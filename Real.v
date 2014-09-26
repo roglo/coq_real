@@ -20,7 +20,16 @@ Axiom fst_same_iff : ∀ x y i odi,
 Definition rm_add x y i :=
   match fst_same x y i with
   | Some di =>
-      if zerop di then false (*???*)
+      (* x[i+di]=y[i+di] *)
+      if zerop di then
+        (* x[i]=y[i] *)
+        match fst_same x y (S i) with
+        | Some dj =>
+            (* x[i+dj]=y[i+dj] *)
+            xorb (rm x i) (rm x (i + dj))
+        | None =>
+            false
+        end
       else negb (rm x (i + di))
   | None =>
       true
