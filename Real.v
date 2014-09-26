@@ -25,7 +25,7 @@ Fixpoint sum_carry x y i di c :=
   | S di' =>
       let xi := rm x (i + di') in
       let yi := rm y (i + di') in
-      let c' := c && (xi || yi) || xi && yi in
+      let c' := c && xi || xi && yi || yi && c in
       sum_carry x y i di' c'
   end.
 
