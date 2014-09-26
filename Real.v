@@ -99,8 +99,48 @@ destruct sxy as [di| ].
  destruct Hsxy as (Hne, Heq).
  split.
   intros dj Hdji.
-  unfold rm_add; simpl.
-  unfold rm_add_i.
+  remember Hdji as H; clear HeqH.
+  apply Hne in H.
+  intros H₁; apply H; clear H; rename H₁ into H.
+  rewrite rm_add_comm in H.
+  unfold rm_add, rm_add_i in H; simpl in H.
+  unfold rm_add, rm_add_i; simpl.
+  remember (fst_same z y (i + dj)) as syz eqn:Hsyz .
+  symmetry in Hsyz.
+  apply fst_same_iff in Hsyz.
+  destruct syz as [diy| ].
+   Focus 1.
+   destruct (zerop diy) as [H₁| H₁].
+    Focus 1.
+    subst diy.
+    destruct Hsyz as (Hyne, Hyeq).
+    remember (fst_same z y (S (i + dj))) as syij eqn:Hsyij .
+    symmetry in Hsyij.
+    apply fst_same_iff in Hsyij.
+    destruct syij as [dj₁| ].
+     Focus 1.
+     destruct Hsyij as (Hyine, Hyieq).
+     rewrite Nat.add_0_r in Hyeq.
+     clear Hyne.
+     simpl in Hyieq.
+     rewrite Hyieq, Hyeq in H.
+     remember (fst_same x y (i + dj)) as sxy eqn:Hsxy .
+     symmetry in Hsxy.
+     apply fst_same_iff in Hsxy.
+     destruct sxy as [dix| ].
+      destruct (zerop dix) as [H₁| H₁].
+       subst dix.
+       rewrite Nat.add_0_r in Hsxy.
+       destruct Hsxy as (Hxne, Hxeq).
+       remember (fst_same x y (S (i + dj))) as sxij eqn:Hsxij .
+       symmetry in Hsxij.
+       apply fst_same_iff in Hsxij.
+       destruct sxij as [dix| ].
+        destruct Hsxij as (Hxine, Hxieq).
+        simpl in Hxieq.
+        rewrite Hxieq.
+        symmetry.
+        rewrite Hyeq, <- Hxeq.
 bbb.
 
 Theorem rm_add_assoc : ∀ x y z, (x + (y + z) = (x + y) + z)%rm.
