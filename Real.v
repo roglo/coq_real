@@ -28,7 +28,7 @@ Definition rm_add_i x y i :=
         match fst_same x y (S i) with
         | Some dj =>
             (* x[i+dj]=y[i+dj] *)
-            xorb (rm x i) (rm x (i + dj))
+            xorb (rm x i) (rm x (S i + dj))
         | None =>
             false
         end
@@ -69,16 +69,15 @@ symmetry in Hsyx.
 apply fst_same_iff in Hsyx.
 destruct syx as [di| ]; auto.
 destruct Hsyx as (Hns, Hs).
-destruct (zerop di) as [H₁| H₁].
- rewrite fst_same_comm.
- remember (fst_same y x (S i)) as syxs eqn:Hsyxs .
- symmetry in Hsyxs.
- apply fst_same_iff in Hsyxs.
- destruct syxs as [dis| ]; auto.
- destruct Hsyxs as (Hnss, Hss).
- subst di; rewrite Nat.add_0_r in Hs.
- rewrite Hs.
- f_equal.
-bbb.
+destruct (zerop di) as [H₁| H₁]; [ idtac | rewrite Hs; reflexivity ].
+rewrite fst_same_comm.
+remember (fst_same y x (S i)) as syxs eqn:Hsyxs .
+symmetry in Hsyxs.
+apply fst_same_iff in Hsyxs.
+destruct syxs as [dis| ]; auto.
+destruct Hsyxs as (Hnss, Hss).
+subst di; rewrite Nat.add_0_r in Hs.
+rewrite Hs; f_equal; symmetry; assumption.
+Qed.
 
 Close Scope nat_scope.
