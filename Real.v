@@ -21,7 +21,7 @@ Axiom fst_00_iff : ∀ x y i di,
 
 Fixpoint sum_carry x y i di c :=
   match di with
-  | O => false
+  | O => c
   | S di' =>
       let xi := rm x (i + di') in
       let yi := rm y (i + di') in
