@@ -116,6 +116,9 @@ destruct sab as [di| ].
  split.
   intros dj Hdji.
   destruct (bool_dec a .[ i + di] b .[ i + di]) as [H₁| H₁].
+   remember a .[ i + di] as aidi eqn:H₂ .
+   symmetry in H₁, H₂.
+   destruct aidi.
 bbb.
 
 intros a b c i.
