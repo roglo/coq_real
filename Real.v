@@ -1,60 +1,66 @@
 Require Import Utf8 QArith NPeano.
 
+Set Implicit Arguments.
+
 Open Scope nat_scope.
 
 (* reals modulo 1 *)
 Record real_mod_1 := { rm : nat → bool }.
 
+Delimit Scope rm_scope with rm.
+Arguments rm r%rm i%nat.
+Notation "s .[ i ]" := (rm s i) (at level 1).
+
 Axiom fst_same : real_mod_1 → real_mod_1 → nat → option nat.
 
-Axiom fst_same_iff : ∀ x y i odi,
-  fst_same x y i = odi ↔
+Axiom fst_same_iff : ∀ a b i odi,
+  fst_same a b i = odi ↔
   match odi with
   | Some di =>
-      (∀ dj, dj < di → rm x (i + dj) ≠ rm y (i + dj))
-      ∧ rm x (i + di) = rm y (i + di)
+      (∀ dj, dj < di → rm a (i + dj) ≠ rm b (i + dj))
+      ∧ rm a (i + di) = rm b (i + di)
   | None =>
-      ∀ dj, rm x (i + dj) ≠ rm y (i + dj)
+      ∀ dj, rm a (i + dj) ≠ rm b (i + dj)
   end.
 
-Delimit Scope rm_scope with rm.
+Arguments fst_same a%rm b%rm i%nat.
 
-Definition rm_eq x y := ∀ i, rm x i = rm y i.
+Definition rm_eq a b := ∀ i, rm a i = rm b i.
 
-Notation "x = y" := (rm_eq x y) : rm_scope.
-Notation "x ≠ y" := (¬ rm_eq x y) : rm_scope.
+Notation "a = b" := (rm_eq a b) : rm_scope.
+Notation "a ≠ b" := (¬ rm_eq a b) : rm_scope.
 
-Definition rm_add_i x y i :=
-  match fst_same x y i with
+Definition rm_add_i a b i :=
+  match fst_same a b i with
   | Some di =>
-      (* x[i+di]=y[i+di] *)
+      (* a[i+di]=b[i+di] *)
       if zerop di then
-        (* x[i]=y[i] *)
-        match fst_same x y (S i) with
+        (* a[i]=b[i] *)
+        match fst_same a b (S i) with
         | Some dj =>
-            (* x[i+dj]=y[i+dj] *)
-            xorb (rm x i) (rm x (S i + dj))
+            (* a[i+dj]=b[i+dj] *)
+            xorb (rm a i) (rm a (S i + dj))
         | None =>
             false
         end
-      else negb (rm x (i + di))
+      else negb (rm a (i + di))
   | None =>
       true
   end.
 
-Definition rm_add x y := {| rm := rm_add_i x y |}.
+Definition rm_add a b := {| rm := rm_add_i a b |}.
 
-Notation "x + y" := (rm_add x y) : rm_scope.
+Notation "a + b" := (rm_add a b) : rm_scope.
 
-Theorem fst_same_comm : ∀ x y i, fst_same x y i = fst_same y x i.
+Theorem fst_same_comm : ∀ a b i, fst_same a b i = fst_same b a i.
 Proof.
-intros x y i.
+intros a b i.
 apply fst_same_iff.
-remember (fst_same y x i) as syx eqn:Hsyx .
-symmetry in Hsyx.
-apply fst_same_iff in Hsyx.
-destruct syx as [di| ].
- destruct Hsyx as (Hns, Hs).
+remember (fst_same b a i) as sba eqn:Hsba .
+symmetry in Hsba.
+apply fst_same_iff in Hsba.
+destruct sba as [di| ].
+ destruct Hsba as (Hns, Hs).
  split; [ idtac | symmetry; assumption ].
  intros dj Hdjn.
  intros H; symmetry in H; revert H.
@@ -62,90 +68,66 @@ destruct syx as [di| ].
 
  intros dj H.
  symmetry in H; revert H.
- apply Hsyx.
+ apply Hsba.
 Qed.
 
-Theorem rm_add_comm : ∀ x y, (x + y = y + x)%rm.
+Theorem rm_add_comm : ∀ a b, (a + b = b + a)%rm.
 Proof.
-intros x y.
+intros a b.
 unfold rm_eq; intros i; simpl.
 unfold rm_add_i.
 rewrite fst_same_comm.
-remember (fst_same y x i) as syx eqn:Hsyx .
-symmetry in Hsyx.
-apply fst_same_iff in Hsyx.
-destruct syx as [di| ]; auto.
-destruct Hsyx as (Hns, Hs).
+remember (fst_same b a i) as sba eqn:Hsba .
+symmetry in Hsba.
+apply fst_same_iff in Hsba.
+destruct sba as [di| ]; auto.
+destruct Hsba as (Hns, Hs).
 destruct (zerop di) as [H₁| H₁]; [ idtac | rewrite Hs; reflexivity ].
 rewrite fst_same_comm.
-remember (fst_same y x (S i)) as syxs eqn:Hsyxs .
-symmetry in Hsyxs.
-apply fst_same_iff in Hsyxs.
-destruct syxs as [dis| ]; auto.
-destruct Hsyxs as (Hnss, Hss).
+remember (fst_same b a (S i)) as sbas eqn:Hsbas .
+symmetry in Hsbas.
+apply fst_same_iff in Hsbas.
+destruct sbas as [dis| ]; auto.
+destruct Hsbas as (Hnss, Hss).
 subst di; rewrite Nat.add_0_r in Hs.
 rewrite Hs; f_equal; symmetry; assumption.
 Qed.
 
-Theorem fst_same_assoc : ∀ x y z i,
-  fst_same x (y + z)%rm i = fst_same (x + y)%rm z i.
+Theorem fst_same_assoc : ∀ a b c i,
+  fst_same a (b + c)%rm i = fst_same (a + b)%rm c i.
 Proof.
-intros x y z i.
+intros a b c i.
 apply fst_same_iff.
-remember (fst_same (x + y)%rm z i) as sxy eqn:Hsxy .
-symmetry in Hsxy.
-apply fst_same_iff in Hsxy.
-destruct sxy as [di| ].
- destruct Hsxy as (Hne, Heq).
+remember (fst_same (a + b) c i) as sab eqn:Hsab .
+symmetry in Hsab.
+apply fst_same_iff in Hsab.
+destruct sab as [di| ].
+ destruct Hsab as (Hne, Heq).
  split.
   intros dj Hdji.
+  Focus 1.
   remember Hdji as H; clear HeqH.
   apply Hne in H.
-  intros H₁; apply H; clear H; rename H₁ into H.
-  rewrite rm_add_comm in H.
-  unfold rm_add, rm_add_i in H; simpl in H.
-  unfold rm_add, rm_add_i; simpl.
-  remember (fst_same z y (i + dj)) as syz eqn:Hsyz .
-  symmetry in Hsyz.
-  apply fst_same_iff in Hsyz.
-  destruct syz as [diy| ].
-   Focus 1.
-   destruct (zerop diy) as [H₁| H₁].
-    Focus 1.
-    subst diy.
-    destruct Hsyz as (Hyne, Hyeq).
-    remember (fst_same z y (S (i + dj))) as syij eqn:Hsyij .
-    symmetry in Hsyij.
-    apply fst_same_iff in Hsyij.
-    destruct syij as [dj₁| ].
+  unfold rm_add in Heq; simpl in Heq.
+  unfold rm_add_i in Heq; simpl in Heq.
+  remember (fst_same a b (i + di)) as aidi eqn:Haidi .
+  symmetry in Haidi.
+  apply fst_same_iff in Haidi.
+  destruct aidi as [aidi| ].
+   destruct Haidi as (Haidine, Haidieq).
+   destruct (zerop aidi) as [H₁| H₁].
+    subst aidi.
+    clear Haidine.
+    rewrite Nat.add_0_r in Haidieq.
+    remember b .[ i + di] as bidi eqn:Hbidi .
+    symmetry in Hbidi.
+    destruct bidi.
      Focus 1.
-     destruct Hsyij as (Hyine, Hyieq).
-     rewrite Nat.add_0_r in Hyeq.
-     clear Hyne.
-     simpl in Hyieq.
-     rewrite Hyieq, Hyeq in H.
-     remember (fst_same x y (i + dj)) as sxy eqn:Hsxy .
-     symmetry in Hsxy.
-     apply fst_same_iff in Hsxy.
-     destruct sxy as [dix| ].
-      destruct (zerop dix) as [H₁| H₁].
-       subst dix.
-       rewrite Nat.add_0_r in Hsxy.
-       destruct Hsxy as (Hxne, Hxeq).
-       remember (fst_same x y (S (i + dj))) as sxij eqn:Hsxij .
-       symmetry in Hsxij.
-       apply fst_same_iff in Hsxij.
-       destruct sxij as [dix| ].
-        destruct Hsxij as (Hxine, Hxieq).
-        simpl in Hxieq.
-        rewrite Hxieq.
-        symmetry.
-        rewrite Hyeq, <- Hxeq.
 bbb.
 
-Theorem rm_add_assoc : ∀ x y z, (x + (y + z) = (x + y) + z)%rm.
+Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
-intros x y z.
+intros a b c.
 unfold rm_eq; intros i; simpl.
 unfold rm_add_i.
 bbb.
