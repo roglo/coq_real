@@ -105,7 +105,10 @@ destruct sab as [di| ].
  destruct Hsab as (Hne, Heq).
  split.
   intros dj Hdji.
-  Focus 1.
+  destruct (bool_dec a .[ i + di] b .[ i + di]) as [H₁| H₁].
+   Focus 1.
+bbb.
+
   remember Hdji as H; clear HeqH.
   apply Hne in H.
   unfold rm_add in Heq; simpl in Heq.
