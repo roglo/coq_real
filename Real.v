@@ -121,6 +121,10 @@ destruct sab as [di| ].
    destruct aidi.
     remember (i + di - 1) as i₁.
     assert (c .[ i₁] = xorb a .[ i₁] b .[ i₁]).
+     destruct di; [ exfalso; revert Hdji; apply Nat.nlt_0_r | idtac ].
+     rewrite Nat.add_succ_r in Heqi₁.
+     rewrite Nat.sub_succ, Nat.sub_0_r in Heqi₁.
+     subst i₁.
 bbb.
 
 intros a b c i.
