@@ -93,9 +93,45 @@ subst di; rewrite Nat.add_0_r in Hs.
 rewrite Hs; f_equal; symmetry; assumption.
 Qed.
 
+Theorem eq_fst_same : ∀ a b i,
+  a .[ i] = b .[ i] → fst_same a b i = Some 0.
+Proof.
+intros a b i Hab.
+apply fst_same_iff; simpl.
+rewrite Nat.add_0_r; split; auto.
+intros dj Hdj.
+exfalso; revert Hdj; apply Nat.nlt_0_r.
+Qed.
+
 Theorem fst_same_assoc : ∀ a b c i,
   fst_same a (b + c)%rm i = fst_same (a + b)%rm c i.
 Proof.
+intros a b c i.
+apply fst_same_iff.
+remember (fst_same (a + b) c i) as sab eqn:Hsab .
+symmetry in Hsab.
+apply fst_same_iff in Hsab.
+destruct sab as [di| ].
+ destruct Hsab as (Hne, Heq).
+ split.
+  intros dj Hdji.
+  destruct (bool_dec a .[ i + di] b .[ i + di]) as [H₁| H₁].
+bbb.
+
+intros a b c i.
+apply fst_same_iff.
+remember (fst_same (a + b) c i) as sab eqn:Hsab .
+symmetry in Hsab.
+apply fst_same_iff in Hsab.
+destruct sab as [di| ].
+ destruct Hsab as (Hne, Heq).
+ split.
+  intros dj Hdji.
+  destruct (bool_dec a .[ i + di] b .[ i + di]) as [H₁| H₁].
+   Focus 1.
+   unfold rm_add, rm_add_i in Heq; simpl in Heq.
+bbb.
+
 intros a b c i.
 apply fst_same_iff.
 remember (fst_same (a + b) c i) as sab eqn:Hsab .
