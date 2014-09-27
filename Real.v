@@ -119,6 +119,8 @@ destruct sab as [di| ].
    remember a .[ i + di] as aidi eqn:H₂ .
    symmetry in H₁, H₂.
    destruct aidi.
+    remember (i + di - 1) as i₁.
+    assert (c .[ i₁] = xorb a .[ i₁] b .[ i₁]).
 bbb.
 
 intros a b c i.
