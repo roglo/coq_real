@@ -103,6 +103,7 @@ intros dj Hdj.
 exfalso; revert Hdj; apply Nat.nlt_0_r.
 Qed.
 
+(*
 Theorem fst_same_assoc : ∀ a b c i,
   fst_same a (b + c)%rm i = fst_same (a + b)%rm c i.
 Proof.
@@ -115,6 +116,7 @@ destruct sab as [di| ].
  destruct Hsab as (Hne, Heq).
  split.
   intros dj Hdji.
+bbb.
   destruct (bool_dec a .[ i + di] b .[ i + di]) as [H₁| H₁].
    remember a .[ i + di] as aidi eqn:H₂ .
    symmetry in H₁, H₂.
@@ -172,12 +174,39 @@ bbb.
     destruct bidi.
      Focus 1.
 bbb.
+*)
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
 intros a b c.
 unfold rm_eq; intros i; simpl.
 unfold rm_add_i.
+remember (fst_same a (b + c) i) as sa eqn:Hsa .
+symmetry in Hsa.
+remember (fst_same (a + b) c i) as sc eqn:Hsc .
+symmetry in Hsc.
+apply fst_same_iff in Hsa.
+apply fst_same_iff in Hsc.
+destruct sa as [dia| ].
+ destruct (zerop dia) as [H₁| H₁].
+  subst dia.
+  destruct Hsa as (_, Hsa).
+  rewrite Nat.add_0_r in Hsa.
+  destruct sc as [dic| ].
+   destruct (zerop dic) as [H₁| H₁].
+    subst dic.
+    destruct Hsc as (_, Hsc).
+    rewrite Nat.add_0_r in Hsc.
+    remember (fst_same a (b + c) (S i)) as sas eqn:Hsas .
+    symmetry in Hsas.
+    remember (fst_same (a + b) c (S i)) as scs eqn:Hscs .
+    symmetry in Hscs.
+    apply fst_same_iff in Hsas.
+    apply fst_same_iff in Hscs.
+    destruct sas as [dias| ].
+     destruct scs as [dics| ].
+      destruct Hsas as (Hsan, Hsas).
+      destruct Hscs as (Hscn, Hscs).
 bbb.
 
 Close Scope nat_scope.
