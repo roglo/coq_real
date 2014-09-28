@@ -178,7 +178,6 @@ destruct sa as [dia| ].
       destruct xbc.
        destruct xab.
         rewrite Hxsc.
-        Focus 1.
         move dja before dia.
         move dic before dia.
         move djc before dja.
@@ -192,6 +191,18 @@ destruct sa as [dia| ].
          apply Hscn in H.
          rename H into Hsd.
          move Hsd before Hsc.
+         unfold rm_add, rm_add_i in Hxa; simpl in Hxa.
+         unfold rm_add, rm_add_i in Hxc; simpl in Hxc.
+         unfold rm_add, rm_add_i in Hsa; simpl in Hsa.
+         unfold rm_add, rm_add_i in Hsc; simpl in Hsc.
+         unfold rm_add, rm_add_i in Hsd; simpl in Hsd.
+         remember (fst_same b c (S i)) as sbc eqn:Hsbc .
+         remember (fst_same a b (S i)) as sab eqn:Hsab .
+         symmetry in Hsbc, Hsab.
+         apply fst_same_iff in Hsbc.
+         apply fst_same_iff in Hsab.
+         destruct sab as [diab| ].
+          destruct sbc as [dibc| ].
 bbb.
 
 Close Scope nat_scope.
