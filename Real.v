@@ -130,8 +130,14 @@ destruct sa as [dia| ].
      destruct Hxsa as (Hxna, Hxsa).
      destruct xsc as [djc| ].
       destruct Hxsc as (Hxnc, Hxsc).
-      Focus 1.
       simpl in Hxsa, Hxsc.
+      remember (xorb b .[ S (i + dia)] c .[ S (i + dia)]) as xbc eqn:Hxbc .
+      symmetry in Hxbc.
+      remember (xorb a .[ S (i + dic)] b .[ S (i + dic)]) as xab eqn:Hxab .
+      symmetry in Hxab.
+      destruct xbc.
+       destruct xab.
+        rewrite Hxsc.
 bbb.
 
 Close Scope nat_scope.
