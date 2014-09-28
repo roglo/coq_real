@@ -134,6 +134,15 @@ destruct sa as [dia| ].
       destruct xbc.
        destruct xab.
         rewrite Hxsc.
+        Focus 1.
+        move dja before dia.
+        move dic before dia.
+        move djc before dja.
+        move Hscn before Hsan.
+        move Hxna before Hscn.
+        move Hxnc before Hxna.
+        move Hxsc before Hsa.
+        move Hxsa before Hsa.
 bbb.
 
 Close Scope nat_scope.
