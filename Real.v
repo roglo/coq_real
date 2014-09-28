@@ -17,10 +17,10 @@ Axiom fst_same_iff : ∀ a b i odi,
   fst_same a b i = odi ↔
   match odi with
   | Some di =>
-      (∀ dj, dj < di → rm a (i + dj) ≠ rm b (i + dj))
-      ∧ rm a (i + di) = rm b (i + di)
+      (∀ dj, dj < di → a.[i + dj] ≠ b.[i + dj])
+      ∧ a.[i + di] = b.[i + di]
   | None =>
-      ∀ dj, rm a (i + dj) ≠ rm b (i + dj)
+      ∀ dj, a.[i + dj] ≠ b.[i + dj]
   end.
 
 Arguments fst_same a%rm b%rm i%nat.
@@ -34,14 +34,14 @@ Definition rm_add_i a b i :=
   match fst_same a b (S i) with
   | Some dj =>
       (* a[S i+di]=b[S i+di] *)
-      if bool_dec a.[i] b.[i] then
+      if negb (xorb a.[i] b.[i]) then
         (* a[i]=b[i] *)
-        xorb (rm a i) (rm a (S i + dj))
+        xorb a.[i] a.[S i + dj]
       else
         (* a[i]≠b[i] *)
-        negb (rm a (S i + dj))
+        negb a.[S i + dj]
   | None =>
-      xorb (rm a i) (rm b i)
+      xorb a.[i] b.[i]
   end.
 
 Definition rm_add a b := {| rm := rm_add_i a b |}.
@@ -77,17 +77,14 @@ remember (fst_same b a (S i)) as sba eqn:Hsba .
 symmetry in Hsba.
 apply fst_same_iff in Hsba.
 destruct sba as [di| ]; [ idtac | apply xorb_comm ].
-destruct (bool_dec a .[ i] b .[ i]) as [H₁| H₁].
- rewrite H₁.
- destruct (bool_dec b .[ i] b .[ i]) as [H₂| H₂].
-  f_equal; destruct Hsba; auto.
-
-  exfalso; apply H₂; reflexivity.
-
- destruct (bool_dec b .[ i] a .[ i]) as [H₂| H₂].
-  symmetry in H₂; contradiction.
-
-  f_equal; destruct Hsba; auto.
+rewrite xorb_comm.
+remember (negb (xorb b .[ i] a .[ i])) as nx eqn:Hnx .
+symmetry in Hnx.
+destruct Hsba as (_, Hsba).
+rewrite Hsba.
+destruct nx; [ idtac | reflexivity ].
+apply negb_true_iff, xorb_eq in Hnx.
+rewrite Hnx; reflexivity.
 Qed.
 
 Theorem eq_fst_same : ∀ a b i,
@@ -185,6 +182,9 @@ symmetry in Hsc.
 apply fst_same_iff in Hsa.
 apply fst_same_iff in Hsc.
 destruct sa as [dia| ].
+ destruct Hsa as (Hsan, Hsa).
+ destruct sc as [dic| ].
+  destruct Hsc as (Hscn, Hsc).
 bbb.
 
 intros a b c.
