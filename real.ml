@@ -25,6 +25,12 @@ value rm_add_i a b i =
 
 value rm_add a b = { rm = rm_add_i a b }.
 
+value rm_add_carry a b =
+  match fst_same a b 0 with
+  | Some dj → a.rm dj
+  | None → False
+  end.
+
 value f2a x =
   let x = mod_float x 1.0 in
   loop 100 x [] where rec loop i x list =

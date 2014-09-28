@@ -99,8 +99,6 @@ Proof.
 intros a b c.
 unfold rm_eq; intros i; simpl.
 unfold rm_add_i.
-bbb.
-
 remember (fst_same a (b + c) (S i)) as sa eqn:Hsa .
 symmetry in Hsa.
 remember (fst_same (a + b) c (S i)) as sc eqn:Hsc .
