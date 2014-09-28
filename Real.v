@@ -38,7 +38,7 @@ Definition rm_add_i a b i :=
         (* a[i]=b[i] *)
         match fst_same a b (S i) with
         | Some dj =>
-            (* a[i+dj]=b[i+dj] *)
+            (* a[S i+dj]=b[S i+dj] *)
             xorb (rm a i) (rm a (S i + dj))
         | None =>
             false
