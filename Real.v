@@ -94,6 +94,50 @@ intros dj Hdj.
 exfalso; revert Hdj; apply Nat.nlt_0_r.
 Qed.
 
+Theorem rm_add_compat_r : ∀ a b c, (a = b)%rm → (a + c = b + c)%rm.
+Proof.
+intros a b c Hab.
+unfold rm_eq in Hab; simpl in Hab.
+unfold rm_eq; simpl.
+intros i.
+unfold rm_add_i; simpl.
+rewrite <- Hab.
+remember (fst_same a c (S i)) as sac eqn:Hsac .
+remember (fst_same b c (S i)) as sbc eqn:Hsbc .
+symmetry in Hsac, Hsbc.
+apply fst_same_iff in Hsac.
+apply fst_same_iff in Hsbc.
+destruct sac as [dja| ].
+ destruct Hsac as (Hnac, Hsac).
+ destruct sbc as [djc| ].
+  rewrite <- Hab.
+  destruct Hsbc as (Hnbc, Hsbc).
+  destruct (lt_dec dja djc) as [H₁| H₁].
+   apply Hnbc in H₁.
+   rewrite <- Hab in H₁; contradiction.
+
+   apply Nat.nlt_ge in H₁.
+   destruct (lt_dec djc dja) as [H₂| H₂].
+    apply Hnac in H₂.
+    rewrite <- Hab in Hsbc.
+    contradiction.
+
+    apply Nat.nlt_ge in H₂.
+    apply Nat.le_antisymm in H₁; auto.
+    subst djc.
+    reflexivity.
+
+  pose proof (Hsbc dja) as H.
+  rewrite <- Hab in H.
+  contradiction.
+
+ destruct sbc as [djc| ]; [ idtac | reflexivity ].
+ destruct Hsbc as (Hnbc, Hsbc).
+ pose proof (Hsac djc) as H.
+ rewrite <- Hab in Hsbc.
+ contradiction.
+Qed.
+
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
 intros a b c.
@@ -143,6 +187,11 @@ destruct sa as [dia| ].
         move Hxnc before Hxna.
         move Hxsc before Hsa.
         move Hxsa before Hsa.
+        destruct (lt_dec dia dic) as [H₁| H₁].
+         remember H₁ as H; clear HeqH.
+         apply Hscn in H.
+         rename H into Hsd.
+         move Hsd before Hsc.
 bbb.
 
 Close Scope nat_scope.
