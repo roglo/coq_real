@@ -31,21 +31,17 @@ Notation "a = b" := (rm_eq a b) : rm_scope.
 Notation "a ≠ b" := (¬ rm_eq a b) : rm_scope.
 
 Definition rm_add_i a b i :=
-  match fst_same a b i with
-  | Some di =>
-      (* a[i+di]=b[i+di] *)
-      if zerop di then
+  match fst_same a b (S i) with
+  | Some dj =>
+      (* a[S i+di]=b[S i+di] *)
+      if bool_dec a.[i] b.[i] then
         (* a[i]=b[i] *)
-        match fst_same a b (S i) with
-        | Some dj =>
-            (* a[S i+dj]=b[S i+dj] *)
-            xorb (rm a i) (rm a (S i + dj))
-        | None =>
-            false
-        end
-      else negb (rm a (i + di))
+        xorb (rm a i) (rm a (S i + dj))
+      else
+        (* a[i]≠b[i] *)
+        negb (rm a (S i + dj))
   | None =>
-      true
+      xorb (rm a i) (rm b i)
   end.
 
 Definition rm_add a b := {| rm := rm_add_i a b |}.
@@ -77,20 +73,21 @@ intros a b.
 unfold rm_eq; intros i; simpl.
 unfold rm_add_i.
 rewrite fst_same_comm.
-remember (fst_same b a i) as sba eqn:Hsba .
+remember (fst_same b a (S i)) as sba eqn:Hsba .
 symmetry in Hsba.
 apply fst_same_iff in Hsba.
-destruct sba as [di| ]; auto.
-destruct Hsba as (Hns, Hs).
-destruct (zerop di) as [H₁| H₁]; [ idtac | rewrite Hs; reflexivity ].
-rewrite fst_same_comm.
-remember (fst_same b a (S i)) as sbas eqn:Hsbas .
-symmetry in Hsbas.
-apply fst_same_iff in Hsbas.
-destruct sbas as [dis| ]; auto.
-destruct Hsbas as (Hnss, Hss).
-subst di; rewrite Nat.add_0_r in Hs.
-rewrite Hs; f_equal; symmetry; assumption.
+destruct sba as [di| ]; [ idtac | apply xorb_comm ].
+destruct (bool_dec a .[ i] b .[ i]) as [H₁| H₁].
+ rewrite H₁.
+ destruct (bool_dec b .[ i] b .[ i]) as [H₂| H₂].
+  f_equal; destruct Hsba; auto.
+
+  exfalso; apply H₂; reflexivity.
+
+ destruct (bool_dec b .[ i] a .[ i]) as [H₂| H₂].
+  symmetry in H₂; contradiction.
+
+  f_equal; destruct Hsba; auto.
 Qed.
 
 Theorem eq_fst_same : ∀ a b i,
@@ -178,6 +175,18 @@ bbb.
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
+intros a b c.
+unfold rm_eq; intros i; simpl.
+unfold rm_add_i.
+remember (fst_same a (b + c) (S i)) as sa eqn:Hsa .
+symmetry in Hsa.
+remember (fst_same (a + b) c (S i)) as sc eqn:Hsc .
+symmetry in Hsc.
+apply fst_same_iff in Hsa.
+apply fst_same_iff in Hsc.
+destruct sa as [dia| ].
+bbb.
+
 intros a b c.
 unfold rm_eq; intros i; simpl.
 unfold rm_add_i.
