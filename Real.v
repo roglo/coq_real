@@ -39,7 +39,7 @@ Definition rm_add_i a b i :=
         negb a.[S i + dj]
       else
         (* a[i]=b[i] *)
-        xorb a.[i] a.[S i + dj]
+        a.[S i + dj]
   | None =>
       xorb a.[i] b.[i]
   end.
@@ -80,12 +80,8 @@ symmetry in Hsba.
 apply fst_same_iff in Hsba.
 destruct sba as [di| ]; [ idtac | apply xorb_comm ].
 rewrite xorb_comm.
-remember (xorb b .[ i] a .[ i]) as xab eqn:Hxab .
-symmetry in Hxab.
 destruct Hsba as (_, Hsba); rewrite Hsba.
-destruct xab; [ reflexivity | idtac ].
-apply xorb_eq in Hxab.
-rewrite Hxab; reflexivity.
+reflexivity.
 Qed.
 
 Theorem eq_fst_same : ∀ a b i,
@@ -103,6 +99,8 @@ Proof.
 intros a b c.
 unfold rm_eq; intros i; simpl.
 unfold rm_add_i.
+bbb.
+
 remember (fst_same a (b + c) (S i)) as sa eqn:Hsa .
 symmetry in Hsa.
 remember (fst_same (a + b) c (S i)) as sc eqn:Hsc .
