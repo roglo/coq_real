@@ -119,7 +119,19 @@ destruct sa as [dia| ].
   destruct xa.
    destruct xc.
     f_equal.
-    rewrite Hsc.
+    rewrite Hsa.
+    unfold rm_add, rm_add_i; simpl.
+    remember (fst_same b c (S (S (i + dia)))) as xsa eqn:Hxsa .
+    remember (fst_same a b (S (S (i + dic)))) as xsc eqn:Hxsc .
+    symmetry in Hxsa, Hxsc.
+    apply fst_same_iff in Hxsa.
+    apply fst_same_iff in Hxsc.
+    destruct xsa as [dja| ].
+     destruct Hxsa as (Hxna, Hxsa).
+     destruct xsc as [djc| ].
+      destruct Hxsc as (Hxnc, Hxsc).
+      Focus 1.
+      simpl in Hxsa, Hxsc.
 bbb.
 
 Close Scope nat_scope.
