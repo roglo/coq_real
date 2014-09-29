@@ -31,10 +31,10 @@ Notation "a = b" := (rm_eq a b) : rm_scope.
 Notation "a ≠ b" := (¬ rm_eq a b) : rm_scope.
 
 Definition rm_add_i a b i :=
-  let s := xorb a.[i] b.[i] in
+  xorb (xorb a.[i] b.[i])
   match fst_same a b (S i) with
-  | Some dj => xorb s a.[S i + dj]
-  | None => s
+  | Some dj => a.[S i + dj]
+  | None => true
   end.
 
 Arguments rm_add_i a%rm b%rm i%nat.
@@ -71,7 +71,7 @@ rewrite fst_same_comm.
 remember (fst_same b a (S i)) as sba eqn:Hsba .
 symmetry in Hsba.
 apply fst_same_iff in Hsba.
-destruct sba as [di| ]; [ idtac | apply xorb_comm ].
+destruct sba as [di| ]; [ idtac | f_equal; apply xorb_comm ].
 destruct Hsba; f_equal; auto; apply xorb_comm.
 Qed.
 

@@ -10,11 +10,11 @@ value fst_same a b i =
 value xorb a b = if a then not b else b.
 
 value rm_add_i a b i =
-  let s = xorb (a.rm i) (b.rm i) in
-  match fst_same a b (i + 1) with
-  | Some dj → xorb s (a.rm (i + dj + 1))
-  | None → s
-  end.
+  xorb (xorb (a.rm i) (b.rm i))
+  (match fst_same a b (i + 1) with
+   | Some dj → a.rm (i + dj + 1)
+   | None → True
+   end).
 
 value rm_add a b = { rm = rm_add_i a b }.
 
