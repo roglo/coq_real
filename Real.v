@@ -144,7 +144,36 @@ destruct sa as [dia| ].
  destruct Hsa as (Hsan, Hsa).
  destruct sc as [dic| ].
   destruct Hsc as (Hscn, Hsc).
-bbb.
+  rewrite Hsc.
+  unfold rm_add, rm_add_i; simpl.
+  remember (fst_same a b (S i)) as sab eqn:Hsab .
+  remember (fst_same b c (S i)) as sbc eqn:Hsbc .
+  symmetry in Hsab, Hsbc.
+  apply fst_same_iff in Hsab.
+  apply fst_same_iff in Hsbc.
+  destruct sab as [diab| ].
+   destruct Hsab as (Hsabn, Hsab).
+   destruct sbc as [dibc| ].
+    destruct Hsbc as (Hsbcn, Hsbc).
+    do 6 rewrite xorb_assoc.
+    do 2 f_equal; symmetry.
+    rewrite xorb_comm, xorb_assoc; f_equal.
+    simpl in Hsbc; rewrite Hsbc.
+bbb
+
+intros a b c.
+unfold rm_eq; intros i; simpl.
+unfold rm_add_i.
+remember (fst_same a (b + c) (S i)) as sa eqn:Hsa .
+symmetry in Hsa.
+remember (fst_same (a + b) c (S i)) as sc eqn:Hsc .
+symmetry in Hsc.
+apply fst_same_iff in Hsa.
+apply fst_same_iff in Hsc.
+destruct sa as [dia| ].
+ destruct Hsa as (Hsan, Hsa).
+ destruct sc as [dic| ].
+  destruct Hsc as (Hscn, Hsc).
   remember (xorb a .[ i] (b + c) .[ i]) as xa eqn:Hxa .
   remember (xorb (a + b) .[ i] c .[ i]) as xc eqn:Hxc .
   symmetry in Hxa, Hxc.
