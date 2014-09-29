@@ -160,95 +160,17 @@ destruct sa as [di_ab_c| ].
     rewrite xorb_comm, xorb_assoc; f_equal.
     simpl in Hsbc; rewrite Hsbc.
     simpl in Hsa, Hsc.
-bbb.
-    rewrite Hsa, <- Hsc.
-    rewrite xorb_comm.
-    unfold rm_add_i; simpl.
-    unfold rm_add_i in Hsa; simpl in Hsa.
-    unfold rm_add_i in Hsc; simpl in Hsc.
-    remember (fst_same a b (S (S (i + di_a_bc)))) as sab₂ eqn:Hsab₂ .
+    unfold rm_add_i in Hsa, Hsc; simpl in Hsa, Hsc.
     remember (fst_same b c (S (S (i + di_ab_c)))) as sbc₂ eqn:Hsbc₂ .
+    remember (fst_same a b (S (S (i + di_a_bc)))) as sab₂ eqn:Hsab₂ .
     symmetry in Hsab₂, Hsbc₂.
     apply fst_same_iff in Hsab₂.
     apply fst_same_iff in Hsbc₂.
     destruct sab₂ as [di_ab₂| ].
      destruct sbc₂ as [di_bc₂| ].
-      Focus 1.
       destruct Hsab₂ as (Hnab₂, Hsab₂).
       destruct Hsbc₂ as (Hnbc₂, Hsbc₂).
       simpl in Hsab₂, Hsbc₂.
-      simpl in Hsab.
-      repeat rewrite xorb_assoc.
-      repeat rewrite xorb_assoc in Hsa.
-      repeat rewrite xorb_assoc in Hsc.
-      rewrite Hsab.
-      rewrite <- Hsbc.
-      rewrite Hsab₂.
-bbb.
-
-intros a b c.
-unfold rm_eq; intros i; simpl.
-unfold rm_add_i.
-remember (fst_same a (b + c) (S i)) as sa eqn:Hsa .
-symmetry in Hsa.
-remember (fst_same (a + b) c (S i)) as sc eqn:Hsc .
-symmetry in Hsc.
-apply fst_same_iff in Hsa.
-apply fst_same_iff in Hsc.
-destruct sa as [dia| ].
- destruct Hsa as (Hsan, Hsa).
- destruct sc as [dic| ].
-  destruct Hsc as (Hscn, Hsc).
-  remember (xorb a .[ i] (b + c) .[ i]) as xa eqn:Hxa .
-  remember (xorb (a + b) .[ i] c .[ i]) as xc eqn:Hxc .
-  symmetry in Hxa, Hxc.
-  destruct xa.
-   destruct xc.
-    f_equal.
-    rewrite Hsa.
-    unfold rm_add, rm_add_i; simpl.
-    remember (fst_same b c (S (S (i + dia)))) as xsa eqn:Hxsa .
-    remember (fst_same a b (S (S (i + dic)))) as xsc eqn:Hxsc .
-    symmetry in Hxsa, Hxsc.
-    apply fst_same_iff in Hxsa.
-    apply fst_same_iff in Hxsc.
-    destruct xsa as [dja| ].
-     destruct Hxsa as (Hxna, Hxsa).
-     destruct xsc as [djc| ].
-      destruct Hxsc as (Hxnc, Hxsc).
-      simpl in Hxsa, Hxsc.
-      remember (xorb b .[ S (i + dia)] c .[ S (i + dia)]) as xbc eqn:Hxbc .
-      symmetry in Hxbc.
-      remember (xorb a .[ S (i + dic)] b .[ S (i + dic)]) as xab eqn:Hxab .
-      symmetry in Hxab.
-      destruct xbc.
-       destruct xab.
-        rewrite Hxsc.
-        move dja before dia.
-        move dic before dia.
-        move djc before dja.
-        move Hscn before Hsan.
-        move Hxna before Hscn.
-        move Hxnc before Hxna.
-        move Hxsc before Hsa.
-        move Hxsa before Hsa.
-        destruct (lt_dec dia dic) as [H₁| H₁].
-         remember H₁ as H; clear HeqH.
-         apply Hscn in H.
-         rename H into Hsd.
-         move Hsd before Hsc.
-         unfold rm_add, rm_add_i in Hxa; simpl in Hxa.
-         unfold rm_add, rm_add_i in Hxc; simpl in Hxc.
-         unfold rm_add, rm_add_i in Hsa; simpl in Hsa.
-         unfold rm_add, rm_add_i in Hsc; simpl in Hsc.
-         unfold rm_add, rm_add_i in Hsd; simpl in Hsd.
-         remember (fst_same b c (S i)) as sbc eqn:Hsbc .
-         remember (fst_same a b (S i)) as sab eqn:Hsab .
-         symmetry in Hsbc, Hsab.
-         apply fst_same_iff in Hsbc.
-         apply fst_same_iff in Hsab.
-         destruct sab as [diab| ].
-          destruct sbc as [dibc| ].
 bbb.
 
 Close Scope nat_scope.
