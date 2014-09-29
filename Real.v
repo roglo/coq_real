@@ -140,9 +140,9 @@ remember (fst_same (a + b) c (S i)) as sc eqn:Hsc .
 symmetry in Hsc.
 apply fst_same_iff in Hsa.
 apply fst_same_iff in Hsc.
-destruct sa as [dia| ].
+destruct sa as [di_ab_c| ].
  destruct Hsa as (Hsan, Hsa).
- destruct sc as [dic| ].
+ destruct sc as [di_a_bc| ].
   destruct Hsc as (Hscn, Hsc).
   rewrite Hsc.
   unfold rm_add, rm_add_i; simpl.
@@ -151,15 +151,40 @@ destruct sa as [dia| ].
   symmetry in Hsab, Hsbc.
   apply fst_same_iff in Hsab.
   apply fst_same_iff in Hsbc.
-  destruct sab as [diab| ].
+  destruct sab as [di_ab| ].
    destruct Hsab as (Hsabn, Hsab).
-   destruct sbc as [dibc| ].
+   destruct sbc as [di_bc| ].
     destruct Hsbc as (Hsbcn, Hsbc).
     do 6 rewrite xorb_assoc.
     do 2 f_equal; symmetry.
     rewrite xorb_comm, xorb_assoc; f_equal.
     simpl in Hsbc; rewrite Hsbc.
-bbb
+    simpl in Hsa, Hsc.
+bbb.
+    rewrite Hsa, <- Hsc.
+    rewrite xorb_comm.
+    unfold rm_add_i; simpl.
+    unfold rm_add_i in Hsa; simpl in Hsa.
+    unfold rm_add_i in Hsc; simpl in Hsc.
+    remember (fst_same a b (S (S (i + di_a_bc)))) as sab₂ eqn:Hsab₂ .
+    remember (fst_same b c (S (S (i + di_ab_c)))) as sbc₂ eqn:Hsbc₂ .
+    symmetry in Hsab₂, Hsbc₂.
+    apply fst_same_iff in Hsab₂.
+    apply fst_same_iff in Hsbc₂.
+    destruct sab₂ as [di_ab₂| ].
+     destruct sbc₂ as [di_bc₂| ].
+      Focus 1.
+      destruct Hsab₂ as (Hnab₂, Hsab₂).
+      destruct Hsbc₂ as (Hnbc₂, Hsbc₂).
+      simpl in Hsab₂, Hsbc₂.
+      simpl in Hsab.
+      repeat rewrite xorb_assoc.
+      repeat rewrite xorb_assoc in Hsa.
+      repeat rewrite xorb_assoc in Hsc.
+      rewrite Hsab.
+      rewrite <- Hsbc.
+      rewrite Hsab₂.
+bbb.
 
 intros a b c.
 unfold rm_eq; intros i; simpl.
