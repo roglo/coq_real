@@ -173,21 +173,28 @@ destruct s₁ as [di₁| ].
       destruct Hs₅ as (Hs₅n, Hs₅).
       destruct Hs₆ as (Hs₆n, Hs₆).
       symmetry in Hs₆.
-      move Hs₁ at bottom.
-      move Hs₂ at bottom.
-      move Hs₃ at bottom.
-      move Hs₄ at bottom.
-      move Hs₅ at bottom.
-      move Hs₆ at bottom.
-      move di₆ before di₁.
-      move di₅ before di₁.
-      move di₄ before di₁.
-      move di₃ before di₁.
+      move Hs₁ at bottom; move Hs₂ at bottom; move Hs₃ at bottom.
+      move Hs₄ at bottom; move Hs₅ at bottom; move Hs₆ at bottom.
+      move di₆ before di₁; move di₅ before di₁.
+      move di₄ before di₁; move di₃ before di₁.
       move di₂ before di₁.
+      move Hs₂n after Hs₆n; move Hs₃n after Hs₆n.
+      move Hs₄n after Hs₆n; move Hs₅n after Hs₆n.
       rewrite xorb_comm.
       rewrite Hs₁, Hs₂.
       rewrite <- Hs₄, <- Hs₆.
       rewrite Hs₃, Hs₅.
+bbb.
+      destruct (lt_dec di₁ di₂) as [H₁| H₁].
+       remember H₁ as H; clear HeqH.
+       apply Hs₂n in H.
+       unfold rm_add_i in H; simpl in H.
+       remember (fst_same a b (S (S (i + di₁)))) as s₇ eqn:Hs₇ .
+       symmetry in Hs₇.
+       apply fst_same_iff in Hs₇.
+       destruct s₇ as [di₇| ].
+        simpl in Hs₇.
+        destruct Hs₇ as (Hs₇n, Hs₇).
 bbb.
 
 Close Scope nat_scope.
