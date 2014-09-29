@@ -7,12 +7,8 @@ Open Scope nat_scope.
 (* reals modulo 1 *)
 Record real_mod_1 := { rm : nat → bool }.
 
-Delimit Scope rm_scope with rm.
-Arguments rm r%rm i%nat.
-
 Definition rm_zero := {| rm i := false |}.
 
-Notation "0" := rm_zero : rm_scope.
 Notation "s .[ i ]" := (rm s i) (at level 1).
 
 Axiom fst_same : real_mod_1 → real_mod_1 → nat → option nat.
@@ -27,8 +23,6 @@ Axiom fst_same_iff : ∀ a b i odi,
       ∀ dj, a.[i + dj] ≠ b.[i + dj]
   end.
 
-Arguments fst_same a%rm b%rm i%nat.
-
 Infix "⊕" := xorb (left associativity, at level 50) : bool_scope.
 
 Definition rm_add_i a b i :=
@@ -38,16 +32,18 @@ Definition rm_add_i a b i :=
   | None => true
   end.
 
-Arguments rm_add_i a%rm b%rm i%nat.
-
 Definition rm_add a b := {| rm := rm_add_i a b |}.
+Definition rm_eq a b := ∀ i,
+  rm (rm_add a rm_zero) i = rm (rm_add b rm_zero) i.
 
+Delimit Scope rm_scope with rm.
+Arguments rm r%rm i%nat.
+Arguments rm_add_i a%rm b%rm i%nat.
+Arguments fst_same a%rm b%rm i%nat.
 Notation "a + b" := (rm_add a b) : rm_scope.
-
-Definition rm_eq a b := ∀ i, rm (a + 0%rm) i = rm (b + 0%rm) i.
-
 Notation "a = b" := (rm_eq a b) : rm_scope.
 Notation "a ≠ b" := (¬ rm_eq a b) : rm_scope.
+Notation "0" := rm_zero : rm_scope.
 
 Theorem fst_same_comm : ∀ a b i, fst_same a b i = fst_same b a i.
 Proof.
