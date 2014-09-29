@@ -9,6 +9,10 @@ Record real_mod_1 := { rm : nat → bool }.
 
 Delimit Scope rm_scope with rm.
 Arguments rm r%rm i%nat.
+
+Definition rm_zero := {| rm i := false |}.
+
+Notation "0" := rm_zero : rm_scope.
 Notation "s .[ i ]" := (rm s i) (at level 1).
 
 Axiom fst_same : real_mod_1 → real_mod_1 → nat → option nat.
@@ -25,10 +29,6 @@ Axiom fst_same_iff : ∀ a b i odi,
 
 Arguments fst_same a%rm b%rm i%nat.
 
-Definition rm_eq a b := ∀ i, rm a i = rm b i.
-
-Notation "a = b" := (rm_eq a b) : rm_scope.
-Notation "a ≠ b" := (¬ rm_eq a b) : rm_scope.
 Infix "⊕" := xorb (left associativity, at level 50) : bool_scope.
 
 Definition rm_add_i a b i :=
@@ -43,6 +43,11 @@ Arguments rm_add_i a%rm b%rm i%nat.
 Definition rm_add a b := {| rm := rm_add_i a b |}.
 
 Notation "a + b" := (rm_add a b) : rm_scope.
+
+Definition rm_eq a b := ∀ i, rm (a + 0%rm) i = rm (b + 0%rm) i.
+
+Notation "a = b" := (rm_eq a b) : rm_scope.
+Notation "a ≠ b" := (¬ rm_eq a b) : rm_scope.
 
 Theorem fst_same_comm : ∀ a b i, fst_same a b i = fst_same b a i.
 Proof.
@@ -63,32 +68,55 @@ destruct sba as [di| ].
  apply Hsba.
 Qed.
 
+Theorem rm_add_i_comm : ∀ a b i, rm_add_i a b i = rm_add_i b a i.
+Proof.
+intros a b i.
+unfold rm_add_i.
+rewrite fst_same_comm.
+remember (fst_same b a (S i)) as s eqn:Hs .
+symmetry in Hs.
+apply fst_same_iff in Hs.
+destruct s as [di| ]; [ idtac | f_equal; apply xorb_comm ].
+f_equal; [ apply xorb_comm | destruct Hs; auto ].
+Qed.
+
 Theorem rm_add_comm : ∀ a b, (a + b = b + a)%rm.
 Proof.
 intros a b.
 unfold rm_eq; intros i; simpl.
-unfold rm_add_i.
-rewrite fst_same_comm.
-remember (fst_same b a (S i)) as sba eqn:Hsba .
-symmetry in Hsba.
+unfold rm_add_i; simpl.
+do 2 rewrite xorb_false_r.
+remember (fst_same (a + b) 0 (S i)) as sab eqn:Hsab .
+remember (fst_same (b + a) 0 (S i)) as sba eqn:Hsba .
+symmetry in Hsab, Hsba.
+apply fst_same_iff in Hsab.
 apply fst_same_iff in Hsba.
-destruct sba as [di| ]; [ idtac | f_equal; apply xorb_comm ].
-destruct Hsba; f_equal; auto; apply xorb_comm.
-Qed.
+simpl in Hsab, Hsba.
+destruct sab as [diab| ].
+ destruct Hsab as (Hnab, Hsab).
+ destruct sba as [diba| ].
+  destruct Hsba as (Hnba, Hsba).
+  rewrite Hsab, Hsba.
+  rewrite rm_add_i_comm; reflexivity.
 
-Theorem eq_fst_same : ∀ a b i,
-  a .[ i] = b .[ i] → fst_same a b i = Some 0.
-Proof.
-intros a b i Hab.
-apply fst_same_iff; simpl.
-rewrite Nat.add_0_r; split; auto.
-intros dj Hdj.
-exfalso; revert Hdj; apply Nat.nlt_0_r.
+  pose proof (Hsba diab) as H.
+  rewrite rm_add_i_comm in H.
+  contradiction.
+
+ destruct sba as [diba| ].
+  destruct Hsba as (Hnba, Hsba).
+  pose proof (Hsab diba) as H.
+  rewrite rm_add_i_comm in H.
+  contradiction.
+
+  rewrite rm_add_i_comm; reflexivity.
 Qed.
 
 Theorem rm_add_compat_r : ∀ a b c, (a = b)%rm → (a + c = b + c)%rm.
 Proof.
 intros a b c Hab.
+bbb.
+
 unfold rm_eq in Hab; simpl in Hab.
 unfold rm_eq; simpl.
 intros i.
@@ -129,6 +157,24 @@ destruct sac as [dja| ].
  rewrite <- Hab in Hsbc.
  contradiction.
 Qed.
+
+Theorem rm_add_0_r : ∀ a, (a + 0 = a)%rm.
+Proof.
+intros a.
+unfold rm_eq, rm_add_i; intros i; simpl.
+unfold rm_eq; simpl.
+unfold rm_add_i; simpl.
+rewrite xorb_false_r.
+remember (fst_same a 0 (S i)) as s eqn:Hs .
+symmetry in Hs.
+apply fst_same_iff in Hs; simpl in Hs.
+destruct s as [di| ].
+ destruct Hs as (Hsn, Hs).
+ rewrite Hs.
+ rewrite xorb_false_r; reflexivity.
+
+ rewrite xorb_true_r.
+bbb.
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
@@ -182,12 +228,12 @@ destruct s₁ as [di₁| ].
       move Hs₂n after Hs₆n; move Hs₃n after Hs₆n.
       move Hs₄n after Hs₆n; move Hs₅n after Hs₆n.
       rewrite xorb_comm.
+bbb.
       destruct (lt_dec di₃ di₄) as [H₁| H₁].
        remember H₁ as H; clear HeqH.
        apply Hs₄n in H.
        rewrite <- Hs₃ in H.
        Focus 1.
-bbb.
       rewrite Hs₁, Hs₂.
       rewrite <- Hs₄, <- Hs₆.
       rewrite Hs₃, Hs₅.
