@@ -29,6 +29,7 @@ Definition rm_eq a b := ∀ i, rm a i = rm b i.
 
 Notation "a = b" := (rm_eq a b) : rm_scope.
 Notation "a ≠ b" := (¬ rm_eq a b) : rm_scope.
+Infix "⊕" := xorb (left associativity, at level 50) : bool_scope.
 
 Definition rm_add_i a b i :=
   xorb (xorb a.[i] b.[i])
@@ -181,6 +182,12 @@ destruct s₁ as [di₁| ].
       move Hs₂n after Hs₆n; move Hs₃n after Hs₆n.
       move Hs₄n after Hs₆n; move Hs₅n after Hs₆n.
       rewrite xorb_comm.
+      destruct (lt_dec di₃ di₄) as [H₁| H₁].
+       remember H₁ as H; clear HeqH.
+       apply Hs₄n in H.
+       rewrite <- Hs₃ in H.
+       Focus 1.
+bbb.
       rewrite Hs₁, Hs₂.
       rewrite <- Hs₄, <- Hs₆.
       rewrite Hs₃, Hs₅.
