@@ -134,43 +134,60 @@ Proof.
 intros a b c.
 unfold rm_eq; intros i; simpl.
 unfold rm_add_i.
-remember (fst_same a (b + c) (S i)) as sa eqn:Hsa .
-symmetry in Hsa.
-remember (fst_same (a + b) c (S i)) as sc eqn:Hsc .
-symmetry in Hsc.
-apply fst_same_iff in Hsa.
-apply fst_same_iff in Hsc.
-destruct sa as [di_ab_c| ].
- destruct Hsa as (Hsan, Hsa).
- destruct sc as [di_a_bc| ].
-  destruct Hsc as (Hscn, Hsc).
-  rewrite Hsc.
+remember (fst_same a (b + c) (S i)) as s₁ eqn:Hs₁ .
+symmetry in Hs₁.
+remember (fst_same (a + b) c (S i)) as s₂ eqn:Hs₂ .
+symmetry in Hs₂.
+apply fst_same_iff in Hs₁.
+apply fst_same_iff in Hs₂.
+simpl in Hs₁, Hs₂; simpl.
+destruct s₁ as [di₁| ].
+ destruct Hs₁ as (Hs₁n, Hs₁).
+ destruct s₂ as [di₂| ].
+  destruct Hs₂ as (Hs₂n, Hs₂).
+  rewrite Hs₂.
   unfold rm_add, rm_add_i; simpl.
-  remember (fst_same a b (S i)) as sab eqn:Hsab .
-  remember (fst_same b c (S i)) as sbc eqn:Hsbc .
-  symmetry in Hsab, Hsbc.
-  apply fst_same_iff in Hsab.
-  apply fst_same_iff in Hsbc.
-  destruct sab as [di_ab| ].
-   destruct Hsab as (Hsabn, Hsab).
-   destruct sbc as [di_bc| ].
-    destruct Hsbc as (Hsbcn, Hsbc).
+  remember (fst_same a b (S i)) as s₃ eqn:Hs₃ .
+  remember (fst_same b c (S i)) as s₄ eqn:Hs₄ .
+  symmetry in Hs₃, Hs₄.
+  apply fst_same_iff in Hs₃.
+  apply fst_same_iff in Hs₄.
+  simpl in Hs₃, Hs₄.
+  destruct s₃ as [di₃| ].
+   destruct Hs₃ as (Hs₃n, Hs₃).
+   destruct s₄ as [di₄| ].
+    destruct Hs₄ as (Hs₄n, Hs₄).
     do 6 rewrite xorb_assoc.
     do 2 f_equal; symmetry.
     rewrite xorb_comm, xorb_assoc; f_equal.
-    simpl in Hsbc; rewrite Hsbc.
-    simpl in Hsa, Hsc.
-    unfold rm_add_i in Hsa, Hsc; simpl in Hsa, Hsc.
-    remember (fst_same b c (S (S (i + di_ab_c)))) as sbc₂ eqn:Hsbc₂ .
-    remember (fst_same a b (S (S (i + di_a_bc)))) as sab₂ eqn:Hsab₂ .
-    symmetry in Hsab₂, Hsbc₂.
-    apply fst_same_iff in Hsab₂.
-    apply fst_same_iff in Hsbc₂.
-    destruct sab₂ as [di_ab₂| ].
-     destruct sbc₂ as [di_bc₂| ].
-      destruct Hsab₂ as (Hnab₂, Hsab₂).
-      destruct Hsbc₂ as (Hnbc₂, Hsbc₂).
-      simpl in Hsab₂, Hsbc₂.
+    symmetry in Hs₂, Hs₄.
+    unfold rm_add_i in Hs₁, Hs₂; simpl in Hs₁, Hs₂.
+    remember (fst_same a b (S (S (i + di₂)))) as s₅ eqn:Hs₅ .
+    remember (fst_same b c (S (S (i + di₁)))) as s₆ eqn:Hs₆ .
+    symmetry in Hs₅, Hs₆.
+    apply fst_same_iff in Hs₅.
+    apply fst_same_iff in Hs₆.
+    simpl in Hs₅, Hs₆.
+    destruct s₅ as [di₅| ].
+     destruct s₆ as [di₆| ].
+      destruct Hs₅ as (Hs₅n, Hs₅).
+      destruct Hs₆ as (Hs₆n, Hs₆).
+      symmetry in Hs₆.
+      move Hs₁ at bottom.
+      move Hs₂ at bottom.
+      move Hs₃ at bottom.
+      move Hs₄ at bottom.
+      move Hs₅ at bottom.
+      move Hs₆ at bottom.
+      move di₆ before di₁.
+      move di₅ before di₁.
+      move di₄ before di₁.
+      move di₃ before di₁.
+      move di₂ before di₁.
+      rewrite xorb_comm.
+      rewrite Hs₁, Hs₂.
+      rewrite <- Hs₄, <- Hs₆.
+      rewrite Hs₃, Hs₅.
 bbb.
 
 Close Scope nat_scope.
