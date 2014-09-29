@@ -10,17 +10,10 @@ value fst_same a b i =
 value xorb a b = if a then not b else b.
 
 value rm_add_i a b i =
+  let s = xorb (a.rm i) (b.rm i) in
   match fst_same a b (i + 1) with
-  | Some dj →
-      (* a[S i+di]=b[S i+di] *)
-      if xorb (a.rm i) (b.rm i) then
-        (* a[i]≠b[i] *)
-        not (a.rm (i + dj + 1))
-      else
-        (* a[i]=b[i] *)
-        a.rm (i + dj + 1)
-  | None →
-      xorb (a.rm i) (b.rm i)
+  | Some dj → xorb s (a.rm (i + dj + 1))
+  | None → s
   end.
 
 value rm_add a b = { rm = rm_add_i a b }.

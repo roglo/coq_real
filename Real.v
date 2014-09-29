@@ -31,17 +31,10 @@ Notation "a = b" := (rm_eq a b) : rm_scope.
 Notation "a ≠ b" := (¬ rm_eq a b) : rm_scope.
 
 Definition rm_add_i a b i :=
+  let s := xorb a.[i] b.[i] in
   match fst_same a b (S i) with
-  | Some dj =>
-      (* a[S i+di]=b[S i+di] *)
-      if xorb a.[i] b.[i] then
-        (* a[i]≠b[i] *)
-        negb a.[S i + dj]
-      else
-        (* a[i]=b[i] *)
-        a.[S i + dj]
-  | None =>
-      xorb a.[i] b.[i]
+  | Some dj => xorb s a.[S i + dj]
+  | None => s
   end.
 
 Arguments rm_add_i a%rm b%rm i%nat.
@@ -79,9 +72,7 @@ remember (fst_same b a (S i)) as sba eqn:Hsba .
 symmetry in Hsba.
 apply fst_same_iff in Hsba.
 destruct sba as [di| ]; [ idtac | apply xorb_comm ].
-rewrite xorb_comm.
-destruct Hsba as (_, Hsba); rewrite Hsba.
-reflexivity.
+destruct Hsba; f_equal; auto; apply xorb_comm.
 Qed.
 
 Theorem eq_fst_same : ∀ a b i,
@@ -153,6 +144,7 @@ destruct sa as [dia| ].
  destruct Hsa as (Hsan, Hsa).
  destruct sc as [dic| ].
   destruct Hsc as (Hscn, Hsc).
+bbb.
   remember (xorb a .[ i] (b + c) .[ i]) as xa eqn:Hxa .
   remember (xorb (a + b) .[ i] c .[ i]) as xc eqn:Hxc .
   symmetry in Hxa, Hxc.
