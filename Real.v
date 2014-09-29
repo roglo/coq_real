@@ -32,7 +32,7 @@ Notation "a ≠ b" := (¬ rm_eq a b) : rm_scope.
 Infix "⊕" := xorb (left associativity, at level 50) : bool_scope.
 
 Definition rm_add_i a b i :=
-  xorb (xorb a.[i] b.[i])
+  a.[i] ⊕ b.[i] ⊕
   match fst_same a b (S i) with
   | Some dj => a.[S i + dj]
   | None => true
