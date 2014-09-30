@@ -108,6 +108,72 @@ destruct sab as [diab| ].
   rewrite rm_add_i_comm; reflexivity.
 Qed.
 
+Theorem eq_0_add_0_0 : (0 = 0 + 0)%rm.
+Proof.
+unfold rm_eq; simpl.
+intros i; unfold rm_add_i at 2; simpl.
+rewrite xorb_false_r.
+remember (fst_same (0%rm + 0%rm) 0 (S i)) as s₁ eqn:Hs₁ .
+symmetry in Hs₁.
+apply fst_same_iff in Hs₁; simpl in Hs₁.
+destruct s₁ as [di₁| ].
+ destruct Hs₁ as (Hn₁, Hs₁).
+ rewrite Hs₁, xorb_false_r.
+ reflexivity.
+
+ exfalso.
+ apply Hs₁ with (dj := 0).
+ rewrite Nat.add_0_r.
+ unfold rm_add_i; simpl.
+ remember (fst_same 0 0 (S (S i))) as s₂ eqn:Hs₂ .
+ symmetry in Hs₂.
+ apply fst_same_iff in Hs₂; simpl in Hs₂.
+ destruct s₂ as [di₂| ]; [ reflexivity | idtac ].
+ exfalso; apply Hs₂; auto.
+Qed.
+
+Theorem rm_add_0_r : ∀ a, (a = a + 0)%rm.
+Proof.
+intros a.
+unfold rm_eq; simpl.
+intros i; unfold rm_add_i at 2; simpl.
+rewrite xorb_false_r.
+remember (fst_same (a + 0%rm) 0 (S i)) as s₁ eqn:Hs₁ .
+symmetry in Hs₁.
+apply fst_same_iff in Hs₁; simpl in Hs₁.
+destruct s₁ as [di₁| ].
+ destruct Hs₁ as (Hn₁, Hs₁).
+ rewrite Hs₁, xorb_false_r.
+ reflexivity.
+
+ exfalso.
+bbb.
+
+ pose proof (Hs₁ 0) as H.
+ exfalso; apply H; clear H.
+ rewrite Nat.add_0_r.
+ unfold rm_add_i; simpl.
+ rewrite xorb_false_r.
+ remember (fst_same a 0 (S (S i))) as s₂ eqn:Hs₂ .
+ symmetry in Hs₂.
+ apply fst_same_iff in Hs₂; simpl in Hs₂.
+ destruct s₂ as [di₂| ].
+  destruct Hs₂ as (Hn₂, Hs₂).
+  rewrite Hs₂, xorb_false_r.
+  pose proof (Hs₁ (S di₂)) as H; simpl in H.
+  unfold rm_add_i in H; simpl in H.
+  rewrite Nat.add_succ_r, Hs₂ in H.
+  rewrite xorb_false_l in H.
+  remember (fst_same a 0 (S (S (S (i + di₂))))) as s₃ eqn:Hs₃ .
+  symmetry in Hs₃.
+  apply fst_same_iff in Hs₃; simpl in Hs₃.
+  destruct s₃ as [di₃| ].
+   destruct Hs₃ as (Hn₃, Hs₃).
+   contradiction.
+
+   clear H.
+bbb.
+
 Theorem zzz : ∀ a b i, (a + b + 0)%rm .[i] = (a + (b + 0) + 0)%rm .[i].
 Proof.
 intros a b i; simpl.
