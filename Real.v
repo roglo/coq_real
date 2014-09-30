@@ -108,11 +108,10 @@ destruct sab as [diab| ].
   rewrite rm_add_i_comm; reflexivity.
 Qed.
 
-Theorem rm_add_0_r : ∀ a, (a + 0 = a)%rm.
+Theorem rm_add_i_0_r : ∀ a i, rm_add_i (a + 0%rm) 0 i = rm_add_i a 0 i.
 Proof.
-intros a.
-unfold rm_eq; simpl.
-intros i; unfold rm_add_i at 1; simpl.
+intros a i.
+unfold rm_add_i at 1; simpl.
 rewrite xorb_false_r.
 remember (fst_same (a + 0%rm) 0 (S i)) as s₁ eqn:Hs₁ .
 symmetry in Hs₁.
@@ -199,9 +198,18 @@ destruct s₁ as [di₁| ].
    discriminate H.
 Qed.
 
+Theorem rm_add_0_r : ∀ a, (a + 0 = a)%rm.
+Proof.
+intros a.
+unfold rm_eq.
+apply rm_add_i_0_r.
+Qed.
+
+(*
 Theorem zzz : ∀ a b i, (a + b + 0)%rm .[i] = (a + (b + 0) + 0)%rm .[i].
 Proof.
 intros a b i; simpl.
+
 unfold rm_add_i; simpl.
 do 2 rewrite xorb_false_r.
 remember (fst_same (a + b) 0 (S i)) as s₁ eqn:Hs₁ .
@@ -263,14 +271,10 @@ destruct s₁ as [di₁| ].
 
         clear H.
 bbb.
+*)
 
 Theorem rm_add_compat_r : ∀ a b c, (a = b)%rm → (a + c = b + c)%rm.
 Proof.
-intros a b c Hab.
-unfold rm_eq in Hab.
-unfold rm_eq; intros i.
-bbb.
-
 intros a b c Hab.
 unfold rm_eq; simpl; intros i.
 unfold rm_add_i; simpl.
@@ -298,6 +302,7 @@ destruct sac as [diac| ].
    destruct Hsac₁ as (Hnac₁, Hsac₁).
    destruct sbc₁ as [dibc₁| ].
     destruct Hsbc₁ as (Hnbc₁, Hsbc₁).
+bbb.
     unfold rm_eq in Hab; simpl in Hab.
     unfold rm_add_i in Hab; simpl in Hab.
 bbb.
