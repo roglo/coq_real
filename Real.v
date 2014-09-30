@@ -17,10 +17,10 @@ Axiom fst_same_iff : ∀ a b i odi,
   fst_same a b i = odi ↔
   match odi with
   | Some di =>
-      (∀ dj, dj < di → a.[i + dj] ≠ b.[i + dj])
+      (∀ dj, dj < di → a.[i + dj] = negb b.[i + dj])
       ∧ a.[i + di] = b.[i + di]
   | None =>
-      ∀ dj, a.[i + dj] ≠ b.[i + dj]
+      ∀ dj, a.[i + dj] = negb b.[i + dj]
   end.
 
 Infix "⊕" := xorb (left associativity, at level 50) : bool_scope.
@@ -52,16 +52,10 @@ apply fst_same_iff.
 remember (fst_same b a i) as sba eqn:Hsba .
 symmetry in Hsba.
 apply fst_same_iff in Hsba.
-destruct sba as [di| ].
- destruct Hsba as (Hns, Hs).
- split; [ idtac | symmetry; assumption ].
- intros dj Hdjn.
- intros H; symmetry in H; revert H.
- apply Hns; assumption.
-
- intros dj H.
- symmetry in H; revert H.
- apply Hsba.
+destruct sba as [di| ]; [ idtac | intros dj; apply negb_sym, Hsba ].
+destruct Hsba as (Hns, Hs).
+split; auto.
+intros dj Hdjn; apply negb_sym, Hns; assumption.
 Qed.
 
 Theorem rm_add_i_comm : ∀ a b i, rm_add_i a b i = rm_add_i b a i.
@@ -95,17 +89,14 @@ destruct sab as [diab| ].
   rewrite Hsab, Hsba.
   rewrite rm_add_i_comm; reflexivity.
 
-  pose proof (Hsba diab) as H.
-  rewrite rm_add_i_comm in H.
-  contradiction.
+  rewrite xorb_comm, rm_add_i_comm, Hsba.
+  rewrite xorb_comm, rm_add_i_comm; reflexivity.
 
- destruct sba as [diba| ].
-  destruct Hsba as (Hnba, Hsba).
-  pose proof (Hsab diba) as H.
-  rewrite rm_add_i_comm in H.
-  contradiction.
-
-  rewrite rm_add_i_comm; reflexivity.
+ destruct sba as [diba| ]; [ idtac | rewrite rm_add_i_comm; reflexivity ].
+ destruct Hsba as (Hnba, Hsba).
+ symmetry; rewrite xorb_comm.
+ rewrite rm_add_i_comm, Hsab.
+ rewrite rm_add_i_comm, rm_add_i_comm; reflexivity.
 Qed.
 
 Theorem rm_add_i_0_r : ∀ a i, rm_add_i (a + 0%rm) 0 i = rm_add_i a 0 i.
@@ -118,10 +109,10 @@ symmetry in Hs₁.
 apply fst_same_iff in Hs₁; simpl in Hs₁.
 destruct s₁ as [di₁| ].
  destruct Hs₁ as (Hn₁, Hs₁).
- rewrite Hs₁, xorb_false_r.
- reflexivity.
+ rewrite Hs₁, xorb_false_r; reflexivity.
 
  exfalso.
+bbb.
  assert (∀ dk, a .[ S (i + dk)] = true) as H.
   intros dk.
   revert i Hs₁.
