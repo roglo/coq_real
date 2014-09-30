@@ -115,8 +115,8 @@ destruct sab as [diab| ].
 Qed.
 
 Theorem rm_add_0_inf_1 : ∀ a i,
-  (∀ dj, rm_add_i a 0 (S (i + dj)) = true)
-  → id (∀ dk, a .[ S (i + dk)] = true).
+  (∀ dj, rm_add_i a 0 (i + dj) = true)
+  → id (∀ dk, a .[i + dk] = true).
 Proof.
 intros a i Hs dk.
 revert i Hs.
@@ -126,7 +126,7 @@ induction dk; intros.
  rewrite Nat.add_0_r in H.
  unfold rm_add_i in H; simpl in H.
  rewrite xorb_false_r in H.
- remember (fst_same a 0 (S (S i))) as s₂ eqn:Hs₂ .
+ remember (fst_same a 0 (S i)) as s₂ eqn:Hs₂ .
  symmetry in Hs₂.
  apply fst_same_iff in Hs₂; simpl in Hs₂.
  destruct s₂ as [di₂| ].
@@ -139,7 +139,7 @@ induction dk; intros.
   pose proof (Hs 1) as H₁; simpl in H₁.
   unfold rm_add_i in H₁; simpl in H₁.
   rewrite xorb_false_r in H₁.
-  remember (fst_same a 0 (S (S (i + 1)))) as s₃ eqn:Hs₃ .
+  remember (fst_same a 0 (S (i + 1))) as s₃ eqn:Hs₃ .
   symmetry in Hs₃.
   apply fst_same_iff in Hs₃; simpl in Hs₃.
   destruct s₃ as [di₃| ].
@@ -167,9 +167,10 @@ Qed.
 Theorem rm_add_i_0_r : ∀ a i, rm_add_i (a + 0%rm) 0 i = rm_add_i a 0 i.
 Proof.
 intros a i.
-unfold rm_add_i at 1; simpl.
+unfold rm_add_i at 1.
+remember (S i) as si; simpl.
 rewrite xorb_false_r.
-remember (fst_same (a + 0%rm) 0 (S i)) as s₁ eqn:Hs₁ .
+remember (fst_same (a + 0%rm) 0 si) as s₁ eqn:Hs₁ .
 symmetry in Hs₁.
 apply fst_same_iff in Hs₁; simpl in Hs₁.
 destruct s₁ as [di₁| ].
@@ -184,7 +185,7 @@ destruct s₁ as [di₁| ].
  rewrite Nat.add_0_r in H.
  unfold rm_add_i in H; simpl in H.
  rewrite xorb_false_r in H.
- remember (fst_same a 0 (S (S i))) as s₂ eqn:Hs₂ .
+ remember (fst_same a 0 (S si)) as s₂ eqn:Hs₂ .
  symmetry in Hs₂.
  apply fst_same_iff in Hs₂.
  simpl in Hs₂.
