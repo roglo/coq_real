@@ -164,6 +164,11 @@ induction dk; intros.
  apply Hs.
 Qed.
 
+Theorem xxx : ∀ a i, ¬ (∀ dj, rm_add_i a 0 (i + dj) = true).
+Proof.
+intros a i Hs.
+bbb.
+
 Theorem rm_add_i_0_r : ∀ a i, rm_add_i (a + 0%rm) 0 i = rm_add_i a 0 i.
 Proof.
 intros a i.
