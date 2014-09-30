@@ -258,8 +258,59 @@ destruct sac as [diac| ].
 bbb.
 *)
 
+Theorem zzz : ∀ a b i, ((a + b) + 0)%rm .[i] = (a + (b + 0))%rm .[i].
+Proof.
+intros a b i; simpl.
+unfold rm_add_i; simpl.
+rewrite xorb_false_r.
+remember (fst_same (a + b) 0 (S i)) as s₁ eqn:Hs₁ .
+remember (fst_same a (b + 0%rm) (S i)) as s₂ eqn:Hs₂ .
+symmetry in Hs₁, Hs₂.
+apply fst_same_iff in Hs₁.
+apply fst_same_iff in Hs₂.
+simpl in Hs₁, Hs₂.
+destruct s₁ as [di₁| ].
+ destruct Hs₁ as (Hn₁, Hs₁).
+ rewrite Hs₁, xorb_false_r.
+ destruct s₂ as [di₂| ].
+  destruct Hs₂ as (Hn₂, Hs₂).
+  unfold rm_add_i; simpl.
+  rewrite xorb_false_r.
+  do 3 rewrite xorb_assoc.
+  do 2 f_equal.
+  remember (fst_same a b (S i)) as s₃ eqn:Hs₃ .
+  remember (fst_same b 0 (S i)) as s₄ eqn:Hs₄ .
+  symmetry in Hs₃, Hs₄.
+  apply fst_same_iff in Hs₃.
+  apply fst_same_iff in Hs₄.
+  simpl in Hs₃, Hs₄.
+  destruct s₃ as [di₃| ].
+   destruct Hs₃ as (Hn₃, Hs₃).
+   destruct s₄ as [di₄| ].
+    destruct Hs₄ as (Hn₄, Hs₄).
+    rewrite Hs₄, xorb_false_l.
+    rewrite Hs₂, Hs₃.
+    unfold rm_add_i; simpl.
+    rewrite xorb_false_r.
+    unfold rm_add_i in Hs₂; simpl in Hs₂.
+    rewrite xorb_false_r in Hs₂.
+    remember (fst_same b 0 (S (S (i + di₂)))) as s₅ eqn:Hs₅ .
+    symmetry in Hs₅.
+    apply fst_same_iff in Hs₅.
+    simpl in Hs₅.
+    destruct s₅ as [di₅| ].
+     destruct Hs₅ as (Hn₅, Hs₅).
+     rewrite Hs₅, xorb_false_r.
+     rewrite Hs₅, xorb_false_r in Hs₂.
+bbb.
+
 Theorem rm_add_compat_r : ∀ a b c, (a = b)%rm → (a + c = b + c)%rm.
 Proof.
+intros a b c Hab.
+unfold rm_eq in Hab.
+unfold rm_eq; intros i.
+bbb.
+
 intros a b c Hab.
 unfold rm_eq; simpl; intros i.
 unfold rm_add_i; simpl.
