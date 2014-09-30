@@ -288,64 +288,57 @@ destruct s₁ as [di₁| ].
    destruct Hs₃ as (Hn₃, Hs₃).
    destruct s₄ as [di₄| ].
     destruct Hs₄ as (Hn₄, Hs₄).
-bbb.
     unfold rm_add_i in Hs₄; simpl in Hs₄.
     unfold rm_add_i; simpl.
     rewrite xorb_false_r in Hs₄.
     rewrite xorb_false_r.
     remember (fst_same b 0 (S (S (i + di₄)))) as s₅ eqn:Hs₅ .
-    remember (fst_same b 0 (S i)) as s₆ eqn:Hs₆ .
-    symmetry in Hs₅, Hs₆.
+    symmetry in Hs₅.
     apply fst_same_iff in Hs₅.
-    apply fst_same_iff in Hs₆.
-    simpl in Hs₅, Hs₆.
+    simpl in Hs₅.
     destruct s₅ as [di₅| ].
      destruct Hs₅ as (Hn₅, Hs₅).
      rewrite Hs₅, xorb_false_r in Hs₄.
-     destruct s₆ as [di₆| ].
-      destruct Hs₆ as (Hn₆, Hs₆).
-      rewrite Hs₆, xorb_false_r.
-      f_equal.
-      destruct (lt_dec di₃ di₄) as [H₁| H₁].
-       remember H₁ as H; clear HeqH.
-       apply Hn₄ in H.
-       unfold rm_add_i in H; simpl in H.
-       rewrite xorb_false_r in H.
-       remember (fst_same b 0 (S (S (i + di₃)))) as s₇ eqn:Hs₇ .
-       symmetry in Hs₇.
-       apply fst_same_iff in Hs₇; simpl in Hs₇.
-       destruct s₇ as [di₇| ].
-        destruct Hs₇ as (Hn₇, Hs₇).
-        rewrite Hs₇, xorb_false_r in H.
-        rewrite Hs₃ in H.
-        destruct b .[ S (i + di₃)]; discriminate H.
+     destruct (lt_dec di₃ di₄) as [H₁| H₁].
+      remember H₁ as H; clear HeqH.
+      apply Hn₄ in H.
+      unfold rm_add_i in H; simpl in H.
+      rewrite xorb_false_r in H.
+      remember (fst_same b 0 (S (S (i + di₃)))) as s₇ eqn:Hs₇ .
+      symmetry in Hs₇.
+      apply fst_same_iff in Hs₇; simpl in Hs₇.
+      destruct s₇ as [di₇| ].
+       destruct Hs₇ as (Hn₇, Hs₇).
+       rewrite Hs₇, xorb_false_r in H.
+       rewrite Hs₃ in H.
+       destruct b .[ S (i + di₃)]; discriminate H.
 
-        clear H.
-        pose proof (Hs₇ (di₄ + di₅ - di₃)) as H.
-        rewrite Nat.add_sub_assoc in H.
-         rewrite Nat.add_comm, Nat.add_assoc in H.
-         rewrite Nat.add_sub in H.
-         rewrite Nat.add_comm, Nat.add_assoc in H.
-         rewrite Hs₅ in H; discriminate H.
+       clear H.
+       pose proof (Hs₇ (di₄ + di₅ - di₃)) as H.
+       rewrite Nat.add_sub_assoc in H.
+        rewrite Nat.add_comm, Nat.add_assoc in H.
+        rewrite Nat.add_sub in H.
+        rewrite Nat.add_comm, Nat.add_assoc in H.
+        rewrite Hs₅ in H; discriminate H.
 
-         apply Nat.succ_le_mono.
-         eapply Nat.le_trans; eauto .
-         rewrite <- Nat.add_succ_r.
-         apply Nat.le_sub_le_add_l.
-         rewrite Nat.sub_diag.
-         apply Nat.le_0_l.
+        apply Nat.succ_le_mono.
+        eapply Nat.le_trans; eauto .
+        rewrite <- Nat.add_succ_r.
+        apply Nat.le_sub_le_add_l.
+        rewrite Nat.sub_diag.
+        apply Nat.le_0_l.
 
-       apply Nat.nlt_ge in H₁.
-       destruct (lt_dec di₄ di₃) as [H₂| H₂].
-        remember H₂ as H; clear HeqH.
-        apply Hn₃ in H.
-        rewrite Hs₄ in H.
-        destruct b .[ S (i + di₄)]; discriminate H.
+      apply Nat.nlt_ge in H₁.
+      destruct (lt_dec di₄ di₃) as [H₂| H₂].
+       remember H₂ as H; clear HeqH.
+       apply Hn₃ in H.
+       rewrite Hs₄ in H.
+       destruct b .[ S (i + di₄)]; discriminate H.
 
-        apply Nat.nlt_ge in H₂.
-        apply Nat.le_antisymm in H₁; auto.
-
-      rewrite xorb_true_r.
+       apply Nat.nlt_ge in H₂.
+       apply Nat.le_antisymm in H₁; auto.
+       subst di₄; clear H₂.
+       clear Hs₄.
 bbb.
 
 Theorem rm_add_compat_r : ∀ a b c, (a = b)%rm → (a + c = b + c)%rm.
