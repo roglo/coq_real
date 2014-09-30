@@ -101,7 +101,7 @@ Qed.
 
 Theorem rm_add_0_inf_1 : ∀ a i,
   (∀ dj, rm_add_i a 0 (S (i + dj)) = true)
-  → (∀ dk, a .[ S (i + dk)] = true).
+  → id (∀ dk, a .[ S (i + dk)] = true).
 Proof.
 intros a i Hs dk.
 revert i Hs.
@@ -162,81 +162,28 @@ destruct s₁ as [di₁| ].
  rewrite Hs₁, xorb_false_r; reflexivity.
 
  exfalso.
-bbb.
- assert (∀ dk, a .[ S (i + dk)] = true) as H.
-  intros dk.
-  revert i Hs₁.
-  induction dk; intros.
-   rewrite Nat.add_0_r.
-   pose proof (Hs₁ 0) as H; simpl in H.
-   rewrite Nat.add_0_r in H.
-   apply not_false_is_true in H.
-   unfold rm_add_i in H; simpl in H.
-   rewrite xorb_false_r in H.
-   remember (fst_same a 0 (S (S i))) as s₂ eqn:Hs₂ .
-   symmetry in Hs₂.
-   apply fst_same_iff in Hs₂.
-   simpl in Hs₂.
-   destruct s₂ as [di₂| ].
-    destruct Hs₂ as (Hn₂, Hs₂).
-    rewrite Hs₂, xorb_false_r in H.
-    assumption.
+ remember Hs₁ as H; clear HeqH.
+ apply rm_add_0_inf_1 in H; unfold id in H.
+ rename H into Hk.
+ pose proof (Hs₁ 0) as H; simpl in H.
+ rewrite Nat.add_0_r in H.
+ unfold rm_add_i in H; simpl in H.
+ rewrite xorb_false_r in H.
+ remember (fst_same a 0 (S (S i))) as s₂ eqn:Hs₂ .
+ symmetry in Hs₂.
+ apply fst_same_iff in Hs₂.
+ simpl in Hs₂.
+ destruct s₂ as [di₂| ].
+  destruct Hs₂ as (Hn₂, Hs₂).
+  rewrite <- Nat.add_succ_r in Hs₂.
+  rewrite Hk in Hs₂; discriminate Hs₂.
 
-    rewrite xorb_true_r in H.
-    apply negb_true_iff in H.
-    pose proof (Hs₁ 1) as H₁; simpl in H₁.
-    apply not_false_is_true in H₁.
-    unfold rm_add_i in H₁; simpl in H₁.
-    rewrite xorb_false_r in H₁.
-    remember (fst_same a 0 (S (S (i + 1)))) as s₃ eqn:Hs₃ .
-    symmetry in Hs₃.
-    apply fst_same_iff in Hs₃.
-    simpl in Hs₃.
-    destruct s₃ as [di₃| ].
-     destruct Hs₃ as (Hn₃, Hs₃).
-     rewrite Hs₃ in H₁.
-     rewrite xorb_false_r in H₁.
-     pose proof (Hs₂ (S di₃)) as H₂.
-     rewrite <- Nat.add_assoc in Hs₃.
-     contradiction.
-
-     rewrite xorb_true_r in H₁.
-     apply negb_true_iff in H₁.
-     pose proof (Hs₂ 0) as H₂.
-     rewrite Nat.add_0_r in H₂.
-     rewrite Nat.add_1_r in H₁.
-     contradiction.
-
-   rewrite Nat.add_succ_r, <- Nat.add_succ_l.
-   apply IHdk.
-   intros dj.
-   rewrite Nat.add_succ_l, <- Nat.add_succ_r.
-   apply Hs₁.
-
-  rename H into Hk.
-  pose proof (Hs₁ 0) as H; simpl in H.
+  rewrite xorb_true_r in H.
+  apply negb_true_iff in H.
+  rename H into H₁.
+  pose proof (Hk 0) as H; simpl in H.
   rewrite Nat.add_0_r in H.
-  apply not_false_is_true in H.
-  unfold rm_add_i in H; simpl in H.
-  rewrite xorb_false_r in H.
-  remember (fst_same a 0 (S (S i))) as s₂ eqn:Hs₂ .
-  symmetry in Hs₂.
-  apply fst_same_iff in Hs₂.
-  simpl in Hs₂.
-  destruct s₂ as [di₂| ].
-   destruct Hs₂ as (Hn₂, Hs₂).
-   clear H.
-   pose proof (Hk (S di₂)) as H; simpl in H.
-   rewrite Nat.add_succ_r in H.
-   rewrite Hs₂ in H; discriminate H.
-
-   rewrite xorb_true_r in H.
-   apply negb_true_iff in H.
-   rename H into H₁.
-   pose proof (Hk 0) as H; simpl in H.
-   rewrite Nat.add_0_r in H.
-   rewrite H₁ in H.
-   discriminate H.
+  rewrite H₁ in H; discriminate H.
 Qed.
 
 Theorem rm_add_0_r : ∀ a, (a + 0 = a)%rm.
@@ -246,13 +193,16 @@ unfold rm_eq.
 apply rm_add_i_0_r.
 Qed.
 
-Theorem zzz : ∀ a₀ b₀ a b c,
+Theorem zzz : ∀ a₀ b₀ c₀ a b c,
   a = (a₀ + 0)%rm
   → b = (b₀ + 0)%rm
+  → c = (c₀ + 0)%rm
   → (a = b)%rm
   → (a + c = b + c)%rm.
 Proof.
-intros a₀ b₀ a b c Ha Hb Hab.
+intros a₀ b₀ c₀ a b c Ha Hb Hc Hab.
+bbb.
+
 unfold rm_eq; simpl; intros i.
 unfold rm_add_i; simpl.
 do 2 rewrite xorb_false_r.
