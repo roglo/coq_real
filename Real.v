@@ -150,6 +150,25 @@ Theorem rm_add_i_compat_r : ∀ a b c i,
 Proof.
 intros a b c j Hab.
 unfold rm_add_i; simpl.
+remember (fst_same a c (S j)) as sac eqn:Hsac .
+remember (fst_same b c (S j)) as sbc eqn:Hsbc .
+symmetry in Hsac, Hsbc.
+apply fst_same_iff in Hsac.
+apply fst_same_iff in Hsbc.
+simpl in Hsac, Hsbc.
+destruct sac as [diac| ].
+ destruct Hsac as (Hnac, Hsac).
+ rewrite Hsac.
+ destruct sbc as [dibc| ].
+  destruct Hsbc as (Hnbc, Hsbc).
+  rewrite Hsbc.
+  unfold rm_eq in Hab; simpl in Hab.
+  unfold rm_add_i in Hab; simpl in Hab.
+Abort. (* chais pas
+bbb.
+
+intros a b c j Hab.
+unfold rm_add_i; simpl.
 pose proof (Hab j) as Hj; simpl in Hj.
 unfold rm_add_i in Hj; simpl in Hj.
 do 2 rewrite xorb_false_r in Hj.
@@ -179,6 +198,8 @@ destruct sa as [dia| ].
    destruct sbc as [dibc| ].
     destruct Hsbc as (Hnbc, Hsbc).
     rewrite Hsbc.
+bbb.
+
     destruct (lt_dec diac dibc) as [H₁| H₁].
      remember H₁ as H; clear HeqH.
      apply Hnbc in H.
@@ -235,6 +256,7 @@ destruct sac as [diac| ].
     do 2 rewrite xorb_false in Hj.
     rewrite Hj; f_equal.
 bbb.
+*)
 
 Theorem rm_add_compat_r : ∀ a b c, (a = b)%rm → (a + c = b + c)%rm.
 Proof.
@@ -254,6 +276,19 @@ destruct sac as [diac| ].
   destruct Hsbc as (Hnbc, Hsbc).
   rewrite Hsac, Hsbc.
   do 2 rewrite xorb_false_r.
+  unfold rm_add_i; simpl.
+  remember (fst_same a c (S i)) as sac₁ eqn:Hsac₁ .
+  remember (fst_same b c (S i)) as sbc₁ eqn:Hsbc₁ .
+  symmetry in Hsac₁, Hsbc₁.
+  apply fst_same_iff in Hsac₁.
+  apply fst_same_iff in Hsbc₁.
+  simpl in Hsac₁, Hsbc₁.
+  destruct sac₁ as [diac₁| ].
+   destruct Hsac₁ as (Hnac₁, Hsac₁).
+   destruct sbc₁ as [dibc₁| ].
+    destruct Hsbc₁ as (Hnbc₁, Hsbc₁).
+    unfold rm_eq in Hab; simpl in Hab.
+    unfold rm_add_i in Hab; simpl in Hab.
 bbb.
 
 unfold rm_eq in Hab; simpl in Hab.
