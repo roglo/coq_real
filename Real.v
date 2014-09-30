@@ -336,9 +336,46 @@ destruct s₁ as [di₁| ].
        destruct b .[ S (i + di₄)]; discriminate H.
 
        apply Nat.nlt_ge in H₂.
-       apply Nat.le_antisymm in H₁; auto.
-       subst di₄; clear H₂.
-       clear Hs₄.
+       apply Nat.le_antisymm in H₁; auto; subst di₄.
+       remember (fst_same b 0 (S i)) as s₆ eqn:Hs₆ .
+       symmetry in Hs₆.
+       apply fst_same_iff in Hs₆; simpl in Hs₆.
+       destruct s₆ as [di₆| ].
+        destruct Hs₆ as (Hn₆, Hs₆).
+        rewrite Hs₆, xorb_false_r; reflexivity.
+
+        pose proof (Hs₆ (S (di₃ + di₅))) as H.
+        rewrite Nat.add_succ_r, Nat.add_assoc in H.
+        rewrite Hs₅ in H; discriminate H.
+
+     rewrite xorb_true_r in Hs₄.
+     remember (fst_same b 0 (S i)) as s₆ eqn:Hs₆ .
+     symmetry in Hs₆.
+     apply fst_same_iff in Hs₆; simpl in Hs₆.
+     destruct s₆ as [di₆| ].
+      destruct Hs₆ as (Hn₆, Hs₆).
+      rewrite Hs₆, xorb_false_r.
+      f_equal.
+      destruct (lt_dec di₄ di₆) as [H₁| H₁].
+       remember H₁ as H; clear HeqH.
+       apply Hn₆ in H.
+       rename H into H₂.
+       pose proof (Hs₅ (di₆ - S di₄)) as H.
+       rewrite <- Nat.add_succ_l in H.
+       rewrite Nat.add_sub_assoc in H; auto.
+       rewrite <- Nat.add_succ_r in H.
+       rewrite Nat.add_comm, Nat.add_assoc in H.
+       rewrite Nat.add_sub, Nat.add_comm in H.
+       rewrite Hs₆ in H; discriminate H.
+
+       apply Nat.nlt_ge in H₁.
+       destruct (lt_dec di₆ di₄) as [H₂| H₂].
+        remember H₂ as H; clear HeqH.
+        apply Hn₄ in H.
+        unfold rm_add_i in H; simpl in H.
+        rewrite xorb_false_r in H.
+        rewrite Hs₆ in H.
+        rewrite xorb_false_l in H.
 bbb.
 
 Theorem rm_add_compat_r : ∀ a b c, (a = b)%rm → (a + c = b + c)%rm.
