@@ -369,13 +369,57 @@ destruct s₁ as [di₁| ].
        rewrite Hs₆ in H; discriminate H.
 
        apply Nat.nlt_ge in H₁.
-       destruct (lt_dec di₆ di₄) as [H₂| H₂].
+       destruct (lt_dec di₃ di₆) as [H₂| H₂].
         remember H₂ as H; clear HeqH.
+        apply Hn₆ in H.
+        rewrite H in Hs₃.
+        rewrite Hs₃, Hs₄; symmetry.
+        apply negb_true_iff.
+        rename H into H₃.
+        remember H₂ as H; clear HeqH.
+        apply Nat.lt_le_trans with (p := di₄) in H; auto.
         apply Hn₄ in H.
+        rewrite Hs₃ in H; symmetry in H.
+        apply negb_true_iff in H.
         unfold rm_add_i in H; simpl in H.
         rewrite xorb_false_r in H.
-        rewrite Hs₆ in H.
-        rewrite xorb_false_l in H.
+        rewrite H₃, xorb_true_l in H.
+        apply negb_false_iff in H.
+        remember (fst_same b 0 (S (S (i + di₃)))) as s₇ eqn:Hs₇ .
+        symmetry in Hs₇.
+        apply fst_same_iff in Hs₇.
+        simpl in Hs₇.
+        destruct s₇ as [di₇| ].
+         destruct Hs₇ as (Hn₇, Hs₇).
+         rewrite Hs₇ in H; discriminate H.
+
+         clear H.
+         pose proof (Hs₇ (di₆ - S di₃)) as H; simpl in H.
+         rewrite <- Nat.add_succ_l in H.
+         rewrite Nat.add_sub_assoc in H; auto.
+         rewrite <- Nat.add_succ_r in H.
+         rewrite Nat.add_comm, Nat.add_assoc in H.
+         rewrite Nat.add_sub, Nat.add_comm in H.
+         rewrite Hs₆ in H; discriminate H.
+
+        apply Nat.nlt_ge in H₂.
+        destruct (lt_dec di₃ di₄) as [H₃| H₃].
+         remember H₃ as H; clear HeqH.
+         apply Hn₄ in H.
+         unfold rm_add_i in H; simpl in H.
+         rewrite xorb_false_r in H.
+         remember (fst_same b 0 (S (S (i + di₃)))) as s₇ eqn:Hs₇ .
+         symmetry in Hs₇.
+         apply fst_same_iff in Hs₇.
+         simpl in Hs₇.
+         destruct s₇ as [di₇| ].
+          destruct Hs₇ as (Hn₇, Hs₇).
+          rewrite Hs₇ in H.
+          rewrite xorb_false_r in H.
+          rewrite Hs₃ in H.
+          destruct b .[ S (i + di₃)]; discriminate H.
+
+          clear H.
 bbb.
 
 Theorem rm_add_compat_r : ∀ a b c, (a = b)%rm → (a + c = b + c)%rm.
