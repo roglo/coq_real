@@ -288,6 +288,7 @@ destruct s₁ as [di₁| ].
    destruct Hs₃ as (Hn₃, Hs₃).
    destruct s₄ as [di₄| ].
     destruct Hs₄ as (Hn₄, Hs₄).
+bbb.
     unfold rm_add_i in Hs₄; simpl in Hs₄.
     unfold rm_add_i; simpl.
     rewrite xorb_false_r in Hs₄.
