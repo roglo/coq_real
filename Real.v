@@ -45,6 +45,21 @@ Notation "a = b" := (rm_eq a b) : rm_scope.
 Notation "a ≠ b" := (¬ rm_eq a b) : rm_scope.
 Notation "0" := rm_zero : rm_scope.
 
+Theorem rm_eq_refl : reflexive _ rm_eq.
+Proof. intros a i; reflexivity. Qed.
+
+Theorem rm_eq_sym : symmetric _ rm_eq.
+Proof. intros a b Hab i; symmetry; apply Hab. Qed.
+
+Theorem rm_eq_trans : transitive _ rm_eq.
+Proof. intros a b c Hab Hbc i; rewrite Hab; apply Hbc. Qed.
+
+Add Parametric Relation : _ rm_eq
+ reflexivity proved by rm_eq_refl
+ symmetry proved by rm_eq_sym
+ transitivity proved by rm_eq_trans
+ as rm_rel.
+
 Theorem fst_same_comm : ∀ a b i, fst_same a b i = fst_same b a i.
 Proof.
 intros a b i.
@@ -201,6 +216,7 @@ Theorem zzz : ∀ a₀ b₀ c₀ a b c,
   → (a + c = b + c)%rm.
 Proof.
 intros a₀ b₀ c₀ a b c Ha Hb Hc Hab.
+Abort. (* à faire
 bbb.
 
 unfold rm_eq; simpl; intros i.
@@ -231,9 +247,116 @@ destruct sac as [diac| ].
   rewrite xorb_comm; symmetry.
   do 2 rewrite xorb_false_r in H.
 bbb.
+*)
+
+Theorem yyy : ∀ a b, (a + b + 0 = a + (b + 0))%rm.
+Proof.
+intros a b.
+rewrite rm_add_0_r.
+unfold rm_eq; intros i; simpl.
+unfold rm_add_i; simpl.
+do 2 rewrite xorb_false_r.
+remember (fst_same (a + b) 0 (S i)) as s₁ eqn:Hs₁ .
+remember (fst_same (a + (b + 0)%rm) 0 (S i)) as s₂ eqn:Hs₂ .
+symmetry in Hs₁, Hs₂.
+apply fst_same_iff in Hs₁.
+apply fst_same_iff in Hs₂.
+simpl in Hs₁, Hs₂.
+destruct s₁ as [di₁| ].
+ destruct Hs₁ as (Hn₁, Hs₁).
+ rewrite Hs₁, xorb_false_r.
+ destruct s₂ as [di₂| ].
+  destruct Hs₂ as (Hn₂, Hs₂).
+  rewrite Hs₂, xorb_false_r.
+  unfold rm_add_i; simpl.
+  remember (fst_same a b (S i)) as s₃ eqn:Hs₃ .
+  remember (fst_same a (b + 0%rm) (S i)) as s₄ eqn:Hs₄ .
+  symmetry in Hs₃, Hs₄.
+  apply fst_same_iff in Hs₃.
+  apply fst_same_iff in Hs₄.
+  simpl in Hs₃, Hs₄.
+  destruct s₃ as [di₃| ].
+   destruct Hs₃ as (Hn₃, Hs₃).
+   destruct s₄ as [di₄| ].
+    destruct Hs₄ as (Hn₄, Hs₄).
+    unfold rm_add_i in Hs₄; simpl in Hs₄.
+    unfold rm_add_i; simpl.
+    rewrite xorb_false_r in Hs₄.
+    rewrite xorb_false_r.
+    remember (fst_same b 0 (S (S (i + di₄)))) as s₅ eqn:Hs₅ .
+    remember (fst_same b 0 (S i)) as s₆ eqn:Hs₆ .
+    symmetry in Hs₅, Hs₆.
+    apply fst_same_iff in Hs₅.
+    apply fst_same_iff in Hs₆.
+    simpl in Hs₅, Hs₆.
+    destruct s₅ as [di₅| ].
+     destruct Hs₅ as (Hn₅, Hs₅).
+     rewrite Hs₅, xorb_false_r in Hs₄.
+     destruct s₆ as [di₆| ].
+      destruct Hs₆ as (Hn₆, Hs₆).
+      rewrite Hs₆, xorb_false_r.
+      f_equal.
+      destruct (lt_dec di₃ di₄) as [H₁| H₁].
+       remember H₁ as H; clear HeqH.
+       apply Hn₄ in H.
+       unfold rm_add_i in H; simpl in H.
+       rewrite xorb_false_r in H.
+       remember (fst_same b 0 (S (S (i + di₃)))) as s₇ eqn:Hs₇ .
+       symmetry in Hs₇.
+       apply fst_same_iff in Hs₇; simpl in Hs₇.
+       destruct s₇ as [di₇| ].
+        destruct Hs₇ as (Hn₇, Hs₇).
+        rewrite Hs₇, xorb_false_r in H.
+        rewrite Hs₃ in H.
+        destruct b .[ S (i + di₃)]; discriminate H.
+
+        clear H.
+bbb.
 
 Theorem rm_add_compat_r : ∀ a b c, (a = b)%rm → (a + c = b + c)%rm.
 Proof.
+intros a b c Hab.
+remember (a + 0)%rm as a₁.
+remember (b + 0)%rm as b₁.
+remember (c + 0)%rm as c₁.
+remember Heqa₁ as H; clear HeqH.
+eapply zzz with (b₀ := b) (c₀ := c) in H; eauto .
+ subst a₁ b₁ c₁.
+ Focus 2.
+ subst a₁ b₁.
+ rewrite rm_add_0_r.
+ rewrite rm_add_0_r.
+ assumption.
+
+ rewrite <- yyy in H.
+ rewrite rm_add_0_r in H.
+ rewrite <- yyy in H.
+ symmetry in H.
+ rewrite rm_add_0_r in H.
+ rewrite rm_add_comm, <- yyy, rm_add_0_r in H.
+ symmetry in H.
+ rewrite rm_add_comm, <- yyy, rm_add_0_r in H.
+ rewrite rm_add_comm; symmetry.
+ rewrite rm_add_comm; symmetry.
+ assumption.
+bbb.
+
+intros a b c Hab.
+remember (a + 0)%rm as a₁.
+remember (b + 0)%rm as b₁.
+remember (c + 0)%rm as c₁.
+remember Heqa₁ as H; clear HeqH.
+eapply zzz with (b₀ := b) (c₀ := c) in H; eauto .
+ subst a₁ b₁ c₁.
+ Focus 2.
+ subst a₁ b₁.
+ rewrite rm_add_0_r.
+ rewrite rm_add_0_r.
+ assumption.
+
+bbb.
+ etransitivity.
+
 intros a b c Hab.
 unfold rm_eq; simpl; intros i.
 unfold rm_add_i; simpl.
