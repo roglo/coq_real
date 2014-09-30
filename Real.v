@@ -164,10 +164,35 @@ induction dk; intros.
  apply Hs.
 Qed.
 
-Theorem xxx : ∀ a i, ¬ (∀ dj, rm_add_i a 0 (i + dj) = true).
+Theorem not_rm_add_0_inf_1 : ∀ a i, ¬ (∀ dj, rm_add_i a 0 (i + dj) = true).
 Proof.
 intros a i Hs.
-bbb.
+rename Hs into Hs₁.
+remember Hs₁ as H; clear HeqH.
+apply rm_add_0_inf_1 in H; unfold id in H.
+rename H into Hk.
+pose proof (Hs₁ 0) as H; simpl in H.
+rewrite Nat.add_0_r in H.
+unfold rm_add_i in H.
+remember (S i) as si.
+simpl in H.
+rewrite xorb_false_r in H.
+remember (fst_same a 0 si) as s₂ eqn:Hs₂ .
+symmetry in Hs₂.
+apply fst_same_iff in Hs₂; simpl in Hs₂.
+destruct s₂ as [di₂| ].
+ destruct Hs₂ as (Hn₂, Hs₂).
+ subst si.
+ rewrite Nat.add_succ_l, <- Nat.add_succ_r in Hs₂.
+ rewrite Hk in Hs₂; discriminate Hs₂.
+
+ rewrite xorb_true_r in H.
+ apply negb_true_iff in H.
+ rename H into H₁.
+ pose proof (Hk 0) as H; simpl in H.
+ rewrite Nat.add_0_r in H.
+ rewrite H₁ in H; discriminate H.
+Qed.
 
 Theorem rm_add_i_0_r : ∀ a i, rm_add_i (a + 0%rm) 0 i = rm_add_i a 0 i.
 Proof.
@@ -182,29 +207,7 @@ destruct s₁ as [di₁| ].
  destruct Hs₁ as (Hn₁, Hs₁).
  rewrite Hs₁, xorb_false_r; reflexivity.
 
- exfalso.
- remember Hs₁ as H; clear HeqH.
- apply rm_add_0_inf_1 in H; unfold id in H.
- rename H into Hk.
- pose proof (Hs₁ 0) as H; simpl in H.
- rewrite Nat.add_0_r in H.
- unfold rm_add_i in H; simpl in H.
- rewrite xorb_false_r in H.
- remember (fst_same a 0 (S si)) as s₂ eqn:Hs₂ .
- symmetry in Hs₂.
- apply fst_same_iff in Hs₂.
- simpl in Hs₂.
- destruct s₂ as [di₂| ].
-  destruct Hs₂ as (Hn₂, Hs₂).
-  rewrite <- Nat.add_succ_r in Hs₂.
-  rewrite Hk in Hs₂; discriminate Hs₂.
-
-  rewrite xorb_true_r in H.
-  apply negb_true_iff in H.
-  rename H into H₁.
-  pose proof (Hk 0) as H; simpl in H.
-  rewrite Nat.add_0_r in H.
-  rewrite H₁ in H; discriminate H.
+ exfalso; eapply not_rm_add_0_inf_1; eauto .
 Qed.
 
 Theorem rm_add_0_r : ∀ a, (a + 0 = a)%rm.
