@@ -99,6 +99,56 @@ destruct sab as [diab| ].
  rewrite rm_add_i_comm, rm_add_i_comm; reflexivity.
 Qed.
 
+Theorem rm_add_0_inf_1 : ∀ a i,
+  (∀ dj, rm_add_i a 0 (S (i + dj)) = true)
+  → (∀ dk, a .[ S (i + dk)] = true).
+Proof.
+intros a i Hs dk.
+revert i Hs.
+induction dk; intros.
+ rewrite Nat.add_0_r.
+ pose proof (Hs 0) as H; simpl in H.
+ rewrite Nat.add_0_r in H.
+ unfold rm_add_i in H; simpl in H.
+ rewrite xorb_false_r in H.
+ remember (fst_same a 0 (S (S i))) as s₂ eqn:Hs₂ .
+ symmetry in Hs₂.
+ apply fst_same_iff in Hs₂; simpl in Hs₂.
+ destruct s₂ as [di₂| ].
+  destruct Hs₂ as (Hn₂, Hs₂).
+  rewrite Hs₂, xorb_false_r in H.
+  assumption.
+
+  rewrite xorb_true_r in H.
+  apply negb_true_iff in H.
+  pose proof (Hs 1) as H₁; simpl in H₁.
+  unfold rm_add_i in H₁; simpl in H₁.
+  rewrite xorb_false_r in H₁.
+  remember (fst_same a 0 (S (S (i + 1)))) as s₃ eqn:Hs₃ .
+  symmetry in Hs₃.
+  apply fst_same_iff in Hs₃; simpl in Hs₃.
+  destruct s₃ as [di₃| ].
+   destruct Hs₃ as (Hn₃, Hs₃).
+   rewrite Hs₃ in H₁.
+   rewrite xorb_false_r in H₁.
+   pose proof (Hs₂ (S di₃)) as H₂.
+   rewrite <- Nat.add_assoc in Hs₃.
+   simpl in Hs₃.
+   rewrite Hs₃ in H₂; discriminate H₂.
+
+   rewrite xorb_true_r in H₁.
+   apply negb_true_iff in H₁.
+   pose proof (Hs₂ 0) as H₂.
+   rewrite Nat.add_0_r in H₂.
+   rewrite Nat.add_1_r in H₁.
+   rewrite H₁ in H₂; discriminate H₂.
+
+ rewrite Nat.add_succ_r, <- Nat.add_succ_l.
+ apply IHdk; intros dj.
+ rewrite Nat.add_succ_l, <- Nat.add_succ_r.
+ apply Hs.
+Qed.
+
 Theorem rm_add_i_0_r : ∀ a i, rm_add_i (a + 0%rm) 0 i = rm_add_i a 0 i.
 Proof.
 intros a i.
