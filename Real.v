@@ -225,6 +225,35 @@ Theorem zzz : ∀ a₀ b₀ c₀ a b c,
   → (a + c = b + c)%rm.
 Proof.
 intros a₀ b₀ c₀ a b c Ha Hb Hc Hab.
+assert (∀ i, a .[ i] = b .[ i]) as H.
+ intros i.
+ unfold rm_eq in Hab; simpl in Hab.
+ pose proof (Hab i) as Hi.
+ unfold rm_add_i in Hi.
+ remember (S i) as si; simpl in Hi.
+ do 2 rewrite xorb_false_r in Hi.
+ remember (fst_same a 0 si) as s₁ eqn:Hs₁ .
+ remember (fst_same b 0 si) as s₂ eqn:Hs₂ .
+ symmetry in Hs₁, Hs₂.
+ apply fst_same_iff in Hs₁.
+ apply fst_same_iff in Hs₂.
+ simpl in Hs₁, Hs₂.
+ destruct s₁ as [di₁| ].
+  destruct Hs₁ as (Hn₁, Hs₁).
+  rewrite Hs₁, xorb_false_r in Hi.
+  destruct s₂ as [di₂| ].
+   destruct Hs₂ as (Hn₂, Hs₂).
+   rewrite Hs₂, xorb_false_r in Hi; assumption.
+
+   rewrite xorb_true_r in Hi.
+   exfalso; revert Hs₂; rewrite Hb; apply not_rm_add_0_inf_1.
+
+  exfalso; revert Hs₁; rewrite Ha; apply not_rm_add_0_inf_1.
+
+ clear Hab; rename H into Hab.
+bbb.
+
+intros a₀ b₀ c₀ a b c Ha Hb Hc Hab.
 unfold rm_eq; simpl.
 intros i; unfold rm_add_i; simpl.
 unfold rm_eq in Hab; simpl in Hab.
