@@ -269,7 +269,37 @@ destruct s₁ as [di₁| ].
       destruct Hs₆ as (Hn₆, Hs₆).
       rewrite Hs₆, xorb_false_r in H.
       rewrite H; f_equal.
+      rename H into Habi.
+      destruct (lt_dec di₃ di₄) as [H₁| H₁].
+       remember H₁ as H; clear HeqH.
+       apply Hn₄ in H.
+       pose proof (Hab (S (i + di₃))) as H₂.
+       unfold rm_add_i in H₂; simpl in H₂.
+       do 2 rewrite xorb_false_r in H₂.
+       remember (fst_same a 0 (S (S (i + di₃)))) as s₇ eqn:Hs₇ .
+       remember (fst_same b 0 (S (S (i + di₃)))) as s₈ eqn:Hs₈ .
+       symmetry in Hs₇, Hs₈.
+       apply fst_same_iff in Hs₇.
+       apply fst_same_iff in Hs₈.
+       simpl in Hs₇, Hs₈.
+       destruct s₇ as [di₇| ].
+        destruct Hs₇ as (Hn₇, Hs₇).
+        rewrite Hs₇, xorb_false_r in H₂.
+        destruct s₈ as [di₈| ].
+         destruct Hs₈ as (Hn₈, Hs₈).
+         rewrite Hs₈, xorb_false_r in H₂.
+         rewrite <- H₂, Hs₃ in H.
+         destruct c .[ S (i + di₃)]; discriminate H.
+
+         clear H₂.
+         rename H into H₂.
+         pose proof (Hab (S (S (i + di₃ + di₇)))) as H.
+         unfold rm_add_i in H; simpl in H.
+         do 2 rewrite xorb_false_r in H.
+         rewrite Hs₇, Hs₈ in H.
+         rewrite xorb_false_l, xorb_true_l in H.
 bbb.
+
 *)
 
 Theorem yyy : ∀ a b, (a + b + 0 = a + (b + 0))%rm.
