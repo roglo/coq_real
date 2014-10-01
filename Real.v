@@ -298,6 +298,7 @@ destruct s₁ as [di₁| ].
          do 2 rewrite xorb_false_r in H.
          rewrite Hs₇, Hs₈ in H.
          rewrite xorb_false_l, xorb_true_l in H.
+         remember (fst_same a 0 (S (S (S (i + di₃ + di₇))))) as s₉ eqn:Hs₉ .
 bbb.
 
 *)
