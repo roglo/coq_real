@@ -261,14 +261,13 @@ destruct s₁ as [di₁| ].
  destruct c .[ S (j + di₂)]; discriminate Hs₂.
 Qed.
 
-Theorem rm_norm_eq_compat_r : ∀ a₀ b₀ c₀ a b c,
+Theorem rm_norm_eq_compat_r : ∀ a₀ b₀ a b c,
   a = (a₀ + 0)%rm
   → b = (b₀ + 0)%rm
-  → c = (c₀ + 0)%rm
   → (a = b)%rm
   → (a + c = b + c)%rm.
 Proof.
-intros a₀ b₀ c₀ a b c Ha Hb Hc Hab.
+intros a₀ b₀ a b c Ha Hb Hab.
 assert (∀ i, a .[ i] = b .[ i]) as H.
  intros i.
  unfold rm_eq in Hab; simpl in Hab.
@@ -365,7 +364,6 @@ destruct s₁ as [di₁| ].
     destruct s₅ as [di₅| ].
      destruct Hs₅ as (Hn₅, Hs₅).
      rewrite Hs₅, xorb_false_r in Hs₄.
-bbb.
      destruct (lt_dec di₃ di₄) as [H₁| H₁].
       remember H₁ as H; clear HeqH.
       apply Hn₄ in H.
@@ -423,7 +421,6 @@ bbb.
       destruct Hs₆ as (Hn₆, Hs₆).
       rewrite Hs₆, xorb_false_r.
       f_equal.
-bbb.
       destruct (lt_dec di₄ di₆) as [H₁| H₁].
        remember H₁ as H; clear HeqH.
        apply Hn₆ in H.
@@ -488,7 +485,9 @@ bbb.
           destruct b .[ S (i + di₃)]; discriminate H.
 
           clear H.
+Abort. (*
 bbb.
+*)
 
 Theorem rm_add_compat_r : ∀ a b c, (a = b)%rm → (a + c = b + c)%rm.
 Proof.
@@ -497,7 +496,7 @@ remember (a + 0)%rm as a₁.
 remember (b + 0)%rm as b₁.
 remember (c + 0)%rm as c₁.
 remember Heqa₁ as H; clear HeqH.
-eapply zzz with (b₀ := b) (c₀ := c) in H; eauto .
+eapply rm_norm_eq_compat_r with (b₀ := b) in H; eauto .
  subst a₁ b₁ c₁.
  Focus 2.
  subst a₁ b₁.
