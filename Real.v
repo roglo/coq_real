@@ -194,6 +194,18 @@ destruct s₂ as [di₂| ].
  rewrite H₁ in H; discriminate H.
 Qed.
 
+Theorem rm_add_inf_1 : ∀ a b i,
+  (∀ dj, rm_add_i a b (i + dj) = true)
+  → id (∀ dk, a .[i + dk] = true).
+Proof.
+bbb. hmmmm....
+
+Theorem not_rm_add_inf_1 : ∀ a b i, ¬ (∀ dj, rm_add_i a b (i + dj) = true).
+Proof.
+intros a b i Hs.
+remember Hs as H; clear HeqH.
+bbb.
+
 Theorem rm_add_i_0_r : ∀ a i, rm_add_i (a + 0%rm) 0 i = rm_add_i a 0 i.
 Proof.
 intros a i.
