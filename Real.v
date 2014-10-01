@@ -197,10 +197,55 @@ Qed.
 (* si ça marche on peut supprimer rm_add_0_inf_1 *)
 Theorem rm_add_inf_1 : ∀ a b i,
   (∀ dj, rm_add_i a b (i + dj) = true)
-  → id (∀ dk, a .[i + dk] = negb b.[i + dk]).
+  → id (∀ dk, a .[i + S dk] = true ∨ b.[i + S dk] = true).
 Proof.
 intros a b i Hs dk.
-bbb. faut voir... peut-être que c'est égal, en fait, pas negb.
+bbb... mouais... conclusion à voir...
+
+revert i Hs.
+induction dk; intros.
+ rewrite Nat.add_1_r.
+ pose proof (Hs 0) as H; simpl in H.
+ rewrite Nat.add_0_r in H.
+ unfold rm_add_i in H; simpl in H.
+ remember (fst_same a b (S i)) as s₂ eqn:Hs₂ .
+ symmetry in Hs₂.
+ apply fst_same_iff in Hs₂; simpl in Hs₂.
+ destruct s₂ as [di₂| ].
+  destruct Hs₂ as (Hn₂, Hs₂).
+  remember a .[ S (i + di₂)] as x eqn:Hx .
+  symmetry in Hx, Hs₂.
+  destruct x.
+   rewrite xorb_true_r in H.
+   apply negb_true_iff in H.
+   apply xorb_eq in H.
+   destruct di₂.
+    rewrite Nat.add_0_r in Hx; left; assumption.
+
+    rename H into Hab.
+    assert (0 < S di₂) as H by apply Nat.lt_0_succ.
+    apply Hn₂ in H.
+    rewrite Nat.add_0_r in H.
+    rewrite H.
+    destruct b .[ S i]; [ right | left ]; reflexivity.
+
+   rewrite xorb_false_r in H.
+   destruct di₂.
+    rewrite Nat.add_0_r in Hx, Hs₂.
+    rename H into Hab.
+    pose proof (Hs 1) as H; simpl in H.
+    rewrite Nat.add_1_r in H.
+    unfold rm_add_i in H; simpl in H.
+    remember (fst_same a b (S (S i))) as s₃ eqn:Hs₃ .
+    symmetry in Hs₃.
+    apply fst_same_iff in Hs₃; simpl in Hs₃.
+    destruct s₃ as [di₃| ].
+     destruct Hs₃ as (Hn₃, Hs₃).
+     rewrite Hx, Hs₂ in H.
+     rewrite xorb_false_l in H.
+bbb.
+
+intros a b i Hs dk.
 revert i Hs.
 induction dk; intros.
  rewrite Nat.add_0_r.
