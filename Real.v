@@ -225,36 +225,50 @@ Theorem zzz : ∀ a₀ b₀ c₀ a b c,
   → (a + c = b + c)%rm.
 Proof.
 intros a₀ b₀ c₀ a b c Ha Hb Hc Hab.
-Abort. (* à faire
-bbb.
-
-unfold rm_eq; simpl; intros i.
-unfold rm_add_i; simpl.
+unfold rm_eq; simpl.
+intros i; unfold rm_add_i; simpl.
+unfold rm_eq in Hab; simpl in Hab.
 do 2 rewrite xorb_false_r.
-remember (fst_same (a + c) 0 (S i)) as sac eqn:Hsac .
-remember (fst_same (b + c) 0 (S i)) as sbc eqn:Hsbc .
-symmetry in Hsac, Hsbc.
-apply fst_same_iff in Hsac.
-apply fst_same_iff in Hsbc.
-simpl in Hsac, Hsbc.
-destruct sac as [diac| ].
- destruct Hsac as (Hnac, Hsac).
- destruct sbc as [dibc| ].
-  destruct Hsbc as (Hnbc, Hsbc).
-  rewrite Hsac, Hsbc.
-  do 2 rewrite xorb_false_r.
-  unfold rm_eq in Hab; simpl in Hab.
-  rewrite Ha, Hb; simpl.
-  rewrite Ha, Hb in Hab; simpl in Hab.
+remember (fst_same (a + c) 0 (S i)) as s₁ eqn:Hs₁ .
+remember (fst_same (b + c) 0 (S i)) as s₂ eqn:Hs₂ .
+symmetry in Hs₁, Hs₂.
+apply fst_same_iff in Hs₁.
+apply fst_same_iff in Hs₂.
+simpl in Hs₁, Hs₂.
+destruct s₁ as [di₁| ].
+ destruct Hs₁ as (Hn₁, Hs₁).
+ rewrite Hs₁, xorb_false_r.
+ destruct s₂ as [di₂| ].
+  destruct Hs₂ as (Hn₂, Hs₂).
+  rewrite Hs₂, xorb_false_r.
   unfold rm_add_i; simpl.
-  unfold rm_add_i in Hab; simpl in Hab.
-  pose proof (Hab i) as H; simpl in H.
-  rewrite xorb_comm, <- xorb_assoc; symmetry.
-  rewrite xorb_comm, <- xorb_assoc; symmetry.
-  f_equal.
-  rewrite xorb_comm; symmetry.
-  rewrite xorb_comm; symmetry.
-  do 2 rewrite xorb_false_r in H.
+  remember (fst_same a c (S i)) as s₃ eqn:Hs₃ .
+  remember (fst_same b c (S i)) as s₄ eqn:Hs₄ .
+  symmetry in Hs₃, Hs₄.
+  apply fst_same_iff in Hs₃.
+  apply fst_same_iff in Hs₄.
+  simpl in Hs₃, Hs₄.
+  destruct s₃ as [di₃| ].
+   destruct Hs₃ as (Hn₃, Hs₃).
+   destruct s₄ as [di₄| ].
+    destruct Hs₄ as (Hn₄, Hs₄).
+    rewrite Hs₃, Hs₄.
+    pose proof (Hab i) as H.
+    unfold rm_add_i in H; simpl in H.
+    do 2 rewrite xorb_false_r in H.
+    remember (fst_same a 0 (S i)) as s₅ eqn:Hs₅ .
+    remember (fst_same b 0 (S i)) as s₆ eqn:Hs₆ .
+    symmetry in Hs₅, Hs₆.
+    apply fst_same_iff in Hs₅.
+    apply fst_same_iff in Hs₆.
+    simpl in Hs₅, Hs₆.
+    destruct s₅ as [di₅| ].
+     destruct Hs₅ as (Hn₅, Hs₅).
+     rewrite Hs₅, xorb_false_r in H.
+     destruct s₆ as [di₆| ].
+      destruct Hs₆ as (Hn₆, Hs₆).
+      rewrite Hs₆, xorb_false_r in H.
+      rewrite H; f_equal.
 bbb.
 *)
 
