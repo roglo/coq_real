@@ -194,98 +194,6 @@ destruct s₂ as [di₂| ].
  rewrite H₁ in H; discriminate H.
 Qed.
 
-(* si ça marche on peut supprimer rm_add_0_inf_1 *)
-Theorem rm_add_inf_1 : ∀ a b i,
-  (∀ dj, rm_add_i a b (i + dj) = true)
-  → id (∀ dk, a .[i + S dk] = true ∨ b.[i + S dk] = true).
-Proof.
-intros a b i Hs dk.
-bbb... mouais... conclusion à voir...
-
-revert i Hs.
-induction dk; intros.
- rewrite Nat.add_1_r.
- pose proof (Hs 0) as H; simpl in H.
- rewrite Nat.add_0_r in H.
- unfold rm_add_i in H; simpl in H.
- remember (fst_same a b (S i)) as s₂ eqn:Hs₂ .
- symmetry in Hs₂.
- apply fst_same_iff in Hs₂; simpl in Hs₂.
- destruct s₂ as [di₂| ].
-  destruct Hs₂ as (Hn₂, Hs₂).
-  remember a .[ S (i + di₂)] as x eqn:Hx .
-  symmetry in Hx, Hs₂.
-  destruct x.
-   rewrite xorb_true_r in H.
-   apply negb_true_iff in H.
-   apply xorb_eq in H.
-   destruct di₂.
-    rewrite Nat.add_0_r in Hx; left; assumption.
-
-    rename H into Hab.
-    assert (0 < S di₂) as H by apply Nat.lt_0_succ.
-    apply Hn₂ in H.
-    rewrite Nat.add_0_r in H.
-    rewrite H.
-    destruct b .[ S i]; [ right | left ]; reflexivity.
-
-   rewrite xorb_false_r in H.
-   destruct di₂.
-    rewrite Nat.add_0_r in Hx, Hs₂.
-    rename H into Hab.
-    pose proof (Hs 1) as H; simpl in H.
-    rewrite Nat.add_1_r in H.
-    unfold rm_add_i in H; simpl in H.
-    remember (fst_same a b (S (S i))) as s₃ eqn:Hs₃ .
-    symmetry in Hs₃.
-    apply fst_same_iff in Hs₃; simpl in Hs₃.
-    destruct s₃ as [di₃| ].
-     destruct Hs₃ as (Hn₃, Hs₃).
-     rewrite Hx, Hs₂ in H.
-     rewrite xorb_false_l in H.
-bbb.
-
-intros a b i Hs dk.
-revert i Hs.
-induction dk; intros.
- rewrite Nat.add_0_r.
- pose proof (Hs 0) as H; simpl in H.
- rewrite Nat.add_0_r in H.
- unfold rm_add_i in H; simpl in H.
- remember (fst_same a b (S i)) as s₂ eqn:Hs₂ .
- symmetry in Hs₂.
- apply fst_same_iff in Hs₂; simpl in Hs₂.
- destruct s₂ as [di₂| ].
-  destruct Hs₂ as (Hn₂, Hs₂).
-  remember a .[ S (i + di₂)] as x eqn:Hx .
-  symmetry in Hx, Hs₂.
-  destruct x.
-   rewrite xorb_true_r in H.
-   apply negb_true_iff in H.
-   apply xorb_eq in H.
-   destruct di₂.
-    rewrite Nat.add_0_r in Hx, Hs₂.
-    pose proof (Hs 1) as H₁.
-    rewrite Nat.add_1_r in H₁.
-    unfold rm_add_i in H₁; simpl in H₁.
-    rewrite Hx, Hs₂, xorb_true_l in H₁.
-    simpl in H₁.
-    remember (fst_same a b (S (S i))) as s₃ eqn:Hs₃ .
-    symmetry in Hs₃.
-    apply fst_same_iff in Hs₃; simpl in Hs₃.
-    destruct s₃ as [| di₃].
-     destruct Hs₃ as (Hn₃, Hs₃).
-     remember a .[ S (S (i + n))] as x.
-     symmetry in Heqx, Hs₃.
-     destruct x; [ clear H₁ | discriminate H₁ ].
-bbb. hmmmm....
-
-Theorem not_rm_add_inf_1 : ∀ a b i, ¬ (∀ dj, rm_add_i a b (i + dj) = true).
-Proof.
-intros a b i Hs.
-remember Hs as H; clear HeqH.
-bbb.
-
 Theorem rm_add_i_0_r : ∀ a i, rm_add_i (a + 0%rm) 0 i = rm_add_i a 0 i.
 Proof.
 intros a i.
@@ -309,7 +217,51 @@ unfold rm_eq.
 apply rm_add_i_0_r.
 Qed.
 
-Theorem zzz : ∀ a₀ b₀ c₀ a b c,
+Theorem rm_add_eq_compat_r : ∀ a b c j,
+  (∀ i, a .[ i] = b .[ i])
+  → rm_add_i b c j = rm_add_i a c j.
+Proof.
+intros a b c j Hab.
+unfold rm_add_i; simpl.
+rewrite Hab; f_equal.
+remember (fst_same b c (S j)) as s₁ eqn:Hs₁ .
+remember (fst_same a c (S j)) as s₂ eqn:Hs₂ .
+symmetry in Hs₁, Hs₂.
+apply fst_same_iff in Hs₁.
+apply fst_same_iff in Hs₂.
+simpl in Hs₁, Hs₂.
+destruct s₁ as [di₁| ].
+ destruct Hs₁ as (Hn₁, Hs₁).
+ rewrite Hs₁.
+ destruct s₂ as [di₂| ].
+  destruct Hs₂ as (Hn₂, Hs₂).
+  rewrite Hs₂.
+  destruct (lt_dec di₁ di₂) as [H₁| H₁].
+   remember H₁ as H; clear HeqH.
+   apply Hn₂ in H.
+   rewrite Hab, Hs₁ in H.
+   destruct c .[ S (j + di₁)]; discriminate H.
+
+   apply Nat.nlt_ge in H₁.
+   destruct (lt_dec di₂ di₁) as [H₂| H₂].
+    remember H₂ as H; clear HeqH.
+    apply Hn₁ in H.
+    rewrite <- Hab, Hs₂ in H.
+    destruct c .[ S (j + di₂)]; discriminate H.
+
+    apply Nat.nlt_ge in H₂.
+    apply Nat.le_antisymm in H₁; auto.
+
+  rewrite <- Hab, Hs₂ in Hs₁.
+  destruct c .[ S (j + di₁)]; discriminate Hs₁.
+
+ destruct s₂ as [di₂| ]; auto.
+ destruct Hs₂ as (Hn₂, Hs₂).
+ rewrite Hab, Hs₁ in Hs₂.
+ destruct c .[ S (j + di₂)]; discriminate Hs₂.
+Qed.
+
+Theorem rm_norm_eq_compat_r : ∀ a₀ b₀ c₀ a b c,
   a = (a₀ + 0)%rm
   → b = (b₀ + 0)%rm
   → c = (c₀ + 0)%rm
@@ -347,6 +299,8 @@ assert (∀ i, a .[ i] = b .[ i]) as H.
  intros i; unfold rm_add_i.
  remember (S i) as si; simpl.
  do 2 rewrite xorb_false_r.
+ symmetry; erewrite rm_add_eq_compat_r; [ symmetry | eauto  ].
+ f_equal.
  remember (fst_same (a + c) 0 si) as s₁ eqn:Hs₁ .
  remember (fst_same (b + c) 0 si) as s₂ eqn:Hs₂ .
  symmetry in Hs₁, Hs₂.
@@ -355,50 +309,20 @@ assert (∀ i, a .[ i] = b .[ i]) as H.
  simpl in Hs₁, Hs₂.
  destruct s₁ as [di₁| ].
   destruct Hs₁ as (Hn₁, Hs₁).
-  rewrite Hs₁, xorb_false_r.
   destruct s₂ as [di₂| ].
    destruct Hs₂ as (Hn₂, Hs₂).
-   rewrite Hs₂, xorb_false_r.
-   unfold rm_add_i; simpl.
-   rewrite Hab; f_equal.
-   remember (fst_same a c (S i)) as s₃ eqn:Hs₃ .
-   remember (fst_same b c (S i)) as s₄ eqn:Hs₄ .
-   symmetry in Hs₃, Hs₄.
-   apply fst_same_iff in Hs₃.
-   apply fst_same_iff in Hs₄.
-   simpl in Hs₃, Hs₄.
-   destruct s₃ as [di₃| ].
-    destruct Hs₃ as (Hn₃, Hs₃).
-    destruct s₄ as [di₄| ].
-     destruct Hs₄ as (Hn₄, Hs₄).
-     destruct (lt_dec di₃ di₄) as [H₁| H₁].
-      remember H₁ as H; clear HeqH.
-      apply Hn₄ in H.
-      rewrite <- Hab, Hs₃ in H.
-      destruct c .[ S (i + di₃)]; discriminate H.
+   rewrite Hs₁, Hs₂; reflexivity.
 
-      apply Nat.nlt_ge in H₁.
-      destruct (lt_dec di₄ di₃) as [H₂| H₂].
-       remember H₂ as H; clear HeqH.
-       apply Hn₃ in H.
-       rewrite Hab, Hs₄ in H.
-       destruct c .[ S (i + di₄)]; discriminate H.
+   pose proof (Hs₂ di₁) as H.
+   apply not_false_iff_true in H.
+   rewrite <- Hs₁ in H.
+   exfalso; apply H.
+   apply rm_add_eq_compat_r; auto.
 
-       apply Nat.nlt_ge in H₂.
-       apply Nat.le_antisymm in H₁; auto.
-       subst di₄.
-       apply Hab.
-
-     rewrite Hab in Hs₃.
-     rewrite Hs₄ in Hs₃.
-     destruct c .[ S (i + di₃)]; discriminate Hs₃.
-
-    destruct s₄ as [di₄| ]; auto.
-    destruct Hs₄ as (Hn₄, Hs₄).
-    rewrite <- Hab, Hs₃ in Hs₄.
-    destruct c .[ S (i + di₄)]; discriminate Hs₄.
-bbb.
-*)
+  destruct s₂ as [di₂| ]; auto.
+  rewrite <- Hs₁ with (dj := di₂).
+  apply rm_add_eq_compat_r; auto.
+Qed.
 
 Theorem yyy : ∀ a b, (a + b + 0 = a + (b + 0))%rm.
 Proof.
@@ -441,6 +365,7 @@ destruct s₁ as [di₁| ].
     destruct s₅ as [di₅| ].
      destruct Hs₅ as (Hn₅, Hs₅).
      rewrite Hs₅, xorb_false_r in Hs₄.
+bbb.
      destruct (lt_dec di₃ di₄) as [H₁| H₁].
       remember H₁ as H; clear HeqH.
       apply Hn₄ in H.
@@ -498,6 +423,7 @@ destruct s₁ as [di₁| ].
       destruct Hs₆ as (Hn₆, Hs₆).
       rewrite Hs₆, xorb_false_r.
       f_equal.
+bbb.
       destruct (lt_dec di₄ di₆) as [H₁| H₁].
        remember H₁ as H; clear HeqH.
        apply Hn₆ in H.
