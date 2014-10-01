@@ -194,10 +194,45 @@ destruct s₂ as [di₂| ].
  rewrite H₁ in H; discriminate H.
 Qed.
 
+(* si ça marche on peut supprimer rm_add_0_inf_1 *)
 Theorem rm_add_inf_1 : ∀ a b i,
   (∀ dj, rm_add_i a b (i + dj) = true)
-  → id (∀ dk, a .[i + dk] = true).
+  → id (∀ dk, a .[i + dk] = negb b.[i + dk]).
 Proof.
+intros a b i Hs dk.
+bbb. faut voir... peut-être que c'est égal, en fait, pas negb.
+revert i Hs.
+induction dk; intros.
+ rewrite Nat.add_0_r.
+ pose proof (Hs 0) as H; simpl in H.
+ rewrite Nat.add_0_r in H.
+ unfold rm_add_i in H; simpl in H.
+ remember (fst_same a b (S i)) as s₂ eqn:Hs₂ .
+ symmetry in Hs₂.
+ apply fst_same_iff in Hs₂; simpl in Hs₂.
+ destruct s₂ as [di₂| ].
+  destruct Hs₂ as (Hn₂, Hs₂).
+  remember a .[ S (i + di₂)] as x eqn:Hx .
+  symmetry in Hx, Hs₂.
+  destruct x.
+   rewrite xorb_true_r in H.
+   apply negb_true_iff in H.
+   apply xorb_eq in H.
+   destruct di₂.
+    rewrite Nat.add_0_r in Hx, Hs₂.
+    pose proof (Hs 1) as H₁.
+    rewrite Nat.add_1_r in H₁.
+    unfold rm_add_i in H₁; simpl in H₁.
+    rewrite Hx, Hs₂, xorb_true_l in H₁.
+    simpl in H₁.
+    remember (fst_same a b (S (S i))) as s₃ eqn:Hs₃ .
+    symmetry in Hs₃.
+    apply fst_same_iff in Hs₃; simpl in Hs₃.
+    destruct s₃ as [| di₃].
+     destruct Hs₃ as (Hn₃, Hs₃).
+     remember a .[ S (S (i + n))] as x.
+     symmetry in Heqx, Hs₃.
+     destruct x; [ clear H₁ | discriminate H₁ ].
 bbb. hmmmm....
 
 Theorem not_rm_add_inf_1 : ∀ a b i, ¬ (∀ dj, rm_add_i a b (i + dj) = true).
