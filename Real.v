@@ -299,8 +299,20 @@ destruct s₁ as [di₁| ].
          rewrite Hs₇, Hs₈ in H.
          rewrite xorb_false_l, xorb_true_l in H.
          remember (fst_same a 0 (S (S (S (i + di₃ + di₇))))) as s₉ eqn:Hs₉ .
-bbb.
+         remember (fst_same b 0 (S (S (S (i + di₃ + di₇))))) as s₁₀ eqn:Hs₁₀ .
+         symmetry in Hs₉, Hs₁₀.
+         apply fst_same_iff in Hs₉.
+         apply fst_same_iff in Hs₁₀.
+         simpl in Hs₉, Hs₁₀.
+         destruct s₉ as [di₉| ].
+          destruct Hs₉ as (Hn₉, Hs₉).
+          rewrite Hs₉ in H.
+          destruct s₁₀ as [di₁₀| ].
+           destruct Hs₁₀ as (Hn₁₀, Hs₁₀).
+           rewrite Hs₁₀ in H; discriminate H.
 
+           clear H.
+bbb.
 *)
 
 Theorem yyy : ∀ a b, (a + b + 0 = a + (b + 0))%rm.
