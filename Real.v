@@ -424,11 +424,8 @@ destruct s₁ as [di₁| ].
         rewrite H₄.
         apply negb_false_iff.
         pose proof (Hs₅ (di₁ - S di₂)) as H.
-        rewrite Nat.add_comm, Nat.add_assoc in H.
-        rewrite Nat.add_comm, Nat.add_assoc in H.
-        rewrite <- Nat.add_succ_l in H.
-        rewrite <- Nat.add_succ_l in H.
-        rewrite <- Nat.add_succ_l in H.
+        do 2 rewrite Nat.add_comm, Nat.add_assoc in H.
+        do 3 rewrite <- Nat.add_succ_l in H.
         rewrite Nat.add_sub_assoc in H; auto.
         rewrite Nat.add_sub_swap in H; auto.
         rewrite Nat.sub_diag, Nat.add_0_l in H; simpl in H.
@@ -439,6 +436,24 @@ destruct s₁ as [di₁| ].
         apply negb_true_iff.
         rewrite H₄ in Hs₂.
         symmetry in Hs₂.
+bbb.
+        destruct (lt_dec di₃ di₂) as [H₅| H₅].
+         remember H₅ as H; clear HeqH.
+         apply Hn₂ in H.
+         rewrite Hs₃ in H; symmetry in H.
+         apply negb_false_iff in H.
+         rename H into Hb.
+         assert (di₃ < di₁) as H by omega.
+         apply Hn₁ in H.
+         rewrite Hb in H; simpl in H.
+         unfold rm_add_i in H; simpl in H.
+         rewrite Hs₃, xorb_false_r, xorb_false_l in H.
+         remember (fst_same a 0 (S (S (i + di₃)))) as s₆ eqn:Hs₆ .
+         symmetry in Hs₆.
+         apply fst_same_iff in Hs₆; simpl in Hs₆.
+         destruct s₆ as [di₆| ]; [ idtac | discriminate H ].
+         destruct Hs₆ as (Hn₆, Hs₆).
+         clear H.
 bbb.
 *)
 
