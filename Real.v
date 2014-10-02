@@ -489,10 +489,12 @@ destruct s₁ as [di₁| ].
 bbb.
 *)
 
+(*
 Theorem xxx : ∀ a b i, rm_add_i (a + 0%rm) b i = rm_add_i a b i.
 Proof.
 intros a b i.
 bbb. pas vrai. Si a = 0,11111... et b = 0,11111... par exemple.
+  (gauche = 0; droite = 0,11111....)
 
 unfold rm_add_i; simpl.
 remember (fst_same (a + 0%rm) b (S i)) as s₁ eqn:Hs₁ .
@@ -536,7 +538,9 @@ destruct s₁ as [di₁| ].
       remember H₂ as H; clear HeqH.
       apply Hn₁ in H.
 bbb.
+*)
 
+(*
 Theorem yyy : ∀ a b, (a + 0 + b = a + b)%rm.
 Proof.
 intros a b.
@@ -557,6 +561,10 @@ destruct s₁ as [di₁| ].
  destruct s₂ as [di₂| ].
   destruct Hs₂ as (Hn₂, Hs₂).
   rewrite Hs₂, xorb_false_r.
+bbb.
+*)
+
+(* false. ex: a=0,111... b=0 c=0,111... a+c=0,111... b+c=0 *)
 bbb.
 
 Theorem rm_add_compat_r : ∀ a b c, (a = b)%rm → (a + c = b + c)%rm.
