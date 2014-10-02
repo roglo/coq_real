@@ -389,6 +389,8 @@ destruct s₁ as [di₁| ].
 
       apply Nat.nlt_ge in H₂.
       apply Nat.le_antisymm in H₁; auto.
+
+    rewrite xorb_true_r in Hs₁.
 bbb.
 *)
 
