@@ -374,6 +374,7 @@ apply Nat.add_sub_eq_nz in Hdi.
    apply Nat.succ_le_mono in Hdi; auto.
    eapply Nat.le_trans; [ idtac | eauto  ].
    apply Nat.le_succ_diag_r.
+Admitted. (*
 bbb.
 *)
 
@@ -537,6 +538,18 @@ destruct s₁ as [di₁| ].
             rewrite <- Nat.add_succ_r in Hs₇, H.
             destruct Hs₇ as (Hn₇, Hs₇).
             rewrite Hs₇ in H.
+            rename H into H₆.
+            assert (di₃ + S di₄ < di₂) as H.
+             Focus 2.
+             apply Hn₂ in H.
+             rewrite <- Nat.add_succ_r, <- Nat.add_succ_l, Nat.add_assoc in H.
+             rewrite <- H in H₆.
+             symmetry in H₆.
+             rename H into H₇.
+bbb.
+             assert (di₇ - S di₄ < di₇) as H.
+              Focus 2.
+              apply Hn₇ in H.
 bbb.
 *)
 
