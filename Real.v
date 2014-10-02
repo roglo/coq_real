@@ -323,6 +323,60 @@ assert (∀ i, a .[ i] = b .[ i]) as H.
   apply rm_add_eq_compat_r; auto.
 Qed.
 
+Theorem www : ∀ a i di₂ di₃ di₆,
+  (∀ dj, a.[i + S di₂ + S dj] = true)
+  → di₃ < di₂
+  → a.[i + S di₃ + S di₆] = false
+  → ∃ di,
+    a.[i + S di₃ + S di] = false ∧
+    ∀ dj, di < dj → a.[i + S di₃ + S dj] = true.
+Proof.
+intros a i di₂ di₃ di₆ Ht Hd Hf.
+remember (di₂ - di₆) as di eqn:Hdi .
+symmetry in Hdi.
+apply Nat.add_sub_eq_nz in Hdi.
+ Focus 2.
+ intros H; subst di.
+ apply Nat.sub_0_le in H.
+ rename H into Hd₁.
+ pose proof (Ht (S di₆ - S di₂ + di₃)) as H.
+ rewrite <- Nat.add_succ_r, Nat.add_assoc in H.
+ do 2 rewrite <- Nat.add_assoc in H.
+ rewrite Nat.add_comm in H.
+ rewrite Nat.add_assoc in H.
+ rewrite Nat.add_sub_assoc in H.
+  rewrite Nat.add_sub_swap in H; auto.
+  rewrite Nat.sub_diag, Nat.add_0_l in H.
+  rewrite Nat.add_shuffle0, <- Nat.add_assoc, Nat.add_comm in H.
+  rewrite Hf in H; discriminate H.
+
+  apply Nat.succ_le_mono in Hd₁; auto.
+
+ subst di₂.
+ revert i di₃ di₆ Hf Ht Hd.
+ induction di; intros.
+  rewrite Nat.add_0_r in Hd.
+  exists di₆.
+  split; auto.
+  intros dj Hdi.
+  pose proof (Ht (dj - S di₆ + S di₃)) as H.
+  rewrite Nat.add_0_r in H.
+  rewrite <- Nat.add_succ_l in H.
+  rewrite <- Nat.sub_succ_l in H; auto.
+  rewrite <- Nat.add_assoc, Nat.add_comm in H.
+  rewrite Nat.add_assoc in H.
+  rewrite Nat.add_sub_assoc in H.
+   rewrite Nat.add_sub_swap in H; auto.
+   rewrite Nat.sub_diag, Nat.add_0_l in H.
+   rewrite Nat.add_shuffle0, <- Nat.add_assoc, Nat.add_comm in H.
+   assumption.
+
+   apply Nat.succ_le_mono in Hdi; auto.
+   eapply Nat.le_trans; [ idtac | eauto  ].
+   apply Nat.le_succ_diag_r.
+bbb.
+*)
+
 Theorem xxx : ∀ a b i, rm_add_i (a + 0%rm) b i = rm_add_i a b i.
 Proof.
 intros a b i.
@@ -467,11 +521,10 @@ destruct s₁ as [di₁| ].
          rewrite <- Nat.add_succ_r in Hs₆, H.
          destruct Hs₆ as (Hn₆, Hs₆).
          clear H.
+         remember Hs₆ as H; clear HeqH.
+         eapply www in H; eauto .
+          destruct H as (di₄, (Hadi, Hdij)).
 bbb.
-  Hs₅ : ∀ dj : nat, a .[ S (S (i + di₂ + dj))] = true
-  H₃ : di₃ ≤ di₂
-  Hn₆ : ∀ dj : nat, dj < di₆ → a .[ S (S (i + di₃ + dj))] = true
-  Hs₆ : a .[ i + S di₃ + S di₆] = false
 *)
 
 Theorem yyy : ∀ a b, (a + 0 + b = a + b)%rm.
