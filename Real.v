@@ -432,11 +432,9 @@ destruct s₁ as [di₁| ].
         rewrite Nat.add_comm; assumption.
 
         apply not_false_iff_true in H₄.
-        rewrite H₄.
-        apply negb_true_iff.
         rewrite H₄ in Hs₂.
         symmetry in Hs₂.
-bbb.
+        exfalso.
         destruct (lt_dec di₃ di₂) as [H₅| H₅].
          remember H₅ as H; clear HeqH.
          apply Hn₂ in H.
@@ -455,6 +453,10 @@ bbb.
          destruct Hs₆ as (Hn₆, Hs₆).
          clear H.
 bbb.
+  Hs₅ : ∀ dj : nat, a .[ S (S (i + di₂ + dj))] = true
+  H₃ : di₃ ≤ di₂
+  Hn₆ : ∀ dj : nat, dj < di₆ → a .[ S (S (i + di₃ + dj))] = true
+  Hs₆ : a .[ S (S (i + di₃ + di₆))] = false
 *)
 
 Theorem yyy : ∀ a b, (a + 0 + b = a + b)%rm.
