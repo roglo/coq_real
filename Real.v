@@ -405,6 +405,21 @@ destruct s₁ as [di₁| ].
       destruct b .[ S (i + di₂)]; discriminate H.
 
       clear H.
+      rewrite <- Hs₁, <- Hs₂.
+      destruct (lt_dec di₂ di₃) as [H₃| H₃].
+       pose proof (Hs₅ (di₃ - S di₂)) as H.
+       rewrite Nat.add_comm, Nat.add_assoc in H.
+       rewrite Nat.add_comm, Nat.add_assoc in H.
+       rewrite <- Nat.add_succ_l in H.
+       rewrite <- Nat.add_succ_l in H.
+       rewrite <- Nat.add_succ_l in H.
+       rewrite Nat.add_sub_assoc in H; auto.
+       rewrite Nat.add_sub_swap in H; auto.
+       rewrite Nat.sub_diag, Nat.add_0_l in H; simpl in H.
+       rewrite Nat.add_comm, Hs₃ in H.
+       discriminate H.
+
+       apply Nat.nlt_ge in H₃.
 bbb.
 *)
 
