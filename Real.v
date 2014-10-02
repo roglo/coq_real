@@ -335,6 +335,8 @@ apply fst_same_iff in Hs₂.
 simpl in Hs₁, Hs₂.
 destruct s₁ as [di₁| ].
  destruct Hs₁ as (Hn₁, Hs₁).
+ rewrite <- Nat.add_succ_r in Hs₁.
+ rewrite <- Nat.add_succ_r.
  rewrite Hs₁.
  unfold rm_add_i; simpl.
  rewrite xorb_false_r.
@@ -342,49 +344,60 @@ destruct s₁ as [di₁| ].
  symmetry in Hs₃.
  apply fst_same_iff in Hs₃; simpl in Hs₃.
  destruct s₂ as [di₂| ].
+  rewrite <- Nat.add_succ_r in Hs₂.
+  rewrite <- Nat.add_succ_r.
   destruct Hs₂ as (Hn₂, Hs₂).
   rewrite Hs₂.
   destruct s₃ as [di₃| ].
+   rewrite <- Nat.add_succ_r in Hs₃.
+   rewrite <- Nat.add_succ_r.
    destruct Hs₃ as (Hn₃, Hs₃).
-   rewrite Hs₃, xorb_false_r.
-   f_equal.
+   rewrite Hs₃, xorb_false_r; f_equal.
    unfold rm_add_i in Hs₁; simpl in Hs₁.
    rewrite xorb_false_r in Hs₁.
-   remember (fst_same a 0 (S (S (i + di₁)))) as s₄ eqn:Hs₄ .
+   remember (fst_same a 0 (S (i + S di₁))) as s₄ eqn:Hs₄ .
    symmetry in Hs₄.
    apply fst_same_iff in Hs₄; simpl in Hs₄.
    destruct s₄ as [di₄| ].
+    rewrite <- Nat.add_succ_r in Hs₄, Hs₁.
     destruct Hs₄ as (Hn₄, Hs₄).
     rewrite Hs₄, xorb_false_r in Hs₁.
     destruct (lt_dec di₁ di₂) as [H₁| H₁].
      remember H₁ as H; clear HeqH.
      apply Hn₂ in H.
+     rewrite <- Nat.add_succ_r in H.
      rewrite Hs₁ in H.
-     destruct b .[ S (i + di₁)]; discriminate H.
+     destruct b .[ i + S di₁]; discriminate H.
 
      apply Nat.nlt_ge in H₁.
      destruct (lt_dec di₂ di₁) as [H₂| H₂].
       remember H₂ as H; clear HeqH.
       apply Hn₁ in H.
+      rewrite <- Nat.add_succ_r in H.
       unfold rm_add_i in H; simpl in H.
-      remember (fst_same a 0 (S (S (i + di₂)))) as s₅ eqn:Hs₅ .
+      remember (fst_same a 0 (S (i + S di₂))) as s₅ eqn:Hs₅ .
       symmetry in Hs₅.
       apply fst_same_iff in Hs₅; simpl in Hs₅.
       destruct s₅ as [di₅| ].
+       rewrite <- Nat.add_succ_r in Hs₅, H.
        destruct Hs₅ as (Hn₅, Hs₅).
-       rewrite xorb_false_r, Hs₂, Hs₅ in H.
-       rewrite xorb_false_r in H.
-       destruct b .[ S (i + di₂)]; discriminate H.
+       rewrite xorb_false_r, Hs₂, Hs₅, xorb_false_r in H.
+       destruct b .[ i + S di₂]; discriminate H.
 
        clear H.
        pose proof (Hs₅ (di₁ - di₂ + di₄)) as H.
-       rewrite Nat.add_comm, Nat.add_assoc in H.
-       rewrite Nat.add_comm, Nat.add_assoc in H.
+       rewrite Nat.add_succ_r in H.
+       do 3 rewrite <- Nat.add_succ_l in H.
+       remember (S (S i)) as ssi.
+       do 2 rewrite Nat.add_comm, Nat.add_assoc in H.
        rewrite Nat.add_assoc in H.
        rewrite Nat.add_sub_assoc in H; auto.
        rewrite Nat.add_sub_swap in H; auto.
        rewrite Nat.sub_diag, Nat.add_0_l in H.
        rewrite Nat.add_comm, Nat.add_assoc in H.
+       subst ssi; simpl in H.
+       rewrite <- Nat.add_succ_r in H.
+       rewrite <- Nat.add_succ_l, <- Nat.add_succ_r in H.
        rewrite Hs₄ in H; discriminate H.
 
       apply Nat.nlt_ge in H₂.
@@ -394,42 +407,40 @@ destruct s₁ as [di₁| ].
     destruct (lt_dec di₂ di₁) as [H₂| H₂].
      remember H₂ as H; clear HeqH.
      apply Hn₁ in H.
+     rewrite <- Nat.add_succ_r in H.
      unfold rm_add_i in H; simpl in H.
-     remember (fst_same a 0 (S (S (i + di₂)))) as s₅ eqn:Hs₅ .
+     remember (fst_same a 0 (S (i + S di₂))) as s₅ eqn:Hs₅ .
      symmetry in Hs₅.
      apply fst_same_iff in Hs₅; simpl in Hs₅.
      destruct s₅ as [di₅| ].
+      rewrite <- Nat.add_succ_r in Hs₅, H.
       destruct Hs₅ as (Hn₅, Hs₅).
-      rewrite xorb_false_r, Hs₂, Hs₅ in H.
-      rewrite xorb_false_r in H.
-      destruct b .[ S (i + di₂)]; discriminate H.
+      rewrite xorb_false_r, Hs₂, Hs₅, xorb_false_r in H.
+      destruct b .[ i + S di₂]; discriminate H.
 
       clear H.
       rewrite <- Hs₁, <- Hs₂.
       destruct (lt_dec di₂ di₃) as [H₃| H₃].
        pose proof (Hs₅ (di₃ - S di₂)) as H.
-       rewrite Nat.add_comm, Nat.add_assoc in H.
-       rewrite Nat.add_comm, Nat.add_assoc in H.
-       rewrite <- Nat.add_succ_l in H.
-       rewrite <- Nat.add_succ_l in H.
+       do 2 rewrite Nat.add_comm, Nat.add_assoc in H.
        rewrite <- Nat.add_succ_l in H.
        rewrite Nat.add_sub_assoc in H; auto.
        rewrite Nat.add_sub_swap in H; auto.
        rewrite Nat.sub_diag, Nat.add_0_l in H; simpl in H.
-       rewrite Nat.add_comm, Hs₃ in H.
+       rewrite Nat.add_comm, <- Nat.add_succ_r, Hs₃ in H.
        discriminate H.
 
        apply Nat.nlt_ge in H₃.
-       destruct (bool_dec a .[ S (i + di₂)] false) as [H₄| H₄].
+       destruct (bool_dec a .[ i + S di₂] false) as [H₄| H₄].
         rewrite H₄.
         apply negb_false_iff.
         pose proof (Hs₅ (di₁ - S di₂)) as H.
         do 2 rewrite Nat.add_comm, Nat.add_assoc in H.
-        do 3 rewrite <- Nat.add_succ_l in H.
         rewrite Nat.add_sub_assoc in H; auto.
         rewrite Nat.add_sub_swap in H; auto.
         rewrite Nat.sub_diag, Nat.add_0_l in H; simpl in H.
-        rewrite Nat.add_comm; assumption.
+        rewrite Nat.add_comm, <- Nat.add_succ_r in H.
+        assumption.
 
         apply not_false_iff_true in H₄.
         rewrite H₄ in Hs₂.
@@ -438,25 +449,29 @@ destruct s₁ as [di₁| ].
         destruct (lt_dec di₃ di₂) as [H₅| H₅].
          remember H₅ as H; clear HeqH.
          apply Hn₂ in H.
+         rewrite <- Nat.add_succ_r in H.
          rewrite Hs₃ in H; symmetry in H.
          apply negb_false_iff in H.
          rename H into Hb.
-         assert (di₃ < di₁) as H by omega.
+         remember H₂ as H; clear HeqH.
+         eapply Nat.lt_trans in H; [ idtac | eauto  ].
          apply Hn₁ in H.
+         rewrite <- Nat.add_succ_r in H.
          rewrite Hb in H; simpl in H.
          unfold rm_add_i in H; simpl in H.
          rewrite Hs₃, xorb_false_r, xorb_false_l in H.
-         remember (fst_same a 0 (S (S (i + di₃)))) as s₆ eqn:Hs₆ .
+         remember (fst_same a 0 (S (i + S di₃))) as s₆ eqn:Hs₆ .
          symmetry in Hs₆.
          apply fst_same_iff in Hs₆; simpl in Hs₆.
          destruct s₆ as [di₆| ]; [ idtac | discriminate H ].
+         rewrite <- Nat.add_succ_r in Hs₆, H.
          destruct Hs₆ as (Hn₆, Hs₆).
          clear H.
 bbb.
   Hs₅ : ∀ dj : nat, a .[ S (S (i + di₂ + dj))] = true
   H₃ : di₃ ≤ di₂
   Hn₆ : ∀ dj : nat, dj < di₆ → a .[ S (S (i + di₃ + dj))] = true
-  Hs₆ : a .[ S (S (i + di₃ + di₆))] = false
+  Hs₆ : a .[ i + S di₃ + S di₆] = false
 *)
 
 Theorem yyy : ∀ a b, (a + 0 + b = a + b)%rm.
