@@ -489,12 +489,74 @@ destruct s₁ as [di₁| ].
 bbb.
 *)
 
+Theorem xxx : ∀ a b i, rm_add_i (a + 0%rm) b i = rm_add_i a b i.
+Proof.
+intros a b i.
+bbb. pas vrai. Si a = 0,11111... et b = 0,11111... par exemple.
+
+unfold rm_add_i; simpl.
+remember (fst_same (a + 0%rm) b (S i)) as s₁ eqn:Hs₁ .
+remember (fst_same a b (S i)) as s₂ eqn:Hs₂ .
+symmetry in Hs₁, Hs₂.
+apply fst_same_iff in Hs₁.
+apply fst_same_iff in Hs₂.
+simpl in Hs₁, Hs₂.
+destruct s₁ as [di₁| ].
+ destruct Hs₁ as (Hn₁, Hs₁).
+ rewrite Hs₁.
+ unfold rm_add_i; simpl.
+ rewrite xorb_false_r.
+ remember (fst_same a 0 (S i)) as s₃ eqn:Hs₃ .
+ symmetry in Hs₃.
+ apply fst_same_iff in Hs₃; simpl in Hs₃.
+ destruct s₂ as [di₂| ].
+  destruct Hs₂ as (Hn₂, Hs₂).
+  rewrite Hs₂.
+  destruct s₃ as [di₃| ].
+   destruct Hs₃ as (Hn₃, Hs₃).
+   rewrite Hs₃, xorb_false_r.
+   f_equal.
+   unfold rm_add_i in Hs₁; simpl in Hs₁.
+   rewrite xorb_false_r in Hs₁.
+   remember (fst_same a 0 (S (S (i + di₁)))) as s₄ eqn:Hs₄ .
+   symmetry in Hs₄.
+   apply fst_same_iff in Hs₄; simpl in Hs₄.
+   destruct s₄ as [di₄| ].
+    Focus 1.
+    destruct Hs₄ as (Hn₄, Hs₄).
+    rewrite Hs₄, xorb_false_r in Hs₁.
+    destruct (lt_dec di₁ di₂) as [H₁| H₁].
+     remember H₁ as H; clear HeqH.
+     apply Hn₂ in H.
+     rewrite Hs₁ in H.
+     destruct b .[ S (i + di₁)]; discriminate H.
+
+     apply Nat.nlt_ge in H₁.
+     destruct (lt_dec di₂ di₁) as [H₂| H₂].
+      remember H₂ as H; clear HeqH.
+      apply Hn₁ in H.
+bbb.
+
 Theorem yyy : ∀ a b, (a + 0 + b = a + b)%rm.
 Proof.
 intros a b.
 unfold rm_eq; intros i; simpl.
 unfold rm_add_i; simpl.
 do 2 rewrite xorb_false_r.
+bbb.
+remember (fst_same (a + b) 0 (S i)) as s₁ eqn:Hs₁ .
+remember (fst_same (a + 0 + b)%rm 0 (S i)) as s₂ eqn:Hs₂ .
+symmetry in Hs₁, Hs₂.
+apply fst_same_iff in Hs₁.
+apply fst_same_iff in Hs₂.
+simpl in Hs₁, Hs₂.
+bbb.
+destruct s₁ as [di₁| ].
+ destruct Hs₁ as (Hn₁, Hs₁).
+ rewrite Hs₁, xorb_false_r.
+ destruct s₂ as [di₂| ].
+  destruct Hs₂ as (Hn₂, Hs₂).
+  rewrite Hs₂, xorb_false_r.
 bbb.
 
 Theorem rm_add_compat_r : ∀ a b c, (a = b)%rm → (a + c = b + c)%rm.
