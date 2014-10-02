@@ -564,9 +564,6 @@ destruct s₁ as [di₁| ].
 bbb.
 *)
 
-(* false. ex: a=0,111... b=0 c=0,111... a+c=0,111... b+c=0 *)
-bbb.
-
 Theorem rm_add_compat_r : ∀ a b c, (a = b)%rm → (a + c = b + c)%rm.
 Proof.
 intros a b c Hab.
