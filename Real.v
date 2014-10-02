@@ -391,6 +391,20 @@ destruct s₁ as [di₁| ].
       apply Nat.le_antisymm in H₁; auto.
 
     rewrite xorb_true_r in Hs₁.
+    destruct (lt_dec di₂ di₁) as [H₂| H₂].
+     remember H₂ as H; clear HeqH.
+     apply Hn₁ in H.
+     unfold rm_add_i in H; simpl in H.
+     remember (fst_same a 0 (S (S (i + di₂)))) as s₅ eqn:Hs₅ .
+     symmetry in Hs₅.
+     apply fst_same_iff in Hs₅; simpl in Hs₅.
+     destruct s₅ as [di₅| ].
+      destruct Hs₅ as (Hn₅, Hs₅).
+      rewrite xorb_false_r, Hs₂, Hs₅ in H.
+      rewrite xorb_false_r in H.
+      destruct b .[ S (i + di₂)]; discriminate H.
+
+      clear H.
 bbb.
 *)
 
