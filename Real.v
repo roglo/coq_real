@@ -524,6 +524,19 @@ destruct s₁ as [di₁| ].
          remember Hs₆ as H; clear HeqH.
          eapply www in H; eauto .
           destruct H as (di₄, (Hadi, Hdij)).
+          assert (di₃ + S di₄ < di₁) as H.
+           Focus 2.
+           apply Hn₁ in H.
+           rewrite <- Nat.add_succ_r, <- Nat.add_succ_l, Nat.add_assoc in H.
+           unfold rm_add_i in H; simpl in H.
+           rewrite Hadi, xorb_false_r, xorb_false_l in H.
+           remember (fst_same a 0 (S (i + S di₃ + S di₄))) as s₇ eqn:Hs₇ .
+           symmetry in Hs₇.
+           apply fst_same_iff in Hs₇; simpl in Hs₇.
+           destruct s₇ as [di₇| ].
+            rewrite <- Nat.add_succ_r in Hs₇, H.
+            destruct Hs₇ as (Hn₇, Hs₇).
+            rewrite Hs₇ in H.
 bbb.
 *)
 
