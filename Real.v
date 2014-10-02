@@ -323,6 +323,7 @@ assert (∀ i, a .[ i] = b .[ i]) as H.
   apply rm_add_eq_compat_r; auto.
 Qed.
 
+(*
 Theorem yyy : ∀ a b, (a + b + 0 = a + (b + 0))%rm.
 Proof.
 intros a b.
@@ -485,25 +486,31 @@ destruct s₁ as [di₁| ].
           destruct b .[ S (i + di₃)]; discriminate H.
 
           clear H.
-Abort. (*
 bbb.
 *)
+
+Theorem yyy : ∀ a b, (a + 0 + b = a + b)%rm.
+Proof.
+intros a b.
+unfold rm_eq; intros i; simpl.
+unfold rm_add_i; simpl.
+do 2 rewrite xorb_false_r.
+bbb.
 
 Theorem rm_add_compat_r : ∀ a b c, (a = b)%rm → (a + c = b + c)%rm.
 Proof.
 intros a b c Hab.
 remember (a + 0)%rm as a₁.
 remember (b + 0)%rm as b₁.
-remember (c + 0)%rm as c₁.
 remember Heqa₁ as H; clear HeqH.
-eapply rm_norm_eq_compat_r with (b₀ := b) in H; eauto .
- subst a₁ b₁ c₁.
+eapply rm_norm_eq_compat_r with (b₀ := b) (c := c) in H; eauto .
  Focus 2.
  subst a₁ b₁.
- rewrite rm_add_0_r.
- rewrite rm_add_0_r.
+ do 2 rewrite rm_add_0_r.
  assumption.
 
+ subst a₁ b₁.
+bbb.
  rewrite <- yyy in H.
  rewrite rm_add_0_r in H.
  rewrite <- yyy in H.
