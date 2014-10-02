@@ -420,6 +420,25 @@ destruct s₁ as [di₁| ].
        discriminate H.
 
        apply Nat.nlt_ge in H₃.
+       destruct (bool_dec a .[ S (i + di₂)] false) as [H₄| H₄].
+        rewrite H₄.
+        apply negb_false_iff.
+        pose proof (Hs₅ (di₁ - S di₂)) as H.
+        rewrite Nat.add_comm, Nat.add_assoc in H.
+        rewrite Nat.add_comm, Nat.add_assoc in H.
+        rewrite <- Nat.add_succ_l in H.
+        rewrite <- Nat.add_succ_l in H.
+        rewrite <- Nat.add_succ_l in H.
+        rewrite Nat.add_sub_assoc in H; auto.
+        rewrite Nat.add_sub_swap in H; auto.
+        rewrite Nat.sub_diag, Nat.add_0_l in H; simpl in H.
+        rewrite Nat.add_comm; assumption.
+
+        apply not_false_iff_true in H₄.
+        rewrite H₄.
+        apply negb_true_iff.
+        rewrite H₄ in Hs₂.
+        symmetry in Hs₂.
 bbb.
 *)
 
