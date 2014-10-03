@@ -458,7 +458,30 @@ split.
    subst k; assumption.
 
    apply Hk; auto.
-   eapply Nat.lt_le_trans.
+   apply Nat.succ_le_mono in Hki.
+   apply Nat.nle_gt; intros H.
+   apply Nat.le_antisymm in H; auto.
+
+  injection Hij; clear Hij; intros; subst j.
+  split; [ apply Nat.lt_succ_r; auto | idtac ].
+  split; [ assumption | idtac ].
+  intros k Hik Hki.
+  apply Nat.succ_le_mono, Nat.nlt_ge in Hki.
+  contradiction.
+
+ intros (Hji, (Haj, Hjk)).
+ revert j Hji Haj Hjk.
+ induction i; intros; [ exfalso; revert Hji; apply Nat.nlt_0_r | simpl ].
+ remember a .[ i] as ai eqn:Hai .
+ symmetry in Hai.
+ destruct ai.
+  apply IHi; auto.
+  destruct (eq_nat_dec i j) as [H₁| H₁].
+   subst j; rewrite Haj in Hai; discriminate Hai.
+
+   apply Nat.succ_le_mono in Hji.
+   apply Nat.nle_gt; intros H.
+   apply Nat.le_antisymm in H; auto.
 bbb.
 
 Theorem xxx : ∀ a b i, rm_add_i (a + 0%rm) b i = rm_add_i a b i.
