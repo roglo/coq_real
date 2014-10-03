@@ -332,6 +332,57 @@ Theorem www : ∀ a i di₂ di₃ di₆,
     ∀ dj, di < dj → a.[i + S di₃ + S dj] = true.
 Proof.
 intros a i di₂ di₃ di₆ Ht Hd Hf.
+bbb.
+
+(* l'énoncé de ce théorème est merdique... à refaire *)
+remember (i + S di₃) as i₃.
+assert (i < i₃) as Hi₃ by omega.
+remember (i₃ + S di₆) as i₆.
+assert (i₃ < i₆) as Hi₆ by omega.
+remember (i + S di₂) as i₂.
+assert (i₆ ≤ i₂) as Hi₂.
+ apply Nat.nlt_ge.
+ intros Hcont.
+ pose proof (Ht (i₆ - S i₂)) as H.
+ rewrite <- Nat.sub_succ_l in H; auto.
+ simpl in H.
+ rewrite Nat.add_sub_assoc in H; [ idtac | apply Nat.lt_le_incl; auto ].
+ rewrite Nat.add_comm in H.
+ rewrite Nat.add_sub in H.
+ rewrite Hf in H.
+ discriminate H.
+
+ clear di₂ di₃ di₆ Heqi₂ Hd Heqi₃ Heqi₆.
+ remember (i₂ - i₆) as di eqn:Hdi .
+ symmetry in Hdi.
+ destruct di.
+  apply Nat.sub_0_le in Hdi.
+  apply Nat.le_antisymm in Hdi; auto.
+  subst i₆; clear Hi₂.
+  exists (i₂ - S i₃).
+  split.
+   rewrite <- Nat.sub_succ_l; auto.
+   simpl.
+   rewrite Nat.add_sub_assoc; [ idtac | apply Nat.lt_le_incl; auto ].
+   rewrite Nat.add_comm, Nat.add_sub.
+   assumption.
+
+   intros dj Hdj.
+   pose proof (Ht (i₃ + dj - i₂)) as H.
+   rewrite <- Nat.sub_succ_l in H; [ idtac | omega ].
+   rewrite Nat.add_sub_assoc in H; [ idtac | omega ].
+   rewrite Nat.add_comm, Nat.add_sub in H.
+   rewrite <- Nat.add_succ_r in H.
+   assumption.
+
+  apply Nat.add_sub_eq_nz in Hdi; [ idtac | intros H; discriminate H ].
+  subst i₂.
+  clear Hi₂.
+  revert i i₃ i₆ Hf Hi₃ Hi₆ Ht.
+  induction di; intros.
+bbb.
+
+intros a i di₂ di₃ di₆ Ht Hd Hf.
 remember (di₂ - di₆) as di eqn:Hdi .
 symmetry in Hdi.
 apply Nat.add_sub_eq_nz in Hdi.
