@@ -323,6 +323,13 @@ assert (∀ i, a .[ i] = b .[ i]) as H.
   apply rm_add_eq_compat_r; auto.
 Qed.
 
+Fixpoint first_false_before a i :=
+  match i with
+  | 0 => None
+  | S j => if a.[j] then first_false_before a j else Some j
+  end.
+
+(* l'énoncé de ce théorème est merdique... à refaire...
 Theorem www : ∀ a i di₂ di₃ di₆,
   (∀ dj, a.[i + S di₂ + S dj] = true)
   → di₃ < di₂
@@ -334,7 +341,6 @@ Proof.
 intros a i di₂ di₃ di₆ Ht Hd Hf.
 bbb.
 
-(* l'énoncé de ce théorème est merdique... à refaire *)
 remember (i + S di₃) as i₃.
 assert (i < i₃) as Hi₃ by omega.
 remember (i₃ + S di₆) as i₆.
@@ -573,6 +579,7 @@ destruct s₁ as [di₁| ].
          destruct Hs₆ as (Hn₆, Hs₆).
          clear H.
          remember Hs₆ as H; clear HeqH.
+bbb.
          eapply www in H; eauto .
           destruct H as (di₄, (Hadi, Hdij)).
           assert (di₃ + S di₄ ≤ di₂) as H₄₂.
