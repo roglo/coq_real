@@ -482,7 +482,16 @@ split.
    apply Nat.succ_le_mono in Hji.
    apply Nat.nle_gt; intros H.
    apply Nat.le_antisymm in H; auto.
-bbb.
+
+  apply Nat.succ_le_mono in Hji.
+  destruct (le_dec i j) as [H₁| H₁].
+   apply Nat.le_antisymm in H₁; auto.
+
+   apply Nat.nle_gt in H₁.
+   apply Hjk in H₁; [ idtac | apply Nat.lt_succ_r; auto ].
+   rewrite Hai in H₁.
+   discriminate H₁.
+Qed.
 
 Theorem xxx : ∀ a b i, rm_add_i (a + 0%rm) b i = rm_add_i a b i.
 Proof.
@@ -631,6 +640,8 @@ destruct s₁ as [di₁| ].
          remember (first_false_before a (i + S di₂)) as j eqn:Hj .
          symmetry in Hj.
          destruct j as [j| ].
+          apply first_false_before_some_iff in Hj.
+          destruct Hj as (Hji, (Hjf, Hk)).
 bbb.
          eapply www in H; eauto .
           destruct H as (di₄, (Hadi, Hdij)).
