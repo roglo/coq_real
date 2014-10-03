@@ -323,12 +323,6 @@ assert (∀ i, a .[ i] = b .[ i]) as H.
   apply rm_add_eq_compat_r; auto.
 Qed.
 
-Fixpoint first_false_before a i :=
-  match i with
-  | 0 => None
-  | S j => if a.[j] then first_false_before a j else Some j
-  end.
-
 (* l'énoncé de ce théorème est merdique... à refaire...
 Theorem www : ∀ a i di₂ di₃ di₆,
   (∀ dj, a.[i + S di₂ + S dj] = true)
@@ -433,6 +427,39 @@ apply Nat.add_sub_eq_nz in Hdi.
    apply Nat.le_succ_diag_r.
 bbb.
 *)
+
+Fixpoint first_false_before a i :=
+  match i with
+  | 0 => None
+  | S j => if a.[j] then first_false_before a j else Some j
+  end.
+
+Theorem first_false_before_some_iff : ∀ a i j,
+  first_false_before a i = Some j
+  ↔ j < i ∧
+    a.[j] = false ∧
+    (∀ k, j < k → k < i → a.[k] = true).
+Proof.
+intros a i j.
+split.
+ intros Hij.
+ revert j Hij.
+ induction i; intros; [ discriminate Hij | idtac ].
+ simpl in Hij.
+ remember a .[ i] as ai eqn:Hai .
+ symmetry in Hai.
+ destruct ai.
+  apply IHi in Hij.
+  destruct Hij as (Hji, (Hj, Hk)).
+  split; [ apply Nat.lt_lt_succ_r; auto | idtac ].
+  split; [ assumption | idtac ].
+  intros k Hjk Hki.
+  destruct (eq_nat_dec k i) as [H₁| H₁].
+   subst k; assumption.
+
+   apply Hk; auto.
+   eapply Nat.lt_le_trans.
+bbb.
 
 Theorem xxx : ∀ a b i, rm_add_i (a + 0%rm) b i = rm_add_i a b i.
 Proof.
