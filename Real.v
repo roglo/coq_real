@@ -578,7 +578,9 @@ destruct s₁ as [di₁| ].
          rewrite <- Nat.add_succ_r in Hs₆, H.
          destruct Hs₆ as (Hn₆, Hs₆).
          clear H.
-         remember Hs₆ as H; clear HeqH.
+         remember (first_false_before a (i + S di₂)) as j eqn:Hj .
+         symmetry in Hj.
+         destruct j as [j| ].
 bbb.
          eapply www in H; eauto .
           destruct H as (di₄, (Hadi, Hdij)).
