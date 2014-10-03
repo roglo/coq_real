@@ -663,6 +663,14 @@ destruct s₁ as [di₁| ].
              apply Nat.succ_lt_mono in H₅; auto.
 
             rewrite Nat.add_comm, Nat.add_sub in H.
+            unfold rm_add_i in H; simpl in H.
+            rewrite xorb_false_r in H.
+            remember (fst_same a 0 (S (S j))) as s₇ eqn:Hs₇ .
+            symmetry in Hs₇.
+            apply fst_same_iff in Hs₇; simpl in Hs₇.
+            destruct s₇ as [di₇| ].
+             destruct Hs₇ as (Hn₇, Hs₇).
+             rewrite Hs₇, xorb_false_r in H.
 bbb.
          eapply www in H; eauto .
           destruct H as (di₄, (Hadi, Hdij)).
