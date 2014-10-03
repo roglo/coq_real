@@ -642,6 +642,27 @@ destruct s₁ as [di₁| ].
          destruct j as [j| ].
           apply first_false_before_some_iff in Hj.
           destruct Hj as (Hji, (Hjf, Hk)).
+          assert (j - i < di₁) as H.
+           eapply Nat.le_lt_trans; [ idtac | eauto  ].
+           rewrite Nat.add_succ_r in Hji.
+           apply Nat.succ_le_mono in Hji.
+           apply Nat.le_sub_le_add_l; auto.
+
+           apply Hn₁ in H.
+           rewrite Nat.add_sub_assoc in H.
+            Focus 2.
+            apply Nat.nlt_ge; intros Hcont.
+            clear H.
+            assert (j < i + S di₃) as H.
+             eapply Nat.lt_trans; eauto .
+             apply Nat.lt_sub_lt_add_l.
+             rewrite Nat.sub_diag; apply Nat.lt_0_succ.
+
+             apply Hk in H; [ rewrite Hs₃ in H; discriminate H | idtac ].
+             apply Nat.add_lt_mono_l.
+             apply Nat.succ_lt_mono in H₅; auto.
+
+            rewrite Nat.add_comm, Nat.add_sub in H.
 bbb.
          eapply www in H; eauto .
           destruct H as (di₄, (Hadi, Hdij)).
