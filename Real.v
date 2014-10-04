@@ -679,6 +679,35 @@ destruct s₁ as [di₁| ].
 
      apply Nat.nlt_ge in H₂.
      destruct (lt_dec di₁ di₂) as [H₃| H₃].
+      destruct (lt_dec di₁ di₃) as [H₁| H₁].
+       pose proof (Hs₄ (di₃ - S di₁)) as H.
+       rewrite Nat.add_sub_assoc in H; auto.
+       rewrite Nat.add_shuffle0, Nat.add_sub in H.
+       rewrite <- Nat.add_succ_r, Hs₃ in H; discriminate H.
+
+       apply Nat.nlt_ge in H₁.
+       destruct (eq_nat_dec di₁ di₃) as [H₄| H₄].
+        subst di₃.
+        rewrite Hs₃ in Hs₁.
+        symmetry in Hs₁; simpl in Hs₁.
+        pose proof (Hs₄ (di₂ - S di₁)) as H.
+        rewrite Nat.add_sub_assoc in H; auto.
+        rewrite Nat.add_shuffle0, Nat.add_sub in H.
+        rewrite <- Nat.add_succ_r in H.
+        rewrite Hs₁, <- Hs₂, H; reflexivity.
+
+        assert (di₃ < di₁) as H.
+         apply Nat.nle_gt; intros H.
+         apply Nat.le_antisymm in H; auto; contradiction.
+
+         clear H₄; rename H into H₄.
+bbb.
+      Focus 1.
+      remember (first_false_before a (i + S (S di₁))) as j eqn:Hj .
+      symmetry in Hj.
+      destruct j as [j| ].
+       apply first_false_before_some_iff in Hj.
+       destruct Hj as (Hji, (Hjf, Hk)).
 bbb.
 *)
 
