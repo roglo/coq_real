@@ -695,22 +695,52 @@ destruct s₁ as [di₁| ].
              rewrite xorb_true_r in H.
              apply negb_sym in H.
              rewrite negb_involutive in H.
-bbb.
              rename H into Hba.
-             destruct (lt_dec (S j - S i) di₂) as [H₇| H₇].
+             destruct (lt_dec (j - i) di₂) as [H₇| H₇].
               apply Hn₂ in H₇.
-              rewrite <- Nat.add_succ_l in H₇.
-              rewrite Nat.add_sub_assoc in H₇.
-               rewrite Nat.add_comm in H₇.
-               rewrite Nat.add_sub in H₇.
-               rewrite Hba in H₇.
-               destruct a .[ S j]; discriminate H₇.
+              rewrite <- Nat.add_succ_r in H₇.
+              rewrite <- Nat.sub_succ_l in H₇.
+               rewrite Nat.add_sub_assoc in H₇.
+                rewrite Nat.add_comm, Nat.add_sub in H₇.
+                rewrite Hba in H₇.
+                destruct a .[ S j]; discriminate H₇.
+
+                apply Nat.nlt_ge.
+                intros Hj.
+                pose proof (Hs₇ (i + S di₃ - S (S j))) as H.
+                rewrite <- Nat.add_succ_l in H.
+                rewrite <- Nat.add_succ_l in H.
+                rewrite Nat.add_sub_assoc in H.
+                 rewrite Nat.add_comm, Nat.add_sub in H.
+                 rewrite Hs₃ in H; discriminate H.
+
+                 eapply Nat.lt_trans; [ eauto  | idtac ].
+                 apply Nat.lt_sub_lt_add_l.
+                 rewrite Nat.sub_diag.
+                 apply Nat.lt_0_succ.
 
                apply Nat.nlt_ge.
-               intros Hcont.
-               apply Nat.succ_lt_mono in Hcont.
-bbb.
+               intros Hj.
+               pose proof (Hs₇ (i + S di₃ - S (S j))) as H.
+               rewrite <- Nat.add_succ_l in H.
+               rewrite <- Nat.add_succ_l in H.
+               rewrite Nat.add_sub_assoc in H.
+                rewrite Nat.add_comm, Nat.add_sub in H.
+                rewrite Hs₃ in H; discriminate H.
 
+                eapply Nat.le_lt_trans; [ eauto  | idtac ].
+                apply Nat.lt_sub_lt_add_l.
+                rewrite Nat.sub_diag.
+                apply Nat.lt_0_succ.
+
+              apply Nat.nlt_ge in H₇.
+              apply Nat.add_le_mono_r with (p := i) in H₇.
+              rewrite <- Nat.add_sub_swap in H₇.
+               rewrite Nat.add_sub in H₇.
+               apply Nat.succ_le_mono in H₇.
+               rewrite <- Nat.add_succ_l, Nat.add_comm in H₇.
+               apply Nat.le_antisymm in H₇; auto.
+bbb.
 
            remember H₄₂ as H; clear HeqH.
            eapply Nat.le_lt_trans in H; [ idtac | eauto  ].
