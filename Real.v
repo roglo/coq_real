@@ -574,7 +574,6 @@ destruct s₁ as [di₁| ].
          destruct j as [j| ].
           apply first_false_before_some_iff in Hj.
           destruct Hj as (Hji, (Hjf, Hk)).
-(**)
           assert (j - S i < di₁) as H.
            eapply Nat.le_lt_trans; [ idtac | eauto  ].
            rewrite Nat.add_succ_r in Hji.
