@@ -676,6 +676,7 @@ destruct s₁ as [di₁| ].
               rewrite Hs₇ in H.
               symmetry in H.
               apply negb_false_iff in H.
+              destruct (lt_dec di₇ di₂) as [H₁| H₁].
 bbb.
           assert (j - i < di₁) as H.
            eapply Nat.le_lt_trans; [ idtac | eauto  ].
