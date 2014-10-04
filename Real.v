@@ -329,6 +329,43 @@ Fixpoint first_false_before a i :=
   | S j => if a.[j] then first_false_before a j else Some j
   end.
 
+Theorem first_false_before_none_iff : ∀ a i,
+  first_false_before a i = None
+  ↔ (∀ k, k < i → a.[k] = true).
+Proof.
+intros a i.
+split.
+ intros Hi k Hki.
+ revert k Hki.
+ induction i; intros.
+  exfalso; revert Hki; apply Nat.nlt_0_r.
+
+  simpl in Hi.
+  remember a .[ i] as ai eqn:Hai .
+  symmetry in Hai.
+  destruct ai; [ idtac | discriminate Hi ].
+  destruct (eq_nat_dec k i) as [H₁| H₁].
+   subst k; assumption.
+
+   apply IHi; auto.
+   apply Nat.nle_gt; intros H.
+   apply Nat.succ_le_mono in Hki.
+   apply Nat.le_antisymm in H; auto.
+
+ intros Hki.
+ induction i; [ reflexivity | simpl ].
+ remember a .[ i] as ai eqn:Hai .
+ symmetry in Hai.
+ destruct ai.
+  apply IHi; intros k Hk.
+  apply Hki.
+  apply Nat.lt_lt_succ_r; assumption.
+
+  apply not_true_iff_false in Hai.
+  exfalso; apply Hai, Hki.
+  apply Nat.lt_succ_r; reflexivity.
+Qed.
+
 Theorem first_false_before_some_iff : ∀ a i j,
   first_false_before a i = Some j
   ↔ j < i ∧
@@ -631,197 +668,10 @@ destruct s₁ as [di₁| ].
               rewrite Nat.sub_diag.
               apply Nat.le_0_l.
 
-bbb.
-              destruct (lt_dec di₇ di₂) as [H₁| H₁].
-               rewrite Hk in Hs₇; [ discriminate Hs₇ | idtac | idtac ].
-                rewrite <- Nat.add_succ_l.
-                apply Nat.le_sub_le_add_l.
-                rewrite Nat.sub_diag.
-                apply Nat.le_0_l.
-
-                apply Nat.nle_gt; intros Hcont.
-                rewrite <- Nat.add_succ_r in Hcont.
-                rename H into Hbt.
-                destruct (lt_dec (i + S di₂) (j + S di₇)) as [H₆| H₆].
-                 pose proof (Hs₅ (j + di₇ - (i + S di₂))) as H.
-                 rewrite Nat.add_succ_r in H₆.
-                 rewrite Nat.add_succ_r in H₆.
-                 apply Nat.succ_le_mono in H₆.
-                 rewrite <- Nat.add_succ_r in H₆.
-                 rewrite Nat.add_sub_assoc in H; auto.
-                 rewrite Nat.add_comm, Nat.add_sub in H.
-                 rewrite Hs₇ in H; discriminate H.
-
-                 apply Nat.nlt_ge in H₆.
-                 apply Nat.le_antisymm in H₆; auto.
-                 rewrite <- Nat.add_succ_r, <- H₆, H₄ in Hs₇.
-                 discriminate Hs₇.
-
-               apply Nat.nlt_ge in H₁.
-               destruct (lt_dec di₂ di₇) as [H₆| H₆].
-                rename H into Hbt.
-                pose proof (Hs₅ (di₇ + j - (i + S di₂))) as H.
-                rewrite Nat.add_sub_assoc in H.
-                 rewrite Nat.add_comm, Nat.add_sub in H.
-                 rewrite Nat.add_comm, Hs₇ in H; discriminate H.
-
-                 rewrite Nat.add_comm.
-                 apply Nat.add_le_mono; auto.
-                 apply Nat.nlt_ge; intros Hcont.
-                 clear H.
-                 assert (j < i + S di₃) as H.
-                  eapply Nat.lt_trans; eauto .
-                  apply Nat.lt_sub_lt_add_l.
-                  rewrite Nat.sub_diag; apply Nat.lt_0_succ.
-
-                  apply Hk in H; [ rewrite Hs₃ in H; discriminate H | idtac ].
-                  apply Nat.add_lt_mono_l.
-                  apply Nat.succ_lt_mono in H₅; auto.
-
-                apply Nat.nlt_ge in H₆.
-                apply Nat.le_antisymm in H₁; auto.
-                subst di₇.
-bbb.
-          assert (j - i < di₁) as H.
-           eapply Nat.le_lt_trans; [ idtac | eauto  ].
-           rewrite Nat.add_succ_r in Hji.
-           apply Nat.succ_le_mono in Hji.
-           apply Nat.le_sub_le_add_l; auto.
-
-           apply Hn₁ in H.
-           rewrite Nat.add_sub_assoc in H.
-            Focus 2.
-            apply Nat.nlt_ge; intros Hcont.
-            clear H.
-            assert (j < i + S di₃) as H.
-             eapply Nat.lt_trans; eauto .
-             apply Nat.lt_sub_lt_add_l.
-             rewrite Nat.sub_diag; apply Nat.lt_0_succ.
-
-             apply Hk in H; [ rewrite Hs₃ in H; discriminate H | idtac ].
-             apply Nat.add_lt_mono_l.
-             apply Nat.succ_lt_mono in H₅; auto.
-
-            rewrite Nat.add_comm, Nat.add_sub in H.
-            unfold rm_add_i in H; simpl in H.
-            rewrite xorb_false_r in H.
-            remember (fst_same a 0 (S (S j))) as s₇ eqn:Hs₇ .
-            symmetry in Hs₇.
-            apply fst_same_iff in Hs₇; simpl in Hs₇.
-            destruct s₇ as [di₇| ].
-             destruct Hs₇ as (Hn₇, Hs₇).
-             clear H.
-             rewrite <- Nat.add_succ_r, <- Nat.add_succ_l in Hs₇.
-             destruct (lt_dec (S j + S di₇) (i + S di₂)) as [H₇| H₇].
-              rewrite Hk in Hs₇; auto; [ discriminate Hs₇ | idtac ].
-              apply Nat.le_sub_le_add_l.
-              rewrite Nat.sub_diag.
-              apply Nat.le_0_l.
-
-              apply Nat.nlt_ge in H₇.
-              destruct (lt_dec (i + S di₂) (S j + S di₇)) as [H₈| H₈].
-               pose proof (Hs₅ (S j + S di₇ - S (i + S di₂))) as H.
-               rewrite <- Nat.add_succ_l in H.
-               rewrite Nat.add_sub_assoc in H; auto.
-               rewrite Nat.add_comm in H.
-               rewrite Nat.add_sub in H.
-               rewrite Hs₇ in H; discriminate H.
-
-               apply Nat.nlt_ge in H₈.
-               apply Nat.le_antisymm in H₈; auto.
-               rewrite <- H₈, H₄ in Hs₇.
-               discriminate Hs₇.
-
-             rewrite xorb_true_r in H.
-             apply negb_sym in H.
-             rewrite negb_involutive in H.
-             rename H into Hba.
-             destruct (lt_dec (j - i) di₂) as [H₇| H₇].
-              apply Hn₂ in H₇.
-              rewrite <- Nat.add_succ_r in H₇.
-              rewrite <- Nat.sub_succ_l in H₇.
-               rewrite Nat.add_sub_assoc in H₇.
-                rewrite Nat.add_comm, Nat.add_sub in H₇.
-                rewrite Hba in H₇.
-                destruct a .[ S j]; discriminate H₇.
-
-                apply Nat.nlt_ge.
-                intros Hj.
-                pose proof (Hs₇ (i + S di₃ - S (S j))) as H.
-                rewrite <- Nat.add_succ_l in H.
-                rewrite <- Nat.add_succ_l in H.
-                rewrite Nat.add_sub_assoc in H.
-                 rewrite Nat.add_comm, Nat.add_sub in H.
-                 rewrite Hs₃ in H; discriminate H.
-
-                 eapply Nat.lt_trans; [ eauto  | idtac ].
-                 apply Nat.lt_sub_lt_add_l.
-                 rewrite Nat.sub_diag.
-                 apply Nat.lt_0_succ.
-
-               apply Nat.nlt_ge.
-               intros Hj.
-               pose proof (Hs₇ (i + S di₃ - S (S j))) as H.
-               rewrite <- Nat.add_succ_l in H.
-               rewrite <- Nat.add_succ_l in H.
-               rewrite Nat.add_sub_assoc in H.
-                rewrite Nat.add_comm, Nat.add_sub in H.
-                rewrite Hs₃ in H; discriminate H.
-
-                eapply Nat.le_lt_trans; [ eauto  | idtac ].
-                apply Nat.lt_sub_lt_add_l.
-                rewrite Nat.sub_diag.
-                apply Nat.lt_0_succ.
-
-              apply Nat.nlt_ge in H₇.
-              apply Nat.add_le_mono_r with (p := i) in H₇.
-              rewrite <- Nat.add_sub_swap in H₇.
-               rewrite Nat.add_sub in H₇.
-               apply Nat.succ_le_mono in H₇.
-               rewrite <- Nat.add_succ_l, Nat.add_comm in H₇.
-               apply Nat.le_antisymm in H₇; auto.
-bbb.
-
-           remember H₄₂ as H; clear HeqH.
-           eapply Nat.le_lt_trans in H; [ idtac | eauto  ].
-           apply Hn₁ in H.
-           rewrite <- Nat.add_succ_r, <- Nat.add_succ_l, Nat.add_assoc in H.
-           unfold rm_add_i in H; simpl in H.
-           rewrite Hadi, xorb_false_r, xorb_false_l in H.
-           remember (fst_same a 0 (S (i + S di₃ + S di₄))) as s₇ eqn:Hs₇ .
-           symmetry in Hs₇.
-           apply fst_same_iff in Hs₇; simpl in Hs₇.
-           destruct s₇ as [di₇| ].
-            rewrite <- Nat.add_succ_r in Hs₇, H.
-            destruct Hs₇ as (Hn₇, Hs₇).
-            rewrite <- Nat.add_assoc in Hs₇.
-            rewrite Nat.add_succ_l in Hs₇.
-            rewrite Hdij in Hs₇; [ discriminate Hs₇ | idtac ].
-            apply Nat.lt_sub_lt_add_l.
-            rewrite Nat.sub_diag.
-            apply Nat.lt_0_succ.
-
-            symmetry in H.
-            apply negb_true_iff in H.
-            rename H into H₆.
-            destruct (lt_dec (di₃ + S di₄) di₂) as [H₇| H₇].
-             remember H₇ as H; clear HeqH.
-             apply Hn₂ in H.
-             rewrite <- Nat.add_succ_r in H.
-             rewrite <- Nat.add_succ_l in H.
-             rewrite Nat.add_assoc in H.
-             rewrite Hadi, H₆ in H.
-             discriminate H.
-
-             apply Nat.nlt_ge in H₇.
-             apply Nat.le_antisymm in H₇; [ idtac | auto ].
-             rewrite <- Nat.add_assoc in H₆.
-             rewrite Nat.add_succ_l in H₆.
-             rewrite H₇ in H₆.
-             rewrite Hs₂ in H₆.
-             discriminate H₆.
-
-          apply Nat.le_lt_trans with (m := di₂); auto.
+          rewrite first_false_before_none_iff in Hj.
+          rewrite Hj in Hs₃; [ discriminate Hs₃ | idtac ].
+          apply Nat.add_lt_mono_l.
+          apply Nat.succ_lt_mono in H₅; assumption.
 
          apply Nat.nlt_ge in H₅.
          apply Nat.le_antisymm in H₅; [ idtac | auto ].
@@ -829,6 +679,7 @@ bbb.
          rewrite H₄ in Hs₃; discriminate Hs₃.
 
      apply Nat.nlt_ge in H₂.
+     destruct (lt_dec di₁ di₂) as [H₃| H₃].
 bbb.
 *)
 
