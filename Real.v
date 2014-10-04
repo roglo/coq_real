@@ -323,111 +323,6 @@ assert (∀ i, a .[ i] = b .[ i]) as H.
   apply rm_add_eq_compat_r; auto.
 Qed.
 
-(* l'énoncé de ce théorème est merdique... à refaire...
-Theorem www : ∀ a i di₂ di₃ di₆,
-  (∀ dj, a.[i + S di₂ + S dj] = true)
-  → di₃ < di₂
-  → a.[i + S di₃ + S di₆] = false
-  → ∃ di,
-    a.[i + S di₃ + S di] = false ∧
-    ∀ dj, di < dj → a.[i + S di₃ + S dj] = true.
-Proof.
-intros a i di₂ di₃ di₆ Ht Hd Hf.
-bbb.
-
-remember (i + S di₃) as i₃.
-assert (i < i₃) as Hi₃ by omega.
-remember (i₃ + S di₆) as i₆.
-assert (i₃ < i₆) as Hi₆ by omega.
-remember (i + S di₂) as i₂.
-assert (i₆ ≤ i₂) as Hi₂.
- apply Nat.nlt_ge.
- intros Hcont.
- pose proof (Ht (i₆ - S i₂)) as H.
- rewrite <- Nat.sub_succ_l in H; auto.
- simpl in H.
- rewrite Nat.add_sub_assoc in H; [ idtac | apply Nat.lt_le_incl; auto ].
- rewrite Nat.add_comm in H.
- rewrite Nat.add_sub in H.
- rewrite Hf in H.
- discriminate H.
-
- clear di₂ di₃ di₆ Heqi₂ Hd Heqi₃ Heqi₆.
- remember (i₂ - i₆) as di eqn:Hdi .
- symmetry in Hdi.
- destruct di.
-  apply Nat.sub_0_le in Hdi.
-  apply Nat.le_antisymm in Hdi; auto.
-  subst i₆; clear Hi₂.
-  exists (i₂ - S i₃).
-  split.
-   rewrite <- Nat.sub_succ_l; auto.
-   simpl.
-   rewrite Nat.add_sub_assoc; [ idtac | apply Nat.lt_le_incl; auto ].
-   rewrite Nat.add_comm, Nat.add_sub.
-   assumption.
-
-   intros dj Hdj.
-   pose proof (Ht (i₃ + dj - i₂)) as H.
-   rewrite <- Nat.sub_succ_l in H; [ idtac | omega ].
-   rewrite Nat.add_sub_assoc in H; [ idtac | omega ].
-   rewrite Nat.add_comm, Nat.add_sub in H.
-   rewrite <- Nat.add_succ_r in H.
-   assumption.
-
-  apply Nat.add_sub_eq_nz in Hdi; [ idtac | intros H; discriminate H ].
-  subst i₂.
-  clear Hi₂.
-  revert i i₃ i₆ Hf Hi₃ Hi₆ Ht.
-  induction di; intros.
-bbb.
-
-intros a i di₂ di₃ di₆ Ht Hd Hf.
-remember (di₂ - di₆) as di eqn:Hdi .
-symmetry in Hdi.
-apply Nat.add_sub_eq_nz in Hdi.
- Focus 2.
- intros H; subst di.
- apply Nat.sub_0_le in H.
- rename H into Hd₁.
- pose proof (Ht (S di₆ - S di₂ + di₃)) as H.
- rewrite <- Nat.add_succ_r, Nat.add_assoc in H.
- do 2 rewrite <- Nat.add_assoc in H.
- rewrite Nat.add_comm in H.
- rewrite Nat.add_assoc in H.
- rewrite Nat.add_sub_assoc in H.
-  rewrite Nat.add_sub_swap in H; auto.
-  rewrite Nat.sub_diag, Nat.add_0_l in H.
-  rewrite Nat.add_shuffle0, <- Nat.add_assoc, Nat.add_comm in H.
-  rewrite Hf in H; discriminate H.
-
-  apply Nat.succ_le_mono in Hd₁; auto.
-
- subst di₂.
- revert i di₃ di₆ Hf Ht Hd.
- induction di; intros.
-  rewrite Nat.add_0_r in Hd.
-  exists di₆.
-  split; auto.
-  intros dj Hdi.
-  pose proof (Ht (dj - S di₆ + S di₃)) as H.
-  rewrite Nat.add_0_r in H.
-  rewrite <- Nat.add_succ_l in H.
-  rewrite <- Nat.sub_succ_l in H; auto.
-  rewrite <- Nat.add_assoc, Nat.add_comm in H.
-  rewrite Nat.add_assoc in H.
-  rewrite Nat.add_sub_assoc in H.
-   rewrite Nat.add_sub_swap in H; auto.
-   rewrite Nat.sub_diag, Nat.add_0_l in H.
-   rewrite Nat.add_shuffle0, <- Nat.add_assoc, Nat.add_comm in H.
-   assumption.
-
-   apply Nat.succ_le_mono in Hdi; auto.
-   eapply Nat.le_trans; [ idtac | eauto  ].
-   apply Nat.le_succ_diag_r.
-bbb.
-*)
-
 Fixpoint first_false_before a i :=
   match i with
   | 0 => None
@@ -722,6 +617,19 @@ destruct s₁ as [di₁| ].
                  apply Hk in H; [ rewrite Hs₃ in H; discriminate H | idtac ].
                  apply Nat.add_lt_mono_l.
                  apply Nat.succ_lt_mono in H₅; auto.
+
+             destruct j.
+              rewrite Hk in Hs₃; [ discriminate Hs₃ | idtac | idtac ].
+               rewrite Nat.add_succ_r.
+               apply Nat.lt_0_succ.
+
+               apply Nat.add_lt_mono_l.
+               apply Nat.succ_lt_mono in H₅; auto.
+
+              rewrite Nat.add_succ_r, <- Nat.add_succ_l.
+              apply Nat.le_sub_le_add_l.
+              rewrite Nat.sub_diag.
+              apply Nat.le_0_l.
 
 bbb.
               destruct (lt_dec di₇ di₂) as [H₁| H₁].
