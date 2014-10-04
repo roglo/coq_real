@@ -670,26 +670,47 @@ destruct s₁ as [di₁| ].
             apply fst_same_iff in Hs₇; simpl in Hs₇.
             destruct s₇ as [di₇| ].
              destruct Hs₇ as (Hn₇, Hs₇).
-             rewrite Hs₇, xorb_false_r in H.
+             clear H.
+             rewrite <- Nat.add_succ_r, <- Nat.add_succ_l in Hs₇.
+             destruct (lt_dec (S j + S di₇) (i + S di₂)) as [H₇| H₇].
+              rewrite Hk in Hs₇; auto; [ discriminate Hs₇ | idtac ].
+              apply Nat.le_sub_le_add_l.
+              rewrite Nat.sub_diag.
+              apply Nat.le_0_l.
+
+              apply Nat.nlt_ge in H₇.
+              destruct (lt_dec (i + S di₂) (S j + S di₇)) as [H₈| H₈].
+               pose proof (Hs₅ (S j + S di₇ - S (i + S di₂))) as H.
+               rewrite <- Nat.add_succ_l in H.
+               rewrite Nat.add_sub_assoc in H; auto.
+               rewrite Nat.add_comm in H.
+               rewrite Nat.add_sub in H.
+               rewrite Hs₇ in H; discriminate H.
+
+               apply Nat.nlt_ge in H₈.
+               apply Nat.le_antisymm in H₈; auto.
+               rewrite <- H₈, H₄ in Hs₇.
+               discriminate Hs₇.
+
+             rewrite xorb_true_r in H.
+             apply negb_sym in H.
+             rewrite negb_involutive in H.
 bbb.
-         eapply www in H; eauto .
-          destruct H as (di₄, (Hadi, Hdij)).
-          assert (di₃ + S di₄ ≤ di₂) as H₄₂.
-           apply Nat.nlt_ge.
-           intros Hcon.
-           pose proof (Hs₅ (di₃ + di₄ - di₂)) as H.
-           rewrite Nat.add_succ_r in Hcon.
-           apply le_S_n in Hcon.
-           rewrite Nat.add_sub_assoc in H; auto.
-           rewrite Nat.add_comm in H.
-           rewrite Nat.add_assoc in H.
-           rewrite Nat.add_succ_r in H.
-           rewrite <- Nat.add_succ_l in H.
-           rewrite Nat.add_sub in H.
-           rewrite Nat.add_comm, Nat.add_assoc in H.
-           rewrite <- Nat.add_succ_r in H.
-           rewrite <- Nat.add_succ_l, <- Nat.add_succ_r in H.
-           rewrite Hadi in H; discriminate H.
+             rename H into Hba.
+             destruct (lt_dec (S j - S i) di₂) as [H₇| H₇].
+              apply Hn₂ in H₇.
+              rewrite <- Nat.add_succ_l in H₇.
+              rewrite Nat.add_sub_assoc in H₇.
+               rewrite Nat.add_comm in H₇.
+               rewrite Nat.add_sub in H₇.
+               rewrite Hba in H₇.
+               destruct a .[ S j]; discriminate H₇.
+
+               apply Nat.nlt_ge.
+               intros Hcont.
+               apply Nat.succ_lt_mono in Hcont.
+bbb.
+
 
            remember H₄₂ as H; clear HeqH.
            eapply Nat.le_lt_trans in H; [ idtac | eauto  ].
