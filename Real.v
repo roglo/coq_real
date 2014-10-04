@@ -679,6 +679,17 @@ destruct s₁ as [di₁| ].
 
      apply Nat.nlt_ge in H₂.
      destruct (lt_dec di₁ di₂) as [H₃| H₃].
+      pose proof (Hs₄ (di₂ - S di₁)) as H.
+      rewrite Nat.add_sub_assoc in H; auto.
+      rewrite Nat.add_shuffle0, Nat.add_sub in H.
+      rewrite <- Nat.add_succ_r in H.
+      rewrite H in Hs₂; symmetry in Hs₂.
+      rename H into Ha; move Ha after Hs₂; rewrite Hs₂.
+      symmetry in Hs₁; apply negb_sym in Hs₁.
+      remember b .[ i + S di₁] as bi eqn:Hbi .
+      destruct bi; [ reflexivity | idtac ].
+      symmetry in Hbi; simpl in Hs₁.
+      exfalso.
       destruct (lt_dec di₁ di₃) as [H₁| H₁].
        pose proof (Hs₄ (di₃ - S di₁)) as H.
        rewrite Nat.add_sub_assoc in H; auto.
@@ -688,13 +699,7 @@ destruct s₁ as [di₁| ].
        apply Nat.nlt_ge in H₁.
        destruct (eq_nat_dec di₁ di₃) as [H₄| H₄].
         subst di₃.
-        rewrite Hs₃ in Hs₁.
-        symmetry in Hs₁; simpl in Hs₁.
-        pose proof (Hs₄ (di₂ - S di₁)) as H.
-        rewrite Nat.add_sub_assoc in H; auto.
-        rewrite Nat.add_shuffle0, Nat.add_sub in H.
-        rewrite <- Nat.add_succ_r in H.
-        rewrite Hs₁, <- Hs₂, H; reflexivity.
+        rewrite Hs₁ in Hs₃; discriminate Hs₃.
 
         assert (di₃ < di₁) as H.
          apply Nat.nle_gt; intros H.
