@@ -706,13 +706,11 @@ destruct s₁ as [di₁| ].
          apply Nat.le_antisymm in H; auto; contradiction.
 
          clear H₄; rename H into H₄.
-bbb.
-      Focus 1.
-      remember (first_false_before a (i + S (S di₁))) as j eqn:Hj .
-      symmetry in Hj.
-      destruct j as [j| ].
-       apply first_false_before_some_iff in Hj.
-       destruct Hj as (Hji, (Hjf, Hk)).
+         remember (first_false_before a (i + S di₁)) as j eqn:Hj .
+         symmetry in Hj.
+         destruct j as [j| ].
+          apply first_false_before_some_iff in Hj.
+          destruct Hj as (Hji, (Hjf, Hk)).
 bbb.
 *)
 
