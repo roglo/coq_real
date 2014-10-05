@@ -763,6 +763,21 @@ destruct s₁ as [di₁| ].
 
              symmetry in H.
              apply negb_true_iff in H.
+             rename H into Hbt.
+             assert (j - S i < di₂) as H.
+              apply Nat.add_lt_mono_r with (p := S i).
+              rewrite <- Nat.add_sub_swap; auto.
+              rewrite Nat.add_sub.
+              rewrite Nat.add_comm, Nat.add_succ_l, <- Nat.add_succ_r.
+              eapply Nat.lt_trans; [ eauto  | idtac ].
+              apply Nat.add_lt_mono_l.
+              apply Nat.succ_lt_mono in H₃; assumption.
+
+              apply Hn₂ in H.
+              rewrite <- Nat.add_succ_l in H.
+              rewrite Nat.add_sub_assoc in H; auto.
+              rewrite Nat.add_comm, Nat.add_sub in H.
+              rewrite Hjf, Hbt in H; discriminate H.
 bbb.
 *)
 
