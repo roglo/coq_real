@@ -825,6 +825,25 @@ destruct s₁ as [di₁| ].
        rewrite Hs₅ in Hs₄; discriminate Hs₄.
 
       apply Nat.nlt_ge, Nat.le_antisymm in H₂; auto.
+      subst di₃; clear H₁.
+      rewrite Hs₂ in Hs₃.
+      apply negb_false_iff in Hs₃.
+      rewrite <- Hs₁ in Hs₃.
+      unfold rm_add_i in Hs₃.
+      rewrite <- Nat.add_succ_l in Hs₃.
+      rewrite <- Heqssi in Hs₃; simpl in Hs₃.
+      rewrite xorb_false_r in Hs₃.
+      remember (fst_same a 0 (ssi + di₁)) as s₅ eqn:Hs₅ .
+      symmetry in Hs₅.
+      apply fst_same_iff in Hs₅; simpl in Hs₅.
+      destruct s₅ as [di₅| ].
+       destruct Hs₅ as (Hn₅, Hs₅); rewrite Hs₅ in Hs₃.
+       rewrite xorb_false_r in Hs₃; assumption.
+
+       rewrite Hs₅ in Hs₄; discriminate Hs₄.
+
+    rewrite xorb_true_r.
+    apply negb_true_iff.
 bbb.
 *)
 
