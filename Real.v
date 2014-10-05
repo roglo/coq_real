@@ -940,6 +940,10 @@ destruct s₁ as [di₁| ].
      destruct Hs₄ as (Hn₄, Hs₄); rewrite Hs₄, xorb_false_r in H.
      rewrite Hs₂ in H.
      destruct b .[ si + di₂]; discriminate H.
+
+     clear H.
+     apply not_false_iff_true.
+     intros Ha.
 bbb.
 *)
 
