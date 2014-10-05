@@ -800,8 +800,15 @@ destruct s₁ as [di₁| ].
    destruct s₄ as [di₄| ].
     destruct Hs₄ as (Hn₄, Hs₄); rewrite Hs₄.
     rewrite xorb_false_r.
-    destruct (lt_dec (di₃ - S di₁) di₄) as [H₁| H₁].
+    destruct (lt_dec di₁ di₃) as [H₁| H₁].
      remember H₁ as H; clear HeqH.
+     apply Hn₃; assumption.
+
+     apply Nat.nlt_ge in H₁.
+     destruct (lt_dec di₃ di₁) as [H₂| H₂].
+bbb.
+    destruct (lt_dec (di₃ - S di₁) di₄) as [H₃| H₃].
+     remember H₃ as H; clear HeqH.
      apply Hn₄ in H.
      rewrite Heqssi, Nat.add_succ_l, <- Nat.add_succ_r in H.
      rewrite <- Nat.add_assoc, Nat.add_comm in H.
