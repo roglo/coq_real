@@ -908,6 +908,36 @@ destruct s₁ as [di₁| ].
    rewrite xorb_true_r, <- Hs₂.
    apply Hs₃.
 
+ unfold rm_add_i; rewrite <- Heqsi; simpl.
+ rewrite xorb_false_r.
+ do 3 rewrite xorb_assoc; f_equal.
+ rewrite xorb_comm, xorb_assoc; f_equal.
+ rewrite xorb_true_l.
+ remember (fst_same a b si) as s₂ eqn:Hs₂ .
+ symmetry in Hs₂.
+ apply fst_same_iff in Hs₂; simpl in Hs₂.
+ remember (fst_same a 0 si) as s₃ eqn:Hs₃ .
+ symmetry in Hs₃.
+ apply fst_same_iff in Hs₃; simpl in Hs₃.
+ destruct s₂ as [di₂| ].
+  destruct Hs₂ as (Hn₂, Hs₂).
+  destruct s₃ as [di₃| ].
+   destruct Hs₃ as (Hn₃, Hs₃).
+   rewrite Hs₃; simpl; symmetry.
+   destruct (lt_dec di₂ di₃) as [H₁| H₁].
+    apply Hn₃; assumption.
+
+    apply Nat.nlt_ge in H₁.
+    apply negb_false_iff.
+    rewrite Hs₂, <- Hs₁.
+    unfold rm_add_i.
+    rewrite <- Nat.add_succ_l; remember (S si) as ssi; simpl.
+    rewrite xorb_false_r.
+    remember (fst_same a 0 (ssi + di₂)) as s₄ eqn:Hs₄ .
+    symmetry in Hs₄.
+    apply fst_same_iff in Hs₄; simpl in Hs₄.
+    destruct s₄ as [di₄| ].
+     destruct Hs₄ as (Hn₄, Hs₄); rewrite Hs₄, xorb_false_r.
 bbb.
 *)
 
