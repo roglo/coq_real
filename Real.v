@@ -844,6 +844,41 @@ destruct s₁ as [di₁| ].
 
     rewrite xorb_true_r.
     apply negb_true_iff.
+    unfold rm_add_i in Hs₁.
+    rewrite <- Nat.add_succ_l, <- Heqssi in Hs₁.
+    simpl in Hs₁.
+    rewrite xorb_false_r in Hs₁.
+    rewrite Hs₂ in Hs₁.
+    remember (fst_same a 0 (ssi + di₁)) as s₅ eqn:Hs₅ .
+    symmetry in Hs₅.
+    apply fst_same_iff in Hs₅; simpl in Hs₅.
+    destruct s₅ as [di₅| ].
+     destruct Hs₅ as (Hn₅, Hs₅); rewrite Hs₅ in Hs₁.
+     rewrite xorb_false_r in Hs₁.
+     destruct b .[ si + di₁]; discriminate Hs₁.
+
+     clear Hs₁ Hs₅.
+     destruct (lt_dec di₁ di₃) as [H₁| H₁].
+      pose proof (Hs₄ (di₃ - S di₁)) as H.
+      rewrite Heqssi in H.
+      rewrite Nat.add_succ_l, <- Nat.add_succ_r in H.
+      rewrite Nat.add_sub_assoc in H; auto.
+      rewrite Nat.add_shuffle0, Nat.add_sub in H.
+      rewrite Hs₃ in H; discriminate H.
+
+      apply Nat.nlt_ge in H₁.
+      destruct (lt_dec di₃ di₁) as [H₂| H₂].
+       remember H₂ as H; clear HeqH.
+       apply Hn₁ in H.
+       unfold rm_add_i in H.
+       rewrite <- Nat.add_succ_l, <- Heqssi in H; simpl in H.
+       rewrite xorb_false_r in H.
+       remember (fst_same a 0 (ssi + di₃)) as s₅ eqn:Hs₅ .
+       symmetry in Hs₅.
+       apply fst_same_iff in Hs₅; simpl in Hs₅.
+       destruct s₅ as [di₅| ].
+        destruct Hs₅ as (Hn₅, Hs₅); rewrite Hs₅ in H.
+        rewrite xorb_false_r in H.
 bbb.
 *)
 
