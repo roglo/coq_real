@@ -769,7 +769,49 @@ destruct s₁ as [di₁| ].
       apply Nat.nlt_ge in H₃.
       apply Nat.le_antisymm in H₃; auto.
 
+   do 3 rewrite xorb_assoc; f_equal.
+   rewrite xorb_comm, xorb_assoc; f_equal.
    rewrite xorb_true_r.
+   rewrite <- Hs₂, Hs₃, <- Hs₁.
+   apply negb_true_iff.
+   unfold rm_add_i; rewrite <- Nat.add_succ_l.
+   remember (S si) as ssi; simpl.
+   rewrite Hs₃, xorb_false_r, xorb_true_l.
+   apply negb_false_iff.
+   remember (fst_same a 0 (ssi + di₁)) as s₄ eqn:Hs₄ .
+   symmetry in Hs₄.
+   destruct s₄ as [s₄| ]; [ idtac | reflexivity ].
+   rewrite Heqssi, Nat.add_succ_l, <- Nat.add_succ_r.
+   rewrite <- Nat.add_assoc, Hs₃; reflexivity.
+
+  do 3 rewrite xorb_assoc; f_equal.
+  rewrite xorb_comm, xorb_assoc; f_equal.
+  destruct s₃ as [di₃| ].
+   destruct Hs₃ as (Hn₃, Hs₃).
+   rewrite Hs₃, xorb_false_r.
+   rewrite <- Hs₁.
+   unfold rm_add_i.
+   rewrite <- Nat.add_succ_l.
+   remember (S si) as ssi; simpl.
+   rewrite xorb_false_r.
+   remember (fst_same a 0 (ssi + di₁)) as s₄ eqn:Hs₄ .
+   symmetry in Hs₄.
+   apply fst_same_iff in Hs₄; simpl in Hs₄.
+   destruct s₄ as [di₄| ].
+    destruct Hs₄ as (Hn₄, Hs₄); rewrite Hs₄.
+    rewrite xorb_false_r.
+    destruct (lt_dec (di₃ - S di₁) di₄) as [H₁| H₁].
+     remember H₁ as H; clear HeqH.
+     apply Hn₄ in H.
+     rewrite Heqssi, Nat.add_succ_l, <- Nat.add_succ_r in H.
+     rewrite <- Nat.add_assoc, Nat.add_comm in H.
+     rewrite Nat.add_sub_assoc in H; auto.
+      rewrite Nat.add_sub_swap in H; auto.
+      rewrite Nat.sub_diag in H; simpl in H.
+      rewrite Nat.add_comm, Hs₃ in H; discriminate H.
+
+      rename H into Ha.
+      apply Nat.nlt_ge; intros H.
 bbb.
 *)
 
