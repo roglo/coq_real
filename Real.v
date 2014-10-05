@@ -518,14 +518,15 @@ Qed.
 Theorem xxx : ∀ a b i, rm_add_i (a + 0%rm) b i = rm_add_i a b i.
 Proof.
 intros a b i.
-unfold rm_add_i; remember (S i) as si; simpl.
+unfold rm_add_i at 1; remember (S i) as si; simpl.
 remember (fst_same (a + 0%rm) b si) as s₁ eqn:Hs₁ .
-remember (fst_same a b si) as s₂ eqn:Hs₂ .
-symmetry in Hs₁, Hs₂.
-apply fst_same_iff in Hs₁.
-apply fst_same_iff in Hs₂.
-simpl in Hs₁, Hs₂.
+symmetry in Hs₁.
+apply fst_same_iff in Hs₁; simpl in Hs₁.
 destruct s₁ as [di₁| ].
+ unfold rm_add_i at 3; rewrite <- Heqsi.
+ remember (fst_same a b si) as s₂ eqn:Hs₂ .
+ symmetry in Hs₂.
+ apply fst_same_iff in Hs₂; simpl in Hs₂.
  destruct Hs₁ as (Hn₁, Hs₁).
  rewrite Hs₁.
  unfold rm_add_i; rewrite <- Heqsi; simpl.
@@ -898,7 +899,16 @@ destruct s₁ as [di₁| ].
         subst si ssi.
         eapply no_room_for_infinite_carry in Hs₃; eauto .
 
-        simpl.
+        rewrite xorb_true_r, <- Hs₂ in H.
+        destruct a .[ si + di₃]; discriminate H.
+
+       apply Nat.nlt_ge in H₂.
+       apply Nat.le_antisymm in H₂; auto.
+       subst di₃; assumption.
+
+   rewrite xorb_true_r, <- Hs₂.
+   apply Hs₃.
+
 bbb.
 *)
 
