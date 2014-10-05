@@ -743,6 +743,26 @@ destruct s₁ as [di₁| ].
              symmetry in H.
              apply negb_false_iff in H.
              rewrite <- Nat.add_succ_r in Hs₇.
+             rewrite Hk in Hs₇; [ discriminate Hs₇ | idtac | idtac ].
+              apply Nat.lt_sub_lt_add_l.
+              rewrite Nat.sub_diag.
+              apply Nat.lt_0_succ.
+
+              apply Nat.nle_gt; intros Hcont.
+              rename H into Hbt.
+              destruct (lt_dec (i + S di₁) (j + S di₇)) as [H₅| H₅].
+               pose proof (Hs₄ (j + S di₇ - S (i + S di₁))) as H.
+               rewrite <- Nat.add_succ_l in H.
+               rewrite Nat.add_sub_assoc in H; auto.
+               rewrite Nat.add_comm, Nat.add_sub in H.
+               rewrite Hs₇ in H; discriminate H.
+
+               apply Nat.nlt_ge in H₅.
+               apply Nat.le_antisymm in H₅; auto.
+               rewrite <- H₅, Hs₁ in Hs₇; discriminate Hs₇.
+
+             symmetry in H.
+             apply negb_true_iff in H.
 bbb.
 *)
 
