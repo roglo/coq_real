@@ -426,19 +426,19 @@ split.
 Qed.
 
 Theorem no_room_for_infinite_carry : ∀ a b i di₁ di₂ di₃,
-  (∀ dj : nat, dj < di₁ → rm_add_i a 0 (S i + dj) = negb b .[ S i + dj])
-  → (∀ dj : nat, a .[ S (S i) + di₁ + dj] = true)
-  → (∀ dj : nat, dj < di₂ → a .[ S i + dj] = negb b .[ S i + dj])
-  → a .[ S i + di₁] = true
-  → a .[ S i + di₃] = false
-  → di₃ < di₁
+  (∀ dj : nat, dj < di₂ → rm_add_i a 0 (S i + dj) = negb b .[ S i + dj])
+  → (∀ dj : nat, a .[ S (S i) + di₂ + dj] = true)
+  → (∀ dj : nat, dj < di₃ → a .[ S i + dj] = negb b .[ S i + dj])
+  → a .[ S i + di₂] = true
+  → a .[ S i + di₁] = false
   → di₁ < di₂
+  → di₂ < di₃
   → False.
 Proof.
 intros a b i di₁ di₂ di₃ Hn₁ Hs₄ Hn₂ Hs₁ Hs₃ H₄ H₃.
 remember (S i) as si.
 remember (S si) as ssi.
-remember (first_false_before a (si + di₁)) as j eqn:Hj .
+remember (first_false_before a (si + di₂)) as j eqn:Hj .
 symmetry in Hj.
 destruct j as [j| ].
  apply first_false_before_some_iff in Hj.
@@ -454,7 +454,7 @@ destruct j as [j| ].
 
    apply Nat.add_lt_mono_l; assumption.
 
-  assert (j - si < di₁) as H.
+  assert (j - si < di₂) as H.
    apply Nat.add_lt_mono_r with (p := si).
    unfold lt in Hij; rewrite <- Heqsi in Hij.
    rewrite <- Nat.add_sub_swap; auto.
@@ -483,8 +483,8 @@ destruct j as [j| ].
 
      apply Nat.nle_gt; intros Hcont.
      rename H into Hbt.
-     destruct (lt_dec (si + di₁) (sj + di₇)) as [H₅| H₅].
-      pose proof (Hs₄ (sj + di₇ - (ssi + di₁))) as H.
+     destruct (lt_dec (si + di₂) (sj + di₇)) as [H₅| H₅].
+      pose proof (Hs₄ (sj + di₇ - (ssi + di₂))) as H.
       unfold lt in H₅; rewrite <- Nat.add_succ_l, <- Heqssi in H₅.
       rewrite Nat.add_sub_assoc in H; auto.
       rewrite Nat.add_comm, Nat.add_sub in H.
@@ -497,7 +497,7 @@ destruct j as [j| ].
     symmetry in H.
     apply negb_true_iff in H.
     rename H into Hbt.
-    assert (j - si < di₂) as H.
+    assert (j - si < di₃) as H.
      apply Nat.add_lt_mono_r with (p := si).
      rewrite <- Nat.add_sub_swap; auto.
      rewrite Nat.add_sub.
