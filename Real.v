@@ -928,16 +928,18 @@ destruct s₁ as [di₁| ].
     apply Hn₃; assumption.
 
     apply Nat.nlt_ge in H₁.
-    apply negb_false_iff.
-    rewrite Hs₂, <- Hs₁.
-    unfold rm_add_i.
-    rewrite <- Nat.add_succ_l; remember (S si) as ssi; simpl.
-    rewrite xorb_false_r.
+    pose proof (Hs₁ di₂) as H.
+    unfold rm_add_i in H.
+    rewrite <- Nat.add_succ_l in H.
+    remember (S si) as ssi; simpl in H.
+    rewrite xorb_false_r in H.
     remember (fst_same a 0 (ssi + di₂)) as s₄ eqn:Hs₄ .
     symmetry in Hs₄.
     apply fst_same_iff in Hs₄; simpl in Hs₄.
     destruct s₄ as [di₄| ].
-     destruct Hs₄ as (Hn₄, Hs₄); rewrite Hs₄, xorb_false_r.
+     destruct Hs₄ as (Hn₄, Hs₄); rewrite Hs₄, xorb_false_r in H.
+     rewrite Hs₂ in H.
+     destruct b .[ si + di₂]; discriminate H.
 bbb.
 *)
 
