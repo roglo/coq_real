@@ -806,19 +806,25 @@ destruct s₁ as [di₁| ].
 
      apply Nat.nlt_ge in H₁.
      destruct (lt_dec di₃ di₁) as [H₂| H₂].
-bbb.
-    destruct (lt_dec (di₃ - S di₁) di₄) as [H₃| H₃].
-     remember H₃ as H; clear HeqH.
-     apply Hn₄ in H.
-     rewrite Heqssi, Nat.add_succ_l, <- Nat.add_succ_r in H.
-     rewrite <- Nat.add_assoc, Nat.add_comm in H.
-     rewrite Nat.add_sub_assoc in H; auto.
-      rewrite Nat.add_sub_swap in H; auto.
-      rewrite Nat.sub_diag in H; simpl in H.
-      rewrite Nat.add_comm, Hs₃ in H; discriminate H.
+      apply not_false_iff_true.
+      intros Ha.
+      remember Ha as Hb; clear HeqHb.
+      rewrite Hs₂ in Hb.
+      apply negb_false_iff in Hb.
+      rewrite <- Hs₁ in Hb.
+      unfold rm_add_i in Hb.
+      rewrite <- Nat.add_succ_l in Hb.
+      rewrite <- Heqssi in Hb; simpl in Hb.
+      rewrite Ha, xorb_false_r, xorb_false_l in Hb.
+      remember (fst_same a 0 (ssi + di₁)) as s₅ eqn:Hs₅ .
+      symmetry in Hs₅.
+      apply fst_same_iff in Hs₅; simpl in Hs₅.
+      destruct s₅ as [di₅| ].
+       destruct Hs₅ as (Hn₅, Hs₅); rewrite Hs₅ in Hb; discriminate Hb.
 
-      rename H into Ha.
-      apply Nat.nlt_ge; intros H.
+       rewrite Hs₅ in Hs₄; discriminate Hs₄.
+
+      apply Nat.nlt_ge, Nat.le_antisymm in H₂; auto.
 bbb.
 *)
 
