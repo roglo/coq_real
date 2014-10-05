@@ -523,14 +523,13 @@ remember (fst_same (a + 0%rm) b si) as s₁ eqn:Hs₁ .
 symmetry in Hs₁.
 apply fst_same_iff in Hs₁; simpl in Hs₁.
 destruct s₁ as [di₁| ].
- unfold rm_add_i at 3; rewrite <- Heqsi.
- remember (fst_same a b si) as s₂ eqn:Hs₂ .
- symmetry in Hs₂.
- apply fst_same_iff in Hs₂; simpl in Hs₂.
  destruct Hs₁ as (Hn₁, Hs₁).
  rewrite Hs₁.
  unfold rm_add_i; rewrite <- Heqsi; simpl.
  rewrite xorb_false_r.
+ remember (fst_same a b si) as s₂ eqn:Hs₂ .
+ symmetry in Hs₂.
+ apply fst_same_iff in Hs₂; simpl in Hs₂.
  remember (fst_same a 0 si) as s₃ eqn:Hs₃ .
  symmetry in Hs₃.
  apply fst_same_iff in Hs₃; simpl in Hs₃.
