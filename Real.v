@@ -944,11 +944,28 @@ destruct s₁ as [di₁| ].
      clear H.
      apply not_false_iff_true.
      intros Ha.
+     (* contre exemple : le théorème est donc faux *)
+Abort. (*
 bbb.
 *)
 
 Theorem yyy : ∀ a b, (a + 0 + b = a + b)%rm.
 Proof.
+intros a b.
+unfold rm_eq; intros i; simpl.
+unfold rm_add_i.
+remember (S i) as si; simpl.
+do 2 rewrite xorb_false_r.
+unfold rm_add_i at 1.
+unfold rm_add_i at 2.
+rewrite <- Heqsi; simpl.
+unfold rm_add_i at 1.
+rewrite <- Heqsi; simpl.
+rewrite xorb_false_r.
+do 5 rewrite xorb_assoc; f_equal.
+rewrite xorb_comm, xorb_assoc; f_equal.
+bbb.
+
 intros a b.
 unfold rm_eq; intros i; simpl.
 unfold rm_add_i; simpl.
