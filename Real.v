@@ -515,9 +515,14 @@ destruct j as [j| ].
  apply Nat.add_lt_mono_l; assumption.
 Qed.
 
-Theorem xxx : ∀ a b i, rm_add_i (a + 0%rm) b i = rm_add_i a b i.
+Theorem xxx : ∀ a b i dj₂ dj₅,
+  (∀ dj, dj < dj₂ → rm_add_i (a + 0%rm) b (S i + dj) = true)
+  → rm_add_i (a + 0%rm) b (S i + dj₂) = false
+  → (∀ dj, dj < dj₅ → rm_add_i a b (S i + dj) = true)
+  → rm_add_i a b (S i + dj₅) = false
+  → rm_add_i (a + 0%rm) b i = rm_add_i a b i.
 Proof.
-intros a b i.
+intros a b i dj₂ dj₅ Pn₂ Ps₂ Pn₅ Ps₅.
 unfold rm_add_i at 1; remember (S i) as si; simpl.
 remember (fst_same (a + 0%rm) b si) as s₁ eqn:Hs₁ .
 symmetry in Hs₁.
@@ -945,12 +950,27 @@ destruct s₁ as [di₁| ].
      apply not_false_iff_true.
      intros Ha.
      (* contre exemple : le théorème est donc faux *)
-Abort. (*
 bbb.
 *)
 
 Theorem yyy : ∀ a b, (a + 0 + b = a + b)%rm.
 Proof.
+intros a b.
+unfold rm_eq; intros i; simpl.
+unfold rm_add_i.
+remember (S i) as si; simpl.
+do 2 rewrite xorb_false_r.
+remember (fst_same ((a + 0)%rm + b) 0 si) as s₂ eqn:Hs₂ .
+remember (fst_same (a + b) 0 si) as s₅ eqn:Hs₅ .
+symmetry in Hs₂, Hs₅.
+apply fst_same_iff in Hs₂; simpl in Hs₂.
+destruct s₂ as [di₂| ].
+ destruct Hs₂ as (Hn₂, Hs₂); rewrite Hs₂, xorb_false_r.
+ apply fst_same_iff in Hs₅; simpl in Hs₅.
+ destruct s₅ as [di₅| ].
+  destruct Hs₅ as (Hn₅, Hs₅); rewrite Hs₅, xorb_false_r.
+bbb.
+
 intros a b.
 unfold rm_eq; intros i; simpl.
 unfold rm_add_i.
@@ -994,6 +1014,9 @@ destruct s₁ as [di₁| ].
      apply fst_same_iff in Hs₅; simpl in Hs₅.
      destruct s₅ as [di₅| ].
       destruct Hs₅ as (Hn₅, Hs₅); rewrite Hs₅, xorb_false_r.
+      destruct (lt_dec di₁ di₄) as [H₁| H₁].
+       remember H₁ as H; clear HeqH.
+       apply Hn₄ in H.
 bbb.
 
 intros a b.
