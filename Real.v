@@ -964,6 +964,36 @@ rewrite <- Heqsi; simpl.
 rewrite xorb_false_r.
 do 5 rewrite xorb_assoc; f_equal.
 rewrite xorb_comm, xorb_assoc; f_equal.
+remember (fst_same (a + 0%rm) b si) as s₁ eqn:Hs₁ .
+remember (fst_same ((a + 0)%rm + b) 0 si) as s₂ eqn:Hs₂ .
+remember (fst_same a 0 si) as s₃ eqn:Hs₃ .
+remember (fst_same a b si) as s₄ eqn:Hs₄ .
+remember (fst_same (a + b) 0 si) as s₅ eqn:Hs₅ .
+symmetry in Hs₁, Hs₂, Hs₃, Hs₄, Hs₅.
+apply fst_same_iff in Hs₁; simpl in Hs₁.
+destruct s₁ as [di₁| ].
+ destruct Hs₁ as (Hn₁, Hs₁).
+ unfold rm_add_i at 1.
+ rewrite <- Nat.add_succ_l.
+ remember (S si) as ssi; simpl.
+ rewrite xorb_false_r.
+ remember (fst_same a 0 (ssi + di₁)) as s₆ eqn:Hs₆ .
+ symmetry in Hs₆; simpl in Hs₆.
+ apply fst_same_iff in Hs₆; simpl in Hs₆.
+ destruct s₆ as [di₆| ].
+  destruct Hs₆ as (Hn₆, Hs₆); rewrite Hs₆, xorb_false_r.
+  apply fst_same_iff in Hs₂; simpl in Hs₂.
+  destruct s₂ as [di₂| ].
+   destruct Hs₂ as (Hn₂, Hs₂); rewrite Hs₂, xorb_false_r.
+   apply fst_same_iff in Hs₃; simpl in Hs₃.
+   destruct s₃ as [di₃| ].
+    destruct Hs₃ as (Hn₃, Hs₃); rewrite Hs₃, xorb_false_r.
+    apply fst_same_iff in Hs₄; simpl in Hs₄.
+    destruct s₄ as [di₄| ].
+     destruct Hs₄ as (Hn₄, Hs₄).
+     apply fst_same_iff in Hs₅; simpl in Hs₅.
+     destruct s₅ as [di₅| ].
+      destruct Hs₅ as (Hn₅, Hs₅); rewrite Hs₅, xorb_false_r.
 bbb.
 
 intros a b.
