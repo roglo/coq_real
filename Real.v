@@ -428,78 +428,68 @@ Qed.
 Theorem xxx : ∀ a b i, rm_add_i (a + 0%rm) b i = rm_add_i a b i.
 Proof.
 intros a b i.
-unfold rm_add_i; simpl.
-remember (fst_same (a + 0%rm) b (S i)) as s₁ eqn:Hs₁ .
-remember (fst_same a b (S i)) as s₂ eqn:Hs₂ .
+unfold rm_add_i; remember (S i) as si; simpl.
+remember (fst_same (a + 0%rm) b si) as s₁ eqn:Hs₁ .
+remember (fst_same a b si) as s₂ eqn:Hs₂ .
 symmetry in Hs₁, Hs₂.
 apply fst_same_iff in Hs₁.
 apply fst_same_iff in Hs₂.
 simpl in Hs₁, Hs₂.
 destruct s₁ as [di₁| ].
  destruct Hs₁ as (Hn₁, Hs₁).
- rewrite <- Nat.add_succ_r in Hs₁.
- rewrite <- Nat.add_succ_r.
  rewrite Hs₁.
- unfold rm_add_i; simpl.
+ unfold rm_add_i; rewrite <- Heqsi; simpl.
  rewrite xorb_false_r.
- remember (fst_same a 0 (S i)) as s₃ eqn:Hs₃ .
+ remember (fst_same a 0 si) as s₃ eqn:Hs₃ .
  symmetry in Hs₃.
  apply fst_same_iff in Hs₃; simpl in Hs₃.
  destruct s₂ as [di₂| ].
-  rewrite <- Nat.add_succ_r in Hs₂.
-  rewrite <- Nat.add_succ_r.
   destruct Hs₂ as (Hn₂, Hs₂).
   rewrite Hs₂.
   destruct s₃ as [di₃| ].
-   rewrite <- Nat.add_succ_r in Hs₃.
-   rewrite <- Nat.add_succ_r.
    destruct Hs₃ as (Hn₃, Hs₃).
    rewrite Hs₃, xorb_false_r; f_equal.
-   unfold rm_add_i in Hs₁; simpl in Hs₁.
-   rewrite xorb_false_r in Hs₁.
-   remember (fst_same a 0 (S (i + S di₁))) as s₄ eqn:Hs₄ .
+   unfold rm_add_i in Hs₁.
+   rewrite <- Nat.add_succ_l in Hs₁.
+   remember (S si) as ssi.
+   move Heqssi before Heqsi.
+   simpl in Hs₁; rewrite xorb_false_r in Hs₁.
+
+   remember (fst_same a 0 (ssi + di₁)) as s₄ eqn:Hs₄ .
    symmetry in Hs₄.
    apply fst_same_iff in Hs₄; simpl in Hs₄.
    destruct s₄ as [di₄| ].
-    rewrite <- Nat.add_succ_r in Hs₄, Hs₁.
     destruct Hs₄ as (Hn₄, Hs₄).
     rewrite Hs₄, xorb_false_r in Hs₁.
     destruct (lt_dec di₁ di₂) as [H₁| H₁].
      remember H₁ as H; clear HeqH.
      apply Hn₂ in H.
-     rewrite <- Nat.add_succ_r in H.
      rewrite Hs₁ in H.
-     destruct b .[ i + S di₁]; discriminate H.
+     destruct b .[ si + di₁]; discriminate H.
 
      apply Nat.nlt_ge in H₁.
      destruct (lt_dec di₂ di₁) as [H₂| H₂].
       remember H₂ as H; clear HeqH.
       apply Hn₁ in H.
-      rewrite <- Nat.add_succ_r in H.
-      unfold rm_add_i in H; simpl in H.
-      remember (fst_same a 0 (S (i + S di₂))) as s₅ eqn:Hs₅ .
+      unfold rm_add_i in H.
+      rewrite <- Nat.add_succ_l, <- Heqssi in H.
+      simpl in H.
+      remember (fst_same a 0 (ssi + di₂)) as s₅ eqn:Hs₅ .
       symmetry in Hs₅.
       apply fst_same_iff in Hs₅; simpl in Hs₅.
       destruct s₅ as [di₅| ].
-       rewrite <- Nat.add_succ_r in Hs₅, H.
        destruct Hs₅ as (Hn₅, Hs₅).
        rewrite xorb_false_r, Hs₂, Hs₅, xorb_false_r in H.
-       destruct b .[ i + S di₂]; discriminate H.
+       destruct b .[ si + di₂]; discriminate H.
 
        clear H.
        pose proof (Hs₅ (di₁ - di₂ + di₄)) as H.
-       rewrite Nat.add_succ_r in H.
-       do 3 rewrite <- Nat.add_succ_l in H.
-       remember (S (S i)) as ssi.
        do 2 rewrite Nat.add_comm, Nat.add_assoc in H.
        rewrite Nat.add_assoc in H.
        rewrite Nat.add_sub_assoc in H; auto.
        rewrite Nat.add_sub_swap in H; auto.
        rewrite Nat.sub_diag, Nat.add_0_l in H.
        rewrite Nat.add_comm, Nat.add_assoc in H.
-       subst ssi; simpl in H.
-       rewrite <- Nat.add_succ_r in H.
-       rewrite <- Nat.add_succ_l, <- Nat.add_succ_r in H.
        rewrite Hs₄ in H; discriminate H.
 
       apply Nat.nlt_ge in H₂.
@@ -509,39 +499,40 @@ destruct s₁ as [di₁| ].
     destruct (lt_dec di₂ di₁) as [H₂| H₂].
      remember H₂ as H; clear HeqH.
      apply Hn₁ in H.
-     rewrite <- Nat.add_succ_r in H.
-     unfold rm_add_i in H; simpl in H.
-     remember (fst_same a 0 (S (i + S di₂))) as s₅ eqn:Hs₅ .
+     unfold rm_add_i in H.
+     rewrite <- Nat.add_succ_l, <- Heqssi in H.
+     simpl in H.
+     remember (fst_same a 0 (ssi + di₂)) as s₅ eqn:Hs₅ .
      symmetry in Hs₅.
      apply fst_same_iff in Hs₅; simpl in Hs₅.
      destruct s₅ as [di₅| ].
-      rewrite <- Nat.add_succ_r in Hs₅, H.
       destruct Hs₅ as (Hn₅, Hs₅).
       rewrite xorb_false_r, Hs₂, Hs₅, xorb_false_r in H.
-      destruct b .[ i + S di₂]; discriminate H.
+      destruct b .[ si + di₂]; discriminate H.
 
       clear H.
       rewrite <- Hs₁, <- Hs₂.
       destruct (lt_dec di₂ di₃) as [H₃| H₃].
        pose proof (Hs₅ (di₃ - S di₂)) as H.
+       rewrite Heqssi, Nat.add_succ_l, <- Nat.add_succ_r in H.
        do 2 rewrite Nat.add_comm, Nat.add_assoc in H.
-       rewrite <- Nat.add_succ_l in H.
        rewrite Nat.add_sub_assoc in H; auto.
        rewrite Nat.add_sub_swap in H; auto.
        rewrite Nat.sub_diag, Nat.add_0_l in H; simpl in H.
-       rewrite Nat.add_comm, <- Nat.add_succ_r, Hs₃ in H.
+       rewrite Nat.add_comm, Hs₃ in H.
        discriminate H.
 
        apply Nat.nlt_ge in H₃.
-       destruct (bool_dec a .[ i + S di₂] false) as [H₄| H₄].
+       destruct (bool_dec a .[ si + di₂] false) as [H₄| H₄].
         rewrite H₄.
         apply negb_false_iff.
         pose proof (Hs₅ (di₁ - S di₂)) as H.
+        rewrite Heqssi, Nat.add_succ_l, <- Nat.add_succ_r in H.
         do 2 rewrite Nat.add_comm, Nat.add_assoc in H.
         rewrite Nat.add_sub_assoc in H; auto.
         rewrite Nat.add_sub_swap in H; auto.
         rewrite Nat.sub_diag, Nat.add_0_l in H; simpl in H.
-        rewrite Nat.add_comm, <- Nat.add_succ_r in H.
+        rewrite Nat.add_comm.
         assumption.
 
         apply not_false_iff_true in H₄.
@@ -551,150 +542,143 @@ destruct s₁ as [di₁| ].
         destruct (lt_dec di₃ di₂) as [H₅| H₅].
          remember H₅ as H; clear HeqH.
          apply Hn₂ in H.
-         rewrite <- Nat.add_succ_r in H.
          rewrite Hs₃ in H; symmetry in H.
          apply negb_false_iff in H.
          rename H into Hb.
          remember H₂ as H; clear HeqH.
          eapply Nat.lt_trans in H; [ idtac | eauto  ].
          apply Hn₁ in H.
-         rewrite <- Nat.add_succ_r in H.
          rewrite Hb in H; simpl in H.
-         unfold rm_add_i in H; simpl in H.
+         unfold rm_add_i in H.
+         rewrite <- Nat.add_succ_l, <- Heqssi in H.
+         simpl in H.
          rewrite Hs₃, xorb_false_r, xorb_false_l in H.
-         remember (fst_same a 0 (S (i + S di₃))) as s₆ eqn:Hs₆ .
+         remember (fst_same a 0 (ssi + di₃)) as s₆ eqn:Hs₆ .
          symmetry in Hs₆.
          apply fst_same_iff in Hs₆; simpl in Hs₆.
          destruct s₆ as [di₆| ]; [ idtac | discriminate H ].
-         rewrite <- Nat.add_succ_r in Hs₆, H.
          destruct Hs₆ as (Hn₆, Hs₆).
          clear H.
-         remember (first_false_before a (i + S di₂)) as j eqn:Hj .
+         remember (first_false_before a (si + di₂)) as j eqn:Hj .
          symmetry in Hj.
          destruct j as [j| ].
           apply first_false_before_some_iff in Hj.
           destruct Hj as (Hji, (Hjf, Hk)).
-          assert (j - S i < di₁) as H.
+          assert (j - si < di₁) as H.
            eapply Nat.le_lt_trans; [ idtac | eauto  ].
-           rewrite Nat.add_succ_r in Hji.
+           rewrite Heqsi in Hji; simpl in Hji.
            apply Nat.succ_le_mono in Hji.
            apply Nat.le_sub_le_add_l.
+           rewrite Heqsi.
            apply Nat.le_le_succ_r; assumption.
 
            apply Hn₁ in H.
            rewrite Nat.add_sub_assoc in H.
             Focus 2.
             apply Nat.nlt_ge; intros Hcont.
+            rewrite Heqsi in Hcont.
             apply Nat.succ_le_mono in Hcont.
             rewrite Hk in Hs₃; [ discriminate Hs₃ | idtac | idtac ].
+             rewrite Heqsi.
              eapply Nat.le_lt_trans; [ eauto  | idtac ].
+             rewrite Nat.add_succ_l, <- Nat.add_succ_r.
              apply Nat.lt_sub_lt_add_l.
              rewrite Nat.sub_diag.
              apply Nat.lt_0_succ.
 
-             apply Nat.add_lt_mono_l.
-             apply Nat.succ_lt_mono in H₅; assumption.
+             apply Nat.add_lt_mono_l; assumption.
 
-            rewrite <- Nat.sub_succ_l in H.
-             rewrite <- Nat.add_succ_l, Nat.add_comm, Nat.add_sub in H.
-             unfold rm_add_i in H; simpl in H.
-             rewrite Hjf, xorb_false_r, xorb_false_l in H.
-             remember (fst_same a 0 (S j)) as s₇ eqn:Hs₇ .
-             symmetry in Hs₇.
-             apply fst_same_iff in Hs₇; simpl in Hs₇.
-             destruct s₇ as [di₇| ].
-              destruct Hs₇ as (Hn₇, Hs₇).
-              rewrite Hs₇ in H.
-              symmetry in H.
-              apply negb_false_iff in H.
-              rewrite <- Nat.add_succ_r in Hs₇.
-              destruct (lt_dec (j + S di₇) (i + S di₂)) as [H₁| H₁].
-               rewrite Hk in Hs₇; auto; [ discriminate Hs₇ | idtac ].
-               apply Nat.lt_sub_lt_add_l.
-               rewrite Nat.sub_diag.
-               apply Nat.lt_0_succ.
-
-               apply Nat.nlt_ge in H₁.
-               rename H into Hbt.
-               destruct (lt_dec (i + S di₂) (j + S di₇)) as [H₆| H₆].
-                pose proof (Hs₅ (j + di₇ - (i + S di₂))) as H.
-                rewrite Nat.add_succ_r in H₆.
-                rewrite Nat.add_succ_r in H₆.
-                apply Nat.succ_le_mono in H₆.
-                rewrite <- Nat.add_succ_r in H₆.
-                rewrite Nat.add_sub_assoc in H; auto.
-                rewrite Nat.add_comm, Nat.add_sub in H.
-                rewrite <- Nat.add_succ_r, Hs₇ in H; discriminate H.
-
-                apply Nat.nlt_ge in H₆.
-                apply Nat.le_antisymm in H₁; auto.
-                rewrite H₁, H₄ in Hs₇; discriminate Hs₇.
-
-              symmetry in H.
-              apply negb_true_iff in H.
-              rename H into H₆.
-              assert (j - S i < di₂) as H.
-               revert Hji H₅; clear; intros; omega.
-
-               apply Hn₂ in H.
-               rewrite <- Nat.add_succ_l in H.
-               rewrite Nat.add_sub_assoc in H.
-                rewrite Nat.add_comm, Nat.add_sub in H.
-                rewrite Hjf, H₆ in H; discriminate H.
-
-                clear H.
-                apply Nat.nlt_ge; intros Hcont.
-                assert (j < i + S di₃) as H.
-                 apply Nat.succ_le_mono in Hcont.
-                 eapply Nat.le_lt_trans; eauto .
-                 apply Nat.lt_sub_lt_add_l.
-                 rewrite Nat.sub_diag; apply Nat.lt_0_succ.
-
-                 apply Hk in H; [ rewrite Hs₃ in H; discriminate H | idtac ].
-                 apply Nat.add_lt_mono_l.
-                 apply Nat.succ_lt_mono in H₅; auto.
-
-             destruct j.
-              rewrite Hk in Hs₃; [ discriminate Hs₃ | idtac | idtac ].
-               rewrite Nat.add_succ_r.
-               apply Nat.lt_0_succ.
-
-               apply Nat.add_lt_mono_l.
-               apply Nat.succ_lt_mono in H₅; auto.
-
-              rewrite Nat.add_succ_r, <- Nat.add_succ_l.
-              apply Nat.le_sub_le_add_l.
+            rewrite Nat.add_comm, Nat.add_sub in H.
+            unfold rm_add_i in H.
+            remember (S j) as sj; simpl in H.
+            rewrite Hjf, xorb_false_r, xorb_false_l in H.
+            remember (fst_same a 0 sj) as s₇ eqn:Hs₇ .
+            symmetry in Hs₇.
+            apply fst_same_iff in Hs₇; simpl in Hs₇.
+            destruct s₇ as [di₇| ].
+             destruct Hs₇ as (Hn₇, Hs₇).
+             rewrite Hs₇ in H.
+             symmetry in H.
+             apply negb_false_iff in H.
+             destruct (lt_dec (sj + di₇) (si + di₂)) as [H₁| H₁].
+              rewrite Hk in Hs₇; auto; [ discriminate Hs₇ | idtac ].
+              rewrite Heqsj, Nat.add_succ_l, <- Nat.add_succ_r.
+              apply Nat.lt_sub_lt_add_l.
               rewrite Nat.sub_diag.
-              apply Nat.le_0_l.
+              apply Nat.lt_0_succ.
+
+              apply Nat.nlt_ge in H₁.
+              rename H into Hbt.
+              destruct (lt_dec (si + di₂) (sj + di₇)) as [H₆| H₆].
+               pose proof (Hs₅ (j + di₇ - (si + di₂))) as H.
+               rewrite Heqsj in H₆.
+               simpl in H₆.
+               apply Nat.succ_le_mono in H₆.
+               rewrite Nat.add_sub_assoc in H; auto.
+               rewrite Heqssi in H.
+               do 2 rewrite Nat.add_succ_l in H.
+               rewrite <- Nat.add_succ_r in H.
+               rewrite Nat.add_comm, Nat.add_sub in H.
+               rewrite <- Nat.add_succ_l, <- Heqsj in H.
+               rewrite Hs₇ in H; discriminate H.
+
+               apply Nat.nlt_ge in H₆.
+               apply Nat.le_antisymm in H₁; auto.
+               rewrite H₁, H₄ in Hs₇; discriminate Hs₇.
+
+             symmetry in H.
+             apply negb_true_iff in H.
+             rename H into H₆.
+             assert (j - si < di₂) as H.
+              revert Hji H₅; clear; intros.
+              omega.
+
+              apply Hn₂ in H.
+              rewrite Nat.add_sub_assoc in H.
+               rewrite Nat.add_comm, Nat.add_sub in H.
+               rewrite Hjf, H₆ in H; discriminate H.
+
+               clear H.
+               apply Nat.nlt_ge; intros Hcont.
+               assert (j < si + di₃) as H.
+                rewrite Heqsi in Hcont.
+                apply Nat.succ_le_mono in Hcont.
+                eapply Nat.le_lt_trans; eauto .
+                rewrite Heqsi; simpl.
+                rewrite <- Nat.add_succ_r.
+                apply Nat.lt_sub_lt_add_l.
+                rewrite Nat.sub_diag; apply Nat.lt_0_succ.
+
+                apply Hk in H; [ rewrite Hs₃ in H; discriminate H | idtac ].
+                apply Nat.add_lt_mono_l; assumption.
 
           rewrite first_false_before_none_iff in Hj.
           rewrite Hj in Hs₃; [ discriminate Hs₃ | idtac ].
-          apply Nat.add_lt_mono_l.
-          apply Nat.succ_lt_mono in H₅; assumption.
+          apply Nat.add_lt_mono_l; assumption.
 
          apply Nat.nlt_ge in H₅.
-         apply Nat.le_antisymm in H₅; [ idtac | auto ].
-         subst di₃.
+         apply Nat.le_antisymm in H₅; [ subst di₃ | auto ].
          rewrite H₄ in Hs₃; discriminate Hs₃.
 
      apply Nat.nlt_ge in H₂.
      destruct (lt_dec di₁ di₂) as [H₃| H₃].
       pose proof (Hs₄ (di₂ - S di₁)) as H.
       rewrite Nat.add_sub_assoc in H; auto.
+      rewrite Heqssi in H; simpl in H.
       rewrite Nat.add_shuffle0, Nat.add_sub in H.
-      rewrite <- Nat.add_succ_r in H.
       rewrite H in Hs₂; symmetry in Hs₂.
       rename H into Ha; move Ha after Hs₂; rewrite Hs₂.
       symmetry in Hs₁; apply negb_sym in Hs₁.
-      remember b .[ i + S di₁] as bi eqn:Hbi .
+      remember b .[ si + di₁] as bi eqn:Hbi .
       destruct bi; [ reflexivity | idtac ].
       symmetry in Hbi; simpl in Hs₁.
       exfalso.
       destruct (lt_dec di₁ di₃) as [H₁| H₁].
        pose proof (Hs₄ (di₃ - S di₁)) as H.
        rewrite Nat.add_sub_assoc in H; auto.
+       rewrite Heqssi in H; simpl in H.
        rewrite Nat.add_shuffle0, Nat.add_sub in H.
-       rewrite <- Nat.add_succ_r, Hs₃ in H; discriminate H.
+       rewrite Hs₃ in H; discriminate H.
 
        apply Nat.nlt_ge in H₁.
        destruct (eq_nat_dec di₁ di₃) as [H₄| H₄].
@@ -706,7 +690,7 @@ destruct s₁ as [di₁| ].
          apply Nat.le_antisymm in H; auto; contradiction.
 
          clear H₄; rename H into H₄.
-         remember (first_false_before a (i + S di₁)) as j eqn:Hj .
+         remember (first_false_before a (si + di₁)) as j eqn:Hj .
          symmetry in Hj.
          destruct j as [j| ].
           apply first_false_before_some_iff in Hj.
@@ -715,26 +699,27 @@ destruct s₁ as [di₁| ].
            apply Nat.nle_gt; intros H.
            rewrite Hk in Hs₃; [ discriminate Hs₃ | idtac | idtac ].
             eapply Nat.le_lt_trans; eauto .
+            rewrite Heqsi, Nat.add_succ_l, <- Nat.add_succ_r.
             apply Nat.lt_sub_lt_add_l.
             rewrite Nat.sub_diag.
             apply Nat.lt_0_succ.
 
-            apply Nat.add_lt_mono_l.
-            apply Nat.succ_lt_mono in H₄; assumption.
+            apply Nat.add_lt_mono_l; assumption.
 
-           assert (j - S i < di₁) as H.
-            apply Nat.add_lt_mono_r with (p := S i).
+           assert (j - si < di₁) as H.
+            apply Nat.add_lt_mono_r with (p := si).
+            unfold lt in Hij; rewrite <- Heqsi in Hij.
             rewrite <- Nat.add_sub_swap; auto.
-            rewrite Nat.add_succ_r, <- Nat.add_succ_l, Nat.add_comm in Hji.
-            rewrite Nat.add_sub; assumption.
+            rewrite Nat.add_sub, Nat.add_comm; assumption.
 
             apply Hn₁ in H.
-            rewrite <- Nat.add_succ_l in H.
+            unfold lt in Hij; rewrite <- Heqsi in Hij.
             rewrite Nat.add_sub_assoc in H; auto.
             rewrite Nat.add_comm, Nat.add_sub in H.
-            unfold rm_add_i in H; simpl in H.
+            unfold rm_add_i in H.
+            remember (S j) as sj; simpl in H.
             rewrite Hjf, xorb_false_r, xorb_false_l in H.
-            remember (fst_same a 0 (S j)) as s₇ eqn:Hs₇ .
+            remember (fst_same a 0 sj) as s₇ eqn:Hs₇ .
             symmetry in Hs₇.
             apply fst_same_iff in Hs₇; simpl in Hs₇.
             destruct s₇ as [di₇| ].
@@ -742,17 +727,17 @@ destruct s₁ as [di₁| ].
              rewrite Hs₇ in H.
              symmetry in H.
              apply negb_false_iff in H.
-             rewrite <- Nat.add_succ_r in Hs₇.
              rewrite Hk in Hs₇; [ discriminate Hs₇ | idtac | idtac ].
+              rewrite Heqsj, Nat.add_succ_l, <- Nat.add_succ_r.
               apply Nat.lt_sub_lt_add_l.
               rewrite Nat.sub_diag.
               apply Nat.lt_0_succ.
 
               apply Nat.nle_gt; intros Hcont.
               rename H into Hbt.
-              destruct (lt_dec (i + S di₁) (j + S di₇)) as [H₅| H₅].
-               pose proof (Hs₄ (j + S di₇ - S (i + S di₁))) as H.
-               rewrite <- Nat.add_succ_l in H.
+              destruct (lt_dec (si + di₁) (sj + di₇)) as [H₅| H₅].
+               pose proof (Hs₄ (sj + di₇ - (ssi + di₁))) as H.
+               unfold lt in H₅; rewrite <- Nat.add_succ_l, <- Heqssi in H₅.
                rewrite Nat.add_sub_assoc in H; auto.
                rewrite Nat.add_comm, Nat.add_sub in H.
                rewrite Hs₇ in H; discriminate H.
@@ -764,25 +749,22 @@ destruct s₁ as [di₁| ].
              symmetry in H.
              apply negb_true_iff in H.
              rename H into Hbt.
-             assert (j - S i < di₂) as H.
-              apply Nat.add_lt_mono_r with (p := S i).
+             assert (j - si < di₂) as H.
+              apply Nat.add_lt_mono_r with (p := si).
               rewrite <- Nat.add_sub_swap; auto.
               rewrite Nat.add_sub.
-              rewrite Nat.add_comm, Nat.add_succ_l, <- Nat.add_succ_r.
+              rewrite Nat.add_comm.
               eapply Nat.lt_trans; [ eauto  | idtac ].
-              apply Nat.add_lt_mono_l.
-              apply Nat.succ_lt_mono in H₃; assumption.
+              apply Nat.add_lt_mono_l; assumption.
 
               apply Hn₂ in H.
-              rewrite <- Nat.add_succ_l in H.
               rewrite Nat.add_sub_assoc in H; auto.
               rewrite Nat.add_comm, Nat.add_sub in H.
               rewrite Hjf, Hbt in H; discriminate H.
 
           rewrite first_false_before_none_iff in Hj.
           rewrite Hj in Hs₃; [ discriminate Hs₃ | idtac ].
-          apply Nat.add_lt_mono_l.
-          apply Nat.succ_lt_mono in H₄; assumption.
+          apply Nat.add_lt_mono_l; assumption.
 
       apply Nat.nlt_ge in H₃.
       apply Nat.le_antisymm in H₃; auto.
@@ -982,8 +964,8 @@ destruct s₁ as [di₁| ].
     rewrite xorb_comm, xorb_assoc; f_equal.
     symmetry in Hs₂, Hs₄.
     unfold rm_add_i in Hs₁, Hs₂; simpl in Hs₁, Hs₂.
-    remember (fst_same a b (S (S (i + di₂)))) as s₅ eqn:Hs₅ .
-    remember (fst_same b c (S (S (i + di₁)))) as s₆ eqn:Hs₆ .
+    remember (fst_same a b (S (si + di₂)))) as s₅ eqn:Hs₅ .
+    remember (fst_same b c (S (si + di₁)))) as s₆ eqn:Hs₆ .
     symmetry in Hs₅, Hs₆.
     apply fst_same_iff in Hs₅.
     apply fst_same_iff in Hs₆.
@@ -1015,7 +997,7 @@ bbb.
        remember H₁ as H; clear HeqH.
        apply Hs₂n in H.
        unfold rm_add_i in H; simpl in H.
-       remember (fst_same a b (S (S (i + di₁)))) as s₇ eqn:Hs₇ .
+       remember (fst_same a b (S (si + di₁)))) as s₇ eqn:Hs₇ .
        symmetry in Hs₇.
        apply fst_same_iff in Hs₇.
        destruct s₇ as [di₇| ].
