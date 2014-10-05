@@ -778,6 +778,16 @@ destruct s₁ as [di₁| ].
               rewrite Nat.add_sub_assoc in H; auto.
               rewrite Nat.add_comm, Nat.add_sub in H.
               rewrite Hjf, Hbt in H; discriminate H.
+
+          rewrite first_false_before_none_iff in Hj.
+          rewrite Hj in Hs₃; [ discriminate Hs₃ | idtac ].
+          apply Nat.add_lt_mono_l.
+          apply Nat.succ_lt_mono in H₄; assumption.
+
+      apply Nat.nlt_ge in H₃.
+      apply Nat.le_antisymm in H₃; auto.
+
+   rewrite xorb_true_r.
 bbb.
 *)
 
