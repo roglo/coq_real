@@ -574,20 +574,6 @@ destruct s₁ as [di₁| ].
 
            apply Hn₁ in H.
            rewrite Nat.add_sub_assoc in H.
-            Focus 2.
-            apply Nat.nlt_ge; intros Hcont.
-            rewrite Heqsi in Hcont.
-            apply Nat.succ_le_mono in Hcont.
-            rewrite Hk in Hs₃; [ discriminate Hs₃ | idtac | idtac ].
-             rewrite Heqsi.
-             eapply Nat.le_lt_trans; [ eauto  | idtac ].
-             rewrite Nat.add_succ_l, <- Nat.add_succ_r.
-             apply Nat.lt_sub_lt_add_l.
-             rewrite Nat.sub_diag.
-             apply Nat.lt_0_succ.
-
-             apply Nat.add_lt_mono_l; assumption.
-
             rewrite Nat.add_comm, Nat.add_sub in H.
             unfold rm_add_i in H.
             remember (S j) as sj; simpl in H.
@@ -651,6 +637,19 @@ destruct s₁ as [di₁| ].
 
                 apply Hk in H; [ rewrite Hs₃ in H; discriminate H | idtac ].
                 apply Nat.add_lt_mono_l; assumption.
+
+            apply Nat.nlt_ge; intros Hcont.
+            rewrite Heqsi in Hcont.
+            apply Nat.succ_le_mono in Hcont.
+            rewrite Hk in Hs₃; [ discriminate Hs₃ | idtac | idtac ].
+             rewrite Heqsi.
+             eapply Nat.le_lt_trans; [ eauto  | idtac ].
+             rewrite Nat.add_succ_l, <- Nat.add_succ_r.
+             apply Nat.lt_sub_lt_add_l.
+             rewrite Nat.sub_diag.
+             apply Nat.lt_0_succ.
+
+             apply Nat.add_lt_mono_l; assumption.
 
           rewrite first_false_before_none_iff in Hj.
           rewrite Hj in Hs₃; [ discriminate Hs₃ | idtac ].
@@ -879,6 +878,11 @@ destruct s₁ as [di₁| ].
        destruct s₅ as [di₅| ].
         destruct Hs₅ as (Hn₅, Hs₅); rewrite Hs₅ in H.
         rewrite xorb_false_r in H.
+        apply not_true_iff_false; intros Ha.
+        rename H into Hab.
+        remember (first_false_before a (si + di₁)) as j eqn:Hj .
+        symmetry in Hj.
+        destruct j as [j| ].
 bbb.
 *)
 
