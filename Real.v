@@ -1233,6 +1233,7 @@ destruct s₂ as [di₂| ].
  apply fst_same_iff in Hs₅; simpl in Hs₅.
  destruct s₅ as [di₅| ].
   destruct Hs₅ as (Hn₅, Hs₅); rewrite Hs₅, xorb_false_r.
+  subst si; eapply rm_add_add_0_l; eauto .
 bbb.
 
 intros a b.
