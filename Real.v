@@ -1005,28 +1005,6 @@ destruct s₁ as [di₁| ].
         rewrite Ps₆ in Hs₂.
         destruct b .[ ssi + di₂]; discriminate Hs₂.
 
-bbb.
-      assert (dj₅ = di₂) as H.
-       destruct (lt_dec dj₅ di₂) as [H₂| H₂].
-        unfold rm_add_i in Ps₅.
-        rewrite <- Nat.add_succ_l, <- Heqssi in Ps₅.
-        remember (fst_same a b (ssi + S dj₅)) as s₆ eqn:Ps₆ .
-        symmetry in Ps₆.
-        apply fst_same_iff in Ps₆; simpl in Ps₆.
-        destruct s₆ as [di₆| ].
-         destruct Ps₆ as (Pn₆, Ps₆).
-         assert (S (S dj₅ + di₆) = di₂) as H.
-          destruct (lt_dec (S (S dj₅ + di₆)) di₂) as [H₃| H₃].
-           apply Hn₂ in H₃.
-           rewrite Nat.add_succ_r, <- Nat.add_succ_l, <- Heqssi in H₃.
-           rewrite Nat.add_assoc in H₃.
-           rewrite Ps₆ in H₃.
-           destruct b .[ ssi + S dj₅ + di₆]; discriminate H₃.
-
-           apply Nat.nlt_ge in H₃.
-           destruct (lt_dec di₂ (S (S dj₅ + di₆))) as [H₄| H₄].
-
-bbb.
       assert (S dj₅ = di₂) as H.
        destruct (lt_dec (S dj₅) di₂) as [H₂| H₂].
         unfold rm_add_i in Ps₅.
@@ -1076,7 +1054,28 @@ bbb.
 
         apply Nat.nlt_ge in H₂.
         destruct (lt_dec di₂ (S dj₅)) as [H₃| H₃].
-
+         unfold rm_add_i in Ps₅.
+         rewrite <- Nat.add_succ_l, <- Heqssi in Ps₅.
+         remember (fst_same a b (ssi + S dj₅)) as s₆ eqn:Ps₆ .
+         symmetry in Ps₆.
+         apply fst_same_iff in Ps₆; simpl in Ps₆.
+         destruct s₆ as [dj₆| ].
+          destruct Ps₆ as (Pn₆, Ps₆).
+          pose proof (Hs₁ (S (S dj₅ + dj₆))) as H.
+          rewrite Nat.add_succ_r, <- Nat.add_succ_l, <- Heqssi in H.
+          rewrite Nat.add_assoc in H.
+          unfold rm_add_i in H.
+          rewrite <- Nat.add_succ_l in H.
+          rewrite <- Nat.add_succ_l in H.
+          remember (S ssi) as sssi; simpl in H.
+          rewrite xorb_false_r in H.
+          remember (fst_same a 0 (sssi + S dj₅ + dj₆)) as s₇ eqn:Ps₇ .
+          symmetry in Ps₇.
+          apply fst_same_iff in Ps₇; simpl in Ps₇.
+          destruct s₇ as [dj₇| ].
+           destruct Ps₇ as (Pn₇, Ps₇); rewrite Ps₇, xorb_false_r in H.
+           rewrite Ps₆ in H.
+           destruct b .[ ssi + S dj₅ + dj₆]; destruct H.
 bbb.
 *)
 
