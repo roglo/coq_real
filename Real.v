@@ -1161,6 +1161,7 @@ destruct s₁ as [di₁| ].
         destruct b .[ si + di₂]; discriminate Ps₅.
 
    symmetry; simpl.
+bbb.
    destruct di₂.
     pose proof (Hs₁ 0) as H.
     rewrite Nat.add_0_r in H.
@@ -1218,6 +1219,49 @@ destruct s₁ as [di₁| ].
         rewrite xorb_true_r in H.
         apply negb_sym in H.
         rewrite negb_involutive in H.
+        rename H into Hba.
+        destruct Ps₆ as (Pn₆, Ps₆).
+        destruct dj₆.
+         clear Hab.
+         unfold rm_add_i in Ps₂.
+         rewrite <- Nat.add_succ_l, <- Heqssi in Ps₂; simpl in Ps₂.
+         remember (fst_same (a + 0%rm) b (ssi + dj₂)) as s₈ eqn:Ps₈ .
+         symmetry in Ps₈.
+         apply fst_same_iff in Ps₈; simpl in Ps₈.
+         destruct s₈ as [dj₈| ].
+          destruct Ps₈ as (Pn₈, Ps₈).
+          unfold rm_add_i in Ps₈.
+          do 2 rewrite <- Nat.add_succ_l in Ps₈.
+          remember (S ssi) as sssi.
+          simpl in Ps₈.
+          rewrite xorb_false_r in Ps₈.
+          remember (fst_same a 0 (sssi + dj₂ + dj₈)) as s₉ eqn:Ps₉ .
+          symmetry in Ps₉.
+          apply fst_same_iff in Ps₉; simpl in Ps₉.
+          destruct s₉ as [dj₉| ].
+           destruct Ps₉ as (Pn₉, Ps₉); rewrite Ps₉, xorb_false_r in Ps₈.
+           rewrite Heqsssi in Ps₉.
+           rewrite Nat.add_succ_l, <- Nat.add_succ_r in Ps₉.
+           do 2 rewrite <- Nat.add_assoc in Ps₉.
+           rewrite Hs₄ in Ps₉.
+           discriminate Ps₉.
+
+           rewrite xorb_true_r in Ps₈.
+           pose proof (Hs₁ (S dj₂ + dj₈)) as H.
+           simpl in H.
+           rewrite Nat.add_succ_r, <- Nat.add_succ_l, <- Heqssi in H.
+           rewrite Nat.add_assoc in H.
+           unfold rm_add_i in H.
+           do 2 rewrite <- Nat.add_succ_l in H.
+           rewrite <- Heqsssi in H.
+           simpl in H.
+           rewrite xorb_false_r in H.
+           remember (fst_same a 0 (sssi + dj₂ + dj₈)) as s₁₀ eqn:Ps₁₀ .
+           symmetry in Ps₁₀.
+           apply fst_same_iff in Ps₁₀.
+           simpl in Ps₁₀.
+           destruct s₁₀ as [dj₁₀| ].
+            destruct Ps₁₀ as (Pn₁₀, Ps₁₀); rewrite Ps₁₀, xorb_false_r in H.
 bbb.
 *)
 
