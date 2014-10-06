@@ -1161,6 +1161,63 @@ destruct s₁ as [di₁| ].
         destruct b .[ si + di₂]; discriminate Ps₅.
 
    symmetry; simpl.
+   destruct di₂.
+    pose proof (Hs₁ 0) as H.
+    rewrite Nat.add_0_r in H.
+    unfold rm_add_i in H.
+    remember (S si) as ssi; simpl in H.
+    rewrite xorb_false_r in H.
+    remember (fst_same a 0 ssi) as s₄ eqn:Hs₄ .
+    symmetry in Hs₄.
+    apply fst_same_iff in Hs₄; simpl in Hs₄.
+    destruct s₄ as [di₄| ].
+     destruct Hs₄ as (Hn₄, Hs₄); rewrite Hs₄, xorb_false_r in H.
+     rewrite Nat.add_0_r in Hs₂.
+     rewrite Hs₂ in H.
+     destruct b .[ si]; discriminate H.
+
+     clear H.
+     destruct dj₅.
+      rewrite Nat.add_0_r in Ps₅.
+      unfold rm_add_i in Ps₅.
+      rewrite <- Heqssi in Ps₅.
+      remember (fst_same a b ssi) as s₆ eqn:Ps₆ .
+      symmetry in Ps₆.
+      apply fst_same_iff in Ps₆; simpl in Ps₆.
+      destruct s₆ as [dj₆| ].
+       rewrite Nat.add_0_r in Hs₂.
+       rewrite Hs₂, Hs₄, xorb_true_r in Ps₅.
+       destruct b .[ si]; discriminate Ps₅.
+
+       rewrite Nat.add_0_r in Hs₂.
+       rewrite Hs₂ in Ps₅.
+       destruct b .[ si]; discriminate Ps₅.
+
+      pose proof (Pn₅ dj₅ (Nat.lt_succ_diag_r dj₅)) as H.
+      unfold rm_add_i in H.
+      rewrite <- Nat.add_succ_l, <- Heqssi in H.
+      remember (fst_same a b (ssi + dj₅)) as s₆ eqn:Ps₆ .
+      symmetry in Ps₆.
+      apply fst_same_iff in Ps₆; simpl in Ps₆.
+      destruct s₆ as [dj₆| ].
+       rename H into Hab.
+       pose proof (Hs₁ dj₅) as H.
+       unfold rm_add_i in H.
+       rewrite <- Nat.add_succ_l, <- Heqssi in H.
+       remember (fst_same a 0 (ssi + dj₅)) as s₇ eqn:Ps₇ .
+       simpl in H.
+       rewrite xorb_false_r in H.
+       symmetry in Ps₇.
+       apply fst_same_iff in Ps₇; simpl in Ps₇.
+       destruct s₇ as [dj₇| ].
+        destruct Ps₇ as (Pn₇, Ps₇).
+        rewrite Ps₇, xorb_false_r in H.
+        rewrite <- Nat.add_assoc, Hs₄ in Ps₇; discriminate Ps₇.
+
+        rewrite <- Nat.add_assoc, Hs₄, xorb_true_r in Hab.
+        rewrite xorb_true_r in H.
+        apply negb_sym in H.
+        rewrite negb_involutive in H.
 bbb.
 *)
 
