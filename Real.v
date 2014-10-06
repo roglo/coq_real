@@ -515,7 +515,7 @@ destruct j as [j| ].
  apply Nat.add_lt_mono_l; assumption.
 Qed.
 
-Theorem xxx : ∀ a b i dj₂ dj₅,
+Theorem rm_add_add_0_l : ∀ a b i dj₂ dj₅,
   (∀ dj, dj < dj₂ → rm_add_i (a + 0%rm) b (S i + dj) = true)
   → rm_add_i (a + 0%rm) b (S i + dj₂) = false
   → (∀ dj, dj < dj₅ → rm_add_i a b (S i + dj) = true)
@@ -1192,8 +1192,30 @@ destruct s₁ as [di₁| ].
 
      pose proof (Hn₂ 0 (Nat.lt_0_succ di₂)) as H.
      rewrite Hs₃, Hb in H; discriminate H.
-bbb.
-*)
+
+  destruct s₃ as [di₃| ].
+   destruct Hs₃ as (Hn₃, Hs₃); rewrite Hs₃; reflexivity.
+
+   pose proof (Hs₁ 0) as H.
+   rewrite Nat.add_0_r in H.
+   unfold rm_add_i in H.
+   remember (S si) as ssi; simpl in H.
+   rewrite xorb_false_r in H.
+   remember (fst_same a 0 ssi) as s₄ eqn:Hs₄ .
+   symmetry in Hs₄.
+   apply fst_same_iff in Hs₄; simpl in Hs₄.
+   destruct s₄ as [di₄| ].
+    destruct Hs₄ as (Hn₄, Hs₄).
+    rewrite Heqssi, Nat.add_succ_l, <- Nat.add_succ_r in Hs₄.
+    rewrite Hs₃ in Hs₄; discriminate Hs₄.
+
+    rewrite xorb_true_r in H.
+    apply negb_sym in H.
+    rewrite negb_involutive in H.
+    pose proof (Hs₂ 0) as H₁.
+    rewrite Nat.add_0_r, H in H₁.
+    destruct a .[ si]; discriminate H₁.
+Qed.
 
 Theorem yyy : ∀ a b, (a + 0 + b = a + b)%rm.
 Proof.
