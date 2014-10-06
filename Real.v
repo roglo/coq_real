@@ -949,7 +949,61 @@ destruct s₁ as [di₁| ].
      clear H.
      apply not_false_iff_true.
      intros Ha.
-     (* contre exemple : le théorème est donc faux *)
+     destruct dj₅.
+      rewrite Nat.add_0_r in Ps₅.
+      unfold rm_add_i in Ps₅.
+      rewrite <- Heqssi in Ps₅.
+      remember (fst_same a b ssi) as s₆ eqn:Ps₆ .
+      symmetry in Ps₆.
+      apply fst_same_iff in Ps₆; simpl in Ps₆.
+      destruct s₆ as [dj₆| ].
+       destruct Ps₆ as (Pn₆, Ps₆).
+       assert (S dj₆ = di₂) as H.
+        destruct (lt_dec (S dj₆) di₂) as [H₂| H₂].
+         apply Hn₂ in H₂.
+         rewrite Nat.add_succ_r, <- Nat.add_succ_l in H₂.
+         rewrite <- Heqssi in H₂.
+         rewrite Ps₆ in H₂.
+         destruct b .[ ssi + dj₆]; discriminate H₂.
+
+         apply Nat.nlt_ge in H₂.
+         destruct (lt_dec di₂ (S dj₆)) as [H₃| H₃].
+          destruct di₂.
+           rewrite Nat.add_0_r in Hs₄.
+           rewrite Nat.add_0_r in Hs₂.
+           rewrite <- Hs₂, Hs₄ in Ps₅.
+           rewrite xorb_true_r in Ps₅.
+           apply negb_false_iff in Ps₅.
+           destruct a .[ si]; discriminate Ps₅.
+
+           apply Nat.succ_lt_mono in H₃.
+           apply Pn₆ in H₃.
+           rewrite Nat.add_succ_r, <- Nat.add_succ_l in Hs₂.
+           rewrite <- Heqssi, H₃ in Hs₂.
+           destruct b .[ ssi + di₂]; discriminate Hs₂.
+
+          apply Nat.nlt_ge in H₃.
+          apply Nat.le_antisymm; auto.
+
+        rewrite <- H, Nat.add_succ_r, <- Nat.add_succ_l in Ha.
+        rewrite <- Heqssi in Ha.
+        rewrite Ha, xorb_false_r in Ps₅.
+        rewrite <- H in Hn₂; clear H.
+        assert (0 < S dj₆) as H by apply Nat.lt_0_succ.
+        apply Hn₂ in H.
+        rewrite Nat.add_0_r in H.
+        rewrite H in Ps₅.
+        destruct b .[ si]; discriminate Ps₅.
+
+       destruct di₂.
+        rewrite Nat.add_0_r in Hs₂.
+        rewrite <- Hs₂ in Ps₅.
+        destruct a .[ si]; discriminate Ps₅.
+
+        rewrite Nat.add_succ_r, <- Nat.add_succ_l in Hs₂.
+        rewrite <- Heqssi in Hs₂.
+        rewrite Ps₆ in Hs₂.
+        destruct b .[ ssi + di₂]; discriminate Hs₂.
 bbb.
 *)
 
