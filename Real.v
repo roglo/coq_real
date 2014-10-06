@@ -1217,6 +1217,13 @@ destruct s₁ as [di₁| ].
     destruct a .[ si]; discriminate H₁.
 Qed.
 
+Theorem xxx : ∀ a b i,
+  (∀ di, rm_add_i a b (S i + di) = true)
+  → id (∀ di, a.[S i + di] = true).
+Proof.
+intros a b i Hdi di.
+bbb.
+
 Theorem yyy : ∀ a b, (a + 0 + b = a + b)%rm.
 Proof.
 intros a b.
