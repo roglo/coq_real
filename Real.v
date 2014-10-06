@@ -1004,6 +1004,57 @@ destruct s₁ as [di₁| ].
         rewrite <- Heqssi in Hs₂.
         rewrite Ps₆ in Hs₂.
         destruct b .[ ssi + di₂]; discriminate Hs₂.
+
+      assert (S dj₅ = di₂) as H.
+       destruct (lt_dec (S dj₅) di₂) as [H₂| H₂].
+        unfold rm_add_i in Ps₅.
+        rewrite <- Nat.add_succ_l, <- Heqssi in Ps₅.
+        remember (fst_same a b (ssi + S dj₅)) as s₆ eqn:Ps₆ .
+        symmetry in Ps₆.
+        apply fst_same_iff in Ps₆; simpl in Ps₆.
+        destruct s₆ as [di₆| ].
+         destruct Ps₆ as (Pn₆, Ps₆).
+         assert (S (S dj₅ + di₆) = di₂) as H.
+          destruct (lt_dec (S (S dj₅ + di₆)) di₂) as [H₃| H₃].
+           apply Hn₂ in H₃.
+           rewrite Nat.add_succ_r, <- Nat.add_succ_l, <- Heqssi in H₃.
+           rewrite Nat.add_assoc in H₃.
+           rewrite Ps₆ in H₃.
+           destruct b .[ ssi + S dj₅ + di₆]; discriminate H₃.
+
+           apply Nat.nlt_ge in H₃.
+           destruct (lt_dec di₂ (S (S dj₅ + di₆))) as [H₄| H₄].
+            assert (di₂ - S (S dj₅) < di₆) as H by omega.
+            apply Pn₆ in H.
+            rewrite Heqssi in H.
+            rewrite Nat.add_succ_l, <- Nat.add_succ_r in H.
+            rewrite Nat.add_sub_assoc in H; auto.
+            rewrite Nat.add_shuffle0, Nat.add_sub in H.
+            rewrite Hs₂ in H.
+            destruct b .[ si + di₂]; discriminate H.
+
+            apply Nat.nlt_ge in H₄.
+            apply Nat.le_antisymm; auto.
+
+          rewrite <- H in Ha.
+          rewrite Nat.add_succ_r, <- Nat.add_succ_l, <- Heqssi in Ha.
+          rewrite Nat.add_assoc in Ha.
+          rewrite Ha, xorb_false_r in Ps₅.
+          apply Hn₂ in H₂.
+          rewrite H₂ in Ps₅.
+          destruct b .[ si + S dj₅]; discriminate Ps₅.
+
+         pose proof (Ps₆ (di₂ - S (S dj₅))) as H.
+         rewrite Nat.add_sub_assoc in H; auto.
+         rewrite Heqssi in H.
+         rewrite Nat.add_succ_l, <- Nat.add_succ_r in H.
+         rewrite Nat.add_shuffle0, Nat.add_sub in H.
+         rewrite Hs₂ in H.
+         destruct b .[ si + di₂]; discriminate H.
+
+        apply Nat.nlt_ge in H₂.
+        destruct (lt_dec di₂ (S dj₅)) as [H₃| H₃].
+
 bbb.
 *)
 
