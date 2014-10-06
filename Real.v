@@ -1146,6 +1146,21 @@ destruct s₁ as [di₁| ].
 
          apply Nat.nlt_ge in H₃.
          apply Nat.le_antisymm; auto.
+
+       rewrite H in Ps₅.
+       unfold rm_add_i in Ps₅.
+       rewrite <- Nat.add_succ_l, <- Heqssi in Ps₅.
+       remember (fst_same a b (ssi + di₂)) as s₆ eqn:Ps₆ .
+       symmetry in Ps₆.
+       apply fst_same_iff in Ps₆; simpl in Ps₆.
+       destruct s₆ as [dj₆| ].
+        rewrite Hs₄, Hs₂, xorb_true_r in Ps₅.
+        destruct b .[ si + di₂]; discriminate Ps₅.
+
+        rewrite Hs₂, xorb_true_r in Ps₅.
+        destruct b .[ si + di₂]; discriminate Ps₅.
+
+   symmetry; simpl.
 bbb.
 *)
 
