@@ -1161,6 +1161,21 @@ destruct s₁ as [di₁| ].
         destruct b .[ si + di₂]; discriminate Ps₅.
 
    symmetry; simpl.
+   assert (∀ dj, b .[ si + dj] = true) as Hb.
+    intros dj.
+    apply negb_false_iff.
+    rewrite <- Hs₁.
+    unfold rm_add_i.
+    rewrite <- Nat.add_succ_l; remember (S si) as ssi; simpl.
+    rewrite xorb_false_r.
+    remember (fst_same a 0 (ssi + dj)) as s₄ eqn:Hs₄ .
+    symmetry in Hs₄.
+    apply fst_same_iff in Hs₄; simpl in Hs₄.
+    destruct s₄ as [di₄| ]; [ idtac | rewrite Hs₃; reflexivity ].
+    destruct Hs₄ as (Hn₄, Hs₄).
+    rewrite Heqssi, Nat.add_succ_l, <- Nat.add_succ_r in Hs₄.
+    rewrite <- Nat.add_assoc, Hs₃ in Hs₄; discriminate Hs₄.
+
 bbb.
    destruct di₂.
     pose proof (Hs₁ 0) as H.
