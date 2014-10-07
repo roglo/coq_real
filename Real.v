@@ -1382,6 +1382,30 @@ destruct s₁ as [di₁| ].
      destruct Hs₃ as (Hn₃, Hb₃).
      rename H into Ha₃.
      rewrite Ha₃ in Hb₃; symmetry in Hb₃.
+     rewrite Nat.add_succ_r in Hs₂, Ha₂.
+     do 2 rewrite <- Nat.add_succ_l in Hs₂, Ha₂.
+     rewrite <- Heqsssi in Hs₂, Ha₂.
+     destruct (lt_dec di₂ di₃) as [H₁| H₁].
+      apply Hn₃ in H₁.
+      rewrite Hs₂, Ha₂ in H₁; discriminate H₁.
+
+      apply Nat.nlt_ge in H₁.
+      destruct (lt_dec di₃ di₂) as [H₂| H₂].
+       apply Nat.succ_lt_mono in H₂.
+       apply Hn₂ in H₂.
+       rewrite Nat.add_succ_r in H₂.
+       do 2 rewrite <- Nat.add_succ_l in H₂.
+       rewrite <- Heqsssi in H₂.
+       rewrite Ha₃, Hb₃ in H₂; discriminate H₂.
+
+       apply Nat.nlt_ge in H₂.
+       apply Nat.le_antisymm in H₁; auto.
+       subst di₃; clear H₂.
+       rewrite Ha₂ in Ha₃; discriminate Ha₃.
+
+     discriminate H.
+
+   clear H.
 bbb.
 
 Theorem yyy : ∀ a b, (a + 0 + b = a + b)%rm.
