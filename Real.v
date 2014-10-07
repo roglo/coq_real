@@ -1336,36 +1336,58 @@ induction di.
  pose proof (Hdi (S di)) as H.
  rewrite Nat.add_succ_r, <- Nat.add_succ_l, <- Heqsi in H.
  unfold rm_add_i in H.
- destruct IHdi as (Ha₁, Hb₁).
- rewrite Ha₁, Hb₁ in H.
+ destruct IHdi as (Ha, Hb).
+ rewrite Ha, Hb in H.
  rewrite xorb_true_l, xorb_false_l in H.
  rewrite <- Nat.add_succ_l, <- Heqssi in H.
- remember (fst_same a b (ssi + di)) as s₂ eqn:Hs₂ .
- apply fst_same_sym_iff in Hs₂.
- destruct s₂ as [di₂| ].
-  destruct Hs₂ as (Hn₂, Hb₂).
-  rewrite H in Hb₂.
-  rename H into Ha₂; symmetry in Hb₂.
-  destruct di₂.
-   rewrite Nat.add_0_r in Ha₂, Hb₂.
+ remember (fst_same a b (ssi + di)) as s₁ eqn:Hs₁ .
+ apply fst_same_sym_iff in Hs₁.
+ destruct s₁ as [di₁| ].
+  destruct Hs₁ as (Hn₁, Hb₁).
+  rewrite H in Hb₁.
+  rename H into Ha₁; symmetry in Hb₁.
+  destruct di₁.
+   rewrite Nat.add_0_r in Ha₁, Hb₁.
    split; assumption.
 
+   rewrite Nat.add_succ_r, <- Nat.add_succ_l in Ha₁.
+   rewrite <- Nat.add_succ_l in Ha₁.
+   rewrite Nat.add_succ_r, <- Nat.add_succ_l in Hb₁.
+   rewrite <- Nat.add_succ_l in Hb₁.
    pose proof (Hdi (S (S di))) as H.
    do 2 rewrite Nat.add_succ_r, <- Nat.add_succ_l in H.
    rewrite <- Heqsi, <- Heqssi in H.
    unfold rm_add_i in H.
-   pose proof (Hn₂ 0 (Nat.lt_0_succ di₂)) as H₁.
+   pose proof (Hn₁ 0 (Nat.lt_0_succ di₁)) as H₁.
    rewrite Nat.add_0_r in H₁.
    rewrite H₁, negb_xorb_diag, xorb_true_l in H.
    apply negb_true_iff in H.
    rewrite <- Nat.add_succ_l in H.
    remember (S ssi) as sssi.
-   remember (fst_same a b (sssi + di)) as s₃ eqn:Hs₃ .
-   apply fst_same_sym_iff in Hs₃.
-   destruct s₃ as [di₃| ].
-    destruct Hs₃ as (Hn₃, Hb₃).
-    rewrite H in Hb₃.
-    rename H into Ha₃; symmetry in Hb₃.
+   remember (fst_same a b (sssi + di)) as s₂ eqn:Hs₂ .
+   apply fst_same_sym_iff in Hs₂.
+   destruct s₂ as [di₂| ]; [ idtac | discriminate H ].
+   destruct Hs₂ as (Hn₂, Hb₂).
+   rewrite H in Hb₂.
+   rename H into Ha₂; symmetry in Hb₂.
+   destruct (lt_dec di₁ di₂) as [H₂| H₂].
+    apply Hn₂ in H₂.
+    rewrite Ha₁, Hb₁ in H₂; discriminate H₂.
+
+    apply Nat.nlt_ge in H₂.
+    destruct (lt_dec di₂ di₁) as [H₃| H₃].
+     apply Nat.succ_lt_mono in H₃.
+     apply Hn₁ in H₃.
+     rewrite Nat.add_succ_r, <- Nat.add_succ_l in H₃.
+     rewrite <- Nat.add_succ_l, <- Heqsssi in H₃.
+     rewrite Ha₂, Hb₂ in H₃; discriminate H₃.
+
+     apply Nat.nlt_ge in H₃.
+     apply Nat.le_antisymm in H₂; auto.
+     subst di₂; clear H₃.
+     rewrite Ha₁ in Ha₂; discriminate Ha₂.
+
+  clear H.
 bbb.
 
 Theorem rm_add_inf_true_neq_if : ∀ a b i,
