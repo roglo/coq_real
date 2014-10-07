@@ -60,6 +60,23 @@ Add Parametric Relation : _ rm_eq
  transitivity proved by rm_eq_trans
  as rm_rel.
 
+Theorem neq_xorb : ∀ b b', b ≠ b' → b ⊕ b' = true.
+Proof.
+intros b b' H.
+apply not_false_iff_true.
+intros H₁; apply H.
+apply xorb_eq; assumption.
+Qed.
+
+Theorem neq_negb : ∀ b b', b ≠ b' → b = negb b'.
+Proof.
+intros b b' H.
+destruct b'; simpl.
+ apply not_true_iff_false; auto.
+
+ apply not_false_iff_true; auto.
+Qed.
+
 Theorem fst_same_comm : ∀ a b i, fst_same a b i = fst_same b a i.
 Proof.
 intros a b i.
@@ -1220,7 +1237,16 @@ Qed.
 Theorem negb_xorb_diag : ∀ a, negb a ⊕ a = true.
 Proof. intros a; destruct a; reflexivity. Qed.
 
-Theorem rm_add_inf_true_if : ∀ a b i,
+Theorem rm_add_inf_true_eq_if : ∀ a b i,
+  (∀ di, rm_add_i a b (i + di) = true)
+  → a.[i] = b.[i]
+  → id (∀ di, a.[i + S di] = true ∧ b.[i + S di] = true).
+Proof.
+intros a b i Hdi Hab.
+(* chais même pas si c'est vrai :-) *)
+bbb.
+
+Theorem rm_add_inf_true_neq_if : ∀ a b i,
   (∀ di, rm_add_i a b (i + di) = true)
   → a.[i] = negb b.[i]
   → ∃ j,
@@ -1442,23 +1468,6 @@ destruct s₁ as [di₁| ].
     rewrite Ha₃, Hb₃ in H; discriminate H.
 
  rewrite Hab, negb_xorb_diag in H; discriminate H.
-Qed.
-
-Theorem neq_xorb : ∀ b b', b ≠ b' → b ⊕ b' = true.
-Proof.
-intros b b' H.
-apply not_false_iff_true.
-intros H₁; apply H.
-apply xorb_eq; assumption.
-Qed.
-
-Theorem neq_negb : ∀ b b', b ≠ b' → b = negb b'.
-Proof.
-intros b b' H.
-destruct b'; simpl.
- apply not_true_iff_false; auto.
-
- apply not_false_iff_true; auto.
 Qed.
 
 Theorem yyy : ∀ a b, (a + 0 + b = a + b)%rm.
