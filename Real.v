@@ -1220,7 +1220,7 @@ Qed.
 Theorem negb_xorb_diag : ∀ a, negb a ⊕ a = true.
 Proof. intros a; destruct a; reflexivity. Qed.
 
-Theorem www : ∀ a b i,
+Theorem rm_add_inf_true_if : ∀ a b i,
   (∀ di, rm_add_i a b (i + di) = true)
   → a.[i] = negb b.[i]
   → ∃ j,
@@ -1428,7 +1428,26 @@ destruct s₁ as [di₁| ].
    do 2 rewrite <- Nat.add_succ_l in H.
    rewrite <- Heqsssi in H.
    rewrite Ha₃, Hb₃ in H; discriminate H.
-bbb.
+
+ rewrite Hab, negb_xorb_diag in H; discriminate H.
+Qed.
+
+Theorem neq_xorb : ∀ b b', b ≠ b' → b ⊕ b' = true.
+Proof.
+intros b b' H.
+apply not_false_iff_true.
+intros H₁; apply H.
+apply xorb_eq; assumption.
+Qed.
+
+Theorem neq_negb : ∀ b b', b ≠ b' → b = negb b'.
+Proof.
+intros b b' H.
+destruct b'; simpl.
+ apply not_true_iff_false; auto.
+
+ apply not_false_iff_true; auto.
+Qed.
 
 Theorem yyy : ∀ a b, (a + 0 + b = a + b)%rm.
 Proof.
@@ -1447,6 +1466,12 @@ destruct s₂ as [di₂| ].
  destruct s₅ as [di₅| ].
   destruct Hs₅ as (Hn₅, Hs₅); rewrite Hs₅, xorb_false_r.
   subst si; eapply rm_add_add_0_l; eauto .
+
+  destruct (bool_dec a .[ si] b .[ si]) as [H₁| H₁].
+   Focus 2.
+   apply neq_negb in H₁.
+   apply rm_add_inf_true_if in Hs₅; auto.
+   destruct Hs₅ as (j, (Hij, (Haj, (Hbj, Habj)))).
 
 bbb.
   unfold rm_add_i.
