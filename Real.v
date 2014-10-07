@@ -1361,6 +1361,27 @@ destruct s₁ as [di₁| ].
        rewrite Nat.add_0_r in H.
        rewrite Hab₁ in H.
        destruct b .[ sssi + di₁ + di]; discriminate H.
+
+    rename H into Ha₂.
+    rewrite Ha₂ in Hs₂; symmetry in Hs₂.
+    pose proof (Hn₂ 0 (Nat.lt_0_succ di₂)) as H.
+    rewrite Nat.add_0_r in H.
+    rename H into Hab₁.
+    pose proof (Hdi (S (S di₁))) as H.
+    do 2 rewrite Nat.add_succ_r in H.
+    do 2 rewrite <- Nat.add_succ_l in H.
+    rewrite <- Heqsi, <- Heqssi in H.
+    unfold rm_add_i in H.
+    rewrite Hab₁, negb_xorb_diag, xorb_true_l in H.
+    apply negb_true_iff in H.
+    rewrite <- Nat.add_succ_l in H; remember (S ssi) as sssi.
+    remember (fst_same a b (sssi + di₁)) as s₃ eqn:Hs₃ .
+    symmetry in Hs₃.
+    apply fst_same_iff in Hs₃; simpl in Hs₃.
+    destruct s₃ as [di₃| ].
+     destruct Hs₃ as (Hn₃, Hb₃).
+     rename H into Ha₃.
+     rewrite Ha₃ in Hb₃; symmetry in Hb₃.
 bbb.
 
 Theorem yyy : ∀ a b, (a + 0 + b = a + b)%rm.
