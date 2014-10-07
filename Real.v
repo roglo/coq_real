@@ -1258,7 +1258,7 @@ Theorem rm_add_inf_true_eq_if : ∀ a b i,
   → a.[i] = b.[i]
   → id (∀ di, a.[i + S di] = true ∧ b.[i + S di] = true).
 Proof.
-intros a b i Hdi Hab di.
+intros a b i Hdi Hab.
 induction di.
  rewrite Nat.add_1_r.
  pose proof (Hdi 0) as H.
@@ -1653,6 +1653,19 @@ destruct s₂ as [di₂| ].
   destruct (bool_dec a .[ si] b .[ si]) as [H₁| H₁].
    apply rm_add_inf_true_eq_if in Hs₅; auto.
    unfold id in Hs₅.
+   destruct di₂.
+    clear Hn₂; rewrite Nat.add_0_r in Hs₂.
+    unfold rm_add_i in Hs₂.
+    remember (S si) as ssi; simpl in Hs₂.
+    remember (fst_same (a + 0%rm) b ssi) as s₃ eqn:Hs₃ .
+    apply fst_same_sym_iff in Hs₃; simpl in Hs₃.
+    destruct s₃ as [di₃| ].
+     destruct Hs₃ as (Hn₃, Hs₃).
+     rewrite Hs₃ in Hs₂.
+     rewrite Heqssi, Nat.add_succ_l, <- Nat.add_succ_r in Hs₂.
+     pose proof (Hs₅ di₃) as H; destruct H as (_, H).
+     rewrite H, xorb_true_r in Hs₂; clear H.
+     apply negb_false_iff in Hs₂.
 
 bbb.
    Focus 2.
