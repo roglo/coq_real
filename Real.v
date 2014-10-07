@@ -1649,6 +1649,7 @@ destruct s₂ as [di₂| ].
   destruct Hs₅ as (Hn₅, Hs₅); rewrite Hs₅, xorb_false_r.
   subst si; eapply rm_add_add_0_l; eauto .
 
+bbb.
   destruct (bool_dec a .[ si] b .[ si]) as [H₁| H₁].
    apply rm_add_inf_true_eq_if in Hs₅; auto.
    unfold id in Hs₅.
