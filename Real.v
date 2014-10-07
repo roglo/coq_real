@@ -1388,7 +1388,25 @@ induction di.
      rewrite Ha₁ in Ha₂; discriminate Ha₂.
 
   clear H.
-bbb.
+  pose proof (Hdi (S (S di))) as H.
+  do 2 rewrite Nat.add_succ_r, <- Nat.add_succ_l in H.
+  rewrite <- Heqsi, <- Heqssi in H.
+  unfold rm_add_i in H.
+  pose proof (Hs₁ 0) as H₁.
+  rewrite Nat.add_0_r in H₁.
+  rewrite H₁, negb_xorb_diag, xorb_true_l in H.
+  apply negb_true_iff in H.
+  rewrite <- Nat.add_succ_l in H.
+  remember (S ssi) as sssi.
+  remember (fst_same a b (sssi + di)) as s₂ eqn:Hs₂ .
+  apply fst_same_sym_iff in Hs₂.
+  destruct s₂ as [di₂| ]; [ idtac | discriminate H ].
+  destruct Hs₂ as (Hn₂, Hb₂).
+  rewrite Heqsssi, Nat.add_succ_l in Hb₂.
+  rewrite Nat.add_succ_l, <- Nat.add_succ_r in Hb₂.
+  rewrite Hs₁ in Hb₂.
+  destruct b .[ ssi + di + S di₂]; discriminate Hb₂.
+Qed.
 
 Theorem rm_add_inf_true_neq_if : ∀ a b i,
   (∀ di, rm_add_i a b (i + di) = true)
@@ -1633,9 +1651,13 @@ destruct s₂ as [di₂| ].
   subst si; eapply rm_add_add_0_l; eauto .
 
   destruct (bool_dec a .[ si] b .[ si]) as [H₁| H₁].
+   apply rm_add_inf_true_eq_if in Hs₅; auto.
+   unfold id in Hs₅.
+
+bbb.
    Focus 2.
    apply neq_negb in H₁.
-   apply rm_add_inf_true_if in Hs₅; auto.
+   apply rm_add_inf_true_neq_if in Hs₅; auto.
    destruct Hs₅ as (j, (Hij, (Hdi, (Haj, (Hbj, Habj))))).
 
 bbb.
