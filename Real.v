@@ -1470,6 +1470,7 @@ destruct s₂ as [di₂| ].
   destruct (bool_dec a .[ si] b .[ si]) as [H₁| H₁].
    Focus 2.
    apply neq_negb in H₁.
+bbb.
    apply rm_add_inf_true_if in Hs₅; auto.
    destruct Hs₅ as (j, (Hij, (Haj, (Hbj, Habj)))).
 
