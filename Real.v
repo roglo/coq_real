@@ -964,7 +964,6 @@ destruct s₁ as [di₁| ].
    remember (S si) as ssi.
    move Heqssi before Heqsi.
    simpl in Hs₁; rewrite xorb_false_r in Hs₁.
-
    remember (fst_same a 0 (ssi + di₁)) as s₄ eqn:Hs₄ .
    symmetry in Hs₄.
    apply fst_same_iff in Hs₄; simpl in Hs₄.
