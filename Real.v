@@ -1224,7 +1224,11 @@ Theorem rm_add_inf_true_if : ∀ a b i,
   (∀ di, rm_add_i a b (i + di) = true)
   → a.[i] = negb b.[i]
   → ∃ j,
-    i < j ∧ a.[j] = false ∧ b.[j] = false ∧
+    i < j ∧
+(**)
+    (∀ di, i + di < j → a.[i + di] = negb b.[i + di]) ∧
+(**)
+    a.[j] = false ∧ b.[j] = false ∧
     ∀ di, a.[j + S di] = true ∧ b.[j + S di] = true.
 Proof.
 intros a b i Hdi Hab.
@@ -1246,6 +1250,7 @@ destruct s₁ as [di₁| ].
   rewrite negb_xorb_diag, xorb_true_l in H.
   apply negb_true_iff in H.
   rewrite H in Hs₁; symmetry in Hs₁.
+bbb.
   split; auto.
   split; auto.
   intros di.
