@@ -1378,34 +1378,56 @@ destruct s₁ as [di₁| ].
     remember (fst_same a b (sssi + di₁)) as s₃ eqn:Hs₃ .
     symmetry in Hs₃.
     apply fst_same_iff in Hs₃; simpl in Hs₃.
-    destruct s₃ as [di₃| ].
-     destruct Hs₃ as (Hn₃, Hb₃).
-     rename H into Ha₃.
-     rewrite Ha₃ in Hb₃; symmetry in Hb₃.
-     rewrite Nat.add_succ_r in Hs₂, Ha₂.
-     do 2 rewrite <- Nat.add_succ_l in Hs₂, Ha₂.
-     rewrite <- Heqsssi in Hs₂, Ha₂.
-     destruct (lt_dec di₂ di₃) as [H₁| H₁].
-      apply Hn₃ in H₁.
-      rewrite Hs₂, Ha₂ in H₁; discriminate H₁.
+    destruct s₃ as [di₃| ]; [ idtac | discriminate H ].
+    destruct Hs₃ as (Hn₃, Hb₃).
+    rename H into Ha₃.
+    rewrite Ha₃ in Hb₃; symmetry in Hb₃.
+    rewrite Nat.add_succ_r in Hs₂, Ha₂.
+    do 2 rewrite <- Nat.add_succ_l in Hs₂, Ha₂.
+    rewrite <- Heqsssi in Hs₂, Ha₂.
+    destruct (lt_dec di₂ di₃) as [H₁| H₁].
+     apply Hn₃ in H₁.
+     rewrite Hs₂, Ha₂ in H₁; discriminate H₁.
 
-      apply Nat.nlt_ge in H₁.
-      destruct (lt_dec di₃ di₂) as [H₂| H₂].
-       apply Nat.succ_lt_mono in H₂.
-       apply Hn₂ in H₂.
-       rewrite Nat.add_succ_r in H₂.
-       do 2 rewrite <- Nat.add_succ_l in H₂.
-       rewrite <- Heqsssi in H₂.
-       rewrite Ha₃, Hb₃ in H₂; discriminate H₂.
+     apply Nat.nlt_ge in H₁.
+     destruct (lt_dec di₃ di₂) as [H₂| H₂].
+      apply Nat.succ_lt_mono in H₂.
+      apply Hn₂ in H₂.
+      rewrite Nat.add_succ_r in H₂.
+      do 2 rewrite <- Nat.add_succ_l in H₂.
+      rewrite <- Heqsssi in H₂.
+      rewrite Ha₃, Hb₃ in H₂; discriminate H₂.
 
-       apply Nat.nlt_ge in H₂.
-       apply Nat.le_antisymm in H₁; auto.
-       subst di₃; clear H₂.
-       rewrite Ha₂ in Ha₃; discriminate Ha₃.
-
-     discriminate H.
+      apply Nat.nlt_ge in H₂.
+      apply Nat.le_antisymm in H₁; auto.
+      subst di₃; clear H₂.
+      rewrite Ha₂ in Ha₃; discriminate Ha₃.
 
    clear H.
+   pose proof (Hs₂ 0) as H.
+   rewrite Nat.add_0_r in H.
+   rename H into Ha₁.
+   pose proof (Hdi (S (S di₁))) as H.
+   do 2 rewrite Nat.add_succ_r in H.
+   rewrite <- Nat.add_succ_l, <- Heqsi in H.
+   rewrite <- Nat.add_succ_l, <- Heqssi in H.
+   unfold rm_add_i in H.
+   rewrite Ha₁, negb_xorb_diag, xorb_true_l in H.
+   apply negb_true_iff in H.
+   rewrite <- Nat.add_succ_l in H.
+   remember (S ssi) as sssi.
+   remember (fst_same a b (sssi + di₁)) as s₃ eqn:Hs₃ .
+   symmetry in Hs₃.
+   apply fst_same_iff in Hs₃; simpl in Hs₃.
+   destruct s₃ as [di₃| ]; [ idtac | discriminate H ].
+   destruct Hs₃ as (Hn₃, Hs₃).
+   rename H into Ha₃; rename Hs₃ into Hb₃.
+   rewrite Ha₃ in Hb₃; symmetry in Hb₃.
+   pose proof (Hs₂ (S di₃)) as H.
+   rewrite Nat.add_succ_r in H.
+   do 2 rewrite <- Nat.add_succ_l in H.
+   rewrite <- Heqsssi in H.
+   rewrite Ha₃, Hb₃ in H; discriminate H.
 bbb.
 
 Theorem yyy : ∀ a b, (a + 0 + b = a + b)%rm.
