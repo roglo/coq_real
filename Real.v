@@ -1833,6 +1833,34 @@ destruct s₈ as [di₈| ].
      rewrite Has in Hs₅; discriminate Hs₅.
 
      rewrite xorb_true_r in Hs₁.
+     unfold rm_add_i in Hs₄.
+     rewrite <- Nat.add_succ_l in Hs₄.
+     rewrite <- Heqssi in Hs₄; simpl in Hs₄.
+     rewrite xorb_false_r in Hs₄.
+     remember (fst_same a 0 (ssi + di₄)) as s₆ eqn:Hs₆ .
+     destruct s₆ as [di₆| ].
+      rewrite Hs₅, xorb_true_r in Hs₄.
+      destruct di₄.
+       rewrite Nat.add_0_r in Hs₁.
+       rewrite <- negb_xorb_r in Hs₁.
+       destruct (a .[ i] ⊕ b .[ i] ⊕ a .[ si]); discriminate Hs₁.
+
+       rewrite Has, Hbs in Hs₄; discriminate Hs₄.
+
+      rewrite xorb_true_r in Hs₄.
+      destruct di₄.
+       rewrite Nat.add_0_r in Hs₁.
+       rewrite <- negb_xorb_r in Hs₁.
+       destruct (a .[ i] ⊕ b .[ i] ⊕ a .[ si]); discriminate Hs₁.
+
+       rewrite Has, Hbs in Hs₄; discriminate Hs₄.
+
+    destruct di₃.
+     rewrite Nat.add_0_r in Hsi₃.
+     rewrite Hsi₃ in Hs₁.
+     destruct (a .[ i] ⊕ b .[ i]); discriminate Hs₁.
+
+     rewrite Has in Hsi₃; discriminate Hsi₃.
 bbb.
 
 Theorem xxx : ∀ a b i di₂,
