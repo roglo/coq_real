@@ -1323,23 +1323,38 @@ destruct s₂ as [di₂| ].
   apply Hs₃.
 Qed.
 
-Theorem rm_add_add_0_l : ∀ a b i dj₂ dj₅,
-  (∀ dj, dj < dj₂ → rm_add_i (a + 0%rm) b (S i + dj) = true)
-  → rm_add_i (a + 0%rm) b (S i + dj₂) = false
-  → (∀ dj, dj < dj₅ → rm_add_i a b (S i + dj) = true)
-  → rm_add_i a b (S i + dj₅) = false
-  → rm_add_i (a + 0%rm) b i = rm_add_i a b i.
+Theorem rm_add_0_l_when_both_hs_has_relay : ∀ a b i dj₂ dj₅,
+  fst_same ((a + 0)%rm + b) 0 (S i) = Some dj₂
+  → fst_same (a + b) 0 (S i) = Some dj₅
+  → rm_add_i ((a + 0)%rm + b) 0 i = rm_add_i (a + b) 0 i.
 Proof.
-intros a b i dj₂ dj₅ Pn₂ Ps₂ Pn₅ Ps₅.
+intros a b i dj₂ dj₅ Ps₂ Ps₅.
+unfold rm_add_i.
+remember (S i) as si; simpl.
+do 2 rewrite xorb_false_r.
+rewrite Ps₂, Ps₅.
+remember Ps₂ as H; clear HeqH.
+apply fst_same_iff in H; simpl in H.
+destruct H as (_, H); rewrite H; clear H.
+remember Ps₅ as H; clear HeqH.
+apply fst_same_iff in H; simpl in H.
+destruct H as (_, H); rewrite H; clear H.
+do 2 rewrite xorb_false_r.
 remember (fst_same (a + 0%rm) b (S i)) as s₁ eqn:Hs₁ .
 symmetry in Hs₁.
 destruct s₁ as [di₁| ].
  eapply rm_add_0_l_when_lhs_has_relay; eauto .
 
- unfold rm_add_i at 1; remember (S i) as si; simpl.
+ rewrite <- Heqsi in Hs₁.
+ unfold rm_add_i.
+ rewrite <- Heqsi; simpl.
  rewrite Hs₁.
+ unfold rm_add_i at 1; rewrite <- Heqsi; simpl.
  apply fst_same_iff in Hs₁; simpl in Hs₁.
- unfold rm_add_i; rewrite <- Heqsi; simpl.
+ apply fst_same_iff in Ps₂; simpl in Ps₂.
+ destruct Ps₂ as (Pn₂, _).
+ apply fst_same_iff in Ps₅; simpl in Ps₅.
+ destruct Ps₅ as (Pn₅, Ps₅).
  rewrite xorb_false_r.
  do 3 rewrite xorb_assoc; f_equal.
  rewrite xorb_comm, xorb_assoc; f_equal.
@@ -1647,19 +1662,12 @@ Theorem yyy : ∀ a b, (a + 0 + b = a + b)%rm.
 Proof.
 intros a b.
 unfold rm_eq; intros i; simpl.
-unfold rm_add_i.
-remember (S i) as si; simpl.
-do 2 rewrite xorb_false_r.
-remember (fst_same ((a + 0)%rm + b) 0 si) as s₂ eqn:Hs₂ .
-remember (fst_same (a + b) 0 si) as s₅ eqn:Hs₅ .
+remember (fst_same ((a + 0)%rm + b) 0 (S i)) as s₂ eqn:Hs₂ .
+remember (fst_same (a + b) 0 (S i)) as s₅ eqn:Hs₅ .
 symmetry in Hs₂, Hs₅.
-apply fst_same_iff in Hs₂; simpl in Hs₂.
 destruct s₂ as [di₂| ].
- destruct Hs₂ as (Hn₂, Hs₂); rewrite Hs₂, xorb_false_r.
- apply fst_same_iff in Hs₅; simpl in Hs₅.
  destruct s₅ as [di₅| ].
-  destruct Hs₅ as (Hn₅, Hs₅); rewrite Hs₅, xorb_false_r.
-  subst si; eapply rm_add_add_0_l; eauto .
+  eapply rm_add_0_l_when_both_hs_has_relay; eauto .
 
 bbb.
   destruct (bool_dec a .[ si] b .[ si]) as [H₁| H₁].
