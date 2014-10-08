@@ -1776,6 +1776,15 @@ destruct s₈ as [di₈| ].
        rewrite xorb_true_r in Hs₄.
        symmetry in Hs₄.
        apply negb_sym in Hs₄.
+       destruct (lt_dec (si + di₄) j) as [H₂| H₂].
+        pose proof (Hs₅ (j - S (si + di₄))) as H.
+        rewrite Nat.add_sub_assoc in H; auto.
+        rewrite <- Nat.add_succ_l, <- Heqssi in H.
+        rewrite Nat.add_comm, Nat.add_sub in H.
+        rewrite Ha in H; discriminate H.
+
+        apply Nat.nlt_ge in H₂.
+        destruct (lt_dec j (si + di₄)) as [H₃| H₃].
 bbb.
 
 Theorem xxx : ∀ a b i di₂,
