@@ -76,6 +76,10 @@ split; intros H.
  symmetry; apply fst_same_iff; assumption.
 Qed.
 
+Theorem forall_and_distr : ∀ α (P Q : α → Prop),
+  (∀ a, P a ∧ Q a) → (∀ a, P a) ∧ (∀ a, Q a).
+Proof. intros; split; intros a; apply H. Qed.
+
 Theorem negb_xorb_diag : ∀ a, negb a ⊕ a = true.
 Proof. intros a; destruct a; reflexivity. Qed.
 
@@ -554,9 +558,11 @@ Qed.
 Theorem rm_add_inf_true_eq_if : ∀ a b i,
   (∀ di, rm_add_i a b (i + di) = true)
   → a.[i] = b.[i]
-  → id (∀ di, a.[i + S di] = true ∧ b.[i + S di] = true).
+  → (∀ di, a.[i + S di] = true) ∧
+     (∀ di, b.[i + S di] = true).
 Proof.
 intros a b i Hdi Hab.
+apply forall_and_distr; intros di.
 induction di.
  rewrite Nat.add_1_r.
  pose proof (Hdi 0) as H.
@@ -713,7 +719,8 @@ Theorem rm_add_inf_true_neq_if : ∀ a b i,
     i < j ∧
     (∀ di, i + di < j → a.[i + di] = negb b.[i + di]) ∧
     a.[j] = false ∧ b.[j] = false ∧
-    ∀ di, a.[j + S di] = true ∧ b.[j + S di] = true.
+    (∀ di, a.[j + S di] = true) ∧
+    (∀ di, b.[j + S di] = true).
 Proof.
 intros a b i Hdi Hab.
 pose proof (Hdi 0) as H.
@@ -746,7 +753,7 @@ destruct s₁ as [di₁| ].
 
    split; auto.
    split; auto.
-   intros di.
+   apply forall_and_distr; intros di.
    rename H into Ha.
    pose proof (Hdi (S di₁)) as H.
    unfold rm_add_i in H.
@@ -1693,6 +1700,30 @@ destruct s₁ as [di₁| ].
  apply fst_same_iff in Hs₅; simpl in Hs₅.
  apply fst_same_iff in Hs₂; simpl in Hs₂.
  destruct Hs₂ as (Hn₂, Hs₂).
+ destruct (bool_dec a .[ si] b .[ si]) as [H₁| H₁].
+  apply rm_add_inf_true_eq_if in Hs₅; auto.
+  destruct Hs₅ as (Ha, Hb).
+  destruct di₂.
+   clear Hn₂; rewrite Nat.add_0_r in Hs₂.
+   unfold rm_add_i in Hs₂.
+   remember (S si) as ssi; simpl in Hs₂.
+   remember (fst_same (a + 0%rm) b ssi) as s₃ eqn:Hs₃ .
+   apply fst_same_sym_iff in Hs₃; simpl in Hs₃.
+   destruct s₃ as [di₃| ].
+    destruct Hs₃ as (Hn₃, Hs₃).
+    rewrite Hs₃ in Hs₂.
+    rewrite Heqssi, Nat.add_succ_l, <- Nat.add_succ_r in Hs₂.
+    rewrite Hb, xorb_true_r in Hs₂.
+    apply negb_false_iff in Hs₂.
+    unfold rm_add_i in Hs₂.
+    rewrite <- Heqssi in Hs₂; simpl in Hs₂.
+    rewrite xorb_false_r in Hs₂.
+    remember (fst_same a 0 ssi) as s₄ eqn:Hs₄ .
+    apply fst_same_sym_iff in Hs₄; simpl in Hs₄.
+    destruct s₄ as [di₄| ].
+     destruct Hs₄ as (Hn₄, Hs₄); rewrite Hs₄, xorb_false_r in Hs₂.
+     rewrite H₁ in Hs₂.
+     destruct b .[ si]; discriminate Hs₂.
 bbb.
 
 Theorem yyy : ∀ a b, (a + 0 + b = a + b)%rm.
