@@ -1669,6 +1669,32 @@ destruct s₁ as [di₁| ].
  eapply rm_add_add_0_l_when_lhs_has_no_relay; eauto .
 Qed.
 
+Theorem xxx : ∀ a b i di₂,
+  fst_same ((a + 0)%rm + b) 0 (S i) = Some di₂
+  → fst_same (a + b) 0 (S i) = None
+  → rm_add_i ((a + 0)%rm + b) 0 i = rm_add_i (a + b) 0 i.
+Proof.
+intros a b i di₂ Hs₂ Hs₅.
+unfold rm_add_i.
+remember (S i) as si; simpl.
+do 2 rewrite xorb_false_r.
+rewrite Hs₂, Hs₅.
+remember Hs₂ as H; clear HeqH.
+apply fst_same_iff in H; simpl in H.
+destruct H as (_, H); rewrite H; clear H.
+rewrite xorb_false_r, xorb_true_r.
+remember (fst_same (a + 0%rm) b (S i)) as s₁ eqn:Hs₁ .
+symmetry in Hs₁.
+subst si.
+destruct s₁ as [di₁| ].
+ exfalso.
+ apply rm_add_add_0_l_when_lhs_has_relay in Hs₁.
+ remember (S i) as si.
+ apply fst_same_iff in Hs₅; simpl in Hs₅.
+ apply fst_same_iff in Hs₂; simpl in Hs₂.
+ destruct Hs₂ as (Hn₂, Hs₂).
+bbb.
+
 Theorem yyy : ∀ a b, (a + 0 + b = a + b)%rm.
 Proof.
 intros a b.
