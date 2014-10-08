@@ -1879,6 +1879,19 @@ destruct s₈ as [di₈| ].
      simpl in Hs₅.
      rewrite Has in Hs₅; discriminate Hs₅.
 
+     destruct di₄.
+      destruct di₂.
+       rewrite Nat.add_0_r in Hs₂.
+       unfold rm_add_i in Hs₂.
+       rewrite <- Heqssi in Hs₂; simpl in Hs₂.
+       remember (fst_same (a + 0%rm) b ssi) as s₆ eqn:Hs₆ .
+       apply fst_same_sym_iff in Hs₆; simpl in Hs₆.
+       destruct s₆ as [di₆| ].
+        destruct Hs₆ as (Hn₆, Hs₆); rewrite Hs₆ in Hs₂.
+        rewrite <- Hs₈ in Hs₂.
+        pose proof (Hs₃ 0) as H.
+        rewrite Nat.add_0_r in H; rewrite H in Hs₂; clear H.
+
 bbb.
 
 Theorem xxx : ∀ a b i di₂,
