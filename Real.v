@@ -1893,8 +1893,15 @@ destruct s₈ as [di₈| ].
      rewrite Nat.add_comm, Nat.add_sub in H.
      rewrite Ha in H; discriminate H.
 
- simpl.
-bbb.
+ pose proof (Hs₈ 0) as H; rewrite Nat.add_0_r in H.
+ apply rm_add_inf_true_neq_if in Hs₅; auto; clear H.
+ destruct Hs₅ as (j, (Hij, (Hni, (Ha, (Hb, (Hat, Hbt)))))).
+ pose proof (Hs₈ (j - si)) as H.
+ apply Nat.lt_le_incl in Hij.
+ rewrite Nat.add_sub_assoc in H; auto.
+ rewrite Nat.add_comm, Nat.add_sub in H.
+ rewrite Ha, Hb in H; discriminate H.
+Qed.
 
 Theorem xxx : ∀ a b i di₂,
   fst_same ((a + 0)%rm + b) 0 (S i) = Some di₂
@@ -1911,10 +1918,10 @@ apply fst_same_iff in H; simpl in H.
 destruct H as (_, H); rewrite H; clear H.
 rewrite xorb_false_r, xorb_true_r.
 remember (fst_same (a + 0%rm) b (S i)) as s₁ eqn:Hs₁ .
-symmetry in Hs₁.
-subst si.
+symmetry in Hs₁; subst si.
 destruct s₁ as [di₁| ].
  exfalso.
+ eapply rm_add_add_0_l_when_relay; eauto .
 bbb.
 
 Theorem yyy : ∀ a b, (a + 0 + b = a + b)%rm.
