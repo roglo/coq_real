@@ -1810,11 +1810,11 @@ destruct s₈ as [di₈| ].
   clear Hn₈; rewrite Nat.add_0_r in Hs₈, Hs₁.
   apply rm_add_inf_true_eq_if in Hs₅; auto.
   destruct Hs₅ as (Has, Hbs).
-  remember (fst_same a 0 si) as si₃ eqn:Hsi₃ .
-  apply fst_same_sym_iff in Hsi₃; simpl in Hsi₃.
-  destruct si₃ as [di₃| ].
-   destruct Hsi₃ as (Hni₃, Hsi₃).
-   rewrite Hsi₃, xorb_false_r in Hs₁.
+  remember (fst_same a 0 si) as s₃ eqn:Hs₃ .
+  apply fst_same_sym_iff in Hs₃; simpl in Hs₃.
+  destruct s₃ as [di₃| ].
+   destruct Hs₃ as (Hn₃, Hs₃).
+   rewrite Hs₃, xorb_false_r in Hs₁.
    remember (fst_same (a + 0%rm) b si) as s₄ eqn:Hs₄ .
    apply fst_same_sym_iff in Hs₄; simpl in Hs₄.
    destruct s₄ as [di₄| ].
@@ -1856,11 +1856,29 @@ destruct s₈ as [di₈| ].
        rewrite Has, Hbs in Hs₄; discriminate Hs₄.
 
     destruct di₃.
-     rewrite Nat.add_0_r in Hsi₃.
-     rewrite Hsi₃ in Hs₁.
+     rewrite Nat.add_0_r in Hs₃.
+     rewrite Hs₃ in Hs₁.
      destruct (a .[ i] ⊕ b .[ i]); discriminate Hs₁.
 
-     rewrite Has in Hsi₃; discriminate Hsi₃.
+     rewrite Has in Hs₃; discriminate Hs₃.
+
+   remember (fst_same (a + 0%rm) b si) as s₄ eqn:Hs₄ .
+   apply fst_same_sym_iff in Hs₄; simpl in Hs₄.
+   destruct s₄ as [di₄| ].
+    destruct Hs₄ as (Hn₄, Hs₄); rewrite Hs₄ in Hs₁.
+    unfold rm_add_i in Hs₄.
+    rewrite <- Nat.add_succ_l in Hs₄.
+    remember (S si) as ssi; simpl in Hs₄.
+    rewrite xorb_false_r in Hs₄.
+    remember (fst_same a 0 (ssi + di₄)) as s₅ eqn:Hs₅ .
+    apply fst_same_sym_iff in Hs₅; simpl in Hs₅.
+    destruct s₅ as [di₅| ].
+     destruct Hs₅ as (Hn₅, Hs₅).
+     rewrite Heqssi, Nat.add_succ_l in Hs₅.
+     rewrite <- Nat.add_succ_r, <- Nat.add_assoc in Hs₅.
+     simpl in Hs₅.
+     rewrite Has in Hs₅; discriminate Hs₅.
+
 bbb.
 
 Theorem xxx : ∀ a b i di₂,
