@@ -930,7 +930,7 @@ destruct s₁ as [di₁| ].
  rewrite Hab, negb_xorb_diag in H; discriminate H.
 Qed.
 
-Theorem rm_add_0_l_when_lhs_has_relay : ∀ a b i di₁,
+Theorem rm_add_add_0_l_when_lhs_has_relay : ∀ a b i di₁,
   fst_same (a + 0%rm) b (S i) = Some di₁
   → rm_add_i (a + 0%rm) b i = rm_add_i a b i.
 Proof.
@@ -1323,7 +1323,327 @@ destruct s₂ as [di₂| ].
   apply Hs₃.
 Qed.
 
-Theorem rm_add_0_l_when_both_hs_has_relay : ∀ a b i dj₂ dj₅,
+Theorem rm_add_add_0_l_when_lhs_has_no_relay : ∀ a b i dj₂ dj₅,
+  fst_same ((a + 0)%rm + b) 0 (S i) = Some dj₂
+  → fst_same (a + b) 0 (S i) = Some dj₅
+  → fst_same (a + 0%rm) b (S i) = None
+  → rm_add_i (a + 0%rm) b i = rm_add_i a b i.
+Proof.
+intros a b i dj₂ dj₅ Ps₂ Ps₅ Hs₁.
+remember (S i) as si.
+unfold rm_add_i.
+rewrite <- Heqsi; simpl.
+rewrite Hs₁.
+unfold rm_add_i at 1; rewrite <- Heqsi; simpl.
+apply fst_same_iff in Hs₁; simpl in Hs₁.
+apply fst_same_iff in Ps₂; simpl in Ps₂.
+destruct Ps₂ as (Pn₂, _).
+apply fst_same_iff in Ps₅; simpl in Ps₅.
+destruct Ps₅ as (Pn₅, Ps₅).
+rewrite xorb_false_r.
+do 3 rewrite xorb_assoc; f_equal.
+rewrite xorb_comm, xorb_assoc; f_equal.
+rewrite xorb_true_l.
+remember (fst_same a b si) as s₂ eqn:Hs₂ .
+symmetry in Hs₂.
+apply fst_same_iff in Hs₂; simpl in Hs₂.
+remember (fst_same a 0 si) as s₃ eqn:Hs₃ .
+symmetry in Hs₃.
+apply fst_same_iff in Hs₃; simpl in Hs₃.
+destruct s₂ as [di₂| ].
+ destruct Hs₂ as (Hn₂, Hs₂).
+ destruct s₃ as [di₃| ].
+  destruct Hs₃ as (Hn₃, Hs₃).
+  rewrite Hs₃; simpl; symmetry.
+  destruct (lt_dec di₂ di₃) as [H₁| H₁].
+   apply Hn₃; assumption.
+
+   apply Nat.nlt_ge in H₁.
+   pose proof (Hs₁ di₂) as H.
+   unfold rm_add_i in H.
+   rewrite <- Nat.add_succ_l in H.
+   remember (S si) as ssi; simpl in H.
+   rewrite xorb_false_r in H.
+   remember (fst_same a 0 (ssi + di₂)) as s₄ eqn:Hs₄ .
+   symmetry in Hs₄.
+   apply fst_same_iff in Hs₄; simpl in Hs₄.
+   destruct s₄ as [di₄| ].
+    destruct Hs₄ as (Hn₄, Hs₄); rewrite Hs₄, xorb_false_r in H.
+    rewrite Hs₂ in H.
+    destruct b .[ si + di₂]; discriminate H.
+
+    clear H.
+    apply not_false_iff_true.
+    intros Ha.
+    destruct dj₅.
+     rewrite Nat.add_0_r in Ps₅.
+     unfold rm_add_i in Ps₅.
+     rewrite <- Heqssi in Ps₅.
+     remember (fst_same a b ssi) as s₆ eqn:Ps₆ .
+     symmetry in Ps₆.
+     apply fst_same_iff in Ps₆; simpl in Ps₆.
+     destruct s₆ as [dj₆| ].
+      destruct Ps₆ as (Pn₆, Ps₆).
+      assert (S dj₆ = di₂) as H.
+       destruct (lt_dec (S dj₆) di₂) as [H₂| H₂].
+        apply Hn₂ in H₂.
+        rewrite Nat.add_succ_r, <- Nat.add_succ_l in H₂.
+        rewrite <- Heqssi in H₂.
+        rewrite Ps₆ in H₂.
+        destruct b .[ ssi + dj₆]; discriminate H₂.
+
+        apply Nat.nlt_ge in H₂.
+        destruct (lt_dec di₂ (S dj₆)) as [H₃| H₃].
+         destruct di₂.
+          rewrite Nat.add_0_r in Hs₄.
+          rewrite Nat.add_0_r in Hs₂.
+          rewrite <- Hs₂, Hs₄ in Ps₅.
+          rewrite xorb_true_r in Ps₅.
+          apply negb_false_iff in Ps₅.
+          destruct a .[ si]; discriminate Ps₅.
+
+          apply Nat.succ_lt_mono in H₃.
+          apply Pn₆ in H₃.
+          rewrite Nat.add_succ_r, <- Nat.add_succ_l in Hs₂.
+          rewrite <- Heqssi, H₃ in Hs₂.
+          destruct b .[ ssi + di₂]; discriminate Hs₂.
+
+         apply Nat.nlt_ge in H₃.
+         apply Nat.le_antisymm; auto.
+
+       rewrite <- H, Nat.add_succ_r, <- Nat.add_succ_l in Ha.
+       rewrite <- Heqssi in Ha.
+       rewrite Ha, xorb_false_r in Ps₅.
+       rewrite <- H in Hn₂; clear H.
+       assert (0 < S dj₆) as H by apply Nat.lt_0_succ.
+       apply Hn₂ in H.
+       rewrite Nat.add_0_r in H.
+       rewrite H in Ps₅.
+       destruct b .[ si]; discriminate Ps₅.
+
+      destruct di₂.
+       rewrite Nat.add_0_r in Hs₂.
+       rewrite <- Hs₂ in Ps₅.
+       destruct a .[ si]; discriminate Ps₅.
+
+       rewrite Nat.add_succ_r, <- Nat.add_succ_l in Hs₂.
+       rewrite <- Heqssi in Hs₂.
+       rewrite Ps₆ in Hs₂.
+       destruct b .[ ssi + di₂]; discriminate Hs₂.
+
+     assert (S dj₅ = di₂) as H.
+      destruct (lt_dec (S dj₅) di₂) as [H₂| H₂].
+       unfold rm_add_i in Ps₅.
+       rewrite <- Nat.add_succ_l, <- Heqssi in Ps₅.
+       remember (fst_same a b (ssi + S dj₅)) as s₆ eqn:Ps₆ .
+       symmetry in Ps₆.
+       apply fst_same_iff in Ps₆; simpl in Ps₆.
+       destruct s₆ as [di₆| ].
+        destruct Ps₆ as (Pn₆, Ps₆).
+        assert (S (S dj₅ + di₆) = di₂) as H.
+         destruct (lt_dec (S (S dj₅ + di₆)) di₂) as [H₃| H₃].
+          apply Hn₂ in H₃.
+          rewrite Nat.add_succ_r, <- Nat.add_succ_l, <- Heqssi in H₃.
+          rewrite Nat.add_assoc in H₃.
+          rewrite Ps₆ in H₃.
+          destruct b .[ ssi + S dj₅ + di₆]; discriminate H₃.
+
+          apply Nat.nlt_ge in H₃.
+          destruct (lt_dec di₂ (S (S dj₅ + di₆))) as [H₄| H₄].
+           assert (di₂ - S (S dj₅) < di₆) as H by omega.
+           apply Pn₆ in H.
+           rewrite Heqssi in H.
+           rewrite Nat.add_succ_l, <- Nat.add_succ_r in H.
+           rewrite Nat.add_sub_assoc in H; auto.
+           rewrite Nat.add_shuffle0, Nat.add_sub in H.
+           rewrite Hs₂ in H.
+           destruct b .[ si + di₂]; discriminate H.
+
+           apply Nat.nlt_ge in H₄.
+           apply Nat.le_antisymm; auto.
+
+         rewrite <- H in Ha.
+         rewrite Nat.add_succ_r, <- Nat.add_succ_l, <- Heqssi in Ha.
+         rewrite Nat.add_assoc in Ha.
+         rewrite Ha, xorb_false_r in Ps₅.
+         apply Hn₂ in H₂.
+         rewrite H₂ in Ps₅.
+         destruct b .[ si + S dj₅]; discriminate Ps₅.
+
+        pose proof (Ps₆ (di₂ - S (S dj₅))) as H.
+        rewrite Nat.add_sub_assoc in H; auto.
+        rewrite Heqssi in H.
+        rewrite Nat.add_succ_l, <- Nat.add_succ_r in H.
+        rewrite Nat.add_shuffle0, Nat.add_sub in H.
+        rewrite Hs₂ in H.
+        destruct b .[ si + di₂]; discriminate H.
+
+       apply Nat.nlt_ge in H₂.
+       destruct (lt_dec di₂ (S dj₅)) as [H₃| H₃].
+        unfold rm_add_i in Ps₅.
+        rewrite <- Nat.add_succ_l, <- Heqssi in Ps₅.
+        remember (fst_same a b (ssi + S dj₅)) as s₆ eqn:Ps₆ .
+        symmetry in Ps₆.
+        apply fst_same_iff in Ps₆; simpl in Ps₆.
+        destruct s₆ as [dj₆| ].
+         destruct Ps₆ as (Pn₆, Ps₆).
+         pose proof (Hs₁ (S dj₅ + dj₆)) as H.
+         rewrite Nat.add_assoc in H.
+         unfold rm_add_i in H.
+         rewrite <- Nat.add_succ_l in H.
+         rewrite <- Nat.add_succ_l in H.
+         rewrite <- Heqssi in H; simpl in H.
+         rewrite xorb_false_r in H.
+         remember (fst_same a 0 (ssi + S dj₅ + dj₆)) as s₇ eqn:Ps₇ .
+         symmetry in Ps₇.
+         apply fst_same_iff in Ps₇; simpl in Ps₇.
+         destruct s₇ as [dj₇| ].
+          destruct Ps₇ as (Pn₇, Ps₇); rewrite Ps₇, xorb_false_r in H.
+          rename H into Hab.
+          pose proof (Hs₁ (S (S dj₅ + dj₆))) as H.
+          rewrite Nat.add_succ_r, <- Nat.add_succ_l, <- Heqssi in H.
+          rewrite Nat.add_assoc in H.
+          unfold rm_add_i in H.
+          do 2 rewrite <- Nat.add_succ_l in H.
+          remember (S ssi) as sssi; simpl in H.
+          rewrite xorb_false_r in H.
+          remember (fst_same a 0 (sssi + S dj₅ + dj₆)) as s₈ eqn:Ps₈ .
+          symmetry in Ps₈.
+          apply fst_same_iff in Ps₈; simpl in Ps₈.
+          destruct s₈ as [dj₈| ].
+           destruct Ps₈ as (Pn₈, Ps₈); rewrite Ps₈, xorb_false_r in H.
+           rewrite Ps₆ in H.
+           destruct b .[ ssi + S dj₅ + dj₆]; discriminate H.
+
+           clear H.
+           pose proof (Hs₄ (S dj₅ + dj₆ + dj₇ - di₂)) as H.
+           rewrite Nat.add_sub_assoc in H.
+            rewrite Nat.add_shuffle0, Nat.add_sub in H.
+            do 2 rewrite Nat.add_assoc in H.
+            rewrite Ps₇ in H; discriminate H.
+
+            eapply Nat.le_trans; eauto .
+            rewrite <- Nat.add_assoc.
+            apply Nat.le_sub_le_add_l.
+            rewrite Nat.sub_diag.
+            apply Nat.le_0_l.
+
+          rewrite xorb_true_r in H.
+          apply negb_sym in H.
+          rewrite negb_involutive in H.
+          destruct dj₆.
+           rewrite Nat.add_0_r in H.
+           rewrite H in Ps₅.
+           rewrite Nat.add_0_r in Ps₇.
+           rewrite Ps₇ in Ps₅.
+           rewrite xorb_true_r in Ps₅.
+           destruct a .[ si + S dj₅]; discriminate Ps₅.
+
+           rename H into Hba.
+           pose proof (Pn₆ dj₆ (Nat.lt_succ_diag_r dj₆)) as H.
+           rewrite Nat.add_succ_r, <- Nat.add_succ_l in Hba.
+           rewrite <- Nat.add_succ_l in Hba.
+           rewrite <- Heqssi in Hba.
+           rewrite Hba in H.
+           destruct a .[ ssi + S dj₅ + dj₆]; discriminate H.
+
+         pose proof (Hs₁ (S dj₅)) as H.
+         unfold rm_add_i in H.
+         rewrite <- Nat.add_succ_l, <- Heqssi in H; simpl in H.
+         rewrite xorb_false_r in H.
+         remember (fst_same a 0 (ssi + S dj₅)) as s₇ eqn:Ps₇ .
+         symmetry in Ps₇.
+         apply fst_same_iff in Ps₇; simpl in Ps₇.
+         destruct s₇ as [dj₇| ].
+          destruct Ps₇ as (Pn₇, Ps₇); rewrite Ps₇, xorb_false_r in H.
+          clear H.
+          pose proof (Hs₄ (S dj₅ + dj₇ - di₂)) as H.
+          rewrite Nat.add_sub_swap in H; auto.
+          rewrite Nat.add_assoc in H.
+          rewrite Nat.add_sub_assoc in H; auto.
+          rewrite Nat.add_shuffle0, Nat.add_sub in H.
+          rewrite Ps₇ in H; discriminate H.
+
+          rewrite xorb_true_r in H.
+          apply negb_sym in H.
+          rewrite negb_involutive in H.
+          rewrite H in Ps₅.
+          destruct a .[ si + S dj₅]; discriminate Ps₅.
+
+        apply Nat.nlt_ge in H₃.
+        apply Nat.le_antisymm; auto.
+
+      rewrite H in Ps₅.
+      unfold rm_add_i in Ps₅.
+      rewrite <- Nat.add_succ_l, <- Heqssi in Ps₅.
+      remember (fst_same a b (ssi + di₂)) as s₆ eqn:Ps₆ .
+      symmetry in Ps₆.
+      apply fst_same_iff in Ps₆; simpl in Ps₆.
+      destruct s₆ as [dj₆| ].
+       rewrite Hs₄, Hs₂, xorb_true_r in Ps₅.
+       destruct b .[ si + di₂]; discriminate Ps₅.
+
+       rewrite Hs₂, xorb_true_r in Ps₅.
+       destruct b .[ si + di₂]; discriminate Ps₅.
+
+  symmetry; simpl.
+  assert (∀ dj, b .[ si + dj] = true) as Hb.
+   intros dj.
+   apply negb_false_iff.
+   rewrite <- Hs₁.
+   unfold rm_add_i.
+   rewrite <- Nat.add_succ_l; remember (S si) as ssi; simpl.
+   rewrite xorb_false_r.
+   remember (fst_same a 0 (ssi + dj)) as s₄ eqn:Hs₄ .
+   symmetry in Hs₄.
+   apply fst_same_iff in Hs₄; simpl in Hs₄.
+   destruct s₄ as [di₄| ]; [ idtac | rewrite Hs₃; reflexivity ].
+   destruct Hs₄ as (Hn₄, Hs₄).
+   rewrite Heqssi, Nat.add_succ_l, <- Nat.add_succ_r in Hs₄.
+   rewrite <- Nat.add_assoc, Hs₃ in Hs₄; discriminate Hs₄.
+
+   destruct di₂.
+    rewrite Nat.add_0_r in Hs₂; rewrite Nat.add_0_r.
+    clear Hn₂.
+    unfold rm_add_i in Ps₅.
+    rewrite <- Nat.add_succ_l in Ps₅; remember (S si) as ssi; simpl in Ps₅.
+    rewrite Hs₃, Hb, xorb_true_r in Ps₅.
+    rewrite xorb_false_l in Ps₅.
+    remember (fst_same a b (ssi + dj₅)) as s₆ eqn:Ps₆ .
+    symmetry in Ps₆.
+    apply fst_same_iff in Ps₆; simpl in Ps₆.
+    destruct s₆ as [dj₆| ]; [ idtac | discriminate Ps₅ ].
+    rewrite Heqssi, Nat.add_succ_l, <- Nat.add_succ_r in Ps₅.
+    rewrite <- Nat.add_assoc, Hs₃ in Ps₅; discriminate Ps₅.
+
+    pose proof (Hn₂ 0 (Nat.lt_0_succ di₂)) as H.
+    rewrite Hs₃, Hb in H; discriminate H.
+
+ destruct s₃ as [di₃| ].
+  destruct Hs₃ as (Hn₃, Hs₃); rewrite Hs₃; reflexivity.
+
+  pose proof (Hs₁ 0) as H.
+  rewrite Nat.add_0_r in H.
+  unfold rm_add_i in H.
+  remember (S si) as ssi; simpl in H.
+  rewrite xorb_false_r in H.
+  remember (fst_same a 0 ssi) as s₄ eqn:Hs₄ .
+  symmetry in Hs₄.
+  apply fst_same_iff in Hs₄; simpl in Hs₄.
+  destruct s₄ as [di₄| ].
+   destruct Hs₄ as (Hn₄, Hs₄).
+   rewrite Heqssi, Nat.add_succ_l, <- Nat.add_succ_r in Hs₄.
+   rewrite Hs₃ in Hs₄; discriminate Hs₄.
+
+   rewrite xorb_true_r in H.
+   apply negb_sym in H.
+   rewrite negb_involutive in H.
+   pose proof (Hs₂ 0) as H₁.
+   rewrite Nat.add_0_r, H in H₁.
+   destruct a .[ si]; discriminate H₁.
+Qed.
+
+Theorem rm_add_add_0_l_when_both_hs_has_relay : ∀ a b i dj₂ dj₅,
   fst_same ((a + 0)%rm + b) 0 (S i) = Some dj₂
   → fst_same (a + b) 0 (S i) = Some dj₅
   → rm_add_i ((a + 0)%rm + b) 0 i = rm_add_i (a + b) 0 i.
@@ -1342,320 +1662,11 @@ destruct H as (_, H); rewrite H; clear H.
 do 2 rewrite xorb_false_r.
 remember (fst_same (a + 0%rm) b (S i)) as s₁ eqn:Hs₁ .
 symmetry in Hs₁.
+subst si.
 destruct s₁ as [di₁| ].
- eapply rm_add_0_l_when_lhs_has_relay; eauto .
+ eapply rm_add_add_0_l_when_lhs_has_relay; eauto .
 
- rewrite <- Heqsi in Hs₁.
- unfold rm_add_i.
- rewrite <- Heqsi; simpl.
- rewrite Hs₁.
- unfold rm_add_i at 1; rewrite <- Heqsi; simpl.
- apply fst_same_iff in Hs₁; simpl in Hs₁.
- apply fst_same_iff in Ps₂; simpl in Ps₂.
- destruct Ps₂ as (Pn₂, _).
- apply fst_same_iff in Ps₅; simpl in Ps₅.
- destruct Ps₅ as (Pn₅, Ps₅).
- rewrite xorb_false_r.
- do 3 rewrite xorb_assoc; f_equal.
- rewrite xorb_comm, xorb_assoc; f_equal.
- rewrite xorb_true_l.
- remember (fst_same a b si) as s₂ eqn:Hs₂ .
- symmetry in Hs₂.
- apply fst_same_iff in Hs₂; simpl in Hs₂.
- remember (fst_same a 0 si) as s₃ eqn:Hs₃ .
- symmetry in Hs₃.
- apply fst_same_iff in Hs₃; simpl in Hs₃.
- destruct s₂ as [di₂| ].
-  destruct Hs₂ as (Hn₂, Hs₂).
-  destruct s₃ as [di₃| ].
-   destruct Hs₃ as (Hn₃, Hs₃).
-   rewrite Hs₃; simpl; symmetry.
-   destruct (lt_dec di₂ di₃) as [H₁| H₁].
-    apply Hn₃; assumption.
-
-    apply Nat.nlt_ge in H₁.
-    pose proof (Hs₁ di₂) as H.
-    unfold rm_add_i in H.
-    rewrite <- Nat.add_succ_l in H.
-    remember (S si) as ssi; simpl in H.
-    rewrite xorb_false_r in H.
-    remember (fst_same a 0 (ssi + di₂)) as s₄ eqn:Hs₄ .
-    symmetry in Hs₄.
-    apply fst_same_iff in Hs₄; simpl in Hs₄.
-    destruct s₄ as [di₄| ].
-     destruct Hs₄ as (Hn₄, Hs₄); rewrite Hs₄, xorb_false_r in H.
-     rewrite Hs₂ in H.
-     destruct b .[ si + di₂]; discriminate H.
-
-     clear H.
-     apply not_false_iff_true.
-     intros Ha.
-     destruct dj₅.
-      rewrite Nat.add_0_r in Ps₅.
-      unfold rm_add_i in Ps₅.
-      rewrite <- Heqssi in Ps₅.
-      remember (fst_same a b ssi) as s₆ eqn:Ps₆ .
-      symmetry in Ps₆.
-      apply fst_same_iff in Ps₆; simpl in Ps₆.
-      destruct s₆ as [dj₆| ].
-       destruct Ps₆ as (Pn₆, Ps₆).
-       assert (S dj₆ = di₂) as H.
-        destruct (lt_dec (S dj₆) di₂) as [H₂| H₂].
-         apply Hn₂ in H₂.
-         rewrite Nat.add_succ_r, <- Nat.add_succ_l in H₂.
-         rewrite <- Heqssi in H₂.
-         rewrite Ps₆ in H₂.
-         destruct b .[ ssi + dj₆]; discriminate H₂.
-
-         apply Nat.nlt_ge in H₂.
-         destruct (lt_dec di₂ (S dj₆)) as [H₃| H₃].
-          destruct di₂.
-           rewrite Nat.add_0_r in Hs₄.
-           rewrite Nat.add_0_r in Hs₂.
-           rewrite <- Hs₂, Hs₄ in Ps₅.
-           rewrite xorb_true_r in Ps₅.
-           apply negb_false_iff in Ps₅.
-           destruct a .[ si]; discriminate Ps₅.
-
-           apply Nat.succ_lt_mono in H₃.
-           apply Pn₆ in H₃.
-           rewrite Nat.add_succ_r, <- Nat.add_succ_l in Hs₂.
-           rewrite <- Heqssi, H₃ in Hs₂.
-           destruct b .[ ssi + di₂]; discriminate Hs₂.
-
-          apply Nat.nlt_ge in H₃.
-          apply Nat.le_antisymm; auto.
-
-        rewrite <- H, Nat.add_succ_r, <- Nat.add_succ_l in Ha.
-        rewrite <- Heqssi in Ha.
-        rewrite Ha, xorb_false_r in Ps₅.
-        rewrite <- H in Hn₂; clear H.
-        assert (0 < S dj₆) as H by apply Nat.lt_0_succ.
-        apply Hn₂ in H.
-        rewrite Nat.add_0_r in H.
-        rewrite H in Ps₅.
-        destruct b .[ si]; discriminate Ps₅.
-
-       destruct di₂.
-        rewrite Nat.add_0_r in Hs₂.
-        rewrite <- Hs₂ in Ps₅.
-        destruct a .[ si]; discriminate Ps₅.
-
-        rewrite Nat.add_succ_r, <- Nat.add_succ_l in Hs₂.
-        rewrite <- Heqssi in Hs₂.
-        rewrite Ps₆ in Hs₂.
-        destruct b .[ ssi + di₂]; discriminate Hs₂.
-
-      assert (S dj₅ = di₂) as H.
-       destruct (lt_dec (S dj₅) di₂) as [H₂| H₂].
-        unfold rm_add_i in Ps₅.
-        rewrite <- Nat.add_succ_l, <- Heqssi in Ps₅.
-        remember (fst_same a b (ssi + S dj₅)) as s₆ eqn:Ps₆ .
-        symmetry in Ps₆.
-        apply fst_same_iff in Ps₆; simpl in Ps₆.
-        destruct s₆ as [di₆| ].
-         destruct Ps₆ as (Pn₆, Ps₆).
-         assert (S (S dj₅ + di₆) = di₂) as H.
-          destruct (lt_dec (S (S dj₅ + di₆)) di₂) as [H₃| H₃].
-           apply Hn₂ in H₃.
-           rewrite Nat.add_succ_r, <- Nat.add_succ_l, <- Heqssi in H₃.
-           rewrite Nat.add_assoc in H₃.
-           rewrite Ps₆ in H₃.
-           destruct b .[ ssi + S dj₅ + di₆]; discriminate H₃.
-
-           apply Nat.nlt_ge in H₃.
-           destruct (lt_dec di₂ (S (S dj₅ + di₆))) as [H₄| H₄].
-            assert (di₂ - S (S dj₅) < di₆) as H by omega.
-            apply Pn₆ in H.
-            rewrite Heqssi in H.
-            rewrite Nat.add_succ_l, <- Nat.add_succ_r in H.
-            rewrite Nat.add_sub_assoc in H; auto.
-            rewrite Nat.add_shuffle0, Nat.add_sub in H.
-            rewrite Hs₂ in H.
-            destruct b .[ si + di₂]; discriminate H.
-
-            apply Nat.nlt_ge in H₄.
-            apply Nat.le_antisymm; auto.
-
-          rewrite <- H in Ha.
-          rewrite Nat.add_succ_r, <- Nat.add_succ_l, <- Heqssi in Ha.
-          rewrite Nat.add_assoc in Ha.
-          rewrite Ha, xorb_false_r in Ps₅.
-          apply Hn₂ in H₂.
-          rewrite H₂ in Ps₅.
-          destruct b .[ si + S dj₅]; discriminate Ps₅.
-
-         pose proof (Ps₆ (di₂ - S (S dj₅))) as H.
-         rewrite Nat.add_sub_assoc in H; auto.
-         rewrite Heqssi in H.
-         rewrite Nat.add_succ_l, <- Nat.add_succ_r in H.
-         rewrite Nat.add_shuffle0, Nat.add_sub in H.
-         rewrite Hs₂ in H.
-         destruct b .[ si + di₂]; discriminate H.
-
-        apply Nat.nlt_ge in H₂.
-        destruct (lt_dec di₂ (S dj₅)) as [H₃| H₃].
-         unfold rm_add_i in Ps₅.
-         rewrite <- Nat.add_succ_l, <- Heqssi in Ps₅.
-         remember (fst_same a b (ssi + S dj₅)) as s₆ eqn:Ps₆ .
-         symmetry in Ps₆.
-         apply fst_same_iff in Ps₆; simpl in Ps₆.
-         destruct s₆ as [dj₆| ].
-          destruct Ps₆ as (Pn₆, Ps₆).
-          pose proof (Hs₁ (S dj₅ + dj₆)) as H.
-          rewrite Nat.add_assoc in H.
-          unfold rm_add_i in H.
-          rewrite <- Nat.add_succ_l in H.
-          rewrite <- Nat.add_succ_l in H.
-          rewrite <- Heqssi in H; simpl in H.
-          rewrite xorb_false_r in H.
-          remember (fst_same a 0 (ssi + S dj₅ + dj₆)) as s₇ eqn:Ps₇ .
-          symmetry in Ps₇.
-          apply fst_same_iff in Ps₇; simpl in Ps₇.
-          destruct s₇ as [dj₇| ].
-           destruct Ps₇ as (Pn₇, Ps₇); rewrite Ps₇, xorb_false_r in H.
-           rename H into Hab.
-           pose proof (Hs₁ (S (S dj₅ + dj₆))) as H.
-           rewrite Nat.add_succ_r, <- Nat.add_succ_l, <- Heqssi in H.
-           rewrite Nat.add_assoc in H.
-           unfold rm_add_i in H.
-           do 2 rewrite <- Nat.add_succ_l in H.
-           remember (S ssi) as sssi; simpl in H.
-           rewrite xorb_false_r in H.
-           remember (fst_same a 0 (sssi + S dj₅ + dj₆)) as s₈ eqn:Ps₈ .
-           symmetry in Ps₈.
-           apply fst_same_iff in Ps₈; simpl in Ps₈.
-           destruct s₈ as [dj₈| ].
-            destruct Ps₈ as (Pn₈, Ps₈); rewrite Ps₈, xorb_false_r in H.
-            rewrite Ps₆ in H.
-            destruct b .[ ssi + S dj₅ + dj₆]; discriminate H.
-
-            clear H.
-            pose proof (Hs₄ (S dj₅ + dj₆ + dj₇ - di₂)) as H.
-            rewrite Nat.add_sub_assoc in H.
-             rewrite Nat.add_shuffle0, Nat.add_sub in H.
-             do 2 rewrite Nat.add_assoc in H.
-             rewrite Ps₇ in H; discriminate H.
-
-             eapply Nat.le_trans; eauto .
-             rewrite <- Nat.add_assoc.
-             apply Nat.le_sub_le_add_l.
-             rewrite Nat.sub_diag.
-             apply Nat.le_0_l.
-
-           rewrite xorb_true_r in H.
-           apply negb_sym in H.
-           rewrite negb_involutive in H.
-           destruct dj₆.
-            rewrite Nat.add_0_r in H.
-            rewrite H in Ps₅.
-            rewrite Nat.add_0_r in Ps₇.
-            rewrite Ps₇ in Ps₅.
-            rewrite xorb_true_r in Ps₅.
-            destruct a .[ si + S dj₅]; discriminate Ps₅.
-
-            rename H into Hba.
-            pose proof (Pn₆ dj₆ (Nat.lt_succ_diag_r dj₆)) as H.
-            rewrite Nat.add_succ_r, <- Nat.add_succ_l in Hba.
-            rewrite <- Nat.add_succ_l in Hba.
-            rewrite <- Heqssi in Hba.
-            rewrite Hba in H.
-            destruct a .[ ssi + S dj₅ + dj₆]; discriminate H.
-
-          pose proof (Hs₁ (S dj₅)) as H.
-          unfold rm_add_i in H.
-          rewrite <- Nat.add_succ_l, <- Heqssi in H; simpl in H.
-          rewrite xorb_false_r in H.
-          remember (fst_same a 0 (ssi + S dj₅)) as s₇ eqn:Ps₇ .
-          symmetry in Ps₇.
-          apply fst_same_iff in Ps₇; simpl in Ps₇.
-          destruct s₇ as [dj₇| ].
-           destruct Ps₇ as (Pn₇, Ps₇); rewrite Ps₇, xorb_false_r in H.
-           clear H.
-           pose proof (Hs₄ (S dj₅ + dj₇ - di₂)) as H.
-           rewrite Nat.add_sub_swap in H; auto.
-           rewrite Nat.add_assoc in H.
-           rewrite Nat.add_sub_assoc in H; auto.
-           rewrite Nat.add_shuffle0, Nat.add_sub in H.
-           rewrite Ps₇ in H; discriminate H.
-
-           rewrite xorb_true_r in H.
-           apply negb_sym in H.
-           rewrite negb_involutive in H.
-           rewrite H in Ps₅.
-           destruct a .[ si + S dj₅]; discriminate Ps₅.
-
-         apply Nat.nlt_ge in H₃.
-         apply Nat.le_antisymm; auto.
-
-       rewrite H in Ps₅.
-       unfold rm_add_i in Ps₅.
-       rewrite <- Nat.add_succ_l, <- Heqssi in Ps₅.
-       remember (fst_same a b (ssi + di₂)) as s₆ eqn:Ps₆ .
-       symmetry in Ps₆.
-       apply fst_same_iff in Ps₆; simpl in Ps₆.
-       destruct s₆ as [dj₆| ].
-        rewrite Hs₄, Hs₂, xorb_true_r in Ps₅.
-        destruct b .[ si + di₂]; discriminate Ps₅.
-
-        rewrite Hs₂, xorb_true_r in Ps₅.
-        destruct b .[ si + di₂]; discriminate Ps₅.
-
-   symmetry; simpl.
-   assert (∀ dj, b .[ si + dj] = true) as Hb.
-    intros dj.
-    apply negb_false_iff.
-    rewrite <- Hs₁.
-    unfold rm_add_i.
-    rewrite <- Nat.add_succ_l; remember (S si) as ssi; simpl.
-    rewrite xorb_false_r.
-    remember (fst_same a 0 (ssi + dj)) as s₄ eqn:Hs₄ .
-    symmetry in Hs₄.
-    apply fst_same_iff in Hs₄; simpl in Hs₄.
-    destruct s₄ as [di₄| ]; [ idtac | rewrite Hs₃; reflexivity ].
-    destruct Hs₄ as (Hn₄, Hs₄).
-    rewrite Heqssi, Nat.add_succ_l, <- Nat.add_succ_r in Hs₄.
-    rewrite <- Nat.add_assoc, Hs₃ in Hs₄; discriminate Hs₄.
-
-    destruct di₂.
-     rewrite Nat.add_0_r in Hs₂; rewrite Nat.add_0_r.
-     clear Hn₂.
-     unfold rm_add_i in Ps₅.
-     rewrite <- Nat.add_succ_l in Ps₅; remember (S si) as ssi; simpl in Ps₅.
-     rewrite Hs₃, Hb, xorb_true_r in Ps₅.
-     rewrite xorb_false_l in Ps₅.
-     remember (fst_same a b (ssi + dj₅)) as s₆ eqn:Ps₆ .
-     symmetry in Ps₆.
-     apply fst_same_iff in Ps₆; simpl in Ps₆.
-     destruct s₆ as [dj₆| ]; [ idtac | discriminate Ps₅ ].
-     rewrite Heqssi, Nat.add_succ_l, <- Nat.add_succ_r in Ps₅.
-     rewrite <- Nat.add_assoc, Hs₃ in Ps₅; discriminate Ps₅.
-
-     pose proof (Hn₂ 0 (Nat.lt_0_succ di₂)) as H.
-     rewrite Hs₃, Hb in H; discriminate H.
-
-  destruct s₃ as [di₃| ].
-   destruct Hs₃ as (Hn₃, Hs₃); rewrite Hs₃; reflexivity.
-
-   pose proof (Hs₁ 0) as H.
-   rewrite Nat.add_0_r in H.
-   unfold rm_add_i in H.
-   remember (S si) as ssi; simpl in H.
-   rewrite xorb_false_r in H.
-   remember (fst_same a 0 ssi) as s₄ eqn:Hs₄ .
-   symmetry in Hs₄.
-   apply fst_same_iff in Hs₄; simpl in Hs₄.
-   destruct s₄ as [di₄| ].
-    destruct Hs₄ as (Hn₄, Hs₄).
-    rewrite Heqssi, Nat.add_succ_l, <- Nat.add_succ_r in Hs₄.
-    rewrite Hs₃ in Hs₄; discriminate Hs₄.
-
-    rewrite xorb_true_r in H.
-    apply negb_sym in H.
-    rewrite negb_involutive in H.
-    pose proof (Hs₂ 0) as H₁.
-    rewrite Nat.add_0_r, H in H₁.
-    destruct a .[ si]; discriminate H₁.
+ eapply rm_add_add_0_l_when_lhs_has_no_relay; eauto .
 Qed.
 
 Theorem yyy : ∀ a b, (a + 0 + b = a + b)%rm.
@@ -1667,7 +1678,7 @@ remember (fst_same (a + b) 0 (S i)) as s₅ eqn:Hs₅ .
 symmetry in Hs₂, Hs₅.
 destruct s₂ as [di₂| ].
  destruct s₅ as [di₅| ].
-  eapply rm_add_0_l_when_both_hs_has_relay; eauto .
+  eapply rm_add_add_0_l_when_both_hs_has_relay; eauto .
 
 bbb.
   destruct (bool_dec a .[ si] b .[ si]) as [H₁| H₁].
