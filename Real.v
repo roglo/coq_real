@@ -1903,6 +1903,27 @@ destruct s₈ as [di₈| ].
  rewrite Ha, Hb in H; discriminate H.
 Qed.
 
+Theorem rm_add_add_0_l_when_no_relay : ∀ a b i di₂,
+  fst_same (a + 0%rm) b (S i) = None
+  → fst_same ((a + 0)%rm + b) 0 (S i) = Some di₂
+  → fst_same (a + b) 0 (S i) ≠ None.
+Proof.
+intros a b i di₂ Hs₁ Hs₂ Hs₅.
+apply fst_same_iff in Hs₁.
+apply fst_same_iff in Hs₅.
+remember (S i) as si; simpl in Hs₁, Hs₅.
+pose proof (Hs₁ 0) as H; rewrite Nat.add_0_r in H.
+unfold rm_add_i in H.
+remember (S si) as ssi; simpl in H.
+rewrite xorb_false_r in H.
+remember (fst_same a 0 ssi) as s₃ eqn:Hs₃ .
+apply fst_same_sym_iff in Hs₃; simpl in Hs₃.
+destruct s₃ as [di₃| ].
+ destruct Hs₃ as (Hn₃, Hs₃); rewrite Hs₃, xorb_false_r in H.
+ apply rm_add_inf_true_neq_if in Hs₅; auto.
+ destruct Hs₅ as (j, (Hij, (Hni, (Ha, (Hb, (Hat, Hbt)))))).
+bbb.
+
 Theorem xxx : ∀ a b i di₂,
   fst_same ((a + 0)%rm + b) 0 (S i) = Some di₂
   → fst_same (a + b) 0 (S i) = None
