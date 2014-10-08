@@ -1739,6 +1739,43 @@ destruct s₈ as [di₈| ].
       apply fst_same_sym_iff in Hs₅; simpl in Hs₅.
       destruct s₅ as [di₅| ].
        destruct Hs₅ as (Hn₅, Hs₅); rewrite Hs₅, xorb_false_r in Hs₄.
+       destruct (lt_dec j (si + di₄)) as [H₂| H₂].
+        pose proof (Hat (si + di₄ + di₅ - j)) as H₃.
+        rewrite <- Nat.sub_succ_l in H₃.
+         rewrite Nat.add_sub_assoc in H₃.
+          rewrite Nat.add_comm, Nat.add_sub in H₃.
+          do 2 rewrite <- Nat.add_succ_l in H₃.
+          rewrite <- Heqssi, Hs₅ in H₃; discriminate H₃.
+
+          apply Nat.lt_le_incl.
+          eapply Nat.lt_le_trans; [ eauto  | idtac ].
+          rewrite <- Nat.add_succ_r.
+          apply Nat.le_sub_le_add_l.
+          rewrite Nat.sub_diag; apply Nat.le_0_l.
+
+         apply Nat.lt_le_incl.
+         eapply Nat.lt_le_trans; eauto .
+         apply Nat.le_sub_le_add_l.
+         rewrite Nat.sub_diag; apply Nat.le_0_l.
+
+        apply Nat.nlt_ge in H₂.
+        destruct (lt_dec (si + di₄) j) as [H₃| H₃].
+         remember H₃ as H; clear HeqH.
+         apply Hni in H.
+         rewrite Hs₄ in H.
+         destruct b .[ si + di₄]; discriminate H.
+
+         apply Nat.nlt_ge in H₃.
+         apply Nat.le_antisymm in H₂; auto.
+         pose proof (Hat di₅) as H.
+         rewrite H₂, Nat.add_succ_r in H.
+         do 2 rewrite <- Nat.add_succ_l in H.
+         rewrite <- Heqssi, Hs₅ in H.
+         discriminate H.
+
+       rewrite xorb_true_r in Hs₄.
+       symmetry in Hs₄.
+       apply negb_sym in Hs₄.
 bbb.
 
 Theorem xxx : ∀ a b i di₂,
