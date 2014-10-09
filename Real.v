@@ -1907,20 +1907,62 @@ Theorem rm_add_add_0_l_when_no_relay : ∀ a b i di₂,
   → rm_add_i (a + 0%rm) b i = negb (rm_add_i a b i).
 Proof.
 intros a b i di₂ Hs₁ Hs₂ Hs₅.
-bbb.
+unfold rm_add_i.
+remember (S i) as si; simpl.
+rewrite Hs₁.
+rewrite negb_xorb_l, negb_xorb_r.
+rewrite xorb_true_r, negb_xorb_r.
+unfold rm_add_i.
+rewrite <- Heqsi; simpl.
+rewrite xorb_false_r.
+do 2 rewrite xorb_assoc; f_equal.
+rewrite xorb_comm; f_equal.
 apply fst_same_iff in Hs₁.
+apply fst_same_iff in Hs₂.
 apply fst_same_iff in Hs₅.
-remember (S i) as si; simpl in Hs₁, Hs₅.
-pose proof (Hs₁ 0) as H; rewrite Nat.add_0_r in H.
-unfold rm_add_i in H.
-remember (S si) as ssi; simpl in H.
-rewrite xorb_false_r in H.
-remember (fst_same a 0 ssi) as s₃ eqn:Hs₃ .
+simpl in Hs₁, Hs₂, Hs₅.
+destruct Hs₂ as (Hn₂, Hs₂).
+remember (fst_same a 0 si) as s₃ eqn:Hs₃ .
 apply fst_same_sym_iff in Hs₃; simpl in Hs₃.
 destruct s₃ as [di₃| ].
- destruct Hs₃ as (Hn₃, Hs₃); rewrite Hs₃, xorb_false_r in H.
- apply rm_add_inf_true_neq_if in Hs₅; auto.
- destruct Hs₅ as (j, (Hij, (Hni, (Ha, (Hb, (Hat, Hbt)))))).
+ destruct Hs₃ as (Hn₃, Hs₃); rewrite Hs₃.
+ remember (fst_same a b si) as s₄ eqn:Hs₄ .
+ apply fst_same_sym_iff in Hs₄; simpl in Hs₄.
+ destruct s₄ as [di₄| ].
+  destruct Hs₄ as (Hn₄, Hs₄).
+  symmetry.
+  pose proof (Hs₁ 0) as H; rewrite Nat.add_0_r in H.
+  unfold rm_add_i in H.
+  remember (S si) as ssi; simpl in H.
+  rewrite xorb_false_r in H.
+  remember (fst_same a 0 ssi) as s₆ eqn:Hs₆ .
+  apply fst_same_sym_iff in Hs₆; simpl in Hs₆.
+  destruct s₆ as [di₆| ].
+   destruct Hs₆ as (Hn₆, Hs₆); rewrite Hs₆, xorb_false_r in H.
+   apply rm_add_inf_true_neq_if in Hs₅; auto.
+   destruct Hs₅ as (j, (Hij, (Hni, (Ha, (Hb, (Hat, Hbt)))))).
+   rename H into Hab.
+   destruct (lt_dec (si + di₄) j) as [H₁| H₁].
+    remember H₁ as H; clear HeqH.
+    apply Hni in H.
+    rewrite Hs₄ in H.
+    destruct b .[ si + di₄]; discriminate H.
+
+    apply Nat.nlt_ge in H₁.
+    destruct (lt_dec j (si + di₄)) as [H₂| H₂].
+     assert (j - si < di₄) as H by omega.
+     apply Hn₄ in H.
+     apply Nat.lt_le_incl in Hij.
+     rewrite Nat.add_sub_assoc in H; auto.
+     rewrite Nat.add_comm, Nat.add_sub in H.
+     rewrite Ha, Hb in H; discriminate H.
+
+     apply Nat.nlt_ge in H₂.
+     apply Nat.le_antisymm in H₂; auto.
+     rewrite <- H₂, Hb in Hs₄.
+     rewrite <- H₂; assumption.
+
+   simpl.
 bbb.
 *)
 
