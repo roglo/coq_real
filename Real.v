@@ -1968,6 +1968,16 @@ destruct s₃ as [di₃| ].
    symmetry in H.
    apply rm_add_inf_true_eq_if in Hs₅; auto.
    destruct Hs₅ as (Hat, Hbt).
+   destruct di₄.
+    destruct di₃; [ assumption | idtac ].
+    rewrite Hat in Hs₃; discriminate Hs₃.
+
+    rename H into Hab.
+    pose proof (Hn₄ 0 (Nat.lt_0_succ di₄)) as H.
+    rewrite Nat.add_0_r, Hab in H.
+    destruct b .[ si]; discriminate H.
+
+  simpl.
 bbb.
 *)
 
