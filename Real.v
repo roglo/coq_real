@@ -2030,6 +2030,55 @@ remember (S i) as si; simpl.
 do 2 rewrite xorb_false_r.
 apply fst_same_iff in Hs₅; simpl in Hs₅.
 destruct Hs₅ as (Hn₅, Hs₅); rewrite Hs₅, xorb_false_r.
+unfold rm_add_i.
+rewrite <- Heqsi; simpl.
+bbb.
+
+destruct di₅.
+ clear Hn₅; rewrite Nat.add_0_r in Hs₅.
+ unfold rm_add_i in Hs₅.
+ remember (S si) as ssi.
+ remember (fst_same a b ssi) as s₁ eqn:Hs₁ .
+ apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
+ destruct s₁ as [di₁| ].
+  destruct Hs₁ as (Hn₁, Hs₁).
+  unfold rm_add_i at 1.
+  rewrite <- Heqsi; simpl.
+  rewrite xorb_false_r.
+  remember (fst_same a 0 si) as s₃ eqn:Hs₃ .
+  apply fst_same_sym_iff in Hs₃; simpl in Hs₃.
+  destruct s₃ as [di₃| ].
+   destruct Hs₃ as (Hn₃, Hs₃).
+   rewrite Hs₃, xorb_false_r.
+   rewrite xorb_assoc; f_equal.
+   remember (fst_same (a + 0%rm) b si) as s₄ eqn:Hs₄ .
+   apply fst_same_sym_iff in Hs₄; simpl in Hs₄.
+   destruct s₄ as [di₄| ].
+    destruct Hs₄ as (Hn₄, Hs₄); rewrite Hs₄.
+    remember (fst_same a b si) as s₆ eqn:Hs₆ .
+    apply fst_same_sym_iff in Hs₆; simpl in Hs₆.
+    destruct s₆ as [di₆| ].
+     destruct Hs₆ as (Hn₆, Hs₆).
+     destruct (lt_dec di₄ di₆) as [H₁| H₁].
+      remember H₁ as H; clear HeqH.
+      apply Hn₆ in H.
+      unfold rm_add_i in Hs₄.
+      rewrite <- Nat.add_succ_l, <- Heqssi in Hs₄; simpl in Hs₄.
+      rewrite xorb_false_r in Hs₄.
+      remember (fst_same a 0 (ssi + di₄)) as s₇ eqn:Hs₇ .
+      apply fst_same_sym_iff in Hs₇; simpl in Hs₇.
+      destruct s₇ as [di₇| ].
+       destruct Hs₇ as (Hn₇, Hs₇); rewrite Hs₇, xorb_false_r in Hs₄.
+       rewrite Hs₄ in H.
+       destruct b .[ si + di₄]; discriminate H.
+
+       pose proof (Hs₇ (di₆ - S di₄)) as H₂.
+       rewrite Heqssi in H₂.
+       rewrite Nat.add_succ_l, <- Nat.add_succ_r in H₂.
+       rewrite Nat.add_sub_assoc in H₂; auto.
+       rewrite Nat.add_shuffle0, Nat.add_sub in H₂.
+       rewrite H₂.
+       rewrite <- Hs₄.
 bbb.
 
 Theorem yyy : ∀ a b, (a + 0 + b = a + b)%rm.
