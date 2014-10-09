@@ -1900,13 +1900,12 @@ destruct s₈ as [di₈| ].
  rewrite Ha, Hb in H; discriminate H.
 Qed.
 
-Theorem rm_add_add_0_l_when_no_relay : ∀ a b i di₂,
+Theorem rm_add_add_0_l_when_no_relay : ∀ a b i,
   fst_same (a + 0%rm) b (S i) = None
-  → fst_same ((a + 0)%rm + b) 0 (S i) = Some di₂
   → fst_same (a + b) 0 (S i) = None
   → rm_add_i (a + 0%rm) b i = negb (rm_add_i a b i).
 Proof.
-intros a b i di₂ Hs₁ Hs₂ Hs₅.
+intros a b i Hs₁ Hs₅.
 unfold rm_add_i.
 remember (S i) as si; simpl.
 rewrite Hs₁.
@@ -1918,10 +1917,8 @@ rewrite xorb_false_r.
 do 2 rewrite xorb_assoc; f_equal.
 rewrite xorb_comm; f_equal.
 apply fst_same_iff in Hs₁.
-apply fst_same_iff in Hs₂.
 apply fst_same_iff in Hs₅.
-simpl in Hs₁, Hs₂, Hs₅.
-destruct Hs₂ as (Hn₂, Hs₂).
+simpl in Hs₁, Hs₅.
 remember (fst_same a 0 si) as s₃ eqn:Hs₃ .
 apply fst_same_sym_iff in Hs₃; simpl in Hs₃.
 destruct s₃ as [di₃| ].
@@ -1994,10 +1991,12 @@ destruct s₃ as [di₃| ].
    rewrite H₁ in H.
    rewrite negb_xorb_diag in H.
    discriminate H.
-bbb.
-*)
 
-Theorem xxx : ∀ a b i di₂,
+ destruct (fst_same a b si) as [di| ]; [ idtac | reflexivity ].
+ rewrite Hs₃; reflexivity.
+Qed.
+
+Theorem rm_add_add_0_l_when_rhs_has_no_relay : ∀ a b i di₂,
   fst_same ((a + 0)%rm + b) 0 (S i) = Some di₂
   → fst_same (a + b) 0 (S i) = None
   → rm_add_i ((a + 0)%rm + b) 0 i = rm_add_i (a + b) 0 i.
@@ -2016,7 +2015,9 @@ symmetry in Hs₁; subst si.
 destruct s₁ as [di₁| ].
  exfalso.
  eapply rm_add_add_0_l_when_relay; eauto .
-bbb.
+
+ eapply rm_add_add_0_l_when_no_relay; eauto .
+Qed.
 
 Theorem yyy : ∀ a b, (a + 0 + b = a + b)%rm.
 Proof.
@@ -2029,6 +2030,7 @@ destruct s₂ as [di₂| ].
  destruct s₅ as [di₅| ].
   eapply rm_add_add_0_l_when_both_hs_has_relay; eauto .
 
+  eapply rm_add_add_0_l_when_rhs_has_no_relay; eauto .
 bbb.
   destruct (bool_dec a .[ si] b .[ si]) as [H₁| H₁].
    apply rm_add_inf_true_eq_if in Hs₅; auto.
