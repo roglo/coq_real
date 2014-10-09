@@ -1676,12 +1676,11 @@ destruct s₁ as [di₁| ].
  eapply rm_add_add_0_l_when_lhs_has_no_relay; eauto .
 Qed.
 
-Theorem rm_add_add_0_l_when_relay : ∀ a b i di₁ di₂,
+Theorem rm_add_add_0_l_when_relay : ∀ a b i di₁,
   fst_same (a + 0%rm) b (S i) = Some di₁
-  → fst_same ((a + 0)%rm + b) 0 (S i) = Some di₂
   → fst_same (a + b) 0 (S i) ≠ None.
 Proof.
-intros a b i di₁ di₂ Hs₁ Hs₂ Hs₅.
+intros a b i di₁ Hs₁ Hs₅.
 apply rm_add_add_0_l_when_lhs_has_relay in Hs₁.
 remember (S i) as si.
 unfold rm_add_i in Hs₁.
@@ -1690,8 +1689,6 @@ unfold rm_add_i in Hs₁ at 1.
 rewrite <- Heqsi in Hs₁; simpl in Hs₁.
 rewrite xorb_false_r in Hs₁.
 apply fst_same_iff in Hs₅; simpl in Hs₅.
-apply fst_same_iff in Hs₂; simpl in Hs₂.
-destruct Hs₂ as (Hn₂, Hs₂).
 remember (fst_same a b si) as s₈ eqn:Hs₈ .
 apply fst_same_sym_iff in Hs₈.
 destruct s₈ as [di₈| ].
