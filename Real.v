@@ -2031,67 +2031,20 @@ destruct s₂ as [di₂| ].
   eapply rm_add_add_0_l_when_both_hs_has_relay; eauto .
 
   eapply rm_add_add_0_l_when_rhs_has_no_relay; eauto .
-bbb.
-  destruct (bool_dec a .[ si] b .[ si]) as [H₁| H₁].
-   apply rm_add_inf_true_eq_if in Hs₅; auto.
-   unfold id in Hs₅.
-   destruct di₂.
-    clear Hn₂; rewrite Nat.add_0_r in Hs₂.
-    unfold rm_add_i in Hs₂.
-    remember (S si) as ssi; simpl in Hs₂.
-    remember (fst_same (a + 0%rm) b ssi) as s₃ eqn:Hs₃ .
-    apply fst_same_sym_iff in Hs₃; simpl in Hs₃.
-    destruct s₃ as [di₃| ].
-     destruct Hs₃ as (Hn₃, Hs₃).
-     rewrite Hs₃ in Hs₂.
-     rewrite Heqssi, Nat.add_succ_l, <- Nat.add_succ_r in Hs₂.
-     pose proof (Hs₅ di₃) as H; destruct H as (_, H).
-     rewrite H, xorb_true_r in Hs₂; clear H.
-     apply negb_false_iff in Hs₂.
 
-bbb.
-   Focus 2.
-   apply neq_negb in H₁.
-   apply rm_add_inf_true_neq_if in Hs₅; auto.
-   destruct Hs₅ as (j, (Hij, (Hdi, (Haj, (Hbj, Habj))))).
-
-bbb.
+ unfold rm_add_i.
+ remember (S i) as si; simpl.
+ rewrite Hs₂, Hs₅.
+ do 2 rewrite xorb_false_r; rewrite xorb_true_r.
+ apply fst_same_iff in Hs₅; simpl in Hs₅.
+ destruct s₅ as [di₅| ].
+  destruct Hs₅ as (Hn₅, Hs₅); rewrite Hs₅, xorb_false_r.
+  apply fst_same_iff in Hs₂; simpl in Hs₂.
   unfold rm_add_i.
   rewrite <- Heqsi; simpl.
-  remember (fst_same (a + 0%rm) b si) as s₁ eqn:Hs₁ .
-  remember (fst_same a b si) as s₃ eqn:Hs₃ .
-  symmetry in Hs₁, Hs₃.
-  apply fst_same_iff in Hs₁; simpl in Hs₁.
-  destruct s₁ as [di₁| ].
-   destruct Hs₁ as (Hn₁, Hs₁).
-   rewrite Hs₁.
-   apply fst_same_iff in Hs₃; simpl in Hs₃.
-   destruct s₃ as [di₃| ].
-    destruct Hs₃ as (Hn₃, Hs₃).
-    unfold rm_add_i.
-    rewrite <- Heqsi; simpl.
-    rewrite xorb_false_r.
-    do 4 rewrite xorb_assoc; f_equal.
-    rewrite xorb_comm, xorb_assoc; f_equal.
-    rewrite xorb_true_r.
-    remember (fst_same a 0 si) as s₄ eqn:Hs₄ .
-    symmetry in Hs₄.
-    apply fst_same_iff in Hs₄; simpl in Hs₄.
-    destruct s₄ as [di₄| ].
-     destruct Hs₄ as (Hn₄, Hs₄); rewrite Hs₄, xorb_false_r.
-     destruct (lt_dec di₁ di₃) as [H₁| H₁].
-      remember H₁ as H; clear HeqH.
-      apply Hn₃ in H.
-      rewrite <- Hs₁.
-      unfold rm_add_i.
-      rewrite <- Nat.add_succ_l; remember (S si) as ssi; simpl.
-      rewrite xorb_false_r.
-      remember (fst_same a 0 (ssi + di₁)) as s₆ eqn:Hs₆ .
-      symmetry in Hs₆.
-      apply fst_same_iff in Hs₆; simpl in Hs₆.
-      destruct s₆ as [di₆| ].
-       destruct Hs₆ as (Hn₆, Hs₆); rewrite Hs₆, xorb_false_r.
-
+  pose proof (Hs₂ 0) as H; rewrite Nat.add_0_r in H.
+  unfold rm_add_i in H.
+  remember (S si) as ssi; simpl in H.
 bbb.
 *)
 
