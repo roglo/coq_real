@@ -2028,6 +2028,8 @@ intros a b i di₅ Hs₂ Hs₅.
 unfold rm_add_i; rewrite Hs₂, Hs₅.
 remember (S i) as si; simpl.
 do 2 rewrite xorb_false_r.
+apply fst_same_iff in Hs₅; simpl in Hs₅.
+destruct Hs₅ as (Hn₅, Hs₅); rewrite Hs₅, xorb_false_r.
 bbb.
 
 Theorem yyy : ∀ a b, (a + 0 + b = a + b)%rm.
