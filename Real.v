@@ -1903,9 +1903,11 @@ Qed.
 Theorem rm_add_add_0_l_when_no_relay : ∀ a b i di₂,
   fst_same (a + 0%rm) b (S i) = None
   → fst_same ((a + 0)%rm + b) 0 (S i) = Some di₂
-  → fst_same (a + b) 0 (S i) ≠ None.
+  → fst_same (a + b) 0 (S i) = None
+  → rm_add_i (a + 0%rm) b i = negb (rm_add_i a b i).
 Proof.
 intros a b i di₂ Hs₁ Hs₂ Hs₅.
+bbb.
 apply fst_same_iff in Hs₁.
 apply fst_same_iff in Hs₅.
 remember (S i) as si; simpl in Hs₁, Hs₅.
@@ -1920,6 +1922,7 @@ destruct s₃ as [di₃| ].
  apply rm_add_inf_true_neq_if in Hs₅; auto.
  destruct Hs₅ as (j, (Hij, (Hni, (Ha, (Hb, (Hat, Hbt)))))).
 bbb.
+*)
 
 Theorem xxx : ∀ a b i di₂,
   fst_same ((a + 0)%rm + b) 0 (S i) = Some di₂
