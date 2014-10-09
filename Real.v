@@ -1962,7 +1962,12 @@ destruct s₃ as [di₃| ].
      rewrite <- H₂, Hb in Hs₄.
      rewrite <- H₂; assumption.
 
-   simpl.
+   rewrite xorb_true_r in H.
+   apply negb_sym in H.
+   rewrite negb_involutive in H.
+   symmetry in H.
+   apply rm_add_inf_true_eq_if in Hs₅; auto.
+   destruct Hs₅ as (Hat, Hbt).
 bbb.
 *)
 
