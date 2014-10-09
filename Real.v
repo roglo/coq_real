@@ -2030,6 +2030,8 @@ remember (S i) as si; simpl.
 do 2 rewrite xorb_false_r.
 apply fst_same_iff in Hs₅; simpl in Hs₅.
 destruct Hs₅ as (Hn₅, Hs₅); rewrite Hs₅, xorb_false_r.
+rewrite xorb_true_r.
+symmetry; apply negb_sym.
 bbb.
 unfold rm_add_i.
 rewrite <- Heqsi; simpl.
