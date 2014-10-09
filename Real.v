@@ -2019,6 +2019,17 @@ destruct s₁ as [di₁| ].
  eapply rm_add_add_0_l_when_no_relay; eauto .
 Qed.
 
+Theorem xxx : ∀ a b i di₅,
+  fst_same ((a + 0)%rm + b) 0 (S i) = None
+  → fst_same (a + b) 0 (S i) = Some di₅
+  → rm_add_i ((a + 0)%rm + b) 0 i = rm_add_i (a + b) 0 i.
+Proof.
+intros a b i di₅ Hs₂ Hs₅.
+unfold rm_add_i; rewrite Hs₂, Hs₅.
+remember (S i) as si; simpl.
+do 2 rewrite xorb_false_r.
+bbb.
+
 Theorem yyy : ∀ a b, (a + 0 + b = a + b)%rm.
 Proof.
 intros a b.
@@ -2032,6 +2043,8 @@ destruct s₂ as [di₂| ].
 
   eapply rm_add_add_0_l_when_rhs_has_no_relay; eauto .
 
+ destruct s₅ as [di₅| ].
+bbb.
  unfold rm_add_i.
  remember (S i) as si; simpl.
  rewrite Hs₂, Hs₅.
