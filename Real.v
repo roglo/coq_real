@@ -1977,7 +1977,23 @@ destruct s₃ as [di₃| ].
     rewrite Nat.add_0_r, Hab in H.
     destruct b .[ si]; discriminate H.
 
-  simpl.
+  pose proof (Hs₅ 0) as H.
+  rewrite Nat.add_0_r in H.
+  unfold rm_add_i in H.
+  remember (S si) as ssi; simpl in H.
+  remember (fst_same a b ssi) as s₆ eqn:Hs₆ .
+  apply fst_same_sym_iff in Hs₆; simpl in Hs₆.
+  destruct s₆ as [di₆| ].
+   destruct Hs₆ as (Hn₆, Hs₆).
+   rewrite Heqssi, Nat.add_succ_l, <- Nat.add_succ_r in Hs₆.
+   rewrite Hs₄ in Hs₆.
+   destruct b .[ si + S di₆]; discriminate Hs₆.
+
+   pose proof (Hs₄ 0) as H₁.
+   rewrite Nat.add_0_r in H₁.
+   rewrite H₁ in H.
+   rewrite negb_xorb_diag in H.
+   discriminate H.
 bbb.
 *)
 
