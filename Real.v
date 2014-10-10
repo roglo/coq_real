@@ -2093,6 +2093,7 @@ destruct s₃ as [di₃| ].
       subst di₆; clear H₁.
       clear Hs₆.
 bbb.
+*)
 
 Theorem yyy : ∀ a b, (a + 0 + b = a + b)%rm.
 Proof.
