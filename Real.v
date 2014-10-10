@@ -2059,6 +2059,40 @@ destruct s₃ as [di₃| ].
    apply fst_same_sym_iff in Hs₇; simpl in Hs₇.
    destruct s₇ as [di₇| ].
     destruct Hs₇ as (Hn₇, Hs₇); rewrite Hs₇, xorb_false_r in Hn₄.
+    destruct (lt_dec di₄ di₆) as [H₁| H₁].
+     apply Hn₆ in H₁.
+     rewrite Hn₄ in H₁.
+     destruct b .[ si + di₄]; discriminate H₁.
+
+     apply Nat.nlt_ge in H₁.
+     destruct (lt_dec di₆ di₄) as [H₂| H₂].
+      remember H₂ as H; clear HeqH.
+      apply Hs₄ in H.
+      unfold rm_add_i in H.
+      rewrite <- Nat.add_succ_l, <- Heqssi in H; simpl in H.
+      rewrite xorb_false_r in H.
+      remember (fst_same a 0 (ssi + di₆)) as s₈ eqn:Hs₈ .
+      apply fst_same_sym_iff in Hs₈; simpl in Hs₈.
+      destruct s₈ as [di₈| ].
+       destruct Hs₈ as (Hn₈, Hs₈); rewrite Hs₈, xorb_false_r in H.
+       rewrite Hs₆ in H.
+       destruct b .[ si + di₆]; discriminate H.
+
+       clear H.
+       pose proof (Hs₈ (di₄ + di₇ - di₆)) as H.
+       rewrite Nat.add_sub_assoc in H.
+        rewrite Nat.add_shuffle0, Nat.add_sub, Nat.add_assoc in H.
+        rewrite Hs₇ in H; discriminate H.
+
+        eapply le_trans; [ eauto  | idtac ].
+        apply Nat.le_sub_le_add_l.
+        rewrite Nat.sub_diag.
+        apply Nat.le_0_l.
+
+      apply Nat.nlt_ge in H₂.
+      apply Nat.le_antisymm in H₂; auto.
+      subst di₆; clear H₁.
+      clear Hs₆.
 bbb.
 
 Theorem yyy : ∀ a b, (a + 0 + b = a + b)%rm.
