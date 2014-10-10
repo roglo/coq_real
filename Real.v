@@ -2109,6 +2109,20 @@ destruct s₄ as [di₄| ].
  destruct b .[ si + S di₁]; discriminate Hs₁.
 Qed.
 
+Theorem xxx : ∀ a b i,
+  fst_same ((a + 0)%rm + b) 0 (S i) = None
+  → fst_same (a + b) 0 (S i) = None
+  → rm_add_i ((a + 0)%rm + b) 0 i = rm_add_i (a + b) 0 i.
+Proof.
+intros a b i Hs₂ Hs₅.
+unfold rm_add_i.
+remember (S i) as si; simpl.
+rewrite Hs₂, Hs₅.
+f_equal; f_equal.
+apply fst_same_iff in Hs₂; simpl in Hs₂.
+apply fst_same_iff in Hs₅; simpl in Hs₅.
+bbb.
+
 Theorem yyy : ∀ a b, (a + 0 + b = a + b)%rm.
 Proof.
 intros a b.
