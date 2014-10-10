@@ -2090,8 +2090,9 @@ destruct s₃ as [di₃| ].
 
       apply Nat.nlt_ge in H₂.
       apply Nat.le_antisymm in H₂; auto.
-      subst di₆; clear H₁.
-      clear Hs₆.
+      subst di₆; clear H₁ Hs₆.
+      destruct di₄.
+       clear Hs₄ Hn₆; rewrite Nat.add_0_r in Hn₇, Hs₇, Hn₄.
 bbb.
 *)
 
