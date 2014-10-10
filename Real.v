@@ -2094,6 +2094,10 @@ destruct s₄ as [di₄| ].
 
     rewrite Nat.add_succ_r, <- Nat.add_succ_l, <- Heqssi in H.
     rewrite Hs₇ in H; discriminate H.
+
+  pose proof (Hs₄ 0 (Nat.lt_0_succ di₄)) as H; rewrite Nat.add_0_r in H.
+  apply rm_add_inf_true_neq_if in Hs₂; auto; simpl in Hs₂.
+  destruct Hs₂ as (j, (Hij, (Hni, (Ha, (Hb, (Hat, Hbt)))))).
 bbb.
 *)
 
