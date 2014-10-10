@@ -2041,7 +2041,6 @@ apply fst_same_iff in Hs₂; simpl in Hs₂.
 remember (fst_same a 0 si) as s₃ eqn:Hs₃ .
 apply fst_same_sym_iff in Hs₃; simpl in Hs₃.
 destruct s₃ as [di₃| ].
- Focus 1.
  destruct Hs₃ as (Hn₃, Hs₃); rewrite Hs₃.
  rewrite xorb_false_r, negb_xorb_r; f_equal.
  remember (fst_same (a + 0%rm) b si) as s₄ eqn:Hs₄ .
