@@ -2052,6 +2052,13 @@ destruct s₃ as [di₃| ].
   apply fst_same_sym_iff in Hs₆; simpl in Hs₆.
   destruct s₆ as [di₆| ].
    destruct Hs₆ as (Hn₆, Hs₆).
+   unfold rm_add_i in Hn₄.
+   rewrite <- Nat.add_succ_l in Hn₄; remember (S si) as ssi; simpl in Hn₄.
+   rewrite xorb_false_r in Hn₄.
+   remember (fst_same a 0 (ssi + di₄)) as s₇ eqn:Hs₇ .
+   apply fst_same_sym_iff in Hs₇; simpl in Hs₇.
+   destruct s₇ as [di₇| ].
+    destruct Hs₇ as (Hn₇, Hs₇); rewrite Hs₇, xorb_false_r in Hn₄.
 bbb.
 
 Theorem yyy : ∀ a b, (a + 0 + b = a + b)%rm.
