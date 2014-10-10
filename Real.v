@@ -2083,26 +2083,17 @@ destruct s₄ as [di₄| ].
      rewrite P in H; clear P.
      discriminate H.
 
-   remember (fst_same a b si) as s₆ eqn:Hs₆ .
-   apply fst_same_sym_iff in Hs₆; simpl in Hs₆.
-   destruct s₆ as [di₆| ].
-    destruct Hs₆ as (Hn₆, Hs₆).
-    destruct di₆.
-     clear Hn₆; rewrite Nat.add_0_r in Hs₆ |- *.
-     rewrite Hs₆ in Hn₄.
-     destruct b .[ si]; discriminate Hn₄.
+   pose proof (Hn₂ 0) as H.
+   unfold rm_add_i in H.
+   rewrite <- Nat.add_succ_l, <- Heqssi in H; simpl in H.
+   rewrite xorb_false_r in H.
+   destruct (fst_same a 0 (ssi + 1)) as [dj| ].
+    rewrite <- Nat.add_assoc, Hs₇ in H.
+    rewrite Nat.add_succ_r, <- Nat.add_succ_l, <- Heqssi in H.
+    rewrite Hs₇ in H; discriminate H.
 
-     pose proof (Hn₂ 0) as H.
-     unfold rm_add_i in H.
-     rewrite <- Nat.add_succ_l, <- Heqssi in H; simpl in H.
-     rewrite xorb_false_r in H.
-     destruct (fst_same a 0 (ssi + 1)) as [dj| ].
-      rewrite <- Nat.add_assoc, Hs₇ in H.
-      rewrite Nat.add_succ_r, <- Nat.add_succ_l, <- Heqssi in H.
-      rewrite Hs₇ in H; discriminate H.
-
-      rewrite Nat.add_succ_r, <- Nat.add_succ_l, <- Heqssi in H.
-      rewrite Hs₇ in H; discriminate H.
+    rewrite Nat.add_succ_r, <- Nat.add_succ_l, <- Heqssi in H.
+    rewrite Hs₇ in H; discriminate H.
 bbb.
 *)
 
