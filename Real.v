@@ -2019,28 +2019,21 @@ destruct s₁ as [di₁| ].
  eapply rm_add_add_0_l_when_no_relay; eauto .
 Qed.
 
-Theorem xxx : ∀ a b i di₅,
-  fst_same ((a + 0)%rm + b) 0 (S i) = None
-  → fst_same (a + b) 0 (S i) = Some di₅
-  → rm_add_i ((a + 0)%rm + b) 0 i = rm_add_i (a + b) 0 i.
+Theorem rm_add_add_0_r_when_relay : ∀ a b i di₅,
+  fst_same (a + b) 0 (S i) = Some di₅
+  → fst_same ((a + 0)%rm + b) 0 (S i) ≠ None.
 Proof.
-intros a b i di₅ Hs₂ Hs₅.
-unfold rm_add_i; rewrite Hs₂, Hs₅.
-remember (S i) as si; simpl.
-do 2 rewrite xorb_false_r.
+intros a b i di₅ Hs₅ Hs₂.
+remember (S i) as si.
 apply fst_same_iff in Hs₅; simpl in Hs₅.
-destruct Hs₅ as (Hn₅, Hs₅); rewrite Hs₅, xorb_false_r.
-rewrite xorb_true_r.
-symmetry; apply negb_sym.
+destruct Hs₅ as (Hn₅, Hs₅).
 apply fst_same_iff in Hs₂; simpl in Hs₂.
-unfold rm_add_i.
-rewrite <- Heqsi; simpl.
 remember (fst_same (a + 0%rm) b si) as s₄ eqn:Hs₄ .
 apply fst_same_sym_iff in Hs₄; simpl in Hs₄.
 destruct s₄ as [di₄| ].
- destruct Hs₄ as (Hs₄, Hn₄); rewrite Hn₄.
+ destruct Hs₄ as (Hs₄, Hn₄).
  destruct di₄.
-  clear Hs₄; rewrite Nat.add_0_r in Hn₄ |- *.
+  clear Hs₄; rewrite Nat.add_0_r in Hn₄.
   apply rm_add_inf_true_eq_if in Hs₂; auto.
   destruct Hs₂ as (Hn₂, Hs₂); simpl in Hn₂.
   unfold rm_add_i in Hn₄.
@@ -2100,8 +2093,21 @@ destruct s₄ as [di₄| ].
   destruct Hs₂ as (j, (Hij, (Hni, (Ha, (Hb, (Hat, Hbt)))))).
   exfalso; eapply not_rm_add_0_inf_1 with (i := S j); intros dj.
   rewrite Nat.add_succ_l, <- Nat.add_succ_r; apply Hat.
-bbb.
-*)
+
+ pose proof (Hs₂ 0) as H; rewrite Nat.add_0_r in H.
+ unfold rm_add_i in H.
+ remember (S si) as ssi; simpl in H.
+ pose proof (Hs₄ 0) as P; rewrite Nat.add_0_r in P.
+ rewrite P, negb_xorb_diag, xorb_true_l in H.
+ apply negb_true_iff in H; clear P.
+ remember (fst_same (a + 0%rm) b ssi) as s₁ eqn:Hs₁ .
+ apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
+ destruct s₁ as [di₁| ]; [ idtac | discriminate H ].
+ destruct Hs₁ as (Hn₁, Hs₁); rewrite Hs₁ in H.
+ rewrite Heqssi, Nat.add_succ_l, <- Nat.add_succ_r in Hs₁.
+ rewrite Hs₄ in Hs₁.
+ destruct b .[ si + S di₁]; discriminate Hs₁.
+Qed.
 
 Theorem yyy : ∀ a b, (a + 0 + b = a + b)%rm.
 Proof.
@@ -2117,6 +2123,8 @@ destruct s₂ as [di₂| ].
   eapply rm_add_add_0_l_when_rhs_has_no_relay; eauto .
 
  destruct s₅ as [di₅| ].
+  exfalso; revert Hs₂.
+  eapply rm_add_add_0_r_when_relay; eauto .
 bbb.
  unfold rm_add_i.
  remember (S i) as si; simpl.
