@@ -2091,6 +2091,18 @@ destruct s₄ as [di₄| ].
      clear Hn₆; rewrite Nat.add_0_r in Hs₆ |- *.
      rewrite Hs₆ in Hn₄.
      destruct b .[ si]; discriminate Hn₄.
+
+     pose proof (Hn₂ 0) as H.
+     unfold rm_add_i in H.
+     rewrite <- Nat.add_succ_l, <- Heqssi in H; simpl in H.
+     rewrite xorb_false_r in H.
+     destruct (fst_same a 0 (ssi + 1)) as [dj| ].
+      rewrite <- Nat.add_assoc, Hs₇ in H.
+      rewrite Nat.add_succ_r, <- Nat.add_succ_l, <- Heqssi in H.
+      rewrite Hs₇ in H; discriminate H.
+
+      rewrite Nat.add_succ_r, <- Nat.add_succ_l, <- Heqssi in H.
+      rewrite Hs₇ in H; discriminate H.
 bbb.
 *)
 
