@@ -2069,96 +2069,29 @@ destruct s₄ as [di₄| ].
       destruct Hs₈ as (Hn₈, Hs₈); rewrite Hs₈ in H; discriminate H.
 
       clear H.
-      destruct di₇.
-       clear Hn₇; rewrite Nat.add_0_r in Hs₇, Hs₈.
-       pose proof (Hn₂ 1) as H.
-       rewrite Nat.add_succ_r, <- Nat.add_succ_l, <- Heqssi in H.
-       rewrite Nat.add_succ_r, <- Nat.add_succ_l, <- Heqsssi in H.
-       rewrite Nat.add_0_r in H.
-       unfold rm_add_i in H.
-       remember (S sssi) as ssssi; simpl in H.
-       rewrite xorb_false_r in H.
-       destruct (fst_same a 0 ssssi) as [dj| ].
-        pose proof (Hs₈ 0) as P; rewrite Nat.add_0_r in P.
-        rewrite P in H; clear P.
-        rewrite Heqssssi in H.
-        rewrite Nat.add_succ_l, <- Nat.add_succ_r, Hs₈ in H.
-        discriminate H.
-
-        pose proof (Hs₈ 0) as P; rewrite Nat.add_0_r in P.
-        rewrite P in H; clear P.
-        discriminate H.
-bbb.
-
-intros a b i di₅ Hs₂ Hs₅.
-unfold rm_add_i; rewrite Hs₂, Hs₅.
-remember (S i) as si; simpl.
-do 2 rewrite xorb_false_r.
-apply fst_same_iff in Hs₅; simpl in Hs₅.
-destruct Hs₅ as (Hn₅, Hs₅); rewrite Hs₅, xorb_false_r.
-rewrite xorb_true_r.
-symmetry; apply negb_sym.
-unfold rm_add_i.
-rewrite <- Heqsi; simpl.
-unfold rm_add_i at 1.
-rewrite <- Heqsi; simpl.
-rewrite xorb_false_r.
-apply fst_same_iff in Hs₂; simpl in Hs₂.
-remember (fst_same a 0 si) as s₃ eqn:Hs₃ .
-apply fst_same_sym_iff in Hs₃; simpl in Hs₃.
-destruct s₃ as [di₃| ].
- destruct Hs₃ as (Hn₃, Hs₃); rewrite Hs₃.
- rewrite xorb_false_r, negb_xorb_r; f_equal.
- remember (fst_same (a + 0%rm) b si) as s₄ eqn:Hs₄ .
- apply fst_same_sym_iff in Hs₄; simpl in Hs₄.
- destruct s₄ as [di₄| ].
-  destruct Hs₄ as (Hs₄, Hn₄); rewrite Hn₄.
-  remember (fst_same a b si) as s₆ eqn:Hs₆ .
-  apply fst_same_sym_iff in Hs₆; simpl in Hs₆.
-  destruct s₆ as [di₆| ].
-   destruct Hs₆ as (Hn₆, Hs₆).
-   unfold rm_add_i in Hn₄.
-   rewrite <- Nat.add_succ_l in Hn₄; remember (S si) as ssi; simpl in Hn₄.
-   rewrite xorb_false_r in Hn₄.
-   remember (fst_same a 0 (ssi + di₄)) as s₇ eqn:Hs₇ .
-   apply fst_same_sym_iff in Hs₇; simpl in Hs₇.
-   destruct s₇ as [di₇| ].
-    destruct Hs₇ as (Hn₇, Hs₇); rewrite Hs₇, xorb_false_r in Hn₄.
-    destruct (lt_dec di₄ di₆) as [H₁| H₁].
-     apply Hn₆ in H₁.
-     rewrite Hn₄ in H₁.
-     destruct b .[ si + di₄]; discriminate H₁.
-
-     apply Nat.nlt_ge in H₁.
-     destruct (lt_dec di₆ di₄) as [H₂| H₂].
-      remember H₂ as H; clear HeqH.
-      apply Hs₄ in H.
+      pose proof (Hn₂ (S di₇)) as H.
+      rewrite Nat.add_succ_r, <- Nat.add_succ_l, <- Heqssi in H.
+      rewrite Nat.add_succ_r, <- Nat.add_succ_l, <- Heqsssi in H.
       unfold rm_add_i in H.
-      rewrite <- Nat.add_succ_l, <- Heqssi in H; simpl in H.
+      rewrite <- Nat.add_succ_l in H.
+      remember (S sssi) as ssssi; simpl in H.
       rewrite xorb_false_r in H.
-      remember (fst_same a 0 (ssi + di₆)) as s₈ eqn:Hs₈ .
-      apply fst_same_sym_iff in Hs₈; simpl in Hs₈.
-      destruct s₈ as [di₈| ].
-       destruct Hs₈ as (Hn₈, Hs₈); rewrite Hs₈, xorb_false_r in H.
-       rewrite Hs₆ in H.
-       destruct b .[ si + di₆]; discriminate H.
+      destruct (fst_same a 0 (ssssi + di₇)) as [dj| ].
+       pose proof (Hs₈ 0) as P; rewrite Nat.add_0_r in P.
+       rewrite P in H; clear P.
+       rewrite Heqssssi in H.
+       rewrite <- Nat.add_assoc in H.
+       rewrite Nat.add_succ_l, <- Nat.add_succ_r in H.
+       rewrite <- Nat.add_succ_r in H.
+       rewrite Nat.add_assoc in H.
+       rewrite Hs₈ in H; discriminate H.
 
-       clear H.
-       pose proof (Hs₈ (di₄ + di₇ - di₆)) as H.
-       rewrite Nat.add_sub_assoc in H.
-        rewrite Nat.add_shuffle0, Nat.add_sub, Nat.add_assoc in H.
-        rewrite Hs₇ in H; discriminate H.
+       pose proof (Hs₈ 0) as P; rewrite Nat.add_0_r in P.
+       rewrite P in H; clear P.
+       discriminate H.
 
-        eapply le_trans; [ eauto  | idtac ].
-        apply Nat.le_sub_le_add_l.
-        rewrite Nat.sub_diag.
-        apply Nat.le_0_l.
-
-      apply Nat.nlt_ge in H₂.
-      apply Nat.le_antisymm in H₂; auto.
-      subst di₆; clear H₁ Hs₆.
-      destruct di₄.
-       clear Hs₄ Hn₆; rewrite Nat.add_0_r in Hn₇, Hs₇, Hn₄.
+     rewrite Hs₆ in Hn₄.
+     destruct b .[ si]; discriminate Hn₄.
 bbb.
 *)
 
