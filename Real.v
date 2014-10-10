@@ -2056,6 +2056,7 @@ destruct s₄ as [di₄| ].
     apply fst_same_sym_iff in Hs₇; simpl in Hs₇.
     destruct s₇ as [di₇| ].
      destruct Hs₇ as (Hn₇, Hs₇); rewrite Hs₇, xorb_false_r in Hn₄.
+     clear Hs₆.
      pose proof (Hn₂ di₇) as H.
      rewrite Nat.add_succ_r, <- Nat.add_succ_l, <- Heqssi in H.
      unfold rm_add_i in H.
@@ -2070,34 +2071,23 @@ destruct s₄ as [di₄| ].
       clear H.
       destruct di₇.
        clear Hn₇; rewrite Nat.add_0_r in Hs₇, Hs₈.
-       unfold rm_add_i.
-       rewrite <- Heqsi; simpl.
-       rewrite xorb_false_r.
-       remember (fst_same a 0 si) as s₁ eqn:Hs₁ .
-       apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
-       destruct s₁ as [di₁| ].
-        destruct Hs₁ as (Hn₁, Hs₁); rewrite Hs₁, xorb_false_r.
-        exfalso.
-        destruct di₁.
-         clear Hn₁; rewrite Nat.add_0_r in Hs₁.
-         rewrite Hs₁ in Hn₄; symmetry in Hn₄; clear Hs₆.
-         pose proof (Hn₂ 1) as H.
-         rewrite Nat.add_succ_r, <- Nat.add_succ_l, <- Heqssi in H.
-         rewrite Nat.add_succ_r, <- Nat.add_succ_l, <- Heqsssi in H.
-         rewrite Nat.add_0_r in H.
-         unfold rm_add_i in H.
-         remember (S sssi) as ssssi; simpl in H.
-         rewrite xorb_false_r in H.
-         destruct (fst_same a 0 ssssi) as [dj| ].
-          pose proof (Hs₈ 0) as P; rewrite Nat.add_0_r in P.
-          rewrite P in H; clear P.
-          rewrite Heqssssi in H.
-          rewrite Nat.add_succ_l, <- Nat.add_succ_r, Hs₈ in H.
-          discriminate H.
+       pose proof (Hn₂ 1) as H.
+       rewrite Nat.add_succ_r, <- Nat.add_succ_l, <- Heqssi in H.
+       rewrite Nat.add_succ_r, <- Nat.add_succ_l, <- Heqsssi in H.
+       rewrite Nat.add_0_r in H.
+       unfold rm_add_i in H.
+       remember (S sssi) as ssssi; simpl in H.
+       rewrite xorb_false_r in H.
+       destruct (fst_same a 0 ssssi) as [dj| ].
+        pose proof (Hs₈ 0) as P; rewrite Nat.add_0_r in P.
+        rewrite P in H; clear P.
+        rewrite Heqssssi in H.
+        rewrite Nat.add_succ_l, <- Nat.add_succ_r, Hs₈ in H.
+        discriminate H.
 
-          pose proof (Hs₈ 0) as P; rewrite Nat.add_0_r in P.
-          rewrite P in H; clear P.
-          discriminate H.
+        pose proof (Hs₈ 0) as P; rewrite Nat.add_0_r in P.
+        rewrite P in H; clear P.
+        discriminate H.
 bbb.
 
 intros a b i di₅ Hs₂ Hs₅.
