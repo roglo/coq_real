@@ -2032,6 +2032,27 @@ apply fst_same_iff in Hs₅; simpl in Hs₅.
 destruct Hs₅ as (Hn₅, Hs₅); rewrite Hs₅, xorb_false_r.
 rewrite xorb_true_r.
 symmetry; apply negb_sym.
+apply fst_same_iff in Hs₂; simpl in Hs₂.
+unfold rm_add_i.
+rewrite <- Heqsi; simpl.
+remember (fst_same (a + 0%rm) b si) as s₄ eqn:Hs₄ .
+apply fst_same_sym_iff in Hs₄; simpl in Hs₄.
+destruct s₄ as [di₄| ].
+ destruct Hs₄ as (Hs₄, Hn₄); rewrite Hn₄.
+ destruct di₄.
+  clear Hs₄; rewrite Nat.add_0_r in Hn₄ |- *.
+  apply rm_add_inf_true_eq_if in Hs₂; auto.
+  destruct Hs₂ as (Hn₂, Hs₂); simpl in Hn₂.
+bbb.
+
+intros a b i di₅ Hs₂ Hs₅.
+unfold rm_add_i; rewrite Hs₂, Hs₅.
+remember (S i) as si; simpl.
+do 2 rewrite xorb_false_r.
+apply fst_same_iff in Hs₅; simpl in Hs₅.
+destruct Hs₅ as (Hn₅, Hs₅); rewrite Hs₅, xorb_false_r.
+rewrite xorb_true_r.
+symmetry; apply negb_sym.
 unfold rm_add_i.
 rewrite <- Heqsi; simpl.
 unfold rm_add_i at 1.
