@@ -2158,8 +2158,9 @@ destruct s₁ as [di₁| ].
     unfold rm_add_i; rewrite <- Heqsi.
     do 6 rewrite xorb_assoc; f_equal; f_equal.
     symmetry; rewrite xorb_comm.
-    rewrite xorb_assoc; f_equal.
-    symmetry.
+    rewrite xorb_assoc; f_equal; symmetry.
+(*
+bbb.
     destruct (lt_dec di₃ di₄) as [H₁| H₁].
      remember H₁ as H; clear HeqH.
      apply Hn₄ in H.
@@ -2179,6 +2180,7 @@ destruct s₁ as [di₁| ].
      rewrite <- xorb_assoc in Hs₃.
      rewrite Hs₃ in H.
 bbb.
+*)
     remember (fst_same b c si) as s₅ eqn:Hs₅ .
     apply fst_same_sym_iff in Hs₅; simpl in Hs₅.
     destruct s₅ as [di₅| ].
