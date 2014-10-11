@@ -2071,17 +2071,24 @@ eapply rm_norm_eq_compat_r with (b₀ := b) (c := c) in H; eauto .
  do 2 rewrite rm_add_0_r; assumption.
 Qed.
 
+Theorem rm_add_compat : ∀ a b c d,
+  (a = b)%rm
+  → (c = d)%rm
+  → (a + c = b + d)%rm.
+Proof.
+intros a b c d Hab Hcd.
+transitivity (a + d)%rm; [ idtac | apply rm_add_compat_r; assumption ].
+rewrite rm_add_comm; symmetry.
+rewrite rm_add_comm; symmetry.
+apply rm_add_compat_r; assumption.
+Qed.
+
 Add Parametric Morphism : rm_add
   with signature rm_eq ==> rm_eq ==> rm_eq
   as rm_add_morph.
 Proof.
 intros a b Hab c d Hcd.
-transitivity (a + d)%rm.
- rewrite rm_add_comm; symmetry.
- rewrite rm_add_comm; symmetry.
- apply rm_add_compat_r; assumption.
-
- apply rm_add_compat_r; assumption.
+apply rm_add_compat; assumption.
 Qed.
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
