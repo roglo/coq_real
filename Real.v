@@ -2101,8 +2101,6 @@ Theorem rm_add_opp_r : ∀ a, (a - a = 0)%rm.
 Proof.
 intros a.
 unfold rm_eq; intros i; simpl.
-bbb.
-
 unfold rm_add_i.
 remember (S i) as si; simpl.
 rewrite xorb_false_r.
@@ -2117,12 +2115,20 @@ destruct s₁ as [di₁| ].
  rewrite <- Heqsi; simpl.
  remember (fst_same a (- a) si) as s₂ eqn:Hs₂ .
  apply fst_same_sym_iff in Hs₂; simpl in Hs₂.
- destruct s₂ as [di₂| ].
-  destruct Hs₂ as (Hn₂, Hs₂).
-  unfold rm_add_i in Hs₁.
-  rewrite <- Nat.add_succ_l in Hs₁.
-  remember (S si) as ssi; simpl in Hs₁.
-bbb.
+ rewrite <- negb_xorb_r, negb_xorb_l, negb_xorb_diag.
+ destruct s₂ as [di₂| ]; [ idtac | reflexivity ].
+ destruct Hs₂ as (Hn₂, Hs₂).
+ destruct a .[ si + di₂]; discriminate Hs₂.
+
+ destruct (bool_dec a .[ si] (negb a .[ si])) as [H₁| H₁].
+  destruct a .[ si]; discriminate H₁.
+
+  apply neq_negb in H₁.
+  apply rm_add_inf_true_neq_if in Hs₁; auto.
+  simpl in Hs₁.
+  destruct Hs₁ as (j, (Hij, (Hni, (Ha, (Hb, (Hat, Hbt)))))).
+  rewrite Ha in Hb; discriminate Hb.
+Qed.
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
