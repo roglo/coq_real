@@ -263,7 +263,7 @@ unfold rm_eq.
 apply rm_add_i_0_r.
 Qed.
 
-Theorem rm_add_eq_compat_r : ∀ a b c j,
+Theorem rm_add_i_compat_r : ∀ a b c j,
   (∀ i, a .[ i] = b .[ i])
   → rm_add_i b c j = rm_add_i a c j.
 Proof.
@@ -344,7 +344,7 @@ assert (∀ i, a .[ i] = b .[ i]) as H.
  intros i; unfold rm_add_i.
  remember (S i) as si; simpl.
  do 2 rewrite xorb_false_r.
- symmetry; erewrite rm_add_eq_compat_r; [ symmetry | eauto  ].
+ symmetry; erewrite rm_add_i_compat_r; [ symmetry | eauto  ].
  f_equal.
  remember (fst_same (a + c) 0 si) as s₁ eqn:Hs₁ .
  remember (fst_same (b + c) 0 si) as s₂ eqn:Hs₂ .
@@ -362,11 +362,11 @@ assert (∀ i, a .[ i] = b .[ i]) as H.
    apply not_false_iff_true in H.
    rewrite <- Hs₁ in H.
    exfalso; apply H.
-   apply rm_add_eq_compat_r; auto.
+   apply rm_add_i_compat_r; auto.
 
   destruct s₂ as [di₂| ]; auto.
   rewrite <- Hs₁ with (dj := di₂).
-  apply rm_add_eq_compat_r; auto.
+  apply rm_add_i_compat_r; auto.
 Qed.
 
 Fixpoint first_false_before a i :=
