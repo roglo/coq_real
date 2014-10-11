@@ -2019,111 +2019,28 @@ destruct s₁ as [di₁| ].
  eapply rm_add_add_0_l_when_no_relay; eauto .
 Qed.
 
-Theorem rm_add_add_0_r_when_relay : ∀ a b i di₅,
-  fst_same (a + b) 0 (S i) = Some di₅
-  → fst_same ((a + 0)%rm + b) 0 (S i) ≠ None.
+Theorem rm_add_add_0_r_not_without_relay : ∀ a b i,
+  fst_same ((a + 0)%rm + b) 0 (S i) ≠ None.
 Proof.
-intros a b i di₅ Hs₅ Hs₂.
+intros a b i Hs₂.
 remember (S i) as si.
-apply fst_same_iff in Hs₅; simpl in Hs₅.
-destruct Hs₅ as (Hn₅, Hs₅).
 apply fst_same_iff in Hs₂; simpl in Hs₂.
-remember (fst_same (a + 0%rm) b si) as s₄ eqn:Hs₄ .
-apply fst_same_sym_iff in Hs₄; simpl in Hs₄.
-destruct s₄ as [di₄| ].
- destruct Hs₄ as (Hs₄, Hn₄).
- destruct di₄.
-  clear Hs₄; rewrite Nat.add_0_r in Hn₄.
-  apply rm_add_inf_true_eq_if in Hs₂; auto.
-  destruct Hs₂ as (Hn₂, Hs₂); simpl in Hn₂.
-  unfold rm_add_i in Hn₄.
-  remember (S si) as ssi; simpl in Hn₄.
-  rewrite xorb_false_r in Hn₄.
-  remember (fst_same a 0 ssi) as s₇ eqn:Hs₇ .
-  apply fst_same_sym_iff in Hs₇; simpl in Hs₇.
-  destruct s₇ as [di₇| ].
-   destruct Hs₇ as (Hn₇, Hs₇); rewrite Hs₇, xorb_false_r in Hn₄.
-   pose proof (Hn₂ di₇) as H.
-   rewrite Nat.add_succ_r, <- Nat.add_succ_l, <- Heqssi in H.
-   unfold rm_add_i in H.
-   rewrite <- Nat.add_succ_l in H; remember (S ssi) as sssi; simpl in H.
-   rewrite xorb_false_r in H.
-   rewrite Hs₇, xorb_false_l in H.
-   remember (fst_same a 0 (sssi + di₇)) as s₈ eqn:Hs₈ .
-   apply fst_same_sym_iff in Hs₈; simpl in Hs₈.
-   destruct s₈ as [di₈| ].
-    destruct Hs₈ as (Hn₈, Hs₈); rewrite Hs₈ in H; discriminate H.
+destruct (bool_dec ((a + 0)%rm) .[ si] b .[ si]) as [H₁| H₁].
+ apply rm_add_inf_true_eq_if in Hs₂; auto.
+ simpl in Hs₂, H₁.
+ destruct Hs₂ as (Hn₂, Hs₂).
+ exfalso; eapply not_rm_add_0_inf_1 with (i := S si); intros dj.
+ rewrite Nat.add_succ_l, <- Nat.add_succ_r; apply Hn₂.
 
-    clear H.
-    pose proof (Hn₂ (S di₇)) as H.
-    rewrite Nat.add_succ_r, <- Nat.add_succ_l, <- Heqssi in H.
-    rewrite Nat.add_succ_r, <- Nat.add_succ_l, <- Heqsssi in H.
-    unfold rm_add_i in H.
-    rewrite <- Nat.add_succ_l in H.
-    remember (S sssi) as ssssi; simpl in H.
-    rewrite xorb_false_r in H.
-    destruct (fst_same a 0 (ssssi + di₇)) as [dj| ].
-     pose proof (Hs₈ 0) as P; rewrite Nat.add_0_r in P.
-     rewrite P in H; clear P.
-     rewrite Heqssssi in H.
-     rewrite <- Nat.add_assoc in H.
-     rewrite Nat.add_succ_l, <- Nat.add_succ_r in H.
-     rewrite <- Nat.add_succ_r in H.
-     rewrite Nat.add_assoc in H.
-     rewrite Hs₈ in H; discriminate H.
-
-     pose proof (Hs₈ 0) as P; rewrite Nat.add_0_r in P.
-     rewrite P in H; clear P.
-     discriminate H.
-
-   pose proof (Hn₂ 0) as H.
-   unfold rm_add_i in H.
-   rewrite <- Nat.add_succ_l, <- Heqssi in H; simpl in H.
-   rewrite xorb_false_r in H.
-   destruct (fst_same a 0 (ssi + 1)) as [dj| ].
-    rewrite <- Nat.add_assoc, Hs₇ in H.
-    rewrite Nat.add_succ_r, <- Nat.add_succ_l, <- Heqssi in H.
-    rewrite Hs₇ in H; discriminate H.
-
-    rewrite Nat.add_succ_r, <- Nat.add_succ_l, <- Heqssi in H.
-    rewrite Hs₇ in H; discriminate H.
-
-  pose proof (Hs₄ 0 (Nat.lt_0_succ di₄)) as H; rewrite Nat.add_0_r in H.
-  apply rm_add_inf_true_neq_if in Hs₂; auto; simpl in Hs₂.
-  destruct Hs₂ as (j, (Hij, (Hni, (Ha, (Hb, (Hat, Hbt)))))).
-  exfalso; eapply not_rm_add_0_inf_1 with (i := S j); intros dj.
-  rewrite Nat.add_succ_l, <- Nat.add_succ_r; apply Hat.
-
- pose proof (Hs₂ 0) as H; rewrite Nat.add_0_r in H.
- unfold rm_add_i in H.
- remember (S si) as ssi; simpl in H.
- pose proof (Hs₄ 0) as P; rewrite Nat.add_0_r in P.
- rewrite P, negb_xorb_diag, xorb_true_l in H.
- apply negb_true_iff in H; clear P.
- remember (fst_same (a + 0%rm) b ssi) as s₁ eqn:Hs₁ .
- apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
- destruct s₁ as [di₁| ]; [ idtac | discriminate H ].
- destruct Hs₁ as (Hn₁, Hs₁); rewrite Hs₁ in H.
- rewrite Heqssi, Nat.add_succ_l, <- Nat.add_succ_r in Hs₁.
- rewrite Hs₄ in Hs₁.
- destruct b .[ si + S di₁]; discriminate Hs₁.
+ apply neq_negb in H₁.
+ apply rm_add_inf_true_neq_if in Hs₂; auto.
+ simpl in Hs₂.
+ destruct Hs₂ as (j, (Hij, (Hni, (Ha, (Hb, (Hat, Hbt)))))).
+ exfalso; eapply not_rm_add_0_inf_1 with (i := S j); intros dj.
+ rewrite Nat.add_succ_l, <- Nat.add_succ_r; apply Hat.
 Qed.
 
-Theorem xxx : ∀ a b i,
-  fst_same ((a + 0)%rm + b) 0 (S i) = None
-  → fst_same (a + b) 0 (S i) = None
-  → rm_add_i ((a + 0)%rm + b) 0 i = rm_add_i (a + b) 0 i.
-Proof.
-intros a b i Hs₂ Hs₅.
-unfold rm_add_i.
-remember (S i) as si; simpl.
-rewrite Hs₂, Hs₅.
-f_equal; f_equal.
-apply fst_same_iff in Hs₂; simpl in Hs₂.
-apply fst_same_iff in Hs₅; simpl in Hs₅.
-bbb.
-
-Theorem yyy : ∀ a b, (a + 0 + b = a + b)%rm.
+Theorem rm_add_add_0_r : ∀ a b, (a + 0 + b = a + b)%rm.
 Proof.
 intros a b.
 unfold rm_eq; intros i; simpl.
@@ -2136,23 +2053,8 @@ destruct s₂ as [di₂| ].
 
   eapply rm_add_add_0_l_when_rhs_has_no_relay; eauto .
 
- destruct s₅ as [di₅| ].
-  exfalso; revert Hs₂.
-  eapply rm_add_add_0_r_when_relay; eauto .
-bbb.
- unfold rm_add_i.
- remember (S i) as si; simpl.
- rewrite Hs₂, Hs₅.
- do 2 rewrite xorb_false_r; rewrite xorb_true_r.
- apply fst_same_iff in Hs₅; simpl in Hs₅.
- destruct s₅ as [di₅| ].
-  destruct Hs₅ as (Hn₅, Hs₅); rewrite Hs₅, xorb_false_r.
-  apply fst_same_iff in Hs₂; simpl in Hs₂.
-  unfold rm_add_i.
-  rewrite <- Heqsi; simpl.
-  pose proof (Hs₂ 0) as H; rewrite Nat.add_0_r in H.
-  unfold rm_add_i in H.
-  remember (S si) as ssi; simpl in H.
+ exfalso; revert Hs₂.
+ eapply rm_add_add_0_r_not_without_relay; eauto .
 bbb.
 *)
 
