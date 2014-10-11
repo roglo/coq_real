@@ -2133,8 +2133,31 @@ Qed.
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
 intros a b c.
+unfold rm_eq; intros i; simpl.
+unfold rm_add_i.
+remember (S i) as si; simpl.
+do 2 rewrite xorb_false_r.
+remember (fst_same (a + (b + c)%rm) 0 si) as s₁ eqn:Hs₁ .
+apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
+destruct s₁ as [di₁| ].
+ destruct Hs₁ as (Hn₁, Hs₁); rewrite Hs₁, xorb_false_r.
+ remember (fst_same ((a + b)%rm + c) 0 si) as s₂ eqn:Hs₂ .
+ apply fst_same_sym_iff in Hs₂; simpl in Hs₂.
+ destruct s₂ as [di₂| ].
+  destruct Hs₂ as (Hn₂, Hs₂); rewrite Hs₂, xorb_false_r.
+  unfold rm_add_i.
+  rewrite <- Heqsi; simpl.
+  remember (fst_same a (b + c) si) as s₃ eqn:Hs₃ .
+  apply fst_same_sym_iff in Hs₃; simpl in Hs₃.
+  destruct s₃ as [di₃| ].
+   destruct Hs₃ as (Hn₃, Hs₃).
+   remember (fst_same (a + b) c si) as s₄ eqn:Hs₄ .
+   apply fst_same_sym_iff in Hs₄; simpl in Hs₄.
+   destruct s₄ as [di₄| ].
+    destruct Hs₄ as (Hn₄, Hs₄).
 bbb.
 
+intros a b c.
 unfold rm_eq; intros i; simpl.
 unfold rm_add_i.
 remember (fst_same a (b + c) (S i)) as s₁ eqn:Hs₁ .
