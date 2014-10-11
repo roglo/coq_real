@@ -2055,8 +2055,7 @@ destruct s₂ as [di₂| ].
 
  exfalso; revert Hs₂.
  eapply rm_add_add_0_r_not_without_relay; eauto .
-bbb.
-*)
+Qed.
 
 Theorem rm_add_compat_r : ∀ a b c, (a = b)%rm → (a + c = b + c)%rm.
 Proof.
@@ -2065,137 +2064,31 @@ remember (a + 0)%rm as a₁.
 remember (b + 0)%rm as b₁.
 remember Heqa₁ as H; clear HeqH.
 eapply rm_norm_eq_compat_r with (b₀ := b) (c := c) in H; eauto .
- Focus 2.
  subst a₁ b₁.
- do 2 rewrite rm_add_0_r.
- assumption.
+ do 2 rewrite rm_add_add_0_r in H; assumption.
 
  subst a₁ b₁.
-bbb.
- rewrite <- yyy in H.
- rewrite rm_add_0_r in H.
- rewrite <- yyy in H.
- symmetry in H.
- rewrite rm_add_0_r in H.
- rewrite rm_add_comm, <- yyy, rm_add_0_r in H.
- symmetry in H.
- rewrite rm_add_comm, <- yyy, rm_add_0_r in H.
- rewrite rm_add_comm; symmetry.
- rewrite rm_add_comm; symmetry.
- assumption.
-bbb.
-
-intros a b c Hab.
-remember (a + 0)%rm as a₁.
-remember (b + 0)%rm as b₁.
-remember (c + 0)%rm as c₁.
-remember Heqa₁ as H; clear HeqH.
-eapply zzz with (b₀ := b) (c₀ := c) in H; eauto .
- subst a₁ b₁ c₁.
- Focus 2.
- subst a₁ b₁.
- rewrite rm_add_0_r.
- rewrite rm_add_0_r.
- assumption.
-
-bbb.
- etransitivity.
-
-intros a b c Hab.
-unfold rm_eq; simpl; intros i.
-unfold rm_add_i; simpl.
-do 2 rewrite xorb_false_r.
-remember (fst_same (a + c) 0 (S i)) as sac eqn:Hsac .
-remember (fst_same (b + c) 0 (S i)) as sbc eqn:Hsbc .
-symmetry in Hsac, Hsbc.
-apply fst_same_iff in Hsac.
-apply fst_same_iff in Hsbc.
-simpl in Hsac, Hsbc.
-destruct sac as [diac| ].
- destruct Hsac as (Hnac, Hsac).
- destruct sbc as [dibc| ].
-  destruct Hsbc as (Hnbc, Hsbc).
-  rewrite Hsac, Hsbc.
-  do 2 rewrite xorb_false_r.
-bbb.
-  unfold rm_add_i; simpl.
-  remember (fst_same a c (S i)) as sac₁ eqn:Hsac₁ .
-  remember (fst_same b c (S i)) as sbc₁ eqn:Hsbc₁ .
-  symmetry in Hsac₁, Hsbc₁.
-  apply fst_same_iff in Hsac₁.
-  apply fst_same_iff in Hsbc₁.
-  simpl in Hsac₁, Hsbc₁.
-  destruct sac₁ as [diac₁| ].
-   destruct Hsac₁ as (Hnac₁, Hsac₁).
-   destruct sbc₁ as [dibc₁| ].
-    destruct Hsbc₁ as (Hnbc₁, Hsbc₁).
-bbb.
-    unfold rm_eq in Hab; simpl in Hab.
-    unfold rm_add_i in Hab; simpl in Hab.
-bbb.
-
-unfold rm_eq in Hab; simpl in Hab.
-unfold rm_eq; simpl.
-intros i.
-unfold rm_add_i; simpl.
-rewrite <- Hab.
-remember (fst_same a c (S i)) as sac eqn:Hsac .
-remember (fst_same b c (S i)) as sbc eqn:Hsbc .
-symmetry in Hsac, Hsbc.
-apply fst_same_iff in Hsac.
-apply fst_same_iff in Hsbc.
-destruct sac as [dja| ].
- destruct Hsac as (Hnac, Hsac).
- destruct sbc as [djc| ].
-  rewrite <- Hab.
-  destruct Hsbc as (Hnbc, Hsbc).
-  destruct (lt_dec dja djc) as [H₁| H₁].
-   apply Hnbc in H₁.
-   rewrite <- Hab in H₁; contradiction.
-
-   apply Nat.nlt_ge in H₁.
-   destruct (lt_dec djc dja) as [H₂| H₂].
-    apply Hnac in H₂.
-    rewrite <- Hab in Hsbc.
-    contradiction.
-
-    apply Nat.nlt_ge in H₂.
-    apply Nat.le_antisymm in H₁; auto.
-    subst djc.
-    reflexivity.
-
-  pose proof (Hsbc dja) as H.
-  rewrite <- Hab in H.
-  contradiction.
-
- destruct sbc as [djc| ]; [ idtac | reflexivity ].
- destruct Hsbc as (Hnbc, Hsbc).
- pose proof (Hsac djc) as H.
- rewrite <- Hab in Hsbc.
- contradiction.
+ do 2 rewrite rm_add_0_r; assumption.
 Qed.
 
-Theorem rm_add_0_r : ∀ a, (a + 0 = a)%rm.
+Add Parametric Morphism : rm_add
+  with signature rm_eq ==> rm_eq ==> rm_eq
+  as rm_add_morph.
 Proof.
-intros a.
-unfold rm_eq, rm_add_i; intros i; simpl.
-unfold rm_eq; simpl.
-unfold rm_add_i; simpl.
-rewrite xorb_false_r.
-remember (fst_same a 0 (S i)) as s eqn:Hs .
-symmetry in Hs.
-apply fst_same_iff in Hs; simpl in Hs.
-destruct s as [di| ].
- destruct Hs as (Hsn, Hs).
- rewrite Hs.
- rewrite xorb_false_r; reflexivity.
+intros a b Hab c d Hcd.
+transitivity (a + d)%rm.
+ rewrite rm_add_comm; symmetry.
+ rewrite rm_add_comm; symmetry.
+ apply rm_add_compat_r; assumption.
 
- rewrite xorb_true_r.
-bbb.
+ apply rm_add_compat_r; assumption.
+Qed.
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
 intros a b c.
+bbb.
+
 unfold rm_eq; intros i; simpl.
 unfold rm_add_i.
 remember (fst_same a (b + c) (S i)) as s₁ eqn:Hs₁ .
