@@ -24,6 +24,9 @@ value rm_add_carry a b =
   | None → False
   end.
 
+value rm_opp a = { rm i = not (a.rm i) };
+value rm_sub a b = rm_add a (rm_opp b);
+
 value f2a x =
   let x = mod_float x 1.0 in
   loop 100 x [] where rec loop i x list =

@@ -45,6 +45,12 @@ Notation "a = b" := (rm_eq a b) : rm_scope.
 Notation "a ≠ b" := (¬ rm_eq a b) : rm_scope.
 Notation "0" := rm_zero : rm_scope.
 
+Definition rm_opp a := {| rm i := negb a.[i] |}.
+Definition rm_sub a b := (a + rm_opp b)%rm.
+
+Notation "- a" := (rm_opp a) : rm_scope.
+Notation "a - b" := (rm_add a (rm_opp b)) : rm_scope.
+
 Theorem rm_eq_refl : reflexive _ rm_eq.
 Proof. intros a i; reflexivity. Qed.
 
@@ -2090,6 +2096,33 @@ Proof.
 intros a b Hab c d Hcd.
 apply rm_add_compat; assumption.
 Qed.
+
+Theorem rm_add_opp_r : ∀ a, (a - a = 0)%rm.
+Proof.
+intros a.
+unfold rm_eq; intros i; simpl.
+bbb.
+
+unfold rm_add_i.
+remember (S i) as si; simpl.
+rewrite xorb_false_r.
+remember (fst_same 0 0 si) as s₁ eqn:Hs₁ .
+apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
+destruct s₁ as [di₁| ]; [ clear di₁ Hs₁ | discriminate Hs₁; auto ].
+remember (fst_same (a - a) 0 si) as s₁ eqn:Hs₁ .
+apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
+destruct s₁ as [di₁| ].
+ destruct Hs₁ as (Hn₁, Hs₁); rewrite Hs₁, xorb_false_r.
+ unfold rm_add_i.
+ rewrite <- Heqsi; simpl.
+ remember (fst_same a (- a) si) as s₂ eqn:Hs₂ .
+ apply fst_same_sym_iff in Hs₂; simpl in Hs₂.
+ destruct s₂ as [di₂| ].
+  destruct Hs₂ as (Hn₂, Hs₂).
+  unfold rm_add_i in Hs₁.
+  rewrite <- Nat.add_succ_l in Hs₁.
+  remember (S si) as ssi; simpl in Hs₁.
+bbb.
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
