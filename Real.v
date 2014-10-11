@@ -2154,7 +2154,20 @@ destruct s₁ as [di₁| ].
    remember (fst_same (a + b) c si) as s₄ eqn:Hs₄ .
    apply fst_same_sym_iff in Hs₄; simpl in Hs₄.
    destruct s₄ as [di₄| ].
-    destruct Hs₄ as (Hn₄, Hs₄).
+    destruct Hs₄ as (Hn₄, Hs₄); rewrite Hs₄.
+    unfold rm_add_i; rewrite <- Heqsi.
+    do 6 rewrite xorb_assoc; f_equal; f_equal.
+    symmetry; rewrite xorb_comm.
+    rewrite xorb_assoc; f_equal.
+    symmetry.
+    remember (fst_same b c si) as s₅ eqn:Hs₅ .
+    apply fst_same_sym_iff in Hs₅; simpl in Hs₅.
+    destruct s₅ as [di₅| ].
+     destruct Hs₅ as (Hn₅, Hs₅).
+     remember (fst_same a b si) as s₆ eqn:Hs₆ .
+     apply fst_same_sym_iff in Hs₆; simpl in Hs₆.
+     destruct s₆ as [di₆| ].
+      destruct Hs₆ as (Hn₆, Hs₆).
 bbb.
 
 intros a b c.
