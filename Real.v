@@ -2160,6 +2160,25 @@ destruct s₁ as [di₁| ].
     symmetry; rewrite xorb_comm.
     rewrite xorb_assoc; f_equal.
     symmetry.
+    destruct (lt_dec di₃ di₄) as [H₁| H₁].
+     remember H₁ as H; clear HeqH.
+     apply Hn₄ in H.
+     unfold rm_add_i in Hs₃.
+     rewrite <- Nat.add_succ_l in Hs₃.
+     remember (S si) as ssi; simpl in Hs₃.
+     unfold rm_add_i in H.
+     rewrite <- Nat.add_succ_l in H.
+     rewrite <- Heqssi in H; simpl in H.
+     apply xorb_move_l_r_2 in H.
+     rewrite <- negb_xorb_l in H.
+     rewrite negb_xorb_r in H.
+     apply xorb_move_r_l_1 in H.
+     rewrite xorb_comm in H.
+     apply xorb_move_r_l_1 in Hs₃.
+     rewrite xorb_comm in Hs₃.
+     rewrite <- xorb_assoc in Hs₃.
+     rewrite Hs₃ in H.
+bbb.
     remember (fst_same b c si) as s₅ eqn:Hs₅ .
     apply fst_same_sym_iff in Hs₅; simpl in Hs₅.
     destruct s₅ as [di₅| ].
