@@ -2,6 +2,10 @@ Require Import Utf8 QArith NPeano.
 
 Set Implicit Arguments.
 
+Notation "[ ]" := nil.
+Notation "[ x ; .. ; y … l ]" := (cons x .. (cons y l) ..).
+Notation "[ x ]" := (cons x nil).
+
 Open Scope nat_scope.
 
 (* reals modulo 1 *)
@@ -2129,6 +2133,67 @@ destruct s₁ as [di₁| ].
   destruct Hs₁ as (j, (Hij, (Hni, (Ha, (Hb, (Hat, Hbt)))))).
   rewrite Ha in Hb; discriminate Hb.
 Qed.
+
+Definition rm_norm_i a i := rm_add_i a 0 i.
+
+Add Parametric Morphism : rm_norm_i
+  with signature rm_eq ==> eq ==> eq
+  as rm_norm_i_morph.
+Proof.
+intros a b Hab n.
+unfold rm_norm_i.
+unfold rm_eq in Hab; simpl in Hab.
+rewrite Hab; reflexivity.
+Qed.
+
+Theorem fold_rm_norm_i : ∀ a i, rm_add_i a 0 i = rm_norm_i a i.
+Proof. reflexivity. Qed.
+
+Theorem zzz : ∀ a b c i,
+ rm_norm_i ((a + b) + c)%rm i = rm_norm_i (((a + 0) + (b + 0)) + (c + 0))%rm i.
+Proof.
+intros a b c i.
+do 3 rewrite rm_add_0_r; reflexivity.
+Qed.
+
+Fixpoint trunc n a :=
+  match n with
+  | 0 => []
+  | S n₁ => [a.[n₁] … trunc n₁ a]
+  end.
+Arguments trunc n%nat a%rm.
+
+Definition carry_sum_3 a b c := a && b || b && c || c && a.
+
+Fixpoint trunc_add_and_carry n a b :=
+  match n with
+  | 0 => ([], false)
+  | S n₁ =>
+      let (tl, c) := trunc_add_and_carry n₁ a b in
+      let t := List.nth n₁ a false ⊕ List.nth n₁ b false ⊕ c in
+      ([t … tl], carry_sum_3 (List.nth n₁ a false) (List.nth n₁ b false) c)
+  end.
+
+Definition trunc_add n a b := (fst (trunc_add_and_carry n a b)).
+
+Theorem yyy : ∀ a b n,
+  trunc n ((a + 0) + (b + 0) + 0)%rm =
+  trunc_add n (trunc n (a + 0%rm)) (trunc n (b + 0%rm)).
+Proof.
+intros a b n.
+induction n; [ reflexivity | simpl ].
+rewrite IHn.
+unfold trunc_add at 2.
+simpl.
+destruct n.
+ simpl.
+ rewrite xorb_false_r.
+ unfold trunc_add; simpl.
+ f_equal.
+ do 3 rewrite fold_rm_norm_i.
+ do 2 rewrite rm_add_0_r.
+ unfold rm_norm_i; simpl.
+bbb. (* c'est faux, ça *)
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
