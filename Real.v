@@ -2165,20 +2165,24 @@ Arguments trunc n%nat a%rm.
 
 Definition carry_sum_3 a b c := a && b || b && c || c && a.
 
-Fixpoint trunc_add_with_carry c n a b :=
-  match n with
-  | 0 => []
-  | S n₁ =>
-      let t := List.nth n₁ a false ⊕ List.nth n₁ b false ⊕ c in
-      let c₁ := carry_sum_3 (List.nth n₁ a false) (List.nth n₁ b false) c in
-      [t … trunc_add_with_carry c₁ n₁ a b]
+Fixpoint trunc_add_with_carry c la lb :=
+  match la with
+  | [a … la₁] =>
+      match lb with
+      | [b … lb₁] =>
+          let t := a ⊕ b ⊕ c in
+          let c₁ := carry_sum_3 a b c in
+          [t … trunc_add_with_carry c₁ la₁ lb₁]
+      | [] => []
+      end
+  | [] => []
   end.
 
 Definition trunc_add := trunc_add_with_carry false.
 
 Theorem yyy : ∀ a b n,
   trunc n ((a + 0) + (b + 0) + 0)%rm =
-  trunc_add n (trunc n (a + 0%rm)) (trunc n (b + 0%rm)).
+  trunc_add (trunc n (a + 0%rm)) (trunc n (b + 0%rm)).
 Proof.
 intros a b n.
 induction n; [ reflexivity | simpl ].
