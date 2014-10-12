@@ -2185,18 +2185,27 @@ Theorem yyy : ∀ a b n,
   trunc_add (trunc n (a + 0%rm)) (trunc n (b + 0%rm)).
 Proof.
 intros a b n.
-induction n; [ reflexivity | simpl ].
-rewrite IHn.
-unfold trunc_add at 2.
-simpl.
+destruct n; [ reflexivity | simpl ].
 destruct n.
  simpl.
- rewrite xorb_false_r.
  unfold trunc_add; simpl.
  f_equal.
  do 3 rewrite fold_rm_norm_i.
  do 2 rewrite rm_add_0_r.
- unfold rm_norm_i; simpl.
+ Focus 2.
+ simpl.
+ unfold trunc_add; simpl.
+ f_equal.
+  do 3 rewrite fold_rm_norm_i.
+  do 2 rewrite rm_add_0_r.
+  unfold rm_norm_i; simpl.
+  Focus 2.
+  f_equal.
+   do 3 rewrite fold_rm_norm_i.
+   do 2 rewrite rm_add_0_r.
+   unfold rm_norm_i; simpl.
+   Unfocus.
+   Unfocus.
 bbb. (* c'est faux, ça... manque la retenue *)
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
