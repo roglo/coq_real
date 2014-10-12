@@ -1,3 +1,5 @@
+open Printf;
+
 type real_mod_1 = { rm : int → bool };
 
 value fst_same a b i =
@@ -48,3 +50,22 @@ value r2f a =
 ;
 
 r2f (rm_add (f2r 0.28) (f2r 0.17));
+
+value rec trunc n a =
+  if n = 0 then []
+  else [a.rm (n-1) :: trunc (n-1) a]
+;
+
+value carry_sum_3 a b c = a && b || b && c || c && a;
+
+value rec trunc_add_with_carry c la lb =
+  match (la, lb) with
+  | ([a :: la₁], [b :: lb₁]) →
+      let t = xorb (xorb a b) c in
+      let c₁ = carry_sum_3 a b c in
+let _ = eprintf "a %b b %b c %b t %b c₁ %b\n%!" a b c t c₁ in
+      [t :: trunc_add_with_carry c₁ la₁ lb₁]
+  | _ → []
+  end.
+
+value trunc_add = trunc_add_with_carry False;

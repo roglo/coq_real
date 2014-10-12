@@ -2165,16 +2165,16 @@ Arguments trunc n%nat a%rm.
 
 Definition carry_sum_3 a b c := a && b || b && c || c && a.
 
-Fixpoint trunc_add_and_carry n a b :=
+Fixpoint trunc_add_with_carry c n a b :=
   match n with
-  | 0 => ([], false)
+  | 0 => []
   | S n₁ =>
-      let (tl, c) := trunc_add_and_carry n₁ a b in
       let t := List.nth n₁ a false ⊕ List.nth n₁ b false ⊕ c in
-      ([t … tl], carry_sum_3 (List.nth n₁ a false) (List.nth n₁ b false) c)
+      let c₁ := carry_sum_3 (List.nth n₁ a false) (List.nth n₁ b false) c in
+      [t … trunc_add_with_carry c₁ n₁ a b]
   end.
 
-Definition trunc_add n a b := (fst (trunc_add_and_carry n a b)).
+Definition trunc_add := trunc_add_with_carry false.
 
 Theorem yyy : ∀ a b n,
   trunc n ((a + 0) + (b + 0) + 0)%rm =
@@ -2193,7 +2193,7 @@ destruct n.
  do 3 rewrite fold_rm_norm_i.
  do 2 rewrite rm_add_0_r.
  unfold rm_norm_i; simpl.
-bbb. (* c'est faux, ça *)
+bbb. (* c'est faux, ça... manque la retenue *)
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
