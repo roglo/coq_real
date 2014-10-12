@@ -2182,7 +2182,7 @@ Definition trunc_add := trunc_add_with_carry false.
 
 Theorem yyy : ∀ a b n,
   trunc n ((a + 0) + (b + 0) + 0)%rm =
-  trunc_add (trunc n (a + 0%rm)) (trunc n (b + 0%rm)).
+  trunc_add (trunc n (a + 0)%rm) (trunc n (b + 0)%rm).
 Proof.
 intros a b n.
 destruct n; [ reflexivity | simpl ].
@@ -2192,6 +2192,7 @@ destruct n.
  f_equal.
  do 3 rewrite fold_rm_norm_i.
  do 2 rewrite rm_add_0_r.
+ unfold rm_norm_i; simpl.
  Focus 2.
  simpl.
  unfold trunc_add; simpl.
