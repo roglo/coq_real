@@ -2296,16 +2296,15 @@ destruct s₁ as [di₁| ].
      remember (rm_add_i (b + c) 0 i) as xbci eqn:Hxbci .
      rename Hs₁ into Hxbcs.
      rename Hs₂ into Hxabs.
-     symmetry in Hxas, Hxbcs, Hxcs, Hxai, Hxci, Hxabi, Hxbci.
+     remember b .[ i] as bi eqn:Hxbi; simpl in Hxbi.
+     remember b .[ si] as bs eqn:Hxbs; simpl in Hxbs.
+     symmetry in Hxas, Hxbcs, Hxcs, Hxai, Hxci, Hxabi, Hxbci, Hxbi, Hxbs.
      move Hxai at bottom; move Hxas at bottom.
      move Hxci at bottom; move Hxcs at bottom.
      move Hxabi at bottom; move Hxabs at bottom.
      move Hxbci at bottom; move Hxbcs at bottom.
+     move Hxbi at bottom; move Hxbs at bottom.
      destruct xai, xas, xci, xcs, xabi, xbci; auto; simpl.
-      remember b .[ i] as bi eqn:Hxbi .
-      symmetry in Hxbi; simpl in Hxbi.
-      remember b .[ si] as bs eqn:Hxbs .
-      symmetry in Hxbs; simpl in Hxbs.
       destruct bi, bs.
        unfold rm_add_i in Hxbci.
        rewrite <- Heqsi in Hxbci; simpl in Hxbci.
