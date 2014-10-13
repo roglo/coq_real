@@ -2293,19 +2293,21 @@ destruct s₁ as [di₁| ].
      clear Hn₂.
      rewrite Nat.add_0_r in Hs₂.
      rewrite Nat.add_0_r.
-     remember (rm_add_i a₀ 0 i) as x₁ eqn:Hx₁ .
-     remember (rm_add_i c₀ 0 i) as x₂ eqn:Hx₂ .
-     remember (rm_add_i a₀ 0 si) as x₃ eqn:Hx₃ .
-     remember (rm_add_i c₀ 0 si) as x₄ eqn:Hx₄ .
      rewrite Hs₂.
-     remember (rm_add_i (a + b) 0 i) as x₅ eqn:Hx₅ .
-     remember (rm_add_i (b + c) 0 i) as x₆ eqn:Hx₆ .
-     symmetry in Hx₃, Hs₁, Hx₄, Hx₁, Hx₂, Hx₅, Hx₆.
-     move Hx₁ at bottom; move Hx₃ at bottom.
-     move Hx₂ at bottom; move Hx₄ at bottom.
-     move Hx₅ at bottom; move Hs₂ at bottom.
-     move Hx₆ at bottom; move Hs₁ at bottom.
-     destruct x₁, x₂, x₃, x₄, x₅, x₆; auto; simpl.
+     remember (rm_add_i a₀ 0 i) as xai eqn:Hxai .
+     remember (rm_add_i c₀ 0 i) as xci eqn:Hxci .
+     remember (rm_add_i a₀ 0 si) as xas eqn:Hxas .
+     remember (rm_add_i c₀ 0 si) as xcs eqn:Hxcs .
+     remember (rm_add_i (a + b) 0 i) as xabi eqn:Hxabi .
+     remember (rm_add_i (b + c) 0 i) as xbci eqn:Hxbci .
+     rename Hs₁ into Hxbcs.
+     rename Hs₂ into Hxabs.
+     symmetry in Hxas, Hxbcs, Hxcs, Hxai, Hxci, Hxabi, Hxbci.
+     move Hxai at bottom; move Hxas at bottom.
+     move Hxci at bottom; move Hxcs at bottom.
+     move Hxabi at bottom; move Hxabs at bottom.
+     move Hxbci at bottom; move Hxbcs at bottom.
+     destruct xai, xci, xas, xcs, xabi, xbci; auto; simpl.
 bbb.
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
