@@ -2301,6 +2301,10 @@ destruct s₁ as [di₁| ].
      remember (rm_add_i (a + b) 0 i) as x₅ eqn:Hx₅ .
      remember (rm_add_i (b + c) 0 i) as x₆ eqn:Hx₆ .
      symmetry in Hx₃, Hs₁, Hx₄, Hx₁, Hx₂, Hx₅, Hx₆.
+     move Hx₁ at bottom; move Hx₃ at bottom.
+     move Hx₂ at bottom; move Hx₄ at bottom.
+     move Hx₅ at bottom; move Hs₂ at bottom.
+     move Hx₆ at bottom; move Hs₁ at bottom.
      destruct x₁, x₂, x₃, x₄, x₅, x₆; auto; simpl.
 bbb.
 
