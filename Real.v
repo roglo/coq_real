@@ -2204,6 +2204,59 @@ destruct n.
 bbb. c'est faux, ça... manque la retenue
  *)
 
+(*
+Theorem rm_add_assoc_0 : ∀ a b c a₀ b₀ c₀,
+  (a = a₀ + 0)%rm
+  → (b = b₀ + 0)%rm
+  → (c = c₀ + 0)%rm
+  → (a + (b + c) = (a + b) + c)%rm.
+Proof.
+intros a b c a₀ b₀ c₀ Ha Hb Hc.
+bbb.
+*)
+
+Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
+Proof.
+intros a b c.
+assert (∀ x, (x = x + 0)%rm) as Hx by (symmetry; apply rm_add_0_r).
+setoid_replace (b + c)%rm with (b + c + 0)%rm by apply Hx.
+setoid_replace (a + b)%rm with (a + b + 0)%rm by apply Hx.
+setoid_replace a with (a + 0)%rm by apply Hx.
+setoid_replace b with (b + 0)%rm by apply Hx.
+setoid_replace c with (c + 0)%rm by apply Hx.
+set (a₁ := (a + 0)%rm).
+set (b₁ := (b + 0)%rm).
+set (c₁ := (c + 0)%rm).
+unfold rm_eq; intros i; simpl.
+unfold rm_add_i.
+remember (S i) as si; simpl.
+do 2 rewrite xorb_false_r.
+remember (fst_same (a₁ + (b₁ + c₁ + 0)%rm) 0 si) as s₁ eqn:Hs₁ .
+apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
+destruct s₁ as [di₁| ].
+ destruct Hs₁ as (Hn₁, Hs₁); rewrite Hs₁, xorb_false_r.
+ remember (fst_same ((a₁ + b₁ + 0)%rm + c₁) 0 si) as s₂ eqn:Hs₂ .
+ apply fst_same_sym_iff in Hs₂; simpl in Hs₂.
+ destruct s₂ as [di₂| ].
+  destruct Hs₂ as (Hn₂, Hs₂); rewrite Hs₂, xorb_false_r.
+  Focus 2.
+  destruct (bool_dec ((a₁ + b₁ + 0)%rm) .[ si] c₁ .[ si]) as [H₁| H₁].
+   apply rm_add_inf_true_eq_if in Hs₂; auto; simpl in Hs₂.
+   destruct Hs₂ as (Hab, Hc).
+   pose proof (not_rm_add_0_inf_1 (a₁ + b₁)%rm (S si)) as H.
+   exfalso; apply H; intros dj.
+   rewrite Nat.add_succ_l, <- Nat.add_succ_r.
+   apply Hab.
+
+   apply neq_negb in H₁.
+   apply rm_add_inf_true_neq_if in Hs₂; auto; simpl in Hs₂.
+   destruct Hs₂ as (j, (Hij, (Hni, (Ha, (Hb, (Hat, Hbt)))))).
+   pose proof (not_rm_add_0_inf_1 c (S j)) as H.
+   exfalso; apply H; intros dj.
+   rewrite Nat.add_succ_l, <- Nat.add_succ_r.
+   apply Hbt.
+bbb.
+
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
 intros a b c.
