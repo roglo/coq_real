@@ -2293,6 +2293,15 @@ destruct s₁ as [di₁| ].
      clear Hn₂.
      rewrite Nat.add_0_r in Hs₂.
      rewrite Nat.add_0_r.
+     remember (rm_add_i a₀ 0 i) as x₁ eqn:Hx₁ .
+     remember (rm_add_i c₀ 0 i) as x₂ eqn:Hx₂ .
+     remember (rm_add_i a₀ 0 si) as x₃ eqn:Hx₃ .
+     remember (rm_add_i c₀ 0 si) as x₄ eqn:Hx₄ .
+     rewrite Hs₂.
+     remember (rm_add_i (a + b) 0 i) as x₅ eqn:Hx₅ .
+     remember (rm_add_i (b + c) 0 i) as x₆ eqn:Hx₆ .
+     symmetry in Hx₃, Hs₁, Hx₄, Hx₁, Hx₂, Hx₅, Hx₆.
+     destruct x₁, x₂, x₃, x₄, x₅, x₆; auto; simpl.
 bbb.
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
