@@ -2311,10 +2311,14 @@ destruct s₁ as [di₁| ].
      move Hxabi at bottom; move Hxabs at bottom.
      move Hxbci at bottom; move Hxbcs at bottom.
      move Hxbi at bottom; move Hxbs at bottom.
-     destruct xai, xas, xci, xcs, xabi, xbci; try reflexivity; exfalso.
+     destruct xai, xas, xci, xcs, xabi, xbci; try reflexivity; exfalso;
       destruct bi, bs.
-       apply not_true_iff_false in Hxbci.
-       eapply Hxbci, case_1; eassumption.
+      apply not_true_iff_false in Hxbci.
+      eapply Hxbci, case_1; eassumption.
+
+      Focus 4.
+      apply not_true_iff_false in Hxabi.
+      eapply Hxabi, case_1; eassumption.
 bbb.
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
