@@ -2257,6 +2257,23 @@ destruct s₁ as [di₁| ].
    exfalso; apply H; intros dj.
    rewrite Nat.add_succ_l, <- Nat.add_succ_r.
    apply Hbt.
+
+  Focus 2.
+  destruct (bool_dec a .[ si] ((b + c + 0)%rm) .[ si]) as [H₁| H₁].
+   apply rm_add_inf_true_eq_if in Hs₁; auto; simpl in Hs₁.
+   destruct Hs₁ as (Ha, Hbc).
+   pose proof (not_rm_add_0_inf_1 (b + c)%rm (S si)) as H.
+   exfalso; apply H; intros dj.
+   rewrite Nat.add_succ_l, <- Nat.add_succ_r.
+   apply Hbc.
+
+   apply neq_negb in H₁.
+   apply rm_add_inf_true_neq_if in Hs₁; auto; simpl in H₁.
+   destruct Hs₁ as (j, (Hij, (Hni, (Ha, (Hb, (Hat, Hbt)))))).
+   pose proof (not_rm_add_0_inf_1 a₀ (S j)) as H.
+   exfalso; apply H; intros dj.
+   rewrite Nat.add_succ_l, <- Nat.add_succ_r.
+   apply Hat.
 bbb.
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
