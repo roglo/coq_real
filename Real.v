@@ -2307,7 +2307,7 @@ destruct s₁ as [di₁| ].
      move Hxci at bottom; move Hxcs at bottom.
      move Hxabi at bottom; move Hxabs at bottom.
      move Hxbci at bottom; move Hxbcs at bottom.
-     destruct xai, xci, xas, xcs, xabi, xbci; auto; simpl.
+     destruct xai, xas, xci, xcs, xabi, xbci; auto; simpl.
 bbb.
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
