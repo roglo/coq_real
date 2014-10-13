@@ -2185,12 +2185,13 @@ Theorem case_1 : ∀ b₀ c₀ i si,
   si = S i
   → rm_add_i c₀ 0 i = true
   → rm_add_i c₀ 0 si = true
-  → rm_add_i (b + c) 0 i = false
   → rm_add_i b₀ 0 i = true
   → rm_add_i b₀ 0 si = true
-  → False.
+  → rm_add_i (b + c) 0 i = true.
 Proof.
-intros b₀ c₀ i si b c Heqsi Hxci Hxcs Hxbci Hxbi Hxbs.
+intros b₀ c₀ i si b c Heqsi Hxci Hxcs Hxbi Hxbs.
+apply eq_true_negb_classical; intros Hxbci.
+apply negb_true_iff in Hxbci.
 unfold rm_add_i in Hxbci.
 rewrite <- Heqsi in Hxbci; simpl in Hxbci.
 rewrite xorb_false_r in Hxbci.
@@ -2310,9 +2311,10 @@ destruct s₁ as [di₁| ].
      move Hxabi at bottom; move Hxabs at bottom.
      move Hxbci at bottom; move Hxbcs at bottom.
      move Hxbi at bottom; move Hxbs at bottom.
-     destruct xai, xas, xci, xcs, xabi, xbci; auto; simpl.
+     destruct xai, xas, xci, xcs, xabi, xbci; try reflexivity; exfalso.
       destruct bi, bs.
-       exfalso; eapply case_1 with (b₀ := b₀) (c₀ := c₀); eassumption.
+       apply not_true_iff_false in Hxbci.
+       eapply Hxbci, case_1; eassumption.
 bbb.
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
