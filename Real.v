@@ -2277,6 +2277,7 @@ destruct s₁ as [di₁| ].
  destruct Hs₂ as (Hn₂, Hs₂); rewrite Hs₂, xorb_false_r.
  clear si Heqsi di₁ Hn₁ Hs₁ di₂ Hn₂ Hs₂.
  unfold rm_add_i; remember (S i) as si; simpl.
+ remember (fst_same a (b + c + 0)%rm si) as s₁ eqn:Hs₁ .
 bbb.
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
