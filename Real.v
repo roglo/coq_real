@@ -244,6 +244,15 @@ destruct s₂ as [di₂| ].
  rewrite H₁ in H; discriminate H.
 Qed.
 
+Theorem not_rm_add_0_inf_1_succ : ∀ a i,
+  ¬ (∀ dj, rm_add_i a 0 (i + S dj) = true).
+Proof.
+intros a i H.
+eapply not_rm_add_0_inf_1 with (i := S i); intros dj.
+rewrite Nat.add_succ_l, <- Nat.add_succ_r.
+apply H.
+Qed.
+
 Theorem rm_add_i_0_r : ∀ a i, rm_add_i (a + 0%rm) 0 i = rm_add_i a 0 i.
 Proof.
 intros a i.
@@ -2308,6 +2317,36 @@ destruct s₁ as [di₁| ].
      move Hxabi at bottom; move Hxabs at bottom.
      move Hxbci at bottom; move Hxbcs at bottom.
      destruct xai, xas, xci, xcs, xabi, xbci; auto; simpl.
+      remember b .[ i] as bi eqn:Hxbi .
+      symmetry in Hxbi; simpl in Hxbi.
+      remember b .[ si] as bs eqn:Hxbs .
+      symmetry in Hxbs; simpl in Hxbs.
+      destruct bi, bs.
+       unfold rm_add_i in Hxbci.
+       rewrite <- Heqsi in Hxbci; simpl in Hxbci.
+       rewrite xorb_false_r in Hxbci.
+       unfold rm_add_i in Hxbci at 1.
+       rewrite <- Heqsi in Hxbci; simpl in Hxbci.
+       rewrite Hxbi, Hxci, xorb_true_r in Hxbci.
+       rewrite xorb_false_l in Hxbci.
+       remember (fst_same b c si) as s₁ eqn:Hs₁ .
+       apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
+       destruct s₁ as [di₁| ].
+        destruct Hs₁ as (Hn₁, Hs₁).
+        destruct di₁.
+         rewrite Nat.add_0_r, Hxbs, xorb_true_l in Hxbci.
+         apply negb_false_iff in Hxbci.
+         remember (fst_same (b + c) 0 si) as s₂ eqn:Hs₂ .
+         apply fst_same_sym_iff in Hs₂; simpl in Hs₂.
+         destruct s₂ as [di₂| ].
+          destruct Hs₂ as (Hn₂, Hs₂); rewrite Hs₂ in Hxbci;
+          discriminate Hxbci.
+
+          clear Hxbci.
+          apply rm_add_inf_true_eq_if in Hs₂.
+           destruct Hs₂ as (Hs₂, Hs₃); simpl in Hs₂.
+           exfalso; revert Hs₂.
+           apply not_rm_add_0_inf_1_succ.
 bbb.
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
