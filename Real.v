@@ -2227,23 +2227,25 @@ setoid_replace c with (c + 0)%rm by apply Hx.
 set (a₁ := (a + 0)%rm).
 set (b₁ := (b + 0)%rm).
 set (c₁ := (c + 0)%rm).
+rename a into a₀; rename b into b₀; rename c into c₀.
+rename a₁ into a; rename b₁ into b; rename c₁ into c.
 unfold rm_eq; intros i; simpl.
 unfold rm_add_i.
 remember (S i) as si; simpl.
 do 2 rewrite xorb_false_r.
-remember (fst_same (a₁ + (b₁ + c₁ + 0)%rm) 0 si) as s₁ eqn:Hs₁ .
+remember (fst_same (a + (b + c + 0)%rm) 0 si) as s₁ eqn:Hs₁ .
 apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
 destruct s₁ as [di₁| ].
  destruct Hs₁ as (Hn₁, Hs₁); rewrite Hs₁, xorb_false_r.
- remember (fst_same ((a₁ + b₁ + 0)%rm + c₁) 0 si) as s₂ eqn:Hs₂ .
+ remember (fst_same ((a + b + 0)%rm + c) 0 si) as s₂ eqn:Hs₂ .
  apply fst_same_sym_iff in Hs₂; simpl in Hs₂.
  destruct s₂ as [di₂| ].
   destruct Hs₂ as (Hn₂, Hs₂); rewrite Hs₂, xorb_false_r.
   Focus 2.
-  destruct (bool_dec ((a₁ + b₁ + 0)%rm) .[ si] c₁ .[ si]) as [H₁| H₁].
+  destruct (bool_dec ((a + b + 0)%rm) .[ si] c .[ si]) as [H₁| H₁].
    apply rm_add_inf_true_eq_if in Hs₂; auto; simpl in Hs₂.
    destruct Hs₂ as (Hab, Hc).
-   pose proof (not_rm_add_0_inf_1 (a₁ + b₁)%rm (S si)) as H.
+   pose proof (not_rm_add_0_inf_1 (a + b)%rm (S si)) as H.
    exfalso; apply H; intros dj.
    rewrite Nat.add_succ_l, <- Nat.add_succ_r.
    apply Hab.
@@ -2251,7 +2253,7 @@ destruct s₁ as [di₁| ].
    apply neq_negb in H₁.
    apply rm_add_inf_true_neq_if in Hs₂; auto; simpl in Hs₂.
    destruct Hs₂ as (j, (Hij, (Hni, (Ha, (Hb, (Hat, Hbt)))))).
-   pose proof (not_rm_add_0_inf_1 c (S j)) as H.
+   pose proof (not_rm_add_0_inf_1 c₀ (S j)) as H.
    exfalso; apply H; intros dj.
    rewrite Nat.add_succ_l, <- Nat.add_succ_r.
    apply Hbt.
