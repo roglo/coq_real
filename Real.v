@@ -347,7 +347,6 @@ assert (∀ i, a .[ i] = b .[ i]) as H.
    destruct Hs₂ as (Hn₂, Hs₂).
    rewrite Hs₂, xorb_false_r in Hi; assumption.
 
-   rewrite xorb_true_r in Hi.
    exfalso; revert Hs₂; rewrite Hb; apply not_rm_add_0_inf_1.
 
   exfalso; revert Hs₁; rewrite Ha; apply not_rm_add_0_inf_1.
@@ -2048,15 +2047,13 @@ destruct (bool_dec ((a + 0)%rm) .[ si] b .[ si]) as [H₁| H₁].
  apply rm_add_inf_true_eq_if in Hs₂; auto.
  simpl in Hs₂, H₁.
  destruct Hs₂ as (Hn₂, Hs₂).
- exfalso; eapply not_rm_add_0_inf_1 with (i := S si); intros dj.
- rewrite Nat.add_succ_l, <- Nat.add_succ_r; apply Hn₂.
+ eapply not_rm_add_0_inf_1_succ; eauto .
 
  apply neq_negb in H₁.
  apply rm_add_inf_true_neq_if in Hs₂; auto.
  simpl in Hs₂.
  destruct Hs₂ as (j, (Hij, (Hni, (Ha, (Hb, (Hat, Hbt)))))).
- exfalso; eapply not_rm_add_0_inf_1 with (i := S j); intros dj.
- rewrite Nat.add_succ_l, <- Nat.add_succ_r; apply Hat.
+ eapply not_rm_add_0_inf_1_succ; eauto .
 Qed.
 
 Theorem rm_add_add_0_r : ∀ a b, (a + 0 + b = a + b)%rm.
@@ -2252,35 +2249,23 @@ destruct s₁ as [di₁| ].
   destruct (bool_dec ((a + b + 0)%rm) .[ si] c .[ si]) as [H₁| H₁].
    apply rm_add_inf_true_eq_if in Hs₂; auto; simpl in Hs₂.
    destruct Hs₂ as (Hab, Hc).
-   pose proof (not_rm_add_0_inf_1 (a + b)%rm (S si)) as H.
-   exfalso; apply H; intros dj.
-   rewrite Nat.add_succ_l, <- Nat.add_succ_r.
-   apply Hab.
+   exfalso; eapply not_rm_add_0_inf_1_succ; eauto .
 
    apply neq_negb in H₁.
    apply rm_add_inf_true_neq_if in Hs₂; auto; simpl in Hs₂.
    destruct Hs₂ as (j, (Hij, (Hni, (Ha, (Hb, (Hat, Hbt)))))).
-   pose proof (not_rm_add_0_inf_1 c₀ (S j)) as H.
-   exfalso; apply H; intros dj.
-   rewrite Nat.add_succ_l, <- Nat.add_succ_r.
-   apply Hbt.
+   exfalso; eapply not_rm_add_0_inf_1_succ; eauto .
 
   Focus 2.
   destruct (bool_dec a .[ si] ((b + c + 0)%rm) .[ si]) as [H₁| H₁].
    apply rm_add_inf_true_eq_if in Hs₁; auto; simpl in Hs₁.
    destruct Hs₁ as (Ha, Hbc).
-   pose proof (not_rm_add_0_inf_1 (b + c)%rm (S si)) as H.
-   exfalso; apply H; intros dj.
-   rewrite Nat.add_succ_l, <- Nat.add_succ_r.
-   apply Hbc.
+   exfalso; eapply not_rm_add_0_inf_1_succ; eauto .
 
    apply neq_negb in H₁.
-   apply rm_add_inf_true_neq_if in Hs₁; auto; simpl in H₁.
+   apply rm_add_inf_true_neq_if in Hs₁; auto; simpl in Hs₁.
    destruct Hs₁ as (j, (Hij, (Hni, (Ha, (Hb, (Hat, Hbt)))))).
-   pose proof (not_rm_add_0_inf_1 a₀ (S j)) as H.
-   exfalso; apply H; intros dj.
-   rewrite Nat.add_succ_l, <- Nat.add_succ_r.
-   apply Hat.
+   exfalso; eapply not_rm_add_0_inf_1_succ; eauto .
 
  destruct Hs₁ as (Hn₁, Hs₁); rewrite Hs₁, xorb_false_r.
  destruct Hs₂ as (Hn₂, Hs₂); rewrite Hs₂, xorb_false_r.
@@ -2339,14 +2324,23 @@ destruct s₁ as [di₁| ].
          remember (fst_same (b + c) 0 si) as s₂ eqn:Hs₂ .
          apply fst_same_sym_iff in Hs₂; simpl in Hs₂.
          destruct s₂ as [di₂| ].
-          destruct Hs₂ as (Hn₂, Hs₂); rewrite Hs₂ in Hxbci;
+          destruct Hs₂ as (Hn₂, Hs₂); rewrite Hs₂ in Hxbci.
           discriminate Hxbci.
 
           clear Hxbci.
           apply rm_add_inf_true_eq_if in Hs₂.
-           destruct Hs₂ as (Hs₂, Hs₃); simpl in Hs₂.
-           exfalso; revert Hs₂.
-           apply not_rm_add_0_inf_1_succ.
+           destruct Hs₂ as (Hs₂, Hs₃); simpl in Hs₂, Hs₃.
+           exfalso; eapply not_rm_add_0_inf_1_succ; eauto .
+
+           simpl; rewrite Hxcs; assumption.
+
+         pose proof (Hn₁ 0 (Nat.lt_0_succ di₁)) as H.
+         rewrite Nat.add_0_r, Hxbs, Hxcs in H.
+         discriminate H.
+
+        pose proof (Hs₁ 0) as H.
+        rewrite Nat.add_0_r, Hxbs, Hxcs in H.
+        discriminate H.
 bbb.
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
