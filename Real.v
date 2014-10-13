@@ -2278,6 +2278,13 @@ destruct s₁ as [di₁| ].
  clear si Heqsi di₁ Hn₁ Hs₁ di₂ Hn₂ Hs₂.
  unfold rm_add_i; remember (S i) as si; simpl.
  remember (fst_same a (b + c + 0)%rm si) as s₁ eqn:Hs₁ .
+ apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
+ destruct s₁ as [di₁| ].
+  destruct Hs₁ as (Hn₁, Hs₁).
+  remember (fst_same (a + b + 0)%rm c si) as s₂ eqn:Hs₂ .
+  apply fst_same_sym_iff in Hs₂; simpl in Hs₂.
+  destruct s₂ as [di₂| ].
+   destruct Hs₂ as (Hn₂, Hs₂).
 bbb.
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
