@@ -2149,13 +2149,6 @@ Qed.
 Theorem fold_rm_norm_i : ∀ a i, rm_add_i a 0 i = rm_norm_i a i.
 Proof. reflexivity. Qed.
 
-Theorem zzz : ∀ a b c i,
- rm_norm_i ((a + b) + c)%rm i = rm_norm_i (((a + 0) + (b + 0)) + (c + 0))%rm i.
-Proof.
-intros a b c i.
-do 3 rewrite rm_add_0_r; reflexivity.
-Qed.
-
 Fixpoint trunc n a :=
   match n with
   | 0 => []
@@ -2180,6 +2173,7 @@ Fixpoint trunc_add_with_carry c la lb :=
 
 Definition trunc_add := trunc_add_with_carry false.
 
+(*
 Theorem yyy : ∀ a b n,
   trunc n ((a + 0) + (b + 0) + 0)%rm =
   trunc_add (trunc n (a + 0)%rm) (trunc n (b + 0)%rm).
@@ -2207,7 +2201,8 @@ destruct n.
    unfold rm_norm_i; simpl.
    Unfocus.
    Unfocus.
-bbb. (* c'est faux, ça... manque la retenue *)
+bbb. c'est faux, ça... manque la retenue
+ *)
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
@@ -2224,6 +2219,7 @@ destruct s₁ as [di₁| ].
  apply fst_same_sym_iff in Hs₂; simpl in Hs₂.
  destruct s₂ as [di₂| ].
   destruct Hs₂ as (Hn₂, Hs₂); rewrite Hs₂, xorb_false_r.
+bbb.
   unfold rm_add_i.
   rewrite <- Heqsi; simpl.
   remember (fst_same a (b + c) si) as s₃ eqn:Hs₃ .
