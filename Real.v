@@ -2179,47 +2179,53 @@ Fixpoint trunc_add_with_carry c la lb :=
 
 Definition trunc_add := trunc_add_with_carry false.
 
-(*
-Theorem yyy : ∀ a b n,
-  trunc n ((a + 0) + (b + 0) + 0)%rm =
-  trunc_add (trunc n (a + 0)%rm) (trunc n (b + 0)%rm).
+Theorem case_1 : ∀ b₀ c₀ i si,
+  let b := (b₀ + 0)%rm in
+  let c := (c₀ + 0)%rm in
+  si = S i
+  → rm_add_i c₀ 0 i = true
+  → rm_add_i c₀ 0 si = true
+  → rm_add_i (b + c) 0 i = false
+  → rm_add_i b₀ 0 i = true
+  → rm_add_i b₀ 0 si = true
+  → False.
 Proof.
-intros a b n.
-destruct n; [ reflexivity | simpl ].
-destruct n.
- simpl.
- unfold trunc_add; simpl.
- f_equal.
- do 3 rewrite fold_rm_norm_i.
- do 2 rewrite rm_add_0_r.
- unfold rm_norm_i; simpl.
- Focus 2.
- simpl.
- unfold trunc_add; simpl.
- f_equal.
-  do 3 rewrite fold_rm_norm_i.
-  do 2 rewrite rm_add_0_r.
-  unfold rm_norm_i; simpl.
-  Focus 2.
-  f_equal.
-   do 3 rewrite fold_rm_norm_i.
-   do 2 rewrite rm_add_0_r.
-   unfold rm_norm_i; simpl.
-   Unfocus.
-   Unfocus.
-bbb. c'est faux, ça... manque la retenue
- *)
+intros b₀ c₀ i si b c Heqsi Hxci Hxcs Hxbci Hxbi Hxbs.
+unfold rm_add_i in Hxbci.
+rewrite <- Heqsi in Hxbci; simpl in Hxbci.
+rewrite xorb_false_r in Hxbci.
+unfold rm_add_i in Hxbci at 1.
+rewrite <- Heqsi in Hxbci; simpl in Hxbci.
+rewrite Hxbi, Hxci, xorb_true_r in Hxbci.
+rewrite xorb_false_l in Hxbci.
+remember (fst_same b c si) as s₁ eqn:Hs₁ .
+apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
+destruct s₁ as [di₁| ].
+ destruct Hs₁ as (Hn₁, Hs₁).
+ destruct di₁.
+  rewrite Nat.add_0_r, Hxbs, xorb_true_l in Hxbci.
+  apply negb_false_iff in Hxbci.
+  remember (fst_same (b + c) 0 si) as s₂ eqn:Hs₂ .
+  apply fst_same_sym_iff in Hs₂; simpl in Hs₂.
+  destruct s₂ as [di₂| ].
+   destruct Hs₂ as (Hn₂, Hs₂); rewrite Hs₂ in Hxbci.
+   discriminate Hxbci.
 
-(*
-Theorem rm_add_assoc_0 : ∀ a b c a₀ b₀ c₀,
-  (a = a₀ + 0)%rm
-  → (b = b₀ + 0)%rm
-  → (c = c₀ + 0)%rm
-  → (a + (b + c) = (a + b) + c)%rm.
-Proof.
-intros a b c a₀ b₀ c₀ Ha Hb Hc.
-bbb.
-*)
+   clear Hxbci.
+   apply rm_add_inf_true_eq_if in Hs₂.
+    destruct Hs₂ as (Hs₂, Hs₃); simpl in Hs₂, Hs₃.
+    exfalso; eapply not_rm_add_0_inf_1_succ; eauto .
+
+    simpl; rewrite Hxcs; assumption.
+
+  pose proof (Hn₁ 0 (Nat.lt_0_succ di₁)) as H.
+  rewrite Nat.add_0_r, Hxbs, Hxcs in H.
+  discriminate H.
+
+ pose proof (Hs₁ 0) as H.
+ rewrite Nat.add_0_r, Hxbs, Hxcs in H.
+ discriminate H.
+Qed.
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
@@ -2306,40 +2312,7 @@ destruct s₁ as [di₁| ].
      move Hxbi at bottom; move Hxbs at bottom.
      destruct xai, xas, xci, xcs, xabi, xbci; auto; simpl.
       destruct bi, bs.
-       unfold rm_add_i in Hxbci.
-       rewrite <- Heqsi in Hxbci; simpl in Hxbci.
-       rewrite xorb_false_r in Hxbci.
-       unfold rm_add_i in Hxbci at 1.
-       rewrite <- Heqsi in Hxbci; simpl in Hxbci.
-       rewrite Hxbi, Hxci, xorb_true_r in Hxbci.
-       rewrite xorb_false_l in Hxbci.
-       remember (fst_same b c si) as s₁ eqn:Hs₁ .
-       apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
-       destruct s₁ as [di₁| ].
-        destruct Hs₁ as (Hn₁, Hs₁).
-        destruct di₁.
-         rewrite Nat.add_0_r, Hxbs, xorb_true_l in Hxbci.
-         apply negb_false_iff in Hxbci.
-         remember (fst_same (b + c) 0 si) as s₂ eqn:Hs₂ .
-         apply fst_same_sym_iff in Hs₂; simpl in Hs₂.
-         destruct s₂ as [di₂| ].
-          destruct Hs₂ as (Hn₂, Hs₂); rewrite Hs₂ in Hxbci.
-          discriminate Hxbci.
-
-          clear Hxbci.
-          apply rm_add_inf_true_eq_if in Hs₂.
-           destruct Hs₂ as (Hs₂, Hs₃); simpl in Hs₂, Hs₃.
-           exfalso; eapply not_rm_add_0_inf_1_succ; eauto .
-
-           simpl; rewrite Hxcs; assumption.
-
-         pose proof (Hn₁ 0 (Nat.lt_0_succ di₁)) as H.
-         rewrite Nat.add_0_r, Hxbs, Hxcs in H.
-         discriminate H.
-
-        pose proof (Hs₁ 0) as H.
-        rewrite Nat.add_0_r, Hxbs, Hxcs in H.
-        discriminate H.
+       exfalso; eapply case_1 with (b₀ := b₀) (c₀ := c₀); eassumption.
 bbb.
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
