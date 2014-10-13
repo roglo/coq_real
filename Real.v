@@ -2285,6 +2285,14 @@ destruct s₁ as [di₁| ].
   apply fst_same_sym_iff in Hs₂; simpl in Hs₂.
   destruct s₂ as [di₂| ].
    destruct Hs₂ as (Hn₂, Hs₂).
+   destruct di₁.
+    clear Hn₁.
+    rewrite Nat.add_0_r in Hs₁.
+    rewrite Nat.add_0_r.
+    destruct di₂.
+     clear Hn₂.
+     rewrite Nat.add_0_r in Hs₂.
+     rewrite Nat.add_0_r.
 bbb.
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
