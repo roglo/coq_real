@@ -2281,15 +2281,15 @@ destruct s₁ as [di₁| ].
  remember (fst_same a (b + c + 0)%rm si) as s₁ eqn:Hs₁ .
  apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
  destruct s₁ as [di₁| ].
-  remember (rm_add_i a₀ 0 (si + di₁)) as xas eqn:Hxas .
   destruct Hs₁ as (Hn₁, Hxbcs).
+  remember (rm_add_i a₀ 0 (si + di₁)) as xas eqn:Hxas .
   symmetry in Hxas, Hxbcs.
   remember (fst_same (a + b + 0)%rm c si) as s₂ eqn:Hs₂ .
   apply fst_same_sym_iff in Hs₂; simpl in Hs₂.
   destruct s₂ as [di₂| ].
+   destruct Hs₂ as (Hn₂, Hxabs).
    remember (rm_add_i c₀ 0 (si + di₂)) as xcs eqn:Hxcs .
    symmetry in Hxcs.
-   destruct Hs₂ as (Hn₂, Hxabs).
    destruct di₁.
     clear Hn₁.
     rewrite Nat.add_0_r in Hxas, Hxbcs.
