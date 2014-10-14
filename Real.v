@@ -2325,8 +2325,10 @@ destruct s₁ as [di₁| ].
    remember (fst_same (a + b) 0 si) as s₃ eqn:Hs₃ .
    move Hs₃ after Hxai.
    apply fst_same_sym_iff in Hs₃; simpl in Hs₃.
-   destruct s₃ as [di₃| ]; [ idtac | apply not_add_norm_inf_1 in Hs₃; auto ].
+   destruct s₃ as [di₃| ].
+    2: apply not_add_norm_inf_1 in Hs₃; contradiction.
 
+    destruct Hs₃ as (Hn₃, Hs₃); rewrite Hs₃, xorb_false_r in H.
 bbb.
 (*-1*)
    destruct xai, xas, xci, xcs, xabi, xbci; try reflexivity; exfalso;
