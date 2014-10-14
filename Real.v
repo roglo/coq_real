@@ -2227,6 +2227,22 @@ destruct s₁ as [di₁| ].
  discriminate H.
 Qed.
 
+Theorem not_add_norm_inf_1 : ∀ a b i,
+  ¬ (∀ dj : nat, rm_add_i (a + 0%rm) (b + 0%rm) (i + dj) = true).
+Proof.
+intros a b i Hab.
+destruct (bool_dec ((a + 0)%rm) .[ i] ((b + 0)%rm) .[ i]) as [H₁| H₁].
+ apply rm_add_inf_true_eq_if in Hab; auto.
+ destruct Hab as (H, _); simpl in H.
+ apply not_rm_add_0_inf_1_succ in H; auto.
+
+ apply neq_negb in H₁.
+ apply rm_add_inf_true_neq_if in Hab; auto.
+ simpl in Hab.
+ destruct Hab as (j, (Hij, (Hni, (Ha, (Hb, (Hat, Hbt)))))).
+ apply not_rm_add_0_inf_1_succ in Hat; auto.
+Qed.
+
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
 intros a b c.
@@ -2301,6 +2317,18 @@ destruct s₁ as [di₁| ].
    move Hxabi at bottom; move Hxabs at bottom.
    move Hxbci at bottom; move Hxbcs at bottom.
    move Hxbi at bottom; move Hxbs at bottom.
+(*1-*)
+   remember Hxabi as H; clear HeqH.
+   unfold rm_add_i in H.
+   rewrite <- Heqsi in H; simpl in H.
+   rewrite xorb_false_r in H.
+   remember (fst_same (a + b) 0 si) as s₃ eqn:Hs₃ .
+   move Hs₃ after Hxai.
+   apply fst_same_sym_iff in Hs₃; simpl in Hs₃.
+   destruct s₃ as [di₃| ]; [ idtac | apply not_add_norm_inf_1 in Hs₃; auto ].
+
+bbb.
+(*-1*)
    destruct xai, xas, xci, xcs, xabi, xbci; try reflexivity; exfalso;
     destruct bi, bs.
     Focus 1.
