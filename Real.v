@@ -2297,17 +2297,26 @@ destruct s₁ as [di₁| ].
    destruct Hs₂ as (Hn₂, Hxabs); rewrite Hxabs.
    remember (rm_add_i c₀ 0 (si + di₂)) as xcs eqn:Hxcs .
    symmetry in Hxcs.
+   move Hxai at bottom; move Hxas at bottom.
+   move Hxci at bottom; move Hxcs at bottom.
+   move Hxabi at bottom; move Hxabs at bottom.
+   move Hxbci at bottom; move Hxbcs at bottom.
+   move Hxbi at bottom; move Hxbs at bottom.
+   destruct xai, xas, xci, xcs, xabi, xbci; try reflexivity; exfalso;
+    destruct bi, bs.
+    Focus 1.
+    destruct di₂.
+     rewrite Nat.add_0_r in Hxcs.
+     apply not_true_iff_false in Hxbci.
+     eapply Hxbci, case_1; eassumption.
+
+bbb.
    destruct di₁.
     clear Hn₁.
     rewrite Nat.add_0_r in Hxas, Hxbcs.
     destruct di₂.
      clear Hn₂.
      rewrite Nat.add_0_r in Hxcs, Hxabs.
-     move Hxai at bottom; move Hxas at bottom.
-     move Hxci at bottom; move Hxcs at bottom.
-     move Hxabi at bottom; move Hxabs at bottom.
-     move Hxbci at bottom; move Hxbcs at bottom.
-     move Hxbi at bottom; move Hxbs at bottom.
      destruct xai, xas, xci, xcs, xabi, xbci; try reflexivity; exfalso;
       destruct bi, bs.
       apply not_true_iff_false in Hxbci.
