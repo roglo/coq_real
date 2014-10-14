@@ -2334,22 +2334,33 @@ destruct s₁ as [di₁| ].
    move Hxbi at bottom; move Hxbs at bottom.
 (*1-*)
    remember Hxabi as H; clear HeqH.
-   subst a b.
-   rewrite rm_add_i_norm_norm in H.
-   set (a := (a₀ + 0)%rm) in *.
-   set (b := (b₀ + 0)%rm) in *.
-   move b before Hx; move a before Hx.
    unfold rm_add_i in H.
    rewrite <- Heqsi in H; simpl in H.
-   rewrite Hxai, Hxbi in H.
-   remember (fst_same a b si) as s₃ eqn:Hs₃ .
-   move Hs₃ after Hxai.
+   rewrite xorb_false_r in H.
+   remember (fst_same (a + b) 0 si) as s₃ eqn:Hs₃ .
    apply fst_same_sym_iff in Hs₃; simpl in Hs₃.
    destruct s₃ as [di₃| ].
-    destruct Hs₃ as (Hn₃, Hs₃).
-    apply xorb_move_l_r_1 in H.
-bbb.
     2: apply not_add_norm_inf_1 in Hs₃; contradiction.
+
+    destruct Hs₃ as (Hn₃, Hs₃); rewrite Hs₃, xorb_false_r in H.
+    remember H as Habi; clear HeqHabi.
+    unfold rm_add_i in H.
+    rewrite <- Heqsi in H; simpl in H.
+    rewrite Hxai, Hxbi in H.
+    remember (fst_same a b si) as s₄ eqn:Hs₄ .
+    apply fst_same_sym_iff in Hs₄; simpl in Hs₄.
+    destruct s₄ as [di₄| ].
+     destruct Hs₄ as (Hn₄, Hb₄).
+     apply xorb_move_l_r_1 in H.
+     rewrite H in Hb₄.
+     rename H into Ha₄.
+     symmetry in Hb₄.
+     move Hn₃ after Hxai.
+     move Hn₄ after Hxai.
+     subst a b.
+     rewrite <- rm_add_i_norm_norm in Hs₃.
+     set (a := (a₀ + 0)%rm) in *.
+     set (b := (b₀ + 0)%rm) in *.
 
 bbb.
 (*-1*)
