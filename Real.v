@@ -2304,12 +2304,14 @@ destruct s₁ as [di₁| ].
    destruct xai, xas, xci, xcs, xabi, xbci; try reflexivity; exfalso;
     destruct bi, bs.
     Focus 1.
+bbb.
     destruct di₂.
      rewrite Nat.add_0_r in Hxcs.
      apply not_true_iff_false in Hxbci.
      eapply Hxbci, case_1; eassumption.
 
      (* cf theorem case_1 *)
+bbb.
      apply not_true_iff_false in Hxbci.
      apply Hxbci; clear Hxbci.
      apply eq_true_negb_classical; intros Hxbci.
