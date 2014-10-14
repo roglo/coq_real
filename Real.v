@@ -2290,22 +2290,23 @@ destruct s₁ as [di₁| ].
     clear Hn₁.
     rewrite Nat.add_0_r in Hs₁.
     rewrite Nat.add_0_r.
+    rename Hs₁ into Hxbcs.
+    rename Hs₂ into Hxabs.
+    remember (rm_add_i c₀ 0 (si + di₂)) as xcs eqn:Hxcs .
+    remember (rm_add_i a₀ 0 si) as xas eqn:Hxas .
+    symmetry in Hxas, Hxcs, Hxbcs.
     destruct di₂.
      clear Hn₂.
-     rewrite Nat.add_0_r in Hs₂.
+     rewrite Nat.add_0_r in Hxcs, Hxabs.
      rewrite Nat.add_0_r.
-     rewrite Hs₂.
+     rewrite Hxabs.
      remember (rm_add_i a₀ 0 i) as xai eqn:Hxai .
      remember (rm_add_i c₀ 0 i) as xci eqn:Hxci .
-     remember (rm_add_i a₀ 0 si) as xas eqn:Hxas .
-     remember (rm_add_i c₀ 0 si) as xcs eqn:Hxcs .
      remember (rm_add_i (a + b) 0 i) as xabi eqn:Hxabi .
      remember (rm_add_i (b + c) 0 i) as xbci eqn:Hxbci .
-     rename Hs₁ into Hxbcs.
-     rename Hs₂ into Hxabs.
-     remember b .[ i] as bi eqn:Hxbi; simpl in Hxbi.
-     remember b .[ si] as bs eqn:Hxbs; simpl in Hxbs.
-     symmetry in Hxas, Hxbcs, Hxcs, Hxai, Hxci, Hxabi, Hxbci, Hxbi, Hxbs.
+     remember b .[ i] as bi eqn:Hxbi ; simpl in Hxbi.
+     remember b .[ si] as bs eqn:Hxbs ; simpl in Hxbs.
+     symmetry in Hxai, Hxci, Hxabi, Hxbci, Hxbi, Hxbs.
      move Hxai at bottom; move Hxas at bottom.
      move Hxci at bottom; move Hxcs at bottom.
      move Hxabi at bottom; move Hxabs at bottom.
