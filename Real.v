@@ -2281,25 +2281,22 @@ destruct s₁ as [di₁| ].
  remember (fst_same a (b + c + 0)%rm si) as s₁ eqn:Hs₁ .
  apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
  destruct s₁ as [di₁| ].
-  destruct Hs₁ as (Hn₁, Hs₁).
+  remember (rm_add_i a₀ 0 (si + di₁)) as xas eqn:Hxas .
+  destruct Hs₁ as (Hn₁, Hxbcs).
+  symmetry in Hxas, Hxbcs.
   remember (fst_same (a + b + 0)%rm c si) as s₂ eqn:Hs₂ .
   apply fst_same_sym_iff in Hs₂; simpl in Hs₂.
   destruct s₂ as [di₂| ].
-   destruct Hs₂ as (Hn₂, Hs₂).
+   remember (rm_add_i c₀ 0 (si + di₂)) as xcs eqn:Hxcs .
+   symmetry in Hxcs.
+   destruct Hs₂ as (Hn₂, Hxabs).
    destruct di₁.
     clear Hn₁.
-    rewrite Nat.add_0_r in Hs₁.
-    rewrite Nat.add_0_r.
-    rename Hs₁ into Hxbcs.
-    rename Hs₂ into Hxabs.
-    remember (rm_add_i c₀ 0 (si + di₂)) as xcs eqn:Hxcs .
-    remember (rm_add_i a₀ 0 si) as xas eqn:Hxas .
-    symmetry in Hxas, Hxcs, Hxbcs.
+    rewrite Nat.add_0_r in Hxas, Hxbcs.
     destruct di₂.
      clear Hn₂.
      rewrite Nat.add_0_r in Hxcs, Hxabs.
-     rewrite Nat.add_0_r.
-     rewrite Hxabs.
+     rewrite Nat.add_0_r, Hxabs.
      remember (rm_add_i a₀ 0 i) as xai eqn:Hxai .
      remember (rm_add_i c₀ 0 i) as xci eqn:Hxci .
      remember (rm_add_i (a + b) 0 i) as xabi eqn:Hxabi .
