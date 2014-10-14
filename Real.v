@@ -2212,7 +2212,6 @@ destruct s₁ as [di₁| ].
    destruct Hs₂ as (Hn₂, Hs₂); rewrite Hs₂ in Hxbci.
    discriminate Hxbci.
 
-   clear Hxbci.
    apply rm_add_inf_true_eq_if in Hs₂.
     destruct Hs₂ as (Hs₂, Hs₃); simpl in Hs₂, Hs₃.
     exfalso; eapply not_rm_add_0_inf_1_succ; eauto .
@@ -2309,6 +2308,49 @@ destruct s₁ as [di₁| ].
      rewrite Nat.add_0_r in Hxcs.
      apply not_true_iff_false in Hxbci.
      eapply Hxbci, case_1; eassumption.
+
+     (* cf theorem case_1 *)
+     apply not_true_iff_false in Hxbci.
+     apply Hxbci; clear Hxbci.
+     apply eq_true_negb_classical; intros Hxbci.
+     apply negb_true_iff in Hxbci.
+     unfold rm_add_i in Hxbci.
+     rewrite <- Heqsi in Hxbci; simpl in Hxbci.
+     rewrite xorb_false_r in Hxbci.
+     unfold rm_add_i in Hxbci at 1.
+     rewrite <- Heqsi in Hxbci; simpl in Hxbci.
+     rewrite Hxbi, Hxci, xorb_true_r in Hxbci.
+     rewrite xorb_false_l in Hxbci.
+     remember (fst_same b c si) as s₁ eqn:Hs₁ .
+     apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
+     destruct s₁ as [di₃| ].
+      destruct Hs₁ as (Hn₃, Hs₃).
+      destruct di₃.
+       rewrite Nat.add_0_r, Hxbs, xorb_true_l in Hxbci.
+       apply negb_false_iff in Hxbci.
+       remember (fst_same (b + c) 0 si) as s₂ eqn:Hs₂ .
+       apply fst_same_sym_iff in Hs₂; simpl in Hs₂.
+       destruct s₂ as [di₄| ].
+        destruct Hs₂ as (Hn₄, Hs₄); rewrite Hs₄ in Hxbci.
+        discriminate Hxbci.
+
+        apply rm_add_inf_true_eq_if in Hs₂.
+         destruct Hs₂ as (Hs₂, Hs₄); simpl in Hs₂, Hs₄.
+         exfalso; eapply not_rm_add_0_inf_1_succ; eauto .
+
+         rewrite Nat.add_0_r in Hs₃; assumption.
+
+       pose proof (Hn₃ 0 (Nat.lt_0_succ di₃)) as H.
+       rewrite Nat.add_0_r, Hxbs in H.
+       symmetry in H; apply negb_true_iff in H.
+       pose proof (Hn₂ 0 (Nat.lt_0_succ di₂)) as H₁.
+       rewrite Nat.add_0_r, H in H₁; simpl in H₁.
+bbb.
+       remember (fst_same (b + c) 0 si) as s₄ eqn:Hs₄ .
+       apply fst_same_sym_iff in Hs₄; simpl in Hs₄.
+       destruct s₄ as [di₄| ].
+        destruct Hs₄ as (Hn₄, Hs₄); rewrite Hs₄, xorb_false_r in Hxbci.
+        rewrite Hxbci in Hs₃; symmetry in Hs₃.
 
 bbb.
    destruct di₁.
