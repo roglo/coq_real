@@ -2278,6 +2278,13 @@ destruct s₁ as [di₁| ].
  destruct Hs₂ as (Hn₂, Hs₂); rewrite Hs₂, xorb_false_r.
  clear di₁ Hn₁ Hs₁ di₂ Hn₂ Hs₂.
  unfold rm_add_i; rewrite <- Heqsi; simpl.
+ remember (rm_add_i a₀ 0 i) as xai eqn:Hxai .
+ remember (rm_add_i (b + c) 0 i) as xbci eqn:Hxbci .
+ remember (rm_add_i (a + b) 0 i) as xabi eqn:Hxabi .
+ remember (rm_add_i c₀ 0 i) as xci eqn:Hxci .
+ remember b .[ i] as bi eqn:Hxbi ; simpl in Hxbi.
+ remember b .[ si] as bs eqn:Hxbs ; simpl in Hxbs.
+ symmetry in Hxai, Hxbci, Hxabi, Hxci, Hxbi, Hxbs.
  remember (fst_same a (b + c + 0)%rm si) as s₁ eqn:Hs₁ .
  apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
  destruct s₁ as [di₁| ].
@@ -2287,7 +2294,7 @@ destruct s₁ as [di₁| ].
   remember (fst_same (a + b + 0)%rm c si) as s₂ eqn:Hs₂ .
   apply fst_same_sym_iff in Hs₂; simpl in Hs₂.
   destruct s₂ as [di₂| ].
-   destruct Hs₂ as (Hn₂, Hxabs).
+   destruct Hs₂ as (Hn₂, Hxabs); rewrite Hxabs.
    remember (rm_add_i c₀ 0 (si + di₂)) as xcs eqn:Hxcs .
    symmetry in Hxcs.
    destruct di₁.
@@ -2296,14 +2303,6 @@ destruct s₁ as [di₁| ].
     destruct di₂.
      clear Hn₂.
      rewrite Nat.add_0_r in Hxcs, Hxabs.
-     rewrite Nat.add_0_r, Hxabs.
-     remember (rm_add_i a₀ 0 i) as xai eqn:Hxai .
-     remember (rm_add_i c₀ 0 i) as xci eqn:Hxci .
-     remember (rm_add_i (a + b) 0 i) as xabi eqn:Hxabi .
-     remember (rm_add_i (b + c) 0 i) as xbci eqn:Hxbci .
-     remember b .[ i] as bi eqn:Hxbi ; simpl in Hxbi.
-     remember b .[ si] as bs eqn:Hxbs ; simpl in Hxbs.
-     symmetry in Hxai, Hxci, Hxabi, Hxbci, Hxbi, Hxbs.
      move Hxai at bottom; move Hxas at bottom.
      move Hxci at bottom; move Hxcs at bottom.
      move Hxabi at bottom; move Hxabs at bottom.
