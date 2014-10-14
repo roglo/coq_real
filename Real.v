@@ -2243,6 +2243,21 @@ destruct (bool_dec ((a + 0)%rm) .[ i] ((b + 0)%rm) .[ i]) as [H₁| H₁].
  apply not_rm_add_0_inf_1_succ in Hat; auto.
 Qed.
 
+Theorem rm_add_i_norm_norm : ∀ a b i,
+  rm_add_i ((a + 0)%rm + (b + 0)%rm) 0 i = rm_add_i (a + 0%rm) (b + 0%rm) i.
+Proof.
+intros a b i.
+unfold rm_add_i at 1.
+remember (S i) as si; simpl.
+rewrite xorb_false_r.
+remember (fst_same ((a + 0)%rm + (b + 0)%rm) 0 si) as s₁ eqn:Hs₁ .
+apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
+destruct s₁ as [di₁| ].
+ destruct Hs₁ as (Hn₁, Hs₁); rewrite Hs₁, xorb_false_r; reflexivity.
+
+ apply not_add_norm_inf_1 in Hs₁; contradiction.
+Qed.
+
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
 intros a b c.
@@ -2297,8 +2312,8 @@ destruct s₁ as [di₁| ].
  remember (rm_add_i (b + c) 0 i) as xbci eqn:Hxbci .
  remember (rm_add_i (a + b) 0 i) as xabi eqn:Hxabi .
  remember (rm_add_i c₀ 0 i) as xci eqn:Hxci .
- remember b .[ i] as bi eqn:Hxbi ; simpl in Hxbi.
- remember b .[ si] as bs eqn:Hxbs ; simpl in Hxbs.
+ remember b .[ i] as xbi eqn:Hxbi ; simpl in Hxbi.
+ remember b .[ si] as xbs eqn:Hxbs ; simpl in Hxbs.
  symmetry in Hxai, Hxbci, Hxabi, Hxci, Hxbi, Hxbs.
  remember (fst_same a (b + c + 0)%rm si) as s₁ eqn:Hs₁ .
  apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
@@ -2319,16 +2334,23 @@ destruct s₁ as [di₁| ].
    move Hxbi at bottom; move Hxbs at bottom.
 (*1-*)
    remember Hxabi as H; clear HeqH.
+   subst a b.
+   rewrite rm_add_i_norm_norm in H.
+   set (a := (a₀ + 0)%rm) in *.
+   set (b := (b₀ + 0)%rm) in *.
+   move b before Hx; move a before Hx.
    unfold rm_add_i in H.
    rewrite <- Heqsi in H; simpl in H.
-   rewrite xorb_false_r in H.
-   remember (fst_same (a + b) 0 si) as s₃ eqn:Hs₃ .
+   rewrite Hxai, Hxbi in H.
+   remember (fst_same a b si) as s₃ eqn:Hs₃ .
    move Hs₃ after Hxai.
    apply fst_same_sym_iff in Hs₃; simpl in Hs₃.
    destruct s₃ as [di₃| ].
+    destruct Hs₃ as (Hn₃, Hs₃).
+    apply xorb_move_l_r_1 in H.
+bbb.
     2: apply not_add_norm_inf_1 in Hs₃; contradiction.
 
-    destruct Hs₃ as (Hn₃, Hs₃); rewrite Hs₃, xorb_false_r in H.
 bbb.
 (*-1*)
    destruct xai, xas, xci, xcs, xabi, xbci; try reflexivity; exfalso;
