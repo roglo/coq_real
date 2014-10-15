@@ -2191,8 +2191,32 @@ Definition tr_add n a b :=
 Theorem zzz : ∀ a b n, tr_add n a b = trunc n (a + b).
 Proof.
 intros a b n.
-induction n; [ reflexivity | idtac ].
-simpl.
+induction n; [ reflexivity | simpl ].
+rewrite <- IHn.
+unfold tr_add.
+remember (S n) as sn.
+remember (S sn) as ssn; simpl.
+remember (fst_same a b ssn) as s₁ eqn:Hs₁ .
+apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
+destruct s₁ as [di₁| ].
+ destruct Hs₁ as (Hn₁, Hs₁).
+ rewrite Heqsn in |- * at 1.
+ rewrite Heqsn in |- * at 1.
+ simpl; f_equal.
+  unfold rm_add_i.
+  rewrite <- Heqsn; simpl; f_equal.
+  remember (fst_same a b sn) as s₂ eqn:Hs₂ .
+  apply fst_same_sym_iff in Hs₂.
+  destruct s₂ as [di₂| ].
+   destruct Hs₂ as (Hn₂, Hs₂).
+   destruct (lt_dec (S di₁) di₂) as [H₁| H₁].
+    apply Hn₂ in H₁.
+    rewrite Nat.add_succ_r, <- Nat.add_succ_l in H₁.
+    rewrite <- Heqssn, Hs₁ in H₁.
+    destruct b .[ ssn + di₁]; discriminate H₁.
+
+    apply Nat.nlt_ge in H₁.
+    destruct (lt_dec di₂ (S di₁)) as [H₂| H₂].
 bbb.
 
 (* old method; but need 4800 goals to resolve
