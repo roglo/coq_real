@@ -2313,8 +2313,7 @@ destruct s₁ as [di₁| ].
  remember (rm_add_i (a + b) 0 i) as xabi eqn:Hxabi .
  remember (rm_add_i c₀ 0 i) as xci eqn:Hxci .
  remember b .[ i] as xbi eqn:Hxbi ; simpl in Hxbi.
- remember b .[ si] as xbs eqn:Hxbs ; simpl in Hxbs.
- symmetry in Hxai, Hxbci, Hxabi, Hxci, Hxbi, Hxbs.
+ symmetry in Hxai, Hxbci, Hxabi, Hxci, Hxbi.
  remember (fst_same a (b + c + 0)%rm si) as s₁ eqn:Hs₁ .
  apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
  destruct s₁ as [di₁| ].
@@ -2331,7 +2330,7 @@ destruct s₁ as [di₁| ].
    move Hxci at bottom; move Hxcs at bottom.
    move Hxabi at bottom; move Hxabs at bottom.
    move Hxbci at bottom; move Hxbcs at bottom.
-   move Hxbi at bottom; move Hxbs at bottom.
+   move Hxbi at bottom.
 (*1-*)
    remember Hxabi as H; clear HeqH.
    subst a b.
@@ -2372,7 +2371,7 @@ destruct s₁ as [di₁| ].
      move Hb₄ after Hc₄; move Hn₄ after Hxai.
      move Hbci before Habi.
      destruct xai, xas, xci, xcs, xabi, xbci; try reflexivity; exfalso;
-      destruct xbi, xbs; simpl in Ha₃, Hb₃, Hb₄, Hc₄.
+      destruct xbi; simpl in Ha₃, Hb₃, Hb₄, Hc₄.
 bbb.
 
 (*-1*)
