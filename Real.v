@@ -2375,6 +2375,11 @@ destruct s₁ as [di₁| ].
       destruct di₄.
        clear Hn₄.
        rewrite Nat.add_0_r in Hb₄, Hc₄.
+       destruct di₃.
+        rewrite Nat.add_0_r, Hb₄ in Hb₃; discriminate Hb₃.
+
+        destruct di₂.
+         rewrite Nat.add_0_r, Hc₄ in Hxcs; discriminate Hxcs.
 bbb.
 
 (*-1*)
