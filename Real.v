@@ -2380,6 +2380,14 @@ destruct s₁ as [di₁| ].
 
         destruct di₂.
          rewrite Nat.add_0_r, Hc₄ in Hxcs; discriminate Hxcs.
+
+         destruct (lt_dec di₂ di₃) as [H₁| H₁].
+          remember H₁ as H; clear HeqH.
+          apply Nat.succ_lt_mono, Hn₃ in H.
+          unfold rm_add_i in Hxabs.
+          rewrite <- Nat.add_succ_l in Hxabs.
+          remember (S si) as ssi; simpl in Hxabs.
+          rewrite xorb_false_r in Hxabs.
 bbb.
 
 (*-1*)
