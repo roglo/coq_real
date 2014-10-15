@@ -81,14 +81,27 @@ value t2f la =
 
 value add' n a b =
   let c =
-    match fst_same a b n with
-    | Some j → a.rm j
+    match fst_same a b (n + 1) with
+    | Some dn → a.rm (n + dn + 1)
     | None → True
     end
   in
+(*
+let _ = eprintf "add' carry %b\n%!" c in
+*)
   trunc_add_with_carry c (trunc n a) (trunc n b)
 ;
 
+value n = 9;
+n;
+t2f (add' n (f2r 0.5) (f2r 0.2));
+t2f (trunc n (rm_add (f2r 0.5) (f2r 0.2)));
+(add' n (f2r 0.5) (f2r 0.2));
+(trunc n (rm_add (f2r 0.5) (f2r 0.2)));
+t2s (add' n (f2r 0.5) (f2r 0.2));
+t2s (trunc n (rm_add (f2r 0.5) (f2r 0.2)));
+
+(**)
 t2f (add' 35 (f2r 0.5) (f2r 0.2));
 t2f (add' 36 (f2r 0.5) (f2r 0.2));
 t2f (add' 37 (f2r 0.5) (f2r 0.2));
@@ -97,10 +110,16 @@ t2f (add' 39 (f2r 0.5) (f2r 0.2));
 t2f (add' 40 (f2r 0.5) (f2r 0.2));
 t2f (add' 41 (f2r 0.5) (f2r 0.2));
 t2f (add' 42 (f2r 0.5) (f2r 0.2));
+(**)
 
 (**)
 5;
 
+t2f (add' 0 (f2r 0.5) (f2r 0.2));
+t2f (add' 1 (f2r 0.5) (f2r 0.2));
+t2f (add' 2 (f2r 0.5) (f2r 0.2));
+t2f (add' 3 (f2r 0.5) (f2r 0.2));
+t2f (add' 4 (f2r 0.5) (f2r 0.2));
 t2f (add' 5 (f2r 0.5) (f2r 0.2));
 t2f (add' 6 (f2r 0.5) (f2r 0.2));
 t2f (add' 7 (f2r 0.5) (f2r 0.2));
@@ -111,6 +130,11 @@ t2f (add' 11 (f2r 0.5) (f2r 0.2));
 
 5;
 
+t2f (trunc 0 (rm_add (f2r 0.5) (f2r 0.2)));
+t2f (trunc 1 (rm_add (f2r 0.5) (f2r 0.2)));
+t2f (trunc 2 (rm_add (f2r 0.5) (f2r 0.2)));
+t2f (trunc 3 (rm_add (f2r 0.5) (f2r 0.2)));
+t2f (trunc 4 (rm_add (f2r 0.5) (f2r 0.2)));
 t2f (trunc 5 (rm_add (f2r 0.5) (f2r 0.2)));
 t2f (trunc 6 (rm_add (f2r 0.5) (f2r 0.2)));
 t2f (trunc 7 (rm_add (f2r 0.5) (f2r 0.2)));
@@ -119,9 +143,3 @@ t2f (trunc 9 (rm_add (f2r 0.5) (f2r 0.2)));
 t2f (trunc 10 (rm_add (f2r 0.5) (f2r 0.2)));
 t2f (trunc 11 (rm_add (f2r 0.5) (f2r 0.2)));
 (**)
-
-value n = 4;
-t2f (add' n (f2r 0.5) (f2r 0.2));
-t2f (trunc n (rm_add (f2r 0.5) (f2r 0.2)));
-(add' n (f2r 0.5) (f2r 0.2));
-(trunc n (rm_add (f2r 0.5) (f2r 0.2)));
