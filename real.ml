@@ -86,9 +86,6 @@ value add' n a b =
     | None → True
     end
   in
-(*
-let _ = eprintf "add' carry %b\n%!" c in
-*)
   trunc_add_with_carry c (trunc n a) (trunc n b)
 ;
 
