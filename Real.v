@@ -2179,6 +2179,24 @@ Fixpoint trunc_add_with_carry c la lb :=
 
 Definition trunc_add := trunc_add_with_carry false.
 
+Definition tr_add n a b :=
+  let c :=
+    match fst_same a b (S n) with
+    | Some dn => a.[S n + dn]
+    | None => true
+    end
+  in
+  trunc_add_with_carry c (trunc n a) (trunc n b).
+
+Theorem zzz : ∀ a b n, tr_add n a b = trunc n (a + b).
+Proof.
+intros a b n.
+induction n; [ reflexivity | idtac ].
+simpl.
+bbb.
+
+(* old method; but need 4800 goals to resolve
+
 Theorem case_1 : ∀ b₀ c₀ i si,
   let b := (b₀ + 0)%rm in
   let c := (c₀ + 0)%rm in
@@ -2594,5 +2612,6 @@ bbb.
         simpl in Hs₇.
         destruct Hs₇ as (Hs₇n, Hs₇).
 bbb.
+*)
 
 Close Scope nat_scope.

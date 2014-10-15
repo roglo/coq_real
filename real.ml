@@ -79,7 +79,7 @@ value t2f la =
 
 (**)
 
-value add' n a b =
+value tr_add n a b =
   let c =
     match fst_same a b (n + 1) with
     | Some dn → a.rm (n + dn + 1)
@@ -91,39 +91,39 @@ value add' n a b =
 
 value n = 9;
 n;
-t2f (add' n (f2r 0.5) (f2r 0.2));
+t2f (tr_add n (f2r 0.5) (f2r 0.2));
 t2f (trunc n (rm_add (f2r 0.5) (f2r 0.2)));
-(add' n (f2r 0.5) (f2r 0.2));
+(tr_add n (f2r 0.5) (f2r 0.2));
 (trunc n (rm_add (f2r 0.5) (f2r 0.2)));
-t2s (add' n (f2r 0.5) (f2r 0.2));
+t2s (tr_add n (f2r 0.5) (f2r 0.2));
 t2s (trunc n (rm_add (f2r 0.5) (f2r 0.2)));
 
 (**)
-t2f (add' 35 (f2r 0.5) (f2r 0.2));
-t2f (add' 36 (f2r 0.5) (f2r 0.2));
-t2f (add' 37 (f2r 0.5) (f2r 0.2));
-t2f (add' 38 (f2r 0.5) (f2r 0.2));
-t2f (add' 39 (f2r 0.5) (f2r 0.2));
-t2f (add' 40 (f2r 0.5) (f2r 0.2));
-t2f (add' 41 (f2r 0.5) (f2r 0.2));
-t2f (add' 42 (f2r 0.5) (f2r 0.2));
+t2f (tr_add 35 (f2r 0.5) (f2r 0.2));
+t2f (tr_add 36 (f2r 0.5) (f2r 0.2));
+t2f (tr_add 37 (f2r 0.5) (f2r 0.2));
+t2f (tr_add 38 (f2r 0.5) (f2r 0.2));
+t2f (tr_add 39 (f2r 0.5) (f2r 0.2));
+t2f (tr_add 40 (f2r 0.5) (f2r 0.2));
+t2f (tr_add 41 (f2r 0.5) (f2r 0.2));
+t2f (tr_add 42 (f2r 0.5) (f2r 0.2));
 (**)
 
 (**)
 5;
 
-t2f (add' 0 (f2r 0.5) (f2r 0.2));
-t2f (add' 1 (f2r 0.5) (f2r 0.2));
-t2f (add' 2 (f2r 0.5) (f2r 0.2));
-t2f (add' 3 (f2r 0.5) (f2r 0.2));
-t2f (add' 4 (f2r 0.5) (f2r 0.2));
-t2f (add' 5 (f2r 0.5) (f2r 0.2));
-t2f (add' 6 (f2r 0.5) (f2r 0.2));
-t2f (add' 7 (f2r 0.5) (f2r 0.2));
-t2f (add' 8 (f2r 0.5) (f2r 0.2));
-t2f (add' 9 (f2r 0.5) (f2r 0.2));
-t2f (add' 10 (f2r 0.5) (f2r 0.2));
-t2f (add' 11 (f2r 0.5) (f2r 0.2));
+t2f (tr_add 0 (f2r 0.5) (f2r 0.2));
+t2f (tr_add 1 (f2r 0.5) (f2r 0.2));
+t2f (tr_add 2 (f2r 0.5) (f2r 0.2));
+t2f (tr_add 3 (f2r 0.5) (f2r 0.2));
+t2f (tr_add 4 (f2r 0.5) (f2r 0.2));
+t2f (tr_add 5 (f2r 0.5) (f2r 0.2));
+t2f (tr_add 6 (f2r 0.5) (f2r 0.2));
+t2f (tr_add 7 (f2r 0.5) (f2r 0.2));
+t2f (tr_add 8 (f2r 0.5) (f2r 0.2));
+t2f (tr_add 9 (f2r 0.5) (f2r 0.2));
+t2f (tr_add 10 (f2r 0.5) (f2r 0.2));
+t2f (tr_add 11 (f2r 0.5) (f2r 0.2));
 
 5;
 
