@@ -63,9 +63,37 @@ value rec trunc_add_with_carry c la lb =
   | ([a :: la₁], [b :: lb₁]) →
       let t = xorb (xorb a b) c in
       let c₁ = carry_sum_3 a b c in
-let _ = eprintf "a %b b %b c %b t %b c₁ %b\n%!" a b c t c₁ in
       [t :: trunc_add_with_carry c₁ la₁ lb₁]
   | _ → []
   end.
 
 value trunc_add = trunc_add_with_carry False;
+
+value t2s la =
+  "0." ^ List.fold_left (fun s a → if a then "1" ^ s else "0" ^ s) "" la
+;
+
+value t2f la =
+  List.fold_left (fun s a → (if a then 1. else 0.) +. s /. 2.) 0. la /. 2.
+;
+
+(**)
+
+value add' n a b =
+  let c =
+    match fst_same a b n with
+    | Some j → a.rm j
+    | None → True
+    end
+  in
+  trunc_add_with_carry c (trunc n a) (trunc n b)
+;
+
+t2f (add' 35 (f2r 0.5) (f2r 0.2));
+t2f (add' 36 (f2r 0.5) (f2r 0.2));
+t2f (add' 37 (f2r 0.5) (f2r 0.2));
+t2f (add' 38 (f2r 0.5) (f2r 0.2));
+t2f (add' 39 (f2r 0.5) (f2r 0.2));
+t2f (add' 40 (f2r 0.5) (f2r 0.2));
+t2f (add' 41 (f2r 0.5) (f2r 0.2));
+t2f (add' 42 (f2r 0.5) (f2r 0.2));
