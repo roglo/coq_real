@@ -97,3 +97,31 @@ t2f (add' 39 (f2r 0.5) (f2r 0.2));
 t2f (add' 40 (f2r 0.5) (f2r 0.2));
 t2f (add' 41 (f2r 0.5) (f2r 0.2));
 t2f (add' 42 (f2r 0.5) (f2r 0.2));
+
+(**)
+5;
+
+t2f (add' 5 (f2r 0.5) (f2r 0.2));
+t2f (add' 6 (f2r 0.5) (f2r 0.2));
+t2f (add' 7 (f2r 0.5) (f2r 0.2));
+t2f (add' 8 (f2r 0.5) (f2r 0.2));
+t2f (add' 9 (f2r 0.5) (f2r 0.2));
+t2f (add' 10 (f2r 0.5) (f2r 0.2));
+t2f (add' 11 (f2r 0.5) (f2r 0.2));
+
+5;
+
+t2f (trunc 5 (rm_add (f2r 0.5) (f2r 0.2)));
+t2f (trunc 6 (rm_add (f2r 0.5) (f2r 0.2)));
+t2f (trunc 7 (rm_add (f2r 0.5) (f2r 0.2)));
+t2f (trunc 8 (rm_add (f2r 0.5) (f2r 0.2)));
+t2f (trunc 9 (rm_add (f2r 0.5) (f2r 0.2)));
+t2f (trunc 10 (rm_add (f2r 0.5) (f2r 0.2)));
+t2f (trunc 11 (rm_add (f2r 0.5) (f2r 0.2)));
+(**)
+
+value n = 4;
+t2f (add' n (f2r 0.5) (f2r 0.2));
+t2f (trunc n (rm_add (f2r 0.5) (f2r 0.2)));
+(add' n (f2r 0.5) (f2r 0.2));
+(trunc n (rm_add (f2r 0.5) (f2r 0.2)));
