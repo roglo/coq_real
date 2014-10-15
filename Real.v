@@ -2352,9 +2352,27 @@ destruct s₁ as [di₁| ].
     apply xorb_move_l_r_1 in H.
     rewrite H in Hb₃; rename H into Ha₃.
     move Ha₃ after Hb₃; move Hn₃ after Hxai.
-bbb.
-    destruct xai, xas, xci, xcs, xabi, xbci; try reflexivity; exfalso;
-     destruct xbi, xbs; simpl in Ha₃, Hb₃.
+    remember Hxbci as H; clear HeqH.
+    subst b c.
+    rewrite rm_add_i_norm_norm in H.
+    set (b := (b₀ + 0)%rm) in *.
+    set (c := (c₀ + 0)%rm) in *.
+    move c before Hx; move b before Hx.
+    remember H as Hbci; clear HeqHbci.
+    unfold rm_add_i in H.
+    rewrite <- Heqsi in H; simpl in H.
+    rewrite Hxbi, Hxci in H.
+    remember (fst_same b c si) as s₄ eqn:Hs₄ .
+    apply fst_same_sym_iff in Hs₄; simpl in Hs₄.
+    destruct s₄ as [di₄| ].
+     destruct Hs₄ as (Hn₄, Hc₄).
+     symmetry in Hc₄.
+     apply xorb_move_l_r_1 in H.
+     rewrite H in Hc₄; rename H into Hb₄.
+     move Hb₄ after Hc₄; move Hn₄ after Hxai.
+     move Hbci before Habi.
+     destruct xai, xas, xci, xcs, xabi, xbci; try reflexivity; exfalso;
+      destruct xbi, xbs; simpl in Ha₃, Hb₃, Hb₄, Hc₄.
 bbb.
 
 (*-1*)
