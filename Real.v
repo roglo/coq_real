@@ -2372,6 +2372,9 @@ destruct s₁ as [di₁| ].
      move Hbci before Habi.
      destruct xai, xas, xci, xcs, xabi, xbci; try reflexivity; exfalso;
       destruct xbi; simpl in Ha₃, Hb₃, Hb₄, Hc₄.
+      destruct di₄.
+       clear Hn₄.
+       rewrite Nat.add_0_r in Hb₄, Hc₄.
 bbb.
 
 (*-1*)
