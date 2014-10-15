@@ -2351,8 +2351,7 @@ destruct s₁ as [di₁| ].
     symmetry in Hb₃.
     apply xorb_move_l_r_1 in H.
     rewrite H in Hb₃; rename H into Ha₃.
-    move Ha₃ after Hb₃.
-    move Hn₃ after Hxai.
+    move Ha₃ after Hb₃; move Hn₃ after Hxai.
 bbb.
     destruct xai, xas, xci, xcs, xabi, xbci; try reflexivity; exfalso;
      destruct xbi, xbs; simpl in Ha₃, Hb₃.
