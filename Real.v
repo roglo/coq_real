@@ -2260,6 +2260,28 @@ destruct s₁ as [di₁| ].
   destruct b .[ n]; reflexivity.
 Qed.
 
+Theorem zzz : ∀ a b, (∀ n, trunc n a = trunc n b) → (a = b)%rm.
+Proof.
+intros a b Hab.
+unfold rm_eq.
+intros i; simpl.
+unfold rm_add_i.
+remember (S i) as si; simpl.
+do 2 rewrite xorb_false_r.
+remember (fst_same a 0 si) as s₁ eqn:Hs₁ .
+remember (fst_same b 0 si) as s₂ eqn:Hs₂ .
+apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
+apply fst_same_sym_iff in Hs₂; simpl in Hs₂.
+destruct s₁ as [di₁| ].
+ destruct Hs₁ as (Hn₁, Hs₁).
+ destruct s₂ as [di₂| ].
+  destruct Hs₂ as (Hn₂, Hs₂).
+  rewrite Hs₁, Hs₂.
+  do 2 rewrite xorb_false_r.
+  pose proof (Hab (S i)) as H; simpl in H.
+  injection H; intros; assumption.
+bbb.
+
 bbb.
 
 (* old method; but need 4800 goals to resolve
