@@ -2188,7 +2188,7 @@ Definition tr_add n a b :=
   in
   trunc_add_with_carry c (trunc n a) (trunc n b).
 
-Theorem zzz : ∀ a b n, tr_add n a b = trunc n (a + b).
+Theorem tr_add_trunc_comm : ∀ a b n, tr_add n a b = trunc n (a + b).
 Proof.
 intros a b n.
 induction n; [ reflexivity | simpl ].
@@ -2236,6 +2236,30 @@ destruct s₁ as [di₁| ].
   rewrite Nat.add_succ_r, <- Nat.add_succ_l, <- Heqsn in H.
   rewrite Hs₁ in H.
   destruct b .[ sn + di₁]; discriminate H.
+
+ rewrite <- IHn.
+ rewrite Heqsn; simpl.
+ unfold tr_add; f_equal; f_equal.
+ unfold carry_sum_3.
+ remember (fst_same a b n) as s₂ eqn:Hs₂ .
+ apply fst_same_sym_iff in Hs₂.
+ destruct s₂ as [di₂| ].
+  destruct Hs₂ as (Hn₂, Hs₂).
+  destruct di₂.
+   clear Hn₂; rewrite Nat.add_0_r in Hs₂ |- *.
+   rewrite Hs₂; simpl.
+   destruct b .[ n]; reflexivity.
+
+   rewrite Nat.add_succ_r, <- Nat.add_succ_l, <- Heqsn in Hs₂.
+   rewrite Hs₁ in Hs₂.
+   destruct b .[ sn + di₂]; discriminate Hs₂.
+
+  simpl.
+  rewrite andb_true_r.
+  pose proof (Hs₂ 0) as H; rewrite Nat.add_0_r in H; rewrite H.
+  destruct b .[ n]; reflexivity.
+Qed.
+
 bbb.
 
 (* old method; but need 4800 goals to resolve
