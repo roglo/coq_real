@@ -2380,14 +2380,10 @@ destruct s₁ as [di₁| ], s₂ as [di₂| ], s₃ as [di₃| ], s₄ as [di₄
   remember c .[ n + di₃] as c₁ eqn:Hc₁ .
   remember b .[ n + di₄] as b₂ eqn:Hb₂ .
   symmetry in Ha₁, Hs₁, Hb₁, Hs₂, Hc₁, Hb₂.
-  move Ha₁ at bottom.
-  move Hs₁ at bottom.
-  move Hb₁ at bottom.
-  move Hs₂ at bottom.
-  move Hc₁ at bottom.
-  move Hs₃ at bottom.
-  move Hb₂ at bottom.
-  move Hs₄ at bottom.
+  move Ha₁ at bottom; move Hs₁ at bottom.
+  move Hb₁ at bottom; move Hs₂ at bottom.
+  move Hc₁ at bottom; move Hs₃ at bottom.
+  move Hb₂ at bottom; move Hs₄ at bottom.
   destruct a₁, b₁, c₁, b₂; try reflexivity; simpl.
   Focus 1.
 bbb.
