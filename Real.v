@@ -2375,6 +2375,22 @@ destruct s₁ as [di₁| ], s₂ as [di₂| ], s₃ as [di₃| ], s₄ as [di₄
  destruct Hs₄ as (Hn₄, Hs₄).
  rewrite Hs₃, Hs₄.
  assert (a .[ n + di₁] ⊕ b .[ n + di₂] = c .[ n + di₃] ⊕ b .[ n + di₄]) as H.
+ assert (a .[ n + di₁] ⊕ b .[ n + di₂] = c .[ n + di₃] ⊕ b .[ n + di₄]) as H.
+  remember a .[ n + di₁] as a₁ eqn:Ha₁ .
+  remember b .[ n + di₂] as b₁ eqn:Hb₁ .
+  remember c .[ n + di₃] as c₁ eqn:Hc₁ .
+  remember b .[ n + di₄] as b₂ eqn:Hb₂ .
+  symmetry in Ha₁, Hs₁, Hb₁, Hs₂, Hc₁.
+  move Ha₁ at bottom.
+  move Hb₁ at bottom.
+  move Hc₁ at bottom.
+  move Hb₂ at bottom.
+  move Hs₂ at bottom.
+  move Hs₁ at bottom.
+  move Hs₃ at bottom.
+  symmetry in Hb₂.
+  destruct a₁, b₁, c₁, b₂; try reflexivity; simpl.
+  Focus 1.
 bbb.
 
 bbb.
