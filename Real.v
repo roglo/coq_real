@@ -2192,23 +2192,31 @@ Theorem zzz : ∀ a b n, tr_add n a b = trunc n (a + b).
 Proof.
 intros a b n.
 induction n; [ reflexivity | simpl ].
-unfold tr_add.
+unfold tr_add, rm_add_i.
 remember (S n) as sn.
 remember (fst_same a b sn) as s₁ eqn:Hs₁ .
 apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
 destruct s₁ as [di₁| ].
  destruct Hs₁ as (Hn₁, Hs₁).
- rewrite Heqsn in |- * at 2.
- rewrite Heqsn in |- * at 2.
+ do 2 rewrite Heqsn in |- * at 2.
  simpl; f_equal.
-  unfold rm_add_i.
-  rewrite <- Heqsn; simpl; f_equal.
-  remember (fst_same a b sn) as s₂ eqn:Hs₂ .
-  apply fst_same_sym_iff in Hs₂.
-  destruct s₂ as [di₂| ].
-   destruct Hs₂ as (Hn₂, Hs₂).
+ rewrite <- IHn.
+ unfold tr_add; f_equal.
+ unfold carry_sum_3.
+ remember (fst_same a b n) as s₂ eqn:Hs₂ .
+ apply fst_same_sym_iff in Hs₂.
+ destruct s₂ as [di₂| ].
+  destruct Hs₂ as (Hn₂, Hs₂).
+  destruct di₂.
+   clear Hn₂; rewrite Nat.add_0_r in Hs₂ |- *.
+   rewrite Hs₂; simpl.
+   destruct b .[ n]; [ reflexivity | simpl; apply andb_false_r ].
+
+   rewrite Nat.add_succ_r, <- Nat.add_succ_l, <- Heqsn in Hs₂.
    destruct (lt_dec di₁ di₂) as [H₁| H₁].
+    apply Nat.succ_lt_mono in H₁.
     apply Hn₂ in H₁.
+    rewrite Nat.add_succ_r, <- Nat.add_succ_l, <- Heqsn in H₁.
     rewrite Hs₁ in H₁.
     destruct b .[ sn + di₁]; discriminate H₁.
 
@@ -2218,13 +2226,16 @@ destruct s₁ as [di₁| ].
      rewrite Hs₂ in H₂.
      destruct b .[ sn + di₂]; discriminate H₂.
 
-     apply Nat.nlt_ge, Nat.le_antisymm in H₂; auto.
+     apply Nat.nlt_ge, Nat.le_antisymm in H₂; auto; subst di₂.
+     rewrite Nat.add_succ_r, <- Nat.add_succ_l, <- Heqsn.
+     pose proof (Hn₂ 0 (Nat.lt_0_succ di₁)) as H.
+     rewrite Nat.add_0_r in H; rewrite H.
+     destruct b .[ n], a .[ sn + di₁]; reflexivity.
 
-   rewrite Hs₂ in Hs₁.
-   destruct b .[ sn + di₁]; discriminate Hs₁.
-
-  rewrite <- IHn.
-  unfold tr_add.
+  pose proof (Hs₂ (S di₁)) as H.
+  rewrite Nat.add_succ_r, <- Nat.add_succ_l, <- Heqsn in H.
+  rewrite Hs₁ in H.
+  destruct b .[ sn + di₁]; discriminate H.
 bbb.
 
 (* old method; but need 4800 goals to resolve
