@@ -2162,6 +2162,13 @@ Fixpoint trunc n a :=
   end.
 Arguments trunc n%nat a%rm.
 
+Fixpoint trunc_from n a i :=
+  match n with
+  | 0 => []
+  | S n₁ => [a.[i+n₁] … trunc_from n₁ a i]
+  end.
+Arguments trunc_from n%nat a%rm i%rm.
+
 Definition carry_sum_3 a b c := a && b || b && c || c && a.
 
 Fixpoint trunc_add_with_carry c la lb :=
@@ -2187,6 +2194,29 @@ Definition tr_add n a b :=
     end
   in
   trunc_add_with_carry c (trunc n a) (trunc n b).
+
+Definition tr_add2 := trunc_add_with_carry false.
+
+Theorem trunc_from_succ : ∀ a n i,
+  trunc_from (S n) a i = [a.[i+n] … trunc_from n a i].
+Proof. reflexivity. Qed.
+
+Theorem zzz : ∀ a b a' b' i di n,
+  fst_same a b (S i) = Some di
+  → S i + di < n
+  → a' = trunc_from n a i
+  → b' = trunc_from n b i
+  → rm_add_i a b i = List.last (tr_add2 a' b') false.
+Proof.
+intros a b a' b' i di n Hdi Hlt Ha' Hb'.
+unfold rm_add_i.
+remember (S i) as si; simpl.
+rewrite Hdi; simpl.
+apply fst_same_iff in Hdi; simpl in Hdi.
+destruct Hdi as (Hni, Hdi).
+subst a' b' si.
+unfold tr_add2; simpl.
+bbb.
 
 Theorem tr_add_trunc_comm : ∀ a b n, tr_add n a b = trunc n (a + b).
 Proof.

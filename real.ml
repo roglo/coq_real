@@ -89,6 +89,8 @@ value tr_add n a b =
   trunc_add_with_carry c (trunc n a) (trunc n b)
 ;
 
+value tr_add2 n a b = trunc_add_with_carry False (trunc n a) (trunc n b);
+
 value n = 9;
 n;
 t2f (tr_add n (f2r 0.5) (f2r 0.2));
