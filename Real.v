@@ -2260,7 +2260,9 @@ destruct s₁ as [di₁| ].
   destruct b .[ n]; reflexivity.
 Qed.
 
-Theorem zzz : ∀ a b, (∀ n, trunc n a = trunc n b) → (a = b)%rm.
+Theorem all_trunc_eq_rm_eq : ∀ a b,
+  (∀ n, trunc n a = trunc n b)
+  → (a = b)%rm.
 Proof.
 intros a b Hab.
 unfold rm_eq.
@@ -2280,7 +2282,21 @@ destruct s₁ as [di₁| ].
   do 2 rewrite xorb_false_r.
   pose proof (Hab (S i)) as H; simpl in H.
   injection H; intros; assumption.
-bbb.
+
+  pose proof (Hab (S (si + di₁))) as H; simpl in H.
+  injection H; clear H; intros Ht Habs.
+  rewrite Hs₁, Hs₂ in Habs; discriminate Habs.
+
+ destruct s₂ as [di₂| ].
+  destruct Hs₂ as (Hn₂, Hs₂).
+  pose proof (Hab (S (si + di₂))) as H; simpl in H.
+  injection H; clear H; intros Ht Habs.
+  rewrite Hs₁, Hs₂ in Habs; discriminate Habs.
+
+  f_equal.
+  pose proof (Hab (S i)) as H; simpl in H.
+  injection H; intros; assumption.
+Qed.
 
 bbb.
 
