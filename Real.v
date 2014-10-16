@@ -2217,6 +2217,23 @@ destruct Hdi as (Hni, Hdi).
 subst a' b' si.
 unfold tr_add2; simpl.
 bbb.
+revert i di Hni Hdi Hlt.
+induction n; intros; [ exfalso; revert Hlt; apply Nat.nlt_0_r | simpl ].
+unfold carry_sum_3; simpl.
+rewrite orb_false_r, andb_false_r, orb_false_r.
+remember (a .[ i + n] && b .[ i + n]) as c eqn:Hc .
+rewrite xorb_false_r.
+destruct i.
+ Focus 1.
+ simpl in Hdi, Hlt, Hc; simpl.
+ apply Nat.succ_lt_mono in Hlt.
+ destruct di.
+  Focus 1.
+  clear Hni.
+  destruct n; [ exfalso; revert Hlt; apply Nat.nlt_0_r | idtac ].
+  clear Hlt.
+  simpl.
+  unfold carry_sum_3; simpl.
 
 Theorem tr_add_trunc_comm : ∀ a b n, tr_add n a b = trunc n (a + b).
 Proof.
