@@ -2316,9 +2316,9 @@ induction la as [| a₁]; intros; simpl.
 Qed.
 
 Theorem yyy : ∀ la lb lc carr₁ carr₂ carr₃ carr₄,
- carr₁ ⊕ carr₂ = carr₃ ⊕ carr₄
- → trunc_add_with_carry carr₁ la (trunc_add_with_carry carr₂ lb lc) =
-   trunc_add_with_carry carr₃ (trunc_add_with_carry carr₄ la lb) lc.
+  carr₁ ⊕ carr₂ = carr₃ ⊕ carr₄
+  → trunc_add_with_carry carr₁ la (trunc_add_with_carry carr₂ lb lc) =
+    trunc_add_with_carry carr₃ (trunc_add_with_carry carr₄ la lb) lc.
 Proof.
 intros la lb lc carr₁ carr₂ carr₃ carr₄ Hcarr.
 revert carr₁ carr₂ carr₃ carr₄ Hcarr la lc.
