@@ -2298,6 +2298,64 @@ destruct s₁ as [di₁| ].
   injection H; intros; assumption.
 Qed.
 
+Theorem trunc_add_with_carry_comm : ∀ la lb c,
+  trunc_add_with_carry c la lb = trunc_add_with_carry c lb la.
+Proof.
+intros la lb c.
+revert lb c.
+induction la as [| a₁]; intros; simpl.
+ destruct lb; reflexivity.
+
+ destruct lb as [| b₁]; [ reflexivity | idtac ].
+ simpl; f_equal.
+  f_equal; apply xorb_comm.
+
+  rewrite IHla; f_equal.
+  unfold carry_sum_3.
+  destruct a₁, b₁, c; reflexivity.
+Qed.
+
+Theorem yyy : ∀ la lb lc carr₁ carr₂ carr₃ carr₄,
+ trunc_add_with_carry carr₁ la (trunc_add_with_carry carr₂ lb lc) =
+ trunc_add_with_carry carr₃ (trunc_add_with_carry carr₄ la lb) lc.
+Proof.
+intros la lb lc carr₁ carr₂ carr₃ carr₄.
+revert carr₁ carr₂ carr₃ carr₄ la lc.
+induction lb as [| b₁]; intros; simpl.
+ rewrite trunc_add_with_carry_comm; simpl.
+ remember (trunc_add_with_carry carr₄ la []) as ld.
+ rewrite trunc_add_with_carry_comm in Heqld; subst ld; reflexivity.
+
+ destruct lc as [| c₁].
+  rewrite trunc_add_with_carry_comm; simpl.
+  rewrite trunc_add_with_carry_comm; reflexivity.
+bbb.
+
+Theorem zzz : ∀ a b c n, trunc n (a + (b + c))%rm = trunc n ((a + b) + c)%rm.
+Proof.
+intros a b c n.
+rewrite <- tr_add_trunc_comm.
+rewrite <- tr_add_trunc_comm.
+unfold tr_add; simpl.
+rewrite <- tr_add_trunc_comm.
+rewrite <- tr_add_trunc_comm.
+unfold tr_add; simpl.
+remember (fst_same a (b + c) n) as s₁ eqn:Hs₁ .
+remember (fst_same b c n) as s₂ eqn:Hs₂ .
+remember (fst_same (a + b) c n) as s₃ eqn:Hs₃ .
+remember (fst_same a b n) as s₄ eqn:Hs₄ .
+apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
+apply fst_same_sym_iff in Hs₂; simpl in Hs₂.
+apply fst_same_sym_iff in Hs₃; simpl in Hs₃.
+apply fst_same_sym_iff in Hs₄; simpl in Hs₄.
+destruct s₁ as [di₁| ], s₂ as [di₂| ], s₃ as [di₃| ], s₄ as [di₄| ].
+ destruct Hs₁ as (Hn₁, Hs₁).
+ destruct Hs₂ as (Hn₂, Hs₂).
+ destruct Hs₃ as (Hn₃, Hs₃).
+ destruct Hs₄ as (Hn₄, Hs₄).
+ rewrite Hs₃, Hs₄.
+bbb.
+
 bbb.
 
 (* old method; but need 4800 goals to resolve
