@@ -2181,8 +2181,8 @@ Definition trunc_add := trunc_add_with_carry false.
 
 Definition tr_add n a b :=
   let c :=
-    match fst_same a b (S n) with
-    | Some dn => a.[S n + dn]
+    match fst_same a b n with
+    | Some dn => a.[n + dn]
     | None => true
     end
   in
@@ -2194,57 +2194,37 @@ intros a b n.
 induction n; [ reflexivity | simpl ].
 unfold tr_add.
 remember (S n) as sn.
-remember (S sn) as ssn; simpl.
-remember (fst_same a b ssn) as s₁ eqn:Hs₁ .
+remember (fst_same a b sn) as s₁ eqn:Hs₁ .
 apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
 destruct s₁ as [di₁| ].
  destruct Hs₁ as (Hn₁, Hs₁).
- rewrite Heqsn.
+ rewrite Heqsn in |- * at 2.
+ rewrite Heqsn in |- * at 2.
  simpl; f_equal.
   unfold rm_add_i.
   rewrite <- Heqsn; simpl; f_equal.
-  unfold tr_add in IHn.
-  rewrite <- Heqsn in IHn.
   remember (fst_same a b sn) as s₂ eqn:Hs₂ .
   apply fst_same_sym_iff in Hs₂.
   destruct s₂ as [di₂| ].
    destruct Hs₂ as (Hn₂, Hs₂).
-   destruct (lt_dec (S di₁) di₂) as [H₁| H₁].
+   destruct (lt_dec di₁ di₂) as [H₁| H₁].
     apply Hn₂ in H₁.
-    rewrite Nat.add_succ_r, <- Nat.add_succ_l in H₁.
-    rewrite <- Heqssn, Hs₁ in H₁.
-    destruct b .[ ssn + di₁]; discriminate H₁.
+    rewrite Hs₁ in H₁.
+    destruct b .[ sn + di₁]; discriminate H₁.
 
     apply Nat.nlt_ge in H₁.
-    destruct (lt_dec di₂ (S di₁)) as [H₂| H₂].
-     destruct di₂.
-bbb.
-      Focus 2.
-      apply Nat.succ_lt_mono in H₂.
-      apply Hn₁ in H₂.
-      rewrite Nat.add_succ_r, <- Nat.add_succ_l in Hs₂.
-      rewrite <- Heqssn, H₂ in Hs₂.
-      destruct b .[ ssn + di₂]; discriminate Hs₂.
+    destruct (lt_dec di₂ di₁) as [H₂| H₂].
+     apply Hn₁ in H₂.
+     rewrite Hs₂ in H₂.
+     destruct b .[ sn + di₂]; discriminate H₂.
 
-      Focus 2.
-      apply Nat.nlt_ge, Nat.le_antisymm in H₂; auto.
-      rewrite H₂, Nat.add_succ_r, <- Nat.add_succ_l.
-      rewrite Heqssn; reflexivity.
+     apply Nat.nlt_ge, Nat.le_antisymm in H₂; auto.
 
-     Focus 2.
-     rewrite Heqssn, Nat.add_succ_l, <- Nat.add_succ_r in Hs₁.
-     rewrite Hs₂ in Hs₁.
-     destruct b .[ sn + S di₁]; discriminate Hs₁.
+   rewrite Hs₂ in Hs₁.
+   destruct b .[ sn + di₁]; discriminate Hs₁.
 
-   Focus 2.
-   rewrite <- IHn.
-   unfold tr_add.
-   rewrite <- Heqsn; simpl.
-   remember (fst_same a b sn) as s₂ eqn:Hs₂ .
-   apply fst_same_sym_iff in Hs₂.
-   destruct s₂ as [di₂| ].
-    destruct Hs₂ as (Hn₂, Hs₂).
-    f_equal.
+  rewrite <- IHn.
+  unfold tr_add.
 bbb.
 
 (* old method; but need 4800 goals to resolve

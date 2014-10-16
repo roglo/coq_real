@@ -81,8 +81,8 @@ value t2f la =
 
 value tr_add n a b =
   let c =
-    match fst_same a b (n + 1) with
-    | Some dn → a.rm (n + dn + 1)
+    match fst_same a b n with
+    | Some dn → a.rm (n + dn)
     | None → True
     end
   in
