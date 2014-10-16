@@ -2316,11 +2316,12 @@ induction la as [| a₁]; intros; simpl.
 Qed.
 
 Theorem yyy : ∀ la lb lc carr₁ carr₂ carr₃ carr₄,
- trunc_add_with_carry carr₁ la (trunc_add_with_carry carr₂ lb lc) =
- trunc_add_with_carry carr₃ (trunc_add_with_carry carr₄ la lb) lc.
+ carr₁ ⊕ carr₂ = carr₃ ⊕ carr₄
+ → trunc_add_with_carry carr₁ la (trunc_add_with_carry carr₂ lb lc) =
+   trunc_add_with_carry carr₃ (trunc_add_with_carry carr₄ la lb) lc.
 Proof.
-intros la lb lc carr₁ carr₂ carr₃ carr₄.
-revert carr₁ carr₂ carr₃ carr₄ la lc.
+intros la lb lc carr₁ carr₂ carr₃ carr₄ Hcarr.
+revert carr₁ carr₂ carr₃ carr₄ Hcarr la lc.
 induction lb as [| b₁]; intros; simpl.
  rewrite trunc_add_with_carry_comm; simpl.
  remember (trunc_add_with_carry carr₄ la []) as ld.
@@ -2329,7 +2330,26 @@ induction lb as [| b₁]; intros; simpl.
  destruct lc as [| c₁].
   rewrite trunc_add_with_carry_comm; simpl.
   rewrite trunc_add_with_carry_comm; reflexivity.
+
+  symmetry.
+  rewrite trunc_add_with_carry_comm; simpl.
+  rewrite trunc_add_with_carry_comm; simpl.
+  destruct la as [| a₁]; [ reflexivity | simpl ].
+  f_equal.
+   do 4 rewrite <- xorb_assoc.
+   replace (c₁ ⊕ b₁ ⊕ a₁) with (a₁ ⊕ b₁ ⊕ c₁) .
+    do 6 rewrite xorb_assoc.
+    do 3 f_equal.
+    rewrite xorb_comm; symmetry; rewrite xorb_comm; assumption.
+
+    rewrite xorb_comm, xorb_assoc; f_equal; apply xorb_comm.
+
+   erewrite IHlb; eauto .
+   rewrite trunc_add_with_carry_comm.
+   induction la as [| a₂]; [ reflexivity | simpl ].
+Abort. (* à voir...
 bbb.
+*)
 
 Theorem zzz : ∀ a b c n, trunc n (a + (b + c))%rm = trunc n ((a + b) + c)%rm.
 Proof.
@@ -2354,6 +2374,7 @@ destruct s₁ as [di₁| ], s₂ as [di₂| ], s₃ as [di₃| ], s₄ as [di₄
  destruct Hs₃ as (Hn₃, Hs₃).
  destruct Hs₄ as (Hn₄, Hs₄).
  rewrite Hs₃, Hs₄.
+ assert (a .[ n + di₁] ⊕ b .[ n + di₂] = c .[ n + di₃] ⊕ b .[ n + di₄]) as H.
 bbb.
 
 bbb.
