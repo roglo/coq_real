@@ -2201,9 +2201,60 @@ Theorem trunc_from_succ : ∀ a n i,
   trunc_from (S n) a i = [a.[i+n] … trunc_from n a i].
 Proof. reflexivity. Qed.
 
-Theorem yyy :
-  List.last (tr_add2 la lb) d =
-  List.last la d ⊕ List.last lb d ⊕
+(*
+Theorem xxx : ∀ a b i j d n,
+  List.nth j (tr_add2 (trunc_from n a i) (trunc_from n b i)) d =
+  List.nth (S j) (tr_add2 (trunc_from (S n) a i) (trunc_from (S n) b i)) d.
+Proof.
+intros a b i j d n.
+revert i j.
+induction n; intros; [ reflexivity | idtac ].
+remember (S n) as sn; simpl; subst sn.
+bbb.
+*)
+
+Theorem xxx : ∀ a b i di n,
+  fst_same a b (S i) = Some di
+  → S di < n
+  → List.last (tr_add2 (trunc_from n a i) (trunc_from n b i)) false =
+    List.last (tr_add2 (trunc_from (S n) a i) (trunc_from (S n) b i)) false.
+Proof.
+intros a b i di n Hdi Hn.
+destruct n; [ exfalso; revert Hn; apply Nat.nlt_0_r | idtac ].
+apply Nat.succ_lt_mono in Hn.
+bbb.
+
+Theorem yyy : ∀ a b i di n,
+  fst_same a b (S i) = Some di
+  → S di < n
+  → List.last (tr_add2 (trunc_from n a i) (trunc_from n b i)) false =
+    a.[i] ⊕ b.[i] ⊕ a.[i+S di].
+Proof.
+intros a b i di n Hdi Hn.
+destruct n; [ exfalso; revert Hn; apply Nat.nlt_0_r | idtac ].
+apply Nat.succ_lt_mono in Hn.
+apply fst_same_iff in Hdi; simpl in Hdi.
+destruct Hdi as (Hni, Hdi).
+simpl.
+unfold carry_sum_3.
+rewrite orb_false_r, andb_false_r, orb_false_r.
+remember (a .[ i + n] && b .[ i + n]) as c.
+bbb.
+
+Theorem yyy₁ : ∀ a b i n,
+  0 < n
+  → a.[i+n] = b.[i+n]
+  → List.last (tr_add2 (trunc_from n a i) (trunc_from n b i)) false =
+    List.last (tr_add2 (trunc_from (S n) a i) (trunc_from (S n) b i)) false.
+Proof.
+intros a b i n Hn Hab.
+destruct n; [ exfalso; revert Hn; apply Nat.nlt_0_r | idtac ].
+clear Hn.
+revert i Hab.
+induction n; intros.
+ simpl.
+ f_equal.
+ rewrite Hab; unfold carry_sum_3.
 bbb.
 
 Theorem zzz : ∀ a b a' b' i di n,
