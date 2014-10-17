@@ -2212,7 +2212,6 @@ Fixpoint last_carry la lb c :=
       end
   end.
 
-(*
 Theorem xxx : ∀ la lb c,
   List.length la = List.length lb
   → List.last (trunc_add_with_carry false la lb) c =
@@ -2246,6 +2245,7 @@ revert lb Hlen.
 induction la as [| a]; intros.
  simpl.
 bbb.
+*)
 
 Theorem zzz : ∀ a b a' b' i di n,
   fst_same a b (S i) = Some di
