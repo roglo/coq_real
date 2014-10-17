@@ -2217,26 +2217,15 @@ subst a' b' si.
 unfold tr_add2; simpl.
 revert i di Hni Hdi.
 induction n; intros.
- replace (di + 2) with (S (di + 1)) by omega; simpl.
- rewrite xorb_false_r.
- unfold carry_sum_3; simpl.
- rewrite orb_false_r, andb_false_r, orb_false_r.
- replace (i + (di + 1)) with (S (i + di)) by omega.
- simpl in Hdi; rewrite Hdi.
- rewrite andb_diag.
- rewrite xorb_nilpotent.
- remember b .[ S (i + di)] as c eqn:Hc .
- destruct di; simpl; [ rewrite Nat.add_0_r; reflexivity | idtac ].
- simpl in Hni.
- replace (i + (di + 1)) with (S (i + di)) by omega.
- rewrite Hni; [ idtac | apply Nat.lt_succ_diag_r ].
- unfold carry_sum_3; simpl.
- rewrite andb_comm, andb_negb_r; simpl.
- rewrite andb_comm.
- rewrite <- andb_orb_distrib_r.
- rewrite orb_negb_r, andb_true_r.
- rewrite <- negb_xorb_l.
- rewrite xorb_nilpotent, xorb_true_l.
+ simpl in Hdi.
+ revert i Hni Hdi.
+ induction di; intros.
+  simpl.
+  rewrite Nat.add_0_r in Hdi |- *.
+  rewrite Nat.add_1_r.
+  f_equal.
+  rewrite Hdi.
+  destruct b .[ S i]; reflexivity.
 bbb.
 
 Theorem tr_add_trunc_comm : ∀ a b n, tr_add n a b = trunc n (a + b).
