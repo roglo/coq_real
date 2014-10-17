@@ -2589,6 +2589,16 @@ destruct s₁ as [di₁| ].
  apply not_add_norm_inf_1 in Hs₁; contradiction.
 Qed.
 
+(*
+Theorem zzz :
+  (∀ dj, dj < di₁ → rm_add_i a 0 (i + dj) = negb (rm_add_i b 0 (i + dj))
+  → (∀ dj, dj < di₂ → rm_add_i c 0 (i + dj) = negb (rm_add_i d 0 (i + dj))
+  → di₁ < di₂
+  → rm_add_i c 0 (i + di₁) = negb (rm_add_i d 0 (i + di₁)).
+Proof.
+bbb
+*)
+
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
 intros a b c.
@@ -2702,7 +2712,35 @@ destruct s₁ as [di₁| ].
      move Hb₄ after Hc₄; move Hn₄ after Hxai.
      move Hbci before Habi.
 (*1-*)
+     destruct (lt_dec di₁ di₃) as [H₁| H₁].
+      remember H₁ as H; clear HeqH.
+      apply Hn₃ in H.
+      rewrite Hxas in H.
+      apply negb_sym in H.
+      destruct (lt_dec di₃ di₄) as [H₄| H₄].
+       remember H₄ as H₄₀; clear HeqH₄₀.
+       apply Hn₄ in H₄₀.
+       rewrite Hb₃ in H₄₀.
+       apply negb_sym in H₄₀.
+       assert (di₁ < di₄) as H₂ by omega.
+       remember H₂ as H₂₀; clear HeqH₂₀.
+       apply Hn₄ in H₂₀.
+       destruct (lt_dec di₄ di₂) as [H₃| H₃].
+        remember H₃ as H₃₀; clear HeqH₃₀.
+        apply Hn₂ in H₃₀.
+        rewrite Hc₄ in H₃₀.
+        assert (di₁ < di₂) as H₅ by omega.
+        remember H₅ as H₅₀; clear HeqH₅₀.
+        apply Hn₂ in H₅₀.
+        assert (di₃ < di₂) as H₆ by omega.
+        remember H₆ as H₆₀; clear HeqH₆₀.
+        apply Hn₂ in H₆₀.
+        rewrite <- H₂₀ in H₅₀.
+        rewrite H₄₀ in H₆₀.
+        rewrite negb_involutive in H₆₀.
+(*
      assert (xas ⊕ xcs = xai ⊕ xabi ⊕ xci ⊕ xbci) as Hr.
+*)
 bbb.
 
      destruct xai, xas, xci, xcs, xabi, xbci; try reflexivity;
