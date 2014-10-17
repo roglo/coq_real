@@ -2203,12 +2203,11 @@ Proof. reflexivity. Qed.
 
 Theorem zzz : ∀ a b a' b' i di n,
   fst_same a b (S i) = Some di
-  → di < n
-  → a' = trunc_from n a i
-  → b' = trunc_from n b i
+  → a' = trunc_from (di + n) a i
+  → b' = trunc_from (di + n) b i
   → rm_add_i a b i = List.last (tr_add2 a' b') false.
 Proof.
-intros a b a' b' i di n Hdi Hlt Ha' Hb'.
+intros a b a' b' i di n Hdi Ha' Hb'.
 unfold rm_add_i.
 remember (S i) as si; simpl.
 rewrite Hdi; simpl.
@@ -2216,21 +2215,9 @@ apply fst_same_iff in Hdi; simpl in Hdi.
 destruct Hdi as (Hni, Hdi).
 subst a' b' si.
 unfold tr_add2; simpl.
-remember (n - S di) as m.
-assert (n = m + S di) by omega.
-clear Heqm Hlt; subst n.
-rename m into n.
 revert i di Hni Hdi.
 induction n; intros.
- rewrite Nat.add_0_l; simpl.
- unfold carry_sum_3; simpl.
- rewrite xorb_false_r.
- rewrite orb_false_r, andb_false_r, orb_false_r.
- remember (a .[ i + di] && b .[ i + di]) as c eqn:Hc .
- destruct i.
-  simpl in Hni, Hdi, Hc; simpl.
-  destruct di.
-   clear Hni; simpl.
+ rewrite Nat.add_0_r; simpl.
 bbb.
 
 Theorem tr_add_trunc_comm : ∀ a b n, tr_add n a b = trunc n (a + b).
