@@ -2203,8 +2203,8 @@ Proof. reflexivity. Qed.
 
 Theorem zzz : ∀ a b a' b' i di n,
   fst_same a b (S i) = Some di
-  → a' = trunc_from (di + n) a i
-  → b' = trunc_from (di + n) b i
+  → a' = trunc_from (di + S (S n)) a i
+  → b' = trunc_from (di + S (S n)) b i
   → rm_add_i a b i = List.last (tr_add2 a' b') false.
 Proof.
 intros a b a' b' i di n Hdi Ha' Hb'.
@@ -2217,7 +2217,26 @@ subst a' b' si.
 unfold tr_add2; simpl.
 revert i di Hni Hdi.
 induction n; intros.
- rewrite Nat.add_0_r; simpl.
+ replace (di + 2) with (S (di + 1)) by omega; simpl.
+ rewrite xorb_false_r.
+ unfold carry_sum_3; simpl.
+ rewrite orb_false_r, andb_false_r, orb_false_r.
+ replace (i + (di + 1)) with (S (i + di)) by omega.
+ simpl in Hdi; rewrite Hdi.
+ rewrite andb_diag.
+ rewrite xorb_nilpotent.
+ remember b .[ S (i + di)] as c eqn:Hc .
+ destruct di; simpl; [ rewrite Nat.add_0_r; reflexivity | idtac ].
+ simpl in Hni.
+ replace (i + (di + 1)) with (S (i + di)) by omega.
+ rewrite Hni; [ idtac | apply Nat.lt_succ_diag_r ].
+ unfold carry_sum_3; simpl.
+ rewrite andb_comm, andb_negb_r; simpl.
+ rewrite andb_comm.
+ rewrite <- andb_orb_distrib_r.
+ rewrite orb_negb_r, andb_true_r.
+ rewrite <- negb_xorb_l.
+ rewrite xorb_nilpotent, xorb_true_l.
 bbb.
 
 Theorem tr_add_trunc_comm : ∀ a b n, tr_add n a b = trunc n (a + b).
