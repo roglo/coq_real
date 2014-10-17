@@ -2201,6 +2201,51 @@ Theorem trunc_from_succ : ∀ a n i,
   trunc_from (S n) a i = [a.[i+n] … trunc_from n a i].
 Proof. reflexivity. Qed.
 
+Fixpoint last_carry la lb c :=
+  match la with
+  | [] => c
+  | [_] => c
+  | [a₁ … la₁] =>
+      match lb with
+      | [] => c
+      | [b₁ … lb₁] => last_carry la₁ lb₁ (carry_sum_3 a₁ b₁ c)
+      end
+  end.
+
+Theorem xxx : ∀ la lb c,
+  List.length la = List.length lb
+  → List.last (trunc_add_with_carry false la lb) c =
+    List.last la false ⊕ List.last lb false ⊕ last_carry la lb c.
+Proof.
+intros la lb c Hlen.
+revert lb c Hlen.
+induction la as [| a]; intros.
+ destruct lb; [ simpl | discriminate Hlen ].
+ destruct c; reflexivity.
+
+ destruct lb as [| b]; [ discriminate Hlen | simpl ].
+ injection Hlen; clear Hlen; intros Hlen.
+ remember (carry_sum_3 a b false) as d.
+ unfold carry_sum_3 in Heqd; simpl in Heqd.
+ rewrite orb_false_r, andb_false_r, orb_false_r in Heqd.
+ remember (trunc_add_with_carry d la lb) as t.
+ symmetry in Heqt.
+ destruct t as [| t tl].
+  destruct la as [| a₁].
+   destruct lb; [ simpl | discriminate Hlen ].
+bbb.
+
+Theorem yyy : ∀ la lb,
+  List.length la = List.length lb
+  → List.last (tr_add2 la lb) false =
+    List.last la false ⊕ List.last lb false ⊕ last_carry la lb false.
+Proof.
+intros la lb Hlen.
+revert lb Hlen.
+induction la as [| a]; intros.
+ simpl.
+bbb.
+
 Theorem zzz : ∀ a b a' b' i di n,
   fst_same a b (S i) = Some di
   → a' = trunc_from (di + S (S n)) a i
@@ -2209,6 +2254,7 @@ Theorem zzz : ∀ a b a' b' i di n,
 Proof.
 intros a b a' b' i di n Hdi Ha' Hb'.
 subst a' b'.
+bbb.
 destruct n.
  revert i Hdi.
  induction di; intros.
