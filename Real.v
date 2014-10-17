@@ -2203,7 +2203,7 @@ Proof. reflexivity. Qed.
 
 Theorem zzz : ∀ a b a' b' i di n,
   fst_same a b (S i) = Some di
-  → S i + di < n
+  → di < n
   → a' = trunc_from n a i
   → b' = trunc_from n b i
   → rm_add_i a b i = List.last (tr_add2 a' b') false.
@@ -2216,24 +2216,22 @@ apply fst_same_iff in Hdi; simpl in Hdi.
 destruct Hdi as (Hni, Hdi).
 subst a' b' si.
 unfold tr_add2; simpl.
+remember (n - S di) as m.
+assert (n = m + S di) by omega.
+clear Heqm Hlt; subst n.
+rename m into n.
+revert i di Hni Hdi.
+induction n; intros.
+ rewrite Nat.add_0_l; simpl.
+ unfold carry_sum_3; simpl.
+ rewrite xorb_false_r.
+ rewrite orb_false_r, andb_false_r, orb_false_r.
+ remember (a .[ i + di] && b .[ i + di]) as c eqn:Hc .
+ destruct i.
+  simpl in Hni, Hdi, Hc; simpl.
+  destruct di.
+   clear Hni; simpl.
 bbb.
-revert i di Hni Hdi Hlt.
-induction n; intros; [ exfalso; revert Hlt; apply Nat.nlt_0_r | simpl ].
-unfold carry_sum_3; simpl.
-rewrite orb_false_r, andb_false_r, orb_false_r.
-remember (a .[ i + n] && b .[ i + n]) as c eqn:Hc .
-rewrite xorb_false_r.
-destruct i.
- Focus 1.
- simpl in Hdi, Hlt, Hc; simpl.
- apply Nat.succ_lt_mono in Hlt.
- destruct di.
-  Focus 1.
-  clear Hni.
-  destruct n; [ exfalso; revert Hlt; apply Nat.nlt_0_r | idtac ].
-  clear Hlt.
-  simpl.
-  unfold carry_sum_3; simpl.
 
 Theorem tr_add_trunc_comm : ∀ a b n, tr_add n a b = trunc n (a + b).
 Proof.
