@@ -2261,6 +2261,32 @@ intros a i n c.
 induction n; [ simpl; rewrite Nat.add_0_r; reflexivity | assumption ].
 Qed.
 
+Theorem yyy : ∀ a b i di c n,
+  fst_same a b (S i) = Some di
+  → last_carry (trunc_from (S (di + S n)) a i)
+      (trunc_from (S (di + S n)) b i) c
+    = a .[ S i + di].
+Proof.
+intros a b i di c n Hdi.
+remember (trunc_from (S (di + S n)) a i) as la eqn:Hla .
+remember (trunc_from (S (di + S n)) b i) as lb eqn:Hlb .
+symmetry in Hla, Hlb.
+revert a b i di c n lb Hdi Hla Hlb.
+induction la as [| a₁]; intros.
+ rewrite trunc_from_succ in Hla; discriminate Hla.
+
+ destruct lb as [| b₁].
+  rewrite trunc_from_succ in Hlb; discriminate Hlb.
+
+  simpl.
+  destruct la as [| a₂].
+   rewrite trunc_from_succ in Hla.
+   injection Hla; clear Hla; intros Hla Ha.
+   rewrite Nat.add_succ_r, trunc_from_succ in Hla.
+   discriminate Hla.
+bbb.
+*)
+
 Theorem zzz : ∀ a b a' b' i di n,
   fst_same a b (S i) = Some di
   → a' = trunc_from (di + S (S n)) a i
@@ -2273,6 +2299,8 @@ rewrite last_tr_add.
  unfold rm_add_i; rewrite Hdi.
  rewrite Nat.add_succ_r.
  do 2 rewrite last_trunc_from.
+bbb.
+ apply fst_same_iff in Hdi.
 bbb.
 *)
 
