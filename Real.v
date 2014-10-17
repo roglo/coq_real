@@ -2201,6 +2201,11 @@ Theorem trunc_from_succ : ∀ a n i,
   trunc_from (S n) a i = [a.[i+n] … trunc_from n a i].
 Proof. reflexivity. Qed.
 
+Theorem yyy :
+  List.last (tr_add2 la lb) d =
+  List.last la d ⊕ List.last lb d ⊕
+bbb.
+
 Theorem zzz : ∀ a b a' b' i di n,
   fst_same a b (S i) = Some di
   → a' = trunc_from (di + S (S n)) a i
@@ -2215,9 +2220,11 @@ apply fst_same_iff in Hdi; simpl in Hdi.
 destruct Hdi as (Hni, Hdi).
 subst a' b' si.
 unfold tr_add2; simpl.
+simpl in Hdi.
 revert i di Hni Hdi.
 induction n; intros.
- simpl in Hdi.
+bbb.
+
  revert i Hni Hdi.
  induction di; intros.
   simpl.
