@@ -2167,7 +2167,7 @@ Fixpoint trunc_from n a i :=
   | 0 => []
   | S n₁ => [a.[i+n₁] … trunc_from n₁ a i]
   end.
-Arguments trunc_from n%nat a%rm i%rm.
+Arguments trunc_from n%nat a%rm i%nat.
 
 Definition carry_sum_3 a b c := a && b || b && c || c && a.
 
@@ -2201,62 +2201,6 @@ Theorem trunc_from_succ : ∀ a n i,
   trunc_from (S n) a i = [a.[i+n] … trunc_from n a i].
 Proof. reflexivity. Qed.
 
-(*
-Theorem xxx : ∀ a b i j d n,
-  List.nth j (tr_add2 (trunc_from n a i) (trunc_from n b i)) d =
-  List.nth (S j) (tr_add2 (trunc_from (S n) a i) (trunc_from (S n) b i)) d.
-Proof.
-intros a b i j d n.
-revert i j.
-induction n; intros; [ reflexivity | idtac ].
-remember (S n) as sn; simpl; subst sn.
-bbb.
-*)
-
-Theorem xxx : ∀ a b i di n,
-  fst_same a b (S i) = Some di
-  → S di < n
-  → List.last (tr_add2 (trunc_from n a i) (trunc_from n b i)) false =
-    List.last (tr_add2 (trunc_from (S n) a i) (trunc_from (S n) b i)) false.
-Proof.
-intros a b i di n Hdi Hn.
-destruct n; [ exfalso; revert Hn; apply Nat.nlt_0_r | idtac ].
-apply Nat.succ_lt_mono in Hn.
-bbb.
-
-Theorem yyy : ∀ a b i di n,
-  fst_same a b (S i) = Some di
-  → S di < n
-  → List.last (tr_add2 (trunc_from n a i) (trunc_from n b i)) false =
-    a.[i] ⊕ b.[i] ⊕ a.[i+S di].
-Proof.
-intros a b i di n Hdi Hn.
-destruct n; [ exfalso; revert Hn; apply Nat.nlt_0_r | idtac ].
-apply Nat.succ_lt_mono in Hn.
-apply fst_same_iff in Hdi; simpl in Hdi.
-destruct Hdi as (Hni, Hdi).
-simpl.
-unfold carry_sum_3.
-rewrite orb_false_r, andb_false_r, orb_false_r.
-remember (a .[ i + n] && b .[ i + n]) as c.
-bbb.
-
-Theorem yyy₁ : ∀ a b i n,
-  0 < n
-  → a.[i+n] = b.[i+n]
-  → List.last (tr_add2 (trunc_from n a i) (trunc_from n b i)) false =
-    List.last (tr_add2 (trunc_from (S n) a i) (trunc_from (S n) b i)) false.
-Proof.
-intros a b i n Hn Hab.
-destruct n; [ exfalso; revert Hn; apply Nat.nlt_0_r | idtac ].
-clear Hn.
-revert i Hab.
-induction n; intros.
- simpl.
- f_equal.
- rewrite Hab; unfold carry_sum_3.
-bbb.
-
 Theorem zzz : ∀ a b a' b' i di n,
   fst_same a b (S i) = Some di
   → a' = trunc_from (di + S (S n)) a i
@@ -2264,26 +2208,54 @@ Theorem zzz : ∀ a b a' b' i di n,
   → rm_add_i a b i = List.last (tr_add2 a' b') false.
 Proof.
 intros a b a' b' i di n Hdi Ha' Hb'.
-unfold rm_add_i.
-remember (S i) as si; simpl.
-rewrite Hdi; simpl.
-apply fst_same_iff in Hdi; simpl in Hdi.
-destruct Hdi as (Hni, Hdi).
-subst a' b' si.
-unfold tr_add2; simpl.
-simpl in Hdi.
-revert i di Hni Hdi.
-induction n; intros.
-bbb.
-
- revert i Hni Hdi.
+subst a' b'.
+destruct n.
+ revert i Hdi.
  induction di; intros.
+  Focus 1.
   simpl.
-  rewrite Nat.add_0_r in Hdi |- *.
-  rewrite Nat.add_1_r.
+  unfold rm_add_i.
+  remember (S i) as si; simpl.
+  rewrite Nat.add_0_r, Nat.add_1_r, <- Heqsi.
   f_equal.
   rewrite Hdi.
-  destruct b .[ S i]; reflexivity.
+  rewrite Nat.add_0_r.
+  unfold carry_sum_3.
+  rewrite orb_false_r, andb_false_r, orb_false_r.
+  apply fst_same_iff in Hdi.
+  destruct Hdi as (_, Hdi).
+  rewrite Nat.add_0_r in Hdi; rewrite Hdi.
+  rewrite andb_diag; reflexivity.
+
+  destruct i.
+   unfold rm_add_i.
+   rewrite Hdi.
+   simpl.
+   apply fst_same_iff in Hdi.
+   destruct Hdi as (Hni, Hdi).
+   unfold carry_sum_3.
+   rewrite orb_false_r, andb_false_r, orb_false_r.
+   rewrite Nat.add_succ_r, <- Nat.add_succ_l in Hdi.
+   rewrite Nat.add_comm in Hdi.
+   rewrite Hdi.
+   rewrite andb_diag.
+   rewrite xorb_false_r.
+   remember (trunc_from (di + 2) a 0) as a'.
+   remember (trunc_from (di + 2) b 0) as b'.
+   remember b .[ di + 2] as c.
+   rewrite xorb_nilpotent.
+   remember (trunc_add_with_carry c a' b') as s.
+   symmetry in Heqs.
+   destruct s as [x| ].
+    subst a' b'.
+    rewrite Nat.add_comm in Heqs; discriminate Heqs.
+
+    simpl.
+    subst a' b'.
+    rewrite Nat.add_comm in Heqs; simpl in Heqs.
+    injection Heqs; clear Heqs; intros Hl Hx.
+    rewrite <- Hl.
+    simpl.
 bbb.
 
 Theorem tr_add_trunc_comm : ∀ a b n, tr_add n a b = trunc n (a + b).
