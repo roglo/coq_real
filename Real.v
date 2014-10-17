@@ -2254,6 +2254,13 @@ destruct la as [| a].
  intros H; discriminate H.
 Qed.
 
+Theorem last_trunc_from : ∀ a i n c,
+  List.last (trunc_from (S n) a i) c =  a .[ i].
+Proof.
+intros a i n c.
+induction n; [ simpl; rewrite Nat.add_0_r; reflexivity | assumption ].
+Qed.
+
 Theorem zzz : ∀ a b a' b' i di n,
   fst_same a b (S i) = Some di
   → a' = trunc_from (di + S (S n)) a i
@@ -2264,58 +2271,8 @@ intros a b a' b' i di n Hdi Ha' Hb'.
 subst a' b'.
 rewrite last_tr_add.
  unfold rm_add_i; rewrite Hdi.
-bbb.
-
-intros a b a' b' i di n Hdi Ha' Hb'.
-subst a' b'.
-bbb.
-destruct n.
- revert i Hdi.
- induction di; intros.
-  Focus 1.
-  simpl.
-  unfold rm_add_i.
-  remember (S i) as si; simpl.
-  rewrite Nat.add_0_r, Nat.add_1_r, <- Heqsi.
-  f_equal.
-  rewrite Hdi.
-  rewrite Nat.add_0_r.
-  unfold carry_sum_3.
-  rewrite orb_false_r, andb_false_r, orb_false_r.
-  apply fst_same_iff in Hdi.
-  destruct Hdi as (_, Hdi).
-  rewrite Nat.add_0_r in Hdi; rewrite Hdi.
-  rewrite andb_diag; reflexivity.
-
-  destruct i.
-   unfold rm_add_i.
-   rewrite Hdi.
-   simpl.
-   apply fst_same_iff in Hdi.
-   destruct Hdi as (Hni, Hdi).
-   unfold carry_sum_3.
-   rewrite orb_false_r, andb_false_r, orb_false_r.
-   rewrite Nat.add_succ_r, <- Nat.add_succ_l in Hdi.
-   rewrite Nat.add_comm in Hdi.
-   rewrite Hdi.
-   rewrite andb_diag.
-   rewrite xorb_false_r.
-   remember (trunc_from (di + 2) a 0) as a'.
-   remember (trunc_from (di + 2) b 0) as b'.
-   remember b .[ di + 2] as c.
-   rewrite xorb_nilpotent.
-   remember (trunc_add_with_carry c a' b') as s.
-   symmetry in Heqs.
-   destruct s as [x| ].
-    subst a' b'.
-    rewrite Nat.add_comm in Heqs; discriminate Heqs.
-
-    simpl.
-    subst a' b'.
-    rewrite Nat.add_comm in Heqs; simpl in Heqs.
-    injection Heqs; clear Heqs; intros Hl Hx.
-    rewrite <- Hl.
-    simpl.
+ rewrite Nat.add_succ_r.
+ do 2 rewrite last_trunc_from.
 bbb.
 *)
 
