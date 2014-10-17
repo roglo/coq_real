@@ -2212,6 +2212,7 @@ Fixpoint last_carry la lb c :=
       end
   end.
 
+(*
 Theorem xxx : ∀ la lb c,
   List.length la = List.length lb
   → List.last (trunc_add_with_carry false la lb) c =
@@ -2303,6 +2304,7 @@ destruct n.
     rewrite <- Hl.
     simpl.
 bbb.
+*)
 
 Theorem tr_add_trunc_comm : ∀ a b n, tr_add n a b = trunc n (a + b).
 Proof.
@@ -2431,6 +2433,7 @@ induction la as [| a₁]; intros; simpl.
   destruct a₁, b₁, c; reflexivity.
 Qed.
 
+(*
 Theorem yyy : ∀ la lb lc carr₁ carr₂ carr₃ carr₄,
   carr₁ ⊕ carr₂ = carr₃ ⊕ carr₄
   → trunc_add_with_carry carr₁ la (trunc_add_with_carry carr₂ lb lc) =
@@ -2463,10 +2466,10 @@ induction lb as [| b₁]; intros; simpl.
    erewrite IHlb; eauto .
    rewrite trunc_add_with_carry_comm.
    induction la as [| a₂]; [ reflexivity | simpl ].
-Abort. (* à voir...
 bbb.
 *)
 
+(*
 Theorem zzz : ∀ a b c n, trunc n (a + (b + c))%rm = trunc n ((a + b) + c)%rm.
 Proof.
 intros a b c n.
@@ -2503,10 +2506,9 @@ destruct s₁ as [di₁| ], s₂ as [di₂| ], s₃ as [di₃| ], s₄ as [di₄
   destruct a₁, b₁, c₁, b₂; try reflexivity; simpl.
   Focus 1.
 bbb.
+*)
 
-bbb.
-
-(* old method; but need 4800 goals to resolve
+(* old method; but need 4800 goals to resolve *)
 
 Theorem case_1 : ∀ b₀ c₀ i si,
   let b := (b₀ + 0)%rm in
@@ -2699,6 +2701,15 @@ destruct s₁ as [di₁| ].
      rewrite H in Hc₄; rename H into Hb₄.
      move Hb₄ after Hc₄; move Hn₄ after Hxai.
      move Hbci before Habi.
+(*1-*)
+     assert (xas ⊕ xcs = xai ⊕ xabi ⊕ xci ⊕ xbci) as Hr.
+bbb.
+
+     destruct xai, xas, xci, xcs, xabi, xbci; try reflexivity;
+      try discriminate Hr.
+
+bbb.
+(*1-*)
      destruct xai, xas, xci, xcs, xabi, xbci; try reflexivity; exfalso;
       destruct xbi; simpl in Ha₃, Hb₃, Hb₄, Hc₄.
       destruct di₄.
