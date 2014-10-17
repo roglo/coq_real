@@ -2212,40 +2212,47 @@ Fixpoint last_carry la lb c :=
       end
   end.
 
-Theorem xxx : ∀ la lb c,
-  List.length la = List.length lb
-  → List.last (trunc_add_with_carry false la lb) c =
+Theorem last_trunc_add : ∀ la lb c,
+  la ≠ []
+  → List.length la = List.length lb
+  → List.last (trunc_add_with_carry c la lb) false =
     List.last la false ⊕ List.last lb false ⊕ last_carry la lb c.
 Proof.
-intros la lb c Hlen.
-revert lb c Hlen.
-induction la as [| a]; intros.
- destruct lb; [ simpl | discriminate Hlen ].
- destruct c; reflexivity.
+intros la lb c Hla Hlen.
+destruct la as [| a₁]; [ exfalso; apply Hla; reflexivity | clear Hla ].
+destruct lb as [| b₁]; [ discriminate Hlen | idtac ].
+injection Hlen; clear Hlen; intros Hlen.
+revert a₁ b₁ lb c Hlen.
+induction la as [| a₂]; intros.
+ destruct lb; [ reflexivity | discriminate Hlen ].
 
- destruct lb as [| b]; [ discriminate Hlen | simpl ].
+ destruct lb as [| b₂]; [ discriminate Hlen | idtac ].
  injection Hlen; clear Hlen; intros Hlen.
- remember (carry_sum_3 a b false) as d.
- unfold carry_sum_3 in Heqd; simpl in Heqd.
- rewrite orb_false_r, andb_false_r, orb_false_r in Heqd.
- remember (trunc_add_with_carry d la lb) as t.
+ remember [a₂ … la] as la₂.
+ remember [b₂ … lb] as lb₂; simpl.
+ remember (carry_sum_3 a₁ b₁ c) as d.
+ remember (trunc_add_with_carry d la₂ lb₂) as t.
  symmetry in Heqt.
- destruct t as [| t tl].
-  destruct la as [| a₁].
-   destruct lb; [ simpl | discriminate Hlen ].
-bbb.
+ subst la₂ lb₂.
+ destruct t as [| t tl]; [ discriminate Heqt | idtac ].
+ rewrite <- IHla; auto.
+ rewrite <- Heqt.
+ reflexivity.
+Qed.
 
-Theorem yyy : ∀ la lb,
+Theorem last_tr_add : ∀ la lb,
   List.length la = List.length lb
   → List.last (tr_add2 la lb) false =
     List.last la false ⊕ List.last lb false ⊕ last_carry la lb false.
 Proof.
 intros la lb Hlen.
-revert lb Hlen.
-induction la as [| a]; intros.
- simpl.
-bbb.
-*)
+destruct la as [| a].
+ destruct lb as [| b]; simpl; [ reflexivity | discriminate Hlen ].
+
+ unfold tr_add2.
+ rewrite last_trunc_add; auto.
+ intros H; discriminate H.
+Qed.
 
 Theorem zzz : ∀ a b a' b' i di n,
   fst_same a b (S i) = Some di
@@ -2253,6 +2260,12 @@ Theorem zzz : ∀ a b a' b' i di n,
   → b' = trunc_from (di + S (S n)) b i
   → rm_add_i a b i = List.last (tr_add2 a' b') false.
 Proof.
+intros a b a' b' i di n Hdi Ha' Hb'.
+subst a' b'.
+rewrite last_tr_add.
+ unfold rm_add_i; rewrite Hdi.
+bbb.
+
 intros a b a' b' i di n Hdi Ha' Hb'.
 subst a' b'.
 bbb.
