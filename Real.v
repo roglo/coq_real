@@ -2171,9 +2171,11 @@ Fixpoint trunc_from n a i :=
   end.
 Arguments trunc_from n%nat a%rm i%nat.
 
+(*
 Definition rm_exp_opp n := {| rm := beq_nat n |}.
 Definition trunc_one n i := trunc_from n (rm_exp_opp (pred (n + i))) i.
 Arguments trunc_one n%nat i%nat.
+*)
 
 Definition carry_sum_3 a b c := a && b || b && c || c && a.
 
@@ -2330,25 +2332,6 @@ induction n; intros; simpl.
  apply IHn; assumption.
 Qed.
 
-(*
-Theorem xxx : ∀ a b i di c n,
-  (∀ dj, dj < di → a.[S i + dj] = negb b.[S i + dj])
-  → a.[S i + di] = b.[S i + di]
-  → last_carry
-     (trunc_from (S (di + S n)) a i)
-     (trunc_from (S (di + S n)) b i) c = a.[S i + di].
-Proof.
-intros a b i di c n Hni Hdi Hdn.
-unfold last_carry.
-destruct n; [ exfalso; revert Hdn; apply Nat.nlt_0_r | idtac ].
-apply Nat.succ_lt_mono in Hdn.
-do 2 rewrite removelast_trunc_succ.
-revert a b i di c Hni Hdi Hdn.
-induction n; intros.
- exfalso; revert Hdn; apply Nat.nlt_0_r.
-bbb.
-*)
-
 Theorem last_carry_through_relay : ∀ a b i di c n,
   fst_same a b (S i) = Some di
   → last_carry
@@ -2402,6 +2385,9 @@ do 2 rewrite last_trunc_from.
 rewrite last_carry_through_relay; auto.
 Qed.
 
+bbb.
+
+(*
 Theorem rm_exp_opp_last : ∀ n, (rm_exp_opp n) .[ n] = true.
 Proof.
 intros n; simpl.
@@ -2415,7 +2401,9 @@ apply Nat.eqb_neq.
 intros H; subst m.
 revert Hm; apply Nat.lt_irrefl.
 Qed.
+*)
 
+(*
 Theorem zzz : ∀ a b a'' b'' i di m n,
   fst_same a b (S i) = Some di
   → m = di + S (S n)
@@ -2472,8 +2460,7 @@ rewrite last_tr_add.
  rewrite Nat.add_succ_r in Heqx; simpl in Heqx; subst x.
  do 2 rewrite xorb_false_r.
 bbb.
-
-bbb.
+*)
 
 Theorem tr_add_trunc_comm : ∀ a b n, tr_add n a b = trunc n (a + b).
 Proof.
