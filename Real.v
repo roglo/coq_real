@@ -2203,16 +2203,18 @@ Theorem trunc_from_succ : ∀ a n i,
   trunc_from (S n) a i = [a.[i+n] … trunc_from n a i].
 Proof. reflexivity. Qed.
 
-Fixpoint last_carry la lb c :=
+Fixpoint last_carry_loop la lb c :=
   match la with
-  | [] => false
-  | [_] => c
+  | [] => c
   | [a₁ … la₁] =>
       match lb with
-      | [] => c
-      | [b₁ … lb₁] => last_carry la₁ lb₁ (carry_sum_3 a₁ b₁ c)
+      | [] => false
+      | [b₁ … lb₁] => last_carry_loop la₁ lb₁ (carry_sum_3 a₁ b₁ c)
       end
   end.
+
+Definition last_carry la lb c :=
+  last_carry_loop (List.removelast la) (List.removelast lb) c.
 
 Theorem last_trunc_add : ∀ la lb c,
   la ≠ []
@@ -2237,9 +2239,8 @@ induction la as [| a₂]; intros.
  symmetry in Heqt.
  subst la₂ lb₂.
  destruct t as [| t tl]; [ discriminate Heqt | idtac ].
- rewrite <- IHla; auto.
- rewrite <- Heqt.
- reflexivity.
+ rewrite <- Heqt, IHla; auto.
+ subst d; reflexivity.
 Qed.
 
 Theorem last_tr_add : ∀ la lb,
@@ -2263,10 +2264,15 @@ intros a i n c.
 induction n; [ simpl; rewrite Nat.add_0_r; reflexivity | assumption ].
 Qed.
 
+(*
 Theorem last_carry_cons_cons : ∀ la lb a₁ a₂ b₁ c,
   last_carry [a₁; a₂ … la] [b₁ … lb] c =
   last_carry [a₂ … la] lb (carry_sum_3 a₁ b₁ c).
-Proof. reflexivity. Qed.
+Proof.
+intros la lb a₁ a₂ b₁ c.
+bbb.
+ reflexivity. Qed.
+*)
 
 Theorem yyy : ∀ a b i di c n,
   fst_same a b (S i) = Some di
@@ -2275,6 +2281,10 @@ Theorem yyy : ∀ a b i di c n,
     = a .[ S i + di].
 Proof.
 intros a b i di c n Hdi.
+unfold last_carry.
+Abort. (* à voir...
+bbb.
+
 remember (trunc_from (S (di + S n)) a i) as la eqn:Hla .
 remember (trunc_from (S (di + S n)) b i) as lb eqn:Hlb .
 symmetry in Hla, Hlb.
@@ -2291,6 +2301,7 @@ induction la as [| a₁]; intros.
    rewrite Nat.add_succ_r, trunc_from_succ in Hla.
    discriminate Hla.
 
+bbb.
    rewrite last_carry_cons_cons.
    apply fst_same_iff in Hdi.
    destruct Hdi as (Hni, Hdi).
