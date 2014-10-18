@@ -2171,6 +2171,9 @@ Fixpoint trunc_from n a i :=
   end.
 Arguments trunc_from n%nat a%rm i%nat.
 
+Definition trunc_one n := (trunc_from (pred n) rm_zero 0 ++ [true])%list.
+Arguments trunc_one n%nat.
+
 Definition carry_sum_3 a b c := a && b || b && c || c && a.
 
 Fixpoint trunc_add_with_carry c la lb :=
@@ -2377,6 +2380,16 @@ rewrite Nat.add_succ_r.
 do 2 rewrite last_trunc_from.
 rewrite last_carry_through_relay; auto.
 Qed.
+
+Theorem zzz : ∀ a b a'' b'' i di m n,
+  fst_same a b (S i) = Some di
+  → m = di + S (S n)
+  → a'' = tr_add2 (trunc_from m a i) (trunc_one m)
+  → b'' = tr_add2 (trunc_from m b i) (trunc_one m)
+  → rm_add_i a b i = List.last (tr_add2 a'' b'') false.
+Proof.
+intros a b a'' b'' i di m n Hdi Hm Ha'' Hb''.
+bbb.
 
 bbb.
 
