@@ -2172,7 +2172,7 @@ Fixpoint trunc_from n a i :=
 Arguments trunc_from n%nat a%rm i%nat.
 
 Definition rm_exp_opp n := {| rm := beq_nat n |}.
-Definition trunc_one n i := trunc_from n (rm_exp_opp (pred n)) i.
+Definition trunc_one n i := trunc_from n (rm_exp_opp (pred (n + i))) i.
 Arguments trunc_one n%nat i%nat.
 
 Definition carry_sum_3 a b c := a && b || b && c || c && a.
@@ -2397,8 +2397,10 @@ rewrite last_tr_add.
  rewrite last_tr_add; [ idtac | apply length_trunc_eq ].
  unfold rm_add_i; rewrite Hdi.
  rewrite Nat.add_succ_r.
- rewrite Nat.pred_succ.
+ remember (pred (S (di + S n) + i)) as x; simpl in Heqx; subst x.
+ do 3 rewrite last_trunc_from.
 bbb.
+ rewrite last_carry_through_relay.
 
 intros a b a'' b'' i di m n Hdi Hm Ha'' Hb''.
 subst a'' b'' m.
