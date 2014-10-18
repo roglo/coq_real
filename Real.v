@@ -2275,12 +2275,17 @@ rewrite IHn; simpl.
 rewrite Nat.add_succ_r; reflexivity.
 Qed.
 
-Theorem www : ∀ b c, carry_sum_3 (negb b) b c = c.
+Theorem carry_sum_negb_l : ∀ b c, carry_sum_3 (negb b) b c = c.
 Proof.
 intros b c.
-bbb.
+unfold carry_sum_3.
+rewrite andb_comm, andb_negb_r; simpl.
+rewrite andb_comm, <- andb_orb_distrib_r.
+rewrite orb_negb_r, andb_true_r.
+reflexivity.
+Qed.
 
-Theorem xxx : ∀ a b c i di n,
+Theorem trunc_moving_carry : ∀ a b c i di n,
   (∀ dj, dj < di → a .[ S (i + dj)] = negb b .[ S (i + dj)])
   → n ≤ di
   → last_carry_loop (trunc_from n a (S i)) (trunc_from n b (S i)) c = c.
@@ -2289,7 +2294,11 @@ intros a b c i di n Hni Hn.
 revert a b i di Hni Hn.
 induction n; intros; [ reflexivity | simpl ].
 rewrite Hni; auto.
-bbb.
+rewrite carry_sum_negb_l.
+apply IHn with (di := di); [ idtac | apply Nat.lt_le_incl; assumption ].
+intros dj Hdj.
+apply Hni; assumption.
+Qed.
 
 Theorem yyy : ∀ a b i di c n,
   fst_same a b (S i) = Some di
@@ -2300,13 +2309,15 @@ Proof.
 intros a b i di c n Hdi.
 unfold last_carry.
 do 2 rewrite removelast_trunc_succ.
-destruct n.
+revert a b i di c Hdi.
+induction n; intros.
  rewrite Nat.add_1_r; simpl.
  apply fst_same_iff in Hdi; simpl in Hdi.
  destruct Hdi as (Hni, Hdi); rewrite Hdi.
  unfold carry_sum_3.
  rewrite andb_diag, absoption_orb.
  rewrite andb_comm, absoption_orb.
+ apply trunc_moving_carry with (di := di); auto.
 bbb.
 
  remember (trunc_from di a (S i)) as la eqn:Hla .
