@@ -142,3 +142,14 @@ t2f (trunc 9 (rm_add (f2r 0.5) (f2r 0.2)));
 t2f (trunc 10 (rm_add (f2r 0.5) (f2r 0.2)));
 t2f (trunc 11 (rm_add (f2r 0.5) (f2r 0.2)));
 (**)
+
+value rec trunc_from n a i =
+  match n with
+  | 0 → []
+  | _ →
+      let n₁ = n - 1 in
+      [a.rm (i+n₁) :: trunc_from n₁ a i]
+  end.
+
+value rm_exp_opp n = {rm i = i = n}.
+value trunc_one n = trunc_from n (rm_exp_opp (pred n)) 0;

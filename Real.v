@@ -2171,8 +2171,9 @@ Fixpoint trunc_from n a i :=
   end.
 Arguments trunc_from n%nat a%rm i%nat.
 
-Definition trunc_one n := (trunc_from (pred n) rm_zero 0 ++ [true])%list.
-Arguments trunc_one n%nat.
+Definition rm_exp_opp n := {| rm := beq_nat n |}.
+Definition trunc_one n i := trunc_from n (rm_exp_opp (pred n)) i.
+Arguments trunc_one n%nat i%nat.
 
 Definition carry_sum_3 a b c := a && b || b && c || c && a.
 
@@ -2381,31 +2382,37 @@ do 2 rewrite last_trunc_from.
 rewrite last_carry_through_relay; auto.
 Qed.
 
-Theorem last_trunc_one : ∀ n c, List.last (trunc_one n) c = true.
-Proof.
-intros n c.
-destruct n; [ reflexivity | idtac ].
-unfold trunc_one; simpl.
-destruct n; [ reflexivity | simpl ].
-induction n; [ reflexivity | assumption ].
-Qed.
-
 Theorem zzz : ∀ a b a'' b'' i di m n,
   fst_same a b (S i) = Some di
   → m = di + S (S n)
-  → a'' = tr_add2 (trunc_from m a i) (trunc_one m)
-  → b'' = tr_add2 (trunc_from m b i) (trunc_one m)
+  → a'' = tr_add2 (trunc_from m a i) (trunc_one m i)
+  → b'' = tr_add2 (trunc_from m b i) (trunc_one m i)
   → rm_add_i a b i = List.last (tr_add2 a'' b'') false.
 Proof.
 intros a b a'' b'' i di m n Hdi Hm Ha'' Hb''.
 subst a'' b'' m.
+unfold trunc_one.
 rewrite last_tr_add.
- rewrite last_tr_add.
-  rewrite last_tr_add.
-   unfold rm_add_i; rewrite Hdi.
-   rewrite Nat.add_succ_r.
-   do 2 rewrite last_trunc_from.
-   rewrite last_trunc_one.
+ rewrite last_tr_add; [ idtac | apply length_trunc_eq ].
+ rewrite last_tr_add; [ idtac | apply length_trunc_eq ].
+ unfold rm_add_i; rewrite Hdi.
+ rewrite Nat.add_succ_r.
+ rewrite Nat.pred_succ.
+bbb.
+
+intros a b a'' b'' i di m n Hdi Hm Ha'' Hb''.
+subst a'' b'' m.
+unfold trunc_one.
+rewrite last_tr_add.
+ rewrite last_tr_add; [ idtac | apply length_trunc_eq ].
+ rewrite last_tr_add; [ idtac | apply length_trunc_eq ].
+ unfold rm_add_i; rewrite Hdi.
+ rewrite Nat.add_succ_r.
+ do 3 rewrite last_trunc_from; simpl.
+ rewrite Nat.eqb_refl.
+ remember (beq_nat (di + S n) 0) as x.
+ rewrite Nat.add_succ_r in Heqx; simpl in Heqx; subst x.
+ do 2 rewrite xorb_false_r.
 bbb.
 
 bbb.
