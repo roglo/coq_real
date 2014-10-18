@@ -2275,6 +2275,22 @@ rewrite IHn; simpl.
 rewrite Nat.add_succ_r; reflexivity.
 Qed.
 
+Theorem www : ∀ b c, carry_sum_3 (negb b) b c = c.
+Proof.
+intros b c.
+bbb.
+
+Theorem xxx : ∀ a b c i di n,
+  (∀ dj, dj < di → a .[ S (i + dj)] = negb b .[ S (i + dj)])
+  → n ≤ di
+  → last_carry_loop (trunc_from n a (S i)) (trunc_from n b (S i)) c = c.
+Proof.
+intros a b c i di n Hni Hn.
+revert a b i di Hni Hn.
+induction n; intros; [ reflexivity | simpl ].
+rewrite Hni; auto.
+bbb.
+
 Theorem yyy : ∀ a b i di c n,
   fst_same a b (S i) = Some di
   → last_carry (trunc_from (S (di + S n)) a i)
