@@ -2284,7 +2284,15 @@ Proof.
 intros a b i di c n Hdi.
 unfold last_carry.
 do 2 rewrite removelast_trunc_succ.
+destruct n.
+ rewrite Nat.add_1_r; simpl.
+ apply fst_same_iff in Hdi; simpl in Hdi.
+ destruct Hdi as (Hni, Hdi); rewrite Hdi.
+ unfold carry_sum_3.
+ rewrite andb_diag, absoption_orb.
+ rewrite andb_comm, absoption_orb.
 bbb.
+
 apply fst_same_iff in Hdi.
 destruct Hdi as (Hni, Hdi).
 
