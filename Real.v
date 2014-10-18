@@ -2264,15 +2264,16 @@ intros a i n c.
 induction n; [ simpl; rewrite Nat.add_0_r; reflexivity | assumption ].
 Qed.
 
-(*
-Theorem last_carry_cons_cons : ∀ la lb a₁ a₂ b₁ c,
-  last_carry [a₁; a₂ … la] [b₁ … lb] c =
-  last_carry [a₂ … la] lb (carry_sum_3 a₁ b₁ c).
+Theorem removelast_trunc_succ : ∀ a i n,
+  List.removelast (trunc_from (S n) a i) = trunc_from n a (S i).
 Proof.
-intros la lb a₁ a₂ b₁ c.
-bbb.
- reflexivity. Qed.
-*)
+intros a i n.
+revert i.
+induction n; intros; [ reflexivity | idtac ].
+remember (S n) as sn; simpl; subst sn.
+rewrite IHn; simpl.
+rewrite Nat.add_succ_r; reflexivity.
+Qed.
 
 Theorem yyy : ∀ a b i di c n,
   fst_same a b (S i) = Some di
@@ -2282,9 +2283,13 @@ Theorem yyy : ∀ a b i di c n,
 Proof.
 intros a b i di c n Hdi.
 unfold last_carry.
-Abort. (* à voir...
+apply fst_same_iff in Hdi.
+destruct Hdi as (Hni, Hdi).
+do 2 rewrite removelast_trunc_succ.
 bbb.
 
+intros a b i di c n Hdi.
+unfold last_carry.
 remember (trunc_from (S (di + S n)) a i) as la eqn:Hla .
 remember (trunc_from (S (di + S n)) b i) as lb eqn:Hlb .
 symmetry in Hla, Hlb.
