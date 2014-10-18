@@ -2155,6 +2155,8 @@ Qed.
 Theorem fold_rm_norm_i : ∀ a i, rm_add_i a 0 i = rm_norm_i a i.
 Proof. reflexivity. Qed.
 
+(* associativity; Ambroise Lafont's pen and paper proof *)
+
 Fixpoint trunc n a :=
   match n with
   | 0 => []
@@ -2284,6 +2286,33 @@ induction la as [| a₁]; intros.
    injection Hla; clear Hla; intros Hla Ha.
    rewrite Nat.add_succ_r, trunc_from_succ in Hla.
    discriminate Hla.
+
+   simpl.
+   destruct la as [| a₃].
+    simpl in Hla.
+    injection Hla; clear Hla; intros Hla Ha.
+    rewrite Nat.add_succ_r in Hla; simpl in Hla.
+    injection Hla; clear Hla; intros Hla Ha₂.
+    apply fst_same_iff in Hdi.
+    destruct Hdi as (Hni, Hdi).
+    destruct n.
+     rewrite Nat.add_1_r in Ha.
+     rewrite Nat.add_succ_r in Ha.
+     rewrite Ha.
+     simpl in Hdi.
+     rewrite Ha in Hdi.
+     simpl in Hlb.
+     injection Hlb; clear Hlb; intros Hlb Hb₁.
+     rewrite Nat.add_1_r, Nat.add_succ_r in Hb₁.
+     rewrite <- Hdi in Hb₁; subst b₁.
+     unfold carry_sum_3.
+     rewrite andb_diag, absoption_orb, andb_comm, absoption_orb.
+     reflexivity.
+
+     rewrite Nat.add_succ_r in Hla.
+     discriminate Hla.
+
+    destruct lb as [| b₂].
 bbb.
 *)
 
