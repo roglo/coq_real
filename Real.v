@@ -2396,6 +2396,7 @@ intros H; subst m.
 revert Hm; apply Nat.lt_irrefl.
 Qed.
 
+(*
 Theorem xxx : ∀ n m i,
   i + n < S (S m)
   → 0 < n
@@ -2430,11 +2431,28 @@ destruct n.
     rewrite Nat.add_0_r in Hm; subst m.
     simpl.
 bbb.
+*)
+
+(*
+Theorem xxx : ∀ n m i,
+  0 < n
+  → i + n ≠ m + 2
+  → List.last (trunc_from n (rm_exp_opp (S m)) i) false = false.
+Proof.
+intros n m i c Hn Hm.
+bbb.
+
+List.last (trunc_one (S (di + S n)) i) false
 
 Theorem yyy : ∀ i n c, List.last (trunc_one (S (S n)) i) c = false.
 Proof.
 intros i n c.
 unfold trunc_one.
+rewrite Nat.add_succ_l, Nat.pred_succ.
+rewrite Nat.add_succ_l.
+apply xxx.
+bbb.
+
 do 2 rewrite trunc_from_succ.
 rewrite Nat.add_succ_l, Nat.pred_succ.
 rewrite Nat.add_comm, rm_exp_opp_last.
@@ -2466,6 +2484,7 @@ induction n; intros.
  do 2 rewrite Nat.add_succ_r.
  subst a.
 bbb.
+*)
 
 Theorem zzz : ∀ a b a'' b'' i di m n,
   fst_same a b (S i) = Some di
