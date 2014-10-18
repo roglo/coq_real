@@ -2330,9 +2330,29 @@ induction n; intros; simpl.
  apply IHn; assumption.
 Qed.
 
+(*
+Theorem xxx : ∀ a b i di c n,
+  (∀ dj, dj < di → a.[S i + dj] = negb b.[S i + dj])
+  → a.[S i + di] = b.[S i + di]
+  → last_carry
+     (trunc_from (S (di + S n)) a i)
+     (trunc_from (S (di + S n)) b i) c = a.[S i + di].
+Proof.
+intros a b i di c n Hni Hdi Hdn.
+unfold last_carry.
+destruct n; [ exfalso; revert Hdn; apply Nat.nlt_0_r | idtac ].
+apply Nat.succ_lt_mono in Hdn.
+do 2 rewrite removelast_trunc_succ.
+revert a b i di c Hni Hdi Hdn.
+induction n; intros.
+ exfalso; revert Hdn; apply Nat.nlt_0_r.
+bbb.
+*)
+
 Theorem last_carry_through_relay : ∀ a b i di c n,
   fst_same a b (S i) = Some di
-  → last_carry (trunc_from (S (di + S n)) a i)
+  → last_carry
+      (trunc_from (S (di + S n)) a i)
       (trunc_from (S (di + S n)) b i) c = a .[ S i + di].
 Proof.
 intros a b i di c n Hdi.
@@ -2396,96 +2416,6 @@ intros H; subst m.
 revert Hm; apply Nat.lt_irrefl.
 Qed.
 
-(*
-Theorem xxx : ∀ n m i,
-  i + n < S (S m)
-  → 0 < n
-  → trunc_from n (rm_exp_opp (S m)) i =
-    [false … trunc_from n (rm_exp_opp m) i].
-Proof.
-intros n m i Hm Hn.
-destruct n.
- exfalso; revert Hn; apply Nat.lt_irrefl.
-
- clear Hn.
- rewrite trunc_from_succ.
- f_equal.
-  simpl.
-  remember (i + n) as j eqn:Hj .
-  destruct j; [ reflexivity | idtac ].
-  apply Nat.eqb_neq.
-  intros H; subst j.
-  rewrite Hj in Hm.
-  rewrite Nat.add_succ_r in Hm.
-  revert Hm; apply Nat.lt_irrefl.
-
-  rewrite Nat.add_succ_r in Hm.
-  apply Nat.succ_lt_mono in Hm.
-  rewrite trunc_from_succ.
-  destruct (eq_nat_dec (i + n) m) as [H₁| H₁].
-   rewrite H₁.
-   rewrite rm_exp_opp_last.
-   clear Hm; rename H₁ into Hm.
-   revert m i Hm.
-   induction n; intros.
-    rewrite Nat.add_0_r in Hm; subst m.
-    simpl.
-bbb.
-*)
-
-(*
-Theorem xxx : ∀ n m i,
-  0 < n
-  → i + n ≠ m + 2
-  → List.last (trunc_from n (rm_exp_opp (S m)) i) false = false.
-Proof.
-intros n m i c Hn Hm.
-bbb.
-
-List.last (trunc_one (S (di + S n)) i) false
-
-Theorem yyy : ∀ i n c, List.last (trunc_one (S (S n)) i) c = false.
-Proof.
-intros i n c.
-unfold trunc_one.
-rewrite Nat.add_succ_l, Nat.pred_succ.
-rewrite Nat.add_succ_l.
-apply xxx.
-bbb.
-
-do 2 rewrite trunc_from_succ.
-rewrite Nat.add_succ_l, Nat.pred_succ.
-rewrite Nat.add_comm, rm_exp_opp_last.
-rewrite Nat.add_succ_r.
-rewrite rm_exp_opp_not_last; [ idtac | apply Nat.lt_succ_diag_r ].
-remember [false … trunc_from n (rm_exp_opp (S (i + n))) i] as l.
-simpl; subst l.
-induction n; [ reflexivity | idtac ].
-rewrite trunc_from_succ.
-rewrite Nat.add_succ_r.
-rewrite rm_exp_opp_not_last.
- 2: apply Nat.lt_succ_r, Nat.le_succ_diag_r.
-bbb.
-
-intros i n c.
-unfold trunc_one.
-do 2 rewrite trunc_from_succ.
-rewrite Nat.add_succ_l.
-rewrite Nat.pred_succ.
-remember (rm_exp_opp (S n + i)) as a eqn:Ha .
-revert a i Ha.
-induction n; intros.
- simpl.
- rewrite Nat.add_0_r, Ha; simpl.
- destruct i; [ reflexivity | idtac ].
- apply Nat.eqb_neq, Nat.neq_succ_diag_l.
-
- rewrite Nat.add_succ_l in Ha.
- do 2 rewrite Nat.add_succ_r.
- subst a.
-bbb.
-*)
-
 Theorem zzz : ∀ a b a'' b'' i di m n,
   fst_same a b (S i) = Some di
   → m = di + S (S n)
@@ -2493,6 +2423,25 @@ Theorem zzz : ∀ a b a'' b'' i di m n,
   → b'' = tr_add2 (trunc_from m b i) (trunc_one m i)
   → rm_add_i a b i = List.last (tr_add2 a'' b'') false.
 Proof.
+intros a b a'' b'' i di m n Hdi Hm Ha'' Hb''.
+subst a'' b'' m.
+rewrite last_tr_add.
+ rewrite last_tr_add; [ idtac | apply length_trunc_eq ].
+ rewrite last_tr_add; [ idtac | apply length_trunc_eq ].
+ unfold rm_add_i; rewrite Hdi.
+ rewrite Nat.add_succ_r.
+ do 2 rewrite last_trunc_from.
+ remember (trunc_one (S (di + S n)) i) as x.
+ remember (List.last x false) as x₁.
+ remember (S (di + S n)) as m.
+ subst x.
+ unfold trunc_one at 1.
+ remember (rm_exp_opp (pred (m + i))) as x.
+ rewrite Heqm in Heqx; simpl in Heqx.
+ subst m.
+bbb.
+ rewrite last_carry_through_relay.
+
 intros a b a'' b'' i di m n Hdi Hm Ha'' Hb''.
 subst a'' b'' m.
 rewrite last_tr_add.
