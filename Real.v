@@ -2205,7 +2205,7 @@ Proof. reflexivity. Qed.
 
 Fixpoint last_carry la lb c :=
   match la with
-  | [] => c
+  | [] => false
   | [_] => c
   | [a₁ … la₁] =>
       match lb with
