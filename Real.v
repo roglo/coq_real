@@ -2285,6 +2285,15 @@ rewrite orb_negb_r, andb_true_r.
 reflexivity.
 Qed.
 
+Theorem carry_sum_diag : ∀ b c, carry_sum_3 b b c = b.
+Proof.
+intros b c.
+unfold carry_sum_3.
+rewrite andb_diag, absoption_orb.
+rewrite andb_comm, absoption_orb.
+reflexivity.
+Qed.
+
 Theorem trunc_moving_carry : ∀ a b c i di n,
   (∀ dj, dj < di → a .[ S (i + dj)] = negb b .[ S (i + dj)])
   → n ≤ di
@@ -2300,11 +2309,27 @@ intros dj Hdj.
 apply Hni; assumption.
 Qed.
 
-Theorem yyy : ∀ a b i di c n,
+Theorem trunc_overwrite_carry : ∀ a b c i di n,
+  a .[ S (i + di)] = b .[ S (i + di)]
+  → last_carry_loop (trunc_from (S di + n) a (S i))
+      (trunc_from (S di + n) b (S i)) c =
+    last_carry_loop (trunc_from di a (S i)) (trunc_from di b (S i))
+       b .[ S (i + di)].
+Proof.
+intros a b c i di n Hdi.
+revert a b c i di Hdi.
+induction n; intros; simpl.
+ rewrite Nat.add_0_r, Hdi.
+ rewrite carry_sum_diag; reflexivity.
+
+ rewrite Nat.add_succ_r, <- Nat.add_succ_l.
+ apply IHn; assumption.
+Qed.
+
+Theorem last_carry_through_relay : ∀ a b i di c n,
   fst_same a b (S i) = Some di
   → last_carry (trunc_from (S (di + S n)) a i)
-      (trunc_from (S (di + S n)) b i) c
-    = a .[ S i + di].
+      (trunc_from (S (di + S n)) b i) c = a .[ S i + di].
 Proof.
 intros a b i di c n Hdi.
 unfold last_carry.
@@ -2318,95 +2343,27 @@ induction n; intros.
  rewrite andb_diag, absoption_orb.
  rewrite andb_comm, absoption_orb.
  apply trunc_moving_carry with (di := di); auto.
-bbb.
 
- remember (trunc_from di a (S i)) as la eqn:Hla .
- symmetry in Hla.
- revert a b i di c Hni Hdi Hla.
- induction la as [| a₁]; intros; [ reflexivity | idtac ].
- simpl.
- remember (trunc_from di b (S i)) as lb eqn:Hlb .
- symmetry in Hlb.
- destruct lb as [| b₁].
-  destruct di; [ discriminate Hla | idtac ].
-  discriminate Hlb.
+ rewrite Nat.add_succ_r, <- Nat.add_succ_l.
+ rewrite trunc_overwrite_carry.
+  simpl.
+  apply fst_same_iff in Hdi; simpl in Hdi.
+  destruct Hdi as (Hni, Hdi); rewrite Hdi.
+  apply trunc_moving_carry with (di := di); auto.
 
-  destruct di.
-   discriminate Hla.
+  apply fst_same_iff in Hdi; simpl in Hdi.
+  destruct Hdi as (Hni, Hdi); assumption.
+Qed.
 
-   simpl in Hla, Hlb.
-   injection Hla; clear Hla; intros Hla Ha₁.
-   injection Hlb; clear Hlb; intros Hlb Hb₁.
-   subst lb.
-   rewrite Hni in Ha₁.
-    rewrite <- Ha₁, Hb₁.
-    unfold carry_sum_3.
-    rewrite andb_comm, andb_negb_r; simpl.
-    rewrite andb_comm, <- andb_orb_distrib_r.
-    rewrite orb_negb_r, andb_true_r.
-bbb.
+Theorem length_trunc_eq : ∀ a b n i j,
+  length (trunc_from n a i) = length (trunc_from n b j).
+Proof.
+intros a b n i j.
+induction n; [ reflexivity | simpl ].
+rewrite IHn; reflexivity.
+Qed.
 
-apply fst_same_iff in Hdi.
-destruct Hdi as (Hni, Hdi).
-
-intros a b i di c n Hdi.
-unfold last_carry.
-remember (trunc_from (S (di + S n)) a i) as la eqn:Hla .
-remember (trunc_from (S (di + S n)) b i) as lb eqn:Hlb .
-symmetry in Hla, Hlb.
-revert a b i di c n lb Hdi Hla Hlb.
-induction la as [| a₁]; intros.
- rewrite trunc_from_succ in Hla; discriminate Hla.
-
- destruct lb as [| b₁].
-  rewrite trunc_from_succ in Hlb; discriminate Hlb.
-
-  destruct la as [| a₂].
-   rewrite trunc_from_succ in Hla.
-   injection Hla; clear Hla; intros Hla Ha.
-   rewrite Nat.add_succ_r, trunc_from_succ in Hla.
-   discriminate Hla.
-
-bbb.
-   rewrite last_carry_cons_cons.
-   apply fst_same_iff in Hdi.
-   destruct Hdi as (Hni, Hdi).
-bbb.
-
-   simpl.
-   destruct la as [| a₃].
-    simpl in Hla.
-    injection Hla; clear Hla; intros Hla Ha.
-    rewrite Nat.add_succ_r in Hla; simpl in Hla.
-    injection Hla; clear Hla; intros Hla Ha₂.
-    apply fst_same_iff in Hdi.
-    destruct Hdi as (Hni, Hdi).
-    destruct n.
-     rewrite Nat.add_1_r in Ha.
-     rewrite Nat.add_succ_r in Ha.
-     rewrite Ha.
-     simpl in Hdi.
-     rewrite Ha in Hdi.
-     simpl in Hlb.
-     injection Hlb; clear Hlb; intros Hlb Hb₁.
-     rewrite Nat.add_1_r, Nat.add_succ_r in Hb₁.
-     rewrite <- Hdi in Hb₁; subst b₁.
-     unfold carry_sum_3.
-     rewrite andb_diag, absoption_orb, andb_comm, absoption_orb.
-     reflexivity.
-
-     rewrite Nat.add_succ_r in Hla.
-     discriminate Hla.
-
-    destruct lb as [| b₂].
-     simpl in Hla.
-     injection Hla; clear Hla; intros Hla Ha₁.
-     apply fst_same_iff in Hdi.
-     destruct Hdi as (Hni, Hdi).
-bbb.
-*)
-
-Theorem zzz : ∀ a b a' b' i di n,
+Theorem rm_add_i_trunc_eq : ∀ a b a' b' i di n,
   fst_same a b (S i) = Some di
   → a' = trunc_from (di + S (S n)) a i
   → b' = trunc_from (di + S (S n)) b i
@@ -2414,14 +2371,14 @@ Theorem zzz : ∀ a b a' b' i di n,
 Proof.
 intros a b a' b' i di n Hdi Ha' Hb'.
 subst a' b'.
-rewrite last_tr_add.
- unfold rm_add_i; rewrite Hdi.
- rewrite Nat.add_succ_r.
- do 2 rewrite last_trunc_from.
+rewrite last_tr_add; [ idtac | apply length_trunc_eq ].
+unfold rm_add_i; rewrite Hdi.
+rewrite Nat.add_succ_r.
+do 2 rewrite last_trunc_from.
+rewrite last_carry_through_relay; auto.
+Qed.
+
 bbb.
- apply fst_same_iff in Hdi.
-bbb.
-*)
 
 Theorem tr_add_trunc_comm : ∀ a b n, tr_add n a b = trunc n (a + b).
 Proof.
