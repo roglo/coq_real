@@ -2284,8 +2284,6 @@ Proof.
 intros a b i di c n Hdi.
 unfold last_carry.
 do 2 rewrite removelast_trunc_succ.
-bbb.
-
 destruct n.
  rewrite Nat.add_1_r; simpl.
  apply fst_same_iff in Hdi; simpl in Hdi.
@@ -2293,6 +2291,8 @@ destruct n.
  unfold carry_sum_3.
  rewrite andb_diag, absoption_orb.
  rewrite andb_comm, absoption_orb.
+bbb.
+
  remember (trunc_from di a (S i)) as la eqn:Hla .
  symmetry in Hla.
  revert a b i di c Hni Hdi Hla.
