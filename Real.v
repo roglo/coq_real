@@ -2283,10 +2283,10 @@ Theorem yyy : ∀ a b i di c n,
 Proof.
 intros a b i di c n Hdi.
 unfold last_carry.
-apply fst_same_iff in Hdi.
-destruct Hdi as (Hni, Hdi).
 do 2 rewrite removelast_trunc_succ.
 bbb.
+apply fst_same_iff in Hdi.
+destruct Hdi as (Hni, Hdi).
 
 intros a b i di c n Hdi.
 unfold last_carry.
