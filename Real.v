@@ -2263,6 +2263,11 @@ intros a i n c.
 induction n; [ simpl; rewrite Nat.add_0_r; reflexivity | assumption ].
 Qed.
 
+Theorem last_carry_cons_cons : ∀ la lb a₁ a₂ b₁ c,
+  last_carry [a₁; a₂ … la] [b₁ … lb] c =
+  last_carry [a₂ … la] lb (carry_sum_3 a₁ b₁ c).
+Proof. reflexivity. Qed.
+
 Theorem yyy : ∀ a b i di c n,
   fst_same a b (S i) = Some di
   → last_carry (trunc_from (S (di + S n)) a i)
@@ -2280,12 +2285,16 @@ induction la as [| a₁]; intros.
  destruct lb as [| b₁].
   rewrite trunc_from_succ in Hlb; discriminate Hlb.
 
-  simpl.
   destruct la as [| a₂].
    rewrite trunc_from_succ in Hla.
    injection Hla; clear Hla; intros Hla Ha.
    rewrite Nat.add_succ_r, trunc_from_succ in Hla.
    discriminate Hla.
+
+   rewrite last_carry_cons_cons.
+   apply fst_same_iff in Hdi.
+   destruct Hdi as (Hni, Hdi).
+bbb.
 
    simpl.
    destruct la as [| a₃].
@@ -2313,6 +2322,10 @@ induction la as [| a₁]; intros.
      discriminate Hla.
 
     destruct lb as [| b₂].
+     simpl in Hla.
+     injection Hla; clear Hla; intros Hla Ha₁.
+     apply fst_same_iff in Hdi.
+     destruct Hdi as (Hni, Hdi).
 bbb.
 *)
 
