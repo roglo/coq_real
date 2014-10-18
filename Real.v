@@ -2381,6 +2381,15 @@ do 2 rewrite last_trunc_from.
 rewrite last_carry_through_relay; auto.
 Qed.
 
+Theorem last_trunc_one : ∀ n c, List.last (trunc_one n) c = true.
+Proof.
+intros n c.
+destruct n; [ reflexivity | idtac ].
+unfold trunc_one; simpl.
+destruct n; [ reflexivity | simpl ].
+induction n; [ reflexivity | assumption ].
+Qed.
+
 Theorem zzz : ∀ a b a'' b'' i di m n,
   fst_same a b (S i) = Some di
   → m = di + S (S n)
@@ -2389,6 +2398,14 @@ Theorem zzz : ∀ a b a'' b'' i di m n,
   → rm_add_i a b i = List.last (tr_add2 a'' b'') false.
 Proof.
 intros a b a'' b'' i di m n Hdi Hm Ha'' Hb''.
+subst a'' b'' m.
+rewrite last_tr_add.
+ rewrite last_tr_add.
+  rewrite last_tr_add.
+   unfold rm_add_i; rewrite Hdi.
+   rewrite Nat.add_succ_r.
+   do 2 rewrite last_trunc_from.
+   rewrite last_trunc_one.
 bbb.
 
 bbb.
