@@ -2284,6 +2284,8 @@ Proof.
 intros a b i di c n Hdi.
 unfold last_carry.
 do 2 rewrite removelast_trunc_succ.
+bbb.
+
 destruct n.
  rewrite Nat.add_1_r; simpl.
  apply fst_same_iff in Hdi; simpl in Hdi.
@@ -2291,6 +2293,30 @@ destruct n.
  unfold carry_sum_3.
  rewrite andb_diag, absoption_orb.
  rewrite andb_comm, absoption_orb.
+ remember (trunc_from di a (S i)) as la eqn:Hla .
+ symmetry in Hla.
+ revert a b i di c Hni Hdi Hla.
+ induction la as [| a₁]; intros; [ reflexivity | idtac ].
+ simpl.
+ remember (trunc_from di b (S i)) as lb eqn:Hlb .
+ symmetry in Hlb.
+ destruct lb as [| b₁].
+  destruct di; [ discriminate Hla | idtac ].
+  discriminate Hlb.
+
+  destruct di.
+   discriminate Hla.
+
+   simpl in Hla, Hlb.
+   injection Hla; clear Hla; intros Hla Ha₁.
+   injection Hlb; clear Hlb; intros Hlb Hb₁.
+   subst lb.
+   rewrite Hni in Ha₁.
+    rewrite <- Ha₁, Hb₁.
+    unfold carry_sum_3.
+    rewrite andb_comm, andb_negb_r; simpl.
+    rewrite andb_comm, <- andb_orb_distrib_r.
+    rewrite orb_negb_r, andb_true_r.
 bbb.
 
 apply fst_same_iff in Hdi.
