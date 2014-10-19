@@ -2350,6 +2350,42 @@ intros a b a' b' i di n Hdi Ha' Hb'.
 eapply rm_add_i_eq_trunc_add; eassumption.
 Qed.
 
+Theorem last_carry_no_relay : ∀ a b i c n,
+  fst_same a b (S i) = None
+  → last_carry (trunc_from (S n) a i) (trunc_from (S n) b i) c = c.
+Proof.
+intros a b i c n Hdi.
+unfold last_carry.
+do 2 rewrite removelast_trunc_succ.
+revert a b i c Hdi.
+induction n; intros; [ reflexivity | simpl ].
+rewrite IHn; auto.
+apply fst_same_iff in Hdi.
+simpl in Hdi; rewrite Hdi.
+apply carry_sum_negb_l.
+Qed.
+
+Theorem rm_add_i_vs_trunc_add_when_no_relay : ∀ a b a' b' i n c,
+  fst_same a b (S i) = None
+  → a' = trunc_from (S n) a i
+  → b' = trunc_from (S n) b i
+  → rm_add_i a b i = List.last (trunc_add_with_carry c a' b') false ⊕ negb c.
+Proof.
+intros a b a' b' i n c Hdi Ha' Hb'.
+subst a' b'.
+rewrite last_tr_add_with_carry.
+ unfold rm_add_i; rewrite Hdi.
+ do 2 rewrite last_trunc_from.
+ rewrite last_carry_no_relay; auto.
+ do 3 rewrite xorb_assoc; f_equal; f_equal.
+ symmetry; rewrite xorb_comm.
+ apply negb_xorb_diag.
+
+ intros H; discriminate H.
+
+ apply length_trunc_eq.
+Qed.
+
 bbb.
 
 (*
