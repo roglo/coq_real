@@ -3141,4 +3141,12 @@ bbb.
 bbb.
 *)
 
+Theorem neq_xorb : ∀ b b', b ≠ b' → b ⊕ b' = true.
+Proof.
+intros b b' H.
+apply not_false_iff_true.
+intros H₁; apply H.
+apply xorb_eq; assumption.
+Qed.
+
 Close Scope nat_scope.
