@@ -93,14 +93,6 @@ Proof. intros; split; intros a; apply H. Qed.
 Theorem negb_xorb_diag : ∀ a, negb a ⊕ a = true.
 Proof. intros a; destruct a; reflexivity. Qed.
 
-Theorem neq_xorb : ∀ b b', b ≠ b' → b ⊕ b' = true.
-Proof.
-intros b b' H.
-apply not_false_iff_true.
-intros H₁; apply H.
-apply xorb_eq; assumption.
-Qed.
-
 Theorem neq_negb : ∀ b b', b ≠ b' → b = negb b'.
 Proof.
 intros b b' H.
@@ -2056,6 +2048,9 @@ destruct (bool_dec ((a + 0)%rm) .[ si] b .[ si]) as [H₁| H₁].
  eapply not_rm_add_0_inf_1_succ; eauto .
 Qed.
 
+(* perhaps could be proved if associativity proved before;
+   in that case, that would be very simple instead of these
+   big lemmas before *)
 Theorem rm_add_add_0_r : ∀ a b, (a + 0 + b = a + b)%rm.
 Proof.
 intros a b.
@@ -2140,29 +2135,7 @@ destruct s₁ as [di₁| ].
   rewrite Ha in Hb; discriminate Hb.
 Qed.
 
-Definition rm_norm_i a i := rm_add_i a 0 i.
-
-Add Parametric Morphism : rm_norm_i
-  with signature rm_eq ==> eq ==> eq
-  as rm_norm_i_morph.
-Proof.
-intros a b Hab n.
-unfold rm_norm_i.
-unfold rm_eq in Hab; simpl in Hab.
-rewrite Hab; reflexivity.
-Qed.
-
-Theorem fold_rm_norm_i : ∀ a i, rm_add_i a 0 i = rm_norm_i a i.
-Proof. reflexivity. Qed.
-
 (* associativity; Ambroise Lafont's pen and paper proof *)
-
-Fixpoint trunc n a :=
-  match n with
-  | 0 => []
-  | S n₁ => [a.[n₁] … trunc n₁ a]
-  end.
-Arguments trunc n%nat a%rm.
 
 Fixpoint trunc_from n a i :=
   match n with
@@ -2170,12 +2143,6 @@ Fixpoint trunc_from n a i :=
   | S n₁ => [a.[i+n₁] … trunc_from n₁ a i]
   end.
 Arguments trunc_from n%nat a%rm i%nat.
-
-(*
-Definition rm_exp_opp n := {| rm := beq_nat n |}.
-Definition trunc_one n i := trunc_from n (rm_exp_opp (pred (n + i))) i.
-Arguments trunc_one n%nat i%nat.
-*)
 
 Definition carry_sum_3 a b c := a && b || b && c || c && a.
 
@@ -2192,22 +2159,7 @@ Fixpoint trunc_add_with_carry c la lb :=
   | [] => []
   end.
 
-Definition trunc_add := trunc_add_with_carry false.
-
-Definition tr_add n a b :=
-  let c :=
-    match fst_same a b n with
-    | Some dn => a.[n + dn]
-    | None => true
-    end
-  in
-  trunc_add_with_carry c (trunc n a) (trunc n b).
-
 Definition tr_add2 := trunc_add_with_carry false.
-
-Theorem trunc_from_succ : ∀ a n i,
-  trunc_from (S n) a i = [a.[i+n] … trunc_from n a i].
-Proof. reflexivity. Qed.
 
 Fixpoint last_carry_loop la lb c :=
   match la with
@@ -2247,6 +2199,18 @@ induction la as [| a₂]; intros.
  destruct t as [| t tl]; [ discriminate Heqt | idtac ].
  rewrite <- Heqt, IHla; auto.
  subst d; reflexivity.
+Qed.
+
+Theorem last_tr_add_with_carry : ∀ la lb c,
+  la ≠ []
+  → List.length la = List.length lb
+  → List.last (trunc_add_with_carry c la lb) false =
+    List.last la false ⊕ List.last lb false ⊕ last_carry la lb c.
+Proof.
+intros la lb c Hla Hlen.
+destruct la as [| a]; [ exfalso; apply Hla; reflexivity | idtac ].
+destruct lb as [| b]; [ discriminate Hlen | idtac ].
+rewrite last_trunc_add; auto.
 Qed.
 
 Theorem last_tr_add : ∀ la lb,
@@ -2370,7 +2334,27 @@ induction n; [ reflexivity | simpl ].
 rewrite IHn; reflexivity.
 Qed.
 
-Theorem rm_add_i_trunc_eq : ∀ a b a' b' i di n,
+Theorem rm_add_i_eq_trunc_add : ∀ a b a' b' i di n c,
+  fst_same a b (S i) = Some di
+  → a' = trunc_from (di + S (S n)) a i
+  → b' = trunc_from (di + S (S n)) b i
+  → rm_add_i a b i = List.last (trunc_add_with_carry c a' b') false.
+Proof.
+intros a b a' b' i di n c Hdi Ha' Hb'.
+subst a' b'.
+rewrite last_tr_add_with_carry.
+ unfold rm_add_i; rewrite Hdi.
+ rewrite Nat.add_succ_r.
+ do 2 rewrite last_trunc_from.
+ rewrite last_carry_through_relay; auto.
+
+ rewrite Nat.add_succ_r.
+ intros H; discriminate H.
+
+ apply length_trunc_eq.
+Qed.
+
+Theorem rm_add_i_eq_tr_add2 : ∀ a b a' b' i di n,
   fst_same a b (S i) = Some di
   → a' = trunc_from (di + S (S n)) a i
   → b' = trunc_from (di + S (S n)) b i
@@ -2388,19 +2372,46 @@ Qed.
 bbb.
 
 (*
-Theorem rm_exp_opp_last : ∀ n, (rm_exp_opp n) .[ n] = true.
+Definition trunc_add := trunc_add_with_carry false.
+
+Definition tr_add n a b :=
+  let c :=
+    match fst_same a b n with
+    | Some dn => a.[n + dn]
+    | None => true
+    end
+  in
+  trunc_add_with_carry c (trunc n a) (trunc n b).
+*)
+
+(*
+Theorem trunc_from_succ : ∀ a n i,
+  trunc_from (S n) a i = [a.[i+n] … trunc_from n a i].
+Proof. reflexivity. Qed.
+*)
+
+(*
+Definition rm_norm_i a i := rm_add_i a 0 i.
+
+Add Parametric Morphism : rm_norm_i
+  with signature rm_eq ==> eq ==> eq
+  as rm_norm_i_morph.
 Proof.
-intros n; simpl.
-apply Nat.eqb_refl.
+intros a b Hab n.
+unfold rm_norm_i.
+unfold rm_eq in Hab; simpl in Hab.
+rewrite Hab; reflexivity.
 Qed.
 
-Theorem rm_exp_opp_not_last : ∀ m n, m < n → (rm_exp_opp n) .[ m] = false.
-Proof.
-intros m n Hm; simpl.
-apply Nat.eqb_neq.
-intros H; subst m.
-revert Hm; apply Nat.lt_irrefl.
-Qed.
+Theorem fold_rm_norm_i : ∀ a i, rm_add_i a 0 i = rm_norm_i a i.
+Proof. reflexivity. Qed.
+
+Fixpoint trunc n a :=
+  match n with
+  | 0 => []
+  | S n₁ => [a.[n₁] … trunc n₁ a]
+  end.
+Arguments trunc n%nat a%rm.
 *)
 
 (*
