@@ -2362,18 +2362,6 @@ rewrite last_tr_add_with_carry.
  apply length_trunc_eq.
 Qed.
 
-(*
-Theorem rm_add_i_eq_tr_add : ∀ a b a' b' i di n,
-  fst_same a b (S i) = Some di
-  → a' = trunc_from (di + S (S n)) a i
-  → b' = trunc_from (di + S (S n)) b i
-  → rm_add_i a b i = List.last (tr_add a' b') false.
-Proof.
-intros a b a' b' i di n Hdi Ha' Hb'.
-eapply rm_add_i_eq_trunc_add; eassumption.
-Qed.
-*)
-
 Theorem rm_add_i_vs_trunc_add_when_no_relay : ∀ a b a' b' i n c,
   fst_same a b (S i) = None
   → a' = trunc_from (S n) a i
@@ -2533,6 +2521,23 @@ induction la as [| a]; intros.
   apply IHla.
   simpl in Hlen; simpl.
   apply eq_add_S; assumption.
+Qed.
+
+Theorem not_norm_sum : ∀ a b i,
+  (∀ di, rm_add_i a b (i + di) = true)
+  → ∃ j,
+    (∀ di, a.[j + S di] = true) ∧
+    (∀ di, b.[j + S di] = true).
+Proof.
+intros a b i H.
+destruct (bool_dec a .[ i] b .[ i]) as [H₁| H₁].
+ apply rm_add_inf_true_eq_if in H₁; [ idtac | assumption ].
+ exists i; assumption.
+
+ apply neq_negb in H₁.
+ apply rm_add_inf_true_neq_if in H₁; [ idtac | assumption ].
+ destruct H₁ as (j, (Hij, (Hni, (Ha, (Hb, (Hat, Hbt)))))).
+ exists j; split; assumption.
 Qed.
 
 (* actually false because we should add 0 to both sides but just to see *)
