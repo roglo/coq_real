@@ -2502,6 +2502,59 @@ destruct s as [di₁| ].
  rewrite orb_true_r; eassumption.
 Qed.
 
+(* actually false because we should add 0 to both sides but just to see *)
+Theorem zzz : ∀ a b c i, rm_add_i a (b + c) i = rm_add_i (a + b) c i.
+Proof.
+intros a b c i.
+remember (opt2nat (fst_same a (b + c) (S i))) as d₂ eqn:Hd₂ .
+remember (opt2nat (fst_same b c (S i))) as d₃ eqn:Hd₃ .
+remember (opt2nat (fst_same (a + b) c (S i))) as d₅ eqn:Hd₅ .
+remember (opt2nat (fst_same a b (S i))) as d₆ eqn:Hd₆ .
+remember [d₂; d₃; d₅; d₆ … []] as dl eqn:Hdl .
+remember (S (List.fold_right max 0 dl)) as di eqn:Hdi .
+assert (List.In d₂ dl) as Hi₂ by (subst dl; left; reflexivity).
+assert (List.In d₃ dl) as Hi₃ by (subst dl; right; left; reflexivity).
+assert (List.In d₅ dl) as Hi₅ by (subst dl; do 2 right; left; reflexivity).
+assert (List.In d₆ dl) as Hi₆ by (subst dl; do 3 right; left; reflexivity).
+erewrite rm_add_i_eq_tr_add with (n := di - d₂); try reflexivity.
+rewrite <- Hd₂.
+erewrite add_succ_sub_max; [ idtac | eauto  | auto ].
+erewrite rm_add_i_eq_tr_add with (n := di - d₅); try reflexivity.
+rewrite <- Hd₅.
+erewrite add_succ_sub_max; [ idtac | eauto  | auto ].
+unfold tr_add_i.
+rewrite last_tr_add_with_carry.
+ erewrite last_carry_on_max; try eassumption.
+ rewrite last_tr_add_with_carry.
+  erewrite last_carry_on_max; try eassumption.
+  do 4 rewrite last_trunc_from; simpl.
+  remember (a .[ i + d₂] || Nat.eqb d₂ 0) as c₃.
+  remember (rm_add_i a b (i + d₅) || Nat.eqb d₅ 0) as c₄.
+  erewrite rm_add_i_eq_tr_add with (n := di - d₃); try reflexivity.
+  rewrite <- Hd₃.
+  erewrite add_succ_sub_max; [ idtac | eauto  | auto ].
+  erewrite rm_add_i_eq_tr_add with (n := di - d₆); try reflexivity.
+  rewrite <- Hd₆.
+  erewrite add_succ_sub_max; [ idtac | eauto  | auto ].
+  unfold tr_add_i.
+  rewrite last_tr_add_with_carry.
+   erewrite last_carry_on_max; try eassumption.
+   rewrite last_tr_add_with_carry.
+    erewrite last_carry_on_max; try eassumption.
+    do 3 rewrite last_trunc_from; simpl.
+    remember (b .[ i + d₃] || Nat.eqb d₃ 0) as c₅.
+    remember (a .[ i + d₆] || Nat.eqb d₆ 0) as c₆.
+    do 6 rewrite xorb_assoc; f_equal; f_equal.
+    symmetry.
+    rewrite xorb_comm, xorb_assoc; f_equal.
+bbb.
+  Heqc₃ : c₃ = a .[ i + d₂] || Nat.eqb d₂ 0
+  Heqc₄ : c₄ = rm_add_i a b (i + d₅) || Nat.eqb d₅ 0
+  Heqc₅ : c₅ = b .[ i + d₃] || Nat.eqb d₃ 0
+  Heqc₆ : c₆ = a .[ i + d₆] || Nat.eqb d₆ 0
+  ============================
+   c₄ ⊕ c₆ = c₅ ⊕ c₃
+
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
 intros a b c.
