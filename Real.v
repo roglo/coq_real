@@ -2502,17 +2502,38 @@ destruct s as [di₁| ].
  rewrite orb_true_r; eassumption.
 Qed.
 
-Theorem last_carry_comm : ∀ la lb c, last_carry la lb c = last_carry lb la c.
+Theorem carry_sum_comm_l : ∀ a b c, carry_sum_3 a b c = carry_sum_3 b a c.
 Proof.
-intros la lb c.
+intros a b c.
+unfold carry_sum_3.
+rewrite andb_comm.
+do 2 rewrite <- orb_assoc; f_equal.
+rewrite orb_comm; f_equal; apply andb_comm.
+Qed.
+
+Theorem last_carry_comm : ∀ la lb c,
+  length la = length lb
+  → last_carry la lb c = last_carry lb la c.
+Proof.
+intros la lb c Hlen.
 unfold last_carry.
-revert lb c.
+revert lb c Hlen.
 induction la as [| a]; intros.
- simpl.
- induction lb as [| b]; [ reflexivity | idtac ].
- simpl.
- destruct lb as [| b₂]; [ reflexivity | idtac ].
-bbb.
+ destruct lb; [ reflexivity | discriminate Hlen ].
+
+ destruct lb as [| b]; [ discriminate Hlen | simpl ].
+ destruct la as [| a₁].
+  destruct lb as [| b₁]; [ reflexivity | discriminate Hlen ].
+
+  destruct lb as [| b₁]; [ discriminate Hlen | idtac ].
+  remember (List.removelast [a₁ … la]) as la₁.
+  remember (List.removelast [b₁ … lb]) as lb₁; simpl.
+  rewrite Heqlb₁.
+  rewrite carry_sum_comm_l.
+  apply IHla.
+  simpl in Hlen; simpl.
+  apply eq_add_S; assumption.
+Qed.
 
 (* actually false because we should add 0 to both sides but just to see *)
 Theorem zzz : ∀ a b c i, rm_add_i a (b + c) i = rm_add_i (a + b) c i.
@@ -2538,31 +2559,31 @@ unfold tr_add_i.
 rewrite last_tr_add_with_carry.
  erewrite last_carry_on_max; try eassumption.
  rewrite last_tr_add_with_carry.
-bbb.
-  erewrite last_carry_on_max; try eassumption.
-  do 4 rewrite last_trunc_from; simpl.
-  remember (a .[ i + d₂] || Nat.eqb d₂ 0) as c₃.
-  remember (rm_add_i a b (i + d₅) || Nat.eqb d₅ 0) as c₄.
-  erewrite rm_add_i_eq_tr_add with (n := di - d₃); try reflexivity.
-  rewrite <- Hd₃.
-  erewrite add_succ_sub_max; [ idtac | eauto  | auto ].
-  erewrite rm_add_i_eq_tr_add with (n := di - d₆); try reflexivity.
-  rewrite <- Hd₆.
-  erewrite add_succ_sub_max; [ idtac | eauto  | auto ].
-  unfold tr_add_i.
-  rewrite last_tr_add_with_carry.
+  symmetry; rewrite last_carry_comm; symmetry.
+   rewrite fst_same_comm in Hd₅.
    erewrite last_carry_on_max; try eassumption.
+   do 4 rewrite last_trunc_from; simpl.
+   remember (a .[ i + d₂] || Nat.eqb d₂ 0) as c₃.
+   remember (c .[ i + d₅] || Nat.eqb d₅ 0) as c₄.
+   erewrite rm_add_i_eq_tr_add with (n := di - d₃); try reflexivity.
+   rewrite <- Hd₃.
+   erewrite add_succ_sub_max; [ idtac | eauto  | auto ].
+   erewrite rm_add_i_eq_tr_add with (n := di - d₆); try reflexivity.
+   rewrite <- Hd₆.
+   erewrite add_succ_sub_max; [ idtac | eauto  | auto ].
+   unfold tr_add_i.
    rewrite last_tr_add_with_carry.
     erewrite last_carry_on_max; try eassumption.
-    do 3 rewrite last_trunc_from; simpl.
-    remember (b .[ i + d₃] || Nat.eqb d₃ 0) as c₅.
-    remember (a .[ i + d₆] || Nat.eqb d₆ 0) as c₆.
-    do 6 rewrite xorb_assoc; f_equal; f_equal.
-    symmetry.
-    rewrite xorb_comm, xorb_assoc; f_equal.
+    rewrite last_tr_add_with_carry.
+     erewrite last_carry_on_max; try eassumption.
+     do 3 rewrite last_trunc_from; simpl.
+     remember (b .[ i + d₃] || Nat.eqb d₃ 0) as c₅.
+     remember (a .[ i + d₆] || Nat.eqb d₆ 0) as c₆.
+     do 6 rewrite xorb_assoc; f_equal; f_equal; symmetry.
+     rewrite xorb_comm, xorb_assoc; f_equal.
 bbb.
   Heqc₃ : c₃ = a .[ i + d₂] || Nat.eqb d₂ 0
-  Heqc₄ : c₄ = rm_add_i a b (i + d₅) || Nat.eqb d₅ 0
+  Heqc₄ : c₄ = c .[ i + d₅] || Nat.eqb d₅ 0
   Heqc₅ : c₅ = b .[ i + d₃] || Nat.eqb d₃ 0
   Heqc₆ : c₆ = a .[ i + d₆] || Nat.eqb d₆ 0
   ============================
