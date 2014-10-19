@@ -2159,7 +2159,7 @@ Fixpoint trunc_add_with_carry c la lb :=
   | [] => []
   end.
 
-Definition tr_add2 := trunc_add_with_carry false.
+Definition tr_add := trunc_add_with_carry false.
 
 Fixpoint last_carry_loop la lb c :=
   match la with
@@ -2211,20 +2211,6 @@ intros la lb c Hla Hlen.
 destruct la as [| a]; [ exfalso; apply Hla; reflexivity | idtac ].
 destruct lb as [| b]; [ discriminate Hlen | idtac ].
 rewrite last_trunc_add; auto.
-Qed.
-
-Theorem last_tr_add : ∀ la lb,
-  List.length la = List.length lb
-  → List.last (tr_add2 la lb) false =
-    List.last la false ⊕ List.last lb false ⊕ last_carry la lb false.
-Proof.
-intros la lb Hlen.
-destruct la as [| a].
- destruct lb as [| b]; simpl; [ reflexivity | discriminate Hlen ].
-
- unfold tr_add2.
- rewrite last_trunc_add; auto.
- intros H; discriminate H.
 Qed.
 
 Theorem last_trunc_from : ∀ a i n c,
@@ -2354,19 +2340,14 @@ rewrite last_tr_add_with_carry.
  apply length_trunc_eq.
 Qed.
 
-Theorem rm_add_i_eq_tr_add2 : ∀ a b a' b' i di n,
+Theorem rm_add_i_eq_tr_add : ∀ a b a' b' i di n,
   fst_same a b (S i) = Some di
   → a' = trunc_from (di + S (S n)) a i
   → b' = trunc_from (di + S (S n)) b i
-  → rm_add_i a b i = List.last (tr_add2 a' b') false.
+  → rm_add_i a b i = List.last (tr_add a' b') false.
 Proof.
 intros a b a' b' i di n Hdi Ha' Hb'.
-subst a' b'.
-rewrite last_tr_add; [ idtac | apply length_trunc_eq ].
-unfold rm_add_i; rewrite Hdi.
-rewrite Nat.add_succ_r.
-do 2 rewrite last_trunc_from.
-rewrite last_carry_through_relay; auto.
+eapply rm_add_i_eq_trunc_add; eassumption.
 Qed.
 
 bbb.
