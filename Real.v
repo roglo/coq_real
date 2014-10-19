@@ -93,6 +93,13 @@ Proof. intros; split; intros a; apply H. Qed.
 Theorem negb_xorb_diag : ∀ a, negb a ⊕ a = true.
 Proof. intros a; destruct a; reflexivity. Qed.
 
+Theorem xorb_shuffle0 : ∀ a b c, a ⊕ b ⊕ c = a ⊕ c ⊕ b.
+Proof.
+intros a b c.
+do 2 rewrite xorb_assoc; f_equal.
+apply xorb_comm.
+Qed.
+
 Theorem neq_negb : ∀ b b', b ≠ b' → b = negb b'.
 Proof.
 intros b b' H.
@@ -2429,6 +2436,69 @@ destruct s; subst di.
 
  eapply rm_add_i_vs_tr_add_carry_no_relay; eauto .
 Qed.
+
+Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
+Proof.
+intros a b c.
+unfold rm_eq; intros i; simpl.
+unfold rm_add_i.
+remember (S i) as si; simpl.
+do 2 rewrite xorb_false_r.
+unfold rm_add_i at 1; simpl.
+unfold rm_add_i at 1; simpl.
+unfold rm_add_i at 2; simpl.
+unfold rm_add_i at 2; simpl.
+do 8 rewrite xorb_assoc; f_equal; f_equal.
+symmetry; rewrite xorb_comm.
+do 2 rewrite xorb_assoc; f_equal.
+rewrite xorb_comm, xorb_shuffle0; symmetry.
+rewrite <- xorb_assoc, xorb_comm, <- xorb_assoc.
+rewrite xorb_shuffle0.
+bbb.
+
+assert (∀ x, (x = x + 0)%rm) as Hx by (symmetry; apply rm_add_0_r).
+setoid_replace (b + c)%rm with (b + c + 0)%rm by apply Hx.
+setoid_replace (a + b)%rm with (a + b + 0)%rm by apply Hx.
+setoid_replace a with (a + 0)%rm by apply Hx.
+setoid_replace b with (b + 0)%rm by apply Hx.
+setoid_replace c with (c + 0)%rm by apply Hx.
+set (a₁ := (a + 0)%rm).
+set (b₁ := (b + 0)%rm).
+set (c₁ := (c + 0)%rm).
+rename a into a₀; rename b into b₀; rename c into c₀.
+rename a₁ into a; rename b₁ into b; rename c₁ into c.
+unfold rm_eq; intros i; simpl.
+unfold rm_add_i.
+remember (S i) as si; simpl.
+do 2 rewrite xorb_false_r.
+remember (fst_same (a + (b + c + 0)%rm) 0 si) as s₁ eqn:Hs₁ .
+apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
+destruct s₁ as [di₁| ].
+ remember (fst_same ((a + b + 0)%rm + c) 0 si) as s₂ eqn:Hs₂ .
+ apply fst_same_sym_iff in Hs₂; simpl in Hs₂.
+ destruct s₂ as [di₂| ].
+  Focus 2.
+  destruct (bool_dec ((a + b + 0)%rm) .[ si] c .[ si]) as [H₁| H₁].
+   apply rm_add_inf_true_eq_if in Hs₂; auto; simpl in Hs₂.
+   destruct Hs₂ as (Hab, Hc).
+   exfalso; eapply not_rm_add_0_inf_1_succ; eauto .
+
+   apply neq_negb in H₁.
+   apply rm_add_inf_true_neq_if in Hs₂; auto; simpl in Hs₂.
+   destruct Hs₂ as (j, (Hij, (Hni, (Ha, (Hb, (Hat, Hbt)))))).
+   exfalso; eapply not_rm_add_0_inf_1_succ; eauto .
+
+  Focus 2.
+  destruct (bool_dec a .[ si] ((b + c + 0)%rm) .[ si]) as [H₁| H₁].
+   apply rm_add_inf_true_eq_if in Hs₁; auto; simpl in Hs₁.
+   destruct Hs₁ as (Ha, Hbc).
+   exfalso; eapply not_rm_add_0_inf_1_succ; eauto .
+
+   apply neq_negb in H₁.
+   apply rm_add_inf_true_neq_if in Hs₁; auto; simpl in Hs₁.
+   destruct Hs₁ as (j, (Hij, (Hni, (Ha, (Hb, (Hat, Hbt)))))).
+   exfalso; eapply not_rm_add_0_inf_1_succ; eauto .
+bbb.
 
 bbb.
 
