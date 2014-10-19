@@ -2444,6 +2444,25 @@ destruct s; subst di.
  eapply rm_add_i_vs_tr_add_carry_no_relay; eauto .
 Qed.
 
+Theorem add_succ_sub_max : ∀ la a b,
+  b = List.fold_right max 0 la
+  → List.In a la
+  → (a + S (b - a)) = S b.
+Proof.
+intros la a b Hb Ha.
+assert (a ≤ b) as H.
+ apply List.in_split in Ha.
+ destruct Ha as (lb, (lc, Ha)); subst la.
+ rewrite List.fold_right_app in Hb.
+ subst b; simpl.
+ induction lb as [| b]; intros; [ apply Nat.le_max_l | simpl ].
+ eapply le_trans; [ apply IHlb | apply Nat.le_max_r ].
+
+ rewrite <- Nat.sub_succ_l; [ idtac | assumption ].
+ rewrite Nat.add_sub_assoc; [ idtac | apply Nat.le_le_succ_r; assumption ].
+ rewrite Nat.add_comm, Nat.add_sub; reflexivity.
+Qed.
+
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
 intros a b c.
@@ -2455,19 +2474,44 @@ remember (opt2nat (fst_same ((a + b)%rm + c) 0 (S i))) as d₄ eqn:Hd₄ .
 remember (opt2nat (fst_same (a + b) c (S i))) as d₅ eqn:Hd₅ .
 remember (opt2nat (fst_same a b (S i))) as d₆ eqn:Hd₆ .
 remember (List.fold_right max 0 [d₁; d₂; d₃; d₄; d₅; d₆ … []]) as di eqn:Hdi .
-simpl in Hdi.
-erewrite rm_add_i_eq_tr_add_carry with (n := di); try eassumption.
- 2: reflexivity.
+erewrite rm_add_i_eq_tr_add_carry with (n := di - d₁); try reflexivity.
+rewrite <- Hd₁.
+erewrite add_succ_sub_max; [ idtac | eassumption | left; reflexivity ].
+bbb.
 
- 2: reflexivity.
-
- erewrite rm_add_i_eq_tr_add_carry with (n := di); try eassumption.
-  2: reflexivity.
-
-  2: reflexivity.
+remember trunc_add_with_carry as f.
+erewrite rm_add_i_eq_tr_add_carry with (n := di); try reflexivity; subst f.
+rewrite <- Hd₄.
+bbb.
 
   rewrite last_trunc_add.
    rewrite last_trunc_add.
+    rewrite Nat.add_succ_r.
+    rewrite Nat.add_succ_r.
+    rewrite last_trunc_from.
+    rewrite last_trunc_from.
+    rewrite last_trunc_from.
+    rewrite last_trunc_from.
+    simpl.
+    do 2 rewrite xorb_false_r.
+    erewrite rm_add_i_eq_tr_add_carry with (n := di); try eassumption.
+     2: reflexivity.
+
+     2: reflexivity.
+
+     rewrite last_trunc_add.
+      erewrite rm_add_i_eq_tr_add_carry with (n := di); try eassumption.
+       2: reflexivity.
+
+       2: reflexivity.
+
+       2: reflexivity.
+
+       rewrite Nat.add_succ_r.
+       rewrite Nat.add_succ_r.
+       rewrite last_trunc_from.
+       rewrite last_trunc_from.
+       simpl.
 bbb.
 
 intros a b c.
