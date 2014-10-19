@@ -2463,8 +2463,58 @@ assert (a ≤ b) as H.
  rewrite Nat.add_comm, Nat.add_sub; reflexivity.
 Qed.
 
+Lemma zzz : ∀ a b i d di dl,
+  d = opt2nat (fst_same a b (S i))
+  → di = List.fold_right max 0 dl
+  → List.In d dl
+  → last_carry (trunc_from (S di) a i) (trunc_from (S di) b i) true
+    = a.[ S i + di].
+Proof.
+intros a b i d di dl Hd Hdi Hdl.
+remember (fst_same a b (S i)) as s eqn:Hs .
+symmetry in Hs.
+destruct s as [di₁| ].
+ simpl in Hd.
+ remember Hs as H; clear HeqH.
+ eapply last_carry_through_relay with (c := true) in H.
+Abort. (* à voir...
+bbb.
+*)
+
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
+intros a b c.
+unfold rm_eq; intros i; simpl.
+remember (opt2nat (fst_same (a + (b + c)%rm) 0 (S i))) as d₁ eqn:Hd₁ .
+remember (opt2nat (fst_same a (b + c) (S i))) as d₂ eqn:Hd₂ .
+remember (opt2nat (fst_same b c (S i))) as d₃ eqn:Hd₃ .
+remember (opt2nat (fst_same ((a + b)%rm + c) 0 (S i))) as d₄ eqn:Hd₄ .
+remember (opt2nat (fst_same (a + b) c (S i))) as d₅ eqn:Hd₅ .
+remember (opt2nat (fst_same a b (S i))) as d₆ eqn:Hd₆ .
+remember [d₁; d₂; d₃; d₄; d₅; d₆ … []] as dl eqn:Hdl .
+remember (List.fold_right max 0 dl) as di eqn:Hdi .
+assert (List.In d₁ dl) as Hi₁ by (subst dl; left; reflexivity).
+assert (List.In d₂ dl) as Hi₂ by (subst dl; right; left; reflexivity).
+assert (List.In d₃ dl) as Hi₃ by (subst dl; do 2 right; left; reflexivity).
+assert (List.In d₄ dl) as Hi₄ by (subst dl; do 3 right; left; reflexivity).
+assert (List.In d₅ dl) as Hi₅ by (subst dl; do 4 right; left; reflexivity).
+assert (List.In d₆ dl) as Hi₆ by (subst dl; do 5 right; left; reflexivity).
+erewrite rm_add_i_eq_tr_add_carry with (n := di - d₁); try reflexivity.
+rewrite <- Hd₁.
+erewrite add_succ_sub_max; [ idtac | eauto  | auto ].
+remember trunc_add_with_carry as f.
+erewrite rm_add_i_eq_tr_add_carry with (n := di - d₄); try reflexivity.
+subst f; rewrite <- Hd₄.
+erewrite add_succ_sub_max; [ idtac | eauto  | auto ].
+rewrite last_tr_add_with_carry.
+ rewrite last_tr_add_with_carry.
+  do 3 rewrite last_trunc_from.
+  remember trunc_from as f; simpl; subst f.
+  erewrite zzz; try eassumption.
+  erewrite zzz; try eassumption.
+  do 2 rewrite xorb_false_r; simpl.
+bbb.
+
 intros a b c.
 unfold rm_eq; intros i; simpl.
 remember (opt2nat (fst_same (a + (b + c)%rm) 0 (S i))) as d₁ eqn:Hd₁ .
@@ -2486,6 +2536,21 @@ rewrite last_tr_add_with_carry.
   do 3 rewrite last_trunc_from.
   remember trunc_from as f; simpl; subst f.
   do 2 rewrite xorb_false_r.
+  erewrite rm_add_i_eq_tr_add_carry with (n := di - d₂); try reflexivity.
+  rewrite <- Hd₂.
+  erewrite add_succ_sub_max; [ idtac | eauto  | right; left; auto ].
+  erewrite rm_add_i_eq_tr_add_carry with (n := di - d₅); try reflexivity.
+  rewrite <- Hd₅.
+  erewrite add_succ_sub_max; [ idtac | eauto  | do 4 right; left; auto ].
+  rewrite last_tr_add_with_carry.
+   rewrite last_tr_add_with_carry.
+    do 4 rewrite last_trunc_from.
+    remember trunc_from as f; simpl; subst f.
+    erewrite zzz; try eassumption.
+     erewrite zzz; try eassumption.
+      erewrite zzz; try eassumption.
+       erewrite zzz; try eassumption.
+        simpl.
 bbb.
 
   rewrite last_trunc_add.
