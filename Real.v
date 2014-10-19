@@ -2502,6 +2502,18 @@ destruct s as [di₁| ].
  rewrite orb_true_r; eassumption.
 Qed.
 
+Theorem last_carry_comm : ∀ la lb c, last_carry la lb c = last_carry lb la c.
+Proof.
+intros la lb c.
+unfold last_carry.
+revert lb c.
+induction la as [| a]; intros.
+ simpl.
+ induction lb as [| b]; [ reflexivity | idtac ].
+ simpl.
+ destruct lb as [| b₂]; [ reflexivity | idtac ].
+bbb.
+
 (* actually false because we should add 0 to both sides but just to see *)
 Theorem zzz : ∀ a b c i, rm_add_i a (b + c) i = rm_add_i (a + b) c i.
 Proof.
@@ -2526,6 +2538,7 @@ unfold tr_add_i.
 rewrite last_tr_add_with_carry.
  erewrite last_carry_on_max; try eassumption.
  rewrite last_tr_add_with_carry.
+bbb.
   erewrite last_carry_on_max; try eassumption.
   do 4 rewrite last_trunc_from; simpl.
   remember (a .[ i + d₂] || Nat.eqb d₂ 0) as c₃.
