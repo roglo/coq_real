@@ -2422,13 +2422,20 @@ eapply rm_add_i_vs_trunc_add_when_no_relay with (c := true) in Hdi.
  eassumption.
 Qed.
 
+Definition opt2nat x :=
+  match x with
+  | Some y => S y
+  | None => 0
+  end.
+
 Theorem rm_add_i_eq_tr_add_carry : ∀ a b a' b' i di n,
-  di = match fst_same a b (S i) with Some di => S di | None => 0 end
+  di = opt2nat (fst_same a b (S i))
   → a' = trunc_from (di + S n) a i
   → b' = trunc_from (di + S n) b i
   → rm_add_i a b i = List.last (trunc_add_with_carry true a' b') false.
 Proof.
 intros a b a' b' i di n Hdi Ha' Hb'.
+unfold opt2nat in Hdi.
 remember (fst_same a b (S i)) as s eqn:Hs .
 symmetry in Hs.
 destruct s; subst di.
@@ -2439,6 +2446,18 @@ Qed.
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
+intros a b c.
+unfold rm_eq; intros i; simpl.
+remember (opt2nat (fst_same (a + (b + c)%rm) 0 (S i))) as d₁ eqn:Hd₁ .
+remember (opt2nat (fst_same a (b + c) (S i))) as d₂ eqn:Hd₂ .
+remember (opt2nat (fst_same b c (S i))) as d₃ eqn:Hd₃ .
+remember (opt2nat (fst_same ((a + b)%rm + c) 0 (S i))) as d₄ eqn:Hd₄ .
+remember (opt2nat (fst_same (a + b) c (S i))) as d₅ eqn:Hd₅ .
+remember (opt2nat (fst_same a b (S i))) as d₆ eqn:Hd₆ .
+remember (List.fold_right max 0 [d₁; d₂; d₃; d₄; d₅; d₆ … []]) as di eqn:Hdi.
+simpl in Hdi.
+bbb.
+
 intros a b c.
 unfold rm_eq; intros i; simpl.
 unfold rm_add_i.
@@ -2454,6 +2473,13 @@ do 2 rewrite xorb_assoc; f_equal.
 rewrite xorb_comm, xorb_shuffle0; symmetry.
 rewrite <- xorb_assoc, xorb_comm, <- xorb_assoc.
 rewrite xorb_shuffle0.
+subst si.
+remember (opt2nat (fst_same (a + (b + c)%rm) 0 (S i))) as d₁ eqn:Hd₁ .
+remember (opt2nat (fst_same a (b + c) (S i))) as d₂ eqn:Hd₂ .
+remember (opt2nat (fst_same b c (S i))) as d₃ eqn:Hd₃ .
+remember (opt2nat (fst_same ((a + b)%rm + c) 0 (S i))) as d₄ eqn:Hd₄ .
+remember (opt2nat (fst_same (a + b) c (S i))) as d₅ eqn:Hd₅ .
+remember (opt2nat (fst_same a b (S i))) as d₆ eqn:Hd₆ .
 bbb.
 
 assert (∀ x, (x = x + 0)%rm) as Hx by (symmetry; apply rm_add_0_r).
