@@ -2435,11 +2435,11 @@ Definition tr_add_i n a b i :=
   let b' := trunc_from n b i in
   List.last (trunc_add_with_carry true a' b') false.
 
-Theorem rm_add_i_eq_tr_add : ∀ a b i di n,
+Theorem rm_add_i_eq_tr_add : ∀ a b i di,
   di = opt2nat (fst_same a b (S i))
-  → rm_add_i a b i = tr_add_i (di + S n) a b i.
+  → ∀ n, rm_add_i a b i = tr_add_i (di + S n) a b i.
 Proof.
-intros a b i di n Hdi.
+intros a b i di Hdi n.
 unfold tr_add_i.
 remember (trunc_from (di + S n) a i) as a' eqn:Ha' .
 remember (trunc_from (di + S n) b i) as b' eqn:Hb' .
@@ -2502,6 +2502,12 @@ destruct s as [di₁| ].
  rewrite orb_true_r; eassumption.
 Qed.
 
+(*
+Theorem zzz :
+  rm_add_i a (b + c)%rm i = tr_add_i (di + S n) a b i.
+bbb.
+*)
+
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
 intros a b c.
@@ -2523,19 +2529,21 @@ assert (List.In d₆ dl) as Hi₆ by (subst dl; do 5 right; left; reflexivity).
 erewrite rm_add_i_eq_tr_add with (n := di - d₁); try reflexivity.
 rewrite <- Hd₁.
 erewrite add_succ_sub_max; [ idtac | eauto  | auto ].
+erewrite rm_add_i_eq_tr_add with (n := di - d₄); try reflexivity.
+rewrite <- Hd₄.
+erewrite add_succ_sub_max; [ idtac | eauto  | auto ].
+bbb.
+  ============================
+   tr_add_i (S di) (a + (b + c))%rm 0%rm i =
+   tr_add_i (S di) (a + b + c)%rm 0%rm i
+
 unfold tr_add_i.
 rewrite last_tr_add_with_carry.
  erewrite last_carry_on_max; try eassumption.
- do 2 rewrite last_trunc_from; simpl.
- rewrite xorb_false_r; symmetry.
- erewrite rm_add_i_eq_tr_add with (n := di - d₄); try reflexivity.
- rewrite <- Hd₄.
- erewrite add_succ_sub_max; [ idtac | eauto  | auto ].
- unfold tr_add_i.
  rewrite last_tr_add_with_carry.
   erewrite last_carry_on_max; try eassumption.
-  do 2 rewrite last_trunc_from; simpl.
-  rewrite xorb_false_r; symmetry.
+  do 3 rewrite last_trunc_from; simpl.
+  do 2 rewrite xorb_false_r.
 bbb.
   ============================
    rm_add_i a (b + c) i ⊕ (rm_add_i a (b + c) (i + d₁) || Nat.eqb d₁ 0) =
