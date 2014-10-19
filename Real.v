@@ -2454,8 +2454,20 @@ remember (opt2nat (fst_same b c (S i))) as d₃ eqn:Hd₃ .
 remember (opt2nat (fst_same ((a + b)%rm + c) 0 (S i))) as d₄ eqn:Hd₄ .
 remember (opt2nat (fst_same (a + b) c (S i))) as d₅ eqn:Hd₅ .
 remember (opt2nat (fst_same a b (S i))) as d₆ eqn:Hd₆ .
-remember (List.fold_right max 0 [d₁; d₂; d₃; d₄; d₅; d₆ … []]) as di eqn:Hdi.
+remember (List.fold_right max 0 [d₁; d₂; d₃; d₄; d₅; d₆ … []]) as di eqn:Hdi .
 simpl in Hdi.
+erewrite rm_add_i_eq_tr_add_carry with (n := di); try eassumption.
+ 2: reflexivity.
+
+ 2: reflexivity.
+
+ erewrite rm_add_i_eq_tr_add_carry with (n := di); try eassumption.
+  2: reflexivity.
+
+  2: reflexivity.
+
+  rewrite last_trunc_add.
+   rewrite last_trunc_add.
 bbb.
 
 intros a b c.
