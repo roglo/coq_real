@@ -2476,12 +2476,16 @@ remember (opt2nat (fst_same a b (S i))) as d₆ eqn:Hd₆ .
 remember (List.fold_right max 0 [d₁; d₂; d₃; d₄; d₅; d₆ … []]) as di eqn:Hdi .
 erewrite rm_add_i_eq_tr_add_carry with (n := di - d₁); try reflexivity.
 rewrite <- Hd₁.
-erewrite add_succ_sub_max; [ idtac | eassumption | left; reflexivity ].
-bbb.
-
+erewrite add_succ_sub_max; [ idtac | eauto  | left; auto ].
 remember trunc_add_with_carry as f.
-erewrite rm_add_i_eq_tr_add_carry with (n := di); try reflexivity; subst f.
-rewrite <- Hd₄.
+erewrite rm_add_i_eq_tr_add_carry with (n := di - d₄); try reflexivity.
+subst f; rewrite <- Hd₄.
+erewrite add_succ_sub_max; [ idtac | eauto  | do 3 right; left; auto ].
+rewrite last_tr_add_with_carry.
+ rewrite last_tr_add_with_carry.
+  do 3 rewrite last_trunc_from.
+  remember trunc_from as f; simpl; subst f.
+  do 2 rewrite xorb_false_r.
 bbb.
 
   rewrite last_trunc_add.
