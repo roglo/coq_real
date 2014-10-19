@@ -2445,7 +2445,7 @@ destruct s; subst di.
 Qed.
 
 Theorem add_succ_sub_max : ∀ la a b,
-  b = List.fold_right max 0 la
+  b = S (List.fold_right max 0 la)
   → List.In a la
   → (a + S (b - a)) = S b.
 Proof.
@@ -2455,6 +2455,7 @@ assert (a ≤ b) as H.
  destruct Ha as (lb, (lc, Ha)); subst la.
  rewrite List.fold_right_app in Hb.
  subst b; simpl.
+ apply Nat.le_le_succ_r.
  induction lb as [| b]; intros; [ apply Nat.le_max_l | simpl ].
  eapply le_trans; [ apply IHlb | apply Nat.le_max_r ].
 
@@ -2465,7 +2466,7 @@ Qed.
 
 Lemma zzz : ∀ a b i d di dl,
   d = opt2nat (fst_same a b (S i))
-  → di = List.fold_right max 0 dl
+  → di = S (List.fold_right max 0 dl)
   → List.In d dl
   → last_carry (trunc_from (S di) a i) (trunc_from (S di) b i) true
     = a.[ S i + di].
@@ -2492,7 +2493,7 @@ remember (opt2nat (fst_same ((a + b)%rm + c) 0 (S i))) as d₄ eqn:Hd₄ .
 remember (opt2nat (fst_same (a + b) c (S i))) as d₅ eqn:Hd₅ .
 remember (opt2nat (fst_same a b (S i))) as d₆ eqn:Hd₆ .
 remember [d₁; d₂; d₃; d₄; d₅; d₆ … []] as dl eqn:Hdl .
-remember (List.fold_right max 0 dl) as di eqn:Hdi .
+remember (S (List.fold_right max 0 dl)) as di eqn:Hdi .
 assert (List.In d₁ dl) as Hi₁ by (subst dl; left; reflexivity).
 assert (List.In d₂ dl) as Hi₂ by (subst dl; right; left; reflexivity).
 assert (List.In d₃ dl) as Hi₃ by (subst dl; do 2 right; left; reflexivity).
@@ -2510,6 +2511,7 @@ rewrite last_tr_add_with_carry.
  rewrite last_tr_add_with_carry.
   do 3 rewrite last_trunc_from.
   remember trunc_from as f; simpl; subst f.
+bbb.
   erewrite zzz; try eassumption.
   erewrite zzz; try eassumption.
   do 2 rewrite xorb_false_r; simpl.
