@@ -2683,6 +2683,19 @@ Theorem yyy : ∀ a b c i di,
      (second n (second n a i + second n b i) i + second n c i)%rm.[i].
 Proof.
 intros a b c i di Hdi n₀ n Hn.
+erewrite <- tr_add_rm_add_distr; try eassumption; simpl.
+rewrite nat_compare_add_succ.
+rewrite fold_rm_add_i.
+rewrite fold_rm_add_i.
+bbb.
+remember (fst_same (a + b) c (S i)) as s₁ eqn:Hs₁ .
+symmetry in Hs₁.
+destruct s₁ as [di₁| ]; simpl in Hs₁.
+ simpl in Hdi.
+bbb.
+
+ erewrite <- tr_add_rm_add_distr; try eassumption.
+  Focus 2.
 bbb.
 
 erewrite <- tr_add_rm_add_distr; try eassumption; simpl.
