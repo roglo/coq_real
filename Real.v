@@ -2689,6 +2689,20 @@ remember (Nat.compare j (i + S n)) as cmp eqn:Hcmp .
 symmetry in Hcmp.
 destruct cmp; auto.
 apply nat_compare_lt in Hcmp.
+unfold rm_add_i; simpl.
+rename Hcmp into Hji.
+remember (Nat.compare j (i + S n)) as cmp eqn:Hcmp .
+symmetry in Hcmp.
+destruct cmp.
+ apply nat_compare_eq in Hcmp.
+ rewrite Hcmp in Hji; exfalso; revert Hji; apply Nat.lt_irrefl.
+
+ f_equal.
+ remember (fst_same a b (S j)) as s₁ eqn:Hs₁ .
+ symmetry in Hs₁.
+ destruct s₁ as [di₁| ].
+  remember Hs₁ as H; clear HeqH.
+  apply fst_same_fin_eq_second with (n := n) (n₀ := n₀) in Hs₁.
 bbb.
 
 intros a b c i di Hdi n₀ n Hn; simpl.
