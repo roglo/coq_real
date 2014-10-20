@@ -2144,14 +2144,13 @@ Qed.
 
 (* associativity; Ambroise Lafont's pen and paper proof *)
 
+(*
 Fixpoint trunc_from n a i :=
   match n with
   | 0 => []
   | S n₁ => [a.[i+n₁] … trunc_from n₁ a i]
   end.
 Arguments trunc_from n%nat a%rm i%nat.
-
-Definition carry_sum_3 a b c := a && b || b && c || c && a.
 
 Fixpoint trunc_add_with_carry c la lb :=
   match la with
@@ -2179,6 +2178,10 @@ Fixpoint last_carry_loop la lb c :=
 Definition last_carry la lb c :=
   last_carry_loop (List.removelast la) (List.removelast lb) c.
 
+Definition carry_sum_3 a b c := a && b || b && c || c && a.
+*)
+
+(*
 Theorem last_trunc_add : ∀ la lb c,
   la ≠ []
   → List.length la = List.length lb
@@ -2380,9 +2383,11 @@ rewrite last_tr_add_with_carry.
 
  apply length_trunc_eq.
 Qed.
+*)
 
 (* *)
 
+(*
 Theorem rm_add_i_vs_tr_add_carry_with_relay : ∀ a b a' b' i di n,
   fst_same a b (S i) = Some di
   → a' = trunc_from (S di + S n) a i
@@ -2409,6 +2414,7 @@ eapply rm_add_i_vs_trunc_add_when_no_relay with (c := true) in Hdi.
 
  eassumption.
 Qed.
+*)
 
 Definition opt2nat x :=
   match x with
@@ -2416,6 +2422,7 @@ Definition opt2nat x :=
   | None => 0
   end.
 
+(*
 Definition tr_add := trunc_add_with_carry true.
 
 Definition tr_add_i n a b i :=
@@ -2523,13 +2530,63 @@ destruct s as [di| ]; simpl.
 
  do 2 rewrite orb_true_r; reflexivity.
 Qed.
+*)
 
+(*
 Definition second n a i := List.last (trunc_from n a i) false.
 Arguments second n%nat a%rm i%nat.
 
 Definition add_second n a b i :=
   List.last (tr_add (trunc_from n a i) (trunc_from n b i)) false.
 Arguments add_second n%nat a%rm b%rm i%nat.
+*)
+
+Definition second n a i :=
+  {| rm j :=
+       match Nat.compare j (i + S n) with
+       | Eq => true
+       | Lt => a.[j]
+       | Gt => false
+       end |}.
+Arguments second n%nat a%rm i%nat.
+
+Theorem zzz : ∀ a b i n,
+  fst_same a b (S i) = fst_same (second n a i) (second n b i) (S i).
+Proof.
+intros a b i n.
+apply fst_same_sym_iff.
+remember (fst_same a b (S i)) as s eqn:Hs .
+apply fst_same_sym_iff in Hs.
+destruct s as [di| ].
+ destruct Hs as (Hn, Hs).
+ split.
+  intros dj Hdj.
+  simpl.
+  rewrite Nat.add_succ_r; simpl.
+  remember (Nat.compare (i + dj) (i + n)) as cmp eqn:Hcmp .
+  symmetry in Hcmp.
+  destruct cmp.
+   apply nat_compare_eq in Hcmp.
+bbb.
+
+(* [(a+b)'']_i = [a'' + b'']_i *)
+Theorem tr_add_rm_add_distr : ∀ a b i di,
+  di = opt2nat (fst_same a b (S i))
+  → ∀ n₀ n, n = S di + n₀ →
+     (second n (a + b) i).[i] = (second n a i + second n b i)%rm.[i].
+Proof.
+intros a b i di Hdi n₀ n Hn; simpl.
+remember (Nat.compare i (i + S n)) as cmp eqn:Hcmp .
+symmetry in Hcmp.
+destruct cmp.
+ apply nat_compare_eq in Hcmp.
+ symmetry in Hcmp.
+ apply Nat.add_sub_eq_l in Hcmp.
+ rewrite Nat.sub_diag in Hcmp; discriminate Hcmp.
+
+ unfold rm_add_i; simpl.
+ rewrite Hcmp; f_equal.
+bbb.
 
 (* (a+b)'' = a''+b'' *)
 Theorem tr_add_rm_add_distr : ∀ a b i di,
