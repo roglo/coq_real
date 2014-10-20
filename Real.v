@@ -2682,6 +2682,29 @@ Theorem yyy : ∀ a b c i di,
      (second n (a + b) i + second n c i)%rm.[i] =
      (second n (second n a i + second n b i) i + second n c i)%rm.[i].
 Proof.
+intros a b c i di Hdi n₀ n Hn; simpl.
+unfold rm_add_i; simpl.
+rewrite nat_compare_add_succ.
+unfold rm_add_i; simpl.
+rewrite nat_compare_add_succ.
+rewrite Nat.add_succ_r; simpl.
+remember (fst_same (a + b) c (S i)) as s₁ eqn:Hs₁ .
+symmetry in Hs₁.
+destruct s₁ as [di₁| ].
+ remember Hs₁ as H; clear HeqH.
+ simpl in Hdi.
+ apply fst_same_fin_eq_second with (n := n) (n₀ := S n₀) in H.
+  2: omega.
+
+  rewrite <- H, Hs₁.
+  Focus 1.
+  subst di.
+  rewrite Nat.add_succ_l, <- Nat.add_succ_r in Hn.
+  rewrite Nat.add_succ_l, <- Nat.add_succ_r in Hn.
+  rewrite Hn.
+  rewrite Nat.add_assoc, nat_compare_add_succ.
+bbb.
+
 intros a b c i di Hdi n₀ n Hn.
 erewrite <- tr_add_rm_add_distr; try eassumption; simpl.
 rewrite nat_compare_add_succ.
