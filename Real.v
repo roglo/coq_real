@@ -2676,17 +2676,79 @@ Theorem fold_rm_add_i : ∀ a b i, rm_add_i a b i = ((a+b)%rm).[i].
 Proof. reflexivity. Qed.
 
 (* (a+b)''+c'' = (a''+b'')+c'' *)
-Theorem yyy : ∀ a b c i di,
-  di = opt2nat (fst_same (a + b) c (S i))
+Theorem yyy : ∀ a b c i d₁ d₂ di,
+  d₁ = opt2nat (fst_same (a + b) c (S i))
+  → d₂ = opt2nat (fst_same a b (S i))
+  → di = max d₁ d₂
   → ∀ n₀ n, n = S di + n₀ →
      (second n (a + b) i + second n c i)%rm.[i] =
      ((second n a i + second n b i) + second n c i)%rm.[i].
 Proof.
-intros a b c i di Hdi n₀ n Hn; simpl.
-bbb.
-   add opt2nat for other sums and choose the greatest di like in
-   zzz below! in particular for (a + b).
+intros a b c i d₁ d₂ di Hd₁ Hd₂ Hdi n₀ n Hn; simpl.
+unfold rm_add_i; simpl.
+rewrite nat_compare_add_succ, Nat.add_succ_r.
+remember (fst_same (a + b) c (S i)) as s₁ eqn:Hs₁ .
+symmetry in Hs₁.
+destruct s₁ as [di₁| ]; simpl in Hd₁.
+ Focus 1.
+ remember Hs₁ as H; clear HeqH.
+ eapply fst_same_fin_eq_second with (n := n) (n₀ := S n₀ + di - d₁) in H.
+  2: rewrite Hd₁.
+  2: rewrite Nat.add_sub_assoc.
+   2: omega.
 
+   2: rewrite Hdi, <- Hd₁.
+   2: apply Nat.le_trans with (m := max d₁ d₂).
+    2: apply Nat.le_max_l.
+
+    2: omega.
+
+  rewrite <- H, Hs₁.
+  unfold rm_add_i at 1.
+  unfold rm_add_i at 2.
+  simpl.
+  rewrite nat_compare_add_succ, Nat.add_succ_r.
+  remember (fst_same a b (S i)) as s₂ eqn:Hs₂ .
+  symmetry in Hs₂.
+  destruct s₂ as [di₂| ].
+   Focus 1.
+   simpl in Hd₂.
+   rename H into Hab₁.
+   remember Hs₂ as H; clear HeqH.
+   eapply fst_same_fin_eq_second with (n := n) (n₀ := S n₀ + di - d₂) in H.
+    rewrite <- H, Hs₂.
+bbb.
+ must cancel each other:
+   ⊕ match Nat.compare (i + di₁) (i + n) with
+     | Eq => true
+     | Lt => rm_add_i a b (S (i + di₁))
+     | Gt => false
+   ⊕ match fst_same (second n a i + second n b i) (second n c i) (S i) with
+     | Some dj => rm_add_i (second n a i) (second n b i) (S (i + dj))
+     | None => true
+     end
+
+intros a b c i di Hdi n₀ n Hn; simpl.
+unfold rm_add_i; simpl.
+rewrite nat_compare_add_succ.
+rewrite Nat.add_succ_r.
+remember (fst_same (a + b) c (S i)) as s₁ eqn:Hs₁ .
+symmetry in Hs₁.
+destruct s₁ as [di₁| ]; simpl in Hdi.
+ Focus 1.
+ remember Hs₁ as H; clear HeqH.
+ eapply fst_same_fin_eq_second with (n := n) (n₀ := S n₀) in H.
+  2: omega.
+
+  rewrite <- H, Hs₁.
+  unfold rm_add_i at 1.
+  unfold rm_add_i at 2.
+  simpl.
+  rewrite nat_compare_add_succ.
+  rewrite Nat.add_succ_r.
+bbb.
+
+intros a b c i di Hdi n₀ n Hn; simpl.
 apply rm_add_i_compat_r; intros j; simpl.
 unfold rm_add_i at 1; simpl.
 rewrite Nat.add_succ_r.
