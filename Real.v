@@ -2668,44 +2668,27 @@ destruct cmp.
  exfalso; revert Hcmp; apply Nat.nlt_0_r.
 Qed.
 
+Theorem xxx : ∀ a b i di,
+  di = opt2nat (fst_same a b (S i))
+  → ∀ n₀ n, n = S di + n₀ →
+    (second n (a + b) i).[i] = (a + b)%rm.[i].
+Proof.
 bbb.
-
-ill typed:
+*)
 
 (* (a+b)''+c'' = (a''+b'')+c'' *)
 Theorem yyy : ∀ a b c i di,
   di = opt2nat (fst_same a (b + c) (S i))
   → ∀ n₀ n, n = S di + n₀ →
-     add_second n (second n (a + b) i) (second n c i) i =
-     add_second n (add_second n a b i) (second n c i) i.
+     (second n (a + b) i + second n c i)%rm.[i] =
+     (second n (second n a i + second n b i) i + second n c i)%rm.[i].
 Proof.
-bbb.
-
-
-    List.last
-      (tr_add (trunc_from (S di + n) (a + b) i) (trunc_from (S di + n) c i))
-      false =
-    List.last
-      (tr_add
-         (tr_add (trunc_from (S di + n) a i) (trunc_from (S di + n) b i))
-         (trunc_from (S di + n) c i))
-      false.
-Proof.
-intros a b c i di Hdi n.
-unfold tr_add.
-rewrite last_tr_add_with_carry.
- rewrite last_tr_add_with_carry.
-  f_equal.
-bbb.
-
-intros a b c i di Hdi n.
-rewrite Nat.add_succ_l.
-unfold tr_add.
-remember (fst_same a (b + c) (S i)) as s eqn:Hs .
-symmetry in Hs.
-destruct s as [di₁| ]; simpl in Hdi.
+intros a b c i di Hdi n₀ n Hn.
 bbb.
 *)
+
+Theorem fold_rm_add_i : ∀ a b i, rm_add_i a b i = ((a+b)%rm).[i].
+Proof. reflexivity. Qed.
 
 (* actually false because we should add 0 to both sides but just to see *)
 Theorem zzz : ∀ a b c i, rm_add_i a (b + c) i = rm_add_i (a + b) c i.
@@ -2721,13 +2704,21 @@ assert (List.In d₂ dl) as Hi₂ by (subst dl; left; reflexivity).
 assert (List.In d₃ dl) as Hi₃ by (subst dl; right; left; reflexivity).
 assert (List.In d₅ dl) as Hi₅ by (subst dl; do 2 right; left; reflexivity).
 assert (List.In d₆ dl) as Hi₆ by (subst dl; do 3 right; left; reflexivity).
+do 2 rewrite fold_rm_add_i.
+symmetry.
+erewrite <- xxx; [ idtac | eassumption | reflexivity ].
+erewrite tr_add_rm_add_distr; [ idtac | eauto  | reflexivity ].
+erewrite yyy; [ idtac | eauto  | idtac ].
+bbb.
+
 erewrite rm_add_i_eq_tr_add with (n := di - d₂); try reflexivity.
 rewrite <- Hd₂.
 erewrite add_succ_sub_max; [ idtac | eauto  | auto ].
+bbb.
 erewrite rm_add_i_eq_tr_add with (n := di - d₅); try reflexivity.
 rewrite <- Hd₅.
 erewrite add_succ_sub_max; [ idtac | eauto  | auto ].
-(*1-*)
+1-
 unfold tr_add_i.
 remember Hd₂ as H; clear HeqH.
 apply yyy with (n := di - d₂) in H.
@@ -2737,7 +2728,7 @@ rewrite Nat.add_sub_assoc in H.
  rewrite H.
  clear H.
 bbb.
-(*-1*)
+-1
 unfold tr_add_i.
 rewrite last_tr_add_with_carry.
  erewrite last_carry_on_max; try eassumption.
@@ -2772,9 +2763,29 @@ bbb.
   Heqc₆ : c₆ = a .[ i + d₆] || Nat.eqb d₆ 0
   ============================
    c₄ ⊕ c₆ = c₅ ⊕ c₃
+*)
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
+intros a b c.
+unfold rm_eq; intros i.
+remember (opt2nat (fst_same (a + (b + c)%rm) 0 (S i))) as d₁ eqn:Hd₁ .
+remember (opt2nat (fst_same a (b + c) (S i))) as d₂ eqn:Hd₂ .
+remember (opt2nat (fst_same b c (S i))) as d₃ eqn:Hd₃ .
+remember (opt2nat (fst_same ((a + b)%rm + c) 0 (S i))) as d₄ eqn:Hd₄ .
+remember (opt2nat (fst_same (a + b) c (S i))) as d₅ eqn:Hd₅ .
+remember (opt2nat (fst_same a b (S i))) as d₆ eqn:Hd₆ .
+remember [d₁; d₂; d₃; d₄; d₅; d₆ … []] as dl eqn:Hdl .
+remember (S (List.fold_right max 0 dl)) as di eqn:Hdi .
+assert (List.In d₁ dl) as Hi₁ by (subst dl; left; reflexivity).
+assert (List.In d₂ dl) as Hi₂ by (subst dl; right; left; reflexivity).
+assert (List.In d₃ dl) as Hi₃ by (subst dl; do 2 right; left; reflexivity).
+assert (List.In d₄ dl) as Hi₄ by (subst dl; do 3 right; left; reflexivity).
+assert (List.In d₅ dl) as Hi₅ by (subst dl; do 4 right; left; reflexivity).
+assert (List.In d₆ dl) as Hi₆ by (subst dl; do 5 right; left; reflexivity).
+erewrite <- xxx; [ idtac | eassumption | reflexivity ].
+bbb.
+
 intros a b c.
 unfold rm_eq; intros i; simpl.
 remember (opt2nat (fst_same (a + (b + c)%rm) 0 (S i))) as d₁ eqn:Hd₁ .
