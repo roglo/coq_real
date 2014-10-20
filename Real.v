@@ -2672,6 +2672,9 @@ destruct s as [di₁| ].
   exfalso; revert Hcmp; apply Nat.lt_irrefl.
 Qed.
 
+Theorem fold_rm_add_i : ∀ a b i, rm_add_i a b i = ((a+b)%rm).[i].
+Proof. reflexivity. Qed.
+
 (* (a+b)''+c'' = (a''+b'')+c'' *)
 Theorem yyy : ∀ a b c i di,
   di = opt2nat (fst_same (a + b) c (S i))
@@ -2680,13 +2683,16 @@ Theorem yyy : ∀ a b c i di,
      (second n (second n a i + second n b i) i + second n c i)%rm.[i].
 Proof.
 intros a b c i di Hdi n₀ n Hn.
+bbb.
+
 erewrite <- tr_add_rm_add_distr; try eassumption; simpl.
 rewrite nat_compare_add_succ.
+rewrite fold_rm_add_i.
+rewrite fold_rm_add_i.
+rewrite <- tr_add_i_eq_rm_add_i with (n := n).
+rewrite <- tr_add_i_eq_rm_add_i with (n := n).
 bbb.
 *)
-
-Theorem fold_rm_add_i : ∀ a b i, rm_add_i a b i = ((a+b)%rm).[i].
-Proof. reflexivity. Qed.
 
 (* actually false because we should add 0 to both sides but just to see *)
 Theorem zzz : ∀ a b c i, rm_add_i a (b + c) i = rm_add_i (a + b) c i.
