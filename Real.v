@@ -2590,6 +2590,25 @@ split.
  simpl in Hs₁; rewrite Hs₁; reflexivity.
 Qed.
 
+(* [ a'' + b'']_i = [a+b]_i *)
+Theorem tr_add_i_eq_rm_add_i : ∀ a b i n,
+  (second n (a + b) i).[i] = (a + b)%rm.[i].
+Proof.
+intros a b i n; simpl.
+remember (Nat.compare i (i + S n)) as cmp eqn:Hcmp .
+symmetry in Hcmp.
+destruct cmp; auto.
+ apply nat_compare_eq in Hcmp.
+ symmetry in Hcmp.
+ apply Nat.add_sub_eq_l in Hcmp.
+ rewrite Nat.sub_diag in Hcmp; discriminate Hcmp.
+
+ apply nat_compare_gt in Hcmp.
+ apply Nat.lt_add_lt_sub_l in Hcmp.
+ rewrite Nat.sub_diag in Hcmp.
+ exfalso; revert Hcmp; apply Nat.nlt_0_r.
+Qed.
+
 (* [(a+b)'']_i = [a'' + b'']_i *)
 Theorem tr_add_rm_add_distr : ∀ a b i di,
   di = opt2nat (fst_same a b (S i))
@@ -2668,14 +2687,6 @@ destruct cmp.
  exfalso; revert Hcmp; apply Nat.nlt_0_r.
 Qed.
 
-Theorem xxx : ∀ a b i di,
-  di = opt2nat (fst_same a b (S i))
-  → ∀ n₀ n, n = S di + n₀ →
-    (second n (a + b) i).[i] = (a + b)%rm.[i].
-Proof.
-bbb.
-*)
-
 (* (a+b)''+c'' = (a''+b'')+c'' *)
 Theorem yyy : ∀ a b c i di,
   di = opt2nat (fst_same a (b + c) (S i))
@@ -2706,7 +2717,7 @@ assert (List.In d₅ dl) as Hi₅ by (subst dl; do 2 right; left; reflexivity).
 assert (List.In d₆ dl) as Hi₆ by (subst dl; do 3 right; left; reflexivity).
 do 2 rewrite fold_rm_add_i.
 symmetry.
-erewrite <- xxx; [ idtac | eassumption | reflexivity ].
+erewrite <- tr_add_i_eq_rm_add_i.
 erewrite tr_add_rm_add_distr; [ idtac | eauto  | reflexivity ].
 erewrite yyy; [ idtac | eauto  | idtac ].
 bbb.
