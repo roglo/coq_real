@@ -2683,6 +2683,15 @@ Theorem yyy : ∀ a b c i di,
      (second n (second n a i + second n b i) i + second n c i)%rm.[i].
 Proof.
 intros a b c i di Hdi n₀ n Hn; simpl.
+apply rm_add_i_compat_r.
+intros j; simpl.
+remember (Nat.compare j (i + S n)) as cmp eqn:Hcmp .
+symmetry in Hcmp.
+destruct cmp; auto.
+apply nat_compare_lt in Hcmp.
+bbb.
+
+intros a b c i di Hdi n₀ n Hn; simpl.
 unfold rm_add_i; simpl.
 rewrite nat_compare_add_succ.
 unfold rm_add_i; simpl.
