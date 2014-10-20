@@ -2166,8 +2166,6 @@ Fixpoint trunc_add_with_carry c la lb :=
   | [] => []
   end.
 
-Definition tr_add := trunc_add_with_carry false.
-
 Fixpoint last_carry_loop la lb c :=
   match la with
   | [] => c
@@ -2418,10 +2416,12 @@ Definition opt2nat x :=
   | None => 0
   end.
 
+Definition tr_add := trunc_add_with_carry true.
+
 Definition tr_add_i n a b i :=
   let a' := trunc_from n a i in
   let b' := trunc_from n b i in
-  List.last (trunc_add_with_carry true a' b') false.
+  List.last (tr_add a' b') false.
 
 Theorem rm_add_i_eq_tr_add : ∀ a b i di,
   di = opt2nat (fst_same a b (S i))
@@ -2524,6 +2524,48 @@ destruct s as [di| ]; simpl.
  do 2 rewrite orb_true_r; reflexivity.
 Qed.
 
+(* (a+b)'' = a''+b'' *)
+Theorem tr_add_rm_add_distr : ∀ a b i di,
+  di = opt2nat (fst_same a b (S i))
+  → ∀ n,
+    List.last
+      (trunc_from (S di + n) (a + b) i) false =
+    List.last
+      (tr_add (trunc_from (S di + n) a i) (trunc_from (S di + n) b i)) false.
+Proof.
+intros a b i di Hdi n.
+rewrite Nat.add_succ_l.
+rewrite last_trunc_from.
+unfold tr_add.
+remember trunc_from as f; simpl; subst f.
+remember (fst_same a b (S i)) as s eqn:Hs .
+symmetry in Hs.
+destruct s as [di₁| ]; simpl in Hdi.
+ eapply rm_add_i_vs_tr_add_carry_with_relay with (n := n); eauto .
+  rewrite <- Hdi, Nat.add_succ_r; reflexivity.
+
+  rewrite <- Hdi, Nat.add_succ_r; reflexivity.
+
+ eapply rm_add_i_vs_tr_add_carry_no_relay; eauto .
+Qed.
+
+(* (a+b)''+c'' = (a''+b'')+c'' *)
+Theorem yyy : ∀ a b c i di,
+  di = opt2nat (fst_same a (b + c) (S i))
+  → ∀ n,
+    List.last
+      (tr_add (trunc_from (S di + n) (a + b) i) (trunc_from (S di + n) c i))
+      false =
+    List.last
+      (tr_add
+         (tr_add (trunc_from (S di + n) a i) (trunc_from (S di + n) b i))
+         (trunc_from (S di + n) c i))
+      false.
+Proof.
+intros a b c i di Hdi n.
+bbb.
+*)
+
 (* actually false because we should add 0 to both sides but just to see *)
 Theorem zzz : ∀ a b c i, rm_add_i a (b + c) i = rm_add_i (a + b) c i.
 Proof.
@@ -2544,6 +2586,17 @@ erewrite add_succ_sub_max; [ idtac | eauto  | auto ].
 erewrite rm_add_i_eq_tr_add with (n := di - d₅); try reflexivity.
 rewrite <- Hd₅.
 erewrite add_succ_sub_max; [ idtac | eauto  | auto ].
+(*1-*)
+unfold tr_add_i.
+remember Hd₂ as H; clear HeqH.
+apply yyy with (n := di - d₂) in H.
+rewrite Nat.add_sub_assoc in H.
+ rewrite Nat.add_succ_l, <- Nat.add_succ_r in H.
+ rewrite Nat.add_comm, Nat.add_sub in H.
+ rewrite H.
+ clear H.
+bbb.
+(*-1*)
 unfold tr_add_i.
 rewrite last_tr_add_with_carry.
  erewrite last_carry_on_max; try eassumption.
