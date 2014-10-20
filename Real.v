@@ -2553,11 +2553,10 @@ Arguments second n%nat a%rm i%nat.
 Theorem fst_same_fin_eq_second : ∀ a b i di,
   fst_same a b (S i) = Some di
   → ∀ n₀ n, n = S di + n₀ →
-    fst_same a b (S i) = fst_same (second n a i) (second n b i) (S i).
+    fst_same (second n a i) (second n b i) (S i) = Some di.
 Proof.
 intros a b i di Hdi n₀ n Hn.
-rewrite Hdi.
-apply fst_same_sym_iff.
+apply fst_same_iff.
 apply fst_same_iff in Hdi; simpl in Hdi.
 destruct Hdi as (Hn₁, Hs₁).
 split.
@@ -2622,8 +2621,7 @@ symmetry in Hs.
 destruct s as [di₁| ].
  subst di; simpl in Hn.
  rewrite <- Nat.add_succ_r in Hn.
- erewrite <- fst_same_fin_eq_second; try eassumption.
- rewrite Hs.
+ erewrite fst_same_fin_eq_second; try eassumption.
  rewrite Nat.add_succ_r.
  remember (Nat.compare (i + di₁) (i + n)) as cmp₁ eqn:Hcmp₁ .
  symmetry in Hcmp₁.
@@ -2703,7 +2701,7 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
 
     2: omega.
 
-  rewrite <- H, Hs₁.
+  rewrite H.
   unfold rm_add_i at 1.
   unfold rm_add_i at 2.
   simpl.
@@ -2716,7 +2714,7 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
    rename H into Hab₁.
    remember Hs₂ as H; clear HeqH.
    eapply fst_same_fin_eq_second with (n := n) (n₀ := S n₀ + di - d₂) in H.
-    rewrite <- H, Hs₂.
+    rewrite H.
 bbb.
  must cancel each other:
    ⊕ match Nat.compare (i + di₁) (i + n) with
