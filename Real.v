@@ -2680,6 +2680,16 @@ Theorem yyy : ∀ a b c i di,
   di = opt2nat (fst_same (a + b) c (S i))
   → ∀ n₀ n, n = S di + n₀ →
      (second n (a + b) i + second n c i)%rm.[i] =
+     ((second n a i + second n b i) + second n c i)%rm.[i].
+Proof.
+bbb.
+*)
+
+(*
+Theorem yyy_oops : ∀ a b c i di,
+  di = opt2nat (fst_same (a + b) c (S i))
+  → ∀ n₀ n, n = S di + n₀ →
+     (second n (a + b) i + second n c i)%rm.[i] =
      (second n (second n a i + second n b i) i + second n c i)%rm.[i].
 Proof.
 intros a b c i di Hdi n₀ n Hn; simpl.
@@ -2824,7 +2834,7 @@ do 2 rewrite fold_rm_add_i.
 symmetry.
 erewrite <- tr_add_i_eq_rm_add_i.
 erewrite tr_add_rm_add_distr; [ idtac | eauto  | reflexivity ].
-erewrite yyy; [ idtac | eauto  | idtac ].
+erewrite yyy; [ idtac | eauto  | reflexivity ].
 bbb.
 
 erewrite rm_add_i_eq_tr_add with (n := di - d₂); try reflexivity.
