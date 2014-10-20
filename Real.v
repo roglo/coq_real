@@ -2682,6 +2682,30 @@ Theorem yyy : ∀ a b c i di,
      (second n (a + b) i + second n c i)%rm.[i] =
      ((second n a i + second n b i) + second n c i)%rm.[i].
 Proof.
+intros a b c i di Hdi n₀ n Hn; simpl.
+bbb.
+   add opt2nat for other sums and choose the greatest di like in
+   zzz below! in particular for (a + b).
+
+apply rm_add_i_compat_r; intros j; simpl.
+unfold rm_add_i at 1; simpl.
+rewrite Nat.add_succ_r.
+remember (Nat.compare j (S (i + n))) as cmp eqn:Hcmp .
+symmetry in Hcmp.
+destruct cmp.
+ Focus 1.
+ rewrite xorb_true_l, xorb_false_l.
+ apply nat_compare_eq in Hcmp.
+ remember (fst_same (second n a i) (second n b i) (S j)) as s₁ eqn:Hs₁ .
+ symmetry in Hs₁.
+ destruct s₁ as [di₁| ]; [ idtac | reflexivity ].
+ remember (Nat.compare (j + di₁) (i + n)) as cmp₁ eqn:Hcmp₁ .
+ symmetry in Hcmp₁.
+ destruct cmp₁; [ reflexivity | idtac | exfalso ].
+  apply nat_compare_lt in Hcmp₁.
+  exfalso; omega.
+
+  apply nat_compare_gt in Hcmp₁.
 bbb.
 *)
 
