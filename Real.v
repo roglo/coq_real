@@ -2590,23 +2590,21 @@ split.
  simpl in Hs₁; rewrite Hs₁; reflexivity.
 Qed.
 
+Theorem nat_compare_add_succ : ∀ i j, Nat.compare i (i + S j) = Lt.
+Proof.
+intros i j.
+apply nat_compare_lt.
+apply Nat.lt_sub_lt_add_l.
+rewrite Nat.sub_diag.
+apply Nat.lt_0_succ.
+Qed.
+
 (* [ a'' + b'']_i = [a+b]_i *)
 Theorem tr_add_i_eq_rm_add_i : ∀ a b i n,
   (second n (a + b) i).[i] = (a + b)%rm.[i].
 Proof.
 intros a b i n; simpl.
-remember (Nat.compare i (i + S n)) as cmp eqn:Hcmp .
-symmetry in Hcmp.
-destruct cmp; auto.
- apply nat_compare_eq in Hcmp.
- symmetry in Hcmp.
- apply Nat.add_sub_eq_l in Hcmp.
- rewrite Nat.sub_diag in Hcmp; discriminate Hcmp.
-
- apply nat_compare_gt in Hcmp.
- apply Nat.lt_add_lt_sub_l in Hcmp.
- rewrite Nat.sub_diag in Hcmp.
- exfalso; revert Hcmp; apply Nat.nlt_0_r.
+rewrite nat_compare_add_succ; reflexivity.
 Qed.
 
 (* [(a+b)'']_i = [a'' + b'']_i *)
@@ -2616,85 +2614,74 @@ Theorem tr_add_rm_add_distr : ∀ a b i di,
      (second n (a + b) i).[i] = (second n a i + second n b i)%rm.[i].
 Proof.
 intros a b i di Hdi n₀ n Hn; simpl.
-remember (Nat.compare i (i + S n)) as cmp eqn:Hcmp .
-symmetry in Hcmp.
-destruct cmp.
- apply nat_compare_eq in Hcmp.
- symmetry in Hcmp.
- apply Nat.add_sub_eq_l in Hcmp.
- rewrite Nat.sub_diag in Hcmp; discriminate Hcmp.
-
- unfold rm_add_i; simpl.
- rewrite Hcmp; f_equal.
- remember (fst_same a b (S i)) as s eqn:Hs .
- symmetry in Hs.
- destruct s as [di₁| ].
-  subst di; simpl in Hn.
+rewrite nat_compare_add_succ.
+unfold rm_add_i; simpl.
+rewrite nat_compare_add_succ; f_equal.
+remember (fst_same a b (S i)) as s eqn:Hs .
+symmetry in Hs.
+destruct s as [di₁| ].
+ subst di; simpl in Hn.
+ rewrite <- Nat.add_succ_r in Hn.
+ erewrite <- fst_same_fin_eq_second; try eassumption.
+ rewrite Hs.
+ rewrite Nat.add_succ_r.
+ remember (Nat.compare (i + di₁) (i + n)) as cmp₁ eqn:Hcmp₁ .
+ symmetry in Hcmp₁.
+ destruct cmp₁; auto.
+  apply nat_compare_eq in Hcmp₁.
+  apply Nat.add_cancel_l in Hcmp₁.
+  subst di₁.
   rewrite <- Nat.add_succ_r in Hn.
-  erewrite <- fst_same_fin_eq_second; try eassumption.
-  rewrite Hs.
-  rewrite Nat.add_succ_r.
-  remember (Nat.compare (i + di₁) (i + n)) as cmp₁ eqn:Hcmp₁ .
-  symmetry in Hcmp₁.
-  destruct cmp₁; auto.
-   apply nat_compare_eq in Hcmp₁.
-   apply Nat.add_cancel_l in Hcmp₁.
-   subst di₁.
-   rewrite <- Nat.add_succ_r in Hn.
-   symmetry in Hn.
-   apply Nat.add_sub_eq_l in Hn.
-   rewrite Nat.sub_diag in Hn; discriminate Hn.
+  symmetry in Hn.
+  apply Nat.add_sub_eq_l in Hn.
+  rewrite Nat.sub_diag in Hn; discriminate Hn.
 
-   apply nat_compare_gt in Hcmp₁.
-   apply Nat.add_lt_mono_l in Hcmp₁.
-   subst n.
-   rewrite <- Nat.add_succ_r in Hcmp₁.
-   apply Nat.lt_add_lt_sub_l in Hcmp₁.
-   rewrite Nat.sub_diag in Hcmp₁.
-   exfalso; revert Hcmp₁; apply Nat.nlt_0_r.
+  apply nat_compare_gt in Hcmp₁.
+  apply Nat.add_lt_mono_l in Hcmp₁.
+  subst n.
+  rewrite <- Nat.add_succ_r in Hcmp₁.
+  apply Nat.lt_add_lt_sub_l in Hcmp₁.
+  rewrite Nat.sub_diag in Hcmp₁.
+  exfalso; revert Hcmp₁; apply Nat.nlt_0_r.
 
-  remember (fst_same (second n a i) (second n b i) (S i)) as s₂ eqn:Hs₂ .
-  apply fst_same_sym_iff in Hs₂.
-  destruct s₂ as [di₁| ]; [ idtac | reflexivity ].
-  rewrite Nat.add_succ_r; simpl.
-  simpl in Hdi.
-  subst n di; simpl.
-  apply fst_same_iff in Hs; simpl in Hs.
-  destruct Hs₂ as (Hn₂, Hs₂).
-  simpl in Hs₂.
-  rewrite Nat.add_succ_r in Hs₂.
-  remember (Nat.compare (i + di₁) (i + S n₀)) as cmp₁ eqn:Hcmp₁ .
-  symmetry in Hcmp₁.
-  destruct cmp₁; auto.
-   rewrite Hs in Hs₂.
-   destruct b .[ S (i + di₁)]; discriminate Hs₂.
+ remember (fst_same (second n a i) (second n b i) (S i)) as s₂ eqn:Hs₂ .
+ apply fst_same_sym_iff in Hs₂.
+ destruct s₂ as [di₁| ]; [ idtac | reflexivity ].
+ rewrite Nat.add_succ_r; simpl.
+ simpl in Hdi.
+ subst n di; simpl.
+ apply fst_same_iff in Hs; simpl in Hs.
+ destruct Hs₂ as (Hn₂, Hs₂).
+ simpl in Hs₂.
+ rewrite Nat.add_succ_r in Hs₂.
+ remember (Nat.compare (i + di₁) (i + S n₀)) as cmp₁ eqn:Hcmp₁ .
+ symmetry in Hcmp₁.
+ destruct cmp₁; auto.
+  rewrite Hs in Hs₂.
+  destruct b .[ S (i + di₁)]; discriminate Hs₂.
 
-   clear Hcmp Hs₂.
-   apply nat_compare_gt in Hcmp₁.
-   apply Nat.add_lt_mono_l in Hcmp₁.
-   apply Hn₂ in Hcmp₁.
-   simpl in Hcmp₁.
-   rewrite Nat.add_succ_r in Hcmp₁.
-   remember (Nat.compare (i + S n₀) (i + S n₀)) as cmp eqn:Hcmp .
-   symmetry in Hcmp.
-   destruct cmp; auto.
-   apply nat_compare_lt in Hcmp.
-   exfalso; revert Hcmp; apply Nat.lt_irrefl.
-
- apply nat_compare_gt in Hcmp.
- apply Nat.lt_add_lt_sub_l in Hcmp.
- rewrite Nat.sub_diag in Hcmp.
- exfalso; revert Hcmp; apply Nat.nlt_0_r.
+  apply nat_compare_gt in Hcmp₁.
+  apply Nat.add_lt_mono_l in Hcmp₁.
+  apply Hn₂ in Hcmp₁.
+  simpl in Hcmp₁.
+  rewrite Nat.add_succ_r in Hcmp₁.
+  remember (Nat.compare (i + S n₀) (i + S n₀)) as cmp eqn:Hcmp .
+  symmetry in Hcmp.
+  destruct cmp; auto.
+  apply nat_compare_lt in Hcmp.
+  exfalso; revert Hcmp; apply Nat.lt_irrefl.
 Qed.
 
 (* (a+b)''+c'' = (a''+b'')+c'' *)
 Theorem yyy : ∀ a b c i di,
-  di = opt2nat (fst_same a (b + c) (S i))
+  di = opt2nat (fst_same (a + b) c (S i))
   → ∀ n₀ n, n = S di + n₀ →
      (second n (a + b) i + second n c i)%rm.[i] =
      (second n (second n a i + second n b i) i + second n c i)%rm.[i].
 Proof.
 intros a b c i di Hdi n₀ n Hn.
+erewrite <- tr_add_rm_add_distr; try eassumption; simpl.
+rewrite nat_compare_add_succ.
 bbb.
 *)
 
