@@ -2683,12 +2683,13 @@ Theorem yyy : ∀ a b c i di,
      (second n (second n a i + second n b i) i + second n c i)%rm.[i].
 Proof.
 intros a b c i di Hdi n₀ n Hn; simpl.
-apply rm_add_i_compat_r.
-intros j; simpl.
+apply rm_add_i_compat_r; intros j; simpl.
 remember (Nat.compare j (i + S n)) as cmp eqn:Hcmp .
 symmetry in Hcmp.
 destruct cmp; auto.
 apply nat_compare_lt in Hcmp.
+bbb.
+
 unfold rm_add_i; simpl.
 rename Hcmp into Hji.
 remember (Nat.compare j (i + S n)) as cmp eqn:Hcmp .
@@ -2703,6 +2704,58 @@ destruct cmp.
  destruct s₁ as [di₁| ].
   remember Hs₁ as H; clear HeqH.
   apply fst_same_fin_eq_second with (n := n) (n₀ := n₀) in Hs₁.
+   rewrite Nat.add_succ_r; simpl.
+   remember (fst_same (second n a i) (second n b i) (S j)) as s₂ eqn:Hs₂ .
+   symmetry in Hs₂.
+   destruct s₂ as [di₂| ].
+    symmetry in Hs₁; rewrite H in Hs₁.
+    apply fst_same_iff in Hs₁.
+    apply fst_same_iff in Hs₂.
+    destruct Hs₁ as (Hn₁, Hs₁).
+    destruct Hs₂ as (Hn₂, Hs₂).
+    destruct (lt_dec di₁ di₂) as [H₁| H₁].
+     rename H into Hs.
+     remember H₁ as H; clear HeqH.
+     apply Hn₂ in H.
+     simpl in H.
+     rewrite Nat.add_succ_r in H.
+     remember (Nat.compare (j + di₁) (i + n)) as cmp₂ eqn:Hcmp₂ .
+     symmetry in Hcmp₂.
+     destruct cmp₂; try discriminate H.
+     apply nat_compare_lt in Hcmp₂.
+     apply fst_same_iff in Hs.
+     destruct Hs as (Hnn, Hs); simpl in Hs.
+     rewrite H in Hs.
+     destruct b .[ S (j + di₁)]; discriminate Hs.
+
+     apply Nat.nlt_ge in H₁.
+     destruct (lt_dec di₂ di₁) as [H₂| H₂].
+      rename H into Hs.
+      remember H₂ as H; clear HeqH.
+      apply Hn₁ in H.
+      simpl in H.
+      rewrite Nat.add_succ_r in H.
+      remember (Nat.compare (j + di₂) (j + n)) as cmp₂ eqn:Hcmp₂ .
+      symmetry in Hcmp₂.
+      destruct cmp₂; try discriminate H.
+      apply nat_compare_lt in Hcmp₂.
+      remember (Nat.compare (j + di₂) (i + n)) as cmp₃ eqn:Hcmp₃ .
+      symmetry in Hcmp₃.
+      destruct cmp₃.
+       apply nat_compare_eq in Hcmp₃.
+bbb.
+       clear Hcmp.
+       apply fst_same_iff in Hs.
+       simpl in Hs.
+       destruct Hs as (Hnn, Hs).
+       simpl in Hs₁.
+       rewrite Nat.add_succ_r in Hs₁.
+       clear Hs₁.
+       simpl in Hs₂.
+       rewrite Nat.add_succ_r in Hs₂.
+       clear Hs₂.
+       rewrite Hcmp₃ in Hcmp₂.
+       rewrite Hcmp₃ in H.
 bbb.
 
 intros a b c i di Hdi n₀ n Hn; simpl.
