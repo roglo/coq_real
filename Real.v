@@ -2524,16 +2524,21 @@ destruct s as [di| ]; simpl.
  do 2 rewrite orb_true_r; reflexivity.
 Qed.
 
+Definition second n a i := List.last (trunc_from n a i) false.
+Arguments second n%nat a%rm i%nat.
+
+Definition add_second n a b i :=
+  List.last (tr_add (trunc_from n a i) (trunc_from n b i)) false.
+Arguments add_second n%nat a%rm b%rm i%nat.
+
 (* (a+b)'' = a''+b'' *)
 Theorem tr_add_rm_add_distr : ∀ a b i di,
   di = opt2nat (fst_same a b (S i))
-  → ∀ n,
-    List.last
-      (trunc_from (S di + n) (a + b) i) false =
-    List.last
-      (tr_add (trunc_from (S di + n) a i) (trunc_from (S di + n) b i)) false.
+  → ∀ n₀ n, n = S di + n₀ → second n (a + b) i = add_second n a b i.
 Proof.
-intros a b i di Hdi n.
+intros a b i di Hdi n₀ n Hn.
+subst n; rename n₀ into n.
+unfold second, add_second.
 rewrite Nat.add_succ_l.
 rewrite last_trunc_from.
 unfold tr_add.
@@ -2549,10 +2554,20 @@ destruct s as [di₁| ]; simpl in Hdi.
  eapply rm_add_i_vs_tr_add_carry_no_relay; eauto .
 Qed.
 
+bbb.
+
+ill typed:
+
 (* (a+b)''+c'' = (a''+b'')+c'' *)
 Theorem yyy : ∀ a b c i di,
   di = opt2nat (fst_same a (b + c) (S i))
-  → ∀ n,
+  → ∀ n₀ n, n = S di + n₀ →
+     add_second n (second n (a + b) i) (second n c i) i =
+     add_second n (add_second n a b i) (second n c i) i.
+Proof.
+bbb.
+
+
     List.last
       (tr_add (trunc_from (S di + n) (a + b) i) (trunc_from (S di + n) c i))
       false =
@@ -2563,6 +2578,18 @@ Theorem yyy : ∀ a b c i di,
       false.
 Proof.
 intros a b c i di Hdi n.
+unfold tr_add.
+rewrite last_tr_add_with_carry.
+ rewrite last_tr_add_with_carry.
+  f_equal.
+bbb.
+
+intros a b c i di Hdi n.
+rewrite Nat.add_succ_l.
+unfold tr_add.
+remember (fst_same a (b + c) (S i)) as s eqn:Hs .
+symmetry in Hs.
+destruct s as [di₁| ]; simpl in Hdi.
 bbb.
 *)
 
