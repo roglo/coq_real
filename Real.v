@@ -2679,6 +2679,9 @@ Theorem vvv : ∀ a b i di,
     → ((a + b)%rm).[j] = ((second n a i + second n b i)%rm).[ j].
 Proof.
 intros a b i di Hs n₀ n j Hn Hj; simpl.
+bbb.
+   probably false
+
 unfold rm_add_i; simpl.
 rewrite Nat.add_succ_r.
 remember (Nat.compare j (S (i + n))) as cmp eqn:Hcmp .
