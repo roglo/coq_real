@@ -2672,41 +2672,6 @@ destruct s as [di₁| ].
   exfalso; revert Hcmp; apply Nat.lt_irrefl.
 Qed.
 
-(*
-Theorem uuu : ∀ a b i di,
-  fst_same a b (S i) = Some di
-  → ∀ n₀ n, n = S di + n₀ →
-    ∀ j dj, j < i + S n →
-    fst_same a b (S j) = Some dj
-    → fst_same (second n a i) (second n b i) (S j) = Some dj.
-Proof.
-intros a b i di Hdi n₀ n Hn j dj Hj Hdj.
-apply fst_same_iff in Hdi; simpl in Hdi.
-destruct Hdi as (Hni, Hdi).
-apply fst_same_iff in Hdj; simpl in Hdj.
-destruct Hdj as (Hnj, Hdj).
-apply fst_same_iff.
-split.
- intros dk Hdk; simpl.
- rewrite Nat.add_succ_r.
- remember (Nat.compare (j + dk) (i + n)) as cmp eqn:Hcmp .
- symmetry in Hcmp.
- destruct cmp.
-  apply nat_compare_eq in Hcmp.
-  destruct (le_dec (S n₀) dk) as [H₁| H₁].
-   assert (dk - S n₀ < dj) as H by omega.
-   apply Hnj in H.
-   rewrite Nat.add_sub_assoc in H; auto.
-   rewrite Hcmp, Hn in H.
-   rewrite Nat.add_succ_l, <- Nat.add_succ_r in H.
-   rewrite Nat.add_assoc, Nat.add_sub in H.
-   rewrite Hdi in H.
-   destruct b .[ S (i + di)]; discriminate H.
-
-   apply Nat.nle_gt in H₁.
-bbb.
-*)
-
 Theorem vvv : ∀ a b i di,
   fst_same a b (S i) = Some di
   → ∀ n₀ n j, n = S di + n₀ →
