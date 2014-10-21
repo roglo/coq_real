@@ -2672,23 +2672,15 @@ destruct s as [di₁| ].
   exfalso; revert Hcmp; apply Nat.lt_irrefl.
 Qed.
 
-(*
-  Hn₁ : ∀ dj : nat,
-        dj < di₁ → rm_add_i a b (S (i + dj)) = negb c .[ S (i + dj)]
-  Hs₁ : rm_add_i a b (S (i + di₁)) = c .[ S (i + di₁)]
-  Hdi₂ : fst_same a b (S i) = Some di₂
-  Hdi : di = S (max di₁ di₂)
-  n₀ : nat
-  dj : nat
-  j : nat
-  Heqj : j = S (i + dj)
-  Hdj : rm_add_i a b j = negb c .[ j]
-  n : nat
-  Heqn : n = S di + n₀
-  Hcmp : j ≤ i + n
-  ============================
-   ((a + b)%rm) .[ j] = ((second n a i + second n b i)%rm) .[ j]
-*)
+Theorem uuu : ∀ a b i di,
+  fst_same a b (S i) = Some di
+  → ∀ n₀ n, n = S di + n₀ →
+    ∀ j dj, j < i + S n →
+    fst_same a b (S j) = Some dj
+    → fst_same (second n a i) (second n b i) (S j) = Some dj.
+Proof.
+intros a b i di Hdi n₀ n Hn j dj Hj Hdj.
+bbb.
 
 Theorem vvv : ∀ a b i di,
   fst_same a b (S i) = Some di
@@ -2696,10 +2688,7 @@ Theorem vvv : ∀ a b i di,
     j < i + S n
     → ((a + b)%rm).[j] = ((second n a i + second n b i)%rm).[ j].
 Proof.
-intros a b i di Hs n₀ n j Hn Hj.
-bbb.
-
-intros a b i j di n₀ n Hn Hj; simpl.
+intros a b i di Hs n₀ n j Hn Hj; simpl.
 unfold rm_add_i; simpl.
 rewrite Nat.add_succ_r.
 remember (Nat.compare j (S (i + n))) as cmp eqn:Hcmp .
@@ -2710,11 +2699,14 @@ destruct cmp.
  rewrite Hcmp in Hj.
  exfalso; revert Hj; apply Nat.lt_irrefl.
 
- f_equal.
+ f_equal; clear Hcmp.
  remember (fst_same a b (S j)) as s₁ eqn:Hs₁ .
  symmetry in Hs₁.
  destruct s₁ as [di₁| ].
-  clear Hcmp.
+  rewrite <- Nat.add_succ_r in Hj.
+  erewrite uuu; try eassumption.
+bbb.
+
   remember (fst_same (second n a i) (second n b i) (S j)) as s₂ eqn:Hs₂ .
   symmetry in Hs₂.
   destruct s₂ as [di₂| ].
@@ -2726,6 +2718,7 @@ destruct cmp.
    rewrite Nat.add_succ_r in Hs₂.
    remember (Nat.compare (j + di₂) (i + n)) as cmp eqn:Hcmp .
    symmetry in Hcmp.
+   Focus 1.
 bbb.
 *)
 
