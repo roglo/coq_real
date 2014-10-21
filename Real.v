@@ -2672,6 +2672,7 @@ destruct s as [di₁| ].
   exfalso; revert Hcmp; apply Nat.lt_irrefl.
 Qed.
 
+(*
 Theorem uuu : ∀ a b i di,
   fst_same a b (S i) = Some di
   → ∀ n₀ n, n = S di + n₀ →
@@ -2680,7 +2681,31 @@ Theorem uuu : ∀ a b i di,
     → fst_same (second n a i) (second n b i) (S j) = Some dj.
 Proof.
 intros a b i di Hdi n₀ n Hn j dj Hj Hdj.
+apply fst_same_iff in Hdi; simpl in Hdi.
+destruct Hdi as (Hni, Hdi).
+apply fst_same_iff in Hdj; simpl in Hdj.
+destruct Hdj as (Hnj, Hdj).
+apply fst_same_iff.
+split.
+ intros dk Hdk; simpl.
+ rewrite Nat.add_succ_r.
+ remember (Nat.compare (j + dk) (i + n)) as cmp eqn:Hcmp .
+ symmetry in Hcmp.
+ destruct cmp.
+  apply nat_compare_eq in Hcmp.
+  destruct (le_dec (S n₀) dk) as [H₁| H₁].
+   assert (dk - S n₀ < dj) as H by omega.
+   apply Hnj in H.
+   rewrite Nat.add_sub_assoc in H; auto.
+   rewrite Hcmp, Hn in H.
+   rewrite Nat.add_succ_l, <- Nat.add_succ_r in H.
+   rewrite Nat.add_assoc, Nat.add_sub in H.
+   rewrite Hdi in H.
+   destruct b .[ S (i + di)]; discriminate H.
+
+   apply Nat.nle_gt in H₁.
 bbb.
+*)
 
 Theorem vvv : ∀ a b i di,
   fst_same a b (S i) = Some di
@@ -2704,22 +2729,38 @@ destruct cmp.
  symmetry in Hs₁.
  destruct s₁ as [di₁| ].
   rewrite <- Nat.add_succ_r in Hj.
-  erewrite uuu; try eassumption.
-bbb.
-
   remember (fst_same (second n a i) (second n b i) (S j)) as s₂ eqn:Hs₂ .
   symmetry in Hs₂.
   destruct s₂ as [di₂| ].
-   apply fst_same_iff in Hs₁; simpl in Hs₁.
-   destruct Hs₁ as (Hn₁, Hs₁).
-   apply fst_same_iff in Hs₂.
-   destruct Hs₂ as (Hn₂, Hs₂).
-   simpl in Hs₂.
+   apply fst_same_iff in Hs₂; simpl in Hs₂.
    rewrite Nat.add_succ_r in Hs₂.
+   destruct Hs₂ as (Hn₂, Hs₂).
    remember (Nat.compare (j + di₂) (i + n)) as cmp eqn:Hcmp .
    symmetry in Hcmp.
-   Focus 1.
-bbb.
+   destruct cmp.
+    apply nat_compare_eq in Hcmp.
+    clear Hs₂.
+    apply fst_same_iff in Hs; simpl in Hs.
+    destruct Hs as (Hnn, Hs).
+    apply fst_same_iff in Hs₁; simpl in Hs₁.
+    destruct Hs₁ as (Hn₁, Hs₁).
+    destruct di₂.
+     rewrite Nat.add_0_r in Hcmp; subst j.
+     clear Hj.
+     clear Hn₂.
+     destruct (lt_dec (n + di₁) di) as [H₁| H₁].
+      apply Hnn in H₁.
+      rewrite Nat.add_assoc, Hs₁ in H₁.
+      destruct b .[ S (i + n + di₁)]; discriminate H₁.
+
+      apply Nat.nlt_ge in H₁.
+      destruct di₁.
+       rewrite Nat.add_0_r in H₁.
+       rewrite Nat.add_0_r in Hs₁.
+       rewrite Nat.add_0_r.
+       clear Hn₁.
+       clear H₁.
+bbb. blocked.
 *)
 
 Theorem www : ∀ a b c i di di₁ di₂,
