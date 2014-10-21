@@ -2867,6 +2867,7 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
      rewrite Nat.add_sub.
      simpl; rewrite Nat.add_comm.
      reflexivity.
+     Unfocus.
 bbb.
     erewrite www; try eassumption.
 bbb.
