@@ -2673,17 +2673,30 @@ destruct s as [di₁| ].
 Qed.
 
 (*
-  → (second n (a + b) j).[j] = ((second n a i + second n b i)%rm).[j].
+  Hn₁ : ∀ dj : nat,
+        dj < di₁ → rm_add_i a b (S (i + dj)) = negb c .[ S (i + dj)]
+  Hs₁ : rm_add_i a b (S (i + di₁)) = c .[ S (i + di₁)]
+  Hdi₂ : fst_same a b (S i) = Some di₂
+  Hdi : di = S (max di₁ di₂)
+  n₀ : nat
+  dj : nat
+  j : nat
+  Heqj : j = S (i + dj)
+  Hdj : rm_add_i a b j = negb c .[ j]
+  n : nat
+  Heqn : n = S di + n₀
+  Hcmp : j ≤ i + n
+  ============================
+   ((a + b)%rm) .[ j] = ((second n a i + second n b i)%rm) .[ j]
 *)
 
-Theorem vvv : ∀ a b i j di n₀ n,
-  fst_same a b i = Some di
-  → n = S di + n₀
-  → j < i + S n
-  → ((a + b)%rm).[j] = ((second n a i + second n b i)%rm).[ j].
+Theorem vvv : ∀ a b i di,
+  fst_same a b (S i) = Some di
+  → ∀ n₀ n j, n = S di + n₀ →
+    j < i + S n
+    → ((a + b)%rm).[j] = ((second n a i + second n b i)%rm).[ j].
 Proof.
-intros a b i j di n₀ n Hs Hn Hj.
-Abort. (* à voir...
+intros a b i di Hs n₀ n j Hn Hj.
 bbb.
 
 intros a b i j di n₀ n Hn Hj; simpl.
@@ -2754,15 +2767,12 @@ split.
   do 2 rewrite fold_rm_add_i.
   apply nat_compare_lt in Hcmp.
   symmetry.
-  remember (S di + n₀) as n.
-  do 2 rewrite <- Nat.add_succ_l.
-  rewrite <- Heqn.
-  unfold lt in Hcmp.
-  rewrite Nat.add_succ_l.
-  remember (S (i + dj)) as j.
+  eapply vvv with (n₀ := n₀ + di - di₂); eauto .
+   simpl; apply eq_S.
+   rewrite Nat.add_sub_assoc.
+    symmetry; rewrite Nat.add_comm, Nat.add_sub.
+    apply Nat.add_comm.
 bbb.
-  Now, go to vvv above and try to redefine it, check it here and if
-  ok, prove it.
 *)
 
 (* (a+b)''+c'' = (a''+b'')+c'' *)
