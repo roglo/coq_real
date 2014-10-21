@@ -2677,14 +2677,16 @@ Qed.
 *)
 
 Theorem vvv : ∀ a b i j di n₀ n,
-  n = S di + n₀
+  fst_same a b i = Some di
+  → n = S di + n₀
   → j < i + S n
   → ((a + b)%rm).[j] = ((second n a i + second n b i)%rm).[ j].
 Proof.
-intros a b i j di n₀ n Hn Hj; simpl.
+intros a b i j di n₀ n Hs Hn Hj.
+Abort. (* à voir...
 bbb.
-  first: is this theorem true?
 
+intros a b i j di n₀ n Hn Hj; simpl.
 unfold rm_add_i; simpl.
 rewrite Nat.add_succ_r.
 remember (Nat.compare j (S (i + n))) as cmp eqn:Hcmp .
@@ -2714,11 +2716,15 @@ destruct cmp.
 bbb.
 *)
 
-Theorem www : ∀ a b c i di,
-  fst_same (a + b) c (S i) = Some di
+Theorem www : ∀ a b c i di di₁ di₂,
+  fst_same (a + b) c (S i) = Some di₁
+  → fst_same a b (S i) = Some di₂
+  → di = S (max di₁ di₂)
   → ∀ n₀ n, n = S di + n₀ →
-    fst_same (second n a i + second n b i) (second n c i) (S i) = Some di.
+    fst_same (second n a i + second n b i) (second n c i) (S i) = Some di₁.
 Proof.
+bbb.
+
 intros a b c i di Hdi n₀ n Hn.
 apply fst_same_iff.
 apply fst_same_iff in Hdi; simpl in Hdi.
@@ -2750,6 +2756,7 @@ split.
   rewrite Nat.add_succ_l.
   remember (S (i + dj)) as j.
 bbb.
+*)
 
 (* (a+b)''+c'' = (a''+b'')+c'' *)
 Theorem yyy : ∀ a b c i d₁ d₂ di,
@@ -2791,6 +2798,8 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
    remember Hs₂ as H; clear HeqH.
    eapply fst_same_fin_eq_second with (n := n) (n₀ := S n₀ + di - d₂) in H.
     rewrite H.
+    subst d₁ d₂.
+    erewrite www; try eassumption.
 bbb.
  must cancel each other:
    ⊕ match Nat.compare (i + di₁) (i + n) with
