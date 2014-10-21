@@ -2723,12 +2723,10 @@ Theorem www : ∀ a b c i di di₁ di₂,
   → ∀ n₀ n, n = S di + n₀ →
     fst_same (second n a i + second n b i) (second n c i) (S i) = Some di₁.
 Proof.
-bbb.
-
-intros a b c i di Hdi n₀ n Hn.
+intros a b c i di di₁ di₂ Hdi₁ Hdi₂ Hdi n₀ n Hn.
 apply fst_same_iff.
-apply fst_same_iff in Hdi; simpl in Hdi.
-destruct Hdi as (Hn₁, Hs₁).
+apply fst_same_iff in Hdi₁; simpl in Hdi₁.
+destruct Hdi₁ as (Hn₁, Hs₁).
 split.
  intros dj Hdj; simpl.
  rewrite Nat.add_succ_r; simpl.
@@ -2739,9 +2737,17 @@ split.
   apply nat_compare_eq in Hcmp.
   apply Nat.add_cancel_l in Hcmp; subst dj.
   rewrite Nat.add_succ_l, <- Nat.add_succ_r in Hdj.
-  apply Nat.lt_add_lt_sub_l in Hdj.
-  rewrite Nat.sub_diag in Hdj.
-  exfalso; revert Hdj; apply Nat.nlt_0_r.
+  apply Nat.succ_lt_mono in Hdj.
+  rewrite <- Nat.add_succ_r in Hdj.
+  rewrite Hdi in Hdj.
+  simpl in Hdj.
+  apply Nat.succ_lt_mono in Hdj.
+  apply Nat.nle_gt in Hdj.
+  exfalso; apply Hdj.
+  apply Nat.le_trans with (m := max di₁ di₂); [ apply Nat.le_max_l | idtac ].
+  apply Nat.le_sub_le_add_l.
+  rewrite Nat.sub_diag.
+  apply Nat.le_0_l.
 
   apply Hn₁ in Hdj; simpl.
   rewrite <- Hdj.
@@ -2749,13 +2755,14 @@ split.
   apply nat_compare_lt in Hcmp.
   symmetry.
   remember (S di + n₀) as n.
-  rewrite <- Nat.add_succ_l.
-  rewrite <- Nat.add_succ_l.
+  do 2 rewrite <- Nat.add_succ_l.
   rewrite <- Heqn.
   unfold lt in Hcmp.
   rewrite Nat.add_succ_l.
   remember (S (i + dj)) as j.
 bbb.
+  Now, go to vvv above and try to redefine it, check it here and if
+  ok, prove it.
 *)
 
 (* (a+b)''+c'' = (a''+b'')+c'' *)
