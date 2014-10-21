@@ -2681,7 +2681,20 @@ Proof.
 intros a b i di Hs n₀ n j Hn Hj; simpl.
 Abort. (*
 bbb.
-   probably false I need j < S (i + di)
+   false
+   ex: a = 0.000
+       b = 0.000
+       i = 0
+       di = 0
+       n₀ = 0
+       n = S di + n₀ = 1
+       a'' = 0.00100...
+       b'' = 0.00100...
+       j < i + S n = 2
+       j = 1
+       (a+b).[j] = 0
+       (a''+b'').[j] = 1
+   I need j < S (i + di) as an extra hypothesis
 
 unfold rm_add_i; simpl.
 rewrite Nat.add_succ_r.
@@ -2740,6 +2753,11 @@ Theorem www : ∀ a b c i di di₁ di₂,
     fst_same (second n a i + second n b i) (second n c i) (S i) = Some di₁.
 Proof.
 intros a b c i di di₁ di₂ Hdi₁ Hdi₂ Hdi n₀ n Hn.
+Abort. (*
+bbb.
+  probablement faux, manque un hypothèse
+
+(*
 remember Hdi₁ as H; clear HeqH.
 eapply fst_same_fin_eq_second with (n := n) (n₀ := di - di₁ + n₀) in H.
  2: rewrite Hn.
@@ -2751,6 +2769,7 @@ eapply fst_same_fin_eq_second with (n := n) (n₀ := di - di₁ + n₀) in H.
   2: rewrite Nat.add_comm, Nat.add_sub; reflexivity.
 
   rename H into Hdi₃.
+*)
 apply fst_same_iff.
 apply fst_same_iff in Hdi₁; simpl in Hdi₁.
 destruct Hdi₁ as (Hn₁, Hs₁).
@@ -2776,8 +2795,9 @@ split.
   rewrite Nat.sub_diag.
   apply Nat.le_0_l.
 
-  apply Hn₁ in Hdj; simpl.
-  rewrite <- Hdj.
+  remember Hdj as H; clear HeqH.
+  apply Hn₁ in H; simpl.
+  rewrite <- H.
   do 2 rewrite fold_rm_add_i.
   apply nat_compare_lt in Hcmp.
   symmetry.
@@ -2838,6 +2858,15 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
    eapply fst_same_fin_eq_second with (n := n) (n₀ := S n₀ + di - d₂) in H.
     rewrite H.
     subst d₁ d₂.
+    Focus 2.
+    rewrite Nat.add_sub_assoc.
+     rewrite Hn.
+     rewrite Hd₂.
+     symmetry.
+     rewrite Nat.add_comm.
+     rewrite Nat.add_sub.
+     simpl; rewrite Nat.add_comm.
+     reflexivity.
 bbb.
     erewrite www; try eassumption.
 bbb.
