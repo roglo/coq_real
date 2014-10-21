@@ -2567,8 +2567,7 @@ split.
  subst n.
  destruct cmp.
   apply nat_compare_eq in Hcmp.
-  apply Nat.add_cancel_l in Hcmp.
-  subst dj.
+  apply Nat.add_cancel_l in Hcmp; subst dj.
   rewrite Nat.add_succ_l, <- Nat.add_succ_r in Hdj.
   apply Nat.lt_add_lt_sub_l in Hdj.
   rewrite Nat.sub_diag in Hdj.
@@ -2588,6 +2587,9 @@ split.
  rewrite Nat.add_succ_r; simpl.
  simpl in Hs₁; rewrite Hs₁; reflexivity.
 Qed.
+
+Theorem fold_rm_add_i : ∀ a b i, rm_add_i a b i = ((a+b)%rm).[i].
+Proof. reflexivity. Qed.
 
 Theorem nat_compare_add_succ : ∀ i j, Nat.compare i (i + S j) = Lt.
 Proof.
@@ -2670,8 +2672,84 @@ destruct s as [di₁| ].
   exfalso; revert Hcmp; apply Nat.lt_irrefl.
 Qed.
 
-Theorem fold_rm_add_i : ∀ a b i, rm_add_i a b i = ((a+b)%rm).[i].
-Proof. reflexivity. Qed.
+(*
+  → (second n (a + b) j).[j] = ((second n a i + second n b i)%rm).[j].
+*)
+
+Theorem vvv : ∀ a b i j di n₀ n,
+  n = S di + n₀
+  → j < i + S n
+  → ((a + b)%rm).[j] = ((second n a i + second n b i)%rm).[ j].
+Proof.
+intros a b i j di n₀ n Hn Hj; simpl.
+bbb.
+  first: is this theorem true?
+
+unfold rm_add_i; simpl.
+rewrite Nat.add_succ_r.
+remember (Nat.compare j (S (i + n))) as cmp eqn:Hcmp .
+symmetry in Hcmp.
+rewrite Nat.add_succ_r in Hj.
+destruct cmp.
+ apply nat_compare_eq in Hcmp.
+ rewrite Hcmp in Hj.
+ exfalso; revert Hj; apply Nat.lt_irrefl.
+
+ f_equal.
+ remember (fst_same a b (S j)) as s₁ eqn:Hs₁ .
+ symmetry in Hs₁.
+ destruct s₁ as [di₁| ].
+  clear Hcmp.
+  remember (fst_same (second n a i) (second n b i) (S j)) as s₂ eqn:Hs₂ .
+  symmetry in Hs₂.
+  destruct s₂ as [di₂| ].
+   apply fst_same_iff in Hs₁; simpl in Hs₁.
+   destruct Hs₁ as (Hn₁, Hs₁).
+   apply fst_same_iff in Hs₂.
+   destruct Hs₂ as (Hn₂, Hs₂).
+   simpl in Hs₂.
+   rewrite Nat.add_succ_r in Hs₂.
+   remember (Nat.compare (j + di₂) (i + n)) as cmp eqn:Hcmp .
+   symmetry in Hcmp.
+bbb.
+*)
+
+Theorem www : ∀ a b c i di,
+  fst_same (a + b) c (S i) = Some di
+  → ∀ n₀ n, n = S di + n₀ →
+    fst_same (second n a i + second n b i) (second n c i) (S i) = Some di.
+Proof.
+intros a b c i di Hdi n₀ n Hn.
+apply fst_same_iff.
+apply fst_same_iff in Hdi; simpl in Hdi.
+destruct Hdi as (Hn₁, Hs₁).
+split.
+ intros dj Hdj; simpl.
+ rewrite Nat.add_succ_r; simpl.
+ remember (Nat.compare (i + dj) (i + n)) as cmp eqn:Hcmp .
+ symmetry in Hcmp.
+ subst n.
+ destruct cmp.
+  apply nat_compare_eq in Hcmp.
+  apply Nat.add_cancel_l in Hcmp; subst dj.
+  rewrite Nat.add_succ_l, <- Nat.add_succ_r in Hdj.
+  apply Nat.lt_add_lt_sub_l in Hdj.
+  rewrite Nat.sub_diag in Hdj.
+  exfalso; revert Hdj; apply Nat.nlt_0_r.
+
+  apply Hn₁ in Hdj; simpl.
+  rewrite <- Hdj.
+  do 2 rewrite fold_rm_add_i.
+  apply nat_compare_lt in Hcmp.
+  symmetry.
+  remember (S di + n₀) as n.
+  rewrite <- Nat.add_succ_l.
+  rewrite <- Nat.add_succ_l.
+  rewrite <- Heqn.
+  unfold lt in Hcmp.
+  rewrite Nat.add_succ_l.
+  remember (S (i + dj)) as j.
+bbb.
 
 (* (a+b)''+c'' = (a''+b'')+c'' *)
 Theorem yyy : ∀ a b c i d₁ d₂ di,
@@ -2688,7 +2766,6 @@ rewrite nat_compare_add_succ, Nat.add_succ_r.
 remember (fst_same (a + b) c (S i)) as s₁ eqn:Hs₁ .
 symmetry in Hs₁.
 destruct s₁ as [di₁| ]; simpl in Hd₁.
- Focus 1.
  remember Hs₁ as H; clear HeqH.
  eapply fst_same_fin_eq_second with (n := n) (n₀ := S n₀ + di - d₁) in H.
   2: rewrite Hd₁.
@@ -2709,7 +2786,6 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
   remember (fst_same a b (S i)) as s₂ eqn:Hs₂ .
   symmetry in Hs₂.
   destruct s₂ as [di₂| ].
-   Focus 1.
    simpl in Hd₂.
    rename H into Hab₁.
    remember Hs₂ as H; clear HeqH.
