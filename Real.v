@@ -2740,6 +2740,17 @@ Theorem www : ∀ a b c i di di₁ di₂,
     fst_same (second n a i + second n b i) (second n c i) (S i) = Some di₁.
 Proof.
 intros a b c i di di₁ di₂ Hdi₁ Hdi₂ Hdi n₀ n Hn.
+remember Hdi₁ as H; clear HeqH.
+eapply fst_same_fin_eq_second with (n := n) (n₀ := di - di₁ + n₀) in H.
+ 2: rewrite Hn.
+ 2: rewrite Nat.add_assoc.
+ 2: simpl.
+ 2: apply eq_S.
+ 2: rewrite Nat.add_sub_assoc.
+  2: f_equal.
+  2: rewrite Nat.add_comm, Nat.add_sub; reflexivity.
+
+  rename H into Hdi₃.
 apply fst_same_iff.
 apply fst_same_iff in Hdi₁; simpl in Hdi₁.
 destruct Hdi₁ as (Hn₁, Hs₁).
@@ -2770,7 +2781,6 @@ split.
   do 2 rewrite fold_rm_add_i.
   apply nat_compare_lt in Hcmp.
   symmetry.
-Abort. (*
 (*1-*)
 bbb.
   simpl.
