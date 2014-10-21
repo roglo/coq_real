@@ -2679,8 +2679,9 @@ Theorem vvv : ∀ a b i di,
     → ((a + b)%rm).[j] = ((second n a i + second n b i)%rm).[ j].
 Proof.
 intros a b i di Hs n₀ n j Hn Hj; simpl.
+Abort. (*
 bbb.
-   probably false
+   probably false I need j < S (i + di)
 
 unfold rm_add_i; simpl.
 rewrite Nat.add_succ_r.
@@ -2769,6 +2770,15 @@ split.
   do 2 rewrite fold_rm_add_i.
   apply nat_compare_lt in Hcmp.
   symmetry.
+Abort. (*
+(*1-*)
+bbb.
+  simpl.
+  remember (S (i + dj)) as j.
+  remember (S (di + n₀)) as n.
+  clear c Hn₁ Hs₁ Hdj.
+bbb.
+(*-1*)
   eapply vvv with (n₀ := n₀ + di - di₂); eauto .
    simpl; apply eq_S.
    rewrite Nat.add_sub_assoc.
@@ -2818,6 +2828,7 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
    eapply fst_same_fin_eq_second with (n := n) (n₀ := S n₀ + di - d₂) in H.
     rewrite H.
     subst d₁ d₂.
+bbb.
     erewrite www; try eassumption.
 bbb.
  must cancel each other:
