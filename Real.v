@@ -2281,16 +2281,15 @@ destruct s as [di₁| ].
   exfalso; revert Hcmp; apply Nat.lt_irrefl.
 Qed.
 
-Theorem vvv : ∀ a b i di,
-  fst_same a b (S i) = Some di
-  → ∀ n₀ n j, n = S di + n₀ →
-    j < i + S n
-    → j < i + S di
-    → ((a + b)%rm).[j] = ((second n a i + second n b i)%rm).[ j].
+Theorem vvv : ∀ a b i di di₁ di₂ j,
+  fst_same a b (S i + di₁) = Some di₂
+  → di = di₁ + di₂
+  → j < i + S di
+  → ∀ n₀ n, n = S di + n₀ →
+    ((a + b)%rm).[j] = ((second n a i + second n b i)%rm).[ j].
 Proof.
-intros a b i di Hs n₀ n j Hn Hjn Hji; simpl.
+intros a b i di di₁ di₂ j Hs Hdi Hdj n₀ n Hn; simpl.
 bbb.
-   réfléchir... faire un dessin...
 
 unfold rm_add_i; simpl.
 rewrite Nat.add_succ_r.
@@ -2477,6 +2476,8 @@ split.
   rewrite <- Heqn in Hcmp.
   rewrite <- Nat.add_succ_r in Hcmp.
   assert (j < S (i + di)) by omega.
+  rewrite <- Nat.add_succ_r in H0.
+  eapply vvv; try eassumption.
 bbb.
 
 intros a b c i di di₁ di₂ Hdi₁ Hdi₂ Hdi n₀ n Hn.
