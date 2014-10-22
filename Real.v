@@ -2356,29 +2356,44 @@ bbb. blocked.
 
 Theorem www : ∀ a b c i di di₁ di₂,
   fst_same (a + b) c (S i) = Some di₁
-  → fst_same a b (S i) = Some di₂
-  → di = S (max di₁ di₂)
+  → fst_same a b (S i + di₁) = Some di₂
+  → di = di₁ + di₂
   → ∀ n₀ n, n = S di + n₀ →
     fst_same (second n a i + second n b i) (second n c i) (S i) = Some di₁.
 Proof.
 intros a b c i di di₁ di₂ Hdi₁ Hdi₂ Hdi n₀ n Hn.
-Abort. (*
+apply fst_same_iff.
+apply fst_same_iff in Hdi₁; simpl in Hdi₁.
+destruct Hdi₁ as (Hn₁, Hs₁).
+split.
+ intros dj Hdj; simpl.
+ rewrite Nat.add_succ_r; simpl.
+ remember (Nat.compare (i + dj) (i + n)) as cmp eqn:Hcmp .
+ symmetry in Hcmp.
+ subst n.
+ destruct cmp.
+  apply nat_compare_eq in Hcmp.
+  exfalso; omega.
+
+  remember Hdj as H; clear HeqH.
+  apply Hn₁ in H; simpl.
+  rewrite <- H.
+  do 2 rewrite fold_rm_add_i.
+  apply nat_compare_lt in Hcmp.
+  symmetry.
+  simpl.
+  remember (S (i + dj)) as j.
+  remember (S (di + n₀)) as n.
+  apply Nat.succ_lt_mono in Hcmp.
+  rewrite <- Heqj in Hcmp.
+  simpl in Hcmp.
+  rewrite <- Heqn in Hcmp.
+  rewrite <- Nat.add_succ_r in Hcmp.
+  assert (j < S (i + di)) by omega.
+Admitted. (*
 bbb.
-  probablement faux, manque un hypothèse
 
-(*
-remember Hdi₁ as H; clear HeqH.
-eapply fst_same_fin_eq_second with (n := n) (n₀ := di - di₁ + n₀) in H.
- 2: rewrite Hn.
- 2: rewrite Nat.add_assoc.
- 2: simpl.
- 2: apply eq_S.
- 2: rewrite Nat.add_sub_assoc.
-  2: f_equal.
-  2: rewrite Nat.add_comm, Nat.add_sub; reflexivity.
-
-  rename H into Hdi₃.
-*)
+intros a b c i di di₁ di₂ Hdi₁ Hdi₂ Hdi n₀ n Hn.
 apply fst_same_iff.
 apply fst_same_iff in Hdi₁; simpl in Hdi₁.
 destruct Hdi₁ as (Hn₁, Hs₁).
