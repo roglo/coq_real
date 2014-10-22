@@ -2285,10 +2285,97 @@ Theorem vvv : ∀ a b i di,
   fst_same a b (S i) = Some di
   → ∀ n₀ n j, n = S di + n₀ →
     j < i + S n
+    → j < i + S di
     → ((a + b)%rm).[j] = ((second n a i + second n b i)%rm).[ j].
 Proof.
-intros a b i di Hs n₀ n j Hn Hj; simpl.
-Abort. (*
+intros a b i di Hs n₀ n j Hn Hjn Hji; simpl.
+bbb.
+   réfléchir... faire un dessin...
+
+unfold rm_add_i; simpl.
+rewrite Nat.add_succ_r.
+remember (Nat.compare j (S (i + n))) as cmp eqn:Hcmp .
+symmetry in Hcmp.
+rewrite Nat.add_succ_r in Hjn.
+destruct cmp.
+ apply nat_compare_eq in Hcmp.
+ rewrite Hcmp in Hjn.
+ exfalso; revert Hjn; apply Nat.lt_irrefl.
+
+ f_equal; clear Hcmp.
+ remember (fst_same a b (S j)) as s₁ eqn:Hs₁ .
+ symmetry in Hs₁.
+ destruct s₁ as [di₁| ].
+  remember (fst_same (second n a i) (second n b i) (S j)) as s₂ eqn:Hs₂ .
+  symmetry in Hs₂.
+  destruct s₂ as [di₂| ].
+   apply fst_same_iff in Hs₂; simpl in Hs₂.
+   rewrite Nat.add_succ_r in Hs₂.
+   destruct Hs₂ as (Hn₂, Hs₂).
+   remember (Nat.compare (j + di₂) (i + n)) as cmp eqn:Hcmp .
+   symmetry in Hcmp.
+   destruct cmp.
+    apply nat_compare_eq in Hcmp.
+    clear Hs₂.
+    apply fst_same_iff in Hs; simpl in Hs.
+    destruct Hs as (Hnn, Hs).
+    apply fst_same_iff in Hs₁; simpl in Hs₁.
+    destruct Hs₁ as (Hn₁, Hs₁).
+    destruct di₂; [ exfalso; omega | idtac ].
+    Focus 1.
+    pose proof (Hn₂ 0 (Nat.lt_0_succ di₂)) as H.
+    rewrite Nat.add_0_r in H.
+    remember (Nat.compare j (i + n)) as cmp₁ eqn:Hcmp₁ .
+    symmetry in Hcmp₁.
+    destruct cmp₁; try discriminate H.
+    destruct di₁.
+     rewrite Nat.add_0_r in Hs₁.
+     rewrite Hs₁ in H.
+     destruct b .[ S j]; discriminate H.
+
+     rename H into HH.
+     pose proof (Hn₂ di₂ (Nat.lt_succ_diag_r di₂)) as H.
+     remember (Nat.compare (j + di₂) (i + n)) as cmp₂ eqn:Hcmp₂ .
+     symmetry in Hcmp₂.
+     destruct cmp₂; try discriminate H.
+     apply nat_compare_lt in Hcmp₂.
+     apply nat_compare_lt in Hcmp₁.
+bbb.
+
+intros a b i di Hs n₀ n j Hn Hjn Hji; simpl.
+unfold rm_add_i; simpl.
+rewrite Nat.add_succ_r.
+remember (Nat.compare j (S (i + n))) as cmp eqn:Hcmp .
+symmetry in Hcmp.
+rewrite Nat.add_succ_r in Hjn.
+destruct cmp.
+ apply nat_compare_eq in Hcmp.
+ rewrite Hcmp in Hjn.
+ exfalso; revert Hjn; apply Nat.lt_irrefl.
+
+ f_equal; clear Hcmp.
+ remember (fst_same a b (S j)) as s₁ eqn:Hs₁ .
+ symmetry in Hs₁.
+ destruct s₁ as [di₁| ].
+  remember (fst_same (second n a i) (second n b i) (S j)) as s₂ eqn:Hs₂ .
+  symmetry in Hs₂.
+  destruct s₂ as [di₂| ].
+   apply fst_same_iff in Hs₂; simpl in Hs₂.
+   rewrite Nat.add_succ_r in Hs₂.
+   destruct Hs₂ as (Hn₂, Hs₂).
+   remember (Nat.compare (j + di₂) (i + n)) as cmp eqn:Hcmp .
+   symmetry in Hcmp.
+   destruct cmp.
+    apply nat_compare_eq in Hcmp.
+    clear Hs₂.
+    apply fst_same_iff in Hs; simpl in Hs.
+    destruct Hs as (Hnn, Hs).
+    apply fst_same_iff in Hs₁; simpl in Hs₁.
+    destruct Hs₁ as (Hn₁, Hs₁).
+    destruct di₂; [ exfalso; omega | idtac ].
+bbb.
+
+intros a b i di Hs n₀ n j Hn Hjn Hji; simpl.
 bbb.
    false
    ex: a = 0.000
@@ -2390,7 +2477,6 @@ split.
   rewrite <- Heqn in Hcmp.
   rewrite <- Nat.add_succ_r in Hcmp.
   assert (j < S (i + di)) by omega.
-Admitted. (*
 bbb.
 
 intros a b c i di di₁ di₂ Hdi₁ Hdi₂ Hdi n₀ n Hn.
