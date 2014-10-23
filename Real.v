@@ -2494,6 +2494,8 @@ Theorem yyy : ∀ a b c i d₁ d₂ di,
      ((second n a i + second n b i) + second n c i)%rm.[i].
 Proof.
 intros a b c i d₁ d₂ di Hd₁ Hd₂ Hdi n₀ n Hn; simpl.
+bbb.
+
 unfold rm_add_i; simpl.
 rewrite nat_compare_add_succ, Nat.add_succ_r.
 remember (fst_same (a + b) c (S i)) as s₁ eqn:Hs₁ .
