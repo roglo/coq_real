@@ -2281,27 +2281,50 @@ destruct s as [di₁| ].
   exfalso; revert Hcmp; apply Nat.lt_irrefl.
 Qed.
 
-Theorem vvv : ∀ a b i di di₁ di₂ j,
-  fst_same a b (S i + di₁) = Some di₂
-  → di = di₁ + di₂
+Theorem vvv : ∀ a b i di d₁ d₂ j,
+  fst_same a b (S i + d₁) = Some d₂
+  → di = d₁ + d₂
   → j < i + S di
   → ∀ n₀ n, n = S di + n₀ →
     ((a + b)%rm).[j] = ((second n a i + second n b i)%rm).[ j].
 Proof.
-intros a b i di di₁ di₂ j Hs Hdi Hdj n₀ n Hn; simpl.
-bbb.
-
+intros a b i di d₁ d₂ j Hs Hdi Hdj n₀ n Hn; simpl.
 unfold rm_add_i; simpl.
 rewrite Nat.add_succ_r.
 remember (Nat.compare j (S (i + n))) as cmp eqn:Hcmp .
 symmetry in Hcmp.
-rewrite Nat.add_succ_r in Hjn.
 destruct cmp.
  apply nat_compare_eq in Hcmp.
- rewrite Hcmp in Hjn.
- exfalso; revert Hjn; apply Nat.lt_irrefl.
+ exfalso; omega.
 
- f_equal; clear Hcmp.
+ f_equal.
+ apply nat_compare_lt in Hcmp.
+ rename Hcmp into Hjn.
+ remember (fst_same a b (S j)) as s₁ eqn:Hs₁ .
+ symmetry in Hs₁.
+ destruct s₁ as [di₁| ].
+  apply fst_same_iff in Hs; simpl in Hs.
+  destruct Hs as (Hnn, Hs).
+  apply fst_same_iff in Hs₁.
+  destruct Hs₁ as (Hn₁, Hs₁).
+  rewrite <- Nat.add_assoc, <- Hdi in Hs.
+  assert (j + di₁ = i + di) as Hji.
+   destruct (lt_dec (j + di₁) (i + di)) as [H₁| H₁].
+    exfalso.
+bbb.
+
+intros a b i di d₁ d₂ j Hs Hdi Hdj n₀ n Hn; simpl.
+unfold rm_add_i; simpl.
+rewrite Nat.add_succ_r.
+remember (Nat.compare j (S (i + n))) as cmp eqn:Hcmp .
+symmetry in Hcmp.
+destruct cmp.
+ apply nat_compare_eq in Hcmp.
+ exfalso; omega.
+
+ f_equal.
+ apply nat_compare_lt in Hcmp.
+ rename Hcmp into Hjn.
  remember (fst_same a b (S j)) as s₁ eqn:Hs₁ .
  symmetry in Hs₁.
  destruct s₁ as [di₁| ].
