@@ -2298,17 +2298,45 @@ split.
  rewrite Nat.add_assoc in Hs; assumption.
 Qed.
 
-Theorem uuu : ∀ a b i j di dj dk,
+Theorem fst_same_second : ∀ a b i j di dj dk,
   fst_same a b (S i) = Some dk
-  → fst_same a b (S j) = Some dj
   → j = i + di
   → dk = di + dj
   → ∀ n₀ n, n = S dk + n₀ →
     fst_same (second n a i) (second n b i) (S j) = Some dj.
 Proof.
-bbb.
+intros a b i j di dj dk Hs Hj Hk n₀ n Hn.
+apply fst_same_iff; simpl.
+rewrite Nat.add_succ_r.
+split.
+ intros dl Hdl.
+ remember (Nat.compare (j + dl) (i + n)) as cmp eqn:Hcmp .
+ symmetry in Hcmp.
+ destruct cmp.
+  apply nat_compare_eq in Hcmp.
+  exfalso; omega.
 
-Theorem vvv : ∀ a b i di dj dk j,
+  apply nat_compare_lt in Hcmp.
+  apply fst_same_iff in Hs; simpl in Hs.
+  destruct Hs as (Hnn, Hs).
+  assert (di + dl < dk) as H by omega.
+  apply Hnn in H.
+  rewrite Nat.add_assoc, <- Hj in H.
+  assumption.
+
+  apply nat_compare_gt in Hcmp.
+  exfalso; omega.
+
+ remember (Nat.compare (j + dj) (i + n)) as cmp eqn:Hcmp .
+ symmetry in Hcmp.
+ destruct cmp; try reflexivity.
+ apply fst_same_iff in Hs; simpl in Hs.
+ destruct Hs as (Hnn, Hs).
+ rewrite Hk, Nat.add_assoc, <- Hj in Hs.
+ assumption.
+Qed.
+
+Theorem fst_same_add_second : ∀ a b i di dj dk j,
   fst_same a b (S i) = Some dk
   → j = i + di
   → dk = di + dj
@@ -2332,212 +2360,20 @@ destruct cmp.
  f_equal.
  rewrite Nat.add_succ_r; simpl.
  apply nat_compare_lt in Hcmp.
- rename Hcmp into Hjn.
-bbb.
+ clear Hcmp.
+ erewrite fst_same_second; try eassumption.
+ remember (Nat.compare (j + dj) (i + n)) as cmp eqn:Hcmp .
+ symmetry in Hcmp.
+ destruct cmp; [ idtac | reflexivity | idtac ].
+  apply nat_compare_eq in Hcmp.
+  exfalso; omega.
 
-intros a b i di dj dk j Hs Hj Hk n₀ n Hn.
-unfold rm_add_i; simpl.
-unfold rm_add_i; simpl.
-remember (Nat.compare j (i + S n)) as cmp eqn:Hcmp .
-symmetry in Hcmp.
-destruct cmp.
- apply nat_compare_eq in Hcmp.
+  apply nat_compare_gt in Hcmp.
+  exfalso; omega.
+
+ apply nat_compare_gt in Hcmp.
  exfalso; omega.
-
- f_equal.
- apply nat_compare_lt in Hcmp.
- rename Hcmp into Hjn.
- remember (fst_same a b (S j)) as s₁ eqn:Hs₁ .
- symmetry in Hs₁.
- destruct s₁ as [di₁| ].
-  remember (fst_same (second n a i) (second n b i) (S j)) as s₂ eqn:Hs₂ .
-  symmetry in Hs₂.
-  destruct s₂ as [di₂| ].
-   rewrite Nat.add_succ_r.
-bbb.
-
-  fst_same a b (S i) = Some di
-  → j < i + S di
-  → ∀ n₀ n, n = S di + n₀ →
-    ((a + b)%rm).[j] = ((second n a i + second n b i)%rm).[ j].
-Proof.
-intros a b i di j Hs Hdj n₀ n Hn; simpl.
-bbb.
-  cf same_fst_same.
-
-unfold rm_add_i; simpl.
-rewrite Nat.add_succ_r.
-remember (Nat.compare j (S (i + n))) as cmp eqn:Hcmp .
-symmetry in Hcmp.
-destruct cmp.
- apply nat_compare_eq in Hcmp.
- exfalso; omega.
-
- f_equal.
- apply nat_compare_lt in Hcmp.
- rename Hcmp into Hjn.
- remember (fst_same a b (S j)) as s₁ eqn:Hs₁ .
- symmetry in Hs₁.
- destruct s₁ as [di₁| ].
-  apply fst_same_iff in Hs; simpl in Hs.
-  destruct Hs as (Hnn, Hs).
-  apply fst_same_iff in Hs₁.
-  destruct Hs₁ as (Hn₁, Hs₁).
-  rewrite <- Nat.add_assoc, <- Hdi in Hs.
-  assert (j + di₁ = i + di) as Hji.
-   destruct (lt_dec (j + di₁) (i + di)) as [H₁| H₁].
-    exfalso.
-bbb.
-
-intros a b i di d₁ d₂ j Hs Hdi Hdj n₀ n Hn; simpl.
-unfold rm_add_i; simpl.
-rewrite Nat.add_succ_r.
-remember (Nat.compare j (S (i + n))) as cmp eqn:Hcmp .
-symmetry in Hcmp.
-destruct cmp.
- apply nat_compare_eq in Hcmp.
- exfalso; omega.
-
- f_equal.
- apply nat_compare_lt in Hcmp.
- rename Hcmp into Hjn.
- remember (fst_same a b (S j)) as s₁ eqn:Hs₁ .
- symmetry in Hs₁.
- destruct s₁ as [di₁| ].
-  remember (fst_same (second n a i) (second n b i) (S j)) as s₂ eqn:Hs₂ .
-  symmetry in Hs₂.
-  destruct s₂ as [di₂| ].
-   apply fst_same_iff in Hs₂; simpl in Hs₂.
-   rewrite Nat.add_succ_r in Hs₂.
-   destruct Hs₂ as (Hn₂, Hs₂).
-   remember (Nat.compare (j + di₂) (i + n)) as cmp eqn:Hcmp .
-   symmetry in Hcmp.
-   destruct cmp.
-    apply nat_compare_eq in Hcmp.
-    clear Hs₂.
-    apply fst_same_iff in Hs; simpl in Hs.
-    destruct Hs as (Hnn, Hs).
-    apply fst_same_iff in Hs₁; simpl in Hs₁.
-    destruct Hs₁ as (Hn₁, Hs₁).
-    destruct di₂; [ exfalso; omega | idtac ].
-    Focus 1.
-    pose proof (Hn₂ 0 (Nat.lt_0_succ di₂)) as H.
-    rewrite Nat.add_0_r in H.
-    remember (Nat.compare j (i + n)) as cmp₁ eqn:Hcmp₁ .
-    symmetry in Hcmp₁.
-    destruct cmp₁; try discriminate H.
-    destruct di₁.
-     rewrite Nat.add_0_r in Hs₁.
-     rewrite Hs₁ in H.
-     destruct b .[ S j]; discriminate H.
-
-     rename H into HH.
-     pose proof (Hn₂ di₂ (Nat.lt_succ_diag_r di₂)) as H.
-     remember (Nat.compare (j + di₂) (i + n)) as cmp₂ eqn:Hcmp₂ .
-     symmetry in Hcmp₂.
-     destruct cmp₂; try discriminate H.
-     apply nat_compare_lt in Hcmp₂.
-     apply nat_compare_lt in Hcmp₁.
-bbb.
-
-intros a b i di Hs n₀ n j Hn Hjn Hji; simpl.
-unfold rm_add_i; simpl.
-rewrite Nat.add_succ_r.
-remember (Nat.compare j (S (i + n))) as cmp eqn:Hcmp .
-symmetry in Hcmp.
-rewrite Nat.add_succ_r in Hjn.
-destruct cmp.
- apply nat_compare_eq in Hcmp.
- rewrite Hcmp in Hjn.
- exfalso; revert Hjn; apply Nat.lt_irrefl.
-
- f_equal; clear Hcmp.
- remember (fst_same a b (S j)) as s₁ eqn:Hs₁ .
- symmetry in Hs₁.
- destruct s₁ as [di₁| ].
-  remember (fst_same (second n a i) (second n b i) (S j)) as s₂ eqn:Hs₂ .
-  symmetry in Hs₂.
-  destruct s₂ as [di₂| ].
-   apply fst_same_iff in Hs₂; simpl in Hs₂.
-   rewrite Nat.add_succ_r in Hs₂.
-   destruct Hs₂ as (Hn₂, Hs₂).
-   remember (Nat.compare (j + di₂) (i + n)) as cmp eqn:Hcmp .
-   symmetry in Hcmp.
-   destruct cmp.
-    apply nat_compare_eq in Hcmp.
-    clear Hs₂.
-    apply fst_same_iff in Hs; simpl in Hs.
-    destruct Hs as (Hnn, Hs).
-    apply fst_same_iff in Hs₁; simpl in Hs₁.
-    destruct Hs₁ as (Hn₁, Hs₁).
-    destruct di₂; [ exfalso; omega | idtac ].
-bbb.
-
-intros a b i di Hs n₀ n j Hn Hjn Hji; simpl.
-bbb.
-   false
-   ex: a = 0.000
-       b = 0.000
-       i = 0
-       di = 0
-       n₀ = 0
-       n = S di + n₀ = 1
-       a'' = 0.00100...
-       b'' = 0.00100...
-       j < i + S n = 2
-       j = 1
-       (a+b).[j] = 0
-       (a''+b'').[j] = 1
-   I need j < S (i + di) as an extra hypothesis
-
-unfold rm_add_i; simpl.
-rewrite Nat.add_succ_r.
-remember (Nat.compare j (S (i + n))) as cmp eqn:Hcmp .
-symmetry in Hcmp.
-rewrite Nat.add_succ_r in Hj.
-destruct cmp.
- apply nat_compare_eq in Hcmp.
- rewrite Hcmp in Hj.
- exfalso; revert Hj; apply Nat.lt_irrefl.
-
- f_equal; clear Hcmp.
- remember (fst_same a b (S j)) as s₁ eqn:Hs₁ .
- symmetry in Hs₁.
- destruct s₁ as [di₁| ].
-  rewrite <- Nat.add_succ_r in Hj.
-  remember (fst_same (second n a i) (second n b i) (S j)) as s₂ eqn:Hs₂ .
-  symmetry in Hs₂.
-  destruct s₂ as [di₂| ].
-   apply fst_same_iff in Hs₂; simpl in Hs₂.
-   rewrite Nat.add_succ_r in Hs₂.
-   destruct Hs₂ as (Hn₂, Hs₂).
-   remember (Nat.compare (j + di₂) (i + n)) as cmp eqn:Hcmp .
-   symmetry in Hcmp.
-   destruct cmp.
-    apply nat_compare_eq in Hcmp.
-    clear Hs₂.
-    apply fst_same_iff in Hs; simpl in Hs.
-    destruct Hs as (Hnn, Hs).
-    apply fst_same_iff in Hs₁; simpl in Hs₁.
-    destruct Hs₁ as (Hn₁, Hs₁).
-    destruct di₂.
-     rewrite Nat.add_0_r in Hcmp; subst j.
-     clear Hj.
-     clear Hn₂.
-     destruct (lt_dec (n + di₁) di) as [H₁| H₁].
-      apply Hnn in H₁.
-      rewrite Nat.add_assoc, Hs₁ in H₁.
-      destruct b .[ S (i + n + di₁)]; discriminate H₁.
-
-      apply Nat.nlt_ge in H₁.
-      destruct di₁.
-       rewrite Nat.add_0_r in H₁.
-       rewrite Nat.add_0_r in Hs₁.
-       rewrite Nat.add_0_r.
-       clear Hn₁.
-       clear H₁.
-bbb. blocked.
-*)
+Qed.
 
 Theorem www : ∀ a b c i di di₁ di₂,
   fst_same (a + b) c (S i) = Some di₁
