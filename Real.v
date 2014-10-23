@@ -2580,6 +2580,52 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
        simpl in H.
        rewrite Hs₂ in H.
        destruct b .[ S (i + di₂)]; discriminate H.
+
+    remember (Nat.compare (i + di₁) (i + n)) as cmp eqn:Hcmp .
+    symmetry in Hcmp.
+    destruct cmp.
+     apply nat_compare_eq in Hcmp.
+     exfalso; omega.
+
+     apply nat_compare_lt in Hcmp.
+     clear Hcmp.
+     remember (Nat.compare (i + di₂) (i + n)) as cmp eqn:Hcmp .
+     symmetry in Hcmp.
+     destruct cmp.
+      apply nat_compare_eq in Hcmp.
+      remember (fst_same a b (i + d₁)) as s₃ eqn:Hs₃ .
+      symmetry in Hs₃.
+      destruct s₃ as [di₃| ]; simpl in Hd₂.
+       destruct (lt_dec (di₁ + di₃) di₂) as [H₂| H₂].
+        apply fst_same_iff in Hs₂; simpl in Hs₂.
+        destruct Hs₂ as (Hn₂, Hs₂).
+        remember H₂ as H; clear HeqH.
+        apply Hn₂ in H.
+        apply fst_same_iff in Hs₃; simpl in Hs₃.
+        destruct Hs₃ as (Hn₃, Hs₃).
+        rewrite Hd₁, Nat.add_succ_r in Hs₃; simpl in Hs₃.
+        rewrite Nat.add_assoc, Hs₃ in H.
+        destruct b .[ S (i + di₁ + di₃)]; discriminate H.
+
+        exfalso; omega.
+
+       subst d₂.
+       rewrite Nat.add_0_r in Hdi.
+       apply fst_same_iff in Hs₃; simpl in Hs₃.
+       apply fst_same_iff in Hs₂; simpl in Hs₂.
+       destruct Hs₂ as (Hn₂, Hs₂).
+       subst d₁.
+       pose proof (Hs₃ (di₂ - di₁)) as H.
+       rewrite Nat.add_sub_assoc in H; auto.
+        rewrite Nat.add_succ_r, <- Nat.add_succ_l in H.
+        rewrite Nat.add_shuffle0, Nat.add_sub in H.
+        simpl in H.
+        rewrite Hs₂ in H.
+        destruct b .[ S (i + di₂)]; discriminate H.
+
+        omega.
+
+      apply nat_compare_lt in Hcmp.
 bbb.
 
   rewrite H.
