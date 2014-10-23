@@ -2375,14 +2375,17 @@ destruct cmp.
  exfalso; omega.
 Qed.
 
-Theorem www : ∀ a b c i di di₁ di₂,
-  fst_same (a + b) c (S i) = Some di₁
-  → fst_same a b (S i) = Some di
-  → di = di₁ + di₂
-  → ∀ n₀ n, n = S di + n₀ →
-    fst_same (second n a i + second n b i) (second n c i) (S i) = Some di₁.
+Theorem www : ∀ a b c i di dj dk,
+  fst_same (a + b) c (S i) = Some di
+  → fst_same a b (S i) = Some dk
+  → dk = di + dj
+  → ∀ n₀ n, n = S dk + n₀ →
+    fst_same (second n a i + second n b i) (second n c i) (S i) = Some di.
 Proof.
-intros a b c i di di₁ di₂ Hdi₁ Hdi₂ Hdi n₀ n Hn.
+intros a b c i di dj dk Hsi Hs Hdk n₀ n Hn.
+Abort. (*
+bbb.
+
 apply fst_same_iff.
 apply fst_same_iff in Hdi₁; simpl in Hdi₁.
 destruct Hdi₁ as (Hn₁, Hs₁).
@@ -2531,8 +2534,8 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
      rewrite Nat.add_sub.
      simpl; rewrite Nat.add_comm.
      reflexivity.
-     destruct (lt_dec di₁ di₂) as [H₁ | H₂].
      Unfocus.
+     destruct (lt_dec di₁ di₂) as [H₁ | H₂].
 bbb.
     erewrite www; try eassumption.
 bbb.
