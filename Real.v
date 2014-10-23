@@ -2282,29 +2282,30 @@ destruct s as [di₁| ].
 Qed.
 
 Theorem same_fst_same : ∀ a b i di dj,
-  fst_same a b (S i) = Some di
-  → dj < di
-  → fst_same a b (i + S dj) = Some (di - dj).
+  fst_same a b i = Some (di + dj)
+  → fst_same a b (i + di) = Some dj.
 Proof.
-intros a b i di dj Hs Hj.
+intros a b i di dj Hs.
 apply fst_same_iff in Hs; simpl in Hs.
 destruct Hs as (Hn, Hs).
 apply fst_same_iff.
 split.
  intros dk Hdk.
- assert (dj + dk < di) as H by omega.
- apply Hn in H.
- rewrite <- Nat.add_succ_r, <- Nat.add_succ_l, Nat.add_assoc in H.
- assumption.
+ apply Nat.add_lt_mono_l with (p := di) in Hdk.
+ apply Hn in Hdk.
+ rewrite Nat.add_assoc in Hdk; assumption.
 
- rewrite Nat.add_succ_r, <- Nat.add_succ_l.
- apply Nat.lt_le_incl in Hj.
- rewrite Nat.add_sub_assoc; [ idtac | assumption ].
- rewrite Nat.add_shuffle0, Nat.add_sub.
- assumption.
+ rewrite Nat.add_assoc in Hs; assumption.
 Qed.
 
 Theorem vvv : ∀ a b i di j,
+  fst_same a b i = Some (di + S dj)
+  → j = i + di
+  → ∀ n₀ n, n = S di + n₀ →
+    ((a + b)%rm).[j] = ((second n a i + second n b i)%rm).[ j].
+Proof.
+bbb.
+
   fst_same a b (S i) = Some di
   → j < i + S di
   → ∀ n₀ n, n = S di + n₀ →
