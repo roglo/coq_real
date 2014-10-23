@@ -2532,6 +2532,21 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
      eapply le_trans with (m := S di₁).
       apply le_n_S, Nat.nlt_ge.
       intros H.
+      apply fst_same_iff in Hs₂; simpl in Hs₂.
+      destruct Hs₂ as (Hn₂, Hs₂).
+      remember H as HH; clear HeqHH.
+      apply Hn₂ in H.
+      remember (fst_same a b (i + d₁)) as s₃ eqn:Hs₃ .
+      symmetry in Hs₃.
+      destruct s₃ as [di₃| ].
+       simpl in Hd₂.
+       apply fst_same_iff in Hs₃; simpl in Hs₃.
+       destruct Hs₃ as (Hn₃, Hs₃).
+       subst d₂ d₁.
+       destruct di₃.
+        rewrite Nat.add_0_r, Nat.add_succ_r in Hs₃; simpl in Hs₃.
+        rewrite H in Hs₃.
+        destruct b .[ S (i + di₁)]; discriminate Hs₃.
 bbb.
 
 
