@@ -2494,8 +2494,6 @@ Theorem yyy : ∀ a b c i d₁ d₂ di,
      ((second n a i + second n b i) + second n c i)%rm.[i].
 Proof.
 intros a b c i d₁ d₂ di Hd₁ Hd₂ Hdi n₀ n Hn; simpl.
-bbb.
-
 unfold rm_add_i; simpl.
 rewrite nat_compare_add_succ, Nat.add_succ_r.
 remember (fst_same (a + b) c (S i)) as s₁ eqn:Hs₁ .
@@ -2503,15 +2501,39 @@ symmetry in Hs₁.
 destruct s₁ as [di₁| ]; simpl in Hd₁.
  remember Hs₁ as H; clear HeqH.
  eapply fst_same_fin_eq_second with (n := n) (n₀ := S n₀ + di - d₁) in H.
-  2: rewrite Hd₁.
-  2: rewrite Nat.add_sub_assoc.
-   2: omega.
+  Focus 2.
+  rewrite Hd₁.
+  rewrite Nat.add_sub_assoc.
+   rewrite Nat.add_comm, Nat.add_sub.
+   simpl; rewrite Nat.add_comm; assumption.
 
-   2: rewrite Hdi, <- Hd₁.
-   2: apply Nat.le_trans with (m := max d₁ d₂).
-    2: apply Nat.le_max_l.
+   rewrite Hdi, <- Hd₁.
+   apply Nat.le_trans with (m := max d₁ d₂).
+    apply Nat.le_max_l.
 
-    2: omega.
+    rewrite Nat.add_comm, Nat.add_succ_l, <- Nat.add_succ_r.
+    apply Nat.le_sub_le_add_l.
+    rewrite Nat.sub_diag.
+    apply Nat.le_0_l.
+
+  rewrite H.
+  unfold rm_add_i at 1.
+  unfold rm_add_i at 2; simpl.
+  rewrite nat_compare_add_succ, Nat.add_succ_r.
+  clear H.
+  remember (fst_same a b (S i)) as s₂ eqn:Hs₂ .
+  symmetry in Hs₂.
+  destruct s₂ as [di₂| ].
+   erewrite fst_same_fin_eq_second with (n₀ := n - S di₂); try eassumption.
+    Focus 2.
+    rewrite Nat.add_sub_assoc.
+     rewrite Nat.add_comm, Nat.add_sub; reflexivity.
+
+     eapply le_trans with (m := S di₁).
+      apply le_n_S, Nat.nlt_ge.
+      intros H.
+bbb.
+
 
   rewrite H.
   unfold rm_add_i at 1.
