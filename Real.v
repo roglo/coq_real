@@ -2488,7 +2488,7 @@ bbb.
 Theorem yyy : ∀ a b c i d₁ d₂ di,
   d₁ = opt2nat (fst_same (a + b) c (S i))
   → d₂ = opt2nat (fst_same a b (i + d₁))
-  → di = S (max d₁ d₂)
+  → di = S (d₁ + d₂)
   → ∀ n₀ n, n = S di + n₀ →
      (second n (a + b) i + second n c i)%rm.[i] =
      ((second n a i + second n b i) + second n c i)%rm.[i].
@@ -2507,14 +2507,12 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
    rewrite Nat.add_comm, Nat.add_sub.
    simpl; rewrite Nat.add_comm; assumption.
 
-   rewrite Hdi, <- Hd₁.
-   apply Nat.le_trans with (m := max d₁ d₂).
-    apply Nat.le_max_l.
-
-    rewrite Nat.add_comm, Nat.add_succ_l, <- Nat.add_succ_r.
-    apply Nat.le_sub_le_add_l.
-    rewrite Nat.sub_diag.
-    apply Nat.le_0_l.
+   rewrite Nat.add_comm, Hdi, Hd₁.
+   rewrite <- Nat.add_succ_r.
+   rewrite <- Nat.add_assoc.
+   apply Nat.le_sub_le_add_l.
+   rewrite Nat.sub_diag.
+   apply Nat.le_0_l.
 
   rewrite H.
   unfold rm_add_i at 1.
@@ -2533,15 +2531,12 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
       eapply Nat.lt_le_trans; [ eassumption | idtac ].
       rewrite Hn, Hdi; simpl.
       do 2 rewrite <- Nat.add_succ_r.
-      apply le_trans with (m := max d₁ d₂).
-       rewrite Hd₁; simpl.
-       destruct d₂; [ apply Nat.le_succ_diag_r | idtac ].
-       apply le_trans with (m := max di₁ d₂); [ apply Nat.le_max_l | idtac ].
-       apply Nat.le_succ_diag_r.
-
-       apply Nat.le_sub_le_add_l.
-       rewrite Nat.sub_diag.
-       apply Nat.le_0_l.
+      rewrite Hd₁; simpl.
+      rewrite <- Nat.add_succ_r.
+      rewrite <- Nat.add_assoc.
+      apply Nat.le_sub_le_add_l.
+      rewrite Nat.sub_diag.
+      apply Nat.le_0_l.
 
       apply Nat.nlt_ge in H₁.
       remember (fst_same a b (i + d₁)) as s₃ eqn:Hs₃ .
@@ -2559,6 +2554,32 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
         destruct b .[ S (i + di₁ + di₃)]; discriminate H.
 
         apply Nat.nlt_ge in H₂.
+        apply Nat.succ_le_mono in H₂.
+        rewrite <- Nat.add_succ_r, <- Hd₂ in H₂.
+        eapply le_trans; eauto .
+        rewrite Hn, Hdi.
+        apply Nat.succ_le_mono.
+        rewrite <- Nat.add_succ_l, <- Hd₁; simpl.
+        do 3 rewrite <- Nat.add_succ_r.
+        apply Nat.le_sub_le_add_l.
+        rewrite Nat.sub_diag.
+        apply Nat.le_0_l.
+
+       rewrite Hn, Hdi.
+       subst d₂.
+       rewrite Nat.add_0_r in Hdi |- *.
+       rewrite Hd₁; simpl.
+       apply fst_same_iff in Hs₃; simpl in Hs₃.
+       apply fst_same_iff in Hs₂; simpl in Hs₂.
+       destruct Hs₂ as (Hn₂, Hs₂).
+       subst d₁.
+       pose proof (Hs₃ (di₂ - di₁)) as H.
+       rewrite Nat.add_sub_assoc in H; auto.
+       rewrite Nat.add_succ_r, <- Nat.add_succ_l in H.
+       rewrite Nat.add_shuffle0, Nat.add_sub in H.
+       simpl in H.
+       rewrite Hs₂ in H.
+       destruct b .[ S (i + di₂)]; discriminate H.
 bbb.
 
   rewrite H.
