@@ -2399,6 +2399,22 @@ split.
   remember Hdj as H; clear HeqH.
   apply Hn₁ in H; simpl.
   rewrite <- H.
+  symmetry.
+  do 2 rewrite fold_rm_add_i.
+  eapply fst_same_add_second with (dj := di - S dj); try eassumption.
+   rewrite <- Nat.add_succ_r; reflexivity.
+
+   omega.
+
+   reflexivity.
+
+  apply nat_compare_gt in Hcmp.
+  exfalso; omega.
+
+bbb.
+  remember Hdj as H; clear HeqH.
+  apply Hn₁ in H; simpl.
+  rewrite <- H.
   do 2 rewrite fold_rm_add_i.
   apply nat_compare_lt in Hcmp.
   symmetry.
