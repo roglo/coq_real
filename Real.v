@@ -2529,26 +2529,25 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
     rewrite Nat.add_sub_assoc.
      rewrite Nat.add_comm, Nat.add_sub; reflexivity.
 
-     eapply le_trans with (m := S di₁).
-      apply le_n_S, Nat.nlt_ge.
-      intros H.
-      apply fst_same_iff in Hs₂; simpl in Hs₂.
-      destruct Hs₂ as (Hn₂, Hs₂).
-      remember H as HH; clear HeqHH.
-      apply Hn₂ in H.
+     destruct (lt_dec di₂ di₁) as [H₁| H₁].
+      eapply Nat.lt_le_trans; [ eassumption | idtac ].
+      rewrite Hn, Hdi; simpl.
+      do 2 rewrite <- Nat.add_succ_r.
+      apply le_trans with (m := max d₁ d₂).
+       rewrite Hd₁; simpl.
+       destruct d₂; [ apply Nat.le_succ_diag_r | idtac ].
+       apply le_trans with (m := max di₁ d₂); [ apply Nat.le_max_l | idtac ].
+       apply Nat.le_succ_diag_r.
+
+       apply Nat.le_sub_le_add_l.
+       rewrite Nat.sub_diag.
+       apply Nat.le_0_l.
+
+      apply Nat.nlt_ge in H₁.
       remember (fst_same a b (i + d₁)) as s₃ eqn:Hs₃ .
       symmetry in Hs₃.
-      destruct s₃ as [di₃| ].
-       simpl in Hd₂.
-       apply fst_same_iff in Hs₃; simpl in Hs₃.
-       destruct Hs₃ as (Hn₃, Hs₃).
-       subst d₂ d₁.
-       destruct di₃.
-        rewrite Nat.add_0_r, Nat.add_succ_r in Hs₃; simpl in Hs₃.
-        rewrite H in Hs₃.
-        destruct b .[ S (i + di₁)]; discriminate Hs₃.
+      destruct s₃ as [di₃| ]; simpl in Hd₂.
 bbb.
-
 
   rewrite H.
   unfold rm_add_i at 1.
