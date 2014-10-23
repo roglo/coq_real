@@ -2487,7 +2487,7 @@ bbb.
 (* (a+b)''+c'' = (a''+b'')+c'' *)
 Theorem yyy : ∀ a b c i d₁ d₂ di,
   d₁ = opt2nat (fst_same (a + b) c (S i))
-  → d₂ = opt2nat (fst_same a b (i + d₁))
+  → d₂ = opt2nat (fst_same a b (S i + d₁))
   → di = S (d₁ + d₂)
   → ∀ n₀ n, n = S di + n₀ →
      (second n (a + b) i + second n c i)%rm.[i] =
@@ -2527,40 +2527,40 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
     rewrite Nat.add_sub_assoc.
      rewrite Nat.add_comm, Nat.add_sub; reflexivity.
 
-     destruct (lt_dec di₂ di₁) as [H₁| H₁].
+     destruct (lt_dec di₂ (S di₁)) as [H₁| H₁].
       eapply Nat.lt_le_trans; [ eassumption | idtac ].
       rewrite Hn, Hdi; simpl.
       do 2 rewrite <- Nat.add_succ_r.
-      rewrite Hd₁; simpl.
-      rewrite <- Nat.add_succ_r.
+      rewrite Hd₁.
       rewrite <- Nat.add_assoc.
       apply Nat.le_sub_le_add_l.
       rewrite Nat.sub_diag.
       apply Nat.le_0_l.
 
       apply Nat.nlt_ge in H₁.
-      remember (fst_same a b (i + d₁)) as s₃ eqn:Hs₃ .
+      remember (fst_same a b (S i + d₁)) as s₃ eqn:Hs₃ .
       symmetry in Hs₃.
       destruct s₃ as [di₃| ]; simpl in Hd₂.
-       destruct (lt_dec (di₁ + di₃) di₂) as [H₂| H₂].
+       subst d₁ d₂.
+       destruct (lt_dec (S di₁ + di₃) di₂) as [H₂| H₂].
         apply fst_same_iff in Hs₂; simpl in Hs₂.
         destruct Hs₂ as (Hn₂, Hs₂).
         remember H₂ as H; clear HeqH.
         apply Hn₂ in H.
         apply fst_same_iff in Hs₃; simpl in Hs₃.
         destruct Hs₃ as (Hn₃, Hs₃).
-        rewrite Hd₁, Nat.add_succ_r in Hs₃; simpl in Hs₃.
+        rewrite Nat.add_succ_r in Hs₃; simpl in Hs₃.
+        rewrite Nat.add_succ_l, Nat.add_succ_r in H.
         rewrite Nat.add_assoc, Hs₃ in H.
-        destruct b .[ S (i + di₁ + di₃)]; discriminate H.
+        destruct b .[ S (S (i + di₁ + di₃))]; discriminate H.
 
         apply Nat.nlt_ge in H₂.
         apply Nat.succ_le_mono in H₂.
-        rewrite <- Nat.add_succ_r, <- Hd₂ in H₂.
+        rewrite <- Nat.add_succ_r in H₂.
         eapply le_trans; eauto .
         rewrite Hn, Hdi.
-        apply Nat.succ_le_mono.
-        rewrite <- Nat.add_succ_l, <- Hd₁; simpl.
-        do 3 rewrite <- Nat.add_succ_r.
+        remember (S di₁ + S di₃) as x; simpl.
+        do 2 rewrite <- Nat.add_succ_r.
         apply Nat.le_sub_le_add_l.
         rewrite Nat.sub_diag.
         apply Nat.le_0_l.
@@ -2573,11 +2573,9 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
        apply fst_same_iff in Hs₂; simpl in Hs₂.
        destruct Hs₂ as (Hn₂, Hs₂).
        subst d₁.
-       pose proof (Hs₃ (di₂ - di₁)) as H.
+       pose proof (Hs₃ (di₂ - S di₁)) as H.
        rewrite Nat.add_sub_assoc in H; auto.
-       rewrite Nat.add_succ_r, <- Nat.add_succ_l in H.
        rewrite Nat.add_shuffle0, Nat.add_sub in H.
-       simpl in H.
        rewrite Hs₂ in H.
        destruct b .[ S (i + di₂)]; discriminate H.
 
@@ -2589,10 +2587,40 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
 
      apply nat_compare_lt in Hcmp.
      clear Hcmp.
+     assert (di₂ < n) as H.
+      rewrite Hn.
+      apply fst_same_iff in Hs₂; simpl in Hs₂.
+      destruct Hs₂ as (Hn₂, Hs₂).
+      remember (fst_same a b (S i + d₁)) as s₃ eqn:Hs₃ .
+      symmetry in Hs₃.
+      destruct s₃ as [di₃| ]; simpl in Hd₂.
+       apply fst_same_iff in Hs₃; simpl in Hs₃.
+       destruct Hs₃ as (Hn₃, Hs₃).
+       apply Nat.nle_gt.
+       intros H₁.
+       simpl in H₁.
+       assert (d₁ + di₃ < di₂) as H by omega.
+       apply Hn₂ in H.
+       rewrite Nat.add_assoc in H.
+       rewrite Hs₃ in H.
+       destruct b .[ S (i + d₁ + di₃)]; discriminate H.
+
+       subst d₂.
+       rewrite Nat.add_0_r in Hdi.
+
+bbb.
      remember (Nat.compare (i + di₂) (i + n)) as cmp eqn:Hcmp .
      symmetry in Hcmp.
      destruct cmp.
       apply nat_compare_eq in Hcmp.
+      unfold rm_add_i at 1.
+      do 2 rewrite <- Nat.add_succ_r.
+      rewrite <- Hd₁; simpl in Hd₂.
+      remember (fst_same a b (S (i + d₁))) as s₃ eqn:Hs₃ .
+      symmetry in Hs₃.
+      destruct s₃ as [di₃| ]; simpl in Hd₂.
+
+bbb.
       remember (fst_same a b (i + d₁)) as s₃ eqn:Hs₃ .
       symmetry in Hs₃.
       destruct s₃ as [di₃| ]; simpl in Hd₂.
