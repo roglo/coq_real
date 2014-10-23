@@ -2625,7 +2625,24 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
 
         omega.
 
-      apply nat_compare_lt in Hcmp.
+      apply nat_compare_lt in Hcmp; f_equal.
+      remember (fst_same a b (i + d₁)) as s₃ eqn:Hs₃ .
+      symmetry in Hs₃.
+      destruct s₃ as [di₃| ]; simpl in Hd₂.
+       destruct (lt_dec (di₁ + di₃) di₂) as [H₂| H₂].
+        apply fst_same_iff in Hs₂; simpl in Hs₂.
+        destruct Hs₂ as (Hn₂, Hs₂).
+        remember H₂ as H; clear HeqH.
+        apply Hn₂ in H.
+        apply fst_same_iff in Hs₃; simpl in Hs₃.
+        destruct Hs₃ as (Hn₃, Hs₃).
+        rewrite Hd₁, Nat.add_succ_r in Hs₃; simpl in Hs₃.
+        rewrite Nat.add_assoc, Hs₃ in H.
+        destruct b .[ S (i + di₁ + di₃)]; discriminate H.
+
+        apply Nat.nlt_ge in H₂.
+        clear Hcmp.
+        subst d₁ d₂.
 bbb.
 
   rewrite H.
