@@ -2487,8 +2487,8 @@ bbb.
 (* (a+b)''+c'' = (a''+b'')+c'' *)
 Theorem yyy : ∀ a b c i d₁ d₂ di,
   d₁ = opt2nat (fst_same (a + b) c (S i))
-  → d₂ = opt2nat (fst_same a b (S i))
-  → di = max d₁ d₂
+  → d₂ = opt2nat (fst_same a b (i + d₁))
+  → di = S (max d₁ d₂)
   → ∀ n₀ n, n = S di + n₀ →
      (second n (a + b) i + second n c i)%rm.[i] =
      ((second n a i + second n b i) + second n c i)%rm.[i].
