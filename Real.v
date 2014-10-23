@@ -2281,14 +2281,39 @@ destruct s as [di₁| ].
   exfalso; revert Hcmp; apply Nat.lt_irrefl.
 Qed.
 
-Theorem vvv : ∀ a b i di d₁ d₂ j,
-  fst_same a b (S i + d₁) = Some d₂
-  → di = d₁ + d₂
+Theorem same_fst_same : ∀ a b i di dj,
+  fst_same a b (S i) = Some di
+  → dj < di
+  → fst_same a b (i + S dj) = Some (di - dj).
+Proof.
+intros a b i di dj Hs Hj.
+apply fst_same_iff in Hs; simpl in Hs.
+destruct Hs as (Hn, Hs).
+apply fst_same_iff.
+split.
+ intros dk Hdk.
+ assert (dj + dk < di) as H by omega.
+ apply Hn in H.
+ rewrite <- Nat.add_succ_r, <- Nat.add_succ_l, Nat.add_assoc in H.
+ assumption.
+
+ rewrite Nat.add_succ_r, <- Nat.add_succ_l.
+ apply Nat.lt_le_incl in Hj.
+ rewrite Nat.add_sub_assoc; [ idtac | assumption ].
+ rewrite Nat.add_shuffle0, Nat.add_sub.
+ assumption.
+Qed.
+
+Theorem vvv : ∀ a b i di j,
+  fst_same a b (S i) = Some di
   → j < i + S di
   → ∀ n₀ n, n = S di + n₀ →
     ((a + b)%rm).[j] = ((second n a i + second n b i)%rm).[ j].
 Proof.
-intros a b i di d₁ d₂ j Hs Hdi Hdj n₀ n Hn; simpl.
+intros a b i di j Hs Hdj n₀ n Hn; simpl.
+bbb.
+  cf same_fst_same.
+
 unfold rm_add_i; simpl.
 rewrite Nat.add_succ_r.
 remember (Nat.compare j (S (i + n))) as cmp eqn:Hcmp .
@@ -2465,7 +2490,7 @@ bbb. blocked.
 
 Theorem www : ∀ a b c i di di₁ di₂,
   fst_same (a + b) c (S i) = Some di₁
-  → fst_same a b (S i + di₁) = Some di₂
+  → fst_same a b (S i) = Some di
   → di = di₁ + di₂
   → ∀ n₀ n, n = S di + n₀ →
     fst_same (second n a i + second n b i) (second n c i) (S i) = Some di₁.
@@ -2500,6 +2525,8 @@ split.
   rewrite <- Nat.add_succ_r in Hcmp.
   assert (j < S (i + di)) by omega.
   rewrite <- Nat.add_succ_r in H0.
+  rename di₁ into d₁.
+  rename di₂ into d₂.
   eapply vvv; try eassumption.
 bbb.
 
@@ -2601,6 +2628,7 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
      rewrite Nat.add_sub.
      simpl; rewrite Nat.add_comm.
      reflexivity.
+     destruct (lt_dec di₁ di₂) as [H₁ | H₂].
      Unfocus.
 bbb.
     erewrite www; try eassumption.
