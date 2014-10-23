@@ -2298,12 +2298,32 @@ split.
  rewrite Nat.add_assoc in Hs; assumption.
 Qed.
 
-Theorem vvv : ∀ a b i di j,
-  fst_same a b i = Some (di + S dj)
+Theorem vvv : ∀ a b i di dj dk j,
+  fst_same a b i = Some dk
   → j = i + di
-  → ∀ n₀ n, n = S di + n₀ →
+  → dk = di + dj
+  → ∀ n₀ n, n = S dk + n₀ →
     ((a + b)%rm).[j] = ((second n a i + second n b i)%rm).[ j].
 Proof.
+intros a b i di dj dk j Hs Hj Hk n₀ n Hn.
+unfold rm_add_i; simpl.
+unfold rm_add_i; simpl.
+remember (Nat.compare j (i + S n)) as cmp eqn:Hcmp .
+symmetry in Hcmp.
+destruct cmp.
+ apply nat_compare_eq in Hcmp.
+ exfalso; omega.
+
+ f_equal.
+ apply nat_compare_lt in Hcmp.
+ rename Hcmp into Hjn.
+ remember (fst_same a b (S j)) as s₁ eqn:Hs₁ .
+ symmetry in Hs₁.
+ destruct s₁ as [di₁| ].
+  remember (fst_same (second n a i) (second n b i) (S j)) as s₂ eqn:Hs₂ .
+  symmetry in Hs₂.
+  destruct s₂ as [di₂| ].
+   rewrite Nat.add_succ_r.
 bbb.
 
   fst_same a b (S i) = Some di
