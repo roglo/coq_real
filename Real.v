@@ -3012,7 +3012,20 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
               apply nat_compare_gt in Hcmp.
               exfalso; omega.
 
-        Focus 1.
+        subst d₂.
+        rewrite Nat.add_0_r in Hdi.
+        apply fst_same_iff in Hs₃; simpl in Hs₃.
+        unfold rm_add_i at 1; simpl.
+        remember (fst_same a b (S (S (i + di₁)))) as s₄ eqn:Hs₄ .
+        symmetry in Hs₄.
+        destruct s₄ as [di₄| ].
+         apply fst_same_iff in Hs₄; simpl in Hs₄.
+         destruct Hs₄ as (Hn₄, Hs₄).
+         do 2 rewrite <- Nat.add_succ_l in Hs₄.
+         rewrite <- Nat.add_succ_r in Hs₄.
+         rewrite <- Hd₁ in Hs₄; simpl in Hs₄.
+         rewrite Hs₃ in Hs₄.
+         destruct b .[ S (i + d₁ + di₄)]; discriminate Hs₄.
 bbb.
 
       remember (fst_same a b (i + d₁)) as s₃ eqn:Hs₃ .
