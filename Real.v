@@ -2384,8 +2384,6 @@ Theorem www : ∀ a b c i di dj dk,
     fst_same (second n a i + second n b i) (second n c i) (S i) = Some di.
 Proof.
 intros a b c i di dj dk Hsi Hsj Hsk Hdk n₀ n Hns.
-bbb.
-
 apply fst_same_iff; simpl.
 rewrite Nat.add_succ_r.
 apply fst_same_iff in Hsi; simpl in Hsi.
