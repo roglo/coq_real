@@ -2499,19 +2499,17 @@ split.
         exfalso; omega.
 
     apply Nat.nlt_ge in H₁.
-    destruct (le_dec (S di₄ + S dl) n) as [H₂| H₂].
+    destruct (le_dec (S dl + S di₄) n) as [H₂| H₂].
      replace n with (n - S dl + S dl) at 1 by omega.
      rewrite fst_same_second_add.
      replace n with (n - S dl + S dl) at 2 by omega.
-     rewrite fst_same_comm.
-     rewrite fst_same_second_add.
-     rewrite fst_same_comm.
+     rewrite fst_same_comm, fst_same_second_add, fst_same_comm.
      rewrite Nat.add_succ_r.
-     erewrite fst_same_fin_eq_second with (n₀ := n - S dl - S di₄).
+     erewrite fst_same_fin_eq_second with (n₀ := n - (S dl + S di₄)).
       2: eassumption.
 
       2: rewrite Nat.add_sub_assoc; [ idtac | omega ].
-      2: rewrite Nat.add_comm, Nat.add_sub; reflexivity.
+      2: omega.
 
       remember (i + n) as ipn eqn:Hin .
       symmetry in Hin.
