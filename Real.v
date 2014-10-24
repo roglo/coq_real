@@ -2375,6 +2375,39 @@ destruct cmp.
  exfalso; omega.
 Qed.
 
+Theorem fst_same_second_add : ∀ a b i j di n,
+  fst_same (second (n + di) a i) b j = fst_same (second n a (i + di)) b j.
+Proof.
+intros a b i j di n.
+apply fst_same_iff; simpl.
+remember (fst_same (second n a (i + di)) b j) as s₁ eqn:Hs₁ .
+apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
+destruct s₁ as [di₁| ].
+ split.
+  intros dj Hdj.
+  apply Hs₁ in Hdj.
+  rewrite <- Nat.add_succ_l, Nat.add_assoc, Nat.add_shuffle0.
+  assumption.
+
+  rewrite <- Nat.add_succ_l, Nat.add_assoc, Nat.add_shuffle0.
+  destruct Hs₁; assumption.
+
+ intros dj.
+ rewrite <- Nat.add_succ_l, Nat.add_assoc, Nat.add_shuffle0.
+ apply Hs₁.
+Qed.
+
+Theorem second_add_add : ∀ a n i di,
+  (second (n + di) a i = second n a (i + di))%rm.
+Proof.
+intros a n i di.
+unfold rm_eq; intros j; simpl.
+unfold rm_add_i; simpl.
+rewrite <- Nat.add_succ_l, Nat.add_assoc, Nat.add_shuffle0.
+rewrite fst_same_second_add.
+reflexivity.
+Qed.
+
 Theorem www : ∀ a b c i di dj dk,
   fst_same (a + b) c (S i) = Some di
   → fst_same a b (S i + S di) = Some dj
@@ -2466,20 +2499,35 @@ split.
         exfalso; omega.
 
     apply Nat.nlt_ge in H₁.
-    replace (second n a i) with (second (n - S dl) a (i + S dl)) .
-     replace (second n b i) with (second (n - S dl) b (i + S dl)) .
-      erewrite fst_same_second with (n₀ := n - S dl - S di₄).
-       2: rewrite Nat.add_succ_r; eassumption.
+    destruct (le_dec (S di₄ + S dl) n) as [H₂| H₂].
+     replace n with (n - S dl + S dl) at 1 by omega.
+     rewrite fst_same_second_add.
+     replace n with (n - S dl + S dl) at 2 by omega.
+     rewrite fst_same_comm.
+     rewrite fst_same_second_add.
+     rewrite fst_same_comm.
+     rewrite Nat.add_succ_r.
+     erewrite fst_same_fin_eq_second with (n₀ := n - S dl - S di₄).
+      2: eassumption.
 
-       2: rewrite Nat.add_0_r.
-       2: rewrite Nat.add_succ_r; reflexivity.
+      2: rewrite Nat.add_sub_assoc; [ idtac | omega ].
+      2: rewrite Nat.add_comm, Nat.add_sub; reflexivity.
 
-       2: simpl; reflexivity.
+      remember (i + n) as ipn eqn:Hin .
+      symmetry in Hin.
+      destruct ipn.
+       exfalso; omega.
 
-       2: rewrite Nat.add_sub_assoc.
-        2: omega.
+       remember (Nat.compare (i + dl + di₄) ipn) as cmp eqn:Hcmp .
+       symmetry in Hcmp.
+       destruct cmp; [ idtac | reflexivity | idtac ].
+        apply nat_compare_eq in Hcmp.
+        exfalso; omega.
 
-        Focus 2.
+        apply nat_compare_gt in Hcmp.
+        exfalso; omega.
+
+     apply Nat.nle_gt in H₂.
 bbb.
 
 Theorem www_old : ∀ a b c i di dj dk,
