@@ -2906,6 +2906,20 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
           assert (di₂ < S di₁ + di₃) as H by omega.
           clear H₂ H₃.
           rename H into H₁.
+          destruct (lt_dec di₁ di₂) as [H₂| H₂].
+           apply fst_same_iff in Hs₂; simpl in Hs₂.
+           destruct Hs₂ as (Hn₂, Hs₂).
+           apply fst_same_iff in Hs₃; simpl in Hs₃.
+           destruct Hs₃ as (Hn₃, Hs₃).
+           assert (di₂ - S di₁ < di₃) as H by omega.
+           apply Hn₃ in H.
+           rewrite Nat.add_sub_assoc in H; auto.
+           rewrite Nat.add_shuffle0, Nat.add_sub in H.
+           rewrite Hs₂ in H.
+           destruct b .[ S (i + di₂)]; discriminate H.
+
+           apply Nat.nlt_ge in H₂.
+           destruct (lt_dec di₂ di₁) as [H₃| H₃].
 bbb.
 
       remember (fst_same a b (i + d₁)) as s₃ eqn:Hs₃ .
