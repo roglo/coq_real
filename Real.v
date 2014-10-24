@@ -2386,6 +2386,33 @@ Proof.
 intros a b c i di dj dk Hsi Hsj Hsk Hdk n₀ n Hns.
 bbb.
 
+apply fst_same_iff; simpl.
+rewrite Nat.add_succ_r.
+apply fst_same_iff in Hsi; simpl in Hsi.
+destruct Hsi as (Hni, Hsi).
+split.
+ intros dl Hdl.
+ assert (dl < n) as Hln by omega.
+ remember Hdl as H; clear HeqH.
+ apply Hni in H; simpl in H.
+ unfold rm_add_i in H; simpl in H.
+ unfold rm_add_i; simpl.
+ rewrite Nat.add_succ_r.
+ remember (Nat.compare (i + dl) (i + n)) as cmp eqn:Hcmp .
+ symmetry in Hcmp.
+ destruct cmp.
+  apply nat_compare_eq in Hcmp.
+  exfalso; omega.
+
+  clear Hcmp.
+  remember (fst_same a b (S (S (i + dl)))) as s₄ eqn:Hs₄ .
+  symmetry in Hs₄.
+  destruct s₄ as [di₄| ].
+   rename H into Hab.
+   rewrite <- Hab.
+   f_equal.
+bbb.
+
 Theorem www_old : ∀ a b c i di dj dk,
   fst_same (a + b) c (S i) = Some di
   → fst_same a b (S i) = Some dk
