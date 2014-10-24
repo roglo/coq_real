@@ -2408,7 +2408,7 @@ rewrite fst_same_second_add.
 reflexivity.
 Qed.
 
-Theorem www : ∀ a b c i di dj dk,
+Theorem same_fst_same_add_second : ∀ a b c i di dj dk,
   fst_same (a + b) c (S i) = Some di
   → fst_same a b (S i + S di) = Some dj
   → fst_same a b (S i) = Some dk
@@ -2416,6 +2416,7 @@ Theorem www : ∀ a b c i di dj dk,
   → ∀ n₀ n, n = S (S (S di + S dj)) + n₀ →
     fst_same (second n a i + second n b i) (second n c i) (S i) = Some di.
 Proof.
+(* à nettoyer : les deux cas du split sont très semblables, faire un lemme *)
 intros a b c i di dj dk Hsi Hsj Hsk Hdk n₀ n Hns.
 apply fst_same_iff; simpl.
 rewrite Nat.add_succ_r.
@@ -2526,115 +2527,171 @@ split.
         exfalso; omega.
 
      apply Nat.nle_gt in H₂.
-bbb.
+     apply fst_same_iff in Hsj; simpl in Hsj.
+     destruct Hsj as (Hnj, Hsj).
+     apply fst_same_iff in Hs₄; simpl in Hs₄.
+     destruct Hs₄ as (Hn₄, Hs₄).
+     assert (di + dj - dl < di₄) as H by omega.
+     apply Hn₄ in H.
+     rewrite Nat.add_sub_assoc in H; [ idtac | omega ].
+     rewrite Nat.add_shuffle0, Nat.add_sub in H.
+     rewrite Nat.add_succ_r in Hsj; simpl in Hsj.
+     rewrite Nat.add_assoc in H.
+     rewrite Hsj in H.
+     destruct b .[ S (S (i + di + dj))]; discriminate H.
 
-Theorem www_old : ∀ a b c i di dj dk,
-  fst_same (a + b) c (S i) = Some di
-  → fst_same a b (S i) = Some dk
-  → dk = di + dj
-  → ∀ n₀ n, n = S dk + n₀ →
-    fst_same (second n a i + second n b i) (second n c i) (S i) = Some di.
-Proof.
-intros a b c i di dj dk Hsi Hs Hdk n₀ n Hn.
-bbb.
-
-apply fst_same_iff.
-apply fst_same_iff in Hdi₁; simpl in Hdi₁.
-destruct Hdi₁ as (Hn₁, Hs₁).
-split.
- intros dj Hdj; simpl.
- rewrite Nat.add_succ_r; simpl.
- remember (Nat.compare (i + dj) (i + n)) as cmp eqn:Hcmp .
- symmetry in Hcmp.
- subst n.
- destruct cmp.
-  apply nat_compare_eq in Hcmp.
-  exfalso; omega.
-
-  remember Hdj as H; clear HeqH.
-  apply Hn₁ in H; simpl.
-  rewrite <- H.
-  symmetry.
-  do 2 rewrite fold_rm_add_i.
-  eapply fst_same_add_second with (dj := di - S dj); try eassumption.
-   rewrite <- Nat.add_succ_r; reflexivity.
-
-   omega.
-
-   reflexivity.
+   apply fst_same_iff in Hsj; simpl in Hsj.
+   destruct Hsj as (Hnj, Hsj).
+   apply fst_same_iff in Hs₄; simpl in Hs₄.
+   rename H into Hab.
+   pose proof (Hs₄ (di + dj - dl)) as H.
+   rewrite Nat.add_sub_assoc in H; [ idtac | omega ].
+   rewrite Nat.add_shuffle0, Nat.add_sub in H.
+   rewrite Nat.add_succ_r in Hsj; simpl in Hsj.
+   rewrite Nat.add_assoc in H.
+   rewrite Hsj in H.
+   destruct b .[ S (S (i + di + dj))]; discriminate H.
 
   apply nat_compare_gt in Hcmp.
   exfalso; omega.
 
-bbb.
-  remember Hdj as H; clear HeqH.
-  apply Hn₁ in H; simpl.
-  rewrite <- H.
-  do 2 rewrite fold_rm_add_i.
-  apply nat_compare_lt in Hcmp.
-  symmetry.
-  simpl.
-  remember (S (i + dj)) as j.
-  remember (S (di + n₀)) as n.
-  apply Nat.succ_lt_mono in Hcmp.
-  rewrite <- Heqj in Hcmp.
-  simpl in Hcmp.
-  rewrite <- Heqn in Hcmp.
-  rewrite <- Nat.add_succ_r in Hcmp.
-  assert (j < S (i + di)) by omega.
-  rewrite <- Nat.add_succ_r in H0.
-  rename di₁ into d₁.
-  rename di₂ into d₂.
-  eapply vvv; try eassumption.
-bbb.
-
-intros a b c i di di₁ di₂ Hdi₁ Hdi₂ Hdi n₀ n Hn.
-apply fst_same_iff.
-apply fst_same_iff in Hdi₁; simpl in Hdi₁.
-destruct Hdi₁ as (Hn₁, Hs₁).
-split.
- intros dj Hdj; simpl.
- rewrite Nat.add_succ_r; simpl.
- remember (Nat.compare (i + dj) (i + n)) as cmp eqn:Hcmp .
+ assert (di < n) as Hdin by omega.
+ remember (Nat.compare (i + di) (i + n)) as cmp eqn:Hcmp .
  symmetry in Hcmp.
- subst n.
  destruct cmp.
   apply nat_compare_eq in Hcmp.
-  apply Nat.add_cancel_l in Hcmp; subst dj.
-  rewrite Nat.add_succ_l, <- Nat.add_succ_r in Hdj.
-  apply Nat.succ_lt_mono in Hdj.
-  rewrite <- Nat.add_succ_r in Hdj.
-  rewrite Hdi in Hdj.
-  simpl in Hdj.
-  apply Nat.succ_lt_mono in Hdj.
-  apply Nat.nle_gt in Hdj.
-  exfalso; apply Hdj.
-  apply Nat.le_trans with (m := max di₁ di₂); [ apply Nat.le_max_l | idtac ].
-  apply Nat.le_sub_le_add_l.
-  rewrite Nat.sub_diag.
-  apply Nat.le_0_l.
+  exfalso; omega.
 
-  remember Hdj as H; clear HeqH.
-  apply Hn₁ in H; simpl.
-  rewrite <- H.
-  do 2 rewrite fold_rm_add_i.
-  apply nat_compare_lt in Hcmp.
-  symmetry.
-(*1-*)
-bbb.
-  simpl.
-  remember (S (i + dj)) as j.
-  remember (S (di + n₀)) as n.
-  clear c Hn₁ Hs₁ Hdj.
-bbb.
-(*-1*)
-  eapply vvv with (n₀ := n₀ + di - di₂); eauto .
-   simpl; apply eq_S.
-   rewrite Nat.add_sub_assoc.
-    symmetry; rewrite Nat.add_comm, Nat.add_sub.
-    apply Nat.add_comm.
-bbb.
-*)
+  clear Hcmp.
+  remember Hsi as H; clear HeqH.
+  unfold rm_add_i in H; simpl in H.
+  unfold rm_add_i; simpl.
+  rewrite Nat.add_succ_r.
+  remember (Nat.compare (i + di) (i + n)) as cmp eqn:Hcmp .
+  symmetry in Hcmp.
+  destruct cmp.
+   apply nat_compare_eq in Hcmp.
+   exfalso; omega.
+
+   clear Hcmp.
+   remember (fst_same a b (S (S (i + di)))) as s₄ eqn:Hs₄ .
+   symmetry in Hs₄.
+   destruct s₄ as [di₄| ].
+    rename H into Hab.
+    rewrite <- Hab.
+    f_equal.
+    destruct (lt_dec di dk) as [H₁| H₁].
+     erewrite fst_same_second with (dj := dk - S di) (n₀ := n - S dk).
+      2: eassumption.
+
+      2: rewrite <- Nat.add_succ_r; reflexivity.
+
+      2: omega.
+
+      2: omega.
+
+      remember (i + n) as ipn eqn:Hin .
+      symmetry in Hin.
+      destruct ipn.
+       exfalso; omega.
+
+       assert (di₄ = dk - S di) as H.
+        destruct (lt_dec di₄ (dk - S di)) as [H₂| H₂].
+         assert (di₄ + S di < dk) as H by omega.
+         apply fst_same_iff in Hsk; simpl in Hsk.
+         destruct Hsk as (Hnk, Hsk).
+         apply Hnk in H.
+         apply fst_same_iff in Hs₄; simpl in Hs₄.
+         destruct Hs₄ as (Hn₄, Hs₄).
+         rewrite Nat.add_assoc, Nat.add_shuffle0 in H.
+         rewrite Nat.add_succ_r in H.
+         simpl in H.
+         rewrite Hs₄ in H.
+         destruct b .[ S (S (i + di + di₄))]; discriminate H.
+
+         apply Nat.nlt_ge in H₂.
+         destruct (lt_dec (dk - S di) di₄) as [H₃| H₃].
+          apply fst_same_iff in Hs₄.
+          destruct Hs₄ as (Hn₄, Hs₄).
+          apply Hn₄ in H₃.
+          apply fst_same_iff in Hsk.
+          destruct Hsk as (Hnk, Hsk).
+          rewrite Nat.add_sub_assoc in H₃; auto.
+          rewrite <- Nat.add_succ_r in H₃.
+          rewrite <- Nat.add_succ_l in H₃.
+          rewrite Nat.add_shuffle0, Nat.add_sub in H₃.
+          rewrite Hsk in H₃.
+          destruct b .[ S i + dk]; discriminate H₃.
+
+          apply Nat.nlt_ge in H₃.
+          apply Nat.le_antisymm; assumption.
+
+        rewrite <- H.
+        remember (Nat.compare (i + di + di₄) ipn) as cmp eqn:Hcmp .
+        symmetry in Hcmp.
+        destruct cmp; [ idtac | reflexivity | idtac ].
+         apply nat_compare_eq in Hcmp.
+         exfalso; omega.
+
+         apply nat_compare_gt in Hcmp.
+         exfalso; omega.
+
+     apply Nat.nlt_ge in H₁.
+     destruct (le_dec (S di + S di₄) n) as [H₂| H₂].
+      replace n with (n - S di + S di) at 1 by omega.
+      rewrite fst_same_second_add.
+      replace n with (n - S di + S di) at 2 by omega.
+      rewrite fst_same_comm, fst_same_second_add, fst_same_comm.
+      rewrite Nat.add_succ_r.
+      erewrite fst_same_fin_eq_second with (n₀ := n - (S di + S di₄)).
+       2: eassumption.
+
+       2: rewrite Nat.add_sub_assoc; [ idtac | omega ].
+       2: omega.
+
+       remember (i + n) as ipn eqn:Hin .
+       symmetry in Hin.
+       destruct ipn.
+        exfalso; omega.
+
+        remember (Nat.compare (i + di + di₄) ipn) as cmp eqn:Hcmp .
+        symmetry in Hcmp.
+        destruct cmp; [ idtac | reflexivity | idtac ].
+         apply nat_compare_eq in Hcmp.
+         exfalso; omega.
+
+         apply nat_compare_gt in Hcmp.
+         exfalso; omega.
+
+      apply Nat.nle_gt in H₂.
+      apply fst_same_iff in Hsj; simpl in Hsj.
+      destruct Hsj as (Hnj, Hsj).
+      apply fst_same_iff in Hs₄; simpl in Hs₄.
+      destruct Hs₄ as (Hn₄, Hs₄).
+      assert (di + dj - di < di₄) as H by omega.
+      apply Hn₄ in H.
+      rewrite Nat.add_sub_assoc in H; [ idtac | omega ].
+      rewrite Nat.add_shuffle0, Nat.add_sub in H.
+      rewrite Nat.add_succ_r in Hsj; simpl in Hsj.
+      rewrite Nat.add_assoc in H.
+      rewrite Hsj in H.
+      destruct b .[ S (S (i + di + dj))]; discriminate H.
+
+    apply fst_same_iff in Hsj; simpl in Hsj.
+    destruct Hsj as (Hnj, Hsj).
+    apply fst_same_iff in Hs₄; simpl in Hs₄.
+    rename H into Hab.
+    pose proof (Hs₄ dj) as H.
+    rewrite Nat.add_succ_r in Hsj; simpl in Hsj.
+    rewrite Hsj in H.
+    destruct b .[ S (S (i + di + dj))]; discriminate H.
+
+   apply nat_compare_gt in Hcmp.
+   exfalso; omega.
+
+  apply nat_compare_gt in Hcmp.
+  exfalso; omega.
+Qed.
 
 (* (a+b)''+c'' = (a''+b'')+c'' *)
 Theorem yyy : ∀ a b c i d₁ d₂ di,
@@ -2796,54 +2853,61 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
 
          apply Nat.nlt_ge in H₂.
          subst d₁ d₂ di.
-         erewrite www; try eassumption.
+         erewrite same_fst_same_add_second; try eassumption.
+         destruct (eq_nat_dec di₂ (S di₁ + di₃)) as [H₃| H₃].
+          rewrite Nat.add_succ_r in Hs₃; simpl in Hs₃.
+          unfold rm_add_i.
+          rewrite Hs₃.
+          erewrite fst_same_second with (dj := di₃).
+           2: eassumption.
 
+           2: rewrite <- Nat.add_succ_r; reflexivity.
+
+           2: assumption.
+
+           2: rewrite Hn.
+           2: rewrite Nat.add_succ_r, <- H₃.
+           2: simpl.
+           2: rewrite <- Nat.add_succ_r.
+           2: rewrite <- Nat.add_succ_r.
+           2: reflexivity.
+
+           simpl.
+           rewrite Nat.add_succ_r.
+           assert (di₁ < n) as Hdn by omega.
+           remember (Nat.compare (i + di₁) (i + n)) as cmp eqn:Hcmp .
+           symmetry in Hcmp.
+           destruct cmp.
+            apply nat_compare_eq in Hcmp.
+            exfalso; omega.
+
+            clear Hcmp.
+            f_equal.
+            remember (i + n) as ipn eqn:Hin .
+            symmetry in Hin.
+            destruct ipn.
+             exfalso; omega.
+
+             remember (Nat.compare (i + di₁ + di₃) ipn) as cmp eqn:Hcmp .
+             symmetry in Hcmp.
+             destruct cmp.
+              apply nat_compare_eq in Hcmp.
+              exfalso; omega.
+
+              reflexivity.
+
+              apply nat_compare_gt in Hcmp.
+              exfalso; omega.
+
+            apply nat_compare_gt in Hcmp.
+            exfalso; omega.
+
+          rename H into Hdn.
+          assert (di₂ < S di₁ + di₃) as H by omega.
+          clear H₂ H₃.
+          rename H into H₁.
 bbb.
-     remember (Nat.compare (i + di₂) (i + n)) as cmp eqn:Hcmp .
-     symmetry in Hcmp.
-     destruct cmp.
-      apply nat_compare_eq in Hcmp.
-      unfold rm_add_i at 1.
-      do 2 rewrite <- Nat.add_succ_r.
-      rewrite <- Hd₁; simpl in Hd₂.
-      remember (fst_same a b (S (i + d₁))) as s₃ eqn:Hs₃ .
-      symmetry in Hs₃.
-      destruct s₃ as [di₃| ]; simpl in Hd₂.
 
-bbb.
-      remember (fst_same a b (i + d₁)) as s₃ eqn:Hs₃ .
-      symmetry in Hs₃.
-      destruct s₃ as [di₃| ]; simpl in Hd₂.
-       destruct (lt_dec (di₁ + di₃) di₂) as [H₂| H₂].
-        apply fst_same_iff in Hs₂; simpl in Hs₂.
-        destruct Hs₂ as (Hn₂, Hs₂).
-        remember H₂ as H; clear HeqH.
-        apply Hn₂ in H.
-        apply fst_same_iff in Hs₃; simpl in Hs₃.
-        destruct Hs₃ as (Hn₃, Hs₃).
-        rewrite Hd₁, Nat.add_succ_r in Hs₃; simpl in Hs₃.
-        rewrite Nat.add_assoc, Hs₃ in H.
-        destruct b .[ S (i + di₁ + di₃)]; discriminate H.
-
-        exfalso; omega.
-
-       subst d₂.
-       rewrite Nat.add_0_r in Hdi.
-       apply fst_same_iff in Hs₃; simpl in Hs₃.
-       apply fst_same_iff in Hs₂; simpl in Hs₂.
-       destruct Hs₂ as (Hn₂, Hs₂).
-       subst d₁.
-       pose proof (Hs₃ (di₂ - di₁)) as H.
-       rewrite Nat.add_sub_assoc in H; auto.
-        rewrite Nat.add_succ_r, <- Nat.add_succ_l in H.
-        rewrite Nat.add_shuffle0, Nat.add_sub in H.
-        simpl in H.
-        rewrite Hs₂ in H.
-        destruct b .[ S (i + di₂)]; discriminate H.
-
-        omega.
-
-      apply nat_compare_lt in Hcmp; f_equal.
       remember (fst_same a b (i + d₁)) as s₃ eqn:Hs₃ .
       symmetry in Hs₃.
       destruct s₃ as [di₃| ]; simpl in Hd₂.
