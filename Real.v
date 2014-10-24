@@ -2377,13 +2377,23 @@ Qed.
 
 Theorem www : ∀ a b c i di dj dk,
   fst_same (a + b) c (S i) = Some di
+  → fst_same a b (S i + S di) = Some dj
+  → fst_same a b (S i) = Some dk
+  → dk ≤ S di + dj
+  → ∀ n₀ n, n = S (S (S di + S dj)) + n₀ →
+    fst_same (second n a i + second n b i) (second n c i) (S i) = Some di.
+Proof.
+intros a b c i di dj dk Hsi Hsj Hsk Hdk n₀ n Hns.
+bbb.
+
+Theorem www_old : ∀ a b c i di dj dk,
+  fst_same (a + b) c (S i) = Some di
   → fst_same a b (S i) = Some dk
   → dk = di + dj
   → ∀ n₀ n, n = S dk + n₀ →
     fst_same (second n a i + second n b i) (second n c i) (S i) = Some di.
 Proof.
 intros a b c i di dj dk Hsi Hs Hdk n₀ n Hn.
-Abort. (*
 bbb.
 
 apply fst_same_iff.
@@ -2643,7 +2653,8 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
          destruct b .[ S (S (i + di₁ + di₃))]; discriminate H.
 
          apply Nat.nlt_ge in H₂.
-         subst d₁ d₂.
+         subst d₁ d₂ di.
+         erewrite www; try eassumption.
 
 bbb.
      remember (Nat.compare (i + di₂) (i + n)) as cmp eqn:Hcmp .
