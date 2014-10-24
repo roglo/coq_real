@@ -2456,6 +2456,30 @@ split.
          apply Nat.le_antisymm; assumption.
 
        rewrite <- H.
+       remember (Nat.compare (i + dl + di₄) ipn) as cmp eqn:Hcmp .
+       symmetry in Hcmp.
+       destruct cmp; [ idtac | reflexivity | idtac ].
+        apply nat_compare_eq in Hcmp.
+        exfalso; omega.
+
+        apply nat_compare_gt in Hcmp.
+        exfalso; omega.
+
+    apply Nat.nlt_ge in H₁.
+    replace (second n a i) with (second (n - S dl) a (i + S dl)) .
+     replace (second n b i) with (second (n - S dl) b (i + S dl)) .
+      erewrite fst_same_second with (n₀ := n - S dl - S di₄).
+       2: rewrite Nat.add_succ_r; eassumption.
+
+       2: rewrite Nat.add_0_r.
+       2: rewrite Nat.add_succ_r; reflexivity.
+
+       2: simpl; reflexivity.
+
+       2: rewrite Nat.add_sub_assoc.
+        2: omega.
+
+        Focus 2.
 bbb.
 
 Theorem www_old : ∀ a b c i di dj dk,
