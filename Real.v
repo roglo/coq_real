@@ -2816,7 +2816,6 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
 
        subst d₂.
        rewrite Nat.add_0_r in Hdi.
-       Focus 1.
        apply fst_same_iff in Hs₃; simpl in Hs₃.
        apply Nat.nle_gt.
        intros H₁.
@@ -2920,6 +2919,55 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
 
            apply Nat.nlt_ge in H₂.
            destruct (lt_dec di₂ di₁) as [H₃| H₃].
+            unfold rm_add_i.
+            rewrite <- Nat.add_succ_r, <- Nat.add_succ_l, Hs₃.
+            rewrite Nat.add_succ_l.
+            replace n with (n - S di₁ + S di₁) at 3 by omega.
+            rewrite fst_same_second_add.
+            rewrite fst_same_comm.
+            replace n with (n - S di₁ + S di₁) at 3 by omega.
+            rewrite fst_same_second_add.
+            rewrite fst_same_comm.
+            erewrite fst_same_fin_eq_second with (n₀ := n - S (di₁ + S di₃)).
+             2: eassumption.
+
+             2: rewrite <- Nat.add_succ_l.
+             2: rewrite Nat.sub_add_distr.
+             2: rewrite Nat.add_sub_assoc; [ idtac | omega ].
+             2: rewrite Nat.add_comm, Nat.add_sub.
+             2: reflexivity.
+
+             simpl.
+             rewrite Nat.add_succ_r.
+             rewrite Nat.add_succ_r.
+             assert (di₁ < n) as H by omega.
+             remember (Nat.compare (S (i + di₁)) (S (i + n))) as cmp eqn:Hcmp .
+             symmetry in Hcmp.
+             destruct cmp.
+              apply nat_compare_eq in Hcmp.
+              exfalso; omega.
+
+              clear Hcmp.
+              f_equal.
+              remember (Nat.compare (S (i + di₁) + di₃) (i + n)) as cmp.
+              rename Heqcmp into Hcmp.
+              symmetry in Hcmp.
+              destruct cmp.
+               apply nat_compare_eq in Hcmp.
+               exfalso; omega.
+
+               reflexivity.
+
+               apply nat_compare_gt in Hcmp.
+               exfalso; omega.
+
+              apply nat_compare_gt in Hcmp.
+              exfalso; omega.
+
+            apply Nat.nlt_ge in H₃.
+            apply Nat.le_antisymm in H₃; auto.
+            subst di₂.
+            clear H₁ H₂.
 bbb.
 
       remember (fst_same a b (i + d₁)) as s₃ eqn:Hs₃ .
