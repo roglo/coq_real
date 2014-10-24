@@ -2409,6 +2409,53 @@ split.
    rename H into Hab.
    rewrite <- Hab.
    f_equal.
+   destruct (lt_dec dl dk) as [H₁| H₁].
+    erewrite fst_same_second with (dj := dk - S dl) (n₀ := n - S dk).
+     2: eassumption.
+
+     2: rewrite <- Nat.add_succ_r; reflexivity.
+
+     2: omega.
+
+     2: omega.
+
+     remember (i + n) as ipn eqn:Hin .
+     symmetry in Hin.
+     destruct ipn.
+      exfalso; omega.
+
+      assert (di₄ = dk - S dl) as H.
+       destruct (lt_dec di₄ (dk - S dl)) as [H₂| H₂].
+        assert (di₄ + S dl < dk) as H by omega.
+        apply fst_same_iff in Hsk; simpl in Hsk.
+        destruct Hsk as (Hnk, Hsk).
+        apply Hnk in H.
+        apply fst_same_iff in Hs₄; simpl in Hs₄.
+        destruct Hs₄ as (Hn₄, Hs₄).
+        rewrite Nat.add_assoc, Nat.add_shuffle0 in H.
+        rewrite Nat.add_succ_r in H.
+        simpl in H.
+        rewrite Hs₄ in H.
+        destruct b .[ S (S (i + dl + di₄))]; discriminate H.
+
+        apply Nat.nlt_ge in H₂.
+        destruct (lt_dec (dk - S dl) di₄) as [H₃| H₃].
+         apply fst_same_iff in Hs₄.
+         destruct Hs₄ as (Hn₄, Hs₄).
+         apply Hn₄ in H₃.
+         apply fst_same_iff in Hsk.
+         destruct Hsk as (Hnk, Hsk).
+         rewrite Nat.add_sub_assoc in H₃; auto.
+         rewrite <- Nat.add_succ_r in H₃.
+         rewrite <- Nat.add_succ_l in H₃.
+         rewrite Nat.add_shuffle0, Nat.add_sub in H₃.
+         rewrite Hsk in H₃.
+         destruct b .[ S i + dk]; discriminate H₃.
+
+         apply Nat.nlt_ge in H₃.
+         apply Nat.le_antisymm; assumption.
+
+       rewrite <- H.
 bbb.
 
 Theorem www_old : ∀ a b c i di dj dk,
