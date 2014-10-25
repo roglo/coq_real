@@ -2498,8 +2498,8 @@ split.
         apply nat_compare_gt in Hcmp.
         exfalso; omega.
 
+    clear H₁.
 (*1*)
-    apply Nat.nlt_ge in H₁.
     destruct (le_dec (S dl + S di₄) n) as [H₂| H₂].
      replace n with (n - S dl + S dl) at 1 by omega.
      rewrite fst_same_second_add.
@@ -2636,8 +2636,8 @@ split.
          apply nat_compare_gt in Hcmp.
          exfalso; omega.
 
+     clear H₁.
 (*2*)
-     apply Nat.nlt_ge in H₁.
      destruct (le_dec (S dl + S di₄) n) as [H₂| H₂].
       replace n with (n - S dl + S dl) at 1 by omega.
       rewrite fst_same_second_add.
