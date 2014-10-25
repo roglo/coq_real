@@ -2531,11 +2531,35 @@ split.
      destruct b .[ S (S (i + di + dj))]; discriminate H.
 
      rewrite Nat.add_0_r in Hdk, Hns.
+     unfold rm_add_i in Hsi.
+     rewrite Nat.add_succ_r in Hsj.
+     simpl in Hsj.
+     rewrite Hsj in Hsi.
+     apply fst_same_iff in Hsj; simpl in Hsj.
+     pose proof (Hsj (dl + di₄ - di)) as H.
+     rewrite Nat.add_sub_assoc in H; [ idtac | omega ].
+     rewrite Nat.add_shuffle0, Nat.add_sub, Nat.add_assoc in H.
+     rewrite Hs₄ in H.
+     destruct b .[ S (S (i + dl + di₄))]; discriminate H.
+
+  clear H.
+  apply fst_same_iff in Hs₄; simpl in Hs₄.
+  rename Hsj into Hoj.
+  rename dj into oj.
+  remember (fst_same a b (S i + S di)) as dj eqn:Hsj .
+  symmetry in Hsj.
+  destruct dj as [dj| ]; simpl in Hoj; subst oj.
+   pose proof (Hs₄ (di + dj - dl)) as H.
+   rewrite Nat.add_sub_assoc in H; [ idtac | omega ].
+   rewrite Nat.add_shuffle0, Nat.add_sub in H.
+   rewrite Nat.add_assoc in H.
+   apply fst_same_iff in Hsj; simpl in Hsj.
+   destruct Hsj as (Hnj, Hsj).
+   rewrite Nat.add_succ_r in Hsj; simpl in Hsj.
+   rewrite Hsj in H.
+   destruct b .[ S (S (i + di + dj))]; discriminate H.
+
 bbb.
-     simpl in H; rewrite Nat.add_0_r in H.
-     apply fst_same_iff in Hsj.
-     pose proof (Hsj 0) as H₁.
-     rewrite Nat.add_0_r, Nat.add_succ_r in H₁; simpl in H₁.
 
   apply fst_same_iff in Hsj; simpl in Hsj.
   destruct Hsj as (Hnj, Hsj).
