@@ -2152,7 +2152,7 @@ Definition opt2nat x :=
 
 Definition second n a i :=
   {| rm j :=
-       match Nat.compare j (i + S n) with
+       match nat_compare j (i + S n) with
        | Eq => true
        | Lt => a.[j]
        | Gt => false
@@ -2171,7 +2171,7 @@ destruct Hdi as (Hn₁, Hs₁).
 split.
  intros dj Hdj; simpl.
  rewrite Nat.add_succ_r; simpl.
- remember (Nat.compare (i + dj) (i + n)) as cmp eqn:Hcmp .
+ remember (nat_compare (i + dj) (i + n)) as cmp eqn:Hcmp .
  symmetry in Hcmp.
  subst n.
  destruct cmp.
@@ -2200,7 +2200,7 @@ Qed.
 Theorem fold_rm_add_i : ∀ a b i, rm_add_i a b i = ((a+b)%rm).[i].
 Proof. reflexivity. Qed.
 
-Theorem nat_compare_add_succ : ∀ i j, Nat.compare i (i + S j) = Lt.
+Theorem nat_compare_add_succ : ∀ i j, nat_compare i (i + S j) = Lt.
 Proof.
 intros i j.
 apply nat_compare_lt.
@@ -2234,7 +2234,7 @@ destruct s as [di₁| ].
  rewrite <- Nat.add_succ_r in Hn.
  erewrite fst_same_fin_eq_second; try eassumption.
  rewrite Nat.add_succ_r.
- remember (Nat.compare (i + di₁) (i + n)) as cmp₁ eqn:Hcmp₁ .
+ remember (nat_compare (i + di₁) (i + n)) as cmp₁ eqn:Hcmp₁ .
  symmetry in Hcmp₁.
  destruct cmp₁; auto.
   apply nat_compare_eq in Hcmp₁.
@@ -2263,7 +2263,7 @@ destruct s as [di₁| ].
  destruct Hs₂ as (Hn₂, Hs₂).
  simpl in Hs₂.
  rewrite Nat.add_succ_r in Hs₂.
- remember (Nat.compare (i + di₁) (i + S n₀)) as cmp₁ eqn:Hcmp₁ .
+ remember (nat_compare (i + di₁) (i + S n₀)) as cmp₁ eqn:Hcmp₁ .
  symmetry in Hcmp₁.
  destruct cmp₁; auto.
   rewrite Hs in Hs₂.
@@ -2274,7 +2274,7 @@ destruct s as [di₁| ].
   apply Hn₂ in Hcmp₁.
   simpl in Hcmp₁.
   rewrite Nat.add_succ_r in Hcmp₁.
-  remember (Nat.compare (i + S n₀) (i + S n₀)) as cmp eqn:Hcmp .
+  remember (nat_compare (i + S n₀) (i + S n₀)) as cmp eqn:Hcmp .
   symmetry in Hcmp.
   destruct cmp; auto.
   apply nat_compare_lt in Hcmp.
@@ -2310,7 +2310,7 @@ apply fst_same_iff; simpl.
 rewrite Nat.add_succ_r.
 split.
  intros dl Hdl.
- remember (Nat.compare (j + dl) (i + n)) as cmp eqn:Hcmp .
+ remember (nat_compare (j + dl) (i + n)) as cmp eqn:Hcmp .
  symmetry in Hcmp.
  destruct cmp.
   apply nat_compare_eq in Hcmp.
@@ -2327,7 +2327,7 @@ split.
   apply nat_compare_gt in Hcmp.
   exfalso; omega.
 
- remember (Nat.compare (j + dj) (i + n)) as cmp eqn:Hcmp .
+ remember (nat_compare (j + dj) (i + n)) as cmp eqn:Hcmp .
  symmetry in Hcmp.
  destruct cmp; try reflexivity.
  apply fst_same_iff in Hs; simpl in Hs.
@@ -2351,7 +2351,7 @@ apply same_fst_same in H; simpl in H.
 rewrite <- Hj in H.
 rewrite H.
 rename H into Hsj.
-remember (Nat.compare j (i + S n)) as cmp eqn:Hcmp .
+remember (nat_compare j (i + S n)) as cmp eqn:Hcmp .
 symmetry in Hcmp.
 destruct cmp.
  apply nat_compare_eq in Hcmp.
@@ -2362,7 +2362,7 @@ destruct cmp.
  apply nat_compare_lt in Hcmp.
  clear Hcmp.
  erewrite fst_same_second; try eassumption.
- remember (Nat.compare (j + dj) (i + n)) as cmp eqn:Hcmp .
+ remember (nat_compare (j + dj) (i + n)) as cmp eqn:Hcmp .
  symmetry in Hcmp.
  destruct cmp; [ idtac | reflexivity | idtac ].
   apply nat_compare_eq in Hcmp.
@@ -2430,7 +2430,7 @@ split.
  unfold rm_add_i in H; simpl in H.
  unfold rm_add_i; simpl.
  rewrite Nat.add_succ_r.
- remember (Nat.compare (i + dl) (i + n)) as cmp eqn:Hcmp .
+ remember (nat_compare (i + dl) (i + n)) as cmp eqn:Hcmp .
  symmetry in Hcmp.
  destruct cmp.
   apply nat_compare_eq in Hcmp.
@@ -2489,14 +2489,9 @@ split.
          apply Nat.le_antisymm; assumption.
 
        rewrite <- H.
-       remember (Nat.compare (i + dl + di₄) ipn) as cmp eqn:Hcmp .
-       symmetry in Hcmp.
-       destruct cmp; [ idtac | reflexivity | idtac ].
-        apply nat_compare_eq in Hcmp.
-        exfalso; omega.
-
-        apply nat_compare_gt in Hcmp.
-        exfalso; omega.
+       assert (i + dl + di₄ < ipn) as Hcmp by omega.
+       apply nat_compare_lt in Hcmp.
+       rewrite Hcmp; reflexivity.
 
     clear H₁.
 (*1*)
@@ -2517,7 +2512,7 @@ split.
       destruct ipn.
        exfalso; omega.
 
-       remember (Nat.compare (i + dl + di₄) ipn) as cmp eqn:Hcmp .
+       remember (nat_compare (i + dl + di₄) ipn) as cmp eqn:Hcmp .
        symmetry in Hcmp.
        destruct cmp; [ idtac | reflexivity | idtac ].
         apply nat_compare_eq in Hcmp.
@@ -2557,7 +2552,7 @@ split.
 
  rename di into dl.
  assert (dl < n) as Hln by omega.
- remember (Nat.compare (i + dl) (i + n)) as cmp eqn:Hcmp .
+ remember (nat_compare (i + dl) (i + n)) as cmp eqn:Hcmp .
  symmetry in Hcmp.
  destruct cmp.
   apply nat_compare_eq in Hcmp.
@@ -2568,7 +2563,7 @@ split.
   unfold rm_add_i in H; simpl in H.
   unfold rm_add_i; simpl.
   rewrite Nat.add_succ_r.
-  remember (Nat.compare (i + dl) (i + n)) as cmp eqn:Hcmp .
+  remember (nat_compare (i + dl) (i + n)) as cmp eqn:Hcmp .
   symmetry in Hcmp.
   destruct cmp.
    apply nat_compare_eq in Hcmp.
@@ -2627,7 +2622,7 @@ split.
           apply Nat.le_antisymm; assumption.
 
         rewrite <- H.
-        remember (Nat.compare (i + dl + di₄) ipn) as cmp eqn:Hcmp .
+        remember (nat_compare (i + dl + di₄) ipn) as cmp eqn:Hcmp .
         symmetry in Hcmp.
         destruct cmp; [ idtac | reflexivity | idtac ].
          apply nat_compare_eq in Hcmp.
@@ -2655,7 +2650,7 @@ split.
        destruct ipn.
         exfalso; omega.
 
-        remember (Nat.compare (i + dl + di₄) ipn) as cmp eqn:Hcmp .
+        remember (nat_compare (i + dl + di₄) ipn) as cmp eqn:Hcmp .
         symmetry in Hcmp.
         destruct cmp; [ idtac | reflexivity | idtac ].
          apply nat_compare_eq in Hcmp.
@@ -2789,7 +2784,7 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
        rewrite Hs₂ in H.
        destruct b .[ S (i + di₂)]; discriminate H.
 
-    remember (Nat.compare (i + di₁) (i + n)) as cmp eqn:Hcmp .
+    remember (nat_compare (i + di₁) (i + n)) as cmp eqn:Hcmp .
     symmetry in Hcmp.
     destruct cmp.
      apply nat_compare_eq in Hcmp.
@@ -2826,7 +2821,7 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
        rewrite Hs₂ in H.
        destruct b .[ S (i + di₂)]; discriminate H.
 
-      remember (Nat.compare (i + di₂) (i + n)) as cmp eqn:Hcmp .
+      remember (nat_compare (i + di₂) (i + n)) as cmp eqn:Hcmp .
       symmetry in Hcmp.
       destruct cmp.
        apply nat_compare_eq in Hcmp.
@@ -2875,7 +2870,7 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
            simpl.
            rewrite Nat.add_succ_r.
            assert (di₁ < n) as Hdn by omega.
-           remember (Nat.compare (i + di₁) (i + n)) as cmp eqn:Hcmp .
+           remember (nat_compare (i + di₁) (i + n)) as cmp eqn:Hcmp .
            symmetry in Hcmp.
            destruct cmp.
             apply nat_compare_eq in Hcmp.
@@ -2888,7 +2883,7 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
             destruct ipn.
              exfalso; omega.
 
-             remember (Nat.compare (i + di₁ + di₃) ipn) as cmp eqn:Hcmp .
+             remember (nat_compare (i + di₁ + di₃) ipn) as cmp eqn:Hcmp .
              symmetry in Hcmp.
              destruct cmp.
               apply nat_compare_eq in Hcmp.
@@ -2942,7 +2937,7 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
              rewrite Nat.add_succ_r.
              rewrite Nat.add_succ_r.
              assert (di₁ < n) as H by omega.
-             remember (Nat.compare (S (i + di₁)) (S (i + n))) as cmp eqn:Hcmp .
+             remember (nat_compare (S (i + di₁)) (S (i + n))) as cmp eqn:Hcmp .
              symmetry in Hcmp.
              destruct cmp.
               apply nat_compare_eq in Hcmp.
@@ -2950,7 +2945,7 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
 
               clear Hcmp.
               f_equal.
-              remember (Nat.compare (S (i + di₁) + di₃) (i + n)) as cmp.
+              remember (nat_compare (S (i + di₁) + di₃) (i + n)) as cmp.
               rename Heqcmp into Hcmp.
               symmetry in Hcmp.
               destruct cmp.
@@ -2990,7 +2985,7 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
              simpl.
              rewrite Nat.add_succ_r.
              rewrite Nat.add_succ_r.
-             remember (Nat.compare (S (i + di₁)) (S (i + n))) as cmp eqn:Hcmp .
+             remember (nat_compare (S (i + di₁)) (S (i + n))) as cmp eqn:Hcmp .
              symmetry in Hcmp.
              destruct cmp.
               apply nat_compare_eq in Hcmp.
@@ -2998,7 +2993,7 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
 
               clear Hcmp.
               f_equal.
-              remember (Nat.compare (S (i + di₁) + di₃) (i + n)) as cmp.
+              remember (nat_compare (S (i + di₁) + di₃) (i + n)) as cmp.
               rename Heqcmp into Hcmp.
               symmetry in Hcmp.
               destruct cmp.
@@ -3077,7 +3072,7 @@ bbb.
     erewrite www; try eassumption.
 bbb.
  must cancel each other:
-   ⊕ match Nat.compare (i + di₁) (i + n) with
+   ⊕ match nat_compare (i + di₁) (i + n) with
      | Eq => true
      | Lt => rm_add_i a b (S (i + di₁))
      | Gt => false
@@ -3110,7 +3105,7 @@ intros a b c i di Hdi n₀ n Hn; simpl.
 apply rm_add_i_compat_r; intros j; simpl.
 unfold rm_add_i at 1; simpl.
 rewrite Nat.add_succ_r.
-remember (Nat.compare j (S (i + n))) as cmp eqn:Hcmp .
+remember (nat_compare j (S (i + n))) as cmp eqn:Hcmp .
 symmetry in Hcmp.
 destruct cmp.
  Focus 1.
@@ -3119,7 +3114,7 @@ destruct cmp.
  remember (fst_same (second n a i) (second n b i) (S j)) as s₁ eqn:Hs₁ .
  symmetry in Hs₁.
  destruct s₁ as [di₁| ]; [ idtac | reflexivity ].
- remember (Nat.compare (j + di₁) (i + n)) as cmp₁ eqn:Hcmp₁ .
+ remember (nat_compare (j + di₁) (i + n)) as cmp₁ eqn:Hcmp₁ .
  symmetry in Hcmp₁.
  destruct cmp₁; [ reflexivity | idtac | exfalso ].
   apply nat_compare_lt in Hcmp₁.
