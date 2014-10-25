@@ -2503,17 +2503,9 @@ split.
 
      remember (i + n) as ipn eqn:Hin .
      symmetry in Hin.
-     destruct ipn.
-      exfalso; omega.
-
-      remember (nat_compare (i + dl + di₄) ipn) as cmp eqn:Hcmp .
-      symmetry in Hcmp.
-      destruct cmp; [ idtac | reflexivity | idtac ].
-       apply nat_compare_eq in Hcmp.
-       exfalso; omega.
-
-       apply nat_compare_gt in Hcmp.
-       exfalso; omega.
+     destruct ipn; [ exfalso; omega | idtac ].
+     assert (i + dl + di₄ < ipn) as Hcmp by omega.
+     apply nat_compare_lt in Hcmp; rewrite Hcmp; reflexivity.
 
     apply Nat.nle_gt in H₂.
     apply fst_same_iff in Hsj; simpl in Hsj.
@@ -2627,17 +2619,9 @@ split.
 
       remember (i + n) as ipn eqn:Hin .
       symmetry in Hin.
-      destruct ipn.
-       exfalso; omega.
-
-       remember (nat_compare (i + dl + di₄) ipn) as cmp eqn:Hcmp .
-       symmetry in Hcmp.
-       destruct cmp; [ idtac | reflexivity | idtac ].
-        apply nat_compare_eq in Hcmp.
-        exfalso; omega.
-
-        apply nat_compare_gt in Hcmp.
-        exfalso; omega.
+      destruct ipn; [ exfalso; omega | idtac ].
+      assert (i + dl + di₄ < ipn) as Hcmp by omega.
+      apply nat_compare_lt in Hcmp; rewrite Hcmp; reflexivity.
 
      apply Nat.nle_gt in H₂.
      apply fst_same_iff in Hsj; simpl in Hsj.
