@@ -2945,6 +2945,21 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
         unfold rm_add_i at 1; simpl.
         rewrite Nat.add_succ_r in Hs₃; simpl in Hs₃; rewrite Hs₃.
         rewrite Nat.add_0_r in Hdi.
+        destruct (lt_dec di₁ di₂) as [H₁| H₁].
+         apply fst_same_iff in Hs₂; simpl in Hs₂.
+         destruct Hs₂ as (Hn₂, Hs₂).
+         apply fst_same_iff in Hs₃; simpl in Hs₃.
+         clear H.
+         pose proof (Hs₃ (di₂ - S di₁)) as H.
+         rewrite Nat.add_shuffle0, Nat.add_comm in H.
+         rewrite <- Nat.add_succ_l, Nat.add_assoc in H.
+         rewrite Nat.add_sub_assoc in H; auto.
+         rewrite <- Nat.add_assoc, Nat.add_comm, Nat.add_sub in H.
+         rewrite Hs₂ in H.
+         destruct b .[ S (i + di₂)]; discriminate H.
+
+         apply Nat.nlt_ge in H₁.
+         destruct (lt_dec di₂ di₁) as [H₂| H₂].
 bbb.
 
       remember (fst_same a b (i + d₁)) as s₃ eqn:Hs₃ .
