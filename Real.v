@@ -2959,8 +2959,8 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
          destruct b .[ S (i + di₂)]; discriminate H.
 
          apply Nat.nlt_ge in H₁.
-         destruct (lt_dec di₂ di₁) as [H₂| H₂].
 bbb.
+         destruct (lt_dec di₂ di₁) as [H₂| H₂].
 
       remember (fst_same a b (i + d₁)) as s₃ eqn:Hs₃ .
       symmetry in Hs₃.
