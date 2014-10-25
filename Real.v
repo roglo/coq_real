@@ -2622,14 +2622,9 @@ split.
           apply Nat.le_antisymm; assumption.
 
         rewrite <- H.
-        remember (nat_compare (i + dl + di₄) ipn) as cmp eqn:Hcmp .
-        symmetry in Hcmp.
-        destruct cmp; [ idtac | reflexivity | idtac ].
-         apply nat_compare_eq in Hcmp.
-         exfalso; omega.
-
-         apply nat_compare_gt in Hcmp.
-         exfalso; omega.
+        assert (i + dl + di₄ < ipn) as Hcmp by omega.
+        apply nat_compare_lt in Hcmp.
+        rewrite Hcmp; reflexivity.
 
      clear H₁.
 (*2*)
