@@ -2430,8 +2430,7 @@ split.
  unfold rm_add_i; simpl.
  rewrite Nat.add_succ_r.
  assert (i + dl < i + n) as Hcmp by omega.
- apply nat_compare_lt in Hcmp.
- rewrite Hcmp; clear Hcmp.
+ apply nat_compare_lt in Hcmp; rewrite Hcmp; clear Hcmp.
  remember (fst_same a b (S (S (i + dl)))) as s₄ eqn:Hs₄ .
  symmetry in Hs₄.
  destruct s₄ as [di₄| ].
@@ -2532,9 +2531,6 @@ split.
   destruct b .[ S (S (i + di + dj))]; discriminate H.
 
  rename di into dl.
- assert (i + dl < i + n) as Hcmp by omega.
- apply nat_compare_lt in Hcmp.
- rewrite Hcmp; clear Hcmp.
  remember Hsi as H; clear HeqH.
  unfold rm_add_i in H; simpl in H.
  unfold rm_add_i; simpl.
