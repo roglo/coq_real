@@ -2555,6 +2555,39 @@ split.
    rewrite Hsj in H.
    destruct b .[ S (S (i + di + dj))]; discriminate H.
 
+   rewrite Nat.add_0_r in Hdk.
+   remember (fst_same (second n a i) (second n b i) (S (S (i + dl)))) as s₁.
+   rename Heqs₁ into Hs₁.
+   apply fst_same_sym_iff in Hs₁.
+   destruct s₁ as [di₁| ].
+    destruct Hs₁ as (Hn₁, Hs₁); simpl in Hs₁.
+    rewrite Nat.add_succ_r in Hs₁.
+    remember (i + n) as ipn eqn:Hin .
+    symmetry in Hin.
+    destruct ipn; [ exfalso; omega | idtac ].
+    remember (nat_compare (i + dl + di₁) ipn) as cmp eqn:Hcmp .
+    symmetry in Hcmp.
+    destruct cmp.
+     remember (fst_same a b (S (S (i + dl)))) as s₂ eqn:Hs₂ .
+     symmetry in Hs₂.
+     destruct s₂ as [di₂| ].
+      apply fst_same_iff in Hs₂.
+      destruct Hs₂ as (Hn₂, Hs₂).
+      pose proof (Hs₄ di₂) as H₁.
+      simpl in Hs₂; rewrite Hs₂ in H₁.
+      destruct b .[ S (S (i + dl + di₂))]; discriminate H₁.
+
+      remember Hdl as H; clear HeqH.
+      apply Hni in H.
+      unfold rm_add_i in H.
+      rewrite Hs₂ in H.
+      assumption.
+
+     pose proof (Hs₄ di₁) as H₁.
+     rewrite Hs₁ in H₁.
+     destruct b .[ S (S (i + dl + di₁))]; discriminate H₁.
+
+     apply nat_compare_gt in Hcmp.
 bbb.
 
   apply fst_same_iff in Hsj; simpl in Hsj.
