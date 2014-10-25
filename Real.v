@@ -2514,23 +2514,23 @@ split.
     apply Nat.nle_gt in H₂.
     apply fst_same_iff in Hs₄; simpl in Hs₄.
     destruct Hs₄ as (Hn₄, Hs₄).
-    assert (di + (dj - 1) - dl < di₄) as H by omega.
-    apply Hn₄ in H.
-    rewrite Nat.add_sub_assoc in H; [ idtac | omega ].
-    rewrite Nat.add_shuffle0, Nat.add_sub in H.
-    rewrite Nat.add_assoc in H.
     rename Hsj into Hoj.
     rename dj into oj.
     remember (fst_same a b (S i + S di)) as dj eqn:Hsj .
     symmetry in Hsj.
     destruct dj as [dj| ]; simpl in Hoj; subst oj.
-     rewrite Nat.sub_succ, Nat.sub_0_r in H.
+     assert (di + dj - dl < di₄) as H by omega.
+     apply Hn₄ in H.
+     rewrite Nat.add_sub_assoc in H; [ idtac | omega ].
+     rewrite Nat.add_shuffle0, Nat.add_sub in H.
+     rewrite Nat.add_assoc in H.
      apply fst_same_iff in Hsj; simpl in Hsj.
      destruct Hsj as (Hnj, Hsj).
      rewrite Nat.add_succ_r in Hsj; simpl in Hsj.
      rewrite Hsj in H.
      destruct b .[ S (S (i + di + dj))]; discriminate H.
 
+     rewrite Nat.add_0_r in Hdk, Hns.
 bbb.
      simpl in H; rewrite Nat.add_0_r in H.
      apply fst_same_iff in Hsj.
