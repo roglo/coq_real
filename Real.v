@@ -2454,7 +2454,6 @@ Theorem same_fst_same_add_second : ∀ a b c i di dj dk,
   → ∀ n₀ n, n = S (S (S di + S dj)) + n₀ →
     fst_same (second n a i + second n b i) (second n c i) (S i) = Some di.
 Proof.
-(* à nettoyer : les deux cas du split sont très semblables, faire un lemme *)
 intros a b c i di dj dk Hsi Hsj Hsk Hdk n₀ n Hns.
 apply fst_same_iff; simpl.
 rewrite Nat.add_succ_r.
@@ -2610,6 +2609,17 @@ split.
   rewrite Nat.add_succ_r in Hsj; simpl in Hsj.
   rewrite Hsj in H.
   destruct b .[ S (S (i + dl + dj))]; discriminate H.
+Qed.
+
+Theorem fst_same_inf_after : ∀ a b i di,
+  fst_same a b i = None
+  → fst_same a b (i + di) = None.
+Proof.
+intros a b i di Hs.
+apply fst_same_iff in Hs.
+apply fst_same_iff; intros dj.
+rewrite <- Nat.add_assoc.
+apply Hs.
 Qed.
 
 (* (a+b)''+c'' = (a''+b'')+c'' *)
@@ -2931,20 +2941,10 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
               apply nat_compare_gt in Hcmp.
               exfalso; omega.
 
-        subst d₂.
-        rewrite Nat.add_0_r in Hdi.
-        apply fst_same_iff in Hs₃; simpl in Hs₃.
+        subst d₁ d₂.
         unfold rm_add_i at 1; simpl.
-        remember (fst_same a b (S (S (i + di₁)))) as s₄ eqn:Hs₄ .
-        symmetry in Hs₄.
-        destruct s₄ as [di₄| ].
-         apply fst_same_iff in Hs₄; simpl in Hs₄.
-         destruct Hs₄ as (Hn₄, Hs₄).
-         do 2 rewrite <- Nat.add_succ_l in Hs₄.
-         rewrite <- Nat.add_succ_r in Hs₄.
-         rewrite <- Hd₁ in Hs₄; simpl in Hs₄.
-         rewrite Hs₃ in Hs₄.
-         destruct b .[ S (i + d₁ + di₄)]; discriminate Hs₄.
+        rewrite Nat.add_succ_r in Hs₃; simpl in Hs₃; rewrite Hs₃.
+        rewrite Nat.add_0_r in Hdi.
 bbb.
 
       remember (fst_same a b (i + d₁)) as s₃ eqn:Hs₃ .
