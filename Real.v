@@ -2430,7 +2430,6 @@ split.
  unfold rm_add_i in H; simpl in H.
  unfold rm_add_i; simpl.
  rewrite Nat.add_succ_r.
-(*1*)
  remember (Nat.compare (i + dl) (i + n)) as cmp eqn:Hcmp .
  symmetry in Hcmp.
  destruct cmp.
@@ -2441,8 +2440,7 @@ split.
   remember (fst_same a b (S (S (i + dl)))) as s₄ eqn:Hs₄ .
   symmetry in Hs₄.
   destruct s₄ as [di₄| ].
-   rename H into Hab.
-   rewrite <- Hab.
+   rewrite <- H; clear H.
    f_equal.
    destruct (lt_dec dl dk) as [H₁| H₁].
     erewrite fst_same_second with (dj := dk - S dl) (n₀ := n - S dk).
@@ -2500,6 +2498,7 @@ split.
         apply nat_compare_gt in Hcmp.
         exfalso; omega.
 
+(*1*)
     apply Nat.nlt_ge in H₁.
     destruct (le_dec (S dl + S di₄) n) as [H₂| H₂].
      replace n with (n - S dl + S dl) at 1 by omega.
@@ -2558,7 +2557,6 @@ split.
 
  rename di into dl.
  assert (dl < n) as Hln by omega.
-(*2*)
  remember (Nat.compare (i + dl) (i + n)) as cmp eqn:Hcmp .
  symmetry in Hcmp.
  destruct cmp.
@@ -2580,8 +2578,7 @@ split.
    remember (fst_same a b (S (S (i + dl)))) as s₄ eqn:Hs₄ .
    symmetry in Hs₄.
    destruct s₄ as [di₄| ].
-    rename H into Hab.
-    rewrite <- Hab.
+    rewrite <- H; clear H.
     f_equal.
     destruct (lt_dec dl dk) as [H₁| H₁].
      erewrite fst_same_second with (dj := dk - S dl) (n₀ := n - S dk).
@@ -2639,6 +2636,7 @@ split.
          apply nat_compare_gt in Hcmp.
          exfalso; omega.
 
+(*2*)
      apply Nat.nlt_ge in H₁.
      destruct (le_dec (S dl + S di₄) n) as [H₂| H₂].
       replace n with (n - S dl + S dl) at 1 by omega.
