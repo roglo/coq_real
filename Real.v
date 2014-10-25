@@ -2530,11 +2530,7 @@ split.
      rewrite Hsj in H.
      destruct b .[ S (S (i + di + dj))]; discriminate H.
 
-     rewrite Nat.add_0_r in Hdk, Hns.
-     unfold rm_add_i in Hsi.
-     rewrite Nat.add_succ_r in Hsj.
-     simpl in Hsj.
-     rewrite Hsj in Hsi.
+     rewrite Nat.add_succ_r in Hsj; simpl in Hsj.
      apply fst_same_iff in Hsj; simpl in Hsj.
      pose proof (Hsj (dl + di₄ - di)) as H.
      rewrite Nat.add_sub_assoc in H; [ idtac | omega ].
