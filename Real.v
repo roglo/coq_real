@@ -2197,6 +2197,25 @@ split.
  simpl in Hs₁; rewrite Hs₁; reflexivity.
 Qed.
 
+Theorem fst_same_inf_second : ∀ a b i,
+  fst_same a b (S i) = None
+  → ∀ n, fst_same (second n a i) (second n b i) (S i) = Some n.
+Proof.
+intros a b i Hs n.
+apply fst_same_iff in Hs; simpl in Hs.
+apply fst_same_iff; simpl.
+rewrite Nat.add_succ_r.
+split.
+ intros dj Hdj.
+ apply Nat.add_lt_mono_l with (p := i) in Hdj.
+ apply nat_compare_lt in Hdj; rewrite Hdj.
+ apply Hs.
+
+ assert (i + n = i + n) as H by reflexivity.
+ apply nat_compare_eq_iff in H; rewrite H.
+ reflexivity.
+Qed.
+
 Theorem fold_rm_add_i : ∀ a b i, rm_add_i a b i = ((a+b)%rm).[i].
 Proof. reflexivity. Qed.
 
@@ -2296,6 +2315,28 @@ split.
  rewrite Nat.add_assoc in Hdk; assumption.
 
  rewrite Nat.add_assoc in Hs; assumption.
+Qed.
+
+Theorem fst_same_inf_second2 : ∀ a b i di,
+  fst_same a b (S i) = None
+  → ∀ n₀ n, n = di + n₀ →
+    fst_same (second n a i) (second n b i) (S i + di) = Some n₀.
+Proof.
+intros a b i di Hs n₀ n Hn.
+apply fst_same_iff in Hs; simpl in Hs.
+apply fst_same_iff; simpl.
+split.
+ intros dj Hdj.
+ rewrite Nat.add_succ_r.
+ assert (i + di + dj < i + n) as H by omega.
+ apply nat_compare_lt in H; rewrite H.
+ rewrite <- Nat.add_assoc.
+ apply Hs.
+
+ rewrite Nat.add_succ_r.
+ assert (i + di + n₀ = i + n) as H by omega.
+ apply nat_compare_eq_iff in H.
+ rewrite H; reflexivity.
 Qed.
 
 Theorem fst_same_second : ∀ a b i j di dj dk,
@@ -3224,9 +3265,32 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
       assert (i + di₁ < i + n) as H₁ by omega.
       apply nat_compare_lt in H₁.
       rewrite H₁ in H; clear H₁.
+      unfold rm_add_i in H.
+      rewrite <- Nat.add_succ_l, <- Nat.add_succ_r in H.
+      rewrite fst_same_inf_second2 with (n₀ := S (S n₀)) in H; auto;
+       try omega.
+      simpl in H.
+      rewrite Nat.add_succ_r in H.
+      assert (i + di₁ < i + n) as H₁ by omega.
+      apply nat_compare_lt in H₁; rewrite H₁ in H; clear H₁.
+      assert (i + S di₁ + S (S n₀) = i + n) as H₁ by omega.
+      apply nat_compare_eq_iff in H₁.
+      rewrite H₁ in H; clear H₁.
+      apply fst_same_iff in Hs₁; simpl in Hs₁.
+      destruct Hs₁ as (Hn₁, Hs₁).
+      unfold rm_add_i in Hs₁; simpl in Hs₁.
+      rewrite <- Nat.add_succ_l, <- Nat.add_succ_r in Hs₁.
+      rewrite fst_same_inf_after in Hs₁; auto.
+      simpl in Hs₁.
+      rewrite Hs₁ in H.
+      destruct c .[ S (i + di₁)]; discriminate H.
+
+     apply fst_same_iff in Hs₂; simpl in Hs₂.
+     rewrite Hs₂ in Hs₃.
+     destruct b .[ S (i + di₃)]; discriminate Hs₃.
+
+     apply nat_compare_gt in Hcmp.
 bbb.
-  faire un lemme de merde comme fst_same_fin_eq_second mais pour
-  les None : fst_same_inf_eq_second
 *)
 
 (* actually false because we should add 0 to both sides but just to see *)
