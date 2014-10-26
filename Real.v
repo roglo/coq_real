@@ -3333,6 +3333,30 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
         apply nat_compare_gt in H₁.
         rewrite H₁ in H; discriminate H.
 
+       unfold rm_add_i in Hs₄; simpl in Hs₄.
+       rewrite Nat.add_succ_r, Hcmp in Hs₄.
+       remember (S (S (i + di₄))) as x.
+       remember (fst_same (second n a i) (second n b i) x) as s₅ eqn:Hs₅ .
+       subst x.
+       symmetry in Hs₅.
+       destruct s₅ as [di₅| ].
+        remember (i + n) as ipn eqn:Hin .
+        symmetry in Hin.
+        destruct ipn; [ exfalso; omega | idtac ].
+        apply nat_compare_lt in Hcmp.
+        apply fst_same_iff in Hs₅.
+        destruct Hs₅ as (Hn₅, Hs₅).
+        simpl in Hs₅.
+        rewrite Nat.add_succ_r, Hin in Hs₅.
+        rename Hcmp into Hdi₄.
+        remember (nat_compare (i + di₄ + di₅) ipn) as cmp eqn:Hcmp .
+        symmetry in Hcmp.
+        destruct cmp.
+         apply fst_same_iff in Hs₂; simpl in Hs₂.
+         rewrite <- Hs₄; simpl.
+         do 2 rewrite Hs₂.
+         do 2 rewrite negb_xorb_diag; reflexivity.
+
 bbb.
     apply fst_same_iff in Hs₂; simpl in Hs₂.
     apply fst_same_iff in Hs₃.
