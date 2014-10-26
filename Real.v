@@ -3290,6 +3290,16 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
      destruct b .[ S (i + di₃)]; discriminate Hs₃.
 
      apply nat_compare_gt in Hcmp.
+     apply Nat.add_lt_mono_l in Hcmp.
+     apply Hn₃ in Hcmp; simpl in Hcmp.
+     rewrite Nat.add_succ_r in Hcmp.
+     assert (i + n = i + n) as H by reflexivity.
+     apply nat_compare_eq_iff in H.
+     rewrite H in Hcmp; discriminate Hcmp.
+
+    replace (S i) with (S i + 0) in Hs₃ by apply Nat.add_0_r.
+    erewrite fst_same_inf_second2 in Hs₃; try reflexivity; auto.
+    discriminate Hs₃.
 bbb.
 *)
 
