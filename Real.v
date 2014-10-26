@@ -2842,6 +2842,13 @@ split.
         clear Hn₂.
         rewrite Nat.add_0_r in Hdi₂, Hab₂.
         simpl in H.
+        simpl in H.
+        assert (dj = S n) as HH by omega.
+        subst dj.
+        clear H₁.
+        clear H.
+        clear Hin.
+        clear Hdj.
 bbb.
 *)
 
