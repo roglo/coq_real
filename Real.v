@@ -2761,6 +2761,7 @@ rewrite <- Nat.add_assoc.
 apply Hs.
 Qed.
 
+(*
 Theorem www : ∀ a b c i,
   fst_same (a + b) c (S i) = None
   → ∀ n, 1 < n →
