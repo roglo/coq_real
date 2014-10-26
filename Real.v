@@ -2761,6 +2761,67 @@ rewrite <- Nat.add_assoc.
 apply Hs.
 Qed.
 
+Theorem www : ∀ a b c i n,
+  fst_same (a + b) c (S i) = None
+  → fst_same (second n a i + second n b i) (second n c i) (S i) = Some n.
+Proof.
+intros a b c i n Hs.
+apply fst_same_iff in Hs; simpl in Hs.
+apply fst_same_iff; simpl.
+rewrite Nat.add_succ_r.
+split.
+ intros dj Hdj.
+ apply Nat.add_lt_mono_l with (p := i) in Hdj.
+ apply nat_compare_lt in Hdj; rewrite Hdj.
+ unfold rm_add_i; simpl.
+ rewrite Nat.add_succ_r, Hdj.
+ pose proof (Hs dj) as H.
+ unfold rm_add_i in H; simpl in H.
+ remember (S (S (i + dj))) as x.
+ remember (fst_same (second n a i) (second n b i) x) as s₂ eqn:Hs₂ .
+ apply fst_same_sym_iff in Hs₂.
+ subst x.
+ destruct s₂ as [di₂| ].
+  remember (i + n) as ipn eqn:Hin .
+  symmetry in Hin.
+  apply nat_compare_lt in Hdj.
+  destruct ipn; [ exfalso; omega | idtac ].
+  remember (nat_compare (i + dj + di₂) ipn) as cmp eqn:Hcmp .
+  symmetry in Hcmp.
+  remember (fst_same a b (S (S (i + dj)))) as s₃ eqn:Hs₃ .
+  apply fst_same_sym_iff in Hs₃.
+  destruct s₃ as [di₃| ].
+   destruct cmp.
+    destruct (lt_dec di₃ di₂) as [H₁| H₁].
+     rename H into Hab.
+     remember H₁ as H; clear HeqH.
+     destruct Hs₂ as (Hn₂, Hs₂).
+     apply Hn₂ in H.
+     simpl in H.
+     rewrite Nat.add_succ_r, Hin in H.
+     apply nat_compare_eq in Hcmp.
+     rename Hcmp into Hdi₂.
+     remember (nat_compare (i + dj + di₃) ipn) as cmp eqn:Hcmp .
+     symmetry in Hcmp.
+     destruct cmp; try discriminate H.
+     destruct Hs₃ as (_, Hs₃); simpl in Hs₃.
+     rewrite Hs₃ in H.
+     destruct b .[ S (S (i + dj + di₃))]; discriminate H.
+
+     apply Nat.nlt_ge in H₁.
+     apply nat_compare_eq in Hcmp.
+     rename Hcmp into Hdi₂.
+     destruct (lt_dec di₂ di₃) as [H₂| H₂].
+      rename H into Hab.
+      remember H₂ as H; clear HeqH.
+      destruct Hs₃ as (Hn₃, Hs₃).
+      apply Hn₃ in H; simpl in H.
+      destruct Hs₂ as (Hn₂, Hs₂).
+      simpl in Hs₂.
+      rewrite Nat.add_succ_r, Hin in Hs₂.
+      clear Hs₂.
+bbb.
+
 (* (a+b)''+c'' = (a''+b'')+c'' *)
 Theorem yyy : ∀ a b c i d₁ d₂ di,
   d₁ = opt2nat (fst_same (a + b) c (S i))
@@ -3310,6 +3371,10 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
  rewrite fst_same_inf_second; auto.
  assert (i + n = i + n) as H by reflexivity.
  apply nat_compare_eq_iff in H; rewrite H; clear H.
+ do 6 rewrite xorb_assoc; f_equal; f_equal.
+ rewrite xorb_comm; symmetry.
+ rewrite xorb_comm; symmetry.
+ do 2 rewrite xorb_assoc; f_equal.
 bbb.
 
  remember (fst_same a b (S i)) as s₂ eqn:Hs₂ .
