@@ -2446,7 +2446,7 @@ destruct (lt_dec di₄ (dk - S dl)) as [H₂| H₂].
   apply Nat.le_antisymm; assumption.
 Qed.
 
-Theorem fst_same_add_second : ∀ a b c i di dj dk,
+Theorem same_fst_same_add_second : ∀ a b c i di dj dk,
   fst_same (a + b) c (S i) = Some di
   → opt2nat (fst_same a b (S i + S di)) = dj
   → fst_same a b (S i) = Some dk
@@ -3028,7 +3028,8 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
        exfalso; revert H; apply Nat.lt_irrefl.
 
        clear Hcmp; f_equal.
-       remember (fst_same a b (S i + d₁)) as s₃ eqn:Hs₃ .
+       remember Hd₂ as Hd₂v; clear HeqHd₂v; symmetry in Hd₂v.
+       remember (fst_same a b (S i + d₁)) as s₃ eqn:Hs₃ in Hd₂.
        symmetry in Hs₃.
        destruct s₃ as [di₃| ]; simpl in Hd₂.
         destruct (lt_dec (S di₁ + di₃) di₂) as [H₂| H₂].
@@ -3227,7 +3228,10 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
          apply Nat.nlt_ge in H₁.
          rewrite <- Nat.add_succ_l, <- Nat.add_succ_r in Hs₃.
          subst di.
-         erewrite uuu; try eassumption.
+         rewrite <- Nat.add_0_r in H₁.
+         replace (S di₁) with (S di₁ + 0) in Hn by apply Nat.add_0_r.
+         erewrite same_fst_same_add_second; try eassumption.
+         rewrite Nat.add_0_r in H₁, Hn.
 bbb.
          destruct (lt_dec di₂ di₁) as [H₂| H₂].
 
