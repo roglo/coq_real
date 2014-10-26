@@ -3276,6 +3276,23 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
      apply nat_compare_gt in Hcmp.
      exfalso; omega.
 
+   rewrite fst_same_inf_after in Hd₂; [ simpl in Hd₂ | assumption ].
+   subst d₂; rewrite Nat.add_0_r in Hdi.
+   subst d₁ di.
+   assert (i + di₁ < i + n) as H by omega.
+   apply nat_compare_lt in H; rewrite H; clear H.
+   remember (fst_same (second n a i) (second n b i) (S i)) as s₃ eqn:Hs₃ .
+   symmetry in Hs₃.
+   destruct s₃ as [di₃| ].
+    apply fst_same_iff in Hs₂; simpl in Hs₂.
+    apply fst_same_iff in Hs₃.
+    destruct Hs₃ as (Hn₃, Hs₃); simpl in Hs₃.
+    rewrite Nat.add_succ_r in Hs₃.
+    remember (nat_compare (i + di₃) (i + n)) as cmp eqn:Hcmp .
+    symmetry in Hcmp.
+    destruct cmp.
+     f_equal.
+
 bbb.
 
       remember (fst_same a b (i + d₁)) as s₃ eqn:Hs₃ .
