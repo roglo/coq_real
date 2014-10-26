@@ -2538,7 +2538,7 @@ split.
      rewrite Hs₄ in H.
      destruct b .[ S (S (i + dl + di₄))]; discriminate H.
 
-  clear H.
+  rename H into Hab.
   apply fst_same_iff in Hs₄; simpl in Hs₄.
   rename Hsj into Hoj.
   rename dj into oj.
@@ -2559,59 +2559,42 @@ split.
    remember (fst_same (second n a i) (second n b i) (S (S (i + dl)))) as s₁.
    rename Heqs₁ into Hs₁.
    apply fst_same_sym_iff in Hs₁.
-   destruct s₁ as [di₁| ].
-    destruct Hs₁ as (Hn₁, Hs₁); simpl in Hs₁.
-    rewrite Nat.add_succ_r in Hs₁.
-    remember (i + n) as ipn eqn:Hin .
-    symmetry in Hin.
-    destruct ipn; [ exfalso; omega | idtac ].
-    remember (nat_compare (i + dl + di₁) ipn) as cmp eqn:Hcmp .
-    symmetry in Hcmp.
-    destruct cmp.
-     remember (fst_same a b (S (S (i + dl)))) as s₂ eqn:Hs₂ .
-     symmetry in Hs₂.
-     destruct s₂ as [di₂| ].
-      apply fst_same_iff in Hs₂.
-      destruct Hs₂ as (Hn₂, Hs₂).
-      pose proof (Hs₄ di₂) as H₁.
-      simpl in Hs₂; rewrite Hs₂ in H₁.
-      destruct b .[ S (S (i + dl + di₂))]; discriminate H₁.
-
-      remember Hdl as H; clear HeqH.
-      apply Hni in H.
-      unfold rm_add_i in H.
-      rewrite Hs₂ in H.
-      assumption.
-
-     pose proof (Hs₄ di₁) as H₁.
-     rewrite Hs₁ in H₁.
-     destruct b .[ S (S (i + dl + di₁))]; discriminate H₁.
-
-     apply nat_compare_gt in Hcmp.
-     assert (n - S dl < di₁) as H by omega.
-     apply Hn₁ in H.
-     simpl in H.
-     rewrite Nat.add_succ_r, Hin in H.
-     rewrite Nat.add_0_r in Hns.
-     rewrite Hns in H.
-     rewrite Nat.add_succ_l in H.
-     rewrite Nat.sub_succ in H.
-     rewrite Nat.add_sub_assoc in H; [ idtac | omega ].
-     rewrite Nat.add_shuffle0, Nat.add_sub in H.
-     assert (i + (S (S di) + n₀) = ipn) as H₁ by omega.
-     apply nat_compare_eq_iff in H₁.
-     rewrite H₁ in H; discriminate H.
-
-    remember Hdl as H; clear HeqH.
-    apply Hni in H.
-    unfold rm_add_i in H.
+   destruct s₁ as [di₁| ]; [ idtac | assumption ].
+   destruct Hs₁ as (Hn₁, Hs₁); simpl in Hs₁.
+   rewrite Nat.add_succ_r in Hs₁.
+   remember (i + n) as ipn eqn:Hin .
+   symmetry in Hin.
+   destruct ipn; [ exfalso; omega | idtac ].
+   remember (nat_compare (i + dl + di₁) ipn) as cmp eqn:Hcmp .
+   symmetry in Hcmp.
+   destruct cmp.
     remember (fst_same a b (S (S (i + dl)))) as s₂ eqn:Hs₂ .
     symmetry in Hs₂.
     destruct s₂ as [di₂| ]; [ idtac | assumption ].
-    apply fst_same_iff in Hs₂; simpl in Hs₂.
+    apply fst_same_iff in Hs₂.
     destruct Hs₂ as (Hn₂, Hs₂).
-    rewrite Hs₄ in Hs₂.
-    destruct b .[ S (S (i + dl + di₂))]; discriminate Hs₂.
+    pose proof (Hs₄ di₂) as H₁.
+    simpl in Hs₂; rewrite Hs₂ in H₁.
+    destruct b .[ S (S (i + dl + di₂))]; discriminate H₁.
+
+    pose proof (Hs₄ di₁) as H₁.
+    rewrite Hs₁ in H₁.
+    destruct b .[ S (S (i + dl + di₁))]; discriminate H₁.
+
+    apply nat_compare_gt in Hcmp.
+    assert (n - S dl < di₁) as H by omega.
+    apply Hn₁ in H.
+    simpl in H.
+    rewrite Nat.add_succ_r, Hin in H.
+    rewrite Nat.add_0_r in Hns.
+    rewrite Hns in H.
+    rewrite Nat.add_succ_l in H.
+    rewrite Nat.sub_succ in H.
+    rewrite Nat.add_sub_assoc in H; [ idtac | omega ].
+    rewrite Nat.add_shuffle0, Nat.add_sub in H.
+    assert (i + (S (S di) + n₀) = ipn) as H₁ by omega.
+    apply nat_compare_eq_iff in H₁.
+    rewrite H₁ in H; discriminate H.
 
  rename di into dl.
  remember Hsi as H; clear HeqH.
@@ -2688,15 +2671,19 @@ split.
      rewrite Hs₄ in H.
      destruct b .[ S (S (i + dl + di₄))]; discriminate H.
 
-bbb.
-  apply fst_same_iff in Hsj; simpl in Hsj.
-  destruct Hsj as (Hnj, Hsj).
-  apply fst_same_iff in Hs₄; simpl in Hs₄.
   rename H into Hab.
-  pose proof (Hs₄ dj) as H.
-  rewrite Nat.add_succ_r in Hsj; simpl in Hsj.
-  rewrite Hsj in H.
-  destruct b .[ S (S (i + dl + dj))]; discriminate H.
+  apply fst_same_iff in Hs₄; simpl in Hs₄.
+  rename Hsj into Hoj.
+  rename dj into oj.
+  remember (fst_same a b (S i + S dl)) as dj eqn:Hsj .
+  symmetry in Hsj.
+  destruct dj as [dj| ]; simpl in Hoj; subst oj.
+   pose proof (Hs₄ dj) as H.
+   apply fst_same_iff in Hsj; simpl in Hsj.
+   destruct Hsj as (Hnj, Hsj).
+   rewrite Nat.add_succ_r in Hsj; simpl in Hsj.
+   rewrite Hsj in H.
+   destruct b .[ S (S (i + dl + dj))]; discriminate H.
 bbb.
 *)
 
