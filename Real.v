@@ -2761,11 +2761,12 @@ rewrite <- Nat.add_assoc.
 apply Hs.
 Qed.
 
-Theorem www : ∀ a b c i n,
+Theorem www : ∀ a b c i,
   fst_same (a + b) c (S i) = None
-  → fst_same (second n a i + second n b i) (second n c i) (S i) = Some n.
+  → ∀ n, 1 < n →
+    fst_same (second n a i + second n b i) (second n c i) (S i) = Some n.
 Proof.
-intros a b c i n Hs.
+intros a b c i Hs n Hn.
 apply fst_same_iff in Hs; simpl in Hs.
 apply fst_same_iff; simpl.
 rewrite Nat.add_succ_r.
@@ -2820,7 +2821,29 @@ split.
       simpl in Hs₂.
       rewrite Nat.add_succ_r, Hin in Hs₂.
       clear Hs₂.
+      rename H into Hab₂.
+      assert (n < di₂ + S (S dj)) as H by omega.
+      destruct n; [ exfalso; omega | idtac ].
+      destruct n.
+       assert (di₂ = 0) as HH by omega.
+       move HH at top; subst di₂.
+       assert (dj = 0) as HH by omega.
+       move HH at top; subst dj.
+       clear Hn₂.
+       do 2 rewrite Nat.add_0_r in Hdi₂.
+       subst ipn.
+       clear H₁ H Hin Hdj.
+       rewrite Nat.add_0_r in Hn₃, Hs₃, Hab, Hab₂ |- *.
+       rewrite Nat.add_0_r in Hab₂.
+       exfalso; revert Hn; apply Nat.lt_irrefl.
+
+       clear Hn.
+       destruct di₂.
+        clear Hn₂.
+        rewrite Nat.add_0_r in Hdi₂, Hab₂.
+        simpl in H.
 bbb.
+*)
 
 (* (a+b)''+c'' = (a''+b'')+c'' *)
 Theorem yyy : ∀ a b c i d₁ d₂ di,
