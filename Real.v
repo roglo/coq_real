@@ -2588,6 +2588,19 @@ split.
      destruct b .[ S (S (i + dl + di₁))]; discriminate H₁.
 
      apply nat_compare_gt in Hcmp.
+     assert (n - S dl < di₁) as H by omega.
+     apply Hn₁ in H.
+     simpl in H.
+     rewrite Nat.add_succ_r, Hin in H.
+     rewrite Nat.add_0_r in Hns.
+     rewrite Hns in H.
+     rewrite Nat.add_succ_l in H.
+     rewrite Nat.sub_succ in H.
+     rewrite Nat.add_sub_assoc in H; [ idtac | omega ].
+     rewrite Nat.add_shuffle0, Nat.add_sub in H.
+     assert (i + (S (S di) + n₀) = ipn) as H₁ by omega.
+     apply nat_compare_eq_iff in H₁.
+     rewrite H₁ in H; discriminate H.
 bbb.
 
   apply fst_same_iff in Hsj; simpl in Hsj.
