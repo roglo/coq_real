@@ -3208,6 +3208,11 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
          assert (S ipn = S ipn) as H₁ by reflexivity.
          apply nat_compare_eq_iff in H₁.
          rewrite H₁ in H; discriminate H.
+
+        apply fst_same_iff in Hs₂; simpl in Hs₂.
+        rewrite <- Hs₄; simpl.
+        do 2 rewrite Hs₂.
+        do 2 rewrite negb_xorb_diag; reflexivity.
 bbb.
     apply fst_same_iff in Hs₂; simpl in Hs₂.
     apply fst_same_iff in Hs₃.
