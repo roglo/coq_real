@@ -3323,6 +3323,22 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
    assert (i + di₂ < i + n) as H by omega.
    apply nat_compare_lt in H; rewrite H; clear H.
    f_equal.
+   remember
+    (fst_same (second n a i + second n b i) (second n c i) (S i)) as s₃
+    eqn:Hs₃ .
+   symmetry in Hs₃.
+   destruct s₃ as [di₃| ]; [ idtac | reflexivity ].
+   apply fst_same_iff in Hs₃.
+   destruct Hs₃ as (Hn₃, Hs₃); simpl in Hs₃.
+   rewrite Nat.add_succ_r in Hs₃.
+   rewrite Hs₃.
+   remember (nat_compare (i + di₃) (i + n)) as cmp eqn:Hcmp .
+   symmetry in Hcmp.
+   destruct cmp; [ reflexivity | idtac | idtac ].
+    unfold rm_add_i in Hs₃; simpl in Hs₃.
+    rewrite Nat.add_succ_r, Hcmp in Hs₃.
+    erewrite fst_same_second in Hs₃; try eassumption.
+     2: rewrite Nat.add_succ_r; reflexivity.
 bbb.
 *)
 
