@@ -2446,7 +2446,7 @@ destruct (lt_dec di₄ (dk - S dl)) as [H₂| H₂].
   apply Nat.le_antisymm; assumption.
 Qed.
 
-Theorem_fst_same_add_second : ∀ a b c i di dj dk,
+Theorem fst_same_add_second : ∀ a b c i di dj dk,
   fst_same (a + b) c (S i) = Some di
   → opt2nat (fst_same a b (S i + S di)) = dj
   → fst_same a b (S i) = Some dk
