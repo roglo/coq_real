@@ -3310,6 +3310,8 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
  rewrite fst_same_inf_second; auto.
  assert (i + n = i + n) as H by reflexivity.
  apply nat_compare_eq_iff in H; rewrite H; clear H.
+bbb.
+
  remember (fst_same a b (S i)) as s₂ eqn:Hs₂ .
  symmetry in Hs₂.
  destruct s₂ as [di₂| ]; simpl in Hd₂; subst d₂.
