@@ -3300,6 +3300,29 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
     replace (S i) with (S i + 0) in Hs₃ by apply Nat.add_0_r.
     erewrite fst_same_inf_second2 in Hs₃; try reflexivity; auto.
     discriminate Hs₃.
+
+ subst d₁ di.
+ rewrite Nat.add_0_r in Hd₂; simpl in Hn.
+ unfold rm_add_i at 1.
+ unfold rm_add_i at 2; simpl.
+ rewrite Nat.add_succ_r.
+ rewrite <- Nat.add_succ_r, nat_compare_add_succ.
+ rewrite fst_same_inf_second; auto.
+ assert (i + n = i + n) as H by reflexivity.
+ apply nat_compare_eq_iff in H; rewrite H; clear H.
+ remember (fst_same a b (S i)) as s₂ eqn:Hs₂ .
+ symmetry in Hs₂.
+ destruct s₂ as [di₂| ]; simpl in Hd₂; subst d₂.
+  erewrite fst_same_second with (n₀ := S (S n₀)); try eassumption.
+   2: rewrite Nat.add_0_r; reflexivity.
+
+   2: reflexivity.
+
+   2: omega.
+
+   assert (i + di₂ < i + n) as H by omega.
+   apply nat_compare_lt in H; rewrite H; clear H.
+   f_equal.
 bbb.
 *)
 
