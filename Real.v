@@ -3213,116 +3213,20 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
         rewrite <- Hs₄; simpl.
         do 2 rewrite Hs₂.
         do 2 rewrite negb_xorb_diag; reflexivity.
+
+       apply fst_same_iff in Hs₂.
+       rewrite Hs₂.
+       rewrite negb_xorb_diag; reflexivity.
+
+      apply fst_same_iff in Hs₄; simpl in Hs₄.
+      rewrite Nat.add_succ_r in Hs₄.
+      pose proof (Hs₄ di₁) as H.
+      assert (i + di₁ < i + n) as H₁ by omega.
+      apply nat_compare_lt in H₁.
+      rewrite H₁ in H; clear H₁.
 bbb.
-    apply fst_same_iff in Hs₂; simpl in Hs₂.
-    apply fst_same_iff in Hs₃.
-    destruct Hs₃ as (Hn₃, Hs₃); simpl in Hs₃.
-    rewrite Nat.add_succ_r in Hs₃.
-    remember (nat_compare (i + di₃) (i + n)) as cmp eqn:Hcmp .
-    symmetry in Hcmp.
-    destruct cmp.
-     f_equal.
-
-bbb.
-
-      remember (fst_same a b (i + d₁)) as s₃ eqn:Hs₃ .
-      symmetry in Hs₃.
-      destruct s₃ as [di₃| ]; simpl in Hd₂.
-       destruct (lt_dec (di₁ + di₃) di₂) as [H₂| H₂].
-        apply fst_same_iff in Hs₂; simpl in Hs₂.
-        destruct Hs₂ as (Hn₂, Hs₂).
-        remember H₂ as H; clear HeqH.
-        apply Hn₂ in H.
-        apply fst_same_iff in Hs₃; simpl in Hs₃.
-        destruct Hs₃ as (Hn₃, Hs₃).
-        rewrite Hd₁, Nat.add_succ_r in Hs₃; simpl in Hs₃.
-        rewrite Nat.add_assoc, Hs₃ in H.
-        destruct b .[ S (i + di₁ + di₃)]; discriminate H.
-
-        apply Nat.nlt_ge in H₂.
-        clear Hcmp.
-        subst d₁ d₂.
-bbb.
-
-  rewrite H.
-  unfold rm_add_i at 1.
-  unfold rm_add_i at 2.
-  simpl.
-  rewrite nat_compare_add_succ, Nat.add_succ_r.
-  remember (fst_same a b (S i)) as s₂ eqn:Hs₂ .
-  symmetry in Hs₂.
-  destruct s₂ as [di₂| ].
-   simpl in Hd₂.
-   rename H into Hab₁.
-   remember Hs₂ as H; clear HeqH.
-   eapply fst_same_fin_eq_second with (n := n) (n₀ := S n₀ + di - d₂) in H.
-    rewrite H.
-    subst d₁ d₂.
-    Focus 2.
-    rewrite Nat.add_sub_assoc.
-     rewrite Hn.
-     rewrite Hd₂.
-     symmetry.
-     rewrite Nat.add_comm.
-     rewrite Nat.add_sub.
-     simpl; rewrite Nat.add_comm.
-     reflexivity.
-     Unfocus.
-     destruct (lt_dec di₁ di₂) as [H₁ | H₂].
-bbb.
-    erewrite www; try eassumption.
-bbb.
- must cancel each other:
-   ⊕ match nat_compare (i + di₁) (i + n) with
-     | Eq => true
-     | Lt => rm_add_i a b (S (i + di₁))
-     | Gt => false
-   ⊕ match fst_same (second n a i + second n b i) (second n c i) (S i) with
-     | Some dj => rm_add_i (second n a i) (second n b i) (S (i + dj))
-     | None => true
-     end
-
-intros a b c i di Hdi n₀ n Hn; simpl.
-unfold rm_add_i; simpl.
-rewrite nat_compare_add_succ.
-rewrite Nat.add_succ_r.
-remember (fst_same (a + b) c (S i)) as s₁ eqn:Hs₁ .
-symmetry in Hs₁.
-destruct s₁ as [di₁| ]; simpl in Hdi.
- Focus 1.
- remember Hs₁ as H; clear HeqH.
- eapply fst_same_fin_eq_second with (n := n) (n₀ := S n₀) in H.
-  2: omega.
-
-  rewrite <- H, Hs₁.
-  unfold rm_add_i at 1.
-  unfold rm_add_i at 2.
-  simpl.
-  rewrite nat_compare_add_succ.
-  rewrite Nat.add_succ_r.
-bbb.
-
-intros a b c i di Hdi n₀ n Hn; simpl.
-apply rm_add_i_compat_r; intros j; simpl.
-unfold rm_add_i at 1; simpl.
-rewrite Nat.add_succ_r.
-remember (nat_compare j (S (i + n))) as cmp eqn:Hcmp .
-symmetry in Hcmp.
-destruct cmp.
- Focus 1.
- rewrite xorb_true_l, xorb_false_l.
- apply nat_compare_eq in Hcmp.
- remember (fst_same (second n a i) (second n b i) (S j)) as s₁ eqn:Hs₁ .
- symmetry in Hs₁.
- destruct s₁ as [di₁| ]; [ idtac | reflexivity ].
- remember (nat_compare (j + di₁) (i + n)) as cmp₁ eqn:Hcmp₁ .
- symmetry in Hcmp₁.
- destruct cmp₁; [ reflexivity | idtac | exfalso ].
-  apply nat_compare_lt in Hcmp₁.
-  exfalso; omega.
-
-  apply nat_compare_gt in Hcmp₁.
-bbb.
+  faire un lemme de merde comme fst_same_fin_eq_second mais pour
+  les None : fst_same_inf_eq_second
 *)
 
 (* actually false because we should add 0 to both sides but just to see *)
