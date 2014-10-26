@@ -3337,8 +3337,46 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
    destruct cmp; [ reflexivity | idtac | idtac ].
     unfold rm_add_i in Hs₃; simpl in Hs₃.
     rewrite Nat.add_succ_r, Hcmp in Hs₃.
-    erewrite fst_same_second in Hs₃; try eassumption.
-     2: rewrite Nat.add_succ_r; reflexivity.
+    destruct (lt_dec (S di₃) di₂) as [H₁| H₁].
+     erewrite fst_same_second with (dj := di₂ - S di₃) (n₀ := S (S n₀))
+      in Hs₃.
+      2: eassumption.
+
+      2: rewrite Nat.add_succ_r; reflexivity.
+
+      2: omega.
+
+      2: omega.
+
+      remember (i + n) as ipn eqn:Hin .
+      symmetry in Hin.
+      destruct ipn; [ exfalso; omega | idtac ].
+      apply nat_compare_lt in Hcmp.
+      rename Hcmp into Hdi₃.
+      assert (i + di₃ + (di₂ - S di₃) < ipn) as Hcmp by omega.
+      apply nat_compare_lt in Hcmp.
+      rewrite Hcmp in Hs₃; clear Hcmp.
+      rewrite Nat.add_sub_assoc in Hs₃; [ idtac | omega ].
+      rewrite Nat.add_shuffle0 in Hs₃.
+      rewrite <- Nat.sub_succ_l in Hs₃; [ idtac | omega ].
+      rewrite <- Nat.add_succ_r in Hs₃.
+      rewrite <- Nat.add_succ_r in Hs₃.
+      rewrite Nat.add_sub in Hs₃.
+      apply fst_same_iff in Hs₂; simpl in Hs₂.
+      destruct Hs₂ as (Hn₂, Hs₂).
+      assert (di₃ < di₂) as H by omega.
+      apply Hn₂ in H.
+      rewrite <- Nat.add_succ_r in H.
+      rewrite H, negb_xorb_diag in Hs₃.
+      Focus 1.
+      apply fst_same_iff in Hs₁; simpl in Hs₁.
+      rename H into Hab.
+      pose proof (Hs₁ di₃) as H.
+      unfold rm_add_i in H; simpl in H.
+      remember (fst_same a b (S (S (i + di₃)))) as s₄ eqn:Hs₄ .
+      destruct s₄ as [di₄| ].
+       apply fst_same_sym_iff in Hs₄; simpl in Hs₄.
+       destruct Hs₄ as (Hn₄, Hs₄).
 bbb.
 *)
 
