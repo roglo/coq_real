@@ -3284,6 +3284,56 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
    remember (fst_same (second n a i) (second n b i) (S i)) as s₃ eqn:Hs₃ .
    symmetry in Hs₃.
    destruct s₃ as [di₃| ].
+    apply fst_same_iff in Hs₃.
+    destruct Hs₃ as (Hn₃, Hs₃); simpl in Hs₃.
+    rewrite Nat.add_succ_r in Hs₃.
+    remember (nat_compare (i + di₃) (i + n)) as cmp eqn:Hcmp .
+    symmetry in Hcmp.
+    destruct cmp.
+     f_equal.
+     unfold rm_add_i at 1.
+     rewrite <- Nat.add_succ_l, <- Nat.add_succ_r.
+     rewrite fst_same_inf_after; [ idtac | assumption ].
+     remember (second n a i + second n b i)%rm as x.
+     remember (fst_same x (second n c i) (S i)) as s₄ eqn:Hs₄ ; subst x.
+     symmetry in Hs₄.
+     destruct s₄ as [di₄| ].
+      apply fst_same_iff in Hs₄.
+      destruct Hs₄ as (Hn₄, Hs₄); simpl in Hs₄.
+      rewrite Nat.add_succ_r in Hs₄.
+      rewrite Hs₄.
+      apply nat_compare_eq in Hcmp.
+      rename Hcmp into Hdi₃.
+      remember (nat_compare (i + di₄) (i + n)) as cmp eqn:Hcmp .
+      symmetry in Hcmp.
+      destruct cmp.
+       apply nat_compare_eq in Hcmp.
+       apply Nat.add_cancel_l in Hcmp; subst di₄.
+       unfold rm_add_i in Hs₄; simpl in Hs₄.
+       rewrite Nat.add_succ_r in Hs₄.
+       assert (i + n = i + n) as H by reflexivity.
+       apply nat_compare_eq_iff in H.
+       rewrite H in Hs₄; clear H.
+       rewrite <- Nat.add_succ_l, <- Nat.add_succ_r in Hs₄.
+       remember (fst_same (second n a i) (second n b i) (S i + S n)) as s₅.
+       rename Heqs₅ into Hs₅.
+       symmetry in Hs₅.
+       destruct s₅ as [di₅| ].
+        remember (i + n) as ipn eqn:Hin .
+        symmetry in Hin.
+        destruct ipn; [ exfalso; omega | idtac ].
+        assert (S ipn + di₅ > ipn) as H by omega.
+        apply nat_compare_gt in H.
+        rewrite H in Hs₄; discriminate Hs₄.
+
+        apply fst_same_iff in Hs₅; simpl in Hs₅.
+        rewrite Nat.add_succ_r in Hs₅.
+        pose proof (Hs₅ 0) as H.
+        assert (S (i + n) + 0 > i + n) as H₁ by omega.
+        apply nat_compare_gt in H₁.
+        rewrite H₁ in H; discriminate H.
+
+bbb.
     apply fst_same_iff in Hs₂; simpl in Hs₂.
     apply fst_same_iff in Hs₃.
     destruct Hs₃ as (Hn₃, Hs₃); simpl in Hs₃.
