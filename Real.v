@@ -3232,8 +3232,51 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
          replace (S di₁) with (S di₁ + 0) in Hn by apply Nat.add_0_r.
          erewrite same_fst_same_add_second; try eassumption.
          rewrite Nat.add_0_r in H₁, Hn.
+         unfold rm_add_i; simpl.
+         rewrite Nat.add_succ_r.
+         assert (i + di₁ < i + n) as Hcmp by omega.
+         apply nat_compare_lt in Hcmp.
+         rewrite Hcmp; clear Hcmp; f_equal.
+         remember (i + n) as ipn eqn:Hin .
+         symmetry in Hin.
+         destruct ipn; [ exfalso; omega | idtac ].
+         remember (S (S (i + di₁))) as x.
+         remember (fst_same (second n a i) (second n b i) x) as s₄ eqn:Hs₄ .
+         subst x.
+         symmetry in Hs₄.
+         destruct s₄ as [di₄| ]; [ idtac | reflexivity ].
+         apply fst_same_iff in Hs₄.
+         destruct Hs₄ as (Hn₄, Hs₄); simpl in Hs₄.
+         rewrite Nat.add_succ_r, Hin in Hs₄.
+         remember (nat_compare (i + di₁ + di₄) ipn) as cmp eqn:Hcmp .
+         symmetry in Hcmp.
+         destruct cmp; [ reflexivity | idtac | idtac ].
+          apply fst_same_iff in Hs₃; simpl in Hs₃.
+          rename H into Hdi₂.
+          pose proof (Hs₃ di₄) as H.
+          rewrite Nat.add_succ_r in H; simpl in H.
+          rewrite Hs₄ in H.
+          destruct b .[ S (S (i + di₁ + di₄))]; discriminate H.
+
+          simpl in Hn₄.
+          rewrite Nat.add_succ_r, Hin in Hn₄.
+          apply nat_compare_gt in Hcmp.
+          rename H into Hdi₂.
+          assert (ipn - (i + di₁) < di₄) as H by omega.
+          apply Hn₄ in H.
+          rewrite Nat.add_sub_assoc in H; [ idtac | omega ].
+          rewrite Nat.add_comm, Nat.add_sub in H.
+          pose proof (eq_refl ipn) as H₂.
+          apply nat_compare_eq_iff in H₂.
+          rewrite H₂ in H; discriminate H.
+
+       apply nat_compare_gt in Hcmp.
+       exfalso; omega.
+
+     apply nat_compare_gt in Hcmp.
+     exfalso; omega.
+
 bbb.
-         destruct (lt_dec di₂ di₁) as [H₂| H₂].
 
       remember (fst_same a b (i + d₁)) as s₃ eqn:Hs₃ .
       symmetry in Hs₃.
