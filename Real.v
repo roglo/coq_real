@@ -2767,6 +2767,9 @@ Theorem www : ∀ a b c i,
     fst_same (second n a i + second n b i) (second n c i) (S i) = Some n.
 Proof.
 intros a b c i Hs n Hn.
+bbb.
+  est-ce que c'est vrai ?
+
 apply fst_same_iff in Hs; simpl in Hs.
 apply fst_same_iff; simpl.
 rewrite Nat.add_succ_r.
