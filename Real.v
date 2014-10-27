@@ -3436,7 +3436,7 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
    destruct cmp; [ reflexivity | idtac | idtac ].
     unfold rm_add_i in Hs₃; simpl in Hs₃.
     rewrite Nat.add_succ_r, Hcmp in Hs₃.
-    destruct (lt_dec (S di₃) di₂) as [H₁| H₁].
+    destruct (lt_dec di₃ di₂) as [H₁| H₁].
      erewrite fst_same_second with (dj := di₂ - S di₃) (n₀ := S (S n₀))
       in Hs₃.
       2: eassumption.
