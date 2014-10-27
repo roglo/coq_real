@@ -3398,6 +3398,13 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
 
  subst d₁ di.
  rewrite Nat.add_0_r in Hd₂; simpl in Hn.
+   assert (∀ di, rm_add_i (a + b) c (S i + di) = false) as Hdi.
+    intros di.
+    unfold rm_add_i.
+    rewrite <- Nat.add_succ_r.
+    rewrite fst_same_inf_after; [ idtac | assumption ].
+    apply fst_same_iff in Hs₁; rewrite Hs₁.
+    destruct c .[ S i + di]; reflexivity.
  unfold rm_add_i at 1.
  unfold rm_add_i at 2; simpl.
  rewrite Nat.add_succ_r.
@@ -3538,6 +3545,18 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
       remember (i + n) as ipn eqn:Hin .
       symmetry in Hin.
       destruct ipn; [ exfalso; omega | idtac ].
+bbb.
+      remember (S (S (i + di₃))) as x.
+      remember (fst_same (second n a i) (second n b i) x) as s₄ eqn:Hs₄ .
+      subst x.
+      apply fst_same_sym_iff in Hs₄.
+      destruct s₄ as [di₄| ].
+       apply nat_compare_lt in Hcmp.
+       destruct (lt_dec (S (di₃ + di₄)) n) as [H₃| H₃].
+        rename H into Hab.
+        assert (i + di₃ + di₄ < ipn) as H by omega.
+        apply nat_compare_lt in H.
+        rewrite H in Hs₃; clear H.
 bbb.
 *)
 
