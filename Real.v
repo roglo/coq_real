@@ -3398,6 +3398,7 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
 
  subst d₁ di.
  rewrite Nat.add_0_r in Hd₂; simpl in Hn.
+(* pourrait servir, on sait jamais...
    assert (∀ di, rm_add_i (a + b) c (S i + di) = false) as Hdi.
     intros di.
     unfold rm_add_i.
@@ -3405,8 +3406,7 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
     rewrite fst_same_inf_after; [ idtac | assumption ].
     apply fst_same_iff in Hs₁; rewrite Hs₁.
     destruct c .[ S i + di]; reflexivity.
-bbb.
-
+*)
  unfold rm_add_i at 1.
  unfold rm_add_i at 2; simpl.
  rewrite Nat.add_succ_r.
@@ -3431,6 +3431,8 @@ bbb.
    assert (i + di₂ < i + n) as H by omega.
    apply nat_compare_lt in H; rewrite H; clear H.
    f_equal.
+bbb.
+
    remember
     (fst_same (second n a i + second n b i) (second n c i) (S i)) as s₃
     eqn:Hs₃ .
