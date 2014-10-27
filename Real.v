@@ -2761,102 +2761,98 @@ rewrite <- Nat.add_assoc.
 apply Hs.
 Qed.
 
-(*
-Theorem www : ∀ a b c i,
-  fst_same (a + b) c (S i) = None
-  → ∀ n, 1 < n →
-    fst_same (second n a i + second n b i) (second n c i) (S i) = Some n.
+Definition rm_add'_i a b i :=
+  a.[i] ⊕ b.[i] ⊕
+  match fst_same a b (S i) with
+  | Some dj => a.[S i + dj]
+  | None => false
+  end.
+
+Definition rm_add' a b := {| rm := rm_add'_i a b |}.
+
+Notation "a +' b" := (rm_add' a b) (left associativity, at level 50) : rm_scope.
+
+(* probably false...
+Theorem uuu : ∀ a b c i, fst_same (a + b) c i = fst_same (a +' b) c i.
 Proof.
-intros a b c i Hs n Hn.
-bbb.
-  est-ce que c'est vrai ?
-
-apply fst_same_iff in Hs; simpl in Hs.
+intros a b c i.
 apply fst_same_iff; simpl.
-rewrite Nat.add_succ_r.
-split.
- intros dj Hdj.
- apply Nat.add_lt_mono_l with (p := i) in Hdj.
- apply nat_compare_lt in Hdj; rewrite Hdj.
- unfold rm_add_i; simpl.
- rewrite Nat.add_succ_r, Hdj.
- pose proof (Hs dj) as H.
- unfold rm_add_i in H; simpl in H.
- remember (S (S (i + dj))) as x.
- remember (fst_same (second n a i) (second n b i) x) as s₂ eqn:Hs₂ .
- apply fst_same_sym_iff in Hs₂.
- subst x.
- destruct s₂ as [di₂| ].
-  remember (i + n) as ipn eqn:Hin .
-  symmetry in Hin.
-  apply nat_compare_lt in Hdj.
-  destruct ipn; [ exfalso; omega | idtac ].
-  remember (nat_compare (i + dj + di₂) ipn) as cmp eqn:Hcmp .
-  symmetry in Hcmp.
-  remember (fst_same a b (S (S (i + dj)))) as s₃ eqn:Hs₃ .
-  apply fst_same_sym_iff in Hs₃.
-  destruct s₃ as [di₃| ].
-   destruct cmp.
-    destruct (lt_dec di₃ di₂) as [H₁| H₁].
-     rename H into Hab.
-     remember H₁ as H; clear HeqH.
-     destruct Hs₂ as (Hn₂, Hs₂).
-     apply Hn₂ in H.
-     simpl in H.
-     rewrite Nat.add_succ_r, Hin in H.
-     apply nat_compare_eq in Hcmp.
-     rename Hcmp into Hdi₂.
-     remember (nat_compare (i + dj + di₃) ipn) as cmp eqn:Hcmp .
-     symmetry in Hcmp.
-     destruct cmp; try discriminate H.
-     destruct Hs₃ as (_, Hs₃); simpl in Hs₃.
-     rewrite Hs₃ in H.
-     destruct b .[ S (S (i + dj + di₃))]; discriminate H.
+remember (fst_same (a +' b) c i) as s₁ eqn:Hs₁ .
+apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
+destruct s₁ as [di₁| ].
+ destruct Hs₁ as (Hn₁, Hs₁).
+ split.
+  intros dj Hdj.
+  remember Hdj as H; clear HeqH.
+  apply Hn₁ in H.
+  unfold rm_add'_i in H; simpl in H.
+  unfold rm_add_i; simpl.
+  remember (fst_same a b (S (i + dj))) as s₂ eqn:Hs₂ .
+  apply fst_same_sym_iff in Hs₂; simpl in Hs₂.
+  destruct s₂ as [di₂| ].
+   assumption.
 
-     apply Nat.nlt_ge in H₁.
-     apply nat_compare_eq in Hcmp.
-     rename Hcmp into Hdi₂.
-     destruct (lt_dec di₂ di₃) as [H₂| H₂].
-      rename H into Hab.
-      remember H₂ as H; clear HeqH.
-      destruct Hs₃ as (Hn₃, Hs₃).
-      apply Hn₃ in H; simpl in H.
-      destruct Hs₂ as (Hn₂, Hs₂).
-      simpl in Hs₂.
-      rewrite Nat.add_succ_r, Hin in Hs₂.
-      clear Hs₂.
-      rename H into Hab₂.
-      assert (n < di₂ + S (S dj)) as H by omega.
-      destruct n; [ exfalso; omega | idtac ].
-      destruct n.
-       assert (di₂ = 0) as HH by omega.
-       move HH at top; subst di₂.
-       assert (dj = 0) as HH by omega.
-       move HH at top; subst dj.
-       clear Hn₂.
-       do 2 rewrite Nat.add_0_r in Hdi₂.
-       subst ipn.
-       clear H₁ H Hin Hdj.
-       rewrite Nat.add_0_r in Hn₃, Hs₃, Hab, Hab₂ |- *.
-       rewrite Nat.add_0_r in Hab₂.
-       exfalso; revert Hn; apply Nat.lt_irrefl.
-
-       clear Hn.
-       destruct di₂.
-        clear Hn₂.
-        rewrite Nat.add_0_r in Hdi₂, Hab₂.
-        simpl in H.
-        simpl in H.
-        assert (dj = S n) as HH by omega.
-        subst dj.
-        clear H₁.
-        clear H.
-        clear Hin.
-        clear Hdj.
+   rewrite xorb_false_r in H.
 bbb.
 *)
 
+Theorem www : ∀ a b, (a + b = a +' b)%rm.
+Proof.
+intros a b.
+unfold rm_eq; intros i; simpl.
+unfold rm_add_i; simpl.
+do 2 rewrite xorb_false_r.
+unfold rm_add_i at 1.
+unfold rm_add'_i at 1.
+remember (fst_same a b (S i)) as s₁ eqn:Hs₁ .
+apply fst_same_sym_iff in Hs₁.
+destruct s₁ as [di₁| ].
+ destruct Hs₁ as (Hn₁, Hs₁).
+ f_equal.
+ remember (fst_same (a + b) 0 (S i)) as s₂ eqn:Hs₂ .
+ remember (fst_same (a +' b) 0 (S i)) as s₃ eqn:Hs₃ .
+ apply fst_same_sym_iff in Hs₂; simpl in Hs₂.
+ destruct s₂ as [di₂| ].
+  destruct Hs₂ as (Hn₂, Hs₂); rewrite Hs₂.
+  destruct s₃ as [di₃| ].
+   apply fst_same_sym_iff in Hs₃; simpl in Hs₃.
+   destruct Hs₃ as (Hn₃, Hs₃); rewrite Hs₃.
+   reflexivity.
+
+   apply fst_same_sym_iff in Hs₃; simpl in Hs₃.
+   pose proof (Hs₃ di₂) as H.
+   unfold rm_add_i in Hs₂.
+   unfold rm_add'_i in H.
+   remember (fst_same a b (S (S (i + di₂)))) as s₄ eqn:Hs₄ .
+   destruct s₄ as [di₄| ].
+    rewrite Hs₂ in H; discriminate H.
+
+    apply fst_same_sym_iff in Hs₄; simpl in Hs₄.
+    rewrite xorb_false_r in H.
+    clear Hs₂; rename H into Hs₂.
+    move Hs₂ before Hn₂.
+    Focus 1.
+    pose proof (Hs₃ di₁) as H.
+    unfold rm_add'_i in H; simpl in H.
+    simpl in Hs₁.
+    rewrite Hs₁, xorb_nilpotent, xorb_false_l in H.
+    remember (fst_same a b (S (S (i + di₁)))) as s₅ eqn:Hs₅ .
+    apply fst_same_sym_iff in Hs₅; simpl in Hs₅.
+    destruct s₅ as [di₅| ]; [ idtac | discriminate H ].
+    destruct Hs₅ as (Hn₅, Hs₅).
+bbb.
+
+bbb.
+
 (* (a+b)''+c'' = (a''+b'')+c'' *)
+(* seems that it is false with this example :
+   a = 0,00001011101110111011101110111... (repetition pattern 0111)
+   b = 0,01101110111011101110111011101... (repetition pattern 1101)
+   c = 0,00000101010101010101010101010... (repetition pattern 10)
+ a'' = 0,00001011000...
+ b'' = 0,01101111000...
+ c'' = 0,00000101000...
+ *)
 Theorem yyy : ∀ a b c i d₁ d₂ di,
   d₁ = opt2nat (fst_same (a + b) c (S i))
   → d₂ = opt2nat (fst_same a b (S i + d₁))
@@ -2866,6 +2862,7 @@ Theorem yyy : ∀ a b c i d₁ d₂ di,
      ((second n a i + second n b i) + second n c i)%rm.[i].
 Proof.
 intros a b c i d₁ d₂ di Hd₁ Hd₂ Hdi n₀ n Hn; simpl.
+bbb.
 unfold rm_add_i; simpl.
 rewrite nat_compare_add_succ, Nat.add_succ_r.
 remember (fst_same (a + b) c (S i)) as s₁ eqn:Hs₁ .
