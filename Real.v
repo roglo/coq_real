@@ -3535,6 +3535,9 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
       assert (i + di₂ < i + n) as HH by omega.
       apply nat_compare_lt in HH.
       rewrite HH in H; clear HH.
+      remember (i + n) as ipn eqn:Hin .
+      symmetry in Hin.
+      destruct ipn; [ exfalso; omega | idtac ].
 bbb.
 *)
 
