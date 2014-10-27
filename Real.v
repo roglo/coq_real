@@ -3509,6 +3509,18 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
         rewrite Hs₃ in H.
         rewrite Nat.add_succ_r in H.
         destruct c .[ S (i + di₃)]; discriminate H.
+
+       apply fst_same_sym_iff in Hs₄.
+       pose proof (Hs₄ (di₂ - S di₃)) as HH.
+       rewrite Nat.add_sub_assoc in HH; [ idtac | omega ].
+       rewrite <- Nat.add_succ_l in HH.
+       rewrite <- Nat.add_succ_r in HH.
+       rewrite Nat.add_shuffle0, Nat.add_sub in HH.
+       simpl in HH.
+       rewrite Hs₂ in HH.
+       destruct b .[ S (i + di₂)]; discriminate HH.
+
+     apply Nat.nlt_ge in H₁.
 bbb.
 *)
 
