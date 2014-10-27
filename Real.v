@@ -3405,6 +3405,8 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
     rewrite fst_same_inf_after; [ idtac | assumption ].
     apply fst_same_iff in Hs₁; rewrite Hs₁.
     destruct c .[ S i + di]; reflexivity.
+bbb.
+
  unfold rm_add_i at 1.
  unfold rm_add_i at 2; simpl.
  rewrite Nat.add_succ_r.
