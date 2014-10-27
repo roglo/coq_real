@@ -3521,6 +3521,20 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
        destruct b .[ S (i + di₂)]; discriminate HH.
 
      apply Nat.nlt_ge in H₁.
+     destruct (lt_dec di₂ di₃) as [H₂| H₂].
+      remember H₂ as H; clear HeqH.
+      apply Hn₃ in H.
+      simpl in H.
+      rewrite Nat.add_succ_r in H.
+      assert (i + di₂ < i + n) as HH by omega.
+      apply nat_compare_lt in HH.
+      rewrite HH in H; clear HH.
+      unfold rm_add_i in H.
+      simpl in H.
+      rewrite Nat.add_succ_r in H.
+      assert (i + di₂ < i + n) as HH by omega.
+      apply nat_compare_lt in HH.
+      rewrite HH in H; clear HH.
 bbb.
 *)
 
