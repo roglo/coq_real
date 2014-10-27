@@ -3409,8 +3409,6 @@ destruct s₁ as [di₁| ]; simpl in Hd₁.
  rewrite xorb_comm; symmetry.
  rewrite xorb_comm; symmetry.
  do 2 rewrite xorb_assoc; f_equal.
-bbb.
-
  remember (fst_same a b (S i)) as s₂ eqn:Hs₂ .
  symmetry in Hs₂.
  destruct s₂ as [di₂| ]; simpl in Hd₂; subst d₂.
@@ -3469,7 +3467,6 @@ bbb.
       apply Hn₂ in H.
       rewrite <- Nat.add_succ_r in H.
       rewrite H, negb_xorb_diag in Hs₃.
-      Focus 1.
       apply fst_same_iff in Hs₁; simpl in Hs₁.
       rename H into Hab.
       pose proof (Hs₁ di₃) as H.
@@ -3478,6 +3475,40 @@ bbb.
       destruct s₄ as [di₄| ].
        apply fst_same_sym_iff in Hs₄; simpl in Hs₄.
        destruct Hs₄ as (Hn₄, Hs₄).
+       assert (di₂ = S (di₃ + di₄)) as HH.
+        destruct (lt_dec di₂ (S (di₃ + di₄))) as [H₂| H₂].
+         assert (di₂ - S di₃ < di₄) as HH by omega.
+         apply Hn₄ in HH.
+         rewrite <- Nat.add_succ_l in HH.
+         rewrite <- Nat.add_succ_l in HH.
+         rewrite <- Nat.add_succ_r in HH.
+         rewrite <- Nat.add_succ_l in HH.
+         rewrite Nat.add_sub_assoc in HH; [ idtac | omega ].
+         rewrite Nat.add_shuffle0, Nat.add_sub in HH.
+         simpl in HH.
+         rewrite Hs₂ in HH.
+         destruct b .[ S (i + di₂)]; discriminate HH.
+
+         apply Nat.nlt_ge in H₂.
+         destruct (lt_dec (S (di₃ + di₄)) di₂) as [H₃| H₃].
+          apply Hn₂ in H₃.
+          rewrite Nat.add_succ_r in H₃; simpl in H₃.
+          rewrite Nat.add_assoc in H₃.
+          rewrite Hs₄ in H₃.
+          destruct b .[ S (S (i + di₃ + di₄))]; discriminate H₃.
+
+          apply Nat.nlt_ge in H₃.
+          apply Nat.le_antisymm; assumption.
+
+        rewrite HH in Hs₃.
+        rewrite Nat.add_succ_r in Hs₃.
+        rewrite Nat.add_assoc in Hs₃.
+        rewrite Nat.add_succ_r in Hab.
+        rewrite Hab in H.
+        rewrite negb_xorb_diag in H.
+        rewrite Hs₃ in H.
+        rewrite Nat.add_succ_r in H.
+        destruct c .[ S (i + di₃)]; discriminate H.
 bbb.
 *)
 
