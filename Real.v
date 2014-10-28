@@ -3969,8 +3969,6 @@ destruct c₁, c₂, c₃, c₄, c₅, c₆; try reflexivity; simpl.
  apply carry_0_r_true_if in Hc₂.
  unfold id in Hc₁, Hc₂.
  simpl in Hc₁, Hc₂.
-bbb.
-
  unfold carry_i in Hc₆; simpl in Hc₆.
  remember (fst_same a b (S i)) as s₆ eqn:Hs₆ .
  apply fst_same_sym_iff in Hs₆; simpl in Hs₆.
@@ -4018,7 +4016,59 @@ bbb.
      rewrite H₅₆ in Hs₅; simpl in Hs₅.
      destruct di₅.
       clear Hn₅; rewrite Nat.add_0_r in H₅₆, Hb₅, Hc₅, Hs₅.
+      pose proof (Hc₁ 0) as H.
+      rewrite Nat.add_1_r in H.
+      unfold rm_add_i in H; simpl in H.
+      rewrite H₅₆, xorb_false_l in H.
+      unfold rm_add_i in H; simpl in H.
+      rewrite Hb₅, Hc₅, xorb_nilpotent, xorb_false_l in H.
+      unfold rm_add_i in Hs₅.
+      rewrite Hb₅, Hc₅, xorb_nilpotent, xorb_false_l in Hs₅.
+      rewrite Hs₅, xorb_true_l in H.
+      apply negb_true_iff in H.
+      unfold carry_i in H; simpl in H.
+      remember (fst_same a (b + c) (S (S i))) as s₁ eqn:Hs₁ .
+      apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
+      destruct s₁ as [di₁| ]; [ idtac | discriminate H ].
+      destruct Hs₁ as (Hn₁, Hs₁).
+      rename H into Ha₁.
+      assert (S di₁ = di₃) as H.
+       destruct (lt_dec (S di₁) di₃) as [H₁| H₁].
+        remember H₁ as H; clear HeqH.
+        apply Hn₃ in H.
+        rewrite Nat.add_succ_r in H.
+        rewrite <- Hs₁ in H.
+        destruct a .[ S (S (i + di₁))]; discriminate H.
+
+        apply Nat.nlt_ge in H₁.
+        destruct (lt_dec di₃ (S di₁)) as [H₂| H₂].
+         destruct di₃.
+          rewrite Nat.add_0_r, H₅₆ in Ha₃.
+          discriminate Ha₃.
+
+          apply Nat.succ_lt_mono in H₂.
+          apply Hn₁ in H₂.
+          rewrite Nat.add_succ_r in Ha₃.
+          rewrite Ha₃ in H₂.
+          symmetry in H₂.
+          apply negb_true_iff in H₂.
+          unfold rm_add_i in H₂.
+          simpl in H₂.
+          rewrite Nat.add_succ_r in Hb₃.
+          rewrite Nat.add_succ_r in Hs₃.
+          rewrite xorb_assoc in H₂.
+          rewrite Hb₃, Hs₃ in H₂.
+          discriminate H₂.
+
+         apply Nat.nlt_ge in H₂.
+         apply Nat.le_antisymm; auto.
+
+       subst di₃.
+       clear H₅₃.
+       rewrite Nat.add_succ_r in Ha₃.
+       rewrite Ha₁ in Ha₃; discriminate Ha₃.
 bbb.
+
       unfold carry_i in Hc₄; simpl in Hc₄.
       remember (fst_same (a + b) c (S i)) as s₄ eqn:Hs₄ .
       destruct s₄ as [di₄| ].
