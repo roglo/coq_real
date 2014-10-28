@@ -2796,9 +2796,62 @@ destruct s₁ as [di₁| ].
 bbb.
 *)
 
+Definition rnot a := {| rm i := negb a.[i] |}.
+
+Theorem add_and_add'_are_twins : ∀ a b i,
+  (a +' b)%rm.[i] = (rnot (rnot a + rnot b))%rm.[i].
+Proof.
+intros a b i; simpl.
+unfold rm_add'_i.
+unfold rm_add_i; simpl.
+remember (fst_same a b (S i)) as s₁ eqn:Hs₁ .
+remember (fst_same (rnot a) (rnot b) (S i)) as s₂ eqn:Hs₂ .
+apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
+apply fst_same_sym_iff in Hs₂; simpl in Hs₂.
+destruct s₁ as [di₁| ].
+ destruct Hs₁ as (Hn₁, Hs₁).
+ destruct s₂ as [di₂| ].
+  destruct Hs₂ as (Hn₂, Hs₂).
+  do 2 rewrite negb_xorb_l.
+  rewrite negb_involutive.
+  do 2 rewrite xorb_assoc; f_equal.
+  rewrite <- negb_xorb_l.
+  rewrite <- negb_xorb_r.
+  rewrite negb_involutive; f_equal.
+  destruct (lt_dec di₁ di₂) as [H₁| H₁].
+   apply Hn₂ in H₁.
+   rewrite negb_involutive in H₁.
+   rewrite Hs₁ in H₁.
+   destruct b .[ S (i + di₁)]; discriminate H₁.
+
+   apply Nat.nlt_ge in H₁.
+   destruct (lt_dec di₂ di₁) as [H₂| H₂].
+    apply Hn₁ in H₂.
+    rewrite H₂ in Hs₂.
+    destruct b .[ S (i + di₂)]; discriminate Hs₂.
+
+    apply Nat.nlt_ge in H₂.
+    apply Nat.le_antisymm in H₂; auto.
+
+  pose proof (Hs₂ di₁) as H.
+  rewrite Hs₁ in H.
+  destruct b .[ S (i + di₁)]; discriminate H.
+
+ destruct s₂ as [di₂| ].
+  destruct Hs₂ as (Hn₂, Hs₂).
+  pose proof (Hs₁ di₂) as H.
+  rewrite <- Hs₂ in H.
+  destruct a .[ S (i + di₂)]; discriminate H.
+
+  destruct a .[ i], b .[ i]; reflexivity.
+Qed.
+
+(* I don't think the method with +' works *)
 Theorem www : ∀ a b, (a + b = a +' b)%rm.
 Proof.
 intros a b.
+bbb.
+
 unfold rm_eq; intros i; simpl.
 unfold rm_add_i; simpl.
 do 2 rewrite xorb_false_r.
