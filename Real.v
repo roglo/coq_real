@@ -3957,7 +3957,38 @@ destruct c₁, c₂, c₃, c₄, c₅, c₆; try reflexivity; simpl.
  rewrite Hc₆ in Hs₆.
  rename Hc₆ into Ha₆; rename Hs₆ into Hb₆.
  move Ha₆ after Hb₆; symmetry in Hb₆.
- Focus 1.
+ unfold carry_i in Hc₃; simpl in Hc₃.
+ remember (fst_same a (b + c) (S i)) as s₃ eqn:Hs₃ .
+ destruct s₃ as [di₃| ].
+  apply fst_same_sym_iff in Hs₃; simpl in Hs₃.
+  destruct Hs₃ as (Hn₃, Hs₃).
+  destruct (lt_dec di₃ di₆) as [H₃₆| H₃₆].
+   remember H₃₆ as H; clear HeqH.
+   apply Hn₆ in H.
+   rewrite Hc₃ in H.
+   symmetry in H.
+   apply negb_true_iff in H.
+   rename H into Hb₃.
+   move Hb₃ before Hc₃.
+   rename Hc₃ into Ha₃.
+   move Hs₃ after Hb₃.
+   rewrite Ha₃ in Hs₃; symmetry in Hs₃.
+   unfold rm_add_i in Hs₃; simpl in Hs₃.
+   rewrite Hb₃, xorb_false_l in Hs₃.
+   unfold carry_i in Hc₅; simpl in Hc₅.
+   remember (fst_same b c (S i)) as s₅ eqn:Hs₅ .
+   destruct s₅ as [di₅| ].
+    apply fst_same_sym_iff in Hs₅; simpl in Hs₅.
+    destruct Hs₅ as (Hn₅, Hs₅).
+    rewrite Hc₅ in Hs₅.
+    rename Hc₅ into Hb₅; rename Hs₅ into Hc₅.
+    symmetry in Hc₅; move Hb₅ after Hc₅.
+    destruct (lt_dec di₅ di₃) as [H₅₃| H₃₅].
+     remember H₅₃ as H; clear HeqH.
+     apply Hn₃ in H.
+     apply negb_sym in H.
+     rename H into Hs₅.
+     move Hs₅ before Hc₅.
 bbb.
 
 destruct c₁.
