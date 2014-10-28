@@ -42,6 +42,7 @@ Definition rm_eq a b := ∀ i,
 
 Delimit Scope rm_scope with rm.
 Arguments rm r%rm i%nat.
+Arguments carry_i a%rm b%rm i%nat.
 Arguments rm_add_i a%rm b%rm i%nat.
 Arguments fst_same a%rm b%rm i%nat.
 Notation "a + b" := (rm_add a b) : rm_scope.
@@ -3994,6 +3995,23 @@ destruct c₁, c₂, c₃, c₄, c₅, c₆; try reflexivity; simpl.
      rewrite Hb₅ in H₅₆; simpl in H₅₆.
      move H₅₆ after Hb₅.
      rewrite H₅₆ in Hs₅; simpl in Hs₅.
+     destruct di₅.
+      clear Hn₅; rewrite Nat.add_0_r in H₅₆, Hb₅, Hc₅, Hs₅.
+      unfold carry_i in Hc₄; simpl in Hc₄.
+      remember (fst_same (a + b) c (S i)) as s₄ eqn:Hs₄ .
+      destruct s₄ as [di₄| ].
+       apply fst_same_sym_iff in Hs₄; simpl in Hs₄.
+       destruct Hs₄ as (Hn₄, Hs₄); rewrite Hc₄ in Hs₄.
+       symmetry in Hs₄.
+       unfold rm_add_i in Hc₄; simpl in Hc₄.
+       unfold rm_add_i in Hs₅; simpl in Hs₅.
+       rewrite Hb₅, Hc₅ in Hs₅.
+       rewrite xorb_nilpotent, xorb_false_l in Hs₅.
+       destruct di₄.
+        clear Hn₄; rewrite Nat.add_0_r in Hs₄, Hc₄.
+        rewrite H₅₆, Hb₅ in Hc₄.
+        rewrite xorb_false_l, xorb_true_l in Hc₄.
+        apply negb_true_iff in Hc₄.
 bbb.
 
 destruct c₁.
