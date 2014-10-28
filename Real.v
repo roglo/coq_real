@@ -3921,6 +3921,31 @@ Definition rm_add2_i a b i := a.[i] ⊕ b.[i] ⊕ carry_i a b i.
 Theorem rm_add_add2_i : ∀ a b i, rm_add_i a b i = rm_add2_i a b i.
 Proof. reflexivity. Qed.
 
+Theorem rm_add_inf_if : ∀ a b i,
+  (∀ dj, rm_add_i a b (i + dj) = true)
+  → ∃ j,
+    i < j ∧
+    (∀ di, a.[j + S di] = true) ∧
+    (∀ di, b.[j + S di] = true).
+Proof.
+intros a b i Hj.
+destruct (bool_dec a .[ i] b .[ i]) as [H₁| H₁].
+ apply rm_add_inf_true_eq_if in Hj; auto.
+ destruct Hj as (Ha, Hb).
+ exists (S i).
+ split; [ apply Nat.lt_succ_diag_r | idtac ].
+ split; intros di; rewrite Nat.add_succ_l, <- Nat.add_succ_r.
+   apply Ha.
+
+   apply Hb.
+
+ apply neq_negb in H₁.
+ apply rm_add_inf_true_neq_if in Hj; auto.
+ destruct Hj as (j, (Hij, (Hni, (Ha, (Hb, (Hat, Hbt)))))).
+ exists j.
+ split; [ assumption | split; assumption ].
+Qed.
+
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
 intros a b c.
@@ -3948,6 +3973,24 @@ symmetry in Hc₁, Hc₂, Hc₃, Hc₄, Hc₅, Hc₆.
 move c₂ before c₁; move c₃ before c₂.
 move c₄ before c₃; move c₅ before c₄.
 move c₆ before c₅.
+bbb.
+
+destruct c₁.
+ unfold carry_i in Hc₁.
+ remember (fst_same (a + (b + c)%rm) 0 (S i)) as s₁ eqn:Hs₁ .
+ apply fst_same_sym_iff in Hs₁.
+ destruct s₁ as [di₁| ].
+  rewrite Hc₁ in Hs₁.
+  destruct Hs₁ as (_, Hs₁); discriminate Hs₁.
+
+  clear Hc₁.
+  remember (S i) as si; simpl in Hs₁; subst si.
+  remember Hs₁ as H; clear HeqH.
+  apply rm_add_inf_if in H.
+  destruct H as (j, (Hj, (Ha, Hb))).
+  simpl in Hb.
+bbb.
+
 destruct c₁, c₂, c₃, c₄, c₅, c₆; try reflexivity; simpl.
  unfold carry_i in Hc₆; simpl in Hc₆.
  remember (fst_same a b (S i)) as s₆ eqn:Hs₆ .
