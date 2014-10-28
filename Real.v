@@ -3989,6 +3989,11 @@ destruct c₁, c₂, c₃, c₄, c₅, c₆; try reflexivity; simpl.
      apply negb_sym in H.
      rename H into Hs₅.
      move Hs₅ before Hc₅.
+     assert (di₅ < di₆) as H₅₆ by omega.
+     apply Hn₆ in H₅₆.
+     rewrite Hb₅ in H₅₆; simpl in H₅₆.
+     move H₅₆ after Hb₅.
+     rewrite H₅₆ in Hs₅; simpl in Hs₅.
 bbb.
 
 destruct c₁.
