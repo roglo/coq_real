@@ -2772,30 +2772,6 @@ Definition rm_add' a b := {| rm := rm_add'_i a b |}.
 
 Notation "a +' b" := (rm_add' a b) (left associativity, at level 50) : rm_scope.
 
-(* probably false...
-Theorem uuu : ∀ a b c i, fst_same (a + b) c i = fst_same (a +' b) c i.
-Proof.
-intros a b c i.
-apply fst_same_iff; simpl.
-remember (fst_same (a +' b) c i) as s₁ eqn:Hs₁ .
-apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
-destruct s₁ as [di₁| ].
- destruct Hs₁ as (Hn₁, Hs₁).
- split.
-  intros dj Hdj.
-  remember Hdj as H; clear HeqH.
-  apply Hn₁ in H.
-  unfold rm_add'_i in H; simpl in H.
-  unfold rm_add_i; simpl.
-  remember (fst_same a b (S (i + dj))) as s₂ eqn:Hs₂ .
-  apply fst_same_sym_iff in Hs₂; simpl in Hs₂.
-  destruct s₂ as [di₂| ].
-   assumption.
-
-   rewrite xorb_false_r in H.
-bbb.
-*)
-
 Definition rnot a := {| rm i := negb a.[i] |}.
 
 Theorem add_and_add'_are_twins : ∀ a b i,
