@@ -2761,6 +2761,8 @@ rewrite <- Nat.add_assoc.
 apply Hs.
 Qed.
 
+bbb.
+
 Definition rm_add'_i a b i :=
   a.[i] ⊕ b.[i] ⊕
   match fst_same a b (S i) with
