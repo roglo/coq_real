@@ -2761,8 +2761,6 @@ rewrite <- Nat.add_assoc.
 apply Hs.
 Qed.
 
-bbb.
-
 Definition rm_add'_i a b i :=
   a.[i] ⊕ b.[i] ⊕
   match fst_same a b (S i) with
@@ -2824,7 +2822,7 @@ destruct s₁ as [di₁| ].
   destruct a .[ i], b .[ i]; reflexivity.
 Qed.
 
-(* I don't think the method with +' works *)
+(* I don't think the method with +' works...
 Theorem www : ∀ a b, (a + b = a +' b)%rm.
 Proof.
 intros a b.
@@ -2872,8 +2870,7 @@ destruct s₁ as [di₁| ].
     destruct s₅ as [di₅| ]; [ idtac | discriminate H ].
     destruct Hs₅ as (Hn₅, Hs₅).
 bbb.
-
-bbb.
+*)
 
 (* (a+b)''+c'' = (a''+b'')+c'' *)
 (* seems that it is false with this example :
@@ -2893,6 +2890,7 @@ Theorem yyy : ∀ a b c i d₁ d₂ di,
      ((second n a i + second n b i) + second n c i)%rm.[i].
 Proof.
 intros a b c i d₁ d₂ di Hd₁ Hd₂ Hdi n₀ n Hn; simpl.
+Abort. (*
 bbb.
 unfold rm_add_i; simpl.
 rewrite nat_compare_add_succ, Nat.add_succ_r.
@@ -3610,6 +3608,7 @@ do 2 rewrite fold_rm_add_i.
 symmetry.
 erewrite <- tr_add_i_eq_rm_add_i.
 erewrite tr_add_rm_add_distr; [ idtac | eauto  | reflexivity ].
+Abort. (*
 erewrite yyy; [ idtac | eauto  | reflexivity ].
 bbb.
 
@@ -3685,6 +3684,7 @@ assert (List.In d₃ dl) as Hi₃ by (subst dl; do 2 right; left; reflexivity).
 assert (List.In d₄ dl) as Hi₄ by (subst dl; do 3 right; left; reflexivity).
 assert (List.In d₅ dl) as Hi₅ by (subst dl; do 4 right; left; reflexivity).
 assert (List.In d₆ dl) as Hi₆ by (subst dl; do 5 right; left; reflexivity).
+Abort. (*
 erewrite <- xxx; [ idtac | eassumption | reflexivity ].
 bbb.
 
@@ -3817,6 +3817,7 @@ destruct s₁ as [di₁| ].
    destruct Hs₁ as (j, (Hij, (Hni, (Ha, (Hb, (Hat, Hbt)))))).
    exfalso; eapply not_rm_add_0_inf_1_succ; eauto .
 bbb.
+*)
 
 (* old method; but need 4800 goals to resolve *)
 
