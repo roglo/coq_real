@@ -3928,6 +3928,21 @@ destruct (bool_dec a .[ i] b .[ i]) as [H₁| H₁].
  split; [ assumption | split; assumption ].
 Qed.
 
+Theorem carry_0_r_true_if : ∀ a i,
+  carry_i a 0 i = true
+  → id (∀ j, a.[i + S j] = true).
+Proof.
+intros a i H j.
+unfold carry_i in H; simpl in H.
+remember (fst_same a 0 (S i)) as s₁ eqn:Hs₁ .
+apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
+destruct s₁ as [di₁| ].
+ destruct Hs₁ as (Hn₁, Hs₁).
+ rewrite Hs₁ in H; discriminate H.
+
+ rewrite Nat.add_succ_r; apply Hs₁.
+Qed.
+
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
 intros a b c.
@@ -3950,6 +3965,12 @@ move c₂ before c₁; move c₃ before c₂.
 move c₄ before c₃; move c₅ before c₄.
 move c₆ before c₅.
 destruct c₁, c₂, c₃, c₄, c₅, c₆; try reflexivity; simpl.
+ apply carry_0_r_true_if in Hc₁.
+ apply carry_0_r_true_if in Hc₂.
+ unfold id in Hc₁, Hc₂.
+ simpl in Hc₁, Hc₂.
+bbb.
+
  unfold carry_i in Hc₆; simpl in Hc₆.
  remember (fst_same a b (S i)) as s₆ eqn:Hs₆ .
  apply fst_same_sym_iff in Hs₆; simpl in Hs₆.
@@ -3995,9 +4016,9 @@ destruct c₁, c₂, c₃, c₄, c₅, c₆; try reflexivity; simpl.
      rewrite Hb₅ in H₅₆; simpl in H₅₆.
      move H₅₆ after Hb₅.
      rewrite H₅₆ in Hs₅; simpl in Hs₅.
-bbb.
      destruct di₅.
       clear Hn₅; rewrite Nat.add_0_r in H₅₆, Hb₅, Hc₅, Hs₅.
+bbb.
       unfold carry_i in Hc₄; simpl in Hc₄.
       remember (fst_same (a + b) c (S i)) as s₄ eqn:Hs₄ .
       destruct s₄ as [di₄| ].
