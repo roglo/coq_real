@@ -4067,6 +4067,15 @@ destruct c₁, c₂, c₃, c₄, c₅, c₆; try reflexivity; simpl.
        clear H₅₃.
        rewrite Nat.add_succ_r in Ha₃.
        rewrite Ha₁ in Ha₃; discriminate Ha₃.
+
+      pose proof (Hc₁ (S di₅)) as H.
+      rewrite Nat.add_succ_r in H.
+      unfold rm_add_i in H; simpl in H.
+      rewrite H₅₆, Hs₅ in H.
+      rewrite xorb_false_l, xorb_true_l in H.
+      apply negb_true_iff in H.
+      rename H into HH.
+      pose proof (Hn₅ di₅ (Nat.lt_succ_diag_r di₅)) as H.
 bbb.
 
       unfold carry_i in Hc₄; simpl in Hc₄.
