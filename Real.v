@@ -3910,7 +3910,89 @@ Proof.
 bbb
 *)
 
+Definition carry_i a b i :=
+  match fst_same a b (S i) with
+  | Some dj => a.[S i + dj]
+  | None => true
+  end.
+
+Definition rm_add2_i a b i := a.[i] ⊕ b.[i] ⊕ carry_i a b i.
+
+Theorem rm_add_add2_i : ∀ a b i, rm_add_i a b i = rm_add2_i a b i.
+Proof. reflexivity. Qed.
+
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
+Proof.
+intros a b c.
+unfold rm_eq; intros i; simpl.
+rewrite rm_add_add2_i; symmetry.
+rewrite rm_add_add2_i; symmetry.
+unfold rm_add2_i; simpl.
+do 2 rewrite xorb_false_r.
+remember (carry_i (a + (b + c))%rm 0%rm i) as c₁ eqn:Hc₁ .
+remember (carry_i (a + b + c)%rm 0%rm i) as c₂ eqn:Hc₂ .
+rewrite rm_add_add2_i; symmetry.
+rewrite rm_add_add2_i; symmetry.
+unfold rm_add2_i; simpl.
+remember (carry_i a (b + c)%rm i) as c₃ eqn:Hc₃ .
+remember (carry_i (a + b)%rm c i) as c₄ eqn:Hc₄ .
+rewrite rm_add_add2_i; symmetry.
+rewrite rm_add_add2_i; symmetry.
+unfold rm_add2_i; simpl.
+remember (carry_i b c i) as c₅ eqn:Hc₅ .
+remember (carry_i a b i) as c₆ eqn:Hc₆ .
+do 8 rewrite xorb_assoc; f_equal; f_equal; symmetry.
+rewrite xorb_comm, xorb_assoc; f_equal; symmetry.
+rewrite <- xorb_assoc.
+symmetry in Hc₁, Hc₂, Hc₃, Hc₄, Hc₅, Hc₆.
+move c₂ before c₁; move c₃ before c₂.
+move c₄ before c₃; move c₅ before c₄.
+move c₆ before c₅.
+destruct c₁, c₂, c₃, c₄, c₅, c₆; try reflexivity; simpl.
+ unfold carry_i in Hc₆; simpl in Hc₆.
+ remember (fst_same a b (S i)) as s₆ eqn:Hs₆ .
+ apply fst_same_sym_iff in Hs₆; simpl in Hs₆.
+ destruct s₆ as [di₆| ]; [ idtac | discriminate Hc₆ ].
+ destruct Hs₆ as (Hn₆, Hs₆).
+ rewrite Hc₆ in Hs₆.
+ rename Hc₆ into Ha₆; rename Hs₆ into Hb₆.
+ move Ha₆ after Hb₆; symmetry in Hb₆.
+bbb.
+
+Theorem rm_add_assoc_hop : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
+Proof.
+intros a b c.
+assert (∀ x, (x = x + 0)%rm) as Hx by (symmetry; apply rm_add_0_r).
+setoid_replace (b + c)%rm with (b + c + 0)%rm by apply Hx.
+setoid_replace (a + b)%rm with (a + b + 0)%rm by apply Hx.
+setoid_replace a with (a + 0)%rm by apply Hx.
+setoid_replace b with (b + 0)%rm by apply Hx.
+setoid_replace c with (c + 0)%rm by apply Hx.
+set (a₁ := (a + 0)%rm).
+set (b₁ := (b + 0)%rm).
+set (c₁ := (c + 0)%rm).
+rename a into a₀; rename b into b₀; rename c into c₀.
+rename a₁ into a; rename b₁ into b; rename c₁ into c.
+unfold rm_eq; intros i; simpl.
+rewrite rm_add_add2_i; symmetry.
+rewrite rm_add_add2_i; symmetry.
+unfold rm_add2_i; simpl.
+do 2 rewrite xorb_false_r.
+remember (carry_i (a + (b + c + 0))%rm 0%rm i) as c₁ eqn:Hc₁ .
+remember (carry_i (a + b + 0 + c)%rm 0%rm i) as c₂ eqn:Hc₂ .
+rewrite rm_add_add2_i; symmetry.
+rewrite rm_add_add2_i; symmetry.
+unfold rm_add2_i; simpl.
+remember (carry_i a (b + c + 0)%rm i) as c₃ eqn:Hc₃ .
+remember (carry_i (a + b + 0)%rm c i) as c₄ eqn:Hc₄ .
+rewrite rm_add_add2_i; symmetry.
+rewrite rm_add_add2_i; symmetry.
+unfold rm_add2_i; simpl.
+do 2 rewrite xorb_false_r.
+remember (carry_i a₀ 0%rm i) as c₅ eqn:Hc₅ .
+bbb.
+
+Theorem rm_add_assoc_ini : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
 intros a b c.
 assert (∀ x, (x = x + 0)%rm) as Hx by (symmetry; apply rm_add_0_r).
