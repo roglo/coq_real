@@ -4076,6 +4076,31 @@ destruct c₁, c₂, c₃, c₄, c₅, c₆; try reflexivity; simpl.
       apply negb_true_iff in H.
       rename H into HH.
       pose proof (Hn₅ di₅ (Nat.lt_succ_diag_r di₅)) as H.
+      unfold rm_add_i in H; simpl in H.
+      rename H into HHH.
+      pose proof (Hc₁ di₅) as H.
+      rewrite Nat.add_succ_r in H.
+      unfold rm_add_i in H; simpl in H.
+      unfold carry_i in H.
+      rewrite Hn₃ in H; [ idtac | omega ].
+      rewrite negb_xorb_diag, xorb_true_l in H.
+      apply negb_true_iff in H.
+      remember (fst_same a (b + c) (S (S (i + di₅)))) as s₇ eqn:Hs₇ .
+      apply fst_same_sym_iff in Hs₇.
+      destruct s₇ as [di₇| ]; [ idtac | discriminate H ].
+      simpl in Hs₇.
+      destruct Hs₇ as (Hn₇, Hs₇).
+      destruct di₇.
+       rewrite Nat.add_0_r in Hs₇, H.
+       rewrite Nat.add_succ_r in H₅₆, Hs₅.
+       rewrite H₅₆, Hs₅ in Hs₇.
+       discriminate Hs₇.
+
+       rename H into H₇.
+       unfold rm_add_i in Hs₅.
+       rewrite Hb₅, Hc₅ in Hs₅.
+       rewrite xorb_nilpotent, xorb_false_l in Hs₅.
+       pose proof (Hn₇ 0 (Nat.lt_0_succ di₇)) as H.
 bbb.
 
       unfold carry_i in Hc₄; simpl in Hc₄.
