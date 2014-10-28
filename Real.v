@@ -3995,6 +3995,7 @@ destruct c₁, c₂, c₃, c₄, c₅, c₆; try reflexivity; simpl.
      rewrite Hb₅ in H₅₆; simpl in H₅₆.
      move H₅₆ after Hb₅.
      rewrite H₅₆ in Hs₅; simpl in Hs₅.
+bbb.
      destruct di₅.
       clear Hn₅; rewrite Nat.add_0_r in H₅₆, Hb₅, Hc₅, Hs₅.
       unfold carry_i in Hc₄; simpl in Hc₄.
@@ -4012,6 +4013,26 @@ destruct c₁, c₂, c₃, c₄, c₅, c₆; try reflexivity; simpl.
         rewrite H₅₆, Hb₅ in Hc₄.
         rewrite xorb_false_l, xorb_true_l in Hc₄.
         apply negb_true_iff in Hc₄.
+        unfold carry_i in Hc₂; simpl in Hc₂.
+        clear Hs₄.
+        unfold carry_i in Hc₁; simpl in Hc₁.
+        remember (fst_same (a + (b + c)%rm) 0 (S i)) as s₇ eqn:Hs₇ .
+        destruct s₇ as [di₇| ].
+         apply fst_same_sym_iff in Hs₇; simpl in Hs₇.
+         destruct Hs₇ as (Hn₇, Hs₇).
+         rewrite Hc₁ in Hs₇; discriminate Hs₇.
+
+         apply fst_same_sym_iff in Hs₇; simpl in Hs₇.
+         pose proof (Hs₇ 0) as H; simpl in H.
+         rewrite Nat.add_0_r in H.
+         unfold rm_add_i in H; simpl in H.
+         rewrite H₅₆, xorb_false_l in H.
+         unfold carry_i in H; simpl in H.
+         unfold rm_add_i in H; simpl in H.
+         rewrite Hb₅, Hc₅, Hs₅ in H.
+         rewrite xorb_nilpotent, xorb_false_l, xorb_true_l in H.
+         apply negb_true_iff in H.
+         unfold carry_i in Hc₄; simpl in Hc₄.
 bbb.
 
 destruct c₁.
