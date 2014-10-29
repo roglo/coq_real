@@ -4012,7 +4012,7 @@ destruct c₁, c₂, c₃, c₄, c₅, c₆; try reflexivity; simpl.
     rewrite Hc₅ in Hs₅.
     rename Hc₅ into Hb₅; rename Hs₅ into Hc₅.
     symmetry in Hc₅; move Hb₅ after Hc₅.
-    destruct (lt_dec di₅ di₃) as [H₅₃| H₃₅].
+    destruct (lt_eq_lt_dec di₅ di₃) as [[H₅₃|H₅₃]|H₃₅].
      remember H₅₃ as H; clear HeqH.
      apply Hn₃ in H.
      apply negb_sym in H.
