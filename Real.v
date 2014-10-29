@@ -4251,8 +4251,6 @@ destruct c₁, c₂, c₃, c₄, c₅, c₆; try reflexivity; simpl.
       rewrite Hb₅, Hc₅ in H; discriminate H.
 
     apply fst_same_sym_iff in Hs₅.
-bbb.
-    apply fst_same_sym_iff in Hs₅.
     simpl in Hs₅.
     rewrite Hs₅ in Hb₃.
     apply negb_false_iff in Hb₃.
@@ -4262,6 +4260,13 @@ bbb.
     remember (fst_same b c (S (S (i + di₃)))) as s₁ eqn:Hs₁ .
     destruct s₁ as [di₁| ]; [ idtac | discriminate Hs₃ ].
     apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
+    destruct Hs₁ as (Hn₁, Hs₁).
+    rewrite <- Nat.add_succ_r, <- Nat.add_assoc in Hs₁.
+    rewrite Hs₅ in Hs₁.
+    destruct c .[ S (i + (di₃ + S di₁))]; discriminate Hs₁.
+
+   apply Nat.nlt_ge in H₃₆.
+bbb.
 
 Theorem rm_add_assoc_hop : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
