@@ -4287,6 +4287,31 @@ destruct c₁, c₂, c₃, c₄, c₅, c₆; try reflexivity; simpl.
    rename Hc into Ha₁.
    unfold rm_add_i in H; simpl in H.
    rewrite Hb₆, xorb_false_l in H.
+   assert (∀ dj, dj < di₆ → c .[ S (i + dj)] = false) as HH.
+    intros dj Hdj.
+    rename H into Hcc.
+    remember Hdj as H; clear HeqH.
+    apply Hn₆ in H.
+    assert (dj < di₃) as HH by omega.
+    apply Hn₃ in HH.
+    rewrite HH in H.
+    apply negb_sym in H.
+    rewrite negb_involutive in H.
+    unfold rm_add_i in H; simpl in H.
+    symmetry in H.
+    rewrite xorb_assoc in H.
+    apply xorb_move_l_r_1 in H.
+    rewrite xorb_nilpotent in H.
+    unfold carry_i in H.
+    remember (fst_same b c (S (S (i + dj)))) as s₂ eqn:Hs₂ .
+    destruct s₂ as [di₂| ].
+     apply fst_same_sym_iff in Hs₂.
+     destruct Hs₂ as (Hn₂, Hs₂).
+bbb.
+     Focus 2.
+     rewrite xorb_true_r in H.
+     apply negb_false_iff in H.
+     apply fst_same_sym_iff in Hs₂; simpl in Hs₂.
 bbb.
 
      i i+1 -  i₆ -  i₃
