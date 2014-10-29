@@ -3993,7 +3993,7 @@ destruct c₁, c₂, c₃, c₄, c₅, c₆; try reflexivity; simpl.
  destruct s₃ as [di₃| ].
   apply fst_same_sym_iff in Hs₃; simpl in Hs₃.
   destruct Hs₃ as (Hn₃, Hs₃).
-  destruct (lt_dec di₃ di₆) as [H₃₆| H₃₆].
+  destruct (lt_eq_lt_dec di₃ di₆) as [[H₃₆| H₃₆] | H₆₃].
    remember H₃₆ as H; clear HeqH.
    apply Hn₆ in H.
    rewrite Hc₃ in H.
@@ -4265,7 +4265,8 @@ destruct c₁, c₂, c₃, c₄, c₅, c₆; try reflexivity; simpl.
     rewrite Hs₅ in Hs₁.
     destruct c .[ S (i + (di₃ + S di₁))]; discriminate Hs₁.
 
-   apply Nat.nlt_ge in H₃₆.
+   subst di₆.
+   rewrite Hc₃ in Ha₆; discriminate Ha₆.
 bbb.
 
 Theorem rm_add_assoc_hop : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
