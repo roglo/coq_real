@@ -4068,92 +4068,152 @@ destruct c₁, c₂, c₃, c₄, c₅, c₆; try reflexivity; simpl.
        rewrite Nat.add_succ_r in Ha₃.
        rewrite Ha₁ in Ha₃; discriminate Ha₃.
 
-      pose proof (Hc₁ (S di₅)) as H.
-      rewrite Nat.add_succ_r in H.
-      unfold rm_add_i in H; simpl in H.
-      rewrite H₅₆, Hs₅ in H.
-      rewrite xorb_false_l, xorb_true_l in H.
-      apply negb_true_iff in H.
-      rename H into HH.
-      pose proof (Hn₅ di₅ (Nat.lt_succ_diag_r di₅)) as H.
-      unfold rm_add_i in H; simpl in H.
-      rename H into HHH.
-      pose proof (Hc₁ di₅) as H.
-      rewrite Nat.add_succ_r in H.
-      unfold rm_add_i in H; simpl in H.
-      unfold carry_i in H.
-      rewrite Hn₃ in H; [ idtac | omega ].
+      remember ((b + c)%rm) .[ S (i + di₅)] as x eqn:Hx .
+      symmetry in Hx.
+      remember Hx as H; clear HeqH.
+      simpl in H.
+      unfold rm_add_i in H.
+      rewrite Hn₅ in H; [ idtac | apply Nat.lt_succ_diag_r ].
       rewrite negb_xorb_diag, xorb_true_l in H.
-      apply negb_true_iff in H.
-      remember (fst_same a (b + c) (S (S (i + di₅)))) as s₇ eqn:Hs₇ .
-      apply fst_same_sym_iff in Hs₇.
-      destruct s₇ as [di₇| ]; [ idtac | discriminate H ].
-      simpl in Hs₇.
-      destruct Hs₇ as (Hn₇, Hs₇).
-      destruct di₇.
-       rewrite Nat.add_0_r in Hs₇, H.
-       rewrite Nat.add_succ_r in H₅₆, Hs₅.
-       rewrite H₅₆, Hs₅ in Hs₇.
-       discriminate Hs₇.
-
-       rename H into H₇.
-       unfold rm_add_i in Hs₅.
-       rewrite Hb₅, Hc₅ in Hs₅.
-       rewrite xorb_nilpotent, xorb_false_l in Hs₅.
-       pose proof (Hn₇ 0 (Nat.lt_0_succ di₇)) as H.
-bbb.
-
-      unfold carry_i in Hc₄; simpl in Hc₄.
-      remember (fst_same (a + b) c (S i)) as s₄ eqn:Hs₄ .
-      destruct s₄ as [di₄| ].
-       apply fst_same_sym_iff in Hs₄; simpl in Hs₄.
-       destruct Hs₄ as (Hn₄, Hs₄); rewrite Hc₄ in Hs₄.
-       symmetry in Hs₄.
-       unfold rm_add_i in Hc₄; simpl in Hc₄.
-       unfold rm_add_i in Hs₅; simpl in Hs₅.
-       rewrite Hb₅, Hc₅ in Hs₅.
-       rewrite xorb_nilpotent, xorb_false_l in Hs₅.
-       destruct di₄.
-        clear Hn₄; rewrite Nat.add_0_r in Hs₄, Hc₄.
-        rewrite H₅₆, Hb₅ in Hc₄.
-        rewrite xorb_false_l, xorb_true_l in Hc₄.
-        apply negb_true_iff in Hc₄.
-        unfold carry_i in Hc₂; simpl in Hc₂.
-        clear Hs₄.
-        unfold carry_i in Hc₁; simpl in Hc₁.
-        remember (fst_same (a + (b + c)%rm) 0 (S i)) as s₇ eqn:Hs₇ .
+      symmetry in H.
+      unfold carry_i in H.
+      remember (fst_same b c (S (S (i + di₅)))) as s₇ eqn:Hs₇ .
+      apply fst_same_sym_iff in Hs₇; simpl in Hs₇.
+      destruct s₇ as [di₇| ].
+       destruct Hs₇ as (Hn₇, Hs₇).
+       destruct di₇.
+        clear Hn₇; rewrite Nat.add_0_r in Hs₇, H.
+        rewrite Nat.add_succ_r in Hb₅.
+        rewrite Hb₅ in H; simpl in H.
+        rewrite H in Hx; clear H.
+        assert (di₅ < di₃) as H by omega.
+        apply Hn₃ in H.
+        rewrite fold_rm_add_i in H.
+        rewrite Hx in H; simpl in H.
+        clear Hs₇ x.
+        rename H into Ha₅.
+        assert (di₅ < di₆) as H by omega.
+        apply Hn₆ in H.
+        rewrite Ha₅ in H.
+        symmetry in H.
+        apply negb_true_iff in H.
+        rename H into Hb₄.
+        pose proof (Hn₅ di₅ (Nat.lt_succ_diag_r di₅)) as H.
+        rewrite Hb₄ in H.
+        symmetry in H.
+        apply negb_false_iff in H.
+        rename H into Hc₆.
+        rename Hx into Hbc.
+        remember ((a + b)%rm) .[ S (i + di₅)] as x eqn:Hx .
+        symmetry in Hx.
+        remember Hx as H; clear HeqH.
+        simpl in H.
+        unfold rm_add_i in H.
+        rewrite Ha₅, Hb₄, xorb_true_l in H.
+        symmetry in H.
+        unfold carry_i in H.
+        remember (fst_same a b (S (S (i + di₅)))) as s₇ eqn:Hs₇ .
+        apply fst_same_sym_iff in Hs₇; simpl in Hs₇.
         destruct s₇ as [di₇| ].
-         apply fst_same_sym_iff in Hs₇; simpl in Hs₇.
          destruct Hs₇ as (Hn₇, Hs₇).
-         rewrite Hc₁ in Hs₇; discriminate Hs₇.
+         rename Hx into Hab.
+         rename H into Hx.
+         assert (S (di₅ + di₇) = di₆) as H.
+          destruct (lt_dec (S (di₅ + di₇)) di₆) as [H₁| H₁].
+           apply Hn₆ in H₁.
+           rewrite Nat.add_succ_r in H₁.
+           rewrite Nat.add_assoc in H₁.
+           rewrite Hs₇ in H₁.
+           destruct b .[ S (S (i + di₅ + di₇))]; discriminate H₁.
 
-         apply fst_same_sym_iff in Hs₇; simpl in Hs₇.
-         pose proof (Hs₇ 0) as H; simpl in H.
-         rewrite Nat.add_0_r in H.
-         unfold rm_add_i in H; simpl in H.
-         rewrite H₅₆, xorb_false_l in H.
-         unfold carry_i in H; simpl in H.
-         unfold rm_add_i in H; simpl in H.
-         rewrite Hb₅, Hc₅, Hs₅ in H.
-         rewrite xorb_nilpotent, xorb_false_l, xorb_true_l in H.
-         apply negb_true_iff in H.
-         unfold carry_i in Hc₄; simpl in Hc₄.
-bbb.
+           apply Nat.nlt_ge in H₁.
+           destruct (lt_dec di₆ (S (di₅ + di₇))) as [H₂| H₂].
+            assert (di₆ - S di₅ < di₇) as H by omega.
+            apply Hn₇ in H.
+            rewrite <- Nat.add_succ_l in H.
+            rewrite Nat.add_sub_assoc in H; [ idtac | omega ].
+            rewrite <- Nat.add_succ_r in H.
+            rewrite Nat.add_shuffle0, Nat.add_sub in H.
+            rewrite Ha₆, Hb₆ in H.
+            discriminate H.
 
-destruct c₁.
- unfold carry_i in Hc₁.
- remember (fst_same (a + (b + c)%rm) 0 (S i)) as s₁ eqn:Hs₁ .
- apply fst_same_sym_iff in Hs₁.
- destruct s₁ as [di₁| ].
-  rewrite Hc₁ in Hs₁.
-  destruct Hs₁ as (_, Hs₁); discriminate Hs₁.
+            apply Nat.nlt_ge in H₂.
+            apply Nat.le_antisymm; auto.
 
-  clear Hc₁.
-  remember (S i) as si; simpl in Hs₁; subst si.
-  remember Hs₁ as H; clear HeqH.
-  apply rm_add_inf_if in H.
-  destruct H as (j, (Hj, (Ha, Hb))).
-  simpl in Hb.
+          simpl in Hx.
+          rewrite <- Nat.add_assoc, <- Nat.add_succ_r in Hx.
+          rewrite H in Hx.
+          rewrite Ha₆ in Hx.
+          simpl in Hx.
+          rewrite Hx in Hab.
+          clear x Hx H.
+          pose proof (Hc₁ di₅) as H.
+          rewrite Nat.add_succ_r in H.
+          unfold rm_add_i in H; simpl in H.
+          rewrite fold_rm_add_i in H.
+          rewrite Ha₅, Hbc in H.
+          rewrite xorb_true_l in H.
+          apply negb_true_iff in H.
+          unfold carry_i in H; simpl in H.
+          clear di₇ Hn₇ Hs₇.
+          remember (fst_same a (b + c) (S (S (i + di₅)))) as s₇ eqn:Hs₇ .
+          apply fst_same_sym_iff in Hs₇; simpl in Hs₇.
+          destruct s₇ as [di₇| ]; [ idtac | discriminate H ].
+          destruct Hs₇ as (Hn₇, Hs₇).
+          rewrite <- Nat.add_assoc in Hs₇.
+          rewrite <- Nat.add_succ_r in Hs₇.
+          rename H into H₅₇.
+          assert (S (di₅ + di₇) = di₃) as H.
+           destruct (lt_dec (S (di₅ + di₇)) di₃) as [H₁| H₁].
+            apply Hn₃ in H₁.
+            rewrite <- Hs₇ in H₁.
+            destruct a .[ S (i + S (di₅ + di₇))]; discriminate H₁.
+
+            apply Nat.nlt_ge in H₁.
+            destruct (lt_dec di₃ (S (di₅ + di₇))) as [H₂| H₂].
+             assert (di₃ - S di₅ < di₇) as H by omega.
+             apply Hn₇ in H.
+             rewrite <- Nat.add_succ_l in H.
+             rewrite Nat.add_sub_assoc in H; [ idtac | omega ].
+             rewrite <- Nat.add_succ_r in H.
+             rewrite Nat.add_shuffle0, Nat.add_sub in H.
+             rewrite Ha₃ in H.
+             unfold rm_add_i in H.
+             rewrite Hb₃, xorb_false_l, Hs₃ in H.
+             discriminate H.
+
+             apply Nat.nlt_ge in H₂.
+             apply Nat.le_antisymm; auto.
+
+           rewrite <- Nat.add_assoc, <- Nat.add_succ_r in H₅₇.
+           rewrite H in H₅₇.
+           rewrite Ha₃ in H₅₇; discriminate H₅₇.
+
+         simpl in H.
+         rewrite H in Hx; clear H.
+         pose proof (Hs₇ (di₆ - S di₅)) as H.
+         rewrite <- Nat.add_succ_l in H.
+         rewrite Nat.add_sub_assoc in H; [ idtac | omega ].
+         rewrite <- Nat.add_succ_r in H.
+         rewrite Nat.add_shuffle0, Nat.add_sub in H.
+         rewrite Ha₆, Hb₆ in H.
+         discriminate H.
+
+        rewrite H in Hx; clear H.
+        pose proof (Hn₇ 0 (Nat.lt_0_succ di₇)) as H.
+        rewrite Nat.add_0_r in H.
+        rewrite Nat.add_succ_r in Hb₅, Hc₅.
+        rewrite Hb₅, Hc₅ in H.
+        discriminate H.
+
+       rewrite H in Hx; clear H.
+       pose proof (Hs₇ 0) as H.
+       rewrite Nat.add_0_r in H.
+       rewrite Nat.add_succ_r in Hb₅, Hc₅.
+       rewrite Hb₅, Hc₅ in H.
+       discriminate H.
+
+     apply Nat.nlt_ge in H₃₅.
 bbb.
 
 Theorem rm_add_assoc_hop : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
