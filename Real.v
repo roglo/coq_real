@@ -3943,6 +3943,15 @@ destruct s₁ as [di₁| ].
  rewrite Nat.add_succ_r; apply Hs₁.
 Qed.
 
+Theorem forall_add_succ_r : ∀ α i f (a : α),
+  (∀ j, f (i + S j) = a)
+  → id (∀ j, f (S i + j) = a).
+Proof.
+intros α i f a; unfold id.
+intros H j.
+rewrite Nat.add_succ_l, <- Nat.add_succ_r; apply H.
+Qed.
+
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
 intros a b c.
