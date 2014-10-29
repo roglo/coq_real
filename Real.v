@@ -4222,7 +4222,8 @@ destruct c₁, c₂, c₃, c₄, c₅, c₆; try reflexivity; simpl.
        rewrite Hb₅, Hc₅ in H.
        discriminate H.
 
-     apply Nat.nlt_ge in H₃₅.
+     subst di₅.
+     rewrite Hb₃ in Hb₅; discriminate Hb₅.
 bbb.
 
 Theorem rm_add_assoc_hop : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
