@@ -4065,41 +4065,34 @@ destruct c₁, c₂, c₃, c₄, c₅, c₆; try reflexivity; simpl.
       destruct s₁ as [di₁| ]; [ idtac | discriminate H ].
       destruct Hs₁ as (Hn₁, Hs₁).
       rename H into Ha₁.
-      assert (S di₁ = di₃) as H.
-       destruct (lt_dec (S di₁) di₃) as [H₁| H₁].
-        remember H₁ as H; clear HeqH.
-        apply Hn₃ in H.
-        rewrite Nat.add_succ_r in H.
-        rewrite <- Hs₁ in H.
-        destruct a .[ S (S (i + di₁))]; discriminate H.
-
-        apply Nat.nlt_ge in H₁.
-        destruct (lt_dec di₃ (S di₁)) as [H₂| H₂].
-         destruct di₃.
-          rewrite Nat.add_0_r, H₅₆ in Ha₃.
-          discriminate Ha₃.
-
-          apply Nat.succ_lt_mono in H₂.
-          apply Hn₁ in H₂.
-          rewrite Nat.add_succ_r in Ha₃.
-          rewrite Ha₃ in H₂.
-          symmetry in H₂.
-          apply negb_true_iff in H₂.
-          unfold rm_add_i in H₂.
-          simpl in H₂.
-          rewrite Nat.add_succ_r in Hb₃.
-          rewrite Nat.add_succ_r in Hs₃.
-          rewrite xorb_assoc in H₂.
-          rewrite Hb₃, Hs₃ in H₂.
-          discriminate H₂.
-
-         apply Nat.nlt_ge in H₂.
-         apply Nat.le_antisymm; auto.
+      destruct (lt_eq_lt_dec (S di₁) di₃) as [[H₁| H₁]| H₁].
+       remember H₁ as H; clear HeqH.
+       apply Hn₃ in H.
+       rewrite Nat.add_succ_r in H.
+       rewrite <- Hs₁ in H.
+       destruct a .[ S (S (i + di₁))]; discriminate H.
 
        subst di₃.
-       clear H₅₃.
        rewrite Nat.add_succ_r in Ha₃.
        rewrite Ha₁ in Ha₃; discriminate Ha₃.
+
+       destruct di₃.
+        rewrite Nat.add_0_r, H₅₆ in Ha₃.
+        discriminate Ha₃.
+
+        apply Nat.succ_lt_mono in H₁.
+        apply Hn₁ in H₁.
+        rewrite Nat.add_succ_r in Ha₃.
+        rewrite Ha₃ in H₁.
+        symmetry in H₁.
+        apply negb_true_iff in H₁.
+        unfold rm_add_i in H₁.
+        simpl in H₁.
+        rewrite Nat.add_succ_r in Hb₃.
+        rewrite Nat.add_succ_r in Hs₃.
+        rewrite xorb_assoc in H₁.
+        rewrite Hb₃, Hs₃ in H₁.
+        discriminate H₁.
 
       remember ((b + c)%rm) .[ S (i + di₅)] as x eqn:Hx .
       symmetry in Hx.
