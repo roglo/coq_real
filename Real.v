@@ -3966,6 +3966,14 @@ destruct (lt_dec di₁ di₂) as [H₁| H₁].
 
   apply Nat.nlt_ge in H₂.
   apply Nat.le_antisymm; assumption.
+
+Theorem forall_add_succ_r : ∀ α i f (a : α),
+  (∀ j, f (i + S j) = a)
+  → id (∀ j, f (S i + j) = a).
+Proof.
+intros α i f a; unfold id.
+intros H j.
+rewrite Nat.add_succ_l, <- Nat.add_succ_r; apply H.
 Qed.
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
@@ -4028,7 +4036,7 @@ destruct c₁, c₂, c₃, c₄, c₅, c₆; try reflexivity; simpl.
     rewrite Hc₅ in Hs₅.
     rename Hc₅ into Hb₅; rename Hs₅ into Hc₅.
     symmetry in Hc₅; move Hb₅ after Hc₅.
-    destruct (lt_dec di₅ di₃) as [H₅₃| H₃₅].
+    destruct (lt_eq_lt_dec di₅ di₃) as [[H₅₃|H₅₃]|H₃₅].
      remember H₅₃ as H; clear HeqH.
      apply Hn₃ in H.
      apply negb_sym in H.
@@ -4238,8 +4246,68 @@ destruct c₁, c₂, c₃, c₄, c₅, c₆; try reflexivity; simpl.
        rewrite Hb₅, Hc₅ in H.
        discriminate H.
 
-     apply Nat.nlt_ge in H₃₅.
+     subst di₅.
+     rewrite Hb₃ in Hb₅; discriminate Hb₅.
+
+     remember (rm_add_i b c (i + S di₃)) as x eqn:Hx .
+     symmetry in Hx.
+     remember Hx as H; clear HeqH.
+     unfold rm_add_i in H; simpl in H.
+     rewrite Nat.add_succ_r in H.
+     rewrite Hb₃, xorb_false_l, Hs₃ in H.
+     rewrite <- H in Hx; clear H.
+     remember H₃₅ as H; clear HeqH.
+     apply Hn₅ in H.
+     rewrite Hb₃ in H.
+     symmetry in H.
+     apply negb_false_iff in H.
+     rewrite H in Hs₃.
+     rewrite xorb_true_l in Hs₃.
+     apply negb_true_iff in Hs₃.
+     unfold carry_i in Hs₃; simpl in Hs₃.
+     clear H.
+     remember (fst_same b c (S (S (i + di₃)))) as s₁ eqn:Hs₁ .
+     destruct s₁ as [di₁| ]; [ idtac | discriminate Hs₃ ].
+     apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
+     assert (S (di₃ + di₁) = di₅) as H.
+      destruct (lt_dec (S (di₃ + di₁)) di₅) as [H₁| H₁].
+       remember H₁ as H; clear HeqH.
+       apply Hn₅ in H; simpl in H.
+       destruct Hs₁ as (Hn₁, Hs₁).
+       rewrite Nat.add_succ_r in H.
+       rewrite Nat.add_assoc in H.
+       rewrite Hs₁ in H.
+       destruct c .[ S (S (i + di₃ + di₁))]; discriminate H.
+
+       apply Nat.nlt_ge in H₁.
+       destruct (lt_dec di₅ (S (di₃ + di₁))) as [H₂| H₂].
+        assert (di₅ - S di₃ < di₁) as H by omega.
+        apply Hs₁ in H.
+        rewrite <- Nat.add_succ_l in H.
+        rewrite Nat.add_sub_assoc in H; [ idtac | omega ].
+        rewrite <- Nat.add_succ_r, Nat.add_shuffle0 in H.
+        rewrite Nat.add_sub in H.
+        rewrite Hb₅, Hc₅ in H; discriminate H.
+
+        apply Nat.nlt_ge in H₂.
+        apply Nat.le_antisymm; assumption.
+
+      rewrite <- Nat.add_assoc, <- Nat.add_succ_r in Hs₃.
+      rewrite H in Hs₃.
+      rewrite Hs₃ in Hb₅.
+      discriminate Hb₅.
+
 bbb.
+    apply fst_same_sym_iff in Hs₅.
+    simpl in Hs₅.
+    rewrite Hs₅ in Hb₃.
+    apply negb_false_iff in Hb₃.
+    rewrite Hb₃, xorb_true_l in Hs₃.
+    apply negb_true_iff in Hs₃.
+    unfold carry_i in Hs₃.
+    remember (fst_same b c (S (S (i + di₃)))) as s₁ eqn:Hs₁ .
+    destruct s₁ as [di₁| ]; [ idtac | discriminate Hs₃ ].
+    apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
 
 Theorem rm_add_assoc_hop : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
