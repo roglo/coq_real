@@ -3943,6 +3943,31 @@ destruct s₁ as [di₁| ].
  rewrite Nat.add_succ_r; apply Hs₁.
 Qed.
 
+(* trying to make a lemma for something used many times, but it does
+   not seem to work properly *)
+Theorem same_relays : ∀ di₁ di₂ f g,
+  (∀ dj, dj < di₁ → f dj = negb (g dj))
+  → (∀ dj, dj < di₂ → f dj = negb (g dj))
+  → f di₁ = g di₁
+  → f di₂ = g di₂
+  → di₁ = di₂.
+Proof.
+intros di₁ di₂ f g Hdi₁ Hdi₂ Hf₁ Hf₂.
+destruct (lt_dec di₁ di₂) as [H₁| H₁].
+ apply Hdi₂ in H₁.
+ rewrite Hf₁ in H₁.
+ destruct (g di₁); discriminate H₁.
+
+ apply Nat.nlt_ge in H₁.
+ destruct (lt_dec di₂ di₁) as [H₂| H₂].
+  apply Hdi₁ in H₂.
+  rewrite Hf₂ in H₂.
+  destruct (g di₂); discriminate H₂.
+
+  apply Nat.nlt_ge in H₂.
+  apply Nat.le_antisymm; assumption.
+Qed.
+
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
 intros a b c.
