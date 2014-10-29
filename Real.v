@@ -4267,7 +4267,28 @@ destruct c₁, c₂, c₃, c₄, c₅, c₆; try reflexivity; simpl.
 
    subst di₆.
    rewrite Hc₃ in Ha₆; discriminate Ha₆.
+
+   pose proof (Hc₁ di₆) as H.
+   unfold rm_add_i in H.
+   rewrite Nat.add_succ_r, Hn₃ in H; [ idtac | assumption ].
+   simpl in H.
+   rewrite negb_xorb_diag, xorb_true_l in H.
+   apply negb_true_iff in H.
 bbb.
+
+     i i+1 -  i₆ -  i₃
+b    .  .  x  0  .  .
+        ≠  ≠
+a    .  . ¬x  0  .  1
+        ≠  ≠  ≠  ≠
+b+c  .  .  x  1  .  1
+
+a+b  .  1  1  .  .  .
+
+c    .  .  .  .  .  .
+
+b    .  .  x  0  .  .
+
 
 Theorem rm_add_assoc_hop : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
