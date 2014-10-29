@@ -4275,6 +4275,13 @@ destruct c₁, c₂, c₃, c₄, c₅, c₆; try reflexivity; simpl.
    rewrite negb_xorb_diag, xorb_true_l in H.
    apply negb_true_iff in H.
 bbb.
+   unfold carry_i in H; simpl in H.
+   remember (fst_same a (b + c) (S (S (i + di₆)))) as s₁ eqn:Hs₁ .
+   destruct s₁ as [di₁| ]; [ idtac | discriminate H ].
+   apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
+   destruct Hs₁ as (Hn₁, Hs₁).
+   rename H into Ha₁.
+bbb.
 
      i i+1 -  i₆ -  i₃
 b    .  .  x  0  .  .
