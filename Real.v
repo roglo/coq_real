@@ -4268,6 +4268,109 @@ destruct c₁, c₂, c₃, c₄, c₅, c₆; try reflexivity; simpl.
    subst di₆.
    rewrite Hc₃ in Ha₆; discriminate Ha₆.
 
+   assert (∀ dj, dj < di₆ → c .[ S (i + dj)] = false) as H.
+    intros dj Hdj.
+    remember Hdj as H; clear HeqH.
+    apply Hn₆ in H; simpl in H.
+    rename H into Habj.
+    assert (dj < di₃) as H by omega.
+    apply Hn₃ in H.
+    rewrite Habj in H.
+    apply negb_sym in H.
+    rewrite negb_involutive in H.
+    rename H into Hbcj.
+    remember Hbcj as H; clear HeqH.
+    unfold rm_add_i in H.
+    rewrite xorb_assoc in H.
+    apply xorb_move_l_r_1 in H.
+    rewrite xorb_nilpotent in H.
+    remember c .[ S (i + dj)] as x.
+    destruct x; [ idtac | reflexivity ].
+    symmetry in Heqx.
+    move Heqx before Habj.
+    rewrite xorb_true_l in H.
+    apply negb_false_iff in H.
+    rename H into Hcaj.
+    remember H₆₃ as H; clear HeqH.
+    apply Hn₃ in H; simpl in H.
+    rewrite Ha₆ in H; symmetry in H.
+    apply negb_false_iff in H.
+    rename H into Hbc₆; move Hbc₆ before Hb₆.
+    remember Hbc₆ as H; clear HeqH.
+    unfold rm_add_i in H.
+    rewrite Hb₆, xorb_false_l in H.
+    rename H into Hca₆.
+    move Hca₆ before Hbc₆.
+    remember Hcaj as H; clear HeqH.
+    unfold carry_i in H; simpl in H.
+    remember (fst_same b c (S (S (i + dj)))) as s₁ eqn:Hs₁ .
+    apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
+    destruct s₁ as [di₁| ]; simpl in Hs₁.
+     destruct Hs₁ as (Hn₁, Hs₁).
+     rewrite H in Hs₁; symmetry in Hs₁.
+     rename H into Hbj; move Hbj after Hs₁.
+     destruct (lt_eq_lt_dec (S (dj + di₁)) di₆) as [[H₁| H₁]| H₁].
+bbb.
+   (* je me demande s'il n'y a pas un raisonnement pas récurrence à
+      faire ici pour cet assert *)
+
+    rename H into Hcca.
+    remember Hcca as H; clear HeqH.
+    unfold carry_i in H; simpl in H.
+    remember (fst_same b c (S (S (i + dj)))) as s₂ eqn:Hs₂ .
+    destruct s₂ as [di₂| ].
+     apply fst_same_sym_iff in Hs₂; simpl in Hs₂.
+     destruct Hs₂ as (Hn₂, Hs₂).
+
+bbb.
+   unfold carry_i in Hc₅; simpl in Hc₅.
+   remember (fst_same b c (S i)) as s₁ eqn:Hs₁ .
+   apply fst_same_sym_iff in Hs₁.
+   destruct s₁ as [di₁| ]; simpl in Hs₁.
+    destruct Hs₁ as (Hn₁, Hs₁).
+    rewrite Hc₅ in Hs₁; symmetry in Hs₁.
+    move Hc₅ after Hs₁.
+    destruct (lt_eq_lt_dec di₁ di₆) as [[H₁| H₁]| H₁].
+     remember H₁ as H; clear HeqH.
+     apply Hn₆ in H.
+     rewrite Hc₅ in H; simpl in H.
+     rename H into Ha₁.
+     move Ha₁ after Hc₅.
+     assert (di₁ < di₃) as H by omega.
+     apply Hn₃ in H.
+     rewrite Ha₁ in H; symmetry in H.
+     apply negb_false_iff in H.
+     rename H into Hbc₁.
+     move Hbc₁ before Hs₁.
+     remember Hbc₁ as H; clear HeqH.
+     unfold rm_add_i in H.
+     rewrite Hc₅, Hs₁, xorb_nilpotent, xorb_false_l in H.
+     rename H into Hca₁.
+     move Hca₁ before Hbc₁.
+     remember Hca₁ as H; clear HeqH.
+bbb.
+     unfold carry_i in H; simpl in H.
+     remember (fst_same b c (S (S (i + di₁)))) as s₂ eqn:Hs₂ .
+     apply fst_same_sym_iff in Hs₂; simpl in Hs₂.
+     destruct s₂ as [di₂| ].
+      destruct Hs₂ as (Hn₂, Hs₂).
+      rewrite H in Hs₂; symmetry in Hs₂.
+      rename H into Hb₂; move Hb₂ after Hs₂.
+      destruct (lt_eq_lt_dec (S (di₁ + di₂)) di₆) as [[H₂| H₂]| H₂].
+       remember H₂ as H; clear HeqH.
+       apply Hn₆ in H.
+       rewrite Nat.add_succ_r, Nat.add_assoc in H.
+       rewrite Hb₂ in H; simpl in H.
+       rename H into Ha₂; move Ha₂ after Hb₂.
+       assert (S (di₁ + di₂) < di₃) as H by omega.
+       apply Hn₃ in H; simpl in H.
+       rewrite Nat.add_succ_r, Nat.add_assoc in H.
+       rewrite Ha₂ in H; symmetry in H.
+       apply negb_false_iff in H.
+       rename H into Hbc₂.
+       move Hbc₂ before Hs₂.
+
+bbb.
    pose proof (Hc₁ di₆) as H.
    unfold rm_add_i in H.
    rewrite Nat.add_succ_r, Hn₃ in H; [ idtac | assumption ].
@@ -4288,7 +4391,6 @@ destruct c₁, c₂, c₃, c₄, c₅, c₆; try reflexivity; simpl.
    unfold rm_add_i in H; simpl in H.
    rewrite Hb₆, xorb_false_l in H.
    assert (∀ dj, dj < di₆ → c .[ S (i + dj)] = false) as HH.
-bbb.
     intros dj Hdj.
     rename H into Hcc.
     remember Hdj as H; clear HeqH.
