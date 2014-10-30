@@ -123,6 +123,17 @@ split; auto.
 intros dj Hdjn; apply negb_sym, Hns; assumption.
 Qed.
 
+Theorem carry_comm : ∀ a b i, carry_i a b i = carry_i b a i.
+Proof.
+intros a b i.
+unfold carry_i; simpl.
+rewrite fst_same_comm.
+remember (fst_same b a (S i)) as s eqn:Hs .
+destruct s as [di| ]; [ idtac | reflexivity ].
+apply fst_same_sym_iff in Hs; simpl in Hs.
+destruct Hs; symmetry; assumption.
+Qed.
+
 Theorem rm_add_i_comm : ∀ a b i, rm_add_i a b i = rm_add_i b a i.
 Proof.
 intros a b i.
@@ -135,6 +146,7 @@ destruct s as [di| ]; [ idtac | f_equal; apply xorb_comm ].
 f_equal; [ apply xorb_comm | destruct Hs; auto ].
 Qed.
 
+(* TODO: carry_comm to be used *)
 Theorem rm_add_comm : ∀ a b, (a + b = b + a)%rm.
 Proof.
 intros a b.
@@ -276,19 +288,18 @@ unfold rm_eq.
 apply rm_add_i_0_r.
 Qed.
 
-Theorem rm_add_i_compat_r : ∀ a b c j,
+Theorem carry_compat_r : ∀ a b c j,
   (∀ i, a .[ i] = b .[ i])
-  → rm_add_i b c j = rm_add_i a c j.
+  → carry_i b c j = carry_i a c j.
 Proof.
 intros a b c j Hab.
-unfold rm_add_i, carry_i; simpl.
-rewrite Hab; f_equal.
+unfold carry_i; intros.
 remember (fst_same b c (S j)) as s₁ eqn:Hs₁ .
 remember (fst_same a c (S j)) as s₂ eqn:Hs₂ .
 symmetry in Hs₁, Hs₂.
 apply fst_same_iff in Hs₁.
 apply fst_same_iff in Hs₂.
-simpl in Hs₁, Hs₂.
+simpl in Hs₁, Hs₂; simpl.
 destruct s₁ as [di₁| ].
  destruct Hs₁ as (Hn₁, Hs₁).
  rewrite Hs₁.
@@ -320,6 +331,58 @@ destruct s₁ as [di₁| ].
  destruct c .[ S (j + di₂)]; discriminate Hs₂.
 Qed.
 
+Theorem rm_add_i_compat_r : ∀ a b c j,
+  (∀ i, a .[ i] = b .[ i])
+  → rm_add_i b c j = rm_add_i a c j.
+Proof.
+intros a b c j Hab.
+unfold rm_add_i.
+rewrite Hab; f_equal.
+apply carry_compat_r; assumption.
+Qed.
+
+Theorem rm_norm_eq_eq : ∀ a₀ b₀ a b,
+  a = (a₀ + 0)%rm
+  → b = (b₀ + 0)%rm
+  → (a = b)%rm
+  → ∀ i, a .[ i] = b .[ i].
+Proof.
+intros a₀ b₀ a b Ha Hb Hab i.
+unfold rm_eq in Hab; simpl in Hab.
+pose proof (Hab i) as Hi.
+unfold rm_add_i, carry_i in Hi.
+remember (S i) as si; simpl in Hi.
+do 2 rewrite xorb_false_r in Hi.
+remember (fst_same a 0 si) as s₁ eqn:Hs₁ .
+remember (fst_same b 0 si) as s₂ eqn:Hs₂ .
+symmetry in Hs₁, Hs₂.
+apply fst_same_iff in Hs₁.
+apply fst_same_iff in Hs₂.
+simpl in Hs₁, Hs₂.
+destruct s₁ as [di₁| ].
+ destruct Hs₁ as (Hn₁, Hs₁).
+ rewrite Hs₁, xorb_false_r in Hi.
+ destruct s₂ as [di₂| ].
+  destruct Hs₂ as (Hn₂, Hs₂).
+  rewrite Hs₂, xorb_false_r in Hi; assumption.
+
+  exfalso; revert Hs₂; rewrite Hb; apply not_rm_add_0_inf_1.
+
+ exfalso; revert Hs₁; rewrite Ha; apply not_rm_add_0_inf_1.
+Qed.
+
+Theorem carry_norm_eq_compat_r : ∀ a₀ b₀ a b c n,
+  a = (a₀ + 0)%rm
+  → b = (b₀ + 0)%rm
+  → (a = b)%rm
+  → carry_i (a + c) 0 n = carry_i (b + c) 0 n.
+Proof.
+intros a₀ b₀ a b c n Ha Hb Hab.
+apply carry_compat_r; simpl.
+intros; apply rm_add_i_compat_r.
+eapply rm_norm_eq_eq; eassumption.
+Qed.
+
 Theorem rm_norm_eq_compat_r : ∀ a₀ b₀ a b c,
   a = (a₀ + 0)%rm
   → b = (b₀ + 0)%rm
@@ -327,58 +390,14 @@ Theorem rm_norm_eq_compat_r : ∀ a₀ b₀ a b c,
   → (a + c = b + c)%rm.
 Proof.
 intros a₀ b₀ a b c Ha Hb Hab.
-assert (∀ i, a .[ i] = b .[ i]) as H.
- intros i.
- unfold rm_eq in Hab; simpl in Hab.
- pose proof (Hab i) as Hi.
- unfold rm_add_i, carry_i in Hi.
- remember (S i) as si; simpl in Hi.
- do 2 rewrite xorb_false_r in Hi.
- remember (fst_same a 0 si) as s₁ eqn:Hs₁ .
- remember (fst_same b 0 si) as s₂ eqn:Hs₂ .
- symmetry in Hs₁, Hs₂.
- apply fst_same_iff in Hs₁.
- apply fst_same_iff in Hs₂.
- simpl in Hs₁, Hs₂.
- destruct s₁ as [di₁| ].
-  destruct Hs₁ as (Hn₁, Hs₁).
-  rewrite Hs₁, xorb_false_r in Hi.
-  destruct s₂ as [di₂| ].
-   destruct Hs₂ as (Hn₂, Hs₂).
-   rewrite Hs₂, xorb_false_r in Hi; assumption.
+unfold rm_eq; simpl; intros i.
+unfold rm_add_i; simpl.
+do 2 rewrite xorb_false_r; f_equal.
+ apply rm_add_i_compat_r.
+ intros j; symmetry.
+ eapply rm_norm_eq_eq; eassumption.
 
-   exfalso; revert Hs₂; rewrite Hb; apply not_rm_add_0_inf_1.
-
-  exfalso; revert Hs₁; rewrite Ha; apply not_rm_add_0_inf_1.
-
- clear Hab; rename H into Hab.
- unfold rm_eq; simpl.
- intros i; unfold rm_add_i, carry_i.
- remember (S i) as si; simpl.
- do 2 rewrite xorb_false_r.
- symmetry; erewrite rm_add_i_compat_r; [ symmetry | eauto  ].
- f_equal.
- remember (fst_same (a + c) 0 si) as s₁ eqn:Hs₁ .
- remember (fst_same (b + c) 0 si) as s₂ eqn:Hs₂ .
- symmetry in Hs₁, Hs₂.
- apply fst_same_iff in Hs₁.
- apply fst_same_iff in Hs₂.
- simpl in Hs₁, Hs₂.
- destruct s₁ as [di₁| ].
-  destruct Hs₁ as (Hn₁, Hs₁).
-  destruct s₂ as [di₂| ].
-   destruct Hs₂ as (Hn₂, Hs₂).
-   rewrite Hs₁, Hs₂; reflexivity.
-
-   pose proof (Hs₂ di₁) as H.
-   apply not_false_iff_true in H.
-   rewrite <- Hs₁ in H.
-   exfalso; apply H.
-   apply rm_add_i_compat_r; auto.
-
-  destruct s₂ as [di₂| ]; auto.
-  rewrite <- Hs₁ with (dj := di₂).
-  apply rm_add_i_compat_r; auto.
+ eapply carry_norm_eq_compat_r; eassumption.
 Qed.
 
 Fixpoint first_false_before a i :=
@@ -2102,6 +2121,16 @@ rewrite rm_add_comm; symmetry.
 rewrite rm_add_comm; symmetry.
 apply rm_add_compat_r; assumption.
 Qed.
+
+Add Parametric Morphism : carry_i
+  with signature rm_eq ==> rm_eq ==> eq ==> eq
+  as carry_i_morph.
+Proof.
+intros a b Hab c d Hcd n.
+transitivity (carry_i a d n).
+Abort. (* a little bit subtile... à voir...
+bbb.
+*)
 
 Add Parametric Morphism : rm_add
   with signature rm_eq ==> rm_eq ==> rm_eq
@@ -4303,6 +4332,10 @@ move c₆ before c₅.
 destruct c₁, c₂, c₃, c₄, c₅, c₆; try reflexivity; simpl.
  exfalso; eapply case_1; eauto .
 
+ exfalso; eapply case_1.
+  6: rewrite carry_comm; eexact Hc₅.
+
+  5: rewrite carry_comm; eexact Hc₆.
 bbb.
 
 Theorem rm_add_assoc_hop : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
