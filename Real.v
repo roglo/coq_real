@@ -4267,7 +4267,54 @@ destruct c₁, c₂, c₃, c₄, c₅, c₆; try reflexivity; simpl.
 
    subst di₆.
    rewrite Hc₃ in Ha₆; discriminate Ha₆.
-(*1-*)
+
+   remember H₆₃ as H; clear HeqH.
+   apply Hn₃ in H.
+   rewrite Ha₆ in H; symmetry in H.
+   apply negb_false_iff in H.
+   rename H into Hbc; move Hbc before Hb₆.
+   pose proof (Hc₁ di₆) as H; simpl in H.
+   rewrite Nat.add_succ_r in H; simpl in H.
+   unfold rm_add_i in H; simpl in H.
+   rewrite Ha₆, Hbc, xorb_true_l in H.
+   apply negb_true_iff in H.
+   rename H into Hca; move Hca before Hbc.
+   remember Hbc as H; clear HeqH.
+   unfold rm_add_i in H; simpl in H.
+   rewrite Hb₆, xorb_false_l in H.
+   rename H into Hcc; move Hcc before Hb₆.
+   remember Hca as H; clear HeqH.
+   unfold carry_i in H; simpl in H.
+   remember (fst_same a (b + c) (S (S (i + di₆)))) as s₁ eqn:Hs₁ .
+   destruct s₁ as [di₁| ]; [ idtac | discriminate H ].
+   apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
+   destruct Hs₁ as (Hn₁, Hs₁).
+   rewrite H in Hs₁.
+   symmetry in Hs₁.
+   rename H into Ha₁; move Ha₁ after Hs₁.
+   destruct (lt_eq_lt_dec (S (di₆ + di₁)) di₃) as [[H₁| H₁]| H₁].
+    remember H₁ as H; clear HeqH.
+    apply Hn₃ in H.
+    rewrite Nat.add_succ_r in H.
+    rewrite Nat.add_assoc in H.
+    rewrite Ha₁, Hs₁ in H.
+    discriminate H.
+
+    rewrite <- Nat.add_assoc, <- Nat.add_succ_r, H₁ in Ha₁.
+    rewrite Hc₃ in Ha₁; discriminate Ha₁.
+
+    assert (di₃ - S di₆ < di₁) as H by omega.
+    apply Hn₁ in H.
+    rewrite <- Nat.add_succ_l in H.
+    rewrite Nat.add_sub_assoc in H; [ idtac | omega ].
+    rewrite <- Nat.add_succ_r, Nat.add_shuffle0 in H.
+    rewrite Nat.add_sub in H.
+    rewrite <- Hs₃ in H.
+    destruct a .[ S (i + di₃)]; discriminate H.
+
+  clear Hc₃.
+  apply fst_same_sym_iff in Hs₃; simpl in Hs₃.
+bbb.
 
    assert (∀ dj, dj < di₆ → c .[ S (i + dj)] = false) as H.
     intros dj Hdj.
