@@ -4295,6 +4295,28 @@ destruct c₁, c₂, c₃, c₄, c₅, c₆; try reflexivity; simpl.
       apply fst_same_sym_iff in Hs₁.
       simpl in Hs₁.
       destruct Hs₁ as (Hn₁, Hs₁).
+      remember c .[ S (i + dj)] as x.
+      destruct x; [ idtac | reflexivity ].
+      symmetry in Heqx.
+      rewrite xorb_true_l in H.
+      apply negb_false_iff in H.
+      rewrite H in Hs₁; symmetry in Hs₁.
+      rename H into Hb₁; move Hb₁ after Hs₁.
+bbb.
+      pose proof (Hc₁ dj) as H.
+      unfold rm_add_i in H; simpl in H.
+      unfold rm_add_i in H; simpl in H.
+      rewrite Nat.add_succ_r in H; simpl in H.
+      rewrite Hab in H.
+      rewrite <- xorb_assoc in H.
+      rewrite <- xorb_assoc in H.
+      rewrite negb_xorb_diag in H.
+      rewrite Heqx in H.
+      rewrite xorb_nilpotent, xorb_false_l in H.
+      unfold carry_i in H at 1.
+      remember (fst_same b c (S (S (i + dj)))) as s₂ eqn:Hs₂ .
+      destruct s₂ as [di₂| ].
+       apply fst_same_sym_iff in Hs₂; simpl in Hs₂.
 bbb.
       destruct di₁.
        rewrite Nat.add_0_r in Hs₁, H.
