@@ -4282,26 +4282,45 @@ destruct c₁, c₂, c₃, c₄, c₅, c₆; try reflexivity; simpl.
      rename H into Hab.
      assert (dj < di₃) as H by omega.
      apply Hn₃ in H.
+     rewrite Hab in H.
+     apply negb_sym in H.
+     rewrite negb_involutive in H.
      unfold rm_add_i in H; simpl in H.
-     do 2 rewrite negb_xorb_l in H.
-     rewrite <- Hab in H.
      rewrite xorb_assoc in H.
-     symmetry in H.
      apply xorb_move_l_r_1 in H.
      rewrite xorb_nilpotent in H.
+     remember c .[ S (i + dj)] as x.
+     destruct x; [ idtac | reflexivity ].
+     symmetry in Heqx.
+     rewrite xorb_true_l in H.
+     apply negb_false_iff in H.
      unfold carry_i in H; simpl in H.
      remember (fst_same b c (S (S (i + dj)))) as s₁ eqn:Hs₁ .
      destruct s₁ as [di₁| ].
       apply fst_same_sym_iff in Hs₁.
       simpl in Hs₁.
       destruct Hs₁ as (Hn₁, Hs₁).
-      remember c .[ S (i + dj)] as x.
-      destruct x; [ idtac | reflexivity ].
-      symmetry in Heqx.
-      rewrite xorb_true_l in H.
-      apply negb_false_iff in H.
       rewrite H in Hs₁; symmetry in Hs₁.
       rename H into Hb₁; move Hb₁ after Hs₁.
+      destruct di₁.
+       clear Hn₁; rewrite Nat.add_0_r in Hb₁, Hs₁.
+       rewrite <- Nat.add_succ_r, Hb₆ in Hb₁.
+       discriminate Hb₁.
+
+       pose proof (Hn₁ 0 (Nat.lt_0_succ di₁)) as H.
+       rewrite Nat.add_0_r, <- Nat.add_succ_r in H.
+       rewrite Hb₆ in H; symmetry in H.
+       apply negb_false_iff in H.
+       rename H into Hcj; move Hcj before Hb₆.
+       remember H₆₃ as H; clear HeqH.
+       apply Hn₃ in H; simpl in H.
+       rewrite Ha₆ in H; symmetry in H.
+       apply negb_false_iff in H.
+       unfold rm_add_i in H; simpl in H.
+       rewrite Hb₆, Hcj, xorb_false_l, xorb_true_l in H.
+       apply negb_true_iff in H.
+       unfold carry_i in H; simpl in H.
+       remember (fst_same b c (S (S (i + S dj)))) as s₂ eqn:Hs₂ .
 bbb.
       pose proof (Hc₁ dj) as H.
       unfold rm_add_i in H; simpl in H.
