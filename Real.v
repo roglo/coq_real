@@ -4267,9 +4267,23 @@ destruct c₁, c₂, c₃, c₄, c₅, c₆; try reflexivity; simpl.
 
    subst di₆.
    rewrite Hc₃ in Ha₆; discriminate Ha₆.
+(*1-*)
 
    assert (∀ dj, dj < di₆ → c .[ S (i + dj)] = false) as H.
     intros dj Hdj.
+    remember (di₆ - S dj) as n.
+    assert (di₆ = n + S dj) as H by omega.
+    subst di₆.
+    clear Hdj Heqn.
+    revert dj Hn₆ Ha₆ Hb₆ H₆₃.
+    induction n; intros.
+     clear Hn₆; simpl in Ha₆, Hb₆, H₆₃.
+bbb.
+
+(*-1*)
+   assert (∀ dj, dj < di₆ → c .[ S (i + dj)] = false) as H.
+    intros dj Hdj.
+bbb.
     remember Hdj as H; clear HeqH.
     apply Hn₆ in H; simpl in H.
     rename H into Habj.
