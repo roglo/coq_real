@@ -4277,7 +4277,39 @@ destruct c₁, c₂, c₃, c₄, c₅, c₆; try reflexivity; simpl.
     clear Hdj Heqn.
     revert dj Hn₆ Ha₆ Hb₆ H₆₃.
     induction n; intros.
-     clear Hn₆; simpl in Ha₆, Hb₆, H₆₃.
+     simpl in Hn₆, Ha₆, Hb₆, H₆₃.
+     pose proof (Hn₆ dj (Nat.lt_succ_diag_r dj)) as H.
+     rename H into Hab.
+     assert (dj < di₃) as H by omega.
+     apply Hn₃ in H.
+     unfold rm_add_i in H; simpl in H.
+     do 2 rewrite negb_xorb_l in H.
+     rewrite <- Hab in H.
+     rewrite xorb_assoc in H.
+     symmetry in H.
+     apply xorb_move_l_r_1 in H.
+     rewrite xorb_nilpotent in H.
+     unfold carry_i in H; simpl in H.
+     remember (fst_same b c (S (S (i + dj)))) as s₁ eqn:Hs₁ .
+     destruct s₁ as [di₁| ].
+      apply fst_same_sym_iff in Hs₁.
+      simpl in Hs₁.
+      destruct Hs₁ as (Hn₁, Hs₁).
+bbb.
+      destruct di₁.
+       rewrite Nat.add_0_r in Hs₁, H.
+       rewrite Nat.add_succ_r in Hb₆.
+       rewrite Hb₆, xorb_false_r in H.
+       assumption.
+
+       rename H into Hcb.
+       pose proof (Hn₁ 0 (Nat.lt_0_succ di₁)) as H.
+       rewrite Nat.add_0_r in H.
+       rewrite <- Nat.add_succ_r, Hb₆ in H.
+       symmetry in H.
+       apply negb_false_iff in H.
+       rename H into Hc₆.
+       move Hc₆ before Hb₆.
 bbb.
 
 (*-1*)
