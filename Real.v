@@ -4288,6 +4288,7 @@ destruct c₁, c₂, c₃, c₄, c₅, c₆; try reflexivity; simpl.
    unfold rm_add_i in H; simpl in H.
    rewrite Hb₆, xorb_false_l in H.
    assert (∀ dj, dj < di₆ → c .[ S (i + dj)] = false) as HH.
+bbb.
     intros dj Hdj.
     rename H into Hcc.
     remember Hdj as H; clear HeqH.
