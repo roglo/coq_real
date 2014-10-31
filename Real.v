@@ -4320,14 +4320,37 @@ Theorem case_2 : ∀ a b c i,
   → False.
 Proof.
 intros a b c i Hc₁ Hc₂ Hc₃ Hc₄ Hc₅ Hc₆.
-apply carry_0_r_true_if in Hc₁.
-apply carry_0_r_true_if in Hc₂.
-unfold id in Hc₁, Hc₂.
-simpl in Hc₁, Hc₂.
-unfold carry_i in Hc₄; simpl in Hc₄.
+remember Hc₁ as H; clear HeqH.
+apply carry_0_r_true_if in H; unfold id in H; simpl in H.
+rename H into Hj₁; move Hj₁ before Hc₁.
+remember Hc₂ as H; clear HeqH.
+apply carry_0_r_true_if in H; unfold id in H; simpl in H.
+rename H into Hj₂; move Hj₂ before Hc₂.
+remember Hc₄ as H; clear HeqH.
+unfold carry_i in H; simpl in H.
 remember (fst_same (a + b) c (S i)) as s₄ eqn:Hs₄ .
 apply fst_same_sym_iff in Hs₄; simpl in Hs₄.
-destruct s₄ as [di₄| ]; [ idtac | discriminate Hc₄ ].
+destruct s₄ as [di₄| ]; [ idtac | discriminate H ].
+destruct Hs₄ as (Hn₄, Hs₄).
+rewrite H in Hs₄; symmetry in Hs₄.
+move Hn₄ before Hc₄; move Hs₄ before Hn₄.
+rename H into Hi₄; move Hi₄ before Hs₄.
+pose proof (Hj₂ di₄) as H; simpl in H.
+rewrite Nat.add_succ_r in H; simpl in H.
+unfold rm_add_i in H; simpl in H.
+rewrite Hi₄, Hs₄, xorb_false_l in H.
+rename H into Hac; move Hac before Hi₄.
+remember Hc₅ as H; clear HeqH.
+unfold carry_i in H; simpl in H.
+remember (fst_same b c (S i)) as s₅ eqn:Hs₅ .
+apply fst_same_sym_iff in Hs₅; simpl in Hs₅.
+rename H into Hj₅.
+move Hs₅ before Hc₅; move Hj₅ before Hs₅.
+destruct s₅ as [di₅| ].
+ destruct Hs₅ as (Hn₅, Hs₅).
+ rewrite Hj₅ in Hs₅; symmetry in Hs₅.
+ move Hj₅ after Hs₅.
+ destruct (lt_eq_lt_dec di₄ di₅) as [[H₁| H₁]| H₁].
 bbb.
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
