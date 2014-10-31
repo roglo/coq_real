@@ -3924,6 +3924,7 @@ destruct (lt_dec di₁ di₂) as [H₁| H₁].
 
   apply Nat.nlt_ge in H₂.
   apply Nat.le_antisymm; assumption.
+Qed.
 
 Theorem forall_add_succ_r : ∀ α i f (a : α),
   (∀ j, f (i + S j) = a)
