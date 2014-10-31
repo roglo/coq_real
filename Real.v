@@ -3991,6 +3991,7 @@ unfold id in Hc₁, Hc₂.
 simpl in Hc₁, Hc₂.
 unfold carry_i in Hc₆; simpl in Hc₆.
 remember (fst_same a b (S i)) as s₆ eqn:Hs₆ .
+remember Hs₆ as Hss₆; clear HeqHss₆.
 apply fst_same_sym_iff in Hs₆; simpl in Hs₆.
 destruct s₆ as [di₆| ]; [ idtac | discriminate Hc₆ ].
 destruct Hs₆ as (Hn₆, Hs₆).
@@ -4004,6 +4005,7 @@ rewrite Ha₆, xorb_false_l in H.
 rename H into Hca; move Hca before Hb₆.
 unfold carry_i in Hc₃; simpl in Hc₃.
 remember (fst_same a (b + c) (S i)) as s₃ eqn:Hs₃ .
+remember Hs₃ as Hss₃; clear HeqHss₃.
 apply fst_same_sym_iff in Hs₃; simpl in Hs₃.
 destruct s₃ as [di₃| ].
  destruct Hs₃ as (Hn₃, Hs₃).
@@ -4022,6 +4024,7 @@ destruct s₃ as [di₃| ].
   rewrite Hb₃, xorb_false_l in Hs₃.
   unfold carry_i in Hc₅; simpl in Hc₅.
   remember (fst_same b c (S i)) as s₅ eqn:Hs₅ .
+  remember Hs₅ as Hss₅; clear HeqHss₅.
   destruct s₅ as [di₅| ].
    apply fst_same_sym_iff in Hs₅; simpl in Hs₅.
    destruct Hs₅ as (Hn₅, Hs₅).
@@ -4053,38 +4056,13 @@ destruct s₃ as [di₃| ].
      apply negb_true_iff in H.
      unfold carry_i in H; simpl in H.
      remember (fst_same a (b + c) (S (S i))) as s₁ eqn:Hs₁ .
-     apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
-     destruct s₁ as [di₁| ]; [ idtac | discriminate H ].
-     destruct Hs₁ as (Hn₁, Hs₁).
-     rename H into Ha₁.
-     destruct (lt_eq_lt_dec (S di₁) di₃) as [[H₄| H₄]| H₄].
-      remember H₄ as H; clear HeqH.
-      apply Hn₃ in H.
-      rewrite Nat.add_succ_r in H.
-      rewrite <- Hs₁ in H.
-      destruct a .[ S (S (i + di₁))]; discriminate H.
-
-      subst di₃.
-      rewrite Nat.add_succ_r in Ha₃.
-      rewrite Ha₁ in Ha₃; discriminate Ha₃.
-
-      destruct di₃.
-       rewrite Nat.add_0_r, H₅₆ in Ha₃.
-       discriminate Ha₃.
-
-       apply Nat.succ_lt_mono in H₄.
-       apply Hn₁ in H₄.
-       rewrite Nat.add_succ_r in Ha₃.
-       rewrite Ha₃ in H₄.
-       symmetry in H₄.
-       apply negb_true_iff in H₄.
-       unfold rm_add_i in H₄.
-       simpl in H₄.
-       rewrite Nat.add_succ_r in Hb₃.
-       rewrite Nat.add_succ_r in Hs₃.
-       rewrite xorb_assoc in H₄.
-       rewrite Hb₃, Hs₃ in H₄.
-       discriminate H₄.
+     symmetry in Hss₃, Hs₁.
+     eapply fst_same_in_range in Hs₁; try eassumption; [ idtac | omega ].
+     subst s₁; simpl in H.
+     rewrite <- Nat.add_succ_l in H.
+     rewrite Nat.add_sub_assoc in H; [ idtac | omega ].
+     rewrite Nat.add_comm, Nat.add_sub in H.
+     rewrite Ha₃ in H; discriminate H.
 
      remember ((b + c)%rm) .[ S (i + di₅)] as x eqn:Hx .
      symmetry in Hx.
