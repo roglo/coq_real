@@ -4310,6 +4310,26 @@ destruct s₃ as [di₃| ].
  discriminate H.
 Qed.
 
+Theorem case_2 : ∀ a b c i,
+  carry_i (a + (b + c)%rm) 0 i = true
+  → carry_i ((a + b)%rm + c) 0 i = true
+  → carry_i a (b + c) i = true
+  → carry_i (a + b) c i = false
+  → carry_i b c i = true
+  → carry_i a b i = true
+  → False.
+Proof.
+intros a b c i Hc₁ Hc₂ Hc₃ Hc₄ Hc₅ Hc₆.
+apply carry_0_r_true_if in Hc₁.
+apply carry_0_r_true_if in Hc₂.
+unfold id in Hc₁, Hc₂.
+simpl in Hc₁, Hc₂.
+unfold carry_i in Hc₄; simpl in Hc₄.
+remember (fst_same (a + b) c (S i)) as s₄ eqn:Hs₄ .
+apply fst_same_sym_iff in Hs₄; simpl in Hs₄.
+destruct s₄ as [di₄| ]; [ idtac | discriminate Hc₄ ].
+bbb.
+
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
 intros a b c.
