@@ -4321,6 +4321,7 @@ destruct s₅ as [di₅| ].
      rewrite Nat.add_comm, Nat.add_sub in Hk₂; simpl in Hk₂.
      rewrite Hj₅, xorb_true_l in Hk₂.
      apply negb_true_iff in Hk₂.
+bbb.
      remember Hc₂ as H; clear HeqH.
      unfold carry_i in H; simpl in H.
      remember (fst_same ((a + b)%rm + c) 0 (S i)) as s₂ eqn:Hs₂ .
