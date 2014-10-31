@@ -4370,6 +4370,22 @@ destruct s₅ as [di₅| ].
    rewrite H in Hs₁; symmetry in Hs₁.
    rename H into Ha₁; move Ha₁ after Hs₁.
    destruct (lt_eq_lt_dec di₁ di₄) as [[H₂| H₂]| H₂].
+    remember H₂ as H; clear HeqH.
+    apply Hn₄ in H.
+    rename H into Hab₁.
+    move Hab₁ before Hs₁.
+    assert (di₁ < di₅) as H by omega.
+    apply Hn₅ in H.
+    rewrite Hs₁ in H; apply negb_sym in H; simpl in H.
+    rename H into Hd₁; move Hd₁ before Hs₁.
+    destruct di₁.
+     clear Hn₁; rewrite Nat.add_0_r in Ha₁, Hs₁, Hd₁, Hab₁.
+     pose proof (Hj₂ 0) as H.
+     rewrite Nat.add_1_r in H.
+     unfold rm_add_i in H; simpl in H.
+     rewrite Hab₁, negb_xorb_diag, xorb_true_l in H.
+     apply negb_true_iff in H.
+     rename H into Hac₁; move Hac₁ before Hab₁.
 bbb.
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
