@@ -41,14 +41,15 @@ Definition rm_eq a b := ∀ i,
   rm (rm_add a rm_zero) i = rm (rm_add b rm_zero) i.
 
 Delimit Scope rm_scope with rm.
+Notation "a + b" := (rm_add a b) (at level 50, left associativity) : rm_scope.
+Notation "a = b" := (rm_eq a b) : rm_scope.
+Notation "a ≠ b" := (¬ rm_eq a b) : rm_scope.
+Notation "0" := rm_zero : rm_scope.
+
 Arguments rm r%rm i%nat.
 Arguments carry_i a%rm b%rm i%nat.
 Arguments rm_add_i a%rm b%rm i%nat.
 Arguments fst_same a%rm b%rm i%nat.
-Notation "a + b" := (rm_add a b) : rm_scope.
-Notation "a = b" := (rm_eq a b) : rm_scope.
-Notation "a ≠ b" := (¬ rm_eq a b) : rm_scope.
-Notation "0" := rm_zero : rm_scope.
 
 Definition rm_opp a := {| rm i := negb a.[i] |}.
 Definition rm_sub a b := (a + rm_opp b)%rm.
@@ -4333,10 +4334,28 @@ move c₆ before c₅.
 destruct c₁, c₂, c₃, c₄, c₅, c₆; try reflexivity; simpl.
  exfalso; eapply case_1; eauto .
 
- exfalso; eapply case_1.
-  6: rewrite carry_comm; eexact Hc₅.
+ exfalso; apply case_1 with (c := a) (b := b) (a := c) (i := i).
+  rewrite carry_compat_r with (a := (a + b + c)%rm); [ assumption | idtac ].
+  intros j; simpl; symmetry.
+  rewrite rm_add_i_comm.
+  apply rm_add_i_compat_r, rm_add_i_comm.
 
-  5: rewrite carry_comm; eexact Hc₆.
+  rewrite carry_compat_r with (a := (a + (b + c))%rm); [ assumption | idtac ].
+  intros j; simpl; rewrite rm_add_i_comm.
+  apply rm_add_i_compat_r, rm_add_i_comm.
+
+  rewrite carry_comm.
+  rewrite carry_compat_r with (a := (a + b)%rm); [ assumption | idtac ].
+  apply rm_add_i_comm.
+
+  rewrite carry_compat_r with (a := (b + c)%rm).
+   rewrite carry_comm; assumption.
+
+   apply rm_add_i_comm.
+
+  rewrite carry_comm; assumption.
+
+  rewrite carry_comm; assumption.
 bbb.
 
 Theorem rm_add_assoc_hop : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
