@@ -4381,7 +4381,26 @@ destruct s₅ as [di₅| ].
     rename H into Hd₁; move Hd₁ before Hs₁.
     destruct di₁.
      clear Hn₁; rewrite Nat.add_0_r in Ha₁, Hs₁, Hd₁, Hab₁.
+     pose proof (Hj₁ 0) as H; simpl in H.
+     rewrite Nat.add_1_r in H.
+     unfold rm_add_i in H; simpl in H.
+     unfold rm_add_i in H.
+     rewrite Ha₁, Hs₁, Hd₁ in H.
+     rewrite xorb_true_l, xorb_false_r in H.
+     rewrite negb_xorb_l, xorb_false_l in H.
+     unfold carry_i in H at 1; simpl in H.
+     remember (fst_same b c (S (S i))) as s₂ eqn:Hs₂ .
+     destruct s₂ as [di₂| ].
+      apply fst_same_sym_iff in Hs₂; simpl in Hs₂.
+      destruct Hs₂ as (Hn₂, Hs₂).
+      rename H into Ht₂.
+      destruct (lt_eq_lt_dec (S di₂) di₅) as [[H₁| H₁]| H₁].
+       remember H₁ as H; clear HeqH.
+       apply Hn₅ in H; simpl in H.
+       rewrite Nat.add_succ_r, Hs₂ in H.
+       destruct c .[ S (S (i + di₂))]; discriminate H.
 bbb.
+
      pose proof (Hj₂ 0) as H.
      rewrite Nat.add_1_r in H.
      unfold rm_add_i in H; simpl in H.
