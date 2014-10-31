@@ -6,6 +6,8 @@ Notation "[ ]" := nil.
 Notation "[ x ; .. ; y … l ]" := (cons x .. (cons y l) ..).
 Notation "[ x ]" := (cons x nil).
 
+Notation "x ≤ y ≤ z" := (x <= y ∧ y <= z)%nat (at level 70, y at next level).
+
 Open Scope nat_scope.
 
 (* reals modulo 1 *)
@@ -4310,6 +4312,15 @@ destruct s₃ as [di₃| ].
  discriminate H.
 Qed.
 
+Theorem uuu : ∀ a b i j di s,
+  fst_same a b i = Some di
+  → fst_same a b j = s
+  → i ≤ j ≤ i + di
+  → s = Some (i + di - j).
+Proof.
+intros a b i j di s Hi Hj (Hij, Hji).
+bbb.
+
 Theorem case_2 : ∀ a b c i,
   carry_i (a + (b + c)%rm) 0 i = true
   → carry_i ((a + b)%rm + c) 0 i = true
@@ -4394,6 +4405,15 @@ destruct s₅ as [di₅| ].
      unfold carry_i in H at 1; simpl in H.
      rename H into Hk₂.
      remember (fst_same b c (S (S i))) as s₂ eqn:Hs₂ .
+     symmetry in Hs₅, Hs₂.
+     eapply uuu in Hs₂; try eassumption; [ idtac | omega ].
+     subst s₂.
+     do 2 rewrite <- Nat.add_succ_l in Hk₂.
+     rewrite Nat.add_sub_assoc in Hk₂; [ idtac | omega ].
+     rewrite Nat.add_comm, Nat.add_sub in Hk₂; simpl in Hk₂.
+     rewrite Hj₅, xorb_true_l in Hk₂.
+     apply negb_true_iff in Hk₂.
+bbb.
      destruct s₂ as [di₂| ].
       remember Hs₂ as H; clear HeqH.
       apply fst_same_sym_iff in H; simpl in H.
