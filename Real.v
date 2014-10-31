@@ -4392,6 +4392,46 @@ destruct s₅ as [di₅| ].
      rewrite xorb_true_l, xorb_false_l in H; simpl in H.
      rename H into Hca₁; move Hca₁ before Hab₁.
      rewrite Hd₁ in Hab₁; simpl in Hab₁.
+     destruct (lt_eq_lt_dec (S di₄) di₅) as [[H₁| H₁]| H₁].
+      remember H₁ as H; clear HeqH.
+      apply Hn₅ in H.
+      rename H into Hbc.
+      remember (rm_add_i b c (S (i + S di₄))) as x eqn:Hx .
+      symmetry in Hx.
+      remember Hx as H; clear HeqH.
+      unfold rm_add_i in H; simpl in H.
+      rewrite Hbc, negb_xorb_diag in H.
+      rewrite xorb_true_l in H.
+      symmetry in H.
+      apply negb_sym in H.
+      unfold carry_i in H; simpl in H.
+      remember (fst_same b c (S (S (i + S di₄)))) as s₂ eqn:Hs₂ .
+      destruct s₂ as [di₂| ].
+       apply fst_same_sym_iff in Hs₂; simpl in Hs₂.
+       destruct Hs₂ as (Hn₂, Hs₂).
+       rewrite H in Hs₂; symmetry in Hs₂.
+       rename H into Ht₂; move Ht₂ after Hs₂.
+       destruct (lt_eq_lt_dec (S (S di₄ + di₂)) di₅) as [[H₃| H₃]| H₃].
+        remember H₃ as H; clear HeqH.
+        apply Hn₅ in H.
+        rewrite Nat.add_succ_r, Nat.add_assoc in H.
+        rewrite Ht₂, Hs₂ in H.
+        destruct x; discriminate H.
+
+        rewrite <- Nat.add_assoc, <- Nat.add_succ_r in Ht₂, Hs₂.
+        rewrite H₃ in Ht₂, Hs₂.
+        rewrite Hj₅ in Ht₂.
+        apply negb_sym in Ht₂.
+        move Ht₂ at top; subst x.
+        simpl in Hx, Hs₂.
+        clear Hs₂.
+        remember Hx as H; clear HeqH.
+        unfold rm_add_i in H.
+        rewrite Hbc, negb_xorb_diag in H.
+        rewrite xorb_true_l in H.
+        apply negb_false_iff in H.
+        rename H into Hfo.
+        Focus 1.
 bbb.
 
      i  i+1  -   i₄   -   i₅
