@@ -4386,6 +4386,35 @@ destruct s₅ as [di₅| ].
      rewrite Hab₁, negb_xorb_diag, xorb_true_l in H.
      apply negb_true_iff in H.
      rename H into Hac₁; move Hac₁ before Hab₁.
+     remember Hab₁ as H; clear HeqH.
+     unfold rm_add_i in H; simpl in H.
+     rewrite Ha₁, Hs₁, Hd₁ in H.
+     rewrite xorb_true_l, xorb_false_l in H; simpl in H.
+     rename H into Hca₁; move Hca₁ before Hab₁.
+     rewrite Hd₁ in Hab₁; simpl in Hab₁.
+bbb.
+
+     i  i+1  -   i₄   -   i₅
+ b   .   1   .   1   .   1
+
+ a   .   1   .   .   .   .
+
+b+c  .   .   .   .   .   .
+
+a+b  .   1   .   0   .   .
+
+ c   .   0   .   0   .   1
+
+ b   .   1   .   1   .   1
+
+     remember Hac₁ as H; clear HeqH.
+     unfold carry_i in H; simpl in H.
+     remember (fst_same (a + b) c (S (S i))) as s₂ eqn:Hs₂ .
+     destruct s₂ as [di₂| ]; [ idtac | discriminate H ].
+     apply fst_same_sym_iff in Hs₂; simpl in Hs₂.
+     destruct Hs₂ as (Hn₂, Hs₂).
+     rewrite H in Hs₂; symmetry in Hs₂.
+     rename H into Ht₃.
 bbb.
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
