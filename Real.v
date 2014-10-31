@@ -4377,9 +4377,11 @@ destruct s₅ as [di₅| ].
     assert (di₁ < di₅) as H by omega.
     apply Hn₅ in H.
     rewrite Hs₁ in H; apply negb_sym in H; simpl in H.
+    rewrite H in Hab₁; simpl in Hab₁.
     rename H into Hd₁; move Hd₁ before Hs₁.
     destruct di₁.
      clear Hn₁; rewrite Nat.add_0_r in Ha₁, Hs₁, Hd₁, Hab₁.
+bbb.
      pose proof (Hj₂ 0) as H.
      rewrite Nat.add_1_r in H.
      unfold rm_add_i in H; simpl in H.
@@ -4431,7 +4433,6 @@ destruct s₅ as [di₅| ].
         rewrite xorb_true_l in H.
         apply negb_false_iff in H.
         rename H into Hfo.
-        Focus 1.
 bbb.
 
      i  i+1  -   i₄   -   i₅
