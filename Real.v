@@ -4247,6 +4247,7 @@ rename H into Hj₂; move Hj₂ before Hc₂.
 remember Hc₄ as H; clear HeqH.
 unfold carry_i in H; simpl in H.
 remember (fst_same (a + b) c (S i)) as s₄ eqn:Hs₄ .
+remember Hs₄ as Hss₄; clear HeqHss₄.
 apply fst_same_sym_iff in Hs₄; simpl in Hs₄.
 destruct s₄ as [di₄| ]; [ idtac | discriminate H ].
 destruct Hs₄ as (Hn₄, Hs₄).
@@ -4302,6 +4303,8 @@ destruct s₅ as [di₅| ].
     rename H into Hd₁; move Hd₁ before Ht₁.
     destruct di₁.
      clear Hn₁; rewrite Nat.add_0_r in Hk₁, Ht₁, Hd₁, Hab₁.
+bbb.
+
      pose proof (Hj₁ 0) as H; simpl in H.
      rewrite Nat.add_1_r in H.
      unfold rm_add_i in H; simpl in H.
