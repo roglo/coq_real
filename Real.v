@@ -3938,6 +3938,43 @@ intros H j.
 rewrite Nat.add_succ_l, <- Nat.add_succ_r; apply H.
 Qed.
 
+Theorem fst_same_in_range : ∀ a b i j di s,
+  fst_same a b i = Some di
+  → fst_same a b j = s
+  → i ≤ j ≤ i + di
+  → s = Some (i + di - j).
+Proof.
+intros a b i j di s Hi Hj (Hij, Hji).
+apply fst_same_iff in Hi; simpl in Hi.
+destruct Hi as (Hni, Hsi).
+destruct s as [dj| ].
+ apply fst_same_iff in Hj; simpl in Hj.
+ destruct Hj as (Hnj, Hsj).
+ destruct (lt_eq_lt_dec dj (i + di - j)) as [[H₁| H₁]| H₁].
+  assert (j + dj - i < di) as H by omega.
+  apply Hni in H; simpl in H.
+  rewrite Nat.add_sub_assoc in H; [ idtac | omega ].
+  rewrite Nat.add_comm, Nat.add_sub in H.
+  rewrite Hsj in H.
+  destruct b .[ j + dj]; discriminate H.
+
+  rewrite H₁; reflexivity.
+
+  apply Hnj in H₁.
+  rewrite Nat.add_sub_assoc in H₁; [ idtac | assumption ].
+  rewrite Nat.add_comm, Nat.add_sub in H₁.
+  rewrite Hsi in H₁.
+  destruct b .[ i + di]; discriminate H₁.
+
+ apply fst_same_iff in Hj; simpl in Hj.
+ pose proof (Hj (i + di - j)) as H.
+ rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+ rewrite Nat.add_comm, Nat.add_sub in H.
+ rewrite Hsi in H.
+ destruct b .[ i + di]; discriminate H.
+Qed.
+
+(* TODO: use fst_same_in_range in this proof to shorten it *)
 Theorem case_1 : ∀ a b c i,
   carry_i (a + (b + c)%rm) 0 i = true
   → carry_i ((a + b)%rm + c) 0 i = true
@@ -4312,15 +4349,6 @@ destruct s₃ as [di₃| ].
  discriminate H.
 Qed.
 
-Theorem uuu : ∀ a b i j di s,
-  fst_same a b i = Some di
-  → fst_same a b j = s
-  → i ≤ j ≤ i + di
-  → s = Some (i + di - j).
-Proof.
-intros a b i j di s Hi Hj (Hij, Hji).
-bbb.
-
 Theorem case_2 : ∀ a b c i,
   carry_i (a + (b + c)%rm) 0 i = true
   → carry_i ((a + b)%rm + c) 0 i = true
@@ -4406,14 +4434,24 @@ destruct s₅ as [di₅| ].
      rename H into Hk₂.
      remember (fst_same b c (S (S i))) as s₂ eqn:Hs₂ .
      symmetry in Hs₅, Hs₂.
-     eapply uuu in Hs₂; try eassumption; [ idtac | omega ].
+     eapply fst_same_in_range in Hs₂; try eassumption; [ idtac | omega ].
      subst s₂.
      do 2 rewrite <- Nat.add_succ_l in Hk₂.
      rewrite Nat.add_sub_assoc in Hk₂; [ idtac | omega ].
      rewrite Nat.add_comm, Nat.add_sub in Hk₂; simpl in Hk₂.
      rewrite Hj₅, xorb_true_l in Hk₂.
      apply negb_true_iff in Hk₂.
+     pose proof (Hj₁ 0) as H; simpl in H.
+     rewrite Nat.add_1_r in H.
+     unfold rm_add_i in H; simpl in H.
+     unfold rm_add_i in H; simpl in H.
+     rewrite Hk₁, Ht₁, Hd₁, Hk₂ in H.
+     do 2 rewrite xorb_false_r in H.
+     rewrite xorb_true_l in H.
+     rewrite negb_xorb_l, xorb_false_l in H.
 bbb.
+     (* crotte ! *)
+
      destruct s₂ as [di₂| ].
       remember Hs₂ as H; clear HeqH.
       apply fst_same_sym_iff in H; simpl in H.
