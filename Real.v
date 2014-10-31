@@ -4351,6 +4351,16 @@ destruct s₅ as [di₅| ].
  rewrite Hj₅ in Hs₅; symmetry in Hs₅.
  move Hj₅ after Hs₅.
  destruct (lt_eq_lt_dec di₄ di₅) as [[H₁| H₁]| H₁].
+  remember H₁ as H; clear HeqH.
+  apply Hn₅ in H.
+  rewrite Hs₄ in H; simpl in H.
+  rename H into Hb₄; move Hb₄ after Hs₄.
+  remember Hi₄ as H; clear HeqH.
+  unfold rm_add_i in H; simpl in H.
+  rewrite Hb₄, xorb_true_r in H.
+  rewrite <- negb_xorb_l in H.
+  apply negb_false_iff in H.
+  rename H into Ha₄; move Ha₄ after Hb₄.
 bbb.
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
