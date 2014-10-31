@@ -4303,8 +4303,6 @@ destruct s₅ as [di₅| ].
     rename H into Hd₁; move Hd₁ before Ht₁.
     destruct di₁.
      clear Hn₁; rewrite Nat.add_0_r in Hk₁, Ht₁, Hd₁, Hab₁.
-bbb.
-
      pose proof (Hj₁ 0) as H; simpl in H.
      rewrite Nat.add_1_r in H.
      unfold rm_add_i in H; simpl in H.
@@ -4323,6 +4321,16 @@ bbb.
      rewrite Nat.add_comm, Nat.add_sub in Hk₂; simpl in Hk₂.
      rewrite Hj₅, xorb_true_l in Hk₂.
      apply negb_true_iff in Hk₂.
+     remember Hc₂ as H; clear HeqH.
+     unfold carry_i in H; simpl in H.
+     remember (fst_same ((a + b)%rm + c) 0 (S i)) as s₂ eqn:Hs₂ .
+     destruct s₂ as [di₂| ].
+      apply fst_same_sym_iff in Hs₂; simpl in Hs₂.
+      destruct Hs₂ as (Hn₂, Hs₂).
+      rewrite Hs₂ in H; discriminate H.
+
+      apply fst_same_sym_iff in Hs₂; simpl in Hs₂.
+bbb.
      pose proof (Hj₁ 0) as H; simpl in H.
      rewrite Nat.add_1_r in H.
      unfold rm_add_i in H; simpl in H.
@@ -4333,6 +4341,9 @@ bbb.
      rewrite negb_xorb_l, xorb_false_l in H.
 bbb.
      (* crotte ! *)
+  Hk₂ : carry_i a (b + c) (S i) = false
+  H : carry_i b c (S i) = true
+  ============================
 
      destruct s₂ as [di₂| ].
       remember Hs₂ as H; clear HeqH.
