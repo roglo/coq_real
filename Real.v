@@ -4109,78 +4109,47 @@ destruct s₃ as [di₃| ].
        symmetry in H.
        unfold carry_i in H.
        remember (fst_same a b (S (S (i + di₅)))) as s₇ eqn:Hs₇ .
+       symmetry in Hss₆, Hs₇.
+       eapply fst_same_in_range in Hs₇; try eassumption; [ idtac | omega ].
+       subst s₇.
+       rewrite Nat.add_sub_assoc in H; [ idtac | omega ].
+       rewrite Nat.add_comm, Nat.add_sub in H.
+       simpl in H.
+       rewrite Ha₆ in H; simpl in H.
+       move H at top; subst x.
+       pose proof (Hc₁ di₅) as H.
+       rewrite Nat.add_succ_r in H.
+       unfold rm_add_i in H; simpl in H.
+       rewrite fold_rm_add_i in H.
+       rewrite Ha₅, Hbc in H.
+       rewrite xorb_true_l in H.
+       apply negb_true_iff in H.
+       unfold carry_i in H; simpl in H.
+       remember (fst_same a (b + c) (S (S (i + di₅)))) as s₇ eqn:Hs₇ .
        apply fst_same_sym_iff in Hs₇; simpl in Hs₇.
-       destruct s₇ as [di₇| ].
-        destruct Hs₇ as (Hn₇, Hs₇).
-        rename Hx into Hab.
-        rename H into Hx.
-        destruct (lt_eq_lt_dec (S (di₅ + di₇)) di₆) as [[H₄| H₄]| H₄].
-         apply Hn₆ in H₄.
-         rewrite Nat.add_succ_r in H₄.
-         rewrite Nat.add_assoc in H₄.
-         rewrite Hs₇ in H₄.
-         destruct b .[ S (S (i + di₅ + di₇))]; discriminate H₄.
+       destruct s₇ as [di₇| ]; [ idtac | discriminate H ].
+       destruct Hs₇ as (Hn₇, Hs₇).
+       rewrite <- Nat.add_assoc in Hs₇.
+       rewrite <- Nat.add_succ_r in Hs₇.
+       rename H into H₅₇.
+       destruct (lt_eq_lt_dec (S (di₅ + di₇)) di₃) as [[H₄| H₄]| H₄].
+        apply Hn₃ in H₄.
+        rewrite <- Hs₇ in H₄.
+        destruct a .[ S (i + S (di₅ + di₇))]; discriminate H₄.
 
-         simpl in Hx.
-         rewrite <- Nat.add_assoc, <- Nat.add_succ_r in Hx.
-         rewrite H₄ in Hx.
-         rewrite Ha₆ in Hx.
-         simpl in Hx.
-         rewrite Hx in Hab.
-         clear x Hx H₄.
-         pose proof (Hc₁ di₅) as H.
-         rewrite Nat.add_succ_r in H.
-         unfold rm_add_i in H; simpl in H.
-         rewrite fold_rm_add_i in H.
-         rewrite Ha₅, Hbc in H.
-         rewrite xorb_true_l in H.
-         apply negb_true_iff in H.
-         unfold carry_i in H; simpl in H.
-         clear di₇ Hn₇ Hs₇.
-         remember (fst_same a (b + c) (S (S (i + di₅)))) as s₇ eqn:Hs₇ .
-         apply fst_same_sym_iff in Hs₇; simpl in Hs₇.
-         destruct s₇ as [di₇| ]; [ idtac | discriminate H ].
-         destruct Hs₇ as (Hn₇, Hs₇).
-         rewrite <- Nat.add_assoc in Hs₇.
-         rewrite <- Nat.add_succ_r in Hs₇.
-         rename H into H₅₇.
-         destruct (lt_eq_lt_dec (S (di₅ + di₇)) di₃) as [[H₄| H₄]| H₄].
-          apply Hn₃ in H₄.
-          rewrite <- Hs₇ in H₄.
-          destruct a .[ S (i + S (di₅ + di₇))]; discriminate H₄.
+        rewrite <- Nat.add_assoc, <- Nat.add_succ_r in H₅₇.
+        rewrite H₄ in H₅₇.
+        rewrite Ha₃ in H₅₇; discriminate H₅₇.
 
-          rewrite <- Nat.add_assoc, <- Nat.add_succ_r in H₅₇.
-          rewrite H₄ in H₅₇.
-          rewrite Ha₃ in H₅₇; discriminate H₅₇.
-
-          assert (di₃ - S di₅ < di₇) as H by omega.
-          apply Hn₇ in H.
-          rewrite <- Nat.add_succ_l in H.
-          rewrite Nat.add_sub_assoc in H; [ idtac | omega ].
-          rewrite <- Nat.add_succ_r in H.
-          rewrite Nat.add_shuffle0, Nat.add_sub in H.
-          rewrite Ha₃ in H.
-          unfold rm_add_i in H.
-          rewrite Hb₃, xorb_false_l, Hs₃ in H.
-          discriminate H.
-
-         assert (di₆ - S di₅ < di₇) as H by omega.
-         apply Hn₇ in H.
-         rewrite <- Nat.add_succ_l in H.
-         rewrite Nat.add_sub_assoc in H; [ idtac | omega ].
-         rewrite <- Nat.add_succ_r in H.
-         rewrite Nat.add_shuffle0, Nat.add_sub in H.
-         rewrite Ha₆, Hb₆ in H.
-         discriminate H.
-
-        simpl in H.
-        rewrite H in Hx; clear H.
-        pose proof (Hs₇ (di₆ - S di₅)) as H.
+        assert (di₃ - S di₅ < di₇) as H by omega.
+        apply Hn₇ in H.
         rewrite <- Nat.add_succ_l in H.
         rewrite Nat.add_sub_assoc in H; [ idtac | omega ].
         rewrite <- Nat.add_succ_r in H.
         rewrite Nat.add_shuffle0, Nat.add_sub in H.
-        rewrite Ha₆, Hb₆ in H.
+        rewrite Ha₃ in H.
+        unfold rm_add_i in H.
+        rewrite Hb₃, xorb_false_l, Hs₃ in H.
         discriminate H.
 
        rewrite H in Hx; clear H.
