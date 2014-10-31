@@ -3989,8 +3989,8 @@ destruct s₃ as [di₃| ].
    rewrite Hc₅ in Hs₅.
    rename Hc₅ into Hb₅; rename Hs₅ into Hc₅.
    symmetry in Hc₅; move Hb₅ after Hc₅.
-   destruct (lt_eq_lt_dec di₅ di₃) as [[H₅₃|H₅₃]|H₃₅].
-    remember H₅₃ as H; clear HeqH.
+   destruct (lt_eq_lt_dec di₅ di₃) as [[H₂|H₂]|H₂].
+    remember H₂ as H; clear HeqH.
     apply Hn₃ in H.
     apply negb_sym in H.
     rename H into Hs₅.
@@ -4190,7 +4190,7 @@ destruct s₃ as [di₃| ].
     rewrite Nat.add_succ_r in H.
     rewrite Hb₃, xorb_false_l, Hs₃ in H.
     rewrite <- H in Hx; clear H.
-    remember H₃₅ as H; clear HeqH.
+    remember H₂ as H; clear HeqH.
     apply Hn₅ in H.
     rewrite Hb₃ in H.
     symmetry in H.
