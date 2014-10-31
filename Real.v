@@ -4343,13 +4343,14 @@ rename H into Hac; move Hac before Hi₄.
 remember Hc₅ as H; clear HeqH.
 unfold carry_i in H; simpl in H.
 remember (fst_same b c (S i)) as s₅ eqn:Hs₅ .
-apply fst_same_sym_iff in Hs₅; simpl in Hs₅.
 rename H into Hj₅.
 move Hs₅ before Hc₅; move Hj₅ before Hs₅.
 destruct s₅ as [di₅| ].
- destruct Hs₅ as (Hn₅, Hs₅).
- rewrite Hj₅ in Hs₅; symmetry in Hs₅.
- move Hj₅ after Hs₅.
+ remember Hs₅ as H; clear HeqH.
+ apply fst_same_sym_iff in H; simpl in H.
+ destruct H as (Hn₅, Ht₅).
+ rewrite Hj₅ in Ht₅; symmetry in Ht₅.
+ move Hn₅ after Hs₅; move Ht₅ before Hj₅.
  destruct (lt_eq_lt_dec di₄ di₅) as [[H₄| H₄]| H₄].
   remember H₄ as H; clear HeqH.
   apply Hn₅ in H.
@@ -4363,37 +4364,41 @@ destruct s₅ as [di₅| ].
   rename H into Ha₄; move Ha₄ after Hb₄.
   remember Hc₆ as H; clear HeqH.
   unfold carry_i in H; simpl in H.
+  rename H into Hk₁.
   remember (fst_same a b (S i)) as s₁ eqn:Hs₁ .
   destruct s₁ as [di₁| ].
-   apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
-   destruct Hs₁ as (Hn₁, Hs₁).
-   rewrite H in Hs₁; symmetry in Hs₁.
-   rename H into Ha₁; move Ha₁ after Hs₁.
+   remember Hs₁ as H; clear HeqH.
+   apply fst_same_sym_iff in H; simpl in H.
+   destruct H as (Hn₁, Ht₁).
+   rewrite Hk₁ in Ht₁; symmetry in Ht₁.
+   move Hn₁ after Hs₁.
    destruct (lt_eq_lt_dec di₁ di₄) as [[H₂| H₂]| H₂].
     remember H₂ as H; clear HeqH.
     apply Hn₄ in H.
     rename H into Hab₁.
-    move Hab₁ before Hs₁.
+    move Hab₁ before Ht₁.
     assert (di₁ < di₅) as H by omega.
     apply Hn₅ in H.
-    rewrite Hs₁ in H; apply negb_sym in H; simpl in H.
+    rewrite Ht₁ in H; apply negb_sym in H; simpl in H.
     rewrite H in Hab₁; simpl in Hab₁.
-    rename H into Hd₁; move Hd₁ before Hs₁.
+    rename H into Hd₁; move Hd₁ before Ht₁.
     destruct di₁.
-     clear Hn₁; rewrite Nat.add_0_r in Ha₁, Hs₁, Hd₁, Hab₁.
+     clear Hn₁; rewrite Nat.add_0_r in Hk₁, Ht₁, Hd₁, Hab₁.
      pose proof (Hj₁ 0) as H; simpl in H.
      rewrite Nat.add_1_r in H.
      unfold rm_add_i in H; simpl in H.
      unfold rm_add_i in H.
-     rewrite Ha₁, Hs₁, Hd₁ in H.
+     rewrite Hk₁, Ht₁, Hd₁ in H.
      rewrite xorb_true_l, xorb_false_r in H.
      rewrite negb_xorb_l, xorb_false_l in H.
      unfold carry_i in H at 1; simpl in H.
+     rename H into Hk₂.
      remember (fst_same b c (S (S i))) as s₂ eqn:Hs₂ .
      destruct s₂ as [di₂| ].
-      apply fst_same_sym_iff in Hs₂; simpl in Hs₂.
-      destruct Hs₂ as (Hn₂, Hs₂).
-      rename H into Ht₂.
+      remember Hs₂ as H; clear HeqH.
+      apply fst_same_sym_iff in H; simpl in H.
+      destruct H as (Hn₂, Ht₂).
+bbb.
       destruct (lt_eq_lt_dec (S di₂) di₅) as [[H₁| H₁]| H₁].
        remember H₁ as H; clear HeqH.
        apply Hn₅ in H; simpl in H.
