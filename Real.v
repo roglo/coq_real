@@ -4402,20 +4402,58 @@ destruct s₅ as [di₅| ].
      rewrite Hbc, Hcc, xorb_true_l in H.
      apply negb_false_iff in H.
      rename H into Hca.
+     remember Hc₃ as H₁; clear HeqH₁.
+     remember Hk₂ as H₃; clear HeqH₃.
+     unfold carry_i in H₁, H₃; simpl in H₁, H₃.
+     remember (fst_same a (b + c) (S i)) as s₆ eqn:Hs₆ .
+     remember (fst_same a (b + c) (S (S i))) as s₇ eqn:Hs₇ .
+     destruct s₆ as [di₆| ].
+      symmetry in Hs₆, Hs₇.
+      destruct di₆.
+       apply fst_same_iff in Hs₆; simpl in Hs₆.
+       destruct Hs₆ as (_, Hs₆).
+       rewrite Nat.add_0_r in Hs₆, H₁.
+       rewrite H₁ in Hs₆; symmetry in Hs₆.
+       unfold rm_add_i in Hs₆; simpl in Hs₆.
+       rewrite Hbc, Hcc in Hs₆.
+       rewrite xorb_true_l in Hs₆.
+       apply negb_true_iff in Hs₆.
+       rewrite Hca in Hs₆; discriminate Hs₆.
+
+       eapply fst_same_in_range in Hs₇; try eassumption; [ idtac | omega ].
+       subst s₇.
+       do 2 rewrite <- Nat.add_succ_l in H₃.
+       rewrite Nat.add_sub_assoc in H₃; [ idtac | omega ].
+       rewrite Nat.add_comm, Nat.add_sub in H₃; simpl in H₃.
+       rewrite H₁ in H₃; discriminate H₃.
+
+      apply fst_same_sym_iff in Hs₆; simpl in Hs₆.
+      destruct s₇ as [di₇| ]; [ idtac | discriminate H₃ ].
+      apply fst_same_sym_iff in Hs₇; simpl in Hs₇.
+      destruct Hs₇ as (Hn₇, Hs₇).
+      rewrite <- Nat.add_succ_r in Hs₇.
+      rewrite Hs₆ in Hs₇.
+      destruct (rm_add_i b c (S (i + S di₇))); discriminate Hs₇.
+
+    subst di₄.
+    rewrite Hk₁, xorb_true_l in Ha₄.
+    apply negb_true_iff in Ha₄.
+    destruct di₁.
+     clear Hn₁ Hn₄ Hb₄; rewrite Nat.add_0_r in Hk₁, Ht₁, Ha₄, Hs₄, Hi₄, Hac.
 bbb.
 
-     i  i+1  -   i₁  -   i₄  -   i₅
- b   .   0   .   1   .   1   .   1
+     i  i+1  -   i₅
+ b   .   1   .   1
 
- a   .   1   .   1   .   .   .   .
+ a   .   1   .   .
 
-b+c  .   0   0   0   0   0   0   .
+b+c  .   0   .   .
 
-a+b  .   0   0   1   .   0   .   .
+a+b  .   0   .   .
 
- c   .   1   .   0   .   0   .   1
+ c   .   0   .   1
 
- b   .   0   .   1   .   1   .   1
+ b   .   1   .   1
 
 bbb.
 
