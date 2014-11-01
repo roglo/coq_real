@@ -4321,127 +4321,63 @@ destruct s₅ as [di₅| ].
      rewrite Nat.add_comm, Nat.add_sub in Hk₂; simpl in Hk₂.
      rewrite Hj₅, xorb_true_l in Hk₂.
      apply negb_true_iff in Hk₂.
-bbb.
-     unfold carry_i in Hk₂.
-     remember (fst_same a (b + c) (S (S i))) as s₂ eqn:Hs₂ .
-     destruct s₂ as [di₂| ]; [ idtac | discriminate Hk₂ ].
-     remember Hs₂ as Hss₂; clear HeqHss₂.
-     apply fst_same_sym_iff in Hs₂; simpl in Hs₂.
-     destruct Hs₂ as (Hn₂, Hs₂).
-     simpl in Hk₂; rewrite Hk₂ in Hs₂.
-     symmetry in Hs₂.
-     unfold rm_add_i in Hs₂; simpl in Hs₂.
-bbb.
-     remember Hc₂ as H; clear HeqH.
-     unfold carry_i in H; simpl in H.
-     remember (fst_same ((a + b)%rm + c) 0 (S i)) as s₂ eqn:Hs₂ .
-     destruct s₂ as [di₂| ].
-      apply fst_same_sym_iff in Hs₂; simpl in Hs₂.
-      destruct Hs₂ as (Hn₂, Hs₂).
-      rewrite Hs₂ in H; discriminate H.
+     remember Hc₃ as H₁; clear HeqH₁.
+     remember Hk₂ as H₃; clear HeqH₃.
+     unfold carry_i in H₁, H₃; simpl in H₁, H₃.
+     remember (fst_same a (b + c) (S i)) as s₆ eqn:Hs₆ .
+     remember (fst_same a (b + c) (S (S i))) as s₇ eqn:Hs₇ .
+     destruct s₆ as [di₆| ].
+      symmetry in Hs₆, Hs₇.
+      destruct di₆.
+       destruct s₇ as [di₇| ]; [ idtac | discriminate H₃ ].
+       apply fst_same_iff in Hs₆; simpl in Hs₆.
+       destruct Hs₆ as (_, Hs₆).
+       rewrite Nat.add_0_r in Hs₆, H₁.
+       rewrite H₁ in Hs₆; symmetry in Hs₆.
+       unfold rm_add_i in Hs₆; simpl in Hs₆.
+       rewrite Ht₁, Hd₁ in Hs₆.
+       rewrite xorb_true_l in Hs₆.
+       apply negb_true_iff in Hs₆.
+       unfold carry_i in Hs₆; simpl in Hs₆.
+       remember (fst_same b c (S (S i))) as s₉ eqn:Hs₉ .
+       symmetry in Hs₉.
+       eapply fst_same_in_range in Hs₉; try eassumption; [ idtac | omega ].
+       subst s₉.
+       do 2 rewrite <- Nat.add_succ_l in Hs₆.
+       rewrite Nat.add_sub_assoc in Hs₆; [ idtac | omega ].
+       rewrite Nat.add_comm, Nat.add_sub in Hs₆; simpl in Hs₆.
+       rewrite Hj₅ in Hs₆; discriminate Hs₆.
 
-      apply fst_same_sym_iff in Hs₂; simpl in Hs₂.
-bbb.
-     pose proof (Hj₁ 0) as H; simpl in H.
-     rewrite Nat.add_1_r in H.
-     unfold rm_add_i in H; simpl in H.
-     unfold rm_add_i in H; simpl in H.
-     rewrite Hk₁, Ht₁, Hd₁, Hk₂ in H.
-     do 2 rewrite xorb_false_r in H.
-     rewrite xorb_true_l in H.
-     rewrite negb_xorb_l, xorb_false_l in H.
-bbb.
-     (* crotte ! *)
-  Hk₂ : carry_i a (b + c) (S i) = false
-  H : carry_i b c (S i) = true
-  ============================
+       eapply fst_same_in_range in Hs₇; try eassumption; [ idtac | omega ].
+       subst s₇.
+       do 2 rewrite <- Nat.add_succ_l in H₃.
+       rewrite Nat.add_sub_assoc in H₃; [ idtac | omega ].
+       rewrite Nat.add_comm, Nat.add_sub in H₃; simpl in H₃.
+       rewrite H₁ in H₃; discriminate H₃.
 
-     destruct s₂ as [di₂| ].
-      remember Hs₂ as H; clear HeqH.
-      apply fst_same_sym_iff in H; simpl in H.
-      destruct H as (Hn₂, Ht₂).
-bbb.
-      destruct (lt_eq_lt_dec (S di₂) di₅) as [[H₁| H₁]| H₁].
-       remember H₁ as H; clear HeqH.
-       apply Hn₅ in H; simpl in H.
-       rewrite Nat.add_succ_r, Hs₂ in H.
-       destruct c .[ S (S (i + di₂))]; discriminate H.
+      apply fst_same_sym_iff in Hs₆; simpl in Hs₆.
+      destruct s₇ as [di₇| ]; [ idtac | discriminate H₃ ].
+      apply fst_same_sym_iff in Hs₇; simpl in Hs₇.
+      destruct Hs₇ as (Hn₇, Hs₇).
+      rewrite <- Nat.add_succ_r in Hs₇.
+      rewrite Hs₆ in Hs₇.
+      destruct (rm_add_i b c (S (i + S di₇))); discriminate Hs₇.
+
 bbb.
 
-     pose proof (Hj₂ 0) as H.
-     rewrite Nat.add_1_r in H.
-     unfold rm_add_i in H; simpl in H.
-     rewrite Hab₁, negb_xorb_diag, xorb_true_l in H.
-     apply negb_true_iff in H.
-     rename H into Hac₁; move Hac₁ before Hab₁.
-     remember Hab₁ as H; clear HeqH.
-     unfold rm_add_i in H; simpl in H.
-     rewrite Ha₁, Hs₁, Hd₁ in H.
-     rewrite xorb_true_l, xorb_false_l in H; simpl in H.
-     rename H into Hca₁; move Hca₁ before Hab₁.
-     rewrite Hd₁ in Hab₁; simpl in Hab₁.
-     destruct (lt_eq_lt_dec (S di₄) di₅) as [[H₁| H₁]| H₁].
-      remember H₁ as H; clear HeqH.
-      apply Hn₅ in H.
-      rename H into Hbc.
-      remember (rm_add_i b c (S (i + S di₄))) as x eqn:Hx .
-      symmetry in Hx.
-      remember Hx as H; clear HeqH.
-      unfold rm_add_i in H; simpl in H.
-      rewrite Hbc, negb_xorb_diag in H.
-      rewrite xorb_true_l in H.
-      symmetry in H.
-      apply negb_sym in H.
-      unfold carry_i in H; simpl in H.
-      remember (fst_same b c (S (S (i + S di₄)))) as s₂ eqn:Hs₂ .
-      destruct s₂ as [di₂| ].
-       apply fst_same_sym_iff in Hs₂; simpl in Hs₂.
-       destruct Hs₂ as (Hn₂, Hs₂).
-       rewrite H in Hs₂; symmetry in Hs₂.
-       rename H into Ht₂; move Ht₂ after Hs₂.
-       destruct (lt_eq_lt_dec (S (S di₄ + di₂)) di₅) as [[H₃| H₃]| H₃].
-        remember H₃ as H; clear HeqH.
-        apply Hn₅ in H.
-        rewrite Nat.add_succ_r, Nat.add_assoc in H.
-        rewrite Ht₂, Hs₂ in H.
-        destruct x; discriminate H.
+     i  i+1  -   i₁  -   i₄   -   i₅
+ b   .   1   .   1   .   1   .   1
 
-        rewrite <- Nat.add_assoc, <- Nat.add_succ_r in Ht₂, Hs₂.
-        rewrite H₃ in Ht₂, Hs₂.
-        rewrite Hj₅ in Ht₂.
-        apply negb_sym in Ht₂.
-        move Ht₂ at top; subst x.
-        simpl in Hx, Hs₂.
-        clear Hs₂.
-        remember Hx as H; clear HeqH.
-        unfold rm_add_i in H.
-        rewrite Hbc, negb_xorb_diag in H.
-        rewrite xorb_true_l in H.
-        apply negb_false_iff in H.
-        rename H into Hfo.
-bbb.
+ a   .   1   .   1  .   .   .   .
 
-     i  i+1  -   i₄   -   i₅
- b   .   1   .   1   .   1
+b+c  .   .   .   .   .   .   .   .
 
- a   .   1   .   .   .   .
+a+b  .   1   .   1   .   0   .   .
 
-b+c  .   .   .   .   .   .
+ c   .   0   .   0   .   0   .   1
 
-a+b  .   1   .   0   .   .
+ b   .   1   .   1   .   1   .   1
 
- c   .   0   .   0   .   1
-
- b   .   1   .   1   .   1
-
-     remember Hac₁ as H; clear HeqH.
-     unfold carry_i in H; simpl in H.
-     remember (fst_same (a + b) c (S (S i))) as s₂ eqn:Hs₂ .
-     destruct s₂ as [di₂| ]; [ idtac | discriminate H ].
-     apply fst_same_sym_iff in Hs₂; simpl in Hs₂.
-     destruct Hs₂ as (Hn₂, Hs₂).
-     rewrite H in Hs₂; symmetry in Hs₂.
-     rename H into Ht₃.
 bbb.
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
