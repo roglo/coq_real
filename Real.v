@@ -3999,8 +3999,6 @@ rewrite Nat.add_comm, Nat.add_sub.
 assumption.
 Qed.
 
-(* TODO: see if the tactics of this theorem could use sum_before_relay
-   to shorten the proof *)
 Theorem case_1 : ∀ a b c i,
   carry_i (a + (b + c)%rm) 0 i = true
   → carry_i ((a + b)%rm + c) 0 i = true
@@ -4135,13 +4133,9 @@ destruct s₃ as [di₃| ].
     subst di₅.
     rewrite Hb₃ in Hb₅; discriminate Hb₅.
 
-    remember (rm_add_i b c (i + S di₃)) as x eqn:Hx .
-    symmetry in Hx.
-    remember Hx as H; clear HeqH.
-    unfold rm_add_i in H; simpl in H.
-    rewrite Nat.add_succ_r in H.
-    rewrite Hb₃, xorb_false_l, Hs₃ in H.
-    rewrite <- H in Hx; clear H.
+    remember Hss₅ as H; clear HeqH; symmetry in H.
+    eapply sum_before_relay in H; try eassumption; simpl in H.
+    rename H into Hx; rewrite <- Nat.add_succ_r in Hx.
     remember H₂ as H; clear HeqH.
     apply Hn₅ in H.
     rewrite Hb₃ in H.
