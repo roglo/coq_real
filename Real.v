@@ -4387,6 +4387,23 @@ destruct s₅ as [di₅| ].
      unfold rm_add_i in H; simpl in H.
      rewrite Hy, xorb_false_l in H.
      rename H into Hk₃.
+     assert (0 < di₄) as H by omega.
+     apply Hn₄ in H; simpl in H.
+     rewrite Nat.add_0_r in H.
+     rewrite Hy in H.
+     apply negb_sym in H; simpl in H.
+     rewrite H in Hbc, Hk₂, Hk₃.
+     rewrite xorb_true_l in Hk₂, Hk₃; simpl in Hbc.
+     rewrite Hbc in Hab; simpl in Hab.
+     apply negb_true_iff in Hk₂.
+     apply negb_true_iff in Hk₃.
+     rename H into Hcc.
+     move Hcc before Hbc.
+     remember Hx as H; clear HeqH.
+     unfold rm_add_i in H; simpl in H.
+     rewrite Hbc, Hcc, xorb_true_l in H.
+     apply negb_false_iff in H.
+     rename H into Hca.
 bbb.
 
      i  i+1  -   i₁  -   i₄  -   i₅
