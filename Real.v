@@ -4096,19 +4096,7 @@ destruct s₃ as [di₃| ].
      apply Hn₃ in H.
      rewrite fold_rm_add_i in H.
      rewrite Hx in H; simpl in H.
-     rename H into Ha₅.
-     assert (di₅ < di₆) as H by omega.
-     apply Hn₆ in H.
-     rewrite Ha₅ in H.
-     symmetry in H.
-     apply negb_true_iff in H.
-     rename H into Hb₄.
-     pose proof (Hn₅ di₅ (Nat.lt_succ_diag_r di₅)) as H.
-     rewrite Hb₄ in H.
-     symmetry in H.
-     apply negb_false_iff in H.
-     rename H into Hc₆.
-     rename Hx into Hbc.
+     rename H into Ha₅; rename Hx into Hbc.
      remember Hss₆ as H; clear HeqH; symmetry in H.
      assert (di₅ < di₆) as HH by omega.
      eapply sum_before_relay in H; try eassumption; clear HH.
