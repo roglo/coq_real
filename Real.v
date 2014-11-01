@@ -4322,6 +4322,16 @@ destruct s₅ as [di₅| ].
      rewrite Hj₅, xorb_true_l in Hk₂.
      apply negb_true_iff in Hk₂.
 bbb.
+     unfold carry_i in Hk₂.
+     remember (fst_same a (b + c) (S (S i))) as s₂ eqn:Hs₂ .
+     destruct s₂ as [di₂| ]; [ idtac | discriminate Hk₂ ].
+     remember Hs₂ as Hss₂; clear HeqHss₂.
+     apply fst_same_sym_iff in Hs₂; simpl in Hs₂.
+     destruct Hs₂ as (Hn₂, Hs₂).
+     simpl in Hk₂; rewrite Hk₂ in Hs₂.
+     symmetry in Hs₂.
+     unfold rm_add_i in Hs₂; simpl in Hs₂.
+bbb.
      remember Hc₂ as H; clear HeqH.
      unfold carry_i in H; simpl in H.
      remember (fst_same ((a + b)%rm + c) 0 (S i)) as s₂ eqn:Hs₂ .
