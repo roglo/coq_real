@@ -4380,10 +4380,8 @@ destruct s₅ as [di₅| ].
      eapply sum_before_relay in H; try eassumption; clear HH.
      rewrite Nat.add_0_r in H; simpl in H.
      rename H into Hy.
-     remember Hss₄ as H; clear HeqH; symmetry in H.
-     assert (0 < di₄) as HH by omega.
-     eapply sum_before_relay in H; try eassumption; clear HH.
-     rewrite Nat.add_0_r in H; simpl in H.
+     pose proof (Hj₂ 0) as H.
+     rewrite Nat.add_1_r in H.
      unfold rm_add_i in H; simpl in H.
      rewrite Hy, xorb_false_l in H.
      rename H into Hk₃.
