@@ -4373,13 +4373,12 @@ destruct s₅ as [di₅| ].
      remember Hs₅ as H; clear HeqH.
      assert (0 < di₅) as HH by omega.
      eapply sum_before_relay in H; try eassumption; clear HH.
-     rewrite Nat.add_0_r in H.
+     rewrite Nat.add_0_r in H; simpl in H.
      rename H into Hx.
-     remember Hs₁ as H; clear HeqH.
-     symmetry in H.
+     remember Hs₁ as H; clear HeqH; symmetry in H.
      assert (0 < S di₁) as HH by apply Nat.lt_0_succ.
      eapply sum_before_relay in H; try eassumption; clear HH.
-     rewrite Nat.add_0_r in H.
+     rewrite Nat.add_0_r in H; simpl in H.
 bbb.
 
      i  i+1  -   i₁  -   i₄  -   i₅
