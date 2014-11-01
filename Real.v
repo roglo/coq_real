@@ -3974,12 +3974,12 @@ destruct s as [dj| ].
  destruct b .[ i + di]; discriminate H.
 Qed.
 
-Theorem sum_0_before_relay_1 : ∀ a b i di,
+Theorem sum_before_relay : ∀ a b i di x,
   fst_same a b i = Some di
-  → a .[i + di] = true
-  → ∀ dj, dj < di → rm_add_i a b (i + dj) = false.
+  → a .[i + di] = x
+  → ∀ dj, dj < di → rm_add_i a b (i + dj) = negb x.
 Proof.
-intros a b i di Hs Ha dj Hdj.
+intros a b i di x Hs Ha dj Hdj.
 unfold rm_add_i.
 remember Hs as H; clear HeqH.
 apply fst_same_iff in H; simpl in H.
@@ -3987,7 +3987,7 @@ destruct H as (Hs₁, Hn₁).
 remember Hdj as H; clear HeqH.
 apply Hs₁ in H.
 rewrite H, negb_xorb_diag, xorb_true_l.
-apply negb_false_iff.
+f_equal.
 unfold carry_i; simpl.
 remember (fst_same a b (S (i + dj))) as s₂ eqn:Hs₂ .
 symmetry in Hs₂.
@@ -3999,7 +3999,7 @@ rewrite Nat.add_comm, Nat.add_sub.
 assumption.
 Qed.
 
-(* TODO: see if the tactics of this theorem could use sum_0_before_relay_1
+(* TODO: see if the tactics of this theorem could use sum_before_relay
    to shorten the proof *)
 Theorem case_1 : ∀ a b c i,
   carry_i (a + (b + c)%rm) 0 i = true
@@ -4092,7 +4092,7 @@ destruct s₃ as [di₃| ].
 
      remember Hss₅ as H; clear HeqH; symmetry in H.
      assert (di₅ < S di₅) as HH by apply Nat.lt_succ_diag_r.
-     eapply sum_0_before_relay_1 in H; try eassumption; clear HH.
+     eapply sum_before_relay in H; try eassumption; clear HH.
      simpl in H; rewrite fold_rm_add_i in H; rename H into Hx.
      assert (di₅ < di₃) as H by omega.
      apply Hn₃ in H.
@@ -4111,23 +4111,10 @@ destruct s₃ as [di₃| ].
      apply negb_false_iff in H.
      rename H into Hc₆.
      rename Hx into Hbc.
-     remember ((a + b)%rm) .[ S (i + di₅)] as x eqn:Hx .
-     symmetry in Hx.
-     remember Hx as H; clear HeqH.
-     simpl in H.
-     unfold rm_add_i in H.
-     rewrite Ha₅, Hb₄, xorb_true_l in H.
-     symmetry in H.
-     unfold carry_i in H.
-     remember (fst_same a b (S (S (i + di₅)))) as s₇ eqn:Hs₇ .
-     symmetry in Hss₆, Hs₇.
-     eapply fst_same_in_range in Hs₇; try eassumption; [ idtac | omega ].
-     subst s₇.
-     rewrite Nat.add_sub_assoc in H; [ idtac | omega ].
-     rewrite Nat.add_comm, Nat.add_sub in H.
-     simpl in H.
-     rewrite Ha₆ in H; simpl in H.
-     move H at top; subst x.
+     remember Hss₆ as H; clear HeqH; symmetry in H.
+     assert (di₅ < di₆) as HH by omega.
+     eapply sum_before_relay in H; try eassumption; clear HH.
+     simpl in H; rewrite fold_rm_add_i in H; rename H into Hx.
      pose proof (Hc₁ di₅) as H.
      rewrite Nat.add_succ_r in H.
      unfold rm_add_i in H; simpl in H.
@@ -4403,13 +4390,13 @@ destruct s₅ as [di₅| ].
      rewrite negb_involutive in Hk₂.
      remember Hs₅ as H; clear HeqH.
      assert (0 < di₅) as HH by omega.
-     eapply sum_0_before_relay_1 in H; try eassumption; clear HH.
+     eapply sum_before_relay in H; try eassumption; clear HH.
      rewrite Nat.add_0_r in H.
      rename H into Hx.
      remember Hs₁ as H; clear HeqH.
      symmetry in H.
      assert (0 < S di₁) as HH by apply Nat.lt_0_succ.
-     eapply sum_0_before_relay_1 in H; try eassumption; clear HH.
+     eapply sum_before_relay in H; try eassumption; clear HH.
      rewrite Nat.add_0_r in H.
 bbb.
 
