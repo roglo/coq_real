@@ -4553,20 +4553,23 @@ destruct s₅ as [di₅| ].
      injection Hsj₂; clear Hsj₂; intros Hsj₂.
      destruct dj₂; [ discriminate Hsj₂ | simpl in Hsj₂; subst dj₂ ].
      clear Hfa₂ Hfb₂; simpl in Hta₂, Htb₂.
+     pose proof (Hta₂ (di₅ - S (S di₁))) as H.
+     rewrite Nat.add_sub_assoc in H; [ idtac | omega ].
+     rewrite Nat.add_shuffle0, Nat.add_sub in H.
 bbb.
 
             i  i+1  -   i₁  -   i₅
-        b   .   .   .   1   .   1
+        b   .   0   .   1   .   1
+                ≠   ≠
+        a   .   1   .   1   .   .
 
-        a   .   .   .   1   .   .
+       b+c  .   0   .   0   .   .
 
-       b+c  .   .   .   0   .   .
-
-       a+b  .   .   .   0   .   .
-
-        c   .   .   .   0   .   1
-
-        b   .   .   .   1   .   1
+       a+b  .   0   .   0   .   1
+                ≠   ≠
+        c   .   1   .   0   .   1
+                ≠   ≠   ≠   ≠
+        b   .   0   .   1   .   1
 
 bbb.
 *)
