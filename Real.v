@@ -4550,7 +4550,9 @@ destruct s₅ as [di₅| ].
       rewrite <- Nat.add_succ_r in H.
       rewrite Hfa₁ in H; [ discriminate H | apply Nat.lt_0_succ ].
 
-     Focus 1.
+     injection Hsj₂; clear Hsj₂; intros Hsj₂.
+     destruct dj₂; [ discriminate Hsj₂ | simpl in Hsj₂; subst dj₂ ].
+     clear Hfa₂ Hfb₂; simpl in Hta₂, Htb₂.
 bbb.
 
             i  i+1  -   i₁  -   i₅
