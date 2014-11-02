@@ -4442,18 +4442,22 @@ destruct s₅ as [di₅| ].
      clear Hn₁ Hn₄ Hb₄; rewrite Nat.add_0_r in Hk₁, Ht₁, Ha₄, Hs₄, Hi₄, Hac.
 bbb.
 
-     i  i+1  -   i₅
- b   .   1   .   1
+            i  i+1  -   i₅
+        b   .   1   .   1
 
- a   .   1   .   .
+        a   .   1   .   .
 
-b+c  .   0   .   .
+       b+c  .   0   .   .
 
-a+b  .   0   .   .
+    a+(b+c) .   1   1   1
 
- c   .   0   .   1
+    (a+b)+c .   1   1   1
 
- b   .   1   .   1
+       a+b  .   0   .   .
+
+        c   .   0   .   1
+
+        b   .   1   .   1
 
 bbb.
 
