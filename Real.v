@@ -4568,7 +4568,51 @@ destruct s₅ as [di₅| ].
      symmetry in Hs₁.
      erewrite carry_before_relay in H₂; try eassumption; [ idtac | omega ].
      rewrite Nat.add_0_r in H₂.
+     assert (0 < di₅) as H by omega.
+     apply Hn₅ in H; rewrite Nat.add_0_r in H.
+     rewrite H₂ in H.
+     rewrite H in H₁; simpl in H₁, H.
+     rename H into H₃.
+     destruct dj₁.
+      pose proof (Htb₁ 0) as HH.
+      rewrite Nat.add_0_r in HH.
+      rewrite Nat.add_0_r in HH.
+      unfold rm_add_i in HH.
+      rewrite H₃, H₂, xorb_false_l, xorb_true_l in HH.
+      apply negb_true_iff in HH.
+      symmetry in Hs₅.
+      replace (S i) with (S i + 0) in HH by apply Nat.add_0_r.
+      erewrite carry_before_relay in HH; try eassumption; [ idtac | omega ].
+      discriminate HH.
+
 bbb.
+      simpl in Hsj₁.
+      pose proof (Hj₁ 0) as H; rewrite Nat.add_1_r in H.
+      unfold rm_add_i in H; simpl in H.
+      unfold rm_add_i in H.
+      rewrite H₁, H₃, H₂ in H.
+      rewrite xorb_true_l, xorb_false_l in H.
+      rewrite negb_xorb_l, xorb_false_l in H.
+      symmetry in Hs₅.
+      replace (S i) with (S i + 0) in H by apply Nat.add_0_r.
+      erewrite carry_before_relay in H; try eassumption; [ idtac | omega ].
+      rewrite xorb_true_l in H.
+      apply negb_true_iff in H.
+      destruct dj₁.
+       apply fst_same_iff in Hsj₁; simpl in Hsj₁.
+       rewrite Nat.add_0_r in Hsj₁.
+       destruct Hsj₁ as (_, Hsj₁).
+       rewrite H₁ in Hsj₁.
+       unfold rm_add_i in Hsj₁; simpl in Hsj₁.
+       rewrite H₃, H₂ in Hsj₁.
+       replace (S i) with (S i + 0) in Hsj₁ by apply Nat.add_0_r.
+       erewrite carry_before_relay in Hsj₁; try eassumption.
+        discriminate Hsj₁.
+
+        omega.
+bbb.
+
+en i+1, a+(b+c) devrait donner 1
 
             i  i+1  -   i₁  -   i₅
         b   .   0   .   1   .   1
