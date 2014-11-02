@@ -4309,21 +4309,18 @@ rename H into Hj₁; move Hj₁ before Hc₁.
 remember Hc₂ as H; clear HeqH.
 apply carry_0_r_true_if in H; unfold id in H; simpl in H.
 rename H into Hj₂; move Hj₂ before Hc₂.
-apply forall_add_succ_r in Hj₁; unfold id in Hj₁.
-apply rm_add_inf_true_if in Hj₁; simpl in Hj₁.
-destruct Hj₁ as (dj₁, (Hta₁, (Htb₁, (Hfa₁, (Hfb₁, Hsj₁))))).
-apply forall_add_succ_r in Hj₂; unfold id in Hj₂.
-apply rm_add_inf_true_if in Hj₂; simpl in Hj₂.
-destruct Hj₂ as (dj₂, (Hta₂, (Htb₂, (Hfa₂, (Hfb₂, Hsj₂))))).
-(**)Restart.
-intros a b c i Hc₁ Hc₂ Hc₃ Hc₄ Hc₅ Hc₆.
-remember Hc₁ as H; clear HeqH.
-apply carry_0_r_true_if in H; unfold id in H; simpl in H.
-rename H into Hj₁; move Hj₁ before Hc₁.
-remember Hc₂ as H; clear HeqH.
-apply carry_0_r_true_if in H; unfold id in H; simpl in H.
-rename H into Hj₂; move Hj₂ before Hc₂.
-(**)
+remember Hj₁ as H; clear HeqH; move H before Hj₁.
+apply forall_add_succ_r in H; unfold id in H.
+apply rm_add_inf_true_if in H; simpl in H.
+destruct H as (dj₁, (Hta₁, (Htb₁, (Hfa₁, (Hfb₁, Hsj₁))))).
+remember Hj₂ as H; clear HeqH; move H before Hj₂.
+apply forall_add_succ_r in H; unfold id in H.
+apply rm_add_inf_true_if in H; simpl in H.
+destruct H as (dj₂, (Hta₂, (Htb₂, (Hfa₂, (Hfb₂, Hsj₂))))).
+rewrite <- Nat.add_succ_r in Hfa₁.
+rewrite <- Nat.add_succ_r in Hfb₁.
+rewrite <- Nat.add_succ_r in Hfa₂.
+rewrite <- Nat.add_succ_r in Hfb₂.
 remember Hc₄ as H; clear HeqH.
 unfold carry_i in H; simpl in H.
 remember (fst_same (a + b) c (S i)) as s₄ eqn:Hs₄ .
@@ -4533,9 +4530,6 @@ destruct s₅ as [di₅| ].
     apply negb_true_iff in Ha₄.
     destruct di₁.
      clear Hn₁ Hn₄ Hb₄; rewrite Nat.add_0_r in Hk₁, Ht₁, Ha₄, Hs₄, Hi₄.
-     apply forall_add_succ_r in Hj₁; unfold id in Hj₁.
-     apply rm_add_inf_true_if in Hj₁; simpl in Hj₁.
-     destruct Hj₁ as (dj₁, (Hta₁, (Htb₁, (Hfa₁, (Hfb₁, Hsj₁))))).
      destruct dj₁.
       clear Hfa₁ Hfb₁; rewrite Nat.add_0_r in Hta₁, Htb₁.
       pose proof (Htb₁ 0) as H.
@@ -4553,15 +4547,10 @@ destruct s₅ as [di₅| ].
       remember Hc₃ as H; clear HeqH.
       unfold carry_i in H.
       rewrite Hsj₁ in H; simpl in H.
+      rewrite <- Nat.add_succ_r in H.
       rewrite Hfa₁ in H; [ discriminate H | apply Nat.lt_0_succ ].
 
      Focus 1.
-     apply forall_add_succ_r in Hj₁; unfold id in Hj₁.
-     apply rm_add_inf_true_if in Hj₁; simpl in Hj₁.
-     destruct Hj₁ as (dj₁, (Hta₁, (Htb₁, (Hfa₁, (Hfb₁, Hsj₁))))).
-     apply forall_add_succ_r in Hj₂; unfold id in Hj₂.
-     apply rm_add_inf_true_if in Hj₂; simpl in Hj₂.
-     destruct Hj₂ as (dj₂, (Hta₂, (Htb₂, (Hfa₂, (Hfb₂, Hsj₂))))).
 bbb.
 
             i  i+1  -   i₁  -   i₅
