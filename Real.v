@@ -982,9 +982,7 @@ Theorem rm_add_inf_true_if : ∀ a b i,
   → ∃ j,
     (∀ dj, a.[i+j+dj] = true) ∧
     (∀ dj, b.[i+j+dj] = true) ∧
-    (0 < j → a.[i+pred j] = false) ∧
-    (0 < j → b.[i+pred j] = false) ∧
-    (∀ k, k < pred j → a.[i+k] = negb b.[i+k]).
+    (fst_same a b i = Some (pred j)).
 Proof.
 intros a b i Hdi.
 destruct (bool_dec a .[ i] b .[ i]) as [H₁| H₁].
@@ -1004,18 +1002,19 @@ destruct (bool_dec a .[ i] b .[ i]) as [H₁| H₁].
     intros dj; destruct dj; [ idtac | apply Hb ].
     rewrite Nat.add_0_r; assumption.
 
-    split; [ intros H; exfalso; revert H; apply Nat.nlt_0_r | idtac ].
-    split; [ intros H; exfalso; revert H; apply Nat.nlt_0_r | idtac ].
-    intros k H; exfalso; revert H; apply Nat.nlt_0_r.
+    apply fst_same_iff; simpl.
+    rewrite Nat.add_0_r.
+    split; [ idtac | rewrite H₁, H₂; reflexivity ].
+    intros dj H; exfalso; revert H; apply Nat.nlt_0_r.
 
   exists 1.
   rewrite Nat.add_1_r; simpl.
-  rewrite Nat.add_0_r.
   split; [ intros dj; rewrite <- Nat.add_succ_r; apply Ha | idtac ].
   split; [ intros dj; rewrite <- Nat.add_succ_r; apply Hb | idtac ].
-  split; [ intros H; assumption | idtac ].
-  split; [ intros H; assumption | idtac ].
-  intros k H; exfalso; revert H; apply Nat.nlt_0_r.
+  apply fst_same_iff; simpl.
+  rewrite Nat.add_0_r.
+  split; [ idtac | rewrite H₁, H₂; reflexivity ].
+  intros dj H; exfalso; revert H; apply Nat.nlt_0_r.
 
  apply neq_negb in H₁.
  remember Hdi as H; clear HeqH.
@@ -1037,10 +1036,11 @@ destruct (bool_dec a .[ i] b .[ i]) as [H₁| H₁].
    rewrite <- Nat.add_succ_r, Nat.add_assoc.
    apply Hbt.
 
-   split; [ intros H; simpl; assumption | idtac ].
-   split; [ intros H; simpl; assumption | idtac ].
-   simpl; intros k Hk.
-   apply Hni, Nat.add_lt_mono_l; assumption.
+   apply fst_same_iff; simpl.
+   split; [ intros dj Hdj | idtac ].
+    apply Hni, Nat.add_lt_mono_l; assumption.
+
+    rewrite Ha, Hb; reflexivity.
 Qed.
 
 Theorem rm_add_add_0_l_when_lhs_has_relay : ∀ a b i di₁,
@@ -4516,9 +4516,9 @@ destruct s₅ as [di₅| ].
      clear Hn₁ Hn₄ Hb₄; rewrite Nat.add_0_r in Hk₁, Ht₁, Ha₄, Hs₄, Hi₄, Hac.
      apply forall_add_succ_r in Hj₁; unfold id in Hj₁.
      apply rm_add_inf_true_if in Hj₁; simpl in Hj₁.
-     destruct Hj₁ as (dj₁, (Hta₁, (Htb₁, (Hfa₁, (Hfb₁, Hna₁))))).
+     destruct Hj₁ as (dj₁, (Hta₁, (Htb₁, Hsj₁))).
      destruct dj₁.
-      clear Hfa₁ Hfb₁ Hna₁; rewrite Nat.add_0_r in Hta₁, Htb₁.
+      rewrite Nat.add_0_r in Hta₁, Htb₁; simpl in Hsj₁.
       pose proof (Htb₁ 0) as H.
       rewrite Nat.add_0_r in H.
       unfold rm_add_i in H; simpl in H.
@@ -4530,12 +4530,10 @@ destruct s₅ as [di₅| ].
       erewrite carry_before_relay in H; try eassumption.
       discriminate H.
 
-      simpl in Hfa₁, Hfb₁, Hna₁.
+      simpl in Hsj₁.
       remember Hc₃ as H; clear HeqH.
-      pose proof (Hfa₁ (Nat.lt_0_succ dj₁)) as HH.
-      rewrite <- Nat.add_succ_r in HH.
-      apply carry_before_relay with (dj := 0) (b := (b + c)%rm) in HH.
-       rewrite Nat.add_0_r in HH; rewrite HH in H; discriminate H.
+      unfold carry_i in H.
+      rewrite Hsj₁ in H.
 bbb.
 
 Donc, ci-dessous, le a et (b+c) ont forcément un 0 0 quelque part.
