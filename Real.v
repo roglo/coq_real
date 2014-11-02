@@ -4610,10 +4610,17 @@ destruct s₅ as [di₅| ].
 
         apply Nat.lt_0_succ.
 
-    Focus 1.
+    injection Hsj₂; clear Hsj₂; intros Hsj₂; move Hsj₂ before Hfb₂.
 bbb.
 
 di₄ < di₁
+
+3 cas :
+  di₁ < di₅
+  di₁ = di₅
+  di₁ > di₅
+
+Ou alors, considérer a+(b+c) (Hc₃) en comparant avec i₄.
 
             i  i+1  -   i₄  -   i₁  -   i₅
         b   .   .   .   .   .   1   .   .
