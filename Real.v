@@ -4614,6 +4614,7 @@ destruct s₅ as [di₅| ].
 bbb.
 
 di₄ < di₁
+di₄ < di₅
 
 3 cas :
   di₁ < di₅
