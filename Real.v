@@ -599,7 +599,7 @@ Theorem rm_add_inf_true_eq_if : ∀ a b i,
   (∀ di, rm_add_i a b (i + di) = true)
   → a.[i] = b.[i]
   → (∀ di, a.[i + S di] = true) ∧
-     (∀ di, b.[i + S di] = true).
+    (∀ di, b.[i + S di] = true).
 Proof.
 intros a b i Hdi Hab.
 apply forall_and_distr; intros di.
@@ -4441,6 +4441,15 @@ destruct s₅ as [di₅| ].
     destruct di₁.
      clear Hn₁ Hn₄ Hb₄; rewrite Nat.add_0_r in Hk₁, Ht₁, Ha₄, Hs₄, Hi₄, Hac.
 bbb.
+
+rm_add_inf_true_eq_if
+rm_add_inf_true_neq_if
+
+∃ j, (∀ dj, a.[j+dj] = true) ∧
+     (∀ dj, b.[j+dj] = true) ∧
+     (0 < j → a.[j] = false) ∧
+     (0 < j → b.[j] = false) ∧
+     (∀ k, k < j → a.[k] = negb b.[k]).
 
             i  i+1  -   i₅
         b   .   1   .   1
