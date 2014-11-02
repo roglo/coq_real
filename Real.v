@@ -4556,6 +4556,18 @@ destruct s₅ as [di₅| ].
      pose proof (Hta₂ (di₅ - S (S di₁))) as H.
      rewrite Nat.add_sub_assoc in H; [ idtac | omega ].
      rewrite Nat.add_shuffle0, Nat.add_sub in H.
+     rename H into Hab.
+     pose proof (Hn₁ 0 (Nat.lt_0_succ di₁)) as H₁.
+     pose proof (Hn₄ 0 (Nat.lt_0_succ di₁)) as H₂.
+     rewrite Nat.add_0_r in H₁, H₂.
+     unfold rm_add_i in H₂; simpl in H₂.
+     rewrite H₁, negb_xorb_diag, xorb_true_l in H₂.
+     apply negb_sym in H₂.
+     rewrite negb_involutive in H₂.
+     replace (S i) with (S i + 0) in H₂ by apply Nat.add_0_r.
+     symmetry in Hs₁.
+     erewrite carry_before_relay in H₂; try eassumption; [ idtac | omega ].
+     rewrite Nat.add_0_r in H₂.
 bbb.
 
             i  i+1  -   i₁  -   i₅
