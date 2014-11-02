@@ -977,6 +977,59 @@ destruct s₁ as [di₁| ].
  rewrite Hab, negb_xorb_diag in H; discriminate H.
 Qed.
 
+(* faut voir... *)
+Theorem rm_add_inf_true_if : ∀ a b i,
+  (∀ di, rm_add_i a b (i + di) = true)
+  → ∃ j,
+    (∀ dj, a.[i+j+dj] = true) ∧
+    (∀ dj, b.[i+j+dj] = true) ∧
+    (0 < j → a.[i+pred j] = false) ∧
+    (0 < j → b.[i+pred j] = false) ∧
+    (∀ k, k < pred j → a.[i+k] = negb b.[i+k]).
+Proof.
+intros a b i Hdi.
+destruct (bool_dec a .[ i] b .[ i]) as [H₁| H₁].
+ remember Hdi as H; clear HeqH.
+ apply rm_add_inf_true_eq_if in H; auto.
+ destruct H as (Ha, Hb).
+ remember a .[ i] as x eqn:H₂ .
+ symmetry in H₁, H₂.
+ destruct x.
+  exists 0.
+  rewrite Nat.add_0_r.
+  split.
+   intros dj; destruct dj; [ idtac | apply Ha ].
+   rewrite Nat.add_0_r; assumption.
+
+   split.
+    intros dj; destruct dj; [ idtac | apply Hb ].
+    rewrite Nat.add_0_r; assumption.
+
+    split; [ intros H; exfalso; revert H; apply Nat.nlt_0_r | idtac ].
+    split; [ intros H; exfalso; revert H; apply Nat.nlt_0_r | idtac ].
+    intros k H; exfalso; revert H; apply Nat.nlt_0_r.
+
+  exists 1.
+  rewrite Nat.add_1_r; simpl.
+  rewrite Nat.add_0_r.
+  split; [ intros dj; rewrite <- Nat.add_succ_r; apply Ha | idtac ].
+  split; [ intros dj; rewrite <- Nat.add_succ_r; apply Hb | idtac ].
+  split; [ intros H; assumption | idtac ].
+  split; [ intros H; assumption | idtac ].
+  intros k H; exfalso; revert H; apply Nat.nlt_0_r.
+
+ apply neq_negb in H₁.
+ remember Hdi as H; clear HeqH.
+ apply rm_add_inf_true_neq_if in H; auto.
+ destruct H as (j, (Hij, (Hni, (Ha, (Hb, (Hat, Hbt)))))).
+ exists j.
+ split.
+  intros dj.
+  destruct i.
+   simpl in Hni; simpl.
+   destruct j; [ exfalso; revert Hij; apply Nat.nlt_0_r | idtac ].
+bbb.
+
 Theorem rm_add_add_0_l_when_lhs_has_relay : ∀ a b i di₁,
   fst_same (a + 0%rm) b (S i) = Some di₁
   → rm_add_i (a + 0%rm) b i = rm_add_i a b i.
@@ -4450,6 +4503,24 @@ rm_add_inf_true_neq_if
      (0 < j → a.[j] = false) ∧
      (0 < j → b.[j] = false) ∧
      (∀ k, k < j → a.[k] = negb b.[k]).
+
+a      00011111...
+b      11011111...
+a+b    11111111...
+a+b+0  00000000...
+
+a      01111111...
+b      01111111...
+a+b    11111111...
+a+b+0  00000000...
+
+a      11111111...
+b      11111111...
+a+b    11111111...
+a+b+0  00000000...
+
+Donc, ci-dessous, le a et (b+c) ont forcément un 0 0 quelque part.
+Ce qui est une contradiction avec Hc₃.
 
             i  i+1  -   i₅
         b   .   1   .   1
