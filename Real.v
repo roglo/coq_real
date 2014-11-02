@@ -4585,7 +4585,6 @@ destruct s₅ as [di₅| ].
       erewrite carry_before_relay in HH; try eassumption; [ idtac | omega ].
       discriminate HH.
 
-bbb.
       simpl in Hsj₁.
       pose proof (Hj₁ 0) as H; rewrite Nat.add_1_r in H.
       unfold rm_add_i in H; simpl in H.
@@ -4599,33 +4598,35 @@ bbb.
       rewrite xorb_true_l in H.
       apply negb_true_iff in H.
       destruct dj₁.
-       apply fst_same_iff in Hsj₁; simpl in Hsj₁.
-       rewrite Nat.add_0_r in Hsj₁.
-       destruct Hsj₁ as (_, Hsj₁).
-       rewrite H₁ in Hsj₁.
-       unfold rm_add_i in Hsj₁; simpl in Hsj₁.
-       rewrite H₃, H₂ in Hsj₁.
-       replace (S i) with (S i + 0) in Hsj₁ by apply Nat.add_0_r.
-       erewrite carry_before_relay in Hsj₁; try eassumption.
-        discriminate Hsj₁.
+       simpl in Hfa₁; rewrite Nat.add_1_r in Hfa₁.
+       rewrite Hfa₁ in H₁; [ discriminate H₁ | apply Nat.lt_0_1 ].
 
-        omega.
+       rename H into Hca.
+       remember Hc₃ as H; clear HeqH.
+       unfold carry_i in H; simpl in H.
+       rewrite Hsj₁ in H; simpl in H.
+       erewrite carry_before_relay in Hca; try eassumption.
+        discriminate Hca.
+
+        apply Nat.lt_0_succ.
+
+    Focus 1.
 bbb.
 
-en i+1, a+(b+c) devrait donner 1
+di₄ < di₁
 
-            i  i+1  -   i₁  -   i₅
-        b   .   0   .   1   .   1
-                ≠   ≠
-        a   .   1   .   1   .   .
-
-       b+c  .   0   .   0   .   .
-
-       a+b  .   0   .   0   .   1
-                ≠   ≠
-        c   .   1   .   0   .   1
+            i  i+1  -   i₄  -   i₁  -   i₅
+        b   .   .   .   .   .   1   .   .
                 ≠   ≠   ≠   ≠
-        b   .   0   .   1   .   1
+        a   .   .   .   .   .   1   .   .
+
+       b+c  .   .   .   .   .   .   .   .
+
+       a+b  .   .   .   0   .   .   .   .
+                ≠   ≠
+        c   .   .   .   0   .   .   .   1
+                ≠   ≠   ≠   ≠   ≠   ≠
+        b   .   .   .   .   .   .   .   1
 
 bbb.
 *)
