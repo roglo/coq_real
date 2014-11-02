@@ -982,6 +982,8 @@ Theorem rm_add_inf_true_if : ∀ a b i,
   → ∃ j,
     (∀ dj, a.[i+j+dj] = true) ∧
     (∀ dj, b.[i+j+dj] = true) ∧
+    (0 < j → a.[i+pred j] = false) ∧
+    (0 < j → b.[i+pred j] = false) ∧
     (fst_same a b i = Some (pred j)).
 Proof.
 intros a b i Hdi.
@@ -1002,6 +1004,8 @@ destruct (bool_dec a .[ i] b .[ i]) as [H₁| H₁].
     intros dj; destruct dj; [ idtac | apply Hb ].
     rewrite Nat.add_0_r; assumption.
 
+    split; [ intros H; exfalso; revert H; apply Nat.nlt_0_r | idtac ].
+    split; [ intros H; exfalso; revert H; apply Nat.nlt_0_r | idtac ].
     apply fst_same_iff; simpl.
     rewrite Nat.add_0_r.
     split; [ idtac | rewrite H₁, H₂; reflexivity ].
@@ -1009,8 +1013,11 @@ destruct (bool_dec a .[ i] b .[ i]) as [H₁| H₁].
 
   exists 1.
   rewrite Nat.add_1_r; simpl.
+  rewrite Nat.add_0_r.
   split; [ intros dj; rewrite <- Nat.add_succ_r; apply Ha | idtac ].
   split; [ intros dj; rewrite <- Nat.add_succ_r; apply Hb | idtac ].
+  split; [ intros H; assumption | idtac ].
+  split; [ intros H; assumption | idtac ].
   apply fst_same_iff; simpl.
   rewrite Nat.add_0_r.
   split; [ idtac | rewrite H₁, H₂; reflexivity ].
@@ -1036,6 +1043,8 @@ destruct (bool_dec a .[ i] b .[ i]) as [H₁| H₁].
    rewrite <- Nat.add_succ_r, Nat.add_assoc.
    apply Hbt.
 
+   split; [ intros H; simpl; assumption | idtac ].
+   split; [ intros H; simpl; assumption | idtac ].
    apply fst_same_iff; simpl.
    split; [ intros dj Hdj | idtac ].
     apply Hni, Nat.add_lt_mono_l; assumption.
@@ -4516,9 +4525,9 @@ destruct s₅ as [di₅| ].
      clear Hn₁ Hn₄ Hb₄; rewrite Nat.add_0_r in Hk₁, Ht₁, Ha₄, Hs₄, Hi₄, Hac.
      apply forall_add_succ_r in Hj₁; unfold id in Hj₁.
      apply rm_add_inf_true_if in Hj₁; simpl in Hj₁.
-     destruct Hj₁ as (dj₁, (Hta₁, (Htb₁, Hsj₁))).
+     destruct Hj₁ as (dj₁, (Hta₁, (Htb₁, (Hfa₁, (Hfb₁, Hsj₁))))).
      destruct dj₁.
-      rewrite Nat.add_0_r in Hta₁, Htb₁; simpl in Hsj₁.
+      clear Hfa₁ Hfb₁; rewrite Nat.add_0_r in Hta₁, Htb₁.
       pose proof (Htb₁ 0) as H.
       rewrite Nat.add_0_r in H.
       unfold rm_add_i in H; simpl in H.
@@ -4530,10 +4539,13 @@ destruct s₅ as [di₅| ].
       erewrite carry_before_relay in H; try eassumption.
       discriminate H.
 
-      simpl in Hsj₁.
+      simpl in Hsj₁, Hfa₁.
       remember Hc₃ as H; clear HeqH.
       unfold carry_i in H.
-      rewrite Hsj₁ in H.
+      rewrite Hsj₁ in H; simpl in H.
+      rewrite Hfa₁ in H; [ discriminate H | apply Nat.lt_0_succ ].
+
+     Focus 1.
 bbb.
 
 Donc, ci-dessous, le a et (b+c) ont forcément un 0 0 quelque part.
