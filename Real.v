@@ -977,7 +977,6 @@ destruct s₁ as [di₁| ].
  rewrite Hab, negb_xorb_diag in H; discriminate H.
 Qed.
 
-(* faut voir... *)
 Theorem rm_add_inf_true_if : ∀ a b i,
   (∀ di, rm_add_i a b (i + di) = true)
   → ∃ j,
@@ -1022,13 +1021,27 @@ destruct (bool_dec a .[ i] b .[ i]) as [H₁| H₁].
  remember Hdi as H; clear HeqH.
  apply rm_add_inf_true_neq_if in H; auto.
  destruct H as (j, (Hij, (Hni, (Ha, (Hb, (Hat, Hbt)))))).
- exists j.
- split.
-  intros dj.
-  destruct i.
-   simpl in Hni; simpl.
-   destruct j; [ exfalso; revert Hij; apply Nat.nlt_0_r | idtac ].
-bbb.
+ remember (j - S i) as k eqn:Hk .
+ assert (j = i + S k) as H by omega.
+ subst j; clear Hij Hk; rename k into j.
+ exists (S (S j)).
+ split; [ intros dj | idtac ].
+  rewrite Nat.add_succ_r; simpl.
+  rewrite <- Nat.add_assoc, <- Nat.add_succ_r.
+  rewrite <- Nat.add_succ_r, Nat.add_assoc.
+  apply Hat.
+
+  split; [ intros dj | idtac ].
+   rewrite Nat.add_succ_r; simpl.
+   rewrite <- Nat.add_assoc, <- Nat.add_succ_r.
+   rewrite <- Nat.add_succ_r, Nat.add_assoc.
+   apply Hbt.
+
+   split; [ intros H; simpl; assumption | idtac ].
+   split; [ intros H; simpl; assumption | idtac ].
+   simpl; intros k Hk.
+   apply Hni, Nat.add_lt_mono_l; assumption.
+Qed.
 
 Theorem rm_add_add_0_l_when_lhs_has_relay : ∀ a b i di₁,
   fst_same (a + 0%rm) b (S i) = Some di₁
@@ -4027,6 +4040,23 @@ destruct s as [dj| ].
  destruct b .[ i + di]; discriminate H.
 Qed.
 
+Theorem carry_before_relay : ∀ a b i di x,
+  fst_same a b i = Some di
+  → a .[i + di] = x
+  → ∀ dj, dj < di → carry_i a b (i + dj) = x.
+Proof.
+intros a b i di x Hs Ha dj Hdj.
+unfold carry_i; simpl.
+remember (fst_same a b (S (i + dj))) as s₂ eqn:Hs₂ .
+symmetry in Hs₂.
+eapply fst_same_in_range in Hs₂; try eassumption; [ idtac | omega ].
+subst s₂.
+rewrite <- Nat.add_succ_l.
+rewrite Nat.add_sub_assoc; [ idtac | omega ].
+rewrite Nat.add_comm, Nat.add_sub.
+assumption.
+Qed.
+
 Theorem sum_before_relay : ∀ a b i di x,
   fst_same a b i = Some di
   → a .[i + di] = x
@@ -4040,16 +4070,7 @@ destruct H as (Hs₁, Hn₁).
 remember Hdj as H; clear HeqH.
 apply Hs₁ in H.
 rewrite H, negb_xorb_diag, xorb_true_l.
-f_equal.
-unfold carry_i; simpl.
-remember (fst_same a b (S (i + dj))) as s₂ eqn:Hs₂ .
-symmetry in Hs₂.
-eapply fst_same_in_range in Hs₂; try eassumption; [ idtac | omega ].
-subst s₂.
-rewrite <- Nat.add_succ_l.
-rewrite Nat.add_sub_assoc; [ idtac | omega ].
-rewrite Nat.add_comm, Nat.add_sub.
-assumption.
+f_equal; erewrite carry_before_relay; try eassumption; reflexivity.
 Qed.
 
 Theorem case_1 : ∀ a b c i,
@@ -4493,6 +4514,23 @@ destruct s₅ as [di₅| ].
     apply negb_true_iff in Ha₄.
     destruct di₁.
      clear Hn₁ Hn₄ Hb₄; rewrite Nat.add_0_r in Hk₁, Ht₁, Ha₄, Hs₄, Hi₄, Hac.
+     apply forall_add_succ_r in Hj₁; unfold id in Hj₁.
+     apply rm_add_inf_true_if in Hj₁; simpl in Hj₁.
+     destruct Hj₁ as (dj₁, (Hta₁, (Htb₁, (Hfa₁, (Hfb₁, Hna₁))))).
+     destruct dj₁.
+      clear Hfa₁ Hfb₁ Hna₁; rewrite Nat.add_0_r in Hta₁, Htb₁.
+      pose proof (Htb₁ 0) as H.
+      rewrite Nat.add_0_r in H.
+      unfold rm_add_i in H; simpl in H.
+      rewrite Ht₁, Hs₄ in H.
+      rewrite xorb_true_l in H.
+      apply negb_true_iff in H.
+      replace (S i) with (S i + 0) in H by apply Nat.add_0_r.
+      symmetry in Hs₅.
+      erewrite carry_before_relay in H; try eassumption.
+      discriminate H.
+
+      simpl in Hfa₁, Hfb₁, Hna₁.
 bbb.
 
 rm_add_inf_true_eq_if
@@ -4500,9 +4538,9 @@ rm_add_inf_true_neq_if
 
 ∃ j, (∀ dj, a.[j+dj] = true) ∧
      (∀ dj, b.[j+dj] = true) ∧
-     (0 < j → a.[j] = false) ∧
-     (0 < j → b.[j] = false) ∧
-     (∀ k, k < j → a.[k] = negb b.[k]).
+     (0 < j → a.[j-1] = false) ∧
+     (0 < j → b.[j-1] = false) ∧
+     (∀ k, k < j-2 → a.[k] = negb b.[k]).
 
 a      00011111...
 b      11011111...
