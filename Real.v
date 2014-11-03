@@ -2491,6 +2491,16 @@ split.
   rewrite H; reflexivity.
 Qed.
 
+Lemma lt_add_r : ∀ a b,
+  0 < b
+  → a < a + b.
+Proof.
+intros a b Hb.
+apply Nat.lt_sub_lt_add_l.
+rewrite Nat.sub_diag.
+assumption.
+Qed.
+
 Theorem fst_same_second : ∀ a b i j di dj dk,
   fst_same a b (S i) = Some dk
   → j = i + di
@@ -2503,22 +2513,21 @@ apply fst_same_iff; simpl.
 rewrite Nat.add_succ_r.
 split.
  intros dl Hdl.
- remember (nat_compare (j + dl) (i + n)) as cmp eqn:Hcmp .
- symmetry in Hcmp.
- destruct cmp.
-  apply nat_compare_eq in Hcmp.
-  exfalso; omega.
+ assert (j + dl < i + n) as Hcmp.
+  subst; simpl.
+  rewrite <- Nat.add_succ_r.
+  do 2 rewrite <- Nat.add_assoc.
+  do 2 apply Nat.add_lt_mono_l.
+  eapply Nat.lt_trans; eauto .
+  apply lt_add_r, Nat.lt_0_succ.
 
-  apply nat_compare_lt in Hcmp.
+  apply nat_compare_lt in Hcmp; rewrite Hcmp.
   apply fst_same_iff in Hs; simpl in Hs.
   destruct Hs as (Hnn, Hs).
   assert (di + dl < dk) as H by omega.
   apply Hnn in H.
   rewrite Nat.add_assoc, <- Hj in H.
   assumption.
-
-  apply nat_compare_gt in Hcmp.
-  exfalso; omega.
 
  remember (nat_compare (j + dj) (i + n)) as cmp eqn:Hcmp .
  symmetry in Hcmp.
