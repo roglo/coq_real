@@ -977,6 +977,17 @@ destruct s₁ as [di₁| ].
  rewrite Hab, negb_xorb_diag in H; discriminate H.
 Qed.
 
+Theorem nat_sub_add_r : ∀ a b c,
+  a < b
+  → c = b - S a
+  → b = a + S c.
+Proof.
+intros a b c Hab Hc; subst c.
+rewrite <- Nat.sub_succ_l; [ simpl | assumption ].
+rewrite Nat.add_sub_assoc; [ idtac | apply Nat.lt_le_incl; assumption ].
+rewrite Nat.add_comm, Nat.add_sub; reflexivity.
+Qed.
+
 Theorem rm_add_inf_true_if : ∀ a b i,
   (∀ di, rm_add_i a b (i + di) = true)
   → ∃ j,
@@ -1028,8 +1039,8 @@ destruct (bool_dec a .[ i] b .[ i]) as [H₁| H₁].
  apply rm_add_inf_true_neq_if in H; auto.
  destruct H as (j, (Hij, (Hni, (Ha, (Hb, (Hat, Hbt)))))).
  remember (j - S i) as k eqn:Hk .
- assert (j = i + S k) as H by omega.
- subst j; clear Hij Hk; rename k into j.
+ apply nat_sub_add_r in Hk; [ idtac | assumption ].
+ subst j; clear Hij; rename k into j.
  exists (S (S j)).
  split; [ intros dj | idtac ].
   rewrite Nat.add_succ_r; simpl.
