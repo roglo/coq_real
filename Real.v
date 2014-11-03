@@ -2864,7 +2864,7 @@ destruct s₅ as [di₅| ].
     apply Hn₄ in H.
     rename H into Hab₁.
     move Hab₁ before Ht₁.
-    assert (di₁ < di₅) as H by omega.
+    assert (di₁ < di₅) as H by (eapply lt_trans; eauto ).
     apply Hn₅ in H.
     rewrite Ht₁ in H; apply negb_sym in H; simpl in H.
     rewrite H in Hab₁; simpl in Hab₁.
