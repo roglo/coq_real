@@ -2711,17 +2711,8 @@ destruct s₃ as [di₃| ].
       rewrite Ha₅, Hbc in H.
       rewrite xorb_true_l in H.
       apply negb_true_iff in H.
-      unfold carry_i in H; simpl in H.
-      remember (fst_same a (b + c) (S (S (i + di₅)))) as s₇ eqn:Hs₇ .
-      symmetry in Hss₃, Hs₇.
-      rewrite <- Nat.add_succ_l, <- Nat.add_succ_r in Hs₇.
-      eapply fst_same_in_range2 in Hs₇; eauto; subst s₇.
       rewrite <- Nat.add_succ_l in H.
-      do 2 rewrite <- Nat.add_succ_r in H.
-      rewrite Nat.add_succ_r in H.
-      rewrite Nat.add_sub_assoc in H; auto.
-      rewrite Nat.add_shuffle0, Nat.add_sub in H.
-      rewrite Ha₃ in H; discriminate H.
+      erewrite carry_before_relay in H; eauto; discriminate H.
 
     subst di₅.
     rewrite Hb₃ in Hb₅; discriminate Hb₅.
@@ -2737,18 +2728,8 @@ destruct s₃ as [di₃| ].
     rewrite H in Hs₃.
     rewrite xorb_true_l in Hs₃.
     apply negb_true_iff in Hs₃.
-    unfold carry_i in Hs₃; simpl in Hs₃.
-    clear H.
-    remember (fst_same b c (S (S (i + di₃)))) as s₁ eqn:Hs₁ .
-    symmetry in Hss₅, Hs₁.
-    rewrite <- Nat.add_succ_l, <- Nat.add_succ_r in Hs₁.
-    eapply fst_same_in_range2 in Hs₁; eauto ; subst s₁.
     rewrite <- Nat.add_succ_l in Hs₃.
-    do 2 rewrite <- Nat.add_succ_r in Hs₃.
-    rewrite Nat.add_succ_r in Hs₃.
-    rewrite Nat.add_sub_assoc in Hs₃; auto.
-    rewrite Nat.add_shuffle0, Nat.add_sub in Hs₃.
-    rewrite Hs₃ in Hb₅; discriminate Hb₅.
+    erewrite carry_before_relay in Hs₃; eauto; discriminate Hs₃.
 
    apply fst_same_sym_iff in Hs₅.
    simpl in Hs₅.
@@ -2780,15 +2761,8 @@ destruct s₃ as [di₃| ].
   rewrite Hb₆, xorb_false_l in H.
   rename H into Hcc; move Hcc before Hb₆.
   remember Hca as H; clear HeqH.
-  unfold carry_i in H; simpl in H.
-  remember (fst_same a (b + c) (S (S (i + di₆)))) as s₁ eqn:Hs₁ .
-  symmetry in Hss₃, Hs₁.
-  eapply fst_same_in_range in Hs₁; try eassumption; [ idtac | omega ].
-  subst s₁.
-  do 2 rewrite <- Nat.add_succ_l in H.
-  rewrite Nat.add_sub_assoc in H; [ idtac | omega ].
-  rewrite Nat.add_comm, Nat.add_sub in H; simpl in H.
-  rewrite Hc₃ in H; discriminate H.
+  rewrite <- Nat.add_succ_l in H.
+  erewrite carry_before_relay in H; eauto ; discriminate H.
 
  clear Hc₃.
  pose proof (Hs₃ di₆) as H.
