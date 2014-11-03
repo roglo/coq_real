@@ -3033,7 +3033,7 @@ destruct s₅ as [di₅| ].
      destruct dj₂; [ discriminate Hsj₂ | simpl in Hsj₂; subst dj₂ ].
      clear Hfa₂ Hfb₂; simpl in Hta₂, Htb₂.
      pose proof (Hta₂ (di₅ - S (S di₁))) as H.
-     rewrite Nat.add_sub_assoc in H; [ idtac | omega ].
+     rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
      rewrite Nat.add_shuffle0, Nat.add_sub in H.
      rename H into Hab.
      pose proof (Hn₁ 0 (Nat.lt_0_succ di₁)) as H₁.
@@ -3045,9 +3045,10 @@ destruct s₅ as [di₅| ].
      rewrite negb_involutive in H₂.
      replace (S i) with (S i + 0) in H₂ by apply Nat.add_0_r.
      symmetry in Hs₁.
-     erewrite carry_before_relay in H₂; try eassumption; [ idtac | omega ].
+     assert (0 < S di₁) as H by apply Nat.lt_0_succ.
+     erewrite carry_before_relay in H₂; try eassumption; clear H.
      rewrite Nat.add_0_r in H₂.
-     assert (0 < di₅) as H by omega.
+     assert (0 < di₅) as H by (eapply Nat.lt_lt_0; eauto ).
      apply Hn₅ in H; rewrite Nat.add_0_r in H.
      rewrite H₂ in H.
      rewrite H in H₁; simpl in H₁, H.
@@ -3061,7 +3062,8 @@ destruct s₅ as [di₅| ].
       apply negb_true_iff in HH.
       symmetry in Hs₅.
       replace (S i) with (S i + 0) in HH by apply Nat.add_0_r.
-      erewrite carry_before_relay in HH; try eassumption; [ idtac | omega ].
+      assert (0 < di₅) as H by (eapply Nat.lt_lt_0; eauto ).
+      erewrite carry_before_relay in HH; try eassumption.
       discriminate HH.
 
       simpl in Hsj₁.
@@ -3073,7 +3075,8 @@ destruct s₅ as [di₅| ].
       rewrite negb_xorb_l, xorb_false_l in H.
       symmetry in Hs₅.
       replace (S i) with (S i + 0) in H by apply Nat.add_0_r.
-      erewrite carry_before_relay in H; try eassumption; [ idtac | omega ].
+      assert (0 < di₅) as HH by (eapply Nat.lt_lt_0; eauto ).
+      erewrite carry_before_relay in H; try eassumption.
       rewrite xorb_true_l in H.
       apply negb_true_iff in H.
       destruct dj₁.
@@ -3084,10 +3087,9 @@ destruct s₅ as [di₅| ].
        remember Hc₃ as H; clear HeqH.
        unfold carry_i in H; simpl in H.
        rewrite Hsj₁ in H; simpl in H.
+       assert (0 < S dj₁) as H₅ by apply Nat.lt_0_succ.
        erewrite carry_before_relay in Hca; try eassumption.
-        discriminate Hca.
-
-        apply Nat.lt_0_succ.
+       discriminate Hca.
 
     injection Hsj₂; clear Hsj₂; intros Hsj₂; move Hsj₂ before Hfb₂.
     remember H₂ as H; clear HeqH.
@@ -3111,11 +3113,11 @@ destruct s₅ as [di₅| ].
      rewrite Nat.add_0_r in Ha₃, Hbc₃.
      remember Hbc₃ as H; clear HeqH.
      unfold rm_add_i in H; simpl in H.
-     assert (0 < di₁) as HH by omega.
+     assert (0 < di₁) as HH by (eapply Nat.lt_lt_0; eauto ).
      apply Hn₁ in HH; rewrite Nat.add_0_r in HH.
      rewrite Ha₃ in HH; apply negb_sym in HH; simpl in HH.
      rename HH into Hb₃.
-     assert (0 < di₅) as HH by omega.
+     assert (0 < di₅) as HH by (eapply Nat.lt_lt_0; eauto ).
      apply Hn₅ in HH; rewrite Nat.add_0_r in HH.
      rewrite Hb₃ in HH; apply negb_sym in HH; simpl in HH.
      rename HH into Hd₃.
@@ -3123,7 +3125,8 @@ destruct s₅ as [di₅| ].
      apply negb_true_iff in H.
      replace (S i) with (S i + 0) in H by apply Nat.add_0_r.
      symmetry in Hs₅.
-     erewrite carry_before_relay in H; try eassumption; [ idtac | omega ].
+     assert (0 < di₅) as HH by (eapply Nat.lt_lt_0; eauto ).
+     erewrite carry_before_relay in H; try eassumption.
      discriminate H.
 
      simpl in Hdi₃.
