@@ -2911,12 +2911,14 @@ destruct s₅ as [di₅| ].
        discriminate H₃.
 
       apply fst_same_sym_iff in Hs₆; simpl in Hs₆.
+      unfold carry_i in H₃; simpl in H₃.
+      remember (fst_same a (b + c) (S (S i))) as s₇ eqn:Hs₇ .
       destruct s₇ as [di₇| ]; [ idtac | discriminate H₃ ].
       apply fst_same_sym_iff in Hs₇; simpl in Hs₇.
       destruct Hs₇ as (Hn₇, Hs₇).
       rewrite <- Nat.add_succ_r in Hs₇.
-      rewrite Hs₆ in Hs₇.
-      destruct (rm_add_i b c (S (i + S di₇))); discriminate Hs₇.
+      rewrite Hs₆ in Hs₇; symmetry in Hs₇.
+      apply neq_negb in Hs₇; apply Hs₇; reflexivity.
 
      pose proof (Hn₁ 0 (Nat.lt_0_succ di₁)) as H.
      rewrite Nat.add_0_r in H.
