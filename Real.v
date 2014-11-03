@@ -1063,6 +1063,40 @@ destruct (bool_dec a .[ i] b .[ i]) as [H₁| H₁].
     rewrite Ha, Hb; reflexivity.
 Qed.
 
+Theorem lt_add_sub_lt_r : ∀ a b c d,
+  a < b + c
+  → d < c
+  → a - b < c.
+Proof.
+intros a b c d Ha Hdc.
+revert b c Ha Hdc.
+induction a; intros.
+ simpl.
+ eapply le_lt_trans; [ apply Nat.le_0_l | eassumption ].
+
+ destruct b; [ rewrite Nat.sub_0_r; assumption | simpl ].
+ simpl in Ha.
+ apply Nat.succ_lt_mono in Ha.
+ apply IHa; assumption.
+Qed.
+
+Theorem lt_add_sub_lt_l : ∀ a b c,
+  a < b + c
+  → b < S a
+  → a - b < c.
+Proof.
+intros a b c Ha Hb.
+revert b c Ha Hb.
+induction a; intros.
+ apply Nat.lt_1_r in Hb; subst b; assumption.
+
+ destruct b; [ rewrite Nat.sub_0_r; assumption | simpl ].
+ simpl in Ha.
+ apply Nat.succ_lt_mono in Ha.
+ apply Nat.succ_lt_mono in Hb.
+ apply IHa; assumption.
+Qed.
+
 Theorem rm_add_add_0_l_when_lhs_has_relay : ∀ a b i di₁,
   fst_same (a + 0%rm) b (S i) = Some di₁
   → rm_add_i (a + 0%rm) b i = rm_add_i a b i.
@@ -1252,28 +1286,25 @@ destruct s₂ as [di₂| ].
             symmetry in H.
             apply negb_true_iff in H.
             rename H into H₆.
-            assert (j - si < di₂) as H.
-             revert Hji H₅; clear; intros.
-             omega.
+            assert (j - si < di₂) as H by (eapply lt_add_sub_lt_r; eauto ).
+            apply Hn₂ in H.
+            rewrite Nat.add_sub_assoc in H.
+             rewrite Nat.add_comm, Nat.add_sub in H.
+             rewrite Hjf, H₆ in H; discriminate H.
 
-             apply Hn₂ in H.
-             rewrite Nat.add_sub_assoc in H.
-              rewrite Nat.add_comm, Nat.add_sub in H.
-              rewrite Hjf, H₆ in H; discriminate H.
+             clear H.
+             apply Nat.nlt_ge; intros Hcont.
+             assert (j < si + di₃) as H.
+              rewrite Heqsi in Hcont.
+              apply Nat.succ_le_mono in Hcont.
+              eapply Nat.le_lt_trans; eauto .
+              rewrite Heqsi; simpl.
+              rewrite <- Nat.add_succ_r.
+              apply Nat.lt_sub_lt_add_l.
+              rewrite Nat.sub_diag; apply Nat.lt_0_succ.
 
-              clear H.
-              apply Nat.nlt_ge; intros Hcont.
-              assert (j < si + di₃) as H.
-               rewrite Heqsi in Hcont.
-               apply Nat.succ_le_mono in Hcont.
-               eapply Nat.le_lt_trans; eauto .
-               rewrite Heqsi; simpl.
-               rewrite <- Nat.add_succ_r.
-               apply Nat.lt_sub_lt_add_l.
-               rewrite Nat.sub_diag; apply Nat.lt_0_succ.
-
-               apply Hk in H; [ rewrite Hs₃ in H; discriminate H | idtac ].
-               apply Nat.add_lt_mono_l; assumption.
+              apply Hk in H; [ rewrite Hs₃ in H; discriminate H | idtac ].
+              apply Nat.add_lt_mono_l; assumption.
 
            apply Nat.nlt_ge; intros Hcont.
            rewrite Heqsi in Hcont.
@@ -1583,7 +1614,11 @@ destruct s₂ as [di₂| ].
 
           apply Nat.nlt_ge in H₃.
           destruct (lt_dec di₂ (S (S dj₅ + di₆))) as [H₄| H₄].
-           assert (di₂ - S (S dj₅) < di₆) as H by omega.
+           remember H₄ as H; clear HeqH.
+           rewrite <- Nat.add_succ_l in H.
+           apply Nat.succ_lt_mono in H₂.
+           apply lt_add_sub_lt_l with (a := di₂) in H; auto.
+           apply Nat.succ_lt_mono in H₂.
            apply Pn₆ in H.
            rewrite Heqssi in H.
            rewrite Nat.add_succ_l, <- Nat.add_succ_r in H.
