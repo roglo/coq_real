@@ -104,13 +104,17 @@ do 2 rewrite xorb_assoc; f_equal.
 apply xorb_comm.
 Qed.
 
-Theorem neq_negb : ∀ b b', b ≠ b' → b = negb b'.
+Theorem neq_negb : ∀ b b', b ≠ b' ↔ b = negb b'.
 Proof.
-intros b b' H.
-destruct b'; simpl.
- apply not_true_iff_false; auto.
+intros b b'.
+split; intros H.
+ destruct b'; simpl.
+  apply not_true_iff_false; auto.
 
- apply not_false_iff_true; auto.
+  apply not_false_iff_true; auto.
+
+ subst b; intros H.
+ destruct b'; discriminate H.
 Qed.
 
 Theorem fst_same_comm : ∀ a b i, fst_same a b i = fst_same b a i.
@@ -2512,12 +2516,18 @@ destruct s as [dj| ].
  apply fst_same_iff in Hj; simpl in Hj.
  destruct Hj as (Hnj, Hsj).
  destruct (lt_eq_lt_dec dj (i + di - j)) as [[H₁| H₁]| H₁].
-  assert (j + dj - i < di) as H by omega.
-  apply Hni in H; simpl in H.
-  rewrite Nat.add_sub_assoc in H; [ idtac | omega ].
-  rewrite Nat.add_comm, Nat.add_sub in H.
-  rewrite Hsj in H.
-  destruct b .[ j + dj]; discriminate H.
+  apply Nat.lt_add_lt_sub_l in H₁; rename H₁ into H.
+  apply lt_add_sub_lt_l in H.
+   apply Hni in H; simpl in H.
+   rewrite Nat.add_sub_assoc in H.
+    rewrite Nat.add_comm, Nat.add_sub in H.
+    rewrite Hsj in H.
+    exfalso; apply neq_negb in H; apply H; reflexivity.
+
+    eapply le_trans; eauto; apply Nat.le_add_r.
+
+   apply le_n_S.
+   eapply le_trans; eauto; apply Nat.le_add_r.
 
   rewrite H₁; reflexivity.
 
@@ -2525,14 +2535,14 @@ destruct s as [dj| ].
   rewrite Nat.add_sub_assoc in H₁; [ idtac | assumption ].
   rewrite Nat.add_comm, Nat.add_sub in H₁.
   rewrite Hsi in H₁.
-  destruct b .[ i + di]; discriminate H₁.
+  exfalso; apply neq_negb in H₁; apply H₁; reflexivity.
 
  apply fst_same_iff in Hj; simpl in Hj.
  pose proof (Hj (i + di - j)) as H.
  rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
  rewrite Nat.add_comm, Nat.add_sub in H.
  rewrite Hsi in H.
- destruct b .[ i + di]; discriminate H.
+ exfalso; apply neq_negb in H; apply H; reflexivity.
 Qed.
 
 Theorem carry_before_relay : ∀ a b i di x,
