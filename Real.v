@@ -3137,6 +3137,29 @@ destruct s₅ as [di₅| ].
 
    clear Hk₁.
 bbb.
+   apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
+   rename Ha₄ into Hd₄.
+   pose proof (Hs₁ di₄) as Ha₄; move Ha₄ after Hb₄.
+   rewrite Hb₄ in Ha₄; simpl in Ha₄.
+   rewrite Ha₄, xorb_false_l in Hd₄; simpl in Hd₄.
+   move Hd₄ after Hs₄.
+   remember Hc₃ as H; clear HeqH.
+   unfold carry_i in H; simpl in H.
+   rewrite Hsj₁ in H.
+   destruct dj₁.
+    rewrite Nat.add_0_r in H.
+    rename H into Has.
+    pose proof (Hs₁ 0) as Hbs; rewrite Nat.add_0_r, Has in Hbs.
+    apply negb_sym in Hbs; simpl in Hbs.
+    assert (0 < di₅) as Hcs by (eapply Nat.lt_lt_0; eauto ).
+    apply Hn₅ in Hcs; rewrite Nat.add_0_r in Hcs.
+    rewrite Hbs in Hcs; apply negb_sym in Hcs; simpl in Hcs.
+    remember Hsj₁ as H; clear HeqH; simpl in H.
+    apply fst_same_iff in H; simpl in H.
+    destruct H as (_, H).
+    rewrite Nat.add_0_r, Has in H; symmetry in H.
+    rename H into Hbcs.
+bbb.
 
 di₄ < di₅
   Hs₁ : None = fst_same a b (S i)
