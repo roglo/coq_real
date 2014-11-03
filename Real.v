@@ -18,9 +18,7 @@ Definition rm_zero := {| rm i := false |}.
 Notation "s .[ i ]" := (rm s i) (at level 1).
 
 Axiom fst_same : real_mod_1 → real_mod_1 → nat → option nat.
-
-Axiom fst_same_iff : ∀ a b i odi,
-  fst_same a b i = odi ↔
+Axiom fst_same_iff : ∀ a b i odi, fst_same a b i = odi ↔
   match odi with
   | Some di =>
       (∀ dj, dj < di → a.[i + dj] = negb b.[i + dj])
