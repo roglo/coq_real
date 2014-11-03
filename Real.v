@@ -2474,15 +2474,21 @@ apply fst_same_iff; simpl.
 split.
  intros dj Hdj.
  rewrite Nat.add_succ_r.
- assert (i + di + dj < i + n) as H by omega.
- apply nat_compare_lt in H; rewrite H.
- rewrite <- Nat.add_assoc.
- apply Hs.
+ assert (i + di + dj < i + n) as H.
+  rewrite <- Nat.add_assoc.
+  apply Nat.add_lt_mono_l; subst n.
+  apply Nat.add_lt_mono_l; assumption.
+
+  apply nat_compare_lt in H; rewrite H.
+  rewrite <- Nat.add_assoc.
+  apply Hs.
 
  rewrite Nat.add_succ_r.
- assert (i + di + n₀ = i + n) as H by omega.
- apply nat_compare_eq_iff in H.
- rewrite H; reflexivity.
+ assert (i + di + n₀ = i + n) as H.
+  subst n; rewrite Nat.add_assoc; reflexivity.
+
+  apply nat_compare_eq_iff in H.
+  rewrite H; reflexivity.
 Qed.
 
 Theorem fst_same_second : ∀ a b i j di dj dk,
