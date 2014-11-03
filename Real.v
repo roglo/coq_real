@@ -2109,7 +2109,9 @@ destruct s₃ as [di₃| ].
 
     apply Nat.nlt_ge in H₁.
     destruct (lt_dec j (si + di₄)) as [H₂| H₂].
-     assert (j - si < di₄) as H by omega.
+     assert (si < S j) as H by (eapply lt_le_trans; eauto ).
+     apply lt_add_sub_lt_l in H₂; auto; clear H.
+     rename H₂ into H.
      apply Hn₄ in H.
      apply Nat.lt_le_incl in Hij.
      rewrite Nat.add_sub_assoc in H; auto.
