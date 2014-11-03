@@ -2741,12 +2741,14 @@ destruct s₃ as [di₃| ].
     clear H.
     remember (fst_same b c (S (S (i + di₃)))) as s₁ eqn:Hs₁ .
     symmetry in Hss₅, Hs₁.
-    eapply fst_same_in_range in Hs₁; try eassumption; [ idtac | omega ].
-    subst s₁.
-    do 2 rewrite <- Nat.add_succ_l in Hs₃.
-    rewrite Nat.add_sub_assoc in Hs₃; [ idtac | omega ].
-    rewrite Nat.add_comm, Nat.add_sub in Hs₃; simpl in Hs₃.
-    rewrite Hb₅ in Hs₃; discriminate Hs₃.
+    rewrite <- Nat.add_succ_l, <- Nat.add_succ_r in Hs₁.
+    eapply fst_same_in_range2 in Hs₁; eauto ; subst s₁.
+    rewrite <- Nat.add_succ_l in Hs₃.
+    do 2 rewrite <- Nat.add_succ_r in Hs₃.
+    rewrite Nat.add_succ_r in Hs₃.
+    rewrite Nat.add_sub_assoc in Hs₃; auto.
+    rewrite Nat.add_shuffle0, Nat.add_sub in Hs₃.
+    rewrite Hs₃ in Hb₅; discriminate Hb₅.
 
    apply fst_same_sym_iff in Hs₅.
    simpl in Hs₅.
