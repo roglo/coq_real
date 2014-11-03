@@ -4611,30 +4611,80 @@ destruct s₅ as [di₅| ].
         apply Nat.lt_0_succ.
 
     injection Hsj₂; clear Hsj₂; intros Hsj₂; move Hsj₂ before Hfb₂.
+    remember H₂ as H; clear HeqH.
+    apply Hn₁ in H.
+    rewrite Hb₄ in H; simpl in H.
+    rewrite H, xorb_false_l in Ha₄.
+    rename Ha₄ into Hab₄; move Hab₄ after Hs₄.
+    rename H into Ha₄; move Ha₄ after Hb₄.
+    remember Hc₃ as H; clear HeqH.
+    unfold carry_i in H; simpl in H.
+    rewrite Hsj₁ in H.
+    remember (pred dj₁) as di₃ eqn:Hdi₃ .
+    rename H into Ha₃; move Ha₃ before Hc₃.
+    move Hc₄ after Ha₄.
+    destruct dj₁.
+     simpl in Hdi₃; subst di₃; clear Hfa₁ Hfb₁.
+     remember Hsj₁ as H; clear HeqH.
+     apply fst_same_iff in H; simpl in H.
+     destruct H as (_, Hbc₃).
+     rewrite Ha₃ in Hbc₃; symmetry in Hbc₃.
+     rewrite Nat.add_0_r in Ha₃, Hbc₃.
+     remember Hbc₃ as H; clear HeqH.
+     unfold rm_add_i in H; simpl in H.
+     assert (0 < di₁) as HH by omega.
+     apply Hn₁ in HH; rewrite Nat.add_0_r in HH.
+     rewrite Ha₃ in HH; apply negb_sym in HH; simpl in HH.
+     rename HH into Hb₃.
+     assert (0 < di₅) as HH by omega.
+     apply Hn₅ in HH; rewrite Nat.add_0_r in HH.
+     rewrite Hb₃ in HH; apply negb_sym in HH; simpl in HH.
+     rename HH into Hd₃.
+     rewrite Hb₃, Hd₃, xorb_true_l in H.
+     apply negb_true_iff in H.
+     replace (S i) with (S i + 0) in H by apply Nat.add_0_r.
+     symmetry in Hs₅.
+     erewrite carry_before_relay in H; try eassumption; [ idtac | omega ].
+     discriminate H.
+
+     simpl in Hdi₃.
+     subst dj₁.
+     rewrite Nat.add_succ_r in Hfa₁.
+     rewrite Hfa₁ in Ha₃; [ discriminate Ha₃ | idtac ].
+     apply Nat.lt_0_succ.
+
+   clear Hk₁.
 bbb.
 
-di₄ < di₁
 di₄ < di₅
+  Hs₁ : None = fst_same a b (S i)
 
-3 cas :
-  di₁ < di₅
-  di₁ = di₅
-  di₁ > di₅
+            i  i+1  -   i₄  -   i₅
+        b   .   0   0   1   .   1
+                ≠   ≠   ≠   ≠   ≠   ≠ ...
+        a   .   1   1   0   .   0
 
-Ou alors, considérer a+(b+c) (Hc₃) en comparant avec i₄.
+       b+c  .   0   0   0   .   .
 
-            i  i+1  -   i₄  -   i₁  -   i₅
-        b   .   .   .   .   .   1   .   .
-                ≠   ≠   ≠   ≠
-        a   .   .   .   .   .   1   .   .
-
-       b+c  .   .   .   .   .   .   .   .
-
-       a+b  .   .   .   0   .   .   .   .
+       a+b  .   0   0   0   .   0
                 ≠   ≠
-        c   .   .   .   0   .   .   .   1
-                ≠   ≠   ≠   ≠   ≠   ≠
-        b   .   .   .   .   .   .   .   1
+        c   .   1   1   0   .   1
+                ≠   ≠   ≠   ≠
+        b   .   0   0   1   .   1
+
+
+            i  i+1  -   i₄  -   i₅
+        b   .   .   .   .   .   .
+                ≠   ≠   ≠   ≠   ≠   ≠ ...
+        a   .   .   .   .   .   .
+
+       b+c  .   .   .   .   .   .
+
+       a+b  .   .   .   0   .   .
+                ≠   ≠
+        c   .   .   .   0   .   1
+                ≠   ≠   ≠   ≠
+        b   .   .   .   .   .   1
 
 bbb.
 *)
