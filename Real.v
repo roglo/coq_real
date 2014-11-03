@@ -2545,6 +2545,21 @@ destruct s as [dj| ].
  exfalso; apply neq_negb in H; apply H; reflexivity.
 Qed.
 
+Theorem fst_same_in_range2 : ∀ a b i di dj s,
+  fst_same a b i = Some dj
+  → fst_same a b (i + di) = s
+  → di ≤ dj
+  → s = Some (dj - di).
+Proof.
+intros a b i di dj s Hdj Hdi Hdij.
+eapply fst_same_in_range in Hdi; try eassumption.
+ rewrite <- minus_plus_simpl_l_reverse in Hdi.
+ assumption.
+
+ split; [ apply Nat.le_add_r | idtac ].
+ apply Nat.add_le_mono_l; assumption.
+Qed.
+
 Theorem carry_before_relay : ∀ a b i di x,
   fst_same a b i = Some di
   → a .[i + di] = x
@@ -2642,7 +2657,7 @@ destruct s₃ as [di₃| ].
     apply negb_sym in H.
     rename H into Hs₅.
     move Hs₅ before Hc₅.
-    assert (di₅ < di₆) as H₅₆ by omega.
+    assert (di₅ < di₆) as H₅₆ by (eapply lt_trans; eauto ).
     apply Hn₆ in H₅₆.
     rewrite Hb₅ in H₅₆; simpl in H₅₆.
     move H₅₆ after Hb₅.
@@ -2662,42 +2677,51 @@ destruct s₃ as [di₃| ].
      unfold carry_i in H; simpl in H.
      remember (fst_same a (b + c) (S (S i))) as s₁ eqn:Hs₁ .
      symmetry in Hss₃, Hs₁.
-     eapply fst_same_in_range in Hs₁; try eassumption; [ idtac | omega ].
-     subst s₁; simpl in H.
-     rewrite <- Nat.add_succ_l in H.
-     rewrite Nat.add_sub_assoc in H; [ idtac | omega ].
-     rewrite Nat.add_comm, Nat.add_sub in H.
-     rewrite Ha₃ in H; discriminate H.
+     assert (S i ≤ i + di₃) as HH by (apply lt_add_r; auto).
+     eapply fst_same_in_range in Hs₁; try eassumption.
+      subst s₁; simpl in H.
+      rewrite <- Nat.add_succ_l in H.
+      rewrite Nat.add_sub_assoc in H; auto.
+      rewrite Nat.add_comm, Nat.add_sub in H.
+      rewrite Ha₃ in H; discriminate H.
+
+      split; [ apply Nat.le_succ_diag_r | idtac ].
+      apply le_n_S; assumption.
 
      remember Hss₅ as H; clear HeqH; symmetry in H.
      assert (di₅ < S di₅) as HH by apply Nat.lt_succ_diag_r.
      eapply sum_before_relay in H; try eassumption; clear HH.
      simpl in H; rewrite fold_rm_add_i in H; rename H into Hx.
-     assert (di₅ < di₃) as H by omega.
-     apply Hn₃ in H.
-     rewrite fold_rm_add_i in H.
-     rewrite Hx in H; simpl in H.
-     rename H into Ha₅; rename Hx into Hbc.
-     remember Hss₆ as H; clear HeqH; symmetry in H.
-     assert (di₅ < di₆) as HH by omega.
-     eapply sum_before_relay in H; try eassumption; clear HH.
-     simpl in H; rewrite fold_rm_add_i in H; rename H into Hx.
-     pose proof (Hc₁ di₅) as H.
-     rewrite Nat.add_succ_r in H.
-     unfold rm_add_i in H; simpl in H.
-     rewrite fold_rm_add_i in H.
-     rewrite Ha₅, Hbc in H.
-     rewrite xorb_true_l in H.
-     apply negb_true_iff in H.
-     unfold carry_i in H; simpl in H.
-     remember (fst_same a (b + c) (S (S (i + di₅)))) as s₇ eqn:Hs₇ .
-     symmetry in Hss₃, Hs₇.
-     eapply fst_same_in_range in Hs₇; try eassumption; [ idtac | omega ].
-     subst s₇.
-     do 2 rewrite <- Nat.add_succ_l in H.
-     rewrite Nat.add_sub_assoc in H; [ idtac | omega ].
-     rewrite Nat.add_comm, Nat.add_sub in H; simpl in H.
-     rewrite Ha₃ in H; discriminate H.
+     assert (di₅ < di₃) as H.
+      eapply le_lt_trans; [ apply Nat.le_succ_diag_r | eauto  ].
+
+      apply Hn₃ in H.
+      rewrite fold_rm_add_i in H.
+      rewrite Hx in H; simpl in H.
+      rename H into Ha₅; rename Hx into Hbc.
+      remember Hss₆ as H; clear HeqH; symmetry in H.
+      apply Nat.lt_le_incl in H₂.
+      assert (di₅ < di₆) as HH by (eapply lt_trans; eauto ).
+      eapply sum_before_relay in H; try eassumption; clear HH.
+      simpl in H; rewrite fold_rm_add_i in H; rename H into Hx.
+      pose proof (Hc₁ di₅) as H.
+      rewrite Nat.add_succ_r in H.
+      unfold rm_add_i in H; simpl in H.
+      rewrite fold_rm_add_i in H.
+      rewrite Ha₅, Hbc in H.
+      rewrite xorb_true_l in H.
+      apply negb_true_iff in H.
+      unfold carry_i in H; simpl in H.
+      remember (fst_same a (b + c) (S (S (i + di₅)))) as s₇ eqn:Hs₇ .
+      symmetry in Hss₃, Hs₇.
+      rewrite <- Nat.add_succ_l, <- Nat.add_succ_r in Hs₇.
+      eapply fst_same_in_range2 in Hs₇; eauto; subst s₇.
+      rewrite <- Nat.add_succ_l in H.
+      do 2 rewrite <- Nat.add_succ_r in H.
+      rewrite Nat.add_succ_r in H.
+      rewrite Nat.add_sub_assoc in H; auto.
+      rewrite Nat.add_shuffle0, Nat.add_sub in H.
+      rewrite Ha₃ in H; discriminate H.
 
     subst di₅.
     rewrite Hb₃ in Hb₅; discriminate Hb₅.
