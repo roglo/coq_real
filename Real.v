@@ -2923,7 +2923,7 @@ destruct s₅ as [di₅| ].
      pose proof (Hn₁ 0 (Nat.lt_0_succ di₁)) as H.
      rewrite Nat.add_0_r in H.
      rename H into Hab.
-     assert (0 < di₅) as H by omega.
+     assert (0 < di₅) as H by (eapply Nat.lt_lt_0; eauto ).
      apply Hn₅ in H; simpl in H.
      rewrite Nat.add_0_r in H.
      rename H into Hbc.
@@ -2934,19 +2934,13 @@ destruct s₅ as [di₅| ].
      do 2 rewrite <- xorb_assoc in H.
      rewrite Hab, negb_xorb_diag in H.
      rewrite xorb_true_l in H.
-     unfold carry_i in H at 1; simpl in H.
-     rename H into Hk₂.
-     remember (fst_same b c (S (S i))) as s₂ eqn:Hs₂ .
-     symmetry in Hs₅, Hs₂.
-     eapply fst_same_in_range in Hs₂; try eassumption; [ idtac | omega ].
-     subst s₂.
-     do 2 rewrite <- Nat.add_succ_l in Hk₂.
-     rewrite Nat.add_sub_assoc in Hk₂; [ idtac | omega ].
-     rewrite Nat.add_comm, Nat.add_sub in Hk₂; simpl in Hk₂.
-     rewrite Hj₅, xorb_true_r in Hk₂.
-     rewrite negb_involutive in Hk₂.
+     replace (S i) with (S i + 0) in H by apply Nat.add_0_r.
+     symmetry in Hs₅.
+     assert (0 < di₅) as HH by (eapply Nat.lt_lt_0; eauto ).
+     erewrite carry_before_relay in H; try eassumption.
+     rewrite xorb_true_r, negb_involutive in H.
+     rewrite Nat.add_0_r in H; rename H into Hk₂.
      remember Hs₅ as H; clear HeqH.
-     assert (0 < di₅) as HH by omega.
      eapply sum_before_relay in H; try eassumption; clear HH.
      rewrite Nat.add_0_r in H; simpl in H.
      rename H into Hx.
