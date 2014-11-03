@@ -2554,12 +2554,14 @@ intros a b i di x Hs Ha dj Hdj.
 unfold carry_i; simpl.
 remember (fst_same a b (S (i + dj))) as s₂ eqn:Hs₂ .
 symmetry in Hs₂.
-eapply fst_same_in_range in Hs₂; try eassumption; [ idtac | omega ].
-subst s₂.
-rewrite <- Nat.add_succ_l.
-rewrite Nat.add_sub_assoc; [ idtac | omega ].
-rewrite Nat.add_comm, Nat.add_sub.
-assumption.
+assert (S (i + dj) ≤ i + di) as H by (apply Nat.add_lt_mono_l; auto).
+eapply fst_same_in_range in Hs₂; try eassumption; [ idtac | split; auto ].
+ subst s₂.
+ rewrite <- Nat.add_succ_l, Nat.add_sub_assoc; auto.
+ rewrite Nat.add_comm, Nat.add_sub; assumption.
+
+ rewrite <- Nat.add_succ_r.
+ apply Nat.le_add_r.
 Qed.
 
 Theorem sum_before_relay : ∀ a b i di x,
