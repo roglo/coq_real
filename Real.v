@@ -2524,10 +2524,13 @@ split.
   apply nat_compare_lt in Hcmp; rewrite Hcmp.
   apply fst_same_iff in Hs; simpl in Hs.
   destruct Hs as (Hnn, Hs).
-  assert (di + dl < dk) as H by omega.
-  apply Hnn in H.
-  rewrite Nat.add_assoc, <- Hj in H.
-  assumption.
+  assert (di + dl < dk) as H.
+   subst; simpl.
+   apply Nat.add_lt_mono_l; assumption.
+
+   apply Hnn in H.
+   rewrite Nat.add_assoc, <- Hj in H.
+   assumption.
 
  remember (nat_compare (j + dj) (i + n)) as cmp eqn:Hcmp .
  symmetry in Hcmp.
@@ -2553,28 +2556,21 @@ apply same_fst_same in H; simpl in H.
 rewrite <- Hj in H.
 rewrite H.
 rename H into Hsj.
-remember (nat_compare j (i + S n)) as cmp eqn:Hcmp .
-symmetry in Hcmp.
-destruct cmp.
- apply nat_compare_eq in Hcmp.
- exfalso; omega.
+assert (j < i + S n) as Hcmp.
+ subst; apply Nat.add_lt_mono_l; simpl.
+ rewrite <- Nat.add_assoc; do 2 rewrite <- Nat.add_succ_r.
+ apply lt_add_r, Nat.lt_0_succ.
 
- f_equal.
+ apply nat_compare_lt in Hcmp; rewrite Hcmp; f_equal.
  rewrite Nat.add_succ_r; simpl.
- apply nat_compare_lt in Hcmp.
- clear Hcmp.
- erewrite fst_same_second; try eassumption.
- remember (nat_compare (j + dj) (i + n)) as cmp eqn:Hcmp .
- symmetry in Hcmp.
- destruct cmp; [ idtac | reflexivity | idtac ].
-  apply nat_compare_eq in Hcmp.
-  exfalso; omega.
+ erewrite fst_same_second; try eassumption; clear Hcmp.
+ assert (j + dj < i + n) as Hcmp.
+  subst; simpl; rewrite <- Nat.add_assoc.
+  apply Nat.add_lt_mono_l.
+  rewrite <- Nat.add_succ_r.
+  apply lt_add_r, Nat.lt_0_succ.
 
-  apply nat_compare_gt in Hcmp.
-  exfalso; omega.
-
- apply nat_compare_gt in Hcmp.
- exfalso; omega.
+  apply nat_compare_lt in Hcmp; rewrite Hcmp; reflexivity.
 Qed.
 
 Theorem fst_same_second_add : ∀ a b i j di n,
