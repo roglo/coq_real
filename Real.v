@@ -2722,22 +2722,48 @@ split.
 
     clear H₁.
     destruct (le_dec (S dl + S di₄) n) as [H₂| H₂].
-     replace n with (n - S dl + S dl) at 1 by omega.
-     rewrite fst_same_second_add.
-     replace n with (n - S dl + S dl) at 2 by omega.
-     rewrite fst_same_comm, fst_same_second_add, fst_same_comm.
-     rewrite Nat.add_succ_r.
-     remember (n - (S dl + S di₄)) as n₁.
-     rewrite fst_same_fin_eq_second with (n₀ := n₁) (di := di₄).
-      remember (i + n) as ipn eqn:Hin .
-      symmetry in Hin.
-      destruct ipn; [ exfalso; omega | idtac ].
-      assert (i + dl + di₄ < ipn) as Hcmp by omega.
-      apply nat_compare_lt in Hcmp; rewrite Hcmp; reflexivity.
+     assert (n = n - S dl + S dl) as H.
+      rewrite Nat.add_comm.
+      rewrite Nat.add_sub_assoc.
+       rewrite Nat.add_comm, Nat.add_sub; reflexivity.
 
-      assumption.
+       eapply Nat.le_trans; eauto .
+       subst n; simpl.
+       rewrite <- Nat.add_assoc.
+       do 3 rewrite <- Nat.add_succ_r.
+       apply Nat.le_add_r.
 
-      subst n₁; rewrite Nat.add_sub_assoc; omega.
+      rewrite H in |- * at 1.
+      rewrite fst_same_second_add.
+      rewrite H in |- * at 2.
+      rewrite fst_same_comm, fst_same_second_add, fst_same_comm.
+      rewrite Nat.add_succ_r.
+      remember (n - (S dl + S di₄)) as n₁.
+      rewrite fst_same_fin_eq_second with (n₀ := n₁) (di := di₄).
+       remember (i + n) as ipn eqn:Hin .
+       symmetry in Hin.
+       destruct ipn.
+        apply Nat.eq_add_0 in Hin.
+        destruct Hin as (_, Hin); subst n; simpl in Hin.
+        discriminate Hin.
+
+        assert (i + dl + di₄ < ipn) as Hcmp.
+         apply lt_S_n; rewrite <- Hin.
+         rewrite <- Nat.add_succ_r, <- Nat.add_assoc.
+         apply Nat.add_lt_mono_l.
+         assumption.
+
+         apply nat_compare_lt in Hcmp; rewrite Hcmp; reflexivity.
+
+       assumption.
+
+       subst n₁; rewrite Nat.add_sub_assoc; [ idtac | assumption ].
+       rewrite Nat.sub_add_distr.
+       rewrite <- Nat.add_sub_assoc.
+        rewrite Nat.add_comm, Nat.add_sub; reflexivity.
+
+        eapply le_trans; [ idtac | eauto  ].
+        apply Nat.le_add_r.
 
      apply Nat.nle_gt in H₂.
      apply fst_same_iff in Hs₄; simpl in Hs₄.
