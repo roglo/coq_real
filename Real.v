@@ -2954,7 +2954,7 @@ destruct s₅ as [di₅| ].
      unfold rm_add_i in H; simpl in H.
      rewrite Hy, xorb_false_l in H.
      rename H into Hk₃.
-     assert (0 < di₄) as H by omega.
+     assert (0 < di₄) as H by (eapply Nat.lt_lt_0; eauto ).
      apply Hn₄ in H; simpl in H.
      rewrite Nat.add_0_r in H.
      rewrite Hy in H.
@@ -2972,12 +2972,10 @@ destruct s₅ as [di₅| ].
      apply negb_false_iff in H.
      rename H into Hca.
      remember Hc₃ as H₁; clear HeqH₁.
-     remember Hk₂ as H₃; clear HeqH₃.
-     unfold carry_i in H₁, H₃; simpl in H₁, H₃.
+     unfold carry_i in H₁; simpl in H₁.
      remember (fst_same a (b + c) (S i)) as s₆ eqn:Hs₆ .
-     remember (fst_same a (b + c) (S (S i))) as s₇ eqn:Hs₇ .
      destruct s₆ as [di₆| ].
-      symmetry in Hs₆, Hs₇.
+      symmetry in Hs₆.
       destruct di₆.
        apply fst_same_iff in Hs₆; simpl in Hs₆.
        destruct Hs₆ as (_, Hs₆).
@@ -2989,14 +2987,16 @@ destruct s₅ as [di₅| ].
        apply negb_true_iff in Hs₆.
        rewrite Hca in Hs₆; discriminate Hs₆.
 
-       eapply fst_same_in_range in Hs₇; try eassumption; [ idtac | omega ].
-       subst s₇.
-       do 2 rewrite <- Nat.add_succ_l in H₃.
-       rewrite Nat.add_sub_assoc in H₃; [ idtac | omega ].
-       rewrite Nat.add_comm, Nat.add_sub in H₃; simpl in H₃.
-       rewrite H₁ in H₃; discriminate H₃.
+       remember Hk₂ as H₃; clear HeqH₃.
+       replace (S i) with (S i + 0) in H₃ by apply Nat.add_0_r.
+       assert (0 < S di₆) as H by apply Nat.lt_0_succ.
+       erewrite carry_before_relay in H₃; try eassumption.
+       discriminate H₃.
 
       apply fst_same_sym_iff in Hs₆; simpl in Hs₆.
+      remember Hk₂ as H₃; clear HeqH₃.
+      unfold carry_i in H₃; simpl in H₃.
+      remember (fst_same a (b + c) (S (S i))) as s₇ eqn:Hs₇ .
       destruct s₇ as [di₇| ]; [ idtac | discriminate H₃ ].
       apply fst_same_sym_iff in Hs₇; simpl in Hs₇.
       destruct Hs₇ as (Hn₇, Hs₇).
