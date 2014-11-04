@@ -3395,30 +3395,23 @@ destruct dj₁; simpl in *; repeat rewrite Nat.add_0_r in *.
     rewrite Hc₅ in H; simpl in H.
     rename H into Ha₅.
     destruct (lt_eq_lt_dec dj₂ di₅) as [[H₂| H₂]| H₂].
-     remember H₂ as H; clear HeqH.
-     apply Hn₅ in H; simpl in H.
-     rewrite Hs₄ in H; simpl in H.
-     rename H into Hb₂.
      assert (dj₂ < di₆) as H by (eapply lt_trans; eauto ).
      apply Hn₆ in H; simpl in H.
-     rewrite Hb₂ in H; simpl in H.
      rename H into Ha₂.
+     remember Hc₄ as H; clear HeqH.
+     unfold rm_add_i in H; simpl in H.
+     rewrite Ha₂, negb_xorb_diag, xorb_true_l in H.
+     apply negb_false_iff in H.
+     rewrite <- Nat.add_succ_l in H.
+     assert (dj₂ < di₆) as HH by (eapply lt_trans; eauto ).
+     erewrite carry_before_relay in H; try eassumption.
+     discriminate H.
+
+     subst dj₂.
+     rewrite Hs₄ in Ht₅; discriminate Ht₅.
 bbb.
   di₅ < di₆
-  dj₂ < di₅
-
-            i  i+1  -   j₂  -   i₅  -   i₆
-        b   .   .   .   1   -   1   .   0
-0               ≠   ≠   ≠   ≠   ≠   ≠
-        a   .   .   .   0   .   0   .   0
-0
-       b+c  .   .   .   .   .   .   .   .
-
-       a+b  .   .   .   0   .   .   .   .
-0               ≠   ≠
-        c   .   .   .   0   .   1   .   .
-1               ≠   ≠   ≠   ≠
-        b   .   .   .   1   .   1   .   0
+  di₅ < dj₂
 
 
             i  i+1  -   i₅  -   i₆
