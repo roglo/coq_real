@@ -3304,12 +3304,21 @@ remember (fst_same a b (S i)) as s₆ eqn:Hs₆ .
 destruct s₆ as [di₆| ]; [ idtac | discriminate Hc₆ ].
 apply fst_same_sym_iff in Hs₆; simpl in Hs₆.
 destruct Hs₆ as (Hn₆, Hs₆); rewrite Hc₆ in Hs₆; symmetry in Hs₆.
-destruct dj₁; simpl in *; repeat rewrite Nat.add_0_r in *.
+destruct dj₁.
+ rewrite Nat.add_0_r in Hta₁.
  rewrite Hta₁ in Hc₆; discriminate Hc₆.
 
- destruct dj₂; simpl in *; repeat rewrite Nat.add_0_r in *.
+ destruct dj₂.
+  rewrite Nat.add_0_r in Htb₂.
   rewrite Htb₂ in Hs₅; discriminate Hs₅.
-bbb.
+
+  remember Hc₃ as H; clear HeqH.
+  unfold carry_i in H; simpl in H.
+  rewrite Hsj₁ in H.
+  rewrite <- Nat.add_succ_r in H.
+  rewrite Hfa₁ in H; [ idtac | apply Nat.lt_0_succ ].
+  discriminate H.
+Qed.
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
@@ -3359,6 +3368,8 @@ destruct c₁, c₂, c₃, c₄, c₅, c₆; try reflexivity; simpl.
   rewrite carry_comm; assumption.
 
  exfalso; eapply case_2; eassumption.
+
+ exfalso; eapply case_3; eassumption.
 bbb.
 
 Theorem rm_add_assoc_hop : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
