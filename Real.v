@@ -3381,6 +3381,61 @@ destruct dj₁; simpl in *; repeat rewrite Nat.add_0_r in *.
   replace (S i) with (S i + 0) in Hs₄ by apply Nat.add_0_r; simpl in Hs₄.
   rewrite Htb₂ in Hs₄; discriminate Hs₄.
 
+  unfold carry_i in Hc₅; simpl in Hc₅.
+  remember (fst_same b c (S i)) as s₅ eqn:Hs₅ .
+  destruct s₅ as [di₅| ]; [ idtac | clear Hc₅ ].
+   symmetry in Hs₅.
+   remember Hs₅ as H; clear HeqH.
+   apply fst_same_iff in H; simpl in H.
+   destruct H as (Hn₅, Ht₅).
+   rewrite Hc₅ in Ht₅; symmetry in Ht₅.
+   destruct (lt_eq_lt_dec di₅ di₆) as [[H₁| H₁]| H₁].
+    remember H₁ as H; clear HeqH.
+    apply Hn₆ in H; simpl in H.
+    rewrite Hc₅ in H; simpl in H.
+    rename H into Ha₅.
+    destruct (lt_eq_lt_dec dj₂ di₅) as [[H₂| H₂]| H₂].
+     remember H₂ as H; clear HeqH.
+     apply Hn₅ in H; simpl in H.
+     rewrite Hs₄ in H; simpl in H.
+     rename H into Hb₂.
+     assert (dj₂ < di₆) as H by (eapply lt_trans; eauto ).
+     apply Hn₆ in H; simpl in H.
+     rewrite Hb₂ in H; simpl in H.
+     rename H into Ha₂.
+bbb.
+  di₅ < di₆
+  dj₂ < di₅
+
+            i  i+1  -   j₂  -   i₅  -   i₆
+        b   .   .   .   1   -   1   .   0
+0               ≠   ≠   ≠   ≠   ≠   ≠
+        a   .   .   .   0   .   0   .   0
+0
+       b+c  .   .   .   .   .   .   .   .
+
+       a+b  .   .   .   0   .   .   .   .
+0               ≠   ≠
+        c   .   .   .   0   .   1   .   .
+1               ≠   ≠   ≠   ≠
+        b   .   .   .   1   .   1   .   0
+
+
+            i  i+1  -   i₅  -   i₆
+        b   .   .   .   1   .   0
+0               ≠   ≠   ≠   ≠
+        a   .   .   .   0   .   0
+0
+       b+c  .   .   .   .   .   .
+
+       a+b  .   .   .   .   .   .
+0
+        c   .   .   .   1   .   .
+1               ≠   ≠
+        b   .   .   .   1   .   0
+
+bbb.
+
   remember Hss₁ as H; clear HeqH.
   destruct dk₁; simpl in *; repeat rewrite Nat.add_0_r in *.
    apply fst_same_iff in H; simpl in H.
@@ -3425,6 +3480,20 @@ destruct dj₁; simpl in *; repeat rewrite Nat.add_0_r in *.
         apply negb_false_iff in H.
 
 bbb.
+
+            i  i+1  -   i₅  -   i₆
+        b   .   .   .   .   .   .
+0
+        a   .   .   .   .   .   .
+0
+       b+c  .   .   .   .   .   .
+
+       a+b  .   .   .   .   .   .
+0
+        c   .   .   .   .   .   .
+1
+        b   .   .   .   .   .   .
+
 
             i  i+1  -   i₅  -   i₆
         b   .   .   .   1   .   0
