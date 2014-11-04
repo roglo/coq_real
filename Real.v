@@ -3450,6 +3450,17 @@ destruct dj₁; simpl in *; repeat rewrite Nat.add_0_r in *.
       apply Hn₄ in H; simpl in H.
       rewrite Nat.add_0_r, Hd₁ in H; simpl in H.
       rename H into He₁.
+      remember He₁ as H; clear HeqH.
+      unfold rm_add_i in H; simpl in H.
+      rewrite Hc₆, Ht₆ in H.
+      rewrite xorb_false_l in H.
+      remember Hsj₁ as HH; clear HeqHH.
+      apply fst_same_iff in HH; simpl in HH.
+      destruct HH as (Hn₁, Hs₁).
+      rewrite Hc₃ in Hs₁; symmetry in Hs₁.
+      rename H into Hc₇.
+      destruct dj₁.
+       rewrite Nat.add_0_r in Hs₁.
 bbb.
   di₆ < di₅
   di₆ < dj₂
