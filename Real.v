@@ -3370,9 +3370,10 @@ rewrite Hsj₁ in Hc₃; simpl in Hc₃.
 unfold carry_i in Hc₆; simpl in Hc₆.
 remember (fst_same a b (S i)) as s₆ eqn:Hs₆ .
 destruct s₆ as [di₆| ]; [ idtac | discriminate Hc₆ ].
-remember Hs₆ as H; clear HeqH.
-apply fst_same_sym_iff in H; simpl in H.
-destruct H as (Hn₆, Ht₆); rewrite Ht₆ in Ht₆; symmetry in Ht₆.
+symmetry in Hs₆; rename Hs₆ into Hss₆.
+remember Hss₆ as H; clear HeqH.
+apply fst_same_iff in H; simpl in H.
+destruct H as (Hn₆, Ht₆); rewrite Hc₆ in Ht₆; symmetry in Ht₆.
 destruct dj₁; simpl in *; repeat rewrite Nat.add_0_r in *.
  rewrite Hta₁ in Hc₆; discriminate Hc₆.
 
@@ -3380,9 +3381,8 @@ destruct dj₁; simpl in *; repeat rewrite Nat.add_0_r in *.
   replace (S i) with (S i + 0) in Hs₄ by apply Nat.add_0_r; simpl in Hs₄.
   rewrite Htb₂ in Hs₄; discriminate Hs₄.
 
-bbb.
+  remember Hss₁ as H; clear HeqH.
   destruct dk₁; simpl in *; repeat rewrite Nat.add_0_r in *.
-   remember Hss₁ as H; clear HeqH.
    apply fst_same_iff in H; simpl in H.
    destruct H as (_, Hs₁); rewrite Nat.add_0_r in Hs₁.
    remember Hsj₁ as H; clear HeqH.
@@ -3397,12 +3397,48 @@ bbb.
     apply fst_same_iff in H; simpl in H.
     destruct H as (Hn₅, Hd₅).
     rewrite Hc₅ in Hd₅; symmetry in Hd₅.
-    symmetry in Hs₆.
     rename Hss₁ into Hu₁.
     clear Hbk₁ Hck₁ Hfa₁ Hfb₁ Hfb₂ Hfa₂.
     destruct dk₂; simpl in *; repeat rewrite Nat.add_0_r in *.
+     destruct (lt_eq_lt_dec di₅ di₆) as [[H₁| H₁]| H₁].
+      remember H₁ as H; clear HeqH.
+      apply Hn₆ in H.
+      rewrite Hc₅ in H; simpl in H.
+      rename H into Ha₅.
+      destruct dj₂; simpl in *; repeat rewrite Nat.add_0_r in *.
+       try rewrite Nat.add_1_r in *; simpl in *.
+       destruct di₅; simpl in *; repeat rewrite Nat.add_0_r in *.
+        rewrite Hs₄ in Hd₅; discriminate Hd₅.
+
+        rewrite Nat.add_succ_r in Ha₅.
+        rewrite Hbl₂ in Ha₅; discriminate Ha₅.
+
+       destruct di₅; simpl in *; repeat rewrite Nat.add_0_r in *.
+        pose proof (Hn₄ 0 (Nat.lt_0_succ _)) as H.
+        rewrite Nat.add_0_r in H.
+        rewrite Hd₅ in H; simpl in H.
+        rename H into Ht₂.
+        remember Ht₂ as H; clear HeqH.
+        unfold rm_add_i in H; simpl in H.
+        rewrite Ha₅, Hc₅ in H.
+        rewrite xorb_true_r in H.
+        apply negb_false_iff in H.
 
 bbb.
+
+            i  i+1  -   i₅  -   i₆
+        b   .   .   .   1   .   0
+                ≠   ≠   ≠   ≠
+        a   .   .   .   0   .   0
+
+       b+c  .   0   0   .   .   .
+
+       a+b  .   1   1   1   1   .
+
+        c   .   .   .   1   .   .
+                ≠   ≠
+        b   .   .   .   1   .   0
+
 *)
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
