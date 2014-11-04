@@ -3201,8 +3201,114 @@ destruct s₅ as [di₅| ].
   apply fst_same_iff in H; simpl in H.
   destruct H as (Hn₃, Hs₃).
   rewrite Ha₃ in Hs₃; symmetry in Hs₃.
-  move Hs₃ before Ha₃.
-  move Hn₃ before Hs₃.
+  move Hs₃ before Ha₃; move Hn₃ before Hs₃.
+  symmetry in Hs₅, Hss₄.
+  injection Hsj₂; clear Hsj₂; intros; subst di₄.
+  move Hs₃ before Ha₃; move Hn₃ before Hs₃.
+  move dj₂ before i; move dk₁ before i; move dj₁ before i.
+  move Hc₆ before Hc₁; move Hc₅ before Hc₁; move Hc₄ before Hc₁.
+  move Hc₃ before Hc₁; move Hc₂ before Hc₁; move Hj₂ before Hj₁.
+  move Hcl₂ before Hj₂; move Hbl₂ before Hj₂.
+  move Hcl₁ before Hj₂; move Hbl₁ before Hj₂.
+  move Hta₂ before Hj₂; move Htb₂ before Hj₂.
+  move Hta₁ before Hj₂; move Htb₁ before Hj₂.
+  move Hbk₂ before Hfb₁; move Hck₂ before Hfb₁.
+  move Hfb₂ before Hfb₁; move Hfa₂ before Hfb₁.
+  move Hck₁ before Hfb₁; move Hbk₁ before Hfb₁.
+  move Hss₄ before Hss₁; move Hs₅ before Hss₁.
+  move Hss₂ before Hss₁; move di₅ before dj₂.
+  move Hs₄ before Ha₃; move Ht₅ before Ha₃; move Hj₅ before Ha₃.
+  move Hi₄ before Hs₃; move dk₂ before dk₁.
+  move Hta₂ before Htb₁; move Hbl₂ before Hta₁.
+  move Hbl₁ before Hbl₂; move Hcl₂ before Hbl₁; move Hcl₁ after Htb₂.
+  move Hbk₂ before Hfa₁; move Hbk₁ before Hbk₂.
+  move Hck₂ before Hbk₁; move Hck₁ before Hck₂.
+  move Hfb₂ before Hck₁; move Hss₄ before Hsj₁.
+  move Hs₅ after Hss₁.
+  destruct dj₂; [ revert H₄; apply Nat.nlt_0_r | idtac ].
+  destruct dj₂; [ revert H₄; apply Nat.nlt_0_r | idtac ].
+  pose proof (Hfb₂ (Nat.lt_0_succ (S dj₂))) as H; clear Hfb₂.
+  simpl in H.
+  rename H into Hd₂; move Hd₂ before Ht₅.
+  pose proof (Hfa₂ (Nat.lt_0_succ (S dj₂))) as H; clear Hfa₂.
+  simpl in H.
+  rename H into Hs₂; move Hs₂ after Hs₃.
+  move Hi₄ before Hs₂.
+  simpl in *.
+  clear Hs₂ Hd₂.
+  rename Hs₅ into Hss₅.
+  destruct dj₁.
+   clear Hfa₁ Hfb₁ Hn₃; simpl in *.
+   try rewrite Nat.add_0_r in *.
+   rewrite Hss₅ in Hss₁.
+   injection Hss₁; clear Hss₁; intros; subst di₅.
+   destruct dk₂.
+    clear Hbk₂ Hck₂.
+    try rewrite Nat.add_0_r in *.
+    simpl in *.
+    destruct dk₁.
+     clear Hbk₁ Hck₁ Hn₅; simpl in *.
+     clear H₄.
+     try rewrite Nat.add_0_r in *.
+     move Hj₅ before Ha₃; move Ht₅ before Hj₅.
+     move Hss₅ before Hss₂.
+     pose proof (Hn₄ 0 (Nat.lt_0_succ dj₂)) as H.
+     rewrite Nat.add_0_r in H.
+     rewrite Ht₅ in H; simpl in H.
+     rename H into Hi₁.
+     move Hi₁ after Hs₃.
+     clear Hbl₂ Hcl₂ Htb₂.
+     rewrite Hcl₁ in Hs₄.
+     discriminate Hs₄.
+
+     simpl in *.
+     clear Hbl₂.
+     move Hj₅ before Ha₃.
+     move Ht₅ before Hj₅.
+     rewrite Hbk₁ in Hj₅; [ idtac | apply Nat.lt_0_succ ].
+     discriminate Hj₅.
+
+    simpl in *.
+    pose proof (Hck₂ (Nat.lt_0_succ dk₂)) as H; clear Hck₂.
+    rename H into Hb₁.
+    pose proof (Hbk₂ (Nat.lt_0_succ dk₂)) as H; clear Hbk₂.
+    rename H into Ha₁.
+    move Ha₁ before Ha₃.
+    move Hb₁ before Ha₁.
+    move Hj₅ before Hb₁.
+    move Ht₅ before Hs₄.
+    move Ht₅ after Hs₄.
+    destruct dk₁.
+     clear Hbk₁ Hck₁ H₄; simpl in *.
+     clear Hn₅.
+     try rewrite Nat.add_0_r in *.
+     move Hss₅ before Hss₂.
+     rewrite Hcl₁ in Hs₄; discriminate Hs₄.
+
+     simpl in *.
+     rewrite Hck₁ in Ht₅; [ idtac | apply Nat.lt_0_succ ].
+     discriminate Ht₅.
+
+   simpl in *.
+   rewrite <- Nat.add_succ_r in Ha₃.
+   rewrite Hfa₁ in Ha₃; [ idtac | apply Nat.lt_0_succ ].
+   discriminate Ha₃.
+bbb.
+
+            i  i+1  -   i₅   -   j₂  -
+        b   .   .   .   1   .   .   .
+
+        a   .   .   .   .   .   .   .
+
+       b+c  .   .   .   .   .   .   .
+
+       a+b  .   .   .   .   .   0   1   1   1 ...
+
+        c   .   .   .   1   .   0   1   1   1 ...
+
+        b   .   .   .   1   .   .   .
+
+bbb.
   destruct dj₁.
    clear Hn₃; rewrite Nat.add_0_r in Ha₃, Hs₃.
    destruct di₅.
