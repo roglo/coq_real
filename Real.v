@@ -3215,6 +3215,10 @@ destruct s₅ as [di₅| ].
   move Hi₄ before Hs₂.
   rename Hs₅ into Hss₅.
   destruct dj₁.
+   simpl in Hbk₁; rewrite Nat.add_0_r in Hbk₁.
+   rewrite Nat.add_0_r in Hss₁; simpl in Hss₁.
+   rewrite Hss₅ in Hss₁.
+   injection Hss₁; intros; subst di₅.
    destruct dk₂.
     destruct dk₁.
      do 2 rewrite Nat.add_0_r in Hcl₁.
@@ -3222,10 +3226,6 @@ destruct s₅ as [di₅| ].
      simpl in Hcl₁.
      rewrite Hcl₁ in Hs₄; discriminate Hs₄.
 
-     simpl in Hbk₁; rewrite Nat.add_0_r in Hbk₁.
-     rewrite Nat.add_0_r in Hss₁; simpl in Hss₁.
-     rewrite Hss₅ in Hss₁.
-     injection Hss₁; intros; subst di₅.
      rewrite Hbk₁ in Hj₅; [ idtac | apply Nat.lt_0_succ ].
      discriminate Hj₅.
 
@@ -3234,10 +3234,7 @@ destruct s₅ as [di₅| ].
      rewrite Hcl₁ in Hs₄; discriminate Hs₄.
 
      rewrite Nat.add_0_r in Hck₁; simpl in Hck₁.
-     simpl in Hbk₁; rewrite Nat.add_0_r in Hbk₁.
-     rewrite Nat.add_0_r in Hss₁; simpl in Hss₁.
-     rewrite Hss₅ in Hss₁.
-     injection Hss₁; intros; subst di₅.
+     simpl in Ht₅.
      rewrite Hck₁ in Ht₅; [ idtac | apply Nat.lt_0_succ ].
      discriminate Ht₅.
 
