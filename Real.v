@@ -3221,22 +3221,25 @@ destruct s₅ as [di₅| ].
    rewrite <- Nat.add_succ_r in Ha₃.
    rewrite Hfa₁ in Ha₃; [ idtac | apply Nat.lt_0_succ ].
    discriminate Ha₃.
-bbb.
 
-            i  i+1  -   i₅  -   i₄
-        b   .   .   .   .   .   .
+ injection Hsj₂; clear Hsj₂; intros; subst di₄; clear Hj₅.
+ apply fst_same_sym_iff in Hs₅; simpl in Hs₅.
+ destruct dj₁, dk₁; simpl in *; repeat rewrite Nat.add_0_r in *.
+  pose proof (Hs₅ 0) as H.
+  rewrite Hbl₁, Hcl₁ in H; discriminate H.
 
-        a   .   .   .   .   .   .
+  pose proof (Hs₅ (S dk₁ + 0)) as H.
+  rewrite Nat.add_assoc in H.
+  rewrite Hbl₁, Hcl₁ in H; discriminate H.
 
-       b+c  .   .   .   .   .   .
+  pose proof (Hs₅ (S dj₁ + 0)) as H.
+  rewrite Nat.add_assoc in H.
+  rewrite Hbl₁, Hcl₁ in H; discriminate H.
 
-       a+b  .   .   .   .   .   0
-                ≠   ≠   ≠   ≠
-        c   .   .   .   1   .   0
-                ≠   ≠
-        b   .   .   .   1   .   .
-
-*)
+  pose proof (Hs₅ (S dj₁ + S dk₁ + 0)) as H.
+  do 2 rewrite Nat.add_assoc in H.
+  rewrite Hbl₁, Hcl₁ in H; discriminate H.
+qed.
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
