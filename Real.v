@@ -3188,6 +3188,13 @@ destruct s₅ as [di₅| ].
   destruct dj₁.
    clear Hn₃; rewrite Nat.add_0_r in Ha₃, Hs₃.
    destruct di₅.
+    destruct dj₂.
+     injection Hsj₂; clear Hsj₂; intros; subst di₄.
+     revert H₄; apply Nat.nlt_0_r.
+
+     clear Hfa₁ Hfb₁ Hfa₂ Hfb₂; simpl in Hsj₂.
+     injection Hsj₂; clear Hsj₂; intros; subst dj₂.
+     clear Hn₅; rewrite Nat.add_0_r in Hj₅, Ht₅.
 bbb.
 
 di₅ < di₄
@@ -3201,9 +3208,9 @@ di₅ = 0
 
        b+c  .   1   .   .
 
-       a+b  .   0   .   0
+       a+b  .   0   .   0   1   1   1 ...
                 ≠   ≠
-        c   .   1   .   0
+        c   .   1   .   0   1   1   1 ...
 
         b   .   1   .   .
 
