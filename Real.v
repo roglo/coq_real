@@ -3173,9 +3173,54 @@ destruct s₅ as [di₅| ].
 
   subst di₅.
   rewrite Hs₄ in Ht₅; discriminate Ht₅.
+
+  remember Hc₃ as H; clear HeqH.
+  unfold carry_i in H; simpl in H.
+  rewrite Hsj₁ in H.
+  rename H into Ha₃; move Ha₃ before Hc₃.
+  move Hc₄ after Hs₄.
+  remember Hsj₁ as H; clear HeqH.
+  apply fst_same_iff in H; simpl in H.
+  destruct H as (Hn₃, Hs₃).
+  rewrite Ha₃ in Hs₃; symmetry in Hs₃.
+  move Hs₃ before Ha₃.
+  move Hn₃ before Hs₃.
+  destruct dj₁.
+   clear Hn₃; rewrite Nat.add_0_r in Ha₃, Hs₃.
+   destruct di₅.
 bbb.
 
 di₅ < di₄
+dj₁ = 0
+di₅ = 0
+
+            i  i+1  -   i₄
+        b   .   1   .   .
+
+        a   .   1   .   .
+
+       b+c  .   1   .   .
+
+       a+b  .   0   .   0
+                ≠   ≠
+        c   .   1   .   0
+
+        b   .   1   .   .
+
+
+            i  i+1  -   i₅  -   i₄
+        b   .   .   .   1   .   .
+
+        a   .   .   .   .   .   .
+
+       b+c  .   0   0   .   .   .
+
+       a+b  .   .   .   0   .   0
+                ≠   ≠   ≠   ≠
+        c   .   .  ¬x   1   .   0
+                ≠   ≠
+        b   .   .   x   1   .   .
+
 
             i  i+1  -   i₅  -   i₄
         b   .   .   .   .   .   .
