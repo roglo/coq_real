@@ -2496,9 +2496,16 @@ Theorem forall_add_succ_r : ∀ α i f (a : α),
   (∀ j, f (i + S j) = a)
   → id (∀ j, f (S i + j) = a).
 Proof.
-intros α i f a; unfold id.
-intros H j.
+intros α i f a; unfold id; intros H j.
 rewrite Nat.add_succ_l, <- Nat.add_succ_r; apply H.
+Qed.
+
+Theorem forall_add_succ_l : ∀ α i f (a : α),
+  (∀ j : nat, f (S (i + j)) = a)
+  → id (∀ j : nat, f (S i + j) = a).
+Proof.
+intros α i f a; unfold id; intros H j.
+apply H.
 Qed.
 
 Theorem fst_same_in_range : ∀ a b i j di s,
@@ -2817,6 +2824,17 @@ rewrite <- Nat.add_succ_r in Hfa₁.
 rewrite <- Nat.add_succ_r in Hfb₁.
 rewrite <- Nat.add_succ_r in Hfa₂.
 rewrite <- Nat.add_succ_r in Hfb₂.
+remember Htb₁ as H; clear HeqH.
+apply forall_add_succ_l in H.
+unfold id in H.
+apply rm_add_inf_true_if in H.
+move H before Hsj₁.
+destruct H as (dk₁, (Hbl₁, (Hcl₁, (Hbk₁, (Hck₁, Hss₁))))).
+remember Hta₂ as H; clear HeqH.
+apply forall_add_succ_l in H; unfold id in H.
+apply rm_add_inf_true_if in H.
+move H before Hsj₂.
+destruct H as (dk₂, (Hbl₂, (Hcl₂, (Hbk₂, (Hck₂, Hss₂))))).
 remember Hc₄ as H; clear HeqH.
 unfold carry_i in H; simpl in H.
 remember (fst_same (a + b) c (S i)) as s₄ eqn:Hs₄ .
@@ -3195,6 +3213,8 @@ destruct s₅ as [di₅| ].
      clear Hfa₁ Hfb₁ Hfa₂ Hfb₂; simpl in Hsj₂.
      injection Hsj₂; clear Hsj₂; intros; subst dj₂.
      clear Hn₅; rewrite Nat.add_0_r in Hj₅, Ht₅.
+     destruct dk₂.
+      clear Hbk₂ Hck₂; rewrite Nat.add_0_r in Hbl₂, Hcl₂; simpl in Hss₂.
 bbb.
 
 di₅ < di₄
@@ -3202,17 +3222,17 @@ dj₁ = 0
 di₅ = 0
 
             i  i+1  -   i₄
-        b   .   1   .   .
+        b   .   1   .   .   1   1   1 ...
 
-        a   .   1   .   .
+        a   .   1   .   .   1   1   1 ...
 
-       b+c  .   1   .   .
+       b+c  .   1   .   .   1   1   1 ...
 
        a+b  .   0   .   0   1   1   1 ...
                 ≠   ≠
         c   .   1   .   0   1   1   1 ...
 
-        b   .   1   .   .
+        b   .   1   .   .   1   1   1 ...
 
 
             i  i+1  -   i₅  -   i₄
