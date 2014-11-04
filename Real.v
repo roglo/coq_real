@@ -3409,23 +3409,36 @@ destruct dj₁; simpl in *; repeat rewrite Nat.add_0_r in *.
 
      subst dj₂.
      rewrite Hs₄ in Ht₅; discriminate Ht₅.
+
+     remember H₂ as H; clear HeqH.
+     apply Hn₄ in H; simpl in H.
+     unfold rm_add_i in H; simpl in H.
+     rewrite Ha₅, Hc₅, Ht₅ in H.
+     rewrite xorb_true_l in H.
+     apply negb_false_iff in H.
+     rewrite <- Nat.add_succ_l in H.
+     erewrite carry_before_relay in H; try eassumption.
+     discriminate H.
+
+    subst di₆.
+    rewrite Ht₆ in Hc₅; discriminate Hc₅.
+
 bbb.
-  di₅ < di₆
-  di₅ < dj₂
+  di₆ < di₅
 
 
-            i  i+1  -   i₅  -   i₆
-        b   .   .   .   1   .   0
+            i  i+1  -   i₅  -   i₆  -   j₂
+        b   .   .   .   1   .   0   .   .
 0               ≠   ≠   ≠   ≠
-        a   .   .   .   0   .   0
+        a   .   .   .   0   .   0   .   .
 0
-       b+c  .   .   .   .   .   .
+       b+c  .   .   .   .   .   .   .   .
 
-       a+b  .   .   .   .   .   .
-0
-        c   .   .   .   1   .   .
+       a+b  .   .   .   .   .   .   .   0
+0               ≠   ≠   ≠   ≠   ≠   ≠
+        c   .   .   .   1   .   .   .   0
 1               ≠   ≠
-        b   .   .   .   1   .   0
+        b   .   .   .   1   .   0   .   .
 
 bbb.
 
