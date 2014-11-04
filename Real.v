@@ -3204,27 +3204,6 @@ destruct s₅ as [di₅| ].
   move Hs₃ before Ha₃; move Hn₃ before Hs₃.
   symmetry in Hs₅, Hss₄.
   injection Hsj₂; clear Hsj₂; intros; subst di₄.
-  move Hs₃ before Ha₃; move Hn₃ before Hs₃.
-  move dj₂ before i; move dk₁ before i; move dj₁ before i.
-  move Hc₆ before Hc₁; move Hc₅ before Hc₁; move Hc₄ before Hc₁.
-  move Hc₃ before Hc₁; move Hc₂ before Hc₁; move Hj₂ before Hj₁.
-  move Hcl₂ before Hj₂; move Hbl₂ before Hj₂.
-  move Hcl₁ before Hj₂; move Hbl₁ before Hj₂.
-  move Hta₂ before Hj₂; move Htb₂ before Hj₂.
-  move Hta₁ before Hj₂; move Htb₁ before Hj₂.
-  move Hbk₂ before Hfb₁; move Hck₂ before Hfb₁.
-  move Hfb₂ before Hfb₁; move Hfa₂ before Hfb₁.
-  move Hck₁ before Hfb₁; move Hbk₁ before Hfb₁.
-  move Hss₄ before Hss₁; move Hs₅ before Hss₁.
-  move Hss₂ before Hss₁; move di₅ before dj₂.
-  move Hs₄ before Ha₃; move Ht₅ before Ha₃; move Hj₅ before Ha₃.
-  move Hi₄ before Hs₃; move dk₂ before dk₁.
-  move Hta₂ before Htb₁; move Hbl₂ before Hta₁.
-  move Hbl₁ before Hbl₂; move Hcl₂ before Hbl₁; move Hcl₁ after Htb₂.
-  move Hbk₂ before Hfa₁; move Hbk₁ before Hbk₂.
-  move Hck₂ before Hbk₁; move Hck₁ before Hck₂.
-  move Hfb₂ before Hck₁; move Hss₄ before Hsj₁.
-  move Hs₅ after Hss₁.
   destruct dj₂; [ revert H₄; apply Nat.nlt_0_r | idtac ].
   destruct dj₂; [ revert H₄; apply Nat.nlt_0_r | idtac ].
   pose proof (Hfb₂ (Nat.lt_0_succ (S dj₂))) as H; clear Hfb₂.
@@ -3234,160 +3213,38 @@ destruct s₅ as [di₅| ].
   simpl in H.
   rename H into Hs₂; move Hs₂ after Hs₃.
   move Hi₄ before Hs₂.
-  simpl in *.
-  clear Hs₂ Hd₂.
   rename Hs₅ into Hss₅.
   destruct dj₁.
-   clear Hfa₁ Hfb₁ Hn₃; simpl in *.
-   try rewrite Nat.add_0_r in *.
-   rewrite Hss₅ in Hss₁.
-   injection Hss₁; clear Hss₁; intros; subst di₅.
    destruct dk₂.
-    clear Hbk₂ Hck₂.
-    try rewrite Nat.add_0_r in *.
-    simpl in *.
     destruct dk₁.
-     clear Hbk₁ Hck₁ Hn₅; simpl in *.
-     clear H₄.
-     try rewrite Nat.add_0_r in *.
-     move Hj₅ before Ha₃; move Ht₅ before Hj₅.
-     move Hss₅ before Hss₂.
-     pose proof (Hn₄ 0 (Nat.lt_0_succ dj₂)) as H.
-     rewrite Nat.add_0_r in H.
-     rewrite Ht₅ in H; simpl in H.
-     rename H into Hi₁.
-     move Hi₁ after Hs₃.
-     clear Hbl₂ Hcl₂ Htb₂.
-     rewrite Hcl₁ in Hs₄.
-     discriminate Hs₄.
+     do 2 rewrite Nat.add_0_r in Hcl₁.
+     simpl in Hs₄.
+     simpl in Hcl₁.
+     rewrite Hcl₁ in Hs₄; discriminate Hs₄.
 
-     simpl in *.
-     clear Hbl₂.
-     move Hj₅ before Ha₃.
-     move Ht₅ before Hj₅.
+     simpl in Hbk₁; rewrite Nat.add_0_r in Hbk₁.
+     rewrite Nat.add_0_r in Hss₁; simpl in Hss₁.
+     rewrite Hss₅ in Hss₁.
+     injection Hss₁; intros; subst di₅.
      rewrite Hbk₁ in Hj₅; [ idtac | apply Nat.lt_0_succ ].
      discriminate Hj₅.
 
-    simpl in *.
-    pose proof (Hck₂ (Nat.lt_0_succ dk₂)) as H; clear Hck₂.
-    rename H into Hb₁.
-    pose proof (Hbk₂ (Nat.lt_0_succ dk₂)) as H; clear Hbk₂.
-    rename H into Ha₁.
-    move Ha₁ before Ha₃.
-    move Hb₁ before Ha₁.
-    move Hj₅ before Hb₁.
-    move Ht₅ before Hs₄.
-    move Ht₅ after Hs₄.
     destruct dk₁.
-     clear Hbk₁ Hck₁ H₄; simpl in *.
-     clear Hn₅.
-     try rewrite Nat.add_0_r in *.
-     move Hss₅ before Hss₂.
+     do 2 rewrite Nat.add_0_r in Hcl₁; simpl in Hs₄, Hcl₁.
      rewrite Hcl₁ in Hs₄; discriminate Hs₄.
 
-     simpl in *.
+     rewrite Nat.add_0_r in Hck₁; simpl in Hck₁.
+     simpl in Hbk₁; rewrite Nat.add_0_r in Hbk₁.
+     rewrite Nat.add_0_r in Hss₁; simpl in Hss₁.
+     rewrite Hss₅ in Hss₁.
+     injection Hss₁; intros; subst di₅.
      rewrite Hck₁ in Ht₅; [ idtac | apply Nat.lt_0_succ ].
      discriminate Ht₅.
 
-   simpl in *.
    rewrite <- Nat.add_succ_r in Ha₃.
    rewrite Hfa₁ in Ha₃; [ idtac | apply Nat.lt_0_succ ].
    discriminate Ha₃.
 bbb.
-
-            i  i+1  -   i₅   -   j₂  -
-        b   .   .   .   1   .   .   .
-
-        a   .   .   .   .   .   .   .
-
-       b+c  .   .   .   .   .   .   .
-
-       a+b  .   .   .   .   .   0   1   1   1 ...
-
-        c   .   .   .   1   .   0   1   1   1 ...
-
-        b   .   .   .   1   .   .   .
-
-bbb.
-  destruct dj₁.
-   clear Hn₃; rewrite Nat.add_0_r in Ha₃, Hs₃.
-   destruct di₅.
-    destruct dj₂.
-     injection Hsj₂; clear Hsj₂; intros; subst di₄.
-     revert H₄; apply Nat.nlt_0_r.
-
-     clear Hfa₁ Hfb₁ Hfa₂ Hfb₂; simpl in Hsj₂.
-     injection Hsj₂; clear Hsj₂; intros; subst dj₂.
-     clear Hn₅; rewrite Nat.add_0_r in Hj₅, Ht₅.
-     destruct dk₂.
-      clear Hbk₂ Hck₂; rewrite Nat.add_0_r in Hbl₂, Hcl₂; simpl in Hss₂.
-      remember Hs₃ as H; clear HeqH.
-      unfold rm_add_i in H.
-      rewrite Hj₅, Ht₅, xorb_true_l, xorb_false_l in H.
-      unfold carry_i in H; simpl in H.
-      remember (fst_same b c (S (S i))) as s₆ eqn:Hs₆ .
-      destruct s₆ as [di₆| ].
-       apply fst_same_sym_iff in Hs₆; simpl in Hs₆.
-       destruct Hs₆ as (Hn₆, Hs₆).
-       rewrite H in Hs₆; symmetry in Hs₆.
-       rename H into Hb₆; move Hb₆ after Hs₆.
-       destruct (lt_eq_lt_dec (S di₆) di₄) as [[H₁| H₁]| H₁].
-        remember Hi₄ as H; clear HeqH.
-        unfold rm_add_i in H; simpl in H.
-        unfold carry_i in H; simpl in H.
-        rewrite <- Nat.add_succ_r in H.
-        rewrite Hss₂ in H.
-        rewrite Nat.add_0_r in H.
-        pose proof (Hbl₂ 0) as HH.
-        rewrite Nat.add_0_r, Nat.add_succ_r in HH.
-        rewrite HH, xorb_true_r in H.
-        apply negb_false_iff in H.
-        rename H into Hab₄.
-        rename HH into Ha₄.
-        move Hab₄ after Hs₄.
-bbb.
-
-di₅ < di₄
-dj₁ = 0
-di₅ = 0
-dk₂ = 0
-
-            i  i+1  -   i₄
-        b   .   1   0   x   1   1   1 ...
-                  ←0    ≠
-        a   .   1   0  ¬x   1   1   1 ...
-
-       b+c  .   10  x  ¬x   1   1   1 ...
-
-       a+b  .   0   1   0   1   1   1 ...
-                ≠   ≠
-        c   .   1   0   0   1   1   1 ...
-
-        b   .   1   0   x   1   1   1 ...
-
-      a = 0,100111...
-      b = 0,101111...
-      c = 0,100111...
-    a+b = 0,010111...
-(a+b)+c = 0,111111...
-      b = 0,101111...
-      c = 0,100111...
-    b+c = 0,010111...
-
-
-            i  i+1  -   i₅  -   i₄
-        b   .   .   .   1   .   .
-
-        a   .   .   .   .   .   .
-
-       b+c  .   0   0   .   .   .
-
-       a+b  .   .   .   0   .   0
-                ≠   ≠   ≠   ≠
-        c   .   .  ¬x   1   .   0
-                ≠   ≠
-        b   .   .   x   1   .   .
-
 
             i  i+1  -   i₅  -   i₄
         b   .   .   .   .   .   .
