@@ -3435,6 +3435,7 @@ destruct dj₁; simpl in *; repeat rewrite Nat.add_0_r in *.
      erewrite carry_before_relay in H; try eassumption.
      discriminate H.
 
+     subst dj₂.
 bbb.
   di₆ < di₅
   dj₂ = di₆
