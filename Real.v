@@ -3136,7 +3136,6 @@ destruct s₅ as [di₅| ].
      apply Nat.lt_0_succ.
 
    clear Hk₁.
-bbb.
    apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
    rename Ha₄ into Hd₄.
    pose proof (Hs₁ di₄) as Ha₄; move Ha₄ after Hb₄.
@@ -3158,40 +3157,39 @@ bbb.
     apply fst_same_iff in H; simpl in H.
     destruct H as (_, H).
     rewrite Nat.add_0_r, Has in H; symmetry in H.
-    rename H into Hbcs.
+    unfold rm_add_i in H; simpl in H.
+    rewrite Hbs, Hcs, xorb_true_l in H.
+    apply negb_true_iff in H.
+    replace (S i) with (S i + 0) in H by apply Nat.add_0_r.
+    symmetry in Hs₅.
+    assert (0 < di₅) as HH by (eapply Nat.lt_lt_0; eauto ).
+    erewrite carry_before_relay in H; try eassumption.
+    discriminate H.
+
+    simpl in H.
+    rewrite Nat.add_succ_r in Hfa₁; simpl in Hfa₁.
+    rewrite Hfa₁ in H; [ discriminate H | idtac ].
+    apply Nat.lt_0_succ.
+
+  subst di₅.
+  rewrite Hs₄ in Ht₅; discriminate Ht₅.
 bbb.
 
-di₄ < di₅
-  Hs₁ : None = fst_same a b (S i)
+di₅ < di₄
 
-            i  i+1  -   i₄  -   i₅
-        b   .   0   0   1   .   1
-                ≠   ≠   ≠   ≠   ≠   ≠ ...
-        a   .   1   1   0   .   0
-                        | contradiction
-       b+c  .   0   0   0   .   .
-
-       a+b  .   0   0   0   .   0
-                ≠   ≠
-        c   .   1   1   0   .   1
-                ≠   ≠   ≠   ≠
-        b   .   0   0   1   .   1
-
-
-            i  i+1  -   i₄  -   i₅
+            i  i+1  -   i₅  -   i₄
         b   .   .   .   .   .   .
-                ≠   ≠   ≠   ≠   ≠   ≠ ...
+
         a   .   .   .   .   .   .
 
        b+c  .   .   .   .   .   .
 
-       a+b  .   .   .   0   .   .
-                ≠   ≠
-        c   .   .   .   0   .   1
+       a+b  .   .   .   .   .   0
                 ≠   ≠   ≠   ≠
-        b   .   .   .   .   .   1
+        c   .   .   .   1   .   0
+                ≠   ≠
+        b   .   .   .   1   .   .
 
-bbb.
 *)
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
