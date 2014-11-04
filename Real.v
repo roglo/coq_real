@@ -3370,14 +3370,35 @@ rewrite Hsj₁ in Hc₃; simpl in Hc₃.
 unfold carry_i in Hc₆; simpl in Hc₆.
 remember (fst_same a b (S i)) as s₆ eqn:Hs₆ .
 destruct s₆ as [di₆| ]; [ idtac | discriminate Hc₆ ].
-apply fst_same_sym_iff in Hs₆; simpl in Hs₆.
-destruct Hs₆ as (Hn₆, Hs₆); rewrite Hc₆ in Hs₆; symmetry in Hs₆.
+remember Hs₆ as H; clear HeqH.
+apply fst_same_sym_iff in H; simpl in H.
+destruct H as (Hn₆, Ht₆); rewrite Ht₆ in Ht₆; symmetry in Ht₆.
 destruct dj₁; simpl in *; repeat rewrite Nat.add_0_r in *.
  rewrite Hta₁ in Hc₆; discriminate Hc₆.
 
  destruct dj₂; simpl in *; repeat rewrite Nat.add_0_r in *.
   replace (S i) with (S i + 0) in Hs₄ by apply Nat.add_0_r; simpl in Hs₄.
   rewrite Htb₂ in Hs₄; discriminate Hs₄.
+
+  destruct dk₁; simpl in *; repeat rewrite Nat.add_0_r in *.
+   remember Hss₁ as H; clear HeqH.
+   apply fst_same_iff in H; simpl in H.
+   destruct H as (_, Hs₁); rewrite Nat.add_0_r in Hs₁.
+   remember Hsj₁ as H; clear HeqH.
+   apply fst_same_iff in H; simpl in H.
+   destruct H as (Hn₁, Ht₁).
+   rewrite Hc₃ in Ht₁; symmetry in Ht₁.
+   unfold carry_i in Hc₅; simpl in Hc₅.
+   remember (fst_same b c (S i)) as s₅ eqn:Hs₅ .
+   destruct s₅ as [di₅| ]; [ idtac | clear Hc₅ ].
+    symmetry in Hs₅.
+    remember Hs₅ as H; clear HeqH.
+    apply fst_same_iff in H; simpl in H.
+    destruct H as (Hn₅, Hd₅).
+    rewrite Hc₅ in Hd₅; symmetry in Hd₅.
+    symmetry in Hs₆.
+    rename Hss₁ into Hu₁.
+
 bbb.
 *)
 
