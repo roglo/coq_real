@@ -3192,38 +3192,15 @@ destruct s₅ as [di₅| ].
   subst di₅.
   rewrite Hs₄ in Ht₅; discriminate Ht₅.
 
-  remember Hc₃ as H; clear HeqH.
-  unfold carry_i in H; simpl in H.
-  rewrite Hsj₁ in H.
-  rename H into Ha₃; move Ha₃ before Hc₃.
-  move Hc₄ after Hs₄.
-  remember Hsj₁ as H; clear HeqH.
-  apply fst_same_iff in H; simpl in H.
-  destruct H as (Hn₃, Hs₃).
-  rewrite Ha₃ in Hs₃; symmetry in Hs₃.
-  move Hs₃ before Ha₃; move Hn₃ before Hs₃.
-  symmetry in Hs₅, Hss₄.
-  injection Hsj₂; clear Hsj₂; intros; subst di₄.
-  destruct dj₂; [ revert H₄; apply Nat.nlt_0_r | idtac ].
-  destruct dj₂; [ revert H₄; apply Nat.nlt_0_r | idtac ].
-  pose proof (Hfb₂ (Nat.lt_0_succ (S dj₂))) as H; clear Hfb₂.
-  simpl in H.
-  rename H into Hd₂; move Hd₂ before Ht₅.
-  pose proof (Hfa₂ (Nat.lt_0_succ (S dj₂))) as H; clear Hfa₂.
-  simpl in H.
-  rename H into Hs₂; move Hs₂ after Hs₃.
-  move Hi₄ before Hs₂.
-  rename Hs₅ into Hss₅.
   destruct dj₁.
    simpl in Hbk₁; rewrite Nat.add_0_r in Hbk₁.
    rewrite Nat.add_0_r in Hss₁; simpl in Hss₁.
-   rewrite Hss₅ in Hss₁.
+   rewrite <- Hs₅ in Hss₁.
    injection Hss₁; intros; subst di₅.
    destruct dk₂.
     destruct dk₁.
      do 2 rewrite Nat.add_0_r in Hcl₁.
-     simpl in Hs₄.
-     simpl in Hcl₁.
+     simpl in Hs₄, Hcl₁.
      rewrite Hcl₁ in Hs₄; discriminate Hs₄.
 
      rewrite Hbk₁ in Hj₅; [ idtac | apply Nat.lt_0_succ ].
@@ -3233,11 +3210,14 @@ destruct s₅ as [di₅| ].
      do 2 rewrite Nat.add_0_r in Hcl₁; simpl in Hs₄, Hcl₁.
      rewrite Hcl₁ in Hs₄; discriminate Hs₄.
 
-     rewrite Nat.add_0_r in Hck₁; simpl in Hck₁.
-     simpl in Ht₅.
+     rewrite Nat.add_0_r in Hck₁; simpl in Hck₁, Ht₅.
      rewrite Hck₁ in Ht₅; [ idtac | apply Nat.lt_0_succ ].
      discriminate Ht₅.
 
+   remember Hc₃ as H; clear HeqH.
+   unfold carry_i in H; simpl in H.
+   rewrite Hsj₁ in H.
+   rename H into Ha₃; move Ha₃ before Hc₃.
    rewrite <- Nat.add_succ_r in Ha₃.
    rewrite Hfa₁ in Ha₃; [ idtac | apply Nat.lt_0_succ ].
    discriminate Ha₃.
