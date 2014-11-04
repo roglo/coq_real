@@ -3423,22 +3423,48 @@ destruct dj₁; simpl in *; repeat rewrite Nat.add_0_r in *.
     subst di₆.
     rewrite Ht₆ in Hc₅; discriminate Hc₅.
 
+    destruct (lt_eq_lt_dec dj₂ di₆) as [[H₂| H₂]| H₂].
+     remember H₂ as H; clear HeqH.
+     apply Hn₆ in H; simpl in H.
+     rename H into Hab.
+     remember Hc₄ as H; clear HeqH.
+     unfold rm_add_i in H; simpl in H.
+     rewrite Hab, negb_xorb_diag in H.
+     apply negb_false_iff in H.
+     rewrite <- Nat.add_succ_l in H.
+     erewrite carry_before_relay in H; try eassumption.
+     discriminate H.
+
 bbb.
   di₆ < di₅
+  dj₂ = di₆
 
-
-            i  i+1  -   i₅  -   i₆  -   j₂
-        b   .   .   .   1   .   0   .   .
-0               ≠   ≠   ≠   ≠
-        a   .   .   .   0   .   0   .   .
+            i  i+1  -   i₆  -   i₅
+        b   .   .   .   0   .   1
+0               ≠   ≠
+        a   .   .   .   0   .   .
 0
-       b+c  .   .   .   .   .   .   .   .
+       b+c  .   .   .   0   .   .
 
-       a+b  .   .   .   .   .   .   .   0
-0               ≠   ≠   ≠   ≠   ≠   ≠
-        c   .   .   .   1   .   .   .   0
-1               ≠   ≠
-        b   .   .   .   1   .   0   .   .
+       a+b  .   .   .   .   .   .
+0
+        c   .   .   .   1   .   1
+1               ≠   ≠   ≠   ≠
+        b   .   .   .   0   .   1
+
+
+            i  i+1  -   i₆  -   i₅
+        b   .   .   .   0   .   .
+0               ≠   ≠
+        a   .   .   .   0   .   .
+0
+       b+c  .   .   .   .   .   .
+
+       a+b  .   .   .   .   .   .
+
+        c   .   .   .   .   .   1
+1               ≠   ≠   ≠   ≠
+        b   .   .   .   .   .   1
 
 bbb.
 
