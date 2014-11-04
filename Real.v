@@ -2805,6 +2805,7 @@ Theorem case_2 : ∀ a b c i,
   → carry_i a b i = true
   → False.
 Proof.
+(* à revoir, refaire à partir de (*1*); voir à partir de (*2*) *)
 intros a b c i Hc₁ Hc₂ Hc₃ Hc₄ Hc₅ Hc₆.
 remember Hc₁ as H; clear HeqH.
 apply carry_0_r_true_if in H; unfold id in H; simpl in H.
@@ -2835,6 +2836,7 @@ apply forall_add_succ_l in H; unfold id in H.
 apply rm_add_inf_true_if in H.
 move H before Hsj₂.
 destruct H as (dk₂, (Hbl₂, (Hcl₂, (Hbk₂, (Hck₂, Hss₂))))).
+(*1*)
 remember Hc₄ as H; clear HeqH.
 unfold carry_i in H; simpl in H.
 remember (fst_same (a + b) c (S i)) as s₄ eqn:Hs₄ .
@@ -3192,6 +3194,10 @@ destruct s₅ as [di₅| ].
   subst di₅.
   rewrite Hs₄ in Ht₅; discriminate Ht₅.
 
+(*2*)
+(* technique : couper-coller les hypothèses dans un fichier toto et faire :
+      LC_ALL=C sort -t: -k 2 toto | less
+   pour essayer de comprendre où se trouve les trucs *)
   destruct dj₁.
    simpl in Hbk₁; rewrite Nat.add_0_r in Hbk₁.
    rewrite Nat.add_0_r in Hss₁; simpl in Hss₁.
@@ -3239,7 +3245,7 @@ destruct s₅ as [di₅| ].
   pose proof (Hs₅ (S dj₁ + S dk₁ + 0)) as H.
   do 2 rewrite Nat.add_assoc in H.
   rewrite Hbl₁, Hcl₁ in H; discriminate H.
-qed.
+Qed.
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
@@ -3263,7 +3269,7 @@ move c₂ before c₁; move c₃ before c₂.
 move c₄ before c₃; move c₅ before c₄.
 move c₆ before c₅.
 destruct c₁, c₂, c₃, c₄, c₅, c₆; try reflexivity; simpl.
- exfalso; eapply case_1; eauto .
+ exfalso; eapply case_1; eassumption.
 
  exfalso; apply case_1 with (c := a) (b := b) (a := c) (i := i).
   rewrite carry_compat_r with (a := (a + b + c)%rm); [ assumption | idtac ].
@@ -3287,6 +3293,8 @@ destruct c₁, c₂, c₃, c₄, c₅, c₆; try reflexivity; simpl.
   rewrite carry_comm; assumption.
 
   rewrite carry_comm; assumption.
+
+ exfalso; eapply case_2; eassumption.
 bbb.
 
 Theorem rm_add_assoc_hop : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
