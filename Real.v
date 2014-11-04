@@ -3436,22 +3436,24 @@ destruct dj₁; simpl in *; repeat rewrite Nat.add_0_r in *.
      discriminate H.
 
      subst dj₂.
+     remember H₁ as H; clear HeqH; apply Hn₅ in H.
+     rewrite Ht₆, Hs₄ in H; discriminate H.
 bbb.
   di₆ < di₅
-  dj₂ = di₆
+  di₆ < dj₂ < di₅
 
-            i  i+1  -   i₆  -   i₅
-        b   .   .   .   0   .   1
+            i  i+1  -   i₆  -   j₂  -   i₅
+        b   .   .   .   0   .   1   .   .
 0               ≠   ≠
-        a   .   .   .   0   .   .
+        a   .   .   .   0   .   .   .   .
 0
-       b+c  .   .   .   0   .   .
+       b+c  .   .   .   0   .   0   .   .
 
-       a+b  .   .   .   .   .   .
-0
-        c   .   .   .   1   .   1
-1               ≠   ≠   ≠   ≠
-        b   .   .   .   0   .   1
+       a+b  .   .   .   0   .   0   .   .
+0               ≠   ≠   ≠   ≠
+        c   .   .   .   1   .   0   .   1
+1               ≠   ≠   ≠   ≠   ≠   ≠
+        b   .   .   .   0   .   1   .   1
 
 
             i  i+1  -   i₆  -   i₅
@@ -3462,7 +3464,7 @@ bbb.
        b+c  .   .   .   .   .   .
 
        a+b  .   .   .   .   .   .
-
+0
         c   .   .   .   .   .   1
 1               ≠   ≠   ≠   ≠
         b   .   .   .   .   .   1
