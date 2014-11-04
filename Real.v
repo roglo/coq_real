@@ -3380,6 +3380,7 @@ destruct dj₁; simpl in *; repeat rewrite Nat.add_0_r in *.
   replace (S i) with (S i + 0) in Hs₄ by apply Nat.add_0_r; simpl in Hs₄.
   rewrite Htb₂ in Hs₄; discriminate Hs₄.
 
+bbb.
   destruct dk₁; simpl in *; repeat rewrite Nat.add_0_r in *.
    remember Hss₁ as H; clear HeqH.
    apply fst_same_iff in H; simpl in H.
@@ -3398,6 +3399,8 @@ destruct dj₁; simpl in *; repeat rewrite Nat.add_0_r in *.
     rewrite Hc₅ in Hd₅; symmetry in Hd₅.
     symmetry in Hs₆.
     rename Hss₁ into Hu₁.
+    clear Hbk₁ Hck₁ Hfa₁ Hfb₁ Hfb₂ Hfa₂.
+    destruct dk₂; simpl in *; repeat rewrite Nat.add_0_r in *.
 
 bbb.
 *)
