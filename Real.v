@@ -3438,22 +3438,50 @@ destruct dj₁; simpl in *; repeat rewrite Nat.add_0_r in *.
      subst dj₂.
      remember H₁ as H; clear HeqH; apply Hn₅ in H.
      rewrite Ht₆, Hs₄ in H; discriminate H.
+
+     destruct di₆.
+      repeat rewrite Nat.add_0_r in *.
+      remember H₁ as H; clear HeqH.
+      apply Hn₅ in H.
+      rewrite Nat.add_0_r, Ht₆ in H.
+      apply negb_sym in H; simpl in H.
+      rename H into Hd₁.
+      remember H₂ as H; clear HeqH.
+      apply Hn₄ in H; simpl in H.
+      rewrite Nat.add_0_r, Hd₁ in H; simpl in H.
+      rename H into He₁.
 bbb.
   di₆ < di₅
-  di₆ < dj₂ < di₅
+  di₆ < dj₂
 
-            i  i+1  -   i₆  -   j₂  -   i₅
-        b   .   .   .   0   .   1   .   .
+  di₆ = 0
+            i  i+1  -   j₂  -   i₅
+        b   .   0   .   1   0   1
+0                ←01                      ←-- contradiction
+        a   .   0   1   1   1   1 ...
+0                ←1
+       b+c  .   0   .   0   0   .
+
+       a+b  .   0   .   0   .   .
 0               ≠   ≠
-        a   .   .   .   0   .   .   .   .
-0
-       b+c  .   .   .   0   .   0   .   .
+        c   .   1   .   0   1   1 ...
+1               ≠   ≠   ≠   ≠
+        b   .   0   .   1   0   1
 
-       a+b  .   .   .   0   .   0   .   .
+
+  0 < di₆
+            i  i+1  -   i₆  -   j₂  -   i₅
+        b   .   .   1   0   .   1   .   .
+0               ≠   ≠    ←0
+        a   .   .   0   0   .   .   .   .
+0                    ←01  ←1                ←--- contradiction
+       b+c  .   .   0   0   .   0   .   .
+
+       a+b  .   .   1   0   .   0   .   .
 0               ≠   ≠   ≠   ≠
-        c   .   .   .   1   .   0   .   1
+        c   .   .   0   1   .   0   .   1
 1               ≠   ≠   ≠   ≠   ≠   ≠
-        b   .   .   .   0   .   1   .   1
+        b   .   .   1   0   .   1   .   1
 
 
             i  i+1  -   i₆  -   i₅
