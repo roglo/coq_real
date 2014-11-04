@@ -3320,6 +3320,67 @@ destruct dj₁.
   discriminate H.
 Qed.
 
+Theorem case_4 : ∀ a b c i,
+  carry_i (a + (b + c)%rm) 0 i = true
+  → carry_i ((a + b)%rm + c) 0 i = true
+  → carry_i a (b + c) i = false
+  → carry_i (a + b) c i = false
+  → carry_i b c i = true
+  → carry_i a b i = false
+  → False.
+Proof.
+intros a b c i Hc₁ Hc₂ Hc₃ Hc₄ Hc₅ Hc₆.
+remember Hc₁ as H; clear HeqH.
+apply carry_0_r_true_if in H; unfold id in H; simpl in H.
+rename H into Hj₁; move Hj₁ before Hc₁.
+remember Hc₂ as H; clear HeqH.
+apply carry_0_r_true_if in H; unfold id in H; simpl in H.
+rename H into Hj₂; move Hj₂ before Hc₂.
+remember Hj₁ as H; clear HeqH; move H before Hj₁.
+apply forall_add_succ_r in H; unfold id in H.
+apply rm_add_inf_true_if in H; simpl in H.
+destruct H as (dj₁, (Hta₁, (Htb₁, (Hfa₁, (Hfb₁, Hsj₁))))).
+remember Hj₂ as H; clear HeqH; move H before Hj₂.
+apply forall_add_succ_r in H; unfold id in H.
+apply rm_add_inf_true_if in H; simpl in H.
+destruct H as (dj₂, (Hta₂, (Htb₂, (Hfa₂, (Hfb₂, Hsj₂))))).
+rewrite <- Nat.add_succ_r in Hfa₁.
+rewrite <- Nat.add_succ_r in Hfb₁.
+rewrite <- Nat.add_succ_r in Hfa₂.
+rewrite <- Nat.add_succ_r in Hfb₂.
+remember Htb₁ as H; clear HeqH.
+apply forall_add_succ_l in H.
+unfold id in H.
+apply rm_add_inf_true_if in H.
+move H before Hsj₁.
+destruct H as (dk₁, (Hbl₁, (Hcl₁, (Hbk₁, (Hck₁, Hss₁))))).
+remember Hta₂ as H; clear HeqH.
+apply forall_add_succ_l in H; unfold id in H.
+apply rm_add_inf_true_if in H.
+move H before Hsj₂.
+destruct H as (dk₂, (Hbl₂, (Hcl₂, (Hbk₂, (Hck₂, Hss₂))))).
+unfold carry_i in Hc₄; simpl in Hc₄.
+remember (fst_same (a + b) c (S i)) as s₄ eqn:Hs₄ .
+destruct s₄ as [di₄| ]; [ idtac | discriminate Hc₄ ].
+injection Hsj₂; clear Hsj₂; intros; subst di₄.
+apply fst_same_sym_iff in Hs₄; simpl in Hs₄.
+destruct Hs₄ as (Hn₄, Hs₄); rewrite Hc₄ in Hs₄; symmetry in Hs₄.
+unfold carry_i in Hc₃; simpl in Hc₃.
+rewrite Hsj₁ in Hc₃; simpl in Hc₃.
+unfold carry_i in Hc₆; simpl in Hc₆.
+remember (fst_same a b (S i)) as s₆ eqn:Hs₆ .
+destruct s₆ as [di₆| ]; [ idtac | discriminate Hc₆ ].
+apply fst_same_sym_iff in Hs₆; simpl in Hs₆.
+destruct Hs₆ as (Hn₆, Hs₆); rewrite Hc₆ in Hs₆; symmetry in Hs₆.
+destruct dj₁; simpl in *; repeat rewrite Nat.add_0_r in *.
+ rewrite Hta₁ in Hc₆; discriminate Hc₆.
+
+ destruct dj₂; simpl in *; repeat rewrite Nat.add_0_r in *.
+  replace (S i) with (S i + 0) in Hs₄ by apply Nat.add_0_r; simpl in Hs₄.
+  rewrite Htb₂ in Hs₄; discriminate Hs₄.
+bbb.
+*)
+
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
 intros a b c.
@@ -3341,10 +3402,10 @@ symmetry in Hc₁, Hc₂, Hc₃, Hc₄, Hc₅, Hc₆.
 move c₂ before c₁; move c₃ before c₂.
 move c₄ before c₃; move c₅ before c₄.
 move c₆ before c₅.
-destruct c₁, c₂, c₃, c₄, c₅, c₆; try reflexivity; simpl.
- exfalso; eapply case_1; eassumption.
+destruct c₁, c₂, c₃, c₄, c₅, c₆; try reflexivity; exfalso.
+ eapply case_1; eassumption.
 
- exfalso; apply case_1 with (c := a) (b := b) (a := c) (i := i).
+ apply case_1 with (c := a) (b := b) (a := c) (i := i).
   rewrite carry_compat_r with (a := (a + b + c)%rm); [ assumption | idtac ].
   intros j; simpl; symmetry.
   rewrite rm_add_i_comm.
@@ -3367,9 +3428,57 @@ destruct c₁, c₂, c₃, c₄, c₅, c₆; try reflexivity; simpl.
 
   rewrite carry_comm; assumption.
 
- exfalso; eapply case_2; eassumption.
+ eapply case_2; eassumption.
 
- exfalso; eapply case_3; eassumption.
+ eapply case_3; eassumption.
+
+ apply case_2 with (c := a) (b := b) (a := c) (i := i).
+  rewrite carry_compat_r with (a := (a + b + c)%rm); [ assumption | idtac ].
+  intros j; simpl; symmetry.
+  rewrite rm_add_i_comm.
+  apply rm_add_i_compat_r, rm_add_i_comm.
+
+  rewrite carry_compat_r with (a := (a + (b + c))%rm); [ assumption | idtac ].
+  intros j; simpl; rewrite rm_add_i_comm.
+  apply rm_add_i_compat_r, rm_add_i_comm.
+
+  rewrite carry_comm.
+  rewrite carry_compat_r with (a := (a + b)%rm); [ assumption | idtac ].
+  apply rm_add_i_comm.
+
+  rewrite carry_compat_r with (a := (b + c)%rm).
+   rewrite carry_comm; assumption.
+
+   apply rm_add_i_comm.
+
+  rewrite carry_comm; assumption.
+
+  rewrite carry_comm; assumption.
+
+ apply case_3 with (c := a) (b := b) (a := c) (i := i).
+  rewrite carry_compat_r with (a := (a + b + c)%rm); [ assumption | idtac ].
+  intros j; simpl; symmetry.
+  rewrite rm_add_i_comm.
+  apply rm_add_i_compat_r, rm_add_i_comm.
+
+  rewrite carry_compat_r with (a := (a + (b + c))%rm); [ assumption | idtac ].
+  intros j; simpl; rewrite rm_add_i_comm.
+  apply rm_add_i_compat_r, rm_add_i_comm.
+
+  rewrite carry_comm.
+  rewrite carry_compat_r with (a := (a + b)%rm); [ assumption | idtac ].
+  apply rm_add_i_comm.
+
+  rewrite carry_compat_r with (a := (b + c)%rm).
+   rewrite carry_comm; assumption.
+
+   apply rm_add_i_comm.
+
+  rewrite carry_comm; assumption.
+
+  rewrite carry_comm; assumption.
+
+ eapply case_4; eassumption.
 bbb.
 
 Theorem rm_add_assoc_hop : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
