@@ -3478,6 +3478,9 @@ destruct dj₁; simpl in *; repeat rewrite Nat.add_0_r in *.
     subst di₆.
     rewrite Ht₆ in Hc₅; discriminate Hc₅.
 
+    pose proof (Hfb₁ (Nat.lt_0_succ dj₁)) as Hd₄.
+    rewrite Nat.add_succ_r in Hd₄; simpl in Hd₄.
+    clear Hfb₂ Hfa₂ Hfa₁ Hfb₁.
     destruct (lt_eq_lt_dec dj₂ di₆) as [[H₂| H₂]| H₂].
      remember H₂ as H; clear HeqH.
      apply Hn₆ in H; simpl in H.
@@ -3490,8 +3493,45 @@ destruct dj₁; simpl in *; repeat rewrite Nat.add_0_r in *.
      erewrite carry_before_relay in H; try eassumption.
      discriminate H.
 
-     subst dj₂.
+     subst di₆.
+     destruct (lt_eq_lt_dec dj₁ dj₂) as [[H₂| H₂]| H₂].
+      pose proof (Hta₁ (dj₂ - S dj₁)) as H.
+      rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+      rewrite Nat.add_shuffle0, Nat.add_sub in H.
+      rewrite Hc₆ in H; discriminate H.
+
+      subst dj₂.
 bbb.
+dj₂ < di₅
+dj₁ < dj₂
+
+            i  i+1  -   j₁  .   j₂  -   i₅
+        b   .   .   .   1   .   0   .   1
+0               ≠   ≠   ≠   ≠
+        a   .   .   .   0   1   01  .   .
+0
+       b+c  .   .   .   0   1   1   1   1   1 ...
+
+       a+b  .   .   .   1   .   0   1   1   1 ...
+0               ≠   ≠   ≠   ≠
+        c   .   .   .   0   .   0   1   1   1 ...
+1               ≠   ≠   ≠   ≠   ≠   ≠
+        b   .   .   .   1   .   0   .   1
+
+
+            i  i+1  -   j₂  -   i₅
+        b   .   .   .   0   .   .
+0               ≠   ≠
+        a   .   .   .   0   .   .
+0
+       b+c  .   .   .   .   .   .
+
+       a+b  .   .   .   .   .   .
+0
+        c   .   .   .   .   .   1
+1               ≠   ≠   ≠   ≠
+        b   .   .   .   .   .   1
+
      remember H₁ as H; clear HeqH; apply Hn₅ in H.
      rewrite Ht₆, Hs₄ in H; discriminate H.
      destruct di₆.
