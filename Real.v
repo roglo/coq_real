@@ -3349,8 +3349,7 @@ rewrite <- Nat.add_succ_r in Hfb₁.
 rewrite <- Nat.add_succ_r in Hfa₂.
 rewrite <- Nat.add_succ_r in Hfb₂.
 remember Htb₁ as H; clear HeqH.
-apply forall_add_succ_l in H.
-unfold id in H.
+apply forall_add_succ_l in H; unfold id in H.
 apply rm_add_inf_true_if in H.
 move H before Hsj₁.
 destruct H as (dk₁, (Hbl₁, (Hcl₁, (Hbk₁, (Hck₁, Hss₁))))).
@@ -3436,6 +3435,7 @@ destruct dj₁; simpl in *; repeat rewrite Nat.add_0_r in *.
      discriminate H.
 
      subst dj₂.
+bbb.
      remember H₁ as H; clear HeqH; apply Hn₅ in H.
      rewrite Ht₆, Hs₄ in H; discriminate H.
      destruct di₆.
