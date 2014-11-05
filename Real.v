@@ -3438,7 +3438,6 @@ destruct dj₁; simpl in *; repeat rewrite Nat.add_0_r in *.
      subst dj₂.
      remember H₁ as H; clear HeqH; apply Hn₅ in H.
      rewrite Ht₆, Hs₄ in H; discriminate H.
-
      destruct di₆.
       repeat rewrite Nat.add_0_r in *.
       remember H₁ as H; clear HeqH.
@@ -3459,13 +3458,53 @@ destruct dj₁; simpl in *; repeat rewrite Nat.add_0_r in *.
       destruct HH as (Hn₁, Hs₁).
       rewrite Hc₃ in Hs₁; symmetry in Hs₁.
       rename H into Hc₇.
-      destruct dj₁.
-       rewrite Nat.add_0_r in Hs₁.
+      remember Hc₇ as H; clear HeqH.
+      unfold carry_i in H; simpl in H.
+      remember (fst_same a b (S (S i))) as s₇ eqn:Hs₇ .
+      destruct s₇ as [di₇| ]; [ idtac | discriminate H ].
+      remember Hs₇ as HH; clear HeqHH.
+      symmetry in Hs₇.
+      apply fst_same_sym_iff in HH; simpl in HH.
+      destruct HH as (Hn₇, Ht₇); rewrite H in Ht₇; symmetry in Ht₇.
+      rename H into Ha₇.
 bbb.
   di₆ < di₅
   di₆ < dj₂
-
   di₆ = 0
+  di₅ < dj₂
+
+            i  i+1  -   i₅   -   j₂
+        b   .   0   .   1   .   .
+0                -0
+        a   .   0   .   .   .   .
+0                -1
+       b+c  .   0   0   .   .   .
+
+       a+b  .   0   .   0   .   0   1   1   1 ...
+0               ≠   ≠   ≠   ≠
+        c   .   1   .   1   .   0   1   1   1 ...
+1               ≠   ≠
+        b   .   0   .   1   .   .
+
+bbb.
+
+            i  i+1  -   i₆  -   i₅   -   j₂
+        b   .   1   1   0   .   1   .   .
+0               ≠   ≠
+        a   .   0   0   0   .   .   .   .
+0
+       b+c  .   0   0   0   .   .   .   .
+
+       a+b  .   1   1   0   .   0   .   0
+0               ≠   ≠   ≠   ≠   ≠   ≠
+        c   .   0   0   1   .   1   .   0
+1               ≠   ≠   ≠   ≠
+        b   .   1   1   0   .   1   .   .
+
+
+
+  di₆ = 0 ... pas sûr :
+
             i  i+1  -   j₂  -   i₅
         b   .   0   .   1   0   1
 0                ←01                      ←-- contradiction
