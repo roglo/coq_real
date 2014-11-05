@@ -2292,7 +2292,7 @@ destruct s₁ as [di₁| ].
   rewrite Ha in Hb; discriminate Hb.
 Qed.
 
-Theorem rm_zerop : ∀ a, { (a = 0)%rm } + { (a ≠ 0)%rm }.
+Theorem rm_zerop : ∀ a, {(a = 0)%rm} + {(a ≠ 0)%rm}.
 Proof.
 intros a.
 remember (fst_same (a + 0%rm) rm_zero' 0) as s eqn:Hs .
@@ -2320,6 +2320,69 @@ destruct s as [di| ].
  apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
  discriminate Hs₁; assumption.
 Qed.
+
+Theorem fst_same_diag : ∀ a i, fst_same a a i = Some 0.
+Proof.
+intros a i.
+apply fst_same_iff; simpl.
+split; [ idtac | reflexivity ].
+intros dj Hdj; exfalso.
+revert Hdj; apply Nat.nlt_0_r.
+Qed.
+
+Theorem carry_diag : ∀ a i, carry_i a a i = a.[S i].
+Proof.
+intros a i.
+unfold carry_i; simpl.
+rewrite fst_same_diag, Nat.add_0_r; reflexivity.
+Qed.
+
+Theorem rm_dec : ∀ a b, {(a = b)%rm} + {(a ≠ b)%rm}.
+Proof.
+intros a b.
+destruct (rm_zerop (a - b)%rm) as [Hab| Hab].
+ left.
+ unfold rm_eq in Hab; simpl in Hab.
+ unfold rm_eq; simpl; intros i.
+ unfold rm_add_i; simpl.
+ do 2 rewrite xorb_false_r.
+ unfold carry_i; simpl.
+ remember (fst_same a 0 (S i)) as sa eqn:Hsa .
+ remember (fst_same b 0 (S i)) as sb eqn:Hsb .
+ apply fst_same_sym_iff in Hsa; simpl in Hsa.
+ apply fst_same_sym_iff in Hsb; simpl in Hsb.
+ destruct sa as [da| ].
+  destruct Hsa as (Hna, Hsa).
+  rewrite Hsa, xorb_false_r.
+  destruct sb as [db| ].
+   destruct Hsb as (Hnb, Hsb).
+   rewrite Hsb, xorb_false_r.
+   pose proof (Hab i) as Hi.
+   unfold rm_add_i in Hi; simpl in Hi.
+   rewrite carry_diag in Hi; simpl in Hi.
+   rewrite xorb_false_r in Hi.
+   unfold rm_add_i in Hi; simpl in Hi.
+   unfold carry_i in Hi; simpl in Hi.
+   remember (fst_same a (- b) (S i)) as sab eqn:Hsab .
+   remember (fst_same (a - b) 0 (S i)) as sc eqn:Hsc .
+   apply fst_same_sym_iff in Hsab; simpl in Hsab.
+   apply fst_same_sym_iff in Hsc; simpl in Hsc.
+   destruct sab as [dab| ].
+    destruct Hsab as (Hnab, Hsab).
+    destruct sc as [dc| ].
+     destruct Hsc as (Hnc, Hsc).
+     rewrite Hsc, xorb_false_r in Hi.
+     unfold rm_add_i in Hsc; simpl in Hsc.
+     unfold carry_i in Hsc; simpl in Hsc.
+     remember (fst_same a (- b) (S (S (i + dc)))) as se eqn:Hse .
+     apply fst_same_sym_iff in Hse; simpl in Hse.
+     destruct se as [de| ].
+      destruct Hse as (Hne, Hse).
+bbb.
+
+Theorem rm_decidable : ∀ a b, Decidable.decidable (a = b)%rm.
+Proof.
+bbb.
 
 (* associativity; Ambroise Lafont's pen and paper proof *)
 
