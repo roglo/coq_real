@@ -3515,6 +3515,24 @@ destruct dj₁; simpl in *; repeat rewrite Nat.add_0_r in *.
        discriminate H.
 
        subst di₅; clear H₁.
+       pose proof (Hn₅ di₆ (Nat.lt_succ_diag_r di₆)) as H.
+       rewrite Ht₆ in H; apply negb_sym in H; simpl in H.
+       rename H into Hd₆.
+       pose proof (Hn₄ di₆ H₂) as H; rewrite Hd₆ in H; simpl in H.
+       unfold rm_add_i in H; simpl in H.
+       rewrite Hc₃, Ht₆, xorb_false_l in H.
+       unfold carry_i in H; simpl in H.
+       remember (fst_same a b (S (S (i + di₆)))) as s₆ eqn:Hs₆ .
+       destruct s₆ as [di₇| ]; [ idtac | discriminate H ].
+       rewrite <- Nat.add_assoc, <- Nat.add_succ_r in H.
+       do 2 rewrite <- Nat.add_succ_l in H.
+       rewrite Nat.add_succ_l in H.
+       rewrite Nat.add_assoc in H.
+       rewrite Hta₁ in H; discriminate H.
+
+       apply Nat.succ_le_mono in H₃.
+       apply Nat.nlt_ge in H₃.
+       contradiction.
 bbb.
 di₆ < di₅
 di₆ < dj₂
