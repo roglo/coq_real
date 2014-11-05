@@ -3533,23 +3533,36 @@ destruct dj₁; simpl in *; repeat rewrite Nat.add_0_r in *.
        apply Nat.succ_le_mono in H₃.
        apply Nat.nlt_ge in H₃.
        contradiction.
+
+      remember Hsj₁ as H; clear HeqH.
+      apply fst_same_iff in H; simpl in H.
+      destruct H as (Hn₁, Hs₁).
+      pose proof (Hn₁ di₆ H₃) as H.
+      rewrite Hc₆ in H; apply negb_sym in H; simpl in H.
+      unfold rm_add_i in H; simpl in H.
+      rewrite Hn₅ in H; [ idtac | assumption ].
+      rewrite negb_xorb_diag, xorb_true_l in H.
+      apply negb_true_iff in H.
+      rewrite <- Nat.add_succ_l in H.
+      erewrite carry_before_relay in H; try eassumption.
+      discriminate H.
 bbb.
   H₁ : di₆ < di₅
   H₃ : di₆ < dj₁
   H₂ : di₆ < dj₂
 
             i  i+1  -   i₆  -   j₂  -   i₅
-        b   .   .   .   .   .   .   .   .
+        b   .   .   .   0   .   .   .   1
 0               ≠   ≠
-        a   .   .   .   .   .   .   .   .
+        a   .   .   .   0   .   .   .   .
 0
-       b+c  .   .   .   .   .   .   .   .
+       b+c  .   .   .   0   .   .   .   .
 
        a+b  .   .   .   .   .   .   .   .
 0
-        c   .   .   .   .   .   .   .   .
+        c   .   .   .   1   .   .   .   1
 1               ≠   ≠   ≠   ≠   ≠   ≠
-        b   .   .   .   .   .   .   .   .
+        b   .   .   .   0   .   .   .   1
 
 
      remember H₁ as H; clear HeqH; apply Hn₅ in H.
