@@ -2337,60 +2337,33 @@ unfold carry_i; simpl.
 rewrite fst_same_diag, Nat.add_0_r; reflexivity.
 Qed.
 
+(* requires associativity
+Axiom rm_add_assoc : ∀ a b c, (a+(b+c) = (a+b)+c)%rm.
 Theorem rm_dec : ∀ a b, {(a = b)%rm} + {(a ≠ b)%rm}.
 Proof.
 intros a b.
 destruct (rm_zerop (a - b)%rm) as [Hab| Hab].
  left.
- unfold rm_eq in Hab; simpl in Hab.
- unfold rm_eq; simpl; intros i.
- unfold rm_add_i; simpl.
- do 2 rewrite xorb_false_r.
- unfold carry_i; simpl.
- remember (fst_same a 0 (S i)) as sa eqn:Hsa .
- remember (fst_same b 0 (S i)) as sb eqn:Hsb .
- apply fst_same_sym_iff in Hsa; simpl in Hsa.
- apply fst_same_sym_iff in Hsb; simpl in Hsb.
- destruct sa as [da| ].
-  destruct Hsa as (Hna, Hsa).
-  rewrite Hsa, xorb_false_r.
-  destruct sb as [db| ].
-   destruct Hsb as (Hnb, Hsb).
-   rewrite Hsb, xorb_false_r.
-   pose proof (Hab i) as Hi.
-   unfold rm_add_i in Hi; simpl in Hi.
-   rewrite carry_diag in Hi; simpl in Hi.
-   rewrite xorb_false_r in Hi.
-   unfold rm_add_i in Hi; simpl in Hi.
-   unfold carry_i in Hi; simpl in Hi.
-   remember (fst_same a (- b) (S i)) as sab eqn:Hsab .
-   remember (fst_same (a - b) 0 (S i)) as sc eqn:Hsc .
-   apply fst_same_sym_iff in Hsab; simpl in Hsab.
-   apply fst_same_sym_iff in Hsc; simpl in Hsc.
-   destruct sab as [dab| ].
-    destruct Hsab as (Hnab, Hsab).
-    destruct sc as [dc| ].
-     destruct Hsc as (Hnc, Hsc).
-     rewrite Hsc, xorb_false_r in Hi.
-     unfold rm_add_i in Hsc; simpl in Hsc.
-     unfold carry_i in Hsc; simpl in Hsc.
-     remember (fst_same a (- b) (S (S (i + dc)))) as se eqn:Hse .
-     apply fst_same_sym_iff in Hse; simpl in Hse.
-     destruct se as [de| ].
-      destruct Hse as (Hne, Hse).
-bbb.
+ rewrite rm_add_comm in Hab.
+ eapply rm_add_compat with (a := b) in Hab; [ idtac | reflexivity ].
+ rewrite rm_add_assoc in Hab.
+ rewrite rm_add_opp_r in Hab.
+ rewrite rm_add_comm in Hab.
+ do 2 rewrite rm_add_0_r in Hab.
+ assumption.
+
+ right.
+ intros H; apply Hab; rewrite H.
+ apply rm_add_opp_r.
+Qed.
 
 Theorem rm_decidable : ∀ a b, Decidable.decidable (a = b)%rm.
 Proof.
-bbb.
+intros a b.
+destruct (rm_dec a b); [ left | right ]; assumption.
+*)
 
-(* associativity; Ambroise Lafont's pen and paper proof *)
-
-Definition opt2nat x :=
-  match x with
-  | Some y => S y
-  | None => 0
-  end.
+(* associativity *)
 
 Theorem fold_rm_add_i : ∀ a b i, rm_add_i a b i = ((a+b)%rm).[i].
 Proof. reflexivity. Qed.
