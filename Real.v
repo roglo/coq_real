@@ -3499,7 +3499,6 @@ destruct dj₁; simpl in *; repeat rewrite Nat.add_0_r in *.
       rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
       rewrite Nat.add_shuffle0, Nat.add_sub in H.
       rewrite Hc₆ in H; discriminate H.
-      rewrite Hc₆ in H; discriminate H.
 
       subst dj₂.
       remember H₁ as H; clear HeqH.
