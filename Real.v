@@ -14,6 +14,7 @@ Open Scope nat_scope.
 Record real_mod_1 := { rm : nat → bool }.
 
 Definition rm_zero := {| rm i := false |}.
+Definition rm_zero' := {| rm i := true |}.
 
 Notation "s .[ i ]" := (rm s i) (at level 1).
 
@@ -2250,16 +2251,6 @@ rewrite rm_add_comm; symmetry.
 apply rm_add_compat_r; assumption.
 Qed.
 
-Add Parametric Morphism : carry_i
-  with signature rm_eq ==> rm_eq ==> eq ==> eq
-  as carry_i_morph.
-Proof.
-intros a b Hab c d Hcd n.
-transitivity (carry_i a d n).
-Abort. (* a little bit subtile... à voir...
-bbb.
-*)
-
 Add Parametric Morphism : rm_add
   with signature rm_eq ==> rm_eq ==> rm_eq
   as rm_add_morph.
@@ -2299,6 +2290,35 @@ destruct s₁ as [di₁| ].
   simpl in Hs₁.
   destruct Hs₁ as (j, (Hij, (Hni, (Ha, (Hb, (Hat, Hbt)))))).
   rewrite Ha in Hb; discriminate Hb.
+Qed.
+
+Theorem rm_zerop : ∀ a, { (a = 0)%rm } + { (a ≠ 0)%rm }.
+Proof.
+intros a.
+remember (fst_same (a + 0%rm) rm_zero' 0) as s eqn:Hs .
+apply fst_same_sym_iff in Hs; simpl in Hs.
+destruct s as [di| ].
+ destruct Hs as (Hn, Hs).
+ right; intros H.
+ unfold rm_eq in H; simpl in H.
+ pose proof (H di) as HH.
+ rewrite Hs in HH; symmetry in HH.
+ unfold rm_add_i in HH; simpl in HH.
+ unfold carry_i in HH; simpl in HH.
+ remember (fst_same 0%rm 0%rm (S di)) as s₁ eqn:Hs₁ .
+ apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
+ destruct s₁ as [di₁| ]; [ idtac | discriminate Hs₁; assumption ].
+ discriminate HH.
+
+ left.
+ unfold rm_eq; intros i; simpl.
+ rewrite Hs.
+ unfold rm_add_i; simpl.
+ unfold carry_i; simpl.
+ remember (fst_same 0 0 (S i)) as s₁ eqn:Hs₁ .
+ destruct s₁; [ reflexivity | idtac ].
+ apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
+ discriminate Hs₁; assumption.
 Qed.
 
 (* associativity; Ambroise Lafont's pen and paper proof *)
