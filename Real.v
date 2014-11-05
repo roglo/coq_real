@@ -3534,22 +3534,22 @@ destruct dj₁; simpl in *; repeat rewrite Nat.add_0_r in *.
        apply Nat.nlt_ge in H₃.
        contradiction.
 bbb.
-di₆ < di₅
-di₆ < dj₂
-H supp : dj₂ < di₅
+  H₁ : di₆ < di₅
+  H₃ : di₆ < dj₁
+  H₂ : di₆ < dj₂
 
-            i  i+1  -   i₆  .   j₂  -   i₅
-        b   .   .   .   0   .   1   0   1
-0               ≠   ≠    ←0
-        a   .   .   .   0   1   1   1   1   1 ...
+            i  i+1  -   i₆  -   j₂  -   i₅
+        b   .   .   .   .   .   .   .   .
+0               ≠   ≠
+        a   .   .   .   .   .   .   .   .
 0
-       b+c  .   .   .   0   1   1   1   1   1 ...
+       b+c  .   .   .   .   .   .   .   .
 
-       a+b  .   .   .   0   .   0   1   1   1 ...
-0               ≠   ≠   ≠   ≠
-        c   .   .   .   1   .   0   1   1   1 ...
+       a+b  .   .   .   .   .   .   .   .
+0
+        c   .   .   .   .   .   .   .   .
 1               ≠   ≠   ≠   ≠   ≠   ≠
-        b   .   .   .   0   .   1   0   1
+        b   .   .   .   .   .   .   .   .
 
 
      remember H₁ as H; clear HeqH; apply Hn₅ in H.
