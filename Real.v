@@ -3499,38 +3499,30 @@ destruct dj₁; simpl in *; repeat rewrite Nat.add_0_r in *.
       rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
       rewrite Nat.add_shuffle0, Nat.add_sub in H.
       rewrite Hc₆ in H; discriminate H.
+      rewrite Hc₆ in H; discriminate H.
 
       subst dj₂.
+      remember H₁ as H; clear HeqH.
+      apply Hn₅ in H.
+      rewrite Ht₆, Hs₄ in H; discriminate H.
 bbb.
 dj₂ < di₅
-dj₁ < dj₂
+dj₂ < dj₁
+H supp : dj₁ < di₅
 
-            i  i+1  -   j₁  .   j₂  -   i₅
-        b   .   .   .   1   .   0   .   1
-0               ≠   ≠   ≠   ≠
-        a   .   .   .   0   1   01  .   .
-0
-       b+c  .   .   .   0   1   1   1   1   1 ...
-
-       a+b  .   .   .   1   .   0   1   1   1 ...
-0               ≠   ≠   ≠   ≠
-        c   .   .   .   0   .   0   1   1   1 ...
-1               ≠   ≠   ≠   ≠   ≠   ≠
-        b   .   .   .   1   .   0   .   1
-
-
-            i  i+1  -   j₂  -   i₅
-        b   .   .   .   0   .   .
+            i  i+1  -   j₂  .   j₁  -   i₅
+        b   .   .   .   .   .   .   .   1
 0               ≠   ≠
-        a   .   .   .   0   .   .
+        a   .   .   .   .   .   .   .   .
 0
-       b+c  .   .   .   .   .   .
+       b+c  .   .   .   .   .   .   .   .
 
-       a+b  .   .   .   .   .   .
+       a+b  .   .   .   .   .   .   .   .
 0
-        c   .   .   .   .   .   1
-1               ≠   ≠   ≠   ≠
-        b   .   .   .   .   .   1
+        c   .   .   .   .   .   .   .   1
+1               ≠   ≠   ≠   ≠   ≠   ≠
+        b   .   .   .   .   .   .   .   1
+
 
      remember H₁ as H; clear HeqH; apply Hn₅ in H.
      rewrite Ht₆, Hs₄ in H; discriminate H.
