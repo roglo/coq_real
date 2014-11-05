@@ -3685,6 +3685,25 @@ destruct c₁, c₂, c₃, c₄, c₅, c₆; try reflexivity; exfalso.
   rewrite carry_comm; assumption.
 
   rewrite carry_comm; assumption.
+
+ (* faire un lemme/théorème *)
+ remember Hc₁ as H; clear HeqH.
+ unfold carry_i in H; simpl in H.
+ remember (fst_same (a + (b + c)%rm) 0 (S i)) as s₁ eqn:Hs₁ .
+ apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
+ destruct s₁ as [di₁| ].
+  destruct Hs₁ as (Hn₁, Hs₁); rewrite Hs₁ in H; discriminate H.
+
+  clear H.
+  remember Hc₂ as H; clear HeqH.
+  unfold carry_i in H; simpl in H.
+  remember (fst_same ((a + b)%rm + c) 0 (S i)) as s₂ eqn:Hs₂ .
+  destruct s₂ as [di₂| ]; [ idtac | discriminate H ].
+  apply fst_same_sym_iff in Hs₂; simpl in Hs₂.
+  destruct Hs₂ as (Hn₂, Hs₂); clear H.
+  remember Hs₂ as H; clear HeqH.
+  unfold rm_add_i in H; simpl in H.
+  unfold rm_add_i in H; simpl in H.
 bbb.
 
 Theorem rm_add_assoc_hop : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
