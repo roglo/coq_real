@@ -3546,211 +3546,23 @@ destruct dj₁; simpl in *; repeat rewrite Nat.add_0_r in *.
       rewrite <- Nat.add_succ_l in H.
       erewrite carry_before_relay in H; try eassumption.
       discriminate H.
-bbb.
-  H₁ : di₆ < di₅
-  H₃ : di₆ < dj₁
-  H₂ : di₆ < dj₂
 
-            i  i+1  -   i₆  -   j₂  -   i₅
-        b   .   .   .   0   .   .   .   1
-0               ≠   ≠
-        a   .   .   .   0   .   .   .   .
-0
-       b+c  .   .   .   0   .   .   .   .
-
-       a+b  .   .   .   .   .   .   .   .
-0
-        c   .   .   .   1   .   .   .   1
-1               ≠   ≠   ≠   ≠   ≠   ≠
-        b   .   .   .   0   .   .   .   1
-
-
-     remember H₁ as H; clear HeqH; apply Hn₅ in H.
-     rewrite Ht₆, Hs₄ in H; discriminate H.
-     destruct di₆.
-      repeat rewrite Nat.add_0_r in *.
-      remember H₁ as H; clear HeqH.
-      apply Hn₅ in H.
-      rewrite Nat.add_0_r, Ht₆ in H.
-      apply negb_sym in H; simpl in H.
-      rename H into Hd₁.
-      remember H₂ as H; clear HeqH.
-      apply Hn₄ in H; simpl in H.
-      rewrite Nat.add_0_r, Hd₁ in H; simpl in H.
-      rename H into He₁.
-      remember He₁ as H; clear HeqH.
-      unfold rm_add_i in H; simpl in H.
-      rewrite Hc₆, Ht₆ in H.
-      rewrite xorb_false_l in H.
-      remember Hsj₁ as HH; clear HeqHH.
-      apply fst_same_iff in HH; simpl in HH.
-      destruct HH as (Hn₁, Hs₁).
-      rewrite Hc₃ in Hs₁; symmetry in Hs₁.
-      rename H into Hc₇.
-      remember Hc₇ as H; clear HeqH.
-      unfold carry_i in H; simpl in H.
-      remember (fst_same a b (S (S i))) as s₇ eqn:Hs₇ .
-      destruct s₇ as [di₇| ]; [ idtac | discriminate H ].
-      remember Hs₇ as HH; clear HeqHH.
-      symmetry in Hs₇.
-      apply fst_same_sym_iff in HH; simpl in HH.
-      destruct HH as (Hn₇, Ht₇); rewrite H in Ht₇; symmetry in Ht₇.
-      rename H into Ha₇.
-bbb.
-  di₆ < di₅
-  di₆ < dj₂
-  di₆ = 0
-  di₅ < dj₂
-
-            i  i+1  -   i₅   -   j₂
-        b   .   0   .   1   .   .
-0                -0
-        a   .   0   .   .   .   .
-0                -1
-       b+c  .   0   0   .   .   .
-
-       a+b  .   0   .   0   .   0   1   1   1 ...
-0               ≠   ≠   ≠   ≠
-        c   .   1   .   1   .   0   1   1   1 ...
-1               ≠   ≠
-        b   .   0   .   1   .   .
-
-bbb.
-
-            i  i+1  -   i₆  -   i₅   -   j₂
-        b   .   1   1   0   .   1   .   .
-0               ≠   ≠
-        a   .   0   0   0   .   .   .   .
-0
-       b+c  .   0   0   0   .   .   .   .
-
-       a+b  .   1   1   0   .   0   .   0
-0               ≠   ≠   ≠   ≠   ≠   ≠
-        c   .   0   0   1   .   1   .   0
-1               ≠   ≠   ≠   ≠
-        b   .   1   1   0   .   1   .   .
-
-
-
-  di₆ = 0 ... pas sûr :
-
-            i  i+1  -   j₂  -   i₅
-        b   .   0   .   1   0   1
-0                ←01                      ←-- contradiction
-        a   .   0   1   1   1   1 ...
-0                ←1
-       b+c  .   0   .   0   0   .
-
-       a+b  .   0   .   0   .   .
-0               ≠   ≠
-        c   .   1   .   0   1   1 ...
-1               ≠   ≠   ≠   ≠
-        b   .   0   .   1   0   1
-
-
-  0 < di₆
-            i  i+1  -   i₆  -   j₂  -   i₅
-        b   .   .   1   0   .   1   .   .
-0               ≠   ≠    ←0
-        a   .   .   0   0   .   .   .   .
-0                    ←01  ←1                ←--- contradiction
-       b+c  .   .   0   0   .   0   .   .
-
-       a+b  .   .   1   0   .   0   .   .
-0               ≠   ≠   ≠   ≠
-        c   .   .   0   1   .   0   .   1
-1               ≠   ≠   ≠   ≠   ≠   ≠
-        b   .   .   1   0   .   1   .   1
-
-
-            i  i+1  -   i₆  -   i₅
-        b   .   .   .   0   .   .
-0               ≠   ≠
-        a   .   .   .   0   .   .
-0
-       b+c  .   .   .   .   .   .
-
-       a+b  .   .   .   .   .   .
-0
-        c   .   .   .   .   .   1
-1               ≠   ≠   ≠   ≠
-        b   .   .   .   .   .   1
-
-bbb.
-
-  remember Hss₁ as H; clear HeqH.
-  destruct dk₁; simpl in *; repeat rewrite Nat.add_0_r in *.
-   apply fst_same_iff in H; simpl in H.
-   destruct H as (_, Hs₁); rewrite Nat.add_0_r in Hs₁.
-   remember Hsj₁ as H; clear HeqH.
-   apply fst_same_iff in H; simpl in H.
-   destruct H as (Hn₁, Ht₁).
-   rewrite Hc₃ in Ht₁; symmetry in Ht₁.
-   unfold carry_i in Hc₅; simpl in Hc₅.
-   remember (fst_same b c (S i)) as s₅ eqn:Hs₅ .
-   destruct s₅ as [di₅| ]; [ idtac | clear Hc₅ ].
-    symmetry in Hs₅.
-    remember Hs₅ as H; clear HeqH.
-    apply fst_same_iff in H; simpl in H.
-    destruct H as (Hn₅, Hd₅).
-    rewrite Hc₅ in Hd₅; symmetry in Hd₅.
-    rename Hss₁ into Hu₁.
-    clear Hbk₁ Hck₁ Hfa₁ Hfb₁ Hfb₂ Hfa₂.
-    destruct dk₂; simpl in *; repeat rewrite Nat.add_0_r in *.
-     destruct (lt_eq_lt_dec di₅ di₆) as [[H₁| H₁]| H₁].
-      remember H₁ as H; clear HeqH.
-      apply Hn₆ in H.
-      rewrite Hc₅ in H; simpl in H.
-      rename H into Ha₅.
-      destruct dj₂; simpl in *; repeat rewrite Nat.add_0_r in *.
-       try rewrite Nat.add_1_r in *; simpl in *.
-       destruct di₅; simpl in *; repeat rewrite Nat.add_0_r in *.
-        rewrite Hs₄ in Hd₅; discriminate Hd₅.
-
-        rewrite Nat.add_succ_r in Ha₅.
-        rewrite Hbl₂ in Ha₅; discriminate Ha₅.
-
-       destruct di₅; simpl in *; repeat rewrite Nat.add_0_r in *.
-        pose proof (Hn₄ 0 (Nat.lt_0_succ _)) as H.
-        rewrite Nat.add_0_r in H.
-        rewrite Hd₅ in H; simpl in H.
-        rename H into Ht₂.
-        remember Ht₂ as H; clear HeqH.
-        unfold rm_add_i in H; simpl in H.
-        rewrite Ha₅, Hc₅ in H.
-        rewrite xorb_true_r in H.
-        apply negb_false_iff in H.
-
-bbb.
-
-            i  i+1  -   i₅  -   i₆
-        b   .   .   .   .   .   .
-0
-        a   .   .   .   .   .   .
-0
-       b+c  .   .   .   .   .   .
-
-       a+b  .   .   .   .   .   .
-0
-        c   .   .   .   .   .   .
-1
-        b   .   .   .   .   .   .
-
-
-            i  i+1  -   i₅  -   i₆
-        b   .   .   .   1   .   0
-                ≠   ≠   ≠   ≠
-        a   .   .   .   0   .   0
-
-       b+c  .   0   0   .   .   .
-
-       a+b  .   1   1   1   1   .
-
-        c   .   .   .   1   .   .
-                ≠   ≠
-        b   .   .   .   1   .   0
-
-*)
+   apply fst_same_sym_iff in Hs₅.
+   pose proof (Htb₁ 0) as H; rewrite Nat.add_0_r in H.
+   unfold rm_add_i in H; simpl in H.
+   simpl in Hs₅.
+   rewrite Hs₅, negb_xorb_diag, xorb_true_l in H.
+   apply negb_true_iff in H.
+   unfold carry_i in H; simpl in H.
+   remember (fst_same b c (S (S (i + S dj₁)))) as s₁ eqn:Hs₁ .
+   destruct s₁ as [di₁| ]; [ idtac | discriminate H ].
+   apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
+   destruct Hs₁ as (Hn₁, Hs₁).
+   rewrite <- Nat.add_succ_r in Hs₁.
+   rewrite <- Nat.add_assoc in Hs₁.
+   rewrite Hs₅ in Hs₁.
+   apply neq_negb in Hs₁; [ contradiction | reflexivity ].
+Qed.
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
