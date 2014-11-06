@@ -2510,7 +2510,7 @@ Qed.
 
 Theorem carry_0_r_true_if : ∀ a i,
   carry_i a 0 i = true
-  → id (∀ j, a.[i + S j] = true).
+  → id (∀ dj, a.[i + S dj] = true).
 Proof.
 intros a i H j.
 unfold carry_i in H; simpl in H.
@@ -3805,15 +3805,14 @@ destruct dj₁.
    rewrite <- Nat.add_assoc, <- Nat.add_succ_r in H.
    rewrite Hcl₁ in H; discriminate H.
 
-bbb.
-
 (*
   clear Hfa₁ Hfb₁.
   try rewrite Nat.add_0_r in *; try rewrite Nat.add_1_r in *; simpl in *.
-  pose proof (Hbk₁ (Nat.lt_0_succ dk₁)) as Hb₁.
-  clear Hbk₁.
-  pose proof (Hck₁ (Nat.lt_0_succ dk₁)) as Hd₁.
-  clear Hck₁.
+  pose proof (Hbk₁ (Nat.lt_0_succ dk₁)) as Hb₁; clear Hbk₁.
+  pose proof (Hck₁ (Nat.lt_0_succ dk₁)) as Hd₁; clear Hck₁.
+  rename Htb₁ into Ht₁.
+bbb.
+
   remember Hc₂ as H; clear HeqH.
   unfold carry_i in H; simpl in H.
   remember (fst_same ((a + b)%rm + c) 0 (S i)) as s₃ eqn:Hs₃ .
@@ -4001,10 +4000,55 @@ bbb.
 
    simpl in *; try rewrite Nat.add_0_r in *.
    clear Hfa₁ Hfb₁.
-   pose proof (Hbk₁ (Nat.lt_0_succ (S dk₁))) as Hb₁.
-   clear Hbk₁.
-   pose proof (Hck₁ (Nat.lt_0_succ (S dk₁))) as Hd₁.
-   clear Hck₁.
+   pose proof (Hbk₁ (Nat.lt_0_succ (S dk₁))) as Hb₁; clear Hbk₁.
+   pose proof (Hck₁ (Nat.lt_0_succ (S dk₁))) as Hd₁; clear Hck₁.
+   rename Htb₁ into Ht₁.
+   remember Hss₁ as H; clear HeqH.
+   apply fst_same_iff in H; simpl in H.
+   destruct H as (Hnk, Hsk).
+   destruct (lt_eq_lt_dec di₂ (S dk₁)) as [[H₁| H₁]| H₁].
+    remember Ht₂ as H; clear HeqH.
+    unfold rm_add_i in H; simpl in H.
+    unfold rm_add_i in H; simpl in H.
+    rewrite Hta₁, xorb_true_l in H.
+    do 3 rewrite <- negb_xorb_l in H.
+    apply negb_false_iff in H.
+    rewrite xorb_shuffle0, xorb_comm in H.
+    do 2 rewrite <- xorb_assoc in H.
+    rewrite Hnk in H; [ idtac | assumption ].
+    rewrite <- negb_xorb_r, xorb_nilpotent, xorb_true_l in H.
+    rewrite <- negb_xorb_l in H.
+    apply negb_true_iff in H.
+    unfold carry_i in H.
+    remember (fst_same a b (S (S (i + di₂)))) as s₃ eqn:Hs₃ .
+    remember (fst_same (a + b) c (S (S (i + di₂)))) as s₄ eqn:Hs₄ .
+    simpl in H.
+    destruct s₃ as [di₃| ].
+     rewrite <- Nat.add_succ_r, <- Nat.add_assoc in H.
+     rewrite Hta₁, xorb_true_l in H.
+     apply negb_false_iff in H.
+     destruct s₄ as [di₄| ].
+      apply fst_same_sym_iff in Hs₄; simpl in Hs₄.
+      destruct Hs₄ as (Hn₄, Hs₄).
+      rewrite Hs₄ in H.
+      rename H into Hd₄.
+      rewrite Hd₄ in Hs₄.
+bbb.
+
+            i  i+1  -   k₁  -
+        b   .   y   x   0   1   1 ...
+
+        a   .   1   1   1   1   1 ...
+
+       b+c  .   1   1   1   1   1 ...
+
+       a+b  .   y   x   0   1   1 ...
+0
+        c   .  ¬y  ¬x   0   1   1 ...
+0               ≠   ≠
+        b   .   y   x   0   1   1 ...
+
+
    remember Hc₂ as H; clear HeqH.
    unfold carry_i in H; simpl in H.
    remember (fst_same ((a + b)%rm + c) 0 (S i)) as s₃ eqn:Hs₃ .
