@@ -3805,6 +3805,9 @@ destruct dj₁.
    rewrite <- Nat.add_assoc, <- Nat.add_succ_r in H.
    rewrite Hcl₁ in H; discriminate H.
 
+bbb.
+
+(*
   clear Hfa₁ Hfb₁.
   try rewrite Nat.add_0_r in *; try rewrite Nat.add_1_r in *; simpl in *.
   pose proof (Hbk₁ (Nat.lt_0_succ dk₁)) as Hb₁.
@@ -3866,8 +3869,25 @@ destruct dj₁.
         subst di₈.
         destruct HH as (Hn₄, Hss₄).
         do 2 rewrite Nat.add_succ_r in H.
+        destruct di₄.
+         try rewrite Nat.add_0_r in *; simpl in *.
 
 bbb.
+
+            i  i+1  -   k₁
+        b   .   .   1   0   1 ...
+1
+        a   .   1   1   1   1 ...
+1
+       b+c  .   1   1   1   1 ...
+
+       a+b  .   .   0   0   1 ...
+0
+        c   .   .   0   0   1 ...
+0               ≠   ≠
+        b   .   .   1   0   1 ...
+*)
+
   destruct dk₁.
    try rewrite Nat.add_0_r in *; try rewrite Nat.add_1_r in *; simpl in *.
    try rewrite Nat.add_0_r in *; try rewrite Nat.add_1_r in *; simpl in *.
