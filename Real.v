@@ -3564,6 +3564,39 @@ destruct dj₁; simpl in *; repeat rewrite Nat.add_0_r in *.
    apply neq_negb in Hs₁; [ contradiction | reflexivity ].
 Qed.
 
+Theorem case_5 : ∀ a b c i,
+  carry_i (a + (b + c)%rm) 0 i = true
+  → carry_i ((a + b)%rm + c) 0 i = false
+  → carry_i a (b + c) i = true
+  → carry_i (a + b) c i = true
+  → carry_i b c i = true
+  → carry_i a b i = true
+  → False.
+Proof.
+intros a b c i Hc₁ Hc₂ Hc₃ Hc₄ Hc₅ Hc₆.
+remember Hc₁ as H; clear HeqH.
+apply carry_0_r_true_if in H; unfold id in H; simpl in H.
+rename H into Hj₁; move Hj₁ before Hc₁.
+remember Hc₂ as H; clear HeqH.
+unfold carry_i in H; simpl in H.
+remember (fst_same ((a + b)%rm + c) 0 (S i)) as s₂ eqn:Hs₂ .
+destruct s₂ as [di₂| ]; [ idtac | discriminate H ].
+apply fst_same_sym_iff in Hs₂; simpl in Hs₂.
+destruct Hs₂ as (Hn₂, Hs₂); clear H.
+remember Hj₁ as H; clear HeqH; move H before Hj₁.
+apply forall_add_succ_r in H; unfold id in H.
+apply rm_add_inf_true_if in H; simpl in H.
+destruct H as (dj₁, (Hta₁, (Htb₁, (Hfa₁, (Hfb₁, Hsj₁))))).
+rewrite <- Nat.add_succ_r in Hfa₁.
+rewrite <- Nat.add_succ_r in Hfb₁.
+remember Htb₁ as H; clear HeqH.
+apply forall_add_succ_l in H; unfold id in H.
+apply rm_add_inf_true_if in H.
+move H before Hsj₁.
+destruct H as (dk₁, (Hbl₁, (Hcl₁, (Hbk₁, (Hck₁, Hss₁))))).
+bbb.
+*)
+
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
 intros a b c.
@@ -3686,24 +3719,7 @@ destruct c₁, c₂, c₃, c₄, c₅, c₆; try reflexivity; exfalso.
 
   rewrite carry_comm; assumption.
 
- (* faire un lemme/théorème *)
- remember Hc₁ as H; clear HeqH.
- unfold carry_i in H; simpl in H.
- remember (fst_same (a + (b + c)%rm) 0 (S i)) as s₁ eqn:Hs₁ .
- apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
- destruct s₁ as [di₁| ].
-  destruct Hs₁ as (Hn₁, Hs₁); rewrite Hs₁ in H; discriminate H.
-
-  clear H.
-  remember Hc₂ as H; clear HeqH.
-  unfold carry_i in H; simpl in H.
-  remember (fst_same ((a + b)%rm + c) 0 (S i)) as s₂ eqn:Hs₂ .
-  destruct s₂ as [di₂| ]; [ idtac | discriminate H ].
-  apply fst_same_sym_iff in Hs₂; simpl in Hs₂.
-  destruct Hs₂ as (Hn₂, Hs₂); clear H.
-  remember Hs₂ as H; clear HeqH.
-  unfold rm_add_i in H; simpl in H.
-  unfold rm_add_i in H; simpl in H.
+ eapply case_5; eassumption.
 bbb.
 
 Theorem rm_add_assoc_hop : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
