@@ -3813,8 +3813,130 @@ destruct dj₁.
   destruct dk₁.
    rewrite Nat.add_0_r in Hs₁.
    rewrite Hs₁, xorb_nilpotent, xorb_false_l in H.
+   rename H into Hd₁.
+   unfold carry_i in Hc₅.
+   remember (fst_same b c (S i)) as s₅ eqn:Hs₅ .
+   destruct s₅ as [di₅| ]; [ idtac | discriminate Hc₅ ].
+   simpl in Hc₅.
+   destruct di₅.
+    try rewrite Nat.add_0_r in *; try rewrite Nat.add_1_r in *; simpl in *.
+    remember Hc₆ as H; clear HeqH.
+    unfold carry_i in H; simpl in H.
+    remember (fst_same a b (S i)) as s₆ eqn:Hs₆ .
+    apply fst_same_sym_iff in Hs₆; simpl in Hs₆.
+    destruct s₆ as [di₆| ].
+     destruct Hs₆ as (Hn₆, Hs₆).
+     rewrite H in Hs₆.
+     symmetry in Hs₆.
+     destruct di₆.
+      rewrite Nat.add_0_r, Hc₅ in Hs₆; discriminate Hs₆.
+
+      clear H.
+      pose proof (Hn₆ di₆ (Nat.lt_succ_diag_r di₆)) as H.
+      rewrite Hta₁ in H.
+      apply negb_sym in H; simpl in H.
+      rewrite Hc₅ in Hs₁; symmetry in Hs₁.
+      rename H into Hs₇.
+      destruct di₆.
+       try rewrite Nat.add_0_r in *; try rewrite Nat.add_1_r in *; simpl in *.
+       clear Hfa₁ Hfb₁ Hbk₁ Hck₁ Hn₁ Hc₅.
+       clear Hn₆.
+       remember Hc₂ as H; clear HeqH.
+       unfold carry_i in H; simpl in H.
+       remember (fst_same ((a + b)%rm + c) 0 (S i)) as s₃ eqn:Hs₃ .
+       destruct s₃ as [di₃| ]; [ idtac | discriminate H ].
+       apply fst_same_sym_iff in Hs₃; simpl in Hs₃.
+       destruct di₃.
+        rewrite Nat.add_0_r in H; simpl in H.
+        unfold rm_add_i in H; simpl in H.
+        rewrite Hs₁, xorb_false_r in H.
+        unfold rm_add_i in H; simpl in H.
+        rewrite Hs₇, xorb_false_r in H.
+        pose proof (Hta₁ 0) as HH; rewrite Nat.add_0_r in HH; rewrite HH in H.
+        rewrite xorb_true_l in H.
+        rewrite <- negb_xorb_l in H; apply negb_false_iff in H.
+        unfold carry_i in H; simpl in H.
+        remember (fst_same a b (S (S i))) as s₄ eqn:Hs₄ .
+        remember (fst_same (a + b) c (S (S i))) as s₈ eqn:Hs₈ .
+        destruct s₄ as [di₄| ].
+         rewrite <- Nat.add_succ_r in H.
+         rewrite Hta₁, xorb_true_l in H.
+         destruct s₈ as [di₈| ]; [ idtac | discriminate H ].
+         apply negb_true_iff in H.
+         unfold rm_add_i in H; simpl in H.
+         unfold carry_i in H; simpl in H.
+         remember (fst_same a b (S (S (S (i + di₈))))) as s₉ eqn:Hs₉ .
+         destruct s₉ as [di₉| ].
+          rewrite Hbl₁ in H.
+          rewrite <- Nat.add_succ_r in H.
+          rewrite Hta₁ in H.
+          rewrite <- Nat.add_succ_r in H.
+          rewrite <- Nat.add_succ_r in H.
+          rewrite <- Nat.add_assoc in H.
+          rewrite Hta₁ in H.
+          discriminate H.
+
+          rewrite Hbl₁ in H.
+          rewrite <- Nat.add_succ_r in H.
+          rewrite Hta₁ in H; discriminate H.
+
+         destruct s₈ as [di₈| ]; [ idtac | discriminate H ].
+         rewrite xorb_true_l in H.
+         apply negb_true_iff in H.
+         unfold rm_add_i in H; simpl in H.
+         rewrite Hbl₁ in H.
+         unfold carry_i in H; simpl in H.
+         remember (fst_same a b (S (S (S (i + di₈))))) as s₉ eqn:Hs₉ .
+         destruct s₉ as [di₉| ].
+          rewrite <- Nat.add_succ_r in H.
+          rewrite Hta₁ in H.
+          rewrite <- Nat.add_succ_r in H.
+          rewrite <- Nat.add_succ_r in H.
+          rewrite <- Nat.add_assoc in H.
+          rewrite Hta₁ in H.
+          discriminate H.
+
+          rewrite <- Nat.add_succ_r in H.
+          rewrite Hta₁ in H.
+          discriminate H.
+          discriminate H.
+
+        unfold rm_add_i in H; simpl in H.
+        rewrite Nat.add_succ_r in H.
+        rewrite Hcl₁, xorb_true_r in H.
+        rewrite <- negb_xorb_l in H.
+        apply negb_false_iff in H.
 
 bbb.
+
+            i  i+1  -
+        b   .   0   1   1 ...
+
+        a   .   1   1   1 ...
+
+       b+c  .   1   1   1 ...
+
+       a+b  .   0   1   1 ...
+
+        c   .   0   1   1 ...
+0
+        b   .   0   1   1 ...
+
+
+            i  i+1  -   i₆  -
+        b   .   0   .   0   1
+
+        a   .   1   1   1   1 ...
+
+       b+c  .   .   .   .   .
+
+       a+b  .   .   .   .   .
+
+        c   .   0   1   1   1 ...
+0
+        b   .   0   1   1   1 ...
+
+
             i  i+1  -   k₁
         b   .   .   .   0   1 ...
 
