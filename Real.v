@@ -3917,6 +3917,11 @@ destruct dj₁.
      rewrite Hta₁ in H; discriminate H.
 
    simpl in *; try rewrite Nat.add_0_r in *.
+   clear Hfa₁ Hfb₁.
+   pose proof (Hbk₁ (Nat.lt_0_succ (S dk₁))) as Hb₁.
+   clear Hbk₁.
+   pose proof (Hck₁ (Nat.lt_0_succ (S dk₁))) as Hd₁.
+   clear Hck₁.
 bbb.
 
             i  i+1  -
