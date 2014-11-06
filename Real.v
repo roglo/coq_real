@@ -4056,6 +4056,22 @@ bbb.
 
        rewrite <- Nat.add_assoc, <- Nat.add_succ_r, H₂ in Hd₄.
        rewrite Hd₁ in Hd₄; discriminate Hd₄.
+
+       remember H₂ as H; clear HeqH.
+       apply lt_add_sub_lt_l in H; [ idtac | assumption ].
+       apply Hn₄ in H; simpl in H.
+       apply Nat.succ_le_mono in H₁.
+       rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+       rewrite Nat.add_shuffle0, Nat.add_sub in H.
+       rewrite <- Nat.add_succ_r, Hd₁ in H; simpl in H.
+       unfold rm_add_i in H; simpl in H.
+       rewrite Hta₁, Hb₁, xorb_true_l in H.
+       apply negb_true_iff in H.
+       unfold carry_i in H; simpl in H.
+       remember (fst_same a b (S (S (i + S dk₁)))) as s₅ eqn:Hs₅ .
+       destruct s₅ as [di₅| ]; [ idtac | discriminate H ].
+       rewrite <- Nat.add_assoc, <- Nat.add_succ_r in H.
+       rewrite Hta₁ in H; discriminate H.
 bbb.
 
             i  i+1  -   k₁  -
