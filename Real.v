@@ -2660,12 +2660,11 @@ Theorem case_1 : ∀ a b c i,
   carry_i (a + (b + c)%rm) 0 i = true
   → carry_i ((a + b)%rm + c) 0 i = true
   → carry_i a (b + c) i = true
-  → carry_i (a + b) c i = true
   → carry_i b c i = true
   → carry_i a b i = false
   → False.
 Proof.
-intros a b c i Hc₁ Hc₂ Hc₃ Hc₄ Hc₅ Hc₆.
+intros a b c i Hc₁ Hc₂ Hc₃ Hc₅ Hc₆.
 apply carry_0_r_true_if in Hc₁.
 apply carry_0_r_true_if in Hc₂.
 unfold id in Hc₁, Hc₂.
@@ -3689,11 +3688,6 @@ destruct c₁, c₂, c₃, c₄, c₅, c₆; try reflexivity; exfalso.
   rewrite carry_comm.
   rewrite carry_compat_r with (a := (a + b)%rm); [ assumption | idtac ].
   apply rm_add_i_comm.
-
-  rewrite carry_compat_r with (a := (b + c)%rm).
-   rewrite carry_comm; assumption.
-
-   apply rm_add_i_comm.
 
   rewrite carry_comm; assumption.
 
