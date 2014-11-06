@@ -3775,6 +3775,43 @@ destruct c₁, c₂, c₃, c₄, c₅, c₆; try reflexivity; exfalso.
   rewrite carry_comm; assumption.
 
  eapply case_5; eassumption.
+
+ Focus 2.
+ eapply case_5; eassumption.
+
+ Focus 7.
+ apply case_5 with (c := a) (b := b) (a := c) (i := i).
+  rewrite carry_compat_r with (a := (a + b + c)%rm); [ assumption | idtac ].
+  intros j; simpl; symmetry.
+  rewrite rm_add_i_comm.
+  apply rm_add_i_compat_r, rm_add_i_comm.
+
+  rewrite carry_compat_r with (a := (a + (b + c))%rm); [ assumption | idtac ].
+  intros j; simpl; rewrite rm_add_i_comm.
+  apply rm_add_i_compat_r, rm_add_i_comm.
+
+  rewrite carry_comm.
+  rewrite carry_compat_r with (a := (a + b)%rm); [ assumption | idtac ].
+  apply rm_add_i_comm.
+
+  rewrite carry_comm; assumption.
+
+ Focus 11.
+ apply case_5 with (c := a) (b := b) (a := c) (i := i).
+  rewrite carry_compat_r with (a := (a + b + c)%rm); [ assumption | idtac ].
+  intros j; simpl; symmetry.
+  rewrite rm_add_i_comm.
+  apply rm_add_i_compat_r, rm_add_i_comm.
+
+  rewrite carry_compat_r with (a := (a + (b + c))%rm); [ assumption | idtac ].
+  intros j; simpl; rewrite rm_add_i_comm.
+  apply rm_add_i_compat_r, rm_add_i_comm.
+
+  rewrite carry_comm.
+  rewrite carry_compat_r with (a := (a + b)%rm); [ assumption | idtac ].
+  apply rm_add_i_comm.
+
+  rewrite carry_comm; assumption.
 bbb.
 
 Theorem rm_add_assoc_hop : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
