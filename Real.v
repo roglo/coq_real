@@ -4072,6 +4072,22 @@ bbb.
        destruct s₅ as [di₅| ]; [ idtac | discriminate H ].
        rewrite <- Nat.add_assoc, <- Nat.add_succ_r in H.
        rewrite Hta₁ in H; discriminate H.
+
+      clear H.
+      apply fst_same_sym_iff in Hs₄; simpl in Hs₄.
+      pose proof (Hs₄ (dk₁ - di₂)) as H.
+      apply Nat.succ_le_mono in H₁.
+      rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+      rewrite Nat.add_shuffle0, Nat.add_sub in H.
+      rewrite <- Nat.add_succ_r, Hd₁ in H; simpl in H.
+      unfold rm_add_i in H; simpl in H.
+      rewrite Hta₁, Hb₁, xorb_true_l in H.
+      apply negb_true_iff in H.
+      unfold carry_i in H; simpl in H.
+      remember (fst_same a b (S (S (i + S dk₁)))) as s₅ eqn:Hs₅ .
+      destruct s₅ as [di₅| ]; [ idtac | discriminate H ].
+      rewrite <- Nat.add_assoc, <- Nat.add_succ_r in H.
+      rewrite Hta₁ in H; discriminate H.
 bbb.
 
             i  i+1  -   k₁  -
