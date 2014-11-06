@@ -3847,6 +3847,25 @@ destruct dj₁.
       rewrite Hta₁ in H.
       rewrite xorb_true_l, xorb_true_r in H.
       rewrite negb_involutive in H.
+      destruct (lt_eq_lt_dec di₈ dk₁) as [[H₁| H₁]| H₁].
+       assert (0 < dk₁) as HH by (eapply Nat.lt_lt_0; eauto ).
+       apply Hn₁ in HH; rewrite Nat.add_0_r in HH.
+       rename HH into Hbc₁.
+       rewrite Hbc₁, negb_xorb_diag, xorb_true_l in H.
+       apply negb_false_iff in H.
+       remember Hs₄ as HH; clear HeqHH.
+       apply fst_same_sym_iff in HH; simpl in HH.
+       destruct (lt_eq_lt_dec di₈ di₄) as [[H₂| H₂]| H₂].
+        destruct HH as (Hn₄, Hss₄).
+        remember H₂ as HH; clear HeqHH.
+        apply Hn₄ in HH.
+        do 2 rewrite Nat.add_succ_r in H.
+        rewrite H in HH.
+        rewrite <- Nat.add_succ_r, Hta₁ in HH; discriminate HH.
+
+        subst di₈.
+        destruct HH as (Hn₄, Hss₄).
+        do 2 rewrite Nat.add_succ_r in H.
 
 bbb.
   destruct dk₁.
