@@ -4053,6 +4053,9 @@ bbb.
        do 2 rewrite <- Nat.add_assoc in H.
        do 2 rewrite <- Nat.add_succ_r in H.
        rewrite Hta₁ in H; discriminate H.
+
+       rewrite <- Nat.add_assoc, <- Nat.add_succ_r, H₂ in Hd₄.
+       rewrite Hd₁ in Hd₄; discriminate Hd₄.
 bbb.
 
             i  i+1  -   k₁  -
