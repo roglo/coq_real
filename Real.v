@@ -4033,6 +4033,26 @@ bbb.
       rewrite Hs₄ in H.
       rename H into Hd₄.
       rewrite Hd₄ in Hs₄.
+      destruct (lt_eq_lt_dec (di₂ + di₄) dk₁) as [[H₂| H₂]| H₂].
+       remember H₂ as H; clear HeqH.
+       apply Nat.succ_lt_mono in H.
+       apply Hnk in H.
+       rewrite Nat.add_succ_r, Nat.add_assoc in H.
+       rewrite Hd₄ in H; simpl in H.
+       rename H into Hb₄.
+       remember Hs₄ as H; clear HeqH.
+       unfold rm_add_i in H; simpl in H.
+       rewrite Hb₄, <- Nat.add_assoc, <- Nat.add_succ_r in H.
+       rewrite Hta₁ in H.
+       rewrite xorb_true_l in H.
+       apply negb_true_iff in H.
+       rewrite Nat.add_succ_r, Nat.add_assoc in H.
+       unfold carry_i in H; simpl in H.
+       remember (fst_same a b (S (S (S (i + di₂ + di₄))))) as s₅ eqn:Hs₅ .
+       destruct s₅ as [di₅| ]; [ idtac | discriminate H ].
+       do 2 rewrite <- Nat.add_assoc in H.
+       do 2 rewrite <- Nat.add_succ_r in H.
+       rewrite Hta₁ in H; discriminate H.
 bbb.
 
             i  i+1  -   k₁  -
