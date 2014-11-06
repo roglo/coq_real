@@ -3805,6 +3805,50 @@ destruct dj₁.
    rewrite <- Nat.add_assoc, <- Nat.add_succ_r in H.
    rewrite Hcl₁ in H; discriminate H.
 
+  clear Hfa₁ Hfb₁.
+  try rewrite Nat.add_0_r in *; try rewrite Nat.add_1_r in *; simpl in *.
+  pose proof (Hbk₁ (Nat.lt_0_succ dk₁)) as Hb₁.
+  clear Hbk₁.
+  pose proof (Hck₁ (Nat.lt_0_succ dk₁)) as Hd₁.
+  clear Hck₁.
+  remember Hc₂ as H; clear HeqH.
+  unfold carry_i in H; simpl in H.
+  remember (fst_same ((a + b)%rm + c) 0 (S i)) as s₃ eqn:Hs₃ .
+  destruct s₃ as [di₃| ]; [ idtac | discriminate H ].
+  unfold rm_add_i in H; simpl in H.
+  destruct di₃.
+   rewrite Nat.add_0_r in H; simpl in H.
+   unfold rm_add_i in H; simpl in H.
+   pose proof (Hta₁ 0) as Ha₂; rewrite Nat.add_0_r in Ha₂.
+   rewrite Ha₂ in H.
+   remember Hss₁ as HH; clear HeqHH.
+   apply fst_same_iff in HH; simpl in HH.
+   destruct HH as (Hn₁, _).
+   rewrite xorb_true_l in H.
+   do 3 rewrite <- negb_xorb_l in H.
+   apply negb_false_iff in H.
+   unfold carry_i in H; simpl in H.
+   remember (fst_same a b (S (S i))) as s₄ eqn:Hs₄ .
+   remember (fst_same (a + b) c (S (S i))) as s₈ eqn:Hs₈ .
+   destruct s₄ as [di₄| ].
+    rewrite <- Nat.add_succ_r in H.
+    rewrite Hta₁, xorb_true_r in H.
+    destruct s₈ as [di₈| ].
+     do 2 rewrite <- negb_xorb_l in H.
+     apply negb_true_iff in H.
+     unfold rm_add_i in H; simpl in H.
+     unfold carry_i in H; simpl in H.
+     remember (fst_same a b (S (S (S (i + di₈))))) as s₉ eqn:Hs₉ .
+     destruct s₉ as [di₉| ].
+      rewrite <- Nat.add_succ_r in H.
+      rewrite Hta₁ in H.
+      do 3 rewrite <- Nat.add_succ_r in H.
+      rewrite <- Nat.add_assoc in H.
+      rewrite Hta₁ in H.
+      rewrite xorb_true_l, xorb_true_r in H.
+      rewrite negb_involutive in H.
+
+bbb.
   destruct dk₁.
    try rewrite Nat.add_0_r in *; try rewrite Nat.add_1_r in *; simpl in *.
    try rewrite Nat.add_0_r in *; try rewrite Nat.add_1_r in *; simpl in *.
@@ -3922,35 +3966,23 @@ destruct dj₁.
    clear Hbk₁.
    pose proof (Hck₁ (Nat.lt_0_succ (S dk₁))) as Hd₁.
    clear Hck₁.
+   remember Hc₂ as H; clear HeqH.
+   unfold carry_i in H; simpl in H.
+   remember (fst_same ((a + b)%rm + c) 0 (S i)) as s₃ eqn:Hs₃ .
+   destruct s₃ as [di₃| ]; [ idtac | discriminate H ].
+   unfold rm_add_i in H; simpl in H.
+   destruct di₃.
+    rewrite Nat.add_0_r in H; simpl in H.
+    unfold rm_add_i in H; simpl in H.
+    pose proof (Hta₁ 0) as Ha₂; rewrite Nat.add_0_r in Ha₂.
+    rewrite Ha₂ in H.
+    remember Hss₁ as HH; clear HeqHH.
+    apply fst_same_iff in HH; simpl in HH.
+    destruct HH as (Hn₁, _).
+    pose proof (Hn₁ 0 (Nat.lt_0_succ dk₁)) as HH.
+    rewrite Nat.add_0_r in HH.
+    rewrite HH in H.
 bbb.
-
-            i  i+1  -
-        b   .   0   1   1 ...
-
-        a   .   1   1   1 ...
-
-       b+c  .   1   1   1 ...
-
-       a+b  .   0   1   1 ...
-
-        c   .   0   1   1 ...
-0
-        b   .   0   1   1 ...
-
-
-            i  i+1  -   i₆  -
-        b   .   0   .   0   1
-
-        a   .   1   1   1   1 ...
-
-       b+c  .   .   .   .   .
-
-       a+b  .   .   .   .   .
-
-        c   .   0   1   1   1 ...
-0
-        b   .   0   1   1   1 ...
-
 
             i  i+1  -   k₁
         b   .   .   .   0   1 ...
