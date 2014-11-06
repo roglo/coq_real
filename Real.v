@@ -3571,12 +3571,10 @@ Theorem case_5 : ∀ a b c i,
   carry_i (a + (b + c)%rm) 0 i = true
   → carry_i ((a + b)%rm + c) 0 i = false
   → carry_i a (b + c) i = true
-  → carry_i (a + b) c i = true
   → carry_i b c i = true
-  → carry_i a b i = true
   → False.
 Proof.
-intros a b c i Hc₁ Hc₂ Hc₃ Hc₄ Hc₅ Hc₆.
+intros a b c i Hc₁ Hc₂ Hc₃ Hc₅.
 remember Hc₁ as H; clear HeqH.
 apply carry_0_r_true_if in H; unfold id in H; simpl in H.
 rename H into Hj₁; move Hj₁ before Hc₁.
@@ -3599,17 +3597,19 @@ symmetry in Hs₂.
 apply fst_same_iff in Hs₂; simpl in Hs₂.
 destruct Hs₂ as (Hn₂, Ht₂); clear H.
 destruct dj₁.
- try rewrite Nat.add_0_r in *; simpl in *.
  remember Hsj₁ as H; clear HeqH.
  apply fst_same_iff in H; simpl in H.
  destruct H as (_, Ha₁).
+ rewrite Nat.add_0_r in Hta₁.
  rewrite Hta₁, Nat.add_0_r in Ha₁.
  symmetry in Ha₁.
  destruct dk₁.
-  try rewrite Nat.add_0_r in *; simpl in *.
   remember Ht₂ as H; clear HeqH.
   unfold rm_add_i in H; simpl in H.
   unfold rm_add_i in H; simpl in H.
+  rewrite Nat.add_0_r in Hbl₁, Hcl₁.
+  rewrite Nat.add_0_r in Hbl₁, Hcl₁.
+  simpl in Hbl₁, Hcl₁.
   rewrite Hta₁, Hbl₁, Hcl₁ in H.
   rewrite xorb_true_l, xorb_true_r, xorb_false_l in H.
   rewrite <- negb_xorb_l in H.
@@ -3635,30 +3635,22 @@ destruct dj₁.
    rewrite <- Nat.add_assoc, <- Nat.add_succ_r in H.
    rewrite Hcl₁ in H; discriminate H.
 
-  pose proof (Hbk₁ (Nat.lt_0_succ dk₁)) as H; simpl in H.
-  clear Hbk₁; rename H into Hbk₁.
-  pose proof (Hck₁ (Nat.lt_0_succ dk₁)) as H; simpl in H.
-  clear Hck₁; rename H into Hck₁.
-  simpl in Hss₁.
-  remember Hss₁ as H; clear HeqH.
-  apply fst_same_iff in H; simpl in H.
-  destruct H as (Hn₁, _).
-bbb.
+  remember Hc₅ as H; clear HeqH.
+  unfold carry_i in H; simpl in H.
+  rewrite Nat.add_0_r in Hss₁.
+  rewrite Hss₁ in H.
+  rewrite Nat.add_0_r in Hbk₁.
+  simpl in Hbk₁, H.
+  rewrite Hbk₁ in H; [ discriminate H | apply Nat.lt_0_succ ].
 
-            i  i+1  -   k₁
-        b   .   .   .   0   1   1 ...
-
-        a   .   1   1   1   1   1 ...
-
-       b+c  .   1   1   1   1   1 ...
-
-       a+b  .   .   .   0
-
-        c   .   .   .   0   1   1 ...
-0               ≠   ≠
-        b   .   .   .   0   1   1 ...
-
-*)
+ rename Htb₁ into Hb₁.
+ remember Hc₃ as H; clear HeqH.
+ unfold carry_i in H; simpl in H.
+ rewrite Hsj₁ in H; simpl in H.
+ rewrite <- Nat.add_succ_r in H.
+ simpl in Hfa₁.
+ rewrite Hfa₁ in H; [ discriminate H | apply Nat.lt_0_succ ].
+Qed.
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
