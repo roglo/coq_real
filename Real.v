@@ -3629,6 +3629,12 @@ destruct dj₁.
    rewrite <- Nat.add_assoc, <- Nat.add_succ_r in H.
    rewrite Hcl₁ in H; discriminate H.
 
+   destruct s₃ as [di₃| ]; [ idtac | discriminate H ].
+   apply fst_same_sym_iff in Hs₃; simpl in Hs₃.
+   destruct Hs₃ as (Hn₃, Hs₃); rewrite Hs₃ in H.
+   rewrite <- Nat.add_assoc, <- Nat.add_succ_r in H.
+   rewrite Hcl₁ in H; discriminate H.
+
   pose proof (Hbk₁ (Nat.lt_0_succ dk₁)) as H; simpl in H.
   clear Hbk₁; rename H into Hbk₁.
   pose proof (Hck₁ (Nat.lt_0_succ dk₁)) as H; simpl in H.
