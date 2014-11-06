@@ -3628,21 +3628,29 @@ destruct dj₁.
    rewrite Hs₃ in H.
    rewrite <- Nat.add_assoc, <- Nat.add_succ_r in H.
    rewrite Hcl₁ in H; discriminate H.
+
+  pose proof (Hbk₁ (Nat.lt_0_succ dk₁)) as H; simpl in H.
+  clear Hbk₁; rename H into Hbk₁.
+  pose proof (Hck₁ (Nat.lt_0_succ dk₁)) as H; simpl in H.
+  clear Hck₁; rename H into Hck₁.
+  simpl in Hss₁.
+  remember Hss₁ as H; clear HeqH.
+  apply fst_same_iff in H; simpl in H.
+  destruct H as (Hn₁, _).
 bbb.
 
-            i  i+1
-        b   .   1   1   1 ...
+            i  i+1  -   k₁
+        b   .   .   .   0   1   1 ...
 
-        a   .   1   1   1 ...
+        a   .   1   1   1   1   1 ...
 
-       b+c  .   .
+       b+c  .   1   1   1   1   1 ...
 
-       a+b  .   .
+       a+b  .   .   .   0
 
-        c   .   1   1   1 ...
-
-        b   .   1   1   1 ...
-
+        c   .   .   .   0   1   1 ...
+0               ≠   ≠
+        b   .   .   .   0   1   1 ...
 
 *)
 
