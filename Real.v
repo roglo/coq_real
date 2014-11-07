@@ -4088,6 +4088,17 @@ bbb.
       destruct s₅ as [di₅| ]; [ idtac | discriminate H ].
       rewrite <- Nat.add_assoc, <- Nat.add_succ_r in H.
       rewrite Hta₁ in H; discriminate H.
+
+     clear H.
+     apply fst_same_sym_iff in Hs₃; simpl in Hs₃.
+     pose proof (Hs₃ (S dk₁ - di₂)) as H.
+     apply Nat.lt_le_incl in H₁.
+     rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+     rewrite Nat.add_shuffle0, Nat.add_sub in H.
+     rewrite <- Nat.add_succ_r, Hta₁ in H; simpl in H.
+     pose proof (Hbl₁ 0) as HH; simpl in HH.
+     rewrite Nat.add_0_r in HH; rewrite HH in H.
+     discriminate H.
 bbb.
 
             i  i+1  -   k₁  -
