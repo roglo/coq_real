@@ -4017,7 +4017,77 @@ apply carry_non_assoc_if in H; [ idtac | assumption ].
 destruct H as (dj₁, (Hdj₁, (Hta₁, (Htb₁, (Hfa₁, (Hfb₁, Hsj₁)))))).
 destruct dj₁; [ revert Hdj₁; apply Nat.nlt_0_r | clear Hdj₁ ].
 simpl in Hfa₁, Hfb₁, Hsj₁.
+remember Hc₆ as H; clear HeqH.
+unfold carry_i in H; simpl in H.
+remember (fst_same a b (S i)) as s₁ eqn:Hs₁ .
+destruct s₁ as [di₁| ]; [ idtac | discriminate H ].
+rename H into Ha₁.
+apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
+destruct Hs₁ as (Hn₁, Hs₁); rewrite Ha₁ in Hs₁; symmetry in Hs₁.
+destruct di₁.
+ clear Hn₁; rewrite Nat.add_0_r in Hs₁, Ha₁.
+ remember Hc₅ as H; clear HeqH.
+ unfold carry_i in H; simpl in H.
+ remember (fst_same b c (S i)) as s₂ eqn:Hs₂ .
+ apply fst_same_sym_iff in Hs₂; simpl in Hs₂.
+ destruct s₂ as [di₂| ].
+  destruct Hs₂ as (Hn₂, Hs₂).
+  rewrite H in Hs₂; symmetry in Hs₂.
+  rename H into Hb₂.
+  destruct di₂.
+   rewrite Nat.add_0_r, Hs₁ in Hb₂; discriminate Hb₂.
+
+   pose proof (Hn₂ 0 (Nat.lt_0_succ di₂)) as H.
+   rewrite Nat.add_0_r, Hs₁ in H.
+   apply negb_sym in H; simpl in H.
+   rename H into Hd₁.
+   destruct dj₁.
+    clear Hfa₁.
+    rewrite Nat.add_0_r in Hfb₁.
 bbb.
+
+            i  i+1  -
+        b   .   0   .
+0            +0  +1
+        a   .   0   1   1   1 ...
+0            +0
+       b+c  .   0   1   1   1 ...
+
+       a+b  .   1   .
+1            +1
+        c   .   1   .
+1            +1  +1
+        b   .   0   .
+
+
+
+            i  i+1  -   j₁   -
+        b   .   0   .   .   .
+             -0
+        a   .   0   .   0   1   1   1 ...
+0            -0 ≠   ≠
+       b+c  .   1   .   0   1   1   1 ...
+
+       a+b  .   .   .   .   .
+             -1
+        c   .   1   .   .   .
+             -1  -1
+        b   .   0   .   .   .
+
+
+
+            i  i+1  -   j₁   -
+        b   .   .   .   .   .
+             -0
+        a   .   .   .   0   1   1   1 ...
+0            -0 ≠   ≠
+       b+c  .   .   .   0   1   1   1 ...
+
+       a+b  .   .   .   .   .
+             -1
+        c   .   .   .   .   .
+             -1
+        b   .   .   .   .   .
 *)
 
 Theorem carry_comm_l : ∀ a b c i,
