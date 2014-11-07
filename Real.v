@@ -4050,6 +4050,13 @@ destruct dj₁.
      rewrite <- Nat.add_succ_r, Hta₁ in H.
      discriminate H.
 
+     apply fst_same_sym_iff in Hs₃; simpl in Hs₃; clear H.
+     pose proof (Hs₃ 0) as H; rewrite Nat.add_0_r in H.
+     rewrite <- Nat.add_succ_r, Hta₁ in H.
+     pose proof (Hbl₁ 0) as HH; rewrite Nat.add_0_r in HH.
+     rewrite H₁, HH in H.
+     discriminate H.
+
 bbb.
 
             i  i+1  -   k₁  -
