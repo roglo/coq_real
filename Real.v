@@ -4146,7 +4146,6 @@ destruct di₁.
         apply Nat.le_sub_le_add_l.
         rewrite Nat.sub_diag.
         apply Nat.le_0_l.
-        apply Nat.le_0_l.
 
        apply fst_same_sym_iff in Hs₄; simpl in Hs₄.
        clear H; pose proof (Hs₄ 0) as H.
