@@ -3566,13 +3566,18 @@ destruct dj₁.
    apply neq_negb in Hs₁; [ contradiction | reflexivity ].
 Qed.
 
-Theorem case_5 : ∀ a b c i,
+Theorem carry_non_assoc_if : ∀ a b c i,
   carry_i (a + (b + c)%rm) 0 i = true
   → carry_i ((a + b)%rm + c) 0 i = false
-  → carry_i a (b + c) i = true
-  → False.
+  → ∃ j,
+    j ≠ 0 ∧
+    (∀ dj, a .[ S (i + j + dj)] = true) ∧
+    (∀ dj, rm_add_i b c (S (i + j + dj)) = true) ∧
+    (0 < j → a .[ S (i + pred j)] = false) ∧
+    (0 < j → rm_add_i b c (S (i + pred j)) = false) ∧
+    fst_same a (b + c) (S i) = Some (pred j).
 Proof.
-intros a b c i Hc₁ Hc₂ Hc₃.
+intros a b c i Hc₁ Hc₂.
 remember Hc₁ as H; clear HeqH.
 apply carry_0_r_true_if in H; unfold id in H; simpl in H.
 rename H into Hj₁; move Hj₁ before Hc₁.
@@ -3580,8 +3585,6 @@ remember Hj₁ as H; clear HeqH; move H before Hj₁.
 apply forall_add_succ_r in H; unfold id in H.
 apply rm_add_inf_true_if in H; simpl in H.
 destruct H as (dj₁, (Hta₁, (Htb₁, (Hfa₁, (Hfb₁, Hsj₁))))).
-rewrite <- Nat.add_succ_r in Hfa₁.
-rewrite <- Nat.add_succ_r in Hfb₁.
 remember Htb₁ as H; clear HeqH.
 apply forall_add_succ_l in H; unfold id in H.
 apply rm_add_inf_true_if in H.
@@ -3595,6 +3598,9 @@ symmetry in Hs₂.
 apply fst_same_iff in Hs₂; simpl in Hs₂.
 destruct Hs₂ as (Hn₂, Ht₂); clear H.
 destruct dj₁.
+ exfalso.
+ rewrite <- Nat.add_succ_r in Hfa₁.
+ rewrite <- Nat.add_succ_r in Hfb₁.
  remember Hsj₁ as H; clear HeqH.
  apply fst_same_iff in H; simpl in H.
  destruct H as (_, Ha₁).
@@ -3949,13 +3955,24 @@ destruct dj₁.
      simpl in HH.
      rewrite HH in H; discriminate H.
 
- rename Htb₁ into Hb₁.
- remember Hc₃ as H; clear HeqH.
- unfold carry_i in H; simpl in H.
- rewrite Hsj₁ in H; simpl in H.
- rewrite <- Nat.add_succ_r in H.
- simpl in Hfa₁.
- rewrite Hfa₁ in H; [ discriminate H | apply Nat.lt_0_succ ].
+ exists (S dj₁); split; auto.
+Qed.
+
+Theorem case_5 : ∀ a b c i,
+  carry_i (a + (b + c)%rm) 0 i = true
+  → carry_i ((a + b)%rm + c) 0 i = false
+  → carry_i a (b + c) i = true
+  → False.
+Proof.
+intros a b c i Hc₁ Hc₂ Hc₃.
+remember Hc₁ as H; clear HeqH.
+apply carry_non_assoc_if in H; [ idtac | assumption ].
+destruct H as (dj₁, (Hdj₁, (Hta₁, (Htb₁, (Hfa₁, (Hfb₁, Hsj₁)))))).
+destruct dj₁; [ apply Hdj₁; reflexivity | simpl in Hfa₁ ].
+remember Hc₃ as H; clear HeqH.
+unfold carry_i in H; simpl in H.
+rewrite Hsj₁ in H; simpl in H.
+rewrite Hfa₁ in H; [ discriminate H | apply Nat.lt_0_succ ].
 Qed.
 
 Theorem case_6 : ∀ a b c i,
@@ -3990,6 +4007,11 @@ Theorem case_7 : ∀ a b c i,
   → False.
 Proof.
 intros a b c i Hc₁ Hc₂ Hc₃ Hc₄ Hc₅ Hc₆.
+remember Hc₁ as H; clear HeqH.
+apply carry_non_assoc_if in H; [ idtac | assumption ].
+destruct H as (dj₁, (Hdj₁, (Hta₁, (Htb₁, (Hfa₁, (Hfb₁, Hsj₁)))))).
+destruct dj₁; [ apply Hdj₁; reflexivity | clear Hdj₁ ].
+simpl in Hfa₁, Hfb₁, Hsj₁.
 bbb.
 *)
 
