@@ -4057,58 +4057,69 @@ destruct dj₁.
      rewrite H₁, HH in H.
      discriminate H.
 
-bbb.
-
-            i  i+1  -   k₁  -
-        b   .   y   x   0   1   1 ...
-
-        a   .   1   1   1   1   1 ...
-
-       b+c  .   1   1   1   1   1 ...
-
-       a+b  .   y   x   0   1   1 ...
-0
-        c   .  ¬y  ¬x   0   1   1 ...
-0               ≠   ≠
-        b   .   y   x   0   1   1 ...
-
-
-   remember Hc₂ as H; clear HeqH.
-   unfold carry_i in H; simpl in H.
-   remember (fst_same ((a + b)%rm + c) 0 (S i)) as s₃ eqn:Hs₃ .
-   destruct s₃ as [di₃| ]; [ idtac | discriminate H ].
-   unfold rm_add_i in H; simpl in H.
-   destruct di₃.
-    rewrite Nat.add_0_r in H; simpl in H.
+    remember Ht₂ as H; clear HeqH.
     unfold rm_add_i in H; simpl in H.
-    pose proof (Hta₁ 0) as Ha₂; rewrite Nat.add_0_r in Ha₂.
-    rewrite Ha₂ in H.
-    remember Hss₁ as HH; clear HeqHH.
-    apply fst_same_iff in HH; simpl in HH.
-    destruct HH as (Hn₁, _).
-    pose proof (Hn₁ 0 (Nat.lt_0_succ dk₁)) as HH.
-    rewrite Nat.add_0_r in HH.
-    rewrite HH in H.
-bbb.
+    unfold rm_add_i in H; simpl in H.
+    rewrite Hta₁, xorb_true_l in H.
+    pose proof (Hbl₁ (di₂ - S (S dk₁))) as HH.
+    rewrite Nat.add_sub_assoc in HH; [ idtac | assumption ].
+    rewrite Nat.add_shuffle0, Nat.add_sub in HH.
+    rename HH into Hb₂.
+    rewrite Hb₂, xorb_false_l in H.
+    pose proof (Hcl₁ (di₂ - S (S dk₁))) as HH.
+    rewrite Nat.add_sub_assoc in HH; [ idtac | assumption ].
+    rewrite Nat.add_shuffle0, Nat.add_sub in HH.
+    rename HH into Hd₂.
+    rewrite Hd₂, xorb_true_r in H.
+    rewrite <- negb_xorb_l in H.
+    apply negb_false_iff in H.
+    unfold carry_i in H; simpl in H.
+    remember (fst_same a b (S (S (i + di₂)))) as s₃ eqn:Hs₃ .
+    remember (fst_same (a + b) c (S (S (i + di₂)))) as s₄ eqn:Hs₄ .
+    destruct s₃ as [di₃| ].
+     rewrite <- Nat.add_succ_r, <- Nat.add_assoc in H.
+     rewrite Hta₁, xorb_true_l in H.
+     apply negb_true_iff in H.
+     destruct s₄ as [di₄| ]; [ idtac | discriminate H ].
+     unfold rm_add_i in H; simpl in H.
+     rewrite <- Nat.add_assoc, <- Nat.add_succ_r in H.
+     rewrite Hta₁ in H.
+     assert (S dk₁ < di₂ + di₄) as HHH.
+      eapply lt_le_trans; eauto .
+      apply Nat.le_sub_le_add_l.
+      rewrite Nat.sub_diag.
+      apply Nat.le_0_l.
 
-            i  i+1  -   k₁
-        b   .   .   .   0   1 ...
+      pose proof (Hbl₁ (di₂ + di₄ - S dk₁)) as HH.
+      apply Nat.lt_le_incl in HHH.
+      rewrite Nat.add_succ_r in HH.
+      rewrite Nat.add_sub_assoc in HH; [ idtac | assumption ].
+      rewrite <- Nat.add_succ_l in HH.
+      rewrite Nat.add_shuffle0, Nat.add_sub in HH.
+      rewrite <- Nat.add_succ_r in HH.
+      simpl in HH.
+      rewrite HH in H.
+      rewrite xorb_true_l, xorb_false_l in H.
+      rename HH into Hb₃.
+      unfold carry_i in H; simpl in H.
+      remember (fst_same a b (S (S (i + S (di₂ + di₄))))) as s₅ eqn:Hs₅ .
+      destruct s₅ as [di₅| ]; [ idtac | discriminate H ].
+      rewrite <- Nat.add_assoc, <- Nat.add_succ_r in H.
+      rewrite Hta₁ in H; discriminate H.
 
-        a   .   1   1   1   1 ...
-
-       b+c  .   1   1   1   1 ...
-
-       a+b  .   .   .   0   1 ...
-
-        c   .   .   .   0   1 ...
-0               ≠   ≠
-        b   .   .   .   0   1 ...
-
-  remember Hc₆ as H; clear HeqH.
-  unfold carry_i in H; simpl in H.
-  remember (fst_same a b (S i)) as s₆ eqn:Hs₆ .
-  destruct s₆ as [di₆| ]; [ idtac | discriminate H ].
-  rewrite Hta₁ in H; discriminate H.
+     apply fst_same_sym_iff in Hs₃; simpl in Hs₃; clear H.
+     pose proof (Hs₃ 0) as H; rewrite Nat.add_0_r in H.
+     rewrite <- Nat.add_succ_r, Hta₁ in H.
+     apply negb_sym in H; simpl in H.
+     pose proof (Hbl₁ (di₂ - S dk₁)) as HH.
+     apply Nat.lt_le_incl in H₁.
+     rewrite Nat.add_succ_r in HH.
+     rewrite Nat.add_sub_assoc in HH; [ idtac | assumption ].
+     rewrite <- Nat.add_succ_l in HH.
+     rewrite Nat.add_shuffle0, Nat.add_sub in HH.
+     rewrite <- Nat.add_succ_r in HH.
+     simpl in HH.
+     rewrite HH in H; discriminate H.
 
  rename Htb₁ into Hb₁.
  remember Hc₃ as H; clear HeqH.
@@ -4117,7 +4128,7 @@ bbb.
  rewrite <- Nat.add_succ_r in H.
  simpl in Hfa₁.
  rewrite Hfa₁ in H; [ discriminate H | apply Nat.lt_0_succ ].
-bbb.
+Qed.
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
