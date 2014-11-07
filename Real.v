@@ -4146,38 +4146,26 @@ destruct di₁.
         apply Nat.le_sub_le_add_l.
         rewrite Nat.sub_diag.
         apply Nat.le_0_l.
+        apply Nat.le_0_l.
 
-       destruct s₅ as [di₅| ]; [ idtac | discriminate H ].
-       rewrite xorb_true_l in H.
-       apply negb_true_iff in H.
+       apply fst_same_sym_iff in Hs₄; simpl in Hs₄.
+       clear H; pose proof (Hs₄ 0) as H.
+       rewrite Hta₁, Nat.add_0_r, Hb₂ in H.
+       discriminate H.
 bbb.
 
-            i  i+1  i₂  -
-        b   .   0   1   x
-0            +0  +1  +1  +1  +1 ...
-        a   .   0   1   1   1 ...
-0            +0
-       b+c  .   0   1   1   1 ...
+            i  i+1  -   i₅
+        b   .   0   0   0   0   0   0 ...
+0
+        a   .   0   1   1   1   1   1 ...
+0
+       b+c  .   0   1   1   1   1   1 ...
 
-       a+b  .   1   1   x
-1            +1
+       a+b  .   .   .   .
+1
         c   .   1   1   .
-1            +1  +1  +1
-        b   .   0   1   x
-
-
-            i  i+1  -   i₂
-        b   .   0   .   1
-0            +0  +1
-        a   .   0   1   1   1 ...
-0            +0
-       b+c  .   0   1   1   1 ...
-
-       a+b  .   1   .   .
-1            +1
-        c   .   1   .   1
-1            +1  +1 ≠+1  +1
-        b   .   0   .   1
+1
+        b   .   0   1   .
 
 
 
