@@ -4151,20 +4151,47 @@ destruct di₁.
        clear H; pose proof (Hs₄ 0) as H.
        rewrite Hta₁, Nat.add_0_r, Hb₂ in H.
        discriminate H.
+
+bbb.
+      clear H.
+      pose proof (Hn₃ 0 (Nat.lt_0_succ di₃)) as H.
+      rewrite Nat.add_0_r in H.
+      unfold rm_add_i in H; simpl in H.
+      rewrite Hd₁, xorb_true_r in H.
+      rewrite <- negb_xorb_l in H.
+      apply negb_true_iff in H.
+      unfold rm_add_i in H; simpl in H.
+      rewrite Ha₁, Hs₁, xorb_false_l in H.
+      rewrite Nat.add_1_r in Hta₁.
+      rewrite carry_when_inf_1 with (i := S i) in H; auto.
+      rewrite xorb_true_l in H.
+      apply negb_false_iff in H.
+      rewrite Nat.add_1_r in Htb₁.
+      unfold carry_i in H; simpl in H.
+      remember (fst_same (a + b) c (S (S i))) as s₄ eqn:Hs₄ .
+      apply fst_same_sym_iff in Hs₄; simpl in Hs₄.
+      destruct s₄ as [di₄| ].
+       destruct Hs₄ as (Hn₄, Hs₄); rewrite H in Hs₄; symmetry in Hs₄.
+       unfold rm_add_i in H; simpl in H.
+       rewrite <- Nat.add_succ_l, Hta₁, xorb_true_l in H.
+       rewrite <- negb_xorb_l in H.
+       apply negb_true_iff in H.
+
+      Focus 1.
 bbb.
 
-            i  i+1  -   i₅
-        b   .   0   0   0   0   0   0 ...
+            i  i+1  -   i₃
+        b   .   0   .   .
 0
         a   .   0   1   1   1   1   1 ...
 0
        b+c  .   0   1   1   1   1   1 ...
 
-       a+b  .   .   .   .
+       a+b  .   1   .   .
 1
-        c   .   1   1   .
-1
-        b   .   0   1   .
+        c   .   1   .   .
+1                +1
+        b   .   0   .   .
 
 
 
