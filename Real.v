@@ -2665,15 +2665,18 @@ rewrite H, negb_xorb_diag, xorb_true_l.
 f_equal; erewrite carry_before_relay; try eassumption; reflexivity.
 Qed.
 
-Theorem carry_when_inf_1 : ∀ a i,
-  (∀ di, a.[i + S di] = true)
-  → id (∀ b di, carry_i a b (i + di) = true).
+Theorem carry_when_inf_1 : ∀ a b i j,
+  (∀ di, a.[S (i + di)] = true)
+  → i ≤ j
+  → carry_i a b j = true.
 Proof.
-intros a i Hdi b di.
+intros a b i j Hdi Hij.
 unfold carry_i; simpl.
-remember (fst_same a b (S (i + di))) as s₁ eqn:Hs₁ .
+remember (fst_same a b (S j)) as s₁ eqn:Hs₁ .
 destruct s₁ as [di₁| ]; [ idtac | reflexivity ].
-rewrite <- Nat.add_assoc, <- Nat.add_succ_r.
+apply Nat.sub_add in Hij.
+rewrite Nat.add_comm in Hij.
+rewrite <- Hij, <- Nat.add_assoc.
 apply Hdi.
 Qed.
 
@@ -4095,12 +4098,8 @@ destruct di₁.
        rewrite Hta₁, xorb_true_l in H.
        rewrite <- negb_xorb_l in H.
        apply negb_false_iff in H.
-       unfold carry_i in H; simpl in H.
-       remember (fst_same a b (S (S (S (i + di₅))))) as s₆ eqn:Hs₆ .
-       destruct s₆ as [di₆| ].
-        rewrite xorb_comm in H.
-        rewrite <- Nat.add_assoc, <- Nat.add_succ_r, Hta₁ in H.
-        rewrite xorb_true_l in H.
+       rewrite carry_when_inf_1 with (i := S i) in H.
+        rewrite xorb_true_r in H.
         apply negb_true_iff in H.
         rename H into Hb₅.
         remember Hs₄ as H; clear HeqH.
@@ -4121,10 +4120,12 @@ destruct di₁.
          pose proof (Hta₁ 0) as HH; rewrite Nat.add_0_r in HH.
          rewrite HH, Hb₂ in H.
          rewrite xorb_nilpotent, xorb_false_l in H.
-         rewrite <- Nat.add_1_r in H.
-         rewrite carry_when_inf_1 in H; [ discriminate H | idtac ].
-         intros di; rewrite Nat.add_succ_r; simpl.
-         apply Hta₁.
+         rewrite carry_when_inf_1 with (i := S i) in H.
+          discriminate H.
+
+          intros di; rewrite Nat.add_succ_l; apply Hta₁.
+
+          apply Nat.le_succ_diag_r.
 
          subst di₄.
          rewrite Hb₅ in Hsn; discriminate Hsn.
@@ -4139,8 +4140,16 @@ destruct di₁.
          pose proof (Hta₁ 0) as HH; rewrite Nat.add_0_r in HH.
          rewrite HH in H; discriminate H.
 
-        rewrite xorb_true_r in H.
-        apply negb_true_iff in H.
+        intros di; rewrite Nat.add_succ_l; apply Hta₁.
+
+        rewrite <- Nat.add_succ_r, <- Nat.add_succ_l.
+        apply Nat.le_sub_le_add_l.
+        rewrite Nat.sub_diag.
+        apply Nat.le_0_l.
+
+       destruct s₅ as [di₅| ]; [ idtac | discriminate H ].
+       rewrite xorb_true_l in H.
+       apply negb_true_iff in H.
 bbb.
 
             i  i+1  i₂  -
