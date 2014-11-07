@@ -4047,6 +4047,51 @@ destruct di₁.
     destruct di₂.
      rewrite Nat.add_1_r in Hs₂, Hb₂; simpl in Hs₂, Hb₂.
      clear Hn₂.
+     remember Hc₂ as H; clear HeqH.
+     unfold carry_i in H; simpl in H.
+     remember (fst_same ((a + b)%rm + c) 0 (S i)) as s₃ eqn:Hs₃ .
+     destruct s₃ as [di₃| ]; [ idtac | discriminate H ].
+     apply fst_same_sym_iff in Hs₃; simpl in Hs₃.
+     destruct Hs₃ as (Hn₃, Hs₃).
+     destruct di₃.
+      clear Hn₃; rewrite Nat.add_0_r in Hs₃, H.
+      unfold rm_add_i in H; simpl in H.
+      rewrite Hd₁, xorb_true_r in H.
+      rewrite <- negb_xorb_l in H.
+      apply negb_false_iff in H.
+      unfold rm_add_i in H; simpl in H.
+      rewrite Ha₁, Hs₁, xorb_false_l in H.
+      unfold carry_i in H; simpl in H.
+      remember (fst_same a b (S (S i))) as s₄ eqn:Hs₄ .
+      remember (fst_same (a + b) c (S (S i))) as s₅ eqn:Hs₅ .
+      rewrite Nat.add_1_r in Hta₁, Htb₁; simpl in Hta₁, Htb₁.
+      destruct s₄ as [di₄| ].
+       rewrite Hta₁ in H.
+       destruct s₅ as [di₅| ]; [ idtac | discriminate H ].
+       rewrite xorb_true_l in H.
+       apply negb_true_iff in H.
+       unfold rm_add_i in H; simpl in H.
+       rewrite Hta₁, xorb_true_l in H.
+       rewrite <- negb_xorb_l in H.
+       apply negb_false_iff in H.
+       unfold carry_i in H; simpl in H.
+       remember (fst_same a b (S (S (S (i + di₅))))) as s₆ eqn:Hs₆ .
+       destruct s₆ as [di₆| ].
+        rewrite xorb_comm in H.
+        rewrite <- Nat.add_assoc, <- Nat.add_succ_r, Hta₁ in H.
+        rewrite xorb_true_l in H.
+        apply negb_true_iff in H.
+        rename H into Hb₅.
+        remember Hs₄ as H; clear HeqH.
+        apply fst_same_sym_iff in H; simpl in H.
+        destruct H as (Hnn, Hsn).
+        rewrite Hta₁ in Hsn; symmetry in Hsn.
+        destruct (lt_eq_lt_dec di₄ di₅) as [[H₁| H₁]| H₁].
+         remember Hs₅ as H; clear HeqH.
+         apply fst_same_sym_iff in H; simpl in H.
+         destruct H as (Hn₅, Ht₅).
+         pose proof (Hn₅ di₄ H₁) as H.
+         rename H into Hab.
 bbb.
 
             i  i+1  i₂
