@@ -3980,6 +3980,19 @@ apply case_5 with (c := a) (b := b) (a := c) (i := i).
  apply rm_add_i_comm.
 Qed.
 
+Theorem case_7 : ∀ a b c i,
+  carry_i (a + (b + c)%rm) 0 i = true
+  → carry_i ((a + b)%rm + c) 0 i = false
+  → carry_i a (b + c) i = false
+  → carry_i (a + b) c i = true
+  → carry_i b c i = true
+  → carry_i a b i = false
+  → False.
+Proof.
+intros a b c i Hc₁ Hc₂ Hc₃ Hc₄ Hc₅ Hc₆.
+bbb.
+*)
+
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
 intros a b c.
@@ -4116,6 +4129,8 @@ destruct c₁, c₂, c₃, c₄, c₅, c₆; try reflexivity; exfalso.
 
  Focus 7.
  eapply case_6; eassumption.
+
+ eapply case_7; eassumption.
 bbb.
 
 Theorem rm_add_assoc_hop : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
