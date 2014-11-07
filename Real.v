@@ -4018,7 +4018,38 @@ destruct dj₁.
      rewrite Nat.add_0_r in HH; rewrite HH in H.
      discriminate H.
 
-    subst di₂.
+    remember Ht₂ as H; clear HeqH.
+    unfold rm_add_i in H; simpl in H.
+    unfold rm_add_i in H; simpl in H.
+    rewrite <- H₁ in Hb₁, Hd₁.
+    rewrite Hta₁, Hb₁, Hd₁ in H.
+    rewrite xorb_true_l, xorb_false_r in H.
+    rewrite <- negb_xorb_l in H.
+    apply negb_false_iff in H.
+    unfold carry_i in H.
+    remember (fst_same a b (S (S (i + di₂)))) as s₃ eqn:Hs₃ .
+    remember (fst_same (a + b) c (S (S (i + di₂)))) as s₄ eqn:Hs₄ .
+    simpl in H.
+    destruct s₃ as [di₃| ].
+     rewrite <- Nat.add_succ_r, <- Nat.add_assoc in H.
+     rewrite Hta₁, xorb_true_l in H.
+     apply negb_true_iff in H.
+     destruct s₄ as [di₄| ]; [ idtac | discriminate H ].
+     unfold rm_add_i in H; simpl in H.
+     rewrite <- Nat.add_assoc, <- Nat.add_succ_r in H.
+     rewrite Hta₁ in H.
+     rewrite <- H₁ in Hbl₁, Hcl₁.
+     do 2 rewrite <- Nat.add_succ_l in H.
+     rewrite Nat.add_succ_l, Nat.add_assoc in H.
+     rewrite Hbl₁ in H.
+     rewrite xorb_nilpotent, xorb_false_l in H.
+     unfold carry_i in H; simpl in H.
+     remember (fst_same a b (S (S (i + S di₂ + di₄)))) as s₅ eqn:Hs₅ .
+     destruct s₅ as [di₅| ]; [ idtac | discriminate H ].
+     do 2 rewrite <- Nat.add_assoc in H.
+     rewrite <- Nat.add_succ_r, Hta₁ in H.
+     discriminate H.
+
 bbb.
 
             i  i+1  -   k₁  -
