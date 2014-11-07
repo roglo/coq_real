@@ -93,6 +93,31 @@ Theorem forall_and_distr : ∀ α (P Q : α → Prop),
   (∀ a, P a ∧ Q a) → (∀ a, P a) ∧ (∀ a, Q a).
 Proof. intros; split; intros a; apply H. Qed.
 
+Theorem forall_compat : ∀ α (P Q : α → Prop),
+  (∀ x, P x → Q x)
+  → (∀ x, P x)
+  → id (∀ x, Q x).
+Proof.
+intros α P Q HPQ HP x.
+apply HPQ, HP.
+Qed.
+
+Theorem forall_add_succ_r : ∀ α i f (a : α),
+  (∀ j, f (i + S j) = a)
+  → id (∀ j, f (S i + j) = a).
+Proof.
+intros α i f a; unfold id; intros H j.
+rewrite Nat.add_succ_l, <- Nat.add_succ_r; apply H.
+Qed.
+
+Theorem forall_add_succ_l : ∀ α i f (a : α),
+  (∀ j : nat, f (S (i + j)) = a)
+  → id (∀ j : nat, f (S i + j) = a).
+Proof.
+intros α i f a; unfold id; intros H j.
+apply H.
+Qed.
+
 Theorem negb_xorb_diag : ∀ a, negb a ⊕ a = true.
 Proof. intros a; destruct a; reflexivity. Qed.
 
@@ -2548,22 +2573,6 @@ destruct (lt_dec di₁ di₂) as [H₁| H₁].
   apply Nat.le_antisymm; assumption.
 Qed.
 
-Theorem forall_add_succ_r : ∀ α i f (a : α),
-  (∀ j, f (i + S j) = a)
-  → id (∀ j, f (S i + j) = a).
-Proof.
-intros α i f a; unfold id; intros H j.
-rewrite Nat.add_succ_l, <- Nat.add_succ_r; apply H.
-Qed.
-
-Theorem forall_add_succ_l : ∀ α i f (a : α),
-  (∀ j : nat, f (S (i + j)) = a)
-  → id (∀ j : nat, f (S i + j) = a).
-Proof.
-intros α i f a; unfold id; intros H j.
-apply H.
-Qed.
-
 Theorem fst_same_in_range : ∀ a b i j di s,
   fst_same a b i = Some di
   → fst_same a b j = s
@@ -4002,6 +4011,18 @@ apply case_5 with (c := a) (b := b) (a := c) (i := i).
  apply rm_add_i_comm.
 Qed.
 
+Theorem carry_when_inf_1 : ∀ a b i,
+  (∀ di, a.[i + S di] = true)
+  → id (∀ di, carry_i a b (i + di) = true).
+Proof.
+intros a b i Hdi di.
+unfold carry_i; simpl.
+remember (fst_same a b (S (i + di))) as s₁ eqn:Hs₁ .
+destruct s₁ as [di₁| ]; [ idtac | reflexivity ].
+rewrite <- Nat.add_assoc, <- Nat.add_succ_r.
+apply Hdi.
+Qed.
+
 Theorem case_7 : ∀ a b c i,
   carry_i (a + (b + c)%rm) 0 i = true
   → carry_i ((a + b)%rm + c) 0 i = false
@@ -4092,20 +4113,28 @@ destruct di₁.
          destruct H as (Hn₅, Ht₅).
          pose proof (Hn₅ di₄ H₁) as H.
          rename H into Hab.
+         remember Hta₁ as H; clear HeqH.
+         apply forall_compat with (Q := fun dj => a .[ S i + S dj] = true)
+          in H.
+          Focus 2.
+          intros di Hdi.
+          rewrite Nat.add_succ_r; assumption.
+
+          apply carry_when_inf_1 with (b := b) in H.
 bbb.
 
-            i  i+1  i₂
-        b   .   0   1
-0            +0  +1
+            i  i+1  i₂  -
+        b   .   0   1   .
+0            +0  +1  +1
         a   .   0   1   1   1 ...
 0            +0
        b+c  .   0   1   1   1 ...
 
-       a+b  .   1   .
+       a+b  .   1   1   .
 1            +1
-        c   .   1   1
+        c   .   1   1   .
 1            +1  +1  +1
-        b   .   0   1
+        b   .   0   1   .
 
 
             i  i+1  -   i₂
