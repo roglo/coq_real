@@ -3973,10 +3973,11 @@ remember Hc₁ as H; clear HeqH.
 apply carry_non_assoc_if in H; [ idtac | assumption ].
 destruct H as (dj₁, (Hdj₁, (Hta₁, (Htb₁, (Hfa₁, (Hfb₁, Hsj₁)))))).
 destruct dj₁; [ revert Hdj₁; apply Nat.nlt_0_r | clear Hdj₁ ].
+simpl in Hfa₁, Hfb₁, Hsj₁.
 remember Hc₃ as H; clear HeqH.
 unfold carry_i in H; simpl in H.
 rewrite Hsj₁ in H; simpl in H.
-simpl in Hfa₁; rewrite Hfa₁ in H; discriminate H.
+rewrite Hfa₁ in H; discriminate H.
 Qed.
 
 Theorem case_6 : ∀ a b c i,
@@ -4018,6 +4019,49 @@ destruct dj₁; [ revert Hdj₁; apply Nat.nlt_0_r | clear Hdj₁ ].
 simpl in Hfa₁, Hfb₁, Hsj₁.
 bbb.
 *)
+
+Theorem carry_comm_l : ∀ a b c i,
+  carry_i (a + b) c i = carry_i (b + a) c i.
+Proof.
+intros a b c i.
+rewrite carry_compat_r with (a := (b + a)%rm); [ reflexivity | idtac ].
+apply rm_add_i_comm.
+Qed.
+
+Theorem carry_assoc_l : ∀ a b c d i,
+  carry_i ((a + b) + c)%rm d i = carry_i (c + (b + a))%rm d i.
+Proof.
+intros a b c d i.
+apply carry_compat_r.
+intros j; simpl.
+rewrite rm_add_i_comm.
+apply rm_add_i_compat_r, rm_add_i_comm.
+Qed.
+
+Theorem case_8 : ∀ a b c i,
+  carry_i (a + (b + c)%rm) 0 i = false
+  → carry_i ((a + b)%rm + c) 0 i = true
+  → carry_i a (b + c) i = true
+  → carry_i (a + b) c i = false
+  → carry_i b c i = true
+  → carry_i a b i = false
+  → False.
+Proof.
+intros a b c i Hc₁ Hc₂ Hc₃ Hc₄ Hc₅ Hc₆.
+rewrite <- carry_assoc_l in Hc₁.
+rewrite carry_assoc_l in Hc₂.
+remember Hc₂ as H; clear HeqH.
+apply carry_non_assoc_if in H; [ idtac | assumption ].
+destruct H as (dj₁, (Hdj₁, (Hta₁, (Htb₁, (Hfa₁, (Hfb₁, Hsj₁)))))).
+destruct dj₁; [ revert Hdj₁; apply Nat.nlt_0_r | clear Hdj₁ ].
+simpl in Hfa₁, Hfb₁, Hsj₁.
+remember Hc₄ as H; clear HeqH.
+unfold carry_i in H; simpl in H.
+rewrite fst_same_comm in Hsj₁.
+remember (fst_same (a + b) c (S i)) as s₁ eqn:Hs₁ .
+destruct s₁ as [di₁| ]; [ idtac | discriminate H ].
+rewrite rm_add_i_comm in Hfb₁.
+bbb. (* mouais... *)
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
