@@ -2665,6 +2665,18 @@ rewrite H, negb_xorb_diag, xorb_true_l.
 f_equal; erewrite carry_before_relay; try eassumption; reflexivity.
 Qed.
 
+Theorem carry_when_inf_1 : ∀ a i,
+  (∀ di, a.[i + S di] = true)
+  → id (∀ b di, carry_i a b (i + di) = true).
+Proof.
+intros a i Hdi b di.
+unfold carry_i; simpl.
+remember (fst_same a b (S (i + di))) as s₁ eqn:Hs₁ .
+destruct s₁ as [di₁| ]; [ idtac | reflexivity ].
+rewrite <- Nat.add_assoc, <- Nat.add_succ_r.
+apply Hdi.
+Qed.
+
 Theorem case_1 : ∀ a b c i,
   carry_i (a + (b + c)%rm) 0 i = true
   → carry_i ((a + b)%rm + c) 0 i = true
@@ -4011,18 +4023,6 @@ apply case_5 with (c := a) (b := b) (a := c) (i := i).
  apply rm_add_i_comm.
 Qed.
 
-Theorem carry_when_inf_1 : ∀ a b i,
-  (∀ di, a.[i + S di] = true)
-  → id (∀ di, carry_i a b (i + di) = true).
-Proof.
-intros a b i Hdi di.
-unfold carry_i; simpl.
-remember (fst_same a b (S (i + di))) as s₁ eqn:Hs₁ .
-destruct s₁ as [di₁| ]; [ idtac | reflexivity ].
-rewrite <- Nat.add_assoc, <- Nat.add_succ_r.
-apply Hdi.
-Qed.
-
 Theorem case_7 : ∀ a b c i,
   carry_i (a + (b + c)%rm) 0 i = true
   → carry_i ((a + b)%rm + c) 0 i = false
@@ -4113,28 +4113,48 @@ destruct di₁.
          destruct H as (Hn₅, Ht₅).
          pose proof (Hn₅ di₄ H₁) as H.
          rename H into Hab.
-         remember Hta₁ as H; clear HeqH.
-         apply forall_compat with (Q := fun dj => a .[ S i + S dj] = true)
-          in H.
-          Focus 2.
-          intros di Hdi.
-          rewrite Nat.add_succ_r; assumption.
+         assert (0 < di₅) as H by (eapply Nat.lt_lt_0; eauto ).
+         apply Hn₅ in H.
+         rewrite Nat.add_0_r in H.
+         rewrite Hs₂ in H; simpl in H.
+         unfold rm_add_i in H; simpl in H.
+         pose proof (Hta₁ 0) as HH; rewrite Nat.add_0_r in HH.
+         rewrite HH, Hb₂ in H.
+         rewrite xorb_nilpotent, xorb_false_l in H.
+         rewrite <- Nat.add_1_r in H.
+         rewrite carry_when_inf_1 in H; [ discriminate H | idtac ].
+         intros di; rewrite Nat.add_succ_r; simpl.
+         apply Hta₁.
 
-          apply carry_when_inf_1 with (b := b) in H.
+         subst di₄.
+         rewrite Hb₅ in Hsn; discriminate Hsn.
+
+         remember H₁ as H; clear HeqH.
+         apply Hnn in H.
+         rename H into Hab.
+         assert (0 < di₄) as H by (eapply Nat.lt_lt_0; eauto ).
+         apply Hnn in H; simpl in H.
+         rewrite Nat.add_0_r in H.
+         rewrite Hb₂ in H; simpl in H.
+         pose proof (Hta₁ 0) as HH; rewrite Nat.add_0_r in HH.
+         rewrite HH in H; discriminate H.
+
+        rewrite xorb_true_r in H.
+        apply negb_true_iff in H.
 bbb.
 
             i  i+1  i₂  -
-        b   .   0   1   .
-0            +0  +1  +1
+        b   .   0   1   x
+0            +0  +1  +1  +1  +1 ...
         a   .   0   1   1   1 ...
 0            +0
        b+c  .   0   1   1   1 ...
 
-       a+b  .   1   1   .
+       a+b  .   1   1   x
 1            +1
         c   .   1   1   .
 1            +1  +1  +1
-        b   .   0   1   .
+        b   .   0   1   x
 
 
             i  i+1  -   i₂
