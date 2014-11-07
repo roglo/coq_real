@@ -3570,11 +3570,11 @@ Theorem carry_non_assoc_if : ∀ a b c i,
   carry_i (a + (b + c)%rm) 0 i = true
   → carry_i ((a + b)%rm + c) 0 i = false
   → ∃ j,
-    j ≠ 0 ∧
+    0 < j ∧
     (∀ dj, a .[ S (i + j + dj)] = true) ∧
     (∀ dj, rm_add_i b c (S (i + j + dj)) = true) ∧
-    (0 < j → a .[ S (i + pred j)] = false) ∧
-    (0 < j → rm_add_i b c (S (i + pred j)) = false) ∧
+    (a .[ S (i + pred j)] = false) ∧
+    (rm_add_i b c (S (i + pred j)) = false) ∧
     fst_same a (b + c) (S i) = Some (pred j).
 Proof.
 intros a b c i Hc₁ Hc₂.
@@ -3954,8 +3954,12 @@ destruct dj₁.
      rewrite <- Nat.add_succ_r in HH.
      simpl in HH.
      rewrite HH in H; discriminate H.
-
- exists (S dj₁); split; auto.
+ exists (S dj₁).
+ split; auto; [ apply Nat.lt_0_succ | idtac ].
+ split; auto.
+ split; auto.
+ split; auto; [ apply Hfa₁, Nat.lt_0_succ | split; auto ].
+ apply Hfb₁, Nat.lt_0_succ.
 Qed.
 
 Theorem case_5 : ∀ a b c i,
@@ -3968,11 +3972,11 @@ intros a b c i Hc₁ Hc₂ Hc₃.
 remember Hc₁ as H; clear HeqH.
 apply carry_non_assoc_if in H; [ idtac | assumption ].
 destruct H as (dj₁, (Hdj₁, (Hta₁, (Htb₁, (Hfa₁, (Hfb₁, Hsj₁)))))).
-destruct dj₁; [ apply Hdj₁; reflexivity | simpl in Hfa₁ ].
+destruct dj₁; [ revert Hdj₁; apply Nat.nlt_0_r | clear Hdj₁ ].
 remember Hc₃ as H; clear HeqH.
 unfold carry_i in H; simpl in H.
 rewrite Hsj₁ in H; simpl in H.
-rewrite Hfa₁ in H; [ discriminate H | apply Nat.lt_0_succ ].
+simpl in Hfa₁; rewrite Hfa₁ in H; discriminate H.
 Qed.
 
 Theorem case_6 : ∀ a b c i,
@@ -4010,7 +4014,7 @@ intros a b c i Hc₁ Hc₂ Hc₃ Hc₄ Hc₅ Hc₆.
 remember Hc₁ as H; clear HeqH.
 apply carry_non_assoc_if in H; [ idtac | assumption ].
 destruct H as (dj₁, (Hdj₁, (Hta₁, (Htb₁, (Hfa₁, (Hfb₁, Hsj₁)))))).
-destruct dj₁; [ apply Hdj₁; reflexivity | clear Hdj₁ ].
+destruct dj₁; [ revert Hdj₁; apply Nat.nlt_0_r | clear Hdj₁ ].
 simpl in Hfa₁, Hfb₁, Hsj₁.
 bbb.
 *)
