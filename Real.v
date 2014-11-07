@@ -4044,10 +4044,13 @@ destruct di₁.
    destruct dj₁.
     clear Hfa₁.
     rewrite Nat.add_0_r in Hfb₁.
+    destruct di₂.
+     rewrite Nat.add_1_r in Hs₂, Hb₂; simpl in Hs₂, Hb₂.
+     clear Hn₂.
 bbb.
 
-            i  i+1  -
-        b   .   0   .
+            i  i+1  i₂
+        b   .   0   1
 0            +0  +1
         a   .   0   1   1   1 ...
 0            +0
@@ -4055,9 +4058,23 @@ bbb.
 
        a+b  .   1   .
 1            +1
-        c   .   1   .
-1            +1  +1
-        b   .   0   .
+        c   .   1   1
+1            +1  +1  +1
+        b   .   0   1
+
+
+            i  i+1  -   i₂
+        b   .   0   .   1
+0            +0  +1
+        a   .   0   1   1   1 ...
+0            +0
+       b+c  .   0   1   1   1 ...
+
+       a+b  .   1   .   .
+1            +1
+        c   .   1   .   1
+1            +1  +1 ≠+1  +1
+        b   .   0   .   1
 
 
 
