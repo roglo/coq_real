@@ -4446,14 +4446,11 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
     rewrite Hb₃, Hbc in H.
     rewrite xorb_true_r, xorb_true_l in H.
     apply negb_true_iff in H.
-bbb.
-    unfold carry_i in H; simpl in H.
-    remember (fst_same b c (S (S (i + di₃)))) as s₁ eqn:Hs₁ .
-    destruct s₁ as [di₁| ]; [ idtac | discriminate H ].
-    apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
-    destruct Hs₁ as (Hn₁, Hs₁).
-    rewrite H in Hs₁; symmetry in Hs₁.
-    rename H into Hb₁.
+    rewrite <- Nat.add_succ_l in H.
+    symmetry in Hs₅.
+    erewrite carry_before_relay in H; try eassumption.
+    discriminate H.
+
 bbb.
 
             i  i+1  -   i₃  .   i₅  -   i₆
