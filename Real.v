@@ -4401,6 +4401,19 @@ rewrite H in Hs₁; symmetry in Hs₁.
 rename H into Ha₁.
 bbb.
 
+            i  i+1  -   i₁
+        b   .   .   .   .
+0
+        a   .   .   .   .
+1
+       b+c  .   .   .   .
+
+       a+b  .   .   .   .
+1
+        c   .   .   .   .
+1
+        b   .   .   .   .
+
 apply carry_0_r_true_if in Hc₁.
 apply carry_0_r_true_if in Hc₂.
 unfold id in Hc₁, Hc₂.
