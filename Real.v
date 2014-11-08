@@ -4424,6 +4424,20 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
    rewrite H in Hs₃; symmetry in Hs₃.
    rename H into Ha₃.
    destruct (lt_eq_lt_dec di₃ di₅) as [[H₂| H₂]| H₂].
+    remember H₂ as H; clear HeqH.
+    apply Hn₅ in H.
+    rename H into Hbc.
+    assert (di₃ < di₆) as H by (eapply lt_trans; eauto ).
+    apply Hn₆ in H.
+    rewrite Ha₃ in H; apply negb_sym in H; simpl in H.
+    rewrite H in Hbc; apply negb_sym in Hbc; simpl in Hbc.
+    rename H into Hb₃.
+    assert (0 < di₅) as H by (eapply Nat.lt_lt_0; eauto ).
+    apply Hn₅ in H.
+    rewrite Nat.add_0_r in H.
+    rewrite H in Hab.
+    rewrite negb_involutive in Hab.
+    rename H into Hbd.
 bbb.
 
             i  i+1  -   i₅  -   i₆
