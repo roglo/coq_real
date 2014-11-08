@@ -4037,6 +4037,7 @@ Theorem case_7 : ∀ a b c i,
   → False.
 Proof.
 intros a b c i Hc₁ Hc₂ Hc₃ Hc₄ Hc₅ Hc₆.
+Abort. (*
 remember Hc₁ as H; clear HeqH.
 apply carry_non_assoc_if in H; [ idtac | assumption ].
 destruct H as (dj₁, (Hdj₁, (Hta₁, (Htb₁, (Hfa₁, (Hfb₁, Hsj₁)))))).
@@ -4282,11 +4283,73 @@ rewrite fst_same_comm in Hsj₁.
 remember (fst_same (a + b) c (S i)) as s₁ eqn:Hs₁ .
 destruct s₁ as [di₁| ]; [ idtac | discriminate H ].
 rewrite rm_add_i_comm in Hfb₁.
-bbb. (* mouais... *)
+Abort. (*
+bbb.
+*)
+
+Theorem rm_add_assoc_norm : ∀ a b c,
+  ((a + 0) + ((b + 0) + (c + 0)) = ((a + 0) + (b + 0)) + (c + 0))%rm
+  → (a + (b + c) = (a + b) + c)%rm.
+Proof.
+intros a b c H.
+do 3 rewrite rm_add_0_r in H; assumption.
+Qed.
+
+Theorem carry_sum_norm : ∀ a₀ b₀ a b i,
+  a = (a₀ + 0)%rm
+  → b = (b₀ + 0)%rm
+  → carry_i (a + b)%rm 0 i = false.
+Proof.
+intros a₀ b₀ a b i Ha₀ Hb₀.
+unfold carry_i; simpl.
+remember (fst_same (a + b) 0 (S i)) as s₁ eqn:Hs₁ .
+apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
+destruct s₁ as [di₁| ].
+ destruct Hs₁ as (Hn₁, Hs₁); assumption.
+
+ apply forall_add_succ_l in Hs₁.
+ apply rm_add_inf_if in Hs₁.
+ destruct Hs₁ as (j, (Hij, (Haj, Hbj))).
+ rewrite Ha₀ in Haj; simpl in Haj.
+ apply forall_add_succ_r in Haj.
+ apply rm_add_inf_if in Haj.
+ destruct Haj as (k, (Hjk, (Hak, Hbk))).
+ simpl in Hbk.
+ symmetry; apply Hbk; assumption.
+Qed.
+
+Theorem carry_sum_3_norm_assoc_r : ∀ a₀ b₀ c₀ a b c i,
+  a = (a₀ + 0)%rm
+  → b = (b₀ + 0)%rm
+  → c = (c₀ + 0)%rm
+  → carry_i (a + (b + c))%rm 0 i = false.
+Proof.
+intros a₀ b₀ c₀ a b c i Ha₀ Hb₀ Hc₀.
+unfold carry_i; simpl.
+remember (fst_same (a + (b + c)%rm) 0 (S i)) as s₁ eqn:Hs₁ .
+apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
+destruct s₁ as [di₁| ].
+ destruct Hs₁ as (Hn₁, Hs₁); assumption.
+
+ apply forall_add_succ_l in Hs₁.
+ apply rm_add_inf_if in Hs₁.
+ destruct Hs₁ as (j, (Hij, (Haj, Hbj))).
+ rewrite Ha₀ in Haj; simpl in Haj.
+ apply forall_add_succ_r in Haj.
+ apply rm_add_inf_if in Haj.
+ destruct Haj as (k, (Hjk, (Hak, Hbk))).
+ simpl in Hbk.
+ symmetry; apply Hbk; assumption.
+Qed.
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
 intros a b c.
+apply rm_add_assoc_norm.
+rename a into a₀; rename b into b₀; rename c into c₀.
+remember (a₀ + 0)%rm as a.
+remember (b₀ + 0)%rm as b.
+remember (c₀ + 0)%rm as c.
 unfold rm_eq; intros i; simpl.
 unfold rm_add_i; simpl.
 do 2 rewrite xorb_false_r.
@@ -4305,6 +4368,10 @@ symmetry in Hc₁, Hc₂, Hc₃, Hc₄, Hc₅, Hc₆.
 move c₂ before c₁; move c₃ before c₂.
 move c₄ before c₃; move c₅ before c₄.
 move c₆ before c₅.
+remember Hc₁ as H; clear HeqH.
+erewrite carry_sum_3_norm_assoc_r in H; try eassumption.
+move H at top; subst c₁.
+bbb.
 destruct c₁, c₂, c₃, c₄, c₅, c₆; try reflexivity; exfalso.
  eapply case_1; eassumption.
 
