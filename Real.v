@@ -4415,20 +4415,29 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
   apply Hn₆ in H.
   rewrite Nat.add_0_r in H.
   rename H into Hab.
+  remember Hc₃ as H; clear HeqH.
+  unfold carry_i in H; simpl in H.
+  remember (fst_same a (b + c) (S i)) as s₃ eqn:Hs₃ .
+  apply fst_same_sym_iff in Hs₃; simpl in Hs₃.
+  destruct s₃ as [di₃| ]; [ idtac | clear H ].
+   destruct Hs₃ as (Hn₃, Hs₃).
+   rewrite H in Hs₃; symmetry in Hs₃.
+   rename H into Ha₃.
+   destruct (lt_eq_lt_dec di₃ di₅) as [[H₂| H₂]| H₂].
 bbb.
 
             i  i+1  -   i₅  -   i₆
-        b   .   .   .   1   .   0
-0               ≠+0  ≠+0  ≠+0 ≠
-        a   .   .   .   0   .   0
-1
+        b   .   .   x   1   .   0
+0               ≠+0 ≠+0 ≠+0 ≠+0
+        a   .   .  ¬x   0   .   0
+1            +1
        b+c  .   0   0   .   .   .
 
-       a+b  .   1   1   1   .   .
-1
-        c   .   .   .   1   .   .
-1               ≠+1 ≠+1
-        b   .   .   .   1   .   0
+       a+b  .   1   1   1   1   .
+1            +1
+        c   .   .  ¬x   1   .   .
+1            +1 ≠+1 ≠+1
+        b   .   .   x   1   .   0
 
 apply carry_0_r_true_if in Hc₁.
 apply carry_0_r_true_if in Hc₂.
