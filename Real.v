@@ -4393,18 +4393,34 @@ Proof.
 intros a₀ b₀ c₀ a b c i Ha₀ Hb₀ Hc₀ Hc₁ Hc₂ Hc₃ Hc₄ Hc₅ Hc₆.
 remember Hc₆ as H; clear HeqH.
 unfold carry_i in H; simpl in H.
-remember (fst_same a b (S i)) as s₁ eqn:Hs₁ .
-destruct s₁ as [di₁| ]; [ idtac | discriminate H ].
-apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
-destruct Hs₁ as (Hn₁, Hs₁).
-rewrite H in Hs₁; symmetry in Hs₁.
-rename H into Ha₁.
+remember (fst_same a b (S i)) as s₆ eqn:Hs₆ .
+destruct s₆ as [di₆| ]; [ idtac | discriminate H ].
+apply fst_same_sym_iff in Hs₆; simpl in Hs₆.
+destruct Hs₆ as (Hn₆, Hs₆).
+rewrite H in Hs₆; symmetry in Hs₆.
+rename H into Ha₆.
+remember Hc₅ as H; clear HeqH.
+unfold carry_i in H; simpl in H.
+remember (fst_same b c (S i)) as s₅ eqn:Hs₅ .
+apply fst_same_sym_iff in Hs₅; simpl in Hs₅.
+destruct s₅ as [di₅| ]; [ idtac | clear H ].
+ destruct Hs₅ as (Hn₅, Hs₅); rewrite H in Hs₅.
+ symmetry in Hs₅; rename H into Hb₅.
+ destruct (lt_eq_lt_dec di₅ di₆) as [[H₁| H₁]| H₁].
+  remember H₁ as H; clear HeqH.
+  apply Hn₆ in H.
+  rewrite Hb₅ in H; simpl in H.
+  rename H into Ha₅.
+  assert (0 < di₆) as H by (eapply Nat.lt_lt_0; eauto ).
+  apply Hn₆ in H.
+  rewrite Nat.add_0_r in H.
+  rename H into Hab.
 bbb.
 
-            i  i+1  -   i₁
-        b   .   .   .   .
-0
-        a   .   .   .   .
+            i  i+1  -   i₆
+        b   .   .   .   0
+0               ≠   ≠
+        a   .   .   .   0
 1
        b+c  .   .   .   .
 
@@ -4412,7 +4428,7 @@ bbb.
 1
         c   .   .   .   .
 1
-        b   .   .   .   .
+        b   .   .   .   0
 
 apply carry_0_r_true_if in Hc₁.
 apply carry_0_r_true_if in Hc₂.
