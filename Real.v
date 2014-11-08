@@ -4318,13 +4318,33 @@ destruct s₁ as [di₁| ].
  symmetry; apply Hbk; assumption.
 Qed.
 
-Theorem carry_sum_3_norm_assoc_r : ∀ a₀ b₀ c₀ a b c i,
+Theorem carry_sum_3_norm_assoc_l : ∀ c₀ a b c i,
+  c = (c₀ + 0)%rm
+  → carry_i ((a + b) + c)%rm 0 i = false.
+Proof.
+intros c₀ a b c i Hc₀.
+unfold carry_i; simpl.
+remember (fst_same ((a + b) + c)%rm 0 (S i)) as s₁ eqn:Hs₁ .
+apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
+destruct s₁ as [di₁| ].
+ destruct Hs₁ as (Hn₁, Hs₁); assumption.
+
+ apply forall_add_succ_l in Hs₁.
+ apply rm_add_inf_if in Hs₁.
+ destruct Hs₁ as (j, (Hij, (Haj, Hbj))).
+ rewrite Hc₀ in Hbj; simpl in Hbj.
+ apply forall_add_succ_r in Hbj.
+ apply rm_add_inf_if in Hbj.
+ destruct Hbj as (k, (Hjk, (Hak, Hbk))).
+ simpl in Hbk.
+ symmetry; apply Hbk; assumption.
+Qed.
+
+Theorem carry_sum_3_norm_assoc_r : ∀ a₀ a b c i,
   a = (a₀ + 0)%rm
-  → b = (b₀ + 0)%rm
-  → c = (c₀ + 0)%rm
   → carry_i (a + (b + c))%rm 0 i = false.
 Proof.
-intros a₀ b₀ c₀ a b c i Ha₀ Hb₀ Hc₀.
+intros a₀ a b c i Ha₀.
 unfold carry_i; simpl.
 remember (fst_same (a + (b + c)%rm) 0 (S i)) as s₁ eqn:Hs₁ .
 apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
@@ -4371,8 +4391,12 @@ move c₆ before c₅.
 remember Hc₁ as H; clear HeqH.
 erewrite carry_sum_3_norm_assoc_r in H; try eassumption.
 move H at top; subst c₁.
+remember Hc₂ as H; clear HeqH.
+erewrite carry_sum_3_norm_assoc_l in H; try eassumption.
+move H at top; subst c₂.
+do 2 rewrite xorb_false_r.
+destruct c₃, c₄, c₅, c₆; try reflexivity; exfalso.
 bbb.
-destruct c₁, c₂, c₃, c₄, c₅, c₆; try reflexivity; exfalso.
  eapply case_1; eassumption.
 
  apply case_1 with (c := a) (b := b) (a := c) (i := i).
