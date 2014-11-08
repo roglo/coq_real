@@ -4451,6 +4451,9 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
     erewrite carry_before_relay in H; try eassumption.
     discriminate H.
 
+    subst di₃.
+    rewrite Ha₅ in Ha₃; discriminate Ha₃.
+
 bbb.
 
             i  i+1  -   i₃  .   i₅  -   i₆
