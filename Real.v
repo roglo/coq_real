@@ -4417,18 +4417,18 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
   rename H into Hab.
 bbb.
 
-            i  i+1  -   i₆
-        b   .   .   .   0
-0               ≠   ≠
-        a   .   .   .   0
+            i  i+1  -   i₅  -   i₆
+        b   .   .   .   1   .   0
+0               ≠+0  ≠+0  ≠+0 ≠
+        a   .   .   .   0   .   0
 1
-       b+c  .   .   .   .
+       b+c  .   0   0   .   .   .
 
-       a+b  .   .   .   .
+       a+b  .   1   1   1   .   .
 1
-        c   .   .   .   .
-1
-        b   .   .   .   0
+        c   .   .   .   1   .   .
+1               ≠+1 ≠+1
+        b   .   .   .   1   .   0
 
 apply carry_0_r_true_if in Hc₁.
 apply carry_0_r_true_if in Hc₂.
