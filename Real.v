@@ -2508,6 +2508,7 @@ destruct s₁ as [di₁| ].
  apply not_add_norm_inf_1 in Hs₁; contradiction.
 Qed.
 
+(* still proved as rm_add_inf_true_if!! *)
 Theorem rm_add_inf_if : ∀ a b i,
   (∀ dj, rm_add_i a b (i + dj) = true)
   → ∃ j,
@@ -4153,6 +4154,21 @@ destruct di₁.
        discriminate H.
 
       clear H.
+bbb.
+
+            i  i+1  -   i₃
+        b   .   0   .   .
+0
+        a   .   0   1   1   1   1   1 ...
+0
+       b+c  .   0   1   1   1   1   1 ...
+
+       a+b  .   1   .   .
+1
+        c   .   1   .   .
+1                +1
+        b   .   0   .   .
+
       pose proof (Hn₃ 0 (Nat.lt_0_succ di₃)) as H.
       rewrite Nat.add_0_r in H.
       unfold rm_add_i in H; simpl in H.
@@ -4182,7 +4198,7 @@ destruct di₁.
 bbb.
 
             i  i+1  -   i₃
-        b   .   0   .   .
+        b   .   0   1   .
 0
         a   .   0   1   1   1   1   1 ...
 0
@@ -4190,9 +4206,9 @@ bbb.
 
        a+b  .   1   .   .
 1
-        c   .   1   .   .
+        c   .   1   1   .
 1                +1
-        b   .   0   .   .
+        b   .   0   1   .
 
 
 
