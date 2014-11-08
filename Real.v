@@ -2681,6 +2681,7 @@ rewrite <- Hij, <- Nat.add_assoc.
 apply Hdi.
 Qed.
 
+(*
 Theorem case_1 : ∀ a b c i,
   carry_i (a + (b + c)%rm) 0 i = true
   → carry_i ((a + b)%rm + c) 0 i = true
@@ -2875,7 +2876,9 @@ destruct s₃ as [di₃| ].
  rewrite Ha₁, Hs₁ in H.
  discriminate H.
 Qed.
+*)
 
+(*
 Theorem case_2 : ∀ a b c i,
   carry_i (a + (b + c)%rm) 0 i = true
   → carry_i ((a + b)%rm + c) 0 i = true
@@ -3330,7 +3333,9 @@ destruct s₅ as [di₅| ].
   simpl in Hbl₁, Hcl₁.
   rewrite Hbl₁, Hcl₁ in H; discriminate H.
 Qed.
+*)
 
+(*
 Theorem case_3 : ∀ a b c i,
   carry_i (a + (b + c)%rm) 0 i = true
   → carry_i ((a + b)%rm + c) 0 i = true
@@ -3399,7 +3404,9 @@ destruct dj₁.
   rewrite Hfa₁ in H; [ idtac | apply Nat.lt_0_succ ].
   discriminate H.
 Qed.
+*)
 
+(*
 Theorem case_4 : ∀ a b c i,
   carry_i (a + (b + c)%rm) 0 i = true
   → carry_i ((a + b)%rm + c) 0 i = true
@@ -3590,7 +3597,9 @@ destruct dj₁.
    rewrite Hs₅ in Hs₁.
    apply neq_negb in Hs₁; [ contradiction | reflexivity ].
 Qed.
+*)
 
+(*
 Theorem carry_non_assoc_if : ∀ a b c i,
   carry_i (a + (b + c)%rm) 0 i = true
   → carry_i ((a + b)%rm + c) 0 i = false
@@ -3986,7 +3995,9 @@ destruct dj₁.
  split; auto; [ apply Hfa₁, Nat.lt_0_succ | split; auto ].
  apply Hfb₁, Nat.lt_0_succ.
 Qed.
+*)
 
+(*
 Theorem case_5 : ∀ a b c i,
   carry_i (a + (b + c)%rm) 0 i = true
   → carry_i ((a + b)%rm + c) 0 i = false
@@ -4004,7 +4015,9 @@ unfold carry_i in H; simpl in H.
 rewrite Hsj₁ in H; simpl in H.
 rewrite Hfa₁ in H; discriminate H.
 Qed.
+*)
 
+(*
 Theorem case_6 : ∀ a b c i,
   carry_i (a + (b + c)%rm) 0 i = false
   → carry_i ((a + b)%rm + c) 0 i = true
@@ -4026,7 +4039,9 @@ apply case_5 with (c := a) (b := b) (a := c) (i := i).
  rewrite carry_compat_r with (a := (a + b)%rm); [ assumption | idtac ].
  apply rm_add_i_comm.
 Qed.
+*)
 
+(*
 Theorem case_7 : ∀ a b c i,
   carry_i (a + (b + c)%rm) 0 i = true
   → carry_i ((a + b)%rm + c) 0 i = false
@@ -4037,7 +4052,7 @@ Theorem case_7 : ∀ a b c i,
   → False.
 Proof.
 intros a b c i Hc₁ Hc₂ Hc₃ Hc₄ Hc₅ Hc₆.
-Abort. (*
+Abort.
 remember Hc₁ as H; clear HeqH.
 apply carry_non_assoc_if in H; [ idtac | assumption ].
 destruct H as (dj₁, (Hdj₁, (Hta₁, (Htb₁, (Hfa₁, (Hfb₁, Hsj₁)))))).
@@ -4260,6 +4275,7 @@ rewrite rm_add_i_comm.
 apply rm_add_i_compat_r, rm_add_i_comm.
 Qed.
 
+(*
 Theorem case_8 : ∀ a b c i,
   carry_i (a + (b + c)%rm) 0 i = false
   → carry_i ((a + b)%rm + c) 0 i = true
