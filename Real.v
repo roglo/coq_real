@@ -4378,6 +4378,57 @@ destruct s₁ as [di₁| ].
  symmetry; apply Hbk; assumption.
 Qed.
 
+Theorem case_1 : ∀ a₀ b₀ c₀ a b c i,
+  a = (a₀ + 0)%rm
+  → b = (b₀ + 0)%rm
+  → c = (c₀ + 0)%rm
+  → carry_i (a + (b + c)%rm) 0 i = false
+  → carry_i ((a + b)%rm + c) 0 i = false
+  → carry_i a (b + c) i = true
+  → carry_i (a + b) c i = true
+  → carry_i b c i = true
+  → carry_i a b i = false
+  → False.
+Proof.
+intros a₀ b₀ c₀ a b c i Ha₀ Hb₀ Hc₀ Hc₁ Hc₂ Hc₃ Hc₄ Hc₅ Hc₆.
+remember Hc₆ as H; clear HeqH.
+unfold carry_i in H; simpl in H.
+remember (fst_same a b (S i)) as s₁ eqn:Hs₁ .
+destruct s₁ as [di₁| ]; [ idtac | discriminate H ].
+apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
+destruct Hs₁ as (Hn₁, Hs₁).
+rewrite H in Hs₁; symmetry in Hs₁.
+rename H into Ha₁.
+bbb.
+
+apply carry_0_r_true_if in Hc₁.
+apply carry_0_r_true_if in Hc₂.
+unfold id in Hc₁, Hc₂.
+simpl in Hc₁, Hc₂.
+unfold carry_i in Hc₆; simpl in Hc₆.
+remember (fst_same a b (S i)) as s₆ eqn:Hs₆ .
+remember Hs₆ as Hss₆; clear HeqHss₆.
+apply fst_same_sym_iff in Hs₆; simpl in Hs₆.
+destruct s₆ as [di₆| ]; [ idtac | discriminate Hc₆ ].
+destruct Hs₆ as (Hn₆, Hs₆).
+rewrite Hc₆ in Hs₆.
+rename Hc₆ into Ha₆; rename Hs₆ into Hb₆.
+move Ha₆ after Hb₆; symmetry in Hb₆.
+pose proof (Hc₁ di₆) as H; simpl in H.
+rewrite Nat.add_succ_r in H; simpl in H.
+unfold rm_add_i in H; simpl in H.
+rewrite Ha₆, xorb_false_l in H.
+rename H into Hca; move Hca before Hb₆.
+unfold carry_i in Hc₃; simpl in Hc₃.
+remember (fst_same a (b + c) (S i)) as s₃ eqn:Hs₃ .
+remember Hs₃ as Hss₃; clear HeqHss₃.
+apply fst_same_sym_iff in Hs₃; simpl in Hs₃.
+destruct s₃ as [di₃| ].
+ destruct Hs₃ as (Hn₃, Hs₃).
+ destruct (lt_eq_lt_dec di₃ di₆) as [[H₁| H₁] | H₁].\
+bbb.
+*)
+
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
 intros a b c.
@@ -4412,9 +4463,9 @@ erewrite carry_sum_3_norm_assoc_l in H; try eassumption.
 move H at top; subst c₂.
 do 2 rewrite xorb_false_r.
 destruct c₃, c₄, c₅, c₆; try reflexivity; exfalso.
-bbb.
  eapply case_1; eassumption.
 
+bbb.
  apply case_1 with (c := a) (b := b) (a := c) (i := i).
   rewrite carry_compat_r with (a := (a + b + c)%rm); [ assumption | idtac ].
   intros j; simpl; symmetry.
