@@ -4438,7 +4438,33 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
     rewrite H in Hab.
     rewrite negb_involutive in Hab.
     rename H into Hbd.
+    remember Hs₃ as H; clear HeqH.
+    unfold rm_add_i in H; simpl in H.
+    rewrite Hb₃, Hbc in H.
+    rewrite xorb_true_r, xorb_true_l in H.
+    apply negb_true_iff in H.
+    unfold carry_i in H; simpl in H.
+    remember (fst_same b c (S (S (i + di₃)))) as s₁ eqn:Hs₁ .
+    destruct s₁ as [di₁| ]; [ idtac | discriminate H ].
+    apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
+    destruct Hs₁ as (Hn₁, Hs₁).
+    rewrite H in Hs₁; symmetry in Hs₁.
+    rename H into Hb₁.
 bbb.
+
+            i  i+1  -   i₃  .   i₅  -   i₆
+        b   .   0   0   0   .   1   .   0
+0               ≠+0 ≠+0 ≠+0 ≠+0 ≠+0 ≠+0
+        a   .   1   1   1   .   0   .   0
+1            +1 ≠+1 ≠+1
+       b+c  .   0   0   10  .   .   .   .
+
+       a+b  .   1   1   1   .   1   1   .
+1            +1
+        c   .   1   1   1   .   1   .   .
+1            +1 ≠+1 ≠+1 ≠+1 ≠+1
+        b   .   0   0   0   .   1   .   0
+
 
             i  i+1  -   i₅  -   i₆
         b   .   .   x   1   .   0
