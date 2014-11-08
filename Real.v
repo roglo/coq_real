@@ -4152,7 +4152,6 @@ destruct di₁.
        rewrite Hta₁, Nat.add_0_r, Hb₂ in H.
        discriminate H.
 
-bbb.
       clear H.
       pose proof (Hn₃ 0 (Nat.lt_0_succ di₃)) as H.
       rewrite Nat.add_0_r in H.
@@ -4176,8 +4175,10 @@ bbb.
        rewrite <- Nat.add_succ_l, Hta₁, xorb_true_l in H.
        rewrite <- negb_xorb_l in H.
        apply negb_true_iff in H.
-
-      Focus 1.
+       erewrite carry_when_inf_1 in H; try eassumption.
+        rewrite xorb_true_r in H.
+        apply negb_false_iff in H.
+        rename H into Hb₄; simpl in Hb₄.
 bbb.
 
             i  i+1  -   i₃
