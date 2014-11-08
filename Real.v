@@ -4454,20 +4454,69 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
     subst di₃.
     rewrite Ha₅ in Ha₃; discriminate Ha₃.
 
+    assert (0 < di₃) as H by (eapply Nat.lt_lt_0; eauto ).
+    apply Hn₃ in H.
+    rewrite Nat.add_0_r in H.
+    rename H into Hbc.
+    remember H₂ as H; clear HeqH.
+    apply Hn₃ in H.
+    rewrite Ha₅ in H; apply negb_sym in H; simpl in H.
+    rename H into Hbd.
+    remember Hbd as H; clear HeqH.
+    unfold rm_add_i in H; simpl in H.
+    rewrite Hb₅, Ht₅, xorb_true_l, xorb_false_l in H.
+    rename H into Hc₇.
+    destruct (lt_eq_lt_dec di₃ di₆) as [[H₃| H₃]| H₃].
+     remember H₃ as H; clear HeqH.
+     apply Hn₆ in H; simpl in H.
+     rewrite Ha₃ in H; apply negb_sym in H; simpl in H.
+     rename H into Hb₃.
+     remember Hc₇ as H; clear HeqH.
+     unfold carry_i in H; simpl in H.
+     remember (fst_same b c (S (S (i + di₅)))) as s₁ eqn:Hs₁ .
+     apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
+     destruct s₁ as [di₁| ]; [ idtac | clear H ].
+      destruct Hs₁ as (Hn₁, Hs₁); rewrite H in Hs₁.
+      symmetry in Hs₁; rename H into Hb₁.
+      destruct (lt_eq_lt_dec (S (di₅ + di₁)) di₃) as [[H₄| H₄]| H₄].
+       remember H₄ as H; clear HeqH.
+       apply Hn₃ in H.
+       rewrite Nat.add_succ_r, Nat.add_assoc in H; simpl in H.
+       rename H into Hac.
+       assert (S (di₅ + di₁) < di₆) by (eapply lt_trans; eauto ).
+       apply Hn₆ in H.
+       rewrite Nat.add_succ_r, Nat.add_assoc in H; simpl in H.
+       rewrite Hb₁ in H; simpl in H.
+       rewrite H in Hac; apply negb_sym in Hac; simpl in Hac.
+       rename H into Ha₁.
 bbb.
 
-            i  i+1  -   i₃  .   i₅  -   i₆
-        b   .   0   0   0   .   1   .   0
-0               ≠+0 ≠+0 ≠+0 ≠+0 ≠+0 ≠+0
-        a   .   1   1   1   .   0   .   0
-1            +1 ≠+1 ≠+1
-       b+c  .   0   0   10  .   .   .   .
+            i  i+1  -   i₅  .   i₁  -   i₃  -   i₆
+        b   .   0   0   1   .   1   .   0   .   0
+0            +0 ≠+0 ≠+0 ≠+0 ≠+0 ≠+0 ≠+0 ≠+0 ≠+0
+        a   .   1   1   0   .   0   .   1   .   0
+1            +1 ≠+1 ≠+1 ≠+1 ≠+1 ≠+1 ≠+1
+       b+c  .   0   0   1   .   1   .   1   .   .
 
-       a+b  .   1   1   1   .   1   1   .
+       a+b  .   1   1   1   1   1   1   1   1   .
 1            +1
-        c   .   1   1   1   .   1   .   .
+        c   .   1   1   1   .   1   .   .   .   .
+1            +1 ≠+1 ≠+1  +1      +1
+        b   .   0   0   1   .   1   .   0   .   0
+
+
+            i  i+1  -   i₅  .   i₃  -   i₆
+        b   .   0   0   1   .   0   .   0
+0            +0 ≠+0 ≠+0 ≠+0 ≠+0 ≠+0 ≠+0
+        a   .   1   1   0   .   1   .   0
 1            +1 ≠+1 ≠+1 ≠+1 ≠+1
-        b   .   0   0   0   .   1   .   0
+       b+c  .   0   0   1   .   1   .   .
+
+       a+b  .   1   1   1   1   1   1   .
+1            +1
+        c   .   1   1   1   .   .   .   .
+1            +1 ≠+1 ≠+1  +1
+        b   .   0   0   1   .   0   .   0
 
 
             i  i+1  -   i₅  -   i₆
