@@ -4299,7 +4299,7 @@ rewrite fst_same_comm in Hsj₁.
 remember (fst_same (a + b) c (S i)) as s₁ eqn:Hs₁ .
 destruct s₁ as [di₁| ]; [ idtac | discriminate H ].
 rewrite rm_add_i_comm in Hfb₁.
-Abort. (*
+Abort.
 bbb.
 *)
 
