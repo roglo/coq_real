@@ -4395,17 +4395,19 @@ remember Hc₆ as H; clear HeqH.
 unfold carry_i in H; simpl in H.
 remember (fst_same a b (S i)) as s₆ eqn:Hs₆ .
 destruct s₆ as [di₆| ]; [ idtac | discriminate H ].
-apply fst_same_sym_iff in Hs₆; simpl in Hs₆.
-destruct Hs₆ as (Hn₆, Hs₆).
-rewrite H in Hs₆; symmetry in Hs₆.
+remember Hs₆ as HH; clear HeqHH.
+apply fst_same_sym_iff in HH; simpl in HH.
+destruct HH as (Hn₆, Ht₆).
+rewrite H in Ht₆; symmetry in Ht₆.
 rename H into Ha₆.
 remember Hc₅ as H; clear HeqH.
 unfold carry_i in H; simpl in H.
 remember (fst_same b c (S i)) as s₅ eqn:Hs₅ .
-apply fst_same_sym_iff in Hs₅; simpl in Hs₅.
+remember Hs₅ as HH; clear HeqHH.
+apply fst_same_sym_iff in HH; simpl in HH.
 destruct s₅ as [di₅| ]; [ idtac | clear H ].
- destruct Hs₅ as (Hn₅, Hs₅); rewrite H in Hs₅.
- symmetry in Hs₅; rename H into Hb₅.
+ destruct HH as (Hn₅, Ht₅); rewrite H in Ht₅.
+ symmetry in Ht₅; rename H into Hb₅.
  destruct (lt_eq_lt_dec di₅ di₆) as [[H₁| H₁]| H₁].
   remember H₁ as H; clear HeqH.
   apply Hn₆ in H.
@@ -4418,10 +4420,11 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
   remember Hc₃ as H; clear HeqH.
   unfold carry_i in H; simpl in H.
   remember (fst_same a (b + c) (S i)) as s₃ eqn:Hs₃ .
-  apply fst_same_sym_iff in Hs₃; simpl in Hs₃.
+  remember Hs₃ as HH; clear HeqHH.
+  apply fst_same_sym_iff in HH; simpl in HH.
   destruct s₃ as [di₃| ]; [ idtac | clear H ].
-   destruct Hs₃ as (Hn₃, Hs₃).
-   rewrite H in Hs₃; symmetry in Hs₃.
+   destruct HH as (Hn₃, Ht₃).
+   rewrite H in Ht₃; symmetry in Ht₃.
    rename H into Ha₃.
    destruct (lt_eq_lt_dec di₃ di₅) as [[H₂| H₂]| H₂].
     remember H₂ as H; clear HeqH.
@@ -4438,11 +4441,12 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
     rewrite H in Hab.
     rewrite negb_involutive in Hab.
     rename H into Hbd.
-    remember Hs₃ as H; clear HeqH.
+    remember Ht₃ as H; clear HeqH.
     unfold rm_add_i in H; simpl in H.
     rewrite Hb₃, Hbc in H.
     rewrite xorb_true_r, xorb_true_l in H.
     apply negb_true_iff in H.
+bbb.
     unfold carry_i in H; simpl in H.
     remember (fst_same b c (S (S (i + di₃)))) as s₁ eqn:Hs₁ .
     destruct s₁ as [di₁| ]; [ idtac | discriminate H ].
