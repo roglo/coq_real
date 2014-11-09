@@ -4518,17 +4518,17 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
        apply negb_sym in HH; rewrite HH in H.
        discriminate H.
 
+      remember H₃ as H; clear HeqH.
+      apply Hn₃ in H; simpl in H.
+(*1*)
+      rewrite Ha₆ in H; apply negb_sym in H; simpl in H.
+      unfold rm_add_i in H; simpl in H.
+      rewrite Ht₆, xorb_false_l in H.
+      rename H into Hcc.
       remember Hbd as H; clear HeqH.
       unfold rm_add_i in H; simpl in H.
       rewrite Hb₅, Ht₅, xorb_true_l, xorb_false_l in H.
       rename H into Hbc.
-      remember H₃ as H; clear HeqH.
-      apply Hn₃ in H; simpl in H.
-      rewrite Ha₆ in H.
-      apply negb_sym in H; simpl in H.
-      unfold rm_add_i in H; simpl in H.
-      rewrite Ht₆, xorb_false_l in H.
-      rename H into Hcc.
       remember (S (i + S di₅)) as x.
       replace x with (x + 0) in Hcc by apply Nat.add_0_r.
       unfold carry_i in Hbc.
@@ -4560,17 +4560,21 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
        unfold carry_i in Hcc.
        rewrite Hs₂ in Hcc; discriminate Hcc.
 
-    pose proof (HH di₅) as H.
+    rename HH into Hab.
+    pose proof (Hab di₅) as H.
     rewrite Ha₅ in H.
     apply negb_sym in H; simpl in H.
-    unfold rm_add_i in H; simpl in H.
-    rewrite Hb₅, Ht₅, xorb_true_l, xorb_false_l in H.
-    rename HH into Hab; rename H into Hbc.
+    rename H into Hbd.
     pose proof (Hab (S di₅)) as H.
+(*2*)
     rewrite Ha₆ in H; apply negb_sym in H; simpl in H.
     unfold rm_add_i in H; simpl in H.
-    rewrite Ht₆ in H; rewrite xorb_false_l in H.
+    rewrite Ht₆, xorb_false_l in H.
     rename H into Hcc.
+    remember Hbd as H; clear HeqH.
+    unfold rm_add_i in H; simpl in H.
+    rewrite Hb₅, Ht₅, xorb_true_l, xorb_false_l in H.
+    rename H into Hbc.
     remember (S (i + S di₅)) as x.
     replace x with (x + 0) in Hcc by apply Nat.add_0_r.
     unfold carry_i in Hbc.
