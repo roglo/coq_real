@@ -4409,6 +4409,9 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
  destruct HH as (Hn₅, Ht₅); rewrite H in Ht₅.
  symmetry in Ht₅; rename H into Hb₅.
  destruct (lt_eq_lt_dec di₅ di₆) as [[H₁| H₁]| H₁].
+(* if not test induction 2, go to 3 *)
+bbb. (* end test induction 2 *)
+(*3*)
   remember H₁ as H; clear HeqH.
   apply Hn₆ in H.
   rewrite Hb₅ in H; simpl in H.
