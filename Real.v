@@ -4495,6 +4495,20 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
         rewrite Nat.add_succ_r in Ht₆.
         rewrite Nat.add_0_r, Ht₆, He₅ in H.
         discriminate H.
+
+       remember Ht₃ as H; clear HeqH.
+       unfold rm_add_i in H; simpl in H.
+       rewrite Ht₆, xorb_false_l in H.
+       unfold carry_i in H; simpl in H.
+       remember (S (i + S di₅)) as x.
+       rewrite <- Nat.add_1_r in H; subst x.
+       rewrite <- Nat.add_succ_r in Hs₁.
+       rewrite fst_same_inf_after in H; [ idtac | assumption ].
+       apply fst_same_iff in Hs₁; simpl in Hs₁.
+       pose proof (Hs₁ 0) as HH; rewrite Nat.add_0_r in HH.
+       rewrite Ht₆ in HH.
+       apply negb_sym in HH; rewrite HH in H.
+       discriminate H.
 bbb. (* end test induction 2 *)
 
             i  i+1  -   i₅  -   i₆
