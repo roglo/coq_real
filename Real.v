@@ -4521,7 +4521,24 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
       unfold rm_add_i in H; simpl in H.
       rewrite Ht₆, xorb_false_l in H.
       rename H into Hcc.
-      Focus 1.
+      remember (S (i + S di₅)) as x.
+      replace x with (x + 0) in Hcc by apply Nat.add_0_r.
+      unfold carry_i in Hbc.
+      rewrite <- Nat.add_succ_r, <- Heqx in Hbc.
+      remember (fst_same b c x) as s₁ eqn:Hs₁ .
+      destruct s₁ as [di₁| ].
+       symmetry in Hs₁.
+       destruct di₁.
+        rewrite Nat.add_0_r, Ht₆ in Hbc; discriminate Hbc.
+
+        assert (0 < S di₁) as H by apply Nat.lt_0_succ.
+        erewrite carry_before_relay in Hcc; try eassumption.
+        rewrite Nat.add_0_r, xorb_true_r in Hcc.
+        apply negb_true_iff in Hcc.
+        apply fst_same_iff in Hs₁; simpl in Hs₁.
+        destruct Hs₁ as (Hn₁, _).
+        apply Hn₁ in H; rewrite Nat.add_0_r in H.
+        rewrite Ht₆, Hcc in H; discriminate H.
 bbb. (* end test induction 2 *)
 
             i  i+1  -   i₅  .   i₃
