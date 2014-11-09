@@ -4489,6 +4489,31 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
        rewrite Hb₁ in H; simpl in H.
        rewrite H in Hac; apply negb_sym in Hac; simpl in Hac.
        rename H into Ha₁.
+       remember Hac as H; clear HeqH.
+       unfold rm_add_i in H; simpl in H.
+       rewrite Hb₁, Hs₁, xorb_true_l, xorb_false_l in H.
+       rename H into Hc₈.
+       remember Hc₈ as H; clear HeqH.
+       unfold carry_i in H; simpl in H.
+       remember (fst_same b c (S (S (S (i + di₅ + di₁))))) as s₂ eqn:Hs₂ .
+       apply fst_same_sym_iff in Hs₂; simpl in Hs₂.
+       destruct s₂ as [di₂| ]; [ idtac | clear H ].
+        destruct Hs₂ as (Hn₂, Hs₂); rewrite H in Hs₂.
+        symmetry in Hs₂; rename H into Hb₂.
+        destruct (lt_eq_lt_dec (S (S (di₅ + di₁ + di₂))) di₃)
+         as [[H₅| H₅]| H₅].
+         remember H₅ as H; clear HeqH.
+         apply Hn₃ in H.
+         do 2 rewrite Nat.add_succ_r in H; simpl in H.
+         do 2 rewrite Nat.add_assoc in H.
+         rename H into Hac₂.
+         assert (S (S (di₅ + di₁ + di₂)) < di₆) by (eapply lt_trans; eauto ).
+         apply Hn₆ in H.
+         do 2 rewrite Nat.add_succ_r in H.
+         do 2 rewrite Nat.add_assoc in H.
+         rewrite Hb₂ in H; simpl in H.
+         rewrite H in Hac₂; apply negb_sym in Hac₂; simpl in Hac₂.
+         rename H into Ha₂.
 bbb.
 
             i  i+1  -   i₅  .   i₁  -   i₃  -   i₆
