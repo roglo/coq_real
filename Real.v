@@ -4411,6 +4411,20 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
  destruct (lt_eq_lt_dec di₅ di₆) as [[H₁| H₁]| H₁].
 (* if not test induction 2, go to 3 *)
 bbb. (* end test induction 2 *)
+
+            i  i+1  -   i₅  -   i₆
+        b   .   .   x   1   .   0
+0               ≠+0 ≠+0 ≠+0 ≠+0
+        a   .   .  ¬x   0   .   0
+1            +1
+       b+c  .   0   0   .   .   .
+
+       a+b  .   1   1   1   1   .
+1            +1
+        c   .   .  ¬x   1   .   .
+1            +1 ≠+1 ≠+1
+        b   .   .   x   1   .   0
+
 (*3*)
   remember H₁ as H; clear HeqH.
   apply Hn₆ in H.
