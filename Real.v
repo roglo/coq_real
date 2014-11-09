@@ -4539,6 +4539,18 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
         destruct Hs₁ as (Hn₁, _).
         apply Hn₁ in H; rewrite Nat.add_0_r in H.
         rewrite Ht₆, Hcc in H; discriminate H.
+
+       symmetry in Hs₁.
+       remember Hs₁ as H; clear HeqH.
+       apply fst_same_inf_after with (di := 1) in H.
+       rewrite Nat.add_1_r in H.
+       rename H into Hs₂.
+       apply fst_same_iff in Hs₁.
+       pose proof (Hs₁ 0) as H; apply negb_sym in H.
+       rewrite H, Nat.add_0_r, Ht₆, xorb_true_l in Hcc.
+       apply negb_true_iff in Hcc.
+       unfold carry_i in Hcc.
+       rewrite Hs₂ in Hcc; discriminate Hcc.
 bbb. (* end test induction 2 *)
 
             i  i+1  -   i₅  .   i₃
