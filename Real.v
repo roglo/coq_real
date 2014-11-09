@@ -4410,6 +4410,84 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
  symmetry in Ht₅; rename H into Hb₅.
  destruct (lt_eq_lt_dec di₅ di₆) as [[H₁| H₁]| H₁].
 (* if not test induction 2, go to 3 *)
+  remember (di₆ - S di₅) as n eqn:Hn .
+  apply nat_sub_add_r in Hn; [ idtac | assumption ].
+  rewrite Nat.add_comm in Hn; simpl in Hn.
+  subst di₆; clear H₁.
+  revert di₅ Hs₅ Hb₅ Hn₅ Ht₅ Hs₆ Ha₆ Hn₆ Ht₆.
+  induction n; intros.
+   simpl in *.
+   pose proof (Hn₆ di₅ (Nat.lt_succ_diag_r di₅)) as Ha₅.
+   rewrite Hb₅ in Ha₅; simpl in Ha₅.
+   remember Hc₃ as H; clear HeqH.
+   unfold carry_i in H; simpl in H.
+   remember (fst_same a (b + c) (S i)) as s₃ eqn:Hs₃ .
+   remember Hs₃ as HH; clear HeqHH.
+   apply fst_same_sym_iff in HH; simpl in HH.
+   destruct s₃ as [di₃| ]; [ idtac | clear H ].
+    destruct HH as (Hn₃, Ht₃).
+    rewrite H in Ht₃; symmetry in Ht₃.
+    rename H into Ha₃.
+    destruct (lt_eq_lt_dec di₃ di₅) as [[H₂| H₂]| H₂].
+     remember H₂ as H; clear HeqH.
+     apply Hn₅ in H.
+     rename H into Hbc.
+     assert (di₃ < S di₅) as H by (eapply Nat.lt_lt_succ_r; eauto ).
+     apply Hn₆ in H.
+     rewrite Ha₃ in H; apply negb_sym in H; simpl in H.
+     rewrite H in Hbc; apply negb_sym in Hbc; simpl in Hbc.
+     rename H into Hb₃.
+     remember Ht₃ as H; clear HeqH.
+     unfold rm_add_i in H; simpl in H.
+     rewrite Hb₃, Hbc in H.
+     rewrite xorb_true_r, xorb_true_l in H.
+     apply negb_true_iff in H.
+     rewrite <- Nat.add_succ_l in H.
+     symmetry in Hs₅.
+     erewrite carry_before_relay in H; try eassumption.
+     discriminate H.
+
+     subst di₃.
+     pose proof (Hn₆ di₅ (Nat.lt_succ_diag_r di₅)) as H.
+     rewrite Ha₃, Hb₅ in H.
+     discriminate H.
+
+     remember H₂ as H; clear HeqH.
+     apply Hn₃ in H.
+     rewrite Hn₆ in H; [ idtac | apply Nat.lt_succ_diag_r ].
+     rewrite Hb₅ in H.
+     apply negb_sym in H; simpl in H.
+     rename H into Hbd.
+     destruct (lt_eq_lt_dec di₃ (S di₅)) as [[H₃| H₃]| H₃].
+      apply Nat.nle_gt in H₃; contradiction.
+
+      subst di₃; clear H₂.
+      remember Hbd as H; clear HeqH.
+      unfold rm_add_i in H; simpl in H.
+      rewrite Hb₅, Ht₅, xorb_true_l, xorb_false_l in H.
+      rename H into Hd₅.
+      remember Hd₅ as H; clear HeqH.
+      unfold carry_i in H; simpl in H.
+      remember (fst_same b c (S (S (i + di₅)))) as s₁ eqn:Hs₁ .
+      symmetry in Hs₁.
+      destruct s₁ as [di₁| ]; [ idtac | clear H ].
+       destruct di₁.
+        rewrite Nat.add_0_r, <- Nat.add_succ_r, Ht₆ in H.
+        discriminate H.
+
+        rename H into Hb₁.
+        remember Ht₃ as H; clear HeqH.
+        unfold rm_add_i in H; simpl in H.
+        rewrite Ht₆, xorb_false_l in H.
+        rewrite xorb_comm in H.
+        rewrite Nat.add_succ_r in H.
+        remember (S (S (i + di₅))) as x.
+        replace x with (x + 0) in H by apply Nat.add_0_r; subst x.
+        assert (0 < S di₁) as HH by apply Nat.lt_0_succ.
+        erewrite carry_before_relay in H; try eassumption; clear HH.
+        rewrite Nat.add_0_r, xorb_true_l in H.
+        apply negb_true_iff in H.
+        rename H into He₅.
 bbb. (* end test induction 2 *)
 
             i  i+1  -   i₅  -   i₆
