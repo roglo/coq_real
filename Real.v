@@ -4509,20 +4509,22 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
        rewrite Ht₆ in HH.
        apply negb_sym in HH; rewrite HH in H.
        discriminate H.
+
+      Focus 1.
 bbb. (* end test induction 2 *)
 
-            i  i+1  -   i₅  -   i₆
-        b   .   .   x   1   .   0
-0               ≠+0 ≠+0 ≠+0 ≠+0
-        a   .   .  ¬x   0   .   0
-1            +1
-       b+c  .   0   0   .   .   .
+            i  i+1  -   i₅  .   i₃
+        b   .   0   0   1   0   .
+0               ≠   ≠   ≠
+        a   .   1   1   0   0   1
+1               ≠   ≠   ≠   ≠
+       b+c  .   0   0   1   1   1
 
-       a+b  .   1   1   1   1   .
-1            +1
-        c   .   .  ¬x   1   .   .
-1            +1 ≠+1 ≠+1
-        b   .   .   x   1   .   0
+       a+b  .   1   1   1   .   .
+1
+        c   .   1   1   1   .   .
+1               ≠   ≠    +1
+        b   .   0   0   1   0   .
 
 (*3*)
   remember H₁ as H; clear HeqH.
