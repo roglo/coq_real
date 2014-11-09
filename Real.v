@@ -4551,20 +4551,26 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
        apply negb_true_iff in Hcc.
        unfold carry_i in Hcc.
        rewrite Hs₂ in Hcc; discriminate Hcc.
+
+    pose proof (HH di₅) as H.
+    rewrite Ha₅ in H.
+    apply negb_sym in H; simpl in H.
+    unfold rm_add_i in H; simpl in H.
+    rewrite Hb₅, Ht₅, xorb_true_l, xorb_false_l in H.
 bbb. (* end test induction 2 *)
 
-            i  i+1  -   i₅  .   i₃
-        b   .   0   0   1   0   .
-0               ≠   ≠   ≠
-        a   .   1   1   0   0   1
-1               ≠   ≠   ≠   ≠
-       b+c  .   0   0   1   1   1
+            i  i+1  -   i₅  -
+        b   .   0   0   1   .
+0               ≠+0 ≠+0 ≠+0
+        a   .   1   1   0   0
+1               ≠   ≠   ≠   ≠   ≠   ≠ ...
+       b+c  .   0   0   1   1
 
-       a+b  .   1   1   1   .   .
+       a+b  .   1   1   1   .
 1
-        c   .   1   1   1   1   .
-1               ≠   ≠    +1  +0   <-- contradiction
-        b   .   0   0   1   0   .
+        c   .   1   1   1   .
+1               ≠   ≠    +1
+        b   .   0   0   1   .
 
 (*3*)
   remember H₁ as H; clear HeqH.
