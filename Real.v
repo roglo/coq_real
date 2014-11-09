@@ -4488,6 +4488,13 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
         rewrite Nat.add_0_r, xorb_true_l in H.
         apply negb_true_iff in H.
         rename H into He₅.
+        remember Hs₁ as H; clear HeqH.
+        apply fst_same_iff in H; simpl in H.
+        destruct H as (Hn₁, _).
+        pose proof (Hn₁ 0 (Nat.lt_0_succ di₁)) as H.
+        rewrite Nat.add_succ_r in Ht₆.
+        rewrite Nat.add_0_r, Ht₆, He₅ in H.
+        discriminate H.
 bbb. (* end test induction 2 *)
 
             i  i+1  -   i₅  -   i₆
