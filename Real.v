@@ -4510,6 +4510,17 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
        apply negb_sym in HH; rewrite HH in H.
        discriminate H.
 
+      remember Hbd as H; clear HeqH.
+      unfold rm_add_i in H; simpl in H.
+      rewrite Hb₅, Ht₅, xorb_true_l, xorb_false_l in H.
+      rename H into Hbc.
+      remember H₃ as H; clear HeqH.
+      apply Hn₃ in H; simpl in H.
+      rewrite Ha₆ in H.
+      apply negb_sym in H; simpl in H.
+      unfold rm_add_i in H; simpl in H.
+      rewrite Ht₆, xorb_false_l in H.
+      rename H into Hcc.
       Focus 1.
 bbb. (* end test induction 2 *)
 
@@ -4522,8 +4533,8 @@ bbb. (* end test induction 2 *)
 
        a+b  .   1   1   1   .   .
 1
-        c   .   1   1   1   .   .
-1               ≠   ≠    +1
+        c   .   1   1   1   1   .
+1               ≠   ≠    +1  +0   <-- contradiction
         b   .   0   0   1   0   .
 
 (*3*)
