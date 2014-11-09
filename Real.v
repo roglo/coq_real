@@ -4462,15 +4462,12 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
     apply Hn₃ in H.
     rewrite Ha₅ in H; apply negb_sym in H; simpl in H.
     rename H into Hbd.
-    remember Hbd as H; clear HeqH.
-    unfold rm_add_i in H; simpl in H.
-    rewrite Hb₅, Ht₅, xorb_true_l, xorb_false_l in H.
-    rename H into Hc₇.
     destruct (lt_eq_lt_dec di₃ di₆) as [[H₃| H₃]| H₃].
-     remember H₃ as H; clear HeqH.
-     apply Hn₆ in H; simpl in H.
-     rewrite Ha₃ in H; apply negb_sym in H; simpl in H.
-     rename H into Hb₃.
+(*1*)
+     remember Hbd as H; clear HeqH.
+     unfold rm_add_i in H; simpl in H.
+     rewrite Hb₅, Ht₅, xorb_true_l, xorb_false_l in H.
+     rename H into Hc₇.
      remember Hc₇ as H; clear HeqH.
      unfold carry_i in H; simpl in H.
      remember (fst_same b c (S (S (i + di₅)))) as s₁ eqn:Hs₁ .
@@ -4481,14 +4478,17 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
       destruct (lt_eq_lt_dec (S (di₅ + di₁)) di₃) as [[H₄| H₄]| H₄].
        remember H₄ as H; clear HeqH.
        apply Hn₃ in H.
-       rewrite Nat.add_succ_r, Nat.add_assoc in H; simpl in H.
+       rewrite Nat.add_succ_r in H.
+       rewrite Nat.add_assoc in H.
        rename H into Hac.
        assert (S (di₅ + di₁) < di₆) by (eapply lt_trans; eauto ).
        apply Hn₆ in H.
-       rewrite Nat.add_succ_r, Nat.add_assoc in H; simpl in H.
+       rewrite Nat.add_succ_r in H.
+       rewrite Nat.add_assoc in H.
        rewrite Hb₁ in H; simpl in H.
        rewrite H in Hac; apply negb_sym in Hac; simpl in Hac.
        rename H into Ha₁.
+(*2*)
        remember Hac as H; clear HeqH.
        unfold rm_add_i in H; simpl in H.
        rewrite Hb₁, Hs₁, xorb_true_l, xorb_false_l in H.
