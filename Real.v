@@ -4391,6 +4391,9 @@ Theorem case_1 : ∀ a₀ b₀ c₀ a b c i,
   → False.
 Proof.
 intros a₀ b₀ c₀ a b c i Ha₀ Hb₀ Hc₀ Hc₁ Hc₂ Hc₃ Hc₄ Hc₅ Hc₆.
+(*
+clear Hb₀ Hc₀ Hc₁ Hc₂ Hc₄.
+*)
 remember Hc₆ as H; clear HeqH.
 unfold carry_i in H; simpl in H.
 remember (fst_same a b (S i)) as s₆ eqn:Hs₆ .
