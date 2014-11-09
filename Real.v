@@ -4414,7 +4414,12 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
   apply nat_sub_add_r in Hn; [ idtac | assumption ].
   rewrite Nat.add_comm in Hn; simpl in Hn.
   subst di₆; clear H₁.
+(**)
   revert di₅ Hs₅ Hb₅ Hn₅ Ht₅ Hs₆ Ha₆ Hn₆ Ht₆.
+(*
+  clear Hs₆.
+  revert di₅ Hs₅ Hb₅ Hn₅ Ht₅ Ha₆ Hn₆ Ht₆.
+*)
   induction n; intros.
    simpl in *.
    pose proof (Hn₆ di₅ (Nat.lt_succ_diag_r di₅)) as Ha₅.
