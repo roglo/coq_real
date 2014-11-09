@@ -4463,6 +4463,52 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
     rewrite Ha₅ in H; apply negb_sym in H; simpl in H.
     rename H into Hbd.
     destruct (lt_eq_lt_dec di₃ di₆) as [[H₃| H₃]| H₃].
+(*if not test induction, go to 1 *)
+     remember (di₃ - S di₅) as n eqn:Hn .
+     apply nat_sub_add_r in Hn; [ idtac | assumption ].
+     rewrite Nat.add_comm in Hn; simpl in Hn.
+     subst di₃.
+     clear H₂.
+     induction n.
+      simpl in Hs₃, Ha₃, Hn₃, Ht₃, H₃.
+      remember Hbd as H; clear HeqH.
+      unfold rm_add_i in H; simpl in H.
+      rewrite Hb₅, Ht₅, xorb_true_l, xorb_false_l in H.
+      rename H into Hc₇.
+      remember Hc₇ as H; clear HeqH.
+      unfold carry_i in H; simpl in H.
+      remember (fst_same b c (S (S (i + di₅)))) as s₁ eqn:Hs₁ .
+      apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
+      destruct s₁ as [di₁| ]; [ idtac | clear H ].
+       destruct Hs₁ as (Hn₁, Hs₁); rewrite H in Hs₁.
+       symmetry in Hs₁; rename H into Hb₁.
+       destruct di₁.
+        clear Hn₁; rewrite Nat.add_0_r in Hs₁, Hb₁.
+        remember H₃ as H; clear HeqH.
+        apply Hn₆ in H; simpl in H.
+        rewrite Nat.add_succ_r, Hb₁ in H; simpl in H.
+        rename H into Ha₁.
+        remember Ht₃ as H; clear HeqH.
+        rewrite Nat.add_succ_r in H.
+        unfold rm_add_i in H; simpl in H.
+        rewrite Hs₁, Hb₁, xorb_true_l, xorb_false_l in H.
+        rename H into Hc₈.
+bbb. (* end test induction *)
+
+            i  i+1  -   i₅  .   i₃  -   i₆
+        b   .   0   0   1   .   0   .   0
+0            +0 ≠+0 ≠+0 ≠+0 ≠+0 ≠+0 ≠+0
+        a   .   1   1   0   .   1   .   0
+1            +1 ≠+1 ≠+1 ≠+1 ≠+1
+       b+c  .   0   0   1   .   1   .   .
+
+       a+b  .   1   1   1   1   1   1   .
+1            +1
+        c   .   1   1   1   .   .   .   .
+1            +1 ≠+1 ≠+1  +1
+        b   .   0   0   1   .   0   .   0
+
+
 (*1*)
      remember Hbd as H; clear HeqH.
      unfold rm_add_i in H; simpl in H.
