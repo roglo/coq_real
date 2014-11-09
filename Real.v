@@ -4378,6 +4378,55 @@ destruct s₁ as [di₁| ].
  symmetry; apply Hbk; assumption.
 Qed.
 
+Theorem zzz : ∀ b c i di₅,
+  b .[ S (i + di₅)] = true
+  → c .[ S (i + di₅)] = true
+  → b .[ S (i + S di₅)] = false
+  → rm_add_i b c (S (i + di₅)) = true
+  → rm_add_i b c (S (i + S di₅)) = true
+  → False.
+Proof.
+intros b c i di₅ Hb₅ Ht₅ Ht₆ Hbd H.
+unfold rm_add_i in H; simpl in H.
+rewrite Ht₆, xorb_false_l in H.
+rename H into Hcc.
+remember Hbd as H; clear HeqH.
+unfold rm_add_i in H; simpl in H.
+rewrite Hb₅, Ht₅, xorb_true_l, xorb_false_l in H.
+rename H into Hbc.
+remember (S (i + S di₅)) as x.
+replace x with (x + 0) in Hcc by apply Nat.add_0_r.
+unfold carry_i in Hbc.
+rewrite <- Nat.add_succ_r, <- Heqx in Hbc.
+remember (fst_same b c x) as s₁ eqn:Hs₁ .
+destruct s₁ as [di₁| ].
+ symmetry in Hs₁.
+ destruct di₁.
+  rewrite Nat.add_0_r, Ht₆ in Hbc; discriminate Hbc.
+
+  assert (0 < S di₁) as H by apply Nat.lt_0_succ.
+  erewrite carry_before_relay in Hcc; try eassumption.
+  rewrite Nat.add_0_r, xorb_true_r in Hcc.
+  apply negb_true_iff in Hcc.
+  apply fst_same_iff in Hs₁; simpl in Hs₁.
+  destruct Hs₁ as (Hn₁, _).
+  apply Hn₁ in H; rewrite Nat.add_0_r in H.
+  rewrite Ht₆, Hcc in H; discriminate H.
+
+ symmetry in Hs₁.
+ remember Hs₁ as H; clear HeqH.
+ apply fst_same_inf_after with (di := 1) in H.
+ rewrite Nat.add_1_r in H.
+ rename H into Hs₂.
+ apply fst_same_iff in Hs₁.
+ pose proof (Hs₁ 0) as H; apply negb_sym in H.
+ rewrite H, Nat.add_0_r, Ht₆, xorb_true_l in Hcc.
+ apply negb_true_iff in Hcc.
+ unfold carry_i in Hcc.
+ rewrite Hs₂ in Hcc; discriminate Hcc.
+bbb.
+*)
+
 Theorem case_1 : ∀ a₀ b₀ c₀ a b c i,
   a = (a₀ + 0)%rm
   → b = (b₀ + 0)%rm
@@ -4567,44 +4616,45 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
     rename H into Hbd.
     pose proof (Hab (S di₅)) as H.
 (*2*)
-    rewrite Ha₆ in H; apply negb_sym in H; simpl in H.
-    unfold rm_add_i in H; simpl in H.
-    rewrite Ht₆, xorb_false_l in H.
-    rename H into Hcc.
-    remember Hbd as H; clear HeqH.
-    unfold rm_add_i in H; simpl in H.
-    rewrite Hb₅, Ht₅, xorb_true_l, xorb_false_l in H.
-    rename H into Hbc.
-    remember (S (i + S di₅)) as x.
-    replace x with (x + 0) in Hcc by apply Nat.add_0_r.
-    unfold carry_i in Hbc.
-    rewrite <- Nat.add_succ_r, <- Heqx in Hbc.
-    remember (fst_same b c x) as s₁ eqn:Hs₁ .
-    destruct s₁ as [di₁| ].
-     symmetry in Hs₁.
-     destruct di₁.
-      rewrite Nat.add_0_r, Ht₆ in Hbc; discriminate Hbc.
+bbb.
+      rewrite Ha₆ in H; apply negb_sym in H; simpl in H.
+      unfold rm_add_i in H; simpl in H.
+      rewrite Ht₆, xorb_false_l in H.
+      rename H into Hcc.
+      remember Hbd as H; clear HeqH.
+      unfold rm_add_i in H; simpl in H.
+      rewrite Hb₅, Ht₅, xorb_true_l, xorb_false_l in H.
+      rename H into Hbc.
+      remember (S (i + S di₅)) as x.
+      replace x with (x + 0) in Hcc by apply Nat.add_0_r.
+      unfold carry_i in Hbc.
+      rewrite <- Nat.add_succ_r, <- Heqx in Hbc.
+      remember (fst_same b c x) as s₁ eqn:Hs₁ .
+      destruct s₁ as [di₁| ].
+       symmetry in Hs₁.
+       destruct di₁.
+        rewrite Nat.add_0_r, Ht₆ in Hbc; discriminate Hbc.
 
-      assert (0 < S di₁) as H by apply Nat.lt_0_succ.
-      erewrite carry_before_relay in Hcc; try eassumption.
-      rewrite Nat.add_0_r, xorb_true_r in Hcc.
-      apply negb_true_iff in Hcc.
-      apply fst_same_iff in Hs₁; simpl in Hs₁.
-      destruct Hs₁ as (Hn₁, _).
-      apply Hn₁ in H; rewrite Nat.add_0_r in H.
-      rewrite Ht₆, Hcc in H; discriminate H.
+        assert (0 < S di₁) as H by apply Nat.lt_0_succ.
+        erewrite carry_before_relay in Hcc; try eassumption.
+        rewrite Nat.add_0_r, xorb_true_r in Hcc.
+        apply negb_true_iff in Hcc.
+        apply fst_same_iff in Hs₁; simpl in Hs₁.
+        destruct Hs₁ as (Hn₁, _).
+        apply Hn₁ in H; rewrite Nat.add_0_r in H.
+        rewrite Ht₆, Hcc in H; discriminate H.
 
-     symmetry in Hs₁.
-     remember Hs₁ as H; clear HeqH.
-     apply fst_same_inf_after with (di := 1) in H.
-     rewrite Nat.add_1_r in H.
-     rename H into Hs₂.
-     apply fst_same_iff in Hs₁.
-     pose proof (Hs₁ 0) as H; apply negb_sym in H.
-     rewrite H, Nat.add_0_r, Ht₆, xorb_true_l in Hcc.
-     apply negb_true_iff in Hcc.
-     unfold carry_i in Hcc.
-     rewrite Hs₂ in Hcc; discriminate Hcc.
+       symmetry in Hs₁.
+       remember Hs₁ as H; clear HeqH.
+       apply fst_same_inf_after with (di := 1) in H.
+       rewrite Nat.add_1_r in H.
+       rename H into Hs₂.
+       apply fst_same_iff in Hs₁.
+       pose proof (Hs₁ 0) as H; apply negb_sym in H.
+       rewrite H, Nat.add_0_r, Ht₆, xorb_true_l in Hcc.
+       apply negb_true_iff in Hcc.
+       unfold carry_i in Hcc.
+       rewrite Hs₂ in Hcc; discriminate Hcc.
 bbb. (* end test induction 2 *)
 
             i  i+1  -   i₅  -
