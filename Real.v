@@ -4495,7 +4495,7 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
      remember (di₃ - S di₅) as n eqn:Hn .
      apply nat_sub_add_r in Hn; [ idtac | assumption ].
      rewrite Nat.add_comm in Hn; simpl in Hn.
-     subst di₃; clear H₂.
+     subst di₃; clear H₂; clear H₁.
      induction n.
       rewrite Nat.add_succ_r in Ht₃.
       destruct (lt_eq_lt_dec (S di₅) di₆) as [[H₂| H₂]| H₂].
@@ -4510,7 +4510,7 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
        simpl in Ha₃.
        rewrite Ha₃ in Ha₆; discriminate Ha₆.
 
-       apply Nat.nle_gt in H₂; contradiction.
+       revert H₂; apply Nat.lt_asymm; assumption.
 bbb.
 
             i  i+1  -   i₅  -   i₆
