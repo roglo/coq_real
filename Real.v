@@ -4522,23 +4522,18 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
      apply nat_sub_add_r in Hn; [ idtac | assumption ].
      rewrite Nat.add_comm in Hn; simpl in Hn.
      subst di₃; clear H₂; clear H₁.
-(*
-     revert di₅ Hs₅ Hb₅ Hn₅ Ht₅ Hbd Hn₃ Ht₃ Ha₃ H₄.
-*)
      revert Hb₅ Ht₅ Hbd Hn₆ Ha₃ Ht₃ H₄; clear; intros.
-(*
-     revert di₅ Hb₅ Ht₅ Hbd Ha₃ Ht₃ H₄.
-     induction n; intros.
-*)
-     induction n using all_lt_all as Hn; intros.
+     rewrite Hn₆ in Ha₃; [ idtac | assumption ].
+     rewrite Nat.add_succ_r in Ha₃.
+     apply negb_true_iff in Ha₃.
+     clear Hn₆.
+     rewrite Nat.add_succ_r in Ht₃.
+     clear H₄.
+     induction n as (n, Hn) using all_lt_all; intros.
      destruct n.
-      rewrite Nat.add_succ_r in Ht₃.
       rewrite sum_11_1_sum_0_0 in Ht₃; try assumption.
-       discriminate Ht₃.
+      discriminate Ht₃.
 
-       rewrite Hn₆ in Ha₃; [ idtac | assumption ].
-       apply negb_true_iff in Ha₃; rewrite Nat.add_succ_r in Ha₃.
-       assumption.
 bbb.
 
             i  i+1  -   i₅  -   i₆
