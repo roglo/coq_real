@@ -4524,7 +4524,7 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
      apply nat_sub_add_r in Hn; [ idtac | assumption ].
      rewrite Nat.add_comm in Hn; simpl in Hn.
      subst di₃.
-     revert Hb₅ Ht₅ Hbd Hn₆ Ha₃ Ht₃; clear; intros.
+     revert Hb₅ Ht₅ Hbd Ha₃ Ht₃; clear; intros.
      rewrite Nat.add_succ_r in Ha₃, Ht₃.
      induction n as (n, Hn) using all_lt_all; intros.
      destruct n.
