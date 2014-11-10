@@ -4475,10 +4475,9 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
    remember Hc₃ as H; clear HeqH.
    unfold carry_i in H; simpl in H.
    remember (fst_same a (b + c) (S i)) as s₃ eqn:Hs₃ .
-   remember Hs₃ as HH; clear HeqHH.
-   apply fst_same_sym_iff in HH; simpl in HH.
+   apply fst_same_sym_iff in Hs₃; simpl in Hs₃.
    destruct s₃ as [di₃| ]; [ idtac | clear H ].
-    destruct HH as (Hn₃, Ht₃).
+    destruct Hs₃ as (Hn₃, Ht₃).
     rewrite H in Ht₃; symmetry in Ht₃.
     rename H into Ha₃.
     destruct (lt_eq_lt_dec di₃ di₅) as [[H₂| H₂]| H₂].
@@ -4520,11 +4519,11 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
 
     pose proof (Hn₆ di₅ (Nat.lt_succ_diag_r di₅)) as Ha₅.
     rewrite Hb₅ in Ha₅; simpl in Ha₅.
-    pose proof (HH di₅) as H.
+    pose proof (Hs₃ di₅) as H.
     rewrite Ha₅ in H.
     apply negb_sym in H; simpl in H.
     rename H into Hbd.
-    pose proof (HH (S di₅)) as H.
+    pose proof (Hs₃ (S di₅)) as H.
     rewrite Ha₆ in H.
     apply negb_sym in H; simpl in H.
     rewrite Nat.add_succ_r in H, Ht₆.
