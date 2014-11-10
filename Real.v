@@ -4491,39 +4491,40 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
     rewrite Hb₅ in H.
     apply negb_sym in H; simpl in H.
     rename H into Hbd.
-    destruct (lt_eq_lt_dec di₃ (S di₅)) as [[H₃| H₃]| H₃].
-     apply Nat.nle_gt in H₃; contradiction.
-
+    destruct (lt_eq_lt_dec di₃ di₆) as [[H₄| H₄]| H₄].
+     remember (di₃ - S di₅) as n eqn:Hn .
+     apply nat_sub_add_r in Hn; [ idtac | assumption ].
+     rewrite Nat.add_comm in Hn; simpl in Hn.
      subst di₃; clear H₂.
-     rewrite Nat.add_succ_r in Ht₃.
-     destruct (lt_eq_lt_dec (S di₅) di₆) as [[H₂| H₂]| H₂].
-      rewrite sum_11_1_sum_0_0 in Ht₃; try assumption.
-       discriminate Ht₃.
+     induction n.
+      rewrite Nat.add_succ_r in Ht₃.
+      destruct (lt_eq_lt_dec (S di₅) di₆) as [[H₂| H₂]| H₂].
+       rewrite sum_11_1_sum_0_0 in Ht₃; try assumption.
+        discriminate Ht₃.
 
-       rewrite Hn₆ in Ha₃; [ idtac | assumption ].
-       apply negb_true_iff in Ha₃; rewrite Nat.add_succ_r in Ha₃.
-       assumption.
+        rewrite Hn₆ in Ha₃; [ idtac | assumption ].
+        apply negb_true_iff in Ha₃; rewrite Nat.add_succ_r in Ha₃.
+        assumption.
 
-      subst di₆.
-      rewrite Ha₃ in Ha₆; discriminate Ha₆.
+       subst di₆.
+       simpl in Ha₃.
+       rewrite Ha₃ in Ha₆; discriminate Ha₆.
 
-      apply Nat.nle_gt in H₂; contradiction.
-
-     destruct (lt_eq_lt_dec di₃ di₆) as [[H₄| H₄]| H₄].
+       apply Nat.nle_gt in H₂; contradiction.
 bbb.
 
-            i  i+1  -   i₅  -   i₃  -   i₆
-        b   .
-0
-        a   .
-1
-       b+c  .
+            i  i+1  -   i₅  -   i₆
+        b   .   .   .   1   0   0
+0               ≠   ≠   ≠   ≠
+        a   .   .   .   0   1   0
+1               ≠   ≠   ≠
+       b+c  .   .   .   1   1   .
 
-       a+b  .
+       a+b  .   .   .   .   .   .
 1
-        c   .
-1
-        b   .
+        c   .   .   .   1   1   .
+1               ≠   ≠    +1  +0 <--- contradiction
+        b   .   .   .   1   0   0
 
 
 (* end of experiment 2 *)
