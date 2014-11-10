@@ -4509,6 +4509,23 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
 
       apply Nat.nle_gt in H₂; contradiction.
 
+     destruct (lt_eq_lt_dec di₃ di₆) as [[H₄| H₄]| H₄].
+bbb.
+
+            i  i+1  -   i₅  -   i₃  -   i₆
+        b   .
+0
+        a   .
+1
+       b+c  .
+
+       a+b  .
+1
+        c   .
+1
+        b   .
+
+
 (* end of experiment 2 *)
 bbb.
   remember (di₆ - S di₅) as n eqn:Hn .
