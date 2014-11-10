@@ -4518,17 +4518,14 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
     apply negb_sym in H; simpl in H.
     rename H into Hbd.
     destruct (lt_eq_lt_dec di₃ di₆) as [[H₄| H₄]| H₄].
+     rewrite Hn₆ in Ha₃; [ idtac | assumption ].
+     apply negb_true_iff in Ha₃.
      remember (di₃ - S di₅) as n eqn:Hn .
      apply nat_sub_add_r in Hn; [ idtac | assumption ].
      rewrite Nat.add_comm in Hn; simpl in Hn.
-     subst di₃; clear H₂; clear H₁.
-     revert Hb₅ Ht₅ Hbd Hn₆ Ha₃ Ht₃ H₄; clear; intros.
-     rewrite Hn₆ in Ha₃; [ idtac | assumption ].
-     rewrite Nat.add_succ_r in Ha₃.
-     apply negb_true_iff in Ha₃.
-     clear Hn₆.
-     rewrite Nat.add_succ_r in Ht₃.
-     clear H₄.
+     subst di₃.
+     revert Hb₅ Ht₅ Hbd Hn₆ Ha₃ Ht₃; clear; intros.
+     rewrite Nat.add_succ_r in Ha₃, Ht₃.
      induction n as (n, Hn) using all_lt_all; intros.
      destruct n.
       rewrite sum_11_1_sum_0_0 in Ht₃; try assumption.
