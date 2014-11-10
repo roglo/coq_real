@@ -4464,6 +4464,80 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
   apply nat_sub_add_r in Hn; [ idtac | assumption ].
   rewrite Nat.add_comm in Hn; simpl in Hn.
   subst di₆; clear H₁.
+(* if new experiment, then *)
+  remember Hc₃ as H; clear HeqH.
+  unfold carry_i in H; simpl in H.
+  remember (fst_same a (b + c) (S i)) as s₃ eqn:Hs₃ .
+  apply fst_same_sym_iff in Hs₃; simpl in Hs₃.
+  destruct s₃ as [di₃| ]; [ idtac | clear H ].
+   destruct Hs₃ as (Hn₃, Ht₃).
+   rewrite H in Ht₃; symmetry in Ht₃.
+   rename H into Ha₃.
+   destruct (lt_eq_lt_dec di₃ di₅) as [[H₂| H₂]| H₂].
+    remember Ht₃ as H; clear HeqH.
+    unfold rm_add_i in H; simpl in H.
+    rewrite <- Nat.add_succ_l in H.
+    symmetry in Hs₅.
+    erewrite carry_before_relay in H; try eassumption; simpl in H.
+    apply Hn₅ in H₂.
+    rewrite H₂, negb_xorb_diag in H.
+    discriminate H.
+
+    subst di₃.
+    assert (di₅ < S (n + di₅)) as H by omega.
+    apply Hn₆ in H.
+    rewrite Ha₃, Hb₅ in H.
+    discriminate H.
+
+    remember H₂ as H; clear HeqH.
+    apply Hn₃ in H.
+    rewrite Hn₆ in H; [ idtac | omega ].
+    rewrite Hb₅ in H.
+    apply negb_sym in H; simpl in H.
+    rename H into Hbd.
+    destruct (lt_eq_lt_dec di₃ (S di₅)) as [[H₃| H₃]| H₃].
+     apply Nat.nle_gt in H₃; contradiction.
+
+     subst di₃; clear H₂.
+     rewrite Nat.add_succ_r in Ht₃, Ht₆.
+     rewrite sum_11_1_sum_0_0 in Ht₃; try assumption.
+      discriminate Ht₃.
+
+      destruct n.
+       simpl in Ha₆.
+       rewrite Ha₆ in Ha₃; discriminate Ha₃.
+
+       rewrite Hn₆ in Ha₃; [ idtac | omega ].
+       apply negb_true_iff in Ha₃; rewrite Nat.add_succ_r in Ha₃.
+       assumption.
+
+bbb.
+     remember H₃ as H; clear HeqH.
+     apply Hn₃ in H; simpl in H.
+     destruct n.
+      simpl in Ha₆.
+      rewrite Ha₆ in H.
+      apply negb_sym in H; simpl in H.
+      rewrite Nat.add_succ_r in H, Ht₆.
+      rewrite sum_11_1_sum_0_0 in H; try assumption.
+      discriminate H.
+(* end new experiment *)
+bbb.
+
+            i  i+1  -   i₅  .   i₃
+        b   .   0   0   1   .   .
+0               ≠   ≠    +0
+        a   .   1   1   0   .   1
+1               ≠   ≠   ≠   ≠
+       b+c  .   0   0   1   .   1
+
+       a+b  .   1   1   1   .   .
+1
+        c   .   1   1   1   .   .
+1               ≠   ≠    +1
+        b   .   0   0   1   .   .
+
+
 (**)
   revert di₅ Hs₅ Hb₅ Hn₅ Ht₅ Hs₆ Ha₆ Hn₆ Ht₆.
 (*
