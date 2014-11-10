@@ -4460,6 +4460,57 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
  destruct HH as (Hn₅, Ht₅); rewrite H in Ht₅.
  symmetry in Ht₅; rename H into Hb₅.
  destruct (lt_eq_lt_dec di₅ di₆) as [[H₁| H₁]| H₁].
+(* if experiment 2, then *)
+  remember Hc₃ as H; clear HeqH.
+  unfold carry_i in H; simpl in H.
+  remember (fst_same a (b + c) (S i)) as s₃ eqn:Hs₃ .
+  apply fst_same_sym_iff in Hs₃; simpl in Hs₃.
+  destruct s₃ as [di₃| ]; [ idtac | clear H ].
+   destruct Hs₃ as (Hn₃, Ht₃).
+   rewrite H in Ht₃; symmetry in Ht₃.
+   rename H into Ha₃.
+   destruct (lt_eq_lt_dec di₃ di₅) as [[H₂| H₂]| H₂].
+    remember Ht₃ as H; clear HeqH.
+    unfold rm_add_i in H; simpl in H.
+    rewrite <- Nat.add_succ_l in H.
+    symmetry in Hs₅.
+    erewrite carry_before_relay in H; try eassumption; simpl in H.
+    apply Hn₅ in H₂.
+    rewrite H₂, negb_xorb_diag in H.
+    discriminate H.
+
+    subst di₃.
+    remember H₁ as H; clear HeqH.
+    apply Hn₆ in H.
+    rewrite Ha₃, Hb₅ in H.
+    discriminate H.
+
+    remember H₂ as H; clear HeqH.
+    apply Hn₃ in H.
+    rewrite Hn₆ in H; [ idtac | assumption ].
+    rewrite Hb₅ in H.
+    apply negb_sym in H; simpl in H.
+    rename H into Hbd.
+    destruct (lt_eq_lt_dec di₃ (S di₅)) as [[H₃| H₃]| H₃].
+     apply Nat.nle_gt in H₃; contradiction.
+
+     subst di₃; clear H₂.
+     rewrite Nat.add_succ_r in Ht₃.
+     destruct (lt_eq_lt_dec (S di₅) di₆) as [[H₂| H₂]| H₂].
+      rewrite sum_11_1_sum_0_0 in Ht₃; try assumption.
+       discriminate Ht₃.
+
+       rewrite Hn₆ in Ha₃; [ idtac | assumption ].
+       apply negb_true_iff in Ha₃; rewrite Nat.add_succ_r in Ha₃.
+       assumption.
+
+      subst di₆.
+      rewrite Ha₃ in Ha₆; discriminate Ha₆.
+
+      apply Nat.nle_gt in H₂; contradiction.
+
+(* end of experiment 2 *)
+bbb.
   remember (di₆ - S di₅) as n eqn:Hn .
   apply nat_sub_add_r in Hn; [ idtac | assumption ].
   rewrite Nat.add_comm in Hn; simpl in Hn.
