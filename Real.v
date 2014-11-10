@@ -4426,6 +4426,32 @@ destruct s₁ as [di₁| ].
  rewrite Hs₂ in Hcc; discriminate Hcc.
 Qed.
 
+Theorem le_neq_lt : ∀ x y : nat, x ≤ y → x ≠ y → (x < y)%nat.
+Proof.
+intros x y Hxy Hnxy.
+apply le_lt_eq_dec in Hxy.
+destruct Hxy as [Hle| Heq]; [ assumption | idtac ].
+exfalso; apply Hnxy; assumption.
+Qed.
+
+Theorem all_lt_all : ∀ P : nat → Prop,
+  (∀ n, (∀ m, (m < n)%nat → P m) → P n)
+  → ∀ n, P n.
+Proof.
+intros P Hm n.
+apply Hm.
+induction n; intros m Hmn.
+ apply Nat.nle_gt in Hmn.
+ exfalso; apply Hmn, Nat.le_0_l.
+
+ destruct (eq_nat_dec m n) as [H₁| H₁].
+  subst m; apply Hm; assumption.
+
+  apply IHn.
+  apply le_neq_lt; [ idtac | assumption ].
+  apply Nat.succ_le_mono; assumption.
+Qed.
+
 Theorem case_1 : ∀ a₀ b₀ c₀ a b c i,
   a = (a₀ + 0)%rm
   → b = (b₀ + 0)%rm
@@ -4499,7 +4525,13 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
 (*
      revert di₅ Hs₅ Hb₅ Hn₅ Ht₅ Hbd Hn₃ Ht₃ Ha₃ H₄.
 *)
+     revert Hb₅ Ht₅ Hbd Hn₆ Ha₃ Ht₃ H₄; clear; intros.
+(*
+     revert di₅ Hb₅ Ht₅ Hbd Ha₃ Ht₃ H₄.
      induction n; intros.
+*)
+     induction n using all_lt_all; intros.
+     destruct n.
       rewrite Nat.add_succ_r in Ht₃.
       rewrite sum_11_1_sum_0_0 in Ht₃; try assumption.
        discriminate Ht₃.
