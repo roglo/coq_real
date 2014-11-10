@@ -4511,18 +4511,22 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
        apply negb_true_iff in Ha₃; rewrite Nat.add_succ_r in Ha₃.
        assumption.
 
+     destruct (lt_eq_lt_dec (S (n + di₅)) di₃) as [[H₁| H₁]| H₁].
 bbb.
-     remember H₃ as H; clear HeqH.
-     apply Hn₃ in H; simpl in H.
-     destruct n.
-      simpl in Ha₆.
-      rewrite Ha₆ in H.
-      apply negb_sym in H; simpl in H.
-      rewrite Nat.add_succ_r in H, Ht₆.
-      rewrite sum_11_1_sum_0_0 in H; try assumption.
-      discriminate H.
-(* end new experiment *)
-bbb.
+
+            i  i+1  -   i₅  .   n   .   i₃
+        b   .   0   0   1   .   0   .   .
+0               ≠   ≠    +0 ≠
+        a   .   1   1   0   .   0   .   1
+1               ≠   ≠   ≠   ≠   ≠   ≠
+       b+c  .   0   0   1   .   1   .   1
+
+       a+b  .   1   1   1   1   .   .   .
+1
+        c   .   1   1   1   .   .   .   .
+1               ≠   ≠    +1
+        b   .   0   0   1   .   0   .   .
+
 
             i  i+1  -   i₅  .   i₃
         b   .   0   0   1   .   .
@@ -4537,6 +4541,17 @@ bbb.
 1               ≠   ≠    +1
         b   .   0   0   1   .   .
 
+     remember H₃ as H; clear HeqH.
+     apply Hn₃ in H; simpl in H.
+     destruct n.
+      simpl in Ha₆.
+      rewrite Ha₆ in H.
+      apply negb_sym in H; simpl in H.
+      rewrite Nat.add_succ_r in H, Ht₆.
+      rewrite sum_11_1_sum_0_0 in H; try assumption.
+      discriminate H.
+(* end new experiment *)
+bbb.
 
 (**)
   revert di₅ Hs₅ Hb₅ Hn₅ Ht₅ Hs₆ Ha₆ Hn₆ Ht₆.
