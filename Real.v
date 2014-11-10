@@ -4496,22 +4496,17 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
      apply nat_sub_add_r in Hn; [ idtac | assumption ].
      rewrite Nat.add_comm in Hn; simpl in Hn.
      subst di₃; clear H₂; clear H₁.
+(*
      revert di₅ Hs₅ Hb₅ Hn₅ Ht₅ Hbd Hn₃ Ht₃ Ha₃ H₄.
+*)
      induction n; intros.
       rewrite Nat.add_succ_r in Ht₃.
-      destruct (lt_eq_lt_dec (S di₅) di₆) as [[H₂| H₂]| H₂].
-       rewrite sum_11_1_sum_0_0 in Ht₃; try assumption.
-        discriminate Ht₃.
+      rewrite sum_11_1_sum_0_0 in Ht₃; try assumption.
+       discriminate Ht₃.
 
-        rewrite Hn₆ in Ha₃; [ idtac | assumption ].
-        apply negb_true_iff in Ha₃; rewrite Nat.add_succ_r in Ha₃.
-        assumption.
-
-       subst di₆.
-       simpl in Ha₃.
-       rewrite Ha₃ in Ha₆; discriminate Ha₆.
-
-       revert H₂; apply Nat.lt_asymm; assumption.
+       rewrite Hn₆ in Ha₃; [ idtac | assumption ].
+       apply negb_true_iff in Ha₃; rewrite Nat.add_succ_r in Ha₃.
+       assumption.
 bbb.
 
             i  i+1  -   i₅  -   i₆
