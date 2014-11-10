@@ -4496,7 +4496,8 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
      apply nat_sub_add_r in Hn; [ idtac | assumption ].
      rewrite Nat.add_comm in Hn; simpl in Hn.
      subst di₃; clear H₂; clear H₁.
-     induction n.
+     revert di₅ Hs₅ Hb₅ Hn₅ Ht₅ Hbd Hn₃ Ht₃ Ha₃ H₄.
+     induction n; intros.
       rewrite Nat.add_succ_r in Ht₃.
       destruct (lt_eq_lt_dec (S di₅) di₆) as [[H₂| H₂]| H₂].
        rewrite sum_11_1_sum_0_0 in Ht₃; try assumption.
