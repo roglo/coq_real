@@ -4530,7 +4530,7 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
      revert di₅ Hb₅ Ht₅ Hbd Ha₃ Ht₃ H₄.
      induction n; intros.
 *)
-     induction n using all_lt_all; intros.
+     induction n using all_lt_all as Hn; intros.
      destruct n.
       rewrite Nat.add_succ_r in Ht₃.
       rewrite sum_11_1_sum_0_0 in Ht₃; try assumption.
