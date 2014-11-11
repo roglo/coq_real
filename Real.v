@@ -4546,16 +4546,16 @@ destruct s₁ as [di₁| ]; [ idtac | clear Hb₁ ].
  rewrite Hs₁ in He₁; discriminate He₁.
 Qed.
 
-Theorem sum_11_1_sum_xy_x_sum_0_0 : ∀ b c i x,
+Theorem sum_11_1_sum_xy_x_sum_0_0 : ∀ b c i,
   b .[ i] = true
   → c .[ i] = true
   → rm_add_i b c i = true
-  → b .[S i] = x
-  → rm_add_i b c (S i) = x
+  → rm_add_i b c (S i) = b.[S i]
   → b .[S (S i)] = false
   → rm_add_i b c (S (S i)) = false.
 Proof.
-intros b c i x Hb₅ Ht₅ Hbd Hx H Hb₃.
+intros b c i Hb₅ Ht₅ Hbd H Hb₃.
+remember b.[S i] as x; symmetry in Heqx.
 rewrite <- negb_involutive.
 apply neq_negb; intros Ht₃; simpl in Ht₃.
 remember c.[S i] as y; symmetry in Heqy.
@@ -4640,57 +4640,24 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
      apply nat_sub_add_r in Hn; [ idtac | assumption ].
      rewrite Nat.add_comm in Hn; simpl in Hn.
      subst di₃.
-(* if test then *)
      rewrite Nat.add_succ_r in Hb₃, Ht₃.
+(* looking for induction principle... *)
      destruct n.
-      rewrite sum_x1_x_sum_0_0 with (x := true) in Ht₃; try assumption.
+      erewrite sum_x1_x_sum_0_0 in Ht₃; try eassumption.
       discriminate Ht₃.
 
       destruct n.
-       simpl in *.
-       remember b .[ S (S (i + di₅))] as x eqn:Hx .
-       symmetry in Hx.
-       remember Hx as H; clear HeqH.
-       rewrite <- Nat.add_succ_r in H.
-       symmetry in H; rewrite <- negb_involutive in H.
-       rewrite <- Hn₆ in H; [ idtac | apply Nat.lt_le_incl; auto ].
-       rewrite Hn₃ in H; [ idtac | apply Nat.lt_succ_diag_r ].
-       rewrite negb_involutive in H; symmetry in H.
-       rewrite Nat.add_succ_r in Ht₃, Hb₃, H.
+       rewrite Nat.add_succ_r in Ht₃, Hb₃.
        erewrite sum_11_1_sum_xy_x_sum_0_0 in Ht₃; try eassumption.
-       discriminate Ht₃.
+        discriminate Ht₃.
+
+        rewrite <- Nat.add_succ_r, <- negb_involutive.
+        rewrite <- Hn₆; [ idtac | apply Nat.lt_le_incl; auto ].
+        apply negb_sym, Hn₃, Nat.lt_succ_diag_r.
+
+       destruct n.
 bbb.
 
-b_{i₅+1} = 0
-
-            i  i+1  -   i₅  +1  +2  -   i₆
-        b   .   0   0   1   0   0   .   0
-0               ≠   ≠   ≠   ≠   ≠   ≠
-        a   .   1   1   0   1   1   .   0
-1               ≠   ≠   ≠   ≠
-       b+c  .   0   0   1   0   1   .   .
-
-       a+b  .   1   1   1   1   1   1   .
-1
-        c   .   1   1   1   0   .   .   .
-1               ≠   ≠    +1  +0
-        b   .   0   0   1   0   0   .   0
-
-
-            i  i+1  -   i₅  +1  +2  -   i₆
-        b   .   .   .   1   .   0   .   0
-0               ≠   ≠   ≠   ≠   ≠   ≠
-        a   .   .   .   .   .   1   .   0
-1               ≠   ≠   ≠   ≠
-       b+c  .   .   .   1   .   1   .   .
-
-       a+b  .   .   .   .   .   .   .   .
-1
-        c   .   .   .   1   .   .   .   .
-1               ≠   ≠
-        b   .   .   .   1   .   0   .   0
-
-(* end if test *)
      revert Hb₅ Ht₅ Hbd Hb₃ Ht₃; clear; intros.
      rewrite Nat.add_succ_r in Hb₃, Ht₃.
      induction n as (n, Hn) using all_lt_all; intros.
