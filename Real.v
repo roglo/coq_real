@@ -4517,6 +4517,37 @@ destruct y.
  revert H; apply no_fixpoint_negb.
 Qed.
 
+Theorem carry_succ_negb : ∀ a b i x,
+  carry_i a b i = x
+  → carry_i a b (S i) = negb x
+  → a.[S i] = x ∧ b.[S i] = x.
+Proof.
+intros a b i x Hc₁ Hc₂.
+unfold carry_i in Hc₁; simpl in Hc₁.
+remember (fst_same a b (S i)) as s₁ eqn:Hs₁ .
+symmetry in Hs₁.
+replace (S i) with (S i + 0) in Hc₂ by apply Nat.add_0_r.
+destruct s₁ as [di₁| ].
+ destruct di₁.
+  apply fst_same_iff in Hs₁.
+  destruct Hs₁ as (_, Hs₁).
+  rewrite Nat.add_0_r in Hc₁, Hs₁.
+  rewrite Hc₁ in Hs₁; symmetry in Hs₁.
+  split; assumption.
+
+  assert (0 < S di₁) as H by apply Nat.lt_0_succ.
+  erewrite carry_before_relay in Hc₂; try eassumption.
+  symmetry in Hc₂.
+  exfalso; revert Hc₂; apply no_fixpoint_negb.
+
+ subst x; simpl in Hc₂.
+ rewrite Nat.add_0_r in Hc₂.
+ unfold carry_i in Hc₂.
+ apply fst_same_inf_after with (di := 1) in Hs₁.
+ rewrite <- Nat.add_1_r, Hs₁ in Hc₂.
+ discriminate Hc₂.
+Qed.
+
 Theorem case_1 : ∀ a₀ b₀ c₀ a b c i,
   a = (a₀ + 0)%rm
   → b = (b₀ + 0)%rm
@@ -4656,6 +4687,12 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
              rewrite Nat.add_succ_r in H.
              unfold rm_add_i in H; simpl in H.
              rewrite Hb₂, Hs₁, xorb_true_l, xorb_false_l in H.
+             do 3 rewrite Nat.add_succ_r in Hd₅.
+             apply carry_succ_negb in H; [ idtac | assumption ].
+             rewrite He₅ in H.
+             destruct H as (_, H); discriminate H.
+
+             apply Nat.lt_lt_succ_r, Nat.lt_succ_diag_r.
 bbb.
 
             i  i+1  -   i₅  +1  +2  +3  -   i₆
