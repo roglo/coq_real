@@ -4671,6 +4671,13 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
        rewrite negb_involutive in H; symmetry in H; simpl in H.
        rewrite Nat.add_succ_r in H.
        rewrite Nat.add_succ_r in Ht₃, Hb₃.
+(*
+to apply the same function as end of cases 0 and 2 of n:
+       erewrite sum_x1_x_sum_0_0 in Ht₃; try eassumption.
+        discriminate Ht₃.
+
+        reflexivity.
+*)
        erewrite sum_11_1_sum_xy_x_sum_0_0 in Ht₃; try eassumption.
        discriminate Ht₃.
 
