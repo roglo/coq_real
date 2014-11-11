@@ -4686,9 +4686,7 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
         rewrite negb_involutive in H.
         do 2 rewrite Nat.add_succ_r in H.
         symmetry in H; rename H into Hbc.
-        erewrite sum_x1_x_sum_0_0 in Ht₃; try eassumption.
-         discriminate Ht₃.
-
+        assert (c .[ S (S (S (i + di₅)))] = true) as H.
          remember Hbc as H; clear HeqH.
          unfold rm_add_i in H; simpl in H.
          rewrite Hx in H.
@@ -4713,6 +4711,9 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
           discriminate Hd₅.
 
           apply Nat.lt_lt_succ_r, Nat.lt_succ_diag_r.
+
+         erewrite sum_x1_x_sum_0_0 in Ht₃; try eassumption.
+         discriminate Ht₃.
 
         simpl.
 bbb.
