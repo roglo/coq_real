@@ -4378,6 +4378,57 @@ destruct s₁ as [di₁| ].
  symmetry; apply Hbk; assumption.
 Qed.
 
+Theorem sum_x1_x_sum_0_0 : ∀ a b i x,
+  a.[i] = x
+  → b.[i] = true
+  → rm_add_i a b i = x
+  → a.[S i] = false
+  → rm_add_i a b (S i) = false.
+Proof.
+intros b c i y Hb₅ Ht₅ Hbd Ht₆.
+apply not_true_iff_false; intros H.
+unfold rm_add_i in H; simpl in H.
+rewrite Ht₆, xorb_false_l in H.
+rename H into Hcc.
+remember Hbd as H; clear HeqH.
+unfold rm_add_i in H; simpl in H.
+rewrite Hb₅, Ht₅, xorb_true_r in H.
+apply xorb_move_l_r_1 in H.
+rewrite negb_xorb_diag in H.
+rename H into Hbc.
+remember (S i) as x.
+replace x with (x + 0) in Hcc by apply Nat.add_0_r.
+unfold carry_i in Hbc.
+rewrite <- Heqx in Hbc.
+remember (fst_same b c x) as s₁ eqn:Hs₁ .
+destruct s₁ as [di₁| ].
+ symmetry in Hs₁.
+ destruct di₁.
+  rewrite Nat.add_0_r, Ht₆ in Hbc; discriminate Hbc.
+
+  assert (0 < S di₁) as H by apply Nat.lt_0_succ.
+  erewrite carry_before_relay in Hcc; try eassumption.
+  rewrite Nat.add_0_r, xorb_true_r in Hcc.
+  apply negb_true_iff in Hcc.
+  apply fst_same_iff in Hs₁; simpl in Hs₁.
+  destruct Hs₁ as (Hn₁, _).
+  apply Hn₁ in H; rewrite Nat.add_0_r in H.
+  rewrite Ht₆, Hcc in H; discriminate H.
+
+ symmetry in Hs₁.
+ remember Hs₁ as H; clear HeqH.
+ apply fst_same_inf_after with (di := 1) in H.
+ rewrite Nat.add_1_r in H.
+ rename H into Hs₂.
+ apply fst_same_iff in Hs₁.
+ pose proof (Hs₁ 0) as H; apply negb_sym in H.
+ rewrite H, Nat.add_0_r, Ht₆, xorb_true_l in Hcc.
+ apply negb_true_iff in Hcc.
+ unfold carry_i in Hcc.
+ rewrite Hs₂ in Hcc; discriminate Hcc.
+Qed.
+
+(*
 Theorem sum_11_1_sum_0_0 : ∀ a b i,
   a.[i] = true
   → b.[i] = true
@@ -4425,6 +4476,7 @@ destruct s₁ as [di₁| ].
  unfold carry_i in Hcc.
  rewrite Hs₂ in Hcc; discriminate Hcc.
 Qed.
+*)
 
 Theorem le_neq_lt : ∀ x y : nat, x ≤ y → x ≠ y → (x < y)%nat.
 Proof.
@@ -4528,7 +4580,7 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
 (* if test then *)
      rewrite Nat.add_succ_r in Hb₃, Ht₃.
      destruct n.
-      rewrite sum_11_1_sum_0_0 in Ht₃; try assumption.
+      rewrite sum_x1_x_sum_0_0 with (x := true) in Ht₃; try assumption.
       discriminate Ht₃.
 
       destruct n.
@@ -4536,25 +4588,19 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
        remember b .[ S (S (i + di₅))] as x eqn:Hx .
        symmetry in Hx.
        destruct x.
+        remember Hx as H; clear HeqH.
+        apply negb_false_iff in H.
+        rewrite <- Nat.add_succ_r in H.
+        rewrite <- Hn₆ in H; [ idtac | apply Nat.lt_le_incl; auto ].
+        rewrite Hn₃ in H; [ idtac | apply Nat.lt_succ_diag_r ].
+        apply negb_false_iff in H.
         remember c .[ S (S (i + di₅))] as y eqn:Hy .
         symmetry in Hy.
         destruct y.
-         remember Hx as H; clear HeqH.
-         apply negb_false_iff in H.
-         rewrite <- Nat.add_succ_r in H.
-         rewrite <- Hn₆ in H; [ idtac | apply Nat.lt_le_incl; auto ].
-         rewrite Hn₃ in H; [ idtac | apply Nat.lt_succ_diag_r ].
-         apply negb_false_iff in H.
          rewrite <- Nat.add_succ_r in Hx, Hy.
-         rewrite sum_11_1_sum_0_0 in Ht₃; try assumption.
+         rewrite sum_x1_x_sum_0_0 with (x := true) in Ht₃; try assumption.
          discriminate Ht₃.
 
-         remember Hx as H; clear HeqH.
-         apply negb_false_iff in H.
-         rewrite <- Nat.add_succ_r in H.
-         rewrite <- Hn₆ in H; [ idtac | apply Nat.lt_le_incl; auto ].
-         rewrite Hn₃ in H; [ idtac | apply Nat.lt_succ_diag_r ].
-         apply negb_false_iff in H.
          rewrite Nat.add_succ_r in H.
          unfold rm_add_i in H; simpl in H.
          rewrite Hx, Hy, xorb_true_l in H.
@@ -4582,22 +4628,35 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
           rewrite Nat.add_1_r in Hs₁.
           unfold carry_i in He₁.
           rewrite Hs₁ in He₁; discriminate He₁.
+
+        remember Hx as H; clear HeqH.
+        apply negb_true_iff in H.
+        rewrite <- Nat.add_succ_r in H.
+        rewrite <- Hn₆ in H; [ idtac | apply Nat.lt_le_incl; auto ].
+        rewrite Hn₃ in H; [ idtac | apply Nat.lt_succ_diag_r ].
+        apply negb_true_iff in H.
+        remember c .[ S (S (i + di₅))] as y eqn:Hy .
+        symmetry in Hy.
+        destruct y.
+         rewrite <- Nat.add_succ_r in Hx, Hy.
+         rewrite sum_x1_x_sum_0_0 with (x := false) in Ht₃; try assumption.
+         discriminate Ht₃.
 bbb.
 
-b_{i₅+1} = 1
+b_{i₅+1} = 0
 
             i  i+1  -   i₅  +1  +2  -   i₆
-        b   .   0   0   1   1   0   .   0
+        b   .   0   0   1   0   0   .   0
 0               ≠   ≠   ≠   ≠   ≠   ≠
-        a   .   1   1   0   0   1   .   0
+        a   .   1   1   0   1   1   .   0
 1               ≠   ≠   ≠   ≠
-       b+c  .   0   0   1   1   1   .   .
+       b+c  .   0   0   1   0   1   .   .
 
        a+b  .   1   1   1   1   1   1   .
 1
-        c   .   1   1   1   0   1   .   .
-1               ≠   ≠    +1  +1  +01
-        b   .   0   0   1   1   0   .   0
+        c   .   1   1   1   1   .   .   .
+1               ≠   ≠    +1  +1
+        b   .   0   0   1   0   0   .   0
 
 
             i  i+1  -   i₅  +1  +2  -   i₆
