@@ -4746,6 +4746,28 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
 
             do 2 apply Nat.lt_succ_l; assumption.
 
+           rename Hx into Hz.
+           remember c .[ S (S (i + di₅))] as x eqn:Hx .
+           symmetry in Hx.
+           rename H into Hcb.
+           rename HH into Hc.
+           remember Hy as H; clear HeqH.
+           apply negb_true_iff in H.
+           rewrite <- Nat.add_succ_r in H.
+           rewrite <- Hn₆ in H.
+            rewrite Hn₃ in H.
+             apply negb_true_iff in H.
+             unfold rm_add_i in H; simpl in H.
+             rewrite Nat.add_succ_r, Hy, xorb_false_l in H.
+             rewrite Hx in H.
+             apply xorb_move_l_r_1 in H.
+             rewrite xorb_false_r in H.
+             do 3 rewrite Nat.add_succ_r in Hcb.
+             destruct x.
+              apply carry_succ_negb in H; [ idtac | assumption ].
+              rewrite Hc in H.
+              destruct H as (_, H); discriminate H.
+
            simpl.
 bbb.
 
@@ -4754,12 +4776,12 @@ bbb.
 0               ≠   ≠   ≠   ≠   ≠   ≠   ≠
         a   .   .   .   .  ¬y   .   1   .   0
 1               ≠   ≠   ≠   ≠   ≠
-       b+c  .   .   .   1   y   .   1   .   .
+       b+c  .   .   .   1   0   .   1   .   .
 
        a+b  .   .   .   .   .   .   .   .   .
 1
-        c   .   .   .   1   .   .   .   .   .
-1               ≠   ≠    +1
+        c   .   .   .   1   0   .   .   .   .
+1               ≠   ≠    +1  +0
         b   .   .   .   1   0   .   0   .   0
 
 
