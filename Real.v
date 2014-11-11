@@ -4378,6 +4378,8 @@ destruct s₁ as [di₁| ].
  symmetry; apply Hbk; assumption.
 Qed.
 
+(* chercher un lemme plus général... *)
+bbb.
 Theorem sum_x1_x_sum_0_0 : ∀ a b i x,
   a.[i] = x
   → b.[i] = true
@@ -4427,56 +4429,6 @@ destruct s₁ as [di₁| ].
  unfold carry_i in Hcc.
  rewrite Hs₂ in Hcc; discriminate Hcc.
 Qed.
-
-(*
-Theorem sum_11_1_sum_0_0 : ∀ a b i,
-  a.[i] = true
-  → b.[i] = true
-  → rm_add_i a b i = true
-  → a.[S i] = false
-  → rm_add_i a b (S i) = false.
-Proof.
-intros b c i Hb₅ Ht₅ Hbd Ht₆.
-apply not_true_iff_false; intros H.
-unfold rm_add_i in H; simpl in H.
-rewrite Ht₆, xorb_false_l in H.
-rename H into Hcc.
-remember Hbd as H; clear HeqH.
-unfold rm_add_i in H; simpl in H.
-rewrite Hb₅, Ht₅, xorb_true_l, xorb_false_l in H.
-rename H into Hbc.
-remember (S i) as x.
-replace x with (x + 0) in Hcc by apply Nat.add_0_r.
-unfold carry_i in Hbc.
-rewrite <- Heqx in Hbc.
-remember (fst_same b c x) as s₁ eqn:Hs₁ .
-destruct s₁ as [di₁| ].
- symmetry in Hs₁.
- destruct di₁.
-  rewrite Nat.add_0_r, Ht₆ in Hbc; discriminate Hbc.
-
-  assert (0 < S di₁) as H by apply Nat.lt_0_succ.
-  erewrite carry_before_relay in Hcc; try eassumption.
-  rewrite Nat.add_0_r, xorb_true_r in Hcc.
-  apply negb_true_iff in Hcc.
-  apply fst_same_iff in Hs₁; simpl in Hs₁.
-  destruct Hs₁ as (Hn₁, _).
-  apply Hn₁ in H; rewrite Nat.add_0_r in H.
-  rewrite Ht₆, Hcc in H; discriminate H.
-
- symmetry in Hs₁.
- remember Hs₁ as H; clear HeqH.
- apply fst_same_inf_after with (di := 1) in H.
- rewrite Nat.add_1_r in H.
- rename H into Hs₂.
- apply fst_same_iff in Hs₁.
- pose proof (Hs₁ 0) as H; apply negb_sym in H.
- rewrite H, Nat.add_0_r, Ht₆, xorb_true_l in Hcc.
- apply negb_true_iff in Hcc.
- unfold carry_i in Hcc.
- rewrite Hs₂ in Hcc; discriminate Hcc.
-Qed.
-*)
 
 Theorem le_neq_lt : ∀ x y : nat, x ≤ y → x ≠ y → (x < y)%nat.
 Proof.
@@ -4544,6 +4496,38 @@ destruct s₁ as [di₁| ]; [ idtac | clear Hb₁ ].
  rewrite Nat.add_1_r in Hs₁.
  unfold carry_i in He₁.
  rewrite Hs₁ in He₁; discriminate He₁.
+Qed.
+
+Theorem zzz : ∀ b c i,
+  b .[ i] = true
+  → c .[ i] = true
+  → rm_add_i b c i = true
+  → rm_add_i b c (S i) = b.[S i]
+  → rm_add_i b c (S (S i)) = b .[S (S i)].
+Proof.
+intros b c i Hb₅ Ht₅ Hbd Hb₃.
+remember b .[ S (S i)] as y; symmetry in Heqy.
+remember b .[ S i] as x; symmetry in Heqx.
+rewrite <- negb_involutive.
+apply neq_negb; intros Ht₃; simpl in Ht₃.
+remember c .[ S i] as z; symmetry in Heqz.
+destruct z.
+ rewrite sum_x1_x_sum_0_0 with (x := x) in Ht₃; try assumption.
+bbb.
+
+intros b c i Hb₅ Ht₅ Hbd Hb₃.
+remember b.[S (S i)] as y; symmetry in Heqy.
+bbb.
+remember b.[S i] as x; symmetry in Heqx.
+rewrite <- negb_involutive.
+apply neq_negb; intros Ht₃; simpl in Ht₃.
+remember c.[S i] as y; symmetry in Heqy.
+destruct y.
+ rewrite sum_x1_x_sum_0_0 with (x := x) in Ht₃; try assumption.
+ discriminate Ht₃.
+
+ rewrite sum_11_1_sum_x0_nx with (x := x) in H; try assumption.
+ revert H; apply no_fixpoint_negb.
 Qed.
 
 Theorem sum_11_1_sum_xy_x_sum_0_0 : ∀ b c i,
@@ -4641,6 +4625,7 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
      rewrite Nat.add_comm in Hn; simpl in Hn.
      subst di₃.
      rewrite Nat.add_succ_r in Hb₃, Ht₃.
+     clear H₁.
 (* looking for induction principle... *)
      destruct n.
       erewrite sum_x1_x_sum_0_0 in Ht₃; try eassumption.
@@ -4656,7 +4641,36 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
         apply negb_sym, Hn₃, Nat.lt_succ_diag_r.
 
        destruct n.
+        simpl in *.
 bbb.
+
+            i  i+1  -   i₅  +1  +2  +3  -   i₆
+        b   .   .   .   1   x   .   0   .   0
+0               ≠   ≠   ≠   ≠   ≠   ≠   ≠
+        a   .   .   .   .  ¬x   .   1   .   0
+1               ≠   ≠   ≠   ≠   ≠
+       b+c  .   .   .   1   x   .   1   .   .
+
+       a+b  .   .   .   .   .   .   .   .   .
+1
+        c   .   .   .   1   1   1   .   .   .
+1               ≠   ≠    +1
+        b   .   .   .   1   x   .   0   .   0
+
+
+            i  i+1  -   i₅  +1  +2  +3  -   i₆
+        b   .   .   .   1   .   .   0   .   0
+0               ≠   ≠   ≠   ≠   ≠   ≠   ≠
+        a   .   .   .   .   .   .   1   .   0
+1               ≠   ≠   ≠   ≠   ≠
+       b+c  .   .   .   1   .   .   1   .   .
+
+       a+b  .   .   .   .   .   .   .   .   .
+1
+        c   .   .   .   1   .   .   .   .   .
+1               ≠   ≠
+        b   .   .   .   1   .   .   0   .   0
+
 
      revert Hb₅ Ht₅ Hbd Hb₃ Ht₃; clear; intros.
      rewrite Nat.add_succ_r in Hb₃, Ht₃.
