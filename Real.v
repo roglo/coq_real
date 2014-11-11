@@ -4702,7 +4702,14 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
             rewrite He₅ in Hs₁.
             destruct Hs₁ as (_, Hs₁); discriminate Hs₁.
 
-           simpl.
+           do 3 rewrite Nat.add_succ_r in Hd₅.
+           unfold carry_i in Hd₅.
+           apply fst_same_inf_after with (di := 2) in Hs₁.
+           do 2 rewrite Nat.add_succ_r in Hs₁.
+           rewrite Nat.add_0_r in Hs₁.
+           rewrite Hs₁ in Hd₅; discriminate Hd₅.
+
+          simpl.
 bbb.
 
             i  i+1  -   i₅  +1  +2  +3  -   i₆
