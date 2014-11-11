@@ -4693,6 +4693,16 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
              destruct H as (_, H); discriminate H.
 
              apply Nat.lt_lt_succ_r, Nat.lt_succ_diag_r.
+
+            do 3 rewrite Nat.add_succ_r in Hd₅.
+            assert (0 < S di₁) as HH by apply Nat.lt_0_succ.
+            eapply carry_before_relay in Hs₁; try eassumption.
+            rewrite Nat.add_0_r in Hs₁.
+            apply carry_succ_negb in Hs₁; [ idtac | assumption ].
+            rewrite He₅ in Hs₁.
+            destruct Hs₁ as (_, Hs₁); discriminate Hs₁.
+
+           simpl.
 bbb.
 
             i  i+1  -   i₅  +1  +2  +3  -   i₆
