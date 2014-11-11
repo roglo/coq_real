@@ -4378,8 +4378,6 @@ destruct s₁ as [di₁| ].
  symmetry; apply Hbk; assumption.
 Qed.
 
-(* chercher un lemme plus général... *)
-bbb.
 Theorem sum_x1_x_sum_0_0 : ∀ a b i x,
   a.[i] = x
   → b.[i] = true
@@ -4496,38 +4494,6 @@ destruct s₁ as [di₁| ]; [ idtac | clear Hb₁ ].
  rewrite Nat.add_1_r in Hs₁.
  unfold carry_i in He₁.
  rewrite Hs₁ in He₁; discriminate He₁.
-Qed.
-
-Theorem zzz : ∀ b c i,
-  b .[ i] = true
-  → c .[ i] = true
-  → rm_add_i b c i = true
-  → rm_add_i b c (S i) = b.[S i]
-  → rm_add_i b c (S (S i)) = b .[S (S i)].
-Proof.
-intros b c i Hb₅ Ht₅ Hbd Hb₃.
-remember b .[ S (S i)] as y; symmetry in Heqy.
-remember b .[ S i] as x; symmetry in Heqx.
-rewrite <- negb_involutive.
-apply neq_negb; intros Ht₃; simpl in Ht₃.
-remember c .[ S i] as z; symmetry in Heqz.
-destruct z.
- rewrite sum_x1_x_sum_0_0 with (x := x) in Ht₃; try assumption.
-bbb.
-
-intros b c i Hb₅ Ht₅ Hbd Hb₃.
-remember b.[S (S i)] as y; symmetry in Heqy.
-bbb.
-remember b.[S i] as x; symmetry in Heqx.
-rewrite <- negb_involutive.
-apply neq_negb; intros Ht₃; simpl in Ht₃.
-remember c.[S i] as y; symmetry in Heqy.
-destruct y.
- rewrite sum_x1_x_sum_0_0 with (x := x) in Ht₃; try assumption.
- discriminate Ht₃.
-
- rewrite sum_11_1_sum_x0_nx with (x := x) in H; try assumption.
- revert H; apply no_fixpoint_negb.
 Qed.
 
 Theorem sum_11_1_sum_xy_x_sum_0_0 : ∀ b c i,
