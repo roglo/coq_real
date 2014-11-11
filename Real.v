@@ -4710,75 +4710,41 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
            rewrite Hs₁ in Hd₅; discriminate Hd₅.
 
           remember b .[ S (S (i + di₅))] as y eqn:Hy .
+          rename H into Hcb.
+          remember Hy as H; clear HeqH.
           symmetry in Hy.
-          destruct y.
-           rename H into Hcb.
-           remember Hy as H; clear HeqH.
-           apply negb_false_iff in H.
-           rewrite <- Nat.add_succ_r in H.
-           rewrite <- Hn₆ in H.
-            rewrite Hn₃ in H.
-             apply negb_false_iff in H.
-             unfold rm_add_i in H; simpl in H.
-             rewrite Nat.add_succ_r, Hy, xorb_true_l in H.
-             rewrite <- negb_xorb_l in H.
-             apply negb_true_iff in H.
-             rewrite <- negb_involutive in Hcb.
-             rewrite Nat.add_succ_r in Hcb.
-             apply carry_succ_negb with (x := true) in Hcb.
-              do 2 rewrite Nat.add_succ_r in Hcb.
-              rewrite HH in Hcb; destruct Hcb as (_, Hcb).
-              discriminate Hcb.
+          rewrite <- Nat.add_succ_r, <- negb_involutive, <- Hn₆ in H.
+           rewrite Hn₃ in H.
+            rewrite negb_involutive in H.
+            unfold rm_add_i in H; simpl in H.
+            rewrite Nat.add_succ_r, Hy in H.
+            symmetry in H; rewrite xorb_assoc in H.
+            apply xorb_move_l_r_1 in H.
+            rewrite xorb_nilpotent in H.
+            rewrite <- negb_involutive in Hcb.
+            rewrite Nat.add_succ_r in Hcb.
+            apply carry_succ_negb with (x := true) in Hcb.
+             do 2 rewrite Nat.add_succ_r in Hcb.
+             rewrite HH in Hcb; destruct Hcb as (_, Hcb).
+             discriminate Hcb.
 
-              do 2 rewrite Nat.add_succ_r.
-              rewrite <- negb_involutive.
-              apply neq_negb.
-              rename HH into Hc.
-              intros HH; rewrite HH, xorb_false_r in H.
-              simpl in Hcb, HH.
-              unfold rm_add_i in Hbd; simpl in Hbd.
-              rewrite Ht₅, Hb₅, xorb_true_l, xorb_false_l in Hbd.
-              apply carry_succ_negb in Hbd; try assumption.
-              rewrite H in Hbd.
-              destruct Hbd as (_, Hbd); discriminate Hbd.
+             do 2 rewrite Nat.add_succ_r.
+             rewrite <- negb_involutive.
+             apply neq_negb.
+             rename HH into Hc.
+             intros HH; rewrite HH, xorb_false_r in H.
+             simpl in Hcb, HH.
+             unfold rm_add_i in Hbd; simpl in Hbd.
+             rewrite Ht₅, Hb₅, xorb_true_l, xorb_false_l in Hbd.
+             apply carry_succ_negb in Hbd; try assumption.
+             rewrite H in Hbd.
+             destruct Hbd as (_, Hbd); discriminate Hbd.
 
-             apply Nat.lt_lt_succ_r, Nat.lt_succ_diag_r.
+            apply Nat.lt_lt_succ_r, Nat.lt_succ_diag_r.
 
-            do 2 apply Nat.lt_succ_l; assumption.
+           do 2 apply Nat.lt_succ_l; assumption.
 
-           rename Hx into Hz.
-           remember c .[ S (S (i + di₅))] as x eqn:Hx .
-           symmetry in Hx.
-           rename H into Hcb.
-           rename HH into Hc.
-           remember Hy as H; clear HeqH.
-           apply negb_true_iff in H.
-           rewrite <- Nat.add_succ_r in H.
-           rewrite <- Hn₆ in H.
-            rewrite Hn₃ in H.
-             apply negb_true_iff in H.
-             unfold rm_add_i in H; simpl in H.
-             rewrite Nat.add_succ_r, Hy, xorb_false_l in H.
-             rewrite Hx in H.
-             apply xorb_move_l_r_1 in H.
-             rewrite xorb_false_r in H.
-             do 3 rewrite Nat.add_succ_r in Hcb.
-             destruct x.
-              apply carry_succ_negb in H; [ idtac | assumption ].
-              rewrite Hc in H.
-              destruct H as (_, H); discriminate H.
-
-              rename H into Hd₅.
-              remember Hbd as H; clear HeqH.
-              unfold rm_add_i in H; simpl in H.
-              rewrite Hb₅, Ht₅, xorb_true_l, xorb_false_l in H.
-              apply carry_succ_negb in H; [ idtac | assumption ].
-              rewrite Hy in H.
-              destruct H as (H, _); discriminate H.
-
-             apply Nat.lt_lt_succ_r, Nat.lt_succ_diag_r.
-
-            do 2 apply Nat.lt_succ_l; assumption.
+        simpl.
 bbb.
 
             i  i+1  -   i₅  +1  +2  +3  -   i₆
