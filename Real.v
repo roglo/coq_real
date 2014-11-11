@@ -4454,6 +4454,37 @@ induction n; intros m Hmn.
   apply Nat.succ_le_mono; assumption.
 Qed.
 
+Theorem carry_succ_negb : ∀ a b i x,
+  carry_i a b i = x
+  → carry_i a b (S i) = negb x
+  → a.[S i] = x ∧ b.[S i] = x.
+Proof.
+intros a b i x Hc₁ Hc₂.
+unfold carry_i in Hc₁; simpl in Hc₁.
+remember (fst_same a b (S i)) as s₁ eqn:Hs₁ .
+symmetry in Hs₁.
+replace (S i) with (S i + 0) in Hc₂ by apply Nat.add_0_r.
+destruct s₁ as [di₁| ].
+ destruct di₁.
+  apply fst_same_iff in Hs₁.
+  destruct Hs₁ as (_, Hs₁).
+  rewrite Nat.add_0_r in Hc₁, Hs₁.
+  rewrite Hc₁ in Hs₁; symmetry in Hs₁.
+  split; assumption.
+
+  assert (0 < S di₁) as H by apply Nat.lt_0_succ.
+  erewrite carry_before_relay in Hc₂; try eassumption.
+  symmetry in Hc₂.
+  exfalso; revert Hc₂; apply no_fixpoint_negb.
+
+ subst x; simpl in Hc₂.
+ rewrite Nat.add_0_r in Hc₂.
+ unfold carry_i in Hc₂.
+ apply fst_same_inf_after with (di := 1) in Hs₁.
+ rewrite <- Nat.add_1_r, Hs₁ in Hc₂.
+ discriminate Hc₂.
+Qed.
+
 Theorem sum_11_1_sum_x0_nx : ∀ a b i x,
   a.[i] = true
   → b.[i] = true
@@ -4496,13 +4527,13 @@ destruct s₁ as [di₁| ]; [ idtac | clear Hb₁ ].
  rewrite Hs₁ in He₁; discriminate He₁.
 Qed.
 
-Theorem sum_11_1_sum_xy_x_sum_0_0 : ∀ b c i,
-  b .[ i] = true
-  → c .[ i] = true
-  → rm_add_i b c i = true
-  → rm_add_i b c (S i) = b.[S i]
-  → b .[S (S i)] = false
-  → rm_add_i b c (S (S i)) = false.
+Theorem sum_11_1_sum_xy_x_sum_0_0 : ∀ a b i,
+  a.[ i] = true
+  → b.[ i] = true
+  → rm_add_i a b i = true
+  → rm_add_i a b (S i) = a.[S i]
+  → a.[S (S i)] = false
+  → rm_add_i a b (S (S i)) = false.
 Proof.
 intros b c i Hb₅ Ht₅ Hbd H Hb₃.
 remember b.[S i] as x; symmetry in Heqx.
@@ -4517,35 +4548,39 @@ destruct y.
  revert H; apply no_fixpoint_negb.
 Qed.
 
-Theorem carry_succ_negb : ∀ a b i x,
-  carry_i a b i = x
-  → carry_i a b (S i) = negb x
-  → a.[S i] = x ∧ b.[S i] = x.
+Theorem sum_11_1_sum_xy_x_sum_0_carry_1 : ∀ a b i,
+  a.[i] = true
+  → b.[i] = true
+  → rm_add_i a b i = true
+  → rm_add_i a b (S i) = a.[S i]
+  → b.[S (S i)] = false
+  → carry_i a b (S (S i)) = true.
 Proof.
-intros a b i x Hc₁ Hc₂.
-unfold carry_i in Hc₁; simpl in Hc₁.
-remember (fst_same a b (S i)) as s₁ eqn:Hs₁ .
-symmetry in Hs₁.
-replace (S i) with (S i + 0) in Hc₂ by apply Nat.add_0_r.
-destruct s₁ as [di₁| ].
- destruct di₁.
-  apply fst_same_iff in Hs₁.
-  destruct Hs₁ as (_, Hs₁).
-  rewrite Nat.add_0_r in Hc₁, Hs₁.
-  rewrite Hc₁ in Hs₁; symmetry in Hs₁.
-  split; assumption.
+intros b c i Hb₅ Ht₅ Hbd H HH.
+rewrite <- negb_involutive.
+apply neq_negb; simpl; intros Hcb.
+remember b .[ S (i)] as y eqn:Hy.
+symmetry in H, Hy.
+unfold rm_add_i in H; simpl in H.
+rewrite Hy in H.
+symmetry in H; rewrite xorb_assoc in H.
+apply xorb_move_l_r_1 in H.
+rewrite xorb_nilpotent in H.
+rewrite <- negb_involutive in Hcb.
+apply carry_succ_negb with (x := true) in Hcb.
+ rewrite HH in Hcb; destruct Hcb as (_, Hcb).
+ discriminate Hcb.
 
-  assert (0 < S di₁) as H by apply Nat.lt_0_succ.
-  erewrite carry_before_relay in Hc₂; try eassumption.
-  symmetry in Hc₂.
-  exfalso; revert Hc₂; apply no_fixpoint_negb.
-
- subst x; simpl in Hc₂.
- rewrite Nat.add_0_r in Hc₂.
- unfold carry_i in Hc₂.
- apply fst_same_inf_after with (di := 1) in Hs₁.
- rewrite <- Nat.add_1_r, Hs₁ in Hc₂.
- discriminate Hc₂.
+ rewrite <- negb_involutive.
+ apply neq_negb.
+ rename HH into Hc.
+ intros HH; rewrite HH, xorb_false_r in H.
+ simpl in Hcb, HH.
+ unfold rm_add_i in Hbd; simpl in Hbd.
+ rewrite Ht₅, Hb₅, xorb_true_l, xorb_false_l in Hbd.
+ apply carry_succ_negb in Hbd; try assumption.
+ rewrite H in Hbd.
+ destruct Hbd as (_, Hbd); discriminate Hbd.
 Qed.
 
 Theorem case_1 : ∀ a₀ b₀ c₀ a b c i,
@@ -4709,40 +4744,16 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
            rewrite Nat.add_0_r in Hs₁.
            rewrite Hs₁ in Hd₅; discriminate Hd₅.
 
-          remember b .[ S (S (i + di₅))] as y eqn:Hy .
-          rename H into Hcb.
-          remember Hy as H; clear HeqH.
-          symmetry in Hy.
-          rewrite <- Nat.add_succ_r, <- negb_involutive, <- Hn₆ in H.
-           rewrite Hn₃ in H.
-            rewrite negb_involutive in H.
-            unfold rm_add_i in H; simpl in H.
-            rewrite Nat.add_succ_r, Hy in H.
-            symmetry in H; rewrite xorb_assoc in H.
-            apply xorb_move_l_r_1 in H.
-            rewrite xorb_nilpotent in H.
-            rewrite <- negb_involutive in Hcb.
-            rewrite Nat.add_succ_r in Hcb.
-            apply carry_succ_negb with (x := true) in Hcb.
-             do 2 rewrite Nat.add_succ_r in Hcb.
-             rewrite HH in Hcb; destruct Hcb as (_, Hcb).
-             discriminate Hcb.
+          do 3 rewrite Nat.add_succ_r in H.
+          rewrite sum_11_1_sum_xy_x_sum_0_carry_1 in H; try assumption.
+           discriminate H.
 
-             do 2 rewrite Nat.add_succ_r.
-             rewrite <- negb_involutive.
-             apply neq_negb.
-             rename HH into Hc.
-             intros HH; rewrite HH, xorb_false_r in H.
-             simpl in Hcb, HH.
-             unfold rm_add_i in Hbd; simpl in Hbd.
-             rewrite Ht₅, Hb₅, xorb_true_l, xorb_false_l in Hbd.
-             apply carry_succ_negb in Hbd; try assumption.
-             rewrite H in Hbd.
-             destruct Hbd as (_, Hbd); discriminate Hbd.
-
+           rewrite <- negb_involutive, <- Nat.add_succ_r.
+           rewrite <- Hn₆.
+            rewrite Hn₃; [ rewrite negb_involutive; reflexivity | idtac ].
             apply Nat.lt_lt_succ_r, Nat.lt_succ_diag_r.
 
-           do 2 apply Nat.lt_succ_l; assumption.
+            do 2 apply Nat.lt_succ_l; assumption.
 
         simpl.
 bbb.
