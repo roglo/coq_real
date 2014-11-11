@@ -4700,25 +4700,31 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
          destruct x.
           rename H into Hd₅.
           rename HH into He₅.
-          remember Hbd as H; clear HeqH.
-          unfold rm_add_i in H; simpl in H.
-          rewrite Hb₅, Ht₅, xorb_true_l, xorb_false_l in H.
-          unfold carry_i in H; simpl in H.
-          remember (fst_same b c (S (S (i + di₅)))) as s₁ eqn:Hs₁ .
-          symmetry in Hs₁.
-          destruct s₁ as [di₁| ]; [ idtac | clear H ].
-           destruct di₁.
-            rewrite Nat.add_0_r in H.
-            rename H into Hb₂.
-            apply fst_same_iff in Hs₁.
-            destruct Hs₁ as (_, Hs₁); rewrite Nat.add_0_r, Hb₂ in Hs₁.
-            symmetry in Hs₁.
-            remember H₄ as H; clear HeqH.
-            do 2 apply Nat.lt_succ_l in H.
-            apply Hn₆ in H.
-            rewrite Nat.add_succ_r, Hb₂ in H; simpl in H.
-            rewrite <- Nat.add_succ_r, Hn₃ in H.
-             apply negb_false_iff in H.
+          revert Hb₅ Ht₅ Hn₆ H₄ Hn₃ Hd₅ He₅ Hbd; clear; intros.
+          revert Hb₅ Ht₅ Hbd Hn₆ H₄ Hn₃ Hd₅ He₅; clear; intros.
+          remember H₄ as H; clear HeqH.
+          do 2 apply Nat.lt_succ_l in H.
+          apply Hn₆ in H.
+          rewrite Hn₃ in H.
+           clear Hn₃ Hn₆.
+           apply negb_sym in H; symmetry in H.
+           rewrite negb_involutive in H.
+           Focus 1.
+           rename H into Hcb.
+           remember Hbd as H; clear HeqH.
+           unfold rm_add_i in H; simpl in H.
+           rewrite Hb₅, Ht₅, xorb_true_l, xorb_false_l in H.
+           unfold carry_i in H; simpl in H.
+           remember (fst_same b c (S (S (i + di₅)))) as s₁ eqn:Hs₁ .
+           symmetry in Hs₁.
+           destruct s₁ as [di₁| ]; [ idtac | clear H ].
+            destruct di₁.
+             rewrite Nat.add_0_r in H.
+             rename H into Hb₂.
+             apply fst_same_iff in Hs₁.
+             destruct Hs₁ as (_, Hs₁); rewrite Nat.add_0_r, Hb₂ in Hs₁.
+             symmetry in Hs₁.
+             remember Hcb as H; clear HeqH.
              rewrite Nat.add_succ_r in H.
              unfold rm_add_i in H; simpl in H.
              rewrite Hb₂, Hs₁, xorb_true_l, xorb_false_l in H.
@@ -4727,22 +4733,22 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
              rewrite He₅ in H.
              destruct H as (_, H); discriminate H.
 
-             apply Nat.lt_lt_succ_r, Nat.lt_succ_diag_r.
+             do 3 rewrite Nat.add_succ_r in Hd₅.
+             assert (0 < S di₁) as HH by apply Nat.lt_0_succ.
+             eapply carry_before_relay in Hs₁; try eassumption.
+             rewrite Nat.add_0_r in Hs₁.
+             apply carry_succ_negb in Hs₁; [ idtac | assumption ].
+             rewrite He₅ in Hs₁.
+             destruct Hs₁ as (_, Hs₁); discriminate Hs₁.
 
             do 3 rewrite Nat.add_succ_r in Hd₅.
-            assert (0 < S di₁) as HH by apply Nat.lt_0_succ.
-            eapply carry_before_relay in Hs₁; try eassumption.
+            unfold carry_i in Hd₅.
+            apply fst_same_inf_after with (di := 2) in Hs₁.
+            do 2 rewrite Nat.add_succ_r in Hs₁.
             rewrite Nat.add_0_r in Hs₁.
-            apply carry_succ_negb in Hs₁; [ idtac | assumption ].
-            rewrite He₅ in Hs₁.
-            destruct Hs₁ as (_, Hs₁); discriminate Hs₁.
+            rewrite Hs₁ in Hd₅; discriminate Hd₅.
 
-           do 3 rewrite Nat.add_succ_r in Hd₅.
-           unfold carry_i in Hd₅.
-           apply fst_same_inf_after with (di := 2) in Hs₁.
-           do 2 rewrite Nat.add_succ_r in Hs₁.
-           rewrite Nat.add_0_r in Hs₁.
-           rewrite Hs₁ in Hd₅; discriminate Hd₅.
+           apply Nat.lt_lt_succ_r, Nat.lt_succ_diag_r.
 
           do 3 rewrite Nat.add_succ_r in H.
           rewrite sum_11_1_sum_xy_x_sum_0_carry_1 in H; try assumption.
