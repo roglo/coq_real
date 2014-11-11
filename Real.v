@@ -4709,21 +4709,58 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
            rewrite Nat.add_0_r in Hs₁.
            rewrite Hs₁ in Hd₅; discriminate Hd₅.
 
-          simpl.
+          remember b .[ S (S (i + di₅))] as y eqn:Hy .
+          symmetry in Hy.
+          destruct y.
+           rename H into Hcb.
+           remember Hy as H; clear HeqH.
+           apply negb_false_iff in H.
+           rewrite <- Nat.add_succ_r in H.
+           rewrite <- Hn₆ in H.
+            rewrite Hn₃ in H.
+             apply negb_false_iff in H.
+             unfold rm_add_i in H; simpl in H.
+             rewrite Nat.add_succ_r, Hy, xorb_true_l in H.
+             rewrite <- negb_xorb_l in H.
+             apply negb_true_iff in H.
+             rewrite <- negb_involutive in Hcb.
+             rewrite Nat.add_succ_r in Hcb.
+             apply carry_succ_negb with (x := true) in Hcb.
+              do 2 rewrite Nat.add_succ_r in Hcb.
+              rewrite HH in Hcb; destruct Hcb as (_, Hcb).
+              discriminate Hcb.
+
+              do 2 rewrite Nat.add_succ_r.
+              rewrite <- negb_involutive.
+              apply neq_negb.
+              rename HH into Hc.
+              intros HH; rewrite HH, xorb_false_r in H.
+              simpl in Hcb, HH.
+              unfold rm_add_i in Hbd; simpl in Hbd.
+              rewrite Ht₅, Hb₅, xorb_true_l, xorb_false_l in Hbd.
+              apply carry_succ_negb in Hbd; try assumption.
+              rewrite H in Hbd.
+              destruct Hbd as (_, Hbd); discriminate Hbd.
+
+             apply Nat.lt_lt_succ_r, Nat.lt_succ_diag_r.
+
+            do 2 apply Nat.lt_succ_l; assumption.
+
+           simpl.
 bbb.
 
             i  i+1  -   i₅  +1  +2  +3  -   i₆
-        b   .   .   .   1   y   1   0   .   0
+        b   .   .   .   1   y   0   0   .   0
 0               ≠   ≠   ≠   ≠   ≠   ≠   ≠
         a   .   .   .   .  ¬y   .   1   .   0
 1               ≠   ≠   ≠   ≠   ≠
-       b+c  .   .   .   1   y   1   1   .   .
+       b+c  .   .   .   1   y   0   1   .   .
 
        a+b  .   .   .   .   .   .   .   .   .
 1
-        c   .   .   .   1   .   0   .   .   .
+        c   .   .   .   1   0   0   .   .   .
 1               ≠   ≠    +1      +0
-        b   .   .   .   1   y   1   0   .   0
+        b   .   .   .   1   1   0   0   .   0
 
 
             i  i+1  -   i₅  +1  +2  +3  -   i₆
