@@ -4768,22 +4768,18 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
               rewrite Hc in H.
               destruct H as (_, H); discriminate H.
 
-           simpl.
+              rename H into Hd₅.
+              remember Hbd as H; clear HeqH.
+              unfold rm_add_i in H; simpl in H.
+              rewrite Hb₅, Ht₅, xorb_true_l, xorb_false_l in H.
+              apply carry_succ_negb in H; [ idtac | assumption ].
+              rewrite Hy in H.
+              destruct H as (H, _); discriminate H.
+
+             apply Nat.lt_lt_succ_r, Nat.lt_succ_diag_r.
+
+            do 2 apply Nat.lt_succ_l; assumption.
 bbb.
-
-            i  i+1  -   i₅  +1  +2  +3  -   i₆
-        b   .   .   .   1   y   .   0   .   0
-0               ≠   ≠   ≠   ≠   ≠   ≠   ≠
-        a   .   .   .   .  ¬y   .   1   .   0
-1               ≠   ≠   ≠   ≠   ≠
-       b+c  .   .   .   1   0   .   1   .   .
-
-       a+b  .   .   .   .   .   .   .   .   .
-1
-        c   .   .   .   1   0   .   .   .   .
-1               ≠   ≠    +1  +0
-        b   .   .   .   1   0   .   0   .   0
-
 
             i  i+1  -   i₅  +1  +2  +3  -   i₆
         b   .   .   .   1   .   .   0   .   0
