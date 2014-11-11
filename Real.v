@@ -4608,6 +4608,25 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
 
        destruct n.
         simpl in *.
+        do 2 rewrite Nat.add_succ_r in Ht₃, Hb₃.
+        remember b .[ S (S (S (i + di₅)))] as x eqn:Hx ; symmetry in Hx.
+        remember Hx as H; clear HeqH; symmetry in H.
+        rewrite <- negb_involutive in H.
+        do 2 rewrite <- Nat.add_succ_r in H.
+        rewrite <- Hn₆ in H; [ idtac | apply Nat.lt_le_incl; auto ].
+        rewrite Hn₃ in H; [ idtac | apply Nat.lt_succ_diag_r ].
+        rewrite negb_involutive in H.
+        do 2 rewrite Nat.add_succ_r in H.
+        symmetry in H; rename H into Hbc.
+        erewrite sum_x1_x_sum_0_0 in Ht₃; try eassumption.
+         discriminate Ht₃.
+
+         remember Hbc as H; clear HeqH.
+         unfold rm_add_i in H; simpl in H.
+         rewrite Hx in H.
+         rewrite xorb_assoc in H.
+         apply xorb_move_l_r_1 in H.
+         rewrite xorb_nilpotent in H.
 bbb.
 
             i  i+1  -   i₅  +1  +2  +3  -   i₆
@@ -4621,7 +4640,7 @@ bbb.
 1
         c   .   .   .   1   1   1   .   .   .
 1               ≠   ≠    +1
-        b   .   .   .   1   x   .   0   .   0
+        b   .   .   .   1   x   1   0   .   0
 
 
             i  i+1  -   i₅  +1  +2  +3  -   i₆
