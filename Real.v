@@ -4697,33 +4697,20 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
          apply neq_negb; simpl.
          intros HH; rewrite HH, xorb_false_l in H.
          do 3 rewrite <- Nat.add_succ_r in H.
-         destruct x.
-          rename H into Hd₅.
-          rename HH into He₅.
-          remember H₄ as H; clear HeqH.
-          do 2 apply Nat.lt_succ_l in H.
-          apply Hn₆ in H.
-          rewrite Hn₃ in H.
-           apply negb_sym in H; symmetry in H.
-           rewrite negb_involutive in H.
-           rename H into Hcb.
-           do 3 rewrite Nat.add_succ_r in Hd₅.
-           rewrite Nat.add_succ_r in Hcb.
-           rewrite sum_11_1_sum_xy_x_sum_0_carry_1 in Hd₅; try assumption.
-           discriminate Hd₅.
+         rename H into Hd₅.
+         remember H₄ as H; clear HeqH.
+         do 2 apply Nat.lt_succ_l in H.
+         apply Hn₆ in H.
+         rewrite Hn₃ in H.
+          apply negb_sym in H; symmetry in H.
+          rewrite negb_involutive in H.
+          rename H into Hcb.
+          rewrite Nat.add_succ_r in Hcb.
+          do 3 rewrite Nat.add_succ_r in Hd₅.
+          rewrite sum_11_1_sum_xy_x_sum_0_carry_1 in Hd₅; try assumption.
+          discriminate Hd₅.
 
-           apply Nat.lt_lt_succ_r, Nat.lt_succ_diag_r.
-
-          do 3 rewrite Nat.add_succ_r in H.
-          rewrite sum_11_1_sum_xy_x_sum_0_carry_1 in H; try assumption.
-           discriminate H.
-
-           rewrite <- negb_involutive, <- Nat.add_succ_r.
-           rewrite <- Hn₆.
-            rewrite Hn₃; [ rewrite negb_involutive; reflexivity | idtac ].
-            apply Nat.lt_lt_succ_r, Nat.lt_succ_diag_r.
-
-            do 2 apply Nat.lt_succ_l; assumption.
+          apply Nat.lt_lt_succ_r, Nat.lt_succ_diag_r.
 
         simpl.
 bbb.
