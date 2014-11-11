@@ -4700,7 +4700,6 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
          destruct x.
           rename H into Hd₅.
           rename HH into He₅.
-          revert Hb₅ Ht₅ Hn₆ H₄ Hn₃ Hd₅ He₅ Hbd; clear; intros.
           revert Hb₅ Ht₅ Hbd Hn₆ H₄ Hn₃ Hd₅ He₅; clear; intros.
           remember H₄ as H; clear HeqH.
           do 2 apply Nat.lt_succ_l in H.
@@ -4709,8 +4708,8 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
            clear Hn₃ Hn₆.
            apply negb_sym in H; symmetry in H.
            rewrite negb_involutive in H.
-           Focus 1.
            rename H into Hcb.
+           revert Hb₅ Ht₅ Hbd Hcb He₅ Hd₅; clear; intros.
            remember Hbd as H; clear HeqH.
            unfold rm_add_i in H; simpl in H.
            rewrite Hb₅, Ht₅, xorb_true_l, xorb_false_l in H.
