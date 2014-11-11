@@ -4632,20 +4632,44 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
          intros HH; rewrite HH, xorb_false_l in H.
          do 3 rewrite <- Nat.add_succ_r in H.
          destruct x.
+          rename H into Hd₅.
+          rename HH into He₅.
+          remember Hbd as H; clear HeqH.
+          unfold rm_add_i in H; simpl in H.
+          rewrite Hb₅, Ht₅, xorb_true_l, xorb_false_l in H.
+          unfold carry_i in H; simpl in H.
+          remember (fst_same b c (S (S (i + di₅)))) as s₁ eqn:Hs₁ .
+          symmetry in Hs₁.
+          destruct s₁ as [di₁| ]; [ idtac | clear H ].
+           destruct di₁.
+            rewrite Nat.add_0_r in H.
+            rename H into Hb₂.
+            apply fst_same_iff in Hs₁.
+            destruct Hs₁ as (_, Hs₁); rewrite Nat.add_0_r, Hb₂ in Hs₁.
+            symmetry in Hs₁.
+            remember H₄ as H; clear HeqH.
+            do 2 apply Nat.lt_succ_l in H.
+            apply Hn₆ in H.
+            rewrite Nat.add_succ_r, Hb₂ in H; simpl in H.
+            rewrite <- Nat.add_succ_r, Hn₃ in H.
+             apply negb_false_iff in H.
+             rewrite Nat.add_succ_r in H.
+             unfold rm_add_i in H; simpl in H.
+             rewrite Hb₂, Hs₁, xorb_true_l, xorb_false_l in H.
 bbb.
 
             i  i+1  -   i₅  +1  +2  +3  -   i₆
-        b   .   .   .   1   y   0   0   .   0
+        b   .   .   .   1   y   1   0   .   0
 0               ≠   ≠   ≠   ≠   ≠   ≠   ≠
         a   .   .   .   .  ¬y   .   1   .   0
 1               ≠   ≠   ≠   ≠   ≠
-       b+c  .   .   .   1   y   0   1   .   .
+       b+c  .   .   .   1   y   1   1   .   .
 
        a+b  .   .   .   .   .   .   .   .   .
 1
-        c   .   .   .   1   1   0   .   .   .
-1               ≠   ≠    +1  +0  +0
-        b   .   .   .   1   y   0   0   .   0
+        c   .   .   .   1   .   0   .   .   .
+1               ≠   ≠    +1      +0
+        b   .   .   .   1   y   1   0   .   0
 
 
             i  i+1  -   i₅  +1  +2  +3  -   i₆
