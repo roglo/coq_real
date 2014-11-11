@@ -4630,6 +4630,10 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
        remember b .[ S (S (i + di₅))] as x eqn:Hx .
        symmetry in Hx.
        destruct x.
+bbb.
+  group the two cases of x together with a lemma;
+  see what happens and perhaps do one only lemma with both cases.
+
         remember Hx as H; clear HeqH.
         apply negb_false_iff in H.
         rewrite <- Nat.add_succ_r in H.
