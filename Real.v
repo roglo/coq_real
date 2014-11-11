@@ -4627,20 +4627,25 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
          rewrite xorb_assoc in H.
          apply xorb_move_l_r_1 in H.
          rewrite xorb_nilpotent in H.
+         rewrite <- negb_involutive.
+         apply neq_negb; simpl.
+         intros HH; rewrite HH, xorb_false_l in H.
+         do 3 rewrite <- Nat.add_succ_r in H.
+         destruct x.
 bbb.
 
             i  i+1  -   i₅  +1  +2  +3  -   i₆
-        b   .   .   .   1   x   .   0   .   0
+        b   .   .   .   1   y   0   0   .   0
 0               ≠   ≠   ≠   ≠   ≠   ≠   ≠
-        a   .   .   .   .  ¬x   .   1   .   0
+        a   .   .   .   .  ¬y   .   1   .   0
 1               ≠   ≠   ≠   ≠   ≠
-       b+c  .   .   .   1   x   .   1   .   .
+       b+c  .   .   .   1   y   0   1   .   .
 
        a+b  .   .   .   .   .   .   .   .   .
 1
-        c   .   .   .   1   1   1   .   .   .
-1               ≠   ≠    +1
-        b   .   .   .   1   x   1   0   .   0
+        c   .   .   .   1   1   0   .   .   .
+1               ≠   ≠    +1  +0  +0
+        b   .   .   .   1   y   0   0   .   0
 
 
             i  i+1  -   i₅  +1  +2  +3  -   i₆
