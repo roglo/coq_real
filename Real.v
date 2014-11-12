@@ -4528,6 +4528,52 @@ Theorem zzz : ∀ a b i di,
   → b.[i + di] = true.
 Proof.
 intros a b i di Ha Hb Hab.
+bbb.
+
+intros a b i di Ha Hb Hab.
+revert i Ha Hb Hab.
+induction di; intros; [ rewrite Nat.add_0_r; assumption | idtac ].
+remember Hab as H; clear HeqH.
+apply
+ forall_compat
+  with (Q := fun dj => dj ≤ di → rm_add_i a b (i + dj) = a .[ i + dj])
+ in H.
+ apply IHdi in H.
+  2: assumption.
+
+  2: assumption.
+
+  Focus 2.
+  intros dj Hdj Hdi.
+  apply Hdj.
+  apply Nat.le_le_succ_r; assumption.
+
+ rewrite Nat.add_succ_r, <- Nat.add_succ_l.
+ rename H into Hb'.
+ pose proof (Hab di (Nat.le_succ_diag_r di)) as H.
+ unfold rm_add_i in H; simpl in H.
+ rewrite xorb_assoc in H.
+ apply xorb_move_l_r_1 in H.
+ rewrite xorb_nilpotent in H.
+ rewrite Hb' in H.
+ rewrite xorb_true_l in H.
+ apply negb_false_iff in H.
+ unfold carry_i in H.
+ remember (fst_same a b (S (i + di))) as s₁ eqn:Hs₁ .
+ apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
+ destruct s₁ as [di₁| ]; [ idtac | clear H ].
+  destruct Hs₁ as (Hn₁, Hs₁).
+  destruct di₁.
+   simpl in H.
+   rewrite H, Nat.add_0_r in Hs₁.
+   symmetry; assumption.
+
+   simpl in H; rewrite H in Hs₁; symmetry in Hs₁.
+   rename H into Ha'.
+   pose proof (Hab di (Nat.le_succ_diag_r di)) as H.
+bbb.
+
+intros a b i di Ha Hb Hab.
 destruct di; [ rewrite Nat.add_0_r; assumption | idtac ].
 destruct di.
  rewrite Nat.add_1_r.
@@ -4593,7 +4639,6 @@ destruct di.
    unfold rm_add_i in H; simpl in H.
    rewrite Ha, Hb, xorb_nilpotent, xorb_false_l in H.
    rename H into Hca.
-Abort. (* TODO
 bbb.
 *)
 
