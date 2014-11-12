@@ -4521,29 +4521,6 @@ rewrite IHdi in H; try assumption.
  apply Hab, Nat.le_le_succ_r; assumption.
 Qed.
 
-Theorem sum_11_1_sum_xy_x_sum_xy_x : ∀ a b i,
-  a .[ i] = true
-  → b .[ i] = true
-  → rm_add_i a b i = true
-  → rm_add_i a b (S i) = a .[ S i]
-  → rm_add_i a b (S (S i)) = a .[ S (S i)]
-  → b .[ S (S i)] = true.
-Proof.
-intros b c i Hb₅ Ht₅ Hbd Hbe Hbc.
-do 2 rewrite <- Nat.add_1_r.
-rewrite <- Nat.add_assoc; simpl.
-apply sum_11_1_sum_x1 with (a := b); try assumption.
-intros dj Hdj.
-rewrite Nat.add_comm.
-destruct dj; simpl; [ rewrite Hb₅; assumption | idtac ].
-destruct dj; [ assumption | idtac ].
-destruct dj; [ assumption | idtac ].
-apply Nat.nlt_ge in Hdj.
-exfalso; apply Hdj.
-do 2 apply lt_n_S.
-apply Nat.lt_0_succ.
-Qed.
-
 Theorem case_1 : ∀ a₀ b₀ c₀ a b c i,
   a = (a₀ + 0)%rm
   → b = (b₀ + 0)%rm
@@ -4638,7 +4615,7 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
         apply sum_11_1_sum_x1 with (a := b); try assumption.
         intros dj Hdj.
         destruct dj; [ rewrite Nat.add_0_r, Hbd, Hb₅; reflexivity | idtac ].
-        destruct dj; [ rewrite Nat.add_1_r; assumption | idtac ].
+        destruct dj; [ rewrite Nat.add_comm; assumption | idtac ].
         apply Nat.nlt_ge in Hdj; exfalso.
         apply Hdj, lt_n_S, Nat.lt_0_succ.
 
@@ -4666,7 +4643,15 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
         rewrite Nat.add_succ_r in H.
         rename H into Hbe.
         assert (c .[ S (S (S (i + di₅)))] = true) as H.
-         apply sum_11_1_sum_xy_x_sum_xy_x with (a := b); try assumption.
+         do 2 rewrite <- Nat.add_1_r.
+         rewrite <- Nat.add_assoc.
+         apply sum_11_1_sum_x1 with (a := b); try assumption; simpl.
+         intros dj Hdj.
+         destruct dj; [ rewrite Nat.add_0_r, Hbd, Hb₅; reflexivity | idtac ].
+         destruct dj; [ rewrite Nat.add_comm; assumption | idtac ].
+         destruct dj; [ rewrite Nat.add_comm; assumption | idtac ].
+         apply Nat.nlt_ge in Hdj; exfalso.
+         apply Hdj, lt_n_S, lt_n_S, Nat.lt_0_succ.
 
          erewrite sum_x1_x_sum_0_0 in Ht₃; try eassumption.
          discriminate Ht₃.
