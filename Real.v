@@ -4520,6 +4520,37 @@ apply carry_succ_negb with (x := true) in Hcb.
  destruct Hbd as (_, Hbd); discriminate Hbd.
 Qed.
 
+Theorem zzz : ∀ a b i di,
+  a .[ i] = true
+  → b .[ i] = true
+  → (∀ dj, dj ≤ di → rm_add_i a b (i + dj) = a.[i + dj])
+  → b.[i + di] = true.
+Proof.
+intros a b i di Ha Hb Hab.
+bbb. (* à réfléchir *)
+destruct di; [ rewrite Nat.add_0_r; assumption | idtac ].
+pose proof (Hab (S di) (Nat.le_refl (S di))) as H.
+unfold rm_add_i in H; simpl in H.
+rewrite xorb_assoc in H.
+apply xorb_move_l_r_1 in H.
+rewrite xorb_nilpotent in H.
+rewrite <- negb_involutive.
+apply neq_negb; simpl.
+intros HH; rewrite HH, xorb_false_l in H.
+rewrite Nat.add_succ_r in H.
+apply carry_succ_negb with (x := true) in H.
+ rewrite <- Nat.add_succ_r, HH in H.
+ destruct H as (_, H); discriminate H.
+
+ clear H HH.
+ pose proof (Hab di (Nat.le_succ_diag_r di)) as H.
+ unfold rm_add_i in H; simpl in H.
+ destruct di.
+  rewrite Nat.add_0_r in H; simpl in H.
+  rewrite Ha, Hb, xorb_nilpotent, xorb_false_l in H.
+  rewrite Nat.add_0_r; assumption.
+bbb.
+
 Theorem sum_11_1_sum_xy_x_sum_xy_x : ∀ a b i,
   a .[ i] = true
   → b .[ i] = true
