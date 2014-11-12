@@ -4520,6 +4520,22 @@ apply carry_succ_negb with (x := true) in Hcb.
  destruct Hbd as (_, Hbd); discriminate Hbd.
 Qed.
 
+Theorem zzz : ∀ a b i,
+  a.[i] = true
+  → b.[i] = true
+  → rm_add_i a b i = true
+  → rm_add_i a b (S i) = a.[S i]
+  → b.[S (S i)] ⊕ carry_i a b (S (S i)) = false
+  → b.[S (S i)] = true.
+Proof.
+intros b c i Hb₅ Ht₅ Hbd Hcb Hd₅.
+rewrite <- negb_involutive.
+apply neq_negb; simpl.
+intros HH; rewrite HH, xorb_false_l in Hd₅.
+rewrite sum_11_1_sum_xy_x_sum_0_carry_1 in Hd₅; try assumption.
+discriminate Hd₅.
+Qed.
+
 Theorem sum_11_1_sum_xy_x : ∀ a b i,
   a.[i] = true
   → b.[i] = true
@@ -4673,11 +4689,7 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
         rewrite Nat.add_succ_r in Hcb.
         do 3 rewrite Nat.add_succ_r in Hd₅.
         assert (c .[ S (S (S (i + di₅)))] = true) as H.
-         rewrite <- negb_involutive.
-         apply neq_negb; simpl.
-         intros HH; rewrite HH, xorb_false_l in Hd₅.
-         rewrite sum_11_1_sum_xy_x_sum_0_carry_1 in Hd₅; try assumption.
-         discriminate Hd₅.
+         apply zzz with (a := b); assumption.
 
          erewrite sum_x1_x_sum_0_0 in Ht₃; try eassumption.
          discriminate Ht₃.
