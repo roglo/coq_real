@@ -4527,129 +4527,61 @@ Theorem zzz : ∀ a b i di,
   → (∀ dj, dj ≤ di → rm_add_i a b (i + dj) = a.[i + dj])
   → b.[i + di] = true.
 Proof.
+(* ok but to be simplified *)
 intros a b i di Ha Hb Hab.
 revert i Ha Hb Hab.
 induction di; intros; [ rewrite Nat.add_0_r; assumption | idtac ].
-pose proof (Hab (S di) (Nat.le_refl (S di))) as H.
+remember a .[ i + S di] as x eqn:Hx .
+symmetry in Hx.
+remember Hx as H; clear HeqH.
+rewrite <- Hab in H; [ idtac | reflexivity ].
+rename H into Hc.
+remember Hc as H; clear HeqH.
 unfold rm_add_i in H; simpl in H.
-rewrite xorb_assoc in H.
-apply xorb_move_l_r_1 in H.
-rewrite xorb_nilpotent in H.
-rewrite <- negb_involutive.
-apply neq_negb; simpl.
-intros HH; rewrite HH, xorb_false_l in H.
-pose proof (Hab di (Nat.le_succ_diag_r di)) as HHH.
-bbb.
-
-intros a b i di Ha Hb Hab.
-revert i Ha Hb Hab.
-induction di; intros; [ rewrite Nat.add_0_r; assumption | idtac ].
-remember Hab as H; clear HeqH.
-apply
- forall_compat
-  with (Q := fun dj => dj ≤ di → rm_add_i a b (i + dj) = a .[ i + dj])
- in H.
- apply IHdi in H.
-  2: assumption.
-
-  2: assumption.
-
-  Focus 2.
-  intros dj Hdj Hdi.
-  apply Hdj.
-  apply Nat.le_le_succ_r; assumption.
-
- rewrite Nat.add_succ_r, <- Nat.add_succ_l.
- rename H into Hb'.
+destruct x.
+ rewrite Hx, xorb_true_l in H.
+ rewrite <- negb_xorb_l in H.
+ apply negb_true_iff in H.
+ remember b .[ i + S di] as y eqn:Hy .
+ destruct y; [ reflexivity | symmetry in Hy ].
+ rewrite xorb_false_l in H.
+ rename H into Hd.
  pose proof (Hab di (Nat.le_succ_diag_r di)) as H.
  unfold rm_add_i in H; simpl in H.
  rewrite xorb_assoc in H.
  apply xorb_move_l_r_1 in H.
  rewrite xorb_nilpotent in H.
- rewrite Hb' in H.
- rewrite xorb_true_l in H.
- apply negb_false_iff in H.
- unfold carry_i in H.
- remember (fst_same a b (S (i + di))) as s₁ eqn:Hs₁ .
- apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
- destruct s₁ as [di₁| ]; [ idtac | clear H ].
-  destruct Hs₁ as (Hn₁, Hs₁).
-  destruct di₁.
-   simpl in H.
-   rewrite H, Nat.add_0_r in Hs₁.
-   symmetry; assumption.
+ rewrite IHdi in H; try assumption.
+  rewrite xorb_true_l in H.
+  apply negb_false_iff in H.
+  rewrite Nat.add_succ_r in Hd.
+  apply carry_succ_negb in H; [ idtac | assumption ].
+  rewrite <- Nat.add_succ_r, Hy in H.
+  destruct H as (_, H); discriminate H.
 
-   simpl in H; rewrite H in Hs₁; symmetry in Hs₁.
-   rename H into Ha'.
-   pose proof (Hab di (Nat.le_succ_diag_r di)) as H.
-bbb.
+  intros dj Hdj.
+  apply Hab, Nat.le_le_succ_r; assumption.
 
-intros a b i di Ha Hb Hab.
-destruct di; [ rewrite Nat.add_0_r; assumption | idtac ].
-destruct di.
- rewrite Nat.add_1_r.
- pose proof (Hab 0 Nat.le_0_1) as H.
- rewrite Nat.add_0_r, Ha in H.
- unfold rm_add_i in H; simpl in H.
- rewrite Ha, Hb, xorb_nilpotent, xorb_false_l in H.
- rename H into Hca.
- pose proof (Hab 1 (Nat.le_refl 1)) as H.
- rewrite Nat.add_1_r in H.
+ rewrite Hx, xorb_false_l in H.
+ remember b .[ i + S di] as y eqn:Hy .
+ destruct y; [ reflexivity | symmetry in Hy ].
+ rewrite xorb_false_l in H.
+ rename H into Hd.
+ pose proof (Hab di (Nat.le_succ_diag_r di)) as H.
  unfold rm_add_i in H; simpl in H.
  rewrite xorb_assoc in H.
  apply xorb_move_l_r_1 in H.
  rewrite xorb_nilpotent in H.
- rewrite <- negb_involutive.
- apply neq_negb; simpl.
- intros HH; rewrite HH, xorb_false_l in H.
- apply carry_succ_negb in Hca; [ idtac | assumption ].
- rewrite HH in Hca.
- destruct Hca as (_, Hca); discriminate Hca.
+ rewrite IHdi in H; try assumption.
+  rewrite xorb_true_l in H.
+  apply negb_false_iff in H.
+  rewrite Nat.add_succ_r in Hd.
+  apply carry_succ_negb in H; [ idtac | assumption ].
+  rewrite <- Nat.add_succ_r, Hy in H.
+  destruct H as (_, H); discriminate H.
 
- destruct di.
-  rewrite Nat.add_comm; simpl.
-  pose proof (Hab 0 (Nat.le_0_l 2)) as H.
-  rewrite Nat.add_0_r, Ha in H.
-  unfold rm_add_i in H; simpl in H.
-  rewrite Ha, Hb, xorb_nilpotent, xorb_false_l in H.
-  rename H into Hca.
-  pose proof (Hab 1 (Nat.le_succ_diag_r 1)) as H.
-  rewrite Nat.add_comm in H; simpl in H.
-  unfold rm_add_i in H; simpl in H.
-  rewrite xorb_assoc in H.
-  apply xorb_move_l_r_1 in H.
-  rewrite xorb_nilpotent in H.
-  remember b .[ S i] as bi eqn:Hbi .
-  symmetry in Hbi.
-  destruct bi.
-   rewrite xorb_true_l in H.
-   apply negb_false_iff in H.
-   rename H into Hca₁.
-   pose proof (Hab 2 (Nat.le_refl 2)) as H.
-   rewrite Nat.add_comm in H; simpl in H.
-   unfold rm_add_i in H; simpl in H.
-   rewrite xorb_assoc in H.
-   apply xorb_move_l_r_1 in H.
-   rewrite xorb_nilpotent in H.
-   rewrite <- negb_involutive.
-   apply neq_negb; simpl.
-   intros HH; rewrite HH, xorb_false_l in H.
-   apply carry_succ_negb in Hca₁; [ idtac | assumption ].
-   rewrite HH in Hca₁.
-   destruct Hca₁ as (_, Hca₁); discriminate Hca₁.
-
-   rewrite xorb_false_l in H.
-   apply carry_succ_negb in Hca; [ idtac | assumption ].
-   rewrite Hbi in Hca.
-   destruct Hca as (_, Hca); discriminate Hca.
-
-  destruct di.
-   rewrite Nat.add_comm; simpl.
-   pose proof (Hab 0 (Nat.le_0_l 3)) as H.
-   rewrite Nat.add_0_r, Ha in H.
-   unfold rm_add_i in H; simpl in H.
-   rewrite Ha, Hb, xorb_nilpotent, xorb_false_l in H.
-   rename H into Hca.
+  intros dj Hdj.
+  apply Hab, Nat.le_le_succ_r; assumption.
 bbb.
 *)
 
