@@ -2631,12 +2631,12 @@ eapply fst_same_in_range in Hdi; try eassumption.
  apply Nat.add_le_mono_l; assumption.
 Qed.
 
-Theorem carry_before_relay : ∀ a b i di x,
+Theorem carry_before_relay : ∀ a b i di,
   fst_same a b i = Some di
-  → a .[i + di] = x
-  → ∀ dj, dj < di → carry_i a b (i + dj) = x.
+  → ∀ dj, dj < di → carry_i a b (i + dj) = a.[i + di].
 Proof.
-intros a b i di x Hs Ha dj Hdj.
+intros a b i di Hs dj Hdj.
+remember a.[i+di] as x eqn:Ha; symmetry in Ha.
 unfold carry_i; simpl.
 remember (fst_same a b (S (i + dj))) as s₂ eqn:Hs₂ .
 symmetry in Hs₂.
@@ -4408,7 +4408,7 @@ destruct s₁ as [di₁| ].
 
   assert (0 < S di₁) as H by apply Nat.lt_0_succ.
   erewrite carry_before_relay in Hcc; try eassumption.
-  rewrite Nat.add_0_r, xorb_true_r in Hcc.
+  rewrite Nat.add_0_r, Hbc, xorb_true_r in Hcc.
   apply negb_true_iff in Hcc.
   apply fst_same_iff in Hs₁; simpl in Hs₁.
   destruct Hs₁ as (Hn₁, _).
@@ -4473,9 +4473,10 @@ destruct s₁ as [di₁| ].
   split; assumption.
 
   assert (0 < S di₁) as H by apply Nat.lt_0_succ.
-  erewrite carry_before_relay in Hc₂; try eassumption.
-  symmetry in Hc₂.
-  exfalso; revert Hc₂; apply no_fixpoint_negb.
+  eapply carry_before_relay in H; try eassumption.
+  rewrite Hc₂ in H; simpl in H.
+  rewrite Hc₁ in H.
+  exfalso; revert H; apply no_fixpoint_negb.
 
  subst x; simpl in Hc₂.
  rewrite Nat.add_0_r in Hc₂.
@@ -4694,8 +4695,7 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
     symmetry in Hs₅.
     erewrite carry_before_relay in H; try eassumption; simpl in H.
     apply Hn₅ in H₂.
-    rewrite H₂, negb_xorb_diag in H.
-    discriminate H.
+    rewrite H₂, negb_xorb_diag, Hb₅ in H; discriminate H.
 
     subst di₃.
     remember H₁ as H; clear HeqH.
