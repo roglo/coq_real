@@ -4623,8 +4623,8 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
         erewrite sum_x1_x_sum_0_0 in Ht₃; try eassumption.
         discriminate Ht₃.
 
-       simpl in Ht₃, Hb₃; rewrite Nat.add_succ_r in Ht₃, Hb₃.
        simpl in Hbc₁; rewrite Nat.add_succ_r in Hbc₁.
+       simpl in Ht₃, Hb₃; rewrite Nat.add_succ_r in Ht₃, Hb₃.
        remember H₄ as H; clear HeqH; simpl in H.
        do 2 apply Nat.lt_succ_l in H; apply Hn₆ in H.
        apply Nat.lt_succ_l in HH.
