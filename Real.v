@@ -4378,14 +4378,14 @@ destruct s₁ as [di₁| ].
  symmetry; apply Hbk; assumption.
 Qed.
 
-Theorem sum_x1_x_sum_0_0 : ∀ a b i x,
-  a.[i] = x
-  → b.[i] = true
-  → rm_add_i a b i = x
+Theorem sum_x1_x_sum_0_0 : ∀ a b i,
+  b.[i] = true
+  → rm_add_i a b i = a.[i]
   → a.[S i] = false
   → rm_add_i a b (S i) = false.
 Proof.
-intros b c i y Hb₅ Ht₅ Hbd Ht₆.
+intros b c i Ht₅ Hbd Ht₆.
+remember b.[i] as y eqn:Hb₅; symmetry in Hb₅.
 apply not_true_iff_false; intros H.
 unfold rm_add_i in H; simpl in H.
 rewrite Ht₆, xorb_false_l in H.
@@ -4622,6 +4622,7 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
      clear H₁.
 (* looking for induction principle... *)
      destruct n.
+      rewrite <- Hb₅ in Hbd.
       erewrite sum_x1_x_sum_0_0 in Ht₃; try eassumption.
       discriminate Ht₃.
 
@@ -4632,11 +4633,9 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
        apply negb_sym in H.
        rewrite negb_involutive in H; symmetry in H; simpl in H.
        rewrite Nat.add_succ_r in H.
-       rewrite Nat.add_succ_r in Ht₃, Hb₃.
-       remember b .[ S (S (i + di₅))] as x eqn:Hx ; symmetry in Hx.
        rename H into Hbc.
+       rewrite Nat.add_succ_r in Ht₃, Hb₃.
        assert (c .[ S (S (i + di₅))] = true) as H.
-        subst x.
         apply sum_11_1_sum_xy_x with (a := b); assumption.
 
         erewrite sum_x1_x_sum_0_0 in Ht₃; try eassumption.
@@ -4680,6 +4679,7 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
 
           apply Nat.lt_lt_succ_r, Nat.lt_succ_diag_r.
 
+         subst x.
          erewrite sum_x1_x_sum_0_0 in Ht₃; try eassumption.
          discriminate Ht₃.
 
