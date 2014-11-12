@@ -4655,7 +4655,7 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
         symmetry in H; rename H into Hbc.
         remember Hbc as H; clear HeqH.
         unfold rm_add_i in H; simpl in H.
-        rewrite Hx in H.
+        subst x.
         rewrite xorb_assoc in H.
         apply xorb_move_l_r_1 in H.
         rewrite xorb_nilpotent in H.
@@ -4664,24 +4664,23 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
         remember H₄ as H; clear HeqH.
         do 2 apply Nat.lt_succ_l in H.
         apply Hn₆ in H.
-        rewrite Hn₃ in H.
-         apply negb_sym in H; symmetry in H.
-         rewrite negb_involutive in H.
-         rename H into Hcb.
-         rewrite Nat.add_succ_r in Hcb.
-         do 3 rewrite Nat.add_succ_r in Hd₅.
-         assert (c .[ S (S (S (i + di₅)))] = true) as H.
-          rewrite <- negb_involutive.
-          apply neq_negb; simpl.
-          intros HH; rewrite HH, xorb_false_l in Hd₅.
-          rewrite sum_11_1_sum_xy_x_sum_0_carry_1 in Hd₅; try assumption.
-          discriminate Hd₅.
+        assert (S di₅ < S (S di₅)) as HH by apply Nat.lt_succ_diag_r.
+        apply Nat.lt_lt_succ_r, Hn₃ in HH.
+        rewrite HH in H; clear HH.
+        apply negb_sym in H; symmetry in H.
+        rewrite negb_involutive in H.
+        rename H into Hcb.
+        rewrite Nat.add_succ_r in Hcb.
+        do 3 rewrite Nat.add_succ_r in Hd₅.
+        assert (c .[ S (S (S (i + di₅)))] = true) as H.
+         rewrite <- negb_involutive.
+         apply neq_negb; simpl.
+         intros HH; rewrite HH, xorb_false_l in Hd₅.
+         rewrite sum_11_1_sum_xy_x_sum_0_carry_1 in Hd₅; try assumption.
+         discriminate Hd₅.
 
-          subst x.
-          erewrite sum_x1_x_sum_0_0 in Ht₃; try eassumption.
-          discriminate Ht₃.
-
-         apply Nat.lt_lt_succ_r, Nat.lt_succ_diag_r.
+         erewrite sum_x1_x_sum_0_0 in Ht₃; try eassumption.
+         discriminate Ht₃.
 
         simpl.
 bbb.
