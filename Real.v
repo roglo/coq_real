@@ -4609,7 +4609,7 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
       rewrite Nat.add_succ_r in H.
       rename H into Hbc.
       destruct n.
-       rewrite Nat.add_succ_r in Ht₃, Hb₃.
+       simpl in *.
        assert (c .[ S (S (i + di₅))] = true) as H.
         rewrite <- Nat.add_1_r.
         apply sum_11_1_sum_x1 with (a := b); try assumption.
@@ -4619,6 +4619,7 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
         apply Nat.nlt_ge in Hdj; exfalso.
         apply Hdj, lt_n_S, Nat.lt_0_succ.
 
+        rewrite Nat.add_succ_r in Ht₃, Hb₃.
         erewrite sum_x1_x_sum_0_0 in Ht₃; try eassumption.
         discriminate Ht₃.
 
@@ -4626,7 +4627,6 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
        rewrite Nat.add_succ_r in Hbc.
        destruct n.
         simpl in *.
-        do 2 rewrite Nat.add_succ_r in Ht₃, Hb₃.
         remember H₄ as H; clear HeqH.
         do 2 apply Nat.lt_succ_l in H.
         apply Hn₆ in H.
@@ -4648,6 +4648,7 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
          apply Nat.nlt_ge in Hdj; exfalso.
          apply Hdj, lt_n_S, lt_n_S, Nat.lt_0_succ.
 
+         do 2 rewrite Nat.add_succ_r in Ht₃, Hb₃.
          erewrite sum_x1_x_sum_0_0 in Ht₃; try eassumption.
          discriminate Ht₃.
 
