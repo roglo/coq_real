@@ -4528,6 +4528,17 @@ Theorem zzz : ∀ a b i di,
   → b.[i + di] = true.
 Proof.
 intros a b i di Ha Hb Hab.
+revert i Ha Hb Hab.
+induction di; intros; [ rewrite Nat.add_0_r; assumption | idtac ].
+pose proof (Hab (S di) (Nat.le_refl (S di))) as H.
+unfold rm_add_i in H; simpl in H.
+rewrite xorb_assoc in H.
+apply xorb_move_l_r_1 in H.
+rewrite xorb_nilpotent in H.
+rewrite <- negb_involutive.
+apply neq_negb; simpl.
+intros HH; rewrite HH, xorb_false_l in H.
+pose proof (Hab di (Nat.le_succ_diag_r di)) as HHH.
 bbb.
 
 intros a b i di Ha Hb Hab.
