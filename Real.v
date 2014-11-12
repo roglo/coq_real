@@ -4486,104 +4486,40 @@ destruct s₁ as [di₁| ].
  discriminate Hc₂.
 Qed.
 
-Theorem sum_11_1_sum_xy_x_sum_0_carry_1 : ∀ a b i,
-  a.[i] = true
-  → b.[i] = true
-  → rm_add_i a b i = true
-  → rm_add_i a b (S i) = a.[S i]
-  → b.[S (S i)] = false
-  → carry_i a b (S (S i)) = true.
-Proof.
-intros b c i Hb₅ Ht₅ Hbd H HH.
-rewrite <- negb_involutive.
-apply neq_negb; simpl; intros Hcb.
-remember b .[ S (i)] as y eqn:Hy.
-symmetry in H, Hy.
-unfold rm_add_i in H; simpl in H.
-rewrite Hy in H.
-symmetry in H; rewrite xorb_assoc in H.
-apply xorb_move_l_r_1 in H.
-rewrite xorb_nilpotent in H.
-rewrite <- negb_involutive in Hcb.
-apply carry_succ_negb with (x := true) in Hcb.
- rewrite HH in Hcb; destruct Hcb as (_, Hcb).
- discriminate Hcb.
-
- rewrite <- negb_involutive.
- apply neq_negb.
- rename HH into Hc.
- intros HH; rewrite HH, xorb_false_r in H.
- simpl in Hcb, HH.
- unfold rm_add_i in Hbd; simpl in Hbd.
- rewrite Ht₅, Hb₅, xorb_true_l, xorb_false_l in Hbd.
- apply carry_succ_negb in Hbd; try assumption.
- rewrite H in Hbd.
- destruct Hbd as (_, Hbd); discriminate Hbd.
-Qed.
-
-Theorem zzz : ∀ a b i di,
+Theorem sum_11_1_sum_x1 : ∀ a b i di,
   a .[ i] = true
   → b .[ i] = true
   → (∀ dj, dj ≤ di → rm_add_i a b (i + dj) = a.[i + dj])
   → b.[i + di] = true.
 Proof.
-(* ok but to be simplified *)
 intros a b i di Ha Hb Hab.
 revert i Ha Hb Hab.
 induction di; intros; [ rewrite Nat.add_0_r; assumption | idtac ].
-remember a .[ i + S di] as x eqn:Hx .
-symmetry in Hx.
-remember Hx as H; clear HeqH.
-rewrite <- Hab in H; [ idtac | reflexivity ].
-rename H into Hc.
-remember Hc as H; clear HeqH.
+pose proof (Hab (S di) (Nat.le_refl (S di))) as H.
 unfold rm_add_i in H; simpl in H.
-destruct x.
- rewrite Hx, xorb_true_l in H.
- rewrite <- negb_xorb_l in H.
- apply negb_true_iff in H.
- remember b .[ i + S di] as y eqn:Hy .
- destruct y; [ reflexivity | symmetry in Hy ].
- rewrite xorb_false_l in H.
- rename H into Hd.
- pose proof (Hab di (Nat.le_succ_diag_r di)) as H.
- unfold rm_add_i in H; simpl in H.
- rewrite xorb_assoc in H.
- apply xorb_move_l_r_1 in H.
- rewrite xorb_nilpotent in H.
- rewrite IHdi in H; try assumption.
-  rewrite xorb_true_l in H.
-  apply negb_false_iff in H.
-  rewrite Nat.add_succ_r in Hd.
-  apply carry_succ_negb in H; [ idtac | assumption ].
-  rewrite <- Nat.add_succ_r, Hy in H.
-  destruct H as (_, H); discriminate H.
+rewrite xorb_assoc in H.
+apply xorb_move_l_r_1 in H.
+rewrite xorb_nilpotent in H.
+remember b .[ i + S di] as y eqn:Hy .
+destruct y; [ reflexivity | symmetry in Hy ].
+rewrite xorb_false_l in H.
+rename H into Hd.
+pose proof (Hab di (Nat.le_succ_diag_r di)) as H.
+unfold rm_add_i in H; simpl in H.
+rewrite xorb_assoc in H.
+apply xorb_move_l_r_1 in H.
+rewrite xorb_nilpotent in H.
+rewrite IHdi in H; try assumption.
+ rewrite xorb_true_l in H.
+ apply negb_false_iff in H.
+ rewrite Nat.add_succ_r in Hd.
+ apply carry_succ_negb in H; [ idtac | assumption ].
+ rewrite <- Nat.add_succ_r, Hy in H.
+ destruct H as (_, H); discriminate H.
 
-  intros dj Hdj.
-  apply Hab, Nat.le_le_succ_r; assumption.
-
- rewrite Hx, xorb_false_l in H.
- remember b .[ i + S di] as y eqn:Hy .
- destruct y; [ reflexivity | symmetry in Hy ].
- rewrite xorb_false_l in H.
- rename H into Hd.
- pose proof (Hab di (Nat.le_succ_diag_r di)) as H.
- unfold rm_add_i in H; simpl in H.
- rewrite xorb_assoc in H.
- apply xorb_move_l_r_1 in H.
- rewrite xorb_nilpotent in H.
- rewrite IHdi in H; try assumption.
-  rewrite xorb_true_l in H.
-  apply negb_false_iff in H.
-  rewrite Nat.add_succ_r in Hd.
-  apply carry_succ_negb in H; [ idtac | assumption ].
-  rewrite <- Nat.add_succ_r, Hy in H.
-  destruct H as (_, H); discriminate H.
-
-  intros dj Hdj.
-  apply Hab, Nat.le_le_succ_r; assumption.
-bbb.
-*)
+ intros dj Hdj.
+ apply Hab, Nat.le_le_succ_r; assumption.
+Qed.
 
 Theorem sum_11_1_sum_xy_x_sum_xy_x : ∀ a b i,
   a .[ i] = true
@@ -4594,18 +4530,18 @@ Theorem sum_11_1_sum_xy_x_sum_xy_x : ∀ a b i,
   → b .[ S (S i)] = true.
 Proof.
 intros b c i Hb₅ Ht₅ Hbd Hbe Hbc.
-rewrite <- negb_involutive.
-apply neq_negb; simpl.
-remember Hbc as H; clear HeqH.
-unfold rm_add_i in H; simpl in H.
-rewrite xorb_assoc in H.
-apply xorb_move_l_r_1 in H.
-rewrite xorb_nilpotent in H.
-rename H into Hd₅.
-intros HH; rewrite HH, xorb_false_l in Hd₅.
-rename HH into Hcc.
-rewrite sum_11_1_sum_xy_x_sum_0_carry_1 in Hd₅; try assumption.
-discriminate Hd₅.
+do 2 rewrite <- Nat.add_1_r.
+rewrite <- Nat.add_assoc; simpl.
+apply sum_11_1_sum_x1 with (a := b); try assumption.
+intros dj Hdj.
+rewrite Nat.add_comm.
+destruct dj; simpl; [ rewrite Hb₅; assumption | idtac ].
+destruct dj; [ assumption | idtac ].
+destruct dj; [ assumption | idtac ].
+apply Nat.nlt_ge in Hdj.
+exfalso; apply Hdj.
+do 2 apply lt_n_S.
+apply Nat.lt_0_succ.
 Qed.
 
 Theorem sum_11_1_sum_xy_x : ∀ a b i,
@@ -4616,21 +4552,16 @@ Theorem sum_11_1_sum_xy_x : ∀ a b i,
   → b.[S i] = true.
 Proof.
 intros b c i Hb₅ Ht₅ Hbd Hbc.
-remember b.[S i] as x eqn:Hx; symmetry in Hx.
-remember Hbc as H; clear HeqH.
-unfold rm_add_i in H; simpl in H.
-rewrite Hx, xorb_assoc in H.
-apply xorb_move_l_r_1 in H.
-rewrite xorb_nilpotent in H.
-rewrite <- negb_involutive.
-apply neq_negb; simpl.
-intros HH; rewrite HH, xorb_false_l in H.
-unfold rm_add_i in Hbd.
-rewrite Hb₅, Ht₅, xorb_true_l, xorb_false_l in Hbd.
-rewrite <- negb_involutive in H.
-apply carry_succ_negb in H; [ idtac | assumption ].
-rewrite HH in H.
-destruct H as (_, H); discriminate H.
+rewrite <- Nat.add_1_r.
+apply sum_11_1_sum_x1 with (a := b); try assumption.
+intros dj Hdj.
+rewrite Nat.add_comm.
+destruct dj; simpl; [ rewrite Hb₅; assumption | idtac ].
+destruct dj; [ assumption | idtac ].
+apply Nat.nlt_ge in Hdj.
+exfalso; apply Hdj.
+apply lt_n_S.
+apply Nat.lt_0_succ.
 Qed.
 
 Theorem case_1 : ∀ a₀ b₀ c₀ a b c i,
