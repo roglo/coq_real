@@ -4520,6 +4520,31 @@ apply carry_succ_negb with (x := true) in Hcb.
  destruct Hbd as (_, Hbd); discriminate Hbd.
 Qed.
 
+Theorem sum_11_1_sum_xy_x : ∀ a b i,
+  a.[i] = true
+  → b.[i] = true
+  → rm_add_i a b i = true
+  → rm_add_i a b (S i) = a.[S i]
+  → b.[S i] = true.
+Proof.
+intros b c i Hb₅ Ht₅ Hbd Hbc.
+remember b.[S i] as x eqn:Hx; symmetry in Hx.
+remember Hbc as H; clear HeqH.
+unfold rm_add_i in H; simpl in H.
+rewrite Hx, xorb_assoc in H.
+apply xorb_move_l_r_1 in H.
+rewrite xorb_nilpotent in H.
+rewrite <- negb_involutive.
+apply neq_negb; simpl.
+intros HH; rewrite HH, xorb_false_l in H.
+unfold rm_add_i in Hbd.
+rewrite Hb₅, Ht₅, xorb_true_l, xorb_false_l in Hbd.
+rewrite <- negb_involutive in H.
+apply carry_succ_negb in H; [ idtac | assumption ].
+rewrite HH in H.
+destruct H as (_, H); discriminate H.
+Qed.
+
 Theorem case_1 : ∀ a₀ b₀ c₀ a b c i,
   a = (a₀ + 0)%rm
   → b = (b₀ + 0)%rm
@@ -4611,21 +4636,8 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
        remember b .[ S (S (i + di₅))] as x eqn:Hx ; symmetry in Hx.
        rename H into Hbc.
        assert (c .[ S (S (i + di₅))] = true) as H.
-        remember Hbc as H; clear HeqH.
-        unfold rm_add_i in H; simpl in H.
-        rewrite Hx in H.
-        rewrite xorb_assoc in H.
-        apply xorb_move_l_r_1 in H.
-        rewrite xorb_nilpotent in H.
-        rewrite <- negb_involutive.
-        apply neq_negb; simpl.
-        intros HH; rewrite HH, xorb_false_l in H.
-        unfold rm_add_i in Hbd.
-        rewrite Hb₅, Ht₅, xorb_true_l, xorb_false_l in Hbd.
-        rewrite <- negb_involutive in H.
-        apply carry_succ_negb in H; [ idtac | assumption ].
-        rewrite HH in H.
-        destruct H as (_, H); discriminate H.
+        subst x.
+        apply sum_11_1_sum_xy_x with (a := b); assumption.
 
         erewrite sum_x1_x_sum_0_0 in Ht₃; try eassumption.
         discriminate Ht₃.
