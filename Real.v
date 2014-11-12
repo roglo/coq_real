@@ -4604,7 +4604,8 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
       simpl in Ht₃, Hb₃; rewrite Nat.add_succ_r in Ht₃, Hb₃.
       remember H₄ as H; clear HeqH; simpl in H.
       apply Nat.lt_succ_l in H; apply Hn₆ in H.
-      rewrite Hn₃ in H; [ idtac | apply Nat.lt_succ_diag_r ].
+      assert (S (n + di₅) < S (S n + di₅)) as HH by apply Nat.lt_succ_diag_r.
+      rewrite Hn₃ in H; [ idtac | assumption ].
       apply negb_sym in H.
       rewrite negb_involutive in H; symmetry in H; simpl in H.
       rewrite Nat.add_succ_r in H.
@@ -4626,28 +4627,27 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
        simpl in Hbc₁; rewrite Nat.add_succ_r in Hbc₁.
        remember H₄ as H; clear HeqH; simpl in H.
        do 2 apply Nat.lt_succ_l in H; apply Hn₆ in H.
-       assert (S (n + di₅) < S (S (S n) + di₅)) as HH.
-        simpl; apply Nat.lt_succ_l, Nat.lt_succ_diag_r.
+       apply Nat.lt_succ_l in HH.
+       rewrite Hn₃ in H; [ idtac | assumption ].
+       apply negb_sym in H.
+       rewrite negb_involutive in H; symmetry in H; simpl in H.
+       rewrite Nat.add_succ_r in H.
+       rename H into Hbc₂.
+       destruct n.
+        assert (c .[ S (S (S (i + di₅)))] = true) as H.
+         do 2 rewrite <- Nat.add_1_r.
+         rewrite <- Nat.add_assoc.
+         apply sum_11_1_sum_x1 with (a := b); try assumption; simpl.
+         intros dj Hdj.
+         destruct dj; [ rewrite Nat.add_0_r, Hbd, Hb₅; reflexivity | idtac ].
+         destruct dj; [ rewrite Nat.add_comm; assumption | idtac ].
+         destruct dj; [ rewrite Nat.add_comm; assumption | idtac ].
+         apply Nat.nlt_ge in Hdj; exfalso.
+         apply Hdj, lt_n_S, lt_n_S, Nat.lt_0_succ.
 
-        rewrite Hn₃ in H; [ idtac | assumption ].
-        apply negb_sym in H.
-        rewrite negb_involutive in H; symmetry in H; simpl in H.
-        rewrite Nat.add_succ_r in H.
-        rename H into Hbc₂.
-        destruct n.
-         assert (c .[ S (S (S (i + di₅)))] = true) as H.
-          do 2 rewrite <- Nat.add_1_r.
-          rewrite <- Nat.add_assoc.
-          apply sum_11_1_sum_x1 with (a := b); try assumption; simpl.
-          intros dj Hdj.
-          destruct dj; [ rewrite Nat.add_0_r, Hbd, Hb₅; reflexivity | idtac ].
-          destruct dj; [ rewrite Nat.add_comm; assumption | idtac ].
-          destruct dj; [ rewrite Nat.add_comm; assumption | idtac ].
-          apply Nat.nlt_ge in Hdj; exfalso.
-          apply Hdj, lt_n_S, lt_n_S, Nat.lt_0_succ.
+         erewrite sum_x1_x_sum_0_0 in Ht₃; try eassumption.
+         discriminate Ht₃.
 
-          erewrite sum_x1_x_sum_0_0 in Ht₃; try eassumption.
-          discriminate Ht₃.
 bbb.
 
             i  i+1  -   i₅  +1  +2  +3  -   i₆
