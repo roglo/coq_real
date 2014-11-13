@@ -4555,7 +4555,6 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
  destruct HH as (Hn₅, Ht₅); rewrite H in Ht₅.
  symmetry in Ht₅; rename H into Hb₅.
  destruct (lt_eq_lt_dec di₅ di₆) as [[H₁| H₁]| H₁].
-(* if experiment 2, then *)
   remember Hc₃ as H; clear HeqH.
   unfold carry_i in H; simpl in H.
   remember (fst_same a (b + c) (S i)) as s₃ eqn:Hs₃ .
