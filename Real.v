@@ -4708,6 +4708,12 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
     unfold rm_add_i in H; simpl in H.
     rewrite Hb₃, Hd₃, xorb_true_r, xorb_true_l in H.
     apply negb_true_iff in H.
+    symmetry in Hs₅.
+    rewrite <- Nat.add_succ_l in H.
+    remember H₁ as HH; clear HeqHH.
+    eapply lt_trans in HH; [ idtac | eassumption ].
+    erewrite carry_before_relay in H; try eassumption.
+    simpl in H; rewrite Hb₅ in H; discriminate H.
 bbb.
 
             i  i+1  -   i₆  -   i₅
