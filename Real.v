@@ -4826,17 +4826,17 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
     rewrite Hb₂, Hd₂, xorb_nilpotent, xorb_false_l in H.
 bbb.
        i  i+1  -   i₂  -   i₁
-  b    .   .   .   1   .   .   .
+  b    .   .   x   1   .   .   .
 1                   +0
-  a    .   .   .   1   .   .   .
-1
+  a    .   1   1   1   .   .   .
+1          ≠   ≠
  b+c   .   0   0   1   .   .   .
 
- a+b   .   .   .   0   .   0   .
+ a+b   .   .   x   0   .   0   .
 0          ≠   ≠   ≠   ≠
   c    .   .   .   1   .   0   .
 1          ≠   ≠    +1
-  b    .   .   .   1   .   .   .   .   .
+  b    .   .   x   1   .   .   .   .   .
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
