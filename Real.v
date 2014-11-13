@@ -4610,6 +4610,12 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
       rewrite <- Nat.add_succ_l.
       apply sum_11_1_sum_x1 with (a := b); try assumption.
       intros dj Hdj.
+      induction dj; intros.
+       rewrite Nat.add_0_r, Hbd, Hb₅; reflexivity.
+
+       remember Hdj as H; clear HeqH.
+       apply le_Sn_le in H.
+       apply IHdj in H.
 bbb.
 (* end test 1 *)
 (* looking for induction principle... *)
