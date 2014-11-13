@@ -4686,6 +4686,28 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
     apply negb_sym, Hs₃.
 
   subst di₅; rewrite Ht₆ in Hb₅; discriminate Hb₅.
+
+  remember Hc₃ as H; clear HeqH.
+  unfold carry_i in H; simpl in H.
+  remember (fst_same a (b + c) (S i)) as s₃ eqn:Hs₃ .
+  apply fst_same_sym_iff in Hs₃; simpl in Hs₃.
+  destruct s₃ as [di₃| ]; [ idtac | clear H ].
+   destruct Hs₃ as (Hn₃, Hs₃); rewrite H in Hs₃.
+   symmetry in Hs₃; rename H into Ha₃.
+   destruct (lt_eq_lt_dec di₃ di₆) as [[H₂| H₂]| H₂].
+    remember H₂ as H; clear HeqH.
+    apply Hn₆ in H.
+    rewrite Ha₃ in H; apply negb_sym in H.
+    rename H into Hb₃; simpl in Hb₃.
+    remember H₁ as H; clear HeqH.
+    eapply lt_trans in H; [ idtac | eassumption ].
+    apply Hn₅ in H.
+    rewrite Hb₃ in H; apply negb_sym in H.
+    rename H into Hd₃; simpl in Hd₃.
+    remember Hs₃ as H; clear HeqH.
+    unfold rm_add_i in H; simpl in H.
+    rewrite Hb₃, Hd₃, xorb_true_r, xorb_true_l in H.
+    apply negb_true_iff in H.
 bbb.
 
             i  i+1  -   i₆  -   i₅
