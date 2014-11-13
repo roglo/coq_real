@@ -4618,6 +4618,9 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
        eapply lt_trans; [ idtac | eassumption ].
        rewrite Nat.add_comm.
        apply le_n_S, Nat.add_le_mono_r; assumption.
+
+     subst di₃.
+     rewrite Ha₆ in Ha₃; discriminate Ha₃.
 bbb.
 *)
 
