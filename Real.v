@@ -4807,6 +4807,15 @@ do 2 rewrite xorb_false_r.
 destruct c₃, c₄, c₅, c₆; try reflexivity; exfalso.
  eapply case_1; eassumption.
 
+ apply case_1 with (a := c) (b := b) (c := a) (i := i).
+  rewrite carry_comm.
+  rewrite carry_compat_r with (a := (a + b)%rm); [ assumption | idtac ].
+  apply rm_add_i_comm.
+
+  rewrite carry_comm; assumption.
+
+  rewrite carry_comm; assumption.
+
 bbb.
  apply case_1 with (c := a) (b := b) (a := c) (i := i).
   rewrite carry_compat_r with (a := (a + b + c)%rm); [ assumption | idtac ].
