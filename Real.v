@@ -4688,18 +4688,18 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
   subst di₅; rewrite Ht₆ in Hb₅; discriminate Hb₅.
 bbb.
 
-            i  i+1  -   i₅  -   i₆
-        b   .   .   .   1   .   0
-0               ≠   ≠   ≠   ≠
-        a   .   .   .   0   .   0
-1               ≠   ≠   ≠   ≠   ≠   ≠   ≠   ≠ ...
-       b+c  .   .   .   1   .   1
+            i  i+1  -   i₆  -   i₅
+        b   .   .   .   0   .   1
+0               ≠   ≠
+        a   .   .   .   0   .   .
+1                                     <--- contradiction
+       b+c  .   0   0   0   0   .
 
-       a+b  .   .   .   0   .   .
+       a+b  .   1   1   .   .   .
 1
-        c   .   .   .   1   .   .
-1               ≠   ≠    +1
-        b   .   .   .   1   .   0
+        c   .   .   .   1   .   1
+1               ≠   ≠   ≠   ≠
+        b   .   .   .   0   .   1
 
 *)
 
