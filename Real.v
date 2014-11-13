@@ -4684,6 +4684,8 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
     rewrite <- negb_involutive.
     rewrite <- Hn₆; [ idtac | apply Nat.lt_succ_diag_r ].
     apply negb_sym, Hs₃.
+
+  subst di₅; rewrite Ht₆ in Hb₅; discriminate Hb₅.
 bbb.
 
             i  i+1  -   i₅  -   i₆
