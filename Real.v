@@ -4690,10 +4690,11 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
   remember Hc₃ as H; clear HeqH.
   unfold carry_i in H; simpl in H.
   remember (fst_same a (b + c) (S i)) as s₃ eqn:Hs₃ .
-  apply fst_same_sym_iff in Hs₃; simpl in Hs₃.
   destruct s₃ as [di₃| ]; [ idtac | clear H ].
-   destruct Hs₃ as (Hn₃, Hs₃); rewrite H in Hs₃.
-   symmetry in Hs₃; rename H into Ha₃.
+   rename H into Ha₃.
+   remember Hs₃ as H; clear HeqH.
+   apply fst_same_sym_iff in H; simpl in H.
+   destruct H as (Hn₃, Ht₃).
    destruct (lt_eq_lt_dec di₃ di₆) as [[H₂| H₂]| H₂].
     remember H₂ as H; clear HeqH.
     apply Hn₆ in H.
@@ -4704,10 +4705,10 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
     apply Hn₅ in H.
     rewrite Hb₃ in H; apply negb_sym in H.
     rename H into Hd₃; simpl in Hd₃.
-    remember Hs₃ as H; clear HeqH.
+    remember Ht₃ as H; clear HeqH.
     unfold rm_add_i in H; simpl in H.
-    rewrite Hb₃, Hd₃, xorb_true_r, xorb_true_l in H.
-    apply negb_true_iff in H.
+    rewrite Ha₃, Hb₃, Hd₃, xorb_true_r, xorb_true_l in H.
+    apply negb_sym in H; simpl in H.
     symmetry in Hs₅.
     rewrite <- Nat.add_succ_l in H.
     remember H₁ as HH; clear HeqHH.
@@ -4716,6 +4717,20 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
     simpl in H; rewrite Hb₅ in H; discriminate H.
 
     subst di₃; rewrite Ha₆ in Ha₃; discriminate Ha₃.
+
+    remember H₂ as H; clear HeqH.
+    apply Hn₃ in H.
+    rewrite Ha₆ in H; apply negb_sym in H; simpl in H.
+    unfold rm_add_i in H; simpl in H.
+    rewrite Ht₆, xorb_false_l in H.
+    rewrite <- Nat.add_succ_l in H.
+    symmetry in Hs₃.
+    symmetry in Hs₅.
+    erewrite carry_before_relay in H; try eassumption.
+    simpl in H.
+    rewrite Hb₅, xorb_true_r in H.
+    rewrite <- Hn₅ in H; [ idtac | assumption ].
+    rewrite Ht₆ in H; discriminate H.
 bbb.
 
             i  i+1  -   i₆  -   i₅
