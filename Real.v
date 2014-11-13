@@ -4783,8 +4783,37 @@ Theorem case_2 : ∀ a₀ b₀ c₀ a b c i,
   → carry_i a b i = true
   → False.
 Proof.
-intros a₀ b₀ c₀ a b c i Ha₀ Hb₀ Hc₀ Hc₁ Hc₂ Hc₃ hc₄ Hc₅ Hc₆.
+intros a₀ b₀ c₀ a b c i Ha₀ Hb₀ Hc₀ Hc₁ Hc₂ Hc₃ Hc₄ Hc₅ Hc₆.
+remember Hc₄ as H; clear HeqH.
+unfold carry_i in H; simpl in H.
+remember (fst_same (a + b) c (S i)) as s₁ eqn:Hs₁ .
+destruct s₁ as [di₁| ]; [ idtac | discriminate H ].
+rename H into He₁.
+remember Hs₁ as H; clear HeqH.
+apply fst_same_sym_iff in H; simpl in H.
+destruct H as (Hn₁, Hd₁); rewrite He₁ in Hd₁; symmetry in Hd₁.
+remember Hc₅ as H; clear HeqH.
+unfold carry_i in H; simpl in H.
+remember (fst_same b c (S i)) as s₂ eqn:Hs₂ .
+destruct s₂ as [di₂| ]; [ idtac | clear H ].
+ rename H into Hb₂.
+ remember Hs₂ as H; clear HeqH.
+ apply fst_same_sym_iff in H; simpl in H.
+ destruct H as (Hn₂, Hd₂); rewrite Hb₂ in Hd₂; symmetry in Hd₂.
+ destruct (lt_eq_lt_dec di₂ di₁) as [[H₁| H₁]| H₁].
 bbb.
+       i  i+1  -   i₂  -   i₁
+  b    .   .   .   1   .   .   .
+1
+  a    .   .   .   .   .   .   .
+1
+ b+c   .   0   0   .   .   .   .
+
+ a+b   .   .   .   0   .   0   .
+0          ≠   ≠   ≠   ≠
+  c    .   .   .   1   .   0   .
+1          ≠   ≠
+  b    .   .   .   1   .   .   .
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
