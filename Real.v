@@ -4724,27 +4724,60 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
     unfold rm_add_i in H; simpl in H.
     rewrite Ht₆, xorb_false_l in H.
     rewrite <- Nat.add_succ_l in H.
-    symmetry in Hs₃.
     symmetry in Hs₅.
-    erewrite carry_before_relay in H; try eassumption.
-    simpl in H.
+    erewrite carry_before_relay in H; try eassumption; simpl in H.
     rewrite Hb₅, xorb_true_r in H.
     rewrite <- Hn₅ in H; [ idtac | assumption ].
     rewrite Ht₆ in H; discriminate H.
+
+   remember Hs₃ as H; clear HeqH.
+   apply fst_same_sym_iff in H; simpl in H.
+   rename H into Ht₃.
+   pose proof (Ht₃ di₆) as H.
+   rewrite Ha₆ in H; apply negb_sym in H; simpl in H.
+   unfold rm_add_i in H; simpl in H.
+   rewrite Ht₆, xorb_false_l in H.
+   rewrite <- Nat.add_succ_l in H.
+   symmetry in Hs₅.
+   erewrite carry_before_relay in H; try eassumption; simpl in H.
+   rewrite Hb₅, xorb_true_r in H.
+   rewrite <- Hn₅ in H; [ idtac | assumption ].
+   rewrite Ht₆ in H; discriminate H.
+
+ rename HH into Ht₅.
+ remember Hc₃ as H; clear HeqH.
+ unfold carry_i in H; simpl in H.
+ remember (fst_same a (b + c) (S i)) as s₃ eqn:Hs₃ .
+ destruct s₃ as [di₃| ]; [ idtac | clear H ].
+  rename H into Ha₃.
+  remember Hs₃ as H; clear HeqH.
+  apply fst_same_sym_iff in H; simpl in H.
+  destruct H as (Hn₃, Ht₃).
+  rewrite Ha₃ in Ht₃; symmetry in Ht₃.
+  unfold rm_add_i in Ht₃; simpl in Ht₃.
+  rewrite Ht₅, negb_xorb_diag, xorb_true_l in Ht₃.
+  apply negb_true_iff in Ht₃.
+  rewrite <- Nat.add_succ_l in Ht₃.
+  symmetry in Ht₅.
+  unfold carry_i in Ht₃; simpl in Ht₃.
+  remember Hs₅ as H; clear HeqH; symmetry in H.
+  apply fst_same_inf_after with (di := S di₃) in H.
+  rewrite Nat.add_succ_r in H; simpl in H.
+  rewrite H in Ht₃; discriminate Ht₃.
 bbb.
 
-            i  i+1  -   i₆  -   i₅
-        b   .   .   .   0   .   1
+            i  i+1  -   i₆
+        b   .   .   .   0
 0               ≠   ≠
-        a   .   .   .   0   .   .
-1                                     <--- contradiction
-       b+c  .   0   0   0   0   .
-
-       a+b  .   1   1   .   .   .
+        a   .   .   .   0
 1
-        c   .   .   .   1   .   1
-1               ≠   ≠   ≠   ≠
-        b   .   .   .   0   .   1
+       b+c  .   0   0   0
+
+       a+b  .   1   1   .
+1
+        c   .   .   .   1
+1               ≠   ≠   ≠   ≠   ≠ ...
+        b   .   .   .   0
 
 *)
 
