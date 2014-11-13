@@ -4801,19 +4801,42 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
  apply fst_same_sym_iff in H; simpl in H.
  destruct H as (Hn₂, Hd₂); rewrite Hb₂ in Hd₂; symmetry in Hd₂.
  destruct (lt_eq_lt_dec di₂ di₁) as [[H₁| H₁]| H₁].
+  remember Hc₃ as H; clear HeqH.
+  unfold carry_i in H; simpl in H.
+  remember (fst_same a (b + c) (S i)) as s₃ eqn:Hs₃ .
+  destruct s₃ as [di₃| ]; [ idtac | clear H ].
+   rename H into Ha₃.
+   remember Hs₃ as H; clear HeqH.
+   apply fst_same_sym_iff in H; simpl in H.
+   destruct H as (Hn₃, He₃); rewrite Ha₃ in He₃; symmetry in He₃.
+   destruct (lt_eq_lt_dec di₃ di₂) as [[H₂| H₂]| H₂].
+    remember He₃ as H; clear HeqH.
+    unfold rm_add_i in H; simpl in H.
+    rewrite Hn₂ in H; [ idtac | assumption ].
+    rewrite negb_xorb_diag, xorb_true_l in H.
+    apply negb_true_iff in H.
+    rewrite <- Nat.add_succ_l in H.
+    symmetry in Hs₂.
+    erewrite carry_before_relay in H; try eassumption; simpl in H.
+    rewrite Hb₂ in H; discriminate H.
+
+    subst di₃.
+    remember He₃ as H; clear HeqH.
+    unfold rm_add_i in H; simpl in H.
+    rewrite Hb₂, Hd₂, xorb_nilpotent, xorb_false_l in H.
 bbb.
        i  i+1  -   i₂  -   i₁
   b    .   .   .   1   .   .   .
+1                   +0
+  a    .   .   .   1   .   .   .
 1
-  a    .   .   .   .   .   .   .
-1
- b+c   .   0   0   .   .   .   .
+ b+c   .   0   0   1   .   .   .
 
  a+b   .   .   .   0   .   0   .
 0          ≠   ≠   ≠   ≠
   c    .   .   .   1   .   0   .
-1          ≠   ≠
-  b    .   .   .   1   .   .   .
+1          ≠   ≠    +1
+  b    .   .   .   1   .   .   .   .   .
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
