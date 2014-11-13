@@ -4621,6 +4621,34 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
      subst di₃.
      rewrite Ha₆ in Ha₃; discriminate Ha₃.
 bbb.
+
+            i  i+1  -   i₅  -   i₆  -   i₃
+        b   .   0   0   1   .   0   .   .
+0               ≠   ≠   ≠   ≠
+        a   .   1   1   0   .   0   .   1
+1               ≠   ≠   ≠   ≠   ≠   ≠
+       b+c  .   0   0   1   .   1   .   1
+
+       a+b  .   1   1   1   1   .   .   .
+1
+        c   .   1   1   1   .   .   .   .
+1               ≠   ≠    +1
+        b   .   0   0   1   .   0   .   .
+
+
+            i  i+1  -   i₅  -   i₆  -   i₃
+        b   .   .   .   1   .   0   .   .
+0               ≠   ≠   ≠   ≠
+        a   .   .   .   .   .   0   .   1
+1               ≠   ≠   ≠   ≠   ≠   ≠
+       b+c  .   .   .   1   .   .   .   1
+
+       a+b  .   .   .   .   .   .   .   .
+1
+        c   .   .   .   1   .   .   .   .
+1               ≠   ≠
+        b   .   .   .   1   .   0   .   .
+
 *)
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
