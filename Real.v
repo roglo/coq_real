@@ -4625,8 +4625,7 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
      apply negb_false_iff in Hbe.
      remember (di₆ - S di₅) as n eqn:Hn .
      apply nat_sub_add_r in Hn; [ idtac | assumption ].
-     rewrite Nat.add_comm in Hn; simpl in Hn.
-     subst di₆.
+     rewrite Nat.add_comm in Hn; simpl in Hn; subst di₆.
      rewrite Nat.add_succ_r in Hbe, Ht₆.
      remember H₁ as H; clear HeqH.
      apply Hn₆ in H.
@@ -4656,20 +4655,49 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
       apply negb_sym in H.
       rewrite negb_involutive in H.
       assumption.
+
+   remember Ha₆ as Hbe; clear HeqHbe.
+   rewrite Hs₃ in Hbe.
+   apply negb_false_iff in Hbe.
+   remember (di₆ - S di₅) as n eqn:Hn .
+   apply nat_sub_add_r in Hn; [ idtac | assumption ].
+   rewrite Nat.add_comm in Hn; simpl in Hn; subst di₆.
+   rewrite Nat.add_succ_r in Hbe, Ht₆.
+   remember H₁ as H; clear HeqH.
+   apply Hn₆ in H.
+   rewrite Hb₅ in H; simpl in H.
+   rename H into Ha₅.
+   rewrite sum_x1_x_sum_0_0 in Hbe; try assumption.
+    discriminate Hbe.
+
+    rewrite Nat.add_assoc, Nat.add_shuffle0.
+    rewrite <- Nat.add_succ_l.
+    apply sum_11_1_sum_x1 with (a := b); try assumption.
+    intros dj Hdj.
+    simpl; rewrite <- Nat.add_assoc, <- negb_involutive.
+    rewrite <- Hn₆.
+     rewrite Hs₃; rewrite negb_involutive; reflexivity.
+
+     rewrite Nat.add_comm.
+     apply le_n_S, Nat.add_le_mono_r; assumption.
+
+    rewrite <- negb_involutive.
+    rewrite <- Hn₆; [ idtac | apply Nat.lt_succ_diag_r ].
+    apply negb_sym, Hs₃.
 bbb.
 
-            i  i+1  -   i₅  -   i₆  -   i₃
-        b   .   .   .   1   .   0   .   .
+            i  i+1  -   i₅  -   i₆
+        b   .   .   .   1   .   0
 0               ≠   ≠   ≠   ≠
-        a   .   .   .   .   .   0   .   1
-1               ≠   ≠   ≠   ≠   ≠   ≠
-       b+c  .   .   .   1   .   .   .   1
+        a   .   .   .   0   .   0
+1               ≠   ≠   ≠   ≠   ≠   ≠   ≠   ≠ ...
+       b+c  .   .   .   1   .   1
 
-       a+b  .   .   .   .   .   .   .   .
+       a+b  .   .   .   0   .   .
 1
-        c   .   .   .   1   .   .   .   .
-1               ≠   ≠
-        b   .   .   .   1   .   0   .   .
+        c   .   .   .   1   .   .
+1               ≠   ≠    +1
+        b   .   .   .   1   .   0
 
 *)
 
