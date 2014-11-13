@@ -4771,6 +4771,21 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
   rewrite <- Ht₅, Ht₆ in Ha₆; discriminate Ha₆.
 Qed.
 
+Theorem case_2 : ∀ a₀ b₀ c₀ a b c i,
+  a = (a₀ + 0)%rm
+  → b = (b₀ + 0)%rm
+  → c = (c₀ + 0)%rm
+  → carry_i (a + (b + c)%rm) 0 i = false
+  → carry_i ((a + b)%rm + c) 0 i = false
+  → carry_i a (b + c) i = true
+  → carry_i (a + b) c i = false
+  → carry_i b c i = true
+  → carry_i a b i = true
+  → False.
+Proof.
+intros a₀ b₀ c₀ a b c i Ha₀ Hb₀ Hc₀ Hc₁ Hc₂ Hc₃ hc₄ Hc₅ Hc₆.
+bbb.
+
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
 intros a b c.
@@ -4815,6 +4830,8 @@ destruct c₃, c₄, c₅, c₆; try reflexivity; exfalso.
   rewrite carry_comm; assumption.
 
   rewrite carry_comm; assumption.
+
+ eapply case_2 with (a := a) (b := b); eassumption.
 
 bbb.
  apply case_1 with (c := a) (b := b) (a := c) (i := i).
