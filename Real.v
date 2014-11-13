@@ -4610,12 +4610,29 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
       rewrite <- Nat.add_succ_l.
       apply sum_11_1_sum_x1 with (a := b); try assumption.
       intros dj Hdj.
-      induction dj; intros.
+      simpl; rewrite <- Nat.add_assoc, <- negb_involutive.
+      rewrite <- Hn₆.
+       rewrite Hn₃; [ rewrite negb_involutive; reflexivity | idtac ].
+       rewrite Nat.add_comm; simpl.
+       apply le_n_S, Nat.add_le_mono_r; assumption.
+
+       eapply lt_trans; [ idtac | eassumption ].
+       rewrite Nat.add_comm.
+       apply le_n_S, Nat.add_le_mono_r; assumption.
+bbb.
+      destruct dj.
        rewrite Nat.add_0_r, Hbd, Hb₅; reflexivity.
 
-       remember Hdj as H; clear HeqH.
-       apply le_Sn_le in H.
-       apply IHdj in H.
+       rewrite <- negb_involutive; simpl.
+       rewrite <- Nat.add_assoc.
+       rewrite <- Hn₆.
+        rewrite Hn₃; [ rewrite negb_involutive; reflexivity | idtac ].
+        rewrite Nat.add_comm; simpl.
+        apply lt_n_S, Nat.add_lt_mono_r; assumption.
+
+        eapply lt_trans; [ idtac | eassumption  ].
+        rewrite Nat.add_comm; simpl.
+        apply lt_n_S, Nat.add_lt_mono_r; assumption.
 bbb.
 (* end test 1 *)
 (* looking for induction principle... *)
