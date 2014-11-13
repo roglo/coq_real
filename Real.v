@@ -4521,22 +4521,13 @@ rewrite IHdi in H; try assumption.
  apply Hab, Nat.le_le_succ_r; assumption.
 Qed.
 
-Theorem case_1 : ∀ a₀ b₀ c₀ a b c i,
-  a = (a₀ + 0)%rm
-  → b = (b₀ + 0)%rm
-  → c = (c₀ + 0)%rm
-  → carry_i (a + (b + c)%rm) 0 i = false
-  → carry_i ((a + b)%rm + c) 0 i = false
-  → carry_i a (b + c) i = true
-  → carry_i (a + b) c i = true
+Theorem case_1 : ∀ a b c i,
+  carry_i a (b + c) i = true
   → carry_i b c i = true
   → carry_i a b i = false
   → False.
 Proof.
-intros a₀ b₀ c₀ a b c i Ha₀ Hb₀ Hc₀ Hc₁ Hc₂ Hc₃ Hc₄ Hc₅ Hc₆.
-(*
-clear Hb₀ Hc₀ Hc₁ Hc₂ Hc₄.
-*)
+intros a b c i Hc₃ Hc₅ Hc₆.
 remember Hc₆ as H; clear HeqH.
 unfold carry_i in H; simpl in H.
 remember (fst_same a b (S i)) as s₆ eqn:Hs₆ .
@@ -4764,22 +4755,21 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
   apply fst_same_inf_after with (di := S di₃) in H.
   rewrite Nat.add_succ_r in H; simpl in H.
   rewrite H in Ht₃; discriminate Ht₃.
-bbb.
 
-            i  i+1  -   i₆
-        b   .   .   .   0
-0               ≠   ≠
-        a   .   .   .   0
-1
-       b+c  .   0   0   0
-
-       a+b  .   1   1   .
-1
-        c   .   .   .   1
-1               ≠   ≠   ≠   ≠   ≠ ...
-        b   .   .   .   0
-
-*)
+  remember Hs₃ as H; clear HeqH.
+  apply fst_same_sym_iff in H; simpl in H.
+  rename H into Ht₃.
+  rewrite Ht₃ in Ha₆.
+  apply negb_false_iff in Ha₆.
+  unfold rm_add_i in Ha₆.
+  rewrite Ht₆, xorb_false_l in Ha₆.
+  unfold carry_i in Ha₆.
+  remember Hs₅ as H; clear HeqH; symmetry in H.
+  apply fst_same_inf_after with (di := S di₆) in H.
+  rewrite Nat.add_succ_r in H; simpl in H.
+  rewrite H, xorb_true_r in Ha₆.
+  rewrite <- Ht₅, Ht₆ in Ha₆; discriminate Ha₆.
+Qed.
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
