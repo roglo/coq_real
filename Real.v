@@ -4595,6 +4595,23 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
      subst di₃.
      rewrite Nat.add_succ_r in Hb₃, Ht₃.
      clear H₁.
+(* if test 1 then *)
+     remember H₄ as H; clear HeqH; simpl in H.
+     apply Nat.lt_succ_l in H; apply Hn₆ in H.
+     assert (n + di₅ < S n + di₅) as HH by apply Nat.lt_succ_diag_r.
+     rewrite Hn₃ in H; [ idtac | assumption ].
+     apply negb_sym in H.
+     rewrite negb_involutive in H; symmetry in H; simpl in H.
+     rename H into Hbc₁.
+     erewrite sum_x1_x_sum_0_0 in Ht₃; try eassumption.
+      discriminate Ht₃.
+
+      rewrite Nat.add_assoc, Nat.add_shuffle0.
+      rewrite <- Nat.add_succ_l.
+      apply sum_11_1_sum_x1 with (a := b); try assumption.
+      intros dj Hdj.
+bbb.
+(* end test 1 *)
 (* looking for induction principle... *)
      destruct n.
       rewrite <- Hb₅ in Hbd.
