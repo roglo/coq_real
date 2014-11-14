@@ -4799,6 +4799,7 @@ induction di; intros.
   assumption.
 
  rename Hy into Hbd.
+Abort. (*
 bbb.
 *)
 
@@ -4899,19 +4900,32 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
         apply carry_succ_negb in He₄; [ simpl in He₄ | assumption ].
         rewrite Hb₄ in He₄; destruct He₄ as (_, H); discriminate H.
 
-       remember Ha₃ as H; clear HeqH.
-       apply zzz with (b := b) (di := S di₄) in H; try assumption.
-        Focus 2.
-        rewrite Hn₁, Hd₂; [ reflexivity | assumption ].
-
-        Focus 2.
-        intros dj Hdj.
-        rewrite Nat.add_succ_r; simpl.
-        rewrite Hn₄; [ symmetry | assumption ].
-        rewrite <- Nat.add_assoc, <- Nat.add_succ_r.
-        apply Hn₁.
-        omega.
-
+       remember a .[ S (S (i + di₂))] as z eqn:Hz .
+       symmetry in Hz.
+       destruct z.
+        remember b .[ S (S (i + di₂))] as y eqn:Hy .
+        symmetry in Hy.
+        pose proof (Hn₄ 0 (Nat.lt_0_succ di₄)) as H.
+        rewrite Nat.add_0_r, Hy in H.
+        rewrite <- Nat.add_succ_r in H.
+        rewrite <- Hn₁ in H; [ idtac | omega ].
+        symmetry in H.
+        unfold rm_add_i in H.
+        rewrite Nat.add_succ_r, Hz, Hy in H.
+        rewrite xorb_true_l in H.
+        apply xorb_move_l_r_1 in H.
+        rewrite negb_xorb_diag in H.
+        remember Hd₂ as HH; clear HeqHH.
+        rewrite <- negb_involutive in HH.
+        apply negb_sym in HH; simpl in HH.
+        rewrite <- Hn₁ in HH; [ idtac | assumption ].
+        symmetry in HH.
+        unfold rm_add_i in HH.
+        rewrite Ha₃, Hb₂, xorb_nilpotent, xorb_false_l in HH.
+        rewrite <- negb_involutive in H.
+        apply carry_succ_negb in H; [ idtac | assumption ].
+        rewrite Hz in H.
+        destruct H as (H, _); discriminate H.
 bbb.
 faire : Some di₅ = fst_same a b (S (i + di₂))
 et lt_eq_lt_dec di₅ di₄
