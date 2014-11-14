@@ -4843,26 +4843,31 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
        apply xorb_move_l_r_1 in H; rewrite xorb_true_r in H.
        remember a .[ S (S (i + di₂))] as x eqn:Ha₄ .
        symmetry in Ha₄.
-       destruct x; simpl in H.
-        rename H into He₄.
-        remember Hd₂ as H; clear HeqH.
-        symmetry in H; rewrite <- negb_involutive in H.
-        rewrite <- Hn₁ in H; [ idtac | apply Nat.lt_le_incl; assumption ].
-        apply negb_sym in H; simpl in H.
-        unfold rm_add_i in H.
-        rewrite Ha₃, Hb₂, xorb_nilpotent, xorb_false_l in H.
+       rename H into He₄.
+       remember Hd₂ as H; clear HeqH.
+       symmetry in H; rewrite <- negb_involutive in H.
+       rewrite <- Hn₁ in H; [ idtac | apply Nat.lt_le_incl; assumption ].
+       apply negb_sym in H; simpl in H.
+       unfold rm_add_i in H.
+       rewrite Ha₃, Hb₂, xorb_nilpotent, xorb_false_l in H.
+       rename H into He₅.
+       destruct x; simpl in He₄.
+        remember He₅ as H; clear HeqH.
         unfold carry_i in H; simpl in H.
         remember (fst_same a b (S (S (i + di₂)))) as s₅ eqn:Hs₅ .
         destruct s₅ as [di₅| ]; [ idtac | discriminate H ].
         apply fst_same_sym_iff in Hs₅; simpl in Hs₅.
         destruct Hs₅ as (Hn₅, Hb₅); rewrite H in Hb₅; symmetry in Hb₅.
-        rename H into Ha₅.
         destruct di₅.
-         rewrite Nat.add_0_r, Ha₄ in Ha₅; discriminate Ha₅.
+         rewrite Nat.add_0_r, Ha₄ in H; discriminate H.
 
+         clear H.
          pose proof (Hn₅ 0 (Nat.lt_0_succ di₅)) as H.
-         rewrite Nat.add_0_r, Ha₄, Hb₄ in H.
-         discriminate H.
+         rewrite Nat.add_0_r, Ha₄, Hb₄ in H; discriminate H.
+
+        rewrite <- negb_involutive in He₄.
+        apply carry_succ_negb in He₄; [ simpl in He₄ | assumption ].
+        rewrite Hb₄ in He₄; destruct He₄ as (_, H); discriminate H.
 bbb.
        i  i+1  -   i₂  i₄  -   i₁  -
   b    .   .   x   1   1   .   .   .
