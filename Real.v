@@ -4771,6 +4771,18 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
   rewrite <- Ht₅, Ht₆ in Ha₆; discriminate Ha₆.
 Qed.
 
+(*
+Theorem zzz : ∀ a b i di,
+  a .[ i] = true
+  → b .[ i] = true
+  → rm_add_i a b i = false
+  → (∀ dj, dj < di → a.[i + S dj] = negb b.[i + S dj])
+  → b.[i + S di] = true
+  → a.[i + S di] = false.
+Proof.
+bbb.
+*)
+
 Theorem case_2 : ∀ a₀ b₀ c₀ a b c i,
   a = (a₀ + 0)%rm
   → b = (b₀ + 0)%rm
