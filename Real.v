@@ -4884,7 +4884,6 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
        rename H into He₅.
        destruct x; simpl in He₄.
         remember He₅ as H; clear HeqH.
-(**)
         unfold carry_i in H; simpl in H.
         remember (fst_same a b (S (S (i + di₂)))) as s₅ eqn:Hs₅ .
         destruct s₅ as [di₅| ]; [ idtac | discriminate H ].
