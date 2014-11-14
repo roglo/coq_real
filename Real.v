@@ -4926,6 +4926,8 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
         apply carry_succ_negb in H; [ idtac | assumption ].
         rewrite Hz in H.
         destruct H as (H, _); discriminate H.
+
+        rename Hz into Ha₄.
 bbb.
 faire : Some di₅ = fst_same a b (S (i + di₂))
 et lt_eq_lt_dec di₅ di₄
