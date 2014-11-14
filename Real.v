@@ -4824,7 +4824,103 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
     remember He₃ as H; clear HeqH.
     unfold rm_add_i in H; simpl in H.
     rewrite Hb₂, Hd₂, xorb_nilpotent, xorb_false_l in H.
+    unfold carry_i in H.
+    remember (fst_same b c (S (S (i + di₂)))) as s₄ eqn:Hs₄ .
+    destruct s₄ as [di₄| ]; [ idtac | clear H ].
+     rename H into Hb₄; simpl in Hb₄.
+     remember Hs₄ as H; clear HeqH.
+     apply fst_same_sym_iff in H; simpl in H.
+     destruct H as (Hn₄, Hd₄); rewrite Hb₄ in Hd₄; symmetry in Hd₄.
+     destruct (lt_eq_lt_dec (S (di₂ + di₄)) di₁) as [[H₂| H₂]| H₂].
+      destruct di₄.
+       clear Hn₄; rewrite Nat.add_0_r in Hb₄, Hd₄, H₂.
+       remember H₂ as H; clear HeqH.
+       apply Hn₁ in H.
+       rewrite Nat.add_succ_r, Hd₄ in H; simpl in H.
+       unfold rm_add_i in H; simpl in H.
+       rewrite Hb₄, xorb_true_r, <- negb_xorb_l in H.
+       apply negb_false_iff in H.
+       apply xorb_move_l_r_1 in H; rewrite xorb_true_r in H.
+       remember a .[ S (S (i + di₂))] as x eqn:Ha₄ .
+       symmetry in Ha₄.
+       destruct x; simpl in H.
+        rename H into He₄.
+        remember Hd₂ as H; clear HeqH.
+        symmetry in H; rewrite <- negb_involutive in H.
+        rewrite <- Hn₁ in H; [ idtac | apply Nat.lt_le_incl; assumption ].
+        apply negb_sym in H; simpl in H.
+        unfold rm_add_i in H.
+        rewrite Ha₃, Hb₂, xorb_nilpotent, xorb_false_l in H.
+        unfold carry_i in H; simpl in H.
+        remember (fst_same a b (S (S (i + di₂)))) as s₅ eqn:Hs₅ .
+        destruct s₅ as [di₅| ]; [ idtac | discriminate H ].
+        apply fst_same_sym_iff in Hs₅; simpl in Hs₅.
+        destruct Hs₅ as (Hn₅, Hb₅); rewrite H in Hb₅; symmetry in Hb₅.
+        rename H into Ha₅.
+        destruct di₅.
+         rewrite Nat.add_0_r, Ha₄ in Ha₅; discriminate Ha₅.
+
+         pose proof (Hn₅ 0 (Nat.lt_0_succ di₅)) as H.
+         rewrite Nat.add_0_r, Ha₄, Hb₄ in H.
+         discriminate H.
 bbb.
+       i  i+1  -   i₂  i₄  -   i₁  -
+  b    .   .   x   1   1   .   .   .
+1                   +0  +1
+  a    .   1   1   1   0   .   .   .
+1          ≠   ≠
+ b+c   .   0   0   1   .   .   .   .
+
+ a+b   .   .   x   0   0   .   0   .
+0          ≠   ≠   ≠   ≠   ≠
+  c    .   .   .   1   1   .   0   .
+1          ≠   ≠    +1
+  b    .   .   x   1   1   .   .   .
+
+
+       i  i+1  -   i₂  -   i₄  -   i₁  -
+  b    .   .   x   1   y   1   .   .   .
+1                   +0  +0  +1           <-- contradiction !?
+  a    .   1   1   1   0   0   .   .   .
+1          ≠   ≠
+ b+c   .   0   0   1   0   .   .   .   .
+
+ a+b   .   .   x   0   y   0   .   0   .
+0          ≠   ≠   ≠   ≠   ≠   ≠
+  c    .   .   .   1   .   1   .   0   .
+1          ≠   ≠    +1 ≠
+  b    .   .   x   1   y   1   .   .   .
+
+si z = 1, alors contradiction, donc z = 0
+
+       i  i+1  -   i₂  -   i₄  -   i₁  -
+  b    .   .   x   1   y   1   .   .   .
+1                   +0  +z
+  a    .   1   1   1   z   .   .   .   .
+1          ≠   ≠
+ b+c   .   0   0   1   0   .   .   .   .
+
+ a+b   .   .   x   0   y   .   .   0   .
+0          ≠   ≠   ≠   ≠   ≠   ≠
+  c    .   .   .   1   .   1   .   0   .
+1          ≠   ≠    +1 ≠
+  b    .   .   x   1   y   1   .   .   .
+
+
+       i  i+1  -   i₂  -   i₄  -   i₁  -
+  b    .   .   x   1   1   0   .   .   .   .   .
+1                   +0 ≠    +0
+  a    .   1   1   1   0   0   .   .   .
+1          ≠   ≠
+ b+c   .   0   0   1   0   0   .   .   .
+
+ a+b   .   .   x   0   1   0   .   0   .
+0          ≠   ≠   ≠   ≠   ≠   ≠
+  c    .   .   .   1   0   1   .   0   .
+1          ≠   ≠    +1
+  b    .   .   x   1   1   0   .   .   .
+
+
        i  i+1  -   i₂  -   i₁
   b    .   .   x   1   .   .   .
 1                   +0
@@ -4836,7 +4932,7 @@ bbb.
 0          ≠   ≠   ≠   ≠
   c    .   .   .   1   .   0   .
 1          ≠   ≠    +1
-  b    .   .   x   1   .   .   .   .   .
+  b    .   .   x   1   .   .   .
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
