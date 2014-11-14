@@ -4776,10 +4776,27 @@ Theorem zzz : ∀ a b i di,
   → b.[i] = true
   → rm_add_i a b i = false
   → (∀ dj, dj < di → b.[i + S dj] = rm_add_i a b (i + S dj))
-  → a.[i + S di] = true ∧ b.[i + S di] = true ∧
-     rm_add_i a b (i + S di) = false.
+  → a.[i + S di] = true
+  → rm_add_i a b (i + S di) = false
+  → b.[i + S di] = true.
 Proof.
-intros a b i di Ha Hb Hc Hdi.
+intros a b i di Ha Hb Hc Hdi Had Hcd.
+unfold rm_add_i in Hcd.
+rewrite Had, xorb_true_l in Hcd.
+remember b .[ i + S di] as y eqn:Hy .
+destruct y; [ reflexivity | rewrite xorb_true_l in Hcd ].
+symmetry in Hy; apply negb_false_iff in Hcd.
+revert i Ha Hb Hc Hdi Had Hcd Hy.
+induction di; intros.
+ rewrite Nat.add_1_r in Had, Hy, Hcd.
+ rewrite <- negb_involutive in Hcd.
+ apply carry_succ_negb in Hcd.
+  rewrite Had in Hcd.
+  destruct Hcd as (H, _); discriminate H.
+
+  unfold rm_add_i in Hc.
+  rewrite Ha, Hb, xorb_nilpotent, xorb_false_l in Hc.
+  assumption.
 bbb.
 *)
 
