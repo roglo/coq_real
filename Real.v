@@ -4779,6 +4779,7 @@ Theorem zzz : ∀ a b i di,
   → a.[i + S di] = true ∧ b.[i + S di] = true ∧
      rm_add_i a b (i + S di) = false.
 Proof.
+intros a b i di Ha Hb Hc Hdi.
 bbb.
 *)
 
@@ -4879,23 +4880,19 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
         apply carry_succ_negb in He₄; [ simpl in He₄ | assumption ].
         rewrite Hb₄ in He₄; destruct He₄ as (_, H); discriminate H.
 
-bbb.
        remember Ha₃ as H; clear HeqH.
        apply zzz with (b := b) (di := S di₄) in H; try assumption.
         Focus 2.
-        unfold rm_add_i.
-        rewrite Ha₃, Hb₂, xorb_nilpotent, xorb_false_l.
-        rewrite <- Nat.add_succ_l.
-        unfold carry_i; simpl.
-        remember (fst_same a b (S (S (i + di₂)))) as s₅ eqn:Hs₅ .
-        apply fst_same_sym_iff in Hs₅; simpl in Hs₅.
-        destruct s₅ as [di₅| ].
-         destruct Hs₅ as (Hn₅, Ht₅).
-         destruct (lt_eq_lt_dec di₅ (S di₄)) as [[H₃| H₃]| H₃].
-          rewrite Hn₄ in Ht₅; [ idtac | assumption ].
-          rewrite <- Nat.add_assoc, <- Nat.add_succ_r in Ht₅.
-          rewrite <- Hn₁ in Ht₅; [ idtac | omega ].
-          rewrite Nat.add_succ_r, Nat.add_assoc in Ht₅.
+        rewrite Hn₁, Hd₂; [ reflexivity | assumption ].
+
+        Focus 2.
+        intros dj Hdj.
+        rewrite Nat.add_succ_r; simpl.
+        rewrite Hn₄; [ symmetry | assumption ].
+        rewrite <- Nat.add_assoc, <- Nat.add_succ_r.
+        apply Hn₁.
+        omega.
+
 bbb.
 faire : Some di₅ = fst_same a b (S (i + di₂))
 et lt_eq_lt_dec di₅ di₄
