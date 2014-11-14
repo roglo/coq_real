@@ -4797,6 +4797,8 @@ induction di; intros.
   unfold rm_add_i in Hc.
   rewrite Ha, Hb, xorb_nilpotent, xorb_false_l in Hc.
   assumption.
+
+ rename Hy into Hbd.
 bbb.
 *)
 
