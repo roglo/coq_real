@@ -4884,6 +4884,7 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
        rename H into He₅.
        destruct x; simpl in He₄.
         remember He₅ as H; clear HeqH.
+(**)
         unfold carry_i in H; simpl in H.
         remember (fst_same a b (S (S (i + di₂)))) as s₅ eqn:Hs₅ .
         destruct s₅ as [di₅| ]; [ idtac | discriminate H ].
@@ -4928,16 +4929,14 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
         destruct H as (H, _); discriminate H.
 
         rename Hz into Ha₄.
+        destruct di₄.
+         pose proof (Hn₄ 0 Nat.lt_0_1) as H; clear Hn₄.
+         rewrite Nat.add_0_r in H.
+         rewrite <- Nat.add_succ_r in H.
+         rewrite <- Hn₁ in H; [ idtac | omega ].
+         rewrite Nat.add_succ_r in H.
+         rename H into Hb₅.
 bbb.
-faire : Some di₅ = fst_same a b (S (i + di₂))
-et lt_eq_lt_dec di₅ di₄
-mouais, non, ça fait que reculer le pb
-voir donc peut-être avec les lemmes qui
-ont résolu case_1
-
-si z = 1, alors contradiction, donc z = 0
-à voir entre i₂+1 et i₄-1
-
        i  i+1  -   i₂  -   i₄  -   i₁  -
   b    .   .   x   1   y   1   .   .   .
 1                   +0  +z  +t
