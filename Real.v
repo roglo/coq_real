@@ -4868,17 +4868,23 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
         apply carry_succ_negb in He₄; [ simpl in He₄ | assumption ].
         rewrite Hb₄ in He₄; destruct He₄ as (_, H); discriminate H.
 bbb.
+faire : Some di₅ = fst_same a b (S (i + di₂))
+et lt_eq_lt_dec di₅ di₄
+mouais, non, ça fait que reculer le pb
+voir donc peut-être avec les lemmes qui
+ont résolu case_1
+
 si z = 1, alors contradiction, donc z = 0
 à voir entre i₂+1 et i₄-1
 
        i  i+1  -   i₂  -   i₄  -   i₁  -
   b    .   .   x   1   y   1   .   .   .
-1                   +0  +z
-  a    .   1   1   1   z   .   .   .   .
+1                   +0  +z  +t
+  a    .   1   1   1   z  ¬t   .   .   .
 1          ≠   ≠
  b+c   .   0   0   1   0   .   .   .   .
 
- a+b   .   .   x   0   y   .   .   0   .
+ a+b   .   .   x   0   y   0   .   0   .
 0          ≠   ≠   ≠   ≠   ≠   ≠
   c    .   .   .   1   .   1   .   0   .
 1          ≠   ≠    +1 ≠
