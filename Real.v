@@ -4842,8 +4842,7 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
        apply negb_false_iff in H.
        apply xorb_move_l_r_1 in H; rewrite xorb_true_r in H.
        remember a .[ S (S (i + di₂))] as x eqn:Ha₄ .
-       symmetry in Ha₄.
-       rename H into He₄.
+       symmetry in Ha₄; rename H into He₄.
        remember Hd₂ as H; clear HeqH.
        symmetry in H; rewrite <- negb_involutive in H.
        rewrite <- Hn₁ in H; [ idtac | apply Nat.lt_le_incl; assumption ].
@@ -4869,18 +4868,21 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
         apply carry_succ_negb in He₄; [ simpl in He₄ | assumption ].
         rewrite Hb₄ in He₄; destruct He₄ as (_, H); discriminate H.
 bbb.
-       i  i+1  -   i₂  i₄  -   i₁  -
-  b    .   .   x   1   1   .   .   .
-1                   +0  +1
-  a    .   1   1   1   0   .   .   .
-1          ≠   ≠
- b+c   .   0   0   1   .   .   .   .
+si z = 1, alors contradiction, donc z = 0
+à voir entre i₂+1 et i₄-1
 
- a+b   .   .   x   0   0   .   0   .
-0          ≠   ≠   ≠   ≠   ≠
-  c    .   .   .   1   1   .   0   .
-1          ≠   ≠    +1
-  b    .   .   x   1   1   .   .   .
+       i  i+1  -   i₂  -   i₄  -   i₁  -
+  b    .   .   x   1   y   1   .   .   .
+1                   +0  +z
+  a    .   1   1   1   z   .   .   .   .
+1          ≠   ≠
+ b+c   .   0   0   1   0   .   .   .   .
+
+ a+b   .   .   x   0   y   .   .   0   .
+0          ≠   ≠   ≠   ≠   ≠   ≠
+  c    .   .   .   1   .   1   .   0   .
+1          ≠   ≠    +1 ≠
+  b    .   .   x   1   y   1   .   .   .
 
 
        i  i+1  -   i₂  -   i₄  -   i₁  -
@@ -4891,21 +4893,6 @@ bbb.
  b+c   .   0   0   1   0   .   .   .   .
 
  a+b   .   .   x   0   y   0   .   0   .
-0          ≠   ≠   ≠   ≠   ≠   ≠
-  c    .   .   .   1   .   1   .   0   .
-1          ≠   ≠    +1 ≠
-  b    .   .   x   1   y   1   .   .   .
-
-si z = 1, alors contradiction, donc z = 0
-
-       i  i+1  -   i₂  -   i₄  -   i₁  -
-  b    .   .   x   1   y   1   .   .   .
-1                   +0  +z
-  a    .   1   1   1   z   .   .   .   .
-1          ≠   ≠
- b+c   .   0   0   1   0   .   .   .   .
-
- a+b   .   .   x   0   y   .   .   0   .
 0          ≠   ≠   ≠   ≠   ≠   ≠
   c    .   .   .   1   .   1   .   0   .
 1          ≠   ≠    +1 ≠
