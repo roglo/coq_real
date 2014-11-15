@@ -4973,6 +4973,7 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
           Hn₃ He₃ Hs₄; revert a b Hn₁ Hn₄ Ha₅ Hb₅ Hd₅ He₅ H₂ Ha₄ Hb₄ He₄ Hf₄;
           clear; intros.
          move a after c; move b after c.
+         move t before Ha₄; move y before Ha₅.
 (*beginning of possible induction*)
          remember a .[ S (S (S (i + di₂)))] as x eqn:Ha₆ .
          symmetry in Ha₆.
@@ -5059,8 +5060,8 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
               apply carry_x_before_xx with (b := b) in Ha₄; try eassumption.
               rewrite Hf₇ in Ha₄; discriminate Ha₄.
 
+             clear y Ha₇ Hb₇ He₇.
 (*possible induction 3rd step here *)
-             clear y Hb₇ He₇.
              rewrite Nat.add_succ_r in H₂, Ha₄, Hb₄, He₄, Hf₄.
              remember a .[ S (S (S (S (S (i + di₂)))))] as x eqn:Ha₈ .
              symmetry in Ha₈.
@@ -5103,6 +5104,8 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
                 rewrite Hf₈ in Ha₄; discriminate Ha₄.
 
                rewrite Nat.add_succ_r in H₂, Ha₄, Hb₄, He₄, Hf₄.
+(*possible induction 4th step here *)
+               clear y Ha₈ Hb₈ He₈.
 bbb.
        i  i+1  -   i₂  -   i₄  -   i₁  -
   b    .   .   x   1   y   1   .   .   .
