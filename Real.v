@@ -4902,31 +4902,35 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
 
        remember a .[ S (S (i + di₂))] as z eqn:Hz .
        symmetry in Hz.
+       remember b .[ S (S (i + di₂))] as y eqn:Hy .
+       symmetry in Hy; move y after z.
+       pose proof (Hn₄ 0 (Nat.lt_0_succ di₄)) as H.
+       rewrite Nat.add_0_r, Hy in H.
+       rewrite <- Nat.add_succ_r in H.
+       rewrite <- Hn₁ in H; [ idtac | omega ].
+       rewrite Nat.add_succ_r in H.
+       symmetry in H; rename H into Ht.
+       remember Ht as H; clear HeqH.
+       unfold rm_add_i in H.
+       rewrite Hz, Hy, xorb_shuffle0 in H.
+       rewrite xorb_comm in H; apply xorb_move_l_r_1 in H.
+       rewrite xorb_nilpotent in H.
+       apply xorb_eq in H; symmetry in H.
+       rename H into Hu.
        destruct z.
-        remember b .[ S (S (i + di₂))] as y eqn:Hy .
-        symmetry in Hy.
-        pose proof (Hn₄ 0 (Nat.lt_0_succ di₄)) as H.
-        rewrite Nat.add_0_r, Hy in H.
-        rewrite <- Nat.add_succ_r in H.
-        rewrite <- Hn₁ in H; [ idtac | omega ].
+        remember Hd₂ as H; clear HeqH.
+        rewrite <- negb_involutive in H.
+        apply negb_sym in H; simpl in H.
+        rewrite <- Hn₁ in H; [ idtac | assumption ].
         symmetry in H.
         unfold rm_add_i in H.
-        rewrite Nat.add_succ_r, Hz, Hy in H.
-        rewrite xorb_true_l in H.
-        apply xorb_move_l_r_1 in H.
-        rewrite negb_xorb_diag in H.
-        remember Hd₂ as HH; clear HeqHH.
-        rewrite <- negb_involutive in HH.
-        apply negb_sym in HH; simpl in HH.
-        rewrite <- Hn₁ in HH; [ idtac | assumption ].
-        symmetry in HH.
-        unfold rm_add_i in HH.
-        rewrite Ha₃, Hb₂, xorb_nilpotent, xorb_false_l in HH.
-        rewrite <- negb_involutive in H.
-        apply carry_succ_negb in H; [ idtac | assumption ].
-        rewrite Hz in H.
-        destruct H as (H, _); discriminate H.
+        rewrite Ha₃, Hb₂, xorb_nilpotent, xorb_false_l in H.
+        rewrite <- negb_involutive in Hu.
+        apply carry_succ_negb in Hu; [ idtac | assumption ].
+        rewrite Hz in Hu.
+        destruct Hu as (Hu, _); discriminate Hu.
 
+bbb.
         rename Hz into Ha₄.
         destruct di₄.
          pose proof (Hn₄ 0 Nat.lt_0_1) as H; clear Hn₄.
