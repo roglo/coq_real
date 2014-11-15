@@ -4795,22 +4795,28 @@ Qed.
 
 Theorem sum_0x_x_not_sum_y1_0 : ∀ a b c i di₁ di₂ di₄ y t,
   (∀ dj, dj < di₁ → rm_add_i a b (S (i + dj)) = negb c .[ S (i + dj)])
-  → (∀ dj, dj < S di₄ →
-     b .[ S (i + di₂ + dj)] = negb c .[ S (i + di₂ + dj)])
+  → (∀ dj, dj < di₄ → b .[ S (i + di₂ + dj)] = negb c .[ S (i + di₂ + dj)])
   → carry a b (i + di₂) = false
-  → S (di₂ + di₄) < di₁
+  → di₂ + di₄ < di₁
   → a .[ S (i + di₂)] = false
   → b .[ S (i + di₂)] = y
   → rm_add_i a b (S (i + di₂)) = y
   → carry a b (S (i + di₂)) = false
-  → a .[ S (S (i + di₂ + di₄))] = negb t
-  → b .[ S (S (i + di₂ + di₄))] = true
-  → rm_add_i a b (S (S (i + di₂ + di₄))) = false
-  → carry a b (S (S (i + di₂ + di₄))) = t
+  → a .[ S (i + di₂ + di₄)] = negb t
+  → b .[ S (i + di₂ + di₄)] = true
+  → rm_add_i a b (S (i + di₂ + di₄)) = false
+  → carry a b (S (i + di₂ + di₄)) = t
   → False.
 Proof.
 intros a b c i di₁ di₂ di₄ y t.
 intros Hn₁ Hn₄ He₅ H₂ Ha₆ Hb₆ He₆ Hf₆ Ha₄ Hb₄ He₄ Hf₄.
+destruct di₄.
+ rewrite Nat.add_0_r in H₂, Ha₄, Hb₄, He₄, Hf₄.
+ rewrite Hf₆ in Hf₄; subst t.
+ rewrite Ha₆ in Ha₄; discriminate Ha₄.
+
+ rewrite Nat.add_succ_r in H₂, Ha₄, Hb₄, He₄, Hf₄.
+
 revert di₂ Hn₄ He₅ H₂ y Ha₆ Hb₆ He₆ Hf₆ t Ha₄ Hb₄ He₄ Hf₄.
 induction di₄; intros.
  rewrite Nat.add_0_r in H₂, Ha₄, Hb₄, He₄, Hf₄.
@@ -4911,7 +4917,9 @@ destruct x.
  rewrite <- Nat.add_succ_r in He₅, Ha₆, Hb₆, He₆, Hf₆.
  remember (S (i + di₂ + di₄)) as x eqn:Hx .
  rewrite <- Nat.add_succ_l, <- Nat.add_succ_r in Hx; subst x.
- eapply sum_0x_x_not_sum_y1_0 with (di₂ := S di₂); try eassumption.
+ rewrite <- Nat.add_succ_r, <- Nat.add_succ_l in H₂, Ha₄, Hb₄, He₄, Hf₄.
+ simpl in Ha₄, Hb₄, He₄, Hf₄.
+ eapply sum_0x_x_not_sum_y1_0; try eassumption.
  intros dj Hdj.
  rewrite Nat.add_succ_r; simpl.
  apply Hn₄; assumption.
