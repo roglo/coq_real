@@ -4871,7 +4871,7 @@ induction di₄; intros.
   assumption.
 Qed.
 
-Theorem zzz : ∀ a b c i di₁ di₂ di₄ t,
+Theorem sum_x1_0_carry_not_x : ∀ a b c i di₁ di₂ di₄ t,
   (∀ dj, dj < di₁ → rm_add_i a b (S (i + dj)) = negb c .[ S (i + dj)])
   → (∀ dj, dj < S di₄ →
      b .[ S (S (i + di₂ + dj))] = negb c .[ S (S (i + di₂ + dj))])
@@ -5053,10 +5053,12 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
        move He₅ at bottom; move t at bottom; move H₂ at bottom.
        move Hb₄ at bottom; move He₄ at bottom; move Hf₄ at bottom.
        symmetry in Hf₄.
-       revert Hn₁ Hn₄ He₅ t H₂ Ha₄ Hb₄ He₄ Hf₄; clear; intros.
        rewrite Nat.add_succ_r in H₂.
-(* try to direct call sum_0x_x_not_sum_y1_0 instead *)
-       eapply zzz; eassumption.
+       eapply sum_x1_0_carry_not_x; eassumption.
+
+      subst di₁.
+      rewrite Nat.add_succ_r, Nat.add_assoc, Hd₄ in Hd₁.
+      discriminate Hd₁.
 
       simpl.
 bbb.
