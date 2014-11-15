@@ -4932,14 +4932,24 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
 
         rename Hz into Ha₅; rename Hy into Hb₅.
         rename Ht into Hd₅; rename Hu into He₅.
-bbb.
         destruct di₄.
-         pose proof (Hn₄ 0 Nat.lt_0_1) as H; clear Hn₄.
-         rewrite Nat.add_0_r in H.
-         rewrite <- Nat.add_succ_r in H.
-         rewrite <- Hn₁ in H; [ idtac | omega ].
-         rewrite Nat.add_succ_r in H.
-         rename H into Hb₅.
+         clear Hn₄.
+         rewrite Nat.add_1_r in Hb₄, Hd₄, H₂.
+         remember Hd₄ as H; clear HeqH.
+         rewrite <- negb_involutive in H.
+         apply negb_sym in H; simpl in H.
+         do 2 rewrite <- Nat.add_succ_r in H.
+         rewrite <- Hn₁ in H; [ idtac | assumption ].
+         symmetry in H; do 2 rewrite Nat.add_succ_r in H.
+         rename H into He₄; move Hb₄ before He₄.
+         remember He₄ as H; clear HeqH.
+         unfold rm_add_i in H.
+         rewrite Hb₄, xorb_true_r in H.
+         apply xorb_eq in H; symmetry in H.
+         rename H into Hf₄.
+         remember a .[ S (S (S (i + di₂)))] as x eqn:Hx .
+         symmetry in Hx.
+         destruct x.
 bbb.
        i  i+1  -   i₂  -   i₄  -   i₁  -
   b    .   .   x   1   y   1   .   .   .
