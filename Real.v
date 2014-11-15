@@ -4793,67 +4793,102 @@ destruct s as [di| ].
  exfalso; revert H; apply no_fixpoint_negb.
 Qed.
 
-Theorem zzz : ∀ a b c i di₁ di₂ di₄ t n,
+Theorem zzz : ∀ a b c i di₁ di₂ di₄ t,
   (∀ dj, dj < di₁ → rm_add_i a b (S (i + dj)) = negb c .[ S (i + dj)])
-  → (∀ dj, dj < n + S di₄ →
+  → (∀ dj, dj < S di₄ →
      b .[ S (S (i + di₂ + dj))] = negb c .[ S (S (i + di₂ + dj))])
-  → carry a b (n + S (i + di₂)) = false
-  → n + S (S (di₂ + di₄)) < di₁
-  → a .[ n + S (S (S (i + di₂ + di₄)))] = negb t
-  → b .[ n + S (S (S (i + di₂ + di₄)))] = true
-  → rm_add_i a b (n + S (S (S (i + di₂ + di₄)))) = false
-  → carry a b (n + S (S (S (i + di₂ + di₄)))) = t
+  → carry a b (S (i + di₂)) = false
+  → S (S (di₂ + di₄)) < di₁
+  → a .[ S (S (S (i + di₂ + di₄)))] = negb t
+  → b .[ S (S (S (i + di₂ + di₄)))] = true
+  → rm_add_i a b (S (S (S (i + di₂ + di₄)))) = false
+  → carry a b (S (S (S (i + di₂ + di₄)))) = t
   → False.
 Proof.
-intros a b c i di₁ di₂ di₄ t n Hn₁ Hn₄ He₅ H₂ Ha₄ Hb₄ He₄ Hf₄.
-induction n.
- simpl in Hn₄, He₅, H₂, Ha₄, Hb₄, He₄, Hf₄.
- remember a .[ S (S (i + di₂))] as x eqn:Ha₆ .
- symmetry in Ha₆.
- remember b .[ S (S (i + di₂))] as y eqn:Hb₆ .
- symmetry in Hb₆.
- assert (0 < S di₄) as H by omega.
- apply Hn₄ in H.
- rewrite Nat.add_0_r, Hb₆ in H.
- rewrite <- Nat.add_succ_r in H.
- rewrite <- Hn₁ in H; [ idtac | omega ].
- rewrite Nat.add_succ_r in H; symmetry in H.
- rename H into He₆; move y before x.
- remember He₆ as H; clear HeqH.
- unfold rm_add_i in H.
- rewrite Ha₆, Hb₆ in H.
- rewrite xorb_shuffle0, xorb_comm in H.
- apply xorb_move_l_r_1 in H.
- rewrite xorb_nilpotent in H.
- apply xorb_eq in H; symmetry in H.
- rename H into Hf₆.
- destruct x.
-  remember Hf₆ as H; clear HeqH.
-  rewrite <- negb_involutive in H.
-  apply carry_succ_negb in H; [ idtac | assumption ].
-  rewrite Ha₆ in H.
-  destruct H as (H, _); discriminate H.
+intros a b c i di₁ di₂ di₄ t Hn₁ Hn₄ He₅ H₂ Ha₄ Hb₄ He₄ Hf₄.
+simpl in Hn₄, He₅, H₂, Ha₄, Hb₄, He₄, Hf₄.
+remember a .[ S (S (i + di₂))] as x eqn:Ha₆ .
+symmetry in Ha₆.
+remember b .[ S (S (i + di₂))] as y eqn:Hb₆ .
+symmetry in Hb₆.
+assert (0 < S di₄) as H by omega.
+apply Hn₄ in H.
+rewrite Nat.add_0_r, Hb₆ in H.
+rewrite <- Nat.add_succ_r in H.
+rewrite <- Hn₁ in H; [ idtac | omega ].
+rewrite Nat.add_succ_r in H; symmetry in H.
+rename H into He₆; move y before x.
+remember He₆ as H; clear HeqH.
+unfold rm_add_i in H.
+rewrite Ha₆, Hb₆ in H.
+rewrite xorb_shuffle0, xorb_comm in H.
+apply xorb_move_l_r_1 in H.
+rewrite xorb_nilpotent in H.
+apply xorb_eq in H; symmetry in H.
+rename H into Hf₆.
+destruct x.
+ remember Hf₆ as H; clear HeqH.
+ rewrite <- negb_involutive in H.
+ apply carry_succ_negb in H; [ idtac | assumption ].
+ rewrite Ha₆ in H.
+ destruct H as (H, _); discriminate H.
 
-  move t after H₂.
-  move y after t; move Ha₆ after t; move Hb₆ after t.
-  move He₆ after t; move Hf₆ after t.
-  destruct di₄.
-   rewrite Nat.add_0_r in H₂, Ha₄, Hb₄, He₄, Hf₄.
-   destruct t.
-    rewrite <- negb_involutive in Hf₄.
-    apply carry_succ_negb in Hf₄; [ idtac | assumption ].
-    rewrite Hb₄ in Hf₄.
-    destruct Hf₄ as (_, H); discriminate H.
+ move t after H₂.
+ move y after t; move Ha₆ after t; move Hb₆ after t.
+ move He₆ after t; move Hf₆ after t.
+ revert di₂ Hn₄ He₅ H₂ y Ha₆ Hb₆ He₆ Hf₆ t Ha₄ Hb₄ He₄ Hf₄.
+ induction di₄; intros.
+  rewrite Nat.add_0_r in H₂, Ha₄, Hb₄, He₄, Hf₄.
+  destruct t.
+   rewrite <- negb_involutive in Hf₄.
+   apply carry_succ_negb in Hf₄; [ idtac | assumption ].
+   rewrite Hb₄ in Hf₄.
+   destruct Hf₄ as (_, H); discriminate H.
 
-    simpl in Ha₄.
-    apply carry_x_before_xx with (b := b) in Ha₄; try eassumption.
-    rewrite Hf₆ in Ha₄; discriminate Ha₄.
+   simpl in Ha₄.
+   apply carry_x_before_xx with (b := b) in Ha₄; try eassumption.
+   rewrite Hf₆ in Ha₄; discriminate Ha₄.
 
-   rewrite Nat.add_succ_r in H₂, Ha₄, Hb₄, He₄, Hf₄.
-   clear He₅ y Ha₆ Hb₆ He₆.
-Abort. (*
-bbb.
-*)
+  rewrite Nat.add_succ_r in H₂, Ha₄, Hb₄, He₄, Hf₄.
+  clear He₅ y Ha₆ Hb₆ He₆.
+  remember a .[ S (S (S (i + di₂)))] as x eqn:Ha₆ .
+  symmetry in Ha₆.
+  remember b .[ S (S (S (i + di₂)))] as y eqn:Hb₆ .
+  symmetry in Hb₆.
+  assert (1 < S (S di₄)) as H by omega.
+  apply Hn₄ in H.
+  rewrite Nat.add_1_r, Hb₆ in H.
+  do 2 rewrite <- Nat.add_succ_r in H.
+  rewrite <- Hn₁ in H; [ idtac | omega ].
+  do 2 rewrite Nat.add_succ_r in H; symmetry in H.
+  rename H into He₆; move y before x.
+  remember He₆ as H; clear HeqH.
+  unfold rm_add_i in H.
+  rewrite Ha₆, Hb₆ in H.
+  rewrite xorb_shuffle0, xorb_comm in H.
+  apply xorb_move_l_r_1 in H.
+  rewrite xorb_nilpotent in H.
+  apply xorb_eq in H; symmetry in H.
+  destruct x.
+   rewrite <- negb_involutive in H.
+   apply carry_succ_negb in H; [ idtac | assumption ].
+   rewrite Ha₆ in H.
+   destruct H as (H, _); discriminate H.
+
+   move t after H₂.
+   move y after t; move Ha₆ after t; move Hb₆ after t.
+   move He₆ after t; move Hf₆ after t.
+   rewrite <- Nat.add_succ_r in Hf₆, Ha₆, Hb₆, He₆, H.
+   remember (S (i + di₂ + di₄)) as x eqn:Hx .
+   rewrite <- Nat.add_succ_l, <- Nat.add_succ_r in Hx; subst x.
+   eapply IHdi₄; try eassumption.
+   intros dj Hdj.
+   rewrite Nat.add_succ_r; simpl.
+   rewrite <- Nat.add_succ_r.
+   apply Hn₄.
+   apply Nat.succ_lt_mono in Hdj.
+   assumption.
+Qed.
 
 Theorem case_2 : ∀ a₀ b₀ c₀ a b c i,
   a = (a₀ + 0)%rm
@@ -4952,7 +4987,6 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
         apply carry_succ_negb in He₄; [ simpl in He₄ | assumption ].
         rewrite Hb₄ in He₄; destruct He₄ as (_, H); discriminate H.
 
-(* if test then *)
        remember Hd₂ as H; clear HeqH.
        rewrite <- negb_involutive in H.
        apply negb_sym in H.
@@ -4986,280 +5020,10 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
        symmetry in Hf₄.
        revert Hn₁ Hn₄ He₅ t H₂ Ha₄ Hb₄ He₄ Hf₄; clear; intros.
        rewrite Nat.add_succ_r in H₂.
-(*true beginning of induction*)
+       eapply zzz; eassumption.
 
+      simpl.
 bbb.
-(* end test *)
-       remember a .[ S (S (i + di₂))] as z eqn:Hz .
-       symmetry in Hz.
-       remember b .[ S (S (i + di₂))] as y eqn:Hy .
-       symmetry in Hy; move y after z.
-       pose proof (Hn₄ 0 (Nat.lt_0_succ di₄)) as H.
-       rewrite Nat.add_0_r, Hy in H.
-       rewrite <- Nat.add_succ_r in H.
-       rewrite <- Hn₁ in H; [ idtac | omega ].
-       rewrite Nat.add_succ_r in H.
-       symmetry in H; rename H into Ht.
-       remember Ht as H; clear HeqH.
-       unfold rm_add_i in H.
-       rewrite Hz, Hy, xorb_shuffle0 in H.
-       rewrite xorb_comm in H; apply xorb_move_l_r_1 in H.
-       rewrite xorb_nilpotent in H.
-       apply xorb_eq in H; symmetry in H.
-       rename H into Hu.
-       destruct z.
-        remember Hd₂ as H; clear HeqH.
-        rewrite <- negb_involutive in H.
-        apply negb_sym in H; simpl in H.
-        rewrite <- Hn₁ in H; [ idtac | assumption ].
-        symmetry in H.
-        unfold rm_add_i in H.
-        rewrite Ha₃, Hb₂, xorb_nilpotent, xorb_false_l in H.
-        rewrite <- negb_involutive in Hu.
-        apply carry_succ_negb in Hu; [ idtac | assumption ].
-        rewrite Hz in Hu.
-        destruct Hu as (Hu, _); discriminate Hu.
-
-        rename Hz into Ha₅; rename Hy into Hb₅.
-        rename Ht into Hd₅; rename Hu into He₅.
-        destruct di₄.
-         clear Hn₄.
-         rewrite Nat.add_1_r in Hb₄, Hd₄, H₂.
-         remember Hd₄ as H; clear HeqH.
-         rewrite <- negb_involutive in H.
-         apply negb_sym in H; simpl in H.
-         do 2 rewrite <- Nat.add_succ_r in H.
-         rewrite <- Hn₁ in H; [ idtac | assumption ].
-         symmetry in H; do 2 rewrite Nat.add_succ_r in H.
-         rename H into He₄; move Hb₄ before He₄.
-         remember He₄ as H; clear HeqH.
-         unfold rm_add_i in H.
-         rewrite Hb₄, xorb_true_r in H.
-         apply xorb_eq in H; symmetry in H.
-         rename H into Hf₄.
-         remember a .[ S (S (S (i + di₂)))] as x eqn:Ha₄ .
-         symmetry in Ha₄; move Ha₄ after Hb₄.
-         destruct x; simpl in Hf₄.
-          apply carry_x_before_xx with (b := b) in Ha₄; try eassumption.
-          rewrite He₅ in Ha₄; discriminate Ha₄.
-
-          remember Hf₄ as H; clear HeqH.
-          rewrite <- negb_involutive in H.
-          apply carry_succ_negb in H; simpl in H; [ idtac | assumption ].
-          rewrite Hb₄ in H.
-          destruct H as (_, H); discriminate H.
-
-         do 2 rewrite Nat.add_succ_r in Hb₄, Hd₄, H₂.
-         remember a .[ S (S (S (S (i + di₂ + di₄))))] as t eqn:Ha₄ .
-         symmetry in Ha₄; move Hb₄ after Ha₄.
-         remember Hd₄ as H; clear HeqH.
-         rewrite <- negb_involutive in H.
-         apply negb_sym in H; simpl in H.
-         rewrite <- Nat.add_assoc in H.
-         do 3 rewrite <- Nat.add_succ_r in H.
-         rewrite <- Hn₁ in H; [ idtac | assumption ].
-         do 3 rewrite Nat.add_succ_r in H.
-         rewrite Nat.add_assoc in H; symmetry in H.
-         rename H into He₄.
-         remember He₄ as H; clear HeqH.
-         unfold rm_add_i in H; simpl in H.
-         rewrite Ha₄, Hb₄, xorb_true_r in H.
-         apply xorb_eq in H; symmetry in H.
-         rename H into Hf₄; rename t into u.
-         remember (negb u) as t.
-         apply negb_sym in Heqt; move Heqt after Ha₄; subst u.
-         move Ha₄ after Hb₄.
-         clear Ha₀ Hb₀ Hc₁ Hc₂ Hc₃ Hc₄ Hc₅ Hc₆ Hs₁ Hs₂ He₁ Hb₂ Hn₂ Hs₃ Ha₃
-          Hn₃ He₃ Hs₄; revert a b Hn₁ Hn₄ Ha₅ Hb₅ Hd₅ He₅ H₂ Ha₄ Hb₄ He₄ Hf₄;
-          clear; intros.
-         move a after c; move b after c; move t before H₂.
-         clear y Ha₅ Hb₅ Hd₅.
-(*beginning of possible induction*)
-         remember a .[ S (S (S (i + di₂)))] as x eqn:Ha₆ .
-         symmetry in Ha₆.
-         remember b .[ S (S (S (i + di₂)))] as y eqn:Hb₆ .
-         symmetry in Hb₆.
-         assert (1 < S (S di₄)) as H by omega.
-         apply Hn₄ in H.
-         rewrite Nat.add_1_r, Hb₆ in H.
-         do 2 rewrite <- Nat.add_succ_r in H.
-         rewrite <- Hn₁ in H; [ idtac | omega ].
-         do 2 rewrite Nat.add_succ_r in H; symmetry in H.
-         rename H into He₆; move y before x.
-         remember He₆ as H; clear HeqH.
-         unfold rm_add_i in H.
-         rewrite Ha₆, Hb₆ in H.
-         rewrite xorb_shuffle0, xorb_comm in H.
-         apply xorb_move_l_r_1 in H.
-         rewrite xorb_nilpotent in H.
-         apply xorb_eq in H; symmetry in H.
-         rename H into Hf₆.
-         destruct x.
-          remember Hf₆ as H; clear HeqH.
-          rewrite <- negb_involutive in H.
-          apply carry_succ_negb in H; [ idtac | assumption ].
-          rewrite Ha₆ in H.
-          destruct H as (H, _); discriminate H.
-
-          move t after H₂.
-          move y after t; move Ha₆ after t; move Hb₆ after t.
-          move He₆ after t; move Hf₆ after t.
-          destruct di₄.
-           rewrite Nat.add_0_r in H₂, Ha₄, Hb₄, He₄, Hf₄.
-           destruct t.
-            rewrite <- negb_involutive in Hf₄.
-            apply carry_succ_negb in Hf₄; [ idtac | assumption ].
-            rewrite Hb₄ in Hf₄.
-            destruct Hf₄ as (_, H); discriminate H.
-
-            simpl in Ha₄.
-            apply carry_x_before_xx with (b := b) in Ha₄; try eassumption.
-            rewrite Hf₆ in Ha₄; discriminate Ha₄.
-
-           rewrite Nat.add_succ_r in H₂, Ha₄, Hb₄, He₄, Hf₄.
-           clear He₅ y Ha₆ Hb₆ He₆.
-(*possible induction 2nd step here *)
-           remember a .[ S (S (S (S (i + di₂))))] as x eqn:Ha₇ .
-           symmetry in Ha₇.
-           remember b .[ S (S (S (S (i + di₂))))] as y eqn:Hb₇ .
-           symmetry in Hb₇.
-           assert (2 < S (S (S di₄))) as H by omega.
-           apply Hn₄ in H.
-           rewrite Nat.add_succ_r, Nat.add_1_r, Hb₇ in H.
-           do 3 rewrite <- Nat.add_succ_r in H.
-           rewrite <- Hn₁ in H; [ idtac | omega ].
-           do 3 rewrite Nat.add_succ_r in H; symmetry in H.
-           rename H into He₇; move y before x.
-           remember He₇ as H; clear HeqH.
-           unfold rm_add_i in H.
-           rewrite Ha₇, Hb₇ in H.
-           rewrite xorb_shuffle0, xorb_comm in H.
-           apply xorb_move_l_r_1 in H.
-           rewrite xorb_nilpotent in H.
-           apply xorb_eq in H; symmetry in H.
-           rename H into Hf₇.
-           destruct x.
-            remember Hf₇ as H; clear HeqH.
-            rewrite <- negb_involutive in H.
-            apply carry_succ_negb in H; [ idtac | assumption ].
-            rewrite Ha₇ in H.
-            destruct H as (H, _); discriminate H.
-
-            move y after t; move Ha₇ after t; move Hb₇ after t.
-            move He₇ after t; move Hf₇ after t.
-            destruct di₄.
-             rewrite Nat.add_0_r in H₂, Ha₄, Hb₄, He₄, Hf₄.
-             destruct t.
-              rewrite <- negb_involutive in Hf₄.
-              apply carry_succ_negb in Hf₄; [ idtac | assumption ].
-              rewrite Hb₄ in Hf₄.
-              destruct Hf₄ as (_, H); discriminate H.
-
-              simpl in Ha₄.
-              apply carry_x_before_xx with (b := b) in Ha₄; try eassumption.
-              rewrite Hf₇ in Ha₄; discriminate Ha₄.
-
-             clear y Hf₆ Ha₇ Hb₇ He₇.
-(*possible induction 3rd step here *)
-             rewrite Nat.add_succ_r in H₂, Ha₄, Hb₄, He₄, Hf₄.
-             remember a .[ S (S (S (S (S (i + di₂)))))] as x eqn:Ha₈ .
-             symmetry in Ha₈.
-             remember b .[ S (S (S (S (S (i + di₂)))))] as y eqn:Hb₈ .
-             symmetry in Hb₈.
-             assert (3 < S (S (S (S di₄)))) as H by omega.
-             apply Hn₄ in H.
-             rewrite Nat.add_comm in H; simpl in H.
-             do 4 rewrite <- Nat.add_succ_r in H.
-             rewrite <- Hn₁ in H; [ idtac | omega ].
-             do 4 rewrite Nat.add_succ_r in H; symmetry in H.
-             rename H into He₈; move y before x.
-             remember He₈ as H; clear HeqH.
-             unfold rm_add_i in H.
-             rewrite Ha₈, Hb₈ in H.
-             rewrite xorb_shuffle0, xorb_comm in H.
-             apply xorb_move_l_r_1 in H.
-             rewrite xorb_nilpotent in H.
-             apply xorb_eq in H; symmetry in H.
-             rename H into Hf₈.
-             destruct x.
-              remember Hf₈ as H; clear HeqH.
-              rewrite <- negb_involutive in H.
-              apply carry_succ_negb in H; [ idtac | assumption ].
-              rewrite Ha₈ in H.
-              destruct H as (H, _); discriminate H.
-
-              move y after t; move Ha₈ after t; move Hb₈ after t.
-              move He₈ after t; move Hf₈ after t.
-              destruct di₄.
-               rewrite Nat.add_0_r in H₂, Ha₄, Hb₄, He₄, Hf₄.
-               destruct t.
-                rewrite <- negb_involutive in Hf₄.
-                apply carry_succ_negb in Hf₄; [ idtac | assumption ].
-                rewrite Hb₄ in Hf₄.
-                destruct Hf₄ as (_, H); discriminate H.
-
-                simpl in Ha₄.
-                apply carry_x_before_xx with (b := b) in Ha₄; try eassumption.
-                rewrite Hf₈ in Ha₄; discriminate Ha₄.
-
-               rewrite Nat.add_succ_r in H₂, Ha₄, Hb₄, He₄, Hf₄.
-               clear Hf₇ y Ha₈ Hb₈ He₈.
-(*possible induction 4th step here *)
-bbb.
-       i  i+1  -   i₂  -   i₄  -   i₁  -
-  b    .   .   x   1   y   1   .   .   .
-1                   +0  +z  +t
-  a    .   1   1   1   z  ¬t   .   .   .
-1          ≠   ≠
- b+c   .   0   0   1   0   .   .   .   .
-
- a+b   .   .   x   0   y   0   .   0   .
-0          ≠   ≠   ≠   ≠   ≠   ≠
-  c    .   .   .   1   .   1   .   0   .
-1          ≠   ≠    +1 ≠
-  b    .   .   x   1   y   1   .   .   .
-
-
-       i  i+1  -   i₂  -   i₄  -   i₁  -
-  b    .   .   x   1   y   1   .   .   .
-1                   +0  +0  +1           <-- contradiction !?
-  a    .   1   1   1   0   0   .   .   .
-1          ≠   ≠
- b+c   .   0   0   1   0   .   .   .   .
-
- a+b   .   .   x   0   y   0   .   0   .
-0          ≠   ≠   ≠   ≠   ≠   ≠
-  c    .   .   .   1   .   1   .   0   .
-1          ≠   ≠    +1 ≠
-  b    .   .   x   1   y   1   .   .   .
-
-
-       i  i+1  -   i₂  -   i₄  -   i₁  -
-  b    .   .   x   1   1   0   .   .   .   .   .
-1                   +0 ≠    +0
-  a    .   1   1   1   0   0   .   .   .
-1          ≠   ≠
- b+c   .   0   0   1   0   0   .   .   .
-
- a+b   .   .   x   0   1   0   .   0   .
-0          ≠   ≠   ≠   ≠   ≠   ≠
-  c    .   .   .   1   0   1   .   0   .
-1          ≠   ≠    +1
-  b    .   .   x   1   1   0   .   .   .
-
-
-       i  i+1  -   i₂  -   i₁
-  b    .   .   x   1   .   .   .
-1                   +0
-  a    .   1   1   1   .   .   .
-1          ≠   ≠
- b+c   .   0   0   1   .   .   .
-
- a+b   .   .   x   0   .   0   .
-0          ≠   ≠   ≠   ≠
-  c    .   .   .   1   .   0   .
-1          ≠   ≠    +1
-  b    .   .   x   1   .   .   .
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
