@@ -5053,6 +5053,7 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
               rewrite Hf₇ in Ha₄; discriminate Ha₄.
 
              rewrite Nat.add_succ_r in H₂, Ha₄, Hb₄, He₄, Hf₄.
+(*possible induction 3rd step here *)
 bbb.
        i  i+1  -   i₂  -   i₄  -   i₁  -
   b    .   .   x   1   y   1   .   .   .
