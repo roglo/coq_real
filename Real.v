@@ -4949,7 +4949,23 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
           rewrite Hb₄ in H.
           destruct H as (_, H); discriminate H.
 
-         simpl.
+         do 2 rewrite Nat.add_succ_r in Hb₄, Hd₄, H₂.
+         remember a .[ S (S (S (S (i + di₂ + di₄))))] as t eqn:Ha₄ .
+         symmetry in Ha₄; move Hb₄ after Ha₄.
+         remember Hd₄ as H; clear HeqH.
+         rewrite <- negb_involutive in H.
+         apply negb_sym in H; simpl in H.
+         rewrite <- Nat.add_assoc in H.
+         do 3 rewrite <- Nat.add_succ_r in H.
+         rewrite <- Hn₁ in H; [ idtac | assumption ].
+         do 3 rewrite Nat.add_succ_r in H.
+         rewrite Nat.add_assoc in H; symmetry in H.
+         rename H into He₄.
+         remember He₄ as H; clear HeqH.
+         unfold rm_add_i in H; simpl in H.
+         rewrite Ha₄, Hb₄, xorb_true_r in H.
+         apply xorb_eq in H; symmetry in H.
+         rename H into Hf₄.
 bbb.
        i  i+1  -   i₂  -   i₄  -   i₁  -
   b    .   .   x   1   y   1   .   .   .
