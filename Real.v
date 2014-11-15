@@ -4900,6 +4900,31 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
        rewrite Ha₃, Hb₂ in H.
        rewrite xorb_nilpotent, xorb_false_l in H.
        rename H into He₅.
+       remember Hd₄ as H; clear HeqH.
+       rewrite Nat.add_succ_r in H.
+       rewrite <- Nat.add_assoc in H.
+       do 2 rewrite <- Nat.add_succ_r in H.
+       rewrite <- negb_involutive in H.
+       apply negb_sym in H; simpl in H.
+       rewrite <- Hn₁ in H; [ idtac | omega ].
+       symmetry in H.
+       do 2 rewrite Nat.add_succ_r in H.
+       rewrite Nat.add_assoc in H.
+       rename H into He₄.
+       remember He₄ as H; clear HeqH.
+       unfold rm_add_i in H.
+       rewrite Nat.add_succ_r in Hb₄.
+       rewrite Hb₄, xorb_true_r in H.
+       apply xorb_eq in H.
+       symmetry in H; apply negb_sym in H.
+       remember (carry a b (S (S (S (i + di₂ + di₄))))) as t eqn:Hf₄ .
+       rename H into Ha₄.
+       move He₅ at bottom; move t at bottom; move H₂ at bottom.
+       move Hb₄ at bottom; move He₄ at bottom; move Hf₄ at bottom.
+       symmetry in Hf₄.
+       revert Hn₁ Hn₄ He₅ t H₂ Ha₄ Hb₄ He₄ Hf₄; clear; intros.
+       rewrite Nat.add_succ_r in H₂.
+(*true beginning of induction*)
 
 bbb.
 (* end test *)
