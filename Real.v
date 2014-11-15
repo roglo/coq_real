@@ -4972,6 +4972,7 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
          clear Ha₀ Hb₀ Hc₁ Hc₂ Hc₃ Hc₄ Hc₅ Hc₆ Hs₁ Hs₂ He₁ Hb₂ Hn₂ Hs₃ Ha₃
           Hn₃ He₃ Hs₄; revert a b Hn₁ Hn₄ Ha₅ Hb₅ Hd₅ He₅ H₂ Ha₄ Hb₄ He₄ Hf₄;
           clear; intros.
+         move a after c; move b after c.
 (*beginning of possible induction*)
          remember a .[ S (S (S (i + di₂)))] as x eqn:Ha₆ .
          symmetry in Ha₆.
@@ -4999,6 +5000,7 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
           rewrite Ha₆ in H.
           destruct H as (H, _); discriminate H.
 
+          move t after H₂.
           move z after t; move Ha₆ after t; move Hb₆ after t.
           move He₆ after t; move Hf₆ after t.
           destruct di₄.
