@@ -4972,12 +4972,12 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
          clear Ha₀ Hb₀ Hc₁ Hc₂ Hc₃ Hc₄ Hc₅ Hc₆ Hs₁ Hs₂ He₁ Hb₂ Hn₂ Hs₃ Ha₃
           Hn₃ He₃ Hs₄; revert a b Hn₁ Hn₄ Ha₅ Hb₅ Hd₅ He₅ H₂ Ha₄ Hb₄ He₄ Hf₄;
           clear; intros.
-         move a after c; move b after c.
-         move t before Ha₄; move y before Ha₅.
+         move a after c; move b after c; move t before H₂.
+         clear y Ha₅ Hb₅ Hd₅.
 (*beginning of possible induction*)
          remember a .[ S (S (S (i + di₂)))] as x eqn:Ha₆ .
          symmetry in Ha₆.
-         remember b .[ S (S (S (i + di₂)))] as z eqn:Hb₆ .
+         remember b .[ S (S (S (i + di₂)))] as y eqn:Hb₆ .
          symmetry in Hb₆.
          assert (1 < S (S di₄)) as H by omega.
          apply Hn₄ in H.
@@ -4985,7 +4985,7 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
          do 2 rewrite <- Nat.add_succ_r in H.
          rewrite <- Hn₁ in H; [ idtac | omega ].
          do 2 rewrite Nat.add_succ_r in H; symmetry in H.
-         rename H into He₆; move z before x.
+         rename H into He₆; move y before x.
          remember He₆ as H; clear HeqH.
          unfold rm_add_i in H.
          rewrite Ha₆, Hb₆ in H.
@@ -5002,7 +5002,7 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
           destruct H as (H, _); discriminate H.
 
           move t after H₂.
-          move z after t; move Ha₆ after t; move Hb₆ after t.
+          move y after t; move Ha₆ after t; move Hb₆ after t.
           move He₆ after t; move Hf₆ after t.
           destruct di₄.
            rewrite Nat.add_0_r in H₂, Ha₄, Hb₄, He₄, Hf₄.
@@ -5017,8 +5017,7 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
             rewrite Hf₆ in Ha₄; discriminate Ha₄.
 
            rewrite Nat.add_succ_r in H₂, Ha₄, Hb₄, He₄, Hf₄.
-           clear Ha₆ Hb₆ He₆ z.
-           clear Ha₅ Hb₅ Hd₅ He₅ y.
+           clear He₅ y Ha₆ Hb₆ He₆.
 (*possible induction 2nd step here *)
            remember a .[ S (S (S (S (i + di₂))))] as x eqn:Ha₇ .
            symmetry in Ha₇.
@@ -5060,7 +5059,7 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
               apply carry_x_before_xx with (b := b) in Ha₄; try eassumption.
               rewrite Hf₇ in Ha₄; discriminate Ha₄.
 
-             clear y Ha₇ Hb₇ He₇.
+             clear y Hf₆ Ha₇ Hb₇ He₇.
 (*possible induction 3rd step here *)
              rewrite Nat.add_succ_r in H₂, Ha₄, Hb₄, He₄, Hf₄.
              remember a .[ S (S (S (S (S (i + di₂)))))] as x eqn:Ha₈ .
@@ -5104,8 +5103,8 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
                 rewrite Hf₈ in Ha₄; discriminate Ha₄.
 
                rewrite Nat.add_succ_r in H₂, Ha₄, Hb₄, He₄, Hf₄.
+               clear Hf₇ y Ha₈ Hb₈ He₈.
 (*possible induction 4th step here *)
-               clear y Ha₈ Hb₈ He₈.
 bbb.
        i  i+1  -   i₂  -   i₄  -   i₁  -
   b    .   .   x   1   y   1   .   .   .
