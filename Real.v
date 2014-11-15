@@ -4947,9 +4947,9 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
          rewrite Hb₄, xorb_true_r in H.
          apply xorb_eq in H; symmetry in H.
          rename H into Hf₄.
-         remember a .[ S (S (S (i + di₂)))] as x eqn:Hx .
-         symmetry in Hx.
-         destruct x.
+         remember a .[ S (S (S (i + di₂)))] as x eqn:Ha₄ .
+         symmetry in Ha₄; move Ha₄ after Hb₄.
+         destruct x; simpl in Hf₄.
 bbb.
        i  i+1  -   i₂  -   i₄  -   i₁  -
   b    .   .   x   1   y   1   .   .   .
