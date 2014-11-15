@@ -4890,6 +4890,19 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
         apply carry_succ_negb in He₄; [ simpl in He₄ | assumption ].
         rewrite Hb₄ in He₄; destruct He₄ as (_, H); discriminate H.
 
+(* if test then *)
+       remember Hd₂ as H; clear HeqH.
+       rewrite <- negb_involutive in H.
+       apply negb_sym in H.
+       rewrite <- Hn₁ in H; [ idtac | assumption ].
+       symmetry in H; simpl in H.
+       unfold rm_add_i in H.
+       rewrite Ha₃, Hb₂ in H.
+       rewrite xorb_nilpotent, xorb_false_l in H.
+       rename H into He₅.
+
+bbb.
+(* end test *)
        remember a .[ S (S (i + di₂))] as z eqn:Hz .
        symmetry in Hz.
        remember b .[ S (S (i + di₂))] as y eqn:Hy .
