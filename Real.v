@@ -4942,6 +4942,14 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
          destruct x; simpl in Hf₄.
           apply carry_x_before_xx with (b := b) in Ha₄; try eassumption.
           rewrite He₅ in Ha₄; discriminate Ha₄.
+
+          remember Hf₄ as H; clear HeqH.
+          rewrite <- negb_involutive in H.
+          apply carry_succ_negb in H; simpl in H; [ idtac | assumption ].
+          rewrite Hb₄ in H.
+          destruct H as (_, H); discriminate H.
+
+         simpl.
 bbb.
        i  i+1  -   i₂  -   i₄  -   i₁  -
   b    .   .   x   1   y   1   .   .   .
