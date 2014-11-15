@@ -4930,8 +4930,9 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
         rewrite Hz in Hu.
         destruct Hu as (Hu, _); discriminate Hu.
 
+        rename Hz into Ha₅; rename Hy into Hb₅.
+        rename Ht into Hd₅; rename Hu into He₅.
 bbb.
-        rename Hz into Ha₄.
         destruct di₄.
          pose proof (Hn₄ 0 Nat.lt_0_1) as H; clear Hn₄.
          rewrite Nat.add_0_r in H.
