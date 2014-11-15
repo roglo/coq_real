@@ -4836,6 +4836,10 @@ destruct x.
  move t after H₂.
  move y after t; move Ha₆ after t; move Hb₆ after t.
  move He₆ after t; move Hf₆ after t.
+
+bbb.
+ (* make a lemma from here and restructure the code *)
+
  revert di₂ Hn₄ He₅ H₂ y Ha₆ Hb₆ He₆ Hf₆ t Ha₄ Hb₄ He₄ Hf₄.
  induction di₄; intros.
   rewrite Nat.add_0_r in H₂, Ha₄, Hb₄, He₄, Hf₄.
