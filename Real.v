@@ -5062,6 +5062,32 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
 
       simpl.
 bbb.
+       i  i+1  -   i₂  -   i₁  -   i₄
+  b    .   0   0   1   y   1   .   1
+1                   +0  +z
+  a    .   1   1   1   z   .   .   .
+1          ≠   ≠
+ b+c   .   0   0   1   0   .   .   .
+
+ a+b   .   0   0   0   y   0   .   .
+0          ≠   ≠   ≠   ≠
+  c    .   1   1   1   .   0   .   1
+1          ≠   ≠       ≠   ≠   ≠
+  b    .   0   0   1   y   1   .   1
+
+
+       i  i+1  -   i₂  -   i₁  -   i₄
+  b    .   .   .   1   .   .   .   1
+1
+  a    .   .   .   1   .   .   .   .
+1          ≠   ≠
+ b+c   .   .   .   1   .   .   .   .
+
+ a+b   .   .   .   .   .   0   .   .
+0          ≠   ≠   ≠   ≠
+  c    .   .   .   1   .   0   .   1
+1          ≠   ≠       ≠   ≠   ≠
+  b    .   .   .   1   .   .   .   1
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
