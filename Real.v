@@ -5011,10 +5011,12 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
             rewrite Hf₆ in Ha₄; discriminate Ha₄.
 
            rewrite Nat.add_succ_r in H₂, Ha₄, Hb₄, He₄, Hf₄.
+           clear Ha₆ Hb₆ He₆ z.
+           clear Ha₅ Hb₅ Hd₅ He₅ y.
 (*possible induction 2nd step here *)
            remember a .[ S (S (S (S (i + di₂))))] as x eqn:Ha₇ .
            symmetry in Ha₇.
-           remember b .[ S (S (S (S (i + di₂))))] as u eqn:Hb₇ .
+           remember b .[ S (S (S (S (i + di₂))))] as y eqn:Hb₇ .
            symmetry in Hb₇.
            assert (2 < S (S (S di₄))) as H by omega.
            apply Hn₄ in H.
@@ -5022,7 +5024,7 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
            do 3 rewrite <- Nat.add_succ_r in H.
            rewrite <- Hn₁ in H; [ idtac | omega ].
            do 3 rewrite Nat.add_succ_r in H; symmetry in H.
-           rename H into He₇; move u before x.
+           rename H into He₇; move y before x.
            remember He₇ as H; clear HeqH.
            unfold rm_add_i in H.
            rewrite Ha₇, Hb₇ in H.
@@ -5038,7 +5040,7 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
             rewrite Ha₇ in H.
             destruct H as (H, _); discriminate H.
 
-            move u after t; move Ha₇ after t; move Hb₇ after t.
+            move y after t; move Ha₇ after t; move Hb₇ after t.
             move He₇ after t; move Hf₇ after t.
             destruct di₄.
              rewrite Nat.add_0_r in H₂, Ha₄, Hb₄, He₄, Hf₄.
