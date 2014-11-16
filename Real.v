@@ -5105,6 +5105,21 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
         rewrite Nat.add_0_r, <- Nat.add_succ_r in H.
         rewrite <- Hn₁ in H; [ idtac | apply Nat.lt_succ_diag_r ].
         rewrite Nat.add_succ_r in H.
+        rename H into Hb₁.
+        remember Hb₁ as H; clear HeqH.
+        unfold rm_add_i in H; simpl in H.
+        rewrite xorb_shuffle0, xorb_comm in H.
+        symmetry in H.
+        apply xorb_move_l_r_1 in H.
+        rewrite xorb_nilpotent in H.
+        apply xorb_eq in H.
+        remember a .[ S (S (i + di₂))] as x eqn:Ha₁ .
+        symmetry in Ha₁, H; rename H into Hf₁.
+        destruct x.
+         rewrite <- negb_involutive in Hf₁.
+         apply carry_succ_negb in Hf₁; [ idtac | assumption ].
+         rewrite Ha₁ in Hf₁.
+         destruct Hf₁ as (H, _); discriminate H.
 bbb.
        i  i+1  -   i₂  -   i₁  -   i₄
   b    .   0   0   1   y   1   .   1
