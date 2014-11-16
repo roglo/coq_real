@@ -5151,6 +5151,25 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
           destruct H as (_, H); discriminate H.
 
          rewrite Nat.add_succ_r in Hs₁, Hd₁, He₁, Hn₁, Hb₃, Ha₂, H.
+         rename H into Hf₃.
+         assert (1 < di₄) as H by omega.
+         apply Hn₄ in H.
+         rewrite Nat.add_comm in H; simpl in H.
+         do 2 rewrite <- Nat.add_succ_r in H.
+         rewrite <- Hn₁ in H; [ idtac | omega ].
+         rewrite Nat.add_succ_r in H.
+         rename H into Hb₅.
+         remember Hb₅ as H; clear HeqH.
+         symmetry in H.
+         apply carry_eq_l_add_eq_r in H.
+         rewrite Nat.add_succ_r in Hb₅, H.
+         remember a .[ S (S (S (i + di₂)))] as y eqn:Ha₅ .
+         symmetry in Ha₅; rename H into Hf₅.
+         destruct y.
+          rewrite <- negb_involutive in Hf₅.
+          apply carry_succ_negb in Hf₅; [ idtac | assumption ].
+          rewrite Ha₅ in Hf₅.
+          destruct Hf₅ as (H, _); discriminate H.
 bbb.
        i  i+1  -   i₂  -   i₁  -   i₄
   b    .   0   0   1   y   1   .   1
