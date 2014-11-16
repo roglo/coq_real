@@ -5101,7 +5101,7 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
       rename H into Hf₆.
       remember a .[ S (S (i + di₂ + di))] as t eqn:Ha₆ .
       symmetry in Ha₆.
-(**)
+(*1*)
       destruct di.
        rewrite Nat.add_0_r in Hs₁, Hd₁, He₁, Hn₁, Ha₆, Hf₆.
        pose proof (Hn₄ 0 H₂) as H.
@@ -5143,7 +5143,7 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
         apply xorb_eq in H.
         remember a .[ S (S (S (i + di₂ + di)))] as x eqn:Ha₂ .
         symmetry in Ha₂, H.
-(**)
+(*2*)
         destruct di.
          rewrite Nat.add_0_r in Hs₁, Hd₁, He₁, Hn₁, Hb₃, Ha₂, H.
          destruct x.
@@ -5175,7 +5175,7 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
           rewrite Ha₅ in H.
           destruct H as (H, _); discriminate H.
 
-(**)
+(*3*)
           destruct di.
            rewrite Nat.add_0_r in Hs₁, Hd₁, He₁, Hn₁, Hb₃, Ha₂, Hf₃.
            destruct x.
