@@ -5131,6 +5131,27 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
          apply carry_succ_negb in Hf₁; [ idtac | assumption ].
          rewrite Ha₁ in Hf₁.
          destruct Hf₁ as (H, _); discriminate H.
+
+         pose proof (Hn₄ 1 H₂) as H.
+         rewrite Nat.add_comm in H; simpl in H.
+         rewrite Hd₁ in H; simpl in H.
+         rename H into Hb₃.
+         remember He₁ as H; clear HeqH.
+         unfold rm_add_i in H.
+         rewrite Hb₃, xorb_true_r in H.
+         apply xorb_eq in H.
+         remember a .[ S (S (S (i + di₂)))] as x eqn:Ha₂ .
+         symmetry in Ha₂, H.
+         destruct x.
+          erewrite carry_x_before_xx in Hf₁; try eassumption.
+          discriminate Hf₁.
+
+          apply carry_succ_negb in H; [ idtac | assumption ].
+          rewrite Hb₃ in H.
+          destruct H as (_, H); discriminate H.
+
+        rewrite Nat.add_succ_r in Hs₁, Hd₁, He₁, Hn₁.
+        destruct di.
 bbb.
        i  i+1  -   i₂  -   i₁  -   i₄
   b    .   0   0   1   y   1   .   1
