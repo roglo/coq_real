@@ -4940,16 +4940,16 @@ split; intros H.
 Qed.
 
 Theorem zzz : ∀ a b c i di₂ di₄ di x,
-  (∀ dj,  dj < S (di₂ + di)
+  (∀ dj,  dj < di₂ + di
    → rm_add_i a b (S (i + dj)) = negb c .[ S (i + dj)])
   → (∀ dj, dj < di₄ →
-     b .[ S (i + di₂ + dj)] = negb c .[ S (i + di₂ + dj)])
+     b .[ i + di₂ + dj] = negb c .[ i + di₂ + dj])
   → S di < di₄
-  → a .[ S (S (i + di₂ + di))] = x
-  → b .[ S (S (i + di₂ + di))] = true
-  → c .[ S (S (i + di₂ + di))] = false
-  → carry a b (S (i + di₂)) = false
-  → carry a b (S (S (i + di₂ + di))) = negb x
+  → a .[ S (i + di₂ + di)] = x
+  → b .[ S (i + di₂ + di)] = true
+  → c .[ S (i + di₂ + di)] = false
+  → carry a b (i + di₂) = false
+  → carry a b (S (i + di₂ + di)) = negb x
   → False.
 Proof.
 intros a b c i di₂ di₄ di x Hn₁ Hn₄ H₂ Ha₂ Hb₃ Hd₁ Hf₁ H.
@@ -4968,14 +4968,12 @@ destruct di.
  assert (1 < di₄) as H by omega.
  apply Hn₄ in H.
  rewrite Nat.add_comm in H; simpl in H.
- rewrite <- Nat.add_succ_r in H.
  rewrite <- Hn₁ in H; [ idtac | omega ].
- rewrite Nat.add_succ_r in H.
  rename H into Hb₅.
  remember Hb₅ as H; clear HeqH.
  symmetry in H.
  apply carry_eq_l_add_eq_r in H.
- remember a .[ S (S (i + di₂))] as y eqn:Ha₅ .
+ remember a .[ S (i + di₂)] as y eqn:Ha₅ .
  symmetry in Ha₅.
  destruct y.
   rewrite <- negb_involutive in H.
