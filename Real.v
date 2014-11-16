@@ -5167,7 +5167,6 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
       rename H into Hf₆.
       remember a .[ S (S (i + di₂ + di))] as t eqn:Ha₆ .
       symmetry in Ha₆.
-bbb.
       revert Hs₁ Hd₁ He₁ Hn₁ Ha₆ Hf₆ Hn₄ H₂ Hf₂; clear; intros.
 (*1*)
       destruct di.
@@ -5211,9 +5210,9 @@ bbb.
         apply xorb_eq in H.
         remember a .[ S (S (S (i + di₂ + di)))] as x eqn:Ha₂ .
         symmetry in Ha₂, H.
-        revert Hd₁ Hn₁ Hb₃ Ha₂ H Hf₁ Hn₄ H₂; clear; intros.
         move Ha₂ at bottom; move Hb₃ at bottom; move Hd₁ at bottom.
         move Hf₁ at bottom; move H at bottom.
+        revert Hd₁ Hn₁ Hb₃ Ha₂ H Hf₁ Hn₄ H₂; clear; intros.
 (*2*)
         destruct di.
          rewrite Nat.add_0_r in Hd₁, Hn₁, Hb₃, Ha₂, H.
@@ -5246,22 +5245,34 @@ bbb.
           rewrite Ha₅ in H.
           destruct H as (H, _); discriminate H.
 
-(*
-          revert Hd₁ Hn₁ Hb₃ Ha₂ Hf₃ H; clear; intros.
-*)
-(*3*)
-          destruct di.
-           rewrite Nat.add_0_r in Hd₁, Hn₁, Hb₃, Ha₂, Hf₃.
-           destruct x.
-            erewrite carry_x_before_xx in H; try eassumption.
-            discriminate H.
+          replace (S (S (S (i + di₂ + di)))) with (i + S (S di₂) + S di) in *
+           by omega.
+          do 2 rewrite <- Nat.add_succ_r in Ha₅, Hf₁.
+          eapply
+           sum_x1_carry_not_x2 with (a := a) (b := b) (c := c) (di₄ := di₄).
+           4: eassumption.
 
-            apply carry_succ_negb in H; [ idtac | assumption ].
-            rewrite Hb₃ in H.
-            destruct H as (_, H); discriminate H.
+           4: eassumption.
 
-           rewrite Nat.add_succ_r in Hd₁, Hn₁, Hb₃, Ha₂.
-           rename H into Hf₅.
+           4: eassumption.
+
+           3: omega.
+
+           3: assumption.
+
+           3: assumption.
+
+           intros dj Hdj.
+           apply Hn₁.
+           rewrite <- Nat.add_succ_r; assumption.
+
+           intros dj Hdj.
+           do 2 rewrite Nat.add_succ_r; simpl.
+           apply Hn₄.
+           assumption.
+
+     simpl.
+
 bbb.
        i  i+1  -   i₂  +1  +2  +3  -   i₁  -   i₄
   b    .   .   .   1   t   y   .   .   1   .   1
