@@ -5059,10 +5059,12 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
       rewrite Nat.add_succ_r, Nat.add_assoc, Hd₄ in Hd₁.
       discriminate Hd₁.
 
-      destruct di₄.
-       rewrite Nat.add_0_r in H₂.
-       apply Nat.nle_gt in H₂.
-       contradiction.
+      remember (di₁ - S di₂) as di.
+      apply nat_sub_add_r in Heqdi; [ idtac | assumption ].
+      subst di₁; clear H₁.
+      rewrite Nat.add_succ_r in H₂; simpl in H₂.
+      apply Nat.succ_lt_mono Nat.add_lt_mono_l in H₂.
+      destruct di.
 bbb.
        i  i+1  -   i₂  -   i₁  -   i₄
   b    .   0   0   1   y   1   .   1
