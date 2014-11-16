@@ -4953,6 +4953,7 @@ Theorem zzz : ∀ a b c i di₂ di₄ di x,
   → False.
 Proof.
 intros a b c i di₂ di₄ di x Hn₁ Hn₄ H₂ Ha₂ Hb₃ Hd₁ Hf₁ H.
+(*1*)
 destruct di.
  rewrite Nat.add_0_r in Hd₁, Hn₁, Hb₃, Ha₂, H.
  destruct x.
@@ -4980,6 +4981,37 @@ destruct di.
   apply carry_succ_negb in H; [ idtac | assumption ].
   rewrite Ha₅ in H.
   destruct H as (H, _); discriminate H.
+
+(*2*)
+  destruct di.
+   rewrite Nat.add_0_r in Hd₁, Hn₁, Hb₃, Ha₂, Hf₃.
+   destruct x.
+    erewrite carry_x_before_xx in H; try eassumption.
+    discriminate H.
+
+    apply carry_succ_negb in H; [ idtac | assumption ].
+    rewrite Hb₃ in H.
+    destruct H as (_, H); discriminate H.
+
+   rewrite Nat.add_succ_r in Hd₁, Hn₁, Hb₃, Ha₂, Hf₃.
+   rename H into Hf₄.
+   assert (2 < di₄) as H by omega.
+   apply Hn₄ in H.
+   rewrite Nat.add_comm in H; simpl in H.
+   rewrite <- Nat.add_succ_r in H.
+   rewrite <- Hn₁ in H; [ idtac | omega ].
+   rewrite Nat.add_succ_r in H.
+   rename H into Hb₆.
+   remember Hb₆ as H; clear HeqH.
+   symmetry in H.
+   apply carry_eq_l_add_eq_r in H.
+   remember a .[ S (S (i + di₂))] as y eqn:Ha₆ .
+   symmetry in Ha₆.
+   destruct y.
+    rewrite <- negb_involutive in H.
+    apply carry_succ_negb in H; [ idtac | assumption ].
+    rewrite Ha₆ in H.
+    destruct H as (H, _); discriminate H.
 bbb.
 
 Theorem case_2 : ∀ a₀ b₀ c₀ a b c i,
