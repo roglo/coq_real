@@ -5167,6 +5167,7 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
       rename H into Hf₆.
       remember a .[ S (S (i + di₂ + di))] as t eqn:Ha₆ .
       symmetry in Ha₆.
+bbb.
       revert Hs₁ Hd₁ He₁ Hn₁ Ha₆ Hf₆ Hn₄ H₂ Hf₂; clear; intros.
 (*1*)
       destruct di.
