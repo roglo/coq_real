@@ -4888,7 +4888,7 @@ remember a .[ S (S (i + di₂))] as x eqn:Ha₆ .
 symmetry in Ha₆.
 remember b .[ S (S (i + di₂))] as y eqn:Hb₆ .
 symmetry in Hb₆.
-assert (0 < S di₄) as H by omega.
+assert (0 < S di₄) as H by apply Nat.lt_0_succ.
 apply Hn₄ in H.
 rewrite Nat.add_0_r, Hb₆ in H.
 rewrite <- Nat.add_succ_r in H.
