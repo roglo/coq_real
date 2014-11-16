@@ -4982,6 +4982,8 @@ destruct di.
   rewrite Ha₅ in H.
   destruct H as (H, _); discriminate H.
 
+  clear Hf₁ Ha₅ Hb₅.
+  move H after Hf₃.
 (*2*)
   destruct di.
    rewrite Nat.add_0_r in Hd₁, Hn₁, Hb₃, Ha₂, Hf₃.
