@@ -5164,25 +5164,38 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
          apply carry_eq_l_add_eq_r in H.
          rewrite Nat.add_succ_r in Hb₅, H.
          remember a .[ S (S (S (i + di₂)))] as y eqn:Ha₅ .
-         symmetry in Ha₅; rename H into Hf₅.
+         symmetry in Ha₅.
          destruct y.
-          rewrite <- negb_involutive in Hf₅.
-          apply carry_succ_negb in Hf₅; [ idtac | assumption ].
-          rewrite Ha₅ in Hf₅.
-          destruct Hf₅ as (H, _); discriminate H.
-bbb.
-       i  i+1  -   i₂  -   i₁  -   i₄
-  b    .   0   0   1   y   1   .   1
-1                   +0  +z
-  a    .   1   1   1   z   .   .   .
-1          ≠   ≠
- b+c   .   0   0   1   0   .   .   .
+          rewrite <- negb_involutive in H.
+          apply carry_succ_negb in H; [ idtac | assumption ].
+          rewrite Ha₅ in H.
+          destruct H as (H, _); discriminate H.
 
- a+b   .   0   0   0   y   0   .   .
-0          ≠   ≠   ≠   ≠
-  c    .   1   1   1   .   0   .   1
-1          ≠   ≠       ≠   ≠   ≠
-  b    .   0   0   1   y   1   .   1
+          destruct di.
+           rewrite Nat.add_0_r in Hs₁, Hd₁, He₁, Hn₁, Hb₃, Ha₂, Hf₃.
+           destruct x.
+            erewrite carry_x_before_xx in H; try eassumption.
+            discriminate H.
+
+            apply carry_succ_negb in H; [ idtac | assumption ].
+            rewrite Hb₃ in H.
+            destruct H as (_, H); discriminate H.
+
+           rewrite Nat.add_succ_r in Hs₁, Hd₁, He₁, Hn₁, Hb₃, Ha₂.
+           rename H into Hf₅.
+bbb.
+       i  i+1  -   i₂  +1  +2  +3  -   i₁  -   i₄
+  b    .   .   .   1   t   y   .   .   1   .   1
+1                   +0  +0  +0          +x
+  a    .   .   .   1   0   0   .   .  ¬x   .   .
+1          ≠   ≠
+ b+c   .   .   .   1   .   .   .   .   .   .   .
+
+ a+b   .   .   .   0   t   y   .   .   0   .   .
+0          ≠   ≠   ≠   ≠   ≠   ≠   ≠
+  c    .   .   .   1   .   .   .   .   0   .   1
+1          ≠   ≠       ≠   ≠   ≠   ≠   ≠   ≠
+  b    .   .   .   1   t   y   .   .   1   .   1
 
 
        i  i+1  -   i₂  -   i₁  -   i₄
