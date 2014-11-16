@@ -5090,27 +5090,30 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
       unfold rm_add_i in H.
       rewrite Ha₃, Hb₂, xorb_nilpotent, xorb_false_l in H.
       rename H into Hf₂.
+      remember He₁ as H; clear HeqH.
+      unfold rm_add_i in H.
+      rewrite Hn₄ in H; [ idtac | assumption ].
+      rewrite Hd₁ in H.
+      rewrite xorb_true in H.
+      rewrite <- negb_xorb_l in H.
+      apply negb_false_iff, xorb_move_l_r_1 in H.
+      rewrite xorb_true_r in H.
+      rename H into Hf₆.
+      remember a .[ S (S (i + di₂ + di))] as t eqn:Ha₆ .
+      symmetry in Ha₆.
+(**)
       destruct di.
-       rewrite Nat.add_0_r in Hs₁, Hd₁, He₁, Hn₁.
+       rewrite Nat.add_0_r in Hs₁, Hd₁, He₁, Hn₁, Ha₆, Hf₆.
        pose proof (Hn₄ 0 H₂) as H.
        rewrite Nat.add_0_r, Hd₁ in H; simpl in H.
        rename H into Hb₁.
-       remember He₁ as H; clear HeqH.
-       unfold rm_add_i in H.
-       rewrite Hb₁, xorb_true_r in H.
-       rewrite <- negb_xorb_l in H.
-       apply negb_false_iff, xorb_move_l_r_1 in H.
-       rewrite xorb_true_r in H.
-       rename H into Hf₁.
-       remember a .[ S (S (i + di₂))] as t eqn:Ha₁ .
-       symmetry in Ha₁.
        destruct t.
         erewrite carry_x_before_xx in Hf₂; try eassumption.
         discriminate Hf₂.
 
-        apply carry_succ_negb in Hf₁; [ idtac | assumption ].
-        rewrite Hb₁ in Hf₁.
-        destruct Hf₁ as (_, H); discriminate H.
+        apply carry_succ_negb in Hf₆; [ idtac | assumption ].
+        rewrite Hb₁ in Hf₆.
+        destruct Hf₆ as (_, H); discriminate H.
 
        rewrite Nat.add_succ_r in Hs₁, Hd₁, He₁, Hn₁.
        assert (0 < di₄) as H by (eapply Nat.lt_lt_0; eauto ).
@@ -5140,6 +5143,7 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
         apply xorb_eq in H.
         remember a .[ S (S (S (i + di₂ + di)))] as x eqn:Ha₂ .
         symmetry in Ha₂, H.
+(**)
         destruct di.
          rewrite Nat.add_0_r in Hs₁, Hd₁, He₁, Hn₁, Hb₃, Ha₂, H.
          destruct x.
@@ -5171,6 +5175,7 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
           rewrite Ha₅ in H.
           destruct H as (H, _); discriminate H.
 
+(**)
           destruct di.
            rewrite Nat.add_0_r in Hs₁, Hd₁, He₁, Hn₁, Hb₃, Ha₂, Hf₃.
            destruct x.
