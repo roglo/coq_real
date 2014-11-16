@@ -4939,6 +4939,51 @@ split; intros H.
  rewrite xorb_comm; assumption.
 Qed.
 
+Theorem zzz : ∀ a b c i di₂ di₄ di x,
+  (∀ dj,  dj < S (di₂ + di)
+   → rm_add_i a b (S (i + dj)) = negb c .[ S (i + dj)])
+  → (∀ dj, dj < di₄ →
+     b .[ S (i + di₂ + dj)] = negb c .[ S (i + di₂ + dj)])
+  → S di < di₄
+  → a .[ S (S (i + di₂ + di))] = x
+  → b .[ S (S (i + di₂ + di))] = true
+  → c .[ S (S (i + di₂ + di))] = false
+  → carry a b (S (i + di₂)) = false
+  → carry a b (S (S (i + di₂ + di))) = negb x
+  → False.
+Proof.
+intros a b c i di₂ di₄ di x Hn₁ Hn₄ H₂ Ha₂ Hb₃ Hd₁ Hf₁ H.
+destruct di.
+ rewrite Nat.add_0_r in Hd₁, Hn₁, Hb₃, Ha₂, H.
+ destruct x.
+  erewrite carry_x_before_xx in Hf₁; try eassumption.
+  discriminate Hf₁.
+
+  apply carry_succ_negb in H; [ idtac | assumption ].
+  rewrite Hb₃ in H.
+  destruct H as (_, H); discriminate H.
+
+ rewrite Nat.add_succ_r in Hd₁, Hn₁, Hb₃, Ha₂, H.
+ rename H into Hf₃.
+ assert (1 < di₄) as H by omega.
+ apply Hn₄ in H.
+ rewrite Nat.add_comm in H; simpl in H.
+ rewrite <- Nat.add_succ_r in H.
+ rewrite <- Hn₁ in H; [ idtac | omega ].
+ rewrite Nat.add_succ_r in H.
+ rename H into Hb₅.
+ remember Hb₅ as H; clear HeqH.
+ symmetry in H.
+ apply carry_eq_l_add_eq_r in H.
+ remember a .[ S (S (i + di₂))] as y eqn:Ha₅ .
+ symmetry in Ha₅.
+ destruct y.
+  rewrite <- negb_involutive in H.
+  apply carry_succ_negb in H; [ idtac | assumption ].
+  rewrite Ha₅ in H.
+  destruct H as (H, _); discriminate H.
+bbb.
+
 Theorem case_2 : ∀ a₀ b₀ c₀ a b c i,
   a = (a₀ + 0)%rm
   → b = (b₀ + 0)%rm
@@ -5101,6 +5146,7 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
       rename H into Hf₆.
       remember a .[ S (S (i + di₂ + di))] as t eqn:Ha₆ .
       symmetry in Ha₆.
+      revert Hs₁ Hd₁ He₁ Hn₁ Ha₆ Hf₆ Hn₄ H₂ Hf₂; clear; intros.
 (*1*)
       destruct di.
        rewrite Nat.add_0_r in Hs₁, Hd₁, He₁, Hn₁, Ha₆, Hf₆.
@@ -5143,9 +5189,12 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
         apply xorb_eq in H.
         remember a .[ S (S (S (i + di₂ + di)))] as x eqn:Ha₂ .
         symmetry in Ha₂, H.
+        revert Hd₁ Hn₁ Hb₃ Ha₂ H Hf₁ Hn₄ H₂; clear; intros.
+        move Ha₂ at bottom; move Hb₃ at bottom; move Hd₁ at bottom.
+        move Hf₁ at bottom; move H at bottom.
 (*2*)
         destruct di.
-         rewrite Nat.add_0_r in Hs₁, Hd₁, He₁, Hn₁, Hb₃, Ha₂, H.
+         rewrite Nat.add_0_r in Hd₁, Hn₁, Hb₃, Ha₂, H.
          destruct x.
           erewrite carry_x_before_xx in Hf₁; try eassumption.
           discriminate Hf₁.
@@ -5154,7 +5203,7 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
           rewrite Hb₃ in H.
           destruct H as (_, H); discriminate H.
 
-         rewrite Nat.add_succ_r in Hs₁, Hd₁, He₁, Hn₁, Hb₃, Ha₂, H.
+         rewrite Nat.add_succ_r in Hd₁, Hn₁, Hb₃, Ha₂, H.
          rename H into Hf₃.
          assert (1 < di₄) as H by omega.
          apply Hn₄ in H.
@@ -5175,9 +5224,12 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
           rewrite Ha₅ in H.
           destruct H as (H, _); discriminate H.
 
+(*
+          revert Hd₁ Hn₁ Hb₃ Ha₂ Hf₃ H; clear; intros.
+*)
 (*3*)
           destruct di.
-           rewrite Nat.add_0_r in Hs₁, Hd₁, He₁, Hn₁, Hb₃, Ha₂, Hf₃.
+           rewrite Nat.add_0_r in Hd₁, Hn₁, Hb₃, Ha₂, Hf₃.
            destruct x.
             erewrite carry_x_before_xx in H; try eassumption.
             discriminate H.
@@ -5186,7 +5238,7 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
             rewrite Hb₃ in H.
             destruct H as (_, H); discriminate H.
 
-           rewrite Nat.add_succ_r in Hs₁, Hd₁, He₁, Hn₁, Hb₃, Ha₂.
+           rewrite Nat.add_succ_r in Hd₁, Hn₁, Hb₃, Ha₂.
            rename H into Hf₅.
 bbb.
        i  i+1  -   i₂  +1  +2  +3  -   i₁  -   i₄
