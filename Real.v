@@ -4793,6 +4793,21 @@ destruct s as [di| ].
  exfalso; revert H; apply no_fixpoint_negb.
 Qed.
 
+Theorem carry_eq_l_add_eq_r : ∀ a b i,
+  carry a b i = a.[i] ↔ rm_add_i a b i = b.[i].
+Proof.
+intros a b i.
+split; intros H.
+ unfold rm_add_i; rewrite xorb_shuffle0.
+ rewrite H, xorb_nilpotent, xorb_false_l; reflexivity.
+
+ unfold rm_add_i in H; rewrite xorb_shuffle0, xorb_comm in H.
+ apply xorb_move_l_r_1 in H.
+ rewrite xorb_nilpotent in H.
+ apply xorb_eq.
+ rewrite xorb_comm; assumption.
+Qed.
+
 Theorem sum_0x_x_not_sum_y1_0 : ∀ a b c i di₁ di₂ di₄ y t,
   (∀ dj, dj < di₁ → rm_add_i a b (S (i + dj)) = negb c .[ S (i + dj)])
   → (∀ dj, dj < di₄ → b .[ S (i + di₂ + dj)] = negb c .[ S (i + di₂ + dj)])
@@ -4924,22 +4939,8 @@ destruct x.
  apply Hn₄; assumption.
 Qed.
 
-Theorem carry_eq_l_add_eq_r : ∀ a b i,
-  carry a b i = a.[i] ↔ rm_add_i a b i = b.[i].
-Proof.
-intros a b i.
-split; intros H.
- unfold rm_add_i; rewrite xorb_shuffle0.
- rewrite H, xorb_nilpotent, xorb_false_l; reflexivity.
-
- unfold rm_add_i in H; rewrite xorb_shuffle0, xorb_comm in H.
- apply xorb_move_l_r_1 in H.
- rewrite xorb_nilpotent in H.
- apply xorb_eq.
- rewrite xorb_comm; assumption.
-Qed.
-
-Theorem zzz : ∀ a b c i di₂ di₄ di x,
+(* TODO: compare with sum_x1_0_carry_not_x *)
+Theorem sum_x1_carry_not_x2 : ∀ a b c i di₂ di₄ di x,
   (∀ dj,  dj < di₂ + di
    → rm_add_i a b (S (i + dj)) = negb c .[ S (i + dj)])
   → (∀ dj, dj < di₄ →
@@ -4953,8 +4954,8 @@ Theorem zzz : ∀ a b c i di₂ di₄ di x,
   → False.
 Proof.
 intros a b c i di₂ di₄ di x Hn₁ Hn₄ H₂ Ha₂ Hb₃ Hd₁ Hf₁ H.
-(*1*)
-destruct di.
+revert di₂ di₄ Hn₁ Hn₄ Ha₂ Hb₃ Hd₁ Hf₁ H H₂.
+induction di; intros.
  rewrite Nat.add_0_r in Hd₁, Hn₁, Hb₃, Ha₂, H.
  destruct x.
   erewrite carry_x_before_xx in Hf₁; try eassumption.
@@ -4966,55 +4967,43 @@ destruct di.
 
  rewrite Nat.add_succ_r in Hd₁, Hn₁, Hb₃, Ha₂, H.
  rename H into Hf₃.
- assert (1 < di₄) as H by omega.
+ destruct di₄; [ revert H₂; apply Nat.nlt_0_r | idtac ].
+ apply Nat.succ_lt_mono in H₂.
+ assert (0 < di₄) as H by (eapply Nat.lt_lt_0; eauto ).
+ apply Nat.succ_lt_mono in H.
  apply Hn₄ in H.
  rewrite Nat.add_comm in H; simpl in H.
- rewrite <- Hn₁ in H; [ idtac | omega ].
- rename H into Hb₅.
- remember Hb₅ as H; clear HeqH.
- symmetry in H.
- apply carry_eq_l_add_eq_r in H.
- remember a .[ S (i + di₂)] as y eqn:Ha₅ .
- symmetry in Ha₅.
- destruct y.
-  rewrite <- negb_involutive in H.
-  apply carry_succ_negb in H; [ idtac | assumption ].
-  rewrite Ha₅ in H.
-  destruct H as (H, _); discriminate H.
+ rewrite <- Hn₁ in H.
+  rename H into Hb₅.
+  remember Hb₅ as H; clear HeqH.
+  symmetry in H.
+  apply carry_eq_l_add_eq_r in H.
+  remember a .[ S (i + di₂)] as y eqn:Ha₅ .
+  symmetry in Ha₅.
+  destruct y.
+   rewrite <- negb_involutive in H.
+   apply carry_succ_negb in H; [ idtac | assumption ].
+   rewrite Ha₅ in H.
+   destruct H as (H, _); discriminate H.
 
-  clear Hf₁ Ha₅ Hb₅.
-  move H after Hf₃.
-(*2*)
-  destruct di.
-   rewrite Nat.add_0_r in Hd₁, Hn₁, Hb₃, Ha₂, Hf₃.
-   destruct x.
-    erewrite carry_x_before_xx in H; try eassumption.
-    discriminate H.
-
-    apply carry_succ_negb in H; [ idtac | assumption ].
-    rewrite Hb₃ in H.
-    destruct H as (_, H); discriminate H.
-
-   rewrite Nat.add_succ_r in Hd₁, Hn₁, Hb₃, Ha₂, Hf₃.
-   rename H into Hf₄.
-   assert (2 < di₄) as H by omega.
-   apply Hn₄ in H.
-   rewrite Nat.add_comm in H; simpl in H.
+   move H after Hf₃.
+   remember (S (i + di₂ + di)) as v.
+   rewrite <- Nat.add_succ_l, <- Nat.add_succ_r in Heqv; subst v.
    rewrite <- Nat.add_succ_r in H.
-   rewrite <- Hn₁ in H; [ idtac | omega ].
-   rewrite Nat.add_succ_r in H.
-   rename H into Hb₆.
-   remember Hb₆ as H; clear HeqH.
-   symmetry in H.
-   apply carry_eq_l_add_eq_r in H.
-   remember a .[ S (S (i + di₂))] as y eqn:Ha₆ .
-   symmetry in Ha₆.
-   destruct y.
-    rewrite <- negb_involutive in H.
-    apply carry_succ_negb in H; [ idtac | assumption ].
-    rewrite Ha₆ in H.
-    destruct H as (H, _); discriminate H.
-bbb.
+   apply IHdi with (di₂ := S di₂) (di₄ := S di); try assumption.
+    intros dj Hdj.
+    rewrite Nat.add_succ_r, Nat.add_succ_l, <- Nat.add_succ_r.
+    apply Hn₄.
+    eapply le_lt_trans; [ eassumption | idtac ].
+    apply Nat.succ_lt_mono in H₂; assumption.
+
+    apply Nat.lt_succ_diag_r.
+
+  rewrite <- Nat.add_succ_r.
+  apply Nat.lt_sub_lt_add_l.
+  rewrite Nat.sub_diag.
+  apply Nat.lt_0_succ.
+Qed.
 
 Theorem case_2 : ∀ a₀ b₀ c₀ a b c i,
   a = (a₀ + 0)%rm
