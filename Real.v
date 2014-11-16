@@ -5066,15 +5066,17 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
       apply Nat.succ_lt_mono, Nat.add_lt_mono_l in H₂.
       rewrite Nat.add_succ_r in Hs₁, Hd₁, He₁, Hn₁.
       rewrite Nat.add_succ_r, Nat.add_assoc in Hd₁, He₁.
+      assert (di₂ < S di₂) as H by apply Nat.lt_succ_diag_r.
+      apply Nat.lt_lt_add_r with (p := di) in H; simpl in H.
+      apply Hn₁ in H.
+      rewrite Hd₂ in H; simpl in H.
+      rename H into He₂.
+      remember He₂ as H; clear HeqH.
+      unfold rm_add_i in H.
+      rewrite Ha₃, Hb₂, xorb_nilpotent, xorb_false_l in H.
+      rename H into Hf₂.
       destruct di.
        rewrite Nat.add_0_r in Hs₁, Hd₁, He₁, Hn₁.
-       pose proof (Hn₁ di₂ (Nat.lt_succ_diag_r di₂)) as H.
-       rewrite Hd₂ in H; simpl in H.
-       rename H into He₂.
-       remember He₂ as H; clear HeqH.
-       unfold rm_add_i in H.
-       rewrite Ha₃, Hb₂, xorb_nilpotent, xorb_false_l in H.
-       rename H into Hf₂.
        pose proof (Hn₄ 0 H₂) as H.
        rewrite Nat.add_0_r, Hd₁ in H; simpl in H.
        rename H into Hb₁.
@@ -5096,6 +5098,8 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
         destruct Hf₁ as (_, H); discriminate H.
 
        rewrite Nat.add_succ_r in Hs₁, Hd₁, He₁, Hn₁.
+       destruct di.
+        rewrite Nat.add_0_r in Hs₁, Hd₁, He₁, Hn₁.
 bbb.
        i  i+1  -   i₂  -   i₁  -   i₄
   b    .   0   0   1   y   1   .   1
