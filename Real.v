@@ -4924,6 +4924,21 @@ destruct x.
  apply Hn₄; assumption.
 Qed.
 
+Theorem carry_eq_l_add_eq_r : ∀ a b i,
+  carry a b i = a.[i] ↔ rm_add_i a b i = b.[i].
+Proof.
+intros a b i.
+split; intros H.
+ unfold rm_add_i; rewrite xorb_shuffle0.
+ rewrite H, xorb_nilpotent, xorb_false_l; reflexivity.
+
+ unfold rm_add_i in H; rewrite xorb_shuffle0, xorb_comm in H.
+ apply xorb_move_l_r_1 in H.
+ rewrite xorb_nilpotent in H.
+ apply xorb_eq.
+ rewrite xorb_comm; assumption.
+Qed.
+
 Theorem case_2 : ∀ a₀ b₀ c₀ a b c i,
   a = (a₀ + 0)%rm
   → b = (b₀ + 0)%rm
@@ -5107,14 +5122,10 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
         rewrite Nat.add_succ_r in H.
         rename H into Hb₁.
         remember Hb₁ as H; clear HeqH.
-        unfold rm_add_i in H; simpl in H.
-        rewrite xorb_shuffle0, xorb_comm in H.
         symmetry in H.
-        apply xorb_move_l_r_1 in H.
-        rewrite xorb_nilpotent in H.
-        apply xorb_eq in H.
+        apply carry_eq_l_add_eq_r in H.
         remember a .[ S (S (i + di₂))] as x eqn:Ha₁ .
-        symmetry in Ha₁, H; rename H into Hf₁.
+        symmetry in Ha₁; rename H into Hf₁.
         destruct x.
          rewrite <- negb_involutive in Hf₁.
          apply carry_succ_negb in Hf₁; [ idtac | assumption ].
