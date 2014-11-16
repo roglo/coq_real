@@ -5100,6 +5100,11 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
        rewrite Nat.add_succ_r in Hs₁, Hd₁, He₁, Hn₁.
        destruct di.
         rewrite Nat.add_0_r in Hs₁, Hd₁, He₁, Hn₁.
+        assert (0 < di₄) as H by (eapply Nat.lt_lt_0; eauto ).
+        apply Hn₄ in H.
+        rewrite Nat.add_0_r, <- Nat.add_succ_r in H.
+        rewrite <- Hn₁ in H; [ idtac | apply Nat.lt_succ_diag_r ].
+        rewrite Nat.add_succ_r in H.
 bbb.
        i  i+1  -   i₂  -   i₁  -   i₄
   b    .   0   0   1   y   1   .   1
