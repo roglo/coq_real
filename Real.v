@@ -4944,7 +4944,7 @@ Theorem zzz : ∀ a b c i di₂ di₄ di x,
    → rm_add_i a b (S (i + dj)) = negb c .[ S (i + dj)])
   → (∀ dj, dj < di₄ →
      b .[ i + di₂ + dj] = negb c .[ i + di₂ + dj])
-  → S di < di₄
+  → di < di₄
   → a .[ S (i + di₂ + di)] = x
   → b .[ S (i + di₂ + di)] = true
   → c .[ S (i + di₂ + di)] = false
