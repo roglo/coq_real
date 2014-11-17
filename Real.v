@@ -5167,80 +5167,33 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
       rename H into Hf₆.
       remember a .[ S (S (i + di₂ + di))] as t eqn:Ha₆ .
       symmetry in Ha₆.
-      revert Hs₁ Hd₁ He₁ Hn₁ Ha₆ Hf₆ Hn₄ H₂ Hf₂; clear; intros.
-(*1*)
-      destruct di.
-       rewrite Nat.add_0_r in Hs₁, Hd₁, He₁, Hn₁, Ha₆, Hf₆.
-       pose proof (Hn₄ 0 H₂) as H.
-       rewrite Nat.add_0_r, Hd₁ in H; simpl in H.
-       rename H into Hb₁.
-       destruct t.
-        erewrite carry_x_before_xx in Hf₂; try eassumption.
-        discriminate Hf₂.
+      replace (S (i + di₂ + di)) with (i + S di₂ + di) in * by omega.
+      eapply sum_x1_carry_not_x2 with (a := a) (b := b) (c := c) (di₄ := di₄).
+       4: eassumption.
 
-        apply carry_succ_negb in Hf₆; [ idtac | assumption ].
-        rewrite Hb₁ in Hf₆.
-        destruct Hf₆ as (_, H); discriminate H.
+       5: eassumption.
 
-       rewrite Nat.add_succ_r in Hs₁, Hd₁, He₁, Hn₁.
-       assert (0 < di₄) as H by (eapply Nat.lt_lt_0; eauto ).
-       apply Hn₄ in H.
-       rewrite Nat.add_0_r, <- Nat.add_succ_r in H.
-       rewrite <- Hn₁ in H; [ idtac | omega ].
-       rewrite Nat.add_succ_r in H.
-       rename H into Hb₁.
-       remember Hb₁ as H; clear HeqH.
-       symmetry in H.
-       apply carry_eq_l_add_eq_r in H.
-       remember a .[ S (S (i + di₂))] as x eqn:Ha₁ .
-       symmetry in Ha₁; rename H into Hf₁.
-       destruct x.
-        rewrite <- negb_involutive in Hf₁.
-        apply carry_succ_negb in Hf₁; [ idtac | assumption ].
-        rewrite Ha₁ in Hf₁.
-        destruct Hf₁ as (H, _); discriminate H.
+       3: assumption.
 
-        pose proof (Hn₄ (S di) H₂) as H.
-        rewrite Nat.add_succ_r in H.
-        rewrite Hd₁ in H; simpl in H.
-        rename H into Hb₃.
-        remember He₁ as H; clear HeqH.
-        unfold rm_add_i in H.
-        rewrite Hb₃, xorb_true_r in H.
-        apply xorb_eq in H.
-        remember a .[ S (S (S (i + di₂ + di)))] as x eqn:Ha₂ .
-        symmetry in Ha₂, H.
-        move Ha₂ at bottom; move Hb₃ at bottom; move Hd₁ at bottom.
-        move Hf₁ at bottom; move H at bottom.
-        replace (S (S (i + di₂ + di))) with (i + S (S di₂) + di) in *
-         by omega.
-        eapply
-         sum_x1_carry_not_x2 with (a := a) (b := b) (c := c) (di₄ := di₄).
-         4: eassumption.
+       intros dj Hdj.
+       apply Hn₁.
+       assumption.
 
-         4: eassumption.
+       intros dj Hdj.
+       rewrite Nat.add_succ_r; simpl.
+       apply Hn₄.
+       omega.
 
-         4: eassumption.
+       rewrite Nat.add_succ_r; simpl.
+       rewrite Nat.add_succ_r in Hd₁; simpl in Hd₁.
+       rewrite Hn₄; [ idtac | assumption ].
+       rewrite Hd₁; reflexivity.
 
-         3: omega.
+       rewrite Nat.add_succ_r; assumption.
 
-         intros dj Hdj.
-         apply Hn₁.
-         omega.
-
-         intros dj Hdj.
-         rewrite Nat.add_succ_r; simpl.
-         rewrite Nat.add_succ_r; simpl.
-         rewrite <- Nat.add_succ_r.
-         apply Hn₄.
-         assumption.
-
-         do 2 rewrite Nat.add_succ_r; assumption.
-
-         assumption.
+       assumption.
 
      simpl.
-
 bbb.
        i  i+1  -   i₂  +1  +2  +3  -   i₁  -   i₄
   b    .   .   .   1   t   y   .   .   1   .   1
