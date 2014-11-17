@@ -5005,6 +5005,7 @@ induction di; intros.
   apply Nat.lt_0_succ.
 Qed.
 
+(*
 Theorem zzz : ∀ a b c i di₁ di₂ di₃,
   a.[S i] = false
   → carry a (b + c) i = true
@@ -5027,8 +5028,6 @@ induction di; intros.
  rewrite Nat.add_1_r in Hs₃.
  revert i Ha di₁ Hc₃ Hc₄ Hc₅ Hc₆ Hs₁ Hs₂ Hs₃ H₁.
  induction di₂; intros.
-  remember c .[ S (S i)] as x eqn:Hc .
-  symmetry in Hc.
   remember Hc₆ as H; clear HeqH.
   unfold carry in H.
   remember (fst_same a b (S i)) as s₆ eqn:Hs₆ .
@@ -5045,7 +5044,6 @@ induction di; intros.
    rename H into Hb; simpl in Hb; move Hb before Ha.
    remember Hs₂ as H; clear HeqH.
    apply fst_same_iff in H; simpl in H.
-   rename Hc into Hc₂.
    destruct H as (_, Hc); rewrite Nat.add_0_r, Hb in Hc.
    symmetry in Hc; move Hc before Hb.
    remember Hs₃ as H; clear HeqH.
@@ -5073,9 +5071,28 @@ induction di; intros.
    rename H into Ha₂; move Ha₂ before He.
    rewrite Ha₂ in Ht₃; symmetry in Ht₃.
    move Ht₃ before Ha₂.
+   remember c .[ S (S i)] as x eqn:Hc₂ .
+   symmetry in Hc₂.
 bbb.
 
-       i  i+1  +1
+c.[i+2] = 1
+
+       i  i+1 i+2
+  b    .   1   1
+1           +1  +0
+  a    .   0   1
+1
+ b+c   .   1   1
+
+ a+b   .   0   0
+0           +0  +0
+  c    .   1   1
+1           +1  +1
+  b    .   1   1
+
+
+
+       i  i+1 i+2
   b    .   1   .
 1           +1
   a    .   0   1
@@ -5087,23 +5104,6 @@ bbb.
   c    .   1   x
 1           +1
   b    .   1   .
-
-
-c.[+1] = 0
-
-       i  i+1  +1
-  b    .   1   1
-1           +1
-  a    .   0   1
-1          ≠+1
- b+c   .   1   10
-
- a+b   .   0   .
-0          ≠+0
-  c    .   1   1
-1           +1
-  b    .   1   1
-
 
 
        i  i+1  +1  +2
