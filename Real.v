@@ -5005,6 +5005,54 @@ induction di; intros.
   apply Nat.lt_0_succ.
 Qed.
 
+Theorem zzz : ∀ a b c i di₁ di₂ di₃,
+  carry a (b + c) i = true
+  → carry (a + b) c i = false
+  → carry b c i = true
+  → carry a b i = true
+  → fst_same (a + b) c (S i) = Some di₁
+  → fst_same b c (S i) = Some di₂
+  → fst_same a (b + c) (S i) = Some di₃
+  → di₂ < di₁
+  → di₂ < di₃
+  → False.
+Proof.
+intros a b c i di₁ di₂ di₃ Hc₃ Hc₄ Hc₅ Hc₆ Hs₁ Hs₂ Hs₃ H₁ H₂.
+remember (di₃ - S di₂) as di eqn:Hdi .
+apply nat_sub_add_r in Hdi; [ idtac | assumption ].
+subst di₃; clear H₂.
+revert i di₁ di₂ Hc₃ Hc₄ Hc₅ Hc₆ Hs₁ Hs₂ Hs₃ H₁.
+induction di; intros.
+ rewrite Nat.add_1_r in Hs₃.
+bbb.
+
+       i  i+1  -   i₂  +1
+  b    .   .   .   .   .
+1
+  a    .   .   .   .   .
+1
+ b+c   .   .   .   .   .
+
+ a+b   .   .   .   .   .
+0
+  c    .   .   .   .   .
+1
+  b    .   .   .   .   .
+
+
+       i  i+1  -   i₂  -   i₃
+  b    .   .   x   1   .   .
+1           +1  +1  +1                i₂ dans la m^ situation que i !
+  a    .   1   1   0   .   1
+1          ≠   ≠   ≠+1 ≠
+ b+c   .   0   0   1   .   1
+
+ a+b   .   .   x   0   .   .
+0          ≠   ≠   ≠+0
+  c    .   .   .   1   .   .
+1          ≠   ≠    +1
+  b    .   .   x   1   .   .
+
 Theorem case_2 : ∀ a₀ b₀ c₀ a b c i,
   a = (a₀ + 0)%rm
   → b = (b₀ + 0)%rm
