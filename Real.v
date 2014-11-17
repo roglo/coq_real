@@ -4943,8 +4943,8 @@ Qed.
 Theorem sum_x1_carry_not_x2 : ∀ a b c i di₂ di₄ di x,
   (∀ dj,  dj < di₂ + di
    → rm_add_i a b (S (i + dj)) = negb c .[ S (i + dj)])
-  → (∀ dj, dj < di₄ →
-     b .[ i + di₂ + dj] = negb c .[ i + di₂ + dj])
+  → (∀ dj, S dj < di₄ →
+     b .[ S (i + di₂ + dj)] = negb c .[ S (i + di₂ + dj)])
   → di < di₄
   → a .[ S (i + di₂ + di)] = x
   → b .[ S (i + di₂ + di)] = true
@@ -5212,64 +5212,32 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
         symmetry in Ha₂, H.
         move Ha₂ at bottom; move Hb₃ at bottom; move Hd₁ at bottom.
         move Hf₁ at bottom; move H at bottom.
-        revert Hd₁ Hn₁ Hb₃ Ha₂ H Hf₁ Hn₄ H₂; clear; intros.
-(*2*)
-        destruct di.
-         rewrite Nat.add_0_r in Hd₁, Hn₁, Hb₃, Ha₂, H.
-         destruct x.
-          erewrite carry_x_before_xx in Hf₁; try eassumption.
-          discriminate Hf₁.
+        replace (S (S (i + di₂ + di))) with (i + S (S di₂) + di) in *
+         by omega.
+        eapply
+         sum_x1_carry_not_x2 with (a := a) (b := b) (c := c) (di₄ := di₄).
+         4: eassumption.
 
-          apply carry_succ_negb in H; [ idtac | assumption ].
-          rewrite Hb₃ in H.
-          destruct H as (_, H); discriminate H.
+         4: eassumption.
 
-         rewrite Nat.add_succ_r in Hd₁, Hn₁, Hb₃, Ha₂, H.
-         rename H into Hf₃.
-         assert (1 < di₄) as H by omega.
-         apply Hn₄ in H.
-         rewrite Nat.add_comm in H; simpl in H.
-         do 2 rewrite <- Nat.add_succ_r in H.
-         rewrite <- Hn₁ in H; [ idtac | omega ].
-         rewrite Nat.add_succ_r in H.
-         rename H into Hb₅.
-         remember Hb₅ as H; clear HeqH.
-         symmetry in H.
-         apply carry_eq_l_add_eq_r in H.
-         rewrite Nat.add_succ_r in Hb₅, H.
-         remember a .[ S (S (S (i + di₂)))] as y eqn:Ha₅ .
-         symmetry in Ha₅.
-         destruct y.
-          rewrite <- negb_involutive in H.
-          apply carry_succ_negb in H; [ idtac | assumption ].
-          rewrite Ha₅ in H.
-          destruct H as (H, _); discriminate H.
+         4: eassumption.
 
-          replace (S (S (S (i + di₂ + di)))) with (i + S (S di₂) + S di) in *
-           by omega.
-          do 2 rewrite <- Nat.add_succ_r in Ha₅, Hf₁.
-          eapply
-           sum_x1_carry_not_x2 with (a := a) (b := b) (c := c) (di₄ := di₄).
-           4: eassumption.
+         3: omega.
 
-           4: eassumption.
+         intros dj Hdj.
+         apply Hn₁.
+         omega.
 
-           4: eassumption.
+         intros dj Hdj.
+         rewrite Nat.add_succ_r; simpl.
+         rewrite Nat.add_succ_r; simpl.
+         rewrite <- Nat.add_succ_r.
+         apply Hn₄.
+         assumption.
 
-           3: omega.
+         do 2 rewrite Nat.add_succ_r; assumption.
 
-           3: assumption.
-
-           3: assumption.
-
-           intros dj Hdj.
-           apply Hn₁.
-           rewrite <- Nat.add_succ_r; assumption.
-
-           intros dj Hdj.
-           do 2 rewrite Nat.add_succ_r; simpl.
-           apply Hn₄.
-           assumption.
+         assumption.
 
      simpl.
 
