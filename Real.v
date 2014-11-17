@@ -5185,19 +5185,78 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
 
      remember Hs₄ as Hn₄; clear HeqHn₄.
      apply fst_same_sym_iff in Hn₄; simpl in Hn₄.
-bbb.
-       i  i+1  -   i₂  -   i₁  -   i₄
-  b    .   .   .   1   .   .   .   .
-1
-  a    .   .   .   1   .   .   .   .
-1          ≠   ≠
- b+c   .   .   .   1   .   .   .   .
+     remember (di₁ - S di₂) as di.
+     apply nat_sub_add_r in Heqdi; [ idtac | assumption ].
+     subst di₁; clear H₁.
+     rewrite Nat.add_succ_r in Hs₁, Hd₁, He₁, Hn₁.
+     rewrite Nat.add_succ_r, Nat.add_assoc in Hd₁, He₁.
+     assert (di₂ < S di₂) as H by apply Nat.lt_succ_diag_r.
+     apply Nat.lt_lt_add_r with (p := di) in H; simpl in H.
+     apply Hn₁ in H.
+     rewrite Hd₂ in H; simpl in H.
+     rename H into He₂.
+     remember He₂ as H; clear HeqH.
+     unfold rm_add_i in H.
+     rewrite Ha₃, Hb₂, xorb_nilpotent, xorb_false_l in H.
+     rename H into Hf₂.
+     remember He₁ as H; clear HeqH.
+     unfold rm_add_i in H.
+     rewrite Hn₄ in H.
+     rewrite Hd₁ in H.
+     rewrite xorb_true in H.
+     rewrite <- negb_xorb_l in H.
+     apply negb_false_iff, xorb_move_l_r_1 in H.
+     rewrite xorb_true_r in H.
+     rename H into Hf₆.
+     remember a .[ S (S (i + di₂ + di))] as t eqn:Ha₆ .
+     symmetry in Ha₆.
+     remember Hd₁ as H; clear HeqH.
+     symmetry in H.
+     rewrite <- negb_involutive in H.
+     rewrite <- Hn₄ in H.
+     apply negb_sym in H.
+     remember (S (i + di₂ + di)) as x eqn:Hx .
+     rewrite <- Nat.add_succ_l, <- Nat.add_succ_r in Hx; subst x.
+     rewrite <- Nat.add_succ_r in Hf₂.
+     move H after Ha₆.
+     eapply sum_x1_carry_not_x2 with (di₄ := S di); try eassumption.
+      intros dj Hdj; apply Hn₁; assumption.
 
- a+b   .   .   .   .   .   0   .   .
-0          ≠   ≠   ≠   ≠
-  c    .   .   .   1   .   0   .   .
-1          ≠   ≠       ≠   ≠   ≠   ≠   ≠   ≠ ...
-  b    .   .   .   1   .   .   .   .
+      intros dj Hdj; rewrite Nat.add_succ_r; simpl; apply Hn₄.
+
+      apply Nat.lt_succ_diag_r.
+
+    simpl.
+bbb.
+
+1/ t=1
+
+       i  i+1  -   i₂  -   i₃
+  b    .   .   x   1   .   .
+1           +1  +1  +1
+  a    .   1   1   0   .   1
+1          ≠   ≠   ≠   ≠
+ b+c   .   0   0   1   .   1
+
+ a+b   .   .   x   0   .   .
+0          ≠   ≠   ≠
+  c    .   .   .   1   .   .
+1          ≠   ≠    +1
+  b    .   .   x   1   .   .
+
+
+       i  i+1  -   i₂  -   i₃
+  b    .   .   x   1   .   .
+1           +1  +1  +t
+  a    .   1   1  ¬t   .   1
+1          ≠   ≠   ≠   ≠
+ b+c   .   0   0   t   .   1
+
+ a+b   .   .   x   0   .   .
+0          ≠   ≠   ≠
+  c    .   .   .   1   .   .
+1          ≠   ≠    +t
+  b    .   .   x   1   .   .
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
