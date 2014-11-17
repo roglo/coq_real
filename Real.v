@@ -5006,7 +5006,7 @@ induction di; intros.
 Qed.
 
 Theorem zzz : ∀ a b c i di₁ di₂ di₃,
-  b.[i] = true
+  a.[S i] = false
   → carry a (b + c) i = true
   → carry (a + b) c i = false
   → carry b c i = true
@@ -5018,29 +5018,57 @@ Theorem zzz : ∀ a b c i di₁ di₂ di₃,
   → di₂ < di₃
   → False.
 Proof.
-intros a b c i di₁ di₂ di₃ Hb Hc₃ Hc₄ Hc₅ Hc₆ Hs₁ Hs₂ Hs₃ H₁ H₂.
+intros a b c i di₁ di₂ di₃ Ha Hc₃ Hc₄ Hc₅ Hc₆ Hs₁ Hs₂ Hs₃ H₁ H₂.
 remember (di₃ - S di₂) as di eqn:Hdi .
 apply nat_sub_add_r in Hdi; [ idtac | assumption ].
 subst di₃; clear H₂.
-revert i Hb di₁ di₂ Hc₃ Hc₄ Hc₅ Hc₆ Hs₁ Hs₂ Hs₃ H₁.
+revert i Ha di₁ di₂ Hc₃ Hc₄ Hc₅ Hc₆ Hs₁ Hs₂ Hs₃ H₁.
 induction di; intros.
  rewrite Nat.add_1_r in Hs₃.
- revert i Hb di₁ Hc₃ Hc₄ Hc₅ Hc₆ Hs₁ Hs₂ Hs₃ H₁.
+ revert i Ha di₁ Hc₃ Hc₄ Hc₅ Hc₆ Hs₁ Hs₂ Hs₃ H₁.
  induction di₂; intros.
 bbb.
 
-       i  i+1  +1
-  b    1   .   .
-1
-  a    .   .   .
-1
- b+c   .   .   .
+       i  i+1  +1  +2
+  b    .   1   1   1
+1           +1  +0  +1 <-- contradiction
+  a    .   0   1   0
+1          ≠+1
+ b+c   .   1   1   .
 
- a+b   .   .   .
-0
-  c    .   .   .
-1
-  b    .   .   .
+ a+b   .   0   0   0
+0          ≠+0 ≠+0
+  c    .   1   1   0
+1           +1  +1
+  b    .   1   1   1
+
+
+       i  i+1  +1
+  b    .   1   1
+1           +1  +0
+  a    .   0   1
+1          ≠+1
+ b+c   .   1   1
+
+ a+b   .   0   0
+0          ≠+0
+  c    .   1   0
+1           +1  +0  <--- contradiction
+  b    .   1   1
+
+
+       i  i+1  +1
+  b    .   1   .
+1           +1
+  a    .   0   1
+1          ≠+1
+ b+c   .   1   1
+
+ a+b   .   0   .
+0          ≠+0
+  c    .   1   .
+1           +1
+  b    .   1   .
 
 
        i  i+1  -   i₂  +1
