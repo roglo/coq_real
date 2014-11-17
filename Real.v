@@ -5228,6 +5228,22 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
 
     simpl.
 bbb.
+
+t=1
+
+       i  i+1  -   i₂  -   i₃
+  b    .   .   x   1   .   .
+1           +1  +1  +1                i₂ dans la m^ situation que i !
+  a    .   1   1   0   .   1
+1          ≠   ≠   ≠+1 ≠
+ b+c   .   0   0   1   .   1
+
+ a+b   .   .   x   0   .   .
+0          ≠   ≠   ≠+0
+  c    .   .   .   1   .   .
+1          ≠   ≠    +1
+  b    .   .   x   1   .   .
+
        i  i+1  -   i₂  -   i₃
   b    .   .   x   1   .   .
 1           +1  +1  +t
