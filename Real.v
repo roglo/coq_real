@@ -5062,19 +5062,29 @@ induction di; intros.
    pose proof (Hn₁ 0 (Nat.lt_0_succ di₁)) as H.
    rewrite Nat.add_0_r, Hc in H; simpl in H.
    rename H into Hab; move Hab after Hbc.
-   destruct x.
+   remember Hab as H; clear HeqH.
+   unfold rm_add_i in H.
+   rewrite Ha, Hb, xorb_true_r, xorb_true_l in H.
+   apply negb_false_iff in H.
+   rename H into He; move He before Hbc.
+   remember Hc₃ as H; clear HeqH.
+   unfold carry in H.
+   rewrite Hs₃, Nat.add_1_r in H.
+   rename H into Ha₂; move Ha₂ before He.
+   rewrite Ha₂ in Ht₃; symmetry in Ht₃.
+   move Ht₃ before Ha₂.
 bbb.
 
        i  i+1  +1
   b    .   1   .
 1           +1
-  a    .   0   .
-1              ≠
- b+c   .   1   .
+  a    .   0   1
+1
+ b+c   .   1   1
 
  a+b   .   0   .
 0           +0
-  c    .   1   1
+  c    .   1   x
 1           +1
   b    .   1   .
 
