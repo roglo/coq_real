@@ -5062,7 +5062,22 @@ induction di; intros.
    pose proof (Hn₁ 0 (Nat.lt_0_succ di₁)) as H.
    rewrite Nat.add_0_r, Hc in H; simpl in H.
    rename H into Hab; move Hab after Hbc.
+   destruct x.
 bbb.
+
+       i  i+1  +1
+  b    .   1   .
+1           +1
+  a    .   0   .
+1              ≠
+ b+c   .   1   .
+
+ a+b   .   0   .
+0
+  c    .   1   1
+1           +1
+  b    .   1   .
+
 
 c.[+1] = 0
 
