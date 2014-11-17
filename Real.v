@@ -5183,10 +5183,11 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
        eapply lt_trans; [ idtac | eassumption ].
        apply Nat.lt_succ_diag_r.
 
-     simpl.
+     remember Hs₄ as Hn₄; clear HeqHn₄.
+     apply fst_same_sym_iff in Hn₄; simpl in Hn₄.
 bbb.
        i  i+1  -   i₂  -   i₁  -   i₄
-  b    .   .   .   1   .   .   .   1
+  b    .   .   .   1   .   .   .   .
 1
   a    .   .   .   1   .   .   .   .
 1          ≠   ≠
@@ -5194,9 +5195,9 @@ bbb.
 
  a+b   .   .   .   .   .   0   .   .
 0          ≠   ≠   ≠   ≠
-  c    .   .   .   1   .   0   .   1
-1          ≠   ≠       ≠   ≠   ≠
-  b    .   .   .   1   .   .   .   1
+  c    .   .   .   1   .   0   .   .
+1          ≠   ≠       ≠   ≠   ≠   ≠   ≠   ≠ ...
+  b    .   .   .   1   .   .   .   .
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
