@@ -5027,34 +5027,41 @@ induction di; intros.
  rewrite Nat.add_1_r in Hs₃.
  revert i Ha di₁ Hc₃ Hc₄ Hc₅ Hc₆ Hs₁ Hs₂ Hs₃ H₁.
  induction di₂; intros.
-  remember c .[ S i] as x eqn:Hc .
+  remember c .[ S (S i)] as x eqn:Hc .
   symmetry in Hc.
-  remember Hs₂ as H; clear HeqH.
-  apply fst_same_iff in H; simpl in H.
-  destruct H as (_, Hb); rewrite Nat.add_0_r, Hc in Hb.
-  destruct x.
-   remember Hc₆ as H; clear HeqH.
-   unfold carry in H.
-   remember (fst_same a b (S i)) as s₄ eqn:Hs₄ .
-   symmetry in Hs₄.
-   destruct s₄ as [di₄| ]; [ idtac | clear H ].
-    rename H into Ha₄.
-    move Hs₄ before Hs₃.
-    move di₄ before di₁.
-    move Hb before Ha.
-    move Hc before Hb.
-    remember Hs₃ as H; clear HeqH.
-    apply fst_same_iff in H; simpl in H.
-    destruct H as (Hn₃, Ht₃).
-    pose proof (Hn₃ 0 Nat.lt_0_1) as H.
-    rewrite Nat.add_0_r, Ha in H.
-    apply negb_sym in H; simpl in H.
-    rename H into Hbc.
-    remember Hbc as H; clear HeqH.
-    unfold rm_add_i in H.
-    rewrite Hb, Hc, xorb_nilpotent, xorb_false_l in H.
-    clear Hn₃.
-    rewrite Nat.add_comm in Ht₃; simpl in Ht₃.
+  remember Hc₆ as H; clear HeqH.
+  unfold carry in H.
+  remember (fst_same a b (S i)) as s₆ eqn:Hs₆ .
+  symmetry in Hs₆.
+  destruct s₆ as [di₆| ]; [ idtac | clear H ].
+   rename H into Ha₆.
+   move Hs₆ before Hs₃; move di₆ before di₁.
+   remember Hs₆ as H; clear HeqH.
+   apply fst_same_iff in H; simpl in H.
+   destruct H as (Hn₆, Ht₆).
+   destruct di₆; [ rewrite Nat.add_0_r, Ha in Ha₆; discriminate Ha₆ | idtac ].
+   pose proof (Hn₆ 0 (Nat.lt_0_succ di₆)) as H.
+   rewrite Nat.add_0_r, Ha in H; apply negb_sym in H.
+   rename H into Hb; simpl in Hb; move Hb before Ha.
+   remember Hs₂ as H; clear HeqH.
+   apply fst_same_iff in H; simpl in H.
+   rename Hc into Hc₂.
+   destruct H as (_, Hc); rewrite Nat.add_0_r, Hb in Hc.
+   symmetry in Hc; move Hc before Hb.
+   remember Hs₃ as H; clear HeqH.
+   apply fst_same_iff in H; simpl in H.
+   rewrite Nat.add_1_r in H.
+   destruct H as (Hn₃, Ht₃).
+   pose proof (Hn₃ 0 Nat.lt_0_1) as H; clear Hn₃.
+   rewrite Nat.add_0_r, Ha in H; apply negb_sym in H; simpl in H.
+   rename H into Hbc; move Hbc before Hc.
+   remember Hs₁ as H; clear HeqH.
+   apply fst_same_iff in H; simpl in H.
+   destruct H as (Hn₁, Ht₁).
+   destruct di₁; [ revert H₁; apply Nat.nlt_0_r | idtac ].
+   pose proof (Hn₁ 0 (Nat.lt_0_succ di₁)) as H.
+   rewrite Nat.add_0_r, Hc in H; simpl in H.
+   rename H into Hab; move Hab after Hbc.
 bbb.
 
 c.[+1] = 0
