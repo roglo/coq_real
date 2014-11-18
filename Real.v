@@ -5333,6 +5333,10 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
 
          rewrite Nat.add_assoc, <- Nat.add_succ_l in Ha₃.
 bbb.
+         remember (S (i + di₂)) as j eqn:Hj .
+         clear i Hs₁ Hs₂ Hs₃ He₁ Hj.
+         rename Hg₃ into Hc₃; rename Hg₄ into Hc₄.
+         rename Hg₅ into Hc₅; rename Hg₆ into Hc₆.
    assert (carry a (b + c) (S (i + di₂)) = true) as Hg₃.
     rewrite <- Nat.add_succ_l; symmetry in Hs₃.
     rewrite carry_before_inf_relay; [ reflexivity | assumption ].
