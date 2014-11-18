@@ -5366,7 +5366,47 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
              eapply subcase_2b; eassumption.
 
              symmetry in Hs₁, Hs₂, Hs₃.
+             rewrite Hi in Hs₃.
+             rewrite Nat.add_1_r in Hs₃₀.
+             apply fst_same_iff in Hs₃₀; simpl in Hs₃₀.
+             apply fst_same_iff in Hs₃; simpl in Hs₃.
+             destruct Hs₃₀ as (Hn₃₀, Hs₃₀).
+             destruct Hs₃ as (Hn₃, Hs₃).
+             destruct di₃; [ revert H₂; apply Nat.nlt_0_r | idtac ].
+             pose proof (Hn₃ 0 (Nat.lt_0_succ di₃)) as H.
+             rewrite Nat.add_0_r in H.
+             rewrite Nat.add_succ_r in Hs₃₀.
+             rewrite <- Hs₃₀ in H.
+             symmetry in H; revert H; apply no_fixpoint_negb.
+
+            apply fst_same_iff in Hs₃₀; simpl in Hs₃₀.
+            apply fst_same_sym_iff in Hs₃; simpl in Hs₃.
+            destruct Hs₃₀ as (Hn₃₀, Hs₃₀).
+            rewrite Hi in Hs₃.
+            pose proof (Hs₃ 0) as H.
+            rewrite <- Nat.add_succ_r in H.
+            rewrite Nat.add_succ_l in H.
+            rewrite <- Nat.add_assoc in H.
+            rewrite <- Hs₃₀ in H.
+            symmetry in H; revert H; apply no_fixpoint_negb.
+
+           subst di₂.
 bbb.
+       i₀ i₀+1 -   i  i+1  -   i₂
+   b   .   .   .   1   .   .   1   .
+1
+   a   .   .   .   .   1   .   .   .
+1          ≠   ≠   ≠
+  b+c  .   .   .   .   1   .   .   .
+
+  a+b  .   .   .   0   .   .   .   .
+0          ≠   ≠   ≠   ≠
+   c   .   .   .   1   .   .   1   .
+1          ≠   ≠       ≠   ≠
+   b   .   .   .   1   .   .   1   .
+
+
+
          clear i Hs₁ Hs₂ Hs₃ He₁ Hj.
    assert (carry a (b + c) (S (i + di₂)) = true) as Hg₃.
     rewrite <- Nat.add_succ_l; symmetry in Hs₃.
