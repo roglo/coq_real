@@ -5022,7 +5022,7 @@ a+b  .   .   .   .   .   .
  *)
 Theorem subcase_2a : ∀ a b c i di₁ di₂,
   fst_same (a + b) c (S i) = Some di₁
-  → c .[ S (i + di₁)] = false
+  → rm_add_i a b (S (i + di₁)) = false
   → fst_same b c (S i) = Some di₂
   → fst_same a (b + c) (S i) = Some di₂
   → a .[ S (i + di₂)] = true
@@ -5031,14 +5031,13 @@ Theorem subcase_2a : ∀ a b c i di₁ di₂,
   → False.
 Proof.
 intros a b c i di₁ di₂.
-intros Hs₁ Hd₁ Hs₂ Hs₃ Ha₃ Hb₂ H₁.
+intros Hs₁ He₁ Hs₂ Hs₃ Ha₃ Hb₂ H₁.
 apply fst_same_iff in Hs₁; simpl in Hs₁.
-destruct Hs₁ as (Hn₁, He₁); rewrite Hd₁ in He₁.
+destruct Hs₁ as (Hn₁, Hd₁); rewrite He₁ in Hd₁; symmetry in Hd₁.
 apply fst_same_iff in Hs₂; simpl in Hs₂.
 destruct Hs₂ as (Hn₂, Hd₂); rewrite Hb₂ in Hd₂; symmetry in Hd₂.
 apply fst_same_iff in Hs₃; simpl in Hs₃.
-destruct Hs₃ as (Hn₃, He₃); rewrite Ha₃ in He₃.
-symmetry in He₃.
+destruct Hs₃ as (Hn₃, He₃); rewrite Ha₃ in He₃; symmetry in He₃.
 remember He₃ as H; clear HeqH.
 unfold rm_add_i in H; simpl in H.
 rewrite Hb₂, Hd₂, xorb_nilpotent, xorb_false_l in H.
@@ -5259,11 +5258,6 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
 
     subst di₃.
     symmetry in Hs₁, Hs₂, Hs₃.
-(**)
-remember Hs₁ as H; clear HeqH.
-apply fst_same_iff in H; simpl in H.
-destruct H as (Hn₁, Hd₁); rewrite He₁ in Hd₁; symmetry in Hd₁.
-(**)
     eapply subcase_2a; eassumption.
 
     assert (carry a (b + c) (S (i + di₂)) = true) as Hg₃.
