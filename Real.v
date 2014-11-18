@@ -5272,8 +5272,20 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
       rewrite <- Nat.add_succ_l; symmetry in Hs₁.
       erewrite carry_before_relay; eassumption.
 
-      assert (carry b c (S (i + di₂)) = true) as Hg₅.
-bbb.
+      remember (carry b c (S (i + di₂))) as t eqn:Hg₅ .
+      symmetry in Hg₅.
+      destruct t.
+       assert (carry a b (S (i + di₂)) = true) as Hg₆.
+        pose proof (Hn₃ di₂ H₂) as H.
+        unfold rm_add_i in H.
+        rewrite Hb₂, Hd₂, xorb_nilpotent, xorb_false_l in H.
+        rewrite Hg₅ in H; simpl in H.
+        pose proof (Hn₁ di₂ H₁) as HH.
+        rewrite Hd₂ in HH; simpl in HH.
+        unfold rm_add_i in HH.
+        rewrite H, Hb₂, xorb_false_l, xorb_true_l in HH.
+        apply negb_false_iff; assumption.
+bb.
 
 t=1
 
