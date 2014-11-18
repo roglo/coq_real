@@ -5437,12 +5437,12 @@ bbb.
         remember He₁ as H; clear HeqH.
         unfold rm_add_i in H.
 
-c.[i₂+1]=1
+c.[i₂+1]=1       pas de contradiction :-(
        i  i+1  -   i₂  +1  -   i₁
   b    .   .   x   1   0   ₀   ₁
 1           +1  +1  +0  +0
   a    .   1   1   1   1   ₀   .
-1          ≠   ≠   ≠
+1          ≠   ≠   ≠    +₀    <--- oui mais bon parité retenues ⇒ +1 et non +0
  b+c   .   0   0   0   1   ₀   ₀
 
  a+b   .   .   x   0   1   ₀   0
