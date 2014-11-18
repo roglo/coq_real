@@ -2650,6 +2650,23 @@ eapply fst_same_in_range in Hs₂; try eassumption; [ idtac | split; auto ].
  apply Nat.le_add_r.
 Qed.
 
+Theorem carry_before_inf_relay : ∀ a b i,
+  fst_same a b i = None
+  → ∀ dj, carry a b (i + dj) = true.
+Proof.
+intros a b i Hs dj.
+unfold carry; simpl.
+remember (fst_same a b (S (i + dj))) as s₂ eqn:Hs₂ .
+symmetry in Hs₂.
+apply fst_same_iff in Hs₂; simpl in Hs₂.
+destruct s₂ as [di₂| ]; [ idtac | reflexivity ].
+apply fst_same_iff in Hs; simpl in Hs.
+destruct Hs₂ as (_, Hs₂).
+rewrite <- Nat.add_assoc, <- Nat.add_succ_r in Hs₂.
+rewrite Hs in Hs₂.
+exfalso; revert Hs₂; apply no_fixpoint_negb.
+Qed.
+
 Theorem sum_before_relay : ∀ a b i di x,
   fst_same a b i = Some di
   → a .[i + di] = x
@@ -5264,6 +5281,12 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
   unfold carry in H; simpl in H.
   remember (fst_same a (b + c) (S i)) as s₃ eqn:Hs₃ .
   destruct s₃ as [di₃| ]; [ idtac | clear H ].
+   Focus 2.
+   assert (carry a (b + c) (S (i + di₂)) = true) as Hg₃.
+    rewrite <- Nat.add_succ_l; symmetry in Hs₃.
+    rewrite carry_before_inf_relay; [ reflexivity | assumption ].
+
+    Unfocus.
    rename H into Ha₃.
    destruct (lt_eq_lt_dec di₃ di₂) as [[H₂| H₂]| H₂].
     symmetry in Hs₂, Hs₃.
