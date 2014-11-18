@@ -5048,16 +5048,16 @@ a+b  .   .   .   .   .   .
  *)
 Theorem subcase_2b : ∀ a b c i di₁ di₂,
   fst_same (a + b) c (S i) = Some di₁
-  → rm_add_i a b (S (i + di₁)) = false
   → fst_same b c (S i) = Some di₂
   → fst_same a (b + c) (S i) = Some di₂
+  → rm_add_i a b (S (i + di₁)) = false
   → a .[ S (i + di₂)] = true
   → b .[ S (i + di₂)] = true
   → di₂ < di₁
   → False.
 Proof.
 intros a b c i di₁ di₂.
-intros Hs₁ He₁ Hs₂ Hs₃ Ha₃ Hb₂ H₁.
+intros Hs₁ Hs₂ Hs₃ He₁ Ha₃ Hb₂ H₁.
 apply fst_same_iff in Hs₁; simpl in Hs₁.
 destruct Hs₁ as (Hn₁, Hd₁); rewrite He₁ in Hd₁; symmetry in Hd₁.
 apply fst_same_iff in Hs₂; simpl in Hs₂.
