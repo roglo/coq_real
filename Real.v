@@ -5176,18 +5176,18 @@ t          ≠   ≠    +u
 *)
 
 Theorem zzz : ∀ a b c i di₁ di₂,
-  rm_add_i a b (S (i + di₁)) = false
-  → (∀ dj, dj < di₁ → rm_add_i a b (S (i + dj)) = negb c .[ S (i + dj)])
+  (∀ dj, dj < di₁ → rm_add_i a b (S (i + dj)) = negb c .[ S (i + dj)])
   → c .[ S (i + di₁)] = false
+  → a .[ S (i + di₂)] = true
   → b .[ S (i + di₂)] = true
   → c .[ S (i + di₂)] = true
-  → di₂ < di₁
-  → a .[ S (i + di₂)] = true
+  → rm_add_i a b (S (i + di₁)) = false
   → rm_add_i b c (S (i + di₂)) = true
+  → di₂ < di₁
   → False.
 Proof.
 intros a b c i di₁ di₂.
-intros He₁ Hn₁ Hd₁ Hb₂ Hd₂ H₁ Ha₃ He₃.
+intros Hn₁ Hd₁ Ha₃ Hb₂ Hd₂ He₁ He₃ H₁.
 remember He₃ as H; clear HeqH.
 unfold rm_add_i in H; simpl in H.
 rewrite Hb₂, Hd₂, xorb_nilpotent, xorb_false_l in H.
