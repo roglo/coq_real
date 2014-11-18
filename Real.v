@@ -5249,7 +5249,15 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
     symmetry in Hs₁, Hs₂, Hs₃.
     eapply subcase_2a; eassumption.
 
-    simpl.
+    assert (carry a (b + c) (S (i + di₂)) = true) as Hg₃.
+     rewrite <- Nat.add_succ_l; symmetry in Hs₃.
+     erewrite carry_before_relay; eassumption.
+
+     assert (carry (a + b) c (S (i + di₂)) = false) as Hg₄.
+      rewrite <- Nat.add_succ_l; symmetry in Hs₁.
+      erewrite carry_before_relay; eassumption.
+
+      assert (carry b c (S (i + di₂)) = true) as Hg₅.
 bbb.
 
 t=1
