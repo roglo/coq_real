@@ -5433,41 +5433,20 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
           rewrite H₂, H₃ in H.
           discriminate H.
 bbb.
-       i₀ i₀+1 -   i  i+1  -   i₁  -  i₂   -
-   b   .   .   .   1   .   .   1   .   1   .
-1
-   a   .   .   .   .   1   .   .   .   .   .
+
+       i  i+1  -   i₂  +1
+  b    .   .   x   1   0
+1           +1  +1  +0  +0
+  a    .   1   1   1   1
 1          ≠   ≠   ≠
-  b+c  .   .   .   .   ½   .   0   .   .   .
+ b+c   .   0   0   0   1
 
-  a+b  .   .   .   0   .   .   0   .   .   .
-0          ≠   ≠   ≠   ≠   ≠
-   c   .   .   .   1   .   .   0   .   1   .
-1          ≠   ≠       ≠   ≠   ≠   ≠
-   b   .   .   .   1   .   .   1   .   1   .
+ a+b   .   .   x   0   1
+0          ≠   ≠   ≠+0  +0
+  c    .   .   .   1   0
+1          ≠   ≠    +0  +1
+  b    .   .   x   1   0
 
-
-
-         clear i Hs₁ Hs₂ Hs₃ He₁ Hj.
-   assert (carry a (b + c) (S (i + di₂)) = true) as Hg₃.
-    rewrite <- Nat.add_succ_l; symmetry in Hs₃.
-    rewrite carry_before_inf_relay; [ reflexivity | assumption ].
-
-
-t=1
-
-       i  i+1  -   i₂  -   i₃
-  b    .   .   x   1   .   .
-1           +1  +1  +1                i₂ dans la m^ situation que i !
-  a    .   1   1   0   .   1
-1          ≠   ≠   ≠+1 ≠
- b+c   .   0   0   1   .   1
-
- a+b   .   .   x   0   .   .
-0          ≠   ≠   ≠+0
-  c    .   .   .   1   .   .
-1          ≠   ≠    +1
-  b    .   .   x   1   .   .
 
        i  i+1  -   i₂  -   i₃
   b    .   .   x   1   .   .
