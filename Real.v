@@ -5229,27 +5229,24 @@ unfold carry in H; simpl in H.
 remember (fst_same (a + b) c (S i)) as s₁ eqn:Hs₁ .
 destruct s₁ as [di₁| ]; [ idtac | discriminate H ].
 rename H into He₁.
-remember Hs₁ as H; clear HeqH.
-apply fst_same_sym_iff in H; simpl in H.
-destruct H as (Hn₁, Hd₁); rewrite He₁ in Hd₁; symmetry in Hd₁.
 remember Hc₅ as H; clear HeqH.
 unfold carry in H; simpl in H.
 remember (fst_same b c (S i)) as s₂ eqn:Hs₂ .
 destruct s₂ as [di₂| ]; [ idtac | clear H ].
  rename H into Hb₂.
- remember Hs₂ as H; clear HeqH.
- apply fst_same_sym_iff in H; simpl in H.
- destruct H as (Hn₂, Hd₂); rewrite Hb₂ in Hd₂; symmetry in Hd₂.
  destruct (lt_eq_lt_dec di₂ di₁) as [[H₁| H₁]| H₁].
   remember Hc₃ as H; clear HeqH.
   unfold carry in H; simpl in H.
   remember (fst_same a (b + c) (S i)) as s₃ eqn:Hs₃ .
   destruct s₃ as [di₃| ]; [ idtac | clear H ].
    rename H into Ha₃.
-   remember Hs₃ as H; clear HeqH.
-   apply fst_same_sym_iff in H; simpl in H.
-   destruct H as (Hn₃, He₃); rewrite Ha₃ in He₃; symmetry in He₃.
    destruct (lt_eq_lt_dec di₃ di₂) as [[H₂| H₂]| H₂].
+    remember Hs₂ as H; clear HeqH.
+    apply fst_same_sym_iff in H; simpl in H.
+    destruct H as (Hn₂, Hd₂); rewrite Hb₂ in Hd₂; symmetry in Hd₂.
+    remember Hs₃ as H; clear HeqH.
+    apply fst_same_sym_iff in H; simpl in H.
+    destruct H as (Hn₃, He₃); rewrite Ha₃ in He₃; symmetry in He₃.
     remember He₃ as H; clear HeqH.
     unfold rm_add_i in H; simpl in H.
     rewrite Hn₂ in H; [ idtac | assumption ].
@@ -5262,6 +5259,11 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
 
     subst di₃.
     symmetry in Hs₁, Hs₂, Hs₃.
+(**)
+remember Hs₁ as H; clear HeqH.
+apply fst_same_iff in H; simpl in H.
+destruct H as (Hn₁, Hd₁); rewrite He₁ in Hd₁; symmetry in Hd₁.
+(**)
     eapply subcase_2a; eassumption.
 
     assert (carry a (b + c) (S (i + di₂)) = true) as Hg₃.
@@ -5276,6 +5278,15 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
       symmetry in Hg₅.
       destruct t.
        assert (carry a b (S (i + di₂)) = true) as Hg₆.
+        remember Hs₁ as H; clear HeqH.
+        apply fst_same_sym_iff in H; simpl in H.
+        destruct H as (Hn₁, Hd₁); rewrite He₁ in Hd₁; symmetry in Hd₁.
+        remember Hs₂ as H; clear HeqH.
+        apply fst_same_sym_iff in H; simpl in H.
+        destruct H as (Hn₂, Hd₂); rewrite Hb₂ in Hd₂; symmetry in Hd₂.
+        remember Hs₃ as H; clear HeqH.
+        apply fst_same_sym_iff in H; simpl in H.
+        destruct H as (Hn₃, He₃); rewrite Ha₃ in He₃; symmetry in He₃.
         pose proof (Hn₃ di₂ H₂) as H.
         unfold rm_add_i in H.
         rewrite Hb₂, Hd₂, xorb_nilpotent, xorb_false_l in H.
@@ -5285,7 +5296,7 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
         unfold rm_add_i in HH.
         rewrite H, Hb₂, xorb_false_l, xorb_true_l in HH.
         apply negb_false_iff; assumption.
-bb.
+bbb.
 
 t=1
 
