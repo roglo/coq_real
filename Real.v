@@ -5176,8 +5176,7 @@ t          ≠   ≠    +u
 *)
 
 Theorem zzz : ∀ a b c i di₁ di₂,
-  Some di₁ = fst_same (a + b) c (S i)
-  → rm_add_i a b (S (i + di₁)) = false
+  rm_add_i a b (S (i + di₁)) = false
   → (∀ dj, dj < di₁ → rm_add_i a b (S (i + dj)) = negb c .[ S (i + dj)])
   → c .[ S (i + di₁)] = false
   → b .[ S (i + di₂)] = true
@@ -5188,7 +5187,7 @@ Theorem zzz : ∀ a b c i di₁ di₂,
   → False.
 Proof.
 intros a b c i di₁ di₂.
-intros Hs₁ He₁ Hn₁ Hd₁ Hb₂ Hd₂ H₁ Ha₃ He₃.
+intros He₁ Hn₁ Hd₁ Hb₂ Hd₂ H₁ Ha₃ He₃.
 remember He₃ as H; clear HeqH.
 unfold rm_add_i in H; simpl in H.
 rewrite Hb₂, Hd₂, xorb_nilpotent, xorb_false_l in H.
@@ -5279,7 +5278,7 @@ destruct s₄ as [di₄| ]; [ idtac | clear H ].
   subst di₁; clear H₁.
   rewrite Nat.add_succ_r in H₂; simpl in H₂.
   apply Nat.succ_lt_mono, Nat.add_lt_mono_l in H₂.
-  rewrite Nat.add_succ_r in Hs₁, Hd₁, He₁, Hn₁.
+  rewrite Nat.add_succ_r in Hd₁, He₁, Hn₁.
   rewrite Nat.add_succ_r, Nat.add_assoc in Hd₁, He₁.
   assert (di₂ < S di₂) as H by apply Nat.lt_succ_diag_r.
   apply Nat.lt_lt_add_r with (p := di) in H; simpl in H.
@@ -5322,7 +5321,7 @@ destruct s₄ as [di₄| ]; [ idtac | clear H ].
  remember (di₁ - S di₂) as di.
  apply nat_sub_add_r in Heqdi; [ idtac | assumption ].
  subst di₁; clear H₁.
- rewrite Nat.add_succ_r in Hs₁, Hd₁, He₁, Hn₁.
+ rewrite Nat.add_succ_r in Hd₁, He₁, Hn₁.
  rewrite Nat.add_succ_r, Nat.add_assoc in Hd₁, He₁.
  assert (di₂ < S di₂) as H by apply Nat.lt_succ_diag_r.
  apply Nat.lt_lt_add_r with (p := di) in H; simpl in H.
