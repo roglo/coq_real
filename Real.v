@@ -5457,7 +5457,7 @@ c.[i₂+1]=0
   b    .   .   x   1   0   ₁   ₁
 1           +1  +1  +0  +0  +₀  +½  <-- contrad
   a    .   1   1   1   1   ₀   ₀
-1          ≠   ≠   ≠
+1          ≠   ≠   ≠    +₀          <-- pb parité retenues ici aussi
  b+c   .   0   0   0   1   ₀   .
 
  a+b   .   .   x   0   1   ₁   0
