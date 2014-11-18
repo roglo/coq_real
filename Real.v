@@ -5391,6 +5391,13 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
             symmetry in H; revert H; apply no_fixpoint_negb.
 
            subst di₂.
+           apply fst_same_sym_iff in Hs₁; simpl in Hs₁.
+           apply fst_same_sym_iff in Hs₂; simpl in Hs₂.
+           destruct Hs₁ as (Hn₁, Hs₁).
+           destruct Hs₂ as (Hn₂, Hs₂).
+           rewrite Hb₂ in Hs₂; symmetry in Hs₂.
+           rewrite Hs₂ in Hs₁.
+           rewrite Hs₁ in He₁; discriminate He₁.
 bbb.
        i₀ i₀+1 -   i  i+1  -   i₂
    b   .   .   .   1   .   .   1   .
@@ -5400,8 +5407,8 @@ bbb.
   b+c  .   .   .   .   1   .   .   .
 
   a+b  .   .   .   0   .   .   .   .
-0          ≠   ≠   ≠   ≠
-   c   .   .   .   1   .   .   1   .
+0          ≠   ≠   ≠   ≠   ≠
+   c   .   .   .   1   .   .   ½  .
 1          ≠   ≠       ≠   ≠
    b   .   .   .   1   .   .   1   .
 
