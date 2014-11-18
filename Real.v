@@ -5005,189 +5005,19 @@ induction di; intros.
   apply Nat.lt_0_succ.
 Qed.
 
-(*
-Theorem zzz : ∀ a b c i di₁ di₂ di₃,
-  a.[S i] = false
-  → carry a (b + c) i = true
-  → carry (a + b) c i = false
-  → carry b c i = true
-  → carry a b i = true
-  → fst_same (a + b) c (S i) = Some di₁
-  → fst_same b c (S i) = Some di₂
-  → fst_same a (b + c) (S i) = Some di₃
-  → di₂ < di₁
-  → di₂ < di₃
-  → False.
-Proof.
-intros a b c i di₁ di₂ di₃ Ha Hc₃ Hc₄ Hc₅ Hc₆ Hs₁ Hs₂ Hs₃ H₁ H₂.
-remember (di₃ - S di₂) as di eqn:Hdi .
-apply nat_sub_add_r in Hdi; [ idtac | assumption ].
-subst di₃; clear H₂.
-revert i Ha di₁ di₂ Hc₃ Hc₄ Hc₅ Hc₆ Hs₁ Hs₂ Hs₃ H₁.
-induction di; intros.
- rewrite Nat.add_1_r in Hs₃.
- revert i Ha di₁ Hc₃ Hc₄ Hc₅ Hc₆ Hs₁ Hs₂ Hs₃ H₁.
- induction di₂; intros.
-  remember Hc₆ as H; clear HeqH.
-  unfold carry in H.
-  remember (fst_same a b (S i)) as s₆ eqn:Hs₆ .
-  symmetry in Hs₆.
-  destruct s₆ as [di₆| ]; [ idtac | clear H ].
-   rename H into Ha₆.
-   move Hs₆ before Hs₃; move di₆ before di₁.
-   remember Hs₆ as H; clear HeqH.
-   apply fst_same_iff in H; simpl in H.
-   destruct H as (Hn₆, Ht₆).
-   destruct di₆; [ rewrite Nat.add_0_r, Ha in Ha₆; discriminate Ha₆ | idtac ].
-   pose proof (Hn₆ 0 (Nat.lt_0_succ di₆)) as H.
-   rewrite Nat.add_0_r, Ha in H; apply negb_sym in H.
-   rename H into Hb; simpl in Hb; move Hb before Ha.
-   remember Hs₂ as H; clear HeqH.
-   apply fst_same_iff in H; simpl in H.
-   destruct H as (_, Hc); rewrite Nat.add_0_r, Hb in Hc.
-   symmetry in Hc; move Hc before Hb.
-   remember Hs₃ as H; clear HeqH.
-   apply fst_same_iff in H; simpl in H.
-   rewrite Nat.add_1_r in H.
-   destruct H as (Hn₃, Ht₃).
-   pose proof (Hn₃ 0 Nat.lt_0_1) as H; clear Hn₃.
-   rewrite Nat.add_0_r, Ha in H; apply negb_sym in H; simpl in H.
-   rename H into Hbc; move Hbc before Hc.
-   remember Hs₁ as H; clear HeqH.
-   apply fst_same_iff in H; simpl in H.
-   destruct H as (Hn₁, Ht₁).
-   destruct di₁; [ revert H₁; apply Nat.nlt_0_r | idtac ].
-   pose proof (Hn₁ 0 (Nat.lt_0_succ di₁)) as H.
-   rewrite Nat.add_0_r, Hc in H; simpl in H.
-   rename H into Hab; move Hab after Hbc.
-   remember Hab as H; clear HeqH.
-   unfold rm_add_i in H.
-   rewrite Ha, Hb, xorb_true_r, xorb_true_l in H.
-   apply negb_false_iff in H.
-   rename H into He; move He before Hbc.
-   remember Hc₃ as H; clear HeqH.
-   unfold carry in H.
-   rewrite Hs₃, Nat.add_1_r in H.
-   rename H into Ha₂; move Ha₂ before He.
-   rewrite Ha₂ in Ht₃; symmetry in Ht₃.
-   move Ht₃ before Ha₂.
-   remember c .[ S (S i)] as x eqn:Hc₂ .
-   symmetry in Hc₂.
-bbb.
-
-c.[i+2] = 1
-
-       i  i+1 i+2
-  b    .   1   1
-1           +1  +0
-  a    .   0   1
-1
- b+c   .   1   1
-
- a+b   .   0   0
-0           +0  +0
-  c    .   1   1
-1           +1  +1
-  b    .   1   1
-
-
-
-       i  i+1 i+2
-  b    .   1   .
-1           +1
-  a    .   0   1
-1
- b+c   .   1   1
-
- a+b   .   0   .
-0           +0
-  c    .   1   x
-1           +1
-  b    .   1   .
-
-
-       i  i+1  +1  +2
-  b    .   1   1   1
-1           +1  +0  +1 <-- contradiction
-  a    .   0   1   0
-1          ≠+1
- b+c   .   1   1   .
-
- a+b   .   0   0   0
-0          ≠+0 ≠+0
-  c    .   1   1   0
-1           +1  +1
-  b    .   1   1   1
-
-
-       i  i+1  +1
-  b    .   1   1
-1           +1  +0
-  a    .   0   1
-1          ≠+1
- b+c   .   1   1
-
- a+b   .   0   0
-0          ≠+0
-  c    .   1   0
-1           +1  +0  <--- contradiction
-  b    .   1   1
-
-
-       i  i+1  +1
-  b    .   1   .
-1           +1
-  a    .   0   1
-1          ≠+1
- b+c   .   1   1
-
- a+b   .   0   .
-0          ≠+0
-  c    .   1   .
-1           +1
-  b    .   1   .
-
-
-       i  i+1  -   i₂  +1
-  b    .   .   x   t   .
-t           +t  +t  +u
-  a    .   t   t  ¬u   1
-1          ≠   ≠   ≠+1
- b+c   .  ¬t  ¬t   u   1
-
- a+b   .   .   x  ¬t   .
-0          ≠   ≠   ≠+0
-  c    .   .   .   t   .
-t          ≠   ≠    +u
-  b    .   .   x   t   .
-
-       i  i+1  -   i₂  -   i₃
-  b    .   .   x   1   .   .
-1           +1  +1  +1                i₂ dans la m^ situation que i !
-  a    .   1   1   0   .   1
-1          ≠   ≠   ≠+1 ≠
- b+c   .   0   0   1   .   1
-
- a+b   .   .   x   0   .   .
-0          ≠   ≠   ≠+0
-  c    .   .   .   1   .   .
-1          ≠   ≠    +1
-  b    .   .   x   1   .   .
-*)
-
 Theorem zzz : ∀ a b c i di₁ di₂,
   (∀ dj, dj < di₁ → rm_add_i a b (S (i + dj)) = negb c .[ S (i + dj)])
   → c .[ S (i + di₁)] = false
+  → rm_add_i a b (S (i + di₁)) = false
   → a .[ S (i + di₂)] = true
   → b .[ S (i + di₂)] = true
   → c .[ S (i + di₂)] = true
-  → rm_add_i a b (S (i + di₁)) = false
   → rm_add_i b c (S (i + di₂)) = true
   → di₂ < di₁
   → False.
 Proof.
 intros a b c i di₁ di₂.
-intros Hn₁ Hd₁ Ha₃ Hb₂ Hd₂ He₁ He₃ H₁.
+intros Hn₁ Hd₁ He₁ Ha₃ Hb₂ Hd₂ He₃ H₁.
 remember He₃ as H; clear HeqH.
 unfold rm_add_i in H; simpl in H.
 rewrite Hb₂, Hd₂, xorb_nilpotent, xorb_false_l in H.
