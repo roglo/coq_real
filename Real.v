@@ -5005,6 +5005,32 @@ induction di; intros.
   apply Nat.lt_0_succ.
 Qed.
 
+Theorem subcase_2a : ∀ a b c i di₃ di₂,
+  fst_same a (b + c) (S i) = Some di₃
+  → fst_same b c (S i) = Some di₂
+  → a .[ S (i + di₃)] = true
+  → b .[ S (i + di₂)] = true
+  → di₃ < di₂
+  → False.
+Proof.
+intros a b c i di₃ di₂.
+intros Hs₃ Hs₂ Ha₃ Hb₂ H₂.
+remember Hs₂ as H; clear HeqH.
+apply fst_same_iff in H; simpl in H.
+destruct H as (Hn₂, Hd₂); rewrite Hb₂ in Hd₂; symmetry in Hd₂.
+remember Hs₃ as H; clear HeqH.
+apply fst_same_iff in H; simpl in H.
+destruct H as (Hn₃, He₃); rewrite Ha₃ in He₃; symmetry in He₃.
+remember He₃ as H; clear HeqH.
+unfold rm_add_i in H; simpl in H.
+rewrite Hn₂ in H; [ idtac | assumption ].
+rewrite negb_xorb_diag, xorb_true_l in H.
+apply negb_true_iff in H.
+rewrite <- Nat.add_succ_l in H.
+erewrite carry_before_relay in H; try eassumption; simpl in H.
+rewrite Hb₂ in H; discriminate H.
+Qed.
+
 (*
      i  i+1  -   i₂  -   i₁
   b  .   .   .   .   .   .
@@ -5020,7 +5046,7 @@ a+b  .   .   .   .   .   .
   b  .   .   .   1   .   .
 
  *)
-Theorem subcase_2a : ∀ a b c i di₁ di₂,
+Theorem subcase_2b : ∀ a b c i di₁ di₂,
   fst_same (a + b) c (S i) = Some di₁
   → rm_add_i a b (S (i + di₁)) = false
   → fst_same b c (S i) = Some di₂
@@ -5240,25 +5266,12 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
   destruct s₃ as [di₃| ]; [ idtac | clear H ].
    rename H into Ha₃.
    destruct (lt_eq_lt_dec di₃ di₂) as [[H₂| H₂]| H₂].
-    remember Hs₂ as H; clear HeqH.
-    apply fst_same_sym_iff in H; simpl in H.
-    destruct H as (Hn₂, Hd₂); rewrite Hb₂ in Hd₂; symmetry in Hd₂.
-    remember Hs₃ as H; clear HeqH.
-    apply fst_same_sym_iff in H; simpl in H.
-    destruct H as (Hn₃, He₃); rewrite Ha₃ in He₃; symmetry in He₃.
-    remember He₃ as H; clear HeqH.
-    unfold rm_add_i in H; simpl in H.
-    rewrite Hn₂ in H; [ idtac | assumption ].
-    rewrite negb_xorb_diag, xorb_true_l in H.
-    apply negb_true_iff in H.
-    rewrite <- Nat.add_succ_l in H.
-    symmetry in Hs₂.
-    erewrite carry_before_relay in H; try eassumption; simpl in H.
-    rewrite Hb₂ in H; discriminate H.
+    symmetry in Hs₂, Hs₃.
+    eapply subcase_2a; eassumption.
 
     subst di₃.
     symmetry in Hs₁, Hs₂, Hs₃.
-    eapply subcase_2a; eassumption.
+    eapply subcase_2b; eassumption.
 
     assert (carry a (b + c) (S (i + di₂)) = true) as Hg₃.
      rewrite <- Nat.add_succ_l; symmetry in Hs₃.
