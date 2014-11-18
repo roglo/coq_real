@@ -5416,6 +5416,22 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
            destruct Hs₃₀ as (H₂, H₃).
            rewrite H₂, H₃ in H.
            discriminate H.
+
+          apply fst_same_iff in Hs₃₀; simpl in Hs₃₀.
+          destruct Hs₃₀ as (Hn₃₀, Hs₃₀).
+          rewrite Nat.add_assoc, <- Nat.add_succ_l, <- Hi in Hs₃₀.
+          rewrite Ha₃₀ in Hs₃₀; symmetry in Hs₃₀.
+          unfold rm_add_i in Hs₃₀.
+          apply fst_same_sym_iff in Hs₂; simpl in Hs₂.
+          pose proof (Hs₂ 0) as H.
+          rewrite Nat.add_0_r in H.
+          rewrite Nat.add_1_r, H in Hs₃₀.
+          rewrite negb_xorb_diag, xorb_true_l in Hs₃₀.
+          symmetry in Hs₃₀; apply negb_sym in Hs₃₀.
+          apply carry_succ_negb in Hs₃₀; [ idtac | assumption ].
+          destruct Hs₃₀ as (H₂, H₃).
+          rewrite H₂, H₃ in H.
+          discriminate H.
 bbb.
        i₀ i₀+1 -   i  i+1  -   i₁  -  i₂   -
    b   .   .   .   1   .   .   1   .   1   .
