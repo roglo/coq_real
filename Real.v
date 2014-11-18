@@ -5006,9 +5006,8 @@ induction di; intros.
 Qed.
 
 Theorem zzz : ∀ a b c i di₁ di₂,
-  (∀ dj, dj < di₁ → rm_add_i a b (S (i + dj)) = negb c .[ S (i + dj)])
+  fst_same (a + b) c (S i) = Some di₁
   → c .[ S (i + di₁)] = false
-  → rm_add_i a b (S (i + di₁)) = false
   → a .[ S (i + di₂)] = true
   → b .[ S (i + di₂)] = true
   → c .[ S (i + di₂)] = true
@@ -5017,7 +5016,10 @@ Theorem zzz : ∀ a b c i di₁ di₂,
   → False.
 Proof.
 intros a b c i di₁ di₂.
-intros Hn₁ Hd₁ He₁ Ha₃ Hb₂ Hd₂ He₃ H₁.
+intros Hs₁ Hd₁ Ha₃ Hb₂ Hd₂ He₃ H₁.
+apply fst_same_iff in Hs₁; simpl in Hs₁.
+destruct Hs₁ as (Hn₁, He₁).
+rewrite Hd₁ in He₁.
 remember He₃ as H; clear HeqH.
 unfold rm_add_i in H; simpl in H.
 rewrite Hb₂, Hd₂, xorb_nilpotent, xorb_false_l in H.
@@ -5240,7 +5242,8 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
     rewrite Hb₂ in H; discriminate H.
 
     subst di₃.
-    eapply zzz; try eassumption.
+    symmetry in Hs₁.
+    eapply zzz; eassumption.
 
     simpl.
 bbb.
