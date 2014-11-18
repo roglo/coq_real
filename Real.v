@@ -5005,6 +5005,21 @@ induction di; intros.
   apply Nat.lt_0_succ.
 Qed.
 
+(*
+     i  i+1  -   i₂  -   i₁
+  b  .   .   .   .   .   .
+                  +t
+  a  .   .   .   1   .   .
+         ≠   ≠
+b+c  .   .   .   .   .   .
+
+a+b  .   .   .   .   .   .
+         ≠   ≠   ≠   ≠
+  c  .   .   .   .   .   0
+         ≠   ≠    +t
+  b  .   .   .   1   .   .
+
+ *)
 Theorem subcase_2a : ∀ a b c i di₁ di₂,
   fst_same (a + b) c (S i) = Some di₁
   → c .[ S (i + di₁)] = false
@@ -5041,8 +5056,8 @@ destruct s₄ as [di₄| ]; [ idtac | clear H ].
    apply Hn₁ in H.
    rewrite Nat.add_succ_r, Hd₄ in H; simpl in H.
    unfold rm_add_i in H; simpl in H.
-   rewrite Hb₄, xorb_true_r, <- negb_xorb_l in H.
-   apply negb_false_iff in H.
+   rewrite Hb₄, xorb_shuffle0, xorb_comm in H.
+   apply xorb_move_l_r_1 in H; simpl in H.
    apply xorb_move_l_r_1 in H; rewrite xorb_true_r in H.
    remember a .[ S (S (i + di₂))] as x eqn:Ha₄ .
    symmetry in Ha₄; rename H into He₄.
