@@ -5332,11 +5332,42 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
          apply negb_false_iff; assumption.
 
          rewrite Nat.add_assoc, <- Nat.add_succ_l in Ha₃.
-bbb.
-         remember (S (i + di₂)) as j eqn:Hj .
-         clear i Hs₁ Hs₂ Hs₃ He₁ Hj.
+         rename i into i₀.
+         remember (S (i₀ + di₂)) as i eqn:Hi .
          rename Hg₃ into Hc₃; rename Hg₄ into Hc₄.
          rename Hg₅ into Hc₅; rename Hg₆ into Hc₆.
+         rename Hs₁ into Hs₁₀; rename Hs₂ into Hs₂₀.
+         rename Hs₃ into Hs₃₀; rename He₁ into He₁₀.
+         rename Hb₂ into Hb₂₀; rename Ha₃ into Ha₃₀.
+         rename di₁ into di₁₀; rename di₂ into di₂₀.
+         rename H₁ into H₁₀.
+         remember Hc₄ as H; clear HeqH.
+         unfold carry in H; simpl in H.
+         remember (fst_same (a + b) c (S i)) as s₁ eqn:Hs₁ .
+         destruct s₁ as [di₁| ]; [ idtac | discriminate H ].
+         rename H into He₁.
+         remember Hc₅ as H; clear HeqH.
+         unfold carry in H; simpl in H.
+         remember (fst_same b c (S i)) as s₂ eqn:Hs₂ .
+         destruct s₂ as [di₂| ]; [ idtac | clear H ].
+          rename H into Hb₂.
+          destruct (lt_eq_lt_dec di₂ di₁) as [[H₁| H₁]| H₁].
+           remember Hc₃ as H; clear HeqH.
+           unfold carry in H; simpl in H.
+           remember (fst_same a (b + c) (S i)) as s₃ eqn:Hs₃ .
+           destruct s₃ as [di₃| ]; [ idtac | clear H ].
+            rename H into Ha₃.
+            destruct (lt_eq_lt_dec di₃ di₂) as [[H₂| H₂]| H₂].
+             symmetry in Hs₂, Hs₃.
+             eapply subcase_2a; eassumption.
+
+             subst di₃.
+             symmetry in Hs₁, Hs₂, Hs₃.
+             eapply subcase_2b; eassumption.
+
+             symmetry in Hs₁, Hs₂, Hs₃.
+bbb.
+         clear i Hs₁ Hs₂ Hs₃ He₁ Hj.
    assert (carry a (b + c) (S (i + di₂)) = true) as Hg₃.
     rewrite <- Nat.add_succ_l; symmetry in Hs₃.
     rewrite carry_before_inf_relay; [ reflexivity | assumption ].
