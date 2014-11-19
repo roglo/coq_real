@@ -5456,6 +5456,17 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
          rewrite Ht₂ in H; simpl in H.
          rename H into He₂.
          remember Hs₃ as H; clear HeqH.
+         apply fst_same_iff in H; simpl in H.
+         destruct H as (Hn₃, Ht₃).
+         rewrite Nat.add_succ_r in Ht₃.
+         pose proof (Hn₃ di₂ (Nat.lt_succ_diag_r di₂)) as H.
+         unfold rm_add_i in H.
+         rewrite Hb₂, Ht₂, Hg₅ in H; simpl in H.
+         rename H into Ha₂.
+         remember He₂ as H; clear HeqH.
+         unfold rm_add_i in H.
+         rewrite Ha₂, Hb₂, xorb_nilpotent, xorb_false_l in H.
+         rename H into Hf₂.
 
 bbb.
         remember He₁ as H; clear HeqH.
