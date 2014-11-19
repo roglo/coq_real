@@ -3725,6 +3725,14 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
       eapply carry_x_before_xx in Hb₂; [ idtac | eassumption ].
       rewrite He₃ in Hb₂; discriminate Hb₂.
 
+     remember (carry a b (S (S (i + di₃)))) as x eqn:Hx .
+     symmetry in Hx.
+     destruct x.
+      rewrite <- Nat.add_succ_r in Hx.
+      remember (di₃ + S (S di)) as y.
+      rewrite Nat.add_succ_r, <- Nat.add_succ_l in Heqy; subst y.
+      eapply IHdi; eassumption.
+
 bbb.
        i  i+1  -   i₃  .   i₂  -   i₁
   b    .   .   .   z   .   0   .   .
