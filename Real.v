@@ -3755,6 +3755,10 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
       rewrite Nat.add_succ_r, <- Nat.add_succ_l in Heqy; subst y.
       eapply IHdi; eassumption.
 
+    subst di₃.
+    symmetry in Hs₁, Hs₂, Hs₃.
+    destruct u; [ eapply subcase_2b; eassumption | idtac ].
+
 bbb.
        i  i+1  -   i₃  .   i₂  -   i₁
   b    .   .   .   z   .   0   .   .
