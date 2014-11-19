@@ -3878,6 +3878,70 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
           rewrite Ha₃ in H.
           destruct H as (H, _); discriminate H.
 
+         rewrite Nat.add_succ_r, <- Nat.add_succ_l in Hs₁.
+bbb.
+       i  i+1  -   i₂  +1  -   di
+  b    .   .   .   1   .   .   .
+1       +1          +0
+  a    .   1   1   1   1   .   .
+1          ≠   ≠   ≠+1
+ b+c   .   0   0   0   1   .   .
+
+ a+b   .   .   .   0   .   .   0
+0          ≠   ≠   ≠+0 ≠   ≠
+  c    .   .   .   1   .   .   0
+1          ≠   ≠    +0
+  b    .   .   .   1   .   .   .
+
+         remember (S (i + di₂)) as j eqn:Hj .
+         replace j with (j + 0) in Hg₃, Hg₄, Hg₅ by apply Nat.add_0_r.
+         replace j with (j + 0) in Hb₂, Ha₃ by apply Nat.add_0_r.
+         subst j.
+         simpl in Hg₃, Hg₄, Hg₅, Ha₃, Hb₂.
+bbb.
+         eapply IHdi with (i := i + di₂); try eassumption; simpl.
+          rewrite Nat.add_0_r in Hb₂, Ha₃, Hg₃, Hg₄, Hg₅.
+          apply carry_x_before_xx; [ idtac | assumption ].
+          remember Hs₃ as H; clear HeqH.
+          apply fst_same_iff in H; simpl in H.
+          destruct H as (Hn₃, Ht₃).
+          rewrite Hn₃; [ idtac | apply Nat.lt_succ_diag_r ].
+          apply negb_true_iff.
+          unfold rm_add_i.
+          rewrite Hb₂, Hg₅, xorb_true_l, xorb_false_r.
+          apply negb_false_iff.
+          remember Hs₂ as H; clear HeqH.
+          apply fst_same_iff in H; simpl in H.
+          destruct H as (Hn₂, Ht₂).
+          rewrite <- Ht₂, Hb₂; reflexivity.
+bbb.
+       i  i+1  -   i₂  +1  -
+  b    .   .   .   1   .   .
+1       +1
+  a    .   1   1   1   1   .
+1          ≠   ≠   ≠+1
+ b+c   .   0   0   0   1   .
+
+ a+b   .   .   .   .   .   .   .   .   0
+0                   +0
+  c    .   .   .   1   .   .
+1          ≠   ≠    +0
+  b    .   .   .   1   .   .
+
+
+          remember Hc₆ as H; clear HeqH.
+          unfold carry in H; simpl in H.
+          remember (fst_same a b (S i)) as s₆ eqn:Hs₆ .
+          apply fst_same_sym_iff in Hs₆; simpl in Hs₆.
+          destruct s₆ as [di₆| ]; [ idtac | clear H ].
+           destruct Hs₆ as (Hn₆, Ht₆).
+           rewrite H in Ht₆; symmetry in Ht₆.
+           rename H into Ha₆.
+           destruct (lt_eq_lt_dec di₂ di₆) as [[H₁| H₁]| H₁].
+            remember H₁ as H; clear HeqH.
+            apply Hn₆ in H.
+            rewrite Hb₂ in H; simpl in H.
+
 bbb.
 
        i  i+1  -   i₂  +1  -
