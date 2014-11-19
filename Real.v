@@ -3712,7 +3712,8 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
     remember (di₂ - S di₃) as di.
     apply nat_sub_add_r in Heqdi; [ idtac | assumption ].
     subst di₂; clear H₂.
-    induction di.
+    clear Hs₃ Ha₃ Hb₃ Hs₂ H₁ Hn₂ Ht₂ Hf₂; revert di₃ Hb₂ He₂ He₃.
+    induction di; intros.
      rewrite Nat.add_1_r, Nat.add_succ_r in Hb₂, He₂.
      remember a .[ S (S (i + di₃))] as x eqn:Ha₂ .
      symmetry in Ha₂.
