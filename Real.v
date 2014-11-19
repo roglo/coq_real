@@ -3712,7 +3712,7 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
     remember (di₂ - S di₃) as di.
     apply nat_sub_add_r in Heqdi; [ idtac | assumption ].
     subst di₂; clear H₂.
-    clear Hs₃ Ha₃ Hb₃ Hs₂ H₁ Hn₂ Ht₂ Hf₂; revert di₃ Hb₂ He₂ He₃.
+    clear Hs₃ Ha₃ Hb₃ Hn₂ Ht₂ Hf₂; revert di₃ Hb₂ He₂ He₃ Hs₂ H₁.
     induction di; intros.
      rewrite Nat.add_1_r, Nat.add_succ_r in Hb₂, He₂.
      remember a .[ S (S (i + di₃))] as x eqn:Ha₂ .
@@ -3729,6 +3729,28 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
      symmetry in Hx.
      destruct x.
       rewrite <- Nat.add_succ_r in Hx.
+      remember (di₃ + S (S di)) as y.
+      rewrite Nat.add_succ_r, <- Nat.add_succ_l in Heqy; subst y.
+      eapply IHdi; eassumption.
+
+      rewrite <- negb_involutive in Hx.
+      apply carry_succ_negb in Hx; [ idtac | assumption ].
+      simpl in Hx; destruct Hx as (Ha₃, Hb₃).
+      do 2 rewrite Nat.add_succ_r, <- Nat.add_succ_l in Hs₂.
+      remember Hs₂ as H; clear HeqH.
+      apply fst_same_iff in H.
+      destruct H as (Hn₂, Ht₂).
+      pose proof (Nat.lt_succ_diag_r (S di₃)) as H.
+      eapply Nat.lt_lt_add_r in H.
+      apply Hn₂ in H; simpl in H.
+      rewrite Nat.add_succ_r, Hb₃, <- Nat.add_succ_r in H.
+      rewrite <- Hn₁ in H; [ idtac | omega ].
+      symmetry in H.
+      rewrite Nat.add_succ_r in H.
+      unfold rm_add_i in H.
+      rewrite Ha₃, Hb₃, xorb_nilpotent, xorb_false_l in H.
+      simpl in Hs₂.
+      rewrite <- Nat.add_succ_r in Hs₂, H.
       remember (di₃ + S (S di)) as y.
       rewrite Nat.add_succ_r, <- Nat.add_succ_l in Heqy; subst y.
       eapply IHdi; eassumption.
