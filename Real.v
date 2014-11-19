@@ -3561,21 +3561,20 @@ Theorem subcase_2b : ∀ a b c i di₁ di₂,
   → fst_same a (b + c) (S i) = Some di₂
   → rm_add_i a b (S (i + di₁)) = false
   → a .[ S (i + di₂)] = true
-  → b .[ S (i + di₂)] = true
   → di₂ < di₁
   → False.
 Proof.
 intros a b c i di₁ di₂.
-intros Hs₁ Hs₂ Hs₃ He₁ Ha₃ Hb₂ H₁.
+intros Hs₁ Hs₂ Hs₃ He₁ Ha₃ H₁.
 apply fst_same_iff in Hs₁; simpl in Hs₁.
 destruct Hs₁ as (Hn₁, Hd₁); rewrite He₁ in Hd₁; symmetry in Hd₁.
 apply fst_same_iff in Hs₂; simpl in Hs₂.
-destruct Hs₂ as (Hn₂, Hd₂); rewrite Hb₂ in Hd₂; symmetry in Hd₂.
+destruct Hs₂ as (Hn₂, Hd₂); symmetry in Hd₂.
 apply fst_same_iff in Hs₃; simpl in Hs₃.
 destruct Hs₃ as (Hn₃, He₃); rewrite Ha₃ in He₃; symmetry in He₃.
 remember He₃ as H; clear HeqH.
 unfold rm_add_i in H; simpl in H.
-rewrite Hb₂, Hd₂, xorb_nilpotent, xorb_false_l in H.
+rewrite Hd₂, xorb_nilpotent, xorb_false_l in H.
 unfold carry in H.
 remember (fst_same b c (S (S (i + di₂)))) as s₄ eqn:Hs₄ .
 destruct s₄ as [di₄| ]; [ idtac | clear H ].
@@ -3600,7 +3599,9 @@ destruct s₄ as [di₄| ]; [ idtac | clear H ].
    rewrite <- Hn₁ in H; [ idtac | apply Nat.lt_le_incl; assumption ].
    apply negb_sym in H; simpl in H.
    unfold rm_add_i in H.
-   rewrite Ha₃, Hb₂, xorb_nilpotent, xorb_false_l in H.
+   rewrite Ha₃, xorb_true_l in H.
+   apply xorb_move_l_r_1 in H.
+   rewrite xorb_nilpotent in H.
    rename H into He₅.
    destruct x; simpl in He₄.
     remember He₅ as H; clear HeqH.
@@ -3626,8 +3627,9 @@ destruct s₄ as [di₄| ]; [ idtac | clear H ].
    rewrite <- Hn₁ in H; [ idtac | assumption ].
    symmetry in H; simpl in H.
    unfold rm_add_i in H.
-   rewrite Ha₃, Hb₂ in H.
-   rewrite xorb_nilpotent, xorb_false_l in H.
+   rewrite Ha₃, xorb_true_l in H.
+   apply xorb_move_l_r_1 in H.
+   rewrite xorb_nilpotent in H.
    rename H into He₅.
    remember Hd₄ as H; clear HeqH.
    rewrite Nat.add_succ_r in H.
@@ -3672,7 +3674,9 @@ destruct s₄ as [di₄| ]; [ idtac | clear H ].
   rename H into He₂.
   remember He₂ as H; clear HeqH.
   unfold rm_add_i in H.
-  rewrite Ha₃, Hb₂, xorb_nilpotent, xorb_false_l in H.
+  rewrite Ha₃, xorb_true_l in H.
+  apply xorb_move_l_r_1 in H.
+  rewrite xorb_nilpotent in H.
   rename H into Hf₂.
   remember He₁ as H; clear HeqH.
   unfold rm_add_i in H.
@@ -3715,12 +3719,13 @@ destruct s₄ as [di₄| ]; [ idtac | clear H ].
  rename H into He₂.
  remember He₂ as H; clear HeqH.
  unfold rm_add_i in H.
- rewrite Ha₃, Hb₂, xorb_nilpotent, xorb_false_l in H.
+ rewrite Ha₃, xorb_true_l in H.
+ apply xorb_move_l_r_1 in H.
+ rewrite xorb_nilpotent in H.
  rename H into Hf₂.
  remember He₁ as H; clear HeqH.
  unfold rm_add_i in H.
- rewrite Hn₄ in H.
- rewrite Hd₁ in H.
+ rewrite Hn₄, Hd₁ in H.
  rewrite xorb_true in H.
  rewrite <- negb_xorb_l in H.
  apply negb_false_iff, xorb_move_l_r_1 in H.
@@ -3774,27 +3779,26 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
   remember (fst_same a (b + c) (S i)) as s₃ eqn:Hs₃ .
   destruct s₃ as [di₃| ]; [ idtac | clear H ].
    rename H into Ha₃.
+   symmetry in Hs₁, Hs₂, Hs₃.
    destruct (lt_eq_lt_dec di₃ di₂) as [[H₂| H₂]| H₂].
-    symmetry in Hs₁, Hs₂, Hs₃.
     eapply subcase_2a; eassumption.
 
     subst di₃.
-    symmetry in Hs₁, Hs₂, Hs₃.
-    destruct u; [ eapply subcase_2b; eassumption | idtac ].
+    eapply subcase_2b; eassumption.
 
 bbb.
-       i  i+1  -   i₃  .   i₂  -   i₁
-  b    .   .   .   z   .   0   .   .
-0                   +1      +x
-  a    .   0   0   1   .  ¬x   .   .
+       i  i+1  -   i₂  -   i₁
+  b    .   .   .   0   .   .
+0           +0  +0  +0
+  a    .   0   0   1   .   .
 1          ≠   ≠
- b+c   .   1   1   1   1   y   .   .
+ b+c   .   1   1   1   .   .
 
- a+b   .   .   .   z   .   1   .   0
-0          ≠   ≠   ≠   ≠   ≠   ≠
-  c    .   .   .   .   .   0   .   0
-0          ≠   ≠   ≠   ≠    +y
-  b    .   .   .   z   .   0   .   .
+ a+b   .   .   .   1   .   0
+0          ≠   ≠   ≠   ≠
+  c    .   .   .   0   .   0
+0          ≠   ≠    +1
+  b    .   .   .   0   .   .
 
 
        i  i+1  -   i₃  .   i₂  -   i₁
