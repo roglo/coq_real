@@ -5437,6 +5437,11 @@ bbb.
         remember He₁ as H; clear HeqH.
         unfold rm_add_i in H.
 
+b.[i₁] = 0 doit conduire contradicition.
+donc on devrait avoir b.[i₁] = 1
+mmm... je me demande si on ne devrait pas faire une
+induction sur i₁ ?
+
        i  i+1  -   i₂  +1  -   i₁
   b    .   .   x   1   0   .   .
 1           +1  +1  +0  +0
