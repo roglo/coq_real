@@ -3418,15 +3418,15 @@ induction di; intros.
   apply Nat.lt_0_succ.
 Qed.
 
-Theorem subcase_2a : ∀ a b c i di₃ di₂,
+Theorem subcase_2a : ∀ a b c i di₃ di₂ u,
   fst_same a (b + c) (S i) = Some di₃
   → fst_same b c (S i) = Some di₂
-  → a .[ S (i + di₃)] = true
-  → b .[ S (i + di₂)] = true
+  → a .[ S (i + di₃)] = u
+  → b .[ S (i + di₂)] = u
   → di₃ < di₂
   → False.
 Proof.
-intros a b c i di₃ di₂.
+intros a b c i di₃ di₂ u.
 intros Hs₃ Hs₂ Ha₃ Hb₂ H₂.
 remember Hs₂ as H; clear HeqH.
 apply fst_same_iff in H; simpl in H.
@@ -3438,10 +3438,11 @@ remember He₃ as H; clear HeqH.
 unfold rm_add_i in H; simpl in H.
 rewrite Hn₂ in H; [ idtac | assumption ].
 rewrite negb_xorb_diag, xorb_true_l in H.
-apply negb_true_iff in H.
+symmetry in H; apply negb_sym in H.
 rewrite <- Nat.add_succ_l in H.
 erewrite carry_before_relay in H; try eassumption; simpl in H.
-rewrite Hb₂ in H; discriminate H.
+rewrite Hb₂ in H.
+symmetry in H; revert H; apply no_fixpoint_negb.
 Qed.
 
 (*
