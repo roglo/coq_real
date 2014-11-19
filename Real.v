@@ -3699,7 +3699,22 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
     apply carry_eq_l_add_eq_r in H.
     rewrite Ha₃ in H.
     rename H into He₃.
+    rewrite Hb₂ in Ht₂; symmetry in Ht₂.
+    pose proof (Hn₁ di₂ H₁) as H.
+    rewrite Ht₂ in H; simpl in H.
+    rename H into Hf₂.
+    remember Hf₂ as H; clear HeqH.
+    unfold rm_add_i in H; simpl in H.
+    rewrite Hb₂, xorb_false_r in H.
+    apply negb_false_iff in H.
+    rewrite negb_xorb_l in H.
+    apply xorb_eq in H.
+    symmetry in H.
+    rename H into He₂.
     remember (di₂ - S di₃) as di.
+    apply nat_sub_add_r in Heqdi; [ idtac | assumption ].
+    subst di₂; clear H₂.
+    induction di.
 
 bbb.
        i  i+1  -   i₃  .   i₂  -   i₁
