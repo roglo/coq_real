@@ -3650,7 +3650,7 @@ destruct s₄ as [di₄| ]; [ idtac | clear H ].
   apply Nat.lt_succ_diag_r.
 Qed.
 
-Theorem case_2 : ∀ a₀ b₀ c₀ a b c i,
+Theorem case_2 : ∀ a₀ b₀ c₀ a b c i u,
   a = (a₀ + 0)%rm
   → b = (b₀ + 0)%rm
   → c = (c₀ + 0)%rm
@@ -3658,11 +3658,11 @@ Theorem case_2 : ∀ a₀ b₀ c₀ a b c i,
   → carry ((a + b)%rm + c) 0 i = false
   → carry a (b + c) i = true
   → carry (a + b) c i = false
-  → carry b c i = true
-  → carry a b i = true
+  → carry b c i = u
+  → carry a b i = u
   → False.
 Proof.
-intros a₀ b₀ c₀ a b c i Ha₀ Hb₀ Hc₀ Hc₁ Hc₂ Hc₃ Hc₄ Hc₅ Hc₆.
+intros a₀ b₀ c₀ a b c i u Ha₀ Hb₀ Hc₀ Hc₁ Hc₂ Hc₃ Hc₄ Hc₅ Hc₆.
 remember Hc₄ as H; clear HeqH.
 unfold carry in H; simpl in H.
 remember (fst_same (a + b) c (S i)) as s₁ eqn:Hs₁ .
@@ -3681,6 +3681,11 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
    rename H into Ha₃.
    destruct (lt_eq_lt_dec di₃ di₂) as [[H₂| H₂]| H₂].
     symmetry in Hs₂, Hs₃.
+(* if test then *)
+    destruct u; [ eapply subcase_2a; eassumption | idtac ].
+
+bbb.
+(* end if test *)
     eapply subcase_2a; eassumption.
 
     subst di₃.
