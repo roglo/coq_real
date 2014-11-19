@@ -3683,8 +3683,52 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
     symmetry in Hs₂, Hs₃.
 (* if test then *)
     destruct u; [ eapply subcase_2a; eassumption | idtac ].
+    remember Hs₂ as H; clear HeqH.
+    apply fst_same_iff in H; simpl in H.
+    destruct H as (Hn₂, Ht₂).
+    remember H₂ as H; clear HeqH.
+    apply Hn₂ in H.
+    rename H into Hb₃.
+    remember Hs₁ as H; clear HeqH.
+    apply fst_same_sym_iff in H; simpl in H.
+    destruct H as (Hn₁, Ht₁).
+    remember H₁ as H; clear HeqH.
+    eapply lt_trans in H; [ idtac | eassumption ].
+    apply Hn₁ in H.
+    rewrite <- Hb₃ in H.
+    apply carry_eq_l_add_eq_r in H.
+    rewrite Ha₃ in H.
+    rename H into He₃.
+    remember (di₂ - S di₃) as di.
 
 bbb.
+       i  i+1  -   i₃  .   i₂  -   i₁
+  b    .   .   .   z   .   0   .   .
+0                   +1      +x
+  a    .   0   0   1   .  ¬x   .   .
+1          ≠   ≠
+ b+c   .   1   1   1   1   y   .   .
+
+ a+b   .   .   .   z   .   1   .   0
+0          ≠   ≠   ≠   ≠   ≠   ≠
+  c    .   .   .   .   .   0   .   0
+0          ≠   ≠   ≠   ≠    +y
+  b    .   .   .   z   .   0   .   .
+
+
+       i  i+1  -   i₃  .   i₂  -   i₁
+  b    .   .   .   .   .   0   .   .
+0
+  a    .   .   .   1   .   .   .   .
+1          ≠   ≠
+ b+c   .   .   .   .   .   .   .   .
+
+ a+b   .   .   .   .   .   .   .   0
+0          ≠   ≠   ≠   ≠   ≠   ≠
+  c    .   .   .   .   .   .   .   .
+0          ≠   ≠   ≠   ≠
+  b    .   .   .   .   .   0   .   .
+
 (* end if test *)
     eapply subcase_2a; eassumption.
 
