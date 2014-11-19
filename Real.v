@@ -5437,6 +5437,19 @@ bbb.
         remember He₁ as H; clear HeqH.
         unfold rm_add_i in H.
 
+       i  i+1  -   i₂  +1  -   i₁
+  b    .   .   x   1   0   .   .
+1           +1  +1  +0  +0
+  a    .   1   1   1   1   .   .
+1          ≠   ≠   ≠
+ b+c   .   0   0   0   1   .   .
+
+ a+b   .   .   x   0   1   .   0
+0          ≠   ≠   ≠+0  +0 ≠
+  c    .   .   .   1   0   .   0
+1          ≠   ≠    +0  +1
+  b    .   .   x   1   0   .   .
+
 c.[i₂+2]=1
        i  i+1  -   i₂  +1  -   i₁
   b    .   .   x   1   0   ₀   ₁
