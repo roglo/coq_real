@@ -3721,6 +3721,9 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
       rewrite Hb₂ in He₂.
       destruct He₂ as (_, H); discriminate H.
 
+      eapply carry_x_before_xx in Hb₂; [ idtac | eassumption ].
+      rewrite He₃ in Hb₂; discriminate Hb₂.
+
 bbb.
        i  i+1  -   i₃  .   i₂  -   i₁
   b    .   .   .   z   .   0   .   .
