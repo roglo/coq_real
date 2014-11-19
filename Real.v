@@ -3708,13 +3708,18 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
     rewrite Hb₂, xorb_false_r in H.
     apply negb_false_iff in H.
     rewrite negb_xorb_l in H.
-    apply xorb_eq in H.
-    symmetry in H.
-    rename H into He₂.
+    apply xorb_eq in H; symmetry in H; rename H into He₂.
     remember (di₂ - S di₃) as di.
     apply nat_sub_add_r in Heqdi; [ idtac | assumption ].
     subst di₂; clear H₂.
     induction di.
+     rewrite Nat.add_1_r, Nat.add_succ_r in Hb₂, He₂.
+     remember a .[ S (S (i + di₃))] as x eqn:Ha₂ .
+     symmetry in Ha₂.
+     destruct x.
+      apply carry_succ_negb in He₂; [ idtac | assumption ].
+      rewrite Hb₂ in He₂.
+      destruct He₂ as (_, H); discriminate H.
 
 bbb.
        i  i+1  -   i₃  .   i₂  -   i₁
