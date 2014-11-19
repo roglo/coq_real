@@ -3864,58 +3864,21 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
          unfold rm_add_i in H.
          rewrite Ha₂, Hb₂, xorb_nilpotent, xorb_false_l in H.
          rename H into Hf₂.
+         remember He₁ as H; clear HeqH.
+         unfold rm_add_i in H.
+         rewrite Ha₃, xorb_true_l in H.
+         apply xorb_eq in H.
+         remember b .[ S (S (i + di₂))] as x eqn:Hb₃ .
+         symmetry in Hb₃, H.
+         destruct x.
+          apply carry_x_before_xx with (a := a) in Hb₃; try assumption.
+          rewrite Hf₂ in Hb₃; discriminate Hb₃.
+
+          apply carry_succ_negb in H; [ idtac | assumption ].
+          rewrite Ha₃ in H.
+          destruct H as (H, _); discriminate H.
 
 bbb.
-        remember He₁ as H; clear HeqH.
-        unfold rm_add_i in H.
-
-b.[i₁] = 0 doit conduire contradiction.
-donc on devrait avoir b.[i₁] = 1
-mmm... je me demande si on ne devrait pas faire une
-induction sur i₁ ?
-
-       i  i+1  -   i₂  +1  -   i₁
-  b    .   .   x   1   0   .   .
-1           +1  +1  +0  +0
-  a    .   1   1   1   1   .   .
-1          ≠   ≠   ≠
- b+c   .   0   0   0   1   .   .
-
- a+b   .   .   x   0   1   .   0
-0          ≠   ≠   ≠+0  +0 ≠
-  c    .   .   .   1   0   .   0
-1          ≠   ≠    +0  +1
-  b    .   .   x   1   0   .   .
-
-c.[i₂+2]=1
-       i  i+1  -   i₂  +1  -   i₁
-  b    .   .   x   1   0   ₀   ₁
-1           +1  +1  +0  +0  +₀  +₀
-  a    .   1   1   1   1   ₀   ₀
-1          ≠   ≠   ≠    +₀
- b+c   .   0   0   0   1   ₀   ₀
-
- a+b   .   .   x   0   1   ₀   01     <-- contrad
-0          ≠   ≠   ≠+0  +0 ≠
-  c    .   .   .   1   0   ₁   0
-1          ≠   ≠    +0  +1  +₁  +₁
-  b    .   .   x   1   0   ₀   ₁
-
-
-c.[i₂+2]=0
-       i  i+1  -   i₂  +1  -   i₁
-  b    .   .   x   1   0   ₁   ₁
-1           +1  +1  +0  +0  +₀  +½  <-- contrad
-  a    .   1   1   1   1   ₀   ₀
-1          ≠   ≠   ≠    +₀
- b+c   .   0   0   0   1   ₀   .
-
- a+b   .   .   x   0   1   ₁   0
-0          ≠   ≠   ≠+0  +0 ≠
-  c    .   .   .   1   0   ₀   0
-1          ≠   ≠    +0  +1  +₁
-  b    .   .   x   1   0   ₁   ₁
-
 
        i  i+1  -   i₂  +1  -
   b    .   .   x   1   0   .
