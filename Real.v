@@ -3786,42 +3786,6 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
     subst di₃.
     eapply subcase_2b; eassumption.
 
-bbb.
-       i  i+1  -   i₂  -   i₁
-  b    .   .   .   0   .   .
-0           +0  +0  +0
-  a    .   0   0   1   .   .
-1          ≠   ≠
- b+c   .   1   1   1   .   .
-
- a+b   .   .   .   1   .   0
-0          ≠   ≠   ≠   ≠
-  c    .   .   .   0   .   0
-0          ≠   ≠    +1
-  b    .   .   .   0   .   .
-
-
-       i  i+1  -   i₃  .   i₂  -   i₁
-  b    .   .   .   .   .   0   .   .
-0
-  a    .   .   .   1   .   .   .   .
-1          ≠   ≠
- b+c   .   .   .   .   .   .   .   .
-
- a+b   .   .   .   .   .   .   .   0
-0          ≠   ≠   ≠   ≠   ≠   ≠
-  c    .   .   .   .   .   .   .   .
-0          ≠   ≠   ≠   ≠
-  b    .   .   .   .   .   0   .   .
-
-    symmetry in Hs₂, Hs₃.
-    eapply subcase_2a; eassumption.
-
-    subst di₃.
-    symmetry in Hs₁, Hs₂, Hs₃.
-    eapply subcase_2b; eassumption.
-
-    symmetry in Hs₁, Hs₂, Hs₃.
     remember (di₃ - S di₂) as di.
     apply nat_sub_add_r in Heqdi; [ idtac | assumption ].
     subst di₃; clear H₂.
@@ -3859,8 +3823,11 @@ bbb.
          pose proof (Hn₁ di₂ H₁) as HH.
          rewrite Hd₂ in HH; simpl in HH.
          unfold rm_add_i in HH.
-         rewrite H, Hb₂, xorb_false_l, xorb_true_l in HH.
-         apply negb_false_iff; assumption.
+         rewrite H, Hb₂, xorb_false_l in HH.
+         apply xorb_move_l_r_1 in HH.
+         rewrite xorb_comm in HH.
+         rewrite negb_xorb_diag in HH.
+         assumption.
 
          rewrite Nat.add_assoc, <- Nat.add_succ_l in Ha₃.
          rename i into i₀.
@@ -3889,15 +3856,13 @@ bbb.
            remember (fst_same a (b + c) (S i)) as s₃ eqn:Hs₃ .
            destruct s₃ as [di₃| ]; [ idtac | clear H ].
             rename H into Ha₃.
+            symmetry in Hs₁, Hs₂, Hs₃.
             destruct (lt_eq_lt_dec di₃ di₂) as [[H₂| H₂]| H₂].
-             symmetry in Hs₂, Hs₃.
              eapply subcase_2a; eassumption.
 
              subst di₃.
-             symmetry in Hs₁, Hs₂, Hs₃.
              eapply subcase_2b; eassumption.
 
-             symmetry in Hs₁, Hs₂, Hs₃.
              rewrite Hi in Hs₃.
              rewrite Nat.add_1_r in Hs₃₀.
              apply fst_same_iff in Hs₃₀; simpl in Hs₃₀.
@@ -3971,7 +3936,7 @@ bbb.
         rewrite Nat.add_1_r in Hs₃, Ha₃.
         rewrite Nat.add_succ_r in Ha₃, Hs₁, He₁, He₁.
         rewrite Nat.add_assoc, <- Nat.add_succ_l in He₁.
-        revert i di₂ Hc₆ Hs₁ Hs₂ Hs₃ Hb₂ Ha₃ Hg₃ Hg₄ Hg₅ He₁.
+        revert i u di₂ Hc₆ Hs₁ Hs₂ Hs₃ Hb₂ Ha₃ Hg₃ Hg₄ Hg₅ He₁.
         induction di; intros.
          rewrite Nat.add_0_r in Hs₁, He₁.
          remember Hs₁ as H; clear HeqH.
@@ -3993,10 +3958,13 @@ bbb.
          pose proof (Hn₃ di₂ (Nat.lt_succ_diag_r di₂)) as H.
          unfold rm_add_i in H.
          rewrite Hb₂, Ht₂, Hg₅ in H; simpl in H.
+         rewrite xorb_nilpotent in H; simpl in H.
          rename H into Ha₂.
          remember He₂ as H; clear HeqH.
          unfold rm_add_i in H.
-         rewrite Ha₂, Hb₂, xorb_nilpotent, xorb_false_l in H.
+         rewrite Ha₂, Hb₂, xorb_true_l in H.
+         apply xorb_move_l_r_1 in H.
+         rewrite xorb_nilpotent in H.
          rename H into Hf₂.
          remember He₁ as H; clear HeqH.
          unfold rm_add_i in H.
