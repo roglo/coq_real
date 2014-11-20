@@ -4129,6 +4129,22 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
           remember Hh₂ as H; clear HeqH.
           eapply carry_succ_diff in H; try eassumption.
           rename H into Hf₃; move Hf₃ before Ht₃.
+          remember (rm_add_i a b (S (S (i + di₂)))) as x eqn:H .
+          symmetry in H.
+          remember H as He₃; clear HeqHe₃.
+          move He₃ after Ht₃.
+          unfold rm_add_i in H; simpl in H.
+          rewrite Ha₃, Hb₃, Hf₃ in H; simpl in H.
+          rewrite <- H in He₃; clear x H.
+          assert (S di₂ < S (S (S (di₂ + di)))) as H by omega.
+          apply Hn₁ in H.
+          rewrite Nat.add_succ_r, He₃ in H; symmetry in H.
+          apply negb_true_iff in H.
+          rename H into Hc₃; move Hc₃ before Hb₃.
+          remember Ht₃ as H; clear HeqH.
+          unfold rm_add_i in H.
+          rewrite Hb₃, Hc₃, xorb_false_l in H.
+          rename H into Hh₃; move Hh₃ before Hf₃.
 bbb.
 Hyp: b.[i₂+2]=0
 
