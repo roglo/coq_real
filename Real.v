@@ -4145,6 +4145,34 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
           unfold rm_add_i in H.
           rewrite Hb₃, Hc₃, xorb_false_l in H.
           rename H into Hh₃; move Hh₃ before Hf₃.
+          remember b .[ S (S (S (i + di₂)))] as x eqn:Hx .
+          symmetry in Hx.
+          destruct (bool_dec x false) as [H₁| H₁].
+           move H₁ at top; subst x.
+           rename Hx into Hb₄; move Hb₄ before Hh₃.
+           remember Hh₃ as H; clear HeqH.
+           apply after_carry_negb in H; [ idtac | assumption ].
+           rename H into Hc₄; move Hc₄ before Hb₄.
+           assert (S (S di₂) < S (S (S (di₂ + di)))) as H by omega.
+           apply Hn₁ in H.
+           do 2 rewrite Nat.add_succ_r in H.
+           rewrite Hc₄ in H; simpl in H.
+           rename H into He₄; move He₄ before Hc₄.
+           remember He₄ as H; clear HeqH.
+           unfold rm_add_i in H; simpl in H.
+           rewrite Hb₄, xorb_false_r in H.
+           apply xorb_eq in H.
+           remember a .[ S (S (S (i + di₂)))] as x eqn:Hx .
+           symmetry in Hx, H.
+           destruct x.
+            eapply carry_succ_diff in Hx; try eassumption.
+            rewrite Hx in H; discriminate H.
+
+            rename Hx into Ha₄; move Ha₄ after Hb₄.
+            rename H into Hf₄; move Hf₄ before He₄.
+            remember Hh₃ as H; clear HeqH.
+            eapply carry_succ_diff in H; try eassumption.
+            rename H into Hh₄; move Hh₄ before Hf₄.
 bbb.
 Hyp: b.[i₂+2]=0
 
