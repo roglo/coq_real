@@ -4174,6 +4174,8 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
             eapply carry_succ_diff in H; try eassumption.
             rename H into Hh₄; move Hh₄ before Hf₄.
 bbb.
+do an induction on (di - S di₂)
+
 Hyp: b.[i₂+2]=0
 
        i  i+1  -   i₂  +1  -   di
