@@ -3991,6 +3991,38 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
 
          rewrite Nat.add_succ_r, <- Nat.add_succ_l in Hs₁.
 bbb.
+Hyp di=0
+       i  i+1  -   i₂  +1
+  b    .   .   .   u   .
+u
+  a    .   u   u   .   1
+1          ≠   ≠   ≠+1
+ b+c   .   .   .   .   1
+
+ a+b   .   .   .   .   0
+0          ≠   ≠   ≠+0
+  c    .   .   .   u   0
+u          ≠   ≠    +0
+  b    .   .   .   u   .
+
+
+
+Hyp: b.[i₂+2]=0
+
+       i  i+1  -   i₂  +1  -   di
+  b    .   .   .   u   0   ₀   ₁
+u                   +0  +0  +₀  +₁  <-- contrad
+  a    .   .   .   1   1   ₀   ₀
+1          ≠   ≠   ≠+1
+ b+c   .   .   .   0   1   ₀   ₁
+
+ a+b   .   .   .   .   1   ₀   0
+0          ≠   ≠   ≠+0 ≠   ≠
+  c    .   .   .   u   0   ₁   0
+u          ≠   ≠    +0  +1  +₁  +₁
+  b    .   .   .   u   0   ₀   ₁
+
+
        i  i+1  -   i₂  +1  -   di
   b    .   .   .   u   .   .   .
 u
