@@ -3936,7 +3936,7 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
         rewrite Nat.add_1_r in Hs₃, Ha₃.
         rewrite Nat.add_succ_r in Ha₃, Hs₁, He₁, He₁.
         rewrite Nat.add_assoc, <- Nat.add_succ_l in He₁.
-        revert i u di₂ Hc₆ Hs₁ Hs₂ Hs₃ Hb₂ Ha₃ Hg₃ Hg₄ Hg₅ He₁.
+        revert i u di₂ Hs₁ Hs₂ Hs₃ Ha₃ Hb₂ Hc₆ He₁ Hg₃ Hg₄ Hg₅.
         induction di; intros.
          rewrite Nat.add_0_r in Hs₁, He₁.
          remember Hs₁ as H; clear HeqH.
