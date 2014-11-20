@@ -4056,10 +4056,9 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
          rewrite Nat.add_0_r in H.
          rename H into Ha₃.
          rewrite Nat.add_succ_r in Ht₃.
-         remember Ht₃ as H; clear HeqH.
-         rewrite Ha₃ in H; symmetry in H.
-         rename H into He₃.
+         rewrite Ha₃ in Ht₃; symmetry in Ht₃.
          do 2 rewrite Nat.add_succ_r in Ht₁.
+         rewrite Nat.add_assoc in Ht₁.
          destruct di.
           rewrite Nat.add_0_r in Hs₁, Hn₁, Ht₁.
           rewrite Nat.add_1_r in He₁, He₂.
@@ -4077,7 +4076,6 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
           apply after_carry_negb in H; [ idtac | assumption ].
           rename H into Hb₃; move Hb₃ before Ha₃.
           remember Hf₂ as H; clear HeqH.
-          symmetry in Ht₃.
           eapply carry_succ_diff in H; try eassumption.
           rename H into Hf₃; move Hf₃ before Hb₃.
           pose proof (Hn₁ (S di₂) (Nat.lt_succ_diag_r (S di₂))) as H.
@@ -4086,8 +4084,8 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
           rewrite Ha₃, Hb₃, Hf₃, xorb_true_l in H.
           apply negb_sym in H; simpl in H.
           rename H into Hc₃; move Hc₃ before Hb₃.
-          move He₃ before Hc₃.
-          remember He₃ as H; clear HeqH.
+          move Ht₃ before Hc₃.
+          remember Ht₃ as H; clear HeqH.
           unfold rm_add_i in H.
           rewrite Hb₃, Hc₃, xorb_false_l in H.
           rename H into Hh₃; move Hh₃ before Hf₃.
@@ -4105,6 +4103,32 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
           apply negb_false_iff in He₂.
           erewrite carry_succ_diff in He₂; try eassumption.
           discriminate He₂.
+
+          move Ha₃ before Ht₂; move Ht₃ before Ha₃.
+          rewrite Nat.add_succ_r in He₁, He₂, Ht₁.
+          rewrite Nat.add_succ_r in He₁, He₂.
+          simpl in He₁, He₂, Ht₁.
+          rewrite Nat.add_succ_r in Hn₁.
+          assert (di₂ < S (S (S (di₂ + di)))) as H by omega.
+          apply Hn₁ in H.
+          rewrite Ht₂ in H; simpl in H.
+          rename H into Hf₂; move Hf₂ before Ht₂.
+          remember Hf₂ as H; clear HeqH.
+          unfold rm_add_i in H.
+          rewrite Ha₂, Hb₂, xorb_true_l in H.
+          apply xorb_move_l_r_1 in H.
+          rewrite xorb_nilpotent in H.
+          rename H into Hh₂; move Hh₂ before Hf₂.
+          remember Ha₂ as H; clear HeqH.
+          rewrite Hn₃ in H; [ idtac | apply Nat.lt_succ_diag_r ].
+          apply negb_true_iff in H.
+          rename H into Hi₂; move Hi₂ before Hf₂.
+          remember Hh₂ as H; clear HeqH.
+          apply after_carry_negb in H; [ idtac | assumption ].
+          rename H into Hb₃; move Hb₃ before Ha₃.
+          remember Hh₂ as H; clear HeqH.
+          eapply carry_succ_diff in H; try eassumption.
+          rename H into Hf₃; move Hf₃ before Ht₃.
 bbb.
 Hyp: b.[i₂+2]=0
 
