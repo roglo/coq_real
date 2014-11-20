@@ -3936,8 +3936,17 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
         rewrite Nat.add_1_r in Hs₃, Ha₃.
         rewrite Nat.add_succ_r in Ha₃, Hs₁, He₁, He₁.
         rewrite Nat.add_assoc, <- Nat.add_succ_l in He₁.
-        revert i u di₂ Hs₁ Hs₂ Hs₃ Ha₃ Hb₂ Hc₆ He₁ Hg₃ Hg₄ Hg₅.
+        clear Ha₃.
+        revert i u di₂ Hs₁ Hs₂ Hs₃ Hb₂ Hc₆ He₁ Hg₃ Hg₄ Hg₅.
         induction di; intros.
+         assert (a .[ S (S (i + di₂))] = true) as Ha₃.
+          remember Hg₃ as H; clear HeqH.
+          unfold carry in H.
+          replace (S di₂) with (S di₂ + 0) in Hs₃ by apply Nat.add_0_r.
+          apply same_fst_same in Hs₃.
+          rewrite Nat.add_succ_r in Hs₃; simpl in Hs₃.
+          rewrite Hs₃, Nat.add_0_r in H; assumption.
+
          rewrite Nat.add_0_r in Hs₁, He₁.
          remember Hs₁ as H; clear HeqH.
          apply fst_same_iff in H; simpl in H.
@@ -3983,17 +3992,17 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
          rewrite Nat.add_succ_r, <- Nat.add_succ_l in Hs₁.
 bbb.
        i  i+1  -   i₂  +1  -   di
-  b    .   .   .   1   .   .   .
-1       +1          +0
-  a    .   1   1   1   1   .   .
+  b    .   .   .   u   .   .   .
+u
+  a    .   .   .   .   .   .   .
 1          ≠   ≠   ≠+1
- b+c   .   0   0   0   1   .   .
+ b+c   .   .   .   .   .   .   .
 
- a+b   .   .   .   0   .   .   0
+ a+b   .   .   .   .   .   .   0
 0          ≠   ≠   ≠+0 ≠   ≠
-  c    .   .   .   1   .   .   0
-1          ≠   ≠    +0
-  b    .   .   .   1   .   .   .
+  c    .   .   .   .   .   .   .
+u          ≠   ≠    +0
+  b    .   .   .   u   .   .   .
 
          remember (S (i + di₂)) as j eqn:Hj .
          replace j with (j + 0) in Hg₃, Hg₄, Hg₅ by apply Nat.add_0_r.
