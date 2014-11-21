@@ -3807,6 +3807,77 @@ Theorem case_2 : ∀ a₀ b₀ c₀ a b c i u,
   → False.
 Proof.
 intros a₀ b₀ c₀ a b c i u Ha₀ Hb₀ Hc₀ Hc₁ Hc₂ Hc₃ Hc₄ Hc₅ Hc₆.
+clear Hc₁ Hc₂.
+revert u Hc₃ Hc₄ Hc₅ Hc₆.
+induction i as (i, IHi) using all_lt_all; intros.
+remember Hc₃ as H; clear HeqH.
+unfold carry in H; simpl in H.
+remember (fst_same a (b + c) (S i)) as s₃ eqn:Hs₃ .
+rename H into H₃.
+remember Hc₄ as H; clear HeqH.
+unfold carry in H; simpl in H.
+remember (fst_same (a + b) c (S i)) as s₄ eqn:Hs₄ .
+rename H into H₄.
+remember Hc₅ as H; clear HeqH.
+unfold carry in H; simpl in H.
+remember (fst_same b c (S i)) as s₅ eqn:Hs₅ .
+rename H into H₅.
+remember Hc₆ as H; clear HeqH.
+unfold carry in H; simpl in H.
+remember (fst_same a b (S i)) as s₆ eqn:Hs₆ .
+rename H into H₆.
+destruct s₄ as [di₄| ]; [ idtac | discriminate H₄ ].
+destruct s₃ as [di₃| ]; [ idtac | clear H₃ ].
+ destruct s₅ as [di₅| ].
+  destruct s₆ as [di₆| ].
+   remember (List.fold_right min di₃ [di₄; di₅; di₆ … []]) as m eqn:Hm .
+   destruct (lt_dec (S i) m) as [H₁| H₁].
+    apply fst_same_sym_iff in Hs₃; simpl in Hs₃.
+    destruct Hs₃ as (Hn₃, Hs₃).
+    apply fst_same_sym_iff in Hs₄; simpl in Hs₄.
+    destruct Hs₄ as (Hn₄, Hs₄).
+    apply fst_same_sym_iff in Hs₅; simpl in Hs₅.
+    destruct Hs₅ as (Hn₅, Hs₅).
+    apply fst_same_sym_iff in Hs₆; simpl in Hs₆.
+    destruct Hs₆ as (Hn₆, Hs₆).
+    assert (0 < di₃ ∧ 0 < di₄ ∧ 0 < di₅ ∧ 0 < di₆) as H.
+     apply Nat.lt_lt_0 in H₁.
+     rewrite Hm in H₁; simpl in H₁.
+     apply Nat.min_glb_lt_iff in H₁.
+     rewrite and_comm, and_assoc.
+     split; [ destruct H₁; assumption | idtac ].
+     destruct H₁ as (_, H₁).
+     apply Nat.min_glb_lt_iff in H₁.
+     rewrite and_assoc.
+     split; [ destruct H₁; assumption | idtac ].
+     destruct H₁ as (_, H₁).
+     apply Nat.min_glb_lt_iff in H₁.
+     assumption.
+
+     destruct H as (M₃, (M₄, (M₅, M₆))).
+     apply Hn₃ in M₃; apply Hn₄ in M₄.
+     apply Hn₅ in M₅; apply Hn₆ in M₆.
+     rewrite Nat.add_0_r in M₃, M₄, M₅, M₆.
+     remember Hc₃ as H; clear HeqH.
+     rewrite carry_comm in H.
+     eapply carry_succ_diff in H; [ idtac | reflexivity | assumption ].
+     rewrite carry_comm in H; rename H into Hg₃.
+     remember Hc₄ as H; clear HeqH; rewrite carry_comm in H.
+     eapply carry_succ_diff in H; [ idtac | reflexivity | assumption ].
+     rewrite carry_comm in H; rename H into Hg₄.
+     remember Hc₅ as H; clear HeqH; rewrite carry_comm in H.
+     eapply carry_succ_diff in H; [ idtac | reflexivity | assumption ].
+     rewrite carry_comm in H; rename H into Hg₅.
+     remember Hc₆ as H; clear HeqH; rewrite carry_comm in H.
+     eapply carry_succ_diff in H; [ idtac | reflexivity | assumption ].
+     rewrite carry_comm in H; rename H into Hg₆.
+     eapply IHi.
+bbb.
+merde, c'est de la co-induction, pas de l'induction
+bordel à queue
+
+bbb.
+intros a₀ b₀ c₀ a b c i u Ha₀ Hb₀ Hc₀ Hc₁ Hc₂ Hc₃ Hc₄ Hc₅ Hc₆.
 remember Hc₄ as H; clear HeqH.
 unfold carry in H; simpl in H.
 remember (fst_same (a + b) c (S i)) as s₁ eqn:Hs₁ .
@@ -3864,6 +3935,79 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
     rename HH into Hg₆; move Hg₆ before Hg₅.
     clear Hn₃ Ht₃ H Hn₂ Ht₂ Hn₁ Ht₁.
 bbb.
+x≠t et i+1<min → contrad
+       i  i+1
+  b    .  ¬t
+x
+  a    .   t
+y
+ b+c   .  ¬t
+
+ a+b   .  ¬x
+z
+  c    .   x
+t
+  b    .  ¬x
+
+
+i+1=min=(a,b+c)<oth → contrad
+       i  i+1
+  b    .   0
+u          ≠
+  a    .   1
+1
+ b+c   .   1=¬u  \
+                   contrad
+ a+b   .   0=¬u  /
+0          ≠
+  c    .   1
+u          ≠
+  b    .   0
+
+i+1=min=(a,b)<oth → induc
+       i  i+1
+  b    .   u
+u           +u
+  a    .   u
+1          ≠+1
+ b+c   .  ¬u
+
+ a+b   .   u
+0          ≠+0
+  c    .  ¬u
+u          ≠+u
+  b    .   u
+
+i+1<min → induct
+       i  i+1
+  b    .  ¬u
+u          ≠+u
+  a    .   u
+1          ≠+1
+ b+c   .  ¬u
+
+ a+b   .  ¬u
+0          ≠+0
+  c    .   u
+u          ≠+u
+  b    .  ¬u
+
+
+       i  i+1
+  b    .   .
+u          ≠
+  a    .   .
+1          ≠
+ b+c   .   .
+
+ a+b   .   .
+0          ≠
+  c    .   .
+u          ≠
+  b    .   .
+
+
+
        i  i+1  -   i₂  -   i₁
   b    .   .   .   u   .   .
 u           +u  +u  +t
