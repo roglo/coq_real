@@ -3925,6 +3925,7 @@ destruct s₃ as [di₃| ]; [ idtac | clear H₃ ].
         subst di₄; clear M₄ Hm.
         rewrite Nat.add_assoc in H₄, Ht₄.
         rewrite Nat.add_succ_r in Hs₄, H₄, Hn₄, Ht₄.
+bbb.
         induction di.
          rewrite Nat.add_0_r in Hs₄, H₄, Hn₄, Ht₄.
          remember Ht₃ as H; clear HeqH.
@@ -3950,18 +3951,19 @@ destruct s₃ as [di₃| ]; [ idtac | clear H₃ ].
          discriminate H.
 bbb.
 
+Hyp b.[m+1]=1
        i  i+1  -   m   -   -   i₄
-  b    .   .   .   1   .   .   .
-1          ≠   ≠    +0
-  a    .   .   .   1   .   .   .
+  b    .   .   .   1   ₁   .   .
+1          ≠   ≠    +0  +₀
+  a    .   .   .   1   ₀   .   .
 1          ≠   ≠
  b+c   .   .   .   1   .   .   .
 
- a+b   .   .   .   0   .   .   0
+ a+b   .   .   .   0   ₁   .   0
 0          ≠   ≠   ≠+0 ≠   ≠
-  c    .   .   .   1   .   .   0
-1          ≠   ≠    +1
-  b    .   .   .   1   .   .   .
+  c    .   .   .   1   ₀   .   0
+1          ≠   ≠    +1  +₁
+  b    .   .   .   1   ₁   .   .
 
 
        i  i+1  -   m
