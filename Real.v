@@ -3930,6 +3930,9 @@ destruct s₃ as [di₃| ]; [ idtac | clear H₃ ].
         unfold rm_add_i in H.
         rewrite Ht₆, Ht₅, xorb_nilpotent, xorb_false_l in H.
         rename H into Hd₅.
+        remember Hs₄ as H; clear HeqH.
+        apply carry_before_relay with (dj := m) in H; [ idtac | assumption ].
+        simpl in H; rewrite H₄ in H; rename H into Hd₄.
 bbb.
        i  i+1  -   m
   b    .   .   .   1
