@@ -5,6 +5,8 @@ Set Implicit Arguments.
 Notation "[ ]" := nil.
 Notation "[ x ; .. ; y … l ]" := (cons x .. (cons y l) ..).
 Notation "[ x ]" := (cons x nil).
+Notation "x ∈ l" := (List.In x l) (at level 70).
+Notation "x ∉ l" := (not (List.In x l)) (at level 70).
 
 Notation "x ≤ y ≤ z" := (x <= y ∧ y <= z)%nat (at level 70, y at next level).
 
@@ -3794,6 +3796,25 @@ destruct H as (Hu, H); rewrite Hu in H.
 revert H; apply no_fixpoint_negb.
 Qed.
 
+Theorem zzz : ∀ x xl y m,
+  m = List.fold_right min x xl
+  → y ∈ [x … xl]
+  → y ≠ m
+  → m < y.
+Proof.
+intros x xl y m Hm Hy Hym.
+subst m.
+apply Nat.nle_gt; intros Hm; apply Hym; clear Hym.
+revert x y Hy Hm.
+induction xl as [| z]; intros.
+ simpl in Hy, Hm; simpl.
+ destruct Hy; auto; contradiction.
+
+ simpl in Hy, Hm; simpl.
+ destruct Hy as [Hy| [Hy| Hy]].
+  subst y.
+bbb.
+
 Theorem case_2 : ∀ a₀ b₀ c₀ a b c i u,
   a = (a₀ + 0)%rm
   → b = (b₀ + 0)%rm
@@ -3858,6 +3879,7 @@ destruct s₃ as [di₃| ]; [ idtac | clear H₃ ].
         move M₅ at top; subst di₅.
         rewrite Ht₄ in Ht₅; discriminate Ht₅.
 
+bbb.
         (* lemme à faire *)
         simpl in Hm.
         rewrite min_r in Hm; [ idtac | apply Nat.le_min_l ].
