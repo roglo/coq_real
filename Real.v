@@ -3876,6 +3876,25 @@ bbb.
 merde, c'est de la co-induction, pas de l'induction
 bordel à queue
 
+bon, il faut en fait faire l'induction plus tard, sur (m-S (S i)), un
+truc comme ça.
+
+il faut se ramener à un problème où m = min
+
+i+1<min → co-induct
+       i  i+1
+  b    .  ¬u
+u          ≠+u
+  a    .   u
+1          ≠+1
+ b+c   .  ¬u
+
+ a+b   .  ¬u
+0          ≠+0
+  c    .   u
+u          ≠+u
+  b    .  ¬u
+
 bbb.
 intros a₀ b₀ c₀ a b c i u Ha₀ Hb₀ Hc₀ Hc₁ Hc₂ Hc₃ Hc₄ Hc₅ Hc₆.
 remember Hc₄ as H; clear HeqH.
@@ -3977,20 +3996,6 @@ u           +u
   c    .  ¬u
 u          ≠+u
   b    .   u
-
-i+1<min → induct
-       i  i+1
-  b    .  ¬u
-u          ≠+u
-  a    .   u
-1          ≠+1
- b+c   .  ¬u
-
- a+b   .  ¬u
-0          ≠+0
-  c    .   u
-u          ≠+u
-  b    .  ¬u
 
 
        i  i+1
