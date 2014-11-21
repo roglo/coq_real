@@ -118,7 +118,10 @@ intros α i f a; unfold id; intros H j.
 apply H.
 Qed.
 
-Theorem negb_xorb_diag : ∀ a, negb a ⊕ a = true.
+Theorem negb_xorb_diag_l : ∀ a, negb a ⊕ a = true.
+Proof. intros a; destruct a; reflexivity. Qed.
+
+Theorem negb_xorb_diag_r : ∀ a, a ⊕ negb a = true.
 Proof. intros a; destruct a; reflexivity. Qed.
 
 Theorem xorb_shuffle0 : ∀ a b c, a ⊕ b ⊕ c = a ⊕ c ⊕ b.
@@ -657,7 +660,7 @@ induction di.
    unfold rm_add_i, carry in H.
    pose proof (Hn₁ 0 (Nat.lt_0_succ di₁)) as H₁.
    rewrite Nat.add_0_r in H₁.
-   rewrite H₁, negb_xorb_diag, xorb_true_l in H.
+   rewrite H₁, negb_xorb_diag_l, xorb_true_l in H.
    apply negb_true_iff in H.
    remember (S si) as ssi.
    remember (fst_same a b ssi) as s₂ eqn:Hs₂ .
@@ -688,7 +691,7 @@ induction di.
   unfold rm_add_i, carry in H.
   pose proof (Hs₁ 0) as H₁.
   rewrite Nat.add_0_r in H₁.
-  rewrite H₁, negb_xorb_diag, xorb_true_l in H.
+  rewrite H₁, negb_xorb_diag_l, xorb_true_l in H.
   apply negb_true_iff in H.
   remember (S si) as ssi.
   remember (fst_same a b ssi) as s₂ eqn:Hs₂ .
@@ -732,7 +735,7 @@ induction di.
    unfold rm_add_i, carry in H.
    pose proof (Hn₁ 0 (Nat.lt_0_succ di₁)) as H₁.
    rewrite Nat.add_0_r in H₁.
-   rewrite H₁, negb_xorb_diag, xorb_true_l in H.
+   rewrite H₁, negb_xorb_diag_l, xorb_true_l in H.
    apply negb_true_iff in H.
    rewrite <- Nat.add_succ_l in H.
    remember (S ssi) as sssi.
@@ -766,7 +769,7 @@ induction di.
   unfold rm_add_i, carry in H.
   pose proof (Hs₁ 0) as H₁.
   rewrite Nat.add_0_r in H₁.
-  rewrite H₁, negb_xorb_diag, xorb_true_l in H.
+  rewrite H₁, negb_xorb_diag_l, xorb_true_l in H.
   apply negb_true_iff in H.
   rewrite <- Nat.add_succ_l in H.
   remember (S ssi) as sssi.
@@ -806,7 +809,7 @@ destruct s₁ as [di₁| ].
   rewrite Heqsi; apply Nat.le_sub_le_add_l.
   rewrite Nat.sub_diag; apply Nat.le_0_l.
 
-  rewrite negb_xorb_diag, xorb_true_l in H.
+  rewrite negb_xorb_diag_l, xorb_true_l in H.
   apply negb_true_iff in H.
   rewrite H in Hs₁; symmetry in Hs₁.
   split.
@@ -876,7 +879,7 @@ destruct s₁ as [di₁| ].
         rewrite <- Heqsi, <- Heqssi, <- Heqsssi in H.
         do 2 rewrite Nat.add_assoc in H.
         unfold rm_add_i, carry in H.
-        rewrite Hab₃, negb_xorb_diag, xorb_true_l in H.
+        rewrite Hab₃, negb_xorb_diag_l, xorb_true_l in H.
         do 3 rewrite <- Nat.add_succ_l in H.
         remember (S sssi) as ssssi.
         remember (fst_same a b (ssssi + di₁ + di + di₃)) as s₄ eqn:Hs₄ .
@@ -945,7 +948,7 @@ destruct s₁ as [di₁| ].
      do 2 rewrite <- Nat.add_succ_l in H.
      rewrite <- Heqsi, <- Heqssi in H.
      unfold rm_add_i, carry in H.
-     rewrite Hab₁, negb_xorb_diag, xorb_true_l in H.
+     rewrite Hab₁, negb_xorb_diag_l, xorb_true_l in H.
      apply negb_true_iff in H.
      rewrite <- Nat.add_succ_l in H; remember (S ssi) as sssi.
      remember (fst_same a b (sssi + di₁)) as s₃ eqn:Hs₃ .
@@ -985,7 +988,7 @@ destruct s₁ as [di₁| ].
     rewrite <- Nat.add_succ_l, <- Heqsi in H.
     rewrite <- Nat.add_succ_l, <- Heqssi in H.
     unfold rm_add_i, carry in H.
-    rewrite Ha₁, negb_xorb_diag, xorb_true_l in H.
+    rewrite Ha₁, negb_xorb_diag_l, xorb_true_l in H.
     apply negb_true_iff in H.
     rewrite <- Nat.add_succ_l in H.
     remember (S ssi) as sssi.
@@ -1002,7 +1005,7 @@ destruct s₁ as [di₁| ].
     rewrite <- Heqsssi in H.
     rewrite Ha₃, Hb₃ in H; discriminate H.
 
- rewrite Hab, negb_xorb_diag in H; discriminate H.
+ rewrite Hab, negb_xorb_diag_l in H; discriminate H.
 Qed.
 
 Theorem nat_sub_add_r : ∀ a b c,
@@ -2181,7 +2184,7 @@ destruct s₃ as [di₃| ].
    pose proof (Hs₄ 0) as H₁.
    rewrite Nat.add_0_r in H₁.
    rewrite H₁ in H.
-   rewrite negb_xorb_diag in H.
+   rewrite negb_xorb_diag_l in H.
    discriminate H.
 
  destruct (fst_same a b si) as [di| ]; [ idtac | reflexivity ].
@@ -2302,7 +2305,7 @@ destruct s₁ as [di₁| ].
  rewrite <- Heqsi; simpl.
  remember (fst_same a (- a) si) as s₂ eqn:Hs₂ .
  apply fst_same_sym_iff in Hs₂; simpl in Hs₂.
- rewrite <- negb_xorb_r, negb_xorb_l, negb_xorb_diag.
+ rewrite <- negb_xorb_r, negb_xorb_l, negb_xorb_diag_l.
  destruct s₂ as [di₂| ]; [ idtac | reflexivity ].
  destruct Hs₂ as (Hn₂, Hs₂).
  destruct a .[ si + di₂]; discriminate Hs₂.
@@ -2679,7 +2682,7 @@ apply fst_same_iff in H; simpl in H.
 destruct H as (Hs₁, Hn₁).
 remember Hdj as H; clear HeqH.
 apply Hs₁ in H.
-rewrite H, negb_xorb_diag, xorb_true_l.
+rewrite H, negb_xorb_diag_l, xorb_true_l.
 f_equal; erewrite carry_before_relay; try eassumption; reflexivity.
 Qed.
 
@@ -2807,7 +2810,7 @@ remember Hbd as H; clear HeqH.
 unfold rm_add_i in H; simpl in H.
 rewrite Hb₅, Ht₅, xorb_true_r in H.
 apply xorb_move_l_r_1 in H.
-rewrite negb_xorb_diag in H.
+rewrite negb_xorb_diag_l in H.
 rename H into Hbc.
 remember (S i) as x.
 replace x with (x + 0) in Hcc by apply Nat.add_0_r.
@@ -2974,7 +2977,7 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
     symmetry in Hs₅.
     erewrite carry_before_relay in H; try eassumption; simpl in H.
     apply Hn₅ in H₂.
-    rewrite H₂, negb_xorb_diag, Hb₅ in H; discriminate H.
+    rewrite H₂, negb_xorb_diag_l, Hb₅ in H; discriminate H.
 
     subst di₃.
     remember H₁ as H; clear HeqH.
@@ -3159,7 +3162,7 @@ destruct s₅ as [di₅| ]; [ idtac | clear H ].
   destruct H as (Hn₃, Ht₃).
   rewrite Ha₃ in Ht₃; symmetry in Ht₃.
   unfold rm_add_i in Ht₃; simpl in Ht₃.
-  rewrite Ht₅, negb_xorb_diag, xorb_true_l in Ht₃.
+  rewrite Ht₅, negb_xorb_diag_l, xorb_true_l in Ht₃.
   apply negb_true_iff in Ht₃.
   rewrite <- Nat.add_succ_l in Ht₃.
   symmetry in Ht₅.
@@ -3438,7 +3441,7 @@ destruct H as (Hn₃, He₃); rewrite Ha₃ in He₃; symmetry in He₃.
 remember He₃ as H; clear HeqH.
 unfold rm_add_i in H; simpl in H.
 rewrite Hn₂ in H; [ idtac | assumption ].
-rewrite negb_xorb_diag, xorb_true_l in H.
+rewrite negb_xorb_diag_l, xorb_true_l in H.
 symmetry in H; apply negb_sym in H.
 rewrite <- Nat.add_succ_l in H.
 erewrite carry_before_relay in H; try eassumption; simpl in H.
@@ -3467,7 +3470,7 @@ destruct H as (Hn₃, He₃); rewrite Ha₃ in He₃; symmetry in He₃.
 remember He₃ as H; clear HeqH.
 unfold rm_add_i in H; simpl in H.
 rewrite Hn₂ in H; [ idtac | assumption ].
-rewrite negb_xorb_diag, xorb_true_l in H.
+rewrite negb_xorb_diag_l, xorb_true_l in H.
 symmetry in H; apply negb_sym in H.
 rewrite <- Nat.add_succ_l in H.
 erewrite carry_before_relay in H; try eassumption; simpl in H.
@@ -3835,7 +3838,59 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
     eapply carry_before_relay in H; [ idtac | eassumption ].
     simpl in H; rewrite He₁ in H.
     rename H into Hg₄.
+    remember (carry b c (S (i + di₂))) as t eqn:Hg₅ .
+    symmetry in Hg₅.
+    move t before u.
+    remember Hs₃ as H; clear HeqH.
+    apply fst_same_iff in H; simpl in H.
+    destruct H as (Hn₃, Ht₃).
+    pose proof (Hn₃ di₂ H₂) as H.
+    unfold rm_add_i in H.
+    remember Hs₂ as HH; clear HeqHH.
+    apply fst_same_iff in HH; simpl in HH.
+    destruct HH as (Hn₂, Ht₂).
+    rewrite Ht₂, Hg₅, xorb_nilpotent, xorb_false_l in H.
+    remember Hs₁ as HH; clear HeqHH.
+    apply fst_same_iff in HH; simpl in HH.
+    destruct HH as (Hn₁, Ht₁).
+    pose proof (Hn₁ di₂ H₁) as HH.
+    unfold rm_add_i in HH.
+    rewrite <- Ht₂, H, Hb₂, xorb_shuffle0, xorb_comm in HH.
+    apply xorb_move_l_r_1 in HH.
+    rewrite negb_xorb_diag_r in HH.
+    rewrite <- negb_xorb_l in HH.
+    apply negb_true_iff in HH.
+    apply xorb_eq in HH; symmetry in HH.
+    rename HH into Hg₆; move Hg₆ before Hg₅.
+    clear Hn₃ Ht₃ H Hn₂ Ht₂ Hn₁ Ht₁.
 bbb.
+       i  i+1  -   i₂  -   i₁
+  b    .   .   .   u   .   .
+u           +u  +u  +t
+  a    .   u   u  ¬t   .   .
+1          ≠   ≠   ≠+1
+ b+c   .   .   .   t   .   .
+
+ a+b   .   .   .   .   .   0
+0          ≠   ≠   ≠+0 ≠
+  c    .   .   .   u   .   0
+u          ≠   ≠    +t
+  b    .   .   .   u   .   .
+
+
+       i  i+1  -   i₂  -   i₁
+  b    .   .   .   .   .   .
+u
+  a    .   .   .   .   .   .
+1          ≠   ≠   ≠
+ b+c   .   .   .   .   .   .
+
+ a+b   .   .   .   .   .   0
+0          ≠   ≠   ≠   ≠
+  c    .   .   .   u   .   0
+u          ≠   ≠
+  b    .   .   .   u   .   .
+
     remember (di₃ - S di₂) as di.
     apply nat_sub_add_r in Heqdi; [ idtac | assumption ].
     subst di₃; clear H₂.
@@ -3869,8 +3924,7 @@ bbb.
        unfold rm_add_i in HH.
        rewrite H, Hb₂, xorb_false_l in HH.
        apply xorb_move_l_r_1 in HH.
-       rewrite xorb_comm in HH.
-       rewrite negb_xorb_diag in HH.
+       rewrite negb_xorb_diag_r in HH.
        assumption.
 
        rewrite Nat.add_assoc, <- Nat.add_succ_l in Ha₃.
@@ -3952,7 +4006,7 @@ bbb.
          apply Hn₂ in H.
          rewrite Nat.add_0_r in H.
          rewrite Nat.add_1_r, H in Hs₃₀.
-         rewrite negb_xorb_diag, xorb_true_l in Hs₃₀.
+         rewrite negb_xorb_diag_l, xorb_true_l in Hs₃₀.
          symmetry in Hs₃₀; apply negb_sym in Hs₃₀.
          apply carry_succ_negb in Hs₃₀; [ idtac | assumption ].
          destruct Hs₃₀ as (H₂, H₃).
@@ -3968,7 +4022,7 @@ bbb.
         pose proof (Hs₂ 0) as H.
         rewrite Nat.add_0_r in H.
         rewrite Nat.add_1_r, H in Hs₃₀.
-        rewrite negb_xorb_diag, xorb_true_l in Hs₃₀.
+        rewrite negb_xorb_diag_l, xorb_true_l in Hs₃₀.
         symmetry in Hs₃₀; apply negb_sym in Hs₃₀.
         apply carry_succ_negb in Hs₃₀; [ idtac | assumption ].
         destruct Hs₃₀ as (H₂, H₃).
