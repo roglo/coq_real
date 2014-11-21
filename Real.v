@@ -3976,6 +3976,7 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
           rewrite H₂, H₃ in H.
           discriminate H.
 
+bbb.
         remember (di₁ - S di₂) as di.
         apply nat_sub_add_r in Heqdi; [ idtac | assumption ].
         subst di₁; clear H₁.
