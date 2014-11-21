@@ -3920,12 +3920,35 @@ destruct s₃ as [di₃| ]; [ idtac | clear H₃ ].
        eapply min_neq_lt in M₄; [ idtac | eauto  | do 2 right; left; auto ].
        destruct (eq_nat_dec di₅ m) as [M₅| M₅].
         move M₅ at top; subst di₅.
+        remember Ht₅ as H; clear HeqH.
+        apply negb_false_iff in H.
+        rewrite <- Hn₄ in H; [ idtac | assumption ].
+        unfold rm_add_i in H; simpl in H.
+        rewrite H₆, Ht₆, xorb_nilpotent, xorb_false_l in H.
+        rename H into Hd₆.
+        remember Ht₃ as H; clear HeqH.
+        unfold rm_add_i in H.
+        rewrite Ht₆, Ht₅, xorb_nilpotent, xorb_false_l in H.
+        rename H into Hd₅.
+bbb.
+       i  i+1  -   m
+  b    .   .   .   1
+1          ≠   ≠    +0
+  a    .   .   .   1
+1          ≠   ≠
+ b+c   .   .   .   1
+
+ a+b   .   .   .   0
+0          ≠   ≠   ≠+0
+  c    .   .   .   1
+1          ≠   ≠    +1
+  b    .   .   .   1
+
         remember (di₄ - S m) as di.
         apply nat_sub_add_r in Heqdi; [ idtac | assumption ].
         subst di₄; clear M₄ Hm.
         rewrite Nat.add_assoc in H₄, Ht₄.
         rewrite Nat.add_succ_r in Hs₄, H₄, Hn₄, Ht₄.
-bbb.
         induction di.
          rewrite Nat.add_0_r in Hs₄, H₄, Hn₄, Ht₄.
          remember Ht₃ as H; clear HeqH.
