@@ -3807,9 +3807,6 @@ Theorem case_2 : ∀ a₀ b₀ c₀ a b c i u,
   → False.
 Proof.
 intros a₀ b₀ c₀ a b c i u Ha₀ Hb₀ Hc₀ Hc₁ Hc₂ Hc₃ Hc₄ Hc₅ Hc₆.
-clear Hc₁ Hc₂.
-revert u Hc₃ Hc₄ Hc₅ Hc₆.
-induction i as (i, IHi) using all_lt_all; intros.
 remember Hc₃ as H; clear HeqH.
 unfold carry in H; simpl in H.
 remember (fst_same a (b + c) (S i)) as s₃ eqn:Hs₃ .
@@ -3830,7 +3827,7 @@ destruct s₄ as [di₄| ]; [ idtac | discriminate H₄ ].
 destruct s₃ as [di₃| ]; [ idtac | clear H₃ ].
  destruct s₅ as [di₅| ].
   destruct s₆ as [di₆| ].
-   remember (List.fold_right min di₃ [di₄; di₅; di₆ … []]) as m eqn:Hm .
+   remember (List.fold_right min di₆ [di₃; di₄; di₅ … []]) as m eqn:Hm .
    destruct (lt_dec (S i) m) as [H₁| H₁].
     apply fst_same_sym_iff in Hs₃; simpl in Hs₃.
     destruct Hs₃ as (Hn₃, Hs₃).
@@ -3840,6 +3837,28 @@ destruct s₃ as [di₃| ]; [ idtac | clear H₃ ].
     destruct Hs₅ as (Hn₅, Hs₅).
     apply fst_same_sym_iff in Hs₆; simpl in Hs₆.
     destruct Hs₆ as (Hn₆, Hs₆).
+    destruct (eq_nat_dec di₃ m) as [M₃| M₃].
+     move M₃ at top; subst di₃.
+     destruct (eq_nat_dec di₄ m) as [M₄| M₄].
+       move M₄ at top; subst di₄.
+       destruct (eq_nat_dec di₅ m) as [M₅| M₅].
+         move M₅ at top; subst di₅.
+         destruct (eq_nat_dec di₆ m) as [M₆| M₆].
+           move M₆ at top; subst di₆.
+bbb.
+       i  i+1
+  b    .   .
+u
+  a    .   1
+1
+ b+c   .   1
+
+ a+b   .   .
+0
+  c    .   .
+u
+  b    .   .
+
     assert (0 < di₃ ∧ 0 < di₄ ∧ 0 < di₅ ∧ 0 < di₆) as H.
      apply Nat.lt_lt_0 in H₁.
      rewrite Hm in H₁; simpl in H₁.
