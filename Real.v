@@ -3830,9 +3830,13 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
     remember (di₃ - S di₂) as di.
     apply nat_sub_add_r in Heqdi; [ idtac | assumption ].
     subst di₃; clear H₂.
+(*
     revert Hc₆ Hs₁ Hs₂ Hs₃ He₁ Hb₂ Ha₃ H₁; clear; intros.
     revert i di₁ di₂ Hc₆ Hs₁ Hs₂ Hs₃ He₁ Hb₂ Ha₃ H₁.
     induction di; intros.
+*)
+    destruct di.
+(**)
      assert (carry a (b + c) (S (i + di₂)) = true) as Hg₃.
       rewrite <- Nat.add_succ_l.
       erewrite carry_before_relay; try eassumption.
@@ -3873,7 +3877,8 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
          rewrite Nat.add_assoc, <- Nat.add_succ_l in Ha₃.
          rename i into i₀.
          remember (S (i₀ + di₂)) as i eqn:Hi .
-         clear Hc₆.
+         rename Hc₃ into Hc₃₀; rename Hc₄ into Hc₄₀.
+         rename Hc₅ into Hc₅₀; rename Hc₆ into Hc₆₀.
          rename Hg₃ into Hc₃; rename Hg₄ into Hc₄.
          rename Hg₅ into Hc₅; rename Hg₆ into Hc₆.
          rename Hs₁ into Hs₁₀; rename Hs₂ into Hs₂₀.
@@ -3978,8 +3983,12 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
         rewrite Nat.add_succ_r in Ha₃, Hs₁, He₁, He₁.
         rewrite Nat.add_assoc, <- Nat.add_succ_l in He₁.
         clear Ha₃.
+(*
         revert i u di₂ Hs₁ Hs₂ Hs₃ Hb₂ Hc₆ He₁ Hg₃ Hg₄ Hg₅.
         induction di; intros.
+*)
+        destruct di.
+(**)
          assert (a .[ S (S (i + di₂))] = true) as Ha₃.
           remember Hg₃ as H; clear HeqH.
           unfold carry in H.
@@ -4083,11 +4092,11 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
           unfold rm_add_i in H.
           rewrite Ha₃, Hb₃, Hf₃, xorb_true_l in H.
           apply negb_sym in H; simpl in H.
-          rename H into Hc₃; move Hc₃ before Hb₃.
-          move Ht₃ before Hc₃.
+          rename H into Hd₃; move Hd₃ before Hb₃.
+          move Ht₃ before Hd₃.
           remember Ht₃ as H; clear HeqH.
           unfold rm_add_i in H.
-          rewrite Hb₃, Hc₃, xorb_false_l in H.
+          rewrite Hb₃, Hd₃, xorb_false_l in H.
           rename H into Hh₃; move Hh₃ before Hf₃.
           rewrite He₁ in Ht₁; symmetry in Ht₁.
           move Ht₁ before Hh₃; move He₁ before Ht₁.
@@ -4140,10 +4149,10 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
           apply Hn₁ in H.
           rewrite Nat.add_succ_r, He₃ in H; symmetry in H.
           apply negb_true_iff in H.
-          rename H into Hc₃; move Hc₃ before Hb₃.
+          rename H into Hd₃; move Hd₃ before Hb₃.
           remember Ht₃ as H; clear HeqH.
           unfold rm_add_i in H.
-          rewrite Hb₃, Hc₃, xorb_false_l in H.
+          rewrite Hb₃, Hd₃, xorb_false_l in H.
           rename H into Hh₃; move Hh₃ before Hf₃.
           remember b .[ S (S (S (i + di₂)))] as x eqn:Hx .
           symmetry in Hx.
@@ -4152,12 +4161,12 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
            rename Hx into Hb₄; move Hb₄ before Hh₃.
            remember Hh₃ as H; clear HeqH.
            apply after_carry_negb in H; [ idtac | assumption ].
-           rename H into Hc₄; move Hc₄ before Hb₄.
+           rename H into Hd₄; move Hd₄ before Hb₄.
            assert (S (S di₂) < S (S (S (di₂ + di)))) as H by omega.
            apply Hn₁ in H.
            do 2 rewrite Nat.add_succ_r in H.
-           rewrite Hc₄ in H; simpl in H.
-           rename H into He₄; move He₄ before Hc₄.
+           rewrite Hd₄ in H; simpl in H.
+           rename H into He₄; move He₄ before Hd₄.
            remember He₄ as H; clear HeqH.
            unfold rm_add_i in H; simpl in H.
            rewrite Hb₄, xorb_false_r in H.
@@ -4174,7 +4183,7 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
             eapply carry_succ_diff in H; try eassumption.
             rename H into Hh₄; move Hh₄ before Hf₄.
 bbb.
-do an induction on (di - S di₂)
+do an induction on (di - S di₂)?
 
 Hyp: b.[i₂+2]=0
 
