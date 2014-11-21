@@ -3835,6 +3835,7 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
     eapply carry_before_relay in H; [ idtac | eassumption ].
     simpl in H; rewrite He₁ in H.
     rename H into Hg₄.
+bbb.
     remember (di₃ - S di₂) as di.
     apply nat_sub_add_r in Heqdi; [ idtac | assumption ].
     subst di₃; clear H₂.
@@ -3974,6 +3975,7 @@ destruct s₂ as [di₂| ]; [ idtac | clear H ].
         rewrite H₂, H₃ in H.
         discriminate H.
 
+bbb.
       remember (di₁ - S di₂) as di.
       apply nat_sub_add_r in Heqdi; [ idtac | assumption ].
       subst di₁; clear H₁.
