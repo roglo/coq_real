@@ -3810,37 +3810,41 @@ intros a₀ b₀ c₀ a b c i u Ha₀ Hb₀ Hc₀ Hc₁ Hc₂ Hc₃ Hc₄ Hc₅ 
 remember Hc₃ as H; clear HeqH.
 unfold carry in H; simpl in H.
 remember (fst_same a (b + c) (S i)) as s₃ eqn:Hs₃ .
-rename H into H₃.
+symmetry in Hs₃; rename H into H₃.
 remember Hc₄ as H; clear HeqH.
 unfold carry in H; simpl in H.
 remember (fst_same (a + b) c (S i)) as s₄ eqn:Hs₄ .
-rename H into H₄.
+symmetry in Hs₄; rename H into H₄.
 remember Hc₅ as H; clear HeqH.
 unfold carry in H; simpl in H.
 remember (fst_same b c (S i)) as s₅ eqn:Hs₅ .
-rename H into H₅.
+symmetry in Hs₅; rename H into H₅.
 remember Hc₆ as H; clear HeqH.
 unfold carry in H; simpl in H.
 remember (fst_same a b (S i)) as s₆ eqn:Hs₆ .
-rename H into H₆.
+symmetry in Hs₆; rename H into H₆.
 destruct s₄ as [di₄| ]; [ idtac | discriminate H₄ ].
 destruct s₃ as [di₃| ]; [ idtac | clear H₃ ].
  destruct s₅ as [di₅| ].
   destruct s₆ as [di₆| ].
    remember (List.fold_right min di₆ [di₃; di₄; di₅ … []]) as m eqn:Hm .
    destruct (lt_dec (S i) m) as [H₁| H₁].
-    apply fst_same_sym_iff in Hs₃; simpl in Hs₃.
-    destruct Hs₃ as (Hn₃, Hs₃).
-    rewrite H₃ in Hs₃; symmetry in Hs₃.
-    apply fst_same_sym_iff in Hs₄; simpl in Hs₄.
-    destruct Hs₄ as (Hn₄, Hs₄).
-    rewrite H₄ in Hs₄; symmetry in Hs₄.
-    apply fst_same_sym_iff in Hs₅; simpl in Hs₅.
-    destruct Hs₅ as (Hn₅, Hs₅).
-    rewrite H₅ in Hs₅; symmetry in Hs₅.
-    apply fst_same_sym_iff in Hs₆; simpl in Hs₆.
-    destruct Hs₆ as (Hn₆, Hs₆).
-    rewrite H₆ in Hs₆; symmetry in Hs₆.
+    remember Hs₃ as H; clear HeqH.
+    apply fst_same_iff in H; simpl in H.
+    destruct H as (Hn₃, Ht₃).
+    rewrite H₃ in Ht₃; symmetry in Ht₃.
+    remember Hs₄ as H; clear HeqH.
+    apply fst_same_iff in H; simpl in H.
+    destruct H as (Hn₄, Ht₄).
+    rewrite H₄ in Ht₄; symmetry in Ht₄.
+    remember Hs₅ as H; clear HeqH.
+    apply fst_same_iff in H; simpl in H.
+    destruct H as (Hn₅, Ht₅).
+    rewrite H₅ in Ht₅; symmetry in Ht₅.
+    remember Hs₆ as H; clear HeqH.
+    apply fst_same_iff in H; simpl in H.
+    destruct H as (Hn₆, Ht₆).
+    rewrite H₆ in Ht₆; symmetry in Ht₆.
     destruct (eq_nat_dec di₃ m) as [M₃| M₃].
      move M₃ at top; subst di₃.
      destruct (eq_nat_dec di₆ m) as [M₆| M₆].
@@ -3848,19 +3852,59 @@ destruct s₃ as [di₃| ]; [ idtac | clear H₃ ].
       remember H₃ as H; clear HeqH.
       rewrite H₆ in H.
       move H at top; subst u.
+      destruct (eq_nat_dec di₄ m) as [M₄| M₄].
+       move M₄ at top; subst di₄.
+       destruct (eq_nat_dec di₅ m) as [M₅| M₅].
+        move M₅ at top; subst di₅.
+        rewrite Ht₄ in Ht₅; discriminate Ht₅.
+
+        (* lemme à faire *)
+        simpl in Hm.
+        rewrite min_r in Hm; [ idtac | apply Nat.le_min_l ].
+        rewrite min_r in Hm; [ idtac | apply Nat.le_min_r ].
+        symmetry in Hm; apply Nat.min_r_iff in Hm.
+        apply Nat.neq_sym in M₅.
+        apply le_neq_lt in Hm; [ idtac | assumption ].
+        (* *)
+        remember Ht₃ as H; clear HeqH.
+        unfold rm_add_i in H.
+        rewrite Ht₆, Ht₄, xorb_true_l in H.
+        apply negb_true_iff in H.
+        rewrite <- Nat.add_succ_l in H.
+        erewrite carry_before_relay in H; try eassumption.
+        simpl in H; rewrite H₅ in H; discriminate H.
 bbb.
+
+       i  i+1  -   m
+  b    .   .   .   1
+u          ≠   ≠    +0
+  a    .   .   .   1
+1          ≠   ≠
+ b+c   .   .   .   1
+
+ a+b   .   .   .   0
+0          ≠   ≠
+  c    .   .   .   0
+u          ≠   ≠   ≠+0  <--
+  b    .   .   .   1
+
        i  i+1  -   m
   b    .   0   0   1
-1          ≠   ≠
+1          ≠   ≠    +0
   a    .   1   1   1
 1          ≠   ≠
  b+c   .   0   0   1
 
- a+b   .   01  0   .  <-- contradiction
-0          ≠   ≠   -
-  c    .   1   1   .
-1          ≠   ≠   -
+ a+b   .   0   0   0
+0          ≠   ≠
+  c    .   1   1   1
+1          ≠+1 ≠+1  +1
   b    .   0   0   1
+
+      remember H₃ as H; clear HeqH.
+      rewrite H₆ in H.
+      move H at top; subst u.
+bbb.
 
     destruct (eq_nat_dec di₃ m) as [M₃| M₃].
      move M₃ at top; subst di₃.
@@ -3874,7 +3918,6 @@ bbb.
        destruct (eq_nat_dec di₆ m) as [M₆| M₆].
         move M₆ at top; subst di₆.
         move M₆ at top; subst di₆; rewrite H₆ in Hs₆; symmetry in Hs₆.
-        Focus 1.
 bbb.
        i  i+1  -   m
   b    .   .   .   1
