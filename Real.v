@@ -3916,20 +3916,53 @@ destruct s₃ as [di₃| ]; [ idtac | clear H₃ ].
         rewrite <- Nat.add_succ_l in H.
         erewrite carry_before_relay in H; try eassumption.
         simpl in H; rewrite H₅ in H; discriminate H.
+
+       eapply min_neq_lt in M₄; [ idtac | eauto  | do 2 right; left; auto ].
+       destruct (eq_nat_dec di₅ m) as [M₅| M₅].
+        move M₅ at top; subst di₅.
+        remember (di₄ - S m) as di.
+        apply nat_sub_add_r in Heqdi; [ idtac | assumption ].
+        subst di₄; clear M₄ Hm.
+        rewrite Nat.add_assoc in H₄, Ht₄.
+        rewrite Nat.add_succ_r in Hs₄, H₄, Hn₄, Ht₄.
+        induction di.
+         rewrite Nat.add_0_r in Hs₄, H₄, Hn₄, Ht₄.
+         remember Ht₃ as H; clear HeqH.
+         unfold rm_add_i in H; simpl in H.
+         rewrite Ht₆, Ht₅, xorb_nilpotent, xorb_false_l in H.
+         rewrite carry_comm in H.
+         apply after_carry_negb in H; [ idtac | assumption ].
+         rename H into Hbm.
+         pose proof (Hn₄ m (Nat.lt_succ_diag_r m)) as H.
+         rewrite Ht₅ in H; simpl in H.
+         unfold rm_add_i in H.
+         rewrite H₃, H₅, xorb_nilpotent, xorb_false_l in H.
+         rename H into Hem.
+         remember Hem as H; clear HeqH.
+         rewrite carry_comm in H.
+         apply after_carry_negb in H; [ idtac | assumption ].
+         rename H into Ham.
+         remember H₄ as H; clear HeqH.
+         unfold rm_add_i in H.
+         rewrite Ham, Hbm, xorb_true_l in H.
+         apply negb_false_iff in H.
+         erewrite carry_succ_diff in H; try eassumption.
+         discriminate H.
 bbb.
 
-       i  i+1  -   m
-  b    .   .   .   1
-u          ≠   ≠    +0
-  a    .   .   .   1
+       i  i+1  -   m   -   -   i₄
+  b    .   .   .   1   .   .   .
+1          ≠   ≠    +0
+  a    .   .   .   1   .   .   .
 1          ≠   ≠
- b+c   .   .   .   1
+ b+c   .   .   .   1   .   .   .
 
- a+b   .   .   .   0
-0          ≠   ≠
-  c    .   .   .   0
-u          ≠   ≠   ≠+0  <--
-  b    .   .   .   1
+ a+b   .   .   .   0   .   .   0
+0          ≠   ≠   ≠+0 ≠   ≠
+  c    .   .   .   1   .   .   0
+1          ≠   ≠    +1
+  b    .   .   .   1   .   .   .
+
 
        i  i+1  -   m
   b    .   0   0   1
