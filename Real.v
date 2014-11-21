@@ -3970,7 +3970,40 @@ destruct s₃ as [di₃| ]; [ idtac | clear H₃ ].
             rewrite It₄ in It₅; discriminate It₅.
 
             eapply min_neq_lt in N₅; eauto; try (do 2 right; left; auto).
+            destruct (eq_nat_dec dj₆ n) as [N₆| N₆].
+             move N₆ at top; subst dj₆.
+             remember N₅ as H; clear HeqH.
+             apply In₅ in H.
+             rewrite It₆, It₄ in H.
+             discriminate H.
+
+             eapply min_neq_lt in N₆; eauto ; try (left; auto).
+             remember I₄ as H; clear HeqH.
+             unfold rm_add_i in H.
+             rewrite In₆ in H; [ idtac | assumption ].
+             rewrite negb_xorb_diag_l, xorb_true_l in H.
+             apply negb_false_iff in H.
+             apply carry_before_relay with (dj := n) in Hu₆; auto.
+             simpl in Hu₆; rewrite H, I₆ in Hu₆.
+             discriminate Hu₆.
+
+           eapply min_neq_lt in N₄; eauto ; try (right; left; auto).
 bbb.
+m=j
+       i  i+1  -   m   -   n
+  b    .   .   .   1   .   1
+1          ≠   ≠    +0 ≠   ≠+1  <-- contrad
+  a    .   .   .   1   .   0
+1          ≠   ≠
+ b+c   .   .   .   1   .   .
+
+ a+b   .   .   .   0   .   0
+0          ≠   ≠   ≠+0 ≠
+  c    .   .   .   1   .   0
+1          ≠   ≠    +1 ≠   ≠p
+  b    .   .   .   1   .   1
+
+
        i  i+1  -   m
   b    .   .   .   1
 1          ≠   ≠    +0
