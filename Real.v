@@ -3796,7 +3796,7 @@ destruct H as (Hu, H); rewrite Hu in H.
 revert H; apply no_fixpoint_negb.
 Qed.
 
-Theorem zzz : ∀ x xl y m,
+Theorem min_neq_lt : ∀ x xl y m,
   m = List.fold_right min x xl
   → y ∈ [x … xl]
   → y ≠ m
@@ -3813,7 +3813,36 @@ induction xl as [| z]; intros.
  simpl in Hy, Hm; simpl.
  destruct Hy as [Hy| [Hy| Hy]].
   subst y.
-bbb.
+  apply Nat.min_glb_iff in Hm.
+  clear IHxl.
+  revert z x Hm.
+  induction xl as [| y]; intros.
+   simpl in Hm; simpl.
+   apply Nat.min_unicity.
+   right; split; [ idtac | reflexivity ].
+   destruct Hm; assumption.
+
+   simpl in Hm; simpl.
+   rewrite <- IHxl.
+    apply Nat.min_unicity.
+    right; split; [ idtac | reflexivity ].
+    destruct Hm; assumption.
+
+    destruct Hm as (Hxz, Hm).
+    apply Nat.min_glb_iff; assumption.
+
+  subst z.
+  symmetry; apply min_l.
+  eapply Nat.min_glb_r; eassumption.
+
+  erewrite <- IHxl; [ idtac | right; eassumption | idtac ].
+   apply Nat.min_unicity.
+   right; split; [ idtac | reflexivity ].
+   eapply Nat.min_glb_l; eassumption.
+
+   erewrite <- IHxl; [ reflexivity | right; eassumption | idtac ].
+   eapply Nat.min_glb_r; eassumption.
+Qed.
 
 Theorem case_2 : ∀ a₀ b₀ c₀ a b c i u,
   a = (a₀ + 0)%rm
@@ -3879,15 +3908,7 @@ destruct s₃ as [di₃| ]; [ idtac | clear H₃ ].
         move M₅ at top; subst di₅.
         rewrite Ht₄ in Ht₅; discriminate Ht₅.
 
-bbb.
-        (* lemme à faire *)
-        simpl in Hm.
-        rewrite min_r in Hm; [ idtac | apply Nat.le_min_l ].
-        rewrite min_r in Hm; [ idtac | apply Nat.le_min_r ].
-        symmetry in Hm; apply Nat.min_r_iff in Hm.
-        apply Nat.neq_sym in M₅.
-        apply le_neq_lt in Hm; [ idtac | assumption ].
-        (* *)
+        eapply min_neq_lt in M₅; [ idtac | eauto  | do 3 right; left; auto ].
         remember Ht₃ as H; clear HeqH.
         unfold rm_add_i in H.
         rewrite Ht₆, Ht₄, xorb_true_l in H.
