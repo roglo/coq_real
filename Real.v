@@ -3933,6 +3933,43 @@ destruct s₃ as [di₃| ]; [ idtac | clear H₃ ].
         remember Hs₄ as H; clear HeqH.
         apply carry_before_relay with (dj := m) in H; [ idtac | assumption ].
         simpl in H; rewrite H₄ in H; rename H into Hd₄.
+        remember (S (i + m)) as j eqn:Hj .
+        remember Hd₄ as H; clear HeqH.
+        unfold carry in H; simpl in H.
+        remember (fst_same (a + b) c (S j)) as u₄ eqn:Hu₄ .
+        symmetry in Hu₄; rename H into I₄.
+        remember Hd₅ as H; clear HeqH.
+        unfold carry in H; simpl in H.
+        remember (fst_same b c (S j)) as u₅ eqn:Hu₅ .
+        symmetry in Hu₅; rename H into I₅.
+        remember Hd₆ as H; clear HeqH.
+        unfold carry in H; simpl in H.
+        remember (fst_same a b (S j)) as u₆ eqn:Hu₆ .
+        symmetry in Hu₆; rename H into I₆.
+        destruct u₄ as [dj₄| ]; [ idtac | discriminate I₄ ].
+        destruct u₆ as [dj₆| ]; [ idtac | discriminate I₆ ].
+        destruct u₅ as [dj₅| ].
+         remember (List.fold_right min dj₆ [dj₄; dj₅ … []]) as n eqn:Hn .
+         destruct (lt_dec (S j) n) as [H₂| H₂].
+          remember Hu₄ as H; clear HeqH.
+          apply fst_same_iff in H; simpl in H.
+          destruct H as (In₄, It₄).
+          rewrite I₄ in It₄; symmetry in It₄.
+          remember Hu₅ as H; clear HeqH.
+          apply fst_same_iff in H; simpl in H.
+          destruct H as (In₅, It₅).
+          rewrite I₅ in It₅; symmetry in It₅.
+          remember Hu₆ as H; clear HeqH.
+          apply fst_same_iff in H; simpl in H.
+          destruct H as (In₆, It₆).
+          rewrite I₆ in It₆; symmetry in It₆.
+          destruct (eq_nat_dec dj₄ n) as [N₄| N₄].
+           move N₄ at top; subst dj₄.
+           destruct (eq_nat_dec dj₅ n) as [N₅| N₅].
+            move N₅ at top; subst dj₅.
+            rewrite It₄ in It₅; discriminate It₅.
+
+            eapply min_neq_lt in N₅; eauto; try (do 2 right; left; auto).
 bbb.
        i  i+1  -   m
   b    .   .   .   1
