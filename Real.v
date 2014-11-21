@@ -3831,33 +3831,63 @@ destruct s₃ as [di₃| ]; [ idtac | clear H₃ ].
    destruct (lt_dec (S i) m) as [H₁| H₁].
     apply fst_same_sym_iff in Hs₃; simpl in Hs₃.
     destruct Hs₃ as (Hn₃, Hs₃).
+    rewrite H₃ in Hs₃; symmetry in Hs₃.
     apply fst_same_sym_iff in Hs₄; simpl in Hs₄.
     destruct Hs₄ as (Hn₄, Hs₄).
+    rewrite H₄ in Hs₄; symmetry in Hs₄.
     apply fst_same_sym_iff in Hs₅; simpl in Hs₅.
     destruct Hs₅ as (Hn₅, Hs₅).
+    rewrite H₅ in Hs₅; symmetry in Hs₅.
     apply fst_same_sym_iff in Hs₆; simpl in Hs₆.
     destruct Hs₆ as (Hn₆, Hs₆).
+    rewrite H₆ in Hs₆; symmetry in Hs₆.
+    destruct (eq_nat_dec di₃ m) as [M₃| M₃].
+     move M₃ at top; subst di₃.
+     destruct (eq_nat_dec di₆ m) as [M₆| M₆].
+      move M₆ at top; subst di₆.
+      remember H₃ as H; clear HeqH.
+      rewrite H₆ in H.
+      move H at top; subst u.
+bbb.
+       i  i+1  -   m
+  b    .   0   0   1
+1          ≠   ≠
+  a    .   1   1   1
+1          ≠   ≠
+ b+c   .   0   0   1
+
+ a+b   .   01  0   .  <-- contradiction
+0          ≠   ≠   -
+  c    .   1   1   .
+1          ≠   ≠   -
+  b    .   0   0   1
+
     destruct (eq_nat_dec di₃ m) as [M₃| M₃].
      move M₃ at top; subst di₃.
      destruct (eq_nat_dec di₄ m) as [M₄| M₄].
-       move M₄ at top; subst di₄.
-       destruct (eq_nat_dec di₅ m) as [M₅| M₅].
-         move M₅ at top; subst di₅.
-         destruct (eq_nat_dec di₆ m) as [M₆| M₆].
-           move M₆ at top; subst di₆.
+      move M₄ at top; subst di₄.
+      destruct (eq_nat_dec di₅ m) as [M₅| M₅].
+       move M₅ at top; subst di₅.
+       remember H₃ as H; clear HeqH.
+       rewrite H₆ in H; move H at top; subst u.
+       rewrite Hs₄ in Hs₅; discriminate Hs₅.
+       destruct (eq_nat_dec di₆ m) as [M₆| M₆].
+        move M₆ at top; subst di₆.
+        move M₆ at top; subst di₆; rewrite H₆ in Hs₆; symmetry in Hs₆.
+        Focus 1.
 bbb.
-       i  i+1
-  b    .   .
-u
-  a    .   1
-1
- b+c   .   1
+       i  i+1  -   m
+  b    .   .   .   1
+u          ≠   ≠
+  a    .   .   .   1
+1          ≠   ≠
+ b+c   .   .   .   1
 
- a+b   .   .
-0
-  c    .   .
-u
-  b    .   .
+ a+b   .   .   .   .
+0          ≠   ≠
+  c    .   .   .   .
+u          ≠   ≠
+  b    .   .   .   .
 
     assert (0 < di₃ ∧ 0 < di₄ ∧ 0 < di₅ ∧ 0 < di₆) as H.
      apply Nat.lt_lt_0 in H₁.
