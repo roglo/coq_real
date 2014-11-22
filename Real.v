@@ -4038,6 +4038,25 @@ destruct s₃ as [di₃| ]; [ idtac | clear H₃ ].
            destruct v₆ as [dk₆| ]; [ idtac | discriminate J₆ ].
            destruct v₅ as [dk₅| ].
             remember (List.fold_right min dk₆ [dk₄; dk₅ … []]) as p eqn:Hp .
+            remember Hv₄ as H; clear HeqH.
+            apply fst_same_iff in H; simpl in H.
+            destruct H as (Jn₄, Jt₄).
+            rewrite J₄ in Jt₄; symmetry in Jt₄.
+            remember Hv₅ as H; clear HeqH.
+            apply fst_same_iff in H; simpl in H.
+            destruct H as (Jn₅, Jt₅).
+            rewrite J₅ in Jt₅; symmetry in Jt₅.
+            remember Hv₆ as H; clear HeqH.
+            apply fst_same_iff in H; simpl in H.
+            destruct H as (Jn₆, Jt₆).
+            rewrite J₆ in Jt₆; symmetry in Jt₆.
+            destruct (eq_nat_dec dk₄ p) as [P₄| P₄].
+             move P₄ at top; subst dk₄.
+             destruct (eq_nat_dec dk₅ p) as [P₅| P₅].
+              move P₅ at top; subst dk₅.
+              rewrite Jt₄ in Jt₅; discriminate Jt₅.
+
+              eapply min_neq_lt in P₅; eauto ; try (do 2 right; left; auto).
 bbb.
 m=j
 n=k
