@@ -4006,20 +4006,37 @@ destruct s₃ as [di₃| ]; [ idtac | clear H₃ ].
              discriminate Hu₆.
 
             eapply min_neq_lt in N₅; eauto ; try (do 2 right; left; auto).
+            destruct (eq_nat_dec dj₆ n) as [N₆| N₆].
+             move N₆ at top; subst dj₆.
+             remember It₆ as H; clear HeqH.
+             rewrite In₅ in H; [ idtac | assumption ].
+             apply negb_false_iff in H.
+             rename H into Hcn.
+             pose proof (In₄ n N₄) as H.
+             rewrite Hcn in H; simpl in H.
+             unfold rm_add_i in H.
+             rewrite I₆, It₆, xorb_false_l in H.
+             rename H into He₆.
+             remember Hu₄ as H; clear HeqH.
+             eapply carry_before_relay in H; [ idtac | eassumption ].
+             simpl in H; rewrite I₄ in H; rename H into He₄.
+             remember Hu₅ as H; clear HeqH.
+             eapply carry_before_relay in H; [ idtac | eassumption ].
+             simpl in H; rewrite I₅ in H; rename H into He₅.
 bbb.
 m=j
        i  i+1  -   m   -   n
-  b    .   .   .   1   .   1
-1          ≠   ≠    +0 ≠   ≠+1 <--
+  b    .   .   .   1   .   0
+1          ≠   ≠    +0 ≠    +0
   a    .   .   .   1   .   0
 1          ≠   ≠
- b+c   .   .   .   1   .   .
+ b+c   .   .   .   1   .   0
 
  a+b   .   .   .   0   .   0
-0          ≠   ≠   ≠+0 ≠   ≠
+0          ≠   ≠   ≠+0 ≠   ≠+0 ...
   c    .   .   .   1   .   1
-1          ≠   ≠    +1 ≠
-  b    .   .   .   1   .   1
+1          ≠   ≠    +1 ≠   ≠+1 ...
+  b    .   .   .   1   .   0
 
 
        i  i+1  -   m
