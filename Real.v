@@ -3964,8 +3964,7 @@ destruct s₃ as [di₃| ]; [ idtac | clear H₃ ].
           rewrite Hx in Hd₆.
           destruct Hd₆ as (Hd₆, _); discriminate Hd₆.
 
-          rename Hx into Ha₆.
-          rename H into Hf₆.
+          rename Hx into Ha₆; rename H into Hf₆.
 bbb.
 
 Ah oui mais non, il faut voir qui est le plus petit entre m₄ et
