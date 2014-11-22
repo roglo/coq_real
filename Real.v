@@ -3995,19 +3995,30 @@ destruct s₃ as [di₃| ]; [ idtac | clear H₃ ].
              rewrite It₆ in I₅; discriminate I₅.
 
              eapply min_neq_lt in N₆; eauto ; try (left; auto).
+             pose proof (In₄ n N₄) as H.
+             rewrite It₅ in H; simpl in H.
+             unfold rm_add_i in H.
+             rewrite In₆ in H; [ idtac | assumption ].
+             rewrite negb_xorb_diag_l, xorb_true_l in H.
+             apply negb_false_iff in H.
+             apply carry_before_relay with (dj := n) in Hu₆; auto.
+             simpl in Hu₆; rewrite H, I₆ in Hu₆.
+             discriminate Hu₆.
+
+            eapply min_neq_lt in N₅; eauto ; try (do 2 right; left; auto).
 bbb.
 m=j
        i  i+1  -   m   -   n
   b    .   .   .   1   .   1
-1          ≠   ≠    +0 ≠   ≠+1  <-- contrad
+1          ≠   ≠    +0 ≠   ≠+1 <--
   a    .   .   .   1   .   0
 1          ≠   ≠
  b+c   .   .   .   1   .   .
 
  a+b   .   .   .   0   .   0
-0          ≠   ≠   ≠+0 ≠
-  c    .   .   .   1   .   0
-1          ≠   ≠    +1 ≠   ≠p
+0          ≠   ≠   ≠+0 ≠   ≠
+  c    .   .   .   1   .   1
+1          ≠   ≠    +1 ≠
   b    .   .   .   1   .   1
 
 
