@@ -3988,6 +3988,13 @@ destruct s₃ as [di₃| ]; [ idtac | clear H₃ ].
              discriminate Hu₆.
 
            eapply min_neq_lt in N₄; eauto ; try (right; left; auto).
+           destruct (eq_nat_dec dj₅ n) as [N₅| N₅].
+            move N₅ at top; subst dj₅.
+            destruct (eq_nat_dec dj₆ n) as [N₆| N₆].
+             move N₆ at top; subst dj₆.
+             rewrite It₆ in I₅; discriminate I₅.
+
+             eapply min_neq_lt in N₆; eauto ; try (left; auto).
 bbb.
 m=j
        i  i+1  -   m   -   n
