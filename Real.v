@@ -3938,6 +3938,34 @@ destruct s₃ as [di₃| ]; [ idtac | clear H₃ ].
        apply carry_before_relay with (dj := m) in H; [ idtac | omega ].
        simpl in H; rewrite Nat.add_succ_r, Nat.add_assoc in H.
        rewrite H₄ in H; rename H into Hd₄.
+       remember b .[ S (S (i + m))] as x eqn:Hb₆ .
+       symmetry in Hb₆.
+       destruct (bool_dec x false) as [H₁| H₁].
+        move H₁ at top; subst x.
+        remember Hd₅ as H; clear HeqH.
+        apply after_carry_negb in H; [ idtac | assumption ].
+        rename H into He₆.
+        destruct m₄.
+         rewrite Nat.add_0_r, He₆ in Ht₄.
+         discriminate Ht₄.
+
+         remember He₆ as H; clear HeqH.
+         apply negb_false_iff in H.
+         rewrite <- Nat.add_succ_r in H.
+         rewrite <- Hn₄ in H; [ idtac | omega ].
+         rewrite Nat.add_succ_r in H.
+         unfold rm_add_i in H.
+         rewrite Hb₆, xorb_false_r in H.
+         apply xorb_eq in H.
+         remember a .[ S (S (i + m))] as x eqn:Hx .
+         symmetry in Hx, H.
+         destruct x.
+          apply carry_succ_negb in Hd₆; try assumption.
+          rewrite Hx in Hd₆.
+          destruct Hd₆ as (Hd₆, _); discriminate Hd₆.
+
+          rename Hx into Ha₆.
+          rename H into Hf₆.
 bbb.
 
 Ah oui mais non, il faut voir qui est le plus petit entre m₄ et
@@ -3949,7 +3977,7 @@ pas partir à l'infini !
 Hyp b.[m+1]=0
        i  i+1  -   m   -   m₄
   b    .   .   .   1   ₀   ₁
-1          ≠   ≠    +0  +₀  +₀
+1          ≠   ≠    +0  +₀  +₀ <-- contrad
   a    .   .   .   1   ₀   ₀
 1          ≠   ≠
  b+c   .   .   .   1   ₀   ₀
