@@ -3939,6 +3939,27 @@ destruct s₃ as [di₃| ]; [ idtac | clear H₃ ].
        simpl in H; rewrite Nat.add_succ_r, Nat.add_assoc in H.
        rewrite H₄ in H; rename H into Hd₄.
 bbb.
+
+Ah oui mais non, il faut voir qui est le plus petit entre m₄ et
+le relais en b c après m, et le relais en a b après m.
+
+D'un autre côté, il faut bien limiter un peu m₄, il va tout de même
+pas partir à l'infini !
+
+Hyp b.[m+1]=0
+       i  i+1  -   m   -   m₄
+  b    .   .   .   1   ₀   ₁
+1          ≠   ≠    +0  +₀  +₀
+  a    .   .   .   1   ₀   ₀
+1          ≠   ≠
+ b+c   .   .   .   1   ₀   ₀
+
+ a+b   .   .   .   0   ₀   0
+0          ≠   ≠   ≠+0 ≠
+  c    .   .   .   1   ₁   0
+1          ≠   ≠    +1      +₁
+  b    .   .   .   1   ₀   ₁
+
 (* end test 1 *)
       destruct (eq_nat_dec di₅ m) as [M₅| M₅].
        move M₅ at top; subst di₅.
