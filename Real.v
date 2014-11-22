@@ -4093,21 +4093,52 @@ destruct s₃ as [di₃| ]; [ idtac | clear H₃ ].
                discriminate Hv₆.
 
               eapply min_neq_lt in P₅; eauto ; try (do 2 right; left; auto).
+              destruct (eq_nat_dec dk₆ p) as [P₆| P₆].
+               move P₆ at top; subst dk₆.
+               remember Jt₆ as H; clear HeqH.
+               rewrite Jn₅ in H; [ idtac | assumption ].
+               apply negb_false_iff in H.
+               rename H into Hf₆.
+               pose proof (Jn₄ p P₄) as H.
+               rewrite Hf₆ in H; simpl in H.
+               unfold rm_add_i in H.
+               rewrite J₆, Jt₆, xorb_false_l in H.
+               rename H into Je₆.
+               remember Hv₄ as H; clear HeqH.
+               eapply carry_before_relay in H; [ idtac | eassumption ].
+               simpl in H; rewrite J₄ in H; rename H into Je₄.
+               remember Hv₅ as H; clear HeqH.
+               eapply carry_before_relay in H; [ idtac | eassumption ].
+               simpl in H; rewrite J₅ in H; rename H into Je₅.
 bbb.
+répétition du motif co-inductif !
+oui, mais il faut bien que le 1 1 arrive un jour pour b c
+qui briserait peut-être la boucle infernale.
+et pis aussi le 0 0 pour a+b c
+
+Faut voir aussi ceci :
+  Hs₅ : fst_same b c (S i) = Some m
+  Hu₅ : fst_same b c (S j) = Some dj₅
+  Hv₅ : fst_same b c (S k) = Some dk₅
+  Hj : j = S (i + m)
+  Hk : k = S (j + n)
+  N₅ : n < dj₅
+En fait, dj₅ et dk₅ sont liés à m, etc.
+
 m=j
 n=k
-       i  i+1  -   m   -   n
-  b    .   .   .   1   .   0
-1          ≠   ≠    +0 ≠    +0
-  a    .   .   .   1   .   0
+       i  i+1  -   m   -   n   -   p
+  b    .   .   .   1   .   0   .   0
+1          ≠   ≠    +0 ≠    +0 ≠    +0
+  a    .   .   .   1   .   0   .   0
 1          ≠   ≠
- b+c   .   .   .   1   .   0
+ b+c   .   .   .   1   .   0   .   0
 
- a+b   .   .   .   0   .   0
-0          ≠   ≠   ≠+0 ≠   ≠+0 ...
-  c    .   .   .   1   .   1
-1          ≠   ≠    +1 ≠   ≠+1 ...
-  b    .   .   .   1   .   0
+ a+b   .   .   .   0   .   0   .   0
+0          ≠   ≠   ≠+0 ≠   ≠+0      +0
+  c    .   .   .   1   .   1   .   1
+1          ≠   ≠    +1 ≠   ≠+1 ≠   ≠+1
+  b    .   .   .   1   .   0   .   0
 
 
        i  i+1  -   m
