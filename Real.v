@@ -4057,6 +4057,42 @@ destruct s₃ as [di₃| ]; [ idtac | clear H₃ ].
               rewrite Jt₄ in Jt₅; discriminate Jt₅.
 
               eapply min_neq_lt in P₅; eauto ; try (do 2 right; left; auto).
+              destruct (eq_nat_dec dk₆ p) as [P₆| P₆].
+               move P₆ at top; subst dk₆.
+               remember P₅ as H; clear HeqH.
+               apply Jn₅ in H.
+               rewrite Jt₆, Jt₄ in H.
+               discriminate H.
+
+               eapply min_neq_lt in P₆; eauto ; try (left; auto).
+               remember J₄ as H; clear HeqH.
+               unfold rm_add_i in H.
+               rewrite Jn₆ in H; [ idtac | assumption ].
+               rewrite negb_xorb_diag_l, xorb_true_l in H.
+               apply negb_false_iff in H.
+               apply carry_before_relay with (dj := p) in Hv₆; auto.
+               simpl in Hv₆; rewrite H, J₆ in Hv₆.
+               discriminate Hv₆.
+
+             eapply min_neq_lt in P₄; eauto ; try (right; left; auto).
+             destruct (eq_nat_dec dk₅ p) as [P₅| P₅].
+              move P₅ at top; subst dk₅.
+              destruct (eq_nat_dec dk₆ p) as [P₆| P₆].
+               move P₆ at top; subst dk₆.
+               rewrite Jt₆ in J₅; discriminate J₅.
+
+               eapply min_neq_lt in P₆; eauto ; try (left; auto).
+               pose proof (Jn₄ p P₄) as H.
+               rewrite Jt₅ in H; simpl in H.
+               unfold rm_add_i in H.
+               rewrite Jn₆ in H; [ idtac | assumption ].
+               rewrite negb_xorb_diag_l, xorb_true_l in H.
+               apply negb_false_iff in H.
+               apply carry_before_relay with (dj := p) in Hv₆; auto.
+               simpl in Hv₆; rewrite H, J₆ in Hv₆.
+               discriminate Hv₆.
+
+              eapply min_neq_lt in P₅; eauto ; try (do 2 right; left; auto).
 bbb.
 m=j
 n=k
