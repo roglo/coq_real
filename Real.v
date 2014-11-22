@@ -3898,9 +3898,7 @@ destruct s₃ as [di₃| ]; [ idtac | clear H₃ ].
     move M₃ at top; subst di₃.
     destruct (eq_nat_dec di₆ m) as [M₆| M₆].
      move M₆ at top; subst di₆.
-     remember H₃ as H; clear HeqH.
-     rewrite H₆ in H.
-     move H at top; subst u.
+     rewrite H₃ in H₆; move H₆ at top; subst u.
      destruct (eq_nat_dec di₄ m) as [M₄| M₄].
       move M₄ at top; subst di₄.
       destruct (eq_nat_dec di₅ m) as [M₅| M₅].
@@ -3917,6 +3915,31 @@ destruct s₃ as [di₃| ]; [ idtac | clear H₃ ].
        simpl in H; rewrite H₅ in H; discriminate H.
 
       eapply min_neq_lt in M₄; [ idtac | eauto  | do 2 right; left; auto ].
+(*if test 1 then *)
+      remember (di₄ - S m) as m₄ eqn:Hm₄ .
+      apply nat_sub_add_r in Hm₄; [ idtac | assumption ].
+      subst di₄; clear M₄.
+      rewrite Nat.add_succ_r in Hs₄, H₄, Hn₄, Ht₄.
+      rewrite Nat.add_succ_r, Nat.add_assoc in H₄, Ht₄.
+      destruct (eq_nat_dec di₅ m) as [M₅| M₅].
+       move M₅ at top; subst di₅.
+       clear Hm Ht₆.
+       remember Ht₅ as H; clear HeqH.
+       apply negb_false_iff in H.
+       rewrite <- Hn₄ in H; [ idtac | omega ].
+       unfold rm_add_i in H; simpl in H.
+       rewrite H₃, H₅, xorb_nilpotent, xorb_false_l in H.
+       rename H into Hd₆.
+       remember Ht₃ as H; clear HeqH.
+       unfold rm_add_i in H.
+       rewrite H₅, Ht₅, xorb_nilpotent, xorb_false_l in H.
+       rename H into Hd₅.
+       remember Hs₄ as H; clear HeqH.
+       apply carry_before_relay with (dj := m) in H; [ idtac | omega ].
+       simpl in H; rewrite Nat.add_succ_r, Nat.add_assoc in H.
+       rewrite H₄ in H; rename H into Hd₄.
+bbb.
+(* end test 1 *)
       destruct (eq_nat_dec di₅ m) as [M₅| M₅].
        move M₅ at top; subst di₅.
        remember Ht₅ as H; clear HeqH.
@@ -3935,6 +3958,7 @@ destruct s₃ as [di₃| ]; [ idtac | clear H₃ ].
        remember (S (i + m)) as j eqn:Hj .
        remember Hd₄ as H; clear HeqH.
        unfold carry in H; simpl in H.
+bbb.
        remember (fst_same (a + b) c (S j)) as u₄ eqn:Hu₄ .
        symmetry in Hu₄; rename H into I₄.
        remember Hd₅ as H; clear HeqH.
@@ -3949,6 +3973,21 @@ destruct s₃ as [di₃| ]; [ idtac | clear H₃ ].
        destruct u₆ as [dj₆| ]; [ idtac | discriminate I₆ ].
        destruct u₅ as [dj₅| ].
         remember (List.fold_right min dj₆ [dj₄; dj₅ … []]) as n eqn:Hn .
+bbb.
+
+       i  i+1  -   m
+  b    .   .   .   1
+1          ≠   ≠    +0
+  a    .   .   .   1
+1          ≠   ≠
+ b+c   .   .   .   1
+
+ a+b   .   .   .   0
+0          ≠   ≠   ≠+0    ... di₄
+  c    .   .   .   1
+1          ≠   ≠    +1
+  b    .   .   .   1
+
         remember Hu₄ as H; clear HeqH.
         apply fst_same_iff in H; simpl in H.
         destruct H as (In₄, It₄).
