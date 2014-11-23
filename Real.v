@@ -3924,6 +3924,51 @@ destruct s₃ as [di₃| ]; [ idtac | clear H₃ ].
       destruct (eq_nat_dec di₅ m) as [M₅| M₅].
        move M₅ at top; subst di₅.
        clear Hm Ht₆.
+       assert (m < S (m + m₄)) as H by omega.
+       apply Hn₄ in H.
+       rewrite Ht₅ in H; simpl in H.
+       rename H into Habm.
+       remember Habm as H; clear HeqH.
+       unfold rm_add_i in H; simpl in H.
+       rewrite H₃, H₅, xorb_nilpotent, xorb_false_l in H.
+       rename H into Hcabm.
+       remember Hcabm as H; clear HeqH.
+       unfold carry in H; simpl in H.
+       remember (fst_same a b (S (S (i + m)))) as sabm eqn:Hsabm .
+       destruct sabm as [djabm| ]; [ idtac | discriminate H ].
+       symmetry in Hsabm.
+       rename H into Haabm.
+       remember Ht₃ as H; clear HeqH.
+       unfold rm_add_i in H.
+       rewrite H₅, Ht₅, xorb_nilpotent, xorb_false_l in H.
+       rename H into Hcbcm.
+       remember Hcbcm as H; clear HeqH.
+       unfold carry in H; simpl in H.
+       remember (fst_same b c (S (S (i + m)))) as sbcm eqn:Hsbcm .
+       destruct sbcm as [djbcm| ]; [ idtac | clear H ].
+        rename H into Hbbcm.
+        symmetry in Hsbcm.
+        remember (min (min djabm m₄) djbcm) as n eqn:Hn .
+        destruct (eq_nat_dec djabm n) as [M₃| M₃].
+         move M₃ at top; subst djabm.
+         destruct (eq_nat_dec djbcm n) as [M₄| M₄].
+          move M₄ at top; subst djbcm.
+          destruct (eq_nat_dec m₄ n) as [M₄| M₄].
+           move M₄ at top; subst m₄.
+bbb.
+       i  i+1  -   m
+  b    .   .   .   1
+1          ≠   ≠    +0
+  a    .   .   .   1
+1          ≠   ≠
+ b+c   .   .   .   1
+
+ a+b   .   .   .   0
+0          ≠   ≠   ≠+0 ... m₄
+  c    .   .   .   1
+1          ≠   ≠    +1
+  b    .   .   .   1
+
        remember Ht₅ as H; clear HeqH.
        apply negb_false_iff in H.
        rewrite <- Hn₄ in H; [ idtac | omega ].
