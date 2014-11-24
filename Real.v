@@ -3924,6 +3924,36 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
       destruct (eq_nat_dec di5 m) as [M5| M5].
        move M5 at top; subst di5.
        clear Hm Ht6.
+bbb.
+
+m=0
+       i  i+1
+  b    .   1
+1           +0
+  a    .   1
+1
+ b+c   .   1
+
+ a+b   .   0
+0           +0
+  c    .   1
+1           +1
+  b    .   1
+
+
+       i  i+1  -   m
+  b    .   1   .   1
+1          ≠   ≠
+  a    .   0   .   1
+1          ≠   ≠
+ b+c   .   10  .   1
+
+ a+b   .   1   .   0
+0          ≠   ≠   ≠
+  c    .   0   .   1
+1          ≠+1 ≠
+  b    .   1   .   1
+
        assert (m < S (m + m4)) as H by omega.
        apply Hn4 in H.
        rewrite Ht5 in H; simpl in H.
@@ -4030,21 +4060,24 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
            move M6 at top; subst djabm.
 bbb.
 
-n est dans la même situation que m, enfin presque !
-
        i  i+1  -   m   -   n
-  b    .   .   .   1   1   0
+  b    .   1   .   1   1   0
 1          ≠   ≠    +0 ≠    +0
-  a    .   .   .   1   0   0
+  a    .   0   .   1   0   0
 1          ≠   ≠
- b+c   .   .   .   1   0   0
+ b+c   .   10  .   1   0   0     <------ 10 ?????
 
- a+b   .   .   .   0   1   0
+ a+b   .   1   .   0   1   0
 0          ≠   ≠   ≠+0 ≠   ≠+0 ≠ …
-  c    .   .   .   1   0   1
-1          ≠   ≠    +1 ≠   ≠+1 ≠ …
-  b    .   .   .   1   1   0
+  c    .   0   .   1   0   1
+1          ≠+1 ≠    +1 ≠   ≠+1 ≠ …
+  b    .   1   .   1   1   0
 
+  a=0,0001000000000000
+  b=0,0111101010101010
+  c=0,0001100101010101
+a+b=0,1000101010101010
+b+c=0,1001010000000000
 
        i  i+1  -   m
   b    .   .   .   1
