@@ -4012,20 +4012,34 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
            rewrite Htabn, Ht4 in H; discriminate H.
 
            eapply min_neq_lt in M5; eauto ; try (do 2 right; left; auto).
+           remember Hsabm as H; clear HeqH.
+           apply fst_same_iff in H; simpl in H.
+           destruct H as (Hnabn, Htabn).
+           remember H4 as H; clear HeqH.
+           unfold rm_add_i in H.
+           rewrite Hnabn in H; [ idtac | assumption ].
+           rewrite negb_xorb_diag_l, xorb_true_l in H.
+           apply negb_false_iff in H.
+           do 2 rewrite <- Nat.add_succ_l in H.
+           erewrite carry_before_relay in H; try eassumption.
+           simpl in H; rewrite Haabm in H.
+           discriminate H.
+
+          eapply min_neq_lt in M5; eauto ; try (right; left; auto).
 bbb.
 
        i  i+1  -   m   -   n
-  b    .   .   .   1   x   0
-1          ≠   ≠    +0 ≠+0  +1 <--
-  a    .   .   .   1   0   0
+  b    .   .   .   1   .   1
+1          ≠   ≠    +0 ≠   ≠+1  ≠ …   <--
+  a    .   .   .   1   .   0
 1          ≠   ≠
- b+c   .   .   .   1   0   0
+ b+c   .   .   .   1   .   .
 
- a+b   .   .   .   0   x   0
+ a+b   .   .   .   0   .   0
 0          ≠   ≠   ≠+0 ≠
   c    .   .   .   1   .   0
-1          ≠   ≠    +1 ≠+1 ≠+1
-  b    .   .   .   1   x   1
+1          ≠   ≠    +1 ≠   ≠   ≠ …
+  b    .   .   .   1   .   1
 
 
        i  i+1  -   m
