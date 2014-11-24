@@ -3967,20 +3967,43 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
            destruct H as (_, H); discriminate H.
 
            eapply min_neq_lt in M5; eauto ; try (do 2 right; left; auto).
+           remember Hsabm as H; clear HeqH.
+           apply fst_same_iff in H; simpl in H.
+           destruct H as (Hnabm, Htabm).
+           rewrite Haabm in Htabm; symmetry in Htabm.
+           rename Htabm into Hbabm.
+           remember Hsbcm as H; clear HeqH.
+           apply fst_same_iff in H; simpl in H.
+           destruct H as (Hbbcn, Hcbcn).
+           rewrite Hbbcm in Hcbcn; symmetry in Hcbcn.
+           assert (S (m + n) < S (m + m4)) as H by omega.
+           apply Hn4 in H.
+           rewrite Nat.add_succ_r, Nat.add_assoc in H.
+           rewrite Hcbcn in H; simpl in H.
+           unfold rm_add_i in H.
+           rewrite Hnabm in H; [ idtac | assumption ].
+           rewrite negb_xorb_diag_l, xorb_true_l in H.
+           apply negb_false_iff in H.
+           do 2 rewrite <- Nat.add_succ_l in H.
+           erewrite carry_before_relay in H; try eassumption.
+           do 2 rewrite Nat.add_succ_l in H.
+           rewrite Haabm in H; discriminate H.
+
+         eapply min_neq_lt in M4; eauto ; try (left; auto).
 bbb.
 
        i  i+1  -   m   -   n
-  b    .   .   .   1   .   1
-1          ≠   ≠    +0
-  a    .   .   .   1   .   0
+  b    .   .   .   1   1   1   . … 0
+1          ≠   ≠    +0 ≠   ≠  ≠
+  a    .   .   .   1   0   0   . … 0
 1          ≠   ≠
  b+c   .   .   .   1   .   .
 
- a+b   .   .   .   0   .   .   . … 0
+ a+b   .   .   .   0   1   1   . … 0
 0          ≠   ≠   ≠+0 ≠   ≠   ≠ …
-  c    .   .   .   1   .   .   . … 0
+  c    .   .   .   1   0   0   . … 0
 1          ≠   ≠    +1
-  b    .   .   .   1   .   1
+  b    .   .   .   1   1   1
 
 
        i  i+1  -   m
