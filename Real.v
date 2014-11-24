@@ -3961,6 +3961,12 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
           eapply min_neq_lt in M4; [ idtac | eauto  | right; left; auto ].
           destruct (eq_nat_dec djabm n) as [M5| M5].
            move M5 at top; subst djabm.
+           remember Hsabm as H; clear HeqH.
+           apply fst_same_iff in H; simpl in H.
+           rewrite Haabm, Hbbcm in H.
+           destruct H as (_, H); discriminate H.
+
+           eapply min_neq_lt in M5; eauto ; try (do 2 right; left; auto).
 bbb.
 
        i  i+1  -   m   -   n
