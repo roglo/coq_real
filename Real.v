@@ -4026,20 +4026,24 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
            discriminate H.
 
           eapply min_neq_lt in M5; eauto ; try (right; left; auto).
+          destruct (eq_nat_dec djabm n) as [M6| M6].
+           move M6 at top; subst djabm.
 bbb.
 
-       i  i+1  -   m   -   n
-  b    .   .   .   1   .   1
-1          ≠   ≠    +0 ≠   ≠+1  ≠ …   <--
-  a    .   .   .   1   .   0
-1          ≠   ≠
- b+c   .   .   .   1   .   .
+n est dans la même situation que m, enfin presque !
 
- a+b   .   .   .   0   .   0
-0          ≠   ≠   ≠+0 ≠
-  c    .   .   .   1   .   0
-1          ≠   ≠    +1 ≠   ≠   ≠ …
-  b    .   .   .   1   .   1
+       i  i+1  -   m   -   n
+  b    .   .   .   1   1   0
+1          ≠   ≠    +0 ≠    +0
+  a    .   .   .   1   0   0
+1          ≠   ≠
+ b+c   .   .   .   1   0   0
+
+ a+b   .   .   .   0   1   0
+0          ≠   ≠   ≠+0 ≠   ≠+0 ≠ …
+  c    .   .   .   1   0   1
+1          ≠   ≠    +1 ≠   ≠+1 ≠ …
+  b    .   .   .   1   1   0
 
 
        i  i+1  -   m
