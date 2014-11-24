@@ -3948,14 +3948,33 @@ destruct s₃ as [di₃| ]; [ idtac | clear H₃ ].
        destruct sbcm as [djbcm| ]; [ idtac | clear H ].
         rename H into Hbbcm.
         symmetry in Hsbcm.
-        remember (min (min djabm m₄) djbcm) as n eqn:Hn .
-        destruct (eq_nat_dec djabm n) as [M₃| M₃].
-         move M₃ at top; subst djabm.
-         destruct (eq_nat_dec djbcm n) as [M₄| M₄].
-          move M₄ at top; subst djbcm.
-          destruct (eq_nat_dec m₄ n) as [M₄| M₄].
-           move M₄ at top; subst m₄.
+        remember (List.fold_right min djbcm [m₄; djabm … []])  as n eqn:Hn .
+        destruct (eq_nat_dec djbcm n) as [M₄| M₄].
+         move M₄ at top; subst djbcm.
+         destruct (eq_nat_dec m₄ n) as [M₄| M₄].
+          move M₄ at top; subst m₄.
+          remember Hsbcm as H; clear HeqH.
+          apply fst_same_iff in H; simpl in H.
+          rewrite Hbbcm, Ht₄ in H.
+          destruct H as (_, H); discriminate H.
+
+          eapply min_neq_lt in M₄; [ idtac | eauto  | right; left; auto ].
 bbb.
+
+       i  i+1  -   m   -   n
+  b    .   .   .   1   .   1
+1          ≠   ≠    +0      +1
+  a    .   .   .   1   .   0
+1          ≠   ≠
+ b+c   .   .   .   1   .   .
+
+ a+b   .   .   .   0   .   0
+0          ≠   ≠   ≠   ≠
+  c    .   .   .   1   .   0
+1          ≠   ≠    +1
+  b    .   .   .   1   .   1
+
+
        i  i+1  -   m
   b    .   .   .   1
 1          ≠   ≠    +0
