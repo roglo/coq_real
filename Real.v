@@ -4039,9 +4039,10 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
            assert (S (m + n) < S (m + m4)) as H by omega.
            apply Hn4 in H.
            rewrite Nat.add_succ_r, Nat.add_assoc in H.
-           rewrite <- negb_involutive in H.
+           remember H as Cn; clear HeqCn.
            rewrite <- Hnbcm in H; [ idtac | assumption ].
            rewrite Htabm in H; simpl in H.
+           remember H as ABn; clear HeqABn.
            unfold rm_add_i in H.
            rewrite Haabm, Htabm, xorb_false_l in H.
            rename H into Rabn.
