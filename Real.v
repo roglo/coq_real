@@ -3926,6 +3926,9 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
        clear Hm Ht6.
 bbb.
 
+putain con, faut tout refaire (fait ci-dessous) avec m=0
+puis, pour m>0 en principe, y a une contradiction.
+
 m=0
        i  i+1
   b    .   1
@@ -3940,13 +3943,13 @@ m=0
 1           +1
   b    .   1
 
-
+m>0
        i  i+1  -   m
   b    .   1   .   1
 1          ≠   ≠
   a    .   0   .   1
 1          ≠   ≠
- b+c   .   10  .   1
+ b+c   .   10  .   1   <-- contrad
 
  a+b   .   1   .   0
 0          ≠   ≠   ≠
