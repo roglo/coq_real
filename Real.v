@@ -3990,20 +3990,32 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
            rewrite Haabm in H; discriminate H.
 
          eapply min_neq_lt in M4; eauto ; try (left; auto).
+         destruct (eq_nat_dec m4 n) as [M5| M5].
+          move M5 at top; subst m4.
+          remember Hsbcm as H; clear HeqH.
+          apply fst_same_iff in H; simpl in H.
+          destruct H as (Hnbcj, Htbcj).
+          remember H4 as H; clear HeqH.
+          unfold rm_add_i in H.
+          rewrite Hnbcj in H; [ idtac | assumption ].
+          rewrite Ht4, xorb_true_r in H.
+          apply xorb_eq in H.
+          symmetry in H.
+          rename H into Hcabn.
 bbb.
 
        i  i+1  -   m   -   n
-  b    .   .   .   1   1   1   . … 0
-1          ≠   ≠    +0 ≠   ≠  ≠
-  a    .   .   .   1   0   0   . … 0
+  b    .   .   .   1   x   1
+1          ≠   ≠    +0 ≠+0  +1 <--
+  a    .   .   .   1   0   0
 1          ≠   ≠
- b+c   .   .   .   1   .   .
+ b+c   .   .   .   1   0   0
 
- a+b   .   .   .   0   1   1   . … 0
-0          ≠   ≠   ≠+0 ≠   ≠   ≠ …
-  c    .   .   .   1   0   0   . … 0
-1          ≠   ≠    +1
-  b    .   .   .   1   1   1
+ a+b   .   .   .   0   x   0
+0          ≠   ≠   ≠+0 ≠
+  c    .   .   .   1   .   0
+1          ≠   ≠    +1 ≠+1 ≠+1
+  b    .   .   .   1   x   1
 
 
        i  i+1  -   m
