@@ -4029,9 +4029,22 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
           destruct (eq_nat_dec djabm n) as [M6| M6].
            move M6 at top; subst djabm.
            clear Hn.
+           remember Hsbcm as H; clear HeqH.
+           apply fst_same_iff in H; simpl in H.
+           destruct H as (Hnbcm, Htbcm).
+           remember Hsabm as H; clear HeqH.
+           apply fst_same_iff in H; simpl in H.
+           destruct H as (Hnabm, Htabm).
+           rewrite Haabm in Htabm; symmetry in Htabm.
            assert (S (m + n) < S (m + m4)) as H by omega.
            apply Hn4 in H.
            rewrite Nat.add_succ_r, Nat.add_assoc in H.
+           rewrite <- negb_involutive in H.
+           rewrite <- Hnbcm in H; [ idtac | assumption ].
+           rewrite Htabm in H; simpl in H.
+           unfold rm_add_i in H.
+           rewrite Haabm, Htabm, xorb_false_l in H.
+           rename H into Rabn.
 bbb.
 
        i  i+1  -   m   -   n
