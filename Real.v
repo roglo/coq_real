@@ -4002,10 +4002,20 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
           apply xorb_eq in H.
           symmetry in H.
           rename H into Hcabn.
+          destruct (eq_nat_dec djabm n) as [M5| M5].
+           move M5 at top; subst djabm.
+           remember Hsabm as H; clear HeqH.
+           apply fst_same_iff in H; simpl in H.
+           destruct H as (Hnabn, Htabn).
+           rewrite Haabm in Htabn; symmetry in Htabn.
+           pose proof (Hnbcj n M4) as H.
+           rewrite Htabn, Ht4 in H; discriminate H.
+
+           eapply min_neq_lt in M5; eauto ; try (do 2 right; left; auto).
 bbb.
 
        i  i+1  -   m   -   n
-  b    .   .   .   1   x   1
+  b    .   .   .   1   x   0
 1          ≠   ≠    +0 ≠+0  +1 <--
   a    .   .   .   1   0   0
 1          ≠   ≠
