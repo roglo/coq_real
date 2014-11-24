@@ -4028,6 +4028,10 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
           eapply min_neq_lt in M5; eauto ; try (right; left; auto).
           destruct (eq_nat_dec djabm n) as [M6| M6].
            move M6 at top; subst djabm.
+           clear Hn.
+           assert (S (m + n) < S (m + m4)) as H by omega.
+           apply Hn4 in H.
+           rewrite Nat.add_succ_r, Nat.add_assoc in H.
 bbb.
 
        i  i+1  -   m   -   n
@@ -4046,7 +4050,7 @@ bbb.
   a=0,0111000000000000
   b=0,0001101010101010
   c=0,0111100101010101 <--
-a+b=0,1000101010101010 <-- ah bin non le relais vaut 1
+a+b=0,1000101010101010 <-- ah bin non le relais vaut 1. bon.
 b+c=0,1001010000000000
 
        i  i+1  -   m
