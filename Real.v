@@ -3846,14 +3846,95 @@ Qed.
 
 (*
 Theorem zzz :
-  Rabn : carry a b (S (S (i + m + n))) = false
-  Rab_cn : carry (a + b) c (S (S (i + m + n))) = false
-  Rbcn : carry b c (S (S (i + m + n))) = true
+  Rabn : carry a b (S (i + m)) = false
+  Rab_cn : carry (a + b) c (S (i + m)) = false
+  Rbcn : carry b c (S (i + m)) = true
   →
-  Rabp : carry a b (S (S (S (i + m + n + p)))) = false
-  Rab_cp : carry (a + b) c (S (S (S (i + m + n + p)))) = false
-  Rbcp : carry b c (S (S (S (i + m + n + p)))) = true
+  Rabp : carry a b (S (S (i + m + p))) = false
+  Rab_cp : carry (a + b) c (S (S (i + m + p))) = false
+  Rbcp : carry b c (S (S (i + m + p))) = true
 *)
+
+Theorem zzz : ∀ a b c i,
+  carry a b i = false
+  → carry (a + b) c i = false
+  → carry b c i = true
+  → ∃ m,
+    carry a b (S (i + m)) = false ∧
+    carry (a + b) c (S (i + m)) = false ∧
+    carry b c (S (i + m)) = true.
+Proof.
+intros a b c i Rab Rabc Rbc.
+rename Rab into Rabn.
+rename Rabc into Rab_cn.
+rename Rbc into Rbcn.
+remember Rabn as H; clear HeqH.
+unfold carry in H; simpl in H.
+remember (fst_same a b (S i)) as sabn eqn:Hsabn .
+destruct sabn as [dabn| ]; [ idtac | discriminate H ].
+rename H into A_p.
+symmetry in Hsabn.
+remember Rab_cn as H; clear HeqH.
+unfold carry in H; simpl in H.
+remember (fst_same (a + b) c (S i)) as sab_cn.
+rename Heqsab_cn into Hsab_cn.
+destruct sab_cn as [dab_cn| ]; [ idtac | discriminate H ].
+rename H into AB_p; symmetry in Hsab_cn.
+remember Rbcn as H; clear HeqH.
+unfold carry in H; simpl in H.
+remember (fst_same b c (S i)) as sbcn eqn:Hsbcn .
+symmetry in Hsbcn.
+destruct sbcn as [dbcn| ]; [ idtac | clear H ].
+ rename H into B_p.
+ remember (List.fold_right min dbcn [dabn; dab_cn … []]) as p.
+ rename Heqp into Hp.
+ destruct (eq_nat_dec dabn p) as [H| H].
+  move H at top; subst dabn; rename A_p into Ap.
+  remember Hsabn as H; clear HeqH.
+  apply fst_same_iff in H; simpl in H.
+  destruct H as (Hnabn, Bp).
+  rewrite Ap in Bp; symmetry in Bp.
+  remember Hsbcn as H; clear HeqH.
+  apply fst_same_iff in H; simpl in H.
+  destruct H as (Hnbcn, Htbcn).
+  destruct (eq_nat_dec dbcn p) as [H| H].
+   move H at top; subst dbcn.
+   rewrite B_p in Bp; discriminate Bp.
+
+   eapply min_neq_lt in H; eauto ; try (left; auto).
+   rename H into Hpdbcn.
+   remember Bp as Cp; clear HeqCp.
+   rewrite Hnbcn in Cp; [ idtac | assumption ].
+   apply negb_false_iff in Cp.
+   remember Hsab_cn as H; clear HeqH.
+   apply fst_same_iff in H; simpl in H.
+   destruct H as (Hnab_cn, Htab_cn).
+   destruct (eq_nat_dec dab_cn p) as [H| H].
+    move H at top; subst dab_cn.
+    rewrite Cp in Htab_cn.
+    rewrite AB_p in Htab_cn; discriminate Htab_cn.
+
+    eapply min_neq_lt in H; eauto ; try (do 2 right; left; auto).
+    rename H into Hpdab_cn.
+    pose proof (Hnab_cn p Hpdab_cn) as H.
+    rewrite Cp in H; simpl in H; rename H into ABp.
+    remember ABp as H; clear HeqH.
+    unfold rm_add_i in H.
+    rewrite Ap, Bp, xorb_false_l in H.
+    rename H into Rabp.
+    remember Hsab_cn as H; clear HeqH.
+    eapply carry_before_relay in H; [ idtac | eassumption ].
+    simpl in H.
+    rewrite AB_p in H.
+    rename H into Rab_cp.
+    remember Hsbcn as H; clear HeqH.
+    eapply carry_before_relay in H; [ idtac | eassumption ].
+    simpl in H.
+    rewrite B_p in H.
+    rename H into Rbcp.
+    exists p.
+    split; [ assumption | split; assumption ].
+bbb.
 
 Theorem case_2 : ∀ a₀ b₀ c₀ a b c i u,
   a = (a₀ + 0)%rm
@@ -3958,6 +4039,7 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
        rename Hcbcm into Rbcn.
 (**)
 Focus 1.
+bbb.
        remember Rabn as H; clear HeqH.
        unfold carry in H; simpl in H.
        remember (fst_same a b (S (S (i + m)))) as sabn eqn:Hsabn .
@@ -4023,6 +4105,7 @@ Focus 1.
            rewrite B_p in H.
            rename H into Rbcp.
 
+bbb.
            Focus 2.
            eapply min_neq_lt in H; eauto ; try (right; left; auto).
            rename H into Hpdan.
@@ -4071,7 +4154,23 @@ Focus 1.
 
              eapply min_neq_lt in H; eauto ; try (do 2 right; left; auto).
              rename H into Hpdab_cn; simpl in Hp.
-             revert Hp Hpdan Hpdbcn Hpdab_cn; clear; intros; subst p.
+             revert Hp Hpdan Hpdbcn Hpdab_cn; clear; intros Hp H1 H2 H3.
+             destruct (Nat.min_dec dab_cn dbcn) as [L1| L1].
+              rewrite L1 in Hp.
+              destruct (Nat.min_dec dabn dab_cn) as [L2| L2].
+               rewrite L2 in Hp; subst p.
+               revert H1; apply Nat.lt_irrefl.
+
+               rewrite L2 in Hp; subst p.
+               revert H3; apply Nat.lt_irrefl.
+
+              rewrite L1 in Hp.
+              destruct (Nat.min_dec dabn dbcn) as [L2| L2].
+               rewrite L2 in Hp; subst p.
+               revert H1; apply Nat.lt_irrefl.
+
+               rewrite L2 in Hp; subst p.
+               revert H2; apply Nat.lt_irrefl.
 bbb.
 
        i  i+1  -   m   -   p
