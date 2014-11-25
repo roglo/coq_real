@@ -4111,7 +4111,19 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
                unfold rm_add_i in H.
                rewrite Ap, Bp, xorb_false_l in H.
                rename H into Rabp.
+               remember Hsab_cn as H; clear HeqH.
+               eapply carry_before_relay in H; [ idtac | eassumption ].
+               simpl in H.
+               rewrite AB_p in H.
+               rename H into Rab_cp.
+               remember Hsbcn as H; clear HeqH.
+               eapply carry_before_relay in H; [ idtac | eassumption ].
+               simpl in H.
+               rewrite B_p in H.
+               rename H into Rbcp.
 bbb.
+
+p like n
 
        i  i+1  -   m   -   n   -   p
   b    .   0   .   1   1   0   .   0
