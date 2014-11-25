@@ -4159,10 +4159,53 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
        rename Hcabm into Rabn.
        rename Habcm into Rab_cn.
        rename Hcbcm into Rbcn.
-       remember Rab_cn as H; clear HeqH.
-       apply carry_repeat in H; try assumption.
-       destruct H as (p, (Rabp, (Rab_cp, (Rbcp, (Bp, Cp))))).
+       remember Rbcn as H; clear HeqH.
+       unfold carry in H; simpl in H.
+       remember (fst_same b c (S (S (i + m)))) as sbcm eqn:Sbcm .
+       destruct sbcm as [dbcm| ]; [ idtac | clear H ].
+        rename H into B_p.
+        symmetry in Sbcm.
+        revert m i Rabn Rab_cn Rbcn Sbcm B_p.
+        induction dbcm; intros.
+         rewrite Nat.add_0_r in B_p; rename B_p into Bm.
+         remember Sbcm as H; clear HeqH.
+         apply fst_same_iff in H; simpl in H.
+         rewrite Nat.add_0_r in H.
+         destruct H as (_, Cm); rewrite Bm in Cm; symmetry in Cm.
+         remember Rabn as H; clear HeqH.
+         rewrite carry_comm in H.
+         apply after_carry_negb in H; [ simpl in H | assumption ].
+         rename H into Am.
+         remember Rab_cn as H; clear HeqH.
+         rewrite carry_comm in H.
+         apply after_carry_negb in H; [ simpl in H | assumption ].
+         unfold rm_add_i in H.
+         rewrite Am, Bm, xorb_true_r, xorb_true_l in H.
+         apply negb_false_iff in H.
+         rewrite <- negb_involutive in H.
+         apply carry_succ_negb in H; [ idtac | assumption ].
+         rewrite Bm in H.
+         destruct H as (_, H); discriminate H.
+
+         remember Rab_cn as H; clear HeqH.
+         apply carry_repeat in H; try assumption.
+         destruct H as (p, (Rabp, (Rab_cp, (Rbcp, (Bp, Cp))))).
 bbb.
+
+       i  i+1  -   m   +1  .
+  b    .   .   .   .   1   .
+1                   +0  +1   <-- contrad
+  a    .   .   .   .   0   .
+1
+ b+c   .   .   .   .   .   .
+
+ a+b   .   .   .   .   0   .
+0                   +0
+  c    .   .   .   .   1   .
+1                   +1
+  b    .   .   .   .   1   .
+
+
 
        i  i+1  -   m   -   p
   b    .   .   .   .   .   1
