@@ -4070,7 +4070,8 @@ Focus 1.
              simpl in H; rewrite A_p in H; discriminate H.
 
              eapply min_neq_lt in H; eauto ; try (do 2 right; left; auto).
-             rename H into Hpdab_cn.
+             rename H into Hpdab_cn; simpl in Hp.
+             revert Hp Hpdan Hpdbcn Hpdab_cn; clear; intros; subst p.
 bbb.
 
        i  i+1  -   m   -   p
