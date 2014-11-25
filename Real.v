@@ -4001,7 +4001,7 @@ destruct sbcn as [dbcn| ]; [ idtac | clear H ].
       rewrite L2 in Hp; subst p.
       revert H2; apply Nat.lt_irrefl.
 
- remember (min dabn dab_cn) as p eqn:Hp .
+ remember (List.fold_right min dabn [dab_cn]) as p eqn:Hp .
  destruct (eq_nat_dec dabn p) as [H| H].
   move H at top; subst dabn; rename A_p into Ap.
   remember Hsabn as H; clear HeqH.
@@ -4021,6 +4021,8 @@ destruct sbcn as [dbcn| ]; [ idtac | clear H ].
    move H at top; subst dab_cn.
    rewrite Cp in Htab_cn.
    rewrite AB_p in Htab_cn; discriminate Htab_cn.
+
+   eapply min_neq_lt in H; eauto ; try (right; left; auto).
 bbb.
 
        i   -   n
