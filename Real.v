@@ -4061,37 +4061,64 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
            unfold carry in H; simpl in H.
            remember (fst_same a b (S (S (S (i + m + n))))) as sabn eqn:Hsabn .
            destruct sabn as [dabn| ]; [ idtac | discriminate H ].
-           rename H into Ap.
+           rename H into A_p.
            symmetry in Hsabn.
            remember Rab_cn as H; clear HeqH.
            unfold carry in H; simpl in H.
            remember (fst_same (a + b) c (S (S (S (i + m + n))))) as sab_cn.
            rename Heqsab_cn into Hsab_cn.
            destruct sab_cn as [dab_cn| ]; [ idtac | discriminate H ].
-           rename H into ABp; symmetry in Hsab_cn.
+           rename H into AB_p; symmetry in Hsab_cn.
            remember Rbcn as H; clear HeqH.
            unfold carry in H; simpl in H.
            remember (fst_same b c (S (S (S (i + m + n))))) as sbcn eqn:Hsbcn .
+           symmetry in Hsbcn.
            destruct sbcn as [dbcn| ]; [ idtac | clear H ].
-            rename H into Bp.
+            rename H into B_p.
             remember (List.fold_right min dbcn [dabn; dab_cn … []]) as p.
             rename Heqp into Hp.
             destruct (eq_nat_dec dabn p) as [H| H].
-             move H at top; subst dabn.
+             move H at top; subst dabn; rename A_p into Ap.
+             remember Hsabn as H; clear HeqH.
+             apply fst_same_iff in H; simpl in H.
+             destruct H as (Hnabn, Bp).
+             rewrite Ap in Bp; symmetry in Bp.
+             remember Hsbcn as H; clear HeqH.
+             apply fst_same_iff in H; simpl in H.
+             destruct H as (Hnbcn, Htbcn).
+             destruct (eq_nat_dec dbcn p) as [H| H].
+              move H at top; subst dbcn.
+              rewrite B_p in Bp; discriminate Bp.
+
+              eapply min_neq_lt in H; eauto ; try (left; auto).
+              rename H into Hpdbcn.
+              remember Bp as Cp; clear HeqCp.
+              rewrite Hnbcn in Cp; [ idtac | assumption ].
+              apply negb_false_iff in Cp.
+              remember Hsab_cn as H; clear HeqH.
+              apply fst_same_iff in H; simpl in H.
+              destruct H as (Hnab_cn, Htab_cn).
+              destruct (eq_nat_dec dab_cn p) as [H| H].
+               move H at top; subst dab_cn.
+               rewrite Cp in Htab_cn.
+               rewrite AB_p in Htab_cn; discriminate Htab_cn.
+
+               eapply min_neq_lt in H; eauto ; try (do 2 right; left; auto).
+               rename H into Hpdab_cn.
 bbb.
 
-       i  i+1  -   m   -   n
-  b    .   0   .   1   1   0
-1          ≠   ≠    +0 ≠    +0
-  a    .   1   .   1   0   0
+       i  i+1  -   m   -   n   -   p
+  b    .   0   .   1   1   0   .   0
+1          ≠   ≠    +0 ≠    +0 ≠    +0
+  a    .   1   .   1   0   0   .   0
 1          ≠   ≠
- b+c   .   0   .   1   0   0
+ b+c   .   0   .   1   0   0   .   0
 
- a+b   .   0   .   0   1   0
-0          ≠   ≠   ≠+0 ≠   ≠+0 ≠ …
-  c    .   1   .   1   0   1
-1          ≠+1 ≠    +1 ≠   ≠+1 ≠ …
-  b    .   0   .   1   1   0
+ a+b   .   0   .   0   1   0   .   0
+0          ≠   ≠   ≠+0 ≠   ≠+0 ≠    +0
+  c    .   1   .   1   0   1   .   1
+1          ≠+1 ≠    +1 ≠   ≠+1 ≠    +1
+  b    .   0   .   1   1   0   .   0
 
   a=0,0111000000000000
   b=0,0001101010101010
