@@ -4057,19 +4057,33 @@ Focus 1.
              simpl in H; rewrite A_p in H; discriminate H.
 
             eapply min_neq_lt in H; eauto ; try (left; auto).
+            rename H into Hpdbcn.
+            destruct (eq_nat_dec dab_cn p) as [H| H].
+             move H at top; subst dab_cn.
+             remember AB_p as H; clear HeqH.
+             unfold rm_add_i in H; simpl in H.
+             rewrite Hnabn in H; [ idtac | assumption ].
+             rewrite negb_xorb_diag_l, xorb_true_l in H.
+             apply negb_false_iff in H.
+             do 2 rewrite <- Nat.add_succ_l in H.
+             erewrite carry_before_relay in H; try eassumption.
+             simpl in H; rewrite A_p in H; discriminate H.
+
+             eapply min_neq_lt in H; eauto ; try (do 2 right; left; auto).
+             rename H into Hpdab_cn.
 bbb.
 
        i  i+1  -   m   -   p
-  b    .   .   .   .   .   .   .   0
-1                   +0 ≠   ≠   ≠ …
-  a    .   .   .   .   .   .   .   0
+  b    .   .   .   .   .   1
+1                   +0 ≠   ≠+0
+  a    .   .   .   .   .   0
 1
  b+c   .   .   .   .   .   .
 
- a+b   .   .   .   .   .   1
+ a+b   .   .   .   .   .   0
 0                   +0 ≠
-  c    .   .   .   .   .   1
-1                   +1 ≠
+  c    .   .   .   .   .   0
+1                   +1 ≠   ≠
   b    .   .   .   .   .   1
 
 
