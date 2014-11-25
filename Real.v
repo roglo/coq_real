@@ -3851,7 +3851,9 @@ Theorem carry_repeat : ∀ a b c i,
   → ∃ m,
     carry a b (S (i + m)) = false ∧
     carry (a + b) c (S (i + m)) = false ∧
-    carry b c (S (i + m)) = true.
+    carry b c (S (i + m)) = true ∧
+    b.[S (i + m)] = false ∧
+    c.[S (i + m)] = true.
 Proof.
 intros a b c i Rab Rabc Rbc.
 rename Rab into Rabn.
@@ -3922,7 +3924,10 @@ destruct sbcn as [dbcn| ]; [ idtac | clear H ].
     rewrite B_p in H.
     rename H into Rbcp.
     exists p.
-    split; [ assumption | split; assumption ].
+    split; [ assumption | idtac ].
+    split; [ assumption | idtac ].
+    split; [ assumption | idtac ].
+    split; assumption.
 
   exfalso.
   eapply min_neq_lt in H; eauto ; try (right; left; auto).
@@ -4023,7 +4028,9 @@ destruct sbcn as [dbcn| ]; [ idtac | clear H ].
    erewrite carry_before_relay; try eassumption; simpl.
    split; [ assumption | idtac ].
    rewrite <- Nat.add_succ_l.
-   erewrite carry_before_inf_relay; [ reflexivity | assumption ].
+   erewrite carry_before_inf_relay; [ idtac | assumption ].
+   split; [ reflexivity | idtac ].
+   split; assumption.
 
   eapply min_neq_lt in H; eauto ; try (left; auto).
   rename H into Hpdabn.
@@ -4154,7 +4161,7 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
        rename Hcbcm into Rbcn.
        remember Rab_cn as H; clear HeqH.
        apply carry_repeat in H; try assumption.
-       destruct H as (p, (Rabp, (Rab_cp, Rbcp))).
+       destruct H as (p, (Rabp, (Rab_cp, (Rbcp, (Bp, Cp))))).
 bbb.
 
        i  i+1  -   m   -   p
@@ -4174,17 +4181,17 @@ bbb.
 p like n
 
        i  i+1  -   m   -   n   -   p
-  b    .   0   .   1   1   0   .   0
+  b    .   0   .   1   1   0   1   0
 1          ≠   ≠    +0 ≠    +0 ≠    +0
-  a    .   1   .   1   0   0   .   0
+  a    .   1   .   1   0   0   0   0
 1          ≠   ≠
  b+c   .   0   .   1   0   0   .   0
 
- a+b   .   0   .   0   1   0   .   0
+ a+b   .   0   .   0   1   0   1   0
 0          ≠   ≠   ≠+0 ≠   ≠+0 ≠    +0
-  c    .   1   .   1   0   1   .   1
+  c    .   1   .   1   0   1   0   1
 1          ≠+1 ≠    +1 ≠   ≠+1 ≠    +1
-  b    .   0   .   1   1   0   .   0
+  b    .   0   .   1   1   0   1   0
 
        i  i+1  -   m
   b    .   .   .   1
