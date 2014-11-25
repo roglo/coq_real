@@ -4042,10 +4042,21 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
            remember H as Cn; clear HeqCn.
            rewrite <- Hnbcm in H; [ idtac | assumption ].
            rewrite Htabm in H; simpl in H.
+           rewrite H in Cn; apply negb_sym in Cn; simpl in Cn.
            remember H as ABn; clear HeqABn.
            unfold rm_add_i in H.
            rewrite Haabm, Htabm, xorb_false_l in H.
            rename H into Rabn.
+           assert (S (m + n) < S (m + m4)) as H by omega.
+           eapply carry_before_relay in H; try eassumption; simpl in H.
+           simpl in H.
+           do 2 rewrite Nat.add_succ_r, Nat.add_assoc in H.
+           rewrite H4 in H.
+           rename H into Rab_cn.
+           remember Hsbcm as H; clear HeqH.
+           eapply carry_before_relay in H; [ idtac | eassumption ].
+           simpl in H; rewrite Hbbcm in H.
+           rename H into Rbcn.
 bbb.
 
        i  i+1  -   m   -   n
