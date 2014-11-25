@@ -4057,6 +4057,23 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
            eapply carry_before_relay in H; [ idtac | eassumption ].
            simpl in H; rewrite Hbbcm in H.
            rename H into Rbcn.
+           remember Rabn as H; clear HeqH.
+           unfold carry in H; simpl in H.
+           remember (fst_same a b (S (S (S (i + m + n))))) as sabn eqn:Hsabn .
+           destruct sabn as [dabn| ]; [ idtac | discriminate H ].
+           rename H into Ap.
+           symmetry in Hsabn.
+           remember Rab_cn as H; clear HeqH.
+           unfold carry in H; simpl in H.
+           remember (fst_same (a + b) c (S (S (S (i + m + n))))) as sab_cn.
+           rename Heqsab_cn into Hsab_cn.
+           destruct sab_cn as [dab_cn| ]; [ idtac | discriminate H ].
+           rename H into ABp; symmetry in Hsab_cn.
+           remember Rbcn as H; clear HeqH.
+           unfold carry in H; simpl in H.
+           remember (fst_same b c (S (S (S (i + m + n))))) as sbcn eqn:Hsbcn .
+           destruct sbcn as [dbcn| ]; [ idtac | clear H ].
+            rename H into Bn.
 bbb.
 
        i  i+1  -   m   -   n
