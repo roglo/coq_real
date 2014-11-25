@@ -3844,6 +3844,17 @@ induction xl as [| z]; intros.
    eapply Nat.min_glb_r; eassumption.
 Qed.
 
+(*
+Theorem zzz :
+  Rabn : carry a b (S (S (i + m + n))) = false
+  Rab_cn : carry (a + b) c (S (S (i + m + n))) = false
+  Rbcn : carry b c (S (S (i + m + n))) = true
+  →
+  Rabp : carry a b (S (S (S (i + m + n + p)))) = false
+  Rab_cp : carry (a + b) c (S (S (S (i + m + n + p)))) = false
+  Rbcp : carry b c (S (S (S (i + m + n + p)))) = true
+*)
+
 Theorem case_2 : ∀ a₀ b₀ c₀ a b c i u,
   a = (a₀ + 0)%rm
   → b = (b₀ + 0)%rm
@@ -3915,213 +3926,152 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
        simpl in H; rewrite H5 in H; discriminate H.
 
       eapply min_neq_lt in M4; [ idtac | eauto  | do 2 right; left; auto ].
-(*if test 1 then *)
-      remember (di4 - S m) as m4 eqn:Hm4 .
-      apply nat_sub_add_r in Hm4; [ idtac | assumption ].
-      subst di4; clear M4.
-      rewrite Nat.add_succ_r in Hs4, H4, Hn4, Ht4.
-      rewrite Nat.add_succ_r, Nat.add_assoc in H4, Ht4.
       destruct (eq_nat_dec di5 m) as [M5| M5].
        move M5 at top; subst di5.
        clear Hm Ht6.
-       assert (m < S (m + m4)) as H by omega.
-       apply Hn4 in H.
-       rewrite Ht5 in H; simpl in H.
-       rename H into Habm.
+       remember Ht5 as H; clear HeqH.
+       rewrite <- negb_involutive in H.
+       apply negb_sym in H; simpl in H.
+       rewrite <- Hn4 in H; [ idtac | assumption ].
+       symmetry in H; rename H into Habm.
        remember Habm as H; clear HeqH.
        unfold rm_add_i in H; simpl in H.
        rewrite H3, H5, xorb_nilpotent, xorb_false_l in H.
        rename H into Hcabm.
+       remember Ht3 as H; clear HeqH.
+       unfold rm_add_i in H.
+       rewrite H5, Ht5, xorb_nilpotent, xorb_false_l in H.
+       rename H into Hcbcm.
        remember Hcabm as H; clear HeqH.
        unfold carry in H; simpl in H.
        remember (fst_same a b (S (S (i + m)))) as sabm eqn:Hsabm .
        destruct sabm as [djabm| ]; [ idtac | discriminate H ].
        symmetry in Hsabm.
        rename H into Haabm.
-       remember Ht3 as H; clear HeqH.
-       unfold rm_add_i in H.
-       rewrite H5, Ht5, xorb_nilpotent, xorb_false_l in H.
-       rename H into Hcbcm.
-       remember Hcbcm as H; clear HeqH.
+       remember Hs4 as H; clear HeqH.
+       eapply carry_before_relay in H; [ idtac | eassumption ].
+       simpl in H; rewrite H4 in H.
+       rename H into Habcm.
+       revert Hcabm Habcm Hcbcm; clear; intros.
+       rename Hcabm into Rabn.
+       rename Habcm into Rab_cn.
+       rename Hcbcm into Rbcn.
+(**)
+Focus 1.
+       remember Rabn as H; clear HeqH.
        unfold carry in H; simpl in H.
-       remember (fst_same b c (S (S (i + m)))) as sbcm eqn:Hsbcm .
-       destruct sbcm as [djbcm| ]; [ idtac | clear H ].
-        rename H into Hbbcm.
-        symmetry in Hsbcm.
-        remember (List.fold_right min djbcm [m4; djabm … []])  as n eqn:Hn .
-        destruct (eq_nat_dec djbcm n) as [M4| M4].
-         move M4 at top; subst djbcm.
-         destruct (eq_nat_dec m4 n) as [M4| M4].
-          move M4 at top; subst m4.
-          remember Hsbcm as H; clear HeqH.
+       remember (fst_same a b (S (S (i + m)))) as sabn eqn:Hsabn .
+       destruct sabn as [dabn| ]; [ idtac | discriminate H ].
+       rename H into A_p.
+       symmetry in Hsabn.
+       remember Rab_cn as H; clear HeqH.
+       unfold carry in H; simpl in H.
+       remember (fst_same (a + b) c (S (S (i + m)))) as sab_cn.
+       rename Heqsab_cn into Hsab_cn.
+       destruct sab_cn as [dab_cn| ]; [ idtac | discriminate H ].
+       rename H into AB_p; symmetry in Hsab_cn.
+       remember Rbcn as H; clear HeqH.
+       unfold carry in H; simpl in H.
+       remember (fst_same b c (S (S (i + m)))) as sbcn eqn:Hsbcn .
+       symmetry in Hsbcn.
+       destruct sbcn as [dbcn| ]; [ idtac | clear H ].
+        rename H into B_p.
+        remember (List.fold_right min dbcn [dabn; dab_cn … []]) as p.
+        rename Heqp into Hp.
+        destruct (eq_nat_dec dabn p) as [H| H].
+         move H at top; subst dabn; rename A_p into Ap.
+         remember Hsabn as H; clear HeqH.
+         apply fst_same_iff in H; simpl in H.
+         destruct H as (Hnabn, Bp).
+         rewrite Ap in Bp; symmetry in Bp.
+         remember Hsbcn as H; clear HeqH.
+         apply fst_same_iff in H; simpl in H.
+         destruct H as (Hnbcn, Htbcn).
+         destruct (eq_nat_dec dbcn p) as [H| H].
+          move H at top; subst dbcn.
+          rewrite B_p in Bp; discriminate Bp.
+
+          eapply min_neq_lt in H; eauto ; try (left; auto).
+          rename H into Hpdbcn.
+          remember Bp as Cp; clear HeqCp.
+          rewrite Hnbcn in Cp; [ idtac | assumption ].
+          apply negb_false_iff in Cp.
+          remember Hsab_cn as H; clear HeqH.
           apply fst_same_iff in H; simpl in H.
-          rewrite Hbbcm, Ht4 in H.
-          destruct H as (_, H); discriminate H.
+          destruct H as (Hnab_cn, Htab_cn).
+          destruct (eq_nat_dec dab_cn p) as [H| H].
+           move H at top; subst dab_cn.
+           rewrite Cp in Htab_cn.
+           rewrite AB_p in Htab_cn; discriminate Htab_cn.
 
-          eapply min_neq_lt in M4; [ idtac | eauto  | right; left; auto ].
-          destruct (eq_nat_dec djabm n) as [M5| M5].
-           move M5 at top; subst djabm.
-           remember Hsabm as H; clear HeqH.
-           apply fst_same_iff in H; simpl in H.
-           rewrite Haabm, Hbbcm in H.
-           destruct H as (_, H); discriminate H.
-
-           eapply min_neq_lt in M5; eauto ; try (do 2 right; left; auto).
-           remember Hsabm as H; clear HeqH.
-           apply fst_same_iff in H; simpl in H.
-           destruct H as (Hnabm, Htabm).
-           rewrite Haabm in Htabm; symmetry in Htabm.
-           rename Htabm into Hbabm.
-           remember Hsbcm as H; clear HeqH.
-           apply fst_same_iff in H; simpl in H.
-           destruct H as (Hbbcn, Hcbcn).
-           rewrite Hbbcm in Hcbcn; symmetry in Hcbcn.
-           assert (S (m + n) < S (m + m4)) as H by omega.
-           apply Hn4 in H.
-           rewrite Nat.add_succ_r, Nat.add_assoc in H.
-           rewrite Hcbcn in H; simpl in H.
+           eapply min_neq_lt in H; eauto ; try (do 2 right; left; auto).
+           rename H into Hpdab_cn.
+           pose proof (Hnab_cn p Hpdab_cn) as H.
+           rewrite Cp in H; simpl in H; rename H into ABp.
+           remember ABp as H; clear HeqH.
            unfold rm_add_i in H.
-           rewrite Hnabm in H; [ idtac | assumption ].
-           rewrite negb_xorb_diag_l, xorb_true_l in H.
-           apply negb_false_iff in H.
-           do 2 rewrite <- Nat.add_succ_l in H.
-           erewrite carry_before_relay in H; try eassumption.
-           do 2 rewrite Nat.add_succ_l in H.
-           rewrite Haabm in H; discriminate H.
-
-         eapply min_neq_lt in M4; eauto ; try (left; auto).
-         destruct (eq_nat_dec m4 n) as [M5| M5].
-          move M5 at top; subst m4.
-          remember Hsbcm as H; clear HeqH.
-          apply fst_same_iff in H; simpl in H.
-          destruct H as (Hnbcj, Htbcj).
-          remember H4 as H; clear HeqH.
-          unfold rm_add_i in H.
-          rewrite Hnbcj in H; [ idtac | assumption ].
-          rewrite Ht4, xorb_true_r in H.
-          apply xorb_eq in H.
-          symmetry in H.
-          rename H into Hcabn.
-          destruct (eq_nat_dec djabm n) as [M5| M5].
-           move M5 at top; subst djabm.
-           remember Hsabm as H; clear HeqH.
-           apply fst_same_iff in H; simpl in H.
-           destruct H as (Hnabn, Htabn).
-           rewrite Haabm in Htabn; symmetry in Htabn.
-           pose proof (Hnbcj n M4) as H.
-           rewrite Htabn, Ht4 in H; discriminate H.
-
-           eapply min_neq_lt in M5; eauto ; try (do 2 right; left; auto).
-           remember Hsabm as H; clear HeqH.
-           apply fst_same_iff in H; simpl in H.
-           destruct H as (Hnabn, Htabn).
-           remember H4 as H; clear HeqH.
-           unfold rm_add_i in H.
-           rewrite Hnabn in H; [ idtac | assumption ].
-           rewrite negb_xorb_diag_l, xorb_true_l in H.
-           apply negb_false_iff in H.
-           do 2 rewrite <- Nat.add_succ_l in H.
-           erewrite carry_before_relay in H; try eassumption.
-           simpl in H; rewrite Haabm in H.
-           discriminate H.
-
-          eapply min_neq_lt in M5; eauto ; try (right; left; auto).
-          destruct (eq_nat_dec djabm n) as [M6| M6].
-           move M6 at top; subst djabm.
-           clear Hn.
-           remember Hsbcm as H; clear HeqH.
-           apply fst_same_iff in H; simpl in H.
-           destruct H as (Hnbcm, Htbcm).
-           remember Hsabm as H; clear HeqH.
-           apply fst_same_iff in H; simpl in H.
-           destruct H as (Hnabm, Htabm).
-           rewrite Haabm in Htabm; symmetry in Htabm.
-           assert (S (m + n) < S (m + m4)) as H by omega.
-           apply Hn4 in H.
-           rewrite Nat.add_succ_r, Nat.add_assoc in H.
-           remember H as Cn; clear HeqCn.
-           rewrite <- Hnbcm in H; [ idtac | assumption ].
-           rewrite Htabm in H; simpl in H.
-           rewrite H in Cn; apply negb_sym in Cn; simpl in Cn.
-           remember H as ABn; clear HeqABn.
-           unfold rm_add_i in H.
-           rewrite Haabm, Htabm, xorb_false_l in H.
-           rename H into Rabn.
-           assert (S (m + n) < S (m + m4)) as H by omega.
-           eapply carry_before_relay in H; try eassumption; simpl in H.
-           simpl in H.
-           do 2 rewrite Nat.add_succ_r, Nat.add_assoc in H.
-           rewrite H4 in H.
-           rename H into Rab_cn.
-           remember Hsbcm as H; clear HeqH.
+           rewrite Ap, Bp, xorb_false_l in H.
+           rename H into Rabp.
+           remember Hsab_cn as H; clear HeqH.
            eapply carry_before_relay in H; [ idtac | eassumption ].
-           simpl in H; rewrite Hbbcm in H.
-           rename H into Rbcn.
-           remember Rabn as H; clear HeqH.
-           unfold carry in H; simpl in H.
-           remember (fst_same a b (S (S (S (i + m + n))))) as sabn eqn:Hsabn .
-           destruct sabn as [dabn| ]; [ idtac | discriminate H ].
-           rename H into A_p.
-           symmetry in Hsabn.
-           remember Rab_cn as H; clear HeqH.
-           unfold carry in H; simpl in H.
-           remember (fst_same (a + b) c (S (S (S (i + m + n))))) as sab_cn.
-           rename Heqsab_cn into Hsab_cn.
-           destruct sab_cn as [dab_cn| ]; [ idtac | discriminate H ].
-           rename H into AB_p; symmetry in Hsab_cn.
-           remember Rbcn as H; clear HeqH.
-           unfold carry in H; simpl in H.
-           remember (fst_same b c (S (S (S (i + m + n))))) as sbcn eqn:Hsbcn .
-           symmetry in Hsbcn.
-           destruct sbcn as [dbcn| ]; [ idtac | clear H ].
-            rename H into B_p.
-            remember (List.fold_right min dbcn [dabn; dab_cn … []]) as p.
-            rename Heqp into Hp.
-            destruct (eq_nat_dec dabn p) as [H| H].
-             move H at top; subst dabn; rename A_p into Ap.
-             remember Hsabn as H; clear HeqH.
-             apply fst_same_iff in H; simpl in H.
-             destruct H as (Hnabn, Bp).
-             rewrite Ap in Bp; symmetry in Bp.
-             remember Hsbcn as H; clear HeqH.
-             apply fst_same_iff in H; simpl in H.
-             destruct H as (Hnbcn, Htbcn).
-             destruct (eq_nat_dec dbcn p) as [H| H].
-              move H at top; subst dbcn.
-              rewrite B_p in Bp; discriminate Bp.
+           simpl in H.
+           rewrite AB_p in H.
+           rename H into Rab_cp.
+           remember Hsbcn as H; clear HeqH.
+           eapply carry_before_relay in H; [ idtac | eassumption ].
+           simpl in H.
+           rewrite B_p in H.
+           rename H into Rbcp.
 
-              eapply min_neq_lt in H; eauto ; try (left; auto).
-              rename H into Hpdbcn.
-              remember Bp as Cp; clear HeqCp.
-              rewrite Hnbcn in Cp; [ idtac | assumption ].
-              apply negb_false_iff in Cp.
-              remember Hsab_cn as H; clear HeqH.
-              apply fst_same_iff in H; simpl in H.
-              destruct H as (Hnab_cn, Htab_cn).
-              destruct (eq_nat_dec dab_cn p) as [H| H].
-               move H at top; subst dab_cn.
-               rewrite Cp in Htab_cn.
-               rewrite AB_p in Htab_cn; discriminate Htab_cn.
+           Focus 2.
+           eapply min_neq_lt in H; eauto ; try (right; left; auto).
+           rename H into Hpdan.
+           remember Hsabn as H; clear HeqH.
+           apply fst_same_iff in H; simpl in H.
+           destruct H as (Hnabn, Htabn).
+           remember Hsab_cn as H; clear HeqH.
+           apply fst_same_iff in H; simpl in H.
+           destruct H as (Hnab_cn, Htab_cn).
+           remember Hsbcn as H; clear HeqH.
+           apply fst_same_iff in H; simpl in H.
+           destruct H as (Hnbcn, Htbcn).
+           rename Htbcn into C_p; rewrite B_p in C_p; symmetry in C_p.
+           rename Htab_cn into C_q; rewrite AB_p in C_q; symmetry in C_q.
+           destruct (eq_nat_dec dbcn p) as [H| H].
+            move H at top; subst dbcn.
+            rename B_p into Bp; rename C_p into Cp.
+            destruct (eq_nat_dec dab_cn p) as [H| H].
+             move H at top; subst dab_cn.
+             rewrite Cp in C_q; discriminate C_q.
 
-               eapply min_neq_lt in H; eauto ; try (do 2 right; left; auto).
-               rename H into Hpdab_cn.
-               pose proof (Hnab_cn p Hpdab_cn) as H.
-               rewrite Cp in H; simpl in H; rename H into ABp.
-               remember ABp as H; clear HeqH.
-               unfold rm_add_i in H.
-               rewrite Ap, Bp, xorb_false_l in H.
-               rename H into Rabp.
-               remember Hsab_cn as H; clear HeqH.
-               eapply carry_before_relay in H; [ idtac | eassumption ].
-               simpl in H.
-               rewrite AB_p in H.
-               rename H into Rab_cp.
-               remember Hsbcn as H; clear HeqH.
-               eapply carry_before_relay in H; [ idtac | eassumption ].
-               simpl in H.
-               rewrite B_p in H.
-               rename H into Rbcp.
+             eapply min_neq_lt in H; eauto ; try (do 2 right; left; auto).
+             rename H into Hpdab_cn.
+             pose proof (Hnab_cn p Hpdab_cn) as H.
+             rewrite Cp in H; rename H into ABp; simpl in ABp.
+             remember ABp as H; clear HeqH.
+             unfold rm_add_i in H.
+             rewrite Hnabn in H; [ idtac | assumption ].
+             rewrite negb_xorb_diag_l, xorb_true_l in H.
+             do 2 rewrite <- Nat.add_succ_l in H.
+             erewrite carry_before_relay in H; try eassumption.
+             simpl in H; rewrite A_p in H; discriminate H.
+
+            eapply min_neq_lt in H; eauto ; try (left; auto).
 bbb.
+
+       i  i+1  -   m   -   p
+  b    .   .   .   .   .   .   .   0
+1                   +0 ≠   ≠   ≠ …
+  a    .   .   .   .   .   .   .   0
+1
+ b+c   .   .   .   .   .   .
+
+ a+b   .   .   .   .   .   1
+0                   +0 ≠
+  c    .   .   .   .   .   1
+1                   +1 ≠
+  b    .   .   .   .   .   1
+
 
 p like n
 
