@@ -4105,6 +4105,12 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
 
                eapply min_neq_lt in H; eauto ; try (do 2 right; left; auto).
                rename H into Hpdab_cn.
+               pose proof (Hnab_cn p Hpdab_cn) as H.
+               rewrite Cp in H; simpl in H; rename H into ABp.
+               remember ABp as H; clear HeqH.
+               unfold rm_add_i in H.
+               rewrite Ap, Bp, xorb_false_l in H.
+               rename H into Rabp.
 bbb.
 
        i  i+1  -   m   -   n   -   p
