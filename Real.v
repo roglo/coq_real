@@ -3844,18 +3844,7 @@ induction xl as [| z]; intros.
    eapply Nat.min_glb_r; eassumption.
 Qed.
 
-(*
-Theorem zzz :
-  Rabn : carry a b (S (i + m)) = false
-  Rab_cn : carry (a + b) c (S (i + m)) = false
-  Rbcn : carry b c (S (i + m)) = true
-  →
-  Rabp : carry a b (S (S (i + m + p))) = false
-  Rab_cp : carry (a + b) c (S (S (i + m + p))) = false
-  Rbcp : carry b c (S (S (i + m + p))) = true
-*)
-
-Theorem zzz : ∀ a b c i,
+Theorem carry_repeat : ∀ a b c i,
   carry a b i = false
   → carry (a + b) c i = false
   → carry b c i = true
@@ -4038,30 +4027,29 @@ destruct sbcn as [dbcn| ]; [ idtac | clear H ].
 
   eapply min_neq_lt in H; eauto ; try (left; auto).
   rename H into Hpdabn.
-bbb.
   destruct (eq_nat_dec dab_cn p) as [H| H].
    move H at top; subst dab_cn.
-   exists p.
-   split.
-    rewrite <- Nat.add_succ_l.
-    erewrite carry_before_relay; eassumption.
+   remember Hsabn as H; clear HeqH.
+   apply fst_same_iff in H; simpl in H.
+   destruct H as (Hnabn, B_p).
+   rewrite A_p in B_p; symmetry in B_p.
+   remember AB_p as H; clear HeqH.
+   unfold rm_add_i in H.
+   rewrite Hnabn in H; [ idtac | assumption ].
+   rewrite negb_xorb_diag_l, xorb_true_l in H.
+   rewrite <- Nat.add_succ_l in H.
+   erewrite carry_before_relay in H; try eassumption.
+   simpl in H; rewrite A_p in H; discriminate H.
 
-    rewrite <- Nat.add_succ_l.
-bbb.
+   eapply min_neq_lt in H; eauto ; try (right; left; auto).
+   simpl in Hp.
+   destruct (Nat.min_dec dab_cn dabn) as [L1| L1].
+    rewrite L1 in Hp; subst p.
+    exfalso; revert H; apply Nat.lt_irrefl.
 
-       i   -   p
-  b    .   .   .
-0
-  a    .   .   .
-
- b+c   .   .   .
-
- a+b   .   .   .
-0
-  c    .   .   .
-1
-  b    .   .   .
-
+    rewrite L1 in Hp; subst p.
+    exfalso; revert Hpdabn; apply Nat.lt_irrefl.
+Qed.
 
 Theorem case_2 : ∀ a₀ b₀ c₀ a b c i u,
   a = (a₀ + 0)%rm
