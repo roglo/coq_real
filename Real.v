@@ -4023,9 +4023,33 @@ destruct sbcn as [dbcn| ]; [ idtac | clear H ].
    rewrite AB_p in Htab_cn; discriminate Htab_cn.
 
    eapply min_neq_lt in H; eauto ; try (right; left; auto).
+   rename H into Hpdab_cn.
+   pose proof (Hnab_cn p Hpdab_cn) as H.
+   rewrite Cp in H; simpl in H.
+   unfold rm_add_i in H.
+   rewrite Ap, Bp, xorb_false_l in H.
+   exists p.
+   split; [ assumption | idtac ].
+   rewrite <- Nat.add_succ_l.
+   erewrite carry_before_relay; try eassumption; simpl.
+   split; [ assumption | idtac ].
+   rewrite <- Nat.add_succ_l.
+   erewrite carry_before_inf_relay; [ reflexivity | assumption ].
+
+  eapply min_neq_lt in H; eauto ; try (left; auto).
+  rename H into Hpdabn.
+bbb.
+  destruct (eq_nat_dec dab_cn p) as [H| H].
+   move H at top; subst dab_cn.
+   exists p.
+   split.
+    rewrite <- Nat.add_succ_l.
+    erewrite carry_before_relay; eassumption.
+
+    rewrite <- Nat.add_succ_l.
 bbb.
 
-       i   -   n
+       i   -   p
   b    .   .   .
 0
   a    .   .   .
