@@ -4000,7 +4000,42 @@ destruct sbcn as [dbcn| ]; [ idtac | clear H ].
 
       rewrite L2 in Hp; subst p.
       revert H2; apply Nat.lt_irrefl.
+
+ remember (min dabn dab_cn) as p eqn:Hp .
+ destruct (eq_nat_dec dabn p) as [H| H].
+  move H at top; subst dabn; rename A_p into Ap.
+  remember Hsabn as H; clear HeqH.
+  apply fst_same_iff in H; simpl in H.
+  destruct H as (Hnabn, Bp).
+  rewrite Ap in Bp; symmetry in Bp.
+  remember Hsbcn as H; clear HeqH.
+  apply fst_same_iff in H; simpl in H.
+  rename H into Hnbcn.
+  remember Bp as Cp; clear HeqCp.
+  rewrite Hnbcn in Cp.
+  apply negb_false_iff in Cp.
+  remember Hsab_cn as H; clear HeqH.
+  apply fst_same_iff in H; simpl in H.
+  destruct H as (Hnab_cn, Htab_cn).
+  destruct (eq_nat_dec dab_cn p) as [H| H].
+   move H at top; subst dab_cn.
+   rewrite Cp in Htab_cn.
+   rewrite AB_p in Htab_cn; discriminate Htab_cn.
 bbb.
+
+       i   -   n
+  b    .   .   .
+0
+  a    .   .   .
+
+ b+c   .   .   .
+
+ a+b   .   .   .
+0
+  c    .   .   .
+1
+  b    .   .   .
+
 
 Theorem case_2 : ∀ a₀ b₀ c₀ a b c i u,
   a = (a₀ + 0)%rm
