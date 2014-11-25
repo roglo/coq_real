@@ -3934,6 +3934,72 @@ destruct sbcn as [dbcn| ]; [ idtac | clear H ].
     rename H into Rbcp.
     exists p.
     split; [ assumption | split; assumption ].
+
+  exfalso.
+  eapply min_neq_lt in H; eauto ; try (right; left; auto).
+  rename H into Hpdan.
+  remember Hsabn as H; clear HeqH.
+  apply fst_same_iff in H; simpl in H.
+  destruct H as (Hnabn, Htabn).
+  remember Hsab_cn as H; clear HeqH.
+  apply fst_same_iff in H; simpl in H.
+  destruct H as (Hnab_cn, Htab_cn).
+  remember Hsbcn as H; clear HeqH.
+  apply fst_same_iff in H; simpl in H.
+  destruct H as (Hnbcn, Htbcn).
+  rename Htbcn into C_p; rewrite B_p in C_p; symmetry in C_p.
+  rename Htab_cn into C_q; rewrite AB_p in C_q; symmetry in C_q.
+  destruct (eq_nat_dec dbcn p) as [H| H].
+   move H at top; subst dbcn.
+   rename B_p into Bp; rename C_p into Cp.
+   destruct (eq_nat_dec dab_cn p) as [H| H].
+    move H at top; subst dab_cn.
+    rewrite Cp in C_q; discriminate C_q.
+
+    eapply min_neq_lt in H; eauto ; try (do 2 right; left; auto).
+    rename H into Hpdab_cn.
+    pose proof (Hnab_cn p Hpdab_cn) as H.
+    rewrite Cp in H; rename H into ABp; simpl in ABp.
+    remember ABp as H; clear HeqH.
+    unfold rm_add_i in H.
+    rewrite Hnabn in H; [ idtac | assumption ].
+    rewrite negb_xorb_diag_l, xorb_true_l in H.
+    rewrite <- Nat.add_succ_l in H.
+    erewrite carry_before_relay in H; try eassumption.
+    simpl in H; rewrite A_p in H; discriminate H.
+
+   eapply min_neq_lt in H; eauto ; try (left; auto).
+   rename H into Hpdbcn.
+   destruct (eq_nat_dec dab_cn p) as [H| H].
+    move H at top; subst dab_cn.
+    remember AB_p as H; clear HeqH.
+    unfold rm_add_i in H; simpl in H.
+    rewrite Hnabn in H; [ idtac | assumption ].
+    rewrite negb_xorb_diag_l, xorb_true_l in H.
+    apply negb_false_iff in H.
+    rewrite <- Nat.add_succ_l in H.
+    erewrite carry_before_relay in H; try eassumption.
+    simpl in H; rewrite A_p in H; discriminate H.
+
+    eapply min_neq_lt in H; eauto ; try (do 2 right; left; auto).
+    rename H into Hpdab_cn; simpl in Hp.
+    revert Hp Hpdan Hpdbcn Hpdab_cn; clear; intros Hp H1 H2 H3.
+    destruct (Nat.min_dec dab_cn dbcn) as [L1| L1].
+     rewrite L1 in Hp.
+     destruct (Nat.min_dec dabn dab_cn) as [L2| L2].
+      rewrite L2 in Hp; subst p.
+      revert H1; apply Nat.lt_irrefl.
+
+      rewrite L2 in Hp; subst p.
+      revert H3; apply Nat.lt_irrefl.
+
+     rewrite L1 in Hp.
+     destruct (Nat.min_dec dabn dbcn) as [L2| L2].
+      rewrite L2 in Hp; subst p.
+      revert H1; apply Nat.lt_irrefl.
+
+      rewrite L2 in Hp; subst p.
+      revert H2; apply Nat.lt_irrefl.
 bbb.
 
 Theorem case_2 : ∀ a₀ b₀ c₀ a b c i u,
