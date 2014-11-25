@@ -4073,7 +4073,11 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
            unfold carry in H; simpl in H.
            remember (fst_same b c (S (S (S (i + m + n))))) as sbcn eqn:Hsbcn .
            destruct sbcn as [dbcn| ]; [ idtac | clear H ].
-            rename H into Bn.
+            rename H into Bp.
+            remember (List.fold_right min dbcn [dabn; dab_cn … []]) as p.
+            rename Heqp into Hp.
+            destruct (eq_nat_dec dabn p) as [H| H].
+             move H at top; subst dabn.
 bbb.
 
        i  i+1  -   m   -   n
