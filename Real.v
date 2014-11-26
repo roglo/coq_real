@@ -4085,54 +4085,6 @@ unfold carry in H; simpl in H.
 remember (fst_same (a + b) c (S i)) as s eqn:Hs .
 destruct s as [di| ]; [ idtac | discriminate H ].
 symmetry in Hs; rename H into ABd.
-apply fst_same_iff in Hs; simpl in Hs.
-destruct Hs as (_, Cd).
-rewrite ABd in Cd; symmetry in Cd.
-remember (S (i + di)) as k.
-assert (i < k) as Hik by omega.
-clear di Heqk.
-revert k Cd ABd Hik.
-induction i as (i, IHi) using all_lt_all; intros.
-remember Hc4 as H; clear HeqH.
-apply carry_repeat in H; try assumption.
-destruct H as (n, (Rabn, (Rab_cn, (Rbcn, H)))).
-destruct H as (An, (Bn, (Cn, H))).
-destruct H as (Hnbc, Hnab_c).
-move Rabn after Rbcn.
-destruct (lt_eq_lt_dec k (S (i + n))) as [[H1| H1]| H1].
- assert (k - S i ≤ n) as H by omega.
- apply Hnab_c in H.
- rewrite <- Nat.add_succ_l in H.
- rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
- rewrite Nat.add_comm, Nat.add_sub in H.
- rewrite ABd, Cd in H; discriminate H.
-
- subst k.
- assert (n ≤ n) as H by reflexivity.
- apply Hnab_c in H.
- rewrite ABd, Cd in H; discriminate H.
-
- remember (S (i + n)) as j.
- assert (i < j) as Hij by omega.
- clear n Hc4 Hc5 Hc6 Heqj Hnbc Hnab_c Hik.
- clear An Bn Cn.
- rename Rab_cn into Hc4.
- rename Rbcn into Hc5.
- rename Rabn into Hc6.
- remember Hc4 as H; clear HeqH.
- apply carry_repeat in H; try assumption.
- destruct H as (n, (Rabn, (Rab_cn, (Rbcn, H)))).
- destruct H as (An, (Bn, (Cn, H))).
- destruct H as (Hnbc, Hnab_c).
- move Rabn after Rbcn.
-bbb.
-
-intros a b c i Hc4 Hc5 Hc6.
-remember Hc4 as H; clear HeqH.
-unfold carry in H; simpl in H.
-remember (fst_same (a + b) c (S i)) as s eqn:Hs .
-destruct s as [di| ]; [ idtac | discriminate H ].
-symmetry in Hs; rename H into ABd.
 (*1*)
 remember Hc4 as H; clear HeqH.
 apply carry_repeat in H; try assumption.
@@ -4203,6 +4155,7 @@ destruct (lt_eq_lt_dec di n) as [[H1| H1]| H1].
  rename Rbcn into Hc5.
  rename Rabn into Hc6.
  rewrite Nat.add_succ_r in ABd.
+Abort. (*
 bbb.
 
        i  i+1  -   di
@@ -4217,7 +4170,7 @@ bbb.
   c    .   .   .   0
         +1
   b    .   .   .   .
-
+*)
 
 Theorem case_2 : ∀ a₀ b₀ c₀ a b c i u,
   a = (a₀ + 0)%rm
@@ -4316,6 +4269,21 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
        eapply carry_before_relay in H; [ idtac | eassumption ].
        simpl in H; rewrite H4 in H.
        rename H into Habcm.
+bbb.
+
+       i  i+1  -   m   -   -
+  b    .   .   .   1   .   .
+        +1 ≠   ≠    +0
+  a    .   .   .   1   .   .
+        +1 ≠   ≠
+ b+c   .   .   .   1   .   .
+
+ a+b   .   .   .   0   .   .
+        +0 ≠   ≠   ≠+0
+  c    .   .   .   1   .   .
+        +1 ≠   ≠    +1
+  b    .   .   .   1   .   .
+
        revert Hcabm Habcm Hcbcm; clear; intros.
        rename Hcabm into Rabn.
        rename Habcm into Rab_cn.
