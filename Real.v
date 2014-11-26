@@ -4084,7 +4084,7 @@ remember Hc4 as H; clear HeqH.
 unfold carry in H; simpl in H.
 remember (fst_same (a + b) c (S i)) as s eqn:Hs .
 destruct s as [di| ]; [ idtac | discriminate H ].
-symmetry in Hs; rename H into ABd.
+symmetry in Hs; clear H.
 (*1*)
 remember Hc4 as H; clear HeqH.
 apply carry_repeat in H; try assumption.
@@ -4103,15 +4103,15 @@ destruct (lt_eq_lt_dec di n) as [[H1| H1]| H1].
  remember Hs as H; clear HeqH.
  apply fst_same_iff in H; simpl in H.
  destruct H as (Hnab_c2, Hab_c).
- rewrite ABd, Cn in Hab_c.
- discriminate Hab_c.
+ remember Hc4 as H; clear HeqH.
+ unfold carry in H; rewrite Hs in H; simpl in H.
+ rewrite H, Cn in Hab_c; discriminate Hab_c.
 
  remember (di - S n) as dj eqn:Hdj .
  apply nat_sub_add_r in Hdj; [ subst di | assumption ].
  rewrite Nat.add_succ_r, <- Nat.add_succ_l in Hs.
  apply same_fst_same in Hs; simpl in Hs.
  rewrite Nat.add_succ_r in Hs.
- rewrite Nat.add_assoc, <- Nat.add_succ_l in ABd.
  remember (S (i + n)) as j.
  clear i n Hc4 Hc5 Hc6 Heqj Hnbc Hnab_c H1.
  clear An Bn Cn.
@@ -4119,7 +4119,6 @@ destruct (lt_eq_lt_dec di n) as [[H1| H1]| H1].
  rename Rab_cn into Hc4.
  rename Rbcn into Hc5.
  rename Rabn into Hc6.
- rewrite Nat.add_succ_r in ABd.
 (*2*)
 remember Hc4 as H; clear HeqH.
 apply carry_repeat in H; try assumption.
@@ -4138,15 +4137,15 @@ destruct (lt_eq_lt_dec di n) as [[H1| H1]| H1].
  remember Hs as H; clear HeqH.
  apply fst_same_iff in H; simpl in H.
  destruct H as (Hnab_c2, Hab_c).
- rewrite ABd, Cn in Hab_c.
- discriminate Hab_c.
+ remember Hc4 as H; clear HeqH.
+ unfold carry in H; rewrite Hs in H; simpl in H.
+ rewrite H, Cn in Hab_c; discriminate Hab_c.
 
  remember (di - S n) as dj eqn:Hdj .
  apply nat_sub_add_r in Hdj; [ subst di | assumption ].
  rewrite Nat.add_succ_r, <- Nat.add_succ_l in Hs.
  apply same_fst_same in Hs; simpl in Hs.
  rewrite Nat.add_succ_r in Hs.
- rewrite Nat.add_assoc, <- Nat.add_succ_l in ABd.
  remember (S (i + n)) as j.
  clear i n Hc4 Hc5 Hc6 Heqj Hnbc Hnab_c H1.
  clear An Bn Cn.
@@ -4154,8 +4153,6 @@ destruct (lt_eq_lt_dec di n) as [[H1| H1]| H1].
  rename Rab_cn into Hc4.
  rename Rbcn into Hc5.
  rename Rabn into Hc6.
- rewrite Nat.add_succ_r in ABd.
-Abort. (*
 bbb.
 
        i  i+1  -   di
@@ -4165,9 +4162,9 @@ bbb.
 
  b+c   .   .   .   .
 
- a+b   .   .   .   0
-        +0 ≠   ≠
-  c    .   .   .   0
+ a+b   .   .   .   .
+        +0 ≠   ≠   =
+  c    .   .   .   .
         +1
   b    .   .   .   .
 *)
