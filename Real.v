@@ -3854,7 +3854,9 @@ Theorem carry_repeat : ∀ a b c i,
     carry b c (S (i + m)) = true ∧
     a.[S (i + m)] = false ∧
     b.[S (i + m)] = false ∧
-    c.[S (i + m)] = true.
+    c.[S (i + m)] = true ∧
+    (∀ dj, dj ≤ m → b.[S (i + dj)] = negb c.[S (i + dj)]) ∧
+    (∀ dj, dj ≤ m → rm_add_i a b (S (i + dj)) = negb c.[S (i + dj)]).
 Proof.
 intros a b c i Rab Rabc Rbc.
 rename Rab into Rabn.
@@ -3929,7 +3931,12 @@ destruct sbcn as [dbcn| ]; [ idtac | clear H ].
     split; [ assumption | idtac ].
     split; [ assumption | idtac ].
     split; [ assumption | idtac ].
-    split; assumption.
+    split; [ assumption | idtac ].
+    split; [ assumption | idtac ].
+    split; intros dj Hdj.
+     eapply Hnbcn, le_lt_trans; eassumption.
+
+     eapply Hnab_cn, le_lt_trans; eassumption.
 
   exfalso.
   eapply min_neq_lt in H; eauto ; try (right; left; auto).
@@ -4033,7 +4040,12 @@ destruct sbcn as [dbcn| ]; [ idtac | clear H ].
    erewrite carry_before_inf_relay; [ idtac | assumption ].
    split; [ reflexivity | idtac ].
    split; [ assumption | idtac ].
-   split; assumption.
+   split; [ assumption | idtac ].
+   split; [ assumption | idtac ].
+   split; intros dj Hdj.
+    apply Hnbcn.
+
+    eapply Hnab_cn, le_lt_trans; eassumption.
 
   eapply min_neq_lt in H; eauto ; try (left; auto).
   rename H into Hpdabn.
@@ -4165,7 +4177,9 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
 (*if test then*)
        remember Rab_cn as H; clear HeqH.
        apply carry_repeat in H; try assumption.
-       destruct H as (p, (Rabp, (Rab_cp, (Rbcp, (Ap, (Bp, Cp)))))).
+       destruct H as (p, (Rabp, (Rab_cp, (Rbcp, H)))).
+       destruct H as (Ap, (Bp, (Cp, H))).
+       destruct H as (Hnbc, Hnab_c).
 bbb.
 (*end test*)
        remember Rbcn as H; clear HeqH.
