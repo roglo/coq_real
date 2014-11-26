@@ -4157,6 +4157,20 @@ destruct (lt_eq_lt_dec di n) as [[H1| H1]| H1].
  rewrite Nat.add_succ_r in ABd.
 bbb.
 
+       i  i+1  -   di
+  b    .   .   .   .
+        +0
+  a    .   .   .   .
+
+ b+c   .   .   .   .
+
+ a+b   .   .   .   0
+        +0 ≠   ≠
+  c    .   .   .   0
+        +1
+  b    .   .   .   .
+
+
 Theorem case_2 : ∀ a₀ b₀ c₀ a b c i u,
   a = (a₀ + 0)%rm
   → b = (b₀ + 0)%rm
@@ -4299,20 +4313,6 @@ bbb.
          apply carry_repeat in H; try assumption.
          destruct H as (p, (Rabp, (Rab_cp, (Rbcp, (Ap, (Bp, Cp)))))).
 bbb.
-
-       i  i+1
-  b    .   1
-        +0
-  a    .   0
-
- b+c   .   .
-
- a+b   .   0
-        +0
-  c    .   0
-        +1
-  b    .   1
-
 
        i  i+1  -   m   +1  .
   b    .   .   .   .   1   .
