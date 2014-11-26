@@ -4081,17 +4081,17 @@ Theorem zzz : ∀ a b c i,
 Proof.
 intros a b c i Hc4 Hc5 Hc6.
 remember Hc4 as H; clear HeqH.
+unfold carry in H; simpl in H.
+remember (fst_same (a + b) c (S i)) as s eqn:Hs .
+destruct s as [di| ]; [ idtac | discriminate H ].
+symmetry in Hs; rename H into ABd.
+(*1*)
+remember Hc4 as H; clear HeqH.
 apply carry_repeat in H; try assumption.
 destruct H as (n, (Rabn, (Rab_cn, (Rbcn, H)))).
 destruct H as (An, (Bn, (Cn, H))).
 destruct H as (Hnbc, Hnab_c).
 move Rabn after Rbcn.
-remember Hc4 as H; clear HeqH.
-unfold carry in H; simpl in H.
-remember (fst_same (a + b) c (S i)) as s eqn:Hs .
-destruct s as [di| ]; [ idtac | discriminate H ].
-symmetry in Hs.
-rename H into ABd.
 destruct (lt_eq_lt_dec di n) as [[H1| H1]| H1].
  remember Hs as H; clear HeqH.
  apply fst_same_iff in H; simpl in H.
@@ -4107,8 +4107,7 @@ destruct (lt_eq_lt_dec di n) as [[H1| H1]| H1].
  discriminate Hab_c.
 
  remember (di - S n) as dj eqn:Hdj .
- apply nat_sub_add_r in Hdj; [ idtac | assumption ].
- subst di.
+ apply nat_sub_add_r in Hdj; [ subst di | assumption ].
  rewrite Nat.add_succ_r, <- Nat.add_succ_l in Hs.
  apply same_fst_same in Hs; simpl in Hs.
  rewrite Nat.add_succ_r in Hs.
@@ -4120,26 +4119,42 @@ destruct (lt_eq_lt_dec di n) as [[H1| H1]| H1].
  rename Rab_cn into Hc4.
  rename Rbcn into Hc5.
  rename Rabn into Hc6.
- remember Hc4 as H; clear HeqH.
- apply carry_repeat in H; try assumption.
- destruct H as (n, (Rabn, (Rab_cn, (Rbcn, H)))).
- destruct H as (An, (Bn, (Cn, H))).
- destruct H as (Hnbc, Hnab_c).
- move Rabn after Rbcn.
  rewrite Nat.add_succ_r in ABd.
- destruct (lt_eq_lt_dec di n) as [[H1| H1]| H1].
-  remember Hs as H; clear HeqH.
-  apply fst_same_iff in H; simpl in H.
-  destruct H as (Hnab_c2, Hab_c).
-  rewrite Hnab_c in Hab_c; [ idtac | apply Nat.lt_le_incl; assumption ].
-  revert Hab_c; apply no_fixpoint_negb.
+(*2*)
+remember Hc4 as H; clear HeqH.
+apply carry_repeat in H; try assumption.
+destruct H as (n, (Rabn, (Rab_cn, (Rbcn, H)))).
+destruct H as (An, (Bn, (Cn, H))).
+destruct H as (Hnbc, Hnab_c).
+move Rabn after Rbcn.
+destruct (lt_eq_lt_dec di n) as [[H1| H1]| H1].
+ remember Hs as H; clear HeqH.
+ apply fst_same_iff in H; simpl in H.
+ destruct H as (Hnab_c2, Hab_c).
+ rewrite Hnab_c in Hab_c; [ idtac | apply Nat.lt_le_incl; assumption ].
+ revert Hab_c; apply no_fixpoint_negb.
 
-  subst di.
-  remember Hs as H; clear HeqH.
-  apply fst_same_iff in H; simpl in H.
-  destruct H as (Hnab_c2, Hab_c).
-  rewrite ABd, Cn in Hab_c.
-  discriminate Hab_c.
+ subst di.
+ remember Hs as H; clear HeqH.
+ apply fst_same_iff in H; simpl in H.
+ destruct H as (Hnab_c2, Hab_c).
+ rewrite ABd, Cn in Hab_c.
+ discriminate Hab_c.
+
+ remember (di - S n) as dj eqn:Hdj .
+ apply nat_sub_add_r in Hdj; [ subst di | assumption ].
+ rewrite Nat.add_succ_r, <- Nat.add_succ_l in Hs.
+ apply same_fst_same in Hs; simpl in Hs.
+ rewrite Nat.add_succ_r in Hs.
+ rewrite Nat.add_assoc, <- Nat.add_succ_l in ABd.
+ remember (S (i + n)) as j.
+ clear i n Hc4 Hc5 Hc6 Heqj Hnbc Hnab_c H1.
+ clear An Bn Cn.
+ rename j into i; rename dj into di.
+ rename Rab_cn into Hc4.
+ rename Rbcn into Hc5.
+ rename Rabn into Hc6.
+ rewrite Nat.add_succ_r in ABd.
 bbb.
 
 Theorem case_2 : ∀ a₀ b₀ c₀ a b c i u,
