@@ -4073,6 +4073,21 @@ destruct sbcn as [dbcn| ]; [ idtac | clear H ].
     exfalso; revert Hpdabn; apply Nat.lt_irrefl.
 Qed.
 
+Theorem zzz : ∀ a b c i,
+  carry (a + b) c i = false
+  → carry b c i = true
+  → carry a b i = false
+  → False.
+Proof.
+intros a b c i Hc4 Hc5 Hc6.
+remember Hc4 as H; clear HeqH.
+apply carry_repeat in H; try assumption.
+destruct H as (n, (Rabn, (Rab_cn, (Rbcn, H)))).
+destruct H as (An, (Bn, (Cn, H))).
+destruct H as (Hnbc, Hnab_c).
+move Rabn after Rbcn.
+bbb.
+
 Theorem case_2 : ∀ a₀ b₀ c₀ a b c i u,
   a = (a₀ + 0)%rm
   → b = (b₀ + 0)%rm
@@ -4180,6 +4195,7 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
        destruct H as (p, (Rabp, (Rab_cp, (Rbcp, H)))).
        destruct H as (Ap, (Bp, (Cp, H))).
        destruct H as (Hnbc, Hnab_c).
+(* cf zzz *)
 bbb.
 (*end test*)
        remember Rbcn as H; clear HeqH.
