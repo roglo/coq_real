@@ -3852,6 +3852,7 @@ Theorem carry_repeat : ∀ a b c i,
     carry a b (S (i + m)) = false ∧
     carry (a + b) c (S (i + m)) = false ∧
     carry b c (S (i + m)) = true ∧
+    a.[S (i + m)] = false ∧
     b.[S (i + m)] = false ∧
     c.[S (i + m)] = true.
 Proof.
@@ -3924,6 +3925,7 @@ destruct sbcn as [dbcn| ]; [ idtac | clear H ].
     rewrite B_p in H.
     rename H into Rbcp.
     exists p.
+    split; [ assumption | idtac ].
     split; [ assumption | idtac ].
     split; [ assumption | idtac ].
     split; [ assumption | idtac ].
@@ -4030,6 +4032,7 @@ destruct sbcn as [dbcn| ]; [ idtac | clear H ].
    rewrite <- Nat.add_succ_l.
    erewrite carry_before_inf_relay; [ idtac | assumption ].
    split; [ reflexivity | idtac ].
+   split; [ assumption | idtac ].
    split; assumption.
 
   eapply min_neq_lt in H; eauto ; try (left; auto).
@@ -4159,6 +4162,12 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
        rename Hcabm into Rabn.
        rename Habcm into Rab_cn.
        rename Hcbcm into Rbcn.
+(*if test then*)
+       remember Rab_cn as H; clear HeqH.
+       apply carry_repeat in H; try assumption.
+       destruct H as (p, (Rabp, (Rab_cp, (Rbcp, (Ap, (Bp, Cp)))))).
+bbb.
+(*end test*)
        remember Rbcn as H; clear HeqH.
        unfold carry in H; simpl in H.
        remember (fst_same b c (S (S (i + m)))) as sbcm eqn:Sbcm .
@@ -4189,7 +4198,7 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
 
          remember Rab_cn as H; clear HeqH.
          apply carry_repeat in H; try assumption.
-         destruct H as (p, (Rabp, (Rab_cp, (Rbcp, (Bp, Cp))))).
+         destruct H as (p, (Rabp, (Rab_cp, (Rbcp, (Ap, (Bp, Cp)))))).
 bbb.
 
        i  i+1  -   m   +1  .
