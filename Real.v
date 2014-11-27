@@ -4114,6 +4114,7 @@ car a.[i+1]=1 → contrad
 *)
 
 Definition rm_shift n a := {| rm i := a.[i+n] |}.
+Arguments rm_shift n%nat a%rm.
 
 Theorem fst_same_shift : ∀ a b a' b' i di d,
   fst_same a b i = Some di
@@ -4136,6 +4137,67 @@ split.
  rewrite Nat.add_sub_assoc; [ idtac | assumption ].
  rewrite Nat.sub_add; [ idtac | omega ].
  assumption.
+Qed.
+
+Theorem carry_shift : ∀ a b n i,
+  carry (rm_shift n a) (rm_shift n b) i = carry a b (i + n).
+Proof.
+intros a b n i.
+unfold carry; simpl.
+remember (fst_same a b (S (i + n))) as s1 eqn:Hs1 .
+remember (fst_same (rm_shift n a) (rm_shift n b) (S i)) as s2 eqn:Hs2 .
+apply fst_same_sym_iff in Hs1; simpl in Hs1.
+apply fst_same_sym_iff in Hs2; simpl in Hs2.
+destruct s1 as [di1| ].
+ destruct Hs1 as (Hn1, Hs1).
+ destruct s2 as [di2| ].
+  destruct Hs2 as (Hn2, Hs2).
+  destruct (lt_eq_lt_dec di1 di2) as [[H1| H1]| H1].
+   apply Hn2 in H1.
+   rewrite Nat.add_shuffle0, Hs1 in H1.
+   exfalso; symmetry in H1; revert H1; apply no_fixpoint_negb.
+
+   subst di2; rewrite Nat.add_shuffle0; reflexivity.
+
+   apply Hn1 in H1.
+   rewrite Nat.add_shuffle0, Hs2 in H1.
+   exfalso; symmetry in H1; revert H1; apply no_fixpoint_negb.
+
+  rewrite Nat.add_shuffle0, Hs2 in Hs1.
+  exfalso; revert Hs1; apply no_fixpoint_negb.
+
+ destruct s2 as [di2| ]; [ idtac | reflexivity ].
+ destruct Hs2 as (Hn2, Hs2).
+ rewrite Nat.add_shuffle0, Hs1 in Hs2.
+ exfalso; revert Hs2; apply no_fixpoint_negb.
+Qed.
+
+Theorem rm_add_i_shift : ∀ a b i n,
+  rm_add_i (rm_shift n a) (rm_shift n b) i = rm_add_i a b (i + n).
+Proof.
+intros a b i n.
+unfold rm_add_i; simpl.
+rewrite carry_shift; reflexivity.
+Qed.
+
+Theorem fst_same_shift_add : ∀ a b c n i,
+  fst_same (rm_shift n (a + b)) c i =
+  fst_same (rm_shift n a + rm_shift n b) c i.
+Proof.
+intros a b c n i.
+apply fst_same_iff; simpl.
+remember (fst_same (rm_shift n a + rm_shift n b) c i) as s eqn:Hs .
+apply fst_same_sym_iff in Hs; simpl in Hs.
+destruct s as [di| ].
+ destruct Hs as (Hn, Hs).
+ split.
+  intros dj Hdj.
+  apply Hn in Hdj.
+  rewrite rm_add_i_shift in Hdj; assumption.
+
+  rewrite rm_add_i_shift in Hs; assumption.
+
+ intros dj; rewrite <- rm_add_i_shift; apply Hs.
 Qed.
 
 Theorem zzz : ∀ a b c i,
@@ -4184,6 +4246,24 @@ destruct (lt_eq_lt_dec di n) as [[H1| H1]| H1].
  remember (rm_shift (S n) c) as c' eqn:Hc .
  eapply fst_same_shift in Hs; try eassumption.
  assert (di - S n < di) as H by omega.
+ subst a'b'.
+ rewrite fst_same_shift_add in Hs.
+ remember (rm_shift (S n) a) as a' eqn:Ha .
+ remember (rm_shift (S n) b) as b' eqn:Hb .
+ eapply IHdi.
+  5: eassumption.
+
+  omega.
+
+  Focus 2.
+  subst b' c'.
+  rewrite carry_shift.
+  rewrite Nat.add_succ_r; assumption.
+
+  Focus 2.
+  subst a' b'.
+  rewrite carry_shift.
+  rewrite Nat.add_succ_r; assumption.
 bbb.
 
 intros a b c i Hc3 Hc4 Hc5 Hc6.
