@@ -4113,6 +4113,31 @@ car a.[i+1]=1 → contrad
   b    0   x   .   .   0   .
 *)
 
+Definition rm_shift n a := {| rm i := a.[i+n] |}.
+
+Theorem fst_same_shift : ∀ a b a' b' i di d,
+  fst_same a b i = Some di
+  → d ≤ di
+  → a' = rm_shift d a
+  → b' = rm_shift d b
+  → fst_same a' b' i = Some (di - d).
+Proof.
+intros a b a' b' i di d Hs Hd Ha' Hb'.
+subst a' b'; simpl.
+apply fst_same_iff in Hs; simpl in Hs.
+destruct Hs as (Hn, Hs).
+apply fst_same_iff; simpl.
+split.
+ intros dj Hdj.
+ rewrite <- Nat.add_assoc.
+ apply Hn.
+ omega.
+
+ rewrite Nat.add_sub_assoc; [ idtac | assumption ].
+ rewrite Nat.sub_add; [ idtac | omega ].
+ assumption.
+Qed.
+
 Theorem zzz : ∀ a b c i,
   carry a (b + c) i = false
   → carry (a + b) c i = false
@@ -4120,6 +4145,47 @@ Theorem zzz : ∀ a b c i,
   → carry a b i = false
   → False.
 Proof.
+intros a b c i Hc3 Hc4 Hc5 Hc6.
+clear Hc3.
+remember Hc4 as H; clear HeqH.
+unfold carry in H; simpl in H.
+remember (fst_same (a + b) c (S i)) as s eqn:Hs .
+destruct s as [di| ]; [ idtac | discriminate H ].
+symmetry in Hs; clear H.
+revert a b c i Hc4 Hc5 Hc6 Hs.
+induction di as (di, IHdi) using all_lt_all; intros.
+remember Hc4 as H; clear HeqH.
+apply carry_repeat in H; try assumption.
+destruct H as (n, (Rabn, (Rab_cn, (Rbcn, H)))).
+destruct H as (An, (Bn, (Cn, H))).
+destruct H as (Hnbc, Hnab_c).
+move Rabn after Rbcn.
+destruct (lt_eq_lt_dec di n) as [[H1| H1]| H1].
+ remember Hs as H; clear HeqH.
+ apply fst_same_iff in H; simpl in H.
+ destruct H as (Hnab_c2, Hab_c).
+ rewrite Hnab_c in Hab_c; [ idtac | apply Nat.lt_le_incl; assumption ].
+ exfalso; revert Hab_c; apply no_fixpoint_negb.
+
+ subst di.
+ remember Hs as H; clear HeqH.
+ apply fst_same_iff in H; simpl in H.
+ destruct H as (Hnab_c2, Hab_c).
+ remember Hc4 as H; clear HeqH.
+ unfold carry in H; rewrite Hs in H; simpl in H.
+ rewrite H, Cn in Hab_c; discriminate Hab_c.
+
+ clear An Bn Cn Hnbc Hnab_c.
+ remember (di - S n) as dj.
+ apply nat_sub_add_r in Heqdj; [ idtac | assumption ].
+ clear Hc4 Hc5 Hc6.
+ rename Rab_cn into Hc4; rename Rbcn into Hc5; rename Rabn into Hc6.
+ remember (rm_shift (S n) (a + b)%rm) as a'b' eqn:Hab .
+ remember (rm_shift (S n) c) as c' eqn:Hc .
+ eapply fst_same_shift in Hs; try eassumption.
+ assert (di - S n < di) as H by omega.
+bbb.
+
 intros a b c i Hc3 Hc4 Hc5 Hc6.
 remember Hc4 as H; clear HeqH.
 unfold carry in H; simpl in H.
