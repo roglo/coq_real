@@ -4379,7 +4379,9 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
        eapply case_2; eassumption.
 
        simpl.
+Abort. (*
 bbb.
+*)
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
 Proof.
@@ -4426,7 +4428,11 @@ destruct c3, c4, c5, c6; try reflexivity; exfalso.
 
   rewrite carry_comm; assumption.
 
+ Focus 5.
  eapply case_2 with (a := a) (b := b); eassumption.
+ (* perhaps another case treated here by switching a and c *)
+
+ eapply case_3 with (a := a) (b := b); eassumption.
 
 bbb.
  apply case_1 with (c := a) (b := b) (a := c) (i := i).
