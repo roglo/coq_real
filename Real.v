@@ -4073,6 +4073,46 @@ destruct sbcn as [dbcn| ]; [ idtac | clear H ].
     exfalso; revert Hpdabn; apply Nat.lt_irrefl.
 Qed.
 
+(* conjecture
+Theorem yyy : ∀ a b c i,
+  carry a (b + c) i = false
+  → carry (a + b) c i = false
+  → carry b c i = true
+  → carry a b i = false
+  → ∀ j, i < j → a.[j] = false.
+Proof.
+intros a b c i Hc3 Hc4 Hc5 Hc6 j Hij.
+bbb.
+
+       i  i+1  -   n   -   di
+  b    .   .   .   0   .   .
+        +0  +0      +0
+  a    .   0   .   0   .   .
+        +0
+ b+c   .   0   0   0   .   .
+
+ a+b   .   .   .   0   .   .
+        +0 ≠   ≠   ≠+0
+  c    .   .   .   1   .   .
+        +1 ≠   ≠   ≠+1
+  b    .   .   .   0   .   .
+
+car a.[i+1]=1 → contrad
+
+       i  i+1  -   n   -   di
+  b    0   x   .   .   0   .
+        +0  +0      +0
+  a    0   0   0   .   0   .
+        +0          +0
+ b+c   0   0   0   0   0   .
+
+ a+b   0   x   .   .   0   0
+       ≠+0 ≠   ≠   ≠+0 ≠
+  c    1   .   .   .   1   0
+       ≠+1 ≠   ≠   ≠+1 ≠
+  b    0   x   .   .   0   .
+*)
+
 Theorem zzz : ∀ a b c i,
   carry a (b + c) i = false
   → carry (a + b) c i = false
@@ -4097,7 +4137,7 @@ destruct (lt_eq_lt_dec di n) as [[H1| H1]| H1].
  apply fst_same_iff in H; simpl in H.
  destruct H as (Hnab_c2, Hab_c).
  rewrite Hnab_c in Hab_c; [ idtac | apply Nat.lt_le_incl; assumption ].
- revert Hab_c; apply no_fixpoint_negb.
+ exfalso; revert Hab_c; apply no_fixpoint_negb.
 
  subst di.
  remember Hs as H; clear HeqH.
