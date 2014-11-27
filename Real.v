@@ -4153,6 +4153,7 @@ destruct (lt_eq_lt_dec di n) as [[H1| H1]| H1].
  subst di; clear H1.
  clear Hc3 Hc4 Hc5 Hc6.
  rename Rab_cn into Hc4; rename Rbcn into Hc5; rename Rabn into Hc6.
+(*1*)
  remember (S (i + n)) as j eqn:Hj .
  rename i into i₀; rename n into n₀; rename dj into dj₀.
  rename j into i; rename Hj into Hj₀; rename Hs into Hs₀.
@@ -4188,6 +4189,7 @@ destruct (lt_eq_lt_dec di n) as [[H1| H1]| H1].
   subst di; clear H1.
   clear Hc4 Hc5 Hc6.
   rename Rab_cn into Hc4; rename Rbcn into Hc5; rename Rabn into Hc6.
+(*2*)
   remember (S (i + n)) as j eqn:Hj .
   rename i into i₁; rename n into n₁; rename dj into dj₁.
   rename j into i; rename Hj into Hj₁; rename Hs into Hs₁.
@@ -4223,6 +4225,7 @@ destruct (lt_eq_lt_dec di n) as [[H1| H1]| H1].
    subst di; clear H1.
    clear Hc4 Hc5 Hc6.
    rename Rab_cn into Hc4; rename Rbcn into Hc5; rename Rabn into Hc6.
+(*3*)
    remember (S (i + n)) as j eqn:Hj .
    rename i into i₂; rename n into n₂; rename dj into dj₂.
    rename j into i; rename Hj into Hj₂; rename Hs into Hs₂.
@@ -4258,6 +4261,26 @@ destruct (lt_eq_lt_dec di n) as [[H1| H1]| H1].
     subst di; clear H1.
     clear Hc4 Hc5 Hc6.
     rename Rab_cn into Hc4; rename Rbcn into Hc5; rename Rabn into Hc6.
+(*4*)
+    remember Hs₀ as H; clear HeqH.
+    rewrite Nat.add_succ_r, <- Nat.add_succ_l in H.
+    apply same_fst_same in H; simpl in H.
+    rewrite Nat.add_succ_r, <- Hj₀ in H.
+    rewrite Hs₁ in H.
+    injection H; clear H; intros Hdj₀; symmetry in Hdj₀.
+    remember Hs₁ as H; clear HeqH.
+    rewrite Nat.add_succ_r, <- Nat.add_succ_l in H.
+    apply same_fst_same in H; simpl in H.
+    rewrite Nat.add_succ_r, <- Hj₁ in H.
+    rewrite Hs₂ in H.
+    injection H; clear H; intros Hdj₁; symmetry in Hdj₁.
+    remember Hs₂ as H; clear HeqH.
+    rewrite Nat.add_succ_r, <- Nat.add_succ_l in H.
+    apply same_fst_same in H; simpl in H.
+    rewrite Nat.add_succ_r, <- Hj₂ in H.
+    rewrite Hs in H.
+    injection H; clear H; intros Hdj₂; symmetry in Hdj₂.
+    subst dj₀ dj₁ dj₂.
 bbb.
 
 
@@ -4322,7 +4345,6 @@ bbb.
    apply carry_succ_negb in H; [ idtac | assumption ].
    rewrite Ai in H; destruct H as (H, _); discriminate H.
 
-Abort. (*
 bbb.
 
        i  i+1  -   n   -   di
