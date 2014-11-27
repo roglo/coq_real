@@ -4387,20 +4387,28 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
        eapply carry_before_relay in Hs5; [ idtac | eassumption ].
        simpl in Hs5; rewrite Hs5, H5 in H; discriminate H.
 
+     eapply min_neq_lt in M6; [ idtac | eauto  | left; auto ].
+     destruct (eq_nat_dec di5 m) as [M5| M5].
+      move M5 at top; subst di5.
+      remember H3 as H; clear HeqH.
+      rewrite Hn6 in H; [ idtac | assumption ].
+      apply negb_true_iff in H.
+      rewrite H5 in H; move H at top; subst u.
+      (* cf case_2 *)
 bbb.
 
       i  i+1  -   m
-   b  .   .   .   1   .   .
-+1    ≠   ≠   ≠    +1
-   a  .   .   .   1   .   .
-+1    ≠   ≠   ≠
- b+c  .   .   .   1   .   .
+   b  .   1   1   0   .   .
+0         ≠   ≠   ≠+0
+   a  .   0   0   1   .   .
+1         ≠   ≠
+ b+c  .   1   1   1   .   .
 
- a+b  .   .   .   1   .   .
-+0    ≠   ≠   ≠   ≠
-   c  .   .   .   0   .   .
-+1    ≠   ≠   ≠   ≠+0           <-- contrad
-   b  .   .   .   1   .   .
+ a+b  .   1   1   1   .   .
+0                  +0
+   c  .   0   0   0   .   .
+0         ≠   ≠    +1
+   b  .   1   1   0   .   .
 
 *)
 
