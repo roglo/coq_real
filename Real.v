@@ -4074,18 +4074,18 @@ destruct sbcn as [dbcn| ]; [ idtac | clear H ].
 Qed.
 
 Theorem zzz : ∀ a b c i,
-  carry (a + b) c i = false
+  carry a (b + c) i = false
+  → carry (a + b) c i = false
   → carry b c i = true
   → carry a b i = false
   → False.
 Proof.
-intros a b c i Hc4 Hc5 Hc6.
+intros a b c i Hc3 Hc4 Hc5 Hc6.
 remember Hc4 as H; clear HeqH.
 unfold carry in H; simpl in H.
 remember (fst_same (a + b) c (S i)) as s eqn:Hs .
 destruct s as [di| ]; [ idtac | discriminate H ].
 symmetry in Hs; clear H.
-(*1*)
 remember Hc4 as H; clear HeqH.
 apply carry_repeat in H; try assumption.
 destruct H as (n, (Rabn, (Rab_cn, (Rbcn, H)))).
@@ -4107,66 +4107,137 @@ destruct (lt_eq_lt_dec di n) as [[H1| H1]| H1].
  unfold carry in H; rewrite Hs in H; simpl in H.
  rewrite H, Cn in Hab_c; discriminate Hab_c.
 
- remember (di - S n) as dj eqn:Hdj .
- apply nat_sub_add_r in Hdj; [ subst di | assumption ].
- rewrite Nat.add_succ_r, <- Nat.add_succ_l in Hs.
- apply same_fst_same in Hs; simpl in Hs.
- rewrite Nat.add_succ_r in Hs.
- remember (S (i + n)) as j.
- clear i n Hc4 Hc5 Hc6 Heqj Hnbc Hnab_c H1.
- clear An Bn Cn.
- rename j into i; rename dj into di.
- rename Rab_cn into Hc4.
- rename Rbcn into Hc5.
- rename Rabn into Hc6.
-(*2*)
-remember Hc4 as H; clear HeqH.
-apply carry_repeat in H; try assumption.
-destruct H as (n, (Rabn, (Rab_cn, (Rbcn, H)))).
-destruct H as (An, (Bn, (Cn, H))).
-destruct H as (Hnbc, Hnab_c).
-move Rabn after Rbcn.
-destruct (lt_eq_lt_dec di n) as [[H1| H1]| H1].
- remember Hs as H; clear HeqH.
- apply fst_same_iff in H; simpl in H.
- destruct H as (Hnab_c2, Hab_c).
- rewrite Hnab_c in Hab_c; [ idtac | apply Nat.lt_le_incl; assumption ].
- revert Hab_c; apply no_fixpoint_negb.
+ remember (carry a (b + c) (S (i + n))) as x eqn:Ra_bcn .
+ symmetry in Ra_bcn.
+ destruct x; [ eapply case_1; eassumption | idtac ].
+ move Ra_bcn after Rab_cn.
+ remember a .[ S i] as x eqn:Ai .
+ symmetry in Ai.
+ destruct x.
+  remember Hc6 as H; clear HeqH.
+  unfold carry in H; simpl in H.
+  remember (fst_same a b (S i)) as sab eqn:Hsab .
+  destruct sab as [diab| ]; [ idtac | discriminate H ].
+  destruct diab.
+   rewrite Nat.add_0_r, Ai in H; discriminate H.
 
- subst di.
- remember Hs as H; clear HeqH.
- apply fst_same_iff in H; simpl in H.
- destruct H as (Hnab_c2, Hab_c).
- remember Hc4 as H; clear HeqH.
- unfold carry in H; rewrite Hs in H; simpl in H.
- rewrite H, Cn in Hab_c; discriminate Hab_c.
+   clear H; apply fst_same_sym_iff in Hsab; simpl in Hsab.
+   destruct Hsab as (Hnab, _).
+   pose proof (Hnab 0 (Nat.lt_0_succ diab)) as Bi.
+   rewrite Nat.add_0_r, Ai in Bi; symmetry in Bi.
+   clear Hnab.
+   apply negb_true_iff in Bi.
+   clear diab.
+   pose proof (Hnbc 0 (Nat.le_0_l n)) as Ci.
+   rewrite Nat.add_0_r, Bi in Ci; symmetry in Ci.
+   apply negb_false_iff in Ci.
+   pose proof (Hnab_c 0 (Nat.le_0_l n)) as ABi.
+   rewrite Nat.add_0_r, Ci in ABi; simpl in ABi.
+   remember ABi as H; clear HeqH.
+   unfold rm_add_i in H.
+   rewrite Ai, Bi, xorb_true_l in H.
+   symmetry in H; apply negb_sym in H.
+   apply carry_succ_negb in H; [ idtac | assumption ].
+   rewrite Ai in H; destruct H as (H, _); discriminate H.
 
- remember (di - S n) as dj eqn:Hdj .
- apply nat_sub_add_r in Hdj; [ subst di | assumption ].
- rewrite Nat.add_succ_r, <- Nat.add_succ_l in Hs.
- apply same_fst_same in Hs; simpl in Hs.
- rewrite Nat.add_succ_r in Hs.
- remember (S (i + n)) as j.
- clear i n Hc4 Hc5 Hc6 Heqj Hnbc Hnab_c H1.
- clear An Bn Cn.
- rename j into i; rename dj into di.
- rename Rab_cn into Hc4.
- rename Rbcn into Hc5.
- rename Rabn into Hc6.
 bbb.
 
-       i  i+1  -   di
-  b    .   .   .   .
-        +0
-  a    .   .   .   .
+       i  i+1  -   n   -   di
+  b    .   .   .   0   .   .
+        +0          +0
+  a    .   0   .   0   .   .
+        +0          +0
+ b+c   .   .   .   .   .   .
 
- b+c   .   .   .   .
+ a+b   .   .   .   .   .   .
+        +0 ≠   ≠   ≠+0 ≠   =
+  c    .   .   .   1   .   .
+        +1 ≠   ≠   ≠+1
+  b    .   .   .   0   .   .
 
- a+b   .   .   .   .
-        +0 ≠   ≠   =
-  c    .   .   .   .
-        +1
-  b    .   .   .   .
+
+       i  i+1  -   n   -   di
+  b    .   .   .   0   .   .
+        +0  +0      +0
+  a    .   0   .   0   .   .
+        +0          +0
+ b+c   .   0   .   0   .   .
+
+ a+b   .   .   .   0   .   .
+        +0 ≠   ≠   ≠+0 ≠   =
+  c    .   .   .   1   .   .
+        +1 ≠   ≠   ≠+1
+  b    .   .   .   0   .   .
+
+
+ remember a .[ S i] as x eqn:Ai .
+ symmetry in Ai.
+ destruct x.
+  remember Hc6 as H; clear HeqH.
+  unfold carry in H; simpl in H.
+  remember (fst_same a b (S i)) as sab eqn:Hsab .
+  destruct sab as [diab| ]; [ idtac | discriminate H ].
+  destruct diab.
+   rewrite Nat.add_0_r, Ai in H; discriminate H.
+
+   clear H; apply fst_same_sym_iff in Hsab; simpl in Hsab.
+   destruct Hsab as (Hnab, _).
+   pose proof (Hnab 0 (Nat.lt_0_succ diab)) as Bi.
+   rewrite Nat.add_0_r, Ai in Bi; symmetry in Bi.
+   clear Hnab.
+   apply negb_true_iff in Bi.
+   clear diab.
+   pose proof (Hnbc 0 (Nat.le_0_l n)) as Ci.
+   rewrite Nat.add_0_r, Bi in Ci; symmetry in Ci.
+   apply negb_false_iff in Ci.
+   pose proof (Hnab_c 0 (Nat.le_0_l n)) as ABi.
+   rewrite Nat.add_0_r, Ci in ABi; simpl in ABi.
+   remember ABi as H; clear HeqH.
+   unfold rm_add_i in H.
+   rewrite Ai, Bi, xorb_true_l in H.
+   symmetry in H; apply negb_sym in H.
+   apply carry_succ_negb in H; [ idtac | assumption ].
+   rewrite Ai in H; destruct H as (H, _); discriminate H.
+
+  remember Hc3 as H; clear HeqH.
+  unfold carry in H; simpl in H.
+  remember (fst_same a (b + c) (S i)) as sa_bc eqn:Hsa_bc .
+  destruct sa_bc as [da_bc| ]; [ idtac | clear H ].
+   destruct da_bc.
+    rewrite Nat.add_0_r, Ai in H; discriminate H.
+
+    apply fst_same_sym_iff in Hsa_bc; simpl in Hsa_bc.
+    destruct Hsa_bc as (Hna_bc, Hta_bc).
+    pose proof (Hna_bc 0 (Nat.lt_0_succ da_bc)) as BCi.
+    rewrite Nat.add_0_r, Ai in BCi; apply negb_sym in BCi.
+    simpl in BCi.
+    clear H.
+    pose proof (Hnbc 0 (Nat.le_0_l n)) as Bi.
+    rewrite Nat.add_0_r in Bi.
+    remember BCi as H; clear HeqH.
+    unfold rm_add_i in H.
+    rewrite Bi, negb_xorb_diag_l, xorb_true_l in H.
+    apply negb_true_iff in H.
+    rewrite <- negb_involutive in H.
+    apply carry_succ_negb in H; [ idtac | assumption ].
+    destruct H as (H2, H3); rewrite H2, H3 in Bi.
+    discriminate Bi.
+
+   apply fst_same_sym_iff in Hsa_bc; simpl in Hsa_bc.
+   pose proof (Hsa_bc 0) as BCi.
+   rewrite Nat.add_0_r, Ai in BCi; apply negb_sym in BCi.
+   simpl in BCi.
+   pose proof (Hnbc 0 (Nat.le_0_l n)) as Bi.
+   rewrite Nat.add_0_r in Bi.
+   remember BCi as H; clear HeqH.
+   unfold rm_add_i in H.
+   rewrite Bi, negb_xorb_diag_l, xorb_true_l in H.
+   apply negb_true_iff in H.
+   rewrite <- negb_involutive in H.
+   apply carry_succ_negb in H; [ idtac | assumption ].
+   destruct H as (H2, H3); rewrite H2, H3 in Bi.
+   discriminate Bi.
+Qed.
 *)
 
 Theorem case_2 : ∀ a₀ b₀ c₀ a b c i u,
@@ -4266,6 +4337,9 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
        eapply carry_before_relay in H; [ idtac | eassumption ].
        simpl in H; rewrite H4 in H.
        rename H into Habcm.
+       remember (carry a (b + c) (S (i + m))) as x eqn:Hx .
+       symmetry in Hx.
+       destruct x; [ eapply case_1; eassumption | idtac ].
 bbb.
 
        i  i+1  -   m   -   -
