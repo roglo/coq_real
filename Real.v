@@ -4378,9 +4378,30 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
        rename H into Habcm.
        eapply case_2; eassumption.
 
-Abort. (*
-       simpl.
+       eapply min_neq_lt in M5; [ idtac | eauto  | do 3 right; left; auto ].
+       remember Ht3 as H; clear HeqH.
+       unfold rm_add_i in H.
+       rewrite Hn5 in H; [ idtac | assumption ].
+       rewrite negb_xorb_diag_l, xorb_true_l in H.
+       apply negb_true_iff in H.
+       eapply carry_before_relay in Hs5; [ idtac | eassumption ].
+       simpl in Hs5; rewrite Hs5, H5 in H; discriminate H.
+
 bbb.
+
+      i  i+1  -   m
+   b  .   .   .   1   .   .
++1    ≠   ≠   ≠    +1
+   a  .   .   .   1   .   .
++1    ≠   ≠   ≠
+ b+c  .   .   .   1   .   .
+
+ a+b  .   .   .   1   .   .
++0    ≠   ≠   ≠   ≠
+   c  .   .   .   0   .   .
++1    ≠   ≠   ≠   ≠+0           <-- contrad
+   b  .   .   .   1   .   .
+
 *)
 
 Theorem rm_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%rm.
