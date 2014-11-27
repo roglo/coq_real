@@ -4379,7 +4379,6 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
        eapply case_2; eassumption.
 
        simpl.
-Abort. (*
 bbb.
 *)
 
