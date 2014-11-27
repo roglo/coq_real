@@ -4147,6 +4147,148 @@ destruct (lt_eq_lt_dec di n) as [[H1| H1]| H1].
  unfold carry in H; rewrite Hs in H; simpl in H.
  rewrite H, Cn in Hab_c; discriminate Hab_c.
 
+ clear An Bn Cn Hnbc Hnab_c.
+ remember (di - S n) as dj.
+ apply nat_sub_add_r in Heqdj; [ idtac | assumption ].
+ subst di; clear H1.
+ clear Hc3 Hc4 Hc5 Hc6.
+ rename Rab_cn into Hc4; rename Rbcn into Hc5; rename Rabn into Hc6.
+ remember (S (i + n)) as j eqn:Hj .
+ rename i into i₀; rename n into n₀; rename dj into dj₀.
+ rename j into i; rename Hj into Hj₀; rename Hs into Hs₀.
+ remember Hc4 as H; clear HeqH.
+ unfold carry in H; simpl in H.
+ remember (fst_same (a + b) c (S i)) as s eqn:Hs .
+ destruct s as [di| ]; [ idtac | discriminate H ].
+ symmetry in Hs; clear H.
+ remember Hc4 as H; clear HeqH.
+ apply carry_repeat in H; try assumption.
+ destruct H as (n, (Rabn, (Rab_cn, (Rbcn, H)))).
+ destruct H as (An, (Bn, (Cn, H))).
+ destruct H as (Hnbc, Hnab_c).
+ move Rabn after Rbcn.
+ destruct (lt_eq_lt_dec di n) as [[H1| H1]| H1].
+  remember Hs as H; clear HeqH.
+  apply fst_same_iff in H; simpl in H.
+  destruct H as (Hnab_c2, Hab_c).
+  rewrite Hnab_c in Hab_c; [ idtac | apply Nat.lt_le_incl; assumption ].
+  exfalso; revert Hab_c; apply no_fixpoint_negb.
+
+  subst di.
+  remember Hs as H; clear HeqH.
+  apply fst_same_iff in H; simpl in H.
+  destruct H as (Hnab_c2, Hab_c).
+  remember Hc4 as H; clear HeqH.
+  unfold carry in H; rewrite Hs in H; simpl in H.
+  rewrite H, Cn in Hab_c; discriminate Hab_c.
+
+  clear An Bn Cn Hnbc Hnab_c.
+  remember (di - S n) as dj.
+  apply nat_sub_add_r in Heqdj; [ idtac | assumption ].
+  subst di; clear H1.
+  clear Hc4 Hc5 Hc6.
+  rename Rab_cn into Hc4; rename Rbcn into Hc5; rename Rabn into Hc6.
+  remember (S (i + n)) as j eqn:Hj .
+  rename i into i₁; rename n into n₁; rename dj into dj₁.
+  rename j into i; rename Hj into Hj₁; rename Hs into Hs₁.
+  remember Hc4 as H; clear HeqH.
+  unfold carry in H; simpl in H.
+  remember (fst_same (a + b) c (S i)) as s eqn:Hs .
+  destruct s as [di| ]; [ idtac | discriminate H ].
+  symmetry in Hs; clear H.
+  remember Hc4 as H; clear HeqH.
+  apply carry_repeat in H; try assumption.
+  destruct H as (n, (Rabn, (Rab_cn, (Rbcn, H)))).
+  destruct H as (An, (Bn, (Cn, H))).
+  destruct H as (Hnbc, Hnab_c).
+  move Rabn after Rbcn.
+  destruct (lt_eq_lt_dec di n) as [[H1| H1]| H1].
+   remember Hs as H; clear HeqH.
+   apply fst_same_iff in H; simpl in H.
+   destruct H as (Hnab_c2, Hab_c).
+   rewrite Hnab_c in Hab_c; [ idtac | apply Nat.lt_le_incl; assumption ].
+   exfalso; revert Hab_c; apply no_fixpoint_negb.
+
+   subst di.
+   remember Hs as H; clear HeqH.
+   apply fst_same_iff in H; simpl in H.
+   destruct H as (Hnab_c2, Hab_c).
+   remember Hc4 as H; clear HeqH.
+   unfold carry in H; rewrite Hs in H; simpl in H.
+   rewrite H, Cn in Hab_c; discriminate Hab_c.
+
+   clear An Bn Cn Hnbc Hnab_c.
+   remember (di - S n) as dj.
+   apply nat_sub_add_r in Heqdj; [ idtac | assumption ].
+   subst di; clear H1.
+   clear Hc4 Hc5 Hc6.
+   rename Rab_cn into Hc4; rename Rbcn into Hc5; rename Rabn into Hc6.
+   remember (S (i + n)) as j eqn:Hj .
+   rename i into i₂; rename n into n₂; rename dj into dj₂.
+   rename j into i; rename Hj into Hj₂; rename Hs into Hs₂.
+   remember Hc4 as H; clear HeqH.
+   unfold carry in H; simpl in H.
+   remember (fst_same (a + b) c (S i)) as s eqn:Hs .
+   destruct s as [di| ]; [ idtac | discriminate H ].
+   symmetry in Hs; clear H.
+   remember Hc4 as H; clear HeqH.
+   apply carry_repeat in H; try assumption.
+   destruct H as (n, (Rabn, (Rab_cn, (Rbcn, H)))).
+   destruct H as (An, (Bn, (Cn, H))).
+   destruct H as (Hnbc, Hnab_c).
+   move Rabn after Rbcn.
+   destruct (lt_eq_lt_dec di n) as [[H1| H1]| H1].
+    remember Hs as H; clear HeqH.
+    apply fst_same_iff in H; simpl in H.
+    destruct H as (Hnab_c2, Hab_c).
+    rewrite Hnab_c in Hab_c; [ idtac | apply Nat.lt_le_incl; assumption ].
+    exfalso; revert Hab_c; apply no_fixpoint_negb.
+
+    subst di.
+    remember Hs as H; clear HeqH.
+    apply fst_same_iff in H; simpl in H.
+    destruct H as (Hnab_c2, Hab_c).
+    remember Hc4 as H; clear HeqH.
+    unfold carry in H; rewrite Hs in H; simpl in H.
+    rewrite H, Cn in Hab_c; discriminate Hab_c.
+
+    clear An Bn Cn Hnbc Hnab_c.
+    remember (di - S n) as dj.
+    apply nat_sub_add_r in Heqdj; [ idtac | assumption ].
+    subst di; clear H1.
+    clear Hc4 Hc5 Hc6.
+    rename Rab_cn into Hc4; rename Rbcn into Hc5; rename Rabn into Hc6.
+bbb.
+
+
+intros a b c i Hc3 Hc4 Hc5 Hc6.
+remember Hc4 as H; clear HeqH.
+unfold carry in H; simpl in H.
+remember (fst_same (a + b) c (S i)) as s eqn:Hs .
+destruct s as [di| ]; [ idtac | discriminate H ].
+symmetry in Hs; clear H.
+remember Hc4 as H; clear HeqH.
+apply carry_repeat in H; try assumption.
+destruct H as (n, (Rabn, (Rab_cn, (Rbcn, H)))).
+destruct H as (An, (Bn, (Cn, H))).
+destruct H as (Hnbc, Hnab_c).
+move Rabn after Rbcn.
+destruct (lt_eq_lt_dec di n) as [[H1| H1]| H1].
+ remember Hs as H; clear HeqH.
+ apply fst_same_iff in H; simpl in H.
+ destruct H as (Hnab_c2, Hab_c).
+ rewrite Hnab_c in Hab_c; [ idtac | apply Nat.lt_le_incl; assumption ].
+ exfalso; revert Hab_c; apply no_fixpoint_negb.
+
+ subst di.
+ remember Hs as H; clear HeqH.
+ apply fst_same_iff in H; simpl in H.
+ destruct H as (Hnab_c2, Hab_c).
+ remember Hc4 as H; clear HeqH.
+ unfold carry in H; rewrite Hs in H; simpl in H.
+ rewrite H, Cn in Hab_c; discriminate Hab_c.
+
+bbb.
  remember (carry a (b + c) (S (i + n))) as x eqn:Ra_bcn .
  symmetry in Ra_bcn.
  destruct x; [ eapply case_1; eassumption | idtac ].
@@ -4180,6 +4322,7 @@ destruct (lt_eq_lt_dec di n) as [[H1| H1]| H1].
    apply carry_succ_negb in H; [ idtac | assumption ].
    rewrite Ai in H; destruct H as (H, _); discriminate H.
 
+Abort. (*
 bbb.
 
        i  i+1  -   n   -   di
