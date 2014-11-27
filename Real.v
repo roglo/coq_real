@@ -4394,7 +4394,7 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
       rewrite Hn6 in H; [ idtac | assumption ].
       apply negb_true_iff in H.
       rewrite H5 in H; move H at top; subst u.
-      (* cf case_2 *)
+      eapply case_2 with (i := S (i + m)).
 bbb.
 
       i  i+1  -   m
