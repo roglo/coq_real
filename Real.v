@@ -4378,6 +4378,7 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
        rename H into Habcm.
        eapply case_2; eassumption.
 
+Abort. (*
        simpl.
 bbb.
 *)
@@ -4429,7 +4430,17 @@ destruct c3, c4, c5, c6; try reflexivity; exfalso.
 
  Focus 5.
  eapply case_2 with (a := a) (b := b); eassumption.
- (* perhaps another case treated here by switching a and c *)
+
+ Focus 5.
+ apply case_2 with (a := c) (b := b) (c := a) (i := i).
+  rewrite carry_compat_r with (a := (b + c)%rm).
+   rewrite carry_comm; assumption.
+
+   apply rm_add_i_comm.
+
+  rewrite carry_comm; assumption.
+
+  rewrite carry_comm; assumption.
 
  eapply case_3 with (a := a) (b := b); eassumption.
 
