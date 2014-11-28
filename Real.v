@@ -4475,19 +4475,38 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
           assumption.
 
        eapply min_neq_lt in M5; [ idtac | eauto  | do 3 right; left; auto ].
+       exists m, u.
+       split.
+        rewrite <- Nat.add_succ_l.
+        erewrite carry_before_relay; eassumption.
+
+        split.
+         rewrite <- Nat.add_succ_l.
+         erewrite carry_before_relay; eassumption.
+
+         split.
+          pose proof (Hn3 m M3) as H.
+          unfold rm_add_i in H.
+          rewrite Hn5 in H; [ idtac | assumption ].
+          rewrite negb_xorb_diag_l in H.
+          rewrite H6, negb_involutive in H.
+          symmetry; assumption.
+
+          pose proof (Hn4 m M4) as H.
+          unfold rm_add_i in H.
 bbb.
 
       i  i+1  -   m
-   b  .   .   .   u   .   .
-u         ≠   ≠    +¬u
+   b  .   .   .   u
+u         ≠   ≠    +u
    a  .   u   u   u
 1         ≠   ≠   ≠+1
- b+c  .   .   .  ¬u   .   .
+ b+c  .   .   .   .
 
- a+b  .   .   .  ¬u
+ a+b  .   .   .   u
 0         ≠   ≠   ≠+0
-   c  .   u   u   u
-u         ≠   ≠    +¬u
+   c  .   u   u   .
+u         ≠   ≠   ≠+u
    b  .   .   .   u
 
 
