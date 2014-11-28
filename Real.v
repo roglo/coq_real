@@ -4453,20 +4453,22 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
       eapply case_1; eassumption.
 
       eapply min_neq_lt in M4; [ idtac | eauto  | do 2 right; left; auto ].
+      destruct (eq_nat_dec di5 m) as [M5| M5].
+       move M5 at top; subst di5.
 bbb.
 
       i  i+1  -   m
    b  .   .   .   u   .   .
-u         ≠   ≠    +0
-   a  .   u   u   u   .   .
+u         ≠   ≠    +¬u
+   a  .   u   u   u
 1         ≠   ≠   ≠+1
- b+c  .   .   .   .   .   .
+ b+c  .   .   .  ¬u   .   .
 
- a+b  .   .   .   0   .   .
-0         ≠   ≠
-   c  .   u   u   0   .   .
-u         ≠   ≠    +1
-   b  .   .   .   u   .   .
+ a+b  .   .   .  ¬u
+0         ≠   ≠   ≠+0
+   c  .   u   u   u
+u         ≠   ≠    +¬u
+   b  .   .   .   u
 
 *)
 
