@@ -4534,20 +4534,47 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
        simpl in H; rewrite H5 in H; discriminate H.
 
       eapply min_neq_lt in M4; eauto ; try (do 2 right; left; auto).
+      destruct (eq_nat_dec di5 m) as [M5| M5].
+       move M5 at top; subst di5.
+       exists m, u.
+       split.
+        rewrite <- Nat.add_succ_l.
+        erewrite carry_before_relay; eassumption.
+
+        split.
+         rewrite <- Nat.add_succ_l.
+         erewrite carry_before_relay; eassumption.
+
+         split.
+          pose proof (Hn3 m M3) as H.
+          unfold rm_add_i in H.
+          rewrite Hn6 in H; [ idtac | assumption ].
+          rewrite H5, Ht5, xorb_nilpotent, xorb_false_l in H.
+          apply negb_sym in H.
+          rewrite negb_involutive in H; assumption.
+
+          pose proof (Hn4 m M4) as H.
+          unfold rm_add_i in H.
+          rewrite Hn6 in H; [ idtac | assumption ].
+          rewrite negb_xorb_diag_l, xorb_true_l, Ht5 in H.
+          apply negb_sym in H; symmetry in H.
+          rewrite negb_involutive in H; assumption.
+
+       eapply min_neq_lt in M5; eauto ; try (do 3 right; left; auto).
 bbb.
 
       i  i+1  -   m
-   b  .   .   .   1
-u         ≠   ≠   ≠+1
-   a  .   u   u   0
+   b  .   .   .   u
+u         ≠   ≠   ≠+u
+   a  .   u   u   .
 1         ≠   ≠   ≠+1
- b+c  .   .   .   1
+ b+c  .   .   .   u
 
- a+b  .   .   .   0
-0         ≠   ≠
-   c  .   u   u   0
-u         ≠   ≠   ≠+0
-   b  .   .   .   1
+ a+b  .   .   .   .
+0         ≠   ≠   ≠+0
+   c  .   u   u   u
+u         ≠   ≠    +u
+   b  .   .   .   u
 
 
 Theorem case_3 : ∀ a₀ b₀ c₀ a b c i u,
