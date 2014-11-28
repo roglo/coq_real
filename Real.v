@@ -4454,6 +4454,27 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
       eapply min_neq_lt in M4; [ idtac | eauto  | do 2 right; left; auto ].
       destruct (eq_nat_dec di5 m) as [M5| M5].
        move M5 at top; subst di5.
+       exists m; exists (negb u).
+       split.
+        rewrite <- Nat.add_succ_l.
+        erewrite carry_before_relay; eassumption.
+
+        split.
+         rewrite <- Nat.add_succ_l.
+         erewrite carry_before_relay; eassumption.
+
+         split.
+          pose proof (Hn3 m M3) as H.
+          unfold rm_add_i in H.
+          rewrite H6, Ht6, Ht5, xorb_nilpotent, xorb_false_l in H.
+          apply negb_sym; assumption.
+
+          pose proof (Hn4 m M4) as H.
+          unfold rm_add_i in H.
+          rewrite H6, Ht6, Ht5, xorb_nilpotent, xorb_false_l in H.
+          assumption.
+
+       eapply min_neq_lt in M5; [ idtac | eauto  | do 3 right; left; auto ].
 bbb.
 
       i  i+1  -   m
