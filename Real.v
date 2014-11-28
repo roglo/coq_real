@@ -4286,6 +4286,10 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
  destruct s5 as [di5| ].
   destruct s6 as [di6| ].
    remember (List.fold_right min di6 [di3; di4; di5 … []]) as m eqn:Hm .
+   clear Ha₀ Hb₀ Hc₀ Hc1 Hc2.
+   revert di3 di4 di5 di6 Hs3 Hs4 Hs5 Hs6 H3 H4 H5 H6 Hm.
+   revert a b c i u Hc3 Hc4 Hc5 Hc6.
+   induction m as (m, IHm) using all_lt_all; intros.
    remember Hs3 as H; clear HeqH.
    apply fst_same_iff in H; simpl in H.
    destruct H as (Hn3, Ht3).
