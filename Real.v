@@ -4734,17 +4734,42 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
       exfalso; eapply case_1; eassumption.
 
       eapply min_neq_lt in M4; [ idtac | eauto  | do 2 right; left; auto ].
+      exists m, true.
+      split.
+       rewrite <- Nat.add_succ_l.
+       clear H6.
+       erewrite carry_before_relay; eassumption.
+
+       split.
+        rewrite <- Nat.add_succ_l.
+        erewrite carry_before_relay; eassumption.
+
+        split.
+         pose proof (Hn3 m M3) as H.
+         unfold rm_add_i in H.
+         rewrite H6, Hn5, negb_xorb_diag_l, negb_involutive in H.
+         symmetry; assumption.
+
+         pose proof (Hn4 m M4) as H.
+         unfold rm_add_i in H.
+         rewrite H6, Hn5, xorb_true_l in H.
+         rewrite negb_involutive in H.
+         apply xorb_move_l_r_1 in H.
+         rewrite negb_xorb_diag_r in H.
+         assumption.
+
+     eapply min_neq_lt in M6; eauto ; try (left; auto).
 bbb.
 
       i  i+1  -   m
    b  .   0   0   1
-1         ≠   ≠    +0
+1         ≠   ≠    +1
    a  .   1   1   1
 1         ≠   ≠   ≠+1
  b+c  .   0   0   0
 
- a+b  .   0   0   0
-0         ≠   ≠
+ a+b  .   0   0   1
+0         ≠   ≠   ≠+0
    c  .   1   1   0
 1         ≠   ≠   ≠+1 ≠
    b  .   0   0   1
