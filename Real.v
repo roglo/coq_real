@@ -4499,20 +4499,55 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
           rewrite Ht6 in H; assumption.
 
      eapply min_neq_lt in M6; [ idtac | eauto  | left; auto ].
+     destruct (eq_nat_dec di4 m) as [M4| M4].
+      move M4 at top; subst di4.
+      remember H4 as H; clear HeqH.
+      unfold rm_add_i in H.
+      rewrite Hn6 in H; [ idtac | assumption ].
+      rewrite negb_xorb_diag_l, xorb_true_l in H.
+      apply negb_false_iff in H.
+      rename H into Rabm.
+      remember Hs6 as H; clear HeqH.
+      eapply carry_before_relay in H; [ idtac | eassumption ].
+      simpl in H; rewrite Rabm, H6 in H.
+      move H at top; subst u.
+      destruct (eq_nat_dec di5 m) as [M5| M5].
+       move M5 at top; subst di5.
+       rewrite Ht4 in Ht5; discriminate Ht5.
+
+       eapply min_neq_lt in M5; eauto ; try (do 3 right; left; auto).
+       pose proof (Hn5 m M5) as H.
+       rewrite Ht4 in H; simpl in H.
+       rename H into Bm.
+       pose proof (Hn6 m M6) as H.
+       rewrite Bm in H; simpl in H.
+       rename H into Am.
+       pose proof (Hn3 m M3) as H.
+       rewrite Am in H; apply negb_sym in H; simpl in H.
+       rename H into BCm.
+       remember BCm as H; clear HeqH.
+       unfold rm_add_i in H.
+       rewrite Bm, Ht4, xorb_true_l in H.
+       apply negb_true_iff in H.
+       rewrite <- Nat.add_succ_l in H.
+       erewrite carry_before_relay in H; try eassumption.
+       simpl in H; rewrite H5 in H; discriminate H.
+
+      eapply min_neq_lt in M4; eauto ; try (do 2 right; left; auto).
 bbb.
 
       i  i+1  -   m
-   b  .   .   .   u
-u         ≠   ≠    +u
-   a  .   u   u   u
+   b  .   .   .   1
+u         ≠   ≠   ≠+1
+   a  .   u   u   0
 1         ≠   ≠   ≠+1
- b+c  .   .   .   .
+ b+c  .   .   .   1
 
- a+b  .   .   .   u
-0         ≠   ≠   ≠+0
-   c  .   u   u   .
-u         ≠   ≠   ≠+u
-   b  .   .   .   u
+ a+b  .   .   .   0
+0         ≠   ≠
+   c  .   u   u   0
+u         ≠   ≠   ≠+0
+   b  .   .   .   1
 
 
 Theorem case_3 : ∀ a₀ b₀ c₀ a b c i u,
