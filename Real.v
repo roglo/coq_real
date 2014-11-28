@@ -4494,6 +4494,11 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
 
           pose proof (Hn4 m M4) as H.
           unfold rm_add_i in H.
+          rewrite H6, Ht6, xorb_nilpotent, xorb_false_l in H.
+          rewrite <- Hn5 in H; [ idtac | assumption ].
+          rewrite Ht6 in H; assumption.
+
+     eapply min_neq_lt in M6; [ idtac | eauto  | left; auto ].
 bbb.
 
       i  i+1  -   m
