@@ -4382,6 +4382,21 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
        simpl in H; rewrite H6 in H; discriminate H.
 
        eapply min_neq_lt in M4; [ idtac | eauto  | do 2 right; left; auto ].
+       pose proof (Hn4 m M4) as H.
+       rewrite Ht5 in H; simpl in H.
+       rename H into ABm.
+       remember ABm as H; clear HeqH.
+       unfold rm_add_i in H.
+       rewrite H3, H5, xorb_true_l in H.
+       apply negb_true_iff in H.
+       rename H into Rabm.
+       remember Hs4 as H; clear HeqH.
+       eapply carry_before_relay in H; [ idtac | eassumption ].
+       simpl in H; rewrite H4 in H.
+       rename H into Rab_cm.
+       eapply case_2; try eassumption.
+
+      eapply min_neq_lt in M5; [ idtac | eauto  | do 3 right; left; auto ].
 bbb.
 
       i  i+1  -   m
