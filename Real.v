@@ -4430,20 +4430,43 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
        simpl in H; rewrite H6 in H; discriminate H.
 
     eapply min_neq_lt in M3; [ idtac | eauto  | right; left; auto ].
+    destruct (eq_nat_dec di6 m) as [M6| M6].
+     move M6 at top; subst di6.
+     destruct (eq_nat_dec di4 m) as [M4| M4].
+      move M4 at top; subst di4.
+      remember H4 as H; clear HeqH.
+      unfold rm_add_i in H.
+      rewrite H6, Ht6, xorb_nilpotent, xorb_false_l in H.
+      rename H into ABm.
+      remember Hs3 as H; clear HeqH.
+      eapply carry_before_relay in H; [ idtac | eassumption ].
+      simpl in H; rewrite H3 in H.
+      rename H into A_BCm.
+      pose proof (Hn3 m M3) as H.
+      rewrite H6 in H.
+      apply negb_sym in H.
+      unfold rm_add_i in H.
+      rewrite Ht6, Ht4, xorb_false_r in H.
+      apply xorb_move_l_r_1 in H.
+      rewrite negb_xorb_diag_r in H.
+      rename H into BCm.
+      eapply case_1; eassumption.
+
+      eapply min_neq_lt in M4; [ idtac | eauto  | do 2 right; left; auto ].
 bbb.
 
       i  i+1  -   m
-   b  .   .   .   0   .   .
-0         ≠   ≠   ≠+0
-   a  .   .   .   1   .   .
-1         ≠   ≠
- b+c  .   .   .   1   .   .
+   b  .   .   .   u   .   .
+u         ≠   ≠    +0
+   a  .   u   u   u   .   .
+1         ≠   ≠   ≠+1
+ b+c  .   .   .   .   .   .
 
  a+b  .   .   .   0   .   .
-0         ≠   ≠   ≠
-   c  .   .   .   1   .   .
-0         ≠   ≠   ≠+0
-   b  .   .   .   0   .   .
+0         ≠   ≠
+   c  .   u   u   0   .   .
+u         ≠   ≠    +1
+   b  .   .   .   u   .   .
 
 *)
 
