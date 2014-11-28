@@ -4683,20 +4683,54 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
         subst m; exfalso; revert M5; apply Nat.lt_irrefl.
 
   move H5 at top; subst u.
+  destruct s6 as [di6| ]; [ idtac | clear H6 ].
+   remember (List.fold_right min di6 [di3; di4 … []]) as m eqn:Hm .
+   remember Hs3 as H; clear HeqH.
+   apply fst_same_iff in H; simpl in H.
+   destruct H as (Hn3, Ht3).
+   rewrite H3 in Ht3; symmetry in Ht3.
+   remember Hs4 as H; clear HeqH.
+   apply fst_same_iff in H; simpl in H.
+   destruct H as (Hn4, Ht4).
+   rewrite H4 in Ht4; symmetry in Ht4.
+   remember Hs5 as H; clear HeqH.
+   apply fst_same_iff in H; simpl in H.
+   rename H into Hn5.
+   remember Hs6 as H; clear HeqH.
+   apply fst_same_iff in H; simpl in H.
+   destruct H as (Hn6, Ht6).
+   rewrite H6 in Ht6; symmetry in Ht6.
+   destruct (eq_nat_dec di3 m) as [M3| M3].
+    move M3 at top; subst di3.
+    remember Ht3 as H; clear HeqH.
+    unfold rm_add_i in H.
+    rewrite Hn5, negb_xorb_diag_l, xorb_true_l in H.
+    apply negb_true_iff in H.
+    rewrite <- Nat.add_succ_l in H.
+    rewrite carry_before_inf_relay in H; [ idtac | assumption ].
+    discriminate H.
+
+    eapply min_neq_lt in M3; eauto ; try (right; left; auto).
 bbb.
 
       i  i+1  -   m
-   b  .   .   .   1
-1         ≠   ≠   ≠+1  ≠
-   a  .   .   .   0
-1         ≠   ≠   ≠+1
- b+c  .   .   .   1
+   b  .   0   0   .
+1         ≠   ≠
+   a  .   1   1   .
+1         ≠   ≠
+ b+c  .   0   0   0
 
- a+b  .   0   0   0
+ a+b  .   0   0   .
 0         ≠   ≠
-   c  .   .   .   0
-1         ≠   ≠   ≠+1
-   b  .   .   .   1
+   c  .   1   1   .
+1         ≠   ≠   ≠   ≠
+   b  .   0   0   .
+
+   destruct (eq_nat_dec di3 m) as [M3| M3].
+    move M3 at top; subst di3.
+    destruct (eq_nat_dec di6 m) as [M6| M6].
+     move M6 at top; subst di6.
+     rewrite H3 in H6.
 
 
 Theorem case_3 : ∀ a₀ b₀ c₀ a b c i u,
