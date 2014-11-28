@@ -4561,6 +4561,31 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
           rewrite negb_involutive in H; assumption.
 
        eapply min_neq_lt in M5; eauto ; try (do 3 right; left; auto).
+       simpl in Hm.
+       destruct (Nat.min_dec di5 di6) as [L1| L1]; rewrite L1 in Hm.
+        destruct (Nat.min_dec di4 di5) as [L2| L2]; rewrite L2 in Hm.
+         destruct (Nat.min_dec di3 di4) as [L3| L3]; rewrite L3 in Hm.
+          subst m; exfalso; revert M3; apply Nat.lt_irrefl.
+
+          subst m; exfalso; revert M4; apply Nat.lt_irrefl.
+
+         destruct (Nat.min_dec di3 di5) as [L3| L3]; rewrite L3 in Hm.
+          subst m; exfalso; revert M3; apply Nat.lt_irrefl.
+
+          subst m; exfalso; revert M5; apply Nat.lt_irrefl.
+
+        destruct (Nat.min_dec di4 di6) as [L2| L2]; rewrite L2 in Hm.
+         destruct (Nat.min_dec di3 di4) as [L3| L3]; rewrite L3 in Hm.
+          subst m; exfalso; revert M3; apply Nat.lt_irrefl.
+
+          subst m; exfalso; revert M4; apply Nat.lt_irrefl.
+
+         destruct (Nat.min_dec di3 di6) as [L3| L3]; rewrite L3 in Hm.
+          subst m; exfalso; revert M3; apply Nat.lt_irrefl.
+
+          subst m; exfalso; revert M6; apply Nat.lt_irrefl.
+
+   move H6 at top; subst u.
 bbb.
 
       i  i+1  -   m
