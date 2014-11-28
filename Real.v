@@ -4586,20 +4586,54 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
           subst m; exfalso; revert M6; apply Nat.lt_irrefl.
 
    move H6 at top; subst u.
+   remember (List.fold_right min di5 [di3; di4 … []]) as m eqn:Hm .
+   remember Hs3 as H; clear HeqH.
+   apply fst_same_iff in H; simpl in H.
+   destruct H as (Hn3, Ht3).
+   rewrite H3 in Ht3; symmetry in Ht3.
+   remember Hs4 as H; clear HeqH.
+   apply fst_same_iff in H; simpl in H.
+   destruct H as (Hn4, Ht4).
+   rewrite H4 in Ht4; symmetry in Ht4.
+   remember Hs5 as H; clear HeqH.
+   apply fst_same_iff in H; simpl in H.
+   destruct H as (Hn5, Ht5).
+   rewrite H5 in Ht5; symmetry in Ht5.
+   remember Hs6 as H; clear HeqH.
+   apply fst_same_iff in H; simpl in H.
+   rename H into Hn6.
+   destruct (eq_nat_dec di3 m) as [M3| M3].
+    move M3 at top; subst di3.
+    destruct (eq_nat_dec di5 m) as [M5| M5].
+     move M5 at top; subst di5.
+     rewrite Hn6, H5 in H3.
+     discriminate H3.
+
+     eapply min_neq_lt in M5; eauto ; try (left; auto).
+     remember Ht3 as H; clear HeqH.
+     unfold rm_add_i in H.
+     rewrite Hn5 in H; [ idtac | assumption ].
+     rewrite negb_xorb_diag_l, xorb_true_l in H.
+     apply negb_true_iff in H.
+     rewrite <- Nat.add_succ_l in H.
+     erewrite carry_before_relay in H; try eassumption.
+     simpl in H; rewrite H5 in H; discriminate H.
+
+    eapply min_neq_lt in M3; eauto ; try (right; left; auto).
 bbb.
 
       i  i+1  -   m
-   b  .   .   .   u
-u         ≠   ≠   ≠+u
-   a  .   u   u   .
-1         ≠   ≠   ≠+1
- b+c  .   .   .   u
+   b  .   .   .   .
+1         ≠   ≠
+   a  .   .   .   .
+1         ≠   ≠
+ b+c  .   .   .   .
 
- a+b  .   .   .   .
-0         ≠   ≠   ≠+0
-   c  .   u   u   u
-u         ≠   ≠    +u
-   b  .   .   .   u
+ a+b  .   0   0   .
+0         ≠   ≠
+   c  .   .   .   .
+1         ≠   ≠   ≠
+   b  .   .   .   .
 
 
 Theorem case_3 : ∀ a₀ b₀ c₀ a b c i u,
