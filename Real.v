@@ -4397,20 +4397,36 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
        eapply case_2; try eassumption.
 
       eapply min_neq_lt in M5; [ idtac | eauto  | do 3 right; left; auto ].
+      remember H3 as H; clear HeqH.
+      rewrite Hn6 in H; [ idtac | assumption ].
+      apply negb_true_iff in H.
+      rename H into Bm.
+      remember Bm as H; clear HeqH.
+      rewrite Hn5 in H; [ idtac | assumption ].
+      apply negb_false_iff in H.
+      rename H into Cm.
+      remember Hs5 as H; clear HeqH.
+      eapply carry_before_relay in H; [ idtac | eassumption ].
+      simpl in H; rewrite H5 in H.
+      rename H into Rbcm.
+      remember Ht3 as H; clear HeqH.
+      unfold rm_add_i in H.
+      rewrite Bm, Cm, Rbcm, xorb_false_l, xorb_true_l in H.
+      apply negb_true_iff in H; move H at top; subst u.
 bbb.
 
       i  i+1  -   m
-   b  .   1   1   0   .   .
-0         ≠   ≠   ≠+0
-   a  .   0   0   1   .   .
+   b  .   .   .   0   .   .
+u         ≠   ≠   ≠
+   a  .   .   .   1   .   .
 1         ≠   ≠
- b+c  .   1   1   1   .   .
+ b+c  .   .   .   1   .   .
 
- a+b  .   1   1   1   .   .
-0                  +0
-   c  .   0   0   0   .   .
-0         ≠   ≠    +1
-   b  .   1   1   0   .   .
+ a+b  .   .   .   .   .   .
+0
+   c  .   .   .   1   .   .
+u         ≠   ≠   ≠+0
+   b  .   .   .   0   .   .
 
 *)
 
