@@ -4840,27 +4840,65 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
       subst m; exfalso; revert M3; apply Nat.lt_irrefl.
 
       subst m; exfalso; revert M4; apply Nat.lt_irrefl.
+
+ destruct s5 as [di5| ].
+  destruct s6 as [di6| ].
+   remember (List.fold_right min di6 [di4; di5 … []]) as m eqn:Hm .
+   remember Hs3 as H; clear HeqH.
+   apply fst_same_iff in H; simpl in H.
+   rename H into Hn3.
+   remember Hs4 as H; clear HeqH.
+   apply fst_same_iff in H; simpl in H.
+   destruct H as (Hn4, Ht4).
+   rewrite H4 in Ht4; symmetry in Ht4.
+   remember Hs5 as H; clear HeqH.
+   apply fst_same_iff in H; simpl in H.
+   destruct H as (Hn5, Ht5).
+   rewrite H5 in Ht5; symmetry in Ht5.
+   remember Hs6 as H; clear HeqH.
+   apply fst_same_iff in H; simpl in H.
+   destruct H as (Hn6, Ht6).
+   rewrite H6 in Ht6; symmetry in Ht6.
+   destruct (eq_nat_dec di5 m) as [M5| M5].
+    move M5 at top; subst di5.
+    destruct (eq_nat_dec di4 m) as [M4| M4].
+     move M4 at top; subst di4.
+     rewrite Ht4 in Ht5.
+     move Ht5 at top; subst u.
+     destruct (eq_nat_dec di6 m) as [M6| M6].
+      move M6 at top; subst di6.
+      remember H4 as H; clear HeqH.
+      unfold rm_add_i in H.
+      rewrite H6, Ht6, xorb_nilpotent, xorb_false_l in H.
+      rename H into ABm.
+      remember Hs3 as H; clear HeqH.
+      eapply carry_before_inf_relay in H; simpl in H.
+      rename H into A_BCm.
+      pose proof (Hn3 m) as H.
+      rewrite H6 in H.
+      apply negb_sym in H.
+      unfold rm_add_i in H.
+      rewrite Ht6, Ht4, xorb_false_r in H.
+      apply xorb_move_l_r_1 in H.
+      rewrite negb_xorb_diag_r in H.
+      rename H into BCm.
+      exfalso; eapply case_1; eassumption.
+
+      eapply min_neq_lt in M6; eauto ; try (left; auto).
 bbb.
 
       i  i+1  -   m
-   b  .   0   0   1
-1         ≠   ≠   ≠+1 ≠
-   a  .   1   1   0
-1         ≠   ≠   ≠+1
- b+c  .   0   0   1
+   b  .   1   1   0   .
+0         ≠   ≠    +0
+   a  .   0   0   0   .
+1         ≠   ≠   ≠+1 ≠   ≠ …
+ b+c  .   1   1   1   .
 
- a+b  .   0   0   0
+ a+b  .   1   1   0   .
 0         ≠   ≠
-   c  .   1   1   0
-1         ≠   ≠   ≠+1 ≠
-   b  .   0   0   1
-
-   destruct (eq_nat_dec di3 m) as [M3| M3].
-    move M3 at top; subst di3.
-    destruct (eq_nat_dec di6 m) as [M6| M6].
-     move M6 at top; subst di6.
-     rewrite H3 in H6.
-
+   c  .   0   0   0   .
+0         ≠   ≠    +1
+   b  .   1   1   0   .
 
 Theorem case_3 : ∀ a₀ b₀ c₀ a b c i u,
   a = (a₀ + 0)%rm
