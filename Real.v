@@ -4945,20 +4945,42 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
          rewrite negb_involutive in H; assumption.
 
     eapply min_neq_lt in M5; eauto ; try (do 2 right; left; auto).
+    destruct (eq_nat_dec di4 m) as [M4| M4].
+     move M4 at top; subst di4.
+     destruct (eq_nat_dec di6 m) as [M6| M6].
+      move M6 at top; subst di6.
+      remember H4 as H; clear HeqH.
+      unfold rm_add_i in H.
+      rewrite H6, Ht6, xorb_nilpotent, xorb_false_l in H.
+      rename H into ABm.
+      remember Hs3 as H; clear HeqH.
+      eapply carry_before_inf_relay in H; simpl in H.
+      rename H into A_BCm.
+      pose proof (Hn3 m) as H.
+      rewrite H6 in H.
+      apply negb_sym in H.
+      unfold rm_add_i in H.
+      rewrite Ht6, Ht4, xorb_false_r in H.
+      apply xorb_move_l_r_1 in H.
+      rewrite negb_xorb_diag_r in H.
+      rename H into BCm.
+      exfalso; eapply case_1; eassumption.
+
+      eapply min_neq_lt in M6; eauto ; try (left; auto).
 bbb.
 
       i  i+1  -   m
-   b  .   .   .   .
-u
-   a  .   .   .   .
-1
- b+c  .   .   .   .
+   b  .   .   .   1
+1                  +0
+   a  .   .   .   1
+1         ≠   ≠   ≠+1 ≠ …
+ b+c  .   .   .   0
 
- a+b  .   .   .   .
+ a+b  .   .   .   0
 0
-   c  .   .   .   .
-u
-   b  .   .   .   .
+   c  .   .   .   0
+1         ≠   ≠   ≠+1
+   b  .   .   .   1
 
 Theorem case_3 : ∀ a₀ b₀ c₀ a b c i u,
   a = (a₀ + 0)%rm
