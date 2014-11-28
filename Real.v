@@ -4885,19 +4885,29 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
       exfalso; eapply case_1; eassumption.
 
       eapply min_neq_lt in M6; eauto ; try (left; auto).
+      remember H4 as H; clear HeqH.
+      unfold rm_add_i in H.
+      rewrite Hn6 in H; [ idtac | assumption ].
+      rewrite negb_xorb_diag_l, xorb_true_l in H.
+      apply negb_false_iff in H.
+      rewrite <- Nat.add_succ_l in H.
+      erewrite carry_before_relay in H; try eassumption.
+      simpl in H; rewrite H6 in H; discriminate H.
+
+     eapply min_neq_lt in M4; eauto ; try (right; left; auto).
 bbb.
 
       i  i+1  -   m
    b  .   1   1   0   .
-0         ≠   ≠    +0
-   a  .   0   0   0   .
-1         ≠   ≠   ≠+1 ≠   ≠ …
- b+c  .   1   1   1   .
+0         ≠   ≠   ≠+0
+   a  .   0   0   .   .
+1         ≠   ≠   ≠   ≠   ≠ …
+ b+c  .   1   1   .   .
 
  a+b  .   1   1   0   .
 0         ≠   ≠
    c  .   0   0   0   .
-0         ≠   ≠    +1
+0         ≠   ≠
    b  .   1   1   0   .
 
 Theorem case_3 : ∀ a₀ b₀ c₀ a b c i u,
