@@ -4367,7 +4367,21 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
       rewrite Hn6 in H; [ idtac | assumption ].
       apply negb_true_iff in H.
       rewrite H5 in H; move H at top; subst u.
-      eapply case_2 with (i := S (i + m)).
+      remember Ht3 as H; clear HeqH.
+      unfold rm_add_i in H.
+      rewrite H5, Ht5, xorb_false_l in H.
+      rename H into Rbcm.
+      destruct (eq_nat_dec di4 m) as [M4| M4].
+       move M4 at top; subst di4.
+       remember H4 as H; clear HeqH.
+       unfold rm_add_i in H.
+       rewrite H3, H5, xorb_true_l in H.
+       apply negb_false_iff in H.
+       rewrite <- Nat.add_succ_l in H.
+       erewrite carry_before_relay in H; try eassumption.
+       simpl in H; rewrite H6 in H; discriminate H.
+
+       eapply min_neq_lt in M4; [ idtac | eauto  | do 2 right; left; auto ].
 bbb.
 
       i  i+1  -   m
