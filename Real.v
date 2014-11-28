@@ -4620,20 +4620,70 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
      simpl in H; rewrite H5 in H; discriminate H.
 
     eapply min_neq_lt in M3; eauto ; try (right; left; auto).
+    destruct (eq_nat_dec di5 m) as [M5| M5].
+     move M5 at top; subst di5.
+     destruct (eq_nat_dec di4 m) as [M4| M4].
+      move M4 at top; subst di4.
+      rewrite Ht5 in Ht4; discriminate Ht4.
+
+      eapply min_neq_lt in M4; eauto ; try (do 2 right; left; auto).
+      exists m, true.
+      split.
+       rewrite <- Nat.add_succ_l.
+       erewrite carry_before_relay; eassumption.
+
+       split.
+        rewrite <- Nat.add_succ_l.
+        erewrite carry_before_relay; eassumption.
+
+        split.
+         pose proof (Hn3 m M3) as H.
+         unfold rm_add_i in H.
+         rewrite Hn6 in H.
+         rewrite H5, Ht5, xorb_false_l in H.
+         apply negb_sym in H; rewrite negb_involutive in H.
+         assumption.
+
+         pose proof (Hn4 m M4) as H.
+         unfold rm_add_i in H.
+         rewrite Hn6 in H.
+         rewrite negb_xorb_diag_l, xorb_true_l, Ht5 in H.
+         apply negb_sym in H; symmetry in H.
+         rewrite negb_involutive in H; assumption.
+
+     eapply min_neq_lt in M5; eauto ; try (left; auto).
+     destruct (eq_nat_dec di4 m) as [M4| M4].
+      move M4 at top; subst di4.
+      pose proof (Hn5 m M5) as H.
+      rewrite Ht4 in H; simpl in H; rename H into Bm.
+      pose proof (Hn6 m) as H.
+      rewrite Bm in H; simpl in H; rename H into Am.
+      pose proof (Hn3 m M3) as H.
+      rewrite Am in H; apply negb_sym in H; simpl in H.
+      rename H into BCm.
+      remember BCm as H; clear HeqH.
+      unfold rm_add_i in H.
+      rewrite Bm, Ht4, xorb_true_l in H.
+      apply negb_true_iff in H.
+      rewrite <- Nat.add_succ_l in H.
+      erewrite carry_before_relay in H; try eassumption.
+      simpl in H; rewrite H5 in H; discriminate H.
+
+      eapply min_neq_lt in M4; eauto ; try (do 2 right; left; auto).
 bbb.
 
       i  i+1  -   m
-   b  .   .   .   .
-1         ≠   ≠
-   a  .   .   .   .
-1         ≠   ≠
- b+c  .   .   .   .
+   b  .   .   .   1
+1         ≠   ≠   ≠+1  ≠
+   a  .   .   .   0
+1         ≠   ≠   ≠+1
+ b+c  .   .   .   1
 
- a+b  .   0   0   .
+ a+b  .   0   0   0
 0         ≠   ≠
-   c  .   .   .   .
-1         ≠   ≠   ≠
-   b  .   .   .   .
+   c  .   .   .   0
+1         ≠   ≠   ≠+1
+   b  .   .   .   1
 
 
 Theorem case_3 : ∀ a₀ b₀ c₀ a b c i u,
