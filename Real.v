@@ -4413,19 +4413,36 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
       unfold rm_add_i in H.
       rewrite Bm, Cm, Rbcm, xorb_false_l, xorb_true_l in H.
       apply negb_true_iff in H; move H at top; subst u.
+      destruct (eq_nat_dec di4 m) as [M4| M4].
+       move M4 at top; subst di4.
+       rewrite Ht4 in Cm; discriminate Cm.
+
+       eapply min_neq_lt in M4; [ idtac | eauto  | do 2 right; left; auto ].
+       pose proof (Hn4 m M4) as H.
+       rewrite Cm in H; simpl in H.
+       rename H into ABm.
+       remember ABm as H; clear HeqH.
+       unfold rm_add_i in H.
+       rewrite H3, Bm, xorb_false_r, xorb_true_l in H.
+       apply negb_false_iff in H.
+       rewrite <- Nat.add_succ_l in H.
+       erewrite carry_before_relay in H; try eassumption.
+       simpl in H; rewrite H6 in H; discriminate H.
+
+    eapply min_neq_lt in M3; [ idtac | eauto  | right; left; auto ].
 bbb.
 
       i  i+1  -   m
    b  .   .   .   0   .   .
-u         ≠   ≠   ≠
+0         ≠   ≠   ≠+0
    a  .   .   .   1   .   .
 1         ≠   ≠
  b+c  .   .   .   1   .   .
 
- a+b  .   .   .   .   .   .
-0
+ a+b  .   .   .   0   .   .
+0         ≠   ≠   ≠
    c  .   .   .   1   .   .
-u         ≠   ≠   ≠+0
+0         ≠   ≠   ≠+0
    b  .   .   .   0   .   .
 
 *)
