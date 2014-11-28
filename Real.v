@@ -4759,17 +4759,98 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
          assumption.
 
      eapply min_neq_lt in M6; eauto ; try (left; auto).
+     destruct (eq_nat_dec di4 m) as [M4| M4].
+      move M4 at top; subst di4.
+      pose proof (Hn5 m) as H.
+      rewrite Ht4 in H; simpl in H.
+      rename H into Bm.
+      pose proof (Hn6 m M6) as H.
+      rewrite Bm in H; simpl in H.
+      rename H into Am.
+      pose proof (Hn3 m M3) as H.
+      rewrite Am in H.
+      apply negb_sym in H; simpl in H.
+      unfold rm_add_i in H.
+      rewrite Bm, Ht4, xorb_true_l in H.
+      apply negb_true_iff in H.
+      rewrite <- Nat.add_succ_l in H.
+      rewrite carry_before_inf_relay in H; [ idtac | assumption ].
+      discriminate H.
+
+      eapply min_neq_lt in M4; [ idtac | eauto  | do 2 right; left; auto ].
+      simpl in Hm.
+      destruct (Nat.min_dec di4 di6) as [L1| L1]; rewrite L1 in Hm.
+       destruct (Nat.min_dec di3 di4) as [L2| L2]; rewrite L2 in Hm.
+        subst m; exfalso; revert M3; apply Nat.lt_irrefl.
+
+        subst m; exfalso; revert M4; apply Nat.lt_irrefl.
+
+       destruct (Nat.min_dec di3 di6) as [L2| L2]; rewrite L2 in Hm.
+        subst m; exfalso; revert M3; apply Nat.lt_irrefl.
+
+        subst m; exfalso; revert M6; apply Nat.lt_irrefl.
+
+   remember (List.fold_right min di4 [di3 … []]) as m eqn:Hm .
+   remember Hs3 as H; clear HeqH.
+   apply fst_same_iff in H; simpl in H.
+   destruct H as (Hn3, Ht3).
+   rewrite H3 in Ht3; symmetry in Ht3.
+   remember Hs4 as H; clear HeqH.
+   apply fst_same_iff in H; simpl in H.
+   destruct H as (Hn4, Ht4).
+   rewrite H4 in Ht4; symmetry in Ht4.
+   remember Hs5 as H; clear HeqH.
+   apply fst_same_iff in H; simpl in H.
+   rename H into Hn5.
+   remember Hs6 as H; clear HeqH.
+   apply fst_same_iff in H; simpl in H.
+   rename H into Hn6.
+   destruct (eq_nat_dec di3 m) as [M3| M3].
+    move M3 at top; subst di3.
+    remember Ht3 as H; clear HeqH.
+    unfold rm_add_i in H.
+    rewrite Hn5, negb_xorb_diag_l, xorb_true_l in H.
+    apply negb_true_iff in H.
+    rewrite <- Nat.add_succ_l in H.
+    rewrite carry_before_inf_relay in H; [ idtac | assumption ].
+    discriminate H.
+
+    eapply min_neq_lt in M3; eauto ; try (right; left; auto).
+    destruct (eq_nat_dec di4 m) as [M4| M4].
+     move M4 at top; subst di4.
+     pose proof (Hn5 m) as H.
+     rewrite Ht4 in H; simpl in H.
+     rename H into Bm.
+     pose proof (Hn6 m) as H.
+     rewrite Bm in H; simpl in H.
+     rename H into Am.
+     pose proof (Hn3 m M3) as H.
+     rewrite Am in H.
+     apply negb_sym in H; simpl in H.
+     unfold rm_add_i in H.
+     rewrite Bm, Ht4, xorb_true_l in H.
+     apply negb_true_iff in H.
+     rewrite <- Nat.add_succ_l in H.
+     rewrite carry_before_inf_relay in H; [ idtac | assumption ].
+     discriminate H.
+
+     eapply min_neq_lt in M4; [ idtac | eauto  | left; auto ].
+     simpl in Hm.
+     destruct (Nat.min_dec di3 di4) as [L1| L1]; rewrite L1 in Hm.
+      subst m; exfalso; revert M3; apply Nat.lt_irrefl.
+
+      subst m; exfalso; revert M4; apply Nat.lt_irrefl.
 bbb.
 
       i  i+1  -   m
    b  .   0   0   1
-1         ≠   ≠    +1
-   a  .   1   1   1
+1         ≠   ≠   ≠+1 ≠
+   a  .   1   1   0
 1         ≠   ≠   ≠+1
- b+c  .   0   0   0
+ b+c  .   0   0   1
 
- a+b  .   0   0   1
-0         ≠   ≠   ≠+0
+ a+b  .   0   0   0
+0         ≠   ≠
    c  .   1   1   0
 1         ≠   ≠   ≠+1 ≠
    b  .   0   0   1
