@@ -3189,6 +3189,7 @@ destruct s5 as [di5| ]; [ idtac | clear H ].
   rewrite <- Ht5, Ht6 in Ha6; discriminate Ha6.
 Qed.
 
+(*
 Theorem carry_x_before_xx : ∀ a b i x,
   a.[S i] = x
   → b.[S i] = x
@@ -3210,7 +3211,9 @@ destruct s as [di| ].
  symmetry in H.
  exfalso; revert H; apply no_fixpoint_negb.
 Qed.
+*)
 
+(*
 Theorem carry_eq_l_add_eq_r : ∀ a b i,
   carry a b i = a.[i] ↔ rm_add_i a b i = b.[i].
 Proof.
@@ -3225,7 +3228,9 @@ split; intros H.
  apply xorb_eq.
  rewrite xorb_comm; assumption.
 Qed.
+*)
 
+(*
 Theorem sum_0x_x_not_sum_y1_0 : ∀ a b c i di1 di2 di4 y t,
   (∀ dj, dj < di1 → rm_add_i a b (S (i + dj)) = negb c .[ S (i + dj)])
   → (∀ dj, dj < di4 → b .[ S (i + di2 + dj)] = negb c .[ S (i + di2 + dj)])
@@ -3302,7 +3307,9 @@ destruct di4.
    apply Nat.succ_lt_mono in Hdj.
    assumption.
 Qed.
+*)
 
+(*
 Theorem sum_x1_0_carry_not_x : ∀ a b c i di1 di2 di4 t,
   (∀ dj, dj < di1 → rm_add_i a b (S (i + dj)) = negb c .[ S (i + dj)])
   → (∀ dj, dj < S di4 →
@@ -3356,8 +3363,9 @@ destruct x.
  rewrite Nat.add_succ_r; simpl.
  apply Hn4; assumption.
 Qed.
+*)
 
-(* TODO: compare with sum_x1_0_carry_not_x *)
+(* TODO: compare with sum_x1_0_carry_not_x
 Theorem sum_x1_carry_not_x2 : ∀ a b c i di2 di4 di x,
   (∀ dj,  dj < di2 + di
    → rm_add_i a b (S (i + dj)) = negb c .[ S (i + dj)])
@@ -3422,6 +3430,7 @@ induction di; intros.
   rewrite Nat.sub_diag.
   apply Nat.lt_0_succ.
 Qed.
+*)
 
 (*
 Theorem old_subcase_2a : ∀ a b c i di3 di2 u,
@@ -3757,6 +3766,7 @@ destruct s4 as [di4| ]; [ idtac | clear H ].
 Qed.
 *)
 
+(*
 Theorem after_carry_negb : ∀ a b i u,
   carry a b i = u
   → a .[ S i] = negb u
@@ -3781,7 +3791,9 @@ destruct s as [di| ].
  rewrite Nat.add_0_r, Ha in H; apply negb_sym in H.
  rewrite negb_involutive in H; assumption.
 Qed.
+*)
 
+(*
 Theorem carry_succ_diff : ∀ a b i t u,
   carry a b i = t
   → a .[ S i] = u
@@ -3797,6 +3809,7 @@ rewrite Ha, Hb in H.
 destruct H as (Hu, H); rewrite Hu in H.
 revert H; apply no_fixpoint_negb.
 Qed.
+*)
 
 Theorem min_neq_lt : ∀ x xl y m,
   m = List.fold_right min x xl
@@ -4074,46 +4087,6 @@ destruct sbcn as [dbcn| ]; [ idtac | clear H ].
     rewrite L1 in Hp; subst p.
     exfalso; revert Hpdabn; apply Nat.lt_irrefl.
 Qed.
-
-(* conjecture
-Theorem yyy : ∀ a b c i,
-  carry a (b + c) i = false
-  → carry (a + b) c i = false
-  → carry b c i = true
-  → carry a b i = false
-  → ∀ j, i < j → a.[j] = false.
-Proof.
-intros a b c i Hc3 Hc4 Hc5 Hc6 j Hij.
-bbb.
-
-       i  i+1  -   n   -   di
-  b    .   .   .   0   .   .
-        +0  +0      +0
-  a    .   0   .   0   .   .
-        +0
- b+c   .   0   0   0   .   .
-
- a+b   .   .   .   0   .   .
-        +0 ≠   ≠   ≠+0
-  c    .   .   .   1   .   .
-        +1 ≠   ≠   ≠+1
-  b    .   .   .   0   .   .
-
-car a.[i+1]=1 → contrad
-
-       i  i+1  -   n   -   di
-  b    0   x   .   .   0   .
-        +0  +0      +0
-  a    0   0   0   .   0   .
-        +0          +0
- b+c   0   0   0   0   0   .
-
- a+b   0   x   .   .   0   0
-       ≠+0 ≠   ≠   ≠+0 ≠
-  c    1   .   .   .   1   0
-       ≠+1 ≠   ≠   ≠+1 ≠
-  b    0   x   .   .   0   .
-*)
 
 Definition rm_shift n a := {| rm i := a.[i+n] |}.
 Arguments rm_shift n%nat a%rm.
