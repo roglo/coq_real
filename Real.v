@@ -111,6 +111,17 @@ intros α i f x; unfold id; intros H j.
 apply H.
 Qed.
 
+Theorem nat_sub_add_r : ∀ x y z,
+  x < y
+  → z = y - S x
+  → y = x + S z.
+Proof.
+intros x y z Hxy Hc; subst z.
+rewrite <- Nat.sub_succ_l; [ simpl | assumption ].
+rewrite Nat.add_sub_assoc; [ idtac | apply Nat.lt_le_incl; assumption ].
+rewrite Nat.add_comm, Nat.add_sub; reflexivity.
+Qed.
+
 Theorem negb_xorb_diag_l : ∀ x, negb x ⊕ x = true.
 Proof. intros x; destruct x; reflexivity. Qed.
 
@@ -986,92 +997,6 @@ destruct s1 as [di1| ].
     rewrite Ha3, Hb3 in H; discriminate H.
 
  rewrite Hxy, negb_xorb_diag_l in H; discriminate H.
-Qed.
-
-Theorem nat_sub_add_r : ∀ x y z,
-  x < y
-  → z = y - S x
-  → y = x + S z.
-Proof.
-intros x y z Hxy Hc; subst z.
-rewrite <- Nat.sub_succ_l; [ simpl | assumption ].
-rewrite Nat.add_sub_assoc; [ idtac | apply Nat.lt_le_incl; assumption ].
-rewrite Nat.add_comm, Nat.add_sub; reflexivity.
-Qed.
-
-Theorem rm_add_inf_true_if : ∀ x y i,
-  (∀ di, rm_add_i x y (i + di) = true)
-  → ∃ j,
-    (∀ dj, x.[i+j+dj] = true) ∧
-    (∀ dj, y.[i+j+dj] = true) ∧
-    (0 < j → x.[i+pred j] = false) ∧
-    (0 < j → y.[i+pred j] = false) ∧
-    (fst_same x y i = Some (pred j)).
-Proof.
-intros x y i Hdi.
-destruct (bool_dec x .[ i] y .[ i]) as [H1| H1].
- remember Hdi as H; clear HeqH.
- apply rm_add_inf_true_eq_if in H; auto.
- destruct H as (Ha, Hb).
- remember x .[ i] as a eqn:H2 .
- symmetry in H1, H2.
- destruct a.
-  exists 0.
-  rewrite Nat.add_0_r.
-  split.
-   intros dj; destruct dj; [ idtac | apply Ha ].
-   rewrite Nat.add_0_r; assumption.
-
-   split.
-    intros dj; destruct dj; [ idtac | apply Hb ].
-    rewrite Nat.add_0_r; assumption.
-
-    split; [ intros H; exfalso; revert H; apply Nat.nlt_0_r | idtac ].
-    split; [ intros H; exfalso; revert H; apply Nat.nlt_0_r | idtac ].
-    apply fst_same_iff; simpl.
-    rewrite Nat.add_0_r.
-    split; [ idtac | rewrite H1, H2; reflexivity ].
-    intros dj H; exfalso; revert H; apply Nat.nlt_0_r.
-
-  exists 1.
-  rewrite Nat.add_1_r; simpl.
-  rewrite Nat.add_0_r.
-  split; [ intros dj; rewrite <- Nat.add_succ_r; apply Ha | idtac ].
-  split; [ intros dj; rewrite <- Nat.add_succ_r; apply Hb | idtac ].
-  split; [ intros H; assumption | idtac ].
-  split; [ intros H; assumption | idtac ].
-  apply fst_same_iff; simpl.
-  rewrite Nat.add_0_r.
-  split; [ idtac | rewrite H1, H2; reflexivity ].
-  intros dj H; exfalso; revert H; apply Nat.nlt_0_r.
-
- apply neq_negb in H1.
- remember Hdi as H; clear HeqH.
- apply rm_add_inf_true_neq_if in H; auto.
- destruct H as (j, (Hij, (Hni, (Ha, (Hb, (Hat, Hbt)))))).
- remember (j - S i) as k eqn:Hk .
- apply nat_sub_add_r in Hk; [ idtac | assumption ].
- subst j; clear Hij; rename k into j.
- exists (S (S j)).
- split; [ intros dj | idtac ].
-  rewrite Nat.add_succ_r; simpl.
-  rewrite <- Nat.add_assoc, <- Nat.add_succ_r.
-  rewrite <- Nat.add_succ_r, Nat.add_assoc.
-  apply Hat.
-
-  split; [ intros dj | idtac ].
-   rewrite Nat.add_succ_r; simpl.
-   rewrite <- Nat.add_assoc, <- Nat.add_succ_r.
-   rewrite <- Nat.add_succ_r, Nat.add_assoc.
-   apply Hbt.
-
-   split; [ intros H; simpl; assumption | idtac ].
-   split; [ intros H; simpl; assumption | idtac ].
-   apply fst_same_iff; simpl.
-   split; [ intros dj Hdj | idtac ].
-    apply Hni, Nat.add_lt_mono_l; assumption.
-
-    rewrite Ha, Hb; reflexivity.
 Qed.
 
 Theorem lt_add_sub_lt_r : ∀ a y z d,
@@ -2342,7 +2267,6 @@ rewrite <- Nat.add_assoc.
 apply Hs.
 Qed.
 
-(* still proved as rm_add_inf_true_if!! *)
 Theorem rm_add_inf_if : ∀ x y i,
   (∀ dj, rm_add_i x y (i + dj) = true)
   → ∃ j,
