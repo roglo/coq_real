@@ -95,15 +95,6 @@ Theorem forall_and_distr : ∀ α (P Q : α → Prop),
   (∀ x, P x ∧ Q x) → (∀ x, P x) ∧ (∀ x, Q x).
 Proof. intros; split; intros x; apply H. Qed.
 
-Theorem forall_compat : ∀ α (P Q : α → Prop),
-  (∀ x, P x → Q x)
-  → (∀ x, P x)
-  → id (∀ x, Q x).
-Proof.
-intros α P Q HPQ HP x.
-apply HPQ, HP.
-Qed.
-
 Theorem forall_add_succ_r : ∀ α i f (x : α),
   (∀ j, f (i + S j) = x)
   → id (∀ j, f (S i + j) = x).
@@ -2360,43 +2351,7 @@ intros dj Hdj; exfalso.
 revert Hdj; apply Nat.nlt_0_r.
 Qed.
 
-Theorem carry_diag : ∀ x i, carry x x i = x.[S i].
-Proof.
-intros x i.
-unfold carry; simpl.
-rewrite fst_same_diag, Nat.add_0_r; reflexivity.
-Qed.
-
 (* associativity *)
-
-Theorem fold_rm_add_i : ∀ x y i, rm_add_i x y i = ((x+y)%rm).[i].
-Proof. reflexivity. Qed.
-
-Theorem nat_compare_add_succ : ∀ i j, nat_compare i (i + S j) = Lt.
-Proof.
-intros i j.
-apply nat_compare_lt.
-apply Nat.lt_sub_lt_add_l.
-rewrite Nat.sub_diag.
-apply Nat.lt_0_succ.
-Qed.
-
-Theorem same_fst_same : ∀ x y i di dj,
-  fst_same x y i = Some (di + dj)
-  → fst_same x y (i + di) = Some dj.
-Proof.
-intros x y i di dj Hs.
-apply fst_same_iff in Hs; simpl in Hs.
-destruct Hs as (Hn, Hs).
-apply fst_same_iff.
-split.
- intros dk Hdk.
- apply Nat.add_lt_mono_l with (p := di) in Hdk.
- apply Hn in Hdk.
- rewrite Nat.add_assoc in Hdk; assumption.
-
- rewrite Nat.add_assoc in Hs; assumption.
-Qed.
 
 Lemma lt_add_r : ∀ x y,
   0 < y
@@ -2406,43 +2361,6 @@ intros x y Hb.
 apply Nat.lt_sub_lt_add_l.
 rewrite Nat.sub_diag.
 assumption.
-Qed.
-
-Theorem fst_same_before : ∀ x y i dk dl di4,
-  fst_same x y (S i) = Some dk
-  → dl < dk
-  → fst_same x y (S (S (i + dl))) = Some di4
-  → di4 = dk - S dl.
-Proof.
-intros x y i dk dl di4 Hsk Hdl Hs4.
-destruct (lt_dec di4 (dk - S dl)) as [H2| H2].
- apply Nat.lt_add_lt_sub_r in H2.
- apply fst_same_iff in Hsk; simpl in Hsk.
- destruct Hsk as (Hnk, Hsk).
- apply Hnk in H2.
- apply fst_same_iff in Hs4; simpl in Hs4.
- destruct Hs4 as (Hn4, Hs4).
- rewrite Nat.add_assoc, Nat.add_shuffle0 in H2.
- rewrite Nat.add_succ_r in H2; simpl in H2.
- rewrite Hs4 in H2.
- destruct y .[ S (S (i + dl + di4))]; discriminate H2.
-
- apply Nat.nlt_ge in H2.
- destruct (lt_dec (dk - S dl) di4) as [H3| H3].
-  apply fst_same_iff in Hs4.
-  destruct Hs4 as (Hn4, Hs4).
-  apply Hn4 in H3.
-  apply fst_same_iff in Hsk.
-  destruct Hsk as (Hnk, Hsk).
-  rewrite Nat.add_sub_assoc in H3; auto.
-  rewrite <- Nat.add_succ_r in H3.
-  rewrite <- Nat.add_succ_l in H3.
-  rewrite Nat.add_shuffle0, Nat.add_sub in H3.
-  rewrite Hsk in H3.
-  destruct y .[ S i + dk]; discriminate H3.
-
-  apply Nat.nlt_ge in H3.
-  apply Nat.le_antisymm; assumption.
 Qed.
 
 Theorem fst_same_inf_after : ∀ x y i di,
@@ -2472,21 +2390,6 @@ destruct (bool_dec ((x + 0)%rm) .[ i] ((y + 0)%rm) .[ i]) as [H1| H1].
  apply not_rm_add_0_inf_1_succ in Hat; auto.
 Qed.
 
-Theorem rm_add_i_norm_norm : ∀ x y i,
-  rm_add_i ((x + 0)%rm + (y + 0)%rm) 0 i = rm_add_i (x + 0%rm) (y + 0%rm) i.
-Proof.
-intros x y i.
-unfold rm_add_i, carry at 1.
-remember (S i) as si; simpl.
-rewrite xorb_false_r.
-remember (fst_same ((x + 0)%rm + (y + 0)%rm) 0 si) as s1 eqn:Hs1 .
-apply fst_same_sym_iff in Hs1; simpl in Hs1.
-destruct s1 as [di1| ].
- destruct Hs1 as (Hn1, Hs1); rewrite Hs1, xorb_false_r; reflexivity.
-
- apply not_add_norm_inf_1 in Hs1; contradiction.
-Qed.
-
 (* still proved as rm_add_inf_true_if!! *)
 Theorem rm_add_inf_if : ∀ x y i,
   (∀ dj, rm_add_i x y (i + dj) = true)
@@ -2511,31 +2414,6 @@ destruct (bool_dec x .[ i] y .[ i]) as [H1| H1].
  destruct Hj as (j, (Hij, (Hni, (Ha, (Hb, (Hat, Hbt)))))).
  exists j.
  split; [ assumption | split; assumption ].
-Qed.
-
-(* trying to make x lemma for something used many times, but it does
-   not seem to work properly *)
-Theorem same_relays : ∀ di1 di2 f g,
-  (∀ dj, dj < di1 → f dj = negb (g dj))
-  → (∀ dj, dj < di2 → f dj = negb (g dj))
-  → f di1 = g di1
-  → f di2 = g di2
-  → di1 = di2.
-Proof.
-intros di1 di2 f g Hdi1 Hdi2 Hf1 Hf2.
-destruct (lt_dec di1 di2) as [H1| H1].
- apply Hdi2 in H1.
- rewrite Hf1 in H1.
- destruct (g di1); discriminate H1.
-
- apply Nat.nlt_ge in H1.
- destruct (lt_dec di2 di1) as [H2| H2].
-  apply Hdi1 in H2.
-  rewrite Hf2 in H2.
-  destruct (g di2); discriminate H2.
-
-  apply Nat.nlt_ge in H2.
-  apply Nat.le_antisymm; assumption.
 Qed.
 
 Theorem fst_same_in_range : ∀ x y i j di s,
@@ -2580,21 +2458,6 @@ destruct s as [dj| ].
  exfalso; apply neq_negb in H; apply H; reflexivity.
 Qed.
 
-Theorem fst_same_in_range2 : ∀ x y i di dj s,
-  fst_same x y i = Some dj
-  → fst_same x y (i + di) = s
-  → di ≤ dj
-  → s = Some (dj - di).
-Proof.
-intros x y i di dj s Hdj Hdi Hdij.
-eapply fst_same_in_range in Hdi; try eassumption.
- rewrite <- minus_plus_simpl_l_reverse in Hdi.
- assumption.
-
- split; [ apply Nat.le_add_r | idtac ].
- apply Nat.add_le_mono_l; assumption.
-Qed.
-
 Theorem carry_before_relay : ∀ x y i di,
   fst_same x y i = Some di
   → ∀ dj, dj < di → carry x y (i + dj) = x.[i + di].
@@ -2631,37 +2494,6 @@ rewrite Hs in Hs2.
 exfalso; revert Hs2; apply no_fixpoint_negb.
 Qed.
 
-Theorem sum_before_relay : ∀ x y i di a,
-  fst_same x y i = Some di
-  → x .[i + di] = a
-  → ∀ dj, dj < di → rm_add_i x y (i + dj) = negb a.
-Proof.
-intros x y i di a Hs Ha dj Hdj.
-unfold rm_add_i.
-remember Hs as H; clear HeqH.
-apply fst_same_iff in H; simpl in H.
-destruct H as (Hs1, Hn1).
-remember Hdj as H; clear HeqH.
-apply Hs1 in H.
-rewrite H, negb_xorb_diag_l, xorb_true_l.
-f_equal; erewrite carry_before_relay; try eassumption; reflexivity.
-Qed.
-
-Theorem carry_when_inf_1 : ∀ x y i j,
-  (∀ di, x.[S (i + di)] = true)
-  → i ≤ j
-  → carry x y j = true.
-Proof.
-intros x y i j Hdi Hij.
-unfold carry; simpl.
-remember (fst_same x y (S j)) as s1 eqn:Hs1 .
-destruct s1 as [di1| ]; [ idtac | reflexivity ].
-apply Nat.sub_add in Hij.
-rewrite Nat.add_comm in Hij.
-rewrite <- Hij, <- Nat.add_assoc.
-apply Hdi.
-Qed.
-
 Theorem carry_comm_l : ∀ x y z i,
   carry (x + y) z i = carry (y + x) z i.
 Proof.
@@ -2676,29 +2508,6 @@ Theorem rm_add_assoc_norm : ∀ x y z,
 Proof.
 intros x y z H.
 do 3 rewrite rm_add_0_r in H; assumption.
-Qed.
-
-Theorem carry_sum_norm : ∀ x0 y0 x y i,
-  x = (x0 + 0)%rm
-  → y = (y0 + 0)%rm
-  → carry (x + y)%rm 0 i = false.
-Proof.
-intros x0 y0 x y i Ha0 Hb0.
-unfold carry; simpl.
-remember (fst_same (x + y) 0 (S i)) as s1 eqn:Hs1 .
-apply fst_same_sym_iff in Hs1; simpl in Hs1.
-destruct s1 as [di1| ].
- destruct Hs1 as (Hn1, Hs1); assumption.
-
- apply forall_add_succ_l in Hs1.
- apply rm_add_inf_if in Hs1.
- destruct Hs1 as (j, (Hij, (Haj, Hbj))).
- rewrite Ha0 in Haj; simpl in Haj.
- apply forall_add_succ_r in Haj.
- apply rm_add_inf_if in Haj.
- destruct Haj as (k, (Hjk, (Hak, Hbk))).
- simpl in Hbk.
- symmetry; apply Hbk; assumption.
 Qed.
 
 Theorem carry_sum_3_norm_assoc_l : ∀ z0 x y z i,
