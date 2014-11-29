@@ -3859,6 +3859,7 @@ induction xl as [| z]; intros.
    eapply Nat.min_glb_r; eassumption.
 Qed.
 
+(* perhaps conclution simplifiable, see carry_repeat2 *)
 Theorem carry_repeat : ∀ x y z i,
   carry x y i = false
   → carry (x + y) z i = false
@@ -5279,19 +5280,14 @@ induction di as (di, IHdi) using all_lt_all; intros.
 remember Hc3 as H; clear HeqH.
 eapply carry_repeat2 with (y := y) in H; try eassumption.
 destruct H as (n, (t, (Ra_bcn, (Rab_cn, (Rbcn, (Rabn, Hnab_z)))))).
-destruct (lt_eq_lt_dec di n) as [[H1| H1]| H1].
- remember Hs as H; clear HeqH.
- apply fst_same_iff in H; simpl in H.
- destruct H as (Hnab_c2, Hxy_z).
- rewrite Hnab_z in Hxy_z; [ idtac | apply Nat.lt_le_incl; assumption ].
- exfalso; revert Hxy_z; apply no_fixpoint_negb.
+remember Hs as H; clear HeqH.
+apply fst_same_iff in H; simpl in H.
+destruct H as (Hnab_c2, Hxy_z).
+destruct (le_dec di n) as [H1| H1].
+ rewrite Hnab_z in Hxy_z; [ idtac | assumption ].
+ revert Hxy_z; apply no_fixpoint_negb.
 
- subst di.
- remember Hs as H; clear HeqH.
- apply fst_same_iff in H; simpl in H.
- destruct H as (Hnab_c2, Hxy_z).
- remember Hc4 as H; clear HeqH.
- unfold carry in H; rewrite Hs in H; simpl in H.
+ apply Nat.nle_gt in H1.
 bbb.
 
 remember Hc4 as H; clear HeqH.
