@@ -5075,7 +5075,46 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
         assumption.
 
     eapply min_neq_lt in M5; eauto ; try (left; auto).
+    destruct (eq_nat_dec di4 m) as [M4| M4].
+     move M4 at top; subst di4.
+     pose proof (Hn5 m M5) as Bm.
+     rewrite Ht4 in Bm; simpl in Bm.
+     pose proof (Hn6 m) as Am.
+     rewrite Bm in Am; simpl in Am.
+     pose proof (Hn3 m) as BCm.
+     rewrite Am in BCm; apply negb_sym in BCm; simpl in BCm.
+     remember BCm as H; clear HeqH.
+     unfold rm_add_i in H.
+     rewrite Bm, Ht4, xorb_true_l in H.
+     apply negb_true_iff in H.
+     rewrite <- Nat.add_succ_l in H.
+     erewrite carry_before_relay in H; try eassumption.
+     simpl in H; rewrite H5 in H.
+     discriminate H.
+
+     eapply min_neq_lt in M4; eauto ; try (right; left; auto).
+     simpl in Hm.
+     destruct (Nat.min_dec di4 di5) as [L1| L1]; rewrite L1 in Hm.
+      subst m; exfalso; revert M4; apply Nat.lt_irrefl.
+
+      subst m; exfalso; revert M5; apply Nat.lt_irrefl.
+
+  move H5 at top; subst u.
+  destruct s6 as [di6| ]; [ idtac | clear H6 ].
 bbb.
+
+      i  i+1  -   m
+   b  .   .   .   1
+u         ≠   ≠   ≠+1 ≠ …          di6
+   a  .   .   .   0
+1         ≠   ≠   ≠+1 ≠ …          di3
+ b+c  .   .   .   1
+
+ a+b  .   .   .   0
+0         ≠   ≠                    di4
+   c  .   .   .   0
+u         ≠   ≠   ≠+0              di5
+   b  .   .   .   1
 
       i  i+1  -   m
    b  .   .   .   .
