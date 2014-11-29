@@ -173,34 +173,64 @@ destruct s as [di| ]; [ idtac | f_equal; apply xorb_comm ].
 f_equal; [ apply xorb_comm | destruct Hs; auto ].
 Qed.
 
-(* TODO: carry_comm to be used *)
+Theorem carry_compat_r : ∀ x y z j,
+  (∀ i, x .[ i] = y .[ i])
+  → carry y z j = carry x z j.
+Proof.
+intros x y z j Hxy.
+unfold carry; intros.
+remember (fst_same y z (S j)) as s1 eqn:Hs1 .
+remember (fst_same x z (S j)) as s2 eqn:Hs2 .
+symmetry in Hs1, Hs2.
+apply fst_same_iff in Hs1.
+apply fst_same_iff in Hs2.
+simpl in Hs1, Hs2; simpl.
+destruct s1 as [di1| ].
+ destruct Hs1 as (Hn1, Hs1).
+ rewrite Hs1.
+ destruct s2 as [di2| ].
+  destruct Hs2 as (Hn2, Hs2).
+  rewrite Hs2.
+  destruct (lt_dec di1 di2) as [H1| H1].
+   remember H1 as H; clear HeqH.
+   apply Hn2 in H.
+   rewrite Hxy, Hs1 in H.
+   destruct z .[ S (j + di1)]; discriminate H.
+
+   apply Nat.nlt_ge in H1.
+   destruct (lt_dec di2 di1) as [H2| H2].
+    remember H2 as H; clear HeqH.
+    apply Hn1 in H.
+    rewrite <- Hxy, Hs2 in H.
+    destruct z .[ S (j + di2)]; discriminate H.
+
+    apply Nat.nlt_ge in H2.
+    apply Nat.le_antisymm in H1; auto.
+
+  rewrite <- Hxy, Hs2 in Hs1.
+  destruct z .[ S (j + di1)]; discriminate Hs1.
+
+ destruct s2 as [di2| ]; auto.
+ destruct Hs2 as (Hn2, Hs2).
+ rewrite Hxy, Hs1 in Hs2.
+ destruct z .[ S (j + di2)]; discriminate Hs2.
+Qed.
+
+Theorem carry_comm_l : ∀ x y z i,
+  carry (x + y) z i = carry (y + x) z i.
+Proof.
+intros x y z i.
+rewrite carry_compat_r with (x := (y + x)%rm); [ reflexivity | idtac ].
+apply rm_add_i_comm.
+Qed.
+
 Theorem rm_add_comm : ∀ x y, (x + y = y + x)%rm.
 Proof.
 intros x y.
 unfold rm_eq; intros i; simpl.
-unfold rm_add_i, carry; simpl.
-do 2 rewrite xorb_false_r.
-remember (fst_same (x + y) 0 (S i)) as sxy eqn:Hsxy .
-remember (fst_same (y + x) 0 (S i)) as syx eqn:Hsyx .
-symmetry in Hsxy, Hsyx.
-apply fst_same_iff in Hsxy.
-apply fst_same_iff in Hsyx.
-simpl in Hsxy, Hsyx.
-destruct sxy as [dixy| ].
- destruct Hsxy as (Hnxy, Hsxy).
- destruct syx as [diyx| ].
-  destruct Hsyx as (Hnyx, Hsyx).
-  rewrite Hsxy, Hsyx.
-  rewrite rm_add_i_comm; reflexivity.
-
-  rewrite xorb_comm, rm_add_i_comm, Hsyx.
-  rewrite xorb_comm, rm_add_i_comm; reflexivity.
-
- destruct syx as [diyx| ]; [ idtac | rewrite rm_add_i_comm; reflexivity ].
- destruct Hsyx as (Hnyx, Hsyx).
- symmetry; rewrite xorb_comm.
- rewrite rm_add_i_comm, Hsxy.
- rewrite rm_add_i_comm, rm_add_i_comm; reflexivity.
+unfold rm_add_i; simpl.
+rewrite rm_add_i_comm, carry_comm_l.
+reflexivity.
 Qed.
 
 Theorem rm_add_0_inf_1 : ∀ x i,
@@ -313,49 +343,6 @@ Proof.
 intros x.
 unfold rm_eq.
 apply rm_add_i_0_r.
-Qed.
-
-Theorem carry_compat_r : ∀ x y z j,
-  (∀ i, x .[ i] = y .[ i])
-  → carry y z j = carry x z j.
-Proof.
-intros x y z j Hxy.
-unfold carry; intros.
-remember (fst_same y z (S j)) as s1 eqn:Hs1 .
-remember (fst_same x z (S j)) as s2 eqn:Hs2 .
-symmetry in Hs1, Hs2.
-apply fst_same_iff in Hs1.
-apply fst_same_iff in Hs2.
-simpl in Hs1, Hs2; simpl.
-destruct s1 as [di1| ].
- destruct Hs1 as (Hn1, Hs1).
- rewrite Hs1.
- destruct s2 as [di2| ].
-  destruct Hs2 as (Hn2, Hs2).
-  rewrite Hs2.
-  destruct (lt_dec di1 di2) as [H1| H1].
-   remember H1 as H; clear HeqH.
-   apply Hn2 in H.
-   rewrite Hxy, Hs1 in H.
-   destruct z .[ S (j + di1)]; discriminate H.
-
-   apply Nat.nlt_ge in H1.
-   destruct (lt_dec di2 di1) as [H2| H2].
-    remember H2 as H; clear HeqH.
-    apply Hn1 in H.
-    rewrite <- Hxy, Hs2 in H.
-    destruct z .[ S (j + di2)]; discriminate H.
-
-    apply Nat.nlt_ge in H2.
-    apply Nat.le_antisymm in H1; auto.
-
-  rewrite <- Hxy, Hs2 in Hs1.
-  destruct z .[ S (j + di1)]; discriminate Hs1.
-
- destruct s2 as [di2| ]; auto.
- destruct Hs2 as (Hn2, Hs2).
- rewrite Hxy, Hs1 in Hs2.
- destruct z .[ S (j + di2)]; discriminate Hs2.
 Qed.
 
 Theorem rm_add_i_compat_r : ∀ x y z j,
@@ -2457,14 +2444,6 @@ destruct Hs2 as (_, Hs2).
 rewrite <- Nat.add_assoc, <- Nat.add_succ_r in Hs2.
 rewrite Hs in Hs2.
 exfalso; revert Hs2; apply no_fixpoint_negb.
-Qed.
-
-Theorem carry_comm_l : ∀ x y z i,
-  carry (x + y) z i = carry (y + x) z i.
-Proof.
-intros x y z i.
-rewrite carry_compat_r with (x := (y + x)%rm); [ reflexivity | idtac ].
-apply rm_add_i_comm.
 Qed.
 
 Theorem carry_sum_3_norm_assoc_l : ∀ z0 x y z i,
