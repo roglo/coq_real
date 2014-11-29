@@ -2344,16 +2344,6 @@ Qed.
 
 (* associativity *)
 
-Lemma lt_add_r : ∀ x y,
-  0 < y
-  → x < x + y.
-Proof.
-intros x y Hb.
-apply Nat.lt_sub_lt_add_l.
-rewrite Nat.sub_diag.
-assumption.
-Qed.
-
 Theorem fst_same_inf_after : ∀ x y i di,
   fst_same x y i = None
   → fst_same x y (i + di) = None.
