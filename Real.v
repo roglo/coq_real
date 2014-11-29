@@ -3455,7 +3455,7 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
       eapply min_neq_lt in M4; [ idtac | eauto  | do 2 right; left; auto ].
       destruct (eq_nat_dec di5 m) as [M5| M5].
        move M5 at top; subst di5.
-       exists m; exists (negb u).
+       exists m, (negb u).
        split.
         rewrite <- Nat.add_succ_l.
         erewrite carry_before_relay; eassumption.
