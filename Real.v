@@ -2342,15 +2342,6 @@ destruct s as [di| ].
  discriminate Hs1; assumption.
 Qed.
 
-Theorem fst_same_diag : ∀ x i, fst_same x x i = Some 0.
-Proof.
-intros x i.
-apply fst_same_iff; simpl.
-split; [ idtac | reflexivity ].
-intros dj Hdj; exfalso.
-revert Hdj; apply Nat.nlt_0_r.
-Qed.
-
 (* associativity *)
 
 Lemma lt_add_r : ∀ x y,
@@ -2372,22 +2363,6 @@ apply fst_same_iff in Hs.
 apply fst_same_iff; intros dj.
 rewrite <- Nat.add_assoc.
 apply Hs.
-Qed.
-
-Theorem not_add_norm_inf_1 : ∀ x y i,
-  ¬ (∀ dj : nat, rm_add_i (x + 0%rm) (y + 0%rm) (i + dj) = true).
-Proof.
-intros x y i Hxy.
-destruct (bool_dec ((x + 0)%rm) .[ i] ((y + 0)%rm) .[ i]) as [H1| H1].
- apply rm_add_inf_true_eq_if in Hxy; auto.
- destruct Hxy as (H, _); simpl in H.
- apply not_rm_add_0_inf_1_succ in H; auto.
-
- apply neq_negb in H1.
- apply rm_add_inf_true_neq_if in Hxy; auto.
- simpl in Hxy.
- destruct Hxy as (j, (Hij, (Hni, (Ha, (Hb, (Hat, Hbt)))))).
- apply not_rm_add_0_inf_1_succ in Hat; auto.
 Qed.
 
 (* still proved as rm_add_inf_true_if!! *)
