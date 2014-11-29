@@ -2513,21 +2513,6 @@ destruct (bool_dec x .[ i] y .[ i]) as [H1| H1].
  split; [ assumption | split; assumption ].
 Qed.
 
-Theorem carry_0_r_true_if : ∀ x i,
-  carry x 0 i = true
-  → id (∀ dj, x.[i + S dj] = true).
-Proof.
-intros x i H j.
-unfold carry in H; simpl in H.
-remember (fst_same x 0 (S i)) as s1 eqn:Hs1 .
-apply fst_same_sym_iff in Hs1; simpl in Hs1.
-destruct s1 as [di1| ].
- destruct Hs1 as (Hn1, Hs1).
- rewrite Hs1 in H; discriminate H.
-
- rewrite Nat.add_succ_r; apply Hs1.
-Qed.
-
 (* trying to make x lemma for something used many times, but it does
    not seem to work properly *)
 Theorem same_relays : ∀ di1 di2 f g,
@@ -2683,16 +2668,6 @@ Proof.
 intros x y z i.
 rewrite carry_compat_r with (x := (y + x)%rm); [ reflexivity | idtac ].
 apply rm_add_i_comm.
-Qed.
-
-Theorem carry_assoc_l : ∀ x y z d i,
-  carry ((x + y) + z)%rm d i = carry (z + (y + x))%rm d i.
-Proof.
-intros x y z d i.
-apply carry_compat_r.
-intros j; simpl.
-rewrite rm_add_i_comm.
-apply rm_add_i_compat_r, rm_add_i_comm.
 Qed.
 
 Theorem rm_add_assoc_norm : ∀ x y z,
@@ -4699,9 +4674,7 @@ destruct c3, c4, c5, c6; try reflexivity; exfalso.
  eapply case_1; eassumption.
 
  apply case_1 with (x := z) (y := y) (z := x) (i := i).
-  rewrite carry_comm.
-  rewrite carry_compat_r with (x := (x + y)%rm); [ assumption | idtac ].
-  apply rm_add_i_comm.
+  rewrite carry_comm, carry_comm_l; assumption.
 
   rewrite carry_comm; assumption.
 
@@ -4712,10 +4685,7 @@ destruct c3, c4, c5, c6; try reflexivity; exfalso.
 
  Focus 5.
  apply case_2 with (x := z) (y := y) (z := x) (i := i).
-  rewrite carry_compat_r with (x := (y + z)%rm).
-   rewrite carry_comm; assumption.
-
-   apply rm_add_i_comm.
+  rewrite carry_comm_l, carry_comm; assumption.
 
   rewrite carry_comm; assumption.
 
@@ -4726,28 +4696,18 @@ destruct c3, c4, c5, c6; try reflexivity; exfalso.
  eapply case_3 with (x := x) (y := y); eassumption.
 
  eapply case_3 with (x := z) (y := y) (z := x) (i := i).
-  rewrite carry_comm.
-  rewrite carry_compat_r with (x := (x + y)%rm); [ assumption | idtac ].
-  apply rm_add_i_comm.
+  rewrite carry_comm, carry_comm_l; assumption.
 
-  rewrite carry_compat_r with (x := (y + z)%rm).
-   rewrite carry_comm; assumption.
-
-   apply rm_add_i_comm.
+  rewrite carry_comm_l, carry_comm; assumption.
 
   rewrite carry_comm; eassumption.
 
   rewrite carry_comm; eassumption.
 
  eapply case_3 with (x := z) (y := y) (z := x) (i := i).
-  rewrite carry_comm.
-  rewrite carry_compat_r with (x := (x + y)%rm); [ assumption | idtac ].
-  apply rm_add_i_comm.
+  rewrite carry_comm, carry_comm_l; assumption.
 
-  rewrite carry_compat_r with (x := (y + z)%rm).
-   rewrite carry_comm; assumption.
-
-   apply rm_add_i_comm.
+  rewrite carry_comm_l, carry_comm; assumption.
 
   rewrite carry_comm; eassumption.
 
