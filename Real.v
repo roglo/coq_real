@@ -5138,20 +5138,35 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
      exfalso; eapply case_1; eassumption.
 
      eapply min_neq_lt in M6; eauto ; try (left; auto).
+     pose proof (Hn5 m) as Bm.
+     rewrite Ht4 in Bm; simpl in Bm.
+     pose proof (Hn6 m M6) as Am.
+     rewrite Bm in Am; simpl in Am.
+     pose proof (Hn3 m) as BCm; apply negb_sym in BCm.
+     rewrite Am in BCm; simpl in BCm.
+     remember BCm as H; clear HeqH.
+     unfold rm_add_i in H.
+     rewrite Bm, Ht4, xorb_true_l in H.
+     apply negb_true_iff in H.
+     rewrite <- Nat.add_succ_l in H.
+     rewrite carry_before_inf_relay in H; [ idtac | assumption ].
+     discriminate H.
+
+    eapply min_neq_lt in M4; eauto ; try (right; left; auto).
 bbb.
 
       i  i+1  -   m
-   b  .   .   .   .
-u         ≠   ≠   ≠   ≠ …          di6
-   a  .   .   .   .
+   b  .   .   .   1
+1         ≠   ≠   ≠+1              di6
+   a  .   .   .   0
 1         ≠   ≠   ≠   ≠ …          di3
- b+c  .   .   .   .
+ b+c  .   .   .   1
 
- a+b  .   .   .   .
+ a+b  .   .   .   0
 0         ≠   ≠                    di4
-   c  .   .   .   .
-u         ≠   ≠                    di5
-   b  .   .   .   .
+   c  .   .   .   0
+1         ≠   ≠   ≠+0 ≠ …          di5
+   b  .   .   .   1
 
 Theorem case_3 : ∀ a₀ b₀ c₀ a b c i u,
   a = (a₀ + 0)%rm
