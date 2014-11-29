@@ -5227,18 +5227,32 @@ Theorem case_3 : ∀ a₀ b₀ c₀ a b c i u,
   → False.
 Proof.
 intros a₀ b₀ c₀ a b c i u Ha₀ Hb₀ Hc₀ Hc1 Hc2 Hc3 Hc4 Hc5 Hc6.
+clear Ha₀ Hb₀ Hc₀ Hc1 Hc2.
 remember Hc4 as H; clear HeqH.
 unfold carry in H; simpl in H.
-remember (fst_same (a + b) c (S i)) as s4 eqn:Hs4 .
-symmetry in Hs4; rename H into H4.
-destruct s4 as [di4| ]; [ idtac | discriminate H4 ].
-clear Ha₀ Hb₀ Hc₀ Hc1 Hc2 H4.
-revert a b c i u Hc3 Hc4 Hc5 Hc6 Hs4.
-induction di4 as (di4, IHdi) using all_lt_all; intros.
+remember (fst_same (a + b) c (S i)) as s eqn:Hs .
+destruct s as [di| ]; [ idtac | discriminate H ].
+symmetry in Hs; clear H.
+revert a b c i u Hc3 Hc4 Hc5 Hc6 Hs.
+induction di as (di, IHdi) using all_lt_all; intros.
 remember Hc3 as H; clear HeqH.
 eapply carry_repeat2 with (b := b) in H; try eassumption.
-destruct H as (m, (t, (Ra_bcm, (Rab_cm, (Rbcm, Rabm))))).
+destruct H as (n, (t, (Ra_bcn, (Rab_cn, (Rbcn, Rabn))))).
+remember Hs as H; clear HeqH.
+apply fst_same_iff in H; simpl in H.
+destruct H as (Hnab_c2, Hab_c).
+remember Rab_cn as H; clear HeqH.
+unfold carry in H; simpl in H.
+remember (fst_same (a + b) c (S (S (i + n)))) as sab_c eqn:Hs2 .
+destruct sab_c as [dab_c| ]; [ idtac | discriminate H ].
+apply fst_same_sym_iff in Hs2; simpl in Hs2.
+destruct Hs2 as (Hn2, Hs2).
+rewrite H in Hs2; symmetry in Hs2.
+rename H into ABd.
+destruct (lt_eq_lt_dec di n) as [[H1| H1]| H1].
 bbb.
+ rewrite Hnab_c in Hab_c; [ idtac | apply Nat.lt_le_incl; assumption ].
+ rewrite Hnab_c2 in Hab_c.
 
 remember Hc4 as H; clear HeqH.
 unfold carry in H; simpl in H.
