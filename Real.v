@@ -5153,19 +5153,50 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
      discriminate H.
 
     eapply min_neq_lt in M4; eauto ; try (right; left; auto).
+    destruct (eq_nat_dec di6 m) as [M6| M6].
+     move M6 at top; subst di6.
+     exists m, true.
+     split.
+      rewrite <- Nat.add_succ_l.
+      rewrite carry_before_inf_relay; [ idtac | assumption ].
+      reflexivity.
+
+      split.
+       rewrite <- Nat.add_succ_l.
+       erewrite carry_before_relay; eassumption.
+
+       split.
+        pose proof (Hn3 m) as H.
+        unfold rm_add_i in H.
+        rewrite H6, Hn5, negb_xorb_diag_l, negb_involutive in H.
+        symmetry; assumption.
+
+        pose proof (Hn4 m M4) as H.
+        unfold rm_add_i in H.
+        rewrite H6, Hn5, xorb_true_l, negb_involutive in H.
+        apply xorb_move_l_r_1 in H.
+        rewrite negb_xorb_diag_r in H.
+        assumption.
+
+     eapply min_neq_lt in M6; eauto ; try (left; auto).
+     simpl in Hm.
+     destruct (Nat.min_dec di4 di6) as [L1| L1]; rewrite L1 in Hm.
+      subst m; exfalso; revert M4; apply Nat.lt_irrefl.
+
+      subst m; exfalso; revert M6; apply Nat.lt_irrefl.
 bbb.
 
       i  i+1  -   m
    b  .   .   .   1
-1         ≠   ≠   ≠+1              di6
-   a  .   .   .   0
+1         ≠   ≠    +1              di6
+   a  .   .   .   1
 1         ≠   ≠   ≠   ≠ …          di3
- b+c  .   .   .   1
+ b+c  .   .   .   0
 
- a+b  .   .   .   0
-0         ≠   ≠                    di4
+ a+b  .   .   .   1
+0         ≠   ≠   ≠+0              di4
    c  .   .   .   0
-1         ≠   ≠   ≠+0 ≠ …          di5
+1         ≠   ≠   ≠+1 ≠ …          di5
    b  .   .   .   1
 
 Theorem case_3 : ∀ a₀ b₀ c₀ a b c i u,
