@@ -3455,57 +3455,45 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
       eapply min_neq_lt in M4; [ idtac | eauto  | do 2 right; left; auto ].
       destruct (eq_nat_dec di5 m) as [M5| M5].
        move M5 at top; subst di5.
-       exists m, (negb u).
+       exists m, (negb u); rewrite <- Nat.add_succ_l.
+       split; [ erewrite carry_before_relay; eassumption | idtac ].
+       split; [ erewrite carry_before_relay; eassumption | idtac ].
        split.
-        rewrite <- Nat.add_succ_l.
-        erewrite carry_before_relay; eassumption.
+        pose proof (Hn3 m M3) as H.
+        unfold rm_add_i in H.
+        rewrite H6, Ht6, Ht5, xorb_nilpotent, xorb_false_l in H.
+        apply negb_sym; assumption.
 
         split.
-         rewrite <- Nat.add_succ_l.
-         erewrite carry_before_relay; eassumption.
+         pose proof (Hn4 m M4) as H.
+         unfold rm_add_i in H.
+         rewrite H6, Ht6, Ht5, xorb_nilpotent, xorb_false_l in H.
+         assumption.
 
-         split.
-          pose proof (Hn3 m M3) as H.
-          unfold rm_add_i in H.
-          rewrite H6, Ht6, Ht5, xorb_nilpotent, xorb_false_l in H.
-          apply negb_sym; assumption.
-
-          split.
-           pose proof (Hn4 m M4) as H.
-           unfold rm_add_i in H.
-           rewrite H6, Ht6, Ht5, xorb_nilpotent, xorb_false_l in H.
-           assumption.
-
-           intros dj Hdj; apply Hn4.
-           eapply le_lt_trans; eassumption.
+         intros dj Hdj; apply Hn4.
+         eapply le_lt_trans; eassumption.
 
        eapply min_neq_lt in M5; [ idtac | eauto  | do 3 right; left; auto ].
-       exists m, u.
+       exists m, u; rewrite <- Nat.add_succ_l.
+       split; [ erewrite carry_before_relay; eassumption | idtac ].
+       split; [ erewrite carry_before_relay; eassumption | idtac ].
        split.
-        rewrite <- Nat.add_succ_l.
-        erewrite carry_before_relay; eassumption.
+        pose proof (Hn3 m M3) as H.
+        unfold rm_add_i in H.
+        rewrite Hn5 in H; [ idtac | assumption ].
+        rewrite negb_xorb_diag_l in H.
+        rewrite H6, negb_involutive in H.
+        symmetry; assumption.
 
         split.
-         rewrite <- Nat.add_succ_l.
-         erewrite carry_before_relay; eassumption.
+         pose proof (Hn4 m M4) as H.
+         unfold rm_add_i in H.
+         rewrite H6, Ht6, xorb_nilpotent, xorb_false_l in H.
+         rewrite <- Hn5 in H; [ idtac | assumption ].
+         rewrite Ht6 in H; assumption.
 
-         split.
-          pose proof (Hn3 m M3) as H.
-          unfold rm_add_i in H.
-          rewrite Hn5 in H; [ idtac | assumption ].
-          rewrite negb_xorb_diag_l in H.
-          rewrite H6, negb_involutive in H.
-          symmetry; assumption.
-
-          split.
-           pose proof (Hn4 m M4) as H.
-           unfold rm_add_i in H.
-           rewrite H6, Ht6, xorb_nilpotent, xorb_false_l in H.
-           rewrite <- Hn5 in H; [ idtac | assumption ].
-           rewrite Ht6 in H; assumption.
-
-           intros dj Hdj; apply Hn4.
-           eapply le_lt_trans; eassumption.
+         intros dj Hdj; apply Hn4.
+         eapply le_lt_trans; eassumption.
 
      eapply min_neq_lt in M6; [ idtac | eauto  | left; auto ].
      destruct (eq_nat_dec di4 m) as [M4| M4].
@@ -3545,33 +3533,27 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
       eapply min_neq_lt in M4; eauto ; try (do 2 right; left; auto).
       destruct (eq_nat_dec di5 m) as [M5| M5].
        move M5 at top; subst di5.
-       exists m, u.
+       exists m, u; rewrite <- Nat.add_succ_l.
+       split; [ erewrite carry_before_relay; eassumption | idtac ].
+       split; [ erewrite carry_before_relay; eassumption | idtac ].
        split.
-        rewrite <- Nat.add_succ_l.
-        erewrite carry_before_relay; eassumption.
+        pose proof (Hn3 m M3) as H.
+        unfold rm_add_i in H.
+        rewrite Hn6 in H; [ idtac | assumption ].
+        rewrite H5, Ht5, xorb_nilpotent, xorb_false_l in H.
+        apply negb_sym in H.
+        rewrite negb_involutive in H; assumption.
 
         split.
-         rewrite <- Nat.add_succ_l.
-         erewrite carry_before_relay; eassumption.
+         pose proof (Hn4 m M4) as H.
+         unfold rm_add_i in H.
+         rewrite Hn6 in H; [ idtac | assumption ].
+         rewrite negb_xorb_diag_l, xorb_true_l, Ht5 in H.
+         apply negb_sym in H; symmetry in H.
+         rewrite negb_involutive in H; assumption.
 
-         split.
-          pose proof (Hn3 m M3) as H.
-          unfold rm_add_i in H.
-          rewrite Hn6 in H; [ idtac | assumption ].
-          rewrite H5, Ht5, xorb_nilpotent, xorb_false_l in H.
-          apply negb_sym in H.
-          rewrite negb_involutive in H; assumption.
-
-          split.
-           pose proof (Hn4 m M4) as H.
-           unfold rm_add_i in H.
-           rewrite Hn6 in H; [ idtac | assumption ].
-           rewrite negb_xorb_diag_l, xorb_true_l, Ht5 in H.
-           apply negb_sym in H; symmetry in H.
-           rewrite negb_involutive in H; assumption.
-
-           intros dj Hdj; apply Hn4.
-           eapply le_lt_trans; eassumption.
+         intros dj Hdj; apply Hn4.
+         eapply le_lt_trans; eassumption.
 
        eapply min_neq_lt in M5; eauto ; try (do 3 right; left; auto).
        simpl in Hm.
@@ -3640,33 +3622,25 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
       rewrite Ht5 in Ht4; discriminate Ht4.
 
       eapply min_neq_lt in M4; eauto ; try (do 2 right; left; auto).
-      exists m, true.
+      exists m, true; rewrite <- Nat.add_succ_l.
+      split; [ erewrite carry_before_relay; eassumption | idtac ].
+      split; [ erewrite carry_before_relay; eassumption | idtac ].
       split.
-       rewrite <- Nat.add_succ_l.
-       erewrite carry_before_relay; eassumption.
+       pose proof (Hn3 m M3) as H.
+       unfold rm_add_i in H.
+       rewrite Hn6, H5, Ht5, xorb_false_l in H.
+       apply negb_sym in H; rewrite negb_involutive in H.
+       assumption.
 
        split.
-        rewrite <- Nat.add_succ_l.
-        erewrite carry_before_relay; eassumption.
+        pose proof (Hn4 m M4) as H.
+        unfold rm_add_i in H.
+        rewrite Hn6, negb_xorb_diag_l, xorb_true_l, Ht5 in H.
+        apply negb_sym in H; symmetry in H.
+        rewrite negb_involutive in H; assumption.
 
-        split.
-         pose proof (Hn3 m M3) as H.
-         unfold rm_add_i in H.
-         rewrite Hn6 in H.
-         rewrite H5, Ht5, xorb_false_l in H.
-         apply negb_sym in H; rewrite negb_involutive in H.
-         assumption.
-
-         split.
-          pose proof (Hn4 m M4) as H.
-          unfold rm_add_i in H.
-          rewrite Hn6 in H.
-          rewrite negb_xorb_diag_l, xorb_true_l, Ht5 in H.
-          apply negb_sym in H; symmetry in H.
-          rewrite negb_involutive in H; assumption.
-
-          intros dj Hdj; apply Hn4.
-          eapply le_lt_trans; eassumption.
+        intros dj Hdj; apply Hn4.
+        eapply le_lt_trans; eassumption.
 
      eapply min_neq_lt in M5; eauto ; try (left; auto).
      destruct (eq_nat_dec di4 m) as [M4| M4].
@@ -3751,33 +3725,27 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
       exfalso; eapply case_1; eassumption.
 
       eapply min_neq_lt in M4; [ idtac | eauto  | do 2 right; left; auto ].
-      exists m, true.
+      exists m, true; rewrite <- Nat.add_succ_l.
+      move H6 at top.
+      split; [ erewrite carry_before_relay; eassumption | idtac ].
+      split; [ erewrite carry_before_relay; eassumption | idtac ].
       split.
-       rewrite <- Nat.add_succ_l.
-       clear H6.
-       erewrite carry_before_relay; eassumption.
+       pose proof (Hn3 m M3) as H.
+       unfold rm_add_i in H.
+       rewrite H6, Hn5, negb_xorb_diag_l, negb_involutive in H.
+       symmetry; assumption.
 
        split.
-        rewrite <- Nat.add_succ_l.
-        erewrite carry_before_relay; eassumption.
+        pose proof (Hn4 m M4) as H.
+        unfold rm_add_i in H.
+        rewrite H6, Hn5, xorb_true_l in H.
+        rewrite negb_involutive in H.
+        apply xorb_move_l_r_1 in H.
+        rewrite negb_xorb_diag_r in H.
+        assumption.
 
-        split.
-         pose proof (Hn3 m M3) as H.
-         unfold rm_add_i in H.
-         rewrite H6, Hn5, negb_xorb_diag_l, negb_involutive in H.
-         symmetry; assumption.
-
-         split.
-          pose proof (Hn4 m M4) as H.
-          unfold rm_add_i in H.
-          rewrite H6, Hn5, xorb_true_l in H.
-          rewrite negb_involutive in H.
-          apply xorb_move_l_r_1 in H.
-          rewrite negb_xorb_diag_r in H.
-          assumption.
-
-          intros dj Hdj; apply Hn4.
-          eapply le_lt_trans; eassumption.
+        intros dj Hdj; apply Hn4.
+        eapply le_lt_trans; eassumption.
 
      eapply min_neq_lt in M6; eauto ; try (left; auto).
      destruct (eq_nat_dec di4 m) as [M4| M4].
@@ -3918,60 +3886,46 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
      eapply min_neq_lt in M4; eauto ; try (right; left; auto).
      destruct (eq_nat_dec di6 m) as [M6| M6].
       move M6 at top; subst di6.
-      exists m, (negb u).
+      exists m, (negb u); rewrite <- Nat.add_succ_l.
+      split; [ rewrite carry_before_inf_relay; auto | idtac ].
+      split; [ erewrite carry_before_relay; eassumption | idtac ].
       split.
-       rewrite <- Nat.add_succ_l.
-       rewrite carry_before_inf_relay; [ idtac | assumption ].
-       reflexivity.
+       pose proof (Hn3 m) as H.
+       unfold rm_add_i in H.
+       rewrite H6, H5, Ht5, xorb_nilpotent, xorb_false_l in H.
+       apply negb_sym in H; assumption.
 
        split.
-        rewrite <- Nat.add_succ_l.
-        erewrite carry_before_relay; eassumption.
+        pose proof (Hn4 m M4) as H.
+        unfold rm_add_i in H.
+        rewrite H6, H5, Ht5, xorb_nilpotent, xorb_false_l in H.
+        assumption.
 
-        split.
-         pose proof (Hn3 m) as H.
-         unfold rm_add_i in H.
-         rewrite H6, H5, Ht5, xorb_nilpotent, xorb_false_l in H.
-         apply negb_sym in H; assumption.
-
-         split.
-          pose proof (Hn4 m M4) as H.
-          unfold rm_add_i in H.
-          rewrite H6, H5, Ht5, xorb_nilpotent, xorb_false_l in H.
-          assumption.
-
-          intros dj Hdj; apply Hn4.
-          eapply le_lt_trans; eassumption.
+        intros dj Hdj; apply Hn4.
+        eapply le_lt_trans; eassumption.
 
       eapply min_neq_lt in M6; eauto ; try (left; auto).
-      exists m, u.
+      exists m, u; rewrite <- Nat.add_succ_l.
+      split; [ rewrite carry_before_inf_relay; auto | idtac ].
+      split; [ erewrite carry_before_relay; eassumption | idtac ].
       split.
-       rewrite <- Nat.add_succ_l.
-       rewrite carry_before_inf_relay; [ idtac | assumption ].
-       reflexivity.
+       pose proof (Hn3 m) as H.
+       unfold rm_add_i in H.
+       rewrite Hn6 in H; [ idtac | assumption ].
+       rewrite H5, Ht5, xorb_nilpotent, xorb_false_l in H.
+       apply negb_sym in H; rewrite negb_involutive in H.
+       assumption.
 
        split.
-        rewrite <- Nat.add_succ_l.
-        erewrite carry_before_relay; eassumption.
+        pose proof (Hn4 m M4) as H.
+        unfold rm_add_i in H.
+        rewrite Hn6 in H; [ idtac | assumption ].
+        rewrite negb_xorb_diag_l, Ht5 in H.
+        apply xorb_move_l_r_1 in H.
+        rewrite negb_involutive in H; assumption.
 
-        split.
-         pose proof (Hn3 m) as H.
-         unfold rm_add_i in H.
-         rewrite Hn6 in H; [ idtac | assumption ].
-         rewrite H5, Ht5, xorb_nilpotent, xorb_false_l in H.
-         apply negb_sym in H; rewrite negb_involutive in H.
-         assumption.
-
-         split.
-          pose proof (Hn4 m M4) as H.
-          unfold rm_add_i in H.
-          rewrite Hn6 in H; [ idtac | assumption ].
-          rewrite negb_xorb_diag_l, Ht5 in H.
-          apply xorb_move_l_r_1 in H.
-          rewrite negb_involutive in H; assumption.
-
-          intros dj Hdj; apply Hn4.
-          eapply le_lt_trans; eassumption.
+        intros dj Hdj; apply Hn4.
+        eapply le_lt_trans; eassumption.
 
     eapply min_neq_lt in M5; eauto ; try (do 2 right; left; auto).
     destruct (eq_nat_dec di4 m) as [M4| M4].
@@ -4020,34 +3974,27 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
      eapply min_neq_lt in M4; eauto ; try (right; left; auto).
      destruct (eq_nat_dec di6 m) as [M6| M6].
       move M6 at top; subst di6.
-      exists m, u.
+      exists m, u; rewrite <- Nat.add_succ_l.
+      split; [ rewrite carry_before_inf_relay; auto | idtac ].
+      split; [ erewrite carry_before_relay; eassumption | idtac ].
       split.
-       rewrite <- Nat.add_succ_l.
-       rewrite carry_before_inf_relay; [ idtac | assumption ].
-       reflexivity.
+       pose proof (Hn3 m) as H.
+       unfold rm_add_i in H.
+       rewrite Hn5 in H; [ idtac | assumption ].
+       rewrite H6, negb_xorb_diag_l, negb_involutive in H.
+       symmetry; assumption.
 
        split.
-        rewrite <- Nat.add_succ_l.
-        erewrite carry_before_relay; eassumption.
+        pose proof (Hn4 m M4) as H.
+        unfold rm_add_i in H.
+        rewrite Hn5 in H; [ idtac | assumption ].
+        rewrite H6, xorb_shuffle0, xorb_comm in H.
+        apply xorb_move_l_r_1 in H.
+        rewrite xorb_nilpotent in H.
+        apply xorb_eq in H; symmetry; assumption.
 
-        split.
-         pose proof (Hn3 m) as H.
-         unfold rm_add_i in H.
-         rewrite Hn5 in H; [ idtac | assumption ].
-         rewrite H6, negb_xorb_diag_l, negb_involutive in H.
-         symmetry; assumption.
-
-         split.
-          pose proof (Hn4 m M4) as H.
-          unfold rm_add_i in H.
-          rewrite Hn5 in H; [ idtac | assumption ].
-          rewrite H6, xorb_shuffle0, xorb_comm in H.
-          apply xorb_move_l_r_1 in H.
-          rewrite xorb_nilpotent in H.
-          apply xorb_eq in H; symmetry; assumption.
-
-          intros dj Hdj; apply Hn4.
-          eapply le_lt_trans; eassumption.
+        intros dj Hdj; apply Hn4.
+        eapply le_lt_trans; eassumption.
 
       eapply min_neq_lt in M6; eauto ; try (left; auto).
       simpl in Hm.
@@ -4085,31 +4032,24 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
      rewrite Ht5 in Ht4; discriminate Ht4.
 
      eapply min_neq_lt in M4; eauto ; try (right; left; auto).
-     exists m, true.
+     exists m, true; rewrite <- Nat.add_succ_l.
+     split; [ rewrite carry_before_inf_relay; auto | idtac ].
+     split; [ erewrite carry_before_relay; eassumption | idtac ].
      split.
-      rewrite <- Nat.add_succ_l.
-      rewrite carry_before_inf_relay; [ idtac | assumption ].
-      reflexivity.
+      pose proof (Hn3 m) as H.
+      unfold rm_add_i in H.
+      rewrite Hn6, H5, Ht5, xorb_true_r, xorb_false_l in H.
+      apply negb_sym in H; assumption.
 
       split.
-       rewrite <- Nat.add_succ_l.
-       erewrite carry_before_relay; eassumption.
+       pose proof (Hn4 m M4) as H.
+       unfold rm_add_i in H.
+       rewrite Hn6, H5, Ht5, xorb_true_r, negb_involutive in H.
+       symmetry in H; apply negb_sym in H.
+       assumption.
 
-       split.
-        pose proof (Hn3 m) as H.
-        unfold rm_add_i in H.
-        rewrite Hn6, H5, Ht5, xorb_true_r, xorb_false_l in H.
-        apply negb_sym in H; assumption.
-
-        split.
-         pose proof (Hn4 m M4) as H.
-         unfold rm_add_i in H.
-         rewrite Hn6, H5, Ht5, xorb_true_r, negb_involutive in H.
-         symmetry in H; apply negb_sym in H.
-         assumption.
-
-         intros dj Hdj; apply Hn4.
-         eapply le_lt_trans; eassumption.
+       intros dj Hdj; apply Hn4.
+       eapply le_lt_trans; eassumption.
 
     eapply min_neq_lt in M5; eauto ; try (left; auto).
     destruct (eq_nat_dec di4 m) as [M4| M4].
@@ -4192,32 +4132,25 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
     eapply min_neq_lt in M4; eauto ; try (right; left; auto).
     destruct (eq_nat_dec di6 m) as [M6| M6].
      move M6 at top; subst di6.
-     exists m, true.
+     exists m, true; rewrite <- Nat.add_succ_l.
+     split; [ rewrite carry_before_inf_relay; auto | idtac ].
+     split; [ erewrite carry_before_relay; eassumption | idtac ].
      split.
-      rewrite <- Nat.add_succ_l.
-      rewrite carry_before_inf_relay; [ idtac | assumption ].
-      reflexivity.
+      pose proof (Hn3 m) as H.
+      unfold rm_add_i in H.
+      rewrite H6, Hn5, negb_xorb_diag_l, negb_involutive in H.
+      symmetry; assumption.
 
       split.
-       rewrite <- Nat.add_succ_l.
-       erewrite carry_before_relay; eassumption.
+       pose proof (Hn4 m M4) as H.
+       unfold rm_add_i in H.
+       rewrite H6, Hn5, xorb_true_l, negb_involutive in H.
+       apply xorb_move_l_r_1 in H.
+       rewrite negb_xorb_diag_r in H.
+       assumption.
 
-       split.
-        pose proof (Hn3 m) as H.
-        unfold rm_add_i in H.
-        rewrite H6, Hn5, negb_xorb_diag_l, negb_involutive in H.
-        symmetry; assumption.
-
-        split.
-         pose proof (Hn4 m M4) as H.
-         unfold rm_add_i in H.
-         rewrite H6, Hn5, xorb_true_l, negb_involutive in H.
-         apply xorb_move_l_r_1 in H.
-         rewrite negb_xorb_diag_r in H.
-         assumption.
-
-         intros dj Hdj; apply Hn4.
-         eapply le_lt_trans; eassumption.
+       intros dj Hdj; apply Hn4.
+       eapply le_lt_trans; eassumption.
 
      eapply min_neq_lt in M6; eauto ; try (left; auto).
      simpl in Hm.
