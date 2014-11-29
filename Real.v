@@ -111,41 +111,101 @@ intros α i f x; unfold id; intros H j.
 apply H.
 Qed.
 
-Theorem nat_sub_add_r : ∀ x y z,
-  x < y
-  → z = y - S x
-  → y = x + S z.
+Theorem nat_sub_add_r : ∀ a b c,
+  a < b
+  → c = b - S a
+  → b = a + S c.
 Proof.
-intros x y z Hxy Hc; subst z.
+intros a b c Hab Hc; subst c.
 rewrite <- Nat.sub_succ_l; [ simpl | assumption ].
 rewrite Nat.add_sub_assoc; [ idtac | apply Nat.lt_le_incl; assumption ].
 rewrite Nat.add_comm, Nat.add_sub; reflexivity.
 Qed.
 
-Theorem negb_xorb_diag_l : ∀ x, negb x ⊕ x = true.
-Proof. intros x; destruct x; reflexivity. Qed.
-
-Theorem negb_xorb_diag_r : ∀ x, x ⊕ negb x = true.
-Proof. intros x; destruct x; reflexivity. Qed.
-
-Theorem xorb_shuffle0 : ∀ x y z, x ⊕ y ⊕ z = x ⊕ z ⊕ y.
+Theorem le_neq_lt : ∀ a b : nat, a ≤ b → a ≠ b → (a < b)%nat.
 Proof.
-intros x y z.
+intros a b Hab Hnab.
+apply le_lt_eq_dec in Hab.
+destruct Hab as [Hle| Heq]; [ assumption | idtac ].
+exfalso; apply Hnab; assumption.
+Qed.
+
+Theorem all_lt_all : ∀ P : nat → Prop,
+  (∀ n, (∀ m, (m < n)%nat → P m) → P n)
+  → ∀ n, P n.
+Proof.
+intros P Hm n.
+apply Hm.
+induction n; intros m Hmn.
+ apply Nat.nle_gt in Hmn.
+ exfalso; apply Hmn, Nat.le_0_l.
+
+ destruct (eq_nat_dec m n) as [H1| H1].
+  subst m; apply Hm; assumption.
+
+  apply IHn.
+  apply le_neq_lt; [ idtac | assumption ].
+  apply Nat.succ_le_mono; assumption.
+Qed.
+
+Theorem lt_add_sub_lt_r : ∀ a b c d,
+  a < b + c
+  → d < c
+  → a - b < c.
+Proof.
+intros a b c d Ha Hdc.
+revert b c Ha Hdc.
+induction a; intros.
+ simpl.
+ eapply le_lt_trans; [ apply Nat.le_0_l | eassumption ].
+
+ destruct b; [ rewrite Nat.sub_0_r; assumption | simpl ].
+ simpl in Ha.
+ apply Nat.succ_lt_mono in Ha.
+ apply IHa; assumption.
+Qed.
+
+Theorem lt_add_sub_lt_l : ∀ a b c,
+  a < b + c
+  → b < S a
+  → a - b < c.
+Proof.
+intros a b c Ha Hb.
+revert b c Ha Hb.
+induction a; intros.
+ apply Nat.lt_1_r in Hb; subst b; assumption.
+
+ destruct b; [ rewrite Nat.sub_0_r; assumption | simpl ].
+ simpl in Ha.
+ apply Nat.succ_lt_mono in Ha.
+ apply Nat.succ_lt_mono in Hb.
+ apply IHa; assumption.
+Qed.
+
+Theorem negb_xorb_diag_l : ∀ a, negb a ⊕ a = true.
+Proof. intros a; destruct a; reflexivity. Qed.
+
+Theorem negb_xorb_diag_r : ∀ a, a ⊕ negb a = true.
+Proof. intros a; destruct a; reflexivity. Qed.
+
+Theorem xorb_shuffle0 : ∀ a b c, a ⊕ b ⊕ c = a ⊕ c ⊕ b.
+Proof.
+intros a b c.
 do 2 rewrite xorb_assoc; f_equal.
 apply xorb_comm.
 Qed.
 
-Theorem neq_negb : ∀ y y', y ≠ y' ↔ y = negb y'.
+Theorem neq_negb : ∀ b b', b ≠ b' ↔ b = negb b'.
 Proof.
-intros y y'.
+intros b b'.
 split; intros H.
- destruct y'; simpl.
+ destruct b'; simpl.
   apply not_true_iff_false; auto.
 
   apply not_false_iff_true; auto.
 
- subst y; intros H.
- destruct y'; discriminate H.
+ subst b; intros H.
+ destruct b'; discriminate H.
 Qed.
 
 Theorem fst_same_comm : ∀ x y i, fst_same x y i = fst_same y x i.
@@ -997,40 +1057,6 @@ destruct s1 as [di1| ].
     rewrite Ha3, Hb3 in H; discriminate H.
 
  rewrite Hxy, negb_xorb_diag_l in H; discriminate H.
-Qed.
-
-Theorem lt_add_sub_lt_r : ∀ a y z d,
-  a < y + z
-  → d < z
-  → a - y < z.
-Proof.
-intros a y z d Ha Hdc.
-revert y z Ha Hdc.
-induction a; intros.
- simpl.
- eapply le_lt_trans; [ apply Nat.le_0_l | eassumption ].
-
- destruct y; [ rewrite Nat.sub_0_r; assumption | simpl ].
- simpl in Ha.
- apply Nat.succ_lt_mono in Ha.
- apply IHa; assumption.
-Qed.
-
-Theorem lt_add_sub_lt_l : ∀ a y z,
-  a < y + z
-  → y < S a
-  → a - y < z.
-Proof.
-intros a y z Ha Hb.
-revert y z Ha Hb.
-induction a; intros.
- apply Nat.lt_1_r in Hb; subst y; assumption.
-
- destruct y; [ rewrite Nat.sub_0_r; assumption | simpl ].
- simpl in Ha.
- apply Nat.succ_lt_mono in Ha.
- apply Nat.succ_lt_mono in Hb.
- apply IHa; assumption.
 Qed.
 
 Theorem rm_add_add_0_l_when_lhs_has_relay : ∀ x y i di1,
@@ -2462,32 +2488,6 @@ destruct s1 as [di1| ].
  apply negb_true_iff in Hcc.
  unfold carry in Hcc.
  rewrite Hs2 in Hcc; discriminate Hcc.
-Qed.
-
-Theorem le_neq_lt : ∀ x y : nat, x ≤ y → x ≠ y → (x < y)%nat.
-Proof.
-intros x y Hxy Hnxy.
-apply le_lt_eq_dec in Hxy.
-destruct Hxy as [Hle| Heq]; [ assumption | idtac ].
-exfalso; apply Hnxy; assumption.
-Qed.
-
-Theorem all_lt_all : ∀ P : nat → Prop,
-  (∀ n, (∀ m, (m < n)%nat → P m) → P n)
-  → ∀ n, P n.
-Proof.
-intros P Hm n.
-apply Hm.
-induction n; intros m Hmn.
- apply Nat.nle_gt in Hmn.
- exfalso; apply Hmn, Nat.le_0_l.
-
- destruct (eq_nat_dec m n) as [H1| H1].
-  subst m; apply Hm; assumption.
-
-  apply IHn.
-  apply le_neq_lt; [ idtac | assumption ].
-  apply Nat.succ_le_mono; assumption.
 Qed.
 
 Theorem carry_succ_negb : ∀ x y i a,
