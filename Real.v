@@ -4261,7 +4261,8 @@ Theorem carry_repeat2 : ∀ a b c i u,
     carry a (b + c) (S (i + m)) = true ∧
     carry (a + b) c (S (i + m)) = false ∧
     carry b c (S (i + m)) = t ∧
-    carry a b (S (i + m)) = t.
+    carry a b (S (i + m)) = t ∧
+    (∀ dj, dj ≤ m → rm_add_i a b (S (i + dj)) = negb c.[S (i + dj)]).
 Proof.
 intros a b c i u Hc3 Hc4 Hc5 Hc6.
 remember Hc4 as H; clear HeqH.
@@ -4469,10 +4470,14 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
           rewrite H6, Ht6, Ht5, xorb_nilpotent, xorb_false_l in H.
           apply negb_sym; assumption.
 
-          pose proof (Hn4 m M4) as H.
-          unfold rm_add_i in H.
-          rewrite H6, Ht6, Ht5, xorb_nilpotent, xorb_false_l in H.
-          assumption.
+          split.
+           pose proof (Hn4 m M4) as H.
+           unfold rm_add_i in H.
+           rewrite H6, Ht6, Ht5, xorb_nilpotent, xorb_false_l in H.
+           assumption.
+
+           intros dj Hdj; apply Hn4.
+           eapply le_lt_trans; eassumption.
 
        eapply min_neq_lt in M5; [ idtac | eauto  | do 3 right; left; auto ].
        exists m, u.
@@ -4492,11 +4497,14 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
           rewrite H6, negb_involutive in H.
           symmetry; assumption.
 
-          pose proof (Hn4 m M4) as H.
-          unfold rm_add_i in H.
-          rewrite H6, Ht6, xorb_nilpotent, xorb_false_l in H.
-          rewrite <- Hn5 in H; [ idtac | assumption ].
-          rewrite Ht6 in H; assumption.
+          split.
+           pose proof (Hn4 m M4) as H.
+           unfold rm_add_i in H.
+           rewrite H6, Ht6, xorb_nilpotent, xorb_false_l in H.
+           rewrite <- Hn5 in H; [ idtac | assumption ].
+           rewrite Ht6 in H; assumption.
+
+bbb.
 
      eapply min_neq_lt in M6; [ idtac | eauto  | left; auto ].
      destruct (eq_nat_dec di4 m) as [M4| M4].
