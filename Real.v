@@ -5256,20 +5256,14 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
    discriminate H.
 Qed.
 
-Theorem case_3 : ∀ x0 y0 z0 x y z i u,
-  x = (x0 + 0)%rm
-  → y = (y0 + 0)%rm
-  → z = (z0 + 0)%rm
-  → carry (x + (y + z)%rm) 0 i = false
-  → carry ((x + y)%rm + z) 0 i = false
-  → carry x (y + z) i = true
+Theorem case_3 : ∀ x y z i u,
+  carry x (y + z) i = true
   → carry (x + y) z i = false
   → carry y z i = u
   → carry x y i = u
   → False.
 Proof.
-intros x0 y0 z0 x y z i u Ha0 Hb0 Hc0 Hc1 Hc2 Hc3 Hc4 Hc5 Hc6.
-clear Ha0 Hb0 Hc0 Hc1 Hc2.
+intros x y z i u Hc3 Hc4 Hc5 Hc6.
 remember Hc4 as H; clear HeqH.
 unfold carry in H; simpl in H.
 remember (fst_same (x + y) z (S i)) as s eqn:Hs .
@@ -5288,212 +5282,33 @@ destruct (le_dec di n) as [H1| H1].
  revert Hxy_z; apply no_fixpoint_negb.
 
  apply Nat.nle_gt in H1.
-bbb.
+ remember (di - S n) as dj.
+ apply nat_sub_add_r in Heqdj; [ idtac | assumption ].
+ remember (rm_shift (S n) (x + y)%rm) as x'y' eqn:Hxy .
+ remember (rm_shift (S n) z) as z' eqn:Hc .
+ eapply fst_same_shift in Hs; try eassumption.
+ assert (di - S n < di) as H by omega.
+ subst x'y'.
+ rewrite fst_same_shift_add_l in Hs.
+ remember (rm_shift (S n) x) as x' eqn:Ha .
+ remember (rm_shift (S n) y) as y' eqn:Hb .
+ eapply IHdi with (x := x') (y := y') (z := z'); try eassumption.
+  subst x' y' z'.
+  rewrite carry_comm.
+  rewrite carry_shift_add_l, Nat.add_succ_r.
+  rewrite carry_comm; assumption.
 
-remember Hc4 as H; clear HeqH.
-unfold carry in H; simpl in H.
-rewrite Hs4 in H; rename H into H4.
-remember Hc3 as H; clear HeqH.
-unfold carry in H; simpl in H.
-remember (fst_same x (y + z) (S i)) as s3 eqn:Hs3 .
-symmetry in Hs3; rename H into H3.
-remember Hc5 as H; clear HeqH.
-unfold carry in H; simpl in H.
-remember (fst_same y z (S i)) as s5 eqn:Hs5 .
-symmetry in Hs5; rename H into H5.
-remember Hc6 as H; clear HeqH.
-unfold carry in H; simpl in H.
-remember (fst_same x y (S i)) as s6 eqn:Hs6 .
-symmetry in Hs6; rename H into H6.
-destruct s3 as [di3| ]; [ idtac | clear H3 ].
- destruct s5 as [di5| ].
-  destruct s6 as [di6| ].
-   remember (List.fold_right min di6 [di3; di4; di5 … []]) as m eqn:Hm .
-   remember Hs3 as H; clear HeqH.
-   apply fst_same_iff in H; simpl in H.
-   destruct H as (Hn3, Ht3).
-   rewrite H3 in Ht3; symmetry in Ht3.
-   remember Hs4 as H; clear HeqH.
-   apply fst_same_iff in H; simpl in H.
-   destruct H as (Hn4, Ht4).
-   rewrite H4 in Ht4; symmetry in Ht4.
-   remember Hs5 as H; clear HeqH.
-   apply fst_same_iff in H; simpl in H.
-   destruct H as (Hn5, Ht5).
-   rewrite H5 in Ht5; symmetry in Ht5.
-   remember Hs6 as H; clear HeqH.
-   apply fst_same_iff in H; simpl in H.
-   destruct H as (Hn6, Ht6).
-   rewrite H6 in Ht6; symmetry in Ht6.
-   destruct (eq_nat_dec di3 m) as [M3| M3].
-    move M3 at top; subst di3.
-    destruct (eq_nat_dec di6 m) as [M6| M6].
-     move M6 at top; subst di6.
-     rewrite H3 in H6; move H6 at top; subst u.
-     destruct (eq_nat_dec di4 m) as [M4| M4].
-      move M4 at top; subst di4.
-      destruct (eq_nat_dec di5 m) as [M5| M5].
-       move M5 at top; subst di5.
-       rewrite Ht4 in Ht5; discriminate Ht5.
+  subst x' y' z'.
+  rewrite carry_shift_add_l, Nat.add_succ_r; assumption.
 
-       eapply min_neq_lt in M5; [ idtac | eauto  | do 3 right; left; auto ].
-       remember Ht3 as H; clear HeqH.
-       unfold rm_add_i in H.
-       rewrite Ht6, Ht4, xorb_true_l in H.
-       apply negb_true_iff in H.
-       rewrite <- Nat.add_succ_l in H.
-       erewrite carry_before_relay in H; try eassumption.
-       simpl in H; rewrite H5 in H; discriminate H.
+  subst y' z'.
+  rewrite carry_shift.
+  rewrite Nat.add_succ_r; eassumption.
 
-      eapply min_neq_lt in M4; [ idtac | eauto  | do 2 right; left; auto ].
-      destruct (eq_nat_dec di5 m) as [M5| M5].
-       move M5 at top; subst di5.
-       clear Hm Ht6.
-       remember Ht5 as H; clear HeqH.
-       rewrite <- negb_involutive in H.
-       apply negb_sym in H; simpl in H.
-       rewrite <- Hn4 in H; [ idtac | assumption ].
-       symmetry in H; rename H into Hxym.
-       remember Hxym as H; clear HeqH.
-       unfold rm_add_i in H; simpl in H.
-       rewrite H3, H5, xorb_nilpotent, xorb_false_l in H.
-       rename H into Hcxym.
-       remember Ht3 as H; clear HeqH.
-       unfold rm_add_i in H.
-       rewrite H5, Ht5, xorb_nilpotent, xorb_false_l in H.
-       rename H into Hcyzm.
-       remember Hcxym as H; clear HeqH.
-       unfold carry in H; simpl in H.
-       remember (fst_same x y (S (S (i + m)))) as sxym eqn:Hsxym .
-       destruct sxym as [djxym| ]; [ idtac | discriminate H ].
-       symmetry in Hsxym.
-       rename H into Haxym.
-       remember Hs4 as H; clear HeqH.
-       eapply carry_before_relay in H; [ idtac | eassumption ].
-       simpl in H; rewrite H4 in H.
-       rename H into Hxycm.
-       eapply case_2; eassumption.
-
-       eapply min_neq_lt in M5; [ idtac | eauto  | do 3 right; left; auto ].
-       remember Ht3 as H; clear HeqH.
-       unfold rm_add_i in H.
-       rewrite Hn5 in H; [ idtac | assumption ].
-       rewrite negb_xorb_diag_l, xorb_true_l in H.
-       apply negb_true_iff in H.
-       eapply carry_before_relay in Hs5; [ idtac | eassumption ].
-       simpl in Hs5; rewrite Hs5, H5 in H; discriminate H.
-
-     eapply min_neq_lt in M6; [ idtac | eauto  | left; auto ].
-     destruct (eq_nat_dec di5 m) as [M5| M5].
-      move M5 at top; subst di5.
-      remember H3 as H; clear HeqH.
-      rewrite Hn6 in H; [ idtac | assumption ].
-      apply negb_true_iff in H.
-      rewrite H5 in H; move H at top; subst u.
-      remember Ht3 as H; clear HeqH.
-      unfold rm_add_i in H.
-      rewrite H5, Ht5, xorb_false_l in H.
-      rename H into Ryzm.
-      destruct (eq_nat_dec di4 m) as [M4| M4].
-       move M4 at top; subst di4.
-       remember H4 as H; clear HeqH.
-       unfold rm_add_i in H.
-       rewrite H3, H5, xorb_true_l in H.
-       apply negb_false_iff in H.
-       rewrite <- Nat.add_succ_l in H.
-       erewrite carry_before_relay in H; try eassumption.
-       simpl in H; rewrite H6 in H; discriminate H.
-
-       eapply min_neq_lt in M4; [ idtac | eauto  | do 2 right; left; auto ].
-       pose proof (Hn4 m M4) as H.
-       rewrite Ht5 in H; simpl in H.
-       rename H into ABm.
-       remember ABm as H; clear HeqH.
-       unfold rm_add_i in H.
-       rewrite H3, H5, xorb_true_l in H.
-       apply negb_true_iff in H.
-       rename H into Rxym.
-       remember Hs4 as H; clear HeqH.
-       eapply carry_before_relay in H; [ idtac | eassumption ].
-       simpl in H; rewrite H4 in H.
-       rename H into Rxy_zm.
-       eapply case_2; try eassumption.
-
-      eapply min_neq_lt in M5; [ idtac | eauto  | do 3 right; left; auto ].
-      remember H3 as H; clear HeqH.
-      rewrite Hn6 in H; [ idtac | assumption ].
-      apply negb_true_iff in H.
-      rename H into Bm.
-      remember Bm as H; clear HeqH.
-      rewrite Hn5 in H; [ idtac | assumption ].
-      apply negb_false_iff in H.
-      rename H into Cm.
-      remember Hs5 as H; clear HeqH.
-      eapply carry_before_relay in H; [ idtac | eassumption ].
-      simpl in H; rewrite H5 in H.
-      rename H into Ryzm.
-      remember Ht3 as H; clear HeqH.
-      unfold rm_add_i in H.
-      rewrite Bm, Cm, Ryzm, xorb_false_l, xorb_true_l in H.
-      apply negb_true_iff in H; move H at top; subst u.
-      destruct (eq_nat_dec di4 m) as [M4| M4].
-       move M4 at top; subst di4.
-       rewrite Ht4 in Cm; discriminate Cm.
-
-       eapply min_neq_lt in M4; [ idtac | eauto  | do 2 right; left; auto ].
-       pose proof (Hn4 m M4) as H.
-       rewrite Cm in H; simpl in H.
-       rename H into ABm.
-       remember ABm as H; clear HeqH.
-       unfold rm_add_i in H.
-       rewrite H3, Bm, xorb_false_r, xorb_true_l in H.
-       apply negb_false_iff in H.
-       rewrite <- Nat.add_succ_l in H.
-       erewrite carry_before_relay in H; try eassumption.
-       simpl in H; rewrite H6 in H; discriminate H.
-
-    eapply min_neq_lt in M3; [ idtac | eauto  | right; left; auto ].
-    destruct (eq_nat_dec di6 m) as [M6| M6].
-     move M6 at top; subst di6.
-     destruct (eq_nat_dec di4 m) as [M4| M4].
-      move M4 at top; subst di4.
-      remember H4 as H; clear HeqH.
-      unfold rm_add_i in H.
-      rewrite H6, Ht6, xorb_nilpotent, xorb_false_l in H.
-      rename H into ABm.
-      remember Hs3 as H; clear HeqH.
-      eapply carry_before_relay in H; [ idtac | eassumption ].
-      simpl in H; rewrite H3 in H.
-      rename H into A_BCm.
-      pose proof (Hn3 m M3) as H.
-      rewrite H6 in H.
-      apply negb_sym in H.
-      unfold rm_add_i in H.
-      rewrite Ht6, Ht4, xorb_false_r in H.
-      apply xorb_move_l_r_1 in H.
-      rewrite negb_xorb_diag_r in H.
-      rename H into BCm.
-      eapply case_1; eassumption.
-
-      eapply min_neq_lt in M4; [ idtac | eauto  | do 2 right; left; auto ].
-      destruct (eq_nat_dec di5 m) as [M5| M5].
-       move M5 at top; subst di5.
-bbb.
-
-      i  i+1  -   m
-   y  .   .   .   1
-u         ≠   ≠   ≠+1
-   x  .   u   u   0
-1         ≠   ≠   ≠   ≠ …
- y+z  .   .   .   1
-
- x+y  .   .   .   0
-0         ≠   ≠
-   z  .   u   u   0
-u         ≠   ≠   ≠+1
-   y  .   .   .   1
-
-*)
+  subst x' y'.
+  rewrite carry_shift.
+  rewrite Nat.add_succ_r; assumption.
+Qed.
 
 Theorem rm_add_assoc : ∀ x y z, (x + (y + z) = (x + y) + z)%rm.
 Proof.
