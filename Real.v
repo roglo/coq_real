@@ -5235,7 +5235,10 @@ destruct s4 as [di4| ]; [ idtac | discriminate H4 ].
 clear Ha₀ Hb₀ Hc₀ Hc1 Hc2 H4.
 revert a b c i u Hc3 Hc4 Hc5 Hc6 Hs4.
 induction di4 as (di4, IHdi) using all_lt_all; intros.
-bbb. (* use in principle carry_repeat2 *)
+remember Hc3 as H; clear HeqH.
+eapply carry_repeat2 with (b := b) in H; try eassumption.
+destruct H as (m, (t, (Ra_bcm, (Rab_cm, (Rbcm, Rabm))))).
+bbb.
 
 remember Hc4 as H; clear HeqH.
 unfold carry in H; simpl in H.
