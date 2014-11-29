@@ -49,13 +49,11 @@ Notation "x = y" := (rm_eq x y) : rm_scope.
 Notation "x ≠ y" := (¬ rm_eq x y) : rm_scope.
 Notation "0" := rm_zero : rm_scope.
 
-Arguments rm r%rm i%nat.
 Arguments carry x%rm y%rm i%nat.
 Arguments rm_add_i x%rm y%rm i%nat.
 Arguments fst_same x%rm y%rm i%nat.
 
 Definition rm_opp x := {| rm i := negb x.[i] |}.
-Definition rm_sub x y := (x + rm_opp y)%rm.
 
 Notation "- x" := (rm_opp x) : rm_scope.
 Notation "x - y" := (rm_add x (rm_opp y)) : rm_scope.
@@ -2855,7 +2853,7 @@ induction xl as [| z]; intros.
    eapply Nat.min_glb_r; eassumption.
 Qed.
 
-(* perhaps conclution simplifixyle, see carry_repeat2 *)
+(* perhaps conclusion simplifiable, see carry_repeat2 *)
 Theorem carry_repeat : ∀ x y z i,
   carry x y i = false
   → carry (x + y) z i = false
