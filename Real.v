@@ -3217,13 +3217,16 @@ destruct Hs as (Hn, Hs).
 apply fst_same_iff; simpl.
 split.
  intros dj Hdj.
- rewrite <- Nat.add_assoc.
- apply Hn.
- omega.
+ rewrite <- Nat.add_assoc; apply Hn.
+ eapply Nat.add_lt_le_mono with (p := d) in Hdj; [ idtac | reflexivity ].
+ rewrite Nat.sub_add in Hdj; assumption.
 
  rewrite Nat.add_sub_assoc; [ idtac | assumption ].
- rewrite Nat.sub_add; [ idtac | omega ].
- assumption.
+ rewrite Nat.sub_add; [ assumption | idtac ].
+ eapply le_trans; [ eassumption | idtac ].
+ apply Nat.le_sub_le_add_r.
+ rewrite Nat.sub_diag.
+ apply Nat.le_0_l.
 Qed.
 
 Theorem carry_shift : ∀ x y n i,
@@ -4464,38 +4467,36 @@ destruct c3, c4, c5, c6; try reflexivity; exfalso.
 
   rewrite carry_comm; assumption.
 
- Focus 5.
+ eapply case_3 with (x := x) (y := y); eassumption.
+
+ eapply case_3 with (x := x) (y := y); eassumption.
+
+ eapply case_3 with (x := z) (y := y) (z := x) (i := i).
+  rewrite carry_comm, carry_comm_l; assumption.
+
+  rewrite carry_comm_l, carry_comm; assumption.
+
+  rewrite carry_comm; eassumption.
+
+  rewrite carry_comm; eassumption.
+
+ eapply case_3 with (x := z) (y := y) (z := x) (i := i).
+  rewrite carry_comm, carry_comm_l; assumption.
+
+  rewrite carry_comm_l, carry_comm; assumption.
+
+  rewrite carry_comm; eassumption.
+
+  rewrite carry_comm; eassumption.
+
  eapply case_2 with (x := x) (y := y); eassumption.
 
- Focus 5.
  apply case_2 with (x := z) (y := y) (z := x) (i := i).
   rewrite carry_comm_l, carry_comm; assumption.
 
   rewrite carry_comm; assumption.
 
   rewrite carry_comm; assumption.
-
- eapply case_3 with (x := x) (y := y); eassumption.
-
- eapply case_3 with (x := x) (y := y); eassumption.
-
- eapply case_3 with (x := z) (y := y) (z := x) (i := i).
-  rewrite carry_comm, carry_comm_l; assumption.
-
-  rewrite carry_comm_l, carry_comm; assumption.
-
-  rewrite carry_comm; eassumption.
-
-  rewrite carry_comm; eassumption.
-
- eapply case_3 with (x := z) (y := y) (z := x) (i := i).
-  rewrite carry_comm, carry_comm_l; assumption.
-
-  rewrite carry_comm_l, carry_comm; assumption.
-
-  rewrite carry_comm; eassumption.
-
-  rewrite carry_comm; eassumption.
 Qed.
 
 Theorem rm_dec : ∀ x y, {(x = y)%rm} + {(x ≠ y)%rm}.
