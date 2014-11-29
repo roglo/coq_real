@@ -4317,36 +4317,24 @@ destruct c3, c4, c5, c6; try reflexivity; exfalso.
   rewrite carry_comm; assumption.
 Qed.
 
-Theorem rm_add_assoc_if_norm : ∀ x y z,
-  ((x + 0) + ((y + 0) + (z + 0)) = ((x + 0) + (y + 0)) + (z + 0))%rm
-  → (x + (y + z) = (x + y) + z)%rm.
-Proof.
-intros x y z H.
-do 3 rewrite rm_add_0_r in H; assumption.
-Qed.
-
 Theorem rm_add_assoc : ∀ x y z, (x + (y + z) = (x + y) + z)%rm.
 Proof.
 intros x y z.
-apply rm_add_assoc_if_norm.
-apply rm_add_assoc_norm.
+pose proof (rm_add_assoc_norm x y z) as H.
+do 3 rewrite rm_add_0_r in H; assumption.
 Qed.
 
 Theorem rm_dec : ∀ x y, {(x = y)%rm} + {(x ≠ y)%rm}.
 Proof.
 intros x y.
 destruct (rm_zerop (x - y)%rm) as [Hxy| Hxy].
- left.
- rewrite rm_add_comm in Hxy.
+ left; rewrite rm_add_comm in Hxy.
  eapply rm_add_compat with (x := y) in Hxy; [ idtac | reflexivity ].
- rewrite rm_add_assoc in Hxy.
- rewrite rm_add_opp_r in Hxy.
- rewrite rm_add_comm in Hxy.
+ rewrite rm_add_assoc, rm_add_opp_r, rm_add_comm in Hxy.
  do 2 rewrite rm_add_0_r in Hxy.
  assumption.
 
- right.
- intros H; apply Hxy; rewrite H.
+ right; intros H; apply Hxy; rewrite H.
  apply rm_add_opp_r.
 Qed.
 
