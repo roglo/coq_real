@@ -5101,20 +5101,44 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
 
   move H5 at top; subst u.
   destruct s6 as [di6| ]; [ idtac | clear H6 ].
+   remember (List.fold_right min di6 [di4 … []]) as m eqn:Hm .
+   remember Hs3 as H; clear HeqH.
+   apply fst_same_iff in H; simpl in H.
+   rename H into Hn3.
+   remember Hs4 as H; clear HeqH.
+   apply fst_same_iff in H; simpl in H.
+   destruct H as (Hn4, Ht4).
+   rewrite H4 in Ht4; symmetry in Ht4.
+   remember Hs5 as H; clear HeqH.
+   apply fst_same_iff in H; simpl in H.
+   rename H into Hn5.
+   remember Hs6 as H; clear HeqH.
+   apply fst_same_iff in H; simpl in H.
+   destruct H as (Hn6, Ht6).
+   rewrite H6 in Ht6; symmetry in Ht6.
+   destruct (eq_nat_dec di4 m) as [M4| M4].
+    move M4 at top; subst di4.
+    destruct (eq_nat_dec di6 m) as [M6| M6].
+     move M6 at top; subst di6.
+     remember H4 as H; clear HeqH.
+     unfold rm_add_i in H.
+     rewrite H6, Ht6, xorb_nilpotent, xorb_false_l in H.
+     rename H into ABm.
+     remember Hs3 as H; clear HeqH.
+     eapply carry_before_inf_relay in H; simpl in H.
+     rename H into A_BCm.
+     pose proof (Hn3 m) as H.
+     rewrite H6 in H.
+     apply negb_sym in H.
+     unfold rm_add_i in H.
+     rewrite Ht6, Ht4, xorb_false_r in H.
+     apply xorb_move_l_r_1 in H.
+     rewrite negb_xorb_diag_r in H.
+     rename H into BCm.
+     exfalso; eapply case_1; eassumption.
+
+     eapply min_neq_lt in M6; eauto ; try (left; auto).
 bbb.
-
-      i  i+1  -   m
-   b  .   .   .   1
-u         ≠   ≠   ≠+1 ≠ …          di6
-   a  .   .   .   0
-1         ≠   ≠   ≠+1 ≠ …          di3
- b+c  .   .   .   1
-
- a+b  .   .   .   0
-0         ≠   ≠                    di4
-   c  .   .   .   0
-u         ≠   ≠   ≠+0              di5
-   b  .   .   .   1
 
       i  i+1  -   m
    b  .   .   .   .
