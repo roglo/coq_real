@@ -5287,6 +5287,11 @@ destruct (lt_eq_lt_dec di n) as [[H1| H1]| H1].
  exfalso; revert Hab_z; apply no_fixpoint_negb.
 
  subst di.
+ remember Hs as H; clear HeqH.
+ apply fst_same_iff in H; simpl in H.
+ destruct H as (Hnab_c2, Hab_z).
+ remember Hc4 as H; clear HeqH.
+ unfold carry in H; rewrite Hs in H; simpl in H.
 bbb.
 
 remember Hc4 as H; clear HeqH.
