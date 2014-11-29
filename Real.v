@@ -2367,32 +2367,6 @@ unfold carry; simpl.
 rewrite fst_same_diag, Nat.add_0_r; reflexivity.
 Qed.
 
-(* requires associativity
-Axiom rm_add_assoc : ∀ x y z, (x+(y+z) = (x+y)+z)%rm.
-Theorem rm_dec : ∀ x y, {(x = y)%rm} + {(x ≠ y)%rm}.
-Proof.
-intros x y.
-destruct (rm_zerop (x - y)%rm) as [Hxy| Hxy].
- left.
- rewrite rm_add_comm in Hxy.
- eapply rm_add_compat with (x := y) in Hxy; [ idtac | reflexivity ].
- rewrite rm_add_assoc in Hxy.
- rewrite rm_add_opp_r in Hxy.
- rewrite rm_add_comm in Hxy.
- do 2 rewrite rm_add_0_r in Hxy.
- assumption.
-
- right.
- intros H; apply Hxy; rewrite H.
- apply rm_add_opp_r.
-Qed.
-
-Theorem rm_decidxyle : ∀ x y, Decidxyle.decidxyle (x = y)%rm.
-Proof.
-intros x y.
-destruct (rm_dec x y); [ left | right ]; assumption.
-*)
-
 (* associativity *)
 
 Theorem fold_rm_add_i : ∀ x y i, rm_add_i x y i = ((x+y)%rm).[i].
@@ -5400,6 +5374,30 @@ destruct c3, c4, c5, c6; try reflexivity; exfalso.
   rewrite carry_comm; eassumption.
 
   rewrite carry_comm; eassumption.
+Qed.
+
+Theorem rm_dec : ∀ x y, {(x = y)%rm} + {(x ≠ y)%rm}.
+Proof.
+intros x y.
+destruct (rm_zerop (x - y)%rm) as [Hxy| Hxy].
+ left.
+ rewrite rm_add_comm in Hxy.
+ eapply rm_add_compat with (x := y) in Hxy; [ idtac | reflexivity ].
+ rewrite rm_add_assoc in Hxy.
+ rewrite rm_add_opp_r in Hxy.
+ rewrite rm_add_comm in Hxy.
+ do 2 rewrite rm_add_0_r in Hxy.
+ assumption.
+
+ right.
+ intros H; apply Hxy; rewrite H.
+ apply rm_add_opp_r.
+Qed.
+
+Theorem rm_decidable : ∀ x y, Decidable.decidable (x = y)%rm.
+Proof.
+intros x y.
+destruct (rm_dec x y); [ left | right ]; assumption.
 Qed.
 
 Close Scope nat_scope.
