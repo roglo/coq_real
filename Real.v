@@ -4967,6 +4967,28 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
       exfalso; eapply case_1; eassumption.
 
       eapply min_neq_lt in M6; eauto ; try (left; auto).
+      pose proof (Hn5 m M5) as Bm.
+      rewrite Ht4 in Bm; simpl in Bm.
+      pose proof (Hn6 m M6) as Am.
+      rewrite Bm in Am; simpl in Am.
+      pose proof (Hn3 m) as BCm.
+      rewrite Am in BCm; apply negb_sym in BCm; simpl in BCm.
+      remember BCm as H; clear HeqH.
+      unfold rm_add_i in H.
+      rewrite Bm, Ht4, xorb_true_l in H.
+      apply negb_true_iff in H.
+      rewrite <- Nat.add_succ_l in H.
+      erewrite carry_before_relay in H; try eassumption.
+      simpl in H; rewrite H5 in H; move H at top; subst u.
+      remember H4 as H; clear HeqH.
+      unfold rm_add_i in H.
+      rewrite Am, Bm, xorb_true_l in H.
+      apply negb_false_iff in H.
+      rewrite <- Nat.add_succ_l in H.
+      erewrite carry_before_relay in H; try eassumption.
+      simpl in H; rewrite H6 in H; discriminate H.
+
+     eapply min_neq_lt in M4; eauto ; try (right; left; auto).
 bbb.
 
       i  i+1  -   m
@@ -5196,17 +5218,17 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
 bbb.
 
       i  i+1  -   m
-   b  .   .   .   u   .   .
-u         ≠   ≠    +¬u
-   a  .   u   u   u
-1         ≠   ≠   ≠+1
- b+c  .   .   .  ¬u   .   .
+   b  .   .   .   1
+u         ≠   ≠   ≠+1
+   a  .   u   u   0
+1         ≠   ≠   ≠   ≠ …
+ b+c  .   .   .   1
 
- a+b  .   .   .  ¬u
-0         ≠   ≠   ≠+0
-   c  .   u   u   u
-u         ≠   ≠    +¬u
-   b  .   .   .   u
+ a+b  .   .   .   0
+0         ≠   ≠
+   c  .   u   u   0
+u         ≠   ≠   ≠+1
+   b  .   .   .   1
 
 *)
 
