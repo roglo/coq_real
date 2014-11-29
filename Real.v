@@ -4416,18 +4416,10 @@ destruct (le_dec di n) as [H1| H1].
   rewrite Nat.add_succ_r; assumption.
 Qed.
 
-Theorem rm_add_assoc_if_norm : ∀ x y z,
-  ((x + 0) + ((y + 0) + (z + 0)) = ((x + 0) + (y + 0)) + (z + 0))%rm
-  → (x + (y + z) = (x + y) + z)%rm.
-Proof.
-intros x y z H.
-do 3 rewrite rm_add_0_r in H; assumption.
-Qed.
-
-Theorem rm_add_assoc : ∀ x y z, (x + (y + z) = (x + y) + z)%rm.
+Theorem rm_add_assoc_norm : ∀ x y z,
+  ((x + 0) + ((y + 0) + (z + 0)) = ((x + 0) + (y + 0)) + (z + 0))%rm.
 Proof.
 intros x y z.
-apply rm_add_assoc_if_norm.
 rename x into x0; rename y into y0; rename z into z0.
 remember (x0 + 0)%rm as x.
 remember (y0 + 0)%rm as y.
@@ -4497,6 +4489,21 @@ destruct c3, c4, c5, c6; try reflexivity; exfalso.
   rewrite carry_comm; assumption.
 
   rewrite carry_comm; assumption.
+Qed.
+
+Theorem rm_add_assoc_if_norm : ∀ x y z,
+  ((x + 0) + ((y + 0) + (z + 0)) = ((x + 0) + (y + 0)) + (z + 0))%rm
+  → (x + (y + z) = (x + y) + z)%rm.
+Proof.
+intros x y z H.
+do 3 rewrite rm_add_0_r in H; assumption.
+Qed.
+
+Theorem rm_add_assoc : ∀ x y z, (x + (y + z) = (x + y) + z)%rm.
+Proof.
+intros x y z.
+apply rm_add_assoc_if_norm.
+apply rm_add_assoc_norm.
 Qed.
 
 Theorem rm_dec : ∀ x y, {(x = y)%rm} + {(x ≠ y)%rm}.
