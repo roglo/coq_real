@@ -5030,33 +5030,64 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
         subst m; exfalso; revert M6; apply Nat.lt_irrefl.
 
    move H6 at top; subst u.
+   remember (List.fold_right min di5 [di4 … []]) as m eqn:Hm .
+   remember Hs3 as H; clear HeqH.
+   apply fst_same_iff in H; simpl in H.
+   rename H into Hn3.
+   remember Hs4 as H; clear HeqH.
+   apply fst_same_iff in H; simpl in H.
+   destruct H as (Hn4, Ht4).
+   rewrite H4 in Ht4; symmetry in Ht4.
+   remember Hs5 as H; clear HeqH.
+   apply fst_same_iff in H; simpl in H.
+   destruct H as (Hn5, Ht5).
+   rewrite H5 in Ht5; symmetry in Ht5.
+   remember Hs6 as H; clear HeqH.
+   apply fst_same_iff in H; simpl in H.
+   rename H into Hn6.
+   destruct (eq_nat_dec di5 m) as [M5| M5].
+    move M5 at top; subst di5.
+    destruct (eq_nat_dec di4 m) as [M4| M4].
+     move M4 at top; subst di4.
+     rewrite Ht5 in Ht4; discriminate Ht4.
+
+     eapply min_neq_lt in M4; eauto ; try (right; left; auto).
+     exists m, true.
+     split.
+      rewrite <- Nat.add_succ_l.
+      rewrite carry_before_inf_relay; [ idtac | assumption ].
+      reflexivity.
+
+      split.
+       rewrite <- Nat.add_succ_l.
+       erewrite carry_before_relay; eassumption.
+
+       split.
+        pose proof (Hn3 m) as H.
+        unfold rm_add_i in H.
+        rewrite Hn6, H5, Ht5, xorb_true_r, xorb_false_l in H.
+        apply negb_sym in H; assumption.
+
+        pose proof (Hn4 m M4) as H.
+        unfold rm_add_i in H.
+        rewrite Hn6, H5, Ht5, xorb_true_r, negb_involutive in H.
+        symmetry in H; apply negb_sym in H.
+        assumption.
+
+    eapply min_neq_lt in M5; eauto ; try (left; auto).
 bbb.
 
       i  i+1  -   m
-   b  .   .   .   u
-u         ≠   ≠    +u              di6
-   a  .   .   .   u
-1         ≠   ≠   ≠+1 ≠ …          di3
- b+c  .   .   .   .
-
- a+b  .   .   .   u
-0         ≠   ≠   ≠+0              di4
-   c  .   .   .   .
-u         ≠   ≠   ≠+u              di5
-   b  .   .   .   u
-
-
-      i  i+1  -   m
-   b  .   .   .   .                di6
-u         ≠   ≠
+   b  .   .   .   .
+u         ≠   ≠   ≠   ≠ …          di6
    a  .   .   .   .
 1         ≠   ≠   ≠   ≠ …          di3
  b+c  .   .   .   .
 
  a+b  .   .   .   .
-0         ≠   ≠   ≠                di4
+0         ≠   ≠                    di4
    c  .   .   .   .
-u         ≠   ≠   ≠                di5
+u         ≠   ≠                    di5
    b  .   .   .   .
 
 Theorem case_3 : ∀ a₀ b₀ c₀ a b c i u,
