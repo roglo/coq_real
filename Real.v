@@ -3205,7 +3205,8 @@ destruct (le_dec di n) as [H1| H1].
  remember (rm_shift (S n) (x + y)%rm) as x'y' eqn:Hxy .
  remember (rm_shift (S n) z) as z' eqn:Hc .
  eapply fst_same_shift in Hs; try eassumption.
- assert (di - S n < di) as H by omega.
+ assert (0 < S n) as Hn by apply Nat.lt_0_succ.
+ assert (di - S n < di) as H by (apply Nat.sub_lt; assumption).
  subst x'y'.
  rewrite fst_same_shift_add_l in Hs.
  remember (rm_shift (S n) x) as x' eqn:Ha .
@@ -4190,7 +4191,8 @@ destruct (le_dec di n) as [H1| H1].
  remember (rm_shift (S n) (x + y)%rm) as x'y' eqn:Hxy .
  remember (rm_shift (S n) z) as z' eqn:Hc .
  eapply fst_same_shift in Hs; try eassumption.
- assert (di - S n < di) as H by omega.
+ assert (0 < S n) as Hn by apply Nat.lt_0_succ.
+ assert (di - S n < di) as H by (apply Nat.sub_lt; assumption).
  subst x'y'.
  rewrite fst_same_shift_add_l in Hs.
  remember (rm_shift (S n) x) as x' eqn:Ha .
