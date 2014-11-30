@@ -206,6 +206,8 @@ split; intros H.
  destruct b'; discriminate H.
 Qed.
 
+(* commutativity *)
+
 Theorem fst_same_comm : ∀ x y i, fst_same x y i = fst_same y x i.
 Proof.
 intros x y i.
@@ -301,6 +303,8 @@ unfold rm_add_i; simpl.
 rewrite rm_add_i_comm, carry_comm_l.
 reflexivity.
 Qed.
+
+(* identity *)
 
 Theorem rm_add_0_inf_1 : ∀ x i,
   (∀ dj, rm_add_i x 0 (i + dj) = true)
@@ -413,6 +417,8 @@ intros x.
 unfold rm_eq.
 apply rm_add_i_0_r.
 Qed.
+
+(* compatibility with equality *)
 
 Theorem rm_add_i_compat_r : ∀ x y z j,
   (∀ i, x .[ i] = y .[ i])
@@ -2216,6 +2222,8 @@ intros x y Hxy z d Hcd.
 apply rm_add_compat; assumption.
 Qed.
 
+(* opposite *)
+
 Theorem rm_add_opp_r : ∀ x, (x - x = 0)%rm.
 Proof.
 intros x.
@@ -2247,35 +2255,6 @@ destruct s1 as [di1| ].
   simpl in Hs1.
   destruct Hs1 as (j, (Hij, (Hni, (Ha, (Hb, (Hat, Hbt)))))).
   rewrite Ha in Hb; discriminate Hb.
-Qed.
-
-Theorem rm_zerop : ∀ x, {(x = 0)%rm} + {(x ≠ 0)%rm}.
-Proof.
-intros x.
-remember (fst_same (x + 0%rm) rm_zero' 0) as s eqn:Hs .
-apply fst_same_sym_iff in Hs; simpl in Hs.
-destruct s as [di| ].
- destruct Hs as (Hn, Hs).
- right; intros H.
- unfold rm_eq in H; simpl in H.
- pose proof (H di) as HH.
- rewrite Hs in HH; symmetry in HH.
- unfold rm_add_i in HH; simpl in HH.
- unfold carry in HH; simpl in HH.
- remember (fst_same 0%rm 0%rm (S di)) as s1 eqn:Hs1 .
- apply fst_same_sym_iff in Hs1; simpl in Hs1.
- destruct s1 as [di1| ]; [ idtac | discriminate Hs1; assumption ].
- discriminate HH.
-
- left.
- unfold rm_eq; intros i; simpl.
- rewrite Hs.
- unfold rm_add_i; simpl.
- unfold carry; simpl.
- remember (fst_same 0 0 (S i)) as s1 eqn:Hs1 .
- destruct s1; [ reflexivity | idtac ].
- apply fst_same_sym_iff in Hs1; simpl in Hs1.
- discriminate Hs1; assumption.
 Qed.
 
 (* associativity *)
@@ -4295,6 +4274,37 @@ Proof.
 intros x y z.
 pose proof (rm_add_assoc_norm x y z) as H.
 do 3 rewrite rm_add_0_r in H; assumption.
+Qed.
+
+(* decidability *)
+
+Theorem rm_zerop : ∀ x, {(x = 0)%rm} + {(x ≠ 0)%rm}.
+Proof.
+intros x.
+remember (fst_same (x + 0%rm) rm_zero' 0) as s eqn:Hs .
+apply fst_same_sym_iff in Hs; simpl in Hs.
+destruct s as [di| ].
+ destruct Hs as (Hn, Hs).
+ right; intros H.
+ unfold rm_eq in H; simpl in H.
+ pose proof (H di) as HH.
+ rewrite Hs in HH; symmetry in HH.
+ unfold rm_add_i in HH; simpl in HH.
+ unfold carry in HH; simpl in HH.
+ remember (fst_same 0%rm 0%rm (S di)) as s1 eqn:Hs1 .
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ destruct s1 as [di1| ]; [ idtac | discriminate Hs1; assumption ].
+ discriminate HH.
+
+ left.
+ unfold rm_eq; intros i; simpl.
+ rewrite Hs.
+ unfold rm_add_i; simpl.
+ unfold carry; simpl.
+ remember (fst_same 0 0 (S i)) as s1 eqn:Hs1 .
+ destruct s1; [ reflexivity | idtac ].
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ discriminate Hs1; assumption.
 Qed.
 
 Theorem rm_dec : ∀ x y, {(x = y)%rm} + {(x ≠ y)%rm}.
