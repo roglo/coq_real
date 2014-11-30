@@ -2853,7 +2853,6 @@ induction xl as [| z]; intros.
    eapply Nat.min_glb_r; eassumption.
 Qed.
 
-(* perhaps conclusion simplifiable, see carry_repeat2 *)
 Theorem carry_repeat : ∀ x y z i,
   carry x y i = false
   → carry (x + y) z i = false
@@ -2862,10 +2861,6 @@ Theorem carry_repeat : ∀ x y z i,
     carry x y (S (i + m)) = false ∧
     carry (x + y) z (S (i + m)) = false ∧
     carry y z (S (i + m)) = true ∧
-    x.[S (i + m)] = false ∧
-    y.[S (i + m)] = false ∧
-    z.[S (i + m)] = true ∧
-    (∀ dj, dj ≤ m → y.[S (i + dj)] = negb z.[S (i + dj)]) ∧
     (∀ dj, dj ≤ m → rm_add_i x y (S (i + dj)) = negb z.[S (i + dj)]).
 Proof.
 intros x y z i Rxy Rayz Ryz.
@@ -2940,13 +2935,7 @@ destruct syzn as [dyzn| ]; [ idtac | clear H ].
     split; [ assumption | idtac ].
     split; [ assumption | idtac ].
     split; [ assumption | idtac ].
-    split; [ assumption | idtac ].
-    split; [ assumption | idtac ].
-    split; [ assumption | idtac ].
-    split; intros dj Hdj.
-     eapply Hnyzn, le_lt_trans; eassumption.
-
-     eapply Hnxy_zn, le_lt_trans; eassumption.
+    intros dj Hdj; eapply Hnxy_zn, le_lt_trans; eassumption.
 
   exfalso.
   eapply min_neq_lt in H; eauto ; try (right; left; auto).
@@ -3049,13 +3038,7 @@ destruct syzn as [dyzn| ]; [ idtac | clear H ].
    rewrite <- Nat.add_succ_l.
    erewrite carry_before_inf_relay; [ idtac | assumption ].
    split; [ reflexivity | idtac ].
-   split; [ assumption | idtac ].
-   split; [ assumption | idtac ].
-   split; [ assumption | idtac ].
-   split; intros dj Hdj.
-    apply Hnyzn.
-
-    eapply Hnxy_zn, le_lt_trans; eassumption.
+   intros dj Hdj; eapply Hnxy_zn, le_lt_trans; eassumption.
 
   eapply min_neq_lt in H; eauto ; try (left; auto).
   rename H into Hpdxyn.
@@ -3205,9 +3188,7 @@ revert x y z i Hc4 Hc5 Hc6 Hs.
 induction di as (di, IHdi) using all_lt_all; intros.
 remember Hc4 as H; clear HeqH.
 apply carry_repeat in H; try assumption.
-destruct H as (n, (Rxyn, (Rxy_zn, (Ryzn, H)))).
-destruct H as (Xn, (Yn, (Zn, H))).
-destruct H as (Hnyz, Hnxy_z).
+destruct H as (n, (Rxyn, (Rxy_zn, (Ryzn, Hnxy_z)))).
 move Rxyn after Ryzn.
 destruct (le_dec di n) as [H1| H1].
  remember Hs as H; clear HeqH.
@@ -3217,7 +3198,6 @@ destruct (le_dec di n) as [H1| H1].
  revert Hxy_z; apply no_fixpoint_negb.
 
  apply Nat.nle_gt in H1.
- clear Xn Yn Zn Hnyz Hnxy_z.
  remember (di - S n) as dj.
  apply nat_sub_add_r in Heqdj; [ idtac | assumption ].
  clear Hc4 Hc5 Hc6.
