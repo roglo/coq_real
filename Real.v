@@ -3209,21 +3209,14 @@ destruct H as (n, (Rxyn, (Rxy_zn, (Ryzn, H)))).
 destruct H as (Xn, (Yn, (Zn, H))).
 destruct H as (Hnyz, Hnxy_z).
 move Rxyn after Ryzn.
-destruct (lt_eq_lt_dec di n) as [[H1| H1]| H1].
+destruct (le_dec di n) as [H1| H1].
  remember Hs as H; clear HeqH.
  apply fst_same_iff in H; simpl in H.
  destruct H as (Hnxy_z2, Hxy_z).
- rewrite Hnxy_z in Hxy_z; [ idtac | apply Nat.lt_le_incl; assumption ].
- exfalso; revert Hxy_z; apply no_fixpoint_negb.
+ rewrite Hnxy_z in Hxy_z; [ idtac | assumption ].
+ revert Hxy_z; apply no_fixpoint_negb.
 
- subst di.
- remember Hs as H; clear HeqH.
- apply fst_same_iff in H; simpl in H.
- destruct H as (Hnxy_z2, Hxy_z).
- remember Hc4 as H; clear HeqH.
- unfold carry in H; rewrite Hs in H; simpl in H.
- rewrite H, Zn in Hxy_z; discriminate Hxy_z.
-
+ apply Nat.nle_gt in H1.
  clear Xn Yn Zn Hnyz Hnxy_z.
  remember (di - S n) as dj.
  apply nat_sub_add_r in Heqdj; [ idtac | assumption ].
