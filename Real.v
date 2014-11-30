@@ -1,4 +1,4 @@
-(* ℝ interval [0..1[, a commutative monoid *)
+(* ℝ interval [0..1[, addition modulo 1: a commutative monoid *)
 
 Require Import Utf8 QArith NPeano.
 
