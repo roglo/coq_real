@@ -1,4 +1,7 @@
-all: Real.vo
+all: Real01Add.vo
+
+clean:
+	rm -f *.vo
 
 .SUFFIXES: .v .vo
 
