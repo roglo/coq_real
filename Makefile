@@ -4,7 +4,7 @@ FILESFORDEP=`LC_ALL=C ls *.v`
 all: $(TARGET)
 
 clean:
-	rm -f *.vo
+	rm -f *.glob *.vo
 
 depend:
 	mv .depend .depend.bak
