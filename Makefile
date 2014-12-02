@@ -13,7 +13,7 @@ depend:
 .SUFFIXES: .v .vo
 
 .v.vo:
-	coqc -I ../puiseuxth/coq $<
+	coqc $<
 
 .PHONY: all
 
