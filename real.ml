@@ -11,12 +11,13 @@ value fst_same a b i =
 
 value xorb a b = if a then not b else b.
 
-value rm_add_i a b i =
-  xorb (xorb (a.rm i) (b.rm i))
-  (match fst_same a b (i + 1) with
-   | Some dj → a.rm (i + dj + 1)
-   | None → True
-   end).
+value carry x y i =
+  match fst_same x y (i + 1) with
+  | Some dj → x.rm (i + dj + 1)
+  | None → True
+  end;
+
+value rm_add_i x y i = xorb (xorb (x.rm i) (y.rm i)) (carry x y i);
 
 value rm_add a b = { rm = rm_add_i a b }.
 
@@ -153,3 +154,17 @@ value rec trunc_from n a i =
 
 value rm_exp_opp n = {rm i = i = n}.
 value trunc_one n = trunc_from n (rm_exp_opp (pred n)) 0;
+
+value rm_shift_r n x = { rm i = if i < n then False else x.rm (i-n) };
+
+type real = { re : real_mod_1; re_power : int; re_sign : bool };
+
+value re_add x y =
+  if x.re_sign && y.re_sign then
+    if x.re_power < y.re_power then
+      let xm = rm_shift_r (y.re_power - x.re_power) x.re in
+      let ym = y.re in
+      {re = rm_add xm ym; re_power = y.re_power; re_sign = True}
+    else failwith "not impl 1"
+  else failwith "not impl 2"
+;
