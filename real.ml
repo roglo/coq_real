@@ -30,7 +30,7 @@ value rm_add_carry a b =
 value rm_opp a = { rm i = not (a.rm i) };
 value rm_sub a b = rm_add a (rm_opp b);
 
-value f2a x =
+value f2am x =
   let x = mod_float x 1.0 in
   loop 100 x [] where rec loop i x list =
     if i = 0 then Array.of_list (List.rev list)
@@ -39,18 +39,18 @@ value f2a x =
       loop (i - 1) (mod_float x 1.0) [x >= 1. :: list]
 ;
 
-value f2r x =
-  let a = f2a x in
+value f2rm x =
+  let a = f2am x in
   { rm i = if i < Array.length a then a.(i) else False }
 ;
 
-value r2f a =
+value rm2f a =
   loop 0 0.0 0.5 where rec loop i x pow =
     if i = 100 then x
     else loop (i + 1) (if a.rm i then x +. pow else x) (pow *. 0.5)
 ;
 
-r2f (rm_add (f2r 0.28) (f2r 0.17));
+rm2f (rm_add (f2rm 0.28) (f2rm 0.17));
 
 value rec trunc n a =
   if n = 0 then []
@@ -94,54 +94,54 @@ value tr_add2 n a b = trunc_add_with_carry False (trunc n a) (trunc n b);
 
 value n = 9;
 n;
-t2f (tr_add n (f2r 0.5) (f2r 0.2));
-t2f (trunc n (rm_add (f2r 0.5) (f2r 0.2)));
-(tr_add n (f2r 0.5) (f2r 0.2));
-(trunc n (rm_add (f2r 0.5) (f2r 0.2)));
-t2s (tr_add n (f2r 0.5) (f2r 0.2));
-t2s (trunc n (rm_add (f2r 0.5) (f2r 0.2)));
+t2f (tr_add n (f2rm 0.5) (f2rm 0.2));
+t2f (trunc n (rm_add (f2rm 0.5) (f2rm 0.2)));
+(tr_add n (f2rm 0.5) (f2rm 0.2));
+(trunc n (rm_add (f2rm 0.5) (f2rm 0.2)));
+t2s (tr_add n (f2rm 0.5) (f2rm 0.2));
+t2s (trunc n (rm_add (f2rm 0.5) (f2rm 0.2)));
 
 (**)
-t2f (tr_add 35 (f2r 0.5) (f2r 0.2));
-t2f (tr_add 36 (f2r 0.5) (f2r 0.2));
-t2f (tr_add 37 (f2r 0.5) (f2r 0.2));
-t2f (tr_add 38 (f2r 0.5) (f2r 0.2));
-t2f (tr_add 39 (f2r 0.5) (f2r 0.2));
-t2f (tr_add 40 (f2r 0.5) (f2r 0.2));
-t2f (tr_add 41 (f2r 0.5) (f2r 0.2));
-t2f (tr_add 42 (f2r 0.5) (f2r 0.2));
+t2f (tr_add 35 (f2rm 0.5) (f2rm 0.2));
+t2f (tr_add 36 (f2rm 0.5) (f2rm 0.2));
+t2f (tr_add 37 (f2rm 0.5) (f2rm 0.2));
+t2f (tr_add 38 (f2rm 0.5) (f2rm 0.2));
+t2f (tr_add 39 (f2rm 0.5) (f2rm 0.2));
+t2f (tr_add 40 (f2rm 0.5) (f2rm 0.2));
+t2f (tr_add 41 (f2rm 0.5) (f2rm 0.2));
+t2f (tr_add 42 (f2rm 0.5) (f2rm 0.2));
 (**)
 
 (**)
 5;
 
-t2f (tr_add 0 (f2r 0.5) (f2r 0.2));
-t2f (tr_add 1 (f2r 0.5) (f2r 0.2));
-t2f (tr_add 2 (f2r 0.5) (f2r 0.2));
-t2f (tr_add 3 (f2r 0.5) (f2r 0.2));
-t2f (tr_add 4 (f2r 0.5) (f2r 0.2));
-t2f (tr_add 5 (f2r 0.5) (f2r 0.2));
-t2f (tr_add 6 (f2r 0.5) (f2r 0.2));
-t2f (tr_add 7 (f2r 0.5) (f2r 0.2));
-t2f (tr_add 8 (f2r 0.5) (f2r 0.2));
-t2f (tr_add 9 (f2r 0.5) (f2r 0.2));
-t2f (tr_add 10 (f2r 0.5) (f2r 0.2));
-t2f (tr_add 11 (f2r 0.5) (f2r 0.2));
+t2f (tr_add 0 (f2rm 0.5) (f2rm 0.2));
+t2f (tr_add 1 (f2rm 0.5) (f2rm 0.2));
+t2f (tr_add 2 (f2rm 0.5) (f2rm 0.2));
+t2f (tr_add 3 (f2rm 0.5) (f2rm 0.2));
+t2f (tr_add 4 (f2rm 0.5) (f2rm 0.2));
+t2f (tr_add 5 (f2rm 0.5) (f2rm 0.2));
+t2f (tr_add 6 (f2rm 0.5) (f2rm 0.2));
+t2f (tr_add 7 (f2rm 0.5) (f2rm 0.2));
+t2f (tr_add 8 (f2rm 0.5) (f2rm 0.2));
+t2f (tr_add 9 (f2rm 0.5) (f2rm 0.2));
+t2f (tr_add 10 (f2rm 0.5) (f2rm 0.2));
+t2f (tr_add 11 (f2rm 0.5) (f2rm 0.2));
 
 5;
 
-t2f (trunc 0 (rm_add (f2r 0.5) (f2r 0.2)));
-t2f (trunc 1 (rm_add (f2r 0.5) (f2r 0.2)));
-t2f (trunc 2 (rm_add (f2r 0.5) (f2r 0.2)));
-t2f (trunc 3 (rm_add (f2r 0.5) (f2r 0.2)));
-t2f (trunc 4 (rm_add (f2r 0.5) (f2r 0.2)));
-t2f (trunc 5 (rm_add (f2r 0.5) (f2r 0.2)));
-t2f (trunc 6 (rm_add (f2r 0.5) (f2r 0.2)));
-t2f (trunc 7 (rm_add (f2r 0.5) (f2r 0.2)));
-t2f (trunc 8 (rm_add (f2r 0.5) (f2r 0.2)));
-t2f (trunc 9 (rm_add (f2r 0.5) (f2r 0.2)));
-t2f (trunc 10 (rm_add (f2r 0.5) (f2r 0.2)));
-t2f (trunc 11 (rm_add (f2r 0.5) (f2r 0.2)));
+t2f (trunc 0 (rm_add (f2rm 0.5) (f2rm 0.2)));
+t2f (trunc 1 (rm_add (f2rm 0.5) (f2rm 0.2)));
+t2f (trunc 2 (rm_add (f2rm 0.5) (f2rm 0.2)));
+t2f (trunc 3 (rm_add (f2rm 0.5) (f2rm 0.2)));
+t2f (trunc 4 (rm_add (f2rm 0.5) (f2rm 0.2)));
+t2f (trunc 5 (rm_add (f2rm 0.5) (f2rm 0.2)));
+t2f (trunc 6 (rm_add (f2rm 0.5) (f2rm 0.2)));
+t2f (trunc 7 (rm_add (f2rm 0.5) (f2rm 0.2)));
+t2f (trunc 8 (rm_add (f2rm 0.5) (f2rm 0.2)));
+t2f (trunc 9 (rm_add (f2rm 0.5) (f2rm 0.2)));
+t2f (trunc 10 (rm_add (f2rm 0.5) (f2rm 0.2)));
+t2f (trunc 11 (rm_add (f2rm 0.5) (f2rm 0.2)));
 (**)
 
 value rec trunc_from n a i =
