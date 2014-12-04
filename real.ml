@@ -2,6 +2,8 @@ open Printf;
 
 type real_mod_1 = { rm : int → int };
 
+value rm_zero = {rm i = 0};
+
 value fst_carry_sure base x y i =
   loop 0 where rec loop di =
     if x.rm (i + di) + y.rm (i + di) <> base - 1 then Some di
@@ -187,7 +189,17 @@ value re_add base x y =
     {re_abs = if c = 1 then rm_shift_r 1 1 zm else zm;
      re_power = max x.re_power y.re_power + c;
      re_sign = x.re_sign}
-  else failwith "not impl 2"
+  else
+    let (zm, sign) =
+      match rm_compare base xm ym with
+      | Eq → (rm_zero, True)
+      | Lt → (rm_sub base ym xm, y.re_sign)
+      | Gt → (rm_sub base xm ym, x.re_sign)
+      end
+    in
+    {re_abs = zm;
+     re_power = max x.re_power y.re_power;
+     re_sign = sign}
 ;
 
 value f2a base x =
