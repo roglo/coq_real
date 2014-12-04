@@ -168,3 +168,23 @@ value re_add x y =
     else failwith "not impl 1"
   else failwith "not impl 2"
 ;
+
+value f2a x =
+  let (x, p) =
+    loop x 0 where rec loop x p =
+      if x ≥ 1.0 then loop (x /. 2.) (p + 1)
+      else (x, p)
+  in
+  loop 100 x [] where rec loop i x list =
+    if i = 0 then (Array.of_list (List.rev list), p)
+    else
+      let x = 2. *. x in
+      loop (i - 1) (mod_float x 1.0) [x >= 1. :: list]
+;
+
+value f2r x =
+  let (a, p) = f2a x in
+  { re = {rm i = if i < Array.length a then a.(i) else False};
+    re_power = p;
+    re_sign = True }
+;
