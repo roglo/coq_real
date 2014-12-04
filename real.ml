@@ -162,11 +162,9 @@ value trunc_one n = trunc_from n (rm_exp_opp (pred n)) 0;
 
 type comparison = [ Eq | Lt | Gt ].
 
-bbb;
-
 value rm_compare base x y =
   match fst_same base x (rm_opp base y) 0 with
-  | Some j → if x.rm j then Gt else Lt
+  | Some j → if x.rm j < y.rm j then Lt else Gt
   | None → Eq
   end
 ;
