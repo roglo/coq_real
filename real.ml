@@ -11,18 +11,18 @@ value fst_carry_sure base x y i =
     else loop (di + 1)
 ;
 
-value add_dig base a b = (a + b) mod base;
+value sum_unit base a b = (a + b) mod base;
 
 value gen_carry base x y i =
   match fst_carry_sure base x y i with
-  | Some dj → if x.rm (i + dj) + y.rm (i + dj) < base - 1 then 0 else 1
+  | Some dj → if x.rm (i + dj) + y.rm (i + dj) < base then 0 else 1
   | None → 1
   end.
 
 value carry base x y i = gen_carry base x y (i + 1);
 
 value rm_add_i base x y i =
-  add_dig base (add_dig base (x.rm i) (y.rm i)) (carry base x y i)
+  sum_unit base (sum_unit base (x.rm i) (y.rm i)) (carry base x y i)
 ;
 
 value rm_add base a b = { rm = rm_add_i base a b }.
