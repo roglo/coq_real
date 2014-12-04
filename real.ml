@@ -157,15 +157,15 @@ value trunc_one n = trunc_from n (rm_exp_opp (pred n)) 0;
 
 value rm_shift_r n pad x = { rm i = if i < n then pad else x.rm (i-n) };
 
-type real = { re : real_mod_1; re_power : int; re_sign : bool };
+type real = { re_abs : real_mod_1; re_power : int; re_sign : bool };
 
 value re_add x y =
   if x.re_sign = y.re_sign then
-    let xm = rm_shift_r (max 0 (y.re_power - x.re_power)) False x.re in
-    let ym = rm_shift_r (max 0 (x.re_power - y.re_power)) False y.re in
+    let xm = rm_shift_r (max 0 (y.re_power - x.re_power)) False x.re_abs in
+    let ym = rm_shift_r (max 0 (x.re_power - y.re_power)) False y.re_abs in
     let zm = rm_add xm ym in
     let c = rm_add_carry xm ym in
-    {re = if c then rm_shift_r 1 True zm else zm;
+    {re_abs = if c then rm_shift_r 1 True zm else zm;
      re_power = max x.re_power y.re_power + if c then 1 else 0;
      re_sign = x.re_sign}
   else failwith "not impl 2"
@@ -186,7 +186,7 @@ value f2a x =
 
 value f2r x =
   let (a, p) = f2a (abs_float x) in
-  { re = {rm i = if i < Array.length a then a.(i) else False};
+  { re_abs = {rm i = if i < Array.length a then a.(i) else False};
     re_power = p;
     re_sign = x ≥ 0. }
 ;
@@ -196,7 +196,7 @@ value r2f a =
     if i = 100 then
       (if a.re_sign then 1. else -1.) *. x *. 2. ** float a.re_power
     else
-      loop (i + 1) (if a.re.rm i then x +. pow else x) (pow *. 0.5)
+      loop (i + 1) (if a.re_abs.rm i then x +. pow else x) (pow *. 0.5)
 ;
 
 r2f (re_add (f2r 0.28) (f2r 0.17));
