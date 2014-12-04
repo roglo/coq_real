@@ -155,6 +155,20 @@ value rec trunc_from n a i =
 value rm_exp_opp n = {rm i = i = n}.
 value trunc_one n = trunc_from n (rm_exp_opp (pred n)) 0;
 
+type comparison = [ Eq | Lt | Gt ].
+
+value rm_compare x y =
+  match fst_same x (rm_opp y) 0 with
+  | Some j → if x.rm j then Gt else Lt
+  | None → Eq
+  end
+;
+
+value rm_lt x y = rm_compare x y = Lt;
+value rm_le x y = rm_compare x y <> Gt;
+value rm_gt x y = rm_compare x y = Gt;
+value rm_ge x y = rm_compare x y <> Lt;
+
 value rm_shift_r n pad x = { rm i = if i < n then pad else x.rm (i-n) };
 
 type real = { re_abs : real_mod_1; re_power : int; re_sign : bool };
