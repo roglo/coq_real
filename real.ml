@@ -11,7 +11,7 @@ value fst_carry_sure base x y i =
     else loop (di + 1)
 ;
 
-value dig_sum base a b = (a + b) mod base;
+value add_dig base a b = (a + b) mod base;
 
 value gen_carry base x y i =
   match fst_carry_sure base x y i with
@@ -22,7 +22,7 @@ value gen_carry base x y i =
 value carry base x y i = gen_carry base x y (i + 1);
 
 value rm_add_i base x y i =
-  dig_sum base (dig_sum base (x.rm i) (y.rm i)) (carry base x y i)
+  add_dig base (add_dig base (x.rm i) (y.rm i)) (carry base x y i)
 ;
 
 value rm_add base a b = { rm = rm_add_i base a b }.
