@@ -4329,4 +4329,20 @@ intros x y.
 destruct (rm_dec x y); [ left | right ]; assumption.
 Qed.
 
+Definition rm_compare x y :=
+  match fst_same x (rm_opp y) 0 with
+  | Some j => if x.[j] then Gt else Lt
+  | None => Eq
+  end.
+
+Definition rm_lt x y := rm_compare x y = Lt.
+Definition rm_le x y := rm_compare x y ≠ Gt.
+Definition rm_gt x y := rm_compare x y = Gt.
+Definition rm_ge x y := rm_compare x y ≠ Lt.
+
+Notation "x < y" := (rm_lt x y) : rm_scope.
+Notation "x ≤ y" := (rm_le x y) : rm_scope.
+Notation "x > y" := (rm_gt x y) : rm_scope.
+Notation "x ≥ y" := (rm_ge x y) : rm_scope.
+
 Close Scope nat_scope.
