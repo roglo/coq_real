@@ -176,6 +176,12 @@ value rm_le base x y = rm_compare base x y <> Gt;
 value rm_gt base x y = rm_compare base x y = Gt;
 value rm_ge base x y = rm_compare base x y <> Lt;
 
+value rm_div_i x y =
+  if rm_le y x then
+;
+
+value rm_div x y = {rm = rm_div_i x y};
+
 value rm_shift_r n pad x = { rm i = if i < n then pad else x.rm (i-n) };
 
 type real = { re_abs : real_mod_1; re_power : int; re_sign : bool };
