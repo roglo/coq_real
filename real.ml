@@ -21,10 +21,10 @@ value rm_add_i x y i = xorb (xorb (x.rm i) (y.rm i)) (carry x y i);
 
 value rm_add a b = { rm = rm_add_i a b }.
 
-value rm_add_carry a b =
-  match fst_same a b 0 with
-  | Some dj → a.rm dj
-  | None → False
+value rm_add_carry x y =
+  match fst_same x y 0 with
+  | Some dj → x.rm dj
+  | None → True
   end.
 
 value rm_opp a = { rm i = not (a.rm i) };
@@ -155,17 +155,19 @@ value rec trunc_from n a i =
 value rm_exp_opp n = {rm i = i = n}.
 value trunc_one n = trunc_from n (rm_exp_opp (pred n)) 0;
 
-value rm_shift_r n x = { rm i = if i < n then False else x.rm (i-n) };
+value rm_shift_r n pad x = { rm i = if i < n then pad else x.rm (i-n) };
 
 type real = { re : real_mod_1; re_power : int; re_sign : bool };
 
 value re_add x y =
   if x.re_sign && y.re_sign then
-    if x.re_power < y.re_power then
-      let xm = rm_shift_r (y.re_power - x.re_power) x.re in
-      let ym = y.re in
-      {re = rm_add xm ym; re_power = y.re_power; re_sign = True}
-    else failwith "not impl 1"
+    let xm = rm_shift_r (max 0 (y.re_power - x.re_power)) False x.re in
+    let ym = rm_shift_r (max 0 (x.re_power - y.re_power)) False y.re in
+    let zm = rm_add xm ym in
+    let c = rm_add_carry xm ym in
+    {re = if c then rm_shift_r 1 True zm else zm;
+     re_power = max x.re_power y.re_power + if c then 1 else 0;
+     re_sign = True}
   else failwith "not impl 2"
 ;
 
@@ -183,8 +185,19 @@ value f2a x =
 ;
 
 value f2r x =
-  let (a, p) = f2a x in
+  let (a, p) = f2a (abs_float x) in
   { re = {rm i = if i < Array.length a then a.(i) else False};
     re_power = p;
-    re_sign = True }
+    re_sign = x ≥ 0. }
 ;
+
+value r2f a =
+  loop 0 0.0 0.5 where rec loop i x pow =
+    if i = 100 then x *. 2. ** float a.re_power
+    else loop (i + 1) (if a.re.rm i then x +. pow else x) (pow *. 0.5)
+;
+
+r2f (re_add (f2r 0.28) (f2r 0.17));
+r2f (re_add (f2r 1.28) (f2r 0.17));
+r2f (re_add (f2r (17.9)) (f2r 16.9));
+r2f (re_add (f2r (-1.28)) (f2r 0.17));
