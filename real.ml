@@ -2,7 +2,7 @@ open Printf;
 
 type real_mod_1 = { rm : int → int };
 
-value fst_same base x y i =
+value fst_carry_sure base x y i =
   loop 0 where rec loop di =
     if x.rm (i + di) + y.rm (i + di) <> base - 1 then Some di
     else if di > 10000 then None
@@ -12,7 +12,7 @@ value fst_same base x y i =
 value dig_sum base a b = (a + b) mod base;
 
 value gen_carry base x y i =
-  match fst_same base x y i with
+  match fst_carry_sure base x y i with
   | Some dj → if x.rm (i + dj) + y.rm (i + dj) < base - 1 then 0 else 1
   | None → 1
   end.
@@ -90,7 +90,7 @@ value t2f la =
 
 value tr_add n a b =
   let c =
-    match fst_same a b n with
+    match fst_carry_sure a b n with
     | Some dn → a.rm (n + dn)
     | None → True
     end
@@ -163,7 +163,7 @@ value trunc_one n = trunc_from n (rm_exp_opp (pred n)) 0;
 type comparison = [ Eq | Lt | Gt ].
 
 value rm_compare base x y =
-  match fst_same base x (rm_opp base y) 0 with
+  match fst_carry_sure base x (rm_opp base y) 0 with
   | Some j → if x.rm j < y.rm j then Lt else Gt
   | None → Eq
   end
@@ -178,48 +178,49 @@ value rm_shift_r n pad x = { rm i = if i < n then pad else x.rm (i-n) };
 
 type real = { re_abs : real_mod_1; re_power : int; re_sign : bool };
 
-value re_add x y =
-  let xm = rm_shift_r (max 0 (y.re_power - x.re_power)) False x.re_abs in
-  let ym = rm_shift_r (max 0 (x.re_power - y.re_power)) False y.re_abs in
+value re_add base x y =
+  let xm = rm_shift_r (max 0 (y.re_power - x.re_power)) 0 x.re_abs in
+  let ym = rm_shift_r (max 0 (x.re_power - y.re_power)) 0 y.re_abs in
   if x.re_sign = y.re_sign then
-    let zm = rm_add xm ym in
-    let c = rm_add_carry xm ym in
-    {re_abs = if c then rm_shift_r 1 True zm else zm;
-     re_power = max x.re_power y.re_power + if c then 1 else 0;
+    let zm = rm_add base xm ym in
+    let c = rm_add_carry base xm ym in
+    {re_abs = if c = 1 then rm_shift_r 1 1 zm else zm;
+     re_power = max x.re_power y.re_power + c;
      re_sign = x.re_sign}
   else failwith "not impl 2"
 ;
 
-value f2a x =
+value f2a base x =
   let (x, p) =
     loop x 0 where rec loop x p =
-      if x ≥ 1.0 then loop (x /. 2.) (p + 1)
+      if x ≥ 1.0 then loop (x /. float base) (p + 1)
       else (x, p)
   in
   loop 100 x [] where rec loop i x list =
     if i = 0 then (Array.of_list (List.rev list), p)
     else
-      let x = 2. *. x in
-      loop (i - 1) (mod_float x 1.0) [x >= 1. :: list]
+      let x = float base *. x in
+      loop (i - 1) (mod_float x 1.0) [truncate x :: list]
 ;
 
-value f2r x =
-  let (a, p) = f2a (abs_float x) in
-  { re_abs = {rm i = if i < Array.length a then a.(i) else False};
+value f2r base x =
+  let (a, p) = f2a base (abs_float x) in
+  { re_abs = {rm i = if i < Array.length a then a.(i) else 0};
     re_power = p;
     re_sign = x ≥ 0. }
 ;
 
-value r2f a =
-  loop 0 0.0 0.5 where rec loop i x pow =
+value r2f base a =
+  loop 0 0.0 (1. /. float base) where rec loop i x pow =
     if i = 100 then
-      (if a.re_sign then 1. else -1.) *. x *. 2. ** float a.re_power
+      (if a.re_sign then 1. else -1.) *. x *. float base ** float a.re_power
     else
-      loop (i + 1) (if a.re_abs.rm i then x +. pow else x) (pow *. 0.5)
+      loop (i + 1) (x +. float (a.re_abs.rm i) *. pow)
+        (pow /. float base)
 ;
 
-r2f (re_add (f2r 0.28) (f2r 0.17));
-r2f (re_add (f2r 1.28) (f2r 0.17));
-r2f (re_add (f2r (17.9)) (f2r 16.9));
-r2f (re_add (f2r (-16.9)) (f2r (-17.9)));
-r2f (re_add (f2r (-1.28)) (f2r 0.17));
+let b = 3 in r2f b (re_add b (f2r b 0.28) (f2r b 0.17));
+let b = 3 in r2f b (re_add b (f2r b 1.28) (f2r b 0.17));
+let b = 3 in r2f b (re_add b (f2r b 17.9) (f2r b 16.9));
+let b = 3 in r2f b (re_add b (f2r b (-16.9)) (f2r b (-17.9)));
+let b = 3 in r2f b (re_add b (f2r b (-1.28)) (f2r b 0.17));
