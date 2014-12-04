@@ -1,57 +1,67 @@
 open Printf;
 
-type real_mod_1 = { rm : int → bool };
+type real_mod_1 = { rm : int → int };
 
-value fst_same a b i =
+value fst_same base x y i =
   loop 0 where rec loop di =
-    if a.rm (i + di) = b.rm (i + di) then Some di
+    if x.rm (i + di) + y.rm (i + di) <> base - 1 then Some di
     else if di > 10000 then None
     else loop (di + 1)
 ;
 
-value xorb a b = if a then not b else b.
+value dig_sum base a b = (a + b) mod base;
 
-value carry x y i =
-  match fst_same x y (i + 1) with
-  | Some dj → x.rm (i + dj + 1)
-  | None → True
-  end;
-
-value rm_add_i x y i = xorb (xorb (x.rm i) (y.rm i)) (carry x y i);
-
-value rm_add a b = { rm = rm_add_i a b }.
-
-value rm_add_carry x y =
-  match fst_same x y 0 with
-  | Some dj → x.rm dj
-  | None → True
+value gen_carry base x y i =
+  match fst_same base x y i with
+  | Some dj → if x.rm (i + dj) + y.rm (i + dj) < base - 1 then 0 else 1
+  | None → 1
   end.
 
-value rm_opp a = { rm i = not (a.rm i) };
-value rm_sub a b = rm_add a (rm_opp b);
+value carry base x y i = gen_carry base x y (i + 1);
 
-value f2am x =
+value rm_add_i base x y i =
+  dig_sum base (dig_sum base (x.rm i) (y.rm i)) (carry base x y i)
+;
+
+value rm_add base a b = { rm = rm_add_i base a b }.
+value rm_opp base a = { rm i = base - 1 - a.rm i };
+value rm_sub base a b = rm_add base a (rm_opp base b);
+
+value rm_add_carry base x y = gen_carry base x y 0;
+
+value f2am base x =
   let x = mod_float x 1.0 in
   loop 100 x [] where rec loop i x list =
     if i = 0 then Array.of_list (List.rev list)
     else
-      let x = 2. *. x in
-      loop (i - 1) (mod_float x 1.0) [x >= 1. :: list]
+      let x = float base *. x in
+      loop (i - 1) (mod_float x 1.0) [truncate x :: list]
 ;
 
-value f2rm x =
-  let a = f2am x in
-  { rm i = if i < Array.length a then a.(i) else False }
+value am2f base a =
+  loop 0 0.0 (1. /. float base) where rec loop i x pow =
+    if i = Array.length a then x
+    else loop (i + 1) (x +. float a.(i) *. pow) (pow /. float base)
 ;
 
-value rm2f a =
-  loop 0 0.0 0.5 where rec loop i x pow =
-    if i = 100 then x
-    else loop (i + 1) (if a.rm i then x +. pow else x) (pow *. 0.5)
+value f2rm base x =
+  let a = f2am base x in
+  { rm i = if i < Array.length a then a.(i) else 0 }
 ;
 
-rm2f (rm_add (f2rm 0.28) (f2rm 0.17));
+value rm2f base x = am2f base (Array.init 100 x.rm);
 
+let b = 2 in rm2f b (rm_add b (f2rm b 0.28) (f2rm b 0.17));
+let b = 7 in rm2f b (rm_add b (f2rm b 0.28) (f2rm b 0.17));
+
+value am2s base a =
+  "0." ^
+  loop 0 "" where rec loop i s =
+    if i = Array.length a then s
+    else loop (i + 1) (s ^ string_of_int a.(i))
+;
+
+(*
 value rec trunc n a =
   if n = 0 then []
   else [a.rm (n-1) :: trunc (n-1) a]
@@ -78,8 +88,6 @@ value t2f la =
   List.fold_left (fun s a → (if a then 1. else 0.) +. s /. 2.) 0. la /. 2.
 ;
 
-(**)
-
 value tr_add n a b =
   let c =
     match fst_same a b n with
@@ -101,7 +109,6 @@ t2f (trunc n (rm_add (f2rm 0.5) (f2rm 0.2)));
 t2s (tr_add n (f2rm 0.5) (f2rm 0.2));
 t2s (trunc n (rm_add (f2rm 0.5) (f2rm 0.2)));
 
-(**)
 t2f (tr_add 35 (f2rm 0.5) (f2rm 0.2));
 t2f (tr_add 36 (f2rm 0.5) (f2rm 0.2));
 t2f (tr_add 37 (f2rm 0.5) (f2rm 0.2));
@@ -110,9 +117,7 @@ t2f (tr_add 39 (f2rm 0.5) (f2rm 0.2));
 t2f (tr_add 40 (f2rm 0.5) (f2rm 0.2));
 t2f (tr_add 41 (f2rm 0.5) (f2rm 0.2));
 t2f (tr_add 42 (f2rm 0.5) (f2rm 0.2));
-(**)
 
-(**)
 5;
 
 t2f (tr_add 0 (f2rm 0.5) (f2rm 0.2));
@@ -142,7 +147,6 @@ t2f (trunc 8 (rm_add (f2rm 0.5) (f2rm 0.2)));
 t2f (trunc 9 (rm_add (f2rm 0.5) (f2rm 0.2)));
 t2f (trunc 10 (rm_add (f2rm 0.5) (f2rm 0.2)));
 t2f (trunc 11 (rm_add (f2rm 0.5) (f2rm 0.2)));
-(**)
 
 value rec trunc_from n a i =
   match n with
@@ -154,20 +158,23 @@ value rec trunc_from n a i =
 
 value rm_exp_opp n = {rm i = i = n}.
 value trunc_one n = trunc_from n (rm_exp_opp (pred n)) 0;
+*)
 
 type comparison = [ Eq | Lt | Gt ].
 
-value rm_compare x y =
-  match fst_same x (rm_opp y) 0 with
+bbb;
+
+value rm_compare base x y =
+  match fst_same base x (rm_opp base y) 0 with
   | Some j → if x.rm j then Gt else Lt
   | None → Eq
   end
 ;
 
-value rm_lt x y = rm_compare x y = Lt;
-value rm_le x y = rm_compare x y <> Gt;
-value rm_gt x y = rm_compare x y = Gt;
-value rm_ge x y = rm_compare x y <> Lt;
+value rm_lt base x y = rm_compare base x y = Lt;
+value rm_le base x y = rm_compare base x y <> Gt;
+value rm_gt base x y = rm_compare base x y = Gt;
+value rm_ge base x y = rm_compare base x y <> Lt;
 
 value rm_shift_r n pad x = { rm i = if i < n then pad else x.rm (i-n) };
 

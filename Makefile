@@ -10,10 +10,13 @@ depend:
 	mv .depend .depend.bak
 	coqdep -I . $(FILESFORDEP) | LC_ALL=C sort > .depend
 
-.SUFFIXES: .v .vo
+.SUFFIXES: .v .vo .ml .cmo
 
 .v.vo:
 	coqc $<
+
+.ml.cmo:
+	ocamlc -pp camlp5r -c $<
 
 .PHONY: all
 
