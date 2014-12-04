@@ -160,9 +160,9 @@ value rm_shift_r n pad x = { rm i = if i < n then pad else x.rm (i-n) };
 type real = { re_abs : real_mod_1; re_power : int; re_sign : bool };
 
 value re_add x y =
+  let xm = rm_shift_r (max 0 (y.re_power - x.re_power)) False x.re_abs in
+  let ym = rm_shift_r (max 0 (x.re_power - y.re_power)) False y.re_abs in
   if x.re_sign = y.re_sign then
-    let xm = rm_shift_r (max 0 (y.re_power - x.re_power)) False x.re_abs in
-    let ym = rm_shift_r (max 0 (x.re_power - y.re_power)) False y.re_abs in
     let zm = rm_add xm ym in
     let c = rm_add_carry xm ym in
     {re_abs = if c then rm_shift_r 1 True zm else zm;
