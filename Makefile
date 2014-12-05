@@ -1,4 +1,4 @@
-TARGET=Real01Div.vo
+TARGET=RealAdd.vo
 FILESFORDEP=`LC_ALL=C ls *.v`
 
 all: $(TARGET)
