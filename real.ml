@@ -167,7 +167,7 @@ let b = 3 in r2f b (re_add b (f2r b 17.9) (f2r b 16.9));
 let b = 3 in r2f b (re_add b (f2r b (-16.9)) (f2r b (-17.9)));
 let b = 3 in r2f b (re_add b (f2r b (-1.28)) (f2r b 0.17));
 
-value rm2fshort base x = am2f base (Array.init 28 (get_rm x));
+value rm2fshort base x = am2f base (Array.init 25 (get_rm x));
 
 Printf.printf "%.16f\n%!" (
 0.17/.0.28
@@ -176,3 +176,5 @@ Printf.printf "%.16f\n%!" (
 Printf.printf "%.16f\n%!" (
 let b = 2 in (rm2fshort b (rm_div (f2rm b 0.17) (f2rm b 0.28)))
 );
+
+let b = 2 in (rm2fshort b (rm_div (f2rm b 0.07) (f2rm b 0.28)));
