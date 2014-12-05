@@ -45,7 +45,7 @@ value rm_sub base a b = rm_add base a (rm_opp base b);
 
 value rm_add_carry base x y = gen_carry base x y 0;
 
-value mm = 35;
+value mm = 30;
 
 value f2am base x =
   let x = mod_float x 1.0 in
@@ -78,105 +78,6 @@ value am2s base a =
     if i = Array.length a then s
     else loop (i + 1) (s ^ string_of_int a.(i))
 ;
-
-(*
-value rec trunc n a =
-  if n = 0 then []
-  else [a.rm (n-1) :: trunc (n-1) a]
-;
-
-value carry_sum_3 a b c = a && b || b && c || c && a;
-
-value rec trunc_add_with_carry c la lb =
-  match (la, lb) with
-  | ([a :: la₁], [b :: lb₁]) →
-      let t = xorb (xorb a b) c in
-      let c₁ = carry_sum_3 a b c in
-      [t :: trunc_add_with_carry c₁ la₁ lb₁]
-  | _ → []
-  end.
-
-value trunc_add = trunc_add_with_carry False;
-
-value t2s la =
-  "0." ^ List.fold_left (fun s a → if a then "1" ^ s else "0" ^ s) "" la
-;
-
-value t2f la =
-  List.fold_left (fun s a → (if a then 1. else 0.) +. s /. 2.) 0. la /. 2.
-;
-
-value tr_add n a b =
-  let c =
-    match fst_carry_sure a b n with
-    | Some dn → a.rm (n + dn)
-    | None → True
-    end
-  in
-  trunc_add_with_carry c (trunc n a) (trunc n b)
-;
-
-value tr_add2 n a b = trunc_add_with_carry False (trunc n a) (trunc n b);
-
-value n = 9;
-n;
-t2f (tr_add n (f2rm 0.5) (f2rm 0.2));
-t2f (trunc n (rm_add (f2rm 0.5) (f2rm 0.2)));
-(tr_add n (f2rm 0.5) (f2rm 0.2));
-(trunc n (rm_add (f2rm 0.5) (f2rm 0.2)));
-t2s (tr_add n (f2rm 0.5) (f2rm 0.2));
-t2s (trunc n (rm_add (f2rm 0.5) (f2rm 0.2)));
-
-t2f (tr_add 35 (f2rm 0.5) (f2rm 0.2));
-t2f (tr_add 36 (f2rm 0.5) (f2rm 0.2));
-t2f (tr_add 37 (f2rm 0.5) (f2rm 0.2));
-t2f (tr_add 38 (f2rm 0.5) (f2rm 0.2));
-t2f (tr_add 39 (f2rm 0.5) (f2rm 0.2));
-t2f (tr_add 40 (f2rm 0.5) (f2rm 0.2));
-t2f (tr_add 41 (f2rm 0.5) (f2rm 0.2));
-t2f (tr_add 42 (f2rm 0.5) (f2rm 0.2));
-
-5;
-
-t2f (tr_add 0 (f2rm 0.5) (f2rm 0.2));
-t2f (tr_add 1 (f2rm 0.5) (f2rm 0.2));
-t2f (tr_add 2 (f2rm 0.5) (f2rm 0.2));
-t2f (tr_add 3 (f2rm 0.5) (f2rm 0.2));
-t2f (tr_add 4 (f2rm 0.5) (f2rm 0.2));
-t2f (tr_add 5 (f2rm 0.5) (f2rm 0.2));
-t2f (tr_add 6 (f2rm 0.5) (f2rm 0.2));
-t2f (tr_add 7 (f2rm 0.5) (f2rm 0.2));
-t2f (tr_add 8 (f2rm 0.5) (f2rm 0.2));
-t2f (tr_add 9 (f2rm 0.5) (f2rm 0.2));
-t2f (tr_add 10 (f2rm 0.5) (f2rm 0.2));
-t2f (tr_add 11 (f2rm 0.5) (f2rm 0.2));
-
-5;
-
-t2f (trunc 0 (rm_add (f2rm 0.5) (f2rm 0.2)));
-t2f (trunc 1 (rm_add (f2rm 0.5) (f2rm 0.2)));
-t2f (trunc 2 (rm_add (f2rm 0.5) (f2rm 0.2)));
-t2f (trunc 3 (rm_add (f2rm 0.5) (f2rm 0.2)));
-t2f (trunc 4 (rm_add (f2rm 0.5) (f2rm 0.2)));
-t2f (trunc 5 (rm_add (f2rm 0.5) (f2rm 0.2)));
-t2f (trunc 6 (rm_add (f2rm 0.5) (f2rm 0.2)));
-t2f (trunc 7 (rm_add (f2rm 0.5) (f2rm 0.2)));
-t2f (trunc 8 (rm_add (f2rm 0.5) (f2rm 0.2)));
-t2f (trunc 9 (rm_add (f2rm 0.5) (f2rm 0.2)));
-t2f (trunc 10 (rm_add (f2rm 0.5) (f2rm 0.2)));
-t2f (trunc 11 (rm_add (f2rm 0.5) (f2rm 0.2)));
-
-value rec trunc_from n a i =
-  match n with
-  | 0 → []
-  | _ →
-      let n₁ = n - 1 in
-      [a.rm (i+n₁) :: trunc_from n₁ a i]
-  end.
-
-value rm_exp_opp n = {rm i = i = n}.
-value trunc_one n = trunc_from n (rm_exp_opp (pred n)) 0;
-*)
 
 type comparison = [ Eq | Lt | Gt ].
 
@@ -266,7 +167,7 @@ let b = 3 in r2f b (re_add b (f2r b 17.9) (f2r b 16.9));
 let b = 3 in r2f b (re_add b (f2r b (-16.9)) (f2r b (-17.9)));
 let b = 3 in r2f b (re_add b (f2r b (-1.28)) (f2r b 0.17));
 
-value rm2fshort base x = am2f base (Array.init 35 (get_rm x));
+value rm2fshort base x = am2f base (Array.init 28 (get_rm x));
 
 Printf.printf "%.16f\n%!" (
 0.17/.0.28
