@@ -1,10 +1,10 @@
 open Printf;
 
-type real_mod_1 = { sm : int → int; id : int };
+type real_mod_1 = { rm : int → int; id : int };
 
 value new_id = let r = ref 0 in fun () → do { incr r; r.val };
-value make_rm rm = {sm = rm; id = new_id ()};
-value get_rm rm = rm.sm;
+value make_rm rm = {rm = rm; id = new_id ()};
+value get_rm x = x.rm;
 
 value rm_zero = make_rm (fun i → 0);
 
@@ -177,4 +177,6 @@ Printf.printf "%.16f\n%!" (
 let b = 2 in (rm2fshort b (rm_div (f2rm b 0.17) (f2rm b 0.28)))
 );
 
+(*
 let b = 2 in (rm2fshort b (rm_div (f2rm b 0.07) (f2rm b 0.28)));
+*)
