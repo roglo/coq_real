@@ -7,7 +7,8 @@ value rm_zero = {rm i = 0};
 value fst_carry_sure base x y i =
   loop 0 where rec loop di =
     if x.rm (i + di) + y.rm (i + di) <> base - 1 then Some di
-    else if di > 30 then None
+    else if di > 30 then
+      None
     else loop (di + 1)
 ;
 
@@ -250,7 +251,7 @@ let b = 3 in r2f b (re_add b (f2r b 17.9) (f2r b 16.9));
 let b = 3 in r2f b (re_add b (f2r b (-16.9)) (f2r b (-17.9)));
 let b = 3 in r2f b (re_add b (f2r b (-1.28)) (f2r b 0.17));
 
-value rm2fshort base x = am2f base (Array.init 15 x.rm);
+value rm2fshort base x = am2f base (Array.init 16 x.rm);
 
 Printf.printf "%.16f\n%!" (
 0.17/.0.28
