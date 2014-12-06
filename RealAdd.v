@@ -325,7 +325,22 @@ destruct s1 as [j1| ]; simpl.
  destruct Hs1 as (Hn1, Hs1).
  destruct s2 as [j2| ]; simpl.
   destruct Hs2 as (Hn2, Hs2).
+  destruct (lt_eq_lt_dec j1 j2) as [[H1| H1]| H1].
 bbb.
+       0       j₁      j₂
+  x+0  0   0   1   .   .
+   x   0   0   0   0   1
+
+  Hn1 : ∀ dj : nat, dj < j1 → (re_mant (x + 0%R)) .[ dj] = false
+  Hs1 : (re_mant (x + 0%R)) .[ j1] = true
+  j2 : nat
+  Hn2 : ∀ dj : nat, dj < j2 → (re_mant x) .[ dj] = false
+  Hs2 : (re_mant x) .[ j2] = true
+  ============================
+   (rm_shift_l (min j1 (re_power (x + 0%R))) (re_mant (x + 0%R)) =
+    rm_shift_l (min j2 (re_power x)) (re_mant x))%rm
+
+
   unfold re_add; simpl.
   rewrite Nat.max_0_r.
   destruct (bool_dec (re_sign x) true) as [H1| H1]; simpl.
