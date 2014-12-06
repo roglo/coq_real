@@ -200,7 +200,7 @@ split; intros H.
  remember (fst_same (x + 0%rm) (- (y + 0)%rm) 0) as s eqn:Hs .
  apply fst_same_sym_iff in Hs; simpl in Hs.
  destruct s as [j| ]; [ exfalso | idtac ].
-  destruct x .[ j]; discriminate H.
+  destruct (x + 0)%rm .[ j]; discriminate H.
 
   unfold rm_eq; intros i; simpl.
   rewrite Hs, negb_involutive; reflexivity.
@@ -217,6 +217,49 @@ Proof.
 intros x y.
 split; intros H; assumption.
 Qed.
+
+Theorem rm_compare_Gt_Lt_antisym : ∀ x y, (x ?= y)%rm = Gt ↔ (y ?= x)%rm = Lt.
+Proof.
+intros x y; split; intros H.
+bbb.
+ unfold rm_compare in H; unfold rm_compare.
+ remember (fst_same (x + 0%rm) (- (y + 0)%rm) 0) as s1 eqn:Hs1 .
+ remember (fst_same (y + 0%rm) (- (x + 0)%rm) 0) as s2 eqn:Hs2 .
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ apply fst_same_sym_iff in Hs2; simpl in Hs2.
+ destruct s1 as [j1| ]; [ idtac | discriminate H ].
+ destruct Hs1 as (Hs1, Hn1).
+ destruct s2 as [j2| ].
+  destruct Hs2 as (Hs2, Hn2).
+  remember x .[ j1] as xj1 eqn:Hxj1 .
+  symmetry in Hxj1.
+  destruct xj1; [ clear H | discriminate H ].
+  remember y .[ j2] as yj2 eqn:Hyj2 .
+  symmetry in Hyj2.
+  destruct yj2; [ exfalso | reflexivity ].
+  destruct (lt_eq_lt_dec j1 j2) as [[H1| H1]| H1].
+   apply Hs2 in H1.
+   rewrite negb_involutive, Hn1 in H1.
+   symmetry in H1; revert H1; apply no_fixpoint_negb.
+
+   subst j2; clear Hn2.
+   unfold rm_add_i in Hn1; simpl in Hn1.
+   rewrite Hxj1, Hyj2 in Hn1.
+   rewrite xorb_true_l in Hn1.
+   rewrite xorb_false_r in Hn1.
+   rewrite negb_involutive in Hn1.
+   unfold carry in Hn1; simpl in Hn1.
+   remember (fst_same x 0 (S j1)) as s3 eqn:Hs3 .
+   remember (fst_same y 0 (S j1)) as s4 eqn:Hs4 .
+   apply fst_same_sym_iff in Hs3; simpl in Hs3.
+   apply fst_same_sym_iff in Hs4; simpl in Hs4.
+   destruct s3 as [di3| ].
+    destruct Hs3 as (Hn3, Hs3).
+    destruct s4 as [di4| ].
+     destruct Hs4 as (Hn4, Hs4).
+     rewrite Hs3, Hs4 in Hn1.
+     discriminate Hn1.
+bbb.
 
 Theorem re_add_comm : ∀ x y, (x + y = y + x)%R.
 Proof.

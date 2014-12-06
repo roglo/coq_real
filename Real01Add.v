@@ -4351,7 +4351,7 @@ Qed.
 
 Definition rm_compare x y :=
   match fst_same (x + 0%rm) (- (y + 0))%rm 0 with
-  | Some j => if x.[j] then Gt else Lt
+  | Some j => if (x + 0)%rm.[j] then Gt else Lt
   | None => Eq
   end.
 
@@ -4364,5 +4364,6 @@ Notation "x < y" := (rm_lt x y) : rm_scope.
 Notation "x ≤ y" := (rm_le x y) : rm_scope.
 Notation "x > y" := (rm_gt x y) : rm_scope.
 Notation "x ≥ y" := (rm_ge x y) : rm_scope.
+Notation "x ?= y" := (rm_compare x y) : rm_scope.
 
 Close Scope nat_scope.
