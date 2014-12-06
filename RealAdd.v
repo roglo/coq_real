@@ -183,21 +183,50 @@ destruct s as [di| ].
  rewrite rm_add_i_comm; apply Hs.
 Qed.
 
+Theorem rm_compare_eq : ∀ x y, (x = y)%rm ↔ rm_compare x y = Eq.
+Proof.
+intros x y.
+split; intros H.
+ unfold rm_compare.
+ unfold rm_eq in H; simpl in H.
+ remember (fst_same x (- y) 0) as s eqn:Hs .
+ apply fst_same_sym_iff in Hs; simpl in Hs.
+ destruct s as [j| ]; [ exfalso | reflexivity ].
+ destruct Hs as (Hn, Hs).
+ pose proof (H j) as Hj.
+ unfold rm_add_i in Hj; simpl in Hj.
+ do 2 rewrite xorb_false_r in Hj.
+ apply xorb_move_l_r_1 in Hj.
+ rewrite Hs, <- xorb_assoc, negb_xorb_diag_l, xorb_true_l in Hj.
+ unfold carry in Hj; simpl in Hj.
+ remember (fst_same x 0 (S j)) as s1 eqn:Hs1 .
+ remember (fst_same y 0 (S j)) as s2 eqn:Hs2 .
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ apply fst_same_sym_iff in Hs2; simpl in Hs2.
+ destruct s1 as [di1| ].
+  destruct Hs1 as (Hn1, Hs1).
+  destruct s2 as [di2| ].
+   destruct Hs2 as (Hn2, Hs2).
+   rewrite Hs1, Hs2 in Hj; discriminate Hj.
+bbb.
+mmm... perhaps redefine rm_compare as:
+  match fst_same (x + 0) (- (y + 0)) 0 with
+
 Theorem re_add_comm : ∀ x y, (x + y = y + x)%R.
 Proof.
 intros x y.
 unfold re_eq.
 split.
  unfold re_add.
+ remember (re_power x - re_power y) as pxy eqn:Hpxy .
+ remember (re_power y - re_power x) as pyx eqn:Hpyx .
+ remember (rm_shift_r (max 0 pxy) false (re_mant y)) as sxy eqn:Hsxy .
+ remember (rm_shift_r (max 0 pyx) false (re_mant x)) as syx eqn:Hsyx .
+ rewrite rm_final_carry_comm.
+ remember (rm_final_carry sxy syx) as fc eqn:Hfc .
+ symmetry in Hfc.
  destruct (bool_dec (re_sign x) (re_sign y)) as [H1| H1].
   destruct (bool_dec (re_sign y) (re_sign x)) as [H2| H2].
-   rewrite rm_final_carry_comm.
-   remember (re_power x - re_power y) as pxy eqn:Hpxy .
-   remember (re_power y - re_power x) as pyx eqn:Hpyx .
-   remember (rm_shift_r (max 0 pxy) false (re_mant y)) as sxy eqn:Hsxy .
-   remember (rm_shift_r (max 0 pyx) false (re_mant x)) as syx eqn:Hsyx .
-   remember (rm_final_carry sxy syx) as fc eqn:Hfc .
-   symmetry in Hfc.
    destruct fc.
     unfold re_norm; simpl.
     rewrite fst_same_rm_shift_r_add_comm_l.
@@ -224,6 +253,20 @@ split.
     apply carry_compat; [ idtac | reflexivity ].
     intros k; simpl.
     apply rm_add_i_comm.
+
+   symmetry in H1; contradiction.
+
+  destruct (bool_dec (re_sign y) (re_sign x)) as [H2| H2].
+   symmetry in H2; contradiction.
+
+   remember (rm_compare syx sxy) as cmp1 eqn:Hcmp1 .
+   remember (rm_compare sxy syx) as cmp2 eqn:Hcmp2 .
+   symmetry in Hcmp1, Hcmp2.
+   destruct cmp1.
+    apply rm_compare_eq in Hcmp1.
+    destruct cmp2.
+     rewrite Nat.max_comm; reflexivity.
+
 bbb.
 
 Close Scope nat_scope.
