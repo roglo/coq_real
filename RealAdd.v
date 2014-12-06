@@ -153,6 +153,18 @@ destruct s as [di| ].
  rewrite rm_add_i_comm; assumption.
 Qed.
 
+Theorem rm_shift_l_comm : ∀ x y n,
+  (rm_shift_l n (x + y) = rm_shift_l n (y + x))%rm.
+Proof.
+intros x y n.
+unfold rm_eq; intros i; simpl.
+unfold rm_add_i; simpl.
+rewrite rm_add_i_comm.
+f_equal.
+apply carry_compat_r; intros j; simpl.
+apply rm_add_i_comm.
+Qed.
+
 Theorem fst_same_comm_l : ∀ x y z n,
   fst_same (x + y) z n = fst_same (y + x) z n.
 Proof.
@@ -207,9 +219,11 @@ split.
     remember (fst_same (sxy + syx) rm_ones 0) as s eqn:Hs .
     destruct s as [j| ]; [ simpl | reflexivity ].
     rewrite Nat.max_comm.
-bbb.
     unfold rm_add_i; simpl.
-    rewrite rm_add_i_comm.
-    f_equal.
+    rewrite rm_add_i_comm; f_equal.
+    apply carry_compat; [ idtac | reflexivity ].
+    intros k; simpl.
+    apply rm_add_i_comm.
+bbb.
 
 Close Scope nat_scope.
