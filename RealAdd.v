@@ -324,6 +324,11 @@ split.
     apply rm_compare_Gt_Lt_antisym in Hcmp1; rewrite Hcmp1.
     reflexivity.
 
+    apply rm_compare_Gt_Lt_antisym in Hcmp1; rewrite Hcmp1.
+    reflexivity.
+
+ split.
+
 bbb.
 
 Close Scope nat_scope.
