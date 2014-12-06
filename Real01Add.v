@@ -313,6 +313,13 @@ intros x y z i.
 apply carry_compat; [ apply rm_add_i_comm | reflexivity ].
 Qed.
 
+Theorem carry_comm_r : ∀ x y z i,
+  carry x (y + z) i = carry x (z + y) i.
+Proof.
+intros x y z i.
+apply carry_compat; [ reflexivity | apply rm_add_i_comm ].
+Qed.
+
 Theorem rm_add_comm : ∀ x y, (x + y = y + x)%rm.
 Proof.
 intros x y.
@@ -4259,43 +4266,26 @@ do 2 rewrite xorb_false_r.
 destruct c3, c4, c5, c6; try reflexivity; exfalso.
  eapply case_1; eassumption.
 
- apply case_1 with (x := z) (y := y) (z := x) (i := i).
-  rewrite carry_comm, carry_comm_l; assumption.
+ rewrite carry_comm_l in Hc4.
+ eapply case_1; rewrite carry_comm; eassumption.
 
-  rewrite carry_comm; assumption.
+ eapply case_3; eassumption.
 
-  rewrite carry_comm; assumption.
+ eapply case_3; eassumption.
 
- eapply case_3 with (x := x) (y := y); eassumption.
+ rewrite carry_comm_r in Hc3.
+ rewrite carry_comm_l in Hc4.
+ eapply case_3; rewrite carry_comm; eassumption.
 
- eapply case_3 with (x := x) (y := y); eassumption.
+ rewrite carry_comm_r in Hc3.
+ rewrite carry_comm_l in Hc4.
+ eapply case_3; rewrite carry_comm; eassumption.
 
- eapply case_3 with (x := z) (y := y) (z := x) (i := i).
-  rewrite carry_comm, carry_comm_l; assumption.
+ clear Hc1 Hc2.
+ eapply case_2; eassumption.
 
-  rewrite carry_comm_l, carry_comm; assumption.
-
-  rewrite carry_comm; eassumption.
-
-  rewrite carry_comm; eassumption.
-
- eapply case_3 with (x := z) (y := y) (z := x) (i := i).
-  rewrite carry_comm, carry_comm_l; assumption.
-
-  rewrite carry_comm_l, carry_comm; assumption.
-
-  rewrite carry_comm; eassumption.
-
-  rewrite carry_comm; eassumption.
-
- eapply case_2 with (x := x) (y := y); eassumption.
-
- apply case_2 with (x := z) (y := y) (z := x) (i := i).
-  rewrite carry_comm_l, carry_comm; assumption.
-
-  rewrite carry_comm; assumption.
-
-  rewrite carry_comm; assumption.
+ rewrite carry_comm_r in Hc3.
+ eapply case_2; rewrite carry_comm; eassumption.
 Qed.
 
 Theorem rm_add_assoc : ∀ x y z, (x + (y + z) = (x + y) + z)%rm.

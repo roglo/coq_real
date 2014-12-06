@@ -153,6 +153,24 @@ destruct s as [di| ].
  rewrite rm_add_i_comm; assumption.
 Qed.
 
+Theorem fst_same_comm_l : ∀ x y z n,
+  fst_same (x + y) z n = fst_same (y + x) z n.
+Proof.
+intros x y z n.
+apply fst_same_iff; simpl.
+remember (fst_same (y + x) z n) as s eqn:Hs .
+apply fst_same_sym_iff in Hs; simpl in Hs.
+destruct s as [di| ].
+ destruct Hs as (Hn, Hs).
+ split; [ idtac | rewrite rm_add_i_comm; assumption ].
+ intros dj Hdj.
+ rewrite rm_add_i_comm.
+ apply Hn; assumption.
+
+ intros j.
+ rewrite rm_add_i_comm; apply Hs.
+Qed.
+
 Theorem re_add_comm : ∀ x y, (x + y = y + x)%R.
 Proof.
 intros x y.
@@ -182,6 +200,16 @@ split.
     remember (max (re_power y) (re_power x) + 1) as m.
     destruct (lt_dec (k + min j m) 1) as [H3| H3]; [ reflexivity | idtac ].
     apply rm_add_i_comm.
+
+    unfold rm_eq; intros i; simpl.
+    unfold re_norm; simpl.
+    rewrite fst_same_comm_l.
+    remember (fst_same (sxy + syx) rm_ones 0) as s eqn:Hs .
+    destruct s as [j| ]; [ simpl | reflexivity ].
+    rewrite Nat.max_comm.
 bbb.
+    unfold rm_add_i; simpl.
+    rewrite rm_add_i_comm.
+    f_equal.
 
 Close Scope nat_scope.
