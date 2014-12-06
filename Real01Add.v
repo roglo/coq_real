@@ -53,6 +53,8 @@ Notation "0" := rm_zero : rm_scope.
 
 Arguments carry x%rm y%rm i%nat.
 Arguments rm_add_i x%rm y%rm i%nat.
+Arguments rm_add x%rm y%rm.
+Arguments rm_eq x%rm y%rm.
 Arguments fst_same x%rm y%rm i%nat.
 
 Definition rm_opp x := {| rm i := negb x.[i] |}.

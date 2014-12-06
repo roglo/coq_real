@@ -8,6 +8,9 @@ Open Scope nat_scope.
 Record real := { re_mant : real_mod_1; re_power : nat; re_sign : bool }.
 
 Delimit Scope R_scope with R.
+Arguments re_mant _%R.
+Arguments re_power _%R.
+Arguments re_sign _%R.
 
 Definition rm_shift_r n pad x :=
   {| rm i := if lt_dec i n then pad else x.[i-n] |}.
@@ -55,6 +58,7 @@ Definition re_norm x :=
   | None =>
       re_zero
   end.
+Arguments re_norm x%R.
 
 Definition re_eq x y :=
   let xn := re_norm x in
@@ -62,6 +66,7 @@ Definition re_eq x y :=
   rm_eq (re_mant xn) (re_mant yn) ∧
   re_power x = re_power y ∧
   re_sign x = re_sign y.
+Arguments re_eq x%R y%R.
 
 Notation "x = y" := (re_eq x y) : R_scope.
 
@@ -268,67 +273,144 @@ destruct s1 as [j1| ].
   split; intros H; discriminate H.
 Qed.
 
+Theorem re_mant_norm_add_comm : ∀ x y,
+  (re_mant (re_norm (x + y)) = re_mant (re_norm (y + x)))%rm.
+Proof.
+intros x y.
+unfold re_add.
+remember (re_power x - re_power y) as pxy eqn:Hpxy .
+remember (re_power y - re_power x) as pyx eqn:Hpyx .
+remember (rm_shift_r (max 0 pxy) false (re_mant y)) as sxy eqn:Hsxy .
+remember (rm_shift_r (max 0 pyx) false (re_mant x)) as syx eqn:Hsyx .
+rewrite rm_final_carry_comm.
+remember (rm_final_carry sxy syx) as fc eqn:Hfc .
+symmetry in Hfc.
+rewrite Nat.max_comm.
+destruct (bool_dec (re_sign x) (re_sign y)) as [H1| H1].
+ destruct (bool_dec (re_sign y) (re_sign x)) as [H2| H2].
+  destruct fc.
+   unfold re_norm; simpl.
+   rewrite fst_same_rm_shift_r_add_comm_l.
+   remember (fst_same (rm_shift_r 1 true (sxy + syx)) rm_ones 0) as s.
+   rename Heqs into Hs.
+   symmetry in Hs.
+   destruct s as [j| ]; [ simpl | reflexivity ].
+   unfold rm_eq; intros i; simpl.
+   apply rm_add_i_compat; [ idtac | reflexivity ].
+   intros k; simpl.
+   remember (max (re_power y) (re_power x) + 1) as m.
+   destruct (lt_dec (k + min j m) 1) as [H3| H3]; [ reflexivity | idtac ].
+   apply rm_add_i_comm.
+
+   unfold rm_eq; intros i; simpl.
+   unfold re_norm; simpl.
+   rewrite fst_same_comm_l.
+   remember (fst_same (sxy + syx) rm_ones 0) as s eqn:Hs .
+   destruct s as [j| ]; [ simpl | reflexivity ].
+   unfold rm_add_i; simpl.
+   rewrite rm_add_i_comm; f_equal.
+   apply carry_compat; [ idtac | reflexivity ].
+   intros k; simpl.
+   apply rm_add_i_comm.
+
+  symmetry in H1; contradiction.
+
+ destruct (bool_dec (re_sign y) (re_sign x)) as [H2| H2].
+  symmetry in H2; contradiction.
+
+  remember (rm_compare syx sxy) as cmp1 eqn:Hcmp1 .
+  symmetry in Hcmp1.
+  destruct cmp1.
+   apply rm_compare_eq in Hcmp1; symmetry in Hcmp1.
+   apply rm_compare_eq in Hcmp1; rewrite Hcmp1.
+   reflexivity.
+
+   apply rm_compare_Gt_Lt_antisym in Hcmp1; rewrite Hcmp1.
+   reflexivity.
+
+   apply rm_compare_Gt_Lt_antisym in Hcmp1; rewrite Hcmp1.
+   reflexivity.
+Qed.
+
+Theorem re_power_add_comm : ∀ x y,
+  re_power (x + y) = re_power (y + x).
+Proof.
+intros x y.
+unfold re_add.
+remember (re_power x - re_power y) as pxy eqn:Hpxy .
+remember (re_power y - re_power x) as pyx eqn:Hpyx .
+remember (rm_shift_r (max 0 pxy) false (re_mant y)) as sxy eqn:Hsxy .
+remember (rm_shift_r (max 0 pyx) false (re_mant x)) as syx eqn:Hsyx .
+rewrite rm_final_carry_comm.
+remember (rm_final_carry sxy syx) as fc eqn:Hfc .
+symmetry in Hfc.
+rewrite Nat.max_comm.
+destruct (bool_dec (re_sign x) (re_sign y)) as [H1| H1]; simpl.
+ destruct (bool_dec (re_sign y) (re_sign x)) as [H2| H2]; simpl.
+  reflexivity.
+
+  symmetry in H1; contradiction.
+
+ destruct (bool_dec (re_sign y) (re_sign x)) as [H2| H2]; simpl.
+  symmetry in H2; contradiction.
+
+  remember (syx ?= sxy)%rm as cmp eqn:Hcmp .
+  symmetry in Hcmp.
+  destruct cmp.
+   apply rm_compare_eq in Hcmp; symmetry in Hcmp.
+   apply rm_compare_eq in Hcmp; rewrite Hcmp.
+   reflexivity.
+
+   apply rm_compare_Gt_Lt_antisym in Hcmp; rewrite Hcmp.
+   reflexivity.
+
+   apply rm_compare_Gt_Lt_antisym in Hcmp; rewrite Hcmp.
+   reflexivity.
+Qed.
+
+Theorem re_sign_add_comm : ∀ x y,
+  re_sign (x + y) = re_sign (y + x).
+Proof.
+intros x y.
+unfold re_add.
+remember (re_power x - re_power y) as pxy eqn:Hpxy .
+remember (re_power y - re_power x) as pyx eqn:Hpyx .
+remember (rm_shift_r (max 0 pxy) false (re_mant y)) as sxy eqn:Hsxy .
+remember (rm_shift_r (max 0 pyx) false (re_mant x)) as syx eqn:Hsyx .
+rewrite rm_final_carry_comm.
+remember (rm_final_carry sxy syx) as fc eqn:Hfc .
+symmetry in Hfc.
+rewrite Nat.max_comm.
+destruct (bool_dec (re_sign x) (re_sign y)) as [H1| H1]; simpl.
+ destruct (bool_dec (re_sign y) (re_sign x)) as [H2| H2]; simpl.
+  assumption.
+
+  symmetry in H1; contradiction.
+
+ destruct (bool_dec (re_sign y) (re_sign x)) as [H2| H2]; simpl.
+  symmetry in H2; contradiction.
+
+  remember (syx ?= sxy)%rm as cmp eqn:Hcmp .
+  symmetry in Hcmp.
+  destruct cmp.
+   apply rm_compare_eq in Hcmp; symmetry in Hcmp.
+   apply rm_compare_eq in Hcmp; rewrite Hcmp.
+   reflexivity.
+
+   apply rm_compare_Gt_Lt_antisym in Hcmp; rewrite Hcmp.
+   reflexivity.
+
+   apply rm_compare_Gt_Lt_antisym in Hcmp; rewrite Hcmp.
+   reflexivity.
+Qed.
+
 Theorem re_add_comm : ∀ x y, (x + y = y + x)%R.
 Proof.
 intros x y.
 unfold re_eq.
-split.
- unfold re_add.
- remember (re_power x - re_power y) as pxy eqn:Hpxy .
- remember (re_power y - re_power x) as pyx eqn:Hpyx .
- remember (rm_shift_r (max 0 pxy) false (re_mant y)) as sxy eqn:Hsxy .
- remember (rm_shift_r (max 0 pyx) false (re_mant x)) as syx eqn:Hsyx .
- rewrite rm_final_carry_comm.
- remember (rm_final_carry sxy syx) as fc eqn:Hfc .
- symmetry in Hfc.
- rewrite Nat.max_comm.
- destruct (bool_dec (re_sign x) (re_sign y)) as [H1| H1].
-  destruct (bool_dec (re_sign y) (re_sign x)) as [H2| H2].
-   destruct fc.
-    unfold re_norm; simpl.
-    rewrite fst_same_rm_shift_r_add_comm_l.
-    remember (fst_same (rm_shift_r 1 true (sxy + syx)) rm_ones 0) as s.
-    rename Heqs into Hs.
-    symmetry in Hs.
-    destruct s as [j| ]; [ simpl | reflexivity ].
-    unfold rm_eq; intros i; simpl.
-    apply rm_add_i_compat; [ idtac | reflexivity ].
-    intros k; simpl.
-    remember (max (re_power y) (re_power x) + 1) as m.
-    destruct (lt_dec (k + min j m) 1) as [H3| H3]; [ reflexivity | idtac ].
-    apply rm_add_i_comm.
-
-    unfold rm_eq; intros i; simpl.
-    unfold re_norm; simpl.
-    rewrite fst_same_comm_l.
-    remember (fst_same (sxy + syx) rm_ones 0) as s eqn:Hs .
-    destruct s as [j| ]; [ simpl | reflexivity ].
-    unfold rm_add_i; simpl.
-    rewrite rm_add_i_comm; f_equal.
-    apply carry_compat; [ idtac | reflexivity ].
-    intros k; simpl.
-    apply rm_add_i_comm.
-
-   symmetry in H1; contradiction.
-
-  destruct (bool_dec (re_sign y) (re_sign x)) as [H2| H2].
-   symmetry in H2; contradiction.
-
-   remember (rm_compare syx sxy) as cmp1 eqn:Hcmp1 .
-   symmetry in Hcmp1.
-   destruct cmp1.
-    apply rm_compare_eq in Hcmp1; symmetry in Hcmp1.
-    apply rm_compare_eq in Hcmp1; rewrite Hcmp1.
-    reflexivity.
-
-    apply rm_compare_Gt_Lt_antisym in Hcmp1; rewrite Hcmp1.
-    reflexivity.
-
-    apply rm_compare_Gt_Lt_antisym in Hcmp1; rewrite Hcmp1.
-    reflexivity.
-
- split.
-
-bbb.
+split; [ apply re_mant_norm_add_comm | idtac ].
+split; [ apply re_power_add_comm | idtac ].
+apply re_sign_add_comm.
+Qed.
 
 Close Scope nat_scope.
