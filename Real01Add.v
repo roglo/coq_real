@@ -56,9 +56,10 @@ Arguments rm_add_i x%rm y%rm i%nat.
 Arguments fst_same x%rm y%rm i%nat.
 
 Definition rm_opp x := {| rm i := negb x.[i] |}.
+Definition rm_sub x y := rm_add x (rm_opp y).
 
 Notation "- x" := (rm_opp x) : rm_scope.
-Notation "x - y" := (rm_add x (rm_opp y)) : rm_scope.
+Notation "x - y" := (rm_sub x y) : rm_scope.
 
 Theorem rm_eq_refl : reflexive _ rm_eq.
 Proof. intros x i; reflexivity. Qed.
@@ -4309,17 +4310,20 @@ destruct s as [di| ].
  discriminate Hs1; assumption.
 Qed.
 
+Theorem fold_rm_sub : ∀ x y, (x + - y = x - y)%rm.
+Proof. intros; reflexivity. Qed.
+
 Theorem rm_dec : ∀ x y, {(x = y)%rm} + {(x ≠ y)%rm}.
 Proof.
 intros x y.
 destruct (rm_zerop (x - y)%rm) as [Hxy| Hxy].
- left; rewrite rm_add_comm in Hxy.
+ left; unfold rm_sub in Hxy; rewrite rm_add_comm in Hxy.
  eapply rm_add_compat with (x := y) in Hxy; [ idtac | reflexivity ].
- rewrite rm_add_assoc, rm_add_opp_r, rm_add_comm in Hxy.
+ rewrite rm_add_assoc, fold_rm_sub, rm_add_opp_r, rm_add_comm in Hxy.
  do 2 rewrite rm_add_0_r in Hxy.
  assumption.
 
- right; intros H; apply Hxy; rewrite H.
+ right; unfold rm_sub in  Hxy; intros H; apply Hxy; rewrite H.
  apply rm_add_opp_r.
 Qed.
 

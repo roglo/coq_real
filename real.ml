@@ -43,7 +43,7 @@ value rm_add base a b = make_rm (rm_add_i base a b);
 value rm_opp base a = make_rm (fun i → base - 1 - get_rm a i);
 value rm_sub base a b = rm_add base a (rm_opp base b);
 
-value rm_add_carry base x y = gen_carry base x y 0;
+value rm_final_carry base x y = gen_carry base x y 0;
 
 value mm = 30;
 
@@ -108,15 +108,15 @@ value rec rm_div_i x y i =
 
 value rm_div x y = make_rm (fun i → rm_div_i x y (i + 1));
 
-type real = { re_abs : real_mod_1; re_power : int; re_sign : bool };
+type real = { re_mant : real_mod_1; re_power : int; re_sign : bool };
 
 value re_add base x y =
-  let xm = rm_shift_r (max 0 (y.re_power - x.re_power)) 0 x.re_abs in
-  let ym = rm_shift_r (max 0 (x.re_power - y.re_power)) 0 y.re_abs in
+  let xm = rm_shift_r (max 0 (y.re_power - x.re_power)) 0 x.re_mant in
+  let ym = rm_shift_r (max 0 (x.re_power - y.re_power)) 0 y.re_mant in
   if x.re_sign = y.re_sign then
     let zm = rm_add base xm ym in
-    let c = rm_add_carry base xm ym in
-    {re_abs = if c = 1 then rm_shift_r 1 1 zm else zm;
+    let c = rm_final_carry base xm ym in
+    {re_mant = if c = 1 then rm_shift_r 1 1 zm else zm;
      re_power = max x.re_power y.re_power + c;
      re_sign = x.re_sign}
   else
@@ -127,7 +127,7 @@ value re_add base x y =
       | Gt → (rm_sub base xm ym, x.re_sign)
       end
     in
-    {re_abs = zm;
+    {re_mant = zm;
      re_power = max x.re_power y.re_power;
      re_sign = sign}
 ;
@@ -147,7 +147,7 @@ value f2a base x =
 
 value f2r base x =
   let (a, p) = f2a base (abs_float x) in
-  { re_abs = make_rm (fun i → if i < Array.length a then a.(i) else 0);
+  { re_mant = make_rm (fun i → if i < Array.length a then a.(i) else 0);
     re_power = p;
     re_sign = x ≥ 0. }
 ;
@@ -157,7 +157,7 @@ value r2f base a =
     if i = mm then
       (if a.re_sign then 1. else -1.) *. x *. float base ** float a.re_power
     else
-      loop (i + 1) (x +. float (get_rm (a.re_abs) i) *. pow)
+      loop (i + 1) (x +. float (get_rm (a.re_mant) i) *. pow)
         (pow /. float base)
 ;
 
