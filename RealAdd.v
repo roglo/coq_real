@@ -206,6 +206,18 @@ split; intros H.
   rewrite Hs, negb_involutive; reflexivity.
 Qed.
 
+Theorem rm_compare_lt : ∀ x y, (x < y)%rm ↔ rm_compare x y = Lt.
+Proof.
+intros x y.
+split; intros H; assumption.
+Qed.
+
+Theorem rm_compare_gt : ∀ x y, (x > y)%rm ↔ rm_compare x y = Gt.
+Proof.
+intros x y.
+split; intros H; assumption.
+Qed.
+
 Theorem re_add_comm : ∀ x y, (x + y = y + x)%R.
 Proof.
 intros x y.
@@ -254,12 +266,11 @@ split.
    symmetry in H2; contradiction.
 
    remember (rm_compare syx sxy) as cmp1 eqn:Hcmp1 .
-   remember (rm_compare sxy syx) as cmp2 eqn:Hcmp2 .
-   symmetry in Hcmp1, Hcmp2.
+   symmetry in Hcmp1.
    destruct cmp1.
-    apply rm_compare_eq in Hcmp1.
-    destruct cmp2.
-     rewrite Nat.max_comm; reflexivity.
+    apply rm_compare_eq in Hcmp1; symmetry in Hcmp1.
+    apply rm_compare_eq in Hcmp1; rewrite Hcmp1.
+    rewrite Nat.max_comm; reflexivity.
 
 bbb.
 
