@@ -32,16 +32,19 @@ Definition re_add x y :=
        re_power := max (re_power x) (re_power y) + if c then 1 else 0;
        re_sign := re_sign x |}
   else
-    let (zm, sign) :=
-      match rm_compare xm ym with
-      | Eq => (rm_zero, true)
-      | Lt => (rm_sub ym xm, re_sign y)
-      | Gt => (rm_sub xm ym, re_sign x)
-      end
-    in
-    {| re_mant := zm;
+    {| re_mant :=
+         match rm_compare xm ym with
+         | Eq => rm_zero
+         | Lt => rm_sub ym xm
+         | Gt => rm_sub xm ym
+         end;
        re_power := max (re_power x) (re_power y);
-       re_sign := sign |}.
+       re_sign :=
+         match rm_compare xm ym with
+         | Eq => true
+         | Lt => re_sign y
+         | Gt => re_sign x
+         end |}.
 
 Definition re_zero :=
   {| re_mant := rm_zero; re_power := 0; re_sign := true |}.
@@ -215,9 +218,8 @@ destruct (bool_dec (re_sign x) (re_sign y)) as [H1| H1].
    unfold rm_eq; intros i; simpl.
    apply rm_add_i_compat; [ idtac | reflexivity ].
    intros k; simpl.
-   remember (max (re_power y) (re_power x) + 1) as m.
-   destruct (lt_dec (k + min j m) 1) as [H3| H3]; [ reflexivity | idtac ].
-   apply rm_add_i_comm.
+   rewrite rm_add_i_comm.
+   reflexivity.
 
    unfold rm_eq; intros i; simpl.
    unfold re_norm; simpl.
@@ -254,35 +256,17 @@ Theorem re_power_add_comm : ∀ x y,
 Proof.
 intros x y.
 unfold re_add.
-remember (re_power x - re_power y) as pxy eqn:Hpxy .
-remember (re_power y - re_power x) as pyx eqn:Hpyx .
-remember (rm_shift_r (max 0 pxy) false (re_mant y)) as sxy eqn:Hsxy .
-remember (rm_shift_r (max 0 pyx) false (re_mant x)) as syx eqn:Hsyx .
 rewrite rm_final_carry_comm.
-remember (rm_final_carry sxy syx) as fc eqn:Hfc .
-symmetry in Hfc.
-rewrite Nat.max_comm.
 destruct (bool_dec (re_sign x) (re_sign y)) as [H1| H1]; simpl.
  destruct (bool_dec (re_sign y) (re_sign x)) as [H2| H2]; simpl.
-  reflexivity.
+  rewrite Nat.max_comm; reflexivity.
 
   symmetry in H1; contradiction.
 
  destruct (bool_dec (re_sign y) (re_sign x)) as [H2| H2]; simpl.
   symmetry in H2; contradiction.
 
-  remember (syx ?= sxy)%rm as cmp eqn:Hcmp .
-  symmetry in Hcmp.
-  destruct cmp.
-   apply rm_compare_eq in Hcmp; symmetry in Hcmp.
-   apply rm_compare_eq in Hcmp; rewrite Hcmp.
-   reflexivity.
-
-   apply rm_compare_Gt_Lt_antisym in Hcmp; rewrite Hcmp.
-   reflexivity.
-
-   apply rm_compare_Gt_Lt_antisym in Hcmp; rewrite Hcmp.
-   reflexivity.
+  rewrite Nat.max_comm; reflexivity.
 Qed.
 
 Theorem re_sign_add_comm : ∀ x y,
@@ -290,14 +274,6 @@ Theorem re_sign_add_comm : ∀ x y,
 Proof.
 intros x y.
 unfold re_add.
-remember (re_power x - re_power y) as pxy eqn:Hpxy .
-remember (re_power y - re_power x) as pyx eqn:Hpyx .
-remember (rm_shift_r (max 0 pxy) false (re_mant y)) as sxy eqn:Hsxy .
-remember (rm_shift_r (max 0 pyx) false (re_mant x)) as syx eqn:Hsyx .
-rewrite rm_final_carry_comm.
-remember (rm_final_carry sxy syx) as fc eqn:Hfc .
-symmetry in Hfc.
-rewrite Nat.max_comm.
 destruct (bool_dec (re_sign x) (re_sign y)) as [H1| H1]; simpl.
  destruct (bool_dec (re_sign y) (re_sign x)) as [H2| H2]; simpl.
   assumption.
@@ -307,6 +283,10 @@ destruct (bool_dec (re_sign x) (re_sign y)) as [H1| H1]; simpl.
  destruct (bool_dec (re_sign y) (re_sign x)) as [H2| H2]; simpl.
   symmetry in H2; contradiction.
 
+  remember (re_power x - re_power y) as pxy eqn:Hpxy .
+  remember (re_power y - re_power x) as pyx eqn:Hpyx .
+  remember (rm_shift_r pxy false (re_mant y)) as sxy eqn:Hsxy .
+  remember (rm_shift_r pyx false (re_mant x)) as syx eqn:Hsyx .
   remember (syx ?= sxy)%rm as cmp eqn:Hcmp .
   symmetry in Hcmp.
   destruct cmp.
@@ -331,6 +311,12 @@ apply re_sign_add_comm.
 Qed.
 
 (* neutral element *)
+
+Theorem re_mant_norm_add_0_r : ∀ x,
+  (re_mant (re_norm (x + 0%R)) = re_mant (re_norm x))%rm.
+Proof.
+intros x.
+bbb.
 
 Theorem re_add_0_r : ∀ x, (x + 0 = x)%R.
 Proof.
