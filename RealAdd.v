@@ -326,6 +326,10 @@ destruct s1 as [j1| ]; simpl.
  destruct s2 as [j2| ]; simpl.
   destruct Hs2 as (Hn2, Hs2).
 bbb.
+  unfold re_add; simpl.
+  rewrite Nat.max_0_r.
+  destruct (bool_dec (re_sign x) true) as [H1| H1]; simpl.
+bbb.
 
 intros x.
 unfold re_add; simpl.
