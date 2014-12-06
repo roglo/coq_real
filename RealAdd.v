@@ -220,38 +220,40 @@ Qed.
 
 Theorem rm_compare_Gt_Lt_antisym : ∀ x y, (x ?= y)%rm = Gt ↔ (y ?= x)%rm = Lt.
 Proof.
-intros x y; split; intros H.
- unfold rm_compare in H; unfold rm_compare; simpl.
- remember (fst_same (x + 0%rm) (- (y + 0)%rm) 0) as s1 eqn:Hs1 .
- remember (fst_same (y + 0%rm) (- (x + 0)%rm) 0) as s2 eqn:Hs2 .
- apply fst_same_sym_iff in Hs1; simpl in Hs1.
- apply fst_same_sym_iff in Hs2; simpl in Hs2.
- destruct s1 as [j1| ]; [ simpl in H | discriminate H ].
+intros x y.
+unfold rm_compare; simpl.
+remember (fst_same (x + 0%rm) (- (y + 0)%rm) 0) as s1 eqn:Hs1 .
+remember (fst_same (y + 0%rm) (- (x + 0)%rm) 0) as s2 eqn:Hs2 .
+apply fst_same_sym_iff in Hs1; simpl in Hs1.
+apply fst_same_sym_iff in Hs2; simpl in Hs2.
+destruct s1 as [j1| ].
  destruct Hs1 as (Hs1, Hn1).
  remember (rm_add_i x 0 j1) as x0 eqn:Hx0 .
  symmetry in Hx0; apply negb_sym in Hn1.
- destruct x0; [ clear H | discriminate H ].
- simpl in Hn1.
- destruct s2 as [j2| ].
-  destruct Hs2 as (Hs2, Hn2).
-  remember (rm_add_i y 0 j2) as y0 eqn:Hy0 .
-  symmetry in Hy0; apply negb_sym in Hn2.
-  destruct y0; [ exfalso | reflexivity ].
-  simpl in Hn2.
-  destruct (lt_eq_lt_dec j1 j2) as [[H1| H1]| H1].
-   apply Hs2 in H1.
-   rewrite negb_involutive, Hn1 in H1.
-   rewrite Hx0 in H1; discriminate H1.
+ destruct x0; simpl in Hn1.
+  split; intros H; [ clear H | reflexivity ].
+  destruct s2 as [j2| ].
+   destruct Hs2 as (Hs2, Hn2).
+   remember (rm_add_i y 0 j2) as y0 eqn:Hy0 .
+   symmetry in Hy0; apply negb_sym in Hn2.
+   destruct y0; [ exfalso | reflexivity ].
+   simpl in Hn2.
+   destruct (lt_eq_lt_dec j1 j2) as [[H1| H1]| H1].
+    apply Hs2 in H1.
+    rewrite negb_involutive, Hn1 in H1.
+    rewrite Hx0 in H1; discriminate H1.
 
-   subst j2.
-   rewrite Hx0 in Hn2; discriminate Hn2.
+    subst j2.
+    rewrite Hx0 in Hn2; discriminate Hn2.
 
-   apply Hs1 in H1.
-   rewrite negb_involutive, Hn2 in H1.
-   rewrite Hy0 in H1; discriminate H1.
+    apply Hs1 in H1.
+    rewrite negb_involutive, Hn2 in H1.
+    rewrite Hy0 in H1; discriminate H1.
 
-  rewrite Hs2, negb_involutive in Hn1.
-  rewrite Hx0 in Hn1; discriminate Hn1.
+   rewrite Hs2, negb_involutive in Hn1.
+   rewrite Hx0 in Hn1; discriminate Hn1.
+
+  split; intros H; [ discriminate H | exfalso ].
 bbb.
 
 Theorem re_add_comm : ∀ x y, (x + y = y + x)%R.
