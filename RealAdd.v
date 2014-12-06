@@ -230,31 +230,43 @@ destruct s1 as [j1| ].
  destruct Hs1 as (Hs1, Hn1).
  remember (rm_add_i x 0 j1) as x0 eqn:Hx0 .
  symmetry in Hx0; apply negb_sym in Hn1.
- destruct x0; simpl in Hn1.
-  split; intros H; [ clear H | reflexivity ].
-  destruct s2 as [j2| ].
-   destruct Hs2 as (Hs2, Hn2).
-   remember (rm_add_i y 0 j2) as y0 eqn:Hy0 .
-   symmetry in Hy0; apply negb_sym in Hn2.
-   destruct y0; [ exfalso | reflexivity ].
-   simpl in Hn2.
-   destruct (lt_eq_lt_dec j1 j2) as [[H1| H1]| H1].
-    apply Hs2 in H1.
-    rewrite negb_involutive, Hn1 in H1.
-    rewrite Hx0 in H1; discriminate H1.
+ destruct s2 as [j2| ].
+  destruct Hs2 as (Hs2, Hn2).
+  remember (rm_add_i y 0 j2) as y0 eqn:Hy0 .
+  symmetry in Hy0; apply negb_sym in Hn2.
+  destruct (lt_eq_lt_dec j1 j2) as [[H1| H1]| H1].
+   apply Hs2 in H1.
+   rewrite negb_involutive, Hn1 in H1.
+   rewrite Hx0 in H1.
+   exfalso; revert H1; apply no_fixpoint_negb.
 
-    subst j2.
+   subst j2.
+   destruct x0.
+    split; intros H; [ clear H | reflexivity ].
+    destruct y0; [ exfalso | reflexivity ].
     rewrite Hx0 in Hn2; discriminate Hn2.
 
-    apply Hs1 in H1.
-    rewrite negb_involutive, Hn2 in H1.
-    rewrite Hy0 in H1; discriminate H1.
+    split; intros H; [ discriminate H | exfalso ].
+    destruct y0; [ discriminate H | clear H ].
+    rewrite Hx0 in Hn2; discriminate Hn2.
 
-   rewrite Hs2, negb_involutive in Hn1.
-   rewrite Hx0 in Hn1; discriminate Hn1.
+   apply Hs1 in H1.
+   rewrite negb_involutive, Hn2 in H1.
+   rewrite Hy0 in H1.
+   exfalso; revert H1; apply no_fixpoint_negb.
 
+  split; intros H; [ exfalso | discriminate H ].
+  destruct x0; [ clear H | discriminate H ].
+  rewrite Hs2, Hx0 in Hn1; discriminate Hn1.
+
+ destruct s2 as [j2| ].
+  destruct Hs2 as (Hs2, Hn2).
   split; intros H; [ discriminate H | exfalso ].
-bbb.
+  rewrite Hs1, negb_involutive in Hn2.
+  symmetry in Hn2; revert Hn2; apply no_fixpoint_negb.
+
+  split; intros H; discriminate H.
+Qed.
 
 Theorem re_add_comm : ∀ x y, (x + y = y + x)%R.
 Proof.
@@ -269,6 +281,7 @@ split.
  rewrite rm_final_carry_comm.
  remember (rm_final_carry sxy syx) as fc eqn:Hfc .
  symmetry in Hfc.
+ rewrite Nat.max_comm.
  destruct (bool_dec (re_sign x) (re_sign y)) as [H1| H1].
   destruct (bool_dec (re_sign y) (re_sign x)) as [H2| H2].
    destruct fc.
@@ -278,7 +291,6 @@ split.
     rename Heqs into Hs.
     symmetry in Hs.
     destruct s as [j| ]; [ simpl | reflexivity ].
-    rewrite Nat.max_comm.
     unfold rm_eq; intros i; simpl.
     apply rm_add_i_compat; [ idtac | reflexivity ].
     intros k; simpl.
@@ -291,7 +303,6 @@ split.
     rewrite fst_same_comm_l.
     remember (fst_same (sxy + syx) rm_ones 0) as s eqn:Hs .
     destruct s as [j| ]; [ simpl | reflexivity ].
-    rewrite Nat.max_comm.
     unfold rm_add_i; simpl.
     rewrite rm_add_i_comm; f_equal.
     apply carry_compat; [ idtac | reflexivity ].
@@ -308,7 +319,10 @@ split.
    destruct cmp1.
     apply rm_compare_eq in Hcmp1; symmetry in Hcmp1.
     apply rm_compare_eq in Hcmp1; rewrite Hcmp1.
-    rewrite Nat.max_comm; reflexivity.
+    reflexivity.
+
+    apply rm_compare_Gt_Lt_antisym in Hcmp1; rewrite Hcmp1.
+    reflexivity.
 
 bbb.
 
