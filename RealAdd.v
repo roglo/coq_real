@@ -316,6 +316,18 @@ Theorem re_mant_norm_add_0_r : ∀ x,
   (re_mant (re_norm (x + 0%R)) = re_mant (re_norm x))%rm.
 Proof.
 intros x.
+unfold re_norm; simpl.
+remember (fst_same (re_mant (x + 0%R)) rm_ones 0) as s1 eqn:Hs1 .
+remember (fst_same (re_mant x) rm_ones 0) as s2 eqn:Hs2 .
+apply fst_same_sym_iff in Hs1; simpl in Hs1.
+apply fst_same_sym_iff in Hs2; simpl in Hs2.
+destruct s1 as [j1| ]; simpl.
+ destruct Hs1 as (Hn1, Hs1).
+ destruct s2 as [j2| ]; simpl.
+  destruct Hs2 as (Hn2, Hs2).
+bbb.
+
+intros x.
 unfold re_add; simpl.
 rewrite Nat.max_0_r.
 destruct (bool_dec (re_sign x) true) as [H1| H1]; simpl.
