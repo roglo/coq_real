@@ -336,7 +336,7 @@ rewrite rm_add_i_comm, carry_comm_l.
 reflexivity.
 Qed.
 
-(* identity *)
+(* neutral element *)
 
 Theorem rm_add_0_inf_1 : ∀ x i,
   (∀ dj, rm_add_i x 0 (i + dj) = true)

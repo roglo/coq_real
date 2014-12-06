@@ -330,4 +330,13 @@ split; [ apply re_power_add_comm | idtac ].
 apply re_sign_add_comm.
 Qed.
 
+(* neutral element *)
+
+Theorem re_add_0_r : ∀ x, (x + 0 = x)%R.
+Proof.
+intros x.
+unfold re_eq.
+split.
+bbb.
+
 Close Scope nat_scope.
