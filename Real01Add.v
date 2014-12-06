@@ -18,7 +18,7 @@ Open Scope nat_scope.
 Record real_mod_1 := { rm : nat → bool }.
 
 Definition rm_zero := {| rm i := false |}.
-Definition rm_zero' := {| rm i := true |}.
+Definition rm_ones := {| rm i := true |}.
 
 Notation "s .[ i ]" := (rm s i) (at level 1).
 
@@ -3048,14 +3048,14 @@ destruct syzn as [dyzn| ]; [ idtac | clear H ].
     exfalso; revert Hpdxyn; apply Nat.lt_irrefl.
 Qed.
 
-Definition rm_shift n x := {| rm i := x.[i+n] |}.
-Arguments rm_shift n%nat x%rm.
+Definition rm_shift_l n x := {| rm i := x.[i+n] |}.
+Arguments rm_shift_l n%nat x%rm.
 
 Theorem fst_same_shift : ∀ x y x' y' i di d,
   fst_same x y i = Some di
   → d ≤ di
-  → x' = rm_shift d x
-  → y' = rm_shift d y
+  → x' = rm_shift_l d x
+  → y' = rm_shift_l d y
   → fst_same x' y' i = Some (di - d).
 Proof.
 intros x y x' y' i di d Hs Hd Ha' Hb'.
@@ -3078,12 +3078,12 @@ split.
 Qed.
 
 Theorem carry_shift : ∀ x y n i,
-  carry (rm_shift n x) (rm_shift n y) i = carry x y (i + n).
+  carry (rm_shift_l n x) (rm_shift_l n y) i = carry x y (i + n).
 Proof.
 intros x y n i.
 unfold carry; simpl.
 remember (fst_same x y (S (i + n))) as s1 eqn:Hs1 .
-remember (fst_same (rm_shift n x) (rm_shift n y) (S i)) as s2 eqn:Hs2 .
+remember (fst_same (rm_shift_l n x) (rm_shift_l n y) (S i)) as s2 eqn:Hs2 .
 apply fst_same_sym_iff in Hs1; simpl in Hs1.
 apply fst_same_sym_iff in Hs2; simpl in Hs2.
 destruct s1 as [di1| ].
@@ -3111,7 +3111,7 @@ destruct s1 as [di1| ].
 Qed.
 
 Theorem rm_add_i_shift : ∀ x y i n,
-  rm_add_i (rm_shift n x) (rm_shift n y) i = rm_add_i x y (i + n).
+  rm_add_i (rm_shift_l n x) (rm_shift_l n y) i = rm_add_i x y (i + n).
 Proof.
 intros x y i n.
 unfold rm_add_i; simpl.
@@ -3119,12 +3119,12 @@ rewrite carry_shift; reflexivity.
 Qed.
 
 Theorem fst_same_shift_add_l : ∀ x y z n i,
-  fst_same (rm_shift n (x + y)) z i =
-  fst_same (rm_shift n x + rm_shift n y) z i.
+  fst_same (rm_shift_l n (x + y)) z i =
+  fst_same (rm_shift_l n x + rm_shift_l n y) z i.
 Proof.
 intros x y z n i.
 apply fst_same_iff; simpl.
-remember (fst_same (rm_shift n x + rm_shift n y) z i) as s eqn:Hs .
+remember (fst_same (rm_shift_l n x + rm_shift_l n y) z i) as s eqn:Hs .
 apply fst_same_sym_iff in Hs; simpl in Hs.
 destruct s as [di| ].
  destruct Hs as (Hn, Hs).
@@ -3139,15 +3139,15 @@ destruct s as [di| ].
 Qed.
 
 Theorem carry_shift_add_l : ∀ x y z n i,
-  carry (rm_shift n x + rm_shift n y) (rm_shift n z) i =
+  carry (rm_shift_l n x + rm_shift_l n y) (rm_shift_l n z) i =
   carry (x + y) z (i + n).
 Proof.
 intros x y z n i.
 rewrite <- carry_shift.
 unfold carry; simpl.
 rewrite <- fst_same_shift_add_l.
-remember (rm_shift n (x + y)) as xy'.
-remember (rm_shift n z) as z'.
+remember (rm_shift_l n (x + y)) as xy'.
+remember (rm_shift_l n z) as z'.
 remember (fst_same xy' z' (S i)) as s eqn:Hs .
 subst xy' z'.
 destruct s as [di| ]; [ idtac | reflexivity ].
@@ -3184,15 +3184,15 @@ destruct (le_dec di n) as [H1| H1].
  apply nat_sub_add_r in Heqdj; [ idtac | assumption ].
  clear Hc4 Hc5 Hc6.
  rename Rxy_zn into Hc4; rename Ryzn into Hc5; rename Rxyn into Hc6.
- remember (rm_shift (S n) (x + y)%rm) as x'y' eqn:Hxy .
- remember (rm_shift (S n) z) as z' eqn:Hc .
+ remember (rm_shift_l (S n) (x + y)%rm) as x'y' eqn:Hxy .
+ remember (rm_shift_l (S n) z) as z' eqn:Hc .
  eapply fst_same_shift in Hs; try eassumption.
  assert (0 < S n) as Hn by apply Nat.lt_0_succ.
  assert (di - S n < di) as H by (apply Nat.sub_lt; assumption).
  subst x'y'.
  rewrite fst_same_shift_add_l in Hs.
- remember (rm_shift (S n) x) as x' eqn:Ha .
- remember (rm_shift (S n) y) as y' eqn:Hb .
+ remember (rm_shift_l (S n) x) as x' eqn:Ha .
+ remember (rm_shift_l (S n) y) as y' eqn:Hb .
  eapply IHdi with (x := x') (y := y') (z := z'); try eassumption.
   subst x' y' z'.
   rewrite carry_shift_add_l, Nat.add_succ_r; assumption.
@@ -4170,15 +4170,15 @@ destruct (le_dec di n) as [H1| H1].
  apply Nat.nle_gt in H1.
  remember (di - S n) as dj.
  apply nat_sub_add_r in Heqdj; [ idtac | assumption ].
- remember (rm_shift (S n) (x + y)%rm) as x'y' eqn:Hxy .
- remember (rm_shift (S n) z) as z' eqn:Hc .
+ remember (rm_shift_l (S n) (x + y)%rm) as x'y' eqn:Hxy .
+ remember (rm_shift_l (S n) z) as z' eqn:Hc .
  eapply fst_same_shift in Hs; try eassumption.
  assert (0 < S n) as Hn by apply Nat.lt_0_succ.
  assert (di - S n < di) as H by (apply Nat.sub_lt; assumption).
  subst x'y'.
  rewrite fst_same_shift_add_l in Hs.
- remember (rm_shift (S n) x) as x' eqn:Ha .
- remember (rm_shift (S n) y) as y' eqn:Hb .
+ remember (rm_shift_l (S n) x) as x' eqn:Ha .
+ remember (rm_shift_l (S n) y) as y' eqn:Hb .
  eapply IHdi with (x := x') (y := y') (z := z'); try eassumption.
   subst x' y' z'.
   rewrite carry_comm.
@@ -4284,7 +4284,7 @@ Qed.
 Theorem rm_zerop : ∀ x, {(x = 0)%rm} + {(x ≠ 0)%rm}.
 Proof.
 intros x.
-remember (fst_same (x + 0%rm) rm_zero' 0) as s eqn:Hs .
+remember (fst_same (x + 0%rm) rm_ones 0) as s eqn:Hs .
 apply fst_same_sym_iff in Hs; simpl in Hs.
 destruct s as [di| ].
  destruct Hs as (Hn, Hs).
