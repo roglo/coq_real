@@ -53,9 +53,9 @@ Notation "x + y" := (re_add x y) : R_scope.
 Notation "0" := re_zero : R_scope.
 
 Definition re_norm x :=
-  match fst_same (re_mant x) rm_ones 0 with
+  match fst_same (re_mant x + 0%rm) rm_ones 0 with
   | Some j =>
-      {| re_mant := rm_shift_l (min j (re_power x)) (re_mant x);
+      {| re_mant := rm_shift_l (min j (re_power x)) (re_mant x + 0%rm);
          re_power := re_power x - j;
          re_sign := re_sign x |}
   | None =>
@@ -210,6 +210,7 @@ destruct (bool_dec (re_sign x) (re_sign y)) as [H1| H1].
  destruct (bool_dec (re_sign y) (re_sign x)) as [H2| H2].
   destruct fc.
    unfold re_norm; simpl.
+bbb.
    rewrite fst_same_rm_shift_r_add_comm_l.
    remember (fst_same (rm_shift_r 1 true (sxy + syx)) rm_ones 0) as s.
    rename Heqs into Hs.
@@ -317,12 +318,16 @@ Theorem zzz : ∀ x i,
   → (re_mant (x + 0%R)).[i] = true
   → ∀ j, i < j → (re_mant x).[j] = true.
 Proof.
+Abort. (* à voir...
 bbb.
+*)
 
 Theorem re_mant_norm_add_0_r : ∀ x,
   (re_mant (re_norm (x + 0%R)) = re_mant (re_norm x))%rm.
 Proof.
 intros x.
+bbb.
+
 unfold re_norm; simpl.
 remember (fst_same (re_mant (x + 0%R)) rm_ones 0) as s1 eqn:Hs1 .
 remember (fst_same (re_mant x) rm_ones 0) as s2 eqn:Hs2 .
