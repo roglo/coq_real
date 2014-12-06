@@ -139,17 +139,35 @@ destruct (lt_dec i n) as [H1| H1].
 Qed.
 
 Theorem fst_same_rm_shift_r_add_comm_l : ∀ x y z n p,
-  fst_same (rm_shift_r n p (x + y)) z 0 =
-  fst_same (rm_shift_r n p (y + x)) z 0.
+  fst_same (rm_shift_r n p (x + y) + 0%rm) z 0 =
+  fst_same (rm_shift_r n p (y + x) + 0%rm) z 0.
 Proof.
 intros x y z n p.
 apply fst_same_iff; simpl.
-remember (fst_same (rm_shift_r n p (y + x)) z 0) as s eqn:Hs .
+remember (fst_same (rm_shift_r n p (y + x) + 0%rm) z 0) as s eqn:Hs .
 apply fst_same_sym_iff in Hs; simpl in Hs.
 destruct s as [di| ].
  destruct Hs as (Hn, Hs).
  split.
   intros dj Hdj.
+  remember Hdj as H; clear HeqH.
+  apply Hn in H.
+  unfold rm_add_i in H; simpl in H.
+  unfold rm_add_i; simpl.
+  destruct (lt_dec dj n) as [H1| H1].
+   unfold carry in H; simpl in H.
+   unfold carry; simpl.
+bbb.
+
+intros x y z n p.
+apply fst_same_iff; simpl.
+remember (fst_same (rm_shift_r n p (y + x) + 0%rm) z 0) as s eqn:Hs .
+apply fst_same_sym_iff in Hs; simpl in Hs.
+destruct s as [di| ].
+ destruct Hs as (Hn, Hs).
+ split.
+  intros dj Hdj.
+bbb.
   apply Hn in Hdj.
   destruct (lt_dec dj n) as [H1| H1]; [ assumption | idtac ].
   rewrite rm_add_i_comm; assumption.
@@ -162,6 +180,7 @@ destruct s as [di| ].
  destruct (lt_dec dj n) as [H1| H1]; [ assumption | idtac ].
  rewrite rm_add_i_comm; assumption.
 Qed.
+*)
 
 Theorem rm_shift_l_comm : ∀ x y n,
   (rm_shift_l n (x + y) = rm_shift_l n (y + x))%rm.
