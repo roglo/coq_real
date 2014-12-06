@@ -63,21 +63,6 @@ Definition rm_sub x y := rm_add x (rm_opp y).
 Notation "- x" := (rm_opp x) : rm_scope.
 Notation "x - y" := (rm_sub x y) : rm_scope.
 
-Theorem rm_eq_refl : reflexive _ rm_eq.
-Proof. intros x i; reflexivity. Qed.
-
-Theorem rm_eq_sym : symmetric _ rm_eq.
-Proof. intros x y Hxy i; symmetry; apply Hxy. Qed.
-
-Theorem rm_eq_trans : transitive _ rm_eq.
-Proof. intros x y z Hxy Hyz i; rewrite Hxy; apply Hyz. Qed.
-
-Add Parametric Relation : _ rm_eq
- reflexivity proved by rm_eq_refl
- symmetry proved by rm_eq_sym
- transitivity proved by rm_eq_trans
- as rm_rel.
-
 Theorem fst_same_sym_iff : ∀ x y i odi,
   odi = fst_same x y i
   ↔ match odi with
@@ -210,6 +195,23 @@ split; intros H.
  subst b; intros H.
  destruct b'; discriminate H.
 Qed.
+
+(* equality is equivalence relation *)
+
+Theorem rm_eq_refl : reflexive _ rm_eq.
+Proof. intros x i; reflexivity. Qed.
+
+Theorem rm_eq_sym : symmetric _ rm_eq.
+Proof. intros x y Hxy i; symmetry; apply Hxy. Qed.
+
+Theorem rm_eq_trans : transitive _ rm_eq.
+Proof. intros x y z Hxy Hyz i; rewrite Hxy; apply Hyz. Qed.
+
+Add Parametric Relation : _ rm_eq
+ reflexivity proved by rm_eq_refl
+ symmetry proved by rm_eq_sym
+ transitivity proved by rm_eq_trans
+ as rm_rel.
 
 (* commutativity *)
 

@@ -70,6 +70,8 @@ Arguments re_eq x%R y%R.
 
 Notation "x = y" := (re_eq x y) : R_scope.
 
+(* equality is equivalence relation *)
+
 Theorem re_eq_refl : reflexive _ re_eq.
 Proof.
 intros x.
