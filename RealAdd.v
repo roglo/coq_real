@@ -317,6 +317,7 @@ Theorem re_mant_norm_add_0_r : ∀ x,
 Proof.
 intros x.
 unfold re_add; simpl.
+rewrite Nat.max_0_r.
 destruct (bool_dec (re_sign x) true) as [H1| H1]; simpl.
  unfold re_norm; simpl.
  rewrite Nat.sub_0_r.
@@ -334,8 +335,16 @@ destruct (bool_dec (re_sign x) true) as [H1| H1]; simpl.
    destruct Hs1 as (Hn1, Hs1).
    destruct s2 as [j2| ]; simpl.
     destruct Hs2 as (Hn2, Hs2).
-bbb.
     rewrite Hx3, Hx1, Hx2 in Hs1; simpl in Hs1.
+    destruct (lt_dec j1 1) as [H3| H3].
+     apply Nat.lt_1_r in H3; subst j1; simpl.
+     clear Hs1 Hn1.
+     unfold rm_final_carry in Hc; simpl in Hc.
+     remember (fst_same x1 x2 0) as s3 eqn:Hs3 .
+     apply fst_same_sym_iff in Hs3; simpl in Hs3.
+     destruct s3 as [j3| ]; [ idtac | clear Hc ].
+      destruct Hs3 as (Hn3, Hs3).
+      rewrite Hc in Hs3; symmetry in Hs3.
 bbb.
 
 Theorem re_add_0_r : ∀ x, (x + 0 = x)%R.
