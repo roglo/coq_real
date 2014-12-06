@@ -189,6 +189,7 @@ intros x y.
 split; intros H.
  unfold rm_compare.
  unfold rm_eq in H; simpl in H.
+bbb.
  remember (fst_same x (- y) 0) as s eqn:Hs .
  apply fst_same_sym_iff in Hs; simpl in Hs.
  destruct s as [j| ]; [ exfalso | reflexivity ].
