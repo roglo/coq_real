@@ -316,6 +316,26 @@ Theorem re_mant_norm_add_0_r : ∀ x,
   (re_mant (re_norm (x + 0%R)) = re_mant (re_norm x))%rm.
 Proof.
 intros x.
+unfold re_add; simpl.
+destruct (bool_dec (re_sign x) true) as [H1| H1]; simpl.
+ unfold re_norm; simpl.
+ rewrite Nat.sub_0_r.
+ remember (rm_shift_r 0 false (re_mant x)) as x1 eqn:Hx1 .
+ remember (rm_shift_r (re_power x) false 0) as x2 eqn:Hx2 .
+ remember (rm_final_carry x1 x2) as c eqn:Hc .
+ symmetry in Hc.
+ destruct c.
+  remember (rm_shift_r 1 true (x1 + x2)) as x3 eqn:Hx3 .
+  remember (fst_same x3 rm_ones 0) as s1 eqn:Hs1 .
+  remember (fst_same (re_mant x) rm_ones 0) as s2 eqn:Hs2 .
+  apply fst_same_sym_iff in Hs1; simpl in Hs1.
+  apply fst_same_sym_iff in Hs2; simpl in Hs2.
+  destruct s1 as [j1| ]; simpl.
+   destruct Hs1 as (Hn1, Hs1).
+   destruct s2 as [j2| ]; simpl.
+    destruct Hs2 as (Hn2, Hs2).
+bbb.
+    rewrite Hx3, Hx1, Hx2 in Hs1; simpl in Hs1.
 bbb.
 
 Theorem re_add_0_r : ∀ x, (x + 0 = x)%R.
