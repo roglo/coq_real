@@ -312,6 +312,13 @@ Qed.
 
 (* neutral element *)
 
+Theorem zzz : ∀ x i,
+  (re_mant x).[i] = false
+  → (re_mant (x + 0%R)).[i] = true
+  → ∀ j, i < j → (re_mant x).[j] = true.
+Proof.
+bbb.
+
 Theorem re_mant_norm_add_0_r : ∀ x,
   (re_mant (re_norm (x + 0%R)) = re_mant (re_norm x))%rm.
 Proof.
@@ -326,6 +333,8 @@ destruct s1 as [j1| ]; simpl.
  destruct s2 as [j2| ]; simpl.
   destruct Hs2 as (Hn2, Hs2).
   destruct (lt_eq_lt_dec j1 j2) as [[H1| H1]| H1].
+   remember H1 as H; clear HeqH.
+   apply Hn2 in H.
 bbb.
        0       j₁      j₂
   x+0  0   0   1   .   .
@@ -336,6 +345,7 @@ bbb.
   j2 : nat
   Hn2 : ∀ dj : nat, dj < j2 → (re_mant x) .[ dj] = false
   Hs2 : (re_mant x) .[ j2] = true
+  H1 : j1 < j2
   ============================
    (rm_shift_l (min j1 (re_power (x + 0%R))) (re_mant (x + 0%R)) =
     rm_shift_l (min j2 (re_power x)) (re_mant x))%rm
