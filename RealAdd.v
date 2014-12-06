@@ -73,11 +73,22 @@ Qed.
 
 Theorem re_eq_sym : symmetric _ re_eq.
 Proof.
-bbb.
-intros x y Hxy i; symmetry; apply Hxy. Qed.
+intros x y Hxy.
+destruct Hxy as (Hm, (Hp, Hs)).
+unfold re_eq.
+rewrite Hm, Hp, Hs.
+split; [ reflexivity | split; reflexivity ].
+Qed.
 
 Theorem re_eq_trans : transitive _ re_eq.
-Proof. intros x y z Hxy Hyz i; rewrite Hxy; apply Hyz. Qed.
+Proof.
+intros x y z Hxy Hyz.
+destruct Hxy as (Hm, (Hp, Hs)).
+destruct Hyz as (Im, (Ip, Is)).
+unfold re_eq.
+split; [ etransitivity; eassumption | idtac ].
+split; etransitivity; eassumption.
+Qed.
 
 Add Parametric Relation : _ re_eq
  reflexivity proved by re_eq_refl
