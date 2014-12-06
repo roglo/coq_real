@@ -290,12 +290,27 @@ destruct s1 as [di1| ].
  destruct z .[ S (j + di2)]; discriminate Hs2.
 Qed.
 
+Theorem carry_compat : ∀ x y z t j,
+  (∀ i, x .[ i] = z .[ i])
+  → (∀ i, y .[ i] = t .[ i])
+  → carry x y j = carry z t j.
+Proof.
+intros x y z t j Hxz Hzt.
+erewrite carry_compat_r.
+ rewrite carry_comm; symmetry.
+ rewrite carry_comm; symmetry.
+ apply carry_compat_r; intros i.
+ rewrite Hzt; reflexivity.
+
+ intros i.
+ rewrite Hxz; reflexivity.
+Qed.
+
 Theorem carry_comm_l : ∀ x y z i,
   carry (x + y) z i = carry (y + x) z i.
 Proof.
 intros x y z i.
-rewrite carry_compat_r with (x := (y + x)%rm); [ reflexivity | idtac ].
-apply rm_add_i_comm.
+apply carry_compat; [ apply rm_add_i_comm | reflexivity ].
 Qed.
 
 Theorem rm_add_comm : ∀ x y, (x + y = y + x)%rm.
@@ -431,6 +446,17 @@ intros x y z j Hxy.
 unfold rm_add_i.
 rewrite Hxy; f_equal.
 apply carry_compat_r; assumption.
+Qed.
+
+Theorem rm_add_i_compat : ∀ x y z t j,
+  (∀ i, x .[ i] = z .[ i])
+  → (∀ i, y .[ i] = t .[ i])
+  → rm_add_i x y j = rm_add_i z t j.
+Proof.
+intros x y z t j Hxz Hyt.
+unfold rm_add_i.
+rewrite Hxz, Hyt; f_equal.
+apply carry_compat; assumption.
 Qed.
 
 Theorem rm_norm_eq_eq : ∀ x0 y0 x y,

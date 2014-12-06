@@ -1,4 +1,4 @@
-Require Import Utf8 QArith.
+Require Import Utf8 QArith NPeano.
 Require Import Real01Add.
 
 Set Implicit Arguments.
@@ -95,5 +95,93 @@ Add Parametric Relation : _ re_eq
  symmetry proved by re_eq_sym
  transitivity proved by re_eq_trans
  as re_rel.
+
+(* commutativity *)
+
+Theorem rm_final_carry_comm : ∀ x y, rm_final_carry x y = rm_final_carry y x.
+Proof.
+intros x y.
+unfold rm_final_carry.
+rewrite fst_same_comm.
+remember (fst_same y x (0)) as s eqn:Hs .
+destruct s as [di| ]; [ idtac | reflexivity ].
+apply fst_same_sym_iff in Hs; simpl in Hs.
+destruct Hs; symmetry; assumption.
+Qed.
+
+Theorem rm_shift_r_comm : ∀ n p x y,
+  (rm_shift_r n p (x + y) = rm_shift_r n p (y + x))%rm.
+Proof.
+intros n p x y.
+unfold rm_eq; intros i; simpl.
+unfold rm_add_i; simpl.
+destruct (lt_dec i n) as [H1| H1].
+ f_equal.
+ apply carry_compat_r; intros j; simpl.
+ destruct (lt_dec j) as [H2| H2]; [ reflexivity | idtac ].
+ apply rm_add_i_comm.
+
+ do 2 rewrite xorb_false_r.
+ f_equal; [ apply rm_add_i_comm | idtac ].
+ apply carry_compat_r; intros j; simpl.
+ destruct (lt_dec j) as [H2| H2]; [ reflexivity | idtac ].
+ apply rm_add_i_comm.
+Qed.
+
+Theorem fst_same_rm_shift_r_add_comm_l : ∀ x y z n p,
+  fst_same (rm_shift_r n p (x + y)) z 0 =
+  fst_same (rm_shift_r n p (y + x)) z 0.
+Proof.
+intros x y z n p.
+apply fst_same_iff; simpl.
+remember (fst_same (rm_shift_r n p (y + x)) z 0) as s eqn:Hs .
+apply fst_same_sym_iff in Hs; simpl in Hs.
+destruct s as [di| ].
+ destruct Hs as (Hn, Hs).
+ split.
+  intros dj Hdj.
+  apply Hn in Hdj.
+  destruct (lt_dec dj n) as [H1| H1]; [ assumption | idtac ].
+  rewrite rm_add_i_comm; assumption.
+
+  destruct (lt_dec di n) as [H1| H1]; [ assumption | idtac ].
+  rewrite rm_add_i_comm; assumption.
+
+ intros dj.
+ pose proof (Hs dj) as H.
+ destruct (lt_dec dj n) as [H1| H1]; [ assumption | idtac ].
+ rewrite rm_add_i_comm; assumption.
+Qed.
+
+Theorem re_add_comm : ∀ x y, (x + y = y + x)%R.
+Proof.
+intros x y.
+unfold re_eq.
+split.
+ unfold re_add.
+ destruct (bool_dec (re_sign x) (re_sign y)) as [H1| H1].
+  destruct (bool_dec (re_sign y) (re_sign x)) as [H2| H2].
+   rewrite rm_final_carry_comm.
+   remember (re_power x - re_power y) as pxy eqn:Hpxy .
+   remember (re_power y - re_power x) as pyx eqn:Hpyx .
+   remember (rm_shift_r (max 0 pxy) false (re_mant y)) as sxy eqn:Hsxy .
+   remember (rm_shift_r (max 0 pyx) false (re_mant x)) as syx eqn:Hsyx .
+   remember (rm_final_carry sxy syx) as fc eqn:Hfc .
+   symmetry in Hfc.
+   destruct fc.
+    unfold re_norm; simpl.
+    rewrite fst_same_rm_shift_r_add_comm_l.
+    remember (fst_same (rm_shift_r 1 true (sxy + syx)) rm_ones 0) as s.
+    rename Heqs into Hs.
+    symmetry in Hs.
+    destruct s as [j| ]; [ simpl | reflexivity ].
+    rewrite Nat.max_comm.
+    unfold rm_eq; intros i; simpl.
+    apply rm_add_i_compat; [ idtac | reflexivity ].
+    intros k; simpl.
+    remember (max (re_power y) (re_power x) + 1) as m.
+    destruct (lt_dec (k + min j m) 1) as [H3| H3]; [ reflexivity | idtac ].
+    apply rm_add_i_comm.
+bbb.
 
 Close Scope nat_scope.
