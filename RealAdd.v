@@ -189,29 +189,22 @@ intros x y.
 split; intros H.
  unfold rm_compare.
  unfold rm_eq in H; simpl in H.
-bbb.
- remember (fst_same x (- y) 0) as s eqn:Hs .
+ remember (fst_same (x + 0%rm) (- (y + 0)%rm) 0) as s eqn:Hs .
  apply fst_same_sym_iff in Hs; simpl in Hs.
  destruct s as [j| ]; [ exfalso | reflexivity ].
  destruct Hs as (Hn, Hs).
- pose proof (H j) as Hj.
- unfold rm_add_i in Hj; simpl in Hj.
- do 2 rewrite xorb_false_r in Hj.
- apply xorb_move_l_r_1 in Hj.
- rewrite Hs, <- xorb_assoc, negb_xorb_diag_l, xorb_true_l in Hj.
- unfold carry in Hj; simpl in Hj.
- remember (fst_same x 0 (S j)) as s1 eqn:Hs1 .
- remember (fst_same y 0 (S j)) as s2 eqn:Hs2 .
- apply fst_same_sym_iff in Hs1; simpl in Hs1.
- apply fst_same_sym_iff in Hs2; simpl in Hs2.
- destruct s1 as [di1| ].
-  destruct Hs1 as (Hn1, Hs1).
-  destruct s2 as [di2| ].
-   destruct Hs2 as (Hn2, Hs2).
-   rewrite Hs1, Hs2 in Hj; discriminate Hj.
-bbb.
-mmm... perhaps redefine rm_compare as:
-  match fst_same (x + 0) (- (y + 0)) 0 with
+ rewrite H in Hs.
+ symmetry in Hs; revert Hs; apply no_fixpoint_negb.
+
+ unfold rm_compare in H.
+ remember (fst_same (x + 0%rm) (- (y + 0)%rm) 0) as s eqn:Hs .
+ apply fst_same_sym_iff in Hs; simpl in Hs.
+ destruct s as [j| ]; [ exfalso | idtac ].
+  destruct x .[ j]; discriminate H.
+
+  unfold rm_eq; intros i; simpl.
+  rewrite Hs, negb_involutive; reflexivity.
+Qed.
 
 Theorem re_add_comm : ∀ x y, (x + y = y + x)%R.
 Proof.
