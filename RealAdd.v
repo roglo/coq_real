@@ -208,6 +208,52 @@ destruct s as [di| ].
     rewrite Hx1; simpl.
     rewrite rm_add_i_comm; assumption.
 
+  remember Hs as H; clear HeqH.
+  unfold rm_add_i in H; simpl in H.
+  unfold rm_add_i; simpl.
+  rewrite xorb_false_r in H.
+  rewrite xorb_false_r.
+  unfold carry in H; simpl in H.
+  unfold carry; simpl.
+  rename di into dj.
+  remember (fst_same x1 0 (S dj)) as s1 eqn:Hs1 .
+  remember (fst_same x2 0 (S dj)) as s2 eqn:Hs2 .
+  apply fst_same_sym_iff in Hs1; simpl in Hs1.
+  apply fst_same_sym_iff in Hs2; simpl in Hs2.
+  destruct s1 as [dj1| ].
+   destruct Hs1 as (Hn1, Hs1); rewrite Hs1.
+   rewrite xorb_false_r.
+   destruct s2 as [dj2| ].
+    destruct Hs2 as (Hn2, Hs2); rewrite Hs2 in H.
+    rewrite xorb_false_r in H.
+    rewrite Hx1; simpl.
+    rewrite Hx2 in H; simpl in H.
+    rewrite rm_add_i_comm; assumption.
+
+    remember (S (dj + dj1)) as i.
+    rewrite Hx1 in Hs1; simpl in Hs1.
+    pose proof (Hs2 dj1) as HH.
+    rewrite <- Heqi in HH.
+    rewrite Hx2 in HH; simpl in HH.
+    rewrite rm_add_i_comm, Hs1 in HH.
+    discriminate HH.
+
+   destruct s2 as [dj2| ].
+    destruct Hs2 as (Hn2, Hs2).
+    remember (S (dj + dj2)) as i.
+    rewrite Hx2 in Hs2; simpl in Hs2.
+    pose proof (Hs1 dj2) as HH.
+    rewrite <- Heqi in HH.
+    rewrite Hx1 in HH; simpl in HH.
+    rewrite rm_add_i_comm, Hs2 in HH.
+    discriminate HH.
+
+    rewrite xorb_true in H.
+    rewrite xorb_true.
+    rewrite Hx2 in H; simpl in H.
+    rewrite Hx1; simpl.
+    rewrite rm_add_i_comm; assumption.
+
 bbb.
 
 intros x y z n p.
