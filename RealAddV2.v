@@ -37,6 +37,34 @@ Arguments re_eq x%R y%R.
 Notation "x = y" := (re_eq x y) : R_scope.
 
 (* equality is equivalence relation *)
-(* ... *)
+
+Theorem re_eq_refl : reflexive _ re_eq.
+Proof.
+intros x; split; reflexivity.
+Qed.
+
+Theorem re_eq_sym : symmetric _ re_eq.
+Proof.
+intros x y Hxy.
+unfold re_eq in Hxy; unfold re_eq.
+destruct Hxy; split; symmetry; assumption.
+Qed.
+
+Theorem re_eq_trans : transitive _ re_eq.
+Proof.
+intros x y z Hxy Hyz.
+destruct Hxy, Hyz.
+unfold re_eq.
+split; etransitivity; eassumption.
+Qed.
+
+Add Parametric Relation : _ re_eq
+ reflexivity proved by re_eq_refl
+ symmetry proved by re_eq_sym
+ transitivity proved by re_eq_trans
+ as re_rel.
+
+(* commutativity *)
+(* TODO *)
 
 Close Scope Z_scope.
