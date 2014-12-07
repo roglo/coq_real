@@ -16,6 +16,7 @@ Definition rm_final_carry x y :=
   | Some j => if x.[j] then 1 else 0
   | None => 1
   end.
+Arguments rm_final_carry x%rm y%rm.
 
 Definition re_add x y :=
   {| re_int := re_int x + re_int y + rm_final_carry (re_frac x) (re_frac y);
@@ -88,6 +89,24 @@ apply rm_final_carry_comm.
 Qed.
 
 (* neutral element *)
-(* TODO *)
+
+Theorem rm_final_carry_add_0_r : ∀ x, rm_final_carry x 0 = 0.
+Proof.
+intros x.
+unfold rm_final_carry; simpl.
+remember (fst_same x 0 0) as s eqn:Hs .
+apply fst_same_sym_iff in Hs; simpl in Hs.
+destruct s as [di| ].
+ destruct Hs as (_, Hs); rewrite Hs; reflexivity.
+bbb.
+ (* does not work, not surprised :-( *)
+
+Theorem re_add_0_r : ∀ x, (x + 0 = x)%R.
+Proof.
+intros x.
+unfold re_eq.
+unfold re_add; simpl; split; [ idtac | apply rm_add_0_r ].
+rewrite Z.add_0_r.
+bbb.
 
 Close Scope Z_scope.
