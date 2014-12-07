@@ -150,6 +150,7 @@ Theorem fst_same_rm_shift_r_add_comm_l : ∀ x y z n p,
   fst_same (rm_shift_r n p (x + y) + 0%rm) z 0 =
   fst_same (rm_shift_r n p (y + x) + 0%rm) z 0.
 Proof.
+(* à revoir : il y a du code répété *)
 intros x y z n p.
 remember (rm_shift_r n p (x + y)) as x1 eqn:Hx1 .
 remember (rm_shift_r n p (y + x)) as x2 eqn:Hx2 .
@@ -254,30 +255,55 @@ destruct s as [di| ].
     rewrite Hx1; simpl.
     rewrite rm_add_i_comm; assumption.
 
-bbb.
-
-intros x y z n p.
-apply fst_same_iff; simpl.
-remember (fst_same (rm_shift_r n p (y + x) + 0%rm) z 0) as s eqn:Hs .
-apply fst_same_sym_iff in Hs; simpl in Hs.
-destruct s as [di| ].
- destruct Hs as (Hn, Hs).
- split.
-  intros dj Hdj.
-bbb.
-  apply Hn in Hdj.
-  destruct (lt_dec dj n) as [H1| H1]; [ assumption | idtac ].
-  rewrite rm_add_i_comm; assumption.
-
-  destruct (lt_dec di n) as [H1| H1]; [ assumption | idtac ].
-  rewrite rm_add_i_comm; assumption.
-
  intros dj.
+ unfold rm_add_i; simpl.
  pose proof (Hs dj) as H.
- destruct (lt_dec dj n) as [H1| H1]; [ assumption | idtac ].
- rewrite rm_add_i_comm; assumption.
+ unfold rm_add_i in H; simpl in H.
+ rewrite xorb_false_r in H.
+ rewrite xorb_false_r.
+ unfold carry in H; simpl in H.
+ unfold carry; simpl.
+ remember (fst_same x1 0 (S dj)) as s1 eqn:Hs1 .
+ remember (fst_same x2 0 (S dj)) as s2 eqn:Hs2 .
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ apply fst_same_sym_iff in Hs2; simpl in Hs2.
+ destruct s1 as [dj1| ].
+  destruct Hs1 as (Hn1, Hs1); rewrite Hs1.
+  rewrite xorb_false_r.
+  destruct s2 as [dj2| ].
+   destruct Hs2 as (Hn2, Hs2); rewrite Hs2 in H.
+   rewrite xorb_false_r in H.
+   rewrite Hx1; simpl.
+   rewrite Hx2 in H; simpl in H.
+   rewrite rm_add_i_comm; assumption.
+
+   remember (S (dj + dj1)) as i.
+   rewrite Hx1 in Hs1; simpl in Hs1.
+   pose proof (Hs2 dj1) as HH.
+   rewrite <- Heqi in HH.
+   rewrite Hx2 in HH; simpl in HH.
+   rewrite rm_add_i_comm, Hs1 in HH.
+   discriminate HH.
+
+  rewrite xorb_true_r.
+  apply negb_negb.
+  destruct s2 as [dj2| ].
+   destruct Hs2 as (Hn2, Hs2); rewrite Hs2 in H.
+   rewrite xorb_false_r in H.
+   remember (S (dj + dj2)) as i.
+   rewrite Hx2 in Hs2; simpl in Hs2.
+   pose proof (Hs1 dj2) as HH.
+   rewrite <- Heqi in HH.
+   rewrite Hx1 in HH; simpl in HH.
+   rewrite rm_add_i_comm, Hs2 in HH.
+   discriminate HH.
+
+   rewrite xorb_true in H.
+   apply negb_negb with (a := x2 .[ dj]) in H.
+   rewrite Hx2 in H; simpl in H.
+   rewrite Hx1; simpl.
+   rewrite rm_add_i_comm; assumption.
 Qed.
-*)
 
 Theorem rm_shift_l_comm : ∀ x y n,
   (rm_shift_l n (x + y) = rm_shift_l n (y + x))%rm.
@@ -326,15 +352,15 @@ destruct (bool_dec (re_sign x) (re_sign y)) as [H1| H1].
  destruct (bool_dec (re_sign y) (re_sign x)) as [H2| H2].
   destruct fc.
    unfold re_norm; simpl.
-bbb.
    rewrite fst_same_rm_shift_r_add_comm_l.
-   remember (fst_same (rm_shift_r 1 true (sxy + syx)) rm_ones 0) as s.
+   remember (fst_same (rm_shift_r 1 true (sxy + syx) + 0%rm) rm_ones 0) as s.
    rename Heqs into Hs.
    symmetry in Hs.
    destruct s as [j| ]; [ simpl | reflexivity ].
    unfold rm_eq; intros i; simpl.
    apply rm_add_i_compat; [ idtac | reflexivity ].
    intros k; simpl.
+bbb.
    rewrite rm_add_i_comm.
    reflexivity.
 
