@@ -192,3 +192,10 @@ type real = { re_int : int; re_frac : real_mod_1 };
 value re_add base x y =
   {re_int = x.re_int + y.re_int + rm_final_carry base x.re_frac y.re_frac;
    re_frac = rm_add base x.re_frac y.re_frac};
+
+value f2r base a =
+  {re_int = truncate (floor a); re_frac = f2rm base (a -. floor a)};
+
+value r2f base x = float x.re_int +. rm2f base x.re_frac;
+
+let b = 10 in r2f b (re_add b (f2r b 18.3) (f2r b (-2.7)));
