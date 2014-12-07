@@ -108,6 +108,9 @@ value rec rm_div_i x y i =
 
 value rm_div x y = make_rm (fun i → rm_div_i x y (i + 1));
 
+(* first version *)
+
+(*
 type real = { re_mant : real_mod_1; re_power : int; re_sign : bool };
 
 value re_add base x y =
@@ -176,7 +179,16 @@ Printf.printf "%.16f\n%!" (
 Printf.printf "%.16f\n%!" (
 let b = 2 in (rm2fshort b (rm_div (f2rm b 0.17) (f2rm b 0.28)))
 );
+*)
 
 (*
 let b = 2 in (rm2fshort b (rm_div (f2rm b 0.07) (f2rm b 0.28)));
 *)
+
+(* *)
+
+type real = { re_int : int; re_frac : real_mod_1 };
+
+value re_add base x y =
+  {re_int = x.re_int + y.re_int + rm_final_carry base x.re_frac y.re_frac;
+   re_frac = rm_add base x.re_frac y.re_frac};

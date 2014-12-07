@@ -13,13 +13,12 @@ Arguments re_frac _%R.
 
 Definition rm_final_carry x y :=
   match fst_same x y 0 with
-  | Some j => x.[j]
-  | None => true
+  | Some j => if x.[j] then 1 else 0
+  | None => 1
   end.
 
 Definition re_add x y :=
-  let c := if rm_final_carry (re_frac x) (re_frac y) then 1 else 0 in
-  {| re_int := re_int x + re_int y + c;
+  {| re_int := re_int x + re_int y + rm_final_carry (re_frac x) (re_frac y);
      re_frac := rm_add (re_frac x) (re_frac y) |}.
 
 Close Scope Z_scope.
