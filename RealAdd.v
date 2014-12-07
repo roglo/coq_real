@@ -188,6 +188,14 @@ destruct s as [di| ].
 
      apply Nat.nlt_ge in H1.
      symmetry in H.
+     rewrite Hx1 in Hs1.
+     remember (S (dj + dj1)) as i.
+     simpl in Hs1.
+     pose proof (Hs2 dj1) as HH.
+     rewrite <- Heqi in HH.
+     rewrite Hx2 in HH; simpl in HH.
+     rewrite rm_add_i_comm, Hs1 in HH.
+     discriminate HH.
 bbb.
 
 intros x y z n p.
