@@ -176,6 +176,26 @@ destruct (rm_zerop (re_frac x)) as [H1| H1].
  rewrite rm_final_carry_norm_add_0_r, Z.add_0_r.
  unfold rm_final_carry; simpl.
  rewrite fst_same_diag.
+ remember (fst_same (re_frac x) 0 0) as s1 eqn:Hs1 .
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ destruct s1 as [di1| ].
+  destruct Hs1 as (_, Hs1).
+  rewrite Hs1; reflexivity.
 bbb.
+  not provable: not a contradiction.
+
+  H1 : (re_frac x = 0)%rm
+  Hs1 : ∀ dj : nat, (re_frac x) .[ dj] = true
+  ============================
+   False
+
+  earlier, we had
+
+  H1 : (re_frac x = 0)%rm
+  ============================
+   rm_final_carry (re_frac x) 0 = rm_final_carry 0 0
+
+  if re_frac x is 0.11111.... (equal to 0) then the result of the
+  first rm_final_carry is 1; perhaps problem of its definition?
 
 Close Scope Z_scope.
