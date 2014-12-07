@@ -5,7 +5,8 @@ Set Implicit Arguments.
 
 Open Scope Z_scope.
 
-Record real := { re_int : Z; re_frac : real_mod_1 }.
+Record real := mkre { re_int : Z; re_frac : real_mod_1 }.
+Arguments mkre _%Z _%rm.
 
 Delimit Scope R_scope with R.
 Arguments re_int _%R.
@@ -38,7 +39,17 @@ Definition re_eq x y :=
   (re_frac x = re_frac y)%rm.
 Arguments re_eq x%R y%R.
 
+Definition re_opp x :=
+  if rm_zerop (re_frac x) then {| re_int := - re_int x; re_frac := 0%rm |}
+  else {| re_int := - re_int x - 1; re_frac := - re_frac x |}.
+Definition re_sub x y := re_add x (re_opp y).
+Arguments re_opp x%R.
+Arguments re_sub x%R y%R.
+
 Notation "x = y" := (re_eq x y) : R_scope.
+Notation "x ≠ y" := (¬ re_eq x y) : R_scope.
+Notation "- x" := (re_opp x) : R_scope.
+Notation "x - y" := (re_sub x y) : R_scope.
 
 (* equality is equivalence relation *)
 
@@ -151,5 +162,18 @@ rewrite <- Z.add_assoc; f_equal.
 rewrite rm_final_carry_norm_add_0_r, Z.add_0_r.
 reflexivity.
 Qed.
+
+(* opposite *)
+
+Theorem re_sub_diag : ∀ x, (x - x = 0)%R.
+Proof.
+intros x.
+unfold re_eq, re_sub, re_opp; simpl.
+destruct (rm_zerop (re_frac x)) as [H1| H1].
+ unfold re_add; simpl.
+ rewrite Z.add_opp_r, Z.sub_diag, Z.add_0_l.
+ split; [ idtac | rewrite rm_add_0_r; assumption ].
+ rewrite rm_final_carry_norm_add_0_r, Z.add_0_r.
+bbb.
 
 Close Scope Z_scope.

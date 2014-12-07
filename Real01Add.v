@@ -2267,7 +2267,7 @@ Qed.
 
 (* opposite *)
 
-Theorem rm_add_opp_r : ∀ x, (x - x = 0)%rm.
+Theorem rm_sub_diag : ∀ x, (x - x = 0)%rm.
 Proof.
 intros x.
 unfold rm_eq; intros i; simpl.
@@ -4339,12 +4339,12 @@ intros x y.
 destruct (rm_zerop (x - y)%rm) as [Hxy| Hxy].
  left; unfold rm_sub in Hxy; rewrite rm_add_comm in Hxy.
  eapply rm_add_compat with (x := y) in Hxy; [ idtac | reflexivity ].
- rewrite rm_add_assoc, fold_rm_sub, rm_add_opp_r, rm_add_comm in Hxy.
+ rewrite rm_add_assoc, fold_rm_sub, rm_sub_diag, rm_add_comm in Hxy.
  do 2 rewrite rm_add_0_r in Hxy.
  assumption.
 
  right; unfold rm_sub in  Hxy; intros H; apply Hxy; rewrite H.
- apply rm_add_opp_r.
+ apply rm_sub_diag.
 Qed.
 
 Theorem rm_decidable : ∀ x y, Decidable.decidable (x = y)%rm.
