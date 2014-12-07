@@ -1,4 +1,4 @@
-Require Import Utf8 QArith.
+Require Import Utf8 QArith NPeano.
 Require Import Real01Add.
 
 Set Implicit Arguments.
@@ -174,6 +174,8 @@ destruct (rm_zerop (re_frac x)) as [H1| H1].
  rewrite Z.add_opp_r, Z.sub_diag, Z.add_0_l.
  split; [ idtac | rewrite rm_add_0_r; assumption ].
  rewrite rm_final_carry_norm_add_0_r, Z.add_0_r.
+ unfold rm_final_carry; simpl.
+ rewrite fst_same_diag.
 bbb.
 
 Close Scope Z_scope.

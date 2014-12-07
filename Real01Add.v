@@ -199,6 +199,15 @@ split; intros H.
  destruct b'; discriminate H.
 Qed.
 
+Theorem fst_same_diag : ∀ x n, fst_same x x n = Some 0%nat.
+Proof.
+intros x n.
+apply fst_same_iff; simpl.
+split; [ idtac | reflexivity ].
+intros dj Hdj.
+exfalso; revert Hdj; apply Nat.nlt_0_r.
+Qed.
+
 (* equality is equivalence relation *)
 
 Theorem rm_eq_refl : reflexive _ rm_eq.
@@ -2274,9 +2283,7 @@ unfold rm_eq; intros i; simpl.
 unfold rm_add_i, carry.
 remember (S i) as si; simpl.
 rewrite xorb_false_r.
-remember (fst_same 0 0 si) as s1 eqn:Hs1 .
-apply fst_same_sym_iff in Hs1; simpl in Hs1.
-destruct s1 as [di1| ]; [ clear di1 Hs1 | discriminate Hs1; auto ].
+rewrite fst_same_diag.
 remember (fst_same (x - x) 0 si) as s1 eqn:Hs1 .
 apply fst_same_sym_iff in Hs1; simpl in Hs1.
 destruct s1 as [di1| ].
@@ -4317,20 +4324,14 @@ destruct s as [di| ].
  rewrite Hs in HH; symmetry in HH.
  unfold rm_add_i in HH; simpl in HH.
  unfold carry in HH; simpl in HH.
- remember (fst_same 0%rm 0%rm (S di)) as s1 eqn:Hs1 .
- apply fst_same_sym_iff in Hs1; simpl in Hs1.
- destruct s1 as [di1| ]; [ idtac | discriminate Hs1; assumption ].
- discriminate HH.
+ rewrite fst_same_diag in HH; discriminate HH.
 
  left.
  unfold rm_eq; intros i; simpl.
  rewrite Hs.
  unfold rm_add_i; simpl.
  unfold carry; simpl.
- remember (fst_same 0 0 (S i)) as s1 eqn:Hs1 .
- destruct s1; [ reflexivity | idtac ].
- apply fst_same_sym_iff in Hs1; simpl in Hs1.
- discriminate Hs1; assumption.
+ rewrite fst_same_diag; reflexivity.
 Qed.
 
 Theorem rm_dec : ∀ x y, {(x = y)%rm} + {(x ≠ y)%rm}.
