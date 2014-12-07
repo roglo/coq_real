@@ -138,6 +138,14 @@ destruct (lt_dec i n) as [H1| H1].
  apply rm_add_i_comm.
 Qed.
 
+Theorem negb_negb : ∀ a b, negb a = negb b ↔ a = b.
+Proof.
+intros a b.
+split; intros H; [ idtac | subst a; reflexivity ].
+apply negb_sym in H; subst b.
+rewrite negb_involutive; reflexivity.
+Qed.
+
 Theorem fst_same_rm_shift_r_add_comm_l : ∀ x y z n p,
   fst_same (rm_shift_r n p (x + y) + 0%rm) z 0 =
   fst_same (rm_shift_r n p (y + x) + 0%rm) z 0.
@@ -191,6 +199,14 @@ destruct s as [di| ].
     rewrite Hx1 in HH; simpl in HH.
     rewrite rm_add_i_comm, Hs2 in HH.
     discriminate HH.
+
+    rewrite xorb_true in H.
+    rewrite xorb_true.
+    apply negb_negb with (a := x2 .[ dj]) in H.
+    apply negb_negb.
+    rewrite Hx2 in H; simpl in H.
+    rewrite Hx1; simpl.
+    rewrite rm_add_i_comm; assumption.
 
 bbb.
 
