@@ -143,8 +143,10 @@ Theorem fst_same_rm_shift_r_add_comm_l : ∀ x y z n p,
   fst_same (rm_shift_r n p (y + x) + 0%rm) z 0.
 Proof.
 intros x y z n p.
+remember (rm_shift_r n p (x + y)) as x1 eqn:Hx1 .
+remember (rm_shift_r n p (y + x)) as x2 eqn:Hx2 .
 apply fst_same_iff; simpl.
-remember (fst_same (rm_shift_r n p (y + x) + 0%rm) z 0) as s eqn:Hs .
+remember (fst_same (x2 + 0%rm) z 0) as s eqn:Hs .
 apply fst_same_sym_iff in Hs; simpl in Hs.
 destruct s as [di| ].
  destruct Hs as (Hn, Hs).
@@ -154,21 +156,38 @@ destruct s as [di| ].
   apply Hn in H.
   unfold rm_add_i in H; simpl in H.
   unfold rm_add_i; simpl.
-  destruct (lt_dec dj n) as [H1| H1].
-   unfold carry in H; simpl in H.
-   unfold carry; simpl.
-   remember (fst_same (rm_shift_r n p (y + x)) 0 (S dj)) as s1 eqn:Hs1 .
-   remember (fst_same (rm_shift_r n p (x + y)) 0 (S dj)) as s2 eqn:Hs2 .
-   apply fst_same_sym_iff in Hs1; simpl in Hs1.
-   apply fst_same_sym_iff in Hs2; simpl in Hs2.
-   destruct n; [ exfalso; revert H1; apply Nat.nlt_0_r | idtac ].
-   destruct s1 as [dj1| ].
-    destruct Hs1 as (Hn1, Hs1).
-    rewrite Hs1 in H.
-    destruct s2 as [dj2| ].
-     destruct Hs2 as (Hn2, Hs2).
-     rewrite Hs2; assumption.
+  unfold carry in H; simpl in H.
+  unfold carry; simpl.
+  remember (fst_same x1 0 (S dj)) as s1 eqn:Hs1 .
+  remember (fst_same x2 0 (S dj)) as s2 eqn:Hs2 .
+  apply fst_same_sym_iff in Hs1; simpl in Hs1.
+  apply fst_same_sym_iff in Hs2; simpl in Hs2.
+  destruct s1 as [dj1| ].
+   destruct Hs1 as (Hn1, Hs1); rewrite Hs1.
+   destruct s2 as [dj2| ].
+    destruct Hs2 as (Hn2, Hs2); rewrite Hs2 in H.
+    rewrite Hx1; simpl.
+    rewrite Hx2 in H; simpl in H.
+    destruct (lt_dec dj n) as [H1| H1]; [ assumption | idtac ].
+    rewrite rm_add_i_comm; assumption.
 
+    do 2 rewrite xorb_false_r.
+    apply negb_sym.
+    rewrite xorb_false_r, xorb_true_r in H.
+    apply negb_sym in H.
+    rewrite negb_involutive in H.
+    rewrite Hx2 in H; simpl in H.
+    exfalso.
+    destruct (lt_dec dj n) as [H1| H1].
+     rewrite Hx1 in Hs1; simpl in Hs1.
+     destruct n; [ exfalso; revert H1; apply Nat.nlt_0_r | idtac ].
+     pose proof (Hs2 dj1) as HH.
+     rewrite Hx2 in HH; simpl in HH.
+     rewrite rm_add_i_comm in HH.
+     rewrite Hs1 in HH; discriminate HH.
+
+     apply Nat.nlt_ge in H1.
+     symmetry in H.
 bbb.
 
 intros x y z n p.
