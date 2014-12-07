@@ -65,6 +65,29 @@ Add Parametric Relation : _ re_eq
  as re_rel.
 
 (* commutativity *)
+
+Theorem rm_final_carry_comm : ∀ x y, rm_final_carry x y = rm_final_carry y x.
+Proof.
+intros x y.
+unfold rm_final_carry.
+rewrite fst_same_comm.
+remember (fst_same y x (0)) as s eqn:Hs .
+destruct s as [di| ]; [ idtac | reflexivity ].
+apply fst_same_sym_iff in Hs; simpl in Hs.
+destruct Hs as (_, Hs).
+rewrite Hs; reflexivity.
+Qed.
+
+Theorem re_add_comm : ∀ x y, (x + y = y + x)%R.
+Proof.
+intros x y.
+unfold re_eq.
+unfold re_add; simpl; split; [ idtac | apply rm_add_comm ].
+f_equal; [ apply Z.add_comm | idtac ].
+apply rm_final_carry_comm.
+Qed.
+
+(* neutral element *)
 (* TODO *)
 
 Close Scope Z_scope.
