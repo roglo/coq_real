@@ -39,8 +39,14 @@ Definition re_eq x y :=
   (re_frac x = re_frac y)%rm.
 Arguments re_eq x%R y%R.
 
+Definition is_all_0 x :=
+  match fst_same x rm_ones 0 with
+  | Some _ => false
+  | None => true
+  end.
+
 Definition re_opp x :=
-  if rm_zerop (re_frac x) then {| re_int := - re_int x; re_frac := 0%rm |}
+  if is_all_0 (re_frac x) then {| re_int := - re_int x; re_frac := 0%rm |}
   else {| re_int := - re_int x - 1; re_frac := - re_frac x |}.
 Definition re_sub x y := re_add x (re_opp y).
 Arguments re_opp x%R.
@@ -169,33 +175,42 @@ Theorem re_sub_diag : ∀ x, (x - x = 0)%R.
 Proof.
 intros x.
 unfold re_eq, re_sub, re_opp; simpl.
-destruct (rm_zerop (re_frac x)) as [H1| H1].
+remember (is_all_0 (re_frac x)) as z eqn:Hz .
+symmetry in Hz.
+destruct z.
  unfold re_add; simpl.
  rewrite Z.add_opp_r, Z.sub_diag, Z.add_0_l.
- split; [ idtac | rewrite rm_add_0_r; assumption ].
- rewrite rm_final_carry_norm_add_0_r, Z.add_0_r.
- unfold rm_final_carry; simpl.
- rewrite fst_same_diag.
- remember (fst_same (re_frac x) 0 0) as s1 eqn:Hs1 .
- apply fst_same_sym_iff in Hs1; simpl in Hs1.
- destruct s1 as [di1| ].
-  destruct Hs1 as (_, Hs1).
-  rewrite Hs1; reflexivity.
+ split.
+  rewrite rm_final_carry_norm_add_0_r, Z.add_0_r.
+  unfold rm_final_carry; simpl.
+  rewrite fst_same_diag.
+  unfold is_all_0 in Hz.
+  remember (fst_same (re_frac x) 0 0) as s1 eqn:Hs1 .
+  apply fst_same_sym_iff in Hs1; simpl in Hs1.
+  destruct s1 as [di1| ].
+   destruct Hs1 as (_, Hs1).
+   rewrite Hs1; reflexivity.
+
+   remember (fst_same (re_frac x) rm_ones 0) as s2 eqn:Hs2 .
+   destruct s2 as [di2| ]; [ discriminate Hz | clear Hz ].
+   apply fst_same_sym_iff in Hs2; simpl in Hs2.
+   pose proof (Hs1 O) as H.
+   rewrite Hs2 in H; discriminate H.
+
+  unfold is_all_0 in Hz.
+  remember (fst_same (re_frac x) rm_ones 0) as s2 eqn:Hs2 .
+  destruct s2 as [j2| ]; [ discriminate Hz | clear Hz ].
+  apply fst_same_sym_iff in Hs2; simpl in Hs2.
+  rewrite rm_add_0_r.
+  unfold rm_eq; intros i; simpl.
+  unfold rm_add_i; simpl.
+  unfold carry; simpl.
+  rewrite fst_same_diag.
+  remember (fst_same (re_frac x) 0 (S i)) as s1 eqn:Hs1 .
+  destruct s1 as [dj1| ]; [ do 2 rewrite Hs2; reflexivity | idtac ].
+  apply fst_same_sym_iff in Hs1; simpl in Hs1.
+  pose proof (Hs1 O) as H.
+  rewrite Hs2 in H; discriminate H.
 bbb.
-  not provable: not a contradiction.
-
-  H1 : (re_frac x = 0)%rm
-  Hs1 : ∀ dj : nat, (re_frac x) .[ dj] = true
-  ============================
-   False
-
-  earlier, we had
-
-  H1 : (re_frac x = 0)%rm
-  ============================
-   rm_final_carry (re_frac x) 0 = rm_final_carry 0 0
-
-  if re_frac x is 0.11111.... (equal to 0) then the result of the
-  first rm_final_carry is 1; perhaps problem of its definition?
 
 Close Scope Z_scope.
