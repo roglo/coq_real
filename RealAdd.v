@@ -236,27 +236,53 @@ destruct sx as [dx| ].
   destruct H as (Hny, Hty); rewrite Hty, Z.add_0_r in Hi.
   subst b; f_equal.
   unfold rm_eq in Hf; simpl in Hf.
-  destruct c1, c2, c3, c4; simpl; try reflexivity; exfalso.
-   rewrite carry_comm in Hc2.
-   eapply case_1; try eassumption.
-   unfold carry; simpl.
-   rewrite fst_same_comm, <- Hsx; reflexivity.
+  remember (carry z 0 0) as c5 eqn:Hc5 .
+  symmetry in Hc5.
+  destruct c5.
+   destruct c1, c2, c3, c4; simpl; try reflexivity; exfalso.
+    rewrite carry_comm in Hc2.
+    eapply case_1; try eassumption.
+    unfold carry; simpl.
+    rewrite fst_same_comm, <- Hsx; reflexivity.
 
-   rewrite carry_comm in Hc2.
-   eapply case_1; try eassumption.
-   unfold carry; simpl.
-   rewrite fst_same_comm, <- Hsx; reflexivity.
+    rewrite carry_comm in Hc2.
+    eapply case_1; try eassumption.
+    unfold carry; simpl.
+    rewrite fst_same_comm, <- Hsx; reflexivity.
 
-   rewrite carry_comm in Hc2.
-   eapply case_1; try eassumption.
-   unfold carry; simpl.
-   rewrite fst_same_comm, <- Hsx; reflexivity.
+    rewrite carry_comm in Hc2.
+    eapply case_1; try eassumption.
+    unfold carry; simpl.
+    rewrite fst_same_comm, <- Hsx; reflexivity.
 
-   rewrite carry_comm in Hc4.
-   eapply case_1; try eassumption.
-   unfold carry; simpl.
-   rewrite fst_same_comm, <- Hsy; reflexivity.
+    rewrite carry_comm in Hc4.
+    eapply case_1; try eassumption.
+    unfold carry; simpl.
+    rewrite fst_same_comm, <- Hsy; reflexivity.
 
+    Focus 2.
+    rewrite carry_comm in Hc4.
+    eapply case_1; try eassumption.
+    unfold carry; simpl.
+    rewrite fst_same_comm, <- Hsy; reflexivity.
+
+    Focus 3.
+    rewrite carry_comm in Hc4.
+    eapply case_1; try eassumption.
+    unfold carry; simpl.
+    rewrite fst_same_comm, <- Hsy; reflexivity.
+
+    eapply case_2; eassumption.
+
+    eapply case_2; eassumption.
+
+    rewrite carry_comm in Hc4.
+    eapply case_2; eassumption.
+
+    rewrite carry_comm in Hc4.
+    eapply case_2; eassumption.
+
+bbb.
    eapply case_2; try eassumption.
    unfold carry; simpl.
    remember (fst_same z 0 0) as sz eqn:Hsz .
@@ -267,23 +293,18 @@ destruct sx as [dx| ].
    unfold carry in Hc1; simpl in Hc1.
    remember (fst_same x z 0) as s1 eqn:Hs1 .
    apply fst_same_sym_iff in Hs1; simpl in Hs1.
+   unfold carry in Hc2; simpl in Hc2.
+   remember (fst_same (x + z) 0 0) as s2 eqn:Hs2 .
+   destruct s2 as [dj2| ]; [ idtac | discriminate Hc2 ].
    destruct s1 as [dj1| ].
     destruct Hs1 as (Hn1, Hs1).
     rewrite Hc1 in Hs1; symmetry in Hs1.
+    apply fst_same_sym_iff in Hs2; simpl in Hs2.
+    destruct Hs2 as (Hs2, _).
     destruct dj1.
-     clear Hn1.
      destruct dx; [ rewrite Hc1 in Htx; discriminate Htx | idtac ].
      destruct dz; [ rewrite Hs1 in Htz; discriminate Htz | idtac ].
-bbb.
-     unfold carry in Hc2; simpl in Hc2.
-     remember (fst_same (x + z) 0 0) as s2 eqn:Hs2 .
-     destruct s2 as [dj2| ]; [ idtac | discriminate Hc2 ].
-     apply fst_same_sym_iff in Hs2; simpl in Hs2.
-     destruct Hs2 as (Hn2, _).
-     unfold rm_add_i in Hc2; simpl in Hc2.
-     destruct dj2.
-      rewrite Hs1, Hc1 in Hc2.
-      rewrite xorb_nilpotent, xorb_false_l in Hc2.
+     clear Hn1.
 bbb.
 
 Theorem rm_add_compat : ∀ x y z d,
