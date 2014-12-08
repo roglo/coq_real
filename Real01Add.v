@@ -2254,10 +2254,10 @@ eapply rm_norm_eq_compat_r with (y0 := y) (z := z) in H; eauto .
  do 2 rewrite rm_add_0_r; assumption.
 Qed.
 
-Theorem rm_add_compat : ∀ x y z d,
+Theorem rm_add_compat : ∀ x y z t,
   (x = y)%rm
-  → (z = d)%rm
-  → (x + z = y + d)%rm.
+  → (z = t)%rm
+  → (x + z = y + t)%rm.
 Proof.
 intros x y z d Hxy Hcd.
 transitivity (x + d)%rm; [ idtac | apply rm_add_compat_r; assumption ].

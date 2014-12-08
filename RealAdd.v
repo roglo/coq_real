@@ -245,4 +245,19 @@ destruct z; simpl.
     discriminate H.
 Qed.
 
+(* compatibility with equality *)
+
+Theorem rm_add_compat_r : ∀ x y z, (x = y)%R → (x + z = y + z)%R.
+Proof.
+intros x y z Hxy.
+bbb.
+
+Theorem rm_add_compat : ∀ x y z d,
+  (x = y)%R
+  → (z = t)%R
+  → (x + z = y + t)%R
+Proof.
+intros x y z t Hxy Hzt.
+bbb.
+
 Close Scope Z_scope.
