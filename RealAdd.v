@@ -12,15 +12,6 @@ Delimit Scope R_scope with R.
 Arguments re_int _%R.
 Arguments re_frac _%R.
 
-(*
-Definition rm_final_carry x y :=
-  match fst_same x y 0 with
-  | Some j => if x.[j] then 1 else 0
-  | None => 1
-  end.
-Arguments rm_final_carry x%rm y%rm.
-*)
-
 Definition b2z (b : bool) := if b then 1 else 0.
 
 Definition re_add x y :=
@@ -90,54 +81,6 @@ Add Parametric Relation : _ re_eq
  as re_rel.
 
 (* commutativity *)
-
-(*
-Theorem rm_final_carry_comm : ∀ x y, rm_final_carry x y = rm_final_carry y x.
-Proof.
-intros x y.
-unfold rm_final_carry.
-rewrite fst_same_comm.
-remember (fst_same y x (0)) as s eqn:Hs .
-destruct s as [di| ]; [ idtac | reflexivity ].
-apply fst_same_sym_iff in Hs; simpl in Hs.
-destruct Hs as (_, Hs).
-rewrite Hs; reflexivity.
-Qed.
-
-Theorem rm_final_carry_comm_l : ∀ x y z,
-  rm_final_carry (x + y) z = rm_final_carry (y + x) z.
-Proof.
-intros x y z.
-unfold rm_final_carry; simpl.
-remember (fst_same (x + y) z 0) as s1 eqn:Hs1 .
-remember (fst_same (y + x) z 0) as s2 eqn:Hs2 .
-apply fst_same_sym_iff in Hs1; simpl in Hs1.
-apply fst_same_sym_iff in Hs2; simpl in Hs2.
-destruct s1 as [j1| ].
- destruct Hs1 as (Hn1, Hs1).
- destruct s2 as [j2| ].
-  destruct Hs2 as (Hn2, Hs2).
-  destruct (lt_eq_lt_dec j1 j2) as [[H1| H1]| H1].
-   apply Hn2 in H1.
-   rewrite rm_add_i_comm, Hs1 in H1; symmetry in H1.
-   exfalso; revert H1; apply no_fixpoint_negb.
-
-   subst j2.
-   rewrite Hs1, Hs2; reflexivity.
-
-   apply Hn1 in H1.
-   rewrite rm_add_i_comm, Hs2 in H1; symmetry in H1.
-   exfalso; revert H1; apply no_fixpoint_negb.
-
-  rewrite rm_add_i_comm, Hs2 in Hs1.
-  exfalso; revert Hs1; apply no_fixpoint_negb.
-
- destruct s2 as [j2| ]; [ idtac | reflexivity ].
- destruct Hs2 as (Hn2, Hs2).
- rewrite rm_add_i_comm, Hs1 in Hs2.
- exfalso; revert Hs2; apply no_fixpoint_negb.
-Qed.
-*)
 
 Theorem re_add_comm : ∀ x y, (x + y = y + x)%R.
 Proof.
