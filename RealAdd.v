@@ -221,15 +221,26 @@ do 2 rewrite Z.add_assoc.
 unfold carry in Hi; simpl in Hi.
 remember (fst_same x 0 0) as sx eqn:Hsx .
 remember (fst_same y 0 0) as sy eqn:Hsy .
-apply fst_same_sym_iff in Hsx; simpl in Hsx.
-apply fst_same_sym_iff in Hsy; simpl in Hsy.
+remember (carry x z 0) as c1 eqn:Hc1 .
+remember (carry (x + z) 0 0) as c2 eqn:Hc2 .
+remember (carry y z 0) as c3 eqn:Hc3 .
+remember (carry (y + z) 0 0) as c4 eqn:Hc4 .
+symmetry in Hc1, Hc2, Hc3, Hc4.
 destruct sx as [dx| ].
- destruct Hsx as (Hnx, Hsx); rewrite Hsx, Z.add_0_r in Hi.
+ remember Hsx as H; clear HeqH.
+ apply fst_same_sym_iff in H; simpl in H.
+ destruct H as (Hnx, Htx); rewrite Htx, Z.add_0_r in Hi.
  destruct sy as [dy| ].
-  destruct Hsy as (Hny, Hsy); rewrite Hsy, Z.add_0_r in Hi.
+  remember Hsy as H; clear HeqH.
+  apply fst_same_sym_iff in H; simpl in H.
+  destruct H as (Hny, Hty); rewrite Hty, Z.add_0_r in Hi.
   subst b; f_equal.
-bbb.
-  unfold carry; simpl.
+  unfold rm_eq in Hf; simpl in Hf.
+  destruct c1, c2, c3, c4; simpl; try reflexivity; exfalso.
+   rewrite carry_comm in Hc2.
+   eapply case_1; try eassumption.
+   unfold carry; simpl.
+   rewrite fst_same_comm, <- Hsx; reflexivity.
 bbb.
 
 Theorem rm_add_compat : ∀ x y z d,
