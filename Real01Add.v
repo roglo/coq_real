@@ -2523,11 +2523,11 @@ Qed.
 Theorem carry2_succ_negb : ∀ x y i a,
   carry2 x y i = a
   → carry2 x y (S i) = negb a
-  → x.[S i] = a ∧ y.[S i] = a.
+  → x.[i] = a ∧ y.[i] = a.
 Proof.
 intros x y i a Hc1 Hc2.
 unfold carry2 in Hc1; simpl in Hc1.
-remember (fst_same x y (S i)) as s1 eqn:Hs1 .
+remember (fst_same x y i) as s1 eqn:Hs1 .
 symmetry in Hs1.
 replace (S i) with (S i + 0) in Hc2 by apply Nat.add_0_r.
 destruct s1 as [di1| ].
@@ -2540,6 +2540,7 @@ destruct s1 as [di1| ].
 
   assert (0 < S di1) as H by apply Nat.lt_0_succ.
   eapply carry2_before_relay in H; try eassumption.
+  rewrite <- Nat.add_succ_l in H.
   rewrite Hc2 in H; simpl in H.
   rewrite Hc1 in H.
   exfalso; revert H; apply no_fixpoint_negb.
@@ -2596,7 +2597,7 @@ Proof.
 intros x y z i Hc3 Hc5 Hc6.
 remember Hc6 as H; clear HeqH.
 unfold carry2 in H; simpl in H.
-remember (fst_same x y (S i)) as s6 eqn:Hs6 .
+remember (fst_same x y i) as s6 eqn:Hs6 .
 destruct s6 as [di6| ]; [ idtac | discriminate H ].
 remember Hs6 as HH; clear HeqHH.
 apply fst_same_sym_iff in HH; simpl in HH.
@@ -2605,7 +2606,7 @@ rewrite H in Ht6; symmetry in Ht6.
 rename H into Ha6.
 remember Hc5 as H; clear HeqH.
 unfold carry2 in H; simpl in H.
-remember (fst_same y z (S i)) as s5 eqn:Hs5 .
+remember (fst_same y z i) as s5 eqn:Hs5 .
 remember Hs5 as HH; clear HeqHH.
 apply fst_same_sym_iff in HH; simpl in HH.
 destruct s5 as [di5| ]; [ idtac | clear H ].
@@ -2614,7 +2615,7 @@ destruct s5 as [di5| ]; [ idtac | clear H ].
  destruct (lt_eq_lt_dec di5 di6) as [[H1| H1]| H1].
   remember Hc3 as H; clear HeqH.
   unfold carry2 in H; simpl in H.
-  remember (fst_same x (y + z) (S i)) as s3 eqn:Hs3 .
+  remember (fst_same x (y + z) i) as s3 eqn:Hs3 .
   apply fst_same_sym_iff in Hs3; simpl in Hs3.
   destruct s3 as [di3| ]; [ idtac | clear H ].
    destruct Hs3 as (Hn3, Ht3).
@@ -2623,7 +2624,9 @@ destruct s5 as [di5| ]; [ idtac | clear H ].
    destruct (lt_eq_lt_dec di3 di5) as [[H2| H2]| H2].
     remember Ht3 as H; clear HeqH.
     unfold rm_add_i in H; simpl in H.
+(*
     rewrite <- Nat.add_succ_l in H.
+*)
     symmetry in Hs5.
     erewrite carry2_before_relay in H; try eassumption; simpl in H.
     apply Hn5 in H2.
@@ -2661,7 +2664,9 @@ destruct s5 as [di5| ]; [ idtac | clear H ].
       discriminate Ht3.
 
       rewrite Nat.add_assoc, Nat.add_shuffle0.
+(*
       rewrite <- Nat.add_succ_l.
+*)
       apply sum_11_1_sum_x1 with (x := y); try assumption.
       intros dj Hdj.
       simpl; rewrite <- Nat.add_assoc, <- negb_involutive.
@@ -2692,7 +2697,9 @@ destruct s5 as [di5| ]; [ idtac | clear H ].
       discriminate Hbe.
 
       rewrite Nat.add_assoc, Nat.add_shuffle0.
+(*
       rewrite <- Nat.add_succ_l.
+*)
       apply sum_11_1_sum_x1 with (x := y); try assumption.
       intros dj Hdj.
       simpl; rewrite <- Nat.add_assoc, <- negb_involutive.
@@ -2728,7 +2735,9 @@ destruct s5 as [di5| ]; [ idtac | clear H ].
     discriminate Hbe.
 
     rewrite Nat.add_assoc, Nat.add_shuffle0.
+(*
     rewrite <- Nat.add_succ_l.
+*)
     apply sum_11_1_sum_x1 with (x := y); try assumption.
     intros dj Hdj.
     simpl; rewrite <- Nat.add_assoc, <- negb_involutive.
@@ -2746,7 +2755,7 @@ destruct s5 as [di5| ]; [ idtac | clear H ].
 
   remember Hc3 as H; clear HeqH.
   unfold carry2 in H; simpl in H.
-  remember (fst_same x (y + z) (S i)) as s3 eqn:Hs3 .
+  remember (fst_same x (y + z) i) as s3 eqn:Hs3 .
   destruct s3 as [di3| ]; [ idtac | clear H ].
    rename H into Ha3.
    remember Hs3 as H; clear HeqH.
@@ -2767,7 +2776,9 @@ destruct s5 as [di5| ]; [ idtac | clear H ].
     rewrite Ha3, Hb3, Hd3, xorb_true_r, xorb_true_l in H.
     apply negb_sym in H; simpl in H.
     symmetry in Hs5.
+(*
     rewrite <- Nat.add_succ_l in H.
+*)
     remember H1 as HH; clear HeqHH.
     eapply lt_trans in HH; [ idtac | eassumption ].
     erewrite carry2_before_relay in H; try eassumption.
@@ -2780,7 +2791,9 @@ destruct s5 as [di5| ]; [ idtac | clear H ].
     rewrite Ha6 in H; apply negb_sym in H; simpl in H.
     unfold rm_add_i in H; simpl in H.
     rewrite Ht6, xorb_false_l in H.
+(*
     rewrite <- Nat.add_succ_l in H.
+*)
     symmetry in Hs5.
     erewrite carry2_before_relay in H; try eassumption; simpl in H.
     rewrite Hb5, xorb_true_r in H.
@@ -2794,7 +2807,9 @@ destruct s5 as [di5| ]; [ idtac | clear H ].
    rewrite Ha6 in H; apply negb_sym in H; simpl in H.
    unfold rm_add_i in H; simpl in H.
    rewrite Ht6, xorb_false_l in H.
+(*
    rewrite <- Nat.add_succ_l in H.
+*)
    symmetry in Hs5.
    erewrite carry2_before_relay in H; try eassumption; simpl in H.
    rewrite Hb5, xorb_true_r in H.
@@ -2804,7 +2819,7 @@ destruct s5 as [di5| ]; [ idtac | clear H ].
  rename HH into Ht5.
  remember Hc3 as H; clear HeqH.
  unfold carry2 in H; simpl in H.
- remember (fst_same x (y + z) (S i)) as s3 eqn:Hs3 .
+ remember (fst_same x (y + z) i) as s3 eqn:Hs3 .
  destruct s3 as [di3| ]; [ idtac | clear H ].
   rename H into Ha3.
   remember Hs3 as H; clear HeqH.
@@ -2901,19 +2916,19 @@ rename Rayz into Rxy_zn.
 rename Ryz into Ryzn.
 remember Rxyn as H; clear HeqH.
 unfold carry2 in H; simpl in H.
-remember (fst_same x y (S i)) as sxyn eqn:Hsxyn .
+remember (fst_same x y i) as sxyn eqn:Hsxyn .
 destruct sxyn as [dxyn| ]; [ idtac | discriminate H ].
 rename H into A_p.
 symmetry in Hsxyn.
 remember Rxy_zn as H; clear HeqH.
 unfold carry2 in H; simpl in H.
-remember (fst_same (x + y) z (S i)) as sxy_zn.
+remember (fst_same (x + y) z i) as sxy_zn.
 rename Heqsxy_zn into Hsxy_zn.
 destruct sxy_zn as [dxy_zn| ]; [ idtac | discriminate H ].
 rename H into AB_p; symmetry in Hsxy_zn.
 remember Ryzn as H; clear HeqH.
 unfold carry2 in H; simpl in H.
-remember (fst_same y z (S i)) as syzn eqn:Hsyzn .
+remember (fst_same y z i) as syzn eqn:Hsyzn .
 symmetry in Hsyzn.
 destruct syzn as [dyzn| ]; [ idtac | clear H ].
  rename H into B_p.
@@ -2967,7 +2982,9 @@ destruct syzn as [dyzn| ]; [ idtac | clear H ].
     split; [ assumption | idtac ].
     split; [ assumption | idtac ].
     split; [ assumption | idtac ].
-    intros dj Hdj; eapply Hnxy_zn, le_lt_trans; eassumption.
+    rewrite <- Nat.add_succ_r.
+    intros dj Hdj.
+    eapply Hnxy_zn, le_lt_trans; eassumption.
 
   exfalso.
   eapply min_neq_lt in H; eauto ; try (right; left; auto).
