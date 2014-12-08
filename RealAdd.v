@@ -177,7 +177,7 @@ intros x.
 unfold re_eq, re_sub, re_opp; simpl.
 remember (is_all_0 (re_frac x)) as z eqn:Hz .
 symmetry in Hz.
-destruct z.
+destruct z; simpl.
  unfold re_add; simpl.
  rewrite Z.add_opp_r, Z.sub_diag, Z.add_0_l.
  split.
@@ -211,6 +211,38 @@ destruct z.
   apply fst_same_sym_iff in Hs1; simpl in Hs1.
   pose proof (Hs1 O) as H.
   rewrite Hs2 in H; discriminate H.
-bbb.
+
+ split; [ idtac | rewrite fold_rm_sub, rm_sub_diag; reflexivity ].
+ unfold rm_final_carry; simpl.
+ rewrite fst_same_diag.
+ rewrite fold_rm_sub.
+ rewrite Z.add_sub_assoc, Z.add_opp_r, Z.sub_diag.
+ remember (fst_same (re_frac x) (- re_frac x) 0) as s1 eqn:Hs1 .
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ destruct s1 as [j1| ].
+  destruct Hs1 as (Hn1, Hs1).
+  symmetry in Hs1.
+  exfalso; revert Hs1; apply no_fixpoint_negb.
+
+  clear Hs1.
+  remember (fst_same (re_frac x - re_frac x) 0 0) as s2 eqn:Hs2 .
+  apply fst_same_sym_iff in Hs2; simpl in Hs2.
+  destruct s2 as [j2| ].
+   destruct Hs2 as (Hn2, Hs2).
+   rewrite Hs2; reflexivity.
+
+   pose proof (Hs2 O) as H.
+   unfold rm_add_i in H; simpl in H.
+   unfold carry in H; simpl in H.
+   remember (fst_same (re_frac x) (- re_frac x) 1) as s3 eqn:Hs3 .
+   destruct s3 as [dj3| ].
+    apply fst_same_sym_iff in Hs3; simpl in Hs3.
+    destruct Hs3 as (Hn3, Hs3).
+    symmetry in Hs3.
+    exfalso; revert Hs3; apply no_fixpoint_negb.
+
+    rewrite negb_xorb_diag_r in H.
+    discriminate H.
+Qed.
 
 Close Scope Z_scope.
