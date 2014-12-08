@@ -250,6 +250,37 @@ Qed.
 Theorem rm_add_compat_r : ∀ x y z, (x = y)%R → (x + z = y + z)%R.
 Proof.
 intros x y z Hxy.
+unfold re_eq in Hxy; simpl in Hxy.
+destruct Hxy as (Hi, Hf).
+unfold re_eq; simpl.
+split; [ idtac | rewrite Hf; reflexivity ].
+do 4 rewrite <- Z.add_assoc.
+rewrite Z.add_comm; symmetry.
+rewrite Z.add_comm; symmetry.
+do 4 rewrite <- Z.add_assoc.
+f_equal.
+remember (re_frac x) as X.
+remember (re_frac y) as Y.
+remember (re_frac z) as Z.
+remember (re_int x) as XI.
+remember (re_int y) as YI.
+clear x y z HeqX HeqY HeqXI HeqYI HeqZ.
+move Z before Y.
+rename X into x; rename Y into y; rename Z into z.
+rename XI into a; rename YI into b.
+do 2 rewrite Z.add_assoc.
+unfold rm_final_carry in Hi; simpl in Hi.
+remember (fst_same x 0 0) as sx eqn:Hsx .
+remember (fst_same y 0 0) as sy eqn:Hsy .
+apply fst_same_sym_iff in Hsx; simpl in Hsx.
+apply fst_same_sym_iff in Hsy; simpl in Hsy.
+destruct sx as [dx| ].
+ destruct Hsx as (Hnx, Hsx); rewrite Hsx, Z.add_0_r in Hi.
+ destruct sy as [dy| ].
+  destruct Hsy as (Hny, Hsy); rewrite Hsy, Z.add_0_r in Hi.
+  subst b; f_equal.
+bbb.
+  unfold rm_final_carry; simpl.
 bbb.
 
 Theorem rm_add_compat : ∀ x y z d,
