@@ -12,15 +12,19 @@ Delimit Scope R_scope with R.
 Arguments re_int _%R.
 Arguments re_frac _%R.
 
+(*
 Definition rm_final_carry x y :=
   match fst_same x y 0 with
   | Some j => if x.[j] then 1 else 0
   | None => 1
   end.
 Arguments rm_final_carry x%rm y%rm.
+*)
+
+Definition b2z (b : bool) := if b then 1 else 0.
 
 Definition re_add x y :=
-  {| re_int := re_int x + re_int y + rm_final_carry (re_frac x) (re_frac y);
+  {| re_int := re_int x + re_int y + b2z (carry (re_frac x) (re_frac y) 0);
      re_frac := rm_add (re_frac x) (re_frac y) |}.
 Arguments re_add x%R y%R.
 
@@ -30,7 +34,7 @@ Notation "x + y" := (re_add x y) : R_scope.
 Notation "0" := re_zero : R_scope.
 
 Definition re_norm x :=
-  {| re_int := re_int x + rm_final_carry (re_frac x) 0;
+  {| re_int := re_int x + b2z (carry (re_frac x) 0 0);
      re_frac := (re_frac x + 0)%rm |}.
 Arguments re_norm x%R.
 
@@ -87,6 +91,7 @@ Add Parametric Relation : _ re_eq
 
 (* commutativity *)
 
+(*
 Theorem rm_final_carry_comm : ∀ x y, rm_final_carry x y = rm_final_carry y x.
 Proof.
 intros x y.
@@ -132,23 +137,24 @@ destruct s1 as [j1| ].
  rewrite rm_add_i_comm, Hs1 in Hs2.
  exfalso; revert Hs2; apply no_fixpoint_negb.
 Qed.
+*)
 
 Theorem re_add_comm : ∀ x y, (x + y = y + x)%R.
 Proof.
 intros x y.
 unfold re_eq.
 unfold re_add; simpl; split; [ idtac | apply rm_add_comm ].
-f_equal; [ idtac | apply rm_final_carry_comm_l ].
-rewrite rm_final_carry_comm; f_equal.
+f_equal; [ idtac | rewrite carry_comm_l; reflexivity ].
+rewrite carry_comm; f_equal.
 apply Z.add_comm.
 Qed.
 
 (* neutral element *)
 
-Theorem rm_final_carry_norm_add_0_r : ∀ x, rm_final_carry (x + 0%rm) 0 = 0.
+Theorem carry_norm_add_0_r : ∀ x, carry (x + 0%rm) 0 0 = false.
 Proof.
 intros x.
-unfold rm_final_carry; simpl.
+unfold carry; simpl.
 remember (fst_same (x + 0%rm) 0 0) as s eqn:Hs .
 apply fst_same_sym_iff in Hs; simpl in Hs.
 destruct s as [j| ].
@@ -165,7 +171,7 @@ unfold re_eq.
 unfold re_add; simpl; split; [ idtac | apply rm_add_0_r ].
 rewrite Z.add_0_r.
 rewrite <- Z.add_assoc; f_equal.
-rewrite rm_final_carry_norm_add_0_r, Z.add_0_r.
+rewrite carry_norm_add_0_r, Z.add_0_r.
 reflexivity.
 Qed.
 
@@ -181,8 +187,8 @@ destruct z; simpl.
  unfold re_add; simpl.
  rewrite Z.add_opp_r, Z.sub_diag, Z.add_0_l.
  split.
-  rewrite rm_final_carry_norm_add_0_r, Z.add_0_r.
-  unfold rm_final_carry; simpl.
+  rewrite carry_norm_add_0_r, Z.add_0_r.
+  unfold carry; simpl.
   rewrite fst_same_diag.
   unfold is_all_0 in Hz.
   remember (fst_same (re_frac x) 0 0) as s1 eqn:Hs1 .
@@ -213,7 +219,7 @@ destruct z; simpl.
   rewrite Hs2 in H; discriminate H.
 
  split; [ idtac | rewrite fold_rm_sub, rm_sub_diag; reflexivity ].
- unfold rm_final_carry; simpl.
+ unfold carry; simpl.
  rewrite fst_same_diag.
  rewrite fold_rm_sub.
  rewrite Z.add_sub_assoc, Z.add_opp_r, Z.sub_diag.
@@ -269,7 +275,7 @@ move Z before Y.
 rename X into x; rename Y into y; rename Z into z.
 rename XI into a; rename YI into b.
 do 2 rewrite Z.add_assoc.
-unfold rm_final_carry in Hi; simpl in Hi.
+unfold carry in Hi; simpl in Hi.
 remember (fst_same x 0 0) as sx eqn:Hsx .
 remember (fst_same y 0 0) as sy eqn:Hsy .
 apply fst_same_sym_iff in Hsx; simpl in Hsx.
@@ -280,7 +286,7 @@ destruct sx as [dx| ].
   destruct Hsy as (Hny, Hsy); rewrite Hsy, Z.add_0_r in Hi.
   subst b; f_equal.
 bbb.
-  unfold rm_final_carry; simpl.
+  unfold carry; simpl.
 bbb.
 
 Theorem rm_add_compat : ∀ x y z d,
