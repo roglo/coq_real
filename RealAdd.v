@@ -245,11 +245,6 @@ destruct z; simpl.
     discriminate H.
 Qed.
 
-(* trying to make an isomorphism with a another implementation of reals
-   where compatibility and associativity would be simpler to prove *)
-(* experiment *)
-
-
 (* compatibility with equality *)
 
 Theorem rm_add_compat_r : ∀ x y z, (x = y)%R → (x + z = y + z)%R.
