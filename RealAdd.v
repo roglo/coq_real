@@ -330,6 +330,7 @@ destruct sx as [dx| ].
     subst di.
     rewrite Nat.add_succ_r; assumption.
 
+bbb.
     pose proof (Hxy (S (i + dx)%nat)) as H.
     unfold rm_add_i in H; simpl in H.
     do 2 rewrite xorb_false_r in H.
