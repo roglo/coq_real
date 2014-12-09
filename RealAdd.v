@@ -194,6 +194,36 @@ destruct z; simpl.
     discriminate H.
 Qed.
 
+(* trying associativity... *)
+
+Theorem re_add_assoc : ∀ x y z, (x + (y + z) = (x + y) + z)%R.
+Proof.
+intros (xi, x) (yi, y) (zi, z).
+unfold re_eq; simpl.
+split; [ idtac | apply rm_add_assoc ].
+do 8 rewrite <- Z.add_assoc; do 2 f_equal.
+symmetry; rewrite Z.add_comm.
+do 2 rewrite <- Z.add_assoc; f_equal.
+rewrite Z.add_assoc, Z.add_comm.
+do 2 rewrite Z.add_assoc.
+bbb.
+rather try to prove re_add_assoc_norm...
+
+remember (carry (x + (y + z))%rm 0%rm 0) as c1 eqn:Hc1 .
+remember (carry (x + y + z)%rm 0%rm (0)) as c2 eqn:Hc2 .
+remember (carry x (y + z)%rm (0)) as c3 eqn:Hc3 .
+remember (carry (x + y)%rm z (0)) as c4 eqn:Hc4 .
+remember (carry y z (0)) as c5 eqn:Hc5 .
+remember (carry x y (0)) as c6 eqn:Hc6 .
+symmetry in Hc1, Hc2, Hc3, Hc4, Hc5, Hc6.
+move c2 before c1; move c3 before c2.
+move c4 before c3; move c5 before c4.
+move c6 before c5.
+destruct c1, c2, c3, c4, c5, c6; try reflexivity; exfalso.
+ Focus 1.
+ eapply case_1; eassumption.
+bbb.
+
 (* compatibility with equality *)
 
 Theorem zzz : ∀ x y i,
