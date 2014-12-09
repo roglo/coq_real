@@ -286,6 +286,30 @@ intros x y i Hxy Hx Hy.
 unfold rm_eq in Hxy; simpl in Hxy.
 pose proof (Hxy i) as H.
 unfold rm_add_i in H; simpl in H.
+rewrite Hx, Hy, xorb_true_l, xorb_false_l in H.
+unfold carry in H; simpl in H.
+remember (fst_same x 0 (S i)) as sx eqn:Hsx .
+remember (fst_same y 0 (S i)) as sy eqn:Hsy .
+destruct sx as [dx| ].
+ remember Hsx as HH; clear HeqHH.
+ apply fst_same_sym_iff in HH; simpl in HH.
+ destruct HH as (Hnx, Htx); rewrite Htx in H.
+ destruct sy as [dy| ]; [ idtac | clear H ].
+  remember Hsy as HH; clear HeqHH.
+  apply fst_same_sym_iff in HH; simpl in HH.
+  destruct HH as (Hny, Hty).
+  rewrite Hty in H; discriminate H.
+
+  right.
+  split; intros di.
+   destruct (lt_eq_lt_dec di dx) as [[H1| H1]| H1].
+    pose proof (Hnx di H1) as H.
+bbb.
+
+intros x y i Hxy Hx Hy.
+unfold rm_eq in Hxy; simpl in Hxy.
+pose proof (Hxy i) as H.
+unfold rm_add_i in H; simpl in H.
 do 2 rewrite xorb_false_r in H.
 rewrite Hx, Hy, xorb_true_l, xorb_false_l in H.
 remember (carry x 0 (S i)) as c1 eqn:Hc1 .
@@ -298,25 +322,30 @@ destruct c1; simpl in Hc2.
   apply fst_same_sym_iff in Hsx; simpl in Hsx.
   destruct Hsx as (_, H); rewrite Hc1 in H; discriminate H.
 
-  apply fst_same_sym_iff in Hsx; simpl in Hsx.
+  remember Hsx as H; clear HeqH.
+  apply fst_same_sym_iff in H; simpl in H.
+  rename H into Hnx.
   unfold carry in Hc2; simpl in Hc2.
   remember (fst_same y 0 (S i)) as sy eqn:Hsy .
   destruct sy as [dy| ]; [ idtac | discriminate Hc2 ].
-  apply fst_same_sym_iff in Hsy; simpl in Hsy.
-  destruct Hsy as (Hsy, _).
+  remember Hsy as H; clear HeqH.
+  apply fst_same_sym_iff in H; simpl in H.
+  destruct H as (Hny, _).
   split; intros di.
    destruct di; [ rewrite Nat.add_0_r; assumption | idtac ].
-   rewrite Nat.add_succ_r; apply Hsx.
+   rewrite Nat.add_succ_r; apply Hnx.
 
    destruct di; [ rewrite Nat.add_0_r; assumption | idtac ].
-   destruct (lt_eq_lt_dec di dy) as [[H1| H1]| H1].
-    remember H1 as H; clear HeqH.
-    apply Hsy in H.
-    exfalso.
-    rename H into Hdi.
+   pose proof (Hxy i) as H.
+   unfold rm_add_i in H; simpl in H.
+   do 2 rewrite xorb_false_r in H.
+   rewrite Hx, Hy, xorb_true_l, xorb_false_l in H.
+   replace i with (i + 0)%nat in H by apply Nat.add_0_r.
+   rewrite carry_before_inf_relay in H.
 bbb.
+*)
 
-Theorem rr_add_compat_r : ∀ x y z, (x = y)%R → (x + z = y + z)%R.
+Theorem re_add_compat_r : ∀ x y z, (x = y)%R → (x + z = y + z)%R.
 Proof.
 intros x y z Hxy.
 unfold re_eq in Hxy; simpl in Hxy.
