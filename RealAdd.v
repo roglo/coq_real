@@ -236,51 +236,32 @@ destruct sx as [dx| ].
   destruct H as (Hny, Hty); rewrite Hty, Z.add_0_r in Hi.
   subst b; f_equal.
   unfold rm_eq in Hf; simpl in Hf.
-  remember (carry z 0 0) as c5 eqn:Hc5 .
-  symmetry in Hc5.
-  destruct c5.
-   destruct c1, c2, c3, c4; simpl; try reflexivity; exfalso.
-    rewrite carry_comm in Hc2.
-    eapply case_1; try eassumption.
-    unfold carry; simpl.
-    rewrite fst_same_comm, <- Hsx; reflexivity.
+  destruct c1, c2, c3, c4; simpl; try reflexivity; exfalso.
+   rewrite carry_comm in Hc2.
+   eapply case_1; try eassumption.
+   unfold carry; simpl.
+   rewrite fst_same_comm, <- Hsx; reflexivity.
 
-    rewrite carry_comm in Hc2.
-    eapply case_1; try eassumption.
-    unfold carry; simpl.
-    rewrite fst_same_comm, <- Hsx; reflexivity.
+   rewrite carry_comm in Hc2.
+   eapply case_1; try eassumption.
+   unfold carry; simpl.
+   rewrite fst_same_comm, <- Hsx; reflexivity.
 
-    rewrite carry_comm in Hc2.
-    eapply case_1; try eassumption.
-    unfold carry; simpl.
-    rewrite fst_same_comm, <- Hsx; reflexivity.
+   rewrite carry_comm in Hc2.
+   eapply case_1; try eassumption.
+   unfold carry; simpl.
+   rewrite fst_same_comm, <- Hsx; reflexivity.
 
-    rewrite carry_comm in Hc4.
-    eapply case_1; try eassumption.
-    unfold carry; simpl.
-    rewrite fst_same_comm, <- Hsy; reflexivity.
+   rewrite carry_comm in Hc4.
+   eapply case_1; try eassumption.
+   unfold carry; simpl.
+   rewrite fst_same_comm, <- Hsy; reflexivity.
 
-    Focus 2.
-    rewrite carry_comm in Hc4.
-    eapply case_1; try eassumption.
-    unfold carry; simpl.
-    rewrite fst_same_comm, <- Hsy; reflexivity.
-
-    Focus 3.
-    rewrite carry_comm in Hc4.
-    eapply case_1; try eassumption.
-    unfold carry; simpl.
-    rewrite fst_same_comm, <- Hsy; reflexivity.
-
-    eapply case_2; eassumption.
-
-    eapply case_2; eassumption.
-
-    rewrite carry_comm in Hc4.
-    eapply case_2; eassumption.
-
-    rewrite carry_comm in Hc4.
-    eapply case_2; eassumption.
+   Focus 2.
+   rewrite carry_comm in Hc4.
+   eapply case_1; try eassumption.
+   unfold carry; simpl.
+   rewrite fst_same_comm, <- Hsy; reflexivity.
 
 bbb.
    eapply case_2; try eassumption.
