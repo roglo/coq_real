@@ -329,6 +329,7 @@ destruct sx as [dx| ].
     simpl in H; rewrite Htx in H; discriminate H.
 
     subst di.
+    rewrite Nat.add_succ_r; assumption.
 bbb.
 
 intros x y i Hxy Hx Hy.
