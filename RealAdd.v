@@ -196,6 +196,47 @@ Qed.
 
 (* compatibility with equality *)
 
+Theorem zzz : ∀ x y i,
+  (x = y)%rm
+  → x.[i] = true
+  → y.[i] = false
+  → (∀ di, x.[i+di] = true) ∧ (∀ di, y.[i+di] = false) ∨
+    (∀ di, x.[i+S di] = false) ∧ (∀ di, y.[i+S di] = true).
+Proof.
+intros x y i Hxy Hx Hy.
+unfold rm_eq in Hxy; simpl in Hxy.
+pose proof (Hxy i) as H.
+unfold rm_add_i in H; simpl in H.
+do 2 rewrite xorb_false_r in H.
+rewrite Hx, Hy, xorb_true_l, xorb_false_l in H.
+remember (carry x 0 (S i)) as c1 eqn:Hc1 .
+rename H into Hc2; symmetry in Hc1, Hc2.
+destruct c1; simpl in Hc2.
+ left.
+ unfold carry in Hc1; simpl in Hc1.
+ remember (fst_same x 0 (S i)) as sx eqn:Hsx .
+ destruct sx as [dx| ]; [ idtac | clear Hc1 ].
+  apply fst_same_sym_iff in Hsx; simpl in Hsx.
+  destruct Hsx as (_, H); rewrite Hc1 in H; discriminate H.
+
+  apply fst_same_sym_iff in Hsx; simpl in Hsx.
+  unfold carry in Hc2; simpl in Hc2.
+  remember (fst_same y 0 (S i)) as sy eqn:Hsy .
+  destruct sy as [dy| ]; [ idtac | discriminate Hc2 ].
+  apply fst_same_sym_iff in Hsy; simpl in Hsy.
+  destruct Hsy as (Hsy, _).
+  split; intros di.
+   destruct di; [ rewrite Nat.add_0_r; assumption | idtac ].
+   rewrite Nat.add_succ_r; apply Hsx.
+
+   destruct di; [ rewrite Nat.add_0_r; assumption | idtac ].
+   destruct (lt_eq_lt_dec di dy) as [[H1| H1]| H1].
+    remember H1 as H; clear HeqH.
+    apply Hsy in H.
+    exfalso.
+    rename H into Hdi.
+bbb.
+
 Theorem rm_add_compat_r : ∀ x y z, (x = y)%R → (x + z = y + z)%R.
 Proof.
 intros x y z Hxy.
