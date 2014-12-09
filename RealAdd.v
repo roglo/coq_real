@@ -263,7 +263,6 @@ destruct sx as [dx| ].
    unfold carry; simpl.
    rewrite fst_same_comm, <- Hsy; reflexivity.
 
-bbb.
    eapply case_2; try eassumption.
    unfold carry; simpl.
    remember (fst_same z 0 0) as sz eqn:Hsz .
@@ -277,15 +276,26 @@ bbb.
    unfold carry in Hc2; simpl in Hc2.
    remember (fst_same (x + z) 0 0) as s2 eqn:Hs2 .
    destruct s2 as [dj2| ]; [ idtac | discriminate Hc2 ].
+   apply fst_same_sym_iff in Hs2; simpl in Hs2.
+   destruct Hs2 as (Hs2, _).
    destruct s1 as [dj1| ].
     destruct Hs1 as (Hn1, Hs1).
     rewrite Hc1 in Hs1; symmetry in Hs1.
-    apply fst_same_sym_iff in Hs2; simpl in Hs2.
-    destruct Hs2 as (Hs2, _).
-    destruct dj1.
+    destruct dj1; [ clear Hn1 | idtac ].
      destruct dx; [ rewrite Hc1 in Htx; discriminate Htx | idtac ].
      destruct dz; [ rewrite Hs1 in Htz; discriminate Htz | idtac ].
-     clear Hn1.
+     destruct dy; [ clear Hny | idtac ].
+      unfold carry in Hc3; simpl in Hc3.
+      remember (fst_same y z 0) as s3 eqn:Hs3 .
+      destruct s3 as [dj3| ]; [ idtac | discriminate Hc3 ].
+      apply fst_same_sym_iff in Hs3; simpl in Hs3.
+      destruct Hs3 as (Hn3, Hs3).
+      rewrite Hc3 in Hs3; symmetry in Hs3.
+      destruct dj3; [ rewrite Hs1 in Hs3; discriminate Hs3 | idtac ].
+      pose proof (Hf O) as H.
+      unfold rm_add_i in H; simpl in H.
+      do 2 rewrite xorb_false_r in H.
+      rewrite Hc1, Hty, xorb_true_l, xorb_false_l in H.
 bbb.
 
 Theorem rm_add_compat : ∀ x y z d,
