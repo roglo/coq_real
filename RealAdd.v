@@ -301,9 +301,34 @@ destruct sx as [dx| ].
   rewrite Hty in H; discriminate H.
 
   right.
+  remember Hsy as Hny; clear HeqHny.
+  apply fst_same_sym_iff in Hny; simpl in Hny.
   split; intros di.
    destruct (lt_eq_lt_dec di dx) as [[H1| H1]| H1].
     pose proof (Hnx di H1) as H.
+    rename H into Hdi.
+    destruct dx; [ exfalso; revert H1; apply Nat.nlt_0_r | idtac ].
+    pose proof (Hxy (S (i + dx))%nat) as H.
+    unfold rm_add_i in H; simpl in H.
+    do 2 rewrite xorb_false_r in H.
+    rewrite Hnx in H; [ idtac | apply Nat.lt_succ_diag_r ].
+    rewrite Hny in H.
+    rewrite xorb_true_l in H.
+    symmetry in H.
+    rewrite xorb_true_l in H.
+    apply negb_sym in H.
+    rewrite negb_involutive in H.
+    rewrite <- Nat.add_succ_l in H.
+    symmetry in Hsx.
+    erewrite carry_before_relay in H; [ idtac | eassumption | auto ].
+    symmetry in Hsy.
+    simpl in H.
+    rewrite <- Nat.add_succ_l in H.
+    rewrite <- Nat.add_succ_l in H.
+    rewrite carry_before_inf_relay in H; [ idtac | assumption ].
+    simpl in H; rewrite Htx in H; discriminate H.
+
+    subst di.
 bbb.
 
 intros x y i Hxy Hx Hy.
