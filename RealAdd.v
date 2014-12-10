@@ -461,6 +461,18 @@ destruct sx as [dx| ].
       unfold rm_add_i in H; simpl in H.
       do 2 rewrite xorb_false_r in H.
       rewrite Hc1, Hty, xorb_true_l, xorb_false_l in H.
+      symmetry in Hsx, Hsy, Hsz.
+      replace 1%nat with (S (0 + 0)) in H by reflexivity.
+      assert (0 < S dx)%nat as Hdx by apply Nat.lt_0_succ.
+      erewrite carry_before_relay in H; try eassumption.
+      simpl in H; rewrite Htx in H; simpl in H.
+      unfold carry in H; simpl in H.
+      remember (fst_same y 0 1) as s4 eqn:Hs4 .
+      apply fst_same_sym_iff in Hs4; simpl in Hs4.
+      destruct s4 as [dj4| ]; [ idtac | clear H ].
+       destruct Hs4 as (_, Hs4); rewrite Hs4 in H; discriminate H.
+
+       rewrite Hs4 in Hc3; discriminate Hc3.
 bbb.
 
 Theorem rm_add_compat : ∀ x y z d,
