@@ -330,6 +330,24 @@ destruct sx as [dx| ].
     subst di.
     rewrite Nat.add_succ_r; assumption.
 
+    rewrite Nat.add_succ_r.
+    rewrite <- negb_involutive.
+    apply neq_negb; simpl; intros Hdi.
+    pose proof (Hxy (S (i + dx)%nat)) as H.
+    unfold rm_add_i in H; simpl in H.
+    do 2 rewrite xorb_false_r in H.
+    rewrite Htx, Hny, xorb_false_l, xorb_true_l in H.
+    unfold carry in H at 1; simpl in H.
+    rewrite <- Nat.add_succ_l in H.
+    symmetry in Hsy.
+    rewrite carry_before_inf_relay in H; [ idtac | assumption ].
+    remember (fst_same x 0 (S (S i + dx))) as s1 eqn:Hs1 .
+    destruct s1 as [di1| ]; [ idtac | discriminate H ].
+    apply fst_same_sym_iff in Hs1; simpl in Hs1.
+    destruct Hs1 as (Hn1, Hs1); clear H.
+    destruct di1.
+     clear Hn1.
+
 bbb.
     pose proof (Hxy (S (i + dx)%nat)) as H.
     unfold rm_add_i in H; simpl in H.
