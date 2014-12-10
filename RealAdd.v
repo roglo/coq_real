@@ -473,6 +473,8 @@ destruct sx as [dx| ].
        destruct Hs4 as (_, Hs4); rewrite Hs4 in H; discriminate H.
 
        rewrite Hs4 in Hc3; discriminate Hc3.
+
+      destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
 bbb.
 
 Theorem rm_add_compat : ∀ x y z d,
