@@ -285,8 +285,25 @@ destruct sx as [dx| ].
     subst di.
     rewrite Nat.add_succ_r; assumption.
 
-Abort. (*
+    remember (di - S dx)%nat as n eqn:Hn .
+    apply nat_sub_add_r in Hn; [ idtac | assumption ].
+    subst di.
+    clear H1.
+    rewrite Nat.add_succ_r.
+    induction n.
+     rewrite Nat.add_succ_r.
+     rewrite <- negb_involutive.
+     apply neq_negb; simpl; intros Hdi.
+     rewrite Nat.add_0_r in Hdi.
+
 bbb.
+  ============================
+   x .[ i + S di] = false
+
+     i   -   dx  -   di
+  x  1   1   0   .   .   .
+  y  0   1   1   1   1   1 …
+
 faut peut-être faire une induction de merde
 
     rewrite Nat.add_succ_r.
