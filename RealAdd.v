@@ -330,6 +330,7 @@ destruct sx as [dx| ].
     subst di.
     rewrite Nat.add_succ_r; assumption.
 
+Abort. (*
 bbb.
 faut peut-être faire une induction de merde
 
