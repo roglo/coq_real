@@ -330,6 +330,9 @@ destruct sx as [dx| ].
     subst di.
     rewrite Nat.add_succ_r; assumption.
 
+bbb.
+faut peut-être faire une induction de merde
+
     rewrite Nat.add_succ_r.
     rewrite <- negb_involutive.
     apply neq_negb; simpl; intros Hdi.
