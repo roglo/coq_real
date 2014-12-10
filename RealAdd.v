@@ -475,22 +475,18 @@ destruct sx as [dx| ].
        rewrite Hs4 in Hc3; discriminate Hc3.
 
       destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
-       pose proof (Hf dx) as H.
-       unfold rm_add_i in H; simpl in H.
-       do 2 rewrite xorb_false_r in H.
-       rewrite Hnx in H; [ idtac | apply Nat.lt_succ_diag_r ].
-       rewrite Hny in H; [ idtac | apply Nat.lt_lt_succ_r; assumption ].
-       apply negb_sym in H.
-       rewrite negb_involutive in H.
-       symmetry in Hsx, Hsy.
-       replace dx with (0 + dx)%nat in H by reflexivity.
-       symmetry in H.
-       erewrite carry_before_relay in H; [ idtac | eassumption | auto ].
-       erewrite carry_before_relay in H; [ idtac | eassumption | auto ].
-       simpl in H.
-       rewrite Htx, Hty in H.
+       remember H1 as H; clear HeqH.
+       apply Nat.succ_lt_mono in H.
+       apply Hny in H.
+       eapply zzz in H; try eassumption.
+        destruct H as [(Hyx, Hxx)| (Hyx, Hxx)]; simpl in Hyx, Hxx.
+         pose proof (Hyx (dy - dx)%nat) as H.
+         apply Nat.lt_le_incl in H1.
+         rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+         rewrite Nat.add_comm, Nat.add_sub in H.
+         rewrite Hty in H; discriminate H.
 bbb.
-     shit! no contradiction!
+     quel merdier !
 
 Theorem rm_add_compat : ∀ x y z d,
   (x = y)%R
