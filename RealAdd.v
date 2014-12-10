@@ -34,15 +34,7 @@ Definition re_eq x y :=
   (re_frac x = re_frac y)%rm.
 Arguments re_eq x%R y%R.
 
-Definition is_all_0 x :=
-  match fst_same x rm_ones 0 with
-  | Some _ => false
-  | None => true
-  end.
-
-Definition re_opp x :=
-  if is_all_0 (re_frac x) then {| re_int := - re_int x; re_frac := 0%rm |}
-  else {| re_int := - re_int x - 1; re_frac := - re_frac x |}.
+Definition re_opp x := {| re_int := - re_int x - 1; re_frac := - re_frac x |}.
 Definition re_sub x y := re_add x (re_opp y).
 Arguments re_opp x%R.
 Arguments re_sub x%R y%R.
@@ -124,74 +116,37 @@ Theorem re_sub_diag : ∀ x, (x - x = 0)%R.
 Proof.
 intros x.
 unfold re_eq, re_sub, re_opp; simpl.
-remember (is_all_0 (re_frac x)) as z eqn:Hz .
-symmetry in Hz.
-destruct z; simpl.
- unfold re_add; simpl.
- rewrite Z.add_opp_r, Z.sub_diag, Z.add_0_l.
- split.
-  rewrite carry_norm_add_0_r, Z.add_0_r.
-  unfold carry; simpl.
-  rewrite fst_same_diag.
-  unfold is_all_0 in Hz.
-  remember (fst_same (re_frac x) 0 0) as s1 eqn:Hs1 .
-  apply fst_same_sym_iff in Hs1; simpl in Hs1.
-  destruct s1 as [di1| ].
-   destruct Hs1 as (_, Hs1).
-   rewrite Hs1; reflexivity.
+split; [ idtac | rewrite fold_rm_sub, rm_sub_diag; reflexivity ].
+unfold carry; simpl.
+rewrite fst_same_diag.
+rewrite fold_rm_sub.
+rewrite Z.add_sub_assoc, Z.add_opp_r, Z.sub_diag.
+remember (fst_same (re_frac x) (- re_frac x) 0) as s1 eqn:Hs1 .
+apply fst_same_sym_iff in Hs1; simpl in Hs1.
+destruct s1 as [j1| ].
+ destruct Hs1 as (Hn1, Hs1).
+ symmetry in Hs1.
+ exfalso; revert Hs1; apply no_fixpoint_negb.
 
-   remember (fst_same (re_frac x) rm_ones 0) as s2 eqn:Hs2 .
-   destruct s2 as [di2| ]; [ discriminate Hz | clear Hz ].
-   apply fst_same_sym_iff in Hs2; simpl in Hs2.
-   pose proof (Hs1 O) as H.
-   rewrite Hs2 in H; discriminate H.
+ clear Hs1.
+ remember (fst_same (re_frac x - re_frac x) 0 0) as s2 eqn:Hs2 .
+ apply fst_same_sym_iff in Hs2; simpl in Hs2.
+ destruct s2 as [j2| ].
+  destruct Hs2 as (Hn2, Hs2).
+  rewrite Hs2; reflexivity.
 
-  unfold is_all_0 in Hz.
-  remember (fst_same (re_frac x) rm_ones 0) as s2 eqn:Hs2 .
-  destruct s2 as [j2| ]; [ discriminate Hz | clear Hz ].
-  apply fst_same_sym_iff in Hs2; simpl in Hs2.
-  rewrite rm_add_0_r.
-  unfold rm_eq; intros i; simpl.
-  unfold rm_add_i; simpl.
-  unfold carry; simpl.
-  rewrite fst_same_diag.
-  remember (fst_same (re_frac x) 0 (S i)) as s1 eqn:Hs1 .
-  destruct s1 as [dj1| ]; [ do 2 rewrite Hs2; reflexivity | idtac ].
-  apply fst_same_sym_iff in Hs1; simpl in Hs1.
-  pose proof (Hs1 O) as H.
-  rewrite Hs2 in H; discriminate H.
+  pose proof (Hs2 O) as H.
+  unfold rm_add_i in H; simpl in H.
+  unfold carry in H; simpl in H.
+  remember (fst_same (re_frac x) (- re_frac x) 1) as s3 eqn:Hs3 .
+  destruct s3 as [dj3| ].
+   apply fst_same_sym_iff in Hs3; simpl in Hs3.
+   destruct Hs3 as (Hn3, Hs3).
+   symmetry in Hs3.
+   exfalso; revert Hs3; apply no_fixpoint_negb.
 
- split; [ idtac | rewrite fold_rm_sub, rm_sub_diag; reflexivity ].
- unfold carry; simpl.
- rewrite fst_same_diag.
- rewrite fold_rm_sub.
- rewrite Z.add_sub_assoc, Z.add_opp_r, Z.sub_diag.
- remember (fst_same (re_frac x) (- re_frac x) 0) as s1 eqn:Hs1 .
- apply fst_same_sym_iff in Hs1; simpl in Hs1.
- destruct s1 as [j1| ].
-  destruct Hs1 as (Hn1, Hs1).
-  symmetry in Hs1.
-  exfalso; revert Hs1; apply no_fixpoint_negb.
-
-  clear Hs1.
-  remember (fst_same (re_frac x - re_frac x) 0 0) as s2 eqn:Hs2 .
-  apply fst_same_sym_iff in Hs2; simpl in Hs2.
-  destruct s2 as [j2| ].
-   destruct Hs2 as (Hn2, Hs2).
-   rewrite Hs2; reflexivity.
-
-   pose proof (Hs2 O) as H.
-   unfold rm_add_i in H; simpl in H.
-   unfold carry in H; simpl in H.
-   remember (fst_same (re_frac x) (- re_frac x) 1) as s3 eqn:Hs3 .
-   destruct s3 as [dj3| ].
-    apply fst_same_sym_iff in Hs3; simpl in Hs3.
-    destruct Hs3 as (Hn3, Hs3).
-    symmetry in Hs3.
-    exfalso; revert Hs3; apply no_fixpoint_negb.
-
-    rewrite negb_xorb_diag_r in H.
-    discriminate H.
+   rewrite negb_xorb_diag_r in H.
+   discriminate H.
 Qed.
 
 (* associativity for normalised reals *)
