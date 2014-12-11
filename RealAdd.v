@@ -614,6 +614,19 @@ destruct sx as [dx| ].
    unfold carry; simpl.
    rewrite fst_same_comm, <- Hsy; reflexivity.
 
+   destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
+    remember H1 as H; clear HeqH.
+    apply Hny in H.
+    symmetry in Hf_v.
+    eapply rm_eq_neq_if in H; try eassumption.
+    destruct H as [(Hyx, Hxx)| (Hyx, Hxx)]; simpl in Hyx, Hxx.
+     pose proof (Hyx (dy - dx)%nat) as H.
+     apply Nat.lt_le_incl in H1.
+     rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+     rewrite Nat.add_comm, Nat.add_sub, Hty in H.
+     discriminate H.
+
+bbb.
    eapply case_2; try eassumption.
    unfold carry; simpl.
    remember (fst_same z 0 0) as sz eqn:Hsz .
