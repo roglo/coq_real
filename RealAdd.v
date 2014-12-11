@@ -451,7 +451,7 @@ destruct sx as [dx| ].
    subst di; clear H1.
    rewrite Nat.add_succ_r.
    induction n as (n, IHn) using all_lt_all.
-   destruct n.
+   destruct n; [ clear IHn | idtac ].
     rewrite Nat.add_succ_r.
     rewrite <- negb_involutive.
     apply neq_negb; simpl; intros Hdi.
@@ -502,6 +502,14 @@ destruct sx as [dx| ].
     rewrite <- negb_involutive.
     apply neq_negb; simpl; intros Hdi.
 bbb.
+    i   dy  -   n
+ x  1   1   1   1   1 …
+ y  0   0   0   1
+
+    i   -   dy  -   n
+ x  1   1   1   1   1   1 …
+ y  0   1   0   0   1
+
     pose proof (Hxy (S (i + dy + n))) as H.
     unfold rm_add_i in H; simpl in H.
     do 2 rewrite xorb_false_r in H.
