@@ -358,34 +358,39 @@ destruct sx as [dx| ].
       remember Hs1 as H; clear HeqH.
       apply fst_same_sym_iff in H; simpl in H.
       destruct H as (Hn1, _).
-bbb.
-   regarder précisément ce qu'il faut utiliser comme paramètre de Hxy
-      pose proof (Hxy (S (S (i + dx + n)))) as H.
+      pose proof (Hxy (S (S (i + dx + S n)))) as H.
       unfold rm_add_i in H; simpl in H.
       do 2 rewrite xorb_false_r in H.
       rewrite <- Nat.add_succ_r in H.
-      pose proof (IHn n (Nat.lt_succ_diag_r n)) as Hn.
       rewrite <- Nat.add_assoc in H.
-      rewrite Hn, Hny, xorb_false_l, xorb_true_l in H.
+      rewrite Nat.add_succ_r in H.
+      rewrite Hdi, Hny, xorb_true_l in H.
       apply negb_sym in H.
+      rewrite negb_involutive in H.
       rewrite <- Nat.add_succ_l in H.
       rewrite carry_before_inf_relay in H; [ idtac | assumption ].
-      apply negb_sym in H; simpl in H.
-      symmetry in Hs1.
-      remember (S (i + (dx + S n))) as z.
+      symmetry in H, Hs1.
+      remember (S i + S (dx + S n))%nat as z.
       replace (S z) with (S z + 0)%nat in H by apply Nat.add_0_r.
       subst z.
       rewrite <- Nat.add_succ_l in H; simpl in H.
-      rewrite <- Nat.add_succ_r in H.
+      rewrite <- Nat.add_succ_l in H.
+      rewrite <- Nat.add_succ_r in Hs1.
+      assert (0 < S di1)%nat as HH by apply Nat.lt_0_succ.
       erewrite carry_before_relay in H; try eassumption.
-bbb.
-  ============================
-   x .[ i + S di] = false
+      simpl in H.
+      do 4 rewrite Nat.add_succ_r in H.
+      do 3 rewrite Nat.add_succ_r in Hx1.
+      simpl in H.
+      rewrite Nat.add_assoc in Hx1.
+      simpl in Hx1.
+      rewrite Nat.add_assoc in H.
+      rewrite Hx1 in H; discriminate H.
 
-     i   -   dx  -   n
-  x  1   1   0   .   0   .
-  y  0   1   1   1   1   1 …
+   rewrite Nat.add_succ_r; simpl; apply Hny.
 
+ destruct sy; [ idtac | discriminate H ].
+ symmetry in H; simpl in H.
 bbb.
 *)
 
