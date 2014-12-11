@@ -389,8 +389,17 @@ destruct sx as [dx| ].
 
    rewrite Nat.add_succ_r; simpl; apply Hny.
 
- destruct sy; [ idtac | discriminate H ].
+ destruct sy as [dy| ]; [ idtac | discriminate H ].
  symmetry in H; simpl in H.
+ remember Hsy as HH; clear HeqHH.
+ apply fst_same_sym_iff in HH; simpl in HH.
+ destruct HH as (Hny, Hty); clear H.
+ left.
+ remember Hsx as Hnx; clear HeqHnx.
+ apply fst_same_sym_iff in Hnx; simpl in Hnx.
+ split; intros di.
+  destruct (lt_eq_lt_dec di (S dy)) as [[H1| H1]| H1].
+
 bbb.
 *)
 
