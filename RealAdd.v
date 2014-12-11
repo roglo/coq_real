@@ -585,6 +585,7 @@ destruct sx as [dx| ].
   apply fst_same_sym_iff in H; simpl in H.
   destruct H as (Hny, Hty); rewrite Hty, Z.add_0_r in Hi.
   subst b; f_equal.
+  remember Hf as Hf_v; clear HeqHf_v.
   unfold rm_eq in Hf; simpl in Hf.
   destruct c1, c2, c3, c4; simpl; try reflexivity; exfalso.
    rewrite carry_comm in Hc2.
@@ -663,15 +664,15 @@ destruct sx as [dx| ].
        remember H1 as H; clear HeqH.
        apply Nat.succ_lt_mono in H.
        apply Hny in H.
+       symmetry in Hf_v.
        eapply rm_eq_neq_if in H; try eassumption.
-        destruct H as [(Hyx, Hxx)| (Hyx, Hxx)]; simpl in Hyx, Hxx.
-         pose proof (Hyx (dy - dx)%nat) as H.
-         apply Nat.lt_le_incl in H1.
-         rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
-         rewrite Nat.add_comm, Nat.add_sub in H.
-         rewrite Hty in H; discriminate H.
+       destruct H as [(Hyx, Hxx)| (Hyx, Hxx)]; simpl in Hyx, Hxx.
+        pose proof (Hyx (dy - dx)%nat) as H.
+        apply Nat.lt_le_incl in H1.
+        rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+        rewrite Nat.add_comm, Nat.add_sub in H.
+        rewrite Hty in H; discriminate H.
 bbb.
-     quel merdier !
 
 Theorem rm_add_compat : ∀ x y z d,
   (x = y)%R
