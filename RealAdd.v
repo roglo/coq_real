@@ -299,8 +299,7 @@ destruct sx as [dx| ].
      unfold rm_add_i in H; simpl in H.
      do 2 rewrite xorb_false_r in H.
      rewrite Htx, Hny, xorb_false_l, xorb_true_l in H.
-     symmetry in H.
-     symmetry in Hsx, Hsy.
+     symmetry in H, Hsx, Hsy.
      rewrite <- Nat.add_succ_l in H.
      rewrite carry_before_inf_relay in H; [ simpl in H | assumption ].
      symmetry in H.
@@ -421,7 +420,31 @@ destruct sx as [dx| ].
    destruct dy; [ rewrite Nat.add_0_r; assumption | idtac ].
    rewrite Nat.add_succ_r; apply Hnx.
 
-   remember (di - S dy)%nat as n eqn:Hn .
+   destruct di; [ rewrite Nat.add_0_r; assumption | idtac ].
+   rewrite Nat.add_succ_r; apply Hnx.
+
+  destruct di; [ rewrite Nat.add_0_r; assumption | idtac ].
+  rewrite Nat.add_succ_r.
+  destruct (lt_eq_lt_dec di dy) as [[H1| H1]| H1].
+   pose proof (Hny di H1) as H.
+   destruct dy; [ exfalso; revert H1; apply Nat.nlt_0_r | idtac ].
+   rename H into Hdi.
+   pose proof (Hxy (S (i + dy))%nat) as H.
+   unfold rm_add_i in H; simpl in H.
+   do 2 rewrite xorb_false_r in H.
+   rewrite Hny in H; [ idtac | apply Nat.lt_succ_diag_r ].
+   rewrite Hnx in H.
+   rewrite xorb_true_l in H.
+   apply negb_sym in H.
+   rewrite negb_involutive in H.
+   rewrite <- Nat.add_succ_l in H.
+   symmetry in Hsy.
+   erewrite carry_before_relay in H; [ idtac | eassumption | auto ].
+   symmetry in Hsx.
+   rewrite carry_before_inf_relay in H; [ idtac | assumption ].
+   simpl in H; rewrite Hty in H; discriminate H.
+
+   subst di; assumption.
 
 bbb.
 *)
