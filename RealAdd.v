@@ -663,7 +663,7 @@ destruct sx as [dx| ].
        remember H1 as H; clear HeqH.
        apply Nat.succ_lt_mono in H.
        apply Hny in H.
-       eapply zzz in H; try eassumption.
+       eapply rm_eq_neq_if in H; try eassumption.
         destruct H as [(Hyx, Hxx)| (Hyx, Hxx)]; simpl in Hyx, Hxx.
          pose proof (Hyx (dy - dx)%nat) as H.
          apply Nat.lt_le_incl in H1.
