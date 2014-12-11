@@ -304,8 +304,6 @@ bbb.
   x  1   1   0   .   .   .
   y  0   1   1   1   1   1 …
 
-faut peut-être faire une induction de merde
-
     rewrite Nat.add_succ_r.
     rewrite <- negb_involutive.
     apply neq_negb; simpl; intros Hdi.
