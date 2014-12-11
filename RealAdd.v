@@ -358,6 +358,8 @@ destruct sx as [dx| ].
       remember Hs1 as H; clear HeqH.
       apply fst_same_sym_iff in H; simpl in H.
       destruct H as (Hn1, _).
+bbb.
+   regarder précisément ce qu'il faut utiliser comme paramètre de Hxy
       pose proof (Hxy (S (S (i + dx + n)))) as H.
       unfold rm_add_i in H; simpl in H.
       do 2 rewrite xorb_false_r in H.
