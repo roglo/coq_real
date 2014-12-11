@@ -626,7 +626,71 @@ destruct sx as [dx| ].
      rewrite Nat.add_comm, Nat.add_sub, Hty in H.
      discriminate H.
 
+     destruct dx.
+      clear Hnx; simpl in Hyx, Hxx.
+      unfold carry in Hc1, Hc3.
+      remember (fst_same x z 0) as s1 eqn:Hs1 .
+      remember (fst_same y z 0) as s3 eqn:Hs3 .
+      destruct s3 as [di3| ]; [ idtac | discriminate Hc3 ].
+      simpl in Hc3; apply fst_same_sym_iff in Hs3.
+      simpl in Hs3; destruct Hs3 as (Hn3, Ht3).
+      rewrite Hc3 in Ht3; symmetry in Ht3.
+      destruct s1 as [di1| ]; [ simpl in Hc1 | clear Hc1 ].
+       apply fst_same_sym_iff in Hs1; simpl in Hs1.
+       destruct Hs1 as (Hn1, Ht1).
+       rewrite Hc1 in Ht1; symmetry in Ht1.
+       destruct di1.
+        rewrite Hc1 in Htx; discriminate Htx.
+
+        destruct di3.
+         pose proof (Hny O H1) as H.
+         rewrite Hc3 in H; discriminate H.
+
+         pose proof (Hn1 O (Nat.lt_0_succ di1)) as H2.
+         pose proof (Hn3 O (Nat.lt_0_succ di3)) as H3.
+         rewrite Htx in H2.
+         rewrite Hny in H3; [ idtac | assumption ].
+         rewrite <- H2 in H3; discriminate H3.
+
+       apply fst_same_sym_iff in Hs1; simpl in Hs1.
+       destruct di3.
+        pose proof (Hny O H1) as H.
+        rewrite Hc3 in H; discriminate H.
+
+        pose proof (Hs1 O) as H2.
+        pose proof (Hn3 O (Nat.lt_0_succ di3)) as H3.
+        rewrite Htx in H2.
+        rewrite Hny in H3; [ idtac | assumption ].
+        rewrite <- H2 in H3; discriminate H3.
+
+      unfold carry in Hc1, Hc3.
+      remember (fst_same x z 0) as s1 eqn:Hs1 .
+      remember (fst_same y z 0) as s3 eqn:Hs3 .
+      destruct s3 as [di3| ]; [ idtac | discriminate Hc3 ].
+      simpl in Hc3; apply fst_same_sym_iff in Hs3.
+      simpl in Hs3; destruct Hs3 as (Hn3, Ht3).
+      rewrite Hc3 in Ht3; symmetry in Ht3.
+      destruct s1 as [di1| ]; [ simpl in Hc1 | clear Hc1 ].
+       apply fst_same_sym_iff in Hs1; simpl in Hs1.
+       destruct Hs1 as (Hn1, Ht1).
+       rewrite Hc1 in Ht1; symmetry in Ht1.
+       destruct di1.
+        destruct di3.
+         rewrite Ht1 in Ht3; discriminate Ht3.
+
+         pose proof (Hn3 O (Nat.lt_0_succ di3)) as H.
+         rewrite Ht1 in H; simpl in H.
+
 bbb.
+
+     0   -   dy
+  x  0   1   1   1 …
+  y  1   0   0   0 …
+
+             dx  -   dy
+  x  .   1   0   1   1   1 …
+  y  .   .   1   0   0   0 …
+
    eapply case_2; try eassumption.
    unfold carry; simpl.
    remember (fst_same z 0 0) as sz eqn:Hsz .
