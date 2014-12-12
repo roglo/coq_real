@@ -230,6 +230,26 @@ Qed.
 
 (* compatibility with equality *)
 
+Definition rm_shift_1_r b x :=
+  {| rm i := match i with O => b | S j => x.[j] end |}.
+
+Fixpoint re2rm_loop sh xi xf :=
+  match sh with
+  | O => xf
+  | S sh1 =>
+      re2rm_loop sh1 (xi / 2)%nat
+        (rm_shift_1_r (if zerop (xi mod 2) then false else true) xf)
+  end.
+
+Definition re2rm sh x :=
+  {| rm := re2rm_loop sh (re_int x) (re_frac x) |}.
+
+Definition rm2re sh x :=
+  {| re_int := 0; (* à voir *)
+     re_frac := rm_shift_l sh x |}
+
+bbb.
+
 Theorem rm_eq_neq_if : ∀ x y i,
   (x = y)%rm
   → x.[i] = true
