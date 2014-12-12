@@ -680,8 +680,16 @@ destruct sx as [dx| ].
 
          pose proof (Hn3 O (Nat.lt_0_succ di3)) as H.
          rewrite Ht1 in H; simpl in H.
+         destruct dy; [ revert H1; apply Nat.nlt_0_r | idtac ].
+         rewrite Hny in H; [ idtac | apply Nat.lt_0_succ ].
+         discriminate H.
 
 bbb.
+
+     0   -   dx  -   dy
+  x  1   1   0   1   1   1 …
+  y  0   .   1   0   0   0 …
+
 
      0   -   dy
   x  0   1   1   1 …
