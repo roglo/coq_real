@@ -746,6 +746,26 @@ destruct sx as [dx| ].
            rewrite Hny in H; [ idtac | assumption ].
            discriminate H.
 
+           remember H1 as H; clear HeqH.
+           apply Hny in H.
+           rename H into Hy1.
+           remember H3 as H; clear HeqH.
+           apply Nat.succ_lt_mono in H.
+           eapply Nat.lt_trans with (m := S dy) in H; [ idtac | eassumption ].
+           apply Hn3 in H.
+           rewrite Hy1 in H.
+           apply negb_sym in H; simpl in H.
+           rename H into Hz1.
+           remember H3 as H; clear HeqH.
+           eapply Nat.lt_trans with (m := di3) in H; [ idtac | eassumption ].
+           apply Nat.succ_lt_mono in H.
+           eapply Nat.lt_trans with (m := S dy) in H; [ idtac | eassumption ].
+           apply Hn1 in H.
+           rewrite Hz1, Htx in H.
+           discriminate H.
+
+       Focus 1.
+
 bbb.
 
      0   -   dx  -   dy
