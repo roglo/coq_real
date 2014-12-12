@@ -694,8 +694,8 @@ destruct sx as [dx| ].
           apply Nat.succ_lt_mono in H.
           apply Hn3 in H.
           rewrite Ht1 in H; simpl in H.
+          rename H into Hy1.
           destruct (lt_eq_lt_dec di1 dx) as [[H3| H3]| H3].
-           rename H into Hy1.
            remember H3 as H; clear HeqH.
            apply Nat.succ_lt_mono in H.
            eapply Nat.lt_trans with (m := S dx) in H; [ idtac | eassumption ].
@@ -705,7 +705,6 @@ destruct sx as [dx| ].
            subst di1.
            rewrite Htx in Hc1; discriminate Hc1.
 
-           rename H into Hy1.
            remember H3 as H; clear HeqH.
            apply Nat.succ_lt_mono in H.
            apply Hn1 in H.
@@ -722,6 +721,30 @@ destruct sx as [dx| ].
 
           subst di3.
           rewrite Ht1 in Ht3; discriminate Ht3.
+
+          remember H2 as H; clear HeqH.
+          apply Nat.succ_lt_mono in H.
+          apply Hn1 in H.
+          rewrite Ht3 in H; simpl in H.
+          rename H into Hx3.
+          destruct (lt_eq_lt_dec di3 dy) as [[H3| H3]| H3].
+           remember H3 as H; clear HeqH.
+           apply Nat.succ_lt_mono in H.
+           apply Hny in H.
+           rewrite Hc3 in H; discriminate H.
+
+           subst di3.
+           remember H2 as H; clear HeqH.
+           apply Nat.succ_lt_mono in H.
+           eapply Nat.lt_trans with (m := S dy) in H; [ idtac | eassumption ].
+           apply Hn1 in H.
+           rewrite Htx in H.
+           apply negb_sym in H; simpl in H.
+           rename H into Hz1.
+           pose proof (Hn3 (S dx) H1) as H.
+           rewrite Hz1 in H; simpl in H.
+           rewrite Hny in H; [ idtac | assumption ].
+           discriminate H.
 
 bbb.
 
