@@ -230,23 +230,35 @@ Qed.
 
 (* compatibility with equality *)
 
+Record real2 (sh : nat) := { re_sign : bool; re_mant : real_mod_1 }.
+
 Definition rm_shift_1_r b x :=
   {| rm i := match i with O => b | S j => x.[j] end |}.
 
-Fixpoint re2rm_loop sh xi xf :=
+Fixpoint re_to_rm_loop sh xi xf :=
   match sh with
   | O => xf
   | S sh1 =>
-      re2rm_loop sh1 (xi / 2)%nat
-        (rm_shift_1_r (if zerop (xi mod 2) then false else true) xf)
+      re_to_rm_loop sh1 (xi / 2)%nat
+         (rm_shift_1_r (if zerop (xi mod 2) then false else true) xf)
   end.
 
-Definition re2rm sh x :=
-  {| rm := re2rm_loop sh (re_int x) (re_frac x) |}.
+Fixpoint rm_to_ri_loop sh x acc :=
+  match sh with
+  | O => acc
+  | S sh1 =>
+      rm_to_ri_loop sh1 (rm_shift_l 1 x)
+        (2 * acc + if x.[0] then 1 else 0)%nat
+   end.
 
-Definition rm2re sh x :=
-  {| re_int := 0; (* à voir *)
-     re_frac := rm_shift_l sh x |}
+Definition re_to_re2 sh x : real2 sh :=
+  {| re_sign := Z.geb (re_int x) 0;
+     re_mant := re_to_rm_loop sh (Z.abs_nat (re_int x)) (re_frac x) |}.
+
+Definition re2_to_re sh (x : real2 sh) :=
+  let n := rm_to_ri_loop sh (re_mant x) O in
+  {| re_int := if re_sign x then Z.of_nat n else - Z.of_nat n;
+     re_frac := rm_shift_l sh (re_mant x) |}.
 
 bbb.
 
