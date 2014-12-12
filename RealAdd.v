@@ -684,20 +684,51 @@ destruct sx as [dx| ].
          rewrite Hny in H; [ idtac | apply Nat.lt_0_succ ].
          discriminate H.
 
+        destruct dy; [ revert H1; apply Nat.nlt_0_r | idtac ].
+        destruct di3.
+         rewrite Hny in Hc3; [ idtac | apply Nat.lt_0_succ ].
+         discriminate Hc3.
+
+         destruct (lt_eq_lt_dec di1 di3) as [[H2| H2]| H2].
+          remember H2 as H; clear HeqH.
+          apply Nat.succ_lt_mono in H.
+          apply Hn3 in H.
+          rewrite Ht1 in H; simpl in H.
+          destruct (lt_eq_lt_dec di1 dx) as [[H3| H3]| H3].
+           rename H into Hy1.
+           remember H3 as H; clear HeqH.
+           apply Nat.succ_lt_mono in H.
+           eapply Nat.lt_trans with (m := S dx) in H; [ idtac | eassumption ].
+           apply Hny in H.
+           rewrite Hy1 in H; discriminate H.
+
+           subst di1.
+           rewrite Htx in Hc1; discriminate Hc1.
+
+           rename H into Hy1.
+           remember H3 as H; clear HeqH.
+           apply Nat.succ_lt_mono in H.
+           apply Hn1 in H.
+           rewrite Htx in H.
+           apply negb_sym in H; simpl in H.
+           rename H into Hz1.
+           remember H3 as H; clear HeqH.
+           eapply Nat.lt_trans with (m := di1) in H; [ idtac | eassumption ].
+           apply Nat.succ_lt_mono in H.
+           apply Hn3 in H.
+           rewrite Hz1 in H; simpl in H.
+           rewrite Hny in H; [ idtac | assumption ].
+           discriminate H.
+
+          subst di3.
+          rewrite Ht1 in Ht3; discriminate Ht3.
+
 bbb.
 
      0   -   dx  -   dy
-  x  1   1   0   1   1   1 …
-  y  0   .   1   0   0   0 …
-
-
-     0   -   dy
-  x  0   1   1   1 …
-  y  1   0   0   0 …
-
-             dx  -   dy
-  x  .   1   0   1   1   1 …
-  y  .   .   1   0   0   0 …
+  x  1   1   0   1   1 …
+  y  1   1   1   0   0 …
+  z  0
 
    eapply case_2; try eassumption.
    unfold carry; simpl.
