@@ -767,12 +767,17 @@ destruct sx as [dx| ].
        remember Hs1 as H; clear HeqH.
        apply fst_same_sym_iff in H; simpl in H.
        rename H into Hn1.
+       destruct dy; [ revert H1; apply Nat.nlt_0_r | idtac ].
+       destruct di3.
+        rewrite Hny in Hc3; [ idtac | apply Nat.lt_0_succ ].
+        discriminate Hc3.
 bbb.
+   cf. rm_add_add_0_r_not_without_relay ?
 
-     0   -   dx  -   dy
-  x  1   1   0   1   1 …
-  y  1   1   1   0   0 …
-  z  0
+     0   -   dx
+  x  1   1   0   0   0   0 …
+  y  .
+  z  0   0   1   1   1   1 …
 
    eapply case_2; try eassumption.
    unfold carry; simpl.

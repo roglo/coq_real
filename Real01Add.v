@@ -2195,12 +2195,11 @@ destruct s1 as [di1| ].
 Qed.
 
 Theorem rm_add_add_0_r_not_without_relay : ∀ x y i,
-  fst_same ((x + 0)%rm + y) 0 (S i) ≠ None.
+  fst_same ((x + 0)%rm + y) 0 i ≠ None.
 Proof.
 intros x y i Hs2.
-remember (S i) as si.
 apply fst_same_iff in Hs2; simpl in Hs2.
-destruct (bool_dec ((x + 0)%rm) .[ si] y .[ si]) as [H1| H1].
+destruct (bool_dec ((x + 0)%rm) .[ i] y .[ i]) as [H1| H1].
  apply rm_add_inf_true_eq_if in Hs2; auto.
  simpl in Hs2, H1.
  destruct Hs2 as (Hn2, Hs2).
