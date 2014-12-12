@@ -260,6 +260,54 @@ Definition re2_to_re sh (x : real2 sh) :=
   {| re_int := if re_sign x then Z.of_nat n else - Z.of_nat n;
      re_frac := rm_shift_l sh (re_mant x) |}.
 
+Definition re2_norm sh (x : real2 sh) :=
+  ...
+
+Definition re2_eq sh (x y : real2 sh) :=
+  re_sign (re2_norm x) = re_sign (re2_norm y) ∧
+  (re_mant (re2_norm x) = re_mant (re2_norm y))%rm.
+
+Theorem zzz : ∀ x y sh,
+  (x = y)%R
+  → re2_eq (re_to_re2 sh x) (re_to_re2 sh y).
+Proof.
+intros x y sh Hxy.
+unfold re2_eq; simpl.
+split.
+ unfold re_eq in Hxy; simpl in Hxy.
+ destruct Hxy as (Hi, Hf).
+ remember (re_int x) as xi eqn:Hxi .
+ remember (re_int y) as yi eqn:Hyi .
+ symmetry in Hxi, Hyi.
+ destruct xi as [| xi| xi].
+  destruct yi as [| yi| yi]; try reflexivity.
+  rewrite Z.add_0_l in Hi.
+  remember (carry (re_frac x) 0 0) as xb eqn:Hxb .
+  remember (carry (re_frac y) 0 0) as yb eqn:Hyb .
+  symmetry in Hxb, Hyb.
+  symmetry in Hi.
+  apply Z.add_move_r in Hi.
+  destruct xb.
+   destruct yb; simpl in Hi.
+    pose proof (Pos2Z.neg_is_neg yi) as H.
+    rewrite Hi in H; exfalso; revert H; apply Z.lt_irrefl.
+
+    pose proof (Pos2Z.neg_is_neg yi) as H.
+    rewrite Hi in H.
+    apply Z.nle_gt in H.
+    exfalso; apply H; apply Z.le_0_1.
+
+   destruct yb; simpl in Hi.
+    unfold rm_eq in Hf; simpl in Hf.
+    unfold carry in Hyb.
+    remember (fst_same (re_frac y) 0 0) as sy eqn:Hsy .
+    destruct sy as [dy| ].
+     apply fst_same_sym_iff in Hsy; simpl in Hsy.
+     destruct Hsy as (_, Hsy).
+     simpl in Hyb; rewrite Hsy in Hyb; discriminate Hyb.
+
+     clear Hyb.
+     apply fst_same_sym_iff in Hsy; simpl in Hsy.
 bbb.
 
 Theorem rm_eq_neq_if : ∀ x y i,
