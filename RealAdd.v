@@ -764,8 +764,9 @@ destruct sx as [dx| ].
            rewrite Hz1, Htx in H.
            discriminate H.
 
-       Focus 1.
-
+       remember Hs1 as H; clear HeqH.
+       apply fst_same_sym_iff in H; simpl in H.
+       rename H into Hn1.
 bbb.
 
      0   -   dx  -   dy
