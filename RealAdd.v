@@ -880,6 +880,34 @@ destruct sx as [dx| ].
         revert H1 H2; clear; intros; omega.
 
     subst dy.
+    unfold carry in Hc1; simpl in Hc1.
+    unfold carry in Hc3; simpl in Hc3.
+    remember (fst_same x z 0) as s1 eqn:Hs1 .
+    remember (fst_same y z 0) as s3 eqn:Hs3 .
+    destruct s3 as [di3| ]; [ idtac | discriminate Hc3 ].
+    simpl in Hc3; apply fst_same_sym_iff in Hs3.
+    simpl in Hs3; destruct Hs3 as (Hn3, Ht3).
+    rewrite Hc3 in Ht3; symmetry in Ht3.
+    destruct s1 as [di1| ]; [ simpl in Hc1 | clear Hc1 ].
+     apply fst_same_sym_iff in Hs1; simpl in Hs1.
+     destruct Hs1 as (Hn1, Ht1).
+     rewrite Hc1 in Ht1; symmetry in Ht1.
+     destruct di1.
+      destruct dx; [ rewrite Hc1 in Htx; discriminate Htx | idtac ].
+      destruct di3.
+       rewrite Ht1 in Ht3; discriminate Ht3.
+
+       pose proof (Hny O (Nat.lt_0_succ dx)) as H.
+       rewrite Hn3 in H; [ idtac | apply Nat.lt_0_succ ].
+       rewrite Ht1 in H; discriminate H.
+
+      destruct di3.
+       destruct dx.
+        rewrite Hn1 in Htx; [ idtac | apply Nat.lt_0_succ ].
+        rewrite Ht3 in Htx; discriminate Htx.
+
+        rewrite Hny in Hc3; [ idtac | apply Nat.lt_0_succ ].
+        discriminate Hc3.
 bbb.
 
      0   -   dx  .   dy
