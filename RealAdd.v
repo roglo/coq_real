@@ -850,16 +850,42 @@ destruct sx as [dx| ].
        apply fst_same_sym_iff in H; simpl in H.
        rename H into Hn1.
        destruct dy; [ revert H1; apply Nat.nlt_0_r | idtac ].
-       destruct di3.
-        rewrite Hny in Hc3; [ idtac | apply Nat.lt_0_succ ].
-        discriminate Hc3.
-bbb.
-   cf. rm_add_add_0_r_not_without_relay ?
+       destruct (eq_nat_dec dy (S dx)) as [H2| H2].
+        subst dy.
+        destruct di3.
+         rewrite Hny in Hc3; [ idtac | apply Nat.lt_0_succ ].
+         discriminate Hc3.
 
-     0   -   dx
-  x  1   1   0   0   0   0 …
-  y  .
-  z  0   0   1   1   1   1 …
+         destruct (lt_eq_lt_dec di3 dx) as [[H2| H2]| H2].
+          remember H2 as H; clear HeqH.
+          apply Nat.succ_lt_mono in H.
+          apply Nat.lt_lt_succ_r in H.
+          apply Hny in H.
+          rewrite Hc3 in H; discriminate H.
+
+          subst di3.
+          rewrite Hn1, Ht3 in Htx.
+          discriminate Htx.
+
+          remember H2 as H; clear HeqH.
+          apply Nat.succ_lt_mono in H.
+          apply Hn3 in H.
+          rewrite Hny in H; [ idtac | apply Nat.lt_succ_diag_r ].
+          rewrite <- Hn1 in H.
+          rewrite Htx in H; discriminate H.
+
+        pose proof (Hyx O) as H.
+        rewrite Nat.add_1_r in H.
+        rewrite Hny in H; [ discriminate H | idtac ].
+        revert H1 H2; clear; intros; omega.
+
+    subst dy.
+bbb.
+
+     0   -   dx  .   dy
+  x  1   1   0   1   1   1 …
+  y  .   .   .   01  0   0 …
+  z  .
 
    eapply case_2; try eassumption.
    unfold carry; simpl.
