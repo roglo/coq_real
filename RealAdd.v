@@ -230,6 +230,7 @@ Qed.
 
 (* compatibility with equality *)
 
+(*
 Record real2 (sh : nat) := { re_sign : bool; re_mant : real_mod_1 }.
 
 Definition rm_shift_1_r b x :=
@@ -309,6 +310,7 @@ split.
      clear Hyb.
      apply fst_same_sym_iff in Hsy; simpl in Hsy.
 bbb.
+*)
 
 Theorem rm_eq_neq_if : ∀ x y i,
   (x = y)%rm
