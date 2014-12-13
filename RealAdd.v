@@ -966,6 +966,7 @@ destruct sx as [dx| ].
          rewrite Hc3 in H; discriminate H.
 
         subst di3.
+        rewrite Ht1 in Ht3; discriminate Ht3.
 bbb.
 
      .   dx  -  di1  -  di3
