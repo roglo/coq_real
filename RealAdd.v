@@ -885,8 +885,9 @@ destruct sx as [dx| ].
     remember (fst_same x z 0) as s1 eqn:Hs1 .
     remember (fst_same y z 0) as s3 eqn:Hs3 .
     destruct s3 as [di3| ]; [ idtac | discriminate Hc3 ].
-    simpl in Hc3; apply fst_same_sym_iff in Hs3.
-    simpl in Hs3; destruct Hs3 as (Hn3, Ht3).
+    remember Hs3 as H; clear HeqH.
+    apply fst_same_sym_iff in H.
+    simpl in H; destruct H as (Hn3, Ht3).
     rewrite Hc3 in Ht3; symmetry in Ht3.
     destruct s1 as [di1| ]; [ simpl in Hc1 | clear Hc1 ].
      apply fst_same_sym_iff in Hs1; simpl in Hs1.
@@ -926,6 +927,11 @@ destruct sx as [dx| ].
           rewrite Hn3 in Hc4; [ idtac | apply Nat.lt_0_succ ].
           rewrite negb_xorb_diag_l, xorb_true_l in Hc4.
           apply negb_false_iff in Hc4.
+          rewrite <- Nat.add_1_r in Hc4.
+          symmetry in Hs3.
+          assert (1 ≤ S di3) as HH by apply Nat.lt_0_succ.
+          erewrite carry_before_relay in Hc4; try eassumption.
+          rewrite Nat.add_0_l, Hc3 in Hc4; discriminate Hc4.
 bbb.
 
      0   -   di1 -  di3
