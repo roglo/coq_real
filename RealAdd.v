@@ -967,12 +967,20 @@ destruct sx as [dx| ].
 
         subst di3.
         rewrite Ht1 in Ht3; discriminate Ht3.
+
+        remember H1 as H; clear HeqH.
+        apply Nat.succ_lt_mono in H.
+        apply Hn1 in H.
+        rewrite Ht3 in H; simpl in H.
+        remember H as Hx1; clear HeqHx1.
+        eapply rm_eq_neq_if in H; try eassumption.
+        destruct H as [(Hxy, Hyy)| (Hxy, Hyy)]; simpl in Hxy, Hyy.
 bbb.
 
-     .   dx  -  di1  -  di3
-  x  1   0   .   1   0   0   0   0 …
-  y  1   0   .   0   1   1   1   1 …
-  z  0   1   .   1   1   0   .   .
+     .   dx  -  di3  -  di1
+  x  .   0   .   1   .   1
+  y  .   0   .   0
+  z  .   1   .   0   .   1
 
    eapply case_2; try eassumption.
    unfold carry; simpl.
