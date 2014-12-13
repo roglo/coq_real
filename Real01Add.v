@@ -2391,16 +2391,25 @@ Qed.
 
 Theorem carry_before_relay : ∀ x y i di,
   fst_same x y i = Some di
-  → ∀ j, i ≤ j ≤ i + di → carry x y j = x.[i + di].
+  → ∀ dj, dj ≤ di → carry x y (i + dj) = x.[i + di].
 Proof.
-intros x y i di Hs j Hiji.
+intros x y i di Hs dj Hdj.
 unfold carry; simpl.
-remember (fst_same x y j) as s1 eqn:Hs1 .
+remember (fst_same x y (i + dj)) as s1 eqn:Hs1 .
 symmetry in Hs1.
 eapply fst_same_in_range in Hs1; try eassumption.
-subst s1.
-rewrite Nat.add_sub_assoc; [ idtac | destruct Hiji; assumption ].
-rewrite Nat.add_comm, Nat.add_sub; reflexivity.
+ subst s1.
+ rewrite Nat.add_sub_assoc.
+  rewrite Nat.add_comm, Nat.add_sub; reflexivity.
+
+  apply Nat.add_le_mono_l; assumption.
+
+ split.
+  apply Nat.le_sub_le_add_l.
+  rewrite Nat.sub_diag.
+  apply Nat.le_0_l.
+
+  apply Nat.add_le_mono_l; assumption.
 Qed.
 
 (* old version that should be removed one day *)
@@ -2409,29 +2418,21 @@ Theorem carry_before_relay9 : ∀ x y i di,
   → ∀ dj, dj < di → carry x y (S (i + dj)) = x.[i + di].
 Proof.
 intros x y i di Hs dj Hdj.
-apply carry_before_relay; [ assumption | idtac ].
 rewrite <- Nat.add_succ_r.
-split.
- apply Nat.le_sub_le_add_l.
- rewrite Nat.sub_diag.
- apply Nat.le_0_l.
-
- apply Nat.add_le_mono_l; assumption.
+apply carry_before_relay; assumption.
 Qed.
 
 Theorem carry_before_inf_relay : ∀ x y i,
   fst_same x y i = None
-  → ∀ j, i ≤ j → carry x y j = true.
+  → ∀ dj, carry x y (i + dj) = true.
 Proof.
-intros x y i Hs j Hij.
+intros x y i Hs dj.
 unfold carry; simpl.
-remember (fst_same x y j) as s1 eqn:Hs1 .
+remember (fst_same x y (i + dj)) as s1 eqn:Hs1 .
 apply fst_same_sym_iff in Hs1; simpl in Hs1.
 destruct s1 as [di1| ]; [ idtac | reflexivity ].
 apply fst_same_iff in Hs; simpl in Hs.
 destruct Hs1 as (_, Hs1).
-remember (j - i) as n eqn:Hn .
-apply nat_le_sub_add_r in Hn; [ subst j | assumption ].
 rewrite <- Nat.add_assoc in Hs1.
 rewrite Hs in Hs1.
 exfalso; revert Hs1; apply no_fixpoint_negb.
@@ -2443,11 +2444,8 @@ Theorem carry_before_inf_relay9 : ∀ x y i,
   → ∀ dj, carry x y (S (i + dj)) = true.
 Proof.
 intros x y i Hs dj.
-eapply carry_before_inf_relay; [ eassumption | idtac ].
 rewrite <- Nat.add_succ_r.
-apply Nat.le_sub_le_add_l.
-rewrite Nat.sub_diag.
-apply Nat.le_0_l.
+apply carry_before_inf_relay; assumption.
 Qed.
 
 Theorem carry_sum_3_norm_assoc_l : ∀ z0 x y z i,
@@ -2511,7 +2509,7 @@ apply xorb_move_l_r_1 in H.
 rewrite negb_xorb_diag_l in H.
 rename H into Hyz.
 remember (S i) as x.
-replace x with (x + 0) in Hcc by apply Nat.add_0_r.
+rewrite <- Nat.add_1_r in Hcc.
 unfold carry in Hyz.
 remember (fst_same y z x) as s1 eqn:Hs1 .
 destruct s1 as [di1| ].
@@ -2520,8 +2518,8 @@ destruct s1 as [di1| ].
   rewrite Nat.add_0_r, Ht6 in Hyz; discriminate Hyz.
 
   assert (0 < S di1) as H by apply Nat.lt_0_succ.
-  erewrite carry_before_relay9 in Hcc; try eassumption.
-  rewrite Nat.add_0_r, Hyz, xorb_true_r in Hcc.
+  erewrite carry_before_relay in Hcc; try eassumption.
+  rewrite Hyz, xorb_true_r in Hcc.
   apply negb_true_iff in Hcc.
   apply fst_same_iff in Hs1; simpl in Hs1.
   destruct Hs1 as (Hn1, _).
@@ -2529,16 +2527,16 @@ destruct s1 as [di1| ].
   rewrite Ht6, Hcc in H; discriminate H.
 
  symmetry in Hs1.
+ rewrite carry_before_inf_relay in Hcc; [ idtac | assumption ].
  remember Hs1 as H; clear HeqH.
  apply fst_same_inf_after with (di := 1) in H.
  rewrite Nat.add_1_r in H.
  rename H into Hs2.
  apply fst_same_iff in Hs1.
  pose proof (Hs1 0) as H; apply negb_sym in H.
- rewrite H, Nat.add_0_r, Ht6, xorb_true_l in Hcc.
- apply negb_true_iff in Hcc.
- unfold carry in Hcc.
- rewrite Hs2 in Hcc; discriminate Hcc.
+ rewrite Nat.add_0_r in H.
+ rewrite H, Ht6, xorb_true_l in Hcc.
+ discriminate Hcc.
 Qed.
 
 Theorem carry_succ_negb : ∀ x y i a,
