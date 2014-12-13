@@ -915,12 +915,19 @@ destruct sx as [dx| ].
          apply Nat.succ_lt_mono in H.
          apply Hn3 in H.
          rewrite Ht1 in H; simpl in H.
-bbb.
          unfold carry in Hc2; simpl in Hc2.
-         remember (fst_same (x + z) 0 0) as s1 eqn:Hs1 .
-         destruct s1 as [di2| ]; [ idtac | discriminate Hc2 ].
-         apply fst_same_sym_iff in Hs1; simpl in Hs1.
-         destruct Hs1 as (Hs1, _).
+         remember (fst_same (x + z) 0 0) as s2 eqn:Hs2 .
+         destruct s2 as [di2| ]; [ idtac | discriminate Hc2 ].
+         apply fst_same_sym_iff in Hs2; simpl in Hs2.
+         destruct Hs2 as (Hs2, _).
+         destruct di2.
+          unfold rm_add_i in Hc2.
+          rewrite Hn1 in Hc2; [ idtac | apply Nat.lt_0_succ ].
+          rewrite negb_xorb_diag_l, xorb_true_l in Hc2.
+          rewrite <- Nat.add_1_r in Hc2.
+bbb.
+          rewrite carry_before_relay with (di := S di1) in Hc2.
+           clear Hnx Hny.
 bbb.
 
      0   -   di1 -  di3
