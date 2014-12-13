@@ -1004,13 +1004,21 @@ destruct sx as [dx| ].
          rewrite Nat.add_comm, Nat.add_sub in H.
          rewrite Hc1 in H; discriminate H.
 
+     remember Hs1 as H; clear HeqH.
+     apply fst_same_sym_iff in H; simpl in H.
+     rename H into Hxz.
+     pose proof (Hxz di3) as Hx1.
+     rewrite Ht3 in Hx1; simpl in Hx1.
+     remember Hx1 as H; clear HeqH.
+     eapply rm_eq_neq_if in H; try eassumption.
+     destruct H as [(Hxy, Hyy)| (Hxy, Hyy)]; simpl in Hxy, Hyy.
      Focus 1.
 bbb.
 
-     .   dx  -  di3  -  di1
-  x  .   .   .   1   0   0   0   0 …
-  y  .   .   .   0   1   1   1   1 …
-  z  .   .   .   0   .   .
+     .   dx  -  di3
+  x  .   .   .   1   1   1   1 …
+  y  .   .   .   0   0   0   0 …
+  z  .   .   .   0   0   0   0 …
 
    eapply case_2; try eassumption.
    unfold carry; simpl.
