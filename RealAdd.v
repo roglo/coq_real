@@ -936,6 +936,30 @@ destruct sx as [dx| ].
           rewrite Nat.add_0_l, Hc3 in Hc4; discriminate Hc4.
 
           clear H.
+          pose proof (Hf di1) as H.
+          unfold rm_add_i in H; simpl in H.
+          rewrite Hn1 in H; [ idtac | apply Nat.lt_succ_diag_r ].
+          apply Nat.lt_lt_succ_r in H1.
+          rewrite Hn3 in H; [ idtac | assumption ].
+          rewrite xorb_false_r in H.
+          apply xorb_move_l_r_1 in H.
+          rewrite <- xorb_assoc, xorb_nilpotent, xorb_false_l in H.
+          replace (S di1) with (S di1 + 0)%nat in H by apply Nat.add_0_r.
+          rewrite carry_before_inf_relay in H.
+           rewrite carry_before_relay with (di := O) in H.
+            simpl in H; rewrite Hxx in H; discriminate H.
+
+            apply fst_same_iff; simpl.
+            split; [ idtac | rewrite Hxx; reflexivity ].
+            intros dj Hdj.
+            exfalso; revert Hdj; apply Nat.nlt_0_r.
+
+            reflexivity.
+
+           apply fst_same_iff; simpl.
+           intros dj; apply Hyx.
+
+         Focus 1.
 bbb.
 
      .   dx  -  di1  -  di3
