@@ -998,13 +998,19 @@ destruct sx as [dx| ].
           apply fst_same_iff; simpl.
           intros dj; apply Hxy.
 
-         Focus 1.
+         pose proof (Hxy (di1 - S di3)%nat) as H.
+         rewrite Nat.add_succ_r, <- Nat.add_succ_l in H.
+         rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+         rewrite Nat.add_comm, Nat.add_sub in H.
+         rewrite Hc1 in H; discriminate H.
+
+     Focus 1.
 bbb.
 
      .   dx  -  di3  -  di1
-  x  .   0   u   1   1   1   1   1 …
-  y  .   0   u   0   0   0   0   0 …
-  z  .   1  ¬u   0   0   1
+  x  .   .   .   1   0   0   0   0 …
+  y  .   .   .   0   1   1   1   1 …
+  z  .   .   .   0   .   .
 
    eapply case_2; try eassumption.
    unfold carry; simpl.
