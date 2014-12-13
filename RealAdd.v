@@ -917,22 +917,14 @@ destruct sx as [dx| ].
         rewrite Ht1 in H; simpl in H.
         eapply rm_eq_neq_if in H; try eassumption.
         destruct H as [(Hyx, Hxx)| (Hyx, Hxx)]; simpl in Hyx, Hxx.
-bbb.
-
-       destruct dx.
-        destruct (lt_eq_lt_dec di1 di3) as [[H1| H1]| H1].
-bbb.
          remember H1 as H; clear HeqH.
-         apply Nat.succ_lt_mono in H.
-         apply Hn3 in H.
-         rewrite Ht1 in H; simpl in H.
          unfold carry in Hc4; simpl in Hc4.
          remember (fst_same (y + z) 0 0) as s2 eqn:Hs2 .
          destruct s2 as [di2| ]; [ idtac | discriminate Hc4 ].
          apply fst_same_sym_iff in Hs2; simpl in Hs2.
          destruct Hs2 as (Hs2, _).
          destruct di2.
-          clear Hs2 Hnx Hny.
+          clear Hs2.
           unfold rm_add_i in Hc4.
           rewrite Hn3 in Hc4; [ idtac | apply Nat.lt_0_succ ].
           rewrite negb_xorb_diag_l, xorb_true_l in Hc4.
@@ -942,12 +934,14 @@ bbb.
           assert (1 ≤ S di3) as HH by apply Nat.lt_0_succ.
           erewrite carry_before_relay in Hc4; try eassumption.
           rewrite Nat.add_0_l, Hc3 in Hc4; discriminate Hc4.
+
+          clear H.
 bbb.
 
-     0   -   di1 -  di3
-  x  0   u   1   .   .
-  y  0   u   0   .   0
-  z  1  ¬u   1   .   0
+     .   dx  -  di1  -  di3
+  x  1   0   .   1   1   1   1   1 …
+  y  1   0   .   0   0   0   0   0 …
+  z  0   1   .   1   1   0   .   .
 
    eapply case_2; try eassumption.
    unfold carry; simpl.
