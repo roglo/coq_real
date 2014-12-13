@@ -2381,38 +2381,61 @@ Qed.
 
 Theorem carry_before_relay : ∀ x y i di,
   fst_same x y i = Some di
+  → ∀ dj, dj ≤ di → carry x y (i + dj) = x.[i + di].
+Proof.
+intros x y i di Hs dj Hdj.
+unfold carry; simpl.
+remember (fst_same x y (i + dj)) as s2 eqn:Hs2 .
+symmetry in Hs2.
+eapply fst_same_in_range in Hs2; try eassumption.
+ subst s2.
+ rewrite Nat.add_sub_assoc.
+  rewrite Nat.add_comm, Nat.add_sub; reflexivity.
+
+  apply Nat.add_le_mono_l; assumption.
+
+ split.
+  apply Nat.le_sub_le_add_l.
+  rewrite Nat.sub_diag.
+  apply Nat.le_0_l.
+
+  apply Nat.add_le_mono_l; assumption.
+Qed.
+
+(* old version that should be removed one day *)
+Theorem carry_before_relay9 : ∀ x y i di,
+  fst_same x y i = Some di
   → ∀ dj, dj < di → carry x y (S (i + dj)) = x.[i + di].
 Proof.
 intros x y i di Hs dj Hdj.
-remember x.[i+di] as a eqn:Ha; symmetry in Ha.
-unfold carry; simpl.
-remember (fst_same x y (S (i + dj))) as s2 eqn:Hs2 .
-symmetry in Hs2.
-assert (S (i + dj) ≤ i + di) as H by (apply Nat.add_lt_mono_l; auto).
-eapply fst_same_in_range in Hs2; try eassumption; [ idtac | split; auto ].
- subst s2.
- rewrite <- Nat.add_succ_l, Nat.add_sub_assoc; auto.
- rewrite Nat.add_comm, Nat.add_sub; assumption.
-
- rewrite <- Nat.add_succ_r.
- apply Nat.le_add_r.
+rewrite <- Nat.add_succ_r.
+apply carry_before_relay; assumption.
 Qed.
 
 Theorem carry_before_inf_relay : ∀ x y i,
   fst_same x y i = None
-  → ∀ dj, carry x y (S (i + dj)) = true.
+  → ∀ dj, carry x y (i + dj) = true.
 Proof.
 intros x y i Hs dj.
 unfold carry; simpl.
-remember (fst_same x y (S (i + dj))) as s2 eqn:Hs2 .
-symmetry in Hs2.
-apply fst_same_iff in Hs2; simpl in Hs2.
+remember (fst_same x y (i + dj)) as s2 eqn:Hs2 .
+apply fst_same_sym_iff in Hs2; simpl in Hs2.
 destruct s2 as [di2| ]; [ idtac | reflexivity ].
 apply fst_same_iff in Hs; simpl in Hs.
 destruct Hs2 as (_, Hs2).
-rewrite <- Nat.add_assoc, <- Nat.add_succ_r in Hs2.
+rewrite <- Nat.add_assoc in Hs2.
 rewrite Hs in Hs2.
 exfalso; revert Hs2; apply no_fixpoint_negb.
+Qed.
+
+(* old version that should be removed one day *)
+Theorem carry_before_inf_relay9 : ∀ x y i,
+  fst_same x y i = None
+  → ∀ dj, carry x y (S (i + dj)) = true.
+Proof.
+intros x y i Hs dj.
+rewrite <- Nat.add_succ_r.
+apply carry_before_inf_relay; assumption.
 Qed.
 
 Theorem carry_sum_3_norm_assoc_l : ∀ z0 x y z i,
@@ -2485,7 +2508,7 @@ destruct s1 as [di1| ].
   rewrite Nat.add_0_r, Ht6 in Hyz; discriminate Hyz.
 
   assert (0 < S di1) as H by apply Nat.lt_0_succ.
-  erewrite carry_before_relay in Hcc; try eassumption.
+  erewrite carry_before_relay9 in Hcc; try eassumption.
   rewrite Nat.add_0_r, Hyz, xorb_true_r in Hcc.
   apply negb_true_iff in Hcc.
   apply fst_same_iff in Hs1; simpl in Hs1.
@@ -2525,7 +2548,7 @@ destruct s1 as [di1| ].
   split; assumption.
 
   assert (0 < S di1) as H by apply Nat.lt_0_succ.
-  eapply carry_before_relay in H; try eassumption.
+  eapply carry_before_relay9 in H; try eassumption.
   rewrite <- Nat.add_succ_l in H.
   rewrite Hc2 in H; simpl in H.
   rewrite Hc1 in H.
@@ -2611,7 +2634,7 @@ destruct s5 as [di5| ]; [ idtac | clear H ].
     remember Ht3 as H; clear HeqH.
     unfold rm_add_i in H; simpl in H.
     symmetry in Hs5.
-    erewrite carry_before_relay in H; try eassumption; simpl in H.
+    erewrite carry_before_relay9 in H; try eassumption; simpl in H.
     apply Hn5 in H2.
     rewrite H2, negb_xorb_diag_l, Hb5 in H; discriminate H.
 
@@ -2752,7 +2775,7 @@ destruct s5 as [di5| ]; [ idtac | clear H ].
     symmetry in Hs5.
     remember H1 as HH; clear HeqHH.
     eapply lt_trans in HH; [ idtac | eassumption ].
-    erewrite carry_before_relay in H; try eassumption.
+    erewrite carry_before_relay9 in H; try eassumption.
     simpl in H; rewrite Hb5 in H; discriminate H.
 
     subst di3; rewrite Ha6 in Ha3; discriminate Ha3.
@@ -2763,7 +2786,7 @@ destruct s5 as [di5| ]; [ idtac | clear H ].
     unfold rm_add_i in H; simpl in H.
     rewrite Ht6, xorb_false_l in H.
     symmetry in Hs5.
-    erewrite carry_before_relay in H; try eassumption; simpl in H.
+    erewrite carry_before_relay9 in H; try eassumption; simpl in H.
     rewrite Hb5, xorb_true_r in H.
     rewrite <- Hn5 in H; [ idtac | assumption ].
     rewrite Ht6 in H; discriminate H.
@@ -2776,7 +2799,7 @@ destruct s5 as [di5| ]; [ idtac | clear H ].
    unfold rm_add_i in H; simpl in H.
    rewrite Ht6, xorb_false_l in H.
    symmetry in Hs5.
-   erewrite carry_before_relay in H; try eassumption; simpl in H.
+   erewrite carry_before_relay9 in H; try eassumption; simpl in H.
    rewrite Hb5, xorb_true_r in H.
    rewrite <- Hn5 in H; [ idtac | assumption ].
    rewrite Ht6 in H; discriminate H.
@@ -2934,12 +2957,12 @@ destruct syzn as [dyzn| ]; [ idtac | clear H ].
     rewrite Ap, Bp, xorb_false_l in H.
     rename H into Rxyp.
     remember Hsxy_zn as H; clear HeqH.
-    eapply carry_before_relay in H; [ idtac | eassumption ].
+    eapply carry_before_relay9 in H; [ idtac | eassumption ].
     simpl in H.
     rewrite AB_p in H.
     rename H into Rxy_zp.
     remember Hsyzn as H; clear HeqH.
-    eapply carry_before_relay in H; [ idtac | eassumption ].
+    eapply carry_before_relay9 in H; [ idtac | eassumption ].
     simpl in H.
     rewrite B_p in H.
     rename H into Ryzp.
@@ -2979,7 +3002,7 @@ destruct syzn as [dyzn| ]; [ idtac | clear H ].
     unfold rm_add_i in H.
     rewrite Hnxyn in H; [ idtac | assumption ].
     rewrite negb_xorb_diag_l, xorb_true_l in H.
-    erewrite carry_before_relay in H; try eassumption.
+    erewrite carry_before_relay9 in H; try eassumption.
     simpl in H; rewrite A_p in H; discriminate H.
 
    eapply min_neq_lt in H; eauto ; try (left; auto).
@@ -2991,7 +3014,7 @@ destruct syzn as [dyzn| ]; [ idtac | clear H ].
     rewrite Hnxyn in H; [ idtac | assumption ].
     rewrite negb_xorb_diag_l, xorb_true_l in H.
     apply negb_false_iff in H.
-    erewrite carry_before_relay in H; try eassumption.
+    erewrite carry_before_relay9 in H; try eassumption.
     simpl in H; rewrite A_p in H; discriminate H.
 
     eapply min_neq_lt in H; eauto ; try (do 2 right; left; auto).
@@ -3043,9 +3066,9 @@ destruct syzn as [dyzn| ]; [ idtac | clear H ].
    rewrite Ap, Bp, xorb_false_l in H.
    exists p.
    split; [ assumption | idtac ].
-   erewrite carry_before_relay; try eassumption; simpl.
+   erewrite carry_before_relay9; try eassumption; simpl.
    split; [ assumption | idtac ].
-   erewrite carry_before_inf_relay; [ idtac | assumption ].
+   erewrite carry_before_inf_relay9; [ idtac | assumption ].
    split; [ reflexivity | idtac ].
    intros dj Hdj; eapply Hnxy_zn, le_lt_trans; eassumption.
 
@@ -3061,7 +3084,7 @@ destruct syzn as [dyzn| ]; [ idtac | clear H ].
    unfold rm_add_i in H.
    rewrite Hnxyn in H; [ idtac | assumption ].
    rewrite negb_xorb_diag_l, xorb_true_l in H.
-   erewrite carry_before_relay in H; try eassumption.
+   erewrite carry_before_relay9 in H; try eassumption.
    simpl in H; rewrite A_p in H; discriminate H.
 
    eapply min_neq_lt in H; eauto ; try (right; left; auto).
@@ -3298,7 +3321,7 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
        unfold rm_add_i in H.
        rewrite Ht6, Ht4, xorb_true_l in H.
        apply negb_true_iff in H.
-       erewrite carry_before_relay in H; try eassumption.
+       erewrite carry_before_relay9 in H; try eassumption.
        simpl in H; rewrite H5 in H; discriminate H.
 
       eapply min_neq_lt in M4; [ idtac | eauto  | do 2 right; left; auto ].
@@ -3325,7 +3348,7 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
        symmetry in Hsxym.
        rename H into Haxym.
        remember Hs4 as H; clear HeqH.
-       eapply carry_before_relay in H; [ idtac | eassumption ].
+       eapply carry_before_relay9 in H; [ idtac | eassumption ].
        simpl in H; rewrite H4 in H.
        rename H into Hxycm.
        exfalso; eapply case_2; eassumption.
@@ -3336,7 +3359,7 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
        rewrite Hn5 in H; [ idtac | assumption ].
        rewrite negb_xorb_diag_l, xorb_true_l in H.
        apply negb_true_iff in H.
-       eapply carry_before_relay in Hs5; [ idtac | eassumption ].
+       eapply carry_before_relay9 in Hs5; [ idtac | eassumption ].
        simpl in Hs5; rewrite Hs5, H5 in H; discriminate H.
 
      eapply min_neq_lt in M6; [ idtac | eauto  | left; auto ].
@@ -3356,7 +3379,7 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
        unfold rm_add_i in H.
        rewrite H3, H5, xorb_true_l in H.
        apply negb_false_iff in H.
-       erewrite carry_before_relay in H; try eassumption.
+       erewrite carry_before_relay9 in H; try eassumption.
        simpl in H; rewrite H6 in H; discriminate H.
 
        eapply min_neq_lt in M4; [ idtac | eauto  | do 2 right; left; auto ].
@@ -3369,7 +3392,7 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
        apply negb_true_iff in H.
        rename H into Rxym.
        remember Hs4 as H; clear HeqH.
-       eapply carry_before_relay in H; [ idtac | eassumption ].
+       eapply carry_before_relay9 in H; [ idtac | eassumption ].
        simpl in H; rewrite H4 in H.
        rename H into Rxy_zm.
        exfalso; eapply case_2; try eassumption.
@@ -3384,7 +3407,7 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
       apply negb_false_iff in H.
       rename H into Cm.
       remember Hs5 as H; clear HeqH.
-      eapply carry_before_relay in H; [ idtac | eassumption ].
+      eapply carry_before_relay9 in H; [ idtac | eassumption ].
       simpl in H; rewrite H5 in H.
       rename H into Ryzm.
       remember Ht3 as H; clear HeqH.
@@ -3403,7 +3426,7 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
        unfold rm_add_i in H.
        rewrite H3, Bm, xorb_false_r, xorb_true_l in H.
        apply negb_false_iff in H.
-       erewrite carry_before_relay in H; try eassumption.
+       erewrite carry_before_relay9 in H; try eassumption.
        simpl in H; rewrite H6 in H; discriminate H.
 
     eapply min_neq_lt in M3; [ idtac | eauto  | right; left; auto ].
@@ -3416,7 +3439,7 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
       rewrite H6, Ht6, xorb_nilpotent, xorb_false_l in H.
       rename H into ABm.
       remember Hs3 as H; clear HeqH.
-      eapply carry_before_relay in H; [ idtac | eassumption ].
+      eapply carry_before_relay9 in H; [ idtac | eassumption ].
       simpl in H; rewrite H3 in H.
       rename H into A_BCm.
       pose proof (Hn3 m M3) as H.
@@ -3433,8 +3456,8 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
       destruct (eq_nat_dec di5 m) as [M5| M5].
        move M5 at top; subst di5.
        exists m, (negb u).
-       split; [ erewrite carry_before_relay; eassumption | idtac ].
-       split; [ erewrite carry_before_relay; eassumption | idtac ].
+       split; [ erewrite carry_before_relay9; eassumption | idtac ].
+       split; [ erewrite carry_before_relay9; eassumption | idtac ].
        split.
         pose proof (Hn3 m M3) as H.
         unfold rm_add_i in H.
@@ -3452,8 +3475,8 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
 
        eapply min_neq_lt in M5; [ idtac | eauto  | do 3 right; left; auto ].
        exists m, u.
-       split; [ erewrite carry_before_relay; eassumption | idtac ].
-       split; [ erewrite carry_before_relay; eassumption | idtac ].
+       split; [ erewrite carry_before_relay9; eassumption | idtac ].
+       split; [ erewrite carry_before_relay9; eassumption | idtac ].
        split.
         pose proof (Hn3 m M3) as H.
         unfold rm_add_i in H.
@@ -3482,7 +3505,7 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
       apply negb_false_iff in H.
       rename H into Rxym.
       remember Hs6 as H; clear HeqH.
-      eapply carry_before_relay in H; [ idtac | eassumption ].
+      eapply carry_before_relay9 in H; [ idtac | eassumption ].
       simpl in H; rewrite Rxym, H6 in H.
       move H at top; subst u.
       destruct (eq_nat_dec di5 m) as [M5| M5].
@@ -3503,15 +3526,15 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
        unfold rm_add_i in H.
        rewrite Bm, Ht4, xorb_true_l in H.
        apply negb_true_iff in H.
-       erewrite carry_before_relay in H; try eassumption.
+       erewrite carry_before_relay9 in H; try eassumption.
        simpl in H; rewrite H5 in H; discriminate H.
 
       eapply min_neq_lt in M4; eauto ; try (do 2 right; left; auto).
       destruct (eq_nat_dec di5 m) as [M5| M5].
        move M5 at top; subst di5.
        exists m, u.
-       split; [ erewrite carry_before_relay; eassumption | idtac ].
-       split; [ erewrite carry_before_relay; eassumption | idtac ].
+       split; [ erewrite carry_before_relay9; eassumption | idtac ].
+       split; [ erewrite carry_before_relay9; eassumption | idtac ].
        split.
         pose proof (Hn3 m M3) as H.
         unfold rm_add_i in H.
@@ -3586,7 +3609,7 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
      rewrite Hn5 in H; [ idtac | assumption ].
      rewrite negb_xorb_diag_l, xorb_true_l in H.
      apply negb_true_iff in H.
-     erewrite carry_before_relay in H; try eassumption.
+     erewrite carry_before_relay9 in H; try eassumption.
      simpl in H; rewrite H5 in H; discriminate H.
 
     eapply min_neq_lt in M3; eauto ; try (right; left; auto).
@@ -3598,8 +3621,8 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
 
       eapply min_neq_lt in M4; eauto ; try (do 2 right; left; auto).
       exists m, true.
-      split; [ erewrite carry_before_relay; eassumption | idtac ].
-      split; [ erewrite carry_before_relay; eassumption | idtac ].
+      split; [ erewrite carry_before_relay9; eassumption | idtac ].
+      split; [ erewrite carry_before_relay9; eassumption | idtac ].
       split.
        pose proof (Hn3 m M3) as H.
        unfold rm_add_i in H.
@@ -3631,7 +3654,7 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
       unfold rm_add_i in H.
       rewrite Bm, Ht4, xorb_true_l in H.
       apply negb_true_iff in H.
-      erewrite carry_before_relay in H; try eassumption.
+      erewrite carry_before_relay9 in H; try eassumption.
       simpl in H; rewrite H5 in H; discriminate H.
 
       eapply min_neq_lt in M4; eauto ; try (do 2 right; left; auto).
@@ -3671,7 +3694,7 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
     unfold rm_add_i in H.
     rewrite Hn5, negb_xorb_diag_l, xorb_true_l in H.
     apply negb_true_iff in H.
-    rewrite carry_before_inf_relay in H; [ idtac | assumption ].
+    rewrite carry_before_inf_relay9 in H; [ idtac | assumption ].
     discriminate H.
 
     eapply min_neq_lt in M3; eauto ; try (right; left; auto).
@@ -3684,7 +3707,7 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
       rewrite H6, Ht6, xorb_nilpotent, xorb_false_l in H.
       rename H into ABm.
       remember Hs3 as H; clear HeqH.
-      eapply carry_before_relay in H; [ idtac | eassumption ].
+      eapply carry_before_relay9 in H; [ idtac | eassumption ].
       simpl in H; rewrite H3 in H.
       rename H into A_BCm.
       pose proof (Hn3 m M3) as H.
@@ -3700,8 +3723,8 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
       eapply min_neq_lt in M4; [ idtac | eauto  | do 2 right; left; auto ].
       exists m, true.
       move H6 at top.
-      split; [ erewrite carry_before_relay; eassumption | idtac ].
-      split; [ erewrite carry_before_relay; eassumption | idtac ].
+      split; [ erewrite carry_before_relay9; eassumption | idtac ].
+      split; [ erewrite carry_before_relay9; eassumption | idtac ].
       split.
        pose proof (Hn3 m M3) as H.
        unfold rm_add_i in H.
@@ -3735,7 +3758,7 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
       unfold rm_add_i in H.
       rewrite Bm, Ht4, xorb_true_l in H.
       apply negb_true_iff in H.
-      rewrite carry_before_inf_relay in H; [ idtac | assumption ].
+      rewrite carry_before_inf_relay9 in H; [ idtac | assumption ].
       discriminate H.
 
       eapply min_neq_lt in M4; [ idtac | eauto  | do 2 right; left; auto ].
@@ -3772,7 +3795,7 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
     unfold rm_add_i in H.
     rewrite Hn5, negb_xorb_diag_l, xorb_true_l in H.
     apply negb_true_iff in H.
-    rewrite carry_before_inf_relay in H; [ idtac | assumption ].
+    rewrite carry_before_inf_relay9 in H; [ idtac | assumption ].
     discriminate H.
 
     eapply min_neq_lt in M3; eauto ; try (right; left; auto).
@@ -3790,7 +3813,7 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
      unfold rm_add_i in H.
      rewrite Bm, Ht4, xorb_true_l in H.
      apply negb_true_iff in H.
-     rewrite carry_before_inf_relay in H; [ idtac | assumption ].
+     rewrite carry_before_inf_relay9 in H; [ idtac | assumption ].
      discriminate H.
 
      eapply min_neq_lt in M4; [ idtac | eauto  | left; auto ].
@@ -3831,7 +3854,7 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
       rewrite H6, Ht6, xorb_nilpotent, xorb_false_l in H.
       rename H into ABm.
       remember Hs3 as H; clear HeqH.
-      eapply carry_before_inf_relay in H; simpl in H.
+      eapply carry_before_inf_relay9 in H; simpl in H.
       rename H into A_BCm.
       pose proof (Hn3 m) as H.
       rewrite H6 in H.
@@ -3849,15 +3872,15 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
       rewrite Hn6 in H; [ idtac | assumption ].
       rewrite negb_xorb_diag_l, xorb_true_l in H.
       apply negb_false_iff in H.
-      erewrite carry_before_relay in H; try eassumption.
+      erewrite carry_before_relay9 in H; try eassumption.
       simpl in H; rewrite H6 in H; discriminate H.
 
      eapply min_neq_lt in M4; eauto ; try (right; left; auto).
      destruct (eq_nat_dec di6 m) as [M6| M6].
       move M6 at top; subst di6.
       exists m, (negb u).
-      split; [ rewrite carry_before_inf_relay; auto | idtac ].
-      split; [ erewrite carry_before_relay; eassumption | idtac ].
+      split; [ rewrite carry_before_inf_relay9; auto | idtac ].
+      split; [ erewrite carry_before_relay9; eassumption | idtac ].
       split.
        pose proof (Hn3 m) as H.
        unfold rm_add_i in H.
@@ -3875,8 +3898,8 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
 
       eapply min_neq_lt in M6; eauto ; try (left; auto).
       exists m, u.
-      split; [ rewrite carry_before_inf_relay; auto | idtac ].
-      split; [ erewrite carry_before_relay; eassumption | idtac ].
+      split; [ rewrite carry_before_inf_relay9; auto | idtac ].
+      split; [ erewrite carry_before_relay9; eassumption | idtac ].
       split.
        pose proof (Hn3 m) as H.
        unfold rm_add_i in H.
@@ -3906,7 +3929,7 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
       rewrite H6, Ht6, xorb_nilpotent, xorb_false_l in H.
       rename H into ABm.
       remember Hs3 as H; clear HeqH.
-      eapply carry_before_inf_relay in H; simpl in H.
+      eapply carry_before_inf_relay9 in H; simpl in H.
       rename H into A_BCm.
       pose proof (Hn3 m) as H.
       rewrite H6 in H.
@@ -3929,21 +3952,21 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
       unfold rm_add_i in H.
       rewrite Bm, Ht4, xorb_true_l in H.
       apply negb_true_iff in H.
-      erewrite carry_before_relay in H; try eassumption.
+      erewrite carry_before_relay9 in H; try eassumption.
       simpl in H; rewrite H5 in H; move H at top; subst u.
       remember H4 as H; clear HeqH.
       unfold rm_add_i in H.
       rewrite Am, Bm, xorb_true_l in H.
       apply negb_false_iff in H.
-      erewrite carry_before_relay in H; try eassumption.
+      erewrite carry_before_relay9 in H; try eassumption.
       simpl in H; rewrite H6 in H; discriminate H.
 
      eapply min_neq_lt in M4; eauto ; try (right; left; auto).
      destruct (eq_nat_dec di6 m) as [M6| M6].
       move M6 at top; subst di6.
       exists m, u.
-      split; [ rewrite carry_before_inf_relay; auto | idtac ].
-      split; [ erewrite carry_before_relay; eassumption | idtac ].
+      split; [ rewrite carry_before_inf_relay9; auto | idtac ].
+      split; [ erewrite carry_before_relay9; eassumption | idtac ].
       split.
        pose proof (Hn3 m) as H.
        unfold rm_add_i in H.
@@ -4000,8 +4023,8 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
 
      eapply min_neq_lt in M4; eauto ; try (right; left; auto).
      exists m, true.
-     split; [ rewrite carry_before_inf_relay; auto | idtac ].
-     split; [ erewrite carry_before_relay; eassumption | idtac ].
+     split; [ rewrite carry_before_inf_relay9; auto | idtac ].
+     split; [ erewrite carry_before_relay9; eassumption | idtac ].
      split.
       pose proof (Hn3 m) as H.
       unfold rm_add_i in H.
@@ -4031,7 +4054,7 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
      unfold rm_add_i in H.
      rewrite Bm, Ht4, xorb_true_l in H.
      apply negb_true_iff in H.
-     erewrite carry_before_relay in H; try eassumption.
+     erewrite carry_before_relay9 in H; try eassumption.
      simpl in H; rewrite H5 in H.
      discriminate H.
 
@@ -4068,7 +4091,7 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
      rewrite H6, Ht6, xorb_nilpotent, xorb_false_l in H.
      rename H into ABm.
      remember Hs3 as H; clear HeqH.
-     eapply carry_before_inf_relay in H; simpl in H.
+     eapply carry_before_inf_relay9 in H; simpl in H.
      rename H into A_BCm.
      pose proof (Hn3 m) as H.
      rewrite H6 in H.
@@ -4091,15 +4114,15 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
      unfold rm_add_i in H.
      rewrite Bm, Ht4, xorb_true_l in H.
      apply negb_true_iff in H.
-     rewrite carry_before_inf_relay in H; [ idtac | assumption ].
+     rewrite carry_before_inf_relay9 in H; [ idtac | assumption ].
      discriminate H.
 
     eapply min_neq_lt in M4; eauto ; try (right; left; auto).
     destruct (eq_nat_dec di6 m) as [M6| M6].
      move M6 at top; subst di6.
      exists m, true.
-     split; [ rewrite carry_before_inf_relay; auto | idtac ].
-     split; [ erewrite carry_before_relay; eassumption | idtac ].
+     split; [ rewrite carry_before_inf_relay9; auto | idtac ].
+     split; [ erewrite carry_before_relay9; eassumption | idtac ].
      split.
       pose proof (Hn3 m) as H.
       unfold rm_add_i in H.
@@ -4148,7 +4171,7 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
    unfold rm_add_i in H.
    rewrite Bm, Ht4, xorb_true_l in H.
    apply negb_true_iff in H.
-   rewrite carry_before_inf_relay in H; [ idtac | assumption ].
+   rewrite carry_before_inf_relay9 in H; [ idtac | assumption ].
    discriminate H.
 Qed.
 

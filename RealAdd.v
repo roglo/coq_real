@@ -357,11 +357,11 @@ destruct sx as [dx| ].
     rewrite negb_involutive in H.
     rewrite <- Nat.add_succ_l in H.
     symmetry in Hsx.
-    erewrite carry_before_relay in H; [ idtac | eassumption | auto ].
+    erewrite carry_before_relay9 in H; [ idtac | eassumption | auto ].
     symmetry in Hsy.
     simpl in H.
     do 2 rewrite <- Nat.add_succ_l in H.
-    rewrite carry_before_inf_relay in H; [ idtac | assumption ].
+    rewrite carry_before_inf_relay9 in H; [ idtac | assumption ].
     simpl in H; rewrite Htx in H; discriminate H.
 
     subst di.
@@ -383,7 +383,7 @@ destruct sx as [dx| ].
      rewrite Htx, Hny, xorb_false_l, xorb_true_l in H.
      symmetry in H, Hsx, Hsy.
      rewrite <- Nat.add_succ_l in H.
-     rewrite carry_before_inf_relay in H; [ simpl in H | assumption ].
+     rewrite carry_before_inf_relay9 in H; [ simpl in H | assumption ].
      symmetry in H.
      unfold carry in H; simpl in H.
      remember (fst_same x 0 (S (S (i + dx)))) as s1 eqn:Hs1 .
@@ -404,14 +404,14 @@ destruct sx as [dx| ].
       apply negb_sym in H.
       rewrite negb_involutive in H.
       rewrite <- Nat.add_succ_l in H.
-      rewrite carry_before_inf_relay in H; [ idtac | assumption ].
+      rewrite carry_before_inf_relay9 in H; [ idtac | assumption ].
       symmetry in H, Hs1.
       replace dx with (dx + 0)%nat in H by apply Nat.add_0_r.
       simpl in H.
       rewrite Nat.add_succ_r, Nat.add_assoc in H.
       do 2 rewrite <- Nat.add_succ_l in H.
       assert (0 < S di1)%nat as HH by apply Nat.lt_0_succ.
-      erewrite carry_before_relay in H; try eassumption.
+      erewrite carry_before_relay9 in H; try eassumption.
       simpl in H.
       rewrite Hx1 in H; discriminate H.
 
@@ -426,7 +426,7 @@ destruct sx as [dx| ].
      rewrite Hny, xorb_false_l, xorb_true_l in H.
      symmetry in H, Hsx, Hsy.
      rewrite <- Nat.add_succ_l in H.
-     rewrite carry_before_inf_relay in H; [ simpl in H | assumption ].
+     rewrite carry_before_inf_relay9 in H; [ simpl in H | assumption ].
      symmetry in H.
      unfold carry in H; simpl in H.
      remember (fst_same x 0 (S (S (i + (dx + S n))))) as s1 eqn:Hs1 .
@@ -449,7 +449,7 @@ destruct sx as [dx| ].
       apply negb_sym in H.
       rewrite negb_involutive in H.
       rewrite <- Nat.add_succ_l in H.
-      rewrite carry_before_inf_relay in H; [ idtac | assumption ].
+      rewrite carry_before_inf_relay9 in H; [ idtac | assumption ].
       symmetry in H, Hs1.
       remember (S i + S (dx + S n))%nat as z.
       replace (S z) with (S z + 0)%nat in H by apply Nat.add_0_r.
@@ -458,7 +458,7 @@ destruct sx as [dx| ].
       rewrite <- Nat.add_succ_l in H.
       rewrite <- Nat.add_succ_r in Hs1.
       assert (0 < S di1)%nat as HH by apply Nat.lt_0_succ.
-      erewrite carry_before_relay in H; try eassumption.
+      erewrite carry_before_relay9 in H; try eassumption.
       simpl in H.
       do 4 rewrite Nat.add_succ_r in H.
       do 3 rewrite Nat.add_succ_r in Hx1.
@@ -493,9 +493,9 @@ destruct sx as [dx| ].
    rewrite negb_involutive in H.
    rewrite <- Nat.add_succ_l in H.
    symmetry in Hsy.
-   erewrite carry_before_relay in H; [ idtac | eassumption | auto ].
+   erewrite carry_before_relay9 in H; [ idtac | eassumption | auto ].
    symmetry in Hsx.
-   rewrite carry_before_inf_relay in H; [ idtac | assumption ].
+   rewrite carry_before_inf_relay9 in H; [ idtac | assumption ].
    simpl in H; rewrite Hty in H; discriminate H.
 
    subst di.
@@ -521,9 +521,9 @@ destruct sx as [dx| ].
    rewrite negb_involutive in H.
    rewrite <- Nat.add_succ_l in H.
    symmetry in Hsy.
-   erewrite carry_before_relay in H; [ idtac | eassumption | auto ].
+   erewrite carry_before_relay9 in H; [ idtac | eassumption | auto ].
    symmetry in Hsx.
-   rewrite carry_before_inf_relay in H; [ idtac | assumption ].
+   rewrite carry_before_inf_relay9 in H; [ idtac | assumption ].
    simpl in H; rewrite Hty in H; discriminate H.
 
    subst di; assumption.
@@ -544,7 +544,7 @@ destruct sx as [dx| ].
     rewrite Hnx, Hty, xorb_false_l, xorb_true_l in H.
     symmetry in Hsx, Hsy.
     rewrite <- Nat.add_succ_l in H.
-    rewrite carry_before_inf_relay in H; [ simpl in H | assumption ].
+    rewrite carry_before_inf_relay9 in H; [ simpl in H | assumption ].
     symmetry in H.
     unfold carry in H; simpl in H.
     remember (fst_same y 0 (S (S (i + dy)))) as s1 eqn:Hs1 .
@@ -568,7 +568,7 @@ destruct sx as [dx| ].
      rewrite negb_involutive in H.
      rewrite <- Nat.add_succ_l in H.
      symmetry in H.
-     rewrite carry_before_inf_relay in H; [ idtac | assumption ].
+     rewrite carry_before_inf_relay9 in H; [ idtac | assumption ].
      symmetry in H, Hs1.
      replace dy with (dy + 0)%nat in H by apply Nat.add_0_r.
      simpl in H.
@@ -576,7 +576,7 @@ destruct sx as [dx| ].
      do 2 rewrite <- Nat.add_succ_l in H.
      clear HH.
      assert (0 < S di1)%nat as HH by apply Nat.lt_0_succ.
-     erewrite carry_before_relay in H; try eassumption.
+     erewrite carry_before_relay9 in H; try eassumption.
      simpl in H.
      rewrite Hx1 in H; discriminate H.
 
@@ -594,7 +594,7 @@ destruct sx as [dx| ].
     rewrite Hnx, HH, xorb_false_l, xorb_true_l in H.
     symmetry in Hsx, Hsy.
     rewrite <- Nat.add_succ_l in H.
-    rewrite carry_before_inf_relay in H; [ simpl in H | assumption ].
+    rewrite carry_before_inf_relay9 in H; [ simpl in H | assumption ].
     symmetry in H.
     unfold carry in H; simpl in H.
     remember (fst_same y 0 (S (S (i + (dy + S n))))) as s1 eqn:Hs1 .
@@ -615,7 +615,7 @@ destruct sx as [dx| ].
      rewrite <- Nat.add_succ_r in H.
      rewrite Hnx, xorb_true_l in H.
      rewrite <- Nat.add_succ_l in H.
-     erewrite carry_before_inf_relay in H; [ idtac | assumption ].
+     erewrite carry_before_inf_relay9 in H; [ idtac | assumption ].
      apply negb_sym in H; simpl in H.
      rewrite Nat.add_succ_r in H.
      remember (S (S (i + (dy + S n)))) as z.
@@ -623,7 +623,7 @@ destruct sx as [dx| ].
      subst z.
      symmetry in Hs1.
      assert (0 < S di1)%nat as HHH by apply Nat.lt_0_succ.
-     erewrite carry_before_relay in H; try eassumption.
+     erewrite carry_before_relay9 in H; try eassumption.
      simpl in H.
      rewrite Hx1 in H; discriminate H.
 Qed.
@@ -958,7 +958,7 @@ bbb.
       symmetry in Hsx, Hsy, Hsz.
       replace 1%nat with (S (0 + 0)) in H by reflexivity.
       assert (0 < S dx)%nat as Hdx by apply Nat.lt_0_succ.
-      erewrite carry_before_relay in H; try eassumption.
+      erewrite carry_before_relay9 in H; try eassumption.
       simpl in H; rewrite Htx in H; simpl in H.
       unfold carry in H; simpl in H.
       remember (fst_same y 0 1) as s4 eqn:Hs4 .
