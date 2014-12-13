@@ -910,8 +910,18 @@ destruct sx as [dx| ].
         rewrite Hny in Hc3; [ idtac | apply Nat.lt_0_succ ].
         discriminate Hc3.
 
+       destruct (lt_eq_lt_dec di1 di3) as [[H1| H1]| H1].
+        remember H1 as H; clear HeqH.
+        apply Nat.succ_lt_mono in H.
+        apply Hn3 in H.
+        rewrite Ht1 in H; simpl in H.
+        eapply rm_eq_neq_if in H; try eassumption.
+        destruct H as [(Hyx, Hxx)| (Hyx, Hxx)]; simpl in Hyx, Hxx.
+bbb.
+
        destruct dx.
         destruct (lt_eq_lt_dec di1 di3) as [[H1| H1]| H1].
+bbb.
          remember H1 as H; clear HeqH.
          apply Nat.succ_lt_mono in H.
          apply Hn3 in H.
