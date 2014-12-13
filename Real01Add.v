@@ -105,6 +105,16 @@ rewrite Nat.add_sub_assoc; [ idtac | apply Nat.lt_le_incl; assumption ].
 rewrite Nat.add_comm, Nat.add_sub; reflexivity.
 Qed.
 
+Theorem nat_le_sub_add_r : ∀ a b c,
+  a ≤ b
+  → c = b - a
+  → b = a + c.
+Proof.
+intros a b c Hab Hc; subst c.
+rewrite Nat.add_sub_assoc; [ idtac | assumption ].
+rewrite Nat.add_comm, Nat.add_sub; reflexivity.
+Qed.
+
 Theorem le_neq_lt : ∀ a b : nat, a ≤ b → a ≠ b → (a < b)%nat.
 Proof.
 intros a b Hab Hnab.
@@ -2381,25 +2391,16 @@ Qed.
 
 Theorem carry_before_relay : ∀ x y i di,
   fst_same x y i = Some di
-  → ∀ dj, dj ≤ di → carry x y (i + dj) = x.[i + di].
+  → ∀ j, i ≤ j ≤ i + di → carry x y j = x.[i + di].
 Proof.
-intros x y i di Hs dj Hdj.
+intros x y i di Hs j Hiji.
 unfold carry; simpl.
-remember (fst_same x y (i + dj)) as s2 eqn:Hs2 .
-symmetry in Hs2.
-eapply fst_same_in_range in Hs2; try eassumption.
- subst s2.
- rewrite Nat.add_sub_assoc.
-  rewrite Nat.add_comm, Nat.add_sub; reflexivity.
-
-  apply Nat.add_le_mono_l; assumption.
-
- split.
-  apply Nat.le_sub_le_add_l.
-  rewrite Nat.sub_diag.
-  apply Nat.le_0_l.
-
-  apply Nat.add_le_mono_l; assumption.
+remember (fst_same x y j) as s1 eqn:Hs1 .
+symmetry in Hs1.
+eapply fst_same_in_range in Hs1; try eassumption.
+subst s1.
+rewrite Nat.add_sub_assoc; [ idtac | destruct Hiji; assumption ].
+rewrite Nat.add_comm, Nat.add_sub; reflexivity.
 Qed.
 
 (* old version that should be removed one day *)
@@ -2408,24 +2409,32 @@ Theorem carry_before_relay9 : ∀ x y i di,
   → ∀ dj, dj < di → carry x y (S (i + dj)) = x.[i + di].
 Proof.
 intros x y i di Hs dj Hdj.
+apply carry_before_relay; [ assumption | idtac ].
 rewrite <- Nat.add_succ_r.
-apply carry_before_relay; assumption.
+split.
+ apply Nat.le_sub_le_add_l.
+ rewrite Nat.sub_diag.
+ apply Nat.le_0_l.
+
+ apply Nat.add_le_mono_l; assumption.
 Qed.
 
 Theorem carry_before_inf_relay : ∀ x y i,
   fst_same x y i = None
-  → ∀ dj, carry x y (i + dj) = true.
+  → ∀ j, i ≤ j → carry x y j = true.
 Proof.
-intros x y i Hs dj.
+intros x y i Hs j Hij.
 unfold carry; simpl.
-remember (fst_same x y (i + dj)) as s2 eqn:Hs2 .
-apply fst_same_sym_iff in Hs2; simpl in Hs2.
-destruct s2 as [di2| ]; [ idtac | reflexivity ].
+remember (fst_same x y j) as s1 eqn:Hs1 .
+apply fst_same_sym_iff in Hs1; simpl in Hs1.
+destruct s1 as [di1| ]; [ idtac | reflexivity ].
 apply fst_same_iff in Hs; simpl in Hs.
-destruct Hs2 as (_, Hs2).
-rewrite <- Nat.add_assoc in Hs2.
-rewrite Hs in Hs2.
-exfalso; revert Hs2; apply no_fixpoint_negb.
+destruct Hs1 as (_, Hs1).
+remember (j - i) as n eqn:Hn .
+apply nat_le_sub_add_r in Hn; [ subst j | assumption ].
+rewrite <- Nat.add_assoc in Hs1.
+rewrite Hs in Hs1.
+exfalso; revert Hs1; apply no_fixpoint_negb.
 Qed.
 
 (* old version that should be removed one day *)
@@ -2434,8 +2443,11 @@ Theorem carry_before_inf_relay9 : ∀ x y i,
   → ∀ dj, carry x y (S (i + dj)) = true.
 Proof.
 intros x y i Hs dj.
+eapply carry_before_inf_relay; [ eassumption | idtac ].
 rewrite <- Nat.add_succ_r.
-apply carry_before_inf_relay; assumption.
+apply Nat.le_sub_le_add_l.
+rewrite Nat.sub_diag.
+apply Nat.le_0_l.
 Qed.
 
 Theorem carry_sum_3_norm_assoc_l : ∀ z0 x y z i,

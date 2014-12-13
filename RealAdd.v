@@ -916,6 +916,12 @@ destruct sx as [dx| ].
          apply Hn3 in H.
          rewrite Ht1 in H; simpl in H.
 bbb.
+         unfold carry in Hc2; simpl in Hc2.
+         remember (fst_same (x + z) 0 0) as s1 eqn:Hs1 .
+         destruct s1 as [di2| ]; [ idtac | discriminate Hc2 ].
+         apply fst_same_sym_iff in Hs1; simpl in Hs1.
+         destruct Hs1 as (Hs1, _).
+bbb.
 
      0   -   di1 -  di3
   x  0   u   1   .   .
