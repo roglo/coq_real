@@ -908,12 +908,19 @@ destruct sx as [dx| ].
 
         rewrite Hny in Hc3; [ idtac | apply Nat.lt_0_succ ].
         discriminate Hc3.
+
+       destruct dx.
+        destruct (lt_eq_lt_dec di1 di3) as [[H1| H1]| H1].
+         remember H1 as H; clear HeqH.
+         apply Nat.succ_lt_mono in H.
+         apply Hn3 in H.
+         rewrite Ht1 in H; simpl in H.
 bbb.
 
-     0   -   dx  .   dy
-  x  1   1   0   1   1   1 …
-  y  .   .   .   01  0   0 …
-  z  .
+     0   -   di1 -  di3
+  x  0   u   1   .   .
+  y  0   u   0   .   0
+  z  1  ¬u   1   .   0
 
    eapply case_2; try eassumption.
    unfold carry; simpl.
