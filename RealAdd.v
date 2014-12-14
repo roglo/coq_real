@@ -1140,6 +1140,30 @@ destruct sx as [dx| ].
        discriminate H.
 
        subst dj3.
+       unfold carry in Hc1; simpl in Hc1.
+       remember (fst_same x z 0) as s1 eqn:Hs1 .
+       destruct s1 as [dj1| ]; [ idtac | clear Hc1 ].
+        apply fst_same_sym_iff in Hs1; simpl in Hs1.
+        destruct Hs1 as (Hn1, Ht1).
+        rewrite Hc1 in Ht1; symmetry in Ht1.
+        destruct (lt_eq_lt_dec dj1 dy) as [[H1| H1]| H1].
+         remember H1 as H; clear HeqH.
+         apply Hn3 in H.
+         rewrite Hny in H; [ idtac | assumption ].
+         rewrite Ht1 in H; discriminate H.
+
+         subst dj1.
+         rewrite Ht3 in Ht1; discriminate Ht1.
+
+         pose proof (Hxy (dj1 - S dy)%nat) as H.
+         rewrite Nat.add_succ_r, <- Nat.add_succ_l in H.
+         rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+         rewrite Nat.add_comm, Nat.add_sub, Hc1 in H.
+         discriminate H.
+
+        remember Hs1 as H; clear HeqH.
+        apply fst_same_sym_iff in H; simpl in H.
+        rename H into Ht1.
 bbb.
 
      .   dy
