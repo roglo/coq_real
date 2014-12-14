@@ -1105,7 +1105,11 @@ destruct sx as [dx| ].
     apply Hnx in H.
     eapply rm_eq_neq_if in H; try eassumption.
     destruct H as [(Hxy, Hyy)| (Hxy, Hyy)]; simpl in Hxy, Hyy.
-     Focus 1.
+     pose proof (Hxy (dx - dy)%nat) as H.
+     apply Nat.lt_le_incl in H1.
+     rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+     rewrite Nat.add_comm, Nat.add_sub, Htx in H.
+     discriminate H.
 bbb.
 
      .   dy  -   dx
