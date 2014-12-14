@@ -1012,13 +1012,44 @@ destruct sx as [dx| ].
      remember Hx1 as H; clear HeqH.
      eapply rm_eq_neq_if in H; try eassumption.
      destruct H as [(Hxy, Hyy)| (Hxy, Hyy)]; simpl in Hxy, Hyy.
-     Focus 1.
+      destruct di3.
+       simpl in Hxy; rewrite Hxy in Htx; discriminate Htx.
+
+       pose proof (Hf di3) as H.
+       unfold rm_add_i in H; simpl in H.
+       rewrite Hn3 in H; [ idtac | apply Nat.lt_succ_diag_r ].
+       rewrite Hxz in H.
+       rewrite xorb_false_r in H.
+       apply xorb_move_l_r_1 in H.
+       rewrite <- xorb_assoc, xorb_nilpotent, xorb_false_l in H.
+       replace (S di3) with (S di3 + 0)%nat in H by apply Nat.add_0_r.
+       rewrite carry_before_inf_relay in H.
+        rewrite carry_before_relay with (di := O) in H.
+         rewrite Nat.add_0_r, Hc3 in H; discriminate H.
+
+         apply fst_same_iff; simpl.
+         simpl in Hyy.
+         split; [ idtac | rewrite Hyy; reflexivity ].
+         intros dj Hdj.
+         exfalso; revert Hdj; apply Nat.nlt_0_r.
+
+         reflexivity.
+
+        apply fst_same_iff; simpl.
+        intros dj; apply Hxy.
+
+      destruct di3.
+       destruct dx; [ rewrite Htx in Hx1; discriminate Hx1 | idtac ].
+       rewrite Hny in Hc3; [ idtac | apply Nat.lt_0_succ ].
+       discriminate Hc3.
+
+       Focus 1.
 bbb.
 
      .   dx  -  di3
-  x  .   .   .   1   1   1   1 …
-  y  .   .   .   0   0   0   0 …
-  z  .   .   .   0   0   0   0 …
+  x  .   .   u   1   1   1   1 …
+  y  .   .   u   0   0   0   0 …
+  z  .   .  ¬u   0   0   0   0 …
 
    eapply case_2; try eassumption.
    unfold carry; simpl.
