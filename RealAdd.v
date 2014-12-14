@@ -1081,7 +1081,6 @@ destruct sx as [dx| ].
          rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
          rewrite Nat.add_comm, Nat.add_sub in H.
          rewrite Hc3, Ht3 in H; discriminate H.
-         rewrite Hc3, Ht3 in H; discriminate H.
 
         subst j.
         rewrite Hc3, Ht3, xorb_false_l.
@@ -1091,7 +1090,18 @@ destruct sx as [dx| ].
         rewrite <- Nat.add_succ_r, <- Nat.add_succ_l.
         apply Hyy.
 
-        Focus 1.
+        remember (j - S (S di3))%nat as v eqn:Hv .
+        apply nat_sub_add_r in Hv; [ idtac | assumption ].
+        subst j.
+        rewrite Hyy, xorb_true_l.
+        rewrite <- Hxz, Hxy, xorb_false_l.
+        unfold carry.
+        remember (fst_same y z (S (S di3 + S v))) as s2 eqn:Hs2 .
+        destruct s2 as [dj2| ]; [ idtac | reflexivity ].
+        rewrite <- Nat.add_succ_r, <- Nat.add_assoc.
+        apply Hyy.
+
+    Focus 1.
 bbb.
 
      .   dx  -  di3
