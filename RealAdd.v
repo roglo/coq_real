@@ -1110,11 +1110,21 @@ destruct sx as [dx| ].
      rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
      rewrite Nat.add_comm, Nat.add_sub, Htx in H.
      discriminate H.
+
+     destruct (lt_dec (S dy) dx) as [H2| H2].
+      remember H2 as H; clear HeqH.
+      apply Hnx in H.
+      rewrite <- Nat.add_1_r, Hxy in H.
+      discriminate H.
+
+      apply Nat.nlt_ge in H2.
+      apply Nat.le_antisymm in H2; [ idtac | assumption ].
+      subst dx; clear H1.
 bbb.
 
-     .   dy  -   dx
-  x  1   1   1   0
-  y  1   0
+     .   dy  dx
+  x  1   1   0   0   0   0 …
+  y  1   0   1   1   1   1 …
   z
 
    eapply case_2; try eassumption.
