@@ -1122,10 +1122,10 @@ destruct sx as [dx| ].
       subst dx; clear H1.
 bbb.
 
-     .   dy  dx
+     .   dy
   x  1   1   0   0   0   0 …
   y  1   0   1   1   1   1 …
-  z
+  z  .   .   .   .   .   .
 
    eapply case_2; try eassumption.
    unfold carry; simpl.
