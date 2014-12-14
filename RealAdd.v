@@ -1043,13 +1043,67 @@ destruct sx as [dx| ].
        rewrite Hny in Hc3; [ idtac | apply Nat.lt_0_succ ].
        discriminate Hc3.
 
-       Focus 1.
+       replace O with (0 + 0)%nat in Hc4 by reflexivity.
+       rewrite carry_before_inf_relay in Hc4; [ discriminate Hc4 | idtac ].
+       apply fst_same_iff; simpl.
+       intro j.
+       unfold rm_add_i.
+       destruct (lt_eq_lt_dec j (S di3)) as [[H1| H1]| H1].
+        rewrite Hn3; [ idtac | assumption ].
+        rewrite negb_xorb_diag_l.
+        apply negb_true_iff.
+        unfold carry; simpl.
+        remember (fst_same y z (S j)) as s2 eqn:Hs2 .
+        apply fst_same_sym_iff in Hs2; simpl in Hs2.
+        destruct s2 as [dj2| ].
+         destruct Hs2 as (Hn2, Hs2).
+         destruct (lt_eq_lt_dec (j + dj2) di3) as [[H2| H2]| H2].
+          remember H2 as H; clear HeqH.
+          apply Nat.succ_lt_mono in H.
+          apply Hn3 in H.
+          rewrite Hs2 in H; symmetry in H.
+          exfalso; revert H; apply no_fixpoint_negb.
+
+          rewrite H2; assumption.
+
+          destruct dj2; [ exfalso; omega | idtac ].
+          remember H2 as H; clear HeqH.
+          assert (0 < S dj2)%nat as HH by apply Nat.lt_0_succ.
+          apply lt_add_sub_lt_r with (d := O) in H; try assumption.
+          apply Hn2 in H.
+          apply le_S_n in H1.
+          rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+          rewrite Nat.add_comm, Nat.add_sub in H.
+          rewrite Hc3, Ht3 in H; discriminate H.
+
+         pose proof (Hs2 (di3 - j)%nat) as H.
+         apply le_S_n in H1.
+         rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+         rewrite Nat.add_comm, Nat.add_sub in H.
+         rewrite Hc3, Ht3 in H; discriminate H.
+         rewrite Hc3, Ht3 in H; discriminate H.
+
+        subst j.
+        rewrite Hc3, Ht3, xorb_false_l.
+        unfold carry; simpl.
+        remember (fst_same y z (S (S di3))) as s2 eqn:Hs2 .
+        destruct s2 as [dj2| ]; [ idtac | reflexivity ].
+        rewrite <- Nat.add_succ_r, <- Nat.add_succ_l.
+        apply Hyy.
+
+        Focus 1.
 bbb.
 
      .   dx  -  di3
-  x  .   .   u   1   0   0   0 …
-  y  .   .   u   0   1   1   1 …
-  z  .   .  ¬u   0   1   1   1 …
+  x  1   0   u   1   0   0   0 …
+  y  1   0   u   0   1   1   1 …
+  z  0   1  ¬u   0   1   1   1 …
+
+  x = 0,1001000...
+  y = 0,1000111...
+  z = 0,0110111...
+x+z = 0,0000000...
+y+z = 0,1111111...
 
    eapply case_2; try eassumption.
    unfold carry; simpl.
