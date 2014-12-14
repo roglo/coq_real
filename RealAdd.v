@@ -1211,12 +1211,19 @@ destruct sx as [dx| ].
           destruct s5 as [dj5| ]; [ idtac | discriminate Hc4 ].
           rewrite Hyy in Hc4; discriminate Hc4.
 
+bbb.
           destruct (lt_eq_lt_dec di4 dy) as [[H1| H1]| H1].
            remember H1 as H; clear HeqH.
            apply Nat.succ_lt_mono in H.
            rewrite Hn3 in Hc4; [ idtac | assumption ].
            rewrite negb_xorb_diag_l, xorb_true_l in Hc4.
            apply negb_false_iff in Hc4.
+           unfold carry in Hc4; simpl in Hc4.
+           remember (fst_same y z (S (S di4))) as s5 eqn:Hs5 .
+           destruct s5 as [dj5| ]; [ idtac | clear Hc4 ].
+            apply fst_same_sym_iff in Hs5; simpl in Hs5.
+            destruct Hs5 as (Hn5, Ht5).
+            rewrite Hc4 in Ht5; symmetry in Ht5.
 bbb.
 
      .   dy
