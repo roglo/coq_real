@@ -1101,19 +1101,17 @@ destruct sx as [dx| ].
         rewrite <- Nat.add_succ_r, <- Nat.add_assoc.
         apply Hyy.
 
-    Focus 1.
+    remember H1 as H; clear HeqH.
+    apply Hnx in H.
+    eapply rm_eq_neq_if in H; try eassumption.
+    destruct H as [(Hxy, Hyy)| (Hxy, Hyy)]; simpl in Hxy, Hyy.
+     Focus 1.
 bbb.
 
-     .   dx  -  di3
-  x  1   0   u   1   0   0   0 …
-  y  1   0   u   0   1   1   1 …
-  z  0   1  ¬u   0   1   1   1 …
-
-  x = 0,1001000...
-  y = 0,1000111...
-  z = 0,0110111...
-x+z = 0,0000000...
-y+z = 0,1111111...
+     .   dy  -   dx
+  x  1   1   1   0
+  y  1   0
+  z
 
    eapply case_2; try eassumption.
    unfold carry; simpl.
