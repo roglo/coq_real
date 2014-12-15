@@ -1211,7 +1211,6 @@ destruct sx as [dx| ].
           destruct s5 as [dj5| ]; [ idtac | discriminate Hc4 ].
           rewrite Hyy in Hc4; discriminate Hc4.
 
-bbb.
           destruct (lt_eq_lt_dec di4 dy) as [[H1| H1]| H1].
            remember H1 as H; clear HeqH.
            apply Nat.succ_lt_mono in H.
@@ -1224,6 +1223,58 @@ bbb.
             apply fst_same_sym_iff in Hs5; simpl in Hs5.
             destruct Hs5 as (Hn5, Ht5).
             rewrite Hc4 in Ht5; symmetry in Ht5.
+            clear H.
+            destruct (lt_eq_lt_dec (S (di4 + dj5)) dy) as [[H2| H2]| H2].
+             remember H2 as H; clear HeqH.
+             apply Nat.succ_lt_mono in H.
+             apply Hn3 in H.
+             rewrite Ht5, Hc4 in H; discriminate H.
+
+             rewrite H2, Ht3 in Ht5; discriminate Ht5.
+
+             destruct dj5.
+              revert H1 H2; clear; intros; omega.
+
+              remember H2 as H; clear HeqH.
+              rewrite <- Nat.add_succ_l in H.
+              assert (0 < S dj5)%nat as HH by apply Nat.lt_0_succ.
+              eapply lt_add_sub_lt_r with (d := O) in H; try assumption.
+              apply Hn5 in H.
+              rewrite <- Nat.add_succ_l in H.
+              rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+              rewrite Nat.add_comm, Nat.add_sub in H.
+              rewrite Hc3, Ht3 in H; discriminate H.
+
+            apply fst_same_sym_iff in Hs5; simpl in Hs5.
+            clear H.
+            pose proof (Hs5 (dy - S di4)%nat) as H.
+            rewrite <- Nat.add_succ_l in H.
+            rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+            rewrite Nat.add_comm, Nat.add_sub in H.
+            rewrite Hc3, Ht3 in H; discriminate H.
+
+           subst di4.
+           rewrite Hty, Ht3, xorb_false_l in Hc4.
+           remember (S (S dy)) as u.
+           replace u with (u + 0)%nat in Hc4 by apply Nat.add_0_r.
+           subst u.
+           rewrite carry_before_relay with (di := O) in Hc4.
+            simpl in Hc4.
+            rewrite <- Nat.add_succ_l, <- Nat.add_succ_r in Hc4.
+            rewrite Hyy in Hc4; discriminate Hc4.
+
+            apply fst_same_iff; simpl.
+            split.
+             intros dj Hdj.
+             exfalso; revert Hdj; apply Nat.nlt_0_r.
+
+             rewrite <- Nat.add_succ_l, <- Nat.add_succ_r.
+             rewrite Hyy, <- negb_involutive.
+             rewrite <- Ht1, Hxy; reflexivity.
+
+            reflexivity.
+
+           Focus 1.
 bbb.
 
      .   dy
