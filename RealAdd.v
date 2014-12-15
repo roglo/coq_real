@@ -633,12 +633,11 @@ Theorem case_4 : ∀ x y z dx dy,
   → fst_same x 0 0 = Some dx
   → fst_same y 0 0 = Some dy
   → carry x z 0 = true
-  → carry (x + z) 0 0 = false
   → carry y z 0 = false
   → carry (y + z) 0 0 = false
   → False.
 Proof.
-intros x y z dx dy Hf_v Hsx Hsy Hc1 Hc2 Hc3 Hc4.
+intros x y z dx dy Hf_v Hsx Hsy Hc1 Hc3 Hc4.
 remember Hsx as H; clear HeqH.
 apply fst_same_iff in H; simpl in H.
 destruct H as (Hnx, Htx).
