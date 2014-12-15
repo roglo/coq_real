@@ -629,22 +629,25 @@ destruct sx as [dx| ].
 Qed.
 
 Theorem case_4 : ∀ x y z dx dy,
-  Some dx = fst_same x 0 0
-  → Some dy = fst_same y 0 0
-  → (∀ i : nat, rm_add_i x 0 i = rm_add_i y 0 i)
+  (x = y)%rm
+  → fst_same x 0 0 = Some dx
+  → fst_same y 0 0 = Some dy
   → carry x z 0 = true
   → carry (x + z) 0 0 = false
   → carry y z 0 = false
   → carry (y + z) 0 0 = false
-  → (∀ dj : nat, (dj < dx)%nat → x .[ dj] = true)
-  → x .[ dx] = false
-  → (∀ dj : nat, (dj < dy)%nat → y .[ dj] = true)
-  → y .[ dy] = false
-  → (x = y)%rm
   → False.
 Proof.
-intros x y z dx dy.
-intros Hsx Hsy Hf Hc1 Hc2 Hc3 Hc4 Hnx Htx Hny Hty Hf_v.
+intros x y z dx dy Hf_v Hsx Hsy Hc1 Hc2 Hc3 Hc4.
+remember Hsx as H; clear HeqH.
+apply fst_same_iff in H; simpl in H.
+destruct H as (Hnx, Htx).
+remember Hsy as H; clear HeqH.
+apply fst_same_iff in H; simpl in H.
+destruct H as (Hny, Hty).
+remember Hf_v as H; clear HeqH.
+unfold rm_eq in H; simpl in H.
+rename H into Hf.
 destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
   remember H1 as H; clear HeqH.
   apply Hny in H.
@@ -1326,13 +1329,13 @@ destruct sx as [dx| ].
    unfold carry; simpl.
    rewrite fst_same_comm, <- Hsy; reflexivity.
 
-   Focus 2.
+   symmetry in Hsx, Hsy.
+   eapply case_4 with (x := x); try eassumption.
+
    rewrite carry_comm in Hc4.
    eapply case_1; try eassumption.
    unfold carry; simpl.
    rewrite fst_same_comm, <- Hsy; reflexivity.
-
-   eapply case_4 with (x := x); try eassumption.
 
    destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
     remember H1 as H; clear HeqH.
