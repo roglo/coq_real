@@ -1355,6 +1355,7 @@ destruct sx as [dx| ].
    symmetry in Hsx, Hsy, Hf_v.
    eapply case_4 with (y := x); eassumption.
 
+(*
    remember (carry x 0 0) as c5 eqn:Hc5.
    remember (carry (0%rm + x) z 0) as c6 eqn:Hc6.
    symmetry in Hc5, Hc6.
@@ -1436,9 +1437,15 @@ destruct sx as [dx| ].
           destruct Hs2 as (Hn2, Ht2).
           rewrite Ht2 in Hc2; discriminate Hc2.
 bbb.
+     0   -  dj1  -  dj6
+  x  .   .   0   1   1   1   1   1 …
+  y  .   .   .   .   .   .
+  z  .   .   0   .   1   .
+
    rewrite carry_comm in Hc2.
    eapply case_3 with (x := 0%rm) (y := x) (z := z); try eassumption.
 bbb.
+*)
    destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
     remember H1 as H; clear HeqH.
     apply Hny in H.
