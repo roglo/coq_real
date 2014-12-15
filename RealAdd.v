@@ -1336,11 +1336,6 @@ destruct sx as [dx| ].
    unfold carry; simpl.
    rewrite fst_same_comm, <- Hsy; reflexivity.
 
-   Focus 3.
-   symmetry in Hsx, Hsy.
-   symmetry in Hf_v.
-   eapply case_4 with (y := x); eassumption.
-
    Focus 2.
    remember (carry 0 y 0) as c5 eqn:Hc5 .
    symmetry in Hc5.
@@ -1356,9 +1351,11 @@ destruct sx as [dx| ].
     rewrite carry_comm in Hc4.
     eapply case_1; eassumption.
 
-   Focus 1.
+   Focus 2.
+   symmetry in Hsx, Hsy.
+   symmetry in Hf_v.
+   eapply case_4 with (y := x); eassumption.
 
-bbb.
    destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
     remember H1 as H; clear HeqH.
     apply Hny in H.
