@@ -696,7 +696,7 @@ destruct sx as [dx| ].
    unfold carry; simpl.
    rewrite fst_same_comm, <- Hsy; reflexivity.
 
-   destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
+  destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
     remember H1 as H; clear HeqH.
     apply Hny in H.
     symmetry in Hf_v.
@@ -1314,8 +1314,14 @@ destruct sx as [dx| ].
 
             reflexivity.
 
+  destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
    Focus 1.
 bbb.
+     0   -   dx  -   dy
+  x  1   1   0   .   .
+  y  1   1   1   1   0
+  z  .
+
 
    eapply case_2; try eassumption.
 bbb.
