@@ -1314,8 +1314,38 @@ destruct sx as [dx| ].
 
             reflexivity.
 
-  destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
-   Focus 1.
+   destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
+    remember H1 as H; clear HeqH.
+    apply Hny in H.
+    rename H into Hy1.
+    symmetry in Hf_v.
+    remember Hy1 as H; clear HeqH.
+    eapply rm_eq_neq_if in H; try eassumption.
+    destruct H as [(Hyx, Hxx)| (Hyx, Hxx)]; simpl in Hyx, Hxx.
+     pose proof (Hyx (dy - dx)%nat) as H.
+     apply Nat.lt_le_incl in H1.
+     rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+     rewrite Nat.add_comm, Nat.add_sub, Hty in H.
+     discriminate H.
+
+     destruct (lt_dec (S dx) dy) as [H2| H2].
+      remember H2 as H; clear HeqH.
+      apply Hny in H.
+      rewrite <- Nat.add_1_r, Hyx in H.
+      discriminate H.
+
+      apply Nat.nlt_ge in H2.
+      apply Nat.le_antisymm in H2; [ idtac | assumption ].
+      subst dy; clear H1.
+
+bbb.
+   unfold carry in Hc1; simpl in Hc1.
+   remember (fst_same x z 0) as s1 eqn:Hs1 .
+   destruct s1 as [dj1| ]; [ idtac | discriminate Hc1 ].
+   remember Hs1 as H; clear HeqH.
+   apply fst_same_sym_iff in H; simpl in H.
+   destruct H as (Hn1, Ht1).
+   rewrite Hc1 in Ht1; symmetry in Ht1.
 bbb.
      0   -   dx  -   dy
   x  1   1   0   .   .
