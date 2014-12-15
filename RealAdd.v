@@ -1352,8 +1352,7 @@ destruct sx as [dx| ].
     eapply case_1; eassumption.
 
    Focus 2.
-   symmetry in Hsx, Hsy.
-   symmetry in Hf_v.
+   symmetry in Hsx, Hsy, Hf_v.
    eapply case_4 with (y := x); eassumption.
 
    destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
