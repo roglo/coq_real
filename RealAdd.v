@@ -1428,6 +1428,13 @@ destruct sx as [dx| ].
         destruct s8 as [dj8| ]; [ idtac | clear H ].
          destruct Hs8 as (Hn8, Ht8).
          rewrite Ht8 in H; discriminate H.
+
+         unfold carry in Hc2; simpl in Hc2.
+         remember (fst_same (x + z) 0 0) as s2 eqn:Hs2 .
+         apply fst_same_sym_iff in Hs2; simpl in Hs2.
+         destruct s2 as [dj2| ]; [ idtac | clear Hc2 ].
+          destruct Hs2 as (Hn2, Ht2).
+          rewrite Ht2 in Hc2; discriminate Hc2.
 bbb.
    rewrite carry_comm in Hc2.
    eapply case_3 with (x := 0%rm) (y := x) (z := z); try eassumption.
