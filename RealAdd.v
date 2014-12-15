@@ -628,6 +628,642 @@ destruct sx as [dx| ].
      rewrite Hx1 in H; discriminate H.
 Qed.
 
+Theorem case_4 : ∀ x y z dx dy,
+  Some dx = fst_same x 0 0
+  → Some dy = fst_same y 0 0
+  → (∀ i : nat, rm_add_i x 0 i = rm_add_i y 0 i)
+  → carry x z 0 = true
+  → carry (x + z) 0 0 = false
+  → carry y z 0 = false
+  → carry (y + z) 0 0 = false
+  → (∀ dj : nat, (dj < dx)%nat → x .[ dj] = true)
+  → x .[ dx] = false
+  → (∀ dj : nat, (dj < dy)%nat → y .[ dj] = true)
+  → y .[ dy] = false
+  → (x = y)%rm
+  → False.
+Proof.
+intros x y z dx dy.
+intros Hsx Hsy Hf Hc1 Hc2 Hc3 Hc4 Hnx Htx Hny Hty Hf_v.
+destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
+  remember H1 as H; clear HeqH.
+  apply Hny in H.
+  symmetry in Hf_v.
+  eapply rm_eq_neq_if in H; try eassumption.
+  destruct H as [(Hyx, Hxx)| (Hyx, Hxx)]; simpl in Hyx, Hxx.
+   pose proof (Hyx (dy - dx)%nat) as H.
+   apply Nat.lt_le_incl in H1.
+   rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+   rewrite Nat.add_comm, Nat.add_sub, Hty in H.
+   discriminate H.
+
+   destruct dx.
+    clear Hnx; simpl in Hyx, Hxx.
+    unfold carry in Hc1, Hc3.
+    remember (fst_same x z 0) as s1 eqn:Hs1 .
+    remember (fst_same y z 0) as s3 eqn:Hs3 .
+    destruct s3 as [di3| ]; [ idtac | discriminate Hc3 ].
+    simpl in Hc3; apply fst_same_sym_iff in Hs3.
+    simpl in Hs3; destruct Hs3 as (Hn3, Ht3).
+    rewrite Hc3 in Ht3; symmetry in Ht3.
+    destruct s1 as [di1| ]; [ simpl in Hc1 | clear Hc1 ].
+     apply fst_same_sym_iff in Hs1; simpl in Hs1.
+     destruct Hs1 as (Hn1, Ht1).
+     rewrite Hc1 in Ht1; symmetry in Ht1.
+     destruct di1.
+      rewrite Hc1 in Htx; discriminate Htx.
+
+      destruct di3.
+       pose proof (Hny O H1) as H.
+       rewrite Hc3 in H; discriminate H.
+
+       pose proof (Hn1 O (Nat.lt_0_succ di1)) as H2.
+       pose proof (Hn3 O (Nat.lt_0_succ di3)) as H3.
+       rewrite Htx in H2.
+       rewrite Hny in H3; [ idtac | assumption ].
+       rewrite <- H2 in H3; discriminate H3.
+
+     apply fst_same_sym_iff in Hs1; simpl in Hs1.
+     destruct di3.
+      pose proof (Hny O H1) as H.
+      rewrite Hc3 in H; discriminate H.
+
+      pose proof (Hs1 O) as H2.
+      pose proof (Hn3 O (Nat.lt_0_succ di3)) as H3.
+      rewrite Htx in H2.
+      rewrite Hny in H3; [ idtac | assumption ].
+      rewrite <- H2 in H3; discriminate H3.
+
+    unfold carry in Hc1, Hc3.
+    remember (fst_same x z 0) as s1 eqn:Hs1 .
+    remember (fst_same y z 0) as s3 eqn:Hs3 .
+    destruct s3 as [di3| ]; [ idtac | discriminate Hc3 ].
+    simpl in Hc3; apply fst_same_sym_iff in Hs3.
+    simpl in Hs3; destruct Hs3 as (Hn3, Ht3).
+    rewrite Hc3 in Ht3; symmetry in Ht3.
+    destruct s1 as [di1| ]; [ simpl in Hc1 | clear Hc1 ].
+     apply fst_same_sym_iff in Hs1; simpl in Hs1.
+     destruct Hs1 as (Hn1, Ht1).
+     rewrite Hc1 in Ht1; symmetry in Ht1.
+     destruct di1.
+      destruct di3.
+       rewrite Ht1 in Ht3; discriminate Ht3.
+
+       pose proof (Hn3 O (Nat.lt_0_succ di3)) as H.
+       rewrite Ht1 in H; simpl in H.
+       destruct dy; [ revert H1; apply Nat.nlt_0_r | idtac ].
+       rewrite Hny in H; [ idtac | apply Nat.lt_0_succ ].
+       discriminate H.
+
+      destruct dy; [ revert H1; apply Nat.nlt_0_r | idtac ].
+      destruct di3.
+       rewrite Hny in Hc3; [ idtac | apply Nat.lt_0_succ ].
+       discriminate Hc3.
+
+       destruct (lt_eq_lt_dec di1 di3) as [[H2| H2]| H2].
+        remember H2 as H; clear HeqH.
+        apply Nat.succ_lt_mono in H.
+        apply Hn3 in H.
+        rewrite Ht1 in H; simpl in H.
+        rename H into Hy1.
+        destruct (lt_eq_lt_dec di1 dx) as [[H3| H3]| H3].
+         remember H3 as H; clear HeqH.
+         apply Nat.succ_lt_mono in H.
+         eapply Nat.lt_trans with (m := S dx) in H; [ idtac | eassumption ].
+         apply Hny in H.
+         rewrite Hy1 in H; discriminate H.
+
+         subst di1.
+         rewrite Htx in Hc1; discriminate Hc1.
+
+         remember H3 as H; clear HeqH.
+         apply Nat.succ_lt_mono in H.
+         apply Hn1 in H.
+         rewrite Htx in H.
+         apply negb_sym in H; simpl in H.
+         rename H into Hz1.
+         remember H3 as H; clear HeqH.
+         eapply Nat.lt_trans with (m := di1) in H; [ idtac | eassumption ].
+         apply Nat.succ_lt_mono in H.
+         apply Hn3 in H.
+         rewrite Hz1 in H; simpl in H.
+         rewrite Hny in H; [ idtac | assumption ].
+         discriminate H.
+
+        subst di3.
+        rewrite Ht1 in Ht3; discriminate Ht3.
+
+        remember H2 as H; clear HeqH.
+        apply Nat.succ_lt_mono in H.
+        apply Hn1 in H.
+        rewrite Ht3 in H; simpl in H.
+        rename H into Hx3.
+        destruct (lt_eq_lt_dec di3 dy) as [[H3| H3]| H3].
+         remember H3 as H; clear HeqH.
+         apply Nat.succ_lt_mono in H.
+         apply Hny in H.
+         rewrite Hc3 in H; discriminate H.
+
+         subst di3.
+         remember H2 as H; clear HeqH.
+         apply Nat.succ_lt_mono in H.
+         eapply Nat.lt_trans with (m := S dy) in H; [ idtac | eassumption ].
+         apply Hn1 in H.
+         rewrite Htx in H.
+         apply negb_sym in H; simpl in H.
+         rename H into Hz1.
+         pose proof (Hn3 (S dx) H1) as H.
+         rewrite Hz1 in H; simpl in H.
+         rewrite Hny in H; [ idtac | assumption ].
+         discriminate H.
+
+         remember H1 as H; clear HeqH.
+         apply Hny in H.
+         rename H into Hy1.
+         remember H3 as H; clear HeqH.
+         apply Nat.succ_lt_mono in H.
+         eapply Nat.lt_trans with (m := S dy) in H; [ idtac | eassumption ].
+         apply Hn3 in H.
+         rewrite Hy1 in H.
+         apply negb_sym in H; simpl in H.
+         rename H into Hz1.
+         remember H3 as H; clear HeqH.
+         eapply Nat.lt_trans with (m := di3) in H; [ idtac | eassumption ].
+         apply Nat.succ_lt_mono in H.
+         eapply Nat.lt_trans with (m := S dy) in H; [ idtac | eassumption ].
+         apply Hn1 in H.
+         rewrite Hz1, Htx in H.
+         discriminate H.
+
+     remember Hs1 as H; clear HeqH.
+     apply fst_same_sym_iff in H; simpl in H.
+     rename H into Hn1.
+     destruct dy; [ revert H1; apply Nat.nlt_0_r | idtac ].
+     destruct (eq_nat_dec dy (S dx)) as [H2| H2].
+      subst dy.
+      destruct di3.
+       rewrite Hny in Hc3; [ idtac | apply Nat.lt_0_succ ].
+       discriminate Hc3.
+
+       destruct (lt_eq_lt_dec di3 dx) as [[H2| H2]| H2].
+        remember H2 as H; clear HeqH.
+        apply Nat.succ_lt_mono in H.
+        apply Nat.lt_lt_succ_r in H.
+        apply Hny in H.
+        rewrite Hc3 in H; discriminate H.
+
+        subst di3.
+        rewrite Hn1, Ht3 in Htx.
+        discriminate Htx.
+
+        remember H2 as H; clear HeqH.
+        apply Nat.succ_lt_mono in H.
+        apply Hn3 in H.
+        rewrite Hny in H; [ idtac | apply Nat.lt_succ_diag_r ].
+        rewrite <- Hn1 in H.
+        rewrite Htx in H; discriminate H.
+
+      pose proof (Hyx O) as H.
+      rewrite Nat.add_1_r in H.
+      rewrite Hny in H; [ discriminate H | idtac ].
+      revert H1 H2; clear; intros; omega.
+
+  subst dy.
+  unfold carry in Hc1; simpl in Hc1.
+  unfold carry in Hc3; simpl in Hc3.
+  remember (fst_same x z 0) as s1 eqn:Hs1 .
+  remember (fst_same y z 0) as s3 eqn:Hs3 .
+  destruct s3 as [di3| ]; [ idtac | discriminate Hc3 ].
+  remember Hs3 as H; clear HeqH.
+  apply fst_same_sym_iff in H.
+  simpl in H; destruct H as (Hn3, Ht3).
+  rewrite Hc3 in Ht3; symmetry in Ht3.
+  destruct s1 as [di1| ]; [ simpl in Hc1 | clear Hc1 ].
+   apply fst_same_sym_iff in Hs1; simpl in Hs1.
+   destruct Hs1 as (Hn1, Ht1).
+   rewrite Hc1 in Ht1; symmetry in Ht1.
+   destruct di1.
+    destruct dx; [ rewrite Hc1 in Htx; discriminate Htx | idtac ].
+    destruct di3.
+     rewrite Ht1 in Ht3; discriminate Ht3.
+
+     pose proof (Hny O (Nat.lt_0_succ dx)) as H.
+     rewrite Hn3 in H; [ idtac | apply Nat.lt_0_succ ].
+     rewrite Ht1 in H; discriminate H.
+
+    destruct di3.
+     destruct dx.
+      rewrite Hn1 in Htx; [ idtac | apply Nat.lt_0_succ ].
+      rewrite Ht3 in Htx; discriminate Htx.
+
+      rewrite Hny in Hc3; [ idtac | apply Nat.lt_0_succ ].
+      discriminate Hc3.
+
+     destruct (lt_eq_lt_dec di1 di3) as [[H1| H1]| H1].
+      remember H1 as H; clear HeqH.
+      apply Nat.succ_lt_mono in H.
+      apply Hn3 in H.
+      rewrite Ht1 in H; simpl in H.
+      eapply rm_eq_neq_if in H; try eassumption.
+      destruct H as [(Hyx, Hxx)| (Hyx, Hxx)]; simpl in Hyx, Hxx.
+       remember H1 as H; clear HeqH.
+       unfold carry in Hc4; simpl in Hc4.
+       remember (fst_same (y + z) 0 0) as s2 eqn:Hs2 .
+       destruct s2 as [di2| ]; [ idtac | discriminate Hc4 ].
+       apply fst_same_sym_iff in Hs2; simpl in Hs2.
+       destruct Hs2 as (Hs2, _).
+       destruct di2.
+        clear Hs2.
+        unfold rm_add_i in Hc4.
+        rewrite Hn3 in Hc4; [ idtac | apply Nat.lt_0_succ ].
+        rewrite negb_xorb_diag_l, xorb_true_l in Hc4.
+        apply negb_false_iff in Hc4.
+        rewrite <- Nat.add_1_r in Hc4.
+        symmetry in Hs3.
+        assert (1 ≤ S di3) as HH by apply Nat.lt_0_succ.
+        erewrite carry_before_relay in Hc4; try eassumption.
+        rewrite Nat.add_0_l, Hc3 in Hc4; discriminate Hc4.
+
+        clear H.
+        pose proof (Hf di1) as H.
+        unfold rm_add_i in H; simpl in H.
+        rewrite Hn1 in H; [ idtac | apply Nat.lt_succ_diag_r ].
+        apply Nat.lt_lt_succ_r in H1.
+        rewrite Hn3 in H; [ idtac | assumption ].
+        rewrite xorb_false_r in H.
+        apply xorb_move_l_r_1 in H.
+        rewrite <- xorb_assoc, xorb_nilpotent, xorb_false_l in H.
+        replace (S di1) with (S di1 + 0)%nat in H by apply Nat.add_0_r.
+        rewrite carry_before_inf_relay in H.
+         rewrite carry_before_relay with (di := O) in H.
+          simpl in H; rewrite Hxx in H; discriminate H.
+
+          apply fst_same_iff; simpl.
+          split; [ idtac | rewrite Hxx; reflexivity ].
+          intros dj Hdj.
+          exfalso; revert Hdj; apply Nat.nlt_0_r.
+
+          reflexivity.
+
+         apply fst_same_iff; simpl.
+         intros dj; apply Hyx.
+
+       pose proof (Hxx (di3 - S di1)%nat) as H.
+       rewrite Nat.add_succ_r, <- Nat.add_succ_l in H.
+       rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+       rewrite Nat.add_comm, Nat.add_sub in H.
+       rewrite Hc3 in H; discriminate H.
+
+      subst di3.
+      rewrite Ht1 in Ht3; discriminate Ht3.
+
+      remember H1 as H; clear HeqH.
+      apply Nat.succ_lt_mono in H.
+      apply Hn1 in H.
+      rewrite Ht3 in H; simpl in H.
+      remember H as Hx1; clear HeqHx1.
+      eapply rm_eq_neq_if in H; try eassumption.
+      destruct H as [(Hxy, Hyy)| (Hxy, Hyy)]; simpl in Hxy, Hyy.
+       pose proof (Hf di3) as H.
+       unfold rm_add_i in H; simpl in H.
+       rewrite Hn3 in H; [ idtac | apply Nat.lt_succ_diag_r ].
+       apply Nat.lt_lt_succ_r in H1.
+       rewrite Hn1 in H; [ idtac | assumption ].
+       rewrite xorb_false_r in H.
+       apply xorb_move_l_r_1 in H.
+       rewrite <- xorb_assoc, xorb_nilpotent, xorb_false_l in H.
+       replace (S di3) with (S di3 + 0)%nat in H by apply Nat.add_0_r.
+       rewrite carry_before_inf_relay in H.
+        rewrite carry_before_relay with (di := O) in H.
+         rewrite Nat.add_0_r, Hc3 in H; discriminate H.
+
+         apply fst_same_iff; simpl.
+         split; [ idtac | rewrite Hyy; reflexivity ].
+         intros dj Hdj.
+         exfalso; revert Hdj; apply Nat.nlt_0_r.
+
+         reflexivity.
+
+        apply fst_same_iff; simpl.
+        intros dj; apply Hxy.
+
+       pose proof (Hxy (di1 - S di3)%nat) as H.
+       rewrite Nat.add_succ_r, <- Nat.add_succ_l in H.
+       rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+       rewrite Nat.add_comm, Nat.add_sub in H.
+       rewrite Hc1 in H; discriminate H.
+
+   remember Hs1 as H; clear HeqH.
+   apply fst_same_sym_iff in H; simpl in H.
+   rename H into Hxz.
+   pose proof (Hxz di3) as Hx1.
+   rewrite Ht3 in Hx1; simpl in Hx1.
+   remember Hx1 as H; clear HeqH.
+   eapply rm_eq_neq_if in H; try eassumption.
+   destruct H as [(Hxy, Hyy)| (Hxy, Hyy)]; simpl in Hxy, Hyy.
+    destruct di3.
+     simpl in Hxy; rewrite Hxy in Htx; discriminate Htx.
+
+     pose proof (Hf di3) as H.
+     unfold rm_add_i in H; simpl in H.
+     rewrite Hn3 in H; [ idtac | apply Nat.lt_succ_diag_r ].
+     rewrite Hxz in H.
+     rewrite xorb_false_r in H.
+     apply xorb_move_l_r_1 in H.
+     rewrite <- xorb_assoc, xorb_nilpotent, xorb_false_l in H.
+     replace (S di3) with (S di3 + 0)%nat in H by apply Nat.add_0_r.
+     rewrite carry_before_inf_relay in H.
+      rewrite carry_before_relay with (di := O) in H.
+       rewrite Nat.add_0_r, Hc3 in H; discriminate H.
+
+       apply fst_same_iff; simpl.
+       simpl in Hyy.
+       split; [ idtac | rewrite Hyy; reflexivity ].
+       intros dj Hdj.
+       exfalso; revert Hdj; apply Nat.nlt_0_r.
+
+       reflexivity.
+
+      apply fst_same_iff; simpl.
+      intros dj; apply Hxy.
+
+    destruct di3.
+     destruct dx; [ rewrite Htx in Hx1; discriminate Hx1 | idtac ].
+     rewrite Hny in Hc3; [ idtac | apply Nat.lt_0_succ ].
+     discriminate Hc3.
+
+     replace O with (0 + 0)%nat in Hc4 by reflexivity.
+     rewrite carry_before_inf_relay in Hc4; [ discriminate Hc4 | idtac ].
+     apply fst_same_iff; simpl.
+     intro j.
+     unfold rm_add_i.
+     destruct (lt_eq_lt_dec j (S di3)) as [[H1| H1]| H1].
+      rewrite Hn3; [ idtac | assumption ].
+      rewrite negb_xorb_diag_l.
+      apply negb_true_iff.
+      unfold carry; simpl.
+      remember (fst_same y z (S j)) as s2 eqn:Hs2 .
+      apply fst_same_sym_iff in Hs2; simpl in Hs2.
+      destruct s2 as [dj2| ].
+       destruct Hs2 as (Hn2, Hs2).
+       destruct (lt_eq_lt_dec (j + dj2) di3) as [[H2| H2]| H2].
+        remember H2 as H; clear HeqH.
+        apply Nat.succ_lt_mono in H.
+        apply Hn3 in H.
+        rewrite Hs2 in H; symmetry in H.
+        exfalso; revert H; apply no_fixpoint_negb.
+
+        rewrite H2; assumption.
+
+        destruct dj2; [ exfalso; omega | idtac ].
+        remember H2 as H; clear HeqH.
+        assert (0 < S dj2)%nat as HH by apply Nat.lt_0_succ.
+        apply lt_add_sub_lt_r with (d := O) in H; try assumption.
+        apply Hn2 in H.
+        apply le_S_n in H1.
+        rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+        rewrite Nat.add_comm, Nat.add_sub in H.
+        rewrite Hc3, Ht3 in H; discriminate H.
+
+       pose proof (Hs2 (di3 - j)%nat) as H.
+       apply le_S_n in H1.
+       rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+       rewrite Nat.add_comm, Nat.add_sub in H.
+       rewrite Hc3, Ht3 in H; discriminate H.
+
+      subst j.
+      rewrite Hc3, Ht3, xorb_false_l.
+      unfold carry; simpl.
+      remember (fst_same y z (S (S di3))) as s2 eqn:Hs2 .
+      destruct s2 as [dj2| ]; [ idtac | reflexivity ].
+      rewrite <- Nat.add_succ_r, <- Nat.add_succ_l.
+      apply Hyy.
+
+      remember (j - S (S di3))%nat as v eqn:Hv .
+      apply nat_sub_add_r in Hv; [ idtac | assumption ].
+      subst j.
+      rewrite Hyy, xorb_true_l.
+      rewrite <- Hxz, Hxy, xorb_false_l.
+      unfold carry.
+      remember (fst_same y z (S (S di3 + S v))) as s2 eqn:Hs2 .
+      destruct s2 as [dj2| ]; [ idtac | reflexivity ].
+      rewrite <- Nat.add_succ_r, <- Nat.add_assoc.
+      apply Hyy.
+
+  remember H1 as H; clear HeqH.
+  apply Hnx in H.
+  eapply rm_eq_neq_if in H; try eassumption.
+  destruct H as [(Hxy, Hyy)| (Hxy, Hyy)]; simpl in Hxy, Hyy.
+   pose proof (Hxy (dx - dy)%nat) as H.
+   apply Nat.lt_le_incl in H1.
+   rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+   rewrite Nat.add_comm, Nat.add_sub, Htx in H.
+   discriminate H.
+
+   destruct (lt_dec (S dy) dx) as [H2| H2].
+    remember H2 as H; clear HeqH.
+    apply Hnx in H.
+    rewrite <- Nat.add_1_r, Hxy in H.
+    discriminate H.
+
+    apply Nat.nlt_ge in H2.
+    apply Nat.le_antisymm in H2; [ idtac | assumption ].
+    subst dx; clear H1.
+    unfold carry in Hc3; simpl in Hc3.
+    remember (fst_same y z 0) as s3 eqn:Hs3 .
+    destruct s3 as [dj3| ]; [ idtac | discriminate Hc3 ].
+    remember Hs3 as H; clear HeqH.
+    apply fst_same_sym_iff in H; simpl in H.
+    destruct H as (Hn3, Ht3).
+    rewrite Hc3 in Ht3; symmetry in Ht3.
+    destruct (lt_eq_lt_dec dj3 dy) as [[H1| H1]| H1].
+     remember H1 as H; clear HeqH.
+     apply Hny in H.
+     rewrite Hc3 in H; discriminate H.
+
+     Focus 2.
+     pose proof (Hyy (dj3 - S dy)%nat) as H.
+     rewrite Nat.add_succ_r, <- Nat.add_succ_l in H.
+     rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+     rewrite Nat.add_comm, Nat.add_sub, Hc3 in H.
+     discriminate H.
+
+     subst dj3.
+     unfold carry in Hc1; simpl in Hc1.
+     remember (fst_same x z 0) as s1 eqn:Hs1 .
+     destruct s1 as [dj1| ]; [ idtac | clear Hc1 ].
+      apply fst_same_sym_iff in Hs1; simpl in Hs1.
+      destruct Hs1 as (Hn1, Ht1).
+      rewrite Hc1 in Ht1; symmetry in Ht1.
+      destruct (lt_eq_lt_dec dj1 dy) as [[H1| H1]| H1].
+       remember H1 as H; clear HeqH.
+       apply Hn3 in H.
+       rewrite Hny in H; [ idtac | assumption ].
+       rewrite Ht1 in H; discriminate H.
+
+       subst dj1.
+       rewrite Ht3 in Ht1; discriminate Ht1.
+
+       pose proof (Hxy (dj1 - S dy)%nat) as H.
+       rewrite Nat.add_succ_r, <- Nat.add_succ_l in H.
+       rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+       rewrite Nat.add_comm, Nat.add_sub, Hc1 in H.
+       discriminate H.
+
+      remember Hs1 as H; clear HeqH.
+      apply fst_same_sym_iff in H; simpl in H.
+      rename H into Ht1.
+      unfold carry in Hc4; simpl in Hc4.
+      remember (fst_same (y + z) 0 0) as s4 eqn:Hs4 .
+      destruct s4 as [di4| ]; [ idtac | discriminate Hc4 ].
+      apply fst_same_sym_iff in Hs4; simpl in Hs4.
+      destruct Hs4 as (Hn4, _).
+      destruct di4.
+       unfold rm_add_i in Hc4.
+       destruct dy.
+        rewrite Hc3, Ht3, xorb_false_l in Hc4.
+        unfold carry in Hc4; simpl in Hc4.
+        remember (fst_same y z 1) as s5 eqn:Hs5 .
+        destruct s5 as [dj5| ]; [ idtac | discriminate Hc4 ].
+        simpl in Hyy; rewrite Hyy in Hc4; discriminate Hc4.
+
+        rewrite Hn3 in Hc4; [ idtac | apply Nat.lt_0_succ ].
+        rewrite negb_xorb_diag_l, xorb_true_l in Hc4.
+        apply negb_false_iff in Hc4.
+        unfold carry in Hc4; simpl in Hc4.
+        remember (fst_same y z 1) as s5 eqn:Hs5 .
+        apply fst_same_sym_iff in Hs5; simpl in Hs5.
+        destruct s5 as [dj5| ]; [ idtac | clear Hc4 ].
+         destruct Hs5 as (Hn5, Ht5).
+         rewrite Hc4 in Ht5; symmetry in Ht5.
+         destruct (lt_eq_lt_dec dj5 dy) as [[H1| H1]| H1].
+          remember H1 as H; clear HeqH.
+          apply Nat.succ_lt_mono in H.
+          apply Hn3 in H.
+          rewrite Ht5, Hc4 in H; discriminate H.
+
+          subst dj5.
+          rewrite Hc3 in Hc4; discriminate Hc4.
+
+          rewrite Hn5 in Hty; [ idtac | assumption ].
+          rewrite Ht3 in Hty; discriminate Hty.
+
+         rewrite Hs5 in Hty.
+         rewrite Ht3 in Hty; discriminate Hty.
+
+       unfold rm_add_i in Hc4.
+       destruct dy.
+        simpl in Hxy, Hyy.
+        rewrite Hyy, <- Ht1, Hxy, xorb_false_l in Hc4.
+        unfold carry in Hc4; simpl in Hc4.
+        remember (fst_same y z (S (S di4))) as s5 eqn:Hs5 .
+        destruct s5 as [dj5| ]; [ idtac | discriminate Hc4 ].
+        rewrite Hyy in Hc4; discriminate Hc4.
+
+        destruct (lt_eq_lt_dec di4 dy) as [[H1| H1]| H1].
+         remember H1 as H; clear HeqH.
+         apply Nat.succ_lt_mono in H.
+         rewrite Hn3 in Hc4; [ idtac | assumption ].
+         rewrite negb_xorb_diag_l, xorb_true_l in Hc4.
+         apply negb_false_iff in Hc4.
+         unfold carry in Hc4; simpl in Hc4.
+         remember (fst_same y z (S (S di4))) as s5 eqn:Hs5 .
+         destruct s5 as [dj5| ]; [ idtac | clear Hc4 ].
+          apply fst_same_sym_iff in Hs5; simpl in Hs5.
+          destruct Hs5 as (Hn5, Ht5).
+          rewrite Hc4 in Ht5; symmetry in Ht5.
+          clear H.
+          destruct (lt_eq_lt_dec (S (di4 + dj5)) dy) as [[H2| H2]| H2].
+           remember H2 as H; clear HeqH.
+           apply Nat.succ_lt_mono in H.
+           apply Hn3 in H.
+           rewrite Ht5, Hc4 in H; discriminate H.
+
+           rewrite H2, Ht3 in Ht5; discriminate Ht5.
+
+           destruct dj5.
+            revert H1 H2; clear; intros; omega.
+
+            remember H2 as H; clear HeqH.
+            rewrite <- Nat.add_succ_l in H.
+            assert (0 < S dj5)%nat as HH by apply Nat.lt_0_succ.
+            eapply lt_add_sub_lt_r with (d := O) in H; try assumption.
+            apply Hn5 in H.
+            rewrite <- Nat.add_succ_l in H.
+            rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+            rewrite Nat.add_comm, Nat.add_sub in H.
+            rewrite Hc3, Ht3 in H; discriminate H.
+
+          apply fst_same_sym_iff in Hs5; simpl in Hs5.
+          clear H.
+          pose proof (Hs5 (dy - S di4)%nat) as H.
+          rewrite <- Nat.add_succ_l in H.
+          rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+          rewrite Nat.add_comm, Nat.add_sub in H.
+          rewrite Hc3, Ht3 in H; discriminate H.
+
+         subst di4.
+         rewrite Hty, Ht3, xorb_false_l in Hc4.
+         remember (S (S dy)) as u.
+         replace u with (u + 0)%nat in Hc4 by apply Nat.add_0_r.
+         subst u.
+         rewrite carry_before_relay with (di := O) in Hc4.
+          simpl in Hc4.
+          rewrite <- Nat.add_succ_l, <- Nat.add_succ_r in Hc4.
+          rewrite Hyy in Hc4; discriminate Hc4.
+
+          apply fst_same_iff; simpl.
+          split.
+           intros dj Hdj.
+           exfalso; revert Hdj; apply Nat.nlt_0_r.
+
+           rewrite <- Nat.add_succ_l, <- Nat.add_succ_r.
+           rewrite Hyy, <- negb_involutive.
+           rewrite <- Ht1, Hxy; reflexivity.
+
+          reflexivity.
+
+         pose proof (Hyy (di4 - S dy)%nat) as H.
+         rewrite Nat.add_succ_r in H.
+         rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+         rewrite Nat.add_comm, Nat.add_sub in H.
+         rewrite H in Hc4.
+         rename H into Hy4.
+         rewrite <- Ht1 in Hc4.
+         pose proof (Hxy (di4 - S dy)%nat) as H.
+         rewrite Nat.add_succ_r in H.
+         rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+         rewrite Nat.add_comm, Nat.add_sub in H.
+         rewrite H in Hc4.
+         rewrite xorb_false_l in Hc4.
+         remember (S (S di4)) as u.
+         replace u with (u + 0)%nat in Hc4 by apply Nat.add_0_r.
+         subst u.
+         rewrite carry_before_relay with (di := O) in Hc4.
+          rewrite Nat.add_0_r in Hc4.
+          rename H into Hx4.
+          pose proof (Hyy (di4 - dy)%nat) as H.
+          rewrite Nat.add_succ_l, Nat.add_succ_r in H.
+          rewrite Nat.add_sub_assoc in H; [ idtac | omega ].
+          rewrite Nat.add_comm, Nat.add_sub in H.
+          rewrite Hc4 in H; discriminate H.
+
+          apply fst_same_iff; simpl.
+          split.
+           intros dj Hdj.
+           exfalso; revert Hdj; apply Nat.nlt_0_r.
+
+           rewrite Nat.add_0_r.
+           remember (di4 - S dy)%nat as v eqn:Hv .
+           apply nat_sub_add_r in Hv; [ idtac | assumption ].
+           subst di4.
+           rewrite <- Nat.add_succ_l, <- Nat.add_succ_r.
+           rewrite Hyy, <- negb_involutive.
+           rewrite <- Ht1, Hxy; reflexivity.
+
+          reflexivity.
+Qed.
+
 Theorem re_add_compat_r : ∀ x y z, (x = y)%R → (x + z = y + z)%R.
 Proof.
 intros x y z Hxy.
@@ -696,623 +1332,7 @@ destruct sx as [dx| ].
    unfold carry; simpl.
    rewrite fst_same_comm, <- Hsy; reflexivity.
 
-  destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
-    remember H1 as H; clear HeqH.
-    apply Hny in H.
-    symmetry in Hf_v.
-    eapply rm_eq_neq_if in H; try eassumption.
-    destruct H as [(Hyx, Hxx)| (Hyx, Hxx)]; simpl in Hyx, Hxx.
-     pose proof (Hyx (dy - dx)%nat) as H.
-     apply Nat.lt_le_incl in H1.
-     rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
-     rewrite Nat.add_comm, Nat.add_sub, Hty in H.
-     discriminate H.
-
-     destruct dx.
-      clear Hnx; simpl in Hyx, Hxx.
-      unfold carry in Hc1, Hc3.
-      remember (fst_same x z 0) as s1 eqn:Hs1 .
-      remember (fst_same y z 0) as s3 eqn:Hs3 .
-      destruct s3 as [di3| ]; [ idtac | discriminate Hc3 ].
-      simpl in Hc3; apply fst_same_sym_iff in Hs3.
-      simpl in Hs3; destruct Hs3 as (Hn3, Ht3).
-      rewrite Hc3 in Ht3; symmetry in Ht3.
-      destruct s1 as [di1| ]; [ simpl in Hc1 | clear Hc1 ].
-       apply fst_same_sym_iff in Hs1; simpl in Hs1.
-       destruct Hs1 as (Hn1, Ht1).
-       rewrite Hc1 in Ht1; symmetry in Ht1.
-       destruct di1.
-        rewrite Hc1 in Htx; discriminate Htx.
-
-        destruct di3.
-         pose proof (Hny O H1) as H.
-         rewrite Hc3 in H; discriminate H.
-
-         pose proof (Hn1 O (Nat.lt_0_succ di1)) as H2.
-         pose proof (Hn3 O (Nat.lt_0_succ di3)) as H3.
-         rewrite Htx in H2.
-         rewrite Hny in H3; [ idtac | assumption ].
-         rewrite <- H2 in H3; discriminate H3.
-
-       apply fst_same_sym_iff in Hs1; simpl in Hs1.
-       destruct di3.
-        pose proof (Hny O H1) as H.
-        rewrite Hc3 in H; discriminate H.
-
-        pose proof (Hs1 O) as H2.
-        pose proof (Hn3 O (Nat.lt_0_succ di3)) as H3.
-        rewrite Htx in H2.
-        rewrite Hny in H3; [ idtac | assumption ].
-        rewrite <- H2 in H3; discriminate H3.
-
-      unfold carry in Hc1, Hc3.
-      remember (fst_same x z 0) as s1 eqn:Hs1 .
-      remember (fst_same y z 0) as s3 eqn:Hs3 .
-      destruct s3 as [di3| ]; [ idtac | discriminate Hc3 ].
-      simpl in Hc3; apply fst_same_sym_iff in Hs3.
-      simpl in Hs3; destruct Hs3 as (Hn3, Ht3).
-      rewrite Hc3 in Ht3; symmetry in Ht3.
-      destruct s1 as [di1| ]; [ simpl in Hc1 | clear Hc1 ].
-       apply fst_same_sym_iff in Hs1; simpl in Hs1.
-       destruct Hs1 as (Hn1, Ht1).
-       rewrite Hc1 in Ht1; symmetry in Ht1.
-       destruct di1.
-        destruct di3.
-         rewrite Ht1 in Ht3; discriminate Ht3.
-
-         pose proof (Hn3 O (Nat.lt_0_succ di3)) as H.
-         rewrite Ht1 in H; simpl in H.
-         destruct dy; [ revert H1; apply Nat.nlt_0_r | idtac ].
-         rewrite Hny in H; [ idtac | apply Nat.lt_0_succ ].
-         discriminate H.
-
-        destruct dy; [ revert H1; apply Nat.nlt_0_r | idtac ].
-        destruct di3.
-         rewrite Hny in Hc3; [ idtac | apply Nat.lt_0_succ ].
-         discriminate Hc3.
-
-         destruct (lt_eq_lt_dec di1 di3) as [[H2| H2]| H2].
-          remember H2 as H; clear HeqH.
-          apply Nat.succ_lt_mono in H.
-          apply Hn3 in H.
-          rewrite Ht1 in H; simpl in H.
-          rename H into Hy1.
-          destruct (lt_eq_lt_dec di1 dx) as [[H3| H3]| H3].
-           remember H3 as H; clear HeqH.
-           apply Nat.succ_lt_mono in H.
-           eapply Nat.lt_trans with (m := S dx) in H; [ idtac | eassumption ].
-           apply Hny in H.
-           rewrite Hy1 in H; discriminate H.
-
-           subst di1.
-           rewrite Htx in Hc1; discriminate Hc1.
-
-           remember H3 as H; clear HeqH.
-           apply Nat.succ_lt_mono in H.
-           apply Hn1 in H.
-           rewrite Htx in H.
-           apply negb_sym in H; simpl in H.
-           rename H into Hz1.
-           remember H3 as H; clear HeqH.
-           eapply Nat.lt_trans with (m := di1) in H; [ idtac | eassumption ].
-           apply Nat.succ_lt_mono in H.
-           apply Hn3 in H.
-           rewrite Hz1 in H; simpl in H.
-           rewrite Hny in H; [ idtac | assumption ].
-           discriminate H.
-
-          subst di3.
-          rewrite Ht1 in Ht3; discriminate Ht3.
-
-          remember H2 as H; clear HeqH.
-          apply Nat.succ_lt_mono in H.
-          apply Hn1 in H.
-          rewrite Ht3 in H; simpl in H.
-          rename H into Hx3.
-          destruct (lt_eq_lt_dec di3 dy) as [[H3| H3]| H3].
-           remember H3 as H; clear HeqH.
-           apply Nat.succ_lt_mono in H.
-           apply Hny in H.
-           rewrite Hc3 in H; discriminate H.
-
-           subst di3.
-           remember H2 as H; clear HeqH.
-           apply Nat.succ_lt_mono in H.
-           eapply Nat.lt_trans with (m := S dy) in H; [ idtac | eassumption ].
-           apply Hn1 in H.
-           rewrite Htx in H.
-           apply negb_sym in H; simpl in H.
-           rename H into Hz1.
-           pose proof (Hn3 (S dx) H1) as H.
-           rewrite Hz1 in H; simpl in H.
-           rewrite Hny in H; [ idtac | assumption ].
-           discriminate H.
-
-           remember H1 as H; clear HeqH.
-           apply Hny in H.
-           rename H into Hy1.
-           remember H3 as H; clear HeqH.
-           apply Nat.succ_lt_mono in H.
-           eapply Nat.lt_trans with (m := S dy) in H; [ idtac | eassumption ].
-           apply Hn3 in H.
-           rewrite Hy1 in H.
-           apply negb_sym in H; simpl in H.
-           rename H into Hz1.
-           remember H3 as H; clear HeqH.
-           eapply Nat.lt_trans with (m := di3) in H; [ idtac | eassumption ].
-           apply Nat.succ_lt_mono in H.
-           eapply Nat.lt_trans with (m := S dy) in H; [ idtac | eassumption ].
-           apply Hn1 in H.
-           rewrite Hz1, Htx in H.
-           discriminate H.
-
-       remember Hs1 as H; clear HeqH.
-       apply fst_same_sym_iff in H; simpl in H.
-       rename H into Hn1.
-       destruct dy; [ revert H1; apply Nat.nlt_0_r | idtac ].
-       destruct (eq_nat_dec dy (S dx)) as [H2| H2].
-        subst dy.
-        destruct di3.
-         rewrite Hny in Hc3; [ idtac | apply Nat.lt_0_succ ].
-         discriminate Hc3.
-
-         destruct (lt_eq_lt_dec di3 dx) as [[H2| H2]| H2].
-          remember H2 as H; clear HeqH.
-          apply Nat.succ_lt_mono in H.
-          apply Nat.lt_lt_succ_r in H.
-          apply Hny in H.
-          rewrite Hc3 in H; discriminate H.
-
-          subst di3.
-          rewrite Hn1, Ht3 in Htx.
-          discriminate Htx.
-
-          remember H2 as H; clear HeqH.
-          apply Nat.succ_lt_mono in H.
-          apply Hn3 in H.
-          rewrite Hny in H; [ idtac | apply Nat.lt_succ_diag_r ].
-          rewrite <- Hn1 in H.
-          rewrite Htx in H; discriminate H.
-
-        pose proof (Hyx O) as H.
-        rewrite Nat.add_1_r in H.
-        rewrite Hny in H; [ discriminate H | idtac ].
-        revert H1 H2; clear; intros; omega.
-
-    subst dy.
-    unfold carry in Hc1; simpl in Hc1.
-    unfold carry in Hc3; simpl in Hc3.
-    remember (fst_same x z 0) as s1 eqn:Hs1 .
-    remember (fst_same y z 0) as s3 eqn:Hs3 .
-    destruct s3 as [di3| ]; [ idtac | discriminate Hc3 ].
-    remember Hs3 as H; clear HeqH.
-    apply fst_same_sym_iff in H.
-    simpl in H; destruct H as (Hn3, Ht3).
-    rewrite Hc3 in Ht3; symmetry in Ht3.
-    destruct s1 as [di1| ]; [ simpl in Hc1 | clear Hc1 ].
-     apply fst_same_sym_iff in Hs1; simpl in Hs1.
-     destruct Hs1 as (Hn1, Ht1).
-     rewrite Hc1 in Ht1; symmetry in Ht1.
-     destruct di1.
-      destruct dx; [ rewrite Hc1 in Htx; discriminate Htx | idtac ].
-      destruct di3.
-       rewrite Ht1 in Ht3; discriminate Ht3.
-
-       pose proof (Hny O (Nat.lt_0_succ dx)) as H.
-       rewrite Hn3 in H; [ idtac | apply Nat.lt_0_succ ].
-       rewrite Ht1 in H; discriminate H.
-
-      destruct di3.
-       destruct dx.
-        rewrite Hn1 in Htx; [ idtac | apply Nat.lt_0_succ ].
-        rewrite Ht3 in Htx; discriminate Htx.
-
-        rewrite Hny in Hc3; [ idtac | apply Nat.lt_0_succ ].
-        discriminate Hc3.
-
-       destruct (lt_eq_lt_dec di1 di3) as [[H1| H1]| H1].
-        remember H1 as H; clear HeqH.
-        apply Nat.succ_lt_mono in H.
-        apply Hn3 in H.
-        rewrite Ht1 in H; simpl in H.
-        eapply rm_eq_neq_if in H; try eassumption.
-        destruct H as [(Hyx, Hxx)| (Hyx, Hxx)]; simpl in Hyx, Hxx.
-         remember H1 as H; clear HeqH.
-         unfold carry in Hc4; simpl in Hc4.
-         remember (fst_same (y + z) 0 0) as s2 eqn:Hs2 .
-         destruct s2 as [di2| ]; [ idtac | discriminate Hc4 ].
-         apply fst_same_sym_iff in Hs2; simpl in Hs2.
-         destruct Hs2 as (Hs2, _).
-         destruct di2.
-          clear Hs2.
-          unfold rm_add_i in Hc4.
-          rewrite Hn3 in Hc4; [ idtac | apply Nat.lt_0_succ ].
-          rewrite negb_xorb_diag_l, xorb_true_l in Hc4.
-          apply negb_false_iff in Hc4.
-          rewrite <- Nat.add_1_r in Hc4.
-          symmetry in Hs3.
-          assert (1 ≤ S di3) as HH by apply Nat.lt_0_succ.
-          erewrite carry_before_relay in Hc4; try eassumption.
-          rewrite Nat.add_0_l, Hc3 in Hc4; discriminate Hc4.
-
-          clear H.
-          pose proof (Hf di1) as H.
-          unfold rm_add_i in H; simpl in H.
-          rewrite Hn1 in H; [ idtac | apply Nat.lt_succ_diag_r ].
-          apply Nat.lt_lt_succ_r in H1.
-          rewrite Hn3 in H; [ idtac | assumption ].
-          rewrite xorb_false_r in H.
-          apply xorb_move_l_r_1 in H.
-          rewrite <- xorb_assoc, xorb_nilpotent, xorb_false_l in H.
-          replace (S di1) with (S di1 + 0)%nat in H by apply Nat.add_0_r.
-          rewrite carry_before_inf_relay in H.
-           rewrite carry_before_relay with (di := O) in H.
-            simpl in H; rewrite Hxx in H; discriminate H.
-
-            apply fst_same_iff; simpl.
-            split; [ idtac | rewrite Hxx; reflexivity ].
-            intros dj Hdj.
-            exfalso; revert Hdj; apply Nat.nlt_0_r.
-
-            reflexivity.
-
-           apply fst_same_iff; simpl.
-           intros dj; apply Hyx.
-
-         pose proof (Hxx (di3 - S di1)%nat) as H.
-         rewrite Nat.add_succ_r, <- Nat.add_succ_l in H.
-         rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
-         rewrite Nat.add_comm, Nat.add_sub in H.
-         rewrite Hc3 in H; discriminate H.
-
-        subst di3.
-        rewrite Ht1 in Ht3; discriminate Ht3.
-
-        remember H1 as H; clear HeqH.
-        apply Nat.succ_lt_mono in H.
-        apply Hn1 in H.
-        rewrite Ht3 in H; simpl in H.
-        remember H as Hx1; clear HeqHx1.
-        eapply rm_eq_neq_if in H; try eassumption.
-        destruct H as [(Hxy, Hyy)| (Hxy, Hyy)]; simpl in Hxy, Hyy.
-         pose proof (Hf di3) as H.
-         unfold rm_add_i in H; simpl in H.
-         rewrite Hn3 in H; [ idtac | apply Nat.lt_succ_diag_r ].
-         apply Nat.lt_lt_succ_r in H1.
-         rewrite Hn1 in H; [ idtac | assumption ].
-         rewrite xorb_false_r in H.
-         apply xorb_move_l_r_1 in H.
-         rewrite <- xorb_assoc, xorb_nilpotent, xorb_false_l in H.
-         replace (S di3) with (S di3 + 0)%nat in H by apply Nat.add_0_r.
-         rewrite carry_before_inf_relay in H.
-          rewrite carry_before_relay with (di := O) in H.
-           rewrite Nat.add_0_r, Hc3 in H; discriminate H.
-
-           apply fst_same_iff; simpl.
-           split; [ idtac | rewrite Hyy; reflexivity ].
-           intros dj Hdj.
-           exfalso; revert Hdj; apply Nat.nlt_0_r.
-
-           reflexivity.
-
-          apply fst_same_iff; simpl.
-          intros dj; apply Hxy.
-
-         pose proof (Hxy (di1 - S di3)%nat) as H.
-         rewrite Nat.add_succ_r, <- Nat.add_succ_l in H.
-         rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
-         rewrite Nat.add_comm, Nat.add_sub in H.
-         rewrite Hc1 in H; discriminate H.
-
-     remember Hs1 as H; clear HeqH.
-     apply fst_same_sym_iff in H; simpl in H.
-     rename H into Hxz.
-     pose proof (Hxz di3) as Hx1.
-     rewrite Ht3 in Hx1; simpl in Hx1.
-     remember Hx1 as H; clear HeqH.
-     eapply rm_eq_neq_if in H; try eassumption.
-     destruct H as [(Hxy, Hyy)| (Hxy, Hyy)]; simpl in Hxy, Hyy.
-      destruct di3.
-       simpl in Hxy; rewrite Hxy in Htx; discriminate Htx.
-
-       pose proof (Hf di3) as H.
-       unfold rm_add_i in H; simpl in H.
-       rewrite Hn3 in H; [ idtac | apply Nat.lt_succ_diag_r ].
-       rewrite Hxz in H.
-       rewrite xorb_false_r in H.
-       apply xorb_move_l_r_1 in H.
-       rewrite <- xorb_assoc, xorb_nilpotent, xorb_false_l in H.
-       replace (S di3) with (S di3 + 0)%nat in H by apply Nat.add_0_r.
-       rewrite carry_before_inf_relay in H.
-        rewrite carry_before_relay with (di := O) in H.
-         rewrite Nat.add_0_r, Hc3 in H; discriminate H.
-
-         apply fst_same_iff; simpl.
-         simpl in Hyy.
-         split; [ idtac | rewrite Hyy; reflexivity ].
-         intros dj Hdj.
-         exfalso; revert Hdj; apply Nat.nlt_0_r.
-
-         reflexivity.
-
-        apply fst_same_iff; simpl.
-        intros dj; apply Hxy.
-
-      destruct di3.
-       destruct dx; [ rewrite Htx in Hx1; discriminate Hx1 | idtac ].
-       rewrite Hny in Hc3; [ idtac | apply Nat.lt_0_succ ].
-       discriminate Hc3.
-
-       replace O with (0 + 0)%nat in Hc4 by reflexivity.
-       rewrite carry_before_inf_relay in Hc4; [ discriminate Hc4 | idtac ].
-       apply fst_same_iff; simpl.
-       intro j.
-       unfold rm_add_i.
-       destruct (lt_eq_lt_dec j (S di3)) as [[H1| H1]| H1].
-        rewrite Hn3; [ idtac | assumption ].
-        rewrite negb_xorb_diag_l.
-        apply negb_true_iff.
-        unfold carry; simpl.
-        remember (fst_same y z (S j)) as s2 eqn:Hs2 .
-        apply fst_same_sym_iff in Hs2; simpl in Hs2.
-        destruct s2 as [dj2| ].
-         destruct Hs2 as (Hn2, Hs2).
-         destruct (lt_eq_lt_dec (j + dj2) di3) as [[H2| H2]| H2].
-          remember H2 as H; clear HeqH.
-          apply Nat.succ_lt_mono in H.
-          apply Hn3 in H.
-          rewrite Hs2 in H; symmetry in H.
-          exfalso; revert H; apply no_fixpoint_negb.
-
-          rewrite H2; assumption.
-
-          destruct dj2; [ exfalso; omega | idtac ].
-          remember H2 as H; clear HeqH.
-          assert (0 < S dj2)%nat as HH by apply Nat.lt_0_succ.
-          apply lt_add_sub_lt_r with (d := O) in H; try assumption.
-          apply Hn2 in H.
-          apply le_S_n in H1.
-          rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
-          rewrite Nat.add_comm, Nat.add_sub in H.
-          rewrite Hc3, Ht3 in H; discriminate H.
-
-         pose proof (Hs2 (di3 - j)%nat) as H.
-         apply le_S_n in H1.
-         rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
-         rewrite Nat.add_comm, Nat.add_sub in H.
-         rewrite Hc3, Ht3 in H; discriminate H.
-
-        subst j.
-        rewrite Hc3, Ht3, xorb_false_l.
-        unfold carry; simpl.
-        remember (fst_same y z (S (S di3))) as s2 eqn:Hs2 .
-        destruct s2 as [dj2| ]; [ idtac | reflexivity ].
-        rewrite <- Nat.add_succ_r, <- Nat.add_succ_l.
-        apply Hyy.
-
-        remember (j - S (S di3))%nat as v eqn:Hv .
-        apply nat_sub_add_r in Hv; [ idtac | assumption ].
-        subst j.
-        rewrite Hyy, xorb_true_l.
-        rewrite <- Hxz, Hxy, xorb_false_l.
-        unfold carry.
-        remember (fst_same y z (S (S di3 + S v))) as s2 eqn:Hs2 .
-        destruct s2 as [dj2| ]; [ idtac | reflexivity ].
-        rewrite <- Nat.add_succ_r, <- Nat.add_assoc.
-        apply Hyy.
-
-    remember H1 as H; clear HeqH.
-    apply Hnx in H.
-    eapply rm_eq_neq_if in H; try eassumption.
-    destruct H as [(Hxy, Hyy)| (Hxy, Hyy)]; simpl in Hxy, Hyy.
-     pose proof (Hxy (dx - dy)%nat) as H.
-     apply Nat.lt_le_incl in H1.
-     rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
-     rewrite Nat.add_comm, Nat.add_sub, Htx in H.
-     discriminate H.
-
-     destruct (lt_dec (S dy) dx) as [H2| H2].
-      remember H2 as H; clear HeqH.
-      apply Hnx in H.
-      rewrite <- Nat.add_1_r, Hxy in H.
-      discriminate H.
-
-      apply Nat.nlt_ge in H2.
-      apply Nat.le_antisymm in H2; [ idtac | assumption ].
-      subst dx; clear H1.
-      unfold carry in Hc3; simpl in Hc3.
-      remember (fst_same y z 0) as s3 eqn:Hs3 .
-      destruct s3 as [dj3| ]; [ idtac | discriminate Hc3 ].
-      remember Hs3 as H; clear HeqH.
-      apply fst_same_sym_iff in H; simpl in H.
-      destruct H as (Hn3, Ht3).
-      rewrite Hc3 in Ht3; symmetry in Ht3.
-      destruct (lt_eq_lt_dec dj3 dy) as [[H1| H1]| H1].
-       remember H1 as H; clear HeqH.
-       apply Hny in H.
-       rewrite Hc3 in H; discriminate H.
-
-       Focus 2.
-       pose proof (Hyy (dj3 - S dy)%nat) as H.
-       rewrite Nat.add_succ_r, <- Nat.add_succ_l in H.
-       rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
-       rewrite Nat.add_comm, Nat.add_sub, Hc3 in H.
-       discriminate H.
-
-       subst dj3.
-       unfold carry in Hc1; simpl in Hc1.
-       remember (fst_same x z 0) as s1 eqn:Hs1 .
-       destruct s1 as [dj1| ]; [ idtac | clear Hc1 ].
-        apply fst_same_sym_iff in Hs1; simpl in Hs1.
-        destruct Hs1 as (Hn1, Ht1).
-        rewrite Hc1 in Ht1; symmetry in Ht1.
-        destruct (lt_eq_lt_dec dj1 dy) as [[H1| H1]| H1].
-         remember H1 as H; clear HeqH.
-         apply Hn3 in H.
-         rewrite Hny in H; [ idtac | assumption ].
-         rewrite Ht1 in H; discriminate H.
-
-         subst dj1.
-         rewrite Ht3 in Ht1; discriminate Ht1.
-
-         pose proof (Hxy (dj1 - S dy)%nat) as H.
-         rewrite Nat.add_succ_r, <- Nat.add_succ_l in H.
-         rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
-         rewrite Nat.add_comm, Nat.add_sub, Hc1 in H.
-         discriminate H.
-
-        remember Hs1 as H; clear HeqH.
-        apply fst_same_sym_iff in H; simpl in H.
-        rename H into Ht1.
-        unfold carry in Hc4; simpl in Hc4.
-        remember (fst_same (y + z) 0 0) as s4 eqn:Hs4 .
-        destruct s4 as [di4| ]; [ idtac | discriminate Hc4 ].
-        apply fst_same_sym_iff in Hs4; simpl in Hs4.
-        destruct Hs4 as (Hn4, _).
-        destruct di4.
-         unfold rm_add_i in Hc4.
-         destruct dy.
-          rewrite Hc3, Ht3, xorb_false_l in Hc4.
-          unfold carry in Hc4; simpl in Hc4.
-          remember (fst_same y z 1) as s5 eqn:Hs5 .
-          destruct s5 as [dj5| ]; [ idtac | discriminate Hc4 ].
-          simpl in Hyy; rewrite Hyy in Hc4; discriminate Hc4.
-
-          rewrite Hn3 in Hc4; [ idtac | apply Nat.lt_0_succ ].
-          rewrite negb_xorb_diag_l, xorb_true_l in Hc4.
-          apply negb_false_iff in Hc4.
-          unfold carry in Hc4; simpl in Hc4.
-          remember (fst_same y z 1) as s5 eqn:Hs5 .
-          apply fst_same_sym_iff in Hs5; simpl in Hs5.
-          destruct s5 as [dj5| ]; [ idtac | clear Hc4 ].
-           destruct Hs5 as (Hn5, Ht5).
-           rewrite Hc4 in Ht5; symmetry in Ht5.
-           destruct (lt_eq_lt_dec dj5 dy) as [[H1| H1]| H1].
-            remember H1 as H; clear HeqH.
-            apply Nat.succ_lt_mono in H.
-            apply Hn3 in H.
-            rewrite Ht5, Hc4 in H; discriminate H.
-
-            subst dj5.
-            rewrite Hc3 in Hc4; discriminate Hc4.
-
-            rewrite Hn5 in Hty; [ idtac | assumption ].
-            rewrite Ht3 in Hty; discriminate Hty.
-
-           rewrite Hs5 in Hty.
-           rewrite Ht3 in Hty; discriminate Hty.
-
-         unfold rm_add_i in Hc4.
-         destruct dy.
-          simpl in Hxy, Hyy.
-          rewrite Hyy, <- Ht1, Hxy, xorb_false_l in Hc4.
-          unfold carry in Hc4; simpl in Hc4.
-          remember (fst_same y z (S (S di4))) as s5 eqn:Hs5 .
-          destruct s5 as [dj5| ]; [ idtac | discriminate Hc4 ].
-          rewrite Hyy in Hc4; discriminate Hc4.
-
-          destruct (lt_eq_lt_dec di4 dy) as [[H1| H1]| H1].
-           remember H1 as H; clear HeqH.
-           apply Nat.succ_lt_mono in H.
-           rewrite Hn3 in Hc4; [ idtac | assumption ].
-           rewrite negb_xorb_diag_l, xorb_true_l in Hc4.
-           apply negb_false_iff in Hc4.
-           unfold carry in Hc4; simpl in Hc4.
-           remember (fst_same y z (S (S di4))) as s5 eqn:Hs5 .
-           destruct s5 as [dj5| ]; [ idtac | clear Hc4 ].
-            apply fst_same_sym_iff in Hs5; simpl in Hs5.
-            destruct Hs5 as (Hn5, Ht5).
-            rewrite Hc4 in Ht5; symmetry in Ht5.
-            clear H.
-            destruct (lt_eq_lt_dec (S (di4 + dj5)) dy) as [[H2| H2]| H2].
-             remember H2 as H; clear HeqH.
-             apply Nat.succ_lt_mono in H.
-             apply Hn3 in H.
-             rewrite Ht5, Hc4 in H; discriminate H.
-
-             rewrite H2, Ht3 in Ht5; discriminate Ht5.
-
-             destruct dj5.
-              revert H1 H2; clear; intros; omega.
-
-              remember H2 as H; clear HeqH.
-              rewrite <- Nat.add_succ_l in H.
-              assert (0 < S dj5)%nat as HH by apply Nat.lt_0_succ.
-              eapply lt_add_sub_lt_r with (d := O) in H; try assumption.
-              apply Hn5 in H.
-              rewrite <- Nat.add_succ_l in H.
-              rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
-              rewrite Nat.add_comm, Nat.add_sub in H.
-              rewrite Hc3, Ht3 in H; discriminate H.
-
-            apply fst_same_sym_iff in Hs5; simpl in Hs5.
-            clear H.
-            pose proof (Hs5 (dy - S di4)%nat) as H.
-            rewrite <- Nat.add_succ_l in H.
-            rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
-            rewrite Nat.add_comm, Nat.add_sub in H.
-            rewrite Hc3, Ht3 in H; discriminate H.
-
-           subst di4.
-           rewrite Hty, Ht3, xorb_false_l in Hc4.
-           remember (S (S dy)) as u.
-           replace u with (u + 0)%nat in Hc4 by apply Nat.add_0_r.
-           subst u.
-           rewrite carry_before_relay with (di := O) in Hc4.
-            simpl in Hc4.
-            rewrite <- Nat.add_succ_l, <- Nat.add_succ_r in Hc4.
-            rewrite Hyy in Hc4; discriminate Hc4.
-
-            apply fst_same_iff; simpl.
-            split.
-             intros dj Hdj.
-             exfalso; revert Hdj; apply Nat.nlt_0_r.
-
-             rewrite <- Nat.add_succ_l, <- Nat.add_succ_r.
-             rewrite Hyy, <- negb_involutive.
-             rewrite <- Ht1, Hxy; reflexivity.
-
-            reflexivity.
-
-           pose proof (Hyy (di4 - S dy)%nat) as H.
-           rewrite Nat.add_succ_r in H.
-           rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
-           rewrite Nat.add_comm, Nat.add_sub in H.
-           rewrite H in Hc4.
-           rename H into Hy4.
-           rewrite <- Ht1 in Hc4.
-           pose proof (Hxy (di4 - S dy)%nat) as H.
-           rewrite Nat.add_succ_r in H.
-           rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
-           rewrite Nat.add_comm, Nat.add_sub in H.
-           rewrite H in Hc4.
-           rewrite xorb_false_l in Hc4.
-           remember (S (S di4)) as u.
-           replace u with (u + 0)%nat in Hc4 by apply Nat.add_0_r.
-           subst u.
-           rewrite carry_before_relay with (di := O) in Hc4.
-            rewrite Nat.add_0_r in Hc4.
-            rename H into Hx4.
-            pose proof (Hyy (di4 - dy)%nat) as H.
-            rewrite Nat.add_succ_l, Nat.add_succ_r in H.
-            rewrite Nat.add_sub_assoc in H; [ idtac | omega ].
-            rewrite Nat.add_comm, Nat.add_sub in H.
-            rewrite Hc4 in H; discriminate H.
-
-            apply fst_same_iff; simpl.
-            split.
-             intros dj Hdj.
-             exfalso; revert Hdj; apply Nat.nlt_0_r.
-
-             rewrite Nat.add_0_r.
-             remember (di4 - S dy)%nat as v eqn:Hv .
-             apply nat_sub_add_r in Hv; [ idtac | assumption ].
-             subst di4.
-             rewrite <- Nat.add_succ_l, <- Nat.add_succ_r.
-             rewrite Hyy, <- negb_involutive.
-             rewrite <- Ht1, Hxy; reflexivity.
-
-            reflexivity.
+   eapply case_4 with (x := x); try eassumption.
 
    destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
     remember H1 as H; clear HeqH.
