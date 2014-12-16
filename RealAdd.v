@@ -1545,10 +1545,31 @@ bbb.
            rewrite Ht1 in Hc1; discriminate Hc1.
 
     subst dy.
+    unfold carry in Hc1; simpl in Hc1.
+    remember (fst_same x z 0) as s1 eqn:Hs1 .
+    destruct s1 as [dj1| ]; [ idtac | discriminate Hc1 ].
+    remember Hs1 as H; clear HeqH.
+    apply fst_same_sym_iff in H; simpl in H.
+    destruct H as (Hn1, Ht1).
+    rewrite Hc1 in Ht1; symmetry in Ht1.
+    destruct (lt_eq_lt_dec dj1 dx) as [[H1| H1]| H1].
+     rewrite Hnx in Hc1; [ idtac | assumption ].
+     discriminate Hc1.
+
+     subst dj1.
+     unfold carry in Hc2; simpl in Hc2.
+     remember (fst_same (x + z) 0 0) as s2 eqn:Hs2 .
+     apply fst_same_sym_iff in Hs2; simpl in Hs2.
+     destruct s2 as [dj2| ]; [ idtac | clear Hc2 ].
+      destruct Hs2 as (Hn2, Ht2).
+      rewrite Ht2 in Hc2; discriminate Hc2.
+
+      assert (∀ dj, rm_add_i x z (0 + dj) = true) as H.
+       intros dj; simpl; apply Hs2.
 bbb.
-     0   -   dx  -   j
-  x
-  y
+     0   -   dx
+  x  1   1   0
+  y  1   1   0
   z
 
 bbb.
