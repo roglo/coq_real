@@ -1583,6 +1583,16 @@ destruct sx as [dx| ].
               rewrite Ht1, Hc3 in H; discriminate H.
 
              subst dj4.
+             unfold rm_add_i in Hc4.
+             rewrite Hc3, Ht3, xorb_false_l in Hc4.
+             unfold carry in Hc4; simpl in Hc4.
+             remember (fst_same y z (S (S dj1))) as s5 eqn:Hs5 .
+             destruct s5 as [dj5| ]; [ idtac | discriminate Hc4 ].
+             apply fst_same_sym_iff in Hs5; simpl in Hs5.
+             destruct Hs5 as (Hn5, Ht5).
+             rewrite Hc4 in Ht5; symmetry in Ht5.
+             rewrite <- Nat.add_succ_r, <- Nat.add_succ_l in Ht5.
+             rewrite Hzd in Ht5; discriminate Ht5.
 bbb.
 
      0   -   dx  -  dj1
