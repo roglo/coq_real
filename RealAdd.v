@@ -1557,6 +1557,8 @@ destruct sx as [dx| ].
                apply Nat.succ_lt_mono in H.
                rewrite Hn3 in Hc4; [ idtac | assumption ].
                rewrite Ht5 in Hc4; discriminate Hc4.
+
+               rewrite H4, Ht1 in Ht5; discriminate Ht5.
 bbb.
 
      0   -   dx  -  dj1
