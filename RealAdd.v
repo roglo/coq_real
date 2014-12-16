@@ -1559,6 +1559,21 @@ destruct sx as [dx| ].
                rewrite Ht5 in Hc4; discriminate Hc4.
 
                rewrite H4, Ht1 in Ht5; discriminate Ht5.
+
+               clear H.
+               destruct dj5.
+                exfalso; omega.
+
+                remember H4 as H; clear HeqH.
+                rewrite <- Nat.add_succ_l in H.
+                rename HH into Hxz.
+                assert (0 < S dj5)%nat as HH by apply Nat.lt_0_succ.
+                apply lt_add_sub_lt_r with (d := O) in H; try assumption.
+                apply Hn5 in H.
+                rewrite <- Nat.add_succ_l in H.
+                rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+                rewrite Nat.add_comm, Nat.add_sub in H.
+                rewrite Ht1, Hc3 in H; discriminate H.
 bbb.
 
      0   -   dx  -  dj1
