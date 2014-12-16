@@ -1454,7 +1454,27 @@ destruct sx as [dx| ].
           subst dj3.
           rewrite Hz1 in Ht3; discriminate Ht3.
 
-          destruct (lt_eq_lt_dec dj3 dj1) as [[H3| H3]| H3].
+          destruct (lt_eq_lt_dec dj3 (S dj1)) as [[H3| H3]| H3].
+           remember H3 as H; clear HeqH.
+           apply Hn1 in H.
+           rewrite Ht3 in H; simpl in H.
+           rename H into Hx3.
+           pose proof (Hf dj3) as H.
+           unfold rm_add_i in H; simpl in H.
+           do 2 rewrite xorb_false_r in H.
+           rewrite Hx3, Hc3, xorb_true_l, xorb_false_l in H.
+           unfold carry in H; simpl in H.
+           remember (fst_same x 0 (S dj3)) as sx3 eqn:Hsx3 .
+           remember (fst_same y 0 (S dj3)) as sy3 eqn:Hsy3 .
+           apply fst_same_sym_iff in Hsx3; simpl in Hsx3.
+           apply fst_same_sym_iff in Hsy3; simpl in Hsy3.
+           destruct sx3 as [dx3| ].
+            destruct Hsx3 as (Hnx3, Htx3).
+            destruct sy3 as [dy3| ].
+             destruct Hsy3 as (Hny3, Hty3).
+             rewrite Htx3, Hty3 in H; discriminate H.
+
+             clear H.
 bbb.
      0   -   dx  -  dj1
   x  1   1   0   u   0   1   1   1 …
