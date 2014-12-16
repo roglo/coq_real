@@ -1574,6 +1574,15 @@ destruct sx as [dx| ].
                 rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
                 rewrite Nat.add_comm, Nat.add_sub in H.
                 rewrite Ht1, Hc3 in H; discriminate H.
+
+              clear H.
+              pose proof (Hs5 (dj1 - S dj4)%nat) as H.
+              rewrite <- Nat.add_succ_l in H.
+              rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+              rewrite Nat.add_comm, Nat.add_sub in H.
+              rewrite Ht1, Hc3 in H; discriminate H.
+
+             subst dj4.
 bbb.
 
      0   -   dx  -  dj1
