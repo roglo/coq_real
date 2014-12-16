@@ -1447,6 +1447,14 @@ destruct sx as [dx| ].
          remember Hs4 as H; clear HeqH.
          apply fst_same_sym_iff in H; simpl in H.
          destruct H as (Hn4, _).
+         destruct (lt_eq_lt_dec dj3 dx) as [[H2| H2]| H2].
+          rewrite Hny in Hc3; [ idtac | assumption ].
+          discriminate Hc3.
+
+          subst dj3.
+          rewrite Hz1 in Ht3; discriminate Ht3.
+
+          destruct (lt_eq_lt_dec dj3 dj1) as [[H3| H3]| H3].
 bbb.
      0   -   dx  -  dj1
   x  1   1   0   u   0   1   1   1 …
