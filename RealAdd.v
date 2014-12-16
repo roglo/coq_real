@@ -1469,6 +1469,36 @@ bbb.
       apply Nat.nlt_ge in H2.
       apply Nat.le_antisymm in H2; [ idtac | assumption ].
       subst dy; clear H1.
+      unfold carry in Hc1; simpl in Hc1.
+      remember (fst_same x z 0) as s1 eqn:Hs1 .
+      destruct s1 as [dj1| ]; [ idtac | discriminate Hc1 ].
+      remember Hs1 as H; clear HeqH.
+      apply fst_same_sym_iff in H; simpl in H.
+      destruct H as (Hn1, Ht1).
+      rewrite Hc1 in Ht1; symmetry in Ht1.
+      destruct (lt_eq_lt_dec dj1 dx) as [[H1| H1]| H1].
+       rewrite Hnx in Hc1; [ idtac | assumption ].
+       discriminate Hc1.
+
+       Focus 2.
+       pose proof (Hxx (dj1 - S dx)%nat) as H.
+       rewrite Nat.add_succ_r, <- Nat.add_succ_l in H.
+       rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+       rewrite Nat.add_comm, Nat.add_sub in H.
+       rewrite Hc1 in H; discriminate H.
+
+       subst dj1.
+       unfold carry in Hc2; simpl in Hc2.
+       remember (fst_same (x + z) 0 0) as s2 eqn:Hs2 .
+       apply fst_same_sym_iff in Hs2; simpl in Hs2.
+       destruct s2 as [dj2| ]; [ idtac | clear Hc2 ].
+        destruct Hs2 as (Hn2, Ht2).
+        rewrite Ht2 in Hc2; discriminate Hc2.
+bbb.
+     0   -   dx
+  x  1   1   0   1   1   1 …
+  y  1   1   1   0   0   0 …
+  z  0   0   0   .   .
 
 bbb.
    unfold carry in Hc1; simpl in Hc1.
@@ -1478,11 +1508,6 @@ bbb.
    apply fst_same_sym_iff in H; simpl in H.
    destruct H as (Hn1, Ht1).
    rewrite Hc1 in Ht1; symmetry in Ht1.
-bbb.
-     0   -   dx  -   dy
-  x  1   1   0   .   .
-  y  1   1   1   1   0
-  z  .
 
 
    eapply case_2; try eassumption.
