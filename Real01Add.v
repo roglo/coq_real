@@ -22,7 +22,7 @@ Definition rm_ones := {| rm i := true |}.
 
 Notation "s .[ i ]" := (rm s i) (at level 1).
 
-Axiom fst_same : real_mod_1 → real_mod_1 → nat → option nat.
+Parameter fst_same : real_mod_1 → real_mod_1 → nat → option nat.
 Axiom fst_same_iff : ∀ x y i odi, fst_same x y i = odi ↔
   match odi with
   | Some di =>
