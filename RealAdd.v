@@ -1475,11 +1475,26 @@ destruct sx as [dx| ].
              rewrite Htx3, Hty3 in H; discriminate H.
 
              clear H.
+             remember Hx3 as H; clear HeqH.
+             eapply rm_eq_neq_if in H; try eassumption.
+             destruct H as [(Hyx, Hxx)| (Hyx, Hxx)]; simpl in Hyx, Hxx.
+              pose proof (Hyx (S dj1 - dj3)%nat) as H.
+              apply Nat.lt_le_incl in H3.
+              rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+              rewrite Nat.add_comm, Nat.add_sub in H.
+              rewrite Hc1 in H; discriminate H.
+
+              pose proof (Hyx (S dj1 - dj3)%nat) as H.
+              rewrite Nat.add_succ_r in H.
+              rewrite Nat.add_sub_assoc in H; [ idtac | omega ].
+              rewrite Nat.add_comm, Nat.add_sub in H.
+              rewrite <- Nat.add_1_r, Hxd in H.
+              discriminate H.
 bbb.
-     0   -   dx  -  dj1
-  x  1   1   0   u   0   1   1   1 …
-  y  1   1   0
-  z  0   0   1  ¬u   0   1   1   1 …
+     0   -   dx  -  dj3  -  dj1
+  x  1   1   0   u   1   v   0   1   1   1 …
+  y  1   1   0   u   0   1   1   1   1   1 …
+  z  0   0   1  ¬u   0  ¬v   0   1   1   1 …
 
    destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
     remember H1 as H; clear HeqH.
