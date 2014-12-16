@@ -1511,11 +1511,58 @@ destruct sx as [dx| ].
              discriminate H.
 
            subst dj3.
+           destruct dj4.
+            unfold rm_add_i in Hc4.
+            rewrite Hn3 in Hc4; [ idtac | apply Nat.lt_0_succ ].
+            rewrite negb_xorb_diag_l, xorb_true_l in Hc4.
+            apply negb_false_iff in Hc4.
+            unfold carry in Hc4; simpl in Hc4.
+            remember (fst_same y z 1) as s5 eqn:Hs5 .
+            apply fst_same_sym_iff in Hs5; simpl in Hs5.
+            destruct s5 as [dj5| ]; [ idtac | clear Hc4 ].
+             destruct Hs5 as (Hn5, Ht5).
+             rewrite Hc4 in Ht5; symmetry in Ht5.
+             destruct (lt_eq_lt_dec dj5 dj1) as [[H3| H3]| H3].
+              remember H3 as H; clear HeqH.
+              apply Nat.succ_lt_mono in H.
+              rewrite Hn3 in Hc4; [ idtac | assumption ].
+              rewrite Ht5 in Hc4; discriminate Hc4.
+
+              subst dj5.
+              rewrite Ht3 in Ht5; discriminate Ht5.
+
+              remember H3 as H; clear HeqH.
+              rewrite Hn5 in Hc3; [ idtac | assumption ].
+              rewrite Ht3 in Hc3; discriminate Hc3.
+
+             rewrite Hs5 in Hc3.
+             rewrite Ht3 in Hc3; discriminate Hc3.
+
+            destruct (lt_eq_lt_dec dj4 dj1) as [[H3| H3]| H3].
+             unfold rm_add_i in Hc4.
+             remember H3 as H; clear HeqH.
+             apply Nat.succ_lt_mono in H.
+             rewrite Hn3 in Hc4; [ idtac | assumption ].
+             rewrite negb_xorb_diag_l, xorb_true_l in Hc4.
+             apply negb_false_iff in Hc4.
+             unfold carry in Hc4; simpl in Hc4.
+             remember (fst_same y z (S (S dj4))) as s5 eqn:Hs5 .
+             apply fst_same_sym_iff in Hs5; simpl in Hs5.
+             destruct s5 as [dj5| ]; [ idtac | clear Hc4 ].
+              destruct Hs5 as (Hn5, Ht5).
+              rewrite Hc4 in Ht5; symmetry in Ht5.
+              destruct (lt_eq_lt_dec (S (dj4 + dj5)) dj1) as [[H4| H4]| H4].
+               clear H.
+               remember H4 as H; clear HeqH.
+               apply Nat.succ_lt_mono in H.
+               rewrite Hn3 in Hc4; [ idtac | assumption ].
+               rewrite Ht5 in Hc4; discriminate Hc4.
 bbb.
-     0   -   dx  -  dj3  -  dj1
-  x  1   1   0   u   1   v   0   1   1   1 …
-  y  1   1   0   .   0
-  z  0   0   1  ¬u   0  ¬v   0   1   1   1 …
+
+     0   -   dx  -  dj1
+  x  1   1   0   u   0   1   1   1 …
+  y  1   1   0   u   0
+  z  0   0   1  ¬u   0   1   1   1 …
 
    destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
     remember H1 as H; clear HeqH.
