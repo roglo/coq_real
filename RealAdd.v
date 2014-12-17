@@ -1773,7 +1773,6 @@ destruct sx as [dx| ].
 
       assert (∀ dj, rm_add_i x z (dx + dj) = true) as H.
        intros dj; apply Hs2.
-       intros dj; apply Hs2.
 
        rewrite <- Ht1 in Hc1.
        apply rm_add_inf_true_eq_if in H; [ idtac | assumption ].
