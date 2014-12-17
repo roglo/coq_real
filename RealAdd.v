@@ -2146,11 +2146,51 @@ destruct sx as [dx| ].
   symmetry in Hf, Hi; symmetry.
   eapply case_6; eassumption.
 
-  apply fst_same_sym_iff in Hsx; simpl in Hsx.
-  apply fst_same_sym_iff in Hsy; simpl in Hsy.
   apply Z.add_cancel_r in Hi; subst a; f_equal.
-bbb.
+  remember Hsx as H; clear HeqH.
+  apply fst_same_sym_iff in H; simpl in H.
+  rename H into Hnx.
+  remember Hsy as H; clear HeqH.
+  apply fst_same_sym_iff in H; simpl in H.
+  rename H into Hny.
   destruct c1, c2, c3, c4; try reflexivity; exfalso.
+   unfold carry in Hc2; simpl in Hc2.
+   remember (fst_same (x + z) 0 0) as s2 eqn:Hs2 .
+   apply fst_same_sym_iff in Hs2; simpl in Hs2.
+   destruct s2 as [dj2| ]; [ idtac | clear Hc2 ].
+    destruct Hs2 as (Hn2, Ht2).
+    rewrite Ht2 in Hc2; discriminate Hc2.
+
+    unfold carry in Hc4; simpl in Hc4.
+    remember (fst_same (y + z) 0 0) as s4 eqn:Hs4 .
+    destruct s4 as [dj4| ]; [ idtac | discriminate Hc4 ].
+    apply fst_same_sym_iff in Hs4; simpl in Hs4.
+    destruct Hs4 as (Hn4, _).
+    unfold rm_add_i in Hc4.
+    rewrite Hny, xorb_true_l in Hc4.
+    remember z .[ dj4] as z4 eqn:Hz4 .
+    symmetry in Hz4.
+    destruct z4.
+     rewrite xorb_false_l in Hc4.
+     unfold carry in Hc4.
+     remember (fst_same y z (S dj4)) as s5 eqn:Hs5 .
+     destruct s5 as [dj5| ]; [ idtac | discriminate Hc4 ].
+     rewrite Hny in Hc4; discriminate Hc4.
+
+     rewrite xorb_true_l in Hc4.
+     apply negb_false_iff in Hc4.
+     pose proof (Hnx dj4) as H.
+     rewrite <- negb_involutive in H.
+     apply negb_sym in H; simpl in H.
+     rewrite <- Hz4 in H.
+     apply negb_sym in H; simpl in H.
+     apply rm_add_inf_true_neq_if in H.
+      destruct H as (j, (Hj, (Hdi, (H, _)))).
+      rewrite Hnx in H; discriminate H.
+
+      intros di; apply Hs2.
+
+   Focus 1.
 bbb.
      0   -   dx
   x  1   1   0   0   0   0   0 …
