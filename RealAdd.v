@@ -2016,6 +2016,11 @@ destruct sx as [dx| ].
        pose proof (Hxx (dj1 + 1)%nat) as H.
        rewrite Hx1 in H; discriminate H.
 
+     unfold carry in Hc3; simpl in Hc3.
+     remember (fst_same y z 0) as s3 eqn:Hs3 .
+     destruct s3 as [dj3| ]; [ idtac | discriminate Hc3 ].
+     rewrite Hny in Hc3; discriminate Hc3.
+
 bbb.
      0   -   dx
   x  1   1   0
