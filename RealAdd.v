@@ -1868,13 +1868,34 @@ destruct sx as [dx| ].
 
            reflexivity.
 
-     Focus 1.
+     pose proof (Hnx dy H1) as Hx1.
+     remember Hx1 as H; clear HeqH.
+     eapply rm_eq_neq_if in H; try eassumption.
+     destruct H as [(Hyx, Hxx)| (Hyx, Hxx)]; simpl in Hyx, Hxx.
+      pose proof (Hyx (dx - dy)%nat) as H.
+      apply Nat.lt_le_incl in H1.
+      rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+      rewrite Nat.add_comm, Nat.add_sub in H.
+      rewrite Htx in H; discriminate H.
+
+      destruct (lt_dec (S dy) dx) as [H2| H2].
+       destruct dx; [ revert H2; apply Nat.nlt_0_r | idtac ].
+       pose proof (Hyx (dx - S dy)%nat) as H.
+       rewrite Nat.add_succ_r, <- Nat.add_succ_l in H.
+       rewrite Nat.add_sub_assoc in H; [ idtac | omega ].
+       rewrite Nat.add_comm, Nat.add_sub in H.
+       rewrite Hnx in H; [ idtac | apply Nat.lt_succ_diag_r ].
+       discriminate H.
+
+       apply Nat.nlt_ge in H2.
+       apply Nat.le_antisymm in H2; [ idtac | assumption ].
+       subst dx; clear H1.
 
 bbb.
-     0   -   dy  -   dx
-  x  1   1   1   1   0
+     0   -   dy
+  x  1   1   1   0
   y  1   1   0
-  z  0   0   0   0   0
+  z  0   0   0   0
 
 bbb.
    unfold carry in Hc1; simpl in Hc1.
