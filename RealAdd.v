@@ -1989,6 +1989,12 @@ destruct sx as [dx| ].
      destruct s3 as [dj3| ]; [ idtac | discriminate Hc3 ].
      rewrite Hny in Hc3; discriminate Hc3.
 
+     rewrite carry_comm in Hc3.
+     rewrite carry_comm_l in Hc4.
+     eapply case_2; try eassumption.
+     unfold carry; simpl.
+     rewrite <- Hsy; reflexivity.
+
 bbb.
      0   -   dx
   x  1   1   0
