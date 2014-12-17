@@ -2088,12 +2088,45 @@ destruct sx as [dx| ].
     pose proof (Hyx O) as H.
     rewrite Hny in H; discriminate H.
 
-   Focus 1.
+   pose proof (Hny (S dx)) as H.
+   symmetry in Hf.
+   eapply rm_eq_neq_if in H; try eassumption; simpl in H.
+   destruct H as [(Hyx, Hxx)| (Hyx, Hxx)]; simpl in Hyx, Hxx.
+    remember Hf as H; clear HeqH.
+    unfold rm_eq in H; simpl in H.
+    rename H into Hr.
+    pose proof (Hr O) as H.
+    unfold rm_add_i in H; simpl in H.
+    do 2 rewrite xorb_false_r in H.
+    rewrite Hnx in H; [ idtac | apply Nat.lt_0_succ ].
+    rewrite Hny, xorb_true_l in H.
+    symmetry in H.
+    rewrite xorb_true_l in H.
+    apply negb_sym in H.
+    rewrite negb_involutive in H.
+    unfold carry in H.
+    remember (fst_same x 0 1) as s1 eqn:Hs1 .
+    remember (fst_same y 0 1) as s2 eqn:Hs2 .
+    destruct s1 as [dj1| ].
+     apply fst_same_sym_iff in Hs1; simpl in Hs1.
+     destruct Hs1 as (Hn1, Ht1).
+     simpl in H.
+     rewrite Ht1 in H.
+     destruct s2 as [dj2| ]; [ idtac | discriminate H ].
+     rewrite Hny in H; discriminate H.
+
+     apply fst_same_sym_iff in Hs1; simpl in Hs1.
+     rewrite Hs1 in Htx; discriminate Htx.
+
+    pose proof (Hyx O) as H.
+    rewrite Hny in H; discriminate H.
+
+ Focus 1.
 bbb.
-     0
-  x  0   0   0   0   0   0   0 …
+     0   -   dx
+  x  1   1   0   0   0   0   0 …
   y  1   1   1   1   1   1   1 …
-  z  0   0   0   0   0   0   0 …
+  z
 
 bbb.
    unfold carry in Hc1; simpl in Hc1.
