@@ -2054,12 +2054,28 @@ destruct sx as [dx| ].
         apply fst_same_sym_iff in Hs2; simpl in Hs2.
         destruct Hs2 as (Hn2, _).
         unfold rm_add_i in Hc2; simpl in Hc2.
+        destruct dj3.
+         destruct dj1.
+          rewrite Hc1, <- Ht3, Hc3 in Ht1; discriminate Ht1.
+
+          simpl in Hz3.
+          rewrite Hz3, Hc1 in Ht1; discriminate Ht1.
+
+         pose proof (Hs4 O) as H.
+         unfold rm_add_i in H; simpl in H.
+         rewrite Hn3 in H; [ idtac | apply Nat.lt_0_succ ].
+         rewrite negb_xorb_diag_l, xorb_true_l in H.
+         apply negb_true_iff in H.
+         unfold carry in H.
+         remember (fst_same y z 1) as s5 eqn:Hs5 .
+         destruct s5 as [dj5| ]; [ idtac | discriminate H ].
+         rewrite Hny in H; discriminate H.
 
 bbb.
-     0   -   dx
-  x  1   1   0
+     0
+  x  0   0   0   0   0   0   0 …
   y  1   1   1   1   1   1   1 …
-  z
+  z  1   1   1   1   1 …
 
 bbb.
    unfold carry in Hc1; simpl in Hc1.
