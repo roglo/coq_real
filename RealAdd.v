@@ -1274,15 +1274,18 @@ Theorem case_5 : ∀ x y z dx dy,
   → carry (x + z) 0 0 = true
   → carry y z 0 = false
   → carry (y + z) 0 0 = false
-  → (∀ dj : nat, (dj < dx)%nat → x .[ dj] = true)
-  → x .[ dx] = false
-  → (∀ dj : nat, (dj < dy)%nat → y .[ dj] = true)
-  → y .[ dy] = false
-  → (∀ i : nat, rm_add_i x 0 i = rm_add_i y 0 i)
   → False.
 Proof.
 intros x y z dx dy Hf_v Hsx Hsy Hc1 Hc2 Hc3 Hc4.
-intros Hnx Htx Hny Hty Hf.
+remember Hsx as H; clear HeqH.
+apply fst_same_iff in H; simpl in H.
+destruct H as (Hnx, Htx).
+remember Hsy as H; clear HeqH.
+apply fst_same_iff in H; simpl in H.
+destruct H as (Hny, Hty).
+remember Hf_v as H; clear HeqH.
+unfold rm_eq in H; simpl in H.
+rename H into Hf.
 unfold carry in Hc1; simpl in Hc1.
 remember (fst_same x z 0) as s1 eqn:Hs1 .
 destruct s1 as [dj1| ]; [ idtac | discriminate Hc1 ].
