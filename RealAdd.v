@@ -1656,12 +1656,20 @@ destruct sx as [dx| ].
                rewrite Nat.add_comm, Nat.add_sub in H.
                rewrite <- Nat.add_1_r in H; simpl in H.
                rewrite Hyx in H; discriminate H.
+
+           pose proof (Hzd (dj3 - S (S dj1))%nat) as H.
+           rewrite Nat.add_succ_r, <- Nat.add_succ_l in H.
+           rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+           rewrite Nat.add_comm, Nat.add_sub in H.
+           rewrite Ht3 in H; discriminate H.
+
+         Focus 1.
 bbb.
 
-     0   -   dx  -  dj1  -  dj4
-  x  1   1   0   u   0   1   1   0   0   0   0 …
-  y  1   1   0   u   0   .   0   1   1   1   1 …
-  z  0   0   1  ¬u   0   1
+     0   -   dx  -  dj1
+  x  1   1   0   u   0
+  y  1   1   0   u   1
+  z  0   0   1  ¬u   0
 
    destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
     remember H1 as H; clear HeqH.
