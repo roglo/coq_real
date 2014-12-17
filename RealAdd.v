@@ -1764,12 +1764,26 @@ destruct sx as [dx| ].
            rewrite Ht1 in Hc1; discriminate Hc1.
 
      subst dy.
+     unfold carry in Hc2; simpl in Hc2.
+     remember (fst_same (x + z) 0 0) as s2 eqn:Hs2 .
+     apply fst_same_sym_iff in Hs2; simpl in Hs2.
+     destruct s2 as [dj2| ]; [ idtac | clear Hc2 ].
+      destruct Hs2 as (Hn2, Ht2).
+      rewrite Ht2 in Hc2; discriminate Hc2.
+
+      assert (∀ dj, rm_add_i x z (dx + dj) = true) as H.
+       intros dj; apply Hs2.
+       intros dj; apply Hs2.
+
+       rewrite <- Ht1 in Hc1.
+       apply rm_add_inf_true_eq_if in H; [ idtac | assumption ].
+       destruct H as (Hxd, Hzd).
 
 bbb.
      0   -   dx
-  x  1   1   0
+  x  1   1   0   1   1   1   1 …
   y  1   1   0
-  z  0   0   0
+  z  0   0   0   1   1   1   1 …
 
 bbb.
    unfold carry in Hc1; simpl in Hc1.
