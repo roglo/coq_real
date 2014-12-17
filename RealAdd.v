@@ -1968,6 +1968,27 @@ destruct sx as [dx| ].
      unfold carry; simpl.
      rewrite fst_same_comm, <- Hsx; reflexivity.
 
+     unfold carry in Hc1; simpl in Hc1.
+     remember (fst_same x z 0) as s1 eqn:Hs1 .
+     apply fst_same_sym_iff in Hs1; simpl in Hs1.
+     destruct s1 as [dj1| ]; [ idtac | clear Hc1 ].
+      rewrite Hxx in Hc1; discriminate Hc1.
+
+      unfold carry in Hc4; simpl in Hc4.
+      remember (fst_same (y + z) 0 0) as s4 eqn:Hs4 .
+      destruct s4 as [dj4| ]; [ idtac | discriminate Hc4 ].
+      unfold rm_add_i in Hc4; simpl in Hc4.
+      rewrite Hny, <- Hs1, Hxx, xorb_false_l in Hc4.
+      unfold carry in Hc4; simpl in Hc4.
+      remember (fst_same y z (S dj4)) as s5 eqn:Hs5 .
+      destruct s5 as [dj5| ]; [ idtac | discriminate Hc4 ].
+      rewrite Hny in Hc4; discriminate Hc4.
+
+     unfold carry in Hc3; simpl in Hc3.
+     remember (fst_same y z 0) as s3 eqn:Hs3 .
+     destruct s3 as [dj3| ]; [ idtac | discriminate Hc3 ].
+     rewrite Hny in Hc3; discriminate Hc3.
+
 bbb.
      0   -   dx
   x  1   1   0
