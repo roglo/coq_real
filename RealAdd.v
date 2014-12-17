@@ -1935,11 +1935,44 @@ destruct sx as [dx| ].
    symmetry in Hf_v.
    eapply case_5 with (x := y) (y := x); eassumption.
 
+  remember Hsy as H; clear HeqH.
+  apply fst_same_sym_iff in H; simpl in H.
+  rename H into Hny.
+  destruct dx; [ clear Hnx | idtac ].
+   pose proof (Hny O) as H.
+   symmetry in Hf.
+   eapply rm_eq_neq_if in H; try eassumption; simpl in H.
+   destruct H as [(Hyx, Hxx)| (Hyx, Hxx)]; simpl in Hyx, Hxx.
+    clear Htx Hyx.
+    simpl in Hi.
+    rewrite Z.add_comm in Hi; subst a.
+    rewrite Z.add_assoc; f_equal.
+    destruct c1, c2, c3, c4; simpl; try reflexivity; exfalso.
+     rewrite carry_comm in Hc2.
+     eapply case_1; try eassumption.
+     unfold carry; simpl.
+     rewrite fst_same_comm, <- Hsx; reflexivity.
+
+     rewrite carry_comm in Hc2.
+     eapply case_1; try eassumption.
+     unfold carry; simpl.
+     rewrite fst_same_comm, <- Hsx; reflexivity.
+
+     rewrite carry_comm in Hc2.
+     eapply case_1; try eassumption.
+     unfold carry; simpl.
+     rewrite fst_same_comm, <- Hsx; reflexivity.
+
+     rewrite carry_comm in Hc2.
+     eapply case_1; try eassumption.
+     unfold carry; simpl.
+     rewrite fst_same_comm, <- Hsx; reflexivity.
+
 bbb.
-     0   -   dy
-  x  1   1   1   0   0   0   0 …
-  y  1   1   0   1   1   1   1 …
-  z  0   0   0   0
+     0   -   dx
+  x  1   1   0
+  y  1   1   1   1   1   1   1 …
+  z
 
 bbb.
    unfold carry in Hc1; simpl in Hc1.
