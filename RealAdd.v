@@ -1890,11 +1890,17 @@ destruct sx as [dx| ].
        apply Nat.nlt_ge in H2.
        apply Nat.le_antisymm in H2; [ idtac | assumption ].
        subst dx; clear H1.
+       unfold carry in Hc2; simpl in Hc2.
+       remember (fst_same (x + z) 0 0) as s2 eqn:Hs2 .
+       apply fst_same_sym_iff in Hs2; simpl in Hs2.
+       destruct s2 as [dj2| ]; [ idtac | clear Hc2 ].
+        destruct Hs2 as (Hn2, Ht2).
+        rewrite Ht2 in Hc2; discriminate Hc2.
 
 bbb.
      0   -   dy
-  x  1   1   1   0
-  y  1   1   0
+  x  1   1   1   0   0   0   0 …
+  y  1   1   0   1   1   1   1 …
   z  0   0   0   0
 
 bbb.
