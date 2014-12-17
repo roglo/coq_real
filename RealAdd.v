@@ -1777,11 +1777,64 @@ destruct sx as [dx| ].
        rewrite <- Ht1 in Hc1.
        apply rm_add_inf_true_eq_if in H; [ idtac | assumption ].
        destruct H as (Hxd, Hzd).
+       pose proof (Hf dx) as H.
+       unfold rm_add_i in H; simpl in H.
+       do 2 rewrite xorb_false_r in H.
+       rewrite Htx, Hty in H.
+       do 2 rewrite xorb_false_l in H.
+       unfold carry in H; simpl in H.
+       remember (fst_same x 0 (S dx)) as s5 eqn:Hs5 .
+       apply fst_same_sym_iff in Hs5; simpl in Hs5.
+       destruct s5 as [dj5| ].
+        destruct Hs5 as (Hn5, Ht5).
+        rewrite <- Nat.add_succ_r in Ht5.
+        rewrite Hxd in Ht5; discriminate Ht5.
+
+        remember (fst_same y 0 (S dx)) as s6 eqn:Hs6 .
+        apply fst_same_sym_iff in Hs6; simpl in Hs6.
+        destruct s6 as [dj6| ]; [ idtac | clear H ].
+         destruct Hs6 as (Hn6, Hs6).
+         rewrite Hs6 in H; discriminate H.
+
+         unfold carry in Hc4; simpl in Hc4.
+         remember (fst_same (y + z) 0 0) as s4 eqn:Hs4 .
+         destruct s4 as [dj4| ]; [ idtac | discriminate Hc4 ].
+         apply fst_same_sym_iff in Hs4; simpl in Hs4.
+         destruct Hs4 as (Hn4, _).
+         destruct (lt_eq_lt_dec dj4 dx) as [[H1| H1]| H1].
+          unfold rm_add_i in Hc4; simpl in Hc4.
+          rewrite Hny in Hc4; [ idtac | assumption ].
+          rewrite <- Hn1 in Hc4; [ idtac | assumption ].
+          rewrite Hnx in Hc4; [ idtac | assumption ].
+          apply negb_false_iff in Hc4.
+          replace (S dj4) with (S dj4 + 0)%nat in Hc4 by apply Nat.add_0_r.
+          rewrite carry_before_relay with (di := (dx - S dj4)%nat) in Hc4.
+           rewrite Nat.add_sub_assoc in Hc4; [ idtac | assumption ].
+           rewrite Nat.add_comm, Nat.add_sub in Hc4.
+           rewrite Hty in Hc4; discriminate Hc4.
+
+           apply fst_same_iff; simpl.
+           split.
+            intros dj Hdj.
+            apply Nat.lt_add_lt_sub_l in Hdj.
+            rewrite Hny; [ idtac | assumption ].
+            rewrite <- Hn1; [ idtac | assumption ].
+            rewrite Hnx; [ idtac | assumption ].
+            reflexivity.
+
+            rewrite <- Nat.add_succ_l.
+            rewrite Nat.add_sub_assoc; [ idtac | assumption ].
+            rewrite Nat.add_comm, Nat.add_sub.
+            rewrite Hty, Ht1; reflexivity.
+
+           apply Nat.le_0_l.
+
+          subst dj4.
 
 bbb.
      0   -   dx
   x  1   1   0   1   1   1   1 …
-  y  1   1   0
+  y  1   1   0   1   1   1   1 …
   z  0   0   0   1   1   1   1 …
 
 bbb.
