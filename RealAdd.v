@@ -1706,7 +1706,6 @@ destruct sx as [dx| ].
        apply Nat.le_antisymm in H2; [ idtac | assumption ].
        subst dy; clear H1.
        unfold carry in Hc1; simpl in Hc1.
-       Focus 1.
        unfold carry in Hc2; simpl in Hc2.
        remember (fst_same (x + z) 0 0) as s2 eqn:Hs2 .
        apply fst_same_sym_iff in Hs2; simpl in Hs2.
@@ -1846,13 +1845,36 @@ destruct sx as [dx| ].
 
            reflexivity.
 
-          Focus 1.
+          remember (dj4 - S dx)%nat as v eqn:Hv .
+          apply nat_sub_add_r in Hv; [ idtac | assumption ].
+          subst dj4.
+          unfold rm_add_i in Hc4; simpl in Hc4.
+          rewrite Hzd, Nat.add_succ_r, Hs6 in Hc4.
+          remember (S (S (dx + v))) as u.
+          replace u with (u + 0)%nat in Hc4 by apply Nat.add_0_r.
+          subst u.
+          rewrite carry_before_relay with (di := O) in Hc4.
+           rewrite Nat.add_0_r, <- Nat.add_succ_r in Hc4.
+           rewrite Hs6 in Hc4; discriminate Hc4.
+
+           apply fst_same_iff; simpl.
+           split.
+            intros dj Hdj.
+            exfalso; revert Hdj; apply Nat.nlt_0_r.
+
+            rewrite Nat.add_0_r.
+            rewrite <- Nat.add_succ_r, Hs6.
+            rewrite <- Nat.add_succ_r, Hzd; reflexivity.
+
+           reflexivity.
+
+     Focus 1.
 
 bbb.
-     0   -   dx
-  x  1   1   0   1   1   1   1 …
-  y  1   1   0   1   1   1   1 …
-  z  0   0   0   1   1   1   1 …
+     0   -   dy  -   dx
+  x  1   1   1   1   0
+  y  1   1   0
+  z  0   0   0   0   0
 
 bbb.
    unfold carry in Hc1; simpl in Hc1.
