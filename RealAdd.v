@@ -1995,6 +1995,27 @@ destruct sx as [dx| ].
      unfold carry; simpl.
      rewrite <- Hsy; reflexivity.
 
+     unfold carry in Hc2; simpl in Hc2.
+     remember (fst_same (x + z) 0 0) as s2 eqn:Hs2 .
+     destruct s2 as [dj2| ]; [ idtac | clear Hc2 ].
+      apply fst_same_sym_iff in Hs2; simpl in Hs2.
+      destruct Hs2 as (_, Ht2).
+      rewrite Ht2 in Hc2; discriminate Hc2.
+
+      apply fst_same_sym_iff in Hs2; simpl in Hs2.
+      unfold carry in Hc1; simpl in Hc1.
+      remember (fst_same x z 0) as s1 eqn:Hs1 .
+      apply fst_same_sym_iff in Hs1; simpl in Hs1.
+      destruct s1 as [dj1| ]; [ idtac | discriminate Hc1 ].
+      destruct Hs1 as (Hn1, Ht1).
+      assert (∀ dj, rm_add_i x z (dj1 + dj) = true) as H.
+       intros dj; apply Hs2.
+
+       apply rm_add_inf_true_eq_if in H; [ idtac | assumption ].
+       destruct H as (Hx1, _).
+       pose proof (Hxx (dj1 + 1)%nat) as H.
+       rewrite Hx1 in H; discriminate H.
+
 bbb.
      0   -   dx
   x  1   1   0
