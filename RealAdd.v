@@ -1830,6 +1830,23 @@ destruct sx as [dx| ].
            apply Nat.le_0_l.
 
           subst dj4.
+          unfold rm_add_i in Hc4; simpl in Hc4.
+          rewrite Hty, Ht1, xorb_false_l in Hc4.
+          replace (S dx) with (S dx + 0)%nat in Hc4 by apply Nat.add_0_r.
+          rewrite carry_before_relay with (di := O) in Hc4.
+           simpl in Hc4; rewrite Hs6 in Hc4.
+           discriminate Hc4.
+
+           apply fst_same_iff; simpl.
+           split.
+            intros dj Hdj.
+            exfalso; revert Hdj; apply Nat.nlt_0_r.
+
+            rewrite Hs6, <- Nat.add_succ_r, Hzd; reflexivity.
+
+           reflexivity.
+
+          Focus 1.
 
 bbb.
      0   -   dx
