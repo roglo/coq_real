@@ -2021,6 +2021,18 @@ destruct sx as [dx| ].
      destruct s3 as [dj3| ]; [ idtac | discriminate Hc3 ].
      rewrite Hny in Hc3; discriminate Hc3.
 
+     unfold carry in Hc3; simpl in Hc3.
+     remember (fst_same y z 0) as s3 eqn:Hs3 .
+     destruct s3 as [dj3| ]; [ idtac | discriminate Hc3 ].
+     rewrite Hny in Hc3; discriminate Hc3.
+
+     unfold carry in Hc4; simpl in Hc4.
+     remember (fst_same (y + z) 0 0) as s4 eqn:Hs4 .
+     apply fst_same_sym_iff in Hs4; simpl in Hs4.
+     destruct s4 as [dj4| ]; [ idtac | clear Hc4 ].
+      destruct Hs4 as (Hn4, Ht4).
+      rewrite Ht4 in Hc4; discriminate Hc4.
+
 bbb.
      0   -   dx
   x  1   1   0
