@@ -1414,7 +1414,6 @@ destruct sx as [dx| ].
           pose proof (Hyx (dy - dx)%nat) as H.
           apply Nat.lt_le_incl in H2.
           rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
-          apply Nat.lt_le_incl in H1.
           rewrite Nat.add_comm, Nat.add_sub, Hty in H.
           discriminate H.
 
@@ -1663,13 +1662,32 @@ destruct sx as [dx| ].
            rewrite Nat.add_comm, Nat.add_sub in H.
            rewrite Ht3 in H; discriminate H.
 
-         Focus 1.
+         remember H2 as H; clear HeqH.
+         apply Hnx in H.
+         rename H into Hx1.
+         remember Hx1 as H; clear HeqH.
+         eapply rm_eq_neq_if in H; try eassumption.
+         destruct H as [(Hyx, Hxx)| (Hyx, Hxx)]; simpl in Hyx, Hxx.
+          pose proof (Hyx (dx - dy)%nat) as H.
+          apply Nat.lt_le_incl in H2.
+          rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+          rewrite Nat.add_comm, Nat.add_sub, Htx in H.
+          discriminate H.
+
+          pose proof (Hyx (S dj1 - dy)%nat) as H.
+          rewrite Nat.add_succ_r in H.
+          rewrite Nat.add_sub_assoc in H; [ idtac | omega ].
+          rewrite Nat.add_comm, Nat.add_sub in H.
+          rewrite <- Nat.add_1_r, Hxd in H.
+          discriminate H.
+
+    subst dj1.
 bbb.
 
-     0   -   dx  -  dj1
-  x  1   1   0   u   0
-  y  1   1   0   u   1
-  z  0   0   1  ¬u   0
+     0   -   dy  -   dx
+  x  1   1   1   1   0
+  y  1   1   0
+  z  0
 
    destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
     remember H1 as H; clear HeqH.
