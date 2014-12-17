@@ -1897,6 +1897,13 @@ destruct sx as [dx| ].
         destruct Hs2 as (Hn2, Ht2).
         rewrite Ht2 in Hc2; discriminate Hc2.
 
+        assert (∀ dj, rm_add_i x z (S dy + dj) = true) as H.
+         intros dj; apply Hs2.
+
+         rewrite <- Ht1 in Hc1.
+         apply rm_add_inf_true_eq_if in H; [ idtac | assumption ].
+         destruct H as (Hxd, Hzd).
+
 bbb.
      0   -   dy
   x  1   1   1   0   0   0   0 …
