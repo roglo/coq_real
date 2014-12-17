@@ -2085,7 +2085,10 @@ destruct sx as [dx| ].
      destruct s3 as [dj3| ]; [ idtac | discriminate Hc3 ].
      rewrite Hny in Hc3; discriminate Hc3.
 
-    Focus 1.
+    pose proof (Hyx O) as H.
+    rewrite Hny in H; discriminate H.
+
+   Focus 1.
 bbb.
      0
   x  0   0   0   0   0   0   0 …
