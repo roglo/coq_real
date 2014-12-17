@@ -1624,12 +1624,44 @@ destruct sx as [dx| ].
               remember Hx4 as H; clear HeqH.
               eapply rm_eq_neq_if in H; try eassumption.
               destruct H as [(Hyx, Hxx)| (Hyx, Hxx)]; simpl in Hyx, Hxx.
+               pose proof (Hf (S dj1)) as H.
+               unfold rm_add_i in H; simpl in H.
+               do 2 rewrite xorb_false_r in H.
+               rewrite Hc1, Hc3 in H.
+               do 2 rewrite xorb_false_l in H.
+               unfold carry in H; simpl in H.
+               remember (fst_same x 0 (S (S dj1))) as s5 eqn:Hs5 .
+               destruct s5 as [dj5| ].
+                apply fst_same_sym_iff in Hs5; simpl in Hs5.
+                destruct Hs5 as (Hn5, Ht5).
+                rewrite <- Nat.add_succ_r, <- Nat.add_succ_l in Ht5.
+                rewrite Hxd in Ht5; discriminate Ht5.
+
+                remember (fst_same y 0 (S (S dj1))) as s6 eqn:Hs6 .
+                destruct s6 as [dj6| ]; [ idtac | clear H ].
+                 apply fst_same_sym_iff in Hs6; simpl in Hs6.
+                 destruct Hs6 as (Hn6, Ht6).
+                 rewrite Ht6 in H; discriminate H.
+
+                 apply fst_same_sym_iff in Hs6; simpl in Hs6.
+                 pose proof (Hs6 (dj4 - S dj1)%nat) as H.
+                 rewrite <- Nat.add_succ_l in H.
+                 rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+                 rewrite Nat.add_comm, Nat.add_sub in H.
+                 rewrite Hy4 in H; discriminate H.
+
+               pose proof (Hxd (dj4 - dj1)%nat) as H.
+               rewrite Nat.add_succ_r, Nat.add_succ_l in H.
+               rewrite Nat.add_sub_assoc in H; [ idtac | omega ].
+               rewrite Nat.add_comm, Nat.add_sub in H.
+               rewrite <- Nat.add_1_r in H; simpl in H.
+               rewrite Hyx in H; discriminate H.
 bbb.
 
      0   -   dx  -  dj1  -  dj4
-  x  1   1   0   u   0   1   1   1   1 …
-  y  1   1   0   u   0   1   0   0   0 …
-  z  0   0   1  ¬u   0   1   1   1   1 …
+  x  1   1   0   u   0   1   1   0   0   0   0 …
+  y  1   1   0   u   0   .   0   1   1   1   1 …
+  z  0   0   1  ¬u   0   1
 
    destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
     remember H1 as H; clear HeqH.
