@@ -2071,11 +2071,26 @@ destruct sx as [dx| ].
          destruct s5 as [dj5| ]; [ idtac | discriminate H ].
          rewrite Hny in H; discriminate H.
 
+       pose proof (Hs4 O) as H.
+       unfold rm_add_i in H.
+       rewrite Hs3, negb_xorb_diag_l, xorb_true_l in H.
+       apply negb_true_iff in H.
+       unfold carry in H; simpl in H.
+       remember (fst_same y z 1) as s5 eqn:Hs5 .
+       destruct s5 as [dj5| ]; [ idtac | discriminate H ].
+       rewrite Hny in H; discriminate H.
+
+     unfold carry in Hc3; simpl in Hc3.
+     remember (fst_same y z 0) as s3 eqn:Hs3 .
+     destruct s3 as [dj3| ]; [ idtac | discriminate Hc3 ].
+     rewrite Hny in Hc3; discriminate Hc3.
+
+    Focus 1.
 bbb.
      0
   x  0   0   0   0   0   0   0 …
   y  1   1   1   1   1   1   1 …
-  z  1   1   1   1   1 …
+  z  0   0   0   0   0   0   0 …
 
 bbb.
    unfold carry in Hc1; simpl in Hc1.
