@@ -2033,6 +2033,28 @@ destruct sx as [dx| ].
       destruct Hs4 as (Hn4, Ht4).
       rewrite Ht4 in Hc4; discriminate Hc4.
 
+      unfold carry in Hc3; simpl in Hc3.
+      remember (fst_same y z 0) as s3 eqn:Hs3 .
+      apply fst_same_sym_iff in Hs3; simpl in Hs3.
+      destruct s3 as [dj3| ]; [ idtac | clear Hc3 ].
+       destruct Hs3 as (Hn3, Ht3).
+       assert (∀ dj, rm_add_i y z (dj3 + dj) = true) as H.
+        intros dj; apply Hs4.
+
+        apply rm_add_inf_true_eq_if in H; [ idtac | assumption ].
+        destruct H as (Hy3, Hz3).
+        unfold carry in Hc1; simpl in Hc1.
+        remember (fst_same x z 0) as s1 eqn:Hs1 .
+        apply fst_same_sym_iff in Hs1; simpl in Hs1.
+        destruct s1 as [dj1| ]; [ idtac | discriminate Hc1 ].
+        destruct Hs1 as (Hn1, Ht1).
+        unfold carry in Hc2; simpl in Hc2.
+        remember (fst_same (x + z) 0 0) as s2 eqn:Hs2 .
+        destruct s2 as [dj2| ]; [ idtac | discriminate Hc2 ].
+        apply fst_same_sym_iff in Hs2; simpl in Hs2.
+        destruct Hs2 as (Hn2, _).
+        unfold rm_add_i in Hc2; simpl in Hc2.
+
 bbb.
      0   -   dx
   x  1   1   0
