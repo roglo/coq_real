@@ -1903,6 +1903,15 @@ destruct sx as [dx| ].
          rewrite <- Ht1 in Hc1.
          apply rm_add_inf_true_eq_if in H; [ idtac | assumption ].
          destruct H as (Hxd, Hzd).
+         pose proof (Hxd O) as H.
+         rewrite Nat.add_succ_l, <- Nat.add_succ_r in H.
+         rewrite Hyx in H; discriminate H.
+
+   remember (carry z 0 0) as c5 eqn:Hc5 .
+   symmetry in Hc5.
+   destruct c5.
+    symmetry in Hsx, Hsy.
+    eapply case_2; eassumption.
 
 bbb.
      0   -   dy
