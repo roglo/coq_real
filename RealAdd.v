@@ -2210,6 +2210,26 @@ Qed.
 
 (* decidability *)
 
+Theorem re_norm_zerop : ∀ x, {(re_norm x = 0)%R} + {(re_norm x ≠ 0)%R}.
+Proof.
+intros x.
+remember (re_norm x) as y eqn:Hy .
+unfold re_eq; simpl.
+destruct (Z_zerop (re_int y)) as [H1| H1].
+ rewrite H1; simpl.
+ destruct (rm_zerop (re_frac y)) as [H2| H2].
+  left.
+  split; [ idtac | assumption ].
+  subst y.
+  simpl in H1, H2; simpl.
+  unfold carry; simpl.
+  f_equal; rewrite fst_same_diag.
+  remember (fst_same (re_frac x + 0%rm) 0 0) as s1 eqn:Hs1 .
+  apply fst_same_sym_iff in Hs1; simpl in Hs1.
+  destruct s1 as [di1| ].
+   destruct Hs1; assumption.
+bbb.
+
 Theorem re_zerop : ∀ x, {(x = 0)%R} + {(x ≠ 0)%R}.
 Proof.
 intros x.
