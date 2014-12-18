@@ -44,6 +44,9 @@ Notation "x ≠ y" := (¬ re_eq x y) : R_scope.
 Notation "- x" := (re_opp x) : R_scope.
 Notation "x - y" := (re_sub x y) : R_scope.
 
+Theorem fold_re_sub : ∀ x y, (x + - y)%R = (x - y)%R.
+Proof. intros; reflexivity. Qed.
+
 (* equality is equivalence relation *)
 
 Theorem re_eq_refl : reflexive _ re_eq.
@@ -2255,6 +2258,20 @@ destruct (re_norm_zerop x) as [H1| H1].
  left; rewrite re_norm_eq in H1; assumption.
 
  right; rewrite re_norm_eq in H1; assumption.
+Qed.
+
+Theorem re_dec : ∀ x y, {(x = y)%R} + {(x ≠ y)%R}.
+Proof.
+intros x y.
+destruct (re_zerop (x - y)%R) as [Hxy| Hxy].
+ left; unfold re_sub in Hxy; rewrite re_add_comm in Hxy.
+ eapply re_add_compat with (x := y) in Hxy; [ idtac | reflexivity ].
+ rewrite re_add_assoc, fold_re_sub, re_sub_diag, re_add_comm in Hxy.
+ do 2 rewrite re_add_0_r in Hxy.
+ assumption.
+
+ right; unfold re_sub in  Hxy; intros H; apply Hxy; rewrite H.
+ apply re_sub_diag.
 Qed.
 
 Close Scope Z_scope.
