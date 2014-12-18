@@ -4695,6 +4695,26 @@ Qed.
 Theorem rm_gt_dec : ∀ x y, {(x > y)%rm} + {(x ≤ y)%rm}.
 Proof.
 intros x y.
-bbb.
+destruct (rm_lt_dec y x) as [H1| H1].
+ left.
+ apply rm_compare_Gt_Lt_antisym; assumption.
+
+ right; intros H; apply H1.
+ apply rm_compare_Gt_Lt_antisym; assumption.
+Qed.
+
+(* *)
+
+Theorem rm_lt_decidable : ∀ x y, Decidable.decidable (x < y)%rm.
+Proof.
+intros x y.
+destruct (rm_lt_dec x y); [ left | right ]; assumption.
+Qed.
+
+Theorem rm_gt_decidable : ∀ x y, Decidable.decidable (x > y)%rm.
+Proof.
+intros x y.
+destruct (rm_gt_dec x y); [ left | right ]; assumption.
+Qed.
 
 Close Scope nat_scope.
