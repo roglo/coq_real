@@ -4671,4 +4671,30 @@ apply rm_le_trans with (y := y); intros H.
  apply rm_compare_Gt_Lt_antisym in H; contradiction.
 Qed.
 
+(* decidability < vs ≥ and > vs ≤ *)
+
+Theorem rm_lt_dec : ∀ x y, {(x < y)%rm} + {(x ≥ y)%rm}.
+Proof.
+intros x y.
+unfold rm_lt, rm_ge; simpl.
+unfold rm_compare; simpl.
+remember (fst_same (x + 0%rm) (- (y + 0))%rm 0) as s eqn:Hs .
+apply fst_same_sym_iff in Hs; simpl in Hs.
+destruct s as [di| ].
+ destruct Hs as (Hn, Ht).
+ remember (rm_add_i x 0 di) as xb eqn:Hxb .
+ symmetry in Hxb; apply negb_sym in Ht.
+ destruct xb; simpl in Ht.
+  right; intros H; discriminate H.
+
+  left; reflexivity.
+
+ right; intros H; discriminate H.
+Qed.
+
+Theorem rm_gt_dec : ∀ x y, {(x > y)%rm} + {(x ≤ y)%rm}.
+Proof.
+intros x y.
+bbb.
+
 Close Scope nat_scope.
