@@ -2181,4 +2181,33 @@ intros x y Hxy z t Hct.
 apply re_add_compat; assumption.
 Qed.
 
+(* associativity *)
+
+Theorem re_norm_eq : ∀ x, (re_norm x = x)%R.
+Proof.
+intros x.
+unfold re_eq.
+split; simpl.
+ rewrite Z.add_comm, Z.add_assoc.
+ f_equal.
+ unfold carry; simpl.
+ remember (fst_same (re_frac x + 0%rm) 0 0) as s1 eqn:Hs1 .
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ destruct s1 as [dj1| ].
+  destruct Hs1 as (Hn1, Ht1).
+  rewrite Ht1; reflexivity.
+
+  pose proof (not_rm_add_0_inf_1 (re_frac x) 0) as H.
+  contradiction.
+
+ apply rm_add_0_r.
+Qed.
+
+Theorem re_add_assoc : ∀ x y z, (x + (y + z) = (x + y) + z)%R.
+Proof.
+intros x y z.
+pose proof (re_add_assoc_norm x y z) as H.
+do 3 rewrite re_norm_eq in H; assumption.
+Qed.
+
 Close Scope Z_scope.
