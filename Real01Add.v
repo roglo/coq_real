@@ -4454,4 +4454,221 @@ destruct s1 as [j1| ].
   split; intros H; discriminate H.
 Qed.
 
+(* inequality ≤ is order *)
+
+Theorem rm_le_refl : reflexive _ rm_le.
+Proof.
+intros x H.
+unfold rm_compare in H; simpl in H.
+remember (fst_same (x + 0%rm) (- (x + 0)%rm) 0) as s1 eqn:Hs1 .
+destruct s1 as [dj1| ]; [ idtac | discriminate H ].
+apply fst_same_sym_iff in Hs1; simpl in Hs1.
+destruct Hs1 as (Hn1, Ht1).
+symmetry in Ht1; revert Ht1; apply no_fixpoint_negb.
+Qed.
+
+Theorem rm_le_antisym : Antisymmetric _ rm_eq rm_le.
+Proof.
+intros x y Hxy Hyx.
+unfold rm_le in Hxy, Hyx.
+unfold rm_compare in Hxy; simpl in Hxy.
+unfold rm_compare in Hyx; simpl in Hyx.
+remember (fst_same (x + 0%rm) (- (y + 0)%rm) 0) as s1 eqn:Hs1 .
+remember (fst_same (y + 0%rm) (- (x + 0)%rm) 0) as s2 eqn:Hs2 .
+destruct s1 as [dj1| ]; [ idtac | clear Hxy ].
+ remember (rm_add_i x 0 dj1) as bx eqn:Hbx .
+ symmetry in Hbx.
+ destruct bx; [ exfalso; apply Hxy; reflexivity | clear Hxy ].
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ destruct Hs1 as (Hn1, Ht1).
+ destruct s2 as [dj2| ]; [ idtac | clear Hyx ].
+  remember (rm_add_i y 0 dj2) as yb eqn:Hby .
+  symmetry in Hby.
+  destruct yb; [ exfalso; apply Hyx; reflexivity | clear Hyx ].
+  apply fst_same_sym_iff in Hs2; simpl in Hs2.
+  destruct Hs2 as (Hn2, Ht2).
+  destruct (lt_eq_lt_dec dj1 dj2) as [[H1| H1]| H1].
+   remember H1 as H; clear HeqH.
+   apply Hn2 in H; rewrite negb_involutive in H.
+   rewrite Ht1 in H; symmetry in H.
+   exfalso; revert H; apply no_fixpoint_negb.
+
+   subst dj2.
+   rewrite Hbx, Hby in Ht1; discriminate Ht1.
+
+   remember H1 as H; clear HeqH.
+   apply Hn1 in H; rewrite negb_involutive in H.
+   rewrite Ht2 in H; symmetry in H.
+   exfalso; revert H; apply no_fixpoint_negb.
+
+  apply fst_same_sym_iff in Hs2; simpl in Hs2.
+  rewrite Hs2 in Ht1.
+  rewrite negb_involutive in Ht1; symmetry in Ht1.
+  exfalso; revert Ht1; apply no_fixpoint_negb.
+
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ unfold rm_eq; simpl; intros i.
+ rewrite Hs1, negb_involutive.
+ reflexivity.
+Qed.
+
+Theorem rm_le_trans : transitive _ rm_le.
+Proof.
+intros x y z Hxy Hyz.
+unfold rm_le in Hxy, Hyz; unfold rm_le.
+unfold rm_compare in Hxy, Hyz; unfold rm_compare.
+simpl in Hxy, Hyz; simpl.
+remember (fst_same (x + 0%rm) (- (y + 0)%rm) 0) as s1 eqn:Hs1 .
+remember (fst_same (y + 0%rm) (- (z + 0)%rm) 0) as s2 eqn:Hs2 .
+remember (fst_same (x + 0%rm) (- (z + 0)%rm) 0) as s3 eqn:Hs3 .
+destruct s3 as [dj3| ]; [ idtac | intros H; discriminate H ].
+remember (rm_add_i x 0 dj3) as b3 eqn:Hb3 .
+symmetry in Hb3.
+destruct b3; [ exfalso | intros H; discriminate H ].
+apply fst_same_sym_iff in Hs3; simpl in Hs3.
+destruct Hs3 as (Hn3, Ht3).
+rewrite Hb3 in Ht3; apply negb_sym in Ht3; simpl in Ht3.
+apply fst_same_sym_iff in Hs1; simpl in Hs1.
+apply fst_same_sym_iff in Hs2; simpl in Hs2.
+destruct s1 as [dj1| ]; [ idtac | clear Hxy ].
+ destruct Hs1 as (Hn1, Ht1).
+ remember (rm_add_i x 0 dj1) as b1 eqn:Hb1 .
+ symmetry in Hb1.
+ apply negb_sym in Ht1.
+ destruct b1; [ apply Hxy; reflexivity | clear Hxy ].
+ simpl in Ht1.
+ destruct s2 as [dj2| ]; [ idtac | clear Hyz ].
+  destruct Hs2 as (Hn2, Ht2).
+  remember (rm_add_i y 0 dj2) as b2 eqn:Hb2 .
+  symmetry in Hb2.
+  apply negb_sym in Ht2.
+  destruct b2; [ apply Hyz; reflexivity | clear Hyz ].
+  simpl in Ht2.
+  destruct (lt_eq_lt_dec dj1 dj2) as [[H1| H1]| H1].
+   remember H1 as H; clear HeqH.
+   apply Hn2 in H.
+   rewrite negb_involutive in H.
+   rename H into Hyz.
+   destruct (lt_eq_lt_dec dj1 dj3) as [[H2| H2]| H2].
+    remember H2 as H; clear HeqH.
+    apply Hn3 in H.
+    rewrite negb_involutive in H.
+    rewrite <- Hyz, Hb1, Ht1 in H.
+    discriminate H.
+
+    subst dj3.
+    rewrite Hb1 in Hb3; discriminate Hb3.
+
+    remember H2 as H; clear HeqH.
+    apply Hn1 in H.
+    rewrite negb_involutive in H.
+    apply Nat.lt_trans with (n := dj3) in H1; [ idtac | assumption ].
+    remember H1 as HH; clear HeqHH.
+    apply Hn2 in HH.
+    rewrite negb_involutive in HH.
+    rewrite Hb3, HH, Ht3 in H.
+    discriminate H.
+
+   subst dj2.
+   rewrite Ht1 in Hb2; discriminate Hb2.
+
+   remember H1 as H; clear HeqH.
+   apply Hn1 in H; simpl in H.
+   rewrite negb_involutive in H.
+   rename H into Hxy.
+   destruct (lt_eq_lt_dec dj2 dj3) as [[H2| H2]| H2].
+    remember H2 as H; clear HeqH.
+    apply Hn3 in H.
+    rewrite negb_involutive in H.
+    rewrite Hxy, Hb2, Ht2 in H.
+    discriminate H.
+
+    subst dj3.
+    rewrite Ht2 in Ht3; discriminate Ht3.
+
+    remember H2 as H; clear HeqH.
+    apply Hn2 in H; simpl in H.
+    rewrite negb_involutive in H.
+    rename H into Hyz.
+    remember H1 as H; clear HeqH.
+    apply Nat.lt_trans with (n := dj3) in H; [ idtac | assumption ].
+    apply Hn1 in H.
+    rewrite negb_involutive in H.
+    rewrite Hb3, Hyz, Ht3 in H.
+    discriminate H.
+
+  destruct (lt_eq_lt_dec dj1 dj3) as [[H1| H1]| H1].
+   remember H1 as H; clear HeqH.
+   apply Hn3 in H.
+   rewrite Hb1, <- Hs2, Ht1 in H.
+   discriminate H.
+
+   subst dj3.
+   rewrite Hb1 in Hb3; discriminate Hb3.
+
+   remember H1 as H; clear HeqH.
+   apply Hn1 in H.
+   rewrite Hb3, Hs2, Ht3 in H.
+   discriminate H.
+
+ destruct s2 as [dj2| ]; [ idtac | clear Hyz ].
+  remember (rm_add_i y 0 dj2) as b2 eqn:Hb2 .
+  destruct Hs2 as (Hn2, Ht2).
+  symmetry in Hb2.
+  apply negb_sym in Ht2.
+  destruct b2; [ apply Hyz; reflexivity | clear Hyz ].
+  simpl in Ht2.
+  destruct (lt_eq_lt_dec dj2 dj3) as [[H1| H1]| H1].
+   remember H1 as H; clear HeqH.
+   apply Hn3 in H.
+   rewrite Hs1, Hb2, Ht2 in H.
+   discriminate H.
+
+   subst dj3.
+   rewrite Ht2 in Ht3; discriminate Ht3.
+
+   remember H1 as H; clear HeqH.
+   apply Hn2 in H.
+   apply negb_sym in H; symmetry in H.
+   apply negb_sym in H.
+   rewrite Ht3, <- Hs1, Hb3 in H.
+   discriminate H.
+
+  rewrite Hs1, Hs2, Ht3 in Hb3.
+  discriminate Hb3.
+Qed.
+
+(* inequality ≥ is order *)
+
+Theorem rm_ge_refl : reflexive _ rm_ge.
+Proof.
+intros x H.
+unfold rm_compare in H; simpl in H.
+remember (fst_same (x + 0%rm) (- (x + 0)%rm) 0) as s1 eqn:Hs1 .
+destruct s1 as [dj1| ]; [ idtac | discriminate H ].
+apply fst_same_sym_iff in Hs1; simpl in Hs1.
+destruct Hs1 as (Hn1, Ht1).
+symmetry in Ht1; revert Ht1; apply no_fixpoint_negb.
+Qed.
+
+Theorem rm_ge_antisym : Antisymmetric _ rm_eq rm_ge.
+Proof.
+intros x y Hxy Hyx.
+apply rm_le_antisym; intros H.
+ apply rm_compare_Gt_Lt_antisym in H; contradiction.
+
+ apply rm_compare_Gt_Lt_antisym in H; contradiction.
+Qed.
+
+Theorem rm_ge_trans : transitive _ rm_ge.
+Proof.
+intros x y z Hxy Hyz H.
+apply rm_compare_Gt_Lt_antisym in H.
+revert H.
+apply rm_le_trans with (y := y); intros H.
+ apply rm_compare_Gt_Lt_antisym in H; contradiction.
+
+ apply rm_compare_Gt_Lt_antisym in H; contradiction.
+Qed.
+
 Close Scope nat_scope.
