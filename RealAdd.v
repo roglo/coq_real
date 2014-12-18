@@ -2274,4 +2274,10 @@ destruct (re_zerop (x - y)%R) as [Hxy| Hxy].
  apply re_sub_diag.
 Qed.
 
+Theorem re_decidable : ∀ x y, Decidable.decidable (x = y)%R.
+Proof.
+intros x y.
+destruct (re_dec x y); [ left | right ]; assumption.
+Qed.
+
 Close Scope Z_scope.
