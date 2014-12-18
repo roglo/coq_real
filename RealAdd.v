@@ -230,88 +230,6 @@ Qed.
 
 (* compatibility with equality *)
 
-(*
-Record real2 (sh : nat) := { re_sign : bool; re_mant : real_mod_1 }.
-
-Definition rm_shift_1_r b x :=
-  {| rm i := match i with O => b | S j => x.[j] end |}.
-
-Fixpoint re_to_rm_loop sh xi xf :=
-  match sh with
-  | O => xf
-  | S sh1 =>
-      re_to_rm_loop sh1 (xi / 2)%nat
-         (rm_shift_1_r (if zerop (xi mod 2) then false else true) xf)
-  end.
-
-Fixpoint rm_to_ri_loop sh x acc :=
-  match sh with
-  | O => acc
-  | S sh1 =>
-      rm_to_ri_loop sh1 (rm_shift_l 1 x)
-        (2 * acc + if x.[0] then 1 else 0)%nat
-   end.
-
-Definition re_to_re2 sh x : real2 sh :=
-  {| re_sign := Z.geb (re_int x) 0;
-     re_mant := re_to_rm_loop sh (Z.abs_nat (re_int x)) (re_frac x) |}.
-
-Definition re2_to_re sh (x : real2 sh) :=
-  let n := rm_to_ri_loop sh (re_mant x) O in
-  {| re_int := if re_sign x then Z.of_nat n else - Z.of_nat n;
-     re_frac := rm_shift_l sh (re_mant x) |}.
-
-Definition re2_norm sh (x : real2 sh) :=
-  ...
-
-Definition re2_eq sh (x y : real2 sh) :=
-  re_sign (re2_norm x) = re_sign (re2_norm y) ∧
-  (re_mant (re2_norm x) = re_mant (re2_norm y))%rm.
-
-Theorem zzz : ∀ x y sh,
-  (x = y)%R
-  → re2_eq (re_to_re2 sh x) (re_to_re2 sh y).
-Proof.
-intros x y sh Hxy.
-unfold re2_eq; simpl.
-split.
- unfold re_eq in Hxy; simpl in Hxy.
- destruct Hxy as (Hi, Hf).
- remember (re_int x) as xi eqn:Hxi .
- remember (re_int y) as yi eqn:Hyi .
- symmetry in Hxi, Hyi.
- destruct xi as [| xi| xi].
-  destruct yi as [| yi| yi]; try reflexivity.
-  rewrite Z.add_0_l in Hi.
-  remember (carry (re_frac x) 0 0) as xb eqn:Hxb .
-  remember (carry (re_frac y) 0 0) as yb eqn:Hyb .
-  symmetry in Hxb, Hyb.
-  symmetry in Hi.
-  apply Z.add_move_r in Hi.
-  destruct xb.
-   destruct yb; simpl in Hi.
-    pose proof (Pos2Z.neg_is_neg yi) as H.
-    rewrite Hi in H; exfalso; revert H; apply Z.lt_irrefl.
-
-    pose proof (Pos2Z.neg_is_neg yi) as H.
-    rewrite Hi in H.
-    apply Z.nle_gt in H.
-    exfalso; apply H; apply Z.le_0_1.
-
-   destruct yb; simpl in Hi.
-    unfold rm_eq in Hf; simpl in Hf.
-    unfold carry in Hyb.
-    remember (fst_same (re_frac y) 0 0) as sy eqn:Hsy .
-    destruct sy as [dy| ].
-     apply fst_same_sym_iff in Hsy; simpl in Hsy.
-     destruct Hsy as (_, Hsy).
-     simpl in Hyb; rewrite Hsy in Hyb; discriminate Hyb.
-
-     clear Hyb.
-     apply fst_same_sym_iff in Hsy; simpl in Hsy.
-bbb.
-*)
-
 Theorem rm_eq_neq_if : ∀ x y i,
   (x = y)%rm
   → x.[i] = true
@@ -2208,43 +2126,45 @@ destruct sx as [dx| ].
   destruct c1, c2, c3, c4; try reflexivity; exfalso.
    eapply case_7 with (x := x); eassumption.
 
-   Focus 2.
-   eapply case_7 with (x := x); eassumption.
+   unfold carry in Hc3; simpl in Hc3.
+   destruct (fst_same y z 0); [ idtac | discriminate Hc3 ].
+   rewrite Hny in Hc3; discriminate Hc3.
 
-   Focus 2.
+   unfold carry in Hc3; simpl in Hc3.
+   destruct (fst_same y z 0); [ idtac | discriminate Hc3 ].
+   rewrite Hny in Hc3; discriminate Hc3.
+
    eapply case_7 with (y := x); eassumption.
 
-   Focus 4.
-   eapply case_7 with (x := x); eassumption.
+   unfold carry in Hc3; simpl in Hc3.
+   destruct (fst_same y z 0); [ idtac | discriminate Hc3 ].
+   rewrite Hny in Hc3; discriminate Hc3.
 
-   Focus 4.
-   eapply case_7 with (y := x); eassumption.
-
-   Focus 5.
-   eapply case_7 with (y := x); eassumption.
-bbb.
-     0   -   dx
-  x  1   1   0   0   0   0   0 …
-  y  1   1   1   1   1   1   1 …
-  z
-
-bbb.
    unfold carry in Hc1; simpl in Hc1.
-   remember (fst_same x z 0) as s1 eqn:Hs1 .
-   destruct s1 as [dj1| ]; [ idtac | discriminate Hc1 ].
-   remember Hs1 as H; clear HeqH.
-   apply fst_same_sym_iff in H; simpl in H.
-   destruct H as (Hn1, Ht1).
-   rewrite Hc1 in Ht1; symmetry in Ht1.
+   destruct (fst_same x z 0); [ idtac | discriminate Hc1 ].
+   rewrite Hnx in Hc1; discriminate Hc1.
 
+   unfold carry in Hc1; simpl in Hc1.
+   destruct (fst_same x z 0); [ idtac | discriminate Hc1 ].
+   rewrite Hnx in Hc1; discriminate Hc1.
 
-   eapply case_2; try eassumption.
-bbb.
+   unfold carry in Hc1; simpl in Hc1.
+   destruct (fst_same x z 0); [ idtac | discriminate Hc1 ].
+   rewrite Hnx in Hc1; discriminate Hc1.
 
-Theorem rm_add_compat : ∀ x y z d,
+   unfold carry in Hc1; simpl in Hc1.
+   destruct (fst_same x z 0); [ idtac | discriminate Hc1 ].
+   rewrite Hnx in Hc1; discriminate Hc1.
+
+   unfold carry in Hc1; simpl in Hc1.
+   destruct (fst_same x z 0); [ idtac | discriminate Hc1 ].
+   rewrite Hnx in Hc1; discriminate Hc1.
+Qed.
+
+Theorem re_add_compat : ∀ x y z t,
   (x = y)%R
   → (z = t)%R
-  → (x + z = y + t)%R
+  → (x + z = y + t)%R.
 Proof.
 intros x y z t Hxy Hzt.
 bbb.
