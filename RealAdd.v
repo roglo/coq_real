@@ -2229,6 +2229,10 @@ destruct (Z_zerop (re_int y)) as [H1| H1].
   destruct s1; [ destruct Hs1; assumption | exfalso ].
   pose proof (not_rm_add_0_inf_1 (re_frac x) 0) as H.
   contradiction.
+
+  right; intros (Hb, Hi); contradiction.
+
+ right; intros (Hb, Hi).
 bbb.
 
 intros x.
