@@ -2233,80 +2233,28 @@ destruct (Z_zerop (re_int y)) as [H1| H1].
   right; intros (Hb, Hi); contradiction.
 
  right; intros (Hb, Hi).
-bbb.
+ unfold carry at 2 in Hb.
+ rewrite fst_same_diag in Hb; simpl in Hb.
+ unfold carry in Hb; simpl in Hb.
+ remember (fst_same (re_frac y) 0 0) as s1 eqn:Hs1 .
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ destruct s1 as [dj1| ].
+  destruct Hs1 as (Hn1, Ht1).
+  rewrite Ht1 in Hb; simpl in Hb.
+  rewrite Z.add_0_r in Hb; contradiction.
 
-intros x.
-remember (re_norm x) as y eqn:Hy .
-unfold re_eq; simpl.
-destruct (Z_zerop (re_int y)) as [H1| H1].
- rewrite H1; simpl.
- destruct (rm_zerop (re_frac y)) as [H2| H2].
-  left.
-  split; [ idtac | assumption ].
-  subst y.
-  simpl in H1, H2; simpl.
-  unfold carry; simpl.
-  f_equal; rewrite fst_same_diag.
-  remember (fst_same (re_frac x + 0%rm) 0 0) as s1 eqn:Hs1 .
-  apply fst_same_sym_iff in Hs1; simpl in Hs1.
-  destruct s1 as [di1| ].
-   destruct Hs1; assumption.
-bbb.
+  subst y; simpl in Hs1.
+  pose proof (not_rm_add_0_inf_1 (re_frac x) 0) as H.
+  contradiction.
+Qed.
 
 Theorem re_zerop : ∀ x, {(x = 0)%R} + {(x ≠ 0)%R}.
 Proof.
 intros x.
-unfold re_eq; simpl.
-destruct (Z_zerop (re_int x)) as [H1| H1].
- rewrite H1; simpl.
- remember (fst_same (re_frac x) rm_ones 0) as s eqn:Hs .
- apply fst_same_sym_iff in Hs; simpl in Hs.
- destruct s as [di| ].
-  destruct Hs as (Hn, Ht).
-  right; intros H.
-  unfold rm_eq in H; simpl in H.
-  destruct H as (Hb, Hi).
-bbb.
+destruct (re_norm_zerop x) as [H1| H1].
+ left; rewrite re_norm_eq in H1; assumption.
 
-intros x.
-unfold re_eq; simpl.
-destruct (Z_zerop (re_int x)) as [H1| H1].
- rewrite H1; simpl.
- remember (fst_same (re_frac x + 0%rm) rm_ones 0) as s eqn:Hs .
- apply fst_same_sym_iff in Hs; simpl in Hs.
- destruct s as [di| ].
-  destruct Hs as (Hn, Ht).
-  right; intros H.
-  unfold rm_eq in H; simpl in H.
-  destruct H as (Hb, Hi).
-  pose proof (Hi di) as HH.
-  rewrite Ht in HH; symmetry in HH.
-  unfold rm_add_i in HH; simpl in HH.
-  unfold carry in HH; simpl in HH.
-  rewrite fst_same_diag in HH; discriminate HH.
-
-bbb.
-  left.
-  split.
-   f_equal.
-   unfold carry; simpl.
-   rewrite fst_same_diag.
-   remember (fst_same (re_frac x) 0 0) as s1 eqn:Hs1 .
-   apply fst_same_sym_iff in Hs1; simpl in Hs1.
-   destruct s1 as [dj1| ].
-    destruct Hs1; assumption.
-
-    pose proof (Hs O) as H.
-    unfold rm_add_i in H; simpl in H.
-    rewrite Hs1 in H.
-    rewrite xorb_false_r, xorb_true_l in H.
-    apply negb_false_iff in H.
-    unfold carry in H; simpl in H.
-    remember (fst_same (re_frac x) 0 1) as s2 eqn:Hs2 .
-    apply fst_same_sym_iff in Hs2; simpl in Hs2.
-    destruct s2 as [dj2| ]; [ idtac | clear H ].
-     destruct Hs2 as (Hn2, Ht2).
-     rewrite Ht2 in H; discriminate H.
-bbb.
+ right; rewrite re_norm_eq in H1; assumption.
+Qed.
 
 Close Scope Z_scope.
