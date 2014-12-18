@@ -2167,6 +2167,18 @@ Theorem re_add_compat : ∀ x y z t,
   → (x + z = y + t)%R.
 Proof.
 intros x y z t Hxy Hzt.
-bbb.
+transitivity (x + t)%R; [ idtac | apply re_add_compat_r; assumption ].
+rewrite re_add_comm; symmetry.
+rewrite re_add_comm; symmetry.
+apply re_add_compat_r; assumption.
+Qed.
+
+Add Parametric Morphism : re_add
+  with signature re_eq ==> re_eq ==> re_eq
+  as re_add_morph.
+Proof.
+intros x y Hxy z t Hct.
+apply re_add_compat; assumption.
+Qed.
 
 Close Scope Z_scope.
