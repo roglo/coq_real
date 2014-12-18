@@ -2220,6 +2220,25 @@ destruct (Z_zerop (re_int y)) as [H1| H1].
  destruct (rm_zerop (re_frac y)) as [H2| H2].
   left.
   split; [ idtac | assumption ].
+  subst y; simpl in H1, H2; simpl; f_equal.
+  unfold rm_eq in H2; simpl in H2.
+  unfold carry; simpl.
+  rewrite fst_same_diag.
+  remember (fst_same (re_frac x + 0%rm) 0 0) as s1 eqn:Hs1 .
+  apply fst_same_sym_iff in Hs1; simpl in Hs1.
+  destruct s1; [ destruct Hs1; assumption | exfalso ].
+  pose proof (not_rm_add_0_inf_1 (re_frac x) 0) as H.
+  contradiction.
+bbb.
+
+intros x.
+remember (re_norm x) as y eqn:Hy .
+unfold re_eq; simpl.
+destruct (Z_zerop (re_int y)) as [H1| H1].
+ rewrite H1; simpl.
+ destruct (rm_zerop (re_frac y)) as [H2| H2].
+  left.
+  split; [ idtac | assumption ].
   subst y.
   simpl in H1, H2; simpl.
   unfold carry; simpl.
