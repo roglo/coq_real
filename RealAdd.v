@@ -2216,6 +2216,19 @@ intros x.
 unfold re_eq; simpl.
 destruct (Z_zerop (re_int x)) as [H1| H1].
  rewrite H1; simpl.
+ remember (fst_same (re_frac x) rm_ones 0) as s eqn:Hs .
+ apply fst_same_sym_iff in Hs; simpl in Hs.
+ destruct s as [di| ].
+  destruct Hs as (Hn, Ht).
+  right; intros H.
+  unfold rm_eq in H; simpl in H.
+  destruct H as (Hb, Hi).
+bbb.
+
+intros x.
+unfold re_eq; simpl.
+destruct (Z_zerop (re_int x)) as [H1| H1].
+ rewrite H1; simpl.
  remember (fst_same (re_frac x + 0%rm) rm_ones 0) as s eqn:Hs .
  apply fst_same_sym_iff in Hs; simpl in Hs.
  destruct s as [di| ].
@@ -2229,6 +2242,7 @@ destruct (Z_zerop (re_int x)) as [H1| H1].
   unfold carry in HH; simpl in HH.
   rewrite fst_same_diag in HH; discriminate HH.
 
+bbb.
   left.
   split.
    f_equal.
