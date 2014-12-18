@@ -149,85 +149,6 @@ destruct s1 as [j1| ].
    discriminate H.
 Qed.
 
-(* associativity for normalised reals *)
-
-Theorem re_add_assoc_norm : ∀ x y z,
-  (re_norm x + (re_norm y + re_norm z) =
-   (re_norm x + re_norm y) + re_norm z)%R.
-Proof.
-intros x y z.
-rename x into x0; rename y into y0; rename z into z0.
-remember (re_norm x0) as x.
-remember (re_norm y0) as y.
-remember (re_norm z0) as z.
-unfold re_eq; simpl.
-split; [ idtac | apply rm_add_assoc ].
-subst x y z; simpl.
-remember (re_frac x0) as x.
-remember (re_frac y0) as y.
-remember (re_frac z0) as z.
-remember (re_int x0) as xi.
-remember (re_int y0) as yi.
-remember (re_int z0) as zi.
-rename x0 into x1; rename y0 into y1; rename z0 into z1.
-rename x into x0; rename y into y0; rename z into z0.
-remember (x0 + 0)%rm as x.
-remember (y0 + 0)%rm as y.
-remember (z0 + 0)%rm as z.
-remember (carry (x + (y + z))%rm 0%rm (0)) as c1 eqn:Hc1 .
-remember (carry (x + y + z)%rm 0%rm (0)) as c2 eqn:Hc2 .
-remember (carry x (y + z)%rm (0)) as c3 eqn:Hc3 .
-remember (carry (x + y)%rm z (0)) as c4 eqn:Hc4 .
-remember (carry y z (0)) as c5 eqn:Hc5 .
-remember (carry x y (0)) as c6 eqn:Hc6 .
-symmetry in Hc1, Hc2, Hc3, Hc4, Hc5, Hc6.
-move c2 before c1; move c3 before c2.
-move c4 before c3; move c5 before c4.
-move c6 before c5.
-remember Hc1 as H; clear HeqH.
-erewrite carry_sum_3_norm_assoc_r in H; try eassumption.
-move H at top; subst c1.
-remember Hc2 as H; clear HeqH.
-erewrite carry_sum_3_norm_assoc_l in H; try eassumption.
-move H at top; subst c2.
-simpl; do 2 rewrite Z.add_0_r.
-do 12 rewrite <- Z.add_assoc.
-do 4 f_equal.
-symmetry; rewrite Z.add_comm.
-do 2 rewrite <- Z.add_assoc.
-do 2 f_equal.
-destruct c3, c4, c5, c6; try reflexivity; exfalso.
- eapply case_1; eassumption.
-
- rewrite carry_comm_l in Hc4.
- eapply case_1; rewrite carry_comm; eassumption.
-
- eapply case_3; eassumption.
-
- eapply case_1; eassumption.
-
- eapply case_3; eassumption.
-
- rewrite carry_comm, carry_comm_l in Hc3.
- rewrite carry_comm, carry_comm_r in Hc4.
- rewrite carry_comm in Hc5, Hc6.
- eapply case_3; try eassumption.
-
- rewrite carry_comm_l in Hc4.
- eapply case_1; rewrite carry_comm; eassumption.
-
- rewrite carry_comm, carry_comm_l in Hc3.
- rewrite carry_comm, carry_comm_r in Hc4.
- rewrite carry_comm in Hc5, Hc6.
- eapply case_3; eassumption.
-
- clear Hc1 Hc2.
- eapply case_2; eassumption.
-
- rewrite carry_comm_r in Hc3.
- eapply case_2; rewrite carry_comm; eassumption.
-Qed.
-
 (* compatibility with equality *)
 
 Theorem rm_eq_neq_if : ∀ x y i,
@@ -2182,6 +2103,83 @@ apply re_add_compat; assumption.
 Qed.
 
 (* associativity *)
+
+Theorem re_add_assoc_norm : ∀ x y z,
+  (re_norm x + (re_norm y + re_norm z) =
+   (re_norm x + re_norm y) + re_norm z)%R.
+Proof.
+intros x y z.
+rename x into x0; rename y into y0; rename z into z0.
+remember (re_norm x0) as x.
+remember (re_norm y0) as y.
+remember (re_norm z0) as z.
+unfold re_eq; simpl.
+split; [ idtac | apply rm_add_assoc ].
+subst x y z; simpl.
+remember (re_frac x0) as x.
+remember (re_frac y0) as y.
+remember (re_frac z0) as z.
+remember (re_int x0) as xi.
+remember (re_int y0) as yi.
+remember (re_int z0) as zi.
+rename x0 into x1; rename y0 into y1; rename z0 into z1.
+rename x into x0; rename y into y0; rename z into z0.
+remember (x0 + 0)%rm as x.
+remember (y0 + 0)%rm as y.
+remember (z0 + 0)%rm as z.
+remember (carry (x + (y + z))%rm 0%rm (0)) as c1 eqn:Hc1 .
+remember (carry (x + y + z)%rm 0%rm (0)) as c2 eqn:Hc2 .
+remember (carry x (y + z)%rm (0)) as c3 eqn:Hc3 .
+remember (carry (x + y)%rm z (0)) as c4 eqn:Hc4 .
+remember (carry y z (0)) as c5 eqn:Hc5 .
+remember (carry x y (0)) as c6 eqn:Hc6 .
+symmetry in Hc1, Hc2, Hc3, Hc4, Hc5, Hc6.
+move c2 before c1; move c3 before c2.
+move c4 before c3; move c5 before c4.
+move c6 before c5.
+remember Hc1 as H; clear HeqH.
+erewrite carry_sum_3_norm_assoc_r in H; try eassumption.
+move H at top; subst c1.
+remember Hc2 as H; clear HeqH.
+erewrite carry_sum_3_norm_assoc_l in H; try eassumption.
+move H at top; subst c2.
+simpl; do 2 rewrite Z.add_0_r.
+do 12 rewrite <- Z.add_assoc.
+do 4 f_equal.
+symmetry; rewrite Z.add_comm.
+do 2 rewrite <- Z.add_assoc.
+do 2 f_equal.
+destruct c3, c4, c5, c6; try reflexivity; exfalso.
+ eapply case_1; eassumption.
+
+ rewrite carry_comm_l in Hc4.
+ eapply case_1; rewrite carry_comm; eassumption.
+
+ eapply case_3; eassumption.
+
+ eapply case_1; eassumption.
+
+ eapply case_3; eassumption.
+
+ rewrite carry_comm, carry_comm_l in Hc3.
+ rewrite carry_comm, carry_comm_r in Hc4.
+ rewrite carry_comm in Hc5, Hc6.
+ eapply case_3; try eassumption.
+
+ rewrite carry_comm_l in Hc4.
+ eapply case_1; rewrite carry_comm; eassumption.
+
+ rewrite carry_comm, carry_comm_l in Hc3.
+ rewrite carry_comm, carry_comm_r in Hc4.
+ rewrite carry_comm in Hc5, Hc6.
+ eapply case_3; eassumption.
+
+ clear Hc1 Hc2.
+ eapply case_2; eassumption.
+
+ rewrite carry_comm_r in Hc3.
+ eapply case_2; rewrite carry_comm; eassumption.
+Qed.
 
 Theorem re_norm_eq : ∀ x, (re_norm x = x)%R.
 Proof.
