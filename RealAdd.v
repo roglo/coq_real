@@ -2283,9 +2283,16 @@ Qed.
 (* comparison *)
 
 Definition re_compare x y :=
-  match fst_same (x + 0%R) (- (y + 0))%R 0 with
-  | Some j => if (x + 0)%R.[j] then Gt else Lt
-  | None => Eq
+  let nx := re_norm x in
+  let ny := re_norm y in
+  match Zcompare (re_int nx) (re_int ny) with
+  | Eq =>
+      match fst_same (re_frac nx) (- (re_frac ny)) 0 with
+      | Some j => if (re_frac nx)%R.[j] then Gt else Lt
+      | None => Eq
+      end
+  | Lt => Lt
+  | Gt => Gt
   end.
 
 Definition re_lt x y := re_compare x y = Lt.
@@ -2293,33 +2300,50 @@ Definition re_le x y := re_compare x y ≠ Gt.
 Definition re_gt x y := re_compare x y = Gt.
 Definition re_ge x y := re_compare x y ≠ Lt.
 
-Notation "x < y" := (re_lt x y) : re_scope.
-Notation "x ≤ y" := (re_le x y) : re_scope.
-Notation "x > y" := (re_gt x y) : re_scope.
-Notation "x ≥ y" := (re_ge x y) : re_scope.
-Notation "x ?= y" := (re_compare x y) : re_scope.
+Notation "x < y" := (re_lt x y) : R_scope.
+Notation "x ≤ y" := (re_le x y) : R_scope.
+Notation "x > y" := (re_gt x y) : R_scope.
+Notation "x ≥ y" := (re_ge x y) : R_scope.
+Notation "x ?= y" := (re_compare x y) : R_scope.
 
 Theorem re_compare_eq : ∀ x y, (x = y)%R ↔ re_compare x y = Eq.
 Proof.
 intros x y.
 split; intros H.
- unfold re_compare.
+ unfold re_compare; simpl.
  unfold re_eq in H; simpl in H.
- remember (fst_same (x + 0%R) (- (y + 0)%R) 0) as s eqn:Hs .
- apply fst_same_sym_iff in Hs; simpl in Hs.
- destruct s as [j| ]; [ exfalso | reflexivity ].
- destruct Hs as (Hn, Hs).
- rewrite H in Hs.
- symmetry in Hs; revert Hs; apply no_fixpoint_negb.
+ destruct H as (Hi, Hf).
+ apply Z.compare_eq_iff in Hi.
+ rewrite Hi.
+ remember (re_frac x) as xf.
+ remember (re_frac y) as yf.
+ remember (fst_same (xf + 0%rm) (- (yf + 0)%rm) 0) as s1 eqn:Hs1 .
+ destruct s1 as [dj1| ]; [ exfalso | reflexivity ].
+ subst xf yf.
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ destruct Hs1 as (Hn1, Ht1).
+ unfold rm_eq in Hf; simpl in Hf.
+ rewrite Hf in Ht1; symmetry in Ht1.
+ revert Ht1; apply no_fixpoint_negb.
 
  unfold re_compare in H.
- remember (fst_same (x + 0%R) (- (y + 0)%R) 0) as s eqn:Hs .
- apply fst_same_sym_iff in Hs; simpl in Hs.
- destruct s as [j| ]; [ exfalso | idtac ].
-  destruct (x + 0)%R .[ j]; discriminate H.
+ remember (re_int (re_norm x) ?= re_int (re_norm y)) as c eqn:Hc .
+ symmetry in Hc.
+ destruct c; [ idtac | discriminate H | discriminate H ].
+ unfold re_eq; simpl.
+ apply Z.compare_eq in Hc; simpl in Hc.
+ split; [ assumption | idtac ].
+ remember (re_norm x) as nx.
+ remember (re_norm y) as ny.
+ remember (fst_same (re_frac nx) (- re_frac ny) 0) as s1 eqn:Hs1 .
+ destruct s1 as [dj1| ].
+  destruct (re_frac nx) .[ dj1]; discriminate H.
 
-  unfold re_eq; intros i; simpl.
-  rewrite Hs, negb_involutive; reflexivity.
+  clear H.
+  subst nx ny.
+  apply fst_same_sym_iff in Hs1; simpl in Hs1.
+  unfold rm_eq; intros i; simpl.
+  rewrite Hs1, negb_involutive; reflexivity.
 Qed.
 
 Theorem re_compare_lt : ∀ x y, (x < y)%R ↔ re_compare x y = Lt.
@@ -2332,56 +2356,6 @@ Theorem re_compare_gt : ∀ x y, (x > y)%R ↔ re_compare x y = Gt.
 Proof.
 intros x y.
 split; intros H; assumption.
-Qed.
-
-Theorem re_compare_Gt_Lt_antisym : ∀ x y, (x ?= y)%R = Gt ↔ (y ?= x)%R = Lt.
-Proof.
-intros x y.
-unfold re_compare; simpl.
-remember (fst_same (x + 0%R) (- (y + 0)%R) 0) as s1 eqn:Hs1 .
-remember (fst_same (y + 0%R) (- (x + 0)%R) 0) as s2 eqn:Hs2 .
-apply fst_same_sym_iff in Hs1; simpl in Hs1.
-apply fst_same_sym_iff in Hs2; simpl in Hs2.
-destruct s1 as [j1| ].
- destruct Hs1 as (Hs1, Hn1).
- remember (re_add_i x 0 j1) as x0 eqn:Hx0 .
- symmetry in Hx0; apply negb_sym in Hn1.
- destruct s2 as [j2| ].
-  destruct Hs2 as (Hs2, Hn2).
-  remember (re_add_i y 0 j2) as y0 eqn:Hy0 .
-  symmetry in Hy0; apply negb_sym in Hn2.
-  destruct (lt_eq_lt_dec j1 j2) as [[H1| H1]| H1].
-   apply Hs2 in H1.
-   rewrite negb_involutive, Hn1 in H1.
-   rewrite Hx0 in H1.
-   exfalso; revert H1; apply no_fixpoint_negb.
-
-   subst j2.
-   destruct x0.
-    split; intros H; [ clear H | reflexivity ].
-    destruct y0; [ exfalso | reflexivity ].
-    rewrite Hx0 in Hn2; discriminate Hn2.
-
-    split; intros H; [ discriminate H | exfalso ].
-    destruct y0; [ discriminate H | clear H ].
-    rewrite Hx0 in Hn2; discriminate Hn2.
-
-   apply Hs1 in H1.
-   rewrite negb_involutive, Hn2 in H1.
-   rewrite Hy0 in H1.
-   exfalso; revert H1; apply no_fixpoint_negb.
-
-  split; intros H; [ exfalso | discriminate H ].
-  destruct x0; [ clear H | discriminate H ].
-  rewrite Hs2, Hx0 in Hn1; discriminate Hn1.
-
- destruct s2 as [j2| ].
-  destruct Hs2 as (Hs2, Hn2).
-  split; intros H; [ discriminate H | exfalso ].
-  rewrite Hs1, negb_involutive in Hn2.
-  symmetry in Hn2; revert Hn2; apply no_fixpoint_negb.
-
-  split; intros H; discriminate H.
 Qed.
 
 Close Scope Z_scope.
