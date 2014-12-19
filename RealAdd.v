@@ -2618,18 +2618,22 @@ Qed.
 Theorem re_ge_refl : reflexive _ re_ge.
 Proof.
 intros x H.
-unfold re_compare in H; simpl in H.
-remember (fst_same (x + 0%R) (- (x + 0)%R) 0) as s1 eqn:Hs1 .
+unfold re_compare in H.
+rewrite Z.compare_refl in H.
+remember (re_norm x) as nx.
+remember (fst_same (re_frac nx) (- re_frac nx) 0) as s1 eqn:Hs1 .
 destruct s1 as [dj1| ]; [ idtac | discriminate H ].
 apply fst_same_sym_iff in Hs1; simpl in Hs1.
 destruct Hs1 as (Hn1, Ht1).
-symmetry in Ht1; revert Ht1; apply no_fixpoint_negb.
+symmetry in Ht1.
+revert Ht1; apply no_fixpoint_negb.
 Qed.
 
 Theorem re_ge_antisym : Antisymmetric _ re_eq re_ge.
 Proof.
 intros x y Hxy Hyx.
 apply re_le_antisym; intros H.
+bbb.
  apply re_compare_Gt_Lt_antisym in H; contradiction.
 
  apply re_compare_Gt_Lt_antisym in H; contradiction.
