@@ -2439,128 +2439,178 @@ Qed.
 Theorem re_le_trans : transitive _ re_le.
 Proof.
 intros x y z Hxy Hyz.
-bbb.
 unfold re_le in Hxy, Hyz; unfold re_le.
 unfold re_compare in Hxy, Hyz; unfold re_compare.
-simpl in Hxy, Hyz; simpl.
-remember (fst_same (x + 0%R) (- (y + 0)%R) 0) as s1 eqn:Hs1 .
-remember (fst_same (y + 0%R) (- (z + 0)%R) 0) as s2 eqn:Hs2 .
-remember (fst_same (x + 0%R) (- (z + 0)%R) 0) as s3 eqn:Hs3 .
-destruct s3 as [dj3| ]; [ idtac | intros H; discriminate H ].
-remember (re_add_i x 0 dj3) as b3 eqn:Hb3 .
-symmetry in Hb3.
-destruct b3; [ exfalso | intros H; discriminate H ].
-apply fst_same_sym_iff in Hs3; simpl in Hs3.
-destruct Hs3 as (Hn3, Ht3).
-rewrite Hb3 in Ht3; apply negb_sym in Ht3; simpl in Ht3.
-apply fst_same_sym_iff in Hs1; simpl in Hs1.
-apply fst_same_sym_iff in Hs2; simpl in Hs2.
-destruct s1 as [dj1| ]; [ idtac | clear Hxy ].
- destruct Hs1 as (Hn1, Ht1).
- remember (re_add_i x 0 dj1) as b1 eqn:Hb1 .
- symmetry in Hb1.
- apply negb_sym in Ht1.
- destruct b1; [ apply Hxy; reflexivity | clear Hxy ].
- simpl in Ht1.
- destruct s2 as [dj2| ]; [ idtac | clear Hyz ].
-  destruct Hs2 as (Hn2, Ht2).
-  remember (re_add_i y 0 dj2) as b2 eqn:Hb2 .
-  symmetry in Hb2.
-  apply negb_sym in Ht2.
-  destruct b2; [ apply Hyz; reflexivity | clear Hyz ].
-  simpl in Ht2.
-  destruct (lt_eq_lt_dec dj1 dj2) as [[H1| H1]| H1].
-   remember H1 as H; clear HeqH.
-   apply Hn2 in H.
-   rewrite negb_involutive in H.
-   rename H into Hyz.
-   destruct (lt_eq_lt_dec dj1 dj3) as [[H2| H2]| H2].
-    remember H2 as H; clear HeqH.
-    apply Hn3 in H.
-    rewrite negb_involutive in H.
-    rewrite <- Hyz, Hb1, Ht1 in H.
-    discriminate H.
+remember (re_norm x) as nx eqn:Hnx .
+remember (re_norm y) as ny eqn:Hny .
+remember (re_norm z) as nz eqn:Hnz .
+remember (re_int nx ?= re_int ny) as cxy eqn:Hcxy .
+remember (re_int ny ?= re_int nz) as cyz eqn:Hcyz .
+remember (re_int nx ?= re_int nz) as cxz eqn:Hcxz .
+symmetry in Hcxy, Hcyz, Hcxz.
+destruct cxz; [ idtac | intros H; discriminate H | exfalso ].
+ remember (fst_same (re_frac nx) (- re_frac nz) 0) as sxz eqn:Hsxz .
+ apply fst_same_sym_iff in Hsxz; simpl in Hsxz.
+ destruct sxz as [dxz| ]; [ idtac | intros H; discriminate H ].
+ rewrite Hnx; simpl.
+ rewrite Hnx, Hnz in Hsxz; simpl in Hsxz.
+ destruct Hsxz as (Hnxz, Htxz).
+ remember (rm_add_i (re_frac x) 0 dxz) as bxz eqn:Hbxz .
+ destruct bxz; [ exfalso | intros H; discriminate H ].
+ symmetry in Hbxz; apply negb_sym in Htxz; simpl in Htxz.
+ destruct cxy; [ idtac | clear Hxy | apply Hxy; reflexivity ].
+  remember (fst_same (re_frac nx) (- re_frac ny) 0) as sxy eqn:Hsxy .
+  apply fst_same_sym_iff in Hsxy; simpl in Hsxy.
+  destruct sxy as [dxy| ]; [ idtac | clear Hxy ].
+   rewrite Hnx, Hny in Hsxy; simpl in Hsxy.
+   rewrite Hnx in Hxy; simpl in Hxy.
+   destruct Hsxy as (Hnxy, Htxy).
+   remember (rm_add_i (re_frac x) 0 dxy) as bxy eqn:Hbxy .
+   destruct bxy; [ apply Hxy; reflexivity | clear Hxy ].
+   symmetry in Hbxy; apply negb_sym in Htxy; simpl in Htxy.
+   destruct cyz; [ idtac | clear Hyz | apply Hyz; reflexivity ].
+    remember (fst_same (re_frac ny) (- re_frac nz) 0) as syz eqn:Hsyz .
+    apply fst_same_sym_iff in Hsyz; simpl in Hsyz.
+    destruct syz as [dyz| ]; [ idtac | clear Hyz ].
+     rewrite Hny, Hnz in Hsyz; simpl in Hsyz.
+     rewrite Hny in Hyz; simpl in Hyz.
+     destruct Hsyz as (Hnyz, Htyz).
+     remember (rm_add_i (re_frac y) 0 dyz) as byz eqn:Hbyz .
+     destruct byz; [ apply Hyz; reflexivity | clear Hyz ].
+     symmetry in Hbyz; apply negb_sym in Htyz; simpl in Htyz.
+     destruct (lt_eq_lt_dec dxy dyz) as [[H1| H1]| H1].
+      remember H1 as H; clear HeqH.
+      apply Hnyz in H.
+      rewrite Htxy in H.
+      rename H into Hz.
+      destruct (lt_eq_lt_dec dxy dxz) as [[H2| H2]| H2].
+       remember H2 as H; clear HeqH.
+       apply Hnxz in H.
+       rewrite Hbxy, <- Hz in H; discriminate H.
 
-    subst dj3.
-    rewrite Hb1 in Hb3; discriminate Hb3.
+       subst dxz.
+       rewrite Hbxy in Hbxz; discriminate Hbxz.
 
-    remember H2 as H; clear HeqH.
-    apply Hn1 in H.
-    rewrite negb_involutive in H.
-    apply Nat.lt_trans with (n := dj3) in H1; [ idtac | assumption ].
-    remember H1 as HH; clear HeqHH.
-    apply Hn2 in HH.
-    rewrite negb_involutive in HH.
-    rewrite Hb3, HH, Ht3 in H.
-    discriminate H.
+       remember H2 as H; clear HeqH.
+       apply Hnxy in H.
+       rewrite Hbxz in H; rename H into Hy.
+       remember H2 as H; clear HeqH.
+       eapply Nat.lt_trans with (m := dxy) in H; [ idtac | eassumption ].
+       apply Hnyz in H.
+       rewrite H, Htxz in Hy; discriminate Hy.
 
-   subst dj2.
-   rewrite Ht1 in Hb2; discriminate Hb2.
+      subst dyz.
+      rewrite Htxy in Hbyz; discriminate Hbyz.
 
-   remember H1 as H; clear HeqH.
-   apply Hn1 in H; simpl in H.
-   rewrite negb_involutive in H.
-   rename H into Hxy.
-   destruct (lt_eq_lt_dec dj2 dj3) as [[H2| H2]| H2].
-    remember H2 as H; clear HeqH.
-    apply Hn3 in H.
-    rewrite negb_involutive in H.
-    rewrite Hxy, Hb2, Ht2 in H.
-    discriminate H.
+      remember H1 as H; clear HeqH.
+      apply Hnxy in H.
+      rewrite Hbyz in H.
+      rename H into Hx.
+      destruct (lt_eq_lt_dec dyz dxz) as [[H2| H2]| H2].
+       remember H2 as H; clear HeqH.
+       apply Hnxz in H.
+       rewrite Hx, Htyz in H; discriminate H.
 
-    subst dj3.
-    rewrite Ht2 in Ht3; discriminate Ht3.
+       subst dxz.
+       rewrite Htyz in Htxz; discriminate Htxz.
 
-    remember H2 as H; clear HeqH.
-    apply Hn2 in H; simpl in H.
-    rewrite negb_involutive in H.
-    rename H into Hyz.
-    remember H1 as H; clear HeqH.
-    apply Nat.lt_trans with (n := dj3) in H; [ idtac | assumption ].
-    apply Hn1 in H.
-    rewrite negb_involutive in H.
-    rewrite Hb3, Hyz, Ht3 in H.
-    discriminate H.
+       remember H2 as H; clear HeqH.
+       apply Hnyz in H; simpl in H.
+       rewrite Htxz in H.
+       rename H into Hy.
+       remember H1 as H; clear HeqH.
+       apply Nat.lt_trans with (n := dxz) in H; [ idtac | assumption ].
+       apply Hnxy in H.
+       rewrite Hbxz, Hy in H; discriminate H.
 
-  destruct (lt_eq_lt_dec dj1 dj3) as [[H1| H1]| H1].
-   remember H1 as H; clear HeqH.
-   apply Hn3 in H.
-   rewrite Hb1, <- Hs2, Ht1 in H.
-   discriminate H.
+     rewrite Hny, Hnz in Hsyz; simpl in Hsyz.
+     destruct (lt_eq_lt_dec dxy dxz) as [[H1| H1]| H1].
+      remember H1 as H; clear HeqH.
+      apply Hnxz in H.
+      rewrite Hbxy, <- Hsyz, Htxy in H; discriminate H.
 
-   subst dj3.
-   rewrite Hb1 in Hb3; discriminate Hb3.
+      subst dxz.
+      rewrite Hbxy in Hbxz; discriminate Hbxz.
 
-   remember H1 as H; clear HeqH.
-   apply Hn1 in H.
-   rewrite Hb3, Hs2, Ht3 in H.
-   discriminate H.
+      remember H1 as H; clear HeqH.
+      apply Hnxy in H.
+      rewrite Hbxz, Hsyz, Htxz in H; discriminate H.
 
- destruct s2 as [dj2| ]; [ idtac | clear Hyz ].
-  remember (re_add_i y 0 dj2) as b2 eqn:Hb2 .
-  destruct Hs2 as (Hn2, Ht2).
-  symmetry in Hb2.
-  apply negb_sym in Ht2.
-  destruct b2; [ apply Hyz; reflexivity | clear Hyz ].
-  simpl in Ht2.
-  destruct (lt_eq_lt_dec dj2 dj3) as [[H1| H1]| H1].
-   remember H1 as H; clear HeqH.
-   apply Hn3 in H.
-   rewrite Hs1, Hb2, Ht2 in H.
-   discriminate H.
+    apply Z.compare_eq in Hcxy.
+    apply Z.compare_eq in Hcxz.
+    rewrite <- Hcxy, Hcxz in Hcyz.
+    revert Hcyz; apply Z.lt_irrefl.
 
-   subst dj3.
-   rewrite Ht2 in Ht3; discriminate Ht3.
+   destruct cyz; [ idtac | clear Hyz | apply Hyz; reflexivity ].
+    remember (fst_same (re_frac ny) (- re_frac nz) 0) as syz eqn:Hsyz .
+    apply fst_same_sym_iff in Hsyz; simpl in Hsyz.
+    destruct syz as [dyz| ]; [ idtac | clear Hyz ].
+     rewrite Hny, Hnz in Hsyz; simpl in Hsyz.
+     rewrite Hny in Hyz; simpl in Hyz.
+     destruct Hsyz as (Hnyz, Htyz).
+     remember (rm_add_i (re_frac y) 0 dyz) as byz eqn:Hbyz .
+     destruct byz; [ apply Hyz; reflexivity | clear Hyz ].
+     symmetry in Hbyz; apply negb_sym in Htyz; simpl in Htyz.
+     rewrite Hnx, Hny in Hsxy; simpl in Hsxy.
+     destruct (lt_eq_lt_dec dyz dxz) as [[H1| H1]| H1].
+      remember H1 as H; clear HeqH.
+      apply Hnxz in H.
+      rewrite Hsxy, Hbyz, Htyz in H; discriminate H.
 
-   remember H1 as H; clear HeqH.
-   apply Hn2 in H.
-   apply negb_sym in H; symmetry in H.
-   apply negb_sym in H.
-   rewrite Ht3, <- Hs1, Hb3 in H.
-   discriminate H.
+      subst dxz.
+      rewrite Htyz in Htxz; discriminate Htxz.
 
-  rewrite Hs1, Hs2, Ht3 in Hb3.
-  discriminate Hb3.
+      remember H1 as H; clear HeqH.
+      apply Hnyz in H.
+      apply negb_sym in H; symmetry in H.
+      apply negb_sym in H.
+      rewrite Htxz, <- Hsxy, Hbxz in H; discriminate H.
+
+     rewrite Hnx, Hny in Hsxy; simpl in Hsxy.
+     rewrite Hny, Hnz in Hsyz; simpl in Hsyz.
+     rewrite Hsxy, Hsyz, Htxz in Hbxz; discriminate Hbxz.
+
+    apply Z.compare_eq in Hcxy.
+    apply Z.compare_eq in Hcxz.
+    rewrite <- Hcxy, Hcxz in Hcyz.
+    revert Hcyz; apply Z.lt_irrefl.
+
+  destruct cyz; [ idtac | clear Hyz | apply Hyz; reflexivity ].
+   apply Z.compare_eq in Hcyz.
+   apply Z.compare_eq in Hcxz.
+   rewrite Hcyz, Hcxz in Hcxy.
+   revert Hcxy; apply Z.lt_irrefl.
+
+   apply Z.compare_eq in Hcxz.
+   rewrite Hcxz in Hcxy.
+   apply Z.nle_gt in Hcxy; apply Hcxy.
+   apply Z.lt_le_incl; assumption.
+
+ destruct cxy; [ idtac | clear Hxy | apply Hxy; reflexivity ].
+  destruct cyz; [ idtac | clear Hyz | apply Hyz; reflexivity ].
+   apply Z.compare_eq in Hcxy.
+   apply Z.compare_eq in Hcyz.
+   rewrite Hcxy, <- Hcyz in Hcxz.
+   apply Z.compare_gt_iff in Hcxz.
+   revert Hcxz; apply Z.lt_irrefl.
+
+   apply Z.compare_eq in Hcxy.
+   rewrite Hcxy in Hcxz.
+   apply Z.compare_gt_iff in Hcxz.
+   apply Z.nle_gt in Hcyz; apply Hcyz.
+   apply Z.lt_le_incl; assumption.
+
+  destruct cyz; [ idtac | clear Hyz | apply Hyz; reflexivity ].
+   apply Z.compare_eq in Hcyz.
+   rewrite Hcyz in Hcxy.
+   apply Z.compare_gt_iff in Hcxz.
+   apply Z.nle_gt in Hcxy; apply Hcxy.
+   apply Z.lt_le_incl; assumption.
+
+   apply Z.compare_gt_iff in Hcxz.
+   apply Z.nle_gt in Hcxz; apply Hcxz.
+   apply Z.lt_le_incl.
+   eapply Z.lt_trans; eassumption.
 Qed.
 
 (* inequality ≥ is order *)
