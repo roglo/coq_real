@@ -2715,19 +2715,29 @@ Qed.
 Theorem re_lt_dec : ∀ x y, {(x < y)%R} + {(x ≥ y)%R}.
 Proof.
 intros x y.
-bbb.
 unfold re_lt, re_ge; simpl.
-unfold re_compare; simpl.
-remember (fst_same (x + 0%R) (- (y + 0))%R 0) as s eqn:Hs .
-apply fst_same_sym_iff in Hs; simpl in Hs.
-destruct s as [di| ].
- destruct Hs as (Hn, Ht).
- remember (re_add_i x 0 di) as xb eqn:Hxb .
- symmetry in Hxb; apply negb_sym in Ht.
- destruct xb; simpl in Ht.
+unfold re_compare.
+remember (re_norm x) as nx eqn:Hnx .
+remember (re_norm y) as ny eqn:Hny .
+remember (re_int nx ?= re_int ny) as c eqn:Hc .
+symmetry in Hc.
+destruct c.
+ remember (fst_same (re_frac nx) (- re_frac ny) 0) as s eqn:Hs .
+ apply fst_same_sym_iff in Hs; simpl in Hs.
+ destruct s as [di| ].
+  destruct Hs as (Hn, Ht).
+  rewrite Hnx; simpl.
+  rewrite Hnx, Hny in Ht; simpl in Ht.
+  remember (rm_add_i (re_frac x) 0 di) as xb eqn:Hxb .
+  symmetry in Hxb; apply negb_sym in Ht.
+  destruct xb; simpl in Ht.
+   right; intros H; discriminate H.
+
+   left; reflexivity.
+
   right; intros H; discriminate H.
 
-  left; reflexivity.
+ left; reflexivity.
 
  right; intros H; discriminate H.
 Qed.
