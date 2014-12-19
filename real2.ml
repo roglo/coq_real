@@ -18,6 +18,9 @@ value carry x y i =
 
 value rm_add_i x y i = x.rm i <> y.rm i <> carry x y (i + 1);
 value rm_add x y = {rm = rm_add_i x y};
+value rm_opp x = {rm i = not (x.rm i)};
+value rm_zero = {rm _ = False};
+value rm_norm x = rm_add x rm_zero;
 
 value mm = 50;
 value f2am x =
@@ -50,6 +53,12 @@ value b2z b = if b then 1 else 0;
 value re_add x y =
   {re_int = x.re_int + y.re_int + b2z (carry x.re_frac y.re_frac 0);
    re_frac = rm_add x.re_frac y.re_frac};
+
+value re_opp x = {re_int = - x.re_int - 1; re_frac = rm_opp x.re_frac};
+
+value re_norm x =
+  {re_int = x.re_int + b2z (carry x.re_frac rm_zero 0);
+   re_frac = rm_norm x.re_frac};
 
 value f2r a = {re_int = truncate (floor a); re_frac = f2rm (a -. floor a)};
 value r2f x = float x.re_int +. rm2f x.re_frac;
