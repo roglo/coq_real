@@ -79,6 +79,8 @@ value am2s base a =
     else loop (i + 1) (s ^ string_of_int a.(i))
 ;
 
+(* *)
+
 type comparison = [ Eq | Lt | Gt ].
 
 value rm_compare base x y =
