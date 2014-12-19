@@ -4404,10 +4404,10 @@ intros x y.
 split; intros H; assumption.
 Qed.
 
-Theorem rm_compare_Gt_Lt_antisym : ∀ x y, (x ?= y)%rm = Gt ↔ (y ?= x)%rm = Lt.
+Theorem rm_gt_lt_iff : ∀ x y, (x > y)%rm ↔ (y < x)%rm.
 Proof.
 intros x y.
-unfold rm_compare; simpl.
+unfold rm_gt, rm_lt, rm_compare; simpl.
 remember (fst_same (x + 0%rm) (- (y + 0)%rm) 0) as s1 eqn:Hs1 .
 remember (fst_same (y + 0%rm) (- (x + 0)%rm) 0) as s2 eqn:Hs2 .
 apply fst_same_sym_iff in Hs1; simpl in Hs1.
@@ -4655,20 +4655,20 @@ Theorem rm_ge_antisym : Antisymmetric _ rm_eq rm_ge.
 Proof.
 intros x y Hxy Hyx.
 apply rm_le_antisym; intros H.
- apply rm_compare_Gt_Lt_antisym in H; contradiction.
+ apply rm_gt_lt_iff in H; contradiction.
 
- apply rm_compare_Gt_Lt_antisym in H; contradiction.
+ apply rm_gt_lt_iff in H; contradiction.
 Qed.
 
 Theorem rm_ge_trans : transitive _ rm_ge.
 Proof.
 intros x y z Hxy Hyz H.
-apply rm_compare_Gt_Lt_antisym in H.
+apply rm_gt_lt_iff in H.
 revert H.
 apply rm_le_trans with (y := y); intros H.
- apply rm_compare_Gt_Lt_antisym in H; contradiction.
+ apply rm_gt_lt_iff in H; contradiction.
 
- apply rm_compare_Gt_Lt_antisym in H; contradiction.
+ apply rm_gt_lt_iff in H; contradiction.
 Qed.
 
 (* decidability < vs ≥ and > vs ≤ *)
@@ -4697,10 +4697,10 @@ Proof.
 intros x y.
 destruct (rm_lt_dec y x) as [H1| H1].
  left.
- apply rm_compare_Gt_Lt_antisym; assumption.
+ apply rm_gt_lt_iff; assumption.
 
  right; intros H; apply H1.
- apply rm_compare_Gt_Lt_antisym; assumption.
+ apply rm_gt_lt_iff; assumption.
 Qed.
 
 (* *)

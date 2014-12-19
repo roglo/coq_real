@@ -2358,6 +2358,11 @@ intros x y.
 split; intros H; assumption.
 Qed.
 
+Theorem re_gt_lt_iff : ∀ x y, (x > y)%R ↔ (y < x)%R.
+Proof.
+intros x y.
+bbb.
+
 (* inequality ≤ is order *)
 
 Theorem re_le_refl : reflexive _ re_le.
@@ -2634,20 +2639,20 @@ Proof.
 intros x y Hxy Hyx.
 apply re_le_antisym; intros H.
 bbb.
- apply re_compare_Gt_Lt_antisym in H; contradiction.
+ apply re_gt_lt_iff in H; contradiction.
 
- apply re_compare_Gt_Lt_antisym in H; contradiction.
+ apply re_gt_lt_iff in H; contradiction.
 Qed.
 
 Theorem re_ge_trans : transitive _ re_ge.
 Proof.
 intros x y z Hxy Hyz H.
-apply re_compare_Gt_Lt_antisym in H.
+apply re_gt_lt_iff in H.
 revert H.
 apply re_le_trans with (y := y); intros H.
- apply re_compare_Gt_Lt_antisym in H; contradiction.
+ apply re_gt_lt_iff in H; contradiction.
 
- apply re_compare_Gt_Lt_antisym in H; contradiction.
+ apply re_gt_lt_iff in H; contradiction.
 Qed.
 
 Close Scope Z_scope.
