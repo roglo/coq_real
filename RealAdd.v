@@ -2363,63 +2363,83 @@ Qed.
 Theorem re_le_refl : reflexive _ re_le.
 Proof.
 intros x H.
-bbb.
-unfold re_compare in H; simpl in H.
-remember (fst_same (x + 0%R) (- (x + 0)%R) 0) as s1 eqn:Hs1 .
+unfold re_compare in H.
+rewrite Z.compare_refl in H.
+remember (re_norm x) as nx.
+remember (fst_same (re_frac nx) (- re_frac nx) 0) as s1 eqn:Hs1 .
 destruct s1 as [dj1| ]; [ idtac | discriminate H ].
 apply fst_same_sym_iff in Hs1; simpl in Hs1.
 destruct Hs1 as (Hn1, Ht1).
-symmetry in Ht1; revert Ht1; apply no_fixpoint_negb.
+symmetry in Ht1.
+revert Ht1; apply no_fixpoint_negb.
 Qed.
 
 Theorem re_le_antisym : Antisymmetric _ re_eq re_le.
 Proof.
 intros x y Hxy Hyx.
 unfold re_le in Hxy, Hyx.
-unfold re_compare in Hxy; simpl in Hxy.
-unfold re_compare in Hyx; simpl in Hyx.
-remember (fst_same (x + 0%R) (- (y + 0)%R) 0) as s1 eqn:Hs1 .
-remember (fst_same (y + 0%R) (- (x + 0)%R) 0) as s2 eqn:Hs2 .
-destruct s1 as [dj1| ]; [ idtac | clear Hxy ].
- remember (re_add_i x 0 dj1) as bx eqn:Hbx .
- symmetry in Hbx.
- destruct bx; [ exfalso; apply Hxy; reflexivity | clear Hxy ].
- apply fst_same_sym_iff in Hs1; simpl in Hs1.
- destruct Hs1 as (Hn1, Ht1).
- destruct s2 as [dj2| ]; [ idtac | clear Hyx ].
-  remember (re_add_i y 0 dj2) as yb eqn:Hby .
-  symmetry in Hby.
-  destruct yb; [ exfalso; apply Hyx; reflexivity | clear Hyx ].
-  apply fst_same_sym_iff in Hs2; simpl in Hs2.
-  destruct Hs2 as (Hn2, Ht2).
-  destruct (lt_eq_lt_dec dj1 dj2) as [[H1| H1]| H1].
-   remember H1 as H; clear HeqH.
-   apply Hn2 in H; rewrite negb_involutive in H.
-   rewrite Ht1 in H; symmetry in H.
-   exfalso; revert H; apply no_fixpoint_negb.
+unfold re_compare in Hxy, Hyx.
+rewrite Z.compare_antisym in Hyx.
+remember (re_norm x) as nx.
+remember (re_norm y) as ny.
+remember (re_int nx ?= re_int ny) as c eqn:Hc .
+symmetry in Hc.
+destruct c; simpl in Hyx.
+ remember (fst_same (re_frac nx) (- re_frac ny) 0) as sx eqn:Hsx .
+ remember (fst_same (re_frac ny) (- re_frac nx) 0) as sy eqn:Hsy .
+ subst nx ny.
+ apply fst_same_sym_iff in Hsx; simpl in Hsx.
+ apply fst_same_sym_iff in Hsy; simpl in Hsy.
+ destruct sx as [dx| ]; [ idtac | clear Hxy ].
+  destruct Hsx as (Hnx, Htx).
+  simpl in Hxy.
+  remember (rm_add_i (re_frac x) 0 dx) as xb eqn:Hxb .
+  symmetry in Hxb; apply negb_sym in Htx.
+  destruct sy as [dy| ]; [ idtac | clear Hyx ].
+   destruct Hsy as (Hny, Hty).
+   simpl in Hyx.
+   remember (rm_add_i (re_frac y) 0 dy) as yb eqn:Hyb .
+   symmetry in Hyb; apply negb_sym in Hty.
+   destruct xb; [ exfalso; apply Hxy; reflexivity | clear Hxy ].
+   destruct yb; [ exfalso; apply Hyx; reflexivity | clear Hyx ].
+   destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
+    remember H1 as H; clear HeqH.
+    apply Hny in H.
+    rewrite Htx, Hxb in H; discriminate H.
 
-   subst dj2.
-   rewrite Hbx, Hby in Ht1; discriminate Ht1.
+    subst dy.
+    rewrite Hxb in Hty; discriminate Hty.
 
-   remember H1 as H; clear HeqH.
-   apply Hn1 in H; rewrite negb_involutive in H.
-   rewrite Ht2 in H; symmetry in H.
-   exfalso; revert H; apply no_fixpoint_negb.
+    remember H1 as H; clear HeqH.
+    apply Hnx in H.
+    rewrite Hty, Hyb in H; discriminate H.
 
-  apply fst_same_sym_iff in Hs2; simpl in Hs2.
-  rewrite Hs2 in Ht1.
-  rewrite negb_involutive in Ht1; symmetry in Ht1.
-  exfalso; revert Ht1; apply no_fixpoint_negb.
+   rewrite Hsy, Hxb in Htx.
+   exfalso; revert Htx; apply no_fixpoint_negb.
 
- apply fst_same_sym_iff in Hs1; simpl in Hs1.
- unfold re_eq; simpl; intros i.
- rewrite Hs1, negb_involutive.
- reflexivity.
+  destruct sy as [dy| ]; [ idtac | clear Hyx ].
+   destruct Hsy as (Hny, Hty).
+   simpl in Hyx.
+   rewrite Hsx in Hty.
+   rewrite negb_involutive in Hty.
+   symmetry in Hty.
+   exfalso; revert Hty; apply no_fixpoint_negb.
+
+   unfold re_eq; simpl.
+   apply Z.compare_eq in Hc; simpl in Hc.
+   split; [ assumption | idtac ].
+   unfold rm_eq; simpl; intros i.
+   rewrite Hsx, negb_involutive; reflexivity.
+
+ exfalso; apply Hyx; reflexivity.
+
+ exfalso; apply Hxy; reflexivity.
 Qed.
 
 Theorem re_le_trans : transitive _ re_le.
 Proof.
 intros x y z Hxy Hyz.
+bbb.
 unfold re_le in Hxy, Hyz; unfold re_le.
 unfold re_compare in Hxy, Hyz; unfold re_compare.
 simpl in Hxy, Hyz; simpl.
