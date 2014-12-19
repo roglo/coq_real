@@ -2694,7 +2694,6 @@ Theorem re_ge_antisym : Antisymmetric _ re_eq re_ge.
 Proof.
 intros x y Hxy Hyx.
 apply re_le_antisym; intros H.
-bbb.
  apply re_gt_lt_iff in H; contradiction.
 
  apply re_gt_lt_iff in H; contradiction.
@@ -2709,6 +2708,53 @@ apply re_le_trans with (y := y); intros H.
  apply re_gt_lt_iff in H; contradiction.
 
  apply re_gt_lt_iff in H; contradiction.
+Qed.
+
+(* decidability < vs ≥ and > vs ≤ *)
+
+Theorem re_lt_dec : ∀ x y, {(x < y)%R} + {(x ≥ y)%R}.
+Proof.
+intros x y.
+bbb.
+unfold re_lt, re_ge; simpl.
+unfold re_compare; simpl.
+remember (fst_same (x + 0%R) (- (y + 0))%R 0) as s eqn:Hs .
+apply fst_same_sym_iff in Hs; simpl in Hs.
+destruct s as [di| ].
+ destruct Hs as (Hn, Ht).
+ remember (re_add_i x 0 di) as xb eqn:Hxb .
+ symmetry in Hxb; apply negb_sym in Ht.
+ destruct xb; simpl in Ht.
+  right; intros H; discriminate H.
+
+  left; reflexivity.
+
+ right; intros H; discriminate H.
+Qed.
+
+Theorem re_gt_dec : ∀ x y, {(x > y)%R} + {(x ≤ y)%R}.
+Proof.
+intros x y.
+destruct (re_lt_dec y x) as [H1| H1].
+ left.
+ apply re_gt_lt_iff; assumption.
+
+ right; intros H; apply H1.
+ apply re_gt_lt_iff; assumption.
+Qed.
+
+(* *)
+
+Theorem re_lt_decidable : ∀ x y, Decidable.decidable (x < y)%R.
+Proof.
+intros x y.
+destruct (re_lt_dec x y); [ left | right ]; assumption.
+Qed.
+
+Theorem re_gt_decidable : ∀ x y, Decidable.decidable (x > y)%R.
+Proof.
+intros x y.
+destruct (re_gt_dec x y); [ left | right ]; assumption.
 Qed.
 
 Close Scope Z_scope.
