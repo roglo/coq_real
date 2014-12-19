@@ -2361,7 +2361,63 @@ Qed.
 Theorem re_gt_lt_iff : ∀ x y, (x > y)%R ↔ (y < x)%R.
 Proof.
 intros x y.
-bbb.
+unfold re_gt, re_lt, re_compare.
+remember (re_norm x) as nx eqn:Hnx .
+remember (re_norm y) as ny eqn:Hny .
+rewrite Z.compare_antisym.
+remember (re_int ny ?= re_int nx) as c eqn:Hc .
+symmetry in Hc.
+destruct c; simpl.
+ remember (fst_same (re_frac nx) (- re_frac ny) 0) as s1 eqn:Hs1 .
+ remember (fst_same (re_frac ny) (- re_frac nx) 0) as s2 eqn:Hs2 .
+ subst nx ny; simpl.
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ apply fst_same_sym_iff in Hs2; simpl in Hs2.
+ destruct s1 as [j1| ].
+  destruct Hs1 as (Hs1, Hn1).
+  remember (rm_add_i (re_frac x) 0 j1) as x0 eqn:Hx0 .
+  symmetry in Hx0; apply negb_sym in Hn1.
+  destruct s2 as [j2| ].
+   destruct Hs2 as (Hs2, Hn2).
+   remember (rm_add_i (re_frac y) 0 j2) as y0 eqn:Hy0 .
+   symmetry in Hy0; apply negb_sym in Hn2.
+   destruct (lt_eq_lt_dec j1 j2) as [[H1| H1]| H1].
+    apply Hs2 in H1.
+    rewrite negb_involutive, Hn1 in H1.
+    rewrite Hx0 in H1.
+    exfalso; revert H1; apply no_fixpoint_negb.
+
+    subst j2.
+    destruct x0.
+     split; intros H; [ clear H | reflexivity ].
+     destruct y0; [ exfalso | reflexivity ].
+     rewrite Hx0 in Hn2; discriminate Hn2.
+
+     split; intros H; [ discriminate H | exfalso ].
+     destruct y0; [ discriminate H | clear H ].
+     rewrite Hx0 in Hn2; discriminate Hn2.
+
+    apply Hs1 in H1.
+    rewrite negb_involutive, Hn2 in H1.
+    rewrite Hy0 in H1.
+    exfalso; revert H1; apply no_fixpoint_negb.
+
+   split; intros H; [ exfalso | discriminate H ].
+   destruct x0; [ clear H | discriminate H ].
+   rewrite Hs2, Hx0 in Hn1; discriminate Hn1.
+
+  destruct s2 as [j2| ].
+   destruct Hs2 as (Hs2, Hn2).
+   split; intros H; [ discriminate H | exfalso ].
+   rewrite Hs1, negb_involutive in Hn2.
+   symmetry in Hn2; revert Hn2; apply no_fixpoint_negb.
+
+   split; intros H; discriminate H.
+
+ split; intros H; reflexivity.
+
+ split; intros H; discriminate H.
+Qed.
 
 (* inequality ≤ is order *)
 
