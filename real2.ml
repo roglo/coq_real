@@ -21,6 +21,17 @@ value rm_add x y = {rm = rm_add_i x y};
 value rm_opp x = {rm i = not (x.rm i)};
 value rm_zero = {rm _ = False};
 value rm_norm x = rm_add x rm_zero;
+value rm_div_2_inc x n = {rm i = if i = 0 then n else x.rm (i - 1)};
+
+type comparison = [ Eq | Lt | Gt ].
+value rm_compare x y =
+  let nx = rm_norm x in
+  match fst_same nx (rm_opp (rm_norm y)) 0 with
+  | Some j → if nx.rm j then Gt else Lt
+  | None → Eq
+  end;
+
+value rm_lt x y = rm_compare x y = Lt;
 
 value mm = 50;
 value f2am x =
@@ -59,6 +70,21 @@ value re_opp x = {re_int = - x.re_int - 1; re_frac = rm_opp x.re_frac};
 value re_norm x =
   {re_int = x.re_int + b2z (carry x.re_frac rm_zero 0);
    re_frac = rm_norm x.re_frac};
+
+value re_div_2 x =
+  {re_int = x.re_int / 2;
+   re_frac = rm_div_2_inc x.re_frac (x.re_int mod 2 <> 0)}
+;
+
+value rm_div_int x y =
+  if rm_lt x y then 0
+  else (*à voir*)1
+;
+
+value rec re_div_int x y =
+  if x.re_int = 0 && y.re_int = 0 then rm_div_int x.re_frac y.re_frac
+  else re_div_int (re_div_2 x) (re_div_2 y)
+;
 
 value f2r a = {re_int = truncate (floor a); re_frac = f2rm (a -. floor a)};
 value r2f x = float x.re_int +. rm2f x.re_frac;
