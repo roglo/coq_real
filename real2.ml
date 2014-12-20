@@ -98,50 +98,51 @@ value rec two_power n =
   end
 ;
 
-(* iub : iterations upper bound *)
-value rec rm_int_of_div_loop iub x y =
-  if iub < 0 then invalid_arg "rm_int_of_div_loop" else
-  match iub with
-  | 0 → failwith "rm_int_of_div_loop bug: insufficient nb of iterations"
+value rec rm_eucl_div_loop m x y =
+  if m < 0 then invalid_arg "rm_eucl_div_loop" else
+  match m with
+  | 0 → failwith "rm_eucl_div_loop bug: insufficient nb of iterations"
   | _ →
-      let iub1 = iub - 1 in
-      if rm_lt x y then 0
-      else 1 + rm_int_of_div_loop iub1 (rm_sub x y) y
+      let m1 = m - 1 in
+      if rm_lt x y then (0, y)
+      else
+        let (q, r) = rm_eucl_div_loop m1 (rm_sub x y) y in
+        (1 + q, r)
   end
 ;
 
-value rm_int_of_div x y =
+value rm_eucl_div x y =
   match fst_same x rm_ones 0 with
   | Some jx →
       match fst_same y rm_ones 0 with
       | Some jy →
           if jx ≤ jy then
-            let iub = two_power (jy - jx + 1) in
-            rm_int_of_div_loop iub x y
-          else 0
-      | None → 0
+            let m = two_power (jy - jx + 1) in
+            rm_eucl_div_loop m x y
+          else (0, y)
+      | None → (0, y)
       end
-  | None → 0
+  | None → (0, y)
   end
 ;
 
-value rec re_int_of_div_loop m x y =
+value rec re_eucl_div_loop m x y =
   match m with
-  | 0 → failwith "re_int_of_div bug: insufficient nb of iterations"
+  | 0 → failwith "re_eucl_div bug: insufficient nb of iterations"
   | _ →
       let m1 = m - 1 in
-      if x.re_int = 0 && y.re_int = 0 then rm_int_of_div x.re_frac y.re_frac
-      else re_int_of_div_loop m1 (re_div_2 x) (re_div_2 y)
+      if x.re_int = 0 && y.re_int = 0 then rm_eucl_div x.re_frac y.re_frac
+      else re_eucl_div_loop m1 (re_div_2 x) (re_div_2 y)
   end
 ;
 
 (* don't try it with x / y > 7 because the division algorithm is only
    done with subtractions without shifts and it is very very slow if
    x >> y *)
-value re_int_of_div x y =
+value re_eucl_div x y =
   let ax = re_abs x in
   let ay = re_abs y in
-  re_int_of_div_loop (ax.re_int + ay.re_int + 1) ax ay
+  re_eucl_div_loop (ax.re_int + ay.re_int + 1) ax ay
 ;
 
-re_int_of_div (f2r 22.) (f2r 7.);
+re_eucl_div (f2r 22.) (f2r 7.);
