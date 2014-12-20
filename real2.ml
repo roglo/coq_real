@@ -68,7 +68,7 @@ value f2rm x =
   let a = f2am x in
   {rm i = if i < Array.length a then a.(i) else False};
 
-value rm2f x = am2f (Array.init 10(*mm*) x.rm);
+value rm2f x = am2f (Array.init 20(*mm*) x.rm);
 
 type real = {re_int : int; re_frac : real_mod_1};
 
@@ -153,13 +153,20 @@ value rm_eucl_div x y =
   end
 ;
 
+value (q, r) = rm_eucl_div (f2rm 0.01) (f2rm 0.03);
+rm2f r;
+
 value rec rm_equiv_div m x y =
   match m with
   | 0 → failwith "rm_equiv_div bug: insufficient nb of iterations"
   | _ →
       let m1 = m - 1 in
-      if x.re_int = 0 && y.re_int = 0 then (x.re_frac, y.re_frac)
-      else rm_equiv_div m1 (re_div_2 x) (re_div_2 y)
+      let x2 = re_div_2 x in
+      let y2 = re_div_2 y in
+      if x.re_int = 0 && y.re_int = 0 then
+        (x2.re_frac, y2.re_frac)
+      else
+        rm_equiv_div m1 x2 y2
   end
 ;
 
