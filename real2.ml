@@ -137,6 +137,10 @@ let _ = printf "rm_div_eucl %d ok\n%!" i in
 value rm_div_i x y i = fst (rm_div_eucl_i (rm_mul_2 x) y i);
 value rm_div x y = {rm = rm_div_i x y};
 
+(* bon, c'est n'importe quoi : m était censé être le nombre maximal
+   d'itérations pour la partie entière, mais pas pour la partie
+   fractionnaire qui se calcule de toutes façons différemment *)
+
 value rm_eucl_div x y =
   match fst_same x rm_ones 0 with
   | Some jx →
