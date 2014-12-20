@@ -19,7 +19,9 @@ value carry x y i =
 value rm_add_i x y i = x.rm i <> y.rm i <> carry x y (i + 1);
 value rm_add x y = {rm = rm_add_i x y};
 value rm_opp x = {rm i = not (x.rm i)};
+value rm_sub x y = rm_add x (rm_opp y);
 value rm_zero = {rm _ = False};
+value rm_ones = {rm _ = True};
 value rm_norm x = rm_add x rm_zero;
 value rm_mul_2 x = {rm i = x.rm (i + 1)};
 value rm_div_2_inc x n = {rm i = if i = 0 then n else x.rm (i - 1)};
@@ -77,6 +79,57 @@ value re_div_2 x =
    re_frac = rm_div_2_inc x.re_frac (x.re_int mod 2 <> 0)}
 ;
 
+value f2r a = {re_int = truncate (floor a); re_frac = f2rm (a -. floor a)};
+value r2f x = float x.re_int +. rm2f x.re_frac;
+
+(* *)
+
+(* division using only subtractions; computation of integer part *)
+
+value rec two_power n =
+  if n < 0 then invalid_arg "two_power" else
+  match n with
+  | 0 → 1
+  | _ →
+      let n1 = n - 1 in
+      2 * two_power n1
+  end
+;
+
+(* iub : iterations upper bound *)
+value rec rm_int_of_div_loop iub x y =
+  if iub < 0 then invalid_arg "rm_int_of_div_loop" else
+  match iub with
+  | 0 → failwith "rm_int_of_div_loop bug: insufficient nb of iterations"
+  | _ →
+      let iub1 = iub - 1 in
+      if rm_lt x y then 0
+      else 1 + rm_int_of_div_loop iub1 (rm_sub x y) y
+  end
+;
+
+(* don't try it with x / y > 7 because the division algorithm is only
+   done with subtractions without shifts *)
+value rm_int_of_div x y =
+  match fst_same x rm_ones 0 with
+  | Some jx →
+      match fst_same y rm_ones 0 with
+      | Some jy →
+          if jx ≤ jy then
+            let iub = two_power (jy - jx + 1) in
+            rm_int_of_div_loop iub x y
+          else 0
+      | None → 0
+      end
+  | None → 0
+  end
+;
+
+rm_int_of_div (f2rm 0.20) (f2rm 0.09);
+
+(*
+version having a problem of upper bound of iterations
+
 value rec nb_shift_upto_lt m x y =
   match m with
   | 0 → failwith "nb_shift_upto_lt bug: insufficient nb of iterations"
@@ -89,7 +142,7 @@ value rec nb_shift_upto_lt m x y =
 
 (* floor (log2 (x / y) *)
 value rm_ln_div_int x y =
-  let s = nb_shift_upto_lt 14(*value to find*) x y in
+  let s = nb_shift_upto_lt 14(*value to yfind*) x y in
   s - 1
 ;
 
@@ -117,11 +170,11 @@ value re_div_int x y = re_div_int_loop (x.re_int + y.re_int) x y;
 value re_div_frac x y =
   failwith "re_div_frac not yet implemented"
 ;
+*)
 
-value f2r a = {re_int = truncate (floor a); re_frac = f2rm (a -. floor a)};
-value r2f x = float x.re_int +. rm2f x.re_frac;
-
+(*
 re_div_int (f2r 34.79) (f2r 8.7);
 re_div_int (f2r 34.8) (f2r 8.7);
 re_div_int (f2r 1111111.) (f2r 239.);
 log (1111111./.239.) /. log 2.;
+*)
