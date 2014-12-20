@@ -142,7 +142,9 @@ value rec re_eucl_div_loop m x y =
 value re_eucl_div x y =
   let ax = re_abs x in
   let ay = re_abs y in
-  re_eucl_div_loop (ax.re_int + ay.re_int + 1) ax ay
+  let (q, r) = re_eucl_div_loop (ax.re_int + ay.re_int + 1) ax ay in
+  if re_is_neg x = re_is_neg y then (q, r) else (- q, r)
 ;
 
-re_eucl_div (f2r 22.) (f2r 7.);
+value (q, r) = re_eucl_div (f2r 22.) (f2r 7.);
+rm2f r;
