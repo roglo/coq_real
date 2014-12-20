@@ -108,9 +108,6 @@ value rec rm_int_of_div_loop iub x y =
   end
 ;
 
-(* don't try it with x / y > 7 because the division algorithm is only
-   done with subtractions without shifts and it is very very slow if
-   x >> y *)
 value rm_int_of_div x y =
   match fst_same x rm_ones 0 with
   | Some jx →
@@ -126,56 +123,19 @@ value rm_int_of_div x y =
   end
 ;
 
-rm_int_of_div (f2rm 0.20) (f2rm 0.09);
-
-(*
-version having a problem of upper bound of iterations
-
-value rec nb_shift_upto_lt m x y =
+value rec re_int_of_div_loop m x y =
   match m with
-  | 0 → failwith "nb_shift_upto_lt bug: insufficient nb of iterations"
+  | 0 → failwith "re_int_of_div bug: insufficient nb of iterations"
   | _ →
       let m1 = m - 1 in
-      if rm_lt x y then 0
-      else 1 + nb_shift_upto_lt m1 x (rm_mul_2 y)
+      if x.re_int = 0 && y.re_int = 0 then rm_int_of_div x.re_frac y.re_frac
+      else re_int_of_div_loop m1 (re_div_2 x) (re_div_2 y)
   end
 ;
 
-(* floor (log2 (x / y) *)
-value rm_ln_div_int x y =
-  let s = nb_shift_upto_lt 14(*value to yfind*) x y in
-  s - 1
-;
+(* don't try it with x / y > 7 because the division algorithm is only
+   done with subtractions without shifts and it is very very slow if
+   x >> y *)
+value re_int_of_div x y = re_int_of_div_loop (x.re_int + y.re_int + 1) x y;
 
-value rm_div_int x y =
-  (* extra shift to allow y left shift to be bigger than x without
-     overflowing *)
-  let x = rm_div_2_inc x False in
-  let y = rm_div_2_inc y False in
-  (* temporary result *)
-  rm_ln_div_int x y
-;
-
-value rec re_div_int_loop m x y =
-  match m with
-  | 0 → failwith "re_div_int_loop bug: insufficient nb of iterations"
-  | _ →
-      let m1 = m - 1 in
-      if x.re_int = 0 && y.re_int = 0 then rm_div_int x.re_frac y.re_frac
-      else re_div_int_loop m1 (re_div_2 x) (re_div_2 y)
-  end
-;
-
-value re_div_int x y = re_div_int_loop (x.re_int + y.re_int) x y;
-
-value re_div_frac x y =
-  failwith "re_div_frac not yet implemented"
-;
-*)
-
-(*
-re_div_int (f2r 34.79) (f2r 8.7);
-re_div_int (f2r 34.8) (f2r 8.7);
-re_div_int (f2r 1111111.) (f2r 239.);
-log (1111111./.239.) /. log 2.;
-*)
+re_int_of_div (f2r 22.) (f2r 7.);
