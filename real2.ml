@@ -24,7 +24,8 @@ value rm_zero = {rm _ = False};
 value rm_ones = {rm _ = True};
 value rm_norm x = rm_add x rm_zero;
 value rm_mul_2 x = {rm i = x.rm (i + 1)};
-value rm_div_2_inc x n = {rm i = if i = 0 then n else x.rm (i - 1)};
+value rm_div_2_inc x n =
+  {rm i = if i = 0 then n else x.rm (i - 1)};
 
 type comparison = [ Eq | Lt | Gt ].
 value rm_compare x y =
@@ -36,7 +37,7 @@ value rm_compare x y =
 
 value rm_lt x y = rm_compare x y = Lt;
 
-value mm = 7;
+value mm = 8;
 value f2am x =
   let x = mod_float x 1.0 in
   loop mm x [] where rec loop i x list =
@@ -117,7 +118,6 @@ value rec rm_div_eucl_i x y i =
       if rm_lt x y then (False, x) else (True, rm_sub x y)
   | _ →
       let i1 = i - 1 in
-let _ = printf "rm_div_eucl %d\n%!" i in
       let r = snd (rm_div_eucl_i x y i1) in
 let _ = printf "rm_div_eucl %d ok\n%!" i in
       let tr = rm_mul_2 r in
@@ -126,7 +126,6 @@ let _ = printf "rm_div_eucl %d ok\n%!" i in
 ;
 
 value rm_div_i x y i = fst (rm_div_eucl_i (rm_mul_2 x) y i);
-
 value rm_div x y = {rm = rm_div_i x y};
 
 value rm_eucl_div x y =
@@ -167,5 +166,6 @@ value re_eucl_div x y =
   if re_is_neg x = re_is_neg y then (q, rm) else (- q, rm)
 ;
 
-value (q, r) = re_eucl_div (f2r 22.) (f2r 7.);
-rm2f r;
+value (q, r) = re_eucl_div (f2r 355.) (f2r 113.);
+printf "%d\n%!" q;
+printf "%f\n%!" (rm2f r);
