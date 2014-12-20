@@ -69,6 +69,8 @@ value re_add x y =
    re_frac = rm_add x.re_frac y.re_frac};
 
 value re_opp x = {re_int = - x.re_int - 1; re_frac = rm_opp x.re_frac};
+value re_is_neg x = x.re_int < 0;
+value re_abs x = if re_is_neg x then re_opp x else x;
 
 value re_norm x =
   {re_int = x.re_int + b2z (carry x.re_frac rm_zero 0);
@@ -136,6 +138,10 @@ value rec re_int_of_div_loop m x y =
 (* don't try it with x / y > 7 because the division algorithm is only
    done with subtractions without shifts and it is very very slow if
    x >> y *)
-value re_int_of_div x y = re_int_of_div_loop (x.re_int + y.re_int + 1) x y;
+value re_int_of_div x y =
+  let ax = re_abs x in
+  let ay = re_abs y in
+  re_int_of_div_loop (ax.re_int + ay.re_int + 1) ax ay
+;
 
 re_int_of_div (f2r 22.) (f2r 7.);
