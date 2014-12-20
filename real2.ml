@@ -37,7 +37,7 @@ value rm_compare x y =
 
 value rm_lt x y = rm_compare x y = Lt;
 
-value mm = 8;
+value mm = 50;
 value f2am x =
   let x = mod_float x 1.0 in
   loop mm x [] where rec loop i x list =
@@ -48,18 +48,27 @@ value f2am x =
 ;
 
 value am2f a =
+(**)
+  let r =
+    loop (Array.length a) 0.0 where rec loop i x =
+      if i = 0 then x
+      else loop (i - 1) (float (if a.(i - 1) then 1 else 0) +. x *. 0.5)
+  in
+  r *. 0.5
+(*
   loop 0 0.0 (1. /. float 2) where rec loop i x pow =
     if i = Array.length a then x
     else
       loop (i + 1) (x +. float (if a.(i) then 1 else 0) *. pow)
         (pow /. float 2)
+*)
 ;
 
 value f2rm x =
   let a = f2am x in
   {rm i = if i < Array.length a then a.(i) else False};
 
-value rm2f x = am2f (Array.init mm x.rm);
+value rm2f x = am2f (Array.init 10(*mm*) x.rm);
 
 type real = {re_int : int; re_frac : real_mod_1};
 
@@ -157,15 +166,22 @@ value rec rm_equiv_div m x y =
 (* don't try it with x / y > 7 because the division algorithm is only
    done with subtractions without shifts and it is very very slow if
    x >> y *)
-value re_eucl_div x y =
+value re_div x y =
   let ax = re_abs x in
   let ay = re_abs y in
   let m = ax.re_int + ay.re_int + 1 in
   let (xm, ym) = rm_equiv_div m x y in
   let (q, rm) = rm_eucl_div xm ym in
-  if re_is_neg x = re_is_neg y then (q, rm) else (- q, rm)
+  {re_int = if re_is_neg x = re_is_neg y then q else -q;
+   re_frac = rm}
 ;
 
-value (q, r) = re_eucl_div (f2r 355.) (f2r 113.);
-printf "%d\n%!" q;
-printf "%f\n%!" (rm2f r);
+value r = re_div (f2r 1.) (f2r 3.);
+printf "%d\n%!" r.re_int;
+printf "%f\n%!" (rm2f r.re_frac);
+
+(*
+value r = re_div (f2r 355.) (f2r 113.);
+printf "%d\n%!" r.re_int;
+printf "%f\n%!" (rm2f r.re_frac);
+*)
