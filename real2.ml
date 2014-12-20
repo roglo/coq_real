@@ -104,7 +104,7 @@ value rec rm_eucl_div_loop m x y =
   | 0 → failwith "rm_eucl_div_loop bug: insufficient nb of iterations"
   | _ →
       let m1 = m - 1 in
-      if rm_lt x y then (0, y)
+      if rm_lt x y then (0, x)
       else
         let (q, r) = rm_eucl_div_loop m1 (rm_sub x y) y in
         (1 + q, r)
@@ -126,13 +126,13 @@ value rm_eucl_div x y =
   end
 ;
 
-value rec re_eucl_div_loop m x y =
+value rec rm_equiv_div m x y =
   match m with
-  | 0 → failwith "re_eucl_div bug: insufficient nb of iterations"
+  | 0 → failwith "rm_equiv_div bug: insufficient nb of iterations"
   | _ →
       let m1 = m - 1 in
-      if x.re_int = 0 && y.re_int = 0 then rm_eucl_div x.re_frac y.re_frac
-      else re_eucl_div_loop m1 (re_div_2 x) (re_div_2 y)
+      if x.re_int = 0 && y.re_int = 0 then (x.re_frac, y.re_frac)
+      else rm_equiv_div m1 (re_div_2 x) (re_div_2 y)
   end
 ;
 
@@ -142,9 +142,13 @@ value rec re_eucl_div_loop m x y =
 value re_eucl_div x y =
   let ax = re_abs x in
   let ay = re_abs y in
-  let (q, r) = re_eucl_div_loop (ax.re_int + ay.re_int + 1) ax ay in
-  if re_is_neg x = re_is_neg y then (q, r) else (- q, r)
+  let m = ax.re_int + ax.re_int + 1 in
+  let (ex, ey) = rm_equiv_div m x y in
+  let (q, r) = rm_eucl_div ex ey in
+  if re_is_neg x = re_is_neg y then (q, (r, ey)) else (- q, (r, ey))
 ;
 
 value (q, r) = re_eucl_div (f2r 22.) (f2r 7.);
-rm2f r;
+rm2f (fst r);
+rm2f (snd r);
+rm2f (fst r) /. rm2f (snd r);
