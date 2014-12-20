@@ -36,7 +36,7 @@ value rm_compare x y =
 
 value rm_lt x y = rm_compare x y = Lt;
 
-value mm = 50;
+value mm = 7;
 value f2am x =
   let x = mod_float x 1.0 in
   loop mm x [] where rec loop i x list =
@@ -111,6 +111,24 @@ value rec rm_eucl_div_loop m x y =
   end
 ;
 
+value rec rm_div_eucl_i x y i =
+  match i with
+  | 0 →
+      if rm_lt x y then (False, x) else (True, rm_sub x y)
+  | _ →
+      let i1 = i - 1 in
+let _ = printf "rm_div_eucl %d\n%!" i in
+      let r = snd (rm_div_eucl_i x y i1) in
+let _ = printf "rm_div_eucl %d ok\n%!" i in
+      let tr = rm_mul_2 r in
+      if rm_lt tr y then (False, tr) else (True, rm_sub tr y)
+  end
+;
+
+value rm_div_i x y i = fst (rm_div_eucl_i (rm_mul_2 x) y i);
+
+value rm_div x y = {rm = rm_div_i x y};
+
 value rm_eucl_div x y =
   match fst_same x rm_ones 0 with
   | Some jx →
@@ -118,7 +136,8 @@ value rm_eucl_div x y =
       | Some jy →
           if jx ≤ jy then
             let m = two_power (jy - jx + 1) in
-            rm_eucl_div_loop m x y
+            let (q, r) = rm_eucl_div_loop m x y in
+            (q, rm_div r y)
           else (0, y)
       | None → (0, y)
       end
@@ -145,14 +164,8 @@ value re_eucl_div x y =
   let m = ax.re_int + ay.re_int + 1 in
   let (xm, ym) = rm_equiv_div m x y in
   let (q, rm) = rm_eucl_div xm ym in
-  if re_is_neg x = re_is_neg y then (q, (rm, ym)) else (- q, (rm, ym))
+  if re_is_neg x = re_is_neg y then (q, rm) else (- q, rm)
 ;
 
-value (q, (xm, ym)) = re_eucl_div (f2r 22.) (f2r 7.);
-rm2f xm;
-rm2f ym;
-rm2f xm /. rm2f ym;
-value (q, (xm, ym)) = re_eucl_div (f2r 355.) (f2r (-113.));
-rm2f xm;
-rm2f ym;
-rm2f xm /. rm2f ym;
+value (q, r) = re_eucl_div (f2r 22.) (f2r 7.);
+rm2f r;
