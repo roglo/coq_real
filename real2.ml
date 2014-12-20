@@ -148,7 +148,11 @@ value re_eucl_div x y =
   if re_is_neg x = re_is_neg y then (q, (r, ey)) else (- q, (r, ey))
 ;
 
-value (q, r) = re_eucl_div (f2r 22.) (f2r 7.);
-rm2f (fst r);
-rm2f (snd r);
-rm2f (fst r) /. rm2f (snd r);
+value (q, (xm, ym)) = re_eucl_div (f2r 22.) (f2r 7.);
+rm2f xm;
+rm2f ym;
+rm2f xm /. rm2f ym;
+value (q, (xm, ym)) = re_eucl_div (f2r 355.) (f2r (-113.));
+rm2f xm;
+rm2f ym;
+rm2f xm /. rm2f ym;
