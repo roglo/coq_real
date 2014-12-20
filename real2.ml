@@ -109,7 +109,8 @@ value rec rm_int_of_div_loop iub x y =
 ;
 
 (* don't try it with x / y > 7 because the division algorithm is only
-   done with subtractions without shifts *)
+   done with subtractions without shifts and it is very very slow if
+   x >> y *)
 value rm_int_of_div x y =
   match fst_same x rm_ones 0 with
   | Some jx →
