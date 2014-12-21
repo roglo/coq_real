@@ -154,9 +154,9 @@ rewrite carry_diag; simpl.
 reflexivity.
 Qed.
 
-Theorem vvv : ∀ x, (0 / x = 0)%rm.
+Theorem vvv : ∀ x, (x ≠ 0)%rm → (0 / x = 0)%rm.
 Proof.
-intros x.
+intros x Hx.
 unfold rm_eq; simpl; intros i.
 unfold rm_add_i; simpl.
 rewrite carry_diag; simpl.
@@ -174,7 +174,15 @@ destruct s1 as [dj1| ].
   rewrite rm_mul_2_0 in H1.
   apply rm_ge_le_iff in H1.
   apply rm_le_0_r in H1.
-  simpl in H1, Hn1, Ht1.
+  contradiction.
+
+  simpl.
+  remember (rm_mul_2 0) as r1.
+  remember (rm_div_eucl_i r1 x i) as r2.
+  remember (rm_mul_2 (snd r2)) as r3.
+  destruct (rm_lt_dec r3 x) as [H1| H1]; [ reflexivity | exfalso ].
+  apply rm_ge_le_iff in H1.
+  subst r3 r2 r1.
 bbb.
 
 Theorem www : ∀ x, (0 / x = 0)%R.
