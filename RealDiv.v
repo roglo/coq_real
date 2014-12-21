@@ -134,6 +134,16 @@ destruct a.
  pose proof (Hs1 O); discriminate H.
 Qed.
 
+Theorem two_power_neq_0 : ∀ n, two_power n ≠ O.
+Proof.
+intros n H.
+induction n; [ discriminate H | simpl in H ].
+rewrite Nat.add_0_r in H.
+apply Nat.eq_add_0 in H.
+destruct H as (H, _).
+apply IHn; assumption.
+Qed.
+
 Theorem www : ∀ x, (0 / x = 0)%R.
 Proof.
 intros x.
@@ -189,22 +199,11 @@ destruct nxp.
      injection Hqrm; clear Hqrm; intros; subst q1 rm.
      remember (tp + tp)%nat as m eqn:Hm .
      destruct m.
-bbb.
-contradiction two_power ≠ 0
-      simpl in Hqr.
-      injection Hqr; clear Hqr; intros; subst q r; simpl.
-      unfold re_zero.
-      unfold re_eq; simpl.
-      rewrite carry_diag; simpl.
-      split.
-       unfold carry; simpl.
-       remember (fst_same (rm_div 0 z) 0 0) as s3 eqn:Hs3 .
-       apply fst_same_sym_iff in Hs3; simpl in Hs3.
-       destruct s3 as [dj3| ].
-        destruct Hs3 as (Hn3, Hs3).
-        rewrite Hs3; reflexivity.
-
-        simpl.
+      symmetry in Hm.
+      apply Nat.eq_add_0 in Hm.
+      destruct Hm as (H, _).
+      subst tp.
+      exfalso; revert H; apply two_power_neq_0.
 bbb.
 
 Theorem xxx : ∀ x, (x / 1 = x)%R.
