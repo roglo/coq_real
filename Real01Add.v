@@ -4795,4 +4795,38 @@ split; intros H.
  eapply rm_eq_ge_compat; eassumption.
 Qed.
 
+(* miscellaneous *)
+
+Theorem rm_le_0_r : ∀ x, (x ≤ 0)%rm ↔ (x = 0)%rm.
+Proof.
+intros x.
+split; intros H.
+ unfold rm_le in H; simpl in H.
+ unfold rm_eq; intros i; simpl.
+ unfold rm_compare in H; simpl in H.
+ remember (fst_same (x + 0%rm) (- (0 + 0)%rm) 0) as s1 eqn:Hs1 .
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ destruct s1 as [j1| ].
+  destruct Hs1 as (Hn1, Ht1).
+  remember (rm_add_i x 0 j1) as b1 eqn:Hb1 .
+  destruct b1; [ exfalso; apply H; reflexivity | clear H ].
+  symmetry in Hb1; apply negb_sym in Ht1; simpl in Ht1.
+  unfold rm_add_i in Ht1; simpl in Ht1.
+  rewrite carry_diag in Ht1; discriminate Ht1.
+
+  rewrite Hs1, negb_involutive; reflexivity.
+
+ unfold rm_eq in H; simpl in H.
+ unfold rm_le; simpl.
+ unfold rm_compare; simpl.
+ remember (fst_same (x + 0%rm) (- (0 + 0)%rm) 0) as s1 eqn:Hs1 .
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ destruct s1 as [j1| ]; [ idtac | intros HH; discriminate HH ].
+ destruct Hs1 as (Hn1, Ht1).
+ remember (rm_add_i x 0 j1) as b1 eqn:Hb1 .
+ destruct b1; [ exfalso | intros HH; discriminate HH ].
+ symmetry in Hb1; apply negb_sym in Ht1; simpl in Ht1.
+ rewrite H, Ht1 in Hb1; discriminate Hb1.
+Qed.
+
 Close Scope nat_scope.

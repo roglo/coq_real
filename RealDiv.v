@@ -172,6 +172,9 @@ destruct s1 as [dj1| ].
   simpl.
   destruct (rm_lt_dec (rm_mul_2 0) x) as [H1| H1]; [ reflexivity | exfalso ].
   rewrite rm_mul_2_0 in H1.
+  apply rm_ge_le_iff in H1.
+  apply rm_le_0_r in H1.
+  simpl in H1, Hn1, Ht1.
 bbb.
 
 Theorem www : ∀ x, (0 / x = 0)%R.
