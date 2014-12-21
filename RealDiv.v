@@ -103,6 +103,7 @@ Definition re_one := {| re_int := 1; re_frac := 0 |}.
 
 Notation "1" := re_one : R_scope.
 Notation "x / y" := (re_div x y) : R_scope.
+Notation "x / y" := (rm_div x y) : rm_scope.
 
 (* *)
 
@@ -143,6 +144,76 @@ apply Nat.eq_add_0 in H.
 destruct H as (H, _).
 apply IHn; assumption.
 Qed.
+
+Theorem rm_mul_2_0 : (rm_mul_2 0 = 0)%rm.
+Proof.
+unfold rm_eq; simpl; intros i.
+unfold rm_add_i; simpl.
+rewrite carry_diag; simpl.
+rewrite carry_diag; simpl.
+reflexivity.
+Qed.
+
+Add Parametric Morphism : rm_ge
+  with signature rm_eq ==> rm_eq ==> iff
+  as rm_ge_morph.
+Proof.
+intros x y Hxy z t Hzt.
+unfold rm_eq in Hxy; simpl in Hxy.
+unfold rm_eq in Hzt; simpl in Hzt.
+split; intros H.
+ unfold rm_ge; simpl.
+ unfold rm_compare; simpl.
+ unfold rm_ge in H.
+ unfold rm_compare in H; simpl in H.
+ remember (fst_same (y + 0%rm) (- (t + 0)%rm) 0) as s1 eqn:Hs1 .
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ destruct s1 as [j1| ]; [ idtac | intros HH; discriminate HH ].
+ destruct Hs1 as (Hn1, Ht1).
+ remember (rm_add_i y 0 j1) as b1 eqn:Hb1 .
+ destruct b1; [ intros HH; discriminate HH | exfalso ].
+ symmetry in Hb1; apply negb_sym in Ht1; simpl in Ht1.
+ remember (fst_same (x + 0%rm) (- (z + 0)%rm) 0) as s2 eqn:Hs2 .
+ apply fst_same_sym_iff in Hs2; simpl in Hs2.
+ destruct s2 as [j2| ]; [ idtac | clear H ].
+  destruct Hs2 as (Hn2, Ht2).
+  remember (rm_add_i x 0 j2) as b2 eqn:Hb2 .
+  destruct b2; [ clear H | apply H; reflexivity ].
+  symmetry in Hb2; apply negb_sym in Ht2; simpl in Ht2.
+  rewrite Hxy in Hb2.
+  rewrite Hzt in Ht2.
+  destruct (lt_eq_lt_dec j1 j2) as [[H1| H1]| H1].
+   remember H1 as H; clear HeqH.
+   apply Hn2 in H.
+   rewrite Hxy, Hzt, Hb1, Ht1 in H.
+   discriminate H.
+
+   subst j2.
+   rewrite Hb1 in Hb2; discriminate Hb2.
+
+   remember H1 as H; clear HeqH.
+   apply Hn1 in H.
+   rewrite Hb2, Ht2 in H; discriminate H.
+bbb.
+
+Theorem vvv : ∀ x, (0 / x = 0)%rm.
+Proof.
+intros x.
+unfold rm_eq; simpl; intros i.
+unfold rm_add_i; simpl.
+rewrite carry_diag; simpl.
+rewrite xorb_false_r.
+unfold rm_div_i; simpl.
+unfold carry; simpl.
+remember (fst_same (0 / x) 0 (S i)) as s1 eqn:Hs1 .
+apply fst_same_sym_iff in Hs1; simpl in Hs1.
+destruct s1 as [dj1| ].
+ destruct Hs1 as (Hn1, Ht1).
+ rewrite Ht1, xorb_false_r.
+ destruct i.
+  simpl.
+  destruct (rm_lt_dec (rm_mul_2 0) x) as [H1| H1]; [ reflexivity | exfalso ].
+bbb.
 
 Theorem www : ∀ x, (0 / x = 0)%R.
 Proof.
