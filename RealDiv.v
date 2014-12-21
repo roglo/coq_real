@@ -124,6 +124,7 @@ unfold re_div; simpl.
 remember (re_abs x) as ax eqn:Hax .
 unfold re_abs; simpl.
 remember (re_is_neg x) as nxp eqn:Hnxp .
+symmetry in Hnxp.
 remember (max_iter_int_part 0%R ax) as m eqn:Hm .
 remember (rm_equiv_div m 0%R ax) as mm eqn:Hmm .
 symmetry in Hmm.
@@ -132,6 +133,22 @@ remember (rm_eucl_div xm ym) as qrm eqn:Hqrm .
 symmetry in Hqrm.
 destruct qrm as (q, rm).
 destruct nxp.
+ unfold max_iter_int_part in Hm; simpl in Hm.
+ rewrite Z.add_comm in Hm; simpl in Hm.
+ remember (re_int ax) as ai eqn:Hai .
+ symmetry in Hai.
+ destruct ai.
+  rewrite Hax in Hai; simpl in Hai.
+  unfold re_abs in Hai.
+  rewrite Hnxp in Hai; simpl in Hai.
+  apply Z.sub_move_0_r with (m := 1) in Hai.
+  apply Z.eq_opp_l in Hai; simpl in Hai.
+  simpl in Hm; subst m; simpl in Hmm.
+  unfold re_abs in Hax.
+  rewrite Hnxp in Hax.
+  subst ax; simpl in Hmm.
+  rewrite Hai in Hmm; simpl in Hmm.
+  injection Hmm; clear Hmm; intros; subst xm ym.
 bbb.
 
 Theorem xxx : ∀ x, (x / 1 = x)%R.
