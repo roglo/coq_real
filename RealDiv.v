@@ -106,6 +106,27 @@ Notation "x / y" := (re_div x y) : R_scope.
 
 (* *)
 
+Theorem Z_nlt_1_0 : (1 <? 0) = false.
+Proof. reflexivity. Qed.
+
+Theorem xxx : ∀ x, (x / 1 = x)%R.
+Proof.
+intros x.
+unfold re_div; simpl.
+remember (re_abs x) as ax eqn:Hax .
+unfold re_abs; simpl.
+remember (re_is_neg x) as nxp eqn:Hnxp .
+unfold re_is_neg; simpl.
+rewrite Z_nlt_1_0, xorb_false_r.
+remember (max_iter_int_part ax 1%R) as m eqn:Hm .
+remember (rm_equiv_div m ax 1%R) as mm eqn:Hmm .
+symmetry in Hmm.
+destruct mm as (xm, ym).
+remember (rm_eucl_div xm ym) as qrm eqn:Hqrm .
+symmetry in Hqrm.
+destruct qrm as (q, rm).
+bbb.
+
 Theorem yyy : ∀ x, (0 < x)%R → (x / x = 1)%R.
 Proof.
 intros x Hx.
