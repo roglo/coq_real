@@ -189,6 +189,8 @@ destruct nxp.
      injection Hqrm; clear Hqrm; intros; subst q1 rm.
      remember (tp + tp)%nat as m eqn:Hm .
      destruct m.
+bbb.
+contradiction two_power ≠ 0
       simpl in Hqr.
       injection Hqr; clear Hqr; intros; subst q r; simpl.
       unfold re_zero.
