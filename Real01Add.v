@@ -4462,6 +4462,16 @@ destruct s1 as [j1| ].
   split; intros H; discriminate H.
 Qed.
 
+Theorem rm_ge_le_iff : ∀ x y, (x ≥ y)%rm ↔ (y ≤ x)%rm.
+Proof.
+intros x y.
+unfold rm_ge, rm_le.
+split; intros H1 H; apply H1; clear H1.
+ apply rm_gt_lt_iff; assumption.
+
+ apply rm_gt_lt_iff; assumption.
+Qed.
+
 (* inequality ≤ is order *)
 
 Theorem rm_le_refl : reflexive _ rm_le.
@@ -4723,6 +4733,66 @@ Theorem rm_gt_decidable : ∀ x y, Decidable.decidable (x > y)%rm.
 Proof.
 intros x y.
 destruct (rm_gt_dec x y); [ left | right ]; assumption.
+Qed.
+
+(* morphisms *)
+
+Theorem rm_eq_ge_compat : ∀ x y z t,
+  (x = y)%rm
+  → (z = t)%rm
+  → (x ≥ z)%rm
+  → (y ≥ t)%rm.
+Proof.
+intros x y z t Hxy Hzt Hxz.
+unfold rm_eq in Hxy; simpl in Hxy.
+unfold rm_eq in Hzt; simpl in Hzt.
+unfold rm_ge; simpl.
+unfold rm_compare; simpl.
+unfold rm_ge in Hxz.
+unfold rm_compare in Hxz; simpl in Hxz.
+remember (fst_same (y + 0%rm) (- (t + 0)%rm) 0) as s1 eqn:Hs1 .
+apply fst_same_sym_iff in Hs1; simpl in Hs1.
+destruct s1 as [j1| ]; [ idtac | intros HH; discriminate HH ].
+destruct Hs1 as (Hn1, Ht1).
+remember (rm_add_i y 0 j1) as b1 eqn:Hb1 .
+destruct b1; [ intros HH; discriminate HH | exfalso ].
+symmetry in Hb1; apply negb_sym in Ht1; simpl in Ht1.
+remember (fst_same (x + 0%rm) (- (z + 0)%rm) 0) as s2 eqn:Hs2 .
+apply fst_same_sym_iff in Hs2; simpl in Hs2.
+destruct s2 as [j2| ]; [ idtac | clear Hxz ].
+ destruct Hs2 as (Hn2, Ht2).
+ remember (rm_add_i x 0 j2) as b2 eqn:Hb2 .
+ destruct b2; [ clear Hxz | apply Hxz; reflexivity ].
+ symmetry in Hb2; apply negb_sym in Ht2; simpl in Ht2.
+ rewrite Hxy in Hb2.
+ rewrite Hzt in Ht2.
+ destruct (lt_eq_lt_dec j1 j2) as [[H1| H1]| H1].
+  remember H1 as H; clear HeqH.
+  apply Hn2 in H.
+  rewrite Hxy, Hzt, Hb1, Ht1 in H.
+  discriminate H.
+
+  subst j2.
+  rewrite Hb1 in Hb2; discriminate Hb2.
+
+  remember H1 as H; clear HeqH.
+  apply Hn1 in H.
+  rewrite Hb2, Ht2 in H; discriminate H.
+
+ rewrite <- Hxy, Hs2 in Hb1.
+ rewrite Hzt, Ht1 in Hb1; discriminate Hb1.
+Qed.
+
+Add Parametric Morphism : rm_ge
+  with signature rm_eq ==> rm_eq ==> iff
+  as rm_ge_morph.
+Proof.
+intros x y Hxy z t Hzt.
+split; intros H.
+ eapply rm_eq_ge_compat; eassumption.
+
+ symmetry in Hxy, Hzt.
+ eapply rm_eq_ge_compat; eassumption.
 Qed.
 
 Close Scope nat_scope.
