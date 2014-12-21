@@ -96,3 +96,55 @@ Definition re_div x y :=
   {| re_int := if re_is_neg x ⊕ re_is_neg y then -qz else qz;
      re_frac := rm |}.
 Arguments re_div x%R y%R.
+
+Definition re_one := {| re_int := 1; re_frac := 0 |}.
+
+Notation "1" := re_one : R_scope.
+Notation "x / y" := (re_div x y) : R_scope.
+
+(* *)
+
+Theorem re_inv_involutive : ∀ x, (re_div 1%R (re_div 1%R x) = x)%R.
+Proof.
+intros x.
+unfold re_eq; simpl.
+split.
+ unfold re_div at 1.
+ remember (re_abs 1) as ax eqn:Hax .
+ remember (re_abs (1 / x)) as ay eqn:Hay; simpl.
+ remember (Z.to_nat (re_int ax + re_int ay)) as m eqn:Hm .
+ unfold re_abs in Hax, Hay.
+ simpl in Hax, Hay; subst ax.
+ remember (re_div_2 1) as r1 eqn:Hr1 .
+ unfold re_div_2 in Hr1; simpl in Hr1.
+ unfold Z.div in Hr1; simpl in Hr1.
+ remember (re_div_2 (1 / x)) as r2 eqn:Hr2 .
+ remember (rm_equiv_div m r1 r2) as mm eqn:Hmm .
+ destruct mm as (xm, ym).
+ remember (rm_eucl_div xm ym) as qr eqn:Hqr .
+ destruct qr as (q, rm); simpl.
+ remember (re_is_neg (1 / x)) as neg eqn:Hneg .
+ symmetry in Hneg.
+ destruct neg.
+  unfold re_div at 1.
+  unfold re_is_neg, re_abs, re_is_neg.
+
+bbb.
+ Focus 2.
+ unfold re_div at 1.
+ remember (re_abs 1) as ax eqn:Hax .
+ remember (re_abs (1 / x)) as ay eqn:Hay .
+ simpl.
+ remember (Z.to_nat (re_int ax + re_int ay)) as m eqn:Hm .
+ unfold re_abs in Hax, Hay.
+ simpl in Hax, Hay.
+ subst ax.
+ remember (re_div_2 1) as r1 eqn:Hr1 .
+ unfold re_div_2 in Hr1; simpl in Hr1.
+ unfold Z.div in Hr1; simpl in Hr1.
+ remember (re_div_2 (1 / x)) as r2 eqn:Hr2 .
+ remember (rm_equiv_div m r1 r2) as mm eqn:Hmm .
+ destruct mm as (xm, ym).
+ remember (rm_eucl_div xm ym) as qr eqn:Hqr .
+ destruct qr as (q, rm); simpl.
+bbb.
