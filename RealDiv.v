@@ -204,6 +204,10 @@ destruct nxp.
       destruct Hm as (H, _).
       subst tp.
       exfalso; revert H; apply two_power_neq_0.
+
+      simpl in Hqr.
+      destruct (rm_lt_dec t z) as [H2| H2].
+       injection Hqr; clear Hqr; intros; subst q r; simpl.
 bbb.
 
 Theorem xxx : ∀ x, (x / 1 = x)%R.
