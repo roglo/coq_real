@@ -4795,6 +4795,22 @@ split; intros H.
  eapply rm_eq_ge_compat; eassumption.
 Qed.
 
+Add Parametric Morphism : rm_le
+  with signature rm_eq ==> rm_eq ==> iff
+  as rm_le_morph.
+Proof.
+intros x y Hxy z t Hzt.
+split; intros H.
+ apply rm_ge_le_iff in H.
+ apply rm_ge_le_iff.
+ eapply rm_eq_ge_compat; eassumption.
+
+ symmetry in Hxy, Hzt.
+ apply rm_ge_le_iff in H.
+ apply rm_ge_le_iff.
+ eapply rm_eq_ge_compat; eassumption.
+Qed.
+
 (* miscellaneous *)
 
 Theorem rm_le_0_r : ∀ x, (x ≤ 0)%rm ↔ (x = 0)%rm.
