@@ -55,20 +55,13 @@ value am2f a =
       else loop (i - 1) (float (if a.(i - 1) then 1 else 0) +. x *. 0.5)
   in
   r *. 0.5
-(*
-  loop 0 0.0 (1. /. float 2) where rec loop i x pow =
-    if i = Array.length a then x
-    else
-      loop (i + 1) (x +. float (if a.(i) then 1 else 0) *. pow)
-        (pow /. float 2)
-*)
 ;
 
 value f2rm x =
   let a = f2am x in
   {rm i = if i < Array.length a then a.(i) else False};
 
-value rm2f x = am2f (Array.init 20(*mm*) x.rm);
+value rm2f x = am2f (Array.init 10(*mm*) x.rm);
 
 type real = {re_int : int; re_frac : real_mod_1};
 
@@ -128,7 +121,9 @@ value rec rm_div_eucl_i x y i =
   | _ →
       let i1 = i - 1 in
       let r = snd (rm_div_eucl_i x y i1) in
+(*
 let _ = printf "rm_div_eucl %d ok\n%!" i in
+*)
       let tr = rm_mul_2 r in
       if rm_lt tr y then (False, tr) else (True, rm_sub tr y)
   end
@@ -136,10 +131,6 @@ let _ = printf "rm_div_eucl %d ok\n%!" i in
 
 value rm_div_i x y i = fst (rm_div_eucl_i (rm_mul_2 x) y i);
 value rm_div x y = {rm = rm_div_i x y};
-
-(* bon, c'est n'importe quoi : m était censé être le nombre maximal
-   d'itérations pour la partie entière, mais pas pour la partie
-   fractionnaire qui se calcule de toutes façons différemment *)
 
 value rm_eucl_div x y =
   match fst_same x rm_ones 0 with
@@ -150,7 +141,8 @@ value rm_eucl_div x y =
             let m = two_power (jy - jx + 1) in
             let (q, r) = rm_eucl_div_loop m x y in
             (q, rm_div r y)
-          else (0, y)
+          else
+            (0, rm_div x y)
       | None → (0, y)
       end
   | None → (0, y)
