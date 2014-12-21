@@ -117,6 +117,23 @@ rewrite H in HH.
 revert HH; apply lt_irrefl.
 Qed.
 
+Theorem www : ∀ x, (0 / x = 0)%R.
+Proof.
+intros x.
+unfold re_div; simpl.
+remember (re_abs x) as ax eqn:Hax .
+unfold re_abs; simpl.
+remember (re_is_neg x) as nxp eqn:Hnxp .
+remember (max_iter_int_part 0%R ax) as m eqn:Hm .
+remember (rm_equiv_div m 0%R ax) as mm eqn:Hmm .
+symmetry in Hmm.
+destruct mm as (xm, ym).
+remember (rm_eucl_div xm ym) as qrm eqn:Hqrm .
+symmetry in Hqrm.
+destruct qrm as (q, rm).
+destruct nxp.
+bbb.
+
 Theorem xxx : ∀ x, (x / 1 = x)%R.
 Proof.
 intros x.
