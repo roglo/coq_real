@@ -109,6 +109,14 @@ Notation "x / y" := (re_div x y) : R_scope.
 Theorem Z_nlt_1_0 : (1 <? 0) = false.
 Proof. reflexivity. Qed.
 
+Theorem Pos2Nat_ne_0 : ∀ a, (Pos.to_nat a ≠ 0)%nat.
+Proof.
+intros a H.
+pose proof Pos2Nat.is_pos a as HH.
+rewrite H in HH.
+revert HH; apply lt_irrefl.
+Qed.
+
 Theorem xxx : ∀ x, (x / 1 = x)%R.
 Proof.
 intros x.
@@ -125,6 +133,31 @@ destruct mm as (xm, ym).
 remember (rm_eucl_div xm ym) as qrm eqn:Hqrm .
 symmetry in Hqrm.
 destruct qrm as (q, rm).
+destruct m.
+ unfold max_iter_int_part in Hm.
+ simpl in Hm.
+ subst ax.
+ unfold re_abs in Hm.
+ rewrite <- Hnxp in Hm.
+ destruct nxp.
+  simpl in Hm.
+  rewrite Z.add_comm in Hm.
+  simpl in Hm.
+  rewrite Z.add_comm in Hm.
+  simpl in Hm.
+  remember (- re_int x - 1) as a.
+  destruct a; [ discriminate Hm | idtac | idtac ].
+   destruct p; [ discriminate Hm | idtac | discriminate Hm ].
+   simpl in Hm.
+   symmetry in Hm.
+   exfalso; revert Hm; apply Pos2Nat_ne_0.
+
+   remember (Z.pos_sub 1 p) as n eqn:Hn .
+   symmetry in Hn.
+   destruct n; [ discriminate Hm | idtac | idtac ].
+    simpl in Hm.
+    symmetry in Hm.
+    exfalso; revert Hm; apply Pos2Nat_ne_0.
 bbb.
 
 Theorem yyy : ∀ x, (0 < x)%R → (x / x = 1)%R.
