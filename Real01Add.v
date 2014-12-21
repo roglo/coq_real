@@ -210,6 +210,14 @@ intros dj Hdj.
 exfalso; revert Hdj; apply Nat.nlt_0_r.
 Qed.
 
+Theorem carry_diag : ∀ x i, carry x x i = x.[i].
+Proof.
+intros x i.
+unfold carry; simpl.
+rewrite fst_same_diag.
+rewrite Nat.add_0_r; reflexivity.
+Qed.
+
 (* equality is equivalence relation *)
 
 Theorem rm_eq_refl : reflexive _ rm_eq.

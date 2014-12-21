@@ -1,4 +1,4 @@
-Require Import Utf8 QArith.
+Require Import Utf8 QArith NPeano.
 Require Import Real01Add RealAdd.
 
 Set Implicit Arguments.
@@ -117,6 +117,23 @@ rewrite H in HH.
 revert HH; apply lt_irrefl.
 Qed.
 
+Theorem rm_div_2_0_false : (rm_div_2_inc 0 false = 0)%rm.
+Proof.
+unfold rm_eq; simpl; intros i.
+unfold rm_add_i; simpl.
+rewrite xorb_false_r, carry_diag; simpl.
+remember (if zerop i then false else false) as a.
+destruct a.
+ destruct (zerop i); discriminate Heqa.
+
+ rewrite xorb_false_l.
+ unfold carry; simpl.
+ remember (fst_same (rm_div_2_inc 0 false) 0 (S i)) as s1 eqn:Hs1 .
+ destruct s1; [ reflexivity | exfalso ].
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ pose proof (Hs1 O); discriminate H.
+Qed.
+
 Theorem www : ∀ x, (0 / x = 0)%R.
 Proof.
 intros x.
@@ -149,6 +166,43 @@ destruct nxp.
   subst ax; simpl in Hmm.
   rewrite Hai in Hmm; simpl in Hmm.
   injection Hmm; clear Hmm; intros; subst xm ym.
+  unfold rm_eucl_div in Hqrm.
+  simpl in Hqrm.
+  remember (fst_same (rm_div_2_inc 0 false) rm_ones 0) as s1 eqn:Hs1 .
+  apply fst_same_sym_iff in Hs1; simpl in Hs1.
+  destruct s1 as [j1| ].
+   destruct Hs1 as (Hn1, Ht1).
+   destruct j1; [ discriminate Ht1 | clear Ht1 ].
+   clear Hn1.
+   remember (rm_div_2_inc (- re_frac x) false) as z eqn:Hz .
+   remember (fst_same z rm_ones 0) as s2 eqn:Hs2 .
+   apply fst_same_sym_iff in Hs2; simpl in Hs2.
+   destruct s2 as [j2| ].
+    destruct Hs2 as (Hn2, Ht2).
+    destruct (le_dec (S j1) j2) as [H1| H1].
+     remember (two_power (j2 - S j1)) as tp eqn:Htp .
+     rewrite Nat.add_0_r in Hqrm.
+     remember (rm_div_2_inc 0 false) as t eqn:Ht .
+     remember (rm_eucl_div_loop (tp + tp) t z) as qr eqn:Hqr .
+     symmetry in Hqr.
+     destruct qr as (q1, r).
+     injection Hqrm; clear Hqrm; intros; subst q1 rm.
+     remember (tp + tp)%nat as m eqn:Hm .
+     destruct m.
+      simpl in Hqr.
+      injection Hqr; clear Hqr; intros; subst q r; simpl.
+      unfold re_zero.
+      unfold re_eq; simpl.
+      rewrite carry_diag; simpl.
+      split.
+       unfold carry; simpl.
+       remember (fst_same (rm_div 0 z) 0 0) as s3 eqn:Hs3 .
+       apply fst_same_sym_iff in Hs3; simpl in Hs3.
+       destruct s3 as [dj3| ].
+        destruct Hs3 as (Hn3, Hs3).
+        rewrite Hs3; reflexivity.
+
+        simpl.
 bbb.
 
 Theorem xxx : ∀ x, (x / 1 = x)%R.
