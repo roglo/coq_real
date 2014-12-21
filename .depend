@@ -1,5 +1,5 @@
 Real01Add.vo Real01Add.glob Real01Add.v.beautified: Real01Add.v
-Real01Div.vo Real01Div.glob Real01Div.v.beautified: Real01Div.v Real01Add.vo
 Real01Mul.vo Real01Mul.glob Real01Mul.v.beautified: Real01Mul.v Real01Add.vo
 RealAdd.vo RealAdd.glob RealAdd.v.beautified: RealAdd.v Real01Add.vo
+RealDiv.vo RealDiv.glob RealDiv.v.beautified: RealDiv.v Real01Add.vo RealAdd.vo
 T.vo T.glob T.v.beautified: T.v

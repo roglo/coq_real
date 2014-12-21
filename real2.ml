@@ -79,9 +79,11 @@ value re_norm x =
   {re_int = x.re_int + b2z (carry x.re_frac rm_zero 0);
    re_frac = rm_norm x.re_frac};
 
+value z_odd x = x land 1 <> 0;
+
 value re_div_2 x =
   {re_int = x.re_int / 2;
-   re_frac = rm_div_2_inc x.re_frac (x.re_int mod 2 <> 0)}
+   re_frac = rm_div_2_inc x.re_frac (z_odd x.re_int)}
 ;
 
 value f2r a = {re_int = truncate (floor a); re_frac = f2rm (a -. floor a)};
