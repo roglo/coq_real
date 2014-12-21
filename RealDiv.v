@@ -232,7 +232,7 @@ destruct s1 as [dj1| ].
    rewrite Hs2 in Ht4; discriminate Ht4.
 Qed.
 
-Theorem vvv : ∀ x, (x ≠ 0)%rm → (0 / x = 0)%rm.
+Theorem rm_div_0_l : ∀ x, (x ≠ 0)%rm → (0 / x = 0)%rm.
 Proof.
 intros x Hx.
 unfold rm_eq; simpl; intros i.
