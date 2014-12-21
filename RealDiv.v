@@ -154,6 +154,46 @@ rewrite carry_diag; simpl.
 reflexivity.
 Qed.
 
+Add Parametric Morphism : rm_mul_2
+  with signature rm_eq ==> rm_eq
+  as rm_mul_2_morph.
+Proof.
+intros x y Hxy.
+unfold rm_eq in Hxy; simpl in Hxy.
+unfold rm_eq; simpl; intros i.
+unfold rm_add_i; simpl.
+do 2 rewrite xorb_false_r.
+unfold carry; simpl.
+remember (fst_same (rm_mul_2 x) 0 (S i)) as s1 eqn:Hs1 .
+remember (fst_same (rm_mul_2 y) 0 (S i)) as s2 eqn:Hs2 .
+apply fst_same_sym_iff in Hs1; simpl in Hs1.
+destruct s1 as [dj1| ].
+ destruct Hs1 as (Hn1, Ht1).
+ rewrite Ht1, xorb_false_r.
+ apply fst_same_sym_iff in Hs2; simpl in Hs2.
+ destruct s2 as [dj2| ].
+  destruct Hs2 as (Hn2, Ht2).
+  rewrite Ht2, xorb_false_r.
+  pose proof (Hxy (S i)) as H.
+  unfold rm_add_i in H; simpl in H.
+  do 2 rewrite xorb_false_r in H.
+  unfold carry in H; simpl in H.
+  remember (fst_same x 0 (S (S i))) as s3 eqn:Hs3 .
+  remember (fst_same y 0 (S (S i))) as s4 eqn:Hs4 .
+  apply fst_same_sym_iff in Hs3; simpl in Hs3.
+  destruct s3 as [dj3| ].
+   destruct Hs3 as (Hn3, Ht3).
+   rewrite Ht3, xorb_false_r in H.
+   apply fst_same_sym_iff in Hs4; simpl in Hs4.
+   destruct s4 as [dj4| ].
+    destruct Hs4 as (Hn4, Ht4).
+    rewrite Ht4, xorb_false_r in H; assumption.
+
+    rewrite Hs4 in Ht2; discriminate Ht2.
+
+   rewrite Hs3 in Ht1; discriminate Ht1.
+bbb.
+
 Theorem vvv : ∀ x, (x ≠ 0)%rm → (0 / x = 0)%rm.
 Proof.
 intros x Hx.
@@ -183,7 +223,12 @@ destruct s1 as [dj1| ].
   destruct (rm_lt_dec r3 x) as [H1| H1]; [ reflexivity | exfalso ].
   apply rm_ge_le_iff in H1.
   subst r3 r2 r1.
+  destruct i.
+   simpl in H1.
+   destruct (rm_lt_dec (rm_mul_2 0) x) as [H2| H2]; simpl in H1.
 bbb.
+apply rm_ge_le_iff in H1. (* rather make a morphism for ≤ *)
+rewrite rm_mul_2_0 in H1.
 
 Theorem www : ∀ x, (0 / x = 0)%R.
 Proof.
