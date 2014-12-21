@@ -16,11 +16,11 @@ Arguments re_div_2 x%R.
 
 Fixpoint rm_equiv_div m x y :=
   match m with
-  | O => (x, y)
+  | O => (0%rm, 0%rm)
   | S m1 =>
       let x2 := re_div_2 x in
       let y2 := re_div_2 y in
-      if Z_zerop (re_int x) ∧ Z_zerop (re_int y) then
+      if Z.eqb (re_int x) 0 && Z.eqb (re_int y) 0 then
         (re_frac x2, re_frac y2)
       else
         rm_equiv_div m1 x2 y2
