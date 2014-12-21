@@ -204,9 +204,7 @@ destruct s1 as [dj1| ].
    rewrite xorb_true_r in H.
    destruct s4 as [dj4| ].
     destruct Hs4 as (Hn4, Ht4).
-    rewrite Ht4 in H.
-    rewrite xorb_false_r in H.
-    rewrite <- H.
+    rewrite Ht4, xorb_false_r in H; rewrite <- H.
     rewrite xorb_true_r, negb_involutive; reflexivity.
 
     rewrite Hs3 in Ht1; discriminate Ht1.
@@ -248,15 +246,13 @@ apply fst_same_sym_iff in Hs1; simpl in Hs1.
 destruct s1 as [dj1| ].
  destruct Hs1 as (Hn1, Ht1).
  rewrite Ht1, xorb_false_r.
- destruct i.
-  simpl.
+ destruct i; simpl.
   destruct (rm_lt_dec (rm_mul_2 0) x) as [H1| H1]; [ reflexivity | exfalso ].
   rewrite rm_mul_2_0 in H1.
   apply rm_ge_le_iff in H1.
   apply rm_le_0_r in H1.
   contradiction.
 
-  simpl.
   remember (rm_mul_2 0) as r1.
   remember (rm_div_eucl_i r1 x i) as r2.
   remember (rm_mul_2 (snd r2)) as r3.
