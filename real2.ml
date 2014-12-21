@@ -175,7 +175,7 @@ value re_div x y =
   let ax = re_abs x in
   let ay = re_abs y in
   let m = ax.re_int + ay.re_int + 1 in
-  let (xm, ym) = rm_equiv_div m x y in
+  let (xm, ym) = rm_equiv_div m ax ay in
   let (q, rm) = rm_eucl_div xm ym in
   {re_int = if re_is_neg x = re_is_neg y then q else -q;
    re_frac = rm}

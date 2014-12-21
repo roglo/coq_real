@@ -86,11 +86,13 @@ Definition rm_eucl_div x y :=
   end.
 Arguments rm_eucl_div x%rm y%rm.
 
+Definition max_iter_int_part ax ay := Z.to_nat (re_int ax + re_int ay + 1).
+
 Definition re_div x y :=
   let ax := re_abs x in
   let ay := re_abs y in
-  let m := S (Z.to_nat (re_int ax + re_int ay)) in
-  let (xm, ym) := rm_equiv_div m x y in
+  let m := max_iter_int_part ax ay in
+  let (xm, ym) := rm_equiv_div m ax ay in
   let (q, rm) := rm_eucl_div xm ym in
   let qz := Z.of_nat q in
   {| re_int := if re_is_neg x ⊕ re_is_neg y then -qz else qz;
@@ -103,6 +105,32 @@ Notation "1" := re_one : R_scope.
 Notation "x / y" := (re_div x y) : R_scope.
 
 (* *)
+
+Theorem zzz : ∀ x, (0 < x)%R → (x ≤ 1)%R → (1 / x ≥ 1)%R.
+Proof.
+intros x Hxgt Hxle.
+unfold re_div; simpl.
+remember (re_abs x) as ax eqn:Hax .
+unfold re_abs; simpl.
+remember (re_is_neg x) as nxp eqn:Hnxp .
+symmetry in Hnxp.
+destruct nxp.
+ unfold re_lt in Hxgt; simpl in Hxgt.
+ unfold re_is_neg in Hnxp.
+ unfold Z.ltb in Hnxp.
+ remember (re_int x ?= 0) as xzc eqn:Hxzc .
+ symmetry in Hxzc.
+ destruct xzc; try discriminate Hnxp; clear Hnxp.
+ Focus 2.
+ remember (max_iter_int_part 1%R ax) as m eqn:Hm .
+ remember (rm_equiv_div m 1%R ax) as mm eqn:Hmm .
+ symmetry in Hmm.
+ destruct mm as (xm, ym).
+ remember (rm_eucl_div xm ym) as qrm eqn:Hqrm .
+ symmetry in Hqrm.
+ destruct qrm as (q, rm).
+ unfold re_ge.
+bbb.
 
 Theorem re_inv_involutive : ∀ x, (re_div 1%R (re_div 1%R x) = x)%R.
 Proof.
