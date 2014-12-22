@@ -279,6 +279,7 @@ destruct s1 as [dj1| ].
     exfalso; subst r3.
     apply rm_lt_nge in IHi; apply IHi; clear IHi.
 bbb.
+  C'est faux. Il y a donc un bug.
 
   remember (rm_mul_2 0) as r1.
   remember (rm_div_eucl_i r1 x i) as r2.
