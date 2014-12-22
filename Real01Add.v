@@ -5113,8 +5113,6 @@ destruct H as [(Hxi, Hyi)| (Hxi, Hyi)]; simpl in Hxi, Hyi.
   rewrite Hn1 in H; discriminate H.
 Qed.
 
-(* difficulties to prove this morphism...
-   should be true, however! *)
 Add Parametric Morphism : rm_opp
   with signature rm_eq ==> rm_eq
   as rm_opp_morph.
@@ -5237,6 +5235,31 @@ destruct s3 as [dj3| ].
     symmetry in Heq; symmetry.
     symmetry in Hs3, Hs4.
     eapply fst_same_opp_0_succ; eassumption.
+
+    destruct s1 as [dj1| ].
+     remember Hs1 as H; clear HeqH.
+     apply fst_same_sym_iff in H; simpl in H.
+     destruct H as (Hn1, Ht1).
+     rewrite Ht1, xorb_false_r in Hi.
+     destruct s2 as [dj2| ].
+      remember Hs2 as H; clear HeqH.
+      apply fst_same_sym_iff in H; simpl in H.
+      destruct H as (Hn2, Ht2).
+      rewrite Ht2, xorb_false_r in Hi; assumption.
+
+      exfalso.
+      remember Hs2 as H; clear HeqH.
+      apply fst_same_sym_iff in H; simpl in H.
+      rename H into Hn2.
+      pose proof (Hn4 O (Nat.lt_0_succ dj4)) as H.
+      rewrite Hn2 in H; discriminate H.
+
+     exfalso.
+     remember Hs1 as H; clear HeqH.
+     apply fst_same_sym_iff in H; simpl in H.
+     rename H into Hn1.
+     pose proof (Hn3 O (Nat.lt_0_succ dj3)) as H.
+     rewrite Hn1 in H; discriminate H.
 bbb.
 
 intros x y Hxy.
