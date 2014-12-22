@@ -5169,6 +5169,22 @@ destruct s3 as [dj3| ].
     rename H into Hy4.
     remember Ht3 as H; clear HeqH.
     eapply rm_eq_neq_if in H; try eassumption.
+    destruct H as [(Hxi, Hyi)| (Hxi, Hyi)]; simpl in Hxi, Hyi.
+     rewrite Hyi in Ht4; discriminate Ht4.
+
+     destruct s1 as [dj1| ].
+      remember Hs1 as H; clear HeqH.
+      apply fst_same_sym_iff in H; simpl in H.
+      destruct H as (Hn1, Ht1).
+      rewrite Ht1, xorb_false_r in Hi.
+      destruct s2 as [dj2| ].
+       remember Hs2 as H; clear HeqH.
+       apply fst_same_sym_iff in H; simpl in H.
+       destruct H as (Hn2, Ht2).
+       rewrite Ht2, xorb_false_r in Hi.
+       rewrite Hi; reflexivity.
+
+       exfalso.
 bbb.
 
 intros x y Hxy.
