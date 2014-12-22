@@ -52,6 +52,9 @@ Fixpoint rm_div_eucl_i x y i :=
   end.
 Arguments rm_div_eucl_i x%rm y%rm i%nat.
 
+Definition rm_div_rem_i x y i := snd (rm_div_eucl_i x y i).
+Arguments rm_div_rem_i x%rm y%rm i%nat.
+
 Definition rm_div_i x y i := fst (rm_div_eucl_i (rm_mul_2 x) y i).
 Arguments rm_div_i x%rm y%rm i%nat.
 
@@ -232,6 +235,34 @@ destruct s1 as [dj1| ].
    rewrite Hs2 in Ht4; discriminate Ht4.
 Qed.
 
+Theorem fold_rm_div_rem_i : ∀ x y i,
+  snd (rm_div_eucl_i x y i) = rm_div_rem_i x y i.
+Proof. reflexivity. Qed.
+
+Add Parametric Morphism : rm_div_rem_i
+  with signature rm_eq ==> rm_eq ==> eq ==> rm_eq
+  as rm_div_rem_i_morph.
+Proof.
+intros x y Hxy z t Hzt i.
+induction i.
+ unfold rm_div_rem_i; simpl.
+ destruct (rm_lt_dec x z) as [H1| H1].
+  destruct (rm_lt_dec y t) as [H2| H2]; [ assumption | idtac ].
+  rewrite Hxy, Hzt in H1.
+  apply rm_lt_nge in H1.
+  apply rm_ge_le_iff in H2.
+  contradiction.
+
+  rewrite Hxy, Hzt in H1.
+  apply rm_ge_le_iff in H1.
+  destruct (rm_lt_dec y t) as [H2| H2].
+   apply rm_lt_nge in H2.
+   contradiction.
+
+   simpl.
+bbb.
+*)
+
 Theorem rm_div_0_l : ∀ x, (x ≠ 0)%rm → (0 / x = 0)%rm.
 Proof.
 intros x Hx.
@@ -262,7 +293,11 @@ destruct s1 as [dj1| ].
   unfold rm_le in H1.
   apply H1; clear H1.
   apply rm_gt_lt_iff.
+  rewrite fold_rm_div_rem_i.
 bbb.
+  ============================
+   (rm_mul_2 (snd (rm_div_eucl_i (rm_mul_2 0) x i)) < x)%rm
+
   induction i; simpl.
    destruct (rm_lt_dec (rm_mul_2 0) x) as [H2| H2]; simpl.
     rewrite rm_mul_2_0; assumption.

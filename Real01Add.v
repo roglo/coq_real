@@ -4827,16 +4827,17 @@ y  .   0   0   0   0   0 …
    i   -  dj1  -  dj3
 x  1   1   0   .   1
 y  1   .   .   .   .
+*)
 
 Add Parametric Morphism : rm_sub
   with signature rm_eq ==> rm_eq ==> rm_eq
   as rm_sub_morph.
 Proof.
-bbb.
 intros x y Hxy z d Hcd.
-apply rm_add_compat; assumption.
-Qed.
-*)
+apply rm_add_compat; [ assumption | idtac ].
+unfold rm_eq; simpl; intros.
+unfold rm_eq in Hcd; simpl in Hcd.
+bbb.
 
 Theorem rm_eq_compare_compat : ∀ x y z t,
   (x = y)%rm
