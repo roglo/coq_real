@@ -246,6 +246,9 @@ apply fst_same_sym_iff in Hs1; simpl in Hs1.
 destruct s1 as [dj1| ].
  destruct Hs1 as (Hn1, Ht1).
  rewrite Ht1, xorb_false_r.
+bbb.
+TODO: try an induction on i
+
  destruct i; simpl.
   destruct (rm_lt_dec (rm_mul_2 0) x) as [H1| H1]; [ reflexivity | exfalso ].
   rewrite rm_mul_2_0 in H1.
@@ -265,6 +268,29 @@ destruct s1 as [dj1| ].
     rewrite rm_mul_2_0 in H1.
     apply rm_gt_lt_iff in H2.
     contradiction.
+
+    rewrite rm_mul_2_0 in H2.
+    apply rm_ge_le_iff in H2.
+    apply rm_le_0_r in H2.
+    contradiction.
+
+   simpl in H1.
+   remember (snd (rm_div_eucl_i (rm_mul_2 0) x i)) as r eqn:Hr .
+   destruct (rm_lt_dec (rm_mul_2 r) x) as [H2| H2]; simpl in H1.
+    destruct i.
+     simpl in Hr.
+     destruct (rm_lt_dec (rm_mul_2 0) x) as [H3| H3]; simpl in Hr.
+      subst r.
+      rewrite rm_mul_2_0 in H1.
+      rewrite rm_mul_2_0 in H1.
+      rewrite rm_mul_2_0 in H1.
+      apply rm_le_0_r in H1; contradiction.
+
+      rewrite rm_mul_2_0 in H3.
+      apply rm_ge_le_iff in H3.
+      apply rm_le_0_r in H3; contradiction.
+
+     simpl in Hr.
 bbb.
 
 Theorem www : ∀ x, (0 / x = 0)%R.

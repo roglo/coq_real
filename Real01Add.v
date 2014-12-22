@@ -4737,6 +4737,107 @@ Qed.
 
 (* morphisms *)
 
+(* difficulties to prove this morphism...
+   should be true, however!
+Add Parametric Morphism : rm_opp
+  with signature rm_eq ==> rm_eq
+  as rm_opp_morph.
+Proof.
+intros x y Hxy.
+unfold rm_eq in Hxy; simpl in Hxy.
+unfold rm_eq; simpl; intros i.
+pose proof (Hxy i) as Hi.
+unfold rm_add_i in Hi; simpl in Hi.
+do 2 rewrite xorb_false_r in Hi.
+unfold rm_add_i; simpl.
+do 2 rewrite xorb_false_r.
+unfold carry in Hi; simpl in Hi.
+unfold carry; simpl.
+remember (fst_same x 0 (S i)) as s1 eqn:Hs1 .
+remember (fst_same y 0 (S i)) as s2 eqn:Hs2 .
+remember (fst_same (- x) 0 (S i)) as s3 eqn:Hs3 .
+remember (fst_same (- y) 0 (S i)) as s4 eqn:Hs4 .
+apply fst_same_sym_iff in Hs1; simpl in Hs1.
+apply fst_same_sym_iff in Hs2; simpl in Hs2.
+apply fst_same_sym_iff in Hs3; simpl in Hs3.
+apply fst_same_sym_iff in Hs4; simpl in Hs4.
+destruct s1 as [dj1| ].
+ destruct Hs1 as (Hn1, Ht1).
+ rewrite Ht1, xorb_false_r in Hi.
+ destruct s2 as [dj2| ].
+  destruct Hs2 as (Hn2, Ht2).
+  rewrite Ht2, xorb_false_r in Hi.
+  rewrite Hi; f_equal.
+  destruct s3 as [dj3| ].
+   destruct Hs3 as (Hn3, Ht3).
+   rewrite Ht3.
+   destruct s4 as [dj4| ].
+    destruct Hs4 as (Hn4, Ht4).
+    rewrite Ht4; reflexivity.
+
+    apply negb_false_iff in Ht3.
+    destruct (lt_eq_lt_dec dj1 dj3) as [[H1| H1]| H1].
+     destruct dj3; [ exfalso; revert H1; apply Nat.nlt_0_r | idtac ].
+     destruct dj1.
+      rewrite Nat.add_0_r in Ht1.
+      clear Hn1.
+      clear H1.
+      destruct dj2.
+       clear Hn2 Ht2.
+       pose proof (Hxy (S (i + S dj3))) as Hsi.
+       unfold rm_add_i in Hsi.
+       simpl in Hsi.
+       do 2 rewrite xorb_false_r in Hsi.
+       rewrite Ht3, xorb_true_l in Hsi.
+       symmetry in Hsi; apply negb_sym in Hsi.
+       rewrite negb_xorb_l in Hsi.
+       rewrite Hs4, xorb_true_l in Hsi.
+       unfold carry in Hsi; simpl in Hsi.
+       remember (fst_same x 0 (S (S (i + S dj3)))) as s5 eqn:Hs5 .
+       remember (fst_same y 0 (S (S (i + S dj3)))) as s6 eqn:Hs6 .
+       destruct s5 as [dj5| ].
+        apply fst_same_sym_iff in Hs5; simpl in Hs5.
+        destruct Hs5 as (Hn5, Ht5).
+        rewrite Ht5 in Hsi.
+        destruct s6 as [dj6| ].
+         apply fst_same_sym_iff in Hs6; simpl in Hs6.
+         destruct Hs6 as (Hn6, Ht6).
+         rewrite Ht6 in Hsi; discriminate Hsi.
+
+         clear Hsi.
+         apply fst_same_sym_iff in Hs6; simpl in Hs6.
+         pose proof (Hs6 0) as H.
+         rewrite <- Nat.add_succ_r in H.
+         rewrite <- negb_involutive in H.
+         apply negb_sym in H.
+         rewrite <- Nat.add_assoc in H.
+         rewrite Hs4 in H; discriminate H.
+
+        destruct s6 as [dj6| ]; [ idtac | discriminate Hsi ].
+        apply fst_same_sym_iff in Hs5; simpl in Hs5.
+        apply fst_same_sym_iff in Hs6; simpl in Hs6.
+        destruct Hs6 as (Hn6, Ht6).
+        clear Hsi.
+        clear Ht6.
+bbb.
+   i  i+1  -  dj3
+x  .   0   0   1   1   1 …
+y  .   0   0   0   0   0 …
+
+   i   -  dj1  -  dj3
+x  1   1   0   .   1
+y  1   .   .   .   .
+
+Add Parametric Morphism : rm_sub
+  with signature rm_eq ==> rm_eq ==> rm_eq
+  as rm_sub_morph.
+Proof.
+bbb.
+intros x y Hxy z d Hcd.
+apply rm_add_compat; assumption.
+Qed.
+*)
+
 Theorem rm_eq_ge_compat : ∀ x y z t,
   (x = y)%rm
   → (z = t)%rm
