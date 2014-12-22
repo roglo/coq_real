@@ -5053,6 +5053,61 @@ destruct sx as [dx| ].
      rewrite Hx1 in H; discriminate H.
 Qed.
 
+Theorem zzz : ∀ x y i (*s1 s2*) dj4,
+  (x = y)%rm
+  → Some 0 = fst_same (- x) 0 (S i)
+  → Some (S dj4) = fst_same (- y) 0 (S i)
+  → x .[ S i] = true
+  → (∀ dj : nat, dj < S dj4 → negb y .[ S (i + dj)] = true)
+  → y .[ S (i + S dj4)] = true
+  → negb x .[ i] = negb y .[ i].
+Proof.
+intros x y i dj4.
+intros Heq Hs3 Hs4 Ht3 Hn4 Ht4.
+remember Heq as H; clear HeqH.
+unfold rm_eq in H; simpl in H.
+rename H into Hxy.
+pose proof (Hxy i) as Hi.
+unfold rm_add_i in Hi; simpl in Hi.
+do 2 rewrite xorb_false_r in Hi.
+unfold carry in Hi; simpl in Hi.
+remember (fst_same x 0 (S i)) as s1 eqn:Hs1 .
+remember (fst_same y 0 (S i)) as s2 eqn:Hs2 .
+    pose proof (Hn4 O (Nat.lt_0_succ dj4)) as H.
+    rewrite Nat.add_0_r in H.
+    apply negb_true_iff in H.
+    rename H into Hy4.
+    remember Ht3 as H; clear HeqH.
+    eapply rm_eq_neq_if in H; try eassumption.
+    destruct H as [(Hxi, Hyi)| (Hxi, Hyi)]; simpl in Hxi, Hyi.
+     rewrite Hyi in Ht4; discriminate Ht4.
+
+     destruct s1 as [dj1| ].
+      remember Hs1 as H; clear HeqH.
+      apply fst_same_sym_iff in H; simpl in H.
+      destruct H as (Hn1, Ht1).
+      rewrite Ht1, xorb_false_r in Hi.
+      destruct s2 as [dj2| ].
+       remember Hs2 as H; clear HeqH.
+       apply fst_same_sym_iff in H; simpl in H.
+       destruct H as (Hn2, Ht2).
+       rewrite Ht2, xorb_false_r in Hi.
+       rewrite Hi; reflexivity.
+
+       exfalso.
+       remember Hs2 as H; clear HeqH.
+       apply fst_same_sym_iff in H; simpl in H.
+       rename H into Hn2.
+       pose proof (Hn2 O) as H.
+       rewrite Nat.add_0_r, Hy4 in H; discriminate H.
+
+      remember Hs1 as H; clear HeqH.
+      apply fst_same_sym_iff in H; simpl in H.
+      rename H into Hn1.
+      pose proof (Hxi O) as H.
+      rewrite Hn1 in H; discriminate H.
+Qed.
+
 (* difficulties to prove this morphism...
    should be true, however! *)
 Add Parametric Morphism : rm_opp
@@ -5163,6 +5218,15 @@ destruct s3 as [dj3| ].
        rewrite Nat.add_succ_r, Hn5 in Ht2.
        discriminate Ht2.
 
+    eapply zzz; eassumption.
+
+   destruct dj4.
+    clear Hn4; rewrite Nat.add_0_r in Ht4.
+    symmetry.
+    symmetry in Heq.
+    eapply zzz; eassumption.
+
+bbb.
     pose proof (Hn4 O (Nat.lt_0_succ dj4)) as H.
     rewrite Nat.add_0_r in H.
     apply negb_true_iff in H.
@@ -5196,6 +5260,12 @@ destruct s3 as [dj3| ].
       rename H into Hn1.
       pose proof (Hxi O) as H.
       rewrite Hn1 in H; discriminate H.
+
+bbb.
+   pose proof (Hn3 O (Nat.lt_0_succ dj3)) as H.
+   rewrite Nat.add_0_r in H.
+   apply negb_true_iff in H.
+   rename H into Hy4.
 bbb.
 
 intros x y Hxy.
