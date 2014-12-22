@@ -4738,7 +4738,7 @@ Qed.
 (* morphisms *)
 
 (* difficulties to prove this morphism...
-   should be true, however!
+   should be true, however! *)
 Add Parametric Morphism : rm_opp
   with signature rm_eq ==> rm_eq
   as rm_opp_morph.
@@ -4757,10 +4757,120 @@ remember (fst_same x 0 (S i)) as s1 eqn:Hs1 .
 remember (fst_same y 0 (S i)) as s2 eqn:Hs2 .
 remember (fst_same (- x) 0 (S i)) as s3 eqn:Hs3 .
 remember (fst_same (- y) 0 (S i)) as s4 eqn:Hs4 .
+remember Hs3 as H; clear HeqH.
+apply fst_same_sym_iff in H; simpl in H.
+destruct s3 as [dj3| ].
+ destruct H as (Hn3, Ht3).
+ rewrite Ht3, xorb_false_r.
+ apply negb_false_iff in Ht3.
+ destruct s4 as [dj4| ].
+  remember Hs4 as H; clear HeqH.
+  apply fst_same_sym_iff in H; simpl in H.
+  destruct H as (Hn4, Ht4).
+  rewrite Ht4, xorb_false_r.
+  apply negb_false_iff in Ht4.
+  destruct dj3.
+   clear Hn3; rewrite Nat.add_0_r in Ht3.
+   destruct dj4.
+    clear Hn4; rewrite Nat.add_0_r in Ht4.
+    destruct s1 as [dj1| ].
+     remember Hs1 as H; clear HeqH.
+     apply fst_same_sym_iff in H; simpl in H.
+     destruct H as (Hn1, Ht1).
+     rewrite Ht1, xorb_false_r in Hi.
+     destruct s2 as [dj2| ].
+      remember Hs2 as H; clear HeqH.
+      apply fst_same_sym_iff in H; simpl in H.
+      destruct H as (Hn2, Ht2).
+      rewrite Ht2, xorb_false_r in Hi.
+      rewrite Hi; reflexivity.
+
+      exfalso.
+      pose proof (Hxy (S i)) as Hsi.
+      unfold rm_add_i in Hsi; simpl in Hsi.
+      do 2 rewrite xorb_false_r in Hsi.
+      rewrite Ht3, Ht4, xorb_true_l in Hsi.
+      apply negb_sym in Hsi.
+      rewrite negb_involutive in Hsi.
+      unfold carry in Hsi; simpl in Hsi.
+      rewrite <- Nat.add_1_r in Hsi at 1.
+      rewrite fst_same_inf_after in Hsi; [ idtac | symmetry; assumption ].
+      remember (fst_same x 0 (S (S i))) as s5 eqn:Hs5 .
+      destruct s5 as [dj5| ]; [ idtac | clear Hsi ].
+       symmetry in Hsi.
+       remember Hs5 as H; clear HeqH.
+       apply fst_same_sym_iff in H; simpl in H.
+       destruct H as (Hn5, Ht5).
+       rewrite Ht5 in Hsi; discriminate Hsi.
+
+       remember Hs5 as H; clear HeqH.
+       apply fst_same_sym_iff in H; simpl in H.
+       destruct dj1.
+        clear Hn1; rewrite Nat.add_0_r in Ht1.
+        rewrite Ht1 in Ht3; discriminate Ht3.
+
+        rewrite Nat.add_succ_r, H in Ht1.
+        discriminate Ht1.
+
+     destruct s2 as [dj2| ]; [ idtac | assumption ].
+     remember Hs2 as H; clear HeqH.
+     apply fst_same_sym_iff in H; simpl in H.
+     destruct H as (Hn2, Ht2).
+     rewrite Ht2, xorb_false_r in Hi.
+     exfalso.
+     pose proof (Hxy (S i)) as Hsi.
+     unfold rm_add_i in Hsi; simpl in Hsi.
+     do 2 rewrite xorb_false_r in Hsi.
+     rewrite Ht3, Ht4, xorb_true_l in Hsi.
+     apply negb_sym in Hsi.
+     rewrite negb_involutive in Hsi.
+     unfold carry in Hsi; simpl in Hsi.
+     symmetry in Hsi.
+     rewrite <- Nat.add_1_r in Hsi at 1.
+     rewrite fst_same_inf_after in Hsi; [ idtac | symmetry; assumption ].
+     remember (fst_same y 0 (S (S i))) as s5 eqn:Hs5 .
+     destruct s5 as [dj5| ]; [ idtac | clear Hsi ].
+      symmetry in Hsi.
+      remember Hs5 as H; clear HeqH.
+      apply fst_same_sym_iff in H; simpl in H.
+      destruct H as (Hn5, Ht5).
+      rewrite Ht5 in Hsi; discriminate Hsi.
+
+      destruct dj2.
+       clear Hn2; rewrite Nat.add_0_r in Ht2.
+       rewrite Ht2 in Ht4; discriminate Ht4.
+
+       remember Hs5 as H; clear HeqH.
+       apply fst_same_sym_iff in H; simpl in H.
+       rename H into Hn5.
+       rewrite Nat.add_succ_r, Hn5 in Ht2.
+       discriminate Ht2.
+
+    pose proof (Hn4 O (Nat.lt_0_succ dj4)) as H.
+    rewrite Nat.add_0_r in H.
+    apply negb_true_iff in H.
+    rename H into Hy4.
+bbb.
+
+intros x y Hxy.
+unfold rm_eq in Hxy; simpl in Hxy.
+unfold rm_eq; simpl; intros i.
+pose proof (Hxy i) as Hi.
+unfold rm_add_i in Hi; simpl in Hi.
+do 2 rewrite xorb_false_r in Hi.
+unfold rm_add_i; simpl.
+do 2 rewrite xorb_false_r.
+unfold carry in Hi; simpl in Hi.
+unfold carry; simpl.
+remember (fst_same x 0 (S i)) as s1 eqn:Hs1 .
+remember (fst_same y 0 (S i)) as s2 eqn:Hs2 .
+remember (fst_same (- x) 0 (S i)) as s3 eqn:Hs3 .
+remember (fst_same (- y) 0 (S i)) as s4 eqn:Hs4 .
 apply fst_same_sym_iff in Hs1; simpl in Hs1.
 apply fst_same_sym_iff in Hs2; simpl in Hs2.
 apply fst_same_sym_iff in Hs3; simpl in Hs3.
 apply fst_same_sym_iff in Hs4; simpl in Hs4.
+bbb.
 destruct s1 as [dj1| ].
  destruct Hs1 as (Hn1, Ht1).
  rewrite Ht1, xorb_false_r in Hi.
