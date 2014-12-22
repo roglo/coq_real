@@ -5185,6 +5185,17 @@ destruct s3 as [dj3| ].
        rewrite Hi; reflexivity.
 
        exfalso.
+       remember Hs2 as H; clear HeqH.
+       apply fst_same_sym_iff in H; simpl in H.
+       rename H into Hn2.
+       pose proof (Hn2 O) as H.
+       rewrite Nat.add_0_r, Hy4 in H; discriminate H.
+
+      remember Hs1 as H; clear HeqH.
+      apply fst_same_sym_iff in H; simpl in H.
+      rename H into Hn1.
+      pose proof (Hxi O) as H.
+      rewrite Hn1 in H; discriminate H.
 bbb.
 
 intros x y Hxy.
