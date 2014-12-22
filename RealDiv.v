@@ -278,6 +278,7 @@ destruct s1 as [dj1| ].
     subst r1 r2.
     exfalso; subst r3.
 bbb.
+waiting for rm_lt_nge to be proved (Read01Add.v)
 
   remember (rm_mul_2 0) as r1.
   remember (rm_div_eucl_i r1 x i) as r2.

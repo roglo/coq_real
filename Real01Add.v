@@ -5023,4 +5023,12 @@ split; intros H.
  rewrite H, Ht1 in Hb1; discriminate Hb1.
 Qed.
 
+Theorem rm_lt_nge : ∀ x y, (x < y)%rm ↔ ¬(y ≤ x)%rm.
+Proof.
+intros x y.
+unfold rm_lt, rm_le.
+split; intros H.
+ intros HH; apply HH; clear HH.
+bbb.
+
 Close Scope nat_scope.
