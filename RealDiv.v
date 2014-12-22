@@ -262,6 +262,7 @@ destruct s1 as [dj1| ].
   unfold rm_le in H1.
   apply H1; clear H1.
   apply rm_gt_lt_iff.
+bbb.
   induction i; simpl.
    destruct (rm_lt_dec (rm_mul_2 0) x) as [H2| H2]; simpl.
     rewrite rm_mul_2_0; assumption.
@@ -276,13 +277,10 @@ destruct s1 as [dj1| ].
    destruct (rm_lt_dec r3 x) as [H1| H1]; [ simpl | exfalso ].
     clear H1.
     subst r1 r2.
+bbb.
     exfalso; subst r3.
     apply rm_lt_nge in IHi; apply IHi; clear IHi.
 bbb.
-  ============================
-   (x ≤ rm_mul_2 (snd (rm_div_eucl_i (rm_mul_2 0) x i)))%rm
-
-  C'est faux. Il y a donc un bug.
 
   remember (rm_mul_2 0) as r1.
   remember (rm_div_eucl_i r1 x i) as r2.
