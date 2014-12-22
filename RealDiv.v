@@ -246,15 +246,38 @@ apply fst_same_sym_iff in Hs1; simpl in Hs1.
 destruct s1 as [dj1| ].
  destruct Hs1 as (Hn1, Ht1).
  rewrite Ht1, xorb_false_r.
-bbb.
-TODO: try an induction on i
-
+ clear dj1 Hn1 Ht1.
  destruct i; simpl.
   destruct (rm_lt_dec (rm_mul_2 0) x) as [H1| H1]; [ reflexivity | exfalso ].
   rewrite rm_mul_2_0 in H1.
   apply rm_ge_le_iff in H1.
-  apply rm_le_0_r in H1.
-  contradiction.
+  apply rm_le_0_r in H1; contradiction.
+
+  remember (rm_mul_2 0) as r1.
+  remember (rm_div_eucl_i r1 x i) as r2.
+  remember (rm_mul_2 (snd r2)) as r3.
+  destruct (rm_lt_dec r3 x) as [H1| H1]; [ reflexivity | exfalso ].
+  apply rm_ge_le_iff in H1.
+  subst r3 r2 r1.
+  unfold rm_le in H1.
+  apply H1; clear H1.
+  apply rm_gt_lt_iff.
+  induction i; simpl.
+   destruct (rm_lt_dec (rm_mul_2 0) x) as [H2| H2]; simpl.
+    rewrite rm_mul_2_0; assumption.
+
+    rewrite rm_mul_2_0 in H2.
+    apply rm_ge_le_iff in H2.
+    apply rm_le_0_r in H2; contradiction.
+
+   remember (rm_mul_2 0) as r1.
+   remember (rm_div_eucl_i r1 x i) as r2.
+   remember (rm_mul_2 (snd r2)) as r3.
+   destruct (rm_lt_dec r3 x) as [H1| H1]; [ simpl | exfalso ].
+    clear H1.
+    subst r1 r2.
+    exfalso; subst r3.
+bbb.
 
   remember (rm_mul_2 0) as r1.
   remember (rm_div_eucl_i r1 x i) as r2.

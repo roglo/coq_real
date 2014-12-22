@@ -4838,6 +4838,97 @@ apply rm_add_compat; assumption.
 Qed.
 *)
 
+Theorem rm_eq_compare_compat : ∀ x y z t,
+  (x = y)%rm
+  → (z = t)%rm
+  → ((x ?= z)%rm = (y ?= t)%rm).
+Proof.
+intros x y z t Hxy Hzt.
+unfold rm_eq in Hxy; simpl in Hxy.
+unfold rm_eq in Hzt; simpl in Hzt.
+unfold rm_compare; simpl.
+remember (fst_same (x + 0%rm) (- (z + 0)%rm) 0) as s1 eqn:Hs1 .
+remember (fst_same (y + 0%rm) (- (t + 0)%rm) 0) as s2 eqn:Hs2 .
+apply fst_same_sym_iff in Hs1; simpl in Hs1.
+apply fst_same_sym_iff in Hs2; simpl in Hs2.
+destruct s1 as [j1| ].
+ destruct Hs1 as (Hn1, Ht1).
+ remember (rm_add_i x 0 j1) as b1 eqn:Hb1 .
+ symmetry in Hb1; apply negb_sym in Ht1.
+ destruct s2 as [j2| ].
+  destruct Hs2 as (Hn2, Ht2).
+  remember (rm_add_i y 0 j2) as b2 eqn:Hb2 .
+  symmetry in Hb2; apply negb_sym in Ht2.
+  destruct (lt_eq_lt_dec j1 j2) as [[H1| H1]| H1].
+   remember H1 as H; clear HeqH.
+   apply Hn2 in H.
+   rewrite negb_involutive in H.
+   rewrite <- Hxy, <- Hzt, Hb1, Ht1 in H.
+   symmetry in H.
+   exfalso; revert H; apply no_fixpoint_negb.
+
+   subst j2.
+   rewrite Hxy, Hb2 in Hb1.
+   subst b2; reflexivity.
+
+   remember H1 as H; clear HeqH.
+   apply Hn1 in H.
+   rewrite negb_involutive in H.
+   rewrite Hxy, Hzt, Hb2, Ht2 in H.
+   symmetry in H.
+   exfalso; revert H; apply no_fixpoint_negb.
+
+  rewrite Hxy, Hs2 in Hb1.
+  rewrite negb_involutive in Hb1.
+  rewrite Hzt in Ht1.
+  rewrite Ht1 in Hb1.
+  exfalso; revert Hb1; apply no_fixpoint_negb.
+
+ destruct s2 as [j2| ]; [ idtac | reflexivity ].
+ destruct Hs2 as (Hn2, Ht2).
+ rewrite <- Hxy, Hs1 in Ht2.
+ rewrite negb_involutive in Ht2.
+ symmetry in Ht2.
+ rewrite Hzt in Ht2.
+ exfalso; revert Ht2; apply no_fixpoint_negb.
+Qed.
+
+Theorem rm_eq_lt_compat : ∀ x y z t,
+  (x = y)%rm
+  → (z = t)%rm
+  → (x < z)%rm
+  → (y < t)%rm.
+Proof.
+intros x y z t Hxy Hzt Hxz.
+unfold rm_lt in Hxz; unfold rm_lt.
+rewrite <- Hxz; symmetry.
+apply rm_eq_compare_compat; eassumption.
+Qed.
+
+Theorem rm_eq_le_compat : ∀ x y z t,
+  (x = y)%rm
+  → (z = t)%rm
+  → (x ≤ z)%rm
+  → (y ≤ t)%rm.
+Proof.
+intros x y z t Hxy Hzt Hxz.
+unfold rm_le in Hxz; unfold rm_le.
+intros H; apply Hxz; rewrite <- H.
+apply rm_eq_compare_compat; eassumption.
+Qed.
+
+Theorem rm_eq_gt_compat : ∀ x y z t,
+  (x = y)%rm
+  → (z = t)%rm
+  → (x > z)%rm
+  → (y > t)%rm.
+Proof.
+intros x y z t Hxy Hzt Hxz.
+unfold rm_gt in Hxz; unfold rm_gt.
+rewrite <- Hxz; symmetry.
+apply rm_eq_compare_compat; eassumption.
+Qed.
+
 Theorem rm_eq_ge_compat : ∀ x y z t,
   (x = y)%rm
   → (z = t)%rm
@@ -4845,43 +4936,45 @@ Theorem rm_eq_ge_compat : ∀ x y z t,
   → (y ≥ t)%rm.
 Proof.
 intros x y z t Hxy Hzt Hxz.
-unfold rm_eq in Hxy; simpl in Hxy.
-unfold rm_eq in Hzt; simpl in Hzt.
-unfold rm_ge; simpl.
-unfold rm_compare; simpl.
-unfold rm_ge in Hxz.
-unfold rm_compare in Hxz; simpl in Hxz.
-remember (fst_same (y + 0%rm) (- (t + 0)%rm) 0) as s1 eqn:Hs1 .
-apply fst_same_sym_iff in Hs1; simpl in Hs1.
-destruct s1 as [j1| ]; [ idtac | intros HH; discriminate HH ].
-destruct Hs1 as (Hn1, Ht1).
-remember (rm_add_i y 0 j1) as b1 eqn:Hb1 .
-destruct b1; [ intros HH; discriminate HH | exfalso ].
-symmetry in Hb1; apply negb_sym in Ht1; simpl in Ht1.
-remember (fst_same (x + 0%rm) (- (z + 0)%rm) 0) as s2 eqn:Hs2 .
-apply fst_same_sym_iff in Hs2; simpl in Hs2.
-destruct s2 as [j2| ]; [ idtac | clear Hxz ].
- destruct Hs2 as (Hn2, Ht2).
- remember (rm_add_i x 0 j2) as b2 eqn:Hb2 .
- destruct b2; [ clear Hxz | apply Hxz; reflexivity ].
- symmetry in Hb2; apply negb_sym in Ht2; simpl in Ht2.
- rewrite Hxy in Hb2.
- rewrite Hzt in Ht2.
- destruct (lt_eq_lt_dec j1 j2) as [[H1| H1]| H1].
-  remember H1 as H; clear HeqH.
-  apply Hn2 in H.
-  rewrite Hxy, Hzt, Hb1, Ht1 in H.
-  discriminate H.
+unfold rm_ge in Hxz; unfold rm_ge.
+intros H; apply Hxz; rewrite <- H.
+apply rm_eq_compare_compat; eassumption.
+Qed.
 
-  subst j2.
-  rewrite Hb1 in Hb2; discriminate Hb2.
+Add Parametric Morphism : rm_lt
+  with signature rm_eq ==> rm_eq ==> iff
+  as rm_lt_morph.
+Proof.
+intros x y Hxy z t Hzt.
+split; intros H.
+ eapply rm_eq_lt_compat; eassumption.
 
-  remember H1 as H; clear HeqH.
-  apply Hn1 in H.
-  rewrite Hb2, Ht2 in H; discriminate H.
+ symmetry in Hxy, Hzt.
+ eapply rm_eq_lt_compat; eassumption.
+Qed.
 
- rewrite <- Hxy, Hs2 in Hb1.
- rewrite Hzt, Ht1 in Hb1; discriminate Hb1.
+Add Parametric Morphism : rm_le
+  with signature rm_eq ==> rm_eq ==> iff
+  as rm_le_morph.
+Proof.
+intros x y Hxy z t Hzt.
+split; intros H.
+ eapply rm_eq_le_compat; eassumption.
+
+ symmetry in Hxy, Hzt.
+ eapply rm_eq_le_compat; eassumption.
+Qed.
+
+Add Parametric Morphism : rm_gt
+  with signature rm_eq ==> rm_eq ==> iff
+  as rm_gt_morph.
+Proof.
+intros x y Hxy z t Hzt.
+split; intros H.
+ eapply rm_eq_gt_compat; eassumption.
+
+ symmetry in Hxy, Hzt.
+ eapply rm_eq_gt_compat; eassumption.
 Qed.
 
 Add Parametric Morphism : rm_ge
@@ -4893,22 +4986,6 @@ split; intros H.
  eapply rm_eq_ge_compat; eassumption.
 
  symmetry in Hxy, Hzt.
- eapply rm_eq_ge_compat; eassumption.
-Qed.
-
-Add Parametric Morphism : rm_le
-  with signature rm_eq ==> rm_eq ==> iff
-  as rm_le_morph.
-Proof.
-intros x y Hxy z t Hzt.
-split; intros H.
- apply rm_ge_le_iff in H.
- apply rm_ge_le_iff.
- eapply rm_eq_ge_compat; eassumption.
-
- symmetry in Hxy, Hzt.
- apply rm_ge_le_iff in H.
- apply rm_ge_le_iff.
  eapply rm_eq_ge_compat; eassumption.
 Qed.
 
