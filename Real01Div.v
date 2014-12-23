@@ -279,10 +279,11 @@ destruct i; simpl.
        rewrite Ht1, Hy1 in Hi; discriminate Hi.
 
        destruct (lt_eq_lt_dec dj1 dj3) as [[H1| H1]| H1].
-        rewrite Hn3 in Ht1; [ idtac | assumption ].
-        discriminate Ht1.
+        rewrite Hn3 in Ht1; [ discriminate Ht1 | assumption ].
 
         subst dj3.
+        pose proof (Hn2 (S dj4)) as H.
+        rewrite Nat.sub_0_r, Ht4 in H; discriminate H.
 bbb.
 
 Theorem I_div_0_l : ∀ x, (x ≠ 0)%I → (0 / x = 0)%I.
