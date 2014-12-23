@@ -5409,7 +5409,34 @@ destruct s3 as [dj3| ].
   symmetry; apply neq_negb.
   symmetry in Heq, Hs3, Hs4.
   eapply fst_same_opp_some_none; eassumption.
-bbb.
+
+  remember Hs4 as H; clear HeqH.
+  apply fst_same_sym_iff in H; simpl in H.
+  rename H into Hn4.
+  destruct s1 as [dj1| ].
+   remember Hs1 as H; clear HeqH.
+   apply fst_same_sym_iff in H; simpl in H.
+   destruct H as (Hn1, Ht1).
+   rewrite Ht1, xorb_false_r in Hi.
+   destruct s2 as [dj2| ].
+    remember Hs2 as H; clear HeqH.
+    apply fst_same_sym_iff in H; simpl in H.
+    destruct H as (Hn2, Ht2).
+    rewrite Ht2, xorb_false_r in Hi.
+    rewrite Hi; reflexivity.
+
+    remember Hs2 as H; clear HeqH.
+    apply fst_same_sym_iff in H; simpl in H.
+    rename H into Hn2.
+    pose proof (Hn4 O) as H.
+    rewrite Hn2 in H; discriminate H.
+
+   remember Hs1 as H; clear HeqH.
+   apply fst_same_sym_iff in H; simpl in H.
+   rename H into Hn1.
+   pose proof (Hn3 O) as H.
+   rewrite Hn1 in H; discriminate H.
+Qed.
 
 Add Parametric Morphism : rm_sub
   with signature rm_eq ==> rm_eq ==> rm_eq
