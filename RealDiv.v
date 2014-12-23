@@ -1,3 +1,5 @@
+(* division in ℝ *)
+
 Require Import Utf8 QArith NPeano.
 Require Import Real01Add RealAdd.
 
@@ -12,11 +14,11 @@ Fixpoint two_power n :=
   end.
 
 Definition rm_mul_2 x := {| rm i := x.[S i] |}.
-Arguments rm_mul_2 x%rm.
+Arguments rm_mul_2 x%I.
 
 Definition rm_div_2_inc x b :=
   {| rm i := if zerop i then b else x.[i-1] |}.
-Arguments rm_div_2_inc x%rm _.
+Arguments rm_div_2_inc x%I _.
 
 Definition re_div_2 x :=
   {| re_int := re_int x / 2;
@@ -25,7 +27,7 @@ Arguments re_div_2 x%R.
 
 Fixpoint rm_equiv_div m x y :=
   match m with
-  | O => (0%rm, 0%rm)
+  | O => (0%I, 0%I)
   | S m1 =>
       let x2 := re_div_2 x in
       let y2 := re_div_2 y in
@@ -34,7 +36,7 @@ Fixpoint rm_equiv_div m x y :=
       else
         rm_equiv_div m1 x2 y2
   end.
-Arguments rm_equiv_div m%Z x%rm y%rm.
+Arguments rm_equiv_div m%Z x%I y%I.
 
 Definition re_is_neg x := Z.ltb (re_int x) 0.
 Arguments re_is_neg x%R.
@@ -50,27 +52,27 @@ Fixpoint rm_div_eucl_i x y i :=
       let tr := rm_mul_2 r in
       if rm_lt_dec tr y then (false, tr) else (true, rm_sub tr y)
   end.
-Arguments rm_div_eucl_i x%rm y%rm i%nat.
+Arguments rm_div_eucl_i x%I y%I i%nat.
 
 Definition rm_div_rem_i x y i := snd (rm_div_eucl_i x y i).
-Arguments rm_div_rem_i x%rm y%rm i%nat.
+Arguments rm_div_rem_i x%I y%I i%nat.
 
 Definition rm_div_i x y i := fst (rm_div_eucl_i (rm_mul_2 x) y i).
-Arguments rm_div_i x%rm y%rm i%nat.
+Arguments rm_div_i x%I y%I i%nat.
 
 Definition rm_div x y := {| rm := rm_div_i x y |}.
-Arguments rm_div x%rm y%rm.
+Arguments rm_div x%I y%I.
 
 Fixpoint rm_eucl_div_loop m x y :=
   match m with
-  | O => (O, 0%rm)
+  | O => (O, 0%I)
   | S m1 =>
       if rm_lt_dec x y then (O, x)
       else
         let (q, r) := rm_eucl_div_loop m1 (rm_sub x y) y in
         (S q, r)
   end.
-Arguments rm_eucl_div_loop m%nat x%rm y%rm.
+Arguments rm_eucl_div_loop m%nat x%I y%I.
 
 Definition rm_eucl_div x y :=
   match fst_same x rm_ones 0 with
@@ -87,7 +89,7 @@ Definition rm_eucl_div x y :=
       end
   | None => (O, y)
   end.
-Arguments rm_eucl_div x%rm y%rm.
+Arguments rm_eucl_div x%I y%I.
 
 Definition max_iter_int_part ax ay := Z.to_nat (re_int ax + re_int ay + 1).
 
@@ -106,7 +108,7 @@ Definition re_one := {| re_int := 1; re_frac := 0 |}.
 
 Notation "1" := re_one : R_scope.
 Notation "x / y" := (re_div x y) : R_scope.
-Notation "x / y" := (rm_div x y) : rm_scope.
+Notation "x / y" := (rm_div x y) : I_scope.
 
 (* *)
 
@@ -121,7 +123,7 @@ rewrite H in HH.
 revert HH; apply lt_irrefl.
 Qed.
 
-Theorem rm_div_2_0_false : (rm_div_2_inc 0 false = 0)%rm.
+Theorem rm_div_2_0_false : (rm_div_2_inc 0 false = 0)%I.
 Proof.
 unfold rm_eq; simpl; intros i.
 unfold rm_add_i; simpl.
@@ -148,7 +150,7 @@ destruct H as (H, _).
 apply IHn; assumption.
 Qed.
 
-Theorem rm_mul_2_0 : (rm_mul_2 0 = 0)%rm.
+Theorem rm_mul_2_0 : (rm_mul_2 0 = 0)%I.
 Proof.
 unfold rm_eq; simpl; intros i.
 unfold rm_add_i; simpl.
@@ -280,12 +282,12 @@ induction i.
    rewrite IHi, Hzt; reflexivity.
 Qed.
 
-Theorem rm_div_rem_i_0_l : ∀ x i, (x ≠ 0)%rm → (rm_div_rem_i 0 x i = 0)%rm.
+Theorem rm_div_rem_i_0_l : ∀ x i, (x ≠ 0)%I → (rm_div_rem_i 0 x i = 0)%I.
 Proof.
 intros x i Hx.
 induction i.
  unfold rm_div_rem_i; simpl.
- destruct (rm_lt_dec 0%rm x) as [H1| H1]; [ reflexivity | idtac ].
+ destruct (rm_lt_dec 0%I x) as [H1| H1]; [ reflexivity | idtac ].
  apply rm_ge_le_iff, rm_le_0_r in H1; contradiction.
 
  unfold rm_div_rem_i; simpl.
@@ -301,7 +303,7 @@ induction i.
   apply rm_ge_le_iff, rm_le_0_r in H1; contradiction.
 Qed.
 
-Theorem rm_div_0_l : ∀ x, (x ≠ 0)%rm → (0 / x = 0)%rm.
+Theorem rm_div_0_l : ∀ x, (x ≠ 0)%I → (0 / x = 0)%I.
 Proof.
 intros x Hx.
 unfold rm_eq; simpl; intros i.

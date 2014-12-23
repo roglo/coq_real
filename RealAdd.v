@@ -6,7 +6,7 @@ Set Implicit Arguments.
 Open Scope Z_scope.
 
 Record real := mkre { re_int : Z; re_frac : real_mod_1 }.
-Arguments mkre _%Z _%rm.
+Arguments mkre _%Z _%I.
 
 Delimit Scope R_scope with R.
 Arguments re_int _%R.
@@ -26,12 +26,12 @@ Notation "0" := re_zero : R_scope.
 
 Definition re_norm x :=
   {| re_int := re_int x + b2z (carry (re_frac x) 0 0);
-     re_frac := (re_frac x + 0)%rm |}.
+     re_frac := (re_frac x + 0)%I |}.
 Arguments re_norm x%R.
 
 Definition re_eq x y :=
   re_int (re_norm x) = re_int (re_norm y) ∧
-  (re_frac x = re_frac y)%rm.
+  (re_frac x = re_frac y)%I.
 Arguments re_eq x%R y%R.
 
 Definition re_opp x := {| re_int := - re_int x - 1; re_frac := - re_frac x |}.
@@ -89,11 +89,11 @@ Qed.
 
 (* neutral element *)
 
-Theorem carry_norm_add_0_r : ∀ x, carry (x + 0%rm) 0 0 = false.
+Theorem carry_norm_add_0_r : ∀ x, carry (x + 0%I) 0 0 = false.
 Proof.
 intros x.
 unfold carry; simpl.
-remember (fst_same (x + 0%rm) 0 0) as s eqn:Hs .
+remember (fst_same (x + 0%I) 0 0) as s eqn:Hs .
 apply fst_same_sym_iff in Hs; simpl in Hs.
 destruct s as [j| ].
  destruct Hs as (_, Hs); rewrite Hs; reflexivity.
@@ -155,7 +155,7 @@ Qed.
 (* compatibility with equality *)
 
 Theorem case_4 : ∀ x y z dx dy,
-  (x = y)%rm
+  (x = y)%I
   → fst_same x 0 0 = Some dx
   → fst_same y 0 0 = Some dy
   → carry x z 0 = true
@@ -793,7 +793,7 @@ destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
 Qed.
 
 Theorem case_5 : ∀ x y z dx dy,
-  (x = y)%rm
+  (x = y)%I
   → fst_same x 0 0 = Some dx
   → fst_same y 0 0 = Some dy
   → carry x z 0 = false
@@ -1369,7 +1369,7 @@ Theorem case_6 : ∀ x y z a b c1 c2 c3 c4 dx,
   Some dx = fst_same x 0 0
   → None = fst_same y 0 0
   → a = b + 1
-  → (x = y)%rm
+  → (x = y)%I
   → carry x z 0 = c1
   → carry (x + z) 0 0 = c2
   → carry y z 0 = c3
@@ -1811,13 +1811,13 @@ remember (re_int y0) as yi.
 remember (re_int z0) as zi.
 rename x0 into x1; rename y0 into y1; rename z0 into z1.
 rename x into x0; rename y into y0; rename z into z0.
-remember (x0 + 0)%rm as x.
-remember (y0 + 0)%rm as y.
-remember (z0 + 0)%rm as z.
-remember (carry (x + (y + z))%rm 0%rm (0)) as c1 eqn:Hc1 .
-remember (carry (x + y + z)%rm 0%rm (0)) as c2 eqn:Hc2 .
-remember (carry x (y + z)%rm (0)) as c3 eqn:Hc3 .
-remember (carry (x + y)%rm z (0)) as c4 eqn:Hc4 .
+remember (x0 + 0)%I as x.
+remember (y0 + 0)%I as y.
+remember (z0 + 0)%I as z.
+remember (carry (x + (y + z))%I 0%I (0)) as c1 eqn:Hc1 .
+remember (carry (x + y + z)%I 0%I (0)) as c2 eqn:Hc2 .
+remember (carry x (y + z)%I (0)) as c3 eqn:Hc3 .
+remember (carry (x + y)%I z (0)) as c4 eqn:Hc4 .
 remember (carry y z (0)) as c5 eqn:Hc5 .
 remember (carry x y (0)) as c6 eqn:Hc6 .
 symmetry in Hc1, Hc2, Hc3, Hc4, Hc5, Hc6.
@@ -1876,7 +1876,7 @@ split; simpl.
  rewrite Z.add_comm, Z.add_assoc.
  f_equal.
  unfold carry; simpl.
- remember (fst_same (re_frac x + 0%rm) 0 0) as s1 eqn:Hs1 .
+ remember (fst_same (re_frac x + 0%I) 0 0) as s1 eqn:Hs1 .
  apply fst_same_sym_iff in Hs1; simpl in Hs1.
  destruct s1 as [dj1| ].
   destruct Hs1 as (Hn1, Ht1).
@@ -1911,7 +1911,7 @@ destruct (Z_zerop (re_int y)) as [H1| H1].
   unfold rm_eq in H2; simpl in H2.
   unfold carry; simpl.
   rewrite fst_same_diag.
-  remember (fst_same (re_frac x + 0%rm) 0 0) as s1 eqn:Hs1 .
+  remember (fst_same (re_frac x + 0%I) 0 0) as s1 eqn:Hs1 .
   apply fst_same_sym_iff in Hs1; simpl in Hs1.
   destruct s1; [ destruct Hs1; assumption | exfalso ].
   pose proof (not_rm_add_0_inf_1 (re_frac x) 0) as H.
@@ -2001,7 +2001,7 @@ split; intros H.
  rewrite Hi.
  remember (re_frac x) as xf.
  remember (re_frac y) as yf.
- remember (fst_same (xf + 0%rm) (- (yf + 0)%rm) 0) as s1 eqn:Hs1 .
+ remember (fst_same (xf + 0%I) (- (yf + 0)%I) 0) as s1 eqn:Hs1 .
  destruct s1 as [dj1| ]; [ exfalso | reflexivity ].
  subst xf yf.
  apply fst_same_sym_iff in Hs1; simpl in Hs1.
