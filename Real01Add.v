@@ -5443,10 +5443,9 @@ Add Parametric Morphism : rm_sub
   as rm_sub_morph.
 Proof.
 intros x y Hxy z d Hcd.
-apply rm_add_compat; [ assumption | idtac ].
-unfold rm_eq; simpl; intros.
-unfold rm_eq in Hcd; simpl in Hcd.
-bbb.
+unfold rm_sub.
+rewrite Hxy, Hcd; reflexivity.
+Qed.
 
 Theorem rm_eq_compare_compat : ∀ x y z t,
   (x = y)%rm
