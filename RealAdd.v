@@ -5,7 +5,7 @@ Set Implicit Arguments.
 
 Open Scope Z_scope.
 
-Record real := mkre { R_int : Z; R_frac : I }.
+Record ℝ := mkre { R_int : Z; R_frac : I }.
 Arguments mkre _%Z _%I.
 
 Delimit Scope R_scope with R.
