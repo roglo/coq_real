@@ -224,6 +224,67 @@ induction i.
   apply I_ge_le_iff, I_le_0_r in H1; contradiction.
 Qed.
 
+Add Parametric Morphism : I_div_2_inc
+  with signature I_eq ==> eq ==> I_eq
+  as I_div_2_inc_morph.
+Proof.
+intros x y Hxy b.
+unfold I_eq; simpl; intros i.
+pose proof (Hxy i) as H; simpl in H.
+unfold I_add_i in H; simpl in H.
+unfold I_add_i; simpl.
+do 2 rewrite xorb_false_r in H.
+do 2 rewrite xorb_false_r.
+rename H into Hi.
+destruct i; simpl.
+ f_equal.
+ unfold carry; simpl.
+ remember (fst_same (I_div_2_inc x b) 0 1) as s1 eqn:Hs1 .
+ remember (fst_same (I_div_2_inc y b) 0 1) as s2 eqn:Hs2 .
+ destruct s1 as [dj1| ].
+  rewrite Nat.sub_0_r.
+  remember Hs1 as H; clear HeqH.
+  apply fst_same_sym_iff in H; simpl in H.
+  destruct H as (Hn1, Ht1); rewrite Nat.sub_0_r in Ht1.
+  rewrite Ht1.
+  destruct s2 as [dj2| ].
+   remember Hs2 as H; clear HeqH.
+   apply fst_same_sym_iff in H; simpl in H.
+   destruct H as (Hn2, Ht2); rewrite Ht2; reflexivity.
+
+   exfalso.
+   remember Hs2 as H; clear HeqH.
+   apply fst_same_sym_iff in H; simpl in H.
+   rename H into Hn2.
+   pose proof (Hn2 dj1) as Hy1.
+   rewrite Nat.sub_0_r in Hy1.
+   remember Hy1 as H; clear HeqH.
+   symmetry in Hxy.
+   eapply I_eq_neq_if in H; try eassumption.
+   destruct H as [(Hyi, Hxi)| (Hyi, Hxi)]; simpl in Hxi, Hyi.
+    unfold carry in Hi; simpl in Hi.
+    remember (fst_same x 0 1) as s3 eqn:Hs3 .
+    remember (fst_same y 0 1) as s4 eqn:Hs4 .
+    destruct s3 as [dj3| ].
+     remember Hs3 as H; clear HeqH.
+     apply fst_same_sym_iff in H; simpl in H.
+     destruct H as (Hn3, Ht3).
+     rewrite Ht3, xorb_false_r in Hi.
+     destruct s4 as [dj4| ].
+      remember Hs4 as H; clear HeqH.
+      apply fst_same_sym_iff in H; simpl in H.
+      destruct H as (Hn4, Ht4).
+      rewrite Ht4, xorb_false_r in Hi.
+      destruct dj1.
+       rewrite Ht1, Hy1 in Hi; discriminate Hi.
+
+       destruct (lt_eq_lt_dec dj1 dj3) as [[H1| H1]| H1].
+        rewrite Hn3 in Ht1; [ idtac | assumption ].
+        discriminate Ht1.
+
+        subst dj3.
+bbb.
+
 Theorem I_div_0_l : ∀ x, (x ≠ 0)%I → (0 / x = 0)%I.
 Proof.
 intros x Hx.

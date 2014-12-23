@@ -51,6 +51,39 @@ Notation "x / y" := (R_div x y) : R_scope.
 
 (* *)
 
+Definition I_equiv_div_fst m x y := fst (I_equiv_div m x y).
+
+Theorem fold_I_equiv_div_fst : ∀ m x y,
+  fst (I_equiv_div m x y) = I_equiv_div_fst m x y.
+Proof. reflexivity. Qed.
+
+Add Parametric Morphism : I_equiv_div_fst
+  with signature eq ==> R_eq ==> R_eq ==> I_eq
+  as I_equiv_div_fst_morph.
+Proof.
+intros m x y Hxy z t Hzt.
+unfold I_equiv_div_fst.
+destruct m; [ reflexivity | simpl ].
+remember ((R_int x =? 0) && (R_int z =? 0)) as c1 eqn:Hc1 .
+remember ((R_int y =? 0) && (R_int t =? 0)) as c2 eqn:Hc2 .
+symmetry in Hc1, Hc2.
+destruct c1; simpl.
+ apply andb_true_iff in Hc1.
+ destruct Hc1 as (Hx, Hz).
+ apply Z.eqb_eq in Hx.
+ apply Z.eqb_eq in Hz.
+ rewrite Hx; simpl.
+ destruct c2; simpl.
+  apply andb_true_iff in Hc2.
+  destruct Hc2 as (Hy, Ht).
+  apply Z.eqb_eq in Hy.
+  apply Z.eqb_eq in Ht.
+  rewrite Hy; simpl.
+  unfold R_eq in Hxy; simpl in Hxy.
+  destruct Hxy as (Hixy, Hfxy).
+bbb.
+rewrite Hfxy.
+
 Theorem Z_nlt_1_0 : (1 <? 0) = false.
 Proof. reflexivity. Qed.
 
@@ -61,6 +94,35 @@ pose proof Pos2Nat.is_pos a as HH.
 rewrite H in HH.
 revert HH; apply lt_irrefl.
 Qed.
+
+Theorem R_div_2_0 : (R_div_2 0 = 0)%R.
+Proof.
+unfold R_eq; simpl.
+split; [ idtac | apply I_div_2_0_false ].
+f_equal.
+rewrite carry_diag; simpl.
+unfold carry; simpl.
+remember (fst_same (I_div_2_inc 0 false) 0 0) as s1 eqn:Hs1 .
+apply fst_same_sym_iff in Hs1; simpl in Hs1.
+destruct s1 as [di1| ]; [ idtac | exfalso ].
+ destruct Hs1 as (Hn1, Ht1); assumption.
+
+ pose proof (Hs1 O) as H.
+ discriminate H.
+Qed.
+
+Theorem zzz : ∀ y m, (I_equiv_div_fst m 0%R y = 0)%I.
+Proof.
+intros y m.
+revert y.
+induction m; intros; [ reflexivity | simpl ].
+unfold I_equiv_div_fst; simpl.
+remember (R_int y =? 0) as c eqn:Hc .
+symmetry in Hc.
+destruct c; simpl; [ apply I_div_2_0_false | idtac ].
+rewrite fold_I_equiv_div_fst.
+bbb.
+rewrite R_div_2_0.
 
 Theorem R_div_0_l : ∀ x, (0 / x = 0)%R.
 Proof.
