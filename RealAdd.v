@@ -5,83 +5,83 @@ Set Implicit Arguments.
 
 Open Scope Z_scope.
 
-Record real := mkre { re_int : Z; re_frac : real_mod_1 }.
+Record real := mkre { R_int : Z; R_frac : I }.
 Arguments mkre _%Z _%I.
 
 Delimit Scope R_scope with R.
-Arguments re_int _%R.
-Arguments re_frac _%R.
+Arguments R_int _%R.
+Arguments R_frac _%R.
 
 Definition b2z (b : bool) := if b then 1 else 0.
 
-Definition re_add x y :=
-  {| re_int := re_int x + re_int y + b2z (carry (re_frac x) (re_frac y) 0);
-     re_frac := rm_add (re_frac x) (re_frac y) |}.
-Arguments re_add x%R y%R.
+Definition R_add x y :=
+  {| R_int := R_int x + R_int y + b2z (carry (R_frac x) (R_frac y) 0);
+     R_frac := I_add (R_frac x) (R_frac y) |}.
+Arguments R_add x%R y%R.
 
-Definition re_zero := {| re_int := 0; re_frac := rm_zero |}.
+Definition R_zero := {| R_int := 0; R_frac := I_zero |}.
 
-Notation "x + y" := (re_add x y) : R_scope.
-Notation "0" := re_zero : R_scope.
+Notation "x + y" := (R_add x y) : R_scope.
+Notation "0" := R_zero : R_scope.
 
-Definition re_norm x :=
-  {| re_int := re_int x + b2z (carry (re_frac x) 0 0);
-     re_frac := (re_frac x + 0)%I |}.
-Arguments re_norm x%R.
+Definition R_norm x :=
+  {| R_int := R_int x + b2z (carry (R_frac x) 0 0);
+     R_frac := (R_frac x + 0)%I |}.
+Arguments R_norm x%R.
 
-Definition re_eq x y :=
-  re_int (re_norm x) = re_int (re_norm y) ∧
-  (re_frac x = re_frac y)%I.
-Arguments re_eq x%R y%R.
+Definition R_eq x y :=
+  R_int (R_norm x) = R_int (R_norm y) ∧
+  (R_frac x = R_frac y)%I.
+Arguments R_eq x%R y%R.
 
-Definition re_opp x := {| re_int := - re_int x - 1; re_frac := - re_frac x |}.
-Definition re_sub x y := re_add x (re_opp y).
-Arguments re_opp x%R.
-Arguments re_sub x%R y%R.
+Definition R_opp x := {| R_int := - R_int x - 1; R_frac := - R_frac x |}.
+Definition R_sub x y := R_add x (R_opp y).
+Arguments R_opp x%R.
+Arguments R_sub x%R y%R.
 
-Notation "x = y" := (re_eq x y) : R_scope.
-Notation "x ≠ y" := (¬ re_eq x y) : R_scope.
-Notation "- x" := (re_opp x) : R_scope.
-Notation "x - y" := (re_sub x y) : R_scope.
+Notation "x = y" := (R_eq x y) : R_scope.
+Notation "x ≠ y" := (¬ R_eq x y) : R_scope.
+Notation "- x" := (R_opp x) : R_scope.
+Notation "x - y" := (R_sub x y) : R_scope.
 
-Theorem fold_re_sub : ∀ x y, (x + - y)%R = (x - y)%R.
+Theorem fold_R_sub : ∀ x y, (x + - y)%R = (x - y)%R.
 Proof. intros; reflexivity. Qed.
 
 (* equality is equivalence relation *)
 
-Theorem re_eq_refl : reflexive _ re_eq.
+Theorem R_eq_refl : reflexive _ R_eq.
 Proof.
 intros x; split; reflexivity.
 Qed.
 
-Theorem re_eq_sym : symmetric _ re_eq.
+Theorem R_eq_sym : symmetric _ R_eq.
 Proof.
 intros x y Hxy.
-unfold re_eq in Hxy; unfold re_eq.
+unfold R_eq in Hxy; unfold R_eq.
 destruct Hxy; split; symmetry; assumption.
 Qed.
 
-Theorem re_eq_trans : transitive _ re_eq.
+Theorem R_eq_trans : transitive _ R_eq.
 Proof.
 intros x y z Hxy Hyz.
 destruct Hxy, Hyz.
-unfold re_eq.
+unfold R_eq.
 split; etransitivity; eassumption.
 Qed.
 
-Add Parametric Relation : _ re_eq
- reflexivity proved by re_eq_refl
- symmetry proved by re_eq_sym
- transitivity proved by re_eq_trans
- as re_rel.
+Add Parametric Relation : _ R_eq
+ reflexivity proved by R_eq_refl
+ symmetry proved by R_eq_sym
+ transitivity proved by R_eq_trans
+ as R_rel.
 
 (* commutativity *)
 
-Theorem re_add_comm : ∀ x y, (x + y = y + x)%R.
+Theorem R_add_comm : ∀ x y, (x + y = y + x)%R.
 Proof.
 intros x y.
-unfold re_eq.
-unfold re_add; simpl; split; [ idtac | apply rm_add_comm ].
+unfold R_eq.
+unfold R_add; simpl; split; [ idtac | apply I_add_comm ].
 f_equal; [ idtac | rewrite carry_comm_l; reflexivity ].
 rewrite carry_comm; f_equal.
 apply Z.add_comm.
@@ -89,7 +89,7 @@ Qed.
 
 (* neutral element *)
 
-Theorem carry_norm_add_0_r : ∀ x, carry (x + 0%I) 0 0 = false.
+Theorem carry_noI_add_0_r : ∀ x, carry (x + 0%I) 0 0 = false.
 Proof.
 intros x.
 unfold carry; simpl.
@@ -98,33 +98,33 @@ apply fst_same_sym_iff in Hs; simpl in Hs.
 destruct s as [j| ].
  destruct Hs as (_, Hs); rewrite Hs; reflexivity.
 
- pose proof (not_rm_add_0_inf_1 x 0) as H.
+ pose proof (not_I_add_0_inf_1 x 0) as H.
  contradiction.
 Qed.
 
-Theorem re_add_0_r : ∀ x, (x + 0 = x)%R.
+Theorem R_add_0_r : ∀ x, (x + 0 = x)%R.
 Proof.
 intros x.
-unfold re_eq.
-unfold re_add; simpl; split; [ idtac | apply rm_add_0_r ].
+unfold R_eq.
+unfold R_add; simpl; split; [ idtac | apply I_add_0_r ].
 rewrite Z.add_0_r.
 rewrite <- Z.add_assoc; f_equal.
-rewrite carry_norm_add_0_r, Z.add_0_r.
+rewrite carry_noI_add_0_r, Z.add_0_r.
 reflexivity.
 Qed.
 
 (* opposite *)
 
-Theorem re_sub_diag : ∀ x, (x - x = 0)%R.
+Theorem R_sub_diag : ∀ x, (x - x = 0)%R.
 Proof.
 intros x.
-unfold re_eq, re_sub, re_opp; simpl.
-split; [ idtac | rewrite fold_rm_sub, rm_sub_diag; reflexivity ].
+unfold R_eq, R_sub, R_opp; simpl.
+split; [ idtac | rewrite fold_I_sub, I_sub_diag; reflexivity ].
 unfold carry; simpl.
 rewrite fst_same_diag.
-rewrite fold_rm_sub.
+rewrite fold_I_sub.
 rewrite Z.add_sub_assoc, Z.add_opp_r, Z.sub_diag.
-remember (fst_same (re_frac x) (- re_frac x) 0) as s1 eqn:Hs1 .
+remember (fst_same (R_frac x) (- R_frac x) 0) as s1 eqn:Hs1 .
 apply fst_same_sym_iff in Hs1; simpl in Hs1.
 destruct s1 as [j1| ].
  destruct Hs1 as (Hn1, Hs1).
@@ -132,16 +132,16 @@ destruct s1 as [j1| ].
  exfalso; revert Hs1; apply no_fixpoint_negb.
 
  clear Hs1.
- remember (fst_same (re_frac x - re_frac x) 0 0) as s2 eqn:Hs2 .
+ remember (fst_same (R_frac x - R_frac x) 0 0) as s2 eqn:Hs2 .
  apply fst_same_sym_iff in Hs2; simpl in Hs2.
  destruct s2 as [j2| ].
   destruct Hs2 as (Hn2, Hs2).
   rewrite Hs2; reflexivity.
 
   pose proof (Hs2 O) as H.
-  unfold rm_add_i in H; simpl in H.
+  unfold I_add_i in H; simpl in H.
   unfold carry in H; simpl in H.
-  remember (fst_same (re_frac x) (- re_frac x) 1) as s3 eqn:Hs3 .
+  remember (fst_same (R_frac x) (- R_frac x) 1) as s3 eqn:Hs3 .
   destruct s3 as [dj3| ].
    apply fst_same_sym_iff in Hs3; simpl in Hs3.
    destruct Hs3 as (Hn3, Hs3).
@@ -171,13 +171,13 @@ remember Hsy as H; clear HeqH.
 apply fst_same_iff in H; simpl in H.
 destruct H as (Hny, Hty).
 remember Hf_v as H; clear HeqH.
-unfold rm_eq in H; simpl in H.
+unfold I_eq in H; simpl in H.
 rename H into Hf.
 destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
   remember H1 as H; clear HeqH.
   apply Hny in H.
   symmetry in Hf_v.
-  eapply rm_eq_neq_if in H; try eassumption.
+  eapply I_eq_neq_if in H; try eassumption.
   destruct H as [(Hyx, Hxx)| (Hyx, Hxx)]; simpl in Hyx, Hxx.
    pose proof (Hyx (dy - dx)%nat) as H.
    apply Nat.lt_le_incl in H1.
@@ -392,7 +392,7 @@ destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
       apply Nat.succ_lt_mono in H.
       apply Hn3 in H.
       rewrite Ht1 in H; simpl in H.
-      eapply rm_eq_neq_if in H; try eassumption.
+      eapply I_eq_neq_if in H; try eassumption.
       destruct H as [(Hyx, Hxx)| (Hyx, Hxx)]; simpl in Hyx, Hxx.
        remember H1 as H; clear HeqH.
        unfold carry in Hc4; simpl in Hc4.
@@ -402,7 +402,7 @@ destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
        destruct Hs2 as (Hs2, _).
        destruct di2.
         clear Hs2.
-        unfold rm_add_i in Hc4.
+        unfold I_add_i in Hc4.
         rewrite Hn3 in Hc4; [ idtac | apply Nat.lt_0_succ ].
         rewrite negb_xorb_diag_l, xorb_true_l in Hc4.
         apply negb_false_iff in Hc4.
@@ -414,7 +414,7 @@ destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
 
         clear H.
         pose proof (Hf di1) as H.
-        unfold rm_add_i in H; simpl in H.
+        unfold I_add_i in H; simpl in H.
         rewrite Hn1 in H; [ idtac | apply Nat.lt_succ_diag_r ].
         apply Nat.lt_lt_succ_r in H1.
         rewrite Hn3 in H; [ idtac | assumption ].
@@ -450,10 +450,10 @@ destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
       apply Hn1 in H.
       rewrite Ht3 in H; simpl in H.
       remember H as Hx1; clear HeqHx1.
-      eapply rm_eq_neq_if in H; try eassumption.
+      eapply I_eq_neq_if in H; try eassumption.
       destruct H as [(Hxy, Hyy)| (Hxy, Hyy)]; simpl in Hxy, Hyy.
        pose proof (Hf di3) as H.
-       unfold rm_add_i in H; simpl in H.
+       unfold I_add_i in H; simpl in H.
        rewrite Hn3 in H; [ idtac | apply Nat.lt_succ_diag_r ].
        apply Nat.lt_lt_succ_r in H1.
        rewrite Hn1 in H; [ idtac | assumption ].
@@ -487,13 +487,13 @@ destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
    pose proof (Hxz di3) as Hx1.
    rewrite Ht3 in Hx1; simpl in Hx1.
    remember Hx1 as H; clear HeqH.
-   eapply rm_eq_neq_if in H; try eassumption.
+   eapply I_eq_neq_if in H; try eassumption.
    destruct H as [(Hxy, Hyy)| (Hxy, Hyy)]; simpl in Hxy, Hyy.
     destruct di3.
      simpl in Hxy; rewrite Hxy in Htx; discriminate Htx.
 
      pose proof (Hf di3) as H.
-     unfold rm_add_i in H; simpl in H.
+     unfold I_add_i in H; simpl in H.
      rewrite Hn3 in H; [ idtac | apply Nat.lt_succ_diag_r ].
      rewrite Hxz in H.
      rewrite xorb_false_r in H.
@@ -524,7 +524,7 @@ destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
      rewrite carry_before_inf_relay in Hc4; [ discriminate Hc4 | idtac ].
      apply fst_same_iff; simpl.
      intro j.
-     unfold rm_add_i.
+     unfold I_add_i.
      destruct (lt_eq_lt_dec j (S di3)) as [[H1| H1]| H1].
       rewrite Hn3; [ idtac | assumption ].
       rewrite negb_xorb_diag_l.
@@ -580,7 +580,7 @@ destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
 
   remember H1 as H; clear HeqH.
   apply Hnx in H.
-  eapply rm_eq_neq_if in H; try eassumption.
+  eapply I_eq_neq_if in H; try eassumption.
   destruct H as [(Hxy, Hyy)| (Hxy, Hyy)]; simpl in Hxy, Hyy.
    pose proof (Hxy (dx - dy)%nat) as H.
    apply Nat.lt_le_incl in H1.
@@ -647,7 +647,7 @@ destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
       apply fst_same_sym_iff in Hs4; simpl in Hs4.
       destruct Hs4 as (Hn4, _).
       destruct di4.
-       unfold rm_add_i in Hc4.
+       unfold I_add_i in Hc4.
        destruct dy.
         rewrite Hc3, Ht3, xorb_false_l in Hc4.
         unfold carry in Hc4; simpl in Hc4.
@@ -679,7 +679,7 @@ destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
          rewrite Hs5 in Hty.
          rewrite Ht3 in Hty; discriminate Hty.
 
-       unfold rm_add_i in Hc4.
+       unfold I_add_i in Hc4.
        destruct dy.
         simpl in Hxy, Hyy.
         rewrite Hyy, <- Ht1, Hxy, xorb_false_l in Hc4.
@@ -810,7 +810,7 @@ remember Hsy as H; clear HeqH.
 apply fst_same_iff in H; simpl in H.
 destruct H as (Hny, Hty).
 remember Hf_v as H; clear HeqH.
-unfold rm_eq in H; simpl in H.
+unfold I_eq in H; simpl in H.
 rename H into Hf.
 unfold carry in Hc1; simpl in Hc1.
 remember (fst_same x z 0) as s1 eqn:Hs1 .
@@ -834,12 +834,12 @@ destruct (lt_eq_lt_dec dj1 dx) as [[H1| H1]| H1].
   destruct Hs2 as (Hn2, Ht2).
   rewrite Ht2 in Hc2; discriminate Hc2.
 
-  assert (∀ dj, rm_add_i x z (0 + dj) = true) as H.
+  assert (∀ dj, I_add_i x z (0 + dj) = true) as H.
    intros dj; simpl; apply Hs2.
 
    destruct dj1; [ revert H1; apply Nat.nlt_0_r | idtac ].
    pose proof (Hn1 O (Nat.lt_0_succ dj1)) as HH.
-   apply rm_add_inf_true_neq_if in H; [ idtac | assumption ].
+   apply I_add_inf_true_neq_if in H; [ idtac | assumption ].
    simpl in H.
    destruct H as (j, (Hj, (Hxz, (Hxj, (Hzj, (Hxd, Hzd)))))).
    destruct (lt_eq_lt_dec j dx) as [[H2| H2]| H2].
@@ -866,7 +866,7 @@ destruct (lt_eq_lt_dec dj1 dx) as [[H1| H1]| H1].
       rename H into Hy1.
       symmetry in Hf_v.
       remember Hy1 as H; clear HeqH.
-      eapply rm_eq_neq_if in H; try eassumption.
+      eapply I_eq_neq_if in H; try eassumption.
       destruct H as [(Hyx, Hxx)| (Hyx, Hxx)]; simpl in Hyx, Hxx.
        pose proof (Hyx (dy - dx)%nat) as H.
        apply Nat.lt_le_incl in H2.
@@ -916,7 +916,7 @@ destruct (lt_eq_lt_dec dj1 dx) as [[H1| H1]| H1].
         rewrite Ht3 in H; simpl in H.
         rename H into Hx3.
         pose proof (Hf dj3) as H.
-        unfold rm_add_i in H; simpl in H.
+        unfold I_add_i in H; simpl in H.
         do 2 rewrite xorb_false_r in H.
         rewrite Hx3, Hc3, xorb_true_l, xorb_false_l in H.
         unfold carry in H; simpl in H.
@@ -932,7 +932,7 @@ destruct (lt_eq_lt_dec dj1 dx) as [[H1| H1]| H1].
 
           clear H.
           remember Hx3 as H; clear HeqH.
-          eapply rm_eq_neq_if in H; try eassumption.
+          eapply I_eq_neq_if in H; try eassumption.
           destruct H as [(Hyx, Hxx)| (Hyx, Hxx)]; simpl in Hyx, Hxx.
            pose proof (Hyx (S dj1 - dj3)%nat) as H.
            apply Nat.lt_le_incl in H3.
@@ -951,7 +951,7 @@ destruct (lt_eq_lt_dec dj1 dx) as [[H1| H1]| H1].
          destruct Hsy3 as (Hny3, Hty3).
          clear H.
          remember Hx3 as H; clear HeqH.
-         eapply rm_eq_neq_if in H; try eassumption.
+         eapply I_eq_neq_if in H; try eassumption.
          destruct H as [(Hyx, Hxx)| (Hyx, Hxx)]; simpl in Hyx, Hxx.
           pose proof (Hyx (S dj1 - dj3)%nat) as H.
           apply Nat.lt_le_incl in H3.
@@ -968,7 +968,7 @@ destruct (lt_eq_lt_dec dj1 dx) as [[H1| H1]| H1].
 
         subst dj3.
         destruct dj4.
-         unfold rm_add_i in Hc4.
+         unfold I_add_i in Hc4.
          rewrite Hn3 in Hc4; [ idtac | apply Nat.lt_0_succ ].
          rewrite negb_xorb_diag_l, xorb_true_l in Hc4.
          apply negb_false_iff in Hc4.
@@ -995,7 +995,7 @@ destruct (lt_eq_lt_dec dj1 dx) as [[H1| H1]| H1].
           rewrite Ht3 in Hc3; discriminate Hc3.
 
          destruct (lt_eq_lt_dec dj4 dj1) as [[H3| H3]| H3].
-          unfold rm_add_i in Hc4.
+          unfold I_add_i in Hc4.
           remember H3 as H; clear HeqH.
           apply Nat.succ_lt_mono in H.
           rewrite Hn3 in Hc4; [ idtac | assumption ].
@@ -1039,7 +1039,7 @@ destruct (lt_eq_lt_dec dj1 dx) as [[H1| H1]| H1].
            rewrite Ht1, Hc3 in H; discriminate H.
 
           subst dj4.
-          unfold rm_add_i in Hc4.
+          unfold I_add_i in Hc4.
           rewrite Hc3, Ht3, xorb_false_l in Hc4.
           unfold carry in Hc4; simpl in Hc4.
           remember (fst_same y z (S (S dj1))) as s5 eqn:Hs5 .
@@ -1050,7 +1050,7 @@ destruct (lt_eq_lt_dec dj1 dx) as [[H1| H1]| H1].
           rewrite <- Nat.add_succ_r, <- Nat.add_succ_l in Ht5.
           rewrite Hzd in Ht5; discriminate Ht5.
 
-          unfold rm_add_i in Hc4.
+          unfold I_add_i in Hc4.
           remember y .[ S dj4] as y4 eqn:Hy4 .
           symmetry in Hy4.
           destruct y4.
@@ -1078,10 +1078,10 @@ destruct (lt_eq_lt_dec dj1 dx) as [[H1| H1]| H1].
            rewrite Nat.add_comm, Nat.add_sub in H.
            rename H into Hx4.
            remember Hx4 as H; clear HeqH.
-           eapply rm_eq_neq_if in H; try eassumption.
+           eapply I_eq_neq_if in H; try eassumption.
            destruct H as [(Hyx, Hxx)| (Hyx, Hxx)]; simpl in Hyx, Hxx.
             pose proof (Hf (S dj1)) as H.
-            unfold rm_add_i in H; simpl in H.
+            unfold I_add_i in H; simpl in H.
             do 2 rewrite xorb_false_r in H.
             rewrite Hc1, Hc3 in H.
             do 2 rewrite xorb_false_l in H.
@@ -1123,7 +1123,7 @@ destruct (lt_eq_lt_dec dj1 dx) as [[H1| H1]| H1].
       apply Hnx in H.
       rename H into Hx1.
       remember Hx1 as H; clear HeqH.
-      eapply rm_eq_neq_if in H; try eassumption.
+      eapply I_eq_neq_if in H; try eassumption.
       destruct H as [(Hyx, Hxx)| (Hyx, Hxx)]; simpl in Hyx, Hxx.
        pose proof (Hyx (dx - dy)%nat) as H.
        apply Nat.lt_le_incl in H2.
@@ -1145,7 +1145,7 @@ destruct (lt_eq_lt_dec dj1 dx) as [[H1| H1]| H1].
   rename H into Hy1.
   symmetry in Hf_v.
   remember Hy1 as H; clear HeqH.
-  eapply rm_eq_neq_if in H; try eassumption.
+  eapply I_eq_neq_if in H; try eassumption.
   destruct H as [(Hyx, Hxx)| (Hyx, Hxx)]; simpl in Hyx, Hxx.
    pose proof (Hyx (dy - dx)%nat) as H.
    apply Nat.lt_le_incl in H1.
@@ -1170,12 +1170,12 @@ destruct (lt_eq_lt_dec dj1 dx) as [[H1| H1]| H1].
      destruct Hs2 as (Hn2, Ht2).
      rewrite Ht2 in Hc2; discriminate Hc2.
 
-     assert (∀ dj, rm_add_i x z (0 + dj) = true) as H.
+     assert (∀ dj, I_add_i x z (0 + dj) = true) as H.
       intros dj; simpl; apply Hs2.
 
       destruct dx.
        rewrite <- Ht1 in Hc1.
-       apply rm_add_inf_true_eq_if in H; [ idtac | assumption ].
+       apply I_add_inf_true_eq_if in H; [ idtac | assumption ].
        simpl in H; destruct H as (Hxd, Hyd).
        unfold carry in Hc3; simpl in Hc3.
        remember (fst_same y z 0) as s3 eqn:Hs3 .
@@ -1190,7 +1190,7 @@ destruct (lt_eq_lt_dec dj1 dx) as [[H1| H1]| H1].
         rewrite Hyd in Ht3; discriminate Ht3.
 
        pose proof (Hn1 O (Nat.lt_0_succ dx)) as HH.
-       apply rm_add_inf_true_neq_if in H; [ idtac | assumption ].
+       apply I_add_inf_true_neq_if in H; [ idtac | assumption ].
        simpl in H.
        destruct H as (j, (Hj, (Hxz, (Hxj, (Hzj, (Hxd, Hzd)))))).
        destruct (lt_eq_lt_dec j (S dx)) as [[H1| H1]| H1].
@@ -1227,14 +1227,14 @@ destruct (lt_eq_lt_dec dj1 dx) as [[H1| H1]| H1].
    destruct Hs2 as (Hn2, Ht2).
    rewrite Ht2 in Hc2; discriminate Hc2.
 
-   assert (∀ dj, rm_add_i x z (dx + dj) = true) as H.
+   assert (∀ dj, I_add_i x z (dx + dj) = true) as H.
     intros dj; apply Hs2.
 
     rewrite <- Ht1 in Hc1.
-    apply rm_add_inf_true_eq_if in H; [ idtac | assumption ].
+    apply I_add_inf_true_eq_if in H; [ idtac | assumption ].
     destruct H as (Hxd, Hzd).
     pose proof (Hf dx) as H.
-    unfold rm_add_i in H; simpl in H.
+    unfold I_add_i in H; simpl in H.
     do 2 rewrite xorb_false_r in H.
     rewrite Htx, Hty in H.
     do 2 rewrite xorb_false_l in H.
@@ -1258,7 +1258,7 @@ destruct (lt_eq_lt_dec dj1 dx) as [[H1| H1]| H1].
       apply fst_same_sym_iff in Hs4; simpl in Hs4.
       destruct Hs4 as (Hn4, _).
       destruct (lt_eq_lt_dec dj4 dx) as [[H1| H1]| H1].
-       unfold rm_add_i in Hc4; simpl in Hc4.
+       unfold I_add_i in Hc4; simpl in Hc4.
        rewrite Hny in Hc4; [ idtac | assumption ].
        rewrite <- Hn1 in Hc4; [ idtac | assumption ].
        rewrite Hnx in Hc4; [ idtac | assumption ].
@@ -1286,7 +1286,7 @@ destruct (lt_eq_lt_dec dj1 dx) as [[H1| H1]| H1].
         apply Nat.le_0_l.
 
        subst dj4.
-       unfold rm_add_i in Hc4; simpl in Hc4.
+       unfold I_add_i in Hc4; simpl in Hc4.
        rewrite Hty, Ht1, xorb_false_l in Hc4.
        replace (S dx) with (S dx + 0)%nat in Hc4 by apply Nat.add_0_r.
        rewrite carry_before_relay with (di := O) in Hc4.
@@ -1305,7 +1305,7 @@ destruct (lt_eq_lt_dec dj1 dx) as [[H1| H1]| H1].
        remember (dj4 - S dx)%nat as v eqn:Hv .
        apply nat_sub_add_r in Hv; [ idtac | assumption ].
        subst dj4.
-       unfold rm_add_i in Hc4; simpl in Hc4.
+       unfold I_add_i in Hc4; simpl in Hc4.
        rewrite Hzd, Nat.add_succ_r, Hs6 in Hc4.
        remember (S (S (dx + v))) as u.
        replace u with (u + 0)%nat in Hc4 by apply Nat.add_0_r.
@@ -1327,7 +1327,7 @@ destruct (lt_eq_lt_dec dj1 dx) as [[H1| H1]| H1].
 
   pose proof (Hnx dy H1) as Hx1.
   remember Hx1 as H; clear HeqH.
-  eapply rm_eq_neq_if in H; try eassumption.
+  eapply I_eq_neq_if in H; try eassumption.
   destruct H as [(Hyx, Hxx)| (Hyx, Hxx)]; simpl in Hyx, Hxx.
    pose proof (Hyx (dx - dy)%nat) as H.
    apply Nat.lt_le_incl in H1.
@@ -1354,11 +1354,11 @@ destruct (lt_eq_lt_dec dj1 dx) as [[H1| H1]| H1].
      destruct Hs2 as (Hn2, Ht2).
      rewrite Ht2 in Hc2; discriminate Hc2.
 
-     assert (∀ dj, rm_add_i x z (S dy + dj) = true) as H.
+     assert (∀ dj, I_add_i x z (S dy + dj) = true) as H.
       intros dj; apply Hs2.
 
       rewrite <- Ht1 in Hc1.
-      apply rm_add_inf_true_eq_if in H; [ idtac | assumption ].
+      apply I_add_inf_true_eq_if in H; [ idtac | assumption ].
       destruct H as (Hxd, Hzd).
       pose proof (Hxd O) as H.
       rewrite Nat.add_succ_l, <- Nat.add_succ_r in H.
@@ -1386,7 +1386,7 @@ rename H into Hny.
 destruct dx; [ clear Hnx | idtac ].
  pose proof (Hny O) as H.
  symmetry in Hf.
- eapply rm_eq_neq_if in H; try eassumption; simpl in H.
+ eapply I_eq_neq_if in H; try eassumption; simpl in H.
  destruct H as [(Hyx, Hxx)| (Hyx, Hxx)]; simpl in Hyx, Hxx.
   clear Htx Hyx.
   simpl in Hi.
@@ -1422,7 +1422,7 @@ destruct dx; [ clear Hnx | idtac ].
     unfold carry in Hc4; simpl in Hc4.
     remember (fst_same (y + z) 0 0) as s4 eqn:Hs4 .
     destruct s4 as [dj4| ]; [ idtac | discriminate Hc4 ].
-    unfold rm_add_i in Hc4; simpl in Hc4.
+    unfold I_add_i in Hc4; simpl in Hc4.
     rewrite Hny, <- Hs1, Hxx, xorb_false_l in Hc4.
     unfold carry in Hc4; simpl in Hc4.
     remember (fst_same y z (S dj4)) as s5 eqn:Hs5 .
@@ -1453,10 +1453,10 @@ destruct dx; [ clear Hnx | idtac ].
     apply fst_same_sym_iff in Hs1; simpl in Hs1.
     destruct s1 as [dj1| ]; [ idtac | discriminate Hc1 ].
     destruct Hs1 as (Hn1, Ht1).
-    assert (∀ dj, rm_add_i x z (dj1 + dj) = true) as H.
+    assert (∀ dj, I_add_i x z (dj1 + dj) = true) as H.
      intros dj; apply Hs2.
 
-     apply rm_add_inf_true_eq_if in H; [ idtac | assumption ].
+     apply I_add_inf_true_eq_if in H; [ idtac | assumption ].
      destruct H as (Hx1, _).
      pose proof (Hxx (dj1 + 1)%nat) as H.
      rewrite Hx1 in H; discriminate H.
@@ -1483,10 +1483,10 @@ destruct dx; [ clear Hnx | idtac ].
     apply fst_same_sym_iff in Hs3; simpl in Hs3.
     destruct s3 as [dj3| ]; [ idtac | clear Hc3 ].
      destruct Hs3 as (Hn3, Ht3).
-     assert (∀ dj, rm_add_i y z (dj3 + dj) = true) as H.
+     assert (∀ dj, I_add_i y z (dj3 + dj) = true) as H.
       intros dj; apply Hs4.
 
-      apply rm_add_inf_true_eq_if in H; [ idtac | assumption ].
+      apply I_add_inf_true_eq_if in H; [ idtac | assumption ].
       destruct H as (Hy3, Hz3).
       unfold carry in Hc1; simpl in Hc1.
       remember (fst_same x z 0) as s1 eqn:Hs1 .
@@ -1498,7 +1498,7 @@ destruct dx; [ clear Hnx | idtac ].
       destruct s2 as [dj2| ]; [ idtac | discriminate Hc2 ].
       apply fst_same_sym_iff in Hs2; simpl in Hs2.
       destruct Hs2 as (Hn2, _).
-      unfold rm_add_i in Hc2; simpl in Hc2.
+      unfold I_add_i in Hc2; simpl in Hc2.
       destruct dj3.
        destruct dj1.
         rewrite Hc1, <- Ht3, Hc3 in Ht1; discriminate Ht1.
@@ -1507,7 +1507,7 @@ destruct dx; [ clear Hnx | idtac ].
         rewrite Hz3, Hc1 in Ht1; discriminate Ht1.
 
        pose proof (Hs4 O) as H.
-       unfold rm_add_i in H; simpl in H.
+       unfold I_add_i in H; simpl in H.
        rewrite Hn3 in H; [ idtac | apply Nat.lt_0_succ ].
        rewrite negb_xorb_diag_l, xorb_true_l in H.
        apply negb_true_iff in H.
@@ -1517,7 +1517,7 @@ destruct dx; [ clear Hnx | idtac ].
        rewrite Hny in H; discriminate H.
 
      pose proof (Hs4 O) as H.
-     unfold rm_add_i in H.
+     unfold I_add_i in H.
      rewrite Hs3, negb_xorb_diag_l, xorb_true_l in H.
      apply negb_true_iff in H.
      unfold carry in H; simpl in H.
@@ -1535,13 +1535,13 @@ destruct dx; [ clear Hnx | idtac ].
 
  pose proof (Hny (S dx)) as H.
  symmetry in Hf.
- eapply rm_eq_neq_if in H; try eassumption; simpl in H.
+ eapply I_eq_neq_if in H; try eassumption; simpl in H.
  destruct H as [(Hyx, Hxx)| (Hyx, Hxx)]; simpl in Hyx, Hxx.
   remember Hf as H; clear HeqH.
-  unfold rm_eq in H; simpl in H.
+  unfold I_eq in H; simpl in H.
   rename H into Hr.
   pose proof (Hr O) as H.
-  unfold rm_add_i in H; simpl in H.
+  unfold I_add_i in H; simpl in H.
   do 2 rewrite xorb_false_r in H.
   rewrite Hnx in H; [ idtac | apply Nat.lt_0_succ ].
   rewrite Hny, xorb_true_l in H.
@@ -1593,7 +1593,7 @@ destruct s2 as [dj2| ]; [ idtac | clear Hc2 ].
  destruct s4 as [dj4| ]; [ idtac | discriminate Hc4 ].
  apply fst_same_sym_iff in Hs4; simpl in Hs4.
  destruct Hs4 as (Hn4, _).
- unfold rm_add_i in Hc4.
+ unfold I_add_i in Hc4.
  rewrite Hny, xorb_true_l in Hc4.
  remember z .[ dj4] as z4 eqn:Hz4 .
  symmetry in Hz4.
@@ -1611,30 +1611,30 @@ destruct s2 as [dj2| ]; [ idtac | clear Hc2 ].
   apply negb_sym in H; simpl in H.
   rewrite <- Hz4 in H.
   apply negb_sym in H; simpl in H.
-  apply rm_add_inf_true_neq_if in H.
+  apply I_add_inf_true_neq_if in H.
    destruct H as (j, (Hj, (Hdi, (H, _)))).
    rewrite Hnx in H; discriminate H.
 
    intros di; apply Hs2.
 Qed.
 
-Theorem re_add_compat_r : ∀ x y z, (x = y)%R → (x + z = y + z)%R.
+Theorem R_add_compat_r : ∀ x y z, (x = y)%R → (x + z = y + z)%R.
 Proof.
 intros x y z Hxy.
-unfold re_eq in Hxy; simpl in Hxy.
+unfold R_eq in Hxy; simpl in Hxy.
 destruct Hxy as (Hi, Hf).
-unfold re_eq; simpl.
+unfold R_eq; simpl.
 split; [ idtac | rewrite Hf; reflexivity ].
 do 4 rewrite <- Z.add_assoc.
 rewrite Z.add_comm; symmetry.
 rewrite Z.add_comm; symmetry.
 do 4 rewrite <- Z.add_assoc.
 f_equal.
-remember (re_frac x) as X.
-remember (re_frac y) as Y.
-remember (re_frac z) as Z.
-remember (re_int x) as XI.
-remember (re_int y) as YI.
+remember (R_frac x) as X.
+remember (R_frac y) as Y.
+remember (R_frac z) as Z.
+remember (R_int x) as XI.
+remember (R_int y) as YI.
 clear x y z HeqX HeqY HeqXI HeqYI HeqZ.
 move Z before Y.
 rename X into x; rename Y into y; rename Z into z.
@@ -1658,7 +1658,7 @@ destruct sx as [dx| ].
   destruct H as (Hny, Hty); rewrite Hty, Z.add_0_r in Hi.
   subst b; f_equal.
   remember Hf as Hf_v; clear HeqHf_v.
-  unfold rm_eq in Hf; simpl in Hf.
+  unfold I_eq in Hf; simpl in Hf.
   destruct c1, c2, c3, c4; simpl; try reflexivity; exfalso.
    rewrite carry_comm in Hc2.
    eapply case_1; try eassumption.
@@ -1769,46 +1769,46 @@ destruct sx as [dx| ].
    rewrite Hnx in Hc1; discriminate Hc1.
 Qed.
 
-Theorem re_add_compat : ∀ x y z t,
+Theorem R_add_compat : ∀ x y z t,
   (x = y)%R
   → (z = t)%R
   → (x + z = y + t)%R.
 Proof.
 intros x y z t Hxy Hzt.
-transitivity (x + t)%R; [ idtac | apply re_add_compat_r; assumption ].
-rewrite re_add_comm; symmetry.
-rewrite re_add_comm; symmetry.
-apply re_add_compat_r; assumption.
+transitivity (x + t)%R; [ idtac | apply R_add_compat_r; assumption ].
+rewrite R_add_comm; symmetry.
+rewrite R_add_comm; symmetry.
+apply R_add_compat_r; assumption.
 Qed.
 
-Add Parametric Morphism : re_add
-  with signature re_eq ==> re_eq ==> re_eq
-  as re_add_morph.
+Add Parametric Morphism : R_add
+  with signature R_eq ==> R_eq ==> R_eq
+  as R_add_morph.
 Proof.
 intros x y Hxy z t Hct.
-apply re_add_compat; assumption.
+apply R_add_compat; assumption.
 Qed.
 
 (* associativity *)
 
-Theorem re_add_assoc_norm : ∀ x y z,
-  (re_norm x + (re_norm y + re_norm z) =
-   (re_norm x + re_norm y) + re_norm z)%R.
+Theorem R_add_assoc_norm : ∀ x y z,
+  (R_norm x + (R_norm y + R_norm z) =
+   (R_norm x + R_norm y) + R_norm z)%R.
 Proof.
 intros x y z.
 rename x into x0; rename y into y0; rename z into z0.
-remember (re_norm x0) as x.
-remember (re_norm y0) as y.
-remember (re_norm z0) as z.
-unfold re_eq; simpl.
-split; [ idtac | apply rm_add_assoc ].
+remember (R_norm x0) as x.
+remember (R_norm y0) as y.
+remember (R_norm z0) as z.
+unfold R_eq; simpl.
+split; [ idtac | apply I_add_assoc ].
 subst x y z; simpl.
-remember (re_frac x0) as x.
-remember (re_frac y0) as y.
-remember (re_frac z0) as z.
-remember (re_int x0) as xi.
-remember (re_int y0) as yi.
-remember (re_int z0) as zi.
+remember (R_frac x0) as x.
+remember (R_frac y0) as y.
+remember (R_frac z0) as z.
+remember (R_int x0) as xi.
+remember (R_int y0) as yi.
+remember (R_int z0) as zi.
 rename x0 into x1; rename y0 into y1; rename z0 into z1.
 rename x into x0; rename y into y0; rename z into z0.
 remember (x0 + 0)%I as x.
@@ -1825,10 +1825,10 @@ move c2 before c1; move c3 before c2.
 move c4 before c3; move c5 before c4.
 move c6 before c5.
 remember Hc1 as H; clear HeqH.
-erewrite carry_sum_3_norm_assoc_r in H; try eassumption.
+erewrite carry_sum_3_noI_assoc_r in H; try eassumption.
 move H at top; subst c1.
 remember Hc2 as H; clear HeqH.
-erewrite carry_sum_3_norm_assoc_l in H; try eassumption.
+erewrite carry_sum_3_noI_assoc_l in H; try eassumption.
 move H at top; subst c2.
 simpl; do 2 rewrite Z.add_0_r.
 do 12 rewrite <- Z.add_assoc.
@@ -1868,53 +1868,53 @@ destruct c3, c4, c5, c6; try reflexivity; exfalso.
  eapply case_2; rewrite carry_comm; eassumption.
 Qed.
 
-Theorem re_norm_eq : ∀ x, (re_norm x = x)%R.
+Theorem R_noI_eq : ∀ x, (R_norm x = x)%R.
 Proof.
 intros x.
-unfold re_eq.
+unfold R_eq.
 split; simpl.
  rewrite Z.add_comm, Z.add_assoc.
  f_equal.
  unfold carry; simpl.
- remember (fst_same (re_frac x + 0%I) 0 0) as s1 eqn:Hs1 .
+ remember (fst_same (R_frac x + 0%I) 0 0) as s1 eqn:Hs1 .
  apply fst_same_sym_iff in Hs1; simpl in Hs1.
  destruct s1 as [dj1| ].
   destruct Hs1 as (Hn1, Ht1).
   rewrite Ht1; reflexivity.
 
-  pose proof (not_rm_add_0_inf_1 (re_frac x) 0) as H.
+  pose proof (not_I_add_0_inf_1 (R_frac x) 0) as H.
   contradiction.
 
- apply rm_add_0_r.
+ apply I_add_0_r.
 Qed.
 
-Theorem re_add_assoc : ∀ x y z, (x + (y + z) = (x + y) + z)%R.
+Theorem R_add_assoc : ∀ x y z, (x + (y + z) = (x + y) + z)%R.
 Proof.
 intros x y z.
-pose proof (re_add_assoc_norm x y z) as H.
-do 3 rewrite re_norm_eq in H; assumption.
+pose proof (R_add_assoc_norm x y z) as H.
+do 3 rewrite R_noI_eq in H; assumption.
 Qed.
 
 (* decidability *)
 
-Theorem re_norm_zerop : ∀ x, {(re_norm x = 0)%R} + {(re_norm x ≠ 0)%R}.
+Theorem R_noI_zerop : ∀ x, {(R_norm x = 0)%R} + {(R_norm x ≠ 0)%R}.
 Proof.
 intros x.
-remember (re_norm x) as y eqn:Hy .
-unfold re_eq; simpl.
-destruct (Z_zerop (re_int y)) as [H1| H1].
+remember (R_norm x) as y eqn:Hy .
+unfold R_eq; simpl.
+destruct (Z_zerop (R_int y)) as [H1| H1].
  rewrite H1; simpl.
- destruct (rm_zerop (re_frac y)) as [H2| H2].
+ destruct (I_zerop (R_frac y)) as [H2| H2].
   left.
   split; [ idtac | assumption ].
   subst y; simpl in H1, H2; simpl; f_equal.
-  unfold rm_eq in H2; simpl in H2.
+  unfold I_eq in H2; simpl in H2.
   unfold carry; simpl.
   rewrite fst_same_diag.
-  remember (fst_same (re_frac x + 0%I) 0 0) as s1 eqn:Hs1 .
+  remember (fst_same (R_frac x + 0%I) 0 0) as s1 eqn:Hs1 .
   apply fst_same_sym_iff in Hs1; simpl in Hs1.
   destruct s1; [ destruct Hs1; assumption | exfalso ].
-  pose proof (not_rm_add_0_inf_1 (re_frac x) 0) as H.
+  pose proof (not_I_add_0_inf_1 (R_frac x) 0) as H.
   contradiction.
 
   right; intros (Hb, Hi); contradiction.
@@ -1923,7 +1923,7 @@ destruct (Z_zerop (re_int y)) as [H1| H1].
  unfold carry at 2 in Hb.
  rewrite fst_same_diag in Hb; simpl in Hb.
  unfold carry in Hb; simpl in Hb.
- remember (fst_same (re_frac y) 0 0) as s1 eqn:Hs1 .
+ remember (fst_same (R_frac y) 0 0) as s1 eqn:Hs1 .
  apply fst_same_sym_iff in Hs1; simpl in Hs1.
  destruct s1 as [dj1| ].
   destruct Hs1 as (Hn1, Ht1).
@@ -1931,139 +1931,139 @@ destruct (Z_zerop (re_int y)) as [H1| H1].
   rewrite Z.add_0_r in Hb; contradiction.
 
   subst y; simpl in Hs1.
-  pose proof (not_rm_add_0_inf_1 (re_frac x) 0) as H.
+  pose proof (not_I_add_0_inf_1 (R_frac x) 0) as H.
   contradiction.
 Qed.
 
-Theorem re_zerop : ∀ x, {(x = 0)%R} + {(x ≠ 0)%R}.
+Theorem R_zerop : ∀ x, {(x = 0)%R} + {(x ≠ 0)%R}.
 Proof.
 intros x.
-destruct (re_norm_zerop x) as [H1| H1].
- left; rewrite re_norm_eq in H1; assumption.
+destruct (R_noI_zerop x) as [H1| H1].
+ left; rewrite R_noI_eq in H1; assumption.
 
- right; rewrite re_norm_eq in H1; assumption.
+ right; rewrite R_noI_eq in H1; assumption.
 Qed.
 
-Theorem re_dec : ∀ x y, {(x = y)%R} + {(x ≠ y)%R}.
+Theorem R_dec : ∀ x y, {(x = y)%R} + {(x ≠ y)%R}.
 Proof.
 intros x y.
-destruct (re_zerop (x - y)%R) as [Hxy| Hxy].
- left; unfold re_sub in Hxy; rewrite re_add_comm in Hxy.
- eapply re_add_compat with (x := y) in Hxy; [ idtac | reflexivity ].
- rewrite re_add_assoc, fold_re_sub, re_sub_diag, re_add_comm in Hxy.
- do 2 rewrite re_add_0_r in Hxy.
+destruct (R_zerop (x - y)%R) as [Hxy| Hxy].
+ left; unfold R_sub in Hxy; rewrite R_add_comm in Hxy.
+ eapply R_add_compat with (x := y) in Hxy; [ idtac | reflexivity ].
+ rewrite R_add_assoc, fold_R_sub, R_sub_diag, R_add_comm in Hxy.
+ do 2 rewrite R_add_0_r in Hxy.
  assumption.
 
- right; unfold re_sub in  Hxy; intros H; apply Hxy; rewrite H.
- apply re_sub_diag.
+ right; unfold R_sub in  Hxy; intros H; apply Hxy; rewrite H.
+ apply R_sub_diag.
 Qed.
 
-Theorem re_decidable : ∀ x y, Decidable.decidable (x = y)%R.
+Theorem R_decidable : ∀ x y, Decidable.decidable (x = y)%R.
 Proof.
 intros x y.
-destruct (re_dec x y); [ left | right ]; assumption.
+destruct (R_dec x y); [ left | right ]; assumption.
 Qed.
 
 (* comparison *)
 
-Definition re_compare x y :=
-  let nx := re_norm x in
-  let ny := re_norm y in
-  match Zcompare (re_int nx) (re_int ny) with
+Definition R_compare x y :=
+  let nx := R_norm x in
+  let ny := R_norm y in
+  match Zcompare (R_int nx) (R_int ny) with
   | Eq =>
-      match fst_same (re_frac nx) (- (re_frac ny)) 0 with
-      | Some j => if (re_frac nx)%R.[j] then Gt else Lt
+      match fst_same (R_frac nx) (- (R_frac ny)) 0 with
+      | Some j => if (R_frac nx)%R.[j] then Gt else Lt
       | None => Eq
       end
   | Lt => Lt
   | Gt => Gt
   end.
 
-Definition re_lt x y := re_compare x y = Lt.
-Definition re_le x y := re_compare x y ≠ Gt.
-Definition re_gt x y := re_compare x y = Gt.
-Definition re_ge x y := re_compare x y ≠ Lt.
+Definition R_lt x y := R_compare x y = Lt.
+Definition R_le x y := R_compare x y ≠ Gt.
+Definition R_gt x y := R_compare x y = Gt.
+Definition R_ge x y := R_compare x y ≠ Lt.
 
-Notation "x < y" := (re_lt x y) : R_scope.
-Notation "x ≤ y" := (re_le x y) : R_scope.
-Notation "x > y" := (re_gt x y) : R_scope.
-Notation "x ≥ y" := (re_ge x y) : R_scope.
-Notation "x ?= y" := (re_compare x y) : R_scope.
+Notation "x < y" := (R_lt x y) : R_scope.
+Notation "x ≤ y" := (R_le x y) : R_scope.
+Notation "x > y" := (R_gt x y) : R_scope.
+Notation "x ≥ y" := (R_ge x y) : R_scope.
+Notation "x ?= y" := (R_compare x y) : R_scope.
 
-Theorem re_compare_eq : ∀ x y, (x = y)%R ↔ re_compare x y = Eq.
+Theorem R_compare_eq : ∀ x y, (x = y)%R ↔ R_compare x y = Eq.
 Proof.
 intros x y.
 split; intros H.
- unfold re_compare; simpl.
- unfold re_eq in H; simpl in H.
+ unfold R_compare; simpl.
+ unfold R_eq in H; simpl in H.
  destruct H as (Hi, Hf).
  apply Z.compare_eq_iff in Hi.
  rewrite Hi.
- remember (re_frac x) as xf.
- remember (re_frac y) as yf.
+ remember (R_frac x) as xf.
+ remember (R_frac y) as yf.
  remember (fst_same (xf + 0%I) (- (yf + 0)%I) 0) as s1 eqn:Hs1 .
  destruct s1 as [dj1| ]; [ exfalso | reflexivity ].
  subst xf yf.
  apply fst_same_sym_iff in Hs1; simpl in Hs1.
  destruct Hs1 as (Hn1, Ht1).
- unfold rm_eq in Hf; simpl in Hf.
+ unfold I_eq in Hf; simpl in Hf.
  rewrite Hf in Ht1; symmetry in Ht1.
  revert Ht1; apply no_fixpoint_negb.
 
- unfold re_compare in H.
- remember (re_int (re_norm x) ?= re_int (re_norm y)) as c eqn:Hc .
+ unfold R_compare in H.
+ remember (R_int (R_norm x) ?= R_int (R_norm y)) as c eqn:Hc .
  symmetry in Hc.
  destruct c; [ idtac | discriminate H | discriminate H ].
- unfold re_eq; simpl.
+ unfold R_eq; simpl.
  apply Z.compare_eq in Hc; simpl in Hc.
  split; [ assumption | idtac ].
- remember (re_norm x) as nx.
- remember (re_norm y) as ny.
- remember (fst_same (re_frac nx) (- re_frac ny) 0) as s1 eqn:Hs1 .
+ remember (R_norm x) as nx.
+ remember (R_norm y) as ny.
+ remember (fst_same (R_frac nx) (- R_frac ny) 0) as s1 eqn:Hs1 .
  destruct s1 as [dj1| ].
-  destruct (re_frac nx) .[ dj1]; discriminate H.
+  destruct (R_frac nx) .[ dj1]; discriminate H.
 
   clear H.
   subst nx ny.
   apply fst_same_sym_iff in Hs1; simpl in Hs1.
-  unfold rm_eq; intros i; simpl.
+  unfold I_eq; intros i; simpl.
   rewrite Hs1, negb_involutive; reflexivity.
 Qed.
 
-Theorem re_compare_lt : ∀ x y, (x < y)%R ↔ re_compare x y = Lt.
+Theorem R_compare_lt : ∀ x y, (x < y)%R ↔ R_compare x y = Lt.
 Proof.
 intros x y.
 split; intros H; assumption.
 Qed.
 
-Theorem re_compare_gt : ∀ x y, (x > y)%R ↔ re_compare x y = Gt.
+Theorem R_compare_gt : ∀ x y, (x > y)%R ↔ R_compare x y = Gt.
 Proof.
 intros x y.
 split; intros H; assumption.
 Qed.
 
-Theorem re_gt_lt_iff : ∀ x y, (x > y)%R ↔ (y < x)%R.
+Theorem R_gt_lt_iff : ∀ x y, (x > y)%R ↔ (y < x)%R.
 Proof.
 intros x y.
-unfold re_gt, re_lt, re_compare.
-remember (re_norm x) as nx eqn:Hnx .
-remember (re_norm y) as ny eqn:Hny .
+unfold R_gt, R_lt, R_compare.
+remember (R_norm x) as nx eqn:Hnx .
+remember (R_norm y) as ny eqn:Hny .
 rewrite Z.compare_antisym.
-remember (re_int ny ?= re_int nx) as c eqn:Hc .
+remember (R_int ny ?= R_int nx) as c eqn:Hc .
 symmetry in Hc.
 destruct c; simpl.
- remember (fst_same (re_frac nx) (- re_frac ny) 0) as s1 eqn:Hs1 .
- remember (fst_same (re_frac ny) (- re_frac nx) 0) as s2 eqn:Hs2 .
+ remember (fst_same (R_frac nx) (- R_frac ny) 0) as s1 eqn:Hs1 .
+ remember (fst_same (R_frac ny) (- R_frac nx) 0) as s2 eqn:Hs2 .
  subst nx ny; simpl.
  apply fst_same_sym_iff in Hs1; simpl in Hs1.
  apply fst_same_sym_iff in Hs2; simpl in Hs2.
  destruct s1 as [j1| ].
   destruct Hs1 as (Hs1, Hn1).
-  remember (rm_add_i (re_frac x) 0 j1) as x0 eqn:Hx0 .
+  remember (I_add_i (R_frac x) 0 j1) as x0 eqn:Hx0 .
   symmetry in Hx0; apply negb_sym in Hn1.
   destruct s2 as [j2| ].
    destruct Hs2 as (Hs2, Hn2).
-   remember (rm_add_i (re_frac y) 0 j2) as y0 eqn:Hy0 .
+   remember (I_add_i (R_frac y) 0 j2) as y0 eqn:Hy0 .
    symmetry in Hy0; apply negb_sym in Hn2.
    destruct (lt_eq_lt_dec j1 j2) as [[H1| H1]| H1].
     apply Hs2 in H1.
@@ -2105,13 +2105,13 @@ Qed.
 
 (* inequality ≤ is order *)
 
-Theorem re_le_refl : reflexive _ re_le.
+Theorem R_le_refl : reflexive _ R_le.
 Proof.
 intros x H.
-unfold re_compare in H.
+unfold R_compare in H.
 rewrite Z.compare_refl in H.
-remember (re_norm x) as nx.
-remember (fst_same (re_frac nx) (- re_frac nx) 0) as s1 eqn:Hs1 .
+remember (R_norm x) as nx.
+remember (fst_same (R_frac nx) (- R_frac nx) 0) as s1 eqn:Hs1 .
 destruct s1 as [dj1| ]; [ idtac | discriminate H ].
 apply fst_same_sym_iff in Hs1; simpl in Hs1.
 destruct Hs1 as (Hn1, Ht1).
@@ -2119,31 +2119,31 @@ symmetry in Ht1.
 revert Ht1; apply no_fixpoint_negb.
 Qed.
 
-Theorem re_le_antisym : Antisymmetric _ re_eq re_le.
+Theorem R_le_antisym : Antisymmetric _ R_eq R_le.
 Proof.
 intros x y Hxy Hyx.
-unfold re_le in Hxy, Hyx.
-unfold re_compare in Hxy, Hyx.
+unfold R_le in Hxy, Hyx.
+unfold R_compare in Hxy, Hyx.
 rewrite Z.compare_antisym in Hyx.
-remember (re_norm x) as nx.
-remember (re_norm y) as ny.
-remember (re_int nx ?= re_int ny) as c eqn:Hc .
+remember (R_norm x) as nx.
+remember (R_norm y) as ny.
+remember (R_int nx ?= R_int ny) as c eqn:Hc .
 symmetry in Hc.
 destruct c; simpl in Hyx.
- remember (fst_same (re_frac nx) (- re_frac ny) 0) as sx eqn:Hsx .
- remember (fst_same (re_frac ny) (- re_frac nx) 0) as sy eqn:Hsy .
+ remember (fst_same (R_frac nx) (- R_frac ny) 0) as sx eqn:Hsx .
+ remember (fst_same (R_frac ny) (- R_frac nx) 0) as sy eqn:Hsy .
  subst nx ny.
  apply fst_same_sym_iff in Hsx; simpl in Hsx.
  apply fst_same_sym_iff in Hsy; simpl in Hsy.
  destruct sx as [dx| ]; [ idtac | clear Hxy ].
   destruct Hsx as (Hnx, Htx).
   simpl in Hxy.
-  remember (rm_add_i (re_frac x) 0 dx) as xb eqn:Hxb .
+  remember (I_add_i (R_frac x) 0 dx) as xb eqn:Hxb .
   symmetry in Hxb; apply negb_sym in Htx.
   destruct sy as [dy| ]; [ idtac | clear Hyx ].
    destruct Hsy as (Hny, Hty).
    simpl in Hyx.
-   remember (rm_add_i (re_frac y) 0 dy) as yb eqn:Hyb .
+   remember (I_add_i (R_frac y) 0 dy) as yb eqn:Hyb .
    symmetry in Hyb; apply negb_sym in Hty.
    destruct xb; [ exfalso; apply Hxy; reflexivity | clear Hxy ].
    destruct yb; [ exfalso; apply Hyx; reflexivity | clear Hyx ].
@@ -2170,10 +2170,10 @@ destruct c; simpl in Hyx.
    symmetry in Hty.
    exfalso; revert Hty; apply no_fixpoint_negb.
 
-   unfold re_eq; simpl.
+   unfold R_eq; simpl.
    apply Z.compare_eq in Hc; simpl in Hc.
    split; [ assumption | idtac ].
-   unfold rm_eq; simpl; intros i.
+   unfold I_eq; simpl; intros i.
    rewrite Hsx, negb_involutive; reflexivity.
 
  exfalso; apply Hyx; reflexivity.
@@ -2181,46 +2181,46 @@ destruct c; simpl in Hyx.
  exfalso; apply Hxy; reflexivity.
 Qed.
 
-Theorem re_le_trans : transitive _ re_le.
+Theorem R_le_trans : transitive _ R_le.
 Proof.
 intros x y z Hxy Hyz.
-unfold re_le in Hxy, Hyz; unfold re_le.
-unfold re_compare in Hxy, Hyz; unfold re_compare.
-remember (re_norm x) as nx eqn:Hnx .
-remember (re_norm y) as ny eqn:Hny .
-remember (re_norm z) as nz eqn:Hnz .
-remember (re_int nx ?= re_int ny) as cxy eqn:Hcxy .
-remember (re_int ny ?= re_int nz) as cyz eqn:Hcyz .
-remember (re_int nx ?= re_int nz) as cxz eqn:Hcxz .
+unfold R_le in Hxy, Hyz; unfold R_le.
+unfold R_compare in Hxy, Hyz; unfold R_compare.
+remember (R_norm x) as nx eqn:Hnx .
+remember (R_norm y) as ny eqn:Hny .
+remember (R_norm z) as nz eqn:Hnz .
+remember (R_int nx ?= R_int ny) as cxy eqn:Hcxy .
+remember (R_int ny ?= R_int nz) as cyz eqn:Hcyz .
+remember (R_int nx ?= R_int nz) as cxz eqn:Hcxz .
 symmetry in Hcxy, Hcyz, Hcxz.
 destruct cxz; [ idtac | intros H; discriminate H | exfalso ].
- remember (fst_same (re_frac nx) (- re_frac nz) 0) as sxz eqn:Hsxz .
+ remember (fst_same (R_frac nx) (- R_frac nz) 0) as sxz eqn:Hsxz .
  apply fst_same_sym_iff in Hsxz; simpl in Hsxz.
  destruct sxz as [dxz| ]; [ idtac | intros H; discriminate H ].
  rewrite Hnx; simpl.
  rewrite Hnx, Hnz in Hsxz; simpl in Hsxz.
  destruct Hsxz as (Hnxz, Htxz).
- remember (rm_add_i (re_frac x) 0 dxz) as bxz eqn:Hbxz .
+ remember (I_add_i (R_frac x) 0 dxz) as bxz eqn:Hbxz .
  destruct bxz; [ exfalso | intros H; discriminate H ].
  symmetry in Hbxz; apply negb_sym in Htxz; simpl in Htxz.
  destruct cxy; [ idtac | clear Hxy | apply Hxy; reflexivity ].
-  remember (fst_same (re_frac nx) (- re_frac ny) 0) as sxy eqn:Hsxy .
+  remember (fst_same (R_frac nx) (- R_frac ny) 0) as sxy eqn:Hsxy .
   apply fst_same_sym_iff in Hsxy; simpl in Hsxy.
   destruct sxy as [dxy| ]; [ idtac | clear Hxy ].
    rewrite Hnx, Hny in Hsxy; simpl in Hsxy.
    rewrite Hnx in Hxy; simpl in Hxy.
    destruct Hsxy as (Hnxy, Htxy).
-   remember (rm_add_i (re_frac x) 0 dxy) as bxy eqn:Hbxy .
+   remember (I_add_i (R_frac x) 0 dxy) as bxy eqn:Hbxy .
    destruct bxy; [ apply Hxy; reflexivity | clear Hxy ].
    symmetry in Hbxy; apply negb_sym in Htxy; simpl in Htxy.
    destruct cyz; [ idtac | clear Hyz | apply Hyz; reflexivity ].
-    remember (fst_same (re_frac ny) (- re_frac nz) 0) as syz eqn:Hsyz .
+    remember (fst_same (R_frac ny) (- R_frac nz) 0) as syz eqn:Hsyz .
     apply fst_same_sym_iff in Hsyz; simpl in Hsyz.
     destruct syz as [dyz| ]; [ idtac | clear Hyz ].
      rewrite Hny, Hnz in Hsyz; simpl in Hsyz.
      rewrite Hny in Hyz; simpl in Hyz.
      destruct Hsyz as (Hnyz, Htyz).
-     remember (rm_add_i (re_frac y) 0 dyz) as byz eqn:Hbyz .
+     remember (I_add_i (R_frac y) 0 dyz) as byz eqn:Hbyz .
      destruct byz; [ apply Hyz; reflexivity | clear Hyz ].
      symmetry in Hbyz; apply negb_sym in Htyz; simpl in Htyz.
      destruct (lt_eq_lt_dec dxy dyz) as [[H1| H1]| H1].
@@ -2287,13 +2287,13 @@ destruct cxz; [ idtac | intros H; discriminate H | exfalso ].
     revert Hcyz; apply Z.lt_irrefl.
 
    destruct cyz; [ idtac | clear Hyz | apply Hyz; reflexivity ].
-    remember (fst_same (re_frac ny) (- re_frac nz) 0) as syz eqn:Hsyz .
+    remember (fst_same (R_frac ny) (- R_frac nz) 0) as syz eqn:Hsyz .
     apply fst_same_sym_iff in Hsyz; simpl in Hsyz.
     destruct syz as [dyz| ]; [ idtac | clear Hyz ].
      rewrite Hny, Hnz in Hsyz; simpl in Hsyz.
      rewrite Hny in Hyz; simpl in Hyz.
      destruct Hsyz as (Hnyz, Htyz).
-     remember (rm_add_i (re_frac y) 0 dyz) as byz eqn:Hbyz .
+     remember (I_add_i (R_frac y) 0 dyz) as byz eqn:Hbyz .
      destruct byz; [ apply Hyz; reflexivity | clear Hyz ].
      symmetry in Hbyz; apply negb_sym in Htyz; simpl in Htyz.
      rewrite Hnx, Hny in Hsxy; simpl in Hsxy.
@@ -2360,13 +2360,13 @@ Qed.
 
 (* inequality ≥ is order *)
 
-Theorem re_ge_refl : reflexive _ re_ge.
+Theorem R_ge_refl : reflexive _ R_ge.
 Proof.
 intros x H.
-unfold re_compare in H.
+unfold R_compare in H.
 rewrite Z.compare_refl in H.
-remember (re_norm x) as nx.
-remember (fst_same (re_frac nx) (- re_frac nx) 0) as s1 eqn:Hs1 .
+remember (R_norm x) as nx.
+remember (fst_same (R_frac nx) (- R_frac nx) 0) as s1 eqn:Hs1 .
 destruct s1 as [dj1| ]; [ idtac | discriminate H ].
 apply fst_same_sym_iff in Hs1; simpl in Hs1.
 destruct Hs1 as (Hn1, Ht1).
@@ -2374,45 +2374,45 @@ symmetry in Ht1.
 revert Ht1; apply no_fixpoint_negb.
 Qed.
 
-Theorem re_ge_antisym : Antisymmetric _ re_eq re_ge.
+Theorem R_ge_antisym : Antisymmetric _ R_eq R_ge.
 Proof.
 intros x y Hxy Hyx.
-apply re_le_antisym; intros H.
- apply re_gt_lt_iff in H; contradiction.
+apply R_le_antisym; intros H.
+ apply R_gt_lt_iff in H; contradiction.
 
- apply re_gt_lt_iff in H; contradiction.
+ apply R_gt_lt_iff in H; contradiction.
 Qed.
 
-Theorem re_ge_trans : transitive _ re_ge.
+Theorem R_ge_trans : transitive _ R_ge.
 Proof.
 intros x y z Hxy Hyz H.
-apply re_gt_lt_iff in H.
+apply R_gt_lt_iff in H.
 revert H.
-apply re_le_trans with (y := y); intros H.
- apply re_gt_lt_iff in H; contradiction.
+apply R_le_trans with (y := y); intros H.
+ apply R_gt_lt_iff in H; contradiction.
 
- apply re_gt_lt_iff in H; contradiction.
+ apply R_gt_lt_iff in H; contradiction.
 Qed.
 
 (* decidability < vs ≥ and > vs ≤ *)
 
-Theorem re_lt_dec : ∀ x y, {(x < y)%R} + {(x ≥ y)%R}.
+Theorem R_lt_dec : ∀ x y, {(x < y)%R} + {(x ≥ y)%R}.
 Proof.
 intros x y.
-unfold re_lt, re_ge; simpl.
-unfold re_compare.
-remember (re_norm x) as nx eqn:Hnx .
-remember (re_norm y) as ny eqn:Hny .
-remember (re_int nx ?= re_int ny) as c eqn:Hc .
+unfold R_lt, R_ge; simpl.
+unfold R_compare.
+remember (R_norm x) as nx eqn:Hnx .
+remember (R_norm y) as ny eqn:Hny .
+remember (R_int nx ?= R_int ny) as c eqn:Hc .
 symmetry in Hc.
 destruct c.
- remember (fst_same (re_frac nx) (- re_frac ny) 0) as s eqn:Hs .
+ remember (fst_same (R_frac nx) (- R_frac ny) 0) as s eqn:Hs .
  apply fst_same_sym_iff in Hs; simpl in Hs.
  destruct s as [di| ].
   destruct Hs as (Hn, Ht).
   rewrite Hnx; simpl.
   rewrite Hnx, Hny in Ht; simpl in Ht.
-  remember (rm_add_i (re_frac x) 0 di) as xb eqn:Hxb .
+  remember (I_add_i (R_frac x) 0 di) as xb eqn:Hxb .
   symmetry in Hxb; apply negb_sym in Ht.
   destruct xb; simpl in Ht.
    right; intros H; discriminate H.
@@ -2426,29 +2426,29 @@ destruct c.
  right; intros H; discriminate H.
 Qed.
 
-Theorem re_gt_dec : ∀ x y, {(x > y)%R} + {(x ≤ y)%R}.
+Theorem R_gt_dec : ∀ x y, {(x > y)%R} + {(x ≤ y)%R}.
 Proof.
 intros x y.
-destruct (re_lt_dec y x) as [H1| H1].
+destruct (R_lt_dec y x) as [H1| H1].
  left.
- apply re_gt_lt_iff; assumption.
+ apply R_gt_lt_iff; assumption.
 
  right; intros H; apply H1.
- apply re_gt_lt_iff; assumption.
+ apply R_gt_lt_iff; assumption.
 Qed.
 
 (* *)
 
-Theorem re_lt_decidable : ∀ x y, Decidable.decidable (x < y)%R.
+Theorem R_lt_decidable : ∀ x y, Decidable.decidable (x < y)%R.
 Proof.
 intros x y.
-destruct (re_lt_dec x y); [ left | right ]; assumption.
+destruct (R_lt_dec x y); [ left | right ]; assumption.
 Qed.
 
-Theorem re_gt_decidable : ∀ x y, Decidable.decidable (x > y)%R.
+Theorem R_gt_decidable : ∀ x y, Decidable.decidable (x > y)%R.
 Proof.
 intros x y.
-destruct (re_gt_dec x y); [ left | right ]; assumption.
+destruct (R_gt_dec x y); [ left | right ]; assumption.
 Qed.
 
 Close Scope Z_scope.
