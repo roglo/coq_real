@@ -332,65 +332,27 @@ destruct s1 as [dj1| ].
   apply H1; clear H1.
   apply rm_gt_lt_iff.
   rewrite fold_rm_div_rem_i, rm_mul_2_0.
-bbb.
+  rewrite rm_div_rem_i_0_l, rm_mul_2_0; [ idtac | assumption ].
+  apply rm_lt_nge; intros H.
+  apply rm_le_0_r in H; contradiction.
 
-  induction i; simpl.
-   destruct (rm_lt_dec (rm_mul_2 0) x) as [H2| H2]; simpl.
-    rewrite rm_mul_2_0; assumption.
+ exfalso.
+ pose proof (Hs1 O) as H.
+ rewrite Nat.add_0_r in H.
+ unfold rm_div_i in H.
+ simpl in H.
+ rewrite fold_rm_div_rem_i in H.
+ remember (rm_div_rem_i (rm_mul_2 0) x i) as y.
+ destruct (rm_lt_dec (rm_mul_2 y) x) as [H1| H1]; [ discriminate H | idtac ].
+ subst y.
+ rewrite rm_mul_2_0 in H1.
+ rewrite rm_div_rem_i_0_l in H1; [ idtac | assumption ].
+ rewrite rm_mul_2_0 in H1.
+ apply rm_ge_le_iff in H1.
+ apply rm_le_0_r in H1; contradiction.
+Qed.
 
-    rewrite rm_mul_2_0 in H2.
-    apply rm_ge_le_iff in H2.
-    apply rm_le_0_r in H2; contradiction.
-
-   remember (rm_mul_2 0) as r1.
-   remember (rm_div_eucl_i r1 x i) as r2.
-   remember (rm_mul_2 (snd r2)) as r3.
-   destruct (rm_lt_dec r3 x) as [H1| H1]; [ simpl | exfalso ].
-    clear H1.
-    subst r1 r2.
-bbb.
-    exfalso; subst r3.
-    apply rm_lt_nge in IHi; apply IHi; clear IHi.
-bbb.
-
-  remember (rm_mul_2 0) as r1.
-  remember (rm_div_eucl_i r1 x i) as r2.
-  remember (rm_mul_2 (snd r2)) as r3.
-  destruct (rm_lt_dec r3 x) as [H1| H1]; [ reflexivity | exfalso ].
-  apply rm_ge_le_iff in H1.
-  subst r3 r2 r1.
-  destruct i.
-   simpl in H1.
-   destruct (rm_lt_dec (rm_mul_2 0) x) as [H2| H2]; simpl in H1.
-    rewrite rm_mul_2_0 in H1.
-    apply rm_gt_lt_iff in H2.
-    contradiction.
-
-    rewrite rm_mul_2_0 in H2.
-    apply rm_ge_le_iff in H2.
-    apply rm_le_0_r in H2.
-    contradiction.
-
-   simpl in H1.
-   remember (snd (rm_div_eucl_i (rm_mul_2 0) x i)) as r eqn:Hr .
-   destruct (rm_lt_dec (rm_mul_2 r) x) as [H2| H2]; simpl in H1.
-    destruct i.
-     simpl in Hr.
-     destruct (rm_lt_dec (rm_mul_2 0) x) as [H3| H3]; simpl in Hr.
-      subst r.
-      rewrite rm_mul_2_0 in H1.
-      rewrite rm_mul_2_0 in H1.
-      rewrite rm_mul_2_0 in H1.
-      apply rm_le_0_r in H1; contradiction.
-
-      rewrite rm_mul_2_0 in H3.
-      apply rm_ge_le_iff in H3.
-      apply rm_le_0_r in H3; contradiction.
-
-     simpl in Hr.
-bbb.
-
-Theorem www : ∀ x, (0 / x = 0)%R.
+Theorem re_div_0_l : ∀ x, (0 / x = 0)%R.
 Proof.
 intros x.
 unfold re_div; simpl.
