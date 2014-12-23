@@ -250,18 +250,35 @@ induction i.
   destruct (rm_lt_dec y t) as [H2| H2]; [ assumption | idtac ].
   rewrite Hxy, Hzt in H1.
   apply rm_lt_nge in H1.
-  apply rm_ge_le_iff in H2.
-  contradiction.
+  apply rm_ge_le_iff in H2; contradiction.
 
   rewrite Hxy, Hzt in H1.
   apply rm_ge_le_iff in H1.
   destruct (rm_lt_dec y t) as [H2| H2].
-   apply rm_lt_nge in H2.
-   contradiction.
+   apply rm_lt_nge in H2; contradiction.
 
    simpl.
-bbb.
-*)
+   rewrite Hxy, Hzt; reflexivity.
+
+ unfold rm_div_rem_i; simpl.
+ do 2 rewrite fold_rm_div_rem_i.
+ remember (rm_div_rem_i x z i) as d1 eqn:Hd1 .
+ remember (rm_div_rem_i y t i) as d2 eqn:Hd2 .
+ destruct (rm_lt_dec (rm_mul_2 d1) z) as [H1| H1]; simpl.
+  destruct (rm_lt_dec (rm_mul_2 d2) t) as [H2| H2]; simpl.
+   rewrite IHi; reflexivity.
+
+   rewrite IHi, Hzt in H1.
+   apply rm_ge_le_iff in H2.
+   apply rm_lt_nge in H1; contradiction.
+
+  destruct (rm_lt_dec (rm_mul_2 d2) t) as [H2| H2]; simpl.
+   rewrite IHi, Hzt in H1.
+   apply rm_ge_le_iff in H1.
+   apply rm_lt_nge in H2; contradiction.
+
+   rewrite IHi, Hzt; reflexivity.
+Qed.
 
 Theorem rm_div_0_l : ∀ x, (x ≠ 0)%rm → (0 / x = 0)%rm.
 Proof.
