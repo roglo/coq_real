@@ -280,6 +280,27 @@ induction i.
    rewrite IHi, Hzt; reflexivity.
 Qed.
 
+Theorem rm_div_rem_i_0_l : ∀ x i, (x ≠ 0)%rm → (rm_div_rem_i 0 x i = 0)%rm.
+Proof.
+intros x i Hx.
+induction i.
+ unfold rm_div_rem_i; simpl.
+ destruct (rm_lt_dec 0%rm x) as [H1| H1]; [ reflexivity | idtac ].
+ apply rm_ge_le_iff, rm_le_0_r in H1; contradiction.
+
+ unfold rm_div_rem_i; simpl.
+ rewrite fold_rm_div_rem_i.
+ remember (rm_mul_2 (rm_div_rem_i 0 x i)) as y eqn:Hy .
+ destruct (rm_lt_dec y x) as [H1| H1]; simpl.
+  subst y.
+  rewrite IHi.
+  apply rm_mul_2_0.
+
+  subst y.
+  rewrite IHi, rm_mul_2_0 in H1.
+  apply rm_ge_le_iff, rm_le_0_r in H1; contradiction.
+Qed.
+
 Theorem rm_div_0_l : ∀ x, (x ≠ 0)%rm → (0 / x = 0)%rm.
 Proof.
 intros x Hx.
@@ -310,10 +331,8 @@ destruct s1 as [dj1| ].
   unfold rm_le in H1.
   apply H1; clear H1.
   apply rm_gt_lt_iff.
-  rewrite fold_rm_div_rem_i.
+  rewrite fold_rm_div_rem_i, rm_mul_2_0.
 bbb.
-  ============================
-   (rm_mul_2 (snd (rm_div_eucl_i (rm_mul_2 0) x i)) < x)%rm
 
   induction i; simpl.
    destruct (rm_lt_dec (rm_mul_2 0) x) as [H2| H2]; simpl.
