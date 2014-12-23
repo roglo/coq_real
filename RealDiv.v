@@ -79,8 +79,121 @@ destruct c1; simpl.
   apply Z.eqb_eq in Hy.
   apply Z.eqb_eq in Ht.
   rewrite Hy; simpl.
+  unfold I_eq; simpl; intros i.
+  unfold I_add_i; simpl.
+  do 2 rewrite xorb_false_r.
+  destruct i; simpl.
+   unfold R_eq in Hxy; simpl in Hxy.
+   destruct Hxy as (Hixy, Hfxy).
+   rewrite Hx, Hy in Hixy; simpl in Hixy.
+   unfold carry; simpl.
+   remember (fst_same (I_div_2_inc (R_frac x) false) 0 1) as s1 eqn:Hs1 .
+   remember (fst_same (I_div_2_inc (R_frac y) false) 0 1) as s2 eqn:Hs2 .
+   destruct s1 as [dj1| ]; simpl.
+    remember Hs1 as H; clear HeqH.
+    apply fst_same_sym_iff in H; simpl in H.
+    destruct H as (Hn1, Ht1).
+    rewrite Ht1; simpl.
+    destruct s2 as [dj2| ]; [ idtac | exfalso ].
+     remember Hs2 as H; clear HeqH.
+     apply fst_same_sym_iff in H; simpl in H.
+     destruct H as (Hn2, Ht2).
+     rewrite Ht2; reflexivity.
+
+(*1*)
+bbb. lemma to do
+     remember Hs2 as H; clear HeqH.
+     apply fst_same_sym_iff in H; simpl in H.
+     rename H into Hn2.
+     unfold carry in Hixy; simpl in Hixy.
+     remember (fst_same (R_frac x) 0 0) as s3 eqn:Hs3 .
+     remember (fst_same (R_frac y) 0 0) as s4 eqn:Hs4 .
+     destruct s3 as [dj3| ].
+      remember Hs3 as H; clear HeqH.
+      apply fst_same_sym_iff in H; simpl in H.
+      destruct H as (Hn3, Ht3).
+      rewrite Ht3 in Hixy.
+      destruct s4 as [dj4| ]; [ idtac | discriminate Hixy ].
+      remember Hs4 as H; clear HeqH.
+      apply fst_same_sym_iff in H; simpl in H.
+      destruct H as (Hn4, Ht4).
+      pose proof (Hn2 dj4) as H.
+      rewrite Nat.sub_0_r, Ht4 in H; discriminate H.
+
+      remember Hs3 as H; clear HeqH.
+      apply fst_same_sym_iff in H; simpl in H.
+      rename H into Hn3.
+      rewrite Hn3 in Ht1; discriminate Ht1.
+
+    remember Hs1 as H; clear HeqH.
+    apply fst_same_sym_iff in H; simpl in H.
+    rename H into Hn1.
+    destruct s2 as [dj2| ]; [ idtac | reflexivity ].
+    remember Hs2 as H; clear HeqH.
+    apply fst_same_sym_iff in H; simpl in H.
+    destruct H as (Hn2, Ht2).
+    rewrite Ht2.
+    exfalso.
+(*2*)
+bbb.
+
+intros m x y Hxy z t Hzt.
+unfold I_equiv_div_fst.
+destruct m; [ reflexivity | simpl ].
+remember ((R_int x =? 0) && (R_int z =? 0)) as c1 eqn:Hc1 .
+remember ((R_int y =? 0) && (R_int t =? 0)) as c2 eqn:Hc2 .
+symmetry in Hc1, Hc2.
+destruct c1; simpl.
+ apply andb_true_iff in Hc1.
+ destruct Hc1 as (Hx, Hz).
+ apply Z.eqb_eq in Hx.
+ apply Z.eqb_eq in Hz.
+ rewrite Hx; simpl.
+ destruct c2; simpl.
+  apply andb_true_iff in Hc2.
+  destruct Hc2 as (Hy, Ht).
+  apply Z.eqb_eq in Hy.
+  apply Z.eqb_eq in Ht.
+  rewrite Hy; simpl.
+bbb.
   unfold R_eq in Hxy; simpl in Hxy.
   destruct Hxy as (Hixy, Hfxy).
+  rewrite Hx, Hy in Hixy; simpl in Hixy.
+  unfold carry in Hixy; simpl in Hixy.
+  remember (fst_same (R_frac x) 0 0) as s1 eqn:Hs1 .
+  remember (fst_same (R_frac y) 0 0) as s2 eqn:Hs2 .
+  destruct s1 as [dj1| ]; simpl in Hixy.
+   remember Hs1 as H; clear HeqH.
+   apply fst_same_sym_iff in H; simpl in H.
+   destruct H as (Hn1, Ht1).
+   rewrite Ht1 in Hixy; simpl in Hixy.
+   destruct s2 as [dj2| ]; [ idtac | discriminate Hixy ].
+   remember Hs2 as H; clear HeqH.
+   apply fst_same_sym_iff in H; simpl in H.
+   destruct H as (Hn2, Ht2).
+   destruct (lt_eq_lt_dec dj1 dj2) as [[H1| H1]| H1].
+    remember H1 as H; clear HeqH.
+    apply Hn2 in H.
+    rename H into Hy1.
+    remember Hy1 as H; clear HeqH.
+    symmetry in Hfxy.
+    eapply I_eq_neq_if in H; try eassumption.
+    destruct H as [(Hyi, Hxi)| (Hyi, Hxi)]; simpl in Hxi, Hyi.
+     pose proof (Hyi (dj2 - dj1)%nat) as H.
+     apply Nat.lt_le_incl in H1.
+     rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+     rewrite Nat.add_comm, Nat.add_sub in H.
+     rewrite Ht2 in H; discriminate H.
+
+bbb.
+   0   -  dj1  -  dj2
+x  1   1   0   1   1   1   1 …
+y  1   1   1   1   0   0   0 …
+
+     pose proof (Hyi (dj2 - S dj1)%nat) as H.
+     rewrite Nat.add_succ_r, <- Nat.add_succ_l in H.
+     rewrite Nat.add_sub_assoc in H.
+      rewrite Nat.add_comm, Nat.add_sub in H.
 bbb.
 rewrite Hfxy.
 

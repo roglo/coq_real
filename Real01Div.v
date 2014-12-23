@@ -224,11 +224,17 @@ induction i.
   apply I_ge_le_iff, I_le_0_r in H1; contradiction.
 Qed.
 
-Add Parametric Morphism : I_div_2_inc
-  with signature I_eq ==> eq ==> I_eq
-  as I_div_2_inc_morph.
+(*
+Definition I_div_2 x := I_div_2_inc x false.
+
+Theorem fold_I_div_2 : ∀ x, I_div_2_inc x false = I_div_2 x.
+Proof. reflexivity. Qed.
+
+Add Parametric Morphism : I_div_2
+  with signature I_eq ==> I_eq
+  as I_div_2_morph.
 Proof.
-intros x y Hxy b.
+intros x y Hxy.
 unfold I_eq; simpl; intros i.
 pose proof (Hxy i) as H; simpl in H.
 unfold I_add_i in H; simpl in H.
@@ -239,8 +245,8 @@ rename H into Hi.
 destruct i; simpl.
  f_equal.
  unfold carry; simpl.
- remember (fst_same (I_div_2_inc x b) 0 1) as s1 eqn:Hs1 .
- remember (fst_same (I_div_2_inc y b) 0 1) as s2 eqn:Hs2 .
+ remember (fst_same (I_div_2 x) 0 1) as s1 eqn:Hs1 .
+ remember (fst_same (I_div_2 y) 0 1) as s2 eqn:Hs2 .
  destruct s1 as [dj1| ].
   rewrite Nat.sub_0_r.
   remember Hs1 as H; clear HeqH.
@@ -284,7 +290,22 @@ destruct i; simpl.
         subst dj3.
         pose proof (Hn2 (S dj4)) as H.
         rewrite Nat.sub_0_r, Ht4 in H; discriminate H.
+
+        remember H1 as H; clear HeqH.
+        apply Nat.succ_lt_mono in H.
+        apply Hn1 in H.
+        rewrite Nat.sub_0_r, Ht3 in H; discriminate H.
+
+      destruct (lt_eq_lt_dec dj1 dj3) as [[H1| H1]| H1].
+       remember H1 as H; clear HeqH.
+       apply Hn3 in H.
+       rewrite <- Nat.add_1_r, Hxi in H.
+       discriminate H.
+
+       subst dj3.
+       destruct dj1.
 bbb.
+*)
 
 Theorem I_div_0_l : ∀ x, (x ≠ 0)%I → (0 / x = 0)%I.
 Proof.
