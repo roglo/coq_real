@@ -5113,6 +5113,15 @@ destruct H as [(Hxi, Hyi)| (Hxi, Hyi)]; simpl in Hxi, Hyi.
   rewrite Hn1 in H; discriminate H.
 Qed.
 
+Theorem fst_same_opp_some_none : ∀ x y i,
+  (x = y)%rm
+  → fst_same (- x) 0 (S i) = Some 0
+  → fst_same (- y) 0 (S i) = None
+  → x.[i] ≠ y.[i].
+Proof.
+intros x y i Heq Hs1 Hs2.
+bbb.
+
 Add Parametric Morphism : rm_opp
   with signature rm_eq ==> rm_eq
   as rm_opp_morph.
@@ -5267,7 +5276,19 @@ destruct s3 as [dj3| ].
      destruct H as (Hn2, Ht2).
      rewrite Ht2, xorb_false_r in Hi.
      exfalso.
+     destruct dj3.
+      rewrite Nat.add_0_r in Hxi, Hyi.
 bbb.
+  Hi : x .[ i] = y .[ i]
+  Hxi : ∀ di : nat, x .[ S (i + di)] = true
+  Hyi : ∀ di : nat, y .[ S (i + di)] = false
+  Heq : (x = y)%rm
+--> should be a contradiction; do I have a theorem for that?
+
+   i   -  dj3
+x  0   0   1   1   1   1   1 …
+   =
+y  0   0   0   0   0   0   0 …
 
 Add Parametric Morphism : rm_sub
   with signature rm_eq ==> rm_eq ==> rm_eq
