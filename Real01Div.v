@@ -10,6 +10,10 @@ Open Scope Z_scope.
 Definition I_mul_2 x := {| rm i := x.[S i] |}.
 Arguments I_mul_2 x%I.
 
+Definition I_div_2_inc x b :=
+  {| rm i := if zerop i then b else x.[i-1] |}.
+Arguments I_div_2_inc x%I _.
+
 Fixpoint I_div_eucl_i x y i :=
   match i with
   | O => if I_lt_dec x y then (false, x) else (true, I_sub x y)
@@ -30,6 +34,40 @@ Definition I_div x y := {| rm := I_div_i x y |}.
 Arguments I_div x%I y%I.
 
 Notation "x / y" := (I_div x y) : I_scope.
+
+Fixpoint two_power n :=
+  match n with
+  | O => 1%nat
+  | S n1 => (2 * two_power n1)%nat
+  end.
+
+Fixpoint I_eucl_div_loop m x y :=
+  match m with
+  | O => (O, 0%I)
+  | S m1 =>
+      if I_lt_dec x y then (O, x)
+      else
+        let (q, r) := I_eucl_div_loop m1 (I_sub x y) y in
+        (S q, r)
+  end.
+Arguments I_eucl_div_loop m%nat x%I y%I.
+
+Definition I_eucl_div x y :=
+  match fst_same x I_ones 0 with
+  | Some jx =>
+      match fst_same y I_ones 0 with
+      | Some jy =>
+          if le_dec jx jy then
+            let m := two_power (S (jy - jx)) in
+            let (q, r) := I_eucl_div_loop m x y in
+            (q, I_div r y)
+          else
+            (O, I_div x y)
+      | None => (O, y)
+      end
+  | None => (O, y)
+  end.
+Arguments I_eucl_div x%I y%I.
 
 (* *)
 
@@ -235,6 +273,33 @@ destruct s1 as [dj1| ].
  rewrite I_mul_2_0 in H1.
  apply I_ge_le_iff in H1.
  apply I_le_0_r in H1; contradiction.
+Qed.
+
+Theorem I_div_2_0_false : (I_div_2_inc 0 false = 0)%I.
+Proof.
+unfold I_eq; simpl; intros i.
+unfold I_add_i; simpl.
+rewrite xorb_false_r, carry_diag; simpl.
+remember (if zerop i then false else false) as a.
+destruct a.
+ destruct (zerop i); discriminate Heqa.
+
+ rewrite xorb_false_l.
+ unfold carry; simpl.
+ remember (fst_same (I_div_2_inc 0 false) 0 (S i)) as s1 eqn:Hs1 .
+ destruct s1; [ reflexivity | exfalso ].
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ pose proof (Hs1 O); discriminate H.
+Qed.
+
+Theorem two_power_neq_0 : ∀ n, two_power n ≠ O.
+Proof.
+intros n H.
+induction n; [ discriminate H | simpl in H ].
+rewrite Nat.add_0_r in H.
+apply Nat.eq_add_0 in H.
+destruct H as (H, _).
+apply IHn; assumption.
 Qed.
 
 Close Scope Z_scope.
