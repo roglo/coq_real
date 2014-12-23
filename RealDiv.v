@@ -368,6 +368,7 @@ remember (rm_eucl_div xm ym) as qrm eqn:Hqrm .
 symmetry in Hqrm.
 destruct qrm as (q, rm).
 destruct nxp.
+bbb.
  unfold max_iter_int_part in Hm; simpl in Hm.
  rewrite Z.add_comm in Hm; simpl in Hm.
  remember (re_int ax) as ai eqn:Hai .
