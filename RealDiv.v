@@ -162,18 +162,87 @@ destruct c1; simpl.
    remember (fst_same d1 0 (S (S i))) as s1 eqn:Hs1 .
    remember (fst_same d2 0 (S (S i))) as s2 eqn:Hs2 .
    subst d1 d2.
-   apply fst_same_sym_iff in Hs1; simpl in Hs1.
-   apply fst_same_sym_iff in Hs2; simpl in Hs2.
+   remember Hs1 as Hn1; clear HeqHn1.
+   apply fst_same_sym_iff in Hn1; simpl in Hn1.
+   remember Hs2 as Hn2; clear HeqHn2.
+   apply fst_same_sym_iff in Hn2; simpl in Hn2.
+   unfold R_eq in Hxy; simpl in Hxy.
+   destruct Hxy as (Hixy, Hfxy).
+   rewrite Hx, Hy in Hixy; simpl in Hixy.
+   apply b2z_inj in Hixy.
+   pose proof (Hfxy i) as Hi; simpl in Hi.
+   unfold I_add_i in Hi; simpl in Hi.
+   do 2 rewrite xorb_false_r in Hi.
+   unfold carry in Hi; simpl in Hi.
+   remember (fst_same (R_frac x) 0 (S i)) as s3 eqn:Hs3 .
+   remember (fst_same (R_frac y) 0 (S i)) as s4 eqn:Hs4 .
    destruct s1 as [dj1| ].
-    destruct Hs1 as (Hn1, Ht1).
+    destruct Hn1 as (Hn1, Ht1).
     rewrite Ht1, xorb_false_r.
     destruct s2 as [dj2| ].
-     destruct Hs2 as (Hn2, Ht2).
+     destruct Hn2 as (Hn2, Ht2).
      rewrite Ht2, xorb_false_r.
-     unfold R_eq in Hxy; simpl in Hxy.
-     destruct Hxy as (Hixy, Hfxy).
-     rewrite Hx, Hy in Hixy; simpl in Hixy.
-     apply b2z_inj in Hixy.
+     destruct s3 as [dj3| ].
+      remember Hs3 as H; clear HeqH.
+      apply fst_same_sym_iff in H; simpl in H.
+      destruct H as (Hn3, Ht3).
+      rewrite Ht3, xorb_false_r in Hi.
+      destruct s4 as [dj4| ].
+       remember Hs4 as H; clear HeqH.
+       apply fst_same_sym_iff in H; simpl in H.
+       destruct H as (Hn4, Ht4).
+       rewrite Ht4, xorb_false_r in Hi; assumption.
+
+       remember Hs4 as H; clear HeqH.
+       apply fst_same_sym_iff in H; simpl in H.
+       rename H into Hn4.
+       rewrite Hn4 in Ht2; discriminate Ht2.
+
+      remember Hs3 as H; clear HeqH.
+      apply fst_same_sym_iff in H; simpl in H.
+      rename H into Hn3.
+      rewrite Hn3 in Ht1; discriminate Ht1.
+
+     destruct s3 as [dj3| ].
+      remember Hs3 as H; clear HeqH.
+      apply fst_same_sym_iff in H; simpl in H.
+      destruct H as (Hn3, Ht3).
+      rewrite Ht3, xorb_false_r in Hi.
+      destruct s4 as [dj4| ]; [ idtac | assumption ].
+      remember Hs4 as H; clear HeqH.
+      apply fst_same_sym_iff in H; simpl in H.
+      destruct H as (Hn4, Ht4).
+      rewrite Ht4, xorb_false_r in Hi.
+      rewrite Hn2 in Ht4; discriminate Ht4.
+
+      remember Hs3 as H; clear HeqH.
+      apply fst_same_sym_iff in H; simpl in H.
+      rename H into Hn3.
+      rewrite Hn3 in Ht1; discriminate Ht1.
+
+    destruct s2 as [dj2| ].
+     destruct Hn2 as (Hn2, Ht2).
+     rewrite Ht2, xorb_false_r.
+     destruct s3 as [dj3| ].
+      remember Hs3 as H; clear HeqH.
+      apply fst_same_sym_iff in H; simpl in H.
+      destruct H as (Hn3, Ht3).
+      rewrite Hn1 in Ht3; discriminate Ht3.
+
+      remember Hs3 as H; clear HeqH.
+      apply fst_same_sym_iff in H; simpl in H.
+      rename H into Hn3.
+      destruct s4 as [dj4| ].
+       remember Hs4 as H; clear HeqH.
+       apply fst_same_sym_iff in H; simpl in H.
+       destruct H as (Hn4, Ht4).
+       rewrite Ht4, xorb_false_r in Hi; assumption.
+
+       remember Hs4 as H; clear HeqH.
+       apply fst_same_sym_iff in H; simpl in H.
+       rename H into Hn4.
+       rewrite Hn4 in Ht2; discriminate Ht2.
+
 bbb.
 
 intros m x y Hxy z t Hzt.
