@@ -51,10 +51,11 @@ Notation "x / y" := (R_div x y) : R_scope.
 
 (* *)
 
-Definition I_equiv_div_fst m x y := fst (I_equiv_div m x y).
+Definition I_equiv_div_fst x y :=
+  fst (I_equiv_div (max_iter_int_part x y) x y).
 
-Theorem fold_I_equiv_div_fst : ∀ m x y,
-  fst (I_equiv_div m x y) = I_equiv_div_fst m x y.
+Theorem fold_I_equiv_div_fst : ∀ x y,
+  fst (I_equiv_div (max_iter_int_part x y) x y) = I_equiv_div_fst x y.
 Proof. reflexivity. Qed.
 
 Theorem b2z_inj : ∀ b1 b2, b2z b1 = b2z b2 → b1 = b2.
@@ -94,11 +95,21 @@ destruct s3 as [dj3| ].
  rewrite Hn3 in Ht1; discriminate Ht1.
 Qed.
 
+(* won't work because int parts must be positive, what is the
+   required condition for I_equiv_div to work
+
 Add Parametric Morphism : I_equiv_div_fst
-  with signature eq ==> R_eq ==> R_eq ==> I_eq
+  with signature R_eq ==> R_eq ==> I_eq
   as I_equiv_div_fst_morph.
 Proof.
-intros m x y Hxy z t Hzt.
+intros x y Hxy z t Hzt.
+unfold I_equiv_div_fst.
+remember (max_iter_int_part x z) as m1 eqn:Hm1 .
+remember (max_iter_int_part y t) as m2 eqn:Hm2 .
+unfold max_iter_int_part in Hm1, Hm2.
+
+bbb.
+intros x y Hxy z t Hzt.
 unfold I_equiv_div_fst.
 destruct m; [ reflexivity | simpl ].
 remember ((R_int x =? 0) && (R_int z =? 0)) as c1 eqn:Hc1 .
@@ -258,6 +269,17 @@ destruct c1; simpl.
       destruct H as (Hn4, Ht4).
       rewrite Hn2 in Ht4; discriminate Ht4.
 
+  apply andb_false_iff in Hc2.
+  destruct Hc2 as [Hy| Ht].
+   apply Z.eqb_neq in Hy.
+   unfold R_eq in Hxy; simpl in Hxy.
+   rewrite Hx in Hxy; simpl in Hxy.
+   destruct Hxy as (Hixy, Hfxy).
+   destruct m.
+    simpl.
+    unfold carry in Hixy; simpl in Hixy.
+    remember (fst_same (R_frac x) 0 0) as s1 eqn:Hs1 .
+    remember (fst_same (R_frac y) 0 0) as s2 eqn:Hs2 .
 bbb.
 
 intros m x y Hxy z t Hzt.
@@ -319,6 +341,7 @@ y  1   1   1   1   0   0   0 …
       rewrite Nat.add_comm, Nat.add_sub in H.
 bbb.
 rewrite Hfxy.
+*)
 
 Theorem Z_nlt_1_0 : (1 <? 0) = false.
 Proof. reflexivity. Qed.
@@ -347,9 +370,87 @@ destruct s1 as [di1| ]; [ idtac | exfalso ].
  discriminate H.
 Qed.
 
-Theorem zzz : ∀ y m, (I_equiv_div_fst m 0%R y = 0)%I.
+Theorem yyy : ∀ x y,
+  (x = 0)%R
+  → (I_equiv_div_fst x y = 0)%I.
 Proof.
-intros y m.
+intros x y Hx.
+unfold I_equiv_div_fst; simpl.
+remember (max_iter_int_part x y) as m eqn:Hm .
+clear Hm.
+revert x y Hx.
+induction m; intros; [ reflexivity | simpl ].
+remember ((R_int x =? 0) && (R_int y =? 0)) as c eqn:Hc .
+symmetry in Hc.
+destruct c; simpl.
+ apply andb_true_iff in Hc.
+ destruct Hc as (Hix, Hiy).
+ apply Z.eqb_eq in Hix.
+ apply Z.eqb_eq in Hiy.
+ rewrite Hix; simpl.
+ remember Hx as H; clear HeqH.
+ unfold R_eq in H; simpl in H.
+ destruct H as (Hi, Hf).
+ unfold I_eq; simpl; intros i.
+ unfold I_add_i; simpl.
+ rewrite carry_diag; simpl.
+ rewrite xorb_false_r.
+ destruct i; simpl.
+  unfold carry; simpl.
+  remember (fst_same (I_div_2_inc (R_frac x) false) 0 1) as s1 eqn:Hs1 .
+  destruct s1 as [dj1| ]; [ idtac | exfalso ].
+   remember Hs1 as H; clear HeqH.
+   apply fst_same_sym_iff in H; simpl in H.
+   destruct H as (Hn1, Ht1).
+   rewrite Ht1; reflexivity.
+
+   remember Hs1 as H; clear HeqH.
+   apply fst_same_sym_iff in H; simpl in H.
+   rename H into Hn1.
+   rewrite Hix in Hi; simpl in Hi.
+   apply b2z_inj in Hi.
+   rewrite carry_diag in Hi.
+   unfold carry in Hi; simpl in Hi.
+   remember (fst_same (R_frac x) 0 0) as s2 eqn:Hs2 .
+   destruct s2 as [dj2| ]; [ idtac | discriminate Hi ].
+   pose proof (Hn1 dj2) as H; rewrite Nat.sub_0_r in H.
+   rewrite Hi in H; discriminate H.
+
+  rewrite Nat.sub_0_r.
+  unfold carry; simpl.
+  remember (fst_same (I_div_2_inc (R_frac x) false) 0 (S (S i))) as s1
+   eqn:Hs1 .
+  destruct s1 as [dj1| ].
+   remember Hs1 as H; clear HeqH.
+   apply fst_same_sym_iff in H; simpl in H.
+   destruct H as (Hn1, Ht1).
+   rewrite Ht1, xorb_false_r.
+   rewrite Hix in Hi; simpl in Hi.
+   apply b2z_inj in Hi.
+   rewrite carry_diag in Hi.
+   unfold carry in Hi; simpl in Hi.
+   remember (fst_same (R_frac x) 0 0) as s2 eqn:Hs2 .
+   destruct s2 as [dj2| ]; [ idtac | discriminate Hi ].
+   remember Hs2 as H; clear HeqH.
+   apply fst_same_sym_iff in H; simpl in H.
+   destruct H as (Hn2, Ht2).
+bbb.
+
+Theorem zzz : ∀ y, (I_equiv_div_fst 0%R y = 0)%I.
+Proof.
+intros y.
+unfold I_equiv_div_fst; simpl.
+remember (max_iter_int_part 0%R y) as m eqn:Hm .
+clear Hm.
+revert y.
+induction m; intros; [ reflexivity | simpl ].
+remember (R_int y =? 0) as c eqn:Hc .
+symmetry in Hc.
+destruct c; simpl; [ apply I_div_2_0_false | idtac ].
+bbb.
+
+intros y.
+bbb.
 revert y.
 induction m; intros; [ reflexivity | simpl ].
 unfold I_equiv_div_fst; simpl.
@@ -359,6 +460,7 @@ destruct c; simpl; [ apply I_div_2_0_false | idtac ].
 rewrite fold_I_equiv_div_fst.
 bbb.
 rewrite R_div_2_0.
+*)
 
 Theorem R_div_0_l : ∀ x, (0 / x = 0)%R.
 Proof.
