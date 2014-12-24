@@ -243,6 +243,21 @@ destruct c1; simpl.
        rename H into Hn4.
        rewrite Hn4 in Ht2; discriminate Ht2.
 
+     destruct s3 as [dj3| ].
+      remember Hs3 as H; clear HeqH.
+      apply fst_same_sym_iff in H; simpl in H.
+      destruct H as (Hn3, Ht3).
+      rewrite Hn1 in Ht3; discriminate Ht3.
+
+      remember Hs3 as H; clear HeqH.
+      apply fst_same_sym_iff in H; simpl in H.
+      rename H into Hn3.
+      destruct s4 as [dj4| ]; [ idtac | assumption ].
+      remember Hs4 as H; clear HeqH.
+      apply fst_same_sym_iff in H; simpl in H.
+      destruct H as (Hn4, Ht4).
+      rewrite Hn2 in Ht4; discriminate Ht4.
+
 bbb.
 
 intros m x y Hxy z t Hzt.
