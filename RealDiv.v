@@ -820,7 +820,7 @@ destruct H as [(Hi, Hf)| (Hi, Hf)].
  unfold I_equiv_div_fst; simpl.
  remember (max_iter_int_part x y) as m eqn:Hm .
  clear Hm.
- revert y.
+ revert x Hx Hi Hf y.
  induction m; intros; [ reflexivity | simpl ].
  rewrite Hi; simpl.
  remember (R_int y =? 0) as c eqn:Hiy .
@@ -828,203 +828,29 @@ destruct H as [(Hi, Hf)| (Hi, Hf)].
  destruct c.
   apply Z.eqb_eq in Hiy; simpl.
   unfold I_eq; simpl; intros i.
-bbb.
-*)
-intros x y Hx.
-remember Hx as H; clear HeqH.
-apply R_zero_if in H; simpl in H.
-destruct H as [(Hi, Hf)| (Hi, Hf)].
-
-bbb.
-intros x y Hx.
-unfold I_equiv_div_fst; simpl.
-remember (max_iter_int_part x y) as m eqn:Hm .
-clear Hm.
-revert x y Hx.
-induction m; intros; [ reflexivity | simpl ].
-remember ((R_int x =? 0) && (R_int y =? 0)) as c eqn:Hc .
-symmetry in Hc.
-destruct c; simpl.
- apply andb_true_iff in Hc.
- destruct Hc as (Hix, Hiy).
- apply Z.eqb_eq in Hix.
- apply Z.eqb_eq in Hiy.
- rewrite Hix; simpl.
- remember Hx as H; clear HeqH.
- unfold R_eq in H; simpl in H.
- destruct H as (Hi, Hf).
- unfold I_eq; simpl; intros i.
- unfold I_add_i; simpl.
- rewrite carry_diag; simpl.
- rewrite xorb_false_r.
- remember Hf as H; clear HeqH.
- apply I_zero_if in H; simpl in H.
- destruct H as [Ha| Ha].
-  destruct i; simpl.
-   unfold carry; simpl.
-   remember (fst_same (I_div_2_inc (R_frac x) false) 0 1) as s1 eqn:Hs1 .
-   destruct s1 as [dj1| ]; [ idtac | exfalso ].
-    rewrite Ha; reflexivity.
-
-    remember Hs1 as H; clear HeqH.
-    apply fst_same_sym_iff in H; simpl in H.
-    rename H into Hn1.
-    pose proof (Hn1 O) as H.
-    rewrite Ha in H; discriminate H.
-
-   rewrite Ha, xorb_false_l.
-   unfold carry; simpl.
-   remember (I_div_2_inc (R_frac x) false) as z eqn:Hz .
-   remember (fst_same z 0 (S (S i))) as s1 eqn:Hs1 .
-   subst z.
-   destruct s1 as [dj1| ]; [ apply Ha | exfalso ].
-   apply fst_same_sym_iff in Hs1; simpl in Hs1.
-   pose proof (Hs1 O) as H.
-   rewrite Ha in H; discriminate H.
-
-  destruct i; simpl.
-   unfold carry; simpl.
-   remember (fst_same (I_div_2_inc (R_frac x) false) 0 1) as s1 eqn:Hs1 .
-   destruct s1 as [dj1| ]; [ idtac | exfalso ].
-    remember Hs1 as H; clear HeqH.
-    apply fst_same_sym_iff in H; simpl in H.
-    destruct H as (Hn1, Ht1).
-    rewrite Ha in Ht1; discriminate Ht1.
-
-    rewrite Hix, Z.add_0_l in Hi.
-    apply b2z_inj in Hi.
-    rewrite carry_diag in Hi; simpl in Hi.
-    unfold carry in Hi; simpl in Hi.
-    remember (fst_same (R_frac x) 0 0) as s2 eqn:Hs2 .
-    destruct s2 as [dj2| ]; [ idtac | discriminate Hi ].
-    rewrite Ha in Hi; discriminate Hi.
-
-   rewrite Ha, xorb_true_l.
-   apply negb_false_iff.
-   rewrite Hix, Z.add_0_l in Hi.
-   apply b2z_inj in Hi.
-   rewrite carry_diag in Hi; simpl in Hi.
-   unfold carry in Hi; simpl in Hi.
-   remember (fst_same (R_frac x) 0 0) as s2 eqn:Hs2 .
-   destruct s2 as [dj2| ]; [ idtac | discriminate Hi ].
-   rewrite Ha in Hi; discriminate Hi.
-
- apply andb_false_iff in Hc.
- rewrite IHm; [ reflexivity | idtac ].
-bbb.
-
-intros x y Hx.
-unfold I_equiv_div_fst; simpl.
-remember (max_iter_int_part x y) as m eqn:Hm .
-clear Hm.
-revert x y Hx.
-induction m; intros; [ reflexivity | simpl ].
-remember ((R_int x =? 0) && (R_int y =? 0)) as c eqn:Hc .
-symmetry in Hc.
-destruct c; simpl.
- apply andb_true_iff in Hc.
- destruct Hc as (Hix, Hiy).
- apply Z.eqb_eq in Hix.
- apply Z.eqb_eq in Hiy.
- rewrite Hix; simpl.
- remember Hx as H; clear HeqH.
- unfold R_eq in H; simpl in H.
- destruct H as (Hi, Hf).
- unfold I_eq; simpl; intros i.
- unfold I_add_i; simpl.
- rewrite carry_diag; simpl.
- rewrite xorb_false_r.
- remember Hf as H; clear HeqH.
- apply I_zero_if in H; simpl in H.
- destruct H as [Ha| Ha].
-  destruct i; simpl.
-   unfold carry; simpl.
-   remember (fst_same (I_div_2_inc (R_frac x) false) 0 1) as s1 eqn:Hs1 .
-   destruct s1 as [dj1| ]; [ idtac | exfalso ].
-    rewrite Ha; reflexivity.
-
-    remember Hs1 as H; clear HeqH.
-    apply fst_same_sym_iff in H; simpl in H.
-    rename H into Hn1.
-    pose proof (Hn1 O) as H.
-    rewrite Ha in H; discriminate H.
-
-   rewrite Ha, xorb_false_l.
-   unfold carry; simpl.
-   remember (I_div_2_inc (R_frac x) false) as z eqn:Hz .
-   remember (fst_same z 0 (S (S i))) as s1 eqn:Hs1 .
-   subst z.
-   destruct s1 as [dj1| ]; [ apply Ha | exfalso ].
-   apply fst_same_sym_iff in Hs1; simpl in Hs1.
-   pose proof (Hs1 O) as H.
-   rewrite Ha in H; discriminate H.
-bbb.
-
-intros x y Hx.
-bbb.
-unfold I_equiv_div_fst; simpl.
-remember (max_iter_int_part x y) as m eqn:Hm .
-clear Hm.
-revert x y Hx.
-induction m; intros; [ reflexivity | simpl ].
-remember ((R_int x =? 0) && (R_int y =? 0)) as c eqn:Hc .
-symmetry in Hc.
-destruct c; simpl.
- apply andb_true_iff in Hc.
- destruct Hc as (Hix, Hiy).
- apply Z.eqb_eq in Hix.
- apply Z.eqb_eq in Hiy.
- rewrite Hix; simpl.
- remember Hx as H; clear HeqH.
- unfold R_eq in H; simpl in H.
- destruct H as (Hi, Hf).
- unfold I_eq; simpl; intros i.
- unfold I_add_i; simpl.
- rewrite carry_diag; simpl.
- rewrite xorb_false_r.
- destruct i; simpl.
+  unfold I_add_i; simpl.
+  rewrite xorb_false_r, carry_diag; simpl.
   unfold carry; simpl.
-  remember (fst_same (I_div_2_inc (R_frac x) false) 0 1) as s1 eqn:Hs1 .
-  destruct s1 as [dj1| ]; [ idtac | exfalso ].
-   remember Hs1 as H; clear HeqH.
-   apply fst_same_sym_iff in H; simpl in H.
-   destruct H as (Hn1, Ht1).
-   rewrite Ht1; reflexivity.
-
-   remember Hs1 as H; clear HeqH.
-   apply fst_same_sym_iff in H; simpl in H.
-   rename H into Hn1.
-   rewrite Hix in Hi; simpl in Hi.
-   apply b2z_inj in Hi.
-   rewrite carry_diag in Hi.
-   unfold carry in Hi; simpl in Hi.
-   remember (fst_same (R_frac x) 0 0) as s2 eqn:Hs2 .
-   destruct s2 as [dj2| ]; [ idtac | discriminate Hi ].
-   pose proof (Hn1 dj2) as H; rewrite Nat.sub_0_r in H.
-   rewrite Hi in H; discriminate H.
-
-  rewrite Nat.sub_0_r.
-  unfold carry; simpl.
-  remember (fst_same (I_div_2_inc (R_frac x) false) 0 (S (S i))) as s1
-   eqn:Hs1 .
+  remember (I_div_2_inc (R_frac x) false) as z eqn:Hz .
+  remember (fst_same z 0 (S i)) as s1 eqn:Hs1 .
+  apply fst_same_sym_iff in Hs1; simpl in Hs1.
   destruct s1 as [dj1| ].
-   remember Hs1 as H; clear HeqH.
-   apply fst_same_sym_iff in H; simpl in H.
-   destruct H as (Hn1, Ht1).
-   rewrite Ht1, xorb_false_r.
-   rewrite Hix in Hi; simpl in Hi.
-   apply b2z_inj in Hi.
-   rewrite carry_diag in Hi.
-   unfold carry in Hi; simpl in Hi.
-   remember (fst_same (R_frac x) 0 0) as s2 eqn:Hs2 .
-   destruct s2 as [dj2| ]; [ idtac | discriminate Hi ].
-   remember Hs2 as H; clear HeqH.
-   apply fst_same_sym_iff in H; simpl in H.
-   destruct H as (Hn2, Ht2).
+   do 2 rewrite Hf.
+   destruct (zerop i); reflexivity.
+
+   pose proof (Hs1 O) as H; subst z; simpl in H.
+   rewrite Hf in H; discriminate H.
+
+  apply Z.eqb_neq in Hiy; simpl.
+  apply IHm; simpl.
+   apply R_div_2_0_if; assumption.
+
+   rewrite Hi; reflexivity.
+
+   intros i.
+   rewrite Hi, Hf; simpl.
+   destruct (zerop i); reflexivity.
 bbb.
-   0   -   i   -  dj2
-x  1   1   1   1   0
-y  .
 
 Theorem zzz : ∀ y, (I_equiv_div_fst 0%R y = 0)%I.
 Proof.
