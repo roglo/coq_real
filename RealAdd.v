@@ -2451,4 +2451,37 @@ intros x y.
 destruct (R_gt_dec x y); [ left | right ]; assumption.
 Qed.
 
+(* miscellaneous *)
+
+Theorem R_zero_if : ∀ x,
+  (x = 0)%R
+  → (R_int x = 0 ∧ ∀ i : nat, (R_frac x).[i] = false) ∨
+    (R_int x = -1 ∧ ∀ i : nat, (R_frac x).[i] = true).
+Proof.
+intros x Hx.
+unfold R_eq in Hx.
+destruct Hx as (Hi, Hf).
+simpl in Hi.
+rewrite carry_diag in Hi; simpl in Hi.
+unfold carry in Hi; simpl in Hi.
+remember (fst_same (R_frac x) 0 0) as s1 eqn:Hs1 .
+apply fst_same_sym_iff in Hs1; simpl in Hs1.
+apply I_zero_if in Hf.
+destruct Hf as [Hf| Hf]; [ left | right ].
+ split; [ idtac | assumption ].
+ destruct s1 as [dj1| ].
+  rewrite Hf, Z.add_0_r in Hi; assumption.
+
+  pose proof (Hs1 O) as H.
+  rewrite Hf in H; discriminate H.
+
+ split; [ idtac | assumption ].
+ destruct s1 as [dj1| ].
+  destruct Hs1 as (Hn1, Ht1).
+  rewrite Hf in Ht1; discriminate Ht1.
+
+  simpl in Hi.
+  apply Z.add_move_r in Hi; assumption.
+Qed.
+
 Close Scope Z_scope.

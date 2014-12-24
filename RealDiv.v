@@ -463,6 +463,7 @@ split.
        destruct H as (Hn4, Ht4).
        rewrite Ht4, Z.add_0_r in Hi.
 
+Abort. (* à voir...
 bbb.
 *)
 
@@ -744,21 +745,76 @@ Qed.
 Theorem R_div_2_0_if : ∀ x, (x = 0)%R → (R_div_2 x = 0)%R.
 Proof.
 intros x Hx.
-unfold R_eq; simpl.
-unfold R_eq in Hx; simpl in Hx.
-destruct Hx as (Hi, Hf).
-split.
- rewrite carry_diag in Hi; simpl in Hi.
+remember Hx as H; clear HeqH.
+apply R_zero_if in H; simpl in H.
+destruct H as [(Hi, Hf)| (Hi, Hf)].
+ unfold R_eq; simpl.
+ rewrite Hi; simpl.
+ remember (I_div_2_inc (R_frac x) false) as z eqn:Hz .
  rewrite carry_diag; simpl.
- unfold carry; simpl.
-bbb.
-not required if I succeed in the morphism above
+ split.
+  unfold carry; simpl.
+  remember (fst_same z 0 0) as s1 eqn:Hs1 .
+  apply fst_same_sym_iff in Hs1; simpl in Hs1.
+  destruct s1 as [dj1| ]; [ idtac | exfalso ].
+   destruct Hs1 as (Hn1, Ht1).
+   rewrite Ht1; reflexivity.
+
+   pose proof (Hs1 O) as H.
+   rewrite Hz in H; discriminate H.
+
+  unfold I_eq; simpl; intros i.
+  unfold I_add_i; simpl.
+  rewrite xorb_false_r, carry_diag; simpl.
+  rewrite Hz in |- * at 1; simpl.
+  unfold carry; simpl.
+  remember (fst_same z 0 (S i)) as s1 eqn:Hs1 .
+  apply fst_same_sym_iff in Hs1; simpl in Hs1.
+  destruct s1 as [dj1| ].
+   destruct Hs1 as (Hn1, Ht1); rewrite Ht1, xorb_false_r.
+   destruct (zerop i); [ reflexivity | apply Hf ].
+
+   pose proof (Hs1 O) as H.
+   rewrite Hz in H; simpl in H.
+   rewrite Hf in H; discriminate H.
+
+ unfold R_eq; simpl.
+ rewrite Z.add_comm.
+ rewrite Hi; simpl.
+ remember (I_div_2_inc (R_frac x) true) as z eqn:Hz .
+ rewrite carry_diag; simpl.
+ split.
+  unfold carry; simpl.
+  remember (fst_same z 0 0) as s1 eqn:Hs1 .
+  apply fst_same_sym_iff in Hs1; simpl in Hs1.
+  destruct s1 as [dj1| ]; [ idtac | reflexivity ].
+  destruct Hs1 as (Hn1, Ht1).
+  rewrite Hz in Ht1; simpl in Ht1.
+  destruct (zerop dj1); [ discriminate Ht1 | idtac ].
+  rewrite Hf in Ht1; discriminate Ht1.
+
+  unfold I_eq; simpl; intros i.
+  unfold I_add_i; simpl.
+  rewrite xorb_false_r, carry_diag; simpl.
+  rewrite Hz in |- * at 1; simpl.
+  unfold carry; simpl.
+  remember (fst_same z 0 (S i)) as s1 eqn:Hs1 .
+  apply fst_same_sym_iff in Hs1; simpl in Hs1.
+  destruct s1 as [dj1| ].
+   destruct Hs1 as (Hn1, Ht1); rewrite Ht1, xorb_false_r.
+   rewrite Hz in Ht1; simpl in Ht1.
+   rewrite Hf in Ht1; discriminate Ht1.
+
+   destruct (zerop i) as [H1| H1]; [ reflexivity | idtac ].
+   rewrite Hf; reflexivity.
+Qed.
 
 Theorem yyy : ∀ x y,
   (x = 0)%R
   → (I_equiv_div_fst x y = 0)%I.
 Proof.
 intros x y Hx.
+bbb.
 unfold I_equiv_div_fst; simpl.
 remember (max_iter_int_part x y) as m eqn:Hm .
 clear Hm.
