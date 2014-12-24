@@ -228,6 +228,8 @@ split.
       apply fst_same_sym_iff in H; simpl in H.
       destruct H as (Hn4, Ht4).
       rewrite Ht4, Z.add_0_r in Hi.
+      pose proof (Hn2 (S dj4)) as H; simpl in H.
+      rewrite Nat.sub_0_r, Ht4 in H; discriminate H.
 bbb.
 
 (* won't work because int parts must be positive, what is the
