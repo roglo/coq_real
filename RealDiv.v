@@ -744,7 +744,8 @@ Qed.
 
 Theorem R_div_2_0_if : ∀ x, (x = 0)%R → (R_div_2 x = 0)%R.
 Proof.
-intros x y Hx.
+intros x Hx.
+bbb.
 remember Hx as H; clear HeqH.
 apply R_zero_if in H; simpl in H.
 destruct H as [(Hi, Hf)| (Hi, Hf)].

@@ -2466,7 +2466,7 @@ rewrite carry_diag in Hi; simpl in Hi.
 unfold carry in Hi; simpl in Hi.
 remember (fst_same (R_frac x) 0 0) as s1 eqn:Hs1 .
 apply fst_same_sym_iff in Hs1; simpl in Hs1.
-apply I_zero_if in Hf.
+apply I_zero_iff in Hf.
 destruct Hf as [Hf| Hf]; [ left | right ].
  split; [ idtac | assumption ].
  destruct s1 as [dj1| ].

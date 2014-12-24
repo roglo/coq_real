@@ -5697,53 +5697,79 @@ split; intros H.
   exfalso; apply H; intros HH; discriminate HH.
 Qed.
 
-Theorem I_zero_if : ∀ x,
-  (x = 0)%I →
+Theorem I_zero_iff : ∀ x,
+  (x = 0)%I ↔
   (∀ i, x.[i] = false) ∨ (∀ i, x.[i] = true).
 Proof.
-intros x Hx.
-remember x .[ 0] as b eqn:Hb .
-symmetry in Hb.
-destruct b; [ right | left ]; intros i.
- induction i; [ assumption | idtac ].
- pose proof (Hx i) as Hi; simpl in Hi.
- unfold I_add_i in Hi; simpl in Hi.
- rewrite xorb_false_r, carry_diag in Hi; simpl in Hi.
- rewrite IHi, xorb_true_l in Hi.
- apply negb_false_iff in Hi.
- unfold carry in Hi; simpl in Hi.
- remember (fst_same x 0 (S i)) as s1 eqn:Hs1 .
- apply fst_same_sym_iff in Hs1; simpl in Hs1.
- destruct s1 as [dj1| ]; [ idtac | clear Hi ].
+intros x.
+split.
+ intros Hx.
+ remember x .[ 0] as b eqn:Hb .
+ symmetry in Hb.
+ destruct b; [ right | left ]; intros i.
+  induction i; [ assumption | idtac ].
+  pose proof (Hx i) as Hi; simpl in Hi.
+  unfold I_add_i in Hi; simpl in Hi.
+  rewrite xorb_false_r, carry_diag in Hi; simpl in Hi.
+  rewrite IHi, xorb_true_l in Hi.
+  apply negb_false_iff in Hi.
+  unfold carry in Hi; simpl in Hi.
+  remember (fst_same x 0 (S i)) as s1 eqn:Hs1 .
+  apply fst_same_sym_iff in Hs1; simpl in Hs1.
+  destruct s1 as [dj1| ]; [ idtac | clear Hi ].
+   destruct Hs1 as (Hn1, Hs1).
+   rewrite Hs1 in Hi; discriminate Hi.
+
+   pose proof (Hs1 O) as H; rewrite Nat.add_0_r in H; assumption.
+
+  induction i; [ assumption | idtac ].
+  pose proof (Hx i) as Hi; simpl in Hi.
+  unfold I_add_i in Hi; simpl in Hi.
+  rewrite xorb_false_r, carry_diag in Hi; simpl in Hi.
+  rewrite IHi, xorb_false_l in Hi.
+  unfold carry in Hi; simpl in Hi.
+  remember (fst_same x 0 (S i)) as s1 eqn:Hs1 .
+  destruct s1 as [dj1| ]; [ idtac | discriminate Hi ].
   destruct Hs1 as (Hn1, Hs1).
-  rewrite Hs1 in Hi; discriminate Hi.
+  pose proof (Hx (S i)) as Hsi; simpl in Hsi.
+  unfold I_add_i in Hsi; simpl in Hsi.
+  rewrite xorb_false_r, carry_diag in Hsi; simpl in Hsi.
+  unfold carry in Hsi; simpl in Hsi.
+  remember (fst_same x 0 (S (S i))) as s2 eqn:Hs2 .
+  apply fst_same_sym_iff in Hs2; simpl in Hs2.
+  destruct s2 as [dj2| ].
+   destruct Hs2 as (Hn2, Ht2).
+   rewrite Ht2, xorb_false_r in Hsi; assumption.
 
-  pose proof (Hs1 O) as H; rewrite Nat.add_0_r in H; assumption.
+   destruct dj1.
+    rewrite Nat.add_0_r in Hi; assumption.
 
- induction i; [ assumption | idtac ].
- pose proof (Hx i) as Hi; simpl in Hi.
- unfold I_add_i in Hi; simpl in Hi.
- rewrite xorb_false_r, carry_diag in Hi; simpl in Hi.
- rewrite IHi, xorb_false_l in Hi.
- unfold carry in Hi; simpl in Hi.
- remember (fst_same x 0 (S i)) as s1 eqn:Hs1 .
- destruct s1 as [dj1| ]; [ idtac | discriminate Hi ].
- destruct Hs1 as (Hn1, Hs1).
- pose proof (Hx (S i)) as Hsi; simpl in Hsi.
- unfold I_add_i in Hsi; simpl in Hsi.
- rewrite xorb_false_r, carry_diag in Hsi; simpl in Hsi.
- unfold carry in Hsi; simpl in Hsi.
- remember (fst_same x 0 (S (S i))) as s2 eqn:Hs2 .
- apply fst_same_sym_iff in Hs2; simpl in Hs2.
- destruct s2 as [dj2| ].
-  destruct Hs2 as (Hn2, Ht2).
-  rewrite Ht2, xorb_false_r in Hsi; assumption.
+    rewrite Nat.add_succ_r, Hs2 in Hi.
+    discriminate Hi.
 
-  destruct dj1.
-   rewrite Nat.add_0_r in Hi; assumption.
+ intros [Hx| Hx].
+  unfold I_eq; simpl; intros i.
+  unfold I_add_i; simpl.
+  rewrite xorb_false_r, carry_diag; simpl.
+  rewrite Hx, xorb_false_l.
+  unfold carry; simpl.
+  remember (fst_same x 0 (S i)) as s1 eqn:Hs1 .
+  apply fst_same_sym_iff in Hs1; simpl in Hs1.
+  destruct s1 as [dj1| ].
+   destruct Hs1; assumption.
 
-   rewrite Nat.add_succ_r, Hs2 in Hi.
-   discriminate Hi.
+   pose proof (Hs1 O) as H.
+   rewrite Hx in H; discriminate H.
+
+  unfold I_eq; simpl; intros i.
+  unfold I_add_i; simpl.
+  rewrite xorb_false_r, carry_diag; simpl.
+  rewrite Hx, xorb_true_l.
+  apply negb_false_iff.
+  unfold carry; simpl.
+  remember (fst_same x 0 (S i)) as s1 eqn:Hs1 .
+  destruct s1 as [dj1| ]; [ idtac | reflexivity ].
+  apply Hx.
 Qed.
 
 Close Scope nat_scope.
