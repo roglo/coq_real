@@ -199,9 +199,7 @@ split.
        rewrite Ht4, Z.add_0_r in Hi.
        rewrite <- Hi; simpl.
        rewrite Zodd_even_bool in Ht1.
-       apply negb_false_iff in Ht1.
-       apply Zeven_bool_iff in Ht1.
-       apply Zeven_div2 in Ht1.
+       apply negb_false_iff, Zeven_bool_iff, Zeven_div2 in Ht1.
        rewrite Ht1.
        rewrite Z.mul_comm.
        rewrite Z.div_mul; [ idtac | intros H; discriminate H ].
@@ -237,8 +235,7 @@ split.
       pose proof (Hn2 O) as H; simpl in H.
       rename H into Hy2.
       rewrite Hi; simpl.
-      apply Zodd_bool_iff in Hy2.
-      apply Zodd_div2 in Hy2.
+      apply Zodd_bool_iff, Zodd_div2 in Hy2.
       rewrite Hy2.
       rewrite <- Z.add_assoc.
       remember 2 as t; simpl; subst t.
@@ -293,7 +290,181 @@ split.
        apply fst_same_sym_iff in H; simpl in H.
        rename H into Hn4.
        destruct dj1; [ exfalso; revert H1; apply Nat.lt_irrefl | clear H1 ].
+       rewrite Hi; simpl.
+       rewrite Zodd_even_bool in Ht2.
+       apply negb_false_iff, Zeven_bool_iff, Zeven_div2 in Ht2.
+       rewrite Ht2.
+       rewrite Z.mul_comm.
+       rewrite Z.div_mul; [ idtac | intros H; discriminate H ].
+       rewrite Z.add_comm.
+       rewrite Z.div_add; [ idtac | intros H; discriminate H ].
+       reflexivity.
+
+      remember Hs3 as H; clear HeqH.
+      apply fst_same_sym_iff in H; simpl in H.
+      rename H into Hn3.
+      rewrite Hn3 in Ht1; discriminate Ht1.
+
+     rewrite Ht2, Z.add_0_r.
+     unfold carry in Hi; simpl in Hi.
+     remember (fst_same (R_frac x) 0 0) as s3 eqn:Hs3 .
+     remember (fst_same (R_frac y) 0 0) as s4 eqn:Hs4 .
+     destruct s3 as [dj3| ].
+      remember Hs3 as H; clear HeqH.
+      apply fst_same_sym_iff in H; simpl in H.
+      destruct H as (Hn3, Ht3).
+      rewrite Ht3, Z.add_0_r in Hi.
+      destruct s4 as [dj4| ].
+       remember Hs4 as H; clear HeqH.
+       apply fst_same_sym_iff in H; simpl in H.
+       destruct H as (Hn4, Ht4).
+       rewrite Ht4, Z.add_0_r in Hi.
+       rewrite Hi; reflexivity.
+
+       remember Hs4 as H; clear HeqH.
+       apply fst_same_sym_iff in H; simpl in H.
+       rename H into Hn4.
+       rewrite Hn4 in Ht2; discriminate Ht2.
+
+      remember Hs3 as H; clear HeqH.
+      apply fst_same_sym_iff in H; simpl in H.
+      rename H into Hn3.
+      rewrite Hn3 in Ht1; discriminate Ht1.
+
+    remember Hs2 as H; clear HeqH.
+    apply fst_same_sym_iff in H; simpl in H.
+    rename H into Hn2.
+    unfold carry in Hi; simpl in Hi.
+    remember (fst_same (R_frac x) 0 0) as s3 eqn:Hs3 .
+    remember (fst_same (R_frac y) 0 0) as s4 eqn:Hs4 .
+    destruct s3 as [dj3| ].
+     remember Hs3 as H; clear HeqH.
+     apply fst_same_sym_iff in H; simpl in H.
+     destruct H as (Hn3, Ht3).
+     rewrite Ht3, Z.add_0_r in Hi.
+     destruct s4 as [dj4| ].
+      remember Hs4 as H; clear HeqH.
+      apply fst_same_sym_iff in H; simpl in H.
+      destruct H as (Hn4, Ht4).
+      rewrite Ht4, Z.add_0_r in Hi.
+      destruct dj4.
+       pose proof (Hn2 1%nat) as H; simpl in H.
+       rewrite Ht4 in H; discriminate H.
+
+       destruct dj3.
+        pose proof (Hn4 O (Nat.lt_0_succ dj4)) as H.
+        rename H into Hy2.
+        remember Hy2 as H; clear HeqH.
+        symmetry in Hf.
+        eapply I_eq_neq_if in H; try eassumption.
+        destruct H as [(Hyi, Hxi)| (Hyi, Hxi)]; simpl in Hxi, Hyi.
+         rewrite Hyi in Ht4; discriminate Ht4.
+
+         pose proof (Hn2 3%nat) as H; simpl in H.
+         rewrite Hyi in H; discriminate H.
+
+        pose proof (Hn2 (S (S dj4))) as H; simpl in H.
+        rewrite Ht4 in H; discriminate H.
+
+      remember Hs4 as H; clear HeqH.
+      apply fst_same_sym_iff in H; simpl in H.
+      rename H into Hn4.
+      pose proof (Hn2 O) as H; simpl in H.
+      rename H into Hy2.
+      rewrite Hi; simpl.
+      apply Zodd_bool_iff, Zodd_div2 in Hy2.
+      rewrite Hy2.
+      rewrite <- Z.add_assoc.
+      remember 2 as t; simpl; subst t.
+      rewrite Z.add_comm, Z.mul_comm.
+      rewrite Z.div_add; [ idtac | intros H; discriminate H ].
+      rewrite Z.add_comm.
+      apply Z.add_cancel_r.
+      rewrite Z.add_comm.
+      rewrite Z.div_add; [ idtac | intros H; discriminate H ].
+      reflexivity.
+
+     remember Hs3 as H; clear HeqH.
+     apply fst_same_sym_iff in H; simpl in H.
+     rename H into Hn3.
+     rewrite Hn3 in Ht1; discriminate Ht1.
+
+  remember Hs1 as H; clear HeqH.
+  apply fst_same_sym_iff in H; simpl in H.
+  rename H into Hn1.
+  destruct s2 as [dj2| ].
+   remember Hs2 as H; clear HeqH.
+   apply fst_same_sym_iff in H; simpl in H.
+   destruct H as (Hn2, Ht2).
+   destruct (zerop dj2) as [H2| H2].
+    subst dj2.
+    clear Hn2.
+    rewrite Ht2, Z.add_0_r.
+    unfold carry in Hi; simpl in Hi.
+    remember (fst_same (R_frac x) 0 0) as s3 eqn:Hs3 .
+    remember (fst_same (R_frac y) 0 0) as s4 eqn:Hs4 .
+    destruct s3 as [dj3| ].
+     remember Hs3 as H; clear HeqH.
+     apply fst_same_sym_iff in H; simpl in H.
+     destruct H as (Hn3, Ht3).
+     rewrite Ht3, Z.add_0_r in Hi.
+     pose proof (Hn1 (S dj3)) as H; simpl in H.
+     rewrite Nat.sub_0_r, Ht3 in H; discriminate H.
+
+     remember Hs3 as H; clear HeqH.
+     apply fst_same_sym_iff in H; simpl in H.
+     rename H into Hn3.
+     destruct s4 as [dj4| ].
+      remember Hs4 as H; clear HeqH.
+      apply fst_same_sym_iff in H; simpl in H.
+      destruct H as (Hn4, Ht4).
+      rewrite Ht4, Z.add_0_r in Hi.
+      rewrite <- Hi; simpl.
+      pose proof (Hn1 O) as H; simpl in H.
+      apply Zodd_bool_iff, Zodd_div2 in H.
+      remember Z.add as f in |- *.
+      rewrite H.
+      rewrite Z.add_comm, Z.mul_comm.
+      clear H.
+      rewrite Z.div_add; [ idtac | intros H; discriminate H ].
+      subst f.
+      symmetry.
+      rewrite Z.add_shuffle0.
+      rewrite Z.div_add; [ idtac | intros H; discriminate H ].
+      rewrite Z.add_comm; reflexivity.
+
+      remember Hs4 as H; clear HeqH.
+      apply fst_same_sym_iff in H; simpl in H.
+      rename H into Hn4.
+      apply Z.add_cancel_r in Hi.
+      pose proof (Hn1 O) as H; simpl in H.
+      rewrite Hi, Ht2 in H; discriminate H.
+
+    rewrite Ht2, Z.add_0_r.
+    destruct dj2; [ exfalso; revert H2; apply Nat.lt_irrefl | clear H2 ].
+    pose proof (Hn1 (S dj2)) as H; simpl in H.
+    simpl in Ht2.
+    rewrite Nat.sub_0_r in Ht2, H.
+    rename H into Hx2.
+    remember Hx2 as H; clear HeqH.
+    eapply I_eq_neq_if in H; try eassumption.
+    destruct H as [(Hxi, Hyi)| (Hxi, Hyi)]; simpl in Hxi, Hyi.
+     unfold carry in Hi; simpl in Hi.
+     remember (fst_same (R_frac x) 0 0) as s3 eqn:Hs3 .
+     remember (fst_same (R_frac y) 0 0) as s4 eqn:Hs4 .
+     destruct s3 as [dj3| ].
+      remember Hs3 as H; clear HeqH.
+      apply fst_same_sym_iff in H; simpl in H.
+      destruct H as (Hn3, Ht3).
+      rewrite Ht3, Z.add_0_r in Hi.
+      destruct s4 as [dj4| ].
+       remember Hs4 as H; clear HeqH.
+       apply fst_same_sym_iff in H; simpl in H.
+       destruct H as (Hn4, Ht4).
+       rewrite Ht4, Z.add_0_r in Hi.
+
 bbb.
+*)
 
 (* won't work because int parts must be positive, what is the
    required condition for I_equiv_div to work
@@ -569,6 +740,19 @@ destruct s1 as [di1| ]; [ idtac | exfalso ].
  pose proof (Hs1 O) as H.
  discriminate H.
 Qed.
+
+Theorem R_div_2_0_if : ∀ x, (x = 0)%R → (R_div_2 x = 0)%R.
+Proof.
+intros x Hx.
+unfold R_eq; simpl.
+unfold R_eq in Hx; simpl in Hx.
+destruct Hx as (Hi, Hf).
+split.
+ rewrite carry_diag in Hi; simpl in Hi.
+ rewrite carry_diag; simpl.
+ unfold carry; simpl.
+bbb.
+not required if I succeed in the morphism above
 
 Theorem yyy : ∀ x y,
   (x = 0)%R
