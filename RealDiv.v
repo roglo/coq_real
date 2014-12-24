@@ -827,7 +827,7 @@ destruct H as [(Hi, Hf)| (Hi, Hf)].
  symmetry in Hiy.
  destruct c.
   apply Z.eqb_eq in Hiy; simpl.
-  unfold I_eq; simpl.
+  unfold I_eq; simpl; intros i.
 bbb.
 *)
 intros x y Hx.
