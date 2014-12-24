@@ -264,6 +264,35 @@ split.
       apply Z.add_cancel_r in Hi.
       pose proof (Hn2 O) as H; simpl in H.
       rewrite <- Hi, Ht1 in H; discriminate H.
+
+   rewrite Ht1, Z.add_0_r.
+   destruct s2 as [dj2| ].
+    remember Hs2 as H; clear HeqH.
+    apply fst_same_sym_iff in H; simpl in H.
+    destruct H as (Hn2, Ht2).
+    destruct (zerop dj2) as [H2| H2].
+     subst dj2.
+     clear Hn2.
+     rewrite Ht2, Z.add_0_r.
+     unfold carry in Hi; simpl in Hi.
+     remember (fst_same (R_frac x) 0 0) as s3 eqn:Hs3 .
+     remember (fst_same (R_frac y) 0 0) as s4 eqn:Hs4 .
+     destruct s3 as [dj3| ].
+      remember Hs3 as H; clear HeqH.
+      apply fst_same_sym_iff in H; simpl in H.
+      destruct H as (Hn3, Ht3).
+      rewrite Ht3, Z.add_0_r in Hi.
+      destruct s4 as [dj4| ].
+       remember Hs4 as H; clear HeqH.
+       apply fst_same_sym_iff in H; simpl in H.
+       destruct H as (Hn4, Ht4).
+       rewrite Ht4, Z.add_0_r in Hi.
+       rewrite Hi; reflexivity.
+
+       remember Hs4 as H; clear HeqH.
+       apply fst_same_sym_iff in H; simpl in H.
+       rename H into Hn4.
+       destruct dj1; [ exfalso; revert H1; apply Nat.lt_irrefl | clear H1 ].
 bbb.
 
 (* won't work because int parts must be positive, what is the
