@@ -230,6 +230,40 @@ split.
       rewrite Ht4, Z.add_0_r in Hi.
       pose proof (Hn2 (S dj4)) as H; simpl in H.
       rewrite Nat.sub_0_r, Ht4 in H; discriminate H.
+
+      remember Hs4 as H; clear HeqH.
+      apply fst_same_sym_iff in H; simpl in H.
+      rename H into Hn4.
+      pose proof (Hn2 O) as H; simpl in H.
+      rename H into Hy2.
+      rewrite Hi; simpl.
+      apply Zodd_bool_iff in Hy2.
+      apply Zodd_div2 in Hy2.
+      rewrite Hy2.
+      rewrite <- Z.add_assoc.
+      remember 2 as t; simpl; subst t.
+      rewrite Z.add_comm, Z.mul_comm.
+      rewrite Z.div_add; [ idtac | intros H; discriminate H ].
+      rewrite Z.add_comm.
+      apply Z.add_cancel_r.
+      rewrite Z.add_comm.
+      rewrite Z.div_add; [ idtac | intros H; discriminate H ].
+      reflexivity.
+
+     remember Hs3 as H; clear HeqH.
+     apply fst_same_sym_iff in H; simpl in H.
+     rename H into Hn3.
+     destruct s4 as [dj4| ].
+      remember Hs4 as H; clear HeqH.
+      apply fst_same_sym_iff in H; simpl in H.
+      destruct H as (Hn4, Ht4).
+      rewrite Ht4, Z.add_0_r in Hi.
+      pose proof (Hn2 (S dj4)) as H; simpl in H.
+      rewrite Nat.sub_0_r, Ht4 in H; discriminate H.
+
+      apply Z.add_cancel_r in Hi.
+      pose proof (Hn2 O) as H; simpl in H.
+      rewrite <- Hi, Ht1 in H; discriminate H.
 bbb.
 
 (* won't work because int parts must be positive, what is the
