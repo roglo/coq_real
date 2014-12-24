@@ -814,7 +814,12 @@ Theorem yyy : ∀ x y,
   → (I_equiv_div_fst x y = 0)%I.
 Proof.
 intros x y Hx.
+remember Hx as H; clear HeqH.
+apply R_zero_if in H; simpl in H.
+destruct H as [(Hi, Hf)| (Hi, Hf)].
+
 bbb.
+intros x y Hx.
 unfold I_equiv_div_fst; simpl.
 remember (max_iter_int_part x y) as m eqn:Hm .
 clear Hm.
