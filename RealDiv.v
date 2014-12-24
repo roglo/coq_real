@@ -170,6 +170,10 @@ destruct c1; simpl.
     destruct s2 as [dj2| ].
      destruct Hs2 as (Hn2, Ht2).
      rewrite Ht2, xorb_false_r.
+     unfold R_eq in Hxy; simpl in Hxy.
+     destruct Hxy as (Hixy, Hfxy).
+     rewrite Hx, Hy in Hixy; simpl in Hixy.
+     apply b2z_inj in Hixy.
 bbb.
 
 intros m x y Hxy z t Hzt.
