@@ -95,6 +95,141 @@ destruct s3 as [dj3| ].
  rewrite Hn3 in Ht1; discriminate Ht1.
 Qed.
 
+Add Parametric Morphism : R_div_2
+  with signature R_eq ==> R_eq
+  as R_div_2_morph.
+Proof.
+intros x y Hxy.
+unfold R_eq; simpl.
+unfold R_eq in Hxy; simpl in Hxy.
+destruct Hxy as (Hi, Hf).
+split.
+ unfold carry; simpl.
+ remember (I_div_2_inc (R_frac x) (Z.odd (R_int x))) as z eqn:Hz .
+ remember (fst_same z 0 0) as s1 eqn:Hs1 .
+ subst z.
+ remember (I_div_2_inc (R_frac y) (Z.odd (R_int y))) as z eqn:Hz .
+ remember (fst_same z 0 0) as s2 eqn:Hs2 .
+ subst z.
+ destruct s1 as [dj1| ].
+  remember Hs1 as H; clear HeqH.
+  apply fst_same_sym_iff in H; simpl in H.
+  destruct H as (Hn1, Ht1).
+  destruct (zerop dj1) as [H1| H1].
+   subst dj1; clear Hn1.
+   rewrite Ht1, Z.add_0_r.
+   destruct s2 as [dj2| ].
+    remember Hs2 as H; clear HeqH.
+    apply fst_same_sym_iff in H; simpl in H.
+    destruct H as (Hn2, Ht2).
+    destruct (zerop dj2) as [H2| H2].
+     subst dj2; clear Hn2.
+     rewrite Ht2, Z.add_0_r.
+     unfold carry in Hi; simpl in Hi.
+     remember (fst_same (R_frac x) 0 0) as s3 eqn:Hs3 .
+     remember (fst_same (R_frac y) 0 0) as s4 eqn:Hs4 .
+     destruct s3 as [dj3| ].
+      remember Hs3 as H; clear HeqH.
+      apply fst_same_sym_iff in H; simpl in H.
+      destruct H as (Hn3, Ht3).
+      rewrite Ht3, Z.add_0_r in Hi.
+      destruct s4 as [dj4| ].
+       remember Hs4 as H; clear HeqH.
+       apply fst_same_sym_iff in H; simpl in H.
+       destruct H as (Hn4, Ht4).
+       rewrite Ht4, Z.add_0_r in Hi.
+       rewrite Hi; reflexivity.
+
+       remember Hs4 as H; clear HeqH.
+       apply fst_same_sym_iff in H; simpl in H.
+       rewrite Hi in Ht1; simpl in Ht1.
+       rewrite Z.odd_add in Ht1; simpl in Ht1.
+       rewrite xorb_true_r in Ht1.
+       apply negb_false_iff in Ht1.
+       rewrite Ht1 in Ht2; discriminate Ht2.
+
+      remember Hs3 as H; clear HeqH.
+      apply fst_same_sym_iff in H; simpl in H.
+      rename H into Hn3.
+      destruct s4 as [dj4| ].
+       remember Hs4 as H; clear HeqH.
+       apply fst_same_sym_iff in H; simpl in H.
+       destruct H as (Hn4, Ht4).
+       rewrite Ht4, Z.add_0_r in Hi.
+       rewrite <- Hi in Ht2; simpl in Ht2.
+       rewrite Z.odd_add in Ht2; simpl in Ht2.
+       rewrite xorb_true_r in Ht2.
+       apply negb_false_iff in Ht2.
+       rewrite Ht1 in Ht2; discriminate Ht2.
+
+       apply Z.add_cancel_r in Hi.
+       rewrite Hi; reflexivity.
+
+     rewrite Ht2, Z.add_0_r.
+     remember H2 as H; clear HeqH.
+     apply Hn2 in H; simpl in H.
+     rename H into Hy2.
+     unfold carry in Hi; simpl in Hi.
+     remember (fst_same (R_frac x) 0 0) as s3 eqn:Hs3 .
+     remember (fst_same (R_frac y) 0 0) as s4 eqn:Hs4 .
+     destruct s3 as [dj3| ].
+      remember Hs3 as H; clear HeqH.
+      apply fst_same_sym_iff in H; simpl in H.
+      destruct H as (Hn3, Ht3).
+      rewrite Ht3, Z.add_0_r in Hi.
+      destruct s4 as [dj4| ].
+       remember Hs4 as H; clear HeqH.
+       apply fst_same_sym_iff in H; simpl in H.
+       destruct H as (Hn4, Ht4).
+       rewrite Ht4, Z.add_0_r in Hi.
+       rewrite Hi; reflexivity.
+
+       remember Hs4 as H; clear HeqH.
+       apply fst_same_sym_iff in H; simpl in H.
+       rename H into Hn4.
+       rewrite Hn4 in Ht2; discriminate Ht2.
+
+      remember Hs3 as H; clear HeqH.
+      apply fst_same_sym_iff in H; simpl in H.
+      rename H into Hn3.
+      destruct s4 as [dj4| ].
+       remember Hs4 as H; clear HeqH.
+       apply fst_same_sym_iff in H; simpl in H.
+       destruct H as (Hn4, Ht4).
+       rewrite Ht4, Z.add_0_r in Hi.
+       rewrite <- Hi; simpl.
+       rewrite Zodd_even_bool in Ht1.
+       apply negb_false_iff in Ht1.
+       apply Zeven_bool_iff in Ht1.
+       apply Zeven_div2 in Ht1.
+       rewrite Ht1.
+       rewrite Z.mul_comm.
+       rewrite Z.div_mul; [ idtac | intros H; discriminate H ].
+       rewrite Z.add_comm.
+       rewrite Z.div_add; [ idtac | intros H; discriminate H ].
+       reflexivity.
+
+       apply Z.add_cancel_r in Hi.
+       rewrite Hi; reflexivity.
+
+    remember Hs2 as H; clear HeqH.
+    apply fst_same_sym_iff in H; simpl in H.
+    rename H into Hn2.
+    unfold carry in Hi; simpl in Hi.
+    remember (fst_same (R_frac x) 0 0) as s3 eqn:Hs3 .
+    remember (fst_same (R_frac y) 0 0) as s4 eqn:Hs4 .
+    destruct s3 as [dj3| ].
+     remember Hs3 as H; clear HeqH.
+     apply fst_same_sym_iff in H; simpl in H.
+     destruct H as (Hn3, Ht3).
+     rewrite Ht3, Z.add_0_r in Hi.
+     destruct s4 as [dj4| ].
+      remember Hs4 as H; clear HeqH.
+      apply fst_same_sym_iff in H; simpl in H.
+      destruct H as (Hn4, Ht4).
+      rewrite Ht4, Z.add_0_r in Hi.
+bbb.
+
 (* won't work because int parts must be positive, what is the
    required condition for I_equiv_div to work
 
@@ -395,6 +530,131 @@ destruct c; simpl.
  unfold I_add_i; simpl.
  rewrite carry_diag; simpl.
  rewrite xorb_false_r.
+ remember Hf as H; clear HeqH.
+ apply I_zero_if in H; simpl in H.
+ destruct H as [Ha| Ha].
+  destruct i; simpl.
+   unfold carry; simpl.
+   remember (fst_same (I_div_2_inc (R_frac x) false) 0 1) as s1 eqn:Hs1 .
+   destruct s1 as [dj1| ]; [ idtac | exfalso ].
+    rewrite Ha; reflexivity.
+
+    remember Hs1 as H; clear HeqH.
+    apply fst_same_sym_iff in H; simpl in H.
+    rename H into Hn1.
+    pose proof (Hn1 O) as H.
+    rewrite Ha in H; discriminate H.
+
+   rewrite Ha, xorb_false_l.
+   unfold carry; simpl.
+   remember (I_div_2_inc (R_frac x) false) as z eqn:Hz .
+   remember (fst_same z 0 (S (S i))) as s1 eqn:Hs1 .
+   subst z.
+   destruct s1 as [dj1| ]; [ apply Ha | exfalso ].
+   apply fst_same_sym_iff in Hs1; simpl in Hs1.
+   pose proof (Hs1 O) as H.
+   rewrite Ha in H; discriminate H.
+
+  destruct i; simpl.
+   unfold carry; simpl.
+   remember (fst_same (I_div_2_inc (R_frac x) false) 0 1) as s1 eqn:Hs1 .
+   destruct s1 as [dj1| ]; [ idtac | exfalso ].
+    remember Hs1 as H; clear HeqH.
+    apply fst_same_sym_iff in H; simpl in H.
+    destruct H as (Hn1, Ht1).
+    rewrite Ha in Ht1; discriminate Ht1.
+
+    rewrite Hix, Z.add_0_l in Hi.
+    apply b2z_inj in Hi.
+    rewrite carry_diag in Hi; simpl in Hi.
+    unfold carry in Hi; simpl in Hi.
+    remember (fst_same (R_frac x) 0 0) as s2 eqn:Hs2 .
+    destruct s2 as [dj2| ]; [ idtac | discriminate Hi ].
+    rewrite Ha in Hi; discriminate Hi.
+
+   rewrite Ha, xorb_true_l.
+   apply negb_false_iff.
+   rewrite Hix, Z.add_0_l in Hi.
+   apply b2z_inj in Hi.
+   rewrite carry_diag in Hi; simpl in Hi.
+   unfold carry in Hi; simpl in Hi.
+   remember (fst_same (R_frac x) 0 0) as s2 eqn:Hs2 .
+   destruct s2 as [dj2| ]; [ idtac | discriminate Hi ].
+   rewrite Ha in Hi; discriminate Hi.
+
+ apply andb_false_iff in Hc.
+ rewrite IHm; [ reflexivity | idtac ].
+bbb.
+
+intros x y Hx.
+unfold I_equiv_div_fst; simpl.
+remember (max_iter_int_part x y) as m eqn:Hm .
+clear Hm.
+revert x y Hx.
+induction m; intros; [ reflexivity | simpl ].
+remember ((R_int x =? 0) && (R_int y =? 0)) as c eqn:Hc .
+symmetry in Hc.
+destruct c; simpl.
+ apply andb_true_iff in Hc.
+ destruct Hc as (Hix, Hiy).
+ apply Z.eqb_eq in Hix.
+ apply Z.eqb_eq in Hiy.
+ rewrite Hix; simpl.
+ remember Hx as H; clear HeqH.
+ unfold R_eq in H; simpl in H.
+ destruct H as (Hi, Hf).
+ unfold I_eq; simpl; intros i.
+ unfold I_add_i; simpl.
+ rewrite carry_diag; simpl.
+ rewrite xorb_false_r.
+ remember Hf as H; clear HeqH.
+ apply I_zero_if in H; simpl in H.
+ destruct H as [Ha| Ha].
+  destruct i; simpl.
+   unfold carry; simpl.
+   remember (fst_same (I_div_2_inc (R_frac x) false) 0 1) as s1 eqn:Hs1 .
+   destruct s1 as [dj1| ]; [ idtac | exfalso ].
+    rewrite Ha; reflexivity.
+
+    remember Hs1 as H; clear HeqH.
+    apply fst_same_sym_iff in H; simpl in H.
+    rename H into Hn1.
+    pose proof (Hn1 O) as H.
+    rewrite Ha in H; discriminate H.
+
+   rewrite Ha, xorb_false_l.
+   unfold carry; simpl.
+   remember (I_div_2_inc (R_frac x) false) as z eqn:Hz .
+   remember (fst_same z 0 (S (S i))) as s1 eqn:Hs1 .
+   subst z.
+   destruct s1 as [dj1| ]; [ apply Ha | exfalso ].
+   apply fst_same_sym_iff in Hs1; simpl in Hs1.
+   pose proof (Hs1 O) as H.
+   rewrite Ha in H; discriminate H.
+bbb.
+
+intros x y Hx.
+bbb.
+unfold I_equiv_div_fst; simpl.
+remember (max_iter_int_part x y) as m eqn:Hm .
+clear Hm.
+revert x y Hx.
+induction m; intros; [ reflexivity | simpl ].
+remember ((R_int x =? 0) && (R_int y =? 0)) as c eqn:Hc .
+symmetry in Hc.
+destruct c; simpl.
+ apply andb_true_iff in Hc.
+ destruct Hc as (Hix, Hiy).
+ apply Z.eqb_eq in Hix.
+ apply Z.eqb_eq in Hiy.
+ rewrite Hix; simpl.
+ remember Hx as H; clear HeqH.
+ unfold R_eq in H; simpl in H.
+ destruct H as (Hi, Hf).
+ unfold I_eq; simpl; intros i.
+ unfold I_add_i; simpl.
+ rewrite carry_diag; simpl.
+ rewrite xorb_false_r.
  destruct i; simpl.
   unfold carry; simpl.
   remember (fst_same (I_div_2_inc (R_frac x) false) 0 1) as s1 eqn:Hs1 .
@@ -435,6 +695,9 @@ destruct c; simpl.
    apply fst_same_sym_iff in H; simpl in H.
    destruct H as (Hn2, Ht2).
 bbb.
+   0   -   i   -  dj2
+x  1   1   1   1   0
+y  .
 
 Theorem zzz : ∀ y, (I_equiv_div_fst 0%R y = 0)%I.
 Proof.
