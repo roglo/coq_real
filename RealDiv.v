@@ -57,6 +57,43 @@ Theorem fold_I_equiv_div_fst : ∀ m x y,
   fst (I_equiv_div m x y) = I_equiv_div_fst m x y.
 Proof. reflexivity. Qed.
 
+Theorem b2z_inj : ∀ b1 b2, b2z b1 = b2z b2 → b1 = b2.
+Proof.
+intros b1 b2 H.
+destruct b1, b2; try reflexivity; discriminate H.
+Qed.
+
+Theorem same_carry_fst_same_none : ∀ x y,
+  carry x 0 0 = carry y 0 0
+  → fst_same (I_div_2_inc y false) 0 1 = None
+  → ∀ i, x.[i] = true.
+Proof.
+intros x y Hixy Hs2 i.
+apply not_false_iff_true; intros Ht1.
+remember Hs2 as H; clear HeqH.
+apply fst_same_iff in H; simpl in H.
+rename H into Hn2.
+unfold carry in Hixy; simpl in Hixy.
+remember (fst_same x 0 0) as s3 eqn:Hs3 .
+remember (fst_same y 0 0) as s4 eqn:Hs4 .
+destruct s3 as [dj3| ].
+ remember Hs3 as H; clear HeqH.
+ apply fst_same_sym_iff in H; simpl in H.
+ destruct H as (Hn3, Ht3).
+ rewrite Ht3 in Hixy.
+ destruct s4 as [dj4| ]; [ idtac | discriminate Hixy ].
+ remember Hs4 as H; clear HeqH.
+ apply fst_same_sym_iff in H; simpl in H.
+ destruct H as (Hn4, Ht4).
+ pose proof (Hn2 dj4) as H.
+ rewrite Nat.sub_0_r, Ht4 in H; discriminate H.
+
+ remember Hs3 as H; clear HeqH.
+ apply fst_same_sym_iff in H; simpl in H.
+ rename H into Hn3.
+ rewrite Hn3 in Ht1; discriminate Ht1.
+Qed.
+
 Add Parametric Morphism : I_equiv_div_fst
   with signature eq ==> R_eq ==> R_eq ==> I_eq
   as I_equiv_div_fst_morph.
@@ -86,6 +123,7 @@ destruct c1; simpl.
    unfold R_eq in Hxy; simpl in Hxy.
    destruct Hxy as (Hixy, Hfxy).
    rewrite Hx, Hy in Hixy; simpl in Hixy.
+   apply b2z_inj in Hixy.
    unfold carry; simpl.
    remember (fst_same (I_div_2_inc (R_frac x) false) 0 1) as s1 eqn:Hs1 .
    remember (fst_same (I_div_2_inc (R_frac y) false) 0 1) as s2 eqn:Hs2 .
@@ -100,30 +138,9 @@ destruct c1; simpl.
      destruct H as (Hn2, Ht2).
      rewrite Ht2; reflexivity.
 
-(*1*)
-bbb. lemma to do
-     remember Hs2 as H; clear HeqH.
-     apply fst_same_sym_iff in H; simpl in H.
-     rename H into Hn2.
-     unfold carry in Hixy; simpl in Hixy.
-     remember (fst_same (R_frac x) 0 0) as s3 eqn:Hs3 .
-     remember (fst_same (R_frac y) 0 0) as s4 eqn:Hs4 .
-     destruct s3 as [dj3| ].
-      remember Hs3 as H; clear HeqH.
-      apply fst_same_sym_iff in H; simpl in H.
-      destruct H as (Hn3, Ht3).
-      rewrite Ht3 in Hixy.
-      destruct s4 as [dj4| ]; [ idtac | discriminate Hixy ].
-      remember Hs4 as H; clear HeqH.
-      apply fst_same_sym_iff in H; simpl in H.
-      destruct H as (Hn4, Ht4).
-      pose proof (Hn2 dj4) as H.
-      rewrite Nat.sub_0_r, Ht4 in H; discriminate H.
-
-      remember Hs3 as H; clear HeqH.
-      apply fst_same_sym_iff in H; simpl in H.
-      rename H into Hn3.
-      rewrite Hn3 in Ht1; discriminate Ht1.
+     symmetry in Hs2.
+     apply not_true_iff_false in Ht1; apply Ht1.
+     eapply same_carry_fst_same_none; eassumption.
 
     remember Hs1 as H; clear HeqH.
     apply fst_same_sym_iff in H; simpl in H.
@@ -134,7 +151,25 @@ bbb. lemma to do
     destruct H as (Hn2, Ht2).
     rewrite Ht2.
     exfalso.
-(*2*)
+    symmetry in Hs1, Hixy.
+    apply not_true_iff_false in Ht2; apply Ht2.
+    eapply same_carry_fst_same_none; eassumption.
+
+   rewrite Nat.sub_0_r.
+   unfold carry; simpl.
+   remember (I_div_2_inc (R_frac x) false) as d1 eqn:Hd1 .
+   remember (I_div_2_inc (R_frac y) false) as d2 eqn:Hd2 .
+   remember (fst_same d1 0 (S (S i))) as s1 eqn:Hs1 .
+   remember (fst_same d2 0 (S (S i))) as s2 eqn:Hs2 .
+   subst d1 d2.
+   apply fst_same_sym_iff in Hs1; simpl in Hs1.
+   apply fst_same_sym_iff in Hs2; simpl in Hs2.
+   destruct s1 as [dj1| ].
+    destruct Hs1 as (Hn1, Ht1).
+    rewrite Ht1, xorb_false_r.
+    destruct s2 as [dj2| ].
+     destruct Hs2 as (Hn2, Ht2).
+     rewrite Ht2, xorb_false_r.
 bbb.
 
 intros m x y Hxy z t Hzt.
