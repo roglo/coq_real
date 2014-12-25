@@ -809,17 +809,18 @@ destruct H as [(Hi, Hf)| (Hi, Hf)].
    rewrite Hf; reflexivity.
 Qed.
 
-Theorem yyy : ∀ x y,
+Theorem I_equiv_div_fst_is_0 : ∀ x y,
   (x = 0)%R
+  → 0 <= R_int x
   → (I_equiv_div_fst x y = 0)%I.
 Proof.
-intros x y Hx.
+intros x y Hx Hxpos.
 remember Hx as H; clear HeqH.
 apply R_zero_if in H; simpl in H.
 destruct H as [(Hi, Hf)| (Hi, Hf)].
  unfold I_equiv_div_fst; simpl.
  remember (max_iter_int_part x y) as m eqn:Hm .
- clear Hm.
+ clear Hm Hxpos.
  revert x Hx Hi Hf y.
  induction m; intros; [ reflexivity | simpl ].
  rewrite Hi; simpl.
@@ -850,8 +851,14 @@ destruct H as [(Hi, Hf)| (Hi, Hf)].
    intros i.
    rewrite Hi, Hf; simpl.
    destruct (zerop i); reflexivity.
-bbb.
 
+ rewrite Hi in Hxpos.
+ apply Z.nlt_ge in Hxpos.
+ exfalso; apply Hxpos.
+ apply Pos2Z.neg_is_neg.
+Qed.
+
+(* wrong if 0%R = (-1, 0.111...)
 Theorem zzz : ∀ y, (I_equiv_div_fst 0%R y = 0)%I.
 Proof.
 intros y.
@@ -880,6 +887,11 @@ rewrite R_div_2_0.
 
 Theorem R_div_0_l : ∀ x, (0 / x = 0)%R.
 Proof.
+intros x.
+unfold R_eq; simpl.
+rewrite carry_diag; simpl.
+bbb.
+
 intros x.
 unfold R_div; simpl.
 remember (R_abs x) as ax eqn:Hax .
