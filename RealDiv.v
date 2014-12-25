@@ -890,6 +890,82 @@ Proof.
 intros x.
 unfold R_eq; simpl.
 rewrite carry_diag; simpl.
+split.
+ unfold carry; simpl.
+ remember (fst_same (R_frac (0 / x)) 0 0) as s1 eqn:Hs1 .
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ destruct s1 as [dj1| ].
+  destruct Hs1 as (Hn1, Ht1).
+  rewrite Ht1; simpl.
+  rewrite Z.add_0_r.
+  unfold R_div; simpl.
+  remember (max_iter_int_part (R_abs 0) (R_abs x)) as m eqn:Hm .
+  remember (I_equiv_div m (R_abs 0) (R_abs x)) as xym eqn:Hxym .
+  symmetry in Hxym.
+  destruct xym as (xm, ym).
+  remember (I_eucl_div xm ym) as qr eqn:Hqr .
+  symmetry in Hqr.
+  destruct qr as (q, r); simpl.
+  remember (R_is_neg x) as b eqn:Hb .
+  symmetry in Hb.
+  destruct b.
+   unfold I_eucl_div in Hqr.
+   remember (fst_same xm I_ones 0) as s2 eqn:Hs2 .
+   remember (fst_same ym I_ones 0) as s3 eqn:Hs3 .
+   destruct s2 as [dj2| ].
+    apply fst_same_sym_iff in Hs2; simpl in Hs2.
+    destruct Hs2 as (Hn2, Ht2).
+    destruct s3 as [dj3| ].
+     apply fst_same_sym_iff in Hs3; simpl in Hs3.
+     destruct Hs3 as (Hn3, Ht3).
+     destruct (le_dec dj2 dj3) as [H1| H1].
+      remember (two_power (S (dj3 - dj2))) as t eqn:Ht .
+      remember (I_eucl_div_loop t xm ym) as qr1 eqn:Hqr1 .
+      symmetry in Hqr1.
+      destruct qr1 as (q1, r1).
+      injection Hqr; clear Hqr; intros; subst q1 r.
+      symmetry in Ht.
+      destruct t; simpl in Hqr1.
+       injection Hqr1; clear Hqr1; intros; subst q; reflexivity.
+
+       destruct (I_lt_dec xm ym) as [H2| H2].
+        injection Hqr1; clear Hqr1; intros; subst q; reflexivity.
+
+        remember (I_eucl_div_loop t (xm - ym) ym) as qr2 eqn:Hqr2 .
+        symmetry in Hqr2.
+        destruct qr2 as (q2, r2).
+        injection Hqr1; clear Hqr1; intros; subst q r2.
+        simpl.
+        destruct (eq_nat_dec dj2 dj3) as [H3| H3].
+         subst dj3.
+         rewrite Nat.sub_diag in Ht; simpl in Ht.
+         unfold max_iter_int_part in Hm; simpl in Hm.
+         symmetry in Hm.
+         destruct m.
+          simpl in Hxym.
+          injection Hxym; clear Hxym; intros; subst xm ym.
+          simpl in Ht2.
+          discriminate Ht2.
+
+          simpl in Hxym.
+          remember (R_int (R_abs x) =? 0) as c eqn:Hc .
+          symmetry in Hc.
+          destruct c.
+           injection Hxym; clear Hxym; intros; subst xm ym.
+           simpl in Ht2, Ht3.
+           destruct (zerop dj2); discriminate Ht2.
+
+           apply Z.eqb_neq in Hc; simpl in Hc.
+           destruct m.
+            simpl in Hxym.
+            injection Hxym; clear Hxym; intros; subst xm ym.
+            discriminate Ht2.
+
+            simpl in Hxym.
+            remember (R_int (R_abs x) / 2 =? 0) as c1 eqn:Hc1 .
+            symmetry in Hc1.
+            destruct c1.
+             apply Z.eqb_eq in Hc1; simpl in Hc1.
 bbb.
 
 intros x.
