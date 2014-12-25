@@ -885,27 +885,36 @@ bbb.
 rewrite R_div_2_0.
 *)
 
-Theorem zzz : ∀ m y xm ym,
-  I_equiv_div m (R_div_2 0) y = (xm, ym)
+Theorem I_equiv_div_0_l : ∀ m x y xm ym,
+  (x = 0)%R
+  → I_equiv_div m x y = (xm, ym)
   → ∀ i, xm.[i] = false.
 Proof.
-intros m y xm ym HI i.
-revert y xm ym i HI.
+intros m x y xm ym Hx HI i.
+revert x y xm ym Hx HI i.
 induction m; intros.
  simpl in HI.
  injection HI; clear HI; intros; subst xm; reflexivity.
 
  simpl in HI.
- remember (R_int y =? 0) as c eqn:Hc .
+ remember ((R_int x =? 0) && (R_int y =? 0)) as c eqn:Hc .
  symmetry in Hc.
  destruct c.
   injection HI; clear HI; intros; subst xm ym; simpl.
-  destruct (zerop i); [ reflexivity | idtac ].
-  destruct (zerop (i - 1)); reflexivity.
+  apply andb_true_iff in Hc.
+  destruct Hc as (Hix, Hiy).
+  apply Z.eqb_eq in Hix; simpl in Hix.
+  rewrite Hix; simpl.
+  destruct (zerop i) as [H1| H1]; [ reflexivity | idtac ].
+  apply R_zero_if in Hx.
+  destruct Hx as [(Hxz, Hf)| (Hxz, Hf)].
+   apply Hf.
 
-  apply Z.eqb_neq in Hc; simpl in Hc.
-bbb.
-*)
+   rewrite Hxz in Hix; discriminate Hix.
+
+  eapply IHm; [ idtac | eassumption ].
+  apply R_div_2_0_if; assumption.
+Qed.
 
 Theorem R_div_0_l : ∀ x, (0 / x = 0)%R.
 Proof.
