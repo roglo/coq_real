@@ -941,31 +941,22 @@ split.
          rewrite Nat.sub_diag in Ht; simpl in Ht.
          unfold max_iter_int_part in Hm; simpl in Hm.
          symmetry in Hm.
-         destruct m.
+         exfalso.
+         unfold R_abs at 1 in Hxym; simpl in Hxym.
+         revert Hxym Ht2; clear; intros.
+         revert x xm ym dj2 Hxym Ht2.
+         induction m; intros.
           simpl in Hxym.
           injection Hxym; clear Hxym; intros; subst xm ym.
-          simpl in Ht2.
-          discriminate Ht2.
+          simpl in Ht2; discriminate Ht2.
 
           simpl in Hxym.
           remember (R_int (R_abs x) =? 0) as c eqn:Hc .
           symmetry in Hc.
           destruct c.
            injection Hxym; clear Hxym; intros; subst xm ym.
-           simpl in Ht2, Ht3.
+           simpl in Ht2.
            destruct (zerop dj2); discriminate Ht2.
-
-           apply Z.eqb_neq in Hc; simpl in Hc.
-           destruct m.
-            simpl in Hxym.
-            injection Hxym; clear Hxym; intros; subst xm ym.
-            discriminate Ht2.
-
-            simpl in Hxym.
-            remember (R_int (R_abs x) / 2 =? 0) as c1 eqn:Hc1 .
-            symmetry in Hc1.
-            destruct c1.
-             apply Z.eqb_eq in Hc1; simpl in Hc1.
 bbb.
 
 intros x.
