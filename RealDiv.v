@@ -988,6 +988,11 @@ split.
            injection Hxym; clear Hxym; intros; subst xm ym.
            simpl in Ht2.
            destruct (zerop dj2); discriminate Ht2.
+
+           apply I_equiv_div_0_l with (i := dj2) in Hxym.
+            rewrite Hxym in Ht2; discriminate Ht2.
+
+            apply R_div_2_0.
 bbb.
 
 intros x.
