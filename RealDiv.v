@@ -885,16 +885,27 @@ bbb.
 rewrite R_div_2_0.
 *)
 
-Theorem zzz : ∀ m y, I_equiv_div m (R_div_2 0) y = I_equiv_div m 0%R y.
+Theorem zzz : ∀ m y xm ym,
+  I_equiv_div m (R_div_2 0) y = (xm, ym)
+  → ∀ i, xm.[i] = false.
 Proof.
-intros m y.
-induction m; [ reflexivity | simpl ].
-remember (R_int y =? 0) as c eqn:Hc .
-symmetry in Hc.
-destruct c.
- apply Z.eqb_eq in Hc; simpl in Hc.
- rewrite Hc; simpl.
+intros m y xm ym HI i.
+revert y xm ym i HI.
+induction m; intros.
+ simpl in HI.
+ injection HI; clear HI; intros; subst xm; reflexivity.
+
+ simpl in HI.
+ remember (R_int y =? 0) as c eqn:Hc .
+ symmetry in Hc.
+ destruct c.
+  injection HI; clear HI; intros; subst xm ym; simpl.
+  destruct (zerop i); [ reflexivity | idtac ].
+  destruct (zerop (i - 1)); reflexivity.
+
+  apply Z.eqb_neq in Hc; simpl in Hc.
 bbb.
+*)
 
 Theorem R_div_0_l : ∀ x, (0 / x = 0)%R.
 Proof.
