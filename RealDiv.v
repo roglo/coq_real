@@ -885,6 +885,17 @@ bbb.
 rewrite R_div_2_0.
 *)
 
+Theorem zzz : ∀ m y, I_equiv_div m (R_div_2 0) y = I_equiv_div m 0%R y.
+Proof.
+intros m y.
+induction m; [ reflexivity | simpl ].
+remember (R_int y =? 0) as c eqn:Hc .
+symmetry in Hc.
+destruct c.
+ apply Z.eqb_eq in Hc; simpl in Hc.
+ rewrite Hc; simpl.
+bbb.
+
 Theorem R_div_0_l : ∀ x, (0 / x = 0)%R.
 Proof.
 intros x.
