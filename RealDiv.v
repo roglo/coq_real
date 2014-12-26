@@ -937,20 +937,56 @@ split.
   remember (I_eucl_div xm ym) as qr eqn:Hqr .
   symmetry in Hqr.
   destruct qr as (q, r); simpl.
-  remember (R_is_neg x) as b eqn:Hb .
-  symmetry in Hb.
-  destruct b.
-   unfold I_eucl_div in Hqr.
-   remember (fst_same xm I_ones 0) as s2 eqn:Hs2 .
-   remember (fst_same ym I_ones 0) as s3 eqn:Hs3 .
-   destruct s2 as [dj2| ].
-    apply fst_same_sym_iff in Hs2; simpl in Hs2.
-    destruct Hs2 as (Hn2, Ht2).
-    remember Hxym as H; clear HeqH.
-    apply I_equiv_div_0_l with (i := dj2) in H; [ idtac | reflexivity ].
-    rewrite Ht2 in H; discriminate H.
+  unfold I_eucl_div in Hqr.
+  remember (fst_same xm I_ones 0) as s2 eqn:Hs2 .
+  destruct s2 as [dj2| ].
+   apply fst_same_sym_iff in Hs2; simpl in Hs2.
+   destruct Hs2 as (Hn2, Ht2).
+   remember Hxym as H; clear HeqH.
+   apply I_equiv_div_0_l with (i := dj2) in H; [ idtac | reflexivity ].
+   rewrite Ht2 in H; discriminate H.
 
-    injection Hqr; clear Hqr; intros; subst q; reflexivity.
+   injection Hqr; clear Hqr; intros; subst q r.
+   destruct (R_is_neg x); reflexivity.
+
+  unfold R_div; simpl.
+  remember (max_iter_int_part (R_abs 0) (R_abs x)) as m eqn:Hm .
+  remember (I_equiv_div m (R_abs 0) (R_abs x)) as xym eqn:Hxym .
+  symmetry in Hxym.
+  destruct xym as (xm, ym).
+  remember (I_eucl_div xm ym) as qr eqn:Hqr .
+  symmetry in Hqr.
+  destruct qr as (q, r); simpl.
+  unfold I_eucl_div in Hqr.
+  remember (fst_same xm I_ones 0) as s2 eqn:Hs2 .
+  destruct s2 as [dj2| ].
+   apply fst_same_sym_iff in Hs2; simpl in Hs2.
+   destruct Hs2 as (Hn2, Ht2).
+   remember Hxym as H; clear HeqH.
+   apply I_equiv_div_0_l with (i := dj2) in H; [ idtac | reflexivity ].
+   rewrite Ht2 in H; discriminate H.
+
+   apply fst_same_sym_iff in Hs2; simpl in Hs2.
+   injection Hqr; clear Hqr; intros; subst q r.
+   exfalso.
+   pose proof (Hs1 O) as H; simpl in H.
+   unfold R_div in H; simpl in H.
+   rewrite <- Hm in H.
+   rewrite Hxym in H.
+   remember (I_eucl_div xm ym) as qr1 eqn:Hqr1 .
+   symmetry in Hqr1.
+   destruct qr1 as (q1, r1); simpl in H.
+   unfold I_eucl_div in Hqr1.
+   remember (fst_same xm I_ones 0) as s3 eqn:Hs3 .
+   destruct s3 as [dj3| ].
+    apply fst_same_sym_iff in Hs3; simpl in Hs3.
+    destruct Hs3 as (Hn3, Ht3).
+    rename H into Hr1.
+    remember Hxym as H; clear HeqH.
+    apply I_equiv_div_0_l with (i := dj3) in H; [ idtac | reflexivity ].
+    rewrite Ht3 in H; discriminate H.
+
+    injection Hqr1; clear Hqr1; intros; subst q1 r1.
 bbb.
 
 intros x.
