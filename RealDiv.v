@@ -25,6 +25,40 @@ Fixpoint I_equiv_div m x y :=
   end.
 Arguments I_equiv_div m%Z x%I y%I.
 
+Fixpoint two_power n :=
+  match n with
+  | O => 1%nat
+  | S n1 => (2 * two_power n1)%nat
+  end.
+
+Fixpoint I_eucl_div_loop m x y :=
+  match m with
+  | O => (O, 0%I)
+  | S m1 =>
+      if I_lt_dec x y then (O, x)
+      else
+        let (q, r) := I_eucl_div_loop m1 (I_sub x y) y in
+        (S q, r)
+  end.
+Arguments I_eucl_div_loop m%nat x%I y%I.
+
+Definition I_eucl_div x y :=
+  match fst_same x I_ones 0 with
+  | Some jx =>
+      match fst_same y I_ones 0 with
+      | Some jy =>
+          if le_dec jx jy then
+            let m := two_power (S (jy - jx)) in
+            let (q, r) := I_eucl_div_loop m x y in
+            (q, I_div r y)
+          else
+            (O, I_div x y)
+      | None => (O, y)
+      end
+  | None => (O, 0%I)
+  end.
+Arguments I_eucl_div x%I y%I.
+
 Definition R_is_neg x := Z.ltb (R_int x) 0.
 Arguments R_is_neg x%R.
 
