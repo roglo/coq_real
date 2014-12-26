@@ -487,6 +487,16 @@ split.
        destruct (I_lt_dec xm ym) as [H2| H2].
         injection Hqr1; clear Hqr1; intros; subst q r1.
         simpl in Hn1, Ht1.
+        symmetry in Hm.
+        destruct m.
+         simpl in Hxym.
+         unfold max_iter_int_part in Hm.
+         simpl in Hm.
+         injection Hxym; clear Hxym; intros; subst xm ym.
+         discriminate Ht3.
+
+         simpl in Hxym.
+         rewrite andb_false_r in Hxym.
 
 bbb.
 
