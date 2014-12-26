@@ -362,9 +362,8 @@ split.
     destruct Hs3 as (Hn3, Ht3).
     rewrite Hs2 in Ht3; discriminate Ht3.
 
-    clear Hs3.
     injection Hqr1; clear Hqr1; intros; subst q1 r1.
-    erewrite I_equiv_div_snd_prop in Hr1; [ discriminate Hr1 | eassumption ].
+    discriminate Hr1.
 
  unfold I_eq; simpl; intros i.
  unfold I_add_i; simpl.
@@ -387,41 +386,13 @@ split.
   rewrite Ht2 in H; discriminate H.
 
   injection Hqr; clear Hqr; intros; subst q r.
-  apply fst_same_sym_iff in Hs2; simpl in Hs2.
-  unfold carry; simpl.
-  remember (fst_same ym 0 (S i)) as s1 eqn:Hs1 .
-  apply fst_same_sym_iff in Hs1; simpl in Hs1.
-  destruct s1 as [dj1| ].
-   destruct Hs1 as (Hn1, Ht1).
-   rewrite Ht1, xorb_false_r.
-bbb.
-   remember Hxym as H; clear HeqH.
-   eapply I_equiv_div_snd_prop in H.
-   destruct i; [ assumption | idtac ].
-   destruct dj1.
-    clear Hn1; rewrite Nat.add_0_r in Ht1.
-    destruct m.
-     simpl in Hxym.
-     injection Hxym; clear Hxym; intros; subst xm ym.
-     reflexivity.
+  rewrite carry_diag; reflexivity.
+Qed.
 
-     simpl in Hxym.
-     remember (R_int (R_abs x) =? 0) as c eqn:Hc .
-     symmetry in Hc.
-     destruct c.
-      injection Hxym; clear Hxym; intros; subst xm ym.
-      simpl in Ht1, H; simpl.
-      rewrite Nat.sub_0_r.
-      apply Z.eqb_eq in Hc; simpl in Hc.
-      clear m Hm H.
-bbb.
-      unfold max_iter_int_part in Hm; simpl in Hm.
-      rewrite Hc in Hm; simpl in Hm.
-bbb.
-
-Theorem xxx : ∀ x, (x / 1 = x)%R.
+Theorem R_div_1_r : ∀ x, (x / 1 = x)%R.
 Proof.
 intros x.
+bbb.
 unfold R_div; simpl.
 remember (R_abs x) as ax eqn:Hax .
 unfold R_abs; simpl.
