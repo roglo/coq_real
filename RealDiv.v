@@ -399,6 +399,23 @@ split.
    destruct i; [ assumption | idtac ].
    destruct dj1.
     clear Hn1; rewrite Nat.add_0_r in Ht1.
+    induction m.
+     simpl in Hxym.
+     injection Hxym; clear Hxym; intros; subst xm ym.
+     reflexivity.
+
+     simpl in Hxym.
+     remember (R_int (R_abs x) =? 0) as c eqn:Hc .
+     symmetry in Hc.
+     destruct c.
+      injection Hxym; clear Hxym; intros; subst xm ym.
+      simpl.
+      simpl in Ht1, H.
+      rewrite Nat.sub_0_r.
+      apply Z.eqb_eq in Hc; simpl in Hc.
+      clear H.
+      unfold max_iter_int_part in Hm; simpl in Hm.
+      rewrite Hc in Hm; simpl in Hm.
 bbb.
 
 Theorem xxx : ∀ x, (x / 1 = x)%R.
