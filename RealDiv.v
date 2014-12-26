@@ -946,32 +946,11 @@ split.
    destruct s2 as [dj2| ].
     apply fst_same_sym_iff in Hs2; simpl in Hs2.
     destruct Hs2 as (Hn2, Ht2).
-    destruct s3 as [dj3| ].
-     apply fst_same_sym_iff in Hs3; simpl in Hs3.
-     destruct Hs3 as (Hn3, Ht3).
-     destruct (le_dec dj2 dj3) as [H1| H1].
-      remember (two_power (S (dj3 - dj2))) as t eqn:Ht .
-      remember (I_eucl_div_loop t xm ym) as qr1 eqn:Hqr1 .
-      symmetry in Hqr1.
-      destruct qr1 as (q1, r1).
-      injection Hqr; clear Hqr; intros; subst q1 r.
-      symmetry in Ht.
-      destruct t; simpl in Hqr1.
-       injection Hqr1; clear Hqr1; intros; subst q; reflexivity.
+    remember Hxym as H; clear HeqH.
+    apply I_equiv_div_0_l with (i := dj2) in H; [ idtac | reflexivity ].
+    rewrite Ht2 in H; discriminate H.
 
-       destruct (I_lt_dec xm ym) as [H2| H2].
-        injection Hqr1; clear Hqr1; intros; subst q; reflexivity.
-
-        remember (I_eucl_div_loop t (xm - ym) ym) as qr2 eqn:Hqr2 .
-        symmetry in Hqr2.
-        destruct qr2 as (q2, r2).
-        injection Hqr1; clear Hqr1; intros; subst q r2.
-        exfalso.
-        remember Hxym as H; clear HeqH.
-        apply I_equiv_div_0_l with (i := dj2) in H; [ idtac | reflexivity ].
-        rewrite Ht2 in H; discriminate H.
-
-      apply Nat.nle_gt in H1.
+    injection Hqr; clear Hqr; intros; subst q; reflexivity.
 bbb.
 
 intros x.
