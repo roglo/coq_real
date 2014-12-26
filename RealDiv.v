@@ -967,37 +967,11 @@ split.
         destruct qr2 as (q2, r2).
         injection Hqr1; clear Hqr1; intros; subst q r2.
         exfalso.
-        destruct (eq_nat_dec dj2 dj3) as [H3| H3].
-         subst dj3.
-         rewrite Nat.sub_diag in Ht; simpl in Ht.
-         unfold max_iter_int_part in Hm; simpl in Hm.
-         symmetry in Hm.
-         exfalso.
-         unfold R_abs at 1 in Hxym; simpl in Hxym.
-         revert Hxym Ht2; clear; intros.
-         revert x xm ym dj2 Hxym Ht2.
-         induction m; intros.
-          simpl in Hxym.
-          injection Hxym; clear Hxym; intros; subst xm ym.
-          simpl in Ht2; discriminate Ht2.
+        remember Hxym as H; clear HeqH.
+        apply I_equiv_div_0_l with (i := dj2) in H; [ idtac | reflexivity ].
+        rewrite Ht2 in H; discriminate H.
 
-          simpl in Hxym.
-          remember (R_int (R_abs x) =? 0) as c eqn:Hc .
-          symmetry in Hc.
-          destruct c.
-           injection Hxym; clear Hxym; intros; subst xm ym.
-           simpl in Ht2.
-           destruct (zerop dj2); discriminate Ht2.
-
-           apply I_equiv_div_0_l with (i := dj2) in Hxym.
-            rewrite Hxym in Ht2; discriminate Ht2.
-
-            apply R_div_2_0.
-
-         apply le_neq_lt in H1; [ idtac | assumption ].
-         clear H3.
-         remember H1 as H; clear HeqH.
-         apply Hn3 in H.
+      apply Nat.nle_gt in H1.
 bbb.
 
 intros x.
