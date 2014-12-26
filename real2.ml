@@ -147,7 +147,7 @@ value rm_eucl_div x y =
             (0, rm_div x y)
       | None → (0, y)
       end
-  | None → (0, y)
+  | None → (0, rm_zero)
   end
 ;
 
