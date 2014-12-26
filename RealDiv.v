@@ -968,7 +968,15 @@ split.
 
    apply fst_same_sym_iff in Hs2; simpl in Hs2.
    injection Hqr; clear Hqr; intros; subst q r.
+vvv.
    exfalso.
+   pose proof (Hs1 O) as H.
+   unfold R_div in H; simpl in H.
+   rewrite <- Hm in H.
+   rewrite Hxym in H.
+   remember (I_eucl_div xm ym) as qr1 eqn:Hqr1 .
+   symmetry in Hqr1.
+   destruct qr1 as (q1, r1); simpl in H.
 bbb.
 
 Theorem xxx : ∀ x, (x / 1 = x)%R.
