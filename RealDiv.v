@@ -12,7 +12,7 @@ Definition R_div_2 x :=
      R_frac := I_div_2_inc (R_frac x) (Z.odd (R_int x)) |}.
 Arguments R_div_2 x%R.
 
-Fixpoint I_equiv_div m x y :=
+Fixpoint R_frac_equiv_div m x y :=
   match m with
   | O => (0%I, 0%I)
   | S m1 =>
@@ -21,9 +21,9 @@ Fixpoint I_equiv_div m x y :=
       if Z.eqb (R_int x) 0 && Z.eqb (R_int y) 0 then
         (R_frac x2, R_frac y2)
       else
-        I_equiv_div m1 x2 y2
+        R_frac_equiv_div m1 x2 y2
   end.
-Arguments I_equiv_div m%Z x%I y%I.
+Arguments R_frac_equiv_div m%Z x%I y%I.
 
 Fixpoint two_power n :=
   match n with
@@ -31,25 +31,25 @@ Fixpoint two_power n :=
   | S n1 => (2 * two_power n1)%nat
   end.
 
-Fixpoint I_eucl_div_loop m x y :=
+Fixpoint R_frac_div_loop m x y :=
   match m with
   | O => (O, 0%I)
   | S m1 =>
       if I_lt_dec x y then (O, x)
       else
-        let (q, r) := I_eucl_div_loop m1 (I_sub x y) y in
+        let (q, r) := R_frac_div_loop m1 (I_sub x y) y in
         (S q, r)
   end.
-Arguments I_eucl_div_loop m%nat x%I y%I.
+Arguments R_frac_div_loop m%nat x%I y%I.
 
-Definition I_eucl_div x y :=
+Definition R_frac_div x y :=
   match fst_same x I_ones 0 with
   | Some jx =>
       match fst_same y I_ones 0 with
       | Some jy =>
           if le_dec jx jy then
             let m := two_power (S (jy - jx)) in
-            let (q, r) := I_eucl_div_loop m x y in
+            let (q, r) := R_frac_div_loop m x y in
             (q, I_div r y)
           else
             (O, I_div x y)
@@ -57,7 +57,7 @@ Definition I_eucl_div x y :=
       end
   | None => (O, 0%I)
   end.
-Arguments I_eucl_div x%I y%I.
+Arguments R_frac_div x%I y%I.
 
 Definition R_is_neg x := Z.ltb (R_int x) 0.
 Arguments R_is_neg x%R.
@@ -71,8 +71,8 @@ Definition R_div x y :=
   let ax := R_abs x in
   let ay := R_abs y in
   let m := max_iter_int_part ax ay in
-  let (xm, ym) := I_equiv_div m ax ay in
-  let (q, rm) := I_eucl_div xm ym in
+  let (xm, ym) := R_frac_equiv_div m ax ay in
+  let (q, rm) := R_frac_div xm ym in
   let qz := Z.of_nat q in
   {| R_int := if R_is_neg x ⊕ R_is_neg y then -qz else qz;
      R_frac := rm |}.
@@ -85,11 +85,11 @@ Notation "x / y" := (R_div x y) : R_scope.
 
 (* *)
 
-Definition I_equiv_div_fst x y :=
-  fst (I_equiv_div (max_iter_int_part x y) x y).
+Definition R_frac_equiv_div_fst x y :=
+  fst (R_frac_equiv_div (max_iter_int_part x y) x y).
 
-Theorem fold_I_equiv_div_fst : ∀ x y,
-  fst (I_equiv_div (max_iter_int_part x y) x y) = I_equiv_div_fst x y.
+Theorem fold_R_frac_equiv_div_fst : ∀ x y,
+  fst (R_frac_equiv_div (max_iter_int_part x y) x y) = R_frac_equiv_div_fst x y.
 Proof. reflexivity. Qed.
 
 Theorem b2z_inj : ∀ b1 b2, b2z b1 = b2z b2 → b1 = b2.
@@ -223,16 +223,16 @@ destruct H as [(Hi, Hf)| (Hi, Hf)].
    rewrite Hf; reflexivity.
 Qed.
 
-Theorem I_equiv_div_fst_is_0 : ∀ x y,
+Theorem R_frac_equiv_div_fst_is_0 : ∀ x y,
   (x = 0)%R
   → 0 <= R_int x
-  → (I_equiv_div_fst x y = 0)%I.
+  → (R_frac_equiv_div_fst x y = 0)%I.
 Proof.
 intros x y Hx Hxpos.
 remember Hx as H; clear HeqH.
 apply R_zero_if in H; simpl in H.
 destruct H as [(Hi, Hf)| (Hi, Hf)].
- unfold I_equiv_div_fst; simpl.
+ unfold R_frac_equiv_div_fst; simpl.
  remember (max_iter_int_part x y) as m eqn:Hm .
  clear Hm Hxpos.
  revert x Hx Hi Hf y.
@@ -272,9 +272,9 @@ destruct H as [(Hi, Hf)| (Hi, Hf)].
  apply Pos2Z.neg_is_neg.
 Qed.
 
-Theorem I_equiv_div_0_l : ∀ m x y xm ym,
+Theorem R_frac_equiv_div_0_l : ∀ m x y xm ym,
   (x = 0)%R
-  → I_equiv_div m x y = (xm, ym)
+  → R_frac_equiv_div m x y = (xm, ym)
   → (∀ i, xm.[i] = false).
 Proof.
 intros m x y xm ym Hx HI i.
@@ -303,8 +303,8 @@ induction m; intros.
   apply R_div_2_0_if; assumption.
 Qed.
 
-Theorem I_equiv_div_snd_prop : ∀ m x y xm ym,
-  I_equiv_div m x y = (xm, ym)
+Theorem R_frac_equiv_div_snd_prop : ∀ m x y xm ym,
+  R_frac_equiv_div m x y = (xm, ym)
   → ym.[0] = false.
 Proof.
 intros m x y xm ym HI.
@@ -343,19 +343,19 @@ split.
   rewrite Z.add_0_r.
   unfold R_div; simpl.
   remember (max_iter_int_part (R_abs 0) (R_abs x)) as m eqn:Hm .
-  remember (I_equiv_div m (R_abs 0) (R_abs x)) as xym eqn:Hxym .
+  remember (R_frac_equiv_div m (R_abs 0) (R_abs x)) as xym eqn:Hxym .
   symmetry in Hxym.
   destruct xym as (xm, ym).
-  remember (I_eucl_div xm ym) as qr eqn:Hqr .
+  remember (R_frac_div xm ym) as qr eqn:Hqr .
   symmetry in Hqr.
   destruct qr as (q, r); simpl.
-  unfold I_eucl_div in Hqr.
+  unfold R_frac_div in Hqr.
   remember (fst_same xm I_ones 0) as s2 eqn:Hs2 .
   destruct s2 as [dj2| ].
    apply fst_same_sym_iff in Hs2; simpl in Hs2.
    destruct Hs2 as (Hn2, Ht2).
    remember Hxym as H; clear HeqH.
-   apply I_equiv_div_0_l with (i := dj2) in H; [ idtac | reflexivity ].
+   apply R_frac_equiv_div_0_l with (i := dj2) in H; [ idtac | reflexivity ].
    rewrite Ht2 in H; discriminate H.
 
    injection Hqr; clear Hqr; intros; subst q r.
@@ -363,19 +363,19 @@ split.
 
   unfold R_div; simpl.
   remember (max_iter_int_part (R_abs 0) (R_abs x)) as m eqn:Hm .
-  remember (I_equiv_div m (R_abs 0) (R_abs x)) as xym eqn:Hxym .
+  remember (R_frac_equiv_div m (R_abs 0) (R_abs x)) as xym eqn:Hxym .
   symmetry in Hxym.
   destruct xym as (xm, ym).
-  remember (I_eucl_div xm ym) as qr eqn:Hqr .
+  remember (R_frac_div xm ym) as qr eqn:Hqr .
   symmetry in Hqr.
   destruct qr as (q, r); simpl.
-  unfold I_eucl_div in Hqr.
+  unfold R_frac_div in Hqr.
   remember (fst_same xm I_ones 0) as s2 eqn:Hs2 .
   destruct s2 as [dj2| ].
    apply fst_same_sym_iff in Hs2; simpl in Hs2.
    destruct Hs2 as (Hn2, Ht2).
    remember Hxym as H; clear HeqH.
-   apply I_equiv_div_0_l with (i := dj2) in H; [ idtac | reflexivity ].
+   apply R_frac_equiv_div_0_l with (i := dj2) in H; [ idtac | reflexivity ].
    rewrite Ht2 in H; discriminate H.
 
    apply fst_same_sym_iff in Hs2; simpl in Hs2.
@@ -385,11 +385,11 @@ split.
    unfold R_div in H; simpl in H.
    rewrite <- Hm in H.
    rewrite Hxym in H.
-   remember (I_eucl_div xm ym) as qr1 eqn:Hqr1 .
+   remember (R_frac_div xm ym) as qr1 eqn:Hqr1 .
    symmetry in Hqr1.
    destruct qr1 as (q1, r1); simpl in H.
    rename H into Hr1.
-   unfold I_eucl_div in Hqr1.
+   unfold R_frac_div in Hqr1.
    remember (fst_same xm I_ones 0) as s3 eqn:Hs3 .
    destruct s3 as [dj3| ].
     apply fst_same_sym_iff in Hs3; simpl in Hs3.
@@ -404,19 +404,19 @@ split.
  rewrite xorb_false_r, carry_diag; simpl.
  unfold R_div; simpl.
  remember (max_iter_int_part (R_abs 0) (R_abs x)) as m eqn:Hm .
- remember (I_equiv_div m (R_abs 0) (R_abs x)) as xym eqn:Hxym .
+ remember (R_frac_equiv_div m (R_abs 0) (R_abs x)) as xym eqn:Hxym .
  symmetry in Hxym.
  destruct xym as (xm, ym).
- remember (I_eucl_div xm ym) as qr eqn:Hqr .
+ remember (R_frac_div xm ym) as qr eqn:Hqr .
  symmetry in Hqr.
  destruct qr as (q, r); simpl.
- unfold I_eucl_div in Hqr.
+ unfold R_frac_div in Hqr.
  remember (fst_same xm I_ones 0) as s2 eqn:Hs2 .
  destruct s2 as [dj2| ].
   apply fst_same_sym_iff in Hs2; simpl in Hs2.
   destruct Hs2 as (Hn2, Ht2).
   remember Hxym as H; clear HeqH.
-  apply I_equiv_div_0_l with (i := dj2) in H; [ idtac | reflexivity ].
+  apply R_frac_equiv_div_0_l with (i := dj2) in H; [ idtac | reflexivity ].
   rewrite Ht2 in H; discriminate H.
 
   injection Hqr; clear Hqr; intros; subst q r.
@@ -430,10 +430,10 @@ unfold R_eq; simpl.
 split.
  unfold R_div; simpl.
  remember (max_iter_int_part (R_abs x) (R_abs 1)) as m eqn:Hm .
- remember (I_equiv_div m (R_abs x) (R_abs 1)) as xym eqn:Hxym .
+ remember (R_frac_equiv_div m (R_abs x) (R_abs 1)) as xym eqn:Hxym .
  symmetry in Hxym.
  destruct xym as (xm, ym).
- remember (I_eucl_div xm ym) as qr eqn:Hqr .
+ remember (R_frac_div xm ym) as qr eqn:Hqr .
  symmetry in Hqr.
  destruct qr as (q, r); simpl.
  unfold carry; simpl.
@@ -459,10 +459,10 @@ remember (R_is_neg x) as nxp eqn:Hnxp .
 unfold R_is_neg; simpl.
 rewrite Z_nlt_1_0, xorb_false_r.
 remember (max_iter_int_part ax 1%R) as m eqn:Hm .
-remember (I_equiv_div m ax 1%R) as mm eqn:Hmm .
+remember (R_frac_equiv_div m ax 1%R) as mm eqn:Hmm .
 symmetry in Hmm.
 destruct mm as (xm, ym).
-remember (I_eucl_div xm ym) as qrm eqn:Hqrm .
+remember (R_frac_div xm ym) as qrm eqn:Hqrm .
 symmetry in Hqrm.
 destruct qrm as (q, rm).
 destruct m.
@@ -500,10 +500,10 @@ remember (R_abs x) as ax eqn:Hax .
 remember (R_is_neg x) as nxp eqn:Hnxp .
 symmetry in Hnxp.
 remember (max_iter_int_part ax ax) as m eqn:Hm .
-remember (I_equiv_div m ax ax) as mm eqn:Hmm .
+remember (R_frac_equiv_div m ax ax) as mm eqn:Hmm .
 symmetry in Hmm.
 destruct mm as (xm, ym).
-remember (I_eucl_div xm ym) as qrm eqn:Hqrm .
+remember (R_frac_div xm ym) as qrm eqn:Hqrm .
 symmetry in Hqrm.
 destruct qrm as (q, rm).
 unfold R_eq.
@@ -529,10 +529,10 @@ destruct nxp.
  destruct xzc; try discriminate Hnxp; clear Hnxp.
  Focus 2.
  remember (max_iter_int_part 1%R ax) as m eqn:Hm .
- remember (I_equiv_div m 1%R ax) as mm eqn:Hmm .
+ remember (R_frac_equiv_div m 1%R ax) as mm eqn:Hmm .
  symmetry in Hmm.
  destruct mm as (xm, ym).
- remember (I_eucl_div xm ym) as qrm eqn:Hqrm .
+ remember (R_frac_div xm ym) as qrm eqn:Hqrm .
  symmetry in Hqrm.
  destruct qrm as (q, rm).
  unfold R_ge.
@@ -553,9 +553,9 @@ split.
  unfold R_div_2 in Hr1; simpl in Hr1.
  unfold Z.div in Hr1; simpl in Hr1.
  remember (R_div_2 (1 / x)) as r2 eqn:Hr2 .
- remember (I_equiv_div m r1 r2) as mm eqn:Hmm .
+ remember (R_frac_equiv_div m r1 r2) as mm eqn:Hmm .
  destruct mm as (xm, ym).
- remember (I_eucl_div xm ym) as qr eqn:Hqr .
+ remember (R_frac_div xm ym) as qr eqn:Hqr .
  destruct qr as (q, rm); simpl.
  remember (R_is_neg (1 / x)) as neg eqn:Hneg .
  symmetry in Hneg.
@@ -577,8 +577,8 @@ bbb.
  unfold R_div_2 in Hr1; simpl in Hr1.
  unfold Z.div in Hr1; simpl in Hr1.
  remember (R_div_2 (1 / x)) as r2 eqn:Hr2 .
- remember (I_equiv_div m r1 r2) as mm eqn:Hmm .
+ remember (R_frac_equiv_div m r1 r2) as mm eqn:Hmm .
  destruct mm as (xm, ym).
- remember (I_eucl_div xm ym) as qr eqn:Hqr .
+ remember (R_frac_div xm ym) as qr eqn:Hqr .
  destruct qr as (q, rm); simpl.
 bbb.
