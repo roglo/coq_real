@@ -392,7 +392,32 @@ Qed.
 Theorem R_div_1_r : ∀ x, (x / 1 = x)%R.
 Proof.
 intros x.
+unfold R_eq; simpl.
+split.
+ unfold R_div; simpl.
+ remember (max_iter_int_part (R_abs x) (R_abs 1)) as m eqn:Hm .
+ remember (I_equiv_div m (R_abs x) (R_abs 1)) as xym eqn:Hxym .
+ symmetry in Hxym.
+ destruct xym as (xm, ym).
+ remember (I_eucl_div xm ym) as qr eqn:Hqr .
+ symmetry in Hqr.
+ destruct qr as (q, r); simpl.
+ unfold carry; simpl.
+ remember (fst_same r 0 0) as s1 eqn:Hs1 .
+ remember (fst_same (R_frac x) 0 0) as s2 eqn:Hs2 .
+ destruct s1 as [dj1| ].
+  apply fst_same_sym_iff in Hs1; simpl in Hs1.
+  destruct Hs1 as (Hn1, Ht1).
+  rewrite Ht1, Z.add_0_r.
+  destruct s2 as [dj2| ].
+   apply fst_same_sym_iff in Hs2; simpl in Hs2.
+   destruct Hs2 as (Hn2, Ht2).
+   rewrite Ht2, Z.add_0_r.
+   unfold R_is_neg at 2; simpl.
+   rewrite Z_nlt_1_0, xorb_false_r.
 bbb.
+
+intros x.
 unfold R_div; simpl.
 remember (R_abs x) as ax eqn:Hax .
 unfold R_abs; simpl.
