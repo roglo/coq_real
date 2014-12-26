@@ -410,8 +410,7 @@ bbb.
      symmetry in Hc.
      destruct c.
       injection Hxym; clear Hxym; intros; subst xm ym.
-      simpl.
-      simpl in Ht1, H.
+      simpl in Ht1, H; simpl.
       rewrite Nat.sub_0_r.
       apply Z.eqb_eq in Hc; simpl in Hc.
       clear m Hm H.
