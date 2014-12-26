@@ -394,12 +394,13 @@ split.
   destruct s1 as [dj1| ].
    destruct Hs1 as (Hn1, Ht1).
    rewrite Ht1, xorb_false_r.
+bbb.
    remember Hxym as H; clear HeqH.
    eapply I_equiv_div_snd_prop in H.
    destruct i; [ assumption | idtac ].
    destruct dj1.
     clear Hn1; rewrite Nat.add_0_r in Ht1.
-    induction m.
+    destruct m.
      simpl in Hxym.
      injection Hxym; clear Hxym; intros; subst xm ym.
      reflexivity.
@@ -413,7 +414,8 @@ split.
       simpl in Ht1, H.
       rewrite Nat.sub_0_r.
       apply Z.eqb_eq in Hc; simpl in Hc.
-      clear H.
+      clear m Hm H.
+bbb.
       unfold max_iter_int_part in Hm; simpl in Hm.
       rewrite Hc in Hm; simpl in Hm.
 bbb.
