@@ -966,7 +966,7 @@ split.
         symmetry in Hqr2.
         destruct qr2 as (q2, r2).
         injection Hqr1; clear Hqr1; intros; subst q r2.
-        simpl.
+        exfalso.
         destruct (eq_nat_dec dj2 dj3) as [H3| H3].
          subst dj3.
          rewrite Nat.sub_diag in Ht; simpl in Ht.
@@ -993,6 +993,11 @@ split.
             rewrite Hxym in Ht2; discriminate Ht2.
 
             apply R_div_2_0.
+
+         apply le_neq_lt in H1; [ idtac | assumption ].
+         clear H3.
+         remember H1 as H; clear HeqH.
+         apply Hn3 in H.
 bbb.
 
 intros x.
