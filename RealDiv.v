@@ -98,6 +98,16 @@ intros b1 b2 H.
 destruct b1, b2; try reflexivity; discriminate H.
 Qed.
 
+Theorem two_power_neq_0 : ∀ n, two_power n ≠ O.
+Proof.
+intros n H.
+induction n; [ discriminate H | simpl in H ].
+rewrite Nat.add_0_r in H.
+apply Nat.eq_add_0 in H.
+destruct H as (H, _).
+apply IHn; assumption.
+Qed.
+
 Theorem same_carry_fst_same_none : ∀ x y,
   carry x 0 0 = carry y 0 0
   → fst_same (I_div_2_inc y false) 0 1 = None
@@ -449,6 +459,35 @@ split.
    rewrite Ht2, Z.add_0_r.
    unfold R_is_neg at 2; simpl.
    rewrite Z_nlt_1_0, xorb_false_r.
+   unfold R_frac_div in Hqr; simpl in Hqr.
+   remember (fst_same xm I_ones 0) as s3 eqn:Hs3 .
+   remember (fst_same ym I_ones 0) as s4 eqn:Hs4 .
+   destruct s3 as [dj3| ].
+    apply fst_same_sym_iff in Hs3; simpl in Hs3.
+    destruct Hs3 as (Hn3, Ht3).
+    destruct s4 as [dj4| ].
+     apply fst_same_sym_iff in Hs4; simpl in Hs4.
+     destruct Hs4 as (Hn4, Ht4).
+     destruct (le_dec dj3 dj4) as [H1| H1].
+      rewrite Nat.add_0_r in Hqr.
+      remember (two_power (dj4 - dj3)) as t eqn:Ht .
+      remember (R_frac_div_loop (t + t) xm ym) as qr1 eqn:Hqr1 .
+      symmetry in Hqr1.
+      destruct qr1 as (q1, r1).
+      injection Hqr; clear Hqr; intros; subst q1 r.
+      remember (t + t)%nat as tt eqn:Htt .
+      symmetry in Htt.
+      destruct tt.
+       symmetry in Ht.
+       apply Nat.eq_add_0 in Htt.
+       destruct Htt as (Htt, _); move Htt at top; subst t.
+       exfalso; revert Ht; apply two_power_neq_0.
+
+       simpl in Hqr1.
+       destruct (I_lt_dec xm ym) as [H2| H2].
+        injection Hqr1; clear Hqr1; intros; subst q r1.
+        simpl in Hn1, Ht1.
+
 bbb.
 
 intros x.
