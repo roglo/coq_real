@@ -133,9 +133,14 @@ value rec i_div_eucl_i x y i =
       let i1 = i - 1 in
       let r = snd (i_div_eucl_i x y i1) in
 (*
-let _ = printf "i_div_eucl %d ok\n%!" i in
+let _ = printf "i_div_eucl %f/%f %d = %f ok\n%!" (rm2f x) (rm2f y) i (rm2f r)
+in
 *)
       let tr = i_mul_2 r in
+(*
+let _ = printf "tr ok\n%!" in
+let _ = printf "tr = %f\n%!" (rm2f tr) in
+*)
       if i_lt tr y then (False, tr) else (True, i_sub tr y)
   end
 ;
@@ -197,6 +202,9 @@ value r_div_r_frac ax ay =
   let m1 = max_iter_int_part ax ay in
   let (xm, ym) = r_frac_equiv_div m1 ax ay in
   let m2 = max_iter_frac_part xm ym in
+(*
+let _ = printf "m2 = %d\n%!" m2 in
+*)
   if m2 = 0 then i_zero
   else
     let rm = r_div_r_frac_loop m2 xm ym in
@@ -219,12 +227,18 @@ value r = r_div_r_frac (f2r 0.01) (f2r 0.03);
 rm2f r;
 
 value r = r_div (f2r 1.) (f2r 3.);
-printf "%d\n%!" r.r_int;
-printf "%f\n%!" (rm2f r.r_frac);
+printf "1/3 i=%d\n%!" r.r_int;
+printf "1/3 f=%f\n%!" (rm2f r.r_frac);
 
 value r = r_div (f2r 8.) (f2r 7.);
-printf "%d\n%!" r.r_int;
-printf "%f\n%!" (rm2f r.r_frac);
+printf "8/7 i=%d\n%!" r.r_int;
+printf "8/7 f=%f\n%!" (rm2f r.r_frac);
+
+(* pourquoi est-ce si lent ?
+value r = r_div (f2r 10.) (f2r 7.);
+printf "10/7 i=%d\n%!" r.r_int;
+printf "10/7 f=%f\n%!" (rm2f r.r_frac);
+*)
 
 (*
 value r = r_div (f2r 355.) (f2r 113.);
