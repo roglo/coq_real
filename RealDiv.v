@@ -436,6 +436,55 @@ Qed.
 Theorem R_nneg_1 : R_is_neg 1 = false.
 Proof. apply Z_nlt_1_0. Qed.
 
+Theorem R_int_abs : ∀ x, 0 <= R_int (R_abs x).
+Proof.
+intros x.
+unfold R_abs; simpl.
+remember (R_is_neg x) as ng eqn:Hng .
+symmetry in Hng.
+destruct ng; simpl; [ idtac | apply Z.ltb_ge; assumption ].
+apply Z.ltb_lt in Hng.
+unfold Z.sub.
+rewrite <- Z.opp_add_distr, <- Z.opp_0.
+apply Z.opp_le_mono.
+do 2 rewrite Z.opp_involutive.
+apply Zlt_succ_le; simpl.
+apply Z.add_lt_mono_r with (p := 1) in Hng.
+assumption.
+Qed.
+
+Theorem max_iter_int_part_abs : ∀ x y,
+  max_iter_int_part (R_abs x) (R_abs y) ≠ 0%nat.
+Proof.
+intros x y Hm.
+unfold max_iter_int_part in Hm; simpl in Hm.
+rewrite <- Z2Nat.inj_0 in Hm.
+apply Z2Nat.inj in Hm; [ idtac | idtac | reflexivity ].
+ remember (R_int (R_abs x)) as iax eqn:Hiax .
+ symmetry in Hiax.
+ destruct iax as [| iax| iax].
+  remember (R_int (R_abs y)) as iay eqn:Hiay .
+  symmetry in Hiay.
+  destruct iay as [| iay| iay]; try discriminate Hm.
+  pose proof (R_int_abs y) as H.
+  rewrite Hiay in H.
+  apply Z.nlt_ge in H.
+  apply H, Pos2Z.neg_is_neg.
+
+  remember (R_int (R_abs y)) as iay eqn:Hiay .
+  symmetry in Hiay.
+  destruct iay as [| iay| iay]; try discriminate Hm.
+  pose proof (R_int_abs y) as H.
+  rewrite Hiay in H.
+  apply Z.nlt_ge in H.
+  apply H, Pos2Z.neg_is_neg.
+
+  pose proof (R_int_abs x) as H.
+  rewrite Hiax in H.
+  apply Z.nlt_ge in H.
+  apply H, Pos2Z.neg_is_neg.
+bbb.
+
 Theorem zzz : ∀ x, R_int (x / 1) = R_int x.
 Proof.
 intros x.
@@ -448,6 +497,8 @@ remember (R_frac_div xm ym) as qr eqn:Hqr .
 symmetry in Hqr.
 destruct qr as (q, r); simpl.
 rewrite R_nneg_1, xorb_false_r.
+symmetry in Hm.
+destruct m.
 bbb.
 *)
 
