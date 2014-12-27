@@ -498,6 +498,7 @@ remember (R_frac_div xm ym) as qr eqn:Hqr .
 symmetry in Hqr.
 destruct qr as (q, r); simpl.
 rewrite R_nneg_1, xorb_false_r.
+bbb.
 symmetry in Hm.
 destruct m.
  exfalso; revert Hm; apply max_iter_int_part_abs_ne_0.
