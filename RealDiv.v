@@ -433,6 +433,24 @@ split.
   rewrite carry_diag; reflexivity.
 Qed.
 
+Theorem R_nneg_1 : R_is_neg 1 = false.
+Proof. apply Z_nlt_1_0. Qed.
+
+Theorem zzz : ∀ x, R_int (x / 1) = R_int x.
+Proof.
+intros x.
+unfold R_div; simpl.
+remember (max_iter_int_part (R_abs x) (R_abs 1)) as m eqn:Hm .
+remember (R_frac_equiv_div m (R_abs x) (R_abs 1)) as xym eqn:Hxym .
+symmetry in Hxym.
+destruct xym as (xm, ym).
+remember (R_frac_div xm ym) as qr eqn:Hqr .
+symmetry in Hqr.
+destruct qr as (q, r); simpl.
+rewrite R_nneg_1, xorb_false_r.
+bbb.
+*)
+
 Theorem R_div_1_r : ∀ x, (x / 1 = x)%R.
 Proof.
 intros x.
