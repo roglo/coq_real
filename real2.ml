@@ -125,19 +125,6 @@ value rec two_power n =
   end
 ;
 
-value rec i_eucl_div_loop m x y =
-  if m < 0 then invalid_arg "i_eucl_div_loop" else
-  match m with
-  | 0 → failwith "i_eucl_div_loop bug: insufficient nb of iterations"
-  | _ →
-      let m1 = m - 1 in
-      if i_lt x y then (0, x)
-      else
-        let (q, r) = i_eucl_div_loop m1 (i_sub x y) y in
-        (1 + q, r)
-  end
-;
-
 value rec i_div_eucl_i x y i =
   match i with
   | 0 →
@@ -156,29 +143,9 @@ let _ = printf "i_div_eucl %d ok\n%!" i in
 value i_div_i x y i = fst (i_div_eucl_i (i_mul_2 x) y i);
 value i_div x y = {rm = i_div_i x y};
 
-value i_eucl_div x y =
-  match fst_same x i_ones 0 with
-  | Some jx →
-      match fst_same y i_ones 0 with
-      | Some jy →
-          if jx ≤ jy then
-            let m = two_power (jy - jx + 1) in
-            let (q, r) = i_eucl_div_loop m x y in
-            (q, i_div r y)
-          else
-            (0, i_div x y)
-      | None → (0, y)
-      end
-  | None → (0, i_zero)
-  end
-;
-
-value (q, r) = i_eucl_div (f2rm 0.01) (f2rm 0.03);
-rm2f r;
-
-value rec i_equiv_div m x y =
+value rec r_frac_equiv_div m x y =
   match m with
-  | 0 → failwith "i_equiv_div bug: insufficient nb of iterations"
+  | 0 → failwith "r_frac_equiv_div bug: insufficient nb of iterations"
   | _ →
       let m1 = m - 1 in
       let x2 = r_div_2 x in
@@ -186,23 +153,55 @@ value rec i_equiv_div m x y =
       if x.r_int = 0 && y.r_int = 0 then
         (x2.r_frac, y2.r_frac)
       else
-        i_equiv_div m1 x2 y2
+        r_frac_equiv_div m1 x2 y2
   end
 ;
 
 value max_iter_int_part ax ay = ax.r_int + ay.r_int + 1;
 
-value rec r_int_div_loop m ax ay =
+value rec r_div_r_int_loop m ax ay =
   match m with
   | 0 → 0
   | _ →
        let m1 = m - 1 in
        if r_lt ax ay then 0
-       else 1 + r_int_div_loop m1 (r_sub ax ay) ay
+       else 1 + r_div_r_int_loop m1 (r_sub ax ay) ay
   end.
 
-value r_int_div ax ay =
-  r_int_div_loop (max_iter_int_part ax ay) ax ay.
+value r_div_r_int ax ay =
+  r_div_r_int_loop (max_iter_int_part ax ay) ax ay.
+
+value max_iter_frac_part xm ym =
+  match fst_same xm i_ones 0 with
+  | Some jx →
+      match fst_same ym i_ones 0 with
+      | Some jy → two_power (max 1 (jy - jx + 1))
+      | None → 0
+      end
+  | None → 0
+  end
+;
+
+value rec r_div_r_frac_loop m x y =
+  if m < 0 then invalid_arg "r_div_r_frac_loop" else
+  match m with
+  | 0 → failwith "r_div_r_frac_loop bug: insufficient nb of iterations"
+  | _ →
+      let m1 = m - 1 in
+      if i_lt x y then x
+      else r_div_r_frac_loop m1 (i_sub x y) y
+  end
+;
+
+value r_div_r_frac ax ay =
+  let m1 = max_iter_int_part ax ay in
+  let (xm, ym) = r_frac_equiv_div m1 ax ay in
+  let m2 = max_iter_frac_part xm ym in
+  if m2 = 0 then i_zero
+  else
+    let rm = r_div_r_frac_loop m2 xm ym in
+    i_div rm ym
+;
 
 (* don't try it with x / y > 7 because the division algorithm is only
    done with subtractions without shifts and it is very very slow if
@@ -210,14 +209,20 @@ value r_int_div ax ay =
 value r_div x y =
   let ax = r_abs x in
   let ay = r_abs y in
-  let m = max_iter_int_part ax ay in
-  let (xm, ym) = i_equiv_div m ax ay in
-  let (q, rm) = i_eucl_div xm ym in
+  let q = r_div_r_int ax ay in
+  let r = r_div_r_frac ax ay in
   {r_int = if r_is_neg x = r_is_neg y then q else -q;
-   r_frac = rm}
+   r_frac = r}
 ;
 
+value r = r_div_r_frac (f2r 0.01) (f2r 0.03);
+rm2f r;
+
 value r = r_div (f2r 1.) (f2r 3.);
+printf "%d\n%!" r.r_int;
+printf "%f\n%!" (rm2f r.r_frac);
+
+value r = r_div (f2r 8.) (f2r 7.);
 printf "%d\n%!" r.r_int;
 printf "%f\n%!" (rm2f r.r_frac);
 
