@@ -31,34 +31,6 @@ Fixpoint two_power n :=
   | S n1 => (2 * two_power n1)%nat
   end.
 
-Fixpoint R_frac_div_loop m x y :=
-  match m with
-  | O => (O, 0%I)
-  | S m1 =>
-      if I_lt_dec x y then (O, x)
-      else
-        let (q, r) := R_frac_div_loop m1 (I_sub x y) y in
-        (S q, r)
-  end.
-Arguments R_frac_div_loop m%nat x%I y%I.
-
-Definition R_frac_div x y :=
-  match fst_same x I_ones 0 with
-  | Some jx =>
-      match fst_same y I_ones 0 with
-      | Some jy =>
-          if le_dec jx jy then
-            let m := two_power (S (jy - jx)) in
-            let (q, r) := R_frac_div_loop m x y in
-            (q, I_div r y)
-          else
-            (O, I_div x y)
-      | None => (O, y)
-      end
-  | None => (O, 0%I)
-  end.
-Arguments R_frac_div x%I y%I.
-
 Definition R_is_neg x := Z.ltb (R_int x) 0.
 Arguments R_is_neg x%R.
 
@@ -67,29 +39,56 @@ Arguments R_abs x%R.
 
 Definition max_iter_int_part ax ay := Z.to_nat (R_int ax + R_int ay + 1).
 
-(* new idea... *)
-Fixpoint R_int_div_loop m ax ay :=
+Fixpoint R_div_R_int_loop m ax ay :=
   match m with
   | O => O
   | S m1 =>
        if R_lt_dec ax ay then O
-       else S (R_int_div_loop m1 (ax - ay)%R ay)
+       else S (R_div_R_int_loop m1 (ax - ay)%R ay)
   end.
-Arguments R_int_div_loop m%nat ax%R ay%R.
+Arguments R_div_R_int_loop m%nat ax%R ay%R.
 
-Definition R_int_div ax ay :=
-  R_int_div_loop (max_iter_int_part ax ay) ax ay.
-Arguments R_int_div ax%R ay%R.
+Definition R_div_R_int ax ay :=
+  R_div_R_int_loop (max_iter_int_part ax ay) ax ay.
+Arguments R_div_R_int ax%R ay%R.
+
+Definition max_iter_frac_part xm ym :=
+  match fst_same xm I_ones 0 with
+  | Some jx =>
+      match fst_same ym I_ones 0 with
+      | Some jy => two_power (max 1 (jy - jx + 1))
+      | None => O
+      end
+  | None => O
+  end.
+Arguments max_iter_frac_part xm%I ym%I.
+
+Fixpoint R_div_R_frac_loop m x y :=
+  match m with
+  | O => 0%I
+  | S m1 =>
+      if I_lt_dec x y then x
+      else R_div_R_frac_loop m1 (x - y)%I y
+  end.
+Arguments R_div_R_frac_loop m%nat x%I y%I.
+
+Definition R_div_R_frac ax ay :=
+  let ml := max_iter_int_part ax ay in
+  let (xm, ym) := R_frac_equiv_div ml ax ay in
+  let m2 := max_iter_frac_part xm ym in
+  if eq_nat_dec m2 O then I_zero
+  else
+    let rm := R_div_R_frac_loop m2 xm ym in
+    I_div rm ym.
+Arguments R_div_R_frac ax%I ay%I.
 
 Definition R_div x y :=
   let ax := R_abs x in
   let ay := R_abs y in
-  let m := max_iter_int_part ax ay in
-  let (xm, ym) := R_frac_equiv_div m ax ay in
-  let (q, rm) := R_frac_div xm ym in
+  let q := R_div_R_int ax ay in
+  let r := R_div_R_frac ax ay in
   let qz := Z.of_nat q in
-  {| R_int := if R_is_neg x ⊕ R_is_neg y then -qz else qz;
-     R_frac := rm |}.
+  {| R_int := if R_is_neg x ⊕ R_is_neg y then -qz else qz; R_frac := r |}.
 Arguments R_div x%R y%R.
 
 Definition R_one := {| R_int := 1; R_frac := 0 |}.
@@ -354,6 +353,29 @@ Qed.
 
 Theorem R_div_0_l : ∀ x, (0 / x = 0)%R.
 Proof.
+intros x.
+unfold R_eq; simpl.
+rewrite carry_diag; simpl.
+split.
+ unfold carry; simpl.
+ remember (R_div_R_frac (R_abs 0) (R_abs x)) as xi.
+ remember (fst_same xi 0 0) as s1 eqn:Hs1 .
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ destruct s1 as [dj1| ].
+  destruct Hs1 as (Hn1, Ht1).
+  rewrite Ht1; simpl.
+  rewrite Z.add_0_r.
+  unfold R_div_R_int; simpl.
+  remember (max_iter_int_part (R_abs 0) (R_abs x)) as m eqn:Hm .
+  destruct m; simpl.
+   destruct (R_is_neg x); reflexivity.
+
+   remember (R_is_neg x) as ng eqn:Hng .
+   symmetry in Hng.
+   destruct (R_lt_dec (R_abs 0) (R_abs x)) as [H1| H1].
+    destruct ng; reflexivity.
+bbb.
+
 intros x.
 unfold R_eq; simpl.
 rewrite carry_diag; simpl.
