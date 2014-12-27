@@ -67,6 +67,20 @@ Arguments R_abs x%R.
 
 Definition max_iter_int_part ax ay := Z.to_nat (R_int ax + R_int ay + 1).
 
+(* new idea... *)
+Fixpoint R_int_div_loop m ax ay :=
+  match m with
+  | O => O
+  | S m1 =>
+       if R_lt_dec ax ay then O
+       else S (R_int_div_loop m1 (ax - ay)%R ay)
+  end.
+Arguments R_int_div_loop m%nat ax%R ay%R.
+
+Definition R_int_div ax ay :=
+  R_int_div_loop (max_iter_int_part ax ay) ax ay.
+Arguments R_int_div ax%R ay%R.
+
 Definition R_div x y :=
   let ax := R_abs x in
   let ay := R_abs y in

@@ -28,6 +28,7 @@ value i_div_2_inc x n =
   {rm i = if i = 0 then n else x.rm (i - 1)};
 
 type comparison = [ Eq | Lt | Gt ].
+
 value i_compare x y =
   let nx = i_norm x in
   match fst_same nx (i_opp (i_norm y)) 0 with
@@ -72,6 +73,7 @@ value r_add x y =
    r_frac = i_add x.r_frac y.r_frac};
 
 value r_opp x = {r_int = - x.r_int - 1; r_frac = i_opp x.r_frac};
+value r_sub x y = r_add x (r_opp y);
 value r_is_neg x = x.r_int < 0;
 value r_abs x = if r_is_neg x then r_opp x else x;
 
@@ -90,6 +92,26 @@ value f2r a = {r_int = truncate (floor a); r_frac = f2rm (a -. floor a)};
 value r2f x = float x.r_int +. rm2f x.r_frac;
 
 (* *)
+
+value zcompare x y =
+  if x < y then Lt
+  else if x > y then Gt
+  else Eq.
+
+value r_compare x y =
+  let nx = r_norm x in
+  let ny = r_norm y in
+  match zcompare nx.r_int ny.r_int with
+  | Eq →
+      match fst_same nx.r_frac (i_opp ny.r_frac) 0 with
+      | Some j → if nx.r_frac.rm j then Gt else Lt
+      | None → Eq
+      end
+  | Lt → Lt
+  | Gt → Gt
+  end.
+
+value r_lt x y = r_compare x y = Lt.
 
 (* division using only subtractions; computation of integer part *)
 
@@ -168,13 +190,27 @@ value rec i_equiv_div m x y =
   end
 ;
 
+value max_iter_int_part ax ay = ax.r_int + ay.r_int + 1;
+
+value rec r_int_div_loop m ax ay =
+  match m with
+  | 0 → 0
+  | _ →
+       let m1 = m - 1 in
+       if r_lt ax ay then 0
+       else 1 + r_int_div_loop m1 (r_sub ax ay) ay
+  end.
+
+value r_int_div ax ay =
+  r_int_div_loop (max_iter_int_part ax ay) ax ay.
+
 (* don't try it with x / y > 7 because the division algorithm is only
    done with subtractions without shifts and it is very very slow if
    x >> y *)
 value r_div x y =
   let ax = r_abs x in
   let ay = r_abs y in
-  let m = ax.r_int + ay.r_int + 1 in
+  let m = max_iter_int_part ax ay in
   let (xm, ym) = i_equiv_div m ax ay in
   let (q, rm) = i_eucl_div xm ym in
   {r_int = if r_is_neg x = r_is_neg y then q else -q;
