@@ -2714,6 +2714,56 @@ split.
  rewrite Hf; reflexivity.
 Qed.
 
+Theorem R_eq_R_int_opp_sign : ∀ x y,
+  (x = y)%R
+  → R_int x < 0
+  → 0 <= R_int y
+  → R_int x = -1 ∧ R_int y = 0 ∧
+    (∀ i, (R_frac x).[i] = true) ∧
+    (∀ i, (R_frac y).[i] = false).
+Proof.
+intros x y Hxy Hxb Hyb.
+remember Hxy as Heq; clear HeqHeq.
+unfold R_eq in Hxy; simpl in Hxy.
+destruct Hxy as (Hf, Hi).
+unfold carry in Hf; simpl in Hf.
+remember (fst_same (R_frac x) 0 0) as s1 eqn:Hs1 .
+remember (fst_same (R_frac y) 0 0) as s2 eqn:Hs2 .
+apply fst_same_sym_iff in Hs1; simpl in Hs1.
+apply fst_same_sym_iff in Hs2; simpl in Hs2.
+destruct s1 as [dj1| ].
+ destruct Hs1 as (Hn1, Ht1).
+ rewrite Ht1, Z.add_0_r in Hf.
+ destruct s2 as [dj2| ].
+  destruct Hs2 as (Hn2, Ht2).
+  rewrite Ht2, Z.add_0_r in Hf.
+  apply Z.nlt_ge in Hyb.
+  rewrite Hf in Hxb; contradiction.
+
+  rewrite Hf in Hxb.
+  exfalso; revert Hxb Hyb; simpl; intros; omega.
+
+ destruct s2 as [dj2| ].
+  destruct Hs2 as (Hn2, Ht2).
+  rewrite Ht2, Z.add_0_r in Hf.
+  rewrite <- Hf in Hyb; simpl in Hyb.
+  assert (R_int x = - 1) as Hx by omega.
+  split; [ assumption | idtac ].
+  rewrite Hx in Hf; simpl in Hf; symmetry in Hf.
+  split; [ assumption | idtac ].
+  split; [ assumption | idtac ].
+  assert (R_frac x = 0)%I as H by (apply I_zero_iff; right; assumption).
+  rename H into Hfx.
+  rewrite Hfx in Hi; symmetry in Hi.
+  apply I_zero_iff in Hi; simpl in Hi.
+  destruct Hi as [Hi| Hi]; [ assumption | idtac ].
+  rewrite Hi in Ht2; discriminate Ht2.
+
+  apply Z.add_cancel_r in Hf.
+  rewrite Hf in Hxb.
+  exfalso; revert Hxb Hyb; simpl; intros; omega.
+Qed.
+
 Add Parametric Morphism : R_abs
   with signature R_eq ==> R_eq
   as R_abs_morph.
@@ -2734,6 +2784,15 @@ destruct xb.
   unfold R_is_neg in Hxb, Hyb.
   apply Z.ltb_lt in Hxb.
   apply Z.ltb_ge in Hyb.
+  remember Heq as H; clear HeqH.
+  apply R_eq_R_int_opp_sign in H; try assumption.
+  clear Hxb Hyb.
+  destruct H as (Hxb, (Hyb, (Hx, Hy))).
+  rewrite Hxb, Hyb, Z.add_0_l in Hi.
+  rewrite Hyb, Z.opp_0, Z.add_0_l, Z.sub_0_l.
+  apply Z.add_move_l.
+  rewrite Z.sub_opp_r.
+  apply Z.add_move_l in Hi.
 bbb.
 
 Theorem R_le_antisymm : ∀ x y, (x ≤ y)%R → (y ≤ x)%R → (x = y)%R.
