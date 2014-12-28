@@ -2780,19 +2780,54 @@ destruct xb.
  unfold R_eq in Hxy; simpl in Hxy.
  destruct Hxy as (Hi, Hf).
  unfold R_eq; simpl.
+ unfold R_is_neg in Hxb, Hyb.
+ apply Z.ltb_lt in Hxb.
+ apply Z.ltb_ge in Hyb.
+ remember Heq as H; clear HeqH.
+ apply R_eq_R_int_opp_sign in H; try assumption.
+ clear Hxb Hyb.
+ destruct H as (Hxb, (Hyb, (Hx, Hy))).
+ rewrite Hxb, Hyb, Z.add_0_l in Hi.
+ apply Z.add_move_l in Hi.
  split.
-  unfold R_is_neg in Hxb, Hyb.
-  apply Z.ltb_lt in Hxb.
-  apply Z.ltb_ge in Hyb.
-  remember Heq as H; clear HeqH.
-  apply R_eq_R_int_opp_sign in H; try assumption.
-  clear Hxb Hyb.
-  destruct H as (Hxb, (Hyb, (Hx, Hy))).
-  rewrite Hxb, Hyb, Z.add_0_l in Hi.
   rewrite Hyb, Z.opp_0, Z.add_0_l, Z.sub_0_l.
   apply Z.add_move_l.
   rewrite Z.sub_opp_r.
-  apply Z.add_move_l in Hi.
+  unfold carry; simpl.
+  remember (fst_same (R_frac y) 0 0) as s1 eqn:Hs1 .
+  remember (fst_same (- R_frac y) 0 0) as s2 eqn:Hs2 .
+  apply fst_same_sym_iff in Hs1; simpl in Hs1.
+  apply fst_same_sym_iff in Hs2; simpl in Hs2.
+  destruct s2 as [dj2| ].
+   destruct Hs2 as (Hn2, Ht2).
+   rewrite Hy in Ht2; discriminate Ht2.
+
+   destruct s1 as [dj1| ].
+    destruct Hs1 as (Hn1, Ht1); rewrite Ht1; reflexivity.
+
+    pose proof (Hs1 O) as H.
+    rewrite Hy in H; discriminate H.
+
+  unfold I_eq; simpl; intros i.
+  unfold I_add_i; simpl.
+  do 2 rewrite xorb_false_r.
+  rewrite Hy, xorb_true_l, xorb_false_l.
+  unfold carry; simpl.
+  remember (fst_same (R_frac y) 0 (S i)) as s1 eqn:Hs1 .
+  remember (fst_same (- R_frac y) 0 (S i)) as s2 eqn:Hs2 .
+  apply fst_same_sym_iff in Hs1; simpl in Hs1.
+  apply fst_same_sym_iff in Hs2; simpl in Hs2.
+  destruct s2 as [dj2| ].
+   destruct Hs2 as (Hn2, Ht2).
+   rewrite Hy in Ht2; discriminate Ht2.
+
+   destruct s1 as [dj1| ].
+    destruct Hs1 as (Hn1, Ht1); rewrite Ht1; reflexivity.
+
+    pose proof (Hs1 O) as H.
+    rewrite Hy in H; discriminate H.
+
+ destruct yb; [ idtac | assumption ].
 bbb.
 
 Theorem R_le_antisymm : ∀ x y, (x ≤ y)%R → (y ≤ x)%R → (x = y)%R.
