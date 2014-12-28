@@ -372,6 +372,21 @@ destruct iax as [| iax| iax].
  exfalso; apply H, Pos2Z.neg_is_neg.
 Qed.
 
+Theorem R_le_antisymm : ∀ x y, (x ≤ y)%R → (y ≤ x)%R → (x = y)%R.
+Proof.
+intros x y Hxy Hyx.
+apply R_ge_le_iff in Hyx.
+unfold R_le in Hxy; simpl in Hxy.
+unfold R_ge in Hyx; simpl in Hyx.
+apply R_compare_eq.
+remember (x ?= y)%R as c eqn:Hc .
+symmetry in Hc.
+destruct c; [ reflexivity | exfalso | exfalso ].
+ apply Hyx; reflexivity.
+
+ apply Hxy; reflexivity.
+Qed.
+
 Theorem R_div_0_l : ∀ x, (0 / x = 0)%R.
 Proof.
 intros x.
@@ -396,6 +411,8 @@ split.
 
     unfold R_abs at 1 in H1; simpl in H1.
     apply R_ge_le_iff in H1.
+    pose proof (R_abs_nonneg x) as H2.
+    apply R_le_antisymm in H2; [ idtac | assumption ].
 bbb.
 
 intros x.
