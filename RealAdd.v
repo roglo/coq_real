@@ -2564,28 +2564,8 @@ split.
  rewrite Z.opp_sub_distr, Z.opp_involutive.
  rewrite <- Z.add_sub_assoc, Z.add_0_r.
  f_equal; f_equal.
-bbb.
- Question: I can resolve goal 2 just with I_opp_involutive,
- but not goal 1. This is normal, since carry is not a morphism.
- So that means that we have to repeat the same proof structure
- as I_opp_involutive here.
-
- unfold carry; simpl.
- remember (fst_same (R_frac x) 0 0) as s1 eqn:Hs1 .
- remember (fst_same (- - R_frac x)%I 0 0) as s2 eqn:Hs2 .
- apply fst_same_sym_iff in Hs1; simpl in Hs1.
- apply fst_same_sym_iff in Hs2; simpl in Hs2.
- destruct s1 as [dj1| ].
-  destruct Hs1 as (Hn1, Ht1); rewrite Ht1.
-  destruct s2 as [dj2| ]; [ idtac | exfalso ].
-   destruct Hs2 as (Hn2, Ht2); rewrite Ht2; reflexivity.
-
-   pose proof (Hs2 dj1) as H.
-   rewrite Ht1 in H; discriminate H.
-
-  destruct s2 as [dj2| ]; [ idtac | reflexivity ].
-  destruct Hs2 as (Hn2, Ht2).
-  rewrite Hs1 in Ht2; discriminate Ht2.
+ apply carry_compat; [ intros i; simpl | reflexivity ].
+ apply negb_involutive.
 
  apply I_opp_involutive.
 Qed.
@@ -2609,8 +2589,10 @@ split.
  apply fst_same_sym_iff in Hs4; simpl in Hs4.
  destruct s3 as [dj3| ].
   destruct Hs3 as (Hn3, Ht3); rewrite Ht3, Z.add_0_r.
+  apply negb_false_iff in Ht3.
   destruct s4 as [dj4| ].
    destruct Hs4 as (Hn4, Ht4); rewrite Ht4, Z.add_0_r.
+   apply negb_false_iff in Ht4.
    f_equal.
    apply Z.opp_inj_wd.
    apply fst_same_sym_iff in Hs1; simpl in Hs1.
