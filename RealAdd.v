@@ -2556,4 +2556,32 @@ destruct Hf as [Hf| Hf]; [ left | right ].
   apply Z.add_move_r in Hi; assumption.
 Qed.
 
+Theorem R_opp_involutive : ∀ x, (- - x = x)%R.
+Proof.
+intros x.
+unfold R_eq; simpl.
+split.
+ rewrite Z.opp_sub_distr, Z.opp_involutive.
+ rewrite <- Z.add_sub_assoc, Z.add_0_r.
+ f_equal; f_equal.
+ unfold carry; simpl.
+ remember (fst_same (R_frac x) 0 0) as s1 eqn:Hs1 .
+ remember (fst_same (- - R_frac x)%I 0 0) as s2 eqn:Hs2 .
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ apply fst_same_sym_iff in Hs2; simpl in Hs2.
+ destruct s1 as [dj1| ].
+  destruct Hs1 as (Hn1, Ht1); rewrite Ht1.
+  destruct s2 as [dj2| ]; [ idtac | exfalso ].
+   destruct Hs2 as (Hn2, Ht2); rewrite Ht2; reflexivity.
+
+   pose proof (Hs2 dj1) as H.
+   rewrite Ht1 in H; discriminate H.
+
+  destruct s2 as [dj2| ]; [ idtac | reflexivity ].
+  destruct Hs2 as (Hn2, Ht2).
+  rewrite Hs1 in Ht2; discriminate Ht2.
+
+ apply I_opp_involutive.
+Qed.
+
 Close Scope Z_scope.

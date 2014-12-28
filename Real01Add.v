@@ -5448,6 +5448,31 @@ unfold I_sub.
 rewrite Hxy, Hcd; reflexivity.
 Qed.
 
+Theorem I_opp_involutive : ∀ x, (- - x = x)%I.
+Proof.
+intros x.
+unfold I_eq; simpl; intros i.
+unfold I_add_i; simpl.
+do 2 rewrite xorb_false_r.
+rewrite negb_involutive; f_equal.
+unfold carry; simpl.
+remember (fst_same x 0 (S i)) as s1 eqn:Hs1 .
+remember (fst_same (- (- x)%I) 0 (S i)) as s2 eqn:Hs2 .
+apply fst_same_sym_iff in Hs1; simpl in Hs1.
+apply fst_same_sym_iff in Hs2; simpl in Hs2.
+destruct s1 as [dj1| ].
+ destruct Hs1 as (Hn1, Ht1); rewrite Ht1.
+ destruct s2 as [dj2| ]; [ idtac | exfalso ].
+  destruct Hs2 as (Hn2, Ht2); rewrite Ht2; reflexivity.
+
+  pose proof (Hs2 dj1) as H.
+  rewrite Ht1 in H; discriminate H.
+
+ destruct s2 as [dj2| ]; [ idtac | reflexivity ].
+ destruct Hs2 as (Hn2, Ht2).
+ rewrite Hs1 in Ht2; discriminate Ht2.
+Qed.
+
 Theorem I_eq_compare_compat : ∀ x y z t,
   (x = y)%I
   → (z = t)%I

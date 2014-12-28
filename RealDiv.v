@@ -387,22 +387,66 @@ destruct c; [ reflexivity | exfalso | exfalso ].
  apply Hxy; reflexivity.
 Qed.
 
-Theorem R_div_0_l : ∀ x, (0 / x = 0)%R.
+Theorem zzz : ∀ x y m,
+  (x = 0)%R
+  → (y = 0)%R
+  → R_div_R_int_loop m x y = O.
 Proof.
-intros x.
+intros x y m Hx Hy.
+Abort. (*
+bbb.
+*)
+
+Theorem R_opp_inj : ∀ x y, (- x = - y)%R → (x = y)%R.
+Proof.
+intros x y H.
+rewrite <- R_opp_involutive.
+bbb.
+rewrite H.
+
+intros x y H.
+unfold R_eq in H; simpl in H.
 unfold R_eq; simpl.
-rewrite carry_diag; simpl.
+destruct H as (Hi, Hf).
 split.
  unfold carry; simpl.
- remember (R_div_R_frac (R_abs 0) (R_abs x)) as xi.
- remember (fst_same xi 0 0) as s1 eqn:Hs1 .
- apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ unfold carry in Hi; simpl in Hi.
+ Focus 2.
+ apply I_opp_morph in Hf.
+ Unfocus.
+ remember (fst_same (R_frac x) 0 0) as s1 eqn:Hs1 .
+ remember (fst_same (R_frac y) 0 0) as s2 eqn:Hs2 .
+ remember (fst_same (- R_frac x) 0 0) as s3 eqn:Hs3 .
+ remember (fst_same (- R_frac y) 0 0) as s4 eqn:Hs4 .
+ destruct s1 as [dj1| ].
+bbb.
+
+Theorem R_abs_0_iff : ∀ x, (R_abs x = 0)%R ↔ (x = 0)%R.
+Proof.
+intros x; split; intros H.
+ unfold R_abs in H; simpl in H.
+ remember (R_is_neg x) as c eqn:Hc .
+ symmetry in Hc.
+ destruct c; [ idtac | assumption ].
+bbb.
+
+Theorem R_div_0_l : ∀ x, (x ≠ 0)%R → (0 / x = 0)%R.
+Proof.
+intros x Hx.
+unfold R_eq; simpl.
+rewrite carry_diag; simpl.
+unfold carry; simpl.
+remember (R_div_R_frac (R_abs 0) (R_abs x)) as xi.
+remember (fst_same xi 0 0) as s1 eqn:Hs1 .
+apply fst_same_sym_iff in Hs1; simpl in Hs1.
+split.
  destruct s1 as [dj1| ].
   destruct Hs1 as (Hn1, Ht1).
   rewrite Ht1; simpl.
   rewrite Z.add_0_r.
   unfold R_div_R_int; simpl.
   remember (max_iter_int_part (R_abs 0) (R_abs x)) as m eqn:Hm .
+  symmetry in Hm.
   destruct m; simpl.
    destruct (R_is_neg x); reflexivity.
 
