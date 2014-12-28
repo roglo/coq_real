@@ -378,7 +378,8 @@ intros x Hx.
 unfold R_eq; simpl.
 rewrite carry_diag; simpl.
 unfold carry; simpl.
-remember (R_div_R_frac (R_abs 0) (R_abs x)) as xi.
+remember (R_div_R_frac (R_abs 0) (R_abs x)) as xi eqn:Hxi .
+unfold R_div_R_frac in Hxi; simpl in Hxi.
 remember (fst_same xi 0 0) as s1 eqn:Hs1 .
 apply fst_same_sym_iff in Hs1; simpl in Hs1.
 split.
@@ -392,6 +393,7 @@ split.
   destruct m; simpl.
    destruct (R_is_neg x); reflexivity.
 
+   simpl in Hxi.
    destruct (R_lt_dec (R_abs 0) (R_abs x)) as [H1| H1].
     destruct (R_is_neg x); reflexivity.
 
@@ -399,8 +401,69 @@ split.
     apply R_ge_le_iff in H1.
     pose proof (R_abs_nonneg x) as H2.
     apply R_le_antisymm in H2; [ idtac | assumption ].
-    apply R_abs_0_iff with (x := x) in H2.
+    apply R_abs_0_iff with (x := x) in H2; contradiction.
+
+  remember (R_is_neg x) as nx eqn:Hnx .
+  symmetry in Hnx.
+  destruct nx; simpl.
+   unfold R_div_R_int; simpl.
+   remember (max_iter_int_part (R_abs 0) (R_abs x)) as m eqn:Hm .
+   symmetry in Hm.
+   destruct m.
+    simpl.
+    exfalso; revert Hm.
+    apply max_iter_int_part_abs_ne_0.
+
+    simpl.
+    destruct (R_lt_dec (R_abs 0) (R_abs x)) as [H1| H1].
+     simpl in Hxi.
+     remember (R_int (R_abs x) =? 0) as c eqn:Hc .
+     symmetry in Hc.
+     destruct c.
+      remember (I_div_2_inc 0 false) as xm.
+      remember (Z.odd (R_int (R_abs x))) as a.
+      remember (I_div_2_inc (R_frac (R_abs x)) a) as ym; subst a.
+      destruct (eq_nat_dec (max_iter_frac_part xm ym) 0) as [H3| H3].
+       pose proof (Hs1 O) as H; rewrite Hxi in H; discriminate H.
 bbb.
+    remember H2 as H; clear HeqH.
+    apply R_zero_if in H.
+    destruct H as [(Hix, Hfx)| (Hix, Hfx)].
+     exfalso.
+     remember (R_int (R_abs x) =? 0) as c eqn:Hc .
+     symmetry in Hc.
+     destruct c.
+      remember (I_div_2_inc 0 false) as xm.
+      remember (Z.odd (R_int (R_abs x))) as a.
+      remember (I_div_2_inc (R_frac (R_abs x)) a) as ym; subst a.
+      destruct (eq_nat_dec (max_iter_frac_part xm ym) 0) as [H3| H3].
+       unfold max_iter_frac_part in H3; simpl in H3.
+       remember (fst_same xm I_ones 0) as s3 eqn:Hs3 .
+       remember (fst_same ym I_ones 0) as s4 eqn:Hs4 .
+       apply fst_same_sym_iff in Hs3; simpl in Hs3.
+       apply fst_same_sym_iff in Hs4; simpl in Hs4.
+       destruct s3 as [dj3| ].
+        destruct Hs3 as (Hn3, Ht3).
+        rewrite Heqxm in Ht3; simpl in Ht3.
+        destruct dj3; discriminate Ht3.
+
+        destruct s4 as [dj4| ].
+         destruct Hs4 as (Hn4, Ht4).
+         rewrite Heqym in Ht4; simpl in Ht4.
+         destruct dj4; simpl in Ht4.
+          apply Z.eqb_eq in Hc.
+          rewrite Hc in Ht4; discriminate Ht4.
+
+          unfold R_abs in Ht4; simpl in Ht4.
+          remember (R_is_neg x) as nx eqn:Hnx .
+          symmetry in Hnx.
+          destruct nx.
+           unfold R_is_neg in Hnx; simpl in Hnx.
+           rewrite Hix in Hnx; discriminate Hnx.
+
+           rewrite Hfx in Ht4; discriminate Ht4.
+
+         Focus 1.
 
 intros x.
 unfold R_eq; simpl.
