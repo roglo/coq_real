@@ -5470,7 +5470,6 @@ intros x y z t Hxy Hzt.
 unfold I_eq in Hxy; simpl in Hxy.
 unfold I_eq in Hzt; simpl in Hzt.
 unfold I_compare; simpl.
-bbb.
 remember (fst_same (x + 0%I) (- (z + 0)%I) 0) as s1 eqn:Hs1 .
 remember (fst_same (y + 0%I) (- (t + 0)%I) 0) as s2 eqn:Hs2 .
 apply fst_same_sym_iff in Hs1; simpl in Hs1.
