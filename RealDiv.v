@@ -399,6 +399,7 @@ split.
     apply R_ge_le_iff in H1.
     pose proof (R_abs_nonneg x) as H2.
     apply R_le_antisymm in H2; [ idtac | assumption ].
+    apply R_abs_0_iff with (x := x) in H2.
 bbb.
 
 intros x.
