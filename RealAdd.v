@@ -2714,4 +2714,82 @@ split.
  rewrite Hf; reflexivity.
 Qed.
 
+Add Parametric Morphism : R_abs
+  with signature R_eq ==> R_eq
+  as R_abs_morph.
+Proof.
+intros x y Hxy.
+remember Hxy as Heq; clear HeqHeq.
+unfold R_abs.
+remember (R_is_neg x) as xb eqn:Hxb .
+remember (R_is_neg y) as yb eqn:Hyb .
+symmetry in Hxb, Hyb.
+destruct xb.
+ rewrite Hxy.
+ destruct yb; [ reflexivity | idtac ].
+ unfold R_eq in Hxy; simpl in Hxy.
+ destruct Hxy as (Hi, Hf).
+ unfold R_eq; simpl.
+ split.
+  unfold R_is_neg in Hxb, Hyb.
+  apply Z.ltb_lt in Hxb.
+  apply Z.ltb_ge in Hyb.
+bbb.
+
+Theorem R_le_antisymm : ∀ x y, (x ≤ y)%R → (y ≤ x)%R → (x = y)%R.
+Proof.
+intros x y Hxy Hyx.
+apply R_ge_le_iff in Hyx.
+unfold R_le in Hxy; simpl in Hxy.
+unfold R_ge in Hyx; simpl in Hyx.
+apply R_compare_eq.
+remember (x ?= y)%R as c eqn:Hc .
+symmetry in Hc.
+destruct c; [ reflexivity | exfalso | exfalso ].
+ apply Hyx; reflexivity.
+
+ apply Hxy; reflexivity.
+Qed.
+
+Theorem R_opp_inj : ∀ x y, (- x = - y)%R → (x = y)%R.
+Proof.
+intros x y H.
+rewrite <- R_opp_involutive.
+rewrite H.
+apply R_opp_involutive.
+Qed.
+
+Theorem R_opp_0 : (- 0 = 0)%R.
+Proof.
+unfold R_eq.
+remember (- 0)%R as z.
+simpl.
+rewrite carry_diag; simpl.
+split.
+ unfold carry; simpl.
+ remember (fst_same (R_frac z) 0 0) as s1 eqn:Hs1 .
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ destruct s1 as [dj1| ].
+  destruct Hs1 as (Hn1, Ht1).
+  subst z; discriminate Ht1.
+
+  subst z; reflexivity.
+
+ subst z; simpl.
+ apply I_opp_0.
+Qed.
+
+Theorem R_abs_0_iff : ∀ x, (R_abs x = 0)%R ↔ (x = 0)%R.
+Proof.
+intros x; split; intros H.
+ unfold R_abs in H; simpl in H.
+ remember (R_is_neg x) as c eqn:Hc .
+ symmetry in Hc.
+ destruct c; [ idtac | assumption ].
+ rewrite <- R_opp_involutive, H.
+ apply R_opp_0.
+
+bbb.
+rewrite H.
+
 Close Scope Z_scope.

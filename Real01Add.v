@@ -5785,4 +5785,13 @@ split.
   apply Hx.
 Qed.
 
+Theorem I_opp_0 : (- 0 = 0)%I.
+Proof.
+unfold I_eq; simpl; intros i.
+unfold I_add_i; simpl.
+rewrite carry_diag; simpl.
+unfold carry; simpl.
+destruct (fst_same (- 0%I) 0 (S i)); reflexivity.
+Qed.
+
 Close Scope nat_scope.

@@ -372,65 +372,6 @@ destruct iax as [| iax| iax].
  exfalso; apply H, Pos2Z.neg_is_neg.
 Qed.
 
-Theorem R_le_antisymm : ∀ x y, (x ≤ y)%R → (y ≤ x)%R → (x = y)%R.
-Proof.
-intros x y Hxy Hyx.
-apply R_ge_le_iff in Hyx.
-unfold R_le in Hxy; simpl in Hxy.
-unfold R_ge in Hyx; simpl in Hyx.
-apply R_compare_eq.
-remember (x ?= y)%R as c eqn:Hc .
-symmetry in Hc.
-destruct c; [ reflexivity | exfalso | exfalso ].
- apply Hyx; reflexivity.
-
- apply Hxy; reflexivity.
-Qed.
-
-Theorem zzz : ∀ x y m,
-  (x = 0)%R
-  → (y = 0)%R
-  → R_div_R_int_loop m x y = O.
-Proof.
-intros x y m Hx Hy.
-Abort. (*
-bbb.
-*)
-
-Theorem R_opp_inj : ∀ x y, (- x = - y)%R → (x = y)%R.
-Proof.
-intros x y H.
-rewrite <- R_opp_involutive.
-bbb.
-rewrite H.
-*)
-
-intros x y H.
-unfold R_eq in H; simpl in H.
-unfold R_eq; simpl.
-destruct H as (Hi, Hf).
-split.
- unfold carry; simpl.
- unfold carry in Hi; simpl in Hi.
- Focus 2.
- apply I_opp_morph in Hf.
- Unfocus.
- remember (fst_same (R_frac x) 0 0) as s1 eqn:Hs1 .
- remember (fst_same (R_frac y) 0 0) as s2 eqn:Hs2 .
- remember (fst_same (- R_frac x) 0 0) as s3 eqn:Hs3 .
- remember (fst_same (- R_frac y) 0 0) as s4 eqn:Hs4 .
- destruct s1 as [dj1| ].
-bbb.
-
-Theorem R_abs_0_iff : ∀ x, (R_abs x = 0)%R ↔ (x = 0)%R.
-Proof.
-intros x; split; intros H.
- unfold R_abs in H; simpl in H.
- remember (R_is_neg x) as c eqn:Hc .
- symmetry in Hc.
- destruct c; [ idtac | assumption ].
-bbb.
-
 Theorem R_div_0_l : ∀ x, (x ≠ 0)%R → (0 / x = 0)%R.
 Proof.
 intros x Hx.
