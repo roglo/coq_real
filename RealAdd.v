@@ -2595,6 +2595,8 @@ unfold R_eq; simpl.
 unfold R_eq in Hxy; simpl in Hxy.
 destruct Hxy as (Hi, Hf).
 split.
+ (* not fully satisfactory: why is the first goal hard to prove,
+    and not the second one? *)
  unfold carry in Hi; simpl in Hi.
  unfold carry; simpl.
  remember (fst_same (R_frac x) 0 0) as s1 eqn:Hs1 .
@@ -2626,6 +2628,90 @@ split.
       rewrite Hf in Ht3; discriminate Ht3.
 
       rewrite Hf in Ht1; discriminate Ht1.
-bbb.
+
+    destruct s2 as [dj2| ].
+     destruct Hs2 as (Hn2, Ht2).
+     apply R_const_if in Hs1.
+     rewrite Hs1 in Hf; symmetry in Hf.
+     apply I_zero_iff in Hf.
+     destruct Hf as [Hf| Hf].
+      rewrite Hf in Ht4; discriminate Ht4.
+
+      rewrite Hf in Ht2; discriminate Ht2.
+
+     apply Z.add_cancel_r in Hi; assumption.
+
+   unfold Z.sub.
+   rewrite Z.add_shuffle0; f_equal; simpl.
+   rewrite <- Z.opp_sub_distr.
+   apply Z.opp_inj_wd, Z.add_move_r.
+   assert (∀ dj, (R_frac y) .[ dj] = false) as H.
+    intros dj; apply negb_true_iff, Hs4.
+
+    apply R_const_if in H.
+    rewrite H in Hf.
+    rename H into Hy.
+    apply fst_same_sym_iff in Hs1; simpl in Hs1.
+    apply fst_same_sym_iff in Hs2; simpl in Hs2.
+    destruct s1 as [dj1| ].
+     destruct Hs1 as (Hn1, Ht1).
+     apply I_zero_iff in Hf.
+     destruct Hf as [Hf| Hf].
+      rewrite Hf in Ht3; discriminate Ht3.
+
+      rewrite Hf in Ht1; discriminate Ht1.
+
+     destruct s2 as [dj2| ].
+      destruct Hs2 as (Hn2, Ht2).
+      rewrite Ht2 in Hi.
+      rewrite Z.add_0_r in Hi; assumption.
+
+      pose proof (Hs4 O) as H.
+      rewrite Hs2 in H; discriminate H.
+
+  assert (∀ dj, (R_frac x) .[ dj] = false) as H.
+   intros dj; apply negb_true_iff, Hs3.
+
+   rewrite Z.sub_simpl_r.
+   unfold Z.sub.
+   rewrite <- Z.opp_add_distr.
+   rewrite <- Z.opp_sub_distr.
+   apply Z.opp_inj_wd, Z.add_move_r.
+   apply R_const_if in H.
+   rewrite H in Hf; symmetry in Hf.
+   rename H into Hx.
+   apply fst_same_sym_iff in Hs1; simpl in Hs1.
+   apply fst_same_sym_iff in Hs2; simpl in Hs2.
+   destruct s1 as [dj1| ].
+    destruct Hs1 as (Hn1, Ht1).
+    destruct s2 as [dj2| ].
+     destruct Hs2 as (Hn2, Ht2).
+     rewrite Ht1, Ht2 in Hi.
+     do 2 rewrite Z.add_0_r in Hi.
+     destruct s4 as [dj4| ].
+      destruct Hs4 as (Hn4, Ht4).
+      apply I_zero_iff in Hf.
+      destruct Hf as [Hf| Hf].
+       rewrite Hf in Ht4; discriminate Ht4.
+
+       rewrite Hf in Ht2; discriminate Ht2.
+
+      rewrite Hi; reflexivity.
+
+     destruct s4 as [dj4| ].
+      destruct Hs4 as (Hn4, Ht4).
+      pose proof (Hs3 dj1) as H.
+      apply negb_true_iff in H.
+      rewrite H, Z.add_0_r in Hi.
+      rewrite Ht4, Z.add_0_r; assumption.
+
+      pose proof (Hs4 O) as H.
+      rewrite Hs2 in H; discriminate H.
+
+    pose proof (Hs3 O) as H.
+    rewrite Hs1 in H; discriminate H.
+
+ rewrite Hf; reflexivity.
+Qed.
 
 Close Scope Z_scope.
