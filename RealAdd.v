@@ -2570,6 +2570,22 @@ split.
  apply I_opp_involutive.
 Qed.
 
+Theorem R_const_if : ∀ x b, (∀ i, x.[i] = b) → (x = 0)%I.
+Proof.
+intros x b H.
+unfold I_eq; simpl; intros i.
+unfold I_add_i; simpl.
+rewrite H, xorb_false_r, carry_diag; simpl.
+unfold carry; simpl.
+remember (fst_same x 0 (S i)) as s1 eqn:Hs1 .
+destruct s1 as [dj1| ].
+ rewrite H, xorb_nilpotent; reflexivity.
+
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ pose proof (Hs1 O) as Hi.
+ rewrite H in Hi; rewrite Hi; reflexivity.
+Qed.
+
 Add Parametric Morphism : R_opp
   with signature R_eq ==> R_eq
   as R_opp_morph.
@@ -2602,6 +2618,9 @@ split.
     destruct s2 as [dj2| ].
      destruct Hs2 as (Hn2, Ht2); rewrite Ht2, Z.add_0_r in Hi.
      assumption.
+
+     apply R_const_if in Hs2.
+     rewrite Hs2 in Hf.
 bbb.
 
 Close Scope Z_scope.
