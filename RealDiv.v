@@ -403,6 +403,7 @@ intros x y H.
 rewrite <- R_opp_involutive.
 bbb.
 rewrite H.
+*)
 
 intros x y H.
 unfold R_eq in H; simpl in H.

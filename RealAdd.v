@@ -2556,6 +2556,38 @@ destruct Hf as [Hf| Hf]; [ left | right ].
   apply Z.add_move_r in Hi; assumption.
 Qed.
 
+Add Parametric Morphism : R_opp
+  with signature R_eq ==> R_eq
+  as R_opp_morph.
+Proof.
+intros x y Hxy.
+unfold R_eq; simpl.
+unfold R_eq in Hxy; simpl in Hxy.
+destruct Hxy as (Hi, Hf).
+split.
+ unfold carry in Hi; simpl in Hi.
+ unfold carry; simpl.
+ remember (fst_same (R_frac x) 0 0) as s1 eqn:Hs1 .
+ remember (fst_same (R_frac y) 0 0) as s2 eqn:Hs2 .
+ remember (fst_same (- R_frac x) 0 0) as s3 eqn:Hs3 .
+ remember (fst_same (- R_frac y) 0 0) as s4 eqn:Hs4 .
+ apply fst_same_sym_iff in Hs3; simpl in Hs3.
+ apply fst_same_sym_iff in Hs4; simpl in Hs4.
+ destruct s3 as [dj3| ].
+  destruct Hs3 as (Hn3, Ht3); rewrite Ht3, Z.add_0_r.
+  destruct s4 as [dj4| ].
+   destruct Hs4 as (Hn4, Ht4); rewrite Ht4, Z.add_0_r.
+   f_equal.
+   apply Z.opp_inj_wd.
+   apply fst_same_sym_iff in Hs1; simpl in Hs1.
+   apply fst_same_sym_iff in Hs2; simpl in Hs2.
+   destruct s1 as [dj1| ].
+    destruct Hs1 as (Hn1, Ht1); rewrite Ht1, Z.add_0_r in Hi.
+    destruct s2 as [dj2| ].
+     destruct Hs2 as (Hn2, Ht2); rewrite Ht2, Z.add_0_r in Hi.
+     assumption.
+bbb.
+
 Theorem R_opp_involutive : ∀ x, (- - x = x)%R.
 Proof.
 intros x.
