@@ -2493,6 +2493,8 @@ destruct c; [ idtac | discriminate H | clear H ].
  unfold carry in Hc; simpl in Hc.
  remember (fst_same (R_frac (R_abs x)) 0 0) as s1 eqn:Hs1 .
  destruct s1 as [dj1| ].
+  apply Z.add_neg_cases in Hc.
+  destruct Hc as [Hc| Hc].
 
 bbb.
  unfold R_le in H; simpl in H.
