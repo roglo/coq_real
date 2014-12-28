@@ -2621,6 +2621,11 @@ split.
 
      apply R_const_if in Hs2.
      rewrite Hs2 in Hf.
+     apply I_zero_iff in Hf.
+     destruct Hf as [Hf| Hf].
+      rewrite Hf in Ht3; discriminate Ht3.
+
+      rewrite Hf in Ht1; discriminate Ht1.
 bbb.
 
 Close Scope Z_scope.
