@@ -31,12 +31,6 @@ Fixpoint two_power n :=
   | S n1 => (2 * two_power n1)%nat
   end.
 
-Definition R_is_neg x := Z.ltb (R_int x) 0.
-Arguments R_is_neg x%R.
-
-Definition R_abs x := if R_is_neg x then R_opp x else x.
-Arguments R_abs x%R.
-
 Definition max_iter_int_part ax ay := Z.to_nat (R_int ax + R_int ay + 1).
 
 Fixpoint R_div_R_int_loop m ax ay :=
@@ -370,10 +364,11 @@ split.
   destruct m; simpl.
    destruct (R_is_neg x); reflexivity.
 
-   remember (R_is_neg x) as ng eqn:Hng .
-   symmetry in Hng.
    destruct (R_lt_dec (R_abs 0) (R_abs x)) as [H1| H1].
-    destruct ng; reflexivity.
+    destruct (R_is_neg x); reflexivity.
+
+    unfold R_abs at 1 in H1; simpl in H1.
+    apply R_ge_le_iff in H1.
 bbb.
 
 intros x.

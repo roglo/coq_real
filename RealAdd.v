@@ -39,6 +39,11 @@ Definition R_sub x y := R_add x (R_opp y).
 Arguments R_opp x%R.
 Arguments R_sub x%R y%R.
 
+Definition R_is_neg x := Z.ltb (R_int x) 0.
+Definition R_abs x := if R_is_neg x then R_opp x else x.
+Arguments R_abs x%R.
+Arguments R_is_neg x%R.
+
 Notation "x = y" := (R_eq x y) : R_scope.
 Notation "x ≠ y" := (¬ R_eq x y) : R_scope.
 Notation "- x" := (R_opp x) : R_scope.
@@ -2103,6 +2108,16 @@ destruct c; simpl.
  split; intros H; discriminate H.
 Qed.
 
+Theorem R_ge_le_iff : ∀ x y, (x ≥ y)%R ↔ (y ≤ x)%R.
+Proof.
+intros x y.
+unfold R_ge, R_le.
+split; intros H1 H; apply H1; clear H1.
+ apply R_gt_lt_iff; assumption.
+
+ apply R_gt_lt_iff; assumption.
+Qed.
+
 (* inequality ≤ is order *)
 
 Theorem R_le_refl : reflexive _ R_le.
@@ -2452,6 +2467,61 @@ destruct (R_gt_dec x y); [ left | right ]; assumption.
 Qed.
 
 (* miscellaneous *)
+
+Theorem R_abs_nonneg: ∀ x, (0 ≤ R_abs x)%R.
+Proof.
+intros x.
+unfold R_le, R_compare.
+intros H.
+remember (R_int (R_norm 0) ?= R_int (R_norm (R_abs x))) as c eqn:Hc .
+symmetry in Hc.
+destruct c; [ idtac | discriminate H | clear H ].
+ simpl in H.
+ apply Z.compare_eq in Hc; simpl in Hc.
+ rewrite carry_diag in Hc; simpl in Hc.
+ symmetry in Hc.
+ remember (R_frac (R_abs x) + 0)%I as a.
+ remember (fst_same (0%I + 0%I) (- a) 0) as s1 eqn:Hs1 ; subst a.
+ destruct s1 as [dj1| ]; [ idtac | discriminate H ].
+ remember (I_add_i 0 0 dj1) as b1 eqn:Hb1 .
+ destruct b1; [ clear H | discriminate H ].
+ unfold I_add_i in Hb1; simpl in Hb1.
+ rewrite carry_diag in Hb1; discriminate Hb1.
+
+ apply Z.compare_gt_iff in Hc; simpl in Hc.
+ rewrite carry_diag in Hc; simpl in Hc.
+ unfold carry in Hc; simpl in Hc.
+ remember (fst_same (R_frac (R_abs x)) 0 0) as s1 eqn:Hs1 .
+ destruct s1 as [dj1| ].
+
+bbb.
+ unfold R_le in H; simpl in H.
+ unfold R_eq; intros i; simpl.
+ unfold R_compare in H; simpl in H.
+ remember (fst_same (x + 0%I) (- (0 + 0)%I) 0) as s1 eqn:Hs1 .
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ destruct s1 as [j1| ].
+  destruct Hs1 as (Hn1, Ht1).
+  remember (R_add_i x 0 j1) as b1 eqn:Hb1 .
+  destruct b1; [ exfalso; apply H; reflexivity | clear H ].
+  symmetry in Hb1; apply negb_sym in Ht1; simpl in Ht1.
+  unfold R_add_i in Ht1; simpl in Ht1.
+  rewrite carry_diag in Ht1; discriminate Ht1.
+
+  rewrite Hs1, negb_involutive; reflexivity.
+
+ unfold R_eq in H; simpl in H.
+ unfold R_le; simpl.
+ unfold R_compare; simpl.
+ remember (fst_same (x + 0%I) (- (0 + 0)%I) 0) as s1 eqn:Hs1 .
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ destruct s1 as [j1| ]; [ idtac | intros HH; discriminate HH ].
+ destruct Hs1 as (Hn1, Ht1).
+ remember (R_add_i x 0 j1) as b1 eqn:Hb1 .
+ destruct b1; [ exfalso | intros HH; discriminate HH ].
+ symmetry in Hb1; apply negb_sym in Ht1; simpl in Ht1.
+ rewrite H, Ht1 in Hb1; discriminate Hb1.
+Qed.
 
 Theorem R_zero_if : ∀ x,
   (x = 0)%R
