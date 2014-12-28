@@ -2885,6 +2885,9 @@ split.
  apply I_opp_0.
 Qed.
 
+Theorem R_abs_0 : (R_abs 0 = 0)%R.
+Proof. split; reflexivity. Qed.
+
 Theorem R_abs_0_iff : ∀ x, (R_abs x = 0)%R ↔ (x = 0)%R.
 Proof.
 intros x; split; intros H.
@@ -2895,7 +2898,105 @@ intros x; split; intros H.
  rewrite <- R_opp_involutive, H.
  apply R_opp_0.
 
- rewrite H; split; reflexivity.
+ rewrite H; apply R_abs_0.
+Qed.
+Add Parametric Morphism : I_lt
+  with signature I_eq ==> I_eq ==> iff
+  as I_lt_morph.
+Proof.
+intros x y Hxy z t Hzt.
+split; intros H.
+ eapply I_eq_lt_compat; eassumption.
+
+ symmetry in Hxy, Hzt.
+ eapply I_eq_lt_compat; eassumption.
+Qed.
+
+Theorem R_eq_compare_compat : ∀ x y z t,
+  (x = y)%R
+  → (z = t)%R
+  → ((x ?= z)%R = (y ?= t)%R).
+Proof.
+intros x y z t Hxy Hzt.
+unfold R_eq in Hxy, Hzt.
+unfold R_compare.
+destruct Hxy as (Hixy, Hfxy).
+destruct Hzt as (Hizt, Hfzt).
+rewrite Hixy, Hizt.
+remember (R_int (R_norm y) ?= R_int (R_norm t)) as c eqn:Hc .
+symmetry in Hc.
+destruct c; try reflexivity.
+remember (R_frac (R_norm x)) as xn eqn:Hxn .
+remember (R_frac (R_norm y)) as yn eqn:Hyn .
+remember (R_frac (R_norm z)) as zn eqn:Hzn .
+remember (R_frac (R_norm t)) as tn eqn:Htn .
+remember (fst_same xn (- zn) 0) as s1 eqn:Hs1 .
+remember (fst_same yn (- tn) 0) as s2 eqn:Hs2 .
+apply fst_same_sym_iff in Hs1; simpl in Hs1.
+apply fst_same_sym_iff in Hs2; simpl in Hs2.
+destruct s1 as [dj1| ].
+ destruct Hs1 as (Hn1, Ht1).
+ remember xn .[ dj1] as xb eqn:Hxb .
+ symmetry in Hxb; apply negb_sym in Ht1.
+ destruct s2 as [dj2| ].
+  destruct Hs2 as (Hn2, Ht2).
+  remember yn .[ dj2] as yb eqn:Hyb .
+  symmetry in Hyb; apply negb_sym in Ht2.
+  subst xn yn zn tn.
+  simpl in Hxb, Hyb, Ht1, Ht2, Hn1, Hn2.
+  unfold I_eq in Hfxy, Hfzt; simpl in Hfxy, Hfzt.
+  rewrite Hfxy in Hxb; simpl in Hxb.
+  rewrite Hfzt in Ht1; simpl in Ht1.
+  destruct (lt_eq_lt_dec dj1 dj2) as [[H1| H1]| H1].
+   apply Hn2 in H1; simpl in H1.
+   rewrite Hxb, Ht1 in H1.
+   rewrite negb_involutive in H1; symmetry in H1.
+   exfalso; revert H1; apply no_fixpoint_negb.
+
+   subst dj2.
+   rewrite Hxb in Hyb.
+   rewrite Hyb; reflexivity.
+
+   apply Hn1 in H1.
+   rewrite Hfxy, Hfzt, Hyb, Ht2 in H1.
+   rewrite negb_involutive in H1; symmetry in H1.
+   exfalso; revert H1; apply no_fixpoint_negb.
+bbb.
+
+Theorem R_eq_ge_compat : ∀ x y z t,
+  (x = y)%R
+  → (z = t)%R
+  → (x ≥ z)%R
+  → (y ≥ t)%R.
+Proof.
+intros x y z t Hxy Hzt Hxz.
+unfold R_ge in Hxz; unfold R_ge.
+intros H; apply Hxz; rewrite <- H.
+apply R_eq_compare_compat; eassumption.
+Qed.
+
+Add Parametric Morphism : R_lt
+  with signature R_eq ==> R_eq ==> iff
+  as R_lt_morph.
+Proof.
+intros x y Hxy z t Hzt.
+split; intros H.
+ eapply R_eq_lt_compat; eassumption.
+
+ symmetry in Hxy, Hzt.
+ eapply R_eq_lt_compat; eassumption.
+Qed.
+
+Add Parametric Morphism : R_le
+  with signature R_eq ==> R_eq ==> iff
+  as R_le_morph.
+Proof.
+intros x y Hxy z t Hzt.
+split; intros H.
+ eapply R_eq_le_compat; eassumption.
+
+ symmetry in Hxy, Hzt.
+ eapply R_eq_le_compat; eassumption.
 Qed.
 
 Close Scope Z_scope.

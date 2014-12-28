@@ -425,7 +425,32 @@ split.
       remember (I_div_2_inc (R_frac (R_abs x)) a) as ym; subst a.
       destruct (eq_nat_dec (max_iter_frac_part xm ym) 0) as [H3| H3].
        pose proof (Hs1 O) as H; rewrite Hxi in H; discriminate H.
+
+       remember (max_iter_frac_part xm ym) as m2 eqn:Hm2 .
+       symmetry in Hm2.
+       destruct m2; [ exfalso; apply H3; reflexivity | idtac ].
+       simpl in Hxi.
+       destruct (I_lt_dec xm ym) as [H4| H4].
+        pose proof (Hs1 O) as H; rewrite Hxi in H; simpl in H.
+        unfold I_div_i in H; simpl in H.
+        rewrite Heqxm, Heqym in H; simpl in H.
+        apply Z.eqb_eq in Hc.
+        rewrite Hc in H; simpl in H.
+        remember (I_mul_2 (I_div_2_inc 0 false)) as xa eqn:Hxa .
+        remember (I_div_2_inc (R_frac (R_abs x)) false) as xb eqn:Hxb .
+        destruct (I_lt_dec xa xb) as [H2| H2]; [ discriminate H | clear H ].
+        unfold I_mul_2, I_div_2_inc in Hxa; simpl in Hxa.
+        assert (xa = I_zero) by assumption.
+        clear Hxa; subst xa.
+        subst xb.
+        apply I_ge_le_iff in H2.
+        apply I_le_0_r in H2.
+        apply I_zero_iff in H2.
+        destruct H2 as [H2| H2].
+         simpl in H2.
 bbb.
+rewrite R_abs_0 in H1.
+
     remember H2 as H; clear HeqH.
     apply R_zero_if in H.
     destruct H as [(Hix, Hfx)| (Hix, Hfx)].
