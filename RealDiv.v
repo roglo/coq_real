@@ -577,10 +577,61 @@ split.
        unfold max_iter_frac_part in Hm2; simpl in Hm2.
        remember (fst_same 0 I_ones 0) as s2 eqn:Hs2 .
        destruct s2 as [dj2| ].
-        rewrite Nat.sub_diag in Hm2; simpl in Hm2.
+        apply fst_same_sym_iff in Hs2; simpl in Hs2.
+        destruct Hs2 as (Hn2, Ht2); discriminate Ht2.
+
         subst m2; simpl in Hxi.
-        destruct (I_lt_dec 0%I 0%I) as [H2| H2].
-         exfalso; revert H2; apply I_lt_irrefl.
+        subst xi; simpl in Hs1.
+        pose proof (Hs1 O); discriminate H.
+
+       simpl in Hxym.
+       remember (R_int (R_abs x) / 2 =? 0) as b1 eqn:Hb1 .
+       symmetry in Hb1.
+       destruct b1.
+        injection Hxym; clear Hxym; intros Hym Hxm.
+        symmetry in Hxm, Hym.
+        remember (max_iter_frac_part xm ym) as m2 eqn:Hm2 .
+        symmetry in Hm2.
+        destruct m2; simpl in Hxi.
+         subst xi.
+         pose proof (Hs1 O) as H; discriminate H.
+
+         destruct (I_lt_dec xm ym) as [H2| H2].
+          assert (xm = 0)%I as H.
+           rewrite Hxm; simpl.
+           unfold I_eq; simpl; intros i.
+           unfold I_add_i; simpl.
+           rewrite xorb_false_r, carry_diag; simpl.
+           rewrite <- Hxm.
+           unfold carry; simpl.
+           remember (fst_same xm 0 (S i)) as s2 eqn:Hs2 .
+           apply fst_same_sym_iff in Hs2; simpl in Hs2.
+           destruct s2 as [dj2| ].
+            destruct Hs2 as (Hn2, Ht2); rewrite Ht2, xorb_false_r.
+            destruct (zerop i), (zerop (i - 1)); reflexivity.
+
+            pose proof (Hs2 O) as H.
+            rewrite Hxm, Nat.add_0_r in H; simpl in H.
+            destruct (zerop (i - 0)); discriminate H.
+
+           clear Hxm; rename H into Hxm.
+           pose proof (Hs1 O) as H.
+           subst xi; simpl in H.
+           simpl in Hs1.
+           remember Hxm as HH; clear HeqHH.
+           apply I_zero_iff in HH; simpl in HH.
+           destruct HH as [HH| HH].
+            unfold I_div_i in H; simpl in H.
+            destruct (I_lt_dec (I_mul_2 xm) ym) as [H3| H3].
+             discriminate H.
+
+             clear H.
+             rewrite Hxm in H3.
+             rewrite I_mul_2_0 in H3.
+             apply I_ge_le_iff in H3.
+             apply I_le_0_r in H3.
+             rewrite Hxm, H3 in H2.
+             exfalso; revert H2; apply I_lt_irrefl.
 bbb.
 
          rewrite Heqym in H4.
