@@ -167,72 +167,120 @@ destruct s1 as [di1| ]; [ idtac | exfalso ].
  discriminate H.
 Qed.
 
-Theorem R_div_2_0_if : ∀ x, (x = 0)%R → (R_div_2 x = 0)%R.
+Theorem R_div_2_0_iff : ∀ x, (x = 0)%R ↔ (R_div_2 x = 0)%R.
 Proof.
-intros x Hx.
-remember Hx as H; clear HeqH.
-apply R_zero_if in H; simpl in H.
-destruct H as [(Hi, Hf)| (Hi, Hf)].
- unfold R_eq; simpl.
- rewrite Hi; simpl.
- remember (I_div_2_inc (R_frac x) false) as z eqn:Hz .
- rewrite carry_diag; simpl.
- split.
-  unfold carry; simpl.
-  remember (fst_same z 0 0) as s1 eqn:Hs1 .
-  apply fst_same_sym_iff in Hs1; simpl in Hs1.
-  destruct s1 as [dj1| ]; [ idtac | exfalso ].
+intros x.
+split; intros Hx.
+ remember Hx as H; clear HeqH.
+ apply R_zero_if in H; simpl in H.
+ destruct H as [(Hi, Hf)| (Hi, Hf)].
+  unfold R_eq; simpl.
+  rewrite Hi; simpl.
+  remember (I_div_2_inc (R_frac x) false) as z eqn:Hz .
+  rewrite carry_diag; simpl.
+  split.
+   unfold carry; simpl.
+   remember (fst_same z 0 0) as s1 eqn:Hs1 .
+   apply fst_same_sym_iff in Hs1; simpl in Hs1.
+   destruct s1 as [dj1| ]; [ idtac | exfalso ].
+    destruct Hs1 as (Hn1, Ht1).
+    rewrite Ht1; reflexivity.
+
+    pose proof (Hs1 O) as H.
+    rewrite Hz in H; discriminate H.
+
+   unfold I_eq; simpl; intros i.
+   unfold I_add_i; simpl.
+   rewrite xorb_false_r, carry_diag; simpl.
+   rewrite Hz in |- * at 1; simpl.
+   unfold carry; simpl.
+   remember (fst_same z 0 (S i)) as s1 eqn:Hs1 .
+   apply fst_same_sym_iff in Hs1; simpl in Hs1.
+   destruct s1 as [dj1| ].
+    destruct Hs1 as (Hn1, Ht1); rewrite Ht1, xorb_false_r.
+    destruct (zerop i); [ reflexivity | apply Hf ].
+
+    pose proof (Hs1 O) as H.
+    rewrite Hz in H; simpl in H.
+    rewrite Hf in H; discriminate H.
+
+  unfold R_eq; simpl.
+  rewrite Z.add_comm.
+  rewrite Hi; simpl.
+  remember (I_div_2_inc (R_frac x) true) as z eqn:Hz .
+  rewrite carry_diag; simpl.
+  split.
+   unfold carry; simpl.
+   remember (fst_same z 0 0) as s1 eqn:Hs1 .
+   apply fst_same_sym_iff in Hs1; simpl in Hs1.
+   destruct s1 as [dj1| ]; [ idtac | reflexivity ].
    destruct Hs1 as (Hn1, Ht1).
-   rewrite Ht1; reflexivity.
-
-   pose proof (Hs1 O) as H.
-   rewrite Hz in H; discriminate H.
-
-  unfold I_eq; simpl; intros i.
-  unfold I_add_i; simpl.
-  rewrite xorb_false_r, carry_diag; simpl.
-  rewrite Hz in |- * at 1; simpl.
-  unfold carry; simpl.
-  remember (fst_same z 0 (S i)) as s1 eqn:Hs1 .
-  apply fst_same_sym_iff in Hs1; simpl in Hs1.
-  destruct s1 as [dj1| ].
-   destruct Hs1 as (Hn1, Ht1); rewrite Ht1, xorb_false_r.
-   destruct (zerop i); [ reflexivity | apply Hf ].
-
-   pose proof (Hs1 O) as H.
-   rewrite Hz in H; simpl in H.
-   rewrite Hf in H; discriminate H.
-
- unfold R_eq; simpl.
- rewrite Z.add_comm.
- rewrite Hi; simpl.
- remember (I_div_2_inc (R_frac x) true) as z eqn:Hz .
- rewrite carry_diag; simpl.
- split.
-  unfold carry; simpl.
-  remember (fst_same z 0 0) as s1 eqn:Hs1 .
-  apply fst_same_sym_iff in Hs1; simpl in Hs1.
-  destruct s1 as [dj1| ]; [ idtac | reflexivity ].
-  destruct Hs1 as (Hn1, Ht1).
-  rewrite Hz in Ht1; simpl in Ht1.
-  destruct (zerop dj1); [ discriminate Ht1 | idtac ].
-  rewrite Hf in Ht1; discriminate Ht1.
-
-  unfold I_eq; simpl; intros i.
-  unfold I_add_i; simpl.
-  rewrite xorb_false_r, carry_diag; simpl.
-  rewrite Hz in |- * at 1; simpl.
-  unfold carry; simpl.
-  remember (fst_same z 0 (S i)) as s1 eqn:Hs1 .
-  apply fst_same_sym_iff in Hs1; simpl in Hs1.
-  destruct s1 as [dj1| ].
-   destruct Hs1 as (Hn1, Ht1); rewrite Ht1, xorb_false_r.
    rewrite Hz in Ht1; simpl in Ht1.
+   destruct (zerop dj1); [ discriminate Ht1 | idtac ].
    rewrite Hf in Ht1; discriminate Ht1.
 
-   destruct (zerop i) as [H1| H1]; [ reflexivity | idtac ].
-   rewrite Hf; reflexivity.
-Qed.
+   unfold I_eq; simpl; intros i.
+   unfold I_add_i; simpl.
+   rewrite xorb_false_r, carry_diag; simpl.
+   rewrite Hz in |- * at 1; simpl.
+   unfold carry; simpl.
+   remember (fst_same z 0 (S i)) as s1 eqn:Hs1 .
+   apply fst_same_sym_iff in Hs1; simpl in Hs1.
+   destruct s1 as [dj1| ].
+    destruct Hs1 as (Hn1, Ht1); rewrite Ht1, xorb_false_r.
+    rewrite Hz in Ht1; simpl in Ht1.
+    rewrite Hf in Ht1; discriminate Ht1.
+
+    destruct (zerop i) as [H1| H1]; [ reflexivity | idtac ].
+    rewrite Hf; reflexivity.
+
+ remember Hx as H; clear HeqH.
+ apply R_zero_if in H; simpl in H.
+ destruct H as [(Hi, Hf)| (Hi, Hf)].
+  pose proof (Hf O) as H; simpl in H.
+  rewrite Zodd_even_bool in H.
+  apply negb_false_iff in H.
+  apply Zeven_bool_iff in H.
+  apply Zeven_div2 in H.
+  rewrite H, Z.mul_comm in Hi.
+  rewrite Z.div_mul in Hi; [ idtac | intros I; discriminate I ].
+  unfold Z.div2 in Hi; simpl in Hi.
+  remember (R_int x) as xi eqn:Hxi .
+  symmetry in Hxi.
+  destruct xi; [ idtac | idtac | discriminate Hi ].
+   unfold R_eq; simpl.
+   rewrite Hxi, carry_diag; simpl.
+   split.
+    unfold carry; simpl.
+    remember (fst_same (R_frac x) 0 0) as s1 eqn:Hs1 .
+    apply fst_same_sym_iff in Hs1; simpl in Hs1.
+    destruct s1 as [dj1| ]; [ idtac | exfalso ].
+     destruct Hs1 as (Hn1, Ht1).
+     rewrite Ht1; reflexivity.
+
+     clear H.
+     pose proof (Hf 1%nat) as H; simpl in H.
+     rewrite Hs1 in H; discriminate H.
+
+    unfold I_eq; simpl; intros i.
+    unfold I_add_i; simpl.
+    rewrite xorb_false_r, carry_diag; simpl.
+    clear H.
+    pose proof (Hf (S i)) as H; simpl in H.
+    rewrite Nat.sub_0_r in H; rewrite H, xorb_false_l.
+    unfold carry; simpl.
+    remember (fst_same (R_frac x) 0 (S i)) as s1 eqn:Hs1 .
+    apply fst_same_sym_iff in Hs1; simpl in Hs1.
+    destruct s1 as [dj1| ]; [ idtac | exfalso ].
+     destruct Hs1 as (Hn1, Ht1); assumption.
+
+     clear H.
+     pose proof (Hf (S (S (S i)))) as H; simpl in H.
+     rewrite <- Nat.add_1_r in H; simpl in H.
+     rewrite Hs1 in H; discriminate H.
+
+   destruct p; [ discriminate Hi | discriminate Hi | discriminate H ].
+bbb.
 
 Theorem R_frac_equiv_div_fst_is_0 : ∀ x y,
   (x = 0)%R
@@ -434,45 +482,110 @@ split.
  discriminate Ht2.
 Qed.
 
+Theorem yyy : ∀ x y m i xm ym,
+  (y ≠ 0)%R
+  → R_frac_equiv_div m x y = (xm, ym)
+  → xm.[i] = true
+  → (∀ j, ym.[j] = false)
+  → False.
+Proof.
+intros x y m i xm ym Hy Hxy Hxm Hym.
+revert x y Hy Hxy.
+induction m; intros; simpl in Hxy.
+ injection Hxy; clear Hxy; intros; subst xm ym.
+ discriminate Hxm.
+
+ remember ((R_int x =? 0) && (R_int y =? 0)) as c eqn:Hc .
+ symmetry in Hc.
+ destruct c.
+  injection Hxy; clear Hxy; intros; subst xm ym.
+  simpl in Hxm.
+  apply andb_true_iff in Hc.
+  destruct Hc as (Hx, Hyy).
+  apply Z.eqb_eq in Hx.
+  apply Z.eqb_eq in Hyy.
+  rewrite Hx in Hxm; simpl in Hxm.
+  destruct i; [ discriminate Hxm | simpl in Hxm ].
+  rewrite Nat.sub_0_r in Hxm.
+  rewrite Hyy in Hym; simpl in Hym.
+  apply Hy.
+  unfold R_eq; simpl.
+  rewrite carry_diag; simpl.
+  rewrite Hyy; simpl.
+  split.
+   unfold carry; simpl.
+   remember (fst_same (R_frac y) 0 0) as s1 eqn:Hs1 .
+   apply fst_same_sym_iff in Hs1; simpl in Hs1.
+   destruct s1 as [dj1| ].
+    destruct Hs1 as (Hn1, Ht1); rewrite Ht1; reflexivity.
+
+    pose proof (Hym 1%nat) as H; simpl in H.
+    rewrite Hs1 in H; discriminate H.
+
+   unfold I_eq; simpl; intros j.
+   unfold I_add_i; simpl.
+   rewrite xorb_false_r, carry_diag; simpl.
+   pose proof (Hym (S j)) as H; simpl in H.
+   rewrite Nat.sub_0_r in H; rewrite H, xorb_false_l.
+   unfold carry; simpl.
+   remember (fst_same (R_frac y) 0 (S j)) as s1 eqn:Hs1 .
+   apply fst_same_sym_iff in Hs1; simpl in Hs1.
+   destruct s1 as [dj1| ]; [ idtac | exfalso ].
+    destruct Hs1 as (Hn1, Hs1); assumption.
+
+    clear H.
+    pose proof (Hym (S (S (S j)))) as H; simpl in H.
+    rewrite <- Nat.add_1_r in H; simpl in H.
+    rewrite Hs1 in H; discriminate H.
+
+  eapply IHm; [ idtac | eassumption ].
+  apply andb_false_iff in Hc.
+  intros H; apply Hy; clear Hy.
+bbb.
+
 Theorem zzz : ∀ x, (R_div_R_frac (R_abs x) (R_abs 1) = R_frac x)%I.
 Proof.
 intros x.
 unfold R_div_R_frac; simpl.
 remember (max_iter_int_part (R_abs x) (R_abs 1)) as m eqn:Hm .
+symmetry in Hm.
 remember (R_frac_equiv_div m (R_abs x) (R_abs 1)) as xym eqn:Hxym .
 symmetry in Hxym.
 destruct xym as (xm, ym).
 remember (max_iter_frac_part xm ym) as m2 eqn:Hm2 .
 symmetry in Hm2; symmetry.
 destruct m2; simpl.
- symmetry in Hm.
-bbb.
- destruct m.
-  exfalso; revert Hm; apply max_iter_int_part_abs_ne_0.
-
-  simpl in Hxym.
-  rewrite andb_false_r in Hxym.
-  unfold max_iter_frac_part in Hm2.
-  remember (fst_same xm I_ones 0) as s1 eqn:Hs1 .
-  apply fst_same_sym_iff in Hs1; simpl in Hs1.
-  destruct s1 as [dj1| ]; [ idtac | clear Hm2 ].
-   destruct Hs1 as (Hn1, Ht1).
-   remember (fst_same ym I_ones 0) as s2 eqn:Hs2 .
-   apply fst_same_sym_iff in Hs2; simpl in Hs2.
-   destruct s2 as [dj2| ]; [ idtac | clear Hm2 ].
-    destruct Hs2 as (Hn2, Ht2).
-    exfalso; revert Hm2; apply two_power_neq_0.
+ unfold max_iter_frac_part in Hm2.
+ remember (fst_same xm I_ones 0) as s1 eqn:Hs1 .
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ destruct s1 as [dj1| ]; [ idtac | clear Hm2 ].
+  destruct Hs1 as (Hn1, Ht1).
+  remember (fst_same ym I_ones 0) as s2 eqn:Hs2 .
+  apply fst_same_sym_iff in Hs2; simpl in Hs2.
+  destruct s2 as [dj2| ]; [ idtac | clear Hm2 ].
+   destruct Hs2 as (Hn2, Ht2).
+   exfalso; revert Hm2; apply two_power_neq_0.
 
 bbb.
-    destruct m.
-     simpl in Hxym.
+   clear Hm Hn1.
+   exfalso.
+   revert x xm ym Hxym Ht1 Hs2.
+   induction m; intros; simpl in Hxym.
+    injection Hxym; clear Hxym; intros; subst xm ym.
+    discriminate Ht1.
+
+    rewrite andb_false_r in Hxym.
+    destruct m; simpl in Hxym.
      injection Hxym; clear Hxym; intros; subst xm ym.
      discriminate Ht1.
 
-     simpl in Hxym.
      rewrite andb_true_r in Hxym.
+     remember (R_int (R_abs x) / 2 =? 0) as c eqn:Hc .
+     symmetry in Hc.
+     destruct c.
+      injection Hxym; clear Hxym; intros; subst xm ym.
+      pose proof (Hs2 1%nat) as H; discriminate H.
 bbb.
-  Craignos. Peut-être une induction sur m ?
 
 Theorem R_div_1_r : ∀ x, (x / 1 = x)%R.
 Proof.
