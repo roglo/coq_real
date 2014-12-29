@@ -434,35 +434,49 @@ split.
  discriminate Ht2.
 Qed.
 
-(*
-Theorem zzz : ∀ x, R_int (x / 1) = R_int x.
+Theorem zzz : ∀ x, (R_div_R_frac (R_abs x) (R_abs 1) = R_frac x)%I.
 Proof.
 intros x.
-bbb.
-
-unfold R_div; simpl.
+unfold R_div_R_frac; simpl.
 remember (max_iter_int_part (R_abs x) (R_abs 1)) as m eqn:Hm .
 remember (R_frac_equiv_div m (R_abs x) (R_abs 1)) as xym eqn:Hxym .
 symmetry in Hxym.
 destruct xym as (xm, ym).
-remember (R_frac_div xm ym) as qr eqn:Hqr .
-symmetry in Hqr.
-destruct qr as (q, r); simpl.
-rewrite R_nneg_1, xorb_false_r.
-bbb.
-symmetry in Hm.
-destruct m.
- exfalso; revert Hm; apply max_iter_int_part_abs_ne_0.
+remember (max_iter_frac_part xm ym) as m2 eqn:Hm2 .
+symmetry in Hm2.
+destruct m2; simpl.
+ symmetry in Hm.
+ destruct m.
+  exfalso; revert Hm; apply max_iter_int_part_abs_ne_0.
 
- simpl in Hxym.
- rewrite andb_false_r in Hxym.
+  simpl in Hxym.
+  rewrite andb_false_r in Hxym.
+  unfold max_iter_frac_part in Hm2.
+  remember (fst_same xm I_ones 0) as s1 eqn:Hs1 .
+  apply fst_same_sym_iff in Hs1; simpl in Hs1.
+  destruct s1 as [dj1| ]; [ idtac | clear Hm2 ].
+   destruct Hs1 as (Hn1, Ht1).
+   remember (fst_same ym I_ones 0) as s2 eqn:Hs2 .
+   apply fst_same_sym_iff in Hs2; simpl in Hs2.
+   destruct s2 as [dj2| ]; [ idtac | clear Hm2 ].
+    destruct Hs2 as (Hn2, Ht2).
+    exfalso; revert Hm2; apply two_power_neq_0.
+
+    destruct m.
+     simpl in Hxym.
+     injection Hxym; clear Hxym; intros; subst xm ym.
+     discriminate Ht1.
+
+     simpl in Hxym.
+     rewrite andb_true_r in Hxym.
 bbb.
-*)
+  Craignos. Peut-être une induction sur m ?
 
 Theorem R_div_1_r : ∀ x, (x / 1 = x)%R.
 Proof.
 intros x.
 unfold R_eq; simpl.
+bbb.
 split.
  remember (R_div_R_frac (R_abs x) (R_abs 1)) as zm eqn:Hzm .
  unfold R_div_R_frac in Hzm.
@@ -497,6 +511,41 @@ split.
       destruct s4 as [dj4| ].
        destruct Hs4 as (Hn4, Ht4).
        rewrite Ht4, Z.add_0_r.
+       unfold R_div_R_int; simpl.
+       rewrite Hm.
+       destruct m.
+        simpl.
+        exfalso; revert Hm.
+        apply max_iter_int_part_abs_ne_0.
+
+        simpl.
+        destruct (R_lt_dec (R_abs x) (R_abs 1)) as [H2| H2].
+         simpl in Hxym.
+         rewrite andb_false_r in Hxym.
+         unfold R_abs at 2 in H2; simpl in H2.
+         unfold R_lt, R_compare in H2.
+         remember (R_int (R_norm 1)) as a; simpl in Heqa.
+         rewrite carry_diag in Heqa; simpl in Heqa.
+         subst a.
+         remember (R_int (R_norm (R_abs x)) ?= 1) as c eqn:Hc .
+         symmetry in Hc.
+         destruct c; try discriminate H2.
+          simpl in H2.
+          remember (fst_same (R_frac (R_abs x) + 0%I) (- (0 + 0)%I) 0) as s5
+           eqn:Hs5 .
+          destruct s5 as [dj5| ]; [ idtac | discriminate H2 ].
+          apply fst_same_sym_iff in Hs5; simpl in Hs5.
+          destruct Hs5 as (Hn5, Ht5).
+          rewrite Ht5 in H2.
+          unfold I_add_i in H2; simpl in H2.
+          rewrite carry_diag in H2; simpl in H2.
+          discriminate H2.
+
+          clear H2.
+          simpl in Hc.
+          remember (R_int (R_abs x)) as axi eqn:Haxi .
+          symmetry in Haxi.
+          apply Z.lt_add_lt_sub_r in Hc.
 bbb.
 
 intros x.
