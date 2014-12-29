@@ -564,6 +564,23 @@ split.
             rewrite Heqym in Hym; simpl in Hym.
             pose proof (Hym 1%nat) as H; simpl in H.
             rewrite Hs2 in H; discriminate H.
+
+      remember
+       (R_frac_equiv_div m (R_div_2 (R_abs 0)) (R_div_2 (R_abs x))) as xym
+       eqn:Hxym .
+      destruct xym as (xm, ym).
+      symmetry in Hxym.
+      destruct m.
+       simpl in Hxym.
+       injection Hxym; clear Hxym; intros; subst xm ym.
+       remember (max_iter_frac_part 0 0) as m2 eqn:Hm2 .
+       unfold max_iter_frac_part in Hm2; simpl in Hm2.
+       remember (fst_same 0 I_ones 0) as s2 eqn:Hs2 .
+       destruct s2 as [dj2| ].
+        rewrite Nat.sub_diag in Hm2; simpl in Hm2.
+        subst m2; simpl in Hxi.
+        destruct (I_lt_dec 0%I 0%I) as [H2| H2].
+         exfalso; revert H2; apply I_lt_irrefl.
 bbb.
 
          rewrite Heqym in H4.

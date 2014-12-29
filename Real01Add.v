@@ -5794,4 +5794,16 @@ unfold carry; simpl.
 destruct (fst_same (- 0%I) 0 (S i)); reflexivity.
 Qed.
 
+Theorem I_lt_irrefl : ∀ x, ¬(x < x)%I.
+Proof.
+intros x Hx.
+unfold I_lt, I_compare in Hx; simpl in Hx.
+remember (fst_same (x + 0%I) (- (x + 0)%I) 0) as s1 eqn:Hs1 .
+destruct s1 as [dj1| ]; [ idtac | discriminate Hx ].
+apply fst_same_sym_iff in Hs1; simpl in Hs1.
+destruct Hs1 as (Hn1, Ht1).
+symmetry in Ht1.
+revert Ht1; apply no_fixpoint_negb.
+Qed.
+
 Close Scope nat_scope.
