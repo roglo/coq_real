@@ -632,6 +632,9 @@ split.
              apply I_le_0_r in H3.
              rewrite Hxm, H3 in H2.
              exfalso; revert H2; apply I_lt_irrefl.
+
+            apply Z.eqb_eq in Hb1.
+            rewrite Hb1 in Hym; simpl in Hym.
 bbb.
 
          rewrite Heqym in H4.
