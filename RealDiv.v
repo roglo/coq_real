@@ -280,6 +280,32 @@ split; intros Hx.
      rewrite Hs1 in H; discriminate H.
 
    destruct p; [ discriminate Hi | discriminate Hi | discriminate H ].
+
+  unfold R_eq; simpl.
+  rewrite carry_diag; simpl.
+  assert (R_frac x = 0)%I as H.
+   unfold I_eq; simpl; intros i.
+   unfold I_add_i; simpl.
+   rewrite xorb_false_r, carry_diag; simpl.
+   pose proof (Hf (S i)) as H; simpl in H.
+   rewrite Nat.sub_0_r in H; rewrite H, xorb_true_l.
+   apply negb_false_iff.
+   clear H.
+   unfold carry; simpl.
+   remember (fst_same (R_frac x) 0 (S i)) as s1 eqn:Hs1 .
+   destruct s1 as [dj1| ]; [ idtac | reflexivity ].
+   pose proof (Hf (S (S (i + dj1)))) as H; simpl in H.
+   assumption.
+
+   split; [ idtac | assumption ].
+   unfold carry; simpl.
+   remember (fst_same (R_frac x) 0 0) as s1 eqn:Hs1 .
+   apply fst_same_sym_iff in Hs1; simpl in Hs1.
+   destruct s1 as [dj1| ].
+    destruct Hs1 as (Hn1, Ht1).
+    rename H into Hxf.
+    pose proof (Hf (S dj1)) as H; simpl in H.
+    rewrite Nat.sub_0_r, Ht1 in H; discriminate H.
 bbb.
 
 Theorem R_frac_equiv_div_fst_is_0 : ∀ x y,
