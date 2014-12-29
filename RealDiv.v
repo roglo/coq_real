@@ -443,9 +443,10 @@ remember (R_frac_equiv_div m (R_abs x) (R_abs 1)) as xym eqn:Hxym .
 symmetry in Hxym.
 destruct xym as (xm, ym).
 remember (max_iter_frac_part xm ym) as m2 eqn:Hm2 .
-symmetry in Hm2.
+symmetry in Hm2; symmetry.
 destruct m2; simpl.
  symmetry in Hm.
+bbb.
  destruct m.
   exfalso; revert Hm; apply max_iter_int_part_abs_ne_0.
 
@@ -462,6 +463,7 @@ destruct m2; simpl.
     destruct Hs2 as (Hn2, Ht2).
     exfalso; revert Hm2; apply two_power_neq_0.
 
+bbb.
     destruct m.
      simpl in Hxym.
      injection Hxym; clear Hxym; intros; subst xm ym.
