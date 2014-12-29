@@ -510,12 +510,61 @@ split.
          destruct H as [Hym| Hym].
           Focus 2.
           pose proof (Hym O) as H; rewrite Heqym in H; discriminate H.
+
+          unfold R_lt, R_compare in H1.
+          remember (R_int (R_norm 0)) as a eqn:Ha ; simpl in Ha.
+          rewrite carry_diag in Ha; simpl in Ha; subst a.
+          remember (0 ?= R_int (R_norm (R_abs x))) as c1 eqn:Hc1 .
+          symmetry in Hc1.
+          destruct c1; [ idtac | idtac | discriminate H1 ].
+           apply Z.compare_eq in Hc1.
+           remember (R_frac (R_norm (R_abs x))) as z eqn:Hz .
+           remember (fst_same (R_frac (R_norm 0)) (- z) 0) as s5 eqn:Hs5 .
+           destruct s5 as [dj5| ]; [ idtac | discriminate H1 ].
+           apply fst_same_sym_iff in Hs5; simpl in Hs5.
+           destruct Hs5 as (Hn5, Ht5).
+           simpl in H1.
+           rewrite Ht5 in H1.
+           remember z .[ dj5] as c2 eqn:Hc2 .
+           symmetry in Hc2.
+           destruct c2; [ clear H1 | discriminate H1 ].
+           simpl in Ht5.
+           subst z.
+           rewrite Heqym in Hym; simpl in Hym.
+           pose proof (Hym (S dj5)) as H; simpl in H.
+           rewrite Nat.sub_0_r in H.
+           simpl in Hc2.
+           unfold I_add_i in Hc2; simpl in Hc2.
+           rewrite H, xorb_false_l in Hc2.
+           unfold carry in Hc2; simpl in Hc2.
+           remember (fst_same (R_frac (R_abs x)) 0 (S dj5)) as s3 eqn:Hs3 .
+           apply fst_same_sym_iff in Hs3; simpl in Hs3.
+           destruct s3 as [dj3| ]; [ idtac | clear Hc2 ].
+            destruct Hs3 as (Hn3, Ht3).
+            rewrite Ht3 in Hc2; discriminate Hc2.
+
+            clear H.
+            pose proof (Hs3 O) as H.
+            rewrite Nat.add_0_r in H.
+            pose proof (Hym (S (S dj5))) as HH; simpl in HH.
+            rewrite HH in H; discriminate H.
+
+           simpl in Hc1.
+           rewrite Hc in Hc1; simpl in Hc1.
+           remember (b2z (carry (R_frac (R_abs x)) 0 0)) as n eqn:Hn .
+           symmetry in Hn.
+           destruct n; try discriminate Hc1.
+           unfold carry in Hn; simpl in Hn.
+           remember (fst_same (R_frac (R_abs x)) 0 0) as s2 eqn:Hs2 .
+           apply fst_same_sym_iff in Hs2; simpl in Hs2.
+           destruct s2 as [dj2| ].
+            destruct Hs2 as (Hn2, Ht2).
+            rewrite Ht2 in Hn; discriminate Hn.
+
+            rewrite Heqym in Hym; simpl in Hym.
+            pose proof (Hym 1%nat) as H; simpl in H.
+            rewrite Hs2 in H; discriminate H.
 bbb.
-  extraire la contradiction de :
-    Hc : R_int (R_abs x) = 0
-    H1 : (0 < R_abs x)%R
-    Heqym : ym = I_div_2_inc (R_frac (R_abs x)) false
-    Hym : ∀ i : nat, ym .[ i] = false
 
          rewrite Heqym in H4.
          unfold I_eq in H4; simpl in H4.
