@@ -409,19 +409,14 @@ split.
   remember (R_frac_equiv_div m (R_abs 0) (R_abs x)) as xym eqn:Hxym .
   symmetry in Hxym.
   destruct xym as (xm, ym).
-  remember (max_iter_frac_part xm ym) as m2 eqn:Hm2 .
-  symmetry in Hm2.
-  destruct m2; [ discriminate H | simpl in H ].
-  rename H into Hi.
-  assert (∀ i, xm .[ i] = false) as Hxm.
-   eapply R_frac_equiv_div_0_l; try eassumption; apply R_abs_0.
-
-   unfold max_iter_frac_part in Hm2.
-   remember (fst_same xm I_ones 0) as s2 eqn:Hs2 .
-   destruct s2 as [dj2| ]; [ idtac | discriminate Hm2 ].
-   apply fst_same_sym_iff in Hs2; simpl in Hs2.
-   destruct Hs2 as (Hn2, Ht2).
-   rewrite Hxm in Ht2; discriminate Ht2.
+  unfold max_iter_frac_part in H.
+  remember (fst_same xm I_ones 0) as s2 eqn:Hs2 .
+  destruct s2 as [dj2| ]; [ idtac | discriminate H ].
+  apply fst_same_sym_iff in Hs2; simpl in Hs2.
+  destruct Hs2 as (Hn2, Ht2).
+  pose proof R_abs_0 as Ha.
+  erewrite R_frac_equiv_div_0_l in Ht2; try eassumption.
+  discriminate Ht2.
 
  unfold R_div_R_frac.
  remember (max_iter_int_part (R_abs 0) (R_abs x)) as m eqn:Hm .
@@ -429,18 +424,14 @@ split.
  remember (R_frac_equiv_div m (R_abs 0) (R_abs x)) as xym eqn:Hxym .
  symmetry in Hxym.
  destruct xym as (xm, ym).
- remember (max_iter_frac_part xm ym) as m2 eqn:Hm2 .
- symmetry in Hm2.
- destruct m2; [ reflexivity | simpl ].
- assert (∀ i, xm .[ i] = false) as Hxm.
-  eapply R_frac_equiv_div_0_l; try eassumption; apply R_abs_0.
-
-  unfold max_iter_frac_part in Hm2.
-  remember (fst_same xm I_ones 0) as s2 eqn:Hs2 .
-  destruct s2 as [dj2| ]; [ idtac | discriminate Hm2 ].
-  apply fst_same_sym_iff in Hs2; simpl in Hs2.
-  destruct Hs2 as (Hn2, Ht2).
-  rewrite Hxm in Ht2; discriminate Ht2.
+ unfold max_iter_frac_part.
+ remember (fst_same xm I_ones 0) as s2 eqn:Hs2 .
+ destruct s2 as [dj2| ]; [ idtac | reflexivity ].
+ apply fst_same_sym_iff in Hs2; simpl in Hs2.
+ destruct Hs2 as (Hn2, Ht2).
+ pose proof R_abs_0 as Ha.
+ erewrite R_frac_equiv_div_0_l in Ht2; try eassumption.
+ discriminate Ht2.
 Qed.
 
 Theorem zzz : ∀ x, R_int (x / 1) = R_int x.
