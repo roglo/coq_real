@@ -505,6 +505,18 @@ split.
          apply I_ge_le_iff, I_le_0_r in H4.
          apply Z.eqb_eq in Hc.
          rewrite Hc in Heqym; simpl in Heqym.
+         remember H4 as H; clear HeqH.
+         apply I_zero_iff in H; simpl in H.
+         destruct H as [Hym| Hym].
+          Focus 2.
+          pose proof (Hym O) as H; rewrite Heqym in H; discriminate H.
+bbb.
+  extraire la contradiction de :
+    Hc : R_int (R_abs x) = 0
+    H1 : (0 < R_abs x)%R
+    Heqym : ym = I_div_2_inc (R_frac (R_abs x)) false
+    Hym : ∀ i : nat, ym .[ i] = false
+
          rewrite Heqym in H4.
          unfold I_eq in H4; simpl in H4.
          unfold R_lt, R_compare in H1.
