@@ -635,6 +635,83 @@ split.
 
             apply Z.eqb_eq in Hb1.
             rewrite Hb1 in Hym; simpl in Hym.
+            assert (R_int (R_abs x) = 1%Z) as H3.
+             unfold R_abs; simpl.
+             rewrite Hnx; simpl.
+             unfold R_abs in Hb1; simpl in Hb1.
+             rewrite Hnx in Hb1.
+             simpl in Hb1.
+             apply Z.div_small_iff in Hb1;
+              [ simpl in Hb1 | intros I; discriminate I ].
+             destruct Hb1 as [(Hb1, Hb2)| (Hb1, Hb2)];
+              [ idtac | exfalso; omega ].
+             apply Z.eqb_neq in Hc.
+             unfold R_abs in Hc; simpl in Hc.
+             rewrite Hnx in Hc.
+             simpl in Hc.
+             omega.
+
+             apply Z.eqb_neq in Hc.
+             rewrite H3 in Hym; simpl in Hym.
+             unfold I_div_i in H; simpl in H.
+             destruct (I_lt_dec (I_mul_2 xm) ym) as [H4| H4].
+              discriminate H.
+
+              clear H.
+              rewrite Hxm in H4; simpl in H4.
+              rewrite I_mul_2_0 in H4.
+              apply I_ge_le_iff, I_le_0_r in H4.
+              rewrite Hxm, H4 in H2.
+              exfalso; revert H2; apply I_lt_irrefl.
+
+          apply Z.eqb_neq in Hc.
+          apply Z.eqb_eq in Hb1.
+          pose proof (Hs1 O) as H.
+          subst xi.
+          simpl in H.
+          unfold I_div_i in H; simpl in H.
+          destruct
+           (I_lt_dec (I_mul_2 (R_div_R_frac_loop m2 (xm - ym) ym)) ym)
+           as [H4| H4].
+           discriminate H.
+
+           clear H.
+           destruct m2.
+            simpl in H4.
+            rewrite I_mul_2_0 in H4.
+            apply I_ge_le_iff, I_le_0_r in H4.
+            rewrite Hxm, H4 in H2.
+            unfold I_ge, I_compare in H2.
+            simpl in H2.
+            remember
+             (fst_same (I_div_2_inc (I_div_2_inc 0 false) false + 0%I)
+                (- (0 + 0)%I) 0) as s2 eqn:Hs2 .
+            destruct s2 as [dj2| ]; try (exfalso; apply H2; reflexivity).
+             apply fst_same_sym_iff in Hs2; simpl in Hs2.
+             destruct Hs2 as (Hn2, Ht2).
+             rewrite Ht2 in H2.
+             unfold I_add_i in H2; simpl in H2.
+             rewrite carry_diag in H2; simpl in H2.
+             clear H2.
+             unfold I_add_i in Ht2; simpl in Ht2.
+             rewrite xorb_false_r in Ht2.
+             rewrite carry_diag in Ht2; simpl in Ht2.
+             unfold carry in Ht2; simpl in Ht2.
+             remember
+              (fst_same (I_div_2_inc (I_div_2_inc 0 false) false) 0 (S dj2)) as s3
+              eqn:Hs3 .
+             destruct s3 as [dj3| ].
+              destruct (zerop dj2), (zerop (dj2 - 1)),
+               (zerop (dj2 + dj3 - 0)); discriminate Ht2.
+
+              clear Ht2.
+              apply fst_same_sym_iff in Hs3; simpl in Hs3.
+              pose proof (Hs3 O) as H.
+              destruct (zerop (dj2 + 0 - 0)); discriminate H.
+
+             clear H2.
+             apply fst_same_sym_iff in Hs2; simpl in Hs2.
+             rewrite Hb1 in Hym; simpl in Hym.
 bbb.
 
          rewrite Heqym in H4.
