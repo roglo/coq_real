@@ -3006,6 +3006,18 @@ intros H; apply Hxz; rewrite <- H.
 apply R_eq_compare_compat; eassumption.
 Qed.
 
+Theorem R_eq_gt_compat : ∀ x y z t,
+  (x = y)%R
+  → (z = t)%R
+  → (x > z)%R
+  → (y > t)%R.
+Proof.
+intros x y z t Hxy Hzt Hxz.
+unfold R_gt in Hxz; unfold R_gt.
+rewrite <- Hxz; symmetry.
+apply R_eq_compare_compat; eassumption.
+Qed.
+
 Theorem R_eq_ge_compat : ∀ x y z t,
   (x = y)%R
   → (z = t)%R
@@ -3040,6 +3052,30 @@ split; intros H.
 
  symmetry in Hxy, Hzt.
  eapply R_eq_le_compat; eassumption.
+Qed.
+
+Add Parametric Morphism : R_gt
+  with signature R_eq ==> R_eq ==> iff
+  as R_gt_morph.
+Proof.
+intros x y Hxy z t Hzt.
+split; intros H.
+ eapply R_eq_gt_compat; eassumption.
+
+ symmetry in Hxy, Hzt.
+ eapply R_eq_gt_compat; eassumption.
+Qed.
+
+Add Parametric Morphism : R_ge
+  with signature R_eq ==> R_eq ==> iff
+  as R_ge_morph.
+Proof.
+intros x y Hxy z t Hzt.
+split; intros H.
+ eapply R_eq_ge_compat; eassumption.
+
+ symmetry in Hxy, Hzt.
+ eapply R_eq_ge_compat; eassumption.
 Qed.
 
 Theorem R_lt_irrefl : ∀ x, ¬(x < x)%R.

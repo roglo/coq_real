@@ -377,6 +377,46 @@ Proof.
 intros x Hx.
 unfold R_eq; simpl.
 rewrite carry_diag; simpl.
+split.
+ unfold carry; simpl.
+ remember (fst_same (R_div_R_frac (R_abs 0) (R_abs x)) 0 0) as s1 eqn:Hs1 .
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ destruct s1 as [dj1| ].
+  destruct Hs1 as (Hn1, Ht1).
+  rewrite Ht1; simpl.
+  rewrite Z.add_0_r.
+  unfold R_div_R_int; simpl.
+  remember (max_iter_int_part (R_abs 0) (R_abs x)) as m eqn:Hm .
+  destruct m; simpl.
+   destruct (R_is_neg x); reflexivity.
+
+   symmetry in Hm.
+   destruct (R_lt_dec (R_abs 0) (R_abs x)) as [H1| H1].
+    destruct (R_is_neg x); reflexivity.
+
+    rewrite R_abs_0 in H1.
+    apply R_ge_le_iff in H1.
+    pose proof (R_abs_nonneg x) as H.
+    apply R_le_antisym in H.
+    apply H in H1; clear H; symmetry in H1.
+    apply R_abs_0_iff with (x := x) in H1.
+    contradiction.
+
+  pose proof (Hs1 O) as H.
+  unfold R_div_R_frac in H.
+  remember (max_iter_int_part (R_abs 0) (R_abs x)) as m eqn:Hm .
+  symmetry in Hm.
+  remember (R_frac_equiv_div m (R_abs 0) (R_abs x)) as xym eqn:Hxym .
+  symmetry in Hxym.
+  destruct xym as (xm, ym).
+  remember (max_iter_frac_part xm ym) as m2 eqn:Hm2 .
+  symmetry in Hm2.
+  destruct m2; [ discriminate H | simpl in H ].
+bbb.
+
+intros x Hx.
+unfold R_eq; simpl.
+rewrite carry_diag; simpl.
 unfold carry; simpl.
 remember (R_div_R_frac (R_abs 0) (R_abs x)) as xi eqn:Hxi .
 unfold R_div_R_frac in Hxi; simpl in Hxi.
