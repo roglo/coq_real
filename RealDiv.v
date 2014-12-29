@@ -434,6 +434,7 @@ split.
  discriminate Ht2.
 Qed.
 
+(*
 Theorem zzz : ∀ x, R_int (x / 1) = R_int x.
 Proof.
 intros x.
@@ -460,6 +461,44 @@ bbb.
 
 Theorem R_div_1_r : ∀ x, (x / 1 = x)%R.
 Proof.
+intros x.
+unfold R_eq; simpl.
+split.
+ remember (R_div_R_frac (R_abs x) (R_abs 1)) as zm eqn:Hzm .
+ unfold R_div_R_frac in Hzm.
+ remember (max_iter_int_part (R_abs x) (R_abs 1)) as m eqn:Hm .
+ symmetry in Hm.
+ remember (R_frac_equiv_div m (R_abs x) (R_abs 1)) as xym eqn:Hxym .
+ symmetry in Hxym.
+ destruct xym as (xm, ym).
+ unfold max_iter_frac_part in Hzm.
+ remember (fst_same xm I_ones 0) as s1 eqn:Hs1 .
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ destruct s1 as [dj1| ].
+  destruct Hs1 as (Hn1, Ht1).
+  remember (fst_same ym I_ones 0) as s2 eqn:Hs2 .
+  apply fst_same_sym_iff in Hs2; simpl in Hs2.
+  destruct s2 as [dj2| ].
+   remember (two_power (max 1 (dj2 - dj1 + 1))) as t eqn:Ht .
+   symmetry in Ht.
+   destruct t.
+    exfalso; revert Ht; apply two_power_neq_0.
+
+    simpl in Hzm.
+    destruct (I_lt_dec xm ym) as [H1| H1].
+     unfold carry; simpl.
+     remember (fst_same zm 0 0) as s3 eqn:Hs3 .
+     remember (fst_same (R_frac x) 0 0) as s4 eqn:Hs4 .
+     apply fst_same_sym_iff in Hs3; simpl in Hs3.
+     apply fst_same_sym_iff in Hs4; simpl in Hs4.
+     destruct s3 as [dj3| ].
+      destruct Hs3 as (Hn3, Ht3).
+      rewrite Ht3, Z.add_0_r.
+      destruct s4 as [dj4| ].
+       destruct Hs4 as (Hn4, Ht4).
+       rewrite Ht4, Z.add_0_r.
+bbb.
+
 intros x.
 unfold R_eq; simpl.
 split.
