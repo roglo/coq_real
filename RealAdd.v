@@ -2961,7 +2961,50 @@ destruct s1 as [dj1| ].
    rewrite Hfxy, Hfzt, Hyb, Ht2 in H1.
    rewrite negb_involutive in H1; symmetry in H1.
    exfalso; revert H1; apply no_fixpoint_negb.
-bbb.
+
+  subst xn yn zn tn.
+  simpl in Hxb, Ht1, Hn1, Hs2.
+  unfold I_eq in Hfxy, Hfzt; simpl in Hfxy, Hfzt.
+  rewrite Hfxy in Hxb; simpl in Hxb.
+  rewrite Hfzt in Ht1; simpl in Ht1.
+  rewrite Hs2 in Hxb.
+  rewrite Ht1, negb_involutive in Hxb.
+  exfalso; revert Hxb; apply no_fixpoint_negb.
+
+ destruct s2 as [dj2| ]; [ idtac | reflexivity ].
+ destruct Hs2 as (Hn2, Ht2).
+ subst xn yn zn tn.
+ simpl in Hs1, Ht2, Hn2.
+ unfold I_eq in Hfxy, Hfzt; simpl in Hfxy, Hfzt.
+ rewrite <- Hfxy, <- Hfzt in Ht2.
+ rewrite Hs1, negb_involutive in Ht2.
+ symmetry in Ht2.
+ exfalso; revert Ht2; apply no_fixpoint_negb.
+Qed.
+
+Theorem R_eq_lt_compat : ∀ x y z t,
+  (x = y)%R
+  → (z = t)%R
+  → (x < z)%R
+  → (y < t)%R.
+Proof.
+intros x y z t Hxy Hzt Hxz.
+unfold R_lt in Hxz; unfold R_lt.
+rewrite <- Hxz; symmetry.
+apply R_eq_compare_compat; eassumption.
+Qed.
+
+Theorem R_eq_le_compat : ∀ x y z t,
+  (x = y)%R
+  → (z = t)%R
+  → (x ≤ z)%R
+  → (y ≤ t)%R.
+Proof.
+intros x y z t Hxy Hzt Hxz.
+unfold R_le in Hxz; unfold R_le.
+intros H; apply Hxz; rewrite <- H.
+apply R_eq_compare_compat; eassumption.
+Qed.
 
 Theorem R_eq_ge_compat : ∀ x y z t,
   (x = y)%R
@@ -2997,6 +3040,23 @@ split; intros H.
 
  symmetry in Hxy, Hzt.
  eapply R_eq_le_compat; eassumption.
+Qed.
+
+Theorem R_lt_irrefl : ∀ x, ¬(x < x)%R.
+Proof.
+intros x Hx.
+unfold R_lt, R_compare in Hx.
+remember (R_int (R_norm x) ?= R_int (R_norm x)) as c eqn:Hc .
+symmetry in Hc.
+destruct c; [ idtac | idtac | discriminate Hx ].
+ simpl in Hx.
+ remember (fst_same (R_frac x + 0%I) (- (R_frac x + 0)%I) 0) as s1 eqn:Hs1 .
+ destruct s1 as [dj1| ]; [ idtac | discriminate Hx ].
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ destruct Hs1 as (Hn1, Ht1).
+ symmetry in Ht1; revert Ht1; apply no_fixpoint_negb.
+
+ revert Hc; apply Z.lt_irrefl.
 Qed.
 
 Close Scope Z_scope.

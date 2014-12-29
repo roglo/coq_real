@@ -448,8 +448,44 @@ split.
         apply I_zero_iff in H2.
         destruct H2 as [H2| H2].
          simpl in H2.
+         rewrite R_abs_0 in H1.
+         assert (R_abs x = 0)%R as H.
+          unfold R_eq; simpl.
+          split.
+           rewrite Hc, carry_diag; simpl.
+           unfold carry; simpl.
+           remember (fst_same (R_frac (R_abs x)) 0 0) as s5 eqn:Hs5 .
+           apply fst_same_sym_iff in Hs5; simpl in Hs5.
+           destruct s5 as [dj5| ].
+            destruct Hs5 as (Hn5, Ht5).
+            rewrite Ht5; reflexivity.
+
+            pose proof (H2 1%nat) as H; simpl in H.
+            rewrite Hs5 in H; discriminate H.
+
+           unfold I_eq; simpl; intros i.
+           unfold I_add_i; simpl.
+           rewrite xorb_false_r, carry_diag; simpl.
+           unfold carry; simpl.
+           remember (fst_same (R_frac (R_abs x)) 0 (S i)) as s5 eqn:Hs5 .
+           apply fst_same_sym_iff in Hs5; simpl in Hs5.
+           destruct s5 as [dj5| ].
+            destruct Hs5 as (Hn5, Ht5); rewrite Ht5, xorb_false_r.
+            pose proof (H2 i) as Hi.
+            destruct i; simpl in Hi.
+             pose proof (H2 1%nat) as H; simpl in H.
+             assumption.
+
+             pose proof (H2 (S (S i))) as H; simpl in H.
+             assumption.
+
+            pose proof (H2 (S (S i))) as H; simpl in H.
+            pose proof (Hs5 O) as HH.
+            rewrite Nat.add_0_r, H in HH; discriminate HH.
+
+          rewrite H in H1.
+          exfalso; revert H1; apply R_lt_irrefl.
 bbb.
-rewrite R_abs_0 in H1.
 
     remember H2 as H; clear HeqH.
     apply R_zero_if in H.
