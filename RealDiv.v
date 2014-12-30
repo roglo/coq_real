@@ -584,6 +584,28 @@ induction m; intros; simpl in Hxy.
   apply R_div_2_0_iff; assumption.
 Qed.
 
+Definition I_div_2_pow x n :=
+  {| rm i := if lt_dec i n then false else x.[i-n] |}.
+
+Definition R_div_2_pow x n :=
+  {| R_int := R_int x / Z.of_nat (two_power n);
+     R_frac := I_div_2_pow ...
+
+ah merde ça va pas, faut mettre le reste de R_int dans R_frac...
+
+Theorem yyy : ∀ x i di m n xm ym,
+  max_iter_int_part (R_abs x) (R_abs 1) = S (n + m)
+  → R_int (R_abs x) / Z.of_nat (two_power n) ≠ 0
+  → R_frac_equiv_div m (R_div_2_pow (R_abs x) (S n))
+       (R_div_2_pow (R_abs 1) (S n)) = (xm, ym)
+  → (∀ dj, xm .[ dj] = false)
+  → (R_frac x) .[ S (i + di)] = false
+  → (R_frac x) .[ i] = false.
+Proof.
+intros x i di m n xm ym Hm Hc Hxym Hxm Hxdi.
+bbb.
+
+
 Theorem zzz : ∀ x, (R_div_R_frac (R_abs x) (R_abs 1) = R_frac x)%I.
 Proof.
 intros x.
@@ -621,6 +643,7 @@ destruct m2; simpl.
   apply fst_same_sym_iff in Hs2; simpl in Hs2.
   destruct s2 as [dj2| ].
    destruct Hs2 as (Hn2, Ht2); rewrite Ht2, xorb_false_r.
+bbb.
    destruct m.
     exfalso; revert Hm; apply max_iter_int_part_abs_ne_0.
 
