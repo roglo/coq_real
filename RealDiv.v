@@ -710,11 +710,10 @@ destruct m2; simpl.
         simpl in Hm.
         do 2 apply eq_add_S in Hm.
         rewrite <- Z2Nat.inj_0 in Hm.
-        apply Z2Nat.inj in Hm; [ idtac | apply R_int_abs | idtac ].
-         rewrite Hm in Hc.
-         exfalso; apply Hc; reflexivity.
-
-         reflexivity.
+        repeat (rewrite <- Z2Nat.inj_succ in Hm; [ idtac | omega ]).
+        apply Z2Nat.inj in Hm; [ idtac | apply R_int_abs | omega ].
+        rewrite Hm in Hc.
+        exfalso; apply Hc; reflexivity.
 
         apply Pos2Z.is_nonneg.
 
@@ -748,12 +747,10 @@ destruct m2; simpl.
         simpl in Hm.
         do 2 apply eq_add_S in Hm.
         rewrite <- Z2Nat.inj_0 in Hm.
-        rewrite <- Z2Nat.inj_succ in Hm; [ idtac | reflexivity ].
-        apply Z2Nat.inj in Hm; [ idtac | apply R_int_abs | idtac ].
-         rewrite Hm in Hc.
-         exfalso; apply Hc; reflexivity.
-
-         apply Pos2Z.is_nonneg.
+        repeat (rewrite <- Z2Nat.inj_succ in Hm; [ idtac | omega ]).
+        apply Z2Nat.inj in Hm; [ idtac | apply R_int_abs | omega ].
+        rewrite Hm in Hc.
+        exfalso; apply Hc; reflexivity.
 
         apply Pos2Z.is_nonneg.
 
@@ -787,13 +784,10 @@ destruct m2; simpl.
         simpl in Hm.
         do 2 apply eq_add_S in Hm.
         rewrite <- Z2Nat.inj_0 in Hm.
-        rewrite <- Z2Nat.inj_succ in Hm; [ idtac | reflexivity ].
-        rewrite <- Z2Nat.inj_succ in Hm; [ idtac | apply Pos2Z.is_nonneg ].
-        apply Z2Nat.inj in Hm; [ idtac | apply R_int_abs | idtac ].
-         rewrite Hm in Hc.
-         exfalso; apply Hc; reflexivity.
-
-         apply Pos2Z.is_nonneg.
+        repeat (rewrite <- Z2Nat.inj_succ in Hm; [ idtac | omega ]).
+        apply Z2Nat.inj in Hm; [ idtac | apply R_int_abs | omega ].
+        rewrite Hm in Hc.
+        exfalso; apply Hc; reflexivity.
 
         apply Pos2Z.is_nonneg.
 
@@ -815,6 +809,8 @@ destruct m2; simpl.
          pose proof (Hs1 (S (n + i))) as H; simpl in H; subst n.
          unfold R_abs in H; rewrite Hxn in H; simpl in H.
          rewrite Nat.sub_0_r in H; assumption.
+
+        remember (S n) as p; subst n; rename p into n; rename Heqp into Hn.
 bbb.
 *)
 
