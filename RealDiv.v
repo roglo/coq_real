@@ -700,6 +700,7 @@ destruct m2; simpl.
        rewrite Nat.sub_0_r in H; assumption.
 
       remember 2%nat as n eqn:Hn in |-*.
+      remember (R_int (R_abs x) / 2) as u eqn:Hu.
 (*1*)
       destruct m; simpl in Hxym.
        injection Hxym; clear Hxym; intros; subst xm ym.
@@ -712,7 +713,7 @@ destruct m2; simpl.
         rewrite <- Z2Nat.inj_0 in Hm.
         repeat (rewrite <- Z2Nat.inj_succ in Hm; [ idtac | omega ]).
         apply Z2Nat.inj in Hm; [ idtac | apply R_int_abs | omega ].
-        rewrite Hm in Hc.
+        subst u; rewrite Hm in Hc.
         exfalso; apply Hc; reflexivity.
 
         apply Pos2Z.is_nonneg.
@@ -721,7 +722,8 @@ destruct m2; simpl.
 
        rewrite andb_true_r in Hxym.
        clear Hc.
-       remember (R_int (R_abs x) / 2 / 2 =? 0) as c eqn:Hc .
+       rewrite <- Hu in Hxym.
+       remember (u / 2 =? 0) as c eqn:Hc .
        symmetry in Hc.
        destruct c.
         injection Hxym; clear Hxym; intros; subst xm ym.
@@ -737,6 +739,7 @@ destruct m2; simpl.
          rewrite Nat.sub_0_r in H; assumption.
 
         remember (S n) as p; subst n; rename p into n; rename Heqp into Hn.
+        remember (u / 2) as p; subst u; rename p into u; rename Heqp into Hu.
 (*2*)
       destruct m; simpl in Hxym.
        injection Hxym; clear Hxym; intros; subst xm ym.
@@ -749,7 +752,7 @@ destruct m2; simpl.
         rewrite <- Z2Nat.inj_0 in Hm.
         repeat (rewrite <- Z2Nat.inj_succ in Hm; [ idtac | omega ]).
         apply Z2Nat.inj in Hm; [ idtac | apply R_int_abs | omega ].
-        rewrite Hm in Hc.
+        subst u; rewrite Hm in Hc.
         exfalso; apply Hc; reflexivity.
 
         apply Pos2Z.is_nonneg.
@@ -758,7 +761,8 @@ destruct m2; simpl.
 
        rewrite andb_true_r in Hxym.
        clear Hc.
-       remember (R_int (R_abs x) / 2 / 2 / 2 =? 0) as c eqn:Hc .
+       rewrite <- Hu in Hxym.
+       remember (u / 2 =? 0) as c eqn:Hc .
        symmetry in Hc.
        destruct c.
         injection Hxym; clear Hxym; intros; subst xm ym.
@@ -774,6 +778,7 @@ destruct m2; simpl.
          rewrite Nat.sub_0_r in H; assumption.
 
         remember (S n) as p; subst n; rename p into n; rename Heqp into Hn.
+        remember (u / 2) as p; subst u; rename p into u; rename Heqp into Hu.
 (*3*)
       destruct m; simpl in Hxym.
        injection Hxym; clear Hxym; intros; subst xm ym.
@@ -786,7 +791,7 @@ destruct m2; simpl.
         rewrite <- Z2Nat.inj_0 in Hm.
         repeat (rewrite <- Z2Nat.inj_succ in Hm; [ idtac | omega ]).
         apply Z2Nat.inj in Hm; [ idtac | apply R_int_abs | omega ].
-        rewrite Hm in Hc.
+        subst u; rewrite Hm in Hc.
         exfalso; apply Hc; reflexivity.
 
         apply Pos2Z.is_nonneg.
@@ -795,7 +800,8 @@ destruct m2; simpl.
 
        rewrite andb_true_r in Hxym.
        clear Hc.
-       remember (R_int (R_abs x) / 2 / 2 / 2 / 2 =? 0) as c eqn:Hc .
+       rewrite <- Hu in Hxym.
+       remember (u / 2 =? 0) as c eqn:Hc .
        symmetry in Hc.
        destruct c.
         injection Hxym; clear Hxym; intros; subst xm ym.
@@ -811,6 +817,7 @@ destruct m2; simpl.
          rewrite Nat.sub_0_r in H; assumption.
 
         remember (S n) as p; subst n; rename p into n; rename Heqp into Hn.
+        remember (u / 2) as p; subst u; rename p into u; rename Heqp into Hu.
 bbb.
 *)
 
