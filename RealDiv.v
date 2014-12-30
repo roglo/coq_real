@@ -676,20 +676,18 @@ destruct m2; simpl.
      injection Hxym; clear Hxym; intros; subst xm ym.
      unfold max_iter_int_part in Hm; simpl in Hm.
      rewrite <- Z.add_assoc, Z.add_comm in Hm.
-     rewrite Z2Nat.inj_add in Hm.
+     rewrite Z2Nat.inj_add in Hm; [ idtac | idtac | apply R_int_abs ].
       discriminate Hm.
 
       apply Pos2Z.is_nonneg.
 
-      apply R_int_abs.
-
-     remember True as Hc; clear HeqHc.
      simpl in Hxym.
      rewrite <- Nat.add_1_r in Hm.
      remember 1%nat as n eqn:Hn .
      remember (R_int (R_abs x)) as u eqn:Hu .
      remember (R_div_2 (R_abs x)) as x1 eqn:Hx1 .
      remember (R_div_2 (R_abs 1)) as y1 eqn:Hy1 .
+     remember 7 as Hc; clear HeqHc.
 (*1*)
      rewrite Hx1, Hy1, Hu in Hxym; simpl in Hxym.
      rewrite andb_true_r, <- Hu in Hxym; clear Hc.
