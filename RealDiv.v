@@ -457,6 +457,8 @@ destruct iax as [| iax| iax].
  exfalso; apply H, Pos2Z.neg_is_neg.
 Qed.
 
+(* 0: left absorbing element *)
+
 Theorem R_div_0_l : ∀ x, (x ≠ 0)%R → (0 / x = 0)%R.
 Proof.
 intros x Hx.
@@ -812,6 +814,8 @@ destruct m2; simpl.
          destruct Hs2 as (Hn2, Ht2); rewrite Ht2, xorb_false_r.
 bbb.
 *)
+
+(* 1: right neutral element *)
 
 Theorem R_div_1_r : ∀ x, (x / 1 = x)%R.
 Proof.
