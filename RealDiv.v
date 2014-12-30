@@ -604,6 +604,12 @@ destruct m2; simpl.
    destruct Hs2 as (Hn2, Ht2).
    exfalso; revert Hm2; apply two_power_neq_0.
 
+   exfalso; eapply R_frac_equiv_div_prop; try eassumption.
+   unfold R_abs; simpl.
+   intros H; unfold R_eq in H; simpl in H.
+   rewrite carry_diag in H; simpl in H.
+   destruct H as (H, _); discriminate H.
+
 bbb.
    clear Hm Hn1.
    exfalso.
