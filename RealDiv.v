@@ -594,7 +594,6 @@ Theorem yyy : ∀ x i di m n xm ym,
 Proof.
 intros x i di m n xm ym Hm Hc Hxym Hxm Hxdi.
 bbb.
-non, c'est pas ça...
 *)
 
 Theorem zzz : ∀ x, (R_div_R_frac (R_abs x) (R_abs 1) = R_frac x)%I.
@@ -634,7 +633,6 @@ destruct m2; simpl.
   apply fst_same_sym_iff in Hs2; simpl in Hs2.
   destruct s2 as [dj2| ].
    destruct Hs2 as (Hn2, Ht2); rewrite Ht2, xorb_false_r.
-bbb.
    destruct m.
     exfalso; revert Hm; apply max_iter_int_part_abs_ne_0.
 
@@ -668,6 +666,11 @@ bbb.
        unfold R_abs in H; rewrite Hxn in H; simpl in H.
        rewrite Nat.sub_0_r in H; assumption.
 
+      apply Z.eqb_neq in Hc.
+      eapply yyy with (m := m) (n := 1%nat); try eassumption; simpl.
+      apply Z.eqb_neq in Hc.
+      rewrite andb_false_r, andb_true_r; rewrite Hc; eassumption.
+bbb.
       destruct m; simpl in Hxym.
        injection Hxym; clear Hxym; intros; subst xm ym.
        unfold max_iter_int_part in Hm; simpl in Hm.
