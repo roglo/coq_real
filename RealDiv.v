@@ -306,7 +306,18 @@ split; intros Hx.
     rename H into Hxf.
     pose proof (Hf (S dj1)) as H; simpl in H.
     rewrite Nat.sub_0_r, Ht1 in H; discriminate H.
-bbb.
+
+    pose proof (Hf O) as Ho; simpl in Ho.
+    apply Zodd_bool_iff in Ho.
+    apply Zodd_ex_iff in Ho.
+    destruct Ho as (m, Ho).
+    rewrite Ho in Hi.
+    rewrite Z.add_comm, Z.mul_comm in Hi.
+    rewrite Z.div_add in Hi; [ idtac | intros I; discriminate I ].
+    simpl in Hi.
+    subst m; simpl in Ho.
+    rewrite Ho; reflexivity.
+Qed.
 
 Theorem R_frac_equiv_div_fst_is_0 : ∀ x y,
   (x = 0)%R
@@ -343,7 +354,7 @@ destruct H as [(Hi, Hf)| (Hi, Hf)].
 
   apply Z.eqb_neq in Hiy; simpl.
   apply IHm; simpl.
-   apply R_div_2_0_if; assumption.
+   apply R_div_2_0_iff with (x := x); assumption.
 
    rewrite Hi; reflexivity.
 
@@ -385,7 +396,7 @@ induction m; intros.
    rewrite Hxz in Hix; discriminate Hix.
 
   eapply IHm; [ idtac | eassumption ].
-  apply R_div_2_0_if; assumption.
+  apply R_div_2_0_iff with (x := x); assumption.
 Qed.
 
 Theorem R_frac_equiv_div_snd_prop : ∀ m x y xm ym,
@@ -508,7 +519,7 @@ split.
  discriminate Ht2.
 Qed.
 
-Theorem yyy : ∀ x y m i xm ym,
+Theorem R_frac_equiv_div_prop : ∀ x y m i xm ym,
   (y ≠ 0)%R
   → R_frac_equiv_div m x y = (xm, ym)
   → xm.[i] = true
@@ -567,7 +578,8 @@ induction m; intros; simpl in Hxy.
   eapply IHm; [ idtac | eassumption ].
   apply andb_false_iff in Hc.
   intros H; apply Hy; clear Hy.
-bbb.
+  apply R_div_2_0_iff; assumption.
+Qed.
 
 Theorem zzz : ∀ x, (R_div_R_frac (R_abs x) (R_abs 1) = R_frac x)%I.
 Proof.
