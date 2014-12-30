@@ -683,17 +683,17 @@ destruct m2; simpl.
 
       apply R_int_abs.
 
+     remember True as Hc; clear HeqHc.
      simpl in Hxym.
      rewrite <- Nat.add_1_r in Hm.
      remember 1%nat as n eqn:Hn .
      remember (R_int (R_abs x)) as u eqn:Hu .
      remember (R_div_2 (R_abs x)) as x1 eqn:Hx1 .
      remember (R_div_2 (R_abs 1)) as y1 eqn:Hy1 .
-     rewrite andb_true_r in Hxym.
-     remember ((u / 2) =? 0) as c eqn:Hc .
-     symmetry in Hc.
-     rewrite Hx1, Hy1 in Hxym.
 (*1*)
+     rewrite Hx1, Hy1, Hu in Hxym; simpl in Hxym.
+     rewrite andb_true_r, <- Hu in Hxym; clear Hc.
+     remember (u / 2 =? 0) as c eqn:Hc ; symmetry in Hc.
      destruct c.
       injection Hxym; clear Hxym; intros; subst xm ym.
       remember (R_is_neg x) as xn eqn:Hxn; symmetry in Hxn.
@@ -729,10 +729,10 @@ destruct m2; simpl.
 
         apply Pos2Z.is_nonneg.
 
-       rewrite Hx1, Hy1 in Hxym; simpl in Hxym.
-       rewrite andb_true_r, <- Hu in Hxym; clear Hc.
-       remember (u / 2 =? 0) as c eqn:Hc ; symmetry in Hc.
 (*2*)
+     rewrite Hx1, Hy1 in Hxym; simpl in Hxym.
+     rewrite andb_true_r, <- Hu in Hxym; clear Hc.
+     remember (u / 2 =? 0) as c eqn:Hc ; symmetry in Hc.
      destruct c.
       injection Hxym; clear Hxym; intros; subst xm ym.
       remember (R_is_neg x) as xn eqn:Hxn; symmetry in Hxn.
@@ -768,10 +768,10 @@ destruct m2; simpl.
 
         apply Pos2Z.is_nonneg.
 
-       rewrite Hx1, Hy1 in Hxym; simpl in Hxym.
-       rewrite andb_true_r, <- Hu in Hxym; clear Hc.
-       remember (u / 2 =? 0) as c eqn:Hc ; symmetry in Hc.
 (*3*)
+     rewrite Hx1, Hy1 in Hxym; simpl in Hxym.
+     rewrite andb_true_r, <- Hu in Hxym; clear Hc.
+     remember (u / 2 =? 0) as c eqn:Hc ; symmetry in Hc.
      destruct c.
       injection Hxym; clear Hxym; intros; subst xm ym.
       remember (R_is_neg x) as xn eqn:Hxn; symmetry in Hxn.
@@ -807,10 +807,10 @@ destruct m2; simpl.
 
         apply Pos2Z.is_nonneg.
 
-       rewrite Hx1, Hy1 in Hxym; simpl in Hxym.
-       rewrite andb_true_r, <- Hu in Hxym; clear Hc.
-       remember (u / 2 =? 0) as c eqn:Hc ; symmetry in Hc.
 (*4*)
+     rewrite Hx1, Hy1 in Hxym; simpl in Hxym.
+     rewrite andb_true_r, <- Hu in Hxym; clear Hc.
+     remember (u / 2 =? 0) as c eqn:Hc ; symmetry in Hc.
      destruct c.
       injection Hxym; clear Hxym; intros; subst xm ym.
       remember (R_is_neg x) as xn eqn:Hxn; symmetry in Hxn.
