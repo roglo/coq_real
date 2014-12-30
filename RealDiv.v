@@ -584,15 +584,49 @@ induction m; intros; simpl in Hxy.
   apply R_div_2_0_iff; assumption.
 Qed.
 
+(* non, c'est pas ça...
 Theorem yyy : ∀ x i di m n xm ym,
-  max_iter_int_part (R_abs x) (R_abs 1) = S (n + m)
-  → R_int (R_abs x) / Z.of_nat (two_power n) ≠ 0
-  → R_frac_equiv_div (S (n + m)) (R_abs x) (R_abs 1) = (xm, ym)
+  max_iter_int_part (R_abs x) (R_abs 1) = S (m + n)
+  → R_frac_equiv_div (S (m + n)) (R_abs x) (R_abs 1) = (xm, ym)
   → (∀ dj, xm .[ dj] = false)
   → (R_frac x) .[ S (i + di)] = false
   → (R_frac x) .[ i] = false.
 Proof.
-intros x i di m n xm ym Hm Hc Hxym Hxm Hxdi.
+intros x i di m n xm ym Hm Hxym Hxm Hxdi.
+bbb.
+
+revert m Hm Hxym.
+induction n; intros.
+ simpl in Hxym.
+ rewrite andb_false_r in Hxym.
+ destruct m; simpl in Hxym.
+  injection Hxym; clear Hxym; intros; subst xm ym.
+  unfold max_iter_int_part in Hm; simpl in Hm.
+  rewrite <- Z.add_assoc, Z.add_comm in Hm.
+  rewrite Z2Nat.inj_add in Hm.
+   discriminate Hm.
+
+   apply Pos2Z.is_nonneg.
+
+   apply R_int_abs.
+
+  rewrite andb_true_r in Hxym.
+  remember (R_int (R_abs x) / 2 =? 0) as c eqn:Hc .
+  symmetry in Hc.
+  destruct c.
+   injection Hxym; clear Hxym; intros; subst xm ym.
+   simpl in Hxm.
+   remember (R_is_neg x) as xn eqn:Hxn .
+   symmetry in Hxn.
+   destruct xn.
+    pose proof (Hxm (S (S (S (i + di))))) as H; simpl in H.
+    unfold R_abs in H; rewrite Hxn in H; simpl in H.
+    rewrite Hxdi in H; discriminate H.
+
+    pose proof (Hxm (S (S i))) as H; simpl in H.
+    unfold R_abs in H; rewrite Hxn in H; simpl in H.
+    rewrite Nat.sub_0_r in H; assumption.
+
 bbb.
 *)
 
@@ -616,7 +650,7 @@ destruct m2; simpl.
   remember (fst_same ym I_ones 0) as s2 eqn:Hs2 .
   apply fst_same_sym_iff in Hs2; simpl in Hs2.
   destruct s2 as [dj2| ]; [ idtac | clear Hm2 ].
-   destruct Hs2 as (Hn2, Ht2).
+   destruct Hs2 as (_, Ht2).
    exfalso; revert Hm2; apply two_power_neq_0.
 
    exfalso; eapply R_frac_equiv_div_prop; try eassumption.
@@ -632,7 +666,7 @@ destruct m2; simpl.
   remember (fst_same (R_frac x) 0 (S i)) as s2 eqn:Hs2 .
   apply fst_same_sym_iff in Hs2; simpl in Hs2.
   destruct s2 as [dj2| ].
-   destruct Hs2 as (Hn2, Ht2); rewrite Ht2, xorb_false_r.
+   destruct Hs2 as (_, Ht2); rewrite Ht2, xorb_false_r.
    destruct m.
     exfalso; revert Hm; apply max_iter_int_part_abs_ne_0.
 
@@ -654,7 +688,6 @@ destruct m2; simpl.
      symmetry in Hc.
      destruct c.
       injection Hxym; clear Hxym; intros; subst xm ym.
-      simpl in Hs1.
       remember (R_is_neg x) as xn eqn:Hxn .
       symmetry in Hxn.
       destruct xn.
@@ -666,11 +699,6 @@ destruct m2; simpl.
        unfold R_abs in H; rewrite Hxn in H; simpl in H.
        rewrite Nat.sub_0_r in H; assumption.
 
-      apply Z.eqb_neq in Hc.
-      eapply yyy with (m := m) (n := 1%nat); try eassumption; simpl.
-      apply Z.eqb_neq in Hc.
-      rewrite andb_false_r, andb_true_r; rewrite Hc; eassumption.
-bbb.
       destruct m; simpl in Hxym.
        injection Hxym; clear Hxym; intros; subst xm ym.
        unfold max_iter_int_part in Hm; simpl in Hm.
@@ -694,7 +722,6 @@ bbb.
        symmetry in Hc.
        destruct c.
         injection Hxym; clear Hxym; intros; subst xm ym.
-        simpl in Hs1.
         remember (R_is_neg x) as xn eqn:Hxn .
         symmetry in Hxn.
         destruct xn.
@@ -705,6 +732,88 @@ bbb.
          pose proof (Hs1 (S (S (S i)))) as H; simpl in H.
          unfold R_abs in H; rewrite Hxn in H; simpl in H.
          rewrite Nat.sub_0_r in H; assumption.
+
+        destruct m; simpl in Hxym.
+         injection Hxym; clear Hxym; intros; subst xm ym.
+         unfold max_iter_int_part in Hm; simpl in Hm.
+         apply Z.eqb_neq in Hc.
+         rewrite <- Z.add_assoc, Z.add_comm in Hm.
+         rewrite Z2Nat.inj_add in Hm.
+          simpl in Hm.
+          do 2 apply eq_add_S in Hm.
+          rewrite <- Z2Nat.inj_0 in Hm.
+          rewrite <- Z2Nat.inj_succ in Hm.
+           apply Z2Nat.inj in Hm;
+            [ idtac | apply R_int_abs | apply Z.le_0_1 ].
+           rewrite Hm in Hc.
+           exfalso; apply Hc; reflexivity.
+
+           reflexivity.
+
+          apply Pos2Z.is_nonneg.
+
+          apply R_int_abs.
+
+         rewrite andb_true_r in Hxym.
+         clear Hc.
+         remember (R_int (R_abs x) / 2 / 2 / 2 =? 0) as c eqn:Hc .
+         symmetry in Hc.
+         destruct c.
+          injection Hxym; clear Hxym; intros; subst xm ym.
+          remember (R_is_neg x) as xn eqn:Hxn .
+          symmetry in Hxn.
+          destruct xn.
+           pose proof (Hs1 (S (S (S (S (S (i + dj2))))))) as H; simpl in H.
+           unfold R_abs in H; rewrite Hxn in H; simpl in H.
+           rewrite Ht2 in H; discriminate H.
+
+           pose proof (Hs1 (S (S (S (S i))))) as H; simpl in H.
+           unfold R_abs in H; rewrite Hxn in H; simpl in H.
+           rewrite Nat.sub_0_r in H; assumption.
+
+          destruct m; simpl in Hxym.
+           injection Hxym; clear Hxym; intros; subst xm ym.
+           unfold max_iter_int_part in Hm; simpl in Hm.
+           apply Z.eqb_neq in Hc.
+           rewrite <- Z.add_assoc, Z.add_comm in Hm.
+           rewrite Z2Nat.inj_add in Hm.
+            simpl in Hm.
+            do 2 apply eq_add_S in Hm.
+            rewrite <- Z2Nat.inj_0 in Hm.
+            do 2 rewrite <- Z2Nat.inj_succ in Hm.
+             apply Z2Nat.inj in Hm; [ idtac | apply R_int_abs | idtac ].
+              rewrite Hm in Hc.
+              exfalso; apply Hc; reflexivity.
+
+              apply Pos2Z.is_nonneg.
+
+             apply Pos2Z.is_nonneg.
+
+             reflexivity.
+
+             reflexivity.
+
+            apply Pos2Z.is_nonneg.
+
+            apply R_int_abs.
+
+           rewrite andb_true_r in Hxym.
+           clear Hc.
+           remember (R_int (R_abs x) / 2 / 2 / 2 / 2 =? 0) as c eqn:Hc .
+           symmetry in Hc.
+           destruct c.
+            injection Hxym; clear Hxym; intros; subst xm ym.
+            remember (R_is_neg x) as xn eqn:Hxn .
+            symmetry in Hxn.
+            destruct xn.
+             pose proof (Hs1 (S (S (S (S (S (S (i + dj2)))))))) as H.
+             simpl in H.
+             unfold R_abs in H; rewrite Hxn in H; simpl in H.
+             rewrite Ht2 in H; discriminate H.
+
+             pose proof (Hs1 (S (S (S (S (S i)))))) as H; simpl in H.
+             unfold R_abs in H; rewrite Hxn in H; simpl in H.
+             rewrite Nat.sub_0_r in H; assumption.
 bbb.
 *)
 
