@@ -693,20 +693,19 @@ destruct m2; simpl.
      remember ((u / 2) =? 0) as c eqn:Hc .
      symmetry in Hc.
      rewrite Hx1, Hy1 in Hxym.
+(*1*)
      destruct c.
       injection Hxym; clear Hxym; intros; subst xm ym.
-      remember (R_is_neg x) as xn eqn:Hxn .
-      symmetry in Hxn.
+      remember (R_is_neg x) as xn eqn:Hxn; symmetry in Hxn.
       destruct xn.
-       pose proof (Hs1 (S (S (S (i + dj2))))) as H; simpl in H.
+       pose proof (Hs1 (S (S (n + i + dj2)))) as H; simpl in H; subst n.
        unfold R_abs in H; rewrite Hxn in H; simpl in H.
        rewrite Ht2 in H; discriminate H.
 
-       pose proof (Hs1 (S (S i))) as H; simpl in H.
+       pose proof (Hs1 (S (n + i))) as H; simpl in H; subst n.
        unfold R_abs in H; rewrite Hxn in H; simpl in H.
        rewrite Nat.sub_0_r in H; assumption.
 
-(*1*)
       rewrite Nat.add_succ_l, <- Nat.add_succ_r in Hm.
       remember (S n) as p; subst n; rename p into n; rename Heqp into Hn.
       remember (u / 2) as p; subst u; rename p into u; rename Heqp into Hu.
@@ -733,19 +732,19 @@ destruct m2; simpl.
        rewrite Hx1, Hy1 in Hxym; simpl in Hxym.
        rewrite andb_true_r, <- Hu in Hxym; clear Hc.
        remember (u / 2 =? 0) as c eqn:Hc ; symmetry in Hc.
-       destruct c.
-        injection Hxym; clear Hxym; intros; subst xm ym.
-        remember (R_is_neg x) as xn eqn:Hxn; symmetry in Hxn.
-        destruct xn.
-         pose proof (Hs1 (S (S (n + i + dj2)))) as H; simpl in H; subst n.
-         unfold R_abs in H; rewrite Hxn in H; simpl in H.
-         rewrite Ht2 in H; discriminate H.
-
-         pose proof (Hs1 (S (n + i))) as H; simpl in H; subst n.
-         unfold R_abs in H; rewrite Hxn in H; simpl in H.
-         rewrite Nat.sub_0_r in H; assumption.
-
 (*2*)
+     destruct c.
+      injection Hxym; clear Hxym; intros; subst xm ym.
+      remember (R_is_neg x) as xn eqn:Hxn; symmetry in Hxn.
+      destruct xn.
+       pose proof (Hs1 (S (S (n + i + dj2)))) as H; simpl in H; subst n.
+       unfold R_abs in H; rewrite Hxn in H; simpl in H.
+       rewrite Ht2 in H; discriminate H.
+
+       pose proof (Hs1 (S (n + i))) as H; simpl in H; subst n.
+       unfold R_abs in H; rewrite Hxn in H; simpl in H.
+       rewrite Nat.sub_0_r in H; assumption.
+
       rewrite Nat.add_succ_l, <- Nat.add_succ_r in Hm.
       remember (S n) as p; subst n; rename p into n; rename Heqp into Hn.
       remember (u / 2) as p; subst u; rename p into u; rename Heqp into Hu.
@@ -772,19 +771,19 @@ destruct m2; simpl.
        rewrite Hx1, Hy1 in Hxym; simpl in Hxym.
        rewrite andb_true_r, <- Hu in Hxym; clear Hc.
        remember (u / 2 =? 0) as c eqn:Hc ; symmetry in Hc.
-       destruct c.
-        injection Hxym; clear Hxym; intros; subst xm ym.
-        remember (R_is_neg x) as xn eqn:Hxn; symmetry in Hxn.
-        destruct xn.
-         pose proof (Hs1 (S (S (n + i + dj2)))) as H; simpl in H; subst n.
-         unfold R_abs in H; rewrite Hxn in H; simpl in H.
-         rewrite Ht2 in H; discriminate H.
-
-         pose proof (Hs1 (S (n + i))) as H; simpl in H; subst n.
-         unfold R_abs in H; rewrite Hxn in H; simpl in H.
-         rewrite Nat.sub_0_r in H; assumption.
-
 (*3*)
+     destruct c.
+      injection Hxym; clear Hxym; intros; subst xm ym.
+      remember (R_is_neg x) as xn eqn:Hxn; symmetry in Hxn.
+      destruct xn.
+       pose proof (Hs1 (S (S (n + i + dj2)))) as H; simpl in H; subst n.
+       unfold R_abs in H; rewrite Hxn in H; simpl in H.
+       rewrite Ht2 in H; discriminate H.
+
+       pose proof (Hs1 (S (n + i))) as H; simpl in H; subst n.
+       unfold R_abs in H; rewrite Hxn in H; simpl in H.
+       rewrite Nat.sub_0_r in H; assumption.
+
       rewrite Nat.add_succ_l, <- Nat.add_succ_r in Hm.
       remember (S n) as p; subst n; rename p into n; rename Heqp into Hn.
       remember (u / 2) as p; subst u; rename p into u; rename Heqp into Hu.
@@ -811,19 +810,19 @@ destruct m2; simpl.
        rewrite Hx1, Hy1 in Hxym; simpl in Hxym.
        rewrite andb_true_r, <- Hu in Hxym; clear Hc.
        remember (u / 2 =? 0) as c eqn:Hc ; symmetry in Hc.
-       destruct c.
-        injection Hxym; clear Hxym; intros; subst xm ym.
-        remember (R_is_neg x) as xn eqn:Hxn; symmetry in Hxn.
-        destruct xn.
-         pose proof (Hs1 (S (S (n + i + dj2)))) as H; simpl in H; subst n.
-         unfold R_abs in H; rewrite Hxn in H; simpl in H.
-         rewrite Ht2 in H; discriminate H.
-
-         pose proof (Hs1 (S (n + i))) as H; simpl in H; subst n.
-         unfold R_abs in H; rewrite Hxn in H; simpl in H.
-         rewrite Nat.sub_0_r in H; assumption.
-
 (*4*)
+     destruct c.
+      injection Hxym; clear Hxym; intros; subst xm ym.
+      remember (R_is_neg x) as xn eqn:Hxn; symmetry in Hxn.
+      destruct xn.
+       pose proof (Hs1 (S (S (n + i + dj2)))) as H; simpl in H; subst n.
+       unfold R_abs in H; rewrite Hxn in H; simpl in H.
+       rewrite Ht2 in H; discriminate H.
+
+       pose proof (Hs1 (S (n + i))) as H; simpl in H; subst n.
+       unfold R_abs in H; rewrite Hxn in H; simpl in H.
+       rewrite Nat.sub_0_r in H; assumption.
+
       rewrite Nat.add_succ_l, <- Nat.add_succ_r in Hm.
       remember (S n) as p; subst n; rename p into n; rename Heqp into Hn.
       remember (u / 2) as p; subst u; rename p into u; rename Heqp into Hu.
