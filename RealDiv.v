@@ -699,7 +699,6 @@ destruct m2; simpl.
      remember (R_div_2 (R_abs 1)) as y1 eqn:Hy1 .
      remember 7 as Hc; clear HeqHc.
      rewrite Hu in Hxym.
-(*1*)
      rewrite Hx1, Hy1 in Hxym; simpl in Hxym.
      rewrite andb_true_r, <- Hu in Hxym; clear Hc.
      remember (u / 2 =? 0) as c eqn:Hc ; symmetry in Hc.
@@ -805,10 +804,10 @@ destruct m2; simpl.
         rewrite Nat.add_succ_l, <- Nat.add_succ_r in Hm.
         remember (S n) as p; subst n; rename p into n; rename Heqp into Hn.
         remember (u / 2) as p; subst u; rename p into u; rename Heqp into Hu.
-        remember Hx1 as H; clear HeqH.
-        rewrite Hn in H; simpl in H; rewrite <- H in Hxym; clear H.
-        remember Hy1 as H; clear HeqH.
-        rewrite Hn in H; simpl in H; rewrite <- H in Hxym; clear H.
+        remember Hx1 as H; clear HeqH; rewrite Hn in H; simpl in H.
+        rewrite <- H in Hxym; clear H.
+        remember Hy1 as H; clear HeqH; rewrite Hn in H; simpl in H.
+        rewrite <- H in Hxym; clear H.
         remember (R_div_2 x1) as p; subst x1.
         rename p into x1; rename Heqp into Hx1.
         remember (R_div_2 y1) as p; subst y1.
