@@ -723,12 +723,11 @@ destruct m2; simpl.
       remember (R_div_2 y1) as p; subst y1.
       rename p into y1; rename Heqp into Hy1.
       rewrite <- Hx1, <- Hy1 in Hxym.
-(*
       assert (x1 = R_div_2_pow (R_abs x) (S n)) as H by (subst n; auto).
       clear Hx1; rename H into Hx1.
       assert (y1 = R_div_2_pow (R_abs 1) (S n)) as H by (subst n; auto).
       clear Hy1; rename H into Hy1.
-*)
+(*1*)
       destruct m; simpl in Hxym.
        injection Hxym; clear Hxym; intros; subst xm ym.
        unfold max_iter_int_part in Hm; simpl in Hm.
@@ -743,31 +742,38 @@ destruct m2; simpl.
         exfalso; subst u; rewrite Hm in Hc; apply Hc; reflexivity.
 
         apply Pos2Z.is_nonneg.
+
+       rewrite Hx1, Hy1, Hn in Hxym; simpl in Hxym.
+       rewrite andb_true_r, <- Hu in Hxym; clear Hc.
+       remember (u / 2 =? 0) as c eqn:Hc ; symmetry in Hc.
+       destruct c.
+        injection Hxym; clear Hxym; intros; subst xm ym.
+        remember (R_is_neg x) as xn eqn:Hxn ; symmetry in Hxn.
+        destruct xn.
+         pose proof (Hs1 (S (S (S (n + i + dj2))))) as H; simpl in H; subst n.
+         unfold R_abs in H; rewrite Hxn in H; simpl in H.
+         rewrite Ht2 in H; discriminate H.
+
+         pose proof (Hs1 (S (S (n + i)))) as H; simpl in H; subst n.
+         unfold R_abs in H; rewrite Hxn in H; simpl in H.
+         rewrite Nat.sub_0_r in H; assumption.
+
+        rewrite Nat.add_succ_l, <- Nat.add_succ_r in Hm.
+        remember (S n) as p; subst n; rename p into n; rename Heqp into Hn.
+        remember (u / 2) as p; subst u; rename p into u; rename Heqp into Hu.
+        remember Hx1 as H; clear HeqH.
+        rewrite Hn in H; simpl in H.
+        rewrite <- H in Hxym; clear H.
+        remember Hy1 as H; clear HeqH.
+        rewrite Hn in H; simpl in H.
+        rewrite <- H in Hxym; clear H.
+        remember (R_div_2 x1) as p; subst x1.
+        rename p into x1; rename Heqp into Hx1.
+        remember (R_div_2 y1) as p; subst y1.
+        rename p into y1; rename Heqp into Hy1.
+        rewrite <- R_div_2_pow_succ in Hx1, Hy1.
 
 (*2*)
-     rewrite Hx1, Hy1 in Hxym; simpl in Hxym.
-     rewrite andb_true_r, <- Hu in Hxym; clear Hc.
-     remember (u / 2 =? 0) as c eqn:Hc ; symmetry in Hc.
-     destruct c.
-      injection Hxym; clear Hxym; intros; subst xm ym.
-      remember (R_is_neg x) as xn eqn:Hxn; symmetry in Hxn.
-      destruct xn.
-       pose proof (Hs1 (S (S (S (n + i + dj2))))) as H; simpl in H; subst n.
-       unfold R_abs in H; rewrite Hxn in H; simpl in H.
-       rewrite Ht2 in H; discriminate H.
-
-       pose proof (Hs1 (S (S (n + i)))) as H; simpl in H; subst n.
-       unfold R_abs in H; rewrite Hxn in H; simpl in H.
-       rewrite Nat.sub_0_r in H; assumption.
-
-      rewrite Nat.add_succ_l, <- Nat.add_succ_r in Hm.
-      remember (S n) as p; subst n; rename p into n; rename Heqp into Hn.
-      remember (u / 2) as p; subst u; rename p into u; rename Heqp into Hu.
-      remember (R_div_2 x1) as p; subst x1.
-      rename p into x1; rename Heqp into Hx1.
-      remember (R_div_2 y1) as p; subst y1.
-      rename p into y1; rename Heqp into Hy1.
-      rewrite <- Hx1, <- Hy1 in Hxym.
       destruct m; simpl in Hxym.
        injection Hxym; clear Hxym; intros; subst xm ym.
        unfold max_iter_int_part in Hm; simpl in Hm.
@@ -782,31 +788,38 @@ destruct m2; simpl.
         exfalso; subst u; rewrite Hm in Hc; apply Hc; reflexivity.
 
         apply Pos2Z.is_nonneg.
+
+       rewrite Hx1, Hy1, Hn in Hxym; simpl in Hxym.
+       rewrite andb_true_r, <- Hu in Hxym; clear Hc.
+       remember (u / 2 =? 0) as c eqn:Hc ; symmetry in Hc.
+       destruct c.
+        injection Hxym; clear Hxym; intros; subst xm ym.
+        remember (R_is_neg x) as xn eqn:Hxn ; symmetry in Hxn.
+        destruct xn.
+         pose proof (Hs1 (S (S (S (n + i + dj2))))) as H; simpl in H; subst n.
+         unfold R_abs in H; rewrite Hxn in H; simpl in H.
+         rewrite Ht2 in H; discriminate H.
+
+         pose proof (Hs1 (S (S (n + i)))) as H; simpl in H; subst n.
+         unfold R_abs in H; rewrite Hxn in H; simpl in H.
+         rewrite Nat.sub_0_r in H; assumption.
+
+        rewrite Nat.add_succ_l, <- Nat.add_succ_r in Hm.
+        remember (S n) as p; subst n; rename p into n; rename Heqp into Hn.
+        remember (u / 2) as p; subst u; rename p into u; rename Heqp into Hu.
+        remember Hx1 as H; clear HeqH.
+        rewrite Hn in H; simpl in H.
+        rewrite <- H in Hxym; clear H.
+        remember Hy1 as H; clear HeqH.
+        rewrite Hn in H; simpl in H.
+        rewrite <- H in Hxym; clear H.
+        remember (R_div_2 x1) as p; subst x1.
+        rename p into x1; rename Heqp into Hx1.
+        remember (R_div_2 y1) as p; subst y1.
+        rename p into y1; rename Heqp into Hy1.
+        rewrite <- R_div_2_pow_succ in Hx1, Hy1.
 
 (*3*)
-     rewrite Hx1, Hy1 in Hxym; simpl in Hxym.
-     rewrite andb_true_r, <- Hu in Hxym; clear Hc.
-     remember (u / 2 =? 0) as c eqn:Hc ; symmetry in Hc.
-     destruct c.
-      injection Hxym; clear Hxym; intros; subst xm ym.
-      remember (R_is_neg x) as xn eqn:Hxn; symmetry in Hxn.
-      destruct xn.
-       pose proof (Hs1 (S (S (S (n + i + dj2))))) as H; simpl in H; subst n.
-       unfold R_abs in H; rewrite Hxn in H; simpl in H.
-       rewrite Ht2 in H; discriminate H.
-
-       pose proof (Hs1 (S (S (n + i)))) as H; simpl in H; subst n.
-       unfold R_abs in H; rewrite Hxn in H; simpl in H.
-       rewrite Nat.sub_0_r in H; assumption.
-
-      rewrite Nat.add_succ_l, <- Nat.add_succ_r in Hm.
-      remember (S n) as p; subst n; rename p into n; rename Heqp into Hn.
-      remember (u / 2) as p; subst u; rename p into u; rename Heqp into Hu.
-      remember (R_div_2 x1) as p; subst x1.
-      rename p into x1; rename Heqp into Hx1.
-      remember (R_div_2 y1) as p; subst y1.
-      rename p into y1; rename Heqp into Hy1.
-      rewrite <- Hx1, <- Hy1 in Hxym.
       destruct m; simpl in Hxym.
        injection Hxym; clear Hxym; intros; subst xm ym.
        unfold max_iter_int_part in Hm; simpl in Hm.
@@ -822,30 +835,35 @@ destruct m2; simpl.
 
         apply Pos2Z.is_nonneg.
 
-(*4*)
-     rewrite Hx1, Hy1 in Hxym; simpl in Hxym.
-     rewrite andb_true_r, <- Hu in Hxym; clear Hc.
-     remember (u / 2 =? 0) as c eqn:Hc ; symmetry in Hc.
-     destruct c.
-      injection Hxym; clear Hxym; intros; subst xm ym.
-      remember (R_is_neg x) as xn eqn:Hxn; symmetry in Hxn.
-      destruct xn.
-       pose proof (Hs1 (S (S (S (n + i + dj2))))) as H; simpl in H; subst n.
-       unfold R_abs in H; rewrite Hxn in H; simpl in H.
-       rewrite Ht2 in H; discriminate H.
+       rewrite Hx1, Hy1, Hn in Hxym; simpl in Hxym.
+       rewrite andb_true_r, <- Hu in Hxym; clear Hc.
+       remember (u / 2 =? 0) as c eqn:Hc ; symmetry in Hc.
+       destruct c.
+        injection Hxym; clear Hxym; intros; subst xm ym.
+        remember (R_is_neg x) as xn eqn:Hxn ; symmetry in Hxn.
+        destruct xn.
+         pose proof (Hs1 (S (S (S (n + i + dj2))))) as H; simpl in H; subst n.
+         unfold R_abs in H; rewrite Hxn in H; simpl in H.
+         rewrite Ht2 in H; discriminate H.
 
-       pose proof (Hs1 (S (S (n + i)))) as H; simpl in H; subst n.
-       unfold R_abs in H; rewrite Hxn in H; simpl in H.
-       rewrite Nat.sub_0_r in H; assumption.
+         pose proof (Hs1 (S (S (n + i)))) as H; simpl in H; subst n.
+         unfold R_abs in H; rewrite Hxn in H; simpl in H.
+         rewrite Nat.sub_0_r in H; assumption.
 
-      rewrite Nat.add_succ_l, <- Nat.add_succ_r in Hm.
-      remember (S n) as p; subst n; rename p into n; rename Heqp into Hn.
-      remember (u / 2) as p; subst u; rename p into u; rename Heqp into Hu.
-      remember (R_div_2 x1) as p; subst x1.
-      rename p into x1; rename Heqp into Hx1.
-      remember (R_div_2 y1) as p; subst y1.
-      rename p into y1; rename Heqp into Hy1.
-      rewrite <- Hx1, <- Hy1 in Hxym.
+        rewrite Nat.add_succ_l, <- Nat.add_succ_r in Hm.
+        remember (S n) as p; subst n; rename p into n; rename Heqp into Hn.
+        remember (u / 2) as p; subst u; rename p into u; rename Heqp into Hu.
+        remember Hx1 as H; clear HeqH.
+        rewrite Hn in H; simpl in H.
+        rewrite <- H in Hxym; clear H.
+        remember Hy1 as H; clear HeqH.
+        rewrite Hn in H; simpl in H.
+        rewrite <- H in Hxym; clear H.
+        remember (R_div_2 x1) as p; subst x1.
+        rename p into x1; rename Heqp into Hx1.
+        remember (R_div_2 y1) as p; subst y1.
+        rename p into y1; rename Heqp into Hy1.
+        rewrite <- R_div_2_pow_succ in Hx1, Hy1.
 uuu.
 *)
 
