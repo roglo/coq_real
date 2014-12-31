@@ -761,11 +761,9 @@ destruct m2; simpl.
         rewrite Nat.add_succ_l, <- Nat.add_succ_r in Hm.
         remember (S n) as p; subst n; rename p into n; rename Heqp into Hn.
         remember (u / 2) as p; subst u; rename p into u; rename Heqp into Hu.
-        remember Hx1 as H; clear HeqH.
-        rewrite Hn in H; simpl in H.
+        remember Hx1 as H; clear HeqH; rewrite Hn in H; simpl in H.
         rewrite <- H in Hxym; clear H.
-        remember Hy1 as H; clear HeqH.
-        rewrite Hn in H; simpl in H.
+        remember Hy1 as H; clear HeqH; rewrite Hn in H; simpl in H.
         rewrite <- H in Hxym; clear H.
         remember (R_div_2 x1) as p; subst x1.
         rename p into x1; rename Heqp into Hx1.
@@ -808,11 +806,9 @@ destruct m2; simpl.
         remember (S n) as p; subst n; rename p into n; rename Heqp into Hn.
         remember (u / 2) as p; subst u; rename p into u; rename Heqp into Hu.
         remember Hx1 as H; clear HeqH.
-        rewrite Hn in H; simpl in H.
-        rewrite <- H in Hxym; clear H.
+        rewrite Hn in H; simpl in H; rewrite <- H in Hxym; clear H.
         remember Hy1 as H; clear HeqH.
-        rewrite Hn in H; simpl in H.
-        rewrite <- H in Hxym; clear H.
+        rewrite Hn in H; simpl in H; rewrite <- H in Hxym; clear H.
         remember (R_div_2 x1) as p; subst x1.
         rename p into x1; rename Heqp into Hx1.
         remember (R_div_2 y1) as p; subst y1.
@@ -853,11 +849,9 @@ destruct m2; simpl.
         rewrite Nat.add_succ_l, <- Nat.add_succ_r in Hm.
         remember (S n) as p; subst n; rename p into n; rename Heqp into Hn.
         remember (u / 2) as p; subst u; rename p into u; rename Heqp into Hu.
-        remember Hx1 as H; clear HeqH.
-        rewrite Hn in H; simpl in H.
+        remember Hx1 as H; clear HeqH; rewrite Hn in H; simpl in H.
         rewrite <- H in Hxym; clear H.
-        remember Hy1 as H; clear HeqH.
-        rewrite Hn in H; simpl in H.
+        remember Hy1 as H; clear HeqH; rewrite Hn in H; simpl in H.
         rewrite <- H in Hxym; clear H.
         remember (R_div_2 x1) as p; subst x1.
         rename p into x1; rename Heqp into Hx1.
