@@ -630,6 +630,16 @@ induction n; intros.
 bbb.
 *)
 
+Fixpoint R_div_2_pow x n :=
+  match n with
+  | O => x
+  | S n1 => R_div_2 (R_div_2_pow x n1)
+  end.
+
+Theorem R_div_2_pow_succ : ∀ x n,
+  R_div_2_pow x (S n) = R_div_2 (R_div_2_pow x n).
+Proof. reflexivity. Qed.
+
 Theorem zzz : ∀ x, (R_div_R_frac (R_abs x) (R_abs 1) = R_frac x)%I.
 Proof.
 intros x.
@@ -713,6 +723,12 @@ destruct m2; simpl.
       remember (R_div_2 y1) as p; subst y1.
       rename p into y1; rename Heqp into Hy1.
       rewrite <- Hx1, <- Hy1 in Hxym.
+(*
+      assert (x1 = R_div_2_pow (R_abs x) (S n)) as H by (subst n; auto).
+      clear Hx1; rename H into Hx1.
+      assert (y1 = R_div_2_pow (R_abs 1) (S n)) as H by (subst n; auto).
+      clear Hy1; rename H into Hy1.
+*)
       destruct m; simpl in Hxym.
        injection Hxym; clear Hxym; intros; subst xm ym.
        unfold max_iter_int_part in Hm; simpl in Hm.
