@@ -640,6 +640,8 @@ Theorem R_div_2_pow_succ : ∀ x n,
   R_div_2_pow x (S n) = R_div_2 (R_div_2_pow x n).
 Proof. reflexivity. Qed.
 
+Definition Z_two_pow n := Z.of_nat (two_power n).
+
 Theorem zzz : ∀ x, (R_div_R_frac (R_abs x) (R_abs 1) = R_frac x)%I.
 Proof.
 intros x.
@@ -726,6 +728,9 @@ destruct m2; simpl.
       clear Hx1; rename H into Hx1.
       assert (y1 = R_div_2_pow (R_abs 1) (S n)) as H by (subst n; auto).
       clear Hy1; rename H into Hy1.
+(*
+      replace 2 with (Z_two_pow n) in Hu by (subst n; reflexivity).
+*)
 (*1*)
       destruct m; simpl in Hxym.
        injection Hxym; clear Hxym; intros; subst xm ym.
