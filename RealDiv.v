@@ -630,14 +630,94 @@ induction n; intros.
 bbb.
 *)
 
+Theorem I_add_i_diag : ∀ x i, I_add_i x x i = x.[S i].
+Proof.
+intros x i.
+unfold I_add_i; simpl.
+rewrite xorb_nilpotent, carry_diag, xorb_false_l.
+reflexivity.
+Qed.
+
+Theorem xxx : ∀ x,
+  (R_frac (R_div_2 x) = 0)%I
+  → (R_frac x = 0)%I.
+Proof.
+intros x Hx.
+unfold I_eq in Hx; simpl in Hx.
+unfold I_eq; simpl; intros i.
+pose proof (Hx (S i)) as H.
+rewrite I_add_i_diag in H; simpl in H.
+rewrite I_add_i_diag; simpl.
+unfold I_add_i in H; simpl in H.
+unfold I_add_i; simpl.
+rewrite Nat.sub_0_r, xorb_false_r in H.
+rewrite xorb_false_r.
+unfold carry in H; simpl in H.
+unfold carry; simpl.
+bbb.
+
 Theorem yyy : ∀ x y ax ay m xm ym,
   ax = R_abs x
   → ay = R_abs y
   → (max_iter_int_part ax ay ≤ m)%nat
   → R_frac_equiv_div m ax ay = (xm, ym)
   → (∀ i, xm.[i] = false)
-  → (x = 0)%R.
+  → (R_frac x = 0)%I.
 Proof.
+intros x y ax ay m xm ym Hax Hay Hm Hxym Hxm.
+unfold max_iter_int_part in Hm.
+revert ax ay x y Hax Hay xm ym Hxm Hm Hxym.
+induction m; intros.
+ subst ax ay.
+ apply Nat.le_0_r in Hm.
+ exfalso; revert Hm; apply max_iter_int_part_abs_ne_0.
+
+ simpl in Hxym.
+ remember ((R_int ax =? 0) && (R_int ay =? 0)) as c eqn:Hc .
+ symmetry in Hc.
+ destruct c.
+  subst ax ay.
+  injection Hxym; clear Hxym; intros; subst xm ym.
+  simpl in Hxm.
+  unfold I_eq; simpl; intros i.
+  rewrite I_add_i_diag; simpl.
+  unfold I_add_i; simpl.
+  rewrite xorb_false_r.
+  apply andb_true_iff in Hc.
+  destruct Hc as (Hax, Hay).
+  apply Z.eqb_eq in Hax.
+  apply Z.eqb_eq in Hay.
+  unfold carry; simpl.
+  remember (fst_same (R_frac x) 0 (S i)) as s1 eqn:Hs1 .
+  apply fst_same_sym_iff in Hs1; simpl in Hs1.
+  destruct s1 as [dj1| ].
+   destruct Hs1 as (Hn1, Ht1).
+   rewrite Ht1, xorb_false_r.
+   unfold R_abs in Hax, Hxm.
+   remember (R_is_neg x) as nx eqn:Hnx .
+   symmetry in Hnx.
+   destruct nx.
+    pose proof (Hxm (S (S (i + dj1)))) as H; simpl in H.
+    rewrite Ht1 in H; discriminate H.
+
+    pose proof (Hxm (S i)) as H; simpl in H.
+    rewrite Nat.sub_0_r in H; assumption.
+
+   unfold R_abs in Hax, Hxm.
+   remember (R_is_neg x) as nx eqn:Hnx .
+   symmetry in Hnx.
+   destruct nx.
+    pose proof (Hxm (S i)) as H; simpl in H.
+    rewrite Nat.sub_0_r in H; assumption.
+
+    pose proof (Hxm (S (S i))) as H; simpl in H.
+    pose proof (Hs1 O) as HH.
+    rewrite Nat.add_0_r, H in HH; discriminate HH.
+
+  remember Hxym as H; clear HeqH.
+  eapply IHm with (x := R_div_2 x) in H.
+bbb.
+
 intros x y ax ay m xm ym Hax Hay Hm Hxym Hxm.
 subst ax ay.
 unfold max_iter_int_part in Hm.
