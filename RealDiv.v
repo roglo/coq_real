@@ -631,11 +631,22 @@ bbb.
 *)
 
 Theorem yyy : ∀ x y m xm ym,
-  R_frac_equiv_div m x y = (xm, ym)
+  (x ≥ 0)%R
+  → (y ≥ 0)%R
+  → m = max_iter_int_part x y
+  → R_frac_equiv_div m x y = (xm, ym)
   → (∀ i, xm.[i] = false)
   → (x = 0)%R.
 Proof.
-intros x y m xm ym Hxym Hxm.
+intros x y m xm ym Hx Hy Hm Hxym Hxm.
+symmetry in Hm.
+revert x y xm ym Hx Hy Hm Hxym Hxm.
+induction m; intros.
+bbb.
+
+ unfold max_iter_int_part in Hm.
+ unfold R_ge, R_compare in Hx; simpl in Hx.
+ rewrite carry_diag in Hx; simpl in Hx.
 bbb.
 
 Fixpoint R_div_2_pow x n :=
