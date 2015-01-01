@@ -630,6 +630,14 @@ induction n; intros.
 bbb.
 *)
 
+Theorem yyy : ∀ x y m xm ym,
+  R_frac_equiv_div m x y = (xm, ym)
+  → (∀ i, xm.[i] = false)
+  → (x = 0)%R.
+Proof.
+intros x y m xm ym Hxym Hxm.
+bbb.
+
 Fixpoint R_div_2_pow x n :=
   match n with
   | O => x
