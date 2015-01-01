@@ -638,23 +638,51 @@ rewrite xorb_nilpotent, carry_diag, xorb_false_l.
 reflexivity.
 Qed.
 
-Theorem xxx : ∀ x,
+Theorem R_frac_R_div_2_0 : ∀ x,
   (R_frac (R_div_2 x) = 0)%I
   → (R_frac x = 0)%I.
 Proof.
 intros x Hx.
 unfold I_eq in Hx; simpl in Hx.
 unfold I_eq; simpl; intros i.
-pose proof (Hx (S i)) as H.
-rewrite I_add_i_diag in H; simpl in H.
 rewrite I_add_i_diag; simpl.
-unfold I_add_i in H; simpl in H.
 unfold I_add_i; simpl.
-rewrite Nat.sub_0_r, xorb_false_r in H.
 rewrite xorb_false_r.
-unfold carry in H; simpl in H.
 unfold carry; simpl.
-bbb.
+remember (fst_same (R_frac x) 0 (S i)) as s1 eqn:Hs1 .
+apply fst_same_sym_iff in Hs1; simpl in Hs1.
+destruct s1 as [dj1| ].
+ destruct Hs1 as (Hn1, Ht1).
+ rewrite Ht1, xorb_false_r.
+ pose proof (Hx (S i)) as H.
+ rewrite I_add_i_diag in H; simpl in H.
+ unfold I_add_i in H; simpl in H.
+ rewrite Nat.sub_0_r, xorb_false_r in H.
+ unfold carry in H; simpl in H.
+ remember (I_div_2_inc (R_frac x) (Z.odd (R_int x))) as y eqn:Hy .
+ remember (fst_same y 0 (S (S i))) as s2 eqn:Hs2 ; subst y.
+ apply fst_same_sym_iff in Hs2; simpl in Hs2.
+ destruct s2 as [dj2| ].
+  destruct Hs2 as (Hn2, Ht2).
+  rewrite Ht2, xorb_false_r in H; assumption.
+
+  rewrite Hs2 in Ht1; discriminate Ht1.
+
+ rewrite xorb_true_r; apply negb_false_iff.
+ pose proof (Hx (S i)) as H.
+ rewrite I_add_i_diag in H; simpl in H.
+ unfold I_add_i in H; simpl in H.
+ rewrite Nat.sub_0_r, xorb_false_r in H.
+ unfold carry in H; simpl in H.
+ remember (I_div_2_inc (R_frac x) (Z.odd (R_int x))) as y eqn:Hy .
+ remember (fst_same y 0 (S (S i))) as s2 eqn:Hs2 ; subst y.
+ apply fst_same_sym_iff in Hs2; simpl in Hs2.
+ destruct s2 as [dj2| ].
+  destruct Hs2 as (Hn2, Ht2).
+  rewrite Hs1 in Ht2; discriminate Ht2.
+
+  rewrite xorb_true_r in H; apply negb_false_iff in H; assumption.
+Qed.
 
 Theorem yyy : ∀ x y ax ay m xm ym,
   ax = R_abs x
@@ -716,6 +744,7 @@ induction m; intros.
 
   remember Hxym as H; clear HeqH.
   eapply IHm with (x := R_div_2 x) in H.
+   apply R_frac_R_div_2_0; assumption.
 bbb.
 
 intros x y ax ay m xm ym Hax Hay Hm Hxym Hxm.
