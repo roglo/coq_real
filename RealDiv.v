@@ -630,24 +630,46 @@ induction n; intros.
 bbb.
 *)
 
-Theorem yyy : ∀ x y m xm ym,
-  (x ≥ 0)%R
-  → (y ≥ 0)%R
-  → m = max_iter_int_part x y
-  → R_frac_equiv_div m x y = (xm, ym)
+Theorem yyy : ∀ x y ax ay m xm ym,
+  ax = R_abs x
+  → ay = R_abs y
+  → (max_iter_int_part ax ay ≤ m)%nat
+  → R_frac_equiv_div m ax ay = (xm, ym)
   → (∀ i, xm.[i] = false)
   → (x = 0)%R.
 Proof.
-intros x y m xm ym Hx Hy Hm Hxym Hxm.
-symmetry in Hm.
-revert x y xm ym Hx Hy Hm Hxym Hxm.
-induction m; intros.
-bbb.
+intros x y ax ay m xm ym Hax Hay Hm Hxym Hxm.
+subst ax ay.
+unfold max_iter_int_part in Hm.
+destruct m.
+ apply Nat.le_0_r in Hm.
+ exfalso; revert Hm; apply max_iter_int_part_abs_ne_0.
 
- unfold max_iter_int_part in Hm.
- unfold R_ge, R_compare in Hx; simpl in Hx.
- rewrite carry_diag in Hx; simpl in Hx.
+ simpl in Hxym.
+ remember ((R_int (R_abs x) =? 0) && (R_int (R_abs y) =? 0)) as c eqn:Hc .
+ symmetry in Hc.
+ destruct c.
+  injection Hxym; clear Hxym; intros; subst xm ym.
+  simpl in Hxm.
+  unfold R_eq; simpl.
+  split.
+   rewrite carry_diag; simpl.
+   apply andb_true_iff in Hc.
+   destruct Hc as (Hax, Hay).
+   apply Z.eqb_eq in Hax.
+   apply Z.eqb_eq in Hay.
+   unfold carry; simpl.
+   remember (fst_same (R_frac x) 0 0) as s1 eqn:Hs1 .
+   destruct s1 as [dj1| ].
+    apply fst_same_sym_iff in Hs1; simpl in Hs1.
+    destruct Hs1 as (Hn1, Ht1).
+    rewrite Ht1, Z.add_0_r.
+    unfold R_abs in Hax.
+    remember (R_is_neg x) as nx eqn:Hnx .
+    symmetry in Hnx.
+    destruct nx.
 bbb.
+*)
 
 Fixpoint R_div_2_pow x n :=
   match n with
