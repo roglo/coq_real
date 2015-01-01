@@ -684,16 +684,9 @@ destruct s1 as [dj1| ].
   rewrite xorb_true_r in H; apply negb_false_iff in H; assumption.
 Qed.
 
-(*
-Theorem xxx : ∀ x, R_div_2 (R_abs x) = R_abs (R_div_2 x).
-Proof.
-intros x.
-bbb.
-*)
-
 Theorem xxx : ∀ ax x,
   (ax = R_abs x)%R
-  → R_int ax = if R_is_neg x then R_int x else - R_int x - 1.
+  → R_int ax = if R_is_neg x then - R_int x - 1 else R_int x.
 Proof.
 intros ax x Hax.
 unfold R_abs in Hax.
@@ -712,9 +705,24 @@ destruct nx.
   rewrite Ht1, Z.add_0_r in Hai.
   destruct s2 as [dj2| ].
    destruct Hs2 as (Hn2, Ht2).
-   rewrite Ht2, Z.add_0_r in Hai.
-   apply negb_false_iff in Ht2.
-   unfold I_eq in Haf; simpl in Haf.
+   rewrite Ht2, Z.add_0_r in Hai; assumption.
+
+   pose proof (Haf dj1) as H; simpl in H.
+   unfold I_add_i in H; simpl in H.
+   do 2 rewrite xorb_false_r in H.
+   rewrite Ht1, Hs2 in H.
+   rewrite xorb_false_l, xorb_true_l in H.
+   unfold carry in H; simpl in H.
+   remember (fst_same (R_frac ax) 0 (S dj1)) as s3 eqn:Hs3 .
+   remember (fst_same (- R_frac x) 0 (S dj1)) as s4 eqn:Hs4 .
+   apply fst_same_sym_iff in Hs3; simpl in Hs3.
+   apply fst_same_sym_iff in Hs4; simpl in Hs4.
+   destruct s3 as [dj3| ].
+    destruct Hs3 as (Hn3, Ht3).
+    rewrite Ht3 in H.
+    destruct s4 as [dj4| ]; [ idtac | clear H ].
+     destruct Hs4 as (Hn4, Ht4).
+     rewrite Hs2 in Ht4; discriminate Ht4.
 bbb.
 
 Theorem yyy : ∀ x y ax ay m xm ym,
