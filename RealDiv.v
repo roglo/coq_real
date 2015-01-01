@@ -671,6 +671,7 @@ destruct m2; simpl.
    rewrite carry_diag in H; simpl in H.
    destruct H as (H, _); discriminate H.
 
+bbb.
   unfold I_eq; simpl; intros i.
   unfold I_add_i; simpl.
   rewrite xorb_false_r, carry_diag; simpl.
