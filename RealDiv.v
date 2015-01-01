@@ -684,6 +684,12 @@ destruct s1 as [dj1| ].
   rewrite xorb_true_r in H; apply negb_false_iff in H; assumption.
 Qed.
 
+(*
+x = (-4, 0.000…)
+ax = -x = (3, 0.111…)
+*)
+
+(* non, il faut que ce soit ax = R_abs x (Leibnitz)
 Theorem xxx : ∀ ax x,
   (ax = R_abs x)%R
   → R_int ax = if R_is_neg x then - R_int x - 1 else R_int x.
@@ -707,6 +713,8 @@ destruct nx.
    destruct Hs2 as (Hn2, Ht2).
    rewrite Ht2, Z.add_0_r in Hai; assumption.
 
+   exfalso.
+bbb.
    pose proof (Haf dj1) as H; simpl in H.
    unfold I_add_i in H; simpl in H.
    do 2 rewrite xorb_false_r in H.
@@ -724,10 +732,12 @@ destruct nx.
      destruct Hs4 as (Hn4, Ht4).
      rewrite Hs2 in Ht4; discriminate Ht4.
 bbb.
+*)
 
+(* mmm... pb with ax=R_abs x marche pas (a=R_abs x)%R non plus
 Theorem yyy : ∀ x y ax ay m xm ym,
-  (ax = R_abs x)%R
-  → (ay = R_abs y)%R
+  ax = R_abs x
+  → ay = R_abs y
   → (max_iter_int_part ax ay ≤ m)%nat
   → R_frac_equiv_div m ax ay = (xm, ym)
   → (∀ i, xm.[i] = false)
