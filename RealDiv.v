@@ -734,17 +734,76 @@ bbb.
 bbb.
 *)
 
-(* mmm... pb with ax=R_abs x marche pas (a=R_abs x)%R non plus
-Theorem yyy : ∀ x y ax ay m xm ym,
-  ax = R_abs x
-  → ay = R_abs y
-  → (max_iter_int_part ax ay ≤ m)%nat
-  → R_frac_equiv_div m ax ay = (xm, ym)
+Theorem xxx : ∀ m x y xm1 ym1 xm2 ym2,
+  R_frac_equiv_div m (R_div_2 (R_abs x)) y = (xm1, ym1)
+  → R_frac_equiv_div m (R_abs (R_div_2 x)) y = (xm2, ym2)
+  → (xm1 = xm2)%I.
+Proof.
+intros m x y xm1 ym1 xm2 ym2 Hxym1 Hxym2.
+bbb.
+
+Theorem yyy : ∀ x y m xm ym,
+  (max_iter_int_part (R_abs x) (R_abs y) = m)%nat
+  → R_frac_equiv_div m (R_abs x) (R_abs y) = (xm, ym)
   → (∀ i, xm.[i] = false)
   → (R_frac x = 0)%I.
 Proof.
-intros x y ax ay m xm ym Hax Hay Hm Hxym Hxm.
+intros x y m xm ym Hm Hxym Hxm.
 unfold max_iter_int_part in Hm.
+revert x y xm ym Hxm Hm Hxym.
+induction m; intros.
+ exfalso; revert Hm; apply max_iter_int_part_abs_ne_0.
+
+ simpl in Hxym.
+ remember ((R_int (R_abs x) =? 0) && (R_int (R_abs y) =? 0)) as c eqn:Hc .
+ symmetry in Hc.
+ destruct c.
+  injection Hxym; clear Hxym; intros; subst xm ym.
+  simpl in Hxm.
+  unfold I_eq; simpl; intros i.
+  rewrite I_add_i_diag; simpl.
+  unfold I_add_i; simpl.
+  rewrite xorb_false_r.
+  apply andb_true_iff in Hc.
+  destruct Hc as (Hax, Hay).
+  apply Z.eqb_eq in Hax.
+  apply Z.eqb_eq in Hay.
+  unfold carry; simpl.
+  remember (fst_same (R_frac x) 0 (S i)) as s1 eqn:Hs1 .
+  apply fst_same_sym_iff in Hs1; simpl in Hs1.
+  destruct s1 as [dj1| ].
+   destruct Hs1 as (Hn1, Ht1).
+   rewrite Ht1, xorb_false_r.
+   unfold R_abs in Hax, Hxm.
+   remember (R_is_neg x) as nx eqn:Hnx .
+   symmetry in Hnx.
+   destruct nx.
+    pose proof (Hxm (S (S (i + dj1)))) as H; simpl in H.
+    rewrite Ht1 in H; discriminate H.
+
+    pose proof (Hxm (S i)) as H; simpl in H.
+    rewrite Nat.sub_0_r in H; assumption.
+
+   unfold R_abs in Hax, Hxm.
+   remember (R_is_neg x) as nx eqn:Hnx .
+   symmetry in Hnx.
+   destruct nx.
+    pose proof (Hxm (S i)) as H; simpl in H.
+    rewrite Nat.sub_0_r in H; assumption.
+
+    pose proof (Hxm (S (S i))) as H; simpl in H.
+    pose proof (Hs1 O) as HH.
+    rewrite Nat.add_0_r, H in HH; discriminate HH.
+
+  remember Hxym as H; clear HeqH.
+  remember
+   (R_frac_equiv_div m (R_abs (R_div_2 x)) (R_div_2 (R_abs y))) as xym
+   eqn:Hxym2 .
+  symmetry in Hxym2.
+  destruct xym as (xm2, ym2).
+  eapply xxx in H; [ idtac | eassumption ].
+bbb.
+
 revert ax ay x y Hax Hay xm ym Hxm Hm Hxym.
 induction m; intros.
  subst ax ay.
