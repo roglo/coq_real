@@ -684,9 +684,42 @@ destruct s1 as [dj1| ].
   rewrite xorb_true_r in H; apply negb_false_iff in H; assumption.
 Qed.
 
+(*
+Theorem xxx : ∀ x, R_div_2 (R_abs x) = R_abs (R_div_2 x).
+Proof.
+intros x.
+bbb.
+*)
+
+Theorem xxx : ∀ ax x,
+  (ax = R_abs x)%R
+  → R_int ax = if R_is_neg x then R_int x else - R_int x - 1.
+Proof.
+intros ax x Hax.
+unfold R_abs in Hax.
+remember (R_is_neg x) as nx eqn:Hnx .
+symmetry in Hnx.
+destruct nx.
+ unfold R_eq in Hax; simpl in Hax.
+ destruct Hax as (Hai, Haf).
+ unfold carry in Hai; simpl in Hai.
+ remember (fst_same (R_frac ax) 0 0) as s1 eqn:Hs1 .
+ remember (fst_same (- R_frac x) 0 0) as s2 eqn:Hs2 .
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ apply fst_same_sym_iff in Hs2; simpl in Hs2.
+ destruct s1 as [dj1| ].
+  destruct Hs1 as (Hn1, Ht1).
+  rewrite Ht1, Z.add_0_r in Hai.
+  destruct s2 as [dj2| ].
+   destruct Hs2 as (Hn2, Ht2).
+   rewrite Ht2, Z.add_0_r in Hai.
+   apply negb_false_iff in Ht2.
+   unfold I_eq in Haf; simpl in Haf.
+bbb.
+
 Theorem yyy : ∀ x y ax ay m xm ym,
-  ax = R_abs x
-  → ay = R_abs y
+  (ax = R_abs x)%R
+  → (ay = R_abs y)%R
   → (max_iter_int_part ax ay ≤ m)%nat
   → R_frac_equiv_div m ax ay = (xm, ym)
   → (∀ i, xm.[i] = false)
