@@ -734,6 +734,67 @@ bbb.
 bbb.
 *)
 
+Theorem Zpos_ne_0 : ∀ a, Zpos a ≠ 0.
+Proof. intros a H; discriminate H. Qed.
+
+Hint Resolve Zpos_ne_0.
+
+Theorem www : ∀ x, (R_div_2 (R_abs x) = R_abs (R_div_2 x))%R.
+Proof.
+intros x.
+unfold R_eq; simpl; intros.
+split.
+ f_equal.
+  unfold R_abs; simpl.
+  remember (R_is_neg x) as nx eqn:Hnx .
+  remember (R_is_neg (R_div_2 x)) as ny eqn:Hny .
+  symmetry in Hnx, Hny.
+  destruct nx, ny; simpl.
+   remember (R_int x mod 2) as xm2 eqn:Hxm2 .
+   symmetry in Hxm2.
+   destruct (Z_zerop xm2) as [H1| H1].
+    subst xm2.
+    rewrite <- Z.div_opp_l_z; auto.
+    apply Zmod_divides in H1; auto.
+    destruct H1 as (c, Hc).
+    rewrite Hc, Z.mul_comm, <- Z.mul_opp_l.
+    rewrite Z.div_mul; auto.
+    unfold Z.sub; rewrite Z.add_comm.
+    rewrite Z.div_add; auto.
+    rewrite Z.add_comm; reflexivity.
+
+    subst xm2.
+    rewrite <- Z.div_opp_l_nz; auto.
+    remember (R_int x) as a.
+    rewrite Zmod_odd in H1.
+    remember (Z.odd a) as oa eqn:Hoa .
+    symmetry in Hoa.
+    destruct oa; [ clear H1 | exfalso; apply H1; reflexivity ].
+    apply Zodd_bool_iff, Zodd_ex_iff in Hoa.
+    destruct Hoa as (m, Hm).
+    rewrite Hm, Z.opp_add_distr.
+    unfold Z.sub.
+    rewrite <- Z.add_assoc, Z.add_comm.
+    rewrite <- Z.mul_opp_r, Z.mul_comm.
+    rewrite Z.div_add; auto.
+    rewrite Z.add_comm; simpl.
+    symmetry; rewrite Z.add_comm.
+    rewrite Z.div_add; auto.
+    rewrite Z.add_comm; reflexivity.
+
+bbb.
+   exfalso.
+   unfold R_is_neg in Hnx, Hny.
+   apply Z.ltb_lt in Hnx.
+   apply Z.ltb_nlt in Hny.
+   apply Hny; clear Hny.
+   unfold R_div_2; simpl.
+   apply Z.nle_gt.
+   apply Z.nle_gt in Hnx.
+   intros H; apply Hnx; clear Hnx.
+   remember (R_int x) as a; clear x Heqa.
+bbb.
+
 Theorem xxx : ∀ m x y xm1 ym1 xm2 ym2,
   R_frac_equiv_div m (R_div_2 (R_abs x)) y = (xm1, ym1)
   → R_frac_equiv_div m (R_abs (R_div_2 x)) y = (xm2, ym2)
