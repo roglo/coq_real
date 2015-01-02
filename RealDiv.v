@@ -739,6 +739,33 @@ Proof. intros a H; discriminate H. Qed.
 
 Hint Resolve Zpos_ne_0.
 
+Theorem Znneg_div_nneg : ∀ a b, 0 < b → 0 <= a / b → 0 <= a.
+Proof.
+intros a b Hb Hab.
+apply Zlt_gt in Hb.
+pose proof (Z_div_mod_eq a b Hb) as Ha.
+bbb.
+   remember (Z.odd a) as c eqn:Hc .
+   symmetry in Hc.
+   destruct c.
+    apply Zodd_bool_iff in Hc.
+    apply Zodd_ex_iff in Hc.
+    destruct Hc as (m, Hm).
+    subst a.
+    rewrite Z.add_comm, Z.mul_comm in H.
+    rewrite Z.div_add in H; auto.
+    simpl in H.
+    eapply Zle_trans; [ eassumption | idtac ].
+    rewrite <- Z.add_diag.
+    rewrite <- Z.add_assoc.
+    apply Z.le_sub_le_add_l.
+    rewrite Z.sub_diag.
+    eapply Zle_trans; [ eassumption | idtac ].
+    apply Z.le_sub_le_add_l.
+    rewrite Z.sub_diag.
+    apply Z.le_0_1.
+bbb.
+
 Theorem www : ∀ x, (R_div_2 (R_abs x) = R_abs (R_div_2 x))%R.
 Proof.
 intros x.
@@ -792,10 +819,26 @@ split.
    apply Z.nle_gt in Hnx.
    intros H; apply Hnx; clear Hnx.
    remember (R_int x) as a; clear x Heqa.
-   destruct a as [| a| a]; [ reflexivity | apply Pos2Z.is_nonneg | idtac ].
-   apply Z.nlt_ge in H; apply Z.nlt_ge.
-   intros Ha; apply H; clear H.
-Abort. (* à finir
+bbb.
+   remember (Z.odd a) as c eqn:Hc .
+   symmetry in Hc.
+   destruct c.
+    apply Zodd_bool_iff in Hc.
+    apply Zodd_ex_iff in Hc.
+    destruct Hc as (m, Hm).
+    subst a.
+    rewrite Z.add_comm, Z.mul_comm in H.
+    rewrite Z.div_add in H; auto.
+    simpl in H.
+    eapply Zle_trans; [ eassumption | idtac ].
+    rewrite <- Z.add_diag.
+    rewrite <- Z.add_assoc.
+    apply Z.le_sub_le_add_l.
+    rewrite Z.sub_diag.
+    eapply Zle_trans; [ eassumption | idtac ].
+    apply Z.le_sub_le_add_l.
+    rewrite Z.sub_diag.
+    apply Z.le_0_1.
 bbb.
 *)
 
