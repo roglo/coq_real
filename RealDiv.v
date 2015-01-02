@@ -795,7 +795,9 @@ split.
    destruct a as [| a| a]; [ reflexivity | apply Pos2Z.is_nonneg | idtac ].
    apply Z.nlt_ge in H; apply Z.nlt_ge.
    intros Ha; apply H; clear H.
+Abort. (* à finir
 bbb.
+*)
 
 Theorem xxx : ∀ m x y xm1 ym1 xm2 ym2,
   R_frac_equiv_div m (R_div_2 (R_abs x)) y = (xm1, ym1)
@@ -803,6 +805,51 @@ Theorem xxx : ∀ m x y xm1 ym1 xm2 ym2,
   → (xm1 = xm2)%I.
 Proof.
 intros m x y xm1 ym1 xm2 ym2 Hxym1 Hxym2.
+destruct m.
+ simpl in Hxym1, Hxym2.
+ injection Hxym1; clear Hxym1; intros; subst.
+ injection Hxym2; clear Hxym2; intros; subst; reflexivity.
+
+ simpl in Hxym1, Hxym2.
+ remember (R_int y =? 0) as cy eqn:Hcy .
+ symmetry in Hcy.
+ destruct cy.
+  rewrite andb_true_r in Hxym1, Hxym2.
+  remember (R_int (R_abs x) / 2 =? 0) as cx1 eqn:Hcx1 .
+  remember (R_int (R_abs (R_div_2 x)) =? 0) as cx2 eqn:Hcx2 .
+  symmetry in Hcx1, Hcx2.
+  destruct cx1.
+   injection Hxym1; clear Hxym1; intros; subst xm1 ym1.
+   apply Z.eqb_eq in Hcx1; rewrite Hcx1; simpl.
+   destruct cx2.
+    injection Hxym2; clear Hxym2; intros; subst xm2 ym2.
+    apply Z.eqb_eq in Hcx2; rewrite Hcx2; simpl.
+    unfold I_eq; intros i; simpl.
+    unfold I_add_i; simpl.
+    destruct i; simpl.
+     unfold carry; simpl.
+     remember
+      (fst_same
+         (I_div_2_inc
+            (I_div_2_inc (R_frac (R_abs x)) (Z.odd (R_int (R_abs x)))) false)
+         0 1) as s1 eqn:Hs1 .
+     destruct s1 as [dj1| ].
+      Focus 1.
+      apply fst_same_sym_iff in Hs1; simpl in Hs1.
+      destruct Hs1 as (Hn1, Ht1); rewrite Ht1.
+      remember
+       (fst_same (I_div_2_inc (R_frac (R_abs (R_div_2 x))) false) 0 1) as s2
+       eqn:Hs2 .
+      destruct s2 as [dj2| ].
+       apply fst_same_sym_iff in Hs2; simpl in Hs2.
+       destruct Hs2 as (Hn2, Ht2).
+       rewrite Ht2; reflexivity.
+
+       exfalso.
+       apply fst_same_sym_iff in Hs2; simpl in Hs2.
+       rewrite Nat.sub_0_r in Ht1.
+       destruct dj1; simpl in Ht1.
+        clear Hn1.
 bbb.
 
 Theorem yyy : ∀ x y m xm ym,
