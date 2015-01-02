@@ -739,6 +739,7 @@ Proof. intros a H; discriminate H. Qed.
 
 Hint Resolve Zpos_ne_0.
 
+(*
 Theorem Znneg_div_nneg : ∀ a b, 0 < b → 0 <= a / b → 0 <= a.
 Proof.
 intros a b Hb Hab.
@@ -765,7 +766,9 @@ bbb.
     rewrite Z.sub_diag.
     apply Z.le_0_1.
 bbb.
+*)
 
+(*
 Theorem www : ∀ x, (R_div_2 (R_abs x) = R_abs (R_div_2 x))%R.
 Proof.
 intros x.
@@ -842,6 +845,7 @@ bbb.
 bbb.
 *)
 
+(*
 Theorem xxx : ∀ m x y xm1 ym1 xm2 ym2,
   R_frac_equiv_div m (R_div_2 (R_abs x)) y = (xm1, ym1)
   → R_frac_equiv_div m (R_abs (R_div_2 x)) y = (xm2, ym2)
@@ -877,7 +881,6 @@ destruct m.
             (I_div_2_inc (R_frac (R_abs x)) (Z.odd (R_int (R_abs x)))) false)
          0 1) as s1 eqn:Hs1 .
      destruct s1 as [dj1| ].
-      Focus 1.
       apply fst_same_sym_iff in Hs1; simpl in Hs1.
       destruct Hs1 as (Hn1, Ht1); rewrite Ht1.
       remember
@@ -894,7 +897,9 @@ destruct m.
        destruct dj1; simpl in Ht1.
         clear Hn1.
 bbb.
+*)
 
+(*
 Theorem yyy : ∀ x y m xm ym,
   (max_iter_int_part (R_abs x) (R_abs y) = m)%nat
   → R_frac_equiv_div m (R_abs x) (R_abs y) = (xm, ym)
@@ -948,6 +953,7 @@ induction m; intros.
     pose proof (Hs1 O) as HH.
     rewrite Nat.add_0_r, H in HH; discriminate HH.
 
+bbb.
   remember Hxym as H; clear HeqH.
   remember
    (R_frac_equiv_div m (R_abs (R_div_2 x)) (R_div_2 (R_abs y))) as xym
@@ -1084,7 +1090,6 @@ destruct m2; simpl.
    rewrite carry_diag in H; simpl in H.
    destruct H as (H, _); discriminate H.
 
-bbb.
   unfold I_eq; simpl; intros i.
   unfold I_add_i; simpl.
   rewrite xorb_false_r, carry_diag; simpl.
