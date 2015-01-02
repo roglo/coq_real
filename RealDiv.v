@@ -782,7 +782,6 @@ split.
     rewrite Z.div_add; auto.
     rewrite Z.add_comm; reflexivity.
 
-bbb.
    exfalso.
    unfold R_is_neg in Hnx, Hny.
    apply Z.ltb_lt in Hnx.
@@ -793,6 +792,9 @@ bbb.
    apply Z.nle_gt in Hnx.
    intros H; apply Hnx; clear Hnx.
    remember (R_int x) as a; clear x Heqa.
+   destruct a as [| a| a]; [ reflexivity | apply Pos2Z.is_nonneg | idtac ].
+   apply Z.nlt_ge in H; apply Z.nlt_ge.
+   intros Ha; apply H; clear H.
 bbb.
 
 Theorem xxx : ∀ m x y xm1 ym1 xm2 ym2,
