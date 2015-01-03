@@ -1126,11 +1126,13 @@ rewrite <- Z.div_div.
  apply Pos2Z.is_pos.
 Qed.
 
-Theorem yyy : ∀ x n i, (R_frac x).[i] = (R_frac (R_div_2_pow x n)).[n + i].
+Theorem R_div_2_pow_shift : ∀ x n i,
+  (R_frac x).[i] = (R_frac (R_div_2_pow x n)).[n + i].
 Proof.
 intros x n i.
-bbb.
-*)
+induction n; [ reflexivity | simpl ].
+rewrite Nat.sub_0_r; assumption.
+Qed.
 
 Theorem zzz : ∀ x, (R_div_R_frac (R_abs x) (R_abs 1) = R_frac x)%I.
 Proof.
@@ -1259,9 +1261,10 @@ destruct m2; simpl.
         destruct xn.
          pose proof (Hs1 (S (S (S (n + i + dj2))))) as H; simpl in H.
          rewrite <- Nat.add_assoc, <- Nat.add_succ_r in H.
+         rewrite <- R_div_2_pow_shift in H.
+         unfold R_abs in H; rewrite Hxn in H; simpl in H.
+         rewrite Ht2 in H; discriminate H.
 bbb.
-rewrite yyy in H.
-unfold R_abs in H; rewrite Hxn in H; simpl in H.
 
 ... end test *)
 (*1*)
