@@ -1264,6 +1264,28 @@ destruct m2; simpl.
          rewrite <- R_div_2_pow_shift in H.
          unfold R_abs in H; rewrite Hxn in H; simpl in H.
          rewrite Ht2 in H; discriminate H.
+
+         pose proof (Hs1 (S (S (n + i)))) as H; simpl in H.
+         unfold R_abs in H; rewrite Hxn in H; simpl in H.
+         rewrite Nat.sub_0_r in H.
+         rewrite <- R_div_2_pow_shift in H; assumption.
+
+        rewrite Nat.add_succ_l, <- Nat.add_succ_r in Hm.
+        do 4 rewrite <- R_div_2_pow_succ in Hxym.
+        remember (R_div_2 x1) as p; subst x1.
+        rename p into x1; rename Heqp into Hx1.
+        remember (R_div_2 y1) as p; subst y1.
+        rename p into y1; rename Heqp into Hy1.
+        rewrite <- R_div_2_pow_succ in Hx1, Hy1.
+        rewrite <- Hx1, <- Hy1 in Hxym.
+        remember (u / 2) as p; subst u; rename p into u; rename Heqp into Hu.
+        assert (0 < 2) as H1 by apply Pos2Z.is_pos.
+        pose proof Z_two_pow_neq_0 n as H2.
+        rewrite Z.div_div in Hu; try assumption; clear H1 H2.
+        rewrite <- Z_two_pow_succ in Hu.
+        remember (S n) as p; clear Hnp.
+        assert (0 < p)%nat as Hnp by (rewrite Heqp; apply Nat.lt_0_succ).
+        clear n Heqp; rename p into n.
 bbb.
 
 ... end test *)
