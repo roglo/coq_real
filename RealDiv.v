@@ -995,6 +995,8 @@ destruct m2; simpl.
       assert (0 < n)%nat as Hnp by (rewrite Hn; apply Nat.lt_0_1).
       clear Hn.
       eapply formula_1; eassumption.
+
+   rewrite xorb_true_r; apply negb_false_iff.
 uuu.
 *)
 
