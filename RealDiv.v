@@ -1061,6 +1061,15 @@ Proof. reflexivity. Qed.
 
 Definition Z_two_pow n := Z.of_nat (two_power n).
 
+Theorem yyy : ∀ n, Z.of_nat n / Z_two_pow n = 0.
+Proof.
+intros n.
+apply Z.div_small.
+split; [ apply Nat2Z.is_nonneg | idtac ].
+induction n; [ apply Z.lt_0_1 | idtac ].
+rewrite Nat2Z.inj_succ.
+bbb.
+
 Theorem zzz : ∀ x, (R_div_R_frac (R_abs x) (R_abs 1) = R_frac x)%I.
 Proof.
 intros x.
