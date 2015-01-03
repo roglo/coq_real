@@ -824,18 +824,19 @@ induction n; [ reflexivity | simpl ].
 rewrite Nat.sub_0_r; assumption.
 Qed.
 
-Theorem formula_1 : ∀ x x1 y1 xm ym m i di n b,
+Theorem formula_1 : ∀ x x1 y1 xm ym m i di n,
   max_iter_int_part (R_abs x) (R_abs 1) = (m + S n)%nat
   → R_int (R_abs x) / Z_two_pow n ≠ 0
   → x1 = R_div_2_pow (R_abs x) (S n)
   → y1 = R_div_2_pow (R_abs 1) (S n)
   → R_frac_equiv_div m x1 y1 = (xm, ym)
   → (∀ dj, xm .[ dj] = false)
-  → (R_frac x) .[ S (i + di)] = b
-  → (R_frac x) .[ i] = b.
+  → (R_frac x) .[ i] = (R_frac x) .[ S (i + di)].
 Proof.
-intros x x1 y1 xm ym m i dj2 n b.
-intros Hm Hc Hx1 Hy1 Hxym Hs1 Ht2.
+intros x x1 y1 xm ym m i dj2 n.
+intros Hm Hc Hx1 Hy1 Hxym Hs1.
+remember ((R_frac x) .[ S (i + dj2)]) as b eqn:Ht2.
+symmetry in Ht2.
 remember (R_int (R_abs x) / Z_two_pow n) as u eqn:Hu .
 revert x x1 y1 xm ym n u i dj2 Hm Hc Hxym Hs1 Ht2 Hu Hx1 Hy1.
 induction m; intros.
@@ -938,14 +939,13 @@ induction m; intros.
     apply Z.lt_1_2.
 Qed.
 
-Theorem R_div_1_r_equiv_0 : ∀ x m xm ym i di b,
+Theorem R_div_1_r_equiv_0 : ∀ x m xm ym i di,
   max_iter_int_part (R_abs x) (R_abs 1) = m
   → R_frac_equiv_div m (R_abs x) (R_abs 1) = (xm, ym)
   → (∀ dj, xm .[ dj] = false)
-  → (R_frac x) .[ S (i + di)] = b
-  → (R_frac x) .[ i] = b.
+  → (R_frac x) .[ i] = (R_frac x) .[ S (i + di)].
 Proof.
-intros x m xm ym i dj2 b Hm Hxym Hs1 Ht2.
+intros x m xm ym i dj2 Hm Hxym Hs1.
 destruct m.
  exfalso; revert Hm; apply max_iter_int_part_abs_ne_0.
 
@@ -967,6 +967,8 @@ destruct m.
   destruct c.
    injection Hxym; clear Hxym; intros; subst xm ym.
    remember (R_is_neg x) as xn eqn:Hxn ; symmetry in Hxn.
+   remember (R_frac x) .[ S (i + dj2)] as b eqn:Hb .
+   symmetry in Hb.
    destruct xn.
     destruct b.
      pose proof (Hs1 (S (S i))) as H; simpl in H.
@@ -976,12 +978,12 @@ destruct m.
 
      pose proof (Hs1 (S (S (S (i + dj2))))) as H; simpl in H.
      unfold R_abs in H; rewrite Hxn in H; simpl in H.
-     rewrite Ht2 in H; discriminate H.
+     rewrite Hb in H; discriminate H.
 
     destruct b.
      pose proof (Hs1 (S (S (S (i + dj2))))) as H; simpl in H.
      unfold R_abs in H; rewrite Hxn in H; simpl in H.
-     rewrite Ht2 in H; discriminate H.
+     rewrite Hb in H; discriminate H.
 
      pose proof (Hs1 (S (S i))) as H; simpl in H.
      unfold R_abs in H; rewrite Hxn in H; simpl in H.
@@ -1035,11 +1037,12 @@ destruct m2; simpl.
   apply fst_same_sym_iff in Hs2; simpl in Hs2.
   destruct s2 as [dj2| ].
    destruct Hs2 as (_, Ht2); rewrite Ht2, xorb_false_r.
+   rewrite <- Ht2.
    eapply R_div_1_r_equiv_0; eassumption.
 
    rewrite xorb_true_r; apply negb_false_iff.
-   eapply R_div_1_r_equiv_0; try eassumption.
-   apply Hs2.
+   rewrite <- Hs2 with (dj := O).
+   eapply R_div_1_r_equiv_0; eassumption.
 uuu.
 *)
 
