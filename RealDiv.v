@@ -584,52 +584,6 @@ induction m; intros; simpl in Hxy.
   apply R_div_2_0_iff; assumption.
 Qed.
 
-(* non, c'est pas ça...
-Theorem yyy : ∀ x i di m n xm ym,
-  max_iter_int_part (R_abs x) (R_abs 1) = S (m + n)
-  → R_frac_equiv_div (S (m + n)) (R_abs x) (R_abs 1) = (xm, ym)
-  → (∀ dj, xm .[ dj] = false)
-  → (R_frac x) .[ S (i + di)] = false
-  → (R_frac x) .[ i] = false.
-Proof.
-intros x i di m n xm ym Hm Hxym Hxm Hxdi.
-bbb.
-
-revert m Hm Hxym.
-induction n; intros.
- simpl in Hxym.
- rewrite andb_false_r in Hxym.
- destruct m; simpl in Hxym.
-  injection Hxym; clear Hxym; intros; subst xm ym.
-  unfold max_iter_int_part in Hm; simpl in Hm.
-  rewrite <- Z.add_assoc, Z.add_comm in Hm.
-  rewrite Z2Nat.inj_add in Hm.
-   discriminate Hm.
-
-   apply Pos2Z.is_nonneg.
-
-   apply R_int_abs.
-
-  rewrite andb_true_r in Hxym.
-  remember (R_int (R_abs x) / 2 =? 0) as c eqn:Hc .
-  symmetry in Hc.
-  destruct c.
-   injection Hxym; clear Hxym; intros; subst xm ym.
-   simpl in Hxm.
-   remember (R_is_neg x) as xn eqn:Hxn .
-   symmetry in Hxn.
-   destruct xn.
-    pose proof (Hxm (S (S (S (i + di))))) as H; simpl in H.
-    unfold R_abs in H; rewrite Hxn in H; simpl in H.
-    rewrite Hxdi in H; discriminate H.
-
-    pose proof (Hxm (S (S i))) as H; simpl in H.
-    unfold R_abs in H; rewrite Hxn in H; simpl in H.
-    rewrite Nat.sub_0_r in H; assumption.
-
-bbb.
-*)
-
 Theorem I_add_i_diag : ∀ x i, I_add_i x x i = x.[S i].
 Proof.
 intros x i.
