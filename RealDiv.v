@@ -1112,6 +1112,20 @@ destruct n; [ reflexivity | idtac ].
 rewrite IHn; [ reflexivity | apply Nat.lt_0_succ ].
 Qed.
 
+Theorem R_int_div_2_pow_div : ∀ x n,
+  R_int (R_div_2_pow x n) = R_int x / Z_two_pow n.
+Proof.
+intros x n.
+induction n; [ rewrite Z.div_1_r; reflexivity | simpl ].
+rewrite Z_two_pow_succ.
+rewrite <- Z.div_div.
+ rewrite IHn; reflexivity.
+
+ apply Z_two_pow_neq_0.
+
+ apply Pos2Z.is_pos.
+Qed.
+
 Theorem zzz : ∀ x, (R_div_R_frac (R_abs x) (R_abs 1) = R_frac x)%I.
 Proof.
 intros x.
@@ -1230,7 +1244,15 @@ destruct m2; simpl.
 
        rewrite Hx1, Hy1 in Hxym; simpl in Hxym.
        rewrite R_int_1_div_2_pow in Hxym; [ simpl in Hxym | assumption ].
-       rewrite andb_true_r in Hxym.
+       rewrite andb_true_r, R_int_div_2_pow_div, <- Hu in Hxym.
+       clear Hc.
+       remember (u / 2 =? 0) as c eqn:Hc ; symmetry in Hc.
+       destruct c.
+        injection Hxym; clear Hxym; intros; subst xm ym.
+        remember (R_is_neg x) as xn eqn:Hxn ; symmetry in Hxn.
+        destruct xn.
+         pose proof (Hs1 (S (S (S (n + i + dj2))))) as H; simpl in H.
+         unfold R_abs in H; rewrite Hxn in H; simpl in H.
 bbb.
 
 (* end test *)
