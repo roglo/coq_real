@@ -638,56 +638,6 @@ destruct s1 as [dj1| ].
   rewrite xorb_true_r in H; apply negb_false_iff in H; assumption.
 Qed.
 
-(*
-x = (-4, 0.000…)
-ax = -x = (3, 0.111…)
-*)
-
-(* non, il faut que ce soit ax = R_abs x (Leibnitz)
-Theorem xxx : ∀ ax x,
-  (ax = R_abs x)%R
-  → R_int ax = if R_is_neg x then - R_int x - 1 else R_int x.
-Proof.
-intros ax x Hax.
-unfold R_abs in Hax.
-remember (R_is_neg x) as nx eqn:Hnx .
-symmetry in Hnx.
-destruct nx.
- unfold R_eq in Hax; simpl in Hax.
- destruct Hax as (Hai, Haf).
- unfold carry in Hai; simpl in Hai.
- remember (fst_same (R_frac ax) 0 0) as s1 eqn:Hs1 .
- remember (fst_same (- R_frac x) 0 0) as s2 eqn:Hs2 .
- apply fst_same_sym_iff in Hs1; simpl in Hs1.
- apply fst_same_sym_iff in Hs2; simpl in Hs2.
- destruct s1 as [dj1| ].
-  destruct Hs1 as (Hn1, Ht1).
-  rewrite Ht1, Z.add_0_r in Hai.
-  destruct s2 as [dj2| ].
-   destruct Hs2 as (Hn2, Ht2).
-   rewrite Ht2, Z.add_0_r in Hai; assumption.
-
-   exfalso.
-bbb.
-   pose proof (Haf dj1) as H; simpl in H.
-   unfold I_add_i in H; simpl in H.
-   do 2 rewrite xorb_false_r in H.
-   rewrite Ht1, Hs2 in H.
-   rewrite xorb_false_l, xorb_true_l in H.
-   unfold carry in H; simpl in H.
-   remember (fst_same (R_frac ax) 0 (S dj1)) as s3 eqn:Hs3 .
-   remember (fst_same (- R_frac x) 0 (S dj1)) as s4 eqn:Hs4 .
-   apply fst_same_sym_iff in Hs3; simpl in Hs3.
-   apply fst_same_sym_iff in Hs4; simpl in Hs4.
-   destruct s3 as [dj3| ].
-    destruct Hs3 as (Hn3, Ht3).
-    rewrite Ht3 in H.
-    destruct s4 as [dj4| ]; [ idtac | clear H ].
-     destruct Hs4 as (Hn4, Ht4).
-     rewrite Hs2 in Ht4; discriminate Ht4.
-bbb.
-*)
-
 Theorem Zpos_ne_0 : ∀ a, Zpos a ≠ 0.
 Proof. intros a H; discriminate H. Qed.
 
@@ -1017,7 +967,7 @@ destruct m2; simpl.
   destruct b; [ discriminate H1 | clear H1 ].
   symmetry in Hxm.
   apply negb_sym in Ht3; simpl in Ht3.
-uuu.
+bbb.
 *)
 
 (* 1: right neutral element *)
