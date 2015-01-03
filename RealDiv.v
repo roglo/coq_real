@@ -1043,6 +1043,26 @@ destruct m2; simpl.
    rewrite xorb_true_r; apply negb_false_iff.
    rewrite <- Hs2 with (dj := O).
    eapply R_div_1_r_equiv_0; eassumption.
+
+ unfold max_iter_frac_part in Hm2.
+ remember (fst_same xm I_ones 0) as s1 eqn:Hs1 .
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ destruct s1 as [dj1| ]; [ idtac | discriminate Hm2 ].
+ destruct Hs1 as (Hn1, Ht1).
+ remember (fst_same ym I_ones 0) as s2 eqn:Hs2 .
+ apply fst_same_sym_iff in Hs2; simpl in Hs2.
+ destruct s2 as [dj2| ]; [ idtac | discriminate Hm2 ].
+ destruct Hs2 as (Hn2, Ht2).
+ destruct (I_lt_dec xm ym) as [H1| H1].
+  unfold I_lt, I_compare in H1; simpl in H1.
+  remember (fst_same (xm + 0%I) (- (ym + 0)%I) 0) as s3 eqn:Hs3 .
+  destruct s3 as [dj3| ]; [ idtac | discriminate H1 ].
+  apply fst_same_sym_iff in Hs3; simpl in Hs3.
+  destruct Hs3 as (Hn3, Ht3).
+  remember (I_add_i xm 0 dj3) as b eqn:Hxm .
+  destruct b; [ discriminate H1 | clear H1 ].
+  symmetry in Hxm.
+  apply negb_sym in Ht3; simpl in Ht3.
 uuu.
 *)
 
