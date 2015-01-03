@@ -1061,14 +1061,46 @@ Proof. reflexivity. Qed.
 
 Definition Z_two_pow n := Z.of_nat (two_power n).
 
-Theorem yyy : ∀ n, Z.of_nat n / Z_two_pow n = 0.
+Theorem two_power_succ : ∀ n, two_power (S n) = (two_power n * 2)%nat.
+Proof.
+intros n; simpl.
+rewrite Nat.mul_succ_r.
+rewrite Nat.add_0_r, Nat.mul_1_r; reflexivity.
+Qed.
+
+Theorem Z_two_pow_succ : ∀ n, Z_two_pow (S n) = Z_two_pow n * 2.
+Proof.
+intros n; simpl.
+unfold Z_two_pow.
+rewrite two_power_succ, Nat2Z.inj_mul; reflexivity.
+Qed.
+
+Theorem Z_two_pow_neq_0 : ∀ n, Z_two_pow n ≠ 0.
 Proof.
 intros n.
-apply Z.div_small.
-split; [ apply Nat2Z.is_nonneg | idtac ].
-induction n; [ apply Z.lt_0_1 | idtac ].
-rewrite Nat2Z.inj_succ.
-bbb.
+unfold Z_two_pow.
+rewrite <- Nat2Z.inj_0.
+intros H.
+apply Nat2Z.inj in H.
+revert H; apply two_power_neq_0.
+Qed.
+
+Theorem div_two_pow : ∀ n, Z.of_nat n / Z_two_pow n = 0.
+Proof.
+intros n.
+unfold Z_two_pow.
+rewrite <- div_Zdiv; [ idtac | apply two_power_neq_0 ].
+rewrite <- Nat2Z.inj_0.
+apply Nat2Z.inj_iff, Nat.div_small.
+induction n; [ apply Nat.lt_0_1 | simpl ].
+rewrite Nat.add_0_r.
+rewrite <- Nat.add_1_r.
+apply Nat.add_lt_le_mono; [ assumption | idtac ].
+remember (two_power n) as m eqn:Hm .
+symmetry in Hm.
+destruct m; [ exfalso; revert Hm; apply two_power_neq_0 | idtac ].
+apply le_n_S, Nat.le_0_l.
+Qed.
 
 Theorem zzz : ∀ x, (R_div_R_frac (R_abs x) (R_abs 1) = R_frac x)%I.
 Proof.
@@ -1172,6 +1204,21 @@ destruct m2; simpl.
         rewrite <- Nat2Z.id in Hm.
         apply Z2Nat.inj in Hm.
          exfalso; apply Hc; rewrite Hu, Hm.
+         rewrite Z_two_pow_succ.
+         rewrite <- Z.div_div.
+          rewrite div_two_pow; reflexivity.
+
+          apply Z_two_pow_neq_0.
+
+          apply Pos2Z.is_pos.
+
+         apply R_int_abs.
+
+         apply Nat2Z.is_nonneg.
+
+        apply Pos2Z.is_nonneg.
+
+       rewrite Hx1, Hy1 in Hxym; simpl in Hxym.
 bbb.
 
 (* end test *)
