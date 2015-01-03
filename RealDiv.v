@@ -1147,9 +1147,25 @@ destruct m2; simpl.
       clear Hx1; rename H into Hx1.
       assert (y1 = R_div_2_pow (R_abs 1) (S n)) as H by (subst n; auto).
       clear Hy1; rename H into Hy1.
-(*
+(* if test then *)
       replace 2 with (Z_two_pow n) in Hu by (subst n; reflexivity).
-*)
+      assert (0 < n)%nat as Hnp by (rewrite Hn; apply Nat.lt_0_1).
+      clear Hn.
+      destruct m; simpl in Hxym.
+       injection Hxym; clear Hxym; intros; subst xm ym.
+       unfold max_iter_int_part in Hm; simpl in Hm.
+       apply Z.eqb_neq in Hc.
+       rewrite <- Z.add_assoc, Z.add_comm in Hm.
+       rewrite Z2Nat.inj_add in Hm; [ idtac | idtac | apply R_int_abs ].
+        simpl in Hm.
+        destruct n; [ exfalso; revert Hnp; apply Nat.lt_irrefl | idtac ].
+        do 2 apply eq_add_S in Hm.
+        rewrite <- Nat2Z.id in Hm.
+        apply Z2Nat.inj in Hm.
+         exfalso; apply Hc; rewrite Hu, Hm.
+bbb.
+
+(* end test *)
 (*1*)
       destruct m; simpl in Hxym.
        injection Hxym; clear Hxym; intros; subst xm ym.
