@@ -967,6 +967,20 @@ destruct m2; simpl.
   destruct b; [ discriminate H1 | clear H1 ].
   symmetry in Hxm.
   apply negb_sym in Ht3; simpl in Ht3.
+  destruct m.
+   simpl in Hxym.
+   injection Hxym; clear Hxym; intros; subst xm ym.
+   discriminate Ht2.
+
+   simpl in Hxym.
+   rewrite andb_false_r in Hxym; simpl in Hxym.
+   destruct m.
+    simpl in Hxym.
+    injection Hxym; clear Hxym; intros; subst xm ym.
+    discriminate Ht2.
+
+    simpl in Hxym.
+    rewrite andb_true_r in Hxym.
 bbb.
 *)
 
