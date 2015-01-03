@@ -1126,6 +1126,12 @@ rewrite <- Z.div_div.
  apply Pos2Z.is_pos.
 Qed.
 
+Theorem yyy : ∀ x n i, (R_frac (R_div_2_pow x n)).[n + i] = (R_frac x).[i].
+Proof.
+intros x n i.
+bbb.
+*)
+
 Theorem zzz : ∀ x, (R_div_R_frac (R_abs x) (R_abs 1) = R_frac x)%I.
 Proof.
 intros x.
@@ -1252,10 +1258,12 @@ destruct m2; simpl.
         remember (R_is_neg x) as xn eqn:Hxn ; symmetry in Hxn.
         destruct xn.
          pose proof (Hs1 (S (S (S (n + i + dj2))))) as H; simpl in H.
-         unfold R_abs in H; rewrite Hxn in H; simpl in H.
+         rewrite <- Nat.add_assoc, <- Nat.add_succ_r in H.
 bbb.
+rewrite yyy in H.
+unfold R_abs in H; rewrite Hxn in H; simpl in H.
 
-(* end test *)
+... end test *)
 (*1*)
       destruct m; simpl in Hxym.
        injection Hxym; clear Hxym; intros; subst xm ym.
