@@ -973,46 +973,31 @@ destruct m2; simpl.
 
       apply Pos2Z.is_nonneg.
 
-bbb.
      simpl in Hxym.
-     rewrite <- Nat.add_1_r in Hm.
-     remember O as n eqn:Hn .
+     rewrite andb_true_r in Hxym.
      remember (R_int (R_abs x)) as u eqn:Hu .
-     remember (R_div_2 (R_abs x)) as x1 eqn:Hx1 .
-     remember (R_div_2 (R_abs 1)) as y1 eqn:Hy1 .
-     remember 7 as Hc; clear HeqHc.
-     rewrite Hu in Hxym.
-     rewrite Hx1, Hy1 in Hxym; simpl in Hxym.
-     rewrite andb_true_r, <- Hu in Hxym; clear Hc.
      remember (u / 2 =? 0) as c eqn:Hc ; symmetry in Hc.
      destruct c.
       injection Hxym; clear Hxym; intros; subst xm ym.
-      remember (R_is_neg x) as xn eqn:Hxn; symmetry in Hxn.
+      remember (R_is_neg x) as xn eqn:Hxn ; symmetry in Hxn.
       destruct xn.
-       pose proof (Hs1 (S (S (S (n + i + dj2))))) as H; simpl in H; subst n.
+       pose proof (Hs1 (S (S (S (i + dj2))))) as H; simpl in H.
        unfold R_abs in H; rewrite Hxn in H; simpl in H.
        rewrite Ht2 in H; discriminate H.
 
-       pose proof (Hs1 (S (S (n + i)))) as H; simpl in H; subst n.
+       pose proof (Hs1 (S (S i))) as H; simpl in H.
        unfold R_abs in H; rewrite Hxn in H; simpl in H.
        rewrite Nat.sub_0_r in H; assumption.
 
-      rewrite Nat.add_succ_l, <- Nat.add_succ_r in Hm.
-      remember (S n) as p; subst n; rename p into n; rename Heqp into Hn.
-      remember (u / 2) as p; subst u; rename p into u; rename Heqp into Hu.
-      remember (R_div_2 x1) as p; subst x1.
-      rename p into x1; rename Heqp into Hx1.
-      remember (R_div_2 y1) as p; subst y1.
-      rename p into y1; rename Heqp into Hy1.
-      rewrite <- Hx1, <- Hy1 in Hxym.
-      assert (x1 = R_div_2_pow (R_abs x) (S n)) as H by (subst n; auto).
-      clear Hx1; rename H into Hx1.
-      assert (y1 = R_div_2_pow (R_abs 1) (S n)) as H by (subst n; auto).
-      clear Hy1; rename H into Hy1.
-      replace 2 with (Z_two_pow n) in Hu by (subst n; reflexivity).
-      assert (0 < n)%nat as Hnp by (rewrite Hn; apply Nat.lt_0_1).
-      clear Hn.
-      eapply formula_1; eassumption.
+      do 2 rewrite <- Nat.add_1_r in Hm.
+      rewrite <- Nat.add_assoc in Hm.
+      eapply formula_1; try eassumption.
+       rewrite <- Hu; unfold Z_two_pow; simpl.
+       apply Z.eqb_neq; assumption.
+
+       symmetry; apply R_div_2_pow_succ.
+
+       symmetry; apply R_div_2_pow_succ.
 
    rewrite xorb_true_r; apply negb_false_iff.
 uuu.
