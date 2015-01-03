@@ -1126,7 +1126,7 @@ rewrite <- Z.div_div.
  apply Pos2Z.is_pos.
 Qed.
 
-Theorem yyy : ∀ x n i, (R_frac (R_div_2_pow x n)).[n + i] = (R_frac x).[i].
+Theorem yyy : ∀ x n i, (R_frac x).[i] = (R_frac (R_div_2_pow x n)).[n + i].
 Proof.
 intros x n i.
 bbb.
