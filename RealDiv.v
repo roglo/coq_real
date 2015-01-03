@@ -1102,6 +1102,16 @@ destruct m; [ exfalso; revert Hm; apply two_power_neq_0 | idtac ].
 apply le_n_S, Nat.le_0_l.
 Qed.
 
+Theorem R_int_1_div_2_pow : ∀ n,
+  (0 < n)%nat
+  → R_int (R_div_2_pow (R_abs 1) n) = 0.
+Proof.
+intros n Hn.
+induction n; [ exfalso; revert Hn; apply Nat.lt_irrefl | simpl ].
+destruct n; [ reflexivity | idtac ].
+rewrite IHn; [ reflexivity | apply Nat.lt_0_succ ].
+Qed.
+
 Theorem zzz : ∀ x, (R_div_R_frac (R_abs x) (R_abs 1) = R_frac x)%I.
 Proof.
 intros x.
@@ -1219,6 +1229,8 @@ destruct m2; simpl.
         apply Pos2Z.is_nonneg.
 
        rewrite Hx1, Hy1 in Hxym; simpl in Hxym.
+       rewrite R_int_1_div_2_pow in Hxym; [ simpl in Hxym | assumption ].
+       rewrite andb_true_r in Hxym.
 bbb.
 
 (* end test *)
