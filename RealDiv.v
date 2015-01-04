@@ -948,6 +948,26 @@ destruct m2; simpl.
    rewrite <- Hs2 with (dj := O).
    eapply R_div_1_r_equiv_0; eassumption.
 
+ destruct (I_lt_dec xm ym) as [H1| H1].
+  unfold I_eq; simpl; intros i.
+  unfold I_add_i; simpl.
+  do 2 rewrite xorb_false_r.
+  unfold carry; simpl.
+  remember (fst_same (R_frac x) 0 (S i)) as s1 eqn:Hs1 .
+  remember (fst_same (xm / ym) 0 (S i)) as s2 eqn:Hs2 .
+  destruct s1 as [dj1| ].
+   apply fst_same_sym_iff in Hs1; simpl in Hs1.
+   destruct Hs1 as (Hn1, Ht1).
+   rewrite Ht1, xorb_false_r.
+   destruct s2 as [dj2| ].
+    apply fst_same_sym_iff in Hs2; simpl in Hs2.
+    destruct Hs2 as (Hn2, Ht2).
+    rewrite Ht2, xorb_false_r.
+    unfold I_div_i.
+    destruct i; simpl.
+     destruct (I_lt_dec (I_mul_2 xm) ym) as [H2| H2]; simpl.
+
+bbb.
  unfold max_iter_frac_part in Hm2.
  remember (fst_same xm I_ones 0) as s1 eqn:Hs1 .
  apply fst_same_sym_iff in Hs1; simpl in Hs1.
