@@ -915,7 +915,8 @@ symmetry in Hxym.
 destruct xym as (xm, ym).
 remember (max_iter_frac_part xm ym) as m2 eqn:Hm2 .
 symmetry in Hm2; symmetry.
-destruct m2; simpl.
+revert m xm ym Hm Hxym Hm2.
+induction m2; intros; simpl.
  unfold max_iter_frac_part in Hm2.
  remember (fst_same xm I_ones 0) as s1 eqn:Hs1 .
  apply fst_same_sym_iff in Hs1; simpl in Hs1.
@@ -949,6 +950,7 @@ destruct m2; simpl.
    eapply R_div_1_r_equiv_0; eassumption.
 
  destruct (I_lt_dec xm ym) as [H1| H1].
+bbb.
   unfold I_eq; simpl; intros i.
   unfold I_add_i; simpl.
   do 2 rewrite xorb_false_r.
