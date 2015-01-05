@@ -12,6 +12,7 @@ Definition R_div_2 x :=
      R_frac := I_div_2_inc (R_frac x) (Z.odd (R_int x)) |}.
 Arguments R_div_2 x%R.
 
+(*
 Fixpoint R_frac_equiv_div m x y :=
   match m with
   | O => (0%I, 0%I)
@@ -84,6 +85,20 @@ Definition R_div x y :=
   let qz := Z.of_nat q in
   {| R_int := if R_is_neg x ⊕ R_is_neg y then -qz else qz; R_frac := r |}.
 Arguments R_div x%R y%R.
+*)
+
+Fixpoint R_div_equiv m x y :=
+  match m with
+  | O => R_zero
+  | S m1 =>
+      if Z.eqb (R_int x) 0 && Z.eqb (R_int y) 0 then
+        let (i, f) := I_div (R_frac x) (R_frac y) in
+        {| R_int := i; R_frac := f |}
+      else
+        R_div_equiv m1 (R_div_2 x) (R_div_2 y)
+  end.
+
+Definition R_div x y := R_div_equiv (R_div_max_iter x y) x y.
 
 Notation "x / y" := (R_div x y) : R_scope.
 

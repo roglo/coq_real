@@ -7,6 +7,7 @@ Set Implicit Arguments.
 
 Open Scope Z_scope.
 
+(*
 Definition I_mul_2 x := {| rm i := x.[S i] |}.
 Arguments I_mul_2 x%I.
 
@@ -32,11 +33,53 @@ Arguments I_div_i x%I y%I i%nat.
 
 Definition I_div x y := {| rm := I_div_i x y |}.
 Arguments I_div x%I y%I.
+*)
+
+Fixpoint two_power n :=
+  match n with
+  | O => 1%nat
+  | S n1 => (2 * two_power n1)%nat
+  end.
+
+Definition I_div_max_iter_int (x y : I) :=
+  match fst_same y I_ones 0 with
+  | Some j => two_power (j + 1)
+  | None => O
+  end.
+
+Definition I_div_2 x := {| rm i := if zerop i then false else x.[i-1] |}.
+
+Fixpoint I_div_lt_pred_i x y i :=
+  match i with
+  | O => (false, (x, I_div_2 y))
+  | S i1 =>
+      let (x1, y1) := snd (I_div_lt_pred_i x y i1) in
+      if I_lt_dec x1 y1 then
+        (false, (x1, I_div_2 y1))
+      else
+        (true, (I_sub x1 y1, I_div_2 y1))
+  end.
+
+Definition I_div_lt x y := {| rm i := fst (I_div_lt_pred_i x y (S i)) |}.
+
+Fixpoint I_div_lim m x y :=
+  match m with
+  | O => (O, I_zero)
+  | S m1 =>
+      if I_lt_dec x y then
+        (O, I_div_lt x y)
+      else
+        let (xi, xf) := I_div_lim m1 (I_sub x y) y in
+        (S xi, xf)
+  end.
+
+Definition I_div x y := snd (I_div_lim (I_div_max_iter_int x y) x y).
 
 Notation "x / y" := (I_div x y) : I_scope.
 
 (* *)
 
+(*
 Theorem I_mul_2_0 : (I_mul_2 0 = 0)%I.
 Proof.
 unfold I_eq; simpl; intros i.
@@ -189,10 +232,13 @@ induction i.
   rewrite IHi, I_mul_2_0 in H1.
   apply I_ge_le_iff, I_le_0_r in H1; contradiction.
 Qed.
+*)
 
 Theorem I_div_0_l : ∀ x, (x ≠ 0)%I → (0 / x = 0)%I.
 Proof.
 intros x Hx.
+bbb.
+
 unfold I_eq; simpl; intros i.
 unfold I_add_i; simpl.
 rewrite carry_diag; simpl.
