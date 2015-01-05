@@ -41,12 +41,12 @@ Fixpoint two_power n :=
   | S n1 => (2 * two_power n1)%nat
   end.
 
-Definition I_div_max_iter_int (x y : I) :=
+Definition I_div_max_iter_int y :=
   match fst_same y I_ones 0 with
   | Some j => two_power (S j)
   | None => O
   end.
-Arguments I_div_max_iter_int x%I y%I.
+Arguments I_div_max_iter_int y%I.
 
 Definition I_div_2 x := {| rm i := if zerop i then false else x.[i-1] |}.
 
@@ -77,7 +77,7 @@ Fixpoint I_div_lim m x y :=
   end.
 Arguments I_div_lim m%nat x%I y%I.
 
-Definition I_div x y := snd (I_div_lim (I_div_max_iter_int x y) x y).
+Definition I_div x y := snd (I_div_lim (I_div_max_iter_int y) x y).
 Arguments I_div x%I y%I.
 
 Notation "x / y" := (I_div x y) : I_scope.
@@ -275,117 +275,18 @@ Qed.
 Theorem I_div_2_eq_0 : ∀ x, (I_div_2 x = 0)%I → (x = 0)%I.
 Proof.
 intros x Hx.
-unfold I_eq in Hx; simpl in Hx.
-unfold I_eq; simpl; intros i.
-unfold I_add_i; simpl.
-rewrite xorb_false_r, carry_diag; simpl.
-bbb.
+apply I_zero_iff in Hx.
+destruct Hx as [Hx| Hx].
+ apply I_zero_iff.
+ left; intros i.
+ simpl in Hx.
+ pose proof (Hx (S i)) as H; simpl in H.
+ rewrite Nat.sub_0_r in H; assumption.
 
-pose proof (Hx i) as H; simpl in H.
-unfold I_add_i in H; simpl in H.
-rewrite xorb_false_r, carry_diag in H; simpl in H.
-destruct i; simpl in H.
- unfold carry in H; simpl in H.
- remember (fst_same (I_div_2 x) 0 1) as s1 eqn:Hs1 .
- destruct s1 as [dj1| ]; [ idtac | discriminate H ].
- apply fst_same_sym_iff in Hs1; simpl in Hs1.
- destruct Hs1 as (Hn1, Ht1).
- rewrite Nat.sub_0_r in Ht1; clear H.
- destruct dj1.
-  rewrite Ht1, xorb_false_l.
-  unfold carry; simpl.
-  remember (fst_same x 0 1) as s2 eqn:Hs2 .
-  destruct s2 as [dj2| ].
-   apply fst_same_sym_iff in Hs2; simpl in Hs2.
-   destruct Hs2; assumption.
+ pose proof (Hx O) as H; discriminate H.
+Qed.
 
-   apply fst_same_sym_iff in Hs2; simpl in Hs2.
-   pose proof (Hx 1%nat) as H.
-   unfold I_add_i in H; simpl in H.
-   rewrite carry_diag in H; simpl in H.
-   rewrite Ht1, xorb_false_l in H.
-   unfold carry in H; simpl in H.
-   remember (fst_same (I_div_2 x) 0 2) as s3 eqn:Hs3 .
-   destruct s3 as [dj3| ]; [ idtac | discriminate H ].
-   rewrite Hs2 in H; discriminate H.
-
-  unfold carry; simpl.
-  remember (fst_same x 0 1) as s2 eqn:Hs2 .
-  destruct s2 as [dj2| ].
-   apply fst_same_sym_iff in Hs2; simpl in Hs2.
-   destruct Hs2 as (Hn2, Ht2).
-   pose proof (Hx 1%nat) as H.
-   unfold I_add_i in H; simpl in H.
-   rewrite xorb_false_r, carry_diag in H; simpl in H.
-   unfold carry in H; simpl in H.
-   remember (fst_same (I_div_2 x) 0 2) as s3 eqn:Hs3 .
-   pose proof (Hn1 O (Nat.lt_0_succ dj1)) as HH.
-   rewrite Nat.sub_0_r in HH.
-   rewrite HH, xorb_true_l in H.
-   apply negb_false_iff in H.
-   destruct s3 as [dj3| ]; [ idtac | clear H ].
-    apply fst_same_sym_iff in Hs3; simpl in Hs3.
-    destruct Hs3 as (Hn3, Ht3).
-    rewrite Ht3 in H; discriminate H.
-
-    apply fst_same_sym_iff in Hs3; simpl in Hs3.
-    rewrite Hs3 in Ht1; discriminate Ht1.
-
-   apply fst_same_sym_iff in Hs2; simpl in Hs2.
-   rewrite Hs2 in Ht1; discriminate Ht1.
-
- Focus 1.
-bbb.
-
-split; intros Hx.
- unfold I_eq in Hx; simpl in Hx.
- unfold I_eq; simpl; intros i.
- rewrite I_add_i_diag; simpl.
- unfold I_add_i; simpl.
- rewrite xorb_false_r.
- destruct i; simpl.
-  unfold carry; simpl.
-  remember (fst_same (I_div_2 x) 0 1) as s1 eqn:Hs1 .
-  destruct s1 as [dj1| ]; [ idtac | exfalso ].
-   apply fst_same_sym_iff in Hs1; simpl in Hs1.
-   destruct Hs1 as (Hn1, Ht1).
-   rewrite Ht1; reflexivity.
-
-   apply fst_same_sym_iff in Hs1; simpl in Hs1.
-bbb.
-
-intros x.
-split; intros Hx.
- unfold I_eq in Hx; simpl in Hx.
- unfold I_eq; simpl; intros i.
- rewrite I_add_i_diag; simpl.
- unfold I_add_i; simpl.
- rewrite xorb_false_r.
- destruct i; simpl.
-  unfold carry; simpl.
-  remember (fst_same (I_div_2 x) 0 1) as s1 eqn:Hs1 .
-  destruct s1 as [dj1| ]; [ idtac | exfalso ].
-   apply fst_same_sym_iff in Hs1; simpl in Hs1.
-   destruct Hs1 as (Hn1, Ht1).
-   rewrite Ht1; reflexivity.
-
-   apply fst_same_sym_iff in Hs1; simpl in Hs1.
-   pose proof (Hx O) as H.
-   unfold I_add_i in H; simpl in H.
-   rewrite xorb_false_r, carry_diag in H; simpl in H.
-   unfold carry in H; simpl in H.
-   remember (fst_same x 0 1) as s2 eqn:Hs2 .
-   destruct s2 as [dj2| ].
-    apply fst_same_sym_iff in Hs2; simpl in Hs2.
-    destruct Hs2 as (Hn2, Ht2).
-    pose proof (Hs1 O) as HH; rewrite Nat.sub_0_r in HH.
-    rewrite Ht2, HH in H; discriminate H.
-
-    apply fst_same_sym_iff in Hs2; simpl in Hs2.
-bbb.
-*)
-
-Theorem zzz : ∀ x y i b x1 y1,
+Theorem I_div_lt_pred_r_eq_0 : ∀ x y i b x1 y1,
   I_div_lt_pred_i x y i = (b, (x1, y1))
   → (y1 = 0)%I
   → (y = 0)%I.
@@ -394,7 +295,21 @@ intros x y i b x1 y1 Hi Hy.
 revert x y b x1 y1 Hi Hy.
 induction i; intros; simpl in Hi.
  injection Hi; clear Hi; intros; subst b x1 y1.
-bbb.
+ apply I_div_2_eq_0; assumption.
+
+ remember (I_div_lt_pred_i x y i) as bxy eqn:Hbxy .
+ symmetry in Hbxy.
+ destruct bxy as (b2, (x2, y2)).
+ simpl in Hi.
+ destruct (I_lt_dec x2 y2) as [H1| H1].
+  injection Hi; clear Hi; intros; subst b x1 y1.
+  apply I_div_2_eq_0 in Hy.
+  eapply IHi; eassumption.
+
+  injection Hi; clear Hi; intros; subst b x1 y1.
+  apply I_div_2_eq_0 in Hy.
+  eapply IHi; eassumption.
+Qed.
 
 Theorem I_div_0_l : ∀ x, (x ≠ 0)%I → (0 / x = 0)%I.
 Proof.
@@ -410,7 +325,7 @@ destruct s1 as [dj1| ].
  destruct Hs1 as (Hn1, Ht1).
  rewrite Ht1, xorb_false_r.
  unfold I_div; simpl.
- remember (I_div_max_iter_int 0 x) as m eqn:Hm .
+ remember (I_div_max_iter_int x) as m eqn:Hm .
  symmetry in Hm.
  destruct m; [ reflexivity | simpl ].
  destruct (I_lt_dec 0%I x) as [H1| H1]; simpl.
@@ -422,6 +337,32 @@ destruct s1 as [dj1| ].
   apply I_div_lt_pred_0_l in H.
   rewrite H in H2.
   apply I_ge_le_iff, I_le_0_r in H2.
+  apply I_div_lt_pred_r_eq_0 in Hbxy; [ idtac | assumption ].
+  rewrite Hbxy in H1; revert H1; apply I_lt_irrefl.
+
+  apply I_ge_le_iff, I_le_0_r in H1.
+bbb.
+  induction on m!
+
+  remember (I_div_lim m (0%I - x) x) as xif eqn:Hxif .
+  symmetry in Hxif.
+  destruct xif as (xi, xf); simpl.
+  destruct m.
+   simpl in Hxif.
+   injection Hxif; clear Hxif; intros; subst xi xf.
+   reflexivity.
+
+   simpl in Hxif.
+   destruct (I_lt_dec (0 - x)%I x) as [H2| H2].
+    rewrite H1, I_sub_diag in H2.
+    exfalso; revert H2; apply I_lt_irrefl.
+
+    remember (I_div_lim m ((0 - x)%I - x) x) as xif2 eqn:Hxif2 .
+    symmetry in Hxif2.
+    destruct xif2 as (xi2, xf2); simpl in Hxif.
+    injection Hxif; clear Hxif; intros; subst xi xf.
+    clear H2.
+    destruct m.
 bbb.
 
 intros x Hx.
