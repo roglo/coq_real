@@ -24,8 +24,6 @@ value i_zero = {rm _ = False};
 value i_ones = {rm _ = True};
 value i_norm x = i_add x i_zero;
 value i_mul_2 x = {rm i = x.rm (i + 1)};
-value i_div_2_inc x n =
-  {rm i = if i = 0 then n else x.rm (i - 1)};
 
 type comparison = [ Eq | Lt | Gt ].
 
@@ -63,6 +61,56 @@ value f2rm x =
   {rm i = if i < Array.length a then a.(i) else False};
 
 value rm2f x = am2f (Array.init 10(*mm*) x.rm);
+
+value rec two_power n =
+  if n < 0 then invalid_arg "two_power" else
+  match n with
+  | 0 → 1
+  | _ →
+      let n1 = n - 1 in
+      2 * two_power n1
+  end.
+
+(* division in I - new version *)
+
+value i_div_max_iter_int x y =
+  match fst_same y i_ones 0 with
+  | Some j → two_power (j + 1)
+  | None → 0
+  end.
+
+value i_div_2_inc x b = {rm i = if i = 0 then b else x.rm (i - 1)}.
+value i_div_2 x = i_div_2_inc x False.
+
+value rec i_div_lt_i x y i =
+  match i with
+  | 0 →
+      if i_lt x (i_div_2 y) then (False, (x, i_div_2 y))
+      else (True, (i_sub x (i_div_2 y), i_div_2 y))
+  | _ →
+      let i1 = i - 1 in
+      let (_, (x1, y1)) = i_div_lt_i x y i1 in
+      if i_lt x1 (i_div_2 y1) then (False, (x1, i_div_2 y1))
+      else (True, (i_sub x1 (i_div_2 y1), i_div_2 y1))
+  end.
+
+value i_div_lt x y = {rm i = fst (i_div_lt_i x y i)}.
+
+value rec i_div_lim m x y =
+  match m with
+  | 0 → (0, i_zero)
+  | _ →
+      let m1 = m - 1 in
+      if i_lt x y then
+        (0, i_div_lt x y)
+      else
+        let (xi, xf) = i_div_lim m1 (i_sub x y) y in
+        (xi + 1, xf)
+  end.
+
+value i_div x y = i_div_lim (i_div_max_iter_int x y) x y.
+
+(**)
 
 type real = {r_int : int; r_frac : real_mod_1};
 
@@ -113,17 +161,9 @@ value r_compare x y =
 
 value r_lt x y = r_compare x y = Lt.
 
-(* division using only subtractions; computation of integer part *)
+(* OLD VERSION - to be updated using new i_div above *)
 
-value rec two_power n =
-  if n < 0 then invalid_arg "two_power" else
-  match n with
-  | 0 → 1
-  | _ →
-      let n1 = n - 1 in
-      2 * two_power n1
-  end
-;
+(* division using only subtractions; computation of integer part *)
 
 value rec i_div_eucl_i x y i =
   match i with
