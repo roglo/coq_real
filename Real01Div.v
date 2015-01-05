@@ -78,6 +78,7 @@ Fixpoint I_div_lim m x y :=
 Arguments I_div_lim m%nat x%I y%I.
 
 Definition I_div x y := snd (I_div_lim (I_div_max_iter_int x y) x y).
+Arguments I_div x%I y%I.
 
 Notation "x / y" := (I_div x y) : I_scope.
 
@@ -238,6 +239,31 @@ induction i.
 Qed.
 *)
 
+Theorem I_div_lt_pred_0_l : ∀ y b x1 y1 i,
+  I_div_lt_pred_i 0 y i = (b, (x1, y1))
+  → (x1 = 0)%I.
+Proof.
+intros y b x1 y1 i Hi.
+revert y b x1 y1 Hi.
+induction i; intros; simpl in Hi.
+ injection Hi; intros; subst; reflexivity.
+
+ remember (I_div_lt_pred_i 0 y i) as bxy eqn:Hbxy .
+ symmetry in Hbxy.
+ destruct bxy as (b2, (x2, y2)).
+ simpl in Hi.
+ destruct (I_lt_dec x2 y2) as [H1| H1].
+  injection Hi; clear Hi; intros; subst b x1 y1.
+  eapply IHi; eassumption.
+
+  injection Hi; clear Hi; intros; subst b x1 y1.
+  apply IHi in Hbxy.
+  rewrite Hbxy in H1.
+  apply I_ge_le_iff, I_le_0_r in H1.
+  rewrite Hbxy, H1.
+  apply I_sub_diag.
+Qed.
+
 Theorem I_div_0_l : ∀ x, (x ≠ 0)%I → (0 / x = 0)%I.
 Proof.
 intros x Hx.
@@ -260,6 +286,10 @@ destruct s1 as [dj1| ].
   symmetry in Hbxy.
   destruct bxy as (b, (x1, y1)); simpl.
   destruct (I_lt_dec x1 y1) as [H2| H2]; [ reflexivity | exfalso ].
+  remember Hbxy as H; clear HeqH.
+  apply I_div_lt_pred_0_l in H.
+  rewrite H in H2.
+  apply I_ge_le_iff, I_le_0_r in H2.
 bbb.
 
 intros x Hx.
