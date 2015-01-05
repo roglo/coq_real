@@ -57,10 +57,12 @@ value am2f a =
 ;
 
 value f2rm x =
-  let a = f2am x in
-  {rm i = if i < Array.length a then a.(i) else False};
+  if x < 0. || x >= 1.0 then invalid_arg "f2rm"
+  else
+    let a = f2am x in
+    {rm i = if i < Array.length a then a.(i) else False};
 
-value rm2f x = am2f (Array.init 10(*mm*) x.rm);
+value rm2f x = am2f (Array.init 15(*mm*) x.rm);
 
 value rec two_power n =
   if n < 0 then invalid_arg "two_power" else
