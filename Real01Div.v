@@ -264,10 +264,44 @@ induction i; intros; simpl in Hi.
   apply I_sub_diag.
 Qed.
 
+Theorem I_add_i_diag : ∀ x i, I_add_i x x i = x.[S i].
+Proof.
+intros x i.
+unfold I_add_i; simpl.
+rewrite xorb_nilpotent, carry_diag, xorb_false_l.
+reflexivity.
+Qed.
+
 Theorem I_div_2_0_iff : ∀ x, (x = 0)%I ↔ (I_div_2 x = 0)%I.
 Proof.
 intros x.
 split; intros Hx.
+ unfold I_eq in Hx; simpl in Hx.
+ unfold I_eq; simpl; intros i.
+ rewrite I_add_i_diag; simpl.
+ unfold I_add_i; simpl.
+ rewrite xorb_false_r.
+ destruct i; simpl.
+  unfold carry; simpl.
+  remember (fst_same (I_div_2 x) 0 1) as s1 eqn:Hs1 .
+  destruct s1 as [dj1| ]; [ idtac | exfalso ].
+   apply fst_same_sym_iff in Hs1; simpl in Hs1.
+   destruct Hs1 as (Hn1, Ht1).
+   rewrite Ht1; reflexivity.
+
+   apply fst_same_sym_iff in Hs1; simpl in Hs1.
+   pose proof (Hx O) as H.
+   unfold I_add_i in H; simpl in H.
+   rewrite xorb_false_r, carry_diag in H; simpl in H.
+   unfold carry in H; simpl in H.
+   remember (fst_same x 0 1) as s2 eqn:Hs2 .
+   destruct s2 as [dj2| ].
+    apply fst_same_sym_iff in Hs2; simpl in Hs2.
+    destruct Hs2 as (Hn2, Ht2).
+    pose proof (Hs1 O) as HH; rewrite Nat.sub_0_r in HH.
+    rewrite Ht2, HH in H; discriminate H.
+
+    apply fst_same_sym_iff in Hs2; simpl in Hs2.
 bbb.
 
 Theorem zzz : ∀ x y i b x1 y1,

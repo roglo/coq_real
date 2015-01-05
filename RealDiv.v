@@ -599,14 +599,6 @@ induction m; intros; simpl in Hxy.
   apply R_div_2_0_iff; assumption.
 Qed.
 
-Theorem I_add_i_diag : ∀ x i, I_add_i x x i = x.[S i].
-Proof.
-intros x i.
-unfold I_add_i; simpl.
-rewrite xorb_nilpotent, carry_diag, xorb_false_l.
-reflexivity.
-Qed.
-
 Theorem R_frac_R_div_2_0 : ∀ x,
   (R_frac (R_div_2 x) = 0)%I
   → (R_frac x = 0)%I.
