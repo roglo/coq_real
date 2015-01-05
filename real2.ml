@@ -82,19 +82,17 @@ value i_div_max_iter_int x y =
 value i_div_2_inc x b = {rm i = if i = 0 then b else x.rm (i - 1)}.
 value i_div_2 x = i_div_2_inc x False.
 
-value rec i_div_lt_i x y i =
+value rec i_div_lt_pred_i x y i =
   match i with
-  | 0 →
-      if i_lt x (i_div_2 y) then (False, (x, i_div_2 y))
-      else (True, (i_sub x (i_div_2 y), i_div_2 y))
+  | 0 → (False, (x, i_div_2 y))
   | _ →
       let i1 = i - 1 in
-      let (_, (x1, y1)) = i_div_lt_i x y i1 in
-      if i_lt x1 (i_div_2 y1) then (False, (x1, i_div_2 y1))
-      else (True, (i_sub x1 (i_div_2 y1), i_div_2 y1))
+      let (_, (x1, y1)) = i_div_lt_pred_i x y i1 in
+      if i_lt x1 y1 then (False, (x1, i_div_2 y1))
+      else (True, (i_sub x1 y1, i_div_2 y1))
   end.
 
-value i_div_lt x y = {rm i = fst (i_div_lt_i x y i)}.
+value i_div_lt x y = {rm i = fst (i_div_lt_pred_i x y (i + 1))}.
 
 value rec i_div_lim m x y =
   match m with
@@ -186,7 +184,7 @@ let _ = printf "tr = %f\n%!" (rm2f tr) in
 ;
 
 value i_div_i x y i = fst (i_div_eucl_i (i_mul_2 x) y i);
-value i_div x y = {rm = i_div_i x y};
+value old_i_div x y = {rm = i_div_i x y};
 
 value rec r_frac_equiv_div m x y =
   match m with
@@ -248,7 +246,7 @@ let _ = printf "m2 = %d\n%!" m2 in
   if m2 = 0 then i_zero
   else
     let rm = r_div_r_frac_loop m2 xm ym in
-    i_div rm ym
+    old_i_div rm ym
 ;
 
 (* don't try it with x / y > 7 because the division algorithm is only
