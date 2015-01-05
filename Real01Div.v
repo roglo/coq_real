@@ -264,6 +264,23 @@ induction i; intros; simpl in Hi.
   apply I_sub_diag.
 Qed.
 
+Theorem I_div_2_0_iff : ∀ x, (x = 0)%I ↔ (I_div_2 x = 0)%I.
+Proof.
+intros x.
+split; intros Hx.
+bbb.
+
+Theorem zzz : ∀ x y i b x1 y1,
+  I_div_lt_pred_i x y i = (b, (x1, y1))
+  → (y1 = 0)%I
+  → (y = 0)%I.
+Proof.
+intros x y i b x1 y1 Hi Hy.
+revert x y b x1 y1 Hi Hy.
+induction i; intros; simpl in Hi.
+ injection Hi; clear Hi; intros; subst b x1 y1.
+bbb.
+
 Theorem I_div_0_l : ∀ x, (x ≠ 0)%I → (0 / x = 0)%I.
 Proof.
 intros x Hx.
