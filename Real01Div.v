@@ -43,9 +43,10 @@ Fixpoint two_power n :=
 
 Definition I_div_max_iter_int (x y : I) :=
   match fst_same y I_ones 0 with
-  | Some j => two_power (j + 1)
+  | Some j => two_power (S j)
   | None => O
   end.
+Arguments I_div_max_iter_int x%I y%I.
 
 Definition I_div_2 x := {| rm i := if zerop i then false else x.[i-1] |}.
 
@@ -59,8 +60,10 @@ Fixpoint I_div_lt_pred_i x y i :=
       else
         (true, (I_sub x1 y1, I_div_2 y1))
   end.
+Arguments I_div_lt_pred_i x%I y%I i%nat.
 
 Definition I_div_lt x y := {| rm i := fst (I_div_lt_pred_i x y (S i)) |}.
+Arguments I_div_lt x%I y%I.
 
 Fixpoint I_div_lim m x y :=
   match m with
@@ -72,6 +75,7 @@ Fixpoint I_div_lim m x y :=
         let (xi, xf) := I_div_lim m1 (I_sub x y) y in
         (S xi, xf)
   end.
+Arguments I_div_lim m%nat x%I y%I.
 
 Definition I_div x y := snd (I_div_lim (I_div_max_iter_int x y) x y).
 
@@ -237,8 +241,28 @@ Qed.
 Theorem I_div_0_l : ∀ x, (x ≠ 0)%I → (0 / x = 0)%I.
 Proof.
 intros x Hx.
+unfold I_eq; simpl; intros i.
+unfold I_add_i; simpl.
+rewrite carry_diag; simpl.
+rewrite xorb_false_r.
+unfold carry; simpl.
+remember (fst_same (0%I / x) 0 (S i)) as s1 eqn:Hs1 .
+apply fst_same_sym_iff in Hs1; simpl in Hs1.
+destruct s1 as [dj1| ].
+ destruct Hs1 as (Hn1, Ht1).
+ rewrite Ht1, xorb_false_r.
+ unfold I_div; simpl.
+ remember (I_div_max_iter_int 0 x) as m eqn:Hm .
+ symmetry in Hm.
+ destruct m; [ reflexivity | simpl ].
+ destruct (I_lt_dec 0%I x) as [H1| H1]; simpl.
+  remember (I_div_lt_pred_i 0 x i) as bxy eqn:Hbxy .
+  symmetry in Hbxy.
+  destruct bxy as (b, (x1, y1)); simpl.
+  destruct (I_lt_dec x1 y1) as [H2| H2]; [ reflexivity | exfalso ].
 bbb.
 
+intros x Hx.
 unfold I_eq; simpl; intros i.
 unfold I_add_i; simpl.
 rewrite carry_diag; simpl.
