@@ -62,7 +62,7 @@ value f2rm x =
     let a = f2am x in
     {rm i = if i < Array.length a then a.(i) else False};
 
-value rm2f x = am2f (Array.init 15(*mm*) x.rm);
+value rm2f x = am2f (Array.init 10(*mm*) x.rm);
 
 value rec two_power n =
   if n < 0 then invalid_arg "two_power" else
@@ -90,8 +90,10 @@ value rec i_div_lt_pred_i x y i =
   | _ →
       let i1 = i - 1 in
       let (_, (x1, y1)) = i_div_lt_pred_i x y i1 in
-      if i_lt x1 y1 then (False, (x1, i_div_2 y1))
-      else (True, (i_sub x1 y1, i_div_2 y1))
+      if i_lt x1 y1 then
+        (False, (x1, i_div_2 y1))
+      else
+        (True, (i_sub x1 y1, i_div_2 y1))
   end.
 
 value i_div_lt x y = {rm i = fst (i_div_lt_pred_i x y (i + 1))}.
@@ -161,7 +163,7 @@ value r_compare x y =
 
 value r_lt x y = r_compare x y = Lt.
 
-(* OLD VERSION - to be updated using new i_div above *)
+(* OLD VERSION
 
 (* division using only subtractions; computation of integer part *)
 
@@ -265,6 +267,25 @@ value r_div x y =
 
 value r = r_div_r_frac (f2r 0.01) (f2r 0.03);
 rm2f r;
+*)
+
+value r_div_max_iter ax ay = ax.r_int + ay.r_int + 1;
+
+value rec r_div_equiv m x y =
+  match m with
+  | 0 → failwith "r_div_equiv bug: insufficient nb of iterations"
+  | _ →
+      let m1 = m - 1 in
+      if x.r_int = 0 && y.r_int = 0 then
+        let (i, f) = i_div x.r_frac y.r_frac in
+        {r_int = i; r_frac = f}
+      else
+        r_div_equiv m1 (r_div_2 x) (r_div_2 y)
+  end.
+
+value r_div x y = r_div_equiv (r_div_max_iter x y) x y.
+
+(* *)
 
 value r = r_div (f2r 1.) (f2r 3.);
 printf "1/3 i=%d\n%!" r.r_int;
