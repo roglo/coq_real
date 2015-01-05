@@ -272,8 +272,88 @@ rewrite xorb_nilpotent, carry_diag, xorb_false_l.
 reflexivity.
 Qed.
 
-Theorem I_div_2_0_iff : ∀ x, (x = 0)%I ↔ (I_div_2 x = 0)%I.
+Theorem I_div_2_eq_0 : ∀ x, (I_div_2 x = 0)%I → (x = 0)%I.
 Proof.
+intros x Hx.
+unfold I_eq in Hx; simpl in Hx.
+unfold I_eq; simpl; intros i.
+unfold I_add_i; simpl.
+rewrite xorb_false_r, carry_diag; simpl.
+bbb.
+
+pose proof (Hx i) as H; simpl in H.
+unfold I_add_i in H; simpl in H.
+rewrite xorb_false_r, carry_diag in H; simpl in H.
+destruct i; simpl in H.
+ unfold carry in H; simpl in H.
+ remember (fst_same (I_div_2 x) 0 1) as s1 eqn:Hs1 .
+ destruct s1 as [dj1| ]; [ idtac | discriminate H ].
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ destruct Hs1 as (Hn1, Ht1).
+ rewrite Nat.sub_0_r in Ht1; clear H.
+ destruct dj1.
+  rewrite Ht1, xorb_false_l.
+  unfold carry; simpl.
+  remember (fst_same x 0 1) as s2 eqn:Hs2 .
+  destruct s2 as [dj2| ].
+   apply fst_same_sym_iff in Hs2; simpl in Hs2.
+   destruct Hs2; assumption.
+
+   apply fst_same_sym_iff in Hs2; simpl in Hs2.
+   pose proof (Hx 1%nat) as H.
+   unfold I_add_i in H; simpl in H.
+   rewrite carry_diag in H; simpl in H.
+   rewrite Ht1, xorb_false_l in H.
+   unfold carry in H; simpl in H.
+   remember (fst_same (I_div_2 x) 0 2) as s3 eqn:Hs3 .
+   destruct s3 as [dj3| ]; [ idtac | discriminate H ].
+   rewrite Hs2 in H; discriminate H.
+
+  unfold carry; simpl.
+  remember (fst_same x 0 1) as s2 eqn:Hs2 .
+  destruct s2 as [dj2| ].
+   apply fst_same_sym_iff in Hs2; simpl in Hs2.
+   destruct Hs2 as (Hn2, Ht2).
+   pose proof (Hx 1%nat) as H.
+   unfold I_add_i in H; simpl in H.
+   rewrite xorb_false_r, carry_diag in H; simpl in H.
+   unfold carry in H; simpl in H.
+   remember (fst_same (I_div_2 x) 0 2) as s3 eqn:Hs3 .
+   pose proof (Hn1 O (Nat.lt_0_succ dj1)) as HH.
+   rewrite Nat.sub_0_r in HH.
+   rewrite HH, xorb_true_l in H.
+   apply negb_false_iff in H.
+   destruct s3 as [dj3| ]; [ idtac | clear H ].
+    apply fst_same_sym_iff in Hs3; simpl in Hs3.
+    destruct Hs3 as (Hn3, Ht3).
+    rewrite Ht3 in H; discriminate H.
+
+    apply fst_same_sym_iff in Hs3; simpl in Hs3.
+    rewrite Hs3 in Ht1; discriminate Ht1.
+
+   apply fst_same_sym_iff in Hs2; simpl in Hs2.
+   rewrite Hs2 in Ht1; discriminate Ht1.
+
+ Focus 1.
+bbb.
+
+split; intros Hx.
+ unfold I_eq in Hx; simpl in Hx.
+ unfold I_eq; simpl; intros i.
+ rewrite I_add_i_diag; simpl.
+ unfold I_add_i; simpl.
+ rewrite xorb_false_r.
+ destruct i; simpl.
+  unfold carry; simpl.
+  remember (fst_same (I_div_2 x) 0 1) as s1 eqn:Hs1 .
+  destruct s1 as [dj1| ]; [ idtac | exfalso ].
+   apply fst_same_sym_iff in Hs1; simpl in Hs1.
+   destruct Hs1 as (Hn1, Ht1).
+   rewrite Ht1; reflexivity.
+
+   apply fst_same_sym_iff in Hs1; simpl in Hs1.
+bbb.
+
 intros x.
 split; intros Hx.
  unfold I_eq in Hx; simpl in Hx.
@@ -303,6 +383,7 @@ split; intros Hx.
 
     apply fst_same_sym_iff in Hs2; simpl in Hs2.
 bbb.
+*)
 
 Theorem zzz : ∀ x y i b x1 y1,
   I_div_lt_pred_i x y i = (b, (x1, y1))
