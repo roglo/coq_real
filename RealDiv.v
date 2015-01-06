@@ -624,6 +624,60 @@ destruct s1 as [dj1| ].
 
      pose proof (Hn2 O (Nat.lt_0_succ dj2)) as H.
      rewrite H1 in H; discriminate H.
+
+ pose proof (Hs1 O) as H.
+ rewrite Nat.add_0_r in H.
+ unfold R_div in H; simpl in H.
+ remember (R_div_max_iter (R_abs 0) (R_abs x)) as m eqn:Hm .
+ remember (R_div_equiv m (R_abs 0) (R_abs x)) as mxy eqn:Hmxy .
+ symmetry in Hmxy.
+ destruct mxy as (mx, my); simpl.
+ remember (I_div_max_iter_int my) as m2 eqn:Hm2 .
+ symmetry in Hm2.
+ remember (I_div_lim m2 mx my) as rif eqn:Hrif .
+ symmetry in Hrif.
+ destruct rif as (ri, rf); simpl in H.
+ rename H into Hrf.
+ remember Hmxy as H; clear HeqH.
+ apply R_div_equiv_0_l in H; [ idtac | apply R_abs_0 ].
+ rename H into Hmx.
+ destruct m2; simpl in Hrif.
+  injection Hrif; clear Hrif; intros; subst ri rf.
+  discriminate Hrf.
+
+  destruct (I_lt_dec mx my) as [H1| H1].
+   injection Hrif; clear Hrif; intros; subst ri rf; simpl.
+   rewrite Hmx in H1.
+   unfold I_div_lt in Hrf; simpl in Hrf.
+   remember (I_div_lt_pred_i mx my i) as bxy eqn:Hbxy .
+   symmetry in Hbxy.
+   destruct bxy as (b, (x1, y1)); simpl in Hrf.
+   destruct (I_lt_dec x1 y1) as [H2| H2]; simpl in Hrf.
+    remember Hbxy as H; clear HeqH.
+    apply I_div_lt_pred_0_l in H; [ idtac | assumption ].
+    rewrite H in H2; rename H into Hx1.
+    destruct (I_lt_dec x1 (I_div_2 y1)) as [H3| H3].
+     discriminate Hrf.
+
+     rewrite Hx1 in H3.
+     apply I_ge_le_iff, I_le_0_r in H3.
+     apply I_div_2_eq_0 in H3.
+     rewrite H3 in H2.
+     exfalso; revert H2; apply I_lt_irrefl.
+
+    destruct (I_lt_dec (x1 - y1)%I (I_div_2 y1)) as [H3| H3].
+     discriminate Hrf.
+
+     remember Hbxy as H; clear HeqH.
+     apply I_div_lt_pred_0_l in H; [ idtac | assumption ].
+     rewrite H in H2; rename H into Hx1.
+     apply I_ge_le_iff, I_le_0_r in H2.
+     apply I_div_lt_pred_r_eq_0 in Hbxy; [ idtac | assumption ].
+     rewrite Hbxy in H1.
+     exfalso; revert H1; apply I_lt_irrefl.
+
+   rewrite Hmx in H1.
+   apply I_ge_le_iff, I_le_0_r in H1.
 bbb.
      destruct i.
       simpl in Hbxy.
