@@ -531,6 +531,7 @@ induction m; intros.
   apply R_div_2_0_iff in Hx; assumption.
 Qed.
 
+(*
 Theorem R_div_equiv_r_eq_0 : ∀ x y m mx my,
   R_div_equiv m x y = (mx, my)
   → (my = 0)%I
@@ -538,6 +539,7 @@ Theorem R_div_equiv_r_eq_0 : ∀ x y m mx my,
 Proof.
 intros x y m mx my Hmxy Hmy.
 bbb.
+*)
 
 Theorem R_frac_div_0_l : ∀ x,
   (x ≠ 0)%R
@@ -746,6 +748,37 @@ destruct s1 as [dj1| ]; simpl.
    apply R_div_equiv_0_l in H; [ idtac | apply R_abs_0 ].
    rewrite H in H1; rename H into Hmx.
    apply I_ge_le_iff, I_le_0_r in H1.
+   symmetry in Hm.
+   unfold R_div_max_iter in Hm; simpl in Hm.
+   rewrite Z2Nat.inj_add in Hm.
+    rewrite Nat.add_comm in Hm.
+    simpl in Hm.
+    subst m.
+    simpl in Hmxy.
+    remember (R_int (R_abs x) =? 0) as c eqn:Hc .
+    symmetry in Hc.
+    destruct c.
+     apply Z.eqb_eq in Hc.
+     injection Hmxy; clear Hmxy; intros; subst mx my.
+     unfold I_div_max_iter_int in Hm2.
+     remember (fst_same (R_frac (R_abs x)) I_ones 0) as s2 eqn:Hs2 .
+     destruct s2 as [dj2| ]; [ idtac | discriminate Hm2 ].
+     apply fst_same_sym_iff in Hs2; simpl in Hs2.
+     destruct Hs2 as (Hn2, Ht2).
+     apply I_zero_iff in H1.
+     destruct H1 as [H1| H1].
+      rewrite H1 in Ht2; discriminate Ht2.
+
+      destruct dj2.
+       simpl in Hm2.
+bbb.
+       clear Hn2.
+       clear Hmx.
+       clear Hrif.
+       clear m2 Hm2.
+       clear Ht2.
+bbb.
+
    apply R_div_equiv_r_eq_0 in Hmxy; [ idtac | assumption ].
    exfalso; apply Hx, R_abs_0_iff; assumption.
 bbb.
