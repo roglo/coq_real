@@ -531,7 +531,7 @@ induction m; intros.
   apply R_div_2_0_iff in Hx; assumption.
 Qed.
 
-Theorem zzz : ∀ x,
+Theorem R_frac_div_0_l : ∀ x,
   (x ≠ 0)%R
   → (R_frac (0 / x) = 0)%I.
 Proof.
@@ -678,139 +678,30 @@ destruct s1 as [dj1| ].
 
    rewrite Hmx in H1.
    apply I_ge_le_iff, I_le_0_r in H1.
-bbb.
-     destruct i.
-      simpl in Hbxy.
-      injection Hbxy; clear Hbxy; intros; subst b x1 y1.
-      apply I_ge_le_iff, I_le_0_r in H2.
-      apply I_div_2_eq_0 in H2.
-      rewrite H2 in H1.
-      revert H1; apply I_lt_irrefl.
-
-      simpl in Hbxy.
-      remember (I_div_lt_pred_i 0 (R_frac (R_abs x)) i) as bxy eqn:Hbxy2 .
-      symmetry in Hbxy2.
-      destruct bxy as (b2, (x2, y2)); simpl in Hbxy.
-      destruct (I_lt_dec x2 y2) as [H3| H3].
-       injection Hbxy; clear Hbxy; intros; subst b x1 y1.
-       remember Hbxy2 as H; clear HeqH.
-       apply I_div_lt_pred_0_l in H; simpl in H.
-bbb.
-
-intros x m z Hx Hm Hz.
-symmetry in Hm.
-destruct m; simpl in Hz.
- subst z; reflexivity.
-
- remember (R_int (R_abs x) =? 0) as c eqn:Hc .
- symmetry in Hc.
- destruct c.
-  apply Z.eqb_eq in Hc.
-  remember (I_div_int_frac 0 (R_frac (R_abs x))) as zif eqn:Hzif .
-  symmetry in Hzif.
-  destruct zif as (zi, zf).
-  subst z; simpl.
-  unfold I_div_int_frac in Hzif.
-  remember (I_div_max_iter_int (R_frac (R_abs x))) as m2 eqn:Hm2 .
-  symmetry in Hm2.
-  unfold I_div_max_iter_int in Hm2; simpl in Hm2.
-  remember (fst_same (R_frac (R_abs x)) I_ones 0) as s1 eqn:Hs1 .
-  apply fst_same_sym_iff in Hs1; simpl in Hs1.
-  destruct s1 as [dj1| ].
-   destruct Hs1 as (Hn1, Ht1).
-   rewrite Nat.add_0_r in Hm2.
-   destruct dj1.
+   unfold I_div_max_iter_int in Hm2; simpl in Hm2.
+   remember (fst_same my I_ones 0) as s2 eqn:Hs2 .
+   destruct s2 as [dj2| ]; [ idtac | discriminate Hm2 ].
+   apply fst_same_sym_iff in Hs2; simpl in Hs2.
+   destruct Hs2 as (Hn2, Ht2).
+   destruct dj2.
     simpl in Hm2.
-    clear Hn1.
-    subst m2.
-bbb.
-  destruct m2; simpl in Hzif.
-   injection Hzif; intros; subst zf; reflexivity.
+    apply eq_add_S in Hm2.
+    subst m2; simpl in Hrif.
+    destruct (I_lt_dec (mx - my)%I my) as [H2| H2].
+     rewrite H1, Hmx in H2.
+     rewrite I_sub_diag in H2.
+     exfalso; revert H2; apply I_lt_irrefl.
 
-   destruct (I_lt_dec 0%I (R_frac (R_abs x))) as [H1| H1].
-    injection Hzif; clear Hzif; intros; subst zi zf.
-    unfold I_eq; simpl; intros i.
-    unfold I_add_i; simpl.
-    rewrite xorb_false_r, carry_diag; simpl.
-    remember (I_div_lt_pred_i 0 (R_frac (R_abs x)) i) as bxy eqn:Hbxy .
-    symmetry in Hbxy.
-    destruct bxy as (b, (x1, y1)); simpl.
-    remember Hbxy as H; clear HeqH.
-    apply I_div_lt_pred_0_l in H.
-    rename H into Hx1.
-    destruct (I_lt_dec x1 y1) as [H2| H2]; simpl.
-     rewrite Hx1 in H2.
-     unfold carry; simpl.
-     remember (fst_same (I_div_lt 0 (R_frac (R_abs x))) 0 (S i)) as s1
-      eqn:Hs1 .
-     apply fst_same_sym_iff in Hs1; simpl in Hs1.
-     destruct s1 as [dj1| ].
-      destruct Hs1 as (Hn1, Ht1).
-      rewrite Ht1; reflexivity.
+     injection Hrif; clear Hrif; intros; subst ri rf.
+     discriminate Hrf.
 
-      exfalso.
-      pose proof (Hs1 O) as H.
-      rewrite Nat.add_0_r in H.
-      rewrite Hbxy in H; simpl in H.
-      destruct (I_lt_dec x1 y1) as [H3| H3]; simpl in H.
-       destruct (I_lt_dec x1 (I_div_2 y1)) as [H4| H4].
-        discriminate H.
-
-        clear H.
-        rewrite Hx1 in H4.
-        apply I_ge_le_iff, I_le_0_r in H4.
-        apply I_div_2_eq_0 in H4.
-        rewrite H4 in H2.
-        revert H2; apply I_lt_irrefl.
-
-       rewrite Hx1 in H3.
-       apply I_ge_le_iff, I_le_0_r in H3.
-       rewrite H3 in H2.
-       revert H2; apply I_lt_irrefl.
-
-     rewrite Hx1 in H2.
-     apply I_ge_le_iff, I_le_0_r in H2.
-     apply I_div_lt_pred_r_eq_0 in Hbxy; [ idtac | assumption ].
-     rewrite Hbxy in H1.
-     exfalso; revert H1; apply I_lt_irrefl.
-
-    apply I_ge_le_iff, I_le_0_r in H1.
-    unfold I_div_max_iter_int in Hm2.
-    remember (fst_same (R_frac (R_abs x)) I_ones 0) as s1 eqn:Hs1 .
-    destruct s1 as [dj1| ]; [ idtac | discriminate Hm2 ].
-    apply fst_same_sym_iff in Hs1; simpl in Hs1.
-    destruct Hs1 as (Hn1, Ht1).
     apply I_zero_iff in H1.
     destruct H1 as [H1| H1].
-     rewrite H1 in Ht1; discriminate Ht1.
+     rewrite H1 in Ht2; discriminate Ht2.
 
-     remember
-      (I_div_lim m2 (0%I - R_frac (R_abs x)) (R_frac (R_abs x))) as xif
-      eqn:Hxif .
-     symmetry in Hxif.
-     destruct xif as (xi, xf).
-     injection Hzif; clear Hzif; intros; subst zi zf.
-     destruct m2.
-      simpl in Hxif.
-      injection Hxif; intros; subst xf; reflexivity.
-
-      simpl in Hxif.
-      destruct (I_lt_dec (0 - R_frac (R_abs x))%I (R_frac (R_abs x)))
-       as [H2| H2].
-       injection Hxif; clear Hxif; intros; subst xi xf.
-       unfold I_eq; simpl; intros i.
-       unfold I_add_i; simpl.
-       rewrite xorb_false_r, carry_diag; simpl.
-       remember
-        (I_div_lt_pred_i (0%I - R_frac (R_abs x)) (R_frac (R_abs x)) i) as bxy2
-        eqn:Hbxy2 .
-       symmetry in Hbxy2.
-       destruct bxy2 as (b2, (x2, y2)); simpl.
-       destruct (I_lt_dec x2 y2) as [H3| H3]; simpl.
-        unfold carry; simpl.
-bbb.
-   trop la merde : revoir les définitions...
-*)
+     pose proof (Hn2 O (Nat.lt_0_succ dj2)) as H.
+     rewrite H1 in H; discriminate H.
+Qed.
 
 Theorem R_div_0_l : ∀ x, (x ≠ 0)%R → (0 / x = 0)%R.
 Proof.
