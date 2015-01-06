@@ -371,23 +371,4 @@ destruct s1 as [dj1| ].
   apply I_ge_le_iff, I_le_0_r in H1; contradiction.
 Qed.
 
-(*
-Theorem I_div_2_0_false : (I_div_2_inc 0 false = 0)%I.
-Proof.
-unfold I_eq; simpl; intros i.
-unfold I_add_i; simpl.
-rewrite xorb_false_r, carry_diag; simpl.
-remember (if zerop i then false else false) as a.
-destruct a.
- destruct (zerop i); discriminate Heqa.
-
- rewrite xorb_false_l.
- unfold carry; simpl.
- remember (fst_same (I_div_2_inc 0 false) 0 (S i)) as s1 eqn:Hs1 .
- destruct s1; [ reflexivity | exfalso ].
- apply fst_same_sym_iff in Hs1; simpl in Hs1.
- pose proof (Hs1 O); discriminate H.
-Qed.
-*)
-
 Close Scope Z_scope.
