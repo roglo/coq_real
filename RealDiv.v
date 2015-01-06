@@ -707,6 +707,7 @@ Theorem R_div_0_l : ∀ x, (x ≠ 0)%R → (0 / x = 0)%R.
 Proof.
 intros x Hx.
 unfold R_eq; simpl.
+split; [ idtac | apply R_frac_div_0_l; assumption ].
 bbb.
 
 remember (R_div_max_iter (R_abs 0) (R_abs x)) as m eqn:Hm .
