@@ -596,6 +596,34 @@ destruct s1 as [dj1| ].
 
       unfold R_abs; simpl.
       apply R_div_2_0.
+
+   remember Hmxy as H; clear HeqH.
+   apply R_div_equiv_0_l in H; [ idtac | apply R_abs_0 ].
+   rewrite H in H1; rename H into Hmx.
+   apply I_ge_le_iff, I_le_0_r in H1.
+   unfold I_div_max_iter_int in Hm2.
+   remember (fst_same my I_ones 0) as s2 eqn:Hs2 .
+   destruct s2 as [dj2| ]; [ idtac | discriminate Hm2 ].
+   apply fst_same_sym_iff in Hs2; simpl in Hs2.
+   destruct Hs2 as (Hn2, Ht2).
+   destruct dj2.
+    clear Hn2.
+    simpl in Hm2.
+    apply eq_add_S in Hm2.
+    subst m2; simpl in Hrif.
+    destruct (I_lt_dec (mx - my)%I my) as [H2| H2].
+     rewrite H1, Hmx in H2.
+     rewrite I_sub_diag in H2.
+     exfalso; revert H2; apply I_lt_irrefl.
+
+     injection Hrif; intros; subst rf; reflexivity.
+
+    apply I_zero_iff in H1.
+    destruct H1 as [H1| H1].
+     rewrite H1 in Ht2; discriminate Ht2.
+
+     pose proof (Hn2 O (Nat.lt_0_succ dj2)) as H.
+     rewrite H1 in H; discriminate H.
 bbb.
      destruct i.
       simpl in Hbxy.
