@@ -531,6 +531,14 @@ induction m; intros.
   apply R_div_2_0_iff in Hx; assumption.
 Qed.
 
+Theorem R_div_equiv_r_eq_0 : ∀ x y m mx my,
+  R_div_equiv m x y = (mx, my)
+  → (my = 0)%I
+  → (y = 0)%R.
+Proof.
+intros x y m mx my Hmxy Hmy.
+bbb.
+
 Theorem R_frac_div_0_l : ∀ x,
   (x ≠ 0)%R
   → (R_frac (0 / x) = 0)%I.
@@ -717,6 +725,29 @@ destruct s1 as [dj1| ]; simpl.
  rewrite Ht1; simpl.
  rewrite Z.add_0_r.
  unfold R_div; simpl.
+ remember (R_div_max_iter (R_abs 0) (R_abs x)) as m eqn:Hm .
+ remember (R_div_equiv m (R_abs 0) (R_abs x)) as mxy eqn:Hmxy .
+ symmetry in Hmxy.
+ destruct mxy as (mx, my); simpl.
+ remember (I_div_max_iter_int my) as m2 eqn:Hm2 .
+ symmetry in Hm2.
+ remember (I_div_lim m2 mx my) as rif eqn:Hrif .
+ symmetry in Hrif.
+ destruct rif as (ri, rf); simpl.
+ destruct m2; simpl in Hrif.
+  injection Hrif; clear Hrif; intros; subst ri rf.
+  destruct (R_is_neg x); reflexivity.
+
+  destruct (I_lt_dec mx my) as [H1| H1].
+   injection Hrif; clear Hrif; intros; subst ri rf; simpl.
+   destruct (R_is_neg x); reflexivity.
+
+   remember Hmxy as H; clear HeqH.
+   apply R_div_equiv_0_l in H; [ idtac | apply R_abs_0 ].
+   rewrite H in H1; rename H into Hmx.
+   apply I_ge_le_iff, I_le_0_r in H1.
+   apply R_div_equiv_r_eq_0 in Hmxy; [ idtac | assumption ].
+   exfalso; apply Hx, R_abs_0_iff; assumption.
 bbb.
 
 remember (R_div_max_iter (R_abs 0) (R_abs x)) as m eqn:Hm .
