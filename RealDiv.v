@@ -91,26 +91,21 @@ Arguments R_div x%R y%R.
 
 Definition R_div_max_iter ax ay := Z.to_nat (R_int ax + R_int ay + 1).
 
-Definition I_div_int_frac x y := I_div_lim (I_div_max_iter_int y) x y.
-Arguments I_div_int_frac x%I y%I.
-
 Fixpoint R_div_equiv m x y :=
   match m with
-  | O => R_zero
+  | O => (I_zero, I_zero)
   | S m1 =>
-      if Z.eqb (R_int x) 0 && Z.eqb (R_int y) 0 then
-        let (i, f) := I_div_int_frac (R_frac x) (R_frac y) in
-        {| R_int := Z.of_nat i; R_frac := f |}
-      else
-        R_div_equiv m1 (R_div_2 x) (R_div_2 y)
+      if Z.eqb (R_int x) 0 && Z.eqb (R_int y) 0 then (R_frac x, R_frac y)
+      else R_div_equiv m1 (R_div_2 x) (R_div_2 y)
   end.
 
 Definition R_div x y :=
   let ax := R_abs x in
   let ay := R_abs y in
-  let r := R_div_equiv (R_div_max_iter ax ay) ax ay in
-  {| R_int := if R_is_neg x ⊕ R_is_neg y then - R_int r else R_int r;
-     R_frac := R_frac r |}.
+  let (mx, my) := R_div_equiv (R_div_max_iter ax ay) ax ay in
+  let (ri, rf) := I_div_lim (I_div_max_iter_int my) mx my in
+  {| R_int := if R_is_neg x ⊕ R_is_neg y then - Z.of_nat ri else Z.of_nat ri;
+     R_frac := rf |}.
 Arguments R_div x%R y%R.
 
 Notation "x / y" := (R_div x y) : R_scope.
@@ -512,12 +507,13 @@ Qed.
 
 (* 0: left absorbing element *)
 
-Theorem zzz : ∀ x m z,
+Theorem zzz : ∀ x,
   (x ≠ 0)%R
-  → m = R_div_max_iter (R_abs 0) (R_abs x)
-  → z = R_div_equiv m (R_abs 0) (R_abs x)
-  → (R_frac z = 0)%I.
+  → (R_frac (0 / x) = 0)%I.
 Proof.
+intros x Hx.
+bbb.
+
 intros x m z Hx Hm Hz.
 symmetry in Hm.
 destruct m; simpl in Hz.
@@ -631,11 +627,14 @@ bbb.
         unfold carry; simpl.
 bbb.
    trop la merde : revoir les définitions...
+*)
 
 Theorem R_div_0_l : ∀ x, (x ≠ 0)%R → (0 / x = 0)%R.
 Proof.
 intros x Hx.
 unfold R_eq; simpl.
+bbb.
+
 remember (R_div_max_iter (R_abs 0) (R_abs x)) as m eqn:Hm .
 remember (R_div_equiv m (R_abs 0) (R_abs x)) as z eqn:Hz .
 bbb.
@@ -699,7 +698,9 @@ split.
  erewrite R_frac_equiv_div_0_l in Ht2; try eassumption.
  discriminate Ht2.
 Qed.
+*)
 
+(*
 Theorem R_frac_equiv_div_prop : ∀ x y m i xm ym,
   (y ≠ 0)%R
   → R_frac_equiv_div m x y = (xm, ym)
@@ -897,6 +898,7 @@ intros x n i.
 induction n; [ reflexivity | simpl ].
 rewrite Nat.sub_0_r; assumption.
 Qed.
+*)
 
 Theorem formula_1 : ∀ x x1 y1 xm ym m i di n,
   max_iter_int_part (R_abs x) (R_abs 1) = (m + S n)%nat
