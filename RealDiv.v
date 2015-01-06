@@ -534,6 +534,17 @@ destruct m; simpl in Hz.
   unfold I_div_int_frac in Hzif.
   remember (I_div_max_iter_int (R_frac (R_abs x))) as m2 eqn:Hm2 .
   symmetry in Hm2.
+  unfold I_div_max_iter_int in Hm2; simpl in Hm2.
+  remember (fst_same (R_frac (R_abs x)) I_ones 0) as s1 eqn:Hs1 .
+  apply fst_same_sym_iff in Hs1; simpl in Hs1.
+  destruct s1 as [dj1| ].
+   destruct Hs1 as (Hn1, Ht1).
+   rewrite Nat.add_0_r in Hm2.
+   destruct dj1.
+    simpl in Hm2.
+    clear Hn1.
+    subst m2.
+bbb.
   destruct m2; simpl in Hzif.
    injection Hzif; intros; subst zf; reflexivity.
 
