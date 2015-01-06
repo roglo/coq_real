@@ -708,6 +708,15 @@ Proof.
 intros x Hx.
 unfold R_eq; simpl.
 split; [ idtac | apply R_frac_div_0_l; assumption ].
+rewrite carry_diag; simpl.
+unfold carry; simpl.
+remember (fst_same (R_frac (0 / x)) 0 0) as s1 eqn:Hs1 .
+apply fst_same_sym_iff in Hs1; simpl in Hs1.
+destruct s1 as [dj1| ]; simpl.
+ destruct Hs1 as (Hn1, Ht1).
+ rewrite Ht1; simpl.
+ rewrite Z.add_0_r.
+ unfold R_div; simpl.
 bbb.
 
 remember (R_div_max_iter (R_abs 0) (R_abs x)) as m eqn:Hm .
