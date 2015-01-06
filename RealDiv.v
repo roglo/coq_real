@@ -585,7 +585,17 @@ destruct s1 as [dj1| ].
      revert H1; apply I_lt_irrefl.
 
      apply R_div_equiv_0_l in Hmxy.
-      apply I_div_lt_pred_0_l in Hbxy; [ idtac | assumption ].
+      remember Hbxy as H; clear HeqH.
+      apply I_div_lt_pred_0_l in H; [ idtac | assumption ].
+      rename H into Hx1.
+      rewrite Hx1 in H2.
+      apply I_ge_le_iff, I_le_0_r in H2.
+      apply I_div_lt_pred_r_eq_0 in Hbxy; [ idtac | assumption ].
+      rewrite Hmxy, Hbxy in H1.
+      revert H1; apply I_lt_irrefl.
+
+      unfold R_abs; simpl.
+      apply R_div_2_0.
 bbb.
      destruct i.
       simpl in Hbxy.
