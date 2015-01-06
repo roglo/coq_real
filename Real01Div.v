@@ -11,10 +11,6 @@ Open Scope Z_scope.
 Definition I_mul_2 x := {| rm i := x.[S i] |}.
 Arguments I_mul_2 x%I.
 
-Definition I_div_2_inc x b :=
-  {| rm i := if zerop i then b else x.[i-1] |}.
-Arguments I_div_2_inc x%I _.
-
 Fixpoint I_div_eucl_i x y i :=
   match i with
   | O => if I_lt_dec x y then (false, x) else (true, I_sub x y)
@@ -375,6 +371,7 @@ destruct s1 as [dj1| ].
   apply I_ge_le_iff, I_le_0_r in H1; contradiction.
 Qed.
 
+(*
 Theorem I_div_2_0_false : (I_div_2_inc 0 false = 0)%I.
 Proof.
 unfold I_eq; simpl; intros i.
@@ -391,5 +388,6 @@ destruct a.
  apply fst_same_sym_iff in Hs1; simpl in Hs1.
  pose proof (Hs1 O); discriminate H.
 Qed.
+*)
 
 Close Scope Z_scope.

@@ -7,6 +7,10 @@ Set Implicit Arguments.
 
 Open Scope Z_scope.
 
+Definition I_div_2_inc x b :=
+  {| rm i := if zerop i then b else x.[i-1] |}.
+Arguments I_div_2_inc x%I _.
+
 Definition R_div_2 x :=
   {| R_int := R_int x / 2;
      R_frac := I_div_2_inc (R_frac x) (Z.odd (R_int x)) |}.
@@ -31,8 +35,6 @@ Fixpoint two_power n :=
   | O => 1%nat
   | S n1 => (2 * two_power n1)%nat
   end.
-
-Definition max_iter_int_part ax ay := Z.to_nat (R_int ax + R_int ay + 1).
 
 Fixpoint R_div_R_int_loop m ax ay :=
   match m with
@@ -87,29 +89,42 @@ Definition R_div x y :=
 Arguments R_div x%R y%R.
 *)
 
+Definition R_div_max_iter ax ay := Z.to_nat (R_int ax + R_int ay + 1).
+
+Definition I_div_int_frac x y := I_div_lim (I_div_max_iter_int y) x y.
+Arguments I_div_int_frac x%I y%I.
+
 Fixpoint R_div_equiv m x y :=
   match m with
   | O => R_zero
   | S m1 =>
       if Z.eqb (R_int x) 0 && Z.eqb (R_int y) 0 then
-        let (i, f) := I_div (R_frac x) (R_frac y) in
-        {| R_int := i; R_frac := f |}
+        let (i, f) := I_div_int_frac (R_frac x) (R_frac y) in
+        {| R_int := Z.of_nat i; R_frac := f |}
       else
         R_div_equiv m1 (R_div_2 x) (R_div_2 y)
   end.
 
-Definition R_div x y := R_div_equiv (R_div_max_iter x y) x y.
+Definition R_div x y :=
+  let ax := R_abs x in
+  let ay := R_abs y in
+  let r := R_div_equiv (R_div_max_iter ax ay) ax ay in
+  {| R_int := if R_is_neg x ⊕ R_is_neg y then - R_int r else R_int r;
+     R_frac := R_frac r |}.
+Arguments R_div x%R y%R.
 
 Notation "x / y" := (R_div x y) : R_scope.
 
 (* *)
 
+(*
 Definition R_frac_equiv_div_fst x y :=
   fst (R_frac_equiv_div (max_iter_int_part x y) x y).
 
 Theorem fold_R_frac_equiv_div_fst : ∀ x y,
   fst (R_frac_equiv_div (max_iter_int_part x y) x y) = R_frac_equiv_div_fst x y.
 Proof. reflexivity. Qed.
+*)
 
 Theorem b2z_inj : ∀ b1 b2, b2z b1 = b2z b2 → b1 = b2.
 Proof.
