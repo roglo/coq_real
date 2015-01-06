@@ -507,13 +507,14 @@ Qed.
 
 (* 0: left absorbing element *)
 
-Theorem yyy : ∀ x y m mx my,
+Theorem R_div_equiv_0_l : ∀ x y m mx my,
   R_div_equiv m x y = (mx, my)
   → (x = 0)%R
   → (mx = 0)%I.
 Proof.
 intros x y m mx my Hmxy Hx.
-destruct m.
+revert x y mx my Hmxy Hx.
+induction m; intros.
  simpl in Hmxy.
  injection Hmxy; intros; subst mx; reflexivity.
 
@@ -526,41 +527,9 @@ destruct m.
   simpl in Hx.
   destruct Hx; assumption.
 
-  destruct m.
-   simpl in Hmxy.
-   injection Hmxy; intros; subst mx; reflexivity.
-
-   simpl in Hmxy.
-   remember ((R_int x / 2 =? 0) && (R_int y / 2 =? 0)) as c1 eqn:Hc1 .
-   symmetry in Hc1.
-   destruct c1.
-    injection Hmxy; clear Hmxy; intros; subst mx my.
-    unfold I_eq; simpl; intros i.
-    unfold I_add_i; simpl.
-    rewrite xorb_false_r, carry_diag; simpl.
-    unfold carry; simpl.
-    remember
-     (fst_same (I_div_2_inc (R_frac x) (Z.odd (R_int x))) 0 (S i)) as s1
-     eqn:Hs1 .
-    apply fst_same_sym_iff in Hs1; simpl in Hs1.
-    destruct s1 as [dj1| ].
-     destruct Hs1 as (Hn1, Ht1).
-     rewrite Ht1, xorb_false_r.
-     apply R_zero_if in Hx.
-     destruct Hx as [(Hxi, Hxf)| (Hxi, Hxf)].
-      rewrite Hxi.
-      destruct i; simpl; [ reflexivity | idtac ].
-      apply Hxf.
-
-      rewrite Hxf in Ht1; discriminate Ht1.
-
-     apply R_zero_if in Hx.
-     destruct Hx as [(Hxi, Hxf)| (Hxi, Hxf)].
-      pose proof (Hs1 O) as H.
-      rewrite Hxf in H; discriminate H.
-
-      rewrite Hxi in Hc1; discriminate Hc1.
-bbb.
+  eapply IHm; [ eassumption | idtac ].
+  apply R_div_2_0_iff in Hx; assumption.
+Qed.
 
 Theorem zzz : ∀ x,
   (x ≠ 0)%R
@@ -607,13 +576,16 @@ destruct s1 as [dj1| ].
     destruct c.
      injection Hmxy; clear Hmxy; intros; subst mx my.
      remember Hbxy as H; clear HeqH.
-     apply I_div_lt_pred_0_l in H; simpl in H.
+     apply I_div_lt_pred_0_l in H; [ simpl in H | reflexivity ].
      rename H into Hx1.
      rewrite Hx1 in H2.
      apply I_ge_le_iff, I_le_0_r in H2.
      apply I_div_lt_pred_r_eq_0 in Hbxy; [ idtac | assumption ].
      rewrite Hbxy in H1.
      revert H1; apply I_lt_irrefl.
+
+     apply R_div_equiv_0_l in Hmxy.
+      apply I_div_lt_pred_0_l in Hbxy; [ idtac | assumption ].
 bbb.
      destruct i.
       simpl in Hbxy.

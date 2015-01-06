@@ -235,16 +235,17 @@ induction i.
 Qed.
 *)
 
-Theorem I_div_lt_pred_0_l : ∀ y b x1 y1 i,
-  I_div_lt_pred_i 0 y i = (b, (x1, y1))
+Theorem I_div_lt_pred_0_l : ∀ x y b x1 y1 i,
+  I_div_lt_pred_i x y i = (b, (x1, y1))
+  → (x = 0)%I
   → (x1 = 0)%I.
 Proof.
-intros y b x1 y1 i Hi.
-revert y b x1 y1 Hi.
+intros x y b x1 y1 i Hi Hx.
+revert x y b x1 y1 Hi Hx.
 induction i; intros; simpl in Hi.
- injection Hi; intros; subst; reflexivity.
+ injection Hi; intros; subst; assumption.
 
- remember (I_div_lt_pred_i 0 y i) as bxy eqn:Hbxy .
+ remember (I_div_lt_pred_i x y i) as bxy eqn:Hbxy .
  symmetry in Hbxy.
  destruct bxy as (b2, (x2, y2)).
  simpl in Hi.
@@ -253,7 +254,7 @@ induction i; intros; simpl in Hi.
   eapply IHi; eassumption.
 
   injection Hi; clear Hi; intros; subst b x1 y1.
-  apply IHi in Hbxy.
+  apply IHi in Hbxy; [ idtac | assumption ].
   rewrite Hbxy in H1.
   apply I_ge_le_iff, I_le_0_r in H1.
   rewrite Hbxy, H1.
@@ -330,7 +331,7 @@ destruct s1 as [dj1| ].
   destruct bxy as (b, (x1, y1)); simpl.
   destruct (I_lt_dec x1 y1) as [H2| H2]; [ reflexivity | exfalso ].
   remember Hbxy as H; clear HeqH.
-  apply I_div_lt_pred_0_l in H.
+  apply I_div_lt_pred_0_l in H; [ idtac | reflexivity ].
   rewrite H in H2.
   apply I_ge_le_iff, I_le_0_r in H2.
   apply I_div_lt_pred_r_eq_0 in Hbxy; [ contradiction | assumption ].
@@ -348,7 +349,7 @@ destruct s1 as [dj1| ].
   symmetry in Hbxy.
   destruct bxy as (b, (x1, y1)); simpl in H.
   remember Hbxy as Hi; clear HeqHi.
-  apply I_div_lt_pred_0_l in Hi.
+  apply I_div_lt_pred_0_l in Hi; [ idtac | reflexivity ].
   destruct (I_lt_dec x1 y1) as [H2| H2]; simpl in H.
    destruct (I_lt_dec x1 (I_div_2 y1)) as [H3| H3].
     discriminate H.
