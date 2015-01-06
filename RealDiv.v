@@ -536,6 +536,30 @@ destruct m.
    destruct c1.
     injection Hmxy; clear Hmxy; intros; subst mx my.
     unfold I_eq; simpl; intros i.
+    unfold I_add_i; simpl.
+    rewrite xorb_false_r, carry_diag; simpl.
+    unfold carry; simpl.
+    remember
+     (fst_same (I_div_2_inc (R_frac x) (Z.odd (R_int x))) 0 (S i)) as s1
+     eqn:Hs1 .
+    apply fst_same_sym_iff in Hs1; simpl in Hs1.
+    destruct s1 as [dj1| ].
+     destruct Hs1 as (Hn1, Ht1).
+     rewrite Ht1, xorb_false_r.
+     apply R_zero_if in Hx.
+     destruct Hx as [(Hxi, Hxf)| (Hxi, Hxf)].
+      rewrite Hxi.
+      destruct i; simpl; [ reflexivity | idtac ].
+      apply Hxf.
+
+      rewrite Hxf in Ht1; discriminate Ht1.
+
+     apply R_zero_if in Hx.
+     destruct Hx as [(Hxi, Hxf)| (Hxi, Hxf)].
+      pose proof (Hs1 O) as H.
+      rewrite Hxf in H; discriminate H.
+
+      rewrite Hxi in Hc1; discriminate Hc1.
 bbb.
 
 Theorem zzz : ∀ x,
