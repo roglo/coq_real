@@ -512,6 +512,45 @@ Theorem zzz : ∀ x,
   → (R_frac (0 / x) = 0)%I.
 Proof.
 intros x Hx.
+unfold I_eq; simpl; intros i.
+unfold I_add_i; simpl.
+rewrite xorb_false_r, carry_diag; simpl.
+unfold carry; simpl.
+remember (fst_same (R_frac (0 / x)) 0 (S i)) as s1 eqn:Hs1 .
+apply fst_same_sym_iff in Hs1; simpl in Hs1.
+destruct s1 as [dj1| ].
+ destruct Hs1 as (Hn1, Ht1).
+ rewrite Ht1, xorb_false_r.
+ unfold R_div; simpl.
+ remember (R_div_max_iter (R_abs 0) (R_abs x)) as m eqn:Hm .
+ remember (R_div_equiv m (R_abs 0) (R_abs x)) as mxy eqn:Hmxy .
+ symmetry in Hmxy.
+ destruct mxy as (mx, my); simpl.
+ remember (I_div_max_iter_int my) as m2 eqn:Hm2 .
+ symmetry in Hm2.
+ remember (I_div_lim m2 mx my) as rif eqn:Hrif .
+ symmetry in Hrif.
+ destruct rif as (ri, rf); simpl.
+ destruct m2; simpl in Hrif.
+  injection Hrif; intros; subst rf; reflexivity.
+
+  destruct (I_lt_dec mx my) as [H1| H1].
+   injection Hrif; clear Hrif; intros; subst ri rf; simpl.
+   remember (I_div_lt_pred_i mx my i) as bxy eqn:Hbxy .
+   symmetry in Hbxy.
+   destruct bxy as (b, (x1, y1)); simpl.
+   destruct (I_lt_dec x1 y1) as [H2| H2]; [ reflexivity | exfalso ].
+   symmetry in Hm.
+   destruct m.
+    simpl in Hmxy.
+    injection Hmxy; clear Hmxy; intros; subst mx my.
+    revert H1; apply I_lt_irrefl.
+
+    simpl in Hmxy.
+    remember (R_int (R_abs x) =? 0) as c eqn:Hc .
+    symmetry in Hc.
+    destruct c.
+     injection Hmxy; clear Hmxy; intros; subst mx my.
 bbb.
 
 intros x m z Hx Hm Hz.
