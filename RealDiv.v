@@ -507,6 +507,37 @@ Qed.
 
 (* 0: left absorbing element *)
 
+Theorem yyy : ∀ x y m mx my,
+  R_div_equiv m x y = (mx, my)
+  → (x = 0)%R
+  → (mx = 0)%I.
+Proof.
+intros x y m mx my Hmxy Hx.
+destruct m.
+ simpl in Hmxy.
+ injection Hmxy; intros; subst mx; reflexivity.
+
+ simpl in Hmxy.
+ remember ((R_int x =? 0) && (R_int y =? 0)) as c eqn:Hc .
+ symmetry in Hc.
+ destruct c.
+  injection Hmxy; clear Hmxy; intros; subst mx my.
+  unfold R_eq in Hx.
+  simpl in Hx.
+  destruct Hx; assumption.
+
+  destruct m.
+   simpl in Hmxy.
+   injection Hmxy; intros; subst mx; reflexivity.
+
+   simpl in Hmxy.
+   remember ((R_int x / 2 =? 0) && (R_int y / 2 =? 0)) as c1 eqn:Hc1 .
+   symmetry in Hc1.
+   destruct c1.
+    injection Hmxy; clear Hmxy; intros; subst mx my.
+    unfold I_eq; simpl; intros i.
+bbb.
+
 Theorem zzz : ∀ x,
   (x ≠ 0)%R
   → (R_frac (0 / x) = 0)%I.
@@ -551,6 +582,31 @@ destruct s1 as [dj1| ].
     symmetry in Hc.
     destruct c.
      injection Hmxy; clear Hmxy; intros; subst mx my.
+     remember Hbxy as H; clear HeqH.
+     apply I_div_lt_pred_0_l in H; simpl in H.
+     rename H into Hx1.
+     rewrite Hx1 in H2.
+     apply I_ge_le_iff, I_le_0_r in H2.
+     apply I_div_lt_pred_r_eq_0 in Hbxy; [ idtac | assumption ].
+     rewrite Hbxy in H1.
+     revert H1; apply I_lt_irrefl.
+bbb.
+     destruct i.
+      simpl in Hbxy.
+      injection Hbxy; clear Hbxy; intros; subst b x1 y1.
+      apply I_ge_le_iff, I_le_0_r in H2.
+      apply I_div_2_eq_0 in H2.
+      rewrite H2 in H1.
+      revert H1; apply I_lt_irrefl.
+
+      simpl in Hbxy.
+      remember (I_div_lt_pred_i 0 (R_frac (R_abs x)) i) as bxy eqn:Hbxy2 .
+      symmetry in Hbxy2.
+      destruct bxy as (b2, (x2, y2)); simpl in Hbxy.
+      destruct (I_lt_dec x2 y2) as [H3| H3].
+       injection Hbxy; clear Hbxy; intros; subst b x1 y1.
+       remember Hbxy2 as H; clear HeqH.
+       apply I_div_lt_pred_0_l in H; simpl in H.
 bbb.
 
 intros x m z Hx Hm Hz.
