@@ -569,36 +569,45 @@ Qed.
 
 (* miscellaneous *)
 
-Theorem I_le_0_r : ∀ x, (x ≤ 0)%I ↔ (x = 0)%I.
+Theorem I_le_0_r : ∀ x, (x ≤ 0)%I → (x = 0)%I.
+Proof.
+intros x H.
+unfold I_le in H; simpl in H.
+unfold I_eq; intros i; simpl.
+unfold I_compare in H; simpl in H.
+remember (fst_same x (- 0%I) 0) as s1 eqn:Hs1 .
+apply fst_same_sym_iff in Hs1; simpl in Hs1.
+destruct s1 as [j1| ].
+ destruct Hs1 as (Hn1, Ht1).
+ rewrite Ht1 in H; exfalso; apply H; reflexivity.
+
+ unfold I_add_i; simpl.
+ rewrite Hs1, <- xorb_false_r, carry_diag; simpl.
+ unfold carry; simpl.
+ remember (fst_same x 0 (S i)) as s2 eqn:Hs2 .
+ destruct s2 as [dj2| ].
+  rewrite Hs1; reflexivity.
+
+  apply fst_same_sym_iff in Hs2; simpl in Hs2.
+  clear H.
+  pose proof (Hs2 O) as H.
+  rewrite Hs1 in H; discriminate H.
+Qed.
+
+Theorem I_le_0_r_eqs_iff : ∀ x, (x ≤ 0)%I ↔ (x == 0)%I.
 Proof.
 intros x.
 split; intros H.
- unfold I_le in H; simpl in H.
- unfold I_eq; intros i; simpl.
- unfold I_compare in H; simpl in H.
- remember (fst_same (x + 0%I) (- (0 + 0)%I) 0) as s1 eqn:Hs1 .
+ unfold I_le, I_compare in H; simpl in H.
+ unfold I_eqs, I_compare; simpl.
+ remember (fst_same x (- 0%I) 0) as s1 eqn:Hs1 .
  apply fst_same_sym_iff in Hs1; simpl in Hs1.
- destruct s1 as [j1| ].
-  destruct Hs1 as (Hn1, Ht1).
-  remember (I_add_i x 0 j1) as b1 eqn:Hb1 .
-  destruct b1; [ exfalso; apply H; reflexivity | clear H ].
-  symmetry in Hb1; apply negb_sym in Ht1; simpl in Ht1.
-  unfold I_add_i in Ht1; simpl in Ht1.
-  rewrite carry_diag in Ht1; discriminate Ht1.
-
-  rewrite Hs1, negb_involutive; reflexivity.
-
- unfold I_eq in H; simpl in H.
- unfold I_le; simpl.
- unfold I_compare; simpl.
- remember (fst_same (x + 0%I) (- (0 + 0)%I) 0) as s1 eqn:Hs1 .
- apply fst_same_sym_iff in Hs1; simpl in Hs1.
- destruct s1 as [j1| ]; [ idtac | intros HH; discriminate HH ].
+ destruct s1 as [j1| ]; [ idtac | reflexivity ].
  destruct Hs1 as (Hn1, Ht1).
- remember (I_add_i x 0 j1) as b1 eqn:Hb1 .
- destruct b1; [ exfalso | intros HH; discriminate HH ].
- symmetry in Hb1; apply negb_sym in Ht1; simpl in Ht1.
- rewrite H, Ht1 in Hb1; discriminate Hb1.
+ rewrite Ht1 in H.
+ exfalso; apply H; reflexivity.
+
+ rewrite H; apply I_le_refl.
 Qed.
 
 Theorem I_lt_nge : ∀ x y, (x < y)%I ↔ ¬(y ≤ x)%I.
@@ -606,8 +615,8 @@ Proof.
 intros x y.
 unfold I_lt, I_le.
 unfold I_compare; simpl.
-remember (fst_same (y + 0%I) (- (x + 0)%I) 0) as s1 eqn:Hs1 .
-remember (fst_same (x + 0%I) (- (y + 0)%I) 0) as s2 eqn:Hs2 .
+remember (fst_same y (- x) 0) as s1 eqn:Hs1 .
+remember (fst_same x (- y) 0) as s2 eqn:Hs2 .
 split; intros H.
  intros HH; apply HH; clear HH.
  destruct s2 as [j2| ]; [ idtac | discriminate H ].
