@@ -238,14 +238,14 @@ Qed.
 Theorem I_div_lt_pred_0_l : ∀ x y b x1 y1 i,
   I_div_lt_pred_i x y i = (b, (x1, y1))
   → (x == 0)%I
-  → (y ≠≠ 0)%I
   → (x1 = 0)%I.
 Proof.
-intros x y b x1 y1 i Hi Hx Hy.
-revert x y b x1 y1 Hi Hx Hy.
+intros x y b x1 y1 i Hi Hx.
+apply I_compare_eq.
+apply -> I_compare_eqs.
+revert x y b x1 y1 Hi Hx.
 induction i; intros; simpl in Hi.
- injection Hi; intros; subst.
- apply I_compare_eq; assumption.
+ injection Hi; intros; subst; assumption.
 
  remember (I_div_lt_pred_i x y i) as bxy eqn:Hbxy .
  symmetry in Hbxy.
@@ -256,40 +256,41 @@ induction i; intros; simpl in Hi.
   eapply IHi; eassumption.
 
   injection Hi; clear Hi; intros; subst b x1 y1.
-  apply IHi in Hbxy; try assumption.
-  rewrite Hbxy.
-  apply I_zero_iff; simpl.
-  apply I_zero_iff in Hbxy.
-  destruct Hbxy as [Hx2| Hx2].
-   simpl.
-   unfold I_ge, I_compare in H1; simpl in H1.
-   remember (fst_same x2 (- y2) 0) as s1 eqn:Hs1 .
-   apply fst_same_sym_iff in Hs1; simpl in Hs1.
-   destruct s1 as [j1| ].
-    destruct Hs1 as (Hn1, Ht1).
-    rewrite Hx2 in H1.
-    exfalso; apply H1; reflexivity.
-
-    left; intros j.
-    rewrite I_add_i_comm.
-    unfold I_add_i; simpl.
-    rewrite xorb_false_r.
-    apply negb_true_iff.
-    rewrite negb_xorb_l.
-    rewrite <- Hs1, Hx2, xorb_false_l.
-    unfold carry; simpl.
-    remember (fst_same (- y2) 0 (S j)) as s2 eqn:Hs2 .
-    destruct s2 as [dj2| ]; [ idtac | reflexivity ].
-    apply negb_false_iff.
-    rewrite <- Hs1, Hx2; reflexivity.
-
-bbb.
-  rewrite Hbxy in H1.
+  remember Hbxy as H; clear HeqH.
+  apply IHi in H; try assumption.
+  rewrite H in H1.
   apply I_ge_le_iff, I_le_0_r in H1.
-  rewrite Hbxy, H1.
-  apply I_sub_diag.
+  unfold I_eqs, I_compare; simpl.
+  remember (fst_same (x2 - y2) (- 0%I) 0) as s1 eqn:Hs1 .
+  destruct s1 as [j1| ]; [ exfalso | reflexivity ].
+  apply fst_same_sym_iff in Hs1; simpl in Hs1.
+  destruct Hs1 as (Hn1, Ht1).
+  unfold I_add_i in Ht1; simpl in Ht1.
+  apply I_zero_iff in H1.
+  unfold I_eqs, I_compare in H.
+  remember (fst_same x2 (- 0%I) 0) as s2 eqn:Hs2 .
+  destruct s2 as [j| ]; [ destruct x2 .[ j]; discriminate H | idtac ].
+  apply fst_same_sym_iff in Hs2; simpl in Hs2.
+  clear H.
+  rewrite Hs2, xorb_false_l in Ht1.
+  unfold carry in Ht1; simpl in Ht1.
+  remember (fst_same x2 (- y2) (S j1)) as s3 eqn:Hs3 .
+  destruct s3 as [dj3| ].
+   apply fst_same_sym_iff in Hs3; simpl in Hs3.
+   destruct Hs3 as (Hn3, Ht3).
+   rewrite Hs2, xorb_false_r in Ht1.
+   destruct H1 as [H1| H1].
+    rewrite Hs2, H1 in Ht3; discriminate Ht3.
+
+    rewrite H1 in Ht1; discriminate Ht1.
+
+   apply fst_same_sym_iff in Hs3; simpl in Hs3.
+   destruct H1 as [H1| H1].
+    rewrite H1 in Ht1; discriminate Ht1.
+
+    pose proof (Hs3 O) as H.
+    rewrite H1, Hs2 in H; discriminate H.
 Qed.
-*)
 
 Theorem I_add_i_diag : ∀ x i, I_add_i x x i = x.[S i].
 Proof.
@@ -366,30 +367,9 @@ destruct s2 as [dj2| ].
   destruct bxy as (b, (x1, y1)); simpl.
   destruct (I_lt_dec x1 y1) as [H2| H2]; [ reflexivity | exfalso ].
   remember Hbxy as H; clear HeqH.
-bbb.
   apply I_div_lt_pred_0_l in H; [ idtac | reflexivity ].
+bbb.
 
-intros x Hx.
-unfold I_eq; simpl; intros i.
-unfold I_add_i; simpl.
-rewrite carry_diag; simpl.
-rewrite xorb_false_r.
-unfold carry; simpl.
-remember (fst_same (0 / x) 0 (S i)) as s1 eqn:Hs1 .
-apply fst_same_sym_iff in Hs1; simpl in Hs1.
-destruct s1 as [dj1| ].
- destruct Hs1 as (Hn1, Ht1).
- rewrite Ht1, xorb_false_r.
- unfold I_div; simpl.
- remember (I_div_max_iter_int x) as m eqn:Hm .
- symmetry in Hm.
- destruct m; [ reflexivity | simpl ].
- destruct (I_lt_dec 0%I x) as [H1| H1]; simpl.
-  remember (I_div_lt_pred_i 0 x i) as bxy eqn:Hbxy .
-  symmetry in Hbxy.
-  destruct bxy as (b, (x1, y1)); simpl.
-  destruct (I_lt_dec x1 y1) as [H2| H2]; [ reflexivity | exfalso ].
-  remember Hbxy as H; clear HeqH.
   apply I_div_lt_pred_0_l in H; [ idtac | reflexivity ].
   rewrite H in H2.
   apply I_ge_le_iff, I_le_0_r in H2.
