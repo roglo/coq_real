@@ -622,63 +622,63 @@ split; intros H.
  destruct s2 as [j2| ]; [ idtac | discriminate H ].
  apply fst_same_sym_iff in Hs2; simpl in Hs2.
  destruct Hs2 as (Hn2, Ht2).
- remember (I_add_i x 0 j2) as b2 eqn:Hb2 .
- symmetry in Hb2; apply negb_sym in Ht2.
- destruct b2; [ discriminate H | clear H; simpl in Ht2 ].
+ remember x .[ j2] as b eqn:Hx2 .
+ destruct b; [ discriminate H | clear H ].
  apply fst_same_sym_iff in Hs1; simpl in Hs1.
  destruct s1 as [j1| ]; [ idtac | exfalso ].
   destruct Hs1 as (Hn1, Ht1).
-  remember (I_add_i y 0 j1) as b1 eqn:Hb1 .
-  symmetry in Hb1; apply negb_sym in Ht1.
-  destruct b1; [ reflexivity | exfalso; simpl in Ht1 ].
+  remember y .[ j1] as y1 eqn:Hy1 .
+  destruct y1; [ reflexivity | exfalso ].
   destruct (lt_eq_lt_dec j1 j2) as [[H1| H1]| H1].
    remember H1 as H; clear HeqH.
-   apply Hn2 in H.
-   rewrite Ht1, Hb1 in H; discriminate H.
+   apply Hn2, negb_sym in H.
+   rewrite <- Hy1, <- Ht1 in H; discriminate H.
 
    subst j2.
-   rewrite Hb1 in Ht2; discriminate Ht2.
+   rewrite <- Hy1 in Ht2; discriminate Ht2.
 
    remember H1 as H; clear HeqH.
-   apply Hn1 in H.
-   rewrite Ht2, Hb2 in H; discriminate H.
+   apply Hn1, negb_sym in H.
+   rewrite <- Hx2, <- Ht2 in H; discriminate H.
 
-  rewrite Hs1, Hb2 in Ht2; discriminate Ht2.
+  rewrite Hs1, <- Hx2 in Ht2; discriminate Ht2.
 
  destruct s1 as [j1| ].
+  remember y .[ j1] as y1 eqn:Hy1 .
+  destruct y1; [ idtac | exfalso; apply H; intros I; discriminate I ].
   apply fst_same_sym_iff in Hs1; simpl in Hs1.
   destruct Hs1 as (Hn1, Ht1).
-  remember (I_add_i y 0 j1) as b1 eqn:Hb1 .
-  symmetry in Hb1; apply negb_sym in Ht1.
-  destruct b1; [ clear H | exfalso; apply H; intros HH; discriminate HH ].
-  apply fst_same_sym_iff in Hs2; simpl in Hs2.
+  clear H.
   destruct s2 as [j2| ].
+   apply fst_same_sym_iff in Hs2; simpl in Hs2.
    destruct Hs2 as (Hn2, Ht2).
-   remember (I_add_i x 0 j2) as b2 eqn:Hb2 .
-   symmetry in Hb2; apply negb_sym in Ht2.
-   destruct b2; [ exfalso | reflexivity ].
+   remember x .[ j2] as x2 eqn:Hx2 .
+   destruct x2; [ exfalso | reflexivity ].
    destruct (lt_eq_lt_dec j1 j2) as [[H1| H1]| H1].
     remember H1 as H; clear HeqH.
     apply Hn2 in H.
-    rewrite Ht1, Hb1 in H; discriminate H.
+    apply negb_sym in H.
+    rewrite <- Ht1, <- Hy1 in H; discriminate H.
 
     subst j2.
-    rewrite Hb1 in Ht2; discriminate Ht2.
+    rewrite <- Hy1 in Ht2; discriminate Ht2.
 
     remember H1 as H; clear HeqH.
     apply Hn1 in H.
-    rewrite Ht2, Hb2 in H; discriminate H.
+    apply negb_sym in H.
+    rewrite <- Hx2, <- Ht2 in H; discriminate H.
 
-   rewrite Hs2, Hb1 in Ht1; discriminate Ht1.
+   apply fst_same_sym_iff in Hs2; simpl in Hs2.
+   rewrite Hs2, <- Hy1 in Ht1; discriminate Ht1.
 
-  exfalso; apply H; intros HH; discriminate HH.
+  exfalso; apply H; intros I; discriminate I.
 Qed.
 
 Theorem I_lt_irrefl : ∀ x, ¬(x < x)%I.
 Proof.
 intros x Hx.
 unfold I_lt, I_compare in Hx; simpl in Hx.
-remember (fst_same (x + 0%I) (- (x + 0)%I) 0) as s1 eqn:Hs1 .
+remember (fst_same x (- x) 0) as s1 eqn:Hs1 .
 destruct s1 as [dj1| ]; [ idtac | discriminate Hx ].
 apply fst_same_sym_iff in Hs1; simpl in Hs1.
 destruct Hs1 as (Hn1, Ht1).

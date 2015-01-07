@@ -2900,17 +2900,6 @@ intros x; split; intros H.
 
  rewrite H; apply R_abs_0.
 Qed.
-Add Parametric Morphism : I_lt
-  with signature I_eq ==> I_eq ==> iff
-  as I_lt_morph.
-Proof.
-intros x y Hxy z t Hzt.
-split; intros H.
- eapply I_eq_lt_compat; eassumption.
-
- symmetry in Hxy, Hzt.
- eapply I_eq_lt_compat; eassumption.
-Qed.
 
 Theorem R_eq_compare_compat : ∀ x y z t,
   (x = y)%R
