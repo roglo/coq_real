@@ -26,6 +26,7 @@ Notation "x ?= y" := (I_compare x y) : I_scope.
 
 Definition I_eqs x y := I_compare x y = Eq.
 Notation "x == y" := (I_eqs x y) : I_scope.
+Notation "x ≠≠ y" := (¬ I_eqs x y) (at level 70, no associativity) : I_scope.
 
 Theorem I_compare_eq : ∀ x y, I_compare x y = Eq → (x = y)%I.
 Proof.

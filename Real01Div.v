@@ -237,14 +237,16 @@ Qed.
 
 Theorem I_div_lt_pred_0_l : ∀ x y b x1 y1 i,
   I_div_lt_pred_i x y i = (b, (x1, y1))
-  → (x = 0)%I
+  → (x == 0)%I
   → (x1 = 0)%I.
 Proof.
 intros x y b x1 y1 i Hi Hx.
 revert x y b x1 y1 Hi Hx.
 induction i; intros; simpl in Hi.
- injection Hi; intros; subst; assumption.
+ injection Hi; intros; subst.
+ apply I_compare_eq; assumption.
 
+bbb.
  remember (I_div_lt_pred_i x y i) as bxy eqn:Hbxy .
  symmetry in Hbxy.
  destruct bxy as (b2, (x2, y2)).
@@ -288,6 +290,7 @@ induction i; intros; simpl in Hi.
    destruct s1 as [j1| ].
     destruct Hs1 as (Hn1, Ht1).
     clear H1.
+bbb.
     right; intros j.
     unfold I_add_i; simpl.
     rewrite Hx2, xorb_true_l.
@@ -309,6 +312,7 @@ bbb.
   rewrite Hbxy, H1.
   apply I_sub_diag.
 Qed.
+*)
 
 Theorem I_add_i_diag : ∀ x i, I_add_i x x i = x.[S i].
 Proof.
@@ -357,15 +361,44 @@ induction i; intros; simpl in Hi.
   eapply IHi; eassumption.
 Qed.
 
-Theorem I_div_0_l : ∀ x, (x ≠ 0)%I → (0 / x = 0)%I.
+Theorem I_div_0_l : ∀ x, (x ≠≠ 0)%I → (0 / x = 0)%I.
 Proof.
+intros x Hx.
+unfold I_eqs, I_compare in Hx.
+remember (fst_same x (- 0%I) 0) as s1 eqn:Hs1 .
+destruct s1 as [dj1| ]; [ clear Hx | exfalso; apply Hx; reflexivity ].
+apply fst_same_sym_iff in Hs1; simpl in Hs1.
+destruct Hs1 as (Hn1, Ht1).
+unfold I_eq; simpl; intros i.
+unfold I_add_i; simpl.
+rewrite carry_diag; simpl.
+rewrite xorb_false_r.
+unfold carry; simpl.
+remember (fst_same (0 / x) 0 (S i)) as s2 eqn:Hs2 .
+apply fst_same_sym_iff in Hs2; simpl in Hs2.
+destruct s2 as [dj2| ].
+ destruct Hs2 as (Hn2, Ht2).
+ rewrite Ht2, xorb_false_r.
+ unfold I_div; simpl.
+ remember (I_div_max_iter_int x) as m eqn:Hm .
+ symmetry in Hm.
+ destruct m; [ reflexivity | simpl ].
+ destruct (I_lt_dec 0%I x) as [H1| H1]; simpl.
+  remember (I_div_lt_pred_i 0 x i) as bxy eqn:Hbxy .
+  symmetry in Hbxy.
+  destruct bxy as (b, (x1, y1)); simpl.
+  destruct (I_lt_dec x1 y1) as [H2| H2]; [ reflexivity | exfalso ].
+  remember Hbxy as H; clear HeqH.
+bbb.
+  apply I_div_lt_pred_0_l in H; [ idtac | reflexivity ].
+
 intros x Hx.
 unfold I_eq; simpl; intros i.
 unfold I_add_i; simpl.
 rewrite carry_diag; simpl.
 rewrite xorb_false_r.
 unfold carry; simpl.
-remember (fst_same (0%I / x) 0 (S i)) as s1 eqn:Hs1 .
+remember (fst_same (0 / x) 0 (S i)) as s1 eqn:Hs1 .
 apply fst_same_sym_iff in Hs1; simpl in Hs1.
 destruct s1 as [dj1| ].
  destruct Hs1 as (Hn1, Ht1).
