@@ -238,15 +238,15 @@ Qed.
 Theorem I_div_lt_pred_0_l : ∀ x y b x1 y1 i,
   I_div_lt_pred_i x y i = (b, (x1, y1))
   → (x == 0)%I
+  → (y ≠≠ 0)%I
   → (x1 = 0)%I.
 Proof.
-intros x y b x1 y1 i Hi Hx.
-revert x y b x1 y1 Hi Hx.
+intros x y b x1 y1 i Hi Hx Hy.
+revert x y b x1 y1 Hi Hx Hy.
 induction i; intros; simpl in Hi.
  injection Hi; intros; subst.
  apply I_compare_eq; assumption.
 
-bbb.
  remember (I_div_lt_pred_i x y i) as bxy eqn:Hbxy .
  symmetry in Hbxy.
  destruct bxy as (b2, (x2, y2)).
@@ -256,8 +256,9 @@ bbb.
   eapply IHi; eassumption.
 
   injection Hi; clear Hi; intros; subst b x1 y1.
-  apply IHi in Hbxy; [ idtac | assumption ].
-  apply I_zero_iff.
+  apply IHi in Hbxy; try assumption.
+  rewrite Hbxy.
+  apply I_zero_iff; simpl.
   apply I_zero_iff in Hbxy.
   destruct Hbxy as [Hx2| Hx2].
    simpl.
@@ -270,42 +271,18 @@ bbb.
     exfalso; apply H1; reflexivity.
 
     left; intros j.
+    rewrite I_add_i_comm.
     unfold I_add_i; simpl.
-    rewrite Hx2, xorb_false_l.
+    rewrite xorb_false_r.
     apply negb_true_iff.
     rewrite negb_xorb_l.
     rewrite <- Hs1, Hx2, xorb_false_l.
     unfold carry; simpl.
-    remember (fst_same x2 (- y2) (S j)) as s2 eqn:Hs2 .
+    remember (fst_same (- y2) 0 (S j)) as s2 eqn:Hs2 .
     destruct s2 as [dj2| ]; [ idtac | reflexivity ].
-    apply fst_same_sym_iff in Hs2; simpl in Hs2.
-    destruct Hs2 as (Hn2, Ht2).
-    rewrite <- negb_involutive in Ht2.
-    rewrite <- Hs1, Hx2 in Ht2; discriminate Ht2.
+    apply negb_false_iff.
+    rewrite <- Hs1, Hx2; reflexivity.
 
-   simpl.
-   unfold I_ge, I_compare in H1; simpl in H1.
-   remember (fst_same x2 (- y2) 0) as s1 eqn:Hs1 .
-   apply fst_same_sym_iff in Hs1; simpl in Hs1.
-   destruct s1 as [j1| ].
-    destruct Hs1 as (Hn1, Ht1).
-    clear H1.
-bbb.
-    right; intros j.
-    unfold I_add_i; simpl.
-    rewrite Hx2, xorb_true_l.
-    unfold carry; simpl.
-    remember (fst_same x2 (- y2) (S j)) as s2 eqn:Hs2 .
-    destruct s2 as [dj2| ].
-     apply fst_same_sym_iff in Hs2; simpl in Hs2.
-     destruct Hs2 as (Hn2, Ht2).
-     rewrite Hx2, xorb_true_r.
-     rewrite Hx2 in Ht1, Ht2.
-     apply negb_sym in Ht1; simpl in Ht1.
-     apply negb_sym in Ht2; simpl in Ht2.
-     destruct (lt_eq_lt_dec j j1) as [[H1| H1]| H1].
-      remember H1 as H; clear HeqH.
-      apply Hn1 in H.
 bbb.
   rewrite Hbxy in H1.
   apply I_ge_le_iff, I_le_0_r in H1.
