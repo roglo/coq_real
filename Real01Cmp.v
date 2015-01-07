@@ -44,6 +44,12 @@ destruct s as [j| ]; [ exfalso | idtac ].
  rewrite Hs, negb_involutive; reflexivity.
 Qed.
 
+Theorem I_compare_eqs : ∀ x y, (x == y)%I ↔ I_compare x y = Eq.
+Proof.
+intros x y.
+split; intros H; assumption.
+Qed.
+
 Theorem I_compare_lt : ∀ x y, (x < y)%I ↔ I_compare x y = Lt.
 Proof.
 intros x y.
@@ -107,6 +113,65 @@ split; intros H1 H; apply H1; clear H1.
 
  apply I_gt_lt_iff; assumption.
 Qed.
+
+(* strong equality == is equivalence relation *)
+
+Theorem I_eqs_refl : reflexive _ I_eqs.
+Proof.
+intros x.
+unfold I_eqs, I_compare.
+remember (fst_same x (- x) 0) as s eqn:Hs .
+destruct s as [j| ]; [ idtac | reflexivity ].
+apply fst_same_sym_iff in Hs; simpl in Hs.
+destruct Hs as (Hn, Hs).
+symmetry in Hs.
+exfalso; revert Hs; apply no_fixpoint_negb.
+Qed.
+
+Theorem I_eqs_sym : symmetric _ I_eqs.
+Proof.
+intros x y Hxy.
+unfold I_eqs, I_compare in Hxy.
+unfold I_eqs, I_compare.
+remember (fst_same x (- y) 0) as s1 eqn:Hs1 .
+remember (fst_same y (- x) 0) as s2 eqn:Hs2 .
+destruct s1 as [dj1| ]; [ idtac | clear Hxy ].
+ destruct x .[ dj1]; discriminate Hxy.
+
+ destruct s2 as [dj2| ]; [ exfalso | reflexivity ].
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ apply fst_same_sym_iff in Hs2; simpl in Hs2.
+ destruct Hs2 as (Hn2, Ht2).
+ rewrite Hs1, negb_involutive in Ht2.
+ symmetry in Ht2.
+ revert Ht2; apply no_fixpoint_negb.
+Qed.
+
+Theorem I_eqs_trans : transitive _ I_eqs.
+Proof.
+intros x y z Hxy Hyz.
+unfold I_eqs in Hxy, Hyz; unfold I_eqs.
+unfold I_compare in Hxy, Hyz; unfold I_compare.
+remember (fst_same x (- y) 0) as s1 eqn:Hs1 .
+remember (fst_same y (- z) 0) as s2 eqn:Hs2 .
+remember (fst_same x (- z) 0) as s3 eqn:Hs3 .
+destruct s3 as [dj3| ]; [ exfalso | reflexivity ].
+apply fst_same_sym_iff in Hs3; simpl in Hs3.
+destruct Hs3 as (Hn3, Ht3).
+apply fst_same_sym_iff in Hs1; simpl in Hs1.
+apply fst_same_sym_iff in Hs2; simpl in Hs2.
+destruct s1 as [j| ]; [ destruct x .[ j]; discriminate Hxy | clear Hxy ].
+destruct s2 as [j| ]; [ destruct y .[ j]; discriminate Hyz | clear Hyz ].
+rewrite Hs1, Hs2, negb_involutive in Ht3.
+rewrite negb_involutive in Ht3; symmetry in Ht3.
+revert Ht3; apply no_fixpoint_negb.
+Qed.
+
+Add Parametric Relation : _ I_eqs
+ reflexivity proved by I_eqs_refl
+ symmetry proved by I_eqs_sym
+ transitivity proved by I_eqs_trans
+ as I_rels.
 
 (* inequality ≤ is order *)
 
@@ -358,55 +423,51 @@ Theorem I_eqs_compare_compat : ∀ x y z t,
   → ((x ?= z)%I = (y ?= t)%I).
 Proof.
 intros x y z t Hxy Hzt.
-unfold I_eqs in Hxy; simpl in Hxy.
-unfold I_eqs in Hzt; simpl in Hzt.
+unfold I_eqs, I_compare in Hxy; simpl in Hxy.
+unfold I_eqs, I_compare in Hzt; simpl in Hzt.
 unfold I_compare; simpl.
 remember (fst_same x (- z) 0) as s1 eqn:Hs1 .
 remember (fst_same y (- t) 0) as s2 eqn:Hs2 .
+remember (fst_same x (- y) 0) as s3 eqn:Hs3 .
+remember (fst_same z (- t) 0) as s4 eqn:Hs4 .
+destruct s3 as [j| ]; [ destruct x .[ j]; discriminate Hxy | clear Hxy ].
+destruct s4 as [j| ]; [ destruct z .[ j]; discriminate Hzt | clear Hzt ].
+apply fst_same_sym_iff in Hs3; simpl in Hs3.
+apply fst_same_sym_iff in Hs4; simpl in Hs4.
 apply fst_same_sym_iff in Hs1; simpl in Hs1.
 apply fst_same_sym_iff in Hs2; simpl in Hs2.
 destruct s1 as [j1| ].
  destruct Hs1 as (Hn1, Ht1).
- remember (I_add_i x 0 j1) as b1 eqn:Hb1 .
- symmetry in Hb1; apply negb_sym in Ht1.
  destruct s2 as [j2| ].
   destruct Hs2 as (Hn2, Ht2).
-  remember (I_add_i y 0 j2) as b2 eqn:Hb2 .
-  symmetry in Hb2; apply negb_sym in Ht2.
+  rewrite Hs3, negb_involutive.
   destruct (lt_eq_lt_dec j1 j2) as [[H1| H1]| H1].
    remember H1 as H; clear HeqH.
    apply Hn2 in H.
-   rewrite negb_involutive in H.
-   rewrite <- Hxy, <- Hzt, Hb1, Ht1 in H.
-   symmetry in H.
-   exfalso; revert H; apply no_fixpoint_negb.
+   rewrite Hs3, H, <- Hs4, negb_involutive in Ht1.
+   symmetry in Ht1.
+   exfalso; revert Ht1; apply no_fixpoint_negb.
 
-   subst j2.
-   rewrite Hxy, Hb2 in Hb1.
-   subst b2; reflexivity.
+   subst j2; reflexivity.
 
    remember H1 as H; clear HeqH.
    apply Hn1 in H.
-   rewrite negb_involutive in H.
-   rewrite Hxy, Hzt, Hb2, Ht2 in H.
+   rewrite Hs3, Hs4, <- Ht2, negb_involutive in H.
    symmetry in H.
    exfalso; revert H; apply no_fixpoint_negb.
 
-  rewrite Hxy, Hs2 in Hb1.
-  rewrite negb_involutive in Hb1.
-  rewrite Hzt in Ht1.
-  rewrite Ht1 in Hb1.
-  exfalso; revert Hb1; apply no_fixpoint_negb.
+  rewrite Hs3, Hs4, <- Hs2, negb_involutive in Ht1.
+  symmetry in Ht1.
+  exfalso; revert Ht1; apply no_fixpoint_negb.
 
- destruct s2 as [j2| ]; [ idtac | reflexivity ].
+ destruct s2 as [dj2| ]; [ idtac | reflexivity ].
  destruct Hs2 as (Hn2, Ht2).
- rewrite <- Hxy, Hs1 in Ht2.
- rewrite negb_involutive in Ht2.
+ rewrite <- negb_involutive, <- Hs4 in Ht2.
+ rewrite <- negb_involutive, <- Hs1 in Ht2.
+ rewrite Hs3, negb_involutive in Ht2.
  symmetry in Ht2.
- rewrite Hzt in Ht2.
  exfalso; revert Ht2; apply no_fixpoint_negb.
 Qed.
-*)
 
 Theorem I_eqs_lt_compat : ∀ x y z t,
   (x == y)%I
@@ -417,95 +478,94 @@ Proof.
 intros x y z t Hxy Hzt Hxz.
 unfold I_lt in Hxz; unfold I_lt.
 rewrite <- Hxz; symmetry.
-apply I_eq_compare_compat; eassumption.
+apply I_eqs_compare_compat; eassumption.
 Qed.
 
-Theorem I_eq_le_compat : ∀ x y z t,
-  (x = y)%I
-  → (z = t)%I
+Theorem I_eqs_le_compat : ∀ x y z t,
+  (x == y)%I
+  → (z == t)%I
   → (x ≤ z)%I
   → (y ≤ t)%I.
 Proof.
 intros x y z t Hxy Hzt Hxz.
 unfold I_le in Hxz; unfold I_le.
 intros H; apply Hxz; rewrite <- H.
-apply I_eq_compare_compat; eassumption.
+apply I_eqs_compare_compat; eassumption.
 Qed.
 
-Theorem I_eq_gt_compat : ∀ x y z t,
-  (x = y)%I
-  → (z = t)%I
+Theorem I_eqs_gt_compat : ∀ x y z t,
+  (x == y)%I
+  → (z == t)%I
   → (x > z)%I
   → (y > t)%I.
 Proof.
 intros x y z t Hxy Hzt Hxz.
 unfold I_gt in Hxz; unfold I_gt.
 rewrite <- Hxz; symmetry.
-apply I_eq_compare_compat; eassumption.
+apply I_eqs_compare_compat; eassumption.
 Qed.
 
-Theorem I_eq_ge_compat : ∀ x y z t,
-  (x = y)%I
-  → (z = t)%I
+Theorem I_eqs_ge_compat : ∀ x y z t,
+  (x == y)%I
+  → (z == t)%I
   → (x ≥ z)%I
   → (y ≥ t)%I.
 Proof.
 intros x y z t Hxy Hzt Hxz.
 unfold I_ge in Hxz; unfold I_ge.
 intros H; apply Hxz; rewrite <- H.
-apply I_eq_compare_compat; eassumption.
+apply I_eqs_compare_compat; eassumption.
 Qed.
 
 (* morphisms *)
 
 Add Parametric Morphism : I_lt
-  with signature I_eq ==> I_eq ==> iff
+  with signature I_eqs ==> I_eqs ==> iff
   as I_lt_morph.
 Proof.
 intros x y Hxy z t Hzt.
 split; intros H.
- eapply I_eq_lt_compat; eassumption.
+ eapply I_eqs_lt_compat; eassumption.
 
  symmetry in Hxy, Hzt.
- eapply I_eq_lt_compat; eassumption.
+ eapply I_eqs_lt_compat; eassumption.
 Qed.
 
 Add Parametric Morphism : I_le
-  with signature I_eq ==> I_eq ==> iff
+  with signature I_eqs ==> I_eqs ==> iff
   as I_le_morph.
 Proof.
 intros x y Hxy z t Hzt.
 split; intros H.
- eapply I_eq_le_compat; eassumption.
+ eapply I_eqs_le_compat; eassumption.
 
  symmetry in Hxy, Hzt.
- eapply I_eq_le_compat; eassumption.
+ eapply I_eqs_le_compat; eassumption.
 Qed.
 
 Add Parametric Morphism : I_gt
-  with signature I_eq ==> I_eq ==> iff
+  with signature I_eqs ==> I_eqs ==> iff
   as I_gt_morph.
 Proof.
 intros x y Hxy z t Hzt.
 split; intros H.
- eapply I_eq_gt_compat; eassumption.
+ eapply I_eqs_gt_compat; eassumption.
 
  symmetry in Hxy, Hzt.
- eapply I_eq_gt_compat; eassumption.
+ eapply I_eqs_gt_compat; eassumption.
 Qed.
 
 Add Parametric Morphism : I_ge
-  with signature I_eq ==> I_eq ==> iff
+  with signature I_eqs ==> I_eqs ==> iff
   as I_ge_morph.
 Proof.
 intros x y Hxy z t Hzt.
 split; intros H.
- eapply I_eq_ge_compat; eassumption.
+ eapply I_eqs_ge_compat; eassumption.
 
  symmetry in Hxy, Hzt.
- eapply I_eq_ge_compat; eassumption.
+ eapply I_eqs_ge_compat; eassumption.
 Qed.
-*)
 
 (* miscellaneous *)
 
