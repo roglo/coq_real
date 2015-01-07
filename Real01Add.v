@@ -43,8 +43,7 @@ Definition carry x y i :=
 
 Definition I_add_i x y i := x.[i] ⊕ y.[i] ⊕ carry x y (S i).
 Definition I_add x y := {| rm := I_add_i x y |}.
-Definition I_eq x y := ∀ i,
-  rm (I_add x I_zero) i = rm (I_add y I_zero) i.
+Definition I_eq x y := ∀ i, rm (I_add x I_zero) i = rm (I_add y I_zero) i.
 
 Delimit Scope I_scope with I.
 Notation "x + y" := (I_add x y) (at level 50, left associativity) : I_scope.

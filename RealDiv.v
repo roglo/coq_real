@@ -725,6 +725,7 @@ apply fst_same_sym_iff in Hs1; simpl in Hs1.
 destruct s1 as [dj1| ]; simpl.
  destruct Hs1 as (Hn1, Ht1).
  rewrite Ht1; simpl.
+unfold R_div in Ht1; simpl in Ht1.
  rewrite Z.add_0_r.
  unfold R_div; simpl.
  remember (R_div_max_iter (R_abs 0) (R_abs x)) as m eqn:Hm .
@@ -770,7 +771,7 @@ destruct s1 as [dj1| ]; simpl.
       rewrite H1 in Ht2; discriminate Ht2.
 
       destruct dj2.
-       simpl in Hm2.
+       simpl in Hm2, Ht1.
 bbb.
        clear Hn2.
        clear Hmx.
