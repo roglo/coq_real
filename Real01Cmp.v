@@ -24,6 +24,9 @@ Notation "x > y" := (I_gt x y) : I_scope.
 Notation "x ≥ y" := (I_ge x y) : I_scope.
 Notation "x ?= y" := (I_compare x y) : I_scope.
 
+Definition I_eqs x y := I_compare x y = Eq.
+Notation "x == y" := (I_eqs x y) : I_scope.
+
 Theorem I_compare_eq : ∀ x y, I_compare x y = Eq → (x = y)%I.
 Proof.
 intros x y H.
@@ -349,14 +352,14 @@ intros x y.
 destruct (I_gt_dec x y); [ left | right ]; assumption.
 Qed.
 
-Theorem I_eq_compare_compat : ∀ x y z t,
-  (x = y)%I
-  → (z = t)%I
+Theorem I_eqs_compare_compat : ∀ x y z t,
+  (x == y)%I
+  → (z == t)%I
   → ((x ?= z)%I = (y ?= t)%I).
 Proof.
 intros x y z t Hxy Hzt.
-unfold I_eq in Hxy; simpl in Hxy.
-unfold I_eq in Hzt; simpl in Hzt.
+unfold I_eqs in Hxy; simpl in Hxy.
+unfold I_eqs in Hzt; simpl in Hzt.
 unfold I_compare; simpl.
 remember (fst_same x (- z) 0) as s1 eqn:Hs1 .
 remember (fst_same y (- t) 0) as s2 eqn:Hs2 .
@@ -403,10 +406,11 @@ destruct s1 as [j1| ].
  rewrite Hzt in Ht2.
  exfalso; revert Ht2; apply no_fixpoint_negb.
 Qed.
+*)
 
-Theorem I_eq_lt_compat : ∀ x y z t,
-  (x = y)%I
-  → (z = t)%I
+Theorem I_eqs_lt_compat : ∀ x y z t,
+  (x == y)%I
+  → (z == t)%I
   → (x < z)%I
   → (y < t)%I.
 Proof.
@@ -501,6 +505,7 @@ split; intros H.
  symmetry in Hxy, Hzt.
  eapply I_eq_ge_compat; eassumption.
 Qed.
+*)
 
 (* miscellaneous *)
 
