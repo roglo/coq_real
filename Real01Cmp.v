@@ -28,10 +28,10 @@ Definition I_eqs x y := I_compare x y = Eq.
 Notation "x == y" := (I_eqs x y) : I_scope.
 Notation "x ≠≠ y" := (¬ I_eqs x y) (at level 70, no associativity) : I_scope.
 
-Theorem I_compare_eq : ∀ x y, I_compare x y = Eq → (x = y)%I.
+Theorem I_eqs_eq : ∀ x y, (x == y)%I → (x = y)%I.
 Proof.
 intros x y H.
-unfold I_compare in H.
+unfold I_eqs, I_compare in H.
 remember (fst_same x (- y) 0) as s eqn:Hs .
 apply fst_same_sym_iff in Hs; simpl in Hs.
 destruct s as [j| ]; [ exfalso | idtac ].
@@ -39,8 +39,7 @@ destruct s as [j| ]; [ exfalso | idtac ].
 
  unfold I_eq; intros i; simpl.
  unfold I_add_i; simpl.
- rewrite Hs, negb_involutive.
- f_equal.
+ rewrite Hs, negb_involutive; f_equal.
  apply carry_compat_r; intros j.
  rewrite Hs, negb_involutive; reflexivity.
 Qed.

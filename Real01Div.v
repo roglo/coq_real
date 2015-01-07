@@ -241,8 +241,7 @@ Theorem I_div_lt_pred_0_l : ∀ x y b x1 y1 i,
   → (x1 = 0)%I.
 Proof.
 intros x y b x1 y1 i Hi Hx.
-apply I_compare_eq.
-apply -> I_compare_eqs.
+apply I_eqs_eq.
 revert x y b x1 y1 Hi Hx.
 induction i; intros; simpl in Hi.
  injection Hi; intros; subst; assumption.
