@@ -255,6 +255,7 @@ induction i; intros; simpl in Hi.
 
   injection Hi; clear Hi; intros; subst b x1 y1.
   apply IHi in Hbxy; [ idtac | assumption ].
+bbb.
   rewrite Hbxy in H1.
   apply I_ge_le_iff, I_le_0_r in H1.
   rewrite Hbxy, H1.
