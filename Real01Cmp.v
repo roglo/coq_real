@@ -686,4 +686,15 @@ symmetry in Ht1.
 revert Ht1; apply no_fixpoint_negb.
 Qed.
 
+Theorem I_lt_0_r : ∀ x, ¬(x < 0)%I.
+Proof.
+intros x H.
+unfold I_lt, I_compare in H.
+remember (fst_same x (- 0%I) 0) as s1 eqn:Hs1 .
+destruct s1 as [dj1| ]; [ idtac | discriminate H ].
+apply fst_same_sym_iff in Hs1; simpl in Hs1.
+destruct Hs1 as (Hn1, Ht1).
+rewrite Ht1 in H; discriminate H.
+Qed.
+
 Close Scope nat_scope.
