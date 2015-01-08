@@ -412,7 +412,11 @@ destruct s2 as [dj2| ].
     destruct x1 .[ j3]; discriminate Hx.
 
     apply fst_same_sym_iff in Hs3; simpl in Hs3.
-    destruct i; simpl in Hbxy.
+bbb.
+    clear Hn2 Ht2.
+    revert b x1 y1 Hbxy H2 Hs3.
+    induction i; intros.
+     simpl in Hbxy.
      injection Hbxy; clear Hbxy; intros; subst b x1 y1.
      apply I_zero_iff2 in H2; simpl in H2.
      destruct H2 as [H2| H2].
@@ -427,6 +431,7 @@ destruct s2 as [dj2| ].
 
       pose proof (H2 O) as H4; discriminate H4.
 
+     simpl in Hbxy.
      rename H into Hx.
      remember (I_div_lt_pred_i 0 x i) as bxy2 eqn:Hbxy2 .
      symmetry in Hbxy2.
@@ -438,9 +443,43 @@ destruct s2 as [dj2| ].
       destruct H2 as [H2| H2].
        rewrite H2 in H3.
        revert H3; apply I_lt_0_r.
-bbb.
-       apply I_lt_nge in H3.
-       apply H3.
+
+       eapply IHi; try eassumption; try reflexivity.
+       apply I_zero_iff; right; assumption.
+
+      injection Hbxy; clear Hbxy; intros; subst b x1 y1.
+      apply I_div_2_eq_0 in H2.
+      eapply IHi; try reflexivity; try assumption.
+      intros j.
+      pose proof (Hs3 j) as H.
+      simpl in H.
+      unfold I_add_i in H; simpl in H.
+      apply I_zero_iff in H2.
+      destruct H2 as [H2| H2].
+       rewrite H2, xorb_true_r in H.
+       unfold carry in H; simpl in H.
+       remember (fst_same x2 (- y2) (S j)) as s4 eqn:Hs4 .
+       destruct s4 as [dj4| ].
+        apply fst_same_sym_iff in Hs4; simpl in Hs4.
+        destruct Hs4 as (Hn4, Ht4).
+        rewrite Ht4, H2, xorb_true_r in H.
+        rewrite negb_involutive in H; assumption.
+
+        rewrite xorb_true_r in H.
+        rewrite negb_involutive in H; assumption.
+
+       rewrite H2, xorb_false_r in H.
+       unfold carry in H; simpl in H.
+       remember (fst_same x2 (- y2) (S j)) as s4 eqn:Hs4 .
+       destruct s4 as [dj4| ].
+        apply fst_same_sym_iff in Hs4; simpl in Hs4.
+        destruct Hs4 as (Hn4, Ht4).
+        rewrite Ht4, H2, xorb_false_r in H.
+        assumption.
+
+        apply fst_same_sym_iff in Hs4; simpl in Hs4.
+
+      Focus 1.
 bbb.
 
   apply I_div_lt_pred_0_l in H; [ idtac | reflexivity ].
