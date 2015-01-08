@@ -704,13 +704,14 @@ destruct nx; simpl in Hx.
  left; intros i; apply Hx.
 Qed.
 
-Theorem R_int_div_0_l : ∀ x i,
+(* mmm... ???
+Theorem R_int_div_0_l : ∀ x,
   (x ≠ 0)%R
-  → R_frac (0 / x).[i] = false
+  → R_frac (0 / x).[0] = false
   → R_int (0 / x) = 0.
 Proof.
-intros x i Hx Hf.
-bbb.
+intros x Hx Hf.
+unfold R_div in Hf; simpl in Hf.
 unfold R_div; simpl.
 remember (R_div_max_iter (R_abs 0) (R_abs x)) as m eqn:Hm .
 remember (R_div_equiv m (R_abs 0) (R_abs x)) as mxy eqn:Hmxy .
