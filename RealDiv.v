@@ -759,6 +759,22 @@ destruct m2; simpl in Hrif.
       rewrite Hfx in H; discriminate H.
 
       rewrite Hfx in Ht1; discriminate Ht1.
+
+     unfold R_abs in Hc; simpl in Hc.
+     remember (R_is_neg x) as nx eqn:Hnx .
+     symmetry in Hnx.
+     destruct nx; simpl in Hc; simpl.
+      apply Z.sub_move_0_l in Hc.
+      rewrite Z.opp_involutive in Hc.
+      rewrite <- Hc; reflexivity.
+
+      unfold R_abs in H1.
+      rewrite Hnx in H1; simpl in H1.
+      rewrite I_zero_eqs_iff in H1.
+      pose proof (H1 O) as H.
+      rewrite Hs1 in H; discriminate H.
+
+    Focus 1.
 bbb.
 *)
 
