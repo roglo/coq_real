@@ -73,9 +73,7 @@ Fixpoint I_div_lim m x y :=
   end.
 Arguments I_div_lim m%nat x%I y%I.
 
-Definition I_div x y :=
-  if I_zerop y then I_zero
-  else snd (I_div_lim (I_div_max_iter_int y) x y).
+Definition I_div x y := snd (I_div_lim (I_div_max_iter_int y) x y).
 Arguments I_div x%I y%I.
 
 Notation "x / y" := (I_div x y) : I_scope.
@@ -396,7 +394,6 @@ destruct s1 as [j1| ]; [ exfalso | reflexivity ].
 apply fst_same_sym_iff in Hs1; simpl in Hs1.
 destruct Hs1 as (Hn1, Hs1).
 unfold I_div in Hs1; simpl in Hs1.
-destruct (I_zerop x) as [H1| H1]; [ discriminate Hs1 | idtac ].
 remember (I_div_max_iter_int x) as m eqn:Hm .
 symmetry in Hm.
 destruct m; [ discriminate Hs1 | simpl in Hs1 ].

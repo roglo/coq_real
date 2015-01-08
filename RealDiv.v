@@ -100,14 +100,12 @@ Fixpoint R_div_equiv m x y :=
   end.
 
 Definition R_div x y :=
-  if R_zerop y then R_zero
-  else
-    let ax := R_abs x in
-    let ay := R_abs y in
-    let (mx, my) := R_div_equiv (R_div_max_iter ax ay) ax ay in
-    let (ri, rf) := I_div_lim (I_div_max_iter_int my) mx my in
-    {| R_int := if R_is_neg x ⊕ R_is_neg y then -Z.of_nat ri else Z.of_nat ri;
-       R_frac := rf |}.
+  let ax := R_abs x in
+  let ay := R_abs y in
+  let (mx, my) := R_div_equiv (R_div_max_iter ax ay) ax ay in
+  let (ri, rf) := I_div_lim (I_div_max_iter_int my) mx my in
+  {| R_int := if R_is_neg x ⊕ R_is_neg y then - Z.of_nat ri else Z.of_nat ri;
+     R_frac := rf |}.
 Arguments R_div x%R y%R.
 
 Notation "x / y" := (R_div x y) : R_scope.
@@ -557,7 +555,6 @@ destruct s1 as [dj1| ].
  destruct Hs1 as (Hn1, Ht1).
  rewrite Ht1, xorb_false_r.
  unfold R_div; simpl.
- destruct (R_zerop x) as [| H]; [ contradiction | clear H ].
  remember (R_div_max_iter (R_abs 0) (R_abs x)) as m eqn:Hm .
  remember (R_div_equiv m (R_abs 0) (R_abs x)) as mxy eqn:Hmxy .
  symmetry in Hmxy.
@@ -624,7 +621,6 @@ destruct s1 as [dj1| ].
  pose proof (Hs1 O) as H.
  rewrite Nat.add_0_r in H.
  unfold R_div in H; simpl in H.
- destruct (R_zerop x) as [| I]; [ contradiction | clear I ].
  remember (R_div_max_iter (R_abs 0) (R_abs x)) as m eqn:Hm .
  remember (R_div_equiv m (R_abs 0) (R_abs x)) as mxy eqn:Hmxy .
  symmetry in Hmxy.
@@ -704,7 +700,6 @@ Theorem R_int_div_0_l : ∀ x,
 Proof.
 intros x Hx.
 unfold R_div; simpl.
-destruct (R_zerop x) as [| H]; [ contradiction | clear H ].
 remember (R_div_max_iter (R_abs 0) (R_abs x)) as m eqn:Hm .
 remember (R_div_equiv m (R_abs 0) (R_abs x)) as mxy eqn:Hmxy .
 symmetry in Hmxy.
