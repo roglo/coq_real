@@ -704,7 +704,6 @@ destruct nx; simpl in Hx.
  left; intros i; apply Hx.
 Qed.
 
-(* mmm... ???
 Theorem R_int_div_0_l : ∀ x,
   (x ≠ 0)%R
   → R_frac (0 / x).[0] = false
@@ -765,6 +764,8 @@ destruct m2; simpl in Hrif.
      destruct H1 as [H1| H1].
       simpl in Hc.
 bbb.
+   x = (-1, 0.000...)
+
 *)
 
 Theorem R_div_0_l : ∀ x, (x ≠ 0)%R → (0 / x = 0)%R.

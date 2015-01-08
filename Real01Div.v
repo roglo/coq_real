@@ -61,6 +61,7 @@ Arguments I_div_lt_pred_i x%I y%I i%nat.
 Definition I_div_lt x y := {| rm i := fst (I_div_lt_pred_i x y (S i)) |}.
 Arguments I_div_lt x%I y%I.
 
+(* shitty: bad if y=0 *)
 Fixpoint I_div_lim m x y :=
   match m with
   | O => (O, I_zero)
