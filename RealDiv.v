@@ -692,6 +692,34 @@ destruct s1 as [dj1| ].
    rewrite H1 in Ht2; discriminate Ht2.
 Qed.
 
+Theorem R_int_div_0_l : ∀ x : ℝ, (x ≠ 0)%R → R_int (0 / x) = 0.
+Proof.
+intros x Hx.
+unfold R_div; simpl.
+remember (R_div_max_iter (R_abs 0) (R_abs x)) as m eqn:Hm .
+remember (R_div_equiv m (R_abs 0) (R_abs x)) as mxy eqn:Hmxy .
+symmetry in Hmxy.
+destruct mxy as (mx, my); simpl.
+remember (I_div_max_iter_int my) as m2 eqn:Hm2 .
+symmetry in Hm2.
+remember (I_div_lim m2 mx my) as rif eqn:Hrif .
+symmetry in Hrif.
+destruct rif as (ri, rf); simpl.
+destruct m2; simpl in Hrif.
+ injection Hrif; intros; subst ri.
+ destruct (R_is_neg x); reflexivity.
+
+ destruct (I_lt_dec mx my) as [H1| H1].
+  injection Hrif; clear Hrif; intros; subst ri rf; simpl.
+  destruct (R_is_neg x); reflexivity.
+
+  remember Hmxy as H; clear HeqH.
+  apply R_div_equiv_0_l in H; [ idtac | apply R_abs_0 ].
+  rename H into Hmx.
+  rewrite Hmx in H1.
+  apply I_ge_le_iff, I_le_0_r_eqs_iff in H1.
+bbb.
+
 Theorem R_div_0_l : ∀ x, (x ≠ 0)%R → (0 / x = 0)%R.
 Proof.
 intros x Hx.
@@ -704,8 +732,10 @@ apply fst_same_sym_iff in Hs1; simpl in Hs1.
 destruct s1 as [dj1| ]; simpl.
  destruct Hs1 as (Hn1, Ht1).
  rewrite Ht1; simpl.
-unfold R_div in Ht1; simpl in Ht1.
  rewrite Z.add_0_r.
+bbb.
+
+unfold R_div in Ht1; simpl in Ht1.
  unfold R_div; simpl.
  remember (R_div_max_iter (R_abs 0) (R_abs x)) as m eqn:Hm .
  remember (R_div_equiv m (R_abs 0) (R_abs x)) as mxy eqn:Hmxy .
