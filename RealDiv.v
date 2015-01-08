@@ -589,11 +589,11 @@ destruct s1 as [dj1| ].
      apply I_div_lt_pred_0_l in H; [ simpl in H | reflexivity ].
      rename H into Hx1.
      rewrite Hx1 in H2.
-     apply I_ge_le_iff, I_le_0_r in H2.
-bbb.
-     apply I_div_lt_pred_r_eq_0 in Hbxy; [ idtac | assumption ].
+     apply I_ge_le_iff, I_le_0_r_eqs_iff in H2.
+     apply I_div_lt_pred_r_eqs_0 in Hbxy; [ idtac | assumption ].
      rewrite Hbxy in H1.
      revert H1; apply I_lt_irrefl.
+vvv.
 
      apply R_div_equiv_0_l in Hmxy.
       remember Hbxy as H; clear HeqH.
