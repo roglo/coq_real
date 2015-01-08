@@ -510,7 +510,7 @@ Qed.
 Theorem R_div_equiv_0_l : ∀ x y m mx my,
   R_div_equiv m x y = (mx, my)
   → (x = 0)%R
-  → (mx = 0)%I.
+  → (mx == 0)%I.
 Proof.
 intros x y m mx my Hmxy Hx.
 revert x y mx my Hmxy Hx.
@@ -525,7 +525,18 @@ induction m; intros.
   injection Hmxy; clear Hmxy; intros; subst mx my.
   unfold R_eq in Hx.
   simpl in Hx.
-  destruct Hx; assumption.
+  destruct Hx as (Hi, Hf).
+  apply I_zero_iff2 in Hf.
+  destruct Hf as [Hf| Hf]; [ assumption | idtac ].
+  rewrite carry_diag in Hi; simpl in Hi.
+  apply andb_true_iff in Hc.
+  destruct Hc as (Hxi, Hyi).
+  apply Z.eqb_eq in Hxi.
+  rewrite Hxi in Hi; simpl in Hi.
+  unfold carry in Hi; simpl in Hi.
+  remember (fst_same (R_frac x) 0 0) as s1 eqn:Hs1 .
+  destruct s1 as [dj1| ]; [ idtac | discriminate Hi ].
+  rewrite Hf in Hi; discriminate Hi.
 
   eapply IHm; [ eassumption | idtac ].
   apply R_div_2_0_iff in Hx; assumption.
@@ -593,20 +604,20 @@ destruct s1 as [dj1| ].
      apply I_div_lt_pred_r_eqs_0 in Hbxy; [ idtac | assumption ].
      rewrite Hbxy in H1.
      revert H1; apply I_lt_irrefl.
-vvv.
 
      apply R_div_equiv_0_l in Hmxy.
       remember Hbxy as H; clear HeqH.
       apply I_div_lt_pred_0_l in H; [ idtac | assumption ].
       rename H into Hx1.
       rewrite Hx1 in H2.
-      apply I_ge_le_iff, I_le_0_r in H2.
-      apply I_div_lt_pred_r_eq_0 in Hbxy; [ idtac | assumption ].
+      apply I_ge_le_iff, I_le_0_r_eqs_iff in H2.
+      apply I_div_lt_pred_r_eqs_0 in Hbxy; [ idtac | assumption ].
       rewrite Hmxy, Hbxy in H1.
       revert H1; apply I_lt_irrefl.
 
       unfold R_abs; simpl.
       apply R_div_2_0.
+bbb.
 
    remember Hmxy as H; clear HeqH.
    apply R_div_equiv_0_l in H; [ idtac | apply R_abs_0 ].
