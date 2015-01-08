@@ -698,7 +698,6 @@ destruct nx; simpl in Hx.
  left; intros i; apply Hx.
 Qed.
 
-(* no
 Theorem R_int_div_0_l : ∀ x,
   (x ≠ 0)%R
   → R_int (0 / x) = 0.
@@ -741,7 +740,9 @@ destruct m2; simpl in Hrif.
     exfalso; apply Hx.
     unfold R_eq; simpl.
     apply Z.eqb_eq in Hc.
-    apply R_frac_R_abs_0 in H1.
+    remember H1 as H; clear HeqH.
+    apply R_frac_R_abs_0 in H.
+    rename H into Hfx.
     split; [ idtac | assumption ].
     rewrite carry_diag; simpl.
     unfold carry; simpl.
@@ -754,11 +755,16 @@ destruct m2; simpl in Hrif.
      remember (R_is_neg x) as nx eqn:Hnx .
      symmetry in Hnx.
      destruct nx; [ exfalso | assumption ].
-     apply I_zero_iff in H1.
-     destruct H1 as [H1| H1].
-      simpl in Hc.
+     apply I_zero_iff in Hfx.
+     destruct Hfx as [Hfx| Hfx].
+      rewrite I_zero_eqs_iff in H1.
+      unfold R_abs in H1.
+      rewrite Hnx in H1; simpl in H1.
+      pose proof (H1 O) as H.
+      rewrite Hfx in H; discriminate H.
+
+      rewrite Hfx in Ht1; discriminate Ht1.
 bbb.
-   x = (-1, 0.000...)
 *)
 
 Theorem R_div_0_l : ∀ x, (x ≠ 0)%R → (0 / x = 0)%R.
