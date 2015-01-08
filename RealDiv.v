@@ -723,6 +723,12 @@ destruct m2; simpl in Hrif.
   rewrite Hmx in H1.
   apply I_ge_le_iff, I_le_0_r_eqs_iff in H1.
   symmetry in Hm.
+(*
+  clear Hm Hrif Hm2; exfalso.
+  revert x mx my Hx Hmxy H1 Hmx.
+  induction m; intros.
+*)
+  exfalso; clear m2 ri rf Hrif Hm2.
   destruct m.
    exfalso; revert Hm; apply R_div_max_iter_abs_ne_0.
 
@@ -774,8 +780,47 @@ destruct m2; simpl in Hrif.
       pose proof (H1 O) as H.
       rewrite Hs1 in H; discriminate H.
 
-    Focus 1.
+    apply Z.eqb_neq in Hc.
+    destruct m.
+     simpl in Hmxy.
+     unfold R_div_max_iter in Hm.
+     simpl in Hm.
+     rewrite Z2Nat.inj_add in Hm.
+      simpl in Hm.
+      unfold Pos.to_nat in Hm; simpl in Hm.
+      apply Nat.add_sub_eq_r in Hm; simpl in Hm.
+      rewrite <- Z2Nat.inj_0 in Hm.
+      apply Z2Nat.inj in Hm; [ idtac | reflexivity | idtac ].
+       symmetry in Hm; contradiction.
+
+       apply R_int_abs.
+
+      apply R_int_abs.
+
+      apply Z.le_0_1.
+
+     simpl in Hmxy.
+     remember (R_int (R_abs x) / 2 =? 0) as c1 eqn:Hc1 .
+     symmetry in Hc1.
+     destruct c1.
+      injection Hmxy; clear Hmxy; intros; subst mx my.
+      apply Z.eqb_eq in Hc1.
+      destruct (Z_eq_dec (R_int (R_abs x)) 1) as [H2| H2].
+       rewrite H2 in H1; simpl in H1.
+       rewrite I_zero_eqs_iff in H1; simpl in H1.
+       pose proof (H1 O) as H; discriminate H.
+
+       apply Z.div_small_iff in Hc1; [ idtac | intros H; discriminate H ].
+       destruct Hc1 as [(H3, H4)| (H3, H4)].
+        omega.
+
+        eapply Z.lt_le_trans in H3; [ idtac | eassumption ].
+        apply Z.nle_gt in H3.
+        apply H3, Z.le_0_2.
+
+      apply Z.eqb_neq in Hc1.
 bbb.
+  fucking induction
 *)
 
 Theorem R_div_0_l : ∀ x, (x ≠ 0)%R → (0 / x = 0)%R.
