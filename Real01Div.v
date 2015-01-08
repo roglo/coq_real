@@ -61,7 +61,6 @@ Arguments I_div_lt_pred_i x%I y%I i%nat.
 Definition I_div_lt x y := {| rm i := fst (I_div_lt_pred_i x y (S i)) |}.
 Arguments I_div_lt x%I y%I.
 
-(* shitty: bad if y=0 *)
 Fixpoint I_div_lim m x y :=
   match m with
   | O => (O, I_zero)
@@ -74,7 +73,9 @@ Fixpoint I_div_lim m x y :=
   end.
 Arguments I_div_lim m%nat x%I y%I.
 
-Definition I_div x y := snd (I_div_lim (I_div_max_iter_int y) x y).
+Definition I_div x y :=
+  if I_zerop y then I_zero
+  else snd (I_div_lim (I_div_max_iter_int y) x y).
 Arguments I_div x%I y%I.
 
 Notation "x / y" := (I_div x y) : I_scope.
@@ -395,15 +396,16 @@ destruct s1 as [j1| ]; [ exfalso | reflexivity ].
 apply fst_same_sym_iff in Hs1; simpl in Hs1.
 destruct Hs1 as (Hn1, Hs1).
 unfold I_div in Hs1; simpl in Hs1.
+destruct (I_zerop x) as [H1| H1]; [ discriminate Hs1 | idtac ].
 remember (I_div_max_iter_int x) as m eqn:Hm .
 symmetry in Hm.
 destruct m; [ discriminate Hs1 | simpl in Hs1 ].
-destruct (I_lt_dec 0%I x) as [H1| H1].
+destruct (I_lt_dec 0%I x) as [H2| H2].
  simpl in Hs1.
  remember (I_div_lt_pred_i 0 x j1) as bxy eqn:Hbxy .
  symmetry in Hbxy.
  destruct bxy as (b, (x1, y1)); simpl in Hs1.
- destruct (I_lt_dec x1 y1) as [H2| H2]; [ discriminate Hs1 | clear Hs1 ].
+ destruct (I_lt_dec x1 y1) as [H3| H3]; [ discriminate Hs1 | clear Hs1 ].
  remember (fst_same x (- 0%I) 0) as s2 eqn:Hs2 .
  destruct s2 as [j2| ].
   clear Hx.
@@ -411,11 +413,11 @@ destruct (I_lt_dec 0%I x) as [H1| H1].
   destruct Hs2 as (Hn2, Ht2).
   remember Hbxy as H; clear HeqH.
   apply I_div_lt_pred_0_l in H; [ idtac | reflexivity ].
-  rewrite H in H2.
-  apply I_ge_le_iff, I_le_0_r_eqs_iff in H2.
+  rewrite H in H3.
+  apply I_ge_le_iff, I_le_0_r_eqs_iff in H3.
   apply I_div_lt_pred_r_eqs_0 in Hbxy; [ idtac | assumption ].
-  rewrite Hbxy in H1.
-  revert H1; apply I_lt_irrefl.
+  rewrite Hbxy in H2.
+  revert H2; apply I_lt_irrefl.
 
   apply Hx; reflexivity.
 
@@ -423,9 +425,9 @@ destruct (I_lt_dec 0%I x) as [H1| H1].
  destruct s2 as [j2| ].
   apply fst_same_sym_iff in Hs2; simpl in Hs2.
   destruct Hs2 as (Hn2, Ht2).
-  apply I_ge_le_iff, I_le_0_r_eqs_iff in H1.
-  rewrite I_zero_eqs_iff in H1.
-  rewrite H1 in Ht2; discriminate Ht2.
+  apply I_ge_le_iff, I_le_0_r_eqs_iff in H2.
+  rewrite I_zero_eqs_iff in H2.
+  rewrite H2 in Ht2; discriminate Ht2.
 
   apply Hx; reflexivity.
 Qed.

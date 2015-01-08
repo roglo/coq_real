@@ -100,12 +100,14 @@ Fixpoint R_div_equiv m x y :=
   end.
 
 Definition R_div x y :=
-  let ax := R_abs x in
-  let ay := R_abs y in
-  let (mx, my) := R_div_equiv (R_div_max_iter ax ay) ax ay in
-  let (ri, rf) := I_div_lim (I_div_max_iter_int my) mx my in
-  {| R_int := if R_is_neg x ⊕ R_is_neg y then - Z.of_nat ri else Z.of_nat ri;
-     R_frac := rf |}.
+  if R_zerop y then R_zero
+  else
+    let ax := R_abs x in
+    let ay := R_abs y in
+    let (mx, my) := R_div_equiv (R_div_max_iter ax ay) ax ay in
+    let (ri, rf) := I_div_lim (I_div_max_iter_int my) mx my in
+    {| R_int := if R_is_neg x ⊕ R_is_neg y then -Z.of_nat ri else Z.of_nat ri;
+       R_frac := rf |}.
 Arguments R_div x%R y%R.
 
 Notation "x / y" := (R_div x y) : R_scope.
@@ -555,6 +557,7 @@ Theorem R_frac_div_0_l : ∀ x,
   → (R_frac (0 / x) = 0)%I.
 Proof.
 intros x Hx.
+bbb.
 unfold I_eq; simpl; intros i.
 unfold I_add_i; simpl.
 rewrite xorb_false_r, carry_diag; simpl.
