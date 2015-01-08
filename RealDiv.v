@@ -470,12 +470,11 @@ induction m; intros.
 Qed.
 *)
 
-(*
-Theorem max_iter_int_part_abs_ne_0 : ∀ x y,
-  max_iter_int_part (R_abs x) (R_abs y) ≠ 0%nat.
+Theorem R_div_max_iter_abs_ne_0 : ∀ x y,
+   R_div_max_iter (R_abs x) (R_abs y) ≠ 0%nat.
 Proof.
 intros x y Hm.
-unfold max_iter_int_part in Hm; simpl in Hm.
+unfold R_div_max_iter in Hm; simpl in Hm.
 remember (R_int (R_abs x)) as iax eqn:Hiax .
 symmetry in Hiax.
 destruct iax as [| iax| iax].
@@ -503,7 +502,6 @@ destruct iax as [| iax| iax].
  apply Z.nlt_ge in H.
  exfalso; apply H, Pos2Z.neg_is_neg.
 Qed.
-*)
 
 (* 0: left absorbing element *)
 
@@ -545,7 +543,7 @@ Qed.
 (*
 Theorem R_div_equiv_r_eq_0 : ∀ x y m mx my,
   R_div_equiv m x y = (mx, my)
-  → (my = 0)%I
+  → (my == 0)%I
   → (y = 0)%R.
 Proof.
 intros x y m mx my Hmxy Hmy.
@@ -692,9 +690,27 @@ destruct s1 as [dj1| ].
    rewrite H1 in Ht2; discriminate Ht2.
 Qed.
 
-Theorem R_int_div_0_l : ∀ x : ℝ, (x ≠ 0)%R → R_int (0 / x) = 0.
+Theorem R_frac_R_abs_0 : ∀ x, (R_frac (R_abs x) == 0)%I → (R_frac x = 0)%I.
 Proof.
 intros x Hx.
+apply I_zero_iff.
+rewrite I_zero_eqs_iff in Hx.
+unfold R_abs in Hx; simpl in Hx.
+remember (R_is_neg x) as nx eqn:Hnx .
+symmetry in Hnx.
+destruct nx; simpl in Hx.
+ right; intros i; apply negb_false_iff, Hx.
+
+ left; intros i; apply Hx.
+Qed.
+
+Theorem R_int_div_0_l : ∀ x i,
+  (x ≠ 0)%R
+  → R_frac (0 / x).[i] = false
+  → R_int (0 / x) = 0.
+Proof.
+intros x i Hx Hf.
+bbb.
 unfold R_div; simpl.
 remember (R_div_max_iter (R_abs 0) (R_abs x)) as m eqn:Hm .
 remember (R_div_equiv m (R_abs 0) (R_abs x)) as mxy eqn:Hmxy .
@@ -718,7 +734,37 @@ destruct m2; simpl in Hrif.
   rename H into Hmx.
   rewrite Hmx in H1.
   apply I_ge_le_iff, I_le_0_r_eqs_iff in H1.
+  symmetry in Hm.
+  destruct m.
+   exfalso; revert Hm; apply R_div_max_iter_abs_ne_0.
+
+   simpl in Hmxy.
+   remember (R_int (R_abs x) =? 0) as c eqn:Hc .
+   symmetry in Hc.
+   destruct c.
+    injection Hmxy; clear Hmxy; intros; subst mx my.
+    clear Hmx.
+    exfalso; apply Hx.
+    unfold R_eq; simpl.
+    apply Z.eqb_eq in Hc.
+    apply R_frac_R_abs_0 in H1.
+    split; [ idtac | assumption ].
+    rewrite carry_diag; simpl.
+    unfold carry; simpl.
+    remember (fst_same (R_frac x) 0 0) as s1 eqn:Hs1 .
+    apply fst_same_sym_iff in Hs1; simpl in Hs1.
+    destruct s1 as [dj1| ].
+     destruct Hs1 as (Hn1, Ht1).
+     rewrite Ht1, Z.add_0_r.
+     unfold R_abs in Hc; simpl in Hc.
+     remember (R_is_neg x) as nx eqn:Hnx .
+     symmetry in Hnx.
+     destruct nx; [ exfalso | assumption ].
+     apply I_zero_iff in H1.
+     destruct H1 as [H1| H1].
+      simpl in Hc.
 bbb.
+*)
 
 Theorem R_div_0_l : ∀ x, (x ≠ 0)%R → (0 / x = 0)%R.
 Proof.

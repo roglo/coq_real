@@ -35,7 +35,7 @@ unfold I_eqs, I_compare in H.
 remember (fst_same x (- y) 0) as s eqn:Hs .
 apply fst_same_sym_iff in Hs; simpl in Hs.
 destruct s as [j| ]; [ exfalso | idtac ].
- destruct x .[ j]; discriminate H.
+ destruct (x .[ j]); discriminate H.
 
  unfold I_eq; intros i; simpl.
  unfold I_add_i; simpl.
@@ -81,9 +81,9 @@ destruct s1 as [j1| ].
 
    subst j2; rewrite Hn1.
    split; intros H.
-    destruct y .[ j1]; [ discriminate H | reflexivity ].
+    destruct (y .[ j1]); [ discriminate H | reflexivity ].
 
-    destruct y .[ j1]; [ discriminate H | reflexivity ].
+    destruct (y .[ j1]); [ discriminate H | reflexivity ].
 
    apply Hs1 in H1.
    rewrite negb_involutive, Hn2 in H1.
@@ -136,7 +136,7 @@ unfold I_eqs, I_compare.
 remember (fst_same x (- y) 0) as s1 eqn:Hs1 .
 remember (fst_same y (- x) 0) as s2 eqn:Hs2 .
 destruct s1 as [dj1| ]; [ idtac | clear Hxy ].
- destruct x .[ dj1]; discriminate Hxy.
+ destruct (x .[ dj1]); discriminate Hxy.
 
  destruct s2 as [dj2| ]; [ exfalso | reflexivity ].
  apply fst_same_sym_iff in Hs1; simpl in Hs1.
@@ -160,8 +160,8 @@ apply fst_same_sym_iff in Hs3; simpl in Hs3.
 destruct Hs3 as (Hn3, Ht3).
 apply fst_same_sym_iff in Hs1; simpl in Hs1.
 apply fst_same_sym_iff in Hs2; simpl in Hs2.
-destruct s1 as [j| ]; [ destruct x .[ j]; discriminate Hxy | clear Hxy ].
-destruct s2 as [j| ]; [ destruct y .[ j]; discriminate Hyz | clear Hyz ].
+destruct s1 as [j| ]; [ destruct (x .[ j]); discriminate Hxy | clear Hxy ].
+destruct s2 as [j| ]; [ destruct (y .[ j]); discriminate Hyz | clear Hyz ].
 rewrite Hs1, Hs2, negb_involutive in Ht3.
 rewrite negb_involutive in Ht3; symmetry in Ht3.
 revert Ht3; apply no_fixpoint_negb.
@@ -207,8 +207,8 @@ destruct s1 as [dj1| ]; [ idtac | clear Hxy ].
    exfalso; revert H; apply no_fixpoint_negb.
 
    subst dj2.
-   destruct x .[ dj1]; [ exfalso; apply Hxy; reflexivity | idtac ].
-   destruct y .[ dj1]; [ exfalso; apply Hyx; reflexivity | idtac ].
+   destruct (x .[ dj1]); [ exfalso; apply Hxy; reflexivity | idtac ].
+   destruct (y .[ dj1]); [ exfalso; apply Hyx; reflexivity | idtac ].
    discriminate Ht1.
 
    remember H1 as H; clear HeqH.
@@ -251,18 +251,18 @@ apply fst_same_sym_iff in Hs3; simpl in Hs3.
 destruct Hs3 as (Hn3, Ht3).
 apply fst_same_sym_iff in Hs1; simpl in Hs1.
 apply fst_same_sym_iff in Hs2; simpl in Hs2.
-remember x .[ dj3] as x3 eqn:Hx3 .
+remember (x .[ dj3]) as x3 eqn:Hx3 .
 destruct x3; [ idtac | intros H; discriminate H ].
 symmetry in Hx3, Ht3.
 apply negb_true_iff in Ht3.
 exfalso.
 destruct s1 as [dj1| ]; [ idtac | clear Hxy ].
  destruct Hs1 as (Hn1, Ht1).
- remember x .[ dj1] as x1 eqn:Hx1 .
+ remember (x .[ dj1]) as x1 eqn:Hx1 .
  destruct x1; [ apply Hxy; reflexivity | clear Hxy ].
  destruct s2 as [dj2| ]; [ idtac | clear Hyz ].
   destruct Hs2 as (Hn2, Ht2).
-  remember y .[ dj2] as y2 eqn:Hy2 .
+  remember (y .[ dj2]) as y2 eqn:Hy2 .
   destruct y2; [ apply Hyz; reflexivity | clear Hyz ].
   destruct (lt_eq_lt_dec dj1 dj2) as [[H1| H1]| H1].
    remember H1 as H; clear HeqH.
@@ -324,7 +324,7 @@ destruct s1 as [dj1| ]; [ idtac | clear Hxy ].
  rewrite Hs1 in Hx3.
  destruct s2 as [dj2| ]; [ idtac | clear Hyz ].
   destruct Hs2 as (Hn2, Ht2).
-  remember y .[ dj2] as y2 eqn:Hy2 .
+  remember (y .[ dj2]) as y2 eqn:Hy2 .
   destruct y2; [ apply Hyz; reflexivity | clear Hyz ].
   destruct (lt_eq_lt_dec dj2 dj3) as [[H1| H1]| H1].
    remember H1 as H; clear HeqH.
@@ -384,7 +384,7 @@ unfold I_compare; simpl.
 remember (fst_same x (- y) 0) as s eqn:Hs .
 apply fst_same_sym_iff in Hs; simpl in Hs.
 destruct s as [di| ].
- destruct x .[ di].
+ destruct (x .[ di]).
   right; intros H; discriminate H.
 
   left; reflexivity.
@@ -430,8 +430,8 @@ remember (fst_same x (- z) 0) as s1 eqn:Hs1 .
 remember (fst_same y (- t) 0) as s2 eqn:Hs2 .
 remember (fst_same x (- y) 0) as s3 eqn:Hs3 .
 remember (fst_same z (- t) 0) as s4 eqn:Hs4 .
-destruct s3 as [j| ]; [ destruct x .[ j]; discriminate Hxy | clear Hxy ].
-destruct s4 as [j| ]; [ destruct z .[ j]; discriminate Hzt | clear Hzt ].
+destruct s3 as [j| ]; [ destruct (x .[ j]); discriminate Hxy | clear Hxy ].
+destruct s4 as [j| ]; [ destruct (z .[ j]); discriminate Hzt | clear Hzt ].
 apply fst_same_sym_iff in Hs3; simpl in Hs3.
 apply fst_same_sym_iff in Hs4; simpl in Hs4.
 apply fst_same_sym_iff in Hs1; simpl in Hs1.
@@ -622,12 +622,12 @@ split; intros H.
  destruct s2 as [j2| ]; [ idtac | discriminate H ].
  apply fst_same_sym_iff in Hs2; simpl in Hs2.
  destruct Hs2 as (Hn2, Ht2).
- remember x .[ j2] as b eqn:Hx2 .
+ remember (x .[ j2]) as b eqn:Hx2 .
  destruct b; [ discriminate H | clear H ].
  apply fst_same_sym_iff in Hs1; simpl in Hs1.
  destruct s1 as [j1| ]; [ idtac | exfalso ].
   destruct Hs1 as (Hn1, Ht1).
-  remember y .[ j1] as y1 eqn:Hy1 .
+  remember (y .[ j1]) as y1 eqn:Hy1 .
   destruct y1; [ reflexivity | exfalso ].
   destruct (lt_eq_lt_dec j1 j2) as [[H1| H1]| H1].
    remember H1 as H; clear HeqH.
@@ -644,7 +644,7 @@ split; intros H.
   rewrite Hs1, <- Hx2 in Ht2; discriminate Ht2.
 
  destruct s1 as [j1| ].
-  remember y .[ j1] as y1 eqn:Hy1 .
+  remember (y .[ j1]) as y1 eqn:Hy1 .
   destruct y1; [ idtac | exfalso; apply H; intros I; discriminate I ].
   apply fst_same_sym_iff in Hs1; simpl in Hs1.
   destruct Hs1 as (Hn1, Ht1).
@@ -652,7 +652,7 @@ split; intros H.
   destruct s2 as [j2| ].
    apply fst_same_sym_iff in Hs2; simpl in Hs2.
    destruct Hs2 as (Hn2, Ht2).
-   remember x .[ j2] as x2 eqn:Hx2 .
+   remember (x .[ j2]) as x2 eqn:Hx2 .
    destruct x2; [ exfalso | reflexivity ].
    destruct (lt_eq_lt_dec j1 j2) as [[H1| H1]| H1].
     remember H1 as H; clear HeqH.

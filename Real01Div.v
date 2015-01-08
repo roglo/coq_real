@@ -267,7 +267,7 @@ induction i; intros; simpl in Hi.
   apply I_zero_iff in H1.
   unfold I_eqs, I_compare in H.
   remember (fst_same x2 (- 0%I) 0) as s2 eqn:Hs2 .
-  destruct s2 as [j| ]; [ destruct x2 .[ j]; discriminate H | idtac ].
+  destruct s2 as [j| ]; [ destruct (x2 .[ j]); discriminate H | idtac ].
   apply fst_same_sym_iff in Hs2; simpl in Hs2.
   clear H.
   rewrite Hs2, xorb_false_l in Ht1.
@@ -320,7 +320,7 @@ split; intros Hx.
   unfold I_eqs, I_compare in Hx; simpl in Hx.
   remember (fst_same x (- 0%I) 0) as s1 eqn:Hs1 .
   destruct s1 as [dj1| ]; [ idtac | clear Hx ].
-   destruct x .[ dj1]; discriminate Hx.
+   destruct (x .[ dj1]); discriminate Hx.
 
    apply fst_same_sym_iff in Hs1; simpl in Hs1.
    apply Hs1.
@@ -336,7 +336,7 @@ split; intros Hx.
  unfold I_eqs, I_compare in Hx.
  remember (fst_same x (- 0%I) 0) as s1 eqn:Hs1 .
  destruct s1 as [dj1| ]; [ idtac | clear Hx ].
-  destruct x .[ dj1]; discriminate Hx.
+  destruct (x .[ dj1]); discriminate Hx.
 
   apply fst_same_sym_iff in Hs1; simpl in Hs1.
   apply Hs1.

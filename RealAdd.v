@@ -1060,7 +1060,7 @@ destruct (lt_eq_lt_dec dj1 dx) as [[H1| H1]| H1].
           rewrite Hzd in Ht5; discriminate Ht5.
 
           unfold I_add_i in Hc4.
-          remember y .[ S dj4] as y4 eqn:Hy4 .
+          remember (y .[ S dj4]) as y4 eqn:Hy4 .
           symmetry in Hy4.
           destruct y4.
            pose proof (Hzd (dj4 - S dj1)%nat) as H.
@@ -1604,7 +1604,7 @@ destruct s2 as [dj2| ]; [ idtac | clear Hc2 ].
  destruct Hs4 as (Hn4, _).
  unfold I_add_i in Hc4.
  rewrite Hny, xorb_true_l in Hc4.
- remember z .[ dj4] as z4 eqn:Hz4 .
+ remember (z .[ dj4]) as z4 eqn:Hz4 .
  symmetry in Hz4.
  destruct z4.
   rewrite xorb_false_l in Hc4.
@@ -2030,7 +2030,7 @@ split; intros H.
  remember (R_norm y) as ny.
  remember (fst_same (R_frac nx) (- R_frac ny) 0) as s1 eqn:Hs1 .
  destruct s1 as [dj1| ].
-  destruct (R_frac nx) .[ dj1]; discriminate H.
+  destruct (R_frac nx .[ dj1]); discriminate H.
 
   clear H.
   subst nx ny.
@@ -2925,11 +2925,11 @@ apply fst_same_sym_iff in Hs1; simpl in Hs1.
 apply fst_same_sym_iff in Hs2; simpl in Hs2.
 destruct s1 as [dj1| ].
  destruct Hs1 as (Hn1, Ht1).
- remember xn .[ dj1] as xb eqn:Hxb .
+ remember (xn .[ dj1]) as xb eqn:Hxb .
  symmetry in Hxb; apply negb_sym in Ht1.
  destruct s2 as [dj2| ].
   destruct Hs2 as (Hn2, Ht2).
-  remember yn .[ dj2] as yb eqn:Hyb .
+  remember (yn .[ dj2]) as yb eqn:Hyb .
   symmetry in Hyb; apply negb_sym in Ht2.
   subst xn yn zn tn.
   simpl in Hxb, Hyb, Ht1, Ht2, Hn1, Hn2.
