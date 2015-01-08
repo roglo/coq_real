@@ -590,6 +590,7 @@ destruct s1 as [dj1| ].
      rename H into Hx1.
      rewrite Hx1 in H2.
      apply I_ge_le_iff, I_le_0_r in H2.
+bbb.
      apply I_div_lt_pred_r_eq_0 in Hbxy; [ idtac | assumption ].
      rewrite Hbxy in H1.
      revert H1; apply I_lt_irrefl.
