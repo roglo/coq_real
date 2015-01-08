@@ -238,10 +238,9 @@ Qed.
 Theorem I_div_lt_pred_0_l : ∀ x y b x1 y1 i,
   I_div_lt_pred_i x y i = (b, (x1, y1))
   → (x == 0)%I
-  → (x1 = 0)%I.
+  → (x1 == 0)%I.
 Proof.
 intros x y b x1 y1 i Hi Hx.
-apply I_eqs_eq.
 revert x y b x1 y1 Hi Hx.
 induction i; intros; simpl in Hi.
  injection Hi; intros; subst; assumption.
@@ -315,10 +314,11 @@ Qed.
 
 Theorem I_div_lt_pred_r_eq_0 : ∀ x y i b x1 y1,
   I_div_lt_pred_i x y i = (b, (x1, y1))
-  → (y1 = 0)%I
-  → (y = 0)%I.
+  → (y1 == 0)%I
+  → (y == 0)%I.
 Proof.
 intros x y i b x1 y1 Hi Hy.
+bbb.
 revert x y b x1 y1 Hi Hy.
 induction i; intros; simpl in Hi.
  injection Hi; clear Hi; intros; subst b x1 y1.
@@ -370,6 +370,38 @@ Qed.
 
 Theorem I_div_0_l : ∀ x, (x ≠≠ 0)%I → (0 / x = 0)%I.
 Proof.
+intros x Hx.
+apply I_eqs_eq.
+unfold I_eqs, I_compare in Hx.
+unfold I_eqs, I_compare.
+remember (fst_same (0 / x) (- 0%I) 0) as s1 eqn:Hs1 .
+destruct s1 as [j1| ]; [ exfalso | reflexivity ].
+apply fst_same_sym_iff in Hs1; simpl in Hs1.
+destruct Hs1 as (Hn1, Hs1).
+unfold I_div in Hs1; simpl in Hs1.
+remember (I_div_max_iter_int x) as m eqn:Hm .
+symmetry in Hm.
+destruct m; [ discriminate Hs1 | simpl in Hs1 ].
+destruct (I_lt_dec 0%I x) as [H1| H1].
+ simpl in Hs1.
+ remember (I_div_lt_pred_i 0 x j1) as bxy eqn:Hbxy .
+ symmetry in Hbxy.
+ destruct bxy as (b, (x1, y1)); simpl in Hs1.
+ destruct (I_lt_dec x1 y1) as [H2| H2]; [ discriminate Hs1 | clear Hs1 ].
+ remember (fst_same x (- 0%I) 0) as s2 eqn:Hs2 .
+ destruct s2 as [j2| ].
+  clear Hx.
+  apply fst_same_sym_iff in Hs2; simpl in Hs2.
+  destruct Hs2 as (Hn2, Ht2).
+  remember Hbxy as H; clear HeqH.
+  apply I_div_lt_pred_0_l in H; [ idtac | reflexivity ].
+  rewrite H in H2.
+  apply I_ge_le_iff, I_le_0_r_eqs_iff in H2.
+bbb.
+  apply I_div_lt_pred_r_eq_0 in Hbxy; [ idtac | assumption ].
+bbb.
+
+
 intros x Hx.
 remember Hx as Hne; clear HeqHne.
 unfold I_eqs, I_compare in Hx.
