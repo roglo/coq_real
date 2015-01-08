@@ -542,22 +542,11 @@ induction m; intros.
   apply R_div_2_0_iff in Hx; assumption.
 Qed.
 
-(*
-Theorem R_div_equiv_r_eq_0 : ∀ x y m mx my,
-  R_div_equiv m x y = (mx, my)
-  → (my == 0)%I
-  → (y = 0)%R.
-Proof.
-intros x y m mx my Hmxy Hmy.
-bbb.
-*)
-
 Theorem R_frac_div_0_l : ∀ x,
   (x ≠ 0)%R
   → (R_frac (0 / x) = 0)%I.
 Proof.
 intros x Hx.
-bbb.
 unfold I_eq; simpl; intros i.
 unfold I_add_i; simpl.
 rewrite xorb_false_r, carry_diag; simpl.
@@ -568,6 +557,7 @@ destruct s1 as [dj1| ].
  destruct Hs1 as (Hn1, Ht1).
  rewrite Ht1, xorb_false_r.
  unfold R_div; simpl.
+ destruct (R_zerop x) as [| H]; [ contradiction | clear H ].
  remember (R_div_max_iter (R_abs 0) (R_abs x)) as m eqn:Hm .
  remember (R_div_equiv m (R_abs 0) (R_abs x)) as mxy eqn:Hmxy .
  symmetry in Hmxy.
@@ -634,6 +624,7 @@ destruct s1 as [dj1| ].
  pose proof (Hs1 O) as H.
  rewrite Nat.add_0_r in H.
  unfold R_div in H; simpl in H.
+ destruct (R_zerop x) as [| I]; [ contradiction | clear I ].
  remember (R_div_max_iter (R_abs 0) (R_abs x)) as m eqn:Hm .
  remember (R_div_equiv m (R_abs 0) (R_abs x)) as mxy eqn:Hmxy .
  symmetry in Hmxy.
@@ -707,14 +698,14 @@ destruct nx; simpl in Hx.
  left; intros i; apply Hx.
 Qed.
 
+(* no
 Theorem R_int_div_0_l : ∀ x,
   (x ≠ 0)%R
-  → R_frac (0 / x).[0] = false
   → R_int (0 / x) = 0.
 Proof.
-intros x Hx Hf.
-unfold R_div in Hf; simpl in Hf.
+intros x Hx.
 unfold R_div; simpl.
+destruct (R_zerop x) as [| H]; [ contradiction | clear H ].
 remember (R_div_max_iter (R_abs 0) (R_abs x)) as m eqn:Hm .
 remember (R_div_equiv m (R_abs 0) (R_abs x)) as mxy eqn:Hmxy .
 symmetry in Hmxy.
@@ -768,7 +759,6 @@ destruct m2; simpl in Hrif.
       simpl in Hc.
 bbb.
    x = (-1, 0.000...)
-
 *)
 
 Theorem R_div_0_l : ∀ x, (x ≠ 0)%R → (0 / x = 0)%R.
