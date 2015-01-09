@@ -1516,6 +1516,34 @@ induction m; intros; simpl in Hxym.
  symmetry in Hc.
  destruct c.
   injection Hxym; clear Hxym; intros; subst xm ym.
+  apply andb_true_iff in Hc.
+  destruct Hc as (Hx, Hy).
+  apply Z.eqb_eq in Hx.
+  apply Z.eqb_eq in Hy.
+  rewrite I_zero_eqs_iff in Hym.
+  rewrite Hy1 in Hym; simpl in Hym.
+  pose proof (Hym O) as H; simpl in H.
+  destruct n; [ discriminate H | simpl in H ].
+  pose proof (Hym 1%nat) as H1; simpl in H1.
+  pose proof (Hym 2%nat) as H2; simpl in H2.
+  pose proof (Hym n) as H3; simpl in H3.
+  rewrite H1 in H3.
+  destruct n; simpl in H3.
+   simpl in H.
+   simpl in H1.
+   discriminate H1.
+
+   destruct n; simpl in H3.
+    simpl in H.
+    simpl in H1.
+    simpl in H2.
+    discriminate H2.
+
+    destruct n.
+     simpl in H3.
+     simpl in H.
+     simpl in H1.
+     simpl in H2.
 bbb.
 
 Theorem R_frac_div_1_r : ∀ x, (R_frac (x / 1) = R_frac x)%I.
