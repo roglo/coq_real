@@ -1009,6 +1009,8 @@ destruct s1 as [dj1| ]; simpl.
       pose proof (H1 i) as H; simpl in H.
       unfold R_abs in H; simpl in H.
       rewrite Hnx in H; simpl in H; assumption.
+
+   apply Z.eqb_neq in Hc.
 bbb.
 
 unfold R_div in Ht1; simpl in Ht1.
