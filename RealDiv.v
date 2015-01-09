@@ -948,6 +948,37 @@ destruct s1 as [dj1| ]; simpl.
  rewrite Ht1; simpl.
  rewrite Z.add_0_r.
  apply R_int_div_0_l; assumption.
+
+ unfold R_div; simpl.
+ pose proof (Hs1 O) as H.
+ unfold R_div in H; simpl in H.
+ remember (R_div_max_iter (R_abs 0) (R_abs x)) as m eqn:Hm .
+ symmetry in Hm.
+ remember (R_div_equiv m (R_abs 0) (R_abs x)) as xym eqn:Hxym .
+ symmetry in Hxym.
+ destruct xym as (xm, ym); simpl in H.
+ remember (I_div_lim (I_div_max_iter_int ym) xm ym) as rif eqn:Hrif .
+ symmetry in Hrif.
+ destruct rif as (ri, rf); simpl in H; simpl.
+ remember (I_div_max_iter_int ym) as m2 eqn:Hm2 .
+ symmetry in Hm2.
+ unfold R_abs in Hm; simpl in Hm.
+ unfold R_abs in Hxym; simpl in Hxym.
+ remember (R_is_neg x) as nx eqn:Hnx .
+ symmetry in Hnx.
+ destruct nx.
+  destruct m2.
+   simpl in Hrif.
+   injection Hrif; intros; subst rf; discriminate H.
+
+   simpl in Hrif.
+   destruct (I_lt_dec xm ym) as [H1| H1].
+    injection Hrif; clear Hrif; intros; subst ri rf.
+    exfalso; simpl in H.
+    destruct (I_lt_dec xm (I_div_2 ym)) as [H2| H2].
+     discriminate H.
+
+     clear H.
 bbb.
 
 unfold R_div in Ht1; simpl in Ht1.
