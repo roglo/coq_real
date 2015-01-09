@@ -1509,6 +1509,11 @@ destruct s1 as [dj1| ].
        simpl in Hm.
        clear Hm2.
 bbb.
+       unfold R_abs in Hm; simpl in Hm.
+       remember (R_is_neg x) as nx eqn:Hnx .
+       symmetry in Hnx.
+       destruct nx; simpl in Hm.
+bbb.
 
 Theorem R_div_1_r : ∀ x, (x / 1 = x)%R.
 Proof.
