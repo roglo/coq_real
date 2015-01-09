@@ -719,6 +719,44 @@ destruct m; [ exfalso; revert Hm; apply two_power_neq_0 | idtac ].
 apply le_n_S, Nat.le_0_l.
 Qed.
 
+Theorem two_power_succ : ∀ n, two_power (S n) = (two_power n * 2)%nat.
+Proof.
+intros n; simpl.
+rewrite Nat.mul_succ_r.
+rewrite Nat.add_0_r, Nat.mul_1_r; reflexivity.
+Qed.
+
+Theorem Z_two_pow_succ : ∀ n, Z_two_pow (S n) = Z_two_pow n * 2.
+Proof.
+intros n; simpl.
+unfold Z_two_pow.
+rewrite two_power_succ, Nat2Z.inj_mul; reflexivity.
+Qed.
+
+Theorem Z_two_pow_neq_0 : ∀ n, Z_two_pow n ≠ 0.
+Proof.
+intros n.
+unfold Z_two_pow.
+rewrite <- Nat2Z.inj_0.
+intros H.
+apply Nat2Z.inj in H.
+revert H; apply two_power_neq_0.
+Qed.
+
+Theorem R_int_div_2_pow_div : ∀ x n,
+  R_int (R_div_2_pow x n) = R_int x / Z_two_pow n.
+Proof.
+intros x n.
+induction n; [ rewrite Z.div_1_r; reflexivity | simpl ].
+rewrite Z_two_pow_succ.
+rewrite <- Z.div_div.
+ rewrite IHn; reflexivity.
+
+ apply Z_two_pow_neq_0.
+
+ apply Pos2Z.is_pos.
+Qed.
+
 Theorem zzz : ∀ x x1 y1 xm ym m n,
   R_div_max_iter (R_abs 0) (R_abs x) = (m + S n)%nat
   → R_int (R_abs x) / Z_two_pow n ≠ 0
@@ -763,6 +801,8 @@ induction m; intros.
   destruct Hc1 as (Hxi, Hyi).
   apply Z.eqb_eq in Hxi.
   apply Z.eqb_eq in Hyi.
+  apply Hc; clear Hc.
+  rewrite <- R_int_div_2_pow_div.
 bbb.
 
   rewrite Nat.add_succ_l, <- Nat.add_succ_r in Hm.
@@ -1201,30 +1241,6 @@ Theorem R_div_2_pow_succ : ∀ x n,
   R_div_2_pow x (S n) = R_div_2 (R_div_2_pow x n).
 Proof. reflexivity. Qed.
 
-Theorem two_power_succ : ∀ n, two_power (S n) = (two_power n * 2)%nat.
-Proof.
-intros n; simpl.
-rewrite Nat.mul_succ_r.
-rewrite Nat.add_0_r, Nat.mul_1_r; reflexivity.
-Qed.
-
-Theorem Z_two_pow_succ : ∀ n, Z_two_pow (S n) = Z_two_pow n * 2.
-Proof.
-intros n; simpl.
-unfold Z_two_pow.
-rewrite two_power_succ, Nat2Z.inj_mul; reflexivity.
-Qed.
-
-Theorem Z_two_pow_neq_0 : ∀ n, Z_two_pow n ≠ 0.
-Proof.
-intros n.
-unfold Z_two_pow.
-rewrite <- Nat2Z.inj_0.
-intros H.
-apply Nat2Z.inj in H.
-revert H; apply two_power_neq_0.
-Qed.
-
 Theorem R_int_1_div_2_pow : ∀ n,
   (0 < n)%nat
   → R_int (R_div_2_pow (R_abs 1) n) = 0.
@@ -1233,20 +1249,6 @@ intros n Hn.
 induction n; [ exfalso; revert Hn; apply Nat.lt_irrefl | simpl ].
 destruct n; [ reflexivity | idtac ].
 rewrite IHn; [ reflexivity | apply Nat.lt_0_succ ].
-Qed.
-
-Theorem R_int_div_2_pow_div : ∀ x n,
-  R_int (R_div_2_pow x n) = R_int x / Z_two_pow n.
-Proof.
-intros x n.
-induction n; [ rewrite Z.div_1_r; reflexivity | simpl ].
-rewrite Z_two_pow_succ.
-rewrite <- Z.div_div.
- rewrite IHn; reflexivity.
-
- apply Z_two_pow_neq_0.
-
- apply Pos2Z.is_pos.
 Qed.
 
 Theorem R_div_2_pow_shift : ∀ x n i,
