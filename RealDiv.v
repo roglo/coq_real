@@ -870,12 +870,6 @@ destruct m2; simpl in Hrif.
   rewrite Hmx in H1.
   apply I_ge_le_iff, I_le_0_r_eqs_iff in H1.
   symmetry in Hm.
-(*
-  clear Hm Hrif Hm2; exfalso.
-  revert x mx my Hx Hmxy H1 Hmx.
-  induction m; intros.
-*)
-  exfalso; clear m2 ri rf Hrif Hm2.
   destruct m.
    exfalso; revert Hm; apply R_div_max_iter_abs_ne_0.
 
@@ -949,7 +943,7 @@ destruct s1 as [dj1| ]; simpl.
  rewrite Z.add_0_r.
  apply R_int_div_0_l; assumption.
 
- unfold R_div; simpl.
+ exfalso.
  pose proof (Hs1 O) as H.
  unfold R_div in H; simpl in H.
  remember (R_div_max_iter (R_abs 0) (R_abs x)) as m eqn:Hm .
@@ -957,28 +951,35 @@ destruct s1 as [dj1| ]; simpl.
  remember (R_div_equiv m (R_abs 0) (R_abs x)) as xym eqn:Hxym .
  symmetry in Hxym.
  destruct xym as (xm, ym); simpl in H.
- remember (I_div_lim (I_div_max_iter_int ym) xm ym) as rif eqn:Hrif .
- symmetry in Hrif.
- destruct rif as (ri, rf); simpl in H; simpl.
+ remember Hxym as H1; clear HeqH1.
+ apply R_div_equiv_0_l in H1; [ idtac | reflexivity ].
+ rename H1 into Hxm.
  remember (I_div_max_iter_int ym) as m2 eqn:Hm2 .
  symmetry in Hm2.
- unfold R_abs in Hm; simpl in Hm.
- unfold R_abs in Hxym; simpl in Hxym.
- remember (R_is_neg x) as nx eqn:Hnx .
- symmetry in Hnx.
- destruct nx.
-  destruct m2.
-   simpl in Hrif.
-   injection Hrif; intros; subst rf; discriminate H.
+ remember (I_div_lim m2 xm ym) as rif eqn:Hrif .
+ symmetry in Hrif.
+ destruct rif as (ri, rf); simpl in H; simpl.
+ destruct m.
+  revert Hm; apply R_div_max_iter_abs_ne_0.
 
-   simpl in Hrif.
-   destruct (I_lt_dec xm ym) as [H1| H1].
-    injection Hrif; clear Hrif; intros; subst ri rf.
-    exfalso; simpl in H.
-    destruct (I_lt_dec xm (I_div_2 ym)) as [H2| H2].
-     discriminate H.
+  simpl in Hxym.
+  remember (R_int (R_abs x) =? 0) as c eqn:Hc .
+  symmetry in Hc.
+  destruct c.
+   injection Hxym; clear Hxym; intros; subst xm ym.
+   clear Hxm.
+   destruct m2.
+    simpl in Hrif.
+    injection Hrif; intros; subst rf; discriminate H.
 
-     clear H.
+    simpl in Hrif.
+    destruct (I_lt_dec 0%I (R_frac (R_abs x))) as [H1| H1].
+     injection Hrif; clear Hrif; intros; subst ri rf.
+     simpl in H.
+     destruct (I_lt_dec 0%I (I_div_2 (R_frac (R_abs x)))) as [H2| H2].
+      discriminate H.
+
+      clear H.
 bbb.
 
 unfold R_div in Ht1; simpl in Ht1.
