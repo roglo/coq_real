@@ -694,6 +694,84 @@ destruct nx; simpl in Hx.
  left; intros i; apply Hx.
 Qed.
 
+Definition Z_two_pow n := Z.of_nat (two_power n).
+
+Fixpoint R_div_2_pow x n :=
+  match n with
+  | O => x
+  | S n1 => R_div_2 (R_div_2_pow x n1)
+  end.
+
+Theorem Z_div_two_pow : ∀ n, Z.of_nat n / Z_two_pow n = 0.
+Proof.
+intros n.
+unfold Z_two_pow.
+rewrite <- div_Zdiv; [ idtac | apply two_power_neq_0 ].
+rewrite <- Nat2Z.inj_0.
+apply Nat2Z.inj_iff, Nat.div_small.
+induction n; [ apply Nat.lt_0_1 | simpl ].
+rewrite Nat.add_0_r.
+rewrite <- Nat.add_1_r.
+apply Nat.add_lt_le_mono; [ assumption | idtac ].
+remember (two_power n) as m eqn:Hm .
+symmetry in Hm.
+destruct m; [ exfalso; revert Hm; apply two_power_neq_0 | idtac ].
+apply le_n_S, Nat.le_0_l.
+Qed.
+
+Theorem zzz : ∀ x x1 y1 xm ym m n,
+  R_div_max_iter (R_abs 0) (R_abs x) = (m + S n)%nat
+  → R_int (R_abs x) / Z_two_pow n ≠ 0
+  → x1 = R_div_2_pow (R_abs 0) (S n)
+  → y1 = R_div_2_pow (R_abs x) (S n)
+  → R_div_equiv m x1 y1 = (xm, ym)
+  → (xm == 0)%I
+  → (ym == 0)%I
+  → False.
+Proof.
+intros x x1 y1 xm ym m n.
+intros Hm Hc Hx1 Hy1 Hxym Hxm Hym.
+revert x x1 y1 xm ym n Hm Hc Hx1 Hy1 Hxym Hxm Hym.
+induction m; intros.
+ unfold R_div_max_iter in Hm.
+ simpl in Hm.
+ rewrite Z2Nat.inj_add in Hm.
+  simpl in Hm.
+  unfold Pos.to_nat in Hm; simpl in Hm.
+  apply Nat.add_sub_eq_r in Hm; simpl in Hm.
+  rewrite Nat.sub_0_r in Hm.
+  symmetry in Hm.
+  rewrite <- Nat2Z.id in Hm.
+  apply Z2Nat.inj in Hm.
+   rewrite Hm in Hc.
+   apply Hc, Z_div_two_pow.
+
+   apply R_int_abs.
+
+   apply Nat2Z.is_nonneg.
+
+  apply R_int_abs.
+
+  apply Z.le_0_1.
+
+ simpl in Hxym.
+ remember ((R_int x1 =? 0) && (R_int y1 =? 0)) as c1 eqn:Hc1 .
+ symmetry in Hc1.
+ destruct c1.
+  injection Hxym; clear Hxym; intros; subst xm ym.
+  apply andb_true_iff in Hc1.
+  destruct Hc1 as (Hxi, Hyi).
+  apply Z.eqb_eq in Hxi.
+  apply Z.eqb_eq in Hyi.
+bbb.
+
+  rewrite Nat.add_succ_l, <- Nat.add_succ_r in Hm.
+  eapply IHm; try eassumption.
+   2: rewrite Hx1; reflexivity.
+
+   2: rewrite Hy1; reflexivity.
+*)
+
 Theorem R_int_div_0_l : ∀ x,
   (x ≠ 0)%R
   → R_int (0 / x) = 0.
@@ -782,7 +860,6 @@ destruct m2; simpl in Hrif.
 
     apply Z.eqb_neq in Hc.
     destruct m.
-     simpl in Hmxy.
      unfold R_div_max_iter in Hm.
      simpl in Hm.
      rewrite Z2Nat.inj_add in Hm.
@@ -820,7 +897,6 @@ destruct m2; simpl in Hrif.
 
       apply Z.eqb_neq in Hc1.
       destruct m.
-       simpl in Hmxy.
        unfold R_div_max_iter in Hm.
        simpl in Hm.
        rewrite Z2Nat.inj_add in Hm.
@@ -862,6 +938,9 @@ destruct m2; simpl in Hrif.
           apply H3, Z.le_0_2.
 
         apply Z.eqb_neq in Hc2.
+        do 3 rewrite <- Nat.add_1_r in Hm.
+        do 2 rewrite <- Nat.add_assoc in Hm; simpl in Hm.
+        eapply zzz; try eassumption.
 bbb.
   fucking induction
 *)
@@ -1118,17 +1197,9 @@ Proof. intros a H; discriminate H. Qed.
 
 Hint Resolve Zpos_ne_0.
 
-Fixpoint R_div_2_pow x n :=
-  match n with
-  | O => x
-  | S n1 => R_div_2 (R_div_2_pow x n1)
-  end.
-
 Theorem R_div_2_pow_succ : ∀ x n,
   R_div_2_pow x (S n) = R_div_2 (R_div_2_pow x n).
 Proof. reflexivity. Qed.
-
-Definition Z_two_pow n := Z.of_nat (two_power n).
 
 Theorem two_power_succ : ∀ n, two_power (S n) = (two_power n * 2)%nat.
 Proof.
@@ -1152,23 +1223,6 @@ rewrite <- Nat2Z.inj_0.
 intros H.
 apply Nat2Z.inj in H.
 revert H; apply two_power_neq_0.
-Qed.
-
-Theorem div_two_pow : ∀ n, Z.of_nat n / Z_two_pow n = 0.
-Proof.
-intros n.
-unfold Z_two_pow.
-rewrite <- div_Zdiv; [ idtac | apply two_power_neq_0 ].
-rewrite <- Nat2Z.inj_0.
-apply Nat2Z.inj_iff, Nat.div_small.
-induction n; [ apply Nat.lt_0_1 | simpl ].
-rewrite Nat.add_0_r.
-rewrite <- Nat.add_1_r.
-apply Nat.add_lt_le_mono; [ assumption | idtac ].
-remember (two_power n) as m eqn:Hm .
-symmetry in Hm.
-destruct m; [ exfalso; revert Hm; apply two_power_neq_0 | idtac ].
-apply le_n_S, Nat.le_0_l.
 Qed.
 
 Theorem R_int_1_div_2_pow : ∀ n,
