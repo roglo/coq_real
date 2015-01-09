@@ -1478,8 +1478,20 @@ Theorem zzz : ∀ x x1 y1 xm ym m n,
   → (ym == 0)%I
   → R_int (R_abs x) / Z_two_pow n = 0.
 Proof.
-intros x x1 y1 xm ym m n.
-intros Hm Hx1 Hy1 Hxym Hym.
+intros x x1 y1 xm ym m n Hm Hx1 Hy1 Hxym Hym.
+revert x x1 y1 xm ym n Hm Hx1 Hy1 Hxym Hym.
+induction m; intros; simpl in Hxym.
+ injection Hxym; clear Hxym; intros; subst xm ym.
+ simpl in Hm.
+ unfold R_div_max_iter in Hm; simpl in Hm.
+ rewrite <- Z.add_assoc in Hm; simpl in Hm.
+ rewrite Z2Nat.inj_add in Hm.
+  simpl in Hm.
+  unfold Pos.to_nat in Hm; simpl in Hm.
+  rewrite Nat.add_comm in Hm.
+  simpl in Hm.
+  apply eq_add_S in Hm.
+  rewrite <- R_int_div_2_pow_div.
 bbb.
 
 Theorem R_frac_div_1_r : ∀ x, (R_frac (x / 1) = R_frac x)%I.
