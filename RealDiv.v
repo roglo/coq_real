@@ -819,6 +819,49 @@ destruct m2; simpl in Hrif.
         apply H3, Z.le_0_2.
 
       apply Z.eqb_neq in Hc1.
+      destruct m.
+       simpl in Hmxy.
+       unfold R_div_max_iter in Hm.
+       simpl in Hm.
+       rewrite Z2Nat.inj_add in Hm.
+        simpl in Hm.
+        unfold Pos.to_nat in Hm; simpl in Hm.
+        apply Nat.add_sub_eq_r in Hm; simpl in Hm.
+        rewrite <- Z2Nat.inj_0 in Hm.
+        rewrite <- Z2Nat.inj_succ in Hm.
+         apply Z2Nat.inj in Hm; simpl in Hm.
+          rewrite <- Hm in Hc1; apply Hc1; reflexivity.
+
+          apply Z.le_0_1.
+
+          apply R_int_abs.
+
+         reflexivity.
+
+        apply R_int_abs.
+
+        apply Z.le_0_1.
+
+       simpl in Hmxy.
+       remember (R_int (R_abs x) / 2 / 2 =? 0) as c2 eqn:Hc2 .
+       symmetry in Hc2.
+       destruct c2.
+        injection Hmxy; clear Hmxy; intros; subst mx my.
+        apply Z.eqb_eq in Hc2.
+        destruct (Z_eq_dec (R_int (R_abs x) / 2) 1) as [H2| H2].
+         rewrite H2 in H1; simpl in H1.
+         rewrite I_zero_eqs_iff in H1; simpl in H1.
+         pose proof (H1 O) as H; discriminate H.
+
+         apply Z.div_small_iff in Hc2; [ idtac | intros H; discriminate H ].
+         destruct Hc2 as [(H3, H4)| (H3, H4)].
+          omega.
+
+          eapply Z.lt_le_trans in H3; [ idtac | eassumption ].
+          apply Z.nle_gt in H3.
+          apply H3, Z.le_0_2.
+
+        apply Z.eqb_neq in Hc2.
 bbb.
   fucking induction
 *)
