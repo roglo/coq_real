@@ -1471,7 +1471,8 @@ bbb.
 (* 1: right neutral element *)
 
 Theorem zzz : ∀ m x y mx my,
-  R_div_equiv m x y = (mx, my)
+  R_int (R_abs x) / 2 ≠ 0
+  → R_div_equiv m x y = (mx, my)
   → (my == 0)%I
   → (y = 0)%R.
 Proof.
@@ -1517,6 +1518,46 @@ destruct s1 as [dj1| ].
 
     simpl in Hxym.
     rewrite andb_false_r in Hxym.
+    unfold I_div_max_iter_int in Hm2; simpl in Hm2.
+    remember (fst_same ym I_ones 0) as s3 eqn:Hs3 .
+    destruct s3 as [dj3| ]; [ idtac | clear Hm2 ].
+     rewrite Nat.add_0_r in Hm2.
+     remember (two_power dj3) as n eqn:Hn .
+     symmetry in Hn.
+     destruct n; [ idtac | discriminate Hm2 ].
+     exfalso; revert Hn; apply two_power_neq_0.
+
+     apply fst_same_sym_iff in Hs3; simpl in Hs3.
+     apply I_zero_eqs_iff in Hs3.
+     destruct m.
+      simpl in Hxym.
+      injection Hxym; clear Hxym; intros; subst xm ym.
+      unfold R_div_max_iter in Hm; simpl in Hm.
+      rewrite <- Z.add_assoc in Hm; simpl in Hm.
+      rewrite Z2Nat.inj_add in Hm.
+       simpl in Hm.
+       unfold Pos.to_nat in Hm; simpl in Hm.
+       rewrite Nat.add_comm in Hm.
+       apply Nat.add_sub_eq_r in Hm; simpl in Hm.
+       destruct (Z.to_nat (R_int (R_abs x))); discriminate Hm.
+
+       apply R_int_abs.
+
+       apply Z.le_0_2.
+
+      simpl in Hxym.
+      rewrite andb_true_r in Hxym.
+      remember (R_int (R_abs x) / 2 =? 0) as c eqn:Hc .
+      symmetry in Hc.
+      destruct c.
+       injection Hxym; clear Hxym; intros; subst xm ym.
+       rewrite I_zero_eqs_iff in Hs3.
+       simpl in Hs3.
+       pose proof (Hs3 O) as H; discriminate H.
+       apply Z.eqb_neq in Hc.
+bbb.
+
+     apply I_zero_eqs_iff in Hs3.
     destruct m.
      simpl in Hxym.
      injection Hxym; clear Hxym; intros; subst xm ym.
@@ -1567,6 +1608,7 @@ destruct s1 as [dj1| ].
 
        apply fst_same_sym_iff in Hs3; simpl in Hs3.
        apply I_zero_eqs_iff in Hs3.
+bbb.
        destruct m.
         simpl in Hxym.
         unfold R_div_max_iter in Hm; simpl in Hm.
