@@ -757,17 +757,17 @@ rewrite <- Z.div_div.
  apply Pos2Z.is_pos.
 Qed.
 
-Theorem formula_1 : ∀ x x1 y1 xm ym m n,
-  R_div_max_iter (R_abs 0) (R_abs x) = (m + S n)%nat
+Theorem formula_1 : ∀ y x1 y1 xm ym m n,
+  R_div_max_iter (R_abs 0) (R_abs y) = (m + S n)%nat
   → x1 = R_div_2_pow (R_abs 0) (S n)
-  → y1 = R_div_2_pow (R_abs x) (S n)
+  → y1 = R_div_2_pow (R_abs y) (S n)
   → R_div_equiv m x1 y1 = (xm, ym)
   → (ym == 0)%I
-  → R_int (R_abs x) / Z_two_pow n = 0.
+  → R_int (R_abs y) / Z_two_pow n = 0.
 Proof.
-intros x x1 y1 xm ym m n.
+intros y x1 y1 xm ym m n.
 intros Hm Hx1 Hy1 Hxym Hym.
-revert x x1 y1 xm ym n Hm Hx1 Hy1 Hxym Hym.
+revert y x1 y1 xm ym n Hm Hx1 Hy1 Hxym Hym.
 induction m; intros.
  unfold R_div_max_iter in Hm.
  simpl in Hm.
@@ -803,12 +803,12 @@ induction m; intros.
   rewrite Hy1 in Hyi; simpl in Hyi.
   apply Z.div_small_iff in Hyi.
    destruct Hyi as [Hyi| Hyi].
-    remember (R_int (R_div_2_pow (R_abs x) n)) as xi eqn:Hx .
-    symmetry in Hx.
-    destruct (Z_eq_dec xi 1) as [H1| H1].
-     rewrite H1 in Hx.
+    remember (R_int (R_div_2_pow (R_abs y) n)) as yi eqn:Hy .
+    symmetry in Hy.
+    destruct (Z_eq_dec yi 1) as [H1| H1].
+     rewrite H1 in Hy.
      rewrite Hy1 in Hym; simpl in Hym.
-     rewrite Hx in Hym; simpl in Hym.
+     rewrite Hy in Hym; simpl in Hym.
      rewrite I_zero_eqs_iff in Hym.
      simpl in Hym.
      pose proof (Hym O) as H; discriminate H.
