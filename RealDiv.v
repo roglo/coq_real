@@ -89,7 +89,7 @@ Definition R_div x y :=
 Arguments R_div x%R y%R.
 *)
 
-Definition R_div_max_iter ax ay := Z.to_nat (R_int ax + R_int ay + 1).
+Definition R_div_equiv_max_iter ax ay := Z.to_nat (R_int ax + R_int ay + 1).
 
 Fixpoint R_div_equiv m x y :=
   match m with
@@ -102,7 +102,7 @@ Fixpoint R_div_equiv m x y :=
 Definition R_div x y :=
   let ax := R_abs x in
   let ay := R_abs y in
-  let (mx, my) := R_div_equiv (R_div_max_iter ax ay) ax ay in
+  let (mx, my) := R_div_equiv (R_div_equiv_max_iter ax ay) ax ay in
   let (ri, rf) := I_div_lim (I_div_max_iter_int my) mx my in
   {| R_int := if R_is_neg x ⊕ R_is_neg y then - Z.of_nat ri else Z.of_nat ri;
      R_frac := rf |}.
@@ -470,11 +470,11 @@ induction m; intros.
 Qed.
 *)
 
-Theorem R_div_max_iter_abs_ne_0 : ∀ x y,
-   R_div_max_iter (R_abs x) (R_abs y) ≠ 0%nat.
+Theorem R_div_equiv_max_iter_abs_ne_0 : ∀ x y,
+   R_div_equiv_max_iter (R_abs x) (R_abs y) ≠ 0%nat.
 Proof.
 intros x y Hm.
-unfold R_div_max_iter in Hm; simpl in Hm.
+unfold R_div_equiv_max_iter in Hm; simpl in Hm.
 remember (R_int (R_abs x)) as iax eqn:Hiax .
 symmetry in Hiax.
 destruct iax as [| iax| iax].
@@ -555,7 +555,7 @@ destruct s1 as [dj1| ].
  destruct Hs1 as (Hn1, Ht1).
  rewrite Ht1, xorb_false_r.
  unfold R_div; simpl.
- remember (R_div_max_iter (R_abs 0) (R_abs x)) as m eqn:Hm .
+ remember (R_div_equiv_max_iter (R_abs 0) (R_abs x)) as m eqn:Hm .
  remember (R_div_equiv m (R_abs 0) (R_abs x)) as mxy eqn:Hmxy .
  symmetry in Hmxy.
  destruct mxy as (mx, my); simpl.
@@ -621,7 +621,7 @@ destruct s1 as [dj1| ].
  pose proof (Hs1 O) as H.
  rewrite Nat.add_0_r in H.
  unfold R_div in H; simpl in H.
- remember (R_div_max_iter (R_abs 0) (R_abs x)) as m eqn:Hm .
+ remember (R_div_equiv_max_iter (R_abs 0) (R_abs x)) as m eqn:Hm .
  remember (R_div_equiv m (R_abs 0) (R_abs x)) as mxy eqn:Hmxy .
  symmetry in Hmxy.
  destruct mxy as (mx, my); simpl.
@@ -758,7 +758,7 @@ rewrite <- Z.div_div.
 Qed.
 
 Theorem formula_1 : ∀ y x1 y1 xm ym m n,
-  R_div_max_iter (R_abs 0) (R_abs y) = (m + S n)%nat
+  R_div_equiv_max_iter (R_abs 0) (R_abs y) = (m + S n)%nat
   → x1 = R_div_2_pow (R_abs 0) (S n)
   → y1 = R_div_2_pow (R_abs y) (S n)
   → R_div_equiv m x1 y1 = (xm, ym)
@@ -769,7 +769,7 @@ intros y x1 y1 xm ym m n.
 intros Hm Hx1 Hy1 Hxym Hym.
 revert y x1 y1 xm ym n Hm Hx1 Hy1 Hxym Hym.
 induction m; intros.
- unfold R_div_max_iter in Hm.
+ unfold R_div_equiv_max_iter in Hm.
  simpl in Hm.
  rewrite Z2Nat.inj_add in Hm.
   simpl in Hm.
@@ -846,7 +846,7 @@ Theorem R_int_div_0_l : ∀ x,
 Proof.
 intros x Hx.
 unfold R_div; simpl.
-remember (R_div_max_iter (R_abs 0) (R_abs x)) as m eqn:Hm .
+remember (R_div_equiv_max_iter (R_abs 0) (R_abs x)) as m eqn:Hm .
 remember (R_div_equiv m (R_abs 0) (R_abs x)) as mxy eqn:Hmxy .
 symmetry in Hmxy.
 destruct mxy as (mx, my); simpl.
@@ -870,7 +870,7 @@ destruct m2; simpl in Hrif.
   apply I_ge_le_iff, I_le_0_r_eqs_iff in H1.
   symmetry in Hm.
   destruct m.
-   exfalso; revert Hm; apply R_div_max_iter_abs_ne_0.
+   exfalso; revert Hm; apply R_div_equiv_max_iter_abs_ne_0.
 
    simpl in Hmxy.
    remember (R_int (R_abs x) =? 0) as c eqn:Hc .
@@ -945,7 +945,7 @@ destruct s1 as [dj1| ]; simpl.
  exfalso.
  pose proof (Hs1 O) as H.
  unfold R_div in H; simpl in H.
- remember (R_div_max_iter (R_abs 0) (R_abs x)) as m eqn:Hm .
+ remember (R_div_equiv_max_iter (R_abs 0) (R_abs x)) as m eqn:Hm .
  symmetry in Hm.
  remember (R_div_equiv m (R_abs 0) (R_abs x)) as xym eqn:Hxym .
  symmetry in Hxym.
@@ -959,7 +959,7 @@ destruct s1 as [dj1| ]; simpl.
  symmetry in Hrif.
  destruct rif as (ri, rf); simpl in H; simpl.
  destruct m.
-  revert Hm; apply R_div_max_iter_abs_ne_0.
+  revert Hm; apply R_div_equiv_max_iter_abs_ne_0.
 
   simpl in Hxym.
   remember (R_int (R_abs x) =? 0) as c eqn:Hc .
@@ -1455,7 +1455,7 @@ bbb.
 
 (*
 Theorem formula_2 :
-  R_div_max_iter (R_abs x) (R_abs 1) = (m + S n)%nat
+  R_div_equiv_max_iter (R_abs x) (R_abs 1) = (m + S n)%nat
   → x1 = R_div_2 (R_div_2 (R_abs x))
   → y1 = R_div_2 (R_div_2 (R_abs 1))
   → R_div_equiv m x1 y1 = (xm, ym)
@@ -1469,8 +1469,8 @@ bbb.
 
 (* 1: right neutral element *)
 
-Theorem zzz : ∀ x x1 y1 xm ym m n,
-  R_div_max_iter (R_abs x) (R_abs 1) = (m + S n)%nat
+Theorem formula_2 : ∀ x x1 y1 xm ym m n,
+  R_div_equiv_max_iter (R_abs x) (R_abs 1) = (m + S n)%nat
   → x1 = R_div_2_pow (R_abs x) (S n)
   → y1 = R_div_2_pow (R_abs 1) (S n)
   → R_div_equiv m x1 y1 = (xm, ym)
@@ -1482,7 +1482,7 @@ revert x x1 y1 xm ym n Hm Hx1 Hy1 Hxym Hym.
 induction m; intros; simpl in Hxym.
  injection Hxym; clear Hxym; intros; subst xm ym.
  simpl in Hm.
- unfold R_div_max_iter in Hm; simpl in Hm.
+ unfold R_div_equiv_max_iter in Hm; simpl in Hm.
  rewrite <- Z.add_assoc in Hm; simpl in Hm.
  rewrite Z2Nat.inj_add in Hm.
   simpl in Hm.
@@ -1515,36 +1515,37 @@ induction m; intros; simpl in Hxym.
  symmetry in Hc.
  destruct c.
   injection Hxym; clear Hxym; intros; subst xm ym.
-  apply andb_true_iff in Hc.
-  destruct Hc as (Hx, Hy).
-  apply Z.eqb_eq in Hx.
-  apply Z.eqb_eq in Hy.
-bbb.
   rewrite I_zero_eqs_iff in Hym.
-  rewrite Hy1 in Hym; simpl in Hym.
-  pose proof (Hym O) as H; simpl in H.
-  destruct n; [ discriminate H | simpl in H ].
-  pose proof (Hym 1%nat) as H1; simpl in H1.
-  pose proof (Hym 2%nat) as H2; simpl in H2.
-  pose proof (Hym n) as H3; simpl in H3.
-  rewrite H1 in H3.
-  destruct n; simpl in H3.
-   simpl in H.
-   simpl in H1.
-   discriminate H1.
+  pose proof (Hym n) as H; simpl in H.
+  rewrite Hy1 in H.
+  exfalso; revert H; clear; intros.
+  induction n; [ discriminate H | idtac ].
+  remember (S n) as sn; simpl in H; subst sn.
+  remember (zerop (S n)) as x; simpl in Heqx; subst x.
+  rewrite Nat.sub_succ, Nat.sub_0_r in H.
+  apply IHn; assumption.
 
-   destruct n; simpl in H3.
-    simpl in H.
-    simpl in H1.
-    simpl in H2.
-    discriminate H2.
+  apply andb_false_iff in Hc.
+  destruct Hc as [Hc| Hc].
+   apply Z.eqb_neq in Hc.
+   exfalso; apply Hc; rewrite Hx1, R_int_div_2_pow_div.
+   rewrite Nat.add_succ_l, <- Nat.add_succ_r in Hm.
+   eapply IHm; try eassumption; try (subst x1 y1; reflexivity).
 
-    destruct n.
-     simpl in H3.
-     simpl in H.
-     simpl in H1.
-     simpl in H2.
-bbb.
+   apply Z.eqb_neq in Hc.
+   exfalso; apply Hc; clear Hc.
+   rewrite Hy1; simpl.
+   rewrite R_int_div_2_pow_div; simpl.
+   rewrite Z.div_div; [ idtac | apply Z_two_pow_neq_0 | apply Z.lt_0_2 ].
+   rewrite Z.mul_comm.
+   rewrite <- Z.div_div; [ reflexivity | intros H; discriminate H | idtac ].
+   clear; unfold Z_two_pow.
+   induction n; [ apply Z.lt_0_1 | simpl ].
+   rewrite Nat.add_0_r.
+   eapply Z.lt_le_trans; [ eassumption | idtac ].
+   apply Nat2Z.inj_le.
+   apply Nat.le_add_r.
+Qed.
 
 Theorem R_frac_div_1_r : ∀ x, (R_frac (x / 1) = R_frac x)%I.
 Proof.
@@ -1565,7 +1566,7 @@ destruct s1 as [dj1| ].
   rewrite Ht2, xorb_false_r.
   unfold R_div; simpl.
   unfold R_div in Ht2; simpl.
-  remember (R_div_max_iter (R_abs x) (R_abs 1)) as m eqn:Hm .
+  remember (R_div_equiv_max_iter (R_abs x) (R_abs 1)) as m eqn:Hm .
   symmetry in Hm.
   remember (R_div_equiv m (R_abs x) (R_abs 1)) as xym eqn:Hxym .
   symmetry in Hxym.
@@ -1580,7 +1581,7 @@ destruct s1 as [dj1| ].
    injection Hrif; clear Hrif; intros; subst ri rf.
    clear Ht2; simpl.
    destruct m.
-    exfalso; revert Hm; apply R_div_max_iter_abs_ne_0.
+    exfalso; revert Hm; apply R_div_equiv_max_iter_abs_ne_0.
 
     simpl in Hxym.
     rewrite andb_false_r in Hxym.
@@ -1600,7 +1601,7 @@ destruct s1 as [dj1| ].
      destruct m.
       simpl in Hxym.
       injection Hxym; clear Hxym; intros; subst xm ym.
-      unfold R_div_max_iter in Hm; simpl in Hm.
+      unfold R_div_equiv_max_iter in Hm; simpl in Hm.
       rewrite <- Z.add_assoc in Hm; simpl in Hm.
       rewrite Z2Nat.inj_add in Hm.
        simpl in Hm.
@@ -1625,15 +1626,17 @@ destruct s1 as [dj1| ].
        apply Z.eqb_neq in Hc.
        do 2 rewrite <- Nat.add_1_r in Hm.
        rewrite <- Nat.add_assoc in Hm; simpl in Hm.
-       eapply zzz in Hxym; try eassumption; try reflexivity.
+       eapply formula_2 in Hxym; try eassumption; try reflexivity.
        contradiction.
+
+   Focus 1.
 bbb.
 
      apply I_zero_eqs_iff in Hs3.
     destruct m.
      simpl in Hxym.
      injection Hxym; clear Hxym; intros; subst xm ym.
-     unfold R_div_max_iter in Hm; simpl in Hm.
+     unfold R_div_equiv_max_iter in Hm; simpl in Hm.
      rewrite <- Z.add_assoc in Hm; simpl in Hm.
      rewrite Z2Nat.inj_add in Hm.
       simpl in Hm.
@@ -1683,7 +1686,7 @@ bbb.
 bbb.
        destruct m.
         simpl in Hxym.
-        unfold R_div_max_iter in Hm; simpl in Hm.
+        unfold R_div_equiv_max_iter in Hm; simpl in Hm.
         rewrite <- Z.add_assoc in Hm; simpl in Hm.
         rewrite Z2Nat.inj_add in Hm.
          simpl in Hm.
