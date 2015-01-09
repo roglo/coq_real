@@ -1491,7 +1491,26 @@ induction m; intros; simpl in Hxym.
   rewrite Nat.add_comm in Hm.
   simpl in Hm.
   apply eq_add_S in Hm.
-  rewrite <- R_int_div_2_pow_div.
+  destruct n; [ discriminate Hm | idtac ].
+  rewrite Z_two_pow_succ.
+  apply eq_add_S in Hm.
+  rewrite <- Nat2Z.id in Hm.
+  apply Z2Nat.inj in Hm.
+   rewrite Hm.
+   rewrite <- Z.div_div.
+    rewrite Z_div_two_pow; reflexivity.
+
+    apply Z_two_pow_neq_0.
+
+    apply Z.lt_0_2.
+
+   apply R_int_abs.
+
+   apply Nat2Z.is_nonneg.
+
+  apply R_int_abs.
+
+  apply Z.le_0_2.
 bbb.
 
 Theorem R_frac_div_1_r : ∀ x, (R_frac (x / 1) = R_frac x)%I.
