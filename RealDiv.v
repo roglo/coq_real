@@ -1036,6 +1036,7 @@ destruct s1 as [dj1| ]; simpl.
      destruct H as [(H2, H3)| (H2, H3)]; omega.
 Qed.
 
+(*
 Theorem R_frac_equiv_div_prop : ∀ x y m i xm ym,
   (y ≠ 0)%R
   → R_frac_equiv_div m x y = (xm, ym)
@@ -1172,6 +1173,7 @@ rewrite Nat.sub_0_r; assumption.
 Qed.
 *)
 
+(*
 Theorem formula_1 : ∀ x x1 y1 xm ym m i di n,
   max_iter_int_part (R_abs x) (R_abs 1) = (m + S n)%nat
   → R_int (R_abs x) / Z_two_pow n ≠ 0
@@ -1347,7 +1349,9 @@ destruct m.
 
     symmetry; apply R_div_2_pow_succ.
 Qed.
+*)
 
+(*
 Theorem zzz : ∀ x, (R_div_R_frac (R_abs x) (R_abs 1) = R_frac x)%I.
 Proof.
 intros x.
@@ -1452,11 +1456,65 @@ bbb.
 
 (* 1: right neutral element *)
 
+Theorem R_frac_div_1_r : ∀ x, (R_frac (x / 1) = R_frac x)%I.
+Proof.
+intros x.
+unfold I_eq; simpl; intros i.
+unfold I_add_i; simpl.
+do 2 rewrite xorb_false_r.
+unfold carry; simpl.
+remember (fst_same (R_frac x) 0 (S i)) as s1 eqn:Hs1 .
+remember (fst_same (R_frac (x / 1)) 0 (S i)) as s2 eqn:Hs2 .
+destruct s1 as [dj1| ].
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ destruct Hs1 as (Hn1, Ht1).
+ rewrite Ht1, xorb_false_r.
+ destruct s2 as [dj2| ].
+  apply fst_same_sym_iff in Hs2; simpl in Hs2.
+  destruct Hs2 as (Hn2, Ht2).
+  rewrite Ht2, xorb_false_r.
+  unfold R_div; simpl.
+  unfold R_div in Ht2; simpl.
+  remember (R_div_max_iter (R_abs x) (R_abs 1)) as m eqn:Hm .
+  symmetry in Hm.
+  remember (R_div_equiv m (R_abs x) (R_abs 1)) as xym eqn:Hxym .
+  symmetry in Hxym.
+  destruct xym as (xm, ym).
+  remember (I_div_max_iter_int ym) as m2 eqn:Hm2 .
+  symmetry in Hm2.
+  remember (I_div_lim m2 xm ym) as rif eqn:Hrif .
+  symmetry in Hrif.
+  destruct rif as (ri, rf); simpl in Ht2; simpl.
+  destruct m2.
+   simpl in Hrif.
+   injection Hrif; clear Hrif; intros; subst ri rf.
+   clear Ht2; simpl.
+   destruct m.
+    exfalso; revert Hm; apply R_div_max_iter_abs_ne_0.
+
+    simpl in Hxym.
+    rewrite andb_false_r in Hxym.
+    destruct m.
+     simpl in Hxym.
+     injection Hxym; clear Hxym; intros; subst xm ym.
+     unfold R_div_max_iter in Hm; simpl in Hm.
+     rewrite <- Z.add_assoc in Hm; simpl in Hm.
+     rewrite Z2Nat.inj_add in Hm.
+      simpl in Hm.
+      unfold Pos.to_nat in Hm; simpl in Hm.
+      apply Nat.add_sub_eq_r in Hm; simpl in Hm.
+      symmetry in Hm.
+      rewrite <- Nat2Z.id in Hm.
+      apply Z2Nat.inj in Hm.
+       simpl in Hm.
+       clear Hm2.
+bbb.
+
 Theorem R_div_1_r : ∀ x, (x / 1 = x)%R.
 Proof.
 intros x.
 unfold R_eq; simpl.
-split; [ idtac | apply zzz ].
+split; [ idtac | apply R_frac_div_1_r ].
 bbb.
 split.
  remember (R_div_R_frac (R_abs x) (R_abs 1)) as zm eqn:Hzm .
