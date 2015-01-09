@@ -2525,35 +2525,61 @@ destruct c; [ simpl in H | discriminate H | clear H ].
   destruct c; [ apply Z.le_0_1 | reflexivity ].
 Qed.
 
-Theorem R_zero_if : ∀ x,
+Theorem R_zero_iff : ∀ x,
   (x = 0)%R
-  → (R_int x = 0 ∧ ∀ i : nat, (R_frac x).[i] = false) ∨
+  ↔ (R_int x = 0 ∧ ∀ i : nat, (R_frac x).[i] = false) ∨
     (R_int x = -1 ∧ ∀ i : nat, (R_frac x).[i] = true).
 Proof.
-intros x Hx.
-unfold R_eq in Hx.
-destruct Hx as (Hi, Hf).
-simpl in Hi.
-rewrite carry_diag in Hi; simpl in Hi.
-unfold carry in Hi; simpl in Hi.
-remember (fst_same (R_frac x) 0 0) as s1 eqn:Hs1 .
-apply fst_same_sym_iff in Hs1; simpl in Hs1.
-apply I_zero_iff in Hf.
-destruct Hf as [Hf| Hf]; [ left | right ].
- split; [ idtac | assumption ].
- destruct s1 as [dj1| ].
-  rewrite Hf, Z.add_0_r in Hi; assumption.
+intros x.
+split; intros Hx.
+ unfold R_eq in Hx.
+ destruct Hx as (Hi, Hf).
+ simpl in Hi.
+ rewrite carry_diag in Hi; simpl in Hi.
+ unfold carry in Hi; simpl in Hi.
+ remember (fst_same (R_frac x) 0 0) as s1 eqn:Hs1 .
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ apply I_zero_iff in Hf.
+ destruct Hf as [Hf| Hf]; [ left | right ].
+  split; [ idtac | assumption ].
+  destruct s1 as [dj1| ].
+   rewrite Hf, Z.add_0_r in Hi; assumption.
 
-  pose proof (Hs1 O) as H.
-  rewrite Hf in H; discriminate H.
+   pose proof (Hs1 O) as H.
+   rewrite Hf in H; discriminate H.
 
- split; [ idtac | assumption ].
- destruct s1 as [dj1| ].
-  destruct Hs1 as (Hn1, Ht1).
-  rewrite Hf in Ht1; discriminate Ht1.
+  split; [ idtac | assumption ].
+  destruct s1 as [dj1| ].
+   destruct Hs1 as (Hn1, Ht1).
+   rewrite Hf in Ht1; discriminate Ht1.
 
-  simpl in Hi.
-  apply Z.add_move_r in Hi; assumption.
+   simpl in Hi.
+   apply Z.add_move_r in Hi; assumption.
+
+ unfold R_eq; simpl.
+ destruct Hx as [(Hi, Hf)| (Hi, Hf)].
+  rewrite Hi, carry_diag; simpl.
+  split.
+   unfold carry; simpl.
+   remember (fst_same (R_frac x) 0 0) as s1 eqn:Hs1 .
+   destruct s1; [ rewrite Hf; reflexivity | idtac ].
+   apply fst_same_sym_iff in Hs1; simpl in Hs1.
+   pose proof (Hf O) as H; rewrite Hs1 in H; discriminate H.
+
+   apply I_zero_iff; left; assumption.
+
+  rewrite carry_diag; simpl.
+  split.
+   unfold carry; simpl.
+   remember (fst_same (R_frac x) 0 0) as s1 eqn:Hs1 .
+   destruct s1 as [dj1| ].
+    apply fst_same_sym_iff in Hs1; simpl in Hs1.
+    destruct Hs1 as (Hn1, Ht1).
+    rewrite Hf in Ht1; discriminate Ht1.
+
+    rewrite Hi; reflexivity.
+
+   apply I_zero_iff; right; assumption.
 Qed.
 
 Theorem R_opp_involutive : ∀ x, (- - x = x)%R.

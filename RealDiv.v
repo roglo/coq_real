@@ -214,7 +214,7 @@ Proof.
 intros x.
 split; intros Hx.
  remember Hx as H; clear HeqH.
- apply R_zero_if in H; simpl in H.
+ apply R_zero_iff in H; simpl in H.
  destruct H as [(Hi, Hf)| (Hi, Hf)].
   unfold R_eq; simpl.
   rewrite Hi; simpl.
@@ -277,7 +277,7 @@ split; intros Hx.
     rewrite Hf; reflexivity.
 
  remember Hx as H; clear HeqH.
- apply R_zero_if in H; simpl in H.
+ apply R_zero_iff in H; simpl in H.
  destruct H as [(Hi, Hf)| (Hi, Hf)].
   pose proof (Hf O) as H; simpl in H.
   rewrite Zodd_even_bool in H.
@@ -966,6 +966,7 @@ destruct s1 as [dj1| ]; simpl.
   remember (R_int (R_abs x) =? 0) as c eqn:Hc .
   symmetry in Hc.
   destruct c.
+   apply Z.eqb_eq in Hc.
    injection Hxym; clear Hxym; intros; subst xm ym.
    clear Hxm.
    destruct m2.
@@ -980,6 +981,34 @@ destruct s1 as [dj1| ]; simpl.
       discriminate H.
 
       clear H.
+      apply I_ge_le_iff, I_le_0_r_eqs_iff in H2.
+      apply I_div_2_eqs_0 in H2.
+      rewrite H2 in H1.
+      revert H1; apply I_lt_irrefl.
+
+     apply I_ge_le_iff, I_le_0_r_eqs_iff in H1.
+     apply Hx.
+     apply R_zero_iff.
+     unfold R_abs in Hc; simpl in Hc.
+     remember (R_is_neg x) as nx eqn:Hnx .
+     symmetry in Hnx.
+     rewrite I_zero_eqs_iff in H1.
+     clear H.
+     destruct nx; simpl in Hc.
+      right.
+      apply Z.sub_move_0_l in Hc.
+      rewrite Z.opp_involutive in Hc.
+      split; [ rewrite <- Hc; reflexivity | intros i ].
+      pose proof (H1 i) as H; simpl in H.
+      unfold R_abs in H; simpl in H.
+      rewrite Hnx in H; simpl in H.
+      apply negb_false_iff in H; assumption.
+
+      left.
+      split; [ rewrite <- Hc; reflexivity | intros i ].
+      pose proof (H1 i) as H; simpl in H.
+      unfold R_abs in H; simpl in H.
+      rewrite Hnx in H; simpl in H; assumption.
 bbb.
 
 unfold R_div in Ht1; simpl in Ht1.
