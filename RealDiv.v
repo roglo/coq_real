@@ -1454,7 +1454,28 @@ bbb.
 bbb.
 *)
 
+(*
+Theorem formula_2 :
+  R_div_max_iter (R_abs x) (R_abs 1) = (m + S n)%nat
+  → x1 = R_div_2 (R_div_2 (R_abs x))
+  → y1 = R_div_2 (R_div_2 (R_abs 1))
+  → R_div_equiv m x1 y1 = (xm, ym)
+  → (ym == 0)%I
+  → R_frac x .[ S (i + di)] = false
+  → R_int (R_abs x) / Z_two_pow n ≠ 0
+  → R_frac x .[ i] = false.
+Proof.
+bbb.
+*)
+
 (* 1: right neutral element *)
+
+Theorem zzz : ∀ m x y mx my,
+  R_div_equiv m x y = (mx, my)
+  → (my == 0)%I
+  → (y = 0)%R.
+Proof.
+bbb.
 
 Theorem R_frac_div_1_r : ∀ x, (R_frac (x / 1) = R_frac x)%I.
 Proof.
@@ -1531,8 +1552,27 @@ destruct s1 as [dj1| ].
        pose proof (Hs3 O) as H; discriminate H.
 
       apply Z.eqb_neq in Hc.
+      unfold I_div_max_iter_int in Hm2; simpl in Hm2.
+      remember (fst_same ym I_ones 0) as s3 eqn:Hs3 .
+      destruct s3 as [dj3| ]; [ idtac | clear Hm2 ].
+       rewrite Nat.add_0_r in Hm2.
+       remember (two_power dj3) as n eqn:Hn .
+       symmetry in Hn.
+       destruct n.
+        exfalso; revert Hn; apply two_power_neq_0.
+
+        discriminate Hm2.
+
+       apply fst_same_sym_iff in Hs3; simpl in Hs3.
+       apply I_zero_eqs_iff in Hs3.
+       apply zzz in Hxym; [ idtac | assumption ].
+       apply R_zero_iff in Hxym.
+       simpl in Hxym.
+       destruct Hxym as [(H1, H2)| (H1, H2)].
+        pose proof (H2 1%nat) as H; discriminate H.
+
+        discriminate H1.
 bbb.
-  s'inspirer de formula_1
 
 Theorem R_div_1_r : ∀ x, (x / 1 = x)%R.
 Proof.
