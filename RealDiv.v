@@ -1567,13 +1567,35 @@ destruct s1 as [dj1| ].
 
        apply fst_same_sym_iff in Hs3; simpl in Hs3.
        apply I_zero_eqs_iff in Hs3.
-       apply zzz in Hxym; [ idtac | assumption ].
-       apply R_zero_iff in Hxym.
-       simpl in Hxym.
-       destruct Hxym as [(H1, H2)| (H1, H2)].
-        pose proof (H2 1%nat) as H; discriminate H.
+       destruct m.
+        simpl in Hxym.
+        unfold R_div_max_iter in Hm; simpl in Hm.
+        rewrite <- Z.add_assoc in Hm; simpl in Hm.
+        rewrite Z2Nat.inj_add in Hm.
+         simpl in Hm.
+         unfold Pos.to_nat in Hm; simpl in Hm.
+         rewrite Nat.add_comm in Hm.
+         apply Nat.add_sub_eq_r in Hm; simpl in Hm.
+         remember (Z.to_nat (R_int (R_abs x))) as xi eqn:Hxi .
+         symmetry in Hxi.
+         destruct xi; try discriminate Hm.
+          clear Hm.
+          rewrite <- Nat2Z.id in Hxi.
+          apply Z2Nat.inj in Hxi.
+           rewrite Hxi in Hc; simpl in Hc.
+           exfalso; apply Hc; reflexivity.
 
-        discriminate H1.
+           apply R_int_abs.
+
+           reflexivity.
+
+          destruct xi; discriminate Hm.
+
+         apply R_int_abs.
+
+         apply Z.le_0_2.
+
+        simpl in Hxym.
 bbb.
 
 Theorem R_div_1_r : ∀ x, (x / 1 = x)%R.
