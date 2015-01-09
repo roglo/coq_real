@@ -1629,7 +1629,18 @@ destruct s1 as [dj1| ].
        eapply formula_2 in Hxym; try eassumption; try reflexivity.
        contradiction.
 
-   Focus 1.
+   destruct m.
+    simpl in Hxym.
+    injection Hxym; clear Hxym; intros; subst xm ym.
+    unfold I_div_max_iter_int in Hm2; simpl in Hm2.
+    remember (fst_same 0 I_ones 0) as s3 eqn:Hs3 .
+    destruct s3 as [dj3| ]; [ idtac | discriminate Hm2 ].
+    apply fst_same_sym_iff in Hs3; simpl in Hs3.
+    destruct Hs3 as (Hn3, Ht3).
+    discriminate Ht3.
+
+    simpl in Hxym.
+    rewrite andb_false_r in Hxym.
 bbb.
 
      apply I_zero_eqs_iff in Hs3.
