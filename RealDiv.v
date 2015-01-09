@@ -1511,6 +1511,11 @@ induction m; intros; simpl in Hxym.
   apply R_int_abs.
 
   apply Z.le_0_2.
+
+ remember ((R_int x1 =? 0) && (R_int y1 =? 0)) as c eqn:Hc .
+ symmetry in Hc.
+ destruct c.
+  injection Hxym; clear Hxym; intros; subst xm ym.
 bbb.
 
 Theorem R_frac_div_1_r : ∀ x, (R_frac (x / 1) = R_frac x)%I.
