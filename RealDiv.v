@@ -1470,15 +1470,17 @@ bbb.
 
 (* 1: right neutral element *)
 
-Theorem zzz : ∀ m x y mx my,
-  R_int (R_abs x) / 2 ≠ 0
-  → R_div_equiv m x y = (mx, my)
-  → (my == 0)%I
-  → (y = 0)%R.
+Theorem zzz : ∀ x x1 y1 xm ym m n,
+  R_div_max_iter (R_abs x) (R_abs 1) = (m + S n)%nat
+  → x1 = R_div_2_pow (R_abs x) (S n)
+  → y1 = R_div_2_pow (R_abs 1) (S n)
+  → R_div_equiv m x1 y1 = (xm, ym)
+  → (ym == 0)%I
+  → R_int (R_abs x) / Z_two_pow n = 0.
 Proof.
-Abort. (* faux
+intros x x1 y1 xm ym m n.
+intros Hm Hx1 Hy1 Hxym Hym.
 bbb.
-*)
 
 Theorem R_frac_div_1_r : ∀ x, (R_frac (x / 1) = R_frac x)%I.
 Proof.
@@ -1529,6 +1531,8 @@ destruct s1 as [dj1| ].
 
      apply fst_same_sym_iff in Hs3; simpl in Hs3.
      apply I_zero_eqs_iff in Hs3.
+     revert Hm Hxym Hs3; clear; intros.
+     exfalso.
      destruct m.
       simpl in Hxym.
       injection Hxym; clear Hxym; intros; subst xm ym.
@@ -1555,6 +1559,10 @@ destruct s1 as [dj1| ].
        simpl in Hs3.
        pose proof (Hs3 O) as H; discriminate H.
        apply Z.eqb_neq in Hc.
+       do 2 rewrite <- Nat.add_1_r in Hm.
+       rewrite <- Nat.add_assoc in Hm; simpl in Hm.
+       eapply zzz in Hxym; try eassumption; try reflexivity.
+       contradiction.
 bbb.
 
      apply I_zero_eqs_iff in Hs3.
