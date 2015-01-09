@@ -1596,6 +1596,14 @@ destruct s1 as [dj1| ].
          apply Z.le_0_2.
 
         simpl in Hxym.
+        rewrite andb_true_r in Hxym.
+        remember (R_int (R_abs x) / 2 / 2 =? 0) as c1 eqn:Hc1 .
+        symmetry in Hc1.
+        destruct c1.
+         injection Hxym; clear Hxym; intros; subst xm ym.
+         rewrite I_zero_eqs_iff in Hs3.
+         simpl in Hs3.
+         pose proof (Hs3 1%nat) as H; discriminate H.
 bbb.
 
 Theorem R_div_1_r : ∀ x, (x / 1 = x)%R.
