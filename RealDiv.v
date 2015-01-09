@@ -1502,17 +1502,15 @@ destruct s1 as [dj1| ].
      rewrite Z2Nat.inj_add in Hm.
       simpl in Hm.
       unfold Pos.to_nat in Hm; simpl in Hm.
+      rewrite Nat.add_comm in Hm.
       apply Nat.add_sub_eq_r in Hm; simpl in Hm.
-      symmetry in Hm.
-      rewrite <- Nat2Z.id in Hm.
-      apply Z2Nat.inj in Hm.
-       simpl in Hm.
-       clear Hm2.
-bbb.
-       unfold R_abs in Hm; simpl in Hm.
-       remember (R_is_neg x) as nx eqn:Hnx .
-       symmetry in Hnx.
-       destruct nx; simpl in Hm.
+      destruct (Z.to_nat (R_int (R_abs x))); discriminate Hm.
+
+      apply R_int_abs.
+
+      apply Z.le_0_2.
+
+     Focus 1.
 bbb.
 
 Theorem R_div_1_r : ∀ x, (x / 1 = x)%R.
