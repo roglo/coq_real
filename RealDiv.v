@@ -987,15 +987,13 @@ destruct s1 as [dj1| ]; simpl.
       revert H1; apply I_lt_irrefl.
 
      apply I_ge_le_iff, I_le_0_r_eqs_iff in H1.
-     apply Hx.
-     apply R_zero_iff.
+     apply Hx, R_zero_iff.
      unfold R_abs in Hc; simpl in Hc.
      remember (R_is_neg x) as nx eqn:Hnx .
      symmetry in Hnx.
      rewrite I_zero_eqs_iff in H1.
      clear H.
-     destruct nx; simpl in Hc.
-      right.
+     destruct nx; simpl in Hc; [ right | left ].
       apply Z.sub_move_0_l in Hc.
       rewrite Z.opp_involutive in Hc.
       split; [ rewrite <- Hc; reflexivity | intros i ].
@@ -1004,7 +1002,6 @@ destruct s1 as [dj1| ]; simpl.
       rewrite Hnx in H; simpl in H.
       apply negb_false_iff in H; assumption.
 
-      left.
       split; [ rewrite <- Hc; reflexivity | intros i ].
       pose proof (H1 i) as H; simpl in H.
       unfold R_abs in H; simpl in H.
