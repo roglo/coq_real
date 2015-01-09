@@ -1475,7 +1475,9 @@ Theorem zzz : ∀ m x y mx my,
   → (my == 0)%I
   → (y = 0)%R.
 Proof.
+Abort. (* faux
 bbb.
+*)
 
 Theorem R_frac_div_1_r : ∀ x, (R_frac (x / 1) = R_frac x)%I.
 Proof.
