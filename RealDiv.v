@@ -1510,8 +1510,29 @@ destruct s1 as [dj1| ].
 
       apply Z.le_0_2.
 
-     Focus 1.
+     simpl in Hxym.
+     rewrite andb_true_r in Hxym.
+     remember (R_int (R_abs x) / 2 =? 0) as c eqn:Hc .
+     symmetry in Hc.
+     destruct c.
+      injection Hxym; clear Hxym; intros; subst xm ym.
+      unfold I_div_max_iter_int in Hm2; simpl in Hm2.
+      remember (fst_same (I_div_2_inc 0 true) I_ones 0) as s3 eqn:Hs3 .
+      destruct s3 as [dj3| ]; [ idtac | clear Hm2 ].
+       rewrite Nat.add_0_r in Hm2.
+       remember (two_power dj3) as n eqn:Hn .
+       symmetry in Hn.
+       destruct n.
+        exfalso; revert Hn; apply two_power_neq_0.
+
+        discriminate Hm2.
+
+       apply fst_same_sym_iff in Hs3; simpl in Hs3.
+       pose proof (Hs3 O) as H; discriminate H.
+
+      apply Z.eqb_neq in Hc.
 bbb.
+  s'inspirer de formula_1
 
 Theorem R_div_1_r : ∀ x, (x / 1 = x)%R.
 Proof.
