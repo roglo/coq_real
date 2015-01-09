@@ -762,13 +762,12 @@ Theorem formula_1 : ∀ x x1 y1 xm ym m n,
   → x1 = R_div_2_pow (R_abs 0) (S n)
   → y1 = R_div_2_pow (R_abs x) (S n)
   → R_div_equiv m x1 y1 = (xm, ym)
-  → (xm == 0)%I
   → (ym == 0)%I
   → R_int (R_abs x) / Z_two_pow n = 0.
 Proof.
 intros x x1 y1 xm ym m n.
-intros Hm Hx1 Hy1 Hxym Hxm Hym.
-revert x x1 y1 xm ym n Hm Hx1 Hy1 Hxym Hxm Hym.
+intros Hm Hx1 Hy1 Hxym Hym.
+revert x x1 y1 xm ym n Hm Hx1 Hy1 Hxym Hym.
 induction m; intros.
  unfold R_div_max_iter in Hm.
  simpl in Hm.
@@ -1520,6 +1519,7 @@ induction m; intros; simpl in Hxym.
   destruct Hc as (Hx, Hy).
   apply Z.eqb_eq in Hx.
   apply Z.eqb_eq in Hy.
+bbb.
   rewrite I_zero_eqs_iff in Hym.
   rewrite Hy1 in Hym; simpl in Hym.
   pose proof (Hym O) as H; simpl in H.
