@@ -1750,6 +1750,25 @@ destruct s1 as [dj1| ].
             clear Wx1.
             clear Hn3.
             clear Hx3.
+            destruct dj2.
+             simpl in Ht2.
+             destruct (I_lt_dec x1 (I_div_2 y1)) as [H2| H2]; simpl in Ht2.
+              destruct (I_lt_dec x1 (I_div_2 (I_div_2 y1))) as [H3| H3];
+               [ idtac | discriminate Ht2 ].
+              clear Ht2.
+              remember (x1 .[ 2]) as b eqn:Hx2 .
+              symmetry in Hx2.
+              remember Hx2 as H; clear HeqH.
+              rewrite Hx1 in H; simpl in H.
+              rewrite <- H in Hx2; clear b H.
+              remember (x1 .[ S (S dj1)]) as b eqn:Hxj1 .
+              symmetry in Hxj1.
+              remember Hxj1 as H; clear HeqH.
+              rewrite Hx1 in H; simpl in H.
+              simpl in Ht1; rewrite Ht1 in H; simpl in H.
+              rewrite <- H in Hxj1; clear b H.
+              destruct dj1.
+               rewrite Hxj1 in Hx2; apply negb_sym in Hx2; simpl in Hx2.
 bbb.
 
  x1    0.00.
@@ -1764,8 +1783,17 @@ bbb.
 abs x = ( 0, 0.011…)
    mx = 0.01… = 1/4
    my = 0.10… = 1/2
-   (ri, rf) = (0, 0.10…)
-   (ri, rf) = (0, 0.01…)
+
+111111111111111 | 1000000000
+100000000000000 --------------
+--------------- | 0.011111…
+ 11111111111111 |
+ 10000000000000
+ --------------
+ 0111111111111
+
+  (ri, rf) = (0, 0.01…)
+
 bbb.
 
      apply I_zero_eqs_iff in Hs3.
