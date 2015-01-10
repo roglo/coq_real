@@ -1547,6 +1547,9 @@ induction m; intros; simpl in Hxym.
    apply Nat.le_add_r.
 Qed.
 
+Theorem I_eql_eqs : ∀ x y, x = y → (x == y)%I.
+Proof. intros; subst; reflexivity. Qed.
+
 Theorem I_div_2_inc_0 : ∀ x y b,
   y = I_div_2_inc x b
   → y .[ 0] = b.
@@ -1556,6 +1559,41 @@ Theorem I_div_2_inc_1 : ∀ x y b,
   y = I_div_2_inc x b
   → y.[1] = x.[0].
 Proof. intros; subst; reflexivity. Qed.
+
+Theorem I_div_2_inc_iff : ∀ x y b,
+  (y == I_div_2_inc x b)%I
+  ↔ y.[0] = b ∧ ∀ i, y.[S i] = x.[i].
+Proof.
+intros x y b.
+split; intros Hy.
+ unfold I_eqs, I_compare in Hy; simpl in Hy.
+ remember (fst_same y (- I_div_2_inc x b) 0) as s1 eqn:Hs1 .
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ destruct s1 as [j1| ]; [ idtac | clear Hy ].
+  destruct Hs1 as (Hn1, Ht1).
+  destruct (y .[ j1]); discriminate Hy.
+
+  pose proof (Hs1 O) as H; simpl in H.
+  rewrite negb_involutive in H.
+  split; [ assumption | intros i ].
+  pose proof (Hs1 (S i)) as Hi; simpl in Hi.
+  rewrite negb_involutive, Nat.sub_0_r in Hi.
+  assumption.
+
+ destruct Hy as (Hy, Hyx).
+ unfold I_eqs, I_compare; simpl.
+ remember (fst_same y (- I_div_2_inc x b) 0) as s1 eqn:Hs1 .
+ destruct s1 as [j1| ]; [ exfalso | reflexivity ].
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ destruct Hs1 as (Hn1, Ht1).
+ destruct j1; simpl in Ht1.
+  rewrite Ht1 in Hy.
+  revert Hy; apply no_fixpoint_negb.
+
+  rewrite Nat.sub_0_r in Ht1.
+  rewrite Hyx in Ht1; symmetry in Ht1.
+  revert Ht1; apply no_fixpoint_negb.
+Qed.
 
 Theorem R_frac_div_1_r : ∀ x, (R_frac (x / 1) = R_frac x)%I.
 Proof.
@@ -1795,6 +1833,10 @@ destruct s1 as [dj1| ].
                pose proof (Hn1 O (Nat.lt_0_succ dj1)) as H; simpl in H.
                rewrite H in Hx2; simpl in Hx2.
                rename H into Hx01.
+               remember Hx1 as H; clear HeqH.
+               apply I_eql_eqs in H.
+               apply I_div_2_inc_iff in H; simpl in H.
+               destruct H as (Hx1_0, Hx1_S).
 bbb.
 
   x    0.11.
