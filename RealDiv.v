@@ -1641,6 +1641,38 @@ destruct s1 as [dj1| ].
 
     simpl in Hxym.
     rewrite andb_false_r in Hxym.
+    destruct m.
+     simpl in Hxym.
+     injection Hxym; clear Hxym; intros; subst xm ym.
+     unfold I_div_max_iter_int in Hm2; simpl in Hm2.
+     remember (fst_same 0 I_ones 0) as s3 eqn:Hs3 .
+     destruct s3 as [dj3| ]; [ idtac | discriminate Hm2 ].
+     apply fst_same_sym_iff in Hs3; simpl in Hs3.
+     destruct Hs3 as (Hn3, Ht3).
+     discriminate Ht3.
+
+     simpl in Hxym.
+     rewrite andb_true_r in Hxym.
+     remember (R_int (R_abs x) / 2 =? 0) as c eqn:Hc .
+     symmetry in Hc.
+     destruct c.
+      injection Hxym; clear Hxym; intros; subst xm ym.
+      simpl in Hrif.
+      apply Z.eqb_eq in Hc.
+      remember
+       (I_div_2_inc (R_frac (R_abs x)) (Z.odd (R_int (R_abs x)))) as x1
+       eqn:Hx1 .
+      remember (I_div_2_inc 0 true) as y1 eqn:Hy1 .
+      destruct (I_lt_dec x1 y1) as [H1| H1].
+       injection Hrif; clear Hrif; intros; subst ri rf.
+       simpl.
+       remember (I_div_lt_pred_i x1 y1 i) as bxy eqn:Hbxy3 .
+       symmetry in Hbxy3.
+       destruct bxy as (b3, (x3, y3)); simpl.
+       destruct (I_lt_dec x3 y3) as [H3| H3]; simpl.
+        destruct i.
+         simpl in Hbxy3.
+         injection Hbxy3; clear Hbxy3; intros; subst b3 x3 y3.
 bbb.
 
      apply I_zero_eqs_iff in Hs3.
