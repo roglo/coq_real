@@ -1797,6 +1797,8 @@ destruct s1 as [dj1| ].
                    apply Hn3 in H; simpl in H.
                    rewrite Vy2 in H; simpl in H.
                    rename H into Hx13.
+                   destruct dj3.
+                    rewrite Hy1 in Ht3; discriminate Ht3.
 bbb.
 
  x1    0.00.
