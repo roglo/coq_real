@@ -1547,6 +1547,16 @@ induction m; intros; simpl in Hxym.
    apply Nat.le_add_r.
 Qed.
 
+Theorem I_div_2_inc_0 : ∀ x y b,
+  y = I_div_2_inc x b
+  → y .[ 0] = b.
+Proof. intros; subst; reflexivity. Qed.
+
+Theorem I_div_2_inc_1 : ∀ x y b,
+  y = I_div_2_inc x b
+  → y.[1] = x.[0].
+Proof. intros; subst; reflexivity. Qed.
+
 Theorem R_frac_div_1_r : ∀ x, (R_frac (x / 1) = R_frac x)%I.
 Proof.
 intros x.
@@ -1673,6 +1683,19 @@ destruct s1 as [dj1| ].
         destruct i.
          simpl in Hbxy3.
          injection Hbxy3; clear Hbxy3; intros; subst b3 x3 y3.
+         remember Hx1 as H; clear HeqH.
+         apply I_div_2_inc_0 in H.
+         rename H into Vx1.
+         remember Hy1 as H; clear HeqH.
+         apply I_div_2_inc_0 in H.
+         rename H into Vy1.
+         remember Hx1 as H; clear HeqH.
+         apply I_div_2_inc_1 in H.
+         rename H into Vx2.
+         remember Hy1 as H; clear HeqH.
+         apply I_div_2_inc_1 in H.
+         simpl in H.
+         rename H into Vy2.
 bbb.
 
      apply I_zero_eqs_iff in Hs3.
