@@ -1696,7 +1696,6 @@ destruct s1 as [dj1| ].
          apply I_div_2_inc_1 in H.
          simpl in H.
          rename H into Vy2.
-bbb.
          unfold I_lt, I_compare in H3; simpl in H3.
          remember (fst_same x1 (- I_div_2 y1) 0) as s3 eqn:Hs3 .
          destruct s3 as [dj3| ]; [ idtac | discriminate H3 ].
@@ -1707,6 +1706,18 @@ bbb.
 
           rewrite Nat.sub_0_r in Ht3.
           pose proof (Hn3 O (Nat.lt_0_succ dj3)) as H; simpl in H.
+          remember (x1 .[ S dj3]) as b eqn:Hx3 .
+          destruct b; [ discriminate H3 | clear H3 ].
+          symmetry in Hx3.
+          apply negb_sym in Ht3; simpl in Ht3.
+          destruct dj3.
+           clear Ht3.
+bbb.
+
+ x1    0.00.
+ y1    0.10.
+ y1/2  0.010.
+
 bbb.
 
      apply I_zero_eqs_iff in Hs3.
