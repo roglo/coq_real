@@ -1697,6 +1697,17 @@ destruct s1 as [dj1| ].
          simpl in H.
          rename H into Vy2.
 bbb.
+         unfold I_lt, I_compare in H3; simpl in H3.
+         remember (fst_same x1 (- I_div_2 y1) 0) as s3 eqn:Hs3 .
+         destruct s3 as [dj3| ]; [ idtac | discriminate H3 ].
+         apply fst_same_sym_iff in Hs3; simpl in Hs3.
+         destruct Hs3 as (Hn3, Ht3).
+         destruct dj3; simpl in Ht3.
+          rewrite Ht3 in H3; discriminate H3.
+
+          rewrite Nat.sub_0_r in Ht3.
+          pose proof (Hn3 O (Nat.lt_0_succ dj3)) as H; simpl in H.
+bbb.
 
      apply I_zero_eqs_iff in Hs3.
     destruct m.
