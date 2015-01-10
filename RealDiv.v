@@ -1707,10 +1707,19 @@ destruct s1 as [dj1| ].
       injection Hxym; clear Hxym; intros; subst xm ym.
       simpl in Hrif.
       apply Z.eqb_eq in Hc.
-      remember
-       (I_div_2_inc (R_frac (R_abs x)) (Z.odd (R_int (R_abs x)))) as x1
-       eqn:Hx1 .
+      remember (Z.odd (R_int (R_abs x))) as b.
+      remember (I_div_2_inc (R_frac (R_abs x)) b) as x1 eqn:Hx1; subst b.
       remember (I_div_2_inc 0 true) as y1 eqn:Hy1 .
+      remember Hx1 as H; clear HeqH.
+      apply I_eql_eqs in H.
+      apply I_div_2_inc_iff in H; simpl in H.
+      destruct H as (Hx1_0, Hx1_S).
+      remember Hy1 as H; clear HeqH.
+      apply I_eql_eqs in H.
+      apply I_div_2_inc_iff in H; simpl in H.
+      destruct H as (Hy1_0, Hy1_S).
+      rename i into j.
+bbb.
       destruct (I_lt_dec x1 y1) as [H1| H1].
        injection Hrif; clear Hrif; intros; subst ri rf.
        simpl.
