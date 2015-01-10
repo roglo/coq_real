@@ -1790,39 +1790,16 @@ destruct s1 as [dj1| ].
                  destruct dj3.
                   rewrite Hx3 in Hxj1; discriminate Hxj1.
 
-                  destruct dj3.
-                   rewrite Ht3 in Vy2; discriminate Vy2.
+                  rewrite Hy1 in Ht3; discriminate Ht3.
 
-                   assert (3 < S (S (S (S dj3))))%nat as H by omega.
-                   apply Hn3 in H; simpl in H.
-                   rewrite Vy2 in H; simpl in H.
-                   rename H into Hx13.
-                   destruct dj3.
-                    rewrite Hy1 in Ht3; discriminate Ht3.
+               pose proof (Hn1 O (Nat.lt_0_succ dj1)) as H; simpl in H.
+               rewrite H in Hx2; simpl in Hx2.
+               rename H into Hx01.
 bbb.
 
- x1    0.00.
- y1    0.100000000… = 1/2
- y1/2  0.010000000… = 1/4
-
-    x = (-1, 0.1.)
-
-1/ x = -1/2
-
-    x = (-1, 0.100…) = -1/2
-abs x = ( 0, 0.011…)
-   mx = 0.01… = 1/4
-   my = 0.10… = 1/2
-
-111111111111111 | 1000000000
-100000000000000 --------------
---------------- | 0.011111…
- 11111111111111 |
- 10000000000000
- --------------
- 0111111111111
-
-  (ri, rf) = (0, 0.01…)
+  x    0.11.
+  x1   0.000.
+  y1   0.10.
 
 bbb.
 
