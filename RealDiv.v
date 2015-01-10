@@ -1719,6 +1719,57 @@ destruct s1 as [dj1| ].
       apply I_div_2_inc_iff in H; simpl in H.
       destruct H as (Hy1_0, Hy1_S).
       rename i into j.
+      symmetry.
+      destruct (I_lt_dec x1 y1) as [H1| H1].
+       injection Hrif; clear Hrif; intros; subst ri rf; simpl.
+       remember (I_div_lt_pred_i x1 y1 j) as bxy eqn:Hbxy3 .
+       symmetry in Hbxy3.
+       destruct bxy as (b3, (x3, y3)); simpl.
+       destruct (I_lt_dec x3 y3) as [H3| H3]; simpl.
+        destruct j.
+         pose proof (Hx1_S O) as H.
+         unfold R_abs in H; simpl in H.
+         remember (R_is_neg x) as nx eqn:Hnx .
+         symmetry in Hnx.
+         destruct nx; simpl in H.
+          apply negb_sym in H; rewrite H.
+          apply negb_false_iff.
+          simpl in Hbxy3.
+          injection Hbxy3; clear Hbxy3; intros; subst b3 x3 y3.
+          unfold I_lt, I_compare in H3; simpl in H3.
+          remember (fst_same x1 (- I_div_2 y1) 0) as s3 eqn:Hs3 .
+          destruct s3 as [dj3| ]; [ idtac | discriminate H3 ].
+          apply fst_same_sym_iff in Hs3; simpl in Hs3.
+          destruct Hs3 as (Hn3, Ht3).
+          destruct dj3; simpl in Ht3.
+           rewrite Ht3 in H3; discriminate H3.
+
+           clear H.
+           destruct dj3.
+            destruct (x1 .[ 1]); [ discriminate H3 | clear H3 ].
+            clear Ht3.
+            pose proof (Hn3 O Nat.lt_0_1) as H.
+            simpl in H.
+            rewrite Hx1_0 in H; simpl in H.
+            rewrite H in Hx1_0.
+            unfold R_abs in H.
+            rewrite Hnx in H; simpl in H.
+            rewrite Z.odd_sub in H; simpl in H.
+            rewrite xorb_true_r in H.
+            apply negb_false_iff in H.
+            unfold R_abs in Hc; simpl in Hc.
+            rewrite Hnx in Hc; simpl in Hc.
+            apply Zodd_bool_iff in H.
+            apply Zodd_ex_iff in H.
+            destruct H as (i, Hi).
+            rewrite Hi in Hc.
+            rewrite Z.add_simpl_r in Hc.
+            rewrite Z.mul_comm in Hc.
+            rewrite Z.div_mul in Hc; [ idtac | intros H; discriminate H ].
+            subst i; simpl in Hi.
+            apply Z.eq_opp_l in Hi; simpl in Hi.
+            unfold R_abs in Hx1_S.
+            rewrite Hnx in Hx1_S; simpl in Hx1_S.
 bbb.
       destruct (I_lt_dec x1 y1) as [H1| H1].
        injection Hrif; clear Hrif; intros; subst ri rf.
