@@ -1769,6 +1769,34 @@ destruct s1 as [dj1| ].
               rewrite <- H in Hxj1; clear b H.
               destruct dj1.
                rewrite Hxj1 in Hx2; apply negb_sym in Hx2; simpl in Hx2.
+               unfold I_lt, I_compare in H3; simpl in H3.
+               remember (fst_same x1 (- I_div_2 (I_div_2 y1)) 0) as s3
+                eqn:Hs3 .
+               destruct s3 as [dj3| ]; [ idtac | discriminate H3 ].
+               apply fst_same_sym_iff in Hs3; simpl in Hs3.
+               destruct Hs3 as (Hn3, Ht3).
+               destruct dj3; simpl in Ht3.
+                rewrite Ht3 in H3; discriminate H3.
+
+                rewrite Nat.sub_0_r in Ht3.
+                destruct dj3; simpl in Ht3.
+                 rewrite Ht3 in H3; discriminate H3.
+
+                 rewrite Nat.sub_0_r in Ht3.
+                 remember (x1 .[ S (S dj3)]) as b eqn:Hx3 .
+                 destruct b; [ discriminate H3 | clear H3 ].
+                 symmetry in Hx3.
+                 apply negb_sym in Ht3; simpl in Ht3.
+                 destruct dj3.
+                  rewrite Hx3 in Hxj1; discriminate Hxj1.
+
+                  destruct dj3.
+                   rewrite Ht3 in Vy2; discriminate Vy2.
+
+                   assert (3 < S (S (S (S dj3))))%nat as H by omega.
+                   apply Hn3 in H; simpl in H.
+                   rewrite Vy2 in H; simpl in H.
+                   rename H into Hx13.
 bbb.
 
  x1    0.00.
