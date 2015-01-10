@@ -1712,11 +1712,49 @@ destruct s1 as [dj1| ].
           apply negb_sym in Ht3; simpl in Ht3.
           destruct dj3.
            clear Ht3.
+           rename H into Wx1.
+           remember Hx3 as H; clear HeqH.
+           rewrite Vx2 in H.
+           unfold R_abs in H; simpl in H.
+           remember (R_is_neg x) as nx eqn:Hnx .
+           symmetry.
+           symmetry in Hnx.
+           destruct nx; [ simpl in H | assumption ].
+           apply negb_false_iff in H; exfalso.
+           unfold R_abs in Hc; simpl in Hc.
+           rewrite Hnx in Hc; simpl in Hc.
+           unfold R_abs in Vx1; simpl in Vx1.
+           rewrite Hnx in Vx1; simpl in Vx1.
+           unfold R_abs in Vx2; simpl in Vx2.
+           rewrite Hnx in Vx2; simpl in Vx2.
+           rewrite H in Vx2; simpl in Vx2.
+           unfold R_abs in Hx1.
+           rewrite Hnx in Hx1; simpl in Hx1.
+           rename H into Hfx.
+           remember Hnx as H; clear HeqH.
+           unfold R_is_neg in H; simpl in H.
+           apply Z.ltb_lt in H.
+           rewrite <- Vx1, Wx1 in Hx1.
+           unfold R_div_equiv_max_iter in Hm; simpl in Hm.
+           unfold R_abs in Hm; simpl in Hm.
+           rewrite Hnx in Hm; simpl in Hm.
+           remember (R_int x) as xi eqn:Hxi .
+           destruct (Z_eq_dec xi (- 1)) as [H2| H2].
+            move H2 at top; subst xi.
+            clear H.
+            simpl in Vx1.
+            simpl in Hc.
+            clear Hc.
+            simpl in Hm.
+            clear m Hm.
+            clear Wx1.
+            clear Hn3.
+            clear Hx3.
 bbb.
 
  x1    0.00.
- y1    0.10.
- y1/2  0.010.
+ y1    0.100000000… = 1/2
+ y1/2  0.010000000… = 1/4
 
 bbb.
 
