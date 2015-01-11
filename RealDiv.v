@@ -1790,6 +1790,11 @@ induction m2; intros; simpl in Hrif.
      split; [ assumption | intros i ].
      rewrite I_zero_eqs_iff in Hs1; simpl in Hs1.
      apply Hs1.
+
+    destruct m.
+     apply Z.eqb_neq in Hc.
+     unfold R_div_equiv_max_iter in Hm.
+     exfalso; apply Hc; clear Hc.
 bbb.
 
 Theorem R_div_diag : ∀ x, (x ≠ 0)%R → (x / x = 1)%R.
