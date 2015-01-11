@@ -791,6 +791,61 @@ Theorem zzz : ∀ x x1 xm m n,
   → R_int (R_abs x) / Z_two_pow n = 0.
 Proof.
 intros x x1 xm m n Hm Hx1 Hx1m Hxm.
+revert x x1 xm n Hm Hx1 Hx1m Hxm.
+induction m; intros.
+ simpl in Hm.
+ apply Z.div_small.
+ split; [ apply R_int_abs | idtac ].
+ unfold R_div_equiv_max_iter in Hm; simpl in Hm.
+ rewrite Z2Nat.inj_add in Hm.
+  simpl in Hm.
+  unfold Pos.to_nat in Hm; simpl in Hm.
+  rewrite Nat.add_comm in Hm.
+  simpl in Hm.
+  apply eq_add_S in Hm.
+  rewrite Z2Nat.inj_add in Hm; try apply R_int_abs.
+  unfold Z_two_pow.
+  apply Z.gt_lt.
+  rewrite <- Z2Nat.id.
+   apply Z.lt_gt.
+   apply Nat2Z.inj_lt.
+   apply Nat_le_lt_power.
+   rewrite <- Hm.
+   apply Nat.le_sub_le_add_r.
+   rewrite Nat.sub_diag.
+   apply Nat.le_0_l.
+
+   apply R_int_abs.
+
+  apply Z.add_nonneg_nonneg; apply R_int_abs.
+
+  apply Z.le_0_1.
+
+ simpl in Hx1m.
+ rewrite andb_diag in Hx1m.
+ remember (R_int x1 =? 0) as c eqn:Hc .
+ symmetry in Hc.
+ destruct c.
+  apply Z.eqb_eq in Hc.
+  injection Hx1m; clear Hx1m; intros; subst xm; clear H0.
+  rewrite <- R_int_div_2_pow_div.
+  rewrite I_zero_eqs_iff in Hxm; simpl in Hxm.
+  assert (x1 = 0)%R as H.
+   apply R_zero_iff.
+   left; split; assumption.
+
+   rewrite Hx1 in H; simpl in H.
+   apply R_div_2_0_iff in H.
+   apply R_zero_iff in H.
+   destruct H as [(H1, H2)| (H1, H2)].
+    assumption.
+
+    exfalso.
+    rewrite Hx1 in Hxm; simpl in Hxm.
+    pose proof (Hxm 1%nat) as H; simpl in H.
+    rewrite H2 in H; discriminate H.
+
+  apply Z.eqb_neq in Hc.
 bbb.
 
 Theorem formula_42 : ∀ x y x1 y1 xm ym m n,
