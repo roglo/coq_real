@@ -1991,6 +1991,10 @@ destruct s1 as [dj1| ].
  apply R_div_int_diag; assumption.
 Qed.
 
+bbb.
+
+A cool thing would be to prove that x/y=z → x/z=y
+
 (* *)
 
 Theorem R_frac_div_1_r : ∀ x, (R_frac (x / 1) = R_frac x)%I.
