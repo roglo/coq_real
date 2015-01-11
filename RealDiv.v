@@ -836,6 +836,84 @@ induction m; intros.
     rewrite Hy1; reflexivity.
 Qed.
 
+Theorem formula_2 : ∀ x x1 y1 xm ym m n,
+  R_div_equiv_max_iter (R_abs x) (R_abs 1) = (m + S n)%nat
+  → x1 = R_div_2_pow (R_abs x) (S n)
+  → y1 = R_div_2_pow (R_abs 1) (S n)
+  → R_div_equiv m x1 y1 = (xm, ym)
+  → (ym == 0)%I
+  → R_int (R_abs x) / Z_two_pow n = 0.
+Proof.
+intros x x1 y1 xm ym m n Hm Hx1 Hy1 Hxym Hym.
+revert x x1 y1 xm ym n Hm Hx1 Hy1 Hxym Hym.
+induction m; intros; simpl in Hxym.
+ injection Hxym; clear Hxym; intros; subst xm ym.
+ simpl in Hm.
+ unfold R_div_equiv_max_iter in Hm; simpl in Hm.
+ rewrite <- Z.add_assoc in Hm; simpl in Hm.
+ rewrite Z2Nat.inj_add in Hm.
+  simpl in Hm.
+  unfold Pos.to_nat in Hm; simpl in Hm.
+  rewrite Nat.add_comm in Hm.
+  simpl in Hm.
+  apply eq_add_S in Hm.
+  destruct n; [ discriminate Hm | idtac ].
+  rewrite Z_two_pow_succ.
+  apply eq_add_S in Hm.
+  rewrite <- Nat2Z.id in Hm.
+  apply Z2Nat.inj in Hm.
+   rewrite Hm.
+   rewrite <- Z.div_div.
+    rewrite Z_div_two_pow; reflexivity.
+
+    apply Z_two_pow_neq_0.
+
+    apply Z.lt_0_2.
+
+   apply R_int_abs.
+
+   apply Nat2Z.is_nonneg.
+
+  apply R_int_abs.
+
+  apply Z.le_0_2.
+
+ remember ((R_int x1 =? 0) && (R_int y1 =? 0)) as c eqn:Hc .
+ symmetry in Hc.
+ destruct c.
+  injection Hxym; clear Hxym; intros; subst xm ym.
+  rewrite I_zero_eqs_iff in Hym.
+  pose proof (Hym n) as H; simpl in H.
+  rewrite Hy1 in H.
+  exfalso; revert H; clear; intros.
+  induction n; [ discriminate H | idtac ].
+  remember (S n) as sn; simpl in H; subst sn.
+  remember (zerop (S n)) as x; simpl in Heqx; subst x.
+  rewrite Nat.sub_succ, Nat.sub_0_r in H.
+  apply IHn; assumption.
+
+  apply andb_false_iff in Hc.
+  destruct Hc as [Hc| Hc].
+   apply Z.eqb_neq in Hc.
+   exfalso; apply Hc; rewrite Hx1, R_int_div_2_pow_div.
+   rewrite Nat.add_succ_l, <- Nat.add_succ_r in Hm.
+   eapply IHm; try eassumption; try (subst x1 y1; reflexivity).
+
+   apply Z.eqb_neq in Hc.
+   exfalso; apply Hc; clear Hc.
+   rewrite Hy1; simpl.
+   rewrite R_int_div_2_pow_div; simpl.
+   rewrite Z.div_div; [ idtac | apply Z_two_pow_neq_0 | apply Z.lt_0_2 ].
+   rewrite Z.mul_comm.
+   rewrite <- Z.div_div; [ reflexivity | intros H; discriminate H | idtac ].
+   clear; unfold Z_two_pow.
+   induction n; [ apply Z.lt_0_1 | simpl ].
+   rewrite Nat.add_0_r.
+   eapply Z.lt_le_trans; [ eassumption | idtac ].
+   apply Nat2Z.inj_le.
+   apply Nat.le_add_r.
+Qed.
+
 Theorem R_int_div_0_l : ∀ x,
   (x ≠ 0)%R
   → R_int (0 / x) = 0.
@@ -1449,99 +1527,7 @@ bbb.
 bbb.
 *)
 
-(*
-Theorem formula_2 :
-  R_div_equiv_max_iter (R_abs x) (R_abs 1) = (m + S n)%nat
-  → x1 = R_div_2 (R_div_2 (R_abs x))
-  → y1 = R_div_2 (R_div_2 (R_abs 1))
-  → R_div_equiv m x1 y1 = (xm, ym)
-  → (ym == 0)%I
-  → R_frac x .[ S (i + di)] = false
-  → R_int (R_abs x) / Z_two_pow n ≠ 0
-  → R_frac x .[ i] = false.
-Proof.
-bbb.
-*)
-
 (* 1: right neutral element *)
-
-Theorem formula_2 : ∀ x x1 y1 xm ym m n,
-  R_div_equiv_max_iter (R_abs x) (R_abs 1) = (m + S n)%nat
-  → x1 = R_div_2_pow (R_abs x) (S n)
-  → y1 = R_div_2_pow (R_abs 1) (S n)
-  → R_div_equiv m x1 y1 = (xm, ym)
-  → (ym == 0)%I
-  → R_int (R_abs x) / Z_two_pow n = 0.
-Proof.
-intros x x1 y1 xm ym m n Hm Hx1 Hy1 Hxym Hym.
-revert x x1 y1 xm ym n Hm Hx1 Hy1 Hxym Hym.
-induction m; intros; simpl in Hxym.
- injection Hxym; clear Hxym; intros; subst xm ym.
- simpl in Hm.
- unfold R_div_equiv_max_iter in Hm; simpl in Hm.
- rewrite <- Z.add_assoc in Hm; simpl in Hm.
- rewrite Z2Nat.inj_add in Hm.
-  simpl in Hm.
-  unfold Pos.to_nat in Hm; simpl in Hm.
-  rewrite Nat.add_comm in Hm.
-  simpl in Hm.
-  apply eq_add_S in Hm.
-  destruct n; [ discriminate Hm | idtac ].
-  rewrite Z_two_pow_succ.
-  apply eq_add_S in Hm.
-  rewrite <- Nat2Z.id in Hm.
-  apply Z2Nat.inj in Hm.
-   rewrite Hm.
-   rewrite <- Z.div_div.
-    rewrite Z_div_two_pow; reflexivity.
-
-    apply Z_two_pow_neq_0.
-
-    apply Z.lt_0_2.
-
-   apply R_int_abs.
-
-   apply Nat2Z.is_nonneg.
-
-  apply R_int_abs.
-
-  apply Z.le_0_2.
-
- remember ((R_int x1 =? 0) && (R_int y1 =? 0)) as c eqn:Hc .
- symmetry in Hc.
- destruct c.
-  injection Hxym; clear Hxym; intros; subst xm ym.
-  rewrite I_zero_eqs_iff in Hym.
-  pose proof (Hym n) as H; simpl in H.
-  rewrite Hy1 in H.
-  exfalso; revert H; clear; intros.
-  induction n; [ discriminate H | idtac ].
-  remember (S n) as sn; simpl in H; subst sn.
-  remember (zerop (S n)) as x; simpl in Heqx; subst x.
-  rewrite Nat.sub_succ, Nat.sub_0_r in H.
-  apply IHn; assumption.
-
-  apply andb_false_iff in Hc.
-  destruct Hc as [Hc| Hc].
-   apply Z.eqb_neq in Hc.
-   exfalso; apply Hc; rewrite Hx1, R_int_div_2_pow_div.
-   rewrite Nat.add_succ_l, <- Nat.add_succ_r in Hm.
-   eapply IHm; try eassumption; try (subst x1 y1; reflexivity).
-
-   apply Z.eqb_neq in Hc.
-   exfalso; apply Hc; clear Hc.
-   rewrite Hy1; simpl.
-   rewrite R_int_div_2_pow_div; simpl.
-   rewrite Z.div_div; [ idtac | apply Z_two_pow_neq_0 | apply Z.lt_0_2 ].
-   rewrite Z.mul_comm.
-   rewrite <- Z.div_div; [ reflexivity | intros H; discriminate H | idtac ].
-   clear; unfold Z_two_pow.
-   induction n; [ apply Z.lt_0_1 | simpl ].
-   rewrite Nat.add_0_r.
-   eapply Z.lt_le_trans; [ eassumption | idtac ].
-   apply Nat2Z.inj_le.
-   apply Nat.le_add_r.
-Qed.
 
 Theorem I_eql_eqs : ∀ x y, x = y → (x == y)%I.
 Proof. intros; subst; reflexivity. Qed.
@@ -1791,8 +1777,8 @@ induction m2; intros; simpl in Hrif.
      rewrite I_zero_eqs_iff in Hs1; simpl in Hs1.
      apply Hs1.
 
+    apply Z.eqb_neq in Hc.
     destruct m.
-     apply Z.eqb_neq in Hc.
      unfold R_div_equiv_max_iter in Hm.
      exfalso; apply Hc; clear Hc.
      rewrite <- Nat2Z.id in Hm.
