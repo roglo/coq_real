@@ -5169,4 +5169,25 @@ unfold carry; simpl.
 destruct (fst_same (- 0%I) 0 (S i)); reflexivity.
 Qed.
 
+Theorem I_add_shuffle0 : ∀ x y z, (x + y + z = x + z + y)%I.
+Proof.
+intros x y z.
+do 2 rewrite <- I_add_assoc.
+apply I_add_compat; [ reflexivity | apply I_add_comm ].
+Qed.
+
+Theorem I_sub_move_0_r : ∀ x y, (x - y = 0)%I ↔ (x = y)%I.
+Proof.
+intros x y.
+split; intros Hxy.
+ apply I_add_compat_r with (z := y) in Hxy.
+ unfold I_sub in Hxy.
+ rewrite I_add_shuffle0, <- I_add_assoc in Hxy.
+ rewrite fold_I_sub, I_sub_diag in Hxy.
+ rewrite I_add_0_r, I_add_comm, I_add_0_r in Hxy.
+ assumption.
+
+ rewrite Hxy; apply I_sub_diag.
+Qed.
+
 Close Scope nat_scope.

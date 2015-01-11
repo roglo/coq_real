@@ -1991,9 +1991,27 @@ destruct s1 as [dj1| ].
  apply R_div_int_diag; assumption.
 Qed.
 
-bbb.
+(* *)
 
-A cool thing would be to prove that x/y=z → x/z=y
+Theorem zzz : ∀ x y z, (y ≠ 0)%R → (z ≠ 0)%R → (x / y = z)%R → (x / z = y)%R.
+Proof.
+intros x y z Hy Hz Hxyz.
+unfold R_eq; simpl.
+unfold R_eq in Hxyz; simpl in Hxyz.
+destruct Hxyz as (Hixy, Hfxy).
+apply I_sub_move_0_r in Hfxy.
+apply I_zero_iff in Hfxy; simpl in Hfxy.
+destruct Hfxy as [Hfxy| Hfxy].
+ split.
+  Focus 2.
+  unfold I_eq; simpl; intros i.
+  pose proof (Hfxy i) as H.
+  unfold I_add_i in H; simpl in H.
+  unfold I_add_i; simpl.
+  do 2 rewrite xorb_false_r.
+bbb.
+  Reflexion to do, indeed, with that method of using I_sub_move_0_r
+  and I_zero_iff in case of (x = y)%I in previous theorems...
 
 (* *)
 
