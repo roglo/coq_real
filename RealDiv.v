@@ -1754,6 +1754,8 @@ split; intros Hy.
   revert Ht1; apply no_fixpoint_negb.
 Qed.
 
+(* proof x/x = 1 *)
+
 Theorem R_div_equiv_diag : ∀ m x, ∃ y, R_div_equiv m x x = (y, y).
 Proof.
 intros m x.
@@ -1767,48 +1769,6 @@ induction m; intros; simpl.
  destruct c; simpl; [ idtac | apply IHm ].
  exists (R_frac x); reflexivity.
 Qed.
-
-Theorem I_div_lim_diag : ∀ m x, ∃ y,
-  I_div_lim m x x = (1%nat, y) ∧ (y = 0)%I.
-Proof.
-intros m x.
-destruct m; simpl.
- Focus 2.
- destruct (I_lt_dec x x) as [H1| H1].
-  exfalso; revert H1; apply I_lt_irrefl.
-
-  remember (I_div_lim m (x - x) x) as xif eqn:Hxif .
-  symmetry in Hxif.
-  destruct xif as (xi, xf); simpl.
-  exists xf.
-  destruct m; simpl in Hxif.
-   injection Hxif; intros; subst xi xf.
-   split; reflexivity.
-
-   destruct (I_lt_dec (x - x)%I x) as [H2| H2].
-    injection Hxif; clear Hxif; intros; subst xi xf.
-    split; [ reflexivity | idtac ].
-    unfold I_eq; simpl; intros i.
-    rewrite I_add_i_diag; simpl.
-    unfold I_add_i; simpl.
-    remember (I_div_lt_pred_i (x - x) x i) as bxy eqn:Hbxy .
-    destruct bxy as (b1, (x1, y1)); simpl.
-    symmetry in Hbxy.
-    remember Hbxy as H; clear HeqH.
-    apply I_div_lt_pred_0_l in H.
-     destruct (I_lt_dec x1 y1) as [H3| H3].
-      rewrite xorb_false_r; simpl.
-      unfold carry; simpl.
-      remember (fst_same (I_div_lt (x - x) x) 0 (S i)) as s1 eqn:Hs1 .
-      destruct s1 as [dj1| ].
-       apply fst_same_sym_iff in Hs1; simpl in Hs1.
-       destruct Hs1 as (Hn1, Ht1).
-       rewrite Ht1; reflexivity.
-
-       apply fst_same_sym_iff in Hs1; simpl in Hs1.
-Abort. (* à voir, si nécessaire...
-bbb.
-*)
 
 Theorem R_div_frac_diag_i  : ∀ x,
   (x ≠ 0)%R
@@ -2028,7 +1988,10 @@ destruct s1 as [dj1| ].
 
  destruct Hs1 as (Hn1, Ht1).
  rewrite Ht1, Z.add_0_r.
-bbb.
+ apply R_div_int_diag; assumption.
+Qed.
+
+(* *)
 
 Theorem R_frac_div_1_r : ∀ x, (R_frac (x / 1) = R_frac x)%I.
 Proof.
