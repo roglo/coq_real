@@ -789,6 +789,7 @@ Theorem formula_42 : ∀ x y x1 y1 xm ym m n,
   → y1 = R_div_2_pow (R_abs y) (S n)
   → R_div_equiv m x1 y1 = (xm, ym)
   → (ym == 0)%I
+... non :
   → R_int (R_abs x) / Z_two_pow n = 0.
 Proof.
 intros x y x1 y1 xm ym m n Hm Hx1 Hy1 Hxym Hym.
@@ -829,6 +830,7 @@ induction m; intros; simpl in Hxym.
   destruct Hc as (Hxi, Hyi).
   apply Z.eqb_eq in Hxi.
   apply Z.eqb_eq in Hyi.
+bbb.
   injection Hxym; clear Hxym; intros; subst xm ym.
   apply Z.div_small.
   split; [ apply R_int_abs | idtac ].
@@ -837,6 +839,7 @@ induction m; intros; simpl in Hxym.
   rewrite <- Z2Nat.id; [ idtac | apply R_int_abs ].
   apply Z.lt_gt.
   apply Nat2Z.inj_lt.
+bbb.
   apply Nat_le_lt_power.
   unfold R_div_equiv_max_iter in Hm.
 bbb.
