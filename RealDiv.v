@@ -1643,9 +1643,72 @@ destruct m; simpl.
        rewrite Ht1; reflexivity.
 
        apply fst_same_sym_iff in Hs1; simpl in Hs1.
-Abort. (* à voir...
+Abort. (* à voir, si nécessaire...
 bbb.
 *)
+
+Theorem R_div_frac_diag_i  : ∀ x,
+  (x ≠ 0)%R
+  → ∀ i, R_frac (x / x) .[ i] = false.
+Proof.
+intros x Hx i.
+unfold R_div; simpl.
+remember (R_div_equiv_max_iter (R_abs x) (R_abs x)) as m eqn:Hm .
+symmetry in Hm.
+remember (R_div_equiv m (R_abs x) (R_abs x)) as xym eqn:Hxym .
+pose proof (R_div_equiv_diag m (R_abs x)) as H.
+destruct H as (mx, Hmx).
+rewrite <- Hxym in Hmx.
+move Hmx at top; subst xym.
+symmetry in Hxym.
+remember (I_div_max_iter_int mx) as m2 eqn:Hm2 .
+symmetry in Hm2.
+remember (I_div_lim m2 mx mx) as rif eqn:Hrif .
+symmetry in Hrif.
+destruct rif as (ri, rf); simpl.
+clear Hxym.
+revert ri rf mx Hm2 Hrif.
+induction m2; intros; simpl in Hrif.
+ injection Hrif; intros; subst rf; reflexivity.
+
+ destruct (I_lt_dec mx mx) as [H1| H1].
+  exfalso; revert H1; apply I_lt_irrefl.
+
+  remember (I_div_lim m2 (mx - mx) mx) as rif2 eqn:Hrif2 .
+  symmetry in Hrif2.
+  destruct rif2 as (ri2, rf2).
+  injection Hrif; clear Hrif; intros; subst ri rf.
+  clear IHm2 H1.
+  destruct m2; simpl in Hrif2.
+   injection Hrif2; intros; subst rf2; reflexivity.
+
+   destruct (I_lt_dec (mx - mx)%I mx) as [H1| H1].
+    rewrite I_sub_diag_eqs in H1.
+    injection Hrif2; clear Hrif2; intros; subst ri2 rf2; simpl.
+    remember (I_div_lt_pred_i (mx - mx) mx i) as bxy eqn:Hbxy .
+    symmetry in Hbxy.
+    destruct bxy as (b1, (x1, y1)); simpl.
+    destruct (I_lt_dec x1 y1) as [H2| H2]; [ reflexivity | exfalso ].
+    remember Hbxy as H; clear HeqH.
+    apply I_div_lt_pred_0_l in H.
+     rewrite H in H2.
+     apply I_ge_le_iff, I_le_0_r_eqs_iff in H2.
+     rename H into Hx1.
+     apply I_div_lt_pred_r_eqs_0 in Hbxy; [ idtac | assumption ].
+     rewrite Hbxy in H1; revert H1; apply I_lt_irrefl.
+
+     apply I_sub_diag_eqs.
+
+    rewrite I_sub_diag_eqs in H1.
+    rewrite I_ge_le_iff, I_le_0_r_eqs_iff in H1.
+    unfold I_div_max_iter_int in Hm2; simpl in Hm2.
+    remember (fst_same mx I_ones 0) as s2 eqn:Hs2 .
+    destruct s2 as [j2| ]; [ idtac | discriminate Hm2 ].
+    apply fst_same_sym_iff in Hs2; simpl in Hs2.
+    destruct Hs2 as (Hn2, Ht2).
+    rewrite I_zero_eqs_iff in H1.
+    rewrite H1 in Ht2; discriminate Ht2.
+Qed.
 
 Theorem R_div_frac_diag : ∀ x, (x ≠ 0)%R → (R_frac (x / x) = 0)%I.
 Proof.
@@ -1660,72 +1723,18 @@ apply fst_same_sym_iff in Hs1; simpl in Hs1.
 destruct s1 as [dj1| ].
  destruct Hs1 as (Hn1, Ht1).
  rewrite Ht1, xorb_false_r.
- unfold R_div; simpl.
- remember (R_div_equiv_max_iter (R_abs x) (R_abs x)) as m eqn:Hm .
- symmetry in Hm.
- remember (R_div_equiv m (R_abs x) (R_abs x)) as xym eqn:Hxym .
- pose proof (R_div_equiv_diag m (R_abs x)) as H.
- destruct H as (mx, Hmx).
- rewrite <- Hxym in Hmx.
- move Hmx at top; subst xym.
- symmetry in Hxym.
- remember (I_div_max_iter_int mx) as m2 eqn:Hm2 .
- symmetry in Hm2.
- remember (I_div_lim m2 mx mx) as rif eqn:Hrif .
- symmetry in Hrif.
- destruct rif as (ri, rf); simpl.
- clear Hxym.
- revert ri rf mx Hm2 Hrif.
- induction m2; intros; simpl in Hrif.
-  injection Hrif; intros; subst rf; reflexivity.
+ apply R_div_frac_diag_i; assumption.
 
-  destruct (I_lt_dec mx mx) as [H1| H1].
-   exfalso; revert H1; apply I_lt_irrefl.
-
-   remember (I_div_lim m2 (mx - mx) mx) as rif2 eqn:Hrif2 .
-   symmetry in Hrif2.
-   destruct rif2 as (ri2, rf2).
-   injection Hrif; clear Hrif; intros; subst ri rf.
-   clear IHm2 H1.
-   destruct m2; simpl in Hrif2.
-    injection Hrif2; intros; subst rf2; reflexivity.
-
-    destruct (I_lt_dec (mx - mx)%I mx) as [H1| H1].
-     rewrite I_sub_diag_eqs in H1.
-     injection Hrif2; clear Hrif2; intros; subst ri2 rf2; simpl.
-     remember (I_div_lt_pred_i (mx - mx) mx i) as bxy eqn:Hbxy .
-     symmetry in Hbxy.
-     destruct bxy as (b1, (x1, y1)); simpl.
-     destruct (I_lt_dec x1 y1) as [H2| H2]; [ reflexivity | exfalso ].
-     remember Hbxy as H; clear HeqH.
-     apply I_div_lt_pred_0_l in H.
-      rewrite H in H2.
-      apply I_ge_le_iff, I_le_0_r_eqs_iff in H2.
-      rename H into Hx1.
-      apply I_div_lt_pred_r_eqs_0 in Hbxy; [ idtac | assumption ].
-      rewrite Hbxy in H1; revert H1; apply I_lt_irrefl.
-
-      apply I_sub_diag_eqs.
-
-     rewrite I_sub_diag_eqs in H1.
-     rewrite I_ge_le_iff, I_le_0_r_eqs_iff in H1.
-     unfold I_div_max_iter_int in Hm2; simpl in Hm2.
-     remember (fst_same mx I_ones 0) as s2 eqn:Hs2 .
-     destruct s2 as [j2| ]; [ idtac | discriminate Hm2 ].
-     apply fst_same_sym_iff in Hs2; simpl in Hs2.
-     destruct Hs2 as (Hn2, Ht2).
-     rewrite I_zero_eqs_iff in H1.
-     rewrite H1 in Ht2; discriminate Ht2.
-
- rewrite xorb_true_r.
- apply negb_false_iff.
-bbb.
+ pose proof (Hs1 O) as H.
+ rewrite R_div_frac_diag_i in H; [ discriminate H | assumption ].
+Qed.
 
 Theorem R_div_diag : ∀ x, (x ≠ 0)%R → (x / x = 1)%R.
 Proof.
 intros x Hx.
 unfold R_eq; simpl.
 rewrite carry_diag; simpl.
+split; [ idtac | apply R_div_frac_diag; assumption ].
 bbb.
 
 Theorem R_frac_div_1_r : ∀ x, (R_frac (x / 1) = R_frac x)%I.
