@@ -753,6 +753,94 @@ rewrite <- Z.div_div.
  apply Pos2Z.is_pos.
 Qed.
 
+Theorem Nat_le_lt_power : ∀ a b,
+  a ≤ b
+  → (a < two_power b)%nat.
+Proof.
+intros a b Hab.
+revert a Hab.
+induction b; intros; simpl.
+ apply Nat.le_0_r in Hab; subst a.
+ apply Nat.lt_0_1.
+
+ rewrite Nat.add_0_r.
+ destruct a.
+  clear.
+  apply Nat.add_pos_l.
+  induction b; [ apply Nat.lt_0_1 | simpl ].
+  rewrite Nat.add_0_r.
+  apply Nat.add_pos_l; assumption.
+
+  apply le_S_n in Hab.
+  apply IHb in Hab.
+  apply lt_n_S in Hab.
+  eapply Nat.lt_le_trans; [ eassumption | idtac ].
+  rewrite <- Nat.add_1_r.
+  apply Nat.add_le_mono_l.
+  clear.
+  induction b; [ apply Nat.lt_0_1 | simpl ].
+  rewrite Nat.add_0_r.
+  apply Nat.add_pos_l; assumption.
+Qed.
+
+Theorem formula_42 : ∀ x y x1 y1 xm ym m n,
+  R_div_equiv_max_iter (R_abs x) (R_abs y) = (m + S n)%nat
+  → x1 = R_div_2_pow (R_abs x) (S n)
+  → y1 = R_div_2_pow (R_abs y) (S n)
+  → R_div_equiv m x1 y1 = (xm, ym)
+  → (ym == 0)%I
+  → R_int (R_abs x) / Z_two_pow n = 0.
+Proof.
+intros x y x1 y1 xm ym m n Hm Hx1 Hy1 Hxym Hym.
+revert x y x1 y1 xm ym n Hm Hx1 Hy1 Hxym Hym.
+induction m; intros; simpl in Hxym.
+ injection Hxym; clear Hxym; intros; subst xm ym.
+ apply Z.div_small.
+ split; [ apply R_int_abs | idtac ].
+ unfold R_div_equiv_max_iter in Hm; simpl in Hm.
+ rewrite Z2Nat.inj_add in Hm.
+  simpl in Hm.
+  unfold Pos.to_nat in Hm; simpl in Hm.
+  rewrite Nat.add_comm in Hm.
+  simpl in Hm.
+  apply eq_add_S in Hm.
+  rewrite Z2Nat.inj_add in Hm; try apply R_int_abs.
+  unfold Z_two_pow.
+  apply Z.gt_lt.
+  rewrite <- Z2Nat.id.
+   apply Z.lt_gt.
+   apply Nat2Z.inj_lt.
+   apply Nat_le_lt_power.
+   rewrite <- Hm.
+   apply Nat.le_sub_le_add_l.
+   rewrite Nat.sub_diag.
+   apply Nat.le_0_l.
+
+   apply R_int_abs.
+
+  apply Z.add_nonneg_nonneg; apply R_int_abs.
+
+  apply Z.le_0_1.
+
+ remember ((R_int x1 =? 0) && (R_int y1 =? 0)) as c eqn:Hc .
+ symmetry in Hc.
+ destruct c.
+  apply andb_true_iff in Hc.
+  destruct Hc as (Hxi, Hyi).
+  apply Z.eqb_eq in Hxi.
+  apply Z.eqb_eq in Hyi.
+  injection Hxym; clear Hxym; intros; subst xm ym.
+  apply Z.div_small.
+  split; [ apply R_int_abs | idtac ].
+  unfold Z_two_pow.
+  apply Z.gt_lt.
+  rewrite <- Z2Nat.id; [ idtac | apply R_int_abs ].
+  apply Z.lt_gt.
+  apply Nat2Z.inj_lt.
+  apply Nat_le_lt_power.
+  unfold R_div_equiv_max_iter in Hm.
+bbb.
+
 Theorem formula_1 : ∀ y x1 y1 xm ym m n,
   R_div_equiv_max_iter (R_abs 0) (R_abs y) = (m + S n)%nat
   → x1 = R_div_2_pow (R_abs 0) (S n)
