@@ -1759,6 +1759,37 @@ induction m2; intros; simpl in Hrif.
   symmetry in Hn.
   destruct n; [ idtac | discriminate Hm2 ].
   exfalso; revert Hn; apply two_power_neq_0.
+
+  apply I_zero_eqs_iff in Hs1.
+  destruct m.
+   exfalso; revert Hm; apply R_div_equiv_max_iter_abs_ne_0.
+
+   simpl in Hxym.
+   rewrite andb_diag in Hxym.
+   remember (R_int (R_abs x) =? 0) as c eqn:Hc .
+   symmetry in Hc.
+   destruct c.
+    injection Hxym; clear Hxym; intros.
+    clear H0; subst mx.
+    apply Z.eqb_eq in Hc.
+    exfalso; apply Hx.
+    apply R_zero_iff.
+    unfold R_abs in Hc, Hs1.
+    remember (R_is_neg x) as nx eqn:Hnx .
+    symmetry in Hnx.
+    destruct nx; simpl in Hc, Hs1.
+     right.
+     apply Z.sub_move_l in Hc.
+     rewrite Z.opp_involutive in Hc; simpl in Hc.
+     symmetry in Hc.
+     split; [ assumption | intros i ].
+     rewrite I_zero_eqs_iff in Hs1; simpl in Hs1.
+     apply negb_false_iff, Hs1.
+
+     left.
+     split; [ assumption | intros i ].
+     rewrite I_zero_eqs_iff in Hs1; simpl in Hs1.
+     apply Hs1.
 bbb.
 
 Theorem R_div_diag : ∀ x, (x ≠ 0)%R → (x / x = 1)%R.
