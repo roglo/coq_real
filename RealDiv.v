@@ -789,8 +789,7 @@ Theorem formula_42 : ∀ x y x1 y1 xm ym m n,
   → y1 = R_div_2_pow (R_abs y) (S n)
   → R_div_equiv m x1 y1 = (xm, ym)
   → (ym == 0)%I
-... non :
-  → R_int (R_abs x) / Z_two_pow n = 0.
+  → R_int (R_abs y) / Z_two_pow n = 0.
 Proof.
 intros x y x1 y1 xm ym m n Hm Hx1 Hy1 Hxym Hym.
 revert x y x1 y1 xm ym n Hm Hx1 Hy1 Hxym Hym.
@@ -813,7 +812,7 @@ induction m; intros; simpl in Hxym.
    apply Nat2Z.inj_lt.
    apply Nat_le_lt_power.
    rewrite <- Hm.
-   apply Nat.le_sub_le_add_l.
+   apply Nat.le_sub_le_add_r.
    rewrite Nat.sub_diag.
    apply Nat.le_0_l.
 
@@ -830,18 +829,36 @@ induction m; intros; simpl in Hxym.
   destruct Hc as (Hxi, Hyi).
   apply Z.eqb_eq in Hxi.
   apply Z.eqb_eq in Hyi.
-bbb.
-  injection Hxym; clear Hxym; intros; subst xm ym.
-  apply Z.div_small.
-  split; [ apply R_int_abs | idtac ].
-  unfold Z_two_pow.
-  apply Z.gt_lt.
-  rewrite <- Z2Nat.id; [ idtac | apply R_int_abs ].
-  apply Z.lt_gt.
-  apply Nat2Z.inj_lt.
-bbb.
-  apply Nat_le_lt_power.
-  unfold R_div_equiv_max_iter in Hm.
+  rewrite <- R_int_div_2_pow_div.
+  rewrite Hy1 in Hyi; simpl in Hyi.
+  apply Z.div_small_iff in Hyi.
+   destruct Hyi as [Hyi| Hyi].
+    remember (R_int (R_div_2_pow (R_abs y) n)) as yi eqn:Hy .
+    symmetry in Hy.
+    destruct (Z_eq_dec yi 1) as [H1| H1].
+     rewrite H1 in Hy.
+     injection Hxym; clear Hxym; intros; subst xm ym.
+     rewrite Hy1 in Hym; simpl in Hym.
+     rewrite Hy in Hym; simpl in Hym.
+     rewrite I_zero_eqs_iff in Hym.
+     simpl in Hym.
+     pose proof (Hym O) as H; discriminate H.
+
+     revert Hyi H1; clear; intros; omega.
+
+    destruct Hyi as (H1, H2).
+    eapply Z.lt_le_trans in H1; [ idtac | eassumption ].
+    apply Z.nle_gt in H1.
+    exfalso; apply H1, Z.le_0_2.
+
+   intros H; discriminate H.
+
+  apply andb_false_iff in Hc.
+  destruct Hc as [Hc| Hc].
+   apply Z.eqb_neq in Hc.
+   exfalso; apply Hc; clear Hc.
+   rewrite Hx1; simpl.
+   rewrite R_int_div_2_pow_div; simpl.
 bbb.
 
 Theorem formula_1 : ∀ y x1 y1 xm ym m n,
