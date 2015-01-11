@@ -1795,6 +1795,21 @@ induction m2; intros; simpl in Hrif.
      apply Z.eqb_neq in Hc.
      unfold R_div_equiv_max_iter in Hm.
      exfalso; apply Hc; clear Hc.
+     rewrite <- Nat2Z.id in Hm.
+     apply Z2Nat.inj in Hm.
+      simpl in Hm.
+      apply Z.add_move_r in Hm; simpl in Hm.
+      rewrite Z.add_diag in Hm.
+      apply Z.eq_mul_0 in Hm.
+      destruct Hm as [Hm| Hm]; [ discriminate Hm | assumption ].
+
+      apply Z.add_nonneg_nonneg; [ idtac | apply Z.le_0_1 ].
+      apply Z.add_nonneg_nonneg; apply R_int_abs.
+
+      apply Z.le_0_1.
+
+     simpl in Hxym.
+     rewrite andb_diag in Hxym.
 bbb.
 
 Theorem R_div_diag : ∀ x, (x ≠ 0)%R → (x / x = 1)%R.
