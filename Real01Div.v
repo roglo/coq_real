@@ -333,27 +333,6 @@ split; intros Hx.
   right; assumption.
 Qed.
 
-Theorem I_zero_eqs_iff : ∀ x, (x == 0)%I ↔ (∀ i, x.[i] = false).
-Proof.
-intros x.
-split; intros Hx.
- intros i.
- unfold I_eqs, I_compare in Hx.
- remember (fst_same x (- 0%I) 0) as s1 eqn:Hs1 .
- destruct s1 as [dj1| ]; [ idtac | clear Hx ].
-  destruct (x .[ dj1]); discriminate Hx.
-
-  apply fst_same_sym_iff in Hs1; simpl in Hs1.
-  apply Hs1.
-
- unfold I_eqs, I_compare.
- remember (fst_same x (- 0%I) 0) as s1 eqn:Hs1 .
- destruct s1 as [dj1| ]; [ idtac | reflexivity ].
- apply fst_same_sym_iff in Hs1; simpl in Hs1.
- destruct Hs1 as (Hn1, Hs1).
- rewrite Hx in Hs1; discriminate Hs1.
-Qed.
-
 Theorem I_div_2_eqs_0 : ∀ x, (I_div_2 x == 0)%I → (x == 0)%I.
 Proof.
 intros x Hx.

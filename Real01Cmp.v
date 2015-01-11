@@ -697,4 +697,51 @@ destruct Hs1 as (Hn1, Ht1).
 rewrite Ht1 in H; discriminate H.
 Qed.
 
+Theorem I_eqs_iff : ∀ x y, (x == y)%I ↔ (∀ i, x.[i] = y.[i])%I.
+Proof.
+intros x y.
+split; intros Hxy.
+ intros i.
+ unfold I_eqs, I_compare in Hxy.
+ remember (fst_same x (- y) 0) as s1 eqn:Hs1 .
+ destruct s1 as [dj1| ]; [ idtac | clear Hxy ].
+  destruct (x .[ dj1]); discriminate Hxy.
+
+  apply fst_same_sym_iff in Hs1; simpl in Hs1.
+  rewrite Hs1, negb_involutive; reflexivity.
+
+ unfold I_eqs, I_compare.
+ remember (fst_same x (- y) 0) as s1 eqn:Hs1 .
+ destruct s1 as [dj1| ]; [ idtac | reflexivity ].
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ destruct Hs1 as (Hn1, Hs1).
+ rewrite Hxy in Hs1; symmetry in Hs1.
+ exfalso; revert Hs1; apply no_fixpoint_negb.
+Qed.
+
+Theorem I_zero_eqs_iff : ∀ x, (x == 0)%I ↔ (∀ i, x.[i] = false).
+Proof.
+intros x.
+split; intros Hx.
+ intros i; rewrite I_eqs_iff in Hx; apply Hx.
+
+ apply I_eqs_iff; assumption.
+Qed.
+
+Theorem I_sub_diag_eqs : ∀ x, (x - x == 0)%I.
+Proof.
+intros x.
+apply I_eqs_iff; simpl; intros i.
+unfold I_add_i; simpl.
+rewrite negb_xorb_diag_r, xorb_true_l.
+apply negb_false_iff.
+unfold carry; simpl.
+remember (fst_same x (- x) (S i)) as s1 eqn:Hs1 .
+destruct s1 as [dj1| ]; [ idtac | reflexivity ].
+apply fst_same_sym_iff in Hs1; simpl in Hs1.
+destruct Hs1 as (Hn1, Ht1).
+symmetry in Ht1.
+exfalso; revert Ht1; apply no_fixpoint_negb.
+Qed.
+
 Close Scope nat_scope.
