@@ -44,7 +44,12 @@ Definition I_div_max_iter_int y :=
   end.
 Arguments I_div_max_iter_int y%I.
 
-Definition I_div_2 x := {| rm i := if zerop i then false else x.[i-1] |}.
+Definition I_div_2_inc x b :=
+  {| rm i := if zerop i then b else x.[i-1] |}.
+Arguments I_div_2_inc x%I _.
+
+Definition I_div_2 x := I_div_2_inc x false.
+Arguments I_div_2 x%I.
 
 Fixpoint I_div_lt_pred_i x y i :=
   match i with

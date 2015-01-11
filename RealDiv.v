@@ -7,10 +7,6 @@ Set Implicit Arguments.
 
 Open Scope Z_scope.
 
-Definition I_div_2_inc x b :=
-  {| rm i := if zerop i then b else x.[i-1] |}.
-Arguments I_div_2_inc x%I _.
-
 Definition R_div_2 x :=
   {| R_int := R_int x / 2;
      R_frac := I_div_2_inc (R_frac x) (Z.odd (R_int x)) |}.
@@ -1770,6 +1766,49 @@ destruct s1 as [dj1| ].
             apply Z.eq_opp_l in Hi; simpl in Hi.
             unfold R_abs in Hx1_S.
             rewrite Hnx in Hx1_S; simpl in Hx1_S.
+            clear Hn3.
+            rewrite Nat.add_0_l in Ht2.
+            simpl in Ht2.
+            remember (I_div_lt_pred_i x1 y1 dj2) as bxy eqn:Hbxy .
+            symmetry in Hbxy.
+            destruct bxy as (b2, (x2, y2)); simpl in Ht2.
+            destruct (I_lt_dec x2 y2) as [H2| H2]; simpl in Ht2.
+             destruct (I_lt_dec x2 (I_div_2 y2)) as [H3| H3].
+              2: discriminate Ht2.
+
+              clear Ht2.
+              remember (I_div_2 y2) as y3 eqn:Hy3 .
+              remember Hy3 as H; clear HeqH.
+              unfold I_div_2 in H.
+              apply I_eql_eqs in H.
+              apply I_div_2_inc_iff in H; simpl in H.
+              destruct H as (Hy3_0, Hy3_S).
+              unfold I_lt, I_compare in H3; simpl in H3.
+              remember (fst_same x2 (- y3) 0) as s3 eqn:Hs3 .
+              destruct s3 as [dj3| ]; [ idtac | discriminate H3 ].
+              apply fst_same_sym_iff in Hs3; simpl in Hs3.
+              destruct Hs3 as (Hn3, Ht3).
+              remember (x2 .[ dj3]) as b eqn:H23 .
+              destruct b; [ discriminate H3 | clear H3 ].
+              symmetry in H23.
+              apply negb_sym in Ht3; simpl in Ht3.
+              destruct dj3.
+               rewrite Hy3_0 in Ht3; discriminate Ht3.
+
+               remember Ht3 as H; clear HeqH.
+               rewrite Hy3_S in H.
+               destruct dj2.
+                simpl in Hbxy.
+                injection Hbxy; clear Hbxy; intros; subst b2 x2 y2.
+                simpl in H.
+                destruct dj3; [ discriminate H | simpl in H ].
+                simpl in Hy3_S.
+                rewrite Nat.sub_0_r in H.
+                rename H into Hy13.
+                assert (1 < S (S dj3))%nat as H by omega.
+                apply Hn3 in H; simpl in H.
+                rewrite negb_involutive in H.
+                rewrite Hy3_S in H; simpl in H.
 bbb.
       destruct (I_lt_dec x1 y1) as [H1| H1].
        injection Hrif; clear Hrif; intros; subst ri rf.
