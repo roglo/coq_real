@@ -783,6 +783,16 @@ induction b; intros; simpl.
   apply Nat.add_pos_l; assumption.
 Qed.
 
+Theorem zzz : ∀ x x1 xm m n,
+  R_div_equiv_max_iter (R_abs x) (R_abs x) = (m + S n)%nat
+  → x1 = R_div_2_pow (R_abs x) (S n)
+  → R_div_equiv m x1 x1 = (xm, xm)
+  → (xm == 0)%I
+  → R_int (R_abs x) / Z_two_pow n = 0.
+Proof.
+intros x x1 xm m n Hm Hx1 Hx1m Hxm.
+bbb.
+
 Theorem formula_42 : ∀ x y x1 y1 xm ym m n,
   R_div_equiv_max_iter (R_abs x) (R_abs y) = (m + S n)%nat
   → x1 = R_div_2_pow (R_abs x) (S n)
@@ -859,7 +869,9 @@ induction m; intros; simpl in Hxym.
    exfalso; apply Hc; clear Hc.
    rewrite Hx1; simpl.
    rewrite R_int_div_2_pow_div; simpl.
+Abort. (* failed: probably wrong hypotheses
 bbb.
+*)
 
 Theorem formula_1 : ∀ y x1 y1 xm ym m n,
   R_div_equiv_max_iter (R_abs 0) (R_abs y) = (m + S n)%nat
@@ -1902,8 +1914,12 @@ induction m2; intros; simpl in Hrif.
 
       apply Z.le_0_1.
 
-     simpl in Hxym.
-     rewrite andb_diag in Hxym.
+     remember Hxym as H; clear HeqH.
+     exfalso.
+     rewrite <- Nat.add_1_r in Hm.
+     eapply zzz in H; try eassumption; [ idtac | reflexivity ].
+     unfold Z_two_pow in H; simpl in H.
+     rewrite Z.div_1_r in H; contradiction.
 bbb.
 
 Theorem R_div_diag : ∀ x, (x ≠ 0)%R → (x / x = 1)%R.
