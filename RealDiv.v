@@ -1729,12 +1729,54 @@ destruct s1 as [dj1| ].
  rewrite R_div_frac_diag_i in H; [ discriminate H | assumption ].
 Qed.
 
+Theorem R_div_int_diag : ∀ x,
+  (x ≠ 0)%R
+  → R_int (x / x) = 1.
+Proof.
+intros x Hx.
+unfold R_div; simpl.
+remember (R_div_equiv_max_iter (R_abs x) (R_abs x)) as m eqn:Hm .
+symmetry in Hm.
+remember (R_div_equiv m (R_abs x) (R_abs x)) as xym eqn:Hxym .
+pose proof (R_div_equiv_diag m (R_abs x)) as H.
+destruct H as (mx, Hmx).
+rewrite <- Hxym in Hmx.
+move Hmx at top; subst xym.
+symmetry in Hxym.
+remember (I_div_max_iter_int mx) as m2 eqn:Hm2 .
+symmetry in Hm2.
+remember (I_div_lim m2 mx mx) as rif eqn:Hrif .
+symmetry in Hrif.
+destruct rif as (ri, rf); simpl.
+revert ri rf mx Hm2 Hrif Hxym.
+induction m2; intros; simpl in Hrif.
+ unfold I_div_max_iter_int in Hm2; simpl in Hm2.
+ remember (fst_same mx I_ones 0) as s1 eqn:Hs1 .
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ destruct s1 as [dj1| ]; [ idtac | clear Hm2 ].
+  rewrite Nat.add_0_r in Hm2.
+  remember (two_power dj1) as n eqn:Hn .
+  symmetry in Hn.
+  destruct n; [ idtac | discriminate Hm2 ].
+  exfalso; revert Hn; apply two_power_neq_0.
+bbb.
+
 Theorem R_div_diag : ∀ x, (x ≠ 0)%R → (x / x = 1)%R.
 Proof.
 intros x Hx.
 unfold R_eq; simpl.
 rewrite carry_diag; simpl.
 split; [ idtac | apply R_div_frac_diag; assumption ].
+unfold carry; simpl.
+remember (fst_same (R_frac (x / x)) 0 0) as s1 eqn:Hs1 .
+apply fst_same_sym_iff in Hs1; simpl in Hs1.
+destruct s1 as [dj1| ].
+ Focus 2.
+ pose proof (Hs1 O) as H.
+ rewrite R_div_frac_diag_i in H; [ discriminate H | assumption ].
+
+ destruct Hs1 as (Hn1, Ht1).
+ rewrite Ht1, Z.add_0_r.
 bbb.
 
 Theorem R_frac_div_1_r : ∀ x, (R_frac (x / 1) = R_frac x)%I.
