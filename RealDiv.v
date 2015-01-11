@@ -1987,10 +1987,30 @@ induction m2; intros; simpl in Hrif.
   remember (I_div_lim m2 (mx - mx) mx) as xif eqn:Hxif .
   symmetry in Hxif.
   destruct xif as (xi, xf).
-  injection Hrif; clear Hrif; intros; subst ri rf.
-bbb.
-  rewrite Nat2Z.inj_succ; simpl.
-bbb.
+  injection Hrif; clear Hrif; intros; subst ri rf; f_equal.
+  destruct m2.
+   simpl in Hxif.
+   injection Hxif; intros; subst xi; reflexivity.
+
+   simpl in Hxif.
+   clear H1.
+   destruct (I_lt_dec (mx - mx)%I mx) as [H1| H1].
+    injection Hxif; intros; subst xi; reflexivity.
+
+    remember (I_div_lim m2 ((mx - mx)%I - mx) mx) as xif2 eqn:Hxif2 .
+    symmetry in Hxif2.
+    destruct xif2 as (xi2, xf2).
+    injection Hxif; clear Hxif; intros; subst xi xf.
+    rewrite I_sub_diag_eqs in H1.
+    apply I_ge_le_iff, I_le_0_r_eqs_iff in H1.
+    unfold I_div_max_iter_int in Hm2.
+    remember (fst_same mx I_ones 0) as s1 eqn:Hs1 .
+    destruct s1 as [dj1| ]; [ idtac | discriminate Hm2 ].
+    apply fst_same_sym_iff in Hs1; simpl in Hs1.
+    destruct Hs1 as (Hn1, Ht1).
+    rewrite I_zero_eqs_iff in H1.
+    rewrite H1 in Ht1; discriminate Ht1.
+Qed.
 
 Theorem R_div_diag : ∀ x, (x ≠ 0)%R → (x / x = 1)%R.
 Proof.
