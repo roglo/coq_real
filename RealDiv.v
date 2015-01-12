@@ -2002,6 +2002,8 @@ Proof.
 intros x y z Hxy Hz Hxyz.
 rewrite I_eqs_iff in Hxyz.
 apply I_eqs_iff; intros i.
+bbb.
+
 pose proof (Hxyz O) as H.
 unfold I_div in H; simpl in H.
 remember (I_div_max_iter_int y) as m eqn:Hm .
