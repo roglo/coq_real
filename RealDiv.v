@@ -1993,25 +1993,33 @@ Qed.
 
 (* *)
 
-Theorem zzz : ∀ x y z, (y ≠ 0)%R → (z ≠ 0)%R → (x / y = z)%R → (x / z = y)%R.
+Theorem yyy : ∀ x y z,
+  (x < y)%I
+  → (z ≠≠ 0)%I
+  → (x / y == z)%I
+  → (x / z == y)%I.
 Proof.
-intros x y z Hy Hz Hxyz.
-unfold R_eq; simpl.
-unfold R_eq in Hxyz; simpl in Hxyz.
-destruct Hxyz as (Hixy, Hfxy).
-apply I_sub_move_0_r in Hfxy.
-apply I_zero_iff in Hfxy; simpl in Hfxy.
-destruct Hfxy as [Hfxy| Hfxy].
- split.
-  Focus 2.
-  unfold I_eq; simpl; intros i.
-  pose proof (Hfxy i) as H.
-  unfold I_add_i in H; simpl in H.
-  unfold I_add_i; simpl.
-  do 2 rewrite xorb_false_r.
+intros x y z Hxy Hz Hxyz.
+rewrite I_eqs_iff in Hxyz.
+apply I_eqs_iff; intros i.
+pose proof (Hxyz O) as H.
+unfold I_div in H; simpl in H.
+remember (I_div_max_iter_int y) as m eqn:Hm .
+symmetry in Hm.
+destruct m.
+ unfold I_div_max_iter_int in Hm.
+ remember (fst_same y I_ones 0) as s1 eqn:Hs1 .
+ destruct s1 as [dj1| ]; [ idtac | clear Hm ].
+  exfalso; revert Hm; apply two_power_neq_0.
+
+  apply fst_same_sym_iff in Hs1; simpl in Hs1.
+  apply I_zero_eqs_iff in Hs1.
+  rewrite Hs1 in Hxy.
+  exfalso; revert Hxy; apply I_nlt_0_r.
+
+ simpl in H.
+ destruct (I_lt_dec x y) as [H1| H1].
 bbb.
-  Reflexion to do, indeed, with that method of using I_sub_move_0_r
-  and I_zero_iff in case of (x = y)%I in other theorems...
 
 0 < x < y
 z=x/y
@@ -2094,6 +2102,26 @@ y₀=0   x / y = x / 0.0y₁y₂y₃…
 
 y₀=1   x / y = x / 0.1y₁y₂y₃ … = z
        x / z = 0.1 …
+
+Theorem zzz : ∀ x y z, (y ≠ 0)%R → (z ≠ 0)%R → (x / y = z)%R → (x / z = y)%R.
+Proof.
+intros x y z Hy Hz Hxyz.
+unfold R_eq; simpl.
+unfold R_eq in Hxyz; simpl in Hxyz.
+destruct Hxyz as (Hixy, Hfxy).
+apply I_sub_move_0_r in Hfxy.
+apply I_zero_iff in Hfxy; simpl in Hfxy.
+destruct Hfxy as [Hfxy| Hfxy].
+ split.
+  Focus 2.
+  unfold I_eq; simpl; intros i.
+  pose proof (Hfxy i) as H.
+  unfold I_add_i in H; simpl in H.
+  unfold I_add_i; simpl.
+  do 2 rewrite xorb_false_r.
+bbb.
+  Reflexion to do, indeed, with that method of using I_sub_move_0_r
+  and I_zero_iff in case of (x = y)%I in other theorems...
 
 (* *)
 

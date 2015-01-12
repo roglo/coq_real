@@ -237,7 +237,7 @@ destruct s1 as [dj1| ]; [ idtac | clear Hxy ].
   rewrite Hs1, negb_involutive; reflexivity.
 Qed.
 
-Theorem I_le_trans : transitive _ I_le.
+Theorem I_le_trans_trans : transitive _ I_le.
 Proof.
 intros x y z Hxy Hyz.
 unfold I_le in Hxy, Hyz; unfold I_le.
@@ -341,6 +341,9 @@ destruct s1 as [dj1| ]; [ idtac | clear Hxy ].
   rewrite Hs2, Ht3 in Hx3; discriminate Hx3.
 Qed.
 
+Theorem I_le_trans : ∀ x y z, (x ≤ y)%I → (y ≤ z)%I → (x ≤ z)%I.
+Proof. intros; eapply I_le_trans_trans; eassumption. Qed.
+
 (* inequality ≥ is order *)
 
 Theorem I_ge_refl : reflexive _ I_ge.
@@ -372,6 +375,21 @@ apply I_le_trans with (y := y); intros H.
  apply I_gt_lt_iff in H; contradiction.
 
  apply I_gt_lt_iff in H; contradiction.
+Qed.
+
+(* decidability == *)
+
+Theorem I_eqs_dec : ∀ x y, {(x == y)%I} + {(x ≠≠ y)%I}.
+Proof.
+intros x y.
+unfold I_eqs; simpl.
+unfold I_compare; simpl.
+remember (fst_same x (- y) 0) as s eqn:Hs .
+apply fst_same_sym_iff in Hs; simpl in Hs.
+destruct s as [di| ].
+ right; destruct (x .[ di]); intros H; discriminate H.
+
+ left; reflexivity.
 Qed.
 
 (* decidability < vs ≥ and > vs ≤ *)
@@ -686,7 +704,7 @@ symmetry in Ht1.
 revert Ht1; apply no_fixpoint_negb.
 Qed.
 
-Theorem I_lt_0_r : ∀ x, ¬(x < 0)%I.
+Theorem I_nlt_0_r : ∀ x, ¬(x < 0)%I.
 Proof.
 intros x H.
 unfold I_lt, I_compare in H.
@@ -742,6 +760,37 @@ apply fst_same_sym_iff in Hs1; simpl in Hs1.
 destruct Hs1 as (Hn1, Ht1).
 symmetry in Ht1.
 exfalso; revert Ht1; apply no_fixpoint_negb.
+Qed.
+
+Theorem I_lt_le_incl : ∀ x y, (x < y)%I → (x ≤ y)%I.
+Proof.
+intros x y Hxy.
+intros H; rewrite Hxy in H; discriminate H.
+Qed.
+
+(* inequality < is transitive *)
+
+Theorem I_lt_trans : transitive _ I_lt.
+Proof.
+intros x y z Hxy Hyz.
+destruct (I_eqs_dec x z) as [H1| H1].
+ rewrite H1 in Hxy.
+ apply I_lt_nge in Hxy.
+ unfold I_le in Hxy.
+ unfold I_lt in Hyz.
+ exfalso; apply Hxy; intros H; rewrite Hyz in H.
+ discriminate H.
+
+ apply I_lt_le_incl in Hxy.
+ apply I_lt_le_incl in Hyz.
+ apply I_le_trans with (z := z) in Hxy; [ idtac | assumption ].
+ unfold I_le in Hxy.
+ unfold I_eqs in H1.
+ unfold I_lt.
+ destruct (x ?= z)%I; [ idtac | reflexivity | idtac ].
+  exfalso; apply H1; reflexivity.
+
+  exfalso; apply Hxy; reflexivity.
 Qed.
 
 Close Scope nat_scope.

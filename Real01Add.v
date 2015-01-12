@@ -4338,7 +4338,7 @@ destruct s as [di| ].
  rewrite fst_same_diag; reflexivity.
 Qed.
 
-Theorem I_dec : ∀ x y, {(x = y)%I} + {(x ≠ y)%I}.
+Theorem I_eq_dec : ∀ x y, {(x = y)%I} + {(x ≠ y)%I}.
 Proof.
 intros x y.
 destruct (I_zerop (x - y)%I) as [Hxy| Hxy].
@@ -4355,7 +4355,7 @@ Qed.
 Theorem I_decidable : ∀ x y, Decidable.decidable (x = y)%I.
 Proof.
 intros x y.
-destruct (I_dec x y); [ left | right ]; assumption.
+destruct (I_eq_dec x y); [ left | right ]; assumption.
 Qed.
 
 (* morphisms *)
