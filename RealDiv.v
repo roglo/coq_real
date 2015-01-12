@@ -2052,6 +2052,7 @@ induction i.
      destruct (I_lt_dec x z) as [H2| H2].
       simpl.
       destruct (I_lt_dec x (I_div_2 z)) as [H3| H3]; simpl.
+       rename H into Hz0.
 bbb.
   Blocked
 
