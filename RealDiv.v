@@ -2002,26 +2002,35 @@ Proof.
 intros x y z Hxy Hz Hxyz.
 rewrite I_eqs_iff in Hxyz.
 apply I_eqs_iff; intros i.
-bbb.
+induction i.
+ pose proof (Hxyz O) as H.
+ unfold I_div in H; simpl in H.
+ remember (I_div_max_iter_int y) as m eqn:Hm .
+ symmetry in Hm.
+ destruct m.
+  unfold I_div_max_iter_int in Hm.
+  remember (fst_same y I_ones 0) as s1 eqn:Hs1 .
+  destruct s1 as [dj1| ]; [ idtac | clear Hm ].
+   exfalso; revert Hm; apply two_power_neq_0.
 
-pose proof (Hxyz O) as H.
-unfold I_div in H; simpl in H.
-remember (I_div_max_iter_int y) as m eqn:Hm .
-symmetry in Hm.
-destruct m.
- unfold I_div_max_iter_int in Hm.
- remember (fst_same y I_ones 0) as s1 eqn:Hs1 .
- destruct s1 as [dj1| ]; [ idtac | clear Hm ].
-  exfalso; revert Hm; apply two_power_neq_0.
+   apply fst_same_sym_iff in Hs1; simpl in Hs1.
+   apply I_zero_eqs_iff in Hs1.
+   rewrite Hs1 in Hxy.
+   exfalso; revert Hxy; apply I_nlt_0_r.
 
-  apply fst_same_sym_iff in Hs1; simpl in Hs1.
-  apply I_zero_eqs_iff in Hs1.
-  rewrite Hs1 in Hxy.
-  exfalso; revert Hxy; apply I_nlt_0_r.
-
- simpl in H.
- destruct (I_lt_dec x y) as [H1| H1].
-  remember I_div_lt as f; simpl in H; subst f.
+  simpl in H.
+  destruct (I_lt_dec x y) as [H1| H1].
+   remember I_div_lt as f; simpl in H; subst f.
+   unfold I_lt, I_compare in H1; simpl in H1.
+   remember (fst_same x (- y) 0) as s1 eqn:Hs1 .
+   destruct s1 as [dj1| ]; [ idtac | discriminate H1 ].
+   remember (x .[ dj1]) as b eqn:Hxj1 .
+   destruct b; [ discriminate H1 | clear H1 ].
+   symmetry in Hxj1.
+   apply fst_same_sym_iff in Hs1; simpl in Hs1.
+   destruct Hs1 as (Hn1, Ht1).
+   rewrite Hxj1 in Ht1; apply negb_sym in Ht1; simpl in Ht1.
+   rename Ht1 into Hyj1.
 bbb.
 
 0 < x < y
