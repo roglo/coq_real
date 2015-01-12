@@ -2011,7 +2011,89 @@ destruct Hfxy as [Hfxy| Hfxy].
   do 2 rewrite xorb_false_r.
 bbb.
   Reflexion to do, indeed, with that method of using I_sub_move_0_r
-  and I_zero_iff in case of (x = y)%I in previous theorems...
+  and I_zero_iff in case of (x = y)%I in other theorems...
+
+0 < x < y
+z=x/y
+
+x₀ x₁ x₂ …       | 0 y₀ y₁ y₂ …
+                 ------------------------
+                 | z₀ z₁ z₂ …
+
+j tel que x_j=y_{j-1} et x_i≠y_{i-1} pour i < j
+si x_j=1 alors x>y sinon x<y
+si j=∞ alors x=y
+
+0 u₀ u₁ … xj …       | 0 u₀ u₁ … yj₁ …
+                      ------------------------
+                     | z₀ z₁ z₂ …
+
+1/ j=0
+
+1 x₁ x₂              | 0 y₀ y₁ y₂
+                      ------------------------
+                     | z₀ z₁ z₂ …
+Donc z₀=1
+
+1 x₁ x₂              | 0 y₀ y₁ y₂
+                      ------------------------
+                     | 1 z₁ z₂ …
+
+Mais rappelons-nous que x<y et donc comme x₀=1 alors il faut que y₀=1
+
+1 x₁ x₂              | 0 1 y₁ y₂
+                      ------------------------
+                     | 1 z₁ z₂ …
+
+Si on inverse y et z
+
+- Mmmm... est-ce que x<z, d'abord ?
+- z = x/y = x*(1/y)    1<1/y     x<x*1/y    x<z   oui
+
+
+1 x₁ x₂              | 0 1 z₁ z₂ …
+                      ------------------------
+                     | 1 y₁ y₂ ?
+
+ouais, ça marche, la première bimale est bien 1=y₀
+
+2/ j>0
+
+0 u₀ u₁ … xj …       | 0 u₀ u₁ … yj₁ …
+                      ------------------------
+                     | z₀ z₁ z₂ …
+
+
+2a/ xj=1 et yj₁=0; alors z₀=1
+
+0 u₀ u₁ … 1 …       | 0 u₀ u₁ … 0 …
+                      ------------------------
+                    | 1 z₁ z₂ …
+
+Divisons x par z
+
+0 u₀ u₁ … 1 …       | 0 1 z₁ z₂ …
+                      ------------------------
+                    | u₀ u₁ … 0 … ?
+
+On a bien u₀ comme première bimale
+
+Mmmm... bon. Si on arrive à prouver que la première bimale de la
+division de x par z est bien y₀, comment on continue ?
+
+y = y₀/2 + 0.0y₁y₂y₃…
+
+x / y = x / (y₀/2 + 0.0y₁y₂y₃) = ???
+
+Deux cas y₀=0 et y₁=1
+
+y₀=0   x / y = x / 0.0y₁y₂y₃…
+   on peut multiplier x par 2 (x₀ est forcément nul puisque x<y)
+   et on est ramené à 0.x₁x₂x₃…/0.y₁y₂y₃… et ça devrait marcher
+   par récurrence
+
+y₀=1   x / y = x / 0.1y₁y₂y₃ … = z
+       x / z = 0.1 …
 
 (* *)
 
