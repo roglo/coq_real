@@ -2019,6 +2019,7 @@ destruct m.
 
  simpl in H.
  destruct (I_lt_dec x y) as [H1| H1].
+  remember I_div_lt as f; simpl in H; subst f.
 bbb.
 
 0 < x < y
