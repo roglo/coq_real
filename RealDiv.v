@@ -2031,7 +2031,29 @@ induction i.
    destruct Hs1 as (Hn1, Ht1).
    rewrite Hxj1 in Ht1; apply negb_sym in Ht1; simpl in Ht1.
    rename Ht1 into Hyj1.
+   symmetry in H.
+   simpl in H.
+   destruct (I_lt_dec x (I_div_2 y)) as [H1| H1]; simpl in H.
+    unfold I_div; simpl.
+    remember (I_div_max_iter_int z) as m2 eqn:Hm2 .
+    symmetry in Hm2.
+    destruct m2; simpl.
+     symmetry.
+     unfold I_div_max_iter_int in Hm2; simpl in Hm2.
+     remember (fst_same z I_ones 0) as s2 eqn:Hs2 .
+     destruct s2 as [dj2| ]; [ idtac | clear Hm2 ].
+      rewrite Nat.add_0_r in Hm2.
+      apply Nat.eq_add_0 in Hm2.
+      exfalso; destruct Hm2 as (Hm2, _); revert Hm2; apply two_power_neq_0.
+
+      apply fst_same_sym_iff in Hs2; simpl in Hs2.
+      apply I_zero_eqs_iff in Hs2; contradiction.
+
+     destruct (I_lt_dec x z) as [H2| H2].
+      simpl.
+      destruct (I_lt_dec x (I_div_2 z)) as [H3| H3]; simpl.
 bbb.
+  Blocked
 
 0 < x < y
 z=x/y
