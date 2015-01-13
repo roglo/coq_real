@@ -2106,6 +2106,30 @@ destruct dj1; simpl in Ht1.
 
            rewrite Nat.sub_0_r in Ht2.
            apply negb_sym in Ht2; rewrite Hxj2 in Ht2; simpl in Ht2.
+           rename H into Hx1.
+           destruct dj1.
+            simpl in Hb3.
+            injection Hb3; clear Hb3; intros; subst b3 x3 y3.
+            rewrite Hx0 in Hx3; discriminate Hx3.
+
+            simpl in Hb3.
+            remember (I_div_lt_pred_i x y dj1) as b eqn:Hb4 .
+            symmetry in Hb4.
+            destruct b as (b4, (x4, y4)); simpl in Hb3.
+            destruct (I_lt_dec x4 y4) as [H2| H2].
+             injection Hb3; clear Hb3; intros; subst b3 x3 y3.
+             assert (2 < S (S (S (S dj1))))%nat as H by omega.
+             apply Hn1 in H; simpl in H.
+             rewrite negb_involutive in H.
+             unfold I_div in H; simpl in H.
+             rewrite Hm in H; simpl in H.
+             destruct (I_lt_dec x y) as [H4| H4].
+              clear H4; simpl in H.
+              destruct (I_lt_dec x (I_div_2 y)) as [H4| H4].
+               simpl in H.
+               destruct (I_lt_dec x (I_div_2 (I_div_2 y))) as [H6| H6].
+                simpl in H.
+                rename H into Hx2.
 bbb.
   There is a fucking induction somewhere...
 
