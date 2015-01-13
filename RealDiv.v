@@ -2025,11 +2025,37 @@ destruct dj1; simpl in Ht1.
    discriminate Ht1.
 
    clear Ht1.
+   destruct dj1.
+    simpl in Hb1.
+    injection Hb1; clear Hb1; intros; subst b1 x1 y1.
+    pose proof (Hn1 O Nat.lt_0_1) as H; simpl in H.
+    rename H into Hx0.
+    clear Hn1.
+    unfold I_ge, I_compare in H2.
+    remember (fst_same x (- I_div_2 y) 0) as s2 eqn:Hs2 .
+    destruct s2 as [dj2| ]; [ idtac | clear H2 ].
+     remember (x .[ dj2]) as b eqn:Hxj2 .
+     destruct b; [ clear H2 | exfalso; apply H2; reflexivity ].
+     symmetry in Hxj2.
+     apply fst_same_sym_iff in Hs2; simpl in Hs2.
+     destruct Hs2 as (Hn2, Ht2).
+     destruct dj2; [ rewrite Hxj2 in Hx0; discriminate Hx0 | idtac ].
+     simpl in Ht2.
+     rewrite Nat.sub_0_r in Ht2.
+     destruct dj2.
+      rewrite Hxj2 in Ht2.
+      apply negb_sym in Ht2; assumption.
+
+      assert (1 < S (S dj2))%nat as H by omega.
+      apply Hn2 in H; simpl in H.
+      rewrite Hxj1, negb_involutive in H.
+      symmetry; assumption.
+
+     apply fst_same_sym_iff in Hs2; simpl in Hs2.
+     pose proof (Hs2 1%nat) as H; simpl in H.
+     rewrite Hxj1, negb_involutive in H.
+     symmetry; assumption.
 bbb.
-  I think there is a contradiction here:
-    H1 : (x < y)%I
-    Hb1 : I_div_lt_pred_i x y dj1 = (b1, (x1, y1))
-    H2 : (x1 ≥ y1)%I
 
 Theorem yyy : ∀ x y z,
   (x < y)%I
