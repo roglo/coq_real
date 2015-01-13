@@ -2000,6 +2000,7 @@ Theorem yyy : ∀ x y z,
   → (x / z == y)%I.
 Proof.
 intros x y z Hxy Hz Hxyz.
+remember Hxyz as Hxdyz; clear HeqHxdyz.
 rewrite I_eqs_iff in Hxyz.
 apply I_eqs_iff; intros i.
 induction i.
