@@ -2087,6 +2087,11 @@ induction i.
            contradiction.
 
            simpl in Hbxy2.
+           remember (I_div_lt_pred_i x y dj2) as bxy3 eqn:Hbxy3 .
+           symmetry in Hbxy3.
+           destruct bxy3 as (b3, (x3, y3)); simpl in Hbxy2.
+           destruct (I_lt_dec x3 y3) as [H4| H4].
+            injection Hbxy2; clear Hbxy2; intros; subst b2 x2 y2.
 bbb.
 
 0 < x < y
