@@ -1993,6 +1993,27 @@ Qed.
 
 (* *)
 
+Theorem xxx : ∀ x y,
+  (x < I_div_2 (x / y))%I
+  → y.[0] = false.
+Proof.
+intros x y Hxy.
+unfold I_lt, I_compare in Hxy; simpl in Hxy.
+remember (fst_same x (- I_div_2 (x / y)) 0) as s1 eqn:Hs1 .
+destruct s1 as [dj1| ]; [ idtac | discriminate Hxy ].
+remember (x .[ dj1]) as b eqn:Hxj1 .
+destruct b; [ discriminate Hxy | clear Hxy ].
+symmetry in Hxj1.
+apply fst_same_sym_iff in Hs1; simpl in Hs1.
+destruct Hs1 as (Hn1, Ht1).
+destruct dj1; simpl in Ht1.
+ rewrite Ht1 in Hxj1; discriminate Hxj1.
+
+ rewrite Nat.sub_0_r, Hxj1 in Ht1.
+ apply negb_sym in Ht1; simpl in Ht1.
+ unfold I_div in Ht1; simpl in Ht1.
+bbb.
+
 Theorem yyy : ∀ x y z,
   (x < y)%I
   → (z ≠≠ 0)%I
@@ -2055,6 +2076,10 @@ induction i.
       destruct (I_lt_dec x (I_div_2 z)) as [H3| H3]; simpl.
        rename H into Hz0.
        rewrite <- Hxdyz in H3.
+bbb.
+  H3 : (x < I_div_2 (x / y))%I
+  should imply y < 1/2
+
        unfold I_lt, I_compare in H3; simpl in H3.
        remember (fst_same x (- I_div_2 (x / y)) 0) as s2 eqn:Hs2 .
        destruct s2 as [dj2| ]; [ idtac | discriminate H3 ].
