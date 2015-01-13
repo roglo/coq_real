@@ -2012,7 +2012,24 @@ destruct dj1; simpl in Ht1.
  rewrite Nat.sub_0_r, Hxj1 in Ht1.
  apply negb_sym in Ht1; simpl in Ht1.
  unfold I_div in Ht1; simpl in Ht1.
+ remember (I_div_max_iter_int y) as m eqn:Hm .
+ symmetry in Hm.
+ destruct m; [ discriminate Ht1 | idtac ].
+ simpl in Ht1.
+ destruct (I_lt_dec x y) as [H1| H1].
+  simpl in Ht1.
+  remember (I_div_lt_pred_i x y dj1) as bxy1 eqn:Hb1 .
+  symmetry in Hb1.
+  destruct bxy1 as (b1, (x1, y1)); simpl in Ht1.
+  destruct (I_lt_dec x1 y1) as [H2| H2].
+   discriminate Ht1.
+
+   clear Ht1.
 bbb.
+  I think there is a contradiction here:
+    H1 : (x < y)%I
+    Hb1 : I_div_lt_pred_i x y dj1 = (b1, (x1, y1))
+    H2 : (x1 ≥ y1)%I
 
 Theorem yyy : ∀ x y z,
   (x < y)%I
