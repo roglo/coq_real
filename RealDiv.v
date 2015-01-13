@@ -2103,144 +2103,45 @@ destruct dj1; simpl in Ht1.
              rewrite Hx3, negb_involutive in H.
              symmetry; assumption.
 
-             Focus 1.
-bbb.
-
-   assert (1 < S (S dj1))%nat as H by omega.
-   apply Hn1 in H; simpl in H.
-   rewrite negb_involutive in H.
-   unfold I_div in H; simpl in H.
-   rewrite Hm in H; simpl in H.
-   destruct (I_lt_dec x y) as [H3| H3].
-    clear H3; simpl in H.
-    destruct (I_lt_dec x (I_div_2 y)) as [H3| H3].
-     simpl in H.
-     rename H into Hx1.
-     simpl in Hb1.
-     remember (I_div_lt_pred_i x y dj1) as b eqn:Hb2 .
-     symmetry in Hb2.
-     destruct b as (b2, (x2, y2)); simpl in Hb1.
-     destruct (I_lt_dec x2 y2) as [H4| H4].
-      injection Hb1; clear Hb1; intros; subst b1 x1 y1.
-      destruct dj1.
-       simpl in Hb2.
-       injection Hb2; clear Hb2; intros; subst b2 x2 y2.
-       rename Hxj1 into Hx2.
-       clear H4.
-bbb.
-     unfold I_ge, I_compare in H2.
-     remember (fst_same x1 (- y1) 0) as s2 eqn:Hs2 .
-     destruct s2 as [dj2| ]; [ idtac | clear H2 ].
-      remember (x1 .[ dj2]) as b eqn:Hxj2 .
-      destruct b; [ clear H2 | exfalso; apply H2; reflexivity ].
-      symmetry in Hxj2.
-      apply fst_same_sym_iff in Hs2; simpl in Hs2.
-      destruct Hs2 as (Hn2, Ht2).
-      rewrite Hxj2 in Ht2.
-      apply negb_sym in Ht2; simpl in Ht2.
-      simpl in Hb1.
-      remember (I_div_lt_pred_i x y dj1) as b eqn:Hb2 .
-      symmetry in Hb2.
-      destruct b as (b2, (x2, y2)); simpl in Hb1.
-      destruct (I_lt_dec x2 y2) as [H2| H2].
-       injection Hb1; clear Hb1; intros; subst b1 x1 y1.
-       destruct dj1.
-        simpl in Hb2.
-        injection Hb2; clear Hb2; intros; subst b2 x2 y2.
-        destruct dj2.
-         rewrite Hxj2 in Hx0; discriminate Hx0.
-
-         destruct dj2.
-          rewrite Hxj2 in Hx1; discriminate Hx1.
-
-          destruct dj2.
-           rewrite Hxj2 in Hxj1; discriminate Hxj1.
-
-           assert (2 < S (S (S dj2)))%nat as H by omega.
-           apply Hn2 in H; simpl in H.
-           rewrite Hxj1, negb_involutive in H.
-           symmetry; assumption.
-
-        simpl in Hb2.
-bbb.
-   unfold I_ge, I_compare in H2.
-   remember (fst_same x1 (- y1) 0) as s2 eqn:Hs2 .
-   destruct s2 as [dj2| ]; [ idtac | clear H2 ].
-    remember (x1 .[ dj2]) as b eqn:Hxj2 .
-    destruct b; [ clear H2 | exfalso; apply H2; reflexivity ].
-    symmetry in Hxj2.
-    apply fst_same_sym_iff in Hs2; simpl in Hs2.
-    destruct Hs2 as (Hn2, Ht2).
-    rewrite Hxj2 in Ht2.
-    apply negb_sym in Ht2; simpl in Ht2.
-    simpl in Hb1.
-    remember (I_div_lt_pred_i x y dj1) as b eqn:Hb2 .
-    symmetry in Hb2.
-    destruct b as (b2, (x2, y2)); simpl in Hb1.
-    destruct (I_lt_dec x2 y2) as [H3| H3].
-     injection Hb1; clear Hb1; intros; subst b1 x1 y1.
-     assert (1 < S (S dj1))%nat as H by omega.
-     apply Hn1 in H; simpl in H.
-     rewrite negb_involutive in H.
-     unfold I_div in H; simpl in H.
-     rewrite Hm in H; simpl in H.
-     destruct (I_lt_dec x y) as [H4| H4].
-      clear H4; simpl in H.
-      destruct (I_lt_dec x (I_div_2 y)) as [H4| H4].
-       simpl in H.
-       simpl in Ht2.
-       destruct dj2; [ clear Ht2 | idtac ].
-        clear Hn2.
-        destruct dj1.
-         simpl in Hb2.
-         injection Hb2; clear Hb2; intros; subst b2 x2 y2.
-         rewrite Hn1 in Hxj2; [ idtac | apply Nat.lt_0_2 ].
-         discriminate Hxj2.
-
-         simpl in Hb2.
-         remember (I_div_lt_pred_i x y dj1) as b eqn:Hb3 .
-         symmetry in Hb3.
-         destruct b as (b3, (x3, y3)); simpl in Hb2.
-         destruct (I_lt_dec x3 y3) as [H5| H5].
-          injection Hb2; clear Hb2; intros; subst b2 x2 y2.
-          unfold I_lt, I_compare in H4.
-          remember (fst_same x (- I_div_2 y) 0) as s2 eqn:Hs2 .
-          destruct s2 as [dj2| ]; [ idtac | discriminate H4 ].
-          rename Hxj2 into Hx3.
-          remember (x .[ dj2]) as b eqn:Hxj2 .
-          destruct b; [ discriminate H4 | clear H4 ].
-          symmetry in Hxj2.
-          apply fst_same_sym_iff in Hs2; simpl in Hs2.
-          destruct Hs2 as (Hn2, Ht2).
-          destruct dj2; simpl in Ht2.
-           rewrite Ht2 in Hxj2; discriminate Hxj2.
-
-           rewrite Nat.sub_0_r in Ht2.
-           apply negb_sym in Ht2; rewrite Hxj2 in Ht2; simpl in Ht2.
-           rename H into Hx1.
-           destruct dj1.
-            simpl in Hb3.
-            injection Hb3; clear Hb3; intros; subst b3 x3 y3.
-            rewrite Hx0 in Hx3; discriminate Hx3.
-
-            simpl in Hb3.
-            remember (I_div_lt_pred_i x y dj1) as b eqn:Hb4 .
-            symmetry in Hb4.
-            destruct b as (b4, (x4, y4)); simpl in Hb3.
-            destruct (I_lt_dec x4 y4) as [H2| H2].
-             injection Hb3; clear Hb3; intros; subst b3 x3 y3.
-             assert (2 < S (S (S (S dj1))))%nat as H by omega.
+             assert (3 < S (S (S (S dj1))))%nat as H by omega.
              apply Hn1 in H; simpl in H.
              rewrite negb_involutive in H.
              unfold I_div in H; simpl in H.
              rewrite Hm in H; simpl in H.
-             destruct (I_lt_dec x y) as [H4| H4].
-              clear H4; simpl in H.
-              destruct (I_lt_dec x (I_div_2 y)) as [H4| H4].
-               simpl in H.
-               destruct (I_lt_dec x (I_div_2 (I_div_2 y))) as [H6| H6].
+             destruct (I_lt_dec x y) as [H6| H6].
+              clear H6; simpl in H.
+              destruct (I_lt_dec x (I_div_2 y)) as [H6| H6]; simpl in H.
+               clear H6.
+               destruct (I_lt_dec x (I_div_2 (I_div_2 y))) as [H6| H6];
                 simpl in H.
-                rename H into Hx2.
+                clear H6.
+                destruct (I_lt_dec x (I_div_2 (I_div_2 (I_div_2 y))))
+                 as [H6| H6]; simpl in H.
+                 rename H into Hx3.
+                 remember (I_div_lt_pred_i x y dj1) as b eqn:Hb2 .
+                 symmetry in Hb2.
+                 destruct b as (b2, (x2, y2)); simpl in Hb1.
+                 destruct (I_lt_dec x2 y2) as [H7| H7].
+                  injection Hb1; clear Hb1; intros; subst b1 x1 y1.
+                  destruct dj1; simpl in Hb2.
+                   injection Hb2; clear Hb2; intros; subst b2 x2 y2.
+                   rename Hxj1 into Hx4.
+                   destruct dj2;
+                    [ rewrite Hxj2 in Hx0; discriminate Hx0 | idtac ].
+                   destruct dj2;
+                    [ rewrite Hxj2 in Hx1; discriminate Hx1 | idtac ].
+                   destruct dj2;
+                    [ rewrite Hxj2 in Hx2; discriminate Hx2 | idtac ].
+                   destruct dj2;
+                    [ rewrite Hxj2 in Hx3; discriminate Hx3 | idtac ].
+                   destruct dj2;
+                    [ rewrite Hxj2 in Hx4; discriminate Hx4 | idtac ].
+                   assert (4 < S (S (S (S (S dj2)))))%nat as H by omega.
+                   apply Hn2 in H; simpl in H.
+                   rewrite Hx4, negb_involutive in H.
+                   symmetry; assumption.
+
+                   Focus 1.
 bbb.
   There is a fucking induction somewhere...
 
