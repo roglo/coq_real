@@ -2019,6 +2019,25 @@ destruct dj1; simpl in Ht1.
  destruct m; [ discriminate Ht1 | idtac ].
  simpl in Ht1.
  destruct (I_lt_dec x y) as [H1| H1].
+  Focus 2.
+  unfold I_ge, I_compare in H1; simpl in H1.
+  remember (fst_same x (- y) 0) as s2 eqn:Hs2 .
+  destruct s2 as [dj2| ]; [ idtac | clear H1 ].
+   remember (x .[ dj2]) as b eqn:Hxj2 .
+   destruct b; [ clear H1 | exfalso; apply H1; reflexivity ].
+   symmetry in Hxj2.
+   apply fst_same_sym_iff in Hs2; simpl in Hs2.
+   destruct Hs2 as (Hn2, Ht2).
+   rewrite Hxj2 in Ht2.
+   apply negb_sym in Ht2; simpl in Ht2.
+   rename Ht2 into Hyj2.
+   destruct dj2; [ assumption | idtac ].
+   rewrite Hn2 in Hx0; [ idtac | apply Nat.lt_0_succ ].
+   rewrite negb_involutive in Hx0; assumption.
+
+   apply fst_same_sym_iff in Hs2; simpl in Hs2.
+   rewrite Hs2, negb_involutive in Hx0; assumption.
+
   simpl in Ht1.
   remember (I_div_lt_pred_i x y dj1) as bxy1 eqn:Hb1 .
   symmetry in Hb1.
