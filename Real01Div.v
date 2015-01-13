@@ -413,4 +413,27 @@ destruct (I_lt_dec 0%I x) as [H2| H2].
   apply Hx; reflexivity.
 Qed.
 
+Add Parametric Morphism : I_div_2
+  with signature I_eqs ==> I_eqs
+  as I_div_2_morph.
+Proof.
+intros x y Hxy.
+unfold I_eqs, I_compare in Hxy.
+unfold I_eqs, I_compare; simpl.
+remember (fst_same (I_div_2 x) (- I_div_2 y) 0) as s1 eqn:Hs1 .
+remember (fst_same x (- y) 0) as s2 eqn:Hs2 .
+destruct s1 as [dj1| ]; [ exfalso | reflexivity ].
+apply fst_same_sym_iff in Hs1; simpl in Hs1.
+destruct Hs1 as (Hn1, Ht1).
+destruct dj1; [ discriminate Ht1 | simpl in Ht1 ].
+rewrite Nat.sub_0_r in Ht1.
+destruct s2 as [dj2| ]; [ idtac | clear Hxy ].
+ destruct (x .[ dj2]); discriminate Hxy.
+
+ apply fst_same_sym_iff in Hs2; simpl in Hs2.
+ rewrite Hs2, negb_involutive in Ht1.
+ symmetry in Ht1.
+ revert Ht1; apply no_fixpoint_negb.
+Qed.
+
 Close Scope Z_scope.

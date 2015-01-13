@@ -2054,8 +2054,40 @@ induction i.
       simpl.
       destruct (I_lt_dec x (I_div_2 z)) as [H3| H3]; simpl.
        rename H into Hz0.
+       rewrite <- Hxdyz in H3.
+       unfold I_lt, I_compare in H3; simpl in H3.
+       remember (fst_same x (- I_div_2 (x / y)) 0) as s2 eqn:Hs2 .
+       destruct s2 as [dj2| ]; [ idtac | discriminate H3 ].
+       remember (x .[ dj2]) as b eqn:Hxj2 .
+       destruct b; [ discriminate H3 | clear H3 ].
+       symmetry in Hxj2.
+       apply fst_same_sym_iff in Hs2; simpl in Hs2.
+       destruct Hs2 as (Hn2, Ht2).
+       destruct dj2; simpl in Ht2.
+        rewrite Ht2 in Hxj2; discriminate Hxj2.
+
+        rewrite Nat.sub_0_r, Hxj2 in Ht2.
+        apply negb_sym in Ht2; simpl in Ht2.
+        unfold I_div in Ht2; simpl in Ht2.
+        rewrite Hm in Ht2; simpl in Ht2.
+        destruct (I_lt_dec x y) as [H3| H3].
+         clear H3.
+         simpl in Ht2.
+         remember (I_div_lt_pred_i x y dj2) as bxy2 eqn:Hbxy2 .
+         symmetry in Hbxy2.
+         destruct bxy2 as (b2, (x2, y2)); simpl in Ht2.
+         destruct (I_lt_dec x2 y2) as [H3| H3]; [ idtac | clear Ht2 ].
+          discriminate Ht2.
+
+          destruct dj2.
+           simpl in Hbxy2.
+           injection Hbxy2; clear Hbxy2; intros; subst b2 x2 y2.
+           apply I_lt_nge in H1.
+           apply I_ge_le_iff in H3.
+           contradiction.
+
+           simpl in Hbxy2.
 bbb.
-  Blocked
 
 0 < x < y
 z=x/y
