@@ -1993,6 +1993,30 @@ Qed.
 
 (* *)
 
+Fixpoint I_div_2_pow x n :=
+  match n with
+  | O => x
+  | S n1 => I_div_2 (I_div_2_pow x n1)
+  end.
+
+(* à voir... *)
+Theorem www : ∀ x y b2 x2 y2 dj1 dj2 m n,
+  (∀ dj, (dj < S (S (S (n + dj1))))%nat
+   → x.[dj] = if zerop dj then false else (x / y)%I.[dj-1])
+  → (∀ dj, (dj < dj2)%nat → x2 .[ dj] = (I_div_2_pow y2 (S n) .[ dj]))
+  → I_div_max_iter_int y = S m
+  → I_div_lt_pred_i x y (S dj1) = (b2, (x2, y2))
+  → (∀ i, (i < S (S n))%nat → x.[i] = false)
+  → x .[ S (S (S (n + dj1)))] = false
+  → x2 .[ dj2] = true
+  → y .[ 0] = false.
+Proof.
+intros x y b2 x2 y2 dj1 dj2 m n.
+intros Hn1 Hn2 Hm Hb1 Hxi Hxj1 Hxj2.
+Abort. (*
+bbb.
+*)
+
 Theorem xxx : ∀ x y,
   (x < I_div_2 (x / y))%I
   → y.[0] = false.
@@ -2067,6 +2091,8 @@ destruct dj1; simpl in Ht1.
     symmetry; assumption.
 
 (*1*)
+clear Ht2.
+revert dj2 Hn1 Hn2 Hm Hb1 Hx0 Hxj1 Hxj2; clear; intros.
     assert (1 < S (S dj1))%nat as H by omega.
     apply Hn1 in H; simpl in H.
     rewrite negb_involutive in H.
@@ -2082,7 +2108,8 @@ destruct dj1; simpl in Ht1.
       destruct b as (b2, (x2, y2)); simpl in Hb1.
       destruct (I_lt_dec x2 y2) as [H4| H4].
        injection Hb1; clear Hb1; intros; subst b1 x1 y1.
-       destruct dj1; simpl in Hb2.
+       destruct dj1.
+        simpl in Hb2.
         rename Hxj1 into Hx2.
         injection Hb2; clear Hb2; intros; subst b2 x2 y2.
         clear H4.
@@ -2106,12 +2133,14 @@ destruct dj1; simpl in Ht1.
       clear H3.
       destruct (I_lt_dec x (I_div_2 (I_div_2 y))) as [H3| H3]; simpl in H.
        rename H into Hx2.
+       simpl in Hb2.
        remember (I_div_lt_pred_i x y dj1) as b eqn:Hb1 .
        symmetry in Hb1.
        destruct b as (b1, (x1, y1)); simpl in Hb2.
        destruct (I_lt_dec x1 y1) as [H5| H5].
         injection Hb2; clear Hb2; intros; subst b2 x2 y2.
-        destruct dj1; simpl in Hb1.
+        destruct dj1.
+         simpl in Hb1.
          injection Hb1; clear Hb1; intros; subst b1 x1 y1.
          rename Hxj1 into Hx3.
          destruct dj2; [ rewrite Hxj2 in Hx0; discriminate Hx0 | idtac ].
@@ -2139,12 +2168,14 @@ destruct dj1; simpl in Ht1.
        destruct (I_lt_dec x (I_div_2 (I_div_2 (I_div_2 y))))
         as [H6| H6]; simpl in H.
         rename H into Hx3.
+        simpl in Hb1.
         remember (I_div_lt_pred_i x y dj1) as b eqn:Hb2 .
         symmetry in Hb2.
         destruct b as (b2, (x2, y2)); simpl in Hb1.
         destruct (I_lt_dec x2 y2) as [H7| H7].
          injection Hb1; clear Hb1; intros; subst b1 x1 y1.
-         destruct dj1; simpl in Hb2.
+         destruct dj1.
+          simpl in Hb2.
           injection Hb2; clear Hb2; intros; subst b2 x2 y2.
           rename Hxj1 into Hx4.
           destruct dj2; [ rewrite Hxj2 in Hx0; discriminate Hx0 | idtac ].
