@@ -27,15 +27,22 @@ Arguments I_div_2_inc x%I _.
 Definition I_div_2 x := I_div_2_inc x false.
 Arguments I_div_2 x%I.
 
+Fixpoint I_div_2_pow x n :=
+  match n with
+  | O => x
+  | S n1 => I_div_2 (I_div_2_pow x n1)
+  end.
+Arguments I_div_2_pow x%I n%nat.
+
 Fixpoint I_div_lt_pred_i x y i :=
   match i with
-  | O => (false, (x, I_div_2 y))
+  | O => (false, x)
   | S i1 =>
-      let (x1, y1) := snd (I_div_lt_pred_i x y i1) in
-      if I_lt_dec x1 y1 then
-        (false, (x1, I_div_2 y1))
+      let x1 := snd (I_div_lt_pred_i x y i1) in
+      if I_lt_dec x1 (I_div_2_pow y i) then
+        (false, x1)
       else
-        (true, (I_sub x1 y1, I_div_2 y1))
+        (true, I_sub x1 (I_div_2_pow y i))
   end.
 Arguments I_div_lt_pred_i x%I y%I i%nat.
 
@@ -61,26 +68,26 @@ Notation "x / y" := (I_div x y) : I_scope.
 
 (* *)
 
-Theorem I_div_lt_pred_0_l : ∀ x y b x1 y1 i,
-  I_div_lt_pred_i x y i = (b, (x1, y1))
+Theorem I_div_lt_pred_0_l : ∀ x y b x1 i,
+  I_div_lt_pred_i x y i = (b, x1)
   → (x == 0)%I
   → (x1 == 0)%I.
 Proof.
-intros x y b x1 y1 i Hi Hx.
-revert x y b x1 y1 Hi Hx.
+intros x y b x1 i Hi Hx.
+revert x y b x1 Hi Hx.
 induction i; intros; simpl in Hi.
  injection Hi; intros; subst; assumption.
 
- remember (I_div_lt_pred_i x y i) as bxy eqn:Hbxy .
- symmetry in Hbxy.
- destruct bxy as (b2, (x2, y2)).
- simpl in Hi.
+ remember (I_div_lt_pred_i x y i) as bx eqn:Hbx .
+ symmetry in Hbx.
+ destruct bx as (b2, x2); simpl in Hi.
+ remember (I_div_2 (I_div_2_pow y i)) as y2 eqn:Hy2.
  destruct (I_lt_dec x2 y2) as [H1| H1].
-  injection Hi; clear Hi; intros; subst b x1 y1.
+  injection Hi; clear Hi; intros; subst b x1.
   eapply IHi; eassumption.
 
-  injection Hi; clear Hi; intros; subst b x1 y1.
-  remember Hbxy as H; clear HeqH.
+  injection Hi; clear Hi; intros; subst b x1.
+  remember Hbx as H; clear HeqH.
   apply IHi in H; try assumption.
   rewrite H in H1.
   apply I_ge_le_iff, I_le_0_r in H1.
@@ -164,8 +171,19 @@ pose proof (Hx (S i)) as H; simpl in H.
 rewrite Nat.sub_0_r in H; assumption.
 Qed.
 
-Theorem I_div_lt_pred_r_eqs_0 : ∀ x y i b x1 y1,
-  I_div_lt_pred_i x y i = (b, (x1, y1))
+Theorem I_div_2_pow_eqs_0 : ∀ x n, (I_div_2_pow x n == 0)%I → (x == 0)%I.
+Proof.
+intros x n Hx.
+revert x Hx.
+induction n; intros; [ assumption | idtac ].
+simpl in Hx.
+apply I_div_2_eqs_0 in Hx.
+apply IHn; assumption.
+Qed.
+
+(*
+Theorem I_div_lt_pred_r_eqs_0 : ∀ x y i b x1,
+  I_div_lt_pred_i x y i = (b, x1)
   → (y1 == 0)%I
   → (y == 0)%I.
 Proof.
@@ -175,9 +193,9 @@ induction i; intros; simpl in Hi.
  injection Hi; clear Hi; intros; subst b x1 y1.
  apply I_div_2_eqs_0; assumption.
 
- remember (I_div_lt_pred_i x y i) as bxy eqn:Hbxy .
- symmetry in Hbxy.
- destruct bxy as (b2, (x2, y2)).
+ remember (I_div_lt_pred_i x y i) as bx eqn:Hbx .
+ symmetry in Hbx.
+ destruct bx as (b2, (x2, y2)).
  simpl in Hi.
  destruct (I_lt_dec x2 y2) as [H1| H1].
   injection Hi; clear Hi; intros; subst b x1 y1.
@@ -188,6 +206,7 @@ induction i; intros; simpl in Hi.
   apply I_div_2_eqs_0 in Hy.
   eapply IHi; eassumption.
 Qed.
+*)
 
 Theorem I_div_0_l : ∀ x, (x ≠≠ 0)%I → (0 / x == 0)%I.
 Proof.
@@ -204,21 +223,22 @@ symmetry in Hm.
 destruct m; [ discriminate Hs1 | simpl in Hs1 ].
 destruct (I_lt_dec 0%I x) as [H2| H2].
  simpl in Hs1.
- remember (I_div_lt_pred_i 0 x j1) as bxy eqn:Hbxy .
- symmetry in Hbxy.
- destruct bxy as (b, (x1, y1)); simpl in Hs1.
+ remember (I_div_lt_pred_i 0 x j1) as bx eqn:Hbx .
+ symmetry in Hbx.
+ destruct bx as (b, x1); simpl in Hs1.
+ remember (I_div_2 (I_div_2_pow x j1)) as y1 eqn:Hy1 .
  destruct (I_lt_dec x1 y1) as [H3| H3]; [ discriminate Hs1 | clear Hs1 ].
  remember (fst_same x (- 0%I) 0) as s2 eqn:Hs2 .
  destruct s2 as [j2| ].
   clear Hx.
   apply fst_same_sym_iff in Hs2; simpl in Hs2.
   destruct Hs2 as (Hn2, Ht2).
-  remember Hbxy as H; clear HeqH.
+  remember Hbx as H; clear HeqH.
   apply I_div_lt_pred_0_l in H; [ idtac | reflexivity ].
-  rewrite H in H3.
+  rewrite H, Hy1 in H3.
   apply I_ge_le_iff, I_le_0_r_eqs_iff in H3.
-  apply I_div_lt_pred_r_eqs_0 in Hbxy; [ idtac | assumption ].
-  rewrite Hbxy in H2.
+  apply I_div_2_eqs_0, I_div_2_pow_eqs_0 in H3.
+  rewrite H3 in H2.
   revert H2; apply I_lt_irrefl.
 
   apply Hx; reflexivity.

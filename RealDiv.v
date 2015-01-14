@@ -374,9 +374,10 @@ destruct s1 as [dj1| ].
 
   destruct (I_lt_dec mx my) as [H1| H1].
    injection Hrif; clear Hrif; intros; subst ri rf; simpl.
-   remember (I_div_lt_pred_i mx my i) as bxy eqn:Hbxy .
-   symmetry in Hbxy.
-   destruct bxy as (b, (x1, y1)); simpl.
+   remember (I_div_lt_pred_i mx my i) as bx eqn:Hbx .
+   symmetry in Hbx.
+   destruct bx as (b, x1); simpl.
+   remember (I_div_2 (I_div_2_pow my i)) as y1 eqn:Hy1.
    destruct (I_lt_dec x1 y1) as [H2| H2]; [ reflexivity | exfalso ].
    symmetry in Hm.
    destruct m.
@@ -389,23 +390,23 @@ destruct s1 as [dj1| ].
     symmetry in Hc.
     destruct c.
      injection Hmxy; clear Hmxy; intros; subst mx my.
-     remember Hbxy as H; clear HeqH.
+     remember Hbx as H; clear HeqH.
      apply I_div_lt_pred_0_l in H; [ simpl in H | reflexivity ].
      rename H into Hx1.
-     rewrite Hx1 in H2.
+     rewrite Hx1, Hy1 in H2.
      apply I_ge_le_iff, I_le_0_r_eqs_iff in H2.
-     apply I_div_lt_pred_r_eqs_0 in Hbxy; [ idtac | assumption ].
-     rewrite Hbxy in H1.
+     apply I_div_2_eqs_0, I_div_2_pow_eqs_0 in H2.
+     rewrite H2 in H1.
      revert H1; apply I_lt_irrefl.
 
      apply R_div_equiv_0_l in Hmxy.
-      remember Hbxy as H; clear HeqH.
+      remember Hbx as H; clear HeqH.
       apply I_div_lt_pred_0_l in H; [ idtac | assumption ].
       rename H into Hx1.
-      rewrite Hx1 in H2.
+      rewrite Hx1, Hy1 in H2.
       apply I_ge_le_iff, I_le_0_r_eqs_iff in H2.
-      apply I_div_lt_pred_r_eqs_0 in Hbxy; [ idtac | assumption ].
-      rewrite Hmxy, Hbxy in H1.
+      apply I_div_2_eqs_0, I_div_2_pow_eqs_0 in H2.
+      rewrite Hmxy, H2 in H1.
       revert H1; apply I_lt_irrefl.
 
       unfold R_abs; simpl.
@@ -447,11 +448,12 @@ destruct s1 as [dj1| ].
    injection Hrif; clear Hrif; intros; subst ri rf; simpl.
    rewrite Hmx in H1.
    unfold I_div_lt in Hrf; simpl in Hrf.
-   remember (I_div_lt_pred_i mx my i) as bxy eqn:Hbxy .
-   symmetry in Hbxy.
-   destruct bxy as (b, (x1, y1)); simpl in Hrf.
+   remember (I_div_lt_pred_i mx my i) as bx eqn:Hbx .
+   symmetry in Hbx.
+   destruct bx as (b, x1); simpl in Hrf.
+   remember (I_div_2 (I_div_2_pow my i)) as y1 eqn:Hy1.
    destruct (I_lt_dec x1 y1) as [H2| H2]; simpl in Hrf.
-    remember Hbxy as H; clear HeqH.
+    remember Hbx as H; clear HeqH.
     apply I_div_lt_pred_0_l in H; [ idtac | assumption ].
     rewrite H in H2; rename H into Hx1.
     destruct (I_lt_dec x1 (I_div_2 y1)) as [H3| H3].
@@ -466,12 +468,12 @@ destruct s1 as [dj1| ].
     destruct (I_lt_dec (x1 - y1)%I (I_div_2 y1)) as [H3| H3].
      discriminate Hrf.
 
-     remember Hbxy as H; clear HeqH.
+     remember Hbx as H; clear HeqH.
      apply I_div_lt_pred_0_l in H; [ idtac | assumption ].
-     rewrite H in H2; rename H into Hx1.
+     rewrite H, Hy1 in H2; rename H into Hx1.
      apply I_ge_le_iff, I_le_0_r_eqs_iff in H2.
-     apply I_div_lt_pred_r_eqs_0 in Hbxy; [ idtac | assumption ].
-     rewrite Hbxy in H1.
+     apply I_div_2_eqs_0, I_div_2_pow_eqs_0 in H2.
+     rewrite H2 in H1.
      exfalso; revert H1; apply I_lt_irrefl.
 
    rewrite Hmx in H1.
@@ -1199,17 +1201,17 @@ induction m2; intros; simpl in Hrif.
    destruct (I_lt_dec (mx - mx)%I mx) as [H1| H1].
     rewrite I_sub_diag_eqs in H1.
     injection Hrif2; clear Hrif2; intros; subst ri2 rf2; simpl.
-    remember (I_div_lt_pred_i (mx - mx) mx i) as bxy eqn:Hbxy .
-    symmetry in Hbxy.
-    destruct bxy as (b1, (x1, y1)); simpl.
+    remember (I_div_lt_pred_i (mx - mx) mx i) as bx eqn:Hbx .
+    symmetry in Hbx.
+    destruct bx as (b1, x1); simpl.
+    remember (I_div_2 (I_div_2_pow mx i)) as y1 eqn:Hy1.
     destruct (I_lt_dec x1 y1) as [H2| H2]; [ reflexivity | exfalso ].
-    remember Hbxy as H; clear HeqH.
+    remember Hbx as H; clear HeqH.
     apply I_div_lt_pred_0_l in H.
-     rewrite H in H2.
+     rewrite H, Hy1 in H2.
      apply I_ge_le_iff, I_le_0_r_eqs_iff in H2.
-     rename H into Hx1.
-     apply I_div_lt_pred_r_eqs_0 in Hbxy; [ idtac | assumption ].
-     rewrite Hbxy in H1; revert H1; apply I_lt_irrefl.
+     apply I_div_2_eqs_0, I_div_2_pow_eqs_0 in H2.
+     rewrite H2 in H1; revert H1; apply I_lt_irrefl.
 
      apply I_sub_diag_eqs.
 
@@ -1384,26 +1386,21 @@ Qed.
 
 (* *)
 
-Fixpoint I_div_2_pow x n :=
-  match n with
-  | O => x
-  | S n1 => I_div_2 (I_div_2_pow x n1)
-  end.
-
 (* à voir... *)
 Theorem www : ∀ x y b2 x2 y2 dj1 dj2 m n,
   (∀ dj, (dj < S (S (S (n + dj1))))%nat
    → x.[dj] = if zerop dj then false else (x / y)%I.[dj-1])
-  → (∀ dj, (dj < dj2)%nat → x2 .[ dj] = (I_div_2_pow y2 (S n) .[ dj]))
   → I_div_max_iter_int y = S m
-  → I_div_lt_pred_i x y (S dj1) = (b2, (x2, y2))
   → (∀ i, (i < S (S n))%nat → x.[i] = false)
   → x .[ S (S (S (n + dj1)))] = false
+  → I_div_lt_pred_i x y (S dj1) = (b2, x2)
+  → y2 = I_div_2 (I_div_2_pow y (S (n + dj1)))
+  → (∀ dj, (dj < dj2)%nat → x2.[dj] = y2.[ dj])
   → x2 .[ dj2] = true
   → y .[ 0] = false.
 Proof.
 intros x y b2 x2 y2 dj1 dj2 m n.
-intros Hn1 Hn2 Hm Hb1 Hxi Hxj1 Hxj2.
+intros Hn1 Hm Hxi Hxj1 Hb1 Hy2 Hn2 Hxj2.
 Abort. (*
 bbb.
 *)
@@ -1454,9 +1451,10 @@ destruct dj1; simpl in Ht1.
    rewrite Hs2, negb_involutive in Hx0; assumption.
 
   simpl in Ht1.
-  remember (I_div_lt_pred_i x y dj1) as bxy1 eqn:Hb1 .
+  remember (I_div_lt_pred_i x y dj1) as bx1 eqn:Hb1 .
   symmetry in Hb1.
-  destruct bxy1 as (b1, (x1, y1)); simpl in Ht1.
+  destruct bx1 as (b1, x1); simpl in Ht1.
+  remember (I_div_2 (I_div_2_pow y dj1)) as y1 eqn:Hy1.
   destruct (I_lt_dec x1 y1) as [H2| H2]; [ discriminate Ht1 | clear Ht1 ].
   unfold I_ge, I_compare in H2.
   remember (fst_same x1 (- y1) 0) as s2 eqn:Hs2 .
@@ -1482,6 +1480,7 @@ destruct dj1; simpl in Ht1.
     symmetry; assumption.
 
 (*1*)
+subst y1.
 clear Ht2.
 revert dj2 Hn1 Hn2 Hm Hb1 Hx0 Hxj1 Hxj2; clear; intros.
     assert (1 < S (S dj1))%nat as H by omega.
@@ -1496,9 +1495,10 @@ revert dj2 Hn1 Hn2 Hm Hb1 Hx0 Hxj1 Hxj2; clear; intros.
       simpl in Hb1.
       remember (I_div_lt_pred_i x y dj1) as b eqn:Hb2 .
       symmetry in Hb2.
-      destruct b as (b2, (x2, y2)); simpl in Hb1.
+      destruct b as (b2, x2); simpl in Hb1.
+      remember (I_div_2 (I_div_2_pow y dj1)) as y2 eqn:Hy2.
       destruct (I_lt_dec x2 y2) as [H4| H4].
-       injection Hb1; clear Hb1; intros; subst b1 x1 y1.
+       injection Hb1; clear Hb1; intros; subst b1 x1.
        destruct dj1.
         simpl in Hb2.
         rename Hxj1 into Hx2.
@@ -1527,7 +1527,8 @@ revert dj2 Hn1 Hn2 Hm Hb1 Hx0 Hxj1 Hxj2; clear; intros.
        simpl in Hb2.
        remember (I_div_lt_pred_i x y dj1) as b eqn:Hb1 .
        symmetry in Hb1.
-       destruct b as (b1, (x1, y1)); simpl in Hb2.
+       destruct b as (b1, x1); simpl in Hb2.
+       remember (I_div_2 (I_div_2_pow y dj1)) as y1 eqn:Hy1.
        destruct (I_lt_dec x1 y1) as [H5| H5].
         injection Hb2; clear Hb2; intros; subst b2 x2 y2.
         destruct dj1.
@@ -1562,7 +1563,8 @@ revert dj2 Hn1 Hn2 Hm Hb1 Hx0 Hxj1 Hxj2; clear; intros.
         simpl in Hb1.
         remember (I_div_lt_pred_i x y dj1) as b eqn:Hb2 .
         symmetry in Hb2.
-        destruct b as (b2, (x2, y2)); simpl in Hb1.
+        destruct b as (b2, x2); simpl in Hb1.
+        remember (I_div_2 (I_div_2_pow y dj1)) as y2 eqn:Hy2.
         destruct (I_lt_dec x2 y2) as [H7| H7].
          injection Hb1; clear Hb1; intros; subst b1 x1 y1.
          destruct dj1.
@@ -1581,7 +1583,8 @@ revert dj2 Hn1 Hn2 Hm Hb1 Hx0 Hxj1 Hxj2; clear; intros.
 
           Focus 1.
 bbb.
-  There is a fucking induction somewhere...
+  There is a fucking induction somewhere...  
+  Voir www ci-dessus.
 
 Theorem yyy : ∀ x y z,
   (x < y)%I
@@ -1667,25 +1670,25 @@ bbb.
         destruct (I_lt_dec x y) as [H3| H3].
          clear H3.
          simpl in Ht2.
-         remember (I_div_lt_pred_i x y dj2) as bxy2 eqn:Hbxy2 .
-         symmetry in Hbxy2.
-         destruct bxy2 as (b2, (x2, y2)); simpl in Ht2.
+         remember (I_div_lt_pred_i x y dj2) as bx2 eqn:Hbx2 .
+         symmetry in Hbx2.
+         destruct bx2 as (b2, (x2, y2)); simpl in Ht2.
          destruct (I_lt_dec x2 y2) as [H3| H3]; [ idtac | clear Ht2 ].
           discriminate Ht2.
 
           destruct dj2.
-           simpl in Hbxy2.
-           injection Hbxy2; clear Hbxy2; intros; subst b2 x2 y2.
+           simpl in Hbx2.
+           injection Hbx2; clear Hbx2; intros; subst b2 x2 y2.
            apply I_lt_nge in H1.
            apply I_ge_le_iff in H3.
            contradiction.
 
-           simpl in Hbxy2.
-           remember (I_div_lt_pred_i x y dj2) as bxy3 eqn:Hbxy3 .
-           symmetry in Hbxy3.
-           destruct bxy3 as (b3, (x3, y3)); simpl in Hbxy2.
+           simpl in Hbx2.
+           remember (I_div_lt_pred_i x y dj2) as bx3 eqn:Hbx3 .
+           symmetry in Hbx3.
+           destruct bx3 as (b3, (x3, y3)); simpl in Hbx2.
            destruct (I_lt_dec x3 y3) as [H4| H4].
-            injection Hbxy2; clear Hbxy2; intros; subst b2 x2 y2.
+            injection Hbx2; clear Hbx2; intros; subst b2 x2 y2.
 bbb.
 
 0 < x < y
@@ -1919,9 +1922,9 @@ destruct s1 as [dj1| ].
       symmetry.
       destruct (I_lt_dec x1 y1) as [H1| H1].
        injection Hrif; clear Hrif; intros; subst ri rf; simpl.
-       remember (I_div_lt_pred_i x1 y1 j) as bxy eqn:Hbxy3 .
-       symmetry in Hbxy3.
-       destruct bxy as (b3, (x3, y3)); simpl.
+       remember (I_div_lt_pred_i x1 y1 j) as bx eqn:Hbx3 .
+       symmetry in Hbx3.
+       destruct bx as (b3, (x3, y3)); simpl.
        destruct (I_lt_dec x3 y3) as [H3| H3]; simpl.
         destruct j.
          pose proof (Hx1_S O) as H.
@@ -1931,8 +1934,8 @@ destruct s1 as [dj1| ].
          destruct nx; simpl in H.
           apply negb_sym in H; rewrite H.
           apply negb_false_iff.
-          simpl in Hbxy3.
-          injection Hbxy3; clear Hbxy3; intros; subst b3 x3 y3.
+          simpl in Hbx3.
+          injection Hbx3; clear Hbx3; intros; subst b3 x3 y3.
           unfold I_lt, I_compare in H3; simpl in H3.
           remember (fst_same x1 (- I_div_2 y1) 0) as s3 eqn:Hs3 .
           destruct s3 as [dj3| ]; [ idtac | discriminate H3 ].
@@ -1970,9 +1973,9 @@ destruct s1 as [dj1| ].
             clear Hn3.
             rewrite Nat.add_0_l in Ht2.
             simpl in Ht2.
-            remember (I_div_lt_pred_i x1 y1 dj2) as bxy eqn:Hbxy .
-            symmetry in Hbxy.
-            destruct bxy as (b2, (x2, y2)); simpl in Ht2.
+            remember (I_div_lt_pred_i x1 y1 dj2) as bx eqn:Hbx .
+            symmetry in Hbx.
+            destruct bx as (b2, (x2, y2)); simpl in Ht2.
             destruct (I_lt_dec x2 y2) as [H2| H2]; simpl in Ht2.
              destruct (I_lt_dec x2 (I_div_2 y2)) as [H3| H3].
               2: discriminate Ht2.
@@ -1999,8 +2002,8 @@ destruct s1 as [dj1| ].
                remember Ht3 as H; clear HeqH.
                rewrite Hy3_S in H.
                destruct dj2.
-                simpl in Hbxy.
-                injection Hbxy; clear Hbxy; intros; subst b2 x2 y2.
+                simpl in Hbx.
+                injection Hbx; clear Hbx; intros; subst b2 x2 y2.
                 simpl in H.
                 destruct dj3; [ discriminate H | simpl in H ].
                 simpl in Hy3_S.
@@ -2014,13 +2017,13 @@ bbb.
       destruct (I_lt_dec x1 y1) as [H1| H1].
        injection Hrif; clear Hrif; intros; subst ri rf.
        simpl.
-       remember (I_div_lt_pred_i x1 y1 i) as bxy eqn:Hbxy3 .
-       symmetry in Hbxy3.
-       destruct bxy as (b3, (x3, y3)); simpl.
+       remember (I_div_lt_pred_i x1 y1 i) as bx eqn:Hbx3 .
+       symmetry in Hbx3.
+       destruct bx as (b3, (x3, y3)); simpl.
        destruct (I_lt_dec x3 y3) as [H3| H3]; simpl.
         destruct i.
-         simpl in Hbxy3.
-         injection Hbxy3; clear Hbxy3; intros; subst b3 x3 y3.
+         simpl in Hbx3.
+         injection Hbx3; clear Hbx3; intros; subst b3 x3 y3.
          remember Hx1 as H; clear HeqH.
          apply I_div_2_inc_0 in H.
          rename H into Vx1.
