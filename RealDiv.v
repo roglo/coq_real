@@ -1433,6 +1433,7 @@ destruct (I_lt_dec x y) as [H3| H3].
 bbb.
 *)
 
+(* second try, fail again, same reason...
 Theorem www : ∀ x y b2 x2 y2 dj1 dj2 m n,
   (∀ dj, (dj < S (n + dj1))%nat
    → x .[ dj] = if zerop dj then false else (x / y)%I .[ dj - 1])
@@ -1447,6 +1448,71 @@ Theorem www : ∀ x y b2 x2 y2 dj1 dj2 m n,
 Proof.
 intros x y b2 x2 y2 dj1 dj2 m n.
 intros Hn1 Hm Hxi Hxj1 Hb2 Hy2 Hn2 Hxj2.
+simpl in Hb2.
+remember (I_div_2 (I_div_2_pow y dj1)) as y1 eqn:Hy1 .
+remember (snd (I_div_lt_pred_i x y dj1)) as x1 eqn:Hx1 .
+destruct (I_lt_dec x1 y1) as [H1| H1].
+ injection Hb2; clear Hb2; intros; subst b2 x2.
+ pose proof (Hn1 O (Nat.lt_0_succ (n + dj1))) as H; simpl in H.
+ rename H into Hx0.
+ destruct dj1.
+  simpl in Hx1; subst x1.
+  destruct dj2; [ rewrite Hxj2 in Hx0; discriminate Hx0 | idtac ].
+  pose proof (Hn2 O (Nat.lt_0_succ dj2)) as H.
+  rewrite Hx0, Hy2 in H; simpl in H.
+*)
+
+Theorem www : ∀ x y b2 x2 y2 dj1 dj2 m n,
+  (∀ dj, (dj < S (S (S (n + dj1))))%nat
+   → x.[dj] = if zerop dj then false else (x / y)%I .[ dj - 1])
+  → I_div_max_iter_int y = S m
+  → (∀ i, (i < S (S n))%nat → x.[i] = false)
+  → x .[ S (S (S (n + dj1)))] = false
+  → I_div_lt_pred_i x y (S dj1) = (b2, x2)
+  → y2 = I_div_2 (I_div_2_pow y (S dj1))
+  → (∀ dj, (dj < dj2)%nat
+      → x2 .[ dj] = I_div_2 (I_div_2_pow y (S (S (n + dj1)))).[ dj])
+  → x2 .[ dj2] = true
+  → y .[ 0] = false.
+Proof.
+intros x y b2 x2 y2 dj1 dj2 m n.
+intros Hn1 Hm Hxi Hxj1 Hb2 Hy2 Hn2 Hxj2.
+bbb.
+
+destruct n.
+ simpl in Hn1, Hxj1.
+ assert (2 < S (S (S dj1)))%nat as H by omega.
+ apply Hn1 in H; simpl in H.
+ unfold I_div in H; simpl in H.
+ rewrite Hm in H; simpl in H.
+ destruct (I_lt_dec x y) as [H2| H2].
+  clear H2; simpl in H.
+  destruct (I_lt_dec x (I_div_2 y)) as [H2| H2]; simpl in H.
+   destruct (I_lt_dec x (I_div_2 (I_div_2 y))) as [H3| H3]; simpl in H.
+    rename H into Hx2.
+    simpl in Hb2.
+    remember (I_div_lt_pred_i x y dj1) as b eqn:Hb1 .
+    symmetry in Hb1.
+    destruct b as (b1, x1); simpl in Hb2.
+    remember (I_div_2 (I_div_2_pow y dj1)) as y1 eqn:Hy1 .
+    destruct (I_lt_dec x1 y1) as [H5| H5].
+     injection Hb2; clear Hb2; intros; subst b2 x2 y2.
+     revert dj2 Hn1 Hn2 Hm Hb1 Hxi Hx2 Hxj1 Hxj2; clear; intros.
+     revert x y m b1 x1 dj2 Hn1 Hn2 Hm Hb1 Hxi Hx2 Hxj1 Hxj2.
+     induction dj1; intros.
+      simpl in Hb1.
+      injection Hb1; clear Hb1; intros; subst b1 x1.
+      rename Hxj1 into Hx3.
+      destruct dj2; [ rewrite Hxi in Hxj2; auto; discriminate Hxj2 | idtac ].
+      destruct dj2; [ rewrite Hxi in Hxj2; auto; discriminate Hxj2 | idtac ].
+      destruct dj2; [ rewrite Hx2 in Hxj2; discriminate Hxj2 | idtac ].
+      destruct dj2; [ rewrite Hx3 in Hxj2; discriminate Hxj2 | idtac ].
+      assert (3 < S (S (S (S dj2))))%nat as H by omega.
+      apply Hn2 in H; simpl in H.
+      rewrite Hx3 in H.
+      symmetry; assumption.
+
+      Focus 1.
 bbb.
 *)
 
