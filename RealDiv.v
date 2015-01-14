@@ -1477,6 +1477,7 @@ Theorem www : ∀ x y b2 x2 y2 dj1 dj2 m n,
 Proof.
 intros x y b2 x2 y2 dj1 dj2 m n.
 intros Hn1 Hm Hxi Hxj1 Hb2 Hy2 Hn2 Hxj2.
+Abort. (*
 bbb.
 
 destruct n.
@@ -1513,6 +1514,40 @@ destruct n.
       symmetry; assumption.
 
       Focus 1.
+bbb.
+*)
+
+Theorem www : ∀ x y b1 x1 dj1 dj2 m n,
+  (∀ dj, (dj < S (S (n + dj1)))%nat
+   → x .[ dj] = if zerop dj then false else (x / y)%I .[ dj - 1])
+  → I_div_max_iter_int y = S m
+  → (∀ i, (i < S (S (S (S n))))%nat → x.[i] = false)
+  → I_div_lt_pred_i x y dj1 = (b1, x1)
+  → (∀ dj, (dj < dj2)%nat
+     → x1.[dj] = I_div_2 (I_div_2_pow y (S (n + dj1))).[dj])
+  → x1.[dj2] = true
+  → y.[0] = false.
+Proof.
+intros x y b1 x1 dj1 dj2 m n Hn1 Hm Hxi Hb1 Hn2 Hxj2.
+induction dj1.
+ simpl in Hb1.
+ injection Hb1; clear Hb1; intros; subst b1 x1.
+ assert (0 < S (S (S (S n))))%nat as H by omega.
+ destruct dj2; [ rewrite Hxi in Hxj2; auto; discriminate Hxj2 | idtac ].
+ clear H.
+ assert (1 < S (S (S (S n))))%nat as H by omega.
+ destruct dj2; [ rewrite Hxi in Hxj2; auto; discriminate Hxj2 | idtac ].
+ clear H.
+ assert (2 < S (S (S (S n))))%nat as H by omega.
+ destruct dj2; [ rewrite Hxi in Hxj2; auto; discriminate Hxj2 | idtac ].
+ clear H.
+ assert (3 < S (S (S (S n))))%nat as H by omega.
+ destruct dj2; [ rewrite Hxi in Hxj2; auto; discriminate Hxj2 | idtac ].
+ clear H.
+ assert (3 < S (S (S (S dj2))))%nat as H by omega.
+ apply Hn2 in H; simpl in H.
+ rewrite Nat.add_0_r in H.
+Abort. (*
 bbb.
 *)
 
@@ -1656,7 +1691,6 @@ revert Hn1 Hm Hx0 Hx1 Hxj1 Hb2 Hy2 Hn2 Hxj2; clear; intros.
          rewrite Hn2; [ idtac | assumption ].
          rewrite Hy1, negb_involutive; reflexivity.
 *)
-bbb.
     assert (2 < S (S (S dj1)))%nat as H by omega.
     apply Hn1 in H; simpl in H.
     rewrite negb_involutive in H.
