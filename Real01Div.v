@@ -257,6 +257,22 @@ induction i; intros; simpl in Hi.
 Qed.
 *)
 
+Theorem I_div_rem_i_0_l : ∀ y i, (I_div_rem_i 0 y i == 0)%I.
+Proof.
+intros y i.
+revert y.
+induction i; intros; [ reflexivity | simpl ].
+remember (I_div_rem_i 0 y i) as x1 eqn:Hx1 .
+remember (I_div_2 (I_div_2_pow y i)) as y1 eqn:Hy1 .
+destruct (I_lt_dec x1 y1) as [H1| H1].
+ subst x1; apply IHi.
+
+ subst x1 y1.
+ rewrite IHi in H1; rewrite IHi.
+ apply I_ge_le_iff, I_le_0_r_eqs_iff in H1.
+ rewrite H1; apply I_sub_diag_eqs.
+Qed.
+
 (* division by 0 is 0 here *)
 Theorem I_div_0_r : ∀ x y, (y == 0)%I → (x / y == 0)%I.
 Proof.
@@ -282,7 +298,6 @@ intros x.
 destruct (I_eqs_dec x 0%I) as [Hx| Hx].
  apply I_div_0_r; assumption.
 
- unfold I_eqs, I_compare in Hx.
  unfold I_eqs, I_compare.
  remember (fst_same (0 / x) (- 0%I) 0) as s1 eqn:Hs1 .
  destruct s1 as [j1| ]; [ exfalso | reflexivity ].
@@ -298,36 +313,14 @@ destruct (I_eqs_dec x 0%I) as [Hx| Hx].
   remember (I_div_rem_i 0 x j1) as x1 eqn:Hx1 .
   remember (I_div_2_pow x (S j1)) as y1 eqn:Hy1 .
   destruct (I_lt_dec x1 y1) as [H1| H1]; [ discriminate Hs1 | clear Hs1 ].
-bbb.
-  remember (I_div_lt_pred_i 0 x j1) as bx eqn:Hbx .
-  symmetry in Hbx.
-  destruct bx as (b, x1); simpl in Hs1.
-  remember (I_div_2 (I_div_2_pow x j1)) as y1 eqn:Hy1 .
-  destruct (I_lt_dec x1 y1) as [H3| H3]; [ discriminate Hs1 | clear Hs1 ].
-  remember (fst_same x (- 0%I) 0) as s2 eqn:Hs2 .
-  destruct s2 as [j2| ].
-   clear Hx.
-   apply fst_same_sym_iff in Hs2; simpl in Hs2.
-   destruct Hs2 as (Hn2, Ht2).
-   remember Hbx as H; clear HeqH.
-   apply I_div_lt_pred_0_l in H; [ idtac | reflexivity ].
-   rewrite H, Hy1 in H3.
-   apply I_ge_le_iff, I_le_0_r_eqs_iff in H3.
-   apply I_div_2_eqs_0, I_div_2_pow_eqs_0 in H3.
-   rewrite H3 in H2.
-   revert H2; apply I_lt_irrefl.
+  subst x1 y1.
+  rewrite I_div_rem_i_0_l in H1.
+  apply I_ge_le_iff, I_le_0_r_eqs_iff in H1.
+  apply I_div_2_pow_eqs_0 in H1.
+  rewrite H1 in H2; revert H2; apply I_lt_irrefl.
 
-   apply Hx; reflexivity.
-
-  remember (fst_same x (- 0%I) 0) as s2 eqn:Hs2 .
-  destruct s2 as [j2| ].
-   apply fst_same_sym_iff in Hs2; simpl in Hs2.
-   destruct Hs2 as (Hn2, Ht2).
-   apply I_ge_le_iff, I_le_0_r_eqs_iff in H2.
-   rewrite I_zero_eqs_iff in H2.
-   rewrite H2 in Ht2; discriminate Ht2.
-
-   apply Hx; reflexivity.
+  apply I_ge_le_iff, I_le_0_r_eqs_iff in H2.
+  contradiction.
 Qed.
 
 Add Parametric Morphism : I_div_2
@@ -429,6 +422,7 @@ destruct (I_lt_dec x1 y1) as [H1| H1].
   rewrite Hx0, Hy2 in H; simpl in H.
 *)
 
+(*
 Theorem www : ∀ x y b2 x2 y2 dj1 dj2 m n,
   (∀ dj, (dj < S (S (S (n + dj1))))%nat
    → x.[dj] = if zerop dj then false else (x / y)%I .[ dj - 1])
@@ -444,7 +438,6 @@ Theorem www : ∀ x y b2 x2 y2 dj1 dj2 m n,
 Proof.
 intros x y b2 x2 y2 dj1 dj2 m n.
 intros Hn1 Hm Hxi Hxj1 Hb2 Hy2 Hn2 Hxj2.
-Abort. (*
 bbb.
 
 destruct n.
@@ -484,6 +477,7 @@ destruct n.
 bbb.
 *)
 
+(*
 Theorem www : ∀ x y b1 x1 dj1 dj2 m n,
   (∀ dj, (dj < S (S (n + dj1)))%nat
    → x .[ dj] = if zerop dj then false else (x / y)%I .[ dj - 1])
@@ -514,7 +508,6 @@ induction dj1.
  assert (3 < S (S (S (S dj2))))%nat as H by omega.
  apply Hn2 in H; simpl in H.
  rewrite Nat.add_0_r in H.
-Abort. (*
 bbb.
 *)
 
@@ -564,6 +557,7 @@ destruct dj1; simpl in Ht1.
    rewrite Hs2, negb_involutive in Hx0; assumption.
 
   simpl in Ht1.
+bbb.
   remember (I_div_lt_pred_i x y dj1) as bx1 eqn:Hb1 .
   symmetry in Hb1.
   destruct bx1 as (b1, x1); simpl in Ht1.
