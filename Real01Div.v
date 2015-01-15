@@ -282,7 +282,6 @@ intros x.
 destruct (I_eqs_dec x 0%I) as [Hx| Hx].
  apply I_div_0_r; assumption.
 
-bbb.
  unfold I_eqs, I_compare in Hx.
  unfold I_eqs, I_compare.
  remember (fst_same (0 / x) (- 0%I) 0) as s1 eqn:Hs1 .
@@ -295,6 +294,7 @@ bbb.
  destruct m; [ discriminate Hs1 | simpl in Hs1 ].
  destruct (I_lt_dec 0%I x) as [H2| H2].
   simpl in Hs1.
+bbb.
   remember (I_div_lt_pred_i 0 x j1) as bx eqn:Hbx .
   symmetry in Hbx.
   destruct bx as (b, x1); simpl in Hs1.
