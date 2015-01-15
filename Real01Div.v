@@ -294,6 +294,10 @@ destruct (I_eqs_dec x 0%I) as [Hx| Hx].
  destruct m; [ discriminate Hs1 | simpl in Hs1 ].
  destruct (I_lt_dec 0%I x) as [H2| H2].
   simpl in Hs1.
+  unfold I_div_lt_i in Hs1.
+  remember (I_div_rem_i 0 x j1) as x1 eqn:Hx1 .
+  remember (I_div_2_pow x (S j1)) as y1 eqn:Hy1 .
+  destruct (I_lt_dec x1 y1) as [H1| H1]; [ discriminate Hs1 | clear Hs1 ].
 bbb.
   remember (I_div_lt_pred_i 0 x j1) as bx eqn:Hbx .
   symmetry in Hbx.
