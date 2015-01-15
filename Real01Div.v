@@ -271,9 +271,27 @@ apply I_eqs_iff.
 intros i; apply Hxy.
 Qed.
 
-Theorem I_mul_2_0 : (I_mul_2 0 == 0)%I.
+Add Parametric Morphism : I_div_2
+  with signature I_eqs ==> I_eqs
+  as I_div_2_morph.
 Proof.
+intros x y Hxy.
+rewrite I_eqs_iff in Hxy.
+apply I_eqs_iff.
+intros i; destruct i; [ reflexivity | simpl ].
+apply Hxy.
+Qed.
+
+Theorem I_mul_2_0 : ∀ x, (x == 0)%I → (I_mul_2 x == 0)%I.
+Proof.
+intros x Hx; rewrite Hx.
 apply I_zero_eqs_iff; intros j; reflexivity.
+Qed.
+
+Theorem I_div_2_0 : ∀ x, (x == 0)%I → (I_div_2 x == 0)%I.
+Proof.
+intros x Hx; rewrite Hx.
+apply I_zero_eqs_iff; intros j; destruct j; reflexivity.
 Qed.
 
 Theorem I_div_rem_i_0_l : ∀ y i, (I_div_rem_i 0 y i == 0)%I.
@@ -284,17 +302,16 @@ induction i; intros; [ reflexivity | simpl ].
 remember (I_mul_2 (I_div_rem_i 0 y i)) as x1 eqn:Hx1 .
 destruct (I_lt_dec x1 y) as [H1| H1].
  rewrite Hx1, IHi.
- apply I_mul_2_0.
+ apply I_mul_2_0; reflexivity.
 
  subst x1.
- rewrite IHi, I_mul_2_0 in H1.
- rewrite IHi, I_mul_2_0.
+ rewrite IHi, I_mul_2_0 in H1; [ idtac | reflexivity ].
+ rewrite IHi, I_mul_2_0; [ idtac | reflexivity ].
  apply I_ge_le_iff, I_le_0_r_eqs_iff in H1.
- rewrite H1.
- apply I_sub_diag_eqs.
+ rewrite H1; apply I_sub_diag_eqs.
 Qed.
 
-(* division by 0 is 0 here *)
+(* division by 0 is 0 in this implementation *)
 Theorem I_div_0_r : ∀ x y, (y == 0)%I → (x / y == 0)%I.
 Proof.
 intros x y Hy.
@@ -316,56 +333,44 @@ Qed.
 Theorem I_div_0_l : ∀ x, (0 / x == 0)%I.
 Proof.
 intros x.
-bbb.
 destruct (I_eqs_dec x 0%I) as [Hx| Hx].
  apply I_div_0_r; assumption.
 
- unfold I_eqs, I_compare.
- remember (fst_same (0 / x) (- 0%I) 0) as s1 eqn:Hs1 .
- destruct s1 as [j1| ]; [ exfalso | reflexivity ].
- apply fst_same_sym_iff in Hs1; simpl in Hs1.
- destruct Hs1 as (Hn1, Hs1).
- unfold I_div in Hs1; simpl in Hs1.
+ apply I_zero_eqs_iff; simpl; intros i.
+ unfold I_div; simpl.
  remember (I_div_max_iter_int x) as m eqn:Hm .
  symmetry in Hm.
- destruct m; [ discriminate Hs1 | simpl in Hs1 ].
- destruct (I_lt_dec 0%I x) as [H2| H2].
-  simpl in Hs1.
-  unfold I_div_lt_i in Hs1.
-  remember (I_div_rem_i 0 x j1) as x1 eqn:Hx1 .
-  remember (I_div_2_pow x (S j1)) as y1 eqn:Hy1 .
-  destruct (I_lt_dec x1 y1) as [H1| H1]; [ discriminate Hs1 | clear Hs1 ].
-  subst x1 y1.
-  rewrite I_div_rem_i_0_l in H1.
-  apply I_ge_le_iff, I_le_0_r_eqs_iff in H1.
-  apply I_div_2_pow_eqs_0 in H1.
-  rewrite H1 in H2; revert H2; apply I_lt_irrefl.
+ destruct m; [ reflexivity | simpl ].
+ destruct (I_lt_dec 0%I x) as [H1| H1]; simpl.
+  unfold I_div_lt_i; simpl.
+  remember (I_div_2 x) as y1 eqn:Hy1 .
+  remember (I_mul_2 (I_div_rem_i (I_div_2 0) y1 i)) as x1 eqn:Hx1 .
+  destruct (I_lt_dec x1 y1) as [H2| H2]; [ reflexivity | exfalso ].
+  subst x1.
+  rewrite I_mul_2_0 in H2.
+   apply I_ge_le_iff, I_le_0_r_eqs_iff in H2.
+   subst y1.
+   apply I_div_2_eqs_0 in H2; contradiction.
 
-  apply I_ge_le_iff, I_le_0_r_eqs_iff in H2.
-  contradiction.
-Qed.
+   clear.
+   induction i; [ apply I_div_2_0; reflexivity | idtac ].
+   simpl.
+   remember (I_mul_2 (I_div_rem_i (I_div_2 0) y1 i)) as x1 eqn:Hx1 .
+   destruct (I_lt_dec x1 y1) as [H3| H3].
+    subst x1.
+    apply I_mul_2_0, IHi.
 
-Add Parametric Morphism : I_div_2
-  with signature I_eqs ==> I_eqs
-  as I_div_2_morph.
-Proof.
-intros x y Hxy.
-unfold I_eqs, I_compare in Hxy.
-unfold I_eqs, I_compare; simpl.
-remember (fst_same (I_div_2 x) (- I_div_2 y) 0) as s1 eqn:Hs1 .
-remember (fst_same x (- y) 0) as s2 eqn:Hs2 .
-destruct s1 as [dj1| ]; [ exfalso | reflexivity ].
-apply fst_same_sym_iff in Hs1; simpl in Hs1.
-destruct Hs1 as (Hn1, Ht1).
-destruct dj1; [ discriminate Ht1 | simpl in Ht1 ].
-rewrite Nat.sub_0_r in Ht1.
-destruct s2 as [dj2| ]; [ idtac | clear Hxy ].
- destruct (x .[ dj2]); discriminate Hxy.
+    subst x1.
+    rewrite IHi.
+    rewrite I_mul_2_0; [ idtac | reflexivity ].
+    rewrite I_mul_2_0 in H3.
+     apply I_ge_le_iff, I_le_0_r_eqs_iff in H3.
+     rewrite H3.
+     apply I_sub_diag_eqs.
 
- apply fst_same_sym_iff in Hs2; simpl in Hs2.
- rewrite Hs2, negb_involutive in Ht1.
- symmetry in Ht1.
- revert Ht1; apply no_fixpoint_negb.
+     apply IHi.
+
+  apply I_ge_le_iff, I_le_0_r_eqs_iff in H1; contradiction.
 Qed.
 
 (* mmm... marche pas, j'ai dû me gourer quelque part...
