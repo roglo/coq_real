@@ -83,59 +83,24 @@ value i_div_max_iter_int x y =
   | None → 0
   end.
 
-value i_div_2_inc x b = {rm i = if i = 0 then b else x.rm (i - 1)}.
+value i_div_2_inc x b = {rm i = if i = 0 then b else x.rm (i-1)}.
 value i_div_2 x = i_div_2_inc x False.
 
-value rec i_div_2_pow x n =
-  match n with
-  | 0 → x
-  | _ → let n1 = n - 1 in i_div_2 (i_div_2_pow x n1)
-  end.
-
-(*
-value rec i_div_lt_pred_i x y i =
-  match i with
-  | 0 → (False, (x, i_div_2 y))
-  | _ →
-      let i1 = i - 1 in
-      let (_, (x1, y1)) = i_div_lt_pred_i x y i1 in
-      if i_lt x1 y1 then
-        (False, (x1, i_div_2 y1))
-      else
-        (True, (i_sub x1 y1, i_div_2 y1))
-  end.
-
-value i_div_lt x y = {rm i = fst (i_div_lt_pred_i x y (i + 1))}.
-
-value rec i_div_lim m x y =
-  match m with
-  | 0 → (0, i_zero)
-  | _ →
-      let m1 = m - 1 in
-      if i_lt x y then
-        (0, i_div_lt x y)
-      else
-        let (xi, xf) = i_div_lim m1 (i_sub x y) y in
-        (xi + 1, xf)
-  end.
-
-value i_div x y = i_div_lim (i_div_max_iter_int x y) x y.
-*)
+value i_mul_2 x = {rm i = x.rm (i+1)}.
 
 value rec i_div_rem_i x y i =
   match i with
   | 0 → x
   | _ →
       let i1 = i - 1 in
-      let x1 = i_div_rem_i x y i1 in
-      if i_lt x1 (i_div_2_pow y i) then x1
-      else i_sub x1 (i_div_2_pow y i)
+      let x1 = i_mul_2 (i_div_rem_i x y i1) in
+      if i_lt x1 y then x1 else i_sub x1 y
   end.
 
 value i_div_lt_i x y i =
-  if i_lt (i_div_rem_i x y i) (i_div_2_pow y (i + 1)) then False else True;
+  if i_lt (i_mul_2 (i_div_rem_i x y i)) y then False else True;
 
-value i_div_lt x y = {rm = i_div_lt_i x y}.
+value i_div_lt x y = {rm = i_div_lt_i (i_div_2 x) (i_div_2 y)}.
 
 value rec i_div_int m x y =
   match m with
