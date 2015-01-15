@@ -874,5 +874,6 @@ y₀=0   x / y = x / 0.0y₁y₂y₃…
 
 y₀=1   x / y = x / 0.1y₁y₂y₃ … = z
        x / z = 0.1 …
+*)
 
 Close Scope Z_scope.
