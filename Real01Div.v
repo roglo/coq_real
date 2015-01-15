@@ -271,6 +271,11 @@ apply I_eqs_iff.
 intros i; apply Hxy.
 Qed.
 
+Theorem I_mul_2_0 : (I_mul_2 0 == 0)%I.
+Proof.
+apply I_zero_eqs_iff; intros j; reflexivity.
+Qed.
+
 Theorem I_div_rem_i_0_l : ∀ y i, (I_div_rem_i 0 y i == 0)%I.
 Proof.
 intros y i.
@@ -279,20 +284,14 @@ induction i; intros; [ reflexivity | simpl ].
 remember (I_mul_2 (I_div_rem_i 0 y i)) as x1 eqn:Hx1 .
 destruct (I_lt_dec x1 y) as [H1| H1].
  rewrite Hx1, IHi.
-bbb.
+ apply I_mul_2_0.
 
-intros y i.
-revert y.
-induction i; intros; [ reflexivity | simpl ].
-remember (I_div_rem_i 0 y i) as x1 eqn:Hx1 .
-remember (I_div_2 (I_div_2_pow y i)) as y1 eqn:Hy1 .
-destruct (I_lt_dec x1 y1) as [H1| H1].
- subst x1; apply IHi.
-
- subst x1 y1.
- rewrite IHi in H1; rewrite IHi.
+ subst x1.
+ rewrite IHi, I_mul_2_0 in H1.
+ rewrite IHi, I_mul_2_0.
  apply I_ge_le_iff, I_le_0_r_eqs_iff in H1.
- rewrite H1; apply I_sub_diag_eqs.
+ rewrite H1.
+ apply I_sub_diag_eqs.
 Qed.
 
 (* division by 0 is 0 here *)
@@ -317,6 +316,7 @@ Qed.
 Theorem I_div_0_l : ∀ x, (0 / x == 0)%I.
 Proof.
 intros x.
+bbb.
 destruct (I_eqs_dec x 0%I) as [Hx| Hx].
  apply I_div_0_r; assumption.
 
