@@ -105,6 +105,7 @@ Notation "x / y" := (I_div x y) : I_scope.
 
 (* *)
 
+(*
 Theorem I_div_lt_pred_0_l : ∀ x y b x1 i,
   I_div_lt_pred_i x y i = (b, x1)
   → (x == 0)%I
@@ -159,6 +160,7 @@ induction i; intros; simpl in Hi.
     pose proof (Hs3 O) as H.
     rewrite H1, Hs2 in H; discriminate H.
 Qed.
+*)
 
 Theorem I_add_i_diag : ∀ x i, I_add_i x x i = x.[S i].
 Proof.
@@ -280,6 +282,7 @@ intros x.
 destruct (I_eqs_dec x 0%I) as [Hx| Hx].
  apply I_div_0_r; assumption.
 
+bbb.
  unfold I_eqs, I_compare in Hx.
  unfold I_eqs, I_compare.
  remember (fst_same (0 / x) (- 0%I) 0) as s1 eqn:Hs1 .
