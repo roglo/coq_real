@@ -27,6 +27,10 @@ Arguments I_div_2_inc x%I _.
 Definition I_div_2 x := I_div_2_inc x false.
 Arguments I_div_2 x%I.
 
+Definition I_mul_2 x := {| rm i := x.[S i] |}.
+Arguments I_mul_2 x%I.
+
+(*
 Fixpoint I_div_2_pow x n :=
   match n with
   | O => x
@@ -34,7 +38,6 @@ Fixpoint I_div_2_pow x n :=
   end.
 Arguments I_div_2_pow x%I n%nat.
 
-(*
 Fixpoint I_div_lt_pred_i x y i :=
   match i with
   | O => (false, x)
@@ -67,17 +70,16 @@ Fixpoint I_div_rem_i x y i :=
   match i with
   | O => x
   | S i1 =>
-      let x1 := I_div_rem_i x y i1 in
-      if I_lt_dec x1 (I_div_2_pow y i) then x1
-      else (x1 - I_div_2_pow y i)%I
+      let x1 := I_mul_2 (I_div_rem_i x y i1) in
+      if I_lt_dec x1 y then x1 else (x1 - y)%I
   end.
 Arguments I_div_rem_i x%I y%I i%nat.
 
 Definition I_div_lt_i x y i :=
-  if I_lt_dec (I_div_rem_i x y i) (I_div_2_pow y (S i)) then false else true.
+  if I_lt_dec (I_mul_2 (I_div_rem_i x y i)) y then false else true.
 Arguments I_div_lt_i x%I y%I i%nat.
 
-Definition I_div_lt x y := {| rm := I_div_lt_i x y |}.
+Definition I_div_lt x y := {| rm := I_div_lt_i (I_div_2 x) (I_div_2 y) |}.
 Arguments I_div_lt x%I y%I.
 
 Fixpoint I_div_int m x y :=
@@ -210,6 +212,7 @@ pose proof (Hx (S i)) as H; simpl in H.
 rewrite Nat.sub_0_r in H; assumption.
 Qed.
 
+(*
 Theorem I_div_2_pow_eqs_0 : ∀ x n, (I_div_2_pow x n == 0)%I → (x == 0)%I.
 Proof.
 intros x n Hx.
@@ -219,6 +222,7 @@ simpl in Hx.
 apply I_div_2_eqs_0 in Hx.
 apply IHn; assumption.
 Qed.
+*)
 
 Theorem two_power_neq_0 : ∀ n, two_power n ≠ O.
 Proof.
@@ -257,8 +261,26 @@ induction i; intros; simpl in Hi.
 Qed.
 *)
 
+Add Parametric Morphism : I_mul_2
+  with signature I_eqs ==> I_eqs
+  as I_mul_2_morph.
+Proof.
+intros x y Hxy.
+rewrite I_eqs_iff in Hxy.
+apply I_eqs_iff.
+intros i; apply Hxy.
+Qed.
+
 Theorem I_div_rem_i_0_l : ∀ y i, (I_div_rem_i 0 y i == 0)%I.
 Proof.
+intros y i.
+revert y.
+induction i; intros; [ reflexivity | simpl ].
+remember (I_mul_2 (I_div_rem_i 0 y i)) as x1 eqn:Hx1 .
+destruct (I_lt_dec x1 y) as [H1| H1].
+ rewrite Hx1, IHi.
+bbb.
+
 intros y i.
 revert y.
 induction i; intros; [ reflexivity | simpl ].
