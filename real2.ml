@@ -133,7 +133,6 @@ value rec i_div_rem_i x y i =
   end.
 
 value i_div_lt_i x y i =
-let _ = printf "i_div_lt_i %d\n%!" i in
   if i_lt (i_div_rem_i x y i) (i_div_2_pow y (i + 1)) then False else True;
 
 value i_div_lt x y = {rm = i_div_lt_i x y}.
