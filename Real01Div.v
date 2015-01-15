@@ -218,50 +218,72 @@ induction i; intros; simpl in Hi.
 Qed.
 *)
 
-Theorem I_div_0_l : ∀ x, (x ≠≠ 0)%I → (0 / x == 0)%I.
+(* division by 0 is 0 here *)
+Theorem I_div_0_r : ∀ x y, (y == 0)%I → (x / y == 0)%I.
 Proof.
-intros x Hx.
-unfold I_eqs, I_compare in Hx.
-unfold I_eqs, I_compare.
-remember (fst_same (0 / x) (- 0%I) 0) as s1 eqn:Hs1 .
-destruct s1 as [j1| ]; [ exfalso | reflexivity ].
-apply fst_same_sym_iff in Hs1; simpl in Hs1.
-destruct Hs1 as (Hn1, Hs1).
-unfold I_div in Hs1; simpl in Hs1.
-remember (I_div_max_iter_int x) as m eqn:Hm .
+intros x y Hy.
+rewrite I_eqs_iff in Hy; simpl in Hy.
+apply I_eqs_iff; simpl; intros i.
+unfold I_div; simpl.
+remember (I_div_max_iter_int y) as m eqn:Hm .
 symmetry in Hm.
-destruct m; [ discriminate Hs1 | simpl in Hs1 ].
-destruct (I_lt_dec 0%I x) as [H2| H2].
- simpl in Hs1.
- remember (I_div_lt_pred_i 0 x j1) as bx eqn:Hbx .
- symmetry in Hbx.
- destruct bx as (b, x1); simpl in Hs1.
- remember (I_div_2 (I_div_2_pow x j1)) as y1 eqn:Hy1 .
- destruct (I_lt_dec x1 y1) as [H3| H3]; [ discriminate Hs1 | clear Hs1 ].
- remember (fst_same x (- 0%I) 0) as s2 eqn:Hs2 .
- destruct s2 as [j2| ].
-  clear Hx.
-  apply fst_same_sym_iff in Hs2; simpl in Hs2.
-  destruct Hs2 as (Hn2, Ht2).
-  remember Hbx as H; clear HeqH.
-  apply I_div_lt_pred_0_l in H; [ idtac | reflexivity ].
-  rewrite H, Hy1 in H3.
-  apply I_ge_le_iff, I_le_0_r_eqs_iff in H3.
-  apply I_div_2_eqs_0, I_div_2_pow_eqs_0 in H3.
-  rewrite H3 in H2.
-  revert H2; apply I_lt_irrefl.
+unfold I_div_max_iter_int in Hm.
+remember (fst_same y I_ones 0) as s2 eqn:Hs2 .
+destruct s2 as [dj2| ].
+ apply fst_same_sym_iff in Hs2; simpl in Hs2.
+ destruct Hs2 as (Hn2, Ht2).
+ rewrite Hy in Ht2; discriminate Ht2.
 
-  apply Hx; reflexivity.
+ subst m; reflexivity.
+Qed.
 
- remember (fst_same x (- 0%I) 0) as s2 eqn:Hs2 .
- destruct s2 as [j2| ].
-  apply fst_same_sym_iff in Hs2; simpl in Hs2.
-  destruct Hs2 as (Hn2, Ht2).
-  apply I_ge_le_iff, I_le_0_r_eqs_iff in H2.
-  rewrite I_zero_eqs_iff in H2.
-  rewrite H2 in Ht2; discriminate Ht2.
+Theorem I_div_0_l : ∀ x, (0 / x == 0)%I.
+Proof.
+intros x.
+destruct (I_eqs_dec x 0%I) as [Hx| Hx].
+ apply I_div_0_r; assumption.
 
-  apply Hx; reflexivity.
+ unfold I_eqs, I_compare in Hx.
+ unfold I_eqs, I_compare.
+ remember (fst_same (0 / x) (- 0%I) 0) as s1 eqn:Hs1 .
+ destruct s1 as [j1| ]; [ exfalso | reflexivity ].
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ destruct Hs1 as (Hn1, Hs1).
+ unfold I_div in Hs1; simpl in Hs1.
+ remember (I_div_max_iter_int x) as m eqn:Hm .
+ symmetry in Hm.
+ destruct m; [ discriminate Hs1 | simpl in Hs1 ].
+ destruct (I_lt_dec 0%I x) as [H2| H2].
+  simpl in Hs1.
+  remember (I_div_lt_pred_i 0 x j1) as bx eqn:Hbx .
+  symmetry in Hbx.
+  destruct bx as (b, x1); simpl in Hs1.
+  remember (I_div_2 (I_div_2_pow x j1)) as y1 eqn:Hy1 .
+  destruct (I_lt_dec x1 y1) as [H3| H3]; [ discriminate Hs1 | clear Hs1 ].
+  remember (fst_same x (- 0%I) 0) as s2 eqn:Hs2 .
+  destruct s2 as [j2| ].
+   clear Hx.
+   apply fst_same_sym_iff in Hs2; simpl in Hs2.
+   destruct Hs2 as (Hn2, Ht2).
+   remember Hbx as H; clear HeqH.
+   apply I_div_lt_pred_0_l in H; [ idtac | reflexivity ].
+   rewrite H, Hy1 in H3.
+   apply I_ge_le_iff, I_le_0_r_eqs_iff in H3.
+   apply I_div_2_eqs_0, I_div_2_pow_eqs_0 in H3.
+   rewrite H3 in H2.
+   revert H2; apply I_lt_irrefl.
+
+   apply Hx; reflexivity.
+
+  remember (fst_same x (- 0%I) 0) as s2 eqn:Hs2 .
+  destruct s2 as [j2| ].
+   apply fst_same_sym_iff in Hs2; simpl in Hs2.
+   destruct Hs2 as (Hn2, Ht2).
+   apply I_ge_le_iff, I_le_0_r_eqs_iff in H2.
+   rewrite I_zero_eqs_iff in H2.
+   rewrite H2 in Ht2; discriminate Ht2.
+
+   apply Hx; reflexivity.
 Qed.
 
 Add Parametric Morphism : I_div_2

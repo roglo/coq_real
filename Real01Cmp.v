@@ -793,4 +793,72 @@ destruct (I_eqs_dec x z) as [H1| H1].
   exfalso; apply Hxy; reflexivity.
 Qed.
 
+(* *)
+
+Add Parametric Morphism : I_add
+  with signature I_eqs ==> I_eqs ==> I_eqs
+  as I_add_eqs_morph.
+Proof.
+intros x y Hxy z t Hzt.
+rewrite I_eqs_iff in Hxy.
+rewrite I_eqs_iff in Hzt.
+apply I_eqs_iff; simpl; intros i.
+unfold I_add_i; simpl.
+rewrite Hxy, Hzt.
+f_equal.
+unfold carry; simpl.
+remember (fst_same x z (S i)) as s1 eqn:Hs1 .
+remember (fst_same y t (S i)) as s2 eqn:Hs2 .
+destruct s1 as [dj1| ].
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ destruct Hs1 as (Hn1, Ht1).
+ destruct s2 as [dj2| ].
+  apply fst_same_sym_iff in Hs2; simpl in Hs2.
+  destruct Hs2 as (Hn2, Ht2).
+  destruct (lt_eq_lt_dec dj1 dj2) as [[H1| H1]| H1].
+   remember H1 as H; clear HeqH.
+   apply Hn2 in H.
+   rewrite Hxy, Hzt, H in Ht1.
+   exfalso; revert Ht1; apply no_fixpoint_negb.
+
+   subst dj2.
+   apply Hxy.
+
+   remember H1 as H; clear HeqH.
+   apply Hn1 in H.
+   rewrite Hxy, Hzt, Ht2 in H.
+   symmetry in H.
+   exfalso; revert H; apply no_fixpoint_negb.
+
+  apply fst_same_sym_iff in Hs2; simpl in Hs2.
+  rewrite Hxy, Hzt, Hs2 in Ht1.
+  exfalso; revert Ht1; apply no_fixpoint_negb.
+
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ destruct s2 as [dj2| ]; [ idtac | reflexivity ].
+ apply fst_same_sym_iff in Hs2; simpl in Hs2.
+ destruct Hs2 as (Hn2, Ht2).
+ rewrite <- Hxy, <- Hzt, Hs1 in Ht2.
+ exfalso; revert Ht2; apply no_fixpoint_negb.
+Qed.
+
+Add Parametric Morphism : I_opp
+  with signature I_eqs ==> I_eqs
+  as I_opp_eqs_morph.
+Proof.
+intros x y Hxy.
+rewrite I_eqs_iff in Hxy; simpl in Hxy.
+apply I_eqs_iff; simpl; intros i.
+rewrite Hxy; reflexivity.
+Qed.
+
+Add Parametric Morphism : I_sub
+  with signature I_eqs ==> I_eqs ==> I_eqs
+  as I_sub_eqs_morph.
+Proof.
+intros x y Hxy z t Hzt.
+unfold I_sub.
+rewrite Hxy, Hzt; reflexivity.
+Qed.
+
 Close Scope nat_scope.
