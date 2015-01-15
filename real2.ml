@@ -3,6 +3,9 @@ open Printf;
 type real_mod_1 = { rm : int → bool };
 
 value di_max = 30;
+value mm = 50;
+value mm1 = ref 11;
+
 value fst_same x y i =
   loop 0 where rec loop di =
     if x.rm (i + di) = y.rm (i + di) then Some di
@@ -36,7 +39,6 @@ value i_compare x y =
 
 value i_lt x y = i_compare x y = Lt;
 
-value mm = 50;
 value f2am x =
   let x = mod_float x 1.0 in
   loop mm x [] where rec loop i x list =
@@ -62,7 +64,7 @@ value f2rm x =
     let a = f2am x in
     {rm i = if i < Array.length a then a.(i) else False};
 
-value rm2f x = am2f (Array.init 10(*mm*) x.rm);
+value rm2f x = am2f (Array.init mm1.val x.rm);
 
 value rec two_power n =
   if n < 0 then invalid_arg "two_power" else
@@ -84,6 +86,13 @@ value i_div_max_iter_int x y =
 value i_div_2_inc x b = {rm i = if i = 0 then b else x.rm (i - 1)}.
 value i_div_2 x = i_div_2_inc x False.
 
+value rec i_div_2_pow x n =
+  match n with
+  | 0 → x
+  | _ → let n1 = n - 1 in i_div_2 (i_div_2_pow x n1)
+  end.
+
+(*
 value rec i_div_lt_pred_i x y i =
   match i with
   | 0 → (False, (x, i_div_2 y))
@@ -111,6 +120,43 @@ value rec i_div_lim m x y =
   end.
 
 value i_div x y = i_div_lim (i_div_max_iter_int x y) x y.
+*)
+
+value rec i_div_rem_i x y i =
+  match i with
+  | 0 → x
+  | _ →
+      let i1 = i - 1 in
+      let x1 = i_div_rem_i x y i1 in
+      if i_lt x1 (i_div_2_pow y i) then x1
+      else i_sub x1 (i_div_2_pow y i)
+  end.
+
+value i_div_lt_i x y i =
+let _ = printf "i_div_lt_i %d\n%!" i in
+  if i_lt (i_div_rem_i x y i) (i_div_2_pow y (i + 1)) then False else True;
+
+value i_div_lt x y = {rm = i_div_lt_i x y}.
+
+value rec i_div_int m x y =
+  match m with
+  | 0 → 0
+  | _ →
+      let m1 = m - 1 in
+      if i_lt x y then 0
+      else i_div_int m1 (i_sub x y) y + 1
+  end.
+
+value rec i_div_frac m x y =
+  match m with
+  | 0 → i_zero
+  | _ →
+      let m1 = m - 1 in
+      if i_lt x y then i_div_lt x y
+      else i_div_frac m1 (i_sub x y) y
+  end.
+
+value i_div x y = i_div_frac (i_div_max_iter_int x y) x y.
 
 (**)
 

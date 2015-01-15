@@ -34,6 +34,7 @@ Fixpoint I_div_2_pow x n :=
   end.
 Arguments I_div_2_pow x%I n%nat.
 
+(*
 Fixpoint I_div_lt_pred_i x y i :=
   match i with
   | O => (false, x)
@@ -49,7 +50,6 @@ Arguments I_div_lt_pred_i x%I y%I i%nat.
 Definition I_div_lt x y := {| rm i := fst (I_div_lt_pred_i x y (S i)) |}.
 Arguments I_div_lt x%I y%I.
 
-(*
 Fixpoint I_div_lim m x y :=
   match m with
   | O => (O, I_zero)
@@ -62,6 +62,23 @@ Fixpoint I_div_lim m x y :=
   end.
 Arguments I_div_lim m%nat x%I y%I.
 *)
+
+Fixpoint I_div_rem_i x y i :=
+  match i with
+  | O => x
+  | S i1 =>
+      let x1 := I_div_rem_i x y i1 in
+      if I_lt_dec x1 (I_div_2_pow y i) then x1
+      else (x1 - I_div_2_pow y i)%I
+  end.
+Arguments I_div_rem_i x%I y%I i%nat.
+
+Definition I_div_lt_i x y i :=
+  if I_lt_dec (I_div_rem_i x y i) (I_div_2_pow y (S i)) then false else true.
+Arguments I_div_lt_i x%I y%I i%nat.
+
+Definition I_div_lt x y := {| rm := I_div_lt_i x y |}.
+Arguments I_div_lt x%I y%I.
 
 Fixpoint I_div_int m x y :=
   match m with
