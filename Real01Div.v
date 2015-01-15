@@ -49,6 +49,7 @@ Arguments I_div_lt_pred_i x%I y%I i%nat.
 Definition I_div_lt x y := {| rm i := fst (I_div_lt_pred_i x y (S i)) |}.
 Arguments I_div_lt x%I y%I.
 
+(*
 Fixpoint I_div_lim m x y :=
   match m with
   | O => (O, I_zero)
@@ -60,8 +61,27 @@ Fixpoint I_div_lim m x y :=
         (S xi, xf)
   end.
 Arguments I_div_lim m%nat x%I y%I.
+*)
 
-Definition I_div x y := snd (I_div_lim (I_div_max_iter_int y) x y).
+Fixpoint I_div_int m x y :=
+  match m with
+  | O => O
+  | S m1 =>
+      if I_lt_dec x y then O
+      else S (I_div_int m1 (I_sub x y) y)
+  end.
+Arguments I_div_int m%nat x%I y%I.
+
+Fixpoint I_div_frac m x y :=
+  match m with
+  | O => 0%I
+  | S m1 =>
+      if I_lt_dec x y then I_div_lt x y
+      else I_div_frac m1 (I_sub x y) y
+  end.
+Arguments I_div_frac m%nat x%I y%I.
+
+Definition I_div x y := I_div_frac (I_div_max_iter_int y) x y.
 Arguments I_div x%I y%I.
 
 Notation "x / y" := (I_div x y) : I_scope.
