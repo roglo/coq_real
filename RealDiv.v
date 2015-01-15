@@ -384,7 +384,7 @@ destruct s1 as [dj1| ].
      apply I_div_lt_pred_0_l in H; [ simpl in H | reflexivity ].
      rename H into Hx1.
      rewrite Hx1, Hy1 in H2.
-     apply I_ge_le_iff, I_le_0_r_eqs_iff in H2.
+     apply I_ge_0_l_eqs_iff in H2.
      apply I_div_2_eqs_0, I_div_2_pow_eqs_0 in H2.
      rewrite H2 in H1.
      revert H1; apply I_lt_irrefl.
@@ -394,7 +394,7 @@ destruct s1 as [dj1| ].
       apply I_div_lt_pred_0_l in H; [ idtac | assumption ].
       rename H into Hx1.
       rewrite Hx1, Hy1 in H2.
-      apply I_ge_le_iff, I_le_0_r_eqs_iff in H2.
+      apply I_ge_0_l_eqs_iff in H2.
       apply I_div_2_eqs_0, I_div_2_pow_eqs_0 in H2.
       rewrite Hmxy, H2 in H1.
       revert H1; apply I_lt_irrefl.
@@ -405,7 +405,7 @@ destruct s1 as [dj1| ].
    remember Hmxy as H; clear HeqH.
    apply R_div_equiv_0_l in H; [ idtac | apply R_abs_0 ].
    rewrite H in H1; rename H into Hmx.
-   apply I_ge_le_iff, I_le_0_r_eqs_iff in H1.
+   apply I_ge_0_l_eqs_iff in H1.
    unfold I_div_max_iter_int in Hm2.
    remember (fst_same my I_ones 0) as s2 eqn:Hs2 .
    destruct s2 as [dj2| ]; [ idtac | discriminate Hm2 ].
@@ -450,7 +450,7 @@ destruct s1 as [dj1| ].
      discriminate Hrf.
 
      rewrite Hx1 in H3.
-     apply I_ge_le_iff, I_le_0_r_eqs_iff in H3.
+     apply I_ge_0_l_eqs_iff in H3.
      apply I_div_2_eqs_0 in H3.
      rewrite H3 in H2.
      exfalso; revert H2; apply I_lt_irrefl.
@@ -461,13 +461,13 @@ destruct s1 as [dj1| ].
      remember Hbx as H; clear HeqH.
      apply I_div_lt_pred_0_l in H; [ idtac | assumption ].
      rewrite H, Hy1 in H2; rename H into Hx1.
-     apply I_ge_le_iff, I_le_0_r_eqs_iff in H2.
+     apply I_ge_0_l_eqs_iff in H2.
      apply I_div_2_eqs_0, I_div_2_pow_eqs_0 in H2.
      rewrite H2 in H1.
      exfalso; revert H1; apply I_lt_irrefl.
 
    rewrite Hmx in H1.
-   apply I_ge_le_iff, I_le_0_r_eqs_iff in H1.
+   apply I_ge_0_l_eqs_iff in H1.
    unfold I_div_max_iter_int in Hm2; simpl in Hm2.
    remember (fst_same my I_ones 0) as s2 eqn:Hs2 .
    destruct s2 as [dj2| ]; [ idtac | discriminate Hm2 ].
@@ -919,7 +919,7 @@ destruct m2; simpl in Hrif.
   apply R_div_equiv_0_l in H; [ idtac | apply R_abs_0 ].
   rename H into Hmx.
   rewrite Hmx in H1.
-  apply I_ge_le_iff, I_le_0_r_eqs_iff in H1.
+  apply I_ge_0_l_eqs_iff in H1.
   symmetry in Hm.
   destruct m.
    exfalso; revert Hm; apply R_div_equiv_max_iter_abs_ne_0.
@@ -1032,12 +1032,12 @@ destruct s1 as [dj1| ]; simpl.
       discriminate H.
 
       clear H.
-      apply I_ge_le_iff, I_le_0_r_eqs_iff in H2.
+      apply I_ge_0_l_eqs_iff in H2.
       apply I_div_2_eqs_0 in H2.
       rewrite H2 in H1.
       revert H1; apply I_lt_irrefl.
 
-     apply I_ge_le_iff, I_le_0_r_eqs_iff in H1.
+     apply I_ge_0_l_eqs_iff in H1.
      apply Hx, R_zero_iff.
      unfold R_abs in Hc; simpl in Hc.
      remember (R_is_neg x) as nx eqn:Hnx .
@@ -1071,13 +1071,13 @@ destruct s1 as [dj1| ]; simpl.
 
       clear H.
       rewrite Hxm in H2.
-      apply I_ge_le_iff, I_le_0_r_eqs_iff in H2.
+      apply I_ge_0_l_eqs_iff in H2.
       apply I_div_2_eqs_0 in H2.
       rewrite H2 in H1.
       revert H1; apply I_lt_irrefl.
 
      rewrite Hxm in H1.
-     apply I_ge_le_iff, I_le_0_r_eqs_iff in H1.
+     apply I_ge_0_l_eqs_iff in H1.
      rename H into Hrf.
      remember Hxym as H; clear HeqH.
      rewrite <- Nat.add_1_r in Hm.
@@ -1199,14 +1199,14 @@ induction m2; intros; simpl in Hrif.
     remember Hbx as H; clear HeqH.
     apply I_div_lt_pred_0_l in H.
      rewrite H, Hy1 in H2.
-     apply I_ge_le_iff, I_le_0_r_eqs_iff in H2.
+     apply I_ge_0_l_eqs_iff in H2.
      apply I_div_2_eqs_0, I_div_2_pow_eqs_0 in H2.
      rewrite H2 in H1; revert H1; apply I_lt_irrefl.
 
      apply I_sub_diag_eqs.
 
     rewrite I_sub_diag_eqs in H1.
-    rewrite I_ge_le_iff, I_le_0_r_eqs_iff in H1.
+    rewrite I_ge_0_l_eqs_iff in H1.
     unfold I_div_max_iter_int in Hm2; simpl in Hm2.
     remember (fst_same mx I_ones 0) as s2 eqn:Hs2 .
     destruct s2 as [j2| ]; [ idtac | discriminate Hm2 ].
@@ -1345,7 +1345,7 @@ induction m2; intros; simpl in Hrif.
     destruct xif2 as (xi2, xf2).
     injection Hxif; clear Hxif; intros; subst xi xf.
     rewrite I_sub_diag_eqs in H1.
-    apply I_ge_le_iff, I_le_0_r_eqs_iff in H1.
+    apply I_ge_0_l_eqs_iff in H1.
     unfold I_div_max_iter_int in Hm2.
     remember (fst_same mx I_ones 0) as s1 eqn:Hs1 .
     destruct s1 as [dj1| ]; [ idtac | discriminate Hm2 ].

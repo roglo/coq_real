@@ -628,6 +628,13 @@ split; intros H.
  rewrite H; apply I_le_refl.
 Qed.
 
+Theorem I_ge_0_l_eqs_iff : ∀ x, (0 ≥ x)%I ↔ (x == 0)%I.
+Proof.
+intros x.
+rewrite I_ge_le_iff.
+apply I_le_0_r_eqs_iff.
+Qed.
+
 Theorem I_lt_nge : ∀ x y, (x < y)%I ↔ ¬(y ≤ x)%I.
 Proof.
 intros x y.

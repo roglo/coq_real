@@ -307,7 +307,7 @@ destruct (I_lt_dec x1 y) as [H1| H1].
  subst x1.
  rewrite IHi, I_mul_2_0 in H1; [ idtac | reflexivity ].
  rewrite IHi, I_mul_2_0; [ idtac | reflexivity ].
- apply I_ge_le_iff, I_le_0_r_eqs_iff in H1.
+ apply I_ge_0_l_eqs_iff in H1.
  rewrite H1; apply I_sub_diag_eqs.
 Qed.
 
@@ -348,7 +348,7 @@ destruct (I_eqs_dec x 0%I) as [Hx| Hx].
   destruct (I_lt_dec x1 y1) as [H2| H2]; [ reflexivity | exfalso ].
   subst x1.
   rewrite I_mul_2_0 in H2.
-   apply I_ge_le_iff, I_le_0_r_eqs_iff in H2.
+   apply I_ge_0_l_eqs_iff in H2.
    subst y1.
    apply I_div_2_eqs_0 in H2; contradiction.
 
@@ -364,13 +364,13 @@ destruct (I_eqs_dec x 0%I) as [Hx| Hx].
     rewrite IHi.
     rewrite I_mul_2_0; [ idtac | reflexivity ].
     rewrite I_mul_2_0 in H3.
-     apply I_ge_le_iff, I_le_0_r_eqs_iff in H3.
+     apply I_ge_0_l_eqs_iff in H3.
      rewrite H3.
      apply I_sub_diag_eqs.
 
      apply IHi.
 
-  apply I_ge_le_iff, I_le_0_r_eqs_iff in H1; contradiction.
+  apply I_ge_0_l_eqs_iff in H1; contradiction.
 Qed.
 
 (* mmm... marche pas, j'ai dû me gourer quelque part...
