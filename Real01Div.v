@@ -30,6 +30,12 @@ Arguments I_div_2 x%I.
 Definition I_mul_2 x := {| rm i := x.[S i] |}.
 Arguments I_mul_2 x%I.
 
+(*
+  Remainder of the division x/y after i bimals of the quotient
+             | x                   if i = 0
+   R_x,y,i = | 2 * R_x,y,i-1       if 2 * R_x,y,i-1 < y
+             | 2 * R_x,y,i-1 - y   if 2 * R_x,y,i-1 ≥ y
+ *)
 Fixpoint I_div_rem_i x y i :=
   match i with
   | O => x
@@ -39,13 +45,16 @@ Fixpoint I_div_rem_i x y i :=
   end.
 Arguments I_div_rem_i x%I y%I i%nat.
 
+(* i-th bimal of the division x/y *)
 Definition I_div_lt_i x y i :=
   if I_lt_dec (I_mul_2 (I_div_rem_i x y i)) y then false else true.
 Arguments I_div_lt_i x%I y%I i%nat.
 
+(* division x/y when x<y *)
 Definition I_div_lt x y := {| rm := I_div_lt_i (I_div_2 x) (I_div_2 y) |}.
 Arguments I_div_lt x%I y%I.
 
+(* integer part of division x/y *)
 Fixpoint I_div_int m x y :=
   match m with
   | O => O
@@ -55,6 +64,7 @@ Fixpoint I_div_int m x y :=
   end.
 Arguments I_div_int m%nat x%I y%I.
 
+(* fractionnal part of division x/y with limited iterations *)
 Fixpoint I_div_frac m x y :=
   match m with
   | O => 0%I
@@ -64,6 +74,7 @@ Fixpoint I_div_frac m x y :=
   end.
 Arguments I_div_frac m%nat x%I y%I.
 
+(* fractional part of divition x/y *)
 Definition I_div x y := I_div_frac (I_div_max_iter_int y) x y.
 Arguments I_div x%I y%I.
 
