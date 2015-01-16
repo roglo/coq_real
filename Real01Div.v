@@ -30,6 +30,8 @@ Arguments I_div_2 x%I.
 Definition I_mul_2 x := {| rm i := x.[S i] |}.
 Arguments I_mul_2 x%I.
 
+Notation "½ x" := (I_div_2 x) (at level 40) : I_scope.
+
 (*
   Remainder of division x/y (x<y) before evaluating i-th bimal (0th=1st
   after dot)
@@ -453,7 +455,6 @@ destruct dj1; simpl in Ht1.
         clear H3; rename H into Hx_2.
         simpl in Hx_2.
         unfold I_div_lt_i in Hx_2; simpl in Hx_2.
-Abort. (* à voir...
 bbb.
 
 (*1*)
