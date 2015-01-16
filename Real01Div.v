@@ -78,7 +78,7 @@ Fixpoint I_div_frac m x y :=
   end.
 Arguments I_div_frac m%nat x%I y%I.
 
-(* fractional part of divition x/y *)
+(* fractional part of division x/y *)
 Definition I_div x y := I_div_frac (I_div_max_iter_int y) x y.
 Arguments I_div x%I y%I.
 
