@@ -690,6 +690,39 @@ destruct dj1; simpl in Ht1.
         rewrite <- Hy1 in Hx_1.
         destruct (I_lt_dec (I_mul_2 (I_div_2 x)) y1) as [H2| H2].
          rewrite Hx_1 in Hxj2; discriminate Hxj2.
+
+         unfold I_ge, I_compare in H2.
+         remember (fst_same (I_mul_2 (I_div_2 x)) (- y1) 0) as s4 eqn:Hs4 .
+         destruct s4 as [dj4| ]; [ idtac | clear H2 ].
+          simpl in H2.
+          rewrite Nat.sub_0_r in H2.
+          remember (x .[ dj4]) as b eqn:Hxj5 .
+          symmetry in Hxj5.
+          destruct b; [ clear H2 | exfalso; apply H2; reflexivity ].
+          apply fst_same_sym_iff in Hs4; simpl in Hs4.
+          rewrite Nat.sub_0_r in Hs4.
+          destruct Hs4 as (Hn4, Ht4).
+          destruct dj4; [ rewrite Hx0 in Hxj5; discriminate Hxj5 | idtac ].
+          pose proof (Hn4 O (Nat.lt_0_succ dj4)) as H; simpl in H.
+          rewrite negb_involutive in H.
+          rewrite Hy1 in H; simpl in H.
+          clear H.
+          rewrite Hy1 in Ht4; simpl in Ht4.
+          rewrite Nat.sub_0_r in Ht4.
+          rewrite Hxj5 in Ht4.
+          apply negb_sym in Ht4; simpl in Ht4.
+          destruct dj4; [ assumption | idtac ].
+          destruct dj4; [ rewrite Ht3 in Ht4; discriminate Ht4 | idtac ].
+          assert (2 < S (S (S dj4)))%nat as H by omega.
+          apply Hn4 in H; simpl in H.
+          rewrite Hy1 in H; simpl in H.
+          rewrite Hxj3, Ht3 in H; simpl in H.
+          discriminate H.
+
+          apply fst_same_sym_iff in Hs4; simpl in Hs4.
+          rewrite Hy1 in Hs4; simpl in Hs4.
+          pose proof (Hs4 2%nat) as H; simpl in H.
+          rewrite Hxj3, Ht3 in H; discriminate H.
 bbb.
 
 (*1*)
