@@ -723,6 +723,18 @@ destruct dj1; simpl in Ht1.
           rewrite Hy1 in Hs4; simpl in Hs4.
           pose proof (Hs4 2%nat) as H; simpl in H.
           rewrite Hxj3, Ht3 in H; discriminate H.
+
+        assert (2 < S (S (S dj1)))%nat as H by omega.
+        apply Hn1 in H; simpl in H.
+        rewrite negb_involutive in H.
+        unfold I_div in H; simpl in H.
+        rewrite Hm in H; simpl in H.
+        apply I_lt_nge in H1.
+        destruct (I_lt_dec x y) as [H3| H3]; [ idtac | contradiction ].
+        apply I_lt_nge in H1.
+        clear H3; rename H into Hx_2.
+        simpl in Hx_2.
+        unfold I_div_lt_i in Hx_2; simpl in Hx_2.
 bbb.
 
 (*1*)
