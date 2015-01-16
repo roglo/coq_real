@@ -635,7 +635,7 @@ rewrite I_ge_le_iff.
 apply I_le_0_r_eqs_iff.
 Qed.
 
-Theorem I_lt_nge : ∀ x y, (x < y)%I ↔ ¬(y ≤ x)%I.
+Theorem I_lt_nle : ∀ x y, (x < y)%I ↔ ¬(y ≤ x)%I.
 Proof.
 intros x y.
 unfold I_lt, I_le.
@@ -697,6 +697,19 @@ split; intros H.
    rewrite Hs2, <- Hy1 in Ht1; discriminate Ht1.
 
   exfalso; apply H; intros I; discriminate I.
+Qed.
+
+Theorem I_lt_nge : ∀ x y, (x < y)%I ↔ ¬(x ≥ y)%I.
+Proof.
+intros x y.
+split; intros H.
+ apply I_lt_nle in H.
+ intros H1; apply H.
+ apply I_ge_le_iff; assumption.
+
+ apply I_lt_nle.
+ intros H1; apply H.
+ apply I_ge_le_iff; assumption.
 Qed.
 
 Theorem I_lt_irrefl : ∀ x, ¬(x < x)%I.
@@ -782,7 +795,7 @@ Proof.
 intros x y z Hxy Hyz.
 destruct (I_eqs_dec x z) as [H1| H1].
  rewrite H1 in Hxy.
- apply I_lt_nge in Hxy.
+ apply I_lt_nle in Hxy.
  unfold I_le in Hxy.
  unfold I_lt in Hyz.
  exfalso; apply Hxy; intros H; rewrite Hyz in H.
