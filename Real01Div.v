@@ -449,6 +449,7 @@ destruct dj1; simpl in Ht1.
         clear H3; rename H into Hx_2.
         simpl in Hx_2.
         unfold I_div_lt_i in Hx_2; simpl in Hx_2.
+Abort. (* à voir...
 bbb.
 
 (*1*)
