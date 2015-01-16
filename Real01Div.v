@@ -30,42 +30,6 @@ Arguments I_div_2 x%I.
 Definition I_mul_2 x := {| rm i := x.[S i] |}.
 Arguments I_mul_2 x%I.
 
-(*
-Fixpoint I_div_2_pow x n :=
-  match n with
-  | O => x
-  | S n1 => I_div_2 (I_div_2_pow x n1)
-  end.
-Arguments I_div_2_pow x%I n%nat.
-
-Fixpoint I_div_lt_pred_i x y i :=
-  match i with
-  | O => (false, x)
-  | S i1 =>
-      let x1 := snd (I_div_lt_pred_i x y i1) in
-      if I_lt_dec x1 (I_div_2_pow y i) then
-        (false, x1)
-      else
-        (true, I_sub x1 (I_div_2_pow y i))
-  end.
-Arguments I_div_lt_pred_i x%I y%I i%nat.
-
-Definition I_div_lt x y := {| rm i := fst (I_div_lt_pred_i x y (S i)) |}.
-Arguments I_div_lt x%I y%I.
-
-Fixpoint I_div_lim m x y :=
-  match m with
-  | O => (O, I_zero)
-  | S m1 =>
-      if I_lt_dec x y then
-        (O, I_div_lt x y)
-      else
-        let (xi, xf) := I_div_lim m1 (I_sub x y) y in
-        (S xi, xf)
-  end.
-Arguments I_div_lim m%nat x%I y%I.
-*)
-
 Fixpoint I_div_rem_i x y i :=
   match i with
   | O => x
@@ -106,63 +70,6 @@ Arguments I_div x%I y%I.
 Notation "x / y" := (I_div x y) : I_scope.
 
 (* *)
-
-(*
-Theorem I_div_lt_pred_0_l : ∀ x y b x1 i,
-  I_div_lt_pred_i x y i = (b, x1)
-  → (x == 0)%I
-  → (x1 == 0)%I.
-Proof.
-intros x y b x1 i Hi Hx.
-revert x y b x1 Hi Hx.
-induction i; intros; simpl in Hi.
- injection Hi; intros; subst; assumption.
-
- remember (I_div_lt_pred_i x y i) as bx eqn:Hbx .
- symmetry in Hbx.
- destruct bx as (b2, x2); simpl in Hi.
- remember (I_div_2 (I_div_2_pow y i)) as y2 eqn:Hy2.
- destruct (I_lt_dec x2 y2) as [H1| H1].
-  injection Hi; clear Hi; intros; subst b x1.
-  eapply IHi; eassumption.
-
-  injection Hi; clear Hi; intros; subst b x1.
-  remember Hbx as H; clear HeqH.
-  apply IHi in H; try assumption.
-  rewrite H in H1.
-  apply I_ge_le_iff, I_le_0_r in H1.
-  unfold I_eqs, I_compare; simpl.
-  remember (fst_same (x2 - y2) (- 0%I) 0) as s1 eqn:Hs1 .
-  destruct s1 as [j1| ]; [ exfalso | reflexivity ].
-  apply fst_same_sym_iff in Hs1; simpl in Hs1.
-  destruct Hs1 as (Hn1, Ht1).
-  unfold I_add_i in Ht1; simpl in Ht1.
-  apply I_zero_iff in H1.
-  unfold I_eqs, I_compare in H.
-  remember (fst_same x2 (- 0%I) 0) as s2 eqn:Hs2 .
-  destruct s2 as [j| ]; [ destruct (x2 .[ j]); discriminate H | idtac ].
-  apply fst_same_sym_iff in Hs2; simpl in Hs2.
-  clear H.
-  rewrite Hs2, xorb_false_l in Ht1.
-  unfold carry in Ht1; simpl in Ht1.
-  remember (fst_same x2 (- y2) (S j1)) as s3 eqn:Hs3 .
-  destruct s3 as [dj3| ].
-   apply fst_same_sym_iff in Hs3; simpl in Hs3.
-   destruct Hs3 as (Hn3, Ht3).
-   rewrite Hs2, xorb_false_r in Ht1.
-   destruct H1 as [H1| H1].
-    rewrite Hs2, H1 in Ht3; discriminate Ht3.
-
-    rewrite H1 in Ht1; discriminate Ht1.
-
-   apply fst_same_sym_iff in Hs3; simpl in Hs3.
-   destruct H1 as [H1| H1].
-    rewrite H1 in Ht1; discriminate Ht1.
-
-    pose proof (Hs3 O) as H.
-    rewrite H1, Hs2 in H; discriminate H.
-Qed.
-*)
 
 Theorem I_add_i_diag : ∀ x i, I_add_i x x i = x.[S i].
 Proof.
@@ -212,18 +119,6 @@ pose proof (Hx (S i)) as H; simpl in H.
 rewrite Nat.sub_0_r in H; assumption.
 Qed.
 
-(*
-Theorem I_div_2_pow_eqs_0 : ∀ x n, (I_div_2_pow x n == 0)%I → (x == 0)%I.
-Proof.
-intros x n Hx.
-revert x Hx.
-induction n; intros; [ assumption | idtac ].
-simpl in Hx.
-apply I_div_2_eqs_0 in Hx.
-apply IHn; assumption.
-Qed.
-*)
-
 Theorem two_power_neq_0 : ∀ n, two_power n ≠ O.
 Proof.
 intros n H.
@@ -233,33 +128,6 @@ apply Nat.eq_add_0 in H.
 destruct H as (H, _).
 apply IHn; assumption.
 Qed.
-
-(*
-Theorem I_div_lt_pred_r_eqs_0 : ∀ x y i b x1,
-  I_div_lt_pred_i x y i = (b, x1)
-  → (y1 == 0)%I
-  → (y == 0)%I.
-Proof.
-intros x y i b x1 y1 Hi Hy.
-revert x y b x1 y1 Hi Hy.
-induction i; intros; simpl in Hi.
- injection Hi; clear Hi; intros; subst b x1 y1.
- apply I_div_2_eqs_0; assumption.
-
- remember (I_div_lt_pred_i x y i) as bx eqn:Hbx .
- symmetry in Hbx.
- destruct bx as (b2, (x2, y2)).
- simpl in Hi.
- destruct (I_lt_dec x2 y2) as [H1| H1].
-  injection Hi; clear Hi; intros; subst b x1 y1.
-  apply I_div_2_eqs_0 in Hy.
-  eapply IHi; eassumption.
-
-  injection Hi; clear Hi; intros; subst b x1 y1.
-  apply I_div_2_eqs_0 in Hy.
-  eapply IHi; eassumption.
-Qed.
-*)
 
 Add Parametric Morphism : I_mul_2
   with signature I_eqs ==> I_eqs
@@ -372,171 +240,6 @@ destruct (I_eqs_dec x 0%I) as [Hx| Hx].
 
   apply I_ge_0_l_eqs_iff in H1; contradiction.
 Qed.
-
-(* mmm... marche pas, j'ai dû me gourer quelque part...
-Theorem www : ∀ x y b2 x2 y2 dj1 dj2 m n,
-  (∀ dj, (dj < S (S (n + dj1)))%nat
-   → x.[dj] = if zerop dj then false else (x / y)%I.[dj-1])
-  → I_div_max_iter_int y = S m
-  → (∀ i, (i < S n)%nat → x.[i] = false)
-  → x .[ S (S (n + dj1))] = false
-  → I_div_lt_pred_i x y (S dj1) = (b2, x2)
-  → y2 = I_div_2 (I_div_2_pow y (S (n + dj1)))
-  → (∀ dj, (dj < dj2)%nat → x2.[dj] = y2.[ dj])
-  → x2 .[ dj2] = true
-  → y .[ 0] = false.
-Proof.
-intros x y b2 x2 y2 dj1 dj2 m n.
-intros Hn1 Hm Hxi Hxj1 Hb1 Hy2 Hn2 Hxj2.
-assert (S n < S (S (n + dj1)))%nat as H by omega.
-apply Hn1 in H; simpl in H.
-rewrite Nat.sub_0_r in H.
-unfold I_div in H; simpl in H.
-rewrite Hm in H; simpl in H.
-destruct (I_lt_dec x y) as [H3| H3].
- clear H3; simpl in H.
- remember (snd (I_div_lt_pred_i x y n)) as x1 eqn:Hx1 .
- remember (I_div_2 (I_div_2_pow y n)) as y1 eqn:Hy1 .
- destruct (I_lt_dec x1 y1) as [H3| H3]; simpl in H.
-  rename H into Hxn.
-  simpl in Hb1.
-  remember (I_div_lt_pred_i x y dj1) as b eqn:Hb2 .
-  symmetry in Hb2.
-  destruct b as (b3, x3); simpl in Hb1.
-  remember (I_div_2 (I_div_2_pow y dj1)) as y3 eqn:Hy3 .
-  destruct (I_lt_dec x3 y3) as [H4| H4].
-   injection Hb1; clear Hb1; intros; subst b2 x2.
-   destruct dj1.
-    simpl in Hb2.
-    rename Hxj1 into Hx2.
-    injection Hb2; clear Hb2; intros; subst b3 x3.
-    destruct dj2.
-     rewrite Hxi in Hxj2; [ discriminate Hxj2 | apply Nat.lt_0_succ ].
-
-     assert (0 < S dj2)%nat as H by apply Nat.lt_0_succ.
-     apply Hn2 in H; simpl in H.
-     rewrite Hxi in H; [ idtac | apply Nat.lt_0_succ ].
-     rewrite Hy2 in H; simpl in H.
-bbb.
-*)
-
-(* second try, fail again, same reason...
-Theorem www : ∀ x y b2 x2 y2 dj1 dj2 m n,
-  (∀ dj, (dj < S (n + dj1))%nat
-   → x .[ dj] = if zerop dj then false else (x / y)%I .[ dj - 1])
-  → I_div_max_iter_int y = S m
-  → (∀ i, (i < n)%nat → x.[i] = false)
-  → x .[S (n + dj1)] = false
-  → I_div_lt_pred_i x y (S dj1) = (b2, x2)
-  → y2 = I_div_2 (I_div_2_pow y (n + dj1))
-  → (∀ dj, (dj < dj2)%nat → x2.[dj] = y2.[ dj])
-  → x2 .[ dj2] = true
-  → y .[ 0] = false.
-Proof.
-intros x y b2 x2 y2 dj1 dj2 m n.
-intros Hn1 Hm Hxi Hxj1 Hb2 Hy2 Hn2 Hxj2.
-simpl in Hb2.
-remember (I_div_2 (I_div_2_pow y dj1)) as y1 eqn:Hy1 .
-remember (snd (I_div_lt_pred_i x y dj1)) as x1 eqn:Hx1 .
-destruct (I_lt_dec x1 y1) as [H1| H1].
- injection Hb2; clear Hb2; intros; subst b2 x2.
- pose proof (Hn1 O (Nat.lt_0_succ (n + dj1))) as H; simpl in H.
- rename H into Hx0.
- destruct dj1.
-  simpl in Hx1; subst x1.
-  destruct dj2; [ rewrite Hxj2 in Hx0; discriminate Hx0 | idtac ].
-  pose proof (Hn2 O (Nat.lt_0_succ dj2)) as H.
-  rewrite Hx0, Hy2 in H; simpl in H.
-*)
-
-(*
-Theorem www : ∀ x y b2 x2 y2 dj1 dj2 m n,
-  (∀ dj, (dj < S (S (S (n + dj1))))%nat
-   → x.[dj] = if zerop dj then false else (x / y)%I .[ dj - 1])
-  → I_div_max_iter_int y = S m
-  → (∀ i, (i < S (S n))%nat → x.[i] = false)
-  → x .[ S (S (S (n + dj1)))] = false
-  → I_div_lt_pred_i x y (S dj1) = (b2, x2)
-  → y2 = I_div_2 (I_div_2_pow y (S dj1))
-  → (∀ dj, (dj < dj2)%nat
-      → x2 .[ dj] = I_div_2 (I_div_2_pow y (S (S (n + dj1)))).[ dj])
-  → x2 .[ dj2] = true
-  → y .[ 0] = false.
-Proof.
-intros x y b2 x2 y2 dj1 dj2 m n.
-intros Hn1 Hm Hxi Hxj1 Hb2 Hy2 Hn2 Hxj2.
-bbb.
-
-destruct n.
- simpl in Hn1, Hxj1.
- assert (2 < S (S (S dj1)))%nat as H by omega.
- apply Hn1 in H; simpl in H.
- unfold I_div in H; simpl in H.
- rewrite Hm in H; simpl in H.
- destruct (I_lt_dec x y) as [H2| H2].
-  clear H2; simpl in H.
-  destruct (I_lt_dec x (I_div_2 y)) as [H2| H2]; simpl in H.
-   destruct (I_lt_dec x (I_div_2 (I_div_2 y))) as [H3| H3]; simpl in H.
-    rename H into Hx2.
-    simpl in Hb2.
-    remember (I_div_lt_pred_i x y dj1) as b eqn:Hb1 .
-    symmetry in Hb1.
-    destruct b as (b1, x1); simpl in Hb2.
-    remember (I_div_2 (I_div_2_pow y dj1)) as y1 eqn:Hy1 .
-    destruct (I_lt_dec x1 y1) as [H5| H5].
-     injection Hb2; clear Hb2; intros; subst b2 x2 y2.
-     revert dj2 Hn1 Hn2 Hm Hb1 Hxi Hx2 Hxj1 Hxj2; clear; intros.
-     revert x y m b1 x1 dj2 Hn1 Hn2 Hm Hb1 Hxi Hx2 Hxj1 Hxj2.
-     induction dj1; intros.
-      simpl in Hb1.
-      injection Hb1; clear Hb1; intros; subst b1 x1.
-      rename Hxj1 into Hx3.
-      destruct dj2; [ rewrite Hxi in Hxj2; auto; discriminate Hxj2 | idtac ].
-      destruct dj2; [ rewrite Hxi in Hxj2; auto; discriminate Hxj2 | idtac ].
-      destruct dj2; [ rewrite Hx2 in Hxj2; discriminate Hxj2 | idtac ].
-      destruct dj2; [ rewrite Hx3 in Hxj2; discriminate Hxj2 | idtac ].
-      assert (3 < S (S (S (S dj2))))%nat as H by omega.
-      apply Hn2 in H; simpl in H.
-      rewrite Hx3 in H.
-      symmetry; assumption.
-
-      Focus 1.
-bbb.
-*)
-
-(*
-Theorem www : ∀ x y b1 x1 dj1 dj2 m n,
-  (∀ dj, (dj < S (S (n + dj1)))%nat
-   → x .[ dj] = if zerop dj then false else (x / y)%I .[ dj - 1])
-  → I_div_max_iter_int y = S m
-  → (∀ i, (i < S (S (S (S n))))%nat → x.[i] = false)
-  → I_div_lt_pred_i x y dj1 = (b1, x1)
-  → (∀ dj, (dj < dj2)%nat
-     → x1.[dj] = I_div_2 (I_div_2_pow y (S (n + dj1))).[dj])
-  → x1.[dj2] = true
-  → y.[0] = false.
-Proof.
-intros x y b1 x1 dj1 dj2 m n Hn1 Hm Hxi Hb1 Hn2 Hxj2.
-induction dj1.
- simpl in Hb1.
- injection Hb1; clear Hb1; intros; subst b1 x1.
- assert (0 < S (S (S (S n))))%nat as H by omega.
- destruct dj2; [ rewrite Hxi in Hxj2; auto; discriminate Hxj2 | idtac ].
- clear H.
- assert (1 < S (S (S (S n))))%nat as H by omega.
- destruct dj2; [ rewrite Hxi in Hxj2; auto; discriminate Hxj2 | idtac ].
- clear H.
- assert (2 < S (S (S (S n))))%nat as H by omega.
- destruct dj2; [ rewrite Hxi in Hxj2; auto; discriminate Hxj2 | idtac ].
- clear H.
- assert (3 < S (S (S (S n))))%nat as H by omega.
- destruct dj2; [ rewrite Hxi in Hxj2; auto; discriminate Hxj2 | idtac ].
- clear H.
- assert (3 < S (S (S (S dj2))))%nat as H by omega.
- apply Hn2 in H; simpl in H.
- rewrite Nat.add_0_r in H.
-bbb.
-*)
 
 Theorem I_mul_2_div_2 : ∀ x, (I_mul_2 (I_div_2 x) == x)%I.
 Proof.
