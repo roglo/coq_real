@@ -31,10 +31,14 @@ Definition I_mul_2 x := {| rm i := x.[S i] |}.
 Arguments I_mul_2 x%I.
 
 (*
-  Remainder of the division x/y after i bimals of the quotient
-             | x                   if i = 0
-   R_x,y,i = | 2 * R_x,y,i-1       if 2 * R_x,y,i-1 < y
-             | 2 * R_x,y,i-1 - y   if 2 * R_x,y,i-1 ≥ y
+  Remainder of division x/y (x<y) before evaluating i-th bimal (0th=1st
+  after dot)
+         | x               if i = 0
+   R_i = | 2 * R_i-1       if 2 * R_i-1 < y
+         | 2 * R_i-1 - y   if 2 * R_i-1 ≥ y
+  In base B would be
+       R_0 = x
+     R_i+1 = B * R_i mod y
  *)
 Fixpoint I_div_rem_i x y i :=
   match i with
@@ -45,7 +49,7 @@ Fixpoint I_div_rem_i x y i :=
   end.
 Arguments I_div_rem_i x%I y%I i%nat.
 
-(* i-th bimal of the division x/y *)
+(* i-th bimal (0th=1st after dot) of division x/y (x<y) *)
 Definition I_div_lt_i x y i :=
   if I_lt_dec (I_mul_2 (I_div_rem_i x y i)) y then false else true.
 Arguments I_div_lt_i x%I y%I i%nat.
