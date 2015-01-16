@@ -64,7 +64,7 @@ Fixpoint I_div_int m x y :=
   | O => O
   | S m1 =>
       if I_lt_dec x y then O
-      else S (I_div_int m1 (I_sub x y) y)
+      else S (I_div_int m1 (x - y)%I y)
   end.
 Arguments I_div_int m%nat x%I y%I.
 
@@ -74,7 +74,7 @@ Fixpoint I_div_frac m x y :=
   | O => 0%I
   | S m1 =>
       if I_lt_dec x y then I_div_lt x y
-      else I_div_frac m1 (I_sub x y) y
+      else I_div_frac m1 (x - y)%I y
   end.
 Arguments I_div_frac m%nat x%I y%I.
 
