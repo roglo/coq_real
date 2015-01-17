@@ -265,6 +265,88 @@ apply I_eqs_iff; intros i.
 destruct i; reflexivity.
 Qed.
 
+Theorem I_div_eqs_compat_l : ∀ x y z, (x == y)%I → (x / z == y / z)%I.
+Proof.
+intros x y z Hxy.
+rewrite I_eqs_iff in Hxy.
+rewrite I_eqs_iff; intros i.
+unfold I_div; simpl.
+remember (I_div_max_iter_int z) as m eqn:Hm .
+symmetry in Hm.
+destruct m; [ reflexivity | simpl ].
+unfold I_div_max_iter_int in Hm.
+remember (fst_same z I_ones 0) as s1 eqn:Hs1 .
+destruct s1 as [dj1| ]; [ idtac | discriminate Hm ].
+apply fst_same_sym_iff in Hs1; simpl in Hs1.
+destruct Hs1 as (Hn1, Ht1).
+destruct (I_lt_dec x z) as [H1| H1].
+ destruct (I_lt_dec y z) as [H2| H2].
+  unfold I_div_lt; simpl.
+  unfold I_div_lt_i.
+  remember (I_mul_2 (I_div_rem_i (½x) (½z) i)) as x1 eqn:Hx1 .
+  remember (I_mul_2 (I_div_rem_i (½y) (½z) i)) as y1 eqn:Hy1 .
+  destruct (I_lt_dec x1 (½z)%I) as [H3| H3].
+   destruct (I_lt_dec y1 (½z)%I) as [H4| H4]; [ reflexivity | exfalso ].
+   unfold I_lt, I_compare in H3; simpl in H3.
+   unfold I_ge, I_compare in H4; simpl in H4.
+   remember (fst_same x1 (- (½z)%I) 0) as s3 eqn:Hs3 .
+   remember (fst_same y1 (- (½z)%I) 0) as s4 eqn:Hs4 .
+   destruct s3 as [dj3| ]; [ idtac | discriminate H3 ].
+   remember (x1 .[ dj3]) as b eqn:Hxj3 .
+   destruct b; [ discriminate H3 | clear H3 ].
+   symmetry in Hxj3.
+   apply fst_same_sym_iff in Hs3; simpl in Hs3.
+   destruct Hs3 as (Hn3, Ht3).
+   rewrite Hxj3 in Ht3; apply negb_sym in Ht3; simpl in Ht3.
+   destruct dj3; [ discriminate Ht3 | simpl in Ht3 ].
+   rewrite Nat.sub_0_r in Ht3.
+   pose proof (Hn3 O (Nat.lt_0_succ dj3)) as H; simpl in H.
+   rename H into Hx10.
+   destruct s4 as [dj4| ].
+    remember (y1 .[ dj4]) as b eqn:Hyj4 .
+    destruct b; [ clear H4 | exfalso; apply H4; reflexivity ].
+    symmetry in Hyj4.
+    apply fst_same_sym_iff in Hs4; simpl in Hs4.
+    destruct Hs4 as (Hn4, Ht4).
+    rewrite Hyj4 in Ht4; apply negb_sym in Ht4; simpl in Ht4.
+Abort. (*
+   oui bon, c'est merdique ; peut-être faisable avec beaucoup
+   de patience
+*)
+
+Theorem I_div_eqs_compat_r : ∀ x y z, (x == y)%I → (z / x == z / y)%I.
+Proof.
+intros x y z Hxy.
+rewrite I_eqs_iff in Hxy.
+rewrite I_eqs_iff; intros i.
+unfold I_div; simpl.
+remember (I_div_max_iter_int x) as mx eqn:Hmx .
+remember (I_div_max_iter_int y) as my eqn:Hmy .
+symmetry in Hmx, Hmy.
+destruct mx; simpl.
+ unfold I_div_max_iter_int in Hmx.
+ remember (fst_same x I_ones 0) as s1 eqn:Hs1 .
+ destruct s1 as [dj1| ]; [ idtac | clear Hmx ].
+  exfalso; revert Hmx; apply two_power_neq_0.
+
+  apply fst_same_sym_iff in Hs1; simpl in Hs1.
+Abort.
+(* faut voir...
+
+ destruct my; [ reflexivity | simpl ].
+ destruct (I_lt_dec z y) as [H1| H1].
+  unfold I_div_lt; simpl.
+  symmetry.
+  destruct i; simpl.
+   unfold I_div_lt_i; simpl.
+   destruct (I_lt_dec (I_mul_2 (½z)) (½y)%I) as [H2| H2].
+    reflexivity.
+
+    exfalso.
+    unfold I_div_max_iter_int in Hmx.
+bbb.
+*)
+
 Theorem xxx : ∀ x y,
   (x < I_div_2 (x / y))%I
   → y.[0] = false.
