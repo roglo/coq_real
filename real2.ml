@@ -122,6 +122,32 @@ value rec i_div_frac m x y =
 
 value i_div x y = i_div_frac (i_div_max_iter_int x y) x y.
 
+(* experimentation *)
+
+(* bon, ça marche pas, faut voir...
+value i_div_2_pow x i = {rm j = if j < i then False else x.rm (j-i)}.
+
+value rec i_div_by_sub x y =
+  if i_lt x y then False else not (i_div_by_sub (i_sub x y) y).
+
+value i_div3_lt_i x y i =
+  if i > 5 then False else
+  i_div_by_sub x (i_div_2_pow y i).
+
+value i_div3_lt x y = {rm = i_div3_lt_i x y};
+
+value rec i_div3_frac m x y =
+  match m with
+  | 0 → i_zero
+  | _ →
+      let m1 = m - 1 in
+      if i_lt x y then i_div3_lt x y
+      else i_div3_frac m1 (i_sub x y) y
+  end.
+
+value i_div3 x y = i_div3_frac (i_div_max_iter_int x y) x y.
+*)
+
 (**)
 
 type real = {r_int : int; r_frac : real_mod_1};
