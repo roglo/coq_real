@@ -86,6 +86,34 @@ Arguments I_div x%I y%I.
 
 Notation "x / y" := (I_div x y) : I_scope.
 
+(* experimentation *)
+
+Definition I_div_2_pow x i :=
+  {| rm j := if lt_dec j i then false else x.[j-i] |}.
+
+Fixpoint I_div_by_sub m x y :=
+  match m with
+  | O => false
+  | S m1 =>
+      if I_lt_dec x y then false
+      else negb (I_div_by_sub m1 (I_sub x y) y)
+  end.
+
+Definition I_div3_lt_i x y i :=
+  I_div_by_sub (two_power (S i)) x (I_div_2_pow y (S i)).
+
+Definition I_div3_lt x y := {| rm := I_div3_lt_i x y |}.
+
+Fixpoint I_div3_frac m x y :=
+  match m with
+  | O => I_zero
+  | S m1 =>
+      if I_lt_dec x y then I_div3_lt x y
+      else I_div3_frac m1 (I_sub x y) y
+  end.
+
+Definition I_div3 x y := I_div3_frac (I_div_max_iter_int y) x y.
+
 (* *)
 
 Theorem I_add_i_diag : ∀ x i, I_add_i x x i = x.[S i].

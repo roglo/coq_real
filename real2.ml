@@ -77,7 +77,7 @@ value rec two_power n =
 
 (* division in I - new version *)
 
-value i_div_max_iter_int x y =
+value i_div_max_iter_int y =
   match fst_same y i_ones 0 with
   | Some j → two_power (j + 1)
   | None → 0
@@ -120,7 +120,7 @@ value rec i_div_frac m x y =
       else i_div_frac m1 (i_sub x y) y
   end.
 
-value i_div x y = i_div_frac (i_div_max_iter_int x y) x y.
+value i_div x y = i_div_frac (i_div_max_iter_int y) x y.
 
 (* experimentation *)
 
@@ -145,7 +145,7 @@ value rec i_div3_frac m x y =
       else i_div3_frac m1 (i_sub x y) y
   end.
 
-value i_div3 x y = i_div3_frac (i_div_max_iter_int x y) x y.
+value i_div3 x y = i_div3_frac (i_div_max_iter_int y) x y.
 
 (**)
 
