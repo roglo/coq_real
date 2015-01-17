@@ -124,15 +124,15 @@ value i_div x y = i_div_frac (i_div_max_iter_int x y) x y.
 
 (* experimentation *)
 
-(* bon, ça marche pas, faut voir...
 value i_div_2_pow x i = {rm j = if j < i then False else x.rm (j-i)}.
 
 value rec i_div_by_sub x y =
   if i_lt x y then False else not (i_div_by_sub (i_sub x y) y).
 
 value i_div3_lt_i x y i =
-  if i > 5 then False else
-  i_div_by_sub x (i_div_2_pow y i).
+let _ = printf "i_div_3_lt_i %d\n%!" i in
+  if i > 4 then False else
+  i_div_by_sub x (i_div_2_pow y (i+1)).
 
 value i_div3_lt x y = {rm = i_div3_lt_i x y};
 
@@ -146,7 +146,6 @@ value rec i_div3_frac m x y =
   end.
 
 value i_div3 x y = i_div3_frac (i_div_max_iter_int x y) x y.
-*)
 
 (**)
 
