@@ -116,6 +116,40 @@ Definition I_div3 x y := I_div3_frac (I_div_max_iter_int y) x y.
 
 (* *)
 
+Theorem zzz : ∀ x y, (I_div3 x y == x / y)%I.
+Proof.
+intros x y.
+apply I_eqs_iff; simpl; intros i.
+unfold I_div3, I_div; simpl.
+remember (I_div_max_iter_int y) as m eqn:Hm .
+symmetry in Hm.
+destruct m; [ reflexivity | simpl ].
+destruct (I_lt_dec x y) as [H1| H1].
+ unfold I_div3_lt, I_div_lt; simpl.
+ unfold I_div3_lt_i, I_div_lt_i.
+ remember (two_power (S i)) as m2 eqn:Hm2 .
+ symmetry in Hm2; simpl.
+ destruct (I_lt_dec (I_mul_2 (I_div_rem_i (½x) (½y) i)) (½y)%I) as [H2| H2].
+  destruct m2; [ reflexivity | simpl ].
+  destruct (I_lt_dec x (I_div_2_pow y (S i))) as [H3| H3].
+   reflexivity.
+
+   apply negb_false_iff.
+   destruct m2.
+    simpl.
+    simpl in Hm2.
+    revert Hm2; clear; intros.
+    Focus 2.
+    simpl.
+    destruct (I_lt_dec (x - I_div_2_pow y (S i))%I (I_div_2_pow y (S i)))
+     as [H4| H4].
+     remember (I_div_2_pow y (S i)) as y1 eqn:Hy1 .
+Abort. (* faut réfléchir...
+bbb.
+*)
+
+(* *)
+
 Theorem I_add_i_diag : ∀ x i, I_add_i x x i = x.[S i].
 Proof.
 intros x i.
