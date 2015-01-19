@@ -548,6 +548,7 @@ destruct dj1; simpl in Ht1.
       rewrite <- Hy1, Hxj2 in H.
       symmetry in H.
       rename H into Hy0.
+      exfalso.
       destruct dj3.
        destruct dj1.
         simpl in Hxj4, Hxj2, Hxj3.
@@ -575,7 +576,7 @@ destruct dj1; simpl in Ht1.
           rewrite Nat.sub_0_r in Ht4.
           rewrite Hxj5 in Ht4.
           apply negb_sym in Ht4; simpl in Ht4.
-          destruct dj4; [ assumption | idtac ].
+          destruct dj4; [ rewrite Hy0 in Ht4; discriminate Ht4 | idtac ].
           destruct dj4; [ rewrite Ht3 in Ht4; discriminate Ht4 | idtac ].
           assert (2 < S (S (S dj4)))%nat as H by omega.
           apply Hn4 in H; simpl in H.
@@ -599,6 +600,8 @@ destruct dj1; simpl in Ht1.
         clear H3; rename H into Hx_2.
         simpl in Hx_2.
         unfold I_div_lt_i in Hx_2; simpl in Hx_2.
+        destruct (I_lt_dec (I_mul_2 (½x)) (½y)%I) as [H2| H2].
+         destruct (I_lt_dec (I_mul_2 (I_mul_2 (½x))) (½y)%I) as [H3| H3].
 bbb.
 
 (*1*)
