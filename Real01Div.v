@@ -550,6 +550,12 @@ destruct dj1; simpl in Ht1.
       rename H into Hy0.
       exfalso.
       subst y1.
+(* if test then *)
+      destruct (I_lt_dec (I_mul_2 (½x)) (½y)%I) as [H2| H2].
+       rewrite I_mul_2_div_2 in H2.
+bbb.
+
+(* end test *)
       destruct dj3.
        destruct dj1.
         simpl in Hxj4, Hxj2, Hxj3.
