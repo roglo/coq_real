@@ -553,6 +553,61 @@ destruct dj1; simpl in Ht1.
 (* if test then *)
       destruct (I_lt_dec (I_mul_2 (½x)) (½y)%I) as [H2| H2].
        rewrite I_mul_2_div_2 in H2.
+       destruct dj1.
+        simpl in Hxj2.
+        rewrite Hx_1 in Hxj2; discriminate Hxj2.
+
+        simpl in Hx1, Hxj4, Hxj2, Hxj3.
+        remember (I_mul_2 (I_div_rem_i (½x) (½y) dj1)) as x2 eqn:Hx2 .
+        assert (2 < S (S (S dj1)))%nat as H by omega.
+        apply Hn1 in H; simpl in H.
+        rewrite negb_involutive in H.
+        unfold I_div in H; simpl in H.
+        rewrite Hm in H; simpl in H.
+        apply I_lt_nge in H1.
+        destruct (I_lt_dec x y) as [H3| H3]; [ idtac | contradiction ].
+        apply I_lt_nge in H1.
+        clear H3; rename H into Hx_2.
+        simpl in Hx_2.
+        unfold I_div_lt_i in Hx_2; simpl in Hx_2.
+        destruct (I_lt_dec x2 (½y)%I) as [H3| H3].
+         subst x2.
+         simpl in Hx1, Hxj4, Hxj2, Hxj3.
+         destruct (I_lt_dec (I_mul_2 (½x)) (½y)%I) as [H4| H4].
+          2: rewrite I_mul_2_div_2 in H4.
+          clear H4.
+          destruct (I_lt_dec (I_mul_2 (I_mul_2 (½x))) (½y)%I) as [H4| H4].
+           destruct dj1.
+            simpl in Hxj2.
+            rewrite Hxj2 in Hx_2; discriminate Hx_2.
+
+            simpl in Hx1, Hxj4, Hxj2, Hxj3, H3.
+            remember (I_mul_2 (I_div_rem_i (½x) (½y) dj1)) as x2 eqn:Hx2 .
+            assert (3 < S (S (S (S dj1))))%nat as H by omega.
+            apply Hn1 in H; simpl in H.
+            rewrite negb_involutive in H.
+            unfold I_div in H; simpl in H.
+            rewrite Hm in H; simpl in H.
+            apply I_lt_nge in H1.
+            destruct (I_lt_dec x y) as [H5| H5]; [ idtac | contradiction ].
+            apply I_lt_nge in H1.
+            rewrite I_mul_2_div_2 in H4.
+            clear H5; rename H into Hx_3.
+            simpl in Hx_3.
+            unfold I_div_lt_i in Hx_3; simpl in Hx_3.
+            destruct (I_lt_dec x2 (½y)%I) as [H5| H5].
+             destruct (I_lt_dec (I_mul_2 (½x)) (½y)%I) as [H6| H6].
+              2: rewrite I_mul_2_div_2 in H6.
+              clear H6.
+              destruct (I_lt_dec (I_mul_2 (I_mul_2 (½x))) (½y)%I) as [H6| H6].
+               2: rewrite I_mul_2_div_2 in H6.
+               clear H6.
+               destruct (I_lt_dec (I_mul_2 (I_mul_2 (I_mul_2 (½x)))) (½y)%I)
+                as [H6| H6].
+                2: rewrite I_mul_2_div_2 in H6.
+                rewrite I_mul_2_div_2 in H6.
+                subst x2.
+                simpl in Hx1, Hxj4, Hxj2, Hxj3, H3.
 bbb.
 
 (* end test *)
