@@ -549,15 +549,15 @@ destruct dj1; simpl in Ht1.
       symmetry in H.
       rename H into Hy0.
       exfalso.
+      subst y1.
       destruct dj3.
        destruct dj1.
         simpl in Hxj4, Hxj2, Hxj3.
-        rewrite <- Hy1 in Hx_1.
-        destruct (I_lt_dec (I_mul_2 (I_div_2 x)) y1) as [H2| H2].
+        destruct (I_lt_dec (I_mul_2 (½x)) (½y)%I) as [H2| H2].
          rewrite Hx_1 in Hxj2; discriminate Hxj2.
 
          unfold I_ge, I_compare in H2.
-         remember (fst_same (I_mul_2 (I_div_2 x)) (- y1) 0) as s4 eqn:Hs4 .
+         remember (fst_same (I_mul_2 (½x)) (- (½y)%I) 0) as s4 eqn:Hs4 .
          destruct s4 as [dj4| ]; [ idtac | clear H2 ].
           simpl in H2.
           rewrite Nat.sub_0_r in H2.
@@ -568,11 +568,7 @@ destruct dj1; simpl in Ht1.
           rewrite Nat.sub_0_r in Hs4.
           destruct Hs4 as (Hn4, Ht4).
           destruct dj4; [ rewrite Hx0 in Hxj5; discriminate Hxj5 | idtac ].
-          pose proof (Hn4 O (Nat.lt_0_succ dj4)) as H; simpl in H.
-          rewrite negb_involutive in H.
-          rewrite Hy1 in H; simpl in H.
-          clear H.
-          rewrite Hy1 in Ht4; simpl in Ht4.
+          simpl in Ht4.
           rewrite Nat.sub_0_r in Ht4.
           rewrite Hxj5 in Ht4.
           apply negb_sym in Ht4; simpl in Ht4.
@@ -580,12 +576,10 @@ destruct dj1; simpl in Ht1.
           destruct dj4; [ rewrite Ht3 in Ht4; discriminate Ht4 | idtac ].
           assert (2 < S (S (S dj4)))%nat as H by omega.
           apply Hn4 in H; simpl in H.
-          rewrite Hy1 in H; simpl in H.
           rewrite Hxj3, Ht3 in H; simpl in H.
           discriminate H.
 
           apply fst_same_sym_iff in Hs4; simpl in Hs4.
-          rewrite Hy1 in Hs4; simpl in Hs4.
           pose proof (Hs4 2%nat) as H; simpl in H.
           rewrite Hxj3, Ht3 in H; discriminate H.
 
@@ -600,9 +594,7 @@ destruct dj1; simpl in Ht1.
         clear H3; rename H into Hx_2.
         simpl in Hx_2.
         unfold I_div_lt_i in Hx_2; simpl in Hx_2.
-        subst y1.
-        simpl in Hx1.
-        simpl in Hxj4, Hxj2, Hxj3.
+        simpl in Hx1, Hxj4, Hxj2, Hxj3.
         remember (I_mul_2 (I_div_rem_i (½x) (½y) dj1)) as x2 eqn:Hx2 .
         destruct (I_lt_dec x2 (½y)%I) as [H2| H2].
          subst x2; simpl in Hx1, Hxj4, Hxj2, Hxj3.
@@ -612,6 +604,28 @@ destruct dj1; simpl in Ht1.
           rewrite I_mul_2_div_2 in H3.
           destruct (I_lt_dec (I_mul_2 (I_mul_2 (½x))) (½y)%I) as [H4| H4].
            rewrite I_mul_2_div_2 in H4.
+           destruct dj1.
+            simpl in Hx2; subst x2; simpl in Hxj2.
+            rewrite Hx_2 in Hxj2; discriminate Hxj2.
+
+            assert (3 < S (S (S (S dj1))))%nat as H by omega.
+            apply Hn1 in H; simpl in H.
+            rewrite negb_involutive in H.
+            unfold I_div in H; simpl in H.
+            rewrite Hm in H; simpl in H.
+            apply I_lt_nge in H1.
+            destruct (I_lt_dec x y) as [H5| H5]; [ idtac | contradiction ].
+            apply I_lt_nge in H1.
+            clear H5; rename H into Hx_3.
+            simpl in Hx_3.
+            unfold I_div_lt_i in Hx_3; simpl in Hx_3.
+            simpl in Hx2.
+            remember (I_mul_2 (I_div_rem_i (½x) (½y) dj1)) as x3 eqn:Hx3 .
+            destruct (I_lt_dec x3 (½y)%I) as [H5| H5].
+             move Hx2 at top; subst x3.
+             subst x2.
+             simpl in Hxj4, Hxj2, Hxj3.
+             remember (I_div_rem_i (½x) (½y) dj1) as x2 eqn:Hx2 .
 bbb.
 
 (*1*)
