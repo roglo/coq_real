@@ -600,11 +600,18 @@ destruct dj1; simpl in Ht1.
         clear H3; rename H into Hx_2.
         simpl in Hx_2.
         unfold I_div_lt_i in Hx_2; simpl in Hx_2.
-        destruct (I_lt_dec (I_mul_2 (½x)) (½y)%I) as [H2| H2].
-         rewrite I_mul_2_div_2 in H2.
-         destruct (I_lt_dec (I_mul_2 (I_mul_2 (½x))) (½y)%I) as [H3| H3].
+        subst y1.
+        simpl in Hx1.
+        simpl in Hxj4, Hxj2, Hxj3.
+        remember (I_mul_2 (I_div_rem_i (½x) (½y) dj1)) as x2 eqn:Hx2 .
+        destruct (I_lt_dec x2 (½y)%I) as [H2| H2].
+         subst x2; simpl in Hx1, Hxj4, Hxj2, Hxj3.
+         remember (I_div_rem_i (½x) (½y) dj1) as x2 eqn:Hx2 .
+         move Hx1 after Hn3.
+         destruct (I_lt_dec (I_mul_2 (½x)) (½y)%I) as [H3| H3].
           rewrite I_mul_2_div_2 in H3.
-          subst y1.
+          destruct (I_lt_dec (I_mul_2 (I_mul_2 (½x))) (½y)%I) as [H4| H4].
+           rewrite I_mul_2_div_2 in H4.
 bbb.
 
 (*1*)
