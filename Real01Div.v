@@ -601,7 +601,10 @@ destruct dj1; simpl in Ht1.
         simpl in Hx_2.
         unfold I_div_lt_i in Hx_2; simpl in Hx_2.
         destruct (I_lt_dec (I_mul_2 (½x)) (½y)%I) as [H2| H2].
+         rewrite I_mul_2_div_2 in H2.
          destruct (I_lt_dec (I_mul_2 (I_mul_2 (½x))) (½y)%I) as [H3| H3].
+          rewrite I_mul_2_div_2 in H3.
+          subst y1.
 bbb.
 
 (*1*)
