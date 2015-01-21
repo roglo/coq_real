@@ -609,6 +609,44 @@ bbb.
                 rewrite I_mul_2_div_2 in H6.
                 subst x2.
                 simpl in Hx1, Hxj4, Hxj2, Hxj3, H3.
+                destruct dj1.
+                 simpl in Hx1, Hxj4, Hxj2, Hxj3, H3.
+                 rewrite Hxj2 in Hx_3; discriminate Hx_3.
+
+                 simpl in Hx1, Hxj4, Hxj2, Hxj3, H3.
+                 assert (4 < S (S (S (S (S dj1)))))%nat as H by omega.
+                 apply Hn1 in H; simpl in H.
+                 rewrite negb_involutive in H.
+                 unfold I_div in H; simpl in H.
+                 rewrite Hm in H; simpl in H.
+                 apply I_lt_nge in H1.
+                 destruct (I_lt_dec x y) as [H7| H7];
+                  [ idtac | contradiction ].
+                 apply I_lt_nge in H1.
+                 clear H7; rename H into Hx_4.
+                 simpl in Hx_4.
+                 unfold I_div_lt_i in Hx_4; simpl in Hx_4.
+                 destruct (I_lt_dec (I_mul_2 (½x)) (½y)%I) as [H7| H7].
+                  rewrite I_mul_2_div_2 in H7.
+                  clear H7.
+                  destruct (I_lt_dec (I_mul_2 (I_mul_2 (½x))) (½y)%I)
+                   as [H7| H7].
+                   rewrite I_mul_2_div_2 in H7.
+                   clear H7.
+                   destruct
+                    (I_lt_dec (I_mul_2 (I_mul_2 (I_mul_2 (½x)))) (½y)%I)
+                    as [H7| H7].
+                    rewrite I_mul_2_div_2 in H7.
+                    clear H7.
+                    destruct
+                     (I_lt_dec (I_mul_2 (I_mul_2 (I_mul_2 (I_mul_2 (½x)))))
+                        (½y)%I) as [H7| H7].
+                     rewrite I_mul_2_div_2 in H7.
+                     destruct
+                      (I_lt_dec (I_mul_2 (I_div_rem_i (½x) (½y) dj1)) (½y)%I)
+                      as [H8| H8].
+                      simpl in H8.
+                      remember (I_div_rem_i (½x) (½y) dj1) as x2 eqn:Hx2 .
 bbb.
 
 (* end test *)
