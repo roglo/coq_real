@@ -146,6 +146,21 @@ intros x y.
 apply I_eqs_eq, I_eqs_add_comm.
 Qed.
 
+(* compatibility *)
+
+Theorem I_add_compat_r : ∀ x y z, (x = y)%I → (x + z = y + z)%I.
+Proof.
+intros x y z Hxy.
+unfold I_eq.
+apply Iwn2I_eq_wm_compat.
+unfold I_eq_wn; simpl; intros i.
+unfold I_add_wn_i; simpl.
+f_equal; f_equal.
+unfold Iwn2I; simpl.
+unfold I_eq in Hxy; simpl in Hxy.
+unfold Iwn2I in Hxy; simpl in Hxy.
+bbb.
+
 (* associativity *)
 
 Definition Iwn_add_i x y i := inat x i + inat y i.
