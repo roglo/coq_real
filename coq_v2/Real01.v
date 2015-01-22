@@ -11,8 +11,6 @@ Record Iwn := { inat : nat → nat }.
 
 Open Scope nat_scope.
 
-Definition base := 2.
-
 Parameter fst_not_1 : Iwn → nat → option nat.
 Axiom fst_not_1_iff : ∀ x i odi, odi = fst_not_1 x i ↔
   match odi with
