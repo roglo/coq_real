@@ -14,7 +14,7 @@ Open Scope nat_scope.
 Definition base := 2.
 
 Parameter fst_not_1 : Iwn → nat → option nat.
-Axiom fst_not_1_iff : ∀ x i odi, fst_not_1 x i = odi ↔
+Axiom fst_not_1_iff : ∀ x i odi, odi = fst_not_1 x i ↔
   match odi with
   | Some di =>
       (∀ dj, dj < di → inat x (i + dj) = 1)
@@ -25,5 +25,7 @@ Axiom fst_not_1_iff : ∀ x i odi, fst_not_1 x i = odi ↔
 
 Notation "x .[ i ]" := (idig x i) (at level 15, i at level 200).
 Infix "⊕" := xorb (left associativity, at level 50) : bool_scope.
+
+Delimit Scope I_scope with I.
 
 Close Scope nat_scope.
