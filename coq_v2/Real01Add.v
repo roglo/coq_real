@@ -27,7 +27,11 @@ Notation "0" := I_zero : I_scope.
 Notation "x + y" := (I_add x y) (at level 50, left associativity) : I_scope.
 
 Definition I_eq_wn x y := ∀ i, inat x i = inat y i.
+Definition I_eqs x y := ∀ i, x.[i] = y.[i].
 Definition I_eq x y := ∀ i, (x + 0)%I.[i] = (y + 0)%I.[i].
+Arguments I_eq_wn x%I y%I.
+Arguments I_eqs x%I y%I.
+Arguments I_eq x%I y%I.
 
 Notation "x = y" := (I_eq x y) : I_scope.
 Notation "x ≠ y" := (¬ I_eq x y) : I_scope.
@@ -107,13 +111,63 @@ destruct s1 as [di1| ]; [ idtac | reflexivity ].
 apply I_add_wn_i_comm_l.
 Qed.
 
+Theorem fst_not_1_add_wm_eqs_compat : ∀ x y z i,
+  I_eqs x y
+  → fst_not_1 (I_add_wn x z) i = fst_not_1 (I_add_wn y z) i.
+Proof.
+intros x y z i Hxy.
+unfold I_eqs in Hxy.
+apply fst_not_1_iff; simpl.
+remember (fst_not_1 (I_add_wn x z) i) as s1 eqn:Hs1 .
+apply fst_not_1_iff in Hs1; simpl in Hs1.
+destruct s1 as [di1| ].
+ destruct Hs1 as (Hn1, Ht1).
+ split.
+  intros dj Hdj.
+  unfold I_add_wn_i; simpl.
+  rewrite <- Hxy.
+  apply Hn1; assumption.
+
+  unfold I_add_wn_i.
+  rewrite <- Hxy; assumption.
+
+ intros dj.
+ unfold I_add_wn_i.
+ rewrite <- Hxy; apply Hs1.
+Qed.
+
+Theorem I_eqs_eq : ∀ x y, I_eqs x y → (x = y)%I.
+Proof.
+intros x y Hxy.
+unfold I_eqs in Hxy; simpl in Hxy.
+unfold I_eq; simpl; intros i.
+unfold Iwn2I; simpl.
+f_equal; f_equal.
+ unfold I_add_wn_i.
+ rewrite Hxy; reflexivity.
+
+ unfold carry; simpl.
+ erewrite fst_not_1_add_wm_eqs_compat; [ idtac | eassumption ].
+ remember (fst_not_1 (I_add_wn y 0) (S i)) as s1 eqn:Hs1 .
+ apply fst_not_1_iff in Hs1; simpl in Hs1.
+ destruct s1 as [di1| ]; [ idtac | reflexivity ].
+ destruct Hs1 as (Hn1, Ht1).
+ unfold I_add_wn_i; simpl.
+ rewrite Hxy; reflexivity.
+Qed.
+
+Theorem I_eqs_add_comm : ∀ x y, I_eqs (x + y) (y + x).
+Proof.
+intros x y.
+unfold I_eqs; simpl; intros i.
+unfold Iwn2I; simpl.
+f_equal; f_equal; [ apply I_add_wn_i_comm | apply carry_add_comm ].
+Qed.
+
 Theorem I_add_comm : ∀ x y, (x + y = y + x)%I.
 Proof.
 intros x y.
-unfold I_eq; simpl; intros i.
-unfold Iwn2I; simpl.
-f_equal; [ rewrite I_add_wn_i_comm_l; reflexivity | f_equal ].
-apply carry_add_comm_l.
+apply I_eqs_eq, I_eqs_add_comm.
 Qed.
 
 Close Scope nat_scope.
