@@ -146,4 +146,33 @@ intros x y.
 apply I_eqs_eq, I_eqs_add_comm.
 Qed.
 
+(* associativity *)
+
+Definition Iwn_add_i x y i := inat x i + inat y i.
+Definition Iwn_add x y := {| inat := Iwn_add_i x y |}.
+
+Definition I2Iwn x := {| inat i := b2n (x.[i]) |}.
+
+Theorem I_eq_wn_I_add : ∀ x y,
+  I_eq_wn (I_add_wn x y) (Iwn_add (I2Iwn x) (I2Iwn y)).
+Proof. intros x y; unfold I_eq_wn; reflexivity. Qed.
+
+Definition n2b n := negb (Nat.eqb n 0).
+
+Theorem I_add_assoc : ∀ x y z, (x + (y + z) = (x + y) + z)%I.
+Proof.
+intros x y z.
+unfold I_eq.
+apply Iwn2I_eq_wm_compat.
+unfold I_eq_wn; simpl; intros i.
+unfold I_add_wn_i; simpl.
+f_equal; f_equal.
+apply Iwn2I_eq_wm_compat; clear i.
+unfold I_eq_wn; intros i.
+unfold I_add_wn; simpl.
+unfold I_add_wn_i; simpl.
+erewrite Iwn2I_eq_wm_compat; [ symmetry | apply I_eq_wn_I_add ].
+erewrite Iwn2I_eq_wm_compat; [ symmetry | apply I_eq_wn_I_add ].
+bbb.
+
 Close Scope nat_scope.
