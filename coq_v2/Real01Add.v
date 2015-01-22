@@ -71,46 +71,6 @@ destruct s1 as [di1| ]; [ idtac | reflexivity ].
 rewrite I_add_wn_i_comm; reflexivity.
 Qed.
 
-Theorem I_add_wn_i_comm_l : ∀ x y z i,
-  I_add_wn_i (x + y) z i = I_add_wn_i (y + x) z i.
-Proof.
-intros x y z i.
-unfold I_add_wn_i; simpl; f_equal; f_equal.
-unfold Iwn2I; simpl.
-unfold I_add_wn_i; simpl; f_equal; f_equal; [ apply Nat.add_comm | idtac ].
-apply carry_add_comm.
-Qed.
-
-Theorem fst_not_1_add_comm_l : ∀ x y z i,
-  fst_not_1 (I_add_wn (x + y) z) i = fst_not_1 (I_add_wn (y + x) z) i.
-Proof.
-intros x y z i.
-apply fst_not_1_iff; simpl.
-remember (fst_not_1 (I_add_wn (x + y) z) i) as s1 eqn:Hs1 .
-apply fst_not_1_iff in Hs1; simpl in Hs1.
-destruct s1 as [di1| ].
- destruct Hs1 as (Hn1, Ht1).
- split; [ idtac | rewrite I_add_wn_i_comm_l; assumption ].
- intros dj Hdj.
- apply Hn1 in Hdj.
- rewrite I_add_wn_i_comm_l; assumption.
-
- intros dj.
- rewrite I_add_wn_i_comm_l.
- apply Hs1.
-Qed.
-
-Theorem carry_add_comm_l : ∀ x y z i,
-   carry (I_add_wn (x + y) z) i = carry (I_add_wn (y + x) z) i.
-Proof.
-intros x y z i.
-unfold carry; simpl.
-rewrite fst_not_1_add_comm_l.
-remember (fst_not_1 (I_add_wn (y + x) z) i) as s1 eqn:Hs1 .
-destruct s1 as [di1| ]; [ idtac | reflexivity ].
-apply I_add_wn_i_comm_l.
-Qed.
-
 Theorem fst_not_1_add_wm_eqs_compat : ∀ x y z i,
   I_eqs x y
   → fst_not_1 (I_add_wn x z) i = fst_not_1 (I_add_wn y z) i.
