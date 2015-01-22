@@ -36,40 +36,7 @@ Arguments I_eq x%I y%I.
 Notation "x = y" := (I_eq x y) : I_scope.
 Notation "x ≠ y" := (¬ I_eq x y) : I_scope.
 
-(* commutativity *)
-
-Theorem I_add_wn_i_comm : ∀ x y i, I_add_wn_i x y i = I_add_wn_i y x i.
-Proof. intros; apply Nat.add_comm. Qed.
-
-Theorem fst_not_1_add_comm : ∀ x y i,
-  fst_not_1 (I_add_wn x y) i = fst_not_1 (I_add_wn y x) i.
-Proof.
-intros x y i.
-apply fst_not_1_iff; simpl.
-remember (fst_not_1 (I_add_wn x y) i) as s1 eqn:Hs1 .
-apply fst_not_1_iff in Hs1; simpl in Hs1.
-destruct s1 as [di1| ].
- destruct Hs1 as (Hn1, Ht1).
- split; [ idtac | rewrite I_add_wn_i_comm; assumption ].
- intros dj Hdj.
- apply Hn1 in Hdj.
- rewrite I_add_wn_i_comm; assumption.
-
- intros dj.
- rewrite I_add_wn_i_comm.
- apply Hs1.
-Qed.
-
-Theorem carry_add_comm : ∀ x y i,
-  carry (I_add_wn x y) i = carry (I_add_wn y x) i.
-Proof.
-intros x y i.
-unfold carry; simpl.
-rewrite fst_not_1_add_comm.
-remember (fst_not_1 (I_add_wn y x) i) as s1 eqn:Hs1 .
-destruct s1 as [di1| ]; [ idtac | reflexivity ].
-rewrite I_add_wn_i_comm; reflexivity.
-Qed.
+(* I_eqs implies I_eq *)
 
 Theorem fst_not_1_add_wm_eqs_compat : ∀ x y z i,
   I_eqs x y
@@ -114,6 +81,41 @@ f_equal; f_equal.
  destruct Hs1 as (Hn1, Ht1).
  unfold I_add_wn_i; simpl.
  rewrite Hxy; reflexivity.
+Qed.
+
+(* commutativity *)
+
+Theorem I_add_wn_i_comm : ∀ x y i, I_add_wn_i x y i = I_add_wn_i y x i.
+Proof. intros; apply Nat.add_comm. Qed.
+
+Theorem fst_not_1_add_comm : ∀ x y i,
+  fst_not_1 (I_add_wn x y) i = fst_not_1 (I_add_wn y x) i.
+Proof.
+intros x y i.
+apply fst_not_1_iff; simpl.
+remember (fst_not_1 (I_add_wn x y) i) as s1 eqn:Hs1 .
+apply fst_not_1_iff in Hs1; simpl in Hs1.
+destruct s1 as [di1| ].
+ destruct Hs1 as (Hn1, Ht1).
+ split; [ idtac | rewrite I_add_wn_i_comm; assumption ].
+ intros dj Hdj.
+ apply Hn1 in Hdj.
+ rewrite I_add_wn_i_comm; assumption.
+
+ intros dj.
+ rewrite I_add_wn_i_comm.
+ apply Hs1.
+Qed.
+
+Theorem carry_add_comm : ∀ x y i,
+  carry (I_add_wn x y) i = carry (I_add_wn y x) i.
+Proof.
+intros x y i.
+unfold carry; simpl.
+rewrite fst_not_1_add_comm.
+remember (fst_not_1 (I_add_wn y x) i) as s1 eqn:Hs1 .
+destruct s1 as [di1| ]; [ idtac | reflexivity ].
+rewrite I_add_wn_i_comm; reflexivity.
 Qed.
 
 Theorem I_eqs_add_comm : ∀ x y, I_eqs (x + y) (y + x).
