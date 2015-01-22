@@ -26,11 +26,11 @@ Definition I_zero := {| idig i := false |}.
 Notation "0" := I_zero : I_scope.
 Notation "x + y" := (I_add x y) (at level 50, left associativity) : I_scope.
 
+Definition I_eq_wn x y := ∀ i, inat x i = inat y i.
 Definition I_eq x y := ∀ i, (x + 0)%I.[i] = (y + 0)%I.[i].
 
 Notation "x = y" := (I_eq x y) : I_scope.
 Notation "x ≠ y" := (¬ I_eq x y) : I_scope.
-
 
 (* commutativity *)
 
@@ -62,7 +62,10 @@ Proof.
 intros x y i.
 unfold carry; simpl.
 rewrite fst_not_1_add_comm.
-bbb.
+remember (fst_not_1 (I_add_wn y x) i) as s1 eqn:Hs1 .
+destruct s1 as [di1| ]; [ idtac | reflexivity ].
+rewrite I_add_wn_i_comm; reflexivity.
+Qed.
 
 Theorem I_add_wn_i_comm_l : ∀ x y z i,
   I_add_wn_i (x + y) z i = I_add_wn_i (y + x) z i.
@@ -71,11 +74,46 @@ intros x y z i.
 unfold I_add_wn_i; simpl; f_equal; f_equal.
 unfold Iwn2I; simpl.
 unfold I_add_wn_i; simpl; f_equal; f_equal; [ apply Nat.add_comm | idtac ].
-bbb.
+apply carry_add_comm.
+Qed.
+
+Theorem fst_not_1_add_comm_l : ∀ x y z i,
+  fst_not_1 (I_add_wn (x + y) z) i = fst_not_1 (I_add_wn (y + x) z) i.
+Proof.
+intros x y z i.
+apply fst_not_1_iff; simpl.
+remember (fst_not_1 (I_add_wn (x + y) z) i) as s1 eqn:Hs1 .
+apply fst_not_1_iff in Hs1; simpl in Hs1.
+destruct s1 as [di1| ].
+ destruct Hs1 as (Hn1, Ht1).
+ split; [ idtac | rewrite I_add_wn_i_comm_l; assumption ].
+ intros dj Hdj.
+ apply Hn1 in Hdj.
+ rewrite I_add_wn_i_comm_l; assumption.
+
+ intros dj.
+ rewrite I_add_wn_i_comm_l.
+ apply Hs1.
+Qed.
+
+Theorem carry_add_comm_l : ∀ x y z i,
+   carry (I_add_wn (x + y) z) i = carry (I_add_wn (y + x) z) i.
+Proof.
+intros x y z i.
+unfold carry; simpl.
+rewrite fst_not_1_add_comm_l.
+remember (fst_not_1 (I_add_wn (y + x) z) i) as s1 eqn:Hs1 .
+destruct s1 as [di1| ]; [ idtac | reflexivity ].
+apply I_add_wn_i_comm_l.
+Qed.
 
 Theorem I_add_comm : ∀ x y, (x + y = y + x)%I.
 Proof.
 intros x y.
 unfold I_eq; simpl; intros i.
 unfold Iwn2I; simpl.
-bbb.
+f_equal; [ rewrite I_add_wn_i_comm_l; reflexivity | f_equal ].
+apply carry_add_comm_l.
+Qed.
+
+Close Scope nat_scope.
