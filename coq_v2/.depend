@@ -1,2 +1,3 @@
 Real01.vo Real01.glob Real01.v.beautified: Real01.v
+Real01Add.vo Real01Add.glob Real01Add.v.beautified: Real01Add.v Real01.vo
 T.vo T.glob T.v.beautified: T.v
