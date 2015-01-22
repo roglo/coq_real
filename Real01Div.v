@@ -570,7 +570,6 @@ destruct dj1; simpl in Ht1.
         clear H3; rename H into Hx_2.
         simpl in Hx_2.
         unfold I_div_lt_i in Hx_2; simpl in Hx_2.
-bbb.
         destruct (I_lt_dec x2 (½y)%I) as [H3| H3].
          subst x2.
          simpl in Hx1, Hxj4, Hxj2, Hxj3.
