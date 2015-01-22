@@ -238,6 +238,24 @@ destruct b1.
   rewrite xorb_true_l in Hi; symmetry in Hi.
   rewrite xorb_true_l in Hi; symmetry in Hi.
   apply negb_inj in Hi.
+  f_equal.
+  unfold carry; simpl.
+  remember (fst_not_1 (I_add_wn x z) (S i)) as s1 eqn:Hs1 .
+  remember (fst_not_1 (I_add_wn y z) (S i)) as s2 eqn:Hs2 .
+  apply fst_not_1_iff in Hs1; simpl in Hs1.
+  apply fst_not_1_iff in Hs2; simpl in Hs2.
+  destruct s1 as [di1| ].
+   destruct s2 as [di2| ].
+    unfold I_add_wn_i; simpl.
+    unfold carry in Hi; simpl in Hi.
+    remember (fst_not_1 (I2Iwn x) (S i)) as s3 eqn:Hs3 .
+    remember (fst_not_1 (I2Iwn y) (S i)) as s4 eqn:Hs4 .
+    apply fst_not_1_iff in Hs3; simpl in Hs3.
+    apply fst_not_1_iff in Hs4; simpl in Hs4.
+    destruct s3 as [di3| ].
+     destruct Hs3 as (Hn3, Ht3).
+     destruct s4 as [di4| ].
+      destruct Hs4 as (Hn4, Ht4).
 bbb.
 
 (* associativity *)
