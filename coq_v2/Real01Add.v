@@ -410,8 +410,7 @@ destruct sx as [dx| ].
      rewrite IHn in H; [ idtac | apply Nat.lt_succ_diag_r ].
      rewrite Hny, xorb_false_l, xorb_true_l in H.
      symmetry in H.
-     rewrite <- Nat.add_succ_l in H.
-     rewrite <- Nat.add_succ_r in H.
+     rewrite <- Nat.add_succ_l, <- Nat.add_succ_r in H.
      erewrite carry_before_inf_relay in H; [ idtac | eassumption ].
      unfold carry in H; simpl in H.
      remember (fst_not_1 (I2Iwn x) (S (i + S (dx + S n)))) as s1 eqn:Hs1 .
@@ -425,37 +424,24 @@ destruct sx as [dx| ].
       apply fst_not_1_iff in H; simpl in H.
       destruct H as (Hn1, _).
       pose proof (Hxy (S (S (i + dx + S n)))) as H.
-bbb.
-      pose proof (Hxy (S (S (i + dx + S n)))) as H.
-      unfold I_add_i in H; simpl in H.
-      do 2 rewrite xorb_false_r in H.
+      unfold Iwn2I in H; simpl in H.
+      do 2 rewrite I_add_wn_0_r, carry_add_wn_0_r in H.
       rewrite <- Nat.add_succ_r in H.
       rewrite <- Nat.add_assoc in H.
       rewrite Nat.add_succ_r in H.
-      rewrite Hdi, Hny, xorb_true_l in H.
-      apply negb_sym in H.
-      rewrite negb_involutive in H.
-      rewrite <- Nat.add_succ_l in H.
-      rewrite carry_before_inf_relay9 in H; [ idtac | assumption ].
-      symmetry in H, Hs1.
-      remember (S i + S (dx + S n))%nat as z.
-      replace (S z) with (S z + 0)%nat in H by apply Nat.add_0_r.
-      subst z.
-      rewrite <- Nat.add_succ_l in H; simpl in H.
-      rewrite <- Nat.add_succ_l in H.
-      rewrite <- Nat.add_succ_r in Hs1.
+      rewrite Hdi, Hny in H.
+      symmetry in H.
+      rewrite <- Nat.add_succ_l, <- Nat.add_succ_r in H.
+      erewrite carry_before_inf_relay in H; [ idtac | eassumption ].
+      symmetry in H.
+      rewrite Nat.add_succ_l, Nat.add_succ_r, <- Nat.add_1_r in H.
       assert (0 < S di1)%nat as HH by apply Nat.lt_0_succ.
-      erewrite carry_before_relay9 in H; try eassumption.
-      simpl in H.
-      do 4 rewrite Nat.add_succ_r in H.
-      do 3 rewrite Nat.add_succ_r in Hx1.
-      simpl in H.
-      rewrite Nat.add_assoc in Hx1.
-      simpl in Hx1.
-      rewrite Nat.add_assoc in H.
+      erewrite carry_before_relay in H; [ idtac | eassumption | auto ].
+      rewrite Nat.add_succ_l in H.
+      apply negb_sym in Hx1.
       rewrite Hx1 in H; discriminate H.
 
-   rewrite Nat.add_succ_r; simpl; apply Hny.
+   rewrite Nat.add_succ_r; simpl; apply b2n_1_iff, Hny.
 
  destruct sy as [dy| ]; [ idtac | discriminate H ].
  symmetry in H; simpl in H.
@@ -470,6 +456,8 @@ bbb.
    pose proof (Hny di H1) as H.
    destruct dy; [ exfalso; revert H1; apply Nat.nlt_0_r | idtac ].
    rename H into Hdi.
+   pose proof (Hxy (S (i + dy))%nat) as H.
+bbb.
    pose proof (Hxy (S (i + dy))%nat) as H.
    unfold I_add_i in H; simpl in H.
    do 2 rewrite xorb_false_r in H.
