@@ -457,29 +457,27 @@ destruct sx as [dx| ].
    destruct dy; [ exfalso; revert H1; apply Nat.nlt_0_r | idtac ].
    rename H into Hdi.
    pose proof (Hxy (S (i + dy))%nat) as H.
-bbb.
-   pose proof (Hxy (S (i + dy))%nat) as H.
-   unfold I_add_i in H; simpl in H.
-   do 2 rewrite xorb_false_r in H.
+   unfold Iwn2I in H; simpl in H.
+   do 2 rewrite I_add_wn_0_r, carry_add_wn_0_r in H.
    rewrite Hny in H; [ idtac | apply Nat.lt_succ_diag_r ].
    rewrite Hnx in H.
-   rewrite xorb_true_l in H.
-   apply negb_sym in H.
-   rewrite negb_involutive in H.
-   rewrite <- Nat.add_succ_l in H.
-   symmetry in Hsy.
-   erewrite carry_before_relay9 in H; [ idtac | eassumption | auto ].
-   symmetry in Hsx.
-   rewrite carry_before_inf_relay9 in H; [ idtac | assumption ].
-   simpl in H; rewrite Hty in H; discriminate H.
+   rewrite <- Nat.add_succ_l, <- Nat.add_succ_r in H.
+   symmetry in H.
+   erewrite carry_before_relay in H; [ idtac | eassumption | auto ].
+   erewrite carry_before_inf_relay in H; [ idtac | eassumption ].
+   apply b2n_not_1_iff in Hty.
+   rewrite Nat.add_succ_l, Hty in H.
+   discriminate H.
 
    subst di.
    destruct dy; [ rewrite Nat.add_0_r; assumption | idtac ].
-   rewrite Nat.add_succ_r; apply Hnx.
+   rewrite Nat.add_succ_r; apply b2n_1_iff, Hnx.
 
    destruct di; [ rewrite Nat.add_0_r; assumption | idtac ].
-   rewrite Nat.add_succ_r; apply Hnx.
+   rewrite Nat.add_succ_r; apply b2n_1_iff, Hnx.
 
+  destruct di; [ rewrite Nat.add_0_r; assumption | idtac ].
+bbb.
   destruct di; [ rewrite Nat.add_0_r; assumption | idtac ].
   rewrite Nat.add_succ_r.
   destruct (lt_eq_lt_dec di dy) as [[H1| H1]| H1].
