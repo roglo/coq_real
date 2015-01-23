@@ -294,6 +294,10 @@ destruct b1.
          rename H into Hy2.
          apply b2n_1_iff in Hy1.
 bbb.
+  Ht1 : x .[ S (i + di1)] = false
+  Hy1 : y .[ S (i + di1)] = true
+  Heq : (x = y)%I
+
    i   -  di1  -  di2  -  di4
 x  0   .   0   .   .   .   .
 y  0   1   1   1   1   1   0
