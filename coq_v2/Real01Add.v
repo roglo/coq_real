@@ -216,6 +216,40 @@ intros a b H.
 destruct a, b; try reflexivity; discriminate H.
 Qed.
 
+Theorem carry_before_relay : ∀ x i di,
+  Some di = fst_not_1 (I2Iwn x) i
+  → ∀ dj, dj ≤ di → carry (I2Iwn x) (i + dj) = b2n (x.[i + di]).
+Proof.
+intros x i di Hs dj Hdj.
+unfold carry; simpl.
+remember (fst_not_1 (I2Iwn x) (i + dj)) as s1 eqn:Hs1 .
+apply fst_not_1_iff in Hs; simpl in Hs.
+apply fst_not_1_iff in Hs1; simpl in Hs1.
+destruct Hs as (Hn, Ht).
+apply b2n_not_1_iff in Ht.
+destruct s1 as [di1| ].
+ destruct Hs1 as (Hn1, Ht1).
+ apply b2n_not_1_iff in Ht1.
+ rewrite Ht, Ht1; reflexivity.
+
+ pose proof (Hs1 (di - dj)) as H.
+ rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+ rewrite Nat.add_shuffle0, Nat.add_sub in H.
+ rewrite Ht in H; discriminate H.
+Qed.
+
+Theorem carry_before_inf_relay : ∀ x i,
+  None = fst_not_1 (I2Iwn x) i
+  → ∀ dj, carry (I2Iwn x) (i + dj) = 1.
+Proof.
+intros x i Hs dj.
+unfold carry; simpl.
+remember (fst_not_1 (I2Iwn x) (i + dj)) as s1 eqn:Hs1 .
+destruct s1 as [di1| ]; [ idtac | reflexivity ].
+apply fst_not_1_iff in Hs; simpl in Hs.
+rewrite <- Nat.add_assoc; apply Hs.
+Qed.
+
 Theorem I_eq_neq_if : ∀ x y i,
   (x = y)%I
   → x.[i] = true
@@ -224,6 +258,7 @@ Theorem I_eq_neq_if : ∀ x y i,
     (∀ di, x.[i+S di] = false) ∧ (∀ di, y.[i+S di] = true).
 Proof.
 intros x y i Hxy Hx Hy.
+remember Hxy as Heq; clear HeqHeq.
 unfold I_eq in Hxy; simpl in Hxy.
 pose proof (Hxy i) as H.
 unfold Iwn2I, I_add_wn_i in H; simpl in H.
@@ -239,45 +274,38 @@ destruct sx as [dx| ].
  apply fst_not_1_iff in HH; simpl in HH.
  destruct HH as (Hnx, Htx).
  apply b2n_not_1_iff in Htx; rewrite Htx in H.
-bbb.
- destruct HH as (Hnx, Htx); rewrite Htx in H.
  destruct sy as [dy| ]; [ idtac | clear H ].
   remember Hsy as HH; clear HeqHH.
-  apply fst_same_sym_iff in HH; simpl in HH.
+  apply fst_not_1_iff in HH; simpl in HH.
   destruct HH as (Hny, Hty).
-  rewrite Hty in H; discriminate H.
+  apply b2n_not_1_iff in Hty; rewrite Hty in H.
+  discriminate H.
 
   right.
   remember Hsy as Hny; clear HeqHny.
-  apply fst_same_sym_iff in Hny; simpl in Hny.
+  apply fst_not_1_iff in Hny; simpl in Hny.
   split; intros di.
    destruct (lt_eq_lt_dec di dx) as [[H1| H1]| H1].
     pose proof (Hnx di H1) as H.
     rename H into Hdi.
     destruct dx; [ exfalso; revert H1; apply Nat.nlt_0_r | idtac ].
+    apply b2n_1_iff in Hdi.
     pose proof (Hxy (S (i + dx))%nat) as H.
-    unfold I_add_i in H; simpl in H.
-    do 2 rewrite xorb_false_r in H.
+    unfold Iwn2I in H; simpl in H.
+    do 2 rewrite I_add_wn_0_r in H.
     rewrite Hnx in H; [ idtac | apply Nat.lt_succ_diag_r ].
     rewrite Hny in H.
-    rewrite xorb_true_l in H.
-    symmetry in H.
-    rewrite xorb_true_l in H.
-    apply negb_sym in H.
-    rewrite negb_involutive in H.
-    rewrite <- Nat.add_succ_l in H.
-    symmetry in Hsx.
-    erewrite carry_before_relay9 in H; [ idtac | eassumption | auto ].
-    symmetry in Hsy.
-    simpl in H.
-    do 2 rewrite <- Nat.add_succ_l in H.
-    rewrite carry_before_inf_relay9 in H; [ idtac | assumption ].
+    do 2 rewrite xorb_false_l, carry_add_wn_0_r in H.
+    rewrite <- Nat.add_succ_l, <- Nat.add_succ_r in H.
+    erewrite carry_before_relay in H; [ idtac | eassumption | auto ].
+    erewrite carry_before_inf_relay in H; [ idtac | eassumption ].
     simpl in H; rewrite Htx in H; discriminate H.
 
     subst di.
     rewrite Nat.add_succ_r; assumption.
 
     remember (di - S dx)%nat as n eqn:Hn .
+bbb.
     apply nat_sub_add_r in Hn; [ idtac | assumption ].
     subst di; clear H1.
     rewrite Nat.add_succ_r.
@@ -304,7 +332,7 @@ bbb.
       rewrite Hdi in Hx1; discriminate Hx1.
 
       remember Hs1 as H; clear HeqH.
-      apply fst_same_sym_iff in H; simpl in H.
+      apply fst_not_1_iff in H; simpl in H.
       destruct H as (Hn1, _).
       pose proof (Hxy (S (S (i + dx)))) as H.
       unfold I_add_i in H; simpl in H.
@@ -347,7 +375,7 @@ bbb.
       rewrite Hdi in Hx1; discriminate Hx1.
 
       remember Hs1 as H; clear HeqH.
-      apply fst_same_sym_iff in H; simpl in H.
+      apply fst_not_1_iff in H; simpl in H.
       destruct H as (Hn1, _).
       pose proof (Hxy (S (S (i + dx + S n)))) as H.
       unfold I_add_i in H; simpl in H.
@@ -383,11 +411,11 @@ bbb.
  destruct sy as [dy| ]; [ idtac | discriminate H ].
  symmetry in H; simpl in H.
  remember Hsy as HH; clear HeqHH.
- apply fst_same_sym_iff in HH; simpl in HH.
+ apply fst_not_1_iff in HH; simpl in HH.
  destruct HH as (Hny, Hty); clear H.
  left.
  remember Hsx as Hnx; clear HeqHnx.
- apply fst_same_sym_iff in Hnx; simpl in Hnx.
+ apply fst_not_1_iff in Hnx; simpl in Hnx.
  split; intros di.
   destruct (lt_eq_lt_dec di dy) as [[H1| H1]| H1].
    pose proof (Hny di H1) as H.
@@ -465,7 +493,7 @@ bbb.
      rewrite Hdi in Hx1; discriminate Hx1.
 
      remember Hs1 as H; clear HeqH.
-     apply fst_same_sym_iff in H; simpl in H.
+     apply fst_not_1_iff in H; simpl in H.
      destruct H as (Hn1, _).
      pose proof (Hxy (S (S (i + dy)))) as H.
      unfold I_add_i in H; simpl in H.
@@ -515,7 +543,7 @@ bbb.
      rewrite Hdi in Hx1; discriminate Hx1.
 
      remember Hs1 as H; clear HeqH.
-     apply fst_same_sym_iff in H; simpl in H.
+     apply fst_not_1_iff in H; simpl in H.
      destruct H as (Hn1, _).
      pose proof (Hxy (S (S (i + dy + S n)))) as H.
      unfold I_add_i in H; simpl in H.
