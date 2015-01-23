@@ -508,13 +508,13 @@ destruct sx as [dx| ].
     apply neq_negb; simpl; intros Hdi.
     rewrite Nat.add_0_r in Hdi.
     pose proof (Hxy (S (i + dy))) as H.
+    unfold Iwn2I in H; simpl in H.
+    do 2 rewrite I_add_wn_0_r, carry_add_wn_0_r in H.
+    apply b2n_not_1_iff in Hty.
+    rewrite Hnx, Hty in H.
+    rewrite <- Nat.add_succ_l, <- Nat.add_succ_r in H.
+    rewrite carry_before_inf_relay in H; [ idtac | assumption ].
 bbb.
-    pose proof (Hxy (S (i + dy))) as H.
-    unfold I_add_i in H; simpl in H.
-    do 2 rewrite xorb_false_r in H.
-    rewrite Hnx, Hty, xorb_false_l, xorb_true_l in H.
-    symmetry in Hsx, Hsy.
-    rewrite <- Nat.add_succ_l in H.
     rewrite carry_before_inf_relay9 in H; [ simpl in H | assumption ].
     symmetry in H.
     unfold carry in H; simpl in H.
