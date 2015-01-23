@@ -198,6 +198,18 @@ intros b; split; intros H; [ idtac | subst b; reflexivity ].
 destruct b; [ discriminate H | reflexivity ].
 Qed.
 
+Theorem b2n_1_iff : ∀ b, b2n b = 1 ↔ b = true.
+Proof.
+intros b; split; intros H; [ idtac | subst b; reflexivity ].
+destruct b; [ reflexivity | discriminate H ].
+Qed.
+
+Theorem b2n_not_1_iff : ∀ b, b2n b ≠ 1 ↔ b = false.
+Proof.
+intros b; split; intros H; [ idtac | subst b; intros H; discriminate H ].
+destruct b; [ exfalso; apply H; reflexivity | reflexivity ].
+Qed.
+
 Theorem negb_inj : ∀ a b, negb a = negb b → a = b.
 Proof.
 intros a b H.
@@ -207,6 +219,7 @@ Qed.
 Theorem I_add_compat_r : ∀ x y z, (x = y)%I → (x + z = y + z)%I.
 Proof.
 intros x y z Hxy.
+remember Hxy as Heq; clear HeqHeq.
 unfold I_eq.
 apply Iwn2I_eq_wn_compat.
 unfold I_eq_wn; simpl; intros i.
@@ -245,7 +258,11 @@ destruct b1.
   apply fst_not_1_iff in Hs1; simpl in Hs1.
   apply fst_not_1_iff in Hs2; simpl in Hs2.
   destruct s1 as [di1| ].
+   destruct Hs1 as (Hn1, Ht1).
+   unfold I_add_wn_i in Ht1; simpl in Ht1.
    destruct s2 as [di2| ].
+    destruct Hs2 as (Hn2, Ht2).
+    unfold I_add_wn_i in Ht2; simpl in Ht2.
     unfold I_add_wn_i; simpl.
     unfold carry in Hi; simpl in Hi.
     remember (fst_not_1 (I2Iwn x) (S i)) as s3 eqn:Hs3 .
@@ -254,8 +271,37 @@ destruct b1.
     apply fst_not_1_iff in Hs4; simpl in Hs4.
     destruct s3 as [di3| ].
      destruct Hs3 as (Hn3, Ht3).
+     apply b2n_not_1_iff in Ht3.
      destruct s4 as [di4| ].
       destruct Hs4 as (Hn4, Ht4).
+      apply b2n_not_1_iff in Ht4.
+      destruct (lt_eq_lt_dec di1 di2) as [[H1| H1]| H1].
+       remember H1 as H; clear HeqH.
+       apply Hn2 in H.
+       unfold I_add_wn_i in H; simpl in H.
+       apply Nat.eq_add_1 in H.
+       destruct H as [(Hy1, Hz1)| (Hy1, Hz1)].
+        rewrite Hz1, Nat.add_0_r in Ht1.
+        apply b2n_not_1_iff in Ht1.
+        rewrite Ht1, Hz1; simpl.
+        symmetry.
+        apply Nat.eq_add_0.
+        unfold I_add_wn_i in Hxy; simpl in Hxy.
+        destruct (lt_eq_lt_dec di2 di4) as [[H2| H2]| H2].
+         remember H2 as H; clear HeqH.
+         apply Hn4 in H.
+         rewrite H in Ht2; simpl in Ht2.
+         rename H into Hy2.
+         apply b2n_1_iff in Hy1.
+bbb.
+   i   -  di1  -  di2  -  di4
+x  0   .   0   .   .   .   .
+y  0   1   1   1   1   1   0
+z  0   .   0   .   1   .   .
+
+         pose proof (Hxy (S (i + di1))) as H.
+         rewrite Ht1, xorb_true_l in H.
+         rewrite Hy1, xorb_false_l in H.
 bbb.
 
 (* associativity *)
