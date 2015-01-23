@@ -36,6 +36,45 @@ Arguments I_eq x%I y%I.
 Notation "x = y" := (I_eq x y) : I_scope.
 Notation "x ≠ y" := (¬ I_eq x y) : I_scope.
 
+(* *)
+
+Theorem le_neq_lt : ∀ a b : nat, a ≤ b → a ≠ b → (a < b)%nat.
+Proof.
+intros a b Hab Hnab.
+apply le_lt_eq_dec in Hab.
+destruct Hab as [Hle| Heq]; [ assumption | idtac ].
+exfalso; apply Hnab; assumption.
+Qed.
+
+Theorem all_lt_all : ∀ P : nat → Prop,
+  (∀ n, (∀ m, (m < n)%nat → P m) → P n)
+  → ∀ n, P n.
+Proof.
+intros P Hm n.
+apply Hm.
+induction n; intros m Hmn.
+ apply Nat.nle_gt in Hmn.
+ exfalso; apply Hmn, Nat.le_0_l.
+
+ destruct (eq_nat_dec m n) as [H1| H1].
+  subst m; apply Hm; assumption.
+
+  apply IHn.
+  apply le_neq_lt; [ idtac | assumption ].
+  apply Nat.succ_le_mono; assumption.
+Qed.
+
+Theorem nat_sub_add_r : ∀ a b c,
+  a < b
+  → c = b - S a
+  → b = a + S c.
+Proof.
+intros a b c Hab Hc; subst c.
+rewrite <- Nat.sub_succ_l; [ simpl | assumption ].
+rewrite Nat.add_sub_assoc; [ idtac | apply Nat.lt_le_incl; assumption ].
+rewrite Nat.add_comm, Nat.add_sub; reflexivity.
+Qed.
+
 (* I_eqs implies I_eq *)
 
 Theorem fst_not_1_add_wn_eqs_compat : ∀ x y z i,
@@ -305,12 +344,12 @@ destruct sx as [dx| ].
     rewrite Nat.add_succ_r; assumption.
 
     remember (di - S dx)%nat as n eqn:Hn .
-bbb.
     apply nat_sub_add_r in Hn; [ idtac | assumption ].
     subst di; clear H1.
     rewrite Nat.add_succ_r.
     induction n as (n, IHn) using all_lt_all.
     destruct n.
+bbb.
      rewrite Nat.add_succ_r.
      rewrite <- negb_involutive.
      apply neq_negb; simpl; intros Hdi.
