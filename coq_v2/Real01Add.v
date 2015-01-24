@@ -694,19 +694,24 @@ destruct b1.
          remember Ht1 as H; clear HeqH.
          symmetry in Heq.
          eapply I_eq_neq_if in H; try eassumption.
-bbb.
-  Ht1 : x .[ S (i + di1)] = false
-  Hy1 : y .[ S (i + di1)] = true
-  Heq : (x = y)%I
+         destruct H as [(Hyi, Hxi)| (Hyi, Hxi)].
+          pose proof (Hyi (di4 - di1)) as H.
+          simpl in H.
+          rewrite Nat.add_sub_assoc in H; [ idtac | omega ].
+          rewrite Nat.add_shuffle0, Nat.add_sub in H.
+          rewrite Ht4 in H; discriminate H.
 
-   i   -  di1  -  di2  -  di4
-x  0   .   0   .   .   .   .
-y  0   1   1   1   1   1   0
-z  0   .   0   .   1   .   .
+          destruct di2; [ exfalso; revert H1; apply Nat.nlt_0_r | idtac ].
+          pose proof (Hyi (di2 - di1)) as H.
+          simpl in H.
+          rewrite Nat.add_succ_r in H.
+          apply le_S_n in H1.
+          rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+          rewrite Nat.add_shuffle0, Nat.add_sub in H.
+          rewrite Nat.add_succ_r, H in Hy2.
+          discriminate Hy2.
 
-         pose proof (Hxy (S (i + di1))) as H.
-         rewrite Ht1, xorb_true_l in H.
-         rewrite Hy1, xorb_false_l in H.
+         subst di4.
 bbb.
 
 (* associativity *)
