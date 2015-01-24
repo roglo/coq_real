@@ -285,6 +285,23 @@ intros a b H.
 destruct a, b; try reflexivity; discriminate H.
 Qed.
 
+Theorem carry_I2Iwn : ∀ x i,
+  carry (I2Iwn x) i =
+    match fst_not_1 (I2Iwn x) i with
+    | Some _ => 0
+    | None => 1
+    end.
+Proof.
+intros x i.
+unfold carry; simpl.
+remember (fst_not_1 (I2Iwn x) i) as s1 eqn:Hs1 .
+apply fst_not_1_iff in Hs1; simpl in Hs1.
+destruct s1 as [di1| ]; [ idtac | reflexivity ].
+destruct Hs1 as (_, Hn1).
+apply b2n_not_1_iff in Hn1.
+rewrite Hn1; reflexivity.
+Qed.
+
 Theorem carry_before_relay : ∀ x i di,
   Some di = fst_not_1 (I2Iwn x) i
   → ∀ dj, dj ≤ di → carry (I2Iwn x) (i + dj) = 0.
