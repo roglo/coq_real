@@ -287,7 +287,7 @@ Qed.
 
 Theorem carry_before_relay : ∀ x i di,
   Some di = fst_not_1 (I2Iwn x) i
-  → ∀ dj, dj ≤ di → carry (I2Iwn x) (i + dj) = b2n (x.[i + di]).
+  → ∀ dj, dj ≤ di → carry (I2Iwn x) (i + dj) = 0.
 Proof.
 intros x i di Hs dj Hdj.
 unfold carry; simpl.
@@ -299,7 +299,7 @@ apply b2n_not_1_iff in Ht.
 destruct s1 as [di1| ].
  destruct Hs1 as (Hn1, Ht1).
  apply b2n_not_1_iff in Ht1.
- rewrite Ht, Ht1; reflexivity.
+ rewrite Ht1; reflexivity.
 
  pose proof (Hs1 (di - dj)) as H.
  rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
@@ -368,7 +368,7 @@ destruct sx as [dx| ].
     rewrite <- Nat.add_succ_l, <- Nat.add_succ_r in H.
     erewrite carry_before_relay in H; [ idtac | eassumption | auto ].
     erewrite carry_before_inf_relay in H; [ idtac | eassumption ].
-    simpl in H; rewrite Htx in H; discriminate H.
+    discriminate H.
 
     subst di.
     rewrite Nat.add_succ_r; assumption.
@@ -415,7 +415,7 @@ destruct sx as [dx| ].
       assert (0 < S di1)%nat as HH by apply Nat.lt_0_succ.
       rewrite Nat.add_succ_l, Nat.add_succ_r, <- Nat.add_1_r in H.
       erewrite carry_before_relay in H; [ idtac | eassumption | auto ].
-      simpl in H; rewrite H in Hx1; discriminate Hx1.
+      discriminate H.
 
      rewrite Nat.add_succ_r.
      rewrite <- negb_involutive.
@@ -454,9 +454,7 @@ destruct sx as [dx| ].
       rewrite Nat.add_succ_l, Nat.add_succ_r, <- Nat.add_1_r in H.
       assert (0 < S di1)%nat as HH by apply Nat.lt_0_succ.
       erewrite carry_before_relay in H; [ idtac | eassumption | auto ].
-      rewrite Nat.add_succ_l in H.
-      apply negb_sym in Hx1.
-      rewrite Hx1 in H; discriminate H.
+      discriminate H.
 
    rewrite Nat.add_succ_r; simpl; apply b2n_1_iff, Hny.
 
@@ -482,8 +480,6 @@ destruct sx as [dx| ].
    symmetry in H.
    erewrite carry_before_relay in H; [ idtac | eassumption | auto ].
    erewrite carry_before_inf_relay in H; [ idtac | eassumption ].
-   apply b2n_not_1_iff in Hty.
-   rewrite Nat.add_succ_l, Hty in H.
    discriminate H.
 
    subst di.
@@ -508,8 +504,7 @@ destruct sx as [dx| ].
    symmetry in H.
    erewrite carry_before_relay in H; [ idtac | eassumption | auto ].
    rewrite carry_before_inf_relay in H; [ idtac | assumption ].
-   apply b2n_not_1_iff in Hty.
-   simpl in H; rewrite Hty in H; discriminate H.
+   discriminate H.
 
    apply b2n_not_1_iff in Hty.
    subst di; assumption.
@@ -560,8 +555,7 @@ destruct sx as [dx| ].
      clear HH.
      assert (0 < S di1)%nat as HH by apply Nat.lt_0_succ.
      erewrite carry_before_relay in H; try eassumption.
-     rewrite xorb_false_l in H.
-     simpl in H; rewrite H in Hx1; discriminate Hx1.
+     discriminate H.
 
     rewrite Nat.add_succ_r.
     rewrite <- negb_involutive.
@@ -607,11 +601,7 @@ destruct sx as [dx| ].
      rewrite <- Nat.add_succ_r in H.
      rewrite Nat.add_succ_r in Hs1.
      erewrite carry_before_relay in H; try eassumption.
-     do 2 rewrite xorb_false_l in H.
-     do 3 rewrite Nat.add_succ_r in Hx1; simpl in Hx1.
-     rewrite Nat.add_succ_r in Hx1.
-     do 3 rewrite Nat.add_succ_r in H.
-     simpl in H, Hx1; rewrite <- H in Hx1; discriminate Hx1.
+     discriminate H.
 Qed.
 
 Theorem I_add_compat_r : ∀ x y z, (x = y)%I → (x + z = y + z)%I.
