@@ -88,6 +88,23 @@ split; intros H.
  destruct b'; discriminate H.
 Qed.
 
+(* I_eq equivalence relation *)
+
+Theorem I_eq_refl : reflexive _ I_eq.
+Proof. intros x i; reflexivity. Qed.
+
+Theorem I_eq_sym : symmetric _ I_eq.
+Proof. intros x y Hxy i; symmetry; apply Hxy. Qed.
+
+Theorem I_eq_trans : transitive _ I_eq.
+Proof. intros x y z Hxy Hyz i; rewrite Hxy; apply Hyz. Qed.
+
+Add Parametric Relation : _ I_eq
+ reflexivity proved by I_eq_refl
+ symmetry proved by I_eq_sym
+ transitivity proved by I_eq_trans
+ as I_rel.
+
 (* I_eqs implies I_eq *)
 
 Theorem fst_not_1_add_wn_eqs_compat : ∀ x y z i,
@@ -550,50 +567,51 @@ destruct sx as [dx| ].
     rewrite <- negb_involutive.
     apply neq_negb; simpl; intros Hdi.
     pose proof (Hxy (S (i + dy + S n))) as H.
-bbb.
-    pose proof (Hxy (S (i + dy + S n))) as H.
-    unfold I_add_i in H; simpl in H.
-    do 2 rewrite xorb_false_r in H.
+    unfold Iwn2I in H; simpl in H.
+    do 2 rewrite I_add_wn_0_r, carry_add_wn_0_r in H.
     rewrite <- Nat.add_assoc in H.
     pose proof (IHn n (Nat.lt_succ_diag_r n)) as HH.
     rewrite <- Nat.add_succ_r in HH.
     rewrite <- Nat.add_succ_r in HH.
     rewrite Nat.add_succ_r in HH.
     rewrite Hnx, HH, xorb_false_l, xorb_true_l in H.
-    symmetry in Hsx, Hsy.
-    rewrite <- Nat.add_succ_l in H.
-    rewrite carry_before_inf_relay9 in H; [ simpl in H | assumption ].
-    symmetry in H.
+    rewrite <- Nat.add_succ_l, <- Nat.add_succ_r in H.
+    rewrite carry_before_inf_relay in H; [ simpl in H | assumption ].
     unfold carry in H; simpl in H.
-    remember (fst_same y 0 (S (S (i + (dy + S n))))) as s1 eqn:Hs1 .
+    remember (fst_not_1 (I2Iwn y) (S (i + S (dy + S n)))) as s1 eqn:Hs1 .
     destruct s1 as [di1| ]; [ idtac | discriminate H ].
     rename H into Hx1.
     destruct di1.
      rewrite Nat.add_0_r in Hx1.
-     rewrite Hdi in Hx1; discriminate Hx1.
+     apply b2n_1_iff in Hdi.
+     rewrite Nat.add_succ_r, Hdi in Hx1; discriminate Hx1.
 
      remember Hs1 as H; clear HeqH.
      apply fst_not_1_iff in H; simpl in H.
      destruct H as (Hn1, _).
      pose proof (Hxy (S (S (i + dy + S n)))) as H.
-     unfold I_add_i in H; simpl in H.
-     do 2 rewrite xorb_false_r in H.
+     unfold Iwn2I in H; simpl in H.
+     do 2 rewrite I_add_wn_0_r, carry_add_wn_0_r in H.
      rewrite <- Nat.add_assoc in H.
      rewrite Hdi in H.
      rewrite <- Nat.add_succ_r in H.
-     rewrite Hnx, xorb_true_l in H.
-     rewrite <- Nat.add_succ_l in H.
-     erewrite carry_before_inf_relay9 in H; [ idtac | assumption ].
-     apply negb_sym in H; simpl in H.
+     rewrite Hnx in H.
+     rewrite <- Nat.add_succ_l, <- Nat.add_succ_r in H.
+     erewrite carry_before_inf_relay in H; [ idtac | assumption ].
      rewrite Nat.add_succ_r in H.
+     rewrite Nat.add_succ_l, Nat.add_succ_r in H.
      remember (S (S (i + (dy + S n)))) as z.
      replace z with (z + 0)%nat in H by apply Nat.add_0_r.
      subst z.
-     symmetry in Hs1.
      assert (0 < S di1)%nat as HHH by apply Nat.lt_0_succ.
-     erewrite carry_before_relay9 in H; try eassumption.
-     simpl in H.
-     rewrite Hx1 in H; discriminate H.
+     rewrite <- Nat.add_succ_r in H.
+     rewrite Nat.add_succ_r in Hs1.
+     erewrite carry_before_relay in H; try eassumption.
+     do 2 rewrite xorb_false_l in H.
+     do 3 rewrite Nat.add_succ_r in Hx1; simpl in Hx1.
+     rewrite Nat.add_succ_r in Hx1.
+     do 3 rewrite Nat.add_succ_r in H.
+     simpl in H, Hx1; rewrite <- H in Hx1; discriminate Hx1.
 Qed.
 
 Theorem I_add_compat_r : ∀ x y z, (x = y)%I → (x + z = y + z)%I.
@@ -673,6 +691,9 @@ destruct b1.
          rewrite H in Ht2; simpl in Ht2.
          rename H into Hy2.
          apply b2n_1_iff in Hy1.
+         remember Ht1 as H; clear HeqH.
+         symmetry in Heq.
+         eapply I_eq_neq_if in H; try eassumption.
 bbb.
   Ht1 : x .[ S (i + di1)] = false
   Hy1 : y .[ S (i + di1)] = true
