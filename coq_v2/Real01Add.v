@@ -24,7 +24,7 @@ Definition I_add x y := {| idig := Iwn2I (I_add_wn x y) |}.
 Definition I_zero := {| idig i := false |}.
 
 Notation "0" := I_zero : I_scope.
-Notation "x + y" := (I_add x y) (at level 50, left associativity) : I_scope.
+Notation "x + y" := (I_add x y) : I_scope.
 
 Definition I_eq_wn x y := ∀ i, inat x i = inat y i.
 Definition I_eqs x y := ∀ i, x.[i] = y.[i].
