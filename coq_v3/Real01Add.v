@@ -3,10 +3,6 @@
 Require Import Utf8 QArith NPeano.
 Require Import Oracle Real01.
 
-(*
-Set Implicit Arguments.
-*)
-
 Notation "[ ]" := nil.
 Notation "[ x ; .. ; y … l ]" := (cons x .. (cons y l) ..).
 Notation "[ x ]" := (cons x nil).
