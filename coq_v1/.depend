@@ -1,4 +1,5 @@
-Real01Add.vo Real01Add.glob Real01Add.v.beautified: Real01Add.v
+Oracle.vo Oracle.glob Oracle.v.beautified: Oracle.v
+Real01Add.vo Real01Add.glob Real01Add.v.beautified: Real01Add.v Oracle.vo
 Real01Cmp.vo Real01Cmp.glob Real01Cmp.v.beautified: Real01Cmp.v Real01Add.vo
 Real01Div.vo Real01Div.glob Real01Div.v.beautified: Real01Div.v Real01Add.vo Real01Cmp.vo
 Real01Mul.vo Real01Mul.glob Real01Mul.v.beautified: Real01Mul.v Real01Add.vo
