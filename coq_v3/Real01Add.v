@@ -138,4 +138,87 @@ split; intros H.
  symmetry; apply fst_same_iff; assumption.
 Qed.
 
+Theorem carry_compat_r : ∀ x y z j,
+  (∀ i, x .[ i] = y .[ i])
+  → carry y z j = carry x z j.
+Proof.
+intros x y z j Hxy.
+unfold carry; intros.
+remember (fst_same y z j) as s1 eqn:Hs1 .
+remember (fst_same x z j) as s2 eqn:Hs2 .
+symmetry in Hs1, Hs2.
+apply fst_same_iff in Hs1.
+apply fst_same_iff in Hs2.
+simpl in Hs1, Hs2; simpl.
+destruct s1 as [di1| ].
+ destruct Hs1 as (Hn1, Hs1).
+ rewrite Hs1.
+ destruct s2 as [di2| ].
+  destruct Hs2 as (Hn2, Hs2).
+  rewrite Hs2.
+  destruct (lt_dec di1 di2) as [H1| H1].
+   remember H1 as H; clear HeqH.
+   apply Hn2 in H.
+   rewrite Hxy, Hs1 in H.
+   destruct (z.[j+di1]); discriminate H.
+
+   apply Nat.nlt_ge in H1.
+   destruct (lt_dec di2 di1) as [H2| H2].
+    remember H2 as H; clear HeqH.
+    apply Hn1 in H.
+    rewrite <- Hxy, Hs2 in H.
+    destruct (z.[j+di2]); discriminate H.
+
+    apply Nat.nlt_ge in H2.
+    apply Nat.le_antisymm in H1; auto.
+
+  rewrite <- Hxy, Hs2 in Hs1.
+  destruct (z.[j + di1]); discriminate Hs1.
+
+ destruct s2 as [di2| ]; auto.
+ destruct Hs2 as (Hn2, Hs2).
+ rewrite Hxy, Hs1 in Hs2.
+ destruct (z.[ j + di2]); discriminate Hs2.
+Qed.
+
+Theorem fst_same_diag : ∀ x n, fst_same x x n = Some 0%nat.
+Proof.
+intros x n.
+apply fst_same_iff; simpl.
+split; [ idtac | reflexivity ].
+intros dj Hdj.
+exfalso; revert Hdj; apply Nat.nlt_0_r.
+Qed.
+
+Theorem carry_diag : ∀ x i, carry x x i = x.[i].
+Proof.
+intros x i.
+unfold carry; simpl.
+rewrite fst_same_diag.
+rewrite Nat.add_0_r; reflexivity.
+Qed.
+
+Theorem negb_xorb_diag_l : ∀ a, negb a ⊕ a = true.
+Proof. intros a; destruct a; reflexivity. Qed.
+
+Theorem negb_xorb_diag_r : ∀ a, a ⊕ negb a = true.
+Proof. intros a; destruct a; reflexivity. Qed.
+
+(* equality is equivalence relation *)
+
+Theorem I_eq_refl : reflexive _ I_eq.
+Proof. intros x i; reflexivity. Qed.
+
+Theorem I_eq_sym : symmetric _ I_eq.
+Proof. intros x y Hxy i; symmetry; apply Hxy. Qed.
+
+Theorem I_eq_trans : transitive _ I_eq.
+Proof. intros x y z Hxy Hyz i; rewrite Hxy; apply Hyz. Qed.
+
+Add Parametric Relation : _ I_eq
+ reflexivity proved by I_eq_refl
+ symmetry proved by I_eq_sym
+ transitivity proved by I_eq_trans
+ as I_rel.
+
 Close Scope nat_scope.
