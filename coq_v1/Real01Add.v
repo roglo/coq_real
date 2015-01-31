@@ -2,6 +2,7 @@
 (* addition modulo 1: a commutative monoid *)
 
 Require Import Utf8 QArith NPeano.
+Require Import Oracle.
 
 Set Implicit Arguments.
 
@@ -23,8 +24,18 @@ Definition I_ones := {| rm i := true |}.
 
 Notation "s .[ i ]" := (rm s i) (at level 15, i at level 200).
 
-Parameter fst_same : I → I → nat → option nat.
-Axiom fst_same_iff : ∀ x y i odi, fst_same x y i = odi ↔
+(* using oracle to find the first identical digit between two numbers *)
+
+Definition Isum2Un_i x y i j := if bool_dec (x.[i+j]) (y.[i+j]) then 1 else 0.
+Definition Isum2Un x y i := {| u := Isum2Un_i x y i |}.
+
+Definition fst_same x y i :=
+  match fst_not_0 (Isum2Un x y i) with
+  | Some di => Some di
+  | None => None
+  end.
+
+Theorem fst_same_iff : ∀ x y i odi, fst_same x y i = odi ↔
   match odi with
   | Some di =>
       (∀ dj, dj < di → x.[i + dj] = negb (y.[i + dj]))
@@ -32,6 +43,70 @@ Axiom fst_same_iff : ∀ x y i odi, fst_same x y i = odi ↔
   | None =>
       ∀ dj, x.[i + dj] = negb (y.[i + dj])
   end.
+Proof.
+intros x y i odi.
+split; intros Hi.
+ subst odi.
+ unfold fst_same; simpl.
+ remember (fst_not_0 (Isum2Un x y i)) as s1 eqn:Hs1 .
+ apply fst_not_0_iff in Hs1; simpl in Hs1.
+ unfold Isum2Un_i in Hs1; simpl in Hs1.
+ destruct s1 as [di1| ].
+  destruct Hs1 as (Hn1, Ht1).
+  split.
+   intros dj Hdj.
+   remember Hdj as H; clear HeqH.
+   apply Hn1 in H.
+   remember (bool_dec (x .[ i + dj]) (y .[ i + dj])) as c.
+   destruct c; [ discriminate H | idtac ].
+   destruct (y .[ i + dj]); simpl.
+    apply not_true_iff_false; assumption.
+
+    apply not_false_iff_true; assumption.
+
+   remember (bool_dec (x .[ i + di1]) (y .[ i + di1])) as c.
+   destruct c; [ assumption | idtac ].
+   exfalso; apply Ht1; reflexivity.
+
+  intros dj.
+  pose proof (Hs1 dj) as H.
+  remember (bool_dec (x .[ i + dj]) (y .[ i + dj])) as c.
+  destruct c; [ discriminate H | idtac ].
+  destruct (y .[ i + dj]); simpl.
+   apply not_true_iff_false; assumption.
+
+   apply not_false_iff_true; assumption.
+
+ unfold fst_same; simpl.
+ remember (fst_not_0 (Isum2Un x y i)) as s1 eqn:Hs1 .
+ apply fst_not_0_iff in Hs1; simpl in Hs1.
+ unfold Isum2Un_i in Hs1; simpl in Hs1.
+ destruct s1 as [di1| ].
+  destruct Hs1 as (Hn1, Ht1).
+  destruct odi as [di| ].
+   destruct Hi as (Hn, Ht).
+   destruct (lt_eq_lt_dec di di1) as [[H1| H1]| H1].
+    remember H1 as H; clear HeqH.
+    apply Hn1 in H.
+    rewrite Ht in H.
+    destruct (y .[ i + di]); discriminate H.
+
+    subst di; reflexivity.
+
+    remember H1 as H; clear HeqH.
+    apply Hn in H.
+    rewrite H in Ht1.
+    destruct (y .[ i + di1]); exfalso; apply Ht1; reflexivity.
+
+   rewrite Hi in Ht1.
+   destruct (y .[ i + di1]); exfalso; apply Ht1; reflexivity.
+
+  destruct odi as [di| ]; [ idtac | reflexivity ].
+  destruct Hi as (Hn, Ht).
+  pose proof (Hs1 di) as H.
+  rewrite Ht in H.
+  destruct (y .[ i + di]); discriminate H.
+Qed.
 
 Infix "⊕" := xorb (left associativity, at level 50) : bool_scope.
 
