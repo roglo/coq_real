@@ -26,8 +26,7 @@ Notation "s .[ i ]" := (rm s i) (at level 15, i at level 200).
 
 (* using oracle to find the first identical digit between two numbers *)
 
-Definition Isum2Un_i x y i j := eqb (x.[i+j]) (y.[i+j]).
-Definition Isum2Un x y i := {| u := Isum2Un_i x y i |}.
+Definition Isum2Un x y i j := eqb (x.[i+j]) (y.[i+j]).
 
 Definition fst_same x y i :=
   match fst_true (Isum2Un x y i) with
@@ -50,7 +49,7 @@ split; intros Hi.
  unfold fst_same; simpl.
  remember (fst_true (Isum2Un x y i)) as s1 eqn:Hs1 .
  apply fst_true_iff in Hs1; simpl in Hs1.
- unfold Isum2Un_i in Hs1; simpl in Hs1.
+ unfold Isum2Un in Hs1; simpl in Hs1.
  destruct s1 as [di1| ].
   destruct Hs1 as (Hn1, Ht1).
   split; [ idtac | apply eqb_true_iff; assumption ].
@@ -74,7 +73,7 @@ split; intros Hi.
  unfold fst_same; simpl.
  remember (fst_true (Isum2Un x y i)) as s1 eqn:Hs1 .
  apply fst_true_iff in Hs1; simpl in Hs1.
- unfold Isum2Un_i in Hs1; simpl in Hs1.
+ unfold Isum2Un in Hs1; simpl in Hs1.
  destruct s1 as [di1| ].
   destruct Hs1 as (Hn1, Ht1).
   destruct odi as [di| ].
