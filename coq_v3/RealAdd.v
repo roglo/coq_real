@@ -1,7 +1,7 @@
 (* definition ℝ and addition *)
 
 Require Import Utf8 QArith NPeano.
-Require Import Real01Add Real01Cmp.
+Require Import Real01 Real01Add Real01Cmp.
 
 Set Implicit Arguments.
 

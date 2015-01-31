@@ -1,8 +1,7 @@
-(* I = ℝ interval [0..1[ i.e. unit interval 1 excluded *)
-(* addition modulo 1: a commutative monoid *)
+(* addition module 1 in I: a commutative monoid *)
 
 Require Import Utf8 QArith NPeano.
-Require Import Oracle.
+Require Import Oracle Real01.
 
 Set Implicit Arguments.
 
@@ -15,14 +14,6 @@ Notation "x ∉ l" := (not (List.In x l)) (at level 70).
 Notation "x ≤ y ≤ z" := (x <= y ∧ y <= z)%nat (at level 70, y at next level).
 
 Open Scope nat_scope.
-
-(* reals modulo 1 *)
-Record I := { rm : nat → bool }.
-
-Definition I_zero := {| rm i := false |}.
-Definition I_ones := {| rm i := true |}.
-
-Notation "s .[ i ]" := (rm s i) (at level 15, i at level 200).
 
 (* using oracle to find the first identical digit between two numbers *)
 
@@ -116,11 +107,9 @@ Definition I_add_i x y i := x.[i] ⊕ y.[i] ⊕ carry x y (S i).
 Definition I_add x y := {| rm := I_add_i x y |}.
 Definition I_eq x y := ∀ i, rm (I_add x I_zero) i = rm (I_add y I_zero) i.
 
-Delimit Scope I_scope with I.
 Notation "x + y" := (I_add x y) : I_scope.
 Notation "x = y" := (I_eq x y) : I_scope.
 Notation "x ≠ y" := (¬ I_eq x y) : I_scope.
-Notation "0" := I_zero : I_scope.
 
 Arguments carry x%I y%I i%nat.
 Arguments I_add_i x%I y%I i%nat.
