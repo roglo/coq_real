@@ -1,5 +1,5 @@
-(* Oracle able to find the index of the first true of an boolean sequence
-   or None if all falses *)
+(* Oracle giving the index of the first true of an boolean sequence
+   or None if sequence of only falses *)
 
 Require Import Utf8.
 
