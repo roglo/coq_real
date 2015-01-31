@@ -1,18 +1,11 @@
-(* definition ℝ and addition *)
+(* addition in ℝ *)
 
 Require Import Utf8 QArith NPeano.
-Require Import Real01 Real01Add Real01AddMono Real01Cmp.
+Require Import Real01 Real01Add Real01AddMono Real01Cmp Real.
 
 Set Implicit Arguments.
 
 Open Scope Z_scope.
-
-Record ℝ := mkre { R_int : Z; R_frac : I }.
-Arguments mkre _%Z _%I.
-
-Delimit Scope R_scope with R.
-Arguments R_int _%R.
-Arguments R_frac _%R.
 
 Definition b2z (b : bool) := if b then 1 else 0.
 
@@ -21,12 +14,7 @@ Definition R_add x y :=
      R_frac := I_add (R_frac x) (R_frac y) |}.
 Arguments R_add x%R y%R.
 
-Definition R_zero := {| R_int := 0; R_frac := I_zero |}.
-Definition R_one := {| R_int := 1; R_frac := I_zero |}.
-
 Notation "x + y" := (R_add x y) : R_scope.
-Notation "0" := R_zero : R_scope.
-Notation "1" := R_one : R_scope.
 
 Definition R_norm x :=
   {| R_int := R_int x + b2z (carry (R_frac x) 0 0);
