@@ -3,10 +3,6 @@
 Require Import Utf8 QArith NPeano.
 Require Import Real01 Real01Add.
 
-(*
-Set Implicit Arguments.
-*)
-
 Open Scope nat_scope.
 
 Theorem forall_and_distr : ∀ α (P Q : α → Prop),
