@@ -706,7 +706,8 @@ destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
          rename H into Hx4.
          pose proof (Hyy (di4 - dy)%nat) as H.
          rewrite Nat.add_succ_l, Nat.add_succ_r in H.
-         rewrite Nat.add_sub_assoc in H; [ idtac | omega ].
+         apply Nat.lt_le_incl in H1.
+         rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
          rewrite Nat.add_comm, Nat.add_sub in H.
          rewrite Hc4 in H; discriminate H.
 
