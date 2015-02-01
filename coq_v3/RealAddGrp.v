@@ -778,7 +778,7 @@ destruct (lt_eq_lt_dec dj1 dx) as [[H1| H1]| H1].
    simpl in H.
    destruct H as (j, (Hj, (Hxz, (Hxj, (Hzj, (Hxd, Hzd)))))).
    destruct (lt_eq_lt_dec j dx) as [[H2| H2]| H2].
-    rewrite Hn1 in Hxj; [ idtac | omega ].
+    rewrite Hn1 in Hxj; [ idtac | transitivity dx; assumption ].
     rewrite Hzj in Hxj; discriminate Hxj.
 
     subst j.
