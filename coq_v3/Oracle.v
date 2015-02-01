@@ -1,8 +1,7 @@
 (* Oracle giving the index of a true of an boolean sequence
    or None if the sequence has only falses *)
 
-Require Import Utf8 Arith NPeano.
-Require Import Misc.
+Require Import Utf8 Arith NPeano Misc.
 
 (* find any true of a boolean sequence (oracle) *)
 

@@ -1,6 +1,6 @@
 (* addition in ℝ is a group *)
 
-Require Import Utf8 QArith NPeano.
+Require Import Utf8 QArith NPeano Misc.
 Require Import Real01 Real01Add Real01AddMono.
 Require Import Real RealAdd.
 
@@ -499,7 +499,7 @@ destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
       apply Hyy.
 
       remember (j - S (S di3))%nat as v eqn:Hv .
-      apply nat_sub_add_r in Hv; [ idtac | assumption ].
+      apply Nat_sub_add_r in Hv; [ idtac | assumption ].
       subst j.
       rewrite Hyy, xorb_true_l.
       rewrite <- Hxz, Hxy, xorb_false_l.
@@ -714,7 +714,7 @@ destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
 
            rewrite Nat.add_0_r.
            remember (di4 - S dy)%nat as v eqn:Hv .
-           apply nat_sub_add_r in Hv; [ idtac | assumption ].
+           apply Nat_sub_add_r in Hv; [ idtac | assumption ].
            subst di4.
            rewrite <- Nat.add_succ_l, <- Nat.add_succ_r.
            rewrite Hyy, <- negb_involutive.
@@ -1234,7 +1234,7 @@ destruct (lt_eq_lt_dec dj1 dx) as [[H1| H1]| H1].
         reflexivity.
 
        remember (dj4 - S dx)%nat as v eqn:Hv .
-       apply nat_sub_add_r in Hv; [ idtac | assumption ].
+       apply Nat_sub_add_r in Hv; [ idtac | assumption ].
        subst dj4.
        unfold I_add_i in Hc4; simpl in Hc4.
        rewrite Hzd, Nat.add_succ_r, Hs6 in Hc4.

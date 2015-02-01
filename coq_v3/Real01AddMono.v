@@ -1,7 +1,7 @@
 (* addition modulo 1 in I: a commutative monoid *)
 
-Require Import Utf8 QArith NPeano.
-Require Import Misc Real01 Real01Add.
+Require Import Utf8 QArith NPeano Misc.
+Require Import Real01 Real01Add.
 
 Open Scope nat_scope.
 
@@ -11,27 +11,6 @@ Theorem forall_add_succ_r : ∀ α i f (x : α),
 Proof.
 intros α i f x; unfold id; intros H j.
 rewrite Nat.add_succ_l, <- Nat.add_succ_r; apply H.
-Qed.
-
-Theorem nat_sub_add_r : ∀ a b c,
-  a < b
-  → c = b - S a
-  → b = a + S c.
-Proof.
-intros a b c Hab Hc; subst c.
-rewrite <- Nat.sub_succ_l; [ simpl | assumption ].
-rewrite Nat.add_sub_assoc; [ idtac | apply Nat.lt_le_incl; assumption ].
-rewrite Nat.add_comm, Nat.add_sub; reflexivity.
-Qed.
-
-Theorem nat_le_sub_add_r : ∀ a b c,
-  a ≤ b
-  → c = b - a
-  → b = a + c.
-Proof.
-intros a b c Hab Hc; subst c.
-rewrite Nat.add_sub_assoc; [ idtac | assumption ].
-rewrite Nat.add_comm, Nat.add_sub; reflexivity.
 Qed.
 
 Theorem all_lt_all : ∀ P : nat → Prop,
@@ -448,7 +427,7 @@ destruct s5 as [di5| ]; [ idtac | clear H ].
      rewrite Hn6 in Hb3; [ idtac | assumption ].
      apply negb_true_iff in Hb3.
      remember (di3 - S di5) as n eqn:Hn .
-     apply nat_sub_add_r in Hn; [ idtac | assumption ].
+     apply Nat_sub_add_r in Hn; [ idtac | assumption ].
      rewrite Nat.add_comm in Hn; simpl in Hn.
      subst di3.
      rewrite Nat.add_succ_r in Hb3, Ht3.
@@ -482,7 +461,7 @@ destruct s5 as [di5| ]; [ idtac | clear H ].
      rewrite Hn3 in Hbe; [ idtac | assumption ].
      apply negb_false_iff in Hbe.
      remember (di6 - S di5) as n eqn:Hn .
-     apply nat_sub_add_r in Hn; [ idtac | assumption ].
+     apply Nat_sub_add_r in Hn; [ idtac | assumption ].
      rewrite Nat.add_comm in Hn; simpl in Hn; subst di6.
      rewrite Nat.add_succ_r in Hbe, Ht6.
      remember H1 as H; clear HeqH.
@@ -517,7 +496,7 @@ destruct s5 as [di5| ]; [ idtac | clear H ].
    rewrite Hs3 in Hbe.
    apply negb_false_iff in Hbe.
    remember (di6 - S di5) as n eqn:Hn .
-   apply nat_sub_add_r in Hn; [ idtac | assumption ].
+   apply Nat_sub_add_r in Hn; [ idtac | assumption ].
    rewrite Nat.add_comm in Hn; simpl in Hn; subst di6.
    rewrite Nat.add_succ_r in Hbe, Ht6.
    remember H1 as H; clear HeqH.
@@ -1023,7 +1002,7 @@ destruct (le_dec di n) as [H1| H1].
 
  apply Nat.nle_gt in H1.
  remember (di - S n) as dj.
- apply nat_sub_add_r in Heqdj; [ idtac | assumption ].
+ apply Nat_sub_add_r in Heqdj; [ idtac | assumption ].
  clear Hc4 Hc5 Hc6.
  rename Rxy_zn into Hc4; rename Ryzn into Hc5; rename Rxyn into Hc6.
  remember (I_shift_l (S n) (x + y)%I) as x'y' eqn:Hxy .
@@ -1995,7 +1974,7 @@ destruct (le_dec di n) as [H1| H1].
 
  apply Nat.nle_gt in H1.
  remember (di - S n) as dj.
- apply nat_sub_add_r in Heqdj; [ idtac | assumption ].
+ apply Nat_sub_add_r in Heqdj; [ idtac | assumption ].
  remember (I_shift_l (S n) (x + y)%I) as x'y' eqn:Hxy .
  remember (I_shift_l (S n) z) as z' eqn:Hc .
  eapply fst_same_shift in Hs; try eassumption.
@@ -2191,7 +2170,7 @@ destruct sx as [dx| ].
     rewrite Nat.add_succ_r; assumption.
 
     remember (di - S dx)%nat as n eqn:Hn .
-    apply nat_sub_add_r in Hn; [ idtac | assumption ].
+    apply Nat_sub_add_r in Hn; [ idtac | assumption ].
     subst di; clear H1.
     rewrite Nat.add_succ_r.
     induction n as (n, IHn) using all_lt_all.
@@ -2352,7 +2331,7 @@ destruct sx as [dx| ].
    subst di; assumption.
 
    remember (di - S dy)%nat as n eqn:Hn .
-   apply nat_sub_add_r in Hn; [ idtac | assumption ].
+   apply Nat_sub_add_r in Hn; [ idtac | assumption ].
    subst di; clear H1.
    rewrite Nat.add_succ_r.
    induction n as (n, IHn) using all_lt_all.
