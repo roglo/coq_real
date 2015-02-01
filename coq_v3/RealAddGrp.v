@@ -820,7 +820,7 @@ destruct (lt_eq_lt_dec dj1 dx) as [[H1| H1]| H1].
         subst dy; clear H2.
         pose proof (Hxx (dj1 - dx)%nat) as H.
         rewrite Nat.add_succ_r in H.
-        rewrite Nat.add_sub_assoc in H; [ idtac | omega ].
+        rewrite Nat.add_sub_assoc in H; [ idtac | apply le_S_n; assumption ].
         rewrite Nat.add_comm, Nat.add_sub in H.
         rewrite Hc1 in H; discriminate H.
 
