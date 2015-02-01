@@ -86,6 +86,7 @@ intros x y i.
 unfold I_mul_i; simpl.
 unfold summation; simpl.
 rewrite Nat.sub_0_r.
+bbb.
 rewrite summation_loop_rev; simpl.
 rewrite Nat.sub_0_r.
 remember 1 as b; clear Heqb.
