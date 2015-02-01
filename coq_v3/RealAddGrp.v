@@ -643,8 +643,9 @@ destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
 
           rewrite H2, Ht3 in Ht5; discriminate Ht5.
 
-          destruct dj5.
-           revert H1 H2; clear; intros; omega.
+          rewrite Nat.add_comm in H2.
+          destruct dj5; [ apply Nat.nle_gt in H2; contradiction | idtac ].
+          rewrite Nat.add_comm in H2.
 
            remember H2 as H; clear HeqH.
            rewrite <- Nat.add_succ_l in H.
