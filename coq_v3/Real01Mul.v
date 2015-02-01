@@ -17,4 +17,4 @@ Notation "'Σ' ( i = b , e ) , g" := (summation b e (λ i, (g)))
 Definition b2n (b : bool) := if b then 1 else 0.
 
 (* just sequence of convolution products, but no carry computed yet. *)
-Definition I_mul_i x y i := Σ (j=0,i), (b2n (x.[j]) * b2n (y.[i-j])).
+Definition I_mul_i x y i := Σ (j=1,i), (b2n (x.[j-1]) * b2n (y.[i-j])).
