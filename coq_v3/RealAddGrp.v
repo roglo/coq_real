@@ -877,7 +877,8 @@ destruct (lt_eq_lt_dec dj1 dx) as [[H1| H1]| H1].
 
            pose proof (Hyx (S dj1 - dj3)%nat) as H.
            rewrite Nat.add_succ_r in H.
-           rewrite Nat.add_sub_assoc in H; [ idtac | omega ].
+           apply Nat.lt_le_incl in H3.
+           rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
            rewrite Nat.add_comm, Nat.add_sub in H.
            rewrite <- Nat.add_1_r, Hxd in H.
            discriminate H.
