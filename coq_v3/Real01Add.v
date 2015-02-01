@@ -16,7 +16,7 @@ Open Scope nat_scope.
 Definition Isum2Un x y i j := eqb (x.[i+j]) (y.[i+j]).
 
 Definition fst_same x y i :=
-  match fst_true (Isum2Un x y i) with
+  match first_true (Isum2Un x y i) with
   | Some di => Some di
   | None => None
   end.
@@ -34,8 +34,8 @@ intros x y i odi.
 split; intros Hi.
  subst odi.
  unfold fst_same; simpl.
- remember (fst_true (Isum2Un x y i)) as s1 eqn:Hs1 .
- apply fst_true_iff in Hs1; simpl in Hs1.
+ remember (first_true (Isum2Un x y i)) as s1 eqn:Hs1 .
+ apply first_true_iff in Hs1; simpl in Hs1.
  unfold Isum2Un in Hs1; simpl in Hs1.
  destruct s1 as [di1| ].
   destruct Hs1 as (Hn1, Ht1).
@@ -58,8 +58,8 @@ split; intros Hi.
    apply not_false_iff_true; assumption.
 
  unfold fst_same; simpl.
- remember (fst_true (Isum2Un x y i)) as s1 eqn:Hs1 .
- apply fst_true_iff in Hs1; simpl in Hs1.
+ remember (first_true (Isum2Un x y i)) as s1 eqn:Hs1 .
+ apply first_true_iff in Hs1; simpl in Hs1.
  unfold Isum2Un in Hs1; simpl in Hs1.
  destruct s1 as [di1| ].
   destruct Hs1 as (Hn1, Ht1).

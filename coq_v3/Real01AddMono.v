@@ -1,7 +1,7 @@
 (* addition modulo 1 in I: a commutative monoid *)
 
 Require Import Utf8 QArith NPeano.
-Require Import Real01 Real01Add.
+Require Import Misc Real01 Real01Add.
 
 Open Scope nat_scope.
 
@@ -34,14 +34,6 @@ rewrite Nat.add_sub_assoc; [ idtac | assumption ].
 rewrite Nat.add_comm, Nat.add_sub; reflexivity.
 Qed.
 
-Theorem le_neq_lt : ∀ a b : nat, a ≤ b → a ≠ b → (a < b)%nat.
-Proof.
-intros a b Hab Hnab.
-apply le_lt_eq_dec in Hab.
-destruct Hab as [Hle| Heq]; [ assumption | idtac ].
-exfalso; apply Hnab; assumption.
-Qed.
-
 Theorem all_lt_all : ∀ P : nat → Prop,
   (∀ n, (∀ m, (m < n)%nat → P m) → P n)
   → ∀ n, P n.
@@ -56,7 +48,7 @@ induction n; intros m Hmn.
   subst m; apply Hm; assumption.
 
   apply IHn.
-  apply le_neq_lt; [ idtac | assumption ].
+  apply Nat_le_neq_lt; [ idtac | assumption ].
   apply Nat.succ_le_mono; assumption.
 Qed.
 
