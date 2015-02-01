@@ -646,16 +646,15 @@ destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
           rewrite Nat.add_comm in H2.
           destruct dj5; [ apply Nat.nle_gt in H2; contradiction | idtac ].
           rewrite Nat.add_comm in H2.
-
-           remember H2 as H; clear HeqH.
-           rewrite <- Nat.add_succ_l in H.
-           assert (0 < S dj5)%nat as HH by apply Nat.lt_0_succ.
-           eapply lt_add_sub_lt_r with (d := O) in H; try assumption.
-           apply Hn5 in H.
-           rewrite <- Nat.add_succ_l in H.
-           rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
-           rewrite Nat.add_comm, Nat.add_sub in H.
-           rewrite Hc3, Ht3 in H; discriminate H.
+          remember H2 as H; clear HeqH.
+          rewrite <- Nat.add_succ_l in H.
+          assert (0 < S dj5)%nat as HH by apply Nat.lt_0_succ.
+          eapply lt_add_sub_lt_r with (d := O) in H; try assumption.
+          apply Hn5 in H.
+          rewrite <- Nat.add_succ_l in H.
+          rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+          rewrite Nat.add_comm, Nat.add_sub in H.
+          rewrite Hc3, Ht3 in H; discriminate H.
 
          apply fst_same_sym_iff in Hs5; simpl in Hs5.
          clear H.
