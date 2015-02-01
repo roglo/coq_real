@@ -476,12 +476,13 @@ destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
 
        rewrite H2; assumption.
 
-       destruct dj2; [ exfalso; omega | idtac ].
+       apply Nat.succ_le_mono, Nat.nlt_ge in H1.
+       destruct dj2; [ rewrite Nat.add_0_r in H2; contradiction | idtac ].
+       apply Nat.nlt_ge in H1.
        remember H2 as H; clear HeqH.
        assert (0 < S dj2)%nat as HH by apply Nat.lt_0_succ.
        apply lt_add_sub_lt_r with (d := O) in H; try assumption.
        apply Hn2 in H.
-       apply le_S_n in H1.
        rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
        rewrite Nat.add_comm, Nat.add_sub in H.
        rewrite Hc3, Ht3 in H; discriminate H.
