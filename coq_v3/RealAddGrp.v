@@ -285,7 +285,9 @@ destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
       pose proof (Hyx O) as H.
       rewrite Nat.add_1_r in H.
       rewrite Hny in H; [ discriminate H | idtac ].
-      revert H1 H2; clear; intros; omega.
+      apply Nat.succ_le_mono in H1.
+      apply Nat.neq_sym in H2.
+      apply lt_n_S, Nat_le_neq_lt; assumption.
 
   subst dy.
   unfold carry in Hc1; simpl in Hc1.
