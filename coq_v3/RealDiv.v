@@ -7,6 +7,8 @@ Set Implicit Arguments.
 
 Open Scope Z_scope.
 
+(* to be revised...
+
 Definition R_div_2 x :=
   {| R_int := R_int x / 2;
      R_frac := I_div_2_inc (R_frac x) (Z.odd (R_int x)) |}.
@@ -2115,3 +2117,4 @@ bbb.
  remember (R_frac_div xm ym) as qr eqn:Hqr .
  destruct qr as (q, rm); simpl.
 bbb.
+*)

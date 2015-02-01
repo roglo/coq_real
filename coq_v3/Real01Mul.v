@@ -3,13 +3,13 @@
 Require Import Utf8.
 Require Import Real01.
 
-Fixpoint summation_aux b len g :=
+Fixpoint summation_loop b len g :=
   match len with
   | O => 0
-  | S len₁ => g b + summation_aux (S b) len₁ g
+  | S len₁ => g b + summation_loop (S b) len₁ g
   end.
 
-Definition summation b e g := summation_aux b (S e - b) g.
+Definition summation b e g := summation_loop b (S e - b) g.
 
 Notation "'Σ' ( i = b , e ) , g" := (summation b e (λ i, (g)))
   (at level 0, i at level 0, b at level 60, e at level 60, g at level 40).

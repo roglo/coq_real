@@ -646,6 +646,7 @@ destruct dj1; simpl in Ht1.
                       as [H8| H8].
                       simpl in H8.
                       remember (I_div_rem_i (½x) (½y) dj1) as x2 eqn:Hx2 .
+Abort. (* complicated... perhaps could be continued one day...
 bbb.
 
 (* end test *)
@@ -929,6 +930,7 @@ induction i.
       destruct (I_lt_dec x (I_div_2 z)) as [H3| H3]; simpl.
        rename H into Hz0.
        rewrite <- Hxdyz in H3.
+Abort. (* complicated... perhaps could be continued one day...
 bbb.
   H3 : (x < I_div_2 (x / y))%I
   should imply y < 1/2
