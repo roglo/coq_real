@@ -21,7 +21,7 @@ Definition I_mul_i x y i := Σ (j=1,i), (b2n (x.[j-1]) * b2n (y.[i-j])).
 
 (* *)
 
-(* summation model and theorems borrowed from proof of Puiseux's theorem,
+(* Summation model and theorems borrowed from my proof of Puiseux's theorem,
    file Fsummation.v *)
 
 Theorem summation_loop_compat : ∀ g h b1 b2 len,
