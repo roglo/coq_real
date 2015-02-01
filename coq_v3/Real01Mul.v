@@ -78,7 +78,7 @@ rewrite Nat.add_comm; f_equal.
  rewrite Nat.add_comm, Nat.add_sub; reflexivity.
 Qed.
 
-(* commutativity of sum of sequence of numbers *)
+(* commutativity of multiplication of numbers encoded reals *)
 
 Theorem I_mul_comm : ∀ x y, (∀ i, I_mul_i x y i = I_mul_i y x i).
 Proof.
@@ -86,17 +86,17 @@ intros x y i.
 unfold I_mul_i; simpl.
 unfold summation; simpl.
 rewrite Nat.sub_0_r.
-bbb.
 rewrite summation_loop_rev; simpl.
 rewrite Nat.sub_0_r.
-remember 1 as b; clear Heqb.
-revert b.
-induction i; intros; [ reflexivity | idtac ].
-remember minus as f; simpl; subst f.
-rewrite Nat.mul_comm; f_equal; [ f_equal | idtac ].
- rewrite <- Nat.add_succ_l, Nat.add_sub.
- do 2 rewrite Nat.sub_diag; reflexivity.
+apply summation_loop_compat.
+intros j Hj.
+rewrite Nat.mul_comm; f_equal; f_equal; f_equal; simpl.
+ rewrite Nat.add_1_r; simpl.
+ rewrite Nat.sub_0_r.
+ apply Nat.add_sub_eq_r.
+ rewrite Nat.add_sub_assoc; [ idtac | apply Nat.lt_le_incl; assumption ].
+ rewrite Nat.add_comm, Nat.add_sub; reflexivity.
 
- rewrite <- Nat.add_succ_l.
- rewrite Nat.add_sub; reflexivity.
-bbb.
+ rewrite Nat.add_1_r; simpl.
+ rewrite <- Nat.sub_add_distr, Nat.add_comm; reflexivity.
+Qed.
