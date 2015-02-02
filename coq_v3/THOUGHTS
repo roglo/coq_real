@@ -1,0 +1,12 @@
+Blocked in approach by division because I don't know how to prove the
+commutativity between divisor and quotient in the division algorithm
+(usual algorithm learned at school).
+
+Blocked in approach by multiplication (normal approach) because I
+don't know how to limit the carries. I just split multiplication into
+multiplication algorithm (returning a sequence of numbers, instead of
+sequence of digits) and propagation of the carry. The first step is
+implemented (easy, I even proved it was commutative). The second step
+poses problems.
+
+(Mon, 2nd of Feb 2015)
