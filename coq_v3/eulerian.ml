@@ -45,7 +45,9 @@
    This toplevel program computes the steps.
 *)
 
-value propag_carry u i = u i mod 2 + u (i + 1) / 2;
+value base = ref 2;
+
+value propag_carry u i = u i mod base.val + u (i + 1) / base.val;
 value rec propag_carry_sev_times u n =
   if n ≤ 0 then u
   else propag_carry_sev_times (propag_carry u) (n-1)
@@ -63,7 +65,7 @@ value u (i : int) = i;
 
 (*
 example:
-list_of_seq (propag_carry_sev_times u 6) 500;
+list_of_seq (propag_carry_sev_times u 3) 100;
 *)
 
 (*
