@@ -13,3 +13,7 @@ value list_of_seq u =
 value u (i : int) = i;
 
 #print_length 1001;
+
+(*
+list_of_seq (propag_carry_sev_times u 6) 500;
+*)
