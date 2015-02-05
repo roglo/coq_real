@@ -26,8 +26,12 @@ value sum_bn1 n =
     else loop (sum + b_pow_i) (b_pow_i * base.val) (i + 1)
 ;
 
+value i_mul_algo x y i =
+  summation 1 i (fun j → b2n (x.rm (j - 1)) * b2n (y.rm (i - j)))
+;
+
 value i_mul_i x y i =
-  let u k = summation 1 k (fun j → b2n (x.rm (j - 1)) * b2n (y.rm (k - j))) in
+  let u = i_mul_algo x y in
   let n =
     loop 0 where rec loop n = if sum_bn1 n - n > i then n else loop (n + 1)
   in
@@ -54,4 +58,6 @@ list_of_seq (i_mul_i (r_of_string "10242") (r_of_string "36628")) 20;
 (*
 # 10242*36628;
 - : int = 375143976
+list_of_seq (i_mul_i (r_of_string "4649") (r_one ())) 20;
+list_of_seq (i_mul_algo (r_of_string "4649") (r_one ())) 20;
 *)
