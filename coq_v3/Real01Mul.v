@@ -6,7 +6,7 @@ Require Import Real01.
 Fixpoint summation_loop b len g :=
   match len with
   | O => 0
-  | S len₁ => g b + summation_loop (S b) len₁ g
+  | S len1 => g b + summation_loop (S b) len1 g
   end.
 
 Definition summation b e g := summation_loop b (S e - b) g.
