@@ -26,17 +26,18 @@ value sum_bn1 n =
     else loop (sum + b_pow_i) (b_pow_i * base.val) (i + 1)
 ;
 
+value n_iter i =
+  loop 0 where rec loop n = if sum_bn1 n - n > i then n else loop (n + 1)
+;
+
+value i_add_algo x y i = x.rm i + y.rm i;
+
 value i_mul_algo x y i =
   summation 1 i (fun j → b2n (x.rm (j - 1)) * b2n (y.rm (i - j)))
 ;
 
-value i_mul_i x y i =
-  let u = i_mul_algo x y in
-  let n =
-    loop 0 where rec loop n = if sum_bn1 n - n > i then n else loop (n + 1)
-  in
-  i_propag_carry u n i
-;
+value i_add_i x y i = i_propag_carry (i_add_algo x y) 1 i;
+value i_mul_i x y i = i_propag_carry (i_mul_algo x y) (n_iter i) i;
 
 value list_of_seq u =
   list_rec [] where rec list_rec l n =
