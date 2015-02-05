@@ -1,6 +1,6 @@
 (* multiplication in I *)
 
-Require Import Utf8 NPeano.
+Require Import Utf8 Arith NPeano.
 Require Import Real01.
 
 Fixpoint summation_loop b len g :=
@@ -16,8 +16,21 @@ Notation "'Σ' ( i = b , e ) , g" := (summation b e (λ i, (g)))
 
 Definition b2n (b : bool) := if b then 1 else 0.
 
-(* just sequence of convolution products, but no carry computed yet. *)
-Definition I_mul_i x y i := Σ (j=1,i), (b2n (x.[j-1]) * b2n (y.[i-j])).
+Definition I_mul_algo x y i := Σ (j=1,i), (b2n (x.[j-1]) * b2n (y.[i-j])).
+
+Definition propag_carry_once u i := u i mod 2 + u (S i) / 2.
+
+Fixpoint I_propag_carry u n :=
+  match n with
+  | 0 => u
+  | S n1 => propag_carry_once (I_propag_carry u n1)
+  end.
+
+Definition I_mul_i x y i :=
+  let nb := I_propag_carry (I_mul_algo x y) (i + 2) i in
+  if zerop nb then false else true.
+
+Definition I_mul x y := {| rm := I_mul_i x y |}.
 
 (* *)
 
@@ -80,10 +93,10 @@ Qed.
 
 (* commutativity of multiplication of numbers encoded reals *)
 
-Theorem I_mul_comm : ∀ x y, (∀ i, I_mul_i x y i = I_mul_i y x i).
+Theorem I_mul_comm : ∀ x y, (∀ i, I_mul_algo x y i = I_mul_algo y x i).
 Proof.
 intros x y i.
-unfold I_mul_i; simpl.
+unfold I_mul_algo; simpl.
 unfold summation; simpl.
 rewrite Nat.sub_0_r.
 rewrite summation_loop_rev; simpl.

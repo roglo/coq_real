@@ -11,10 +11,12 @@ value rec summation_loop b len g =
 value summation b e g = summation_loop b (e + 1 - b) g;
 
 value base = ref 2;
-value propag_carry u i = u i mod base.val + u (i + 1) / base.val;
-value rec propag_carry_sev_times u n =
-  if n ≤ 0 then u
-  else propag_carry_sev_times (propag_carry u) (n-1)
+value propag_carry_once u i = u i mod base.val + u (i + 1) / base.val;
+value rec i_propag_carry u n =
+  match n with
+  | 0 → u
+  | _ → propag_carry_once (i_propag_carry u (n-1))
+  end
 ;
 
 (* (base^n-1)/(base-1) *)
@@ -29,7 +31,7 @@ value i_mul_i x y i =
   let n =
     loop 0 where rec loop n = if sum_bn1 n - n > i then n else loop (n + 1)
   in
-  propag_carry_sev_times u n i
+  i_propag_carry u n i
 ;
 
 value list_of_seq u =
