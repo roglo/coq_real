@@ -19,6 +19,7 @@ Notation "'Σ' ( i = b , e ) , g" := (summation b e (λ i, (g)))
 Definition b2n (b : bool) := if b then 1 else 0.
 
 Definition I_mul_algo x y i := Σ (j=1,i), (b2n (x.[j-1]) * b2n (y.[i-j])).
+Arguments I_mul_algo x%I y%I i%nat.
 
 Definition propag_carry_once u i := u i mod 2 + u (S i) / 2.
 
