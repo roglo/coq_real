@@ -46,4 +46,4 @@ value r_of_string s =
      else Char.code s.[i] - Char.code '0'}
 ;
 
-list_of_seq (i_mul_i (r_of_string "239") (r_of_string "4649"));
+list_of_seq (i_mul_i (r_of_string "239") (r_of_string "4649")) 20;
