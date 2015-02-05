@@ -91,7 +91,7 @@ rewrite Nat.add_comm; f_equal.
  rewrite Nat.add_comm, Nat.add_sub; reflexivity.
 Qed.
 
-(* commutativity of multiplication of numbers encoded reals *)
+(* commutativity *)
 
 Theorem I_mul_algo_comm : ∀ x y, (∀ i, I_mul_algo x y i = I_mul_algo y x i).
 Proof.
@@ -114,13 +114,39 @@ rewrite Nat.mul_comm; f_equal; f_equal; f_equal; simpl.
  rewrite <- Nat.sub_add_distr, Nat.add_comm; reflexivity.
 Qed.
 
-Theorem I_mul_i_comm : ∀ x y i, I_mul_comm x y i = I_mul_comm y x i.
+Theorem I_propag_carry_mul_algo_comm : ∀ x y i j,
+  I_propag_carry (I_mul_algo y x) i j =
+  I_propag_carry (I_mul_algo x y) i j.
+Proof.
+intros x y i j.
+revert j.
+induction i; intros; simpl.
+ apply I_mul_algo_comm.
+
+ unfold propag_carry_once.
+ rewrite IHi; f_equal.
+ rewrite IHi; reflexivity.
+Qed.
+
+Theorem I_mul_i_comm : ∀ x y i, I_mul_i x y i = I_mul_i y x i.
 Proof.
 intros x y i.
-bbb.
+unfold I_mul_i; simpl.
+rewrite Nat.add_succ_r; simpl.
+unfold propag_carry_once.
+rewrite I_propag_carry_mul_algo_comm, Nat.add_comm.
+rewrite I_propag_carry_mul_algo_comm, Nat.add_comm.
+reflexivity.
+Qed.
 
 Theorem I_mul_comm : ∀ x y, (I_mul x y = I_mul y x)%I.
 Proof.
 intros x y.
 unfold I_eq; simpl; intros i.
-bbb.
+unfold I_add_i; simpl.
+rewrite I_mul_i_comm; f_equal.
+apply carry_compat_r.
+clear i; intros i.
+unfold I_mul; simpl.
+apply I_mul_i_comm.
+Qed.
