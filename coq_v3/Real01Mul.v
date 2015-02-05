@@ -1,11 +1,11 @@
 (* multiplication in I *)
 
 Require Import Utf8 Arith NPeano.
-Require Import Real01.
+Require Import Real01 Real01Add.
 
 Fixpoint summation_loop b len g :=
   match len with
-  | O => 0
+  | O => O
   | S len1 => g b + summation_loop (S b) len1 g
   end.
 
@@ -93,7 +93,7 @@ Qed.
 
 (* commutativity of multiplication of numbers encoded reals *)
 
-Theorem I_mul_comm : ∀ x y, (∀ i, I_mul_algo x y i = I_mul_algo y x i).
+Theorem I_mul_algo_comm : ∀ x y, (∀ i, I_mul_algo x y i = I_mul_algo y x i).
 Proof.
 intros x y i.
 unfold I_mul_algo; simpl.
@@ -113,3 +113,14 @@ rewrite Nat.mul_comm; f_equal; f_equal; f_equal; simpl.
  rewrite Nat.add_1_r; simpl.
  rewrite <- Nat.sub_add_distr, Nat.add_comm; reflexivity.
 Qed.
+
+Theorem I_mul_i_comm : ∀ x y i, I_mul_comm x y i = I_mul_comm y x i.
+Proof.
+intros x y i.
+bbb.
+
+Theorem I_mul_comm : ∀ x y, (I_mul x y = I_mul y x)%I.
+Proof.
+intros x y.
+unfold I_eq; simpl; intros i.
+bbb.

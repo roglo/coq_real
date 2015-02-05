@@ -2354,5 +2354,3 @@ Proof.
 intros x y Hxy z d Hcd.
 apply I_add_compat; assumption.
 Qed.
-
-Close Scope nat_scope.
