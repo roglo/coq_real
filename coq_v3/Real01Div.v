@@ -14,7 +14,7 @@ Fixpoint two_power n :=
   end.
 
 Definition I_div_max_iter_int y :=
-  match fst_same y I_ones 0 with
+  match fst_same y I_one 0 with
   | Some j => two_power (S j)
   | None => O
   end.
@@ -268,7 +268,7 @@ unfold I_div; simpl.
 remember (I_div_max_iter_int y) as m eqn:Hm .
 symmetry in Hm.
 unfold I_div_max_iter_int in Hm.
-remember (fst_same y I_ones 0) as s2 eqn:Hs2 .
+remember (fst_same y I_one 0) as s2 eqn:Hs2 .
 destruct s2 as [dj2| ].
  apply fst_same_sym_iff in Hs2; simpl in Hs2.
  destruct Hs2 as (Hn2, Ht2).
@@ -337,7 +337,7 @@ remember (I_div_max_iter_int z) as m eqn:Hm .
 symmetry in Hm.
 destruct m; [ reflexivity | simpl ].
 unfold I_div_max_iter_int in Hm.
-remember (fst_same z I_ones 0) as s1 eqn:Hs1 .
+remember (fst_same z I_one 0) as s1 eqn:Hs1 .
 destruct s1 as [dj1| ]; [ idtac | discriminate Hm ].
 apply fst_same_sym_iff in Hs1; simpl in Hs1.
 destruct Hs1 as (Hn1, Ht1).
@@ -387,7 +387,7 @@ remember (I_div_max_iter_int y) as my eqn:Hmy .
 symmetry in Hmx, Hmy.
 destruct mx; simpl.
  unfold I_div_max_iter_int in Hmx.
- remember (fst_same x I_ones 0) as s1 eqn:Hs1 .
+ remember (fst_same x I_one 0) as s1 eqn:Hs1 .
  destruct s1 as [dj1| ]; [ idtac | clear Hmx ].
   exfalso; revert Hmx; apply two_power_neq_0.
 
@@ -885,7 +885,7 @@ induction i.
  symmetry in Hm.
  destruct m.
   unfold I_div_max_iter_int in Hm.
-  remember (fst_same y I_ones 0) as s1 eqn:Hs1 .
+  remember (fst_same y I_one 0) as s1 eqn:Hs1 .
   destruct s1 as [dj1| ]; [ idtac | clear Hm ].
    exfalso; revert Hm; apply two_power_neq_0.
 
@@ -916,7 +916,7 @@ induction i.
     destruct m2; simpl.
      symmetry.
      unfold I_div_max_iter_int in Hm2; simpl in Hm2.
-     remember (fst_same z I_ones 0) as s2 eqn:Hs2 .
+     remember (fst_same z I_one 0) as s2 eqn:Hs2 .
      destruct s2 as [dj2| ]; [ idtac | clear Hm2 ].
       rewrite Nat.add_0_r in Hm2.
       apply Nat.eq_add_0 in Hm2.

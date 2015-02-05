@@ -2072,7 +2072,7 @@ Qed.
 Theorem I_zerop : ∀ x, {(x = 0)%I} + {(x ≠ 0)%I}.
 Proof.
 intros x.
-remember (fst_same (x + 0%I) I_ones 0) as s eqn:Hs .
+remember (fst_same (x + 0%I) I_one 0) as s eqn:Hs .
 apply fst_same_sym_iff in Hs; simpl in Hs.
 destruct s as [di| ].
  destruct Hs as (Hn, Hs).
