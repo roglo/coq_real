@@ -1,7 +1,9 @@
 (* multiplication in I *)
 
-Require Import Utf8 Arith NPeano.
+Require Import Utf8 QArith NPeano.
 Require Import Real01 Real01Add.
+
+Open Scope nat_scope.
 
 Fixpoint summation_loop b len g :=
   match len with
@@ -150,3 +152,18 @@ clear i; intros i.
 unfold I_mul; simpl.
 apply I_mul_i_comm.
 Qed.
+
+(* neutral element *)
+
+Theorem I_add_1_r : ∀ x, (I_mul x 1 = x)%I.
+Proof.
+intros x.
+unfold I_eq; simpl; intros i.
+unfold I_add_i; simpl.
+do 2 rewrite xorb_false_r.
+f_equal.
+ unfold I_mul_i; simpl.
+bbb.
+ rewrite Nat.add_comm; simpl.
+ unfold I_mul_algo; simpl.
+bbb.
