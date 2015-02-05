@@ -46,4 +46,10 @@ value r_of_string s =
      else Char.code s.[i] - Char.code '0'}
 ;
 
+base.val := 10;
 list_of_seq (i_mul_i (r_of_string "239") (r_of_string "4649")) 20;
+list_of_seq (i_mul_i (r_of_string "10242") (r_of_string "36628")) 20;
+(*
+# 10242*36628;
+- : int = 375143976
+*)
