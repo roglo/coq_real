@@ -59,13 +59,29 @@ value list_of_seq u =
     else list_rec [u (n-1) :: l] (n-1)
 ;
 
+value rec count l =
+  match l with
+  | [] → []
+  | [x :: l] →
+      match count l with
+      | [] → [(1, x)]
+      | [(c, y) :: l1] →
+          if x = y then [(c+1, y) :: l1]
+          else [(1, x); (c, y) :: l1]
+      end
+  end;
+
 value u (i : int) = i;
 
 #print_length 1001;
 
 (*
-example:
+examples:
 list_of_seq (propag_carry_sev_times u 3) 100;
+base.val:=10;
+value v i = i * 81;
+count (list_of_seq (propag_carry_sev_times v 2) 500);
+count (list_of_seq (propag_carry_sev_times v 3) 1000);
 *)
 
 (*
