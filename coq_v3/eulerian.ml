@@ -76,18 +76,14 @@ value u (i : int) = i;
 #print_length 1001;
 
 (*
-examples:
+example:
 list_of_seq (propag_carry_sev_times u 3) 100;
-base.val:=10;
-value v i = i * 81;
-count (list_of_seq (propag_carry_sev_times v 2) 500);
-count (list_of_seq (propag_carry_sev_times v 3) 1000);
 *)
 
 (*
 result:
 line n:
-   (2^n-n-1) "1" / "0" / (2^n-1) "2" / "1" / (2^n-1) "3" / "2" / (2^n-1) "4" /
+   (2^n-1-n) "1" / "0" / (2^n-1) "2" / "1" / (2^n-1) "3" / "2" / (2^n-1) "4" /
    "3" / ...
 
 0 1 2 3 4 5 6 7 8 9 10 11 12 13 ...
@@ -97,4 +93,28 @@ line n:
 1 1 1 1 1 1 1 1 1 1  1  0  2  2 ...
 remark:
    2^n-n-1 = A(n,1) where A is the eulerian number
+*)
+
+(*
+example in base 10:
+base.val:=10;
+value v i = i * 81;
+count (list_of_seq (propag_carry_sev_times v 2) 500);
+count (list_of_seq (propag_carry_sev_times v 3) 1000);
+2:     9x9 8    10x18 17    10x27 26    10x36 35 ... (1x81)
+3:   108x9 8   110x18 17   110x27 26   110x36 35 ... (12x81)
+4:  1107x9 8  1110x18 17  1110x27 26  1110x36 35 ... (123x81)
+5: 11106x9 8 11110x18 17 11110x27 26 11110x36 35 ... (1234x81)
+9 = 9*(1)                      = 10^1-1
+108=9*(1x10¹+2)                = 10^2+10^1-2
+1107=9*(1x10²+2x10¹+3)         = 10^3+10^2+10^1+10^0-4
+11106=9*(1x10³+2x10²+3x10³+4)  = 10^4+10^3+10^2+10^1+10^0-5
+n: (1x10^(n-2)+2x10^(n-3)+..+(n-1)x10^0)x9x9 8
+                               = 10^(n-1)+10^(n-2)+..+10^1+10^0-n
+                               = (10^n-1)/(10-1)-n
+(b^n-1)/(b-1)-n
+si b=2: (2^n-1)/(2-1)-n = 2^n-1-n
+
+line n:
+    ((b^n-1)/(b-1)-n)x(b-1) (b-2) ... à voir...
 *)
