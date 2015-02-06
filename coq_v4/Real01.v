@@ -62,4 +62,27 @@ split; intros Hi.
   destruct Hs1 as (Hn1, Ht1).
   apply negb_true_iff in Ht1.
   apply Nat.eqb_neq in Ht1.
-bbb.
+  split; [ idtac | assumption ].
+  intros dj Hdj.
+  remember Hdj as H; clear HeqH.
+  apply Hn1 in H.
+  apply negb_false_iff in H.
+  apply Nat.eqb_eq; assumption.
+
+  intros dj.
+  apply Nat.eqb_eq, negb_false_iff, Hs1.
+
+ unfold fst_not_1; simpl.
+ apply first_true_iff.
+ destruct odi as [di| ].
+  destruct Hi as (Hn1, Ht1).
+  unfold test_not_1; simpl.
+  apply Nat.eqb_neq, negb_true_iff in Ht1.
+  split; [ idtac | assumption ].
+  intros j Hj.
+  apply negb_false_iff, Nat.eqb_eq, Hn1; assumption.
+
+  unfold test_not_1.
+  intros j.
+  apply negb_false_iff, Nat.eqb_eq, Hi.
+Qed.
