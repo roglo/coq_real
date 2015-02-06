@@ -60,4 +60,28 @@ intros x y z.
 unfold I_eq_ext; simpl; intros i.
 unfold I_add_i; simpl.
 unfold I_add_i; simpl.
+remember (x .[ i]) as xi eqn:Hxi .
+remember (y .[ i]) as yi eqn:Hyi .
+remember (z .[ i]) as zi eqn:Hzi .
+remember (x .[ S i]) as xsi eqn:Hxsi .
+remember (y .[ S i]) as ysi eqn:Hysi .
+remember (z .[ S i]) as zsi eqn:Hzsi .
+remember (x .[ S (S i)]) as xssi eqn:Hxssi .
+remember (y .[ S (S i)]) as yssi eqn:Hyssi .
+remember (z .[ S (S i)]) as zssi eqn:Hzssi .
+symmetry in Hxi, Hyi, Hzi, Hxsi, Hysi, Hzsi, Hxssi, Hyssi, Hzssi.
+unfold n2d, d2n, modb, divb.
+destruct xi, yi, zi, xsi, ysi, zsi, xssi, yssi, zssi; try reflexivity; simpl.
+ Focus 1.
 bbb.
+
+Il faut au moins deux propagations de retenues pour l'addition !
+Exemple:
+     1   0   1
+   + 1   1   1
+   ===========
+     2   1   2
+    ./0 0/1 1/0
+     0   2   0
+    ./0 1/0 0/0
+     1   0   0
