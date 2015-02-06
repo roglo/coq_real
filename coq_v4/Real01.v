@@ -1,5 +1,7 @@
-Require Import Utf8 NPeano.
+Require Import Utf8 QArith NPeano.
 Require Import Oracle.
+
+Open Scope nat_scope.
 
 (* I = interval [0..1] of ℝ *)
 Record I := { rm : nat → bool }.
@@ -50,4 +52,14 @@ Theorem fst_not_1_iff : ∀ u i odi, odi = fst_not_1 u i ↔
   end.
 Proof.
 intros u i odi.
+split; intros Hi.
+ subst odi.
+ unfold fst_not_1; simpl.
+ remember (first_true (test_not_1 u i)) as s1 eqn:Hs1 .
+ apply first_true_iff in Hs1; simpl in Hs1.
+ unfold test_not_1 in Hs1; simpl in Hs1.
+ destruct s1 as [di1| ].
+  destruct Hs1 as (Hn1, Ht1).
+  apply negb_true_iff in Ht1.
+  apply Nat.eqb_neq in Ht1.
 bbb.
