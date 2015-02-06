@@ -40,3 +40,24 @@ unfold I_eq_ext; simpl; intros i.
 unfold I_add_i; simpl.
 destruct (x.[i]), (x.[S i]); reflexivity.
 Qed.
+
+(* compatibility *)
+
+Theorem I_add_compat_r : ∀ x y z, I_eq_ext x y → I_eq_ext (x + z) (y + z).
+Proof.
+intros x y z Hxy.
+unfold I_eq_ext in Hxy.
+unfold I_eq_ext; simpl; intros i.
+unfold I_add_i; simpl.
+do 2 rewrite Hxy; reflexivity.
+Qed.
+
+(* associativity *)
+
+Theorem I_add_assoc : ∀ x y z, I_eq_ext (x + (y + z)) ((x + y) + z).
+Proof.
+intros x y z.
+unfold I_eq_ext; simpl; intros i.
+unfold I_add_i; simpl.
+unfold I_add_i; simpl.
+bbb.
