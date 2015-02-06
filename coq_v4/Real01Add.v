@@ -6,7 +6,7 @@ Require Import Real01.
 Open Scope nat_scope.
 
 Definition I_add_algo x y := {| sn i := d2n (x.[i]) + d2n (y.[i]) |}.
-Definition I_add_i x y i := n2d (sn (I_propag_carry 2 (I_add_algo x y)) i).
+Definition I_add_i x y i := n2d (sn (I_propag_carry_once (I_add_algo x y)) i).
 Definition I_add x y := {| rm := I_add_i x y |}.
 
 Arguments I_add_algo x%I y%I.
@@ -17,8 +17,26 @@ Notation "x + y" := (I_add x y) : I_scope.
 
 (* commutativity *)
 
+Theorem fst_not_1_I_add_algo_comm : ∀ x y i,
+  fst_not_1 (I_add_algo x y) i = fst_not_1 (I_add_algo y x) i.
+Proof.
+intros x y i.
+bbb.
+
+Theorem carry_I_add_algo_comm : ∀ x y i,
+  carry (I_add_algo x y) i = carry (I_add_algo y x) i.
+Proof.
+intros x y i.
+unfold carry; simpl.
+bbb.
+
 Theorem I_add_i_comm : ∀ x y i, I_add_i x y i = I_add_i y x i.
 Proof.
+intros x y i.
+unfold I_add_i; simpl.
+f_equal; f_equal; [ rewrite Nat.add_comm; reflexivity | idtac ].
+bbb.
+
 intros x y i.
 unfold I_add_i; simpl; f_equal.
 f_equal; f_equal; f_equal; rewrite Nat.add_comm; reflexivity.
@@ -59,6 +77,7 @@ Proof.
 intros x y z.
 unfold I_eq_ext; simpl; intros i.
 bbb.
+(*
 counterexample:
   Hxi : x .[ i] = true
   Hyi : y .[ i] = true
@@ -74,6 +93,7 @@ counterexample:
   Hzsssi : z .[ S (S (S i))] = false
   ============================
    0 = 1
+*)
 
 unfold I_add_i; simpl.
 unfold I_add_i; simpl.
@@ -100,6 +120,7 @@ destruct xi, yi, zi, xsi, ysi, zsi, xssi, yssi, zssi; try reflexivity; simpl.
   unfold modb, divb; simpl.
 bbb.
 
+(*
 Trois, maintenant !
 
 Il faut au moins deux propagations de retenues pour l'addition !
@@ -112,3 +133,4 @@ Exemple:
      0   2   0
     ./0 1/0 0/0
      1   0   0
+*)
