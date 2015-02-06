@@ -33,3 +33,10 @@ intros x y.
 unfold I_eq_ext; simpl; intros i.
 apply I_add_i_comm.
 Qed.
+
+(* neutral element *)
+
+Theorem I_add_0_r : ∀ x, I_eq_ext (x + 0) x.
+Proof.
+intros x.
+bbb.
