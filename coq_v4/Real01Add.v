@@ -21,9 +21,7 @@ Theorem I_add_i_comm : ∀ x y i, I_add_i x y i = I_add_i y x i.
 Proof.
 intros x y i.
 unfold I_add_i; simpl; f_equal.
-bbb.
-
-f_equal; rewrite Nat.add_comm; reflexivity.
+f_equal; f_equal; f_equal; rewrite Nat.add_comm; reflexivity.
 Qed.
 
 Theorem I_add_comm : ∀ x y, I_eq_ext (x + y) (y + x).
@@ -40,7 +38,7 @@ Proof.
 intros x.
 unfold I_eq_ext; simpl; intros i.
 unfold I_add_i; simpl.
-destruct (x.[i]), (x.[S i]); reflexivity.
+destruct (x .[ i]), (x .[ S i]), (x .[ S (S i)]); reflexivity.
 Qed.
 
 (* compatibility *)
@@ -51,7 +49,7 @@ intros x y z Hxy.
 unfold I_eq_ext in Hxy.
 unfold I_eq_ext; simpl; intros i.
 unfold I_add_i; simpl.
-do 2 rewrite Hxy; reflexivity.
+do 3 rewrite Hxy; reflexivity.
 Qed.
 
 (* associativity *)
@@ -60,6 +58,23 @@ Theorem I_add_assoc : ∀ x y z, I_eq_ext (x + (y + z)) ((x + y) + z).
 Proof.
 intros x y z.
 unfold I_eq_ext; simpl; intros i.
+bbb.
+counterexample:
+  Hxi : x .[ i] = true
+  Hyi : y .[ i] = true
+  Hzi : z .[ i] = true
+  Hxsi : x .[ S i] = true
+  Hysi : y .[ S i] = true
+  Hzsi : z .[ S i] = true
+  Hxssi : x .[ S (S i)] = true
+  Hyssi : y .[ S (S i)] = true
+  Hzssi : z .[ S (S i)] = false
+  Hxsssi : x .[ S (S (S i))] = true
+  Hysssi : y .[ S (S (S i))] = true
+  Hzsssi : z .[ S (S (S i))] = false
+  ============================
+   0 = 1
+
 unfold I_add_i; simpl.
 unfold I_add_i; simpl.
 remember (x .[ i]) as xi eqn:Hxi .
@@ -71,11 +86,21 @@ remember (z .[ S i]) as zsi eqn:Hzsi .
 remember (x .[ S (S i)]) as xssi eqn:Hxssi .
 remember (y .[ S (S i)]) as yssi eqn:Hyssi .
 remember (z .[ S (S i)]) as zssi eqn:Hzssi .
+remember (x .[ S (S (S i))]) as xsssi eqn:Hxsssi .
+remember (y .[ S (S (S i))]) as ysssi eqn:Hysssi .
+remember (z .[ S (S (S i))]) as zsssi eqn:Hzsssi .
 symmetry in Hxi, Hyi, Hzi, Hxsi, Hysi, Hzsi, Hxssi, Hyssi, Hzssi.
-unfold n2d, d2n, modb, divb.
-destruct xi, yi, zi, xsi, ysi, zsi, xssi, yssi, zssi; try reflexivity; simpl.
- Focus 1.
+symmetry in Hxsssi, Hysssi, Hzsssi.
 bbb.
+
+
+destruct xi, yi, zi, xsi, ysi, zsi, xssi, yssi, zssi; try reflexivity; simpl.
+ destruct xsssi, ysssi, zsssi; try reflexivity; simpl.
+  Focus 1.
+  unfold modb, divb; simpl.
+bbb.
+
+Trois, maintenant !
 
 Il faut au moins deux propagations de retenues pour l'addition !
 Exemple:
