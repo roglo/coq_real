@@ -55,11 +55,7 @@ Proof.
 intros x y i.
 unfold I_add_i; simpl.
 f_equal; f_equal; [ rewrite Nat.add_comm; reflexivity | idtac ].
-bbb.
-
-intros x y i.
-unfold I_add_i; simpl; f_equal.
-f_equal; f_equal; f_equal; rewrite Nat.add_comm; reflexivity.
+apply carry_I_add_algo_comm.
 Qed.
 
 Theorem I_add_comm : ∀ x y, I_eq_ext (x + y) (y + x).
@@ -71,13 +67,43 @@ Qed.
 
 (* neutral element *)
 
+(* this theorem is false; should be I_eq (to be defined), not I_eq_ext *)
 Theorem I_add_0_r : ∀ x, I_eq_ext (x + 0) x.
 Proof.
 intros x.
 unfold I_eq_ext; simpl; intros i.
 unfold I_add_i; simpl.
-destruct (x .[ i]), (x .[ S i]), (x .[ S (S i)]); reflexivity.
-Qed.
+rewrite Nat.add_0_r.
+unfold modb.
+remember (x .[ i]) as xi eqn:Hxi .
+symmetry in Hxi.
+destruct xi; simpl.
+ unfold n2d.
+ reflexivity.
+
+ unfold n2d.
+ apply negb_false_iff.
+ apply Nat.eqb_eq.
+ unfold carry.
+ simpl.
+ remember (fst_not_1 (I_add_algo x 0) (S i)) as s1 eqn:Hs1 .
+ apply fst_not_1_iff in Hs1; simpl in Hs1.
+ destruct s1 as [di1| ].
+  destruct Hs1 as (Hn1, Ht1).
+  unfold d2n in Ht1.
+  remember (x .[ S (i + di1)]) as xi1 eqn:Hxi1 .
+  symmetry in Hxi1.
+  destruct xi1; [ exfalso; apply Ht1; reflexivity | idtac ].
+  reflexivity.
+
+  pose proof (Hs1 0) as H; simpl in H.
+  rewrite Nat.add_0_r in H.
+  rewrite Nat.add_0_r in H.
+  unfold d2n in H; simpl in H.
+  remember (x .[ S i]) as xsi eqn:Hxsi .
+  symmetry in Hxsi.
+  destruct xsi; [ clear H | discriminate H ].
+bbb.
 
 (* compatibility *)
 
