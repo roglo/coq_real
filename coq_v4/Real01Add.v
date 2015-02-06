@@ -67,7 +67,7 @@ Qed.
 
 (* neutral element *)
 
-(* this theorem is false; should be I_eq (to be defined), not I_eq_ext *)
+(* this theorem is false; should be I_eq (to be defined), not I_eq_ext
 Theorem I_add_0_r : ∀ x, I_eq_ext (x + 0) x.
 Proof.
 intros x.
@@ -104,16 +104,49 @@ destruct xi; simpl.
   symmetry in Hxsi.
   destruct xsi; [ clear H | discriminate H ].
 bbb.
+*)
 
 (* compatibility *)
+
+Theorem fst_not_1_I_add_algo_compat_r : ∀ x y z i,
+  I_eq_ext x y
+  → fst_not_1 (I_add_algo x z) i = fst_not_1 (I_add_algo y z) i.
+Proof.
+intros x y z i Hxy.
+apply fst_not_1_iff; simpl.
+remember (fst_not_1 (I_add_algo x z) i) as s1 eqn:Hs1 .
+apply fst_not_1_iff in Hs1; simpl in Hs1.
+destruct s1 as [di1| ].
+ destruct Hs1 as (Hn1, Ht1).
+ rewrite Hxy in Ht1.
+ split; [ idtac | assumption ].
+ intros dj Hdj; rewrite <- Hxy; apply Hn1; assumption.
+
+ intros dj; rewrite <- Hxy; apply Hs1.
+Qed.
+
+Theorem carry_I_add_algo_compat_r : ∀ x y z i,
+  I_eq_ext x y
+  → carry (I_add_algo x z) i = carry (I_add_algo y z) i.
+Proof.
+intros x y z i Hxy.
+unfold carry; simpl.
+erewrite fst_not_1_I_add_algo_compat_r; [ idtac | eassumption ].
+remember (fst_not_1 (I_add_algo y z) (S i)) as s1 eqn:Hs1 .
+apply fst_not_1_iff in Hs1; simpl in Hs1.
+destruct s1 as [di1| ]; [ idtac | reflexivity ].
+rewrite Hxy; reflexivity.
+Qed.
 
 Theorem I_add_compat_r : ∀ x y z, I_eq_ext x y → I_eq_ext (x + z) (y + z).
 Proof.
 intros x y z Hxy.
 unfold I_eq_ext in Hxy.
 unfold I_eq_ext; simpl; intros i.
-unfold I_add_i; simpl.
-do 3 rewrite Hxy; reflexivity.
+unfold I_add_i; simpl; f_equal.
+rewrite Hxy; f_equal.
+apply carry_I_add_algo_compat_r.
+assumption.
 Qed.
 
 (* associativity *)
@@ -122,24 +155,14 @@ Theorem I_add_assoc : ∀ x y z, I_eq_ext (x + (y + z)) ((x + y) + z).
 Proof.
 intros x y z.
 unfold I_eq_ext; simpl; intros i.
+unfold I_add_i; simpl.
+unfold I_add_i; simpl.
+remember (x .[ i]) as xi eqn:Hxi .
+remember (y .[ i]) as yi eqn:Hyi .
+remember (z .[ i]) as zi eqn:Hzi .
+symmetry in Hxi, Hyi, Hzi.
+destruct xi, yi, zi; try reflexivity; simpl.
 bbb.
-(*
-counterexample:
-  Hxi : x .[ i] = true
-  Hyi : y .[ i] = true
-  Hzi : z .[ i] = true
-  Hxsi : x .[ S i] = true
-  Hysi : y .[ S i] = true
-  Hzsi : z .[ S i] = true
-  Hxssi : x .[ S (S i)] = true
-  Hyssi : y .[ S (S i)] = true
-  Hzssi : z .[ S (S i)] = false
-  Hxsssi : x .[ S (S (S i))] = true
-  Hysssi : y .[ S (S (S i))] = true
-  Hzsssi : z .[ S (S (S i))] = false
-  ============================
-   0 = 1
-*)
 
 unfold I_add_i; simpl.
 unfold I_add_i; simpl.
