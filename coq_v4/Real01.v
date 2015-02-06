@@ -13,11 +13,15 @@ Notation "0" := I_zero : I_scope.
 Notation "1" := I_one : I_scope.
 
 Definition d2n (d : bool) := if d then 1 else 0.
-Definition n2d (n : nat) := Nat.eqb n 0.
+Definition n2d (n : nat) := negb (Nat.eqb n 0).
 
 Record SeqNat := { sn : nat → nat }.
 
-Definition propag_carry_once s := {| sn i := sn s i mod 2 + sn s (S i) / 2 |}.
+Definition modb n := n mod 2.
+Definition divb n := n / 2.
+
+Definition propag_carry_once s :=
+  {| sn i := modb (sn s i) + divb (sn s (S i)) |}.
 
 Fixpoint I_propag_carry n u :=
   match n with
