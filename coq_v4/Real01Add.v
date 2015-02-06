@@ -21,14 +21,34 @@ Theorem fst_not_1_I_add_algo_comm : ∀ x y i,
   fst_not_1 (I_add_algo x y) i = fst_not_1 (I_add_algo y x) i.
 Proof.
 intros x y i.
-bbb.
+apply fst_not_1_iff; simpl.
+remember (fst_not_1 (I_add_algo x y) i) as s1 eqn:Hs1 .
+apply fst_not_1_iff in Hs1; simpl in Hs1.
+destruct s1 as [di1| ].
+ destruct Hs1 as (Hn1, Ht1).
+ rewrite Nat.add_comm in Ht1.
+ split; [ idtac | assumption ].
+ intros dj Hdj.
+ rewrite Nat.add_comm.
+ apply Hn1; assumption.
+
+ intros dj.
+ rewrite Nat.add_comm.
+ apply Hs1.
+Qed.
 
 Theorem carry_I_add_algo_comm : ∀ x y i,
   carry (I_add_algo x y) i = carry (I_add_algo y x) i.
 Proof.
 intros x y i.
 unfold carry; simpl.
-bbb.
+rewrite fst_not_1_I_add_algo_comm.
+remember (fst_not_1 (I_add_algo y x) (S i)) as s1 eqn:Hs1 .
+apply fst_not_1_iff in Hs1; simpl in Hs1.
+destruct s1 as [di1| ]; [ idtac | reflexivity ].
+destruct Hs1 as (Hn1, Ht1).
+rewrite Nat.add_comm; reflexivity.
+Qed.
 
 Theorem I_add_i_comm : ∀ x y i, I_add_i x y i = I_add_i y x i.
 Proof.
