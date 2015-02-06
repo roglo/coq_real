@@ -6,7 +6,7 @@ Require Import Real01.
 Open Scope nat_scope.
 
 Definition I_add_algo x y := {| sn i := d2n (x.[i]) + d2n (y.[i]) |}.
-Definition I_add_i x y i := n2d (sn (propag_carry_once (I_add_algo x y)) i).
+Definition I_add_i x y i := n2d (sn (I_propag_carry 2 (I_add_algo x y)) i).
 Definition I_add x y := {| rm := I_add_i x y |}.
 
 Arguments I_add_algo x%I y%I.
@@ -21,6 +21,8 @@ Theorem I_add_i_comm : ∀ x y i, I_add_i x y i = I_add_i y x i.
 Proof.
 intros x y i.
 unfold I_add_i; simpl; f_equal.
+bbb.
+
 f_equal; rewrite Nat.add_comm; reflexivity.
 Qed.
 
