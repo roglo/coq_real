@@ -108,7 +108,7 @@ destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
  remember H1 as H; clear HeqH.
  apply Hny in H.
  symmetry in Hf_v.
- eapply I_eq_neq_if in H; try eassumption.
+ eapply I_eq_neq_prop in H; try eassumption.
  destruct H as [(Hyx, Hxx)| (Hyx, Hxx)]; simpl in Hyx, Hxx.
   pose proof (Hyx (dy - dx)%nat) as H.
   apply Nat.lt_le_incl in H1.
@@ -325,7 +325,7 @@ destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
      apply Nat.succ_lt_mono in H.
      apply Hn3 in H.
      rewrite Ht1 in H; simpl in H.
-     eapply I_eq_neq_if in H; try eassumption.
+     eapply I_eq_neq_prop in H; try eassumption.
      destruct H as [(Hyx, Hxx)| (Hyx, Hxx)]; simpl in Hyx, Hxx.
       remember H1 as H; clear HeqH.
       unfold carry in Hc4; simpl in Hc4.
@@ -383,7 +383,7 @@ destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
      apply Hn1 in H.
      rewrite Ht3 in H; simpl in H.
      remember H as Hx1; clear HeqHx1.
-     eapply I_eq_neq_if in H; try eassumption.
+     eapply I_eq_neq_prop in H; try eassumption.
      destruct H as [(Hxy, Hyy)| (Hxy, Hyy)]; simpl in Hxy, Hyy.
       pose proof (Hf di3) as H.
       unfold I_add_i in H; simpl in H.
@@ -420,7 +420,7 @@ destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
   pose proof (Hxz di3) as Hx1.
   rewrite Ht3 in Hx1; simpl in Hx1.
   remember Hx1 as H; clear HeqH.
-  eapply I_eq_neq_if in H; try eassumption.
+  eapply I_eq_neq_prop in H; try eassumption.
   destruct H as [(Hxy, Hyy)| (Hxy, Hyy)]; simpl in Hxy, Hyy.
    destruct di3.
     simpl in Hxy; rewrite Hxy in Htx; discriminate Htx.
@@ -514,7 +514,7 @@ destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
 
  remember H1 as H; clear HeqH.
  apply Hnx in H.
- eapply I_eq_neq_if in H; try eassumption.
+ eapply I_eq_neq_prop in H; try eassumption.
  destruct H as [(Hxy, Hyy)| (Hxy, Hyy)]; simpl in Hxy, Hyy.
   pose proof (Hxy (dx - dy)%nat) as H.
   apply Nat.lt_le_incl in H1.
@@ -801,7 +801,7 @@ destruct (lt_eq_lt_dec dj1 dx) as [[H1| H1]| H1].
       rename H into Hy1.
       symmetry in Hf_v.
       remember Hy1 as H; clear HeqH.
-      eapply I_eq_neq_if in H; try eassumption.
+      eapply I_eq_neq_prop in H; try eassumption.
       destruct H as [(Hyx, Hxx)| (Hyx, Hxx)]; simpl in Hyx, Hxx.
        pose proof (Hyx (dy - dx)%nat) as H.
        apply Nat.lt_le_incl in H2.
@@ -867,7 +867,7 @@ destruct (lt_eq_lt_dec dj1 dx) as [[H1| H1]| H1].
 
           clear H.
           remember Hx3 as H; clear HeqH.
-          eapply I_eq_neq_if in H; try eassumption.
+          eapply I_eq_neq_prop in H; try eassumption.
           destruct H as [(Hyx, Hxx)| (Hyx, Hxx)]; simpl in Hyx, Hxx.
            pose proof (Hyx (S dj1 - dj3)%nat) as H.
            apply Nat.lt_le_incl in H3.
@@ -887,7 +887,7 @@ destruct (lt_eq_lt_dec dj1 dx) as [[H1| H1]| H1].
          destruct Hsy3 as (Hny3, Hty3).
          clear H.
          remember Hx3 as H; clear HeqH.
-         eapply I_eq_neq_if in H; try eassumption.
+         eapply I_eq_neq_prop in H; try eassumption.
          destruct H as [(Hyx, Hxx)| (Hyx, Hxx)]; simpl in Hyx, Hxx.
           pose proof (Hyx (S dj1 - dj3)%nat) as H.
           apply Nat.lt_le_incl in H3.
@@ -1014,7 +1014,7 @@ destruct (lt_eq_lt_dec dj1 dx) as [[H1| H1]| H1].
            rewrite Nat.add_comm, Nat.add_sub in H.
            rename H into Hx4.
            remember Hx4 as H; clear HeqH.
-           eapply I_eq_neq_if in H; try eassumption.
+           eapply I_eq_neq_prop in H; try eassumption.
            destruct H as [(Hyx, Hxx)| (Hyx, Hxx)]; simpl in Hyx, Hxx.
             pose proof (Hf (S dj1)) as H.
             unfold I_add_i in H; simpl in H.
@@ -1059,7 +1059,7 @@ destruct (lt_eq_lt_dec dj1 dx) as [[H1| H1]| H1].
       apply Hnx in H.
       rename H into Hx1.
       remember Hx1 as H; clear HeqH.
-      eapply I_eq_neq_if in H; try eassumption.
+      eapply I_eq_neq_prop in H; try eassumption.
       destruct H as [(Hyx, Hxx)| (Hyx, Hxx)]; simpl in Hyx, Hxx.
        pose proof (Hyx (dx - dy)%nat) as H.
        apply Nat.lt_le_incl in H2.
@@ -1081,7 +1081,7 @@ destruct (lt_eq_lt_dec dj1 dx) as [[H1| H1]| H1].
   rename H into Hy1.
   symmetry in Hf_v.
   remember Hy1 as H; clear HeqH.
-  eapply I_eq_neq_if in H; try eassumption.
+  eapply I_eq_neq_prop in H; try eassumption.
   destruct H as [(Hyx, Hxx)| (Hyx, Hxx)]; simpl in Hyx, Hxx.
    pose proof (Hyx (dy - dx)%nat) as H.
    apply Nat.lt_le_incl in H1.
@@ -1263,7 +1263,7 @@ destruct (lt_eq_lt_dec dj1 dx) as [[H1| H1]| H1].
 
   pose proof (Hnx dy H1) as Hx1.
   remember Hx1 as H; clear HeqH.
-  eapply I_eq_neq_if in H; try eassumption.
+  eapply I_eq_neq_prop in H; try eassumption.
   destruct H as [(Hyx, Hxx)| (Hyx, Hxx)]; simpl in Hyx, Hxx.
    pose proof (Hyx (dx - dy)%nat) as H.
    apply Nat.lt_le_incl in H1.
@@ -1322,7 +1322,7 @@ rename H into Hny.
 destruct dx; [ clear Hnx | idtac ].
  pose proof (Hny O) as H.
  symmetry in Hf.
- eapply I_eq_neq_if in H; try eassumption; simpl in H.
+ eapply I_eq_neq_prop in H; try eassumption; simpl in H.
  destruct H as [(Hyx, Hxx)| (Hyx, Hxx)]; simpl in Hyx, Hxx.
   clear Htx Hyx.
   simpl in Hi.
@@ -1471,7 +1471,7 @@ destruct dx; [ clear Hnx | idtac ].
 
  pose proof (Hny (S dx)) as H.
  symmetry in Hf.
- eapply I_eq_neq_if in H; try eassumption; simpl in H.
+ eapply I_eq_neq_prop in H; try eassumption; simpl in H.
  destruct H as [(Hyx, Hxx)| (Hyx, Hxx)]; simpl in Hyx, Hxx.
   remember Hf as H; clear HeqH.
   unfold I_eq in H; simpl in H.

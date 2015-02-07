@@ -2025,7 +2025,7 @@ rewrite Nat.add_0_r in H.
 apply negb_true_iff in H.
 rename H into Hy4.
 remember Ht3 as H; clear HeqH.
-eapply I_eq_neq_if in H; try eassumption.
+eapply I_eq_neq_prop in H; try eassumption.
 destruct H as [(Hxi, Hyi)| (Hxi, Hyi)]; simpl in Hxi, Hyi.
  rewrite Hyi in Ht4; discriminate Ht4.
 
@@ -2092,7 +2092,7 @@ destruct s3 as [dj3| ].
   destruct dj4.
    clear Hn4; rewrite Nat.add_0_r in Ht4.
    remember Ht1 as H; clear HeqH.
-   eapply I_eq_neq_if in H; try eassumption.
+   eapply I_eq_neq_prop in H; try eassumption.
    destruct H as [(Hxi, Hyi)| (Hxi, Hyi)]; simpl in Hxi, Hyi.
     rewrite Hxi in Ht3; discriminate Ht3.
 
@@ -2148,7 +2148,7 @@ pose proof (Hn4 dj3) as H.
 apply negb_true_iff in H.
 rename H into Hy.
 remember Ht3 as H; clear HeqH.
-eapply I_eq_neq_if in H; try eassumption.
+eapply I_eq_neq_prop in H; try eassumption.
 destruct H as [(Hxi, Hyi)| (Hxi, Hyi)]; simpl in Hxi, Hyi.
  destruct s1 as [dj1| ].
   remember Hs1 as H; clear HeqH.
@@ -2253,7 +2253,7 @@ destruct s3 as [dj3| ].
       destruct b; simpl in Hi.
        symmetry in Heq.
        remember Hy as H; clear HeqH.
-       eapply I_eq_neq_if in H; try eassumption.
+       eapply I_eq_neq_prop in H; try eassumption.
        destruct H as [(Hyi, Hxi)| (Hyi, Hxi)]; simpl in Hxi, Hyi.
         rewrite <- Nat.add_1_r, Hxi in Ht3; discriminate Ht3.
 
@@ -2261,7 +2261,7 @@ destruct s3 as [dj3| ].
         rewrite Nat.add_1_r, Ht4 in H; discriminate H.
 
        remember Hi as H; clear HeqH.
-       eapply I_eq_neq_if in H; try eassumption.
+       eapply I_eq_neq_prop in H; try eassumption.
        destruct H as [(Hxi, Hyi)| (Hxi, Hyi)]; simpl in Hxi, Hyi.
         rewrite <- Nat.add_1_r, Hyi in Ht4; discriminate Ht4.
 
@@ -2278,7 +2278,7 @@ destruct s3 as [dj3| ].
       symmetry in Hx, Hi.
       destruct b; simpl in Hi.
        remember Hx as H; clear HeqH.
-       eapply I_eq_neq_if in H; try eassumption.
+       eapply I_eq_neq_prop in H; try eassumption.
        destruct H as [(Hxi, Hyi)| (Hxi, Hyi)]; simpl in Hxi, Hyi.
         rewrite <- Nat.add_1_r, Hyi in Ht4; discriminate Ht4.
 
@@ -2287,7 +2287,7 @@ destruct s3 as [dj3| ].
 
        symmetry in Heq.
        remember Hi as H; clear HeqH.
-       eapply I_eq_neq_if in H; try eassumption.
+       eapply I_eq_neq_prop in H; try eassumption.
        destruct H as [(Hyi, Hxi)| (Hyi, Hxi)]; simpl in Hxi, Hyi.
         rewrite <- Nat.add_1_r, Hxi in Ht3; discriminate Ht3.
 

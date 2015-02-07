@@ -139,10 +139,10 @@ split; intros H.
 Qed.
 
 Theorem carry_compat_r : ∀ x y z j,
-  (∀ i, x .[ i] = y .[ i])
-  → carry y z j = carry x z j.
+  I_eq_ext x y
+  → carry x z j = carry y z j.
 Proof.
-intros x y z j Hxy.
+intros x y z j Hxy; symmetry.
 unfold carry; intros.
 remember (fst_same y z j) as s1 eqn:Hs1 .
 remember (fst_same x z j) as s2 eqn:Hs2 .
@@ -179,6 +179,15 @@ destruct s1 as [di1| ].
  destruct Hs2 as (Hn2, Hs2).
  rewrite Hxy, Hs1 in Hs2.
  destruct (z.[ j + di2]); discriminate Hs2.
+Qed.
+
+Theorem I_eq_ext_eq : ∀ x y, I_eq_ext x y → (x = y)%I.
+Proof.
+intros x y Hxy.
+unfold I_eq; intros i; simpl.
+unfold I_add_i; simpl.
+rewrite Hxy; f_equal.
+apply carry_compat_r; assumption.
 Qed.
 
 Theorem fst_same_diag : ∀ x n, fst_same x x n = Some 0%nat.
@@ -543,11 +552,11 @@ Qed.
 
 (* compatibility with equality *)
 
-Theorem I_add_i_compat_r : ∀ x y z j,
-  (∀ i, x .[ i] = y .[ i])
-  → I_add_i y z j = I_add_i x z j.
+Theorem I_add_i_compat_r : ∀ x y z,
+  I_eq_ext x y
+  → I_eq_ext (x + z) (y + z).
 Proof.
-intros x y z j Hxy.
+intros x y z Hxy j; simpl.
 unfold I_add_i.
 rewrite Hxy; f_equal.
 apply carry_compat_r; assumption.
@@ -568,7 +577,7 @@ Theorem I_noI_eq_eq : ∀ x0 y0 x y,
   x = (x0 + 0)%I
   → y = (y0 + 0)%I
   → (x = y)%I
-  → ∀ i, x .[ i] = y .[ i].
+  → I_eq_ext x y.
 Proof.
 intros x0 y0 x y Ha Hb Hxy i.
 unfold I_eq in Hxy; simpl in Hxy.
@@ -602,7 +611,7 @@ Theorem carry_noI_eq_compat_r : ∀ x0 y0 x y z n,
 Proof.
 intros x0 y0 x y z n Ha Hb Hxy.
 apply carry_compat_r; simpl.
-intros; apply I_add_i_compat_r.
+apply I_add_i_compat_r.
 eapply I_noI_eq_eq; eassumption.
 Qed.
 
@@ -617,7 +626,6 @@ unfold I_eq; simpl; intros i.
 unfold I_add_i; simpl.
 do 2 rewrite xorb_false_r; f_equal.
  apply I_add_i_compat_r.
- intros j; symmetry.
  eapply I_noI_eq_eq; eassumption.
 
  eapply carry_noI_eq_compat_r; eassumption.
@@ -2458,7 +2466,7 @@ rewrite <- Nat.add_succ_r.
 apply carry_before_inf_relay; assumption.
 Qed.
 
-Theorem I_eq_neq_if : ∀ x y i,
+Theorem I_eq_neq_prop : ∀ x y i,
   (x = y)%I
   → x.[i] = true
   → y.[i] = false
@@ -2772,4 +2780,49 @@ destruct sx as [dx| ].
      erewrite carry_before_relay9 in H; try eassumption.
      simpl in H.
      rewrite Hx1 in H; discriminate H.
+Qed.
+
+Theorem I_eq_prop : ∀ x y,
+  (x = y)%I
+  → I_eq_ext x y ∨
+    ∃ i,
+    (∀ j, j < i → x.[j] = y.[j]) ∧
+    x.[i] ≠ y.[i] ∧
+    ((∀ di, x.[i+S di] = x.[i]) ∧ (∀ di, y.[i+S di] = y.[i]) ∨
+     (∀ di, x.[i+S di] = y.[i]) ∧ (∀ di, y.[i+S di] = x.[i])).
+Proof.
+intros x y Hxy.
+remember (fst_same x (- y) 0) as s1 eqn:Hs1 .
+apply fst_same_sym_iff in Hs1; simpl in Hs1.
+destruct s1 as [di1| ].
+ destruct Hs1 as (Hn1, Ht1).
+ right; exists di1.
+ split.
+  intros j Hdj.
+  rewrite Hn1; [ idtac | assumption ].
+  rewrite negb_involutive; reflexivity.
+
+  split.
+   intros H; rewrite Ht1 in H.
+   revert H; apply no_fixpoint_negb.
+
+   remember (x .[ di1]) as b eqn:Hxi1 .
+   symmetry in Hxi1.
+   apply negb_sym in Ht1; rewrite Ht1.
+   destruct b.
+    eapply I_eq_neq_prop in Hxi1; try eassumption.
+    destruct Hxi1 as [(Hx, Hy)| (Hx, Hy)].
+     left; split; intros di; [ apply Hx | apply Hy ].
+
+     right; split; intros di; [ apply Hx | apply Hy ].
+
+    symmetry in Hxy.
+    eapply I_eq_neq_prop in Hxi1; try eassumption.
+    destruct Hxi1 as [(Hy, Hx)| (Hy, Hx)].
+     left; split; intros di; [ apply Hx | apply Hy ].
+
+     right; split; intros di; [ apply Hx | apply Hy ].
+
+ left; intros i.
+ rewrite Hs1, negb_involutive; reflexivity.
 Qed.
