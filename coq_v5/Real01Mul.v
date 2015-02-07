@@ -35,6 +35,8 @@ Definition I_mul_i x y i :=
 
 Definition I_mul x y := {| rm := I_mul_i x y |}.
 
+Notation "x * y" := (I_mul x y) : I_scope.
+
 (* *)
 
 (* Summation model and theorems borrowed from my proof of Puiseux's theorem,
@@ -142,7 +144,7 @@ rewrite I_propag_carry_mul_algo_comm, Nat.add_comm.
 reflexivity.
 Qed.
 
-Theorem I_mul_comm : ∀ x y, (I_mul x y = I_mul y x)%I.
+Theorem I_mul_comm : ∀ x y, (x * y = y * x)%I.
 Proof.
 intros x y.
 unfold I_eq; simpl; intros i.
@@ -156,6 +158,7 @@ Qed.
 
 (* neutral element *)
 
+(* difficulties to prove that...
 Theorem I_add_1_r : ∀ x, (I_mul x 1 = x)%I.
 Proof.
 intros x.
@@ -164,7 +167,14 @@ unfold I_add_i; simpl.
 do 2 rewrite xorb_false_r.
 f_equal.
  unfold I_mul_i; simpl.
-bbb.
+ bbb.
  rewrite Nat.add_comm; simpl.
  unfold I_mul_algo; simpl.
+bbb.
+*)
+
+(* compatibility with equality *)
+
+Theorem I_mul_compat_r : ∀ x y z, I_eq_ext x y → I_eq_ext (x * z) (y * z).
+Proof.
 bbb.
