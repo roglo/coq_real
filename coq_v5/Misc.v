@@ -28,3 +28,21 @@ intros a b c Hab Hc; subst c.
 rewrite Nat.add_sub_assoc; [ idtac | assumption ].
 rewrite Nat.add_comm, Nat.add_sub; reflexivity.
 Qed.
+
+Theorem all_lt_all : ∀ P : nat → Prop,
+  (∀ n, (∀ m, (m < n)%nat → P m) → P n)
+  → ∀ n, P n.
+Proof.
+intros P Hm n.
+apply Hm.
+induction n; intros m Hmn.
+ apply Nat.nle_gt in Hmn.
+ exfalso; apply Hmn, Nat.le_0_l.
+
+ destruct (eq_nat_dec m n) as [H1| H1].
+  subst m; apply Hm; assumption.
+
+  apply IHn.
+  apply Nat_le_neq_lt; [ idtac | assumption ].
+  apply Nat.succ_le_mono; assumption.
+Qed.

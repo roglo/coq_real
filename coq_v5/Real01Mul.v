@@ -211,6 +211,13 @@ erewrite I_ext_propag_carry_mul_algo_compat_r; [ idtac | eassumption ].
 reflexivity.
 Qed.
 
+Theorem zzz : ∀ x y,
+  (x = y)%I
+  → I_eq_ext x y ∨
+    ∃ i, 
+Proof.
+bbb.
+
 Theorem I_mul_compat_r : ∀ x y z, (x = y)%I → (x * z = y * z)%I.
 Proof.
 intros x y z Hxy.
