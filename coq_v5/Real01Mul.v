@@ -175,6 +175,48 @@ bbb.
 
 (* compatibility with equality *)
 
-Theorem I_mul_compat_r : ∀ x y z, I_eq_ext x y → I_eq_ext (x * z) (y * z).
+Theorem I_ext_mul_algo_compat_r : ∀ x y z i,
+  I_eq_ext x y
+  → I_mul_algo x z i = I_mul_algo y z i.
 Proof.
+intros x y z i Hxy.
+unfold I_mul_algo.
+unfold summation.
+rewrite Nat.sub_succ, Nat.sub_0_r.
+apply summation_loop_compat.
+intros j Hji.
+rewrite Hxy; reflexivity.
+Qed.
+
+Theorem I_ext_propag_carry_mul_algo_compat_r : ∀ x y z n i,
+  I_eq_ext x y
+  → I_propag_carry (I_mul_algo x z) n i =
+    I_propag_carry (I_mul_algo y z) n i.
+Proof.
+intros x y z n i Hxy.
+revert i.
+induction n; intros; simpl.
+ apply I_ext_mul_algo_compat_r; assumption.
+
+ unfold propag_carry_once.
+ f_equal; rewrite IHn; reflexivity.
+Qed.
+
+Theorem I_ext_mul_compat_r : ∀ x y z, I_eq_ext x y → I_eq_ext (x * z) (y * z).
+Proof.
+intros x y z Hxy.
+unfold I_eq_ext; simpl; intros i.
+unfold I_mul_i; simpl.
+erewrite I_ext_propag_carry_mul_algo_compat_r; [ idtac | eassumption ].
+reflexivity.
+Qed.
+
+Theorem I_mul_compat_r : ∀ x y z, (x = y)%I → (x * z = y * z)%I.
+Proof.
+intros x y z Hxy.
+unfold I_eq; simpl; intros i.
+unfold I_add_i; simpl.
+do 2 rewrite xorb_false_r.
+unfold I_mul_i.
+unfold I_eq in Hxy; simpl in Hxy.
 bbb.
