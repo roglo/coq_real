@@ -162,7 +162,28 @@ remember (y .[ i]) as yi eqn:Hyi .
 remember (z .[ i]) as zi eqn:Hzi .
 symmetry in Hxi, Hyi, Hzi.
 destruct xi, yi, zi; try reflexivity; simpl.
+ f_equal.
+ rewrite Nat.add_1_r.
+ remember (carry (I_add_algo y z) i) as c1 eqn:Hc1 .
+ remember (carry (I_add_algo x (y + z)) i) as c2 eqn:Hc2 .
+ remember (carry (I_add_algo x y) i) as c3 eqn:Hc3 .
+ remember (carry (I_add_algo (x + y) z) i) as c4 eqn:Hc4 .
+ symmetry in Hc1, Hc2, Hc3, Hc4.
+ destruct c1, c2, c3, c4; try reflexivity; simpl.
+  unfold carry in Hc4; simpl in Hc4.
+  remember (fst_not_1 (I_add_algo (x + y) z) (S i)) as s4 eqn:Hs4 .
+  apply fst_not_1_iff in Hs4; simpl in Hs4.
+  destruct s4 as [di4| ].
+   destruct Hs4 as (Hn4, Ht4).
+   remember (I_add_i x y (S (i + di4))) as xy4 eqn:Hxy4 .
+   remember (z .[ S (i + di4)]) as z4 eqn:Hz4 .
+   symmetry in Hxy4, Hz4.
+   destruct xy4, z4; try (exfalso; apply Ht4; reflexivity).
+    simpl in Hc4.
+    clear Ht4.
+    clear Hc4; exfalso.
 bbb.
+(* Mouais... compliqué... *)
 
 unfold I_add_i; simpl.
 unfold I_add_i; simpl.
