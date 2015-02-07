@@ -30,6 +30,7 @@ Fixpoint I_propag_carry u n :=
   end.
 
 Definition I_mul_i x y i :=
+
   let nb := I_propag_carry (I_mul_algo x y) (i + 2) i in
   if zerop nb then false else true.
 
@@ -217,4 +218,26 @@ intros x y z Hxy.
 apply I_eq_prop in Hxy.
 destruct Hxy as [Hxy| (i, (Hlt, (Heq, Hgt)))].
  apply I_eq_ext_eq, I_ext_mul_compat_r; assumption.
+
+ destruct Hgt as [(Hx, Hy)| (Hx, Hy)].
+  unfold I_eq; simpl; intros k.
+  unfold I_add_i; simpl.
+  do 2 rewrite xorb_false_r.
+  unfold I_mul_i.
+  remember (I_propag_carry (I_mul_algo x z) (k + 2) k) as nb1 eqn:Hnb1 .
+  remember (I_propag_carry (I_mul_algo y z) (k + 2) k) as nb2 eqn:Hnb2 .
+  symmetry in Hnb1, Hnb2.
+  destruct nb1; simpl.
+   destruct nb2; simpl.
+    unfold carry; simpl.
+    remember (fst_same (x * z) 0 (S k)) as s1 eqn:Hs1 .
+    remember (fst_same (y * z) 0 (S k)) as s2 eqn:Hs2 .
+    apply fst_same_sym_iff in Hs1; simpl in Hs1.
+    apply fst_same_sym_iff in Hs2; simpl in Hs2.
+    destruct s1 as [dj1| ].
+     destruct Hs1 as (Hn1, Ht1).
+     rewrite Ht1; simpl.
+     destruct s2 as [dj2| ].
+      destruct Hs2 as (Hn2, Ht2).
+      rewrite Ht2; reflexivity.
 bbb.
