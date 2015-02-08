@@ -322,7 +322,8 @@ destruct Hxy as [Hxy| (i, (Hlt, (Heq, Hgt)))].
        rename Heqnb3 into Hnb3.
        symmetry in Hnb3.
        destruct nb3; [ discriminate H | clear H ].
-bbb.
-       simpl in Hnb3.
-       unfold propag_carry_once in Hnb3.
+       destruct dj1.
+        Focus 2.
+        pose proof (Hn1 0 (Nat.lt_0_succ dj1)) as H.
+        rewrite Nat.add_0_r in H.
 bbb.
