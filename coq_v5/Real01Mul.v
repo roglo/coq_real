@@ -240,4 +240,9 @@ destruct Hxy as [Hxy| (i, (Hlt, (Heq, Hgt)))].
      destruct s2 as [dj2| ].
       destruct Hs2 as (Hn2, Ht2).
       rewrite Ht2; reflexivity.
+
+      remember (x .[ i]) as b eqn:Hxi .
+      apply neq_negb in Heq.
+      symmetry in Hxi; apply negb_sym in Heq.
+      rewrite Heq in Hy.
 bbb.
