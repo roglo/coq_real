@@ -190,6 +190,64 @@ unfold I_mul; simpl.
 apply I_mul_i_comm.
 Qed.
 
+(* 0 absorbing element *)
+
+Theorem if_0_propag_carry_0 : ∀ x n,
+  (∀ i, x i = 0)
+  → ∀ j, I_propag_carry x n j = 0.
+Proof.
+intros x n Hx j.
+revert j.
+induction n; intros; simpl; [ apply Hx | idtac ].
+unfold propag_carry_once.
+do 2 rewrite IHn; reflexivity.
+Qed.
+
+Theorem I_mul_algo_0_l : ∀ x y,
+  I_eq_ext x 0
+  → ∀ i, I_mul_algo x y i = 0.
+Proof.
+intros x y Hx i.
+unfold I_mul_algo.
+apply all_0_summation_0; intros j Hj.
+rewrite Hx; reflexivity.
+Qed.
+
+Theorem I_mul_i_0_l : ∀ x y,
+  I_eq_ext x 0
+  → ∀ i, I_mul_i x y i = false.
+Proof.
+intros x y Hx i.
+unfold I_mul_i.
+remember (I_propag_carry (I_mul_algo x y) (i + 2) i) as nb eqn:Hnb .
+symmetry in Hnb.
+destruct nb; [ reflexivity | exfalso ].
+rewrite if_0_propag_carry_0 in Hnb; [ discriminate Hnb | idtac ].
+intros j; apply I_mul_algo_0_l; assumption.
+Qed.
+
+Theorem I_mul_0_l : ∀ x, (0 * x = 0)%I.
+Proof.
+intros x.
+unfold I_eq; simpl; intros i.
+unfold I_add_i; simpl.
+rewrite carry_diag; simpl.
+rewrite I_mul_i_0_l; [ idtac | reflexivity ].
+rewrite xorb_false_l.
+unfold carry; simpl.
+remember (fst_same (0%I * x) 0 (S i)) as s1 eqn:Hs1 .
+apply fst_same_sym_iff in Hs1; simpl in Hs1.
+destruct s1 as [dj1| ].
+ destruct Hs1 as (Hn1, Ht1); assumption.
+
+ pose proof (Hs1 0) as H; simpl in H.
+ rewrite Nat.add_0_r in H.
+ remember (S i) as si.
+ unfold I_mul_i in H; simpl in H; subst si.
+ rewrite if_0_propag_carry_0 in H; [ discriminate H | idtac ].
+ intros j; apply all_0_summation_0; intros k Hk; reflexivity.
+Qed.
+
 (* neutral element *)
 
 (* difficulties to prove that...
@@ -243,40 +301,6 @@ unfold I_eq_ext; simpl; intros i.
 unfold I_mul_i; simpl.
 erewrite I_ext_propag_carry_mul_algo_compat_r; [ idtac | eassumption ].
 reflexivity.
-Qed.
-
-Theorem if_0_propag_carry_0 : ∀ x n,
-  (∀ i, x i = 0)
-  → ∀ j, I_propag_carry x n j = 0.
-Proof.
-intros x n Hx j.
-revert j.
-induction n; intros; simpl; [ apply Hx | idtac ].
-unfold propag_carry_once.
-do 2 rewrite IHn; reflexivity.
-Qed.
-
-Theorem I_mul_algo_0_l : ∀ x y,
-  I_eq_ext x 0
-  → ∀ i, I_mul_algo x y i = 0.
-Proof.
-intros x y Hx i.
-unfold I_mul_algo.
-apply all_0_summation_0; intros j Hj.
-rewrite Hx; reflexivity.
-Qed.
-
-Theorem I_mul_i_0_l : ∀ x y,
-  I_eq_ext x 0
-  → ∀ i, I_mul_i x y i = false.
-Proof.
-intros x y Hx i.
-unfold I_mul_i.
-remember (I_propag_carry (I_mul_algo x y) (i + 2) i) as nb eqn:Hnb .
-symmetry in Hnb.
-destruct nb; [ reflexivity | exfalso ].
-rewrite if_0_propag_carry_0 in Hnb; [ discriminate Hnb | idtac ].
-intros j; apply I_mul_algo_0_l; assumption.
 Qed.
 
 Theorem I_mul_compat_r : ∀ x y z, (x = y)%I → (x * z = y * z)%I.
