@@ -3,14 +3,6 @@
 Require Import Utf8 QArith NPeano Misc.
 Require Import Oracle Real01.
 
-Notation "[ ]" := nil.
-Notation "[ x ; .. ; y … l ]" := (cons x .. (cons y l) ..).
-Notation "[ x ]" := (cons x nil).
-Notation "x ∈ l" := (List.In x l) (at level 70).
-Notation "x ∉ l" := (not (List.In x l)) (at level 70).
-
-Notation "x ≤ y ≤ z" := (x <= y ∧ y <= z)%nat (at level 70, y at next level).
-
 Open Scope nat_scope.
 
 Definition Isum2Un x y i j := eqb (x.[i+j]) (y.[i+j]).

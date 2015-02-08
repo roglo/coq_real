@@ -1,6 +1,6 @@
 (* multiplication in I *)
 
-Require Import Utf8 QArith NPeano.
+Require Import Utf8 QArith NPeano Misc.
 Require Import Real01 Real01Add.
 
 Open Scope nat_scope.
@@ -95,6 +95,42 @@ rewrite Nat.add_comm; f_equal.
  f_equal.
  rewrite Nat.add_succ_r, Nat.sub_succ, Nat.sub_0_r.
  rewrite Nat.add_comm, Nat.add_sub; reflexivity.
+Qed.
+
+Theorem all_0_summation_loop_0 : ∀ g b len,
+  (∀ i, (b ≤ i < b + len) → g i = 0)
+  → summation_loop b len (λ i, g i) = 0.
+Proof.
+intros g b len H.
+revert b H.
+induction len; intros; [ reflexivity | simpl ].
+rewrite H; [ idtac | split; auto ].
+ rewrite Nat.add_0_l, IHlen; [ reflexivity | idtac ].
+ intros i (Hbi, Hib); apply H.
+ rewrite Nat.add_succ_r, <- Nat.add_succ_l.
+ split; [ apply Nat.lt_le_incl; auto | auto ].
+
+ rewrite Nat.add_succ_r.
+ apply le_n_S, le_plus_l.
+Qed.
+
+Theorem all_0_summation_0 : ∀ g i1 i2,
+  (∀ i, i1 ≤ i ≤ i2 → g i = 0)
+  → Σ (i = i1, i2), g i = 0.
+Proof.
+intros g i1 i2 H.
+apply all_0_summation_loop_0.
+intros i (H1, H2).
+apply H.
+split; [ assumption | idtac ].
+destruct (le_dec i1 (S i2)) as [H3| H3].
+ rewrite Nat.add_sub_assoc in H2; auto.
+ rewrite Nat.add_comm, Nat.add_sub in H2.
+ apply Nat.succ_le_mono; assumption.
+
+ apply not_le_minus_0 in H3.
+ rewrite H3, Nat.add_0_r in H2.
+ apply Nat.nle_gt in H2; contradiction.
 Qed.
 
 (* commutativity *)
@@ -212,6 +248,27 @@ erewrite I_ext_propag_carry_mul_algo_compat_r; [ idtac | eassumption ].
 reflexivity.
 Qed.
 
+Theorem if_0_propag_carry_0 : ∀ x n,
+  (∀ i, x i = 0)
+  → ∀ j, I_propag_carry x n j = 0.
+Proof.
+intros x n Hx j.
+revert j.
+induction n; intros; simpl; [ apply Hx | idtac ].
+unfold propag_carry_once.
+do 2 rewrite IHn; reflexivity.
+Qed.
+
+Theorem I_mul_algo_0_l : ∀ x y,
+  I_eq_ext x 0
+  → ∀ i, I_mul_algo x y i = 0.
+Proof.
+intros x y Hx i.
+unfold I_mul_algo.
+apply all_0_summation_0; intros j Hj.
+rewrite Hx; reflexivity.
+Qed.
+
 Theorem I_mul_compat_r : ∀ x y z, (x = y)%I → (x * z = y * z)%I.
 Proof.
 intros x y z Hxy.
@@ -254,5 +311,7 @@ destruct Hxy as [Hxy| (i, (Hlt, (Heq, Hgt)))].
        rename Heqnb3 into Hnb3.
        symmetry in Hnb3.
        destruct nb3; [ discriminate H | clear H ].
-       simpl in Hnb3.
+       rewrite if_0_propag_carry_0 in Hnb3; [ discriminate Hnb3 | idtac ].
+       intros i.
+       apply I_mul_algo_0_l; assumption.
 bbb.
