@@ -314,4 +314,15 @@ destruct Hxy as [Hxy| (i, (Hlt, (Heq, Hgt)))].
        rewrite if_0_propag_carry_0 in Hnb3; [ discriminate Hnb3 | idtac ].
        intros i.
        apply I_mul_algo_0_l; assumption.
+
+       pose proof (Hs2 O) as H.
+       rewrite Nat.add_0_r in H.
+       unfold I_mul_i in H.
+       remember (I_propag_carry (I_mul_algo y z) (S k + 2) (S k)) as nb3.
+       rename Heqnb3 into Hnb3.
+       symmetry in Hnb3.
+       destruct nb3; [ discriminate H | clear H ].
+bbb.
+       simpl in Hnb3.
+       unfold propag_carry_once in Hnb3.
 bbb.
