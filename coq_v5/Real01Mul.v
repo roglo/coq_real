@@ -219,7 +219,8 @@ apply I_eq_prop in Hxy.
 destruct Hxy as [Hxy| (i, (Hlt, (Heq, Hgt)))].
  apply I_eq_ext_eq, I_ext_mul_compat_r; assumption.
 
- destruct Hgt as [(Hx, Hy)| (Hx, Hy)].
+ destruct Hgt as [(Hi, (Hx, Hy))| (Hx, Hy)].
+  subst i; clear Hlt.
   unfold I_eq; simpl; intros k.
   unfold I_add_i; simpl.
   do 2 rewrite xorb_false_r.
@@ -241,8 +242,9 @@ destruct Hxy as [Hxy| (i, (Hlt, (Heq, Hgt)))].
       destruct Hs2 as (Hn2, Ht2).
       rewrite Ht2; reflexivity.
 
-      remember (x .[ i]) as b eqn:Hxi .
+      remember (x .[ 0]) as b eqn:Hxi .
       apply neq_negb in Heq.
       symmetry in Hxi; apply negb_sym in Heq.
       rewrite Heq in Hy.
+      destruct b; simpl in Hy, Heq.
 bbb.
