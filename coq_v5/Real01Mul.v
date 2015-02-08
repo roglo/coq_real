@@ -247,4 +247,12 @@ destruct Hxy as [Hxy| (i, (Hlt, (Heq, Hgt)))].
       symmetry in Hxi; apply negb_sym in Heq.
       rewrite Heq in Hy.
       destruct b; simpl in Hy, Heq.
+       pose proof (Hs2 0) as H.
+       rewrite Nat.add_0_r in H.
+       unfold I_mul_i in H.
+       remember (I_propag_carry (I_mul_algo y z) (S k + 2) (S k)) as nb3.
+       rename Heqnb3 into Hnb3.
+       symmetry in Hnb3.
+       destruct nb3; [ discriminate H | clear H ].
+       simpl in Hnb3.
 bbb.
