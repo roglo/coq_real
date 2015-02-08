@@ -269,6 +269,19 @@ apply all_0_summation_0; intros j Hj.
 rewrite Hx; reflexivity.
 Qed.
 
+Theorem I_mul_i_0_l : ∀ x y,
+  I_eq_ext x 0
+  → ∀ i, I_mul_i x y i = false.
+Proof.
+intros x y Hx i.
+unfold I_mul_i.
+remember (I_propag_carry (I_mul_algo x y) (i + 2) i) as nb eqn:Hnb .
+symmetry in Hnb.
+destruct nb; [ reflexivity | exfalso ].
+rewrite if_0_propag_carry_0 in Hnb; [ discriminate Hnb | idtac ].
+intros j; apply I_mul_algo_0_l; assumption.
+Qed.
+
 Theorem I_mul_compat_r : ∀ x y z, (x = y)%I → (x * z = y * z)%I.
 Proof.
 intros x y z Hxy.
@@ -326,4 +339,13 @@ destruct Hxy as [Hxy| (i, (Hlt, (Heq, Hgt)))].
         Focus 2.
         pose proof (Hn1 0 (Nat.lt_0_succ dj1)) as H.
         rewrite Nat.add_0_r in H.
+        rewrite I_mul_i_0_l in H; [ discriminate H | assumption ].
+
+        clear Hn1; rewrite Nat.add_0_r in Ht1.
+        unfold I_mul_i in Ht1.
+        remember (I_propag_carry (I_mul_algo x z) (S k + 2) (S k)) as nb4.
+        rename Heqnb4 into Hnb4.
+        symmetry in Hnb4.
+        destruct nb4; [ clear Ht1 | discriminate Ht1 ].
+        move Hnb4 before Hnb3.
 bbb.
