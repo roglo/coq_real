@@ -345,4 +345,11 @@ destruct Hxy as [Hxy| (i, (Hlt, (Heq, Hgt)))].
         symmetry in Hnb4.
         destruct nb4; [ clear Ht1 | discriminate Ht1 ].
         move Hnb4 before Hnb3.
+        rewrite Nat.add_succ_r in Hnb2; simpl in Hnb2.
+        unfold propag_carry_once in Hnb2.
+        apply Nat.eq_add_0 in Hnb2.
+        destruct Hnb2 as (Hnb5, Hnb2).
+        rewrite Nat.add_1_r in Hnb2.
+        apply Nat.div_small_iff in Hnb2; [ idtac | intros H; discriminate H ].
+        simpl in Hnb2.
 bbb.
