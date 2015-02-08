@@ -17,6 +17,7 @@ Notation "'Σ' ( i = b , e ) , g" := (summation b e (λ i, (g)))
   (at level 0, i at level 0, b at level 60, e at level 60, g at level 40).
 
 Definition b2n (b : bool) := if b then 1 else 0.
+Definition n2b n := negb (Nat.eqb n 0).
 
 Definition I_mul_algo x y i := Σ (j=1,i), (b2n (x.[j-1]) * b2n (y.[i-j])).
 Arguments I_mul_algo x%I y%I i%nat.
@@ -29,11 +30,7 @@ Fixpoint I_propag_carry u n :=
   | S n1 => propag_carry_once (I_propag_carry u n1)
   end.
 
-Definition I_mul_i x y i :=
-
-  let nb := I_propag_carry (I_mul_algo x y) (i + 2) i in
-  if zerop nb then false else true.
-
+Definition I_mul_i x y i := n2b (I_propag_carry (I_mul_algo x y) (i + 2) i).
 Definition I_mul x y := {| rm := I_mul_i x y |}.
 
 Notation "x * y" := (I_mul x y) : I_scope.
