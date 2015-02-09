@@ -294,6 +294,10 @@ Proof. reflexivity. Qed.
 Theorem I_add_1_r : ∀ x, (I_mul x 1 = x)%I.
 Proof.
 intros x.
+apply I_eq_prop.
+bbb.
+
+intros x.
 unfold I_eq; simpl; intros i.
 unfold I_add_i; simpl.
 do 2 rewrite xorb_false_r.
