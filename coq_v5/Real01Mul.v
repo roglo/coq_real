@@ -269,6 +269,22 @@ Qed.
 
 (* neutral element *)
 
+Theorem b2n_le_1 : ∀ b, b2n b ≤ 1.
+Proof.
+intros b.
+destruct b; [ reflexivity | apply Nat.le_0_1 ].
+Qed.
+
+Theorem divmod_div : ∀ a b, fst (divmod a b 0 b) = (a / S b)%nat.
+Proof. intros a b; reflexivity. Qed.
+
+Theorem divmod_mod : ∀ a b, b - snd (divmod a b 0 b) = (a mod S b)%nat.
+Proof. intros a b; reflexivity. Qed.
+
+Theorem fold_sub_succ_l : ∀ a b,
+  (match a with 0 => S b | S c => b - c end = S b - a)%nat.
+Proof. reflexivity. Qed.
+
 Theorem I_add_1_r : ∀ x, (I_mul x 1 = x)%I.
 Proof.
 intros x.
@@ -286,6 +302,23 @@ destruct s1 as [dj1| ].
   apply fst_same_sym_iff in Hs2; simpl in Hs2.
   destruct Hs2 as (Hn2, Ht2).
   rewrite Ht2, xorb_false_r.
+  destruct i.
+   simpl in *.
+   unfold I_mul_i; simpl.
+   unfold propag_carry_once, I_mul_algo; simpl.
+   do 3 rewrite divmod_div.
+   do 2 rewrite fold_sub_succ_l, divmod_mod.
+   rewrite summation_only_one, Nat.sub_diag; simpl.
+   do 3 rewrite divmod_div.
+   do 2 rewrite fold_sub_succ_l, divmod_mod.
+   rewrite Nat.mul_1_r.
+   rewrite Nat.div_small; [ idtac | apply le_n_S, b2n_le_1 ].
+   rewrite Nat.mod_0_l; [ rewrite Nat.add_0_l | intros H; discriminate H ].
+   rewrite Nat.mod_small; [ idtac | apply le_n_S, b2n_le_1 ].
+   unfold summation; simpl.
+   do 2 rewrite divmod_div.
+   do 2 rewrite Nat.mul_1_r.
+   rewrite Nat.add_0_r.
 bbb.
 
 (* compatibility with equality *)
