@@ -275,6 +275,12 @@ intros b.
 destruct b; [ reflexivity | apply Nat.le_0_1 ].
 Qed.
 
+Theorem n2b_false_iff : ∀ n, n2b n = false ↔ n = 0.
+Proof.
+intros n; split; intros Hn; [ idtac | subst n; reflexivity ].
+destruct n; [ reflexivity | discriminate Hn ].
+Qed.
+
 Theorem divmod_div : ∀ a b, fst (divmod a b 0 b) = (a / S b)%nat.
 Proof. intros a b; reflexivity. Qed.
 
@@ -326,11 +332,15 @@ destruct s1 as [dj1| ].
     symmetry in Hx1.
     destruct b; [ reflexivity | exfalso ].
     destruct dj2.
-    destruct dj2.
      Focus 2.
      rewrite Hn2 in Hx1; [ discriminate Hx1 | apply Nat.lt_0_succ ].
 
      clear Hn2 Ht2.
+     unfold I_mul_i in Ht1.
+     apply n2b_false_iff in Ht1; simpl in Ht1.
+     unfold propag_carry_once in Ht1.
+     apply Nat.eq_add_0 in Ht1.
+     destruct Ht1 as (H1, H2).
 bbb.
 
 (* compatibility with equality *)
