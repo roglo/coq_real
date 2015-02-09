@@ -325,6 +325,12 @@ destruct s1 as [dj1| ].
     remember (x .[ 1]) as b eqn:Hx1 .
     symmetry in Hx1.
     destruct b; [ reflexivity | exfalso ].
+    destruct dj2.
+    destruct dj2.
+     Focus 2.
+     rewrite Hn2 in Hx1; [ discriminate Hx1 | apply Nat.lt_0_succ ].
+
+     clear Hn2 Ht2.
 bbb.
 
 (* compatibility with equality *)
