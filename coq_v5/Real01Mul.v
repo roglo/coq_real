@@ -308,9 +308,11 @@ destruct s as [di| ].
  rewrite Hs, negb_involutive; reflexivity.
 Qed.
 
-Theorem zzz : ∀ x, I_mul_i x 1%I 0 = x .[ 0].
+Theorem I_mul_i_1_r_0 : ∀ x,
+  x.[0] = false ∨ x.[1] = true
+  → I_mul_i x 1%I 0 = x .[ 0].
 Proof.
-intros x.
+intros x Hx01.
 unfold I_mul_i; simpl.
 unfold I_mul_algo; simpl.
 unfold propag_carry_once; simpl.
@@ -333,13 +335,55 @@ remember (x .[ 1]) as b1 eqn:Hx1 .
 symmetry in Hx0, Hx1.
 unfold n2b.
 destruct b0, b1; try reflexivity; simpl.
-Abort. (*
-bbb.
-  Hx0 : x .[ 0] = true
-  Hx1 : x .[ 1] = false
-  ============================
-   false = true
-*)
+destruct Hx01 as [H| H]; discriminate H.
+Qed.
+
+Theorem Nat_add_mod_2 : ∀ a b, (a + b) mod 2 = 0 ↔ a mod 2 = b mod 2.
+Proof.
+intros a b.
+split; intros Hab.
+ rewrite Nat.add_mod in Hab; [ idtac | intros H; discriminate H ].
+ remember (a mod 2) as aa eqn:Ha .
+ remember (b mod 2) as bb eqn:Hb .
+ symmetry in Ha, Hb.
+ destruct aa, bb; try reflexivity.
+  rewrite Nat.add_0_l, <- Hb in Hab.
+  rewrite Nat.mod_mod in Hab; [ idtac | intros H; discriminate H ].
+  rewrite Hb in Hab; discriminate Hab.
+
+  rewrite Nat.add_0_r, <- Ha in Hab.
+  rewrite Nat.mod_mod in Hab; [ idtac | intros H; discriminate H ].
+  rewrite Ha in Hab; discriminate Hab.
+
+  destruct aa.
+   destruct bb; [ reflexivity | idtac ].
+   assert (2 ≠ 0) as H by (intros H; discriminate H).
+   apply Nat.mod_upper_bound with (a := b) in H.
+   rewrite Hb in H.
+   apply Nat.nlt_ge in H.
+   exfalso; apply H.
+   do 2 apply lt_n_S.
+   apply Nat.lt_0_succ.
+
+   assert (2 ≠ 0) as H by (intros H; discriminate H).
+   apply Nat.mod_upper_bound with (a := a) in H.
+   rewrite Ha in H.
+   apply Nat.nlt_ge in H.
+   exfalso; apply H.
+   do 2 apply lt_n_S.
+   apply Nat.lt_0_succ.
+
+ rewrite Nat.add_mod; [ idtac | intros H; discriminate H ].
+ rewrite Hab; clear a Hab.
+ remember (b mod 2) as a; clear b Heqa.
+ induction a; [ reflexivity | idtac ].
+ rewrite <- Nat.add_1_r.
+ rewrite Nat.add_shuffle0.
+ do 2 rewrite <- Nat.add_assoc.
+ rewrite Nat.add_assoc.
+ rewrite Nat.add_mod; [ idtac | intros H; discriminate H ].
+ rewrite IHa; reflexivity.
+Qed.
 
 Theorem I_add_1_r : ∀ x, (I_mul x 1 = x)%I.
 Proof.
@@ -372,12 +416,13 @@ destruct s as [di| ].
     symmetry in Hb0, Hb1.
     destruct b0.
      destruct b1.
-      Focus 2.
+      rewrite I_mul_i_1_r_0 in Ht; [ contradiction | idtac ].
+      rewrite Hb1; right; reflexivity.
+
       remember (I_mul_i x 1%I 0) as b eqn:Hb .
       symmetry in Hb.
       destruct b; [ exfalso; apply Ht; reflexivity | clear Ht ].
       clear Hb.
-      Focus 1.
       unfold I_mul_i; simpl.
       rewrite Nat.add_comm; simpl.
       unfold propag_carry_once; simpl.
@@ -386,8 +431,8 @@ destruct s as [di| ].
       apply n2b_false_iff, Nat.eq_add_0.
       split.
        rewrite Nat.add_mod_idemp_l; [ idtac | intros H; discriminate H ].
+       apply Nat_add_mod_2.
 bbb.
-(* the other cases (of Hb0 & Hb1) should be traited by zzz above. *)
 
 intros x.
 unfold I_eq; simpl; intros i.
