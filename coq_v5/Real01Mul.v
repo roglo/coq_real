@@ -130,6 +130,25 @@ destruct (le_dec i1 (S i2)) as [H3| H3].
  apply Nat.nle_gt in H2; contradiction.
 Qed.
 
+Theorem summation_only_one : ∀ g n, Σ (i = n, n), g i = g n.
+Proof.
+intros g n.
+unfold summation.
+rewrite Nat.sub_succ_l; [ idtac | reflexivity ].
+rewrite Nat.sub_diag; simpl.
+rewrite Nat.add_0_r; reflexivity.
+Qed.
+
+Theorem summation_empty : ∀ f b k, k < b → Σ (i = b, k), f i = 0.
+Proof.
+intros f b k Hkb.
+unfold summation.
+destruct b; [ exfalso; revert Hkb; apply Nat.nlt_0_r | idtac ].
+rewrite Nat.sub_succ.
+apply le_S_n in Hkb.
+apply Nat.sub_0_le in Hkb; rewrite Hkb; reflexivity.
+Qed.
+
 (* commutativity *)
 
 Theorem I_mul_algo_comm : ∀ x y, (∀ i, I_mul_algo x y i = I_mul_algo y x i).
@@ -250,20 +269,24 @@ Qed.
 
 (* neutral element *)
 
-(* difficulties to prove that...
 Theorem I_add_1_r : ∀ x, (I_mul x 1 = x)%I.
 Proof.
 intros x.
 unfold I_eq; simpl; intros i.
 unfold I_add_i; simpl.
 do 2 rewrite xorb_false_r.
-f_equal.
- unfold I_mul_i; simpl.
- bbb.
- rewrite Nat.add_comm; simpl.
- unfold I_mul_algo; simpl.
+unfold carry; simpl.
+remember (fst_same (x * 1%I) 0 (S i)) as s1 eqn:Hs1 .
+remember (fst_same x 0 (S i)) as s2 eqn:Hs2 .
+destruct s1 as [dj1| ].
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ destruct Hs1 as (Hn1, Ht1).
+ rewrite Ht1, xorb_false_r.
+ destruct s2 as [dj2| ].
+  apply fst_same_sym_iff in Hs2; simpl in Hs2.
+  destruct Hs2 as (Hn2, Ht2).
+  rewrite Ht2, xorb_false_r.
 bbb.
-*)
 
 (* compatibility with equality *)
 
