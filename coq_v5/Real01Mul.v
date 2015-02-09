@@ -308,6 +308,39 @@ destruct s as [di| ].
  rewrite Hs, negb_involutive; reflexivity.
 Qed.
 
+Theorem zzz : ∀ x, I_mul_i x 1%I 0 = x .[ 0].
+Proof.
+intros x.
+unfold I_mul_i; simpl.
+unfold I_mul_algo; simpl.
+unfold propag_carry_once; simpl.
+do 3 rewrite divmod_div.
+do 2 rewrite fold_sub_succ_l, divmod_mod.
+rewrite summation_only_one; simpl.
+do 3 rewrite divmod_div.
+do 2 rewrite fold_sub_succ_l, divmod_mod.
+rewrite Nat.mul_1_r.
+rewrite Nat.div_small; [ idtac | apply le_n_S, b2n_le_1 ].
+rewrite Nat.mod_0_l; [ idtac | intros H; discriminate H ].
+rewrite Nat.add_0_l.
+rewrite Nat.mod_small; [ idtac | apply le_n_S, b2n_le_1 ].
+unfold summation; simpl.
+do 2 rewrite divmod_div.
+do 2 rewrite Nat.mul_1_r.
+rewrite Nat.add_0_r.
+remember (x .[ 0]) as b0 eqn:Hx0 .
+remember (x .[ 1]) as b1 eqn:Hx1 .
+symmetry in Hx0, Hx1.
+unfold n2b.
+destruct b0, b1; try reflexivity; simpl.
+Abort. (*
+bbb.
+  Hx0 : x .[ 0] = true
+  Hx1 : x .[ 1] = false
+  ============================
+   false = true
+*)
+
 Theorem I_add_1_r : ∀ x, (I_mul x 1 = x)%I.
 Proof.
 intros x.
@@ -334,8 +367,27 @@ destruct s as [di| ].
    split.
     intros j; simpl.
     apply neq_negb in Ht.
-    exfalso; apply Ht; clear.
+    remember (x .[ 0]) as b0 eqn:Hb0 .
+    remember (x .[ 1]) as b1 eqn:Hb1 .
+    symmetry in Hb0, Hb1.
+    destruct b0.
+     destruct b1.
+      Focus 2.
+      remember (I_mul_i x 1%I 0) as b eqn:Hb .
+      symmetry in Hb.
+      destruct b; [ exfalso; apply Ht; reflexivity | clear Ht ].
+      clear Hb.
+      Focus 1.
+      unfold I_mul_i; simpl.
+      rewrite Nat.add_comm; simpl.
+      unfold propag_carry_once; simpl.
+      do 3 rewrite divmod_div.
+      do 3 rewrite fold_sub_succ_l, divmod_mod.
+      apply n2b_false_iff, Nat.eq_add_0.
+      split.
+       rewrite Nat.add_mod_idemp_l; [ idtac | intros H; discriminate H ].
 bbb.
+(* the other cases (of Hb0 & Hb1) should be traited by zzz above. *)
 
 intros x.
 unfold I_eq; simpl; intros i.
