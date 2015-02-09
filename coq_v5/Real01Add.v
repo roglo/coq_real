@@ -2776,108 +2776,217 @@ Qed.
 
 Theorem I_eq_prop : ∀ x y,
   (x = y)%I
-  → I_eq_ext x y ∨
+  ↔ I_eq_ext x y ∨
     ∃ i,
     (∀ j, j < i → x.[j] = y.[j]) ∧
     x.[i] ≠ y.[i] ∧
     (i = 0 ∧ (∀ j, x.[j] = x.[0]) ∧ (∀ j, y.[j] = y.[0]) ∨
      (∀ di, x.[i+S di] = y.[i]) ∧ (∀ di, y.[i+S di] = x.[i])).
 Proof.
-intros x y Hxy.
-remember (fst_same x (- y) 0) as s1 eqn:Hs1 .
-apply fst_same_sym_iff in Hs1; simpl in Hs1.
-destruct s1 as [di1| ].
- destruct Hs1 as (Hn1, Ht1).
- right; exists di1.
- split.
-  intros j Hdj.
-  rewrite Hn1; [ idtac | assumption ].
-  rewrite negb_involutive; reflexivity.
-
+intros x y.
+split; intros Hxy.
+ remember (fst_same x (- y) 0) as s1 eqn:Hs1 .
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ destruct s1 as [di1| ].
+  destruct Hs1 as (Hn1, Ht1).
+  right; exists di1.
   split.
-   intros H; rewrite Ht1 in H.
-   revert H; apply no_fixpoint_negb.
+   intros j Hdj.
+   rewrite Hn1; [ idtac | assumption ].
+   rewrite negb_involutive; reflexivity.
 
-   remember (x .[ di1]) as b eqn:Hxi1 .
-   symmetry in Hxi1.
-   apply negb_sym in Ht1; rewrite Ht1.
-   destruct b.
-    eapply I_eq_neq_prop in Hxi1; try eassumption.
-    destruct Hxi1 as [(Hx, Hy)| (Hx, Hy)].
-     destruct di1.
-      left.
-      split; [ reflexivity | idtac ].
-      simpl in Hx, Hy.
-      split; intros j; [ do 2 rewrite Hx | do 2 rewrite Hy ]; reflexivity.
+   split.
+    intros H; rewrite Ht1 in H.
+    revert H; apply no_fixpoint_negb.
 
-      exfalso.
-      clear Ht1.
-      pose proof (Hn1 di1 (Nat.lt_succ_diag_r di1)) as H.
-      rewrite negb_involutive in H.
-      pose proof (Hxy di1) as HH; simpl in HH.
-      unfold I_add_i in HH; simpl in HH.
-      do 2 rewrite xorb_false_r in HH.
-      rewrite H in HH.
-      apply xorb_move_l_r_1 in HH.
-      rewrite <- xorb_assoc, xorb_nilpotent in HH.
-      rewrite xorb_false_l in HH.
-      unfold carry in HH; simpl in HH.
-      remember (fst_same x 0 (S di1)) as s2 eqn:Hs2 .
-      remember (fst_same y 0 (S di1)) as s3 eqn:Hs3 .
-      destruct s2 as [dj2| ].
-       apply fst_same_sym_iff in Hs2; simpl in Hs2.
-       destruct Hs2 as (Hn2, Ht2).
-       rewrite <- Nat.add_succ_l, Hx in Ht2; discriminate Ht2.
+    remember (x .[ di1]) as b eqn:Hxi1 .
+    symmetry in Hxi1.
+    apply negb_sym in Ht1; rewrite Ht1.
+    destruct b.
+     eapply I_eq_neq_prop in Hxi1; try eassumption.
+     destruct Hxi1 as [(Hx, Hy)| (Hx, Hy)].
+      destruct di1.
+       left.
+       split; [ reflexivity | idtac ].
+       simpl in Hx, Hy.
+       split; intros j; [ do 2 rewrite Hx | do 2 rewrite Hy ]; reflexivity.
 
-       clear Hs2.
-       apply fst_same_sym_iff in Hs3; simpl in Hs3.
-       destruct s3 as [dj3| ]; [ idtac | clear HH ].
-        rewrite <- Nat.add_succ_l, Hy in HH; discriminate HH.
+       exfalso.
+       clear Ht1.
+       pose proof (Hn1 di1 (Nat.lt_succ_diag_r di1)) as H.
+       rewrite negb_involutive in H.
+       pose proof (Hxy di1) as HH; simpl in HH.
+       unfold I_add_i in HH; simpl in HH.
+       do 2 rewrite xorb_false_r in HH.
+       rewrite H in HH.
+       apply xorb_move_l_r_1 in HH.
+       rewrite <- xorb_assoc, xorb_nilpotent in HH.
+       rewrite xorb_false_l in HH.
+       unfold carry in HH; simpl in HH.
+       remember (fst_same x 0 (S di1)) as s2 eqn:Hs2 .
+       remember (fst_same y 0 (S di1)) as s3 eqn:Hs3 .
+       destruct s2 as [dj2| ].
+        apply fst_same_sym_iff in Hs2; simpl in Hs2.
+        destruct Hs2 as (Hn2, Ht2).
+        rewrite <- Nat.add_succ_l, Hx in Ht2; discriminate Ht2.
 
-        pose proof (Hy 0) as HH; simpl in HH.
-        rewrite Hs3 in HH; discriminate HH.
+        clear Hs2.
+        apply fst_same_sym_iff in Hs3; simpl in Hs3.
+        destruct s3 as [dj3| ]; [ idtac | clear HH ].
+         rewrite <- Nat.add_succ_l, Hy in HH; discriminate HH.
 
-     right; split; intros di; [ apply Hx | apply Hy ].
+         pose proof (Hy 0) as HH; simpl in HH.
+         rewrite Hs3 in HH; discriminate HH.
 
-    simpl in Ht1; simpl.
-    symmetry in Hxy.
-    eapply I_eq_neq_prop in Hxi1; try eassumption.
-    destruct Hxi1 as [(Hy, Hx)| (Hy, Hx)].
-     destruct di1.
-      left.
-      split; [ reflexivity | idtac ].
-      simpl in Hx, Hy.
-      split; intros j; [ do 2 rewrite Hx | do 2 rewrite Hy ]; reflexivity.
+      right; split; intros di; [ apply Hx | apply Hy ].
 
-      exfalso.
-      clear Ht1.
-      pose proof (Hn1 di1 (Nat.lt_succ_diag_r di1)) as H.
-      rewrite negb_involutive in H.
-      pose proof (Hxy di1) as HH; simpl in HH.
-      unfold I_add_i in HH; simpl in HH.
-      do 2 rewrite xorb_false_r in HH.
-      rewrite H in HH.
-      apply xorb_move_l_r_1 in HH.
-      rewrite <- xorb_assoc, xorb_nilpotent in HH.
-      rewrite xorb_false_l in HH.
-      unfold carry in HH; simpl in HH.
-      remember (fst_same x 0 (S di1)) as s2 eqn:Hs2 .
-      remember (fst_same y 0 (S di1)) as s3 eqn:Hs3 .
-      destruct s2 as [dj2| ].
-       apply fst_same_sym_iff in Hs2; simpl in Hs2.
-       destruct Hs2 as (Hn2, Ht2).
-       rewrite Ht2 in HH.
-       destruct s3 as [dj3| ]; [ idtac | discriminate HH ].
-       simpl in Hy.
-       rewrite Hy in HH; discriminate HH.
+     simpl in Ht1; simpl.
+     symmetry in Hxy.
+     eapply I_eq_neq_prop in Hxi1; try eassumption.
+     destruct Hxi1 as [(Hy, Hx)| (Hy, Hx)].
+      destruct di1.
+       left.
+       split; [ reflexivity | idtac ].
+       simpl in Hx, Hy.
+       split; intros j; [ do 2 rewrite Hx | do 2 rewrite Hy ]; reflexivity.
 
-       apply fst_same_sym_iff in Hs2; simpl in Hs2.
-       clear H.
-       pose proof (Hx 0) as H; simpl in H.
-       rewrite Hs2 in H; discriminate H.
+       exfalso.
+       clear Ht1.
+       pose proof (Hn1 di1 (Nat.lt_succ_diag_r di1)) as H.
+       rewrite negb_involutive in H.
+       pose proof (Hxy di1) as HH; simpl in HH.
+       unfold I_add_i in HH; simpl in HH.
+       do 2 rewrite xorb_false_r in HH.
+       rewrite H in HH.
+       apply xorb_move_l_r_1 in HH.
+       rewrite <- xorb_assoc, xorb_nilpotent in HH.
+       rewrite xorb_false_l in HH.
+       unfold carry in HH; simpl in HH.
+       remember (fst_same x 0 (S di1)) as s2 eqn:Hs2 .
+       remember (fst_same y 0 (S di1)) as s3 eqn:Hs3 .
+       destruct s2 as [dj2| ].
+        apply fst_same_sym_iff in Hs2; simpl in Hs2.
+        destruct Hs2 as (Hn2, Ht2).
+        rewrite Ht2 in HH.
+        destruct s3 as [dj3| ]; [ idtac | discriminate HH ].
+        simpl in Hy.
+        rewrite Hy in HH; discriminate HH.
 
-     right; split; intros di; [ apply Hx | apply Hy ].
+        apply fst_same_sym_iff in Hs2; simpl in Hs2.
+        clear H.
+        pose proof (Hx 0) as H; simpl in H.
+        rewrite Hs2 in H; discriminate H.
 
- left; intros i.
- rewrite Hs1, negb_involutive; reflexivity.
-Qed.
+      right; split; intros di; [ apply Hx | apply Hy ].
+
+  left; intros i.
+  rewrite Hs1, negb_involutive; reflexivity.
+
+ destruct Hxy as [Hxy| Hxy].
+  apply I_eq_ext_eq; assumption.
+
+  destruct Hxy as (i, (Heq, (Hne, Hxy))).
+  destruct Hxy as [(Hi, (Hx, Hy))| (Hx, Hy)].
+   subst i.
+   clear Heq.
+   unfold I_eq; simpl; intros i.
+   unfold I_add_i; simpl.
+   do 2 rewrite xorb_false_r.
+   rewrite Hx, Hy.
+   unfold carry; simpl.
+   remember (fst_same x 0 (S i)) as s1 eqn:Hs1 .
+   remember (fst_same y 0 (S i)) as s2 eqn:Hs2 .
+   apply fst_same_sym_iff in Hs1; simpl in Hs1.
+   apply fst_same_sym_iff in Hs2; simpl in Hs2.
+   destruct s1 as [dj1| ].
+    destruct Hs1 as (Hn1, Ht1).
+    rewrite Ht1, xorb_false_r.
+    destruct s2 as [dj2| ].
+     destruct Hs2 as (Hn2, Ht2).
+     rewrite Ht2, xorb_false_r.
+     rewrite Hx in Ht1.
+     rewrite Hy in Ht2.
+     rewrite <- Ht2 in Ht1; contradiction.
+
+     rewrite xorb_true_r.
+     apply neq_negb; assumption.
+
+    rewrite xorb_true_r.
+    destruct s2 as [di2| ].
+     destruct Hs2 as (Hn2, Ht2).
+     rewrite Ht2, xorb_false_r.
+     apply neq_negb in Hne.
+     rewrite Hne, negb_involutive; reflexivity.
+
+     pose proof (Hs1 0) as H.
+     rewrite <- Hs2 with (dj := 0) in H.
+     rewrite Hx, Hy in H; contradiction.
+
+   unfold I_eq; simpl; intros j.
+   unfold I_add_i; simpl.
+   do 2 rewrite xorb_false_r.
+   unfold carry; simpl.
+   remember (fst_same x 0 (S j)) as s1 eqn:Hs1 .
+   remember (fst_same y 0 (S j)) as s2 eqn:Hs2 .
+   apply fst_same_sym_iff in Hs1; simpl in Hs1.
+   apply fst_same_sym_iff in Hs2; simpl in Hs2.
+   destruct s1 as [di1| ].
+    destruct Hs1 as (Hn1, Ht1).
+    rewrite Ht1, xorb_false_r.
+    destruct s2 as [di2| ].
+     destruct Hs2 as (Hn2, Ht2).
+     rewrite Ht2, xorb_false_r.
+     rewrite <- Nat.add_succ_r in Ht1, Ht2.
+     destruct (lt_eq_lt_dec j i) as [[H1| H1]| H1].
+      apply Heq in H1; assumption.
+
+      subst j.
+      destruct (lt_eq_lt_dec di1 di2) as [[H1| H1]| H1].
+       apply Hn2 in H1.
+       rewrite Hx in Ht1.
+       rewrite Hy in Ht2.
+       rewrite <- Ht1 in Ht2; contradiction.
+
+       subst di2.
+       rewrite <- Ht2, Hx, Hy in Ht1.
+       symmetry in Ht1; contradiction.
+
+       apply Hn1 in H1.
+       rewrite Hx in Ht1.
+       rewrite Hy in Ht2.
+       rewrite <- Ht1 in Ht2; contradiction.
+
+      pose proof (Hx (j - i + di1)) as H.
+      rewrite Nat.add_succ_r in H.
+      rewrite Nat.add_assoc in H.
+      apply Nat.lt_le_incl in H1.
+      rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+      remember (i + j - i) as k eqn:Hk .
+      rewrite Nat.add_comm, Nat.add_sub in Hk; subst k.
+      rewrite <- Nat.add_succ_r in H.
+      rewrite H in Ht1; clear H.
+      pose proof (Hy (j - i + di2)) as H.
+      rewrite Nat.add_succ_r in H.
+      rewrite Nat.add_assoc in H.
+      rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+      remember (i + j - i) as k eqn:Hk .
+      rewrite Nat.add_comm, Nat.add_sub in Hk; subst k.
+      rewrite <- Nat.add_succ_r in H.
+      rewrite <- Ht1, H in Ht2.
+      contradiction.
+
+     rewrite xorb_true_r.
+     destruct (lt_eq_lt_dec j i) as [[H1| H1]| H1].
+      pose proof (Hs2 (i - j + di1)) as H.
+      rewrite Nat.add_assoc in H.
+      remember H1 as HH; clear HeqHH.
+      apply Nat.lt_le_incl in HH.
+      rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+      clear HH.
+      remember (j + i - j) as k eqn:Hk .
+      rewrite Nat.add_comm, Nat.add_sub in Hk; subst k.
+      rewrite <- Nat.add_succ_r in H.
+      rewrite Hy in H.
+bbb.
+      apply Heq in H1.
+qed.
