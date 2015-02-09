@@ -319,6 +319,12 @@ destruct s1 as [dj1| ].
    do 2 rewrite divmod_div.
    do 2 rewrite Nat.mul_1_r.
    rewrite Nat.add_0_r.
+   remember (x .[ 0]) as b eqn:Hx0 .
+   symmetry in Hx0.
+   destruct b.
+    remember (x .[ 1]) as b eqn:Hx1 .
+    symmetry in Hx1.
+    destruct b; [ reflexivity | exfalso ].
 bbb.
 
 (* compatibility with equality *)
