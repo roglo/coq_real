@@ -392,11 +392,11 @@ apply I_eq_prop.
 remember (fst_same (x * 1)%I (- x) 0) as s eqn:Hs .
 apply fst_same_sym_iff in Hs; simpl in Hs.
 destruct s as [di| ].
- destruct Hs as (Hn, Ht).
  Focus 2.
  left; intros i; simpl.
  rewrite Hs, negb_involutive; reflexivity.
 
+ destruct Hs as (Hn, Ht).
  right.
  exists di.
  split.
@@ -406,18 +406,42 @@ destruct s as [di| ].
 
   split; [ simpl; apply neq_negb; assumption | idtac ].
   destruct di.
-   left.
-   split; [ reflexivity | idtac ].
-   split.
-    intros j; simpl.
-    apply neq_negb in Ht.
-    remember (x .[ 0]) as b0 eqn:Hb0 .
-    remember (x .[ 1]) as b1 eqn:Hb1 .
-    symmetry in Hb0, Hb1.
-    destruct b0.
-     destruct b1.
-      rewrite I_mul_i_1_r_0 in Ht; [ contradiction | idtac ].
-      rewrite Hb1; right; reflexivity.
+   clear Hn; simpl.
+   remember (x .[ 0]) as b0 eqn:Hb0 .
+   symmetry in Hb0.
+   rewrite Ht.
+   destruct b0; simpl in Ht; simpl.
+    remember (x .[ 1]) as b eqn:Hx1 .
+    symmetry in Hx1.
+    destruct b.
+     left.
+     split; [ reflexivity | idtac ].
+     split; intros j; simpl.
+      rewrite I_mul_i_1_r_0 in Ht; [ idtac | right; assumption ].
+      rewrite Hb0 in Ht; discriminate Ht.
+
+      rewrite I_mul_i_1_r_0 in Ht; [ idtac | right; assumption ].
+      rewrite Hb0 in Ht; discriminate Ht.
+
+     right.
+     split; intros di.
+      clear Ht.
+      unfold I_mul_i; simpl.
+      unfold n2b, propag_carry_once, I_mul_algo, summation; simpl.
+      rewrite divmod_div.
+      rewrite fold_sub_succ_l, divmod_mod.
+      apply negb_true_iff.
+      apply Nat.eqb_neq.
+      intros H.
+      apply Nat.eq_add_0 in H.
+      destruct H as (H1, H2).
+bbb.
+      rewrite Nat.add_comm in H1; simpl in H1.
+      rewrite fold_sub_succ_l, divmod_mod in H1.
+      unfold propag_carry_once in H1; simpl in H1.
+      do 3 rewrite divmod_div in H1.
+      do 4 rewrite fold_sub_succ_l, divmod_mod in H1.
+bbb.
 
       remember (I_mul_i x 1%I 0) as b eqn:Hb .
       symmetry in Hb.
@@ -432,7 +456,44 @@ destruct s as [di| ].
       split.
        rewrite Nat.add_mod_idemp_l; [ idtac | intros H; discriminate H ].
        apply Nat_add_mod_2.
+       destruct j.
+        simpl.
+        rewrite divmod_div.
+        rewrite fold_sub_succ_l, divmod_mod.
+        unfold I_mul_algo.
+        rewrite summation_only_one, Nat.sub_diag, Hb0.
+        reflexivity.
+
+        simpl.
+        rewrite divmod_div.
+        do 2 rewrite fold_sub_succ_l, divmod_mod.
+        unfold propag_carry_once; simpl.
+        do 3 rewrite divmod_div.
+        do 4 rewrite fold_sub_succ_l, divmod_mod.
+        destruct j.
+         simpl.
+         do 3 rewrite divmod_div.
+         do 4 rewrite fold_sub_succ_l, divmod_mod.
+         unfold I_mul_algo; simpl.
+         do 3 rewrite divmod_div.
+         do 4 rewrite fold_sub_succ_l, divmod_mod.
+         rewrite summation_only_one, Nat.sub_diag.
+         rewrite Nat.mul_1_r, Hb0.
+         unfold summation; simpl.
+         do 3 rewrite divmod_div.
+         rewrite Hb0, Hb1; simpl.
+         rewrite Nat.mul_1_r, Nat.add_0_r.
+         remember (x .[ 2]) as b eqn:Hb2 .
+         symmetry in Hb2.
+         destruct b; [ reflexivity | simpl ].
 bbb.
+  failed!
+
+  Hb0 : x .[ 0] = true
+  Hb1 : x .[ 1] = false
+  Hb2 : x .[ 2] = false
+  ============================
+   1 = 0
 
 intros x.
 unfold I_eq; simpl; intros i.
