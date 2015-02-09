@@ -2783,6 +2783,7 @@ Theorem I_eq_prop : ∀ x y,
     (i = 0 ∧ (∀ j, x.[j] = x.[0]) ∧ (∀ j, y.[j] = y.[0]) ∨
      (∀ di, x.[i+S di] = y.[i]) ∧ (∀ di, y.[i+S di] = x.[i])).
 Proof.
+(* à nettoyer (la 2ème partie) *)
 intros x y.
 split; intros Hxy.
  remember (fst_same x (- y) 0) as s1 eqn:Hs1 .
@@ -2987,6 +2988,99 @@ split; intros Hxy.
       rewrite Nat.add_comm, Nat.add_sub in Hk; subst k.
       rewrite <- Nat.add_succ_r in H.
       rewrite Hy in H.
-bbb.
-      apply Heq in H1.
-qed.
+      rewrite H in Hne; clear H.
+      pose proof (Hs2 (i - S j)) as H.
+      rewrite <- Nat.add_succ_l in H.
+      rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+      rewrite Nat.add_comm, Nat.add_sub in H.
+      symmetry in H; contradiction.
+
+      subst j.
+      apply neq_negb; assumption.
+
+      pose proof (Hx (j - S i)) as H.
+      rewrite Nat.add_succ_r, <- Nat.add_succ_l in H.
+      rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+      rewrite Nat.add_comm, Nat.add_sub in H.
+      rename H into Hxy.
+      pose proof (Hy (j - S i)) as H.
+      rewrite Nat.add_succ_r, <- Nat.add_succ_l in H.
+      rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+      rewrite Nat.add_comm, Nat.add_sub in H.
+      rename H into Hyx.
+      rewrite <- Hxy, <- Hyx in Hne.
+      apply neq_negb, not_eq_sym; assumption.
+
+    rewrite xorb_true_r.
+    destruct s2 as [di2| ].
+     destruct Hs2 as (Hn2, Ht2).
+     rewrite Ht2, xorb_false_r.
+     destruct (lt_eq_lt_dec j i) as [[H1| H1]| H1].
+      pose proof (Hs1 (i - j + di2)) as H.
+      rewrite Nat.add_assoc in H.
+      remember H1 as HH; clear HeqHH.
+      apply Nat.lt_le_incl in HH.
+      rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+      clear HH.
+      remember (j + i - j) as k eqn:Hk .
+      rewrite Nat.add_comm, Nat.add_sub in Hk; subst k.
+      rewrite <- Nat.add_succ_r in H.
+      rewrite Hx in H.
+      rewrite H in Hne; clear H.
+      pose proof (Hs1 (i - S j)) as H.
+      rewrite <- Nat.add_succ_l in H.
+      rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+      rewrite Nat.add_comm, Nat.add_sub in H.
+      contradiction.
+
+      subst j; symmetry.
+      apply neq_negb, not_eq_sym; assumption.
+
+      pose proof (Hy (j - S i)) as H.
+      rewrite Nat.add_succ_r, <- Nat.add_succ_l in H.
+      rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+      rewrite Nat.add_comm, Nat.add_sub in H.
+      rename H into Hxy.
+      pose proof (Hx (j - S i)) as H.
+      rewrite Nat.add_succ_r, <- Nat.add_succ_l in H.
+      rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+      rewrite Nat.add_comm, Nat.add_sub in H.
+      rename H into Hyx.
+      rewrite <- Hxy, <- Hyx in Hne.
+      symmetry.
+      apply neq_negb; assumption.
+
+     rewrite xorb_true_r; f_equal.
+     destruct (lt_eq_lt_dec j i) as [[H1| H1]| H1].
+      apply Heq; assumption.
+
+      subst j.
+      pose proof (Hs1 0) as H.
+      rewrite <- Nat.add_succ_r, Hx in H.
+      rewrite H in Hne; clear H.
+      pose proof (Hs2 0) as H.
+      rewrite <- Nat.add_succ_r, Hy in H.
+      rewrite H in Hne; clear H.
+      exfalso; apply Hne; reflexivity.
+
+      pose proof (Hx (j - i)) as H.
+      rewrite Nat.add_succ_r in H.
+      remember H1 as HH; clear HeqHH.
+      apply Nat.lt_le_incl in HH.
+      rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+      clear HH.
+      rewrite Nat.add_comm, Nat.add_sub in H.
+      replace j with (j + 0) in H by apply Nat.add_0_r.
+      rewrite Hs1 in H.
+      rewrite <- H in Hne; clear H.
+      pose proof (Hy (j - i)) as H.
+      rewrite Nat.add_succ_r in H.
+      remember H1 as HH; clear HeqHH.
+      apply Nat.lt_le_incl in HH.
+      rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+      clear HH.
+      rewrite Nat.add_comm, Nat.add_sub in H.
+      replace j with (j + 0) in H by apply Nat.add_0_r.
+      rewrite Hs2 in H.
+      symmetry in H; contradiction.
+Qed.
