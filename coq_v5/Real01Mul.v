@@ -291,10 +291,50 @@ Theorem fold_sub_succ_l : ∀ a b,
   (match a with 0 => S b | S c => b - c end = S b - a)%nat.
 Proof. reflexivity. Qed.
 
+Theorem I_eq_ext_dec : ∀ x y, {I_eq_ext x y} + {not(I_eq_ext x y)}.
+Proof.
+intros x y.
+unfold I_eq_ext.
+remember (fst_same x (- y) 0) as s eqn:Hs .
+apply fst_same_sym_iff in Hs; simpl in Hs.
+destruct s as [di| ].
+ destruct Hs as (Hn, Ht).
+ right; intros H.
+ rewrite H in Ht.
+ symmetry in Ht.
+ revert Ht; apply no_fixpoint_negb.
+
+ left; intros i.
+ rewrite Hs, negb_involutive; reflexivity.
+Qed.
+
 Theorem I_add_1_r : ∀ x, (I_mul x 1 = x)%I.
 Proof.
 intros x.
 apply I_eq_prop.
+remember (fst_same (x * 1)%I (- x) 0) as s eqn:Hs .
+apply fst_same_sym_iff in Hs; simpl in Hs.
+destruct s as [di| ].
+ destruct Hs as (Hn, Ht).
+ Focus 2.
+ left; intros i; simpl.
+ rewrite Hs, negb_involutive; reflexivity.
+
+ right.
+ exists di.
+ split.
+  intros j Hj; simpl.
+  apply Hn in Hj.
+  rewrite Hj, negb_involutive; reflexivity.
+
+  split; [ simpl; apply neq_negb; assumption | idtac ].
+  destruct di.
+   left.
+   split; [ reflexivity | idtac ].
+   split.
+    intros j; simpl.
+    apply neq_negb in Ht.
+    exfalso; apply Ht; clear.
 bbb.
 
 intros x.
