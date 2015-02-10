@@ -22,11 +22,18 @@ Definition n2b n := negb (Nat.eqb n 0).
 Definition modb n := n mod 2.
 Definition divb n := n / 2.
 
+(* I think this definition of carry is false because, after multiplication,
+   u (S (i + di)) can be greater than 2, and the 1s between i+1 and i+di
+   do not transmit this carry a so simple way
+
 Definition carry u i :=
   match fst_not_1 u (S i) with
   | Some di => divb (u (S (i + di)))
   | None => 1
   end.
+*)
+
+stop.
 
 Definition propag_carry_once u i := modb (u i) + carry u i.
 
