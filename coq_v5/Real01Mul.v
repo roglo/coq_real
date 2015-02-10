@@ -19,21 +19,16 @@ Notation "'Σ' ( i = b , e ) , g" := (summation b e (λ i, (g)))
 Definition b2n (b : bool) := if b then 1 else 0.
 Definition n2b n := negb (Nat.eqb n 0).
 
-Record SeqNat := { sn : nat → nat }.
-
 Definition modb n := n mod 2.
 Definition divb n := n / 2.
 
-Definition test_not_1 u i j := negb (Nat.eqb (sn u (i + j)) 1).
-Definition fst_not_1 u i := first_true (test_not_1 u i).
-
 Definition carry u i :=
   match fst_not_1 u (S i) with
-  | Some di => divb (sn u (S (i + di)))
+  | Some di => divb (u (S (i + di)))
   | None => 1
   end.
 
-Definition propag_carry_once u := {| sn i := modb (sn u i) + carry u i |}.
+Definition propag_carry_once u i := modb (u i) + carry u i.
 
 Fixpoint I_propag_carry u n :=
   match n with
@@ -41,14 +36,11 @@ Fixpoint I_propag_carry u n :=
   | S n1 => propag_carry_once (I_propag_carry u n1)
   end.
 
-Definition I_mul_algo x y :=
-  {| sn i := Σ (j=1,i), (b2n (x.[j-1]) * b2n (y.[i-j])) |}.
-Arguments I_mul_algo x%I y%I.
+Definition I_mul_algo x y i := Σ (j=1,i), (b2n (x.[j-1]) * b2n (y.[i-j])).
+Arguments I_mul_algo x%I y%I i%nat.
 
-Definition I_mul_i x y i :=
-  n2b (sn (I_propag_carry (I_mul_algo x y) (i + 2)) i).
-Definition I_mul x y :=
-  {| rm := I_mul_i x y |}.
+Definition I_mul_i x y i := n2b (I_propag_carry (I_mul_algo x y) (i + 2) i).
+Definition I_mul x y := {| rm := I_mul_i x y |}.
 
 Notation "x * y" := (I_mul x y) : I_scope.
 
@@ -168,8 +160,6 @@ Qed.
 
 (* commutativity *)
 
-bbb.
-
 Theorem I_mul_algo_comm : ∀ x y, (∀ i, I_mul_algo x y i = I_mul_algo y x i).
 Proof.
 intros x y i.
@@ -192,22 +182,45 @@ rewrite Nat.mul_comm; f_equal; f_equal; f_equal; simpl.
 Qed.
 
 Theorem I_propag_carry_mul_algo_comm : ∀ x y i j,
-  I_propag_carry (I_mul_algo y x) i j =
-  I_propag_carry (I_mul_algo x y) i j.
+  I_propag_carry (I_mul_algo x y) i j =
+  I_propag_carry (I_mul_algo y x) i j.
 Proof.
 intros x y i j.
 revert j.
-induction i; intros; simpl.
- apply I_mul_algo_comm.
+induction i; intros; simpl; [ apply I_mul_algo_comm | idtac ].
+unfold propag_carry_once.
+rewrite IHi; f_equal.
+unfold carry; simpl.
+remember (fst_not_1 (I_propag_carry (I_mul_algo x y) i) (S j)) as s1 eqn:Hs1 .
+remember (fst_not_1 (I_propag_carry (I_mul_algo y x) i) (S j)) as s2 eqn:Hs2 .
+apply fst_not_1_iff in Hs1; simpl in Hs1.
+destruct s1 as [di1| ].
+ destruct Hs1 as (Hn1, Ht1).
+ apply fst_not_1_iff in Hs2; simpl in Hs2.
+ destruct s2 as [di2| ].
+  destruct Hs2 as (Hn2, Ht2).
+  destruct (lt_eq_lt_dec di1 di2) as [[H1| H1]| H1].
+   apply Hn2 in H1.
+   rewrite <- IHi in H1; contradiction.
 
- unfold propag_carry_once.
- rewrite IHi; f_equal.
- rewrite IHi; reflexivity.
+   subst di2; rewrite IHi; reflexivity.
+
+   apply Hn1 in H1; rewrite IHi in H1; contradiction.
+
+  rewrite IHi, Hs2 in Ht1.
+  exfalso; apply Ht1; reflexivity.
+
+ apply fst_not_1_iff in Hs2; simpl in Hs2.
+ destruct s2 as [di2| ]; [ idtac | reflexivity ].
+ destruct Hs2 as (Hn2, Ht2).
+ rewrite <- IHi, Hs1 in Ht2.
+ exfalso; apply Ht2; reflexivity.
 Qed.
 
 Theorem I_mul_i_comm : ∀ x y i, I_mul_i x y i = I_mul_i y x i.
 Proof.
 intros x y i.
+bbb.
 unfold I_mul_i; simpl.
 rewrite Nat.add_succ_r; simpl.
 unfold propag_carry_once.
