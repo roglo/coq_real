@@ -423,16 +423,13 @@ destruct s as [di| ].
       rewrite I_mul_i_1_r_0 in Ht; [ idtac | right; assumption ].
       rewrite Hb0 in Ht; discriminate Ht.
 
+     clear Ht.
      right.
-     split; intros di.
-      clear Ht.
+     split; intros i.
       unfold I_mul_i; simpl.
-      unfold n2b, propag_carry_once, I_mul_algo, summation; simpl.
-      rewrite divmod_div.
-      rewrite fold_sub_succ_l, divmod_mod.
-      apply negb_true_iff.
-      apply Nat.eqb_neq.
-      intros H.
+      unfold n2b, propag_carry_once; simpl.
+      rewrite divmod_div, fold_sub_succ_l, divmod_mod.
+      apply negb_true_iff, Nat.eqb_neq; intros H.
       apply Nat.eq_add_0 in H.
       destruct H as (H1, H2).
 bbb.
