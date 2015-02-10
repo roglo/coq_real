@@ -1,6 +1,6 @@
 (* multiplication in I *)
 
-Require Import Utf8 QArith NPeano Misc.
+Require Import Utf8 QArith NPeano Misc Oracle.
 Require Import Real01 Real01Add.
 
 Open Scope nat_scope.
@@ -19,10 +19,21 @@ Notation "'Σ' ( i = b , e ) , g" := (summation b e (λ i, (g)))
 Definition b2n (b : bool) := if b then 1 else 0.
 Definition n2b n := negb (Nat.eqb n 0).
 
-Definition I_mul_algo x y i := Σ (j=1,i), (b2n (x.[j-1]) * b2n (y.[i-j])).
-Arguments I_mul_algo x%I y%I i%nat.
+Record SeqNat := { sn : nat → nat }.
 
-Definition propag_carry_once u i := u i mod 2 + u (S i) / 2.
+Definition modb n := n mod 2.
+Definition divb n := n / 2.
+
+Definition test_not_1 u i j := negb (Nat.eqb (sn u (i + j)) 1).
+Definition fst_not_1 u i := first_true (test_not_1 u i).
+
+Definition carry u i :=
+  match fst_not_1 u (S i) with
+  | Some di => divb (sn u (S (i + di)))
+  | None => 1
+  end.
+
+Definition propag_carry_once u := {| sn i := modb (sn u i) + carry u i |}.
 
 Fixpoint I_propag_carry u n :=
   match n with
@@ -30,8 +41,14 @@ Fixpoint I_propag_carry u n :=
   | S n1 => propag_carry_once (I_propag_carry u n1)
   end.
 
-Definition I_mul_i x y i := n2b (I_propag_carry (I_mul_algo x y) (i + 2) i).
-Definition I_mul x y := {| rm := I_mul_i x y |}.
+Definition I_mul_algo x y :=
+  {| sn i := Σ (j=1,i), (b2n (x.[j-1]) * b2n (y.[i-j])) |}.
+Arguments I_mul_algo x%I y%I.
+
+Definition I_mul_i x y i :=
+  n2b (sn (I_propag_carry (I_mul_algo x y) (i + 2)) i).
+Definition I_mul x y :=
+  {| rm := I_mul_i x y |}.
 
 Notation "x * y" := (I_mul x y) : I_scope.
 
@@ -150,6 +167,8 @@ apply Nat.sub_0_le in Hkb; rewrite Hkb; reflexivity.
 Qed.
 
 (* commutativity *)
+
+bbb.
 
 Theorem I_mul_algo_comm : ∀ x y, (∀ i, I_mul_algo x y i = I_mul_algo y x i).
 Proof.
