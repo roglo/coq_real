@@ -451,6 +451,7 @@ destruct s as [i| ].
  rewrite Hs, negb_involutive; reflexivity.
 
  destruct Hs as (Hn, Ht).
+bbb.
  right.
  exists i.
  split.
@@ -460,8 +461,6 @@ destruct s as [i| ].
 
   split; [ simpl; apply neq_negb; assumption | idtac ].
   destruct i.
-   clear Hn; simpl.
-bbb.
    clear Hn; simpl.
    remember (x .[ 0]) as b0 eqn:Hb0 .
    symmetry in Hb0.
@@ -473,11 +472,29 @@ bbb.
      left.
      split; [ reflexivity | idtac ].
      split; intros j; simpl.
-      rewrite I_mul_i_1_r_0 in Ht; [ idtac | right; assumption ].
-      rewrite Hb0 in Ht; discriminate Ht.
-
-      rewrite I_mul_i_1_r_0 in Ht; [ idtac | right; assumption ].
-      rewrite Hb0 in Ht; discriminate Ht.
+      unfold I_mul_i; simpl.
+      unfold I_mul_i in Ht.
+      apply n2b_false_iff.
+      apply n2b_false_iff in Ht.
+      induction j; [ assumption | idtac ].
+      simpl.
+      unfold propag_carry_once.
+      simpl.
+      remember
+       (fst_not_1 (I_propag_carry (I_mul_algo x 1) j) (S (S j))) as s1
+       eqn:Hs1 .
+      remember (nat_compare (I_propag_carry (I_mul_algo x 1) j (S j)) 1) as c
+       eqn:Hc .
+      symmetry in Hc.
+      apply fst_not_1_iff in Hs1; simpl in Hs1.
+      destruct s1 as [di1| ].
+       destruct Hs1 as (Hn1, Ht1).
+       destruct c.
+        apply nat_compare_eq in Hc.
+        destruct
+         (lt_dec (I_propag_carry (I_mul_algo x 1) j (S (S (j + di1)))) 2)
+         as [H1| H1].
+bbb.
 
      clear Ht.
      right.
