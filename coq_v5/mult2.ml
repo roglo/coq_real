@@ -1,3 +1,5 @@
+open Printf.
+
 type real01 = { rm : int → int };
 
 value b2n b = b (*if b then 1 else 0*);
@@ -11,9 +13,28 @@ value rec summation_loop b len g =
 value summation b e g = summation_loop b (e + 1 - b) g;
 
 value base = ref 2;
-value propag_carry_once u i =
-  (if u i < base.val then u i else u i - base.val) +
-  (if u (i + 1) < base.val then 0 else 1)
+
+value rec fst_not_1 z i0 =
+  loop 30 z i0 where rec loop n z i =
+    if n = 0 then let _ = printf "oups %d\n%!" i in None
+    else if z i = base.val - 1 then loop (n - 1) z (i + 1)
+    else let _ = printf "fst_not_1 i=%d r=Some %d\n%!" i0 i in Some i
+;
+
+value propag_carry_once z i =
+  match fst_not_1 z (i + 1) with
+  | Some di →
+      if z i < base.val - 1 then
+        if z (i + di) < base.val then z i else z i + 1
+      else if z i > base.val - 1 then
+        if z (i + di) < base.val then z i - base.val else z i - base.val + 1
+      else
+        if z (i + di) < base.val then z i else 0
+  | None →
+      if z i < base.val - 1 then z i + 1
+      else if z i > base.val - 1 then z i - base.val + 1
+      else 0
+   end
 ;
 value rec i_propag_carry u n =
   match n with
@@ -32,7 +53,7 @@ value sum_bn1 n =
 value n_iter i =
 (*
   loop 0 where rec loop n = if sum_bn1 n - n > i then n else loop (n + 1)
-*)10
+*)i
 ;
 
 value i_add_algo x y i = x.rm i + y.rm i;
