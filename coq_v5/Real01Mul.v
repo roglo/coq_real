@@ -282,9 +282,8 @@ Theorem I_mul_i_0_l : ∀ x y,
   → ∀ i, I_mul_i x y i = false.
 Proof.
 intros x y Hx i.
-bbb.
 unfold I_mul_i.
-remember (I_propag_carry (I_mul_algo x y) (i + 2) i) as nb eqn:Hnb .
+remember (I_propag_carry (I_mul_algo x y) i i) as nb eqn:Hnb .
 symmetry in Hnb.
 destruct nb; [ reflexivity | exfalso ].
 rewrite if_0_propag_carry_0 in Hnb; [ discriminate Hnb | idtac ].
@@ -354,6 +353,7 @@ destruct s as [di| ].
  rewrite Hs, negb_involutive; reflexivity.
 Qed.
 
+(*
 Theorem I_mul_i_1_r_0 : ∀ x,
   x.[0] = false ∨ x.[1] = true
   → I_mul_i x 1%I 0 = x .[ 0].
@@ -383,6 +383,7 @@ unfold n2b.
 destruct b0, b1; try reflexivity; simpl.
 destruct Hx01 as [H| H]; discriminate H.
 Qed.
+*)
 
 Theorem Nat_add_mod_2 : ∀ a b, (a + b) mod 2 = 0 ↔ a mod 2 = b mod 2.
 Proof.
@@ -441,6 +442,7 @@ Qed.
 Theorem I_add_1_r : ∀ x, (I_mul x 1 = x)%I.
 Proof.
 intros x.
+stop.
 apply I_eq_prop.
 remember (fst_same (x * 1)%I (- x) 0) as s eqn:Hs .
 apply fst_same_sym_iff in Hs; simpl in Hs.
