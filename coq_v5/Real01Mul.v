@@ -22,20 +22,21 @@ Definition n2b n := negb (Nat.eqb n 0).
 Definition modb n := n mod 2.
 Definition divb n := n / 2.
 
-(* I think this definition of carry is false because, after multiplication,
-   u (S (i + di)) can be greater than 2, and the 1s between i+1 and i+di
-   do not transmit this carry a so simple way
-
-Definition carry u i :=
-  match fst_not_1 u (S i) with
-  | Some di => divb (u (S (i + di)))
-  | None => 1
-  end.
-*)
-
-stop.
-
-Definition propag_carry_once u i := modb (u i) + carry u i.
+Definition propag_carry_once z i :=
+  match fst_not_1 z (S i) with
+  | Some di =>
+      match nat_compare (z i) 1 with
+      | Eq => if lt_dec (z (S (i + di))) 2 then z i else 0
+      | Lt => if lt_dec (z (S (i + di))) 2 then z i else S (z i)
+      | Gt => if lt_dec (z (S (i + di))) 2 then z i - 2 else z i - 1
+      end
+  | None =>
+      match nat_compare (z i) 1 with
+      | Eq => 0
+      | Lt => S (z i)
+      | Gt => z i - 1
+      end
+   end.
 
 Fixpoint I_propag_carry u n :=
   match n with
@@ -46,7 +47,7 @@ Fixpoint I_propag_carry u n :=
 Definition I_mul_algo x y i := Σ (j=1,i), (b2n (x.[j-1]) * b2n (y.[i-j])).
 Arguments I_mul_algo x%I y%I i%nat.
 
-Definition I_mul_i x y i := n2b (I_propag_carry (I_mul_algo x y) (i + 2) i).
+Definition I_mul_i x y i := n2b (I_propag_carry (I_mul_algo x y) i i).
 Definition I_mul x y := {| rm := I_mul_i x y |}.
 
 Notation "x * y" := (I_mul x y) : I_scope.
@@ -227,12 +228,8 @@ Qed.
 Theorem I_mul_i_comm : ∀ x y i, I_mul_i x y i = I_mul_i y x i.
 Proof.
 intros x y i.
-bbb.
-unfold I_mul_i; simpl.
-rewrite Nat.add_succ_r; simpl.
-unfold propag_carry_once.
-rewrite I_propag_carry_mul_algo_comm, Nat.add_comm.
-rewrite I_propag_carry_mul_algo_comm, Nat.add_comm.
+unfold I_mul_i.
+rewrite I_propag_carry_mul_algo_comm.
 reflexivity.
 Qed.
 
@@ -258,7 +255,16 @@ intros x n Hx j.
 revert j.
 induction n; intros; simpl; [ apply Hx | idtac ].
 unfold propag_carry_once.
-do 2 rewrite IHn; reflexivity.
+remember (fst_not_1 (I_propag_carry x n) (S j)) as s1 eqn:Hs1 .
+remember (nat_compare (I_propag_carry x n j) 1) as c eqn:Hc .
+apply fst_not_1_iff in Hs1; simpl in Hs1.
+symmetry in Hc.
+destruct s1 as [di1| ].
+ do 2 rewrite IHn; destruct c; reflexivity.
+
+ pose proof (Hs1 0) as H.
+ rewrite IHn in H.
+ discriminate H.
 Qed.
 
 Theorem I_mul_algo_0_l : ∀ x y,
@@ -276,6 +282,7 @@ Theorem I_mul_i_0_l : ∀ x y,
   → ∀ i, I_mul_i x y i = false.
 Proof.
 intros x y Hx i.
+bbb.
 unfold I_mul_i.
 remember (I_propag_carry (I_mul_algo x y) (i + 2) i) as nb eqn:Hnb .
 symmetry in Hnb.
