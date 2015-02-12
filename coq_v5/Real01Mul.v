@@ -442,25 +442,26 @@ Qed.
 Theorem I_add_1_r : ∀ x, (I_mul x 1 = x)%I.
 Proof.
 intros x.
-stop.
 apply I_eq_prop.
 remember (fst_same (x * 1)%I (- x) 0) as s eqn:Hs .
 apply fst_same_sym_iff in Hs; simpl in Hs.
-destruct s as [di| ].
+destruct s as [i| ].
  Focus 2.
  left; intros i; simpl.
  rewrite Hs, negb_involutive; reflexivity.
 
  destruct Hs as (Hn, Ht).
  right.
- exists di.
+ exists i.
  split.
   intros j Hj; simpl.
   apply Hn in Hj.
   rewrite Hj, negb_involutive; reflexivity.
 
   split; [ simpl; apply neq_negb; assumption | idtac ].
-  destruct di.
+  destruct i.
+   clear Hn; simpl.
+bbb.
    clear Hn; simpl.
    remember (x .[ 0]) as b0 eqn:Hb0 .
    symmetry in Hb0.
