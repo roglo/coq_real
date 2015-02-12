@@ -14,22 +14,23 @@ value summation b e g = summation_loop b (e + 1 - b) g;
 
 value base = ref 2;
 
-value rec fst_not_1 z i0 =
-  loop 30 z i0 where rec loop n z i =
-    if n = 0 then let _ = printf "oups %d\n%!" i in None
-    else if z i = base.val - 1 then loop (n - 1) z (i + 1)
-    else let _ = printf "fst_not_1 i=%d r=Some %d\n%!" i0 i in Some i
+value rec fst_not_1 z i =
+  loop 20 0 where rec loop n di =
+    if n = 0 then None
+    else if z (i + di) = base.val - 1 then loop (n - 1) (di + 1)
+    else Some di
 ;
 
 value propag_carry_once z i =
   match fst_not_1 z (i + 1) with
   | Some di →
       if z i < base.val - 1 then
-        if z (i + di) < base.val then z i else z i + 1
+        if z (i + di + 1) < base.val then z i else z i + 1
       else if z i > base.val - 1 then
-        if z (i + di) < base.val then z i - base.val else z i - base.val + 1
+        if z (i + di + 1) < base.val then z i - base.val
+        else z i - base.val + 1
       else
-        if z (i + di) < base.val then z i else 0
+        if z (i + di + 1) < base.val then z i else 0
   | None →
       if z i < base.val - 1 then z i + 1
       else if z i > base.val - 1 then z i - base.val + 1
@@ -79,7 +80,12 @@ value r_of_string s =
      else Char.code s.[i] - Char.code '0'}
 ;
 
+base.val := 2;
+list_of_seq (i_propag_carry (i_mul_algo (r_one ()) (r_one ())) 6) 20;
+
 base.val := 10;
+list_of_seq (i_mul_i (r_of_string "23") (r_of_string "49")) 20;
+
 list_of_seq (i_mul_i (r_of_string "239") (r_of_string "4649")) 20;
 list_of_seq (i_mul_i (r_of_string "10242") (r_of_string "36628")) 20;
 (*
