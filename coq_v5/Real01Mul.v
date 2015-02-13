@@ -541,8 +541,10 @@ destruct s as [i| ].
      left.
      split; [ reflexivity | idtac ].
      split; intros j.
-      unfold I_mul_i.
-      clear Ht; simpl.
+      clear Ht.
+bbb.
+      unfold I_mul_i; simpl.
+      simpl.
       unfold propag_carry_once.
       remember (I_propag_carry (I_mul_algo x 1) j) as z eqn:Hz .
       remember (fst_not_1 z (S j)) as s2 eqn:Hs2 .
