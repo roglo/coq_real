@@ -571,6 +571,7 @@ destruct s as [i| ].
         symmetry in Hx1.
         destruct b; [ discriminate H | simpl in H ].
         apply Nat.succ_inj in H.
+        rename di1 into j.
 bbb.
        destruct di1.
         unfold I_mul_algo in H1.
