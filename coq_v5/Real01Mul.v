@@ -47,7 +47,7 @@ Fixpoint I_propag_carry u n :=
 Definition I_mul_algo x y i := Σ (j=1,i), (b2n (x.[j-1]) * b2n (y.[i-j])).
 Arguments I_mul_algo x%I y%I i%nat.
 
-Definition I_mul_i x y i := n2b (I_propag_carry (I_mul_algo x y) i i).
+Definition I_mul_i x y i := n2b (I_propag_carry (I_mul_algo x y) (S i) i).
 Definition I_mul x y := {| rm := I_mul_i x y |}.
 
 Notation "x * y" := (I_mul x y) : I_scope.
@@ -283,7 +283,7 @@ Theorem I_mul_i_0_l : ∀ x y,
 Proof.
 intros x y Hx i.
 unfold I_mul_i.
-remember (I_propag_carry (I_mul_algo x y) i i) as nb eqn:Hnb .
+remember (I_propag_carry (I_mul_algo x y) (S i) i) as nb eqn:Hnb .
 symmetry in Hnb.
 destruct nb; [ reflexivity | exfalso ].
 rewrite if_0_propag_carry_0 in Hnb; [ discriminate Hnb | idtac ].
@@ -307,7 +307,7 @@ destruct s1 as [dj1| ].
  pose proof (Hs1 0) as H; simpl in H.
  rewrite Nat.add_0_r in H.
  remember (S i) as si.
- unfold I_mul_i in H; simpl in H; subst si.
+ unfold I_mul_i in H; subst si.
  rewrite if_0_propag_carry_0 in H; [ discriminate H | idtac ].
  intros j; apply all_0_summation_0; intros k Hk; reflexivity.
 Qed.
