@@ -451,7 +451,6 @@ destruct s as [i| ].
  rewrite Hs, negb_involutive; reflexivity.
 
  destruct Hs as (Hn, Ht).
-bbb.
  right.
  exists i.
  split.
@@ -472,6 +471,15 @@ bbb.
      left.
      split; [ reflexivity | idtac ].
      split; intros j; simpl.
+bbb.
+  blocked; theorem must be false; model must be false!
+  Hb0 : x .[ 0] = true
+  Ht : I_mul_i x 1%I 0 = false
+  Hx1 : x .[ 1] = true
+  j : nat
+  ============================
+   I_mul_i x 1%I j = false
+
       unfold I_mul_i; simpl.
       unfold I_mul_i in Ht.
       apply n2b_false_iff.
