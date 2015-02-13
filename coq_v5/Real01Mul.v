@@ -538,127 +538,27 @@ destruct s as [i| ].
        unfold summation in H; simpl in H.
        rewrite Hx0 in H; discriminate H.
 
-     left.
-     split; [ reflexivity | idtac ].
-     split; intros j.
-      clear Ht.
-bbb.
-      unfold I_mul_i; simpl.
-      simpl.
-      unfold propag_carry_once.
-      remember (I_propag_carry (I_mul_algo x 1) j) as z eqn:Hz .
-      remember (fst_not_1 z (S j)) as s2 eqn:Hs2 .
-      remember (nat_compare (z j) 1) as c eqn:Hc .
-      symmetry in Hc.
-      destruct s2 as [di2| ].
-       destruct (lt_dec (z (S (j + di2))) 2) as [H1| H1].
-        apply fst_not_1_iff in Hs2; simpl in Hs2.
-        destruct Hs2 as (Hn2, Ht2).
-        destruct c.
-         apply nat_compare_eq in Hc.
-         rewrite Hc; reflexivity.
+     pose proof (Hs1 0) as H; simpl in H.
+     unfold I_mul_algo in H; simpl in H.
+     unfold summation in H; simpl in H.
+     rewrite Hx0 in H; discriminate H.
 
-         apply nat_compare_lt in Hc.
-         pose proof (Hs1 (j + di2)) as H.
-         rewrite Hz in Ht2.
-         destruct j; [ simpl in Ht2, H; contradiction | idtac ].
-         simpl in Ht2.
-         apply Nat.lt_1_r in Hc.
-         rewrite Hz in Hc; simpl in Hc.
-         unfold propag_carry_once in Hc; simpl in Hc.
-         remember (I_propag_carry (I_mul_algo x 1) j) as u eqn:Hu .
-         remember (fst_not_1 u (S (S j))) as s3 eqn:Hs3 .
-         apply fst_not_1_iff in Hs3; simpl in Hs3.
-         remember (nat_compare (u (S j)) 1) as c1 eqn:Hc1 .
-         symmetry in Hc1.
-         destruct s3 as [di3| ].
-          destruct Hs3 as (Hn3, Ht3).
-          destruct (lt_dec (u (S (S (j + di3)))) 2) as [H2| H2].
-           destruct c1.
-            apply nat_compare_eq in Hc1.
-            rewrite Hc1 in Hc; discriminate Hc.
-
-            apply nat_compare_lt in Hc1.
-bbb.
-     split; intros j; simpl.
-      unfold I_mul_i in Ht; simpl in Ht.
-      apply n2b_false_iff in Ht.
-      unfold propag_carry_once in Ht; simpl in Ht.
-      remember (fst_not_1 (I_mul_algo x 1) 1) as s1 eqn:Hs1 .
-      apply fst_not_1_iff in Hs1; simpl in Hs1.
-      destruct s1 as [di1| ]; [ idtac | discriminate Ht ].
-      destruct (lt_dec (I_mul_algo x 1 (S di1)) 2) as [H1| H1].
+   right; simpl.
+   split; intros di.
+    remember (x .[ S i]) as b eqn:Hxi .
+    symmetry in Hxi.
+    destruct b; simpl in Ht.
+     remember (S i) as si.
+     unfold I_mul_i in Ht; simpl in Ht.
+     apply n2b_false_iff in Ht.
+     unfold propag_carry_once in Ht; simpl in Ht.
+     remember (I_propag_carry (I_mul_algo x 1) si) as z eqn:Hz .
+     remember (fst_not_1 z (S si)) as s1 eqn:Hs1 .
+     apply fst_not_1_iff in Hs1; simpl in Hs1.
+     destruct s1 as [di1| ].
+      destruct (lt_dec (z (S (si + di1))) 2) as [H1| H1].
        destruct Hs1 as (Hn1, Ht1).
-       unfold I_mul_algo in Ht1; simpl in Ht1.
-       destruct di1.
-        unfold summation in Ht1; simpl in Ht1.
-        rewrite Hx0 in Ht1; exfalso; apply Ht1; reflexivity.
-
-        unfold I_mul_algo in H1; simpl in H1.
-        unfold summation in H1; simpl in H1.
-        rewrite Hx0, Hx1 in H1; simpl in H1.
-        destruct di1.
-         simpl in H1.
-         exfalso; revert H1; apply Nat.lt_irrefl.
-
-         simpl in H1.
-         remember (x .[ 2]) as b eqn:Hx2 .
-         symmetry in Hx2.
-         destruct b; simpl in H1.
-          exfalso; omega.
-
-          assert (1 < S (S di1)) as H by omega.
-          apply Hn1 in H; simpl in H.
-          unfold I_mul_algo in H; simpl in H.
-          unfold summation in H; simpl in H.
-          rewrite Hx0, Hx1 in H; simpl in H.
-          discriminate H.
-
-       discriminate Ht.
-
-      Focus 1.
 bbb.
-     split; intros i.
-      unfold I_mul_i; simpl.
-      unfold n2b, propag_carry_once; simpl.
-      rewrite divmod_div, fold_sub_succ_l, divmod_mod.
-      apply negb_true_iff, Nat.eqb_neq; intros H.
-      apply Nat.eq_add_0 in H.
-      destruct H as (H1, H2).
-      rewrite Nat.add_comm in H1, H2; simpl in H1, H2.
-      rewrite fold_sub_succ_l, divmod_mod in H1.
-      rewrite divmod_div in H2.
-      unfold propag_carry_once in H1, H2; simpl in H1, H2.
-      do 3 rewrite divmod_div in H1.
-      do 4 rewrite divmod_div in H2.
-      do 4 rewrite fold_sub_succ_l, divmod_mod in H1.
-      do 3 rewrite fold_sub_succ_l, divmod_mod in H2.
-      rewrite Nat.add_mod_idemp_l in H1; [ idtac | intros H; discriminate H ].
-      rewrite Nat.add_mod_idemp_l in H2; [ idtac | intros H; discriminate H ].
-      rewrite <- Nat.add_assoc in H1.
-      rewrite Nat.add_mod_idemp_l in H1; [ idtac | intros H; discriminate H ].
-      rewrite Nat.add_assoc in H1.
-      destruct i.
-       simpl in H1.
-       do 3 rewrite divmod_div in H1.
-       do 2 rewrite fold_sub_succ_l, divmod_mod in H1.
-       unfold I_mul_algo, summation in H1; simpl in H1.
-       do 3 rewrite divmod_div in H1.
-       do 2 rewrite fold_sub_succ_l, divmod_mod in H1.
-       rewrite Hb0, Hx1 in H1; simpl in H1.
-       rewrite Nat.mul_1_r, Nat.add_0_r in H1.
-       remember (x .[ 2]) as b eqn:Hx2 .
-       symmetry in Hx2.
-       destruct b; [ clear H1 | discriminate H1 ].
-       clear H2. (* brings nothing *)
-bbb.
-  blocked!
-
-  Hb0 : x .[ 0] = true
-  Hx1 : x .[ 1] = false
-  Hx2 : x .[ 2] = true
-  ============================
-   False
 
 (* compatibility with equality *)
 
