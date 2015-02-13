@@ -545,20 +545,52 @@ destruct s as [i| ].
 
    right; simpl.
    split; intros di.
-    remember (x .[ S i]) as b eqn:Hxi .
-    symmetry in Hxi.
-    destruct b; simpl in Ht.
-bbb.
-     remember (S i) as si.
-     unfold I_mul_i in Ht; simpl in Ht.
-     apply n2b_false_iff in Ht.
-     unfold propag_carry_once in Ht; simpl in Ht.
-     remember (I_propag_carry (I_mul_algo x 1) si) as z eqn:Hz .
-     remember (fst_not_1 z (S si)) as s1 eqn:Hs1 .
+    pose proof (Hn 0 (Nat.lt_0_succ i)) as H.
+    rewrite negb_involutive in H.
+    remember (x .[ 0]) as b eqn:Hx0 .
+    symmetry in Hx0.
+    destruct b.
+     unfold I_mul_i in H; simpl in H.
+     unfold propag_carry_once in H; simpl in H.
+     remember (fst_not_1 (I_mul_algo x 1) 1) as s1 eqn:Hs1 .
      apply fst_not_1_iff in Hs1; simpl in Hs1.
      destruct s1 as [di1| ].
-      destruct (lt_dec (z (S (si + di1))) 2) as [H1| H1].
-       destruct Hs1 as (Hn1, Ht1).
+      destruct Hs1 as (Hn1, Ht1).
+      destruct (lt_dec (I_mul_algo x 1 (S di1)) 2) as [H1| H1].
+       unfold I_mul_algo in H.
+       unfold summation in H; discriminate H.
+
+       clear H Ht1.
+       destruct (lt_eq_lt_dec (S i) di1) as [[H2| H2]| H2].
+        remember H2 as H; clear HeqH.
+        apply Hn1 in H.
+        unfold I_mul_algo in H; simpl in H.
+        unfold summation in H; simpl in H.
+        rewrite Hx0 in H; simpl in H.
+        remember (x .[ 1]) as b eqn:Hx1 .
+        symmetry in Hx1.
+        destruct b; [ discriminate H | simpl in H ].
+        apply Nat.succ_inj in H.
+bbb.
+       destruct di1.
+        unfold I_mul_algo in H1.
+        unfold summation in H1; simpl in H1.
+        rewrite Hx0 in H1; simpl in H1.
+        exfalso; apply H1, Nat.lt_1_2.
+
+        remember (S i) as si.
+        unfold I_mul_i in Ht; simpl in Ht.
+        unfold propag_carry_once in Ht; simpl in Ht.
+        remember (I_propag_carry (I_mul_algo x 1) si) as z eqn:Hz .
+        remember (fst_not_1 z (S si)) as s1 eqn:Hs1 .
+        apply fst_not_1_iff in Hs1; simpl in Hs1.
+        destruct s1 as [di2| ].
+         destruct Hs1 as (Hn2, Ht2).
+         destruct (lt_dec (z (S (si + di2))) 2) as [H2| H2].
+          remember (nat_compare (z si) 1) as c eqn:Hc .
+          symmetry in Hc.
+          apply negb_sym in Ht.
+          destruct c.
 bbb.
 
 (* compatibility with equality *)
