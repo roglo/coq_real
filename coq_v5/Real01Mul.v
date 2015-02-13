@@ -557,6 +557,26 @@ destruct s as [i| ].
          rewrite Hc; reflexivity.
 
          apply nat_compare_lt in Hc.
+         pose proof (Hs1 (j + di2)) as H.
+         rewrite Hz in Ht2.
+         destruct j; [ simpl in Ht2, H; contradiction | idtac ].
+         simpl in Ht2.
+         apply Nat.lt_1_r in Hc.
+         rewrite Hz in Hc; simpl in Hc.
+         unfold propag_carry_once in Hc; simpl in Hc.
+         remember (I_propag_carry (I_mul_algo x 1) j) as u eqn:Hu .
+         remember (fst_not_1 u (S (S j))) as s3 eqn:Hs3 .
+         apply fst_not_1_iff in Hs3; simpl in Hs3.
+         remember (nat_compare (u (S j)) 1) as c1 eqn:Hc1 .
+         symmetry in Hc1.
+         destruct s3 as [di3| ].
+          destruct Hs3 as (Hn3, Ht3).
+          destruct (lt_dec (u (S (S (j + di3)))) 2) as [H2| H2].
+           destruct c1.
+            apply nat_compare_eq in Hc1.
+            rewrite Hc1 in Hc; discriminate Hc.
+
+            apply nat_compare_lt in Hc1.
 bbb.
      split; intros j; simpl.
       unfold I_mul_i in Ht; simpl in Ht.
