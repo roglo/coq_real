@@ -461,70 +461,87 @@ destruct s as [i| ].
   split; [ simpl; apply neq_negb; assumption | idtac ].
   destruct i.
    clear Hn; simpl.
-   remember (x .[ 0]) as b0 eqn:Hx0 .
+   remember (x .[ 0]) as b eqn:Hx0 .
    symmetry in Hx0.
    rewrite Ht.
-   destruct b0; simpl in Ht; simpl.
+   destruct b; simpl in Ht; simpl.
+    exfalso.
     remember (x .[ 1]) as b eqn:Hx1 .
     symmetry in Hx1.
-    destruct b.
-     exfalso.
-     unfold I_mul_i in Ht; simpl in Ht.
-     apply n2b_false_iff in Ht.
-     unfold propag_carry_once in Ht; simpl in Ht.
-     remember (fst_not_1 (I_mul_algo x 1) 1) as s1 eqn:Hs1 .
-     apply fst_not_1_iff in Hs1; simpl in Hs1.
-     destruct s1 as [di1| ]; [ idtac | discriminate Ht ].
-     destruct (lt_dec (I_mul_algo x 1 (S di1)) 2) as [H1| H1].
-      destruct Hs1 as (Hn1, Ht1).
-      unfold I_mul_algo in Ht1; simpl in Ht1.
-      destruct di1.
-       unfold summation in Ht1; simpl in Ht1.
-       rewrite Hx0 in Ht1; exfalso; apply Ht1; reflexivity.
+    unfold I_mul_i in Ht; simpl in Ht.
+    apply n2b_false_iff in Ht.
+    unfold propag_carry_once in Ht; simpl in Ht.
+    remember (fst_not_1 (I_mul_algo x 1) 1) as s1 eqn:Hs1 .
+    apply fst_not_1_iff in Hs1; simpl in Hs1.
+    destruct s1 as [di1| ]; [ idtac | discriminate Ht ].
+    destruct (lt_dec (I_mul_algo x 1 (S di1)) 2) as [H1| H1].
+     destruct Hs1 as (Hn1, Ht1).
+     unfold I_mul_algo in Ht1; simpl in Ht1.
+     destruct di1.
+      unfold summation in Ht1; simpl in Ht1.
+      rewrite Hx0 in Ht1; exfalso; apply Ht1; reflexivity.
 
-       unfold I_mul_algo in H1; simpl in H1.
-       unfold summation in H1; simpl in H1.
-       rewrite Hx0, Hx1 in H1; simpl in H1.
-       destruct di1.
-        simpl in H1.
-        exfalso; revert H1; apply Nat.lt_irrefl.
+      unfold I_mul_algo in H1; simpl in H1.
+      unfold summation in H1; simpl in H1.
+      rewrite Hx0, Hx1 in H1; simpl in H1.
+      destruct di1.
+       simpl in H1.
+       destruct b.
+        revert H1; apply Nat.lt_irrefl.
+
+        unfold summation in Ht1; simpl in Ht1.
+        rewrite Hx0, Hx1 in Ht1; apply Ht1; reflexivity.
+
+       destruct b.
+        assert (1 < S (S di1)) as H by omega.
+        apply Hn1 in H; simpl in H.
+        unfold I_mul_algo in H; simpl in H.
+        unfold summation in H; simpl in H.
+        rewrite Hx0, Hx1 in H; simpl in H.
+        discriminate H.
 
         simpl in H1.
         remember (x .[ 2]) as b eqn:Hx2 .
         symmetry in Hx2.
-        destruct b; simpl in H1.
-         exfalso; omega.
+        destruct b.
+         simpl in H1.
+         do 2 apply lt_S_n in H1.
+         revert H1; apply Nat.nlt_0_r.
 
-         assert (1 < S (S di1)) as H by omega.
-         apply Hn1 in H; simpl in H.
-         unfold I_mul_algo in H; simpl in H.
-         unfold summation in H; simpl in H.
-         rewrite Hx0, Hx1 in H; simpl in H.
-         discriminate H.
-
-      discriminate Ht.
-
-     right.
-     split; intros i.
-      unfold I_mul_i in Ht; simpl in Ht.
-      unfold propag_carry_once in Ht; simpl in Ht.
-      apply n2b_false_iff in Ht.
-      remember (fst_not_1 (I_mul_algo x 1) 1) as s1 eqn:Hs1 .
-      apply fst_not_1_iff in Hs1; simpl in Hs1.
-      destruct s1 as [di1| ]; [ idtac | discriminate Ht ].
-      destruct (lt_dec (I_mul_algo x 1 (S di1)) 2) as [H1| H1].
-       destruct Hs1 as (Hn1, Ht1).
-       unfold I_mul_algo in Ht1; simpl in Ht1.
-       destruct di1.
-        unfold summation in Ht1; simpl in Ht1.
-        rewrite Hx0 in Ht1; exfalso; apply Ht1; reflexivity.
-
-        destruct di1.
          unfold summation in Ht1; simpl in Ht1.
-         rewrite Hx0, Hx1 in Ht1; simpl in Ht1.
-         exfalso; apply Ht1; reflexivity.
+         simpl in H1.
+         apply lt_S_n in H1.
+         apply Nat.lt_1_r in H1.
+         rewrite Hx0, Hx1, Hx2, H1 in Ht1; simpl in Ht1.
+         apply Ht1; reflexivity.
 
-         Focus 1.
+     discriminate Ht.
+
+    unfold I_mul_i in Ht; simpl in Ht.
+    unfold propag_carry_once in Ht; simpl in Ht.
+    remember (fst_not_1 (I_mul_algo x 1) 1) as s1 eqn:Hs1 .
+    apply fst_not_1_iff in Hs1; simpl in Hs1.
+    destruct s1 as [di1| ].
+     destruct (lt_dec (I_mul_algo x 1 (S di1)) 2) as [H1| H1].
+      unfold I_mul_algo in Ht; simpl in Ht.
+      unfold summation in Ht; discriminate Ht.
+
+      unfold I_mul_algo in H1; simpl in H1.
+      destruct Hs1 as (Hn1, Ht1).
+      destruct di1.
+       unfold summation in H1; simpl in H1.
+       rewrite Hx0 in H1; simpl in H1.
+       exfalso; apply H1, Nat.lt_0_succ.
+
+       pose proof (Hn1 0 (Nat.lt_0_succ di1)) as H.
+       unfold I_mul_algo in H; simpl in H.
+       unfold summation in H; simpl in H.
+       rewrite Hx0 in H; discriminate H.
+
+     left.
+     split; [ reflexivity | idtac ].
+     split; intros j.
+      unfold I_mul_i.
 bbb.
      split; intros j; simpl.
       unfold I_mul_i in Ht; simpl in Ht.
