@@ -548,6 +548,7 @@ destruct s as [i| ].
     remember (x .[ S i]) as b eqn:Hxi .
     symmetry in Hxi.
     destruct b; simpl in Ht.
+bbb.
      remember (S i) as si.
      unfold I_mul_i in Ht; simpl in Ht.
      apply n2b_false_iff in Ht.
