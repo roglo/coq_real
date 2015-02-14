@@ -829,22 +829,26 @@ destruct s as [i| ].
            symmetry in Hc3.
            apply fst_not_1_iff in Hs3; simpl in Hs3.
            destruct s3 as [di3| ].
+            destruct Hs3 as (Hn3, Ht3).
             destruct (lt_dec (I_mul_algo x 1 (S (S (S (di1 + di3))))) 2)
              as [H3| H3].
-             destruct Hs3 as (Hn3, Ht3).
+             remember (I_mul_algo x 1 (S (S (S (di1 + di3))))) as m eqn:Hm .
+             symmetry in Hm.
+             destruct m.
+              unfold I_mul_algo in Hm; simpl in Hm.
+              unfold summation in Hm; simpl in Hm.
+              rewrite Hx1, Nat.add_comm in Hm; discriminate Hm.
+
+              destruct m; [ apply Ht3; reflexivity | idtac ].
+              do 2 apply Nat.succ_lt_mono in H3.
+              revert H3; apply Nat.nlt_0_r.
+
+             apply Nat.nlt_ge in H3; clear Ht3.
              destruct c3.
-              apply nat_compare_eq in Hc3.
-              rewrite Hc3 in H1.
               apply Nat.nlt_ge in H1.
-              apply H1, Nat.lt_1_2.
+              apply H1, Nat.lt_0_succ.
 
               apply nat_compare_lt in Hc3.
-              apply Nat.nlt_ge in H1.
-              apply H1.
-              eapply Nat.lt_le_trans; [ eassumption | idtac ].
-              apply le_n_S, Nat.le_0_l.
-
-              apply nat_compare_gt in Hc3.
 bbb.
 
 (* compatibility with equality *)
