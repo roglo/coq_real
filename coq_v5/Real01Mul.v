@@ -849,6 +849,10 @@ destruct s as [i| ].
               apply H1, Nat.lt_0_succ.
 
               apply nat_compare_lt in Hc3.
+              apply Nat.nlt_ge in H1.
+              apply H1, lt_n_S; assumption.
+
+              Focus 1.
 bbb.
 
 (* compatibility with equality *)
