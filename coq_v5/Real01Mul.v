@@ -888,6 +888,16 @@ destruct s as [i| ].
                  apply Nat.nlt_ge in H2.
                  apply H2, Nat.lt_1_2.
 
+                assert (1 < S (S di2)) as H by omega.
+                apply Hn2 in H.
+                unfold I_mul_algo in H; simpl in H.
+                unfold summation in H; simpl in H.
+                rewrite Hx0, Hx1 in H; simpl in H.
+                apply Nat.succ_inj in H.
+                remember (x .[ 2]) as b eqn:Hx2 .
+                symmetry in Hx2.
+                destruct b; [ discriminate H | clear H ].
+
                 Focus 1.
 bbb.
 
