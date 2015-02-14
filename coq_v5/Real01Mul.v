@@ -752,6 +752,15 @@ destruct s as [i| ].
            revert Hc2; apply Nat.lt_irrefl.
 
          apply nat_compare_gt in Hc1.
+         remember (z 1) as n eqn:Hz .
+         symmetry in Hz.
+         apply Nat.nle_gt in Hc1.
+         destruct n; [ apply Hc1, Nat.le_0_l | idtac ].
+         destruct n; [ apply Hc1; reflexivity | idtac ].
+         simpl in Ht.
+         rewrite Nat.sub_0_r in Ht.
+         apply negb_sym in Ht; simpl in Ht.
+         clear Hc1.
 bbb.
 
 (* compatibility with equality *)
