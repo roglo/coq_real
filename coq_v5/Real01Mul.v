@@ -605,6 +605,11 @@ destruct s as [i| ].
            destruct (x .[ 0]); discriminate Hc1.
 
           apply Nat.nlt_ge in H2; clear Ht2.
+          destruct c2; [ discriminate Hc1 | idtac | idtac ].
+           remember (x .[ 0]) as b eqn:Hx0 .
+           destruct b; [ discriminate Hc1 | clear Hc1 ].
+           symmetry in Hx0.
+           clear Hc2.
 bbb.
     pose proof (Hn 0 (Nat.lt_0_succ i)) as H.
     rewrite negb_involutive in H.
