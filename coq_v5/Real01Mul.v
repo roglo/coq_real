@@ -545,6 +545,47 @@ destruct s as [i| ].
 
    right; simpl.
    split; intros di.
+    exfalso.
+    destruct i.
+     unfold I_mul_i in Ht.
+     simpl in Ht.
+     unfold propag_carry_once at 1 in Ht; simpl in Ht.
+     remember (propag_carry_once (I_mul_algo x 1)) as z.
+     remember (fst_not_1 z 2) as s1 eqn:Hs1 .
+     apply fst_not_1_iff in Hs1; simpl in Hs1.
+     destruct s1 as [di1| ].
+      destruct Hs1 as (Hn1, Ht1).
+      remember (nat_compare (z 1) 1) as c1 eqn:Hc1 .
+      symmetry in Hc1.
+      destruct (lt_dec (z (S (S di1))) 2) as [H1| H1].
+       destruct c1.
+        apply nat_compare_eq in Hc1.
+        rewrite Hc1 in Ht; simpl in Ht.
+        unfold n2b in Ht; apply negb_sym in Ht; simpl in Ht.
+        rewrite Heqz in Hc1.
+        unfold propag_carry_once in Hc1; simpl in Hc1.
+        remember (fst_not_1 (I_mul_algo x 1) 2) as s2 eqn:Hs2 .
+        apply fst_not_1_iff in Hs2; simpl in Hs2.
+        destruct s2 as [di2| ].
+         destruct Hs2 as (Hn2, Ht2).
+         rewrite I_mul_algo_1 in Hc1; simpl in Hc1.
+         rewrite Nat.mul_1_r in Hc1.
+         remember (nat_compare (b2n (x .[ 0])) 1) as c2 eqn:Hc2 .
+         symmetry in Hc2.
+         destruct (lt_dec (I_mul_algo x 1 (S (S di2))) 2) as [H2| H2].
+          destruct c2.
+           apply nat_compare_eq in Hc2; simpl in Hc2.
+           unfold b2n in Hc2; simpl in Hc2.
+           remember (x .[ 0]) as b eqn:Hx0 .
+           symmetry in Hx0.
+           destruct b; [ clear Hc1 Hc2 | discriminate Hc2 ].
+           remember (z (S (S di1))) as m eqn:Hz1 .
+           symmetry in Hz1.
+           destruct m; [ clear Ht1 H1 | idtac ].
+            remember (I_mul_algo x 1 (S (S di2))) as m eqn:Hm2 .
+            symmetry in Hm2.
+            destruct m; [ clear Ht2 H2 | idtac ].
+bbb.
     pose proof (Hn 0 (Nat.lt_0_succ i)) as H.
     rewrite negb_involutive in H.
     remember (x .[ 0]) as b eqn:Hx0 .
@@ -561,6 +602,7 @@ destruct s as [i| ].
        unfold summation in H; discriminate H.
 
        clear H Ht1.
+bbb.
        destruct (lt_eq_lt_dec (S i) di1) as [[H2| H2]| H2].
         remember H2 as H; clear HeqH.
         apply Hn1 in H.
