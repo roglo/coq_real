@@ -853,6 +853,42 @@ destruct s as [i| ].
               apply H1, lt_n_S; assumption.
 
               apply nat_compare_gt in Hc3.
+              clear H1.
+              unfold gt in Hc3.
+              destruct di2.
+               unfold I_mul_algo in H2; simpl in H2.
+               unfold summation in H2; simpl in H2.
+               rewrite Hx0, Hx1 in H2; simpl in H2.
+               apply Nat.nlt_ge in H2.
+               apply H2, Nat.lt_1_2.
+
+               destruct di2.
+                unfold I_mul_algo in H2; simpl in H2.
+                unfold summation in H2; simpl in H2.
+                rewrite Hx0, Hx1 in H2; simpl in H2.
+                remember (x .[ 2]) as b eqn:Hx2 .
+                symmetry in Hx2.
+                destruct b; simpl in H2.
+                 clear H2.
+                 destruct di1.
+                  unfold I_mul_algo in Hc3; simpl in Hc3.
+                  unfold summation in Hc3; simpl in Hc3.
+                  rewrite Hx0, Hx1 in Hc3; simpl in Hc3.
+                  revert Hc3; apply Nat.lt_irrefl.
+
+                  pose proof (Hn1 0 (Nat.lt_0_succ di1)) as H.
+                  rewrite Heqz in H; simpl in H.
+                  unfold propag_carry_once in H; simpl in H.
+                  remember (fst_not_1 (I_mul_algo x 1) 3) as s4 eqn:Hs4 .
+                  unfold I_mul_algo in H; simpl in H.
+                  unfold summation in H; simpl in H.
+                  rewrite Hx0, Hx1, Hx2 in H; simpl in H.
+                  destruct s4; discriminate H.
+
+                 apply Nat.nlt_ge in H2.
+                 apply H2, Nat.lt_1_2.
+
+                Focus 1.
 bbb.
 
 (* compatibility with equality *)
