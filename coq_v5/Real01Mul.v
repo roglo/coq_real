@@ -558,58 +558,45 @@ destruct s as [i| ].
       remember (nat_compare (z 1) 1) as c1 eqn:Hc1 .
       symmetry in Hc1.
       destruct (lt_dec (z (S (S di1))) 2) as [H1| H1].
-       destruct c1.
-        apply nat_compare_eq in Hc1.
-        rewrite Hc1 in Ht; simpl in Ht.
-        unfold n2b in Ht; apply negb_sym in Ht; simpl in Ht.
-        rewrite Heqz in Hc1.
-        unfold propag_carry_once in Hc1; simpl in Hc1.
-        remember (fst_not_1 (I_mul_algo x 1) 2) as s2 eqn:Hs2 .
-        apply fst_not_1_iff in Hs2; simpl in Hs2.
-        destruct s2 as [di2| ].
-         destruct Hs2 as (Hn2, Ht2).
-         rewrite I_mul_algo_1 in Hc1; simpl in Hc1.
-         rewrite Nat.mul_1_r in Hc1.
-         remember (nat_compare (b2n (x .[ 0])) 1) as c2 eqn:Hc2 .
-         symmetry in Hc2.
-         destruct (lt_dec (I_mul_algo x 1 (S (S di2))) 2) as [H2| H2].
-          destruct c2.
-           apply nat_compare_eq in Hc2; simpl in Hc2.
-           unfold b2n in Hc2; simpl in Hc2.
-           remember (x .[ 0]) as b eqn:Hx0 .
-           symmetry in Hx0.
-           destruct b; [ clear Hc1 Hc2 | discriminate Hc2 ].
-           remember (z (S (S di1))) as m eqn:Hz1 .
-           symmetry in Hz1.
-           destruct m; [ clear Ht1 H1 | idtac ].
-            remember (I_mul_algo x 1 (S (S di2))) as m eqn:Hm2 .
-            symmetry in Hm2.
-            destruct m; [ clear Ht2 H2 | idtac ].
-             unfold I_mul_algo in Hm2; simpl in Hm2.
-             unfold summation in Hm2; simpl in Hm2.
-             rewrite Hx0 in Hm2; discriminate Hm2.
+       remember (z (S (S di1))) as m eqn:Hz1 .
+       symmetry in Hz1.
+       destruct m; [ clear Ht1 H1 | idtac ].
+        destruct c1.
+         apply nat_compare_eq in Hc1.
+         rewrite Hc1 in Ht; simpl in Ht.
+         unfold n2b in Ht; apply negb_sym in Ht; simpl in Ht.
+         rewrite Heqz in Hc1.
+         unfold propag_carry_once in Hc1; simpl in Hc1.
+         remember (fst_not_1 (I_mul_algo x 1) 2) as s2 eqn:Hs2 .
+         apply fst_not_1_iff in Hs2; simpl in Hs2.
+         destruct s2 as [di2| ].
+          destruct Hs2 as (Hn2, Ht2).
+          rewrite I_mul_algo_1 in Hc1; simpl in Hc1.
+          rewrite Nat.mul_1_r in Hc1.
+          remember (nat_compare (b2n (x .[ 0])) 1) as c2 eqn:Hc2 .
+          symmetry in Hc2.
+          destruct (lt_dec (I_mul_algo x 1 (S (S di2))) 2) as [H2| H2].
+           remember (I_mul_algo x 1 (S (S di2))) as m eqn:Hm2 .
+           symmetry in Hm2.
+           destruct m; [ clear Ht2 H2 | idtac ].
+            unfold I_mul_algo in Hm2; simpl in Hm2.
+            unfold summation in Hm2; simpl in Hm2.
+            destruct c2.
+             rewrite Hc1 in Hm2; discriminate Hm2.
 
-             destruct m; [ apply Ht2; reflexivity | idtac ].
-             do 2 apply Nat.succ_lt_mono in H2.
-             revert H2; apply Nat.nlt_0_r.
+             rewrite Hc1 in Hm2; discriminate Hm2.
 
-            destruct m; [ apply Ht1; reflexivity | idtac ].
-            do 2 apply Nat.succ_lt_mono in H1.
-            revert H1; apply Nat.nlt_0_r.
+             destruct (x .[ 0]); discriminate Hc1.
 
-           apply nat_compare_lt in Hc2.
-           rewrite Hc1 in Hc2.
-           revert Hc2; apply Nat.lt_irrefl.
+            destruct m; [ apply Ht2; reflexivity | idtac ].
+            do 2 apply Nat.succ_lt_mono in H2.
+            revert H2; apply Nat.nlt_0_r.
 
-           unfold b2n in Hc1; simpl in Hc1.
-           destruct (x .[ 0]); discriminate Hc1.
-
-          apply Nat.nlt_ge in H2; clear Ht2.
-          destruct c2; [ discriminate Hc1 | idtac | idtac ].
-           remember (x .[ 0]) as b eqn:Hx0 .
-           destruct b; [ discriminate Hc1 | clear Hc1 ].
-           symmetry in Hx0.
-           clear Hc2.
+           destruct c2; [ discriminate Hc1 | idtac | idtac ].
+            remember (x .[ 0]) as b eqn:Hx0 .
+            destruct b; [ discriminate Hc1 | clear Hc1 ].
+            symmetry in Hx0; clear Hc2.
+            apply Nat.nlt_ge in H2; clear Ht2.
 bbb.
     pose proof (Hn 0 (Nat.lt_0_succ i)) as H.
     rewrite negb_involutive in H.
