@@ -636,6 +636,34 @@ destruct s as [i| ].
            rewrite Hx0 in Hc2; simpl in Hc2.
            apply Nat.nle_gt in Hc2.
            apply Hc2, Nat.le_0_l.
+
+         apply nat_compare_lt in Hc1.
+         apply Nat.lt_1_r in Hc1.
+         rewrite Hc1 in Ht; apply negb_sym in Ht; simpl in Ht.
+bbb.
+voir plutôt avec Hz1
+
+         rewrite Heqz in Hc1.
+         unfold propag_carry_once in Hc1; simpl in Hc1.
+         remember (fst_not_1 (I_mul_algo x 1) 2) as s2 eqn:Hs2 .
+         apply fst_not_1_iff in Hs2; simpl in Hs2.
+         remember (nat_compare (I_mul_algo x 1 1) 1) as c2 eqn:Hc2 .
+         symmetry in Hc2.
+         destruct s2 as [di2| ].
+          destruct Hs2 as (Hn2, Ht2).
+          destruct (lt_dec (I_mul_algo x 1 (S (S di2))) 2) as [H2| H2].
+           remember (I_mul_algo x 1 (S (S di2))) as m eqn:Hm2 .
+           symmetry in Hm2.
+           destruct m; [ clear Ht2 H2 | idtac ].
+            unfold I_mul_algo in Hm2; simpl in Hm2.
+            unfold summation in Hm2; simpl in Hm2.
+            rewrite Ht, Nat.add_comm in Hm2; discriminate Hm2.
+
+            destruct m; [ apply Ht2; reflexivity | idtac ].
+            do 2 apply Nat.succ_lt_mono in H2.
+            revert H2; apply Nat.nlt_0_r.
+
+           apply Nat.nlt_ge in H2; clear Ht2.
 bbb.
 
 (* compatibility with equality *)
