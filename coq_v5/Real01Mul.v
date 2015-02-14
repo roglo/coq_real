@@ -615,6 +615,11 @@ destruct s as [i| ].
           symmetry in Hc2.
           destruct c2; [ discriminate Hc1 | idtac | idtac ].
            apply Nat.succ_inj in Hc1; clear Hc2.
+           unfold I_mul_algo in Hc1; simpl in Hc1.
+           unfold summation in Hc1; simpl in Hc1.
+           remember (x .[ 0]) as b eqn:Hx0 .
+           symmetry in Hx0.
+           destruct b; [ discriminate Hc1 | clear Hc1 ].
 bbb.
 
 (* compatibility with equality *)
