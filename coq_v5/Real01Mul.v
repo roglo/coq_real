@@ -439,9 +439,28 @@ unfold I_mul_algo, summation; simpl.
 apply Nat.add_0_r.
 Qed.
 
+Theorem I_mul_algo_1_r : ∀ x i,
+  I_mul_algo x 1 i = Σ (k = 1, i), b2n (x.[k-1]).
+Proof.
+intros x i.
+unfold I_mul_algo; simpl.
+unfold summation.
+apply summation_loop_compat.
+intros j Hj.
+rewrite Nat.mul_1_r; reflexivity.
+Qed.
+
+(*
+Theorem zzz : ∀ x i, propag_carry_once (I_mul_algo x 1) i = 0.
+Proof.
+bbb.
+*)
+
 Theorem I_add_1_r : ∀ x, (I_mul x 1 = x)%I.
 Proof.
 intros x.
+bbb.
+(* much too complicated *)
 apply I_eq_prop.
 remember (fst_same (x * 1)%I (- x) 0) as s eqn:Hs .
 apply fst_same_sym_iff in Hs; simpl in Hs.
