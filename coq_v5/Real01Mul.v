@@ -610,6 +610,11 @@ destruct s as [i| ].
              rewrite Hx0, Ht in H; discriminate H.
 
             destruct (x .[ 0]); discriminate Hc1.
+
+          remember (nat_compare (I_mul_algo x 1 1) 1) as c2 eqn:Hc2 .
+          symmetry in Hc2.
+          destruct c2; [ discriminate Hc1 | idtac | idtac ].
+           apply Nat.succ_inj in Hc1; clear Hc2.
 bbb.
 
 (* compatibility with equality *)
