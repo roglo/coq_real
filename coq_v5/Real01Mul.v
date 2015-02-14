@@ -757,10 +757,38 @@ destruct s as [i| ].
          apply Nat.nle_gt in Hc1.
          destruct n; [ apply Hc1, Nat.le_0_l | idtac ].
          destruct n; [ apply Hc1; reflexivity | idtac ].
-         simpl in Ht.
+         simpl in Ht; clear Hc1.
          rewrite Nat.sub_0_r in Ht.
          apply negb_sym in Ht; simpl in Ht.
-         clear Hc1.
+         rewrite Heqz in Hz.
+         unfold propag_carry_once in Hz; simpl in Hz.
+         remember (fst_not_1 (I_mul_algo x 1) 2) as s2 eqn:Hs2 .
+         rewrite I_mul_algo_1 in Hz; simpl in Hz.
+         rewrite Nat.mul_1_r in Hz; simpl in Hz.
+         remember (nat_compare (b2n (x .[ 0])) 1) as c2 eqn:Hc2 .
+         symmetry in Hc2.
+         apply fst_not_1_iff in Hs2; simpl in Hs2.
+         destruct s2 as [di2| ].
+          destruct Hs2 as (Hn2, Ht2).
+          destruct (lt_dec (I_mul_algo x 1 (S (S di2))) 2) as [H2| H2].
+           unfold b2n in Hz.
+           destruct c2, (x .[ 0]); discriminate Hz.
+
+           remember (x .[ 0]) as b eqn:Hx0 .
+           symmetry in Hx0.
+           destruct c2, b; try discriminate Hz.
+           apply nat_compare_lt in Hc2.
+           revert Hc2; apply Nat.lt_irrefl.
+
+          remember (x .[ 0]) as b eqn:Hx0 .
+          symmetry in Hx0.
+          destruct c2, b; try discriminate Hz.
+          apply nat_compare_lt in Hc2.
+          revert Hc2; apply Nat.lt_irrefl.
+
+        destruct m; [ apply Ht1; reflexivity | idtac ].
+        do 2 apply Nat.succ_lt_mono in H1.
+        revert H1; apply Nat.nlt_0_r.
 bbb.
 
 (* compatibility with equality *)
