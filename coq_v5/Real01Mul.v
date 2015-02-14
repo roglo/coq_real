@@ -585,6 +585,26 @@ destruct s as [i| ].
             remember (I_mul_algo x 1 (S (S di2))) as m eqn:Hm2 .
             symmetry in Hm2.
             destruct m; [ clear Ht2 H2 | idtac ].
+             unfold I_mul_algo in Hm2; simpl in Hm2.
+             unfold summation in Hm2; simpl in Hm2.
+             rewrite Hx0 in Hm2; discriminate Hm2.
+
+             destruct m; [ apply Ht2; reflexivity | idtac ].
+             do 2 apply Nat.succ_lt_mono in H2.
+             revert H2; apply Nat.nlt_0_r.
+
+            destruct m; [ apply Ht1; reflexivity | idtac ].
+            do 2 apply Nat.succ_lt_mono in H1.
+            revert H1; apply Nat.nlt_0_r.
+
+           apply nat_compare_lt in Hc2.
+           rewrite Hc1 in Hc2.
+           revert Hc2; apply Nat.lt_irrefl.
+
+           unfold b2n in Hc1; simpl in Hc1.
+           destruct (x .[ 0]); discriminate Hc1.
+
+          apply Nat.nlt_ge in H2; clear Ht2.
 bbb.
     pose proof (Hn 0 (Nat.lt_0_succ i)) as H.
     rewrite negb_involutive in H.
