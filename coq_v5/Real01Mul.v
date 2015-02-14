@@ -620,6 +620,22 @@ destruct s as [i| ].
            remember (x .[ 0]) as b eqn:Hx0 .
            symmetry in Hx0.
            destruct b; [ discriminate Hc1 | clear Hc1 ].
+           pose proof (Hs2 0) as H.
+           unfold I_mul_algo in H; simpl in H.
+           unfold summation in H; simpl in H.
+           rewrite Hx0, Ht in H; discriminate H.
+
+           unfold I_mul_algo in Hc1; simpl in Hc1.
+           unfold summation in Hc1; simpl in Hc1.
+           remember (x .[ 0]) as b eqn:Hx0 .
+           symmetry in Hx0.
+           destruct b; [ discriminate Hc1 | clear Hc1 ].
+           apply nat_compare_gt in Hc2; simpl in Hc2.
+           unfold I_mul_algo in Hc2; simpl in Hc2.
+           unfold summation in Hc2; simpl in Hc2.
+           rewrite Hx0 in Hc2; simpl in Hc2.
+           apply Nat.nle_gt in Hc2.
+           apply Hc2, Nat.le_0_l.
 bbb.
 
 (* compatibility with equality *)
