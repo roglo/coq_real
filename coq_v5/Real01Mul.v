@@ -820,6 +820,31 @@ destruct s as [i| ].
            remember (x .[ 0]) as b eqn:Hx0 ; symmetry in Hx0.
            destruct b; [ discriminate Hc1 | clear Hc1 ].
            clear Hc2.
+           rewrite Heqz in H1; simpl in H1.
+           unfold propag_carry_once in H1; simpl in H1.
+           remember (fst_not_1 (I_mul_algo x 1) (S (S (S di1)))) as s3
+            eqn:Hs3 .
+           remember (nat_compare (I_mul_algo x 1 (S (S di1))) 1) as c3
+            eqn:Hc3 .
+           symmetry in Hc3.
+           apply fst_not_1_iff in Hs3; simpl in Hs3.
+           destruct s3 as [di3| ].
+            destruct (lt_dec (I_mul_algo x 1 (S (S (S (di1 + di3))))) 2)
+             as [H3| H3].
+             destruct Hs3 as (Hn3, Ht3).
+             destruct c3.
+              apply nat_compare_eq in Hc3.
+              rewrite Hc3 in H1.
+              apply Nat.nlt_ge in H1.
+              apply H1, Nat.lt_1_2.
+
+              apply nat_compare_lt in Hc3.
+              apply Nat.nlt_ge in H1.
+              apply H1.
+              eapply Nat.lt_le_trans; [ eassumption | idtac ].
+              apply le_n_S, Nat.le_0_l.
+
+              apply nat_compare_gt in Hc3.
 bbb.
 
 (* compatibility with equality *)
