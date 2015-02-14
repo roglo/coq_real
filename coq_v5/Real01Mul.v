@@ -789,6 +789,37 @@ destruct s as [i| ].
         destruct m; [ apply Ht1; reflexivity | idtac ].
         do 2 apply Nat.succ_lt_mono in H1.
         revert H1; apply Nat.nlt_0_r.
+
+       apply Nat.nlt_ge in H1; clear Ht1.
+       apply negb_sym in Ht; simpl in Ht.
+       rename Ht into Hx1.
+       destruct c1; simpl in Hx1.
+        apply nat_compare_eq in Hc1; simpl in Hc1.
+        rewrite Heqz in Hc1.
+        unfold propag_carry_once in Hc1; simpl in Hc1.
+        rewrite I_mul_algo_1 in Hc1; simpl in Hc1.
+        rewrite Nat.mul_1_r in Hc1; simpl in Hc1.
+        remember (nat_compare (b2n (x .[ 0])) 1) as c2 eqn:Hc2 .
+        symmetry in Hc2.
+        remember (fst_not_1 (I_mul_algo x 1) 2) as s2 eqn:Hs2 .
+        apply fst_not_1_iff in Hs2; simpl in Hs2.
+        destruct s2 as [di2| ].
+         destruct Hs2 as (Hn2, Ht2).
+         destruct (lt_dec (I_mul_algo x 1 (S (S di2))) 2) as [H2| H2].
+          remember (I_mul_algo x 1 (S (S di2))) as m eqn:Hm .
+          unfold I_mul_algo in Hm; simpl in Hm.
+          unfold summation in Hm; simpl in Hm.
+          rewrite Nat.add_comm, Hx1 in Hm; simpl in Hm.
+          destruct m; [ discriminate Hm | idtac ].
+          destruct m; [ apply Ht2; reflexivity | idtac ].
+          do 2 apply Nat.succ_lt_mono in H2.
+          revert H2; apply Nat.nlt_0_r.
+
+          apply Nat.nlt_ge in H2; simpl in H2; clear Ht2.
+          destruct c2; [ discriminate Hc1 | idtac | idtac ].
+           remember (x .[ 0]) as b eqn:Hx0 ; symmetry in Hx0.
+           destruct b; [ discriminate Hc1 | clear Hc1 ].
+           clear Hc2.
 bbb.
 
 (* compatibility with equality *)
