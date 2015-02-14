@@ -852,7 +852,7 @@ destruct s as [i| ].
               apply Nat.nlt_ge in H1.
               apply H1, lt_n_S; assumption.
 
-              Focus 1.
+              apply nat_compare_gt in Hc3.
 bbb.
 
 (* compatibility with equality *)
