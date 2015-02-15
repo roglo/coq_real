@@ -25,17 +25,12 @@ Definition divb n := n / 2.
 Definition propag_carry_once z i :=
   match fst_not_1 z (S i) with
   | Some di =>
-      match nat_compare (z i) 1 with
-      | Eq => if lt_dec (z (S (i + di))) 2 then z i else 0
-      | Lt => if lt_dec (z (S (i + di))) 2 then z i else S (z i)
-      | Gt => if lt_dec (z (S (i + di))) 2 then z i - 2 else z i - 1
-      end
+      if lt_dec (z (S (i + di))) 2 then
+       if le_dec (z i) 1 then z i else z i - 2
+     else
+       if zerop (z i) then 1 else z i - 1
   | None =>
-      match nat_compare (z i) 1 with
-      | Eq => 0
-      | Lt => S (z i)
-      | Gt => z i - 1
-      end
+      if zerop (z i) then 1 else z i - 1
    end.
 
 Fixpoint I_propag_carry u n :=
@@ -197,8 +192,7 @@ intros x y i j.
 revert j.
 induction i; intros; simpl; [ apply I_mul_algo_comm | idtac ].
 unfold propag_carry_once.
-rewrite IHi; f_equal.
-unfold carry; simpl.
+rewrite IHi.
 remember (fst_not_1 (I_propag_carry (I_mul_algo x y) i) (S j)) as s1 eqn:Hs1 .
 remember (fst_not_1 (I_propag_carry (I_mul_algo y x) i) (S j)) as s2 eqn:Hs2 .
 apply fst_not_1_iff in Hs1; simpl in Hs1.
@@ -256,15 +250,10 @@ revert j.
 induction n; intros; simpl; [ apply Hx | idtac ].
 unfold propag_carry_once.
 remember (fst_not_1 (I_propag_carry x n) (S j)) as s1 eqn:Hs1 .
-remember (nat_compare (I_propag_carry x n j) 1) as c eqn:Hc .
 apply fst_not_1_iff in Hs1; simpl in Hs1.
-symmetry in Hc.
-destruct s1 as [di1| ].
- do 2 rewrite IHn; destruct c; reflexivity.
-
- pose proof (Hs1 0) as H.
- rewrite IHn in H.
- discriminate H.
+destruct s1 as [di1| ]; [ do 2 rewrite IHn; reflexivity | idtac ].
+pose proof (Hs1 0) as H.
+rewrite IHn in H; discriminate H.
 Qed.
 
 Theorem I_mul_algo_0_l : ∀ x y,
@@ -385,53 +374,6 @@ destruct Hx01 as [H| H]; discriminate H.
 Qed.
 *)
 
-Theorem Nat_add_mod_2 : ∀ a b, (a + b) mod 2 = 0 ↔ a mod 2 = b mod 2.
-Proof.
-intros a b.
-split; intros Hab.
- rewrite Nat.add_mod in Hab; [ idtac | intros H; discriminate H ].
- remember (a mod 2) as aa eqn:Ha .
- remember (b mod 2) as bb eqn:Hb .
- symmetry in Ha, Hb.
- destruct aa, bb; try reflexivity.
-  rewrite Nat.add_0_l, <- Hb in Hab.
-  rewrite Nat.mod_mod in Hab; [ idtac | intros H; discriminate H ].
-  rewrite Hb in Hab; discriminate Hab.
-
-  rewrite Nat.add_0_r, <- Ha in Hab.
-  rewrite Nat.mod_mod in Hab; [ idtac | intros H; discriminate H ].
-  rewrite Ha in Hab; discriminate Hab.
-
-  destruct aa.
-   destruct bb; [ reflexivity | idtac ].
-   assert (2 ≠ 0) as H by (intros H; discriminate H).
-   apply Nat.mod_upper_bound with (a := b) in H.
-   rewrite Hb in H.
-   apply Nat.nlt_ge in H.
-   exfalso; apply H.
-   do 2 apply lt_n_S.
-   apply Nat.lt_0_succ.
-
-   assert (2 ≠ 0) as H by (intros H; discriminate H).
-   apply Nat.mod_upper_bound with (a := a) in H.
-   rewrite Ha in H.
-   apply Nat.nlt_ge in H.
-   exfalso; apply H.
-   do 2 apply lt_n_S.
-   apply Nat.lt_0_succ.
-
- rewrite Nat.add_mod; [ idtac | intros H; discriminate H ].
- rewrite Hab; clear a Hab.
- remember (b mod 2) as a; clear b Heqa.
- induction a; [ reflexivity | idtac ].
- rewrite <- Nat.add_1_r.
- rewrite Nat.add_shuffle0.
- do 2 rewrite <- Nat.add_assoc.
- rewrite Nat.add_assoc.
- rewrite Nat.add_mod; [ idtac | intros H; discriminate H ].
- rewrite IHa; reflexivity.
-Qed.
-
 Theorem I_mul_algo_1 : ∀ x y, I_mul_algo x y 1 = b2n (x.[0]) * b2n (y.[0]).
 Proof.
 intros x y.
@@ -450,17 +392,11 @@ intros j Hj.
 rewrite Nat.mul_1_r; reflexivity.
 Qed.
 
-(*
-Theorem zzz : ∀ x i, propag_carry_once (I_mul_algo x 1) i = 0.
-Proof.
-bbb.
-*)
-
 Theorem I_add_1_r : ∀ x, (I_mul x 1 = x)%I.
 Proof.
 intros x.
 bbb.
-(* much too complicated *)
+(* too much complicated *)
 apply I_eq_prop.
 remember (fst_same (x * 1)%I (- x) 0) as s eqn:Hs .
 apply fst_same_sym_iff in Hs; simpl in Hs.

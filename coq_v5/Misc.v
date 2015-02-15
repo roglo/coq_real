@@ -55,3 +55,50 @@ induction n; intros m Hmn.
   apply Nat_le_neq_lt; [ idtac | assumption ].
   apply Nat.succ_le_mono; assumption.
 Qed.
+
+Theorem Nat_add_mod_2 : ∀ a b, (a + b) mod 2 = 0 ↔ a mod 2 = b mod 2.
+Proof.
+intros a b.
+split; intros Hab.
+ rewrite Nat.add_mod in Hab; [ idtac | intros H; discriminate H ].
+ remember (a mod 2) as aa eqn:Ha .
+ remember (b mod 2) as bb eqn:Hb .
+ symmetry in Ha, Hb.
+ destruct aa, bb; try reflexivity.
+  rewrite Nat.add_0_l, <- Hb in Hab.
+  rewrite Nat.mod_mod in Hab; [ idtac | intros H; discriminate H ].
+  rewrite Hb in Hab; discriminate Hab.
+
+  rewrite Nat.add_0_r, <- Ha in Hab.
+  rewrite Nat.mod_mod in Hab; [ idtac | intros H; discriminate H ].
+  rewrite Ha in Hab; discriminate Hab.
+
+  destruct aa.
+   destruct bb; [ reflexivity | idtac ].
+   assert (2 ≠ 0) as H by (intros H; discriminate H).
+   apply Nat.mod_upper_bound with (a := b) in H.
+   rewrite Hb in H.
+   apply Nat.nlt_ge in H.
+   exfalso; apply H.
+   do 2 apply lt_n_S.
+   apply Nat.lt_0_succ.
+
+   assert (2 ≠ 0) as H by (intros H; discriminate H).
+   apply Nat.mod_upper_bound with (a := a) in H.
+   rewrite Ha in H.
+   apply Nat.nlt_ge in H.
+   exfalso; apply H.
+   do 2 apply lt_n_S.
+   apply Nat.lt_0_succ.
+
+ rewrite Nat.add_mod; [ idtac | intros H; discriminate H ].
+ rewrite Hab; clear a Hab.
+ remember (b mod 2) as a; clear b Heqa.
+ induction a; [ reflexivity | idtac ].
+ rewrite <- Nat.add_1_r.
+ rewrite Nat.add_shuffle0.
+ do 2 rewrite <- Nat.add_assoc.
+ rewrite Nat.add_assoc.
+ rewrite Nat.add_mod; [ idtac | intros H; discriminate H ].
+ rewrite IHa; reflexivity.
+Qed.
