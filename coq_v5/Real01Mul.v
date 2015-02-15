@@ -161,6 +161,19 @@ apply le_S_n in Hkb.
 apply Nat.sub_0_le in Hkb; rewrite Hkb; reflexivity.
 Qed.
 
+Theorem summation_split_last : ∀ g b k,
+  b ≤ S k
+  → Σ (i = b, S k), g i = Σ (i = b, k), g i + g (S k).
+Proof.
+intros g b k Hbk.
+unfold summation.
+rewrite Nat.sub_succ_l; [ idtac | assumption ].
+rewrite summation_loop_succ_last.
+rewrite Nat.add_sub_assoc; [ f_equal | assumption ].
+rewrite Nat.add_comm, Nat.add_sub.
+reflexivity.
+Qed.
+
 (* commutativity *)
 
 Theorem I_mul_algo_comm : ∀ x y, (∀ i, I_mul_algo x y i = I_mul_algo y x i).
@@ -402,6 +415,15 @@ Theorem b2n_eq_1 : ∀ b, b2n b = 1 → b = true.
 Proof.
 intros b Hb.
 destruct b; [ reflexivity | discriminate Hb ].
+Qed.
+
+Theorem I_mul_algo_succ : ∀ x i,
+  I_mul_algo x 1 (S i) = I_mul_algo x 1 i + b2n (x.[i]).
+Proof.
+intros x i.
+do 2 rewrite I_mul_algo_1_r.
+rewrite summation_split_last; [ idtac | apply le_n_S, Nat.le_0_l ].
+simpl; rewrite Nat.sub_0_r; reflexivity.
 Qed.
 
 Theorem I_add_1_r : ∀ x, (I_mul x 1 = x)%I.
