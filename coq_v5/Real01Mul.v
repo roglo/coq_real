@@ -671,7 +671,35 @@ destruct s as [i| ].
             apply Nat.eq_add_0 in H1.
             destruct H1 as (_, Hx0).
             apply b2n_eq_0 in Hx0.
+            rewrite Heqz in Hm; simpl in Hm.
+            unfold propag_carry_once in Hm; simpl in Hm.
+            remember (fst_not_1 (I_mul_algo x 1) 2) as s3 eqn:Hs3 .
+            apply fst_not_1_iff in Hs3; simpl in Hs3.
+            rewrite I_mul_algo_1_r in Hm; simpl in Hm.
+            unfold summation in Hm; simpl in Hm.
+            rewrite Hx0 in Hm; simpl in Hm.
+            destruct s3 as [di3| ]; [ idtac | clear Hm ].
+             destruct Hs3 as (Hn3, Ht3).
+             destruct (zerop (I_mul_algo x 1 (S (S di3)))) as [H3| H3].
+              discriminate Hm.
+
+              clear Hm.
+              destruct di3.
+               rewrite I_mul_algo_1_r in Ht3; simpl in Ht3.
+               unfold summation in Ht3; simpl in Ht3.
+               rewrite Hx0, Hx1 in Ht3; simpl in Ht3.
+               apply Ht3; reflexivity.
+
+               destruct di3.
+                unfold I_mul_algo in Ht3; simpl in Ht3.
+                unfold summation in Ht3; simpl in Ht3.
+                rewrite Hx0, Hx1 in Ht3; simpl in Ht3.
+                remember (x .[ 2]) as d eqn:Hx2 .
+                symmetry in Hx2.
+                destruct d; [ clear Ht3 | apply Ht3; reflexivity ].
+                clear H3.
 bbb.
+x = 0.011..
 
 (* compatibility with equality *)
 
