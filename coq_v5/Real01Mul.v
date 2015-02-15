@@ -496,7 +496,6 @@ destruct s as [i| ].
 
    right; simpl.
    split; intros di.
-    exfalso.
     destruct i.
      unfold I_mul_i in Ht.
      simpl in Ht.
@@ -543,8 +542,8 @@ destruct s as [i| ].
             rename H1 into Hx0.
             remember (I_mul_algo x 1 (S (S (S (di1 + di2))))) as m eqn:Hm .
             symmetry in Hm.
-            destruct m; [ revert H2; apply Nat.nlt_0_r | clear H2 ].
-            destruct m; [ apply Ht2; reflexivity | clear Ht2 ].
+            destruct m; [ exfalso; revert H2; apply Nat.nlt_0_r | clear H2 ].
+            destruct m; [ exfalso; apply Ht2; reflexivity | clear Ht2 ].
             rewrite I_mul_algo_1_r in Hm; simpl in Hm.
             unfold summation in Hm; simpl in Hm.
             rewrite Hx0, Hx1 in Hm; simpl in Hm.
@@ -630,8 +629,8 @@ destruct s as [i| ].
             apply b2n_eq_0 in H3; rename H3 into Hx0.
             remember (I_mul_algo x 1 (S (S di2))) as m eqn:Hm .
             symmetry in Hm.
-            destruct m; [ revert H2; apply Nat.nlt_0_r | clear H2 ].
-            destruct m; [ apply Ht2; reflexivity | clear Ht2 ].
+            destruct m; [ exfalso; revert H2; apply Nat.nlt_0_r | clear H2 ].
+            destruct m; [ exfalso; apply Ht2; reflexivity | clear Ht2 ].
             destruct di2.
              rewrite I_mul_algo_1_r in Hm; simpl in Hm.
              unfold summation in Hm; simpl in Hm.
@@ -665,7 +664,7 @@ destruct s as [i| ].
         apply Nat.nle_gt in H2.
         remember (z 1) as m eqn:Hm .
         symmetry in Hm.
-        destruct m; [ revert H2; apply Nat.nlt_0_r | clear H2 ].
+        destruct m; [ exfalso; revert H2; apply Nat.nlt_0_r | clear H2 ].
         simpl in Hx1.
         destruct m; simpl in Hx1.
          rewrite Heqz in H1.
@@ -710,7 +709,7 @@ destruct s as [i| ].
                rewrite I_mul_algo_1_r in Ht3; simpl in Ht3.
                unfold summation in Ht3; simpl in Ht3.
                rewrite Hx0, Hx1 in Ht3; simpl in Ht3.
-               apply Ht3; reflexivity.
+               exfalso; apply Ht3; reflexivity.
 
                destruct di3.
                 unfold I_mul_algo in Ht3; simpl in Ht3.
@@ -718,10 +717,11 @@ destruct s as [i| ].
                 rewrite Hx0, Hx1 in Ht3; simpl in Ht3.
                 remember (x .[ 2]) as d eqn:Hx2 .
                 symmetry in Hx2.
-                destruct d; [ clear Ht3 | apply Ht3; reflexivity ].
+                destruct d; [ clear Ht3 | exfalso; apply Ht3; reflexivity ].
                 clear H3.
                 clear Hn3 H2 Hn Ht2 di2 Hn2.
                 clear z Heqz Hn1 Ht1.
+                rewrite Hx1; simpl.
 bbb.
 x = 0.011..
 
