@@ -720,6 +720,8 @@ destruct s as [i| ].
                 symmetry in Hx2.
                 destruct d; [ clear Ht3 | apply Ht3; reflexivity ].
                 clear H3.
+                clear Hn3 H2 Hn Ht2 di2 Hn2.
+                clear z Heqz Hn1 Ht1.
 bbb.
 x = 0.011..
 
