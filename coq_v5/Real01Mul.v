@@ -417,7 +417,7 @@ intros b Hb.
 destruct b; [ reflexivity | discriminate Hb ].
 Qed.
 
-Theorem I_mul_algo_succ : ∀ x i,
+Theorem I_mul_algo_1_succ : ∀ x i,
   I_mul_algo x 1 (S i) = I_mul_algo x 1 i + b2n (x.[i]).
 Proof.
 intros x i.
