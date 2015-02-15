@@ -25,7 +25,7 @@ Definition divb n := n / 2.
 Definition propag_carry_once z i :=
   match fst_not_1 z (S i) with
   | Some di =>
-      if lt_dec (z (S (i + di))) 2 then
+      if le_dec (z (S (i + di))) 1 then
        if le_dec (z i) 1 then z i else z i - 2
      else
        if zerop (z i) then 1 else z i - 1
