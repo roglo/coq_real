@@ -472,7 +472,28 @@ destruct s as [i| ].
      apply fst_not_1_iff in Hs1; simpl in Hs1.
      destruct s1 as [di1| ].
       destruct Hs1 as (Hn1, Ht1).
-      apply negb_sym in Ht.
+      apply negb_sym in Ht; rename Ht into Hx1.
+      destruct (zerop (z (S (S di1)))) as [H1| H1].
+       destruct (le_dec (z 1) 1) as [H2| H2].
+        unfold n2b in Hx1; simpl in Hx1.
+        rewrite negb_involutive in Hx1.
+        remember (z 1) as d eqn:Hd .
+        symmetry in Hd.
+        destruct d; simpl in Hx1.
+         clear Ht1 H2.
+         rewrite Heqz in H1; simpl in H1.
+         unfold propag_carry_once in H1; simpl in H1.
+         remember (fst_not_1 (I_mul_algo x 1) (S (S (S di1)))) as s2 eqn:Hs2 .
+         apply fst_not_1_iff in Hs2; simpl in Hs2.
+         destruct s2 as [di2| ].
+          destruct Hs2 as (Hn2, Ht2).
+          destruct (zerop (I_mul_algo x 1 (S (S (S (di1 + di2))))))
+           as [H2| H2].
+           clear Ht2.
+           destruct (le_dec (I_mul_algo x 1 (S (S di1))) 1) as [H3| H3].
+            unfold I_mul_algo in H1; simpl in H1.
+            unfold summation in H1; simpl in H1.
+            rewrite Hx1, Nat.add_comm in H1; discriminate H1.
 bbb.
       destruct Hs1 as (Hn1, Ht1).
       remember (nat_compare (z 1) 1) as c1 eqn:Hc1 .
