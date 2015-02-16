@@ -1332,8 +1332,8 @@ destruct Hxy as [Hxy| (i, (Hlt, (Heq, Hgt)))].
   unfold I_add_i; simpl.
   do 2 rewrite xorb_false_r.
   unfold I_mul_i.
-  remember (I_propag_carry (I_mul_algo x z) (k + 2) k) as nb1 eqn:Hnb1 .
-  remember (I_propag_carry (I_mul_algo y z) (k + 2) k) as nb2 eqn:Hnb2 .
+  remember (I_propag_carry (I_mul_algo x z) (S k) k) as nb1 eqn:Hnb1 .
+  remember (I_propag_carry (I_mul_algo y z) (S k) k) as nb2 eqn:Hnb2 .
   symmetry in Hnb1, Hnb2.
   destruct nb1; simpl.
    destruct nb2; simpl.
@@ -1347,7 +1347,6 @@ destruct Hxy as [Hxy| (i, (Hlt, (Heq, Hgt)))].
      rewrite Ht1; simpl.
      destruct s2 as [dj2| ].
       destruct Hs2 as (Hn2, Ht2).
-bbb.
       rewrite Ht2; reflexivity.
 
       remember (x .[ 0]) as b eqn:Hxi .
@@ -1358,7 +1357,7 @@ bbb.
        pose proof (Hs2 0) as H.
        rewrite Nat.add_0_r in H.
        unfold I_mul_i in H.
-       remember (I_propag_carry (I_mul_algo y z) (S k + 2) (S k)) as nb3.
+       remember (I_propag_carry (I_mul_algo y z) (S (S k)) (S k)) as nb3.
        rename Heqnb3 into Hnb3.
        symmetry in Hnb3.
        destruct nb3; [ discriminate H | clear H ].
@@ -1369,7 +1368,7 @@ bbb.
        pose proof (Hs2 O) as H.
        rewrite Nat.add_0_r in H.
        unfold I_mul_i in H.
-       remember (I_propag_carry (I_mul_algo y z) (S k + 2) (S k)) as nb3.
+       remember (I_propag_carry (I_mul_algo y z) (S (S k)) (S k)) as nb3.
        rename Heqnb3 into Hnb3.
        symmetry in Hnb3.
        destruct nb3; [ discriminate H | clear H ].
@@ -1381,11 +1380,12 @@ bbb.
 
         clear Hn1; rewrite Nat.add_0_r in Ht1.
         unfold I_mul_i in Ht1.
-        remember (I_propag_carry (I_mul_algo x z) (S k + 2) (S k)) as nb4.
+        remember (I_propag_carry (I_mul_algo x z) (S (S k)) (S k)) as nb4.
         rename Heqnb4 into Hnb4.
         symmetry in Hnb4.
         destruct nb4; [ clear Ht1 | discriminate Ht1 ].
         move Hnb4 before Hnb3.
+vvv.
         rewrite Nat.add_succ_r in Hnb2; simpl in Hnb2.
         unfold propag_carry_once in Hnb2.
         apply Nat.eq_add_0 in Hnb2.
