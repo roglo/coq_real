@@ -426,6 +426,7 @@ rewrite summation_split_last; [ idtac | apply le_n_S, Nat.le_0_l ].
 simpl; rewrite Nat.sub_0_r; reflexivity.
 Qed.
 
+(*
 Theorem yyy : ∀ x y u i,
   u = I_mul_algo x y
   → I_propag_carry u (S (S i)) i = I_propag_carry u (S i) i.
@@ -477,6 +478,7 @@ bbb.
           clear Hn1; simpl in H3.
           simpl in Hn2.
 bbb.
+*)
 
 Definition nn_add (u v : nat → nat) i := u i + v i.
 
