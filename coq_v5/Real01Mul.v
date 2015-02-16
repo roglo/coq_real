@@ -718,12 +718,37 @@ destruct s as [i| ].
                 remember (x .[ 2]) as d eqn:Hx2 .
                 symmetry in Hx2.
                 destruct d; [ clear Ht3 | exfalso; apply Ht3; reflexivity ].
+                rewrite Hx1; simpl.
+                destruct di.
+                 unfold I_mul_i; simpl.
+                 unfold propag_carry_once at 1.
+                 rewrite <- Heqz.
+                 remember (fst_not_1 (propag_carry_once z) 3) as s4 eqn:Hs4 .
+                 apply fst_not_1_iff in Hs4; simpl in Hs4.
+                 destruct s4 as [di4| ].
+                  simpl.
+                  destruct Hs4 as (Hn4, Ht4).
+                  destruct (zerop (propag_carry_once z (S (S (S di4)))))
+                   as [H4| H4].
+                   clear Ht4.
+                   destruct (le_dec (propag_carry_once z 2) 1) as [H5| H5].
+                    remember (propag_carry_once z 2) as m eqn:Hm .
+                    symmetry in Hm.
+                    destruct m; [ idtac | reflexivity ].
+                    clear H5; exfalso.
+                    unfold propag_carry_once in Hm; simpl in Hm.
+                    remember (fst_not_1 z 3) as s5 eqn:Hs5 .
+                    apply fst_not_1_iff in Hs5; simpl in Hs5.
+                    destruct s5 as [di5| ].
+                     destruct Hs5 as (Hn5, Ht5).
+                     destruct (zerop (z (S (S (S di5))))) as [H5| H5].
+                      clear Ht5.
+                      destruct (le_dec (z 2) 1) as [H6| H6].
+                       clear H6.
+bbb.
                 clear H3.
                 clear Hn3 H2 Hn Ht2 di2 Hn2.
                 clear z Heqz Hn1 Ht1.
-                rewrite Hx1; simpl.
-bbb.
-x = 0.011..
 
 (* compatibility with equality *)
 
