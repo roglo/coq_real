@@ -1314,8 +1314,7 @@ Theorem I_ext_mul_compat_r : ∀ x y z, I_eq_ext x y → I_eq_ext (x * z) (y * z
 Proof.
 intros x y z Hxy.
 unfold I_eq_ext; simpl; intros i.
-unfold I_mul_i; simpl.
-bbb.
+unfold I_mul_i.
 erewrite I_ext_propag_carry_mul_algo_compat_r; [ idtac | eassumption ].
 reflexivity.
 Qed.
@@ -1348,6 +1347,7 @@ destruct Hxy as [Hxy| (i, (Hlt, (Heq, Hgt)))].
      rewrite Ht1; simpl.
      destruct s2 as [dj2| ].
       destruct Hs2 as (Hn2, Ht2).
+bbb.
       rewrite Ht2; reflexivity.
 
       remember (x .[ 0]) as b eqn:Hxi .
