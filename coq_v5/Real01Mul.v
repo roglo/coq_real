@@ -426,12 +426,121 @@ rewrite summation_split_last; [ idtac | apply le_n_S, Nat.le_0_l ].
 simpl; rewrite Nat.sub_0_r; reflexivity.
 Qed.
 
+Theorem yyy : ∀ x y u i,
+  u = I_mul_algo x y
+  → I_propag_carry u (S (S i)) i = I_propag_carry u (S i) i.
+Proof.
+intros x y u i Hu; simpl.
+remember (propag_carry_once (I_propag_carry u i)) as u1 eqn:Hu1 .
+unfold propag_carry_once; simpl.
+remember (fst_not_1 u1 (S i)) as s1 eqn:Hs1 .
+apply fst_not_1_iff in Hs1; simpl in Hs1.
+destruct s1 as [di1| ].
+ destruct Hs1 as (Hn1, Ht1).
+ destruct (zerop (u1 (S (i + di1)))) as [H1| H1].
+  clear Ht1.
+  destruct (le_dec (u1 i) 1) as [H2| H2]; [ reflexivity | idtac ].
+  apply Nat.nle_gt in H2.
+  exfalso.
+  rewrite Hu1 in H1; simpl in H1.
+  unfold propag_carry_once in H1; simpl in H1.
+  remember (I_propag_carry u i) as u2 eqn:Hu2 .
+  remember (fst_not_1 u2 (S (S (i + di1)))) as s2 eqn:Hs2 .
+  apply fst_not_1_iff in Hs2; simpl in Hs2.
+  destruct s2 as [di2| ].
+   destruct Hs2 as (Hn2, Ht2).
+   destruct (zerop (u2 (S (S (i + di1 + di2))))) as [H3| H3].
+    clear Ht2.
+    destruct (le_dec (u2 (S (i + di1))) 1) as [H4| H4].
+     clear H4.
+     rewrite Hu1 in H2; simpl in H2.
+     unfold propag_carry_once in H2; simpl in H2.
+     remember (fst_not_1 u2 (S i)) as s3 eqn:Hs3 .
+     apply fst_not_1_iff in Hs3; simpl in Hs3.
+     destruct s3 as [di3| ].
+      destruct Hs3 as (Hn3, Ht3).
+      destruct (zerop (u2 (S (i + di3)))) as [H4| H4].
+       clear Ht3.
+       destruct (le_dec (u2 i) 1) as [H5| H5].
+        apply Nat.nle_gt in H2; contradiction.
+
+        clear H5.
+        apply Nat.lt_add_lt_sub_r in H2; simpl in H2.
+bbb.
+        subst u2.
+        destruct i.
+         simpl in H2.
+         simpl in H4.
+         simpl in H1, H3.
+         simpl in Hn1, Hn2, Hn3, Hu1.
+         destruct di1.
+          clear Hn1; simpl in H3.
+          simpl in Hn2.
+bbb.
+
 Definition nn_add (u v : nat → nat) i := u i + v i.
 
 Theorem zzz : ∀ u v i,
-  propag_carry_once (nn_add u v) i =
-  propag_carry_once u i + propag_carry_once v i.
+  I_propag_carry (nn_add u v) (S i) i =
+  I_propag_carry u (S i) i + I_propag_carry v (S i) i.
 Proof.
+intros u v i.
+simpl.
+unfold propag_carry_once; simpl.
+remember (I_propag_carry (nn_add u v) i) as uvi eqn:Huvi .
+remember (I_propag_carry u i) as ui eqn:Hui .
+remember (I_propag_carry v i) as vi eqn:Hvi .
+remember (fst_not_1 uvi (S i)) as s1 eqn:Hs1 .
+remember (fst_not_1 ui (S i)) as s2 eqn:Hs2 .
+remember (fst_not_1 vi (S i)) as s3 eqn:Hs3 .
+apply fst_not_1_iff in Hs1; simpl in Hs1.
+apply fst_not_1_iff in Hs2; simpl in Hs2.
+apply fst_not_1_iff in Hs3; simpl in Hs3.
+destruct s1 as [di1| ].
+ destruct Hs1 as (Hn1, Ht1).
+ destruct (zerop (uvi (S (i + di1)))) as [H1| H1].
+  clear Ht1.
+  destruct s2 as [di2| ].
+   destruct Hs2 as (Hn2, Ht2).
+   destruct s3 as [di3| ].
+    destruct Hs3 as (Hn3, Ht3).
+    destruct (zerop (ui (S (i + di2)))) as [H2| H2].
+     clear Ht2.
+     destruct (zerop (vi (S (i + di3)))) as [H3| H3].
+      clear Ht3.
+(**)
+      destruct (lt_eq_lt_dec di1 di2) as [[H6| H6]| H6].
+       remember H6 as H; clear HeqH.
+       apply Hn2 in H.
+(**)
+bbb.
+      destruct (le_dec (uvi i) 1) as [H4| H4].
+       remember (uvi i) as uv eqn:Huv .
+       symmetry in Huv.
+       destruct uv.
+        clear H4.
+        rewrite Huvi in Huv.
+        destruct i.
+         simpl in Huv.
+         unfold nn_add in Huv; simpl in Huv.
+         apply Nat.eq_add_0 in Huv.
+         destruct Huv as (Hu, Hv).
+         rewrite Hui, Hvi; simpl.
+         rewrite Hu, Hv; reflexivity.
+
+         simpl in Huv.
+         unfold propag_carry_once in Huv.
+         remember (I_propag_carry (nn_add u v) i) as uvi1 eqn:Huvi1 .
+         remember (fst_not_1 uvi1 (S (S i))) as s4 eqn:Hs4 .
+         apply fst_not_1_iff in Hs4; simpl in Hs4.
+         destruct s4 as [di4| ].
+          destruct Hs4 as (Hn4, Ht4).
+          destruct (zerop (uvi1 (S (S i + di4)))) as [H5| H5].
+           clear Ht4.
+           destruct (le_dec (uvi1 (S i)) 1) as [H6| H6].
+            clear H6.
+bbb.
+
 intros u v i.
 unfold propag_carry_once; simpl.
 remember (fst_not_1 (nn_add u v) (S i)) as s1 eqn:Hs1 .
