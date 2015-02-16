@@ -481,6 +481,115 @@ destruct i; simpl.
     apply eq_b2n_1 in H; assumption.
 
    rewrite xorb_true_r.
+   remember (S di1) as si.
+   unfold I_mul_i in Ht1; simpl in Ht1.
+   apply n2b_false_iff in Ht1.
+   unfold propag_carry_once in Ht1; simpl in Ht1.
+   remember (I_propag_carry (I_mul_algo x 1) si) as u eqn:Hu .
+   remember (fst_not_1 u (S si)) as s3 eqn:Hs3 .
+   apply fst_not_1_iff in Hs3; simpl in Hs3.
+   destruct s3 as [di3| ].
+    destruct Hs3 as (Hn3, Ht3).
+    destruct (zerop (u (S (si + di3)))) as [H1| H1].
+     destruct (le_dec (u si) 1) as [H2| H2].
+      rewrite Hu, Heqsi in Ht1.
+      simpl in Ht1.
+      remember (I_propag_carry (I_mul_algo x 1) di1) as u1 eqn:Hu1 .
+      unfold propag_carry_once in Ht1; simpl in Ht1.
+      remember (fst_not_1 u1 (S (S di1))) as s4 eqn:Hs4 .
+      apply fst_not_1_iff in Hs4; simpl in Hs4.
+      destruct s4 as [di4| ].
+       destruct Hs4 as (Hn4, Ht4).
+       destruct (zerop (u1 (S (S (di1 + di4))))) as [H3| H3].
+        destruct (le_dec (u1 (S di1)) 1) as [H4| H4].
+         rewrite Hu1 in Ht1; simpl in Ht1.
+         destruct di1.
+          simpl in Ht1.
+          rewrite I_mul_algo_1_r in Ht1.
+          rewrite summation_only_one in Ht1; simpl in Ht1.
+          apply eq_b2n_0 in Ht1.
+          subst si.
+          rewrite Ht1; simpl.
+          unfold I_mul_i; simpl.
+          unfold propag_carry_once; simpl.
+          remember (fst_not_1 (I_mul_algo x 1) 1) as s5 eqn:Hs5 .
+          apply fst_not_1_iff in Hs5; simpl in Hs5.
+          destruct s5 as [di5| ]; [ idtac | reflexivity ].
+          destruct Hs5 as (Hn5, Ht5).
+          destruct (zerop (I_mul_algo x 1 (S di5))) as [H5| H5].
+           rewrite I_mul_algo_1_r in H5; simpl in H5.
+           unfold summation in H5; simpl in H5.
+           rewrite Ht1 in H5; simpl in H5.
+           destruct di5; [ clear H5 | simpl in H5 ].
+            clear Ht5 Hn5.
+            simpl in H1.
+            rewrite Hu in H1; simpl in H1.
+            unfold propag_carry_once in H1; simpl in H1.
+            remember (fst_not_1 (I_mul_algo x 1) (S (S (S di3)))) as s5
+             eqn:Hs5 .
+            apply fst_not_1_iff in Hs5; simpl in Hs5.
+            destruct s5 as [di5| ].
+             destruct Hs5 as (Hn5, Ht5).
+             destruct (zerop (I_mul_algo x 1 (S (S (S (di3 + di5))))))
+              as [H5| H5].
+              rewrite I_mul_algo_1_r in H5; simpl in H5.
+              unfold summation in H5; simpl in H5.
+              rewrite Ht1, Hs2, Hs2 in H5.
+              discriminate H5.
+
+              destruct (zerop (I_mul_algo x 1 (S (S di3)))) as [H6| H6].
+               discriminate H1.
+
+               symmetry in H1.
+               apply Nat_le_sub_add_r in H1; [ simpl in H1 | assumption ].
+               rewrite I_mul_algo_1_r in H1; simpl in H1.
+               unfold summation in H1; simpl in H1.
+               rewrite Ht1 in H1; simpl in H1.
+               rewrite Hs2 in H1; simpl in H1.
+               apply Nat.succ_inj in H1.
+               destruct di3.
+                simpl in H1.
+                clear H1.
+                simpl in Ht3.
+                rewrite Hu1 in H3; simpl in H3.
+                rewrite I_mul_algo_1_r in H3; simpl in H3.
+                unfold summation in H3; simpl in H3.
+                rewrite Nat.add_comm, Hs2 in H3; simpl in H3.
+                discriminate H3.
+
+                simpl in H1.
+                rewrite Hs2 in H1; discriminate H1.
+
+             destruct (zerop (I_mul_algo x 1 (S (S di3)))) as [H5| H5].
+              discriminate H1.
+
+              simpl in Hu, Hu1; subst u1.
+              simpl in H3.
+              rewrite I_mul_algo_1_r in H3; simpl in H3.
+              unfold summation in H3; simpl in H3.
+              rewrite Nat.add_comm, Hs2 in H3; discriminate H3.
+
+            rewrite Hs2 in H5; discriminate H5.
+
+           simpl in Hu, Hu1; subst u1.
+           rewrite I_mul_algo_1_r in H3; simpl in H3.
+           unfold summation in H3; simpl in H3.
+           rewrite Nat.add_comm, Hs2 in H3; discriminate H3.
+
+          pose proof (Hn1 0 (Nat.lt_0_succ di1)) as H.
+bbb.
+     rewrite Hu, Heqsi in H1; simpl in H1.
+     remember (I_propag_carry (I_mul_algo x 1) di1) as u1 eqn:Hu1 .
+     unfold propag_carry_once in H1; simpl in H1.
+     remember (S (S (di1 + di3))) as ssi.
+     remember (fst_not_1 u1 (S ssi)) as s4 eqn:Hs4 .
+     apply fst_not_1_iff in Hs4; simpl in Hs4.
+     destruct s4 as [di4| ].
+      destruct Hs4 as (Hn4, Ht4).
+      do 2 rewrite <- Nat.add_succ_l in H1.
+      rewrite <- Heqssi in H1.
+      destruct (zerop (u1 (S (ssi + di4)))) as [H2| H2].
+       destruct (le_dec (u1 ssi) 1) as [H3| H3].
 bbb.
 
 (* version using I_eq_prop *)
