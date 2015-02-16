@@ -493,12 +493,12 @@ destruct i; simpl.
      rewrite I_mul_algo_1_r in H1; simpl in H1.
      unfold summation in H1; simpl in H1.
      apply Nat.eq_add_0 in H1.
-     destruct H1 as (H1, H2).
-     apply eq_b2n_0 in H1.
-     destruct di3; [ clear H2 | simpl in H2 ].
+     destruct H1 as (Hx0, H1).
+     apply eq_b2n_0 in Hx0.
+     destruct di3; [ clear H1 | simpl in H1 ].
       unfold I_mul_algo in Ht3; simpl in Ht3.
       unfold summation in Ht3; simpl in Ht3.
-      rewrite H1 in Ht3; simpl in Ht3.
+      rewrite Hx0 in Ht3; simpl in Ht3.
       clear Ht3 Hn3.
       destruct di1.
        clear Hn1.
@@ -527,10 +527,10 @@ destruct i; simpl.
             rewrite Nat.add_comm, Hs2 in H3; discriminate H3.
 
             rewrite I_mul_algo_1 in Ht1; simpl in Ht1.
-            rewrite H1 in Ht1; discriminate Ht1.
+            rewrite Hx0 in Ht1; discriminate Ht1.
 
            rewrite I_mul_algo_1 in Ht1; simpl in Ht1.
-           rewrite H1 in Ht1; discriminate Ht1.
+           rewrite Hx0 in Ht1; discriminate Ht1.
 
           apply Nat.nle_gt in H3.
           symmetry in Ht1.
@@ -549,17 +549,35 @@ destruct i; simpl.
             rewrite Nat.add_comm, Hs2 in H3; discriminate H3.
 
             rewrite I_mul_algo_1 in Ht1; simpl in Ht1.
-            rewrite H1 in Ht1; discriminate Ht1.
+            rewrite Hx0 in Ht1; discriminate Ht1.
 
            rewrite I_mul_algo_1 in Ht1; simpl in Ht1.
-           rewrite H1 in Ht1; discriminate Ht1.
+           rewrite Hx0 in Ht1; discriminate Ht1.
 
-         destruct (zerop (u 1)) as [H3| H3].
-          discriminate Ht1.
+         destruct (zerop (u 1)) as [H3| H3]; [ discriminate Ht1 | idtac ].
+         symmetry in Ht1.
+         apply Nat_le_sub_add_r in Ht1; [ simpl in Ht1 | assumption ].
+         clear H3.
+         rewrite Hu in Ht1; simpl in Ht1.
+         unfold propag_carry_once in Ht1; simpl in Ht1.
+         remember (fst_not_1 (I_mul_algo x 1) 2) as s4 eqn:Hs4 .
+         apply fst_not_1_iff in Hs4; simpl in Hs4.
+         destruct s4 as [di4| ].
+          destruct Hs4 as (Hn4, Ht4).
+          destruct (zerop (I_mul_algo x 1 (S (S di4)))) as [H3| H3].
+           clear Ht4.
+           rewrite I_mul_algo_1_r in H3; simpl in H3.
+           unfold summation in H3; simpl in H3.
+           rewrite Nat.add_comm, Hs2 in H3; discriminate H3.
 
-          symmetry in Ht1.
-          apply Nat_le_sub_add_r in Ht1; [ simpl in Ht1 | assumption ].
-          clear H3.
+           clear Ht1.
+           remember (I_mul_algo x 1 (S (S di4))) as m eqn:Hm .
+           destruct m; [ exfalso; revert H3; apply Nat.nlt_0_r | clear H3 ].
+           destruct m; [ exfalso; apply Ht4; reflexivity | clear Ht4 ].
+           symmetry in Hm.
+           rewrite I_mul_algo_1_r in Hm; simpl in Hm.
+           unfold summation in Hm; simpl in Hm.
+           rewrite Hx0 in Hm; simpl in Hm.
 bbb.
    remember (S di1) as si.
    unfold I_mul_i in Ht1; simpl in Ht1.
