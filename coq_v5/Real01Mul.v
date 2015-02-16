@@ -426,7 +426,7 @@ rewrite summation_split_last; [ idtac | apply le_n_S, Nat.le_0_l ].
 simpl; rewrite Nat.sub_0_r; reflexivity.
 Qed.
 
-Theorem I_add_1_r : ∀ x, (I_mul x 1 = x)%I.
+Theorem I_mul_1_r : ∀ x, (I_mul x 1 = x)%I.
 Proof.
 intros x.
 apply I_eq_prop.
