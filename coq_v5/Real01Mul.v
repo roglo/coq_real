@@ -1353,25 +1353,18 @@ destruct Hxy as [Hxy| (i, (Hlt, (Heq, Hgt)))].
       apply neq_negb in Heq.
       symmetry in Hxi; apply negb_sym in Heq.
       rewrite Heq in Hy.
+      pose proof (Hs2 0) as H.
+      rewrite Nat.add_0_r in H.
+      unfold I_mul_i in H.
+      remember (I_propag_carry (I_mul_algo y z) (S (S k)) (S k)) as nb3.
+      rename Heqnb3 into Hnb3.
+      symmetry in Hnb3.
+      destruct nb3; [ discriminate H | clear H ].
       destruct b; simpl in Hy, Heq.
-       pose proof (Hs2 0) as H.
-       rewrite Nat.add_0_r in H.
-       unfold I_mul_i in H.
-       remember (I_propag_carry (I_mul_algo y z) (S (S k)) (S k)) as nb3.
-       rename Heqnb3 into Hnb3.
-       symmetry in Hnb3.
-       destruct nb3; [ discriminate H | clear H ].
        rewrite if_0_propag_carry_0 in Hnb3; [ discriminate Hnb3 | idtac ].
        intros i.
        apply I_mul_algo_0_l; assumption.
 
-       pose proof (Hs2 O) as H.
-       rewrite Nat.add_0_r in H.
-       unfold I_mul_i in H.
-       remember (I_propag_carry (I_mul_algo y z) (S (S k)) (S k)) as nb3.
-       rename Heqnb3 into Hnb3.
-       symmetry in Hnb3.
-       destruct nb3; [ discriminate H | clear H ].
 bbb.
        destruct dj1.
         Focus 2.
