@@ -1280,8 +1280,34 @@ induction n; intros; simpl.
  apply I_ext_mul_algo_compat_r; assumption.
 
  unfold propag_carry_once.
-bbb.
- f_equal; rewrite IHn; reflexivity.
+ rewrite IHn.
+ remember (I_propag_carry (I_mul_algo x z) n) as u1 eqn:Hu1 .
+ remember (I_propag_carry (I_mul_algo y z) n) as u2 eqn:Hu2 .
+ remember (fst_not_1 u1 (S i)) as s1 eqn:Hs1 .
+ remember (fst_not_1 u2 (S i)) as s2 eqn:Hs2 .
+ apply fst_not_1_iff in Hs1; simpl in Hs1.
+ apply fst_not_1_iff in Hs2; simpl in Hs2.
+ destruct s1 as [di1| ].
+  destruct Hs1 as (Hn1, Ht1).
+  destruct s2 as [di2| ].
+   destruct Hs2 as (Hn2, Ht2).
+   rewrite IHn.
+   destruct (lt_eq_lt_dec di1 di2) as [[H1| H1]| H1].
+    apply Hn2 in H1.
+    rewrite IHn in Ht1; contradiction.
+
+    subst di2; reflexivity.
+
+    apply Hn1 in H1.
+    rewrite IHn in H1; contradiction.
+
+   rewrite IHn, Hs2 in Ht1.
+   exfalso; apply Ht1; reflexivity.
+
+  destruct s2 as [di2| ]; [ idtac | reflexivity ].
+  destruct Hs2 as (Hn2, Ht2).
+  rewrite <- IHn, Hs1 in Ht2.
+  exfalso; apply Ht2; reflexivity.
 Qed.
 
 Theorem I_ext_mul_compat_r : ∀ x y z, I_eq_ext x y → I_eq_ext (x * z) (y * z).
@@ -1289,6 +1315,7 @@ Proof.
 intros x y z Hxy.
 unfold I_eq_ext; simpl; intros i.
 unfold I_mul_i; simpl.
+bbb.
 erewrite I_ext_propag_carry_mul_algo_compat_r; [ idtac | eassumption ].
 reflexivity.
 Qed.
