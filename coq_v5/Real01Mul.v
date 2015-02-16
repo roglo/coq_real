@@ -49,6 +49,30 @@ Notation "x * y" := (I_mul x y) : I_scope.
 
 (* *)
 
+Theorem eq_b2n_0 : ∀ b, b2n b = 0 → b = false.
+Proof.
+intros b Hb.
+destruct b; [ discriminate Hb | reflexivity ].
+Qed.
+
+Theorem eq_b2n_1 : ∀ b, b2n b = 1 → b = true.
+Proof.
+intros b Hb.
+destruct b; [ reflexivity | discriminate Hb ].
+Qed.
+
+Theorem le_b2n_1 : ∀ b, b2n b ≤ 1.
+Proof.
+intros b.
+destruct b; [ reflexivity | apply Nat.le_0_1 ].
+Qed.
+
+Theorem n2b_false_iff : ∀ n, n2b n = false ↔ n = 0.
+Proof.
+intros n; split; intros Hn; [ idtac | subst n; reflexivity ].
+destruct n; [ reflexivity | discriminate Hn ].
+Qed.
+
 (* Summation model and theorems borrowed from my proof of Puiseux's theorem,
    file Fsummation.v *)
 
@@ -316,18 +340,6 @@ Qed.
 
 (* neutral element *)
 
-Theorem b2n_le_1 : ∀ b, b2n b ≤ 1.
-Proof.
-intros b.
-destruct b; [ reflexivity | apply Nat.le_0_1 ].
-Qed.
-
-Theorem n2b_false_iff : ∀ n, n2b n = false ↔ n = 0.
-Proof.
-intros n; split; intros Hn; [ idtac | subst n; reflexivity ].
-destruct n; [ reflexivity | discriminate Hn ].
-Qed.
-
 Theorem divmod_div : ∀ a b, fst (divmod a b 0 b) = (a / S b)%nat.
 Proof. intros a b; reflexivity. Qed.
 
@@ -370,10 +382,10 @@ rewrite summation_only_one; simpl.
 do 3 rewrite divmod_div.
 do 2 rewrite fold_sub_succ_l, divmod_mod.
 rewrite Nat.mul_1_r.
-rewrite Nat.div_small; [ idtac | apply le_n_S, b2n_le_1 ].
+rewrite Nat.div_small; [ idtac | apply le_n_S, le_b2n_1 ].
 rewrite Nat.mod_0_l; [ idtac | intros H; discriminate H ].
 rewrite Nat.add_0_l.
-rewrite Nat.mod_small; [ idtac | apply le_n_S, b2n_le_1 ].
+rewrite Nat.mod_small; [ idtac | apply le_n_S, le_b2n_1 ].
 unfold summation; simpl.
 do 2 rewrite divmod_div.
 do 2 rewrite Nat.mul_1_r.
@@ -405,18 +417,6 @@ intros j Hj.
 rewrite Nat.mul_1_r; reflexivity.
 Qed.
 
-Theorem b2n_eq_0 : ∀ b, b2n b = 0 → b = false.
-Proof.
-intros b Hb.
-destruct b; [ discriminate Hb | reflexivity ].
-Qed.
-
-Theorem b2n_eq_1 : ∀ b, b2n b = 1 → b = true.
-Proof.
-intros b Hb.
-destruct b; [ reflexivity | discriminate Hb ].
-Qed.
-
 Theorem I_mul_algo_1_succ : ∀ x i,
   I_mul_algo x 1 (S i) = I_mul_algo x 1 i + b2n (x.[i]).
 Proof.
@@ -428,6 +428,62 @@ Qed.
 
 Theorem I_mul_1_r : ∀ x, (I_mul x 1 = x)%I.
 Proof.
+intros x.
+unfold I_eq; intros i; simpl.
+unfold I_add_i; simpl.
+do 2 rewrite xorb_false_r.
+destruct i; simpl.
+ unfold carry; simpl.
+ remember (fst_same (x * 1%I) 0 1) as s1 eqn:Hs1 .
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ remember (fst_same x 0 1) as s2 eqn:Hs2 .
+ apply fst_same_sym_iff in Hs2; simpl in Hs2.
+ destruct s1 as [di1| ].
+  destruct Hs1 as (Hn1, Ht1).
+  rewrite Ht1, xorb_false_r.
+  destruct s2 as [di2| ].
+   destruct Hs2 as (Hn2, Ht2).
+   rewrite Ht2, xorb_false_r.
+   unfold I_mul_i; simpl.
+   unfold propag_carry_once; simpl.
+   remember (fst_not_1 (I_mul_algo x 1) 1) as s3 eqn:Hs3 .
+   apply fst_not_1_iff in Hs3; simpl in Hs3.
+   symmetry; unfold n2b; simpl.
+   destruct s3 as [di3| ]; simpl.
+    destruct Hs3 as (Hn3, Ht3).
+    destruct (zerop (I_mul_algo x 1 (S di3))) as [H1| H1]; simpl.
+     rewrite I_mul_algo_1_r in H1; simpl in H1.
+     unfold summation in H1; simpl in H1.
+     apply Nat.eq_add_0 in H1.
+     destruct H1 as (H1, _).
+     apply eq_b2n_0 in H1; assumption.
+
+     remember (I_mul_algo x 1 (S di3)) as m eqn:Hm .
+     symmetry in Hm.
+     destruct m; [ exfalso; revert H1; apply Nat.nlt_0_r | clear H1 ].
+     destruct m; [ exfalso; apply Ht3; reflexivity | clear Ht3 ].
+     rewrite I_mul_algo_1_r in Hm; simpl in Hm.
+     unfold summation in Hm; simpl in Hm.
+     unfold b2n in Hm; simpl in Hm.
+     remember (x .[ 0]) as b eqn:Hx0 .
+     symmetry in Hx0.
+     destruct b; [ reflexivity | simpl in Hm ].
+     destruct di3; [ discriminate Hm | simpl in Hm ].
+     pose proof (Hn3 0 (Nat.lt_0_succ di3)) as H.
+     rewrite I_mul_algo_1_r in H; simpl in H.
+     unfold summation in H; simpl in H.
+     rewrite Hx0 in H; discriminate H.
+
+    pose proof (Hs3 0) as H.
+    rewrite I_mul_algo_1_r in H; simpl in H.
+    unfold summation in H; simpl in H.
+    rewrite Nat.add_0_r in H.
+    apply eq_b2n_1 in H; assumption.
+
+   rewrite xorb_true_r.
+bbb.
+
+(* version using I_eq_prop *)
 intros x.
 apply I_eq_prop.
 remember (fst_same (x * 1)%I (- x) 0) as s eqn:Hs .
@@ -538,7 +594,7 @@ destruct s as [i| ].
             apply Nat.succ_inj in H1.
             apply Nat.eq_add_0 in H1.
             destruct H1 as (_, H1).
-            apply b2n_eq_0 in H1.
+            apply eq_b2n_0 in H1.
             rename H1 into Hx0.
             remember (I_mul_algo x 1 (S (S (S (di1 + di2))))) as m eqn:Hm .
             symmetry in Hm.
@@ -578,7 +634,7 @@ destruct s as [i| ].
            apply Nat.succ_inj in H1.
            apply Nat.eq_add_0 in H1.
            destruct H1 as (_, H1).
-           apply b2n_eq_0 in H1.
+           apply eq_b2n_0 in H1.
            rename H1 into Hx0.
            rewrite Heqz in Hd; simpl in Hd.
            unfold propag_carry_once in Hd; simpl in Hd.
@@ -613,7 +669,7 @@ destruct s as [i| ].
            rewrite Nat.add_0_r in Hd.
            destruct (le_dec (b2n (x .[ 0]))) as [H3| H3].
             clear H3.
-            apply b2n_eq_1 in Hd.
+            apply eq_b2n_1 in Hd.
             rename Hd into Hx0.
             rewrite I_mul_algo_1_r in H2.
             unfold summation in H2; simpl in H2.
@@ -626,7 +682,7 @@ destruct s as [i| ].
            rewrite Nat.add_0_r in Hd; simpl in Hd.
            destruct (zerop (b2n (x .[ 0]))) as [H3| H3].
             clear Hd Ht1.
-            apply b2n_eq_0 in H3; rename H3 into Hx0.
+            apply eq_b2n_0 in H3; rename H3 into Hx0.
             remember (I_mul_algo x 1 (S (S di2))) as m eqn:Hm .
             symmetry in Hm.
             destruct m; [ exfalso; revert H2; apply Nat.nlt_0_r | clear H2 ].
@@ -650,7 +706,7 @@ destruct s as [i| ].
           rewrite Nat.add_0_r in Hd; simpl in Hd.
           destruct (zerop (b2n (x .[ 0]))) as [H2| H2].
            clear Hd.
-           apply b2n_eq_0 in H2.
+           apply eq_b2n_0 in H2.
            rename H2 into Hx0.
            pose proof (Hs2 0) as H.
            rewrite I_mul_algo_1_r in H; simpl in H.
@@ -691,7 +747,7 @@ destruct s as [i| ].
             apply Nat.succ_inj in H1.
             apply Nat.eq_add_0 in H1.
             destruct H1 as (_, Hx0).
-            apply b2n_eq_0 in Hx0.
+            apply eq_b2n_0 in Hx0.
             rewrite Heqz in Hm; simpl in Hm.
             unfold propag_carry_once in Hm; simpl in Hm.
             remember (fst_not_1 (I_mul_algo x 1) 2) as s3 eqn:Hs3 .
