@@ -482,6 +482,7 @@ bbb.
 
 Definition nn_add (u v : nat → nat) i := u i + v i.
 
+(*
 Theorem zzz : ∀ u v i,
   I_propag_carry (nn_add u v) (S i) i =
   I_propag_carry u (S i) i + I_propag_carry v (S i) i.
@@ -510,11 +511,9 @@ destruct s1 as [di1| ].
      clear Ht2.
      destruct (zerop (vi (S (i + di3)))) as [H3| H3].
       clear Ht3.
-(**)
       destruct (lt_eq_lt_dec di1 di2) as [[H6| H6]| H6].
        remember H6 as H; clear HeqH.
        apply Hn2 in H.
-(**)
 bbb.
       destruct (le_dec (uvi i) 1) as [H4| H4].
        remember (uvi i) as uv eqn:Huv .
@@ -602,7 +601,9 @@ destruct s1 as [di1| ].
             clear Hn1 Hn2 Hn3.
             rewrite Nat.add_0_r in Hu, Hv, H2, H3.
 bbb.
+*)
 
+(*
 Theorem I_mul_1_r : ∀ x, (I_mul x 1 = x)%I.
 Proof.
 intros x.
@@ -917,7 +918,7 @@ destruct i; simpl.
           rewrite Hx0, Hs2, Hs2 in H; discriminate H.
 
 bbb.
-(* ou alors avec Hs3 0... ? *)
+-- ou alors avec Hs3 0... ? --
         destruct (zerop (u 1)) as [H1| H1]; [ discriminate Ht1 | idtac ].
         symmetry in Ht1.
         apply Nat_le_sub_add_r in Ht1; [ idtac | assumption ].
@@ -929,7 +930,7 @@ bbb.
 
 bbb.
 
-(* version using I_eq_prop *)
+-- version using I_eq_prop --
 intros x.
 apply I_eq_prop.
 remember (fst_same (x * 1)%I (- x) 0) as s eqn:Hs .
@@ -1251,6 +1252,7 @@ bbb.
                 clear H3.
                 clear Hn3 H2 Hn Ht2 di2 Hn2.
                 clear z Heqz Hn1 Ht1.
+*)
 
 (* compatibility with equality *)
 
@@ -1278,6 +1280,7 @@ induction n; intros; simpl.
  apply I_ext_mul_algo_compat_r; assumption.
 
  unfold propag_carry_once.
+bbb.
  f_equal; rewrite IHn; reflexivity.
 Qed.
 
