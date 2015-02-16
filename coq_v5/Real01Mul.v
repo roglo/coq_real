@@ -22,15 +22,15 @@ Definition n2b n := negb (Nat.eqb n 0).
 Definition modb n := n mod 2.
 Definition divb n := n / 2.
 
-Definition propag_carry_once z i :=
-  match fst_not_1 z (S i) with
+Definition propag_carry_once u i :=
+  match fst_not_1 u (S i) with
   | Some di =>
-      if zerop (z (S (i + di))) then
-        if le_dec (z i) 1 then z i else z i - 2
+      if zerop (u (S (i + di))) then
+        if le_dec (u i) 1 then u i else u i - 2
       else
-        if zerop (z i) then 1 else z i - 1
+        if zerop (u i) then 1 else u i - 1
   | None =>
-      if zerop (z i) then 1 else z i - 1
+      if zerop (u i) then 1 else u i - 1
    end.
 
 Fixpoint I_propag_carry u n :=
@@ -425,6 +425,72 @@ do 2 rewrite I_mul_algo_1_r.
 rewrite summation_split_last; [ idtac | apply le_n_S, Nat.le_0_l ].
 simpl; rewrite Nat.sub_0_r; reflexivity.
 Qed.
+
+Definition nn_add (u v : nat → nat) i := u i + v i.
+
+Theorem zzz : ∀ u v i,
+  propag_carry_once (nn_add u v) i =
+  propag_carry_once u i + propag_carry_once v i.
+Proof.
+intros u v i.
+unfold propag_carry_once; simpl.
+remember (fst_not_1 (nn_add u v) (S i)) as s1 eqn:Hs1 .
+remember (fst_not_1 u (S i)) as s2 eqn:Hs2 .
+remember (fst_not_1 v (S i)) as s3 eqn:Hs3 .
+apply fst_not_1_iff in Hs1; simpl in Hs1.
+apply fst_not_1_iff in Hs2; simpl in Hs2.
+apply fst_not_1_iff in Hs3; simpl in Hs3.
+destruct s1 as [di1| ].
+ unfold nn_add in Hs1; simpl in Hs1.
+ destruct Hs1 as (Hn1, Ht1).
+ unfold nn_add; simpl.
+ destruct (zerop (u (S (i + di1)) + v (S (i + di1)))) as [H1| H1].
+  apply Nat.eq_add_0 in H1.
+  destruct H1 as (Hu, Hv).
+  destruct s2 as [di2| ].
+   destruct Hs2 as (Hn2, Ht2).
+   destruct s3 as [di3| ].
+    destruct Hs3 as (Hn3, Ht3).
+    destruct (zerop (u (S (i + di2)))) as [H2| H2].
+     clear Ht2.
+     destruct (zerop (v (S (i + di3)))) as [H3| H3].
+      clear Ht3.
+      destruct (le_dec (u i + v i) 1) as [H1| H1].
+       remember (u i + v i) as uv eqn:Huv .
+       symmetry in Huv.
+       destruct uv.
+        apply Nat.eq_add_0 in Huv.
+        destruct Huv as (Hui, Hvi).
+        rewrite Hui, Hvi; reflexivity.
+
+        apply Nat.succ_le_mono in H1.
+        apply Nat.le_0_r in H1; subst uv.
+        apply Nat.eq_add_1 in Huv.
+        destruct Huv as [(Hui, Hvi)| (Hui, Hvi)]; rewrite Hui, Hvi.
+         reflexivity.
+
+         reflexivity.
+
+       apply Nat.nle_gt in H1.
+       destruct (le_dec (u i) 1) as [H4| H4].
+        destruct (le_dec (v i) 1) as [H5| H5].
+         clear Ht1.
+         destruct (lt_eq_lt_dec di1 di2) as [[H6| H6]| H6].
+          remember H6 as H; clear HeqH.
+          apply Hn2 in H.
+          rewrite Hu in H; discriminate H.
+
+          subst di2.
+          destruct (lt_eq_lt_dec di1 di3) as [[H7| H7]| H7].
+           remember H7 as H; clear HeqH.
+           apply Hn3 in H.
+           rewrite Hv in H; discriminate H.
+
+           subst di3.
+           destruct di1.
+            clear Hn1 Hn2 Hn3.
+            rewrite Nat.add_0_r in Hu, Hv, H2, H3.
+bbb.
 
 Theorem I_mul_1_r : ∀ x, (I_mul x 1 = x)%I.
 Proof.
