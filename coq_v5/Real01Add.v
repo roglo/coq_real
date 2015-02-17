@@ -279,13 +279,23 @@ Qed.
 (* equality is equivalence relation *)
 
 Theorem I_eq_refl : reflexive _ I_eq.
-Proof. intros x i; reflexivity. Qed.
+Proof. intros x; split; reflexivity. Qed.
 
 Theorem I_eq_sym : symmetric _ I_eq.
-Proof. intros x y Hxy i; symmetry; apply Hxy. Qed.
+Proof.
+intros x y Hxy.
+destruct Hxy as (Hxy, Hc).
+split; symmetry; assumption.
+Qed.
 
 Theorem I_eq_trans : transitive _ I_eq.
-Proof. intros x y z Hxy Hyz i; rewrite Hxy; apply Hyz. Qed.
+Proof.
+intros x y z Hxy Hyz.
+destruct Hxy as (Hxy, Hcxy).
+destruct Hyz as (Hyz, Hcyz).
+split; [ rewrite Hxy, Hyz; reflexivity | idtac ].
+rewrite Hcxy, Hcyz; reflexivity.
+Qed.
 
 Add Parametric Relation : _ I_eq
  reflexivity proved by I_eq_refl
@@ -417,6 +427,7 @@ Qed.
 Theorem I_add_comm : ∀ x y, (x + y = y + x)%I.
 Proof.
 intros x y.
+bbb.
 unfold I_eq; intros i; simpl.
 unfold I_add_i; simpl.
 rewrite I_add_i_comm, carry_comm_l.
