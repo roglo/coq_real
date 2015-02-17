@@ -591,14 +591,8 @@ destruct s1 as [dj1| ].
 
     destruct s5; reflexivity.
 
- destruct s2 as [dj2| ]; [ idtac | reflexivity ].
- destruct Hs2 as (Hn2, Ht2).
- exfalso.
-bbb.
-
-intros x.
-unfold I_eq, I_eq_ext.
-apply I_add_i_0_r.
+ pose proof (not_I_add_0_inf_1 x 0) as H.
+ contradiction.
 Qed.
 
 (* compatibility with equality *)
@@ -631,6 +625,7 @@ Theorem I_noI_eq_eq : ∀ x0 y0 x y,
   → I_eq_ext x y.
 Proof.
 intros x0 y0 x y Ha Hb Hxy i.
+bbb.
 unfold I_eq, I_eq_ext in Hxy; simpl in Hxy.
 pose proof (Hxy i) as Hi.
 unfold I_add_i, carry in Hi.
