@@ -625,8 +625,8 @@ Theorem I_noI_eq_eq : ∀ x0 y0 x y,
   → I_eq_ext x y.
 Proof.
 intros x0 y0 x y Ha Hb Hxy i.
-bbb.
 unfold I_eq, I_eq_ext in Hxy; simpl in Hxy.
+destruct Hxy as (Hxy, Hcxy).
 pose proof (Hxy i) as Hi.
 unfold I_add_i, carry in Hi.
 remember (S i) as si; simpl in Hi.
@@ -668,6 +668,8 @@ Theorem I_noI_eq_compat_r : ∀ x0 y0 x y z,
   → (x + z = y + z)%I.
 Proof.
 intros x0 y0 x y z Ha Hb Hxy.
+bbb.
+
 unfold I_eq; intros i; simpl.
 unfold I_add_i; simpl.
 do 2 rewrite xorb_false_r; f_equal.
