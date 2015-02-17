@@ -66,31 +66,6 @@ rewrite <- Nat.add_assoc.
 apply Hs.
 Qed.
 
-Theorem I_add_inf_if : ∀ x y i,
-  (∀ dj, I_add_i x y (i + dj) = true)
-  → ∃ j,
-    i < j ∧
-    (∀ di, x.[j + S di] = true) ∧
-    (∀ di, y.[j + S di] = true).
-Proof.
-intros x y i Hj.
-destruct (bool_dec (x .[ i]) (y .[ i])) as [H1| H1].
- apply I_add_inf_true_eq_if in Hj; auto.
- destruct Hj as (Ha, Hb).
- exists (S i).
- split; [ apply Nat.lt_succ_diag_r | idtac ].
- split; intros di; rewrite Nat.add_succ_l, <- Nat.add_succ_r.
-   apply Ha.
-
-   apply Hb.
-
- apply neq_negb in H1.
- apply I_add_inf_true_neq_if in Hj; auto.
- destruct Hj as (j, (Hij, (Hni, (Ha, (Hb, (Hat, Hbt)))))).
- exists j.
- split; [ assumption | split; assumption ].
-Qed.
-
 Theorem carry_sum_3_noI_assoc_l : ∀ z0 x y z i,
   z = (z0 + 0)%I
   → carry ((x + y) + z)%I 0 i = false.
