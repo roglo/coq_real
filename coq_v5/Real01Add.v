@@ -96,7 +96,8 @@ Definition I_add x y := {| rm := I_add_i x y |}.
 
 Notation "x + y" := (I_add x y) : I_scope.
 
-Definition I_eq x y := I_eq_ext (x + 0%I) (y + 0%I).
+Definition I_eq x y :=
+  I_eq_ext (x + 0%I) (y + 0%I) ∧ carry x 0%I 0 = carry y 0%I 0.
 
 Notation "x = y" := (I_eq x y) : I_scope.
 Notation "x ≠ y" := (¬ I_eq x y) : I_scope.
@@ -178,7 +179,7 @@ Qed.
 Theorem I_eq_ext_eq : ∀ x y, I_eq_ext x y → (x = y)%I.
 Proof.
 intros x y Hxy.
-unfold I_eq; intros i; simpl.
+split; [ intros i; simpl | apply carry_compat_r; assumption ].
 unfold I_add_i; simpl.
 rewrite Hxy; f_equal.
 apply carry_compat_r; assumption.
@@ -207,13 +208,78 @@ Proof. intros a; destruct a; reflexivity. Qed.
 Theorem negb_xorb_diag_r : ∀ a, a ⊕ negb a = true.
 Proof. intros a; destruct a; reflexivity. Qed.
 
-Theorem I_zero_iff : ∀ x,
-  (x = 0)%I ↔
-  (∀ i, x.[i] = false) ∨ (∀ i, x.[i] = true).
+Theorem I_zero_iff : ∀ x, (x = 0)%I ↔ (∀ i, x.[i] = false).
 Proof.
 intros x.
 split.
- intros Hx.
+ intros (Hx, Hxc) i.
+ induction i.
+  rewrite carry_diag in Hxc; simpl in Hxc.
+  unfold I_eq_ext in Hx; simpl in Hx.
+  pose proof (Hx 0) as H.
+  unfold I_add_i in H; simpl in H.
+  rewrite xorb_false_r, carry_diag in H; simpl in H.
+  remember (x .[ 0]) as b eqn:Hx0 .
+  symmetry in Hx0.
+  destruct b; [ idtac | reflexivity ].
+  rewrite xorb_true_l in H; symmetry in H.
+  apply negb_sym in H; simpl in H.
+  unfold carry in Hxc, H; simpl in Hxc, H.
+  remember (fst_same x 0 0) as s1 eqn:Hs1 .
+  destruct s1 as [dj1| ]; [ idtac | discriminate Hxc ].
+  apply fst_same_sym_iff in Hs1; simpl in Hs1.
+  destruct Hs1 as (Hn1, _).
+  remember (fst_same x 0 1) as s2 eqn:Hs2 .
+  apply fst_same_sym_iff in Hs2; simpl in Hs2.
+  destruct s2 as [dj2| ]; [ idtac | clear H ].
+   destruct Hs2 as (Hn2, Ht2).
+   rewrite Ht2 in H; discriminate H.
+
+   destruct dj1; [ rewrite Hxc in Hx0; discriminate Hx0 | idtac ].
+   rewrite Hs2 in Hxc; discriminate Hxc.
+
+  unfold I_eq_ext in Hx; simpl in Hx.
+bbb.
+  rewrite carry_diag in Hxc.
+  unfold carry in Hxc; simpl in Hxc.
+  remember (fst_same x 0 0) as s1 eqn:Hs1 .
+  destruct s1 as [dj1| ]; [ idtac | discriminate Hxc ].
+  apply fst_same_sym_iff in Hs1; simpl in Hs1.
+  destruct Hs1 as (Hn1, _).
+bbb.
+  unfold I_eq_ext in Hx; simpl in Hx.
+  pose proof (Hx 0) as H.
+  unfold I_add_i in H; simpl in H.
+  rewrite xorb_false_r, carry_diag in H; simpl in H.
+  pose proof (Hx (S i)) as Hsi; simpl in Hsi.
+  unfold I_add_i in Hsi; simpl in Hsi.
+  rewrite xorb_false_r, carry_diag in Hsi; simpl in Hsi.
+  remember (x .[ S i]) as b eqn:Hb .
+  symmetry in Hb.
+  destruct b; [ idtac | reflexivity ].
+  rewrite xorb_true_l in Hsi; symmetry in Hsi.
+  apply negb_sym in Hsi; simpl in Hsi.
+  unfold carry in Hsi; simpl in Hsi.
+  remember (fst_same x 0 (S (S i))) as s2 eqn:Hs2 .
+  apply fst_same_sym_iff in Hs2; simpl in Hs2.
+  destruct s2 as [dj2| ]; [ idtac | clear Hsi ].
+   destruct Hs2 as (Hn2, Ht2).
+   rewrite Ht2 in Hsi; discriminate Hsi.
+
+   unfold carry in H; simpl in H.
+   remember (fst_same x 0 1) as s3 eqn:Hs3 .
+   apply fst_same_sym_iff in Hs3; simpl in Hs3.
+   destruct s3 as [dj3| ].
+    destruct Hs3 as (Hn3, Ht3).
+    rewrite Ht3, xorb_false_r in H.
+    destruct (lt_eq_lt_dec dj1 dj3) as [[H1| H1]| H1].
+     apply Hn3 in H1.
+bbb.
+
+
+intros x.
+split.
+ intros (Hx, Hxc).
  remember (x .[ 0]) as b eqn:Hb .
  symmetry in Hb.
  destruct b; [ right | left ]; intros i.
@@ -258,7 +324,8 @@ split.
     discriminate Hi.
 
  intros [Hx| Hx].
-  unfold I_eq; intros i; simpl.
+  unfold I_eq; split; [ idtac | apply carry_compat_r; assumption ].
+  intros i; simpl.
   unfold I_add_i; simpl.
   rewrite xorb_false_r, carry_diag; simpl.
   rewrite Hx, xorb_false_l.
