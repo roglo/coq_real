@@ -2357,26 +2357,24 @@ destruct (bool_dec (((x + 0)%I) .[ i]) (y .[ i])) as [H1| H1].
  eapply not_I_add_0_inf_1_succ; eauto .
 Qed.
 
-(* perhaps could be proved if associativity proved before;
-   in that case, that would be very simple instead of these
-   big lemmas before *)
 Theorem I_add_add_0_r : ∀ x y, (x + 0 + y = x + y)%I.
 Proof.
 intros x y.
+unfold I_eq, I_eq_ext; simpl.
+split.
+ intros i; simpl.
+ remember (fst_same ((x + 0)%I + y) 0 (S i)) as s2 eqn:Hs2 .
+ remember (fst_same (x + y) 0 (S i)) as s5 eqn:Hs5 .
+ symmetry in Hs2, Hs5.
+ destruct s2 as [di2| ].
+  destruct s5 as [di5| ].
+   eapply I_add_add_0_l_when_both_hs_has_relay; eauto .
+
+   eapply I_add_add_0_l_when_rhs_has_no_relay; eauto .
+
+  exfalso; revert Hs2.
+  eapply I_add_add_0_r_not_without_relay; eauto .
 bbb.
-unfold I_eq; intros i; simpl.
-remember (fst_same ((x + 0)%I + y) 0 (S i)) as s2 eqn:Hs2 .
-remember (fst_same (x + y) 0 (S i)) as s5 eqn:Hs5 .
-symmetry in Hs2, Hs5.
-destruct s2 as [di2| ].
- destruct s5 as [di5| ].
-  eapply I_add_add_0_l_when_both_hs_has_relay; eauto .
-
-  eapply I_add_add_0_l_when_rhs_has_no_relay; eauto .
-
- exfalso; revert Hs2.
- eapply I_add_add_0_r_not_without_relay; eauto .
-Qed.
 
 Theorem I_add_compat_r : ∀ x y z, (x = y)%I → (x + z = y + z)%I.
 Proof.
