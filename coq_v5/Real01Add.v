@@ -427,8 +427,8 @@ Qed.
 Theorem I_add_comm : ∀ x y, (x + y = y + x)%I.
 Proof.
 intros x y.
-bbb.
-unfold I_eq; intros i; simpl.
+unfold I_eq; split; [ idtac | apply carry_comm_l ].
+intros i; simpl.
 unfold I_add_i; simpl.
 rewrite I_add_i_comm, carry_comm_l.
 reflexivity.
@@ -542,8 +542,60 @@ destruct s1 as [di1| ].
  exfalso; eapply not_I_add_0_inf_1; eauto .
 Qed.
 
-Theorem I_add_0_r : ∀ x, (x + 0 = x)%I.
+Theorem I_add_0_r : ∀ x, (x ≠ 1)%I → (x + 0 = x)%I.
 Proof.
+intros x Hx.
+split; [ intros i; apply I_add_i_0_r | idtac ].
+unfold carry; simpl.
+remember (fst_same (x + 0%I) 0 0) as s1 eqn:Hs1 .
+remember (fst_same x 0 0) as s2 eqn:Hs2 .
+apply fst_same_sym_iff in Hs1; simpl in Hs1.
+apply fst_same_sym_iff in Hs2; simpl in Hs2.
+destruct s1 as [dj1| ].
+ destruct Hs1 as (Hn1, Ht1).
+ rewrite Ht1.
+ destruct s2 as [dj2| ]; [ destruct Hs2; symmetry; assumption | idtac ].
+ unfold I_add_i in Ht1; simpl in Ht1.
+ rewrite Hs2, xorb_true_l in Ht1.
+ symmetry in Ht1; apply negb_sym in Ht1; simpl in Ht1.
+ unfold carry in Ht1; simpl in Ht1.
+ remember (fst_same x 0 (S dj1)) as s3 eqn:Hs3 .
+ apply fst_same_sym_iff in Hs3; simpl in Hs3.
+ destruct s3 as [dj3| ]; [ idtac | clear Ht1 ].
+  destruct Hs3 as (Hn3, Ht3).
+  rewrite Ht3 in Ht1; discriminate Ht1.
+
+  exfalso; apply Hx.
+  split.
+   intros i; simpl.
+   unfold I_add_i; simpl.
+   rewrite Hs2, xorb_true_l.
+   unfold carry; simpl.
+   remember (fst_same x 0 (S i)) as s4 eqn:Hs4 .
+   remember (fst_same 1 0 (S i)) as s5 eqn:Hs5 .
+   apply fst_same_sym_iff in Hs4; simpl in Hs4.
+   apply fst_same_sym_iff in Hs5; simpl in Hs5.
+   destruct s4 as [dj4| ].
+    destruct Hs4 as (Hn4, Ht4).
+    rewrite Hs2 in Ht4; discriminate Ht4.
+
+    destruct s5; reflexivity.
+
+   unfold carry; simpl.
+   remember (fst_same x 0 0) as s4 eqn:Hs4 .
+   remember (fst_same 1 0 0) as s5 eqn:Hs5 .
+   apply fst_same_sym_iff in Hs4; simpl in Hs4.
+   destruct s4 as [di4| ].
+    destruct Hs4 as (Hn4, Ht4).
+    rewrite Hs2 in Ht4; discriminate Ht4.
+
+    destruct s5; reflexivity.
+
+ destruct s2 as [dj2| ]; [ idtac | reflexivity ].
+ destruct Hs2 as (Hn2, Ht2).
+ exfalso.
+bbb.
+
 intros x.
 unfold I_eq, I_eq_ext.
 apply I_add_i_0_r.
