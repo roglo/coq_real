@@ -525,6 +525,196 @@ rewrite Nat.add_succ_l, <- Nat.add_succ_r.
 apply H.
 Qed.
 
+(*
+Theorem zzz : ∀ x y i,
+  (∀ dj, I_add_i x y (i + dj) = true)
+  → id (∀ j, x.[S j] = y.[S j]).
+Proof.
+intros x y i Hs j.
+revert j.
+induction i; intros.
+ simpl in Hs.
+ induction j.
+  pose proof (Hs 0) as H.
+  unfold I_add_i in H; simpl in H.
+  unfold carry in H; simpl in H.
+  remember (fst_same x y 1) as s1 eqn:Hs1 .
+  apply fst_same_sym_iff in Hs1; simpl in Hs1.
+  destruct s1 as [di1| ].
+   destruct Hs1 as (Hn1, Ht1).
+   destruct di1; [ assumption | idtac ].
+   rename H into H0.
+   pose proof (Hn1 0 (Nat.lt_0_succ di1)) as H.
+bbb.
+*)
+
+Theorem yyy : ∀ x y,
+  (∀ i, I_add_i x y i = true)
+  → id (∀ i, x.[i] = true).
+Proof.
+intros x y Hs i.
+destruct i.
+ pose proof (Hs 0) as H.
+ unfold I_add_i in H; simpl in H.
+ remember (carry x y 1) as c1 eqn:Hc1 .
+ symmetry in Hc1.
+ destruct c1.
+  rewrite xorb_true_r in H; simpl in H.
+  remember (x .[ 0]) as b eqn:Hx0 .
+  symmetry in Hx0.
+  destruct b; [ reflexivity | idtac ].
+  rewrite xorb_false_l in H.
+  apply negb_true_iff in H.
+  rename H into Hy0.
+  pose proof (Hs 1) as H.
+  unfold I_add_i in H; simpl in H.
+  remember (carry x y 2) as c2 eqn:Hc2 .
+  symmetry in Hc2.
+  move Hc2 before Hc1.
+  destruct c2.
+   unfold carry in Hc1, Hc2; simpl in Hc1, Hc2.
+   remember (fst_same x y 1) as s1 eqn:Hs1 .
+   remember (fst_same x y 2) as s2 eqn:Hs2 .
+   apply fst_same_sym_iff in Hs1; simpl in Hs1.
+   apply fst_same_sym_iff in Hs2; simpl in Hs2.
+   destruct s1 as [di1| ].
+    destruct Hs1 as (Hn1, Ht1).
+    destruct s2 as [di2| ].
+     destruct Hs2 as (Hn2, Ht2).
+     destruct (lt_eq_lt_dec (S di1) di2) as [[H1| H1]| H1].
+      rewrite Hc1 in Ht1.
+      symmetry in Ht1.
+      rename Hc1 into Hx1; move Hx1 after Ht1.
+      rename Ht1 into Hy1.
+      rename H into Hxy.
+      remember H1 as H; clear HeqH.
+      apply Hn2 in H.
+      destruct di1.
+       rewrite Hx1, Hy1 in Hxy; simpl in Hxy.
+       clear Hxy.
+       clear Hn1.
+       destruct di2; [ exfalso; revert H1; apply Nat.nlt_0_r | idtac ].
+       destruct di2; [ exfalso; omega | idtac ].
+       clear H1.
+       rename H into H3.
+       pose proof (Hn2 0 (Nat.lt_0_succ (S di2))) as H.
+bbb.
+
+intros x y Hs i.
+destruct i.
+ pose proof (Hs 0) as H.
+ unfold I_add_i in H; simpl in H.
+ unfold carry in H; simpl in H.
+ remember (fst_same x y 1) as s1 eqn:Hs1 .
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ destruct s1 as [di1| ].
+  destruct Hs1 as (Hn1, Ht1).
+  destruct di1.
+   clear Hn1.
+   remember (x .[ 0]) as b eqn:Hx0 .
+   symmetry in Hx0.
+   destruct b; [ reflexivity | idtac ].
+   rewrite xorb_false_l in H.
+   rename H into Hy0.
+   pose proof (Hs 1) as H.
+   unfold I_add_i in H; simpl in H.
+   rewrite Ht1, xorb_nilpotent, xorb_false_l in H.
+   unfold carry in H; simpl in H.
+   remember (fst_same x y 2) as s2 eqn:Hs2 .
+   apply fst_same_sym_iff in Hs2; simpl in Hs2.
+   destruct s2 as [dj2| ]; [ idtac | clear H ].
+    destruct Hs2 as (Hn2, Ht2).
+    destruct dj2.
+     clear Hn2.
+     rewrite H in Ht2.
+     rename H into Hx2; move Hx2 after Ht2.
+     symmetry in Ht2; rename Ht2 into Hy2.
+     pose proof (Hs 2) as H.
+     unfold I_add_i in H; simpl in H.
+     rewrite Hx2, Hy2, xorb_nilpotent, xorb_false_l in H.
+     unfold carry in H; simpl in H.
+     remember (fst_same x y 3) as s3 eqn:Hs3 .
+     apply fst_same_sym_iff in Hs3; simpl in Hs3.
+     destruct s3 as [dj3| ]; [ idtac | clear H ].
+      destruct Hs3 as (Hn3, Ht3).
+      destruct dj3.
+       clear Hn3.
+       rewrite H in Ht3.
+       rename H into Hx3; move Hx3 after Ht3.
+       symmetry in Ht3; rename Ht3 into Hy3.
+       remember (x .[ 1]) as b eqn:Hb .
+       symmetry in Hb.
+       destruct b.
+        rename Hb into Hx1.
+        symmetry in Ht1.
+        rename Ht1 into Hy1.
+        rewrite xorb_true_r in Hy0.
+        apply negb_true_iff in Hy0; simpl in Hy0.
+        pose proof (Hs 0) as H.
+        unfold I_add_i in H; simpl in H.
+        rewrite Hx0, Hy0, xorb_false_l in H.
+bbb.
+
+Theorem zzz : ∀ x y, ¬(∀ i, I_add_i x y i = true).
+Proof.
+intros x y Hs.
+pose proof (Hs 0) as H.
+unfold I_add_i in H; simpl in H.
+unfold carry in H; simpl in H.
+remember (fst_same x y 1) as s1 eqn:Hs1 .
+apply fst_same_sym_iff in Hs1; simpl in Hs1.
+destruct s1 as [di1| ].
+ destruct Hs1 as (Hn1, Ht1).
+ remember (x .[ 0]) as b eqn:Hx0 .
+ symmetry in Hx0.
+ destruct b.
+  remember (y .[ 0]) as b eqn:Hy0 .
+  symmetry in Hy0.
+  destruct b.
+   rewrite xorb_nilpotent, xorb_false_l in H.
+   rewrite H in Ht1.
+   rename H into Hx1.
+   symmetry in Ht1.
+   rename Ht1 into Hy1; move Hy1 after Hx1.
+   pose proof (Hs (S di1)) as H.
+   unfold I_add_i in H; simpl in H.
+   rewrite Hx1, Hy1, xorb_nilpotent, xorb_false_l in H.
+   unfold carry in H; simpl in H.
+   remember (fst_same x y (S (S di1))) as s2 eqn:Hs2 .
+   apply fst_same_sym_iff in Hs2; simpl in Hs2.
+   destruct s2 as [di2| ]; [ idtac | clear H ].
+    destruct Hs2 as (Hn2, Ht2).
+bbb.
+
+Theorem not_I_add_inf_1 : ∀ x y i, ¬ (∀ dj, I_add_i x y (i + dj) = true).
+Proof.
+intros x y i Hs.
+bbb.
+
+revert x y Hs.
+induction i; intros.
+ simpl in Hs.
+ pose proof (Hs 0) as H.
+ unfold I_add_i in H; simpl in H.
+ unfold carry in H; simpl in H.
+ remember (fst_same x y 1) as s1 eqn:Hs1 .
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ destruct s1 as [di1| ].
+  destruct Hs1 as (Hn1, Ht1).
+  rename H into H0.
+  destruct di1.
+   clear Hn1.
+   pose proof (Hs 1) as H.
+   unfold I_add_i in H; simpl in H.
+   unfold carry in H; simpl in H.
+   remember (fst_same x y 2) as s2 eqn:Hs2 .
+   apply fst_same_sym_iff in Hs2; simpl in Hs2.
+   destruct s2 as [di2| ].
+    destruct Hs2 as (Hn2, Ht2).
+    destruct di2.
+     clear Hn2.
+bbb.
+
 Theorem I_add_i_0_r : ∀ x i, I_add_i (x + 0%I) 0 i = I_add_i x 0 i.
 Proof.
 intros x i.
@@ -2374,6 +2564,18 @@ split.
 
   exfalso; revert Hs2.
   eapply I_add_add_0_r_not_without_relay; eauto .
+
+ unfold carry; simpl.
+ remember (fst_same ((x + 0)%I + y) 0 0) as s1 eqn:Hs1 .
+ remember (fst_same (x + y) 0 0) as s2 eqn:Hs2 .
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ apply fst_same_sym_iff in Hs2; simpl in Hs2.
+ destruct s1 as [di1| ].
+  destruct Hs1 as (Hn1, Ht1).
+  rewrite Ht1.
+  destruct s2 as [di2| ].
+   destruct Hs2 as (Hn2, Ht2).
+   rewrite Ht2; reflexivity.
 bbb.
 
 Theorem I_add_compat_r : ∀ x y z, (x = y)%I → (x + z = y + z)%I.
