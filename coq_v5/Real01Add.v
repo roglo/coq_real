@@ -668,9 +668,9 @@ Theorem I_noI_eq_compat_r : ∀ x0 y0 x y z,
   → (x + z = y + z)%I.
 Proof.
 intros x0 y0 x y z Ha Hb Hxy.
-bbb.
-
-unfold I_eq; intros i; simpl.
+unfold I_eq, I_eq_ext; simpl.
+split; [ idtac | eapply carry_noI_eq_compat_r; eassumption ].
+intros i.
 unfold I_add_i; simpl.
 do 2 rewrite xorb_false_r; f_equal.
  apply I_add_i_compat_r.
@@ -2363,6 +2363,7 @@ Qed.
 Theorem I_add_add_0_r : ∀ x y, (x + 0 + y = x + y)%I.
 Proof.
 intros x y.
+bbb.
 unfold I_eq; intros i; simpl.
 remember (fst_same ((x + 0)%I + y) 0 (S i)) as s2 eqn:Hs2 .
 remember (fst_same (x + y) 0 (S i)) as s5 eqn:Hs5 .
