@@ -2382,6 +2382,13 @@ destruct (bool_dec (((x + 0)%I) .[ i]) (y .[ i])) as [H1| H1].
  eapply not_I_add_0_inf_1_succ; eauto .
 Qed.
 
+Theorem xorb_shuffle0 : ∀ a b c, a ⊕ b ⊕ c = a ⊕ c ⊕ b.
+Proof.
+intros a b c.
+do 2 rewrite xorb_assoc; f_equal.
+apply xorb_comm.
+Qed.
+
 Theorem I_add_add_0_r : ∀ x y, (x + 0 + y = x + y)%I.
 Proof.
 intros x y.
@@ -2412,6 +2419,7 @@ split.
    destruct Hs2 as (Hn2, Ht2).
    rewrite Ht2; reflexivity.
 
+bbb.
    pose proof (I_add_inf_if x y 0) as HH.
    simpl in HH.
    pose proof (HH Hs2) as H; clear HH.
