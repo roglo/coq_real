@@ -93,9 +93,11 @@ Definition carry x y i :=
 
 Definition I_add_i x y i := x.[i] ⊕ y.[i] ⊕ carry x y (S i).
 Definition I_add x y := {| rm := I_add_i x y |}.
-Definition I_eq x y := ∀ i, rm (I_add x I_zero) i = rm (I_add y I_zero) i.
 
 Notation "x + y" := (I_add x y) : I_scope.
+
+Definition I_eq x y := ∀ i, (x + 0)%I.[i] = (y + 0)%I.[i].
+
 Notation "x = y" := (I_eq x y) : I_scope.
 Notation "x ≠ y" := (¬ I_eq x y) : I_scope.
 
