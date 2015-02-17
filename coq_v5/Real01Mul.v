@@ -267,7 +267,7 @@ Qed.
 Theorem I_mul_comm : ∀ x y, (x * y = y * x)%I.
 Proof.
 intros x y.
-unfold I_eq; simpl; intros i.
+unfold I_eq; intros i; simpl.
 unfold I_add_i; simpl.
 rewrite I_mul_i_comm; f_equal.
 apply carry_compat_r.
@@ -319,7 +319,7 @@ Qed.
 Theorem I_mul_0_l : ∀ x, (0 * x = 0)%I.
 Proof.
 intros x.
-unfold I_eq; simpl; intros i.
+unfold I_eq; intros i; simpl.
 unfold I_add_i; simpl.
 rewrite carry_diag; simpl.
 rewrite I_mul_i_0_l; [ idtac | reflexivity ].

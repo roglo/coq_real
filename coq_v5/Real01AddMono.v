@@ -1959,7 +1959,7 @@ destruct s as [di| ].
  destruct Hs as (Hn, Hs).
  right; intros H.
  unfold I_eq in H; simpl in H.
- pose proof (H di) as HH.
+ pose proof (H di) as HH; simpl in HH.
  rewrite Hs in HH; symmetry in HH.
  unfold I_add_i in HH; simpl in HH.
  unfold carry in HH; simpl in HH.
@@ -2014,7 +2014,7 @@ apply negb_false_iff in Ht4.
 remember Heq as H; clear HeqH.
 unfold I_eq in H; simpl in H.
 rename H into Hxy.
-pose proof (Hxy i) as Hi.
+pose proof (Hxy i) as Hi; simpl in Hi.
 unfold I_add_i in Hi; simpl in Hi.
 do 2 rewrite xorb_false_r in Hi.
 unfold carry in Hi; simpl in Hi.
@@ -2204,8 +2204,8 @@ Add Parametric Morphism : I_opp
 Proof.
 intros x y Hxy.
 remember Hxy as Heq; clear HeqHeq.
-unfold I_eq in Hxy; simpl in Hxy.
-unfold I_eq; simpl; intros i.
+unfold I_eq, I_eq_ext in Hxy; simpl in Hxy.
+unfold I_eq; intros i; simpl.
 pose proof (Hxy i) as Hi.
 unfold I_add_i in Hi; simpl in Hi.
 do 2 rewrite xorb_false_r in Hi.
@@ -2392,7 +2392,7 @@ Qed.
 Theorem I_opp_involutive : ∀ x, (- - x = x)%I.
 Proof.
 intros x.
-unfold I_eq; simpl; intros i.
+unfold I_eq; intros i; simpl.
 unfold I_add_i; simpl.
 do 2 rewrite xorb_false_r.
 rewrite negb_involutive; f_equal.
@@ -2406,7 +2406,7 @@ Qed.
 
 Theorem I_opp_0 : (- 0 = 0)%I.
 Proof.
-unfold I_eq; simpl; intros i.
+unfold I_eq; intros i; simpl.
 unfold I_add_i; simpl.
 rewrite carry_diag; simpl.
 unfold carry; simpl.

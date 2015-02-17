@@ -96,7 +96,7 @@ Definition I_add x y := {| rm := I_add_i x y |}.
 
 Notation "x + y" := (I_add x y) : I_scope.
 
-Definition I_eq x y := ∀ i, (x + 0)%I.[i] = (y + 0)%I.[i].
+Definition I_eq x y := I_eq_ext (x + 0%I) (y + 0%I).
 
 Notation "x = y" := (I_eq x y) : I_scope.
 Notation "x ≠ y" := (¬ I_eq x y) : I_scope.
@@ -258,7 +258,7 @@ split.
     discriminate Hi.
 
  intros [Hx| Hx].
-  unfold I_eq; simpl; intros i.
+  unfold I_eq; intros i; simpl.
   unfold I_add_i; simpl.
   rewrite xorb_false_r, carry_diag; simpl.
   rewrite Hx, xorb_false_l.
@@ -271,7 +271,7 @@ split.
    pose proof (Hs1 O) as H.
    rewrite Hx in H; discriminate H.
 
-  unfold I_eq; simpl; intros i.
+  unfold I_eq; intros i; simpl.
   unfold I_add_i; simpl.
   rewrite xorb_false_r, carry_diag; simpl.
   rewrite Hx, xorb_true_l.
@@ -540,7 +540,7 @@ Qed.
 Theorem I_add_0_r : ∀ x, (x + 0 = x)%I.
 Proof.
 intros x.
-unfold I_eq.
+unfold I_eq, I_eq_ext.
 apply I_add_i_0_r.
 Qed.
 
@@ -574,7 +574,7 @@ Theorem I_noI_eq_eq : ∀ x0 y0 x y,
   → I_eq_ext x y.
 Proof.
 intros x0 y0 x y Ha Hb Hxy i.
-unfold I_eq in Hxy; simpl in Hxy.
+unfold I_eq, I_eq_ext in Hxy; simpl in Hxy.
 pose proof (Hxy i) as Hi.
 unfold I_add_i, carry in Hi.
 remember (S i) as si; simpl in Hi.
@@ -616,7 +616,7 @@ Theorem I_noI_eq_compat_r : ∀ x0 y0 x y z,
   → (x + z = y + z)%I.
 Proof.
 intros x0 y0 x y z Ha Hb Hxy.
-unfold I_eq; simpl; intros i.
+unfold I_eq; intros i; simpl.
 unfold I_add_i; simpl.
 do 2 rewrite xorb_false_r; f_equal.
  apply I_add_i_compat_r.
@@ -2468,7 +2468,7 @@ Theorem I_eq_neq_prop : ∀ x y i,
     (∀ di, x.[i+S di] = false) ∧ (∀ di, y.[i+S di] = true).
 Proof.
 intros x y i Hxy Hx Hy.
-unfold I_eq in Hxy; simpl in Hxy.
+unfold I_eq, I_eq_ext in Hxy; simpl in Hxy.
 pose proof (Hxy i) as H.
 unfold I_add_i in H; simpl in H.
 rewrite Hx, Hy, xorb_true_l, xorb_false_l in H.
@@ -2892,7 +2892,7 @@ split; intros Hxy.
   destruct Hxy as [(Hi, (Hx, Hy))| (Hx, Hy)].
    subst i.
    clear Heq.
-   unfold I_eq; simpl; intros i.
+   unfold I_eq; intros i; simpl.
    unfold I_add_i; simpl.
    do 2 rewrite xorb_false_r.
    rewrite Hx, Hy.
@@ -2925,7 +2925,7 @@ split; intros Hxy.
      rewrite <- Hs2 with (dj := 0) in H.
      rewrite Hx, Hy in H; contradiction.
 
-   unfold I_eq; simpl; intros j.
+   unfold I_eq; intros j; simpl.
    unfold I_add_i; simpl.
    do 2 rewrite xorb_false_r.
    unfold carry; simpl.

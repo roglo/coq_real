@@ -230,7 +230,7 @@ destruct s1 as [dj1| ]; [ idtac | clear Hxy ].
   exfalso; revert Ht2; apply no_fixpoint_negb.
 
   apply fst_same_sym_iff in Hs2; simpl in Hs2.
-  unfold I_eq; simpl; intros i.
+  unfold I_eq; intros i; simpl.
   unfold I_add_i; simpl.
   rewrite Hs1, negb_involutive; f_equal.
   apply carry_compat_r; intros j.
