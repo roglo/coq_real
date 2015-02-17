@@ -338,6 +338,143 @@ destruct s1 as [dj1| ].
  intros j; apply all_0_summation_0; intros k Hk; reflexivity.
 Qed.
 
+(* compatibility with equality *)
+
+Theorem I_ext_mul_algo_compat_r : ∀ x y z i,
+  I_eq_ext x y
+  → I_mul_algo x z i = I_mul_algo y z i.
+Proof.
+intros x y z i Hxy.
+unfold I_mul_algo.
+unfold summation.
+rewrite Nat.sub_succ, Nat.sub_0_r.
+apply summation_loop_compat.
+intros j Hji.
+rewrite Hxy; reflexivity.
+Qed.
+
+Theorem I_ext_propag_carry_mul_algo_compat_r : ∀ x y z n i,
+  I_eq_ext x y
+  → I_propag_carry (I_mul_algo x z) n i =
+    I_propag_carry (I_mul_algo y z) n i.
+Proof.
+intros x y z n i Hxy.
+revert i.
+induction n; intros; simpl.
+ apply I_ext_mul_algo_compat_r; assumption.
+
+ unfold propag_carry_once.
+ rewrite IHn.
+ remember (I_propag_carry (I_mul_algo x z) n) as u1 eqn:Hu1 .
+ remember (I_propag_carry (I_mul_algo y z) n) as u2 eqn:Hu2 .
+ remember (fst_not_1 u1 (S i)) as s1 eqn:Hs1 .
+ remember (fst_not_1 u2 (S i)) as s2 eqn:Hs2 .
+ apply fst_not_1_iff in Hs1; simpl in Hs1.
+ apply fst_not_1_iff in Hs2; simpl in Hs2.
+ destruct s1 as [di1| ].
+  destruct Hs1 as (Hn1, Ht1).
+  destruct s2 as [di2| ].
+   destruct Hs2 as (Hn2, Ht2).
+   rewrite IHn.
+   destruct (lt_eq_lt_dec di1 di2) as [[H1| H1]| H1].
+    apply Hn2 in H1.
+    rewrite IHn in Ht1; contradiction.
+
+    subst di2; reflexivity.
+
+    apply Hn1 in H1.
+    rewrite IHn in H1; contradiction.
+
+   rewrite IHn, Hs2 in Ht1.
+   exfalso; apply Ht1; reflexivity.
+
+  destruct s2 as [di2| ]; [ idtac | reflexivity ].
+  destruct Hs2 as (Hn2, Ht2).
+  rewrite <- IHn, Hs1 in Ht2.
+  exfalso; apply Ht2; reflexivity.
+Qed.
+
+Theorem I_ext_mul_compat_r : ∀ x y z, I_eq_ext x y → I_eq_ext (x * z) (y * z).
+Proof.
+intros x y z Hxy.
+unfold I_eq_ext; simpl; intros i.
+unfold I_mul_i.
+erewrite I_ext_propag_carry_mul_algo_compat_r; [ idtac | eassumption ].
+reflexivity.
+Qed.
+
+Theorem I_mul_compat_r : ∀ x y z, (x = y)%I → (x * z = y * z)%I.
+Proof.
+intros x y z Hxy.
+bbb.
+
+apply I_eq_prop in Hxy.
+destruct Hxy as [Hxy| (i, (Hlt, (Heq, Hgt)))].
+ apply I_eq_ext_eq, I_ext_mul_compat_r; assumption.
+
+ destruct Hgt as [(Hi, (Hx, Hy))| (Hx, Hy)].
+  subst i; clear Hlt.
+  unfold I_eq; simpl; intros k.
+  unfold I_add_i; simpl.
+  do 2 rewrite xorb_false_r.
+  unfold I_mul_i.
+  remember (I_propag_carry (I_mul_algo x z) (S k) k) as nb1 eqn:Hnb1 .
+  remember (I_propag_carry (I_mul_algo y z) (S k) k) as nb2 eqn:Hnb2 .
+  symmetry in Hnb1, Hnb2.
+  destruct nb1; simpl.
+   destruct nb2; simpl.
+    unfold carry; simpl.
+    remember (fst_same (x * z) 0 (S k)) as s1 eqn:Hs1 .
+    remember (fst_same (y * z) 0 (S k)) as s2 eqn:Hs2 .
+    apply fst_same_sym_iff in Hs1; simpl in Hs1.
+    apply fst_same_sym_iff in Hs2; simpl in Hs2.
+    destruct s1 as [dj1| ].
+     destruct Hs1 as (Hn1, Ht1).
+     rewrite Ht1; simpl.
+     destruct s2 as [dj2| ].
+      destruct Hs2 as (Hn2, Ht2).
+      rewrite Ht2; reflexivity.
+
+      remember (x .[ 0]) as b eqn:Hxi .
+      apply neq_negb in Heq.
+      symmetry in Hxi; apply negb_sym in Heq.
+      rewrite Heq in Hy.
+      pose proof (Hs2 0) as H.
+      rewrite Nat.add_0_r in H.
+      unfold I_mul_i in H.
+      remember (I_propag_carry (I_mul_algo y z) (S (S k)) (S k)) as nb3.
+      rename Heqnb3 into Hnb3.
+      symmetry in Hnb3.
+      destruct nb3; [ discriminate H | clear H ].
+      destruct b; simpl in Hy, Heq.
+       rewrite if_0_propag_carry_0 in Hnb3; [ discriminate Hnb3 | idtac ].
+       intros i.
+       apply I_mul_algo_0_l; assumption.
+
+bbb.
+       destruct dj1.
+        Focus 2.
+        pose proof (Hn1 0 (Nat.lt_0_succ dj1)) as H.
+        rewrite Nat.add_0_r in H.
+        rewrite I_mul_i_0_l in H; [ discriminate H | assumption ].
+
+        clear Hn1; rewrite Nat.add_0_r in Ht1.
+        unfold I_mul_i in Ht1.
+        remember (I_propag_carry (I_mul_algo x z) (S (S k)) (S k)) as nb4.
+        rename Heqnb4 into Hnb4.
+        symmetry in Hnb4.
+        destruct nb4; [ clear Ht1 | discriminate Ht1 ].
+        move Hnb4 before Hnb3.
+vvv.
+        rewrite Nat.add_succ_r in Hnb2; simpl in Hnb2.
+        unfold propag_carry_once in Hnb2.
+        apply Nat.eq_add_0 in Hnb2.
+        destruct Hnb2 as (Hnb5, Hnb2).
+        rewrite Nat.add_1_r in Hnb2.
+        apply Nat.div_small_iff in Hnb2; [ idtac | intros H; discriminate H ].
+        simpl in Hnb2.
+bbb.
+
 (* neutral element *)
 
 Theorem divmod_div : ∀ a b, fst (divmod a b 0 b) = (a / S b)%nat.
@@ -367,7 +504,6 @@ destruct s as [di| ].
  rewrite Hs, negb_involutive; reflexivity.
 Qed.
 
-(*
 Theorem I_mul_i_1_r_0 : ∀ x,
   x.[0] = false ∨ x.[1] = true
   → I_mul_i x 1%I 0 = x .[ 0].
@@ -426,7 +562,6 @@ rewrite summation_split_last; [ idtac | apply le_n_S, Nat.le_0_l ].
 simpl; rewrite Nat.sub_0_r; reflexivity.
 Qed.
 
-(*
 Theorem yyy : ∀ x y u i,
   u = I_mul_algo x y
   → I_propag_carry u (S (S i)) i = I_propag_carry u (S i) i.
@@ -482,7 +617,6 @@ bbb.
 
 Definition nn_add (u v : nat → nat) i := u i + v i.
 
-(*
 Theorem zzz : ∀ u v i,
   I_propag_carry (nn_add u v) (S i) i =
   I_propag_carry u (S i) i + I_propag_carry v (S i) i.
@@ -603,7 +737,6 @@ destruct s1 as [di1| ].
 bbb.
 *)
 
-(*
 Theorem I_mul_1_r : ∀ x, (I_mul x 1 = x)%I.
 Proof.
 intros x.
@@ -1253,138 +1386,3 @@ bbb.
                 clear Hn3 H2 Hn Ht2 di2 Hn2.
                 clear z Heqz Hn1 Ht1.
 *)
-
-(* compatibility with equality *)
-
-Theorem I_ext_mul_algo_compat_r : ∀ x y z i,
-  I_eq_ext x y
-  → I_mul_algo x z i = I_mul_algo y z i.
-Proof.
-intros x y z i Hxy.
-unfold I_mul_algo.
-unfold summation.
-rewrite Nat.sub_succ, Nat.sub_0_r.
-apply summation_loop_compat.
-intros j Hji.
-rewrite Hxy; reflexivity.
-Qed.
-
-Theorem I_ext_propag_carry_mul_algo_compat_r : ∀ x y z n i,
-  I_eq_ext x y
-  → I_propag_carry (I_mul_algo x z) n i =
-    I_propag_carry (I_mul_algo y z) n i.
-Proof.
-intros x y z n i Hxy.
-revert i.
-induction n; intros; simpl.
- apply I_ext_mul_algo_compat_r; assumption.
-
- unfold propag_carry_once.
- rewrite IHn.
- remember (I_propag_carry (I_mul_algo x z) n) as u1 eqn:Hu1 .
- remember (I_propag_carry (I_mul_algo y z) n) as u2 eqn:Hu2 .
- remember (fst_not_1 u1 (S i)) as s1 eqn:Hs1 .
- remember (fst_not_1 u2 (S i)) as s2 eqn:Hs2 .
- apply fst_not_1_iff in Hs1; simpl in Hs1.
- apply fst_not_1_iff in Hs2; simpl in Hs2.
- destruct s1 as [di1| ].
-  destruct Hs1 as (Hn1, Ht1).
-  destruct s2 as [di2| ].
-   destruct Hs2 as (Hn2, Ht2).
-   rewrite IHn.
-   destruct (lt_eq_lt_dec di1 di2) as [[H1| H1]| H1].
-    apply Hn2 in H1.
-    rewrite IHn in Ht1; contradiction.
-
-    subst di2; reflexivity.
-
-    apply Hn1 in H1.
-    rewrite IHn in H1; contradiction.
-
-   rewrite IHn, Hs2 in Ht1.
-   exfalso; apply Ht1; reflexivity.
-
-  destruct s2 as [di2| ]; [ idtac | reflexivity ].
-  destruct Hs2 as (Hn2, Ht2).
-  rewrite <- IHn, Hs1 in Ht2.
-  exfalso; apply Ht2; reflexivity.
-Qed.
-
-Theorem I_ext_mul_compat_r : ∀ x y z, I_eq_ext x y → I_eq_ext (x * z) (y * z).
-Proof.
-intros x y z Hxy.
-unfold I_eq_ext; simpl; intros i.
-unfold I_mul_i.
-erewrite I_ext_propag_carry_mul_algo_compat_r; [ idtac | eassumption ].
-reflexivity.
-Qed.
-
-Theorem I_mul_compat_r : ∀ x y z, (x = y)%I → (x * z = y * z)%I.
-Proof.
-intros x y z Hxy.
-apply I_eq_prop in Hxy.
-destruct Hxy as [Hxy| (i, (Hlt, (Heq, Hgt)))].
- apply I_eq_ext_eq, I_ext_mul_compat_r; assumption.
-
- destruct Hgt as [(Hi, (Hx, Hy))| (Hx, Hy)].
-  subst i; clear Hlt.
-  unfold I_eq; simpl; intros k.
-  unfold I_add_i; simpl.
-  do 2 rewrite xorb_false_r.
-  unfold I_mul_i.
-  remember (I_propag_carry (I_mul_algo x z) (S k) k) as nb1 eqn:Hnb1 .
-  remember (I_propag_carry (I_mul_algo y z) (S k) k) as nb2 eqn:Hnb2 .
-  symmetry in Hnb1, Hnb2.
-  destruct nb1; simpl.
-   destruct nb2; simpl.
-    unfold carry; simpl.
-    remember (fst_same (x * z) 0 (S k)) as s1 eqn:Hs1 .
-    remember (fst_same (y * z) 0 (S k)) as s2 eqn:Hs2 .
-    apply fst_same_sym_iff in Hs1; simpl in Hs1.
-    apply fst_same_sym_iff in Hs2; simpl in Hs2.
-    destruct s1 as [dj1| ].
-     destruct Hs1 as (Hn1, Ht1).
-     rewrite Ht1; simpl.
-     destruct s2 as [dj2| ].
-      destruct Hs2 as (Hn2, Ht2).
-      rewrite Ht2; reflexivity.
-
-      remember (x .[ 0]) as b eqn:Hxi .
-      apply neq_negb in Heq.
-      symmetry in Hxi; apply negb_sym in Heq.
-      rewrite Heq in Hy.
-      pose proof (Hs2 0) as H.
-      rewrite Nat.add_0_r in H.
-      unfold I_mul_i in H.
-      remember (I_propag_carry (I_mul_algo y z) (S (S k)) (S k)) as nb3.
-      rename Heqnb3 into Hnb3.
-      symmetry in Hnb3.
-      destruct nb3; [ discriminate H | clear H ].
-      destruct b; simpl in Hy, Heq.
-       rewrite if_0_propag_carry_0 in Hnb3; [ discriminate Hnb3 | idtac ].
-       intros i.
-       apply I_mul_algo_0_l; assumption.
-
-bbb.
-       destruct dj1.
-        Focus 2.
-        pose proof (Hn1 0 (Nat.lt_0_succ dj1)) as H.
-        rewrite Nat.add_0_r in H.
-        rewrite I_mul_i_0_l in H; [ discriminate H | assumption ].
-
-        clear Hn1; rewrite Nat.add_0_r in Ht1.
-        unfold I_mul_i in Ht1.
-        remember (I_propag_carry (I_mul_algo x z) (S (S k)) (S k)) as nb4.
-        rename Heqnb4 into Hnb4.
-        symmetry in Hnb4.
-        destruct nb4; [ clear Ht1 | discriminate Ht1 ].
-        move Hnb4 before Hnb3.
-vvv.
-        rewrite Nat.add_succ_r in Hnb2; simpl in Hnb2.
-        unfold propag_carry_once in Hnb2.
-        apply Nat.eq_add_0 in Hnb2.
-        destruct Hnb2 as (Hnb5, Hnb2).
-        rewrite Nat.add_1_r in Hnb2.
-        apply Nat.div_small_iff in Hnb2; [ idtac | intros H; discriminate H ].
-        simpl in Hnb2.
-bbb.
