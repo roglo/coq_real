@@ -338,6 +338,18 @@ destruct s1 as [dj1| ].
  intros j; apply all_0_summation_0; intros k Hk; reflexivity.
 Qed.
 
+(* Equality between 0 and 1... oops... *)
+
+Theorem I_0_eq_1 : (0 = 1)%I.
+Proof.
+apply I_eq_prop.
+right; exists 0.
+split; [ intros j H; exfalso; revert H; apply Nat.nlt_0_r | idtac ].
+split; [ intros H; discriminate H | left ].
+split; [ reflexivity | idtac ].
+split; intros; reflexivity.
+Qed.
+
 (* compatibility with equality *)
 
 Theorem I_ext_mul_algo_compat_r : ∀ x y z i,
@@ -403,17 +415,32 @@ erewrite I_ext_propag_carry_mul_algo_compat_r; [ idtac | eassumption ].
 reflexivity.
 Qed.
 
-Theorem I_mul_compat_r : ∀ x y z, (x = y)%I → (x * z = y * z)%I.
+Theorem I_mul_compat_r : ∀ x y z,
+  (x = y)%I
+  → (x * z = y * z)%I.
 Proof.
 intros x y z Hxy.
-bbb.
-
 apply I_eq_prop in Hxy.
 destruct Hxy as [Hxy| (i, (Hlt, (Heq, Hgt)))].
  apply I_eq_ext_eq, I_ext_mul_compat_r; assumption.
 
  destruct Hgt as [(Hi, (Hx, Hy))| (Hx, Hy)].
   subst i; clear Hlt.
+  remember (x .[ 0]) as b eqn:Hxi .
+  apply neq_negb in Heq.
+  symmetry in Hxi; apply negb_sym in Heq.
+  rewrite Heq in Hy.
+  destruct b; simpl in Hy, Heq.
+bbb.
+  (* c'est faux ! shit. *)
+  (* c'est bizarre, d'ailleurs, car on a :
+       (0 * x = 0)%I
+     mais pas
+       (x = 0)%I → (x * y = 0)%I
+     car
+       (0 = 1)%I
+   *)
+
   unfold I_eq; simpl; intros k.
   unfold I_add_i; simpl.
   do 2 rewrite xorb_false_r.
