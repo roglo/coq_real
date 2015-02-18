@@ -81,6 +81,16 @@ list_of_seq (i_propag_carry (i_mul_algo (r_of_string "10110111") (r_one ())) 6) 
 
 base.val := 10;
 list_of_seq (i_propag_carry (i_mul_algo (r_of_string "239") (r_of_string "4649")) 0) 20;
+list_of_seq (i_propag_carry (i_mul_algo (r_of_string "239") (r_of_string "4649")) 1) 20;
+list_of_seq (i_propag_carry (i_mul_algo (r_of_string "239") (r_of_string "4649")) 2) 20;
+list_of_seq (i_propag_carry (i_mul_algo (r_of_string "239") (r_of_string "4649")) 3) 20;
+list_of_seq (i_propag_carry (i_mul_algo (r_of_string "239") (r_of_string "4649")) 4) 20;
+list_of_seq (i_propag_carry (i_mul_algo (r_of_string "239") (r_of_string "4649")) 5) 20;
+list_of_seq (i_propag_carry (i_mul_algo (r_of_string "239") (r_of_string "4649")) 6) 20;
+list_of_seq (i_propag_carry (i_mul_algo (r_of_string "239") (r_of_string "4649")) 7) 20;
+list_of_seq (i_propag_carry (i_mul_algo (r_of_string "239") (r_of_string "4649")) 8) 20;
+list_of_seq (i_propag_carry (i_mul_algo (r_of_string "239") (r_of_string "4649")) 9) 20;
+
 list_of_seq (i_mul_i (r_of_string "23") (r_of_string "49")) 20;
 
 list_of_seq (i_mul_i (r_of_string "239") (r_of_string "4649")) 20;
