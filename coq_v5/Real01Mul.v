@@ -488,6 +488,15 @@ destruct s1 as [di1| ].
            apply fst_not_1_iff in Hs4; simpl in Hs4.
            destruct s4 as [di4| ].
             destruct Hs4 as (Hn4, Ht4).
+            destruct (zerop (u2 (S (S (i + di4))))) as [H5| H5].
+             clear Ht4.
+             destruct (le_dec (u2 (S i)) 1) as [H4| H4].
+              eapply Nat.lt_le_trans in H4; [ idtac | eassumption ].
+              apply Nat.nle_gt in H4.
+              apply H4, le_n_S, Nat.le_0_l.
+
+              apply Nat.lt_add_lt_sub_r in H2; simpl in H2.
+              clear H4.
 bbb.
 
 Theorem I_mul_compat_r : ∀ x y z,
