@@ -444,6 +444,27 @@ destruct s1 as [di1| ].
    destruct (zerop (u1 (S (S (i + di1 + di2))))) as [H3| H3].
     destruct (le_dec (u1 (S (i + di1))) 1) as [H4| H4].
      clear H4 Ht2.
+     remember (fst_not_1 u1 (S i)) as s3 eqn:Hs3 .
+     apply fst_not_1_iff in Hs3; simpl in Hs3.
+     destruct s3 as [di3| ].
+      destruct Hs3 as (Hn3, Ht3).
+      destruct (zerop (u1 (S (i + di3)))) as [H4| H4].
+       clear Ht3.
+       destruct (le_dec (u1 i) 1) as [H5| H5].
+        apply Nat.nle_gt in H2; contradiction.
+
+        apply Nat.lt_add_lt_sub_r in H2; simpl in H2.
+        clear H5.
+        destruct (lt_eq_lt_dec (S (di1 + di2)) di3) as [[H5| H5]| H5].
+         remember H5 as H; clear HeqH.
+         apply Hn3 in H.
+         rewrite Nat.add_succ_r, Nat.add_assoc, H3 in H.
+         discriminate H.
+
+         clear H3.
+         assert (di1 < di3) as H by omega.
+         apply Hn3 in H.
+         rewrite H1 in H; discriminate H.
 bbb.
 
 Theorem I_mul_compat_r : ∀ x y z,
