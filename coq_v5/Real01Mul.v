@@ -415,6 +415,18 @@ erewrite I_ext_propag_carry_mul_algo_compat_r; [ idtac | eassumption ].
 reflexivity.
 Qed.
 
+Theorem yyy : ∀ x y i, I_mul_algo x y i ≤ i.
+Proof.
+intros x y i.
+unfold I_mul_algo; simpl.
+unfold summation; simpl.
+rewrite Nat.sub_0_r.
+induction i.
+ reflexivity.
+
+ simpl.
+bbb.
+
 (* is the number of iterations sufficient? *)
 Theorem zzz : ∀ x y i,
   I_propag_carry (I_mul_algo x y) (S (S i)) i =
