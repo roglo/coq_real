@@ -198,6 +198,15 @@ rewrite Nat.add_comm, Nat.add_sub.
 reflexivity.
 Qed.
 
+Theorem summation_le : ∀ f n, (∀ i, f i ≤ 1) → Σ (i = 1, n), f i ≤ n.
+Proof.
+intros f n Hf.
+induction n; [ reflexivity | idtac ].
+rewrite summation_split_last; [ idtac | apply le_n_S, Nat.le_0_l ].
+remember 1 as one; rewrite <- Nat.add_1_r; subst one.
+apply Nat.add_le_mono; [ assumption | apply Hf ].
+Qed.
+
 (* commutativity *)
 
 Theorem I_mul_algo_comm : ∀ x y, (∀ i, I_mul_algo x y i = I_mul_algo y x i).
@@ -415,17 +424,16 @@ erewrite I_ext_propag_carry_mul_algo_compat_r; [ idtac | eassumption ].
 reflexivity.
 Qed.
 
-Theorem yyy : ∀ x y i, I_mul_algo x y i ≤ i.
+Theorem I_mul_algo_le : ∀ x y i, I_mul_algo x y i ≤ i.
 Proof.
 intros x y i.
 unfold I_mul_algo; simpl.
-unfold summation; simpl.
-rewrite Nat.sub_0_r.
-induction i.
- reflexivity.
-
- simpl.
-bbb.
+apply summation_le; intros j.
+remember (x .[ j - 1]) as a eqn:Hx .
+remember (y .[ i - j]) as b eqn:Hy .
+symmetry in Hx, Hy.
+destruct a, b; try apply Nat.le_0_l; reflexivity.
+Qed.
 
 (* is the number of iterations sufficient? *)
 Theorem zzz : ∀ x y i,
@@ -491,6 +499,13 @@ destruct i; simpl.
          apply Nat.add_sub_eq_nz in Hm; [ idtac | intros H; discriminate H ].
          symmetry in Hm; simpl in Hm.
          clear H1.
+         pose proof (I_mul_algo_le x y 1) as H.
+         rewrite Hm in H.
+         apply le_S_n, Nat.le_0_r in H.
+         discriminate H.
+
+        destruct (zerop (I_mul_algo x y 1)) as [H1| H1].
+         discriminate Hm.
 bbb.
 
 (* solution not starting with testing i=0 *)
