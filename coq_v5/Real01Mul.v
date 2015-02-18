@@ -415,6 +415,37 @@ erewrite I_ext_propag_carry_mul_algo_compat_r; [ idtac | eassumption ].
 reflexivity.
 Qed.
 
+(* is the number of iterations sufficient? *)
+Theorem zzz : ∀ x y i,
+  I_propag_carry (I_mul_algo x y) (S (S i)) i =
+  I_propag_carry (I_mul_algo x y) (S i) i.
+Proof.
+intros x y i.
+remember (S i) as si; simpl; subst si.
+remember (I_propag_carry (I_mul_algo x y) (S i)) as u eqn:Hu.
+unfold propag_carry_once; simpl.
+remember (fst_not_1 u (S i)) as s1 eqn:Hs1 .
+apply fst_not_1_iff in Hs1; simpl in Hs1.
+destruct s1 as [di1| ].
+ destruct Hs1 as (Hn1, Ht1).
+ destruct (zerop (u (S (i + di1)))) as [H1| H1].
+  clear Ht1.
+  destruct (le_dec (u i) 1) as [H2| H2]; [ reflexivity | idtac ].
+  apply Nat.nle_gt in H2.
+  exfalso.
+  subst u.
+  simpl in H1, H2.
+  remember (I_propag_carry (I_mul_algo x y) i) as u1 eqn:Hu1 .
+  unfold propag_carry_once in H1, H2; simpl in H1, H2.
+  remember (fst_not_1 u1 (S (S (i + di1)))) as s2 eqn:Hs2 .
+  apply fst_not_1_iff in Hs2; simpl in Hs2.
+  destruct s2 as [di2| ].
+   destruct Hs2 as (Hn2, Ht2).
+   destruct (zerop (u1 (S (S (i + di1 + di2))))) as [H3| H3].
+    destruct (le_dec (u1 (S (i + di1))) 1) as [H4| H4].
+     clear H4 Ht2.
+bbb.
+
 Theorem I_mul_compat_r : ∀ x y z,
   ¬I_eq_ext x 1
   → ¬I_eq_ext y 1
