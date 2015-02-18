@@ -609,6 +609,38 @@ destruct i; simpl.
                unfold summation in Hm; simpl in Hm.
                rewrite Hx, H31, Nat.sub_0_r in Hm; simpl in Hm.
                rewrite Nat.add_0_r in Hm.
+               remember (di1 + di2) as dd eqn:Hdd .
+               symmetry in Hdd.
+               destruct dd.
+                clear H12.
+                rewrite Hy, Nat.mul_1_r in H11.
+                apply eq_b2n_0 in H11.
+                apply Nat.eq_add_0 in Hdd.
+                destruct Hdd; subst di1 di2.
+                clear Hn2.
+                rewrite H3 in Hm; simpl in Hm.
+                discriminate Hm.
+
+                simpl in H12.
+                rewrite Nat.sub_0_r in H12.
+                destruct dd.
+                 simpl in H12.
+                 rewrite Nat.add_0_r in H12.
+                 clear H11; rewrite Hy, Nat.mul_1_r in H12.
+                 apply eq_b2n_0 in H12.
+                 apply Nat.eq_add_1 in Hdd.
+                 destruct Hdd as [(Hd1, Hd2)| (Hd1, Hd2)]; subst di1 di2.
+                  clear Hn2.
+                  simpl in Hm.
+                  rewrite Hy, Nat.mul_1_r, Nat.add_0_r in Hm; simpl.
+                  remember (y .[ 2]) as a eqn:Ha .
+                  remember (x .[ 2]) as b eqn:Hb .
+                  destruct a, b; discriminate Hm.
+
+                  simpl in Hm.
+                  rewrite H3 in Hm; discriminate Hm.
+
+                 Focus 1.
 bbb.
 
 (* solution not starting with testing i=0 *)
