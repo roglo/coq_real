@@ -498,7 +498,6 @@ destruct i; simpl.
 
          apply Nat.add_sub_eq_nz in Hm; [ idtac | intros H; discriminate H ].
          symmetry in Hm; simpl in Hm.
-         clear H1.
          pose proof (I_mul_algo_le x y 1) as H.
          rewrite Hm in H.
          apply le_S_n, Nat.le_0_r in H.
@@ -506,6 +505,24 @@ destruct i; simpl.
 
         destruct (zerop (I_mul_algo x y 1)) as [H1| H1].
          discriminate Hm.
+
+         clear Hn1.
+         apply Nat.add_sub_eq_nz in Hm; [ idtac | intros H; discriminate H ].
+         symmetry in Hm; simpl in Hm.
+         pose proof (I_mul_algo_le x y 1) as H.
+         rewrite Hm in H.
+         apply le_S_n, Nat.le_0_r in H.
+         discriminate H.
+
+       destruct (zerop (I_mul_algo x y 1)) as [H1| H1].
+        discriminate Hm.
+
+        apply Nat.add_sub_eq_nz in Hm; [ idtac | intros H; discriminate H ].
+        symmetry in Hm; simpl in Hm.
+        pose proof (I_mul_algo_le x y 1) as H.
+        rewrite Hm in H.
+        apply le_S_n, Nat.le_0_r in H.
+        discriminate H.
 bbb.
 
 (* solution not starting with testing i=0 *)
