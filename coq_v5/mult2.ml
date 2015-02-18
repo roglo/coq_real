@@ -77,6 +77,7 @@ value r_of_string s =
 
 base.val := 2;
 list_of_seq (i_propag_carry (i_mul_algo (r_one ()) (r_one ())) 6) 20;
+list_of_seq (i_propag_carry (i_mul_algo (r_of_string "10110111") (r_one ())) 6) 20;
 
 base.val := 10;
 list_of_seq (i_mul_i (r_of_string "23") (r_of_string "49")) 20;
