@@ -497,6 +497,29 @@ destruct s1 as [di1| ].
 
               apply Nat.lt_add_lt_sub_r in H2; simpl in H2.
               clear H4.
+              simpl in Hu1.
+              rewrite <- Hu2 in Hu1.
+              rename u2 into u3; rename Hu2 into Hu3.
+              rename u1 into u2; rename Hu1 into Hu2.
+              rename u3 into u1; rename Hu3 into Hu1.
+              move Hu1 after Hu2.
+              destruct i.
+               simpl in Hu1.
+               rewrite Hu1 in H2; simpl in H2.
+               unfold I_mul_algo in H2; simpl in H2.
+               unfold summation in H2; simpl in H2.
+               pose proof (le_b2n_1 (x .[ 0])) as C1.
+               pose proof (le_b2n_1 (y .[ 0])) as C2.
+               revert H2 C1 C2; clear; intros.
+               destruct (b2n (x .[ 0])), (b2n (y .[ 0])); simpl in H2;
+                try omega.
+               apply le_S_n in C1.
+               apply le_S_n in C2.
+               apply Nat.le_0_r in C1.
+               apply Nat.le_0_r in C2.
+               subst n n0.
+               simpl in H2.
+               omega.
 bbb.
 
 Theorem I_mul_compat_r : ∀ x y z,
