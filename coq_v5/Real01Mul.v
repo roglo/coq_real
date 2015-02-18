@@ -465,6 +465,29 @@ destruct s1 as [di1| ].
          assert (di1 < di3) as H by omega.
          apply Hn3 in H.
          rewrite H1 in H; discriminate H.
+
+         destruct (lt_eq_lt_dec di1 di3) as [[H6| H6]| H6].
+          remember H6 as H; clear HeqH.
+          apply Hn3 in H.
+          rewrite H1 in H; discriminate H.
+
+          subst di3.
+          clear H4 H5.
+          rewrite Hu1 in H2; simpl in H2.
+          destruct i.
+           simpl in H2.
+           unfold I_mul_algo in H2; simpl in H2.
+           unfold summation in H2; simpl in H2.
+           apply Nat.nle_gt in H2.
+           apply H2, Nat.le_0_l.
+
+           simpl in H2.
+           remember (I_propag_carry (I_mul_algo x y) i) as u2 eqn:Hu2 .
+           unfold propag_carry_once in H2; simpl in H2.
+           remember (fst_not_1 u2 (S (S i))) as s4 eqn:Hs4 .
+           apply fst_not_1_iff in Hs4; simpl in Hs4.
+           destruct s4 as [di4| ].
+            destruct Hs4 as (Hn4, Ht4).
 bbb.
 
 Theorem I_mul_compat_r : ∀ x y z,
