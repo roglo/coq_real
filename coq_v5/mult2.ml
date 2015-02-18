@@ -21,20 +21,15 @@ value rec fst_not_1 z i =
     else Some di
 ;
 
-value propag_carry_once z i =
-  match fst_not_1 z (i + 1) with
+value propag_carry_once u i =
+  match fst_not_1 u (i + 1) with
   | Some di →
-      if z i < base.val - 1 then
-        if z (i + di + 1) < base.val then z i else z i + 1
-      else if z i > base.val - 1 then
-        if z (i + di + 1) < base.val then z i - base.val
-        else z i - base.val + 1
+      if u (i + di + 1) < base.val - 1 then
+        if u i ≤ base.val - 1 then u i else u i - base.val
       else
-        if z (i + di + 1) < base.val then z i else 0
+        if u i < base.val - 1 then u i + 1 else u i - base.val + 1
   | None →
-      if z i < base.val - 1 then z i + 1
-      else if z i > base.val - 1 then z i - base.val + 1
-      else 0
+      if u i < base.val - 1 then u i + 1 else u i - base.val + 1
    end
 ;
 value rec i_propag_carry u n =
