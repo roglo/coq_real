@@ -416,10 +416,12 @@ reflexivity.
 Qed.
 
 Theorem I_mul_compat_r : ∀ x y z,
-  (x = y)%I
+  ¬I_eq_ext x 1
+  → ¬I_eq_ext y 1
+  → (x = y)%I
   → (x * z = y * z)%I.
 Proof.
-intros x y z Hxy.
+intros x y z Hxn1 Hyn1 Hxy.
 apply I_eq_prop in Hxy.
 destruct Hxy as [Hxy| (i, (Hlt, (Heq, Hgt)))].
  apply I_eq_ext_eq, I_ext_mul_compat_r; assumption.
@@ -430,16 +432,8 @@ destruct Hxy as [Hxy| (i, (Hlt, (Heq, Hgt)))].
   apply neq_negb in Heq.
   symmetry in Hxi; apply negb_sym in Heq.
   rewrite Heq in Hy.
-  destruct b; simpl in Hy, Heq.
+  destruct b; contradiction.
 bbb.
-  (* c'est faux ! shit. *)
-  (* c'est bizarre, d'ailleurs, car on a :
-       (0 * x = 0)%I
-     mais pas
-       (x = 0)%I → (x * y = 0)%I
-     car
-       (0 = 1)%I
-   *)
 
   unfold I_eq; simpl; intros k.
   unfold I_add_i; simpl.
