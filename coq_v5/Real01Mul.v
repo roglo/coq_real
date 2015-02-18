@@ -523,6 +523,92 @@ destruct i; simpl.
         rewrite Hm in H.
         apply le_S_n, Nat.le_0_r in H.
         discriminate H.
+
+      pose proof (Hn1 0 (Nat.lt_0_succ di1)) as H.
+      rewrite Hu in H; simpl in H.
+      unfold propag_carry_once in H; simpl in H.
+      remember (fst_not_1 (I_mul_algo x y) 2) as s3 eqn:Hs3 .
+      apply fst_not_1_iff in Hs3; simpl in Hs3.
+      destruct s3 as [di3| ].
+       destruct Hs3 as (Hn3, Ht3).
+       destruct (zerop (I_mul_algo x y (S (S di3)))) as [H2| H2].
+        clear Ht3.
+        destruct (le_dec (I_mul_algo x y 1) 1) as [H4| H4].
+         clear H4.
+         unfold I_mul_algo in H; simpl in H.
+         unfold summation in H; simpl in H.
+         rewrite Nat.add_0_r in H.
+         remember (x .[ 0]) as a eqn:Hx .
+         remember (y .[ 0]) as b eqn:Hy .
+         symmetry in Hx, Hy.
+         destruct a, b; try discriminate H; clear H.
+         unfold I_mul_algo in H3; simpl in H3.
+         unfold summation in H3; simpl in H3.
+         rewrite Hx, Nat.sub_0_r in H3; simpl in H3.
+         rewrite Nat.add_0_r in H3.
+         destruct di2.
+          simpl in H3.
+          rewrite Hy in H3; discriminate H3.
+
+          simpl in H3.
+          rewrite Nat.sub_0_r in H3.
+          apply Nat.eq_add_0 in H3.
+          destruct H3 as (H3, H31).
+          apply eq_b2n_0 in H3.
+          apply Nat.eq_add_0 in H31.
+          destruct H31 as (H31, H32).
+          destruct di2.
+           clear H32.
+           rewrite Hy, Nat.mul_1_r in H31.
+           apply eq_b2n_0 in H31.
+           unfold I_mul_algo in H2; simpl in H2.
+           unfold summation in H2; simpl in H2.
+           rewrite Hx, H31 in H2; simpl in H2.
+           rewrite Nat.add_0_r in H2.
+           apply Nat.eq_add_0 in H2.
+           destruct H2 as (H2, H21).
+           apply eq_b2n_0 in H2.
+           destruct di3.
+            clear H21 Hn3 H2 Hn2.
+            remember (u (S (S di1))) as m eqn:Hm .
+            destruct m; [ revert H1; apply Nat.nlt_0_r | idtac ].
+            destruct m; [ apply Ht1; reflexivity | idtac ].
+            clear Ht1 H1.
+            symmetry in Hm.
+            rewrite Hu in Hm; simpl in Hm.
+            unfold propag_carry_once in Hm; simpl in Hm.
+            remember (S (S (S di1))) as ss.
+            remember (fst_not_1 (I_mul_algo x y) ss) as s2 eqn:Hs2 .
+            apply fst_not_1_iff in Hs2; simpl in Hs2.
+            destruct s2 as [di2| ].
+             destruct Hs2 as (Hn2, Ht2).
+             subst ss.
+             remember (S (S (S (di1 + di2)))) as ss.
+             destruct (zerop (I_mul_algo x y ss)) as [H1| H1].
+              subst ss.
+              clear Ht2.
+              unfold I_mul_algo in H1; simpl in H1.
+              unfold summation in H1; simpl in H1.
+              rewrite Hx, H31 in H1; simpl in H1.
+              rewrite Nat.add_0_r, Nat.sub_0_r in H1.
+              apply Nat.eq_add_0 in H1.
+              destruct H1 as (H1, H11).
+              apply eq_b2n_0 in H1.
+              apply Nat.eq_add_0 in H11.
+              destruct H11 as (H11, H12).
+              destruct (le_dec (I_mul_algo x y (S (S di1))) 1) as [H4| H4].
+               rewrite Hm in H4.
+               apply le_S_n, Nat.le_0_r in H4.
+               discriminate H4.
+
+               apply Nat.add_sub_eq_nz in Hm;
+                [ idtac | intros H; discriminate H ].
+               symmetry in Hm; simpl in Hm.
+               clear H4.
+               unfold I_mul_algo in Hm; simpl in Hm.
+               unfold summation in Hm; simpl in Hm.
+               rewrite Hx, H31, Nat.sub_0_r in Hm; simpl in Hm.
+               rewrite Nat.add_0_r in Hm.
 bbb.
 
 (* solution not starting with testing i=0 *)
