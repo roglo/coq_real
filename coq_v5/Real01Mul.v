@@ -544,7 +544,6 @@ destruct v1; [ clear Hle1 | idtac ].
   destruct v2; [ reflexivity | exfalso; omega ].
 
   Unfocus.
-  Focus 1.
   remember (S i) as si; simpl in Hv1, Hv2; subst si.
   remember (I_propag_carry (I_mul_algo x y) (S i)) as u eqn:Hu .
   destruct i; simpl in Hv1.
@@ -588,6 +587,112 @@ destruct v1; [ clear Hle1 | idtac ].
           apply Nat_sub_add_r in Hm; [ idtac | assumption ].
           simpl in Hm.
           clear H3.
+          unfold I_mul_algo in H1; simpl in H1.
+          unfold summation in H1; simpl in H1.
+          apply Nat.eq_add_0 in H1.
+          destruct H1 as (H1, H11).
+          apply Nat.eq_add_0 in H11.
+          destruct H11 as (H11, H12).
+          rewrite Nat.sub_0_r in H11.
+          destruct di2.
+           unfold I_mul_algo in Ht2; simpl in Ht2.
+           unfold summation in Ht2; simpl in Ht2.
+           rewrite Nat.add_0_r in Ht2.
+           unfold I_mul_algo in H2; simpl in H2.
+           unfold summation in H2; simpl in H2.
+           rewrite Nat.add_0_r in H2.
+           remember (x .[ 0]) as a eqn:Ha .
+           remember (y .[ 0]) as b eqn:Hb .
+           destruct a; simpl in H2.
+            destruct b; simpl in H2.
+             apply Ht2; reflexivity.
+
+             revert H2; apply Nat.nlt_0_r.
+
+            revert H2; apply Nat.nlt_0_r.
+
+           pose proof (Hn2 0 (Nat.lt_0_succ di2)) as H.
+           unfold I_mul_algo in H; simpl in H.
+           unfold summation in H; simpl in H.
+           rewrite Nat.add_0_r in H.
+           remember (x .[ 0]) as a.
+           remember (y .[ 0]) as b.
+           destruct a, b; try discriminate H; clear H.
+           rename Heqa into Hx0; symmetry in Hx0.
+           rename Heqb into Hy0; symmetry in Hy0.
+           move Hy0 before Hx0.
+           simpl in H1.
+           rewrite Nat.add_0_r in H1.
+           apply eq_b2n_0 in H1.
+           remember (di1 + di3) as dd eqn:Hdd .
+           symmetry in Hdd.
+           destruct dd.
+            rewrite Hy0 in H11; rewrite Nat.mul_1_r in H11.
+            apply eq_b2n_0 in H11.
+            rename H11 into Hx1; move Hx1 after H1.
+            rename H1 into Hy1.
+            apply Nat.eq_add_0 in Hdd.
+            destruct Hdd; subst di1 di3.
+            clear Hn1 Hn3 H12.
+            unfold I_mul_algo in Hm; simpl in Hm.
+            unfold summation in Hm; simpl in Hm.
+            rewrite Hx0, Hy0 in Hm; discriminate Hm.
+
+            simpl in H12.
+            rewrite Nat.sub_0_r in H12.
+            apply Nat.eq_add_0 in H12.
+            destruct H12 as (H12, H13).
+            destruct di1.
+             unfold I_mul_algo in Hm; simpl in Hm.
+             unfold summation in Hm; simpl in Hm.
+             rewrite Hx0, Hy0 in Hm; discriminate Hm.
+
+             simpl in Hdd.
+             apply Nat.succ_inj in Hdd.
+             pose proof (Hn1 0 (Nat.lt_0_succ di1)) as H.
+             rewrite Hu in H; simpl in H.
+             unfold propag_carry_once in H; simpl in H.
+             remember (fst_not_1 (I_mul_algo x y) 2) as s4 eqn:Hs4 .
+             apply fst_not_1_iff in Hs4; simpl in Hs4.
+             destruct s4 as [di4| ].
+              destruct Hs4 as (Hn4, Ht4).
+              destruct (zerop (I_mul_algo x y (S (S di4)))) as [H3| H3].
+               clear Ht4.
+               destruct (le_dec (I_mul_algo x y 1) 1) as [H4| H4].
+                clear H4.
+                unfold I_mul_algo in H3; simpl in H3.
+                unfold summation in H3; simpl in H3.
+                rewrite Nat.sub_0_r in H3.
+                apply Nat.eq_add_0 in H3.
+                destruct H3 as (H3, H31).
+                rewrite Hx0 in H3; simpl in H3.
+                rewrite Nat.add_0_r in H3.
+                apply eq_b2n_0 in H3.
+                apply Nat.eq_add_0 in H31.
+                destruct H31 as (H31, H32).
+                clear H.
+                destruct dd.
+                 clear H13.
+                 rewrite Hy0, Nat.mul_1_r in H12.
+                 apply eq_b2n_0 in H12.
+                 rename H12 into Hx2.
+                 apply Nat.eq_add_0 in Hdd.
+                 destruct Hdd; subst di1 di3.
+                 clear Hn3.
+                 unfold I_mul_algo in Hm; simpl in Hm.
+                 unfold summation in Hm; simpl in Hm.
+                 rewrite Hx0, Hy0 in Hm; simpl in Hm.
+                 rewrite Nat.mul_1_r, Nat.add_0_r in Hm.
+                 rewrite Nat.add_0_r in Hm.
+                 remember (x .[ 1]) as a.
+                 remember (y .[ 1]) as b.
+                 destruct a, b; discriminate Hm.
+
+                 simpl in H13.
+                 rewrite Nat.sub_0_r in H13.
+                 apply Nat.eq_add_0 in H13.
+                 destruct H13 as (H13, H14).
+                 destruct di1.
 bbb.
 
 intros x y i.
