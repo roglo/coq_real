@@ -435,13 +435,12 @@ symmetry in Hx, Hy.
 destruct a, b; try apply Nat.le_0_l; reflexivity.
 Qed.
 
-Theorem yyy : ∀ x y u n i,
+Theorem propag_carry_succ_upper_bound : ∀ x y u n i,
   u = I_propag_carry (I_mul_algo x y)
-  → u (n + 1) i ≤ max (u n i - 1) 1.
+  → u (S n) i ≤ max (u n i - 1) 1.
 Proof.
 intros x y u n i Hu.
 destruct i.
- rewrite Nat.add_comm; simpl.
  rewrite Hu; simpl.
  rewrite <- Hu.
  induction n.
@@ -466,7 +465,19 @@ destruct i.
      eapply Nat.le_trans; [ idtac | eassumption ].
      apply Nat.le_sub_le_add_l, Nat.le_succ_diag_r.
 
-     apply Nat.nle_gt in H2.
+     eapply Nat.le_trans; [ idtac | apply Nat.le_max_l ].
+     apply Nat.le_sub_le_add_l; simpl.
+     rewrite Nat.sub_1_r, Nat.succ_pred.
+      apply Nat.le_succ_diag_r.
+
+      apply Nat.nle_gt in H2.
+      intros H; rewrite H in H2; revert H2; apply Nat.nlt_0_r.
+
+    destruct (zerop (u1 0)) as [H2| H2]; [ idtac | apply Nat.le_max_l ].
+    apply Nat.le_max_r.
+
+   destruct (zerop (u1 0)) as [H1| H1]; [ idtac | apply Nat.le_max_l ].
+   apply Nat.le_max_r.
 bbb.
 
 intros x y u n i Hu.
