@@ -435,6 +435,66 @@ symmetry in Hx, Hy.
 destruct a, b; try apply Nat.le_0_l; reflexivity.
 Qed.
 
+Theorem yyy : ∀ x y u n i,
+  u = I_propag_carry (I_mul_algo x y)
+  → u (n + 1) i ≤ max (u n i - 1) 1.
+Proof.
+intros x y u n i Hu.
+destruct i.
+ rewrite Nat.add_comm; simpl.
+ rewrite Hu; simpl.
+ rewrite <- Hu.
+ induction n.
+  subst u; simpl.
+  unfold propag_carry_once; simpl.
+  remember (fst_not_1 (I_mul_algo x y) 1) as s1 eqn:Hs1 .
+  destruct s1 as [di1| ]; [ idtac | reflexivity ].
+  destruct (zerop (I_mul_algo x y (S di1))); auto.
+
+  rewrite Hu; simpl.
+  rewrite <- Hu.
+  remember (propag_carry_once (u n)) as u1 eqn:Hu1 .
+  unfold propag_carry_once; simpl.
+  remember (fst_not_1 u1 1) as s1 eqn:Hs1 .
+  apply fst_not_1_iff in Hs1; simpl in Hs1.
+  destruct s1 as [di1| ].
+   destruct Hs1 as (Hn1, Ht1).
+   destruct (zerop (u1 (S di1))) as [H1| H1].
+    clear Ht1.
+    destruct (le_dec (u1 0) 1) as [H2| H2].
+     rewrite Nat.max_r; [ assumption | idtac ].
+     eapply Nat.le_trans; [ idtac | eassumption ].
+     apply Nat.le_sub_le_add_l, Nat.le_succ_diag_r.
+
+     apply Nat.nle_gt in H2.
+bbb.
+
+intros x y u n i Hu.
+subst u.
+destruct n; simpl.
+ induction i; simpl.
+  unfold propag_carry_once; simpl.
+  remember (fst_not_1 (I_mul_algo x y) 1) as s1 eqn:Hs1 .
+  destruct s1 as [di1| ]; [ idtac | reflexivity ].
+  destruct (zerop (I_mul_algo x y (S di1))); auto.
+
+  unfold propag_carry_once; simpl.
+  remember (fst_not_1 (I_mul_algo x y) (S (S i))) as s1 eqn:Hs1 .
+  apply fst_not_1_iff in Hs1; simpl in Hs1.
+  destruct s1 as [di1| ].
+   destruct Hs1 as (Hn1, Ht1).
+   destruct (zerop (I_mul_algo x y (S (S (i + di1))))) as [H1| H1].
+    clear Ht1.
+    destruct (le_dec (I_mul_algo x y (S i)) 1) as [H2| H2].
+     unfold propag_carry_once in IHi; simpl in IHi.
+     remember (fst_not_1 (I_mul_algo x y) (S i)) as s2 eqn:Hs2 .
+     apply fst_not_1_iff in Hs2; simpl in Hs2.
+     destruct s2 as [di2| ].
+      destruct Hs2 as (Hn2, Ht2).
+      destruct (zerop (I_mul_algo x y (S (i + di2)))) as [H3| H3].
+       destruct (le_dec (I_mul_algo x y i) 1) as [H4| H4].
+bbb.
+
 (* is the number of iterations sufficient? *)
 Theorem zzz : ∀ x y i,
   I_propag_carry (I_mul_algo x y) (S (S i)) i =
