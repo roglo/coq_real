@@ -440,9 +440,34 @@ Theorem propag_carry_succ_upper_bound : ∀ x y u n i,
   → u (S n) i ≤ max (u n i - 1) 1.
 Proof.
 intros x y u n i Hu.
-destruct i.
- rewrite Hu; simpl.
- rewrite <- Hu.
+rewrite Hu; simpl; rewrite <- Hu.
+revert i.
+induction n; intros.
+ subst u; simpl.
+ unfold propag_carry_once; simpl.
+ remember (fst_not_1 (I_mul_algo x y) (S i)) as s1 eqn:Hs1 .
+ destruct s1 as [di1| ].
+  destruct (zerop (I_mul_algo x y (S (i + di1)))) as [H1| H1].
+   destruct (le_dec (I_mul_algo x y i) 1) as [H2| H2].
+    rewrite Nat.max_r; [ assumption | idtac ].
+    rewrite Nat.sub_1_r.
+    apply Nat.le_le_pred; assumption.
+
+    eapply Nat.le_trans; [ idtac | apply Nat.le_max_l ].
+    rewrite Nat.sub_succ_r; apply Nat.le_pred_l.
+
+   destruct (zerop (I_mul_algo x y i)); [ idtac | apply Nat.le_max_l ].
+   apply Nat.le_max_r.
+
+  destruct (zerop (I_mul_algo x y i)); [ idtac | apply Nat.le_max_l ].
+  apply Nat.le_max_r.
+bbb.
+
+(* only case i=0 here *)
+intros x y u n i Hu.
+revert n.
+induction i; intros.
+ rewrite Hu; simpl; rewrite <- Hu.
  induction n.
   subst u; simpl.
   unfold propag_carry_once; simpl.
