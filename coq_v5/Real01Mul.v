@@ -510,18 +510,86 @@ induction n; simpl.
    assumption.
 Qed.
 
-Theorem yyy : ∀ x y n i,
-  i ≤ S n
+Theorem I_propag_carry_mul_algo_le_1 : ∀ x y n i,
+  i - 1 ≤ n
   → I_propag_carry (I_mul_algo x y) n i ≤ 1.
 Proof.
 intros x y n i Hin.
-bbb.
+eapply Nat.le_trans; [ apply I_propag_carry_le | idtac ].
+apply Nat.max_lub; [ idtac | reflexivity ].
+apply Nat.le_sub_le_add_r in Hin.
+apply Nat.le_sub_le_add_l; assumption.
+Qed.
 
 (* is the number of iterations sufficient? *)
 Theorem zzz : ∀ x y i,
   I_propag_carry (I_mul_algo x y) (S (S i)) i =
   I_propag_carry (I_mul_algo x y) (S i) i.
 Proof.
+intros x y i.
+assert (i - 1 ≤ S (S i)) as Hle1 by omega.
+apply (I_propag_carry_mul_algo_le_1 x y) in Hle1.
+assert (i - 1 ≤ S i) as Hle2 by omega.
+apply (I_propag_carry_mul_algo_le_1 x y) in Hle2.
+remember (I_propag_carry (I_mul_algo x y) (S (S i)) i) as v1 eqn:Hv1 .
+remember (I_propag_carry (I_mul_algo x y) (S i) i) as v2 eqn:Hv2 .
+symmetry in Hv1, Hv2.
+destruct v1; [ clear Hle1 | idtac ].
+ destruct v2; [ reflexivity | exfalso ].
+ apply le_S_n, Nat.le_0_r in Hle2; subst v2.
+ Focus 2.
+ destruct v1; [ clear Hle1 | exfalso; omega ].
+ destruct v2; [ clear Hle2; exfalso | idtac ].
+  Focus 2.
+  destruct v2; [ reflexivity | exfalso; omega ].
+
+  Unfocus.
+  Focus 1.
+  remember (S i) as si; simpl in Hv1, Hv2; subst si.
+  remember (I_propag_carry (I_mul_algo x y) (S i)) as u eqn:Hu .
+  destruct i; simpl in Hv1.
+   simpl in Hu.
+   unfold propag_carry_once in Hv1; simpl in Hv1.
+   remember (fst_not_1 u 1) as s1 eqn:Hs1 .
+   apply fst_not_1_iff in Hs1; simpl in Hs1.
+   destruct s1 as [di1| ].
+    destruct Hs1 as (Hn1, Ht1).
+    destruct (zerop (u (S di1))) as [H1| H1].
+     rewrite Hv2 in Hv1; discriminate Hv1.
+
+     clear Hv1.
+     rewrite Hu in Hv2.
+     unfold propag_carry_once in Hv2; simpl in Hv2.
+     remember (fst_not_1 (I_mul_algo x y) 1) as s2 eqn:Hs2 .
+     apply fst_not_1_iff in Hs2; simpl in Hs2.
+     destruct s2 as [di2| ]; [ idtac | clear Hv2 ].
+      destruct Hs2 as (Hn2, Ht2).
+      destruct (zerop (I_mul_algo x y (S di2))) as [H2| H2].
+       discriminate Hv2.
+
+       clear Hv2.
+       remember (u (S di1)) as m eqn:Hm .
+       destruct m; [ revert H1; apply Nat.nlt_0_r | idtac ].
+       destruct m; [ apply Ht1; reflexivity | clear Ht1 H1 ].
+       symmetry in Hm.
+       rewrite Hu in Hm; simpl in Hm.
+       unfold propag_carry_once in Hm; simpl in Hm.
+       remember (fst_not_1 (I_mul_algo x y) (S (S di1))) as s3 eqn:Hs3 .
+       apply fst_not_1_iff in Hs3; simpl in Hs3.
+       destruct s3 as [di3| ].
+        destruct Hs3 as (Hn3, Ht3).
+        destruct (zerop (I_mul_algo x y (S (S (di1 + di3))))) as [H1| H1].
+         clear Ht3.
+         destruct (le_dec (I_mul_algo x y (S di1)) 1) as [H3| H3].
+          rewrite Hm in H3; revert H3; clear; intros; omega.
+
+          symmetry in Hm.
+          apply Nat.nle_gt in H3.
+          apply Nat_sub_add_r in Hm; [ idtac | assumption ].
+          simpl in Hm.
+          clear H3.
+bbb.
+
 intros x y i.
 remember (S i) as si; simpl; subst si.
 remember (I_propag_carry (I_mul_algo x y) (S i)) as u eqn:Hu .
