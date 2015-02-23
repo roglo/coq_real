@@ -1,119 +1,118 @@
-(* Oracle giving the index of a true of an boolean sequence
-   or None if the sequence has only falses *)
+(* Oracle giving the index of a non-zero value in an integer sequence
+   or None if the sequence is identically nul *)
 
 Require Import Utf8.
 
-(* find any true of a boolean sequence (oracle) *)
+(* find any non-zero value of an integer sequence (oracle) *)
 
-Parameter find_true : (nat → bool) → option nat.
-Axiom find_true_iff : ∀ u odi, odi = find_true u ↔
+Parameter find_nonzero : (nat → nat) → option nat.
+Axiom find_nonzero_iff : ∀ u odi, odi = find_nonzero u ↔
   match odi with
-  | Some i => u i = true
-  | None => (∀ j, u j = false)
+  | Some i => u i ≠ 0
+  | None => (∀ j, u j = 0)
   end.
 
-(* find the first true of a boolean sequence *)
+(* find the first nonzero of an integer sequence *)
 
 Require Import Arith NPeano Misc.
 
-Fixpoint first_true_loop (u : nat → bool) m i :=
-  if u i then i
-  else
+Fixpoint first_nonzero_loop (u : nat → nat) m i :=
+  if zerop (u i) then
     match m with
     | 0 => 0
-    | S m1 => first_true_loop u m1 (S i)
-    end.
+    | S m1 => first_nonzero_loop u m1 (S i)
+    end
+  else i.
 
-Definition first_true u :=
-  match find_true u with
-  | Some i => Some (first_true_loop u i 0)
+Definition first_nonzero u :=
+  match find_nonzero u with
+  | Some i => Some (first_nonzero_loop u i 0)
   | None => None
   end.
 
-Theorem false_before_first_true : ∀ u m i j,
+Theorem zero_before_first_nonzero : ∀ u m i j,
   i ≤ j
-  → j < first_true_loop u m i
-  → u j = false.
+  → j < first_nonzero_loop u m i
+  → u j = 0.
 Proof.
 intros u m i j Hij Hj.
 revert i j Hij Hj.
-induction m; intros.
- simpl in Hj.
- destruct (u i).
-  apply Nat.nle_gt in Hj; contradiction.
-
+induction m; intros; simpl in Hj.
+ destruct (zerop (u i)) as [Hui| Hui].
   exfalso; revert Hj; apply Nat.nlt_0_r.
 
- simpl in Hj.
- remember (u i) as ui eqn:Hui .
- symmetry in Hui.
- destruct ui; [ apply Nat.nle_gt in Hj; contradiction | idtac ].
- destruct (eq_nat_dec i j) as [H1| H1].
-  subst i; assumption.
+  apply Nat.nle_gt in Hj; contradiction.
 
-  eapply IHm; [ idtac | eassumption ].
-  apply Nat_le_neq_lt; assumption.
+ destruct (zerop (u i)) as [Hui| Hui].
+  destruct (eq_nat_dec i j) as [H1| H1].
+   subst i; assumption.
+
+   eapply IHm; [ idtac | eassumption ].
+   apply Nat_le_neq_lt; assumption.
+
+  apply Nat.nle_gt in Hj; contradiction.
 Qed.
 
-Theorem true_at_first_true : ∀ u m i,
-  u (i + m) = true
-  → u (first_true_loop u m i) = true.
+Theorem nonzero_at_first_nonzero : ∀ u m i,
+  u (i + m) ≠ 0
+  → u (first_nonzero_loop u m i) ≠ 0.
 Proof.
-intros u m i Hm.
+intros u m i H.
+intros Hm; apply H; clear H.
 revert i Hm.
-induction m; intros; simpl.
- rewrite Nat.add_0_r in Hm; rewrite Hm; assumption.
+induction m; intros; simpl in Hm.
+ rewrite Nat.add_0_r.
+ destruct (zerop (u i)); assumption.
 
- remember (u i) as ui eqn:Hui .
- symmetry in Hui.
- destruct ui; [ assumption | idtac ].
- rewrite Nat.add_succ_r in Hm.
- apply IHm; assumption.
+ rewrite Nat.add_succ_r, <- Nat.add_succ_l.
+ destruct (zerop (u i)) as [H1| H1]; [ apply IHm; assumption | idtac ].
+ rewrite Hm in H1.
+ exfalso; revert H1; apply Nat.nlt_0_r.
 Qed.
 
-Theorem first_true_iff : ∀ u odi, odi = first_true u ↔
+Theorem first_nonzero_iff : ∀ u odi, odi = first_nonzero u ↔
   match odi with
-  | Some i => (∀ j, j < i → u j = false) ∧ u i = true
-  | None => (∀ j, u j = false)
+  | Some i => (∀ j, j < i → u j = 0) ∧ u i ≠ 0
+  | None => (∀ j, u j = 0)
   end.
 Proof.
 intros u odi.
 split; intros Hi.
- unfold first_true in Hi; simpl in Hi.
- remember (find_true u) as s1 eqn:Hs1 .
- apply find_true_iff in Hs1; simpl in Hs1.
+ unfold first_nonzero in Hi; simpl in Hi.
+ remember (find_nonzero u) as s1 eqn:Hs1 .
+ apply find_nonzero_iff in Hs1; simpl in Hs1.
  destruct odi as [i| ].
   destruct s1 as [k| ]; [ idtac | discriminate Hi ].
   injection Hi; clear Hi; intros; subst i.
-  split; [ idtac | apply true_at_first_true; assumption ].
+  split; [ idtac | apply nonzero_at_first_nonzero; assumption ].
   intros j Hj.
-  eapply false_before_first_true; [ idtac | eassumption ].
+  eapply zero_before_first_nonzero; [ idtac | eassumption ].
   apply Nat.le_0_l.
 
   intros j.
   destruct s1 as [k| ]; [ discriminate Hi | apply Hs1 ].
 
- unfold first_true.
- remember (find_true u) as s1 eqn:Hs1 .
- apply find_true_iff in Hs1; simpl in Hs1.
+ unfold first_nonzero.
+ remember (find_nonzero u) as s1 eqn:Hs1 .
+ apply find_nonzero_iff in Hs1; simpl in Hs1.
  destruct s1 as [k| ].
   destruct odi as [i| ].
    destruct Hi as (Hn, Ht).
    f_equal.
-   remember (first_true_loop u k 0) as j eqn:Hj .
+   remember (first_nonzero_loop u k 0) as j eqn:Hj .
    destruct (lt_eq_lt_dec i j) as [[H1| H1]| H1].
     subst j.
-    apply false_before_first_true in H1; [ idtac | apply Nat.le_0_l ].
-    rewrite Ht in H1; discriminate H1.
+    apply zero_before_first_nonzero in H1; [ idtac | apply Nat.le_0_l ].
+    contradiction.
 
     assumption.
 
     apply Hn in H1; subst j.
-    rewrite true_at_first_true in H1; [ discriminate H1 | assumption ].
+    apply nonzero_at_first_nonzero in H1; [ contradiction | assumption ].
 
-   rewrite Hi in Hs1; discriminate Hs1.
+   exfalso; apply Hs1, Hi.
 
   destruct odi as [i| ]; [ idtac | reflexivity ].
   destruct Hi as (Hn, Ht).
-  rewrite Hs1 in Ht; discriminate Ht.
+  exfalso; apply Ht, Hs1.
 Qed.

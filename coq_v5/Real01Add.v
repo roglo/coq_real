@@ -5,10 +5,10 @@ Require Import Oracle Real01.
 
 Open Scope nat_scope.
 
-Definition Isum2Un x y i j := eqb (x.[i+j]) (y.[i+j]).
+Definition Isum2Un x y i j := if bool_dec (x.[i+j]) (y.[i+j]) then 1 else 0.
 
 Definition fst_same x y i :=
-  match first_true (Isum2Un x y i) with
+  match first_nonzero (Isum2Un x y i) with
   | Some di => Some di
   | None => None
   end.
@@ -26,61 +26,73 @@ intros x y i odi.
 split; intros Hi.
  subst odi.
  unfold fst_same; simpl.
- remember (first_true (Isum2Un x y i)) as s1 eqn:Hs1 .
- apply first_true_iff in Hs1; simpl in Hs1.
+ remember (first_nonzero (Isum2Un x y i)) as s1 eqn:Hs1 .
+ apply first_nonzero_iff in Hs1; simpl in Hs1.
  unfold Isum2Un in Hs1; simpl in Hs1.
  destruct s1 as [di1| ].
   destruct Hs1 as (Hn1, Ht1).
-  split; [ idtac | apply eqb_true_iff; assumption ].
-  intros dj Hdj.
-  remember Hdj as H; clear HeqH.
-  apply Hn1 in H.
-  apply eqb_false_iff in H.
-  destruct (y .[ i + dj]); simpl.
-   apply not_true_iff_false; assumption.
+  destruct (bool_dec (x .[ i + di1]) (y .[ i + di1])) as [H1| H1].
+   split; [ idtac | assumption ].
+   intros dj Hdj.
+   remember Hdj as H; clear HeqH.
+   apply Hn1 in H.
+   destruct (bool_dec (x .[ i + dj]) (y .[ i + dj])) as [H2| H2].
+    discriminate H.
 
-   apply not_false_iff_true; assumption.
+    destruct (y .[ i + dj]); simpl.
+     apply not_true_iff_false; assumption.
+
+     apply not_false_iff_true; assumption.
+
+   exfalso; apply Ht1; reflexivity.
 
   intros dj.
   pose proof (Hs1 dj) as H.
-  apply eqb_false_iff in H.
-  destruct (y .[ i + dj]); simpl.
-   apply not_true_iff_false; assumption.
+  destruct (bool_dec (x .[ i + dj]) (y .[ i + dj])) as [H2| H2].
+   discriminate H.
 
-   apply not_false_iff_true; assumption.
+   destruct (y .[ i + dj]); simpl.
+    apply not_true_iff_false; assumption.
+
+    apply not_false_iff_true; assumption.
 
  unfold fst_same; simpl.
- remember (first_true (Isum2Un x y i)) as s1 eqn:Hs1 .
- apply first_true_iff in Hs1; simpl in Hs1.
+ remember (first_nonzero (Isum2Un x y i)) as s1 eqn:Hs1 .
+ apply first_nonzero_iff in Hs1; simpl in Hs1.
  unfold Isum2Un in Hs1; simpl in Hs1.
  destruct s1 as [di1| ].
   destruct Hs1 as (Hn1, Ht1).
   destruct odi as [di| ].
    destruct Hi as (Hn, Ht).
-   destruct (lt_eq_lt_dec di di1) as [[H1| H1]| H1].
-    remember H1 as H; clear HeqH.
-    apply Hn1 in H.
-    rewrite Ht in H.
-    destruct (y .[ i + di]); discriminate H.
+   destruct (bool_dec (x .[ i + di1]) (y .[ i + di1])) as [H2| H2].
+    destruct (lt_eq_lt_dec di di1) as [[H1| H1]| H1].
+     remember H1 as H; clear HeqH.
+     apply Hn1 in H.
+     rewrite Ht in H.
+     destruct (y .[ i + di]); discriminate H.
 
-    subst di; reflexivity.
+     subst di; reflexivity.
 
-    remember H1 as H; clear HeqH.
-    apply Hn in H.
-    apply eqb_prop in Ht1.
-    rewrite H in Ht1.
-    exfalso; revert Ht1; apply no_fixpoint_negb.
+     remember H1 as H; clear HeqH.
+     apply Hn in H.
+     rewrite H in H2.
+     exfalso; revert H2; apply no_fixpoint_negb.
 
-   apply eqb_prop in Ht1.
-   rewrite Hi in Ht1.
-   exfalso; revert Ht1; apply no_fixpoint_negb.
+    exfalso; apply Ht1; reflexivity.
+
+   destruct (bool_dec (x .[ i + di1]) (y .[ i + di1])) as [H2| H2].
+    rewrite Hi in H2.
+    exfalso; revert H2; apply no_fixpoint_negb.
+
+    exfalso; apply Ht1; reflexivity.
 
   destruct odi as [di| ]; [ idtac | reflexivity ].
   destruct Hi as (Hn, Ht).
   pose proof (Hs1 di) as H.
-  apply eqb_false_iff in H.
-  rewrite Ht in H.
-  exfalso; apply H; reflexivity.
+  destruct (bool_dec (x .[ i + di]) (y .[ i + di])) as [H2| H2].
+   discriminate H.
+
+   contradiction.
 Qed.
 
 Infix "⊕" := xorb (left associativity, at level 50) : bool_scope.

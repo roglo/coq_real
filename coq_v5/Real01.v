@@ -42,8 +42,8 @@ Add Parametric Relation : _ I_eq_ext
  transitivity proved by I_eq_ext_trans
  as I_eq_ext_rel.
 
-Definition test_not_1 u i j := negb (Nat.eqb (u (i + j)) 1).
-Definition fst_not_1 u i := first_true (test_not_1 u i).
+Definition test_not_1 u i j := if eq_nat_dec (u (i + j)) 1 then 0 else 1.
+Definition fst_not_1 u i := first_nonzero (test_not_1 u i).
 
 Theorem fst_not_1_iff : ∀ u i odi, odi = fst_not_1 u i ↔
   match odi with
@@ -55,34 +55,36 @@ intros u i odi.
 split; intros Hi.
  subst odi.
  unfold fst_not_1; simpl.
- remember (first_true (test_not_1 u i)) as s1 eqn:Hs1 .
- apply first_true_iff in Hs1; simpl in Hs1.
+ remember (first_nonzero (test_not_1 u i)) as s1 eqn:Hs1 .
+ apply first_nonzero_iff in Hs1; simpl in Hs1.
  unfold test_not_1 in Hs1; simpl in Hs1.
  destruct s1 as [di1| ].
   destruct Hs1 as (Hn1, Ht1).
-  apply negb_true_iff in Ht1.
-  apply Nat.eqb_neq in Ht1.
-  split; [ idtac | assumption ].
-  intros dj Hdj.
-  remember Hdj as H; clear HeqH.
-  apply Hn1 in H.
-  apply negb_false_iff in H.
-  apply Nat.eqb_eq; assumption.
+  destruct (eq_nat_dec (u (i + di1)) 1) as [H1| H1].
+   exfalso; apply Ht1; reflexivity.
+
+   split; [ idtac | assumption ].
+   intros dj Hdj.
+   remember Hdj as H; clear HeqH.
+   apply Hn1 in H.
+   destruct (eq_nat_dec (u (i + dj)) 1); [ assumption | discriminate H ].
 
   intros dj.
-  apply Nat.eqb_eq, negb_false_iff, Hs1.
+  pose proof (Hs1 dj) as H.
+  destruct (eq_nat_dec (u (i + dj)) 1); [ assumption | discriminate H ].
 
  unfold fst_not_1; simpl.
- apply first_true_iff.
+ apply first_nonzero_iff.
  destruct odi as [di| ].
   destruct Hi as (Hn1, Ht1).
   unfold test_not_1; simpl.
-  apply Nat.eqb_neq, negb_true_iff in Ht1.
-  split; [ idtac | assumption ].
+  destruct (eq_nat_dec (u (i + di)) 1) as [H1| H1]; [ contradiction | idtac ].
+  split; [ idtac | intros H; discriminate H ].
   intros j Hj.
-  apply negb_false_iff, Nat.eqb_eq, Hn1; assumption.
+  destruct (eq_nat_dec (u (i + j)) 1) as [H2| H2]; [reflexivity | idtac ].
+  exfalso; apply H2, Hn1; assumption.
 
-  unfold test_not_1.
-  intros j.
-  apply negb_false_iff, Nat.eqb_eq, Hi.
+  unfold test_not_1; intros j.
+  destruct (eq_nat_dec (u (i + j)) 1) as [H1| H1]; [reflexivity | idtac ].
+  exfalso; apply H1, Hi.
 Qed.
