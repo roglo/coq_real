@@ -704,7 +704,6 @@ destruct v1; [ clear Hle1 | idtac ].
                  simpl in H13.
                  rewrite Nat.sub_0_r in H13.
                  destruct di1.
-                 destruct di1.
                   simpl in Hdd; subst di3.
                   pose proof (Hn3 0 (Nat.lt_0_succ dd)) as H.
                   simpl in H.
