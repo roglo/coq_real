@@ -20,12 +20,13 @@ value i_mul_algo x y i =
   summation 1 i (fun j → b2n (x.rm (j - 1)) * b2n (y.rm (i - j)))
 ;
 
-(* Σ (k=1,n), u_{i+k}/b^k + (i+n+2)/b^n =
-   (Σ (k=1,n), u_{i+k}*b^(n-k) + i+n+2) / b^n
+(* C ≤ Σ (k=1,n), u_{i+k}/b^k + (i+n+b/(b-1))/b^n *)
+(* Σ (k=1,n), u_{i+k}/b^k + (i+n+b/(b-1))/b^n =
+   (Σ (k=1,n), u_{i+k}*b^(n-k) + i+n+b/(b-1)) / b^n
  *)
 value partial_carry_bound_num u i n =
   summation 1 n (fun k → u (i + k) * int_pow base.val (n - k))
-  + i + n + 2
+  + i + n + base.val / (base.val - 1)
 ;
 value partial_carry_bound_den n =
   int_pow base.val n
@@ -55,11 +56,34 @@ partial_carry_bound u 2 1;
 partial_carry_bound u 3 1;
 partial_carry_bound u 4 1;
 ();
-(u 1 + partial_carry_bound u 0 1) mod 10;
-(u 2 + partial_carry_bound u 1 1) mod 10;
-(u 3 + partial_carry_bound u 2 1) mod 10;
-(u 4 + partial_carry_bound u 3 1) mod 10;
-(u 5 + partial_carry_bound u 4 1) mod 10;
+(u 0 + partial_carry_bound u 0 1) mod 10;
+(u 1 + partial_carry_bound u 1 1) mod 10;
+(u 2 + partial_carry_bound u 2 1) mod 10;
+(u 3 + partial_carry_bound u 3 1) mod 10;
+(u 4 + partial_carry_bound u 4 1) mod 10;
+
+value u = i_mul_algo (r_of_string "9344") (r_of_string "685");
+list_of_seq u 10;
+let i = 0 in (u i+partial_carry_bound u i (7-i)) mod 10;
+let i = 1 in (u i+partial_carry_bound u i (7-i)) mod 10;
+let i = 2 in (u i+partial_carry_bound u i (7-i)) mod 10;
+let i = 3 in (u i+partial_carry_bound u i (7-i)) mod 10;
+let i = 4 in (u i+partial_carry_bound u i (7-i)) mod 10;
+let i = 5 in (u i+partial_carry_bound u i (7-i)) mod 10;
+let i = 6 in (u i+partial_carry_bound u i (7-i)) mod 10;
+
+(* 4821*107 = 515847 *)
+
+value u = i_mul_algo (r_of_string "4821") (r_of_string "107");
+list_of_seq u 10;
+let i = 0 in (u i+partial_carry_bound u i (7-i)) mod 10;
+let i = 1 in (u i+partial_carry_bound u i (7-i)) mod 10;
+let i = 2 in (u i+partial_carry_bound u i (7-i)) mod 10;
+let i = 3 in (u i+partial_carry_bound u i (7-i)) mod 10;
+let i = 4 in (u i+partial_carry_bound u i (7-i)) mod 10;
+let i = 5 in (u i+partial_carry_bound u i (7-i)) mod 10;
+let i = 6 in (u i+partial_carry_bound u i (7-i)) mod 10;
+
 
 (*
 # 9344*685;
@@ -128,7 +152,7 @@ M = (i+n)/(b-1) + b/(b-1)²
 M = 1/(b-1) ((i+n) + b/(b-1))
 M = 1/(b-1) (i + n + b/(b-1))
 
-C ≤ Σ (k=1,n), u_{i+k}/b^k + (i+n+b/(b-1))/b^n
+******* C ≤ Σ (k=1,n), u_{i+k}/b^k + (i+n+b/(b-1))/b^n *******
 
 Si b = 2, C ≤ Σ (k=1,n), u_{i+k}/2^k + (i+n+2)/2^n
 Si b = 10, C ≤ Σ (k=1,n), u_{i+k}/10^k + (i+n+10/9)/10^n
