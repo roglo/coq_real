@@ -89,18 +89,18 @@ partial_carry_bound u 4 1;
 # (20/1) mod 10;
 - : int = 0
 
-ith digit: (u_i + Σ (k=1,n), u_{i+k}*b^(n-k) / b^n) mod b
- actually: (u_i + Σ (k=1,∞), u_{i+k}*b^(∞-k) / b^∞) mod b
+ith digit =
+  (u_i + int (Σ (k=1,∞), u_{i+k} / b^k)) mod b
 
-C = Σ (k=1,∞), u_{i+k}*b^(∞-k) / b^∞
-C = Σ (k=1,∞), u_{i+k}/b^k
+C = Σ (k=1,∞), u_{i+k}/b^k)
 u_i ≤ i(b-1)
 C ≤ Σ (k=1,∞), (i+k)(b-1)/b^k
 
 C = u_{i+1}/2 + Σ (k=2,∞), u_{i+k)/b^k
-
+...
 C = Σ (k=1,n), u_{i+k}/b^k + Σ (k=n+1,∞), u_{i+k}/b^k
 C ≤ Σ (k=1,n), u_{i+k}/b^k + Σ (k=n+1,∞), (i+k)(b-1)/b^k
+C ≤ Σ (k=1,n), u_{i+k}/b^k + Σ (k=1,∞), (i+k+n)(b-1)/b^(k+n)
 C ≤ Σ (k=1,n), u_{i+k}/b^k + (b-1)/b^n Σ (k=1,∞), (i+k+n)/b^k
 C ≤ Σ (k=1,n), u_{i+k}/b^k + (b-1)/b^n M
 
@@ -126,10 +126,12 @@ x = b/(b-1)²
 
 M = (i+n)/(b-1) + b/(b-1)²
 M = 1/(b-1) ((i+n) + b/(b-1))
+M = 1/(b-1) (i + n + b/(b-1))
 
 C ≤ Σ (k=1,n), u_{i+k}/b^k + (i+n+b/(b-1))/b^n
 
 Si b = 2, C ≤ Σ (k=1,n), u_{i+k}/2^k + (i+n+2)/2^n
+Si b = 10, C ≤ Σ (k=1,n), u_{i+k}/10^k + (i+n+10/9)/10^n
 
 value i_mul_i x y =
   let m = i_mul_algo x y in
