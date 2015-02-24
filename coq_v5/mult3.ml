@@ -12,17 +12,26 @@ value rec summation_loop b len g =
 
 value summation b e g = summation_loop b (e + 1 - b) g;
 
+value rec int_pow a b = if b ≤ 0 then 1 else a * int_pow a (b - 1);
+
 value base = ref 2;
 
 value i_mul_algo x y i =
   summation 1 i (fun j → b2n (x.rm (j - 1)) * b2n (y.rm (i - j)))
 ;
 
-(* Σ (k=1,n), u_{i+k}/b^k *)
-value partial_carry u i n =
-  summation 1 n (fun k → ...
-  ah oui mais non, faut voir si on fait ça en rationels ou en entiers...
+(* Σ (k=1,n), u_{i+k}/b^k + (i+n+2)/b^n =
+   (Σ (k=1,n), u_{i+k}*b^(n-k) + i+n+2) / b^n
+ *)
+value partial_carry_bound_num u i n =
+  summation 1 n (fun k → u (i + k) * int_pow base.val (n - k))
+  + i + n + 2
+;
+value partial_carry_bound_den n =
+  int_pow base.val n
+;
 
+(*
 value i_mul_i x y =
   let m = i_mul_algo x y in
   fun i →
@@ -64,3 +73,4 @@ v₀ ≤ u₁/2 + u₂/4 + u₃/8 + u₄/16 + 3/8
 ∀ k ≥ 1, u_k = k → v₀ = 2
 ∃ n, Σ (k=1,n), u_k/2^k ≥ 1 → v₀ = 1
 ∃ n, Σ (k=1,n), u_k/2^k + (n+2)/2^n < 1 → v₀ = 0
+*)
