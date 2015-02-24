@@ -31,6 +31,36 @@ value partial_carry_bound_den n =
   int_pow base.val n
 ;
 
+value partial_carry_bound u i n =
+  partial_carry_bound_num u i n / partial_carry_bound_den n
+;
+
+value r_of_string s =
+  {rm i =
+     if i ≥ String.length s then 0
+     else Char.code s.[i] - Char.code '0'}
+;
+value list_of_seq u =
+  list_rec [] where rec list_rec l n =
+    if n ≤ 0 then l
+    else list_rec [u (n-1) :: l] (n-1)
+;
+
+base.val := 10;
+value u = i_mul_algo (r_of_string "239") (r_of_string "4649");
+list_of_seq u 10;
+partial_carry_bound u 0 1;
+partial_carry_bound u 1 1;
+partial_carry_bound u 2 1;
+partial_carry_bound u 3 1;
+partial_carry_bound u 4 1;
+();
+(u 1 + partial_carry_bound u 0 1) mod 10;
+(u 2 + partial_carry_bound u 1 1) mod 10;
+(u 3 + partial_carry_bound u 2 1) mod 10;
+(u 4 + partial_carry_bound u 3 1) mod 10;
+(u 5 + partial_carry_bound u 4 1) mod 10;
+
 (*
 value i_mul_i x y =
   let m = i_mul_algo x y in
