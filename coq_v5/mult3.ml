@@ -18,11 +18,10 @@ value i_mul_algo x y i =
   summation 1 i (fun j → b2n (x.rm (j - 1)) * b2n (y.rm (i - j)))
 ;
 
-value carry m i =
-  loop 0 i 1 where rec loop num k base_pow_k_sub_i =
-    if
-    loop (base.val * num + m k) (k + 1) (base.val * base_pow_k_sub_i)
-;
+(* Σ (k=1,n), u_{i+k}/b^k *)
+value partial_carry u i n =
+  summation 1 n (fun k → ...
+  ah oui mais non, faut voir si on fait ça en rationels ou en entiers...
 
 value i_mul_i x y =
   let m = i_mul_algo x y in
