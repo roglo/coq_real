@@ -62,16 +62,6 @@ partial_carry_bound u 4 1;
 (u 3 + partial_carry_bound u 3 1) mod 10;
 (u 4 + partial_carry_bound u 4 1) mod 10;
 
-value u = i_mul_algo (r_of_string "9344") (r_of_string "685");
-list_of_seq u 10;
-let i = 0 in (u i+partial_carry_bound u i (7-i)) mod 10;
-let i = 1 in (u i+partial_carry_bound u i (7-i)) mod 10;
-let i = 2 in (u i+partial_carry_bound u i (7-i)) mod 10;
-let i = 3 in (u i+partial_carry_bound u i (7-i)) mod 10;
-let i = 4 in (u i+partial_carry_bound u i (7-i)) mod 10;
-let i = 5 in (u i+partial_carry_bound u i (7-i)) mod 10;
-let i = 6 in (u i+partial_carry_bound u i (7-i)) mod 10;
-
 (* 4821*107 = 515847 *)
 
 value u = i_mul_algo (r_of_string "4821") (r_of_string "107");
@@ -83,6 +73,28 @@ let i = 3 in (u i+partial_carry_bound u i (7-i)) mod 10;
 let i = 4 in (u i+partial_carry_bound u i (7-i)) mod 10;
 let i = 5 in (u i+partial_carry_bound u i (7-i)) mod 10;
 let i = 6 in (u i+partial_carry_bound u i (7-i)) mod 10;
+
+(* 9344*685 = 6400640 *)
+
+value u = i_mul_algo (r_of_string "9344") (r_of_string "685");
+list_of_seq u 10;
+let i = 0 in (u i+partial_carry_bound u i (7-i)) mod 10;
+let i = 1 in (u i+partial_carry_bound u i (7-i)) mod 10;
+let i = 2 in (u i+partial_carry_bound u i (7-i)) mod 10;
+let i = 3 in (u i+partial_carry_bound u i (7-i)) mod 10;
+let i = 4 in (u i+partial_carry_bound u i (7-i)) mod 10;
+let i = 5 in (u i+partial_carry_bound u i (7-i)) mod 10;
+let i = 6 in (u i+partial_carry_bound u i (7-i)) mod 10;
+();
+
+let i = 0 in (u i+partial_carry_bound u i 1) mod 10; (* erreur *)
+let i = 0 in (u i+partial_carry_bound u i 2) mod 10;
+let i = 0 in (u i+partial_carry_bound u i 3) mod 10;
+let i = 0 in (u i+partial_carry_bound u i 4) mod 10;
+let i = 0 in (u i+partial_carry_bound u i 5) mod 10;
+let i = 0 in (u i+partial_carry_bound u i 6) mod 10;
+let i = 0 in (u i+partial_carry_bound u i 7) mod 10;
+();
 
 
 (*
