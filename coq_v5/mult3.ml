@@ -61,18 +61,33 @@ value i_mul_algo x y i =
 
  *)
 
-value carry_upper_bound_num u i n =
+value carry_lower_bound_num u i n =
   summation 1 n (fun k → u (i + k) * int_pow base.val (n - k))
-  + (i + n) * (base.val - 1) + base.val
 ;
-value carry_upper_bound_den n =
+value carry_upper_bound_num u i n =
+  carry_lower_bound_num u i n + (i + n) * (base.val - 1) + base.val
+;
+value carry_bound_den n =
   int_pow base.val n
 ;
 
+value carry_lower_bound u i n =
+  let num = carry_lower_bound_num u i n in
+  let den = carry_bound_den n in
+  num / den
+;
 value carry_upper_bound u i n =
   let num = carry_upper_bound_num u i n in
-  let den = carry_upper_bound_den n in
+  let den = carry_bound_den n in
   num / den
+;
+
+value carry u i =
+  loop 1 where rec loop n =
+    let lb = carry_lower_bound u i n in
+    let ub = carry_upper_bound u i n in
+    if lb = ub then lb
+    else loop (n + 1)
 ;
 
 value r_of_string s =
@@ -86,59 +101,23 @@ value list_of_seq u =
     else list_rec [u (n-1) :: l] (n-1)
 ;
 
+value i_mul x y =
+  let u = i_mul_algo x y in
+  {rm i = (u i + carry u i) mod base.val}
+;
+
 base.val := 10;
 
-(* 239*4649 = 1111111 *)
-
-value u = i_mul_algo (r_of_string "239") (r_of_string "4649");
-list_of_seq u 10;
 239*4649;
-let i = 0 in (u i+carry_upper_bound u i 2) mod 10;
-let i = 1 in (u i+carry_upper_bound u i 2) mod 10;
-let i = 2 in (u i+carry_upper_bound u i 2) mod 10;
-let i = 3 in (u i+carry_upper_bound u i 2) mod 10;
-let i = 4 in (u i+carry_upper_bound u i 2) mod 10;
-let i = 5 in (u i+carry_upper_bound u i 1) mod 10;
-let i = 6 in (u i+carry_upper_bound u i 1) mod 10;
-
-(* 4821*107 = 515847 *)
-
-value u = i_mul_algo (r_of_string "4821") (r_of_string "107");
-list_of_seq u 10;
+list_of_seq (i_mul (r_of_string "239") (r_of_string "4649")).rm 10;
 4821*107;
-let i = 0 in (u i+carry_upper_bound u i (7-i)) mod 10;
-let i = 1 in (u i+carry_upper_bound u i (7-i)) mod 10;
-let i = 2 in (u i+carry_upper_bound u i (7-i)) mod 10;
-let i = 3 in (u i+carry_upper_bound u i (7-i)) mod 10;
-let i = 4 in (u i+carry_upper_bound u i (7-i)) mod 10;
-let i = 5 in (u i+carry_upper_bound u i 3) mod 10;
-let i = 6 in (u i+carry_upper_bound u i 2) mod 10;
-
-(* 9344*685 = 6400640 *)
-
-value u = i_mul_algo (r_of_string "9344") (r_of_string "685");
-list_of_seq u 10;
+list_of_seq (i_mul (r_of_string "4821") (r_of_string "107")).rm 10;
 9344*685;
-let i = 0 in (u i+carry_upper_bound u i (7-i)) mod 10;
-let i = 1 in (u i+carry_upper_bound u i (7-i)) mod 10;
-let i = 2 in (u i+carry_upper_bound u i (7-i)) mod 10;
-let i = 3 in (u i+carry_upper_bound u i (7-i)) mod 10;
-let i = 4 in (u i+carry_upper_bound u i (7-i)) mod 10;
-let i = 5 in (u i+carry_upper_bound u i (7-i)) mod 10;
-let i = 6 in (u i+carry_upper_bound u i 2) mod 10;
-();
-
-let i = 0 in (u i+carry_upper_bound u i 1) mod 10;
-let i = 0 in (u i+carry_upper_bound u i 2) mod 10;
-let i = 0 in (u i+carry_upper_bound u i 3) mod 10;
-let i = 0 in (u i+carry_upper_bound u i 4) mod 10;
-let i = 0 in (u i+carry_upper_bound u i 5) mod 10;
-let i = 0 in (u i+carry_upper_bound u i 6) mod 10;
-let i = 0 in (u i+carry_upper_bound u i 7) mod 10;
-();
-
-let i = 0 in (carry_upper_bound_num u i 1, carry_upper_bound_den 1);
-let i = 1 in (carry_upper_bound_num u i 1, carry_upper_bound_den 1);
+list_of_seq (i_mul (r_of_string "9344") (r_of_string "685")).rm 10;
+9725*483;
+list_of_seq (i_mul (r_of_string "9725") (r_of_string "483")).rm 10;
+4656*7532;
+list_of_seq (i_mul (r_of_string "4656") (r_of_string "7532")).rm 10;
 
 (*
 # 9344*685;
