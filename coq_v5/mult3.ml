@@ -4,15 +4,32 @@ type real01 = { rm : int → int };
 
 value b2n b = b (*if b then 1 else 0*);
 
+value add a b =
+  if a < 0 then
+    failwith (sprintf "summation negative arg %d" a)
+  else
+    let c = a + b in
+    if c < 0 then
+      failwith (sprintf "summation overflow %d+%d" a b)
+    else c
+;
+
 value rec summation_loop b len g =
   match len with
   | 0 → 0
-  | _ → g b + summation_loop (b + 1) (len - 1) g
+  | _ → add (g b) (summation_loop (b + 1) (len - 1) g)
   end.
 
 value summation b e g = summation_loop b (e + 1 - b) g;
 
-value rec int_pow a b = if b ≤ 0 then 1 else a * int_pow a (b - 1);
+value rec int_pow a b =
+  if b < 0 then invalid_arg "int_pow"
+  else if b = 0 then 1
+  else
+    let r = a * int_pow a (b - 1) in
+    if a > 0 && r < 0 then failwith "int_pow overflow"
+    else r
+;
 
 value base = ref 2;
 
@@ -65,7 +82,11 @@ value carry_lower_bound_num u i n =
   summation 1 n (fun k → u (i + k) * int_pow base.val (n - k))
 ;
 value carry_upper_bound_num u i n =
-  carry_lower_bound_num u i n + (i + n) * (base.val - 1) + base.val
+  let a = carry_lower_bound_num u i n in
+  let b = (i + n) * (base.val - 1) + base.val in
+  let c = a + b in
+  if b < 0 || c < 0 then failwith "carry_upper_bound_num overflow"
+  else c
 ;
 value carry_bound_den n =
   int_pow base.val n
@@ -137,6 +158,8 @@ list_of_seq (i_mul (r_of_string "3") one).rm 20;
 value u = i_mul_algo (r_of_string "3") one;
 let n = 8 in (carry_lower_bound u 0 n, carry_upper_bound u 0 n);
 let n = 9 in (carry_lower_bound u 0 n, carry_upper_bound u 0 n);
+
+value x = {rm i = i mod base.val};
 
 (*
 # 9344*685;
