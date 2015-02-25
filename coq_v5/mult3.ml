@@ -59,20 +59,19 @@ value i_mul_algo x y i =
    Cn = Σ(k=1,n),u_{i+k}/10^k + ---------
                                   10^n
 
-   function "partial_carry_bound" below is Cn
  *)
 
-value partial_carry_bound_num u i n =
+value carry_upper_bound_num u i n =
   summation 1 n (fun k → u (i + k) * int_pow base.val (n - k))
   + (i + n) * (base.val - 1) + base.val
 ;
-value partial_carry_bound_den n =
+value carry_upper_bound_den n =
   int_pow base.val n
 ;
 
-value partial_carry_bound u i n =
-  let num = partial_carry_bound_num u i n in
-  let den = partial_carry_bound_den n in
+value carry_upper_bound u i n =
+  let num = carry_upper_bound_num u i n in
+  let den = carry_upper_bound_den n in
   num / den
 ;
 
@@ -88,58 +87,58 @@ value list_of_seq u =
 ;
 
 base.val := 10;
+
+(* 239*4649 = 1111111 *)
+
 value u = i_mul_algo (r_of_string "239") (r_of_string "4649");
 list_of_seq u 10;
-partial_carry_bound u 0 1;
-partial_carry_bound u 1 1;
-partial_carry_bound u 2 1;
-partial_carry_bound u 3 1;
-partial_carry_bound u 4 1;
-();
-(u 0 + partial_carry_bound u 0 1) mod 10;
-(u 1 + partial_carry_bound u 1 1) mod 10;
-(u 2 + partial_carry_bound u 2 1) mod 10;
-(u 3 + partial_carry_bound u 3 1) mod 10;
-(u 4 + partial_carry_bound u 4 1) mod 10;
+239*4649;
+let i = 0 in (u i+carry_upper_bound u i 2) mod 10;
+let i = 1 in (u i+carry_upper_bound u i 2) mod 10;
+let i = 2 in (u i+carry_upper_bound u i 2) mod 10;
+let i = 3 in (u i+carry_upper_bound u i 2) mod 10;
+let i = 4 in (u i+carry_upper_bound u i 2) mod 10;
+let i = 5 in (u i+carry_upper_bound u i 1) mod 10;
+let i = 6 in (u i+carry_upper_bound u i 1) mod 10;
 
 (* 4821*107 = 515847 *)
 
 value u = i_mul_algo (r_of_string "4821") (r_of_string "107");
 list_of_seq u 10;
 4821*107;
-let i = 0 in (u i+partial_carry_bound u i (7-i)) mod 10;
-let i = 1 in (u i+partial_carry_bound u i (7-i)) mod 10;
-let i = 2 in (u i+partial_carry_bound u i (7-i)) mod 10;
-let i = 3 in (u i+partial_carry_bound u i (7-i)) mod 10;
-let i = 4 in (u i+partial_carry_bound u i (7-i)) mod 10;
-let i = 5 in (u i+partial_carry_bound u i 3) mod 10;
-let i = 6 in (u i+partial_carry_bound u i 2) mod 10;
+let i = 0 in (u i+carry_upper_bound u i (7-i)) mod 10;
+let i = 1 in (u i+carry_upper_bound u i (7-i)) mod 10;
+let i = 2 in (u i+carry_upper_bound u i (7-i)) mod 10;
+let i = 3 in (u i+carry_upper_bound u i (7-i)) mod 10;
+let i = 4 in (u i+carry_upper_bound u i (7-i)) mod 10;
+let i = 5 in (u i+carry_upper_bound u i 3) mod 10;
+let i = 6 in (u i+carry_upper_bound u i 2) mod 10;
 
 (* 9344*685 = 6400640 *)
 
 value u = i_mul_algo (r_of_string "9344") (r_of_string "685");
 list_of_seq u 10;
 9344*685;
-let i = 0 in (u i+partial_carry_bound u i (7-i)) mod 10;
-let i = 1 in (u i+partial_carry_bound u i (7-i)) mod 10;
-let i = 2 in (u i+partial_carry_bound u i (7-i)) mod 10;
-let i = 3 in (u i+partial_carry_bound u i (7-i)) mod 10;
-let i = 4 in (u i+partial_carry_bound u i (7-i)) mod 10;
-let i = 5 in (u i+partial_carry_bound u i (7-i)) mod 10;
-let i = 6 in (u i+partial_carry_bound u i 2) mod 10;
+let i = 0 in (u i+carry_upper_bound u i (7-i)) mod 10;
+let i = 1 in (u i+carry_upper_bound u i (7-i)) mod 10;
+let i = 2 in (u i+carry_upper_bound u i (7-i)) mod 10;
+let i = 3 in (u i+carry_upper_bound u i (7-i)) mod 10;
+let i = 4 in (u i+carry_upper_bound u i (7-i)) mod 10;
+let i = 5 in (u i+carry_upper_bound u i (7-i)) mod 10;
+let i = 6 in (u i+carry_upper_bound u i 2) mod 10;
 ();
 
-let i = 0 in (u i+partial_carry_bound u i 1) mod 10;
-let i = 0 in (u i+partial_carry_bound u i 2) mod 10;
-let i = 0 in (u i+partial_carry_bound u i 3) mod 10;
-let i = 0 in (u i+partial_carry_bound u i 4) mod 10;
-let i = 0 in (u i+partial_carry_bound u i 5) mod 10;
-let i = 0 in (u i+partial_carry_bound u i 6) mod 10;
-let i = 0 in (u i+partial_carry_bound u i 7) mod 10;
+let i = 0 in (u i+carry_upper_bound u i 1) mod 10;
+let i = 0 in (u i+carry_upper_bound u i 2) mod 10;
+let i = 0 in (u i+carry_upper_bound u i 3) mod 10;
+let i = 0 in (u i+carry_upper_bound u i 4) mod 10;
+let i = 0 in (u i+carry_upper_bound u i 5) mod 10;
+let i = 0 in (u i+carry_upper_bound u i 6) mod 10;
+let i = 0 in (u i+carry_upper_bound u i 7) mod 10;
 ();
 
-let i = 0 in (partial_carry_bound_num u i 1, partial_carry_bound_den 1);
-let i = 1 in (partial_carry_bound_num u i 1, partial_carry_bound_den 1);
+let i = 0 in (carry_upper_bound_num u i 1, carry_upper_bound_den 1);
+let i = 1 in (carry_upper_bound_num u i 1, carry_upper_bound_den 1);
 
 (*
 # 9344*685;
