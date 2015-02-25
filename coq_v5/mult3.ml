@@ -20,16 +20,20 @@ value i_mul_algo x y i =
   summation 1 i (fun j → b2n (x.rm (j - 1)) * b2n (y.rm (i - j)))
 ;
 
-(* C ≤ Σ (k=1,n), u_{i+k}/b^k + (i+n+b/(b-1))/b^n *)
-(* Σ (k=1,n), u_{i+k}/b^k + (i+n+b/(b-1))/b^n =
-   (Σ (k=1,n), u_{i+k}*b^(n-k) + i+n+b/(b-1)) / b^n
+(* C ≤ D
+                              (i+n)(b-1)+b
+   D = Σ(k=1,n),u_{i+k}/b^k + ------------
+                                b^n (b-1)
+   num D = (b-1)Σ(k=1,n),u_{i+k}*b^(n-k) + (i+n)(b-1) + b
+   den D = b^n(b-1)
  *)
 value partial_carry_bound_num u i n =
+  (base.val - 1) *
   summation 1 n (fun k → u (i + k) * int_pow base.val (n - k))
-  + i + n + base.val / (base.val - 1)
+  + (i + n) * (base.val - 1) + base.val
 ;
 value partial_carry_bound_den n =
-  int_pow base.val n
+  int_pow base.val n * (base.val - 1)
 ;
 
 value partial_carry_bound u i n =
@@ -87,7 +91,7 @@ let i = 5 in (u i+partial_carry_bound u i (7-i)) mod 10;
 let i = 6 in (u i+partial_carry_bound u i (7-i)) mod 10;
 ();
 
-let i = 0 in (u i+partial_carry_bound u i 1) mod 10; (* erreur *)
+let i = 0 in (u i+partial_carry_bound u i 1) mod 10; (* 5 = erreur *)
 let i = 0 in (u i+partial_carry_bound u i 2) mod 10;
 let i = 0 in (u i+partial_carry_bound u i 3) mod 10;
 let i = 0 in (u i+partial_carry_bound u i 4) mod 10;
