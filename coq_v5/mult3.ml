@@ -20,20 +20,54 @@ value i_mul_algo x y i =
   summation 1 i (fun j → b2n (x.rm (j - 1)) * b2n (y.rm (i - j)))
 ;
 
-(* C ≤ D
-                              (i+n)(b-1)+b
-   D = Σ(k=1,n),u_{i+k}/b^k + ------------
-                                b^n (b-1)
-   num D = (b-1)Σ(k=1,n),u_{i+k}*b^(n-k) + (i+n)(b-1) + b
-   den D = b^n(b-1)
+(* Let x, y two real numbers in base b, u their product as number with
+   numbers, z their product (i.e. u where carries are propagated).
+
+   Conjecture supposed true:
+       ∀ i, zi = (ui + floor C∞) mod b
+       with C∞ = Σ (k=1,∞),u_{i+k}/b^k
+
+   C∞ is not computable since it is an infinite summation.
+
+   But C∞ can be bounded from above using a partial summation of n terms
+   and an upper bound of the rest, knowing that u_i ≤ i(b-1)².
+
+   Let Cn being this partial summation + upper bound of the rest.
+
+   ∀ n, C∞ ≤ Cn
+
+   The computation gives
+                               (i+n)(b-1)+b
+   Cn = Σ(k=1,n),u_{i+k}/b^k + ------------
+                                   b^n
+   num Cn = Σ(k=1,n),u_{i+k}*b^(n-k) + (i+n)(b-1) + b
+   den Cn = b^n
+
+   zi = (ui + floor C∞) mod b
+   C∞ = min Cn = lim Cn
+        n ∈ ℕ    n→∞
+
+   The sequence (Cn) is decreasing; hopefully can be computed using the
+   oracle.
+
+   Special case when b=2:
+                               i+n+2
+   Cn = Σ(k=1,n),u_{i+k}/2^k + -----
+                                2^n
+   Special case when b=10:
+                                9(i+n)+10
+   Cn = Σ(k=1,n),u_{i+k}/10^k + ---------
+                                  10^n
+
+   function "partial_carry_bound" below is Cn
  *)
+
 value partial_carry_bound_num u i n =
-  (base.val - 1) *
   summation 1 n (fun k → u (i + k) * int_pow base.val (n - k))
   + (i + n) * (base.val - 1) + base.val
 ;
 value partial_carry_bound_den n =
-  int_pow base.val n * (base.val - 1)
+  int_pow base.val n
 ;
 
 value partial_carry_bound u i n =
@@ -78,8 +112,8 @@ let i = 1 in (u i+partial_carry_bound u i (7-i)) mod 10;
 let i = 2 in (u i+partial_carry_bound u i (7-i)) mod 10;
 let i = 3 in (u i+partial_carry_bound u i (7-i)) mod 10;
 let i = 4 in (u i+partial_carry_bound u i (7-i)) mod 10;
-let i = 5 in (u i+partial_carry_bound u i (7-i)) mod 10;
-let i = 6 in (u i+partial_carry_bound u i (7-i)) mod 10;
+let i = 5 in (u i+partial_carry_bound u i 3) mod 10;
+let i = 6 in (u i+partial_carry_bound u i 2) mod 10;
 
 (* 9344*685 = 6400640 *)
 
@@ -92,11 +126,11 @@ let i = 2 in (u i+partial_carry_bound u i (7-i)) mod 10;
 let i = 3 in (u i+partial_carry_bound u i (7-i)) mod 10;
 let i = 4 in (u i+partial_carry_bound u i (7-i)) mod 10;
 let i = 5 in (u i+partial_carry_bound u i (7-i)) mod 10;
-let i = 6 in (u i+partial_carry_bound u i (7-i)) mod 10;
+let i = 6 in (u i+partial_carry_bound u i 2) mod 10;
 ();
 
-let i = 0 in (u i+partial_carry_bound u i 1) mod 10; (* 5 = erreur *)
-let i = 0 in (u i+partial_carry_bound u i 2) mod 10; (* 6 = bon *)
+let i = 0 in (u i+partial_carry_bound u i 1) mod 10;
+let i = 0 in (u i+partial_carry_bound u i 2) mod 10;
 let i = 0 in (u i+partial_carry_bound u i 3) mod 10;
 let i = 0 in (u i+partial_carry_bound u i 4) mod 10;
 let i = 0 in (u i+partial_carry_bound u i 5) mod 10;
@@ -134,90 +168,4 @@ let i = 1 in (partial_carry_bound_num u i 1, partial_carry_bound_den 1);
 - : int = 4
 # (20/1) mod 10;
 - : int = 0
-
-ith digit =
-  (u_i + int (Σ (k=1,∞), u_{i+k} / b^k)) mod b
-
-C = Σ (k=1,∞), u_{i+k}/b^k)
-u_i ≤ i(b-1)
-C ≤ Σ (k=1,∞), (i+k)(b-1)/b^k
-
-C = u_{i+1}/2 + Σ (k=2,∞), u_{i+k)/b^k
-...
-C = Σ (k=1,n), u_{i+k}/b^k + Σ (k=n+1,∞), u_{i+k}/b^k
-C ≤ Σ (k=1,n), u_{i+k}/b^k + Σ (k=n+1,∞), (i+k)(b-1)/b^k
-C ≤ Σ (k=1,n), u_{i+k}/b^k + Σ (k=1,∞), (i+k+n)(b-1)/b^(k+n)
-C ≤ Σ (k=1,n), u_{i+k}/b^k + (b-1)/b^n Σ (k=1,∞), (i+k+n)/b^k
-C ≤ Σ (k=1,n), u_{i+k}/b^k + (b-1)/b^n M
-
-M = Σ (k=1,∞), (i+k+n)/b^k
-M = (i+n) Σ (k=1,∞), 1/b^k + Σ (k=1,∞), k/b^k
-
-1/b+1/b²+1/b³+...+1/b^n = (b^(n-1)+b^(n-2)+...+1)/b^n
-                        = (b^n-1)/((b-1)b^n)
-→ 1/(b-1) when n → ∞
-
-M = (i+n)/(b-1) + Σ (k=1,∞), k/b^k
-
-x = Σ (k = 1, ∞), k/b^k
-x = 1/b + Σ (k = 2, ∞), k/b^k
-x = 1/b + Σ (k = 1, ∞), (k+1)/b^(k+1)
-x = 1/b + 1/b * Σ (k = 1, ∞), (k+1)/b^k
-x = 1/b + 1/b * (Σ (k = 1, ∞), 1/b^k + Σ (k = 1, ∞), k/b^k)
-x = 1/b + 1/b * (1/(b-1) + x)
-bx = 1 + 1/(b-1) + x
-bx - x = 1 + 1/(b-1)
-(b-1)x = (b-1+1)/(b-1)
-x = b/(b-1)²
-
-M = (i+n)/(b-1) + b/(b-1)²
-M = 1/(b-1) ((i+n) + b/(b-1))
-M = 1/(b-1) (i + n + b/(b-1))
-
-******* C ≤ Σ (k=1,n), u_{i+k}/b^k + (i+n+b/(b-1))/b^n *******
-
-Si b = 2, C ≤ Σ (k=1,n), u_{i+k}/2^k + (i+n+2)/2^n
-Si b = 10, C ≤ Σ (k=1,n), u_{i+k}/10^k + (i+n+10/9)/10^n
-
-value i_mul_i x y =
-  let m = i_mul_algo x y in
-  fun i →
-    (m i + floor (summation (i + 1) ∞ (fun k → m k / base.val ^ (k - i))))
-    mod base.val
-;
-
-u_i ≤ i
-x = Σ (k = 1, ∞), k/2^k
-x = 1 + 1/2 * Σ (k = 2, ∞), (k-1)/2^(k-1) = 1 + 1/2 x
-1/2 x = 1
-x = 2
-
-z₀ = (floor v₀) mod 2
-v₀ = Σ (k = 1, ∞), u_k/2^k
-0 ≤ v₀ ≤ 2
-
-v₀ = u₁/2 + Σ (k = 2, ∞), u_k/2^k
-   =      + 1/2 Σ (k = 1, ∞), u_{k+1}/2^k
-v₀ ≤ u₁/2 + 1/2 Σ (k = 1, ∞), (k+1)/2^k
-v₀ ≤ u₁/2 + 1/2 (Σ (k = 1, ∞), 1/2^k + Σ (k = 1, ∞), k/2^k)
-v₀ ≤ u₁/2 + 1/2 (1 + 2)
-v₀ ≤ u₁/2 + 3/2
-
-v₀ = u₁/2 + u₂/4 + Σ (k = 3, ∞), u_k/2^k
-v₀ = u₁/2 + u₂/4 + 1/4 Σ (k = 1, ∞), u_{k+2}/2^k
-v₀ ≤ u₁/2 + u₂/4 + 1/4 Σ (k = 1, ∞), (k+2)/2^k
-v₀ ≤ u₁/2 + u₂/4 + 1/4 (2 Σ (k = 1, ∞), 1/2^k + Σ (k = 1, ∞), k/2^k)
-v₀ ≤ u₁/2 + u₂/4 + 1/4 (2 * 1 + 2)
-v₀ ≤ u₁/2 + u₂/4 + 1
-
-v₀ ≤ u₁/2 + 3/2
-v₀ ≤ u₁/2 + u₂/4 + 1
-v₀ ≤ u₁/2 + u₂/4 + u₃/8 + 5/8
-v₀ ≤ u₁/2 + u₂/4 + u₃/8 + u₄/16 + 3/8
-
-Σ (k=1,n), u_k/2^k ≤ v₀ ≤ Σ (k=1,n), u_k/2^k + (n+2)/2^n
-
-∀ k ≥ 1, u_k = k → v₀ = 2
-∃ n, Σ (k=1,n), u_k/2^k ≥ 1 → v₀ = 1
-∃ n, Σ (k=1,n), u_k/2^k + (n+2)/2^n < 1 → v₀ = 0
 *)
