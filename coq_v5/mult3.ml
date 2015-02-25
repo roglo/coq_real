@@ -37,7 +37,9 @@ value partial_carry_bound_den n =
 ;
 
 value partial_carry_bound u i n =
-  partial_carry_bound_num u i n / partial_carry_bound_den n
+  let num = partial_carry_bound_num u i n in
+  let den = partial_carry_bound_den n in
+  num / den
 ;
 
 value r_of_string s =
@@ -70,6 +72,7 @@ partial_carry_bound u 4 1;
 
 value u = i_mul_algo (r_of_string "4821") (r_of_string "107");
 list_of_seq u 10;
+4821*107;
 let i = 0 in (u i+partial_carry_bound u i (7-i)) mod 10;
 let i = 1 in (u i+partial_carry_bound u i (7-i)) mod 10;
 let i = 2 in (u i+partial_carry_bound u i (7-i)) mod 10;
@@ -82,6 +85,7 @@ let i = 6 in (u i+partial_carry_bound u i (7-i)) mod 10;
 
 value u = i_mul_algo (r_of_string "9344") (r_of_string "685");
 list_of_seq u 10;
+9344*685;
 let i = 0 in (u i+partial_carry_bound u i (7-i)) mod 10;
 let i = 1 in (u i+partial_carry_bound u i (7-i)) mod 10;
 let i = 2 in (u i+partial_carry_bound u i (7-i)) mod 10;
@@ -92,7 +96,7 @@ let i = 6 in (u i+partial_carry_bound u i (7-i)) mod 10;
 ();
 
 let i = 0 in (u i+partial_carry_bound u i 1) mod 10; (* 5 = erreur *)
-let i = 0 in (u i+partial_carry_bound u i 2) mod 10;
+let i = 0 in (u i+partial_carry_bound u i 2) mod 10; (* 6 = bon *)
 let i = 0 in (u i+partial_carry_bound u i 3) mod 10;
 let i = 0 in (u i+partial_carry_bound u i 4) mod 10;
 let i = 0 in (u i+partial_carry_bound u i 5) mod 10;
@@ -100,6 +104,8 @@ let i = 0 in (u i+partial_carry_bound u i 6) mod 10;
 let i = 0 in (u i+partial_carry_bound u i 7) mod 10;
 ();
 
+let i = 0 in (partial_carry_bound_num u i 1, partial_carry_bound_den 1);
+let i = 1 in (partial_carry_bound_num u i 1, partial_carry_bound_den 1);
 
 (*
 # 9344*685;
