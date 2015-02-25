@@ -74,12 +74,18 @@ value carry_bound_den n =
 value carry_lower_bound u i n =
   let num = carry_lower_bound_num u i n in
   let den = carry_bound_den n in
-  num / den
+  if num < 0 || den < 0 then
+    failwith (sprintf "carry_lower_bound: overflow (%d iterations)" n)
+  else
+    num / den
 ;
 value carry_upper_bound u i n =
   let num = carry_upper_bound_num u i n in
   let den = carry_bound_den n in
-  num / den
+  if num < 0 || den < 0 then
+    failwith (sprintf "carry_upper_bound: overflow (%d iterations)" n)
+  else
+    num / den
 ;
 
 value carry u i =
@@ -118,6 +124,13 @@ list_of_seq (i_mul (r_of_string "9344") (r_of_string "685")).rm 10;
 list_of_seq (i_mul (r_of_string "9725") (r_of_string "483")).rm 10;
 4656*7532;
 list_of_seq (i_mul (r_of_string "4656") (r_of_string "7532")).rm 10;
+(* for 64 bits *)
+9468025*7023342;
+list_of_seq (i_mul (r_of_string "9468025") (r_of_string "7023342")).rm 20;
+
+(* this does not work, bug *)
+value one = {rm i = base.val-1};
+list_of_seq (i_mul one one).rm 20;
 
 (*
 # 9344*685;
