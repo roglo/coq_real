@@ -37,8 +37,8 @@ value i_mul_algo x y i =
   summation 1 i (fun j → b2n (x.rm (j - 1)) * b2n (y.rm (i - j)))
 ;
 
-(* Let x, y two real numbers in base b, u their product as number with
-   numbers, z their product (i.e. u where carries are propagated).
+(* Let x, y two real numbers in base b, u their product as "number with
+   numbers", z their product (i.e. u where carries are propagated).
 
    Conjecture supposed true:
        ∀ i, zi = (ui + floor C∞) mod b
@@ -78,9 +78,12 @@ value i_mul_algo x y i =
 
  *)
 
+(* Σ(k=1,n),u_{i+k}/b^(n-k) *)
 value carry_lower_bound_num u i n =
   summation 1 n (fun k → u (i + k) * int_pow base.val (n - k))
 ;
+
+(* Σ(k=1,n),u_{i+k}*b^(n-k) + (i+n)(b-1) + b *)
 value carry_upper_bound_num u i n =
   let a = carry_lower_bound_num u i n in
   let b = (i + n) * (base.val - 1) + base.val in
@@ -88,6 +91,7 @@ value carry_upper_bound_num u i n =
   if b < 0 || c < 0 then failwith "carry_upper_bound_num overflow"
   else c
 ;
+
 value carry_bound_den n =
   int_pow base.val n
 ;
@@ -100,6 +104,7 @@ value carry_lower_bound u i n =
   else
     num / den
 ;
+
 value carry_upper_bound u i n =
   let num = carry_upper_bound_num u i n in
   let den = carry_bound_den n in
@@ -109,6 +114,7 @@ value carry_upper_bound u i n =
     num / den
 ;
 
+(* carry computation supposing we have the right to infinitely loop *)
 value carry u i =
   loop 1 where rec loop n =
     let lb = carry_lower_bound u i n in
@@ -122,6 +128,7 @@ value r_of_string s =
      if i ≥ String.length s then 0
      else Char.code s.[i] - Char.code '0'}
 ;
+
 value list_of_seq u =
   list_rec [] where rec list_rec l n =
     if n ≤ 0 then l
