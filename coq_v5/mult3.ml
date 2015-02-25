@@ -128,9 +128,15 @@ list_of_seq (i_mul (r_of_string "4656") (r_of_string "7532")).rm 10;
 9468025*7023342;
 list_of_seq (i_mul (r_of_string "9468025") (r_of_string "7023342")).rm 20;
 
-(* this does not work, bug *)
+(* overflows *)
 value one = {rm i = base.val-1};
 list_of_seq (i_mul one one).rm 20;
+list_of_seq (i_mul (r_of_string "39872") one).rm 20;
+list_of_seq (i_mul (r_of_string "3") one).rm 20;
+
+value u = i_mul_algo (r_of_string "3") one;
+let n = 8 in (carry_lower_bound u 0 n, carry_upper_bound u 0 n);
+let n = 9 in (carry_lower_bound u 0 n, carry_upper_bound u 0 n);
 
 (*
 # 9344*685;
