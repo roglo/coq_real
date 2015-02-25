@@ -167,6 +167,7 @@ list_of_seq (i_mul (r_of_string "3") one).rm 20;
 value u = i_mul_algo (r_of_string "3") one;
 let n = 8 in (carry_lower_bound u 0 n, carry_upper_bound u 0 n);
 let n = 9 in (carry_lower_bound u 0 n, carry_upper_bound u 0 n);
+let n = 6 in (carry_lower_bound_num u 0 n, carry_upper_bound_num u 0 n);
 
 value x = {rm i = i mod base.val};
 
@@ -177,6 +178,12 @@ value u = i_mul_algo one one;
 list_of_seq u 20;
 carry_lower_bound u 0 7;
 carry_upper_bound u 0 7;
+let n = 1 in (carry_lower_bound_num u 0 n, carry_upper_bound_num u 0 n);
+let n = 2 in (carry_lower_bound_num u 0 n, carry_upper_bound_num u 0 n);
+let n = 3 in (carry_lower_bound_num u 0 n, carry_upper_bound_num u 0 n);
+let n = 4 in (carry_lower_bound_num u 0 n, carry_upper_bound_num u 0 n);
+let n = 5 in (carry_lower_bound_num u 0 n, carry_upper_bound_num u 0 n);
+let n = 6 in (carry_lower_bound_num u 0 n, carry_upper_bound_num u 0 n);
 
 (*
 # 9344*685;
