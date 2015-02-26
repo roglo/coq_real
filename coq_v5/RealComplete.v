@@ -20,4 +20,10 @@ assert (1 > 0)%R as H.
  Focus 2.
  apply Hc in H.
  destruct H as (N, HN).
+ exists (mkre (R_int (u (S N))) 0).
+ intros ε Hε.
+ exists N; intros n Hn.
+ remember Hε as H; clear HeqH.
+ apply Hc in H.
+ destruct H as (N1, HN1).
 bbb.
