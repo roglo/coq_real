@@ -11,13 +11,13 @@ Definition cauchy_sequence u :=
 Definition converges_to u r :=
   ∀ ε, (ε > 0)%R → ∃ N, ∀ n, n > N → (R_abs (r - u n) < ε)%R.
 
-Definition cauchy_sequence_limit u :=
-  {| R_int :=
-     R_frac i := |}.
-
 Theorem zzz : ∀ u, cauchy_sequence u → ∃ r, converges_to u r.
 Proof.
 intros u Hc.
 unfold cauchy_sequence in Hc.
 unfold converges_to.
+assert (1 > 0)%R as H.
+ Focus 2.
+ apply Hc in H.
+ destruct H as (N, HN).
 bbb.
