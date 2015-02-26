@@ -9,9 +9,15 @@ Definition cauchy_sequence u :=
   ∀ ε, (ε > 0)%R → ∃ N, ∀ p q, p > N → q > N → (R_abs (u p - u q) < ε)%R.
 
 Definition converges_to u r :=
-  (∃ N, ∀ n, n > N → R_int r = R_int (u n)) ∧
-  (∀ i, ∃ N, ∀ n, n > N → R_frac r.[i] = R_frac (u n).[i]).
+  ∀ ε, (ε > 0)%R → ∃ N, ∀ n, n > N → (R_abs (r - u n) < ε)%R.
+
+Definition cauchy_sequence_limit u :=
+  {| R_int :=
+     R_frac i := |}.
 
 Theorem zzz : ∀ u, cauchy_sequence u → ∃ r, converges_to u r.
 Proof.
+intros u Hc.
+unfold cauchy_sequence in Hc.
+unfold converges_to.
 bbb.
