@@ -713,6 +713,7 @@ destruct v1; [ clear Hle1 | idtac ].
                   do 2 rewrite Nat.add_0_r in H.
                   rewrite Nat.mul_1_r in H.
 bbb.
+(*
 
 intros x y i.
 remember (S i) as si; simpl; subst si.
@@ -1159,7 +1160,6 @@ unfold n2b.
 destruct b0, b1; try reflexivity; simpl.
 destruct Hx01 as [H| H]; discriminate H.
 Qed.
-*)
 
 Theorem I_mul_algo_1 : ∀ x y, I_mul_algo x y 1 = b2n (x.[0]) * b2n (y.[0]).
 Proof.
@@ -1239,7 +1239,6 @@ bbb.
           clear Hn1; simpl in H3.
           simpl in Hn2.
 bbb.
-*)
 
 Definition nn_add (u v : nat → nat) i := u i + v i.
 
@@ -1361,7 +1360,6 @@ destruct s1 as [di1| ].
             clear Hn1 Hn2 Hn3.
             rewrite Nat.add_0_r in Hu, Hv, H2, H3.
 bbb.
-*)
 
 Theorem I_mul_1_r : ∀ x, (I_mul x 1 = x)%I.
 Proof.
