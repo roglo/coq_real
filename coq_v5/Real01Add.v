@@ -146,6 +146,7 @@ Theorem carry_compat_r : ∀ x y z j,
   → (carry x z j = carry y z j)%D.
 Proof.
 intros x y z j Hxy; symmetry.
+unfold I_eq_ext in Hxy.
 unfold carry; intros.
 remember (fst_same y z j) as s1 eqn:Hs1 .
 remember (fst_same x z j) as s2 eqn:Hs2 .
@@ -173,24 +174,26 @@ destruct s1 as [di1| ].
     exfalso; apply H; reflexivity.
 
     apply Nat.nlt_ge in H2.
-    apply Nat.le_antisymm in H1; auto.
+    apply Nat.le_antisymm in H1; [ idtac | assumption ].
+    subst di1; reflexivity.
 
-  rewrite <- Hxy, Hs2 in Hs1.
-  destruct (z.[j + di1]); discriminate Hs1.
+  rewrite <- Hxy in Hs1.
+  pose proof (Hs2 di1) as H; contradiction.
 
- destruct s2 as [di2| ]; auto.
+ destruct s2 as [di2| ]; [ idtac | reflexivity ].
  destruct Hs2 as (Hn2, Hs2).
- rewrite Hxy, Hs1 in Hs2.
- destruct (z.[ j + di2]); discriminate Hs2.
+ rewrite Hxy in Hs2.
+ pose proof (Hs1 di2) as H; contradiction.
 Qed.
 
 Theorem I_eq_ext_eq : ∀ x y, I_eq_ext x y → (x = y)%I.
 Proof.
 intros x y Hxy.
+unfold I_eq_ext in Hxy.
 unfold I_eq; intros i; simpl.
 unfold I_add_i; simpl.
-rewrite Hxy; f_equal.
-apply carry_compat_r; assumption.
+rewrite Hxy.
+rewrite carry_compat_r; [ reflexivity | assumption ].
 Qed.
 
 Theorem fst_same_diag : ∀ x n, fst_same x x n = Some 0%nat.
@@ -210,21 +213,24 @@ rewrite fst_same_diag.
 rewrite Nat.add_0_r; reflexivity.
 Qed.
 
+(*
 Theorem negb_xorb_diag_l : ∀ a, negb a ⊕ a = true.
 Proof. intros a; destruct a; reflexivity. Qed.
 
 Theorem negb_xorb_diag_r : ∀ a, a ⊕ negb a = true.
 Proof. intros a; destruct a; reflexivity. Qed.
+*)
 
 Theorem I_zero_iff : ∀ x,
   (x = 0)%I ↔
-  (∀ i, x.[i] = false) ∨ (∀ i, x.[i] = true).
+  (∀ i, (x.[i] = 0)%D) ∨ (∀ i, (x.[i] = 1)%D).
 Proof.
 intros x.
 split.
  intros Hx.
  remember (x .[ 0]) as b eqn:Hb .
  symmetry in Hb.
+bbb.
  destruct b; [ right | left ]; intros i.
   induction i; [ assumption | idtac ].
   pose proof (Hx i) as Hi; simpl in Hi.

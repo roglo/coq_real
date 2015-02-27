@@ -27,13 +27,13 @@ Proof. intros x i; reflexivity. Qed.
 Theorem I_eq_ext_sym : symmetric _ I_eq_ext.
 Proof.
 intros x y Hxy i.
-bbb.
-rewrite Hxy; reflexivity.
+symmetry; apply Hxy.
 Qed.
 
 Theorem I_eq_ext_trans : transitive _ I_eq_ext.
 Proof.
 intros x y z Hxy Hyz i.
+unfold I_eq_ext in Hxy, Hyz.
 rewrite Hxy, Hyz; reflexivity.
 Qed.
 
