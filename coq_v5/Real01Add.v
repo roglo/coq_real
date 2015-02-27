@@ -259,6 +259,8 @@ split.
    apply digit_neq_0_1.
 
   right; intros i.
+  induction i.
+   destruct (digit_eq_dec (x .[ 0]) 1%D) as [H1| H1]; [ assumption | idtac ].
 bbb.
 
 intros x.
