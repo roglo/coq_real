@@ -386,14 +386,13 @@ apply fst_same_iff.
 remember (fst_same y x i) as syx eqn:Hsyx .
 symmetry in Hsyx.
 apply fst_same_iff in Hsyx.
-bbb.
-destruct syx as [di| ]; [ idtac | intros dj; apply negb_sym, Hsyx ].
+destruct syx as [di| ]; [ idtac | intros dj; apply digit_neq_sym, Hsyx ].
 destruct Hsyx as (Hns, Hs).
-split; auto.
-intros dj Hdjn; apply negb_sym, Hns; assumption.
+split; [ idtac | symmetry; assumption ].
+intros dj Hdjn; apply digit_neq_sym, Hns; assumption.
 Qed.
 
-Theorem carry_comm : ∀ x y i, carry x y i = carry y x i.
+Theorem carry_comm : ∀ x y i, (carry x y i = carry y x i)%D.
 Proof.
 intros x y i.
 unfold carry; simpl.
@@ -404,7 +403,7 @@ apply fst_same_sym_iff in Hs; simpl in Hs.
 destruct Hs; symmetry; assumption.
 Qed.
 
-Theorem I_add_i_comm : ∀ x y i, I_add_i x y i = I_add_i y x i.
+Theorem I_add_i_comm : ∀ x y i, (I_add_i x y i = I_add_i y x i)%D.
 Proof.
 intros x y i.
 unfold I_add_i, carry.
@@ -412,14 +411,17 @@ rewrite fst_same_comm.
 remember (fst_same y x (S i)) as s eqn:Hs .
 symmetry in Hs.
 apply fst_same_iff in Hs.
-destruct s as [di| ]; [ idtac | f_equal; apply xorb_comm ].
-f_equal; [ apply xorb_comm | destruct Hs; auto ].
+destruct s as [di| ].
+ destruct Hs as (Hn, Ht); rewrite Ht.
+ apply digit_add_compat; [ apply digit_add_comm | reflexivity ].
+
+ apply digit_add_compat; [ apply digit_add_comm | reflexivity ].
 Qed.
 
 Theorem carry_compat : ∀ x y z t j,
-  (∀ i, x .[ i] = z .[ i])
-  → (∀ i, y .[ i] = t .[ i])
-  → carry x y j = carry z t j.
+  (∀ i, (x .[ i] = z .[ i])%D)
+  → (∀ i, (y .[ i] = t .[ i])%D)
+  → (carry x y j = carry z t j)%D.
 Proof.
 intros x y z t j Hxz Hzt.
 erewrite carry_compat_r.
@@ -433,14 +435,14 @@ erewrite carry_compat_r.
 Qed.
 
 Theorem carry_comm_l : ∀ x y z i,
-  carry (x + y) z i = carry (y + x) z i.
+  (carry (x + y) z i = carry (y + x) z i)%D.
 Proof.
 intros x y z i.
 apply carry_compat; [ apply I_add_i_comm | reflexivity ].
 Qed.
 
 Theorem carry_comm_r : ∀ x y z i,
-  carry x (y + z) i = carry x (z + y) i.
+  (carry x (y + z) i = carry x (z + y) i)%D.
 Proof.
 intros x y z i.
 apply carry_compat; [ reflexivity | apply I_add_i_comm ].
@@ -458,8 +460,8 @@ Qed.
 (* neutral element *)
 
 Theorem I_add_0_inf_1 : ∀ x i,
-  (∀ dj, I_add_i x 0 (i + dj) = true)
-  → id (∀ dk, x .[i + dk] = true).
+  (∀ dj, (I_add_i x 0 (i + dj) = 1)%D)
+  → id (∀ dk, (x .[i + dk] = 1)%D).
 Proof.
 intros x i Hs dk.
 revert i Hs.
@@ -478,7 +480,7 @@ induction dk; intros.
   assumption.
 
   rewrite digit_add_1_r in H.
-  apply negb_true_iff in H.
+  apply digit_opp_1_iff in H.
   pose proof (Hs 1) as H1; simpl in H1.
   unfold I_add_i, carry in H1; simpl in H1.
   rewrite digit_add_0_r in H1.
@@ -492,14 +494,14 @@ induction dk; intros.
    pose proof (Hs2 (S di3)) as H2.
    rewrite <- Nat.add_assoc in Hs3.
    simpl in Hs3.
-   rewrite Hs3 in H2; discriminate H2.
+   rewrite Hs3 in H2; exfalso; apply H2; reflexivity.
 
    rewrite digit_add_1_r in H1.
-   apply negb_true_iff in H1.
+   apply digit_opp_1_iff in H1.
    pose proof (Hs2 0) as H2.
    rewrite Nat.add_0_r in H2.
    rewrite Nat.add_1_r in H1.
-   rewrite H1 in H2; discriminate H2.
+   rewrite H1 in H2; exfalso; apply H2; reflexivity.
 
  rewrite Nat.add_succ_r, <- Nat.add_succ_l.
  apply IHdk; intros dj.
@@ -507,7 +509,7 @@ induction dk; intros.
  apply Hs.
 Qed.
 
-Theorem not_I_add_0_inf_1 : ∀ x i, ¬ (∀ dj, I_add_i x 0 (i + dj) = true).
+Theorem not_I_add_0_inf_1 : ∀ x i, ¬ (∀ dj, (I_add_i x 0 (i + dj) = 1)%D).
 Proof.
 intros x i Hs.
 rename Hs into Hs1.
@@ -527,18 +529,18 @@ destruct s2 as [di2| ].
  destruct Hs2 as (Hn2, Hs2).
  subst si.
  rewrite Nat.add_succ_l, <- Nat.add_succ_r in Hs2.
- rewrite Hk in Hs2; discriminate Hs2.
+ rewrite Hk in Hs2; exfalso; revert Hs2; apply digit_neq_1_0.
 
  rewrite digit_add_1_r in H.
- apply negb_true_iff in H.
+ apply digit_opp_1_iff in H.
  rename H into H1.
  pose proof (Hk 0) as H; simpl in H.
  rewrite Nat.add_0_r in H.
- rewrite H1 in H; discriminate H.
+ rewrite H1 in H; exfalso; revert H; apply digit_neq_0_1.
 Qed.
 
 Theorem not_I_add_0_inf_1_succ : ∀ x i,
-  ¬ (∀ dj, I_add_i x 0 (i + S dj) = true).
+  ¬ (∀ dj, (I_add_i x 0 (i + S dj) = 1)%D).
 Proof.
 intros x i H.
 eapply not_I_add_0_inf_1 with (i := S i); intros dj.
@@ -546,7 +548,7 @@ rewrite Nat.add_succ_l, <- Nat.add_succ_r.
 apply H.
 Qed.
 
-Theorem I_add_i_0_r : ∀ x i, I_add_i (x + 0%I) 0 i = I_add_i x 0 i.
+Theorem I_add_i_0_r : ∀ x i, (I_add_i (x + 0%I) 0 i = I_add_i x 0 i)%D.
 Proof.
 intros x i.
 unfold I_add_i at 1.
@@ -561,6 +563,7 @@ destruct s1 as [di1| ].
  rewrite Hs1, digit_add_0_r; reflexivity.
 
  exfalso; eapply not_I_add_0_inf_1; eauto .
+bbb.
 Qed.
 
 Theorem I_add_0_r : ∀ x, (x + 0 = x)%I.
@@ -823,7 +826,7 @@ destruct j as [j| ].
       rewrite <- H5, Hs1 in Hs7; discriminate Hs7.
 
     symmetry in H.
-    apply negb_true_iff in H.
+    apply digit_opp_1_iff in H.
     rename H into Hbt.
     assert (j - si < di3) as H.
      apply Nat.add_lt_mono_r with (p := si).
@@ -878,7 +881,7 @@ induction di.
    pose proof (Hn1 0 (Nat.lt_0_succ di1)) as H1.
    rewrite Nat.add_0_r in H1.
    rewrite H1, negb_xorb_diag_l, digit_add_1_l in H.
-   apply negb_true_iff in H.
+   apply digit_opp_1_iff in H.
    remember (S si) as ssi.
    remember (fst_same x y ssi) as s2 eqn:Hs2 .
    apply fst_same_sym_iff in Hs2.
@@ -909,7 +912,7 @@ induction di.
   pose proof (Hs1 0) as H1.
   rewrite Nat.add_0_r in H1.
   rewrite H1, negb_xorb_diag_l, digit_add_1_l in H.
-  apply negb_true_iff in H.
+  apply digit_opp_1_iff in H.
   remember (S si) as ssi.
   remember (fst_same x y ssi) as s2 eqn:Hs2 .
   apply fst_same_sym_iff in Hs2.
@@ -953,7 +956,7 @@ induction di.
    pose proof (Hn1 0 (Nat.lt_0_succ di1)) as H1.
    rewrite Nat.add_0_r in H1.
    rewrite H1, negb_xorb_diag_l, digit_add_1_l in H.
-   apply negb_true_iff in H.
+   apply digit_opp_1_iff in H.
    rewrite <- Nat.add_succ_l in H.
    remember (S ssi) as sssi.
    remember (fst_same x y (sssi + di)) as s2 eqn:Hs2 .
@@ -987,7 +990,7 @@ induction di.
   pose proof (Hs1 0) as H1.
   rewrite Nat.add_0_r in H1.
   rewrite H1, negb_xorb_diag_l, digit_add_1_l in H.
-  apply negb_true_iff in H.
+  apply digit_opp_1_iff in H.
   rewrite <- Nat.add_succ_l in H.
   remember (S ssi) as sssi.
   remember (fst_same x y (sssi + di)) as s2 eqn:Hs2 .
@@ -1027,7 +1030,7 @@ destruct s1 as [di1| ].
   rewrite Nat.sub_diag; apply Nat.le_0_l.
 
   rewrite negb_xorb_diag_l, digit_add_1_l in H.
-  apply negb_true_iff in H.
+  apply digit_opp_1_iff in H.
   rewrite H in Hs1; symmetry in Hs1.
   split.
    intros di Hidi.
@@ -1106,7 +1109,7 @@ destruct s1 as [di1| ].
         destruct Hs4 as (Hn4, Hs4).
         destruct di4.
          rewrite Nat.add_0_r in H.
-         apply negb_true_iff in H.
+         apply digit_opp_1_iff in H.
          rewrite Nat.add_succ_r in Ha3.
          do 3 rewrite <- Nat.add_succ_l in Ha3.
          rewrite <- Heqssssi, H in Ha3.
@@ -1147,7 +1150,7 @@ destruct s1 as [di1| ].
         destruct (y .[ ssssi + di1 + di + di4]); discriminate H.
 
         rewrite digit_add_1_r in H.
-        apply negb_true_iff in H.
+        apply digit_opp_1_iff in H.
         apply xorb_eq in H.
         rename H into Hxy1.
         pose proof (Hs3 0) as H.
@@ -1166,7 +1169,7 @@ destruct s1 as [di1| ].
      rewrite <- Heqsi, <- Heqssi in H.
      unfold I_add_i, carry in H.
      rewrite Hxy1, negb_xorb_diag_l, digit_add_1_l in H.
-     apply negb_true_iff in H.
+     apply digit_opp_1_iff in H.
      rewrite <- Nat.add_succ_l in H; remember (S ssi) as sssi.
      remember (fst_same x y (sssi + di1)) as s3 eqn:Hs3 .
      symmetry in Hs3.
@@ -1206,7 +1209,7 @@ destruct s1 as [di1| ].
     rewrite <- Nat.add_succ_l, <- Heqssi in H.
     unfold I_add_i, carry in H.
     rewrite Ha1, negb_xorb_diag_l, digit_add_1_l in H.
-    apply negb_true_iff in H.
+    apply digit_opp_1_iff in H.
     rewrite <- Nat.add_succ_l in H.
     remember (S ssi) as sssi.
     remember (fst_same x y (sssi + di1)) as s3 eqn:Hs3 .
@@ -1412,7 +1415,7 @@ destruct s2 as [di2| ].
               rewrite H1, H4 in Hs7; discriminate Hs7.
 
             symmetry in H.
-            apply negb_true_iff in H.
+            apply digit_opp_1_iff in H.
             rename H into H6.
             assert (j - si < di2) as H by (eapply lt_add_sub_lt_r; eauto ).
             apply Hn2 in H.
@@ -1463,7 +1466,7 @@ destruct s2 as [di2| ].
      rewrite Nat.add_shuffle0, Nat.add_sub in H.
      rewrite H in Hs2; symmetry in Hs2.
      rename H into Ha; move Ha after Hs2; rewrite Hs2.
-     symmetry in Hs1; apply negb_sym in Hs1.
+     symmetry in Hs1; apply digit_neq_sym in Hs1.
      remember (y .[ si + di1]) as bi eqn:Hbi .
      destruct bi; [ reflexivity | idtac ].
      symmetry in Hbi; simpl in Hs1.
@@ -1491,10 +1494,10 @@ destruct s2 as [di2| ].
      apply Nat.le_antisymm in H3; auto.
 
   do 3 rewrite xorb_assoc; f_equal.
-  rewrite xorb_comm, xorb_assoc; f_equal.
+  rewrite digit_add_comm, xorb_assoc; f_equal.
   rewrite digit_add_1_r.
   rewrite <- Hs2, Hs3, <- Hs1.
-  apply negb_true_iff.
+  apply digit_opp_1_iff.
   unfold I_add_i, carry; rewrite <- Nat.add_succ_l.
   remember (S si) as ssi; simpl.
   rewrite Hs3, digit_add_0_r, digit_add_1_l.
@@ -1506,7 +1509,7 @@ destruct s2 as [di2| ].
   rewrite <- Nat.add_assoc, Hs3; reflexivity.
 
  do 3 rewrite xorb_assoc; f_equal.
- rewrite xorb_comm, xorb_assoc; f_equal.
+ rewrite digit_add_comm, xorb_assoc; f_equal.
  destruct s3 as [di3| ].
   destruct Hs3 as (Hn3, Hs3).
   rewrite Hs3, digit_add_0_r.
@@ -1564,7 +1567,7 @@ destruct s2 as [di2| ].
       rewrite Hs5 in Hs4; discriminate Hs4.
 
    rewrite digit_add_1_r.
-   apply negb_true_iff.
+   apply digit_opp_1_iff.
    unfold I_add_i, carry in Hs1.
    rewrite <- Nat.add_succ_l, <- Heqssi in Hs1.
    simpl in Hs1.
@@ -1634,7 +1637,7 @@ apply fst_same_iff in Ps5; simpl in Ps5.
 destruct Ps5 as (Pn5, Ps5).
 rewrite digit_add_0_r.
 do 3 rewrite xorb_assoc; f_equal.
-rewrite xorb_comm, xorb_assoc; f_equal.
+rewrite digit_add_comm, xorb_assoc; f_equal.
 rewrite digit_add_1_l.
 remember (fst_same x y si) as s2 eqn:Hs2 .
 symmetry in Hs2.
@@ -1825,7 +1828,7 @@ destruct s2 as [di2| ].
             apply Nat.le_0_l.
 
           rewrite digit_add_1_r in H.
-          apply negb_sym in H.
+          apply digit_neq_sym in H.
           rewrite negb_involutive in H.
           destruct dj6.
            rewrite Nat.add_0_r in H.
@@ -1861,7 +1864,7 @@ destruct s2 as [di2| ].
           rewrite Ps7 in H; discriminate H.
 
           rewrite digit_add_1_r in H.
-          apply negb_sym in H.
+          apply digit_neq_sym in H.
           rewrite negb_involutive in H.
           rewrite H in Ps5.
           destruct (x .[ si + S dj5]); discriminate Ps5.
@@ -1932,7 +1935,7 @@ destruct s2 as [di2| ].
    rewrite Hs3 in Hs4; discriminate Hs4.
 
    rewrite digit_add_1_r in H.
-   apply negb_sym in H.
+   apply digit_neq_sym in H.
    rewrite negb_involutive in H.
    pose proof (Hs2 0) as H1.
    rewrite Nat.add_0_r, H in H1.
@@ -2147,7 +2150,7 @@ destruct s8 as [di8| ].
 
        rewrite digit_add_1_r in Hs4.
        symmetry in Hs4.
-       apply negb_sym in Hs4.
+       apply digit_neq_sym in Hs4.
        destruct (lt_dec (si + di4) j) as [H2| H2].
         pose proof (Hs5 (j - S (si + di4))) as H.
         rewrite Nat.add_sub_assoc in H; auto.
@@ -2205,7 +2208,7 @@ unfold I_add_i, carry.
 rewrite <- Heqsi; simpl.
 rewrite digit_add_0_r.
 do 2 rewrite xorb_assoc; f_equal.
-rewrite xorb_comm; f_equal.
+rewrite digit_add_comm; f_equal.
 apply fst_same_iff in Hs1.
 apply fst_same_iff in Hs5.
 simpl in Hs1, Hs5.
@@ -2252,7 +2255,7 @@ destruct s3 as [di3| ].
      rewrite <- H2; assumption.
 
    rewrite digit_add_1_r in H.
-   apply negb_sym in H.
+   apply digit_neq_sym in H.
    rewrite negb_involutive in H.
    symmetry in H.
    apply I_add_inf_true_eq_if in Hs5; auto.
@@ -2527,7 +2530,7 @@ destruct sx as [dx| ].
     rewrite digit_add_1_l in H.
     symmetry in H.
     rewrite digit_add_1_l in H.
-    apply negb_sym in H.
+    apply digit_neq_sym in H.
     rewrite negb_involutive in H.
     rewrite <- Nat.add_succ_l in H.
     symmetry in Hsx.
@@ -2575,7 +2578,7 @@ destruct sx as [dx| ].
       do 2 rewrite digit_add_0_r in H.
       rewrite <- Nat.add_succ_r in H.
       rewrite Hdi, Hny, digit_add_1_l in H.
-      apply negb_sym in H.
+      apply digit_neq_sym in H.
       rewrite negb_involutive in H.
       rewrite <- Nat.add_succ_l in H.
       rewrite carry_before_inf_relay9 in H; [ idtac | assumption ].
@@ -2620,7 +2623,7 @@ destruct sx as [dx| ].
       rewrite <- Nat.add_assoc in H.
       rewrite Nat.add_succ_r in H.
       rewrite Hdi, Hny, digit_add_1_l in H.
-      apply negb_sym in H.
+      apply digit_neq_sym in H.
       rewrite negb_involutive in H.
       rewrite <- Nat.add_succ_l in H.
       rewrite carry_before_inf_relay9 in H; [ idtac | assumption ].
@@ -2663,7 +2666,7 @@ destruct sx as [dx| ].
    rewrite Hny in H; [ idtac | apply Nat.lt_succ_diag_r ].
    rewrite Hnx in H.
    rewrite digit_add_1_l in H.
-   apply negb_sym in H.
+   apply digit_neq_sym in H.
    rewrite negb_involutive in H.
    rewrite <- Nat.add_succ_l in H.
    symmetry in Hsy.
@@ -2691,7 +2694,7 @@ destruct sx as [dx| ].
    rewrite Hny in H; [ idtac | apply Nat.lt_succ_diag_r ].
    rewrite Hnx in H.
    rewrite digit_add_1_l in H.
-   apply negb_sym in H.
+   apply digit_neq_sym in H.
    rewrite negb_involutive in H.
    rewrite <- Nat.add_succ_l in H.
    symmetry in Hsy.
@@ -2738,7 +2741,7 @@ destruct sx as [dx| ].
      pose proof (Hn1 O (Nat.lt_0_succ di1)) as HH.
      rewrite Nat.add_0_r, <- Nat.add_succ_r in HH.
      rewrite HH, Hnx, digit_add_1_l in H.
-     apply negb_sym in H.
+     apply digit_neq_sym in H.
      rewrite negb_involutive in H.
      rewrite <- Nat.add_succ_l in H.
      symmetry in H.
@@ -2790,7 +2793,7 @@ destruct sx as [dx| ].
      rewrite Hnx, digit_add_1_l in H.
      rewrite <- Nat.add_succ_l in H.
      erewrite carry_before_inf_relay9 in H; [ idtac | assumption ].
-     apply negb_sym in H; simpl in H.
+     apply digit_neq_sym in H; simpl in H.
      rewrite Nat.add_succ_r in H.
      remember (S (S (i + (dy + S n)))) as z.
      replace z with (z + 0)%nat in H by apply Nat.add_0_r.
@@ -2830,7 +2833,7 @@ split; intros Hxy.
 
     remember (x .[ di1]) as b eqn:Hxi1 .
     symmetry in Hxi1.
-    apply negb_sym in Ht1; rewrite Ht1.
+    apply digit_neq_sym in Ht1; rewrite Ht1.
     destruct b.
      eapply I_eq_neq_prop in Hxi1; try eassumption.
      destruct Hxi1 as [(Hx, Hy)| (Hx, Hy)].
