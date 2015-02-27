@@ -779,7 +779,7 @@ destruct j as [j| ].
  destruct Hj as (Hji, (Hjf, Hk)).
  assert (i < j) as Hij.
   apply Nat.nle_gt; intros H.
-  rewrite Hk in Hs3; [ discriminate Hs3 | idtac | idtac ].
+  rewrite Hk in Hs3; [ revert Hs3; apply digit_neq_1_0 | idtac | idtac ].
    eapply Nat.le_lt_trans; eauto .
    rewrite Heqsi, Nat.add_succ_l, <- Nat.add_succ_r.
    apply Nat.lt_sub_lt_add_l.
@@ -809,7 +809,7 @@ destruct j as [j| ].
     rewrite Hs7 in H.
     symmetry in H.
     apply digit_opp_0_iff in H.
-    rewrite Hk in Hs7; [ discriminate Hs7 | idtac | idtac ].
+    rewrite Hk in Hs7; [ revert Hs7; apply digit_neq_1_0 | idtac | idtac ].
      rewrite Heqsj, Nat.add_succ_l, <- Nat.add_succ_r.
      apply Nat.lt_sub_lt_add_l.
      rewrite Nat.sub_diag.
@@ -822,11 +822,11 @@ destruct j as [j| ].
       unfold lt in H5; rewrite <- Nat.add_succ_l, <- Heqssi in H5.
       rewrite Nat.add_sub_assoc in H; auto.
       rewrite Nat.add_comm, Nat.add_sub in H.
-      rewrite Hs7 in H; discriminate H.
+      rewrite Hs7 in H; revert H; apply digit_neq_0_1.
 
       apply Nat.nlt_ge in H5.
       apply Nat.le_antisymm in H5; auto.
-      rewrite <- H5, Hs1 in Hs7; discriminate Hs7.
+      rewrite <- H5, Hs1 in Hs7; revert Hs7; apply digit_neq_1_0.
 
     symmetry in H.
     apply digit_opp_1_iff in H.
@@ -842,18 +842,19 @@ destruct j as [j| ].
      apply Hn2 in H.
      rewrite Nat.add_sub_assoc in H; auto.
      rewrite Nat.add_comm, Nat.add_sub in H.
-     rewrite Hjf, Hbt in H; discriminate H.
+     rewrite Hjf, Hbt, digit_opp_0 in H.
+     revert H; apply digit_neq_0_1.
 
  rewrite first_0_before_none_iff in Hj.
- rewrite Hj in Hs3; [ discriminate Hs3 | idtac ].
+ rewrite Hj in Hs3; [ revert Hs3; apply digit_neq_1_0 | idtac ].
  apply Nat.add_lt_mono_l; assumption.
 Qed.
 
 Theorem I_add_inf_true_eq_if : ∀ x y i,
-  (∀ di, I_add_i x y (i + di) = true)
-  → x.[i] = y.[i]
-  → (∀ di, x.[i + S di] = true) ∧
-    (∀ di, y.[i + S di] = true).
+  (∀ di, (I_add_i x y (i + di) = 1)%D)
+  → (x.[i] = y.[i])%D
+  → (∀ di, (x.[i + S di] = 1)%D) ∧
+    (∀ di, (y.[i + S di] = 1)%D).
 Proof.
 intros x y i Hdi Hxy.
 apply forall_and_distr; intros di.
@@ -868,6 +869,7 @@ induction di.
  destruct s1 as [di1| ].
   destruct Hs1 as (Hn1, Hs1).
   rewrite Hxy in H.
+bbb.
   rewrite xorb_nilpotent, digit_add_0_l in H.
   rewrite H in Hs1; symmetry in Hs1.
   rename H into Ha1.
