@@ -1096,31 +1096,35 @@ destruct s1 as [di1| ].
         rewrite <- Heqsi, <- Heqssi, <- Heqsssi in H.
         do 2 rewrite Nat.add_assoc in H.
         unfold I_add_i, carry in H.
-bbb.
-        rewrite Hxy3, digit_opp_add_diag_l, digit_add_1_l in H.
+        apply digit_eq_add_1 in Hxy3.
+        rewrite Hxy3, digit_add_1_l in H.
         do 3 rewrite <- Nat.add_succ_l in H.
         remember (S sssi) as ssssi.
         remember (fst_same x y (ssssi + di1 + di + di3)) as s4 eqn:Hs4 .
         symmetry in Hs4.
         apply fst_same_iff in Hs4; simpl in Hs4.
-        destruct s4 as [di4| ]; [ idtac | discriminate H ].
-        destruct Hs4 as (Hn4, Hs4).
-        destruct di4.
-         rewrite Nat.add_0_r in H.
-         apply digit_opp_1_iff in H.
-         rewrite Nat.add_succ_r in Ha3.
-         do 3 rewrite <- Nat.add_succ_l in Ha3.
-         rewrite <- Heqssssi, H in Ha3.
-         discriminate Ha3.
+        apply digit_opp_1_iff in H.
+        destruct s4 as [di4| ].
+         destruct Hs4 as (Hn4, Hs4).
+         destruct di4.
+          rewrite Nat.add_0_r in H.
+          apply digit_opp_1_iff in H.
+          rewrite Nat.add_succ_r in Ha3.
+          do 3 rewrite <- Nat.add_succ_l in Ha3.
+          apply digit_opp_1_iff in H.
+          rewrite <- Heqssssi, H in Ha3.
+          exfalso; revert Ha3; apply digit_neq_0_1.
 
-         rename H into Ha4.
-         pose proof (Hn4 0 (Nat.lt_0_succ di4)) as H.
-         rewrite Nat.add_0_r in H.
-         rewrite Nat.add_succ_r in Hs3, Ha3.
-         do 3 rewrite <- Nat.add_succ_l in Hs3, Ha3.
-         rewrite <- Heqssssi in Hs3, Ha3.
-         rewrite Hs3, Ha3 in H.
-         discriminate H.
+          rename H into Ha4.
+          pose proof (Hn4 0 (Nat.lt_0_succ di4)) as H.
+          rewrite Nat.add_0_r in H.
+          rewrite Nat.add_succ_r in Hs3, Ha3.
+          do 3 rewrite <- Nat.add_succ_l in Hs3, Ha3.
+          rewrite <- Heqssssi in Hs3, Ha3.
+          rewrite Hs3, Ha3 in H.
+          exfalso; apply H; reflexivity.
+
+         exfalso; revert H; apply digit_neq_1_0.
 
        clear H.
        pose proof (Hdi (S (S (S (di1 + di))))) as H.
@@ -1145,6 +1149,7 @@ bbb.
         do 3 rewrite <- Nat.add_succ_l in H.
         rewrite <- Heqssssi in H.
         rewrite Hs4 in H.
+bbb.
         destruct (y .[ ssssi + di1 + di + di4]); discriminate H.
 
         rewrite digit_add_1_r in H.
