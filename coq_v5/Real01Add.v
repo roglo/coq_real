@@ -259,58 +259,26 @@ split.
    apply digit_neq_0_1.
 
   right; intros i.
-  induction i.
-   destruct (digit_eq_dec (x .[ 0]) 1%D) as [H1| H1]; [ assumption | idtac ].
-bbb.
-
-intros x.
-split.
- intros Hx.
- remember (x .[ 0]) as b eqn:Hb .
- symmetry in Hb.
-bbb.
- destruct b; [ right | left ]; intros i.
-  induction i; [ assumption | idtac ].
+  induction i; [ apply digit_neq_0_eq_1; assumption | idtac ].
   pose proof (Hx i) as Hi; simpl in Hi.
   unfold I_add_i in Hi; simpl in Hi.
-  rewrite xorb_false_r, carry_diag in Hi; simpl in Hi.
-  rewrite IHi, xorb_true_l in Hi.
-  apply negb_false_iff in Hi.
+  rewrite carry_diag in Hi; simpl in Hi.
+  do 3 rewrite digit_add_0_r in Hi.
+  rewrite IHi in Hi.
   unfold carry in Hi; simpl in Hi.
   remember (fst_same x 0 (S i)) as s1 eqn:Hs1 .
   apply fst_same_sym_iff in Hs1; simpl in Hs1.
   destruct s1 as [dj1| ]; [ idtac | clear Hi ].
    destruct Hs1 as (Hn1, Hs1).
-   rewrite Hs1 in Hi; discriminate Hi.
+   rewrite Hs1, digit_add_0_r in Hi.
+   symmetry in Hi; exfalso; revert Hi.
+   apply digit_neq_0_1.
 
-   pose proof (Hs1 O) as H; rewrite Nat.add_0_r in H; assumption.
-
-  induction i; [ assumption | idtac ].
-  pose proof (Hx i) as Hi; simpl in Hi.
-  unfold I_add_i in Hi; simpl in Hi.
-  rewrite xorb_false_r, carry_diag in Hi; simpl in Hi.
-  rewrite IHi, xorb_false_l in Hi.
-  unfold carry in Hi; simpl in Hi.
-  remember (fst_same x 0 (S i)) as s1 eqn:Hs1 .
-  destruct s1 as [dj1| ]; [ idtac | discriminate Hi ].
-  destruct Hs1 as (Hn1, Hs1).
-  pose proof (Hx (S i)) as Hsi; simpl in Hsi.
-  unfold I_add_i in Hsi; simpl in Hsi.
-  rewrite xorb_false_r, carry_diag in Hsi; simpl in Hsi.
-  unfold carry in Hsi; simpl in Hsi.
-  remember (fst_same x 0 (S (S i))) as s2 eqn:Hs2 .
-  apply fst_same_sym_iff in Hs2; simpl in Hs2.
-  destruct s2 as [dj2| ].
-   destruct Hs2 as (Hn2, Ht2).
-   rewrite Ht2, xorb_false_r in Hsi; assumption.
-
-   destruct dj1.
-    rewrite Nat.add_0_r in Hi; assumption.
-
-    rewrite Nat.add_succ_r, Hs2 in Hi.
-    discriminate Hi.
+   pose proof (Hs1 O) as H; rewrite Nat.add_0_r in H.
+   apply digit_neq_0_eq_1; assumption.
 
  intros [Hx| Hx].
+bbb.
   unfold I_eq; intros i; simpl.
   unfold I_add_i; simpl.
   rewrite xorb_false_r, carry_diag; simpl.
