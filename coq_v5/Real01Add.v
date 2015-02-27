@@ -623,17 +623,22 @@ destruct s1 as [di1| ].
   destruct Hs2 as (Hn2, Hs2).
   rewrite Hs2, digit_add_0_r in Hi; assumption.
 
-bbb.
-  exfalso; revert Hs2; rewrite Hb; apply not_I_add_0_inf_1.
+  pose proof (not_I_add_0_inf_1 y0 si) as H.
+  exfalso; apply H; intros dj.
+  rewrite Hb in Hs2.
+  apply digit_neq_0_eq_1, Hs2.
 
- exfalso; revert Hs1; rewrite Ha; apply not_I_add_0_inf_1.
+ pose proof (not_I_add_0_inf_1 x0 si) as H.
+ exfalso; apply H; intros dj.
+ rewrite Ha in Hs1.
+ apply digit_neq_0_eq_1, Hs1.
 Qed.
 
 Theorem carry_noI_eq_compat_r : ∀ x0 y0 x y z n,
   x = (x0 + 0)%I
   → y = (y0 + 0)%I
   → (x = y)%I
-  → carry (x + z) 0 n = carry (y + z) 0 n.
+  → (carry (x + z) 0 n = carry (y + z) 0 n)%D.
 Proof.
 intros x0 y0 x y z n Ha Hb Hxy.
 apply carry_compat_r; simpl.
@@ -650,6 +655,7 @@ Proof.
 intros x0 y0 x y z Ha Hb Hxy.
 unfold I_eq; intros i; simpl.
 unfold I_add_i; simpl.
+bbb.
 do 2 rewrite digit_add_0_r; f_equal.
  apply I_add_i_compat_r.
  eapply I_noI_eq_eq; eassumption.
