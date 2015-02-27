@@ -313,8 +313,9 @@ Proof. intros x y Hxy i; symmetry; apply Hxy. Qed.
 
 Theorem I_eq_trans : transitive _ I_eq.
 Proof.
-bbb.
-intros x y z Hxy Hyz i; rewrite Hxy; apply Hyz.
+intros x y z Hxy Hyz i.
+unfold I_eq, I_eq_ext in Hxy.
+rewrite Hxy; apply Hyz.
 Qed.
 
 Add Parametric Relation : _ I_eq
@@ -385,6 +386,7 @@ apply fst_same_iff.
 remember (fst_same y x i) as syx eqn:Hsyx .
 symmetry in Hsyx.
 apply fst_same_iff in Hsyx.
+bbb.
 destruct syx as [di| ]; [ idtac | intros dj; apply negb_sym, Hsyx ].
 destruct Hsyx as (Hns, Hs).
 split; auto.
