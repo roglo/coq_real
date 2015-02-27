@@ -869,8 +869,7 @@ induction di.
  destruct s1 as [di1| ].
   destruct Hs1 as (Hn1, Hs1).
   rewrite Hxy in H.
-bbb.
-  rewrite xorb_nilpotent, digit_add_0_l in H.
+  rewrite digit_add_nilpotent, digit_add_0_l in H.
   rewrite H in Hs1; symmetry in Hs1.
   rename H into Ha1.
   rename Hs1 into Hb1.
@@ -885,11 +884,13 @@ bbb.
    unfold I_add_i, carry in H.
    pose proof (Hn1 0 (Nat.lt_0_succ di1)) as H1.
    rewrite Nat.add_0_r in H1.
-   rewrite H1, negb_xorb_diag_l, digit_add_1_l in H.
+   apply digit_eq_add_1 in H1.
+   rewrite H1, digit_add_1_l in H.
    apply digit_opp_1_iff in H.
    remember (S si) as ssi.
    remember (fst_same x y ssi) as s2 eqn:Hs2 .
    apply fst_same_sym_iff in Hs2.
+bbb.
    destruct s2 as [di2| ]; [ idtac | discriminate H ].
    destruct Hs2 as (Hn2, Hb2).
    rewrite H in Hb2.
@@ -2857,7 +2858,7 @@ split; intros Hxy.
        do 2 rewrite digit_add_0_r in HH.
        rewrite H in HH.
        apply xorb_move_l_r_1 in HH.
-       rewrite <- xorb_assoc, xorb_nilpotent in HH.
+       rewrite <- xorb_assoc, digit_add_nilpotent in HH.
        rewrite digit_add_0_l in HH.
        unfold carry in HH; simpl in HH.
        remember (fst_same x 0 (S di1)) as s2 eqn:Hs2 .
@@ -2896,7 +2897,7 @@ split; intros Hxy.
        do 2 rewrite digit_add_0_r in HH.
        rewrite H in HH.
        apply xorb_move_l_r_1 in HH.
-       rewrite <- xorb_assoc, xorb_nilpotent in HH.
+       rewrite <- xorb_assoc, digit_add_nilpotent in HH.
        rewrite digit_add_0_l in HH.
        unfold carry in HH; simpl in HH.
        remember (fst_same x 0 (S di1)) as s2 eqn:Hs2 .
