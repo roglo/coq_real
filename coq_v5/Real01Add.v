@@ -116,7 +116,7 @@ Arguments I_add x%I y%I.
 Arguments I_eq x%I y%I.
 Arguments fst_same x%I y%I i%nat.
 
-Definition I_opp x := {| rm i := negb (x.[i]) |}.
+Definition I_opp x := {| rm i := (-x.[i])%D |}.
 Definition I_sub x y := I_add x (I_opp y).
 
 Notation "- x" := (I_opp x) : I_scope.
@@ -129,9 +129,9 @@ Theorem fst_same_sym_iff : ∀ x y i odi,
   odi = fst_same x y i
   ↔ match odi with
     | Some di =>
-        (∀ dj : nat, dj < di → x .[ i + dj] = negb (y.[i + dj]))
-        ∧ x .[ i + di] = y .[ i + di]
-    | None => ∀ dj : nat, x .[ i + dj] = negb (y.[i + dj])
+        (∀ dj : nat, dj < di → (x .[ i + dj] ≠ y.[i + dj])%D)
+        ∧ (x .[ i + di] = y .[ i + di])%D
+    | None => ∀ dj : nat, (x .[ i + dj] ≠ y.[i + dj])%D
     end.
 Proof.
 intros x y i odi.
@@ -155,6 +155,7 @@ apply fst_same_iff in Hs2.
 simpl in Hs1, Hs2; simpl.
 destruct s1 as [di1| ].
  destruct Hs1 as (Hn1, Hs1).
+bbb.
  rewrite Hs1.
  destruct s2 as [di2| ].
   destruct Hs2 as (Hn2, Hs2).
