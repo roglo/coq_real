@@ -15,7 +15,7 @@ Delimit Scope I_scope with I.
 Notation "0" := I_zero : I_scope.
 Notation "1" := I_one : I_scope.
 
-Definition I_eq_ext x y := ∀ i, x.[i] = y.[i].
+Definition I_eq_ext x y := ∀ i, (x.[i] = y.[i])%D.
 Arguments I_eq_ext x%I y%I.
 
 (* actually, I think that I_eq_ext is equivalent to I_eqs in Real01Cmp.v
@@ -27,6 +27,7 @@ Proof. intros x i; reflexivity. Qed.
 Theorem I_eq_ext_sym : symmetric _ I_eq_ext.
 Proof.
 intros x y Hxy i.
+bbb.
 rewrite Hxy; reflexivity.
 Qed.
 

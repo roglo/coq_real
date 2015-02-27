@@ -143,7 +143,7 @@ Qed.
 
 Theorem carry_compat_r : ∀ x y z j,
   I_eq_ext x y
-  → carry x z j = carry y z j.
+  → (carry x z j = carry y z j)%D.
 Proof.
 intros x y z j Hxy; symmetry.
 unfold carry; intros.
@@ -155,7 +155,6 @@ apply fst_same_iff in Hs2.
 simpl in Hs1, Hs2; simpl.
 destruct s1 as [di1| ].
  destruct Hs1 as (Hn1, Hs1).
-bbb.
  rewrite Hs1.
  destruct s2 as [di2| ].
   destruct Hs2 as (Hn2, Hs2).
@@ -164,14 +163,14 @@ bbb.
    remember H1 as H; clear HeqH.
    apply Hn2 in H.
    rewrite Hxy, Hs1 in H.
-   destruct (z.[j+di1]); discriminate H.
+   exfalso; apply H; reflexivity.
 
    apply Nat.nlt_ge in H1.
    destruct (lt_dec di2 di1) as [H2| H2].
     remember H2 as H; clear HeqH.
     apply Hn1 in H.
     rewrite <- Hxy, Hs2 in H.
-    destruct (z.[j+di2]); discriminate H.
+    exfalso; apply H; reflexivity.
 
     apply Nat.nlt_ge in H2.
     apply Nat.le_antisymm in H1; auto.
