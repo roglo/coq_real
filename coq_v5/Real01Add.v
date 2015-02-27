@@ -739,17 +739,7 @@ split.
  intros (Hji, (Haj, Hjk)).
  revert j Hji Haj Hjk.
  induction i; intros; [ exfalso; revert Hji; apply Nat.nlt_0_r | simpl ].
- remember (x .[ i]) as ai eqn:Hai .
- symmetry in Hai.
- destruct ai.
-  apply IHi; auto.
-  destruct (eq_nat_dec i j) as [H1| H1].
-   subst j; rewrite Haj in Hai; discriminate Hai.
-
-   apply Nat.succ_le_mono in Hji.
-   apply Nat.nle_gt; intros H.
-   apply Nat.le_antisymm in H; auto.
-
+ destruct (digit_eq_dec (x .[ i]) 0) as [Hai| Hai].
   apply Nat.succ_le_mono in Hji.
   destruct (le_dec i j) as [H1| H1].
    apply Nat.le_antisymm in H1; auto.
@@ -757,15 +747,24 @@ split.
    apply Nat.nle_gt in H1.
    apply Hjk in H1; [ idtac | apply Nat.lt_succ_r; auto ].
    rewrite Hai in H1.
-   discriminate H1.
+   exfalso; revert H1; apply digit_neq_0_1.
+
+  apply IHi; auto.
+  destruct (eq_nat_dec i j) as [H1| H1].
+   subst j; rewrite Haj in Hai.
+   exfalso; apply Hai; reflexivity.
+
+   apply Nat.succ_le_mono in Hji.
+   apply Nat.nle_gt; intros H.
+   apply Nat.le_antisymm in H; auto.
 Qed.
 
 Theorem no_room_for_infinite_carry : ∀ x y i di1 di2 di3,
-  (∀ dj : nat, dj < di2 → I_add_i x 0 (S i + dj) = negb (y .[ S i + dj]))
-  → (∀ dj : nat, x .[ S (S i) + di2 + dj] = true)
-  → (∀ dj : nat, dj < di3 → x .[ S i + dj] = negb (y .[ S i + dj]))
-  → x .[ S i + di2] = true
-  → x .[ S i + di1] = false
+  (∀ dj : nat, dj < di2 → (I_add_i x 0 (S i + dj) = - y .[ S i + dj])%D)
+  → (∀ dj : nat, (x .[ S (S i) + di2 + dj] = 1)%D)
+  → (∀ dj : nat, dj < di3 → (x .[ S i + dj] = - y .[ S i + dj])%D)
+  → (x .[ S i + di2] = 1)%D
+  → (x .[ S i + di1] = 0)%D
   → di1 < di2
   → di2 < di3
   → False.
