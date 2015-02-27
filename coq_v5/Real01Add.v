@@ -63,21 +63,21 @@ split; intros Hi.
     destruct (lt_eq_lt_dec di di1) as [[H1| H1]| H1].
      remember H1 as H; clear HeqH.
      apply Hn1 in H.
-     rewrite Ht in H.
-     destruct (y .[ i + di]); discriminate H.
+     destruct (digit_eq_dec (x .[ i + di]) (y .[ i + di])) as [H3| H3].
+      discriminate H.
+
+      contradiction.
 
      subst di; reflexivity.
 
      remember H1 as H; clear HeqH.
      apply Hn in H.
-     rewrite H in H2.
-     exfalso; revert H2; apply no_fixpoint_negb.
+     contradiction.
 
     exfalso; apply Ht1; reflexivity.
 
    destruct (digit_eq_dec (x .[ i + di1]) (y .[ i + di1])) as [H2| H2].
-    rewrite Hi in H2.
-    exfalso; revert H2; apply no_fixpoint_negb.
+    pose proof Hi di1 as H; contradiction.
 
     exfalso; apply Ht1; reflexivity.
 
@@ -90,15 +90,17 @@ split; intros Hi.
    contradiction.
 Qed.
 
+(*
 Infix "⊕" := xorb (left associativity, at level 50) : bool_scope.
+*)
 
 Definition carry x y i :=
   match fst_same x y i with
   | Some dj => x.[i + dj]
-  | None => true
+  | None => 1%D
   end.
 
-Definition I_add_i x y i := x.[i] ⊕ y.[i] ⊕ carry x y (S i).
+Definition I_add_i x y i := (x.[i] + y.[i] + carry x y (S i))%D.
 Definition I_add x y := {| rm := I_add_i x y |}.
 
 Notation "x + y" := (I_add x y) : I_scope.
