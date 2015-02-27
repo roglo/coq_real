@@ -1149,17 +1149,16 @@ destruct s1 as [di1| ].
         do 3 rewrite <- Nat.add_succ_l in H.
         rewrite <- Heqssssi in H.
         rewrite Hs4 in H.
-bbb.
-        destruct (y .[ ssssi + di1 + di + di4]); discriminate H.
+        exfalso; apply H; reflexivity.
 
         rewrite digit_add_1_r in H.
         apply digit_opp_1_iff in H.
-        apply xorb_eq in H.
         rename H into Hxy1.
         pose proof (Hs3 0) as H.
         rewrite Nat.add_0_r in H.
+        apply digit_eq_add_1 in H.
         rewrite Hxy1 in H.
-        destruct (y .[ sssi + di1 + di]); discriminate H.
+        exfalso; revert H; apply digit_neq_0_1.
 
      rename H into Ha2.
      rewrite Ha2 in Hs2; symmetry in Hs2.
@@ -1171,6 +1170,7 @@ bbb.
      do 2 rewrite <- Nat.add_succ_l in H.
      rewrite <- Heqsi, <- Heqssi in H.
      unfold I_add_i, carry in H.
+bbb.
      rewrite Hxy1, digit_opp_add_diag_l, digit_add_1_l in H.
      apply digit_opp_1_iff in H.
      rewrite <- Nat.add_succ_l in H; remember (S ssi) as sssi.
