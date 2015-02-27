@@ -655,23 +655,23 @@ Proof.
 intros x0 y0 x y z Ha Hb Hxy.
 unfold I_eq; intros i; simpl.
 unfold I_add_i; simpl.
-bbb.
-do 2 rewrite digit_add_0_r; f_equal.
+do 2 rewrite digit_add_0_r.
+apply digit_add_compat.
  apply I_add_i_compat_r.
  eapply I_noI_eq_eq; eassumption.
 
  eapply carry_noI_eq_compat_r; eassumption.
 Qed.
 
-Fixpoint first_false_before x i :=
+Fixpoint first_0_before x i :=
   match i with
   | 0 => None
-  | S j => if x.[j] then first_false_before x j else Some j
+  | S j => if digit_eq_dec (x.[j]) 0 then Some j else first_0_before x j
   end.
 
-Theorem first_false_before_none_iff : ∀ x i,
-  first_false_before x i = None
-  ↔ (∀ k, k < i → x.[k] = true).
+Theorem first_0_before_none_iff : ∀ x i,
+  first_0_before x i = None
+  ↔ (∀ k, k < i → (x.[k] = 1)%D).
 Proof.
 intros x i.
 split.
@@ -681,36 +681,33 @@ split.
   exfalso; revert Hki; apply Nat.nlt_0_r.
 
   simpl in Hi.
-  remember (x .[ i]) as ai eqn:Hai .
-  symmetry in Hai.
-  destruct ai; [ idtac | discriminate Hi ].
-  destruct (eq_nat_dec k i) as [H1| H1].
-   subst k; assumption.
+  destruct (digit_eq_dec (x .[ i]) 0) as [H1| H1].
+   discriminate Hi.
 
-   apply IHi; auto.
-   apply Nat.nle_gt; intros H.
-   apply Nat.succ_le_mono in Hki.
-   apply Nat.le_antisymm in H; auto.
+   destruct (eq_nat_dec k i) as [H2| H2].
+    subst i; apply digit_neq_0_eq_1; assumption.
+
+    apply IHi; auto.
+    apply Nat.nle_gt; intros H.
+    apply Nat.succ_le_mono in Hki.
+    apply Nat.le_antisymm in H; auto.
 
  intros Hki.
  induction i; [ reflexivity | simpl ].
- remember (x .[ i]) as ai eqn:Hai .
- symmetry in Hai.
- destruct ai.
-  apply IHi; intros k Hk.
-  apply Hki.
-  apply Nat.lt_lt_succ_r; assumption.
+ destruct (digit_eq_dec (x .[ i]) 0) as [H1| H1].
+  rewrite Hki in H1; auto.
+  exfalso; revert H1; apply digit_neq_1_0.
 
-  apply not_true_iff_false in Hai.
-  exfalso; apply Hai, Hki.
-  apply Nat.lt_succ_r; reflexivity.
+  apply IHi; intros k Hk.
+  apply Hki, Nat.lt_le_incl, lt_n_S.
+  assumption.
 Qed.
 
-Theorem first_false_before_some_iff : ∀ x i j,
-  first_false_before x i = Some j
+Theorem first_0_before_some_iff : ∀ x i j,
+  first_0_before x i = Some j
   ↔ j < i ∧
-    x.[j] = false ∧
-    (∀ k, j < k → k < i → x.[k] = true).
+    (x.[j] = 0)%D ∧
+    (∀ k, j < k → k < i → (x.[k] = 1)%D).
 Proof.
 intros x i j.
 split.
@@ -778,10 +775,10 @@ Proof.
 intros x y i di1 di2 di3 Hn1 Hs4 Hn2 Hs1 Hs3 H4 H3.
 remember (S i) as si.
 remember (S si) as ssi.
-remember (first_false_before x (si + di2)) as j eqn:Hj .
+remember (first_0_before x (si + di2)) as j eqn:Hj .
 symmetry in Hj.
 destruct j as [j| ].
- apply first_false_before_some_iff in Hj.
+ apply first_0_before_some_iff in Hj.
  destruct Hj as (Hji, (Hjf, Hk)).
  assert (i < j) as Hij.
   apply Nat.nle_gt; intros H.
@@ -850,7 +847,7 @@ destruct j as [j| ].
      rewrite Nat.add_comm, Nat.add_sub in H.
      rewrite Hjf, Hbt in H; discriminate H.
 
- rewrite first_false_before_none_iff in Hj.
+ rewrite first_0_before_none_iff in Hj.
  rewrite Hj in Hs3; [ discriminate Hs3 | idtac ].
  apply Nat.add_lt_mono_l; assumption.
 Qed.
@@ -1370,10 +1367,10 @@ destruct s2 as [di2| ].
         destruct s6 as [di6| ]; [ idtac | discriminate H ].
         destruct Hs6 as (Hn6, Hs6).
         clear H.
-        remember (first_false_before x (si + di2)) as j eqn:Hj .
+        remember (first_0_before x (si + di2)) as j eqn:Hj .
         symmetry in Hj.
         destruct j as [j| ].
-         apply first_false_before_some_iff in Hj.
+         apply first_0_before_some_iff in Hj.
          destruct Hj as (Hji, (Hjf, Hk)).
          assert (j - si < di1) as H.
           eapply Nat.le_lt_trans; [ idtac | eauto  ].
@@ -1459,7 +1456,7 @@ destruct s2 as [di2| ].
 
             apply Nat.add_lt_mono_l; assumption.
 
-         rewrite first_false_before_none_iff in Hj.
+         rewrite first_0_before_none_iff in Hj.
          rewrite Hj in Hs3; [ discriminate Hs3 | idtac ].
          apply Nat.add_lt_mono_l; assumption.
 
