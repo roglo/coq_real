@@ -715,28 +715,26 @@ split.
  revert j Hij.
  induction i; intros; [ discriminate Hij | idtac ].
  simpl in Hij.
- remember (x .[ i]) as ai eqn:Hai .
- symmetry in Hai.
- destruct ai.
-  apply IHi in Hij.
-  destruct Hij as (Hji, (Hj, Hk)).
-  split; [ apply Nat.lt_lt_succ_r; auto | idtac ].
-  split; [ assumption | idtac ].
-  intros k Hjk Hki.
-  destruct (eq_nat_dec k i) as [H1| H1].
-   subst k; assumption.
-
-   apply Hk; auto.
-   apply Nat.succ_le_mono in Hki.
-   apply Nat.nle_gt; intros H.
-   apply Nat.le_antisymm in H; auto.
-
+ destruct (digit_eq_dec (x .[ i]) 0) as [Hai| Hai].
   injection Hij; clear Hij; intros; subst j.
   split; [ apply Nat.lt_succ_r; auto | idtac ].
   split; [ assumption | idtac ].
   intros k Hik Hki.
   apply Nat.succ_le_mono, Nat.nlt_ge in Hki.
   contradiction.
+
+  apply IHi in Hij.
+  destruct Hij as (Hji, (Hj, Hk)).
+  split; [ apply Nat.lt_lt_succ_r; auto | idtac ].
+  split; [ assumption | idtac ].
+  intros k Hjk Hki.
+  destruct (eq_nat_dec k i) as [H1| H1].
+   subst k; apply digit_neq_0_eq_1; assumption.
+
+   apply Hk; auto.
+   apply Nat.succ_le_mono in Hki.
+   apply Nat.nle_gt; intros H.
+   apply Nat.le_antisymm in H; auto.
 
  intros (Hji, (Haj, Hjk)).
  revert j Hji Haj Hjk.
