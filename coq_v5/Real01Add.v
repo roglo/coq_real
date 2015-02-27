@@ -890,26 +890,25 @@ induction di.
    remember (S si) as ssi.
    remember (fst_same x y ssi) as s2 eqn:Hs2 .
    apply fst_same_sym_iff in Hs2.
-bbb.
-   destruct s2 as [di2| ]; [ idtac | discriminate H ].
+   destruct s2 as [di2| ]; [ idtac | exfalso; revert H; apply digit_neq_1_0 ].
    destruct Hs2 as (Hn2, Hb2).
    rewrite H in Hb2.
    rename H into Ha2; symmetry in Hb2.
    destruct (lt_dec di1 di2) as [H2| H2].
     apply Hn2 in H2.
-    rewrite Ha1, Hb1 in H2; discriminate H2.
+    rewrite Ha1, Hb1 in H2; exfalso; apply H2; reflexivity.
 
     apply Nat.nlt_ge in H2.
     destruct (lt_dec di2 di1) as [H3| H3].
      apply Nat.succ_lt_mono in H3.
      apply Hn1 in H3.
      rewrite Nat.add_succ_r, <- Nat.add_succ_l, <- Heqssi in H3.
-     rewrite Ha2, Hb2 in H3; discriminate H3.
+     rewrite Ha2, Hb2 in H3; exfalso; apply H3; reflexivity.
 
      apply Nat.nlt_ge in H3.
      apply Nat.le_antisymm in H2; auto.
      subst di2; clear H3.
-     rewrite Ha1 in Ha2; discriminate Ha2.
+     rewrite Ha1 in Ha2; exfalso; revert Ha2; apply digit_neq_1_0.
 
   clear H.
   pose proof (Hdi 1) as H.
@@ -917,18 +916,19 @@ bbb.
   unfold I_add_i, carry in H.
   pose proof (Hs1 0) as H1.
   rewrite Nat.add_0_r in H1.
-  rewrite H1, negb_xorb_diag_l, digit_add_1_l in H.
+  apply digit_eq_add_1 in H1.
+  rewrite H1, digit_add_1_l in H.
   apply digit_opp_1_iff in H.
   remember (S si) as ssi.
   remember (fst_same x y ssi) as s2 eqn:Hs2 .
   apply fst_same_sym_iff in Hs2.
-  destruct s2 as [di2| ]; [ idtac | discriminate H ].
+  destruct s2 as [di2| ]; [ idtac | exfalso; revert H; apply digit_neq_1_0 ].
   destruct Hs2 as (Hn2, Hb2).
   rewrite H in Hb2.
   rename H into Ha2; symmetry in Hb2.
   pose proof (Hs1 (S di2)) as H.
   rewrite Nat.add_succ_r, <- Nat.add_succ_l, <- Heqssi in H.
-  rewrite Ha2, Hb2 in H; discriminate H.
+  rewrite Ha2, Hb2 in H; exfalso; apply H; reflexivity.
 
  rewrite Nat.add_succ_r, <- Nat.add_succ_l in IHdi.
  do 2 rewrite Nat.add_succ_r, <- Nat.add_succ_l.
@@ -961,7 +961,8 @@ bbb.
    unfold I_add_i, carry in H.
    pose proof (Hn1 0 (Nat.lt_0_succ di1)) as H1.
    rewrite Nat.add_0_r in H1.
-   rewrite H1, negb_xorb_diag_l, digit_add_1_l in H.
+   apply digit_eq_add_1 in H1.
+   rewrite H1, digit_add_1_l in H.
    apply digit_opp_1_iff in H.
    rewrite <- Nat.add_succ_l in H.
    remember (S ssi) as sssi.
