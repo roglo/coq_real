@@ -228,6 +228,42 @@ Proof.
 intros x.
 split.
  intros Hx.
+ destruct (digit_eq_dec (x .[ 0]) 0%D) as [Hb| Hb].
+  left; intros i.
+  induction i; [ assumption | idtac ].
+  pose proof (Hx i) as Hi; simpl in Hi.
+  unfold I_add_i in Hi; simpl in Hi.
+  rewrite carry_diag in Hi; simpl in Hi.
+  do 3 rewrite digit_add_0_r in Hi.
+  rewrite IHi, digit_add_0_l in Hi.
+  unfold carry in Hi; simpl in Hi.
+  remember (fst_same x 0 (S i)) as s1 eqn:Hs1 .
+  destruct s1 as [dj1| ].
+   pose proof (Hx (S i)) as Hsi; simpl in Hsi.
+   unfold I_add_i in Hsi; simpl in Hsi.
+   rewrite carry_diag in Hsi; simpl in Hsi.
+   do 3 rewrite digit_add_0_r in Hsi.
+   unfold carry in Hsi; simpl in Hsi.
+   remember (fst_same x 0 (S (S i))) as s2 eqn:Hs2 .
+   apply fst_same_sym_iff in Hs2; simpl in Hs2.
+   destruct s2 as [dj2| ].
+    destruct Hs2 as (Hn2, Ht2).
+    rewrite Ht2 in Hsi.
+    rewrite digit_add_0_r in Hsi; assumption.
+
+    destruct dj1; [ rewrite Nat.add_0_r in Hi; assumption | idtac ].
+    pose proof (Hs2 dj1) as H.
+    rewrite Nat.add_succ_r in Hi; contradiction.
+
+   symmetry in Hi; exfalso; revert Hi.
+   apply digit_neq_0_1.
+
+  right; intros i.
+bbb.
+
+intros x.
+split.
+ intros Hx.
  remember (x .[ 0]) as b eqn:Hb .
  symmetry in Hb.
 bbb.
