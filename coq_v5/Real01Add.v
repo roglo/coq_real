@@ -562,8 +562,8 @@ destruct s1 as [di1| ].
  destruct Hs1 as (Hn1, Hs1).
  rewrite Hs1, digit_add_0_r; reflexivity.
 
- exfalso; eapply not_I_add_0_inf_1; eauto .
-bbb.
+ exfalso; eapply not_I_add_0_inf_1; intros dj.
+ apply digit_neq_0_eq_1, Hs1.
 Qed.
 
 Theorem I_add_0_r : ∀ x, (x + 0 = x)%I.
@@ -581,18 +581,20 @@ Theorem I_add_i_compat_r : ∀ x y z,
 Proof.
 intros x y z Hxy j; simpl.
 unfold I_add_i.
-rewrite Hxy; f_equal.
+unfold I_eq_ext in Hxy; rewrite Hxy.
+apply digit_add_compat; [ reflexivity | idtac ].
 apply carry_compat_r; assumption.
 Qed.
 
 Theorem I_add_i_compat : ∀ x y z t j,
-  (∀ i, x .[ i] = z .[ i])
-  → (∀ i, y .[ i] = t .[ i])
-  → I_add_i x y j = I_add_i z t j.
+  (∀ i, (x .[ i] = z .[ i])%D)
+  → (∀ i, (y .[ i] = t .[ i])%D)
+  → (I_add_i x y j = I_add_i z t j)%D.
 Proof.
 intros x y z t j Hxz Hyt.
 unfold I_add_i.
-rewrite Hxz, Hyt; f_equal.
+rewrite Hxz, Hyt.
+apply digit_add_compat; [ reflexivity | idtac ].
 apply carry_compat; assumption.
 Qed.
 
@@ -621,6 +623,7 @@ destruct s1 as [di1| ].
   destruct Hs2 as (Hn2, Hs2).
   rewrite Hs2, digit_add_0_r in Hi; assumption.
 
+bbb.
   exfalso; revert Hs2; rewrite Hb; apply not_I_add_0_inf_1.
 
  exfalso; revert Hs1; rewrite Ha; apply not_I_add_0_inf_1.
