@@ -13,21 +13,18 @@ Definition cauchy_sequence u :=
 Definition converges_to u r :=
   ∀ ε, (ε ≠ 0)%I → ∃ N, ∀ n, n > N → (I_abs_sub r (u n) < ε)%I.
 
+Axiom functional_choice :
+  ∀ A B (P : A → B → Prop),
+  (∀ x, ∃ y, P x y)
+  → ∃ f, ∀ x, P x (f x).
+
+(* to be completed
 Theorem zzz : ∀ u, cauchy_sequence u → ∃ r, converges_to u r.
 Proof.
 intros u Hc.
 unfold cauchy_sequence in Hc.
 unfold converges_to.
+apply functional_choice in Hc.
+destruct Hc as (f, Hf).
 bbb.
-
-assert (1 > 0)%I as H.
- Focus 2.
- apply Hc in H.
- destruct H as (N, HN).
- exists (mkre (R_int (u (S N))) 0).
- intros ε Hε.
- exists N; intros n Hn.
- remember Hε as H; clear HeqH.
- apply Hc in H.
- destruct H as (N1, HN1).
-bbb.
+*)
