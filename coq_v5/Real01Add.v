@@ -1,11 +1,12 @@
 (* addition modulo 1 in I *)
 
 Require Import Utf8 QArith NPeano Misc.
-Require Import Oracle Real01.
+Require Import Oracle Digit Real01.
 
 Open Scope nat_scope.
 
-Definition Isum2Un x y i j := if bool_dec (x.[i+j]) (y.[i+j]) then 1 else 0.
+Definition Isum2Un x y i j :=
+  if digit_eq_dec (x.[i+j]) (y.[i+j]) then 1 else 0.
 
 Definition fst_same x y i :=
   match first_nonzero (Isum2Un x y i) with
@@ -16,10 +17,10 @@ Definition fst_same x y i :=
 Theorem fst_same_iff : ∀ x y i odi, fst_same x y i = odi ↔
   match odi with
   | Some di =>
-      (∀ dj, dj < di → x.[i + dj] = negb (y.[i + dj]))
-      ∧ x.[i + di] = y.[i + di]
+      (∀ dj, dj < di → (x.[i + dj] ≠ y.[i + dj])%D)
+      ∧ (x.[i + di] = y.[i + di])%D
   | None =>
-      ∀ dj, x.[i + dj] = negb (y.[i + dj])
+      ∀ dj, (x.[i + dj] ≠ y.[i + dj])%D
   end.
 Proof.
 intros x y i odi.
@@ -31,30 +32,24 @@ split; intros Hi.
  unfold Isum2Un in Hs1; simpl in Hs1.
  destruct s1 as [di1| ].
   destruct Hs1 as (Hn1, Ht1).
-  destruct (bool_dec (x .[ i + di1]) (y .[ i + di1])) as [H1| H1].
+  destruct (digit_eq_dec (x .[ i + di1]) (y .[ i + di1])) as [H1| H1].
    split; [ idtac | assumption ].
    intros dj Hdj.
    remember Hdj as H; clear HeqH.
    apply Hn1 in H.
-   destruct (bool_dec (x .[ i + dj]) (y .[ i + dj])) as [H2| H2].
+   destruct (digit_eq_dec (x .[ i + dj]) (y .[ i + dj])) as [H2| H2].
     discriminate H.
 
-    destruct (y .[ i + dj]); simpl.
-     apply not_true_iff_false; assumption.
-
-     apply not_false_iff_true; assumption.
+    assumption.
 
    exfalso; apply Ht1; reflexivity.
 
   intros dj.
   pose proof (Hs1 dj) as H.
-  destruct (bool_dec (x .[ i + dj]) (y .[ i + dj])) as [H2| H2].
+  destruct (digit_eq_dec (x .[ i + dj]) (y .[ i + dj])) as [H2| H2].
    discriminate H.
 
-   destruct (y .[ i + dj]); simpl.
-    apply not_true_iff_false; assumption.
-
-    apply not_false_iff_true; assumption.
+   assumption.
 
  unfold fst_same; simpl.
  remember (first_nonzero (Isum2Un x y i)) as s1 eqn:Hs1 .
@@ -64,7 +59,7 @@ split; intros Hi.
   destruct Hs1 as (Hn1, Ht1).
   destruct odi as [di| ].
    destruct Hi as (Hn, Ht).
-   destruct (bool_dec (x .[ i + di1]) (y .[ i + di1])) as [H2| H2].
+   destruct (digit_eq_dec (x .[ i + di1]) (y .[ i + di1])) as [H2| H2].
     destruct (lt_eq_lt_dec di di1) as [[H1| H1]| H1].
      remember H1 as H; clear HeqH.
      apply Hn1 in H.
@@ -80,7 +75,7 @@ split; intros Hi.
 
     exfalso; apply Ht1; reflexivity.
 
-   destruct (bool_dec (x .[ i + di1]) (y .[ i + di1])) as [H2| H2].
+   destruct (digit_eq_dec (x .[ i + di1]) (y .[ i + di1])) as [H2| H2].
     rewrite Hi in H2.
     exfalso; revert H2; apply no_fixpoint_negb.
 
@@ -89,7 +84,7 @@ split; intros Hi.
   destruct odi as [di| ]; [ idtac | reflexivity ].
   destruct Hi as (Hn, Ht).
   pose proof (Hs1 di) as H.
-  destruct (bool_dec (x .[ i + di]) (y .[ i + di])) as [H2| H2].
+  destruct (digit_eq_dec (x .[ i + di]) (y .[ i + di])) as [H2| H2].
    discriminate H.
 
    contradiction.
@@ -1308,7 +1303,7 @@ destruct s2 as [di2| ].
       discriminate H.
 
       apply Nat.nlt_ge in H3.
-      destruct (bool_dec (x .[ si + di2]) false) as [H4| H4].
+      destruct (digit_eq_dec (x .[ si + di2]) false) as [H4| H4].
        rewrite H4.
        apply negb_false_iff.
        pose proof (Hs5 (di1 - S di2)) as H.
@@ -2302,7 +2297,7 @@ Theorem I_add_add_0_r_not_without_relay : ∀ x y i,
 Proof.
 intros x y i Hs2.
 apply fst_same_iff in Hs2; simpl in Hs2.
-destruct (bool_dec (((x + 0)%I) .[ i]) (y .[ i])) as [H1| H1].
+destruct (digit_eq_dec (((x + 0)%I) .[ i]) (y .[ i])) as [H1| H1].
  apply I_add_inf_true_eq_if in Hs2; auto.
  simpl in Hs2, H1.
  destruct Hs2 as (Hn2, Hs2).

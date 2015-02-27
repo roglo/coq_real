@@ -1,13 +1,13 @@
 Require Import Utf8 QArith NPeano.
-Require Import Oracle.
+Require Import Oracle Digit.
 
 Open Scope nat_scope.
 
 (* I = interval [0..1] of ℝ *)
-Record I := { rm : nat → bool }.
+Record I := mki { rm : nat → digit }.
 
-Definition I_zero := {| rm i := false |}.
-Definition I_one := {| rm i := true |}.
+Definition I_zero := {| rm i := 0%D |}.
+Definition I_one := {| rm i := 1%D |}.
 
 Notation "s .[ i ]" := (rm s i) (at level 15, i at level 200).
 
