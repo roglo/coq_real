@@ -13,13 +13,6 @@ intros α i f x; unfold id; intros H j.
 rewrite Nat.add_succ_l, <- Nat.add_succ_r; apply H.
 Qed.
 
-Theorem xorb_shuffle0 : ∀ a b c, a ⊕ b ⊕ c = a ⊕ c ⊕ b.
-Proof.
-intros a b c.
-do 2 rewrite xorb_assoc; f_equal.
-apply xorb_comm.
-Qed.
-
 (* opposite *)
 
 Theorem I_sub_diag : ∀ x, (x - x = 0)%I.
@@ -28,6 +21,7 @@ intros x.
 unfold I_eq; intros i; simpl.
 unfold I_add_i, carry.
 remember (S i) as si; simpl.
+bbb.
 rewrite xorb_false_r.
 rewrite fst_same_diag.
 remember (fst_same (x - x) 0 si) as s1 eqn:Hs1 .

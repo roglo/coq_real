@@ -8,7 +8,7 @@ Set Implicit Arguments.
 
 Open Scope Z_scope.
 
-Definition b2z (b : bool) := if b then 1 else 0.
+Definition b2z (b : digit) := if digit_eq_dec b 1 then 1 else 0.
 
 Definition R_add x y :=
   {| R_int := R_int x + R_int y + b2z (carry (R_frac x) (R_frac y) 0);

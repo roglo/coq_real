@@ -9,7 +9,7 @@ Open Scope nat_scope.
 
 Definition I_compare x y :=
   match fst_same x (- y)%I 0 with
-  | Some j => if x.[j] then Gt else Lt
+  | Some j => if digit_eq_dec (x.[j]) 1 then Gt else Lt
   | None => Eq
   end.
 

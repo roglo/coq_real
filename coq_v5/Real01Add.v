@@ -2942,10 +2942,7 @@ split; intros Hxy.
        unfold I_add_i in HH; simpl in HH.
        do 2 rewrite digit_add_0_r in HH.
        rewrite H in HH.
-bbb.
-       apply xorb_move_l_r_1 in HH.
-       rewrite digit_add_assoc, digit_add_nilpotent in HH.
-       rewrite digit_add_0_l in HH.
+       apply digit_add_cancel_l in HH.
        unfold carry in HH; simpl in HH.
        remember (fst_same x 0 (S di1)) as s2 eqn:Hs2 .
        remember (fst_same y 0 (S di1)) as s3 eqn:Hs3 .
@@ -2953,16 +2950,17 @@ bbb.
         apply fst_same_sym_iff in Hs2; simpl in Hs2.
         destruct Hs2 as (Hn2, Ht2).
         rewrite Ht2 in HH.
-        destruct s3 as [dj3| ]; [ idtac | discriminate HH ].
+        destruct s3 as [dj3| ]; [ idtac | revert HH; apply digit_neq_1_0 ].
         simpl in Hy.
-        rewrite Hy in HH; discriminate HH.
+        rewrite Hy in HH; revert HH; apply digit_neq_1_0.
 
         apply fst_same_sym_iff in Hs2; simpl in Hs2.
         clear H.
         pose proof (Hx 0) as H; simpl in H.
-        rewrite Hs2 in H; discriminate H.
+        rewrite Hs2 in H; revert H; apply digit_neq_1_0.
 
-      right; split; intros di; [ apply Hx | apply Hy ].
+      right; split; intros di; [ rewrite Ht1; apply Hx | idtac ].
+      rewrite Hx1; apply Hy.
 
   left; intros i.
   rewrite Hs1, digit_opp_involutive; reflexivity.
@@ -3093,7 +3091,7 @@ bbb.
       rewrite Nat.add_comm, Nat.add_sub in H.
       rename H into Hyx.
       rewrite <- Hxy, <- Hyx in Hne.
-      apply digit_neq_eq_opp, not_eq_sym; assumption.
+      apply digit_neq_eq_opp, digit_neq_sym; assumption.
 
     rewrite digit_add_1_r.
     destruct s2 as [di2| ].
@@ -3118,7 +3116,7 @@ bbb.
       contradiction.
 
       subst j; symmetry.
-      apply digit_neq_eq_opp, not_eq_sym; assumption.
+      apply digit_neq_eq_opp, digit_neq_sym; assumption.
 
       pose proof (Hy (j - S i)) as H.
       rewrite Nat.add_succ_r, <- Nat.add_succ_l in H.
@@ -3135,6 +3133,7 @@ bbb.
       apply digit_neq_eq_opp; assumption.
 
      rewrite digit_add_1_r; f_equal.
+     apply digit_opp_compat.
      destruct (lt_eq_lt_dec j i) as [[H1| H1]| H1].
       apply Heq; assumption.
 
