@@ -39,6 +39,8 @@ Fixpoint I_propag_carry u n :=
   | S n1 => propag_carry_once (I_propag_carry u n1)
   end.
 
+bbb.
+
 Definition I_mul_algo x y i := Σ (j=1,i), (b2n (x.[j-1]) * b2n (y.[i-j])).
 Arguments I_mul_algo x%I y%I i%nat.
 
