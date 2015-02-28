@@ -2879,52 +2879,59 @@ split; intros Hxy.
     intros H; rewrite Ht1 in H.
     revert H; apply no_fixpoint_oppd.
 
-bbb.
-    remember (x .[ di1]) as b eqn:Hxi1 .
-    symmetry in Hxi1.
-bbb.
-    apply oppd_inj in Ht1; rewrite Ht1.
-    destruct b.
+    apply oppd_sym in Ht1.
+    destruct (digit_eq_dec (x .[ di1]) 1) as [Hx1| Hx1].
+     remember Hx1 as Hxi1; clear HeqHxi1.
      eapply I_eq_neq_prop in Hxi1; try eassumption.
-     destruct Hxi1 as [(Hx, Hy)| (Hx, Hy)].
-      destruct di1.
-       left.
-       split; [ reflexivity | idtac ].
-       simpl in Hx, Hy.
-       split; intros j; [ do 2 rewrite Hx | do 2 rewrite Hy ]; reflexivity.
+      destruct Hxi1 as [(Hx, Hy)| (Hx, Hy)].
+       destruct di1.
+        left.
+        split; [ reflexivity | idtac ].
+        simpl in Hx, Hy.
+        split; intros j; [ do 2 rewrite Hx | do 2 rewrite Hy ]; reflexivity.
 
-       exfalso.
-       clear Ht1.
-       pose proof (Hn1 di1 (Nat.lt_succ_diag_r di1)) as H.
-       rewrite negb_involutive in H.
-       pose proof (Hxy di1) as HH; simpl in HH.
-       unfold I_add_i in HH; simpl in HH.
-       do 2 rewrite digit_add_0_r in HH.
-       rewrite H in HH.
-       apply xorb_move_l_r_1 in HH.
-       rewrite digit_add_assoc, digit_add_nilpotent in HH.
-       rewrite digit_add_0_l in HH.
-       unfold carry in HH; simpl in HH.
-       remember (fst_same x 0 (S di1)) as s2 eqn:Hs2 .
-       remember (fst_same y 0 (S di1)) as s3 eqn:Hs3 .
-       destruct s2 as [dj2| ].
-        apply fst_same_sym_iff in Hs2; simpl in Hs2.
-        destruct Hs2 as (Hn2, Ht2).
-        rewrite <- Nat.add_succ_l, Hx in Ht2; discriminate Ht2.
+        pose proof (Hn1 di1 (Nat.lt_succ_diag_r di1)) as H.
+        rewrite digit_opp_involutive in H.
+        pose proof (Hxy di1) as HH; simpl in HH.
+        unfold I_add_i in HH; simpl in HH.
+        do 2 rewrite digit_add_0_r in HH.
+        rewrite H in HH.
+        unfold carry in HH; simpl in HH.
+        remember (fst_same x 0 (S di1)) as s2 eqn:Hs2 .
+        remember (fst_same y 0 (S di1)) as s3 eqn:Hs3 .
+        destruct s2 as [dj2| ].
+         apply fst_same_sym_iff in Hs2; simpl in Hs2.
+         destruct Hs2 as (Hn2, Ht2).
+         rewrite <- Nat.add_succ_l, Hx in Ht2.
+         exfalso; revert Ht2; apply digit_neq_1_0.
 
-        clear Hs2.
-        apply fst_same_sym_iff in Hs3; simpl in Hs3.
-        destruct s3 as [dj3| ]; [ idtac | clear HH ].
-         rewrite <- Nat.add_succ_l, Hy in HH; discriminate HH.
+         apply fst_same_sym_iff in Hs3; simpl in Hs3.
+         destruct s3 as [dj3| ]; [ idtac | clear HH ].
+          rewrite <- Nat.add_succ_l, Hy, digit_add_0_r in HH.
+          exfalso; revert HH; apply no_fixpoint_oppd.
 
-         pose proof (Hy 0) as HH; simpl in HH.
-         rewrite Hs3 in HH; discriminate HH.
+          pose proof (Hy 0) as HH; simpl in HH.
+          rewrite Hs3 in HH.
+          exfalso; revert HH; apply digit_neq_1_0.
 
-      right; split; intros di; [ apply Hx | apply Hy ].
+       rewrite Hx1 in Ht1.
+       right; split; intros di; [ rewrite Ht1; apply Hx | idtac ].
+       rewrite Hx1; apply Hy.
 
-     simpl in Ht1; simpl.
-     symmetry in Hxy.
-     eapply I_eq_neq_prop in Hxi1; try eassumption.
+      simpl in Ht1; simpl.
+      rewrite Hx1 in Ht1.
+      eapply I_eq_neq_prop in Hxi1; eassumption.
+
+bbb.
+     destruct di1.
+      left.
+      split; [ reflexivity | idtac ].
+      split; intros j.
+
+
+; [ do 2 rewrite Hx | do 2 rewrite Hy ]; reflexivity.
+bbb.
+(*
      destruct Hxi1 as [(Hy, Hx)| (Hy, Hx)].
       destruct di1.
        left.
@@ -2935,7 +2942,7 @@ bbb.
        exfalso.
        clear Ht1.
        pose proof (Hn1 di1 (Nat.lt_succ_diag_r di1)) as H.
-       rewrite negb_involutive in H.
+       rewrite digit_opp_involutive in H.
        pose proof (Hxy di1) as HH; simpl in HH.
        unfold I_add_i in HH; simpl in HH.
        do 2 rewrite digit_add_0_r in HH.
@@ -2962,7 +2969,7 @@ bbb.
       right; split; intros di; [ apply Hx | apply Hy ].
 
   left; intros i.
-  rewrite Hs1, negb_involutive; reflexivity.
+  rewrite Hs1, digit_opp_involutive; reflexivity.
 
  destruct Hxy as [Hxy| Hxy].
   apply I_eq_ext_eq; assumption.
@@ -2998,7 +3005,7 @@ bbb.
      destruct Hs2 as (Hn2, Ht2).
      rewrite Ht2, digit_add_0_r.
      apply digit_neq_eq_opp in Hne.
-     rewrite Hne, negb_involutive; reflexivity.
+     rewrite Hne, digit_opp_involutive; reflexivity.
 
      pose proof (Hs1 0) as H.
      rewrite <- Hs2 with (dj := 0) in H.
