@@ -1512,26 +1512,25 @@ destruct s2 as [di2| ].
      apply Nat.le_antisymm in H3; [ idtac | assumption ].
      subst di1; reflexivity.
 
-  do 4 rewrite <- digit_add_assoc.
+  do 3 rewrite <- digit_add_assoc.
   apply digit_add_compat; [ reflexivity | idtac ].
-  rewrite digit_add_assoc, digit_add_1_r.
+  rewrite digit_add_comm, <- digit_add_assoc.
+  apply digit_add_compat; [ reflexivity | idtac ].
   rewrite <- Hs2, Hs3, <- Hs1.
-  symmetry; rewrite digit_add_1_l; symmetry.
-bbb.
-
-  apply oppd_1_iff.
   unfold I_add_i, carry; rewrite <- Nat.add_succ_l.
+  rewrite Hs3, digit_add_0_r, digit_add_1_l, digit_add_1_r.
+  apply oppd_equal, oppd_0_iff.
   remember (S si) as ssi; simpl.
-  rewrite Hs3, digit_add_0_r, digit_add_1_l.
-  apply oppd_0_iff.
   remember (fst_same x 0 (ssi + di1)) as s4 eqn:Hs4 .
   symmetry in Hs4.
   destruct s4 as [s4| ]; [ idtac | reflexivity ].
   rewrite Heqssi, Nat.add_succ_l, <- Nat.add_succ_r.
   rewrite <- Nat.add_assoc, Hs3; reflexivity.
 
- do 3 rewrite xorb_assoc; f_equal.
- rewrite xorb_comm, xorb_assoc; f_equal.
+ do 3 rewrite <- digit_add_assoc.
+ apply digit_add_compat; [ reflexivity | idtac ].
+ rewrite digit_add_comm, <- digit_add_assoc.
+ apply digit_add_compat; [ reflexivity | idtac ].
  destruct s3 as [di3| ].
   destruct Hs3 as (Hn3, Hs3).
   rewrite Hs3, digit_add_0_r.
@@ -1566,11 +1565,13 @@ bbb.
      symmetry in Hs5.
      apply fst_same_iff in Hs5; simpl in Hs5.
      destruct s5 as [di5| ].
-      destruct Hs5 as (Hn5, Hs5); rewrite Hs5 in Hb; discriminate Hb.
+      destruct Hs5 as (Hn5, Hs5); rewrite Hs5 in Hb.
+      revert Hb; apply digit_neq_0_1.
 
-      rewrite Hs5 in Hs4; discriminate Hs4.
+      rewrite Hs5 in Hs4.
+      revert Hs4; apply digit_neq_1_0.
 
-     apply Nat.nlt_ge, Nat.le_antisymm in H2; auto.
+     apply Nat.nlt_ge, Nat.le_antisymm in H2; [ idtac | assumption ].
      subst di3; clear H1.
      rewrite Hs2 in Hs3.
      apply oppd_0_iff in Hs3.
@@ -1586,7 +1587,8 @@ bbb.
       destruct Hs5 as (Hn5, Hs5); rewrite Hs5 in Hs3.
       rewrite digit_add_0_r in Hs3; assumption.
 
-      rewrite Hs5 in Hs4; discriminate Hs4.
+      rewrite Hs5 in Hs4.
+      exfalso; revert Hs4; apply digit_neq_1_0.
 
    rewrite digit_add_1_r.
    apply oppd_1_iff.
@@ -1601,7 +1603,7 @@ bbb.
    destruct s5 as [di5| ].
     destruct Hs5 as (Hn5, Hs5); rewrite Hs5 in Hs1.
     rewrite digit_add_0_r in Hs1.
-    destruct (y .[ si + di1]); discriminate Hs1.
+    exfalso; revert Hs1; apply no_fixpoint_oppd.
 
     clear Hs1 Hs5.
     destruct (lt_dec di1 di3) as [H1| H1].
@@ -1610,7 +1612,8 @@ bbb.
      rewrite Nat.add_succ_l, <- Nat.add_succ_r in H.
      rewrite Nat.add_sub_assoc in H; auto.
      rewrite Nat.add_shuffle0, Nat.add_sub in H.
-     rewrite Hs3 in H; discriminate H.
+     rewrite Hs3 in H.
+     exfalso; revert H; apply digit_neq_0_1.
 
      apply Nat.nlt_ge in H1.
      destruct (lt_dec di3 di1) as [H2| H2].
@@ -1625,12 +1628,12 @@ bbb.
       destruct s5 as [di5| ].
        destruct Hs5 as (Hn5, Hs5); rewrite Hs5 in H.
        rewrite digit_add_0_r in H.
-       apply not_true_iff_false; intros Ha.
+       apply digit_not_1_iff_0; intros Ha.
        subst si ssi.
        eapply no_room_for_infinite_carry in Hs3; eauto .
 
        rewrite digit_add_1_r, <- Hs2 in H.
-       destruct (x .[ si + di3]); discriminate H.
+       exfalso; revert H; apply no_fixpoint_oppd.
 
       apply Nat.nlt_ge in H2.
       apply Nat.le_antisymm in H2; auto.
@@ -1644,7 +1647,7 @@ Theorem I_add_add_0_l_when_lhs_has_no_relay : ∀ x y i dj2 dj5,
   fst_same ((x + 0)%I + y) 0 (S i) = Some dj2
   → fst_same (x + y) 0 (S i) = Some dj5
   → fst_same (x + 0%I) y (S i) = None
-  → I_add_i (x + 0%I) y i = I_add_i x y i.
+  → (I_add_i (x + 0%I) y i = I_add_i x y i)%D.
 Proof.
 intros x y i dj2 dj5 Ps2 Ps5 Hs1.
 remember (S i) as si.
@@ -1658,8 +1661,9 @@ destruct Ps2 as (Pn2, _).
 apply fst_same_iff in Ps5; simpl in Ps5.
 destruct Ps5 as (Pn5, Ps5).
 rewrite digit_add_0_r.
-do 3 rewrite xorb_assoc; f_equal.
-rewrite xorb_comm, xorb_assoc; f_equal.
+bbb.
+do 3 rewrite <- digit_add_assoc; f_equal.
+rewrite digit_add_comm, <- digit_add_assoc; f_equal.
 rewrite digit_add_1_l.
 remember (fst_same x y si) as s2 eqn:Hs2 .
 symmetry in Hs2.
@@ -2229,8 +2233,8 @@ rewrite digit_add_1_r, negb_xorb_r.
 unfold I_add_i, carry.
 rewrite <- Heqsi; simpl.
 rewrite digit_add_0_r.
-do 2 rewrite xorb_assoc; f_equal.
-rewrite xorb_comm; f_equal.
+do 2 rewrite <- digit_add_assoc; f_equal.
+rewrite digit_add_comm; f_equal.
 apply fst_same_iff in Hs1.
 apply fst_same_iff in Hs5.
 simpl in Hs1, Hs5.
@@ -2874,7 +2878,7 @@ split; intros Hxy.
        do 2 rewrite digit_add_0_r in HH.
        rewrite H in HH.
        apply xorb_move_l_r_1 in HH.
-       rewrite <- xorb_assoc, digit_add_nilpotent in HH.
+       rewrite digit_add_assoc, digit_add_nilpotent in HH.
        rewrite digit_add_0_l in HH.
        unfold carry in HH; simpl in HH.
        remember (fst_same x 0 (S di1)) as s2 eqn:Hs2 .
@@ -2913,7 +2917,7 @@ split; intros Hxy.
        do 2 rewrite digit_add_0_r in HH.
        rewrite H in HH.
        apply xorb_move_l_r_1 in HH.
-       rewrite <- xorb_assoc, digit_add_nilpotent in HH.
+       rewrite digit_add_assoc, digit_add_nilpotent in HH.
        rewrite digit_add_0_l in HH.
        unfold carry in HH; simpl in HH.
        remember (fst_same x 0 (S di1)) as s2 eqn:Hs2 .
