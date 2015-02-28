@@ -2879,6 +2879,7 @@ split; intros Hxy.
     intros H; rewrite Ht1 in H.
     revert H; apply no_fixpoint_oppd.
 
+bbb.
     remember (x .[ di1]) as b eqn:Hxi1 .
     symmetry in Hxi1.
 bbb.
