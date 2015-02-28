@@ -1661,9 +1661,10 @@ destruct Ps2 as (Pn2, _).
 apply fst_same_iff in Ps5; simpl in Ps5.
 destruct Ps5 as (Pn5, Ps5).
 rewrite digit_add_0_r.
-bbb.
-do 3 rewrite <- digit_add_assoc; f_equal.
-rewrite digit_add_comm, <- digit_add_assoc; f_equal.
+do 3 rewrite <- digit_add_assoc.
+apply digit_add_compat; [ reflexivity | idtac ].
+rewrite digit_add_comm, <- digit_add_assoc.
+apply digit_add_compat; [ reflexivity | idtac ].
 rewrite digit_add_1_l.
 remember (fst_same x y si) as s2 eqn:Hs2 .
 symmetry in Hs2.
@@ -1690,8 +1691,8 @@ destruct s2 as [di2| ].
    apply fst_same_iff in Hs4; simpl in Hs4.
    destruct s4 as [di4| ].
     destruct Hs4 as (Hn4, Hs4); rewrite Hs4, digit_add_0_r in H.
-    rewrite Hs2 in H.
-    destruct (y .[ si + di2]); discriminate H.
+    rewrite Hs2 in H; symmetry in H.
+    exfalso; revert H; apply no_fixpoint_oppd.
 
     clear H.
     apply digit_not_0_iff_1.
@@ -1710,8 +1711,8 @@ destruct s2 as [di2| ].
         apply Hn2 in H2.
         rewrite Nat.add_succ_r, <- Nat.add_succ_l in H2.
         rewrite <- Heqssi in H2.
-        rewrite Ps6 in H2.
-        destruct (y .[ ssi + dj6]); discriminate H2.
+        rewrite Ps6 in H2; symmetry in H2.
+        exfalso; revert H2; apply no_fixpoint_oppd.
 
         apply Nat.nlt_ge in H2.
         destruct (lt_dec di2 (S dj6)) as [H3| H3].
@@ -1721,13 +1722,14 @@ destruct s2 as [di2| ].
           rewrite <- Hs2, Hs4 in Ps5.
           rewrite digit_add_1_r in Ps5.
           apply oppd_0_iff in Ps5.
-          destruct (x .[ si]); discriminate Ps5.
+          rewrite digit_add_nilpotent in Ps5.
+          exfalso; revert Ps5; apply digit_neq_0_1.
 
           apply Nat.succ_lt_mono in H3.
           apply Pn6 in H3.
           rewrite Nat.add_succ_r, <- Nat.add_succ_l in Hs2.
           rewrite <- Heqssi, H3 in Hs2.
-          destruct (y .[ ssi + di2]); discriminate Hs2.
+          exfalso; revert Hs2; apply no_fixpoint_oppd.
 
          apply Nat.nlt_ge in H3.
          apply Nat.le_antisymm; auto.
@@ -1739,18 +1741,18 @@ destruct s2 as [di2| ].
        assert (0 < S dj6) as H by apply Nat.lt_0_succ.
        apply Hn2 in H.
        rewrite Nat.add_0_r in H.
-       rewrite H in Ps5.
-       destruct (y .[ si]); discriminate Ps5.
+       rewrite H, digit_opp_add_diag_l in Ps5.
+       revert Ps5; apply digit_neq_1_0.
 
       destruct di2.
        rewrite Nat.add_0_r in Hs2.
-       rewrite <- Hs2 in Ps5.
-       destruct (x .[ si]); discriminate Ps5.
+       rewrite <- Hs2, digit_add_nilpotent in Ps5.
+       revert Ps5; apply digit_neq_1_0.
 
        rewrite Nat.add_succ_r, <- Nat.add_succ_l in Hs2.
        rewrite <- Heqssi in Hs2.
        rewrite Ps6 in Hs2.
-       destruct (y .[ ssi + di2]); discriminate Hs2.
+       revert Hs2; apply no_fixpoint_oppd.
 
      assert (S dj5 = di2) as H.
       destruct (lt_dec (S dj5) di2) as [H2| H2].
@@ -1766,8 +1768,8 @@ destruct s2 as [di2| ].
           apply Hn2 in H3.
           rewrite Nat.add_succ_r, <- Nat.add_succ_l, <- Heqssi in H3.
           rewrite Nat.add_assoc in H3.
-          rewrite Ps6 in H3.
-          destruct (y .[ ssi + S dj5 + di6]); discriminate H3.
+          rewrite Ps6 in H3; symmetry in H3.
+          exfalso; revert H3; apply no_fixpoint_oppd.
 
           apply Nat.nlt_ge in H3.
           destruct (lt_dec di2 (S (S dj5 + di6))) as [H4| H4].
@@ -1781,8 +1783,8 @@ destruct s2 as [di2| ].
            rewrite Nat.add_succ_l, <- Nat.add_succ_r in H.
            rewrite Nat.add_sub_assoc in H; auto.
            rewrite Nat.add_shuffle0, Nat.add_sub in H.
-           rewrite Hs2 in H.
-           destruct (y .[ si + di2]); discriminate H.
+           rewrite Hs2 in H; symmetry in H.
+           exfalso; revert H; apply no_fixpoint_oppd.
 
            apply Nat.nlt_ge in H4.
            apply Nat.le_antisymm; auto.
@@ -1792,16 +1794,16 @@ destruct s2 as [di2| ].
          rewrite Nat.add_assoc in Ha.
          rewrite Ha, digit_add_0_r in Ps5.
          apply Hn2 in H2.
-         rewrite H2 in Ps5.
-         destruct (y .[ si + S dj5]); discriminate Ps5.
+         rewrite H2, digit_opp_add_diag_l in Ps5.
+         exfalso; revert Ps5; apply digit_neq_1_0.
 
         pose proof (Ps6 (di2 - S (S dj5))) as H.
         rewrite Nat.add_sub_assoc in H; auto.
         rewrite Heqssi in H.
         rewrite Nat.add_succ_l, <- Nat.add_succ_r in H.
         rewrite Nat.add_shuffle0, Nat.add_sub in H.
-        rewrite Hs2 in H.
-        destruct (y .[ si + di2]); discriminate H.
+        rewrite Hs2 in H; symmetry in H.
+        exfalso; revert H; apply no_fixpoint_oppd.
 
        apply Nat.nlt_ge in H2.
        destruct (lt_dec di2 (S dj5)) as [H3| H3].
@@ -1837,14 +1839,15 @@ destruct s2 as [di2| ].
           apply fst_same_iff in Ps8; simpl in Ps8.
           destruct s8 as [dj8| ].
            destruct Ps8 as (Pn8, Ps8); rewrite Ps8, digit_add_0_r in H.
-           rewrite Ps6 in H.
-           destruct (y .[ ssi + S dj5 + dj6]); discriminate H.
+           rewrite Ps6 in H; symmetry in H.
+           exfalso; revert H; apply no_fixpoint_oppd.
 
            clear H.
            pose proof (Hs4 (S dj5 + dj6 + dj7 - di2)) as H.
            rewrite Nat.add_sub_assoc in H.
             rewrite Nat.add_shuffle0, Nat.add_sub in H.
             do 2 rewrite Nat.add_assoc in H.
+bbb.
             rewrite Ps7 in H; discriminate H.
 
             eapply Nat.le_trans; eauto .
