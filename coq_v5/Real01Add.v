@@ -2922,16 +2922,11 @@ split; intros Hxy.
       rewrite Hx1 in Ht1.
       eapply I_eq_neq_prop in Hxi1; eassumption.
 
-bbb.
-     destruct di1.
-      left.
-      split; [ reflexivity | idtac ].
-      split; intros j.
-
-
-; [ do 2 rewrite Hx | do 2 rewrite Hy ]; reflexivity.
-bbb.
-(*
+     apply digit_not_1_iff_0 in Hx1.
+     rewrite Hx1 in Ht1.
+     remember Hx1 as Hxi1; clear HeqHxi1.
+     symmetry in Hxy.
+     eapply I_eq_neq_prop in Hxi1; try eassumption.
      destruct Hxi1 as [(Hy, Hx)| (Hy, Hx)].
       destruct di1.
        left.
@@ -2947,6 +2942,7 @@ bbb.
        unfold I_add_i in HH; simpl in HH.
        do 2 rewrite digit_add_0_r in HH.
        rewrite H in HH.
+bbb.
        apply xorb_move_l_r_1 in HH.
        rewrite digit_add_assoc, digit_add_nilpotent in HH.
        rewrite digit_add_0_l in HH.
