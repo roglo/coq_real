@@ -4,7 +4,7 @@ Oracle.vo Oracle.glob Oracle.v.beautified: Oracle.v Misc.vo
 Real.vo Real.glob Real.v.beautified: Real.v Real01.vo
 Real01.vo Real01.glob Real01.v.beautified: Real01.v Oracle.vo Digit.vo
 Real01Add.vo Real01Add.glob Real01Add.v.beautified: Real01Add.v Misc.vo Oracle.vo Digit.vo Real01.vo
-Real01AddMono.vo Real01AddMono.glob Real01AddMono.v.beautified: Real01AddMono.v Misc.vo Real01.vo Real01Add.vo
+Real01AddMono.vo Real01AddMono.glob Real01AddMono.v.beautified: Real01AddMono.v Misc.vo Digit.vo Real01.vo Real01Add.vo
 Real01Cmp.vo Real01Cmp.glob Real01Cmp.v.beautified: Real01Cmp.v Digit.vo Real01.vo Real01Add.vo
 Real01Div.vo Real01Div.glob Real01Div.v.beautified: Real01Div.v Real01.vo Real01Add.vo Real01Cmp.vo
 Real01Mul.vo Real01Mul.glob Real01Mul.v.beautified: Real01Mul.v Misc.vo Oracle.vo Real01.vo Real01Add.vo
