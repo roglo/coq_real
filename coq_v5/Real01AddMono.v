@@ -2337,7 +2337,6 @@ destruct s3 as [dj3| ].
         rewrite Nat.add_1_r, Ht4 in H.
         exfalso; revert H; apply digit_neq_1_0.
 
-bbb.
       apply digit_move_l_r_2 in Hi.
       rewrite Hi, digit_add_1_r, digit_add_1_r.
       apply digit_opp_involutive.
@@ -2367,14 +2366,14 @@ bbb.
       apply fst_same_sym_iff in H; simpl in H.
       rename H into Hn2.
       pose proof (Hn4 O (Nat.lt_0_succ dj4)) as H.
-      rewrite Hn2 in H; discriminate H.
+      rewrite Hn2 in H; exfalso; revert H; apply digit_neq_0_1.
 
      exfalso.
      remember Hs1 as H; clear HeqH.
      apply fst_same_sym_iff in H; simpl in H.
      rename H into Hn1.
      pose proof (Hn3 O (Nat.lt_0_succ dj3)) as H.
-     rewrite Hn1 in H; discriminate H.
+     rewrite Hn1 in H; exfalso; revert H; apply digit_neq_0_1.
 
   remember Hs4 as H; clear HeqH.
   apply fst_same_sym_iff in H; simpl in H.
@@ -2382,6 +2381,7 @@ bbb.
   rewrite digit_add_1_r; f_equal.
   apply digit_neq_eq_opp.
   symmetry in Hs3, Hs4.
+  intros H; apply oppd_inj in H; revert H.
   eapply fst_same_opp_some_none; eassumption.
 
  rename H into Hn3.
@@ -2394,6 +2394,7 @@ bbb.
   rewrite digit_add_1_r; f_equal.
   symmetry; apply digit_neq_eq_opp.
   symmetry in Heq, Hs3, Hs4.
+  intros H; apply oppd_inj in H; revert H.
   eapply fst_same_opp_some_none; eassumption.
 
   remember Hs4 as H; clear HeqH.
@@ -2415,13 +2416,13 @@ bbb.
     apply fst_same_sym_iff in H; simpl in H.
     rename H into Hn2.
     pose proof (Hn4 O) as H.
-    rewrite Hn2 in H; discriminate H.
+    rewrite Hn2 in H; exfalso; revert H; apply digit_neq_0_1.
 
    remember Hs1 as H; clear HeqH.
    apply fst_same_sym_iff in H; simpl in H.
    rename H into Hn1.
    pose proof (Hn3 O) as H.
-   rewrite Hn1 in H; discriminate H.
+   rewrite Hn1 in H; exfalso; revert H; apply digit_neq_0_1.
 Qed.
 
 Add Parametric Morphism : I_sub
