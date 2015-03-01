@@ -527,3 +527,6 @@ Qed.
 
 Theorem eq_digit_eq : ∀ d e, d = e → (d = e)%D.
 Proof. intros d e H; subst d; reflexivity. Qed.
+
+Ltac discr_digit x :=
+  exfalso; revert x; try apply digit_neq_1_0; apply digit_neq_0_1.

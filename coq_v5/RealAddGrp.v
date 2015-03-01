@@ -6,9 +6,6 @@ Require Import Real RealAdd.
 
 Open Scope Z_scope.
 
-Ltac discr_digit x :=
-  exfalso; revert x; try apply digit_neq_1_0; apply digit_neq_0_1.
-
 (* commutativity *)
 
 Theorem R_add_comm : ∀ x y, (x + y = y + x)%R.
@@ -40,7 +37,7 @@ Theorem b2z_0 : b2z 0%D = 0.
 Proof.
 unfold b2z; simpl.
 destruct (digit_eq_dec 0 1) as [H1 | H1]; [ idtac | reflexivity ].
-discr_digit H1; apply digit_neq_0_1.
+discr_digit H1.
 Qed.
 
 Theorem b2z_1 : b2z 1%D = 1.
@@ -98,7 +95,7 @@ destruct s1 as [j1| ].
    exfalso; revert Hs3; apply no_fixpoint_oppd.
 
    rewrite digit_opp_add_diag_r in H.
-   discr_digit H; apply digit_neq_0_1.
+   discr_digit H.
 Qed.
 
 (* compatibility with equality *)
@@ -322,7 +319,7 @@ destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
   destruct Hs1 as (Hn1, Ht1).
   rewrite Hc1 in Ht1; symmetry in Ht1.
   destruct di1.
-   destruct dx; [ rewrite Hc1 in Htx; revert Htx; apply digit_neq_1_0 | idtac ].
+   destruct dx; [ rewrite Hc1 in Htx; discr_digit Htx | idtac ].
    destruct di3.
     rewrite Ht1 in Ht3; discr_digit Ht3.
 
@@ -470,7 +467,7 @@ destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
      intros dj; apply Hxy.
 
    destruct di3.
-    destruct dx; [ rewrite Htx in Hx1; revert Hx1; apply digit_neq_0_1 | idtac ].
+    destruct dx; [ rewrite Htx in Hx1; discr_digit Hx1 | idtac ].
     rewrite Hny in Hc3; [ idtac | apply Nat.lt_0_succ ].
     discr_digit Hc3.
 
@@ -1346,7 +1343,7 @@ destruct dx; [ clear Hnx | idtac ].
   clear Htx Hyx.
   simpl in Hi.
   rewrite Z.add_comm in Hi; subst a.
-  rewrite Z.add_assoc; f_equal.
+  rewrite Z.add_assoc.
   destruct c1, c2, c3, c4; simpl; try reflexivity; exfalso.
    rewrite carry_comm in Hc2.
    eapply case_1; try eassumption.
