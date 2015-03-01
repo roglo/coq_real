@@ -2098,7 +2098,7 @@ Theorem fst_same_opp_some_0_none : ∀ x y i,
   (x = y)%I
   → fst_same (- x) 0 (S i) = Some 0
   → fst_same (- y) 0 (S i) = None
-  → x.[i] ≠ y.[i].
+  → (x.[i] ≠ y.[i])%D.
 Proof.
 intros x y i Heq Hs1 Hs2.
 apply fst_same_iff in Hs1; simpl in Hs1.
@@ -2167,7 +2167,7 @@ Theorem fst_same_opp_some_none : ∀ x y i dj,
   (x = y)%I
   → fst_same (- x) 0 (S i) = Some dj
   → fst_same (- y) 0 (S i) = None
-  → x.[i] ≠ y.[i].
+  → (x.[i] ≠ y.[i])%D.
 Proof.
 intros x y i dj3 Heq Hs3 Hs4.
 remember Hs4 as H; clear HeqH.
@@ -2203,7 +2203,6 @@ destruct H as [(Hxi, Hyi)| (Hxi, Hyi)]; simpl in Hxi, Hyi.
    destruct dj3.
     rewrite Nat.add_0_r in Hxi, Hyi.
     eapply fst_same_opp_some_0_none in Hs3; try eassumption.
-bbb.
     contradiction.
 
     remember Hs4 as H; clear HeqH.
@@ -2212,7 +2211,8 @@ bbb.
     eapply fst_same_opp_some_0_none in H; try eassumption.
      rewrite Nat.add_succ_r in H.
      apply H.
-     rewrite <- digit_opp_involutive; apply oppd_sym.
+     rewrite <- digit_opp_involutive.
+     symmetry; apply oppd_sym; symmetry.
      rewrite Hn3; [ idtac | apply Nat.lt_succ_diag_r ].
      apply Hn4.
 
