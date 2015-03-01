@@ -6,6 +6,9 @@ Require Import Real RealAdd.
 
 Open Scope Z_scope.
 
+Ltac discr_digit x :=
+  exfalso; revert x; try apply digit_neq_1_0; apply digit_neq_0_1.
+
 (* commutativity *)
 
 Theorem R_add_comm : ∀ x y, (x + y = y + x)%R.
@@ -657,9 +660,9 @@ destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
           remember H2 as H; clear HeqH.
           apply Nat.succ_lt_mono in H.
           apply Hn3 in H.
-          rewrite Ht5, Hc4 in H; discriminate H.
+          rewrite Ht5, Hc4 in H; exfalso; revert H; apply digit_neq_1_0.
 
-          rewrite H2, Ht3 in Ht5; discriminate Ht5.
+          rewrite H2, Ht3 in Ht5; discr_digit Ht5.
 
           rewrite Nat.add_comm in H2.
           destruct dj5; [ apply Nat.nle_gt in H2; contradiction | idtac ].
@@ -672,7 +675,7 @@ destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
           rewrite <- Nat.add_succ_l in H.
           rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
           rewrite Nat.add_comm, Nat.add_sub in H.
-          rewrite Hc3, Ht3 in H; discriminate H.
+          rewrite Hc3, Ht3 in H; discr_digit H.
 
          apply fst_same_sym_iff in Hs5; simpl in Hs5.
          clear H.
@@ -680,7 +683,7 @@ destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
          rewrite <- Nat.add_succ_l in H.
          rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
          rewrite Nat.add_comm, Nat.add_sub in H.
-         rewrite Hc3, Ht3 in H; discriminate H.
+         rewrite Hc3, Ht3 in H; discr_digit H.
 
         subst di4.
         rewrite Hty, Ht3, digit_add_0_l in Hc4.
@@ -690,7 +693,7 @@ destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
         rewrite carry_before_relay with (di := O) in Hc4.
          simpl in Hc4.
          rewrite <- Nat.add_succ_l, <- Nat.add_succ_r in Hc4.
-         rewrite Hyy in Hc4; discriminate Hc4.
+         rewrite Hyy in Hc4; exfalso; revert Hc4; apply digit_neq_1_0.
 
          apply fst_same_iff; simpl.
          split.
@@ -698,7 +701,7 @@ destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
           exfalso; revert Hdj; apply Nat.nlt_0_r.
 
           rewrite <- Nat.add_succ_l, <- Nat.add_succ_r.
-          rewrite Hyy, <- negb_involutive.
+          symmetry; rewrite Hyy, <- digit_opp_involutive.
           rewrite <- Ht1, Hxy; reflexivity.
 
          reflexivity.
@@ -727,7 +730,7 @@ destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
          apply Nat.lt_le_incl in H1.
          rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
          rewrite Nat.add_comm, Nat.add_sub in H.
-         rewrite Hc4 in H; discriminate H.
+         rewrite Hc4 in H; discr_digit H.
 
          apply fst_same_iff; simpl.
          split.
@@ -739,7 +742,7 @@ destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
           apply Nat_sub_add_r in Hv; [ idtac | assumption ].
           subst di4.
           rewrite <- Nat.add_succ_l, <- Nat.add_succ_r.
-          rewrite Hyy, <- negb_involutive.
+          symmetry; rewrite Hyy, <- digit_opp_involutive.
           rewrite <- Ht1, Hxy; reflexivity.
 
          reflexivity.
@@ -767,7 +770,7 @@ unfold I_eq, I_eq_ext in H; simpl in H.
 rename H into Hf.
 unfold carry in Hc1; simpl in Hc1.
 remember (fst_same x z 0) as s1 eqn:Hs1 .
-destruct s1 as [dj1| ]; [ idtac | discriminate Hc1 ].
+destruct s1 as [dj1| ]; [ idtac | exfalso; revert Hc1; apply digit_neq_1_0 ].
 remember Hs1 as H; clear HeqH.
 apply fst_same_sym_iff in H; simpl in H.
 destruct H as (Hn1, Ht1).
@@ -1502,7 +1505,7 @@ destruct dx; [ clear Hnx | idtac ].
   symmetry in H.
   rewrite digit_add_1_l in H.
   apply oppd_sym in H.
-  rewrite negb_involutive in H.
+  rewrite digit_opp_involutive in H.
   unfold carry in H.
   remember (fst_same x 0 1) as s1 eqn:Hs1 .
   remember (fst_same y 0 1) as s2 eqn:Hs2 .
@@ -1561,7 +1564,7 @@ destruct s2 as [dj2| ]; [ idtac | clear Hc2 ].
   rewrite digit_add_1_l in Hc4.
   apply oppd_0_iff in Hc4.
   pose proof (Hnx dj4) as H.
-  rewrite <- negb_involutive in H.
+  rewrite <- digit_opp_involutive in H.
   apply oppd_sym in H; simpl in H.
   rewrite <- Hz4 in H.
   apply oppd_sym in H; simpl in H.
@@ -1981,7 +1984,7 @@ split; intros H.
   subst nx ny.
   apply fst_same_sym_iff in Hs1; simpl in Hs1.
   unfold I_eq; intros i; simpl.
-  rewrite Hs1, negb_involutive; reflexivity.
+  rewrite Hs1, digit_opp_involutive; reflexivity.
 Qed.
 
 Theorem R_compare_lt : ∀ x y, (x < y)%R ↔ R_compare x y = Lt.
@@ -2021,7 +2024,7 @@ destruct c; simpl.
    symmetry in Hy0; apply oppd_sym in Hn2.
    destruct (lt_eq_lt_dec j1 j2) as [[H1| H1]| H1].
     apply Hs2 in H1.
-    rewrite negb_involutive, Hn1 in H1.
+    rewrite digit_opp_involutive, Hn1 in H1.
     rewrite Hx0 in H1.
     exfalso; revert H1; apply no_fixpoint_oppd.
 
@@ -2036,7 +2039,7 @@ destruct c; simpl.
      rewrite Hx0 in Hn2; discriminate Hn2.
 
     apply Hs1 in H1.
-    rewrite negb_involutive, Hn2 in H1.
+    rewrite digit_opp_involutive, Hn2 in H1.
     rewrite Hy0 in H1.
     exfalso; revert H1; apply no_fixpoint_oppd.
 
@@ -2047,7 +2050,7 @@ destruct c; simpl.
   destruct s2 as [j2| ].
    destruct Hs2 as (Hs2, Hn2).
    split; intros H; [ discriminate H | exfalso ].
-   rewrite Hs1, negb_involutive in Hn2.
+   rewrite Hs1, digit_opp_involutive in Hn2.
    symmetry in Hn2; revert Hn2; apply no_fixpoint_oppd.
 
    split; intros H; discriminate H.
@@ -2130,7 +2133,7 @@ destruct c; simpl in Hyx.
    destruct Hsy as (Hny, Hty).
    simpl in Hyx.
    rewrite Hsx in Hty.
-   rewrite negb_involutive in Hty.
+   rewrite digit_opp_involutive in Hty.
    symmetry in Hty.
    exfalso; revert Hty; apply no_fixpoint_oppd.
 
@@ -2138,7 +2141,7 @@ destruct c; simpl in Hyx.
    apply Z.compare_eq in Hc; simpl in Hc.
    split; [ assumption | idtac ].
    unfold I_eq; intros i; simpl.
-   rewrite Hsx, negb_involutive; reflexivity.
+   rewrite Hsx, digit_opp_involutive; reflexivity.
 
  exfalso; apply Hyx; reflexivity.
 
@@ -2536,7 +2539,7 @@ split.
  rewrite <- Z.add_sub_assoc, Z.add_0_r.
  f_equal; f_equal.
  apply carry_compat; [ intros i; simpl | reflexivity ].
- apply negb_involutive.
+ apply digit_opp_involutive.
 
  apply I_opp_involutive.
 Qed.
@@ -2910,7 +2913,7 @@ destruct s1 as [dj1| ].
   destruct (lt_eq_lt_dec dj1 dj2) as [[H1| H1]| H1].
    apply Hn2 in H1; simpl in H1.
    rewrite Hxb, Ht1 in H1.
-   rewrite negb_involutive in H1; symmetry in H1.
+   rewrite digit_opp_involutive in H1; symmetry in H1.
    exfalso; revert H1; apply no_fixpoint_oppd.
 
    subst dj2.
@@ -2919,7 +2922,7 @@ destruct s1 as [dj1| ].
 
    apply Hn1 in H1.
    rewrite Hfxy, Hfzt, Hyb, Ht2 in H1.
-   rewrite negb_involutive in H1; symmetry in H1.
+   rewrite digit_opp_involutive in H1; symmetry in H1.
    exfalso; revert H1; apply no_fixpoint_oppd.
 
   subst xn yn zn tn.
@@ -2928,7 +2931,7 @@ destruct s1 as [dj1| ].
   rewrite Hfxy in Hxb; simpl in Hxb.
   rewrite Hfzt in Ht1; simpl in Ht1.
   rewrite Hs2 in Hxb.
-  rewrite Ht1, negb_involutive in Hxb.
+  rewrite Ht1, digit_opp_involutive in Hxb.
   exfalso; revert Hxb; apply no_fixpoint_oppd.
 
  destruct s2 as [dj2| ]; [ idtac | reflexivity ].
@@ -2937,7 +2940,7 @@ destruct s1 as [dj1| ].
  simpl in Hs1, Ht2, Hn2.
  unfold I_eq, I_eq_ext in Hfxy, Hfzt; simpl in Hfxy, Hfzt.
  rewrite <- Hfxy, <- Hfzt in Ht2.
- rewrite Hs1, negb_involutive in Ht2.
+ rewrite Hs1, digit_opp_involutive in Ht2.
  symmetry in Ht2.
  exfalso; revert Ht2; apply no_fixpoint_oppd.
 Qed.
