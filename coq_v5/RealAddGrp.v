@@ -1842,37 +1842,58 @@ do 4 f_equal.
 symmetry; rewrite Z.add_comm.
 do 2 rewrite <- Z.add_assoc.
 do 2 f_equal.
-bbb.
-destruct c3, c4, c5, c6; try reflexivity; exfalso.
- eapply case_1; eassumption.
+destruct (ddec c3) as [H|H]; rewrite H in *; clear c3 H.
+ destruct (ddec c4) as [H|H]; rewrite H in *; clear c4 H.
+  destruct (ddec c5) as [H|H]; rewrite H in *; clear c5 H.
+   destruct (ddec c6) as [H|H]; rewrite H in *;
+   try rewrite b2z_0; try rewrite b2z_1; try reflexivity; clear H; exfalso.
+   eapply case_1; eassumption.
 
- rewrite carry_comm_l in Hc4.
- eapply case_1; rewrite carry_comm; eassumption.
+   destruct (ddec c6) as [H|H]; rewrite H in *;
+   try rewrite b2z_0; try rewrite b2z_1; try reflexivity; clear H; exfalso.
+   rewrite carry_comm_l in Hc4.
+   eapply case_1; rewrite carry_comm; eassumption.
 
- eapply case_3; eassumption.
+  destruct (ddec c5) as [H|H]; rewrite H in *; clear c5 H.
+   destruct (ddec c6) as [H|H]; rewrite H in *;
+   try rewrite b2z_0; try rewrite b2z_1; try reflexivity; clear H; exfalso.
+    eapply case_3; eassumption.
 
- eapply case_1; eassumption.
+    eapply case_1; eassumption.
 
- eapply case_3; eassumption.
+   destruct (ddec c6) as [H|H]; rewrite H in *;
+   try rewrite b2z_0; try rewrite b2z_1; try reflexivity; clear H; exfalso.
+   eapply case_3; eassumption.
 
- rewrite carry_comm, carry_comm_l in Hc3.
- rewrite carry_comm, carry_comm_r in Hc4.
- rewrite carry_comm in Hc5, Hc6.
- eapply case_3; try eassumption.
+ destruct (ddec c4) as [H|H]; rewrite H in *; clear c4 H.
+  destruct (ddec c5) as [H|H]; rewrite H in *; clear c5 H.
+   destruct (ddec c6) as [H|H]; rewrite H in *;
+   try rewrite b2z_0; try rewrite b2z_1; try reflexivity; clear H; exfalso.
+   rewrite carry_comm, carry_comm_l in Hc3.
+   rewrite carry_comm, carry_comm_r in Hc4.
+   rewrite carry_comm in Hc5, Hc6.
+   eapply case_3; try eassumption.
 
- rewrite carry_comm_l in Hc4.
- eapply case_1; rewrite carry_comm; eassumption.
+   destruct (ddec c6) as [H|H]; rewrite H in *;
+   try rewrite b2z_0; try rewrite b2z_1; try reflexivity; clear H; exfalso.
+    rewrite carry_comm_l in Hc4.
+    eapply case_1; rewrite carry_comm; eassumption.
 
- rewrite carry_comm, carry_comm_l in Hc3.
- rewrite carry_comm, carry_comm_r in Hc4.
- rewrite carry_comm in Hc5, Hc6.
- eapply case_3; eassumption.
+    rewrite carry_comm, carry_comm_l in Hc3.
+    rewrite carry_comm, carry_comm_r in Hc4.
+    rewrite carry_comm in Hc5, Hc6.
+    eapply case_3; eassumption.
 
- clear Hc1 Hc2.
- eapply case_2; eassumption.
+  destruct (ddec c5) as [H|H]; rewrite H in *; clear c5 H.
+   destruct (ddec c6) as [H|H]; rewrite H in *;
+   try rewrite b2z_0; try rewrite b2z_1; try reflexivity; clear H; exfalso.
+   clear Hc1 Hc2.
+   eapply case_2; eassumption.
 
- rewrite carry_comm_r in Hc3.
- eapply case_2; rewrite carry_comm; eassumption.
+   destruct (ddec c6) as [H|H]; rewrite H in *;
+   try rewrite b2z_0; try rewrite b2z_1; try reflexivity; clear H; exfalso.
+   rewrite carry_comm_r in Hc3.
+   eapply case_2; rewrite carry_comm; eassumption.
 Qed.
 
 Theorem R_noI_eq : ∀ x, (R_norm x = x)%R.
@@ -1887,7 +1908,7 @@ split; simpl.
  apply fst_same_sym_iff in Hs1; simpl in Hs1.
  destruct s1 as [dj1| ].
   destruct Hs1 as (Hn1, Ht1).
-  rewrite Ht1; reflexivity.
+  rewrite Ht1, b2z_0; reflexivity.
 
   pose proof (not_I_add_0_inf_1 (R_frac x) 0) as H.
   contradiction.
@@ -1920,6 +1941,7 @@ destruct (Z_zerop (R_int y)) as [H1| H1].
   rewrite fst_same_diag.
   remember (fst_same (R_frac x + 0%I) 0 0) as s1 eqn:Hs1 .
   apply fst_same_sym_iff in Hs1; simpl in Hs1.
+bbb.
   destruct s1; [ destruct Hs1; assumption | exfalso ].
   pose proof (not_I_add_0_inf_1 (R_frac x) 0) as H.
   contradiction.
