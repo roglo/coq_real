@@ -1614,70 +1614,95 @@ symmetry in Hc1, Hc2, Hc3, Hc4.
 destruct sx as [dx| ].
  remember Hsx as H; clear HeqH.
  apply fst_same_sym_iff in H; simpl in H.
-bbb.
- destruct H as (Hnx, Htx); rewrite Htx, Z.add_0_r in Hi.
+ destruct H as (Hnx, Htx); rewrite Htx, b2z_0, Z.add_0_r in Hi.
  destruct sy as [dy| ].
   remember Hsy as H; clear HeqH.
   apply fst_same_sym_iff in H; simpl in H.
-  destruct H as (Hny, Hty); rewrite Hty, Z.add_0_r in Hi.
+  destruct H as (Hny, Hty); rewrite Hty, b2z_0, Z.add_0_r in Hi.
   subst b; f_equal.
   remember Hf as Hf_v; clear HeqHf_v.
   unfold I_eq in Hf; simpl in Hf.
-  destruct c1, c2, c3, c4; simpl; try reflexivity; exfalso.
-   rewrite carry_comm in Hc2.
-   eapply case_1; try eassumption.
-   unfold carry; simpl.
-   rewrite fst_same_comm, <- Hsx; reflexivity.
+  apply eq_digit_eq in Hc1.
+  apply eq_digit_eq in Hc2.
+  apply eq_digit_eq in Hc3.
+  apply eq_digit_eq in Hc4.
+  destruct (ddec c1) as [H|H]; rewrite H in *; clear c1 H.
+   destruct (ddec c2) as [H|H]; rewrite H in *; clear c2 H.
+    destruct (ddec c3) as [H|H]; rewrite H in *; clear c3 H.
+     destruct (ddec c4) as [H|H]; rewrite H in *;
+     try rewrite b2z_0; try rewrite b2z_1; try reflexivity; clear H; exfalso.
+     rewrite carry_comm in Hc2.
+     eapply case_1; try eassumption.
+     unfold carry; simpl.
+     rewrite fst_same_comm, <- Hsx; reflexivity.
 
-   rewrite carry_comm in Hc2.
-   eapply case_1; try eassumption.
-   unfold carry; simpl.
-   rewrite fst_same_comm, <- Hsx; reflexivity.
+     destruct (ddec c4) as [H|H]; rewrite H in *;
+     try rewrite b2z_0; try rewrite b2z_1; try reflexivity; clear H; exfalso.
+      rewrite carry_comm in Hc2.
+      eapply case_1; try eassumption.
+      unfold carry; simpl.
+      rewrite fst_same_comm, <- Hsx; reflexivity.
 
-   rewrite carry_comm in Hc2.
-   eapply case_1; try eassumption.
-   unfold carry; simpl.
-   rewrite fst_same_comm, <- Hsx; reflexivity.
+      rewrite carry_comm in Hc2.
+      eapply case_1; try eassumption.
+      unfold carry; simpl.
+      rewrite fst_same_comm, <- Hsx; reflexivity.
 
-   rewrite carry_comm in Hc4.
-   eapply case_1; try eassumption.
-   unfold carry; simpl.
-   rewrite fst_same_comm, <- Hsy; reflexivity.
+    destruct (ddec c3) as [H|H]; rewrite H in *; clear c3 H.
+     destruct (ddec c4) as [H|H]; rewrite H in *;
+     try rewrite b2z_0; try rewrite b2z_1; try reflexivity; clear H; exfalso.
+     rewrite carry_comm in Hc4.
+     eapply case_1; try eassumption.
+     unfold carry; simpl.
+     rewrite fst_same_comm, <- Hsy; reflexivity.
 
-   symmetry in Hsx, Hsy.
-   eapply case_4 with (x := x); try eassumption.
+     destruct (ddec c4) as [H|H]; rewrite H in *;
+     try rewrite b2z_0; try rewrite b2z_1; try reflexivity; clear H; exfalso.
+     symmetry in Hsx, Hsy.
+     eapply case_4 with (x := x); try eassumption.
 
-   rewrite carry_comm in Hc4.
-   eapply case_1; try eassumption.
-   unfold carry; simpl.
-   rewrite fst_same_comm, <- Hsy; reflexivity.
+   destruct (ddec c2) as [H|H]; rewrite H in *; clear c2 H.
+    destruct (ddec c3) as [H|H]; rewrite H in *; clear c3 H.
+     destruct (ddec c4) as [H|H]; rewrite H in *;
+     try rewrite b2z_0; try rewrite b2z_1; try reflexivity; clear H; exfalso.
+     rewrite carry_comm in Hc4.
+     eapply case_1; try eassumption.
+     unfold carry; simpl.
+     rewrite fst_same_comm, <- Hsy; reflexivity.
 
-   Focus 2.
-   remember (carry 0 y 0) as c5 eqn:Hc5 .
-   symmetry in Hc5.
-   destruct c5.
-    unfold carry in Hc5; simpl in Hc5.
-    remember (fst_same 0 y 0) as s5 eqn:Hs5 .
-    destruct s5; [ discr_digit Hc5 | clear Hc5 ].
-    remember Hs5 as H; clear HeqH.
-    rewrite fst_same_comm in H.
-    apply fst_same_sym_iff in H; simpl in H.
-    rewrite H in Hty; discr_digit Hty.
+     destruct (ddec c4) as [H|H]; rewrite H in *;
+     try rewrite b2z_0; try rewrite b2z_1; try reflexivity; clear H; exfalso.
+     symmetry in Hsx, Hsy.
+     eapply case_5; eassumption.
 
-    rewrite carry_comm in Hc4.
-    eapply case_1; eassumption.
+    destruct (ddec c3) as [H|H]; rewrite H in *; clear c3 H.
+     destruct (ddec c4) as [H|H]; rewrite H in *;
+     try rewrite b2z_0; try rewrite b2z_1; try reflexivity; clear H; exfalso.
+      remember (carry 0 y 0) as c5 eqn:Hc5 .
+      symmetry in Hc5.
+      apply eq_digit_eq in Hc5.
+      destruct (ddec c5) as [H|H]; rewrite H in *; clear c5 H.
+       unfold carry in Hc5; simpl in Hc5.
+       remember (fst_same 0 y 0) as s5 eqn:Hs5 .
+       destruct s5; [ discr_digit Hc5 | clear Hc5 ].
+       remember Hs5 as H; clear HeqH.
+       rewrite fst_same_comm in H.
+       apply fst_same_sym_iff in H; simpl in H.
+       rewrite H in Hty; discr_digit Hty.
 
-   Focus 2.
-   symmetry in Hsx, Hsy, Hf_v.
-   eapply case_4 with (y := x); eassumption.
+       rewrite carry_comm in Hc4.
+       eapply case_1; eassumption.
 
-   symmetry in Hsx, Hsy.
-   eapply case_5; eassumption.
+      symmetry in Hsx, Hsy, Hf_v.
+      eapply case_4 with (y := x); eassumption.
 
-   symmetry in Hsx, Hsy.
-   symmetry in Hf_v.
-   eapply case_5 with (x := y) (y := x); eassumption.
+     destruct (ddec c4) as [H|H]; rewrite H in *;
+     try rewrite b2z_0; try rewrite b2z_1; try reflexivity; clear H; exfalso.
+     symmetry in Hsx, Hsy.
+     symmetry in Hf_v.
+     eapply case_5 with (x := y) (y := x); eassumption.
 
+bbb.
   eapply case_6; eassumption.
 
  destruct sy as [dy| ]; simpl in Hi.
