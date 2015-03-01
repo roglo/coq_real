@@ -543,14 +543,14 @@ induction xl as [| z]; intros.
 Qed.
 
 Theorem carry_repeat : ∀ x y z i,
-  carry x y i = false
-  → carry (x + y) z i = false
-  → carry y z i = true
+  (carry x y i = 0)%D
+  → (carry (x + y) z i = 0)%D
+  → (carry y z i = 1)%D
   → ∃ m,
-    carry x y (S (i + m)) = false ∧
-    carry (x + y) z (S (i + m)) = false ∧
-    carry y z (S (i + m)) = true ∧
-    (∀ dj, dj ≤ m → I_add_i x y (i + dj) = oppd (z.[i + dj])).
+    (carry x y (S (i + m)) = 0)%D ∧
+    (carry (x + y) z (S (i + m)) = 0)%D ∧
+    (carry y z (S (i + m)) = 1)%D ∧
+    (∀ dj, dj ≤ m → (I_add_i x y (i + dj) = oppd (z.[i + dj]))%D).
 Proof.
 intros x y z i Rxy Rayz Ryz.
 rename Rxy into Rxyn.
@@ -559,14 +559,14 @@ rename Ryz into Ryzn.
 remember Rxyn as H; clear HeqH.
 unfold carry in H; simpl in H.
 remember (fst_same x y i) as sxyn eqn:Hsxyn .
-destruct sxyn as [dxyn| ]; [ idtac | discriminate H ].
+destruct sxyn as [dxyn| ]; [ idtac | exfalso; revert H; apply digit_neq_1_0 ].
 rename H into A_p.
 symmetry in Hsxyn.
 remember Rxy_zn as H; clear HeqH.
 unfold carry in H; simpl in H.
 remember (fst_same (x + y) z i) as sxy_zn.
 rename Heqsxy_zn into Hsxy_zn.
-destruct sxy_zn as [dxy_zn| ]; [ idtac | discriminate H ].
+destruct sxy_zn as [dxy_zn| ]; [ | exfalso; revert H; apply digit_neq_1_0 ].
 rename H into AB_p; symmetry in Hsxy_zn.
 remember Ryzn as H; clear HeqH.
 unfold carry in H; simpl in H.
@@ -587,7 +587,7 @@ destruct syzn as [dyzn| ]; [ idtac | clear H ].
   destruct H as (Hnyzn, Htyzn).
   destruct (eq_nat_dec dyzn p) as [H| H].
    move H at top; subst dyzn.
-   rewrite B_p in Bp; discriminate Bp.
+   rewrite B_p in Bp; exfalso; revert Bp; apply digit_neq_1_0.
 
    eapply min_neq_lt in H; eauto ; try (left; auto).
    rename H into Hpdyzn.
@@ -600,7 +600,7 @@ destruct syzn as [dyzn| ]; [ idtac | clear H ].
    destruct (eq_nat_dec dxy_zn p) as [H| H].
     move H at top; subst dxy_zn.
     rewrite Cp in Htxy_zn.
-    rewrite AB_p in Htxy_zn; discriminate Htxy_zn.
+    rewrite AB_p in Htxy_zn; exfalso; revert Htxy_zn; apply digit_neq_0_1.
 
     eapply min_neq_lt in H; eauto ; try (do 2 right; left; auto).
     rename H into Hpdxy_zn.
@@ -646,7 +646,7 @@ destruct syzn as [dyzn| ]; [ idtac | clear H ].
    rename B_p into Bp; rename C_p into Cp.
    destruct (eq_nat_dec dxy_zn p) as [H| H].
     move H at top; subst dxy_zn.
-    rewrite Cp in C_q; discriminate C_q.
+    rewrite Cp in C_q; exfalso; revert C_q; apply digit_neq_1_0.
 
     eapply min_neq_lt in H; eauto ; try (do 2 right; left; auto).
     rename H into Hpdxy_zn.
@@ -657,7 +657,7 @@ destruct syzn as [dyzn| ]; [ idtac | clear H ].
     rewrite Hnxyn in H; [ idtac | assumption ].
     rewrite digit_opp_add_diag_l, digit_add_1_l in H.
     erewrite carry_before_relay9 in H; try eassumption.
-    simpl in H; rewrite A_p in H; discriminate H.
+    simpl in H; rewrite A_p in H; exfalso; revert H; apply digit_neq_1_0.
 
    eapply min_neq_lt in H; eauto ; try (left; auto).
    rename H into Hpdyzn.
@@ -669,7 +669,7 @@ destruct syzn as [dyzn| ]; [ idtac | clear H ].
     rewrite digit_opp_add_diag_l, digit_add_1_l in H.
     apply oppd_0_iff in H.
     erewrite carry_before_relay9 in H; try eassumption.
-    simpl in H; rewrite A_p in H; discriminate H.
+    simpl in H; rewrite A_p in H; exfalso; revert H; apply digit_neq_0_1.
 
     eapply min_neq_lt in H; eauto ; try (do 2 right; left; auto).
     rename H into Hpdxy_zn; simpl in Hp.
@@ -710,7 +710,7 @@ destruct syzn as [dyzn| ]; [ idtac | clear H ].
   destruct (eq_nat_dec dxy_zn p) as [H| H].
    move H at top; subst dxy_zn.
    rewrite Cp in Htxy_zn.
-   rewrite AB_p in Htxy_zn; discriminate Htxy_zn.
+   rewrite AB_p in Htxy_zn; exfalso; revert Htxy_zn; apply digit_neq_0_1.
 
    eapply min_neq_lt in H; eauto ; try (right; left; auto).
    rename H into Hpdxy_zn.
@@ -739,7 +739,7 @@ destruct syzn as [dyzn| ]; [ idtac | clear H ].
    rewrite Hnxyn in H; [ idtac | assumption ].
    rewrite digit_opp_add_diag_l, digit_add_1_l in H.
    erewrite carry_before_relay9 in H; try eassumption.
-   simpl in H; rewrite A_p in H; discriminate H.
+   simpl in H; rewrite A_p in H; exfalso; revert H; apply digit_neq_1_0.
 
    eapply min_neq_lt in H; eauto ; try (right; left; auto).
    simpl in Hp.
