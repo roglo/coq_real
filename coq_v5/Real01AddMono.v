@@ -1235,7 +1235,7 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
 
           subst m; exfalso; revert M6; apply Nat.lt_irrefl.
 
-   move H6 at top; subst u.
+   move H6 at top; rewrite <- H6 in *; clear H6.
    remember (List.fold_right min di5 [di3; di4 … []]) as m eqn:Hm .
    remember Hs3 as H; clear HeqH.
    apply fst_same_iff in H; simpl in H.
@@ -1257,7 +1257,7 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
     destruct (eq_nat_dec di5 m) as [M5| M5].
      move M5 at top; subst di5.
      rewrite Hn6, H5 in H3.
-     discriminate H3.
+     exfalso; revert H3; apply digit_neq_0_1.
 
      eapply min_neq_lt in M5; eauto ; try (left; auto).
      remember Ht3 as H; clear HeqH.
@@ -1266,17 +1266,17 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
      rewrite digit_opp_add_diag_l, digit_add_1_l in H.
      apply oppd_1_iff in H.
      erewrite carry_before_relay9 in H; try eassumption.
-     simpl in H; rewrite H5 in H; discriminate H.
+     simpl in H; rewrite H5 in H; exfalso; revert H; apply digit_neq_1_0.
 
     eapply min_neq_lt in M3; eauto ; try (right; left; auto).
     destruct (eq_nat_dec di5 m) as [M5| M5].
      move M5 at top; subst di5.
      destruct (eq_nat_dec di4 m) as [M4| M4].
       move M4 at top; subst di4.
-      rewrite Ht5 in Ht4; discriminate Ht4.
+      rewrite Ht5 in Ht4; exfalso; revert Ht4; apply digit_neq_1_0.
 
       eapply min_neq_lt in M4; eauto ; try (do 2 right; left; auto).
-      exists m, true.
+      exists m, 1%D.
       split; [ erewrite carry_before_relay9; eassumption | idtac ].
       split; [ erewrite carry_before_relay9; eassumption | idtac ].
       split.
@@ -1311,7 +1311,7 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
       rewrite Bm, Ht4, digit_add_1_l in H.
       apply oppd_1_iff in H.
       erewrite carry_before_relay9 in H; try eassumption.
-      simpl in H; rewrite H5 in H; discriminate H.
+      simpl in H; rewrite H5 in H; exfalso; revert H; apply digit_neq_1_0.
 
       eapply min_neq_lt in M4; eauto ; try (do 2 right; left; auto).
       simpl in Hm.
@@ -1326,7 +1326,7 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
 
         subst m; exfalso; revert M5; apply Nat.lt_irrefl.
 
-  move H5 at top; subst u.
+  move H5 at top; rewrite <- H5 in *; clear u H5.
   destruct s6 as [di6| ]; [ idtac | clear H6 ].
    remember (List.fold_right min di6 [di3; di4 … []]) as m eqn:Hm .
    remember Hs3 as H; clear HeqH.
@@ -1351,7 +1351,7 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
     rewrite Hn5, digit_opp_add_diag_l, digit_add_1_l in H.
     apply oppd_1_iff in H.
     rewrite carry_before_inf_relay9 in H; [ idtac | assumption ].
-    discriminate H.
+    exfalso; revert H; apply digit_neq_1_0.
 
     eapply min_neq_lt in M3; eauto ; try (right; left; auto).
     destruct (eq_nat_dec di6 m) as [M6| M6].
@@ -1377,7 +1377,7 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
       exfalso; eapply case_1; eassumption.
 
       eapply min_neq_lt in M4; [ idtac | eauto  | do 2 right; left; auto ].
-      exists m, true.
+      exists m, 1%D.
       move H6 at top.
       split; [ erewrite carry_before_relay9; eassumption | idtac ].
       split; [ erewrite carry_before_relay9; eassumption | idtac ].
