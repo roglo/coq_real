@@ -2230,12 +2230,12 @@ destruct H as [(Hxi, Hyi)| (Hxi, Hyi)]; simpl in Hxi, Hyi.
 
    remember Hs2 as H; clear HeqH.
    apply fst_same_sym_iff in H; simpl in H.
-   rewrite H in Hy; discriminate Hy.
+   rewrite H in Hy; exfalso; revert Hy; apply digit_neq_1_0.
 
  pose proof (Hyi O) as H.
  rewrite <- Nat.add_assoc in H.
  apply oppd_0_iff in H.
- rewrite Hn4 in H; discriminate H.
+ rewrite Hn4 in H; exfalso; revert H; apply digit_neq_1_0.
 Qed.
 
 Add Parametric Morphism : I_opp
@@ -2288,53 +2288,57 @@ destruct s3 as [dj3| ].
       rewrite Hi; reflexivity.
 
       exfalso.
-      remember (y .[ i]) as b eqn:Hy .
-      symmetry in Hy.
-      destruct b; simpl in Hi.
+      destruct (ddec (y.[i])) as [Hy | Hy]; rewrite Hy in *.
        symmetry in Heq.
        remember Hy as H; clear HeqH.
        eapply I_eq_neq_prop in H; try eassumption.
        destruct H as [(Hyi, Hxi)| (Hyi, Hxi)]; simpl in Hxi, Hyi.
-        rewrite <- Nat.add_1_r, Hxi in Ht3; discriminate Ht3.
+        rewrite <- Nat.add_1_r, Hxi in Ht3.
+        exfalso; revert Ht3; apply digit_neq_0_1.
 
         pose proof (Hyi O) as H.
-        rewrite Nat.add_1_r, Ht4 in H; discriminate H.
+        rewrite Nat.add_1_r, Ht4 in H; exfalso; revert H; apply digit_neq_1_0.
 
        remember Hi as H; clear HeqH.
        eapply I_eq_neq_prop in H; try eassumption.
        destruct H as [(Hxi, Hyi)| (Hxi, Hyi)]; simpl in Hxi, Hyi.
-        rewrite <- Nat.add_1_r, Hyi in Ht4; discriminate Ht4.
+        rewrite <- Nat.add_1_r, Hyi in Ht4.
+        exfalso; revert Ht4; apply digit_neq_0_1.
 
         pose proof (Hxi O) as H.
-        rewrite Nat.add_1_r, Ht3 in H; discriminate H.
+        rewrite Nat.add_1_r, Ht3 in H; exfalso; revert H; apply digit_neq_1_0.
 
      destruct s2 as [dj2| ].
       remember Hs2 as H; clear HeqH.
       apply fst_same_sym_iff in H; simpl in H.
       destruct H as (Hn2, Ht2).
       rewrite Ht2, digit_add_0_r in Hi.
+      symmetry in Hi.
       exfalso.
-      remember (x .[ i]) as b eqn:Hx .
-      symmetry in Hx, Hi.
-      destruct b; simpl in Hi.
+      destruct (ddec (x.[i])) as [Hx | Hx]; rewrite Hx in *.
        remember Hx as H; clear HeqH.
        eapply I_eq_neq_prop in H; try eassumption.
        destruct H as [(Hxi, Hyi)| (Hxi, Hyi)]; simpl in Hxi, Hyi.
-        rewrite <- Nat.add_1_r, Hyi in Ht4; discriminate Ht4.
+        rewrite <- Nat.add_1_r, Hyi in Ht4.
+        exfalso; revert Ht4; apply digit_neq_0_1.
 
         pose proof (Hxi O) as H.
-        rewrite Nat.add_1_r, Ht3 in H; discriminate H.
+        rewrite Nat.add_1_r, Ht3 in H.
+        exfalso; revert H; apply digit_neq_1_0.
 
        symmetry in Heq.
        remember Hi as H; clear HeqH.
        eapply I_eq_neq_prop in H; try eassumption.
        destruct H as [(Hyi, Hxi)| (Hyi, Hxi)]; simpl in Hxi, Hyi.
-        rewrite <- Nat.add_1_r, Hxi in Ht3; discriminate Ht3.
+        rewrite <- Nat.add_1_r, Hxi in Ht3.
+        exfalso; revert Ht3; apply digit_neq_0_1.
 
         pose proof (Hyi O) as H.
-        rewrite Nat.add_1_r, Ht4 in H; discriminate H.
+        rewrite Nat.add_1_r, Ht4 in H.
+        exfalso; revert H; apply digit_neq_1_0.
 
-      apply xorb_move_l_r_2 in Hi.
+bbb.
+      apply digit_move_l_r_2 in Hi.
       rewrite Hi, digit_add_1_r, digit_add_1_r.
       apply digit_opp_involutive.
 
