@@ -73,4 +73,18 @@ Add Parametric Relation : _ R_eq
  transitivity proved by R_eq_trans
  as R_rel.
 
+Add Parametric Morphism : b2z
+  with signature digit_eq ==> eq
+  as b2z_compat.
+Proof.
+intros x y Hxy.
+unfold b2z; simpl.
+destruct (digit_eq_dec x 1) as [H1 | H1].
+ destruct (digit_eq_dec y 1) as [H2 | H2]; [ reflexivity | idtac ].
+ rewrite H1 in Hxy; symmetry in Hxy; contradiction.
+
+ destruct (digit_eq_dec y 1) as [H2 | H2]; [ idtac | reflexivity ].
+ rewrite H2 in Hxy; contradiction.
+Qed.
+
 Close Scope Z_scope.
