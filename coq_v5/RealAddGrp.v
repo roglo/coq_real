@@ -1935,16 +1935,18 @@ destruct (Z_zerop (R_int y)) as [H1| H1].
  destruct (I_zerop (R_frac y)) as [H2| H2].
   left.
   split; [ idtac | assumption ].
-  subst y; simpl in H1, H2; simpl; f_equal.
+  subst y; simpl in H1, H2; simpl.
   unfold I_eq in H2; simpl in H2.
   unfold carry; simpl.
   rewrite fst_same_diag.
   remember (fst_same (R_frac x + 0%I) 0 0) as s1 eqn:Hs1 .
   apply fst_same_sym_iff in Hs1; simpl in Hs1.
-bbb.
-  destruct s1; [ destruct Hs1; assumption | exfalso ].
-  pose proof (not_I_add_0_inf_1 (R_frac x) 0) as H.
-  contradiction.
+  destruct s1 as [di1| ].
+   destruct Hs1 as (Hn1, Ht1).
+   rewrite Ht1; reflexivity.
+
+   pose proof (not_I_add_0_inf_1 (R_frac x) 0) as H.
+   contradiction.
 
   right; intros (Hb, Hi); contradiction.
 
@@ -1957,7 +1959,7 @@ bbb.
  destruct s1 as [dj1| ].
   destruct Hs1 as (Hn1, Ht1).
   rewrite Ht1 in Hb; simpl in Hb.
-  rewrite Z.add_0_r in Hb; contradiction.
+  rewrite b2z_0, Z.add_0_r in Hb; contradiction.
 
   subst y; simpl in Hs1.
   pose proof (not_I_add_0_inf_1 (R_frac x) 0) as H.
@@ -1994,6 +1996,8 @@ destruct (R_dec x y); [ left | right ]; assumption.
 Qed.
 
 (* comparison *)
+
+bbb.
 
 Definition R_compare x y :=
   let nx := R_norm x in
