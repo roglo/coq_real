@@ -1887,6 +1887,16 @@ destruct (le_dec di n) as [H1| H1].
   rewrite Nat.add_succ_r; assumption.
 Qed.
 
+Theorem ddec : ∀ x, {(x = 1)%D} + {(x = 0)%D}.
+Proof.
+intros x.
+unfold digit_eq; simpl.
+destruct (eq_nat_dec (dig x) 0) as [H1 | H1].
+ right; left; split; [ assumption | reflexivity ].
+
+ left; right; split; [ assumption | intros H; discriminate H ].
+Qed.
+
 Theorem I_add_assoc_norm : ∀ x y z,
   ((x + 0) + ((y + 0) + (z + 0)) = ((x + 0) + (y + 0)) + (z + 0))%I.
 Proof.
@@ -1906,43 +1916,68 @@ remember (carry (x + y)%I z (S i)) as c4 eqn:Hc4 .
 unfold I_add_i; simpl.
 remember (carry y z (S i)) as c5 eqn:Hc5 .
 remember (carry x y (S i)) as c6 eqn:Hc6 .
-do 8 rewrite <- digit_add_assoc; f_equal; f_equal; symmetry.
-rewrite digit_add_comm, <- digit_add_assoc; f_equal; symmetry.
+do 8 rewrite <- digit_add_assoc.
+apply digit_add_compat; [ reflexivity | idtac ].
+apply digit_add_compat; [ reflexivity | symmetry ].
+rewrite digit_add_comm, <- digit_add_assoc.
+apply digit_add_compat; [ reflexivity | symmetry ].
 rewrite digit_add_assoc.
 symmetry in Hc1, Hc2, Hc3, Hc4, Hc5, Hc6.
 move c2 before c1; move c3 before c2.
 move c4 before c3; move c5 before c4.
 move c6 before c5.
 remember Hc1 as H; clear HeqH.
+apply eq_digit_eq in H.
 erewrite carry_sum_3_noI_assoc_r in H; try eassumption.
-move H at top; subst c1.
+apply eq_digit_eq in Hc1.
+rewrite <- H in *; clear c1 H.
 remember Hc2 as H; clear HeqH.
+apply eq_digit_eq in H.
 erewrite carry_sum_3_noI_assoc_l in H; try eassumption.
-move H at top; subst c2.
+apply eq_digit_eq in Hc2.
+rewrite <- H in *; clear c2 H.
 do 2 rewrite digit_add_0_r.
-destruct c3, c4, c5, c6; try reflexivity; exfalso.
- eapply case_1; eassumption.
+apply eq_digit_eq in Hc3.
+apply eq_digit_eq in Hc4.
+apply eq_digit_eq in Hc5.
+apply eq_digit_eq in Hc6.
+destruct (ddec c3) as [H|H]; rewrite H in *; clear c3 H.
+ destruct (ddec c4) as [H|H]; rewrite H in *; clear c4 H.
+  destruct (ddec c5) as [H|H]; rewrite H in *; clear c5 H.
+   destruct (ddec c6) as [H|H]; rewrite H in *; try reflexivity; exfalso.
+   eapply case_1; try eassumption.
 
- rewrite carry_comm_l in Hc4.
- eapply case_1; rewrite carry_comm; eassumption.
+   destruct (ddec c6) as [H|H]; rewrite H in *; try reflexivity; exfalso.
+   rewrite carry_comm_l in Hc4.
+   eapply case_1; rewrite carry_comm; eassumption.
 
- eapply case_3; eassumption.
+  destruct (ddec c5) as [H|H]; rewrite H in *; clear c5 H.
+   destruct (ddec c6) as [H|H]; rewrite H in *; try reflexivity; exfalso.
+   eapply case_3; eassumption.
 
- eapply case_3; eassumption.
+   destruct (ddec c6) as [H|H]; rewrite H in *; try reflexivity; exfalso.
+   eapply case_3; eassumption.
 
- rewrite carry_comm_r in Hc3.
- rewrite carry_comm_l in Hc4.
- eapply case_3; rewrite carry_comm; eassumption.
+ destruct (ddec c4) as [H|H]; rewrite H in *; clear c4 H.
+  destruct (ddec c5) as [H|H]; rewrite H in *; clear c5 H.
+   destruct (ddec c6) as [H|H]; rewrite H in *; try reflexivity; exfalso.
+   rewrite carry_comm_r in Hc3.
+   rewrite carry_comm_l in Hc4.
+   eapply case_3; rewrite carry_comm; eassumption.
 
- rewrite carry_comm_r in Hc3.
- rewrite carry_comm_l in Hc4.
- eapply case_3; rewrite carry_comm; eassumption.
+   destruct (ddec c6) as [H|H]; rewrite H in *; try reflexivity; exfalso.
+    rewrite carry_comm_r in Hc3.
+    rewrite carry_comm_l in Hc4.
+    eapply case_3; rewrite carry_comm; eassumption.
 
- clear Hc1 Hc2.
- eapply case_2; eassumption.
+  destruct (ddec c5) as [H|H]; rewrite H in *; clear c5 H.
+   destruct (ddec c6) as [H|H]; rewrite H in *; try reflexivity; exfalso.
+   clear Hc1 Hc2.
+   eapply case_2; eassumption.
 
- rewrite carry_comm_r in Hc3.
- eapply case_2; rewrite carry_comm; eassumption.
+   destruct (ddec c6) as [H|H]; rewrite H in *; try reflexivity; exfalso.
+   rewrite carry_comm_r in Hc3.
+   eapply case_2; rewrite carry_comm; eassumption.
 Qed.
 
 Theorem I_add_assoc : ∀ x y z, (x + (y + z) = (x + y) + z)%I.
@@ -1967,7 +2002,7 @@ destruct s as [di| ].
  rewrite Hs in HH; symmetry in HH.
  unfold I_add_i in HH; simpl in HH.
  unfold carry in HH; simpl in HH.
- rewrite fst_same_diag in HH; discriminate HH.
+ rewrite fst_same_diag in HH; exfalso; revert HH; apply digit_neq_0_1.
 
  left.
  unfold I_eq; intros i; simpl.
@@ -2003,7 +2038,7 @@ Theorem fst_same_opp_some_some : ∀ x y i dj,
   (x = y)%I
   → fst_same (- x) 0 (S i) = Some 0
   → fst_same (- y) 0 (S i) = Some (S dj)
-  → x.[i] = y.[i].
+  → (x.[i] = y.[i])%D.
 Proof.
 intros x y i dj4 Heq Hs3 Hs4.
 remember Hs3 as H; clear HeqH.
@@ -2031,7 +2066,7 @@ rename H into Hy4.
 remember Ht3 as H; clear HeqH.
 eapply I_eq_neq_prop in H; try eassumption.
 destruct H as [(Hxi, Hyi)| (Hxi, Hyi)]; simpl in Hxi, Hyi.
- rewrite Hyi in Ht4; discriminate Ht4.
+ rewrite Hyi in Ht4; exfalso; revert Ht4; apply digit_neq_0_1.
 
  destruct s1 as [dj1| ].
   remember Hs1 as H; clear HeqH.
@@ -2050,13 +2085,13 @@ destruct H as [(Hxi, Hyi)| (Hxi, Hyi)]; simpl in Hxi, Hyi.
    apply fst_same_sym_iff in H; simpl in H.
    rename H into Hn2.
    pose proof (Hn2 O) as H.
-   rewrite Nat.add_0_r, Hy4 in H; discriminate H.
+   rewrite Nat.add_0_r, Hy4 in H; exfalso; revert H; apply digit_neq_0_1.
 
   remember Hs1 as H; clear HeqH.
   apply fst_same_sym_iff in H; simpl in H.
   rename H into Hn1.
   pose proof (Hxi O) as H.
-  rewrite Hn1 in H; discriminate H.
+  rewrite Hn1 in H; exfalso; revert H; apply digit_neq_1_0.
 Qed.
 
 Theorem fst_same_opp_some_0_none : ∀ x y i,
@@ -2088,32 +2123,32 @@ apply fst_same_sym_iff in Hs4; simpl in Hs4.
 destruct s3 as [dj3| ].
  destruct Hs3 as (Hn3, Ht3).
  rewrite Ht3 in Hi.
- destruct s4 as [dj4| ]; [ idtac | discriminate Hi ].
+ destruct s4 as [dj4| ]; [ idtac | exfalso; revert Hi; apply digit_neq_0_1 ].
  destruct Hs4 as (Hn4, Ht4); clear Hi.
  destruct dj3.
-  rewrite Nat.add_0_r, Ht1 in Ht3; discriminate Ht3.
+  rewrite Nat.add_0_r, Ht1 in Ht3; exfalso; revert Ht3; apply digit_neq_1_0.
 
   destruct dj4.
    clear Hn4; rewrite Nat.add_0_r in Ht4.
    remember Ht1 as H; clear HeqH.
    eapply I_eq_neq_prop in H; try eassumption.
    destruct H as [(Hxi, Hyi)| (Hxi, Hyi)]; simpl in Hxi, Hyi.
-    rewrite Hxi in Ht3; discriminate Ht3.
+    rewrite Hxi in Ht3; exfalso; revert Ht3; apply digit_neq_1_0.
 
     pose proof (Hyi O) as H.
     apply oppd_0_iff in H.
-    rewrite Hs2 in H; discriminate H.
+    rewrite Hs2 in H; exfalso; revert H; apply digit_neq_1_0.
 
    pose proof (Hn4 O (Nat.lt_0_succ dj4)) as H.
    apply oppd_0_iff in H.
-   rewrite Hs2 in H; discriminate H.
+   rewrite Hs2 in H; exfalso; revert H; apply digit_neq_1_0.
 
  destruct s4 as [dj4| ].
   destruct Hs4 as (Hn4, Ht4).
-  rewrite Ht4 in Hi; discriminate Hi.
+  rewrite Ht4 in Hi; exfalso; revert Hi; apply digit_neq_1_0.
 
   pose proof (Hs2 O) as H.
-  rewrite Hs4 in H; discriminate H.
+  rewrite Hs4 in H; exfalso; revert H; apply digit_neq_0_1.
 Qed.
 
 Theorem fst_same_some_after : ∀ x y i di,
@@ -2168,6 +2203,7 @@ destruct H as [(Hxi, Hyi)| (Hxi, Hyi)]; simpl in Hxi, Hyi.
    destruct dj3.
     rewrite Nat.add_0_r in Hxi, Hyi.
     eapply fst_same_opp_some_0_none in Hs3; try eassumption.
+bbb.
     contradiction.
 
     remember Hs4 as H; clear HeqH.
