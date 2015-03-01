@@ -430,9 +430,9 @@ destruct s5 as [di5| ]; [ idtac | clear H ].
     remember H1 as HH; clear HeqHH.
     eapply lt_trans in HH; [ idtac | eassumption ].
     erewrite carry_before_relay9 in H; try eassumption.
-    simpl in H; rewrite Hb5 in H; discriminate H.
+    simpl in H; rewrite Hb5 in H; exfalso; revert H; apply digit_neq_1_0.
 
-    subst di3; rewrite Ha6 in Ha3; discriminate Ha3.
+    subst di3; rewrite Ha6 in Ha3; exfalso; revert Ha3; apply digit_neq_0_1.
 
     remember H2 as H; clear HeqH.
     apply Hn3 in H.
@@ -443,7 +443,7 @@ destruct s5 as [di5| ]; [ idtac | clear H ].
     erewrite carry_before_relay9 in H; try eassumption; simpl in H.
     rewrite Hb5, digit_add_1_r in H.
     rewrite <- Hn5 in H; [ idtac | assumption ].
-    rewrite Ht6 in H; discriminate H.
+    rewrite Ht6 in H; exfalso; revert H; apply digit_neq_0_1.
 
    remember Hs3 as H; clear HeqH.
    apply fst_same_sym_iff in H; simpl in H.
@@ -456,7 +456,7 @@ destruct s5 as [di5| ]; [ idtac | clear H ].
    erewrite carry_before_relay9 in H; try eassumption; simpl in H.
    rewrite Hb5, digit_add_1_r in H.
    rewrite <- Hn5 in H; [ idtac | assumption ].
-   rewrite Ht6 in H; discriminate H.
+   rewrite Ht6 in H; exfalso; revert H; apply digit_neq_0_1.
 
  rename HH into Ht5.
  remember Hc3 as H; clear HeqH.
@@ -477,7 +477,7 @@ destruct s5 as [di5| ]; [ idtac | clear H ].
   remember Hs5 as H; clear HeqH; symmetry in H.
   apply fst_same_inf_after with (di := S di3) in H.
   rewrite Nat.add_succ_r in H; simpl in H.
-  rewrite H in Ht3; discriminate Ht3.
+  rewrite H in Ht3; exfalso; revert Ht3; apply digit_neq_1_0.
 
   remember Hs3 as H; clear HeqH.
   apply fst_same_sym_iff in H; simpl in H.
@@ -491,7 +491,7 @@ destruct s5 as [di5| ]; [ idtac | clear H ].
   apply fst_same_inf_after with (di := S di6) in H.
   rewrite Nat.add_succ_r in H; simpl in H.
   rewrite H, digit_add_1_r in Ha6.
-  rewrite <- Ht5, Ht6 in Ha6; discriminate Ha6.
+  rewrite <- Ht5, Ht6 in Ha6; exfalso; revert Ha6; apply digit_neq_0_1.
 Qed.
 
 Theorem min_neq_lt : ∀ x xl y m,
