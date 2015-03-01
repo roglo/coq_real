@@ -1563,9 +1563,7 @@ destruct s2 as [dj2| ]; [ idtac | clear Hc2 ].
  destruct Hs4 as (Hn4, _).
  unfold I_add_i in Hc4.
  rewrite Hny, digit_add_1_l in Hc4.
- remember (z .[ dj4]) as z4 eqn:Hz4 .
- symmetry in Hz4.
- destruct z4.
+ destruct (ddec (z.[dj4])) as [Hz4 | Hz4]; rewrite Hz4 in *.
   rewrite digit_add_0_l in Hc4.
   unfold carry in Hc4.
   remember (fst_same y z (S dj4)) as s5 eqn:Hs5 .
@@ -1575,10 +1573,7 @@ destruct s2 as [dj2| ]; [ idtac | clear Hc2 ].
   rewrite digit_add_1_l in Hc4.
   apply oppd_0_iff in Hc4.
   pose proof (Hnx dj4) as H.
-  rewrite <- digit_opp_involutive in H.
-  apply oppd_sym in H; simpl in H.
   rewrite <- Hz4 in H.
-  apply oppd_sym in H; simpl in H.
   apply I_add_inf_1_neq_if in H.
    destruct H as (j, (Hj, (Hdi, (H, _)))).
    rewrite Hnx in H; discr_digit H.
@@ -1619,6 +1614,7 @@ symmetry in Hc1, Hc2, Hc3, Hc4.
 destruct sx as [dx| ].
  remember Hsx as H; clear HeqH.
  apply fst_same_sym_iff in H; simpl in H.
+bbb.
  destruct H as (Hnx, Htx); rewrite Htx, Z.add_0_r in Hi.
  destruct sy as [dy| ].
   remember Hsy as H; clear HeqH.
