@@ -1415,7 +1415,7 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
       rewrite Bm, Ht4, digit_add_1_l in H.
       apply oppd_1_iff in H.
       rewrite carry_before_inf_relay9 in H; [ idtac | assumption ].
-      discriminate H.
+      exfalso; revert H; apply digit_neq_1_0.
 
       eapply min_neq_lt in M4; [ idtac | eauto  | do 2 right; left; auto ].
       simpl in Hm.
@@ -1452,7 +1452,7 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
     rewrite Hn5, digit_opp_add_diag_l, digit_add_1_l in H.
     apply oppd_1_iff in H.
     rewrite carry_before_inf_relay9 in H; [ idtac | assumption ].
-    discriminate H.
+    exfalso; revert H; apply digit_neq_1_0.
 
     eapply min_neq_lt in M3; eauto ; try (right; left; auto).
     destruct (eq_nat_dec di4 m) as [M4| M4].
@@ -1470,7 +1470,7 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
      rewrite Bm, Ht4, digit_add_1_l in H.
      apply oppd_1_iff in H.
      rewrite carry_before_inf_relay9 in H; [ idtac | assumption ].
-     discriminate H.
+     exfalso; revert H; apply digit_neq_1_0.
 
      eapply min_neq_lt in M4; [ idtac | eauto  | left; auto ].
      simpl in Hm.
@@ -1502,7 +1502,7 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
     destruct (eq_nat_dec di4 m) as [M4| M4].
      move M4 at top; subst di4.
      rewrite Ht4 in Ht5.
-     move Ht5 at top; subst u.
+     rewrite <- Ht5 in *; clear u Ht5.
      destruct (eq_nat_dec di6 m) as [M6| M6].
       move M6 at top; subst di6.
       remember H4 as H; clear HeqH.
@@ -1529,13 +1529,13 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
       rewrite digit_opp_add_diag_l, digit_add_1_l in H.
       apply oppd_0_iff in H.
       erewrite carry_before_relay9 in H; try eassumption.
-      simpl in H; rewrite H6 in H; discriminate H.
+      simpl in H; rewrite H6 in H; exfalso; revert H; apply digit_neq_0_1.
 
      eapply min_neq_lt in M4; eauto ; try (right; left; auto).
      destruct (eq_nat_dec di6 m) as [M6| M6].
       move M6 at top; subst di6.
       exists m, (oppd u).
-      split; [ rewrite carry_before_inf_relay9; auto | idtac ].
+      split; [ rewrite carry_before_inf_relay9; auto; reflexivity | idtac ].
       split; [ erewrite carry_before_relay9; eassumption | idtac ].
       split.
        pose proof (Hn3 m) as H.
@@ -1554,7 +1554,7 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
 
       eapply min_neq_lt in M6; eauto ; try (left; auto).
       exists m, u.
-      split; [ rewrite carry_before_inf_relay9; auto | idtac ].
+      split; [ rewrite carry_before_inf_relay9; auto; reflexivity | idtac ].
       split; [ erewrite carry_before_relay9; eassumption | idtac ].
       split.
        pose proof (Hn3 m) as H.
@@ -1609,19 +1609,20 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
       rewrite Bm, Ht4, digit_add_1_l in H.
       apply oppd_1_iff in H.
       erewrite carry_before_relay9 in H; try eassumption.
-      simpl in H; rewrite H5 in H; move H at top; subst u.
+      simpl in H; rewrite H5 in H.
+      rewrite H in *; clear u H.
       remember H4 as H; clear HeqH.
       unfold I_add_i in H.
       rewrite Am, Bm, digit_add_1_l in H.
       apply oppd_0_iff in H.
       erewrite carry_before_relay9 in H; try eassumption.
-      simpl in H; rewrite H6 in H; discriminate H.
+      simpl in H; rewrite H6 in H. exfalso; revert H; apply digit_neq_0_1.
 
      eapply min_neq_lt in M4; eauto ; try (right; left; auto).
      destruct (eq_nat_dec di6 m) as [M6| M6].
       move M6 at top; subst di6.
       exists m, u.
-      split; [ rewrite carry_before_inf_relay9; auto | idtac ].
+      split; [ rewrite carry_before_inf_relay9; auto; reflexivity | idtac ].
       split; [ erewrite carry_before_relay9; eassumption | idtac ].
       split.
        pose proof (Hn3 m) as H.
@@ -1634,10 +1635,10 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
         pose proof (Hn4 m M4) as H.
         unfold I_add_i in H.
         rewrite Hn5 in H; [ idtac | assumption ].
-        rewrite H6, xorb_shuffle0, xorb_comm in H.
+        rewrite H6, digit_add_shuffle0, digit_add_comm in H.
         apply digit_move_l_r_1 in H.
         rewrite digit_add_nilpotent in H.
-        apply xorb_eq in H; symmetry; assumption.
+        apply digit_eq_add_0 in H; symmetry; assumption.
 
         intros dj Hdj; apply Hn4.
         eapply le_lt_trans; eassumption.
@@ -1655,7 +1656,7 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
 
         subst m; exfalso; revert M6; apply Nat.lt_irrefl.
 
-   move H6 at top; subst u.
+   rewrite <- H6 in *; clear u H6.
    remember (List.fold_right min di5 [di4 … []]) as m eqn:Hm .
    remember Hs3 as H; clear HeqH.
    apply fst_same_iff in H; simpl in H.
@@ -1675,11 +1676,11 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
     move M5 at top; subst di5.
     destruct (eq_nat_dec di4 m) as [M4| M4].
      move M4 at top; subst di4.
-     rewrite Ht5 in Ht4; discriminate Ht4.
+     rewrite Ht5 in Ht4; exfalso; revert Ht4; apply digit_neq_1_0.
 
      eapply min_neq_lt in M4; eauto ; try (right; left; auto).
-     exists m, true.
-     split; [ rewrite carry_before_inf_relay9; auto | idtac ].
+     exists m, 1%D.
+     split; [ rewrite carry_before_inf_relay9; auto; reflexivity | idtac ].
      split; [ erewrite carry_before_relay9; eassumption | idtac ].
      split.
       pose proof (Hn3 m) as H.
@@ -1712,7 +1713,7 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
      apply oppd_1_iff in H.
      erewrite carry_before_relay9 in H; try eassumption.
      simpl in H; rewrite H5 in H.
-     discriminate H.
+     exfalso; revert H; apply digit_neq_1_0.
 
      eapply min_neq_lt in M4; eauto ; try (right; left; auto).
      simpl in Hm.
@@ -1721,7 +1722,7 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
 
       subst m; exfalso; revert M5; apply Nat.lt_irrefl.
 
-  move H5 at top; subst u.
+  rewrite <- H5 in *; clear u H5.
   destruct s6 as [di6| ]; [ idtac | clear H6 ].
    remember (List.fold_right min di6 [di4 … []]) as m eqn:Hm .
    remember Hs3 as H; clear HeqH.
@@ -1771,13 +1772,13 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
      rewrite Bm, Ht4, digit_add_1_l in H.
      apply oppd_1_iff in H.
      rewrite carry_before_inf_relay9 in H; [ idtac | assumption ].
-     discriminate H.
+     exfalso; revert H; apply digit_neq_1_0.
 
     eapply min_neq_lt in M4; eauto ; try (right; left; auto).
     destruct (eq_nat_dec di6 m) as [M6| M6].
      move M6 at top; subst di6.
-     exists m, true.
-     split; [ rewrite carry_before_inf_relay9; auto | idtac ].
+     exists m, 1%D.
+     split; [ rewrite carry_before_inf_relay9; auto; reflexivity | idtac ].
      split; [ erewrite carry_before_relay9; eassumption | idtac ].
      split.
       pose proof (Hn3 m) as H.
@@ -1828,21 +1829,21 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
    rewrite Bm, Ht4, digit_add_1_l in H.
    apply oppd_1_iff in H.
    rewrite carry_before_inf_relay9 in H; [ idtac | assumption ].
-   discriminate H.
+   exfalso; revert H; apply digit_neq_1_0.
 Qed.
 
 Theorem case_3 : ∀ x y z i u,
-  carry x (y + z) i = true
-  → carry (x + y) z i = false
-  → carry y z i = u
-  → carry x y i = u
+  (carry x (y + z) i = 1)%D
+  → (carry (x + y) z i = 0)%D
+  → (carry y z i = u)%D
+  → (carry x y i = u)%D
   → False.
 Proof.
 intros x y z i u Hc3 Hc4 Hc5 Hc6.
 remember Hc4 as H; clear HeqH.
 unfold carry in H; simpl in H.
 remember (fst_same (x + y) z i) as s eqn:Hs .
-destruct s as [di| ]; [ idtac | discriminate H ].
+destruct s as [di| ]; [ idtac | exfalso; revert H; apply digit_neq_1_0 ].
 symmetry in Hs; clear H.
 revert x y z i u Hc3 Hc4 Hc5 Hc6 Hs.
 induction di as (di, IHdi) using all_lt_all; intros.
@@ -1906,7 +1907,7 @@ unfold I_add_i; simpl.
 remember (carry y z (S i)) as c5 eqn:Hc5 .
 remember (carry x y (S i)) as c6 eqn:Hc6 .
 do 8 rewrite <- digit_add_assoc; f_equal; f_equal; symmetry.
-rewrite xorb_comm, <- digit_add_assoc; f_equal; symmetry.
+rewrite digit_add_comm, <- digit_add_assoc; f_equal; symmetry.
 rewrite digit_add_assoc.
 symmetry in Hc1, Hc2, Hc3, Hc4, Hc5, Hc6.
 move c2 before c1; move c3 before c2.
