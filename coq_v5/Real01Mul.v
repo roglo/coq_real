@@ -621,8 +621,10 @@ destruct v1; [ clear Hle1 | idtac ].
            unfold summation in H2; simpl in H2.
            rewrite Nat.add_0_r in H2.
            unfold b2n in Ht2, H2.
-           destruct (digit_dec (x.[0])); [ idtac | revert H2; apply Nat.nlt_0_r ].
-           destruct (digit_dec (y.[0])); [ idtac | revert H2; apply Nat.nlt_0_r ].
+           remember (digit_dec (x.[0])) as v.
+           destruct v; [ clear Heqv | revert H2; apply Nat.nlt_0_r ].
+           remember (digit_dec (y.[0])) as v.
+           destruct v; [ clear Heqv | revert H2; apply Nat.nlt_0_r ].
            apply Ht2; reflexivity.
 
            pose proof (Hn2 0 (Nat.lt_0_succ di2)) as H.
