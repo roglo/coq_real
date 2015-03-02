@@ -18,7 +18,14 @@ Notation "1" := digit_1 : digit_scope.
 Notation "x = y" := (digit_eq x y) : digit_scope.
 Notation "x ≠ y" := (¬digit_eq x y) : digit_scope.
 
-Theorem digit_eq_refl : reflexive digit digit_eq.
+Definition oppd x := if eq_nat_dec (dig x) 0 then digit_1 else digit_0.
+Definition digit_add x y := if eq_nat_dec (dig x) 0 then y else oppd y.
+
+Notation "x + y" := (digit_add x y) : digit_scope.
+
+Module Digit.
+
+Theorem eq_refl : reflexive digit digit_eq.
 Proof.
 intros d.
 unfold digit_eq.
@@ -26,7 +33,7 @@ destruct (dig d); [ left; split; reflexivity | idtac ].
 right; split; intros H; discriminate H.
 Qed.
 
-Theorem digit_eq_sym : symmetric digit digit_eq.
+Theorem eq_sym : symmetric digit digit_eq.
 Proof.
 intros x y Hxy.
 unfold digit_eq in Hxy; unfold digit_eq.
@@ -36,7 +43,7 @@ destruct Hxy as [Hxy| Hxy]; rewrite and_comm in Hxy.
  right; assumption.
 Qed.
 
-Theorem digit_eq_trans : transitive digit digit_eq.
+Theorem eq_trans : transitive digit digit_eq.
 Proof.
 intros x y z Hxy Hyz.
 unfold digit_eq in Hxy, Hyz.
@@ -55,12 +62,12 @@ destruct Hxy as [(Hx, Hy)| (Hx, Hy)].
 Qed.
 
 Add Parametric Relation : digit digit_eq
- reflexivity proved by digit_eq_refl
- symmetry proved by digit_eq_sym
- transitivity proved by digit_eq_trans
- as digit_eq_rel.
+ reflexivity proved by eq_refl
+ symmetry proved by eq_sym
+ transitivity proved by eq_trans
+ as eq_rel.
 
-Theorem digit_eq_dec : ∀ x y, {(x = y)%D} + {(x ≠ y)%D}.
+Theorem eq_dec : ∀ x y, {(x = y)%D} + {(x ≠ y)%D}.
 Proof.
 intros x y.
 unfold digit_eq.
@@ -73,16 +80,11 @@ destruct (dig x) as [| xd].
  right; intros [(Hx, Hy)| (Hx, Hy)]; [ discriminate Hx | idtac ].
  apply Hy; reflexivity.
 Qed.
-Arguments digit_eq_dec x%D y%D.
-
-Definition oppd x := if eq_nat_dec (dig x) 0 then digit_1 else digit_0.
-Definition digit_add x y := if eq_nat_dec (dig x) 0 then y else oppd y.
-
-Notation "x + y" := (digit_add x y) : digit_scope.
+Arguments eq_dec x%D y%D.
 
 Add Parametric Morphism : digit_add
   with signature digit_eq ==> digit_eq ==> digit_eq
-  as digit_add_compat.
+  as add_compat.
 Proof.
 intros x y Hxy z t Hzt.
 unfold digit_eq in Hxy, Hzt.
@@ -106,7 +108,7 @@ Qed.
 
 Add Parametric Morphism : oppd
   with signature digit_eq ==> digit_eq
-  as digit_opp_compat.
+  as opp_compat.
 Proof.
 intros x y Hxy.
 unfold digit_eq in Hxy; unfold digit_eq, oppd.
@@ -122,7 +124,7 @@ destruct (eq_nat_dec (dig x) 0) as [H1| H1]; simpl.
   left; split; reflexivity.
 Qed.
 
-Theorem digit_add_comm : ∀ d e, (d + e = e + d)%D.
+Theorem add_comm : ∀ d e, (d + e = e + d)%D.
 Proof.
 intros d e.
 unfold digit_eq, digit_add, oppd; simpl.
@@ -138,7 +140,7 @@ destruct (eq_nat_dec (dig d) 0) as [H1| H1].
   left; split; reflexivity.
 Qed.
 
-Theorem digit_add_0_r : ∀ d, (d + 0 = d)%D.
+Theorem add_0_r : ∀ d, (d + 0 = d)%D.
 Proof.
 intros d.
 unfold digit_eq, digit_add; simpl.
@@ -149,14 +151,14 @@ destruct (eq_nat_dec (dig d) 0) as [H1| H1].
  unfold oppd; intros H; discriminate H.
 Qed.
 
-Theorem digit_add_0_l : ∀ d, (0 + d = d)%D.
+Theorem add_0_l : ∀ d, (0 + d = d)%D.
 Proof.
 intros d.
-rewrite digit_add_comm.
-apply digit_add_0_r.
+rewrite add_comm.
+apply add_0_r.
 Qed.
 
-Theorem digit_add_1_r : ∀ d, (d + 1 = oppd d)%D.
+Theorem add_1_r : ∀ d, (d + 1 = oppd d)%D.
 Proof.
 intros d.
 unfold digit_eq, digit_add, oppd; simpl.
@@ -166,24 +168,24 @@ destruct (eq_nat_dec (dig d) 0) as [H1| H1]; simpl.
  left; split; reflexivity.
 Qed.
 
-Theorem digit_add_1_l : ∀ d, (1 + d = oppd d)%D.
+Theorem add_1_l : ∀ d, (1 + d = oppd d)%D.
 Proof.
 intros d.
-rewrite digit_add_comm.
-apply digit_add_1_r.
+rewrite add_comm.
+apply add_1_r.
 Qed.
 
-Theorem digit_neq_0_1 : (0 ≠ 1)%D.
+Theorem neq_0_1 : (0 ≠ 1)%D.
 Proof.
 intros [(Hx, Hy)|(Hx, Hy)]; [ discriminate Hy | apply Hx; reflexivity ].
 Qed.
 
-Theorem digit_neq_1_0 : (1 ≠ 0)%D.
+Theorem neq_1_0 : (1 ≠ 0)%D.
 Proof.
 intros [(Hx, Hy)|(Hx, Hy)]; [ discriminate Hx | apply Hy; reflexivity ].
 Qed.
 
-Theorem digit_not_0_iff_1 : ∀ d, (d ≠ 0)%D ↔ (d = 1)%D.
+Theorem not_0_iff_1 : ∀ d, (d ≠ 0)%D ↔ (d = 1)%D.
 Proof.
 intros d;
 split; intros Hd.
@@ -195,10 +197,10 @@ split; intros Hd.
 
  intros H.
  rewrite Hd in H.
- revert H; apply digit_neq_1_0.
+ revert H; apply neq_1_0.
 Qed.
 
-Theorem digit_not_1_iff_0 : ∀ d, (d ≠ 1)%D ↔ (d = 0)%D.
+Theorem not_1_iff_0 : ∀ d, (d ≠ 1)%D ↔ (d = 0)%D.
 Proof.
 intros d;
 split; intros Hd.
@@ -210,10 +212,10 @@ split; intros Hd.
 
  intros H.
  rewrite Hd in H.
- revert H; apply digit_neq_0_1.
+ revert H; apply neq_0_1.
 Qed.
 
-Theorem digit_opp_0_iff : ∀ d, (oppd d = 0)%D ↔ (d = 1)%D.
+Theorem opp_0_iff : ∀ d, (oppd d = 0)%D ↔ (d = 1)%D.
 Proof.
 intros d.
 unfold digit_eq, oppd; simpl.
@@ -230,7 +232,7 @@ split; intros [(H1, H2)| (H1, H2)].
  left; split; reflexivity.
 Qed.
 
-Theorem digit_opp_1_iff : ∀ d, (oppd d = 1)%D ↔ (d = 0)%D.
+Theorem opp_1_iff : ∀ d, (oppd d = 1)%D ↔ (d = 0)%D.
 Proof.
 intros d.
 unfold digit_eq, oppd; simpl.
@@ -248,14 +250,14 @@ split; intros [(H1, H2)| (H1, H2)].
  exfalso; apply H2; reflexivity.
 Qed.
 
-Theorem digit_neq_sym : ∀ d e, (d ≠ e)%D → (e ≠ d)%D.
+Theorem neq_sym : ∀ d e, (d ≠ e)%D → (e ≠ d)%D.
 Proof.
 intros d e Hde.
 intros H; apply Hde.
 symmetry; assumption.
 Qed.
 
-Theorem digit_add_assoc : ∀ d e f, (d + (e + f) = (d + e) + f)%D.
+Theorem add_assoc : ∀ d e f, (d + (e + f) = (d + e) + f)%D.
 Proof.
 intros d e f.
 unfold digit_eq.
@@ -284,25 +286,25 @@ destruct (eq_nat_dec (dig d) 0) as [H1| H1]; simpl.
    right; split; [ intros H; discriminate H | assumption ].
 Qed.
 
-Theorem digit_add_shuffle0 : ∀ d e f, (d + e + f = d + f + e)%D.
+Theorem add_shuffle0 : ∀ d e f, (d + e + f = d + f + e)%D.
 Proof.
 intros d e f.
-do 2 rewrite <- digit_add_assoc.
-apply digit_add_compat; [ reflexivity | idtac ].
-apply digit_add_comm.
+do 2 rewrite <- add_assoc.
+apply add_compat; [ reflexivity | idtac ].
+apply add_comm.
 Qed.
 
-Theorem digit_opp_0 : (oppd 0 = 1)%D.
+Theorem opp_0 : (oppd 0 = 1)%D.
 Proof.
-apply digit_opp_1_iff; reflexivity.
+apply opp_1_iff; reflexivity.
 Qed.
 
-Theorem digit_opp_1 : (oppd 1 = 0)%D.
+Theorem opp_1 : (oppd 1 = 0)%D.
 Proof.
-apply digit_opp_0_iff; reflexivity.
+apply opp_0_iff; reflexivity.
 Qed.
 
-Theorem digit_add_nilpotent : ∀ d, (d + d = 0)%D.
+Theorem add_nilpotent : ∀ d, (d + d = 0)%D.
 Proof.
 intros d.
 unfold digit_eq, digit_add, oppd; simpl.
@@ -312,7 +314,7 @@ destruct (eq_nat_dec (dig d) 0) as [H1 | H1]; simpl.
  left; split; reflexivity.
 Qed.
 
-Theorem digit_eq_add_1 : ∀ d e, (d ≠ e)%D → (d + e = 1)%D.
+Theorem eq_add_1 : ∀ d e, (d ≠ e)%D → (d + e = 1)%D.
 Proof.
 intros d e Hde.
 unfold digit_eq, digit_add, oppd; simpl.
@@ -328,7 +330,7 @@ destruct (eq_nat_dec (dig d) 0) as [H1 | H1].
   right; split; assumption.
 Qed.
 
-Theorem digit_opp_add_diag_l : ∀ d, (oppd d + d = 1)%D.
+Theorem opp_add_diag_l : ∀ d, (oppd d + d = 1)%D.
 Proof.
 intros d.
 unfold digit_eq, digit_add, oppd; simpl.
@@ -338,14 +340,14 @@ destruct (eq_nat_dec (dig d) 0) as [H1| H1]; simpl.
  right; split; [ assumption | intros H; discriminate H ].
 Qed.
 
-Theorem digit_opp_add_diag_r : ∀ d, (d + oppd d = 1)%D.
+Theorem opp_add_diag_r : ∀ d, (d + oppd d = 1)%D.
 Proof.
 intros d.
-rewrite digit_add_comm.
-apply digit_opp_add_diag_l.
+rewrite add_comm.
+apply opp_add_diag_l.
 Qed.
 
-Theorem digit_no_fixpoint_opp : ∀ d, (oppd d ≠ d)%D.
+Theorem no_fixpoint_opp : ∀ d, (oppd d ≠ d)%D.
 Proof.
 intros d.
 unfold digit_eq, oppd; simpl; intros H.
@@ -356,7 +358,7 @@ destruct H as [(Hx, Hy)| (Hx, Hy)].
  apply Hx; reflexivity.
 Qed.
 
-Theorem digit_neq_eq_opp : ∀ d e, (d ≠ e)%D ↔ (d = oppd e)%D.
+Theorem neq_eq_opp : ∀ d e, (d ≠ e)%D ↔ (d = oppd e)%D.
 Proof.
 intros d e.
 split; intros Hde.
@@ -374,10 +376,10 @@ split; intros Hde.
   right; split; assumption.
 
  intros H; rewrite Hde in H.
- exfalso; revert H; apply digit_no_fixpoint_opp.
+ exfalso; revert H; apply no_fixpoint_opp.
 Qed.
 
-Theorem digit_opp_sym : ∀ d d', (d' = oppd d)%D → (d = oppd d')%D.
+Theorem opp_sym : ∀ d d', (d' = oppd d)%D → (d = oppd d')%D.
 Proof.
 intros d d' Hd'.
 rewrite Hd'; unfold digit_eq, oppd; simpl.
@@ -387,7 +389,7 @@ destruct (eq_nat_dec (dig d) 0) as [H1 | H1]; simpl.
  right; split; [ assumption | intros H; discriminate H ].
 Qed.
 
-Theorem digit_opp_eq : ∀ d e, (oppd d = oppd e)%D → (d = e)%D.
+Theorem opp_eq : ∀ d e, (oppd d = oppd e)%D → (d = e)%D.
 Proof.
 intros d e Hde.
 unfold digit_eq, oppd in Hde; unfold digit_eq.
@@ -405,7 +407,7 @@ destruct (eq_nat_dec (dig d) 0) as [H1 | H1]; simpl in Hde; simpl.
   right; split; assumption.
 Qed.
 
-Theorem digit_opp_add_r : ∀ d e, (oppd (d + e) = d + oppd e)%D.
+Theorem opp_add_r : ∀ d e, (oppd (d + e) = d + oppd e)%D.
 Proof.
 intros d e.
 unfold digit_eq, digit_add, oppd; simpl.
@@ -421,15 +423,15 @@ destruct (eq_nat_dec (dig d) 0) as [H1 | H1]; simpl.
   right; split; intros H; discriminate H.
 Qed.
 
-Theorem digit_opp_add_l : ∀ d e, (oppd (d + e) = oppd d + e)%D.
+Theorem opp_add_l : ∀ d e, (oppd (d + e) = oppd d + e)%D.
 Proof.
 intros d e.
-rewrite digit_add_comm; symmetry.
-rewrite digit_add_comm; symmetry.
-apply digit_opp_add_r.
+rewrite add_comm; symmetry.
+rewrite add_comm; symmetry.
+apply opp_add_r.
 Qed.
 
-Theorem digit_opp_involutive : ∀ d, (oppd (oppd d) = d)%D.
+Theorem opp_involutive : ∀ d, (oppd (oppd d) = d)%D.
 Proof.
 intros d.
 unfold digit_eq, oppd.
@@ -439,7 +441,7 @@ destruct (eq_nat_dec (dig d) 0) as [H1 | H1]; simpl.
  right; split; [ intros H; discriminate H | assumption ].
 Qed.
 
-Theorem digit_add_cancel_l : ∀ d e f, (d + e = d + f)%D → (e = f)%D.
+Theorem add_cancel_l : ∀ d e f, (d + e = d + f)%D → (e = f)%D.
 Proof.
 intros d e f Hd.
 unfold digit_eq, digit_add, oppd in Hd; unfold digit_eq.
@@ -458,7 +460,7 @@ destruct (eq_nat_dec (dig e) 0) as [H2 | H2].
   right; split; assumption.
 Qed.
 
-Theorem digit_move_l_r_1 : ∀ d e f, (d + e = f)%D → (e = d + f)%D.
+Theorem move_l_r_1 : ∀ d e f, (d + e = f)%D → (e = d + f)%D.
 Proof.
 intros d e f Hd.
 unfold digit_eq, digit_add, oppd in Hd.
@@ -477,7 +479,7 @@ destruct (eq_nat_dec (dig d) 0) as [H1 | H1]; [ assumption | idtac ].
    exfalso; apply He; reflexivity.
 Qed.
 
-Theorem digit_move_l_r_2 : ∀ d e f, (d + e = f)%D → (d = f + e)%D.
+Theorem move_l_r_2 : ∀ d e f, (d + e = f)%D → (d = f + e)%D.
 Proof.
 intros d e f Hd.
 unfold digit_eq, digit_add, oppd in Hd.
@@ -507,7 +509,7 @@ destruct (eq_nat_dec (dig d) 0) as [H1| H1].
    exfalso; apply He; reflexivity.
 Qed.
 
-Theorem digit_eq_add_0 : ∀ d e, (d + e = 0)%D → (d = e)%D.
+Theorem eq_add_0 : ∀ d e, (d + e = 0)%D → (d = e)%D.
 Proof.
 intros d e Hde.
 unfold digit_eq, digit_add, oppd in Hde.
@@ -525,10 +527,7 @@ destruct (eq_nat_dec (dig d) 0) as [H1 | H1]; simpl in Hde.
   right; split; assumption.
 Qed.
 
-Theorem eq_digit_eq : ∀ d e, d = e → (d = e)%D.
-Proof. intros d e H; subst d; reflexivity. Qed.
-
-Theorem digit_dec : ∀ x, {(x = 1)%D} + {(x = 0)%D}.
+Theorem dec : ∀ x, {(x = 1)%D} + {(x = 0)%D}.
 Proof.
 intros x.
 unfold digit_eq; simpl.
@@ -537,7 +536,12 @@ destruct (eq_nat_dec (dig x) 0) as [H1 | H1].
 
  left; right; split; [ assumption | intros H; discriminate H ].
 Qed.
-Arguments digit_dec x%D.
+Arguments dec x%D.
+
+End Digit.
+
+Theorem eq_digit_eq : ∀ d e, d = e → (d = e)%D.
+Proof. intros d e H; subst d; reflexivity. Qed.
 
 Ltac discr_digit x :=
-  exfalso; revert x; try apply digit_neq_1_0; apply digit_neq_0_1.
+  exfalso; revert x; try apply Digit.neq_1_0; apply Digit.neq_0_1.

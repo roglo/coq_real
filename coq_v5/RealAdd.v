@@ -8,7 +8,7 @@ Set Implicit Arguments.
 
 Open Scope Z_scope.
 
-Definition b2z (b : digit) := if digit_eq_dec b 1 then 1 else 0.
+Definition b2z (b : digit) := if Digit.eq_dec b 1 then 1 else 0.
 
 Definition R_add x y :=
   {| R_int := R_int x + R_int y + b2z (carry (R_frac x) (R_frac y) 0);
@@ -79,11 +79,11 @@ Add Parametric Morphism : b2z
 Proof.
 intros x y Hxy.
 unfold b2z; simpl.
-destruct (digit_eq_dec x 1) as [H1 | H1].
- destruct (digit_eq_dec y 1) as [H2 | H2]; [ reflexivity | idtac ].
+destruct (Digit.eq_dec x 1) as [H1 | H1].
+ destruct (Digit.eq_dec y 1) as [H2 | H2]; [ reflexivity | idtac ].
  rewrite H1 in Hxy; symmetry in Hxy; contradiction.
 
- destruct (digit_eq_dec y 1) as [H2 | H2]; [ idtac | reflexivity ].
+ destruct (Digit.eq_dec y 1) as [H2 | H2]; [ idtac | reflexivity ].
  rewrite H2 in Hxy; contradiction.
 Qed.
 

@@ -134,7 +134,7 @@ destruct (I_lt_dec x y) as [H1| H1].
   destruct (I_lt_dec x (I_div_2_pow y (S i))) as [H3| H3].
    reflexivity.
 
-   apply digit_opp_0_iff.
+   apply Digit.opp_0_iff.
    destruct m2.
     simpl.
     simpl in Hm2.
@@ -154,7 +154,7 @@ Theorem I_add_i_diag : ∀ x i, (I_add_i x x i = x.[S i])%D.
 Proof.
 intros x i.
 unfold I_add_i; simpl.
-rewrite digit_add_nilpotent, carry_diag, digit_add_0_l.
+rewrite Digit.add_nilpotent, carry_diag, Digit.add_0_l.
 reflexivity.
 Qed.
 
@@ -180,7 +180,7 @@ split; intros Hx.
   unfold I_eqs, I_compare in Hx; simpl in Hx.
   remember (fst_same x (- 0%I) 0) as s1 eqn:Hs1 .
   destruct s1 as [dj1| ]; [ idtac | clear Hx ].
-   destruct (digit_eq_dec (x .[ dj1]) 1); discriminate Hx.
+   destruct (Digit.eq_dec (x .[ dj1]) 1); discriminate Hx.
 
    apply fst_same_sym_iff in Hs1; simpl in Hs1.
    apply Hs1.

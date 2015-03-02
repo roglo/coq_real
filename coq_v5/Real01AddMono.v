@@ -21,26 +21,26 @@ intros x.
 unfold I_eq; intros i; simpl.
 unfold I_add_i, carry.
 remember (S i) as si; simpl.
-rewrite digit_add_0_r.
+rewrite Digit.add_0_r.
 rewrite fst_same_diag.
 remember (fst_same (x - x) 0 si) as s1 eqn:Hs1 .
 apply fst_same_sym_iff in Hs1; simpl in Hs1.
 destruct s1 as [di1| ].
- destruct Hs1 as (Hn1, Hs1); rewrite Hs1, digit_add_0_r.
+ destruct Hs1 as (Hn1, Hs1); rewrite Hs1, Digit.add_0_r.
  unfold I_add_i, carry.
  rewrite <- Heqsi; simpl.
  remember (fst_same x (- x) si) as s2 eqn:Hs2 .
  apply fst_same_sym_iff in Hs2; simpl in Hs2.
- do 2 rewrite digit_add_0_r.
- rewrite digit_opp_add_diag_r.
- apply digit_opp_0_iff.
+ do 2 rewrite Digit.add_0_r.
+ rewrite Digit.opp_add_diag_r.
+ apply Digit.opp_0_iff.
  destruct s2 as [di2| ]; [ idtac | reflexivity ].
  destruct Hs2 as (Hn2, Hs2); symmetry in Hs2.
- exfalso; revert Hs2; apply digit_no_fixpoint_opp.
+ exfalso; revert Hs2; apply Digit.no_fixpoint_opp.
 
- destruct (digit_eq_dec (x .[ si]) (oppd (x .[ si]))) as [H1| H1].
+ destruct (Digit.eq_dec (x .[ si]) (oppd (x .[ si]))) as [H1| H1].
   symmetry in H1.
-  exfalso; revert H1; apply digit_no_fixpoint_opp.
+  exfalso; revert H1; apply Digit.no_fixpoint_opp.
 
   apply I_add_inf_1_neq_if in Hs1.
    simpl in Hs1.
@@ -48,7 +48,7 @@ destruct s1 as [di1| ].
    rewrite Ha in Hb.
    discr_digit Hb.
 
-   simpl; rewrite digit_opp_involutive; reflexivity.
+   simpl; rewrite Digit.opp_involutive; reflexivity.
 Qed.
 
 (* associativity *)
@@ -72,7 +72,7 @@ Theorem I_add_inf_if : ∀ x y i,
     (∀ di, (y.[j + S di] = 1)%D).
 Proof.
 intros x y i Hj.
-destruct (digit_eq_dec (x .[ i]) (y .[ i])) as [H1| H1].
+destruct (Digit.eq_dec (x .[ i]) (y .[ i])) as [H1| H1].
  apply I_add_inf_1_eq_if in Hj; auto.
  destruct Hj as (Ha, Hb).
  exists (S i).
@@ -82,7 +82,7 @@ destruct (digit_eq_dec (x .[ i]) (y .[ i])) as [H1| H1].
 
    apply Hb.
 
- apply digit_neq_eq_opp in H1.
+ apply Digit.neq_eq_opp in H1.
  apply I_add_inf_1_neq_if in Hj; auto.
  destruct Hj as (j, (Hij, (Hni, (Ha, (Hb, (Hat, Hbt)))))).
  exists j.
@@ -139,15 +139,15 @@ Theorem sum_x1_x_sum_0_0 : ∀ x y i,
 Proof.
 intros y z i Ht5 Hbd Ht6.
 remember (y.[i]) as b eqn:Hb5; symmetry in Hb5.
-apply digit_not_1_iff_0; intros H.
+apply Digit.not_1_iff_0; intros H.
 unfold I_add_i in H; simpl in H.
-rewrite Ht6, digit_add_0_l in H.
+rewrite Ht6, Digit.add_0_l in H.
 rename H into Hcc.
 remember Hbd as H; clear HeqH.
 unfold I_add_i in H; simpl in H.
-rewrite Hb5, Ht5, digit_add_1_r in H.
-apply digit_move_l_r_1 in H.
-rewrite digit_opp_add_diag_l in H.
+rewrite Hb5, Ht5, Digit.add_1_r in H.
+apply Digit.move_l_r_1 in H.
+rewrite Digit.opp_add_diag_l in H.
 rename H into Hyz.
 remember (S i) as x.
 rewrite <- Nat.add_1_r in Hcc.
@@ -161,8 +161,8 @@ destruct s1 as [di1| ].
 
   assert (0 < S di1) as H by apply Nat.lt_0_succ.
   erewrite carry_before_relay in Hcc; try eassumption.
-  rewrite Hyz, digit_add_1_r in Hcc.
-  apply digit_opp_1_iff in Hcc.
+  rewrite Hyz, Digit.add_1_r in Hcc.
+  apply Digit.opp_1_iff in Hcc.
   apply fst_same_iff in Hs1; simpl in Hs1.
   destruct Hs1 as (Hn1, _).
   apply Hn1 in H; rewrite Nat.add_0_r in H.
@@ -176,9 +176,9 @@ destruct s1 as [di1| ].
  rewrite Nat.add_1_r in H.
  rename H into Hs2.
  apply fst_same_iff in Hs1.
- pose proof (Hs1 0) as H; apply digit_opp_sym in H.
+ pose proof (Hs1 0) as H; apply Digit.opp_sym in H.
  rewrite Nat.add_0_r in H.
- rewrite H, Ht6, digit_add_1_l in Hcc.
+ rewrite H, Ht6, Digit.add_1_l in Hcc.
  discr_digit Hcc.
 Qed.
 
@@ -205,7 +205,7 @@ destruct s1 as [di1| ].
   rewrite <- Nat.add_succ_l in H.
   rewrite Hc2 in H; simpl in H.
   rewrite Hc1 in H.
-  exfalso; revert H; apply digit_no_fixpoint_opp.
+  exfalso; revert H; apply Digit.no_fixpoint_opp.
 
  rewrite <- Hc1 in Hc2 |-*; simpl in Hc2.
  rewrite Nat.add_0_r in Hc2.
@@ -226,21 +226,21 @@ revert i Ha Hy Hxy.
 induction di; intros; [ rewrite Nat.add_0_r; assumption | idtac ].
 pose proof (Hxy (S di) (Nat.le_refl (S di))) as H.
 unfold I_add_i in H; simpl in H.
-rewrite <- digit_add_assoc in H.
-apply digit_move_l_r_1 in H.
-rewrite digit_add_nilpotent in H.
-destruct (digit_eq_dec (y.[i+S di]) 1) as [Hb | Hb]; [ assumption | idtac ].
-apply digit_not_1_iff_0 in Hb.
-rewrite Hb, digit_add_0_l in H.
+rewrite <- Digit.add_assoc in H.
+apply Digit.move_l_r_1 in H.
+rewrite Digit.add_nilpotent in H.
+destruct (Digit.eq_dec (y.[i+S di]) 1) as [Hb | Hb]; [ assumption | idtac ].
+apply Digit.not_1_iff_0 in Hb.
+rewrite Hb, Digit.add_0_l in H.
 rename H into Hd.
 pose proof (Hxy di (Nat.le_succ_diag_r di)) as H.
 unfold I_add_i in H; simpl in H.
-rewrite <- digit_add_assoc in H.
-apply digit_move_l_r_1 in H.
-rewrite digit_add_nilpotent in H.
+rewrite <- Digit.add_assoc in H.
+apply Digit.move_l_r_1 in H.
+rewrite Digit.add_nilpotent in H.
 rewrite IHdi in H; try assumption.
- rewrite digit_add_1_l in H.
- apply digit_opp_0_iff in H.
+ rewrite Digit.add_1_l in H.
+ apply Digit.opp_0_iff in H.
  rewrite Nat.add_succ_r in Hd.
  apply carry_succ_negb in H; [ idtac | assumption ].
  rewrite <- Nat.add_succ_r, Hb in H.
@@ -289,7 +289,7 @@ destruct s5 as [di5| ]; [ idtac | clear H ].
     symmetry in Hs5.
     erewrite carry_before_relay9 in H; try eassumption; simpl in H.
     apply Hn5 in H2.
-    rewrite H2, digit_opp_add_diag_l, Hb5 in H.
+    rewrite H2, Digit.opp_add_diag_l, Hb5 in H.
     discr_digit H.
 
     subst di3.
@@ -302,12 +302,12 @@ destruct s5 as [di5| ]; [ idtac | clear H ].
     apply Hn3 in H.
     rewrite Hn6 in H; [ idtac | assumption ].
     rewrite Hb5 in H.
-    apply digit_opp_sym in H; simpl in H.
+    apply Digit.opp_sym in H; simpl in H.
     rename H into Hbd.
     destruct (lt_eq_lt_dec di3 di6) as [[H4| H4]| H4].
      remember Ha3 as Hb3; clear HeqHb3.
      rewrite Hn6 in Hb3; [ idtac | assumption ].
-     apply digit_opp_1_iff in Hb3.
+     apply Digit.opp_1_iff in Hb3.
      remember (di3 - S di5) as n eqn:Hn .
      apply Nat_sub_add_r in Hn; [ idtac | assumption ].
      rewrite Nat.add_comm in Hn; simpl in Hn.
@@ -317,8 +317,8 @@ destruct s5 as [di5| ]; [ idtac | clear H ].
      apply Nat.lt_succ_l in H; apply Hn6 in H.
      assert (n + di5 < S n + di5) as HH by apply Nat.lt_succ_diag_r.
      rewrite Hn3 in H; [ idtac | assumption ].
-     apply digit_opp_sym in H.
-     rewrite digit_opp_involutive in H; symmetry in H; simpl in H.
+     apply Digit.opp_sym in H.
+     rewrite Digit.opp_involutive in H; symmetry in H; simpl in H.
      rename H into Hyz1.
      erewrite sum_x1_x_sum_0_0 in Ht3; try eassumption.
       discr_digit Ht3.
@@ -326,9 +326,9 @@ destruct s5 as [di5| ]; [ idtac | clear H ].
       rewrite Nat.add_assoc, Nat.add_shuffle0.
       apply sum_11_1_sum_x1 with (x := y); try assumption.
       intros dj Hdj.
-      simpl; symmetry; rewrite <- Nat.add_assoc, <- digit_opp_involutive.
+      simpl; symmetry; rewrite <- Nat.add_assoc, <- Digit.opp_involutive.
       rewrite <- Hn6.
-       rewrite Hn3; [ rewrite digit_opp_involutive; reflexivity | idtac ].
+       rewrite Hn3; [ rewrite Digit.opp_involutive; reflexivity | idtac ].
        rewrite Nat.add_comm; simpl.
        apply le_n_S, Nat.add_le_mono_r; assumption.
 
@@ -341,7 +341,7 @@ destruct s5 as [di5| ]; [ idtac | clear H ].
 
      remember Ha6 as Hbe; clear HeqHbe.
      rewrite Hn3 in Hbe; [ idtac | assumption ].
-     apply digit_opp_0_iff in Hbe.
+     apply Digit.opp_0_iff in Hbe.
      remember (di6 - S di5) as n eqn:Hn .
      apply Nat_sub_add_r in Hn; [ idtac | assumption ].
      rewrite Nat.add_comm in Hn; simpl in Hn; subst di6.
@@ -356,9 +356,9 @@ destruct s5 as [di5| ]; [ idtac | clear H ].
       rewrite Nat.add_assoc, Nat.add_shuffle0.
       apply sum_11_1_sum_x1 with (x := y); try assumption.
       intros dj Hdj.
-      simpl; symmetry; rewrite <- Nat.add_assoc, <- digit_opp_involutive.
+      simpl; symmetry; rewrite <- Nat.add_assoc, <- Digit.opp_involutive.
       rewrite <- Hn6.
-       rewrite Hn3; [ rewrite digit_opp_involutive; reflexivity | idtac ].
+       rewrite Hn3; [ rewrite Digit.opp_involutive; reflexivity | idtac ].
        eapply lt_trans; [ idtac | eassumption ].
        rewrite Nat.add_comm.
        apply le_n_S, Nat.add_le_mono_r; assumption.
@@ -370,13 +370,13 @@ destruct s5 as [di5| ]; [ idtac | clear H ].
       eapply lt_trans in H; [ idtac | apply Nat.lt_succ_diag_r ].
       apply Hn3 in H.
       rewrite Hn6 in H; [ idtac | apply Nat.lt_succ_diag_r ].
-      apply digit_opp_sym in H.
-      rewrite digit_opp_involutive in H.
+      apply Digit.opp_sym in H.
+      rewrite Digit.opp_involutive in H.
       assumption.
 
    remember Ha6 as Hbe; clear HeqHbe.
    rewrite Hs3 in Hbe.
-   apply digit_opp_0_iff in Hbe.
+   apply Digit.opp_0_iff in Hbe.
    remember (di6 - S di5) as n eqn:Hn .
    apply Nat_sub_add_r in Hn; [ idtac | assumption ].
    rewrite Nat.add_comm in Hn; simpl in Hn; subst di6.
@@ -391,16 +391,16 @@ destruct s5 as [di5| ]; [ idtac | clear H ].
     rewrite Nat.add_assoc, Nat.add_shuffle0.
     apply sum_11_1_sum_x1 with (x := y); try assumption.
     intros dj Hdj.
-    simpl; symmetry; rewrite <- Nat.add_assoc, <- digit_opp_involutive.
+    simpl; symmetry; rewrite <- Nat.add_assoc, <- Digit.opp_involutive.
     rewrite <- Hn6.
-     rewrite Hs3; rewrite digit_opp_involutive; reflexivity.
+     rewrite Hs3; rewrite Digit.opp_involutive; reflexivity.
 
      rewrite Nat.add_comm.
      apply le_n_S, Nat.add_le_mono_r; assumption.
 
-    symmetry; rewrite <- digit_opp_involutive.
+    symmetry; rewrite <- Digit.opp_involutive.
     rewrite <- Hn6; [ idtac | apply Nat.lt_succ_diag_r ].
-    symmetry; apply digit_opp_sym, Hs3.
+    symmetry; apply Digit.opp_sym, Hs3.
 
   subst di5; rewrite Ht6 in Hb5; discr_digit Hb5.
 
@@ -415,17 +415,17 @@ destruct s5 as [di5| ]; [ idtac | clear H ].
    destruct (lt_eq_lt_dec di3 di6) as [[H2| H2]| H2].
     remember H2 as H; clear HeqH.
     apply Hn6 in H.
-    rewrite Ha3 in H; apply digit_opp_sym in H.
+    rewrite Ha3 in H; apply Digit.opp_sym in H.
     rename H into Hb3; simpl in Hb3.
     remember H1 as H; clear HeqH.
     eapply lt_trans in H; [ idtac | eassumption ].
     apply Hn5 in H.
-    rewrite Hb3 in H; apply digit_opp_sym in H.
+    rewrite Hb3 in H; apply Digit.opp_sym in H.
     rename H into Hd3; simpl in Hd3.
     remember Ht3 as H; clear HeqH.
     unfold I_add_i in H; simpl in H.
-    rewrite Ha3, Hb3, Hd3, digit_add_1_r, digit_add_1_l in H.
-    apply digit_opp_sym in H; simpl in H.
+    rewrite Ha3, Hb3, Hd3, Digit.add_1_r, Digit.add_1_l in H.
+    apply Digit.opp_sym in H; simpl in H.
     symmetry in Hs5.
     remember H1 as HH; clear HeqHH.
     eapply lt_trans in HH; [ idtac | eassumption ].
@@ -436,12 +436,12 @@ destruct s5 as [di5| ]; [ idtac | clear H ].
 
     remember H2 as H; clear HeqH.
     apply Hn3 in H.
-    rewrite Ha6 in H; apply digit_opp_sym in H; simpl in H.
+    rewrite Ha6 in H; apply Digit.opp_sym in H; simpl in H.
     unfold I_add_i in H; simpl in H.
-    rewrite Ht6, digit_add_0_l in H.
+    rewrite Ht6, Digit.add_0_l in H.
     symmetry in Hs5.
     erewrite carry_before_relay9 in H; try eassumption; simpl in H.
-    rewrite Hb5, digit_add_1_r in H.
+    rewrite Hb5, Digit.add_1_r in H.
     rewrite <- Hn5 in H; [ idtac | assumption ].
     rewrite Ht6 in H; discr_digit H.
 
@@ -449,12 +449,12 @@ destruct s5 as [di5| ]; [ idtac | clear H ].
    apply fst_same_sym_iff in H; simpl in H.
    rename H into Ht3.
    pose proof (Ht3 di6) as H.
-   rewrite Ha6 in H; apply digit_opp_sym in H; simpl in H.
+   rewrite Ha6 in H; apply Digit.opp_sym in H; simpl in H.
    unfold I_add_i in H; simpl in H.
-   rewrite Ht6, digit_add_0_l in H.
+   rewrite Ht6, Digit.add_0_l in H.
    symmetry in Hs5.
    erewrite carry_before_relay9 in H; try eassumption; simpl in H.
-   rewrite Hb5, digit_add_1_r in H.
+   rewrite Hb5, Digit.add_1_r in H.
    rewrite <- Hn5 in H; [ idtac | assumption ].
    rewrite Ht6 in H; discr_digit H.
 
@@ -469,8 +469,8 @@ destruct s5 as [di5| ]; [ idtac | clear H ].
   destruct H as (Hn3, Ht3).
   rewrite Ha3 in Ht3; symmetry in Ht3.
   unfold I_add_i in Ht3; simpl in Ht3.
-  rewrite Ht5, digit_opp_add_diag_l, digit_add_1_l in Ht3.
-  apply digit_opp_1_iff in Ht3.
+  rewrite Ht5, Digit.opp_add_diag_l, Digit.add_1_l in Ht3.
+  apply Digit.opp_1_iff in Ht3.
   rewrite <- Nat.add_succ_l in Ht3.
   symmetry in Ht5.
   unfold carry in Ht3; simpl in Ht3.
@@ -483,14 +483,14 @@ destruct s5 as [di5| ]; [ idtac | clear H ].
   apply fst_same_sym_iff in H; simpl in H.
   rename H into Ht3.
   rewrite Ht3 in Ha6.
-  apply digit_opp_0_iff in Ha6.
+  apply Digit.opp_0_iff in Ha6.
   unfold I_add_i in Ha6.
-  rewrite Ht6, digit_add_0_l in Ha6.
+  rewrite Ht6, Digit.add_0_l in Ha6.
   unfold carry in Ha6.
   remember Hs5 as H; clear HeqH; symmetry in H.
   apply fst_same_inf_after with (di := S di6) in H.
   rewrite Nat.add_succ_r in H; simpl in H.
-  rewrite H, digit_add_1_r in Ha6.
+  rewrite H, Digit.add_1_r in Ha6.
   rewrite <- Ht5, Ht6 in Ha6; discr_digit Ha6.
 Qed.
 
@@ -593,7 +593,7 @@ destruct syzn as [dyzn| ]; [ idtac | clear H ].
    rename H into Hpdyzn.
    remember Bp as Cp; clear HeqCp.
    rewrite Hnyzn in Cp; [ idtac | assumption ].
-   apply digit_opp_0_iff in Cp.
+   apply Digit.opp_0_iff in Cp.
    remember Hsxy_zn as H; clear HeqH.
    apply fst_same_iff in H; simpl in H.
    destruct H as (Hnxy_zn, Htxy_zn).
@@ -608,7 +608,7 @@ destruct syzn as [dyzn| ]; [ idtac | clear H ].
     rewrite Cp in H; simpl in H; rename H into ABp.
     remember ABp as H; clear HeqH.
     unfold I_add_i in H.
-    rewrite Ap, Bp, digit_add_0_l in H.
+    rewrite Ap, Bp, Digit.add_0_l in H.
     rename H into Rxyp.
     remember Hsxy_zn as H; clear HeqH.
     eapply carry_before_relay9 in H; [ idtac | eassumption ].
@@ -655,7 +655,7 @@ destruct syzn as [dyzn| ]; [ idtac | clear H ].
     remember ABp as H; clear HeqH.
     unfold I_add_i in H.
     rewrite Hnxyn in H; [ idtac | assumption ].
-    rewrite digit_opp_add_diag_l, digit_add_1_l in H.
+    rewrite Digit.opp_add_diag_l, Digit.add_1_l in H.
     erewrite carry_before_relay9 in H; try eassumption.
     simpl in H; rewrite A_p in H; discr_digit H.
 
@@ -666,8 +666,8 @@ destruct syzn as [dyzn| ]; [ idtac | clear H ].
     remember AB_p as H; clear HeqH.
     unfold I_add_i in H; simpl in H.
     rewrite Hnxyn in H; [ idtac | assumption ].
-    rewrite digit_opp_add_diag_l, digit_add_1_l in H.
-    apply digit_opp_0_iff in H.
+    rewrite Digit.opp_add_diag_l, Digit.add_1_l in H.
+    apply Digit.opp_0_iff in H.
     erewrite carry_before_relay9 in H; try eassumption.
     simpl in H; rewrite A_p in H; discr_digit H.
 
@@ -703,7 +703,7 @@ destruct syzn as [dyzn| ]; [ idtac | clear H ].
   rename H into Hnyzn.
   remember Bp as Cp; clear HeqCp.
   rewrite Hnyzn in Cp.
-  apply digit_opp_0_iff in Cp.
+  apply Digit.opp_0_iff in Cp.
   remember Hsxy_zn as H; clear HeqH.
   apply fst_same_iff in H; simpl in H.
   destruct H as (Hnxy_zn, Htxy_zn).
@@ -717,7 +717,7 @@ destruct syzn as [dyzn| ]; [ idtac | clear H ].
    pose proof (Hnxy_zn p Hpdxy_zn) as H.
    rewrite Cp in H; simpl in H.
    unfold I_add_i in H.
-   rewrite Ap, Bp, digit_add_0_l in H.
+   rewrite Ap, Bp, Digit.add_0_l in H.
    exists p.
    split; [ assumption | idtac ].
    erewrite carry_before_relay9; try eassumption; simpl.
@@ -737,7 +737,7 @@ destruct syzn as [dyzn| ]; [ idtac | clear H ].
    remember AB_p as H; clear HeqH.
    unfold I_add_i in H.
    rewrite Hnxyn in H; [ idtac | assumption ].
-   rewrite digit_opp_add_diag_l, digit_add_1_l in H.
+   rewrite Digit.opp_add_diag_l, Digit.add_1_l in H.
    erewrite carry_before_relay9 in H; try eassumption.
    simpl in H; rewrite A_p in H; discr_digit H.
 
@@ -796,21 +796,21 @@ destruct s1 as [di1| ].
   destruct (lt_eq_lt_dec di1 di2) as [[H1| H1]| H1].
    apply Hn2 in H1.
    rewrite Nat.add_shuffle0, Hs1 in H1.
-   exfalso; symmetry in H1; revert H1; apply digit_no_fixpoint_opp.
+   exfalso; symmetry in H1; revert H1; apply Digit.no_fixpoint_opp.
 
    subst di2; rewrite Nat.add_shuffle0; reflexivity.
 
    apply Hn1 in H1.
    rewrite Nat.add_shuffle0, Hs2 in H1.
-   exfalso; symmetry in H1; revert H1; apply digit_no_fixpoint_opp.
+   exfalso; symmetry in H1; revert H1; apply Digit.no_fixpoint_opp.
 
   rewrite Nat.add_shuffle0, Hs2 in Hs1.
-  exfalso; revert Hs1; apply digit_no_fixpoint_opp.
+  exfalso; revert Hs1; apply Digit.no_fixpoint_opp.
 
  destruct s2 as [di2| ]; [ idtac | reflexivity ].
  destruct Hs2 as (Hn2, Hs2).
  rewrite Nat.add_shuffle0, Hs1 in Hs2.
- exfalso; revert Hs2; apply digit_no_fixpoint_opp.
+ exfalso; revert Hs2; apply Digit.no_fixpoint_opp.
 Qed.
 
 Theorem I_add_i_shift : ∀ x y i n,
@@ -880,7 +880,7 @@ destruct (le_dec di n) as [H1| H1].
  apply fst_same_iff in H; simpl in H.
  destruct H as (Hnxy_z2, Hxy_z).
  rewrite Hnxy_z in Hxy_z; [ idtac | assumption ].
- revert Hxy_z; apply digit_no_fixpoint_opp.
+ revert Hxy_z; apply Digit.no_fixpoint_opp.
 
  apply Nat.nle_gt in H1.
  remember (di - S n) as dj.
@@ -973,8 +973,8 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
        eapply min_neq_lt in M5; [ idtac | eauto  | do 3 right; left; auto ].
        remember Ht3 as H; clear HeqH.
        unfold I_add_i in H.
-       rewrite Ht6, Ht4, digit_add_1_l in H.
-       apply digit_opp_1_iff in H.
+       rewrite Ht6, Ht4, Digit.add_1_l in H.
+       apply Digit.opp_1_iff in H.
        erewrite carry_before_relay9 in H; try eassumption.
        simpl in H; rewrite H5 in H; discr_digit H.
 
@@ -984,17 +984,17 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
        clear Hm Ht6.
        remember Ht5 as H; clear HeqH.
        symmetry in H.
-       rewrite <- digit_opp_involutive in H; symmetry in H.
-       apply digit_opp_sym in H; simpl in H; symmetry in H.
+       rewrite <- Digit.opp_involutive in H; symmetry in H.
+       apply Digit.opp_sym in H; simpl in H; symmetry in H.
        rewrite <- Hn4 in H; [ idtac | assumption ].
        rename H into Hxym.
        remember Hxym as H; clear HeqH.
        unfold I_add_i in H; simpl in H.
-       rewrite H3, H5, digit_add_nilpotent, digit_add_0_l in H.
+       rewrite H3, H5, Digit.add_nilpotent, Digit.add_0_l in H.
        rename H into Hcxym.
        remember Ht3 as H; clear HeqH.
        unfold I_add_i in H.
-       rewrite H5, Ht5, digit_add_nilpotent, digit_add_0_l in H.
+       rewrite H5, Ht5, Digit.add_nilpotent, Digit.add_0_l in H.
        rename H into Hcyzm.
        remember Hcxym as H; clear HeqH.
        unfold carry in H; simpl in H.
@@ -1012,8 +1012,8 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
        remember Ht3 as H; clear HeqH.
        unfold I_add_i in H.
        rewrite Hn5 in H; [ idtac | assumption ].
-       rewrite digit_opp_add_diag_l, digit_add_1_l in H.
-       apply digit_opp_1_iff in H.
+       rewrite Digit.opp_add_diag_l, Digit.add_1_l in H.
+       apply Digit.opp_1_iff in H.
        eapply carry_before_relay9 in Hs5; [ idtac | eassumption ].
        simpl in Hs5; rewrite Hs5, H5 in H.
        discr_digit H.
@@ -1023,18 +1023,18 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
       move M5 at top; subst di5.
       remember H3 as H; clear HeqH.
       rewrite Hn6 in H; [ idtac | assumption ].
-      apply digit_opp_1_iff in H.
+      apply Digit.opp_1_iff in H.
       rewrite H5 in H; move H at top; rewrite H in *; clear H.
       remember Ht3 as H; clear HeqH.
       unfold I_add_i in H.
-      rewrite H5, Ht5, digit_add_0_l in H.
+      rewrite H5, Ht5, Digit.add_0_l in H.
       rename H into Ryzm.
       destruct (eq_nat_dec di4 m) as [M4| M4].
        move M4 at top; subst di4.
        remember H4 as H; clear HeqH.
        unfold I_add_i in H.
-       rewrite H3, H5, digit_add_1_l in H.
-       apply digit_opp_0_iff in H.
+       rewrite H3, H5, Digit.add_1_l in H.
+       apply Digit.opp_0_iff in H.
        erewrite carry_before_relay9 in H; try eassumption.
        simpl in H; rewrite H6 in H; discr_digit H.
 
@@ -1044,8 +1044,8 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
        rename H into ABm.
        remember ABm as H; clear HeqH.
        unfold I_add_i in H.
-       rewrite H3, H5, digit_add_1_l in H.
-       apply digit_opp_1_iff in H.
+       rewrite H3, H5, Digit.add_1_l in H.
+       apply Digit.opp_1_iff in H.
        rename H into Rxym.
        remember Hs4 as H; clear HeqH.
        eapply carry_before_relay9 in H; [ idtac | eassumption ].
@@ -1056,11 +1056,11 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
       eapply min_neq_lt in M5; [ idtac | eauto  | do 3 right; left; auto ].
       remember H3 as H; clear HeqH.
       rewrite Hn6 in H; [ idtac | assumption ].
-      apply digit_opp_1_iff in H.
+      apply Digit.opp_1_iff in H.
       rename H into Bm.
       remember Bm as H; clear HeqH.
       rewrite Hn5 in H; [ idtac | assumption ].
-      apply digit_opp_0_iff in H.
+      apply Digit.opp_0_iff in H.
       rename H into Cm.
       remember Hs5 as H; clear HeqH.
       eapply carry_before_relay9 in H; [ idtac | eassumption ].
@@ -1068,8 +1068,8 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
       rename H into Ryzm.
       remember Ht3 as H; clear HeqH.
       unfold I_add_i in H.
-      rewrite Bm, Cm, Ryzm, digit_add_0_l, digit_add_1_l in H.
-      apply digit_opp_1_iff in H; move H at top; rewrite H in *; clear H.
+      rewrite Bm, Cm, Ryzm, Digit.add_0_l, Digit.add_1_l in H.
+      apply Digit.opp_1_iff in H; move H at top; rewrite H in *; clear H.
       destruct (eq_nat_dec di4 m) as [M4| M4].
        move M4 at top; subst di4.
        rewrite Ht4 in Cm; discr_digit Cm.
@@ -1080,8 +1080,8 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
        rename H into ABm.
        remember ABm as H; clear HeqH.
        unfold I_add_i in H.
-       rewrite H3, Bm, digit_add_0_r, digit_add_1_l in H.
-       apply digit_opp_0_iff in H.
+       rewrite H3, Bm, Digit.add_0_r, Digit.add_1_l in H.
+       apply Digit.opp_0_iff in H.
        erewrite carry_before_relay9 in H; try eassumption.
        simpl in H; rewrite H6 in H; discr_digit H.
 
@@ -1092,7 +1092,7 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
       move M4 at top; subst di4.
       remember H4 as H; clear HeqH.
       unfold I_add_i in H.
-      rewrite H6, Ht6, digit_add_nilpotent, digit_add_0_l in H.
+      rewrite H6, Ht6, Digit.add_nilpotent, Digit.add_0_l in H.
       rename H into ABm.
       remember Hs3 as H; clear HeqH.
       eapply carry_before_relay9 in H; [ idtac | eassumption ].
@@ -1100,11 +1100,11 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
       rename H into A_BCm.
       pose proof (Hn3 m M3) as H.
       rewrite H6 in H.
-      apply digit_opp_sym in H.
+      apply Digit.opp_sym in H.
       unfold I_add_i in H.
-      rewrite Ht6, Ht4, digit_add_0_r in H.
-      apply digit_move_l_r_1 in H.
-      rewrite digit_opp_add_diag_r in H.
+      rewrite Ht6, Ht4, Digit.add_0_r in H.
+      apply Digit.move_l_r_1 in H.
+      rewrite Digit.opp_add_diag_r in H.
       rename H into BCm.
       exfalso; eapply case_1; eassumption.
 
@@ -1117,13 +1117,13 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
        split.
         pose proof (Hn3 m M3) as H.
         unfold I_add_i in H.
-        rewrite H6, Ht6, Ht5, digit_add_nilpotent, digit_add_0_l in H.
-        apply digit_opp_sym; assumption.
+        rewrite H6, Ht6, Ht5, Digit.add_nilpotent, Digit.add_0_l in H.
+        apply Digit.opp_sym; assumption.
 
         split.
          pose proof (Hn4 m M4) as H.
          unfold I_add_i in H.
-         rewrite H6, Ht6, Ht5, digit_add_nilpotent, digit_add_0_l in H.
+         rewrite H6, Ht6, Ht5, Digit.add_nilpotent, Digit.add_0_l in H.
          assumption.
 
          intros dj Hdj; apply Hn4.
@@ -1137,14 +1137,14 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
         pose proof (Hn3 m M3) as H.
         unfold I_add_i in H.
         rewrite Hn5 in H; [ idtac | assumption ].
-        rewrite digit_opp_add_diag_l in H.
-        rewrite H6, digit_opp_involutive in H.
+        rewrite Digit.opp_add_diag_l in H.
+        rewrite H6, Digit.opp_involutive in H.
         symmetry; assumption.
 
         split.
          pose proof (Hn4 m M4) as H.
          unfold I_add_i in H.
-         rewrite H6, Ht6, digit_add_nilpotent, digit_add_0_l in H.
+         rewrite H6, Ht6, Digit.add_nilpotent, Digit.add_0_l in H.
          rewrite <- Hn5 in H; [ idtac | assumption ].
          rewrite Ht6 in H; assumption.
 
@@ -1157,8 +1157,8 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
       remember H4 as H; clear HeqH.
       unfold I_add_i in H.
       rewrite Hn6 in H; [ idtac | assumption ].
-      rewrite digit_opp_add_diag_l, digit_add_1_l in H.
-      apply digit_opp_0_iff in H.
+      rewrite Digit.opp_add_diag_l, Digit.add_1_l in H.
+      apply Digit.opp_0_iff in H.
       rename H into Rxym.
       remember Hs6 as H; clear HeqH.
       eapply carry_before_relay9 in H; [ idtac | eassumption ].
@@ -1176,12 +1176,12 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
        rewrite Bm in H; simpl in H.
        rename H into Am.
        pose proof (Hn3 m M3) as H.
-       rewrite Am in H; apply digit_opp_sym in H; simpl in H.
+       rewrite Am in H; apply Digit.opp_sym in H; simpl in H.
        rename H into BCm.
        remember BCm as H; clear HeqH.
        unfold I_add_i in H.
-       rewrite Bm, Ht4, digit_add_1_l in H.
-       apply digit_opp_1_iff in H.
+       rewrite Bm, Ht4, Digit.add_1_l in H.
+       apply Digit.opp_1_iff in H.
        erewrite carry_before_relay9 in H; try eassumption.
        simpl in H; rewrite H5 in H; discr_digit H.
 
@@ -1195,17 +1195,17 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
         pose proof (Hn3 m M3) as H.
         unfold I_add_i in H.
         rewrite Hn6 in H; [ idtac | assumption ].
-        rewrite H5, Ht5, digit_add_nilpotent, digit_add_0_l in H.
-        apply digit_opp_sym in H.
-        rewrite digit_opp_involutive in H; assumption.
+        rewrite H5, Ht5, Digit.add_nilpotent, Digit.add_0_l in H.
+        apply Digit.opp_sym in H.
+        rewrite Digit.opp_involutive in H; assumption.
 
         split.
          pose proof (Hn4 m M4) as H.
          unfold I_add_i in H.
          rewrite Hn6 in H; [ idtac | assumption ].
-         rewrite digit_opp_add_diag_l, digit_add_1_l, Ht5 in H.
-         apply digit_opp_sym in H; symmetry in H.
-         rewrite digit_opp_involutive in H; assumption.
+         rewrite Digit.opp_add_diag_l, Digit.add_1_l, Ht5 in H.
+         apply Digit.opp_sym in H; symmetry in H.
+         rewrite Digit.opp_involutive in H; assumption.
 
          intros dj Hdj; apply Hn4.
          eapply le_lt_trans; eassumption.
@@ -1263,8 +1263,8 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
      remember Ht3 as H; clear HeqH.
      unfold I_add_i in H.
      rewrite Hn5 in H; [ idtac | assumption ].
-     rewrite digit_opp_add_diag_l, digit_add_1_l in H.
-     apply digit_opp_1_iff in H.
+     rewrite Digit.opp_add_diag_l, Digit.add_1_l in H.
+     apply Digit.opp_1_iff in H.
      erewrite carry_before_relay9 in H; try eassumption.
      simpl in H; rewrite H5 in H; discr_digit H.
 
@@ -1282,16 +1282,16 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
       split.
        pose proof (Hn3 m M3) as H.
        unfold I_add_i in H.
-       rewrite Hn6, H5, Ht5, digit_add_0_l in H.
-       apply digit_opp_sym in H; rewrite digit_opp_involutive in H.
+       rewrite Hn6, H5, Ht5, Digit.add_0_l in H.
+       apply Digit.opp_sym in H; rewrite Digit.opp_involutive in H.
        assumption.
 
        split.
         pose proof (Hn4 m M4) as H.
         unfold I_add_i in H.
-        rewrite Hn6, digit_opp_add_diag_l, digit_add_1_l, Ht5 in H.
-        apply digit_opp_sym in H; symmetry in H.
-        rewrite digit_opp_involutive in H; assumption.
+        rewrite Hn6, Digit.opp_add_diag_l, Digit.add_1_l, Ht5 in H.
+        apply Digit.opp_sym in H; symmetry in H.
+        rewrite Digit.opp_involutive in H; assumption.
 
         intros dj Hdj; apply Hn4.
         eapply le_lt_trans; eassumption.
@@ -1304,12 +1304,12 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
       pose proof (Hn6 m) as H.
       rewrite Bm in H; simpl in H; rename H into Am.
       pose proof (Hn3 m M3) as H.
-      rewrite Am in H; apply digit_opp_sym in H; simpl in H.
+      rewrite Am in H; apply Digit.opp_sym in H; simpl in H.
       rename H into BCm.
       remember BCm as H; clear HeqH.
       unfold I_add_i in H.
-      rewrite Bm, Ht4, digit_add_1_l in H.
-      apply digit_opp_1_iff in H.
+      rewrite Bm, Ht4, Digit.add_1_l in H.
+      apply Digit.opp_1_iff in H.
       erewrite carry_before_relay9 in H; try eassumption.
       simpl in H; rewrite H5 in H; discr_digit H.
 
@@ -1348,8 +1348,8 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
     move M3 at top; subst di3.
     remember Ht3 as H; clear HeqH.
     unfold I_add_i in H.
-    rewrite Hn5, digit_opp_add_diag_l, digit_add_1_l in H.
-    apply digit_opp_1_iff in H.
+    rewrite Hn5, Digit.opp_add_diag_l, Digit.add_1_l in H.
+    apply Digit.opp_1_iff in H.
     rewrite carry_before_inf_relay9 in H; [ idtac | assumption ].
     discr_digit H.
 
@@ -1360,7 +1360,7 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
       move M4 at top; subst di4.
       remember H4 as H; clear HeqH.
       unfold I_add_i in H.
-      rewrite H6, Ht6, digit_add_nilpotent, digit_add_0_l in H.
+      rewrite H6, Ht6, Digit.add_nilpotent, Digit.add_0_l in H.
       rename H into ABm.
       remember Hs3 as H; clear HeqH.
       eapply carry_before_relay9 in H; [ idtac | eassumption ].
@@ -1368,11 +1368,11 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
       rename H into A_BCm.
       pose proof (Hn3 m M3) as H.
       rewrite H6 in H.
-      apply digit_opp_sym in H.
+      apply Digit.opp_sym in H.
       unfold I_add_i in H.
-      rewrite Ht6, Ht4, digit_add_0_r in H.
-      apply digit_move_l_r_1 in H.
-      rewrite digit_opp_add_diag_r in H.
+      rewrite Ht6, Ht4, Digit.add_0_r in H.
+      apply Digit.move_l_r_1 in H.
+      rewrite Digit.opp_add_diag_r in H.
       rename H into BCm.
       exfalso; eapply case_1; eassumption.
 
@@ -1384,16 +1384,16 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
       split.
        pose proof (Hn3 m M3) as H.
        unfold I_add_i in H.
-       rewrite H6, Hn5, digit_opp_add_diag_l, digit_opp_involutive in H.
+       rewrite H6, Hn5, Digit.opp_add_diag_l, Digit.opp_involutive in H.
        symmetry; assumption.
 
        split.
         pose proof (Hn4 m M4) as H.
         unfold I_add_i in H.
-        rewrite H6, Hn5, digit_add_1_l in H.
-        rewrite digit_opp_involutive in H.
-        apply digit_move_l_r_1 in H.
-        rewrite digit_opp_add_diag_r in H.
+        rewrite H6, Hn5, Digit.add_1_l in H.
+        rewrite Digit.opp_involutive in H.
+        apply Digit.move_l_r_1 in H.
+        rewrite Digit.opp_add_diag_r in H.
         assumption.
 
         intros dj Hdj; apply Hn4.
@@ -1410,10 +1410,10 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
       rename H into Am.
       pose proof (Hn3 m M3) as H.
       rewrite Am in H.
-      apply digit_opp_sym in H; simpl in H.
+      apply Digit.opp_sym in H; simpl in H.
       unfold I_add_i in H.
-      rewrite Bm, Ht4, digit_add_1_l in H.
-      apply digit_opp_1_iff in H.
+      rewrite Bm, Ht4, Digit.add_1_l in H.
+      apply Digit.opp_1_iff in H.
       rewrite carry_before_inf_relay9 in H; [ idtac | assumption ].
       discr_digit H.
 
@@ -1449,8 +1449,8 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
     move M3 at top; subst di3.
     remember Ht3 as H; clear HeqH.
     unfold I_add_i in H.
-    rewrite Hn5, digit_opp_add_diag_l, digit_add_1_l in H.
-    apply digit_opp_1_iff in H.
+    rewrite Hn5, Digit.opp_add_diag_l, Digit.add_1_l in H.
+    apply Digit.opp_1_iff in H.
     rewrite carry_before_inf_relay9 in H; [ idtac | assumption ].
     discr_digit H.
 
@@ -1465,10 +1465,10 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
      rename H into Am.
      pose proof (Hn3 m M3) as H.
      rewrite Am in H.
-     apply digit_opp_sym in H; simpl in H.
+     apply Digit.opp_sym in H; simpl in H.
      unfold I_add_i in H.
-     rewrite Bm, Ht4, digit_add_1_l in H.
-     apply digit_opp_1_iff in H.
+     rewrite Bm, Ht4, Digit.add_1_l in H.
+     apply Digit.opp_1_iff in H.
      rewrite carry_before_inf_relay9 in H; [ idtac | assumption ].
      discr_digit H.
 
@@ -1507,18 +1507,18 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
       move M6 at top; subst di6.
       remember H4 as H; clear HeqH.
       unfold I_add_i in H.
-      rewrite H6, Ht6, digit_add_nilpotent, digit_add_0_l in H.
+      rewrite H6, Ht6, Digit.add_nilpotent, Digit.add_0_l in H.
       rename H into ABm.
       remember Hs3 as H; clear HeqH.
       eapply carry_before_inf_relay9 in H; simpl in H.
       rename H into A_BCm.
       pose proof (Hn3 m) as H.
       rewrite H6 in H.
-      apply digit_opp_sym in H.
+      apply Digit.opp_sym in H.
       unfold I_add_i in H.
-      rewrite Ht6, Ht4, digit_add_0_r in H.
-      apply digit_move_l_r_1 in H.
-      rewrite digit_opp_add_diag_r in H.
+      rewrite Ht6, Ht4, Digit.add_0_r in H.
+      apply Digit.move_l_r_1 in H.
+      rewrite Digit.opp_add_diag_r in H.
       rename H into BCm.
       exfalso; eapply case_1; eassumption.
 
@@ -1526,8 +1526,8 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
       remember H4 as H; clear HeqH.
       unfold I_add_i in H.
       rewrite Hn6 in H; [ idtac | assumption ].
-      rewrite digit_opp_add_diag_l, digit_add_1_l in H.
-      apply digit_opp_0_iff in H.
+      rewrite Digit.opp_add_diag_l, Digit.add_1_l in H.
+      apply Digit.opp_0_iff in H.
       erewrite carry_before_relay9 in H; try eassumption.
       simpl in H; rewrite H6 in H; discr_digit H.
 
@@ -1540,13 +1540,13 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
       split.
        pose proof (Hn3 m) as H.
        unfold I_add_i in H.
-       rewrite H6, H5, Ht5, digit_add_nilpotent, digit_add_0_l in H.
-       apply digit_opp_sym in H; assumption.
+       rewrite H6, H5, Ht5, Digit.add_nilpotent, Digit.add_0_l in H.
+       apply Digit.opp_sym in H; assumption.
 
        split.
         pose proof (Hn4 m M4) as H.
         unfold I_add_i in H.
-        rewrite H6, H5, Ht5, digit_add_nilpotent, digit_add_0_l in H.
+        rewrite H6, H5, Ht5, Digit.add_nilpotent, Digit.add_0_l in H.
         assumption.
 
         intros dj Hdj; apply Hn4.
@@ -1560,17 +1560,17 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
        pose proof (Hn3 m) as H.
        unfold I_add_i in H.
        rewrite Hn6 in H; [ idtac | assumption ].
-       rewrite H5, Ht5, digit_add_nilpotent, digit_add_0_l in H.
-       apply digit_opp_sym in H; rewrite digit_opp_involutive in H.
+       rewrite H5, Ht5, Digit.add_nilpotent, Digit.add_0_l in H.
+       apply Digit.opp_sym in H; rewrite Digit.opp_involutive in H.
        assumption.
 
        split.
         pose proof (Hn4 m M4) as H.
         unfold I_add_i in H.
         rewrite Hn6 in H; [ idtac | assumption ].
-        rewrite digit_opp_add_diag_l, Ht5 in H.
-        apply digit_move_l_r_1 in H.
-        rewrite digit_opp_involutive in H; assumption.
+        rewrite Digit.opp_add_diag_l, Ht5 in H.
+        apply Digit.move_l_r_1 in H.
+        rewrite Digit.opp_involutive in H; assumption.
 
         intros dj Hdj; apply Hn4.
         eapply le_lt_trans; eassumption.
@@ -1582,18 +1582,18 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
       move M6 at top; subst di6.
       remember H4 as H; clear HeqH.
       unfold I_add_i in H.
-      rewrite H6, Ht6, digit_add_nilpotent, digit_add_0_l in H.
+      rewrite H6, Ht6, Digit.add_nilpotent, Digit.add_0_l in H.
       rename H into ABm.
       remember Hs3 as H; clear HeqH.
       eapply carry_before_inf_relay9 in H; simpl in H.
       rename H into A_BCm.
       pose proof (Hn3 m) as H.
       rewrite H6 in H.
-      apply digit_opp_sym in H.
+      apply Digit.opp_sym in H.
       unfold I_add_i in H.
-      rewrite Ht6, Ht4, digit_add_0_r in H.
-      apply digit_move_l_r_1 in H.
-      rewrite digit_opp_add_diag_r in H.
+      rewrite Ht6, Ht4, Digit.add_0_r in H.
+      apply Digit.move_l_r_1 in H.
+      rewrite Digit.opp_add_diag_r in H.
       rename H into BCm.
       exfalso; eapply case_1; eassumption.
 
@@ -1603,18 +1603,18 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
       pose proof (Hn6 m M6) as Am.
       rewrite Bm in Am; simpl in Am.
       pose proof (Hn3 m) as BCm.
-      rewrite Am in BCm; apply digit_opp_sym in BCm; simpl in BCm.
+      rewrite Am in BCm; apply Digit.opp_sym in BCm; simpl in BCm.
       remember BCm as H; clear HeqH.
       unfold I_add_i in H.
-      rewrite Bm, Ht4, digit_add_1_l in H.
-      apply digit_opp_1_iff in H.
+      rewrite Bm, Ht4, Digit.add_1_l in H.
+      apply Digit.opp_1_iff in H.
       erewrite carry_before_relay9 in H; try eassumption.
       simpl in H; rewrite H5 in H.
       rewrite H in *; clear u H.
       remember H4 as H; clear HeqH.
       unfold I_add_i in H.
-      rewrite Am, Bm, digit_add_1_l in H.
-      apply digit_opp_0_iff in H.
+      rewrite Am, Bm, Digit.add_1_l in H.
+      apply Digit.opp_0_iff in H.
       erewrite carry_before_relay9 in H; try eassumption.
       simpl in H; rewrite H6 in H. discr_digit H.
 
@@ -1628,17 +1628,17 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
        pose proof (Hn3 m) as H.
        unfold I_add_i in H.
        rewrite Hn5 in H; [ idtac | assumption ].
-       rewrite H6, digit_opp_add_diag_l, digit_opp_involutive in H.
+       rewrite H6, Digit.opp_add_diag_l, Digit.opp_involutive in H.
        symmetry; assumption.
 
        split.
         pose proof (Hn4 m M4) as H.
         unfold I_add_i in H.
         rewrite Hn5 in H; [ idtac | assumption ].
-        rewrite H6, digit_add_shuffle0, digit_add_comm in H.
-        apply digit_move_l_r_1 in H.
-        rewrite digit_add_nilpotent in H.
-        apply digit_eq_add_0 in H; symmetry; assumption.
+        rewrite H6, Digit.add_shuffle0, Digit.add_comm in H.
+        apply Digit.move_l_r_1 in H.
+        rewrite Digit.add_nilpotent in H.
+        apply Digit.eq_add_0 in H; symmetry; assumption.
 
         intros dj Hdj; apply Hn4.
         eapply le_lt_trans; eassumption.
@@ -1685,14 +1685,14 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
      split.
       pose proof (Hn3 m) as H.
       unfold I_add_i in H.
-      rewrite Hn6, H5, Ht5, digit_add_1_r, digit_add_0_l in H.
-      apply digit_opp_sym in H; assumption.
+      rewrite Hn6, H5, Ht5, Digit.add_1_r, Digit.add_0_l in H.
+      apply Digit.opp_sym in H; assumption.
 
       split.
        pose proof (Hn4 m M4) as H.
        unfold I_add_i in H.
-       rewrite Hn6, H5, Ht5, digit_add_1_r, digit_opp_involutive in H.
-       symmetry in H; apply digit_opp_sym in H.
+       rewrite Hn6, H5, Ht5, Digit.add_1_r, Digit.opp_involutive in H.
+       symmetry in H; apply Digit.opp_sym in H.
        assumption.
 
        intros dj Hdj; apply Hn4.
@@ -1706,11 +1706,11 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
      pose proof (Hn6 m) as Am.
      rewrite Bm in Am; simpl in Am.
      pose proof (Hn3 m) as BCm.
-     rewrite Am in BCm; apply digit_opp_sym in BCm; simpl in BCm.
+     rewrite Am in BCm; apply Digit.opp_sym in BCm; simpl in BCm.
      remember BCm as H; clear HeqH.
      unfold I_add_i in H.
-     rewrite Bm, Ht4, digit_add_1_l in H.
-     apply digit_opp_1_iff in H.
+     rewrite Bm, Ht4, Digit.add_1_l in H.
+     apply Digit.opp_1_iff in H.
      erewrite carry_before_relay9 in H; try eassumption.
      simpl in H; rewrite H5 in H.
      discr_digit H.
@@ -1745,18 +1745,18 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
      move M6 at top; subst di6.
      remember H4 as H; clear HeqH.
      unfold I_add_i in H.
-     rewrite H6, Ht6, digit_add_nilpotent, digit_add_0_l in H.
+     rewrite H6, Ht6, Digit.add_nilpotent, Digit.add_0_l in H.
      rename H into ABm.
      remember Hs3 as H; clear HeqH.
      eapply carry_before_inf_relay9 in H; simpl in H.
      rename H into A_BCm.
      pose proof (Hn3 m) as H.
      rewrite H6 in H.
-     apply digit_opp_sym in H.
+     apply Digit.opp_sym in H.
      unfold I_add_i in H.
-     rewrite Ht6, Ht4, digit_add_0_r in H.
-     apply digit_move_l_r_1 in H.
-     rewrite digit_opp_add_diag_r in H.
+     rewrite Ht6, Ht4, Digit.add_0_r in H.
+     apply Digit.move_l_r_1 in H.
+     rewrite Digit.opp_add_diag_r in H.
      rename H into BCm.
      exfalso; eapply case_1; eassumption.
 
@@ -1765,12 +1765,12 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
      rewrite Ht4 in Bm; simpl in Bm.
      pose proof (Hn6 m M6) as Am.
      rewrite Bm in Am; simpl in Am.
-     pose proof (Hn3 m) as BCm; apply digit_opp_sym in BCm.
+     pose proof (Hn3 m) as BCm; apply Digit.opp_sym in BCm.
      rewrite Am in BCm; simpl in BCm.
      remember BCm as H; clear HeqH.
      unfold I_add_i in H.
-     rewrite Bm, Ht4, digit_add_1_l in H.
-     apply digit_opp_1_iff in H.
+     rewrite Bm, Ht4, Digit.add_1_l in H.
+     apply Digit.opp_1_iff in H.
      rewrite carry_before_inf_relay9 in H; [ idtac | assumption ].
      discr_digit H.
 
@@ -1783,15 +1783,15 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
      split.
       pose proof (Hn3 m) as H.
       unfold I_add_i in H.
-      rewrite H6, Hn5, digit_opp_add_diag_l, digit_opp_involutive in H.
+      rewrite H6, Hn5, Digit.opp_add_diag_l, Digit.opp_involutive in H.
       symmetry; assumption.
 
       split.
        pose proof (Hn4 m M4) as H.
        unfold I_add_i in H.
-       rewrite H6, Hn5, digit_add_1_l, digit_opp_involutive in H.
-       apply digit_move_l_r_1 in H.
-       rewrite digit_opp_add_diag_r in H.
+       rewrite H6, Hn5, Digit.add_1_l, Digit.opp_involutive in H.
+       apply Digit.move_l_r_1 in H.
+       rewrite Digit.opp_add_diag_r in H.
        assumption.
 
        intros dj Hdj; apply Hn4.
@@ -1822,12 +1822,12 @@ destruct s3 as [di3| ]; [ idtac | clear H3 ].
    rewrite Ht4 in Bm; simpl in Bm.
    pose proof (Hn6 m) as Am.
    rewrite Bm in Am; simpl in Am.
-   pose proof (Hn3 m) as BCm; apply digit_opp_sym in BCm.
+   pose proof (Hn3 m) as BCm; apply Digit.opp_sym in BCm.
    rewrite Am in BCm; simpl in BCm.
    remember BCm as H; clear HeqH.
    unfold I_add_i in H.
-   rewrite Bm, Ht4, digit_add_1_l in H.
-   apply digit_opp_1_iff in H.
+   rewrite Bm, Ht4, Digit.add_1_l in H.
+   apply Digit.opp_1_iff in H.
    rewrite carry_before_inf_relay9 in H; [ idtac | assumption ].
    discr_digit H.
 Qed.
@@ -1855,7 +1855,7 @@ apply fst_same_iff in H; simpl in H.
 destruct H as (Hnxy_z2, Hxy_z).
 destruct (le_dec di n) as [H1| H1].
  rewrite Hnxy_z in Hxy_z; [ idtac | assumption ].
- revert Hxy_z; apply digit_no_fixpoint_opp.
+ revert Hxy_z; apply Digit.no_fixpoint_opp.
 
  apply Nat.nle_gt in H1.
  remember (di - S n) as dj.
@@ -1897,7 +1897,7 @@ remember (y0 + 0)%I as y.
 remember (z0 + 0)%I as z.
 unfold I_eq; intros i; simpl.
 unfold I_add_i; simpl.
-do 2 rewrite digit_add_0_r.
+do 2 rewrite Digit.add_0_r.
 remember (carry (x + (y + z))%I 0%I (S i)) as c1 eqn:Hc1 .
 remember (carry (x + y + z)%I 0%I (S i)) as c2 eqn:Hc2 .
 unfold I_add_i; simpl.
@@ -1906,12 +1906,12 @@ remember (carry (x + y)%I z (S i)) as c4 eqn:Hc4 .
 unfold I_add_i; simpl.
 remember (carry y z (S i)) as c5 eqn:Hc5 .
 remember (carry x y (S i)) as c6 eqn:Hc6 .
-do 8 rewrite <- digit_add_assoc.
-apply digit_add_compat; [ reflexivity | idtac ].
-apply digit_add_compat; [ reflexivity | symmetry ].
-rewrite digit_add_comm, <- digit_add_assoc.
-apply digit_add_compat; [ reflexivity | symmetry ].
-rewrite digit_add_assoc.
+do 8 rewrite <- Digit.add_assoc.
+apply Digit.add_compat; [ reflexivity | idtac ].
+apply Digit.add_compat; [ reflexivity | symmetry ].
+rewrite Digit.add_comm, <- Digit.add_assoc.
+apply Digit.add_compat; [ reflexivity | symmetry ].
+rewrite Digit.add_assoc.
 symmetry in Hc1, Hc2, Hc3, Hc4, Hc5, Hc6.
 move c2 before c1; move c3 before c2.
 move c4 before c3; move c5 before c4.
@@ -1926,46 +1926,46 @@ apply eq_digit_eq in H.
 erewrite carry_sum_3_noI_assoc_l in H; try eassumption.
 apply eq_digit_eq in Hc2.
 rewrite <- H in *; clear c2 H.
-do 2 rewrite digit_add_0_r.
+do 2 rewrite Digit.add_0_r.
 apply eq_digit_eq in Hc3.
 apply eq_digit_eq in Hc4.
 apply eq_digit_eq in Hc5.
 apply eq_digit_eq in Hc6.
-destruct (digit_dec c3) as [H|H]; rewrite H in *; clear c3 H.
- destruct (digit_dec c4) as [H|H]; rewrite H in *; clear c4 H.
-  destruct (digit_dec c5) as [H|H]; rewrite H in *; clear c5 H.
-   destruct (digit_dec c6) as [H|H]; rewrite H in *; try reflexivity; exfalso.
+destruct (Digit.dec c3) as [H|H]; rewrite H in *; clear c3 H.
+ destruct (Digit.dec c4) as [H|H]; rewrite H in *; clear c4 H.
+  destruct (Digit.dec c5) as [H|H]; rewrite H in *; clear c5 H.
+   destruct (Digit.dec c6) as [H|H]; rewrite H in *; try reflexivity; exfalso.
    eapply case_1; try eassumption.
 
-   destruct (digit_dec c6) as [H|H]; rewrite H in *; try reflexivity; exfalso.
+   destruct (Digit.dec c6) as [H|H]; rewrite H in *; try reflexivity; exfalso.
    rewrite carry_comm_l in Hc4.
    eapply case_1; rewrite carry_comm; eassumption.
 
-  destruct (digit_dec c5) as [H|H]; rewrite H in *; clear c5 H.
-   destruct (digit_dec c6) as [H|H]; rewrite H in *; try reflexivity; exfalso.
+  destruct (Digit.dec c5) as [H|H]; rewrite H in *; clear c5 H.
+   destruct (Digit.dec c6) as [H|H]; rewrite H in *; try reflexivity; exfalso.
    eapply case_3; eassumption.
 
-   destruct (digit_dec c6) as [H|H]; rewrite H in *; try reflexivity; exfalso.
+   destruct (Digit.dec c6) as [H|H]; rewrite H in *; try reflexivity; exfalso.
    eapply case_3; eassumption.
 
- destruct (digit_dec c4) as [H|H]; rewrite H in *; clear c4 H.
-  destruct (digit_dec c5) as [H|H]; rewrite H in *; clear c5 H.
-   destruct (digit_dec c6) as [H|H]; rewrite H in *; try reflexivity; exfalso.
+ destruct (Digit.dec c4) as [H|H]; rewrite H in *; clear c4 H.
+  destruct (Digit.dec c5) as [H|H]; rewrite H in *; clear c5 H.
+   destruct (Digit.dec c6) as [H|H]; rewrite H in *; try reflexivity; exfalso.
    rewrite carry_comm_r in Hc3.
    rewrite carry_comm_l in Hc4.
    eapply case_3; rewrite carry_comm; eassumption.
 
-   destruct (digit_dec c6) as [H|H]; rewrite H in *; try reflexivity; exfalso.
+   destruct (Digit.dec c6) as [H|H]; rewrite H in *; try reflexivity; exfalso.
     rewrite carry_comm_r in Hc3.
     rewrite carry_comm_l in Hc4.
     eapply case_3; rewrite carry_comm; eassumption.
 
-  destruct (digit_dec c5) as [H|H]; rewrite H in *; clear c5 H.
-   destruct (digit_dec c6) as [H|H]; rewrite H in *; try reflexivity; exfalso.
+  destruct (Digit.dec c5) as [H|H]; rewrite H in *; clear c5 H.
+   destruct (Digit.dec c6) as [H|H]; rewrite H in *; try reflexivity; exfalso.
    clear Hc1 Hc2.
    eapply case_2; eassumption.
 
-   destruct (digit_dec c6) as [H|H]; rewrite H in *; try reflexivity; exfalso.
+   destruct (Digit.dec c6) as [H|H]; rewrite H in *; try reflexivity; exfalso.
    rewrite carry_comm_r in Hc3.
    eapply case_2; rewrite carry_comm; eassumption.
 Qed.
@@ -2035,23 +2035,23 @@ remember Hs3 as H; clear HeqH.
 apply fst_same_iff in H; simpl in H.
 destruct H as (_, Ht3).
 rewrite Nat.add_0_r in Ht3.
-apply digit_opp_0_iff in Ht3.
+apply Digit.opp_0_iff in Ht3.
 remember Hs4 as H; clear HeqH.
 apply fst_same_iff in H; simpl in H.
 destruct H as (Hn4, Ht4).
-apply digit_opp_0_iff in Ht4.
+apply Digit.opp_0_iff in Ht4.
 remember Heq as H; clear HeqH.
 unfold I_eq in H; simpl in H.
 rename H into Hxy.
 pose proof (Hxy i) as Hi; simpl in Hi.
 unfold I_add_i in Hi; simpl in Hi.
-do 2 rewrite digit_add_0_r in Hi.
+do 2 rewrite Digit.add_0_r in Hi.
 unfold carry in Hi; simpl in Hi.
 remember (fst_same x 0 (S i)) as s1 eqn:Hs1 .
 remember (fst_same y 0 (S i)) as s2 eqn:Hs2 .
 pose proof (Hn4 O (Nat.lt_0_succ dj4)) as H.
 rewrite Nat.add_0_r in H.
-apply digit_opp_1_iff in H.
+apply Digit.opp_1_iff in H.
 rename H into Hy4.
 remember Ht3 as H; clear HeqH.
 eapply I_eq_neq_prop in H; try eassumption.
@@ -2062,12 +2062,12 @@ destruct H as [(Hxi, Hyi)| (Hxi, Hyi)]; simpl in Hxi, Hyi.
   remember Hs1 as H; clear HeqH.
   apply fst_same_sym_iff in H; simpl in H.
   destruct H as (Hn1, Ht1).
-  rewrite Ht1, digit_add_0_r in Hi.
+  rewrite Ht1, Digit.add_0_r in Hi.
   destruct s2 as [dj2| ].
    remember Hs2 as H; clear HeqH.
    apply fst_same_sym_iff in H; simpl in H.
    destruct H as (Hn2, Ht2).
-   rewrite Ht2, digit_add_0_r in Hi.
+   rewrite Ht2, Digit.add_0_r in Hi.
    rewrite Hi; reflexivity.
 
    exfalso.
@@ -2095,16 +2095,16 @@ apply fst_same_iff in Hs1; simpl in Hs1.
 destruct Hs1 as (Hn1, Ht1).
 apply fst_same_iff in Hs2; simpl in Hs2.
 rewrite Nat.add_0_r in Ht1.
-apply digit_opp_0_iff in Ht1.
+apply Digit.opp_0_iff in Ht1.
 clear Hn1.
 intros Hxy.
 pose proof (Heq i) as Hi; simpl in Hi.
 unfold I_add_i in Hi; simpl in Hi.
-do 2 rewrite digit_add_0_r in Hi.
+do 2 rewrite Digit.add_0_r in Hi.
 rewrite Hxy in Hi.
-apply digit_move_l_r_1 in Hi.
-rewrite digit_add_assoc in Hi.
-rewrite digit_add_nilpotent, digit_add_0_l in Hi.
+apply Digit.move_l_r_1 in Hi.
+rewrite Digit.add_assoc in Hi.
+rewrite Digit.add_nilpotent, Digit.add_0_l in Hi.
 unfold carry in Hi; simpl in Hi.
 remember (fst_same x 0 (S i)) as s3 eqn:Hs3 .
 remember (fst_same y 0 (S i)) as s4 eqn:Hs4 .
@@ -2126,11 +2126,11 @@ destruct s3 as [dj3| ].
     rewrite Hxi in Ht3; discr_digit Ht3.
 
     pose proof (Hyi O) as H.
-    apply digit_opp_0_iff in H.
+    apply Digit.opp_0_iff in H.
     rewrite Hs2 in H; discr_digit H.
 
    pose proof (Hn4 O (Nat.lt_0_succ dj4)) as H.
-   apply digit_opp_0_iff in H.
+   apply Digit.opp_0_iff in H.
    rewrite Hs2 in H; discr_digit H.
 
  destruct s4 as [dj4| ].
@@ -2166,15 +2166,15 @@ rename H into Hn4.
 remember Hs3 as H; clear HeqH.
 apply fst_same_iff in H; simpl in H.
 destruct H as (Hn3, Ht3).
-apply digit_opp_0_iff in Ht3.
+apply Digit.opp_0_iff in Ht3.
 pose proof (Heq i) as Hi; simpl in Hi.
 unfold I_add_i in Hi; simpl in Hi.
-do 2 rewrite digit_add_0_r in Hi.
+do 2 rewrite Digit.add_0_r in Hi.
 unfold carry in Hi; simpl in Hi.
 remember (fst_same x 0 (S i)) as s1 eqn:Hs1 .
 remember (fst_same y 0 (S i)) as s2 eqn:Hs2 .
 pose proof (Hn4 dj3) as H.
-apply digit_opp_1_iff in H.
+apply Digit.opp_1_iff in H.
 rename H into Hy.
 remember Ht3 as H; clear HeqH.
 eapply I_eq_neq_prop in H; try eassumption.
@@ -2183,12 +2183,12 @@ destruct H as [(Hxi, Hyi)| (Hxi, Hyi)]; simpl in Hxi, Hyi.
   remember Hs1 as H; clear HeqH.
   apply fst_same_sym_iff in H; simpl in H.
   destruct H as (Hn1, Ht1).
-  rewrite Ht1, digit_add_0_r in Hi.
+  rewrite Ht1, Digit.add_0_r in Hi.
   destruct s2 as [dj2| ].
    remember Hs2 as H; clear HeqH.
    apply fst_same_sym_iff in H; simpl in H.
    destruct H as (Hn2, Ht2).
-   rewrite Ht2, digit_add_0_r in Hi.
+   rewrite Ht2, Digit.add_0_r in Hi.
    exfalso.
    destruct dj3.
     rewrite Nat.add_0_r in Hxi, Hyi.
@@ -2201,22 +2201,22 @@ destruct H as [(Hxi, Hyi)| (Hxi, Hyi)]; simpl in Hxi, Hyi.
     eapply fst_same_opp_some_0_none in H; try eassumption.
      rewrite Nat.add_succ_r in H.
      apply H.
-     rewrite <- digit_opp_involutive.
-     symmetry; apply digit_opp_sym; symmetry.
+     rewrite <- Digit.opp_involutive.
+     symmetry; apply Digit.opp_sym; symmetry.
      rewrite Hn3; [ idtac | apply Nat.lt_succ_diag_r ].
      apply Hn4.
 
      rewrite <- Nat.add_succ_l.
      apply fst_same_some_after; assumption.
 
-   apply digit_neq_eq_opp; assumption.
+   apply Digit.neq_eq_opp; assumption.
 
   destruct s2 as [dj2| ].
    remember Hs2 as H; clear HeqH.
    apply fst_same_sym_iff in H; simpl in H.
    destruct H as (Hn2, Ht2).
-   rewrite Ht2, digit_add_0_r, digit_add_1_r in Hi.
-   apply digit_neq_eq_opp, digit_opp_sym; symmetry; assumption.
+   rewrite Ht2, Digit.add_0_r, Digit.add_1_r in Hi.
+   apply Digit.neq_eq_opp, Digit.opp_sym; symmetry; assumption.
 
    remember Hs2 as H; clear HeqH.
    apply fst_same_sym_iff in H; simpl in H.
@@ -2224,7 +2224,7 @@ destruct H as [(Hxi, Hyi)| (Hxi, Hyi)]; simpl in Hxi, Hyi.
 
  pose proof (Hyi O) as H.
  rewrite <- Nat.add_assoc in H.
- apply digit_opp_0_iff in H.
+ apply Digit.opp_0_iff in H.
  rewrite Hn4 in H; discr_digit H.
 Qed.
 
@@ -2238,9 +2238,9 @@ unfold I_eq, I_eq_ext in Hxy; simpl in Hxy.
 unfold I_eq; intros i; simpl.
 pose proof (Hxy i) as Hi.
 unfold I_add_i in Hi; simpl in Hi.
-do 2 rewrite digit_add_0_r in Hi.
+do 2 rewrite Digit.add_0_r in Hi.
 unfold I_add_i; simpl.
-do 2 rewrite digit_add_0_r.
+do 2 rewrite Digit.add_0_r.
 unfold carry in Hi; simpl in Hi.
 unfold carry; simpl.
 remember (fst_same x 0 (S i)) as s1 eqn:Hs1 .
@@ -2251,16 +2251,16 @@ remember Hs3 as H; clear HeqH.
 apply fst_same_sym_iff in H; simpl in H.
 destruct s3 as [dj3| ].
  destruct H as (Hn3, Ht3).
- rewrite Ht3, digit_add_0_r.
- apply digit_opp_0_iff in Ht3.
+ rewrite Ht3, Digit.add_0_r.
+ apply Digit.opp_0_iff in Ht3.
  destruct s4 as [dj4| ].
   remember Hs4 as H; clear HeqH.
   apply fst_same_sym_iff in H; simpl in H.
   destruct H as (Hn4, Ht4).
-  rewrite Ht4, digit_add_0_r.
-  apply digit_opp_sym; symmetry.
-  rewrite digit_opp_involutive.
-  apply digit_opp_0_iff in Ht4.
+  rewrite Ht4, Digit.add_0_r.
+  apply Digit.opp_sym; symmetry.
+  rewrite Digit.opp_involutive.
+  apply Digit.opp_0_iff in Ht4.
   destruct dj3.
    clear Hn3; rewrite Nat.add_0_r in Ht3.
    destruct dj4.
@@ -2269,16 +2269,16 @@ destruct s3 as [dj3| ].
      remember Hs1 as H; clear HeqH.
      apply fst_same_sym_iff in H; simpl in H.
      destruct H as (Hn1, Ht1).
-     rewrite Ht1, digit_add_0_r in Hi.
+     rewrite Ht1, Digit.add_0_r in Hi.
      destruct s2 as [dj2| ].
       remember Hs2 as H; clear HeqH.
       apply fst_same_sym_iff in H; simpl in H.
       destruct H as (Hn2, Ht2).
-      rewrite Ht2, digit_add_0_r in Hi.
+      rewrite Ht2, Digit.add_0_r in Hi.
       rewrite Hi; reflexivity.
 
       exfalso.
-      destruct (digit_dec (y.[i])) as [Hy | Hy]; rewrite Hy in *.
+      destruct (Digit.dec (y.[i])) as [Hy | Hy]; rewrite Hy in *.
        symmetry in Heq.
        remember Hy as H; clear HeqH.
        eapply I_eq_neq_prop in H; try eassumption.
@@ -2302,10 +2302,10 @@ destruct s3 as [dj3| ].
       remember Hs2 as H; clear HeqH.
       apply fst_same_sym_iff in H; simpl in H.
       destruct H as (Hn2, Ht2).
-      rewrite Ht2, digit_add_0_r in Hi.
+      rewrite Ht2, Digit.add_0_r in Hi.
       symmetry in Hi.
       exfalso.
-      destruct (digit_dec (x.[i])) as [Hx | Hx]; rewrite Hx in *.
+      destruct (Digit.dec (x.[i])) as [Hx | Hx]; rewrite Hx in *.
        remember Hx as H; clear HeqH.
        eapply I_eq_neq_prop in H; try eassumption.
        destruct H as [(Hxi, Hyi)| (Hxi, Hyi)]; simpl in Hxi, Hyi.
@@ -2327,9 +2327,9 @@ destruct s3 as [dj3| ].
         rewrite Nat.add_1_r, Ht4 in H.
         discr_digit H.
 
-      apply digit_move_l_r_2 in Hi.
-      rewrite Hi, digit_add_1_r, digit_add_1_r.
-      apply digit_opp_involutive.
+      apply Digit.move_l_r_2 in Hi.
+      rewrite Hi, Digit.add_1_r, Digit.add_1_r.
+      apply Digit.opp_involutive.
 
     symmetry in Hs3, Hs4.
     eapply fst_same_opp_some_some; eassumption.
@@ -2344,12 +2344,12 @@ destruct s3 as [dj3| ].
      remember Hs1 as H; clear HeqH.
      apply fst_same_sym_iff in H; simpl in H.
      destruct H as (Hn1, Ht1).
-     rewrite Ht1, digit_add_0_r in Hi.
+     rewrite Ht1, Digit.add_0_r in Hi.
      destruct s2 as [dj2| ].
       remember Hs2 as H; clear HeqH.
       apply fst_same_sym_iff in H; simpl in H.
       destruct H as (Hn2, Ht2).
-      rewrite Ht2, digit_add_0_r in Hi; assumption.
+      rewrite Ht2, Digit.add_0_r in Hi; assumption.
 
       exfalso.
       remember Hs2 as H; clear HeqH.
@@ -2368,10 +2368,10 @@ destruct s3 as [dj3| ].
   remember Hs4 as H; clear HeqH.
   apply fst_same_sym_iff in H; simpl in H.
   rename H into Hn4.
-  rewrite digit_add_1_r; f_equal.
-  apply digit_neq_eq_opp.
+  rewrite Digit.add_1_r; f_equal.
+  apply Digit.neq_eq_opp.
   symmetry in Hs3, Hs4.
-  intros H; apply digit_opp_eq in H; revert H.
+  intros H; apply Digit.opp_eq in H; revert H.
   eapply fst_same_opp_some_none; eassumption.
 
  rename H into Hn3.
@@ -2379,12 +2379,12 @@ destruct s3 as [dj3| ].
   remember Hs4 as H; clear HeqH.
   apply fst_same_sym_iff in H; simpl in H.
   destruct H as (Hn4, Ht4).
-  rewrite Ht4, digit_add_0_r.
-  apply digit_opp_0_iff in Ht4.
-  rewrite digit_add_1_r; f_equal.
-  symmetry; apply digit_neq_eq_opp.
+  rewrite Ht4, Digit.add_0_r.
+  apply Digit.opp_0_iff in Ht4.
+  rewrite Digit.add_1_r; f_equal.
+  symmetry; apply Digit.neq_eq_opp.
   symmetry in Heq, Hs3, Hs4.
-  intros H; apply digit_opp_eq in H; revert H.
+  intros H; apply Digit.opp_eq in H; revert H.
   eapply fst_same_opp_some_none; eassumption.
 
   remember Hs4 as H; clear HeqH.
@@ -2394,12 +2394,12 @@ destruct s3 as [dj3| ].
    remember Hs1 as H; clear HeqH.
    apply fst_same_sym_iff in H; simpl in H.
    destruct H as (Hn1, Ht1).
-   rewrite Ht1, digit_add_0_r in Hi.
+   rewrite Ht1, Digit.add_0_r in Hi.
    destruct s2 as [dj2| ].
     remember Hs2 as H; clear HeqH.
     apply fst_same_sym_iff in H; simpl in H.
     destruct H as (Hn2, Ht2).
-    rewrite Ht2, digit_add_0_r in Hi.
+    rewrite Ht2, Digit.add_0_r in Hi.
     rewrite Hi; reflexivity.
 
     remember Hs2 as H; clear HeqH.
@@ -2429,10 +2429,10 @@ Proof.
 intros x.
 unfold I_eq; intros i; simpl.
 unfold I_add_i; simpl.
-do 2 rewrite digit_add_0_r.
-rewrite digit_opp_involutive; f_equal.
+do 2 rewrite Digit.add_0_r.
+rewrite Digit.opp_involutive; f_equal.
 erewrite carry_compat; [ reflexivity | simpl | simpl ].
- intros j; apply digit_opp_involutive.
+ intros j; apply Digit.opp_involutive.
 
  intros j; reflexivity.
 Qed.
