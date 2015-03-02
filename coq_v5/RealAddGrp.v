@@ -2458,6 +2458,13 @@ apply R_le_trans with (y := y); intros H.
  apply R_gt_lt_iff in H; contradiction.
 Qed.
 
+(* other transitivities *)
+
+Theorem R_lt_le_trans : ∀ x y z, (x < y)%R → (y ≤ z)%R → (x < z)%R.
+Proof.
+(* move from RealComplete.v *)
+bbb.
+
 (* decidability < vs ≥ and > vs ≤ *)
 
 Theorem R_lt_dec : ∀ x y, {(x < y)%R} + {(x ≥ y)%R}.
@@ -2500,6 +2507,12 @@ destruct (R_lt_dec y x) as [H1| H1].
 
  right; intros H; apply H1.
  apply R_gt_lt_iff; assumption.
+Qed.
+
+Theorem R_le_dec : ∀ x y, {(x ≤ y)%R} + {(x > y)%R}.
+Proof.
+intros x y.
+destruct (R_gt_dec x y) as [H1| H1]; [ right | left ]; assumption.
 Qed.
 
 (* *)
