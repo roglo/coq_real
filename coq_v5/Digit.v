@@ -345,7 +345,7 @@ rewrite digit_add_comm.
 apply digit_opp_add_diag_l.
 Qed.
 
-Theorem no_fixpoint_oppd : ∀ d, (oppd d ≠ d)%D.
+Theorem digit_no_fixpoint_opp : ∀ d, (oppd d ≠ d)%D.
 Proof.
 intros d.
 unfold digit_eq, oppd; simpl; intros H.
@@ -374,7 +374,7 @@ split; intros Hde.
   right; split; assumption.
 
  intros H; rewrite Hde in H.
- exfalso; revert H; apply no_fixpoint_oppd.
+ exfalso; revert H; apply digit_no_fixpoint_opp.
 Qed.
 
 Theorem oppd_sym : ∀ d d', (d' = oppd d)%D → (d = oppd d')%D.

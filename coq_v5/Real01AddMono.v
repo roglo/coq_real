@@ -36,11 +36,11 @@ destruct s1 as [di1| ].
  apply digit_opp_0_iff.
  destruct s2 as [di2| ]; [ idtac | reflexivity ].
  destruct Hs2 as (Hn2, Hs2); symmetry in Hs2.
- exfalso; revert Hs2; apply no_fixpoint_oppd.
+ exfalso; revert Hs2; apply digit_no_fixpoint_opp.
 
  destruct (digit_eq_dec (x .[ si]) (oppd (x .[ si]))) as [H1| H1].
   symmetry in H1.
-  exfalso; revert H1; apply no_fixpoint_oppd.
+  exfalso; revert H1; apply digit_no_fixpoint_opp.
 
   apply I_add_inf_1_neq_if in Hs1.
    simpl in Hs1.
@@ -205,7 +205,7 @@ destruct s1 as [di1| ].
   rewrite <- Nat.add_succ_l in H.
   rewrite Hc2 in H; simpl in H.
   rewrite Hc1 in H.
-  exfalso; revert H; apply no_fixpoint_oppd.
+  exfalso; revert H; apply digit_no_fixpoint_opp.
 
  rewrite <- Hc1 in Hc2 |-*; simpl in Hc2.
  rewrite Nat.add_0_r in Hc2.
@@ -796,21 +796,21 @@ destruct s1 as [di1| ].
   destruct (lt_eq_lt_dec di1 di2) as [[H1| H1]| H1].
    apply Hn2 in H1.
    rewrite Nat.add_shuffle0, Hs1 in H1.
-   exfalso; symmetry in H1; revert H1; apply no_fixpoint_oppd.
+   exfalso; symmetry in H1; revert H1; apply digit_no_fixpoint_opp.
 
    subst di2; rewrite Nat.add_shuffle0; reflexivity.
 
    apply Hn1 in H1.
    rewrite Nat.add_shuffle0, Hs2 in H1.
-   exfalso; symmetry in H1; revert H1; apply no_fixpoint_oppd.
+   exfalso; symmetry in H1; revert H1; apply digit_no_fixpoint_opp.
 
   rewrite Nat.add_shuffle0, Hs2 in Hs1.
-  exfalso; revert Hs1; apply no_fixpoint_oppd.
+  exfalso; revert Hs1; apply digit_no_fixpoint_opp.
 
  destruct s2 as [di2| ]; [ idtac | reflexivity ].
  destruct Hs2 as (Hn2, Hs2).
  rewrite Nat.add_shuffle0, Hs1 in Hs2.
- exfalso; revert Hs2; apply no_fixpoint_oppd.
+ exfalso; revert Hs2; apply digit_no_fixpoint_opp.
 Qed.
 
 Theorem I_add_i_shift : ∀ x y i n,
@@ -880,7 +880,7 @@ destruct (le_dec di n) as [H1| H1].
  apply fst_same_iff in H; simpl in H.
  destruct H as (Hnxy_z2, Hxy_z).
  rewrite Hnxy_z in Hxy_z; [ idtac | assumption ].
- revert Hxy_z; apply no_fixpoint_oppd.
+ revert Hxy_z; apply digit_no_fixpoint_opp.
 
  apply Nat.nle_gt in H1.
  remember (di - S n) as dj.
@@ -1855,7 +1855,7 @@ apply fst_same_iff in H; simpl in H.
 destruct H as (Hnxy_z2, Hxy_z).
 destruct (le_dec di n) as [H1| H1].
  rewrite Hnxy_z in Hxy_z; [ idtac | assumption ].
- revert Hxy_z; apply no_fixpoint_oppd.
+ revert Hxy_z; apply digit_no_fixpoint_opp.
 
  apply Nat.nle_gt in H1.
  remember (di - S n) as dj.
