@@ -1,7 +1,7 @@
 (* multiplication in I *)
 
 Require Import Utf8 QArith NPeano Misc Oracle.
-Require Import Real01 Real01Add.
+Require Import Digit Real01 Real01Add.
 
 Open Scope nat_scope.
 
@@ -16,8 +16,8 @@ Definition summation b e g := summation_loop b (S e - b) g.
 Notation "'Σ' ( i = b , e ) , g" := (summation b e (λ i, (g)))
   (at level 0, i at level 0, b at level 60, e at level 60, g at level 40).
 
-Definition b2n (b : bool) := if b then 1 else 0.
-Definition n2b n := negb (Nat.eqb n 0).
+Definition b2n d := if ddec d then 1 else 0.
+Definition n2b n := if zerop n then 0%D else 1%D.
 
 Definition modb n := n mod 2.
 Definition divb n := n / 2.
@@ -39,8 +39,6 @@ Fixpoint I_propag_carry u n :=
   | S n1 => propag_carry_once (I_propag_carry u n1)
   end.
 
-bbb.
-
 Definition I_mul_algo x y i := Σ (j=1,i), (b2n (x.[j-1]) * b2n (y.[i-j])).
 Arguments I_mul_algo x%I y%I i%nat.
 
@@ -51,28 +49,32 @@ Notation "x * y" := (I_mul x y) : I_scope.
 
 (* *)
 
-Theorem eq_b2n_0 : ∀ b, b2n b = 0 → b = false.
+Theorem eq_b2n_0 : ∀ b, b2n b = 0 → (b = 0)%D.
 Proof.
 intros b Hb.
-destruct b; [ discriminate Hb | reflexivity ].
+unfold b2n in Hb.
+destruct (ddec b); [ discriminate Hb | assumption ].
 Qed.
 
-Theorem eq_b2n_1 : ∀ b, b2n b = 1 → b = true.
+Theorem eq_b2n_1 : ∀ b, b2n b = 1 → (b = 1)%D.
 Proof.
 intros b Hb.
-destruct b; [ reflexivity | discriminate Hb ].
+unfold b2n in Hb.
+destruct (ddec b); [ assumption | discriminate Hb ].
 Qed.
 
 Theorem le_b2n_1 : ∀ b, b2n b ≤ 1.
 Proof.
 intros b.
-destruct b; [ reflexivity | apply Nat.le_0_1 ].
+unfold b2n.
+destruct (ddec b); [ reflexivity | apply Nat.le_0_l ].
 Qed.
 
-Theorem n2b_false_iff : ∀ n, n2b n = false ↔ n = 0.
+Theorem n2b_0_iff : ∀ n, (n2b n = 0)%D ↔ n = 0.
 Proof.
 intros n; split; intros Hn; [ idtac | subst n; reflexivity ].
-destruct n; [ reflexivity | discriminate Hn ].
+unfold n2b in Hn.
+destruct n; [ reflexivity | discr_digit Hn ].
 Qed.
 
 (* Summation model and theorems borrowed from my proof of Puiseux's theorem,
@@ -267,7 +269,7 @@ destruct s1 as [di1| ].
  exfalso; apply Ht2; reflexivity.
 Qed.
 
-Theorem I_mul_i_comm : ∀ x y i, I_mul_i x y i = I_mul_i y x i.
+Theorem I_mul_i_comm : ∀ x y i, (I_mul_i x y i = I_mul_i y x i)%D.
 Proof.
 intros x y i.
 unfold I_mul_i.
@@ -281,6 +283,7 @@ intros x y.
 unfold I_eq; intros i; simpl.
 unfold I_add_i; simpl.
 rewrite I_mul_i_comm; f_equal.
+apply digit_add_compat; [ reflexivity | idtac ].
 apply carry_compat_r.
 clear i; intros i.
 unfold I_mul; simpl.
@@ -311,12 +314,15 @@ Proof.
 intros x y Hx i.
 unfold I_mul_algo.
 apply all_0_summation_0; intros j Hj.
-rewrite Hx; reflexivity.
+unfold I_eq_ext in Hx.
+unfold b2n; simpl.
+destruct (ddec (x.[j-1])) as [Hxj|Hxj]; [ simpl | reflexivity ].
+rewrite Hx in Hxj; discr_digit Hxj.
 Qed.
 
 Theorem I_mul_i_0_l : ∀ x y,
   I_eq_ext x 0
-  → ∀ i, I_mul_i x y i = false.
+  → ∀ i, (I_mul_i x y i = 0)%D.
 Proof.
 intros x y Hx i.
 unfold I_mul_i.
@@ -334,7 +340,7 @@ unfold I_eq; intros i; simpl.
 unfold I_add_i; simpl.
 rewrite carry_diag; simpl.
 rewrite I_mul_i_0_l; [ idtac | reflexivity ].
-rewrite xorb_false_l.
+rewrite digit_add_0_l.
 unfold carry; simpl.
 remember (fst_same (0%I * x) 0 (S i)) as s1 eqn:Hs1 .
 apply fst_same_sym_iff in Hs1; simpl in Hs1.
@@ -345,8 +351,10 @@ destruct s1 as [dj1| ].
  rewrite Nat.add_0_r in H.
  remember (S i) as si.
  unfold I_mul_i in H; subst si.
- rewrite if_0_propag_carry_0 in H; [ discriminate H | idtac ].
- intros j; apply all_0_summation_0; intros k Hk; reflexivity.
+ rewrite if_0_propag_carry_0 in H; [ discr_digit H | idtac ].
+ intros j; apply all_0_summation_0; intros k Hk.
+ unfold b2n; simpl.
+ destruct (ddec 0) as [H1|H1]; [ discr_digit H1 | reflexivity ].
 Qed.
 
 (* Equality between 0 and 1... oops... *)
@@ -356,7 +364,7 @@ Proof.
 apply I_eq_prop.
 right; exists 0.
 split; [ intros j H; exfalso; revert H; apply Nat.nlt_0_r | idtac ].
-split; [ intros H; discriminate H | left ].
+split; [ intros H; discr_digit H | left ].
 split; [ reflexivity | idtac ].
 split; intros; reflexivity.
 Qed.
@@ -372,8 +380,14 @@ unfold I_mul_algo.
 unfold summation.
 rewrite Nat.sub_succ, Nat.sub_0_r.
 apply summation_loop_compat.
-intros j Hji.
-rewrite Hxy; reflexivity.
+intros j Hji; unfold b2n; unfold I_eq_ext in Hxy.
+rewrite minus_plus.
+destruct (ddec (x.[j])) as [Hx|Hx].
+ destruct (ddec (y.[j])) as [Hy|Hy]; [ reflexivity | idtac ].
+ rewrite Hxy, Hy in Hx; discr_digit Hx.
+
+ destruct (ddec (y.[j])) as [Hy|Hy]; [ idtac | reflexivity ].
+ rewrite Hxy, Hy in Hx; discr_digit Hx.
 Qed.
 
 Theorem I_ext_propag_carry_mul_algo_compat_r : ∀ x y z n i,
@@ -430,11 +444,9 @@ Theorem I_mul_algo_le : ∀ x y i, I_mul_algo x y i ≤ i.
 Proof.
 intros x y i.
 unfold I_mul_algo; simpl.
-apply summation_le; intros j.
-remember (x .[ j - 1]) as a eqn:Hx .
-remember (y .[ i - j]) as b eqn:Hy .
-symmetry in Hx, Hy.
-destruct a, b; try apply Nat.le_0_l; reflexivity.
+apply summation_le; intros j; unfold b2n.
+destruct (ddec (x.[j-1])); [ idtac | apply Nat.le_0_l ].
+destruct (ddec (y.[i-j])); [ reflexivity | apply Nat.le_0_l ].
 Qed.
 
 (* pas forcément utile, mais bon, je le garde, on sait jamais *)
@@ -608,32 +620,25 @@ destruct v1; [ clear Hle1 | idtac ].
            unfold I_mul_algo in H2; simpl in H2.
            unfold summation in H2; simpl in H2.
            rewrite Nat.add_0_r in H2.
-           remember (x .[ 0]) as a eqn:Ha .
-           remember (y .[ 0]) as b eqn:Hb .
-           destruct a; simpl in H2.
-            destruct b; simpl in H2.
-             apply Ht2; reflexivity.
-
-             revert H2; apply Nat.nlt_0_r.
-
-            revert H2; apply Nat.nlt_0_r.
+           unfold b2n in Ht2, H2.
+           destruct (ddec (x.[0])); [ idtac | revert H2; apply Nat.nlt_0_r ].
+           destruct (ddec (y.[0])); [ idtac | revert H2; apply Nat.nlt_0_r ].
+           apply Ht2; reflexivity.
 
            pose proof (Hn2 0 (Nat.lt_0_succ di2)) as H.
            unfold I_mul_algo in H; simpl in H.
            unfold summation in H; simpl in H.
            rewrite Nat.add_0_r in H.
-           remember (x .[ 0]) as a.
-           remember (y .[ 0]) as b.
-           destruct a, b; try discriminate H; clear H.
-           rename Heqa into Hx0; symmetry in Hx0.
-           rename Heqb into Hy0; symmetry in Hy0.
-           move Hy0 before Hx0.
-           simpl in H1.
+           unfold b2n in H, H1.
+           destruct (ddec (x.[0])) as [Hx0|]; [ idtac | discriminate H ].
+           destruct (ddec (y.[0])) as [Hy0|]; [ idtac | discriminate H ].
+           clear H; simpl in H1.
            rewrite Nat.add_0_r in H1.
            apply eq_b2n_0 in H1.
            remember (di1 + di3) as dd eqn:Hdd .
            symmetry in Hdd.
            destruct dd.
+bbb.
             rewrite Hy0 in H11; rewrite Nat.mul_1_r in H11.
             apply eq_b2n_0 in H11.
             rename H11 into Hx1; move Hx1 after H1.
@@ -1440,7 +1445,7 @@ destruct i; simpl.
       destruct di1.
        clear Hn1.
        unfold I_mul_i in Ht1; simpl in Ht1.
-       apply n2b_false_iff in Ht1.
+       apply n2b_0_iff in Ht1.
        remember (propag_carry_once (I_mul_algo x 1)) as u eqn:Hu .
        unfold propag_carry_once in Ht1; simpl in Ht1.
        remember (fst_not_1 u 2) as s3 eqn:Hs3 .
@@ -1716,7 +1721,7 @@ destruct s as [i| ].
    destruct b; simpl in Ht; simpl.
     exfalso.
     unfold I_mul_i in Ht; simpl in Ht.
-    apply n2b_false_iff in Ht.
+    apply n2b_0_iff in Ht.
     unfold propag_carry_once in Ht; simpl in Ht.
     remember (fst_not_1 (I_mul_algo x 1) 1) as s1 eqn:Hs1 .
     apply fst_not_1_iff in Hs1; simpl in Hs1.

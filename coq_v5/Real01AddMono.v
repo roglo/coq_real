@@ -1887,16 +1887,6 @@ destruct (le_dec di n) as [H1| H1].
   rewrite Nat.add_succ_r; assumption.
 Qed.
 
-Theorem ddec : ∀ x, {(x = 1)%D} + {(x = 0)%D}.
-Proof.
-intros x.
-unfold digit_eq; simpl.
-destruct (eq_nat_dec (dig x) 0) as [H1 | H1].
- right; left; split; [ assumption | reflexivity ].
-
- left; right; split; [ assumption | intros H; discriminate H ].
-Qed.
-
 Theorem I_add_assoc_norm : ∀ x y z,
   ((x + 0) + ((y + 0) + (z + 0)) = ((x + 0) + (y + 0)) + (z + 0))%I.
 Proof.

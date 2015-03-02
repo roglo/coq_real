@@ -1,7 +1,7 @@
 (* Division in I = ℝ interval [0..1[ *)
 
 Require Import Utf8 QArith NPeano.
-Require Import Real01 Real01Add Real01Cmp.
+Require Import Digit Real01 Real01Add Real01Cmp.
 
 Set Implicit Arguments.
 
@@ -22,9 +22,9 @@ Arguments I_div_max_iter_int y%I.
 
 Definition I_div_2_inc x b :=
   {| rm i := if zerop i then b else x.[i-1] |}.
-Arguments I_div_2_inc x%I _.
+Arguments I_div_2_inc x%I b%D.
 
-Definition I_div_2 x := I_div_2_inc x false.
+Definition I_div_2 x := I_div_2_inc x 0.
 Arguments I_div_2 x%I.
 
 Definition I_mul_2 x := {| rm i := x.[S i] |}.
@@ -53,7 +53,7 @@ Arguments I_div_rem_i x%I y%I i%nat.
 
 (* i-th bimal (0th=1st after dot) of division x/y (x<y) *)
 Definition I_div_lt_i x y i :=
-  if I_lt_dec (I_mul_2 (I_div_rem_i x y i)) y then false else true.
+  if I_lt_dec (I_mul_2 (I_div_rem_i x y i)) y then 0%D else 1%D.
 Arguments I_div_lt_i x%I y%I i%nat.
 
 (* division x/y when x<y *)
@@ -89,14 +89,14 @@ Notation "x / y" := (I_div x y) : I_scope.
 (* experimentation *)
 
 Definition I_div_2_pow x i :=
-  {| rm j := if lt_dec j i then false else x.[j-i] |}.
+  {| rm j := if lt_dec j i then 0%D else x.[j-i] |}.
 
 Fixpoint I_div_by_sub m x y :=
   match m with
-  | O => false
+  | O => 0%D
   | S m1 =>
-      if I_lt_dec x y then false
-      else negb (I_div_by_sub m1 (I_sub x y) y)
+      if I_lt_dec x y then 0%D
+      else oppd (I_div_by_sub m1 (I_sub x y) y)
   end.
 
 Definition I_div3_lt_i x y i :=
@@ -134,7 +134,7 @@ destruct (I_lt_dec x y) as [H1| H1].
   destruct (I_lt_dec x (I_div_2_pow y (S i))) as [H3| H3].
    reflexivity.
 
-   apply negb_false_iff.
+   apply oppd_0_iff.
    destruct m2.
     simpl.
     simpl in Hm2.
@@ -150,15 +150,15 @@ bbb.
 
 (* *)
 
-Theorem I_add_i_diag : ∀ x i, I_add_i x x i = x.[S i].
+Theorem I_add_i_diag : ∀ x i, (I_add_i x x i = x.[S i])%D.
 Proof.
 intros x i.
 unfold I_add_i; simpl.
-rewrite xorb_nilpotent, carry_diag, xorb_false_l.
+rewrite digit_add_nilpotent, carry_diag, digit_add_0_l.
 reflexivity.
 Qed.
 
-Theorem I_zero_iff2 : ∀ x, (x = 0)%I ↔ (x == 0)%I ∨ (∀ j, x.[j] = true).
+Theorem I_zero_iff2 : ∀ x, (x = 0)%I ↔ (x == 0)%I ∨ (∀ j, (x.[j] = 1)%D).
 Proof.
 intros x.
 split; intros Hx.
@@ -170,7 +170,7 @@ split; intros Hx.
   destruct s1 as [j1| ]; [ exfalso | reflexivity ].
   apply fst_same_sym_iff in Hs1; simpl in Hs1.
   destruct Hs1 as (Hn1, Ht1).
-  rewrite Hx in Ht1; discriminate Ht1.
+  rewrite Hx in Ht1; discr_digit Ht1.
 
   right; assumption.
 
@@ -180,7 +180,7 @@ split; intros Hx.
   unfold I_eqs, I_compare in Hx; simpl in Hx.
   remember (fst_same x (- 0%I) 0) as s1 eqn:Hs1 .
   destruct s1 as [dj1| ]; [ idtac | clear Hx ].
-   destruct (x .[ dj1]); discriminate Hx.
+   destruct (digit_eq_dec (x .[ dj1]) 1); discriminate Hx.
 
    apply fst_same_sym_iff in Hs1; simpl in Hs1.
    apply Hs1.
@@ -272,7 +272,7 @@ remember (fst_same y I_one 0) as s2 eqn:Hs2 .
 destruct s2 as [dj2| ].
  apply fst_same_sym_iff in Hs2; simpl in Hs2.
  destruct Hs2 as (Hn2, Ht2).
- rewrite Hy in Ht2; discriminate Ht2.
+ rewrite Hy in Ht2; discr_digit Ht2.
 
  subst m; reflexivity.
 Qed.
@@ -355,6 +355,10 @@ destruct (I_lt_dec x z) as [H1| H1].
    remember (fst_same y1 (- (½z)%I) 0) as s4 eqn:Hs4 .
    destruct s3 as [dj3| ]; [ idtac | discriminate H3 ].
    remember (x1 .[ dj3]) as b eqn:Hxj3 .
+Abort. (*
+   oui bon, c'est merdique ; peut-être faisable avec beaucoup
+   de patience
+
    destruct b; [ discriminate H3 | clear H3 ].
    symmetry in Hxj3.
    apply fst_same_sym_iff in Hs3; simpl in Hs3.
@@ -371,9 +375,6 @@ destruct (I_lt_dec x z) as [H1| H1].
     apply fst_same_sym_iff in Hs4; simpl in Hs4.
     destruct Hs4 as (Hn4, Ht4).
     rewrite Hyj4 in Ht4; apply negb_sym in Ht4; simpl in Ht4.
-Abort. (*
-   oui bon, c'est merdique ; peut-être faisable avec beaucoup
-   de patience
 *)
 
 Theorem I_div_eqs_compat_r : ∀ x y z, (x == y)%I → (z / x == z / y)%I.
@@ -411,12 +412,13 @@ bbb.
 
 Theorem xxx : ∀ x y,
   (x < I_div_2 (x / y))%I
-  → y.[0] = false.
+  → (y.[0] = 0)%D.
 Proof.
 intros x y Hxy.
 unfold I_lt, I_compare in Hxy; simpl in Hxy.
 remember (fst_same x (- I_div_2 (x / y)) 0) as s1 eqn:Hs1 .
 destruct s1 as [dj1| ]; [ idtac | discriminate Hxy ].
+bbb.
 remember (x .[ dj1]) as b eqn:Hxj1 .
 destruct b; [ discriminate Hxy | clear Hxy ].
 symmetry in Hxj1.

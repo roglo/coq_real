@@ -528,5 +528,16 @@ Qed.
 Theorem eq_digit_eq : ∀ d e, d = e → (d = e)%D.
 Proof. intros d e H; subst d; reflexivity. Qed.
 
+Theorem ddec : ∀ x, {(x = 1)%D} + {(x = 0)%D}.
+Proof.
+intros x.
+unfold digit_eq; simpl.
+destruct (eq_nat_dec (dig x) 0) as [H1 | H1].
+ right; left; split; [ assumption | reflexivity ].
+
+ left; right; split; [ assumption | intros H; discriminate H ].
+Qed.
+Arguments ddec x%D.
+
 Ltac discr_digit x :=
   exfalso; revert x; try apply digit_neq_1_0; apply digit_neq_0_1.

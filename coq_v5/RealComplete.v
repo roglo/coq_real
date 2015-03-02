@@ -18,12 +18,15 @@ Axiom functional_choice :
   (∀ x, ∃ y, P x y)
   → ∃ f, ∀ x, P x (f x).
 
-(* to be completed
+(* to be completed *)
 Theorem zzz : ∀ u, cauchy_sequence u → ∃ r, converges_to u r.
 Proof.
 intros u Hc.
 unfold cauchy_sequence in Hc.
 unfold converges_to.
+bbb.
+
+(*
 apply functional_choice in Hc.
 destruct Hc as (f, Hf).
 bbb.
