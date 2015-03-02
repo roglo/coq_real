@@ -2280,7 +2280,8 @@ destruct cxz; [ idtac | intros H; discriminate H | exfalso ].
      destruct Hsyz as (Hnyz, Htyz).
      remember (I_add_i (R_frac y) 0 dyz) as byz eqn:Hbyz .
      apply eq_digit_eq in Hbyz.
-     destruct (digit_dec byz) as [H|H]; [ apply Hyz; reflexivity | clear Hyz ].
+     remember (digit_dec byz) as u.
+     destruct u as [H|H]; [ apply Hyz; reflexivity | clear Hequ ].
      rewrite H in *; clear byz H.
      symmetry in Hbyz; apply digit_opp_sym in Htyz; simpl in Htyz.
      destruct (lt_eq_lt_dec dxy dyz) as [[H1| H1]| H1].
@@ -2355,7 +2356,8 @@ destruct cxz; [ idtac | intros H; discriminate H | exfalso ].
      destruct Hsyz as (Hnyz, Htyz).
      remember (I_add_i (R_frac y) 0 dyz) as byz eqn:Hbyz .
      apply eq_digit_eq in Hbyz.
-     destruct (digit_dec byz) as [H|H]; [ apply Hyz; reflexivity | clear Hyz ].
+     remember (digit_dec byz) as u.
+     destruct u as [H|H]; [ apply Hyz; reflexivity | clear Hequ Hyz ].
      rewrite H in *; clear byz H.
      symmetry in Hbyz; apply digit_opp_sym in Htyz; simpl in Htyz.
      rewrite Hnx, Hny in Hsxy; simpl in Hsxy.
