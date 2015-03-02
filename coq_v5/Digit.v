@@ -394,7 +394,7 @@ unfold digit_eq, oppd in Hde; unfold digit_eq.
 destruct (eq_nat_dec (dig d) 0) as [H1 | H1]; simpl in Hde; simpl.
  destruct (eq_nat_dec (dig e) 0) as [H2 | H2]; simpl in Hde; simpl.
   left; split; assumption.
-  
+
   destruct Hde as [(Hd, He)|(Hd, He)]; [ discriminate Hd | idtac ].
   exfalso; apply He; reflexivity.
 
