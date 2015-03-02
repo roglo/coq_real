@@ -213,7 +213,7 @@ split; intros Hd.
  revert H; apply digit_neq_0_1.
 Qed.
 
-Theorem oppd_0_iff : ∀ d, (oppd d = 0)%D ↔ (d = 1)%D.
+Theorem digit_opp_0_iff : ∀ d, (oppd d = 0)%D ↔ (d = 1)%D.
 Proof.
 intros d.
 unfold digit_eq, oppd; simpl.
@@ -230,7 +230,7 @@ split; intros [(H1, H2)| (H1, H2)].
  left; split; reflexivity.
 Qed.
 
-Theorem oppd_1_iff : ∀ d, (oppd d = 1)%D ↔ (d = 0)%D.
+Theorem digit_opp_1_iff : ∀ d, (oppd d = 1)%D ↔ (d = 0)%D.
 Proof.
 intros d.
 unfold digit_eq, oppd; simpl.
@@ -294,12 +294,12 @@ Qed.
 
 Theorem digit_opp_0 : (oppd 0 = 1)%D.
 Proof.
-apply oppd_1_iff; reflexivity.
+apply digit_opp_1_iff; reflexivity.
 Qed.
 
 Theorem digit_opp_1 : (oppd 1 = 0)%D.
 Proof.
-apply oppd_0_iff; reflexivity.
+apply digit_opp_0_iff; reflexivity.
 Qed.
 
 Theorem digit_add_nilpotent : ∀ d, (d + d = 0)%D.

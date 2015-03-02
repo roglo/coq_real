@@ -278,7 +278,7 @@ remember (digit_eq_dec (x.[dj3]) 1) as u.
 destruct u as [Hx3|Hx3]; [ clear Hequ | intros H; discriminate H ].
 rewrite Hx3 in *.
 symmetry in Ht3.
-apply oppd_1_iff in Ht3.
+apply digit_opp_1_iff in Ht3.
 exfalso.
 destruct s1 as [dj1| ]; [ idtac | clear Hxy ].
  destruct Hs1 as (Hn1, Ht1).
@@ -827,7 +827,7 @@ intros x.
 apply I_eqs_iff; simpl; intros i.
 unfold I_add_i; simpl.
 rewrite digit_opp_add_diag_r, digit_add_1_l.
-apply oppd_0_iff.
+apply digit_opp_0_iff.
 unfold carry; simpl.
 remember (fst_same x (- x) (S i)) as s1 eqn:Hs1 .
 destruct s1 as [dj1| ]; [ idtac | reflexivity ].

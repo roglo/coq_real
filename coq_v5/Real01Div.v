@@ -134,7 +134,7 @@ destruct (I_lt_dec x y) as [H1| H1].
   destruct (I_lt_dec x (I_div_2_pow y (S i))) as [H3| H3].
    reflexivity.
 
-   apply oppd_0_iff.
+   apply digit_opp_0_iff.
    destruct m2.
     simpl.
     simpl in Hm2.
