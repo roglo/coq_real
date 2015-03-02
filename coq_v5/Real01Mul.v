@@ -16,7 +16,7 @@ Definition summation b e g := summation_loop b (S e - b) g.
 Notation "'Σ' ( i = b , e ) , g" := (summation b e (λ i, (g)))
   (at level 0, i at level 0, b at level 60, e at level 60, g at level 40).
 
-Definition b2n d := if ddec d then 1 else 0.
+Definition b2n d := if digit_dec d then 1 else 0.
 Definition n2b n := if zerop n then 0%D else 1%D.
 
 Definition modb n := n mod 2.
@@ -53,21 +53,21 @@ Theorem eq_b2n_0 : ∀ b, b2n b = 0 → (b = 0)%D.
 Proof.
 intros b Hb.
 unfold b2n in Hb.
-destruct (ddec b); [ discriminate Hb | assumption ].
+destruct (digit_dec b); [ discriminate Hb | assumption ].
 Qed.
 
 Theorem eq_b2n_1 : ∀ b, b2n b = 1 → (b = 1)%D.
 Proof.
 intros b Hb.
 unfold b2n in Hb.
-destruct (ddec b); [ assumption | discriminate Hb ].
+destruct (digit_dec b); [ assumption | discriminate Hb ].
 Qed.
 
 Theorem le_b2n_1 : ∀ b, b2n b ≤ 1.
 Proof.
 intros b.
 unfold b2n.
-destruct (ddec b); [ reflexivity | apply Nat.le_0_l ].
+destruct (digit_dec b); [ reflexivity | apply Nat.le_0_l ].
 Qed.
 
 Theorem n2b_0_iff : ∀ n, (n2b n = 0)%D ↔ n = 0.
@@ -316,7 +316,7 @@ unfold I_mul_algo.
 apply all_0_summation_0; intros j Hj.
 unfold I_eq_ext in Hx.
 unfold b2n; simpl.
-destruct (ddec (x.[j-1])) as [Hxj|Hxj]; [ simpl | reflexivity ].
+destruct (digit_dec (x.[j-1])) as [Hxj|Hxj]; [ simpl | reflexivity ].
 rewrite Hx in Hxj; discr_digit Hxj.
 Qed.
 
@@ -354,7 +354,7 @@ destruct s1 as [dj1| ].
  rewrite if_0_propag_carry_0 in H; [ discr_digit H | idtac ].
  intros j; apply all_0_summation_0; intros k Hk.
  unfold b2n; simpl.
- destruct (ddec 0) as [H1|H1]; [ discr_digit H1 | reflexivity ].
+ destruct (digit_dec 0) as [H1|H1]; [ discr_digit H1 | reflexivity ].
 Qed.
 
 (* Equality between 0 and 1... oops... *)
@@ -382,11 +382,11 @@ rewrite Nat.sub_succ, Nat.sub_0_r.
 apply summation_loop_compat.
 intros j Hji; unfold b2n; unfold I_eq_ext in Hxy.
 rewrite minus_plus.
-destruct (ddec (x.[j])) as [Hx|Hx].
- destruct (ddec (y.[j])) as [Hy|Hy]; [ reflexivity | idtac ].
+destruct (digit_dec (x.[j])) as [Hx|Hx].
+ destruct (digit_dec (y.[j])) as [Hy|Hy]; [ reflexivity | idtac ].
  rewrite Hxy, Hy in Hx; discr_digit Hx.
 
- destruct (ddec (y.[j])) as [Hy|Hy]; [ idtac | reflexivity ].
+ destruct (digit_dec (y.[j])) as [Hy|Hy]; [ idtac | reflexivity ].
  rewrite Hxy, Hy in Hx; discr_digit Hx.
 Qed.
 
@@ -445,8 +445,8 @@ Proof.
 intros x y i.
 unfold I_mul_algo; simpl.
 apply summation_le; intros j; unfold b2n.
-destruct (ddec (x.[j-1])); [ idtac | apply Nat.le_0_l ].
-destruct (ddec (y.[i-j])); [ reflexivity | apply Nat.le_0_l ].
+destruct (digit_dec (x.[j-1])); [ idtac | apply Nat.le_0_l ].
+destruct (digit_dec (y.[i-j])); [ reflexivity | apply Nat.le_0_l ].
 Qed.
 
 (* pas forcément utile, mais bon, je le garde, on sait jamais *)
@@ -621,8 +621,8 @@ destruct v1; [ clear Hle1 | idtac ].
            unfold summation in H2; simpl in H2.
            rewrite Nat.add_0_r in H2.
            unfold b2n in Ht2, H2.
-           destruct (ddec (x.[0])); [ idtac | revert H2; apply Nat.nlt_0_r ].
-           destruct (ddec (y.[0])); [ idtac | revert H2; apply Nat.nlt_0_r ].
+           destruct (digit_dec (x.[0])); [ idtac | revert H2; apply Nat.nlt_0_r ].
+           destruct (digit_dec (y.[0])); [ idtac | revert H2; apply Nat.nlt_0_r ].
            apply Ht2; reflexivity.
 
            pose proof (Hn2 0 (Nat.lt_0_succ di2)) as H.
@@ -630,8 +630,8 @@ destruct v1; [ clear Hle1 | idtac ].
            unfold summation in H; simpl in H.
            rewrite Nat.add_0_r in H.
            unfold b2n in H, H1.
-           destruct (ddec (x.[0])) as [Hx0|]; [ idtac | discriminate H ].
-           destruct (ddec (y.[0])) as [Hy0|]; [ idtac | discriminate H ].
+           destruct (digit_dec (x.[0])) as [Hx0|]; [ idtac | discriminate H ].
+           destruct (digit_dec (y.[0])) as [Hy0|]; [ idtac | discriminate H ].
            clear H; simpl in H1.
            rewrite Nat.add_0_r in H1.
            apply eq_b2n_0 in H1.
