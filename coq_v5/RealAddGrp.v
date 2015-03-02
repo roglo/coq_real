@@ -2193,9 +2193,11 @@ destruct c; simpl in Hyx.
    remember (I_add_i (R_frac y) 0 dy) as yb eqn:Hyb .
    apply eq_digit_eq in Hyb.
    symmetry in Hyb; apply digit_opp_sym in Hty.
-   destruct (digit_dec xb) as [H|H]; [ exfalso; apply Hxy; reflexivity | idtac ].
+   remember (digit_dec xb) as u.
+   destruct u as [H|H]; [ exfalso; apply Hxy; reflexivity | clear Hequ ].
    rewrite H in *; clear xb H Hxy.
-   destruct (digit_dec yb) as [H|H]; [ exfalso; apply Hyx; reflexivity | idtac ].
+   destruct (digit_dec yb) as u.
+   destruct u as [H|H]; [ exfalso; apply Hyx; reflexivity | clear Hequ ].
    rewrite H in *; clear yb H Hyx.
    destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
     remember H1 as H; clear HeqH.
