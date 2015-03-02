@@ -702,14 +702,14 @@ split; intros H.
   apply digit_not_1_iff_0 in Hy1.
   destruct (lt_eq_lt_dec j1 j2) as [[H1| H1]| H1].
    remember H1 as H; clear HeqH.
-   apply Hn2, oppd_sym in H.
+   apply Hn2, digit_opp_sym in H.
    rewrite <- Ht1, Hy1 in H; discr_digit H.
 
    subst j2.
    rewrite Ht2, Hy1 in Hx2; discr_digit Hx2.
 
    remember H1 as H; clear HeqH.
-   apply Hn1, oppd_sym in H.
+   apply Hn1, digit_opp_sym in H.
    rewrite <- Ht2, Hx2 in H; discr_digit H.
 
   rewrite Hs1, Hx2 in Ht2; discr_digit Ht2.

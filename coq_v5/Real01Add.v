@@ -381,10 +381,10 @@ destruct syx as [di| ].
  destruct Hsyx as (Hns, Hs).
  split; [ idtac | symmetry; assumption ].
  intros dj Hdjn.
- apply oppd_sym, Hns; assumption.
+ apply digit_opp_sym, Hns; assumption.
 
  intros dj.
- apply oppd_sym, Hsyx; assumption.
+ apply digit_opp_sym, Hsyx; assumption.
 Qed.
 
 Theorem carry_comm : ∀ x y i, (carry x y i = carry y x i)%D.
@@ -1857,7 +1857,7 @@ destruct s2 as [di2| ].
             apply Nat.le_0_l.
 
           rewrite digit_add_1_r in H.
-          apply oppd_inj in H.
+          apply digit_opp_eq in H.
           destruct dj6.
            rewrite Nat.add_0_r in H.
            rewrite H in Ps5.
@@ -1893,7 +1893,7 @@ destruct s2 as [di2| ].
           discr_digit H.
 
           rewrite digit_add_1_r in H.
-          apply oppd_inj in H.
+          apply digit_opp_eq in H.
           rewrite H, digit_add_nilpotent in Ps5.
           discr_digit Ps5.
 
@@ -1971,7 +1971,7 @@ destruct s2 as [di2| ].
    discr_digit Hs4.
 
    rewrite digit_add_1_r in H.
-   apply oppd_inj in H.
+   apply digit_opp_eq in H.
    pose proof (Hs2 0) as H1.
    rewrite Nat.add_0_r, H in H1; symmetry in H1.
    exfalso; revert H1; apply digit_no_fixpoint_opp.
@@ -2114,7 +2114,7 @@ destruct s8 as [di8| ].
     pose proof (Hs3 0) as H; rewrite Nat.add_0_r in H.
     rewrite H, digit_add_1_r in Hs1.
     do 2 rewrite digit_add_1_r in Hs1.
-    apply oppd_inj in Hs1.
+    apply digit_opp_eq in Hs1.
     rewrite <- digit_opp_add_l in Hs1.
     revert Hs1; apply digit_no_fixpoint_opp.
 
@@ -2307,7 +2307,7 @@ destruct s3 as [di3| ].
      rewrite <- H2; assumption.
 
    rewrite digit_add_1_r in H.
-   apply oppd_inj in H.
+   apply digit_opp_eq in H.
    apply I_add_inf_1_eq_if in Hs5; auto.
    destruct Hs5 as (Hat, Hbt).
    destruct di4.
@@ -2582,7 +2582,7 @@ destruct sx as [dx| ].
     rewrite digit_add_1_l in H.
     symmetry in H.
     rewrite digit_add_1_l in H.
-    apply oppd_inj in H.
+    apply digit_opp_eq in H.
     rewrite <- Nat.add_succ_l in H.
     symmetry in Hsx, H.
     erewrite carry_before_relay9 in H; [ idtac | eassumption | auto ].
@@ -2691,7 +2691,7 @@ destruct sx as [dx| ].
        rewrite Nat.add_assoc in Hx1.
        simpl in Hx1.
        rewrite Nat.add_assoc, Hx1, <- digit_opp_add_l in H.
-       apply oppd_inj in H.
+       apply digit_opp_eq in H.
        rewrite digit_add_1_l in H.
        apply digit_opp_1_iff in H.
        do 3 rewrite Nat.add_succ_r.
@@ -2720,7 +2720,7 @@ destruct sx as [dx| ].
    rewrite Hny in H; [ idtac | apply Nat.lt_succ_diag_r ].
    rewrite Hnx in H.
    rewrite digit_add_1_l in H.
-   apply oppd_inj in H.
+   apply digit_opp_eq in H.
    rewrite <- Nat.add_succ_l in H.
    symmetry in Hsy, H.
    erewrite carry_before_relay9 in H; [ idtac | eassumption | auto ].
@@ -2748,7 +2748,7 @@ destruct sx as [dx| ].
    rewrite Hny in H; [ idtac | apply Nat.lt_succ_diag_r ].
    rewrite Hnx in H.
    rewrite digit_add_1_l in H.
-   apply oppd_inj in H.
+   apply digit_opp_eq in H.
    rewrite <- Nat.add_succ_l in H.
    symmetry in Hsy, H.
    erewrite carry_before_relay9 in H; [ idtac | eassumption | auto ].
@@ -2790,7 +2790,7 @@ destruct sx as [dx| ].
      pose proof (Hn1 O (Nat.lt_0_succ di1)) as HH.
      rewrite Nat.add_0_r, <- Nat.add_succ_r in HH.
      rewrite HH, Hnx, digit_add_1_l in H.
-     apply oppd_inj in H.
+     apply digit_opp_eq in H.
      rewrite <- Nat.add_succ_l in H.
      rewrite carry_before_inf_relay9 in H; [ idtac | assumption ].
      symmetry in H, Hs1.
@@ -2879,7 +2879,7 @@ split; intros Hxy.
     intros H; rewrite Ht1 in H.
     revert H; apply digit_no_fixpoint_opp.
 
-    apply oppd_sym in Ht1.
+    apply digit_opp_sym in Ht1.
     destruct (digit_eq_dec (x .[ di1]) 1) as [Hx1| Hx1].
      remember Hx1 as Hxi1; clear HeqHxi1.
      eapply I_eq_neq_prop in Hxi1; try eassumption.

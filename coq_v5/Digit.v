@@ -377,7 +377,7 @@ split; intros Hde.
  exfalso; revert H; apply digit_no_fixpoint_opp.
 Qed.
 
-Theorem oppd_sym : ∀ d d', (d' = oppd d)%D → (d = oppd d')%D.
+Theorem digit_opp_sym : ∀ d d', (d' = oppd d)%D → (d = oppd d')%D.
 Proof.
 intros d d' Hd'.
 rewrite Hd'; unfold digit_eq, oppd; simpl.
@@ -387,7 +387,7 @@ destruct (eq_nat_dec (dig d) 0) as [H1 | H1]; simpl.
  right; split; [ assumption | intros H; discriminate H ].
 Qed.
 
-Theorem oppd_inj : ∀ d e, (oppd d = oppd e)%D → (d = e)%D.
+Theorem digit_opp_eq : ∀ d e, (oppd d = oppd e)%D → (d = e)%D.
 Proof.
 intros d e Hde.
 unfold digit_eq, oppd in Hde; unfold digit_eq.
