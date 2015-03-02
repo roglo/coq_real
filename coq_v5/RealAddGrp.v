@@ -2196,7 +2196,7 @@ destruct c; simpl in Hyx.
    remember (digit_dec xb) as u.
    destruct u as [H|H]; [ exfalso; apply Hxy; reflexivity | clear Hequ ].
    rewrite H in *; clear xb H Hxy.
-   destruct (digit_dec yb) as u.
+   remember (digit_dec yb) as u.
    destruct u as [H|H]; [ exfalso; apply Hyx; reflexivity | clear Hequ ].
    rewrite H in *; clear yb H Hyx.
    destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
