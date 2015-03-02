@@ -24,7 +24,9 @@ Proof.
 intros u Hc.
 unfold cauchy_sequence in Hc.
 unfold converges_to.
+(*
 bbb.
+*)
 
 (*
 apply functional_choice in Hc.
