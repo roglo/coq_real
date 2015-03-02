@@ -1347,7 +1347,8 @@ destruct dx; [ clear Hnx | idtac ].
   destruct (digit_dec c1) as [H|H]; rewrite H in *; clear c1 H.
    destruct (digit_dec c2) as [H|H]; rewrite H in *; clear c2 H.
     destruct (digit_dec c3) as [H|H]; rewrite H in *; clear c3 H.
-     destruct (digit_dec c4) as [H|H]; rewrite H in *; try reflexivity; exfalso.
+     destruct (digit_dec c4) as [H|H]; rewrite H in *;
+     try reflexivity; exfalso.
       rewrite carry_comm in Hc2.
       eapply case_1; try eassumption.
       unfold carry; simpl.
@@ -1358,7 +1359,8 @@ destruct dx; [ clear Hnx | idtac ].
       unfold carry; simpl.
       rewrite fst_same_comm, <- Hsx; reflexivity.
 
-     destruct (digit_dec c4) as [H|H]; rewrite H in *; try reflexivity; exfalso.
+     destruct (digit_dec c4) as [H|H]; rewrite H in *;
+     try reflexivity; exfalso.
       rewrite carry_comm in Hc2.
       eapply case_1; try eassumption.
       unfold carry; simpl.
