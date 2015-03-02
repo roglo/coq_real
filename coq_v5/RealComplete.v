@@ -38,13 +38,6 @@ Fixpoint R_max_abs_seq_upto u n :=
   | S n1 => R_max (R_abs (u n)) (R_max_abs_seq_upto u n1)
   end.
 
-Theorem R_lt_le_incl : ∀ x y, (x < y)%R → (x ≤ y)%R.
-Proof.
-intros x y Hxy.
-unfold R_lt in Hxy; unfold R_le.
-rewrite Hxy; intros H; discriminate H.
-Qed.
-
 Theorem R_le_max_l : ∀ x y, (x ≤ R_max x y)%R.
 Proof.
 intros x y.
@@ -53,81 +46,18 @@ destruct (R_lt_dec x y) as [H1| H1]; [ idtac | apply R_le_refl ].
 apply R_lt_le_incl; assumption.
 Qed.
 
-Theorem R_lt_nle : ∀ x y, (x < y)%R ↔ ¬(y ≤ x)%R.
+Theorem R_lt_sub_lt_add_l : ∀ x y z, (x - y < z)%R ↔ (x < y + z)%R.
 Proof.
-intros x y.
-split; intros Hxy.
- intros H.
- apply R_ge_le_iff in H.
- unfold R_lt in Hxy; unfold R_ge in H.
- rewrite Hxy in H; apply H; reflexivity.
-
- apply R_gt_lt_iff.
- unfold R_le in Hxy; unfold R_gt.
- remember (y ?= x)%R as c eqn:Hc.
- symmetry in Hc.
- destruct c; [ exfalso | exfalso | reflexivity ].
-  apply Hxy; intros H; discriminate H.
-
-  apply Hxy; intros H; discriminate H.
-Qed.
-
-Theorem R_lt_trans : ∀ x y z, (x < y)%R → (y < z)%R → (x < z)%R.
-Proof.
-intros x y z Hxy Hyz.
-destruct (R_dec x y) as [H1| H1].
- rewrite H1 in Hxy; exfalso; revert Hxy; apply R_lt_irrefl.
-
- destruct (R_dec y z) as [H2| H2].
-  rewrite H2 in Hyz; exfalso; revert Hyz; apply R_lt_irrefl.
-
-  remember Hxy as Hxye; clear HeqHxye.
-  remember Hyz as Hyze; clear HeqHyze.
-  apply R_lt_le_incl in Hxye.
-  apply R_lt_le_incl in Hyze.
-  pose proof (R_le_trans x y z Hxye Hyze) as H.
-  destruct (R_dec x z) as [H3| H3].
-   rewrite <- H3 in Hyze.
-   apply R_lt_nle in Hxy; contradiction.
-
-   unfold R_le in H; unfold R_lt.
-   remember (x ?= z)%R as c eqn:Hc.
-   symmetry in Hc.
-   destruct c; [ idtac | reflexivity | exfalso; apply H; reflexivity ].
-   apply R_compare_eq in Hc; contradiction.
-Qed.
-
-Theorem R_lt_le_trans : ∀ x y z, (x < y)%R → (y ≤ z)%R → (x < z)%R.
-Proof.
-intros x y z Hxy Hyz.
-destruct (R_dec y z) as [H1| H1]; [ rewrite <- H1; assumption | idtac ].
-assert (y < z)%R as H.
- unfold R_le in Hyz; unfold R_lt.
- remember (y ?= z)%R as c eqn:Hc.
- symmetry in Hc.
- destruct c; [ idtac | reflexivity | exfalso; apply Hyz; reflexivity ].
- apply R_compare_eq in Hc.
- contradiction.
-
- eapply R_lt_trans.
-bbb.
-
-eapply R_le_trans in Hyz.
-
-unfold R_lt in Hxy.
-unfold R_le in Hyz.
-unfold R_lt.
-Check R_le_trans.
+intros x y z.
+split; intros Hxyz.
 bbb.
 
 Theorem R_le_pos_lt_compat : ∀ x y z, (x ≤ y)%R → (z > 0)%R → (x < y + z)%R.
 Proof.
 intros x y z Hxy Hz.
-apply R_lt_le_trans.
-
-unfold R_le in Hxy.
-unfold R_gt in Hz.
-unfold R_lt.
+eapply R_le_lt_trans; [ eassumption | idtac ].
+SearchAbout (_ < _ + _)%Z.
+bbb.
 
 Theorem R_cauchy_sequence_bounded : ∀ u,
   R_cauchy_sequence u → ∃ m, ∀ n, (R_abs (u n) < m)%R.
