@@ -49,6 +49,38 @@ Qed.
 Theorem R_compare_add_compat : ∀ x y z, (x ?= y)%R = (x + z ?= y + z)%R.
 Proof.
 intros x y z.
+remember (x ?= y)%R as c1 eqn:Hc1.
+remember (x + z ?= y + z)%R as c2 eqn:Hc2.
+symmetry in Hc1, Hc2.
+destruct c1.
+ apply R_compare_eq in Hc1.
+ destruct c2; [ reflexivity | exfalso | exfalso ].
+   apply R_compare_lt in Hc2.
+   rewrite Hc1 in Hc2.
+   revert Hc2; apply R_lt_irrefl.
+
+   apply R_compare_gt in Hc2.
+   rewrite Hc1 in Hc2.
+   apply R_gt_lt_iff in Hc2.
+   revert Hc2; apply R_lt_irrefl.
+
+  apply R_compare_lt in Hc1.
+  destruct c2; [ exfalso | reflexivity | exfalso ].
+   apply R_compare_eq in Hc2.
+   apply R_add_reg_r in Hc2.
+   rewrite Hc2 in Hc1.
+   revert Hc1; apply R_lt_irrefl.
+
+   apply R_compare_gt in Hc2.
+bbb.
+
+   apply R_add_compat with (x:=(-z)%R) (y:=(-z)%R) in Hc2.
+
+
+ apply R_compare_gt in Hc2.
+ rewrite Hc1 in 
+
+
 unfold R_compare.
 remember (R_norm x) as nx eqn:Hnx.
 remember (R_norm y) as ny eqn:Hny.

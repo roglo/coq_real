@@ -3019,6 +3019,18 @@ intros x; split; intros H.
  rewrite H; apply R_abs_0.
 Qed.
 
+Theorem R_add_reg_r : ∀ x y z, (x + z = y + z)%R → (x = y)%R.
+Proof.
+intros x y z Hxyz.
+eapply R_add_compat in Hxyz; [ idtac | reflexivity ].
+rewrite R_add_comm in Hxyz; symmetry in Hxyz.
+rewrite R_add_comm in Hxyz; symmetry in Hxyz.
+do 2 rewrite <- R_add_assoc in Hxyz.
+rewrite fold_R_sub, R_sub_diag in Hxyz.
+do 2 rewrite R_add_0_r in Hxyz.
+assumption.
+Qed.
+
 Theorem R_eq_compare_compat : ∀ x y z t,
   (x = y)%R
   → (z = t)%R
