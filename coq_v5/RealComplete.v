@@ -81,7 +81,19 @@ destruct c1; [ idtac | clear Hxy | discriminate Hxy ].
      destruct Hs2 as (Hn2, Ht2).
      rewrite H2 in Ht2; rename H2 into Hnxz2; rename Ht2 into Hnyz2.
      apply Digit.opp_sym in Hnyz2; rewrite Digit.opp_1 in Hnyz2.
+     subst; simpl in *.
+     remember (R_frac x) as xf eqn:Hxf.
+     remember (R_frac y) as yf eqn:Hyf.
+     remember (R_frac z) as zf eqn:Hzf.
+     remember (R_int x) as xi eqn:Hxi.
+     remember (R_int y) as yi eqn:Hyi.
+     remember (R_int z) as zi eqn:Hzi.
+     move xf after zf; move yf after zf.
 bbb.
+     move Hyf before Hxf; move yf before xf; move zf before yf.
+     move xi before zf; move yi before xi; move zi before yi.
+     move Hxi before Hzf; move Hyi before Hxi; move Hzi before Hyi.
+bbb
 
    Focus 2.
    apply Z.compare_gt_iff in Hc2.
