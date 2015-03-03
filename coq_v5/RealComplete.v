@@ -107,6 +107,8 @@ destruct c1; [ idtac | clear Hxy | discriminate Hxy ].
      remember H1 as H; clear HeqH.
      apply Hn2 in H; rewrite Digit.opp_involutive in H.
      unfold I_add_i in H; simpl in H.
+     rewrite Digit.add_0_r in H.
+     unfold I_add_i in H; simpl in H.
 bbb.
 
    Focus 2.
