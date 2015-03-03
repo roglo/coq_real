@@ -72,6 +72,22 @@ destruct c1.
    revert Hc1; apply R_lt_irrefl.
 
    apply R_compare_gt in Hc2.
+   apply R_gt_lt_iff in Hc2.
+   apply R_lt_nle in Hc2.
+   apply Hc2; clear Hc2.
+   bbb.
+   Focus 2.
+   apply R_compare_gt in Hc1.
+   destruct c2; [ exfalso | exfalso | reflexivity ].
+    apply R_compare_eq in Hc2.
+    apply R_add_reg_r in Hc2.
+    rewrite Hc2 in Hc1.
+    apply R_gt_lt_iff in Hc1.
+    revert Hc1; apply R_lt_irrefl.
+
+    apply R_compare_lt in Hc2.
+
+
 bbb.
 
    apply R_add_compat with (x:=(-z)%R) (y:=(-z)%R) in Hc2.
