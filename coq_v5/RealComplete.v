@@ -55,13 +55,13 @@ remember (R_norm x) as nx eqn:Hnx.
 remember (R_norm y) as ny eqn:Hny.
 remember (R_norm (x + z)) as nxz eqn:Hnxz.
 remember (R_norm (y + z)) as nyz eqn:Hnyz.
-remember (R_int nx ?= R_int ny)%Z as c1 eqn:Hc1.
-remember (R_int nxz ?= R_int nyz)%Z as c2 eqn:Hc2.
-symmetry in Hc1, Hc2.
+remember (R_int nx ?= R_int ny)%Z as cmp1 eqn:Hcmp1.
+remember (R_int nxz ?= R_int nyz)%Z as cmp2 eqn:Hcmp2.
+symmetry in Hcmp1, Hcmp2.
 remember (fst_same (R_frac nx) (- R_frac ny) 0) as s1 eqn:Hs1.
 remember (fst_same (R_frac nxz) (- R_frac nyz) 0) as s2 eqn:Hs2.
-destruct c1; [ idtac | clear Hxy | discriminate Hxy ].
- apply Z.compare_eq in Hc1.
+destruct cmp1; [ idtac | clear Hxy | discriminate Hxy ].
+ apply Z.compare_eq in Hcmp1.
  destruct s1 as [j1| ]; [| discriminate Hxy ].
  destruct (Digit.dec (R_frac nx .[ j1])) as [H1| H1].
   discriminate Hxy.
@@ -71,8 +71,8 @@ destruct c1; [ idtac | clear Hxy | discriminate Hxy ].
   destruct Hs1 as (Hn1, Ht1).
   rewrite H1 in Ht1; rename H1 into Hnx1; rename Ht1 into Hny1.
   apply Digit.opp_sym in Hny1; rewrite Digit.opp_0 in Hny1.
-  destruct c2; [ idtac | reflexivity | exfalso ].
-   apply Z.compare_eq in Hc2.
+  destruct cmp2; [ idtac | reflexivity | exfalso ].
+   apply Z.compare_eq in Hcmp2.
    destruct s2 as [j2| ]; [ idtac | exfalso ].
     destruct (Digit.dec (R_frac nxz .[ j2])) as [H2| H2].
      2: reflexivity.
@@ -91,7 +91,7 @@ destruct c1; [ idtac | clear Hxy | discriminate Hxy ].
      move xf after zf; move yf after zf.
      move xi before zf; move yi before xi; move zi before yi.
      move Hxf after Hyf; move Hxi before Hzf; move Hyi before Hxi.
-     move Hzi before Hyi; move Hc1 after Hc2; move Hnxz2 after Hnyz2.
+     move Hzi before Hyi; move Hcmp1 after Hcmp2; move Hnxz2 after Hnyz2.
      move Hnx1 after Hnxz2; move Hny1 after Hnxz2.
      unfold I_add_i in Hnxz2; simpl in Hnxz2.
      unfold I_add_i in Hnxz2; simpl in Hnxz2.
@@ -103,12 +103,19 @@ destruct c1; [ idtac | clear Hxy | discriminate Hxy ].
      rewrite Digit.add_0_r in Hnx1.
      unfold I_add_i in Hny1; simpl in Hny1.
      rewrite Digit.add_0_r in Hny1.
+bbb.
+unfold carry in *; simpl in *.
+     remember (carry xf 0 0) as c1 eqn:Hc1.
+     remember (carry yf 0 0) as c2 eqn:Hc2.
+     remember (carry xf zf 0) as c3 eqn:Hc3.
+     remember (carry yf zf 0) as c4 eqn:Hc4.
+bbb.
      destruct (lt_eq_lt_dec j1 j2) as [[H1| H1]| H1].
-     remember H1 as H; clear HeqH.
-     apply Hn2 in H; rewrite Digit.opp_involutive in H.
-     unfold I_add_i in H; simpl in H.
-     rewrite Digit.add_0_r in H.
-     unfold I_add_i in H; simpl in H.
+      remember H1 as H; clear HeqH.
+      apply Hn2 in H; rewrite Digit.opp_involutive in H.
+      unfold I_add_i in H; simpl in H.
+      rewrite Digit.add_0_r in H.
+      unfold I_add_i in H; simpl in H.
 bbb.
 
    Focus 2.
