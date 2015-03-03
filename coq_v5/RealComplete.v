@@ -89,11 +89,10 @@ destruct c1; [ idtac | clear Hxy | discriminate Hxy ].
      remember (R_int y) as yi eqn:Hyi.
      remember (R_int z) as zi eqn:Hzi.
      move xf after zf; move yf after zf.
-bbb.
-     move Hyf before Hxf; move yf before xf; move zf before yf.
      move xi before zf; move yi before xi; move zi before yi.
-     move Hxi before Hzf; move Hyi before Hxi; move Hzi before Hyi.
-bbb
+     move Hxf after Hyf; move Hxi before Hzf; move Hyi before Hxi.
+     move Hzi before Hyi; move Hc1 after Hc2.
+bbb.
 
    Focus 2.
    apply Z.compare_gt_iff in Hc2.
