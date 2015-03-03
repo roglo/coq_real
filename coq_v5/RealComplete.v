@@ -46,7 +46,12 @@ destruct (R_lt_dec x y) as [H1| H1]; [ idtac | apply R_le_refl ].
 apply R_lt_le_incl; assumption.
 Qed.
 
-Theorem R_compare_add_compat : ∀ x y z, (x ?= y)%R = (x + z ?= y + z)%R.
+Theorem R_lt_add_compat_r : ∀ x y z, (x < y)%R → (x + z < y + z)%R.
+Proof.
+intros x y z Hxy.
+bbb.
+
+Theorem R_compare_add_compat_r : ∀ x y z, (x ?= y)%R = (x + z ?= y + z)%R.
 Proof.
 intros x y z.
 remember (x ?= y)%R as c1 eqn:Hc1.
@@ -76,6 +81,8 @@ destruct c1.
    apply R_lt_nle in Hc2.
    apply Hc2; clear Hc2.
    bbb.
+apply R_lt_add_compat_r.
+
    Focus 2.
    apply R_compare_gt in Hc1.
    destruct c2; [ exfalso | exfalso | reflexivity ].
