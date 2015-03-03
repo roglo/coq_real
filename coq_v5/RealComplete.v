@@ -91,7 +91,22 @@ destruct c1; [ idtac | clear Hxy | discriminate Hxy ].
      move xf after zf; move yf after zf.
      move xi before zf; move yi before xi; move zi before yi.
      move Hxf after Hyf; move Hxi before Hzf; move Hyi before Hxi.
-     move Hzi before Hyi; move Hc1 after Hc2.
+     move Hzi before Hyi; move Hc1 after Hc2; move Hnxz2 after Hnyz2.
+     move Hnx1 after Hnxz2; move Hny1 after Hnxz2.
+     unfold I_add_i in Hnxz2; simpl in Hnxz2.
+     unfold I_add_i in Hnxz2; simpl in Hnxz2.
+     rewrite Digit.add_0_r in Hnxz2.
+     unfold I_add_i in Hnyz2; simpl in Hnyz2.
+     unfold I_add_i in Hnyz2; simpl in Hnyz2.
+     rewrite Digit.add_0_r in Hnyz2.
+     unfold I_add_i in Hnx1; simpl in Hnx1.
+     rewrite Digit.add_0_r in Hnx1.
+     unfold I_add_i in Hny1; simpl in Hny1.
+     rewrite Digit.add_0_r in Hny1.
+     destruct (lt_eq_lt_dec j1 j2) as [[H1| H1]| H1].
+     remember H1 as H; clear HeqH.
+     apply Hn2 in H; rewrite Digit.opp_involutive in H.
+     unfold I_add_i in H; simpl in H.
 bbb.
 
    Focus 2.
