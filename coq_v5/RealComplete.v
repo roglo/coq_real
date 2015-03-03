@@ -72,53 +72,36 @@ destruct c1, c2; try reflexivity.
    destruct (Digit.dec (R_frac nx .[ j1])) as [H1| H1].
     destruct (Digit.dec (R_frac nxz .[ j2])) as [H2| H2]; auto; exfalso.
     subst; simpl in *.
+    rewrite H2 in Ht2.
+    apply Digit.opp_sym in Ht2; rewrite Digit.opp_0 in Ht2.
+    rewrite H1 in Ht1.
+    apply Digit.opp_sym in Ht1; rewrite Digit.opp_1 in Ht1.
+    unfold I_add_i in H1; simpl in H1.
+    unfold I_add_i in H2; simpl in H2.
+    unfold I_add_i in Ht1; simpl in Ht1.
+    unfold I_add_i in Ht2; simpl in Ht2.
+    rewrite Digit.add_0_r in H1, H2, Ht1, Ht2.
+    unfold I_add_i in H2; simpl in H2.
+    unfold I_add_i in Ht2; simpl in Ht2.
+    remember (R_frac x) as xf eqn:Hxf.
+    remember (R_frac y) as yf eqn:Hyf.
+    remember (R_frac z) as zf eqn:Hzf.
+    remember (R_int x) as xi eqn:Hxi.
+    remember (R_int y) as yi eqn:Hyi.
+    remember (R_int z) as zi eqn:Hzi.
+    move Hyf before Hxf; move yf before xf; move zf before yf.
+    move xi before zf; move yi before xi; move zi before yi.
+    move Hxi before Hzf; move Hyi before Hxi; move Hzi before Hyi.
+    move H1 after H2; move Hc1 after Hc2.
+    do 4 rewrite <- Z.add_assoc in Hc2.
+    rewrite Z.add_comm in Hc2; symmetry in Hc2.
+    rewrite Z.add_comm in Hc2; symmetry in Hc2.
+    do 4 rewrite <- Z.add_assoc in Hc2.
+    apply Z.add_reg_l in Hc2.
+    rewrite Z.add_comm in Hc2; symmetry in Hc2.
+    rewrite Z.add_comm in Hc2; symmetry in Hc2.
+    move Ht1 before H1; move Ht2 before H2.
 bbb.
-
-destruct c.
- apply Z.compare_eq in Hc.
- apply fst_same_sym_iff in Hs1; simpl in Hs1.
- destruct s1 as [di1| ].
-  destruct Hs1 as (Hn1, Ht1).
-  destruct (Digit.dec (R_frac nx .[ di1])) as [H1| H1].
-   discriminate Hxy.
-
-   clear Hxy.
-   rewrite H1 in Ht1; apply Digit.opp_sym in Ht1.
-   symmetry in Hc2.
-   destruct c2.
-    apply Z.compare_eq in Hc2.
-    apply fst_same_sym_iff in Hs2; simpl in Hs2.
-    destruct s2 as [di2| ].
-     destruct Hs2 as (Hn2, Ht2).
-     destruct (Digit.dec (R_frac nxz .[ di2])) as [H2| H2].
-      rewrite H2 in Ht2; apply Digit.opp_sym in Ht2.
-      exfalso.
-      move ny before nx; move nz before ny.
-      move nxz before ny; move nyz before nxz.
-      move Hnz before Hny; move Hnxz before Hnz.
-      move Hnyz before Hnxz; move Hc2 before Hc.
-      destruct (lt_eq_lt_dec di1 di2) as [[H3| H3]| H3].
-       remember H3 as H; clear HeqH.
-       apply Hn2 in H; simpl in H.
-       rewrite Digit.opp_involutive in H.
-       (* part en couille peut-être ici *)
-       rewrite Hnx, Hny in Hc.
-       unfold R_norm in Hc; simpl in Hc.
-       rewrite Hnxz, Hnyz in Hc2.
-       unfold R_norm in Hc2; simpl in Hc2.
-       rewrite Hny in Ht1; simpl in Ht1.
-       rewrite Hnx in H1; simpl in H1.
-       rewrite Hnyz in Ht2; simpl in Ht2.
-       rewrite Hnxz in H2; simpl in H2.
-       rewrite Hnxz, Hnyz in H; simpl in H.
-       unfold I_add_i in H; simpl in H.
-       do 2 rewrite Digit.add_0_r in H.
-       unfold I_add_i in H; simpl in H.
-       remember (R_frac x) as xf eqn:Hxf.
-       remember (R_frac y) as yf eqn:Hyf.
-       remember (R_frac z) as zf eqn:Hzf.
-Abort. (*
-bbb. bof.
 *)
 
 SearchAbout R_compare.
