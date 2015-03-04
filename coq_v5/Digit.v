@@ -460,6 +460,14 @@ destruct (eq_nat_dec (dig e) 0) as [H2 | H2].
   right; split; assumption.
 Qed.
 
+Theorem add_cancel_r : ∀ d e f, (d + f = e + f)%D → (d = e)%D.
+Proof.
+intros d e f Hd.
+rewrite add_comm in Hd; symmetry in Hd.
+rewrite add_comm in Hd; symmetry in Hd.
+apply add_cancel_l in Hd; assumption.
+Qed.
+
 Theorem move_l_r_1 : ∀ d e f, (d + e = f)%D → (e = d + f)%D.
 Proof.
 intros d e f Hd.

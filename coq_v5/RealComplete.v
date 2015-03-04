@@ -65,6 +65,31 @@ destruct s2 as [dj2| ]; [ idtac | destruct s3; reflexivity ].
 rewrite Hs1; destruct s3; reflexivity.
 Qed.
 
+Theorem I_eq_ext_1 : ∀ x, I_eq_ext x 1 → (∀ i, (x.[i] = 1)%D).
+Proof.
+intros x Hx i.
+apply Hx.
+Qed.
+
+Theorem I_eqs_eq_ext : ∀ x y, I_eq_ext x y ↔ (x == y)%I.
+Proof.
+intros x y.
+unfold I_eq_ext, I_eqs, I_compare; simpl.
+remember (fst_same x (-y) 0) as s1 eqn:Hs1.
+apply fst_same_sym_iff in Hs1; simpl in Hs1.
+split; intros Hxy.
+ destruct s1 as [j1| ]; [ exfalso | reflexivity ].
+ destruct Hs1 as (Hn1, Ht1).
+ rewrite Hxy in Ht1; symmetry in Ht1.
+ revert Ht1; apply Digit.no_fixpoint_opp.
+
+ intros i.
+ destruct s1 as [j1| ]; [ idtac | clear Hxy ].
+  destruct (Digit.eq_dec (x.[j1]) 1); discriminate Hxy.
+
+  rewrite Hs1; apply Digit.opp_involutive.
+Qed.
+
 Theorem R_lt_add_compat_r : ∀ x y z, (x < y)%R → (x + z < y + z)%R.
 Proof.
 intros x y z Hxy.
@@ -127,7 +152,7 @@ destruct cmp1; [ idtac | clear Hxy | discriminate Hxy ].
      rewrite <- Z.add_assoc, Z.add_comm, Z.add_assoc in Hcmp2.
      symmetry in Hcmp2.
      apply Z.add_cancel_r in Hcmp2.
-     destruct (I_eq_dec xf 1) as [H1| H1].
+     destruct (I_eqs_dec xf 1) as [H1| H1].
 bbb.
 unfold carry in *; simpl in *.
      remember (carry xf 0 0) as c1 eqn:Hc1.

@@ -417,6 +417,7 @@ destruct s as [di| ].
 
  left; reflexivity.
 Qed.
+Arguments I_eqs_dec x%I y%I.
 
 (* decidability < vs ≥ and > vs ≤ *)
 
