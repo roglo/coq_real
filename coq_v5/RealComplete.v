@@ -103,6 +103,12 @@ destruct cmp1; [ idtac | clear Hxy | discriminate Hxy ].
      rewrite Digit.add_0_r in Hnx1.
      unfold I_add_i in Hny1; simpl in Hny1.
      rewrite Digit.add_0_r in Hny1.
+     rewrite <- Z.add_assoc, Z.add_comm, Z.add_assoc in Hcmp2.
+     symmetry in Hcmp2.
+     rewrite <- Z.add_assoc, Z.add_comm, Z.add_assoc in Hcmp2.
+     symmetry in Hcmp2.
+     apply Z.add_cancel_r in Hcmp2.
+SearchAbout (carry (_ + _)).
 bbb.
 unfold carry in *; simpl in *.
      remember (carry xf 0 0) as c1 eqn:Hc1.
