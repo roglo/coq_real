@@ -357,18 +357,6 @@ destruct s1 as [dj1| ].
  destruct (Digit.dec 0) as [H1|H1]; [ discr_digit H1 | reflexivity ].
 Qed.
 
-(* Equality between 0 and 1... oops... *)
-
-Theorem I_0_eq_1 : (0 = 1)%I.
-Proof.
-apply I_eq_prop.
-right; exists 0.
-split; [ intros j H; exfalso; revert H; apply Nat.nlt_0_r | idtac ].
-split; [ intros H; discr_digit H | left ].
-split; [ reflexivity | idtac ].
-split; intros; reflexivity.
-Qed.
-
 (* compatibility with equality *)
 
 Theorem I_ext_mul_algo_compat_r : ∀ x y z i,

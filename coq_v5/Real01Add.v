@@ -3167,3 +3167,15 @@ split; intros Hxy.
       rewrite Hs2 in H.
       symmetry in H; contradiction.
 Qed.
+
+(* Equality between 0 and 1... oops... *)
+
+Theorem I_0_eq_1 : (0 = 1)%I.
+Proof.
+apply I_eq_prop.
+right; exists 0.
+split; [ intros j H; exfalso; revert H; apply Nat.nlt_0_r | idtac ].
+split; [ intros H; discr_digit H | left ].
+split; [ reflexivity | idtac ].
+split; intros; reflexivity.
+Qed.

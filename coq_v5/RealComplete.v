@@ -46,31 +46,6 @@ destruct (R_lt_dec x y) as [H1| H1]; [ idtac | apply R_le_refl ].
 apply R_lt_le_incl; assumption.
 Qed.
 
-Theorem carry_0_0_r : ∀ x, (x ≠ 1)%I → (carry x 0 0 = 0)%D.
-Proof.
-intros x Hx.
-unfold carry; simpl.
-remember (fst_same x 0 0) as s1 eqn:Hs1.
-apply fst_same_sym_iff in Hs1; simpl in Hs1.
-destruct s1 as [dj1|]; [ idtac | exfalso ].
-destruct Hs1 as (Hn1, Ht1); assumption.
-apply Hx; unfold I_eq; simpl.
-unfold I_eq_ext; simpl; intros i.
-unfold I_add_i; simpl.
-rewrite Hs1; apply Digit.add_compat; [ reflexivity | idtac ].
-unfold carry; simpl.
-remember (fst_same x 0 (S i)) as s2 eqn:Hs2.
-remember (fst_same 1 0 (S i)) as s3 eqn:Hs3.
-destruct s2 as [dj2| ]; [ idtac | destruct s3; reflexivity ].
-rewrite Hs1; destruct s3; reflexivity.
-Qed.
-
-Theorem I_eq_ext_1 : ∀ x, I_eq_ext x 1 → (∀ i, (x.[i] = 1)%D).
-Proof.
-intros x Hx i.
-apply Hx.
-Qed.
-
 Theorem I_eqs_eq_ext : ∀ x y, I_eq_ext x y ↔ (x == y)%I.
 Proof.
 intros x y.
@@ -88,6 +63,25 @@ split; intros Hxy.
   destruct (Digit.eq_dec (x.[j1]) 1); discriminate Hxy.
 
   rewrite Hs1; apply Digit.opp_involutive.
+Qed.
+
+Theorem carry_0_0_r : ∀ x, (x ≠≠ 1)%I → (carry x 0 0 = 0)%D.
+Proof.
+intros x Hx.
+unfold carry; simpl.
+remember (fst_same x 0 0) as s1 eqn:Hs1.
+apply fst_same_sym_iff in Hs1; simpl in Hs1.
+destruct s1 as [dj1|]; [ idtac | exfalso ].
+destruct Hs1 as (Hn1, Ht1); assumption.
+apply Hx; unfold I_eq; simpl.
+apply I_eqs_eq_ext.
+assumption.
+Qed.
+
+Theorem I_eq_ext_1 : ∀ x, I_eq_ext x 1 → (∀ i, (x.[i] = 1)%D).
+Proof.
+intros x Hx i.
+apply Hx.
 Qed.
 
 Theorem R_lt_add_compat_r : ∀ x y z, (x < y)%R → (x + z < y + z)%R.
@@ -152,7 +146,38 @@ destruct cmp1; [ idtac | clear Hxy | discriminate Hxy ].
      rewrite <- Z.add_assoc, Z.add_comm, Z.add_assoc in Hcmp2.
      symmetry in Hcmp2.
      apply Z.add_cancel_r in Hcmp2.
+     destruct (I_eq_dec xf 1) as [H1| H1].
+bbb.
+(* --> revoir ce lien entre I_eqs et I_eq_ext ; il faut une seule
+   définition et peut-être le fait que I_eqs x y est équivalent à
+   ∀ i, (x.[i] = y.[i])%D
+ *)
+
+      destruct (I_eq_dec xf 0) as [H2| H2].
+       Focus 2.
+       rewrite H1 in H2; apply H2; symmetry; apply I_0_eq_1.
+
+       unfold I_eq, I_eq_ext in H1, H2; simpl in H1, H2.
+
+Unfocus.
+Focus 2.bbb.
+      unfold I_eq, I_eq_ext in H1; simpl in H1.
+
+SearchAbout (0 = 1)%I.
+      apply I_eqs_eq_ext in H1.
+      unfold I_eqs, I_compare in H1; simpl in H1.
+
+      Focus 2.
+      remember H1 as H; clear HeqH.
+      apply carry_0_0_r in H.
+      rewrite H, b2z_0, Z.add_0_r in Hcmp1.
+bbb.
      destruct (I_eqs_dec xf 1) as [H1| H1].
+      apply I_eqs_eq_ext in H1; unfold I_eq_ext in H1; simpl in H1.
+      rewrite H1 in Hnx1, Hnxz2.
+       apply carry_0_0_r.
+       intros H; apply H1.
+       apply I_eqs_eq.
 bbb.
 unfold carry in *; simpl in *.
      remember (carry xf 0 0) as c1 eqn:Hc1.
