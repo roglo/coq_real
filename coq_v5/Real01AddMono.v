@@ -2015,6 +2015,7 @@ destruct (I_zerop (x - y)%I) as [Hxy| Hxy].
  right; unfold I_sub in  Hxy; intros H; apply Hxy; rewrite H.
  apply I_sub_diag.
 Qed.
+Arguments I_eq_dec x%I y%I.
 
 Theorem I_decidable : ∀ x y, Decidable.decidable (x = y)%I.
 Proof.
