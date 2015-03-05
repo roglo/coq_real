@@ -315,8 +315,8 @@ destruct cmp1; [ idtac | clear Hxy | discriminate Hxy ].
      rewrite <- Hx1 in H; apply Digit.opp_sym in H.
      apply I_add_inf_1_neq_if in H; [ idtac | intros di; apply Hs1 ].
      destruct H as (j, (Hij, (Hni, (Ha, (Hb, (Hat, Hbt)))))).
+SearchAbout (∀ _, (I_add_i _ _ _ = 1)%D).
 bbb.
-
     pose proof Hs1 0 as H; simpl in H.
     rewrite Digit.opp_involutive in H.
     unfold I_add_i in H; simpl in H.
