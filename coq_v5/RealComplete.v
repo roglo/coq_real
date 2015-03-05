@@ -192,6 +192,29 @@ bbb.
 bbb.
 *)
 
+Theorem R_int_norm_add : ∀ x y nx ny,
+  nx = R_norm x
+  → ny = R_norm y
+  → R_int (R_norm (nx + ny)) = (R_int (R_norm nx) + R_int (R_norm ny))%Z.
+Proof.
+intros x y nx ny Hnx Hny; simpl.
+symmetry.
+destruct (I_eqs_dec (R_frac nx) 1) as [H1| H1].
+ rewrite Hnx in H1; simpl in H1.
+ unfold I_eqs, I_compare in H1; simpl in H1.
+ remember (fst_same (R_frac x + 0%I) (- 1%I) 0) as s1 eqn:Hs1.
+ destruct s1; [ idtac | clear H1 ].
+  destruct (Digit.eq_dec (I_add_i (R_frac x) 0 n) 1); discriminate H1.
+
+  apply fst_same_sym_iff in Hs1; simpl in Hs1.
+  pose proof not_I_add_0_inf_1 (R_frac x) 0 as H; simpl in H.
+  exfalso; apply H; intros i.
+  rewrite Hs1; reflexivity.
+
+ rewrite carry_0_0_r; [ idtac | assumption ].
+bbb.
+*)
+
 Theorem zzz : ∀ x y z,
   (R_norm x < R_norm y)%R
   → (R_norm x + R_norm z < R_norm y + R_norm z)%R.
@@ -225,9 +248,9 @@ destruct cmp1; [ idtac | clear Hxy | discriminate Hxy ].
  rewrite Hny in Hy1 at 2; simpl in Hy1.
  rewrite carry_add_0_0 in Hx1, Hy1.
  do 2 rewrite Digit.add_0_r in Hx1, Hy1.
-bbb.
-
  unfold R_lt, R_compare.
+ rewrite <- R_int_norm_add.
+bbb.
  remember (R_norm (nx + nz)) as nxz eqn:Hnxz.
  remember (R_norm (ny + nz)) as nyz eqn:Hnyz.
  move nyz before nxz.
