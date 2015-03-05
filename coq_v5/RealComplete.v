@@ -84,6 +84,169 @@ intros x Hx i.
 apply Hx.
 Qed.
 
+Theorem yyy : ∀ x y i, (carry ((x + 0)%I + 0%I) y i = carry (x + 0%I) y i)%D.
+Proof.
+intros x y i.
+unfold carry; simpl.
+remember (fst_same ((x + 0)%I + 0%I) y i) as s1 eqn:Hs1.
+remember (fst_same (x + 0%I) y i) as s2 eqn:Hs2.
+destruct s1 as [dj1| ].
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ destruct Hs1 as (Hn1, Ht1); rewrite Ht1.
+ destruct s2 as [dj2| ].
+  apply fst_same_sym_iff in Hs2; simpl in Hs2.
+  destruct Hs2 as (Hn2, Ht2); rewrite Ht2.
+  destruct (lt_eq_lt_dec dj1 dj2) as [[H1| H1]| H1].
+   remember H1 as H; clear HeqH.
+   apply Hn2 in H.
+   unfold I_add_i in Ht1; simpl in Ht1.
+   rewrite H, Digit.add_0_r in Ht1.
+   unfold carry in Ht1; simpl in Ht1.
+   remember (fst_same (x + 0%I) 0 (S (i + dj1))) as s3 eqn:Hs3.
+   apply fst_same_sym_iff in Hs3; simpl in Hs3.
+   destruct s3 as [dj3| ].
+    destruct Hs3 as (Hn3, Ht3); rewrite Ht3, Digit.add_0_r in Ht1.
+    exfalso; revert Ht1; apply Digit.no_fixpoint_opp.
+
+    clear Ht1.
+    unfold I_add_i in H; simpl in H.
+    rewrite Digit.add_0_r in H.
+    unfold carry in H; simpl in H.
+    remember (fst_same x 0 (S (i + dj1))) as s4 eqn:Hs4.
+    apply fst_same_sym_iff in Hs4; simpl in Hs4.
+    destruct s4 as [dj4| ].
+     destruct Hs4 as (Hn4, Ht4); rewrite Ht4, Digit.add_0_r in H.
+     pose proof Hs3 dj4 as HH.
+     unfold I_add_i in HH; simpl in HH.
+     rewrite Ht4 in HH.
+     do 2 rewrite Digit.add_0_l in HH; rewrite Digit.opp_0 in HH.
+Abort.
+  (* putain, ça a pas l'air de le faire, les mecs ;
+     mais bon, faut que je regarde un peu plus... *)
+
+Theorem R_norm_add : ∀ x y nx ny,
+  nx = R_norm x
+  → ny = R_norm y
+  → (R_norm (nx + ny) = R_norm nx + R_norm ny)%R.
+Proof.
+intros x y nx ny Hnx Hny.
+unfold R_eq; simpl.
+split.
+ do 6 rewrite <- Z.add_assoc.
+ apply Z.add_cancel_l.
+ symmetry; rewrite Z.add_comm; symmetry.
+ do 2 rewrite <- Z.add_assoc.
+ apply Z.add_cancel_l.
+ subst nx ny; simpl.
+ do 3 rewrite carry_add_0_0, b2z_0.
+ do 2 rewrite Z.add_0_r; rewrite Z.add_0_l.
+ rewrite Z.add_comm; f_equal.
+ unfold carry; simpl.
+ remember ((R_frac x + 0)%I) as nx eqn:Hnx.
+ remember ((R_frac y + 0)%I) as ny eqn:Hny.
+ remember (fst_same (nx + ny) 0 0) as s1 eqn:Hs1.
+ remember (fst_same (nx + 0%I) (ny + 0%I) 0) as s2 eqn:Hs2.
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ apply fst_same_sym_iff in Hs2; simpl in Hs2.
+ destruct s1 as [di1| ].
+  destruct Hs1 as (Hn1, Ht1); rewrite Ht1, b2z_0.
+  destruct s2 as [di2| ]; [ idtac | exfalso ].
+   destruct Hs2 as (Hn2, Ht2); rewrite Ht2.
+   rewrite Hnx, Hny in Ht2.
+   do 2 rewrite I_add_i_0_r in Ht2.
+   rewrite Hny, I_add_i_0_r.
+   destruct (lt_eq_lt_dec di1 di2) as [[H1| H1]| H1].
+    apply Hn2 in H1.
+    rewrite Hnx, Hny in H1.
+    do 2 rewrite I_add_i_0_r in H1.
+    rewrite Hnx, Hny in Ht1.
+    unfold I_add_i in Ht1; simpl in Ht1.
+    rewrite H1 in Ht1.
+    rewrite Digit.opp_add_diag_l, Digit.add_1_l in Ht1.
+    apply Digit.opp_0_iff in Ht1.
+bbb.
+   unfold I_add_i in Ht2; simpl in Ht2.
+   do 2 rewrite Digit.add_0_r in Ht2.
+bbb.
+
+Theorem zzz : ∀ x y z,
+  (R_norm x < R_norm y)%R
+  → (R_norm x + R_norm z < R_norm y + R_norm z)%R.
+Proof.
+intros x y z Hxy.
+unfold R_lt, R_compare in Hxy.
+remember (R_norm x) as nx eqn:Hnx.
+remember (R_norm y) as ny eqn:Hny.
+remember (R_norm z) as nz eqn:Hnz.
+move ny before nx; move nz before ny; move Hnz before Hny.
+remember (R_int (R_norm nx) ?= R_int (R_norm ny))%Z as cmp1 eqn:Hcmp1.
+symmetry in Hcmp1.
+destruct cmp1; [ idtac | clear Hxy | discriminate Hxy ].
+ apply Z.compare_eq in Hcmp1.
+ remember (R_frac (R_norm nx)) as a.
+ remember (R_frac (R_norm ny)) as b.
+ remember (fst_same a (-b) 0) as s1 eqn:Hs1; subst a b.
+ destruct s1 as [j1| ]; [ idtac | discriminate Hxy ].
+ remember (Digit.dec (R_frac (R_norm nx) .[ j1])) as d eqn:Hd.
+ destruct d as [H1| H1]; [ discriminate Hxy | clear Hd Hxy ].
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ destruct Hs1 as (Hn1, Ht1).
+ rewrite H1 in Ht1; apply Digit.opp_sym in Ht1; rewrite Digit.opp_0 in Ht1.
+ simpl in H1.
+ rename H1 into Hx1; rename Ht1 into Hy1; move Hy1 before Hx1.
+ simpl in Hcmp1.
+ rewrite Hnx in Hcmp1 at 2.
+ rewrite Hny in Hcmp1 at 2; simpl in Hcmp1.
+ do 2 rewrite carry_add_0_0, b2z_0, Z.add_0_r in Hcmp1.
+ rename j1 into i.
+ unfold I_add_i in Hx1, Hy1; simpl in Hx1, Hy1.
+ rewrite Hnx in Hx1 at 2; simpl in Hx1.
+ rewrite Hny in Hy1 at 2; simpl in Hy1.
+ rewrite carry_add_0_0 in Hx1, Hy1.
+ do 2 rewrite Digit.add_0_r in Hx1, Hy1.
+ unfold R_lt, R_compare.
+ remember (R_norm (nx + nz)) as nxz eqn:Hnxz.
+ remember (R_norm (ny + nz)) as nyz eqn:Hnyz.
+ move nyz before nxz.
+ remember ((R_int nxz ?= R_int nyz)%Z) as cmp2 eqn:Hcmp2.
+ symmetry in Hcmp2.
+ destruct cmp2; [ idtac | reflexivity | exfalso ].
+  apply Z.compare_eq in Hcmp2.
+  remember (fst_same (R_frac nxz) (- R_frac nyz) 0) as s2 eqn:Hs2.
+  destruct s2 as [j2| ]; [ idtac | exfalso ].
+  remember (Digit.dec (R_frac nxz .[ j2])) as d eqn:Hd.
+  destruct d as [H1| H1]; [ exfalso; clear Hd | reflexivity ].
+  apply fst_same_sym_iff in Hs2; simpl in Hs2.
+  destruct Hs2 as (Hn2, Ht2).
+  rewrite H1 in Ht2; apply Digit.opp_sym in Ht2; rewrite Digit.opp_1 in Ht2.
+  rename H1 into Hxz1; rename Ht2 into Hyz1; move Hyz1 before Hxz1.
+  rewrite Hnxz, Hnyz in Hcmp2; simpl in Hcmp2.
+  rewrite Hcmp1 in Hcmp2.
+  do 4 rewrite <- Z.add_assoc in Hcmp2.
+  do 2 apply Z.add_cancel_l in Hcmp2.
+SearchAbout (R_norm).
+bbb.
+
+ unfold R_lt, R_compare.
+ remember (R_norm (nx + nz)) as a.
+ remember (R_norm (ny + nz)) as b.
+ remember (R_int a ?= R_int b)%Z as cmp2 eqn:Hcmp2.
+ symmetry in Hcmp2.
+ destruct cmp2; [ idtac | reflexivity | exfalso ].
+  apply Z.compare_eq in Hcmp2.
+  remember (fst_same (R_frac a) (- R_frac b) 0) as s2 eqn:Hs2.
+  destruct s2 as [j2| ]; [ idtac | exfalso ].
+  destruct (Digit.dec (R_frac a .[ j2])) as [H1| H1]; [ idtac | reflexivity ].
+  exfalso; subst a b; simpl in H1, Hcmp2, Hs2.
+  apply fst_same_sym_iff in Hs2; simpl in Hs2.
+  destruct Hs2 as (Hn2, Ht2).
+  simpl in Hcmp1.
+  remember (R_frac nz.[j1]) as zi eqn:Hzi.
+  symmetry in Hzi; apply eq_digit_eq in Hzi.
+  destruct (Digit.dec zi) as [H2| H2]; rewrite H2 in Hzi; clear zi H2.
+   Focus 2.
+bbb.
+
 Theorem R_lt_add_compat_r : ∀ x y z, (x < y)%R → (x + z < y + z)%R.
 Proof.
 intros x y z Hxy.
@@ -109,6 +272,7 @@ destruct cmp1; [ idtac | clear Hxy | discriminate Hxy ].
   destruct Hs1 as (Hn1, Ht1).
   rewrite H1 in Ht1; rename H1 into Hnx1; rename Ht1 into Hny1.
   apply Digit.opp_sym in Hny1; rewrite Digit.opp_0 in Hny1.
+bbb.
   destruct cmp2; [ idtac | reflexivity | exfalso ].
    apply Z.compare_eq in Hcmp2.
    destruct s2 as [j2| ]; [ idtac | exfalso ].

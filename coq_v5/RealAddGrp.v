@@ -20,17 +20,15 @@ Qed.
 
 (* neutral element *)
 
-Theorem carry_noI_add_0_r : ∀ x, (carry (x + 0%I) 0 0 = 0)%D.
+Theorem carry_add_0_0 : ∀ x i, (carry (x + 0%I) 0 i = 0)%D.
 Proof.
-intros x.
+intros x i.
 unfold carry; simpl.
-remember (fst_same (x + 0%I) 0 0) as s eqn:Hs .
-apply fst_same_sym_iff in Hs; simpl in Hs.
-destruct s as [j| ].
- destruct Hs as (_, Hs); rewrite Hs; reflexivity.
-
- pose proof (not_I_add_0_inf_1 x 0) as H.
- contradiction.
+remember (fst_same (x + 0%I) 0 i) as s1 eqn:Hs1.
+apply fst_same_sym_iff in Hs1; simpl in Hs1.
+destruct s1 as [dj1| ]; [ destruct Hs1 as (Hn1, Ht1); assumption | idtac ].
+pose proof not_I_add_0_inf_1 x i as H.
+contradiction.
 Qed.
 
 Theorem b2z_0 : b2z 0%D = 0.
@@ -54,7 +52,7 @@ unfold R_eq.
 unfold R_add; simpl; split; [ idtac | apply I_add_0_r ].
 rewrite Z.add_0_r.
 rewrite <- Z.add_assoc; f_equal.
-rewrite carry_noI_add_0_r, b2z_0, Z.add_0_r.
+rewrite carry_add_0_0, b2z_0, Z.add_0_r.
 reflexivity.
 Qed.
 
