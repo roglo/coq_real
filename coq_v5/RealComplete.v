@@ -84,6 +84,26 @@ intros x Hx i.
 apply Hx.
 Qed.
 
+Theorem R_int_norm_norm : ∀ x nx,
+  nx = R_norm x
+  → R_int (R_norm nx) = R_int nx.
+Proof.
+intros x nx Hnx; simpl.
+subst nx; simpl.
+rewrite carry_add_0_0, b2z_0, Z.add_0_r.
+reflexivity.
+Qed.
+
+Theorem R_frac_norm_norm : ∀ x nx,
+  nx = R_norm x
+  → (R_frac (R_norm nx) = R_frac nx)%I.
+Proof.
+intros x nx Hnx; simpl.
+subst nx; simpl.
+rewrite I_add_0_r.
+reflexivity.
+Qed.
+
 Theorem yyy : ∀ x y i, (carry ((x + 0)%I + 0%I) y i = carry (x + 0%I) y i)%D.
 Proof.
 intros x y i.
@@ -156,18 +176,21 @@ split.
    do 2 rewrite I_add_i_0_r in Ht2.
    rewrite Hny, I_add_i_0_r.
    destruct (lt_eq_lt_dec di1 di2) as [[H1| H1]| H1].
-    apply Hn2 in H1.
-    rewrite Hnx, Hny in H1.
-    do 2 rewrite I_add_i_0_r in H1.
+    remember H1 as H; clear HeqH.
+    apply Hn2 in H.
+    rewrite Hnx, Hny in H.
+    do 2 rewrite I_add_i_0_r in H.
     rewrite Hnx, Hny in Ht1.
     unfold I_add_i in Ht1; simpl in Ht1.
-    rewrite H1 in Ht1.
+    rewrite H in Ht1.
     rewrite Digit.opp_add_diag_l, Digit.add_1_l in Ht1.
     apply Digit.opp_0_iff in Ht1.
+Abort. (* à voir...
 bbb.
    unfold I_add_i in Ht2; simpl in Ht2.
    do 2 rewrite Digit.add_0_r in Ht2.
 bbb.
+*)
 
 Theorem zzz : ∀ x y z,
   (R_norm x < R_norm y)%R
@@ -178,8 +201,10 @@ unfold R_lt, R_compare in Hxy.
 remember (R_norm x) as nx eqn:Hnx.
 remember (R_norm y) as ny eqn:Hny.
 remember (R_norm z) as nz eqn:Hnz.
+erewrite R_int_norm_norm in Hxy; [ idtac | eassumption ].
+erewrite R_int_norm_norm in Hxy; [ idtac | eassumption ].
 move ny before nx; move nz before ny; move Hnz before Hny.
-remember (R_int (R_norm nx) ?= R_int (R_norm ny))%Z as cmp1 eqn:Hcmp1.
+remember (R_int nx ?= R_int ny)%Z as cmp1 eqn:Hcmp1.
 symmetry in Hcmp1.
 destruct cmp1; [ idtac | clear Hxy | discriminate Hxy ].
  apply Z.compare_eq in Hcmp1.
@@ -194,16 +219,14 @@ destruct cmp1; [ idtac | clear Hxy | discriminate Hxy ].
  rewrite H1 in Ht1; apply Digit.opp_sym in Ht1; rewrite Digit.opp_0 in Ht1.
  simpl in H1.
  rename H1 into Hx1; rename Ht1 into Hy1; move Hy1 before Hx1.
- simpl in Hcmp1.
- rewrite Hnx in Hcmp1 at 2.
- rewrite Hny in Hcmp1 at 2; simpl in Hcmp1.
- do 2 rewrite carry_add_0_0, b2z_0, Z.add_0_r in Hcmp1.
  rename j1 into i.
  unfold I_add_i in Hx1, Hy1; simpl in Hx1, Hy1.
  rewrite Hnx in Hx1 at 2; simpl in Hx1.
  rewrite Hny in Hy1 at 2; simpl in Hy1.
  rewrite carry_add_0_0 in Hx1, Hy1.
  do 2 rewrite Digit.add_0_r in Hx1, Hy1.
+bbb.
+
  unfold R_lt, R_compare.
  remember (R_norm (nx + nz)) as nxz eqn:Hnxz.
  remember (R_norm (ny + nz)) as nyz eqn:Hnyz.
