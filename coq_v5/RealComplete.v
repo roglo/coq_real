@@ -329,7 +329,18 @@ destruct cmp1; [ idtac | clear Hxy | discriminate Hxy ].
 
     rewrite carry_0_0_r in Hcmp2; [ idtac | assumption ].
     rewrite b2z_0, Z.add_0_r in Hcmp2.
-
+    unfold carry in Hcmp2; simpl in Hcmp2.
+    remember (fst_same (R_frac nx) (R_frac nz) 0) as s3 eqn:Hs3.
+    remember (fst_same (R_frac ny) (R_frac nz) 0) as s4 eqn:Hs4.
+    apply fst_same_sym_iff in Hs3; simpl in Hs3.
+    apply fst_same_sym_iff in Hs4; simpl in Hs4.
+    destruct s3 as [di3| ].
+     destruct Hs3 as (Hn3, Ht3); rewrite Ht3 in Hcmp2.
+     destruct s4 as [di4| ].
+      destruct Hs4 as (Hn4, Ht4); rewrite Ht4 in Hcmp2.
+      destruct (lt_eq_lt_dec di3 di4) as [[H3| H3]| H3].
+       remember H3 as H; clear HeqH.
+       apply Hn4 in H; simpl in H.
 bbb.
 
  unfold R_lt, R_compare.
