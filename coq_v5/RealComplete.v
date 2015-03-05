@@ -192,6 +192,7 @@ bbb.
 bbb.
 *)
 
+(* faux
 Theorem R_int_norm_add : ∀ x y nx ny,
   nx = R_norm x
   → ny = R_norm y
@@ -225,6 +226,17 @@ destruct (I_eqs_dec (R_frac nx) 1) as [H1| H1].
    rewrite Hs1; reflexivity.
 
   rewrite carry_0_0_r; [ idtac | assumption ].
+  rewrite b2z_0; do 2 rewrite Z.add_0_r.
+  unfold carry; simpl.
+  remember (fst_same (R_frac nx) (R_frac ny) 0) as s1 eqn:Hs1.
+  remember (fst_same (R_frac nx + R_frac ny) 0 0) as s2 eqn:Hs2.
+  apply fst_same_sym_iff in Hs1; simpl in Hs1.
+  apply fst_same_sym_iff in Hs2; simpl in Hs2.
+  destruct s1 as [dj1| ].
+   destruct Hs1 as (Hn1, Ht1).
+   destruct s2 as [dj2| ].
+    destruct Hs2 as (Hn2, Ht2).
+    rewrite Ht2, b2z_0, Z.add_0_r.
 bbb.
 *)
 
@@ -262,8 +274,6 @@ destruct cmp1; [ idtac | clear Hxy | discriminate Hxy ].
  rewrite carry_add_0_0 in Hx1, Hy1.
  do 2 rewrite Digit.add_0_r in Hx1, Hy1.
  unfold R_lt, R_compare.
- rewrite <- R_int_norm_add.
-bbb.
  remember (R_norm (nx + nz)) as nxz eqn:Hnxz.
  remember (R_norm (ny + nz)) as nyz eqn:Hnyz.
  move nyz before nxz.
@@ -283,7 +293,28 @@ bbb.
   rewrite Hcmp1 in Hcmp2.
   do 4 rewrite <- Z.add_assoc in Hcmp2.
   do 2 apply Z.add_cancel_l in Hcmp2.
-SearchAbout (R_norm).
+  destruct (I_eqs_dec (R_frac nx + R_frac nz) 1) as [H1| H1].
+   unfold I_eqs, I_compare in H1; simpl in H1.
+   remember (fst_same (R_frac nx + R_frac nz) (- 1%I) 0) as s1 eqn:Hs1.
+   destruct s1 as [j1| ]; [ idtac | clear H1 ].
+   remember (I_add_i (R_frac nx) (R_frac nz) j1) as d.
+   destruct (Digit.eq_dec d 1); discriminate H1.
+
+   apply fst_same_sym_iff in Hs1; simpl in Hs1.
+   destruct (I_eqs_dec (R_frac ny + R_frac nz) 1) as [H1| H1].
+    unfold I_eqs, I_compare in H1; simpl in H1.
+    remember (fst_same (R_frac ny + R_frac nz) (- 1%I) 0) as s3 eqn:Hs3.
+    destruct s3 as [j3| ]; [ idtac | clear H1 ].
+    remember (I_add_i (R_frac ny) (R_frac nz) j3) as d.
+    destruct (Digit.eq_dec d 1); discriminate H1.
+
+    apply fst_same_sym_iff in Hs3; simpl in Hs3.
+bbb.
+
+
+  rewrite carry_0_0_r, b2z_0, Z.add_0_r in Hcmp2.
+   rewrite carry_0_0_r, b2z_0, Z.add_0_r in Hcmp2.
+    apply fst_same_sym_iff in Hs1; simpl in Hs1.
 bbb.
 
  unfold R_lt, R_compare.
