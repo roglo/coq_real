@@ -309,7 +309,17 @@ destruct cmp1; [ idtac | clear Hxy | discriminate Hxy ].
     destruct (Digit.eq_dec d 1); discriminate H1.
 
     apply fst_same_sym_iff in Hs3; simpl in Hs3.
+    destruct (Digit.dec (R_frac nz.[i])) as [Hz1| Hz1]; move Hz1 before Hy1.
+     remember Hz1 as H; clear HeqH; symmetry in H.
+     rewrite <- Digit.opp_involutive in H; symmetry in H.
+     rewrite <- Hx1 in H; apply Digit.opp_sym in H.
+     apply I_add_inf_1_neq_if in H; [ idtac | intros di; apply Hs1 ].
+     destruct H as (j, (Hij, (Hni, (Ha, (Hb, (Hat, Hbt)))))).
 bbb.
+
+    pose proof Hs1 0 as H; simpl in H.
+    rewrite Digit.opp_involutive in H.
+    unfold I_add_i in H; simpl in H.
 
 
   rewrite carry_0_0_r, b2z_0, Z.add_0_r in Hcmp2.
