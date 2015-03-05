@@ -203,8 +203,8 @@ destruct (I_eqs_dec (R_frac nx) 1) as [H1| H1].
  rewrite Hnx in H1; simpl in H1.
  unfold I_eqs, I_compare in H1; simpl in H1.
  remember (fst_same (R_frac x + 0%I) (- 1%I) 0) as s1 eqn:Hs1.
- destruct s1; [ idtac | clear H1 ].
-  destruct (Digit.eq_dec (I_add_i (R_frac x) 0 n) 1); discriminate H1.
+ destruct s1 as [j1| ]; [ idtac | clear H1 ].
+  destruct (Digit.eq_dec (I_add_i (R_frac x) 0 j1) 1); discriminate H1.
 
   apply fst_same_sym_iff in Hs1; simpl in Hs1.
   pose proof not_I_add_0_inf_1 (R_frac x) 0 as H; simpl in H.
@@ -212,6 +212,19 @@ destruct (I_eqs_dec (R_frac nx) 1) as [H1| H1].
   rewrite Hs1; reflexivity.
 
  rewrite carry_0_0_r; [ idtac | assumption ].
+ destruct (I_eqs_dec (R_frac ny) 1) as [H2| H2].
+  rewrite Hny in H2; simpl in H2.
+  unfold I_eqs, I_compare in H2; simpl in H2.
+  remember (fst_same (R_frac y + 0%I) (- 1%I) 0) as s1 eqn:Hs1.
+  destruct s1 as [j1| ]; [ idtac | clear H2 ].
+   destruct (Digit.eq_dec (I_add_i (R_frac y) 0 j1) 1); discriminate H2.
+
+   apply fst_same_sym_iff in Hs1; simpl in Hs1.
+   pose proof not_I_add_0_inf_1 (R_frac y) 0 as H; simpl in H.
+   exfalso; apply H; intros i.
+   rewrite Hs1; reflexivity.
+
+  rewrite carry_0_0_r; [ idtac | assumption ].
 bbb.
 *)
 
