@@ -329,6 +329,7 @@ destruct cmp1; [ idtac | clear Hxy | discriminate Hxy ].
 
     rewrite carry_0_0_r in Hcmp2; [ idtac | assumption ].
     rewrite b2z_0, Z.add_0_r in Hcmp2.
+bbb.
     unfold carry in Hcmp2; simpl in Hcmp2.
     remember (fst_same (R_frac nx) (R_frac nz) 0) as s3 eqn:Hs3.
     remember (fst_same (R_frac ny) (R_frac nz) 0) as s4 eqn:Hs4.
