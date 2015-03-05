@@ -240,6 +240,16 @@ destruct (I_eqs_dec (R_frac nx) 1) as [H1| H1].
 bbb.
 *)
 
+Theorem not_I_add_0_l_inf_1 : ∀ x y, ¬(∀ i, (I_add_i (x + 0%I) y i = 1)%D).
+Proof.
+intros x y Hi.
+assert (∀ i, (I_add_i (x + 0%I) y (0 + i) = 1)%D) as H.
+intros i; apply Hi.
+eapply I_add_inf_if in H; simpl in H.
+destruct H as (j, (Hj, (Hx, Hy))).
+revert Hx; apply not_I_add_0_inf_1_succ.
+Qed.
+
 Theorem zzz : ∀ x y z,
   (R_norm x < R_norm y)%R
   → (R_norm x + R_norm z < R_norm y + R_norm z)%R.
@@ -297,34 +307,29 @@ destruct cmp1; [ idtac | clear Hxy | discriminate Hxy ].
    unfold I_eqs, I_compare in H1; simpl in H1.
    remember (fst_same (R_frac nx + R_frac nz) (- 1%I) 0) as s1 eqn:Hs1.
    destruct s1 as [j1| ]; [ idtac | clear H1 ].
-   remember (I_add_i (R_frac nx) (R_frac nz) j1) as d.
-   destruct (Digit.eq_dec d 1); discriminate H1.
-
-   apply fst_same_sym_iff in Hs1; simpl in Hs1.
-   destruct (I_eqs_dec (R_frac ny + R_frac nz) 1) as [H1| H1].
-    unfold I_eqs, I_compare in H1; simpl in H1.
-    remember (fst_same (R_frac ny + R_frac nz) (- 1%I) 0) as s3 eqn:Hs3.
-    destruct s3 as [j3| ]; [ idtac | clear H1 ].
-    remember (I_add_i (R_frac ny) (R_frac nz) j3) as d.
+    remember (I_add_i (R_frac nx) (R_frac nz) j1) as d.
     destruct (Digit.eq_dec d 1); discriminate H1.
 
-    apply fst_same_sym_iff in Hs3; simpl in Hs3.
-    destruct (Digit.dec (R_frac nz.[i])) as [Hz1| Hz1]; move Hz1 before Hy1.
-     remember Hz1 as H; clear HeqH; symmetry in H.
-     rewrite <- Digit.opp_involutive in H; symmetry in H.
-     rewrite <- Hx1 in H; apply Digit.opp_sym in H.
-     apply I_add_inf_1_neq_if in H; [ idtac | intros di; apply Hs1 ].
-     destruct H as (j, (Hij, (Hni, (Ha, (Hb, (Hat, Hbt)))))).
-SearchAbout (∀ _, (I_add_i _ _ _ = 1)%D).
-bbb.
-    pose proof Hs1 0 as H; simpl in H.
-    rewrite Digit.opp_involutive in H.
-    unfold I_add_i in H; simpl in H.
-
-
-  rewrite carry_0_0_r, b2z_0, Z.add_0_r in Hcmp2.
-   rewrite carry_0_0_r, b2z_0, Z.add_0_r in Hcmp2.
     apply fst_same_sym_iff in Hs1; simpl in Hs1.
+    rewrite Hnx, Hnz in Hs1; simpl in Hs1.
+    revert Hs1; apply not_I_add_0_l_inf_1.
+
+   rewrite carry_0_0_r in Hcmp2; [ idtac | assumption ].
+   rewrite b2z_0, Z.add_0_r in Hcmp2.
+   destruct (I_eqs_dec (R_frac ny + R_frac nz) 1) as [H2| H2].
+    unfold I_eqs, I_compare in H2; simpl in H2.
+    remember (fst_same (R_frac ny + R_frac nz) (- 1%I) 0) as s3 eqn:Hs3.
+    destruct s3 as [j3| ]; [ idtac | clear H2 ].
+     remember (I_add_i (R_frac ny) (R_frac nz) j3) as d.
+     destruct (Digit.eq_dec d 1); discriminate H2.
+
+     apply fst_same_sym_iff in Hs3; simpl in Hs3.
+     rewrite Hny, Hnz in Hs3; simpl in Hs3.
+     revert Hs3; apply not_I_add_0_l_inf_1.
+
+    rewrite carry_0_0_r in Hcmp2; [ idtac | assumption ].
+    rewrite b2z_0, Z.add_0_r in Hcmp2.
+
 bbb.
 
  unfold R_lt, R_compare.
