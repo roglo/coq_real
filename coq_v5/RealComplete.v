@@ -250,6 +250,17 @@ destruct H as (j, (Hj, (Hx, Hy))).
 revert Hx; apply not_I_add_0_inf_1_succ.
 Qed.
 
+Theorem b2z_1_iff : ∀ d, b2z d = 1%Z ↔ (d = 1)%D.
+Proof.
+intros d.
+unfold b2z; simpl.
+destruct (Digit.eq_dec 0 1) as [H1| H1]; [ discr_digit H1 | idtac ].
+destruct (Digit.eq_dec d 1) as [H2| H2].
+ split; intros H; [ assumption | reflexivity ].
+
+ split; intros H; [ discriminate H | contradiction ].
+Qed.
+
 Theorem zzz : ∀ x y z,
   (R_norm x < R_norm y)%R
   → (R_norm x + R_norm z < R_norm y + R_norm z)%R.
@@ -349,15 +360,32 @@ SearchAbout (carry (_ + _) 0).
 bbb.
 *)
     destruct (Digit.dec (R_frac nz.[i])) as [Hz1| Hz1]; move Hz1 before Hy1.
-     destruct i.
-      clear Hn1.
-      unfold carry in Hcmp2.
+     clear Hn1.
+     unfold carry in Hcmp2; simpl in Hcmp2.
+     remember (fst_same (R_frac ny) (R_frac nz) 0) as s4 eqn:Hs4.
+     apply fst_same_sym_iff in Hs4; simpl in Hs4.
+     destruct s4 as [di4| ].
+      destruct Hs4 as (Hn4, Ht4).
+      destruct (lt_eq_lt_dec i di4) as [[H3| H3]| H3].
+      remember H3 as H; clear HeqH.
+      apply Hn4 in H.
+      rewrite Hy1, Hz1 in H; discr_digit H.
+
+      subst di4; clear Ht4.
+      rewrite Hy1, b2z_1 in Hcmp2.
+      remember (fst_same (R_frac nx) (R_frac nz) 0) as s3 eqn:Hs3.
+      apply fst_same_sym_iff in Hs3; simpl in Hs3.
+      destruct s3 as [di3| ].
+       destruct Hs3 as (Hn3, Ht3).
+       apply b2z_1_iff in Hcmp2; rewrite Hcmp2 in Ht3.
+       rename Hcmp2 into Hx3; rename Ht3 into Hy3.
+       symmetry in Hy3; move Hx3 after Hy3.
+       destruct (lt_eq_lt_dec i di3) as [[H3| H3]| H3].
+
+
 bbb.
-    unfold carry in Hcmp2; simpl in Hcmp2.
-    remember (fst_same (R_frac nx) (R_frac nz) 0) as s3 eqn:Hs3.
-    remember (fst_same (R_frac ny) (R_frac nz) 0) as s4 eqn:Hs4.
+
     apply fst_same_sym_iff in Hs3; simpl in Hs3.
-    apply fst_same_sym_iff in Hs4; simpl in Hs4.
     destruct s3 as [di3| ].
      destruct Hs3 as (Hn3, Ht3); rewrite Ht3 in Hcmp2.
      destruct s4 as [di4| ].
