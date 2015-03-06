@@ -380,9 +380,27 @@ bbb.
        apply b2z_1_iff in Hcmp2; rewrite Hcmp2 in Ht3.
        rename Hcmp2 into Hx3; rename Ht3 into Hy3.
        symmetry in Hy3; move Hx3 after Hy3.
+       destruct (lt_eq_lt_dec di3 i) as [[H3| H3]| H3].
+bbb.
+        remember H3 as H; clear HeqH.
+        apply Hn4 in H.
+        destruct i; [ revert H3; apply Nat.nlt_0_r | idtac ].
+        pose proof Hn4 0 (Nat.lt_0_succ i) as H4.
+
        destruct (lt_eq_lt_dec i di3) as [[H3| H3]| H3].
-
-
+        destruct (lt_eq_lt_dec i j2) as [[H4| H4]| H4].
+         remember H4 as H; clear HeqH.
+         apply Hn2 in H; rewrite Digit.opp_involutive in H.
+         rewrite Hnxz, Hnyz in H; simpl in H.
+         unfold I_add_i in H; simpl in H.
+         unfold I_add_i in H; simpl in H.
+         rewrite Hx1, Hy1, Hz1 in H; simpl in H.
+bbb.
+        rewrite Hnyz in Hyz1; simpl in Hyz1.
+        unfold I_add_i in Hxz1; simpl in Hxz1.
+        rewrite Digit.add_0_r in Hxz1.
+        unfold I_add_i in Hyz1; simpl in Hyz1.
+        rewrite Digit.add_0_r in Hyz1.
 bbb.
 
     apply fst_same_sym_iff in Hs3; simpl in Hs3.
