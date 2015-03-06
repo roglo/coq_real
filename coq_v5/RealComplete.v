@@ -298,7 +298,7 @@ destruct cmp1; [ idtac | clear Hxy | discriminate Hxy ].
   apply fst_same_sym_iff in Hs2; simpl in Hs2.
   destruct Hs2 as (Hn2, Ht2).
   rewrite H1 in Ht2; apply Digit.opp_sym in Ht2; rewrite Digit.opp_1 in Ht2.
-  rename H1 into Hxz1; rename Ht2 into Hyz1; move Hyz1 before Hxz1.
+  rename H1 into Hxz1; rename Ht2 into Hyz1; move Hyz1 after Hxz1.
   rewrite Hnxz, Hnyz in Hcmp2; simpl in Hcmp2.
   rewrite Hcmp1 in Hcmp2.
   do 4 rewrite <- Z.add_assoc in Hcmp2.
@@ -329,6 +329,23 @@ destruct cmp1; [ idtac | clear Hxy | discriminate Hxy ].
 
     rewrite carry_0_0_r in Hcmp2; [ idtac | assumption ].
     rewrite b2z_0, Z.add_0_r in Hcmp2.
+    destruct (lt_eq_lt_dec i j2) as [[H3| H3]| H3].
+     remember H3 as H; clear HeqH.
+     apply Hn2 in H; rewrite Digit.opp_involutive in H.
+     rewrite Hnxz, Hnyz in H; simpl in H.
+     unfold I_add_i in H; simpl in H.
+     unfold I_add_i in H; simpl in H.
+     do 2 rewrite Digit.add_0_r in H.
+     do 4 rewrite <- Digit.add_assoc in H.
+     rewrite Digit.add_comm in H; symmetry in H.
+     rewrite Digit.add_comm in H; symmetry in H.
+     do 4 rewrite <- Digit.add_assoc in H.
+     apply Digit.add_cancel_l in H.
+     rewrite Hx1, Hy1, Digit.add_0_r in H.
+     rewrite Hnxz in Hxz1; simpl in Hxz1.
+     unfold I_add_i in Hxz1; simpl in Hxz1.
+bbb.
+    destruct (Digit.dec (R_frac nz.[i])) as [Hz1| Hz1]; move Hz1 before Hy1.
 bbb.
     unfold carry in Hcmp2; simpl in Hcmp2.
     remember (fst_same (R_frac nx) (R_frac nz) 0) as s3 eqn:Hs3.
