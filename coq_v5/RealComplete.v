@@ -373,13 +373,35 @@ bbb.
 
       subst di4; clear Ht4.
       rewrite Hy1, b2z_1 in Hcmp2.
+      apply b2z_1_iff in Hcmp2.
+      destruct i; [ clear Hn4 | idtac ].
+       destruct j2; [ clear Hn2 | idtac ].
+        rewrite Hnxz in Hxz1; simpl in Hxz1.
+        unfold I_add_i in Hxz1; simpl in Hxz1.
+        unfold I_add_i in Hxz1; simpl in Hxz1.
+        rewrite Hx1, Hz1, Digit.add_0_l, Digit.add_0_r in Hxz1.
+        rewrite Digit.add_1_l in Hxz1.
+        rewrite <- Digit.opp_add_l in Hxz1.
+        apply Digit.opp_1_iff in Hxz1.
+        remember (fst_same (R_frac nx) (R_frac nz) 0) as s3 eqn:Hs3.
+        apply fst_same_sym_iff in Hs3; simpl in Hs3.
+        destruct s3 as [di3| ].
+         destruct Hs3 as (Hn3, Ht3).
+         rename Hcmp2 into Hx3; rename Ht3 into Hz3.
+         symmetry in Hz3; move Hx3 after Hz3; rewrite Hx3 in Hz3.
+bbb.
+         unfold carry in Hxz1; simpl in Hxz1.
+        rewrite Hnyz in Hyz1; simpl in Hyz1.
+        unfold I_add_i in Hxz1, Hyz1; simpl in Hxz1, Hyz1.
+        unfold I_add_i in Hxz1, Hyz1; simpl in Hxz1, Hyz1.
+        rewrite Hx1, Hz1, Digit.add_0_r in Hxz1.
+        rewrite Hy1, Hz1, Digit.add_0_r in Hyz1.
+        unfold carry in Hxz1, Hyz1; simpl in Hxz1, Hyz1.
+bbb.
       remember (fst_same (R_frac nx) (R_frac nz) 0) as s3 eqn:Hs3.
       apply fst_same_sym_iff in Hs3; simpl in Hs3.
       destruct s3 as [di3| ].
        destruct Hs3 as (Hn3, Ht3).
-       apply b2z_1_iff in Hcmp2; rewrite Hcmp2 in Ht3.
-       rename Hcmp2 into Hx3; rename Ht3 into Hy3.
-       symmetry in Hy3; move Hx3 after Hy3.
        destruct (lt_eq_lt_dec di3 i) as [[H3| H3]| H3].
 bbb.
         remember H3 as H; clear HeqH.
