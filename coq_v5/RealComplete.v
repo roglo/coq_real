@@ -389,8 +389,27 @@ bbb.
          destruct Hs3 as (Hn3, Ht3).
          rename Hcmp2 into Hx3; rename Ht3 into Hz3.
          symmetry in Hz3; move Hx3 after Hz3; rewrite Hx3 in Hz3.
-bbb.
          unfold carry in Hxz1; simpl in Hxz1.
+         remember (fst_same (R_frac nx) (R_frac nz) 1) as s4 eqn:Hs4.
+         apply fst_same_sym_iff in Hs4; simpl in Hs4.
+         destruct s4 as [di4| ].
+          destruct Hs4 as (Hn4, Ht4).
+          destruct di3; [ rewrite Hx1 in Hx3; discr_digit Hx3 | idtac ].
+          destruct (lt_eq_lt_dec di3 di4) as [[H3| H3]| H3].
+           apply Hn4 in H3.
+           rewrite Hx3, Hz3 in H3; discr_digit H3.
+
+           subst di4.
+           rewrite Hx3, Digit.add_1_l in Hxz1.
+           apply Digit.opp_0_iff in Hxz1.
+           remember (fst_same (R_frac nx + R_frac nz) 0 1) as s5 eqn:Hs5.
+           apply fst_same_sym_iff in Hs5; simpl in Hs5.
+           destruct s5 as [di5| ]; [ idtac | clear Hxz1 ].
+            destruct Hs5 as (Hn5, Ht5).
+            rewrite Hxz1 in Ht5; discr_digit Ht5.
+
+            bbb.
+
         rewrite Hnyz in Hyz1; simpl in Hyz1.
         unfold I_add_i in Hxz1, Hyz1; simpl in Hxz1, Hyz1.
         unfold I_add_i in Hxz1, Hyz1; simpl in Hxz1, Hyz1.
