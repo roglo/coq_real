@@ -459,15 +459,46 @@ bbb.
         do 4 rewrite Digit.add_0_r in H.
         do 2 rewrite Digit.add_1_l in H.
         rewrite Digit.opp_1, Digit.add_0_l in H.
+        rename H into Hcc.
         remember (fst_same (R_frac nx) (R_frac nz) 0) as s3 eqn:Hs3.
+        remember Hs3 as Hs3v; clear HeqHs3v.
         apply fst_same_sym_iff in Hs3; simpl in Hs3.
         destruct s3 as [di3| ]; [ idtac | clear Hcmp2 ].
          destruct Hs3 as (Hn3, Ht3).
          rename Hcmp2 into Hx3; rename Ht3 into Hz3.
          symmetry in Hz3; move Hx3 after Hz3; rewrite Hx3 in Hz3.
          destruct di3; [ rewrite Hx1 in Hx3; discr_digit Hx3 | idtac ].
-        bbb.
+         destruct (lt_eq_lt_dec j2 di3) as [[H3| H3]| H3].
+          remember H3 as H; clear HeqH.
+          apply Nat.succ_lt_mono, Hn3 in H.
+          rewrite Hnxz in Hxz1; simpl in Hxz1.
+          unfold I_add_i in Hxz1; simpl in Hxz1.
+          unfold I_add_i in Hxz1; simpl in Hxz1.
+          rewrite H, Digit.opp_add_diag_l in Hxz1.
+          rewrite Digit.add_0_r, Digit.add_1_l in Hxz1.
+          rename H into Hxz2.
+          remember Hs3v as H; clear HeqH; symmetry in H.
+          apply Nat.succ_lt_mono in H3.
+          eapply carry_before_relay in H; [ simpl in H | eassumption ].
+          rewrite H, Hx3, Digit.opp_1, Digit.add_0_l in Hxz1.
+          rewrite Hnx, Hnz in Hxz1; simpl in Hxz1.
+          rewrite carry_sum_3_noI_assoc_l in Hxz1; [ idtac | reflexivity ].
+          discr_digit Hxz1.
+
+          subst di3.
 bbb.
+              di3
+   nz  1   .   1
+        ←c ≠
+   nx  0   .   1   .   .
+
+  nxz ¬c   .   .
+       =
+  nyz ¬c   .   .
+
+   ny  1   .   .
+        ←¬c
+   nz  1   .   1
 
 Theorem R_lt_add_compat_r : ∀ x y z, (x < y)%R → (x + z < y + z)%R.
 Proof.
