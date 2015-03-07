@@ -513,6 +513,41 @@ y+z = 1.011
             remember Hs3v as H; clear HeqH; symmetry in H.
             eapply carry_before_relay in H; [ idtac | reflexivity ].
             simpl in H; rewrite Hx3, Hnx, Hnz in H; assumption.
+
+            remember (fst_same (R_frac ny) (R_frac nz) 1) as s4 eqn:Hs4.
+            remember Hs4 as Hs4v; clear HeqHs4v.
+            remember Hcyz as H; clear HeqH.
+            unfold carry in H; simpl in H.
+            rewrite <- Hs4 in H.
+            destruct s4 as [dj4| ]; [ idtac | discr_digit H ].
+            apply fst_same_sym_iff in Hs4; simpl in Hs4.
+            destruct Hs4 as (Hn4, Ht4).
+            rewrite H in Ht4; symmetry in Ht4.
+            assert (R_frac ny.[1] = 0)%D as Hny1.
+             destruct dj4; [ assumption | idtac ].
+             clear H.
+             pose proof Hn4 0 (Nat.lt_0_succ dj4) as H.
+             rewrite Hz3 in H; assumption.
+
+(*
+             rewrite Hny, Hnz in Hcyz.
+             rewrite Hcyz in Hcc.
+             apply Digit.opp_0_iff in Hcc.
+*)
+bbb.
+             rewrite Hnyz in Hyz1; simpl in Hyz1.
+             unfold I_add_i in Hyz1; simpl in Hyz1.
+             unfold I_add_i in Hyz1; simpl in Hyz1.
+             rewrite Hny1, Hz3, Digit.add_0_r, Digit.add_1_r in Hyz1.
+             do 2 rewrite <- Digit.opp_add_l in Hyz1.
+             rewrite Digit.add_0_l in Hyz1.
+             apply Digit.opp_0_iff in Hyz1.
+             rewrite Hny, Hnz in Hyz1; simpl in Hyz1.
+             rewrite carry_sum_3_noI_assoc_l in Hyz1; [ idtac | reflexivity ].
+             rewrite Digit.add_0_r in Hyz1.
+             symmetry in Hs4v.
+             eapply carry_before_relay in Hs4v; [ idtac | apply Nat.le_0_l ].
+             simpl in Hs4v; rewrite H in Hs4v.
 bbb.
 
    x = 0.011
