@@ -507,16 +507,12 @@ y+z = 1.011
    nz  1   .   1
 *)
           destruct j2.
-           rewrite Hnyz in Hyz1; simpl in Hyz1.
-           unfold I_add_i in Hyz1; simpl in Hyz1.
-           unfold I_add_i in Hyz1; simpl in Hyz1.
-           rewrite Hz3, Digit.add_0_r, Digit.add_1_r in Hyz1.
-           do 2 rewrite <- Digit.opp_add_l in Hyz1.
-           apply Digit.opp_0_iff in Hyz1.
-           rewrite Hny, Hnz in Hyz1; simpl in Hyz1.
-           rewrite carry_sum_3_noI_assoc_l in Hyz1; [ idtac | reflexivity ].
-           unfold I_add_i in Hyz1; simpl in Hyz1.
-           do 2 rewrite Digit.add_0_r in Hyz1.
+           assert (carry (R_frac ny) (R_frac nz) 1 = 0)%D as Hcyz.
+            rewrite Hny, Hnz, <- Hcc.
+            apply Digit.opp_0_iff.
+            remember Hs3v as H; clear HeqH; symmetry in H.
+            eapply carry_before_relay in H; [ idtac | reflexivity ].
+            simpl in H; rewrite Hx3, Hnx, Hnz in H; assumption.
 bbb.
 
    x = 0.011
@@ -533,9 +529,20 @@ bbb.
        =
   nyz  0   0
 
-   ny  1   .
-        ←0
+   ny  1   0
+        ←0  ←1  <-- contradiction
    nz  1   1
+
+           rewrite Hnyz in Hyz1; simpl in Hyz1.
+           unfold I_add_i in Hyz1; simpl in Hyz1.
+           unfold I_add_i in Hyz1; simpl in Hyz1.
+           rewrite Hz3, Digit.add_0_r, Digit.add_1_r in Hyz1.
+           do 2 rewrite <- Digit.opp_add_l in Hyz1.
+           apply Digit.opp_0_iff in Hyz1.
+           rewrite Hny, Hnz in Hyz1; simpl in Hyz1.
+           rewrite carry_sum_3_noI_assoc_l in Hyz1; [ idtac | reflexivity ].
+           unfold I_add_i in Hyz1; simpl in Hyz1.
+           do 2 rewrite Digit.add_0_r in Hyz1.
 
 Theorem R_lt_add_compat_r : ∀ x y z, (x < y)%R → (x + z < y + z)%R.
 Proof.
