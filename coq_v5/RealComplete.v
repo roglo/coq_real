@@ -487,17 +487,23 @@ bbb.
 
           subst di3.
 bbb.
-              di3
+  x = 0.011
+  y = 0.100
+  z = 0.111
+x+z = 1.010
+y+z = 1.011
+
+               j2
    nz  1   .   1
-        ←c ≠
+        ←1 ≠    ←1
    nx  0   .   1   .   .
 
-  nxz ¬c   .   .
-       =
-  nyz ¬c   .   .
+  nxz  0   .   1
+       =   =
+  nyz  0   .   0
 
    ny  1   .   .
-        ←¬c
+        ←0
    nz  1   .   1
 
 Theorem R_lt_add_compat_r : ∀ x y z, (x < y)%R → (x + z < y + z)%R.
