@@ -240,14 +240,22 @@ destruct (I_eqs_dec (R_frac nx) 1) as [H1| H1].
 bbb.
 *)
 
+Theorem not_I_add_0_l_inf_1_from : ∀ x y i,
+  ¬(∀ j, (I_add_i (x + 0%I) y (i + j) = 1)%D).
+Proof.
+intros x y i Hi.
+apply I_add_inf_if in Hi; simpl in Hi.
+destruct Hi as (j, (Hj, (Hx, Hy))).
+revert Hx; apply not_I_add_0_inf_1_succ.
+Qed.
+
 Theorem not_I_add_0_l_inf_1 : ∀ x y, ¬(∀ i, (I_add_i (x + 0%I) y i = 1)%D).
 Proof.
 intros x y Hi.
 assert (∀ i, (I_add_i (x + 0%I) y (0 + i) = 1)%D) as H.
-intros i; apply Hi.
-eapply I_add_inf_if in H; simpl in H.
-destruct H as (j, (Hj, (Hx, Hy))).
-revert Hx; apply not_I_add_0_inf_1_succ.
+ intros i; apply Hi.
+
+ revert H; apply not_I_add_0_l_inf_1_from.
 Qed.
 
 Theorem b2z_1_iff : ∀ d, b2z d = 1%Z ↔ (d = 1)%D.
@@ -408,7 +416,15 @@ bbb.
             destruct Hs5 as (Hn5, Ht5).
             rewrite Hxz1 in Ht5; discr_digit Ht5.
 
-            bbb.
+            rewrite Hnx in Hs5; simpl in Hs5.
+            pose proof not_I_add_0_l_inf_1_from (R_frac x) (R_frac nz) 1 as H.
+            contradiction.
+
+           apply Nat.succ_lt_mono, Hn3 in H3.
+           rewrite Ht4 in H3; symmetry in H3.
+           revert H3; apply Digit.no_fixpoint_opp.
+
+          bbb.
 
         rewrite Hnyz in Hyz1; simpl in Hyz1.
         unfold I_add_i in Hxz1, Hyz1; simpl in Hxz1, Hyz1.
