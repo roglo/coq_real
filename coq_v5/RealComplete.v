@@ -393,7 +393,7 @@ bbb.
         apply Digit.opp_1_iff in Hxz1.
         remember (fst_same (R_frac nx) (R_frac nz) 0) as s3 eqn:Hs3.
         apply fst_same_sym_iff in Hs3; simpl in Hs3.
-        destruct s3 as [di3| ].
+        destruct s3 as [di3| ]; [ idtac | clear Hcmp2 ].
          destruct Hs3 as (Hn3, Ht3).
          rename Hcmp2 into Hx3; rename Ht3 into Hz3.
          symmetry in Hz3; move Hx3 after Hz3; rewrite Hx3 in Hz3.
@@ -424,70 +424,32 @@ bbb.
            rewrite Ht4 in H3; symmetry in H3.
            revert H3; apply Digit.no_fixpoint_opp.
 
-          bbb.
+          destruct di3; [ rewrite Hx1 in Hx3; discr_digit Hx3 | idtac ].
+          rewrite Hs4, Hz3 in Hx3; discr_digit Hx3.
 
-        rewrite Hnyz in Hyz1; simpl in Hyz1.
-        unfold I_add_i in Hxz1, Hyz1; simpl in Hxz1, Hyz1.
-        unfold I_add_i in Hxz1, Hyz1; simpl in Hxz1, Hyz1.
-        rewrite Hx1, Hz1, Digit.add_0_r in Hxz1.
-        rewrite Hy1, Hz1, Digit.add_0_r in Hyz1.
-        unfold carry in Hxz1, Hyz1; simpl in Hxz1, Hyz1.
-bbb.
-      remember (fst_same (R_frac nx) (R_frac nz) 0) as s3 eqn:Hs3.
-      apply fst_same_sym_iff in Hs3; simpl in Hs3.
-      destruct s3 as [di3| ].
-       destruct Hs3 as (Hn3, Ht3).
-       destruct (lt_eq_lt_dec di3 i) as [[H3| H3]| H3].
-bbb.
-        remember H3 as H; clear HeqH.
-        apply Hn4 in H.
-        destruct i; [ revert H3; apply Nat.nlt_0_r | idtac ].
-        pose proof Hn4 0 (Nat.lt_0_succ i) as H4.
+         unfold carry in Hxz1; simpl in Hxz1.
+         remember (fst_same (R_frac nx) (R_frac nz) 1) as s4 eqn:Hs4.
+         apply fst_same_sym_iff in Hs4; simpl in Hs4.
+         destruct s4 as [di4| ].
+          destruct Hs4 as (Hn4, Ht4).
+          rewrite Hs3 in Ht4.
+          revert Ht4; apply Digit.no_fixpoint_opp.
 
-       destruct (lt_eq_lt_dec i di3) as [[H3| H3]| H3].
-        destruct (lt_eq_lt_dec i j2) as [[H4| H4]| H4].
-         remember H4 as H; clear HeqH.
-         apply Hn2 in H; rewrite Digit.opp_involutive in H.
-         rewrite Hnxz, Hnyz in H; simpl in H.
-         unfold I_add_i in H; simpl in H.
-         unfold I_add_i in H; simpl in H.
-         rewrite Hx1, Hy1, Hz1 in H; simpl in H.
-bbb.
-        rewrite Hnyz in Hyz1; simpl in Hyz1.
-        unfold I_add_i in Hxz1; simpl in Hxz1.
-        rewrite Digit.add_0_r in Hxz1.
-        unfold I_add_i in Hyz1; simpl in Hyz1.
-        rewrite Digit.add_0_r in Hyz1.
-bbb.
+          rewrite Digit.add_1_l in Hxz1.
+          apply Digit.opp_0_iff in Hxz1.
+          remember (fst_same (R_frac nx + R_frac nz) 0 1) as s5 eqn:Hs5.
+          apply fst_same_sym_iff in Hs5; simpl in Hs5.
+          destruct s5 as [di5| ]; [ idtac | clear Hxz1 ].
+           destruct Hs5 as (Hn5, Ht5).
+           rewrite Hxz1 in Ht5; discr_digit Ht5.
 
-    apply fst_same_sym_iff in Hs3; simpl in Hs3.
-    destruct s3 as [di3| ].
-     destruct Hs3 as (Hn3, Ht3); rewrite Ht3 in Hcmp2.
-     destruct s4 as [di4| ].
-      destruct Hs4 as (Hn4, Ht4); rewrite Ht4 in Hcmp2.
-      destruct (lt_eq_lt_dec di3 di4) as [[H3| H3]| H3].
-       remember H3 as H; clear HeqH.
-       apply Hn4 in H; simpl in H.
-bbb.
+           rewrite Hnx in Hs5; simpl in Hs5.
+           pose proof not_I_add_0_l_inf_1_from (R_frac x) (R_frac nz) 1 as H.
+           contradiction.
 
- unfold R_lt, R_compare.
- remember (R_norm (nx + nz)) as a.
- remember (R_norm (ny + nz)) as b.
- remember (R_int a ?= R_int b)%Z as cmp2 eqn:Hcmp2.
- symmetry in Hcmp2.
- destruct cmp2; [ idtac | reflexivity | exfalso ].
-  apply Z.compare_eq in Hcmp2.
-  remember (fst_same (R_frac a) (- R_frac b) 0) as s2 eqn:Hs2.
-  destruct s2 as [j2| ]; [ idtac | exfalso ].
-  destruct (Digit.dec (R_frac a .[ j2])) as [H1| H1]; [ idtac | reflexivity ].
-  exfalso; subst a b; simpl in H1, Hcmp2, Hs2.
-  apply fst_same_sym_iff in Hs2; simpl in Hs2.
-  destruct Hs2 as (Hn2, Ht2).
-  simpl in Hcmp1.
-  remember (R_frac nz.[j1]) as zi eqn:Hzi.
-  symmetry in Hzi; apply eq_digit_eq in Hzi.
-  destruct (Digit.dec zi) as [H2| H2]; rewrite H2 in Hzi; clear zi H2.
-   Focus 2.
+        pose proof Hn2 0 (Nat.lt_0_succ j2) as H.
+        rewrite Digit.opp_involutive in H.
+        bbb.
 bbb.
 
 Theorem R_lt_add_compat_r : ∀ x y z, (x < y)%R → (x + z < y + z)%R.
