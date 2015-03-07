@@ -486,7 +486,7 @@ bbb.
           discr_digit Hxz1.
 
           subst di3.
-bbb.
+(*
   x = 0.011
   y = 0.100
   z = 0.111
@@ -505,6 +505,37 @@ y+z = 1.011
    ny  1   .   .
         ←0
    nz  1   .   1
+*)
+          destruct j2.
+           rewrite Hnyz in Hyz1; simpl in Hyz1.
+           unfold I_add_i in Hyz1; simpl in Hyz1.
+           unfold I_add_i in Hyz1; simpl in Hyz1.
+           rewrite Hz3, Digit.add_0_r, Digit.add_1_r in Hyz1.
+           do 2 rewrite <- Digit.opp_add_l in Hyz1.
+           apply Digit.opp_0_iff in Hyz1.
+           rewrite Hny, Hnz in Hyz1; simpl in Hyz1.
+           rewrite carry_sum_3_noI_assoc_l in Hyz1; [ idtac | reflexivity ].
+           unfold I_add_i in Hyz1; simpl in Hyz1.
+           do 2 rewrite Digit.add_0_r in Hyz1.
+bbb.
+
+   x = 0.011
+   y = 0.100
+   z = 0.111
+ x+z = 1.010
+ y+z = 1.011
+
+   nz  1   1
+        ←1  ←1
+   nx  0   1   .   .
+
+  nxz  0   1
+       =
+  nyz  0   0
+
+   ny  1   .
+        ←0
+   nz  1   1
 
 Theorem R_lt_add_compat_r : ∀ x y z, (x < y)%R → (x + z < y + z)%R.
 Proof.
