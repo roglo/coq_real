@@ -449,13 +449,24 @@ bbb.
 
         pose proof Hn2 0 (Nat.lt_0_succ j2) as H.
         rewrite Digit.opp_involutive in H.
+        rewrite Hnxz, Hnyz in H; simpl in H.
+        unfold I_add_i in H; simpl in H.
+        unfold I_add_i in H; simpl in H.
+        rewrite Hx1, Hy1, Hz1 in H; simpl in H.
+        rewrite Hnx, Hny, Hnz in H; simpl in H.
+        rewrite carry_sum_3_noI_assoc_l in H; [ idtac | reflexivity ].
+        rewrite carry_sum_3_noI_assoc_l in H; [ idtac | reflexivity ].
+        do 4 rewrite Digit.add_0_r in H.
+        do 2 rewrite Digit.add_1_l in H.
+        rewrite Digit.opp_1, Digit.add_0_l in H.
         remember (fst_same (R_frac nx) (R_frac nz) 0) as s3 eqn:Hs3.
         apply fst_same_sym_iff in Hs3; simpl in Hs3.
         destruct s3 as [di3| ]; [ idtac | clear Hcmp2 ].
          destruct Hs3 as (Hn3, Ht3).
          rename Hcmp2 into Hx3; rename Ht3 into Hz3.
          symmetry in Hz3; move Hx3 after Hz3; rewrite Hx3 in Hz3.
-         bbb.
+         destruct di3; [ rewrite Hx1 in Hx3; discr_digit Hx3 | idtac ].
+        bbb.
 bbb.
 
 Theorem R_lt_add_compat_r : ∀ x y z, (x < y)%R → (x + z < y + z)%R.
