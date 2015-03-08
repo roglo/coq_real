@@ -453,7 +453,9 @@ bbb.
         unfold I_add_i in H; simpl in H.
         unfold I_add_i in H; simpl in H.
         rewrite Hx1, Hy1, Hz1 in H; simpl in H.
-        rewrite Hnx, Hny, Hnz in H; simpl in H.
+        remember (carry (R_frac nx) (R_frac nz)) as ax.
+        remember (carry (R_frac ny) (R_frac nz)) as ay.
+        rewrite Hnx, Hny, Hnz in H; simpl in H; subst ax ay.
         rewrite carry_sum_3_noI_assoc_l in H; [ idtac | reflexivity ].
         rewrite carry_sum_3_noI_assoc_l in H; [ idtac | reflexivity ].
         do 4 rewrite Digit.add_0_r in H.
@@ -508,11 +510,10 @@ y+z = 1.011
 *)
           destruct j2.
            assert (carry (R_frac ny) (R_frac nz) 1 = 0)%D as Hcyz.
-            rewrite Hny, Hnz, <- Hcc.
-            apply Digit.opp_0_iff.
+            rewrite <- Hcc; apply Digit.opp_0_iff.
             remember Hs3v as H; clear HeqH; symmetry in H.
             eapply carry_before_relay in H; [ idtac | reflexivity ].
-            simpl in H; rewrite Hx3, Hnx, Hnz in H; assumption.
+            simpl in H; rewrite Hx3 in H; assumption.
 
             remember (fst_same (R_frac ny) (R_frac nz) 1) as s4 eqn:Hs4.
             remember Hs4 as Hs4v; clear HeqHs4v.
