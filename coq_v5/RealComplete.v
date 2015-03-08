@@ -514,6 +514,19 @@ destruct cmp1; [ idtac | clear Hxy | discriminate Hxy ].
    nz  1   .   1
 *)
              destruct j2.
+              assert (R_frac ny .[ 1] = 0)%D as Hny1.
+               unfold carry in Hcyz; simpl in Hcyz.
+               remember (fst_same (R_frac ny) (R_frac nz) 1) as s4 eqn:Hs4.
+               destruct s4 as [dj4| ]; [ idtac | discr_digit Hcyz ].
+               apply fst_same_sym_iff in Hs4; simpl in Hs4.
+               destruct Hs4 as (Hn4, Ht4).
+               rewrite Hcyz in Ht4; symmetry in Ht4.
+               destruct dj4; [ assumption | idtac ].
+               rewrite Hn4; [ idtac | apply Nat.lt_0_succ ].
+               apply Digit.opp_0_iff; assumption.
+
+               rename Hx3 into Hnx1; rename Hz3 into Hnz1.
+               move Hny1 after Hnz1.
 (*
    nz  1   1
         ←1
@@ -523,26 +536,33 @@ destruct cmp1; [ idtac | clear Hxy | discriminate Hxy ].
        =
   nyz  0   0
 
-   ny  1   .
+   ny  1   0
         ←0
    nz  1   1
 *)
-              assert (R_frac ny .[ 1] = 0)%D as Hny1.
 bbb.
+  nyz[1]=0
+  donc retenue(ny[1]+nz[1])=1,
+  donc contradiction avec retenue(ny[0]+nz[0]).
 
-              remember Hcyz as H; clear HeqH.
-              unfold carry in H; simpl in H.
-              remember (fst_same (R_frac ny) (R_frac nz) 1) as s4 eqn:Hs4 .
-              unfold carry in H; simpl in H.
-              destruct s4 as [dj4| ]; [ idtac | discr_digit H ].
-              apply fst_same_sym_iff in Hs4; simpl in Hs4.
-              destruct Hs4 as (Hn4, Ht4).
-              rewrite H in Ht4; symmetry in Ht4.
+(*
+               remember Hcyz as H; clear HeqH.
+               unfold carry in H; simpl in H.
+               remember (fst_same (R_frac ny) (R_frac nz) 1) as s4 eqn:Hs4 .
+               unfold carry in H; simpl in H.
+               destruct s4 as [dj4| ]; [ idtac | discr_digit H ].
+               apply fst_same_sym_iff in Hs4; simpl in Hs4.
+               destruct Hs4 as (Hn4, Ht4).
+               rewrite H in Ht4; symmetry in Ht4.
+               destruct dj4; [ rewrite Hnz1 in Ht4; discr_digit Ht4 | idtac ].
+               rewrite Hn4 in Hny1; [ idtac | apply Nat.lt_0_succ ].
+
               assert (R_frac ny .[ 1] = 0)%D as Hny1.
                destruct dj4; [ assumption | clear H ].
                pose proof (Hn4 0 (Nat.lt_0_succ dj4)) as H.
                rewrite Hz3 in H; assumption.
-
+*)
+(*
                rename H into Hny4; rename Ht4 into Hnz4.
                move Hnz4 after Hny4; move Hny1 after Hz3.
                rename Hx3 into Hnx1; rename Hz3 into Hnz1.
@@ -558,6 +578,7 @@ bbb.
                apply carry_succ_negb in Hcyz; [ idtac | assumption ].
                destruct Hcyz as (H3, H4).
                rewrite Hnz1 in H4; discr_digit H4.
+*)
 
               destruct j2.
 bbb.
