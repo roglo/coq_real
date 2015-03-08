@@ -89,20 +89,20 @@ destruct (Digit.eq_dec (x .[ i]) (y .[ i])) as [H1| H1].
  split; [ assumption | split; assumption ].
 Qed.
 
-Theorem carry_sum_3_noI_assoc_l : ∀ z0 x y z i,
-  z = (z0 + 0)%I
-  → (carry ((x + y) + z)%I 0 i = 0)%D.
+Theorem carry_sum_3_no_assoc_l : ∀ x y y0 i,
+  y = (y0 + 0)%I
+  → (carry (x + y) 0 i = 0)%D.
 Proof.
-intros z0 x y z i Hc0.
+intros x y y0 i Hy.
 unfold carry; simpl.
-remember (fst_same ((x + y) + z)%I 0 i) as s1 eqn:Hs1 .
+remember (fst_same (x + y) 0 i) as s1 eqn:Hs1 .
 apply fst_same_sym_iff in Hs1; simpl in Hs1.
 destruct s1 as [di1| ].
  destruct Hs1 as (Hn1, Hs1); assumption.
 
  apply I_add_inf_if in Hs1.
  destruct Hs1 as (j, (Hij, (Haj, Hbj))).
- rewrite Hc0 in Hbj; simpl in Hbj.
+ rewrite Hy in Hbj; simpl in Hbj.
  apply forall_add_succ_r in Hbj.
  apply I_add_inf_if in Hbj.
  destruct Hbj as (k, (Hjk, (Hak, Hbk))).
@@ -110,20 +110,20 @@ destruct s1 as [di1| ].
  symmetry; apply Hbk; assumption.
 Qed.
 
-Theorem carry_sum_3_noI_assoc_r : ∀ x0 x y z i,
+Theorem carry_sum_3_no_assoc_r : ∀ x x0 y i,
   x = (x0 + 0)%I
-  → (carry (x + (y + z))%I 0 i = 0)%D.
+  → (carry (x + y) 0 i = 0)%D.
 Proof.
-intros x0 x y z i Ha0.
+intros x x0 y i Hx.
 unfold carry; simpl.
-remember (fst_same (x + (y + z)%I) 0 i) as s1 eqn:Hs1 .
+remember (fst_same (x + y) 0 i) as s1 eqn:Hs1 .
 apply fst_same_sym_iff in Hs1; simpl in Hs1.
 destruct s1 as [di1| ].
  destruct Hs1 as (Hn1, Hs1); assumption.
 
  apply I_add_inf_if in Hs1.
  destruct Hs1 as (j, (Hij, (Haj, Hbj))).
- rewrite Ha0 in Haj; simpl in Haj.
+ rewrite Hx in Haj; simpl in Haj.
  apply forall_add_succ_r in Haj.
  apply I_add_inf_if in Haj.
  destruct Haj as (k, (Hjk, (Hak, Hbk))).
@@ -1918,12 +1918,12 @@ move c4 before c3; move c5 before c4.
 move c6 before c5.
 remember Hc1 as H; clear HeqH.
 apply eq_digit_eq in H.
-erewrite carry_sum_3_noI_assoc_r in H; try eassumption.
+erewrite carry_sum_3_no_assoc_r in H; [ idtac | eassumption ].
 apply eq_digit_eq in Hc1.
 rewrite <- H in *; clear c1 H.
 remember Hc2 as H; clear HeqH.
 apply eq_digit_eq in H.
-erewrite carry_sum_3_noI_assoc_l in H; try eassumption.
+erewrite carry_sum_3_no_assoc_l in H; [ idtac | eassumption ].
 apply eq_digit_eq in Hc2.
 rewrite <- H in *; clear c2 H.
 do 2 rewrite Digit.add_0_r.

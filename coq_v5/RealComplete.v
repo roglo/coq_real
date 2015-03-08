@@ -278,9 +278,13 @@ unfold R_lt, R_compare in Hxy.
 remember (R_norm x) as nx eqn:Hnx .
 remember (R_norm y) as ny eqn:Hny .
 remember (R_norm z) as nz eqn:Hnz .
-erewrite R_int_norm_norm in Hxy; [ idtac | eassumption ].
-erewrite R_int_norm_norm in Hxy; [ idtac | eassumption ].
 move ny before nx; move nz before ny; move Hnz before Hny.
+assert (R_frac nx = (R_frac x + 0)%I) as Hfnx by (subst nx; reflexivity).
+assert (R_frac ny = (R_frac y + 0)%I) as Hfny by (subst ny; reflexivity).
+assert (R_frac nz = (R_frac z + 0)%I) as Hfnz by (subst nz; reflexivity).
+move Hfnz before Hnz; move Hfny before Hnz; move Hfnx before Hnz.
+erewrite R_int_norm_norm in Hxy; [ idtac | eassumption ].
+erewrite R_int_norm_norm in Hxy; [ idtac | eassumption ].
 remember (R_int nx ?= R_int ny)%Z as cmp1 eqn:Hcmp1 .
 symmetry in Hcmp1.
 destruct cmp1; [ idtac | clear Hxy | discriminate Hxy ].
@@ -437,11 +441,8 @@ destruct cmp1; [ idtac | clear Hxy | discriminate Hxy ].
           unfold I_add_i in H; simpl in H.
           unfold I_add_i in H; simpl in H.
           rewrite Hxi, Hyi, Hzi in H; simpl in H.
-          remember (carry (R_frac nx) (R_frac nz)) as ax.
-          remember (carry (R_frac ny) (R_frac nz)) as ay.
-          rewrite Hnx, Hny, Hnz in H; simpl in H; subst ax ay.
-          rewrite carry_sum_3_noI_assoc_l in H; [ idtac | reflexivity ].
-          rewrite carry_sum_3_noI_assoc_l in H; [ idtac | reflexivity ].
+          rewrite carry_sum_3_no_assoc_l in H; [ idtac | eassumption ].
+          rewrite carry_sum_3_no_assoc_l in H; [ idtac | eassumption ].
           do 4 rewrite Digit.add_0_r in H.
           do 2 rewrite Digit.add_1_l in H.
           rewrite Digit.opp_1, Digit.add_0_l in H.
@@ -467,8 +468,7 @@ destruct cmp1; [ idtac | clear Hxy | discriminate Hxy ].
             apply Nat.succ_lt_mono in H3.
             eapply carry_before_relay in H; [ simpl in H | eassumption ].
             rewrite H, Hx3, Digit.opp_1, Digit.add_0_l in Hxz1.
-            rewrite Hnx, Hnz in Hxz1; simpl in Hxz1.
-            rewrite carry_sum_3_noI_assoc_l in Hxz1; [ idtac | reflexivity ].
+            rewrite carry_sum_3_no_assoc_l in Hxz1; [ idtac | eassumption ].
             discr_digit Hxz1.
 
             subst di3.
@@ -526,11 +526,8 @@ y+z = 1.011
                do 2 rewrite <- Digit.opp_add_l in Hyz1.
                rewrite Digit.add_0_l in Hyz1.
                apply Digit.opp_0_iff in Hyz1.
-               rewrite Hny, Hnz in Hyz1; simpl in Hyz1.
-               rewrite carry_sum_3_noI_assoc_l in Hyz1; [ | reflexivity ].
+               rewrite carry_sum_3_no_assoc_l in Hyz1; [ | eassumption ].
                rewrite Digit.add_0_r in Hyz1.
-               rewrite Hny, Hnz in Hcyz.
-               rewrite Hny in Hny1; rewrite Hnz in Hnz1.
                apply carry_succ_negb in Hcyz; [ idtac | assumption ].
                destruct Hcyz as (H3, H4).
                rewrite Hnz1 in H4; discr_digit H4.
@@ -546,9 +543,19 @@ y+z = 1.011
                rewrite H in Ht4; symmetry in Ht4.
                assert (R_frac ny .[ 1] = 0)%D as Hny1.
                 destruct dj4; [ assumption | clear H ].
-                pose proof (Hn4 0 (Nat.lt_0_succ dj4)) as H.
-
+                remember Hyz1 as H; clear HeqH.
+                rewrite Hnyz in H; simpl in H.
+                unfold I_add_i in H; simpl in H.
+                rewrite Digit.add_0_r in H.
+                rewrite carry_sum_3_no_assoc_l in H; [ idtac | eassumption ].
+                rewrite Digit.add_0_r in H.
+                unfold I_add_i in H; simpl in H.
 bbb.
+  merde c'est pas ça
+
+  Hx3 : (R_frac nx .[ 2] = 1)%D
+  Hyz1 : (R_frac nyz .[ 2] = 0)%D
+
 (*
   x = 0.0.11
   y = 0.1...

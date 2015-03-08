@@ -1830,10 +1830,10 @@ apply eq_digit_eq in Hc4.
 apply eq_digit_eq in Hc5.
 apply eq_digit_eq in Hc6.
 remember Hc1 as H; clear HeqH.
-erewrite carry_sum_3_noI_assoc_r in H; try eassumption.
+erewrite carry_sum_3_no_assoc_r in H; [ idtac | eassumption ].
 rewrite <- H in *; clear c1 H.
 remember Hc2 as H; clear HeqH.
-erewrite carry_sum_3_noI_assoc_l in H; try eassumption.
+erewrite carry_sum_3_no_assoc_l in H; [ idtac | eassumption ].
 rewrite <- H in *; clear c2 H.
 rewrite b2z_0.
 simpl; do 2 rewrite Z.add_0_r.
