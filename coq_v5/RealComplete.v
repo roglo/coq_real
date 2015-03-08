@@ -535,7 +535,19 @@ y+z = 1.011
                destruct Hcyz as (H3, H4).
                rewrite Hnz1 in H4; discr_digit H4.
 
-             destruct j2.
+              destruct j2.
+               remember Hcyz as H; clear HeqH.
+               unfold carry in H; simpl in H.
+               remember (fst_same (R_frac ny) (R_frac nz) 1) as s4 eqn:Hs4 .
+               unfold carry in H; simpl in H.
+               destruct s4 as [dj4| ]; [ idtac | discr_digit H ].
+               apply fst_same_sym_iff in Hs4; simpl in Hs4.
+               destruct Hs4 as (Hn4, Ht4).
+               rewrite H in Ht4; symmetry in Ht4.
+               assert (R_frac ny .[ 1] = 0)%D as Hny1.
+                destruct dj4; [ assumption | clear H ].
+                pose proof (Hn4 0 (Nat.lt_0_succ dj4)) as H.
+
 bbb.
 (*
   x = 0.0.11
