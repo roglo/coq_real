@@ -295,13 +295,13 @@ destruct cmp1; [ idtac | clear Hxy | discriminate Hxy ].
  destruct Hs1 as (Hn1, Ht1).
  rewrite H1 in Ht1; apply Digit.opp_sym in Ht1; rewrite Digit.opp_0 in Ht1.
  simpl in H1.
- rename H1 into Hx1; rename Ht1 into Hy1; move Hy1 before Hx1.
+ rename H1 into Hxi; rename Ht1 into Hyi; move Hyi before Hxi.
  rename j1 into i.
- unfold I_add_i in Hx1, Hy1; simpl in Hx1, Hy1.
- rewrite Hnx in Hx1 at 2; simpl in Hx1.
- rewrite Hny in Hy1 at 2; simpl in Hy1.
- rewrite carry_add_0_0 in Hx1, Hy1.
- do 2 rewrite Digit.add_0_r in Hx1, Hy1.
+ unfold I_add_i in Hxi, Hyi; simpl in Hxi, Hyi.
+ rewrite Hnx in Hxi at 2; simpl in Hxi.
+ rewrite Hny in Hyi at 2; simpl in Hyi.
+ rewrite carry_add_0_0 in Hxi, Hyi.
+ do 2 rewrite Digit.add_0_r in Hxi, Hyi.
  unfold R_lt, R_compare.
  remember (R_norm (nx + nz)) as nxz eqn:Hnxz .
  remember (R_norm (ny + nz)) as nyz eqn:Hnyz .
@@ -348,8 +348,8 @@ destruct cmp1; [ idtac | clear Hxy | discriminate Hxy ].
 
      rewrite carry_0_0_r in Hcmp2; [ idtac | assumption ].
      rewrite b2z_0, Z.add_0_r in Hcmp2.
-     destruct (Digit.dec (R_frac nz .[ i])) as [Hz1| Hz1];
-      move Hz1 before Hy1.
+     destruct (Digit.dec (R_frac nz .[ i])) as [Hzi| Hzi];
+      move Hzi before Hyi.
       clear Hn1.
       unfold carry in Hcmp2; simpl in Hcmp2.
       remember (fst_same (R_frac ny) (R_frac nz) 0) as s4 eqn:Hs4 .
@@ -359,17 +359,17 @@ destruct cmp1; [ idtac | clear Hxy | discriminate Hxy ].
        destruct (lt_eq_lt_dec i di4) as [[H3| H3]| H3].
         remember H3 as H; clear HeqH.
         apply Hn4 in H.
-        rewrite Hy1, Hz1 in H; discr_digit H.
+        rewrite Hyi, Hzi in H; discr_digit H.
 
         subst di4; clear Ht4.
-        rewrite Hy1, b2z_1 in Hcmp2.
+        rewrite Hyi, b2z_1 in Hcmp2.
         apply b2z_1_iff in Hcmp2.
         destruct i; [ clear Hn4 | idtac ].
          destruct j2; [ clear Hn2 | idtac ].
           rewrite Hnxz in Hxz1; simpl in Hxz1.
           unfold I_add_i in Hxz1; simpl in Hxz1.
           unfold I_add_i in Hxz1; simpl in Hxz1.
-          rewrite Hx1, Hz1, Digit.add_0_l, Digit.add_0_r in Hxz1.
+          rewrite Hxi, Hzi, Digit.add_0_l, Digit.add_0_r in Hxz1.
           rewrite Digit.add_1_l in Hxz1.
           rewrite <- Digit.opp_add_l in Hxz1.
           apply Digit.opp_1_iff in Hxz1.
@@ -384,7 +384,7 @@ destruct cmp1; [ idtac | clear Hxy | discriminate Hxy ].
            apply fst_same_sym_iff in Hs4; simpl in Hs4.
            destruct s4 as [di4| ].
             destruct Hs4 as (Hn4, Ht4).
-            destruct di3; [ rewrite Hx1 in Hx3; discr_digit Hx3 | idtac ].
+            destruct di3; [ rewrite Hxi in Hx3; discr_digit Hx3 | idtac ].
             destruct (lt_eq_lt_dec di3 di4) as [[H3| H3]| H3].
              apply Hn4 in H3.
              rewrite Hx3, Hz3 in H3; discr_digit H3.
@@ -407,7 +407,7 @@ destruct cmp1; [ idtac | clear Hxy | discriminate Hxy ].
              rewrite Ht4 in H3; symmetry in H3.
              revert H3; apply Digit.no_fixpoint_opp.
 
-            destruct di3; [ rewrite Hx1 in Hx3; discr_digit Hx3 | idtac ].
+            destruct di3; [ rewrite Hxi in Hx3; discr_digit Hx3 | idtac ].
             rewrite Hs4, Hz3 in Hx3; discr_digit Hx3.
 
            unfold carry in Hxz1; simpl in Hxz1.
@@ -436,7 +436,7 @@ destruct cmp1; [ idtac | clear Hxy | discriminate Hxy ].
           rewrite Hnxz, Hnyz in H; simpl in H.
           unfold I_add_i in H; simpl in H.
           unfold I_add_i in H; simpl in H.
-          rewrite Hx1, Hy1, Hz1 in H; simpl in H.
+          rewrite Hxi, Hyi, Hzi in H; simpl in H.
           remember (carry (R_frac nx) (R_frac nz)) as ax.
           remember (carry (R_frac ny) (R_frac nz)) as ay.
           rewrite Hnx, Hny, Hnz in H; simpl in H; subst ax ay.
@@ -453,7 +453,7 @@ destruct cmp1; [ idtac | clear Hxy | discriminate Hxy ].
            destruct Hs3 as (Hn3, Ht3).
            rename Hcmp2 into Hx3; rename Ht3 into Hz3.
            symmetry in Hz3; move Hx3 after Hz3; rewrite Hx3 in Hz3.
-           destruct di3; [ rewrite Hx1 in Hx3; discr_digit Hx3 | idtac ].
+           destruct di3; [ rewrite Hxi in Hx3; discr_digit Hx3 | idtac ].
            destruct (lt_eq_lt_dec j2 di3) as [[H3| H3]| H3].
             remember H3 as H; clear HeqH.
             apply Nat.succ_lt_mono, Hn3 in H.
@@ -503,11 +503,10 @@ y+z = 1.011
    nz  1   .   1
 *)
              destruct j2.
-              remember (fst_same (R_frac ny) (R_frac nz) 1) as s4 eqn:Hs4 .
-              remember Hs4 as Hs4v; clear HeqHs4v.
               remember Hcyz as H; clear HeqH.
               unfold carry in H; simpl in H.
-              rewrite <- Hs4 in H.
+              remember (fst_same (R_frac ny) (R_frac nz) 1) as s4 eqn:Hs4 .
+              unfold carry in H; simpl in H.
               destruct s4 as [dj4| ]; [ idtac | discr_digit H ].
               apply fst_same_sym_iff in Hs4; simpl in Hs4.
               destruct Hs4 as (Hn4, Ht4).
