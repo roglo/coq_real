@@ -472,6 +472,15 @@ destruct cmp1; [ idtac | clear Hxy | discriminate Hxy ].
             discr_digit Hxz1.
 
             subst di3.
+            assert (carry (R_frac ny) (R_frac nz) 1 = 0)%D as Hcyz.
+             rewrite <- Hcc; apply Digit.opp_0_iff.
+             remember Hs3v as H; clear HeqH; symmetry in H.
+             eapply carry_before_relay in H.
+              simpl in H; rewrite Hx3 in H; eassumption.
+
+              apply le_n_S, Nat.le_0_l.
+              rewrite Hcyz in Hcc; apply Digit.opp_0_iff in Hcc.
+              rename Hcc into Hcxz; move Hcyz before Hcxz.
 (*
   x = 0.011
   y = 0.100
@@ -492,13 +501,7 @@ y+z = 1.011
         ←0
    nz  1   .   1
 *)
-            destruct j2.
-             assert (carry (R_frac ny) (R_frac nz) 1 = 0)%D as Hcyz.
-              rewrite <- Hcc; apply Digit.opp_0_iff.
-              remember Hs3v as H; clear HeqH; symmetry in H.
-              eapply carry_before_relay in H; [ idtac | reflexivity ].
-              simpl in H; rewrite Hx3 in H; assumption.
-
+             destruct j2.
               remember (fst_same (R_frac ny) (R_frac nz) 1) as s4 eqn:Hs4 .
               remember Hs4 as Hs4v; clear HeqHs4v.
               remember Hcyz as H; clear HeqH.
@@ -531,7 +534,29 @@ y+z = 1.011
                apply carry_succ_negb in Hcyz; [ idtac | assumption ].
                destruct Hcyz as (H3, H4).
                rewrite Hnz1 in H4; discr_digit H4.
+
+             destruct j2.
 bbb.
+(*
+  x = 0.0.11
+  y = 0.1...
+  z = 0.1.11
+x+z = 1.001.
+y+z = 1.000.
+
+               j2
+   nz  1   .   1
+        ←1 ≠←1  ←1
+   nx  0   .   1   .   .
+
+  nxz  0   0   1
+       =   =
+  nyz  0   01  0  <-- contrad
+
+   ny  1   0  ¬c
+        ←0  ←1  ←c
+   nz  1   0   1
+*)
 
 Theorem R_lt_add_compat_r : ∀ x y z, (x < y)%R → (x + z < y + z)%R.
 Proof.
