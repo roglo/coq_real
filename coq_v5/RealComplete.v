@@ -479,8 +479,9 @@ destruct cmp1; [ idtac | clear Hxy | discriminate Hxy ].
               simpl in H; rewrite Hx3 in H; eassumption.
 
               apply le_n_S, Nat.le_0_l.
-              rewrite Hcyz in Hcc; apply Digit.opp_0_iff in Hcc.
-              rename Hcc into Hcxz; move Hcyz before Hcxz.
+
+             rewrite Hcyz in Hcc; apply Digit.opp_0_iff in Hcc.
+             rename Hcc into Hcxz; move Hcyz before Hcxz.
 (*
   x = 0.011
   y = 0.100
