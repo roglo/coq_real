@@ -529,55 +529,25 @@ y+z = 1.011
              pose proof Hn4 0 (Nat.lt_0_succ dj4) as H.
              rewrite Hz3 in H; assumption.
 
-(*
-             rewrite Hny, Hnz in Hcyz.
-             rewrite Hcyz in Hcc.
-             apply Digit.opp_0_iff in Hcc.
-*)
-bbb.
+             rename H into Hny4; rename Ht4 into Hnz4.
+             move Hnz4 after Hny4; move Hny1 after Hz3.
+             rename Hx3 into Hnx1; rename Hz3 into Hnz1.
              rewrite Hnyz in Hyz1; simpl in Hyz1.
              unfold I_add_i in Hyz1; simpl in Hyz1.
              unfold I_add_i in Hyz1; simpl in Hyz1.
-             rewrite Hny1, Hz3, Digit.add_0_r, Digit.add_1_r in Hyz1.
+             rewrite Hny1, Hnz1, Digit.add_0_r, Digit.add_1_r in Hyz1.
              do 2 rewrite <- Digit.opp_add_l in Hyz1.
              rewrite Digit.add_0_l in Hyz1.
              apply Digit.opp_0_iff in Hyz1.
              rewrite Hny, Hnz in Hyz1; simpl in Hyz1.
              rewrite carry_sum_3_noI_assoc_l in Hyz1; [ idtac | reflexivity ].
              rewrite Digit.add_0_r in Hyz1.
-             symmetry in Hs4v.
-             eapply carry_before_relay in Hs4v; [ idtac | apply Nat.le_0_l ].
-             simpl in Hs4v; rewrite H in Hs4v.
+             rewrite Hny, Hnz in Hcyz.
+             rewrite Hny in Hny1; rewrite Hnz in Hnz1.
+             apply carry_succ_negb in Hcyz; [ idtac | assumption ].
+             destruct Hcyz as (H3, H4).
+             rewrite Hnz1 in H4; discr_digit H4.
 bbb.
-
-   x = 0.011
-   y = 0.100
-   z = 0.111
- x+z = 1.010
- y+z = 1.011
-
-   nz  1   1
-        ←1  ←1
-   nx  0   1   .   .
-
-  nxz  0   1
-       =
-  nyz  0   0
-
-   ny  1   0
-        ←0  ←1  <-- contradiction
-   nz  1   1
-
-           rewrite Hnyz in Hyz1; simpl in Hyz1.
-           unfold I_add_i in Hyz1; simpl in Hyz1.
-           unfold I_add_i in Hyz1; simpl in Hyz1.
-           rewrite Hz3, Digit.add_0_r, Digit.add_1_r in Hyz1.
-           do 2 rewrite <- Digit.opp_add_l in Hyz1.
-           apply Digit.opp_0_iff in Hyz1.
-           rewrite Hny, Hnz in Hyz1; simpl in Hyz1.
-           rewrite carry_sum_3_noI_assoc_l in Hyz1; [ idtac | reflexivity ].
-           unfold I_add_i in Hyz1; simpl in Hyz1.
-           do 2 rewrite Digit.add_0_r in Hyz1.
 
 Theorem R_lt_add_compat_r : ∀ x y z, (x < y)%R → (x + z < y + z)%R.
 Proof.
