@@ -482,16 +482,27 @@ destruct cmp1; [ idtac | clear Hxy | discriminate Hxy ].
 
              rewrite Hcyz in Hcc; apply Digit.opp_0_iff in Hcc.
              rename Hcc into Hcxz; move Hcyz before Hcxz.
+             remember (R_frac nxz .[0]) as v eqn:Hnxz0.
+             symmetry in Hnxz0.
+             apply eq_digit_eq in Hnxz0.
+             remember Hnxz0 as H; clear HeqH.
+             rewrite Hnxz in H; simpl in H.
+             unfold I_add_i in H; simpl in H.
+             rewrite carry_sum_3_no_assoc_l in H; [ idtac | eassumption ].
+             unfold I_add_i in H; simpl in H.
+             rewrite Hxi, Hzi, Hcxz in H; simpl in H.
+             rewrite Digit.add_0_l, Digit.add_1_l in H.
+             do 2 rewrite Digit.add_0_r in H; rewrite Digit.opp_1 in H.
+             rewrite <- H in Hnxz0; clear v H.
+             remember Hnxz0 as H; clear HeqH.
+             rewrite Hn2 in H; [ idtac | apply Nat.lt_0_succ ].
+             rewrite Digit.opp_involutive in H.
+             rename H into Hnyz0.
+             move Hnxz0 after Hxz1; move Hnyz0 after Hxz1.
 (*
-  x = 0.011
-  y = 0.100
-  z = 0.111
-x+z = 1.010
-y+z = 1.011
-
                j2
    nz  1   .   1
-        ←1 ≠    ←1
+        ←1 ≠
    nx  0   .   1   .   .
 
   nxz  0   .   1
@@ -503,6 +514,22 @@ y+z = 1.011
    nz  1   .   1
 *)
              destruct j2.
+(*
+   nz  1   1
+        ←1
+   nx  0   1
+
+  nxz  0   1
+       =
+  nyz  0   0
+
+   ny  1   .
+        ←0
+   nz  1   1
+*)
+              assert (R_frac ny .[ 1] = 0)%D as Hny1.
+bbb.
+
               remember Hcyz as H; clear HeqH.
               unfold carry in H; simpl in H.
               remember (fst_same (R_frac ny) (R_frac nz) 1) as s4 eqn:Hs4 .
@@ -533,6 +560,21 @@ y+z = 1.011
                rewrite Hnz1 in H4; discr_digit H4.
 
               destruct j2.
+bbb.
+(*
+   nz  1   .   1
+        ←1 ≠    ←1
+   nx  0   .   1   .   .
+
+  nxz  0   .   1
+       =   =
+  nyz  0   .   0
+
+   ny  1   .   .
+        ←0
+   nz  1   .   1
+*)
+
                remember Hcyz as H; clear HeqH.
                unfold carry in H; simpl in H.
                remember (fst_same (R_frac ny) (R_frac nz) 1) as s4 eqn:Hs4 .
@@ -550,10 +592,9 @@ y+z = 1.011
                 rewrite carry_sum_3_no_assoc_l in H; [ idtac | eassumption ].
                 rewrite Digit.add_0_r in H.
                 unfold I_add_i in H; simpl in H.
+                rewrite Hz3 in H.
 bbb.
-  merde c'est pas ça
-
-  Hx3 : (R_frac nx .[ 2] = 1)%D
+  Hz3 : (R_frac nz .[ 2] = 1)%D
   Hyz1 : (R_frac nyz .[ 2] = 0)%D
 
 (*
