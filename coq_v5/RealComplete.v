@@ -599,6 +599,21 @@ destruct cmp1; [ idtac | clear Hxy | discriminate Hxy ].
         +0      +1
    nz  1   .   1
 *)
+                Check carry_succ_negb.
+                apply carry_succ_negb with (a:=0%D) in Hnyc2_1.
+                 rewrite Hnz2 in Hnyc2_1.
+                 destruct Hnyc2_1 as (_, H); discr_digit H.
+bbb.
+
+Theorem yyy :
+  (carry x y i = a)%D
+  → (carry x y (S i) = oppd a)%D
+    →
+
+                apply carry_succ_negb in Hcyz.
+                destruct Hcyz as (Hny1, Hnz1).
+
+                rewrite Hn4 in Hcyz.
                 bbb.
 
                 rewrite Hnyz in Hyz1; simpl in Hyz1.
