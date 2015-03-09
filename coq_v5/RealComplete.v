@@ -538,8 +538,6 @@ destruct cmp1; [ idtac | clear Hxy | discriminate Hxy ].
                apply carry_succ_negb in Hcyz; [ idtac | assumption ].
                rewrite Hnz1 in Hcyz; destruct Hcyz as (_, H); discr_digit H.
 
-              Focus 1.
-bbb.
 (*
    nz  1   .   1
         +1 ≠
@@ -551,6 +549,21 @@ bbb.
 
    ny  1   .   .
         +0
+   nz  1   .   1
+*)
+              Focus 1.
+bbb.
+(*
+   nz  1   .   1
+        +1 ≠
+   nx  0   .   1
+
+  nxz  0   .   1
+       =   =
+  nyz  0   .   0
+
+   ny  1   .  ¬c
+        +0      +c
    nz  1   .   1
 *)
 (*
