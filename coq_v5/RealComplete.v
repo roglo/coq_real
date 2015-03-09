@@ -527,24 +527,32 @@ destruct cmp1; [ idtac | clear Hxy | discriminate Hxy ].
 
                rename Hx3 into Hnx1; rename Hz3 into Hnz1.
                move Hny1 after Hnz1.
-(*
-   nz  1   1
-        ←1
-   nx  0   1
+               rewrite Hnyz in Hyz1; simpl in Hyz1.
+               unfold I_add_i in Hyz1; simpl in Hyz1.
+               rewrite carry_sum_3_no_assoc_l in Hyz1; [ | eassumption ].
+               do 2 rewrite Digit.add_0_r in Hyz1.
+               unfold I_add_i in Hyz1.
+               rewrite Hny1, Hnz1 in Hyz1.
+               rewrite Digit.add_0_l, Digit.add_1_l in Hyz1.
+               apply Digit.opp_0_iff in Hyz1.
+               apply carry_succ_negb in Hcyz; [ idtac | assumption ].
+               rewrite Hnz1 in Hcyz; destruct Hcyz as (_, H); discr_digit H.
 
-  nxz  0   1
-       =
-  nyz  0   0
-
-   ny  1   0
-        ←0
-   nz  1   1
-*)
+              Focus 1.
 bbb.
-  nyz[1]=0
-  donc retenue(ny[1]+nz[1])=1,
-  donc contradiction avec retenue(ny[0]+nz[0]).
+(*
+   nz  1   .   1
+        +1 ≠
+   nx  0   .   1
 
+  nxz  0   .   1
+       =   =
+  nyz  0   .   0
+
+   ny  1   .   .
+        +0
+   nz  1   .   1
+*)
 (*
                remember Hcyz as H; clear HeqH.
                unfold carry in H; simpl in H.
