@@ -538,6 +538,7 @@ destruct cmp1; [ idtac | clear Hxy | discriminate Hxy ].
                apply carry_succ_negb in Hcyz; [ idtac | assumption ].
                rewrite Hnz1 in Hcyz; destruct Hcyz as (_, H); discr_digit H.
 
+              destruct j2.
 (*
    nz  1   .   1
         +1 ≠
@@ -551,8 +552,15 @@ destruct cmp1; [ idtac | clear Hxy | discriminate Hxy ].
         +0
    nz  1   .   1
 *)
-              Focus 1.
-bbb.
+               remember Hyz1 as H; clear HeqH.
+               rewrite Hnyz in H; simpl in H.
+               unfold I_add_i in H; simpl in H.
+               rewrite carry_sum_3_no_assoc_l in H; [ idtac | eassumption ].
+               do 2 rewrite Digit.add_0_r in H.
+               unfold I_add_i in H.
+               rewrite Hz3, Digit.add_1_r, <- Digit.opp_add_l in H.
+               apply Digit.opp_0_iff in H.
+               rename H into Hnyc2_1.
 (*
    nz  1   .   1
         +1 ≠
@@ -565,6 +573,99 @@ bbb.
    ny  1   .  ¬c
         +0      +c
    nz  1   .   1
+*)
+               remember (carry (R_frac ny) (R_frac nz) 2) as c eqn:H.
+               symmetry in H; apply eq_digit_eq in H.
+               destruct (Digit.eq_dec c 0) as [Hc| Hc]; rewrite <- H in Hc.
+                unfold carry in Hc; simpl in Hc.
+                remember (fst_same (R_frac ny) (R_frac nz) 2) as s4 eqn:Hs4.
+                destruct s4 as [dj4| ]; [ idtac | discr_digit Hc ].
+                apply fst_same_sym_iff in Hs4; simpl in Hs4.
+                destruct Hs4 as (Hn4, Ht4).
+                rewrite Hc in Ht4; symmetry in Ht4.
+                destruct dj4; [ rewrite Hz3 in Ht4; discr_digit Ht4 | idtac ].
+bbb.
+                pose proof Hn4
+
+                unfold carry in Hcyz; simpl in Hcyz.
+                remember (fst_same (R_frac ny) (R_frac nz) 1) as s5 eqn:Hs5.
+                destruct s5 as [dj5| ]; [ idtac | discr_digit Hcyz ].
+                symmetry in Hs5.
+                remember Hs5 as Hn5; clear HeqHn5.
+                apply fst_same_iff in Hn5; simpl in Hn5.
+                destruct Hn5 as (Hn5, Ht5).
+                rewrite Hcyz in Ht5.
+                destruct dj5.
+
+                apply fst_same_sym_iff in Hs4; simpl in Hs4.
+                destruct Hs4 as (Hn4, Ht4); rewrite Hc in Ht4.
+                destruct dj4; [ rewrite Hz3 in Ht4; discr_digit Ht4 | idtac ].
+                rewrite Hn4 in Hx.
+bbb.
+(*
+   nz  1   .   1
+        +1 ≠
+   nx  0   .   1
+
+  nxz  0   .   1
+       =   =
+  nyz  0   .   0
+
+   ny  1   .  ¬c
+        +0  +1  +c
+   nz  1   .   1
+*)
+(*
+   nz  1   0   1
+        +1 ≠
+   nx  0   .   1
+
+  nxz  0   .   1
+       =   =
+  nyz  0   .   0
+
+   ny  1   0  ¬c
+        +0  +1  +c
+   nz  1   0   1
+*)
+(*
+   nz  1   0   1
+        +1 ≠
+   nx  0   1   1
+
+  nxz  0   .   1
+       =   =
+  nyz  0   .   0
+
+   ny  1   0  ¬c
+        +0  +1  +c
+   nz  1   0   1
+*)
+(*
+   nz  1   0   1
+        +1 ≠+1
+   nx  0   1   1
+
+  nxz  0   1   1
+       =   =
+  nyz  0   1   0
+
+   ny  1   0  ¬c
+        +0  +1  +c
+   nz  1   0   1
+*)
+(*
+   nz  1   0   1
+        +1 ≠+1
+   nx  0   1   1
+
+  nxz  0   10  1 <-- contrad
+       =   =
+  nyz  0   1   0
+
+   ny  1   0  ¬c
+        +0  +1  +c
+   nz  1   0   1
 *)
 (*
                remember Hcyz as H; clear HeqH.
