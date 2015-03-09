@@ -269,6 +269,66 @@ destruct (Digit.eq_dec d 1) as [H2| H2].
  split; intros H; [ discriminate H | contradiction ].
 Qed.
 
+Theorem carry_1 : ∀ x y i,
+  (x.[i] = 1)%D
+  → (y.[i] = 1)%D
+  → (carry x y i = 1)%D.
+Proof.
+intros x y i Hx Hy.
+unfold carry; simpl.
+remember (fst_same x y i) as s1 eqn:Hs1.
+destruct s1 as [dj1| ]; [ idtac | reflexivity ].
+apply fst_same_sym_iff in Hs1; simpl in Hs1.
+destruct Hs1 as (Hn1, Ht1).
+destruct dj1; [ rewrite Nat.add_0_r; assumption | idtac ].
+pose proof Hn1 0 (Nat.lt_0_succ dj1) as H.
+rewrite Nat.add_0_r, Hx, Hy in H; discr_digit H.
+Qed.
+
+Theorem digit_opp_carry_succ : ∀ x y i a,
+  (x.[i] = a)%D
+  → (y.[i] = oppd a)%D
+  → (carry x y (S i) = carry x y i)%D.
+Proof.
+intros x y i a Hx Hy.
+unfold carry; simpl.
+remember (fst_same x y i) as s1 eqn:Hs1.
+remember (fst_same x y (S i)) as s2 eqn:Hs2.
+apply fst_same_sym_iff in Hs1; simpl in Hs1.
+apply fst_same_sym_iff in Hs2; simpl in Hs2.
+destruct s1 as [dj1| ].
+ destruct Hs1 as (Hn1, Ht1).
+ destruct s2 as [dj2| ].
+  destruct Hs2 as (Hn2, Ht2).
+  destruct dj1.
+   rewrite Nat.add_0_r, Hx, Hy in Ht1; symmetry in Ht1.
+   exfalso; revert Ht1; apply Digit.no_fixpoint_opp.
+
+   destruct (lt_eq_lt_dec dj1 dj2) as [[H1| H1]| H1].
+    apply Hn2 in H1.
+    rewrite Nat.add_succ_r, H1 in Ht1.
+    exfalso; revert Ht1; apply Digit.no_fixpoint_opp.
+
+    subst dj2.
+    rewrite Nat.add_succ_r; reflexivity.
+
+    apply Nat.succ_lt_mono, Hn1 in H1.
+    rewrite <- Nat.add_succ_r, H1 in Ht2.
+    exfalso; revert Ht2; apply Digit.no_fixpoint_opp.
+
+  destruct dj1.
+   rewrite Nat.add_0_r, Hx, Hy in Ht1; symmetry in Ht1.
+   exfalso; revert Ht1; apply Digit.no_fixpoint_opp.
+
+   rewrite Nat.add_succ_r, Hs2 in Ht1.
+   exfalso; revert Ht1; apply Digit.no_fixpoint_opp.
+
+ destruct s2 as [dj2| ]; [ idtac | reflexivity ].
+ destruct Hs2 as (Hn2, Ht2).
+ rewrite <- Nat.add_succ_r, Hs1 in Ht2.
+ exfalso; revert Ht2; apply Digit.no_fixpoint_opp.
+Qed.
+
 Theorem zzz : ∀ x y z,
   (R_norm x < R_norm y)%R
   → (R_norm x + R_norm z < R_norm y + R_norm z)%R.
@@ -575,68 +635,16 @@ destruct cmp1; [ idtac | clear Hxy | discriminate Hxy ].
    nz  1   .   1
 *)
                assert (carry (R_frac ny) (R_frac nz) 2 = 1)%D as Hcyz2.
-                unfold carry; simpl.
-                remember (fst_same (R_frac ny) (R_frac nz) 2) as s4 eqn:Hs4.
-                destruct s4 as [dj4| ]; [ idtac | reflexivity ].
-                apply fst_same_sym_iff in Hs4; simpl in Hs4.
-                destruct Hs4 as (Hn4, Ht4); rewrite Ht4.
-                destruct dj4; [ assumption | idtac ].
-                pose proof Hn4 0 (Nat.lt_0_succ dj4) as H.
-                rewrite Hz3, Digit.opp_1 in H.
-                rename Hx3 into Hnx2; rename Hz3 into Hnz2.
-                rename H into Hny2; move Hny2 after Hnz2.
-                rewrite Hny2, Digit.add_0_l in Hnyc2_1.
-(*
-   nz  1   .   1
-        +1 ≠
-   nx  0   .   1
+                remember (R_frac ny.[2]) as ny2 eqn:Hny2.
+                symmetry in Hny2; apply eq_digit_eq in Hny2.
+                destruct (Digit.eq_dec ny2 0) as [H3| H3].
+                 rewrite H3 in Hny2, Hnyc2_1; clear ny2 H3.
+                 rewrite Digit.add_0_l in Hnyc2_1.
+                 rewrite <- digit_opp_carry_succ; eassumption.
 
-  nxz  0   .   1
-       =   =
-  nyz  0   .   0
-
-   ny  1   .   0
-        +0      +1
-   nz  1   .   1
-*)
-                Check carry_succ_negb.
-                apply carry_succ_negb with (a:=0%D) in Hnyc2_1.
-                 rewrite Hnz2 in Hnyc2_1.
-                 destruct Hnyc2_1 as (_, H); discr_digit H.
-bbb.
-
-Theorem yyy :
-  (carry x y i = a)%D
-  → (carry x y (S i) = oppd a)%D
-    →
-
-                apply carry_succ_negb in Hcyz.
-                destruct Hcyz as (Hny1, Hnz1).
-
-                rewrite Hn4 in Hcyz.
-                bbb.
-
-                rewrite Hnyz in Hyz1; simpl in Hyz1.
-                unfold I_add_i in Hyz1; simpl in Hyz1.
-                rewrite carry_sum_3_no_assoc_l in Hyz1; [ | eassumption ].
-                do 2 rewrite Digit.add_0_r in Hyz1.
-bbb.
-
-                apply carry_succ_negb in Hcyz.
-
-                symmetry in Hs3v.
-                eapply carry_before_relay in Hs3v; [ | apply Nat.le_0_l ].
-                simpl in Hs3v.
-
-                unfold I_add_i in Hyz1.
-                rewrite Hny2, Hnz2, Digit.add_0_l, Digit.add_1_l in Hyz1.
-                apply Digit.opp_0_iff in Hyz1.
-
-                apply carry_succ_negb in Hyz1.
-
-                rewrite Hny3, Digit.add_0_l in Hnyc2_1.
-
-bbb.
+                 apply Digit.not_0_iff_1 in H3.
+                 rewrite H3 in Hny2, Hnyc2_1; clear ny2 H3.
+                 apply carry_1; assumption.
 (*
    nz  1   .   1
         +1 ≠
@@ -650,37 +658,7 @@ bbb.
         +0  +1  +c
    nz  1   .   1
 *)
-
-                destruct dj4.
-                 unfold carry in Hnyc2_1; simpl in Hnyc2_1.
-
-               symmetry in H; apply eq_digit_eq in H.
-               remember H as Hv; clear HeqHv.
-               unfold carry in H; simpl in H.
-                rewrite H in Ht4; symmetry in Ht4.
-                destruct dj4.
-                 rewrite Hz3 in Ht4.
-                 rewrite <- Ht4 in H, Hv; clear Ht4.
-
-                destruct s4 as [dj4| ]; [ idtac | discr_digit H ].
-                rewrite Hc in Ht4; symmetry in Ht4.
-bbb.
-                pose proof Hn4
-
-                unfold carry in Hcyz; simpl in Hcyz.
-                remember (fst_same (R_frac ny) (R_frac nz) 1) as s5 eqn:Hs5.
-                destruct s5 as [dj5| ]; [ idtac | discr_digit Hcyz ].
-                symmetry in Hs5.
-                remember Hs5 as Hn5; clear HeqHn5.
-                apply fst_same_iff in Hn5; simpl in Hn5.
-                destruct Hn5 as (Hn5, Ht5).
-                rewrite Hcyz in Ht5.
-                destruct dj5.
-
-                apply fst_same_sym_iff in Hs4; simpl in Hs4.
-                destruct Hs4 as (Hn4, Ht4); rewrite Hc in Ht4.
-                destruct dj4; [ rewrite Hz3 in Ht4; discr_digit Ht4 | idtac ].
-                rewrite Hn4 in Hx.
+                Focus 1.
 bbb.
 (*
    nz  1   0   1
