@@ -574,16 +574,81 @@ destruct cmp1; [ idtac | clear Hxy | discriminate Hxy ].
         +0      +c
    nz  1   .   1
 *)
-               remember (carry (R_frac ny) (R_frac nz) 2) as c eqn:H.
-               symmetry in H; apply eq_digit_eq in H.
-               destruct (Digit.eq_dec c 0) as [Hc| Hc]; rewrite <- H in Hc.
-                unfold carry in Hc; simpl in Hc.
+               assert (carry (R_frac ny) (R_frac nz) 2 = 1)%D as Hcyz2.
+                unfold carry; simpl.
                 remember (fst_same (R_frac ny) (R_frac nz) 2) as s4 eqn:Hs4.
-                destruct s4 as [dj4| ]; [ idtac | discr_digit Hc ].
+                destruct s4 as [dj4| ]; [ idtac | reflexivity ].
                 apply fst_same_sym_iff in Hs4; simpl in Hs4.
-                destruct Hs4 as (Hn4, Ht4).
+                destruct Hs4 as (Hn4, Ht4); rewrite Ht4.
+                destruct dj4; [ assumption | idtac ].
+                pose proof Hn4 0 (Nat.lt_0_succ dj4) as H.
+                rewrite Hz3, Digit.opp_1 in H.
+                rename Hx3 into Hnx2; rename Hz3 into Hnz2.
+                rename H into Hny2; move Hny2 after Hnz2.
+                rewrite Hny2, Digit.add_0_l in Hnyc2_1.
+(*
+   nz  1   .   1
+        +1 ≠
+   nx  0   .   1
+
+  nxz  0   .   1
+       =   =
+  nyz  0   .   0
+
+   ny  1   .   0
+        +0      +1
+   nz  1   .   1
+*)
+                bbb.
+
+                rewrite Hnyz in Hyz1; simpl in Hyz1.
+                unfold I_add_i in Hyz1; simpl in Hyz1.
+                rewrite carry_sum_3_no_assoc_l in Hyz1; [ | eassumption ].
+                do 2 rewrite Digit.add_0_r in Hyz1.
+bbb.
+
+                apply carry_succ_negb in Hcyz.
+
+                symmetry in Hs3v.
+                eapply carry_before_relay in Hs3v; [ | apply Nat.le_0_l ].
+                simpl in Hs3v.
+
+                unfold I_add_i in Hyz1.
+                rewrite Hny2, Hnz2, Digit.add_0_l, Digit.add_1_l in Hyz1.
+                apply Digit.opp_0_iff in Hyz1.
+
+                apply carry_succ_negb in Hyz1.
+
+                rewrite Hny3, Digit.add_0_l in Hnyc2_1.
+
+bbb.
+(*
+   nz  1   .   1
+        +1 ≠
+   nx  0   .   1
+
+  nxz  0   .   1
+       =   =
+  nyz  0   .   0
+
+   ny  1   .  ¬c
+        +0  +1  +c
+   nz  1   .   1
+*)
+
+                destruct dj4.
+                 unfold carry in Hnyc2_1; simpl in Hnyc2_1.
+
+               symmetry in H; apply eq_digit_eq in H.
+               remember H as Hv; clear HeqHv.
+               unfold carry in H; simpl in H.
+                rewrite H in Ht4; symmetry in Ht4.
+                destruct dj4.
+                 rewrite Hz3 in Ht4.
+                 rewrite <- Ht4 in H, Hv; clear Ht4.
+
+                destruct s4 as [dj4| ]; [ idtac | discr_digit H ].
                 rewrite Hc in Ht4; symmetry in Ht4.
-                destruct dj4; [ rewrite Hz3 in Ht4; discr_digit Ht4 | idtac ].
 bbb.
                 pose proof Hn4
 
@@ -602,19 +667,6 @@ bbb.
                 destruct dj4; [ rewrite Hz3 in Ht4; discr_digit Ht4 | idtac ].
                 rewrite Hn4 in Hx.
 bbb.
-(*
-   nz  1   .   1
-        +1 ≠
-   nx  0   .   1
-
-  nxz  0   .   1
-       =   =
-  nyz  0   .   0
-
-   ny  1   .  ¬c
-        +0  +1  +c
-   nz  1   .   1
-*)
 (*
    nz  1   0   1
         +1 ≠
