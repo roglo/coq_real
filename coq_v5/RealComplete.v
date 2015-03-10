@@ -428,6 +428,7 @@ destruct cmp1; [ idtac | clear Hxy | discriminate Hxy ].
         subst di4; clear Ht4.
         rewrite Hyi, b2z_1 in Hcmp2.
         apply b2z_1_iff in Hcmp2.
+bbb.
         destruct i; [ clear Hn4 | idtac ].
          destruct j2; [ clear Hn2 | idtac ].
           rewrite Hnxz in Hxz1; simpl in Hxz1.
@@ -647,6 +648,34 @@ destruct cmp1; [ idtac | clear Hxy | discriminate Hxy ].
                 destruct H as (_, H); discr_digit H.
 
                 destruct j2.
+bbb.
+Focus 3.
+apply Nat.succ_lt_mono, Hn2 in H3.
+rewrite Digit.opp_involutive in H3.
+rewrite Hnxz, Hnyz in H3; simpl in H3.
+unfold I_add_i in H3; simpl in H3.
+rewrite carry_sum_3_no_assoc_l in H3; [ | eassumption ].
+rewrite carry_sum_3_no_assoc_l in H3; [ | eassumption ].
+do 4 rewrite Digit.add_0_r in H3.
+unfold I_add_i in H3; simpl in H3.
+rewrite Hx3, Hz3 in H3.
+Unfocus.
+Focus 4.
+Unfocus.
+Focus 5.
+Unfocus.
+Focus 6.
+Unfocus.
+Focus 7.
+Unfocus.
+Focus 8.
+Unfocus.
+Focus 9.
+Unfocus.
+Focus 10.
+Unfocus.
+Focus 11.
+Unfocus.
 bbb.
 (*
    nz  1   .   .   1
