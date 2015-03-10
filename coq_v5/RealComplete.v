@@ -338,6 +338,38 @@ Arguments I_div_2_pow_i x%I n%nat i%nat.
 Definition I_div_2_pow x n := {| rm := I_div_2_pow_i x n |}.
 Arguments I_div_2_pow x%I n%nat.
 
+Fixpoint I_mul_2_pow_from xi xf n :=
+  match n with
+  | 0 => xi
+  | S n1 => I_mul_2_pow_from (2 * xi + b2z (xf.[n]))%Z xf n1
+  end.
+
+Fixpoint I_div_2_pow_from_int xi n :=
+  match n with
+  | 0 => if Z_zerop (xi mod 2) then 0%D else 1%D
+  | S n1 => I_div_2_pow_from_int (xi / 2)%Z n1
+  end.
+
+Definition I_div_2_pow_frac_i xi xf n i :=
+  if lt_dec i n then I_div_2_pow_from_int xi (n-i)
+  else xf.[i-n].
+
+Fixpoint I_div_2_pow_int xi n :=
+  match n with
+  | 0 => xi
+  | S n1 => I_div_2_pow_int (xi / 2)%Z n1
+  end.
+
+Definition I_div_2_pow_frac xi xf n := {| rm := I_div_2_pow_frac_i xi xf n |}.
+
+Definition R_mul_2_pow x n :=
+  {| R_int := I_mul_2_pow_from (R_int x) (R_frac x) n;
+     R_frac := I_mul_2_pow (R_frac x) n |}.
+
+Definition R_div_2_pow x n :=
+  {| R_int := I_div_2_pow_int (R_int x) n;
+     R_frac := I_div_2_pow_frac (R_int x) (R_frac x) n |}.
+
 Theorem I_mul_2_pow_div : ∀ x n, (I_mul_2_pow (I_div_2_pow x n) n = x)%I.
 Proof.
 intros x n.
