@@ -428,6 +428,7 @@ destruct cmp1; [ idtac | clear Hxy | discriminate Hxy ].
         subst di4; clear Ht4.
         rewrite Hyi, b2z_1 in Hcmp2.
         apply b2z_1_iff in Hcmp2.
+Abort. (* bon. À voir...
 bbb.
         destruct i; [ clear Hn4 | idtac ].
          destruct j2; [ clear Hn2 | idtac ].
@@ -690,6 +691,7 @@ bbb.
         +0
    nz  1   .   .   1
 *)
+*)
 
 Theorem R_lt_add_compat_r : ∀ x y z, (x < y)%R → (x + z < y + z)%R.
 Proof.
@@ -716,6 +718,7 @@ destruct cmp1; [ idtac | clear Hxy | discriminate Hxy ].
   destruct Hs1 as (Hn1, Ht1).
   rewrite H1 in Ht1; rename H1 into Hnx1; rename Ht1 into Hny1.
   apply Digit.opp_sym in Hny1; rewrite Digit.opp_0 in Hny1.
+Abort. (* À voir...
 bbb.
   destruct cmp2; [ idtac | reflexivity | exfalso ].
    apply Z.compare_eq in Hcmp2.
@@ -897,6 +900,7 @@ destruct c1.
    apply R_gt_lt_iff in Hc2.
    apply R_lt_nle in Hc2.
    apply Hc2; clear Hc2.
+Abort. (* À voir...
    bbb.
 apply R_lt_add_compat_r.
 
@@ -915,20 +919,25 @@ apply R_lt_add_compat_r.
 bbb.
 
 SearchAbout R_compare.
+*)
 
 Theorem R_lt_sub_lt_add_l : ∀ x y z, (x - y < z)%R ↔ (x < y + z)%R.
 Proof.
 intros x y z.
 split; intros Hxyz.
+Abort. (* À voir...
 SearchAbout I_le.
 bbb.
+*)
 
 Theorem R_le_pos_lt_compat : ∀ x y z, (x ≤ y)%R → (z > 0)%R → (x < y + z)%R.
 Proof.
 intros x y z Hxy Hz.
 eapply R_le_lt_trans; [ eassumption | idtac ].
+Abort. (* À voir...
 SearchAbout (_ < _ + _)%Z.
 bbb.
+*)
 
 Theorem R_cauchy_sequence_bounded : ∀ u,
   R_cauchy_sequence u → ∃ m, ∀ n, (R_abs (u n) < m)%R.
@@ -941,15 +950,17 @@ destruct H as (N, HN).
 exists (R_max (R_max_abs_seq_upto u N) (R_abs (u (S N))) + 1)%R.
 intros n.
 destruct (le_dec n N) as [H1 | H1].
+Abort. (* À voir...
 bbb.
+*)
 
 (* to be completed *)
+(* À voir...
 Theorem zzz : ∀ u, cauchy_sequence u → ∃ r, converges_to u r.
 Proof.
 intros u Hc.
 unfold cauchy_sequence in Hc.
 unfold converges_to.
-(*
 bbb.
 *)
 
