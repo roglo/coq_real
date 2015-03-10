@@ -644,7 +644,7 @@ destruct cmp1; [ idtac | clear Hxy | discriminate Hxy ].
                 rewrite Hnz1 in H.
                 destruct H as (_, H); discr_digit H.
 
-               destruct j2.
+                destruct j2.
 bbb.
 (*
    nz  1   .   .   1
