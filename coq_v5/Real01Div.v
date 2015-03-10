@@ -418,6 +418,7 @@ intros x y Hxy.
 unfold I_lt, I_compare in Hxy; simpl in Hxy.
 remember (fst_same x (- I_div_2 (x / y)) 0) as s1 eqn:Hs1 .
 destruct s1 as [dj1| ]; [ idtac | discriminate Hxy ].
+Abort. (* À voir...
 bbb.
 remember (x .[ dj1]) as b eqn:Hxj1 .
 destruct b; [ discriminate Hxy | clear Hxy ].
@@ -869,6 +870,7 @@ bbb.
   There is a fucking induction somewhere...
   Voir www ci-dessus.
 *)
+*)
 
 Theorem yyy : ∀ x y z,
   (x < y)%I
@@ -903,6 +905,7 @@ induction i.
    remember (fst_same x (- y) 0) as s1 eqn:Hs1 .
    destruct s1 as [dj1| ]; [ idtac | discriminate H1 ].
    remember (x .[ dj1]) as b eqn:Hxj1 .
+Abort. (* À voir...
    destruct b; [ discriminate H1 | clear H1 ].
    symmetry in Hxj1.
    apply fst_same_sym_iff in Hs1; simpl in Hs1.
@@ -1057,6 +1060,7 @@ y₀=0   x / y = x / 0.0y₁y₂y₃…
 
 y₀=1   x / y = x / 0.1y₁y₂y₃ … = z
        x / z = 0.1 …
+*)
 *)
 
 Close Scope Z_scope.
