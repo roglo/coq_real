@@ -623,10 +623,12 @@ destruct cmp1; [ idtac | clear Hxy | discriminate Hxy ].
                 remember Hcyz as H; clear HeqH.
                 apply carry_succ_negb in H; [ idtac | assumption ].
                 destruct H as (Hny1, Hnz1).
-                pose proof Hn3 1 Nat.lt_1_2 as H.
+                assert (1 < 2) as H by (clear; omega).
+                apply Hn3 in H.
                 rewrite Hnz1, Digit.opp_0 in H.
                 rename H into Hnx1; move Hnx1 after Hny1.
-                pose proof Hn2 1 Nat.lt_1_2 as H.
+                assert (1 < 2) as H by (clear; omega).
+                apply Hn2 in H.
                 rewrite Digit.opp_involutive in H.
                 rewrite Hnxz, Hnyz in H; simpl in H.
                 unfold I_add_i in H; simpl in H.
