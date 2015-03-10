@@ -329,6 +329,71 @@ destruct s1 as [dj1| ].
  exfalso; revert Ht2; apply Digit.no_fixpoint_opp.
 Qed.
 
+Definition I_mul_2_pow x n := {| rm i := x.[i+n] |}.
+Arguments I_mul_2_pow x%I n%nat.
+
+Definition I_div_2_pow_i x n i := if lt_dec i n then 0%D else x.[i-n].
+Arguments I_div_2_pow_i x%I n%nat i%nat.
+
+Definition I_div_2_pow x n := {| rm := I_div_2_pow_i x n |}.
+Arguments I_div_2_pow x%I n%nat.
+
+Theorem I_mul_2_pow_div : ∀ x n, (I_mul_2_pow (I_div_2_pow x n) n = x)%I.
+Proof.
+intros x n.
+unfold I_eq; intros i; simpl.
+unfold I_add_i; simpl.
+do 2 rewrite Digit.add_0_r.
+unfold I_div_2_pow_i; simpl.
+rewrite Nat.add_sub.
+destruct (lt_dec (i + n) n) as [H1| H1].
+ apply Nat.lt_add_lt_sub_r in H1.
+ rewrite Nat.sub_diag in H1.
+ exfalso; revert H1; apply Nat.nlt_0_r.
+
+ clear H1.
+ apply Digit.add_compat; [ reflexivity | idtac ].
+ unfold carry; simpl.
+ remember (fst_same (I_mul_2_pow (I_div_2_pow x n) n) 0 (S i)) as s1 eqn:Hs1 .
+ remember (fst_same x 0 (S i)) as s2 eqn:Hs2 .
+ destruct s1 as [dj1| ].
+  apply fst_same_sym_iff in Hs1; simpl in Hs1.
+  destruct Hs1 as (Hn1, Ht1); rewrite Ht1.
+  apply fst_same_sym_iff in Hs2; simpl in Hs2.
+  destruct s2 as [dj2| ].
+   destruct Hs2 as (Hn2, Ht2); rewrite Ht2; reflexivity.
+
+   unfold I_div_2_pow_i in Ht1; simpl in Ht1.
+   destruct (lt_dec (S (i + dj1 + n)) n) as [H1| H1].
+    rewrite <- Nat.add_succ_l in H1.
+    apply Nat.lt_add_lt_sub_r in H1.
+    rewrite Nat.sub_diag in H1.
+    exfalso; revert H1; apply Nat.nlt_0_r.
+
+    clear H1; simpl in Ht1.
+    destruct n.
+     rewrite Nat.add_0_r in Ht1.
+     rewrite Hs2 in Ht1; discr_digit Ht1.
+
+     rewrite Nat.add_succ_r, <- Nat.add_succ_l, Nat.add_sub in Ht1.
+     rewrite Hs2 in Ht1; discr_digit Ht1.
+
+  destruct s2 as [dj2| ]; [ idtac | reflexivity ].
+  apply fst_same_sym_iff in Hs1; simpl in Hs1.
+  apply fst_same_sym_iff in Hs2; simpl in Hs2.
+  destruct Hs2 as (Hn2, Ht2).
+  pose proof (Hs1 dj2) as H.
+  unfold I_div_2_pow_i in H; simpl in H.
+  destruct (lt_dec (S (i + dj2 + n)) n) as [H1| H1].
+   discr_digit H.
+
+   clear H1; destruct n; simpl.
+    rewrite Nat.add_0_r in H; rewrite H; reflexivity.
+
+    rewrite Nat.add_succ_r, <- Nat.add_succ_l, Nat.add_sub in H.
+    rewrite H; reflexivity.
+Qed.
+
 Theorem zzz : ∀ x y z,
   (R_norm x < R_norm y)%R
   → (R_norm x + R_norm z < R_norm y + R_norm z)%R.
