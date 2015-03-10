@@ -599,19 +599,6 @@ destruct cmp1; [ idtac | clear Hxy | discriminate Hxy ].
                rewrite Hnz1 in Hcyz; destruct Hcyz as (_, H); discr_digit H.
 
               destruct j2.
-(*
-   nz  1   .   1
-        +1 ≠
-   nx  0   .   1
-
-  nxz  0   .   1
-       =   =
-  nyz  0   .   0
-
-   ny  1   .   .
-        +0
-   nz  1   .   1
-*)
                remember Hyz1 as H; clear HeqH.
                rewrite Hnyz in H; simpl in H.
                unfold I_add_i in H; simpl in H.
