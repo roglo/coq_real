@@ -73,3 +73,9 @@ value list_of_seq u =
 
 value readable_i x = list_of_seq x.rm 32;
 value readable_r x = (x.r_int, readable_i x.r_frac);
+
+readable_r (r_div_b_pow (r_of_string "314.15926535") 0);
+readable_r (r_div_b_pow (r_of_string "314.15926535") 1);
+readable_r (r_div_b_pow (r_of_string "314.15926535") 2);
+readable_r (r_div_b_pow (r_of_string "314.15926535") 3);
+readable_r (r_div_b_pow (r_of_string "314.15926535") 4);
