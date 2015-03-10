@@ -598,28 +598,28 @@ destruct cmp1; [ idtac | clear Hxy | discriminate Hxy ].
                apply carry_succ_negb in Hcyz; [ idtac | assumption ].
                rewrite Hnz1 in Hcyz; destruct Hcyz as (_, H); discr_digit H.
 
-              destruct j2.
-               remember Hyz1 as H; clear HeqH.
-               rewrite Hnyz in H; simpl in H.
-               unfold I_add_i in H; simpl in H.
-               rewrite carry_sum_3_no_assoc_l in H; [ idtac | eassumption ].
-               do 2 rewrite Digit.add_0_r in H.
-               unfold I_add_i in H.
-               rewrite Hz3, Digit.add_1_r, <- Digit.opp_add_l in H.
-               apply Digit.opp_0_iff in H.
-               rename H into Hnyc2_1.
-               assert (carry (R_frac ny) (R_frac nz) 2 = 1)%D as Hcyz2.
-                remember (R_frac ny.[2]) as ny2 eqn:Hny2.
-                symmetry in Hny2; apply eq_digit_eq in Hny2.
-                destruct (Digit.eq_dec ny2 0) as [H3| H3].
-                 rewrite H3 in Hny2, Hnyc2_1; clear ny2 H3.
-                 rewrite Digit.add_0_l in Hnyc2_1.
-                 rewrite <- digit_opp_carry_succ; eassumption.
+              remember Hyz1 as H; clear HeqH.
+              rewrite Hnyz in H; simpl in H.
+              unfold I_add_i in H; simpl in H.
+              rewrite carry_sum_3_no_assoc_l in H; [ idtac | eassumption ].
+              do 2 rewrite Digit.add_0_r in H.
+              unfold I_add_i in H.
+              rewrite Hz3, Digit.add_1_r, <- Digit.opp_add_l in H.
+              apply Digit.opp_0_iff in H.
+              rename H into Hnyc2_1.
+              assert (carry (R_frac ny) (R_frac nz) (S (S j2)) = 1)%D as Hcyz2.
+               remember (R_frac ny.[S (S j2)]) as ny2 eqn:Hny2.
+               symmetry in Hny2; apply eq_digit_eq in Hny2.
+               destruct (Digit.eq_dec ny2 0) as [H3| H3].
+                rewrite H3 in Hny2, Hnyc2_1; clear ny2 H3.
+                rewrite Digit.add_0_l in Hnyc2_1.
+                rewrite <- digit_opp_carry_succ; eassumption.
 
-                 apply Digit.not_0_iff_1 in H3.
-                 rewrite H3 in Hny2, Hnyc2_1; clear ny2 H3.
-                 apply carry_1; assumption.
+                apply Digit.not_0_iff_1 in H3.
+                rewrite H3 in Hny2, Hnyc2_1; clear ny2 H3.
+                apply carry_1; assumption.
 
+               destruct j2.
                 remember Hcyz as H; clear HeqH.
                 apply carry_succ_negb in H; [ idtac | assumption ].
                 destruct H as (Hny1, Hnz1).
