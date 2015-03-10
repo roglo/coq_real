@@ -428,7 +428,6 @@ destruct cmp1; [ idtac | clear Hxy | discriminate Hxy ].
         subst di4; clear Ht4.
         rewrite Hyi, b2z_1 in Hcmp2.
         apply b2z_1_iff in Hcmp2.
-Abort. (* bon. À voir...
 bbb.
         destruct i; [ clear Hn4 | idtac ].
          destruct j2; [ clear Hn2 | idtac ].
