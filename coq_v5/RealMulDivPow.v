@@ -136,12 +136,12 @@ unfold R_eq; simpl; split.
 
     unfold R_mul_b_pow in Ht1; simpl in Ht1.
     unfold R_abs in Ht1.
-    remember (R_is_neg y) as yn eqn:Hyn; symmetry in Hyn.
+    remember (R_is_neg y) as yn eqn:Hyn ; symmetry in Hyn.
     destruct yn; simpl in Ht1.
      rewrite Hy in Ht1.
      unfold R_div_b_pow in Ht1; simpl in Ht1.
      unfold R_abs in Ht1; simpl in Ht1.
-     remember (R_is_neg x) as xn eqn:Hxn; symmetry in Hxn.
+     remember (R_is_neg x) as xn eqn:Hxn ; symmetry in Hxn.
      destruct xn; simpl in Ht1.
       unfold I_div_b_pow_frac_i in Ht1; simpl in Ht1.
       destruct (lt_dec (dj1 + n) n) as [H1| H1].
@@ -162,7 +162,7 @@ unfold R_eq; simpl; split.
      rewrite Hy in Ht1.
      unfold R_div_b_pow in Ht1; simpl in Ht1.
      unfold R_abs in Ht1; simpl in Ht1.
-     remember (R_is_neg x) as xn eqn:Hxn; symmetry in Hxn.
+     remember (R_is_neg x) as xn eqn:Hxn ; symmetry in Hxn.
      destruct xn; simpl in Ht1.
       unfold I_div_b_pow_frac_i in Ht1; simpl in Ht1.
       destruct (lt_dec (dj1 + n) n) as [H1| H1].
@@ -184,15 +184,15 @@ unfold R_eq; simpl; split.
    apply fst_same_sym_iff in Hs1; simpl in Hs1.
    apply fst_same_sym_iff in Hs2; simpl in Hs2.
    destruct Hs2 as (Hn2, Ht2).
-   pose proof Hs1 dj2 as H.
+   pose proof (Hs1 dj2) as H.
    unfold R_mul_b_pow in H; simpl in H.
    unfold R_abs in H; simpl in H.
-   remember (R_is_neg y) as yn eqn:Hyn; symmetry in Hyn.
+   remember (R_is_neg y) as yn eqn:Hyn ; symmetry in Hyn.
    destruct yn; simpl in H.
     rewrite Hy in H; simpl in H.
     unfold R_div_b_pow in H; simpl in H.
     unfold R_abs in H; simpl in H.
-    remember (R_is_neg x) as xn eqn:Hxn; symmetry in Hxn.
+    remember (R_is_neg x) as xn eqn:Hxn ; symmetry in Hxn.
     destruct xn; simpl in H.
      unfold I_div_b_pow_frac_i in H; simpl in H.
      destruct (lt_dec (dj2 + n) n) as [H1| H1].
@@ -211,7 +211,7 @@ unfold R_eq; simpl; split.
 
     rewrite Hy in H; simpl in H.
     unfold R_div_b_pow, R_abs in H; simpl in H.
-    remember (R_is_neg x) as xn eqn:Hxn; symmetry in Hxn.
+    remember (R_is_neg x) as xn eqn:Hxn ; symmetry in Hxn.
     destruct xn; simpl in H.
      unfold I_div_b_pow_frac_i in H; simpl in H.
      destruct (lt_dec (dj2 + n) n) as [H1| H1].
@@ -229,6 +229,60 @@ unfold R_eq; simpl; split.
 
       rewrite Nat.add_sub, Ht2 in H; discr_digit H.
 
+  induction n; simpl.
+   remember (R_div_b_pow x 0) as y eqn:Hy .
+   unfold R_mul_b_pow, R_div_b_pow, R_abs; simpl.
+   remember (R_is_neg y) as ny eqn:Hny ; symmetry in Hny.
+   destruct ny; simpl.
+    rewrite Z2Nat.id.
+     rewrite Hy; simpl.
+     unfold R_div_b_pow, R_abs; simpl.
+     remember (R_is_neg x) as nx eqn:Hnx ; symmetry in Hnx.
+     destruct nx; simpl.
+      rewrite Z2Nat.id; simpl.
+       do 2 rewrite Z.opp_sub_distr, Z.opp_involutive, Z.add_simpl_r.
+       reflexivity.
+
+       unfold R_is_neg in Hnx; simpl in Hnx.
+       apply Z.ltb_lt, Z.opp_lt_mono in Hnx; simpl in Hnx.
+       apply Z.le_add_le_sub_r, Z.lt_pred_le; assumption.
+
+      rewrite Z.opp_sub_distr, Z.opp_involutive, Z.add_simpl_r.
+      rewrite Z2Nat.id; [ reflexivity | idtac ].
+      unfold R_is_neg in Hnx; simpl in Hnx.
+      apply Z.ltb_nlt, Z.nlt_ge in Hnx; simpl in Hnx.
+      assumption.
+bbb.
+
+      rewrite Z2Nat.id; simpl.
+       reflexivity.
+
+       unfold R_is_neg in Hnx; simpl in Hnx.
+       apply Z.ltb_lt, Z.opp_lt_mono in Hnx; simpl in Hnx.
+       apply Z.le_add_le_sub_r, Z.lt_pred_le; assumption.
+
+      rewrite Z2Nat.id; simpl.
+      rewrite Z.opp_sub_distr, Z.opp_involutive, Z.add_simpl_r.
+      reflexivity.
+
+      rewrite Hy in Hny; simpl in Hny.
+      unfold R_div_b_pow, R_abs in Hny; simpl in Hny.
+      rewrite Hnx in Hny; simpl in Hny.
+
+
+      rewrite Z2Nat.id in Hny; simpl in Hny.
+       unfold R_is_neg in Hnx, Hny; simpl in Hnx, Hny.
+       rewrite Hnx in Hny; discriminate Hny.
+
+
+       rewrite Z2Nat.id in Hny; simpl in Hny.
+       unfold R_is_neg in Hnx, Hny; simpl in Hnx, Hny.
+       rewrite Hnx in Hny; discriminate Hny.
+
+      do 2 rewrite Z.opp_sub_distr, Z.opp_involutive, Z.add_simpl_r.
+      reflexivity.
+
+bbb.
   remember (R_div_b_pow x n) as y eqn:Hy.
   unfold R_mul_b_pow, R_abs; simpl.
   remember (R_is_neg y) as yn eqn:Hyn; symmetry in Hyn.
