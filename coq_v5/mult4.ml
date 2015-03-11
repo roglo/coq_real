@@ -21,13 +21,13 @@ value i_div_b_pow_i x n i = if i < n then 0 else x.rm (i-n).
 
 value i_div_b_pow x n = { rm = i_div_b_pow_i x n }.
 
-value rec i_mul_b_pow_from xi xf n i =
+value rec i_mul_b_pow_from xi xf n =
   if n < 0 then invalid_arg "i_mul_b_pow_from" else
   match n with
   | 0 → xi
   | _ →
       let n1 = n-1 in
-      i_mul_b_pow_from (b * xi + d2n (xf.rm i)) xf n1 (i+1)
+      i_mul_b_pow_from (b * xi + d2n (xf.rm 0)) (i_mul_b_pow xf 1) n1
   end.
 
 value rec i_div_b_pow_from_int xi n =
@@ -59,7 +59,7 @@ value r_mul_b_pow x n =
   let r =
     let xi = r_int ax in
     let xf = r_frac ax in
-    { r_int = i_mul_b_pow_from xi xf n 0;
+    { r_int = i_mul_b_pow_from xi xf n;
       r_frac = i_mul_b_pow xf n }
   in
   if r_is_neg x then r_opp r else r.
