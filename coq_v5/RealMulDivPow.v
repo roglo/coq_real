@@ -3,7 +3,9 @@
 Require Import Utf8 QArith NPeano.
 Require Import Digit Real01 Real01Add Real RealAdd RealAddGrp.
 
-Definition b := 2%Z.
+Definition b := 2.
+
+Definition d2n d := if Digit.dec d then 1 else 0.
 
 Definition I_mul_b_pow x n := {| rm i := x.[i+n] |}.
 Arguments I_mul_b_pow x%I n%nat.
@@ -17,13 +19,13 @@ Arguments I_div_b_pow x%I n%nat.
 Fixpoint I_mul_b_pow_from xi xf n :=
   match n with
   | 0 => xi
-  | S n1 => I_mul_b_pow_from (b * xi + b2z (xf.[n]))%Z xf n1
+  | S n1 => I_mul_b_pow_from (b * xi + d2n (xf.[n])) xf n1
   end.
 
 Fixpoint I_div_b_pow_from_int xi n :=
   match n with
-  | 0 => if Z_zerop (xi mod 2) then 0%D else 1%D
-  | S n1 => I_div_b_pow_from_int (xi / b)%Z n1
+  | 0 => if zerop (xi mod 2) then 0%D else 1%D
+  | S n1 => I_div_b_pow_from_int (xi / b) n1
   end.
 
 Definition I_div_b_pow_frac_i xi xf n i :=
@@ -33,18 +35,30 @@ Definition I_div_b_pow_frac_i xi xf n i :=
 Fixpoint I_div_b_pow_int xi n :=
   match n with
   | 0 => xi
-  | S n1 => I_div_b_pow_int (xi / b)%Z n1
+  | S n1 => I_div_b_pow_int (xi / b) n1
   end.
 
 Definition I_div_b_pow_frac xi xf n := {| rm := I_div_b_pow_frac_i xi xf n |}.
 
 Definition R_mul_b_pow x n :=
-  {| R_int := I_mul_b_pow_from (R_int x) (R_frac x) n;
-     R_frac := I_mul_b_pow (R_frac x) n |}.
+  let ax := R_abs x in
+  let r :=
+    let xi := R_int ax in
+    let xf := R_frac ax in
+    {| R_int := Z.of_nat (I_mul_b_pow_from (Z.to_nat xi) xf n);
+       R_frac := I_mul_b_pow xf n |}
+  in
+  if R_is_neg x then R_opp r else r.
 
 Definition R_div_b_pow x n :=
-  {| R_int := I_div_b_pow_int (R_int x) n;
-     R_frac := I_div_b_pow_frac (R_int x) (R_frac x) n |}.
+  let ax := R_abs x in
+  let r :=
+    let xi := R_int ax in
+    let xf := R_frac ax in
+    {| R_int := Z.of_nat (I_div_b_pow_int (Z.to_nat xi) n);
+       R_frac := I_div_b_pow_frac (Z.to_nat xi) xf n |}
+  in
+  if R_is_neg x then R_opp r else r.
 
 Theorem I_mul_b_pow_div : ∀ x n, (I_mul_b_pow (I_div_b_pow x n) n = x)%I.
 Proof.
@@ -109,33 +123,85 @@ unfold R_eq; simpl; split.
  f_equal.
   Focus 2.
   unfold carry; simpl.
-  remember (I_div_b_pow_frac (R_int x) (R_frac x) n) as y eqn:Hy .
-  remember (fst_same (I_mul_b_pow y n) 0 0) as s1 eqn:Hs1 .
+  remember (R_div_b_pow x n) as y eqn:Hy .
+  remember (fst_same (R_frac (R_mul_b_pow y n)) 0 0) as s1 eqn:Hs1 .
   remember (fst_same (R_frac x) 0 0) as s2 eqn:Hs2 .
   destruct s1 as [dj1| ].
    apply fst_same_sym_iff in Hs1; simpl in Hs1.
-   destruct Hs1 as (Hn1, Ht1).
-   unfold I_div_b_pow_frac_i; simpl.
-   rewrite Nat.add_sub.
-   rewrite Hy in Ht1; simpl in Ht1.
-   unfold I_div_b_pow_frac_i in Ht1; simpl in Ht1.
-   destruct (lt_dec (dj1 + n) n) as [H1| H1].
-    apply Nat.lt_add_lt_sub_r in H1.
-    rewrite Nat.sub_diag in H1.
-    exfalso; revert H1; apply Nat.nlt_0_r.
+   destruct Hs1 as (Hn1, Ht1); rewrite Ht1.
+   apply fst_same_sym_iff in Hs2; simpl in Hs2.
+   destruct s2 as [dj2| ].
+    destruct Hs2 as (Hn2, Ht2); rewrite Ht2; reflexivity.
 
-    clear H1.
-    rewrite Nat.add_sub in Ht1; rewrite Ht1.
-    apply fst_same_sym_iff in Hs2; simpl in Hs2.
-    destruct s2 as [dj2| ].
-     destruct Hs2 as (Hn2, Ht2).
-     rewrite Ht2; reflexivity.
+    unfold R_mul_b_pow in Ht1; simpl in Ht1.
+    unfold R_abs in Ht1.
+    remember (R_is_neg y) as yn eqn:Hyn; symmetry in Hyn.
+    destruct yn; simpl in Ht1.
+     rewrite Hy in Ht1.
+     unfold R_div_b_pow in Ht1; simpl in Ht1.
+     unfold R_abs in Ht1; simpl in Ht1.
+     remember (R_is_neg x) as xn eqn:Hxn; symmetry in Hxn.
+     destruct xn; simpl in Ht1.
+      unfold I_div_b_pow_frac_i in Ht1; simpl in Ht1.
+      destruct (lt_dec (dj1 + n) n) as [H1| H1].
+       apply Nat.lt_add_lt_sub_r in H1.
+       rewrite Nat.sub_diag in H1.
+       exfalso; revert H1; apply Nat.nlt_0_r.
 
-     rewrite Hs2 in Ht1; discr_digit Ht1.
+       rewrite Hs2 in Ht1; discr_digit Ht1.
+
+      unfold I_div_b_pow_frac_i in Ht1; simpl in Ht1.
+      destruct (lt_dec (dj1 + n) n) as [H1| H1].
+       apply Nat.lt_add_lt_sub_r in H1.
+       rewrite Nat.sub_diag in H1.
+       exfalso; revert H1; apply Nat.nlt_0_r.
+
+       rewrite Hs2 in Ht1; discr_digit Ht1.
+
+     rewrite Hy in Ht1.
+     unfold R_div_b_pow in Ht1; simpl in Ht1.
+     unfold R_abs in Ht1; simpl in Ht1.
+     remember (R_is_neg x) as xn eqn:Hxn; symmetry in Hxn.
+     destruct xn; simpl in Ht1.
+      unfold I_div_b_pow_frac_i in Ht1; simpl in Ht1.
+      destruct (lt_dec (dj1 + n) n) as [H1| H1].
+       apply Nat.lt_add_lt_sub_r in H1.
+       rewrite Nat.sub_diag in H1.
+       exfalso; revert H1; apply Nat.nlt_0_r.
+
+       rewrite Hs2 in Ht1; discr_digit Ht1.
+
+      unfold I_div_b_pow_frac_i in Ht1; simpl in Ht1.
+      destruct (lt_dec (dj1 + n) n) as [H1| H1].
+       apply Nat.lt_add_lt_sub_r in H1.
+       rewrite Nat.sub_diag in H1.
+       exfalso; revert H1; apply Nat.nlt_0_r.
+
+       rewrite Hs2 in Ht1; discr_digit Ht1.
 
    destruct s2 as [dj2| ]; [ idtac | reflexivity ].
    apply fst_same_sym_iff in Hs1; simpl in Hs1.
-   rewrite Hy in Hs1; simpl in Hs1.
+   pose proof Hs1 dj2 as H.
+   unfold R_mul_b_pow in H; simpl in H.
+   remember (R_is_neg y) as yn eqn:Hyn; symmetry in Hyn.
+   destruct yn; simpl in H.
+bbb.
+    rewrite Hy in H.
+    unfold R_div_b_pow in H; simpl in H.
+    unfold R_abs in H; simpl in H.
+    remember (R_is_neg x) as xn eqn:Hxn; symmetry in Hxn.
+    destruct xn; simpl in H.
+bbb.
+     unfold I_div_b_pow_frac_i in Ht1; simpl in Ht1.
+     destruct (lt_dec (dj1 + n) n) as [H1| H1].
+      apply Nat.lt_add_lt_sub_r in H1.
+      rewrite Nat.sub_diag in H1.
+      exfalso; revert H1; apply Nat.nlt_0_r.
+
+      rewrite Hs2 in Ht1; discr_digit Ht1.
+
+
+
    unfold I_div_b_pow_frac_i in Hs1; simpl in Hs1.
    pose proof Hs1 dj2 as H; rewrite Nat.add_sub in H.
    destruct (lt_dec (dj2 + n) n) as [H1| H1].
