@@ -119,6 +119,21 @@ destruct (lt_dec (i + n) n) as [H1| H1].
     rewrite H; reflexivity.
 Qed.
 
+Add Parametric Morphism : I_mul_b_pow_from
+  with signature eq ==> I_eq ==> eq ==> eq
+  as I_mul_b_prop_from_compat.
+Proof.
+intros accu xf yf Hxy n.
+revert accu xf yf Hxy.
+induction n; intros; [ reflexivity | simpl ].
+rewrite Nat.add_0_r.
+destruct (Nat.eq_dec (d2n (xf.[0])) (d2n (yf.[0]))) as [H1| H1].
+ rewrite H1.
+ apply IHn.
+ Focus 2.
+bbb.
+*)
+
 Theorem R_mul_b_pow_div : ∀ x n, (R_mul_b_pow (R_div_b_pow x n) n = x)%R.
 Proof.
 intros x n.
@@ -231,20 +246,60 @@ unfold R_eq; simpl; split.
 
       rewrite Nat.add_sub, Ht2 in H; discr_digit H.
 
-(* à voir...
-remember (R_div_b_pow x n) as y eqn:Hy.
-unfold R_div_b_pow in Hy.
-remember (R_abs x) as ax eqn:Hax.
-remember (R_int ax) as xi eqn:Hxi.
-remember (R_frac ax) as xf eqn:Hxf.
-remember (R_abs_div_b_pow ax n) as ry eqn:Hry.
-unfold R_mul_b_pow.
-remember (R_abs y) as ay eqn:Hay.
-remember (R_int ay) as yi eqn:Hyi.
-remember (R_frac ay) as yf eqn:Hyf.
-remember (R_abs_mul_b_pow ay n) as rx eqn:Hrx.
+(**)
+  remember (R_div_b_pow x n) as y eqn:Hy .
+  unfold R_div_b_pow in Hy.
+  remember (R_abs x) as ax eqn:Hax .
+  remember (R_int ax) as xi eqn:Hxi .
+  remember (R_frac ax) as xf eqn:Hxf .
+  remember (R_abs_div_b_pow ax n) as rx eqn:Hrx .
+  unfold R_mul_b_pow.
+  remember (R_abs y) as ay eqn:Hay .
+  remember (R_int ay) as yi eqn:Hyi .
+  remember (R_frac ay) as yf eqn:Hyf .
+  remember (R_abs_mul_b_pow ay n) as ry eqn:Hry .
+  unfold R_abs in Hax, Hay.
+  remember (R_is_neg x) as nx eqn:Hnx ; symmetry in Hnx.
+  remember (R_is_neg y) as ny eqn:Hny ; symmetry in Hny.
+  move ay before ax; move xi before ay; move yi before xi.
+  move rx before yi; move ry before rx; move xf before ry.
+  move ny before nx; move yf before xf; move Hay before Hax.
+  move Hrx before Hry; move Hyi before Hxi; move Hyf before Hyi.
+  move Hxf after Hyf; move Hny before Hnx.
+  destruct nx, ny.
+   rewrite Hry; simpl.
+   rewrite Hay; simpl.
+   rewrite Hy; simpl.
+   rewrite Z.opp_sub_distr, Z.opp_involutive, Z.add_simpl_r.
+Focus 1.
+(*
+   (- Z.of_nat (I_mul_b_pow_from (Z.to_nat (R_int rx)) (- - R_frac rx)%I n) -
+    1)%Z = R_int x
 *)
+rewrite I_opp_involutive.
 bbb.
+   destruct n; intros; simpl.
+    rewrite Hrx; simpl.
+    rewrite Nat2Z.id.
+    rewrite Z2Nat.id.
+     rewrite Hax; simpl.
+     rewrite Z.opp_sub_distr, Z.opp_involutive, Z.add_simpl_r.
+     reflexivity.
+
+     rewrite Hax; simpl.
+     unfold R_is_neg in Hnx; simpl in Hnx.
+     apply Z.ltb_lt, Z.opp_lt_mono in Hnx; simpl in Hnx.
+     apply Z.le_add_le_sub_r, Z.lt_pred_le; assumption.
+
+    rewrite Nat.add_0_r.
+
+Focus 1.
+remember (R_frac rx.[0]) as v eqn:H.
+rewrite Hrx in H; simpl in H.
+unfold I_div_b_pow_frac_i in H; simpl in H.
+rewrite Hax in H; simpl in H.
+bbb.
+(**)
 
   induction n; simpl.
    remember (R_div_b_pow x 0) as y eqn:Hy .
