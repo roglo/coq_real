@@ -5,7 +5,15 @@ type real = { r_int : int; r_frac : real01 }.
 
 value b = 10;
 
-value b2z d = d mod b;
+value d2n d = d mod b;
+
+value r_int x = x.r_int;
+value r_frac x = x.r_frac;
+
+value i_opp x = { rm i = b - 1 - x.rm i }.
+value r_opp x = { r_int = - r_int x - 1; r_frac = i_opp (r_frac x) }.
+value r_is_neg x = r_int x < 0;
+value r_abs x = if r_is_neg x then r_opp x else x.
 
 value i_mul_b_pow x n = { rm i = x.rm (i+n) }.
 
@@ -19,7 +27,7 @@ value rec i_mul_b_pow_from xi xf n =
   | 0 → xi
   | _ →
       let n1 = n-1 in
-      i_mul_b_pow_from (b * xi + b2z (xf.rm n)) xf n1
+      i_mul_b_pow_from (b * xi + d2n (xf.rm n)) xf n1
   end.
 
 value rec i_div_b_pow_from_int xi n =
@@ -47,12 +55,24 @@ value rec i_div_b_pow_int xi n =
 value i_div_b_pow_frac xi xf n = { rm = i_div_b_pow_frac_i xi xf n }.
 
 value r_mul_b_pow x n =
-  { r_int = i_mul_b_pow_from x.r_int x.r_frac n;
-    r_frac = i_mul_b_pow x.r_frac n }.
+  let ax = r_abs x in
+  let r =
+    let xi = r_int ax in
+    let xf = r_frac ax in
+    { r_int = i_mul_b_pow_from xi xf n;
+      r_frac = i_mul_b_pow xf n }
+  in
+  if r_is_neg x then r_opp r else r.
 
 value r_div_b_pow x n =
-  { r_int = i_div_b_pow_int x.r_int n;
-    r_frac = i_div_b_pow_frac x.r_int x.r_frac n }.
+  let ax = r_abs x in
+  let r =
+    let xi = r_int ax in
+    let xf = r_frac ax in
+    { r_int = i_div_b_pow_int xi n;
+      r_frac = i_div_b_pow_frac xi xf n }
+  in
+  if r_is_neg x then r_opp r else r.
 
 (* *)
 
@@ -85,3 +105,5 @@ readable_r (r_div_b_pow (r_of_string "314.15926535") 3);
 readable_r (r_div_b_pow (r_of_string "314.15926535") 4);
 
 readable_r (r_div_b_pow (r_of_string "-314.15926535") 1);
+readable_r (r_mul_b_pow (r_div_b_pow (r_of_string "-314.15926535") 1) 1);
+readable_r (r_mul_b_pow (r_div_b_pow (r_of_string "-314.15926535") 0) 0);
