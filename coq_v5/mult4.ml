@@ -63,8 +63,9 @@ value i_of_string_from s k =
 ;
 
 value r_of_string s =
-  let k = try String.index s '.' with [ Not_found → String.length s ] in
-  { r_int = int_of_string (String.sub s 0 k);
+  let (sign, i) = if s <> "" && s.[0] = '-' then (-1, 1) else (1, 0) in
+  let k = try String.index_from s i '.' with [ Not_found → String.length s ] in
+  { r_int = sign * int_of_string (String.sub s i (k-i));
     r_frac = i_of_string_from s (k + 1) }
 ;
 
@@ -82,3 +83,5 @@ readable_r (r_div_b_pow (r_of_string "314.15926535") 1);
 readable_r (r_div_b_pow (r_of_string "314.15926535") 2);
 readable_r (r_div_b_pow (r_of_string "314.15926535") 3);
 readable_r (r_div_b_pow (r_of_string "314.15926535") 4);
+
+readable_r (r_div_b_pow (r_of_string "-314.15926535") 1);
