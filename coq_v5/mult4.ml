@@ -5,7 +5,7 @@ type real = { r_int : int; r_frac : real01 }.
 
 value b = 10;
 
-value b2z d = if d = 0 then 0 else 1;
+value b2z d = d mod b;
 
 value i_mul_b_pow x n = { rm i = x.rm (i+n) }.
 
@@ -14,6 +14,7 @@ value i_div_b_pow_i x n i = if i < n then 0 else x.rm (i-n).
 value i_div_b_pow x n = { rm = i_div_b_pow_i x n }.
 
 value rec i_mul_b_pow_from xi xf n =
+  if n < 0 then invalid_arg "i_mul_b_pow_from" else
   match n with
   | 0 → xi
   | _ →
@@ -22,6 +23,7 @@ value rec i_mul_b_pow_from xi xf n =
   end.
 
 value rec i_div_b_pow_from_int xi n =
+  if n < 0 then invalid_arg "i_div_b_pow_from_int" else
   match n with
   | 0 → xi mod b
   | _ →
@@ -34,6 +36,7 @@ value i_div_b_pow_frac_i xi xf n i =
   else xf.rm (i-n).
 
 value rec i_div_b_pow_int xi n =
+  if n < 0 then invalid_arg "i_div_b_pow_int" else
   match n with
   | 0 → xi
   | _ →
@@ -71,7 +74,7 @@ value list_of_seq u =
     else list_rec [u (n-1) :: l] (n-1)
 ;
 
-value readable_i x = list_of_seq x.rm 32;
+value readable_i x = list_of_seq x.rm 20;
 value readable_r x = (x.r_int, readable_i x.r_frac);
 
 readable_r (r_div_b_pow (r_of_string "314.15926535") 0);
