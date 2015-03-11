@@ -1,7 +1,8 @@
 (* Multiplication/Division of a Real by a power of 2 *)
 
 Require Import Utf8 QArith NPeano.
-Require Import Digit Real01 Real01Add Real RealAdd RealAddGrp.
+Require Import Digit Real01 Real01Add Real01AddMono.
+Require Import Real RealAdd RealAddGrp.
 
 Definition b := 2.
 
@@ -19,7 +20,7 @@ Arguments I_div_b_pow x%I n%nat.
 Fixpoint I_mul_b_pow_from xi xf n :=
   match n with
   | 0 => xi
-  | S n1 => I_mul_b_pow_from (b * xi + d2n (xf.[n])) xf n1
+  | S n1 => I_mul_b_pow_from (b * xi + d2n (xf.[0])) (I_mul_b_pow xf 1) n1
   end.
 
 Fixpoint I_div_b_pow_from_int xi n :=
@@ -181,53 +182,59 @@ unfold R_eq; simpl; split.
 
    destruct s2 as [dj2| ]; [ idtac | reflexivity ].
    apply fst_same_sym_iff in Hs1; simpl in Hs1.
+   apply fst_same_sym_iff in Hs2; simpl in Hs2.
+   destruct Hs2 as (Hn2, Ht2).
    pose proof Hs1 dj2 as H.
    unfold R_mul_b_pow in H; simpl in H.
+   unfold R_abs in H; simpl in H.
    remember (R_is_neg y) as yn eqn:Hyn; symmetry in Hyn.
    destruct yn; simpl in H.
-bbb.
-    rewrite Hy in H.
+    rewrite Hy in H; simpl in H.
     unfold R_div_b_pow in H; simpl in H.
     unfold R_abs in H; simpl in H.
     remember (R_is_neg x) as xn eqn:Hxn; symmetry in Hxn.
     destruct xn; simpl in H.
-bbb.
-     unfold I_div_b_pow_frac_i in Ht1; simpl in Ht1.
-     destruct (lt_dec (dj1 + n) n) as [H1| H1].
+     unfold I_div_b_pow_frac_i in H; simpl in H.
+     destruct (lt_dec (dj2 + n) n) as [H1| H1].
       apply Nat.lt_add_lt_sub_r in H1.
       rewrite Nat.sub_diag in H1.
       exfalso; revert H1; apply Nat.nlt_0_r.
 
-      rewrite Hs2 in Ht1; discr_digit Ht1.
+      rewrite Nat.add_sub, Ht2 in H; discr_digit H.
 
+     rewrite Hy in Hyn; simpl in Hyn.
+     unfold R_div_b_pow, R_abs in Hyn; simpl in Hyn.
+     rewrite Hxn in Hyn; simpl in Hyn.
+     unfold R_is_neg in Hyn; simpl in Hyn.
+     apply Z.ltb_lt, Z.nle_gt in Hyn.
+     exfalso; apply Hyn, Nat2Z.is_nonneg.
 
+    rewrite Hy in H; simpl in H.
+    unfold R_div_b_pow, R_abs in H; simpl in H.
+    remember (R_is_neg x) as xn eqn:Hxn; symmetry in Hxn.
+    destruct xn; simpl in H.
+     unfold I_div_b_pow_frac_i in H; simpl in H.
+     destruct (lt_dec (dj2 + n) n) as [H1| H1].
+      apply Nat.lt_add_lt_sub_r in H1.
+      rewrite Nat.sub_diag in H1.
+      exfalso; revert H1; apply Nat.nlt_0_r.
 
-   unfold I_div_b_pow_frac_i in Hs1; simpl in Hs1.
-   pose proof Hs1 dj2 as H; rewrite Nat.add_sub in H.
-   destruct (lt_dec (dj2 + n) n) as [H1| H1].
-    apply Nat.lt_add_lt_sub_r in H1.
-    rewrite Nat.sub_diag in H1.
-    exfalso; revert H1; apply Nat.nlt_0_r.
+      rewrite Nat.add_sub, Ht2 in H; discr_digit H.
 
-    rewrite H; reflexivity.
+     unfold I_div_b_pow_frac_i in H; simpl in H.
+     destruct (lt_dec (dj2 + n) n) as [H1| H1].
+      apply Nat.lt_add_lt_sub_r in H1.
+      rewrite Nat.sub_diag in H1.
+      exfalso; revert H1; apply Nat.nlt_0_r.
 
-  remember (R_int x) as xi.
-  remember (R_frac x) as yi.
-  clear x Heqxi Heqyi.
-  revert xi yi; induction n; intros; [ reflexivity | simpl ].
-  unfold I_div_b_pow_frac_i.
-  rewrite Nat.sub_diag.
-  destruct (lt_dec (S n) (S n)) as [H1| H1].
-   exfalso; revert H1; apply Nat.lt_irrefl.
+      rewrite Nat.add_sub, Ht2 in H; discr_digit H.
 
-   clear H1.
-   remember (I_div_b_pow_int (xi / b) n) as z eqn:Hz.
-   symmetry in Hz.
-   destruct z as [| p| p].
-    simpl.
-    destruct n.
-     simpl.
-     destruct xi.
-      simpl in Hz.
-      simpl.
+  remember (R_div_b_pow x n) as y eqn:Hy.
+  unfold R_mul_b_pow, R_abs; simpl.
+  remember (R_is_neg y) as yn eqn:Hyn; symmetry in Hyn.
+  destruct yn; simpl.
+   rewrite Hy; simpl.
+   unfold R_div_b_pow, R_abs; simpl.
+   remember (R_is_neg x) as xn eqn:Hxn; symmetry in Hxn.
+   destruct xn; simpl.
 bbb.

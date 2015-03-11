@@ -2469,5 +2469,3 @@ split; intros Hxy.
 
  rewrite Hxy; apply I_sub_diag.
 Qed.
-
-Close Scope nat_scope.
