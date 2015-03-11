@@ -21,13 +21,13 @@ value i_div_b_pow_i x n i = if i < n then 0 else x.rm (i-n).
 
 value i_div_b_pow x n = { rm = i_div_b_pow_i x n }.
 
-value rec i_mul_b_pow_from xi xf n =
+value rec i_mul_b_pow_from xi xf n i =
   if n < 0 then invalid_arg "i_mul_b_pow_from" else
   match n with
   | 0 → xi
   | _ →
       let n1 = n-1 in
-      i_mul_b_pow_from (b * xi + d2n (xf.rm n)) xf n1
+      i_mul_b_pow_from (b * xi + d2n (xf.rm i)) xf n1 (i+1)
   end.
 
 value rec i_div_b_pow_from_int xi n =
@@ -59,7 +59,7 @@ value r_mul_b_pow x n =
   let r =
     let xi = r_int ax in
     let xf = r_frac ax in
-    { r_int = i_mul_b_pow_from xi xf n;
+    { r_int = i_mul_b_pow_from xi xf n 0;
       r_frac = i_mul_b_pow xf n }
   in
   if r_is_neg x then r_opp r else r.
@@ -83,10 +83,13 @@ value i_of_string_from s k =
 ;
 
 value r_of_string s =
-  let (sign, i) = if s <> "" && s.[0] = '-' then (-1, 1) else (1, 0) in
+  let (is_neg, i) = if s <> "" && s.[0] = '-' then (True, 1) else (False, 0) in
   let k = try String.index_from s i '.' with [ Not_found → String.length s ] in
-  { r_int = sign * int_of_string (String.sub s i (k-i));
-    r_frac = i_of_string_from s (k + 1) }
+  let r =
+    { r_int = int_of_string (String.sub s i (k-i));
+      r_frac = i_of_string_from s (k + 1) }
+  in
+  if is_neg then r_opp r else r
 ;
 
 value list_of_seq u =
@@ -105,5 +108,5 @@ readable_r (r_div_b_pow (r_of_string "314.15926535") 3);
 readable_r (r_div_b_pow (r_of_string "314.15926535") 4);
 
 readable_r (r_div_b_pow (r_of_string "-314.15926535") 1);
-readable_r (r_mul_b_pow (r_div_b_pow (r_of_string "-314.15926535") 1) 1);
-readable_r (r_mul_b_pow (r_div_b_pow (r_of_string "-314.15926535") 0) 0);
+readable_r (r_opp (r_mul_b_pow (r_div_b_pow (r_of_string "-314.15926535") 1) 1));
+readable_r (r_opp (r_mul_b_pow (r_div_b_pow (r_of_string "-314.15926535") 0) 0));
