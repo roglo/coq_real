@@ -41,24 +41,26 @@ Fixpoint I_div_b_pow_int xi n :=
 
 Definition I_div_b_pow_frac xi xf n := {| rm := I_div_b_pow_frac_i xi xf n |}.
 
+Definition R_abs_mul_b_pow ax n :=
+  let xi := R_int ax in
+  let xf := R_frac ax in
+  {| R_int := Z.of_nat (I_mul_b_pow_from (Z.to_nat xi) xf n);
+     R_frac := I_mul_b_pow xf n |}.
+
 Definition R_mul_b_pow x n :=
   let ax := R_abs x in
-  let r :=
-    let xi := R_int ax in
-    let xf := R_frac ax in
-    {| R_int := Z.of_nat (I_mul_b_pow_from (Z.to_nat xi) xf n);
-       R_frac := I_mul_b_pow xf n |}
-  in
+  let r := R_abs_mul_b_pow ax n in
   if R_is_neg x then R_opp r else r.
+
+Definition R_abs_div_b_pow ax n :=
+  let xi := R_int ax in
+  let xf := R_frac ax in
+  {| R_int := Z.of_nat (I_div_b_pow_int (Z.to_nat xi) n);
+     R_frac := I_div_b_pow_frac (Z.to_nat xi) xf n |}.
 
 Definition R_div_b_pow x n :=
   let ax := R_abs x in
-  let r :=
-    let xi := R_int ax in
-    let xf := R_frac ax in
-    {| R_int := Z.of_nat (I_div_b_pow_int (Z.to_nat xi) n);
-       R_frac := I_div_b_pow_frac (Z.to_nat xi) xf n |}
-  in
+  let r := R_abs_div_b_pow ax n in
   if R_is_neg x then R_opp r else r.
 
 Theorem I_mul_b_pow_div : ∀ x n, (I_mul_b_pow (I_div_b_pow x n) n = x)%I.
@@ -229,6 +231,21 @@ unfold R_eq; simpl; split.
 
       rewrite Nat.add_sub, Ht2 in H; discr_digit H.
 
+(* à voir...
+remember (R_div_b_pow x n) as y eqn:Hy.
+unfold R_div_b_pow in Hy.
+remember (R_abs x) as ax eqn:Hax.
+remember (R_int ax) as xi eqn:Hxi.
+remember (R_frac ax) as xf eqn:Hxf.
+remember (R_abs_div_b_pow ax n) as ry eqn:Hry.
+unfold R_mul_b_pow.
+remember (R_abs y) as ay eqn:Hay.
+remember (R_int ay) as yi eqn:Hyi.
+remember (R_frac ay) as yf eqn:Hyf.
+remember (R_abs_mul_b_pow ay n) as rx eqn:Hrx.
+*)
+bbb.
+
   induction n; simpl.
    remember (R_div_b_pow x 0) as y eqn:Hy .
    unfold R_mul_b_pow, R_div_b_pow, R_abs; simpl.
@@ -278,7 +295,7 @@ unfold R_eq; simpl; split.
      apply Z.ltb_nlt, Z.nlt_ge in Hny; assumption.
 
 Focus 1.
-simpl.
+unfold R_mul_b_pow, R_div_b_pow; simpl.
 bbb.
 
       rewrite Z2Nat.id; simpl.
