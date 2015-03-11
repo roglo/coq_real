@@ -99,3 +99,19 @@ destruct (lt_dec (i + n) n) as [H1| H1].
     rewrite Nat.add_succ_r, <- Nat.add_succ_l, Nat.add_sub in H.
     rewrite H; reflexivity.
 Qed.
+
+Theorem R_mul_b_pow_div : ∀ x n, (R_mul_b_pow (R_div_b_pow x n) n = x)%R.
+Proof.
+intros x n.
+unfold R_eq; simpl; split.
+bbb.
+
+ f_equal.
+  remember (R_int x) as xi.
+  remember (R_frac x) as yi.
+  clear x Heqxi Heqyi.
+  revert xi yi.
+  induction n; intros; [ reflexivity | simpl ].
+  remember (I_div_b_pow_int (xi / 2) n) as d eqn:Hd.
+  destruct d as [| d| d].
+   simpl.
