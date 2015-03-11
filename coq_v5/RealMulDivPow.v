@@ -1,7 +1,7 @@
 (* Multiplication/Division of a Real by a power of 2 *)
 
 Require Import Utf8 QArith NPeano.
-Require Import Digit Real01 Real01Add Real RealAdd.
+Require Import Digit Real01 Real01Add Real RealAdd RealAddGrp.
 
 Definition I_mul_b_pow x n := {| rm i := x.[i+n] |}.
 Arguments I_mul_b_pow x%I n%nat.
@@ -104,14 +104,42 @@ Theorem R_mul_b_pow_div : ∀ x n, (R_mul_b_pow (R_div_b_pow x n) n = x)%R.
 Proof.
 intros x n.
 unfold R_eq; simpl; split.
-bbb.
-
  f_equal.
-  remember (R_int x) as xi.
-  remember (R_frac x) as yi.
-  clear x Heqxi Heqyi.
-  revert xi yi.
-  induction n; intros; [ reflexivity | simpl ].
-  remember (I_div_b_pow_int (xi / 2) n) as d eqn:Hd.
-  destruct d as [| d| d].
-   simpl.
+  Focus 2.
+  unfold carry; simpl.
+  remember (I_div_b_pow_frac (R_int x) (R_frac x) n) as y eqn:Hy .
+  remember (fst_same (I_mul_b_pow y n) 0 0) as s1 eqn:Hs1 .
+  remember (fst_same (R_frac x) 0 0) as s2 eqn:Hs2 .
+  destruct s1 as [dj1| ].
+   apply fst_same_sym_iff in Hs1; simpl in Hs1.
+   destruct Hs1 as (Hn1, Ht1).
+   unfold I_div_b_pow_frac_i; simpl.
+   rewrite Nat.add_sub.
+   rewrite Hy in Ht1; simpl in Ht1.
+   unfold I_div_b_pow_frac_i in Ht1; simpl in Ht1.
+   destruct (lt_dec (dj1 + n) n) as [H1| H1].
+    apply Nat.lt_add_lt_sub_r in H1.
+    rewrite Nat.sub_diag in H1.
+    exfalso; revert H1; apply Nat.nlt_0_r.
+
+    clear H1.
+    rewrite Nat.add_sub in Ht1; rewrite Ht1.
+    apply fst_same_sym_iff in Hs2; simpl in Hs2.
+    destruct s2 as [dj2| ].
+     destruct Hs2 as (Hn2, Ht2).
+     rewrite Ht2; reflexivity.
+
+     rewrite Hs2 in Ht1; discr_digit Ht1.
+
+   destruct s2 as [dj2| ]; [ idtac | reflexivity ].
+   apply fst_same_sym_iff in Hs1; simpl in Hs1.
+   rewrite Hy in Hs1; simpl in Hs1.
+   unfold I_div_b_pow_frac_i in Hs1; simpl in Hs1.
+   pose proof Hs1 dj2 as H; rewrite Nat.add_sub in H.
+   destruct (lt_dec (dj2 + n) n) as [H1| H1].
+    apply Nat.lt_add_lt_sub_r in H1.
+    rewrite Nat.sub_diag in H1.
+    exfalso; revert H1; apply Nat.nlt_0_r.
+
+    rewrite H; reflexivity.
+bbb.
