@@ -252,6 +252,33 @@ unfold R_eq; simpl; split.
       unfold R_is_neg in Hnx; simpl in Hnx.
       apply Z.ltb_nlt, Z.nlt_ge in Hnx; simpl in Hnx.
       assumption.
+
+     unfold R_is_neg in Hny; simpl in Hny.
+     apply Z.ltb_lt, Z.opp_lt_mono in Hny; simpl in Hny.
+     apply Z.le_add_le_sub_r, Z.lt_pred_le; assumption.
+
+    rewrite Z2Nat.id.
+     rewrite Hy; simpl.
+     unfold R_div_b_pow, R_abs; simpl.
+     remember (R_is_neg x) as nx eqn:Hnx ; symmetry in Hnx.
+     destruct nx; simpl.
+      rewrite Z2Nat.id.
+       rewrite Z.opp_sub_distr, Z.opp_involutive, Z.add_simpl_r.
+       reflexivity.
+
+       unfold R_is_neg in Hnx; simpl in Hnx.
+       apply Z.ltb_lt, Z.opp_lt_mono in Hnx; simpl in Hnx.
+       apply Z.le_add_le_sub_r, Z.lt_pred_le; assumption.
+
+      rewrite Z2Nat.id; [ reflexivity | idtac ].
+      unfold R_is_neg in Hnx; simpl in Hnx.
+      apply Z.ltb_nlt, Z.nlt_ge in Hnx; assumption.
+
+     unfold R_is_neg in Hny; simpl in Hny.
+     apply Z.ltb_nlt, Z.nlt_ge in Hny; assumption.
+
+Focus 1.
+simpl.
 bbb.
 
       rewrite Z2Nat.id; simpl.
