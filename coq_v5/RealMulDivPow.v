@@ -3,6 +3,8 @@
 Require Import Utf8 QArith NPeano.
 Require Import Digit Real01 Real01Add Real RealAdd RealAddGrp.
 
+Definition b := 2%Z.
+
 Definition I_mul_b_pow x n := {| rm i := x.[i+n] |}.
 Arguments I_mul_b_pow x%I n%nat.
 
@@ -15,13 +17,13 @@ Arguments I_div_b_pow x%I n%nat.
 Fixpoint I_mul_b_pow_from xi xf n :=
   match n with
   | 0 => xi
-  | S n1 => I_mul_b_pow_from (2 * xi + b2z (xf.[n]))%Z xf n1
+  | S n1 => I_mul_b_pow_from (b * xi + b2z (xf.[n]))%Z xf n1
   end.
 
 Fixpoint I_div_b_pow_from_int xi n :=
   match n with
   | 0 => if Z_zerop (xi mod 2) then 0%D else 1%D
-  | S n1 => I_div_b_pow_from_int (xi / 2)%Z n1
+  | S n1 => I_div_b_pow_from_int (xi / b)%Z n1
   end.
 
 Definition I_div_b_pow_frac_i xi xf n i :=
@@ -31,7 +33,7 @@ Definition I_div_b_pow_frac_i xi xf n i :=
 Fixpoint I_div_b_pow_int xi n :=
   match n with
   | 0 => xi
-  | S n1 => I_div_b_pow_int (xi / 2)%Z n1
+  | S n1 => I_div_b_pow_int (xi / b)%Z n1
   end.
 
 Definition I_div_b_pow_frac xi xf n := {| rm := I_div_b_pow_frac_i xi xf n |}.
@@ -142,4 +144,24 @@ unfold R_eq; simpl; split.
     exfalso; revert H1; apply Nat.nlt_0_r.
 
     rewrite H; reflexivity.
+
+  remember (R_int x) as xi.
+  remember (R_frac x) as yi.
+  clear x Heqxi Heqyi.
+  revert xi yi; induction n; intros; [ reflexivity | simpl ].
+  unfold I_div_b_pow_frac_i.
+  rewrite Nat.sub_diag.
+  destruct (lt_dec (S n) (S n)) as [H1| H1].
+   exfalso; revert H1; apply Nat.lt_irrefl.
+
+   clear H1.
+   remember (I_div_b_pow_int (xi / b) n) as z eqn:Hz.
+   symmetry in Hz.
+   destruct z as [| p| p].
+    simpl.
+    destruct n.
+     simpl.
+     destruct xi.
+      simpl in Hz.
+      simpl.
 bbb.
