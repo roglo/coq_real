@@ -7,6 +7,7 @@ Require Import Misc Real RealAdd RealAddGrp.
 Definition base := 2.
 
 Definition d2n d := if Digit.dec d then 1 else 0.
+Arguments d2n d%D.
 
 Definition I_mul_b_pow_frac x n := {| rm i := x.[i+n] |}.
 Arguments I_mul_b_pow_frac x%I n%nat.
@@ -182,6 +183,24 @@ destruct Hxy as [Hxy| (i, (Hlt, (Heq, Hgt)))].
 bbb.
 *)
 
+Theorem digit_d2n_compat : ∀ d e, (d = e)%D → d2n d = d2n e.
+Proof.
+intros d e Hde.
+unfold d2n; simpl.
+destruct (Digit.dec d) as [H1| H1].
+ destruct (Digit.dec e) as [H2| H2]; [ reflexivity | idtac ].
+ rewrite H1, H2 in Hde; discr_digit Hde.
+
+ destruct (Digit.dec e) as [H2| H2]; [ idtac | reflexivity ].
+ rewrite H1, H2 in Hde; discr_digit Hde.
+Qed.
+
+Theorem d2n_0 : d2n 0 = 0.
+Proof.
+unfold d2n.
+destruct (Digit.dec 0) as [H1| H1]; [ discr_digit H1 | reflexivity ].
+Qed.
+
 Theorem R_mul_b_pow_div : ∀ x n, (R_mul_b_pow (R_div_b_pow x n) n = x)%R.
 Proof.
 intros x n.
@@ -343,7 +362,12 @@ rewrite divmod_div.
 remember (I_div_b_pow_int (Z.to_nat xi / 2) n) as dxi eqn:Hdxi.
 remember (I_div_b_pow_frac (Z.to_nat xi) xf (S n)) as dxf eqn:Hdxf.
 remember (I_div_b_pow_from_int (Z.to_nat xi) n) as dxif eqn:Hdxif.
-simpl.
+erewrite digit_d2n_compat; [ idtac | apply Digit.opp_involutive ].
+destruct n; simpl.
+rewrite Hdxi, Hdxif; simpl.
+rewrite divmod_div, fold_sub_succ_l, divmod_mod.
+destruct (zerop (Z.to_nat xi mod 2)) as [H1| H1].
+rewrite d2n_0.
 bbb.
 
 Focus 1.
