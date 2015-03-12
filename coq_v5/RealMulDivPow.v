@@ -2,9 +2,9 @@
 
 Require Import Utf8 QArith NPeano.
 Require Import Digit Real01 Real01Add Real01AddMono.
-Require Import Real RealAdd RealAddGrp.
+Require Import Misc Real RealAdd RealAddGrp.
 
-Definition b := 2.
+Definition base := 2.
 
 Definition d2n d := if Digit.dec d then 1 else 0.
 
@@ -17,16 +17,16 @@ Arguments I_div_b_pow_i x%I n%nat i%nat.
 Definition I_div_b_pow x n := {| rm := I_div_b_pow_i x n |}.
 Arguments I_div_b_pow x%I n%nat.
 
-Fixpoint I_mul_b_pow_from accu xf n :=
+Fixpoint I_mul_b_pow_from a xf n :=
   match n with
-  | 0 => accu
-  | S n1 => I_mul_b_pow_from (b * accu + d2n (xf.[0])) (I_mul_b_pow xf 1) n1
+  | 0 => a
+  | S n1 => I_mul_b_pow_from (base * a + d2n (xf.[0])) (I_mul_b_pow xf 1) n1
   end.
 
 Fixpoint I_div_b_pow_from_int xi n :=
   match n with
   | 0 => if zerop (xi mod 2) then 0%D else 1%D
-  | S n1 => I_div_b_pow_from_int (xi / b) n1
+  | S n1 => I_div_b_pow_from_int (xi / base) n1
   end.
 
 Definition I_div_b_pow_frac_i xi xf n i :=
@@ -36,7 +36,7 @@ Definition I_div_b_pow_frac_i xi xf n i :=
 Fixpoint I_div_b_pow_int xi n :=
   match n with
   | 0 => xi
-  | S n1 => I_div_b_pow_int (xi / b) n1
+  | S n1 => I_div_b_pow_int (xi / base) n1
   end.
 
 Definition I_div_b_pow_frac xi xf n := {| rm := I_div_b_pow_frac_i xi xf n |}.
@@ -119,6 +119,25 @@ destruct (lt_dec (i + n) n) as [H1| H1].
     rewrite H; reflexivity.
 Qed.
 
+Fixpoint two_power n :=
+  match n with
+  | O => 1
+  | S n1 => 2 * two_power n1
+  end.
+
+Theorem I_mul_b_pow_from_succ : ∀ a xf n,
+  I_mul_b_pow_from (S a) xf n = I_mul_b_pow_from a xf n + two_power n.
+Proof.
+intros a xf n.
+revert a xf.
+induction n; intros; [ rewrite Nat.add_1_r; reflexivity | simpl ].
+do 2 rewrite Nat.add_0_r.
+rewrite Nat.add_succ_r; simpl.
+do 2 rewrite IHn.
+rewrite Nat.add_assoc; reflexivity.
+Qed.
+
+(* faux
 Add Parametric Morphism : I_mul_b_pow_from
   with signature eq ==> I_eq ==> eq ==> eq
   as I_mul_b_prop_from_morph.
@@ -157,9 +176,10 @@ destruct Hxy as [Hxy| (i, (Hlt, (Heq, Hgt)))].
 
      intros j; rewrite Hy; symmetry; apply Hy.
 
-    rewrite Nat.add_0_r.
-Print I_mul_b_pow_from.
+    rewrite Nat.add_0_r, Nat.add_1_r.
+    rewrite I_mul_b_pow_from_succ.
 bbb.
+*)
 
 Theorem R_mul_b_pow_div : ∀ x n, (R_mul_b_pow (R_div_b_pow x n) n = x)%R.
 Proof.
@@ -298,14 +318,7 @@ unfold R_eq; simpl; split.
    rewrite Hay; simpl.
    rewrite Hy; simpl.
    rewrite Z.opp_sub_distr, Z.opp_involutive, Z.add_simpl_r.
-Focus 1.
-(*
-   (- Z.of_nat (I_mul_b_pow_from (Z.to_nat (R_int rx)) (- - R_frac rx)%I n) -
-    1)%Z = R_int x
-*)
-rewrite I_opp_involutive.
-bbb.
-   destruct n; intros; simpl.
+   destruct n; intros.
     rewrite Hrx; simpl.
     rewrite Nat2Z.id.
     rewrite Z2Nat.id.
@@ -318,7 +331,13 @@ bbb.
      apply Z.ltb_lt, Z.opp_lt_mono in Hnx; simpl in Hnx.
      apply Z.le_add_le_sub_r, Z.lt_pred_le; assumption.
 
-    rewrite Nat.add_0_r.
+    simpl; rewrite Nat.add_0_r.
+
+rewrite Hrx; simpl.
+rewrite divmod_div.
+rewrite Nat2Z.id.
+rewrite <- Hxi, <- Hxf.
+bbb.
 
 Focus 1.
 remember (R_frac rx.[0]) as v eqn:H.

@@ -1101,16 +1101,6 @@ bbb.
 
 (* neutral element *)
 
-Theorem divmod_div : ∀ a b, fst (divmod a b 0 b) = (a / S b)%nat.
-Proof. intros a b; reflexivity. Qed.
-
-Theorem divmod_mod : ∀ a b, b - snd (divmod a b 0 b) = (a mod S b)%nat.
-Proof. intros a b; reflexivity. Qed.
-
-Theorem fold_sub_succ_l : ∀ a b,
-  (match a with 0 => S b | S c => b - c end = S b - a)%nat.
-Proof. reflexivity. Qed.
-
 Theorem I_eq_ext_dec : ∀ x y, {I_eq_ext x y} + {not(I_eq_ext x y)}.
 Proof.
 intros x y.

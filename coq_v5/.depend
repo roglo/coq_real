@@ -12,5 +12,5 @@ RealAdd.vo RealAdd.glob RealAdd.v.beautified: RealAdd.v Digit.vo Real01.vo Real0
 RealAddGrp.vo RealAddGrp.glob RealAddGrp.v.beautified: RealAddGrp.v Misc.vo Digit.vo Real01.vo Real01Add.vo Real01AddMono.vo Real.vo RealAdd.vo
 RealComplete.vo RealComplete.glob RealComplete.v.beautified: RealComplete.v Misc.vo Real01.vo Real01Cmp.vo Real01AddMono.vo Real01Add.vo Digit.vo Real.vo RealAdd.vo RealAddGrp.vo
 RealDiv.vo RealDiv.glob RealDiv.v.beautified: RealDiv.v Real01Add.vo Real01Cmp.vo RealAdd.vo Real01Div.vo
-RealMulDivPow.vo RealMulDivPow.glob RealMulDivPow.v.beautified: RealMulDivPow.v Digit.vo Real01.vo Real01Add.vo Real01AddMono.vo Real.vo RealAdd.vo RealAddGrp.vo
+RealMulDivPow.vo RealMulDivPow.glob RealMulDivPow.v.beautified: RealMulDivPow.v Digit.vo Real01.vo Real01Add.vo Real01AddMono.vo Misc.vo Real.vo RealAdd.vo RealAddGrp.vo
 T.vo T.glob T.v.beautified: T.v
