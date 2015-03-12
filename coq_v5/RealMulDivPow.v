@@ -387,11 +387,34 @@ unfold R_eq; simpl; split.
       rewrite d2n_1, Nat.add_1_r.
       rewrite Nat2Z.inj_succ.
       remember (Z.to_nat xi) as ni eqn:Hni; symmetry in Hni.
-      remember (ni mod 2) as ni2 eqn:Hni2; symmetry in Hni2.
-      destruct ni2; [ exfalso; revert H1; apply Nat.lt_irrefl | idtac ].
-      destruct ni2.
+      remember (ni mod 2) as nim2 eqn:Hnim2; symmetry in Hnim2.
+      destruct nim2; [ exfalso; revert H1; apply Nat.lt_irrefl | idtac ].
+      destruct nim2.
+       assert (2 ≠ 0) as H0 by (intros H; discriminate H).
+       pose proof (Nat.div_mod ni 2 H0) as H; clear H0.
+       rewrite Hnim2 in H; simpl in H.
+       rewrite divmod_div, Nat.add_0_r in H.
+       rewrite Nat.add_1_r in H.
+       unfold Z.sub.
+       rewrite <- Z.opp_add_distr, <- Nat2Z.inj_succ, <- H, <- Hni.
+       rewrite Z2Nat.id.
+        rewrite Hxi, Hax; simpl.
+        rewrite Z.sub_simpl_r, Z.opp_involutive; reflexivity.
+
+        rewrite Hxi, Hax; simpl.
+        unfold R_is_neg in Hnx; simpl in Hnx.
+        apply Z.ltb_lt, Z.opp_lt_mono in Hnx; simpl in Hnx.
+        apply Z.le_add_le_sub_r, Z.lt_pred_le; assumption.
+
+       exfalso.
+       assert (2 ≠ 0) as H by (intros H; discriminate H).
+       apply Nat.mod_upper_bound with (a:=ni) in H.
+       rewrite Hnim2 in H.
+       apply Nat.nle_gt in H.
+       apply H, le_n_S, le_n_S, Nat.le_0_l.
+
+     rewrite Nat.add_0_r.
 bbb.
-(**)
 
   induction n; simpl.
    remember (R_div_b_pow x 0) as y eqn:Hy .
