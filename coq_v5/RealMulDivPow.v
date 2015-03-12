@@ -8,8 +8,8 @@ Definition base := 2.
 
 Definition d2n d := if Digit.dec d then 1 else 0.
 
-Definition I_mul_b_pow x n := {| rm i := x.[i+n] |}.
-Arguments I_mul_b_pow x%I n%nat.
+Definition I_mul_b_pow_frac x n := {| rm i := x.[i+n] |}.
+Arguments I_mul_b_pow_frac x%I n%nat.
 
 Definition I_div_b_pow_i x n i := if lt_dec i n then 0%D else x.[i-n].
 Arguments I_div_b_pow_i x%I n%nat i%nat.
@@ -17,10 +17,10 @@ Arguments I_div_b_pow_i x%I n%nat i%nat.
 Definition I_div_b_pow x n := {| rm := I_div_b_pow_i x n |}.
 Arguments I_div_b_pow x%I n%nat.
 
-Fixpoint I_mul_b_pow_from a xf n :=
+Fixpoint I_mul_b_pow_int a xf n i :=
   match n with
   | 0 => a
-  | S n1 => I_mul_b_pow_from (base * a + d2n (xf.[0])) (I_mul_b_pow xf 1) n1
+  | S n1 => I_mul_b_pow_int (base * a + d2n (xf.[i])) xf n1 (S i)
   end.
 
 Fixpoint I_div_b_pow_from_int xi n :=
@@ -44,8 +44,8 @@ Definition I_div_b_pow_frac xi xf n := {| rm := I_div_b_pow_frac_i xi xf n |}.
 Definition R_abs_mul_b_pow ax n :=
   let xi := R_int ax in
   let xf := R_frac ax in
-  {| R_int := Z.of_nat (I_mul_b_pow_from (Z.to_nat xi) xf n);
-     R_frac := I_mul_b_pow xf n |}.
+  {| R_int := Z.of_nat (I_mul_b_pow_int (Z.to_nat xi) xf n 0);
+     R_frac := I_mul_b_pow_frac xf n |}.
 
 Definition R_mul_b_pow x n :=
   let ax := R_abs x in
@@ -63,7 +63,8 @@ Definition R_div_b_pow x n :=
   let r := R_abs_div_b_pow ax n in
   if R_is_neg x then R_opp r else r.
 
-Theorem I_mul_b_pow_div : ∀ x n, (I_mul_b_pow (I_div_b_pow x n) n = x)%I.
+Theorem I_mul_b_pow_frac_div : ∀ x n,
+  (I_mul_b_pow_frac (I_div_b_pow x n) n = x)%I.
 Proof.
 intros x n.
 unfold I_eq; intros i; simpl.
@@ -79,7 +80,7 @@ destruct (lt_dec (i + n) n) as [H1| H1].
  clear H1.
  apply Digit.add_compat; [ reflexivity | idtac ].
  unfold carry; simpl.
- remember (fst_same (I_mul_b_pow (I_div_b_pow x n) n) 0 (S i)) as s1 eqn:Hs1 .
+ remember (fst_same (I_mul_b_pow_frac (I_div_b_pow x n) n) 0 (S i)) as s1 eqn:Hs1 .
  remember (fst_same x 0 (S i)) as s2 eqn:Hs2 .
  destruct s1 as [dj1| ].
   apply fst_same_sym_iff in Hs1; simpl in Hs1.
@@ -125,11 +126,11 @@ Fixpoint two_power n :=
   | S n1 => 2 * two_power n1
   end.
 
-Theorem I_mul_b_pow_from_succ : ∀ a xf n,
-  I_mul_b_pow_from (S a) xf n = I_mul_b_pow_from a xf n + two_power n.
+Theorem I_mul_b_pow_int_succ : ∀ a xf n i,
+  I_mul_b_pow_int (S a) xf n i = I_mul_b_pow_int a xf n i + two_power n.
 Proof.
-intros a xf n.
-revert a xf.
+intros a xf n i.
+revert a xf i.
 induction n; intros; [ rewrite Nat.add_1_r; reflexivity | simpl ].
 do 2 rewrite Nat.add_0_r.
 rewrite Nat.add_succ_r; simpl.
@@ -138,7 +139,7 @@ rewrite Nat.add_assoc; reflexivity.
 Qed.
 
 (* faux
-Add Parametric Morphism : I_mul_b_pow_from
+Add Parametric Morphism : I_mul_b_pow_int
   with signature eq ==> I_eq ==> eq ==> eq
   as I_mul_b_prop_from_morph.
 Proof.
@@ -177,7 +178,7 @@ destruct Hxy as [Hxy| (i, (Hlt, (Heq, Hgt)))].
      intros j; rewrite Hy; symmetry; apply Hy.
 
     rewrite Nat.add_0_r, Nat.add_1_r.
-    rewrite I_mul_b_pow_from_succ.
+    rewrite I_mul_b_pow_int_succ.
 bbb.
 *)
 
@@ -342,6 +343,7 @@ rewrite divmod_div.
 remember (I_div_b_pow_int (Z.to_nat xi / 2) n) as dxi eqn:Hdxi.
 remember (I_div_b_pow_frac (Z.to_nat xi) xf (S n)) as dxf eqn:Hdxf.
 remember (I_div_b_pow_from_int (Z.to_nat xi) n) as dxif eqn:Hdxif.
+simpl.
 bbb.
 
 Focus 1.
