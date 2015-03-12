@@ -337,6 +337,11 @@ rewrite Hrx; simpl.
 rewrite divmod_div.
 rewrite Nat2Z.id.
 rewrite <- Hxi, <- Hxf.
+unfold I_div_b_pow_frac_i; simpl.
+rewrite divmod_div.
+remember (I_div_b_pow_int (Z.to_nat xi / 2) n) as dxi eqn:Hdxi.
+remember (I_div_b_pow_frac (Z.to_nat xi) xf (S n)) as dxf eqn:Hdxf.
+remember (I_div_b_pow_from_int (Z.to_nat xi) n) as dxif eqn:Hdxif.
 bbb.
 
 Focus 1.
