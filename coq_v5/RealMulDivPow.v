@@ -201,6 +201,12 @@ unfold d2n.
 destruct (Digit.dec 0) as [H1| H1]; [ discr_digit H1 | reflexivity ].
 Qed.
 
+Theorem d2n_1 : d2n 1 = 1.
+Proof.
+unfold d2n.
+destruct (Digit.dec 1) as [H1| H1]; [ reflexivity | discr_digit H1 ].
+Qed.
+
 Theorem R_mul_b_pow_div : ∀ x n, (R_mul_b_pow (R_div_b_pow x n) n = x)%R.
 Proof.
 intros x n.
@@ -313,7 +319,6 @@ unfold R_eq; simpl; split.
 
       rewrite Nat.add_sub, Ht2 in H; discr_digit H.
 
-(**)
   remember (R_div_b_pow x n) as y eqn:Hy .
   unfold R_div_b_pow in Hy.
   remember (R_abs x) as ax eqn:Hax .
@@ -340,8 +345,7 @@ unfold R_eq; simpl; split.
    rewrite Z.opp_sub_distr, Z.opp_involutive, Z.add_simpl_r.
    destruct n; intros.
     rewrite Hrx; simpl.
-    rewrite Nat2Z.id.
-    rewrite Z2Nat.id.
+    rewrite Nat2Z.id, Z2Nat.id.
      rewrite Hax; simpl.
      rewrite Z.opp_sub_distr, Z.opp_involutive, Z.add_simpl_r.
      reflexivity.
@@ -352,29 +356,40 @@ unfold R_eq; simpl; split.
      apply Z.le_add_le_sub_r, Z.lt_pred_le; assumption.
 
     simpl; rewrite Nat.add_0_r.
+    rewrite Hrx; simpl.
+    rewrite divmod_div, Nat2Z.id, <- Hxi, <- Hxf.
+    unfold I_div_b_pow_frac_i; simpl.
+    rewrite divmod_div.
+    remember (I_div_b_pow_int (Z.to_nat xi / 2) n) as dxi eqn:Hdxi .
+    remember (I_div_b_pow_frac (Z.to_nat xi) xf (S n)) as dxf eqn:Hdxf .
+    remember (I_div_b_pow_from_int (Z.to_nat xi) n) as dxif eqn:Hdxif .
+    erewrite digit_d2n_compat; [ idtac | apply Digit.opp_involutive ].
+    destruct n; simpl.
+     rewrite Hdxi, Hdxif; simpl.
+     rewrite divmod_div, fold_sub_succ_l, divmod_mod.
+     destruct (zerop (Z.to_nat xi mod 2)) as [H1| H1].
+      rewrite d2n_0, Nat.add_0_r.
+      apply Nat.mod_divides in H1; [ idtac | intros H; discriminate H ].
+      destruct H1 as (c, Hc).
+      rewrite Hc, Nat.mul_comm.
+      rewrite Nat.div_mul; [ idtac | intros H; discriminate H ].
+      simpl in Hc; rewrite Nat.add_0_r in Hc; rewrite <- Hc.
+      rewrite Z2Nat.id.
+       rewrite Hxi, Hax; simpl.
+       rewrite Z.opp_sub_distr, Z.opp_involutive, Z.add_simpl_r; simpl.
+       reflexivity.
 
-rewrite Hrx; simpl.
-rewrite divmod_div.
-rewrite Nat2Z.id.
-rewrite <- Hxi, <- Hxf.
-unfold I_div_b_pow_frac_i; simpl.
-rewrite divmod_div.
-remember (I_div_b_pow_int (Z.to_nat xi / 2) n) as dxi eqn:Hdxi.
-remember (I_div_b_pow_frac (Z.to_nat xi) xf (S n)) as dxf eqn:Hdxf.
-remember (I_div_b_pow_from_int (Z.to_nat xi) n) as dxif eqn:Hdxif.
-erewrite digit_d2n_compat; [ idtac | apply Digit.opp_involutive ].
-destruct n; simpl.
-rewrite Hdxi, Hdxif; simpl.
-rewrite divmod_div, fold_sub_succ_l, divmod_mod.
-destruct (zerop (Z.to_nat xi mod 2)) as [H1| H1].
-rewrite d2n_0.
-bbb.
+       rewrite Hxi, Hax; simpl.
+       unfold R_is_neg in Hnx; simpl in Hnx.
+       apply Z.ltb_lt, Z.opp_lt_mono in Hnx; simpl in Hnx.
+       apply Z.le_add_le_sub_r, Z.lt_pred_le; assumption.
 
-Focus 1.
-remember (R_frac rx.[0]) as v eqn:H.
-rewrite Hrx in H; simpl in H.
-unfold I_div_b_pow_frac_i in H; simpl in H.
-rewrite Hax in H; simpl in H.
+      rewrite d2n_1, Nat.add_1_r.
+      rewrite Nat2Z.inj_succ.
+      remember (Z.to_nat xi) as ni eqn:Hni; symmetry in Hni.
+      remember (ni mod 2) as ni2 eqn:Hni2; symmetry in Hni2.
+      destruct ni2; [ exfalso; revert H1; apply Nat.lt_irrefl | idtac ].
+      destruct ni2.
 bbb.
 (**)
 
