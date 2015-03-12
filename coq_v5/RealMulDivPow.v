@@ -319,6 +319,30 @@ unfold R_eq; simpl; split.
 
       rewrite Nat.add_sub, Ht2 in H; discr_digit H.
 
+(**)
+  remember (R_div_b_pow x n) as y eqn:Hy .
+  unfold R_div_b_pow in Hy; simpl in Hy.
+  unfold R_mul_b_pow; simpl.
+  remember (R_is_neg x) as nx eqn:Hnx ; symmetry in Hnx.
+  remember (R_is_neg y) as ny eqn:Hny ; symmetry in Hny.
+  destruct nx, ny; simpl.
+   subst y; clear Hny.
+   revert x Hnx.
+   induction n; intros.
+Focus 2.
+simpl.
+bbb.
+
+   remember (R_abs_div_b_pow (R_abs x) n) as y eqn:Hy .
+   unfold R_is_neg; simpl.
+
+
+
+  remember (R_is_neg y) as ny eqn:Hny ; symmetry in Hny.
+  destruct nx, ny; simpl.
+
+(**)
+bbb.
   remember (R_div_b_pow x n) as y eqn:Hy .
   unfold R_div_b_pow in Hy.
   remember (R_abs x) as ax eqn:Hax .
@@ -343,7 +367,9 @@ unfold R_eq; simpl; split.
    rewrite Hay; simpl.
    rewrite Hy; simpl.
    rewrite Z.opp_sub_distr, Z.opp_involutive, Z.add_simpl_r.
-   destruct n; intros.
+   subst.
+   revert x Hnx Hny.
+   induction n; intros.
     rewrite Hrx; simpl.
     rewrite Nat2Z.id, Z2Nat.id.
      rewrite Hax; simpl.
@@ -414,6 +440,7 @@ unfold R_eq; simpl; split.
        apply H, le_n_S, le_n_S, Nat.le_0_l.
 
      rewrite Nat.add_0_r.
+     simpl in Hdxi; do 2 rewrite divmod_div in Hdxi.
 bbb.
 
   induction n; simpl.
