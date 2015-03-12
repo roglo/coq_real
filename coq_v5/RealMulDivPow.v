@@ -17,10 +17,10 @@ Arguments I_div_b_pow_i x%I n%nat i%nat.
 Definition I_div_b_pow x n := {| rm := I_div_b_pow_i x n |}.
 Arguments I_div_b_pow x%I n%nat.
 
-Fixpoint I_mul_b_pow_from xi xf n :=
+Fixpoint I_mul_b_pow_from accu xf n :=
   match n with
-  | 0 => xi
-  | S n1 => I_mul_b_pow_from (b * xi + d2n (xf.[0])) (I_mul_b_pow xf 1) n1
+  | 0 => accu
+  | S n1 => I_mul_b_pow_from (b * accu + d2n (xf.[0])) (I_mul_b_pow xf 1) n1
   end.
 
 Fixpoint I_div_b_pow_from_int xi n :=
@@ -121,18 +121,45 @@ Qed.
 
 Add Parametric Morphism : I_mul_b_pow_from
   with signature eq ==> I_eq ==> eq ==> eq
-  as I_mul_b_prop_from_compat.
+  as I_mul_b_prop_from_morph.
 Proof.
 intros accu xf yf Hxy n.
-revert accu xf yf Hxy.
-induction n; intros; [ reflexivity | simpl ].
-rewrite Nat.add_0_r.
-destruct (Nat.eq_dec (d2n (xf.[0])) (d2n (yf.[0]))) as [H1| H1].
- rewrite H1.
- apply IHn.
- Focus 2.
+apply I_eq_prop in Hxy.
+destruct Hxy as [Hxy| (i, (Hlt, (Heq, Hgt)))].
+ unfold I_eq_ext in Hxy.
+ revert accu xf yf Hxy.
+ induction n; intros; [ reflexivity | simpl ].
+ rewrite Nat.add_0_r.
+ unfold d2n; simpl.
+ destruct (Digit.dec (xf.[0])) as [H1| H1].
+  destruct (Digit.dec (yf.[0])) as [H2| H2].
+   apply IHn; intros i; apply Hxy.
+
+   rewrite Hxy, H2 in H1; discr_digit H1.
+
+  destruct (Digit.dec (yf.[0])) as [H2| H2].
+   rewrite Hxy, H2 in H1; discr_digit H1.
+
+   apply IHn; intros i; apply Hxy.
+
+ destruct Hgt as [(Hi, (Hx, Hy))| (Hx, Hy)].
+  subst i; clear Hlt.
+  revert accu xf yf Heq Hx Hy.
+  induction n; intros; [ reflexivity | simpl ].
+  rewrite Nat.add_0_r.
+  unfold d2n; simpl.
+  destruct (Digit.dec (xf.[0])) as [H1| H1].
+   destruct (Digit.dec (yf.[0])) as [H2| H2].
+    apply IHn; simpl.
+     rewrite Hx, Hy; assumption.
+
+     intros j; rewrite Hx; symmetry; apply Hx.
+
+     intros j; rewrite Hy; symmetry; apply Hy.
+
+    rewrite Nat.add_0_r.
+Print I_mul_b_pow_from.
 bbb.
-*)
 
 Theorem R_mul_b_pow_div : ∀ x n, (R_mul_b_pow (R_div_b_pow x n) n = x)%R.
 Proof.
