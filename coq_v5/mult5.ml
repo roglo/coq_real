@@ -41,10 +41,6 @@ value i_mul_algo x y i =
 
 value q_floor p q = p / q;
 
-value summation_for_u2z b n u i =
-  summation 0 n (fun k → u (i + k) * int_pow b (n - k))
-;
-
 value logn n a =
   loop a (a / n) where rec loop m a =
     match m with
@@ -54,6 +50,10 @@ value logn n a =
         if a = 0 then 0
         else 1 + loop m1 (a / n)
     end
+;
+
+value summation_for_u2z b n u i =
+  summation 0 n (fun k → u (i + k) * int_pow b (n - k))
 ;
 
 value z_of_u b u i =
