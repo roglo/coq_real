@@ -39,7 +39,7 @@ value i_mul_algo x y i =
   summation 1 i (fun j → b2n (x.rm (j - 1)) * b2n (y.rm (i - j)))
 ;
 
-value q_floor p q = p / q * q;
+value q_floor p q = p / q;
 
 value summation_for_u2z b n u i =
   summation 0 n (fun k → u (i + k) * int_pow b (n - k))
