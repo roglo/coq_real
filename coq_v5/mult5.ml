@@ -61,7 +61,13 @@ value i_mul x y =
 value r_of_string s =
   {rm i =
      if i ≥ String.length s then 0
-     else Char.code s.[i] - Char.code '0'}
+     else
+       let c = Char.code s.[i] - Char.code '0' in
+       if c >= base.val then
+         failwith
+           (sprintf "r_of_string \"%s\" (digit %d is %c > %d)" s i s.[i]
+              (base.val - 1))
+       else c}
 ;
 
 value list_of_seq u =
