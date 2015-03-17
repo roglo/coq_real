@@ -119,6 +119,7 @@ value one = {rm i = base.val-1};
 list_of_seq one.rm 20;
 value u = i_mul_algo one one;
 list_of_seq u 20;
+list_of_seq (i_mul one one).rm 20;
 (*
 carry_lower_bound u 0 7;
 carry_upper_bound u 0 7;
