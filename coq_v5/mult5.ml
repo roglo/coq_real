@@ -45,10 +45,21 @@ value summation_for_u2z b n u i =
   summation 0 n (fun k → u (i + k) * int_pow b (n - k))
 ;
 
-value logn n a = int_of_float (ceil (log (float a) /. log (float n)));
+value logn n a =
+(*
+let r = do {
+*)
+  int_of_float (ceil (log (float a) /. log (float n)));
+(*
+} in do {
+printf "logn %d %d = %d\n%!" n a r;
+r};
+*)
 
 value z_of_u b u i =
   let n = max 3 (logn b (i * (b - 1) + b) + 1) in
+(* à voir ... *)
+let n = logn b (i * (b - 1) + b) + 1 in
   let c = 0 (* ou 1 : à voir *) in
   (q_floor (summation_for_u2z b n u i) (int_pow b n) + c) mod b
 ;
