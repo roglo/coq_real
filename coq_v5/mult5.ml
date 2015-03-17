@@ -89,6 +89,7 @@ list_of_seq (i_mul (r_of_string "9468025") (r_of_string "7023342")).rm 20;
 (* overflows *)
 value one = {rm i = base.val-1};
 value u = i_mul_algo one one;
+(*
 list_of_seq u 20;
 carry_lower_bound_num u 0 1;
 carry_lower_bound_num u 0 2;
@@ -97,14 +98,19 @@ carry_lower_bound_num u 0 4;
 carry_lower_bound_num u 0 5;
 carry_lower_bound_num u 0 6;
 carry_upper_bound_num u 0 6;
+*)
 
+39872*1;
 list_of_seq (i_mul (r_of_string "39872") one).rm 20;
+3*1;
 list_of_seq (i_mul (r_of_string "3") one).rm 20;
 
 value u = i_mul_algo (r_of_string "3") one;
+(*
 let n = 8 in (carry_lower_bound u 0 n, carry_upper_bound u 0 n);
 let n = 9 in (carry_lower_bound u 0 n, carry_upper_bound u 0 n);
 let n = 6 in (carry_lower_bound_num u 0 n, carry_upper_bound_num u 0 n);
+*)
 
 value x = {rm i = i mod base.val};
 
@@ -113,6 +119,7 @@ value one = {rm i = base.val-1};
 list_of_seq one.rm 20;
 value u = i_mul_algo one one;
 list_of_seq u 20;
+(*
 carry_lower_bound u 0 7;
 carry_upper_bound u 0 7;
 let n = 1 in (carry_lower_bound_num u 0 n, carry_upper_bound_num u 0 n);
@@ -121,6 +128,7 @@ let n = 3 in (carry_lower_bound_num u 0 n, carry_upper_bound_num u 0 n);
 let n = 4 in (carry_lower_bound_num u 0 n, carry_upper_bound_num u 0 n);
 let n = 5 in (carry_lower_bound_num u 0 n, carry_upper_bound_num u 0 n);
 let n = 6 in (carry_lower_bound_num u 0 n, carry_upper_bound_num u 0 n);
+*)
 
 (*
 # 9344*685;
