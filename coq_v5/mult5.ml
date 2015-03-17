@@ -42,7 +42,7 @@ value i_mul_algo x y i =
 value q_floor p q = p / q * q;
 
 value summation_for_u2z b n u i =
-  summation 0 n (fun k → (* let _ = printf "(1) int_pow %d %d...%!" b (n - k) in *) u (i + k) * int_pow b (n - k))
+  summation 0 n (fun k → u (i + k) * int_pow b (n - k))
 ;
 
 value logn n a = int_of_float (ceil (log (float a) /. log (float n)));
@@ -50,9 +50,6 @@ value logn n a = int_of_float (ceil (log (float a) /. log (float n)));
 value z_of_u b u i =
   let n = max 3 (logn b (i * (b - 1) + b) + 1) in
   let c = 0 (* ou 1 : à voir *) in
-(*
-  let _ = printf "(2) int_pow %d %d...%!" b n in
-*)
   (q_floor (summation_for_u2z b n u i) (int_pow b n) + c) mod b
 ;
 
