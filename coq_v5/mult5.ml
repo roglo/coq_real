@@ -46,20 +46,18 @@ value summation_for_u2z b n u i =
 ;
 
 value logn n a =
-(*
-let r = do {
-*)
-  int_of_float (ceil (log (float a) /. log (float n)));
-(*
-} in do {
-printf "logn %d %d = %d\n%!" n a r;
-r};
-*)
+  loop a (a / n) where rec loop m a =
+    match m with
+    | 0 → 0
+    | _ →
+        let m1 = m - 1 in
+        if a = 0 then 0
+        else 1 + loop m1 (a / n)
+    end
+;
 
 value z_of_u b u i =
-  let n = max 3 (logn b (i * (b - 1) + b) + 1) in
-(* à voir ... *)
-let n = logn b (i * (b - 1) + b) + 1 in
+  let n = logn b (i * (b - 1) + b) + 2 in
   let c = 0 (* ou 1 : à voir *) in
   (q_floor (summation_for_u2z b n u i) (int_pow b n) + c) mod b
 ;
