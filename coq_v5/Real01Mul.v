@@ -89,6 +89,9 @@ unfold n2d in Hn.
 destruct n; [ reflexivity | discr_digit Hn ].
 Qed.
 
+Theorem n2d_eq : ∀ a b, a = b → (n2d a = n2d b)%D.
+Proof. intros; subst; reflexivity. Qed.
+
 (* Summation model and theorems borrowed from my proof of Puiseux's theorem,
    file Fsummation.v *)
 
@@ -487,14 +490,25 @@ induction n; intros; simpl.
 Qed.
 *)
 
+Theorem I_ext_mul_i_compat_r : ∀ x y z i,
+  I_eq_ext x y
+  → (I_mul_i x z i = I_mul_i y z i)%D.
+Proof.
+intros x y z i Hxy.
+unfold I_mul_i.
+unfold z_of_u; simpl.
+do 2 rewrite fold_sub_succ_l, divmod_mod.
+apply n2d_eq; f_equal.
+unfold summation_for_u2z; f_equal.
+apply summation_compat; intros k Hk; f_equal.
+apply I_ext_mul_algo_compat_r; assumption.
+Qed.
+
 Theorem I_ext_mul_compat_r : ∀ x y z, I_eq_ext x y → I_eq_ext (x * z) (y * z).
 Proof.
 intros x y z Hxy.
 unfold I_eq_ext; simpl; intros i.
-unfold I_mul_i.
-bbb.
-erewrite I_ext_propag_carry_mul_algo_compat_r; [ idtac | eassumption ].
-reflexivity.
+apply I_ext_mul_i_compat_r; assumption.
 Qed.
 
 Theorem I_mul_algo_le : ∀ x y i, I_mul_algo x y i ≤ i.
@@ -506,7 +520,7 @@ destruct (Digit.dec (x.[j-1])); [ idtac | apply Nat.le_0_l ].
 destruct (Digit.dec (y.[i-j])); [ reflexivity | apply Nat.le_0_l ].
 Qed.
 
-(* pas forcément utile, mais bon, je le garde, on sait jamais *)
+(*
 Theorem propag_carry_succ_upper_bound : ∀ x y u n i,
   u = I_propag_carry (I_mul_algo x y)
   → u (S n) i ≤ max (u n i - 1) 1.
@@ -530,7 +544,9 @@ destruct s1 as [di1| ].
  destruct (zerop (u n i)); [ idtac | apply Nat.le_max_l ].
  apply Nat.le_max_r.
 Qed.
+*)
 
+(*
 Theorem I_propag_carry_le : ∀ x y n i,
   I_propag_carry (I_mul_algo x y) n i ≤ max (i - n) 1.
 Proof.
@@ -580,7 +596,9 @@ induction n; simpl.
    destruct (zerop (u i)) as [H2| H2]; [ apply Nat.le_max_r | idtac ].
    assumption.
 Qed.
+*)
 
+(*
 Theorem I_propag_carry_mul_algo_le_1 : ∀ x y n i,
   i - 1 ≤ n
   → I_propag_carry (I_mul_algo x y) n i ≤ 1.
@@ -591,8 +609,9 @@ apply Nat.max_lub; [ idtac | reflexivity ].
 apply Nat.le_sub_le_add_r in Hin.
 apply Nat.le_sub_le_add_l; assumption.
 Qed.
+*)
 
-(* is the number of iterations sufficient? *)
+(*
 Theorem zzz : ∀ x y i,
   I_propag_carry (I_mul_algo x y) (S (S i)) i =
   I_propag_carry (I_mul_algo x y) (S i) i.
@@ -779,7 +798,6 @@ bbb.
                   do 2 rewrite Nat.add_0_r in H.
                   rewrite Nat.mul_1_r in H.
 bbb.
-(*
 
 intros x y i.
 remember (S i) as si; simpl; subst si.
@@ -984,7 +1002,7 @@ destruct i; simpl.
                  Focus 1.
 bbb.
 
-(* solution not starting with testing i=0 *)
+-- solution not starting with testing i=0
 intros x y i.
 remember (S i) as si; simpl; subst si.
 remember (I_propag_carry (I_mul_algo x y) (S i)) as u eqn:Hu.
@@ -1086,6 +1104,7 @@ destruct s1 as [di1| ].
                simpl in H2.
                omega.
 bbb.
+*)
 
 Theorem I_mul_compat_r : ∀ x y z,
   ¬I_eq_ext x 1
@@ -1100,11 +1119,19 @@ destruct Hxy as [Hxy| (i, (Hlt, (Heq, Hgt)))].
 
  destruct Hgt as [(Hi, (Hx, Hy))| (Hx, Hy)].
   subst i; clear Hlt.
+  unfold I_eq_ext in Hxn1; simpl in Hxn1.
+  unfold I_eq_ext in Hyn1; simpl in Hyn1.
   remember (x .[ 0]) as b eqn:Hxi .
-  apply neq_negb in Heq.
-  symmetry in Hxi; apply negb_sym in Heq.
-  rewrite Heq in Hy.
-  destruct b; contradiction.
+  apply Digit.neq_eq_opp, Digit.opp_sym in Heq.
+  apply eq_digit_eq in Hxi; symmetry in Hxi.
+  destruct (Digit.dec b) as [H| H].
+   exfalso; apply Hxn1.
+   intros i; rewrite Hx; assumption.
+
+   exfalso; apply Hyn1.
+   intros i; rewrite Hy, Heq, H; reflexivity.
+
+  aaa.
 bbb.
 
   unfold I_eq; simpl; intros k.
