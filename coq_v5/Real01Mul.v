@@ -308,7 +308,7 @@ Qed.
 Theorem I_mul_i_comm : ∀ x y i, (I_mul_i x y i = I_mul_i y x i)%D.
 Proof.
 intros x y i.
-unfold  I_mul_i; simpl.
+unfold I_mul_i; simpl.
 apply z_of_u_compat_l.
 apply I_mul_algo_comm.
 Qed.
@@ -358,12 +358,29 @@ destruct (Digit.dec (x.[j-1])) as [Hxj|Hxj]; [ simpl | reflexivity ].
 rewrite Hx in Hxj; discr_digit Hxj.
 Qed.
 
+Theorem int_pow_neq_0 : ∀ a b, a ≠ 0 → int_pow a b ≠ 0.
+Proof.
+intros a b Ha.
+induction b; [ intros H; discriminate H | simpl ].
+apply Nat.neq_mul_0; split; assumption.
+Qed.
+
 Theorem I_mul_i_0_l : ∀ x y,
   I_eq_ext x 0
   → ∀ i, (I_mul_i x y i = 0)%D.
 Proof.
 intros x y Hx i.
 unfold I_mul_i.
+unfold z_of_u, base; simpl.
+rewrite Nat.mul_1_r.
+unfold summation_for_u2z.
+rewrite fold_sub_succ_l, divmod_mod.
+apply n2d_0_iff.
+rewrite all_0_summation_0.
+ rewrite Nat.div_0_l; [ reflexivity | idtac ].
+ apply int_pow_neq_0; intros H; discriminate H.
+
+ intros k Hk.
 bbb.
 
 remember (I_propag_carry (I_mul_algo x y) (S i) i) as nb eqn:Hnb .
