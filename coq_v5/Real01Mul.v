@@ -1117,10 +1117,10 @@ apply I_eq_prop in Hxy.
 destruct Hxy as [Hxy| (i, (Hlt, (Heq, Hgt)))].
  apply I_eq_ext_eq, I_ext_mul_compat_r; assumption.
 
+ unfold I_eq_ext in Hxn1; simpl in Hxn1.
+ unfold I_eq_ext in Hyn1; simpl in Hyn1.
  destruct Hgt as [(Hi, (Hx, Hy))| (Hx, Hy)].
   subst i; clear Hlt.
-  unfold I_eq_ext in Hxn1; simpl in Hxn1.
-  unfold I_eq_ext in Hyn1; simpl in Hyn1.
   remember (x .[ 0]) as b eqn:Hxi .
   apply Digit.neq_eq_opp, Digit.opp_sym in Heq.
   apply eq_digit_eq in Hxi; symmetry in Hxi.
@@ -1131,7 +1131,24 @@ destruct Hxy as [Hxy| (i, (Hlt, (Heq, Hgt)))].
    exfalso; apply Hyn1.
    intros i; rewrite Hy, Heq, H; reflexivity.
 
-  aaa.
+bbb. (* faut réfléchir *)
+  remember (x .[ i]) as b eqn:Hxi .
+  apply Digit.neq_eq_opp, Digit.opp_sym in Heq.
+  apply eq_digit_eq in Hxi; symmetry in Hxi.
+  destruct (Digit.dec b) as [H1| H1].
+   rewrite H1 in Hxi, Heq.
+   rewrite Digit.opp_1 in Heq.
+   unfold I_eq; simpl.
+   intros k; simpl.
+   apply I_add_i_compat.
+   clear k; intros k; simpl.
+   unfold I_mul_i; simpl.
+bbb.
+
+   exfalso; apply Hyn1; intros k.
+   destruct (lt_eq_lt_dec k i) as [[H2| H2]| H2].
+    remember H2 as H; clear HeqH.
+    apply Hlt in H.
 bbb.
 
   unfold I_eq; simpl; intros k.
