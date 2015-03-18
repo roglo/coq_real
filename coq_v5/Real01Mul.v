@@ -1131,18 +1131,36 @@ destruct Hxy as [Hxy| (i, (Hlt, (Heq, Hgt)))].
    exfalso; apply Hyn1.
    intros i; rewrite Hy, Heq, H; reflexivity.
 
-bbb. (* faut réfléchir *)
   remember (x .[ i]) as b eqn:Hxi .
   apply Digit.neq_eq_opp, Digit.opp_sym in Heq.
   apply eq_digit_eq in Hxi; symmetry in Hxi.
   destruct (Digit.dec b) as [H1| H1].
    rewrite H1 in Hxi, Heq.
    rewrite Digit.opp_1 in Heq.
-   unfold I_eq; simpl.
-   intros k; simpl.
+   apply I_eq_prop.
+   right; simpl.
+   exists 0.
+   split.
+    intros k Hk.
+    exfalso; revert Hk; apply Nat.nlt_0_r.
+
+    split.
+SearchAbout I_mul_i.
+bbb.
+
+   right; exists i; simpl.
+   split.
+    intros k Hk.
+bbb. (* faut réfléchir *)
+     .   i   .   .
+  x  .   1   0   0   0 …
+     =   ≠
+  y  .   0   1   1   1 …
+
    apply I_add_i_compat.
    clear k; intros k; simpl.
    unfold I_mul_i; simpl.
+
 bbb.
 
    exfalso; apply Hyn1; intros k.
