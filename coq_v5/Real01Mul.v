@@ -399,15 +399,28 @@ apply fst_same_sym_iff in Hs1; simpl in Hs1.
 destruct s1 as [dj1| ].
  destruct Hs1 as (Hn1, Ht1); assumption.
 
+ exfalso.
  pose proof (Hs1 0) as H; simpl in H.
  rewrite Nat.add_0_r in H.
  remember (S i) as si.
  unfold I_mul_i in H; subst si.
-bbb.
- rewrite if_0_propag_carry_0 in H; [ discr_digit H | idtac ].
- intros j; apply all_0_summation_0; intros k Hk.
- unfold d2n; simpl.
- destruct (Digit.dec 0) as [H1|H1]; [ discr_digit H1 | reflexivity ].
+ rewrite z_of_u_compat_l in H; [ idtac | apply I_mul_algo_0_l; reflexivity ].
+ unfold z_of_u in H; simpl in H.
+ rewrite fold_sub_succ_l, divmod_mod in H.
+ rewrite Digit.opp_0 in H.
+ apply Digit.not_0_iff_1 in H.
+ apply H; clear H.
+ apply n2d_0_iff.
+ apply Nat.mod_divide; [ intros H; discriminate H | idtac ].
+ exists 0; simpl.
+ apply Nat.div_small.
+ unfold summation_for_u2z; simpl.
+ rewrite all_0_summation_0.
+  apply Nat.nle_gt; intros H.
+  apply Nat.le_0_r in H.
+  revert H; apply int_pow_neq_0; intros H; discriminate H.
+
+  intros k Hk; reflexivity.
 Qed.
 
 (* compatibility with equality *)
@@ -431,6 +444,7 @@ destruct (Digit.dec (x.[j])) as [Hx|Hx].
  rewrite Hxy, Hy in Hx; discr_digit Hx.
 Qed.
 
+(*
 Theorem I_ext_propag_carry_mul_algo_compat_r : ∀ x y z n i,
   I_eq_ext x y
   → I_propag_carry (I_mul_algo x z) n i =
@@ -471,12 +485,14 @@ induction n; intros; simpl.
   rewrite <- IHn, Hs1 in Ht2.
   exfalso; apply Ht2; reflexivity.
 Qed.
+*)
 
 Theorem I_ext_mul_compat_r : ∀ x y z, I_eq_ext x y → I_eq_ext (x * z) (y * z).
 Proof.
 intros x y z Hxy.
 unfold I_eq_ext; simpl; intros i.
 unfold I_mul_i.
+bbb.
 erewrite I_ext_propag_carry_mul_algo_compat_r; [ idtac | eassumption ].
 reflexivity.
 Qed.
