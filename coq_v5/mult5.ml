@@ -42,7 +42,7 @@ value i_mul_algo x y i =
 value q_floor p q = p / q;
 
 value logn n a =
-  loop a (a / n) where rec loop m a =
+  loop a a - 1 where rec loop m a =
     match m with
     | 0 → 0
     | _ →

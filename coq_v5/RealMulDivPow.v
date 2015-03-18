@@ -331,6 +331,7 @@ unfold R_eq; simpl; split.
    induction n; intros.
 Focus 2.
 simpl.
+Abort. (* à voir...
 bbb.
 
    remember (R_abs_div_b_pow (R_abs x) n) as y eqn:Hy .
@@ -533,3 +534,4 @@ bbb.
    remember (R_is_neg x) as xn eqn:Hxn; symmetry in Hxn.
    destruct xn; simpl.
 bbb.
+*)
