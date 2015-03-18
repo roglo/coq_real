@@ -381,13 +381,8 @@ rewrite all_0_summation_0.
  apply int_pow_neq_0; intros H; discriminate H.
 
  intros k Hk.
-bbb.
-
-remember (I_propag_carry (I_mul_algo x y) (S i) i) as nb eqn:Hnb .
-symmetry in Hnb.
-destruct nb; [ reflexivity | exfalso ].
-rewrite if_0_propag_carry_0 in Hnb; [ discriminate Hnb | idtac ].
-intros j; apply I_mul_algo_0_l; assumption.
+ apply Nat.eq_mul_0; left.
+ apply I_mul_algo_0_l; assumption.
 Qed.
 
 Theorem I_mul_0_l : ∀ x, (0 * x = 0)%I.
@@ -408,6 +403,7 @@ destruct s1 as [dj1| ].
  rewrite Nat.add_0_r in H.
  remember (S i) as si.
  unfold I_mul_i in H; subst si.
+bbb.
  rewrite if_0_propag_carry_0 in H; [ discr_digit H | idtac ].
  intros j; apply all_0_summation_0; intros k Hk.
  unfold d2n; simpl.
