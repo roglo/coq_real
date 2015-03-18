@@ -110,6 +110,16 @@ rewrite IHlen with (b2 := S b2).
  apply Nat.succ_lt_mono in Hi; assumption.
 Qed.
 
+Theorem summation_compat : ∀ g h b e,
+  (∀ i, b ≤ i ≤ e → g i = h i)
+  → Σ (i = b, e), g i = Σ (i = b, e), h i.
+Proof.
+intros g h b e H.
+apply summation_loop_compat.
+intros i Hie.
+apply H; omega.
+Qed.
+
 Theorem summation_loop_succ_last : ∀ g b len,
   summation_loop b (S len) g =
   summation_loop b len g + g (b + len).
@@ -283,13 +293,24 @@ destruct s1 as [di1| ].
 Qed.
 *)
 
+Theorem z_of_u_compat_l : ∀ b u v n,
+  (∀ i, u i = v i)
+  → (z_of_u b u n = z_of_u b v n)%D.
+Proof.
+intros b u v n Huv.
+unfold z_of_u; simpl.
+unfold summation_for_u2z; simpl.
+apply eq_digit_eq; f_equal; f_equal; f_equal.
+apply summation_compat; intros i Hi.
+rewrite Huv; reflexivity.
+Qed.
+
 Theorem I_mul_i_comm : ∀ x y i, (I_mul_i x y i = I_mul_i y x i)%D.
 Proof.
 intros x y i.
-unfold I_mul_i.
-bbb.
-rewrite I_propag_carry_mul_algo_comm.
-reflexivity.
+unfold  I_mul_i; simpl.
+apply z_of_u_compat_l.
+apply I_mul_algo_comm.
 Qed.
 
 Theorem I_mul_comm : ∀ x y, (x * y = y * x)%I.
@@ -307,6 +328,7 @@ Qed.
 
 (* 0 absorbing element *)
 
+(*
 Theorem if_0_propag_carry_0 : ∀ x n,
   (∀ i, x i = 0)
   → ∀ j, I_propag_carry x n j = 0.
@@ -321,6 +343,7 @@ destruct s1 as [di1| ]; [ do 2 rewrite IHn; reflexivity | idtac ].
 pose proof (Hs1 0) as H.
 rewrite IHn in H; discriminate H.
 Qed.
+*)
 
 Theorem I_mul_algo_0_l : ∀ x y,
   I_eq_ext x 0
@@ -341,6 +364,8 @@ Theorem I_mul_i_0_l : ∀ x y,
 Proof.
 intros x y Hx i.
 unfold I_mul_i.
+bbb.
+
 remember (I_propag_carry (I_mul_algo x y) (S i) i) as nb eqn:Hnb .
 symmetry in Hnb.
 destruct nb; [ reflexivity | exfalso ].
