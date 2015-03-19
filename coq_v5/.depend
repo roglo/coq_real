@@ -7,7 +7,7 @@ Real01Add.vo Real01Add.glob Real01Add.v.beautified: Real01Add.v Misc.vo Oracle.v
 Real01AddMono.vo Real01AddMono.glob Real01AddMono.v.beautified: Real01AddMono.v Misc.vo Digit.vo Real01.vo Real01Add.vo
 Real01Cmp.vo Real01Cmp.glob Real01Cmp.v.beautified: Real01Cmp.v Digit.vo Real01.vo Real01Add.vo
 Real01Div.vo Real01Div.glob Real01Div.v.beautified: Real01Div.v Digit.vo Real01.vo Real01Add.vo Real01Cmp.vo
-Real01Mul.vo Real01Mul.glob Real01Mul.v.beautified: Real01Mul.v Misc.vo Oracle.vo Digit.vo Real01.vo Real01Add.vo
+Real01Mul.vo Real01Mul.glob Real01Mul.v.beautified: Real01Mul.v Misc.vo Oracle.vo Digit.vo Real01.vo Real01Add.vo Real01Cmp.vo
 RealAdd.vo RealAdd.glob RealAdd.v.beautified: RealAdd.v Digit.vo Real01.vo Real01Add.vo Real.vo
 RealAddGrp.vo RealAddGrp.glob RealAddGrp.v.beautified: RealAddGrp.v Misc.vo Digit.vo Real01.vo Real01Add.vo Real01AddMono.vo Real.vo RealAdd.vo
 RealComplete.vo RealComplete.glob RealComplete.v.beautified: RealComplete.v Misc.vo Real01.vo Real01Cmp.vo Real01AddMono.vo Real01Add.vo Digit.vo Real.vo RealAdd.vo RealAddGrp.vo

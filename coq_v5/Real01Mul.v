@@ -1,7 +1,7 @@
 (* multiplication in I *)
 
 Require Import Utf8 QArith NPeano Misc Oracle.
-Require Import Digit Real01 Real01Add.
+Require Import Digit Real01 Real01Add Real01Cmp.
 
 Open Scope nat_scope.
 
@@ -1106,6 +1106,21 @@ destruct s1 as [di1| ].
 bbb.
 *)
 
+Theorem I_eqs_eq_ext : ∀ x y, (x == y)%I ↔ I_eq_ext x y.
+Proof.
+intros x y.
+split; intros Hxy.
+ unfold I_eq_ext.
+ apply I_eqs_iff; assumption.
+
+ apply I_eqs_iff; assumption.
+Qed.
+
+Theorem I_mul_add_0_r : ∀ x y, ((x + 0) * y = x * y)%I.
+Proof.
+intros x y.
+bbb.
+
 Theorem I_mul_compat_r : ∀ x y z,
   ¬I_eq_ext x 1
   → ¬I_eq_ext y 1
@@ -1135,10 +1150,61 @@ destruct Hxy as [Hxy| (i, (Hlt, (Heq, Hgt)))].
   apply Digit.neq_eq_opp, Digit.opp_sym in Heq.
   apply eq_digit_eq in Hxi; symmetry in Hxi.
   destruct (Digit.dec b) as [H1| H1].
-   rewrite H1 in Hxi, Heq.
-   rewrite Digit.opp_1 in Heq.
-   apply I_eq_prop.
+   assert (x == y + 0)%I.
+    apply I_eqs_iff; intros j; simpl.
+    unfold I_add_i; simpl.
+    rewrite Digit.add_0_r; simpl.
+    unfold carry; simpl.
+    remember (fst_same y 0 (S j)) as s1 eqn:Hs1.
+    apply fst_same_sym_iff in Hs1; simpl in Hs1.
+    destruct (lt_eq_lt_dec j i) as [[H2| H2]| H2].
+     remember H2 as H; clear HeqH.
+     apply Hlt in H; rewrite H.
+     destruct s1 as [dj1| ].
+      destruct Hs1 as (Hn1, Ht1).
+      rewrite Ht1, Digit.add_0_r; reflexivity.
+
+      clear H.
+      pose proof Hs1 (i - S j) as H.
+      rewrite <- Nat.add_succ_l in H.
+      rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+      rewrite Nat.add_comm, Nat.add_sub in H.
+      rewrite Heq, H1 in H; discr_digit H.
+
+     subst j.
+     destruct s1 as [dj1| ].
+      destruct Hs1 as (Hn1, Ht1).
+      rewrite <- Nat.add_succ_r, Hy, H1 in Ht1; discr_digit Ht1.
+
+      rewrite Hxi, Heq, H1; reflexivity.
+
+     destruct s1 as [dj1| ].
+      destruct Hs1 as (Hn1, Ht1).
+      pose proof Hy (j + dj1 - i) as H.
+      rewrite Nat.add_succ_r in H.
+      rewrite Nat.add_sub_assoc in H; [ idtac | omega ].
+      rewrite Nat.add_comm, Nat.add_sub, Ht1 in H.
+      rewrite H1 in H; discr_digit H.
+
+      pose proof Hx (j - S i) as H.
+      rewrite Nat.add_succ_r, <- Nat.add_succ_l in H.
+      rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+      rewrite Nat.add_comm, Nat.add_sub in H.
+      rewrite H, Heq; clear H.
+      pose proof Hy (j - S i) as H.
+      rewrite Nat.add_succ_r, <- Nat.add_succ_l in H.
+      rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+      rewrite Nat.add_comm, Nat.add_sub in H.
+      rewrite H, Digit.add_comm; reflexivity.
+
+   symmetry.
+   rewrite <- oups_I_mul_compat_r; symmetry. (* I_mul_add_0_r *)
+   apply I_eqs_eq, I_eqs_eq_ext.
+   apply I_ext_mul_compat_r.
+   apply I_eqs_eq_ext; assumption.
+
 bbb.
+
      .   i   .   .
   x  .   1   0   0   0 …
      =   ≠
