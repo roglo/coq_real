@@ -1119,6 +1119,46 @@ Qed.
 Theorem I_mul_add_0_r : ∀ x y, ((x + 0) * y = x * y)%I.
 Proof.
 intros x y.
+apply I_eq_prop.
+destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
+ left.
+ apply I_ext_mul_compat_r.
+ apply I_eqs_eq_ext; assumption.
+
+ right.
+ unfold I_eqs in H1; simpl in H1.
+ unfold I_compare in H1; simpl in H1.
+ remember (fst_same (x + 0%I) (- x) 0) as s1 eqn:Hs1.
+ apply fst_same_sym_iff in Hs1; simpl in Hs1.
+ destruct s1 as [dj1| ].
+  destruct Hs1 as (Hn1, Ht1).
+  destruct (Digit.eq_dec (I_add_i x 0 dj1) 1) as [H2| H2].
+   clear H1.
+   rewrite H2 in Ht1.
+   apply Digit.opp_sym in Ht1.
+   rewrite Digit.opp_1 in Ht1.
+(*
+   unfold I_add_i in H2; simpl in H2.
+   rewrite Ht1 in H2.
+   do 2 rewrite Digit.add_0_l in H2.
+*)
+bbb.
+   exists dj1.
+   split.
+    intros j Hj; simpl.
+    remember Hj as H; clear HeqH.
+    apply Hn1 in H.
+    rewrite Digit.opp_involutive in H.
+    unfold I_mul_i; simpl.
+    unfold z_of_u, I_mul_algo; simpl.
+    do 2 rewrite fold_sub_succ_l, divmod_mod.
+    rewrite Nat.mul_1_r.
+    unfold summation_for_u2z; simpl.
+    do 2 rewrite fold_sub_succ_l, divmod_mod.
+    remember (logn base (j + base) + 2) as v eqn:Hv.
+    assert (v < dj1).
+     subst v; unfold base.
+     rewrite Nat.add_comm; simpl.
 bbb.
 
 Theorem I_mul_compat_r : ∀ x y z,
