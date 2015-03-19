@@ -148,6 +148,7 @@ let n = 6 in (carry_lower_bound_num u 0 n, carry_upper_bound_num u 0 n);
 
 base.val := 2;
 value one = {rm i = base.val - 1};
+(* should be wrong but however works *)
 list_of_seq (i_mul_algo (r_of_string "1") one) 20;
 list_of_seq (i_mul (r_of_string "1") one).rm 20;
 
