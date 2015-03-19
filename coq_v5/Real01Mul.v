@@ -1137,18 +1137,18 @@ destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
    rewrite H2 in Ht1.
    apply Digit.opp_sym in Ht1.
    rewrite Digit.opp_1 in Ht1.
+   simpl.
 (*
-   unfold I_add_i in H2; simpl in H2.
-   rewrite Ht1 in H2.
-   do 2 rewrite Digit.add_0_l in H2.
-*)
-bbb.
    exists dj1.
+*)
+   exists (dj1 - (logn base (dj1 + base) + 2)).
    split.
     intros j Hj; simpl.
+(*
     remember Hj as H; clear HeqH.
     apply Hn1 in H.
     rewrite Digit.opp_involutive in H.
+*)
     unfold I_mul_i; simpl.
     unfold z_of_u, I_mul_algo; simpl.
     do 2 rewrite fold_sub_succ_l, divmod_mod.
@@ -1156,6 +1156,24 @@ bbb.
     unfold summation_for_u2z; simpl.
     do 2 rewrite fold_sub_succ_l, divmod_mod.
     remember (logn base (j + base) + 2) as v eqn:Hv.
+
+Focus 2.
+split.
+unfold I_mul_i; simpl.
+    unfold z_of_u, I_mul_algo; simpl.
+    do 2 rewrite fold_sub_succ_l, divmod_mod.
+    rewrite Nat.mul_1_r.
+    unfold summation_for_u2z; simpl.
+    do 2 rewrite fold_sub_succ_l, divmod_mod.
+
+bbb. bof...
+I_add_i x 0 (j0 - 1))
+x .[ j0 - 1])
+  Hv : v = logn base (j + base) + 2
+il faut que j+v-1 < dj1
+if faut donc que le exists ci-dessus...
+exists (dj1 + (logn base (dj1 + base) + 2)) ?
+
     assert (v < dj1).
      subst v; unfold base.
      rewrite Nat.add_comm; simpl.
