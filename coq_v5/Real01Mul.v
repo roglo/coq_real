@@ -1138,20 +1138,7 @@ destruct Hxy as [Hxy| (i, (Hlt, (Heq, Hgt)))].
    rewrite H1 in Hxi, Heq.
    rewrite Digit.opp_1 in Heq.
    apply I_eq_prop.
-   right; simpl.
-   exists 0.
-   split.
-    intros k Hk.
-    exfalso; revert Hk; apply Nat.nlt_0_r.
-
-    split.
-SearchAbout I_mul_i.
 bbb.
-
-   right; exists i; simpl.
-   split.
-    intros k Hk.
-bbb. (* faut réfléchir *)
      .   i   .   .
   x  .   1   0   0   0 …
      =   ≠
