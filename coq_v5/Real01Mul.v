@@ -1,7 +1,7 @@
 (* multiplication in I *)
 
 Require Import Utf8 QArith NPeano Misc Oracle.
-Require Import Digit Real01 Real01Add Real01Cmp.
+Require Import Digit Real01 Real01Add Real01AddMono Real01Cmp.
 
 Open Scope nat_scope.
 
@@ -425,6 +425,24 @@ destruct s1 as [dj1| ].
 
   intros k Hk; reflexivity.
 Qed.
+
+(* 1 neutral element *)
+
+Theorem I_mul_i_1_l : ∀ x y,
+  I_eq_ext x 1
+  → ∀ i, (I_mul_i x y i = y.[i])%D.
+Proof.
+intros x y Hx i.
+unfold I_mul_i; simpl.
+unfold z_of_u, base; simpl.
+rewrite fold_sub_succ_l, divmod_mod.
+rewrite Nat.mul_1_r.
+unfold I_mul_algo.
+unfold summation_for_u2z; simpl.
+rewrite fold_sub_succ_l, divmod_mod.
+Abort. (* mmm... pas l'air évident...
+bbb.
+*)
 
 (* compatibility with equality *)
 
@@ -1125,7 +1143,78 @@ destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
  apply I_ext_mul_compat_r.
  apply I_eqs_eq_ext; assumption.
 
+ destruct (I_zerop y) as [Hz| Hnz].
+  apply I_zero_iff in Hz; simpl in Hz.
+  destruct Hz as [Hz| Hz].
+   left; intros i; simpl.
+   rewrite I_mul_i_comm.
+   rewrite I_mul_i_0_l; [ idtac | assumption ].
+   rewrite I_mul_i_comm.
+   rewrite I_mul_i_0_l; [ idtac | assumption ].
+   reflexivity.
+
+   bbb.
+
+bbb.
+I_mul_i_1_l.
+SearchAbout I_mul_i.
+
+
  right.
+ Focus 1.
+ assert (x + 0 = x)%I as H by apply I_add_0_r.
+ apply I_eq_prop in H; simpl in H.
+ destruct H as [H| (i, (Hlt, (Heq, Hgt)))].
+  exfalso; apply H1, I_eqs_eq_ext; assumption.
+
+  destruct Hgt as [(Hi, (Hx, Hy))| (Hx, Hy)].
+   subst i; clear Hlt.
+   unfold I_eqs in H1; simpl in H1.
+   unfold I_compare in H1; simpl in H1.
+   remember (fst_same (x + 0%I) (- x) 0) as s1 eqn:Hs1.
+   apply fst_same_sym_iff in Hs1; simpl in Hs1.
+   destruct s1 as [dj1| ].
+    destruct Hs1 as (Hn1, Ht1).
+    clear H1 Heq; rewrite Hx, Hy in Ht1; clear dj1 Hn1.
+    destruct (Digit.dec (x.[0])) as [H1| H1].
+     Focus 2.
+     rewrite H1, Digit.opp_0 in Ht1.
+     unfold I_add_i in Ht1; simpl in Ht1.
+     rewrite H1 in Ht1.
+     do 2 rewrite Digit.add_0_l in Ht1.
+     unfold carry in Ht1; simpl in Ht1.
+     remember (fst_same x 0 1) as s2 eqn:Hs2.
+     apply fst_same_sym_iff in Hs2; simpl in Hs2.
+     destruct s2 as [dj2| ]; [ idtac | clear Ht1 ].
+      destruct Hs2 as (Hn2, Ht2).
+      rewrite Ht2 in Ht1; discr_digit Ht1.
+
+      pose proof Hy 1 as H; rewrite H1, Hs2 in H.
+      discr_digit H.
+
+     destruct (I_zerop y) as [H2| H2].
+      simpl.
+bbb. oups...
+
+     exists 0; simpl.
+     split; [ intros j Hj; exfalso; revert Hj; apply Nat.nlt_0_r | idtac ].
+     split.
+
+
+   unfold I_add_i in Heq; simpl in Heq.
+   rewrite Digit.add_0_r in Heq.
+   destruct (Digit.dec (x.[0])) as [H2| H2].
+    unfold carry in Heq; simpl in Heq.
+    remember (fst_same x 0 1) as s1 eqn:Hs1.
+    apply fst_same_sym_iff in Hs1; simpl in Hs1.
+    destruct s1 as [dj1| ].
+     destruct Hs1 as (Hn1, Ht1).
+     rewrite Hy, H2 in Ht1; discr_digit Ht1.
+
+     clear Heq Hs1.
+
+bbb.
+
  unfold I_eqs in H1; simpl in H1.
  unfold I_compare in H1; simpl in H1.
  remember (fst_same (x + 0%I) (- x) 0) as s1 eqn:Hs1.
@@ -1133,11 +1222,12 @@ destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
  destruct s1 as [dj1| ].
   destruct Hs1 as (Hn1, Ht1).
   destruct (Digit.eq_dec (I_add_i x 0 dj1) 1) as [H2| H2].
+   Focus 1.
    clear H1.
    rewrite H2 in Ht1.
    apply Digit.opp_sym in Ht1.
    rewrite Digit.opp_1 in Ht1.
-   simpl.
+bbb.
 (*
    exists dj1.
 *)
