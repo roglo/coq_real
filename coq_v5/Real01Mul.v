@@ -433,9 +433,12 @@ split; intros Hxy.
  apply I_eqs_iff; assumption.
 Qed.
 
-Theorem I_mul_add_0_r : ∀ x y, (y ≠≠ 1)%I → ((x + 0) * y = x * y)%I.
+Theorem I_mul_add_0_r : ∀ x y,
+  (x ≠≠ 1)%I
+  → (y ≠≠ 1)%I
+  → ((x + 0) * y = x * y)%I.
 Proof.
-intros x y Hyn1.
+intros x y Hxn1 Hyn1.
 apply I_eq_iff.
 destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
  left.
@@ -454,41 +457,44 @@ destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
 
    exfalso; apply Hyn1; clear Hyn1.
    apply I_eqs_eq_ext; assumption.
+
+  right.
+  assert (x + 0 = x)%I as H by apply I_add_0_r.
+  apply I_eq_iff in H; simpl in H.
+  destruct H as [H| (i, (Hlt, (Heq, Hgt)))].
+   exfalso; apply H1, I_eqs_eq_ext; assumption.
+
+   destruct Hgt as [(Hi, (Hx, Hy))| (Hx, Hy)].
+    subst i; clear Hlt.
+    unfold I_eqs in H1; simpl in H1.
+    unfold I_compare in H1; simpl in H1.
+    remember (fst_same (x + 0%I) (- x) 0) as s1 eqn:Hs1 .
+    apply fst_same_sym_iff in Hs1; simpl in Hs1.
+    destruct s1 as [dj1| ].
+     destruct Hs1 as (Hn1, Ht1).
+     clear H1 Heq; rewrite Hx, Hy in Ht1; clear dj1 Hn1.
+     destruct (Digit.dec (x .[ 0])) as [H1| H1].
+      exfalso; apply Hxn1; clear Hxn1.
+      apply I_eqs_eq_ext; intros i; simpl.
+      rewrite Hy, H1; reflexivity.
+
+      rewrite H1, Digit.opp_0 in Ht1.
+      unfold I_add_i in Ht1; simpl in Ht1.
+      rewrite H1 in Ht1.
+      do 2 rewrite Digit.add_0_l in Ht1.
+      unfold carry in Ht1; simpl in Ht1.
+      remember (fst_same x 0 1) as s2 eqn:Hs2 .
+      apply fst_same_sym_iff in Hs2; simpl in Hs2.
+      destruct s2 as [dj2| ]; [ idtac | clear Ht1 ].
+       destruct Hs2 as (Hn2, Ht2).
+       rewrite Ht2 in Ht1; discr_digit Ht1.
+
+       pose proof (Hy 1) as H; rewrite H1, Hs2 in H; discr_digit H.
+
+     exfalso; apply H1; reflexivity.
+
+    Focus 1.
 bbb.
-
- assert (x + 0 = x)%I as H by apply I_add_0_r.
- apply I_eq_iff in H; simpl in H.
- destruct H as [H| (i, (Hlt, (Heq, Hgt)))].
-  exfalso; apply H1, I_eqs_eq_ext; assumption.
-
-  destruct Hgt as [(Hi, (Hx, Hy))| (Hx, Hy)].
-   subst i; clear Hlt.
-   unfold I_eqs in H1; simpl in H1.
-   unfold I_compare in H1; simpl in H1.
-   remember (fst_same (x + 0%I) (- x) 0) as s1 eqn:Hs1.
-   apply fst_same_sym_iff in Hs1; simpl in Hs1.
-   destruct s1 as [dj1| ].
-    destruct Hs1 as (Hn1, Ht1).
-    clear H1 Heq; rewrite Hx, Hy in Ht1; clear dj1 Hn1.
-    destruct (Digit.dec (x.[0])) as [H1| H1].
-     Focus 2.
-     rewrite H1, Digit.opp_0 in Ht1.
-     unfold I_add_i in Ht1; simpl in Ht1.
-     rewrite H1 in Ht1.
-     do 2 rewrite Digit.add_0_l in Ht1.
-     unfold carry in Ht1; simpl in Ht1.
-     remember (fst_same x 0 1) as s2 eqn:Hs2.
-     apply fst_same_sym_iff in Hs2; simpl in Hs2.
-     destruct s2 as [dj2| ]; [ idtac | clear Ht1 ].
-      destruct Hs2 as (Hn2, Ht2).
-      rewrite Ht2 in Ht1; discr_digit Ht1.
-
-      pose proof Hy 1 as H; rewrite H1, Hs2 in H.
-      discr_digit H.
-
-     destruct (I_zerop y) as [H2| H2].
-      simpl.
-bbb. oups...
 
      exists 0; simpl.
      split; [ intros j Hj; exfalso; revert Hj; apply Nat.nlt_0_r | idtac ].
