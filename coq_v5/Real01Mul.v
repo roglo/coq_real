@@ -493,8 +493,47 @@ destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
 
      exfalso; apply H1; reflexivity.
 
-    Focus 1.
+    simpl.
+    destruct (Digit.dec (x .[ i])) as [H2| H2].
+     exfalso; apply Heq; clear Heq.
+     unfold I_add_i; simpl; rewrite H2.
+     do 2 rewrite Digit.add_1_l.
+     apply Digit.opp_1_iff.
+     unfold carry; simpl.
+     remember (fst_same x 0 (S i)) as s1 eqn:Hs1.
+     apply fst_same_sym_iff in Hs1; simpl in Hs1.
+     destruct s1 as [dj1| ]; [ destruct Hs1; assumption | exfalso ].
+     pose proof Hs1 0 as H; simpl in H.
+     rewrite <- Nat.add_succ_r, Hy, Digit.opp_0 in H.
+     exfalso; apply H1; clear H1.
+     apply I_eqs_eq_ext.
+     intros j; simpl.
+     destruct (lt_eq_lt_dec j i) as [[H1| H1]| H1].
+      apply Hlt; assumption.
+
+      subst j.
+      rewrite H2, H; reflexivity.
+
+      rename H into H3.
+      pose proof Hx (j - S i) as H.
+      rewrite Nat.add_succ_r, <- Nat.add_succ_l in H.
+      rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+      rewrite Nat.add_comm, Nat.add_sub in H.
+      rewrite H, H2; symmetry; clear H.
+      pose proof Hs1 (j - S i) as H.
+      rewrite <- Nat.add_succ_l in H.
+      rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+      rewrite Nat.add_comm, Nat.add_sub in H.
+      assumption.
+
+     bbb.
+
 bbb.
+  H : (carry x 0 (S i) = oppd 0)%D
+     .   i   .   .
+  x  .   1   0   0   0 …
+     =   ≠
+  y  .   0   1   1   1 …
 
      exists 0; simpl.
      split; [ intros j Hj; exfalso; revert Hj; apply Nat.nlt_0_r | idtac ].
