@@ -2853,7 +2853,7 @@ destruct sx as [dx| ].
    discr_digit H.
 Qed.
 
-Theorem I_eq_prop : ∀ x y,
+Theorem I_eq_iff : ∀ x y,
   (x = y)%I
   ↔ I_eq_ext x y ∨
     ∃ i,
@@ -3172,7 +3172,7 @@ Qed.
 
 Theorem I_0_eq_1 : (0 = 1)%I.
 Proof.
-apply I_eq_prop.
+apply I_eq_iff.
 right; exists 0.
 split; [ intros j H; exfalso; revert H; apply Nat.nlt_0_r | idtac ].
 split; [ intros H; discr_digit H | left ].

@@ -1137,7 +1137,7 @@ Qed.
 Theorem I_mul_add_0_r : ∀ x y, ((x + 0) * y = x * y)%I.
 Proof.
 intros x y.
-apply I_eq_prop.
+apply I_eq_iff.
 destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
  left.
  apply I_ext_mul_compat_r.
@@ -1153,17 +1153,13 @@ destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
    rewrite I_mul_i_0_l; [ idtac | assumption ].
    reflexivity.
 
-   bbb.
-
+   right; simpl.
+unfold I_mul_i.
 bbb.
-I_mul_i_1_l.
-SearchAbout I_mul_i.
 
-
- right.
  Focus 1.
  assert (x + 0 = x)%I as H by apply I_add_0_r.
- apply I_eq_prop in H; simpl in H.
+ apply I_eq_iff in H; simpl in H.
  destruct H as [H| (i, (Hlt, (Heq, Hgt)))].
   exfalso; apply H1, I_eqs_eq_ext; assumption.
 
@@ -1276,7 +1272,7 @@ Theorem I_mul_compat_r : ∀ x y z,
   → (x * z = y * z)%I.
 Proof.
 intros x y z Hxn1 Hyn1 Hxy.
-apply I_eq_prop in Hxy.
+apply I_eq_iff in Hxy.
 destruct Hxy as [Hxy| (i, (Hlt, (Heq, Hgt)))].
  apply I_eq_ext_eq, I_ext_mul_compat_r; assumption.
 
@@ -2006,9 +2002,9 @@ bbb.
 
 bbb.
 
--- version using I_eq_prop --
+-- version using I_eq_iff --
 intros x.
-apply I_eq_prop.
+apply I_eq_iff.
 remember (fst_same (x * 1)%I (- x) 0) as s eqn:Hs .
 apply fst_same_sym_iff in Hs; simpl in Hs.
 destruct s as [i| ].
