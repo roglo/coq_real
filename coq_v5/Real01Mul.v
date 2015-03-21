@@ -523,9 +523,10 @@ destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
      unfold summation_for_u2z; simpl.
      do 2 rewrite fold_sub_succ_l, divmod_mod.
      rewrite Nat.mul_1_r.
-     destruct (lt_eq_lt_dec j i) as [[H3| H3]| H3].
-      remember H3 as H; clear HeqH; apply Hlt in H.
+     remember (logn 2 (j + 2) + 2) as m eqn:Hm.
+     destruct (lt_eq_lt_dec (j + m) i) as [[H3| H3]| H3].
 bbb.
+      remember H3 as H; clear HeqH; apply Hlt in H.
      .   i   .   .
   x  .   1   0   0   0 …
      =   ≠
