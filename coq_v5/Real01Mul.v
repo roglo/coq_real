@@ -410,7 +410,7 @@ Qed.
 Theorem I_eqs_mul_compat_r : ∀ x y z, (x == y)%I → (x * z == y * z)%I.
 Proof.
 intros x y z Hxy.
-apply I_eqs_eqc_iff; intros i; simpl.
+intros i; simpl.
 apply I_eqs_mul_i_compat_r; assumption.
 Qed.
 
@@ -434,26 +434,23 @@ Theorem I_mul_add_0_r_eqs : ∀ x y,
 Proof.
 intros x y Hxn1 Hyn1.
 destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
- apply I_eqs_mul_compat_r.
- apply I_eqs_eqc_iff; assumption.
+ apply I_eqs_mul_compat_r; assumption.
 
  destruct (I_zerop y) as [Hz| Hnz].
   apply I_zero_iff in Hz; simpl in Hz.
   destruct Hz as [Hz| Hz].
-   left; intros i; simpl.
+   intros i; simpl.
    rewrite I_mul_i_comm.
    rewrite I_mul_i_0_l; [ idtac | assumption ].
    rewrite I_mul_i_comm.
-   rewrite I_mul_i_0_l; [ idtac | assumption ].
-   reflexivity.
+   rewrite I_mul_i_0_l; [ reflexivity | assumption ].
 
-   exfalso; apply Hyn1; clear Hyn1.
-   apply I_eqs_eqc_iff; assumption.
+   exfalso; apply Hyn1; clear Hyn1; assumption.
 
   assert (x + 0 = x)%I as H by apply I_add_0_r.
   apply I_eq_iff in H; simpl in H.
   destruct H as [H| (i, (Hlt, (Heq, Hgt)))].
-   exfalso; apply H1, I_eqs_eqc_iff; assumption.
+   exfalso; apply H1; assumption.
 
    destruct Hgt as [(Hi, (Hx, Hy))| (Hx, Hy)].
     subst i; clear Hlt.
@@ -466,7 +463,7 @@ destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
      clear H1 Heq; rewrite Hx, Hy in Ht1; clear dj1 Hn1.
      destruct (Digit.dec (x .[ 0])) as [H1| H1].
       exfalso; apply Hxn1; clear Hxn1.
-      apply I_eqs_eqc_iff; intros i; simpl.
+      intros i; simpl.
       rewrite Hy, H1; reflexivity.
 
       rewrite H1, Digit.opp_0 in Ht1.
@@ -482,6 +479,7 @@ destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
 
        pose proof (Hy 1) as H; rewrite H1, Hs2 in H; discr_digit H.
 
+bbb.
      exfalso; apply H1; reflexivity.
 
     simpl.
@@ -497,7 +495,7 @@ destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
      pose proof Hs1 0 as H; simpl in H.
      rewrite <- Nat.add_succ_r, Hy, Digit.opp_0 in H.
      exfalso; apply H1; clear H1.
-     apply I_eqs_eqc_iff.
+     apply I_eqc_eqs_iff.
      intros j; simpl.
      destruct (lt_eq_lt_dec j i) as [[H1| H1]| H1].
       apply Hlt; assumption.
@@ -682,9 +680,9 @@ destruct Hxy as [Hxy| (i, (Hlt, (Heq, Hgt)))].
 
    symmetry.
    rewrite <- oups_I_mul_compat_r; symmetry. (* I_mul_add_0_r *)
-   apply I_eqs_eq, I_eqs_eqc_iff.
+   apply I_eqs_eq, I_eqc_eqs_iff.
    apply I_eqs_mul_compat_r.
-   apply I_eqs_eqc_iff; assumption.
+   apply I_eqc_eqs_iff; assumption.
 
 bbb.
 

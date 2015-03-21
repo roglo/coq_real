@@ -119,7 +119,7 @@ Definition I_div3 x y := I_div3_frac (I_div_max_iter_int y) x y.
 Theorem zzz : ∀ x y, (I_div3 x y == x / y)%I.
 Proof.
 intros x y.
-apply I_eqs_iff; simpl; intros i.
+intros i; simpl.
 unfold I_div3, I_div; simpl.
 remember (I_div_max_iter_int y) as m eqn:Hm .
 symmetry in Hm.
@@ -163,29 +163,10 @@ Proof.
 intros x.
 split; intros Hx.
  apply I_zero_iff in Hx.
- destruct Hx as [Hx| Hx].
-  left.
-  unfold I_eqs, I_compare.
-  remember (fst_same x (- 0%I) 0) as s1 eqn:Hs1 .
-  destruct s1 as [j1| ]; [ exfalso | reflexivity ].
-  apply fst_same_sym_iff in Hs1; simpl in Hs1.
-  destruct Hs1 as (Hn1, Ht1).
-  rewrite Hx in Ht1; discr_digit Ht1.
-
-  right; assumption.
+ destruct Hx as [Hx| Hx]; [ left; assumption | right; assumption ].
 
  apply I_zero_iff.
- destruct Hx as [Hx| Hx].
-  left; intros i.
-  unfold I_eqs, I_compare in Hx; simpl in Hx.
-  remember (fst_same x (- 0%I) 0) as s1 eqn:Hs1 .
-  destruct s1 as [dj1| ]; [ idtac | clear Hx ].
-   destruct (Digit.eq_dec (x .[ dj1]) 1); discriminate Hx.
-
-   apply fst_same_sym_iff in Hs1; simpl in Hs1.
-   apply Hs1.
-
-  right; assumption.
+ destruct Hx as [Hx| Hx]; [ left; assumption | right; assumption ].
 Qed.
 
 Theorem I_div_2_eqs_0 : ∀ x, (I_div_2 x == 0)%I → (x == 0)%I.
@@ -213,8 +194,6 @@ Add Parametric Morphism : I_mul_2
   as I_mul_2_morph.
 Proof.
 intros x y Hxy.
-rewrite I_eqs_iff in Hxy.
-apply I_eqs_iff.
 intros i; apply Hxy.
 Qed.
 
@@ -223,10 +202,7 @@ Add Parametric Morphism : I_div_2
   as I_div_2_morph.
 Proof.
 intros x y Hxy.
-rewrite I_eqs_iff in Hxy.
-apply I_eqs_iff.
-intros i; destruct i; [ reflexivity | simpl ].
-apply Hxy.
+intros i; destruct i; [ reflexivity | apply Hxy ].
 Qed.
 
 Theorem I_mul_2_0 : ∀ x, (x == 0)%I → (I_mul_2 x == 0)%I.
@@ -261,9 +237,7 @@ Qed.
 (* division by 0 is 0 in this implementation *)
 Theorem I_div_0_r : ∀ x y, (y == 0)%I → (x / y == 0)%I.
 Proof.
-intros x y Hy.
-rewrite I_eqs_iff in Hy; simpl in Hy.
-apply I_eqs_iff; simpl; intros i.
+intros x y Hy i; simpl.
 unfold I_div; simpl.
 remember (I_div_max_iter_int y) as m eqn:Hm .
 symmetry in Hm.
@@ -272,6 +246,7 @@ remember (fst_same y I_one 0) as s2 eqn:Hs2 .
 destruct s2 as [dj2| ].
  apply fst_same_sym_iff in Hs2; simpl in Hs2.
  destruct Hs2 as (Hn2, Ht2).
+ unfold I_eqs in Hy.
  rewrite Hy in Ht2; discr_digit Ht2.
 
  subst m; reflexivity.
@@ -321,17 +296,11 @@ destruct (I_eqs_dec x 0%I) as [Hx| Hx].
 Qed.
 
 Theorem I_mul_2_div_2 : ∀ x, (I_mul_2 (I_div_2 x) == x)%I.
-Proof.
-intros x.
-apply I_eqs_iff; intros i.
-destruct i; reflexivity.
-Qed.
+Proof. intros x; destruct i; reflexivity. Qed.
 
 Theorem I_div_eqs_compat_l : ∀ x y z, (x == y)%I → (x / z == y / z)%I.
 Proof.
-intros x y z Hxy.
-rewrite I_eqs_iff in Hxy.
-rewrite I_eqs_iff; intros i.
+intros x y z Hxy i; simpl.
 unfold I_div; simpl.
 remember (I_div_max_iter_int z) as m eqn:Hm .
 symmetry in Hm.
@@ -379,9 +348,7 @@ Abort. (*
 
 Theorem I_div_eqs_compat_r : ∀ x y z, (x == y)%I → (z / x == z / y)%I.
 Proof.
-intros x y z Hxy.
-rewrite I_eqs_iff in Hxy.
-rewrite I_eqs_iff; intros i.
+intros x y z Hxy i; simpl.
 unfold I_div; simpl.
 remember (I_div_max_iter_int x) as mx eqn:Hmx .
 remember (I_div_max_iter_int y) as my eqn:Hmy .
@@ -878,10 +845,8 @@ Theorem yyy : ∀ x y z,
   → (x / y == z)%I
   → (x / z == y)%I.
 Proof.
-intros x y z Hxy Hz Hxyz.
+intros x y z Hxy Hz Hxyz i.
 remember Hxyz as Hxdyz; clear HeqHxdyz.
-rewrite I_eqs_iff in Hxyz.
-apply I_eqs_iff; intros i.
 induction i.
  pose proof (Hxyz O) as H.
  unfold I_div in H; simpl in H.
