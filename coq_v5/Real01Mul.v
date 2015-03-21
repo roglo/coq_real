@@ -517,87 +517,19 @@ destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
      assert (∀ di, (x .[ i + S di] = 1)%D) as H by (intros; rewrite Hy; auto).
      clear Hy; rename H into Hy; move Hy before Hx.
      intros j; simpl.
+     unfold I_mul_i; simpl.
+     unfold I_mul_algo; simpl.
+     unfold z_of_u, base; simpl.
+     unfold summation_for_u2z; simpl.
+     do 2 rewrite fold_sub_succ_l, divmod_mod.
+     rewrite Nat.mul_1_r.
+     destruct (lt_eq_lt_dec j i) as [[H3| H3]| H3].
+      remember H3 as H; clear HeqH; apply Hlt in H.
 bbb.
-     exists 0; simpl.
-     split; [ intros j Hj; exfalso; revert Hj; apply Nat.nlt_0_r | idtac ].
-     split.
-bbb.
-  H : (carry x 0 (S i) = oppd 0)%D
      .   i   .   .
   x  .   1   0   0   0 …
      =   ≠
   y  .   0   1   1   1 …
-
-     exists 0; simpl.
-     split.
-
-
-   unfold I_add_i in Heq; simpl in Heq.
-   rewrite Digit.add_0_r in Heq.
-   destruct (Digit.dec (x.[0])) as [H2| H2].
-    unfold carry in Heq; simpl in Heq.
-    remember (fst_same x 0 1) as s1 eqn:Hs1.
-    apply fst_same_sym_iff in Hs1; simpl in Hs1.
-    destruct s1 as [dj1| ].
-     destruct Hs1 as (Hn1, Ht1).
-     rewrite Hy, H2 in Ht1; discr_digit Ht1.
-
-     clear Heq Hs1.
-
-bbb.
-
- unfold I_eqs in H1; simpl in H1.
- unfold I_compare in H1; simpl in H1.
- remember (fst_same (x + 0%I) (- x) 0) as s1 eqn:Hs1.
- apply fst_same_sym_iff in Hs1; simpl in Hs1.
- destruct s1 as [dj1| ].
-  destruct Hs1 as (Hn1, Ht1).
-  destruct (Digit.eq_dec (I_add_i x 0 dj1) 1) as [H2| H2].
-   Focus 1.
-   clear H1.
-   rewrite H2 in Ht1.
-   apply Digit.opp_sym in Ht1.
-   rewrite Digit.opp_1 in Ht1.
-bbb.
-(*
-   exists dj1.
-*)
-   exists (dj1 - (logn base (dj1 + base) + 2)).
-   split.
-    intros j Hj; simpl.
-(*
-    remember Hj as H; clear HeqH.
-    apply Hn1 in H.
-    rewrite Digit.opp_involutive in H.
-*)
-    unfold I_mul_i; simpl.
-    unfold z_of_u, I_mul_algo; simpl.
-    do 2 rewrite fold_sub_succ_l, divmod_mod.
-    rewrite Nat.mul_1_r.
-    unfold summation_for_u2z; simpl.
-    do 2 rewrite fold_sub_succ_l, divmod_mod.
-    remember (logn base (j + base) + 2) as v eqn:Hv.
-
-Focus 2.
-split.
-unfold I_mul_i; simpl.
-    unfold z_of_u, I_mul_algo; simpl.
-    do 2 rewrite fold_sub_succ_l, divmod_mod.
-    rewrite Nat.mul_1_r.
-    unfold summation_for_u2z; simpl.
-    do 2 rewrite fold_sub_succ_l, divmod_mod.
-
-bbb. bof...
-I_add_i x 0 (j0 - 1))
-x .[ j0 - 1])
-  Hv : v = logn base (j + base) + 2
-il faut que j+v-1 < dj1
-if faut donc que le exists ci-dessus...
-exists (dj1 + (logn base (dj1 + base) + 2)) ?
-
-    assert (v < dj1).
-     subst v; unfold base.
-     rewrite Nat.add_comm; simpl.
 bbb.
 
 Theorem I_mul_compat_r : ∀ x y z,
