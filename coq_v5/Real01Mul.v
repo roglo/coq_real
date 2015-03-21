@@ -433,6 +433,9 @@ split; intros Hxy.
  apply I_eqs_iff; assumption.
 Qed.
 
+Theorem fold_I_add_i : ∀ x y i, I_add_i x y i = (x + y)%I.[i].
+Proof. intros; reflexivity. Qed.
+
 Theorem I_mul_add_0_r : ∀ x y,
   (x ≠≠ 1)%I
   → (y ≠≠ 1)%I
@@ -526,8 +529,10 @@ destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
       rewrite Nat.add_comm, Nat.add_sub in H.
       assumption.
 
-     bbb.
-
+     rewrite H2 in Heq.
+     apply Digit.not_0_iff_1 in Heq.
+     assert (∀ di, (x .[ i + S di] = 1)%D) as H by (intros; rewrite Hy; auto).
+     clear Hy; rename H into Hy; move Hy before Hx.
 bbb.
   H : (carry x 0 (S i) = oppd 0)%D
      .   i   .   .
