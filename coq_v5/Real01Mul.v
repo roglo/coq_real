@@ -479,10 +479,9 @@ destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
 
        pose proof (Hy 1) as H; rewrite H1, Hs2 in H; discr_digit H.
 
-bbb.
-     exfalso; apply H1; reflexivity.
+     exfalso; apply Heq; rewrite Hs1.
+     apply Digit.opp_involutive.
 
-    simpl.
     destruct (Digit.dec (x .[ i])) as [H2| H2].
      exfalso; apply Heq; clear Heq.
      unfold I_add_i; simpl; rewrite H2.
@@ -495,7 +494,6 @@ bbb.
      pose proof Hs1 0 as H; simpl in H.
      rewrite <- Nat.add_succ_r, Hy, Digit.opp_0 in H.
      exfalso; apply H1; clear H1.
-     apply I_eqc_eqs_iff.
      intros j; simpl.
      destruct (lt_eq_lt_dec j i) as [[H1| H1]| H1].
       apply Hlt; assumption.
@@ -512,13 +510,13 @@ bbb.
       pose proof Hs1 (j - S i) as H.
       rewrite <- Nat.add_succ_l in H.
       rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
-      rewrite Nat.add_comm, Nat.add_sub in H.
-      assumption.
+      rewrite Nat.add_comm, Nat.add_sub in H; assumption.
 
      rewrite H2 in Heq.
      apply Digit.not_0_iff_1 in Heq.
      assert (∀ di, (x .[ i + S di] = 1)%D) as H by (intros; rewrite Hy; auto).
      clear Hy; rename H into Hy; move Hy before Hx.
+     intros j; simpl.
 bbb.
      exists 0; simpl.
      split; [ intros j Hj; exfalso; revert Hj; apply Nat.nlt_0_r | idtac ].
