@@ -770,14 +770,11 @@ Add Parametric Morphism : I_add
   as I_add_eqs_morph.
 Proof.
 intros x y Hxy z t Hzt.
-bbb.
-
-rewrite I_eqc_iff in Hxy.
-rewrite I_eqc_iff in Hzt.
-apply I_eqc_iff; simpl; intros i.
+intros i; simpl.
 unfold I_add_i; simpl.
+unfold I_eqs in Hxy, Hzt.
 rewrite Hxy, Hzt.
-f_equal.
+apply Digit.add_compat; [ reflexivity | idtac ].
 unfold carry; simpl.
 remember (fst_same x z (S i)) as s1 eqn:Hs1 .
 remember (fst_same y t (S i)) as s2 eqn:Hs2 .
@@ -793,9 +790,7 @@ destruct s1 as [dj1| ].
    rewrite Hxy, Hzt, H in Ht1.
    exfalso; revert Ht1; apply Digit.no_fixpoint_opp.
 
-   subst dj2.
-   apply Digit.add_compat; [ reflexivity | idtac ].
-   apply Hxy.
+   subst dj2; apply Hxy.
 
    remember H1 as H; clear HeqH.
    apply Hn1 in H.
@@ -820,6 +815,8 @@ Add Parametric Morphism : I_opp
   as I_opp_eqs_morph.
 Proof.
 intros x y Hxy.
+bbb.
+
 rewrite I_eqc_iff in Hxy; simpl in Hxy.
 apply I_eqc_iff; simpl; intros i.
 rewrite Hxy; reflexivity.
