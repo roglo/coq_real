@@ -2235,7 +2235,7 @@ Add Parametric Morphism : I_opp
 Proof.
 intros x y Hxy.
 remember Hxy as Heq; clear HeqHeq.
-unfold I_eq, I_eq_ext in Hxy; simpl in Hxy.
+unfold I_eq, I_eqs in Hxy; simpl in Hxy.
 unfold I_eq; intros i; simpl.
 pose proof (Hxy i) as Hi.
 unfold I_add_i in Hi; simpl in Hi.

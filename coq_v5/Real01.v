@@ -15,33 +15,35 @@ Delimit Scope I_scope with I.
 Notation "0" := I_zero : I_scope.
 Notation "1" := I_one : I_scope.
 
-Definition I_eq_ext x y := ∀ i, (x.[i] = y.[i])%D.
-Arguments I_eq_ext x%I y%I.
+Definition I_eqs x y := ∀ i, (x.[i] = y.[i])%D.
+Arguments I_eqs x%I y%I.
 
-(* actually, I_eq_ext is equivalent to I_eqs in Real01Cmp.v
-   something should be done to unify these definitions *)
+Notation "x == y" := (I_eqs x y) : I_scope.
+Notation "x ≠≠ y" := (¬ I_eqs x y) (at level 70, no associativity) : I_scope.
 
-Theorem I_eq_ext_refl : reflexive _ I_eq_ext.
+(* I_eqs is equivalent to I_eqc in Real01Cmp.v *)
+
+Theorem I_eqs_refl : reflexive _ I_eqs.
 Proof. intros x i; reflexivity. Qed.
 
-Theorem I_eq_ext_sym : symmetric _ I_eq_ext.
+Theorem I_eqs_sym : symmetric _ I_eqs.
 Proof.
 intros x y Hxy i.
 symmetry; apply Hxy.
 Qed.
 
-Theorem I_eq_ext_trans : transitive _ I_eq_ext.
+Theorem I_eqs_trans : transitive _ I_eqs.
 Proof.
 intros x y z Hxy Hyz i.
-unfold I_eq_ext in Hxy, Hyz.
+unfold I_eqs in Hxy, Hyz.
 rewrite Hxy, Hyz; reflexivity.
 Qed.
 
-Add Parametric Relation : _ I_eq_ext
- reflexivity proved by I_eq_ext_refl
- symmetry proved by I_eq_ext_sym
- transitivity proved by I_eq_ext_trans
- as I_eq_ext_rel.
+Add Parametric Relation : _ I_eqs
+ reflexivity proved by I_eqs_refl
+ symmetry proved by I_eqs_sym
+ transitivity proved by I_eqs_trans
+ as I_eqs_rel.
 
 Definition test_not_1 u i j := if eq_nat_dec (u (i + j)) 1 then 0 else 1.
 Definition fst_not_1 u i := first_nonzero (test_not_1 u i).

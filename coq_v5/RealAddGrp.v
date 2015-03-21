@@ -115,7 +115,7 @@ remember Hsy as H; clear HeqH.
 apply fst_same_iff in H; simpl in H.
 destruct H as (Hny, Hty).
 remember Hf_v as H; clear HeqH.
-unfold I_eq, I_eq_ext in H; simpl in H.
+unfold I_eq, I_eqs in H; simpl in H.
 rename H into Hf.
 destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
  remember H1 as H; clear HeqH.
@@ -761,7 +761,7 @@ remember Hsy as H; clear HeqH.
 apply fst_same_iff in H; simpl in H.
 destruct H as (Hny, Hty).
 remember Hf_v as H; clear HeqH.
-unfold I_eq, I_eq_ext in H; simpl in H.
+unfold I_eq, I_eqs in H; simpl in H.
 rename H into Hf.
 unfold carry in Hc1; simpl in Hc1.
 remember (fst_same x z 0) as s1 eqn:Hs1 .
@@ -1506,7 +1506,7 @@ destruct dx; [ clear Hnx | idtac ].
  eapply I_eq_neq_prop in H; try eassumption; simpl in H.
  destruct H as [(Hyx, Hxx)| (Hyx, Hxx)]; simpl in Hyx, Hxx.
   remember Hf as H; clear HeqH.
-  unfold I_eq, I_eq_ext in H; simpl in H.
+  unfold I_eq, I_eqs in H; simpl in H.
   rename H into Hr.
   pose proof (Hr O) as H.
   unfold I_add_i in H; simpl in H.
@@ -2037,7 +2037,7 @@ split; intros H.
  subst xf yf.
  apply fst_same_sym_iff in Hs1; simpl in Hs1.
  destruct Hs1 as (Hn1, Ht1).
- unfold I_eq, I_eq_ext in Hf; simpl in Hf.
+ unfold I_eq, I_eqs in Hf; simpl in Hf.
  rewrite Hf in Ht1; symmetry in Ht1.
  revert Ht1; apply Digit.no_fixpoint_opp.
 
@@ -3063,7 +3063,7 @@ destruct s1 as [dj1| ].
   symmetry in Hyb; apply Digit.opp_sym in Ht2.
   subst xn yn zn tn.
   simpl in Hxb, Hyb, Ht1, Ht2, Hn1, Hn2.
-  unfold I_eq, I_eq_ext in Hfxy, Hfzt; simpl in Hfxy, Hfzt.
+  unfold I_eq, I_eqs in Hfxy, Hfzt; simpl in Hfxy, Hfzt.
   rewrite Hfxy in Hxb; simpl in Hxb.
   rewrite Hfzt in Ht1; simpl in Ht1.
   destruct (lt_eq_lt_dec dj1 dj2) as [[H1| H1]| H1].
@@ -3088,7 +3088,7 @@ destruct s1 as [dj1| ].
 
   subst xn yn zn tn.
   simpl in Hxb, Ht1, Hn1, Hs2.
-  unfold I_eq, I_eq_ext in Hfxy, Hfzt; simpl in Hfxy, Hfzt.
+  unfold I_eq, I_eqs in Hfxy, Hfzt; simpl in Hfxy, Hfzt.
   rewrite Hfxy in Hxb; simpl in Hxb.
   rewrite Hfzt in Ht1; simpl in Ht1.
   rewrite Hs2 in Hxb.
@@ -3099,7 +3099,7 @@ destruct s1 as [dj1| ].
  destruct Hs2 as (Hn2, Ht2).
  subst xn yn zn tn.
  simpl in Hs1, Ht2, Hn2.
- unfold I_eq, I_eq_ext in Hfxy, Hfzt; simpl in Hfxy, Hfzt.
+ unfold I_eq, I_eqs in Hfxy, Hfzt; simpl in Hfxy, Hfzt.
  rewrite <- Hfxy, <- Hfzt in Ht2.
  rewrite Hs1, Digit.opp_involutive in Ht2.
  symmetry in Ht2.

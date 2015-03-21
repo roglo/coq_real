@@ -295,13 +295,13 @@ Qed.
 (* 0 absorbing element *)
 
 Theorem I_mul_algo_0_l : ∀ x y,
-  I_eq_ext x 0
+  I_eqs x 0
   → ∀ i, I_mul_algo x y i = 0.
 Proof.
 intros x y Hx i.
 unfold I_mul_algo.
 apply all_0_summation_0; intros j Hj.
-unfold I_eq_ext in Hx.
+unfold I_eqs in Hx.
 unfold d2n; simpl.
 destruct (Digit.dec (x.[j-1])) as [Hxj|Hxj]; [ simpl | reflexivity ].
 rewrite Hx in Hxj; discr_digit Hxj.
@@ -315,7 +315,7 @@ apply Nat.neq_mul_0; split; assumption.
 Qed.
 
 Theorem I_mul_i_0_l : ∀ x y,
-  I_eq_ext x 0
+  I_eqs x 0
   → ∀ i, (I_mul_i x y i = 0)%D.
 Proof.
 intros x y Hx i.
@@ -374,8 +374,8 @@ Qed.
 
 (* compatibility with equality *)
 
-Theorem I_ext_mul_algo_compat_r : ∀ x y z i,
-  I_eq_ext x y
+Theorem I_eqs_mul_algo_compat_r : ∀ x y z i,
+  (x == y)%I
   → I_mul_algo x z i = I_mul_algo y z i.
 Proof.
 intros x y z i Hxy.
@@ -383,7 +383,7 @@ unfold I_mul_algo.
 unfold summation.
 rewrite Nat.sub_succ, Nat.sub_0_r.
 apply summation_loop_compat.
-intros j Hji; unfold d2n; unfold I_eq_ext in Hxy.
+intros j Hji; unfold d2n; unfold I_eqs in Hxy.
 rewrite minus_plus.
 destruct (Digit.dec (x.[j])) as [Hx|Hx].
  destruct (Digit.dec (y.[j])) as [Hy|Hy]; [ reflexivity | idtac ].
@@ -393,8 +393,8 @@ destruct (Digit.dec (x.[j])) as [Hx|Hx].
  rewrite Hxy, Hy in Hx; discr_digit Hx.
 Qed.
 
-Theorem I_ext_mul_i_compat_r : ∀ x y z i,
-  I_eq_ext x y
+Theorem I_eqs_mul_i_compat_r : ∀ x y z i,
+  (x == y)%I
   → (I_mul_i x z i = I_mul_i y z i)%D.
 Proof.
 intros x y z i Hxy.
@@ -404,14 +404,14 @@ do 2 rewrite fold_sub_succ_l, divmod_mod.
 apply n2d_eq; f_equal.
 unfold summation_for_u2z; f_equal.
 apply summation_compat; intros k Hk; f_equal.
-apply I_ext_mul_algo_compat_r; assumption.
+apply I_eqs_mul_algo_compat_r; assumption.
 Qed.
 
-Theorem I_ext_mul_compat_r : ∀ x y z, I_eq_ext x y → I_eq_ext (x * z) (y * z).
+Theorem I_eqs_mul_compat_r : ∀ x y z, (x == y)%I → (x * z == y * z)%I.
 Proof.
 intros x y z Hxy.
-unfold I_eq_ext; simpl; intros i.
-apply I_ext_mul_i_compat_r; assumption.
+apply I_eqs_eqc_iff; intros i; simpl.
+apply I_eqs_mul_i_compat_r; assumption.
 Qed.
 
 Theorem I_mul_algo_le : ∀ x y i, I_mul_algo x y i ≤ i.
@@ -423,30 +423,19 @@ destruct (Digit.dec (x.[j-1])); [ idtac | apply Nat.le_0_l ].
 destruct (Digit.dec (y.[i-j])); [ reflexivity | apply Nat.le_0_l ].
 Qed.
 
-Theorem I_eqs_eq_ext : ∀ x y, (x == y)%I ↔ I_eq_ext x y.
-Proof.
-intros x y.
-split; intros Hxy.
- unfold I_eq_ext.
- apply I_eqs_iff; assumption.
-
- apply I_eqs_iff; assumption.
-Qed.
-
 Theorem fold_I_add_i : ∀ x y i, I_add_i x y i = (x + y)%I.[i].
 Proof. intros; reflexivity. Qed.
 
-Theorem I_mul_add_0_r : ∀ x y,
+(* compatibility is strong (==) in that case *)
+Theorem I_mul_add_0_r_eqs : ∀ x y,
   (x ≠≠ 1)%I
   → (y ≠≠ 1)%I
-  → ((x + 0) * y = x * y)%I.
+  → ((x + 0) * y == x * y)%I.
 Proof.
 intros x y Hxn1 Hyn1.
-apply I_eq_iff.
 destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
- left.
- apply I_ext_mul_compat_r.
- apply I_eqs_eq_ext; assumption.
+ apply I_eqs_mul_compat_r.
+ apply I_eqs_eqc_iff; assumption.
 
  destruct (I_zerop y) as [Hz| Hnz].
   apply I_zero_iff in Hz; simpl in Hz.
@@ -459,13 +448,12 @@ destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
    reflexivity.
 
    exfalso; apply Hyn1; clear Hyn1.
-   apply I_eqs_eq_ext; assumption.
+   apply I_eqs_eqc_iff; assumption.
 
-  right.
   assert (x + 0 = x)%I as H by apply I_add_0_r.
   apply I_eq_iff in H; simpl in H.
   destruct H as [H| (i, (Hlt, (Heq, Hgt)))].
-   exfalso; apply H1, I_eqs_eq_ext; assumption.
+   exfalso; apply H1, I_eqs_eqc_iff; assumption.
 
    destruct Hgt as [(Hi, (Hx, Hy))| (Hx, Hy)].
     subst i; clear Hlt.
@@ -478,7 +466,7 @@ destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
      clear H1 Heq; rewrite Hx, Hy in Ht1; clear dj1 Hn1.
      destruct (Digit.dec (x .[ 0])) as [H1| H1].
       exfalso; apply Hxn1; clear Hxn1.
-      apply I_eqs_eq_ext; intros i; simpl.
+      apply I_eqs_eqc_iff; intros i; simpl.
       rewrite Hy, H1; reflexivity.
 
       rewrite H1, Digit.opp_0 in Ht1.
@@ -509,7 +497,7 @@ destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
      pose proof Hs1 0 as H; simpl in H.
      rewrite <- Nat.add_succ_r, Hy, Digit.opp_0 in H.
      exfalso; apply H1; clear H1.
-     apply I_eqs_eq_ext.
+     apply I_eqs_eqc_iff.
      intros j; simpl.
      destruct (lt_eq_lt_dec j i) as [[H1| H1]| H1].
       apply Hlt; assumption.
@@ -534,6 +522,10 @@ destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
      assert (∀ di, (x .[ i + S di] = 1)%D) as H by (intros; rewrite Hy; auto).
      clear Hy; rename H into Hy; move Hy before Hx.
 bbb.
+     exists 0; simpl.
+     split; [ intros j Hj; exfalso; revert Hj; apply Nat.nlt_0_r | idtac ].
+     split.
+bbb.
   H : (carry x 0 (S i) = oppd 0)%D
      .   i   .   .
   x  .   1   0   0   0 …
@@ -541,7 +533,6 @@ bbb.
   y  .   0   1   1   1 …
 
      exists 0; simpl.
-     split; [ intros j Hj; exfalso; revert Hj; apply Nat.nlt_0_r | idtac ].
      split.
 
 
@@ -614,18 +605,18 @@ exists (dj1 + (logn base (dj1 + base) + 2)) ?
 bbb.
 
 Theorem I_mul_compat_r : ∀ x y z,
-  ¬I_eq_ext x 1
-  → ¬I_eq_ext y 1
+  ¬I_eqs x 1
+  → ¬I_eqs y 1
   → (x = y)%I
   → (x * z = y * z)%I.
 Proof.
 intros x y z Hxn1 Hyn1 Hxy.
 apply I_eq_iff in Hxy.
 destruct Hxy as [Hxy| (i, (Hlt, (Heq, Hgt)))].
- apply I_eq_ext_eq, I_ext_mul_compat_r; assumption.
+ apply I_eqs_eq, I_eqs_mul_compat_r; assumption.
 
- unfold I_eq_ext in Hxn1; simpl in Hxn1.
- unfold I_eq_ext in Hyn1; simpl in Hyn1.
+ unfold I_eqs in Hxn1; simpl in Hxn1.
+ unfold I_eqs in Hyn1; simpl in Hyn1.
  destruct Hgt as [(Hi, (Hx, Hy))| (Hx, Hy)].
   subst i; clear Hlt.
   remember (x .[ 0]) as b eqn:Hxi .
@@ -691,9 +682,9 @@ destruct Hxy as [Hxy| (i, (Hlt, (Heq, Hgt)))].
 
    symmetry.
    rewrite <- oups_I_mul_compat_r; symmetry. (* I_mul_add_0_r *)
-   apply I_eqs_eq, I_eqs_eq_ext.
-   apply I_ext_mul_compat_r.
-   apply I_eqs_eq_ext; assumption.
+   apply I_eqs_eq, I_eqs_eqc_iff.
+   apply I_eqs_mul_compat_r.
+   apply I_eqs_eqc_iff; assumption.
 
 bbb.
 
@@ -776,23 +767,6 @@ vvv.
 bbb.
 
 (* neutral element *)
-
-Theorem I_eq_ext_dec : ∀ x y, {I_eq_ext x y} + {not(I_eq_ext x y)}.
-Proof.
-intros x y.
-unfold I_eq_ext.
-remember (fst_same x (- y) 0) as s eqn:Hs .
-apply fst_same_sym_iff in Hs; simpl in Hs.
-destruct s as [di| ].
- destruct Hs as (Hn, Ht).
- right; intros H.
- rewrite H in Ht.
- symmetry in Ht.
- revert Ht; apply no_fixpoint_negb.
-
- left; intros i.
- rewrite Hs, negb_involutive; reflexivity.
-Qed.
 
 Theorem I_mul_i_1_r_0 : ∀ x,
   x.[0] = false ∨ x.[1] = true

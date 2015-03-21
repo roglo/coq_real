@@ -103,7 +103,7 @@ Definition I_add x y := {| rm := I_add_i x y |}.
 
 Notation "x + y" := (I_add x y) : I_scope.
 
-Definition I_eq x y := I_eq_ext (x + 0%I) (y + 0%I).
+Definition I_eq x y := I_eqs (x + 0%I) (y + 0%I).
 
 Notation "x = y" := (I_eq x y) : I_scope.
 Notation "x ≠ y" := (¬ I_eq x y) : I_scope.
@@ -140,11 +140,11 @@ split; intros H.
 Qed.
 
 Theorem carry_compat_r : ∀ x y z j,
-  I_eq_ext x y
+  I_eqs x y
   → (carry x z j = carry y z j)%D.
 Proof.
 intros x y z j Hxy; symmetry.
-unfold I_eq_ext in Hxy.
+unfold I_eqs in Hxy.
 unfold carry; intros.
 remember (fst_same y z j) as s1 eqn:Hs1 .
 remember (fst_same x z j) as s2 eqn:Hs2 .
@@ -184,10 +184,10 @@ destruct s1 as [di1| ].
  exfalso; revert Hs2; apply Digit.no_fixpoint_opp.
 Qed.
 
-Theorem I_eq_ext_eq : ∀ x y, I_eq_ext x y → (x = y)%I.
+Theorem I_eqs_eq : ∀ x y, I_eqs x y → (x = y)%I.
 Proof.
 intros x y Hxy.
-unfold I_eq_ext in Hxy.
+unfold I_eqs in Hxy.
 unfold I_eq; intros i; simpl.
 unfold I_add_i; simpl.
 rewrite Hxy.
@@ -305,7 +305,7 @@ Proof. intros x y Hxy i; symmetry; apply Hxy. Qed.
 Theorem I_eq_trans : transitive _ I_eq.
 Proof.
 intros x y z Hxy Hyz i.
-unfold I_eq, I_eq_ext in Hxy.
+unfold I_eq, I_eqs in Hxy.
 rewrite Hxy; apply Hyz.
 Qed.
 
@@ -563,19 +563,19 @@ Qed.
 Theorem I_add_0_r : ∀ x, (x + 0 = x)%I.
 Proof.
 intros x.
-unfold I_eq, I_eq_ext.
+unfold I_eq, I_eqs.
 apply I_add_i_0_r.
 Qed.
 
 (* compatibility with equality *)
 
 Theorem I_add_i_compat_r : ∀ x y z,
-  I_eq_ext x y
-  → I_eq_ext (x + z) (y + z).
+  I_eqs x y
+  → I_eqs (x + z) (y + z).
 Proof.
 intros x y z Hxy j; simpl.
 unfold I_add_i.
-unfold I_eq_ext in Hxy; rewrite Hxy.
+unfold I_eqs in Hxy; rewrite Hxy.
 apply Digit.add_compat; [ reflexivity | idtac ].
 apply carry_compat_r; assumption.
 Qed.
@@ -596,10 +596,10 @@ Theorem I_noI_eq_eq : ∀ x0 y0 x y,
   x = (x0 + 0)%I
   → y = (y0 + 0)%I
   → (x = y)%I
-  → I_eq_ext x y.
+  → I_eqs x y.
 Proof.
 intros x0 y0 x y Ha Hb Hxy i.
-unfold I_eq, I_eq_ext in Hxy; simpl in Hxy.
+unfold I_eq, I_eqs in Hxy; simpl in Hxy.
 pose proof (Hxy i) as Hi.
 unfold I_add_i, carry in Hi.
 remember (S i) as si; simpl in Hi.
@@ -2548,7 +2548,7 @@ Theorem I_eq_neq_prop : ∀ x y i,
     (∀ di, (x.[i+S di] = 0)%D) ∧ (∀ di, (y.[i+S di] = 1)%D).
 Proof.
 intros x y i Hxy Hx Hy.
-unfold I_eq, I_eq_ext in Hxy; simpl in Hxy.
+unfold I_eq, I_eqs in Hxy; simpl in Hxy.
 pose proof (Hxy i) as H.
 unfold I_add_i in H; simpl in H.
 rewrite Hx, Hy, Digit.add_1_l, Digit.add_0_l in H.
@@ -2855,7 +2855,7 @@ Qed.
 
 Theorem I_eq_iff : ∀ x y,
   (x = y)%I
-  ↔ I_eq_ext x y ∨
+  ↔ I_eqs x y ∨
     ∃ i,
     (∀ j, j < i → (x.[j] = y.[j])%D) ∧
     (x.[i] ≠ y.[i])%D ∧
@@ -2966,7 +2966,7 @@ split; intros Hxy.
   rewrite Hs1, Digit.opp_involutive; reflexivity.
 
  destruct Hxy as [Hxy| Hxy].
-  apply I_eq_ext_eq; assumption.
+  apply I_eqs_eq; assumption.
 
   destruct Hxy as (i, (Heq, (Hne, Hxy))).
   destruct Hxy as [(Hi, (Hx, Hy))| (Hx, Hy)].
