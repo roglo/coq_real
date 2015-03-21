@@ -716,7 +716,7 @@ Qed.
 Theorem I_zero_eqs_iff : ∀ x, (x == 0)%I ↔ (∀ i, (x.[i] = 0)%D).
 Proof. intros x; split; intros i; assumption. Qed.
 
-Theorem I_sub_diag_eqc : ∀ x, (x - x == 0)%I.
+Theorem I_sub_diag_eqs : ∀ x, (x - x == 0)%I.
 Proof.
 intros x i; simpl.
 unfold I_add_i; simpl.
@@ -815,10 +815,8 @@ Add Parametric Morphism : I_opp
   as I_opp_eqs_morph.
 Proof.
 intros x y Hxy.
-bbb.
-
-rewrite I_eqc_iff in Hxy; simpl in Hxy.
-apply I_eqc_iff; simpl; intros i.
+intros i; simpl.
+unfold I_eqs in Hxy.
 rewrite Hxy; reflexivity.
 Qed.
 
