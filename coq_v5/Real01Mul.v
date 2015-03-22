@@ -92,6 +92,27 @@ Qed.
 Theorem n2d_eq : ∀ a b, a = b → (n2d a = n2d b)%D.
 Proof. intros; subst; reflexivity. Qed.
 
+Theorem digit_d2n_eq_iff : ∀ d e, (d = e)%D ↔ d2n d = d2n e.
+Proof.
+intros d e.
+split; intros Hde.
+ unfold d2n.
+ destruct (Digit.dec d) as [H1| H1].
+  destruct (Digit.dec e) as [H2| H2]; [ reflexivity | exfalso ].
+  rewrite H1, H2 in Hde; discr_digit Hde.
+
+  destruct (Digit.dec e) as [H2| H2]; [ exfalso | reflexivity ].
+  rewrite H1, H2 in Hde; discr_digit Hde.
+
+ unfold d2n in Hde.
+ destruct (Digit.dec d) as [H1| H1].
+  destruct (Digit.dec e) as [H2| H2]; [ clear Hde | discriminate Hde ].
+  rewrite H1, H2; reflexivity.
+
+  destruct (Digit.dec e) as [H2| H2]; [ discriminate Hde | clear Hde ].
+  rewrite H1, H2; reflexivity.
+Qed.
+
 (* Summation model and theorems borrowed from my proof of Puiseux's theorem,
    file Fsummation.v *)
 
@@ -524,9 +545,19 @@ destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
      do 2 rewrite fold_sub_succ_l, divmod_mod.
      rewrite Nat.mul_1_r.
      remember (logn 2 (j + 2) + 2) as m eqn:Hm.
-     destruct (lt_eq_lt_dec (j + m) i) as [[H3| H3]| H3].
+     destruct (lt_dec (j + m) (S i)) as [H3| H3].
+      apply eq_digit_eq; do 3 f_equal.
+      apply summation_compat.
+      intros k Hk; f_equal.
+      apply summation_compat.
+      intros l Hl; f_equal.
+      apply digit_d2n_eq_iff, Hlt.
+      revert H3 Hk Hl; clear; intros; omega.
+
+      apply Nat.nlt_ge in H3.
 bbb.
-      remember H3 as H; clear HeqH; apply Hlt in H.
+apply Hlt.
+
      .   i   .   .
   x  .   1   0   0   0 …
      =   ≠
