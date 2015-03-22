@@ -555,8 +555,8 @@ destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
       revert H3 Hk Hl; clear; intros; omega.
 
       apply Nat.nlt_ge in H3.
+      destruct (le_dec j i) as [H4| H4].
 bbb.
-apply Hlt.
 
      .   i   .   .
   x  .   1   0   0   0 …
