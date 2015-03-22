@@ -555,7 +555,9 @@ destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
       revert H3 Hk Hl; clear; intros; omega.
 
       apply Nat.nlt_ge in H3.
-      destruct (le_dec j i) as [H4| H4].
+      destruct (lt_dec i j) as [H4| H4].
+       apply summation_compat.
+       intros k Hk; f_equal.
 bbb.
 
      .   i   .   .
