@@ -38,11 +38,8 @@ Definition base := 2.
 
 Definition d2n d := if Digit.dec d then 1 else 0.
 Definition n2d n := match n with 0 => 0%D | S n1 => 1%D end.
-
-(*
-Definition modb n := n mod 2.
-Definition divb n := n / 2.
-*)
+Arguments d2n d%D.
+Arguments n2d n%nat.
 
 Definition I_mul_algo x y i := Σ (j=1,i), (d2n (x.[j-1]) * d2n (y.[i-j])).
 Arguments I_mul_algo x%I y%I i%nat.
@@ -60,6 +57,18 @@ Definition I_mul x y := {| rm := I_mul_i x y |}.
 Notation "x * y" := (I_mul x y) : I_scope.
 
 (* *)
+
+Theorem d2n_0 : d2n 0 = 0.
+Proof.
+unfold d2n.
+destruct (Digit.dec 0) as [H1| H1]; [ discr_digit H1 | reflexivity ].
+Qed.
+
+Theorem d2n_1 : d2n 1 = 1.
+Proof.
+unfold d2n.
+destruct (Digit.dec 1) as [H1| H1]; [ reflexivity | discr_digit H1 ].
+Qed.
 
 Theorem eq_d2n_0 : ∀ b, d2n b = 0 → (b = 0)%D.
 Proof.
@@ -612,8 +621,45 @@ destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
       apply Nat.nlt_ge in H3.
       destruct (lt_dec i j) as [H4| H4].
        destruct i.
+        erewrite summation_compat.
+         Focus 2.
+         intros k (Hk, Hkm).
+         apply Nat.mul_cancel_r.
+          apply int_pow_neq_0; intros H; discriminate H.
+
+          apply summation_split_first.
+          eapply Nat.le_trans; [ eassumption | idtac ].
+          apply Nat.le_sub_le_add_l; rewrite Nat.sub_diag.
+          apply Nat.le_0_l.
+
+         simpl; symmetry.
+         erewrite summation_compat.
+          Focus 2.
+          intros k (Hk, Hkm).
+          apply Nat.mul_cancel_r.
+           apply int_pow_neq_0; intros H; discriminate H.
+
+           apply summation_split_first.
+           eapply Nat.le_trans; [ eassumption | idtac ].
+           apply Nat.le_sub_le_add_l; rewrite Nat.sub_diag.
+           apply Nat.le_0_l.
+
+          simpl; symmetry.
+          apply digit_d2n_eq_iff in Heq; rewrite Heq, d2n_1.
+          rewrite summation_split_first; [ idtac | apply Nat.le_0_l ].
+          rewrite Nat.mul_1_l.
+          symmetry.
+          apply digit_d2n_eq_iff in H2; rewrite H2, d2n_0.
+          rewrite summation_split_first; [ idtac | apply Nat.le_0_l ].
+          rewrite Nat.mul_0_l, Nat.add_0_l; simpl.
+          rewrite Nat.add_0_r, Nat.sub_0_r.
 bbb.
-        apply summation_compat.
+
+          split; [ reflexivity | idtac ].
+          eapply Nat.le_trans; [ eassumption | idtac ].
+          apply Nat.le_sub_le_add_l; rewrite Nat.sub_diag.
+          apply Nat.le_0_l.
+
         intros k (Hk, Hkm); f_equal.
         apply summation_compat.
         intros l (Hl, Hljk); f_equal.
