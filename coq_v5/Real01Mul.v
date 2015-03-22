@@ -556,21 +556,9 @@ destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
 
       apply Nat.nlt_ge in H3.
       destruct (lt_dec i j) as [H4| H4].
-
-Theorem zzz : ∀ b1 e1 f g,
-  (∀ i, b1 ≤ i ≤ e1 → f i = g i)
-  → Σ (i = b1, e1), f i = Σ (i = b1, e1), g i.
-Proof.
-intros b1 e1 f g Hfg.
-Admitted.
-
-simpl.
-erewrite zzz.
+erewrite summation_compat.
 Focus 2.
 intros k Hk.
-bbb.
-(* c'est embêtant ce "?3296 k" *)
-
 apply Nat.mul_cancel_r.
  apply int_pow_neq_0; intros H; discriminate H.
 
@@ -581,8 +569,7 @@ Proof.
 intros b1 e1 f k.
 Admitted.
 
-simpl.
-apply yyy with (k := i).
+apply yyy with (k := i); simpl.
 bbb.
 
 Theorem zzz : ∀ b1 e1 b2 e2 f g k,
