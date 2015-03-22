@@ -447,7 +447,7 @@ Qed.
 Theorem fold_I_add_i : ∀ x y i, I_add_i x y i = (x + y)%I.[i].
 Proof. intros; reflexivity. Qed.
 
-(* compatibility is strong (==) in that case *)
+(* there is a compatibility with strong equality (==) *)
 Theorem I_mul_add_0_r_eqs : ∀ x y,
   (x ≠≠ 1)%I
   → (y ≠≠ 1)%I
@@ -556,6 +556,46 @@ destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
 
       apply Nat.nlt_ge in H3.
       destruct (lt_dec i j) as [H4| H4].
+
+Theorem zzz : ∀ b1 e1 f g,
+  (∀ i, b1 ≤ i ≤ e1 → f i = g i)
+  → Σ (i = b1, e1), f i = Σ (i = b1, e1), g i.
+Proof.
+intros b1 e1 f g Hfg.
+Admitted.
+
+simpl.
+erewrite zzz.
+Focus 2.
+intros k Hk.
+bbb.
+(* c'est embêtant ce "?3296 k" *)
+
+apply Nat.mul_cancel_r.
+ apply int_pow_neq_0; intros H; discriminate H.
+
+Theorem yyy : ∀ b1 e1 f k,
+  Σ (i = b1, e1), f i =
+  Σ (i = b1, k), f i + Σ (i = S k, e1), f i.
+Proof.
+intros b1 e1 f k.
+Admitted.
+
+simpl.
+apply yyy with (k := i).
+bbb.
+
+Theorem zzz : ∀ b1 e1 b2 e2 f g k,
+  Σ (i = b1, e1), (Σ (j = b2, e2 i), f i j) * g i =
+  Σ (i = b1, e1), (Σ (j = b2, k), f i j + Σ (j = S k, e2 i), f i j) * g i.
+Proof.
+intros b1 e1 b2 e2 f g k.
+bbb.
+
+rewrite zzz with (k := i).
+
+bbb.
+
        apply summation_compat.
        intros k Hk; f_equal.
 bbb.
