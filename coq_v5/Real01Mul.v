@@ -257,6 +257,32 @@ remember 1 as one; rewrite <- Nat.add_1_r; subst one.
 apply Nat.add_le_mono; [ assumption | apply Hf ].
 Qed.
 
+Theorem summation_split : ∀ b1 e1 f k,
+  b1 ≤ k ≤ e1
+  → Σ (i = b1, e1), f i =
+    Σ (i = b1, k), f i + Σ (i = S k, e1), f i.
+Proof.
+intros b1 e1 f k (Hb, He).
+revert b1 k Hb He.
+induction e1; intros.
+ apply Nat.le_0_r in He; subst k.
+ apply Nat.le_0_r in Hb; subst b1.
+ symmetry; rewrite Nat.add_comm.
+ rewrite summation_empty; [ reflexivity | apply Nat.lt_0_1 ].
+
+ destruct (le_dec k e1) as [H1| H1].
+  rewrite summation_split_last; [ idtac | eapply le_trans; eassumption ].
+  rewrite summation_split_last; [ idtac | apply le_n_S; assumption ].
+  erewrite IHe1; [ idtac | eassumption | assumption ].
+  rewrite Nat.add_assoc; reflexivity.
+
+  apply Nat.nle_gt in H1.
+  apply Nat.le_antisymm in He; [ subst k; clear H1 | assumption ].
+  symmetry; rewrite Nat.add_comm.
+  rewrite summation_empty; [ reflexivity | idtac ].
+  apply Nat.lt_succ_r; reflexivity.
+Qed.
+
 (* commutativity *)
 
 Theorem I_mul_algo_comm : ∀ x y, (∀ i, I_mul_algo x y i = I_mul_algo y x i).
@@ -447,7 +473,7 @@ Qed.
 Theorem fold_I_add_i : ∀ x y i, I_add_i x y i = (x + y)%I.[i].
 Proof. intros; reflexivity. Qed.
 
-(* there is a compatibility with strong equality (==) *)
+(* compatibility with strong equality (==) *)
 Theorem I_mul_add_0_r_eqs : ∀ x y,
   (x ≠≠ 1)%I
   → (y ≠≠ 1)%I
@@ -509,10 +535,10 @@ destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
      do 2 rewrite Digit.add_1_l.
      apply Digit.opp_1_iff.
      unfold carry; simpl.
-     remember (fst_same x 0 (S i)) as s1 eqn:Hs1.
+     remember (fst_same x 0 (S i)) as s1 eqn:Hs1 .
      apply fst_same_sym_iff in Hs1; simpl in Hs1.
      destruct s1 as [dj1| ]; [ destruct Hs1; assumption | exfalso ].
-     pose proof Hs1 0 as H; simpl in H.
+     pose proof (Hs1 0) as H; simpl in H.
      rewrite <- Nat.add_succ_r, Hy, Digit.opp_0 in H.
      exfalso; apply H1; clear H1.
      intros j; simpl.
@@ -523,12 +549,12 @@ destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
       rewrite H2, H; reflexivity.
 
       rename H into H3.
-      pose proof Hx (j - S i) as H.
+      pose proof (Hx (j - S i)) as H.
       rewrite Nat.add_succ_r, <- Nat.add_succ_l in H.
       rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
       rewrite Nat.add_comm, Nat.add_sub in H.
       rewrite H, H2; symmetry; clear H.
-      pose proof Hs1 (j - S i) as H.
+      pose proof (Hs1 (j - S i)) as H.
       rewrite <- Nat.add_succ_l in H.
       rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
       rewrite Nat.add_comm, Nat.add_sub in H; assumption.
@@ -544,7 +570,7 @@ destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
      unfold summation_for_u2z; simpl.
      do 2 rewrite fold_sub_succ_l, divmod_mod.
      rewrite Nat.mul_1_r.
-     remember (logn 2 (j + 2) + 2) as m eqn:Hm.
+     remember (logn 2 (j + 2) + 2) as m eqn:Hm .
      apply eq_digit_eq; do 3 f_equal.
      destruct (lt_dec (j + m) (S i)) as [H3| H3].
       apply summation_compat.
@@ -556,35 +582,32 @@ destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
 
       apply Nat.nlt_ge in H3.
       destruct (lt_dec i j) as [H4| H4].
-erewrite summation_compat.
-Focus 2.
-intros k Hk.
-apply Nat.mul_cancel_r.
- apply int_pow_neq_0; intros H; discriminate H.
+       erewrite summation_compat.
+        Focus 2.
+        intros k Hk.
+        apply Nat.mul_cancel_r.
+         apply int_pow_neq_0; intros H; discriminate H.
 
-Theorem yyy : ∀ b1 e1 f k,
-  Σ (i = b1, e1), f i =
-  Σ (i = b1, k), f i + Σ (i = S k, e1), f i.
-Proof.
-intros b1 e1 f k.
-Admitted.
+         apply summation_split with (k := S i).
+         split; [ apply le_n_S, Nat.le_0_l | idtac ].
+         eapply Nat.le_trans; [ eassumption | idtac ].
+         apply Nat.le_sub_le_add_l; rewrite Nat.sub_diag.
+         apply Nat.le_0_l.
 
-apply yyy with (k := i); simpl.
-bbb.
+        simpl; symmetry.
+        erewrite summation_compat.
+         Focus 2.
+         intros k Hk.
+         apply Nat.mul_cancel_r.
+          apply int_pow_neq_0; intros H; discriminate H.
 
-Theorem zzz : ∀ b1 e1 b2 e2 f g k,
-  Σ (i = b1, e1), (Σ (j = b2, e2 i), f i j) * g i =
-  Σ (i = b1, e1), (Σ (j = b2, k), f i j + Σ (j = S k, e2 i), f i j) * g i.
-Proof.
-intros b1 e1 b2 e2 f g k.
-bbb.
+          apply summation_split with (k := S i).
+          split; [ apply le_n_S, Nat.le_0_l | idtac ].
+          eapply Nat.le_trans; [ eassumption | idtac ].
+          apply Nat.le_sub_le_add_l; rewrite Nat.sub_diag.
+          apply Nat.le_0_l.
 
-rewrite zzz with (k := i).
-
-bbb.
-
-       apply summation_compat.
-       intros k Hk; f_equal.
+         simpl.
 bbb.
 
      .   i   .   .
