@@ -545,8 +545,8 @@ destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
      do 2 rewrite fold_sub_succ_l, divmod_mod.
      rewrite Nat.mul_1_r.
      remember (logn 2 (j + 2) + 2) as m eqn:Hm.
+     apply eq_digit_eq; do 3 f_equal.
      destruct (lt_dec (j + m) (S i)) as [H3| H3].
-      apply eq_digit_eq; do 3 f_equal.
       apply summation_compat.
       intros k Hk; f_equal.
       apply summation_compat.
