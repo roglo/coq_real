@@ -1,7 +1,7 @@
 (* multiplication in I *)
 
 Require Import Utf8 QArith NPeano Misc Oracle.
-Require Import Digit Real01 Real01Add Real01AddMono Real01Cmp.
+Require Import Misc Digit Real01 Real01Add Real01AddMono Real01Cmp.
 
 Open Scope nat_scope.
 
@@ -648,111 +648,35 @@ destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
 
          simpl; symmetry.
          rewrite Nat.sub_0_r.
-bbb.
          erewrite summation_compat.
           Focus 2.
           intros k (Hk, Hkm).
-          apply Nat.mul_cancel_r.
-           apply int_pow_neq_0; intros H; discriminate H.
-
-bbb.
-         rewrite summation_split_first; [ simpl | apply Nat.le_0_l ].
-         rewrite Nat.add_0_r, Nat.sub_0_r; symmetry.
-         rewrite summation_split_first; [ simpl | apply Nat.le_0_l ].
-         rewrite Nat.add_0_r, Nat.sub_0_r; symmetry.
-bbb.
-
-        erewrite summation_compat.
-         Focus 2.
-         intros k (Hk, Hkm).
-         apply Nat.mul_cancel_r.
-          apply int_pow_neq_0; intros H; discriminate H.
-
-          apply summation_split3 with (k := i).
-bbb.
-           eapply Nat.le_trans; [ eassumption | idtac ].
-           apply Nat.le_sub_le_add_l; rewrite Nat.sub_diag.
-           apply Nat.le_0_l.
+          rewrite <- Nat.add_assoc, Nat.mul_add_distr_r.
+          reflexivity.
 
           simpl; symmetry.
-          apply digit_d2n_eq_iff in Heq; rewrite Heq, d2n_1.
-          rewrite summation_split_first; [ idtac | apply Nat.le_0_l ].
-          rewrite Nat.mul_1_l.
-          symmetry.
-          apply digit_d2n_eq_iff in H2; rewrite H2, d2n_0.
-          rewrite summation_split_first; [ idtac | apply Nat.le_0_l ].
-          rewrite Nat.mul_0_l, Nat.add_0_l; simpl.
-          rewrite Nat.add_0_r, Nat.sub_0_r.
+          erewrite summation_compat.
+           Focus 2.
+           intros k (Hk, Hkm).
+           rewrite <- Nat.add_assoc, Nat.mul_add_distr_r.
+           reflexivity.
+
+           simpl; symmetry.
+           rewrite summation_split_first; [ simpl | apply Nat.le_0_l ].
+           simpl; symmetry.
+           rewrite summation_split_first; [ simpl | apply Nat.le_0_l ].
+           do 2 rewrite <- Nat.add_assoc.
+           f_equal.
+            f_equal; apply summation_compat.
+            intros k (Hk, Hkm); f_equal.
+            apply digit_d2n_eq_iff; symmetry; apply Hlt.
+            apply Nat_lt_add_sub_lt_l; apply le_n_S; assumption.
+
+            rewrite Nat.add_0_r, Nat.sub_0_r.
+            apply digit_d2n_eq_iff in Heq; rewrite Heq, d2n_1.
+            apply digit_d2n_eq_iff in H2; rewrite H2, d2n_0.
+            rewrite Nat.mul_0_l, Nat.add_0_l, Nat.mul_1_l.
 bbb.
-
-          split; [ reflexivity | idtac ].
-          eapply Nat.le_trans; [ eassumption | idtac ].
-          apply Nat.le_sub_le_add_l; rewrite Nat.sub_diag.
-          apply Nat.le_0_l.
-
-        intros k (Hk, Hkm); f_equal.
-        apply summation_compat.
-        intros l (Hl, Hljk); f_equal.
-
-         Focus 2.
-         intros k Hk.
-         apply Nat.mul_cancel_r.
-          apply int_pow_neq_0; intros H; discriminate H.
-
-
-          apply summation_split with (k := 1).
-          split; [ reflexivity | idtac ].
-          eapply Nat.le_trans; [ eassumption | idtac ].
-          apply Nat.le_sub_le_add_l; rewrite Nat.sub_diag.
-          apply Nat.le_0_l.
-
-         simpl.
-bbb.
-
-        erewrite summation_compat.
-         Focus 2.
-         intros k Hk.
-        apply Nat.mul_cancel_r.
-         apply int_pow_neq_0; intros H; discriminate H.
-
-         destruct i.
-          apply summation_split with (k := 1).
-          split; [ reflexivity | idtac ].
-          eapply Nat.le_trans; [ eassumption | idtac ].
-          apply Nat.le_sub_le_add_l; rewrite Nat.sub_diag.
-          apply Nat.le_0_l.
-
-          simpl.
-          rewrite summation_split3 with (k := i).
-simpl.
-Show Script.
-           apply summation_split3 with (k := i).
-bbb.
-  ============================
-   1 ≤ i < j + k
-
-         apply summation_split with (k := S i).
-         split; [ apply le_n_S, Nat.le_0_l | idtac ].
-         eapply Nat.le_trans; [ eassumption | idtac ].
-         apply Nat.le_sub_le_add_l; rewrite Nat.sub_diag.
-         apply Nat.le_0_l.
-
-        simpl; symmetry.
-        erewrite summation_compat.
-         Focus 2.
-         intros k Hk.
-         apply Nat.mul_cancel_r.
-          apply int_pow_neq_0; intros H; discriminate H.
-
-          apply summation_split with (k := S i).
-          split; [ apply le_n_S, Nat.le_0_l | idtac ].
-          eapply Nat.le_trans; [ eassumption | idtac ].
-          apply Nat.le_sub_le_add_l; rewrite Nat.sub_diag.
-          apply Nat.le_0_l.
-
-         simpl.
-bbb.
-
      .   i   .   .
   x  .   1   0   0   0 …
      =   ≠

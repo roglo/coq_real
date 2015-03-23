@@ -321,40 +321,6 @@ Theorem forall_and_distr : ∀ α (P Q : α → Prop),
   (∀ x, P x ∧ Q x) → (∀ x, P x) ∧ (∀ x, Q x).
 Proof. intros; split; intros x; apply H. Qed.
 
-Theorem lt_add_sub_lt_r : ∀ a b c d,
-  a < b + c
-  → d < c
-  → a - b < c.
-Proof.
-intros a b c d Ha Hdc.
-revert b c Ha Hdc.
-induction a; intros.
- simpl.
- eapply le_lt_trans; [ apply Nat.le_0_l | eassumption ].
-
- destruct b; [ rewrite Nat.sub_0_r; assumption | simpl ].
- simpl in Ha.
- apply Nat.succ_lt_mono in Ha.
- apply IHa; assumption.
-Qed.
-
-Theorem lt_add_sub_lt_l : ∀ a b c,
-  a < b + c
-  → b < S a
-  → a - b < c.
-Proof.
-intros a b c Ha Hb.
-revert b c Ha Hb.
-induction a; intros.
- apply Nat.lt_1_r in Hb; subst b; assumption.
-
- destruct b; [ rewrite Nat.sub_0_r; assumption | simpl ].
- simpl in Ha.
- apply Nat.succ_lt_mono in Ha.
- apply Nat.succ_lt_mono in Hb.
- apply IHa; assumption.
-Qed.
-
 Theorem neq_negb : ∀ b b', b ≠ b' ↔ b = negb b'.
 Proof.
 intros b b'.
@@ -1431,7 +1397,7 @@ destruct s2 as [di2| ].
             symmetry in H.
             apply Digit.opp_1_iff in H.
             rename H into H6.
-            assert (j - si < di2) as H by (eapply lt_add_sub_lt_r; eauto ).
+            assert (j - si < di2) as H by (eapply Nat_lt_add_sub_lt_r; eauto ).
             apply Hn2 in H.
             rewrite Nat.add_sub_assoc in H.
              rewrite Nat.add_comm, Nat.add_sub in H.
@@ -1776,7 +1742,7 @@ destruct s2 as [di2| ].
            remember H4 as H; clear HeqH.
            rewrite <- Nat.add_succ_l in H.
            apply Nat.succ_lt_mono in H2.
-           apply lt_add_sub_lt_l with (a := di2) in H; auto.
+           apply Nat_lt_add_sub_lt_l with (a := di2) in H; auto.
            apply Nat.succ_lt_mono in H2.
            apply Pn6 in H.
            rewrite Heqssi in H.
@@ -2292,7 +2258,7 @@ destruct s3 as [di3| ].
     apply Nat.nlt_ge in H1.
     destruct (lt_dec j (si + di4)) as [H2| H2].
      assert (si < S j) as H by (eapply lt_le_trans; eauto ).
-     apply lt_add_sub_lt_l in H2; auto; clear H.
+     apply Nat_lt_add_sub_lt_l in H2; auto; clear H.
      rename H2 into H.
      apply Hn4 in H.
      apply Nat.lt_le_incl in Hij.
@@ -2453,7 +2419,7 @@ destruct s as [dj| ].
  destruct Hj as (Hnj, Hsj).
  destruct (lt_eq_lt_dec dj (i + di - j)) as [[H1| H1]| H1].
   apply Nat.lt_add_lt_sub_l in H1; rename H1 into H.
-  apply lt_add_sub_lt_l in H.
+  apply Nat_lt_add_sub_lt_l in H.
    apply Hni in H; simpl in H.
    rewrite Nat.add_sub_assoc in H.
     rewrite Nat.add_comm, Nat.add_sub in H.

@@ -38,6 +38,40 @@ rewrite Nat.add_sub_assoc; [ idtac | assumption ].
 rewrite Nat.add_comm, Nat.add_sub; reflexivity.
 Qed.
 
+Theorem Nat_lt_add_sub_lt_r : ∀ a b c d,
+  a < b + c
+  → d < c
+  → a - b < c.
+Proof.
+intros a b c d Ha Hdc.
+revert b c Ha Hdc.
+induction a; intros.
+ simpl.
+ eapply le_lt_trans; [ apply Nat.le_0_l | eassumption ].
+
+ destruct b; [ rewrite Nat.sub_0_r; assumption | simpl ].
+ simpl in Ha.
+ apply Nat.succ_lt_mono in Ha.
+ apply IHa; assumption.
+Qed.
+
+Theorem Nat_lt_add_sub_lt_l : ∀ a b c,
+  a < b + c
+  → b < S a
+  → a - b < c.
+Proof.
+intros a b c Ha Hb.
+revert b c Ha Hb.
+induction a; intros.
+ apply Nat.lt_1_r in Hb; subst b; assumption.
+
+ destruct b; [ rewrite Nat.sub_0_r; assumption | simpl ].
+ simpl in Ha.
+ apply Nat.succ_lt_mono in Ha.
+ apply Nat.succ_lt_mono in Hb.
+ apply IHa; assumption.
+Qed.
+
 Theorem all_lt_all : ∀ P : nat → Prop,
   (∀ n, (∀ m, (m < n)%nat → P m) → P n)
   → ∀ n, P n.

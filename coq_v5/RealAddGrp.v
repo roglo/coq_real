@@ -497,7 +497,7 @@ destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
        apply Nat.nlt_ge in H1.
        remember H2 as H; clear HeqH.
        assert (0 < S dj2)%nat as HH by apply Nat.lt_0_succ.
-       apply lt_add_sub_lt_r with (d := O) in H; try assumption.
+       apply Nat_lt_add_sub_lt_r with (d := O) in H; try assumption.
        apply Hn2 in H.
        rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
        rewrite Nat.add_comm, Nat.add_sub in H.
@@ -665,7 +665,7 @@ destruct (lt_eq_lt_dec dx dy) as [[H1| H1]| H1].
           remember H2 as H; clear HeqH.
           rewrite <- Nat.add_succ_l in H.
           assert (0 < S dj5)%nat as HH by apply Nat.lt_0_succ.
-          eapply lt_add_sub_lt_r with (d := O) in H; try assumption.
+          eapply Nat_lt_add_sub_lt_r with (d := O) in H; try assumption.
           apply Hn5 in H.
           rewrite <- Nat.add_succ_l in H.
           rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
@@ -976,7 +976,7 @@ destruct (lt_eq_lt_dec dj1 dx) as [[H1| H1]| H1].
              rewrite <- Nat.add_succ_l in H.
              rename HH into Hxz.
              assert (0 < S dj5)%nat as HH by apply Nat.lt_0_succ.
-             apply lt_add_sub_lt_r with (d := O) in H; try assumption.
+             apply Nat_lt_add_sub_lt_r with (d := O) in H; try assumption.
              apply Hn5 in H.
              rewrite <- Nat.add_succ_l in H.
              rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
