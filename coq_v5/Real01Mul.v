@@ -732,7 +732,22 @@ destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
               Focus 2.
               intros k Hk.
               rewrite digit_d2n_eq_iff in H2.
-              rewrite H2, d2n_0, Nat.mul_0_l, Nat.add_0_l; reflexivity.
+              rewrite H2, d2n_0, Nat.mul_0_l, Nat.add_0_l.
+              erewrite summation_compat.
+               Focus 2.
+               intros l (Hl, Hlk).
+               pose proof Hy (l - S (S i)) as H.
+               rewrite Nat.add_succ_r, <- Nat.add_succ_l in H.
+               remember (S (S i)) as ssi.
+               replace (S i) with (pred (S (S i))) in H by apply Nat.pred_succ.
+               subst ssi.
+               rewrite Nat.add_pred_l in H; [ idtac | intros I; discriminate I ].
+               rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+               rewrite Nat.add_comm, Nat.add_sub in H.
+               rewrite <- Nat.sub_1_r, digit_d2n_eq_iff in H.
+               rewrite H, d2n_1, Nat.mul_1_l; reflexivity.
+
+               reflexivity.
 
               simpl; symmetry.
 bbb.
