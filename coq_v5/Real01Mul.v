@@ -283,33 +283,34 @@ apply Nat.add_le_mono; [ assumption | apply Hf ].
 Qed.
 
 Theorem summation_split : ∀ b1 e1 f k,
-  b1 ≤ k ≤ e1
+  b1 ≤ S k ≤ S e1
   → Σ (i = b1, e1), f i =
     Σ (i = b1, k), f i + Σ (i = S k, e1), f i.
 Proof.
 intros b1 e1 f k (Hb, He).
 revert b1 k Hb He.
 induction e1; intros.
- apply Nat.le_0_r in He; subst k.
- apply Nat.le_0_r in Hb; subst b1.
+ apply le_S_n, Nat.le_0_r in He; subst k.
  symmetry; rewrite Nat.add_comm.
  rewrite summation_empty; [ reflexivity | apply Nat.lt_0_1 ].
 
  destruct (le_dec k e1) as [H1| H1].
+  apply le_n_S in H1.
   rewrite summation_split_last; [ idtac | eapply le_trans; eassumption ].
-  rewrite summation_split_last; [ idtac | apply le_n_S; assumption ].
+  rewrite summation_split_last; [ idtac | assumption ].
   erewrite IHe1; [ idtac | eassumption | assumption ].
   rewrite Nat.add_assoc; reflexivity.
 
-  apply Nat.nle_gt in H1.
-  apply Nat.le_antisymm in He; [ subst k; clear H1 | assumption ].
+  apply Nat.nle_gt, le_n_S in H1.
+  apply Nat.le_antisymm in He; [ idtac | assumption ].
+  apply Nat.succ_inj in He; subst k.
   symmetry; rewrite Nat.add_comm.
   rewrite summation_empty; [ reflexivity | idtac ].
   apply Nat.lt_succ_r; reflexivity.
 Qed.
 
 Theorem summation_split3 : ∀ b1 e1 f k,
-  b1 ≤ k < e1
+  b1 ≤ S k ≤ e1
   → Σ (i = b1, e1), f i =
     Σ (i = b1, k), f i + f (S k) + Σ (i = S (S k), e1), f i.
 Proof.
@@ -318,7 +319,8 @@ rewrite summation_split with (k := k).
  rewrite <- Nat.add_assoc; f_equal.
  apply summation_split_first; assumption.
 
- split; [ assumption | apply Nat.lt_le_incl; assumption ].
+ split; [ assumption | idtac ].
+ apply Nat.lt_le_incl, le_n_S; assumption.
 Qed.
 
 (* commutativity *)
@@ -511,7 +513,6 @@ Qed.
 Theorem fold_I_add_i : ∀ x y i, I_add_i x y i = (x + y)%I.[i].
 Proof. intros; reflexivity. Qed.
 
-(* compatibility with strong equality (==) *)
 Theorem I_mul_add_0_r_eqs : ∀ x y,
   (x ≠≠ 1)%I
   → (y ≠≠ 1)%I
@@ -620,26 +621,55 @@ destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
 
       apply Nat.nlt_ge in H3.
       destruct (lt_dec i j) as [H4| H4].
-       destruct i.
+       erewrite summation_compat.
+        Focus 2.
+        intros k (Hk, Hkm).
+        apply Nat.mul_cancel_r.
+         apply int_pow_neq_0; intros H; discriminate H.
+
+         apply summation_split3 with (k := i).
+         split; [ apply le_n_S, Nat.le_0_l | idtac ].
+         eapply Nat.le_trans; [ eassumption | idtac ].
+         apply Nat.le_sub_le_add_l; rewrite Nat.sub_diag.
+         apply Nat.le_0_l.
+
+        simpl; symmetry.
         erewrite summation_compat.
          Focus 2.
          intros k (Hk, Hkm).
          apply Nat.mul_cancel_r.
           apply int_pow_neq_0; intros H; discriminate H.
 
-          apply summation_split_first.
+          apply summation_split3 with (k := i).
+          split; [ apply le_n_S, Nat.le_0_l | idtac ].
           eapply Nat.le_trans; [ eassumption | idtac ].
           apply Nat.le_sub_le_add_l; rewrite Nat.sub_diag.
           apply Nat.le_0_l.
 
          simpl; symmetry.
+         rewrite Nat.sub_0_r.
+bbb.
          erewrite summation_compat.
           Focus 2.
           intros k (Hk, Hkm).
           apply Nat.mul_cancel_r.
            apply int_pow_neq_0; intros H; discriminate H.
 
-           apply summation_split_first.
+bbb.
+         rewrite summation_split_first; [ simpl | apply Nat.le_0_l ].
+         rewrite Nat.add_0_r, Nat.sub_0_r; symmetry.
+         rewrite summation_split_first; [ simpl | apply Nat.le_0_l ].
+         rewrite Nat.add_0_r, Nat.sub_0_r; symmetry.
+bbb.
+
+        erewrite summation_compat.
+         Focus 2.
+         intros k (Hk, Hkm).
+         apply Nat.mul_cancel_r.
+          apply int_pow_neq_0; intros H; discriminate H.
+
+          apply summation_split3 with (k := i).
+bbb.
            eapply Nat.le_trans; [ eassumption | idtac ].
            apply Nat.le_sub_le_add_l; rewrite Nat.sub_diag.
            apply Nat.le_0_l.
