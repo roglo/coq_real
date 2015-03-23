@@ -725,7 +725,14 @@ destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
               rewrite digit_d2n_eq_iff in H2.
               rewrite H, H2, d2n_0, Nat.mul_0_l; reflexivity.
 
-             simpl.
+             simpl; symmetry.
+             erewrite summation_compat.
+              Focus 2.
+              intros k Hk.
+              rewrite digit_d2n_eq_iff in H2.
+              rewrite H2, d2n_0, Nat.mul_0_l, Nat.add_0_l; reflexivity.
+
+              simpl; symmetry.
 bbb.
      .   i   .   .
   x  .   1   0   0   0 …
