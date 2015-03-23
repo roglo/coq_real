@@ -354,6 +354,72 @@ destruct (le_dec b k) as [Hbk| Hbk].
  replace (S k - b) with O by omega; reflexivity.
 Qed.
 
+Theorem summation_loop_rtl : ∀ g b len,
+  summation_loop b len g =
+  summation_loop b len (λ i, g (b + len - 1 + b - i)).
+Proof.
+intros g b len.
+revert g b.
+induction len; intros; [ reflexivity | idtac ].
+remember (S len) as x.
+rewrite Heqx in |- * at 1.
+simpl; subst x.
+rewrite IHlen.
+rewrite summation_loop_succ_last.
+rewrite Nat.add_succ_l, Nat_sub_succ_1.
+do 2 rewrite Nat.add_succ_r; rewrite Nat_sub_succ_1.
+rewrite Nat.add_sub_swap, Nat.sub_diag; auto.
+rewrite Nat.add_comm; f_equal.
+apply summation_loop_compat.
+intros; reflexivity.
+Qed.
+
+Theorem summation_rtl : ∀ g b k,
+  Σ (i = b, k), g i = Σ (i = b, k), g (k + b - i).
+Proof.
+intros g b k.
+unfold summation.
+rewrite summation_loop_rtl.
+apply summation_loop_compat; intros i Hi.
+destruct b; simpl; [ rewrite Nat.sub_0_r; reflexivity | idtac ].
+rewrite Nat.sub_0_r; simpl in Hi.
+apply Nat.lt_add_lt_sub_r in Hi.
+apply Nat.le_trans with (n := b) in Hi.
+ remember (b + (k - b))%nat as x eqn:H .
+ rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+ rewrite Nat.add_sub_swap in H; auto.
+ rewrite Nat.sub_diag in H; subst x; reflexivity.
+
+ rewrite <- Nat.add_succ_l.
+ apply Nat.le_sub_le_add_r.
+ rewrite Nat.sub_diag.
+ apply Nat.le_0_l.
+Qed.
+
+Theorem summation_shift : ∀ b g k n,
+  n ≤ b
+  → n ≤ k
+  → Σ (i = b, k), g i =
+    Σ (i = b - n, k - n), g (i + n).
+Proof.
+intros b g k n Hnb Hnk.
+destruct (le_dec b k) as [H1| H1].
+ unfold summation; symmetry.
+ rewrite Nat.sub_succ_l; [ idtac | apply Nat.sub_le_mono_r; assumption ].
+ rewrite Nat_sub_sub_distr; [ idtac | assumption ].
+ rewrite Nat.sub_add; [ idtac | eassumption ].
+ rewrite Nat.sub_succ_l; [ idtac | assumption ].
+ apply summation_loop_compat; intros j Hj.
+ rewrite Nat.add_shuffle0, Nat.sub_add; [ reflexivity | assumption ].
+
+ apply Nat.nle_gt in H1.
+ rewrite summation_empty; [ idtac | assumption ].
+ rewrite summation_empty; [ reflexivity | idtac ].
+ apply Nat.lt_add_lt_sub_l.
+ rewrite Nat.add_sub_assoc; [ idtac | assumption ].
+ rewrite Nat.add_comm, Nat.add_sub; assumption.
+Qed.
+
 (* commutativity *)
 
 Theorem I_mul_algo_comm : ∀ x y, (∀ i, I_mul_algo x y i = I_mul_algo y x i).
@@ -749,7 +815,37 @@ destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
 
                reflexivity.
 
-              simpl; symmetry.
+              simpl.
+              rewrite summation_rtl; symmetry.
+              rewrite summation_rtl, Nat.add_0_r.
+              erewrite summation_compat.
+               Focus 2.
+               intros k (Hk, Hkm).
+               rewrite Nat.add_sub_assoc; [ idtac | assumption ].
+               rewrite Nat_sub_sub_distr; [ idtac | assumption ].
+               rewrite Nat.mul_comm, Nat.add_comm, Nat.add_sub.
+               rewrite Nat.mul_comm; reflexivity.
+
+               simpl; symmetry.
+               erewrite summation_compat.
+                Focus 2.
+                intros  k (Hk, Hkm).
+                rewrite Nat.add_sub_assoc; [ idtac | assumption ].
+                rewrite Nat_sub_sub_distr; [ idtac | assumption ].
+                rewrite Nat.mul_comm, Nat.add_comm, Nat.add_sub.
+                rewrite Nat.mul_comm.
+                rewrite summation_shift with (n := S i).
+                 rewrite Nat.sub_succ_l; [ idtac | reflexivity ].
+                 rewrite Nat.sub_diag; reflexivity.
+
+                 apply Nat.le_succ_diag_r.
+
+                 omega.
+
+                simpl.
+                remember (j + m) as j' eqn:Hj'.
+                symmetry in Hj'; apply Nat.add_sub_eq_r in Hj'.
+                subst j; rename j' into j.
 bbb.
      .   i   .   .
   x  .   1   0   0   0 …

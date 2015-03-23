@@ -28,6 +28,27 @@ rewrite Nat.add_sub_assoc; [ idtac | apply Nat.lt_le_incl; assumption ].
 rewrite Nat.add_comm, Nat.add_sub; reflexivity.
 Qed.
 
+Theorem Nat_sub_succ_1 : ∀ n, (S n - 1 = n).
+Proof. intros n; simpl; rewrite Nat.sub_0_r; reflexivity. Qed.
+
+Theorem Nat_sub_sub_distr :  ∀ a b c,
+  c ≤ b
+  → a - (b - c) = a + c - b.
+Proof.
+intros n m p Hpm.
+rewrite Nat.add_comm.
+revert n m Hpm.
+induction p; intros.
+ rewrite Nat.sub_0_r, Nat.add_0_l; reflexivity.
+
+ destruct m as [| m].
+  exfalso; revert Hpm; apply Nat.nle_succ_0.
+
+  rewrite Nat.sub_succ; simpl.
+  apply Nat.succ_le_mono in Hpm.
+  apply IHp; assumption.
+Qed.
+
 Theorem Nat_le_sub_add_r : ∀ a b c,
   a ≤ b
   → c = b - a
