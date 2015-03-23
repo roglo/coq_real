@@ -710,7 +710,9 @@ destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
              Focus 2.
              intros k Hk.
              rewrite all_0_summation_0.
-              rewrite Nat.mul_0_l, Nat.add_0_r; reflexivity.
+              apply digit_d2n_eq_iff in Heq.
+              rewrite Nat.mul_0_l, Nat.add_0_r, Heq, d2n_1, Nat.mul_1_l.
+              reflexivity.
 
               intros l (Hl, Hlk).
               pose proof Hx (l - S (S i)) as H.
