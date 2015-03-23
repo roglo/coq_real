@@ -323,6 +323,37 @@ rewrite summation_split with (k := k).
  apply Nat.lt_le_incl, le_n_S; assumption.
 Qed.
 
+Theorem summation_add_distr : ∀ g h b k,
+  Σ (i = b, k), (g i + h i) =
+  Σ (i = b, k), g i + Σ (i = b, k), h i.
+Proof.
+intros g h b k.
+destruct (le_dec b k) as [Hbk| Hbk].
+ revert b Hbk.
+ induction k; intros.
+  destruct b; [ idtac | reflexivity ].
+  do 3 rewrite summation_only_one; reflexivity.
+
+  rewrite summation_split_last; [ idtac | assumption ].
+  rewrite summation_split_last; [ idtac | assumption ].
+  rewrite summation_split_last; [ idtac | assumption ].
+  destruct (eq_nat_dec b (S k)) as [H₂| H₂].
+   subst b.
+   unfold summation; simpl.
+   rewrite Nat.sub_diag; reflexivity.
+
+   apply Nat_le_neq_lt in Hbk; [ idtac | assumption ].
+   apply Nat.succ_le_mono in Hbk.
+   rewrite IHk; [ idtac | assumption ].
+   do 2 rewrite <- Nat.add_assoc.
+   f_equal; rewrite Nat.add_comm, Nat.add_assoc.
+   apply Nat.add_shuffle0.
+
+ unfold summation.
+ apply Nat.nle_gt in Hbk.
+ replace (S k - b) with O by omega; reflexivity.
+Qed.
+
 (* commutativity *)
 
 Theorem I_mul_algo_comm : ∀ x y, (∀ i, I_mul_algo x y i = I_mul_algo y x i).
@@ -651,31 +682,30 @@ destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
          erewrite summation_compat.
           Focus 2.
           intros k (Hk, Hkm).
-          rewrite <- Nat.add_assoc, Nat.mul_add_distr_r.
+          rewrite <- Nat.add_assoc.
+          do 2 rewrite Nat.mul_add_distr_r.
           reflexivity.
 
           simpl; symmetry.
           erewrite summation_compat.
            Focus 2.
            intros k (Hk, Hkm).
-           rewrite <- Nat.add_assoc, Nat.mul_add_distr_r.
+           rewrite <- Nat.add_assoc.
+           do 2 rewrite Nat.mul_add_distr_r.
            reflexivity.
 
            simpl; symmetry.
-           rewrite summation_split_first; [ simpl | apply Nat.le_0_l ].
-           simpl; symmetry.
-           rewrite summation_split_first; [ simpl | apply Nat.le_0_l ].
-           do 2 rewrite <- Nat.add_assoc.
+           rewrite summation_add_distr; symmetry.
+           rewrite summation_add_distr; symmetry.
            f_equal.
-            f_equal; apply summation_compat.
-            intros k (Hk, Hkm); f_equal.
-            apply digit_d2n_eq_iff; symmetry; apply Hlt.
+            apply summation_compat.
+            intros k Hk; f_equal.
+            apply summation_compat.
+            intros l (Hl, Hli); f_equal.
+            apply digit_d2n_eq_iff, Hlt.
             apply Nat_lt_add_sub_lt_l; apply le_n_S; assumption.
 
-            rewrite Nat.add_0_r, Nat.sub_0_r.
-            apply digit_d2n_eq_iff in Heq; rewrite Heq, d2n_1.
-            apply digit_d2n_eq_iff in H2; rewrite H2, d2n_0.
-            rewrite Nat.mul_0_l, Nat.add_0_l, Nat.mul_1_l.
+            simpl.
 bbb.
      .   i   .   .
   x  .   1   0   0   0 …
