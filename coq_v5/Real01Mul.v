@@ -613,16 +613,16 @@ Proof. intros; reflexivity. Qed.
 Theorem I_mul_add_0_r_eqs : ∀ x y,
   (x ≠≠ 1)%I
   → (y ≠≠ 1)%I
-  → ((x + 0) * y == x * y)%I.
+  → ((x + 0) * y = x * y)%I.
 Proof.
-bbb. (* the == is probably false *)
 intros x y Hxn1 Hyn1.
 destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
- apply I_eqs_mul_compat_r; assumption.
+ apply I_eqs_eq, I_eqs_mul_compat_r; assumption.
 
  destruct (I_zerop y) as [Hz| Hnz].
   apply I_zero_iff in Hz; simpl in Hz.
   destruct Hz as [Hz| Hz].
+   apply I_eqs_eq.
    intros i; simpl.
    rewrite I_mul_i_comm.
    rewrite I_mul_i_0_l; [ idtac | assumption ].
@@ -705,6 +705,7 @@ destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
      unfold I_mul_algo; simpl.
      unfold z_of_u, base; simpl.
      unfold summation_for_u2z; simpl.
+bbb.
      do 2 rewrite fold_sub_succ_l, divmod_mod.
      rewrite Nat.mul_1_r.
      remember (logn 2 (j + 2) + 2) as m eqn:Hm .
@@ -720,8 +721,9 @@ destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
       apply Nat.nlt_ge in H3.
       destruct (lt_dec i j) as [H4| H4].
 bbb.
-(* à voir sur papier ; le terme en y.[0] semble différent à gauche et
-   à droite *)
+(* à voir sur papier ; le terme en y.[0] était différent à gauche et
+   à droite quand il y avait == dans la conclusion du théorème à la
+   place de = *)
 
        erewrite summation_compat.
         Focus 2.
