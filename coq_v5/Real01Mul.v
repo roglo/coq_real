@@ -718,6 +718,10 @@ destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
 
       apply Nat.nlt_ge in H3.
       destruct (lt_dec i j) as [H4| H4].
+bbb.
+(* à voir sur papier ; le terme en y.[0] semble différent à gauche et
+   à droite *)
+
        erewrite summation_compat.
         Focus 2.
         intros k (Hk, Hkm).
