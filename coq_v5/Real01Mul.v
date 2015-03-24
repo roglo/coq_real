@@ -824,7 +824,7 @@ destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
                rewrite Nat.add_sub_assoc; [ idtac | assumption ].
                rewrite Nat_sub_sub_distr; [ idtac | assumption ].
                rewrite Nat.mul_comm, Nat.add_comm, Nat.add_sub.
-               rewrite Nat.mul_comm; reflexivity.
+               rewrite Nat_sub_shuffle0, Nat.mul_comm; reflexivity.
 
                simpl; symmetry.
                erewrite summation_compat.
@@ -836,16 +836,26 @@ destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
                 rewrite Nat.mul_comm.
                 rewrite summation_shift with (n := S i).
                  rewrite Nat.sub_succ_l; [ idtac | reflexivity ].
-                 rewrite Nat.sub_diag; reflexivity.
+                 rewrite Nat.sub_diag, Nat_sub_shuffle0.
+                 erewrite summation_compat.
+                  Focus 2.
+                  intros l Hl.
+                  remember (j + m) as u.
+                  rewrite Nat.add_comm; subst u.
+                  rewrite Nat_sub_shuffle0, Nat.sub_add_distr; reflexivity.
+
+                  simpl; reflexivity.
 
                  apply Nat.le_succ_diag_r.
 
                  omega.
 
                 simpl.
-                remember (j + m) as j' eqn:Hj'.
-                symmetry in Hj'; apply Nat.add_sub_eq_r in Hj'.
-                subst j; rename j' into j.
+                remember (j + m - S i) as j' eqn:Hj'.
+                apply Nat_le_sub_add_r in Hj'; [ idtac | assumption ].
+                apply Nat.add_sub_eq_r in Hj'.
+                subst j; rename j' into j; clear H3.
+                symmetry.
 bbb.
      .   i   .   .
   x  .   1   0   0   0 …

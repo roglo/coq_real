@@ -49,6 +49,13 @@ induction p; intros.
   apply IHp; assumption.
 Qed.
 
+Theorem Nat_sub_shuffle0 : ∀ a b c, a - b - c = a - c - b.
+Proof.
+intros a b c.
+rewrite <- Nat.sub_add_distr, Nat.add_comm.
+rewrite Nat.sub_add_distr; reflexivity.
+Qed.
+
 Theorem Nat_le_sub_add_r : ∀ a b c,
   a ≤ b
   → c = b - a
