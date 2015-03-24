@@ -824,7 +824,9 @@ destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
                rewrite Nat.add_sub_assoc; [ idtac | assumption ].
                rewrite Nat_sub_sub_distr; [ idtac | assumption ].
                rewrite Nat.mul_comm, Nat.add_comm, Nat.add_sub.
-               rewrite Nat_sub_shuffle0, Nat.mul_comm; reflexivity.
+               rewrite Nat_sub_shuffle0.
+               rewrite Nat.add_sub_swap; [ idtac | assumption ].
+               rewrite Nat.mul_comm; reflexivity.
 
                simpl; symmetry.
                erewrite summation_compat.
@@ -837,12 +839,15 @@ destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
                 rewrite summation_shift with (n := S i).
                  rewrite Nat.sub_succ_l; [ idtac | reflexivity ].
                  rewrite Nat.sub_diag, Nat_sub_shuffle0.
+                 rewrite Nat.add_sub_swap; [ idtac | assumption ].
                  erewrite summation_compat.
                   Focus 2.
                   intros l Hl.
                   remember (j + m) as u.
                   rewrite Nat.add_comm; subst u.
-                  rewrite Nat_sub_shuffle0, Nat.sub_add_distr; reflexivity.
+                  rewrite Nat_sub_shuffle0, Nat.sub_add_distr.
+                  rewrite Nat.add_sub_swap; [ idtac | assumption ].
+                  reflexivity.
 
                   simpl; reflexivity.
 
@@ -851,11 +856,33 @@ destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
                  omega.
 
                 simpl.
-                remember (j + m - S i) as j' eqn:Hj'.
+                remember (j - S i) as j' eqn:Hj'.
                 apply Nat_le_sub_add_r in Hj'; [ idtac | assumption ].
-                apply Nat.add_sub_eq_r in Hj'.
-                subst j; rename j' into j; clear H3.
-                symmetry.
+                subst j; rename j' into j; clear H3 H4.
+                rewrite summation_rtl, Nat.add_0_r.
+                erewrite summation_compat.
+                 Focus 2.
+                 intros k (Hk, Hkm).
+                 rewrite Nat_sub_sub_distr; [ idtac | assumption ].
+                 rewrite Nat.add_shuffle0, Nat.add_sub.
+                 erewrite summation_compat.
+                  Focus 2.
+                  intros l Hl.
+                  rewrite Nat_sub_shuffle0.
+                  rewrite Nat_sub_sub_distr; [ idtac | assumption ].
+                  rewrite Nat.add_shuffle0, Nat.add_sub; reflexivity.
+
+                  simpl; reflexivity.
+
+                 simpl; symmetry.
+                 rewrite summation_rtl, Nat.add_0_r.
+                 erewrite summation_compat.
+                  Focus 2.
+                  intros k (Hk, Hkm).
+                  rewrite Nat_sub_sub_distr; [ idtac | assumption ].
+                  rewrite Nat.add_shuffle0, Nat.add_sub; reflexivity.
+
+                  simpl.
 bbb.
      .   i   .   .
   x  .   1   0   0   0 …
