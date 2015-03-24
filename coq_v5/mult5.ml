@@ -35,6 +35,8 @@ value rec int_pow a b =
 
 value base = ref 10;
 
+value i_add_algo x y i = x.rm i + y.rm i;
+
 value i_mul_algo x y i =
   summation 1 i (fun j → b2n (x.rm (j - 1)) * b2n (y.rm (i - j)))
 ;
@@ -60,6 +62,11 @@ value z_of_u b u i =
   let n = logn b (i * (b - 1) + b) + 2 in
   let c = 0 (* ou 1 : à voir *) in
   (q_floor (summation_for_u2z b n u i) (int_pow b n) + c) mod b
+;
+
+value i_add x y =
+  let u = i_add_algo x y in
+  {rm = z_of_u base.val u}
 ;
 
 value i_mul x y =
@@ -151,6 +158,17 @@ value one = {rm i = base.val - 1};
 list_of_seq (i_mul_algo (r_of_string "1") one) 20;
 (* should answer 0.1000... but the 0.0111... is equivalent! *)
 list_of_seq (i_mul (r_of_string "1") one).rm 20;
+
+base.val := 2;
+value zero = {rm i = 0};
+value x = {rm i = if i < 5 then 0 else 1};
+value x0 = i_add x zero;
+list_of_seq x.rm 20;
+(* this implementation of add does not normalise numbers; this can be
+   a good thing but this is strange: how it works? and I have to add
+   a function to normalise (0.99999... → 1); how many iterations are
+   required for addition? here I put the same as for multiplication
+   but perhaps it is different, perhaps 1 iteration is sufficient *)
 
 (*
 # 9344*685;
