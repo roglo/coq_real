@@ -615,6 +615,7 @@ Theorem I_mul_add_0_r_eqs : ∀ x y,
   → (y ≠≠ 1)%I
   → ((x + 0) * y == x * y)%I.
 Proof.
+bbb. (* the == is probably false *)
 intros x y Hxn1 Hyn1.
 destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
  apply I_eqs_mul_compat_r; assumption.
