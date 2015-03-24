@@ -807,11 +807,13 @@ destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
                remember (S (S i)) as ssi.
                replace (S i) with (pred (S (S i))) in H by apply Nat.pred_succ.
                subst ssi.
-               rewrite Nat.add_pred_l in H; [ idtac | intros I; discriminate I ].
-               rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
-               rewrite Nat.add_comm, Nat.add_sub in H.
-               rewrite <- Nat.sub_1_r, digit_d2n_eq_iff in H.
-               rewrite H, d2n_1, Nat.mul_1_l; reflexivity.
+               rewrite Nat.add_pred_l in H.
+                rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+                rewrite Nat.add_comm, Nat.add_sub in H.
+                rewrite <- Nat.sub_1_r, digit_d2n_eq_iff in H.
+                rewrite H, d2n_1, Nat.mul_1_l; reflexivity.
+
+                intros I; discriminate I.
 
                reflexivity.
 
@@ -858,7 +860,8 @@ destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
                 simpl.
                 remember (j - S i) as j' eqn:Hj'.
                 apply Nat_le_sub_add_r in Hj'; [ idtac | assumption ].
-                subst j; rename j' into j; clear H3 H4.
+                subst j; rename j' into j.
+                clear H3 H4.
                 rewrite summation_rtl, Nat.add_0_r.
                 erewrite summation_compat.
                  Focus 2.
@@ -871,8 +874,6 @@ destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
                   rewrite Nat_sub_shuffle0.
                   rewrite Nat_sub_sub_distr; [ idtac | assumption ].
                   rewrite Nat.add_shuffle0, Nat.add_sub; reflexivity.
-
-                  simpl.
 
                   simpl; reflexivity.
 
@@ -902,6 +903,8 @@ destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
                     simpl; reflexivity.
 
                    simpl; symmetry.
+                   destruct j.
+                    simpl.
 bbb.
      .   i   .   .
   x  .   1   0   0   0 …
