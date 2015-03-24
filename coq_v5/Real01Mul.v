@@ -700,12 +700,15 @@ destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
      apply Digit.not_0_iff_1 in Heq.
      assert (∀ di, (x .[ i + S di] = 1)%D) as H by (intros; rewrite Hy; auto).
      clear Hy; rename H into Hy; move Hy before Hx.
+(*if not test then goto 1*)
+     apply I_eq_iff; simpl.
+bbb.
+(*label 1*)
      intros j; simpl.
      unfold I_mul_i; simpl.
      unfold I_mul_algo; simpl.
      unfold z_of_u, base; simpl.
      unfold summation_for_u2z; simpl.
-bbb.
      do 2 rewrite fold_sub_succ_l, divmod_mod.
      rewrite Nat.mul_1_r.
      remember (logn 2 (j + 2) + 2) as m eqn:Hm .
