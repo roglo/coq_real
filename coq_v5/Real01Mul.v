@@ -867,10 +867,12 @@ destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
                  rewrite Nat.add_shuffle0, Nat.add_sub.
                  erewrite summation_compat.
                   Focus 2.
-                  intros l Hl.
+                  intros l (Hl, Hlk).
                   rewrite Nat_sub_shuffle0.
                   rewrite Nat_sub_sub_distr; [ idtac | assumption ].
                   rewrite Nat.add_shuffle0, Nat.add_sub; reflexivity.
+
+                  simpl.
 
                   simpl; reflexivity.
 
@@ -882,7 +884,7 @@ destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
                   rewrite Nat_sub_sub_distr; [ idtac | assumption ].
                   rewrite Nat.add_shuffle0, Nat.add_sub; reflexivity.
 
-                  simpl.
+                  simpl; symmetry.
 bbb.
      .   i   .   .
   x  .   1   0   0   0 …
