@@ -702,6 +702,7 @@ destruct (I_eqs_dec (x + 0)%I x) as [H1| H1].
      clear Hy; rename H into Hy; move Hy before Hx.
 (*if not test then goto 1*)
      apply I_eq_iff; simpl.
+     (* difficulties to decide left or right and, if right, values for i0 *)
 bbb.
 (*label 1*)
      intros j; simpl.
