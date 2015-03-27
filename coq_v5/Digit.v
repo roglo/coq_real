@@ -553,3 +553,10 @@ Proof. intros d e H; subst d; reflexivity. Qed.
 
 Ltac discr_digit x :=
   exfalso; revert x; try apply Digit.neq_1_0; apply Digit.neq_0_1.
+
+Definition base := 2.
+
+Definition d2n d := if Digit.dec d then 1 else 0.
+Definition n2d n := match n with 0 => 0%D | S n1 => 1%D end.
+Arguments d2n d%D.
+Arguments n2d n%nat.

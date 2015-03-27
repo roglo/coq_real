@@ -1,7 +1,8 @@
 (* multiplication in I *)
 
-Require Import Utf8 QArith NPeano Misc Oracle.
-Require Import Misc Digit Real01 Real01Add Real01AddMono Real01Cmp.
+Require Import Utf8 QArith NPeano.
+Require Import Misc Oracle.
+Require Import Digit Real01 Real01Add Real01AddMono Real01Cmp.
 
 Open Scope nat_scope.
 
@@ -33,13 +34,6 @@ Fixpoint logn_loop n m a :=
   end.
 
 Definition logn n a := pred (logn_loop n a a).
-
-Definition base := 2.
-
-Definition d2n d := if Digit.dec d then 1 else 0.
-Definition n2d n := match n with 0 => 0%D | S n1 => 1%D end.
-Arguments d2n d%D.
-Arguments n2d n%nat.
 
 Definition I_mul_algo x y i := Σ (j=1,i), (d2n (x.[j-1]) * d2n (y.[i-j])).
 Arguments I_mul_algo x%I y%I i%nat.
