@@ -41,6 +41,7 @@ Theorem z_of_u_compat_l : ∀ b u v i n,
   → z_of_u b n u i = z_of_u b n v i.
 Proof.
 intros b u v i n Huv.
+unfold z_of_u.
 unfold z_of_u; f_equal.
 apply summation_compat; intros j (_, Hj).
 f_equal; f_equal; f_equal.
@@ -361,16 +362,40 @@ Proof.
 intros x y z.
 unfold I_eqs; intros i; simpl.
 unfold I_add2_i; simpl.
-(* if not new then goto 1 *) (*
+(* if not new then goto 1 *)
 unfold z_of_u, base.
 unfold summation; rewrite Nat.sub_0_r.
-remember div as f; remember modulo as g.
-simpl; subst f g.
+remember div as f; remember modulo as g; simpl; subst f g.
 do 3 rewrite Nat.add_0_r.
 do 2 rewrite Nat.mul_1_r.
 do 2 rewrite Nat.add_assoc.
 rewrite Nat.div_mul; [ idtac | intros H; discriminate H ].
 rewrite Nat.div_mul; [ idtac | intros H; discriminate H ].
+unfold I_add_algo.
+remember div as f; remember modulo as g; simpl; subst f g.
+unfold I_add2_i, z_of_u, base.
+unfold summation; rewrite Nat.sub_0_r.
+remember div as fdiv; remember modulo as fmod; simpl.
+unfold I_add_algo.
+do 9 rewrite Nat.add_0_r.
+do 6 rewrite <- Nat.add_assoc; simpl.
+do 8 rewrite Nat.add_assoc.
+subst fdiv fmod.
+do 6 (rewrite Nat.div_mul; [ idtac | intros H; discriminate H ]).
+do 6 rewrite Nat.mul_1_r.
+bbb.
+
+unfold d2n.
+destruct (Digit.dec (x.[i])) as [H1| H1].
+ destruct (Digit.dec (y.[i])) as [H2| H2].
+  destruct (Digit.dec (z.[i])) as [H3| H3].
+   destruct (Digit.dec (y.[i+1])) as [H4| H4].
+    destruct (Digit.dec (z.[i+1])) as [H5| H5].
+     simpl.
+     do 14 rewrite divmod_div.
+     destruct (Digit.dec 1) as [H6| H6]; [ clear H6; simpl | discr_digit H6 ].
+     do 14 rewrite divmod_div.
+     destruct (Digit.dec (x.[i+1])) as [H6| H6]; simpl.
 bbb.
 *)
 (* label 1 *)
