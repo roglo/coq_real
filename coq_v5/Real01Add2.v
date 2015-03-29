@@ -235,7 +235,6 @@ x  1   1   .
 y  1   1   1
 z  1   0   1
 
-
 remember (Digit.dec (x.[i+1])) as xi1 eqn:Hxi1.
 remember (Digit.dec (y.[i+1])) as yi1 eqn:Hyi1.
 remember (Digit.dec (z.[i+1])) as zi1 eqn:Hzi1.
@@ -354,6 +353,7 @@ bbb.
      rewrite Nat.add_succ_r in Hc1.
      destruct c1; simpl in Hc1.
 bbb.
+*)
 
 Theorem I_add_assoc : ∀ x y z, (x + (y + z) == (x + y) + x)%I.
 Proof.
