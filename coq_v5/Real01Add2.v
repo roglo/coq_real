@@ -188,6 +188,21 @@ split; intros H.
   rewrite Hd, He; reflexivity.
 Qed.
 
+Theorem d2n_add_div_4 : ∀ d e, (d2n d + d2n e) / 4 = 0.
+Proof.
+intros d e.
+rewrite Nat.div_small; [ reflexivity | idtac ].
+replace 4 with (2 + 2) by reflexivity.
+apply Nat.add_lt_mono; apply d2n_lt_base.
+Qed.
+
+Theorem Nat_mul_2_div_4 : ∀ n, n * 2 / 4 = n / 2.
+Proof.
+intros n.
+replace 4 with (2 * 2) by reflexivity.
+apply Nat.div_mul_cancel_r; intros H; discriminate H.
+Qed.
+
 Theorem I_add_algo_assoc : ∀ x y z i j,
   j ≤ 2
   → I_add_algo x (y + z) (i + j) = I_add_algo (x + y) z (i + j).
@@ -383,6 +398,61 @@ do 8 rewrite Nat.add_assoc.
 subst fdiv fmod.
 do 6 (rewrite Nat.div_mul; [ idtac | intros H; discriminate H ]).
 do 6 rewrite Nat.mul_1_r.
+do 6 rewrite d2n_add_div_4, Nat.add_0_r.
+do 6 rewrite Nat_mul_2_div_4.
+remember (d2n (x .[i])) as xi eqn:Hxi.
+remember (d2n (y .[i])) as yi eqn:Hyi.
+remember (d2n (z .[i])) as zi eqn:Hzi.
+remember (d2n (x .[i+1])) as xi1 eqn:Hxi1.
+remember (d2n (y .[i+1])) as yi1 eqn:Hyi1.
+remember (d2n (z .[i+1])) as zi1 eqn:Hzi1.
+remember (d2n (x .[i+2])) as xi2 eqn:Hxi2.
+remember (d2n (y .[i+2])) as yi2 eqn:Hyi2.
+remember (d2n (z .[i+2])) as zi2 eqn:Hzi2.
+do 4 rewrite d2n_n2d.
+destruct (zerop ((yi + zi) mod 2 + ((yi1 + zi1) / 2) mod 2)) as [H1| H1].
+ rewrite Nat.add_0_r.
+(*
+ apply Nat.eq_add_0 in H1; destruct H1 as (H1, H2).
+ apply Nat_add_mod_2 in H1.
+ apply Nat.mod_divides in H2; [ idtac | intros H; discriminate H ].
+*)
+ destruct (zerop ((yi1 + zi1) mod 2 + ((yi2 + zi2) / 2) mod 2)) as [H2| H2].
+  rewrite Nat.add_0_r.
+  destruct (zerop ((xi + yi) mod 2 + ((xi1 + yi1) / 2) mod 2)) as [H3| H3].
+   rewrite Nat.add_0_l.
+   destruct (zerop ((xi1 + yi1) mod 2 + ((xi2 + yi2) / 2) mod 2)) as [H4| H4].
+    rewrite Nat.add_0_l; reflexivity.
+
+    destruct xi1; [ reflexivity | symmetry in Hxi1 ].
+    destruct xi1; [ idtac | exfalso ].
+    remember modulo as fmod; simpl; subst fmod.
+    rewrite Nat.mod_0_l; [ rewrite Nat.add_0_r | intros H; discriminate H ].
+    rewrite Nat.mod_small; [ idtac | subst xi; apply d2n_lt_base ].
+    rewrite Nat.mod_small; [ idtac | apply Nat.lt_1_2 ].
+    destruct xi; [ exfalso; symmetry in Hxi | reflexivity ].
+    apply Nat.eq_add_0 in H1; destruct H1 as (H11, H12).
+    apply Nat_add_mod_2 in H11.
+    apply Nat.eq_add_0 in H2; destruct H2 as (H21, H22).
+    apply Nat_add_mod_2 in H21.
+    apply Nat.eq_add_0 in H3; destruct H3 as (H31, H32).
+    apply Nat_add_mod_2 in H31; symmetry in H31.
+    rewrite Nat.mod_0_l in H31; [ idtac | intros H; discriminate H ].
+bbb.
+(*
+    rewrite Nat.add_mod in H4; [ idtac | intros H; discriminate H ].
+*)
+
+bbb.
+(*
+Theorem zzz : ∀ d e, ((d2n d + d2n e) / 2) mod 2 = 0 → d = e.
+Proof.
+intros d e H.
+unfold d2n in H.
+destruct (Digit.dec d) as [H1| H1].
+ destruct (Digit.dec e) as [H2| H2]; [ discriminate H | idtac ].
+*)
+
 bbb.
 
 unfold d2n.
