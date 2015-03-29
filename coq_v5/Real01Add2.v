@@ -1,4 +1,4 @@
-(* second version of adding reals in interval [0..1[ *)
+(** second version of adding reals in interval [0..1[ *)
 
 Require Import Utf8 QArith NPeano.
 Require Import Misc Summation.
@@ -36,22 +36,24 @@ apply Nat.add_comm.
 Qed.
 
 (* repeated in Real01Mul.v; to be unified *)
-Theorem z_of_u_compat_l : ∀ b u v j n,
-  (∀ i, u i = v i)
-  → (z_of_u b n u j = z_of_u b n v j)%D.
+Theorem z_of_u_compat_l : ∀ b u v i n,
+  (∀ j, j ≤ n → u (i + j) = v (i + j))
+  → (z_of_u b n u i = z_of_u b n v i)%D.
 Proof.
-intros b u v j n Huv.
+intros b u v i n Huv.
 unfold z_of_u; simpl.
+bbb.
+
 apply eq_digit_eq; f_equal.
-apply summation_compat; intros i Hi.
-rewrite Huv; reflexivity.
+apply summation_compat; intros j (_, Hj).
+rewrite Huv; [ reflexivity | assumption ].
 Qed.
 
 Theorem I_add2_i_comm : ∀ x y i, (I_add2_i x y i = I_add2_i y x i)%D.
 Proof.
 intros x y i.
 unfold I_add2_i; simpl.
-apply z_of_u_compat_l.
+apply z_of_u_compat_l; intros j Hj.
 apply I_add_algo_comm.
 Qed.
 
@@ -83,9 +85,9 @@ Theorem I_add2_i_0_r : ∀ x i, (I_add2_i x 0 i = x.[i])%D.
 Proof.
 intros x i.
 unfold I_add2_i; simpl.
-rewrite z_of_u_compat_l.
+rewrite z_of_u_compat_l with (v := λ k, d2n (x.[k])).
  Focus 2.
- clear i; intros i.
+ intros j Hj.
  unfold I_add_algo; simpl.
  rewrite d2n_0, Nat.add_0_r.
  reflexivity.
@@ -188,10 +190,11 @@ split; intros H.
   rewrite Hd, He; reflexivity.
 Qed.
 
-Theorem I_add_algo_assoc : ∀ x y z i,
-  I_add_algo x (y + z) i = I_add_algo (x + y) z i.
+Theorem I_add_algo_assoc : ∀ x y z i j,
+  j ≤ 2
+  → I_add_algo x (y + z) (i + j) = I_add_algo (x + y) z (i + j).
 Proof.
-intros x y z i.
+intros x y z i j Hj.
 unfold I_add_algo; simpl.
 unfold I_add2_i; simpl.
 unfold z_of_u.
@@ -214,21 +217,22 @@ unfold summation; simpl.
 do 6 rewrite fold_sub_succ_l, divmod_mod.
 do 4 rewrite divmod_div.
 unfold d2n.
-destruct (Digit.dec (x.[i])) as [H1| H1]; simpl.
- destruct (Digit.dec (y.[i])) as [H2| H2]; simpl.
-  destruct (Digit.dec (z.[i])) as [H3| H3]; simpl.
-   destruct (Digit.dec (x.[i+1])) as [H4| H4]; simpl.
-    destruct (Digit.dec (y.[i+1])) as [H5| H5]; simpl.
-     destruct (Digit.dec (z.[i+1])) as [H6| H6]; simpl.
+destruct (Digit.dec (x.[i+j])) as [H1| H1]; simpl.
+ destruct (Digit.dec (y.[i+j])) as [H2| H2]; simpl.
+  destruct (Digit.dec (z.[i+j])) as [H3| H3]; simpl.
+   destruct (Digit.dec (x.[i+j+1])) as [H4| H4]; simpl.
+    destruct (Digit.dec (y.[i+j+1])) as [H5| H5]; simpl.
+     destruct (Digit.dec (z.[i+j+1])) as [H6| H6]; simpl.
       destruct (Digit.dec 1); reflexivity.
 
-      destruct (Digit.dec (y.[i+2])) as [H7| H7]; simpl.
-       destruct (Digit.dec (z.[i+2])) as [H8| H8]; simpl.
+      destruct (Digit.dec (y.[i+j+2])) as [H7| H7]; simpl.
+       destruct (Digit.dec (z.[i+j+2])) as [H8| H8]; simpl.
         destruct (Digit.dec 0) as [H9| H9].
          destruct (Digit.dec 1) as [H10| H10]; [ reflexivity | idtac ].
          discr_digit H10.
 
          destruct (Digit.dec 1) as [H10| H10]; [ idtac | reflexivity ].
+Abort. (*
 bbb.
    i  i+1 i+2
 x  1   1   .
@@ -360,6 +364,20 @@ Proof.
 intros x y z.
 unfold I_eqs; intros i; simpl.
 unfold I_add2_i; simpl.
-apply z_of_u_compat_l; clear i.
-intros i; simpl.
+(* if not new then goto 1 *)
+unfold z_of_u, base.
+unfold summation; rewrite Nat.sub_0_r.
+remember div as f; remember modulo as g.
+simpl; subst f g.
+do 3 rewrite Nat.add_0_r.
+do 2 rewrite Nat.mul_1_r.
+do 2 rewrite Nat.add_assoc.
+rewrite Nat.div_mul; [ idtac | intros H; discriminate H ].
+rewrite Nat.div_mul; [ idtac | intros H; discriminate H ].
 bbb.
+(* label 1 *)
+apply z_of_u_compat_l; intros j Hj.
+bbb.
+  Hj : j ≤ 2
+  ============================
+   I_add_algo x (y + z) (i + j) = I_add_algo (x + y) x (i + j)

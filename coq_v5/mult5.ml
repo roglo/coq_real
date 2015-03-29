@@ -54,24 +54,22 @@ value logn n a =
     end
 ;
 
-value summation_for_u2z b n u i =
-  summation 0 n (fun k → u (i + k) * int_pow b (n - k))
-;
-
-value z_of_u b u i =
-  let n = logn b (i * (b - 1) + b) + 2 in
-  let c = 0 (* ou 1 : à voir *) in
-  (q_floor (summation_for_u2z b n u i) (int_pow b n) + c) mod b
+value z_of_u b n u i =
+  (q_floor
+    (summation 0 n (fun k → u (i + k) * int_pow b (n - k))) (int_pow b n))
+    mod b
 ;
 
 value i_add x y =
   let u = i_add_algo x y in
-  {rm = z_of_u base.val u}
+  {rm = z_of_u 2 base.val u}
 ;
 
 value i_mul x y =
   let u = i_mul_algo x y in
-  {rm = z_of_u base.val u}
+  {rm i =
+     let n = logn base.val (i * (base.val - 1) + base.val) + 2 in
+     z_of_u base.val n u i}
 ;
 
 value r_of_string s =
