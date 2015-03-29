@@ -149,11 +149,127 @@ destruct (Digit.dec (x .[ i])) as [H1| H1].
  apply Nat.le_succ_diag_r.
 Qed.
 
+Theorem d2n_add_iff : ∀ d e n,
+  d2n d + d2n e = n
+  ↔ n = 0 ∧ (d = 0)%D ∧ (e = 0)%D ∨
+    n = 1 ∧ (d = 0)%D ∧ (e = 1)%D ∨
+    n = 1 ∧ (d = 1)%D ∧ (e = 0)%D ∨
+    n = 2 ∧ (d = 1)%D ∧ (e = 1)%D.
+Proof.
+intros d e n.
+split; intros H.
+ unfold d2n in H; simpl in H.
+ destruct (Digit.dec d) as [H1| H1]; rewrite H1.
+  destruct (Digit.dec e) as [H2| H2]; rewrite H2, <- H.
+   right; right; right; split; [ reflexivity | split; reflexivity ].
+
+   right; right; left; split; [ reflexivity | split; reflexivity ].
+
+  destruct (Digit.dec e) as [H2| H2]; rewrite H2, <- H.
+   right; left; split; [ reflexivity | split; reflexivity ].
+
+   left; split; [ reflexivity | split; reflexivity ].
+
+ destruct H as [H| [H| [H| H]]]; destruct H as (Hn, (Hd, He)); subst n.
+  apply eq_d2n_0 in Hd.
+  apply eq_d2n_0 in He.
+  rewrite Hd, He; reflexivity.
+
+  apply eq_d2n_0 in Hd.
+  apply eq_d2n_1 in He.
+  rewrite Hd, He; reflexivity.
+
+  apply eq_d2n_1 in Hd.
+  apply eq_d2n_0 in He.
+  rewrite Hd, He; reflexivity.
+
+  apply eq_d2n_1 in Hd.
+  apply eq_d2n_1 in He.
+  rewrite Hd, He; reflexivity.
+Qed.
+
 Theorem I_add_algo_assoc : ∀ x y z i,
   I_add_algo x (y + z) i = I_add_algo (x + y) z i.
 Proof.
 intros x y z i.
 unfold I_add_algo; simpl.
+unfold I_add2_i; simpl.
+unfold z_of_u.
+remember minus as h; remember div as f; remember modulo as g.
+simpl; subst f g h.
+unfold summation; simpl.
+do 6 rewrite fold_sub_succ_l, divmod_mod.
+do 6 rewrite divmod_div.
+do 2 rewrite Nat.add_0_r, Nat.mul_1_r.
+rewrite Nat.add_0_r.
+do 2 rewrite Nat.add_assoc.
+rewrite Nat.div_mul; [ idtac | intros H; discriminate H ].
+rewrite Nat.div_mul; [ idtac | intros H; discriminate H ].
+unfold I_add_algo; simpl.
+unfold I_add2_i; simpl.
+unfold z_of_u.
+remember minus as h; remember div as f; remember modulo as g.
+simpl; subst f g h.
+unfold summation; simpl.
+do 6 rewrite fold_sub_succ_l, divmod_mod.
+do 4 rewrite divmod_div.
+unfold d2n.
+destruct (Digit.dec (x.[i])) as [H1| H1]; simpl.
+ destruct (Digit.dec (y.[i])) as [H2| H2]; simpl.
+  destruct (Digit.dec (z.[i])) as [H3| H3]; simpl.
+   destruct (Digit.dec (x.[i+1])) as [H4| H4]; simpl.
+    destruct (Digit.dec (y.[i+1])) as [H5| H5]; simpl.
+     destruct (Digit.dec (z.[i+1])) as [H6| H6]; simpl.
+      destruct (Digit.dec 1); reflexivity.
+
+      destruct (Digit.dec (y.[i+2])) as [H7| H7]; simpl.
+       destruct (Digit.dec (z.[i+2])) as [H8| H8]; simpl.
+        destruct (Digit.dec 0) as [H9| H9].
+         destruct (Digit.dec 1) as [H10| H10]; [ reflexivity | idtac ].
+         discr_digit H10.
+
+         destruct (Digit.dec 1) as [H10| H10]; [ idtac | reflexivity ].
+bbb.
+   i  i+1 i+2
+x  1   1   .
+y  1   1   1
+z  1   0   1
+
+
+remember (Digit.dec (x.[i+1])) as xi1 eqn:Hxi1.
+remember (Digit.dec (y.[i+1])) as yi1 eqn:Hyi1.
+remember (Digit.dec (z.[i+1])) as zi1 eqn:Hzi1.
+remember minus as h; remember div as f; remember modulo as g.
+
+
+remember (Digit.dec (x.[i])) as xi eqn:Hxi.
+remember (Digit.dec (y.[i])) as yi eqn:Hyi.
+remember (Digit.dec (z.[i])) as zi eqn:Hzi.
+remember (Digit.dec (x.[i+1])) as xi1 eqn:Hxi1.
+remember (Digit.dec (y.[i+1])) as yi1 eqn:Hyi1.
+remember (Digit.dec (z.[i+1])) as zi1 eqn:Hzi1.
+remember minus as h; remember div as f; remember modulo as g.
+destruct xi, yi, zi, xi1, yi1, zi1; simpl; subst f g h; simpl.
+ destruct (Digit.dec 1); reflexivity.
+
+ rewrite divmod_div.
+
+rewrite Nat.div_mul; [ idtac | intros H; discriminate H ].
+rewrite Nat.div_mul; [ idtac | intros H; discriminate H ].
+unfold I_add_algo; simpl.
+unfold I_add2_i; simpl.
+unfold z_of_u.
+
+apply d2n_add_iff.
+
+
+do 2 rewrite d2n_n2d.
+remember (I_add_algo y z) as yz eqn:Hyz.
+remember (yz i mod 2) as a1 eqn:Ha1.
+remember ((yz (i + 1) * 2 / 4) mod 2) as a2 eqn:Ha2.
+subst yz.
+bbb.
+
 unfold I_add2_i; simpl.
 unfold z_of_u.
 remember minus as h; remember div as f; remember modulo as g.
@@ -207,6 +323,10 @@ rewrite Nat.div_small.
    rewrite Nat.add_0_r in Hc1.
    unfold I_add_algo in Hc2; simpl in Hc2.
    rewrite divmod_div in Hc2.
+bbb.
+   apply d2n_add_eq in Hc1.
+   apply d2n_add_eq in Hc1.
+
    destruct (zerop (a3 + a4)) as [H2| H2].
     rewrite Nat.add_0_l.
     apply Nat.eq_add_0 in H2.
@@ -232,6 +352,7 @@ rewrite Nat.div_small.
      do 2 apply le_n_S; apply Nat.le_0_l.
 
      rewrite Nat.add_succ_r in Hc1.
+     destruct c1; simpl in Hc1.
 bbb.
 
 Theorem I_add_assoc : ∀ x y z, (x + (y + z) == (x + y) + x)%I.

@@ -573,18 +573,28 @@ unfold d2n.
 destruct (Digit.dec 1) as [H1| H1]; [ reflexivity | discr_digit H1 ].
 Qed.
 
-Theorem eq_d2n_0 : ∀ b, d2n b = 0 → (b = 0)%D.
+Theorem eq_d2n_0 : ∀ b, d2n b = 0 ↔ (b = 0)%D.
 Proof.
-intros b Hb.
-unfold d2n in Hb.
-destruct (Digit.dec b); [ discriminate Hb | assumption ].
+intros b.
+split; intros Hb.
+ unfold d2n in Hb.
+ destruct (Digit.dec b); [ discriminate Hb | assumption ].
+
+ unfold d2n.
+ destruct (Digit.dec b) as [H1| H1]; [ idtac | reflexivity ].
+ rewrite Hb in H1; discr_digit H1.
 Qed.
 
-Theorem eq_d2n_1 : ∀ b, d2n b = 1 → (b = 1)%D.
+Theorem eq_d2n_1 : ∀ b, d2n b = 1 ↔ (b = 1)%D.
 Proof.
-intros b Hb.
-unfold d2n in Hb.
-destruct (Digit.dec b); [ assumption | discriminate Hb ].
+intros b.
+split; intros Hb.
+ unfold d2n in Hb.
+ destruct (Digit.dec b); [ assumption | discriminate Hb ].
+
+ unfold d2n.
+ destruct (Digit.dec b) as [H1| H1]; [ reflexivity | idtac ].
+ rewrite Hb in H1; discr_digit H1.
 Qed.
 
 Theorem le_d2n_1 : ∀ b, d2n b ≤ 1.
