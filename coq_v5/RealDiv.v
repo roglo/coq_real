@@ -1,6 +1,6 @@
 (* division in ℝ *)
 
-Require Import Utf8 QArith NPeano.
+Require Import Utf8 NPeano.
 Require Import Real01Add Real01Cmp RealAdd Real01Div.
 
 Set Implicit Arguments.
