@@ -149,6 +149,8 @@ unfold summation; simpl.
 do 6 rewrite fold_sub_succ_l, divmod_mod.
 do 6 rewrite divmod_div.
 do 2 rewrite Nat.add_0_r, Nat.mul_1_r.
+rewrite Nat.add_0_r.
+do 2 rewrite Nat.add_assoc.
 rewrite Nat.div_mul; [ idtac | intros H; discriminate H ].
 rewrite Nat.div_mul; [ idtac | intros H; discriminate H ].
 rewrite d2n_n2d.
@@ -156,13 +158,18 @@ remember (I_add_algo y z) as yz eqn:Hyz.
 remember (yz i mod 2) as a1 eqn:Ha1.
 remember ((yz (i + 1) * 2 / 4) mod 2) as a2 eqn:Ha2.
 remember ((yz (i + 2) / 4) mod 2) as a3 eqn:Ha3.
-destruct (zerop ((a1 + (a2 + a3)))) as [H1| H1].
+destruct (zerop (a1 + a2 + a3)) as [H1| H1].
  rewrite Nat.add_0_r.
  apply Nat.eq_add_0 in H1.
+ destruct H1 as (H1, H3).
+ apply Nat.eq_add_0 in H1.
  destruct H1 as (H1, H2).
- apply Nat.eq_add_0 in H2.
- destruct H2 as (H2, H3).
  subst a1 a2 a3 yz.
+ apply Nat.mod_divides in H1; [ idtac | intros H; discriminate H ].
+ destruct H1 as (c1, Hc1).
+ unfold I_add_algo in Hc1; simpl in Hc1.
+ rewrite Nat.add_0_r in Hc1.
+bbb.
 
 Focus 2.
 (* mouais... *)
