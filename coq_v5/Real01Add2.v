@@ -136,6 +136,19 @@ destruct n; simpl.
  destruct (Digit.dec 1) as [H1| H1]; [ reflexivity | discr_digit H1 ].
 Qed.
 
+Theorem I_add_algo_le : ∀ x y i, I_add_algo x y i ≤ 2 * (base - 1).
+Proof.
+intros x y i; simpl.
+unfold I_add_algo; simpl.
+unfold d2n; simpl.
+destruct (Digit.dec (x .[ i])) as [H1| H1].
+ destruct (Digit.dec (y .[ i])) as [H2| H2]; [ reflexivity | idtac ].
+ apply Nat.le_succ_diag_r.
+
+ destruct (Digit.dec (y .[ i])) as [H2| H2]; [ idtac | apply Nat.le_0_l ].
+ apply Nat.le_succ_diag_r.
+Qed.
+
 Theorem I_add_algo_assoc : ∀ x y z i,
   I_add_algo x (y + z) i = I_add_algo (x + y) z i.
 Proof.
@@ -153,26 +166,53 @@ rewrite Nat.add_0_r.
 do 2 rewrite Nat.add_assoc.
 rewrite Nat.div_mul; [ idtac | intros H; discriminate H ].
 rewrite Nat.div_mul; [ idtac | intros H; discriminate H ].
-rewrite d2n_n2d.
+do 2 rewrite d2n_n2d.
 remember (I_add_algo y z) as yz eqn:Hyz.
 remember (yz i mod 2) as a1 eqn:Ha1.
 remember ((yz (i + 1) * 2 / 4) mod 2) as a2 eqn:Ha2.
-remember ((yz (i + 2) / 4) mod 2) as a3 eqn:Ha3.
-destruct (zerop (a1 + a2 + a3)) as [H1| H1].
- rewrite Nat.add_0_r.
- apply Nat.eq_add_0 in H1.
- destruct H1 as (H1, H3).
- apply Nat.eq_add_0 in H1.
- destruct H1 as (H1, H2).
- subst a1 a2 a3 yz.
- apply Nat.mod_divides in H1; [ idtac | intros H; discriminate H ].
- destruct H1 as (c1, Hc1).
- unfold I_add_algo in Hc1; simpl in Hc1.
- rewrite Nat.add_0_r in Hc1.
-bbb.
+subst yz.
+remember (I_add_algo x y) as xy eqn:Hxy.
+remember (xy i mod 2) as a3 eqn:Ha3.
+remember ((xy (i + 1) * 2 / 4) mod 2) as a4 eqn:Ha4.
+subst xy.
+rewrite Nat.div_small.
+ Focus 2.
+ eapply le_lt_trans; [ apply I_add_algo_le | unfold base; simpl ].
+ apply Nat.le_le_succ_r; reflexivity.
 
-Focus 2.
-(* mouais... *)
+ rewrite Nat.mod_small; [ rewrite Nat.add_0_r | apply Nat.lt_0_succ ].
+ rewrite Nat.div_small.
+  Focus 2.
+  eapply le_lt_trans; [ apply I_add_algo_le | unfold base; simpl ].
+  apply Nat.le_le_succ_r; reflexivity.
+
+  rewrite Nat.mod_small; [ rewrite Nat.add_0_r | apply Nat.lt_0_succ ].
+  destruct (zerop (a1 + a2)) as [H1| H1].
+   rewrite Nat.add_0_r.
+   apply Nat.eq_add_0 in H1.
+   destruct H1 as (H1, H2).
+   subst a1 a2.
+   apply Nat.mod_divides in H1; [ idtac | intros H; discriminate H ].
+   destruct H1 as (c1, Hc1).
+   apply Nat.mod_divides in H2; [ idtac | intros H; discriminate H ].
+   destruct H2 as (c2, Hc2).
+   unfold I_add_algo in Hc1; simpl in Hc1.
+   rewrite Nat.add_0_r in Hc1.
+   unfold I_add_algo in Hc2; simpl in Hc2.
+   rewrite Nat.add_0_r, divmod_div in Hc2.
+   destruct (zerop (a3 + a4)) as [H2| H2].
+    rewrite Nat.add_0_l.
+    apply Nat.eq_add_0 in H2.
+    destruct H2 as (H1, H2).
+    subst a3 a4.
+    apply Nat.mod_divides in H1; [ idtac | intros H; discriminate H ].
+    destruct H1 as (c3, Hc3).
+    apply Nat.mod_divides in H2; [ idtac | intros H; discriminate H ].
+    destruct H2 as (c4, Hc4).
+    unfold I_add_algo in Hc3; simpl in Hc3.
+    rewrite Nat.add_0_r in Hc3.
+    unfold I_add_algo in Hc4; simpl in Hc4.
+    rewrite Nat.add_0_r, divmod_div in Hc4.
 bbb.
 
 Theorem I_add_assoc : ∀ x y z, (x + (y + z) == (x + y) + x)%I.
