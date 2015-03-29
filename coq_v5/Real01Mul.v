@@ -27,14 +27,12 @@ Definition logn n a := pred (logn_loop n a a).
 Definition I_mul_algo x y i := Σ (j=1,i), (d2n (x.[j-1]) * d2n (y.[i-j])).
 Arguments I_mul_algo x%I y%I i%nat.
 
-Definition summation_for_u2z b n u i :=
-  Σ (k = 0, n), u (i + k) * int_pow b (n - k).
+Definition z_of_u b n u i :=
+  n2d (Σ (k = 0, n), u (i + k) * int_pow b (n - k) / int_pow b n mod b).
 
-Definition z_of_u b u i :=
-  let n := logn b (i * (b - 1) + b) + 2 in
-  n2d (summation_for_u2z b n u i / int_pow b n mod b).
-
-Definition I_mul_i x y := z_of_u base (I_mul_algo x y).
+Definition I_mul_i x y i :=
+  let n := logn base (i * (base - 1) + base) + 2 in
+  z_of_u base n (I_mul_algo x y) i.
 Definition I_mul x y := {| rm := I_mul_i x y |}.
 
 Notation "x * y" := (I_mul x y) : I_scope.
@@ -128,14 +126,13 @@ rewrite Nat.mul_comm; f_equal; f_equal; f_equal; simpl.
  rewrite <- Nat.sub_add_distr, Nat.add_comm; reflexivity.
 Qed.
 
-Theorem z_of_u_compat_l : ∀ b u v n,
+Theorem z_of_u_compat_l : ∀ b u v j n,
   (∀ i, u i = v i)
-  → (z_of_u b u n = z_of_u b v n)%D.
+  → (z_of_u b n u j = z_of_u b n v j)%D.
 Proof.
-intros b u v n Huv.
+intros b u v j n Huv.
 unfold z_of_u; simpl.
-unfold summation_for_u2z; simpl.
-apply eq_digit_eq; f_equal; f_equal; f_equal.
+apply eq_digit_eq; f_equal.
 apply summation_compat; intros i Hi.
 rewrite Huv; reflexivity.
 Qed.
@@ -189,18 +186,17 @@ Theorem I_mul_i_0_l : ∀ x y,
 Proof.
 intros x y Hx i.
 unfold I_mul_i.
-unfold z_of_u, base; simpl.
+unfold z_of_u, base.
 rewrite Nat.mul_1_r.
-unfold summation_for_u2z.
-rewrite fold_sub_succ_l, divmod_mod.
 apply n2d_0_iff.
-rewrite all_0_summation_0.
- rewrite Nat.div_0_l; [ reflexivity | idtac ].
- apply int_pow_neq_0; intros H; discriminate H.
+rewrite all_0_summation_0; [ reflexivity | idtac ].
+intros k Hk.
+rewrite I_mul_algo_0_l; [ idtac | assumption ].
+rewrite Nat.mul_0_l.
+rewrite Nat.div_0_l.
+ rewrite Nat.mod_0_l; [ reflexivity | intros H; discriminate H ].
 
- intros k Hk.
- apply Nat.eq_mul_0; left.
- apply I_mul_algo_0_l; assumption.
+ apply int_pow_neq_0; intros H; discriminate H.
 Qed.
 
 Theorem I_mul_0_l : ∀ x, (0 * x = 0)%I.
@@ -229,16 +225,12 @@ destruct s1 as [dj1| ].
  apply Digit.not_0_iff_1 in H.
  apply H; clear H.
  apply n2d_0_iff.
+ apply all_0_summation_0; intros j Hj.
  apply Nat.mod_divide; [ intros H; discriminate H | idtac ].
  exists 0; simpl.
- apply Nat.div_small.
- unfold summation_for_u2z; simpl.
- rewrite all_0_summation_0.
-  apply Nat.nle_gt; intros H.
-  apply Nat.le_0_r in H.
-  revert H; apply int_pow_neq_0; intros H; discriminate H.
-
-  intros k Hk; reflexivity.
+ apply Nat.div_small, Nat.nle_gt; intros H.
+ apply Nat.le_0_r in H.
+ revert H; apply int_pow_neq_0; intros H; discriminate H.
 Qed.
 
 (* compatibility with equality *)
@@ -268,11 +260,10 @@ Theorem I_eqs_mul_i_compat_r : ∀ x y z i,
 Proof.
 intros x y z i Hxy.
 unfold I_mul_i.
-unfold z_of_u; simpl.
-do 2 rewrite fold_sub_succ_l, divmod_mod.
-apply n2d_eq; f_equal.
-unfold summation_for_u2z; f_equal.
-apply summation_compat; intros k Hk; f_equal.
+unfold z_of_u.
+remember modulo as f; simpl; subst f.
+apply n2d_eq.
+apply summation_compat; intros k Hk; f_equal; f_equal; f_equal.
 apply I_eqs_mul_algo_compat_r; assumption.
 Qed.
 
