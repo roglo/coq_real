@@ -438,12 +438,12 @@ destruct (zerop ((yi + zi) mod 2 + ((yi1 + zi1) / 2) mod 2)) as [H1| H1].
     apply Nat.eq_add_0 in H3; destruct H3 as (H31, H32).
     apply Nat_add_mod_2 in H31; symmetry in H31.
     rewrite Nat.mod_0_l in H31; [ idtac | intros H; discriminate H ].
+    rewrite H31 in H11; symmetry in H11.
 bbb.
 (*
     rewrite Nat.add_mod in H4; [ idtac | intros H; discriminate H ].
 *)
 
-bbb.
 (*
 Theorem zzz : ∀ d e, ((d2n d + d2n e) / 2) mod 2 = 0 → d = e.
 Proof.
