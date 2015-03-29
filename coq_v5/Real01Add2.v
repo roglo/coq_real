@@ -213,7 +213,17 @@ rewrite Nat.div_small.
     rewrite Nat.add_0_r in Hc3.
     unfold I_add_algo in Hc4; simpl in Hc4.
     rewrite Nat.add_0_r, divmod_div in Hc4.
+    destruct c1; simpl in Hc1.
+     apply Nat.eq_add_0 in Hc1.
+     destruct Hc1 as (H1, H2).
+     rewrite H1, Nat.add_0_r in Hc3; rewrite H2, Hc3.
+     destruct c3; [ reflexivity | exfalso; simpl in Hc3 ].
 bbb.
+
+    i  i+1
+x   1
+y   0
+z   0
 
 Theorem I_add_assoc : ∀ x y z, (x + (y + z) == (x + y) + x)%I.
 Proof.
