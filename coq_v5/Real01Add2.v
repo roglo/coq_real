@@ -196,10 +196,17 @@ rewrite Nat.div_small.
    destruct H1 as (c1, Hc1).
    apply Nat.mod_divides in H2; [ idtac | intros H; discriminate H ].
    destruct H2 as (c2, Hc2).
+   pose proof I_add_algo_le y z (i + 1) as H; simpl in H.
+   apply Nat.mul_le_mono_r with (p := 2) in H; simpl in H.
+   eapply Nat.div_le_mono with (c := 4) in H.
+   2: intros I; discriminate I.
+   rewrite Hc2 in H; simpl in H; rewrite Nat.add_0_r in H.
+   destruct c2; [ clear H | exfalso; revert H; clear; intros; omega ].
+   rewrite Nat.mul_0_r in Hc2.
    unfold I_add_algo in Hc1; simpl in Hc1.
    rewrite Nat.add_0_r in Hc1.
    unfold I_add_algo in Hc2; simpl in Hc2.
-   rewrite Nat.add_0_r, divmod_div in Hc2.
+   rewrite divmod_div in Hc2.
    destruct (zerop (a3 + a4)) as [H2| H2].
     rewrite Nat.add_0_l.
     apply Nat.eq_add_0 in H2.
@@ -218,12 +225,14 @@ rewrite Nat.div_small.
      destruct Hc1 as (H1, H2).
      rewrite H1, Nat.add_0_r in Hc3; rewrite H2, Hc3.
      destruct c3; [ reflexivity | exfalso; simpl in Hc3 ].
-bbb.
+     rewrite Nat.add_succ_r in Hc3.
+     pose proof d2n_lt_base (x.[i]) as H.
+     rewrite Hc3 in H.
+     apply Nat.nle_gt in H; apply H.
+     do 2 apply le_n_S; apply Nat.le_0_l.
 
-    i  i+1
-x   1
-y   0
-z   0
+     rewrite Nat.add_succ_r in Hc1.
+bbb.
 
 Theorem I_add_assoc : ∀ x y z, (x + (y + z) == (x + y) + x)%I.
 Proof.
