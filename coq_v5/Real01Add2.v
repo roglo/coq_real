@@ -65,7 +65,7 @@ Qed.
 
 (* 0 neutral element *)
 
-Theorem d2n_lt_base : ∀ d, d2n d < 2.
+Theorem d2n_lt_base : ∀ d, d2n d < base.
 Proof.
 intros d.
 unfold d2n; simpl.

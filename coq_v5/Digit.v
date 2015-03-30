@@ -6,10 +6,11 @@ Open Scope nat_scope.
 
 Delimit Scope digit_scope with D.
 
+Definition base := 2.
 Record digit := { dig : nat }.
 Definition digit_0 := {| dig := 0 |}.
 Definition digit_1 := {| dig := 1 |}.
-Definition digit_eq x y := dig x = 0 ∧ dig y = 0 ∨ dig x ≠ 0 ∧ dig y ≠ 0.
+Definition digit_eq x y := dig x mod base = dig y mod base.
 Arguments dig d%D.
 Arguments digit_eq x%D y%D.
 
@@ -18,48 +19,24 @@ Notation "1" := digit_1 : digit_scope.
 Notation "x = y" := (digit_eq x y) : digit_scope.
 Notation "x ≠ y" := (¬digit_eq x y) : digit_scope.
 
-Definition oppd x := if eq_nat_dec (dig x) 0 then digit_1 else digit_0.
-Definition digit_add x y := if eq_nat_dec (dig x) 0 then y else oppd y.
+Definition oppd x := {| dig := base - 1 - dig x mod base |}.
+Definition digit_add x y := {| dig := dig x + dig y |}.
 
 Notation "x + y" := (digit_add x y) : digit_scope.
 
 Module Digit.
 
+Theorem base_neq_0 : base ≠ 0.
+Proof. intros H; discriminate H. Qed.
+
 Theorem eq_refl : reflexive digit digit_eq.
-Proof.
-intros d.
-unfold digit_eq.
-destruct (dig d); [ left; split; reflexivity | idtac ].
-right; split; intros H; discriminate H.
-Qed.
+Proof. intros d; reflexivity. Qed.
 
 Theorem eq_sym : symmetric digit digit_eq.
-Proof.
-intros x y Hxy.
-unfold digit_eq in Hxy; unfold digit_eq.
-destruct Hxy as [Hxy| Hxy]; rewrite and_comm in Hxy.
- left; assumption.
-
- right; assumption.
-Qed.
+Proof. intros x y Hxy; symmetry; assumption. Qed.
 
 Theorem eq_trans : transitive digit digit_eq.
-Proof.
-intros x y z Hxy Hyz.
-unfold digit_eq in Hxy, Hyz.
-unfold digit_eq.
-destruct Hxy as [(Hx, Hy)| (Hx, Hy)].
- rewrite Hy in Hyz; rewrite Hx.
- destruct Hyz as [(Hy2, Hz)| (Hy2, Hz)].
-  rewrite Hz; left; split; reflexivity.
-
-  exfalso; apply Hy2; reflexivity.
-
- destruct Hyz as [(Hy2, Hz)| (Hy2, Hz)].
-  contradiction.
-
-  right; split; assumption.
-Qed.
+Proof. intros x y z Hxy Hyz; etransitivity; eassumption. Qed.
 
 Add Parametric Relation : digit digit_eq
  reflexivity proved by eq_refl
@@ -68,19 +45,13 @@ Add Parametric Relation : digit digit_eq
  as eq_rel.
 
 Theorem eq_dec : ∀ x y, {(x = y)%D} + {(x ≠ y)%D}.
-Proof.
-intros x y.
-unfold digit_eq.
-destruct (dig x) as [| xd].
- destruct (dig y) as [| yd]; [ left; left; split; reflexivity | idtac ].
- right; intros [(Hx, Hy)| (Hx, Hy)]; [ discriminate Hy | idtac ].
- apply Hx; reflexivity.
-
- destruct (dig y); [ idtac | left; right; split; intros H; discriminate H ].
- right; intros [(Hx, Hy)| (Hx, Hy)]; [ discriminate Hx | idtac ].
- apply Hy; reflexivity.
-Qed.
+Proof. intros x y; apply Nat.eq_dec. Qed.
 Arguments eq_dec x%D y%D.
+
+Ltac fsimpl :=
+  remember minus as fminus;
+  remember modulo as fmod;
+  simpl; subst fminus fmod.
 
 Add Parametric Morphism : digit_add
   with signature digit_eq ==> digit_eq ==> digit_eq
@@ -88,22 +59,9 @@ Add Parametric Morphism : digit_add
 Proof.
 intros x y Hxy z t Hzt.
 unfold digit_eq in Hxy, Hzt.
-unfold digit_eq.
-unfold digit_add; simpl.
-destruct Hxy as [(Hx, Hy)| (Hx, Hy)].
- rewrite Hx, Hy; simpl.
- assumption.
-
- destruct (eq_nat_dec (dig x) 0) as [H1| H1]; [ contradiction | idtac ].
- destruct (eq_nat_dec (dig y) 0) as [H2| H2]; [ contradiction | idtac ].
- unfold oppd.
- destruct Hzt as [(Hz, Ht)| (Hz, Ht)].
-  rewrite Hz, Ht; simpl.
-  right; split; intros H; discriminate H.
-
-  destruct (eq_nat_dec (dig z) 0) as [H3| H3]; [ contradiction | simpl ].
-  destruct (eq_nat_dec (dig t) 0) as [H4| H4]; [ contradiction | simpl ].
-  left; split; reflexivity.
+unfold digit_eq, digit_add; fsimpl.
+rewrite Nat.add_mod; [ rewrite Hxy, Hzt | apply base_neq_0 ].
+rewrite <- Nat.add_mod; [ reflexivity | apply base_neq_0 ].
 Qed.
 
 Add Parametric Morphism : oppd
@@ -112,43 +70,21 @@ Add Parametric Morphism : oppd
 Proof.
 intros x y Hxy.
 unfold digit_eq in Hxy; unfold digit_eq, oppd.
-destruct (eq_nat_dec (dig x) 0) as [H1| H1]; simpl.
- destruct (eq_nat_dec (dig y) 0) as [H2| H2]; simpl.
-  right; split; intros H; discriminate H.
-
-  destruct Hxy as [(Hx, Hy)| (Hx, Hy)]; contradiction.
-
- destruct (eq_nat_dec (dig y) 0) as [H2| H2]; simpl.
-  destruct Hxy as [(Hx, Hy)| (Hx, Hy)]; contradiction.
-
-  left; split; reflexivity.
+rewrite Hxy; reflexivity.
 Qed.
 
 Theorem add_comm : ∀ d e, (d + e = e + d)%D.
 Proof.
 intros d e.
-unfold digit_eq, digit_add, oppd; simpl.
-destruct (eq_nat_dec (dig d) 0) as [H1| H1].
- destruct (eq_nat_dec (dig e) 0) as [H2| H2]; simpl.
-  left; split; assumption.
-
-  right; split; [ assumption | intros H; discriminate H ].
-
- destruct (eq_nat_dec (dig e) 0) as [H2| H2]; simpl.
-  right; split; [ intros H; discriminate H | assumption ].
-
-  left; split; reflexivity.
+unfold digit_eq, digit_add, oppd; fsimpl.
+rewrite Nat.add_comm; reflexivity.
 Qed.
 
 Theorem add_0_r : ∀ d, (d + 0 = d)%D.
 Proof.
 intros d.
-unfold digit_eq, digit_add; simpl.
-destruct (eq_nat_dec (dig d) 0) as [H1| H1].
- rewrite H1; left; split; reflexivity.
-
- right; split; [ idtac | assumption ].
- unfold oppd; intros H; discriminate H.
+unfold digit_eq, digit_add; fsimpl.
+rewrite Nat.add_0_r; reflexivity.
 Qed.
 
 Theorem add_0_l : ∀ d, (0 + d = d)%D.
@@ -158,10 +94,11 @@ rewrite add_comm.
 apply add_0_r.
 Qed.
 
+(*
 Theorem add_1_r : ∀ d, (d + 1 = oppd d)%D.
 Proof.
 intros d.
-unfold digit_eq, digit_add, oppd; simpl.
+unfold digit_eq, digit_add, oppd; fsimpl.
 destruct (eq_nat_dec (dig d) 0) as [H1| H1]; simpl.
  right; split; intros H; discriminate H.
 
@@ -174,17 +111,15 @@ intros d.
 rewrite add_comm.
 apply add_1_r.
 Qed.
+*)
 
 Theorem neq_0_1 : (0 ≠ 1)%D.
-Proof.
-intros [(Hx, Hy)|(Hx, Hy)]; [ discriminate Hy | apply Hx; reflexivity ].
-Qed.
+Proof. intros H; discriminate H. Qed.
 
 Theorem neq_1_0 : (1 ≠ 0)%D.
-Proof.
-intros [(Hx, Hy)|(Hx, Hy)]; [ discriminate Hx | apply Hy; reflexivity ].
-Qed.
+Proof. intros H; discriminate H. Qed.
 
+(*
 Theorem not_0_iff_1 : ∀ d, (d ≠ 0)%D ↔ (d = 1)%D.
 Proof.
 intros d;
@@ -249,6 +184,7 @@ split; intros [(H1, H2)| (H1, H2)].
 
  exfalso; apply H2; reflexivity.
 Qed.
+*)
 
 Theorem neq_sym : ∀ d e, (d ≠ e)%D → (e ≠ d)%D.
 Proof.
@@ -261,29 +197,8 @@ Theorem add_assoc : ∀ d e f, (d + (e + f) = (d + e) + f)%D.
 Proof.
 intros d e f.
 unfold digit_eq.
-unfold digit_add, oppd; simpl.
-destruct (eq_nat_dec (dig d) 0) as [H1| H1]; simpl.
- destruct (eq_nat_dec (dig e) 0) as [H2| H2]; simpl.
-  destruct (eq_nat_dec (dig f) 0) as [H3| H3]; simpl.
-   left; split; assumption.
-
-   right; split; assumption.
-
-  destruct (eq_nat_dec (dig f) 0) as [H3| H3]; simpl.
-   right; split; intros H; discriminate H.
-
-   left; split; reflexivity.
-
- destruct (eq_nat_dec (dig e) 0) as [H2| H2]; simpl.
-  destruct (eq_nat_dec (dig f) 0) as [H3| H3]; simpl.
-   right; split; intros H; discriminate H.
-
-   left; split; reflexivity.
-
-  destruct (eq_nat_dec (dig f) 0) as [H3| H3]; simpl.
-   left; split; [ reflexivity | assumption ].
-
-   right; split; [ intros H; discriminate H | assumption ].
+unfold digit_add, oppd; fsimpl.
+rewrite Nat.add_assoc; reflexivity.
 Qed.
 
 Theorem add_shuffle0 : ∀ d e f, (d + e + f = d + f + e)%D.
@@ -294,6 +209,7 @@ apply add_compat; [ reflexivity | idtac ].
 apply add_comm.
 Qed.
 
+(*
 Theorem opp_0 : (oppd 0 = 1)%D.
 Proof.
 apply opp_1_iff; reflexivity.
@@ -329,10 +245,12 @@ destruct (eq_nat_dec (dig d) 0) as [H1 | H1].
   exfalso; apply Hde; unfold digit_eq.
   right; split; assumption.
 Qed.
+*)
 
 Theorem opp_add_diag_l : ∀ d, (oppd d + d = 1)%D.
 Proof.
 intros d.
+bbb.
 unfold digit_eq, digit_add, oppd; simpl.
 destruct (eq_nat_dec (dig d) 0) as [H1| H1]; simpl.
  right; split; intros H; discriminate H.
@@ -554,9 +472,7 @@ Proof. intros d e H; subst d; reflexivity. Qed.
 Ltac discr_digit x :=
   exfalso; revert x; try apply Digit.neq_1_0; apply Digit.neq_0_1.
 
-Definition base := 2.
-
-Definition d2n d := if Digit.dec d then 1 else 0.
+Definition d2n d := dig d mod base.
 Definition n2d n := match n with 0 => 0%D | S n1 => 1%D end.
 Arguments d2n d%D.
 Arguments n2d n%nat.
@@ -578,6 +494,9 @@ Proof.
 intros b.
 split; intros Hb.
  unfold d2n in Hb.
+ unfold digit_eq.
+ left; split; [ idtac | reflexivity ].
+bbb.
  destruct (Digit.dec b); [ discriminate Hb | assumption ].
 
  unfold d2n.
