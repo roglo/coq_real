@@ -135,14 +135,24 @@ Proof.
 unfold digit_eq; simpl.
 unfold radix; simpl; intros Hr.
 pose proof radix_ge_2 rad as H.
-remember (radix_value rad) as r.
+remember (radix_value rad) as r; clear Heqr.
 apply Nat.nlt_ge in H; apply H; clear H.
-destruct r; [ apply Nat.lt_0_succ | idtac ].
+destruct r; [ apply Nat.lt_0_succ | apply lt_n_S, Nat.lt_1_r ].
 fsimpl_in Hr.
 rewrite Nat.mod_0_l in Hr; [ idtac | intros H; discriminate H ].
 symmetry in Hr.
-destruct r; [ apply Nat.lt_1_2 | exfalso ].
 bbb.
+
+apply Nat.mod_divides in Hr; [ idtac | intros H; discriminate H ].
+destruct Hr as (c, Hc).
+rewrite Nat.mul_comm in Hc; rewrite Hc.
+destruct c; [ apply Nat.lt_1_2 | exfalso ].
+bbb.
+revert c Hc.
+induction r; intros; [ discriminate Hc | idtac ].
+simpl in Hc.
+bbb.
+
 
 Theorem neq_9_0 : (9 ≠ 0)%D.
 Proof. intros H; discriminate H. Qed.
