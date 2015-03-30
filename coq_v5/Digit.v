@@ -162,20 +162,15 @@ intros d.
 unfold digit_eq, oppd; fsimpl.
 split; intros H1.
  rewrite Nat.mod_0_l in H1; [ idtac | apply radix_neq_0 ].
- apply Nat.mod_divides in H1; [ idtac | apply radix_neq_0 ].
- destruct H1 as (c, Hc).
  remember (dig d mod radix) as dr eqn:Hdr.
  symmetry in Hdr.
- destruct dr.
-  destruct c; [ discriminate Hc | idtac ].
-  simpl in Hc; rewrite Nat.add_succ_r in Hc.
-  discriminate Hc.
-
-  rewrite Nat.sub_succ in Hc; simpl in Hc.
+ destruct dr; [ discriminate H1 | idtac ].
+ destruct dr; [ reflexivity | idtac ].
 bbb.
-
- [H1| H1].
-  simpl in Hc.
+  Hdr : dig d mod radix = S (S dr)
+  H1 : (1 - S (S dr)) mod radix = 0
+  ============================
+   S (S dr) = 1 mod radix
 bbb.
 
 split; intros [(H1, H2)| (H1, H2)].
