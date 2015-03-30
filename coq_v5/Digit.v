@@ -189,6 +189,22 @@ split; intros Hd.
 Qed.
 *)
 
+Theorem Nat_mod_succ_r : ∀ a, a mod S a = a.
+Proof.
+intros a.
+rewrite Nat.mod_small; [ reflexivity | idtac ].
+apply Nat.lt_succ_diag_r.
+Qed.
+
+Theorem Nat_pred_le_mod : ∀ a b, a ≠ 0 → pred a ≤ b mod a → b mod a = pred a.
+Proof.
+intros a b Ha H.
+remember H as HH; clear HeqHH.
+apply Nat.le_antisymm in H; [ assumption | idtac ].
+apply Nat.mod_upper_bound with (a := b) in Ha.
+apply Nat.lt_le_pred; assumption.
+Qed.
+
 Theorem opp_0_iff : ∀ d, (oppd d = 0)%D ↔ (d = 9)%D.
 Proof.
 intros d.
@@ -196,14 +212,41 @@ split; intros H1.
  unfold digit_eq in H1; fsimpl_in H1.
  unfold digit_eq; simpl.
  rewrite Nat.mod_0_l in H1; [ idtac | apply radix_neq_0 ].
+
+ symmetry.
+ rewrite Nat.mod_small.
+ symmetry.
+
+
  apply Nat.mod_divides in H1; [ idtac | apply radix_neq_0 ].
+
  destruct H1 as (c, Hc); rewrite Nat.mul_comm in Hc.
  destruct c; simpl in Hc.
-  apply Nat.sub_0_le in Hc.
 
-Theorem zzz : ∀ a b, a ≠ 0 → pred a ≤ b mod a → b = pred a.
-Proof.
-intros a b Ha H.
+  apply Nat.sub_0_le in Hc.
+  apply Nat_pred_le_mod in Hc; [ assumption | apply radix_neq_0 ].
+
+bbb.
+
+  rewrite Hc.
+  destruct radix as [| n]; [ reflexivity | fsimpl ].
+  rewrite Nat_mod_succ_r; reflexivity.
+
+  symmetry.
+  rewrite Nat.mod_small.
+
+destruct a; [reflexivity|].
+pose proof Nat.mod_upper_bound a (S a) as H.
+
+bbb.
+
+Inspect 6.
+bbb.
+
+destruct a.
+SearchAbout (_ mod _ < _).
+
+
 revert a Ha H.
 induction b; intros; simpl.
  rewrite Nat.mod_0_l in H; [ idtac | assumption ].
