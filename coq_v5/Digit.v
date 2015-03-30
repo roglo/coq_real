@@ -239,16 +239,12 @@ rewrite Nat.mod_small.
    intros H; discriminate H.
 
   eapply Nat.le_lt_trans; [ idtac | apply pred_radix_lt_radix ].
-  apply Nat.le_sub_le_add_r.
-  apply Nat.le_sub_le_add_l.
-  rewrite Nat.sub_diag.
-  apply Nat.le_0_l.
+  apply Nat.le_sub_le_add_r, Nat.le_sub_le_add_l.
+  rewrite Nat.sub_diag; apply Nat.le_0_l.
 
  eapply Nat.le_lt_trans; [ idtac | apply pred_radix_lt_radix ].
- apply Nat.le_sub_le_add_r.
- apply Nat.le_sub_le_add_l.
- rewrite Nat.sub_diag.
- apply Nat.le_0_l.
+ apply Nat.le_sub_le_add_r, Nat.le_sub_le_add_l.
+ rewrite Nat.sub_diag; apply Nat.le_0_l.
 Qed.
 
 Theorem opp_1_iff : ∀ d, (oppd d = 9)%D ↔ (d = 0)%D.
@@ -263,28 +259,14 @@ split; intros H1.
   rewrite Nat.mod_small; [ apply Nat.sub_diag | idtac ].
   apply neq_0_lt, Nat.neq_sym, radix_neq_0.
 
-bbb.
-unfold digit_eq, oppd; simpl.
-split; intros H1.
-Inspect 1.
-SearchAbout oppd.
-apply opp_compat.
-bbb.
+  rewrite Nat.mod_small; [ rewrite Nat.sub_diag | apply pred_radix_lt_radix ].
+  apply neq_0_lt, Nat.neq_sym, radix_neq_0.
 
-split; intros [(H1, H2)| (H1, H2)].
- discriminate H2.
-
- destruct (eq_nat_dec (dig d) 0) as [H3| H3].
-  left; split; [ assumption | reflexivity ].
-
-  exfalso; apply H1; reflexivity.
-
- destruct (eq_nat_dec (dig d) 0) as [H3| H3]; [ idtac | contradiction ].
- right; split; intros H; discriminate H.
-
- exfalso; apply H2; reflexivity.
+ apply opp_compat in H1; rewrite H1.
+ unfold digit_eq; simpl.
+ rewrite Nat.mod_0_l; [ rewrite Nat.sub_0_r | apply radix_neq_0 ].
+ reflexivity.
 Qed.
-*)
 
 Theorem neq_sym : ∀ d e, (d ≠ e)%D → (e ≠ d)%D.
 Proof.
@@ -314,7 +296,7 @@ Proof.
 apply opp_1_iff; reflexivity.
 Qed.
 
-Theorem opp_1 : (oppd 1 = 0)%D.
+Theorem opp_9 : (oppd 9 = 0)%D.
 Proof.
 apply opp_0_iff; reflexivity.
 Qed.
@@ -347,18 +329,36 @@ destruct (eq_nat_dec (dig d) 0) as [H1 | H1].
 Qed.
 *)
 
-Theorem opp_add_diag_l : ∀ d, (oppd d + d = radix - 1)%D.
+Theorem opp_add_diag_l : ∀ d, (oppd d + d = 9)%D.
 Proof.
 intros d.
-bbb.
-unfold digit_eq, digit_add, oppd; simpl.
-destruct (eq_nat_dec (dig d) 0) as [H1| H1]; simpl.
- right; split; intros H; discriminate H.
+unfold digit_eq; simpl.
+symmetry; rewrite Nat.mod_small; [ symmetry | apply pred_radix_lt_radix ].
+rewrite Nat.add_mod; [ idtac | apply radix_neq_0 ].
+rewrite Nat.mod_small.
+ rewrite Nat.mod_small.
+  rewrite <- Nat.add_sub_swap; [ apply Nat.add_sub | apply le_S_n ].
+  rewrite Nat.succ_pred; [ idtac | apply radix_neq_0 ].
+  apply Nat.mod_upper_bound, radix_neq_0.
 
- right; split; [ assumption | intros H; discriminate H ].
+  eapply le_lt_trans; [ idtac | apply pred_radix_lt_radix ].
+  apply Nat.le_sub_le_add_r, Nat.le_sub_le_add_l.
+  rewrite Nat.sub_diag; apply Nat.le_0_l.
+
+ rewrite Nat.mod_small.
+  rewrite <- Nat.add_sub_swap.
+   rewrite Nat.add_sub; apply pred_radix_lt_radix.
+
+   apply le_S_n.
+   rewrite Nat.succ_pred; [ idtac | apply radix_neq_0 ].
+   apply Nat.mod_upper_bound, radix_neq_0.
+
+  eapply le_lt_trans; [ idtac | apply pred_radix_lt_radix ].
+  apply Nat.le_sub_le_add_r, Nat.le_sub_le_add_l.
+  rewrite Nat.sub_diag; apply Nat.le_0_l.
 Qed.
 
-Theorem opp_add_diag_r : ∀ d, (d + oppd d = 1)%D.
+Theorem opp_add_diag_r : ∀ d, (d + oppd d = 9)%D.
 Proof.
 intros d.
 rewrite add_comm.
@@ -369,6 +369,7 @@ Theorem no_fixpoint_opp : ∀ d, (oppd d ≠ d)%D.
 Proof.
 intros d.
 unfold digit_eq, oppd; simpl; intros H.
+bbb.
 destruct H as [(Hx, Hy)| (Hx, Hy)].
  rewrite Hy in Hx; discriminate Hx.
 
