@@ -6,8 +6,9 @@ Open Scope nat_scope.
 
 Delimit Scope digit_scope with D.
 
-Parameter radix : nat.
-Axiom radix_ge_2 : radix ≥ 2.
+Record radix_type := { radn : nat; radp : radn ≥ 2 }.
+Parameter rad : radix_type.
+Definition radix := radn rad.
 
 Record digit := { dig : nat }.
 Definition digit_0 := {| dig := 0 |}.
@@ -31,7 +32,8 @@ Module Digit.
 Theorem radix_neq_0 : radix ≠ 0.
 Proof.
 intros Hr.
-pose proof radix_ge_2 as H.
+unfold radix in Hr.
+pose proof radp rad as H.
 rewrite Hr in H.
 apply Nat.nlt_ge in H.
 apply H, Nat.lt_0_succ.
@@ -131,6 +133,8 @@ Qed.
 Theorem neq_0_1 : (0 ≠ 9)%D.
 Proof.
 unfold digit_eq; simpl; intros Hr.
+bbb.
+
 pose proof radix_ge_2 as H.
 apply Nat.nlt_ge in H; apply H; clear H.
 destruct radix; [ apply Nat.lt_0_succ | idtac ].
