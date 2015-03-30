@@ -138,10 +138,17 @@ pose proof radix_ge_2 rad as H.
 remember (radix_value rad) as r; clear Heqr.
 apply Nat.nlt_ge in H; apply H; clear H.
 destruct r; [ apply Nat.lt_0_succ | apply lt_n_S, Nat.lt_1_r ].
-fsimpl_in Hr.
+fsimpl_in Hr; symmetry in Hr.
 rewrite Nat.mod_0_l in Hr; [ idtac | intros H; discriminate H ].
-symmetry in Hr.
 bbb.
+destruct r; [ reflexivity | exfalso ].
+induction r.
+ rewrite Nat.mod_1_l in Hr; [ discriminate Hr | idtac ].
+ apply Nat.lt_1_2.
+
+
+bbb.
+
 
 apply Nat.mod_divides in Hr; [ idtac | intros H; discriminate H ].
 destruct Hr as (c, Hc).
