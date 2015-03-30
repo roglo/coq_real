@@ -6,7 +6,9 @@ Open Scope nat_scope.
 
 Delimit Scope digit_scope with D.
 
-Definition radix := 2.
+Parameter radix : nat.
+Axiom radix_ge_2 : radix ≥ 2.
+
 Record digit := { dig : nat }.
 Definition digit_0 := {| dig := 0 |}.
 Definition digit_r1 := {| dig := pred radix |}.
@@ -27,7 +29,13 @@ Notation "x + y" := (digit_add x y) : digit_scope.
 Module Digit.
 
 Theorem radix_neq_0 : radix ≠ 0.
-Proof. intros H; discriminate H. Qed.
+Proof.
+intros Hr.
+pose proof radix_ge_2 as H.
+rewrite Hr in H.
+apply Nat.nlt_ge in H.
+apply H, Nat.lt_0_succ.
+Qed.
 
 Theorem eq_refl : reflexive digit digit_eq.
 Proof. intros d; reflexivity. Qed.
@@ -49,14 +57,16 @@ Proof. intros x y; apply Nat.eq_dec. Qed.
 Arguments eq_dec x%D y%D.
 
 Ltac fsimpl_in H :=
-  remember minus as fminus in H;
-  remember modulo as fmod in H;
-  simpl in H; subst fminus fmod.
+  remember minus as fminus;
+  remember div as fdiv;
+  remember modulo as fmod;
+  simpl in H; subst fminus fdiv fmod.
 
 Ltac fsimpl :=
   remember minus as fminus;
+  remember div as fdiv;
   remember modulo as fmod;
-  simpl; subst fminus fmod.
+  simpl; subst fminus fdiv fmod.
 
 Add Parametric Morphism : digit_add
   with signature digit_eq ==> digit_eq ==> digit_eq
@@ -119,7 +129,15 @@ Qed.
 *)
 
 Theorem neq_0_1 : (0 ≠ 9)%D.
-Proof. intros H; discriminate H. Qed.
+Proof.
+unfold digit_eq; simpl; intros Hr.
+pose proof radix_ge_2 as H.
+apply Nat.nlt_ge in H; apply H; clear H.
+destruct radix; [ apply Nat.lt_0_succ | idtac ].
+fsimpl_in Hr.
+rewrite Nat.mod_0_l in Hr; [ idtac | intros H; discriminate H ].
+bbb.
+intros H; discriminate H. Qed.
 
 Theorem neq_1_0 : (9 ≠ 0)%D.
 Proof. intros H; discriminate H. Qed.
@@ -165,13 +183,11 @@ split; intros H1.
  remember (dig d mod radix) as dr eqn:Hdr.
  symmetry in Hdr.
  destruct dr; [ discriminate H1 | idtac ].
- destruct dr; [ reflexivity | idtac ].
 bbb.
-  Hdr : dig d mod radix = S (S dr)
-  H1 : (1 - S (S dr)) mod radix = 0
+  Hdr : dig d mod radix = S dr
+  H1 : (9 - S dr) mod radix = 0
   ============================
-   S (S dr) = 1 mod radix
-bbb.
+   S dr = 9 mod radix
 
 split; intros [(H1, H2)| (H1, H2)].
  destruct (eq_nat_dec (dig d) 0) as [H3| H3]; [ discriminate H1 | idtac ].
