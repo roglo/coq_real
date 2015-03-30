@@ -189,11 +189,17 @@ split; intros Hd.
 Qed.
 *)
 
-Theorem Nat_mod_succ_r : ∀ a, a mod S a = a.
+Theorem Nat_mod_succ : ∀ a, a mod S a = a.
 Proof.
 intros a.
 rewrite Nat.mod_small; [ reflexivity | idtac ].
 apply Nat.lt_succ_diag_r.
+Qed.
+
+Theorem Nat_pred_mod : ∀ a, pred a mod a = pred a.
+Proof.
+intros a.
+destruct a; [ reflexivity | apply Nat_mod_succ ].
 Qed.
 
 Theorem Nat_pred_le_mod : ∀ a b, a ≠ 0 → pred a ≤ b mod a → b mod a = pred a.
@@ -241,11 +247,56 @@ split; intros H1.
  rewrite H1, Nat.sub_diag; reflexivity.
 Qed.
 
-Theorem opp_1_iff : ∀ d, (oppd d = 9)%D ↔ (d = 0)%D.
+Theorem opp_involutive : ∀ d, (oppd (oppd d) = d)%D.
 Proof.
 intros d.
 unfold digit_eq, oppd; simpl.
+rewrite Nat.mod_small.
+ rewrite Nat.mod_small.
+  apply Nat.add_sub_eq_r.
+  rewrite Nat.add_sub_assoc.
+   rewrite Nat.add_comm, Nat.add_sub; reflexivity.
+
+   destruct radix; [ reflexivity | idtac ].
+   apply le_S_n.
+   apply Nat.mod_upper_bound.
+   intros H; discriminate H.
+
+  apply Nat.le_lt_trans with (m := pred radix).
+   apply Nat.le_sub_le_add_r.
+   apply Nat.le_sub_le_add_l.
+   rewrite Nat.sub_diag.
+   apply Nat.le_0_l.
+
+   pose proof (radix_ge_2 rad) as H.
+   unfold radix.
+   destruct (radix_value rad); [ idtac | apply Nat.lt_succ_diag_r ].
+   exfalso; apply Nat.nlt_ge in H; apply H, Nat.lt_0_succ.
+
+ apply Nat.le_lt_trans with (m := pred radix).
+  apply Nat.le_sub_le_add_r.
+  apply Nat.le_sub_le_add_l.
+  rewrite Nat.sub_diag.
+  apply Nat.le_0_l.
+
+  pose proof (radix_ge_2 rad) as H.
+  unfold radix.
+  destruct (radix_value rad); [ idtac | apply Nat.lt_succ_diag_r ].
+  exfalso; apply Nat.nlt_ge in H; apply H, Nat.lt_0_succ.
+Qed.
+
+Theorem opp_1_iff : ∀ d, (oppd d = 9)%D ↔ (d = 0)%D.
+Proof.
+intros d.
 split; intros H1.
+ apply opp_compat in H1.
+ rewrite opp_involutive in H1.
+bbb.
+unfold digit_eq, oppd; simpl.
+split; intros H1.
+Inspect 1.
+SearchAbout oppd.
+apply opp_compat.
 bbb.
 
 split; intros [(H1, H2)| (H1, H2)].
@@ -424,16 +475,6 @@ intros d e.
 rewrite add_comm; symmetry.
 rewrite add_comm; symmetry.
 apply opp_add_r.
-Qed.
-
-Theorem opp_involutive : ∀ d, (oppd (oppd d) = d)%D.
-Proof.
-intros d.
-unfold digit_eq, oppd.
-destruct (eq_nat_dec (dig d) 0) as [H1 | H1]; simpl.
- left; split; [ reflexivity | assumption ].
-
- right; split; [ intros H; discriminate H | assumption ].
 Qed.
 
 Theorem add_cancel_l : ∀ d e f, (d + e = d + f)%D → (e = f)%D.
