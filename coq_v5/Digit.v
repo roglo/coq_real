@@ -6,27 +6,27 @@ Open Scope nat_scope.
 
 Delimit Scope digit_scope with D.
 
-Definition base := 2.
+Definition radix := 2.
 Record digit := { dig : nat }.
 Definition digit_0 := {| dig := 0 |}.
-Definition digit_1 := {| dig := 1 |}.
-Definition digit_eq x y := dig x mod base = dig y mod base.
+Definition digit_r1 := {| dig := pred radix |}.
+Definition digit_eq x y := dig x mod radix = dig y mod radix.
 Arguments dig d%D.
 Arguments digit_eq x%D y%D.
 
 Notation "0" := digit_0 : digit_scope.
-Notation "1" := digit_1 : digit_scope.
+Notation "9" := digit_r1 : digit_scope.
 Notation "x = y" := (digit_eq x y) : digit_scope.
 Notation "x ≠ y" := (¬digit_eq x y) : digit_scope.
 
-Definition oppd x := {| dig := base - 1 - dig x mod base |}.
 Definition digit_add x y := {| dig := dig x + dig y |}.
+Definition oppd x := {| dig := pred radix - dig x mod radix |}.
 
 Notation "x + y" := (digit_add x y) : digit_scope.
 
 Module Digit.
 
-Theorem base_neq_0 : base ≠ 0.
+Theorem radix_neq_0 : radix ≠ 0.
 Proof. intros H; discriminate H. Qed.
 
 Theorem eq_refl : reflexive digit digit_eq.
@@ -48,6 +48,11 @@ Theorem eq_dec : ∀ x y, {(x = y)%D} + {(x ≠ y)%D}.
 Proof. intros x y; apply Nat.eq_dec. Qed.
 Arguments eq_dec x%D y%D.
 
+Ltac fsimpl_in H :=
+  remember minus as fminus in H;
+  remember modulo as fmod in H;
+  simpl in H; subst fminus fmod.
+
 Ltac fsimpl :=
   remember minus as fminus;
   remember modulo as fmod;
@@ -60,8 +65,8 @@ Proof.
 intros x y Hxy z t Hzt.
 unfold digit_eq in Hxy, Hzt.
 unfold digit_eq, digit_add; fsimpl.
-rewrite Nat.add_mod; [ rewrite Hxy, Hzt | apply base_neq_0 ].
-rewrite <- Nat.add_mod; [ reflexivity | apply base_neq_0 ].
+rewrite Nat.add_mod; [ rewrite Hxy, Hzt | apply radix_neq_0 ].
+rewrite <- Nat.add_mod; [ reflexivity | apply radix_neq_0 ].
 Qed.
 
 Add Parametric Morphism : oppd
@@ -113,10 +118,10 @@ apply add_1_r.
 Qed.
 *)
 
-Theorem neq_0_1 : (0 ≠ 1)%D.
+Theorem neq_0_1 : (0 ≠ 9)%D.
 Proof. intros H; discriminate H. Qed.
 
-Theorem neq_1_0 : (1 ≠ 0)%D.
+Theorem neq_1_0 : (9 ≠ 0)%D.
 Proof. intros H; discriminate H. Qed.
 
 (*
@@ -149,11 +154,30 @@ split; intros Hd.
  rewrite Hd in H.
  revert H; apply neq_0_1.
 Qed.
+*)
 
-Theorem opp_0_iff : ∀ d, (oppd d = 0)%D ↔ (d = 1)%D.
+Theorem opp_0_iff : ∀ d, (oppd d = 0)%D ↔ (d = 9)%D.
 Proof.
 intros d.
-unfold digit_eq, oppd; simpl.
+unfold digit_eq, oppd; fsimpl.
+split; intros H1.
+ rewrite Nat.mod_0_l in H1; [ idtac | apply radix_neq_0 ].
+ apply Nat.mod_divides in H1; [ idtac | apply radix_neq_0 ].
+ destruct H1 as (c, Hc).
+ remember (dig d mod radix) as dr eqn:Hdr.
+ symmetry in Hdr.
+ destruct dr.
+  destruct c; [ discriminate Hc | idtac ].
+  simpl in Hc; rewrite Nat.add_succ_r in Hc.
+  discriminate Hc.
+
+  rewrite Nat.sub_succ in Hc; simpl in Hc.
+bbb.
+
+ [H1| H1].
+  simpl in Hc.
+bbb.
+
 split; intros [(H1, H2)| (H1, H2)].
  destruct (eq_nat_dec (dig d) 0) as [H3| H3]; [ discriminate H1 | idtac ].
  right; split; [ assumption | idtac ].
@@ -209,8 +233,7 @@ apply add_compat; [ reflexivity | idtac ].
 apply add_comm.
 Qed.
 
-(*
-Theorem opp_0 : (oppd 0 = 1)%D.
+Theorem opp_0 : (oppd 0 = 9)%D.
 Proof.
 apply opp_1_iff; reflexivity.
 Qed.
@@ -220,6 +243,7 @@ Proof.
 apply opp_0_iff; reflexivity.
 Qed.
 
+(*
 Theorem add_nilpotent : ∀ d, (d + d = 0)%D.
 Proof.
 intros d.
@@ -247,7 +271,7 @@ destruct (eq_nat_dec (dig d) 0) as [H1 | H1].
 Qed.
 *)
 
-Theorem opp_add_diag_l : ∀ d, (oppd d + d = 1)%D.
+Theorem opp_add_diag_l : ∀ d, (oppd d + d = radix - 1)%D.
 Proof.
 intros d.
 bbb.
@@ -472,7 +496,7 @@ Proof. intros d e H; subst d; reflexivity. Qed.
 Ltac discr_digit x :=
   exfalso; revert x; try apply Digit.neq_1_0; apply Digit.neq_0_1.
 
-Definition d2n d := dig d mod base.
+Definition d2n d := dig d mod radix.
 Definition n2d n := match n with 0 => 0%D | S n1 => 1%D end.
 Arguments d2n d%D.
 Arguments n2d n%nat.
