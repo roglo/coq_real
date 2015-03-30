@@ -6,19 +6,19 @@ Open Scope nat_scope.
 
 Delimit Scope digit_scope with D.
 
-Record radix_type := { radn : nat; radp : radn ≥ 2 }.
+Record radix_type := { radix_value : nat; radix_ge_2 : radix_value ≥ 2 }.
 Parameter rad : radix_type.
-Definition radix := radn rad.
+Definition radix := radix_value rad.
 
 Record digit := { dig : nat }.
 Definition digit_0 := {| dig := 0 |}.
-Definition digit_r1 := {| dig := pred radix |}.
+Definition digit_rm1 := {| dig := pred radix |}.
 Definition digit_eq x y := dig x mod radix = dig y mod radix.
 Arguments dig d%D.
 Arguments digit_eq x%D y%D.
 
 Notation "0" := digit_0 : digit_scope.
-Notation "9" := digit_r1 : digit_scope.
+Notation "9" := digit_rm1 : digit_scope.
 Notation "x = y" := (digit_eq x y) : digit_scope.
 Notation "x ≠ y" := (¬digit_eq x y) : digit_scope.
 
@@ -33,7 +33,7 @@ Theorem radix_neq_0 : radix ≠ 0.
 Proof.
 intros Hr.
 unfold radix in Hr.
-pose proof radp rad as H.
+pose proof radix_ge_2 rad as H.
 rewrite Hr in H.
 apply Nat.nlt_ge in H.
 apply H, Nat.lt_0_succ.
@@ -130,20 +130,21 @@ apply add_1_r.
 Qed.
 *)
 
-Theorem neq_0_1 : (0 ≠ 9)%D.
+Theorem neq_0_9 : (0 ≠ 9)%D.
 Proof.
-unfold digit_eq; simpl; intros Hr.
-bbb.
-
-pose proof radix_ge_2 as H.
+unfold digit_eq; simpl.
+unfold radix; simpl; intros Hr.
+pose proof radix_ge_2 rad as H.
+remember (radix_value rad) as r.
 apply Nat.nlt_ge in H; apply H; clear H.
-destruct radix; [ apply Nat.lt_0_succ | idtac ].
+destruct r; [ apply Nat.lt_0_succ | idtac ].
 fsimpl_in Hr.
 rewrite Nat.mod_0_l in Hr; [ idtac | intros H; discriminate H ].
+symmetry in Hr.
+destruct r; [ apply Nat.lt_1_2 | exfalso ].
 bbb.
-intros H; discriminate H. Qed.
 
-Theorem neq_1_0 : (9 ≠ 0)%D.
+Theorem neq_9_0 : (9 ≠ 0)%D.
 Proof. intros H; discriminate H. Qed.
 
 (*
