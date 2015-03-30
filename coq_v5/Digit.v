@@ -130,6 +130,11 @@ apply add_1_r.
 Qed.
 *)
 
+Theorem Nat_eq_mod_succ_diag_r_0 : ∀ a, a mod S a = 0 → a = 0.
+Proof.
+intros a Ha.
+bbb.
+
 Theorem neq_0_9 : (0 ≠ 9)%D.
 Proof.
 unfold digit_eq; simpl.
@@ -140,6 +145,7 @@ apply Nat.nlt_ge in H; apply H; clear H.
 destruct r; [ apply Nat.lt_0_succ | apply lt_n_S, Nat.lt_1_r ].
 fsimpl_in Hr; symmetry in Hr.
 rewrite Nat.mod_0_l in Hr; [ idtac | intros H; discriminate H ].
+
 bbb.
 destruct r; [ reflexivity | exfalso ].
 induction r.
