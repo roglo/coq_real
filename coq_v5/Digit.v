@@ -192,9 +192,44 @@ Qed.
 Theorem opp_0_iff : ∀ d, (oppd d = 0)%D ↔ (d = 9)%D.
 Proof.
 intros d.
-unfold digit_eq, oppd; fsimpl.
 split; intros H1.
+ unfold digit_eq in H1; fsimpl_in H1.
+ unfold digit_eq; simpl.
  rewrite Nat.mod_0_l in H1; [ idtac | apply radix_neq_0 ].
+ apply Nat.mod_divides in H1; [ idtac | apply radix_neq_0 ].
+ destruct H1 as (c, Hc); rewrite Nat.mul_comm in Hc.
+ destruct c; simpl in Hc.
+  apply Nat.sub_0_le in Hc.
+
+Theorem zzz : ∀ a b, a ≠ 0 → pred a ≤ b mod a → b = pred a.
+Proof.
+intros a b Ha H.
+revert a Ha H.
+induction b; intros; simpl.
+ rewrite Nat.mod_0_l in H; [ idtac | assumption ].
+ apply Nat.le_0_r in H; symmetry; assumption.
+
+ rewrite <- Nat.add_1_r in H.
+ rewrite <- Nat.add_mod_idemp_l in H; [ idtac | assumption ].
+bbb.
+
+apply Nat.le_pred_le_succ in H.
+
+
+bbb.
+  destruct radix as [| n]; [ reflexivity | idtac ].
+  apply le_S_n in Hc; fsimpl.
+bbb.
+
+ pose proof radix_ge_2 rad as H.
+ unfold radix in *; simpl in *.
+ remember (radix_value rad) as r.
+ destruct r.
+  apply Nat.nlt_ge in H.
+  exfalso; apply H, Nat.lt_0_succ.
+
+  fsimpl; fsimpl_in H1.
+Inspect 4.
 bbb.
  remember (dig d mod radix) as dr eqn:Hdr.
  symmetry.
