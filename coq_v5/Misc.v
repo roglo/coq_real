@@ -174,3 +174,36 @@ Proof. intros a b; reflexivity. Qed.
 Theorem fold_sub_succ_l : ∀ a b,
   (match a with 0 => S b | S c => b - c end = S b - a)%nat.
 Proof. reflexivity. Qed.
+
+Theorem Nat_mod_succ_diag_r_eq_0 : ∀ a, a mod S a = 0 → a = 0.
+Proof.
+intros a Ha.
+apply Nat.mod_divides in Ha; [ idtac | intros H; discriminate H ].
+destruct Ha as (c, Hc).
+rewrite Nat.mul_comm in Hc.
+destruct c; [ assumption | simpl in Hc ].
+exfalso; revert Hc; rewrite Nat.add_comm.
+apply Nat.succ_add_discr.
+Qed.
+
+Theorem Nat_mod_succ : ∀ a, a mod S a = a.
+Proof.
+intros a.
+rewrite Nat.mod_small; [ reflexivity | idtac ].
+apply Nat.lt_succ_diag_r.
+Qed.
+
+Theorem Nat_pred_mod : ∀ a, pred a mod a = pred a.
+Proof.
+intros a.
+destruct a; [ reflexivity | apply Nat_mod_succ ].
+Qed.
+
+Theorem Nat_pred_le_mod : ∀ a b, a ≠ 0 → pred a ≤ b mod a → b mod a = pred a.
+Proof.
+intros a b Ha H.
+remember H as HH; clear HeqHH.
+apply Nat.le_antisymm in H; [ assumption | idtac ].
+apply Nat.mod_upper_bound with (a := b) in Ha.
+apply Nat.lt_le_pred; assumption.
+Qed.

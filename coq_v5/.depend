@@ -1,4 +1,4 @@
-Digit.vo Digit.glob Digit.v.beautified: Digit.v
+Digit.vo Digit.glob Digit.v.beautified: Digit.v Misc.vo
 Misc.vo Misc.glob Misc.v.beautified: Misc.v
 Oracle.vo Oracle.glob Oracle.v.beautified: Oracle.v Misc.vo
 Real.vo Real.glob Real.v.beautified: Real.v Real01.vo

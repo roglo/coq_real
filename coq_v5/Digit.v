@@ -1,6 +1,7 @@
 (* digits *)
 
 Require Import Utf8 QArith NPeano.
+Require Import Misc.
 
 Open Scope nat_scope.
 
@@ -28,6 +29,14 @@ Definition oppd x := {| dig := pred radix - dig x mod radix |}.
 Notation "x + y" := (digit_add x y) : digit_scope.
 
 Module Digit.
+
+Theorem pred_radix_lt_radix : pred radix < radix.
+Proof.
+pose proof (radix_ge_2 rad) as H.
+unfold radix.
+destruct (radix_value rad); [ idtac | apply Nat.lt_succ_diag_r ].
+exfalso; apply Nat.nlt_ge in H; apply H, Nat.lt_0_succ.
+Qed.
 
 Theorem radix_neq_0 : radix ≠ 0.
 Proof.
@@ -130,17 +139,6 @@ apply add_1_r.
 Qed.
 *)
 
-Theorem Nat_mod_succ_diag_r_eq_0 : ∀ a, a mod S a = 0 → a = 0.
-Proof.
-intros a Ha.
-apply Nat.mod_divides in Ha; [ idtac | intros H; discriminate H ].
-destruct Ha as (c, Hc).
-rewrite Nat.mul_comm in Hc.
-destruct c; [ assumption | simpl in Hc ].
-exfalso; revert Hc; rewrite Nat.add_comm.
-apply Nat.succ_add_discr.
-Qed.
-
 Theorem neq_0_9 : (0 ≠ 9)%D.
 Proof.
 unfold digit_eq; simpl.
@@ -188,28 +186,6 @@ split; intros Hd.
  revert H; apply neq_0_1.
 Qed.
 *)
-
-Theorem Nat_mod_succ : ∀ a, a mod S a = a.
-Proof.
-intros a.
-rewrite Nat.mod_small; [ reflexivity | idtac ].
-apply Nat.lt_succ_diag_r.
-Qed.
-
-Theorem Nat_pred_mod : ∀ a, pred a mod a = pred a.
-Proof.
-intros a.
-destruct a; [ reflexivity | apply Nat_mod_succ ].
-Qed.
-
-Theorem Nat_pred_le_mod : ∀ a b, a ≠ 0 → pred a ≤ b mod a → b mod a = pred a.
-Proof.
-intros a b Ha H.
-remember H as HH; clear HeqHH.
-apply Nat.le_antisymm in H; [ assumption | idtac ].
-apply Nat.mod_upper_bound with (a := b) in Ha.
-apply Nat.lt_le_pred; assumption.
-Qed.
 
 Theorem opp_0_iff : ∀ d, (oppd d = 0)%D ↔ (d = 9)%D.
 Proof.
@@ -262,27 +238,17 @@ rewrite Nat.mod_small.
    apply Nat.mod_upper_bound.
    intros H; discriminate H.
 
-  apply Nat.le_lt_trans with (m := pred radix).
-   apply Nat.le_sub_le_add_r.
-   apply Nat.le_sub_le_add_l.
-   rewrite Nat.sub_diag.
-   apply Nat.le_0_l.
-
-   pose proof (radix_ge_2 rad) as H.
-   unfold radix.
-   destruct (radix_value rad); [ idtac | apply Nat.lt_succ_diag_r ].
-   exfalso; apply Nat.nlt_ge in H; apply H, Nat.lt_0_succ.
-
- apply Nat.le_lt_trans with (m := pred radix).
+  eapply Nat.le_lt_trans; [ idtac | apply pred_radix_lt_radix ].
   apply Nat.le_sub_le_add_r.
   apply Nat.le_sub_le_add_l.
   rewrite Nat.sub_diag.
   apply Nat.le_0_l.
 
-  pose proof (radix_ge_2 rad) as H.
-  unfold radix.
-  destruct (radix_value rad); [ idtac | apply Nat.lt_succ_diag_r ].
-  exfalso; apply Nat.nlt_ge in H; apply H, Nat.lt_0_succ.
+ eapply Nat.le_lt_trans; [ idtac | apply pred_radix_lt_radix ].
+ apply Nat.le_sub_le_add_r.
+ apply Nat.le_sub_le_add_l.
+ rewrite Nat.sub_diag.
+ apply Nat.le_0_l.
 Qed.
 
 Theorem opp_1_iff : ∀ d, (oppd d = 9)%D ↔ (d = 0)%D.
@@ -290,7 +256,13 @@ Proof.
 intros d.
 split; intros H1.
  apply opp_compat in H1.
- rewrite opp_involutive in H1.
+ rewrite opp_involutive in H1; rewrite H1.
+ unfold digit_eq; simpl.
+ rewrite Nat.mod_small.
+  rewrite Nat.mod_small; [ idtac | apply pred_radix_lt_radix ].
+  rewrite Nat.mod_small; [ apply Nat.sub_diag | idtac ].
+  apply neq_0_lt, Nat.neq_sym, radix_neq_0.
+
 bbb.
 unfold digit_eq, oppd; simpl.
 split; intros H1.

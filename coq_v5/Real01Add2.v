@@ -523,7 +523,11 @@ bbb.
 *)
 (* label 1 *)
 erewrite z_of_u_compat_l; [ reflexivity | intros j Hj ].
+Abort. (*
 bbb.
+(*
   Hj : j ≤ 2
   ============================
    I_add_algo x (y + z) (i + j) = I_add_algo (x + y) x (i + j)
+*)
+*)
