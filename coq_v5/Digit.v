@@ -130,10 +130,16 @@ apply add_1_r.
 Qed.
 *)
 
-Theorem Nat_eq_mod_succ_diag_r_0 : ∀ a, a mod S a = 0 → a = 0.
+Theorem Nat_mod_succ_diag_r_eq_0 : ∀ a, a mod S a = 0 → a = 0.
 Proof.
 intros a Ha.
-bbb.
+apply Nat.mod_divides in Ha; [ idtac | intros H; discriminate H ].
+destruct Ha as (c, Hc).
+rewrite Nat.mul_comm in Hc.
+destruct c; [ assumption | simpl in Hc ].
+exfalso; revert Hc; rewrite Nat.add_comm.
+apply Nat.succ_add_discr.
+Qed.
 
 Theorem neq_0_9 : (0 ≠ 9)%D.
 Proof.
@@ -145,30 +151,11 @@ apply Nat.nlt_ge in H; apply H; clear H.
 destruct r; [ apply Nat.lt_0_succ | apply lt_n_S, Nat.lt_1_r ].
 fsimpl_in Hr; symmetry in Hr.
 rewrite Nat.mod_0_l in Hr; [ idtac | intros H; discriminate H ].
-
-bbb.
-destruct r; [ reflexivity | exfalso ].
-induction r.
- rewrite Nat.mod_1_l in Hr; [ discriminate Hr | idtac ].
- apply Nat.lt_1_2.
-
-
-bbb.
-
-
-apply Nat.mod_divides in Hr; [ idtac | intros H; discriminate H ].
-destruct Hr as (c, Hc).
-rewrite Nat.mul_comm in Hc; rewrite Hc.
-destruct c; [ apply Nat.lt_1_2 | exfalso ].
-bbb.
-revert c Hc.
-induction r; intros; [ discriminate Hc | idtac ].
-simpl in Hc.
-bbb.
-
+apply Nat_mod_succ_diag_r_eq_0; assumption.
+Qed.
 
 Theorem neq_9_0 : (9 ≠ 0)%D.
-Proof. intros H; discriminate H. Qed.
+Proof. intros H; symmetry in H; revert H; apply neq_0_9. Qed.
 
 (*
 Theorem not_0_iff_1 : ∀ d, (d ≠ 0)%D ↔ (d = 1)%D.
@@ -208,9 +195,15 @@ intros d.
 unfold digit_eq, oppd; fsimpl.
 split; intros H1.
  rewrite Nat.mod_0_l in H1; [ idtac | apply radix_neq_0 ].
+bbb.
  remember (dig d mod radix) as dr eqn:Hdr.
- symmetry in Hdr.
- destruct dr; [ discriminate H1 | idtac ].
+ symmetry.
+ destruct dr.
+  rewrite Nat.sub_0_r in H1; assumption.
+
+Inspect 4.
+
+; [ discriminate H1 | idtac ].
 bbb.
   Hdr : dig d mod radix = S dr
   H1 : (9 - S dr) mod radix = 0
