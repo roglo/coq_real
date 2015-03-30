@@ -212,99 +212,41 @@ split; intros H1.
  unfold digit_eq in H1; fsimpl_in H1.
  unfold digit_eq; simpl.
  rewrite Nat.mod_0_l in H1; [ idtac | apply radix_neq_0 ].
-
  symmetry.
- rewrite Nat.mod_small.
- symmetry.
-
-
+ rewrite Nat.mod_small; [ symmetry | apply Nat.lt_pred_l, radix_neq_0 ].
  apply Nat.mod_divides in H1; [ idtac | apply radix_neq_0 ].
-
  destruct H1 as (c, Hc); rewrite Nat.mul_comm in Hc.
  destruct c; simpl in Hc.
-
   apply Nat.sub_0_le in Hc.
   apply Nat_pred_le_mod in Hc; [ assumption | apply radix_neq_0 ].
 
-bbb.
+  apply Nat.add_sub_eq_nz in Hc.
+   rewrite Nat.add_comm in Hc.
+   destruct radix; [ reflexivity | simpl in Hc ].
+   rewrite <- Nat.add_1_r in Hc.
+   do 2 rewrite <- Nat.add_assoc in Hc.
+   apply Nat.add_sub_eq_l in Hc.
+   rewrite Nat.sub_diag, Nat.add_assoc, Nat.add_1_r in Hc.
+   discriminate Hc.
 
-  rewrite Hc.
-  destruct radix as [| n]; [ reflexivity | fsimpl ].
-  rewrite Nat_mod_succ_r; reflexivity.
+   intros H.
+   apply Nat.eq_add_0 in H.
+   destruct H as (H, _).
+   revert H; apply radix_neq_0.
 
-  symmetry.
-  rewrite Nat.mod_small.
-
-destruct a; [reflexivity|].
-pose proof Nat.mod_upper_bound a (S a) as H.
-
-bbb.
-
-Inspect 6.
-bbb.
-
-destruct a.
-SearchAbout (_ mod _ < _).
-
-
-revert a Ha H.
-induction b; intros; simpl.
- rewrite Nat.mod_0_l in H; [ idtac | assumption ].
- apply Nat.le_0_r in H; symmetry; assumption.
-
- rewrite <- Nat.add_1_r in H.
- rewrite <- Nat.add_mod_idemp_l in H; [ idtac | assumption ].
-bbb.
-
-apply Nat.le_pred_le_succ in H.
-
-
-bbb.
-  destruct radix as [| n]; [ reflexivity | idtac ].
-  apply le_S_n in Hc; fsimpl.
-bbb.
-
- pose proof radix_ge_2 rad as H.
- unfold radix in *; simpl in *.
- remember (radix_value rad) as r.
- destruct r.
-  apply Nat.nlt_ge in H.
-  exfalso; apply H, Nat.lt_0_succ.
-
-  fsimpl; fsimpl_in H1.
-Inspect 4.
-bbb.
- remember (dig d mod radix) as dr eqn:Hdr.
- symmetry.
- destruct dr.
-  rewrite Nat.sub_0_r in H1; assumption.
-
-Inspect 4.
-
-; [ discriminate H1 | idtac ].
-bbb.
-  Hdr : dig d mod radix = S dr
-  H1 : (9 - S dr) mod radix = 0
-  ============================
-   S dr = 9 mod radix
-
-split; intros [(H1, H2)| (H1, H2)].
- destruct (eq_nat_dec (dig d) 0) as [H3| H3]; [ discriminate H1 | idtac ].
- right; split; [ assumption | idtac ].
- intros H; discriminate H.
-
- exfalso; apply H2; reflexivity.
-
- discriminate H2.
-
- destruct (eq_nat_dec (dig d) 0) as [H3| H3]; [ contradiction | idtac ].
- left; split; reflexivity.
+ unfold digit_eq in H1; fsimpl_in H1.
+ unfold digit_eq; simpl.
+ symmetry in H1.
+ rewrite Nat.mod_small in H1; [ idtac | apply Nat.lt_pred_l, radix_neq_0 ].
+ rewrite H1, Nat.sub_diag; reflexivity.
 Qed.
 
-Theorem opp_1_iff : ∀ d, (oppd d = 1)%D ↔ (d = 0)%D.
+Theorem opp_1_iff : ∀ d, (oppd d = 9)%D ↔ (d = 0)%D.
 Proof.
 intros d.
 unfold digit_eq, oppd; simpl.
+bbb.
+
 split; intros [(H1, H2)| (H1, H2)].
  discriminate H2.
 
