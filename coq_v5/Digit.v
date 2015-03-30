@@ -245,6 +245,7 @@ Theorem opp_1_iff : ∀ d, (oppd d = 9)%D ↔ (d = 0)%D.
 Proof.
 intros d.
 unfold digit_eq, oppd; simpl.
+split; intros H1.
 bbb.
 
 split; intros [(H1, H2)| (H1, H2)].
