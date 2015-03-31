@@ -236,8 +236,7 @@ rewrite Nat.mod_small.
    rewrite Nat.add_comm, Nat.add_sub; reflexivity.
 
    destruct radix; [ reflexivity | idtac ].
-   apply le_S_n.
-   apply Nat.mod_upper_bound.
+   apply le_S_n, Nat.mod_upper_bound.
    intros H; discriminate H.
 
   eapply Nat.le_lt_trans; [ idtac | apply pred_radix_lt_radix ].
@@ -595,7 +594,21 @@ destruct (lt_dec (dr + er) radix) as [H1| H1].
     symmetry in Hx.
     apply Nat.add_cancel_l in Hx.
     assumption.
-bbb.
+
+    rewrite Hy.
+    apply Nat_lt_add_sub_lt_r with (d := 0).
+     subst dr fr.
+     apply Nat.add_lt_mono; apply Nat.mod_upper_bound, radix_neq_0.
+
+     apply neq_0_lt, Nat.neq_sym, radix_neq_0.
+
+   rewrite Hx.
+   apply Nat_lt_add_sub_lt_r with (d := 0).
+    subst dr er.
+    apply Nat.add_lt_mono; apply Nat.mod_upper_bound, radix_neq_0.
+
+    apply neq_0_lt, Nat.neq_sym, radix_neq_0.
+Qed.
 
 Theorem add_cancel_r : ∀ d e f, (d + f = e + f)%D → (d = e)%D.
 Proof.
@@ -605,6 +618,7 @@ rewrite add_comm in Hd; symmetry in Hd.
 apply add_cancel_l in Hd; assumption.
 Qed.
 
+(*
 Theorem move_l_r_1 : ∀ d e f, (d + e = f)%D → (e = d + f)%D.
 Proof.
 intros d e f Hd.
@@ -682,30 +696,39 @@ destruct (eq_nat_dec (dig x) 0) as [H1 | H1].
  left; right; split; [ assumption | intros H; discriminate H ].
 Qed.
 Arguments dec x%D.
+*)
 
 End Digit.
 
 Theorem eq_digit_eq : ∀ d e, d = e → (d = e)%D.
 Proof. intros d e H; subst d; reflexivity. Qed.
 
+(*
 Ltac discr_digit x :=
   exfalso; revert x; try apply Digit.neq_1_0; apply Digit.neq_0_1.
+*)
 
 Definition d2n d := dig d mod radix.
-Definition n2d n := match n with 0 => 0%D | S n1 => 1%D end.
+Definition n2d n := {| dig := n |}.
 Arguments d2n d%D.
 Arguments n2d n%nat.
 
 Theorem d2n_0 : d2n 0 = 0.
 Proof.
 unfold d2n.
-destruct (Digit.dec 0) as [H1| H1]; [ discr_digit H1 | reflexivity ].
+rewrite Nat.mod_0_l; [ reflexivity | apply Digit.radix_neq_0 ].
 Qed.
 
 Theorem d2n_1 : d2n 1 = 1.
 Proof.
 unfold d2n.
-destruct (Digit.dec 1) as [H1| H1]; [ reflexivity | discr_digit H1 ].
+rewrite Nat.mod_small; [ reflexivity | simpl ].
+pose proof radix_ge_2 rad as H; unfold radix.
+remember (radix_value rad) as r.
+apply Nat.nlt_ge in H.
+destruct r; [ exfalso; apply H, Nat.lt_0_succ | idtac ].
+destruct r; [ exfalso; apply H, Nat.lt_1_2 | idtac ].
+apply lt_n_S, Nat.lt_0_succ.
 Qed.
 
 Theorem eq_d2n_0 : ∀ b, d2n b = 0 ↔ (b = 0)%D.
@@ -714,13 +737,13 @@ intros b.
 split; intros Hb.
  unfold d2n in Hb.
  unfold digit_eq.
- left; split; [ idtac | reflexivity ].
-bbb.
- destruct (Digit.dec b); [ discriminate Hb | assumption ].
+ rewrite Hb; simpl.
+ rewrite Nat.mod_0_l; [ reflexivity | apply Digit.radix_neq_0 ].
 
  unfold d2n.
- destruct (Digit.dec b) as [H1| H1]; [ idtac | reflexivity ].
- rewrite Hb in H1; discr_digit H1.
+ unfold digit_eq in Hb.
+ rewrite Hb; simpl.
+ rewrite Nat.mod_0_l; [ reflexivity | apply Digit.radix_neq_0 ].
 Qed.
 
 Theorem eq_d2n_1 : ∀ b, d2n b = 1 ↔ (b = 1)%D.
@@ -728,47 +751,38 @@ Proof.
 intros b.
 split; intros Hb.
  unfold d2n in Hb.
- destruct (Digit.dec b); [ assumption | discriminate Hb ].
+ unfold digit_eq.
+ rewrite Hb; simpl.
+ rewrite Nat.mod_small; [ reflexivity | apply radix_ge_2 ].
 
  unfold d2n.
- destruct (Digit.dec b) as [H1| H1]; [ reflexivity | idtac ].
- rewrite Hb in H1; discr_digit H1.
+ unfold digit_eq in Hb.
+ rewrite Hb; simpl.
+ rewrite Nat.mod_small; [ reflexivity | apply radix_ge_2 ].
 Qed.
 
-Theorem le_d2n_1 : ∀ b, d2n b ≤ 1.
+Theorem le_d2n_1 : ∀ b, d2n b ≤ pred radix.
 Proof.
 intros b.
 unfold d2n.
-destruct (Digit.dec b); [ reflexivity | apply Nat.le_0_l ].
+destruct radix; [ reflexivity | idtac ].
+apply le_S_n, Nat.mod_upper_bound.
+intros H; discriminate H.
 Qed.
 
+(*
 Theorem n2d_0_iff : ∀ n, (n2d n = 0)%D ↔ n = 0.
 Proof.
 intros n; split; intros Hn; [ idtac | subst n; reflexivity ].
 unfold n2d in Hn.
-destruct n; [ reflexivity | discr_digit Hn ].
+destruct n; [ reflexivity | idtac ].
+unfold digit_eq in Hn; simpl in Hn.
+rewrite Nat.mod_0_l in Hn; [ idtac | apply Digit.radix_neq_0 ].
 Qed.
+*)
 
 Theorem n2d_eq : ∀ a b, a = b → (n2d a = n2d b)%D.
 Proof. intros; subst; reflexivity. Qed.
 
 Theorem digit_d2n_eq_iff : ∀ d e, (d = e)%D ↔ d2n d = d2n e.
-Proof.
-intros d e.
-split; intros Hde.
- unfold d2n.
- destruct (Digit.dec d) as [H1| H1].
-  destruct (Digit.dec e) as [H2| H2]; [ reflexivity | exfalso ].
-  rewrite H1, H2 in Hde; discr_digit Hde.
-
-  destruct (Digit.dec e) as [H2| H2]; [ exfalso | reflexivity ].
-  rewrite H1, H2 in Hde; discr_digit Hde.
-
- unfold d2n in Hde.
- destruct (Digit.dec d) as [H1| H1].
-  destruct (Digit.dec e) as [H2| H2]; [ clear Hde | discriminate Hde ].
-  rewrite H1, H2; reflexivity.
-
-  destruct (Digit.dec e) as [H2| H2]; [ discriminate Hde | clear Hde ].
-  rewrite H1, H2; reflexivity.
-Qed.
+Proof. intros d e; split; intros; assumption. Qed.

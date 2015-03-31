@@ -2,7 +2,7 @@
 
 Require Import Utf8 QArith NPeano.
 Require Import Misc Summation.
-Require Import Digit2 Real01.
+Require Import Digit2 Real012.
 
 Open Scope nat_scope.
 
