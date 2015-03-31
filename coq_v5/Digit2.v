@@ -508,6 +508,43 @@ rewrite Nat.mod_small.
  rewrite Nat.sub_diag; apply Nat.le_0_l.
 Qed.
 
+Theorem add_cancel_lt_lt : ∀ d e f dr er fr,
+  dr = dig d mod radix
+  → er = dig e mod radix
+  → fr = dig f mod radix
+  → dr + er = (dr + fr) mod radix
+  → dr + er < radix
+  → dr + fr < radix.
+Proof.
+intros d e f dr er fr Hdr Her Hfr H1 H2.
+apply Nat.nle_gt; intros H3.
+assert (fr = er + radix) as H.
+ remember (dr + fr - radix) as x eqn:Hx .
+ remember Hx as H; clear HeqH.
+ apply Nat_le_sub_add_r in H; [ idtac | assumption ].
+ apply Nat.add_cancel_l with (p := dr).
+ rewrite Nat.add_assoc, H1, H, Nat.add_comm.
+ apply Nat.add_cancel_r; symmetry.
+ rewrite Nat.add_mod; [ idtac | apply radix_neq_0 ].
+ rewrite Nat.mod_same; [ rewrite Nat.add_0_r | apply radix_neq_0 ].
+ rewrite Nat.mod_mod; [ idtac | apply radix_neq_0 ].
+ apply Nat.mod_small; rewrite Hx.
+ apply Nat_lt_add_sub_lt_r with (d := 0).
+  subst dr fr.
+  apply Nat.add_lt_mono; apply Nat.mod_upper_bound, radix_neq_0.
+
+  apply neq_0_lt, Nat.neq_sym, radix_neq_0.
+
+ subst fr er.
+ pose proof radix_neq_0 as H4.
+ apply Nat.mod_upper_bound with (a := dig f) in H4.
+ rewrite H in H4.
+ apply Nat.lt_add_lt_sub_r in H4.
+ rewrite Nat.sub_diag in H4.
+ apply Nat.nlt_ge in H4.
+ apply H4, Nat.lt_0_succ.
+Qed.
+
 Theorem add_cancel_l : ∀ d e f, (d + e = d + f)%D → (e = f)%D.
 Proof.
 intros d e f Hd.
@@ -524,36 +561,17 @@ destruct (lt_dec (dr + er) radix) as [H1| H1].
   rewrite Nat.mod_small in Hd; [ idtac | assumption ].
   apply Nat.add_cancel_l in Hd; assumption.
 
-  (* same thing for symmetric case, but must be simplified before *)
-  apply Nat.nlt_ge in H2.
-  assert (fr = er + radix) as H.
-   remember (dr + fr - radix) as x eqn:Hx .
-   remember Hx as H; clear HeqH.
-   apply Nat_le_sub_add_r in H; [ idtac | assumption ].
-   apply Nat.add_cancel_l with (p := dr).
-   rewrite Nat.add_assoc, Hd, H, Nat.add_comm.
-   apply Nat.add_cancel_r; symmetry.
-   rewrite Nat.add_mod; [ idtac | apply radix_neq_0 ].
-   rewrite Nat.mod_same; [ rewrite Nat.add_0_r | apply radix_neq_0 ].
-   rewrite Nat.mod_mod; [ idtac | apply radix_neq_0 ].
-   apply Nat.mod_small; rewrite Hx.
-   apply Nat_lt_add_sub_lt_r with (d := 0).
-    subst dr fr.
-    apply Nat.add_lt_mono; apply Nat.mod_upper_bound, radix_neq_0.
+  exfalso; apply H2.
+  eapply add_cancel_lt_lt with (er := er); eassumption.
 
-    apply neq_0_lt, Nat.neq_sym, radix_neq_0.
-
-   exfalso; subst fr er.
-   pose proof radix_neq_0 as H3.
-   apply Nat.mod_upper_bound with (a := dig f) in H3.
-   rewrite H in H3.
-   apply Nat.lt_add_lt_sub_r in H3.
-   rewrite Nat.sub_diag in H3.
-   apply Nat.nlt_ge in H3.
-   apply H3, Nat.lt_0_succ.
-
- apply Nat.nlt_ge in H1.
  destruct (lt_dec (dr + fr) radix) as [H2| H2].
+  symmetry in Hd.
+  rewrite Nat.mod_small in Hd; [ idtac | assumption ].
+  exfalso; apply H1.
+  eapply add_cancel_lt_lt with (er := fr); eassumption.
+
+  apply Nat.nlt_ge in H1.
+  apply Nat.nlt_ge in H2.
 bbb.
 
 Theorem add_cancel_r : ∀ d e f, (d + f = e + f)%D → (d = e)%D.
