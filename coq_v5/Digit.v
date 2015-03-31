@@ -365,10 +365,12 @@ rewrite add_comm.
 apply opp_add_diag_l.
 Qed.
 
+(* false if radix is even
 Theorem no_fixpoint_opp : ∀ d, (oppd d ≠ d)%D.
 Proof.
 intros d.
 unfold digit_eq, oppd; simpl; intros H.
+rewrite Nat.mod_small in H.
 bbb.
 destruct H as [(Hx, Hy)| (Hx, Hy)].
  rewrite Hy in Hx; discriminate Hx.
@@ -376,7 +378,9 @@ destruct H as [(Hx, Hy)| (Hx, Hy)].
  destruct (eq_nat_dec (dig d) 0) as [H1| H1]; [ contradiction | idtac ].
  apply Hx; reflexivity.
 Qed.
+*)
 
+(*
 Theorem neq_eq_opp : ∀ d e, (d ≠ e)%D ↔ (d = oppd e)%D.
 Proof.
 intros d e.
@@ -397,33 +401,22 @@ split; intros Hde.
  intros H; rewrite Hde in H.
  exfalso; revert H; apply no_fixpoint_opp.
 Qed.
+*)
 
 Theorem opp_sym : ∀ d d', (d' = oppd d)%D → (d = oppd d')%D.
 Proof.
 intros d d' Hd'.
-rewrite Hd'; unfold digit_eq, oppd; simpl.
-destruct (eq_nat_dec (dig d) 0) as [H1 | H1]; simpl.
- left; split; [ assumption | reflexivity ].
-
- right; split; [ assumption | intros H; discriminate H ].
+apply opp_compat in Hd'.
+rewrite opp_involutive in Hd'.
+symmetry; assumption.
 Qed.
 
 Theorem opp_eq : ∀ d e, (oppd d = oppd e)%D → (d = e)%D.
 Proof.
 intros d e Hde.
-unfold digit_eq, oppd in Hde; unfold digit_eq.
-destruct (eq_nat_dec (dig d) 0) as [H1 | H1]; simpl in Hde; simpl.
- destruct (eq_nat_dec (dig e) 0) as [H2 | H2]; simpl in Hde; simpl.
-  left; split; assumption.
-
-  destruct Hde as [(Hd, He)|(Hd, He)]; [ discriminate Hd | idtac ].
-  exfalso; apply He; reflexivity.
-
- destruct (eq_nat_dec (dig e) 0) as [H2 | H2]; simpl in Hde; simpl.
-  destruct Hde as [(Hd, He)|(Hd, He)]; [ discriminate He | idtac ].
-  exfalso; apply Hd; reflexivity.
-
-  right; split; assumption.
+apply opp_compat in Hde.
+do 2 rewrite opp_involutive in Hde.
+assumption.
 Qed.
 
 Theorem opp_add_r : ∀ d e, (oppd (d + e) = d + oppd e)%D.
