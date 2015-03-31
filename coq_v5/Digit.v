@@ -532,8 +532,9 @@ destruct (lt_dec (dr + er) radix) as [H1| H1].
 rewrite Nat.add_mod in Hd.
 rewrite Nat.mod_same in Hd; [simpl in Hd|apply radix_neq_0].
 rewrite Nat.mod_mod in Hd; [ | apply radix_neq_0].
-eapply Nat.lt_le_trans in H2; [ | eassumption].
-apply Nat.add_lt_mono_l in H2.
+remember H2 as H3; clear HeqH3.
+eapply Nat.lt_le_trans in H3; [ | eassumption].
+apply Nat.add_lt_mono_l in H3.
 bbb.
 (* oops... *)
 
