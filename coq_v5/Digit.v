@@ -13,12 +13,14 @@ Definition radix := radix_value rad.
 
 Record digit := { dig : nat }.
 Definition digit_0 := {| dig := 0 |}.
+Definition digit_1 := {| dig := 1 |}.
 Definition digit_rm1 := {| dig := pred radix |}.
 Definition digit_eq x y := dig x mod radix = dig y mod radix.
 Arguments dig d%D.
 Arguments digit_eq x%D y%D.
 
 Notation "0" := digit_0 : digit_scope.
+Notation "1" := digit_1 : digit_scope.
 Notation "9" := digit_rm1 : digit_scope.
 Notation "x = y" := (digit_eq x y) : digit_scope.
 Notation "x ≠ y" := (¬digit_eq x y) : digit_scope.
@@ -419,10 +421,39 @@ do 2 rewrite opp_involutive in Hde.
 assumption.
 Qed.
 
-Theorem opp_add_r : ∀ d e, (oppd (d + e) = d + oppd e)%D.
+Theorem opp_add : ∀ d e, (oppd (d + e) = oppd d + oppd e + 1)%D.
 Proof.
 intros d e.
 unfold digit_eq, digit_add, oppd; simpl.
+remember ((dig d + dig e) mod radix) as x eqn:Hx.
+rewrite Nat.add_mod in Hx; [ subst x | apply radix_neq_0 ].
+remember (dig d mod radix) as dr eqn:Hdr.
+remember (dig e mod radix) as er eqn:Her.
+rewrite Nat.mod_small.
+symmetry.
+rewrite Nat.add_comm.
+rewrite Nat.add_sub_assoc.
+rewrite Nat.add_sub_assoc.
+rewrite Nat.add_assoc.
+rewrite Nat.add_sub_assoc.
+rewrite Nat.add_1_l.
+rewrite Nat.succ_pred.
+rewrite <- Nat.add_sub_swap.
+rewrite <- Nat.sub_add_distr.
+rewrite Nat.add_comm.
+rewrite Nat.add_pred_l.
+bbb.
+
+rewrite
+
+SearchAbout ((_ + _) mod _).
+bbb.
+
+opp (d + e) = b - 1 - d - e
+
+opp (d + e) = opp d + opp e + 1
+
+
 destruct (eq_nat_dec (dig d) 0) as [H1 | H1]; simpl.
  destruct (eq_nat_dec (dig e) 0) as [H2 | H2]; simpl.
   right; split; intros H; discriminate H.
@@ -435,6 +466,7 @@ destruct (eq_nat_dec (dig d) 0) as [H1 | H1]; simpl.
   right; split; intros H; discriminate H.
 Qed.
 
+(*
 Theorem opp_add_l : ∀ d e, (oppd (d + e) = oppd d + e)%D.
 Proof.
 intros d e.
@@ -442,6 +474,7 @@ rewrite add_comm; symmetry.
 rewrite add_comm; symmetry.
 apply opp_add_r.
 Qed.
+*)
 
 Theorem add_cancel_l : ∀ d e f, (d + e = d + f)%D → (e = f)%D.
 Proof.
