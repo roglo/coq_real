@@ -15,11 +15,10 @@ Fixpoint int_pow a b :=
 Definition I_add_algo x y i := d2n (x.[i]) + d2n (y.[i]).
 Arguments I_add_algo x%I y%I i%nat.
 
-(* repeated in Real01Mul.v; to be unified *)
 Definition z_of_u b n u i :=
   n2d (Σ (k = 0, n), u (i + k) * int_pow b (n - k) / int_pow b n mod b).
 
-Definition I_add2_i x y := z_of_u base 2 (I_add_algo x y).
+Definition I_add2_i x y := z_of_u radix 2 (I_add_algo x y).
 Definition I_add2 x y := {| rm := I_add2_i x y |}.
 Arguments I_add2_i x%I y%I i%nat.
 Arguments I_add2 x%I y%I.
@@ -35,7 +34,6 @@ unfold I_add_algo; simpl.
 apply Nat.add_comm.
 Qed.
 
-(* repeated in Real01Mul.v; to be unified *)
 Theorem z_of_u_compat_l : ∀ b u v i n,
   (∀ j, j ≤ n → u (i + j) = v (i + j))
   → z_of_u b n u i = z_of_u b n v i.
@@ -64,20 +62,6 @@ rewrite I_add2_i_comm; reflexivity.
 Qed.
 
 (* 0 neutral element *)
-
-Theorem d2n_lt_base : ∀ d, d2n d < base.
-Proof.
-intros d.
-unfold d2n; simpl.
-destruct (Digit.dec d); [ apply Nat.lt_1_2 | apply Nat.lt_0_succ ].
-Qed.
-
-Theorem n2d_d2n : ∀ d, (n2d (d2n d) = d)%D.
-Proof.
-intros d.
-unfold n2d, d2n; simpl.
-destruct (Digit.dec d) as [H1| H1]; rewrite H1; reflexivity.
-Qed.
 
 Theorem I_add2_i_0_r : ∀ x i, (I_add2_i x 0 i = x.[i])%D.
 Proof.

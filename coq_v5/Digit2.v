@@ -786,3 +786,18 @@ Proof. intros; subst; reflexivity. Qed.
 
 Theorem digit_d2n_eq_iff : ∀ d e, (d = e)%D ↔ d2n d = d2n e.
 Proof. intros d e; split; intros; assumption. Qed.
+
+Theorem d2n_lt_base : ∀ d, d2n d < radix.
+Proof.
+intros d.
+unfold d2n; simpl.
+bbb.
+destruct (Digit.dec d); [ apply Nat.lt_1_2 | apply Nat.lt_0_succ ].
+Qed.
+
+Theorem n2d_d2n : ∀ d, (n2d (d2n d) = d)%D.
+Proof.
+intros d.
+unfold n2d, d2n; simpl.
+destruct (Digit.dec d) as [H1| H1]; rewrite H1; reflexivity.
+Qed.
