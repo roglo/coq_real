@@ -1,7 +1,7 @@
 (* Multiplication/Division of a Real by a power of 2 *)
 
 Require Import Utf8 QArith NPeano.
-Require Import Digit2 Real01 Real01Add Real01AddMono.
+Require Import Digit Real01 Real01Add Real01AddMono.
 Require Import Misc Real RealAdd RealAddGrp.
 
 Definition base := 2.

@@ -1,7 +1,7 @@
 (* Division in I = ℝ interval [0..1[ *)
 
 Require Import Utf8 QArith NPeano.
-Require Import Digit2 Real01 Real01Add Real01Cmp.
+Require Import Digit Real01 Real01Add Real01Cmp.
 
 Set Implicit Arguments.
 

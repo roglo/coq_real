@@ -1,7 +1,7 @@
 (* addition modulo 1 in I: a commutative monoid *)
 
 Require Import Utf8 QArith NPeano Misc.
-Require Import Digit2 Real01 Real01Add.
+Require Import Digit Real01 Real01Add.
 
 Open Scope nat_scope.
 

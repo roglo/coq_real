@@ -1,7 +1,7 @@
 (* addition modulo 1 in I *)
 
 Require Import Utf8 QArith NPeano Misc.
-Require Import Oracle Digit2 Real01.
+Require Import Oracle Digit Real01.
 
 Open Scope nat_scope.
 

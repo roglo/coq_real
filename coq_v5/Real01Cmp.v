@@ -1,7 +1,7 @@
 (* comparison in I *)
 
 Require Import Utf8 QArith NPeano.
-Require Import Digit2 Real01 Real01Add.
+Require Import Digit Real01 Real01Add.
 
 Set Implicit Arguments.
 

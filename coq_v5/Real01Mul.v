@@ -2,7 +2,7 @@
 
 Require Import Utf8 QArith NPeano.
 Require Import Misc Oracle Summation.
-Require Import Digit2 Real01 Real01Add Real01AddMono Real01Cmp.
+Require Import Digit Real01 Real01Add Real01AddMono Real01Cmp.
 
 Open Scope nat_scope.
 

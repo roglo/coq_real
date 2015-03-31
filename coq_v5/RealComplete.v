@@ -2,7 +2,7 @@
 
 Require Import Utf8 QArith NPeano Misc.
 Require Import Real01 Real01Cmp Real01AddMono Real01Add.
-Require Import Digit2 Real RealAdd RealAddGrp.
+Require Import Digit Real RealAdd RealAddGrp.
 
 Open Scope nat_scope.
 

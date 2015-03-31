@@ -1,7 +1,7 @@
 (* addition in ℝ is a group *)
 
 Require Import Utf8 QArith NPeano Misc.
-Require Import Digit2 Real01 Real01Add Real01AddMono.
+Require Import Digit Real01 Real01Add Real01AddMono.
 Require Import Real RealAdd.
 
 Open Scope Z_scope.

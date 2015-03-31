@@ -1,7 +1,7 @@
 (* definition of real numbers in interval [0..1[ *)
 
 Require Import Utf8 QArith NPeano.
-Require Import Oracle Digit2.
+Require Import Oracle Digit.
 
 Open Scope nat_scope.
 
