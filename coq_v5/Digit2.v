@@ -572,6 +572,29 @@ destruct (lt_dec (dr + er) radix) as [H1| H1].
 
   apply Nat.nlt_ge in H1.
   apply Nat.nlt_ge in H2.
+  remember (dr + er - radix) as x eqn:Hx.
+  remember (dr + fr - radix) as y eqn:Hy.
+  remember Hx as H; clear HeqH.
+  apply Nat_le_sub_add_r in H; [ idtac | assumption ].
+  rewrite H in Hd; clear H.
+  remember Hy as H; clear HeqH.
+  apply Nat_le_sub_add_r in H; [ idtac | assumption ].
+  rewrite H in Hd; clear H.
+  rewrite Nat.add_mod in Hd; symmetry in Hd; [ idtac | apply radix_neq_0 ].
+  rewrite Nat.add_mod in Hd; symmetry in Hd; [ idtac | apply radix_neq_0 ].
+  rewrite Nat.mod_same in Hd; [ simpl in Hd | apply radix_neq_0 ].
+  rewrite Nat.mod_mod in Hd; [ idtac | apply radix_neq_0 ].
+  rewrite Nat.mod_mod in Hd; [ idtac | apply radix_neq_0 ].
+  rewrite Nat.mod_small in Hd.
+   rewrite Nat.mod_small in Hd.
+    subst y; rewrite Hy in Hx.
+    apply Nat_le_sub_add_r in Hx; [ idtac | assumption ].
+    rewrite Nat.add_sub_assoc in Hx; [ idtac | assumption ].
+    symmetry in Hx.
+    rewrite Nat.add_comm, Nat.add_sub in Hx.
+    symmetry in Hx.
+    apply Nat.add_cancel_l in Hx.
+    assumption.
 bbb.
 
 Theorem add_cancel_r : ∀ d e f, (d + f = e + f)%D → (d = e)%D.
