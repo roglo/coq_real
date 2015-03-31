@@ -526,20 +526,16 @@ destruct (lt_dec (dr + er) radix) as [H1| H1].
 
   (* same thing for symmetric case, but must be simplified before *)
   apply Nat.nlt_ge in H2.
-  remember (dr + fr - radix) as x eqn:Hx .
-  remember Hx as H; clear HeqH.
-  apply Nat_le_sub_add_r in H; [ idtac | assumption ].
-  rewrite H in Hd.
-  rewrite Nat.add_mod in Hd; [ idtac | apply radix_neq_0 ].
-  rewrite Nat.mod_same in Hd; [ simpl in Hd | apply radix_neq_0 ].
-  rewrite Nat.mod_mod in Hd; [ idtac | apply radix_neq_0 ].
-  remember H2 as H3; clear HeqH3.
-  eapply Nat.lt_le_trans in H3; [ idtac | eassumption ].
-  apply Nat.add_lt_mono_l in H3.
-  assert (fr = er + radix) as H4.
+  assert (fr = er + radix) as H.
+   remember (dr + fr - radix) as x eqn:Hx .
+   remember Hx as H; clear HeqH.
+   apply Nat_le_sub_add_r in H; [ idtac | assumption ].
    apply Nat.add_cancel_l with (p := dr).
    rewrite Nat.add_assoc, Hd, H, Nat.add_comm.
    apply Nat.add_cancel_r; symmetry.
+   rewrite Nat.add_mod; [ idtac | apply radix_neq_0 ].
+   rewrite Nat.mod_same; [ rewrite Nat.add_0_r | apply radix_neq_0 ].
+   rewrite Nat.mod_mod; [ idtac | apply radix_neq_0 ].
    apply Nat.mod_small; rewrite Hx.
    apply Nat_lt_add_sub_lt_r with (d := 0).
     subst dr fr.
@@ -547,16 +543,17 @@ destruct (lt_dec (dr + er) radix) as [H1| H1].
 
     apply neq_0_lt, Nat.neq_sym, radix_neq_0.
 
-   subst fr er.
-   pose proof radix_neq_0 as H5.
-   apply Nat.mod_upper_bound with (a := dig f) in H5.
-   rewrite H4 in H5.
-   apply Nat.lt_add_lt_sub_r in H5.
-   rewrite Nat.sub_diag in H5.
-   apply Nat.nlt_ge in H5.
-   exfalso; apply H5, Nat.lt_0_succ.
+   exfalso; subst fr er.
+   pose proof radix_neq_0 as H3.
+   apply Nat.mod_upper_bound with (a := dig f) in H3.
+   rewrite H in H3.
+   apply Nat.lt_add_lt_sub_r in H3.
+   rewrite Nat.sub_diag in H3.
+   apply Nat.nlt_ge in H3.
+   apply H3, Nat.lt_0_succ.
 
  apply Nat.nlt_ge in H1.
+ destruct (lt_dec (dr + fr) radix) as [H2| H2].
 bbb.
 
 Theorem add_cancel_r : ∀ d e f, (d + f = e + f)%D → (d = e)%D.
