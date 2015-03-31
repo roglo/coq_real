@@ -513,6 +513,41 @@ Proof.
 intros d e f Hd.
 unfold digit_eq, digit_add, oppd in Hd; simpl in Hd.
 unfold digit_eq; simpl.
+rewrite Nat.add_mod in Hd; [ symmetry in Hd | apply radix_neq_0 ].
+rewrite Nat.add_mod in Hd; [ symmetry in Hd | apply radix_neq_0 ].
+remember (dig d mod radix) as dr eqn:Hdr.
+remember (dig e mod radix) as er eqn:Her.
+remember (dig f mod radix) as fr eqn:Hfr.
+destruct (lt_dec (dr + er) radix) as [H1| H1].
+ rewrite Nat.mod_small in Hd; [ idtac | assumption ].
+ destruct (lt_dec (dr + fr) radix) as [H2| H2].
+  rewrite Nat.mod_small in Hd; [ idtac | assumption ].
+  apply Nat.add_cancel_l in Hd; assumption.
+
+  apply Nat.nlt_ge in H2.
+      remember (dr + fr - radix) as x eqn:Hx .
+      remember Hx as H; clear HeqH.
+      apply Nat_le_sub_add_r in H; [ idtac | assumption ].
+      rewrite H in Hd.
+rewrite Nat.add_mod in Hd.
+rewrite Nat.mod_same in Hd; [simpl in Hd|apply radix_neq_0].
+rewrite Nat.mod_mod in Hd; [ | apply radix_neq_0].
+eapply Nat.lt_le_trans in H2; [ | eassumption].
+apply Nat.add_lt_mono_l in H2.
+bbb.
+(* oops... *)
+
+      rewrite H, Nat.sub_add_distr, Nat.add_comm, Nat.add_sub.
+      rewrite Nat.add_mod; [ idtac | apply radix_neq_0 ].
+      rewrite Nat.mod_same; [ simpl | apply radix_neq_0 ].
+      rewrite Nat.mod_mod; [ simpl | apply radix_neq_0 ].
+      rewrite Nat.mod_small.
+       rewrite Nat.mod_small; [ reflexivity | rewrite Hx ].
+       eapply Nat_lt_add_sub_lt_l.
+        subst dr er.
+        apply Nat.add_lt_mono; apply Nat.mod_upper_bound, radix_neq_0.
+
+
 bbb.
 
 destruct (eq_nat_dec (dig d) 0) as [H1 | H1]; [ assumption | simpl ].
