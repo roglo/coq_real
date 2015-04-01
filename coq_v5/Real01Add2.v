@@ -290,6 +290,40 @@ eapply le_trans; [ apply Nat.add_lt_mono; eassumption | idtac ].
 apply double_radix_le_square_radix.
 Qed.
 
+Theorem d2n_add_div_radix : ∀ a b,
+  radix ≤ d2n a + d2n b
+  → (d2n a + d2n b) / radix = 1.
+Proof.
+intros a b Hab.
+remember (d2n a + d2n b - radix) as c eqn:Hc.
+apply Nat_le_sub_add_r in Hc; [ idtac | assumption ].
+replace radix with (1 * radix) in Hc by apply Nat.mul_1_l.
+rewrite Hc, Nat.add_comm.
+rewrite Nat.div_add; [ idtac | apply Digit.radix_neq_0 ].
+rewrite Nat.div_small; [ reflexivity | idtac ].
+rewrite Nat.mul_1_l in Hc.
+apply Nat.add_lt_mono_l with (p := radix).
+rewrite <- Hc.
+apply Nat.add_lt_mono; apply d2n_lt_radix.
+Qed.
+
+Theorem d2n_add_mod_radix : ∀ a b,
+  radix ≤ d2n a + d2n b
+  → (d2n a + d2n b) mod radix = d2n a + d2n b - radix.
+Proof.
+intros a b Hab.
+remember (d2n a + d2n b - radix) as c eqn:Hc.
+apply Nat_le_sub_add_r in Hc; [ idtac | assumption ].
+replace radix with (1 * radix) in Hc by apply Nat.mul_1_l.
+rewrite Hc, Nat.add_comm.
+rewrite Nat.mod_add; [ idtac | apply Digit.radix_neq_0 ].
+rewrite Nat.mod_small; [ reflexivity | idtac ].
+rewrite Nat.mul_1_l in Hc.
+apply Nat.add_lt_mono_l with (p := radix).
+rewrite <- Hc.
+apply Nat.add_lt_mono; apply d2n_lt_radix.
+Qed.
+
 Theorem I_add_assoc : ∀ x y z, (x + (y + z) == (x + y) + z)%I.
 Proof.
 intros x y z.
@@ -387,7 +421,32 @@ destruct (lt_dec (yi2 + zi2) radix) as [H1| H1].
     reflexivity.
 
     apply Nat.nlt_ge in H4.
+    remember ((xi1 + yi1) / radix) as a eqn:Ha.
+    rewrite Hxi1, Hyi1 in H4, Ha.
+    rewrite d2n_add_div_radix in Ha; [ idtac | assumption ].
+    rewrite <- Hxi1, <- Hyi1 in H4; subst a.
+    remember ((xi1 + yi1) mod radix) as a eqn:Ha.
+    rewrite Hxi1, Hyi1 in H4, Ha.
+    rewrite d2n_add_mod_radix in Ha; [ idtac | assumption ].
+    rewrite <- Hxi1, <- Hyi1 in H4, Ha; subst a.
+    destruct (eq_nat_dec ((xi + yi + zi) mod radix) (pred radix)) as [H5| H5].
+    rewrite <- Nat.add_mod_idemp_l; [ idtac | apply Digit.radix_neq_0 ].
+    rewrite H5, Nat.add_1_r.
+    rewrite Nat.succ_pred; [ idtac | apply Digit.radix_neq_0 ].
+    rewrite Nat.mod_same; [ idtac | apply Digit.radix_neq_0 ].
+    rewrite Nat.add_0_l.
+SearchAbout ((_ + _) / _).
+Theorem zzz : ∀ a b, b ≤ a → (a - b) / b = pred (a / b).
+Proof.
+intros a b Hba.
 bbb.
+
+bbb.
+    rewrite Nat.add_comm.
+    rewrite Nat.add_sub_assoc; [ idtac | assumption ].
+SearchAbout ((_ + _) / _).
+bbb.
+
 
 do 6 rewrite d2n_add_div_4, Nat.add_0_r.
 do 6 rewrite Nat_mul_2_div_4.
