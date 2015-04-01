@@ -88,6 +88,8 @@ rewrite Nat.div_small.
 rewrite Nat.div_small.
 rewrite Nat.add_0_r.
 apply n2d_d2n.
+eapply lt_trans.
+apply Nat.mod_upper_bound, Digit.radix_neq_0.
 bbb.
 
  rewrite Nat.div_mul; [ idtac | intros H; discriminate H ].
