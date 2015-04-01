@@ -234,6 +234,9 @@ rewrite Nat.div_mul.
   remember (d2n (x .[i+1])) as xi1 eqn:Hxi1.
   remember (d2n (y .[i+1])) as yi1 eqn:Hyi1.
   remember (d2n (z .[i+1])) as zi1 eqn:Hzi1.
+  destruct (lt_dec (yi + zi) radix) as [H1| H1].
+   remember ((yi + zi) mod radix) as yz eqn:Hyz.
+   rewrite Nat.mod_small in Hyz; [ subst yz | assumption ].
 bbb.
 
 do 6 rewrite fold_sub_succ_l, divmod_mod.
