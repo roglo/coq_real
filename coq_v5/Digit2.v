@@ -815,3 +815,20 @@ intros d.
 unfold digit_eq, n2d, d2n; simpl.
 apply Nat.mod_mod, Digit.radix_neq_0.
 Qed.
+
+Theorem d2n_mod_radix : ∀ d e,
+  d2n d mod radix = d2n e mod radix → d2n d = d2n e.
+Proof.
+intros d e H.
+unfold d2n in H; unfold d2n.
+rewrite Nat.mod_mod in H; [ idtac | apply Digit.radix_neq_0 ].
+rewrite Nat.mod_mod in H; [ idtac | apply Digit.radix_neq_0 ].
+assumption.
+Qed.
+
+Theorem radix_radix_neq_0 : radix * radix ≠ 0.
+Proof.
+intros H.
+apply Nat.eq_mul_0 in H.
+destruct H; revert H; apply Digit.radix_neq_0.
+Qed.

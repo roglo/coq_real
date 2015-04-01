@@ -207,3 +207,11 @@ apply Nat.le_antisymm in H; [ assumption | idtac ].
 apply Nat.mod_upper_bound with (a := b) in Ha.
 apply Nat.lt_le_pred; assumption.
 Qed.
+
+Theorem Nat_lt_sqr_div_mod : ∀ a b, a < b * b → (a / b) mod b = a / b.
+Proof.
+intros a b Hab.
+destruct b; [ reflexivity | idtac ].
+rewrite Nat.mod_small; [ reflexivity | idtac ].
+apply Nat.div_lt_upper_bound; [ intros H; discriminate H | assumption ].
+Qed.

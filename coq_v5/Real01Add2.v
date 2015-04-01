@@ -254,23 +254,6 @@ bbb.
 (* mouais, bin le théorème doit être faux... *)
 *)
 
-Theorem d2n_mod_radix : ∀ d e,
-  d2n d mod radix = d2n e mod radix → d2n d = d2n e.
-Proof.
-intros d e H.
-unfold d2n in H; unfold d2n.
-rewrite Nat.mod_mod in H; [ idtac | apply Digit.radix_neq_0 ].
-rewrite Nat.mod_mod in H; [ idtac | apply Digit.radix_neq_0 ].
-assumption.
-Qed.
-
-Theorem radix_radix_neq_0 : radix * radix ≠ 0.
-Proof.
-intros H.
-apply Nat.eq_mul_0 in H.
-destruct H; revert H; apply Digit.radix_neq_0.
-Qed.
-
 Theorem I_add_assoc : ∀ x y z, (x + (y + z) == (x + y) + z)%I.
 Proof.
 intros x y z.
@@ -308,7 +291,9 @@ do 6 rewrite d2n_n2d.
 remember (d2n (x .[ i + 3])) as xi3 eqn:Hxi3 .
 remember (d2n (y .[ i + 3])) as yi3 eqn:Hyi3 .
 remember (d2n (z .[ i + 3])) as zi3 eqn:Hzi3 .
+rewrite Nat_lt_sqr_div_mod.
 bbb.
+(* bin ouais : si r ≥ 2 alors r² ≥ 2r et donc si a < r et b < r, a+b<r² *)
 
 do 6 rewrite d2n_add_div_4, Nat.add_0_r.
 do 6 rewrite Nat_mul_2_div_4.
