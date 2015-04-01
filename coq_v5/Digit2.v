@@ -62,6 +62,25 @@ apply Nat.nlt_ge in H.
 apply H, Nat.lt_0_succ.
 Qed.
 
+Theorem radix_neq_1 : radix ≠ 1.
+Proof.
+intros Hr.
+unfold radix in Hr.
+pose proof radix_ge_2 rad as H.
+rewrite Hr in H.
+apply Nat.nlt_ge in H.
+apply H, Nat.lt_1_2.
+Qed.
+
+Theorem radix_gt_0 : 0 < radix.
+Proof. apply neq_0_lt, Nat.neq_sym, radix_neq_0. Qed.
+
+Theorem radix_gt_1 : 1 < radix.
+Proof.
+eapply lt_le_trans; [ apply Nat.lt_1_2 | idtac ].
+apply radix_ge_2.
+Qed.
+
 Theorem eq_refl : reflexive digit digit_eq.
 Proof. intros d; reflexivity. Qed.
 
@@ -257,11 +276,10 @@ split; intros H1.
  unfold digit_eq; simpl.
  rewrite Nat.mod_small.
   rewrite Nat.mod_small; [ idtac | apply pred_radix_lt_radix ].
-  rewrite Nat.mod_small; [ apply Nat.sub_diag | idtac ].
-  apply neq_0_lt, Nat.neq_sym, radix_neq_0.
+  rewrite Nat.mod_small; [ apply Nat.sub_diag | apply radix_gt_0 ].
 
   rewrite Nat.mod_small; [ rewrite Nat.sub_diag | apply pred_radix_lt_radix ].
-  apply neq_0_lt, Nat.neq_sym, radix_neq_0.
+  apply radix_gt_0.
 
  apply opp_compat in H1; rewrite H1.
  unfold digit_eq; simpl.
@@ -528,11 +546,9 @@ assert (fr = er + radix) as H.
  rewrite Nat.mod_same; [ rewrite Nat.add_0_r | apply radix_neq_0 ].
  rewrite Nat.mod_mod; [ idtac | apply radix_neq_0 ].
  apply Nat.mod_small; rewrite Hx.
- apply Nat_lt_add_sub_lt_r with (d := 0).
-  subst dr fr.
-  apply Nat.add_lt_mono; apply Nat.mod_upper_bound, radix_neq_0.
-
-  apply neq_0_lt, Nat.neq_sym, radix_neq_0.
+ eapply Nat_lt_add_sub_lt_r; [ idtac | apply radix_gt_0 ].
+ subst dr fr.
+ apply Nat.add_lt_mono; apply Nat.mod_upper_bound, radix_neq_0.
 
  subst fr er.
  pose proof radix_neq_0 as H4.
@@ -596,18 +612,14 @@ destruct (lt_dec (dr + er) radix) as [H1| H1].
     assumption.
 
     rewrite Hy.
-    apply Nat_lt_add_sub_lt_r with (d := 0).
-     subst dr fr.
-     apply Nat.add_lt_mono; apply Nat.mod_upper_bound, radix_neq_0.
-
-     apply neq_0_lt, Nat.neq_sym, radix_neq_0.
-
-   rewrite Hx.
-   apply Nat_lt_add_sub_lt_r with (d := 0).
-    subst dr er.
+    eapply Nat_lt_add_sub_lt_r; [ idtac | apply radix_gt_0 ].
+    subst dr fr.
     apply Nat.add_lt_mono; apply Nat.mod_upper_bound, radix_neq_0.
 
-    apply neq_0_lt, Nat.neq_sym, radix_neq_0.
+   rewrite Hx.
+   eapply Nat_lt_add_sub_lt_r; [ idtac | apply radix_gt_0 ].
+   subst dr er.
+   apply Nat.add_lt_mono; apply Nat.mod_upper_bound, radix_neq_0.
 Qed.
 
 Theorem add_cancel_r : ∀ d e f, (d + f = e + f)%D → (d = e)%D.

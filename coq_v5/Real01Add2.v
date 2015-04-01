@@ -67,7 +67,7 @@ Theorem I_add2_i_0_r : ∀ x i, (I_add2_i x 0 i = x.[i])%D.
 Proof.
 intros x i.
 unfold I_add2_i; simpl.
-rewrite z_of_u_compat_l with (v := λ k, d2n (x.[k])).
+rewrite z_of_u_compat_l with (v := λ k, d2n (x .[ k])).
  Focus 2.
  intros j Hj.
  unfold I_add_algo; simpl.
@@ -78,42 +78,46 @@ rewrite z_of_u_compat_l with (v := λ k, d2n (x.[k])).
  rewrite Nat.sub_0_r; simpl.
  do 2 rewrite Nat.add_0_r, Nat.mul_1_r.
  rewrite Nat.div_mul.
- 2: apply Nat.neq_mul_0; split; apply Digit.radix_neq_0.
- rewrite Nat.div_mul_cancel_r; try apply Digit.radix_neq_0.
- rewrite Nat.mod_small.
- 2: apply Nat.mod_upper_bound, Digit.radix_neq_0.
-rewrite Nat.mod_small.
-rewrite Nat.mod_small.
-rewrite Nat.div_small.
-rewrite Nat.div_small.
-rewrite Nat.add_0_r.
-apply n2d_d2n.
-eapply lt_trans.
-apply Nat.mod_upper_bound, Digit.radix_neq_0.
-bbb.
+  2: apply Nat.neq_mul_0; split; apply Digit.radix_neq_0.
 
- rewrite Nat.div_mul; [ idtac | intros H; discriminate H ].
- rewrite Nat.mod_small; [ idtac | apply d2n_lt_base ].
- rewrite Nat.mod_small.
-  rewrite Nat.div_small.
-   rewrite Nat.add_0_l.
+  rewrite Nat.div_mul_cancel_r; try apply Digit.radix_neq_0.
+  rewrite Nat.mod_small.
+   2: apply Nat.mod_upper_bound, Digit.radix_neq_0.
+
    rewrite Nat.mod_small.
-    rewrite Nat.div_small; [ rewrite Nat.add_0_r; apply n2d_d2n | idtac ].
-    eapply Nat.lt_trans; [ apply d2n_lt_base | idtac ].
-    do 2 apply lt_n_S; apply Nat.lt_0_succ.
+    rewrite Nat.mod_small.
+     rewrite Nat.div_small; [ idtac | apply d2n_lt_radix ].
+     rewrite Nat.div_small.
+      rewrite Nat.add_0_r.
+      apply n2d_d2n.
 
-    rewrite Nat.div_small; [ apply Nat.lt_0_succ | idtac ].
-    eapply Nat.lt_trans; [ apply d2n_lt_base | idtac ].
-    do 2 apply lt_n_S; apply Nat.lt_0_succ.
+      eapply lt_trans.
+       apply Nat.mod_upper_bound, Digit.radix_neq_0.
 
-   replace 4 with (2 * 2) by reflexivity.
-   apply Nat.mul_lt_mono_pos_r; [ apply Nat.lt_0_succ | idtac ].
-   apply d2n_lt_base.
+       apply le_lt_trans with (m := 1 * radix).
+        rewrite Nat.mul_1_l; reflexivity.
 
-  rewrite Nat.div_small; [ apply Nat.lt_0_succ | idtac ].
-  replace 4 with (2 * 2) by reflexivity.
-  apply Nat.mul_lt_mono_pos_r; [ apply Nat.lt_0_succ | idtac ].
-  apply d2n_lt_base.
+        apply Nat.mul_lt_mono_pos_r.
+         apply Digit.radix_gt_0.
+
+         apply Digit.radix_gt_1.
+
+     apply Nat.div_lt_upper_bound.
+      apply Nat.neq_mul_0; split; apply Digit.radix_neq_0.
+
+      apply lt_trans with (m := 1 * radix).
+       rewrite Nat.mul_1_l; apply d2n_lt_radix.
+
+       apply Nat.mul_lt_mono_pos_r; [ apply Digit.radix_gt_0 | idtac ].
+       replace 1 with (1 * 1) by reflexivity.
+       apply Nat.mul_lt_mono; apply Digit.radix_gt_1.
+
+    apply Nat.div_lt_upper_bound; [ apply Digit.radix_neq_0 | idtac ].
+    apply lt_trans with (m := 1 * radix).
+     rewrite Nat.mul_1_l; apply d2n_lt_radix.
+
+     apply Nat.mul_lt_mono_pos_r; [ apply Digit.radix_gt_0 | idtac ].
+     apply Digit.radix_gt_1.
 Qed.
 
 Theorem I_add2_0_r : ∀ x, (x + 0 == x)%I.
@@ -124,29 +128,15 @@ Qed.
 
 (* associativity *)
 
-Theorem d2n_n2d : ∀ n, d2n (n2d n) = if zerop n then 0 else 1.
-Proof.
-intros n.
-unfold d2n, n2d.
-destruct n; simpl.
- destruct (Digit.dec 0) as [H1| H1]; [ discr_digit H1 | reflexivity ].
-
- destruct (Digit.dec 1) as [H1| H1]; [ reflexivity | discr_digit H1 ].
-Qed.
-
-Theorem I_add_algo_le : ∀ x y i, I_add_algo x y i ≤ 2 * (base - 1).
+Theorem I_add_algo_le : ∀ x y i, I_add_algo x y i ≤ 2 * (radix - 1).
 Proof.
 intros x y i; simpl.
 unfold I_add_algo; simpl.
-unfold d2n; simpl.
-destruct (Digit.dec (x .[ i])) as [H1| H1].
- destruct (Digit.dec (y .[ i])) as [H2| H2]; [ reflexivity | idtac ].
- apply Nat.le_succ_diag_r.
-
- destruct (Digit.dec (y .[ i])) as [H2| H2]; [ idtac | apply Nat.le_0_l ].
- apply Nat.le_succ_diag_r.
+rewrite Nat.add_0_r, Nat.sub_1_r.
+apply Nat.add_le_mono; apply Nat.lt_le_pred, d2n_lt_radix.
 Qed.
 
+(*
 Theorem d2n_add_iff : ∀ d e n,
   d2n d + d2n e = n
   ↔ n = 0 ∧ (d = 0)%D ∧ (e = 0)%D ∨
@@ -185,13 +175,15 @@ split; intros H.
   apply eq_d2n_1 in He.
   rewrite Hd, He; reflexivity.
 Qed.
+*)
 
-Theorem d2n_add_div_4 : ∀ d e, (d2n d + d2n e) / 4 = 0.
+(*
+Theorem d2n_add_div_2_radix : ∀ d e, (d2n d + d2n e) / (radix + radix) = 0.
 Proof.
 intros d e.
 rewrite Nat.div_small; [ reflexivity | idtac ].
 replace 4 with (2 + 2) by reflexivity.
-apply Nat.add_lt_mono; apply d2n_lt_base.
+apply Nat.add_lt_mono; apply d2n_lt_radix.
 Qed.
 
 Theorem Nat_mul_2_div_4 : ∀ n, n * 2 / 4 = n / 2.
@@ -199,6 +191,21 @@ Proof.
 intros n.
 replace 4 with (2 * 2) by reflexivity.
 apply Nat.div_mul_cancel_r; intros H; discriminate H.
+Qed.
+*)
+
+Theorem I_add_algo_lt_sqr_radix : ∀ x y i,
+  I_add_algo x y i / (radix * radix) = 0.
+Proof.
+intros x y i.
+rewrite Nat.div_small; [ reflexivity | idtac ].
+eapply le_lt_trans; [ apply I_add_algo_le | idtac ].
+rewrite Nat.sub_1_r.
+eapply le_lt_trans with (m := radix * pred radix).
+ apply Nat.mul_le_mono; [ apply radix_ge_2 | reflexivity ].
+
+ apply Nat.mul_lt_mono_pos_l; [ apply Digit.radix_gt_0 | idtac ].
+ apply Digit.pred_radix_lt_radix.
 Qed.
 
 Theorem I_add_algo_assoc : ∀ x y z i j,
@@ -208,10 +215,22 @@ Proof.
 intros x y z i j Hj.
 unfold I_add_algo; simpl.
 unfold I_add2_i; simpl.
-unfold z_of_u.
-remember minus as h; remember div as f; remember modulo as g.
-simpl; subst f g h.
+unfold z_of_u; fsimpl.
+rewrite Nat.mul_1_r.
+do 2 rewrite d2n_n2d.
 unfold summation; simpl.
+do 3 rewrite Nat.mul_1_r.
+rewrite Nat.add_0_r.
+rewrite Nat.div_mul.
+ rewrite Nat.div_mul.
+  rewrite Nat.div_mul_cancel_r; try apply Digit.radix_neq_0.
+  rewrite Nat.div_mul_cancel_r; try apply Digit.radix_neq_0.
+  do 2 rewrite I_add_algo_lt_sqr_radix.
+  rewrite Nat.mod_0_l; [ idtac | apply Digit.radix_neq_0 ].
+  do 2 rewrite Nat.add_0_r.
+  unfold I_add_algo; simpl.
+bbb.
+
 do 6 rewrite fold_sub_succ_l, divmod_mod.
 do 6 rewrite divmod_div.
 do 2 rewrite Nat.add_0_r, Nat.mul_1_r.
@@ -307,13 +326,13 @@ remember ((xy (i + 1) * 2 / 4) mod 2) as a4 eqn:Ha4.
 subst xy.
 rewrite Nat.div_small.
  Focus 2.
- eapply le_lt_trans; [ apply I_add_algo_le | unfold base; simpl ].
+ eapply le_lt_trans; [ apply I_add_algo_le | unfold radix; simpl ].
  apply Nat.le_le_succ_r; reflexivity.
 
  rewrite Nat.mod_small; [ rewrite Nat.add_0_r | apply Nat.lt_0_succ ].
  rewrite Nat.div_small.
   Focus 2.
-  eapply le_lt_trans; [ apply I_add_algo_le | unfold base; simpl ].
+  eapply le_lt_trans; [ apply I_add_algo_le | unfold radix; simpl ].
   apply Nat.le_le_succ_r; reflexivity.
 
   rewrite Nat.mod_small; [ rewrite Nat.add_0_r | apply Nat.lt_0_succ ].
@@ -360,7 +379,7 @@ bbb.
      rewrite H1, Nat.add_0_r in Hc3; rewrite H2, Hc3.
      destruct c3; [ reflexivity | exfalso; simpl in Hc3 ].
      rewrite Nat.add_succ_r in Hc3.
-     pose proof d2n_lt_base (x.[i]) as H.
+     pose proof d2n_lt_radix (x.[i]) as H.
      rewrite Hc3 in H.
      apply Nat.nle_gt in H; apply H.
      do 2 apply le_n_S; apply Nat.le_0_l.
@@ -370,8 +389,8 @@ bbb.
 bbb.
 *)
 
-Theorem d2n_mod_base : ∀ d e,
-  d2n d mod base = d2n e mod base → d2n d = d2n e.
+Theorem d2n_mod_radix : ∀ d e,
+  d2n d mod radix = d2n e mod radix → d2n d = d2n e.
 Proof.
 intros d e H.
 unfold d2n in H; unfold d2n.
@@ -386,7 +405,7 @@ Proof.
 intros x y z.
 unfold I_eqs; intros i; simpl.
 unfold I_add2_i; simpl.
-unfold z_of_u, base.
+unfold z_of_u, radix.
 unfold summation; rewrite Nat.sub_0_r.
 remember div as f; remember modulo as g; simpl; subst f g.
 do 3 rewrite Nat.add_0_r.
@@ -396,7 +415,7 @@ rewrite Nat.div_mul; [ idtac | intros H; discriminate H ].
 rewrite Nat.div_mul; [ idtac | intros H; discriminate H ].
 unfold I_add_algo.
 remember div as f; remember modulo as g; simpl; subst f g.
-unfold I_add2_i, z_of_u, base.
+unfold I_add2_i, z_of_u, radix.
 unfold summation; rewrite Nat.sub_0_r.
 remember div as fdiv; remember modulo as fmod; simpl.
 unfold I_add_algo.
@@ -436,21 +455,21 @@ destruct (zerop ((yi + zi) mod 2 + ((yi1 + zi1) / 2) mod 2)) as [H1| H1].
     apply Nat_add_mod_2 in H41.
     rewrite Nat.add_0_l.
     subst xi1 yi1 zi1.
-    apply d2n_mod_base in H21.
-    apply d2n_mod_base in H41.
+    apply d2n_mod_radix in H21.
+    apply d2n_mod_radix in H41.
     rewrite H41, H21; reflexivity.
 
     rewrite Hxi1.
-    rewrite Nat.div_small; [ idtac | apply d2n_lt_base ].
+    rewrite Nat.div_small; [ idtac | apply d2n_lt_radix ].
     rewrite Nat.mod_0_l; [ idtac | intros H; discriminate H ].
     rewrite Hyi, Hzi in H11.
-    apply d2n_mod_base in H11.
+    apply d2n_mod_radix in H11.
     rewrite <- Hyi, <- Hzi in H11.
     rewrite Hyi1, Hzi1 in H21.
-    apply d2n_mod_base in H21.
+    apply d2n_mod_radix in H21.
     rewrite <- Hyi1, <- Hzi1 in H21.
     rewrite Hxi, Hyi in H31.
-    apply d2n_mod_base in H31.
+    apply d2n_mod_radix in H31.
     rewrite <- Hxi, <- Hyi in H31.
     rewrite H21, Hzi1 in H12.
     unfold d2n in H12, Hzi1.
@@ -468,7 +487,7 @@ bbb.
     destruct xi1; [ idtac | exfalso ].
      remember modulo as fmod; simpl; subst fmod.
      rewrite Nat.mod_0_l; [ rewrite Nat.add_0_r | intros H; discriminate H ].
-     rewrite Nat.mod_small; [ idtac | subst xi; apply d2n_lt_base ].
+     rewrite Nat.mod_small; [ idtac | subst xi; apply d2n_lt_radix ].
      rewrite Nat.mod_small; [ idtac | apply Nat.lt_1_2 ].
      destruct xi; [ exfalso; symmetry in Hxi | reflexivity ].
      apply Nat.eq_add_0 in H1; destruct H1 as (H11, H12).
