@@ -264,6 +264,13 @@ rewrite Nat.mod_mod in H; [ idtac | apply Digit.radix_neq_0 ].
 assumption.
 Qed.
 
+Theorem radix_radix_neq_0 : radix * radix ≠ 0.
+Proof.
+intros H.
+apply Nat.eq_mul_0 in H.
+destruct H; revert H; apply Digit.radix_neq_0.
+Qed.
+
 Theorem I_add_assoc : ∀ x y z, (x + (y + z) == (x + y) + z)%I.
 Proof.
 intros x y z.
@@ -274,16 +281,29 @@ unfold summation; rewrite Nat.sub_0_r; simpl.
 do 3 rewrite Nat.add_0_r.
 do 2 rewrite Nat.mul_1_r.
 do 2 rewrite Nat.add_assoc.
-rewrite Nat.div_mul.
-rewrite Nat.div_mul.
+do 2 (rewrite Nat.div_mul; [ idtac | apply radix_radix_neq_0 ]).
 unfold I_add_algo; simpl.
 unfold I_add2_i, z_of_u.
 unfold summation; rewrite Nat.sub_0_r; simpl.
+do 8 rewrite Nat.mul_1_r.
+do 6 rewrite I_add_algo_lt_sqr_radix.
 unfold I_add_algo.
-do 9 rewrite Nat.add_0_r.
-do 6 rewrite <- Nat.add_assoc; simpl.
+do 4 rewrite Nat.add_0_r.
+do 4 rewrite <- Nat.add_assoc; simpl.
 do 8 rewrite Nat.add_assoc.
-do 6 rewrite Nat.mul_1_r.
+remember (d2n (x .[ i])) as xi eqn:Hxi .
+remember (d2n (y .[ i])) as yi eqn:Hyi .
+remember (d2n (z .[ i])) as zi eqn:Hzi .
+remember (d2n (x .[ i + 1])) as xi1 eqn:Hxi1 .
+remember (d2n (y .[ i + 1])) as yi1 eqn:Hyi1 .
+remember (d2n (z .[ i + 1])) as zi1 eqn:Hzi1 .
+remember (d2n (x .[ i + 2])) as xi2 eqn:Hxi2 .
+remember (d2n (y .[ i + 2])) as yi2 eqn:Hyi2 .
+remember (d2n (z .[ i + 2])) as zi2 eqn:Hzi2 .
+do 6 (rewrite Nat.div_mul; [ idtac | apply radix_radix_neq_0 ]).
+do 8 (rewrite Nat.div_mul_cancel_r; try apply Digit.radix_neq_0).
+rewrite Nat.mod_0_l; [ idtac | apply Digit.radix_neq_0 ].
+do 6 rewrite Nat.add_0_r.
 bbb.
 
 do 6 rewrite d2n_add_div_4, Nat.add_0_r.
