@@ -128,7 +128,7 @@ Qed.
 
 (* associativity *)
 
-Theorem I_add_algo_le : ∀ x y i, I_add_algo x y i ≤ 2 * (radix - 1).
+Theorem I_add_algo_upper_bound : ∀ x y i, I_add_algo x y i ≤ 2 * (radix - 1).
 Proof.
 intros x y i; simpl.
 unfold I_add_algo; simpl.
@@ -194,12 +194,12 @@ apply Nat.div_mul_cancel_r; intros H; discriminate H.
 Qed.
 *)
 
-Theorem I_add_algo_lt_sqr_radix : ∀ x y i,
+Theorem I_add_algo_div_sqr_radix : ∀ x y i,
   I_add_algo x y i / (radix * radix) = 0.
 Proof.
 intros x y i.
 rewrite Nat.div_small; [ reflexivity | idtac ].
-eapply le_lt_trans; [ apply I_add_algo_le | idtac ].
+eapply le_lt_trans; [ apply I_add_algo_upper_bound | idtac ].
 rewrite Nat.sub_1_r.
 eapply le_lt_trans with (m := radix * pred radix).
  apply Nat.mul_le_mono; [ apply radix_ge_2 | reflexivity ].
@@ -224,7 +224,7 @@ rewrite Nat.div_mul.
  rewrite Nat.div_mul.
   rewrite Nat.div_mul_cancel_r; try apply Digit.radix_neq_0.
   rewrite Nat.div_mul_cancel_r; try apply Digit.radix_neq_0.
-  do 2 rewrite I_add_algo_lt_sqr_radix.
+  do 2 rewrite I_add_algo_div_sqr_radix.
   rewrite Nat.mod_0_l; [ idtac | apply Digit.radix_neq_0 ].
   do 2 rewrite Nat.add_0_r.
   unfold I_add_algo; simpl.
@@ -286,7 +286,7 @@ unfold I_add_algo; simpl.
 unfold I_add2_i, z_of_u.
 unfold summation; rewrite Nat.sub_0_r; simpl.
 do 8 rewrite Nat.mul_1_r.
-do 6 rewrite I_add_algo_lt_sqr_radix.
+do 6 rewrite I_add_algo_div_sqr_radix.
 unfold I_add_algo.
 do 4 rewrite Nat.add_0_r.
 do 4 rewrite <- Nat.add_assoc; simpl.
@@ -304,6 +304,10 @@ do 6 (rewrite Nat.div_mul; [ idtac | apply radix_radix_neq_0 ]).
 do 8 (rewrite Nat.div_mul_cancel_r; try apply Digit.radix_neq_0).
 rewrite Nat.mod_0_l; [ idtac | apply Digit.radix_neq_0 ].
 do 6 rewrite Nat.add_0_r.
+do 6 rewrite d2n_n2d.
+remember (d2n (x .[ i + 3])) as xi3 eqn:Hxi3 .
+remember (d2n (y .[ i + 3])) as yi3 eqn:Hyi3 .
+remember (d2n (z .[ i + 3])) as zi3 eqn:Hzi3 .
 bbb.
 
 do 6 rewrite d2n_add_div_4, Nat.add_0_r.
