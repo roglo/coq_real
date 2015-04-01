@@ -254,6 +254,42 @@ bbb.
 (* mouais, bin le théorème doit être faux... *)
 *)
 
+Theorem double_radix_le_square_radix : radix + radix ≤ radix * radix.
+Proof.
+pose proof radix_ge_2 rad as H.
+unfold radix.
+remember (radix_value rad) as radix.
+apply Nat.nlt_ge in H.
+destruct radix as [| n]; [ exfalso; apply H, Nat.lt_0_succ | idtac ].
+destruct n; [ exfalso; apply H, Nat.lt_1_2 | simpl ].
+rewrite Nat.add_comm; simpl.
+rewrite Nat.mul_comm; simpl.
+do 2 rewrite Nat.add_succ_r; simpl.
+do 4 apply le_n_S.
+rewrite Nat.add_assoc.
+apply Nat.le_sub_le_add_l.
+rewrite Nat.sub_diag.
+apply Nat.le_0_l.
+Qed.
+
+Theorem d2n_add_lt_sqr_radix : ∀ a b, d2n a + d2n b < radix * radix.
+Proof.
+intros a b.
+eapply lt_le_trans; [ idtac | apply double_radix_le_square_radix ].
+apply Nat.add_lt_mono; apply d2n_lt_radix.
+Qed.
+
+Theorem lt_radix_div_add_sqr_radix : ∀ a b,
+  a < radix
+  → b < radix
+  → (a + b) / (radix * radix) = 0.
+Proof.
+intros a b Ha Hb.
+rewrite Nat.div_small; [ reflexivity | idtac ].
+eapply le_trans; [ apply Nat.add_lt_mono; eassumption | idtac ].
+apply double_radix_le_square_radix.
+Qed.
+
 Theorem I_add_assoc : ∀ x y z, (x + (y + z) == (x + y) + z)%I.
 Proof.
 intros x y z.
@@ -288,12 +324,36 @@ do 8 (rewrite Nat.div_mul_cancel_r; try apply Digit.radix_neq_0).
 rewrite Nat.mod_0_l; [ idtac | apply Digit.radix_neq_0 ].
 do 6 rewrite Nat.add_0_r.
 do 6 rewrite d2n_n2d.
+(*
 remember (d2n (x .[ i + 3])) as xi3 eqn:Hxi3 .
 remember (d2n (y .[ i + 3])) as yi3 eqn:Hyi3 .
 remember (d2n (z .[ i + 3])) as zi3 eqn:Hzi3 .
+*)
+rewrite Nat_lt_sqr_div_mod; [ idtac | subst; apply d2n_add_lt_sqr_radix ].
 rewrite Nat_lt_sqr_div_mod.
+Focus 2.
+eapply lt_le_trans; [ idtac | apply double_radix_le_square_radix ].
+apply Nat.add_lt_mono; [ subst xi1; apply d2n_lt_radix | idtac ].
+apply Nat.mod_upper_bound, Digit.radix_neq_0.
+rewrite Nat_lt_sqr_div_mod; [ idtac | subst; apply d2n_add_lt_sqr_radix ].
+rewrite Nat_lt_sqr_div_mod; [ idtac | subst; apply d2n_add_lt_sqr_radix ].
+rewrite Nat_lt_sqr_div_mod; [ idtac | subst; apply d2n_add_lt_sqr_radix ].
+rewrite Nat_lt_sqr_div_mod.
+Focus 2.
+eapply lt_le_trans; [ idtac | apply double_radix_le_square_radix ].
+apply Nat.add_lt_mono; [ idtac | subst zi1; apply d2n_lt_radix ].
+apply Nat.mod_upper_bound, Digit.radix_neq_0.
+rewrite Nat_lt_sqr_div_mod; [ idtac | subst; apply d2n_add_lt_sqr_radix ].
+rewrite Nat_lt_sqr_div_mod; [ idtac | subst; apply d2n_add_lt_sqr_radix ].
+rewrite lt_radix_div_add_sqr_radix.
+2: rewrite Hxi2; apply d2n_lt_radix.
+2: apply Nat.mod_upper_bound, Digit.radix_neq_0.
+rewrite lt_radix_div_add_sqr_radix.
+2: apply Nat.mod_upper_bound, Digit.radix_neq_0.
+2: rewrite Hzi2; apply d2n_lt_radix.
+rewrite Nat.mod_0_l; [ idtac | apply Digit.radix_neq_0 ].
+do 2 rewrite Nat.add_0_r.
 bbb.
-(* bin ouais : si r ≥ 2 alors r² ≥ 2r et donc si a < r et b < r, a+b<r² *)
 
 do 6 rewrite d2n_add_div_4, Nat.add_0_r.
 do 6 rewrite Nat_mul_2_div_4.
