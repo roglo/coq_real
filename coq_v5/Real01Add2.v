@@ -74,10 +74,22 @@ rewrite z_of_u_compat_l with (v := λ k, d2n (x.[k])).
  rewrite d2n_0, Nat.add_0_r.
  reflexivity.
 
- unfold z_of_u.
- unfold summation.
- remember div as f; remember modulo as g; simpl; subst f g.
- do 2 rewrite Nat.add_0_r; rewrite Nat.mul_1_r.
+ unfold z_of_u, summation.
+ rewrite Nat.sub_0_r; simpl.
+ do 2 rewrite Nat.add_0_r, Nat.mul_1_r.
+ rewrite Nat.div_mul.
+ 2: apply Nat.neq_mul_0; split; apply Digit.radix_neq_0.
+ rewrite Nat.div_mul_cancel_r; try apply Digit.radix_neq_0.
+ rewrite Nat.mod_small.
+ 2: apply Nat.mod_upper_bound, Digit.radix_neq_0.
+rewrite Nat.mod_small.
+rewrite Nat.mod_small.
+rewrite Nat.div_small.
+rewrite Nat.div_small.
+rewrite Nat.add_0_r.
+apply n2d_d2n.
+bbb.
+
  rewrite Nat.div_mul; [ idtac | intros H; discriminate H ].
  rewrite Nat.mod_small; [ idtac | apply d2n_lt_base ].
  rewrite Nat.mod_small.

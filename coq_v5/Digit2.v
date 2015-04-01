@@ -30,6 +30,18 @@ Definition oppd x := {| dig := pred radix - dig x mod radix |}.
 
 Notation "x + y" := (digit_add x y) : digit_scope.
 
+Ltac fsimpl_in H :=
+  remember minus as fminus;
+  remember div as fdiv;
+  remember modulo as fmod;
+  simpl in H; subst fminus fdiv fmod.
+
+Ltac fsimpl :=
+  remember minus as fminus;
+  remember div as fdiv;
+  remember modulo as fmod;
+  simpl; subst fminus fdiv fmod.
+
 Module Digit.
 
 Theorem pred_radix_lt_radix : pred radix < radix.
@@ -68,18 +80,6 @@ Add Parametric Relation : digit digit_eq
 Theorem eq_dec : ∀ x y, {(x = y)%D} + {(x ≠ y)%D}.
 Proof. intros x y; apply Nat.eq_dec. Qed.
 Arguments eq_dec x%D y%D.
-
-Ltac fsimpl_in H :=
-  remember minus as fminus;
-  remember div as fdiv;
-  remember modulo as fmod;
-  simpl in H; subst fminus fdiv fmod.
-
-Ltac fsimpl :=
-  remember minus as fminus;
-  remember div as fdiv;
-  remember modulo as fmod;
-  simpl; subst fminus fdiv fmod.
 
 Add Parametric Morphism : digit_add
   with signature digit_eq ==> digit_eq ==> digit_eq
