@@ -208,11 +208,10 @@ eapply le_lt_trans with (m := radix * pred radix).
  apply Digit.pred_radix_lt_radix.
 Qed.
 
-Theorem I_add_algo_assoc : ∀ x y z i j,
-  j ≤ 2
-  → I_add_algo x (y + z) (i + j) = I_add_algo (x + y) z (i + j).
+Theorem I_add_algo_assoc : ∀ x y z i,
+  I_add_algo x (y + z) i = I_add_algo (x + y) z i.
 Proof.
-intros x y z i j Hj.
+intros x y z i.
 unfold I_add_algo; simpl.
 unfold I_add2_i; simpl.
 unfold z_of_u; fsimpl.
@@ -229,6 +228,12 @@ rewrite Nat.div_mul.
   rewrite Nat.mod_0_l; [ idtac | apply Digit.radix_neq_0 ].
   do 2 rewrite Nat.add_0_r.
   unfold I_add_algo; simpl.
+  remember (d2n (x .[i])) as xi eqn:Hxi.
+  remember (d2n (y .[i])) as yi eqn:Hyi.
+  remember (d2n (z .[i])) as zi eqn:Hzi.
+  remember (d2n (x .[i+1])) as xi1 eqn:Hxi1.
+  remember (d2n (y .[i+1])) as yi1 eqn:Hyi1.
+  remember (d2n (z .[i+1])) as zi1 eqn:Hzi1.
 bbb.
 
 do 6 rewrite fold_sub_succ_l, divmod_mod.
