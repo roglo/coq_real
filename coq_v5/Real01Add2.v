@@ -234,167 +234,24 @@ rewrite Nat.div_mul.
   remember (d2n (x .[i+1])) as xi1 eqn:Hxi1.
   remember (d2n (y .[i+1])) as yi1 eqn:Hyi1.
   remember (d2n (z .[i+1])) as zi1 eqn:Hzi1.
-  destruct (lt_dec (yi + zi) radix) as [H1| H1].
-   remember ((yi + zi) mod radix) as yz eqn:Hyz.
-   rewrite Nat.mod_small in Hyz; [ subst yz | assumption ].
-bbb.
+  destruct (lt_dec (yi1 + zi1) radix) as [H1| H1].
+   rewrite Nat.div_small; [ idtac | assumption ].
+   rewrite Nat.mod_0_l; [ rewrite Nat.add_0_r | apply Digit.radix_neq_0 ].
+   rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
+   destruct (lt_dec (xi1 + yi1) radix) as [H2| H2].
+    rewrite Nat.div_small; [ idtac | assumption ].
+    rewrite Nat.mod_0_l; [ rewrite Nat.add_0_r | apply Digit.radix_neq_0 ].
+    rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
+    destruct (lt_dec (yi + zi) radix) as [H3| H3].
+     rewrite Nat.mod_small; [ idtac | assumption ].
+     destruct (lt_dec (xi + yi) radix) as [H4| H4].
+      rewrite Nat.mod_small; [ idtac | assumption ].
+      apply Nat.add_assoc.
 
-do 6 rewrite fold_sub_succ_l, divmod_mod.
-do 6 rewrite divmod_div.
-do 2 rewrite Nat.add_0_r, Nat.mul_1_r.
-rewrite Nat.add_0_r.
-do 2 rewrite Nat.add_assoc.
-rewrite Nat.div_mul; [ idtac | intros H; discriminate H ].
-rewrite Nat.div_mul; [ idtac | intros H; discriminate H ].
-unfold I_add_algo; simpl.
-unfold I_add2_i; simpl.
-unfold z_of_u.
-remember minus as h; remember div as f; remember modulo as g.
-simpl; subst f g h.
-unfold summation; simpl.
-do 6 rewrite fold_sub_succ_l, divmod_mod.
-do 4 rewrite divmod_div.
-unfold d2n.
-destruct (Digit.dec (x.[i+j])) as [H1| H1]; simpl.
- destruct (Digit.dec (y.[i+j])) as [H2| H2]; simpl.
-  destruct (Digit.dec (z.[i+j])) as [H3| H3]; simpl.
-   destruct (Digit.dec (x.[i+j+1])) as [H4| H4]; simpl.
-    destruct (Digit.dec (y.[i+j+1])) as [H5| H5]; simpl.
-     destruct (Digit.dec (z.[i+j+1])) as [H6| H6]; simpl.
-      destruct (Digit.dec 1); reflexivity.
-
-      destruct (Digit.dec (y.[i+j+2])) as [H7| H7]; simpl.
-       destruct (Digit.dec (z.[i+j+2])) as [H8| H8]; simpl.
-        destruct (Digit.dec 0) as [H9| H9].
-         destruct (Digit.dec 1) as [H10| H10]; [ reflexivity | idtac ].
-         discr_digit H10.
-
-         destruct (Digit.dec 1) as [H10| H10]; [ idtac | reflexivity ].
+      apply Nat.nlt_ge in H4.
 Abort. (*
 bbb.
-   i  i+1 i+2
-x  1   1   .
-y  1   1   1
-z  1   0   1
-
-remember (Digit.dec (x.[i+1])) as xi1 eqn:Hxi1.
-remember (Digit.dec (y.[i+1])) as yi1 eqn:Hyi1.
-remember (Digit.dec (z.[i+1])) as zi1 eqn:Hzi1.
-remember minus as h; remember div as f; remember modulo as g.
-
-
-remember (Digit.dec (x.[i])) as xi eqn:Hxi.
-remember (Digit.dec (y.[i])) as yi eqn:Hyi.
-remember (Digit.dec (z.[i])) as zi eqn:Hzi.
-remember (Digit.dec (x.[i+1])) as xi1 eqn:Hxi1.
-remember (Digit.dec (y.[i+1])) as yi1 eqn:Hyi1.
-remember (Digit.dec (z.[i+1])) as zi1 eqn:Hzi1.
-remember minus as h; remember div as f; remember modulo as g.
-destruct xi, yi, zi, xi1, yi1, zi1; simpl; subst f g h; simpl.
- destruct (Digit.dec 1); reflexivity.
-
- rewrite divmod_div.
-
-rewrite Nat.div_mul; [ idtac | intros H; discriminate H ].
-rewrite Nat.div_mul; [ idtac | intros H; discriminate H ].
-unfold I_add_algo; simpl.
-unfold I_add2_i; simpl.
-unfold z_of_u.
-
-apply d2n_add_iff.
-
-
-do 2 rewrite d2n_n2d.
-remember (I_add_algo y z) as yz eqn:Hyz.
-remember (yz i mod 2) as a1 eqn:Ha1.
-remember ((yz (i + 1) * 2 / 4) mod 2) as a2 eqn:Ha2.
-subst yz.
-bbb.
-
-unfold I_add2_i; simpl.
-unfold z_of_u.
-remember minus as h; remember div as f; remember modulo as g.
-simpl; subst f g h.
-unfold summation; simpl.
-do 6 rewrite fold_sub_succ_l, divmod_mod.
-do 6 rewrite divmod_div.
-do 2 rewrite Nat.add_0_r, Nat.mul_1_r.
-rewrite Nat.add_0_r.
-do 2 rewrite Nat.add_assoc.
-rewrite Nat.div_mul; [ idtac | intros H; discriminate H ].
-rewrite Nat.div_mul; [ idtac | intros H; discriminate H ].
-do 2 rewrite d2n_n2d.
-remember (I_add_algo y z) as yz eqn:Hyz.
-remember (yz i mod 2) as a1 eqn:Ha1.
-remember ((yz (i + 1) * 2 / 4) mod 2) as a2 eqn:Ha2.
-subst yz.
-remember (I_add_algo x y) as xy eqn:Hxy.
-remember (xy i mod 2) as a3 eqn:Ha3.
-remember ((xy (i + 1) * 2 / 4) mod 2) as a4 eqn:Ha4.
-subst xy.
-rewrite Nat.div_small.
- Focus 2.
- eapply le_lt_trans; [ apply I_add_algo_le | unfold radix; simpl ].
- apply Nat.le_le_succ_r; reflexivity.
-
- rewrite Nat.mod_small; [ rewrite Nat.add_0_r | apply Nat.lt_0_succ ].
- rewrite Nat.div_small.
-  Focus 2.
-  eapply le_lt_trans; [ apply I_add_algo_le | unfold radix; simpl ].
-  apply Nat.le_le_succ_r; reflexivity.
-
-  rewrite Nat.mod_small; [ rewrite Nat.add_0_r | apply Nat.lt_0_succ ].
-  destruct (zerop (a1 + a2)) as [H1| H1].
-   rewrite Nat.add_0_r.
-   apply Nat.eq_add_0 in H1.
-   destruct H1 as (H1, H2).
-   subst a1 a2.
-   apply Nat.mod_divides in H1; [ idtac | intros H; discriminate H ].
-   destruct H1 as (c1, Hc1).
-   apply Nat.mod_divides in H2; [ idtac | intros H; discriminate H ].
-   destruct H2 as (c2, Hc2).
-   pose proof I_add_algo_le y z (i + 1) as H; simpl in H.
-   apply Nat.mul_le_mono_r with (p := 2) in H; simpl in H.
-   eapply Nat.div_le_mono with (c := 4) in H.
-   2: intros I; discriminate I.
-   rewrite Hc2 in H; simpl in H; rewrite Nat.add_0_r in H.
-   destruct c2; [ clear H | exfalso; revert H; clear; intros; omega ].
-   rewrite Nat.mul_0_r in Hc2.
-   unfold I_add_algo in Hc1; simpl in Hc1.
-   rewrite Nat.add_0_r in Hc1.
-   unfold I_add_algo in Hc2; simpl in Hc2.
-   rewrite divmod_div in Hc2.
-bbb.
-   apply d2n_add_eq in Hc1.
-   apply d2n_add_eq in Hc1.
-
-   destruct (zerop (a3 + a4)) as [H2| H2].
-    rewrite Nat.add_0_l.
-    apply Nat.eq_add_0 in H2.
-    destruct H2 as (H1, H2).
-    subst a3 a4.
-    apply Nat.mod_divides in H1; [ idtac | intros H; discriminate H ].
-    destruct H1 as (c3, Hc3).
-    apply Nat.mod_divides in H2; [ idtac | intros H; discriminate H ].
-    destruct H2 as (c4, Hc4).
-    unfold I_add_algo in Hc3; simpl in Hc3.
-    rewrite Nat.add_0_r in Hc3.
-    unfold I_add_algo in Hc4; simpl in Hc4.
-    rewrite Nat.add_0_r, divmod_div in Hc4.
-    destruct c1; simpl in Hc1.
-     apply Nat.eq_add_0 in Hc1.
-     destruct Hc1 as (H1, H2).
-     rewrite H1, Nat.add_0_r in Hc3; rewrite H2, Hc3.
-     destruct c3; [ reflexivity | exfalso; simpl in Hc3 ].
-     rewrite Nat.add_succ_r in Hc3.
-     pose proof d2n_lt_radix (x.[i]) as H.
-     rewrite Hc3 in H.
-     apply Nat.nle_gt in H; apply H.
-     do 2 apply le_n_S; apply Nat.le_0_l.
-
-     rewrite Nat.add_succ_r in Hc1.
-     destruct c1; simpl in Hc1.
-bbb.
+(* mouais, bin le théorème doit être faux... *)
 *)
 
 Theorem d2n_mod_radix : ∀ d e,
@@ -402,10 +259,9 @@ Theorem d2n_mod_radix : ∀ d e,
 Proof.
 intros d e H.
 unfold d2n in H; unfold d2n.
-destruct (Digit.dec d) as [H1| H1].
- destruct (Digit.dec e) as [H2| H2]; [ reflexivity | discriminate H ].
-
- destruct (Digit.dec e) as [H2| H2]; [ discriminate H | reflexivity ].
+rewrite Nat.mod_mod in H; [ idtac | apply Digit.radix_neq_0 ].
+rewrite Nat.mod_mod in H; [ idtac | apply Digit.radix_neq_0 ].
+assumption.
 Qed.
 
 Theorem I_add_assoc : ∀ x y z, (x + (y + z) == (x + y) + z)%I.
@@ -413,26 +269,23 @@ Proof.
 intros x y z.
 unfold I_eqs; intros i; simpl.
 unfold I_add2_i; simpl.
-unfold z_of_u, radix.
-unfold summation; rewrite Nat.sub_0_r.
-remember div as f; remember modulo as g; simpl; subst f g.
+unfold z_of_u.
+unfold summation; rewrite Nat.sub_0_r; simpl.
 do 3 rewrite Nat.add_0_r.
 do 2 rewrite Nat.mul_1_r.
 do 2 rewrite Nat.add_assoc.
-rewrite Nat.div_mul; [ idtac | intros H; discriminate H ].
-rewrite Nat.div_mul; [ idtac | intros H; discriminate H ].
-unfold I_add_algo.
-remember div as f; remember modulo as g; simpl; subst f g.
-unfold I_add2_i, z_of_u, radix.
-unfold summation; rewrite Nat.sub_0_r.
-remember div as fdiv; remember modulo as fmod; simpl.
+rewrite Nat.div_mul.
+rewrite Nat.div_mul.
+unfold I_add_algo; simpl.
+unfold I_add2_i, z_of_u.
+unfold summation; rewrite Nat.sub_0_r; simpl.
 unfold I_add_algo.
 do 9 rewrite Nat.add_0_r.
 do 6 rewrite <- Nat.add_assoc; simpl.
 do 8 rewrite Nat.add_assoc.
-subst fdiv fmod.
-do 6 (rewrite Nat.div_mul; [ idtac | intros H; discriminate H ]).
 do 6 rewrite Nat.mul_1_r.
+bbb.
+
 do 6 rewrite d2n_add_div_4, Nat.add_0_r.
 do 6 rewrite Nat_mul_2_div_4.
 remember (d2n (x .[ i])) as xi eqn:Hxi .
