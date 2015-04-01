@@ -435,16 +435,16 @@ destruct (lt_dec (yi2 + zi2) radix) as [H1| H1].
     rewrite Nat.succ_pred; [ idtac | apply Digit.radix_neq_0 ].
     rewrite Nat.mod_same; [ idtac | apply Digit.radix_neq_0 ].
     rewrite Nat.add_0_l.
-SearchAbout ((_ + _) / _).
 Theorem zzz : ∀ a b, b ≤ a → (a - b) / b = pred (a / b).
 Proof.
 intros a b Hba.
 bbb.
 
-bbb.
     rewrite Nat.add_comm.
     rewrite Nat.add_sub_assoc; [ idtac | assumption ].
-SearchAbout ((_ + _) / _).
+    rewrite zzz.
+    rewrite Nat.add_comm.
+    rewrite Nat.add_pred_l.
 bbb.
 
 
