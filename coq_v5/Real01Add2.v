@@ -196,13 +196,35 @@ rewrite Nat.div_small.
 bbb.
 *)
 
+Theorem unfold_S2I : ∀ n u i,
+  S2I n u .[i] =
+  n2d (Σ (k = 0, n),
+       (u (i + k) * int_pow radix (n - k) / int_pow radix n) mod radix).
+Proof. reflexivity. Qed.
+
 Theorem I_add_assoc : ∀ x y z, (x + (y + z) == (x + y) + z)%I.
 Proof.
 intros x y z i.
 unfold I_add2.
 unfold I_add_algo.
-Check S_add_assoc_i.
+do 2 rewrite unfold_S2I.
+unfold digit_eq; fsimpl.
+rewrite Nat.mul_1_r.
+(* osons *)
+f_equal.
+apply summation_compat.
+intros j (_, Hj).
+f_equal; f_equal; f_equal.
+unfold S_add; simpl.
+unfold I2S, S2I; fsimpl.
+do 2 rewrite d2n_n2d.
+rewrite Nat.mul_1_r.
+unfold summation; simpl.
+remember (i + j) as k.
+do 3 rewrite Nat.add_0_r.
+rewrite Nat.mul_1_r.
 bbb.
+bof, finalement, c'est comme le OLD...
 
 Definition S2M (u : nat → nat) i := u i mod radix.
 
@@ -488,6 +510,7 @@ eapply le_lt_trans with (m := radix * pred radix).
  apply Digit.pred_radix_lt_radix.
 Qed.
 
+(*
 Theorem I_add_algo_assoc : ∀ x y z i,
   I_add_algo x (y + z) i = I_add_algo (x + y) z i.
 Proof.
@@ -529,7 +552,6 @@ rewrite Nat.div_mul.
       apply Nat.add_assoc.
 
       apply Nat.nlt_ge in H4.
-Abort. (*
 bbb.
 (* mouais, bin le théorème doit être faux... *)
 *)
