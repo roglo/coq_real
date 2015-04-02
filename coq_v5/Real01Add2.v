@@ -476,7 +476,7 @@ rewrite Nat_lt_sqr_div_mod.
          simpl.
 SearchAbout ((_ + _) mod _).
 bbb.
-
+(* (a + b) mod c ≠ 0 → (a + b) mod c = a mod c + b *)
 
 do 6 rewrite d2n_add_div_4, Nat.add_0_r.
 do 6 rewrite Nat_mul_2_div_4.
