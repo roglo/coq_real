@@ -131,82 +131,174 @@ intros x.
 unfold I_eqs, I_add2, I_add_algo; intros i.
 rewrite I_zero_S_zero.
 rewrite S_add_0_r.
-Theorem zzz : ∀ n x, (S2I n (I2S x) == x)%I.
-Proof.
-intros n x i; simpl.
-unfold digit_eq; simpl.
-rewrite summation_split_first; [ idtac | apply Nat.le_0_l ].
-rewrite Nat.add_0_r.
-rewrite Nat.sub_0_r.
-rewrite Nat.div_mul; [ idtac | apply int_pow_neq_0, Digit.radix_neq_0 ].
-unfold I2S, d2n; simpl.
-rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
-destruct n.
- rewrite summation_empty; [ idtac | apply Nat.lt_0_1 ].
+unfold digit_eq, S2I; fsimpl.
+unfold summation.
+remember modulo as fmod; remember div as fdiv; simpl; subst fmod fdiv.
+do 2 rewrite Nat.add_0_r, Nat.mul_1_r; fsimpl.
+rewrite Nat.div_mul; [ idtac | apply radix_radix_neq_0 ].
+rewrite Nat.div_mul_cancel_r; try apply Digit.radix_neq_0.
+rewrite Nat.div_small; [ idtac | apply d2n_lt_radix ].
+rewrite Nat.mod_0_l; [ idtac | apply Digit.radix_neq_0 ].
+rewrite Nat.add_0_l.
+rewrite Nat.div_small.
+ rewrite Nat.mod_0_l; [ idtac | apply Digit.radix_neq_0 ].
  rewrite Nat.add_0_r.
- rewrite Nat.mod_mod; [ reflexivity | apply Digit.radix_neq_0 ].
-
- destruct n.
-  rewrite summation_only_one.
-  fsimpl; rewrite Nat.sub_diag.
-  do 2 rewrite Nat.mul_1_r.
-  rewrite Nat.div_small.
-   rewrite Nat.mod_0_l; [ idtac | apply Digit.radix_neq_0 ].
-   rewrite Nat.add_0_r.
-   rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
-   reflexivity.
-
-   apply Nat.mod_upper_bound, Digit.radix_neq_0.
-
-  destruct n.
-   unfold summation; simpl.
-   do 2 rewrite Nat.mul_1_r; rewrite Nat.add_0_r.
-vvv.
-
- rewrite Nat.div_mul.
  rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
- rewrite Nat.div_mul; [ idtac | apply int_pow_neq_0, Digit.radix_neq_0 ].
+ unfold I2S, d2n.
  rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
  reflexivity.
 
+ eapply lt_le_trans.
+  apply Nat.mod_upper_bound, Digit.radix_neq_0.
 
-rewrite Nat.div_mul; [ idtac | intros H; discriminate H ].
+  remember (radix * radix) as a.
+  replace radix with (radix * 1) by apply Nat.mul_1_r; subst a.
+  apply Nat.mul_le_mono_l.
+  apply Digit.radix_gt_0.
+Qed.
+
+(* associativity *)
+
+Theorem zzz : ∀ x y, (I2S (S2I 2 (I2S x + I2S y)) = (I2S x + I2S y))%S.
+Proof.
+intros u v i.
+unfold I2S, S2I, S_add; fsimpl.
+rewrite d2n_n2d, Nat.mul_1_r.
+unfold summation.
+remember modulo as fmod; remember div as fdiv; simpl; subst fmod fdiv.
+do 2 rewrite Nat.add_0_r, Nat.mul_1_r; fsimpl.
+rewrite Nat.div_mul; [ idtac | apply radix_radix_neq_0 ].
+rewrite Nat.div_mul_cancel_r; try apply Digit.radix_neq_0.
+Abort. (*
+(*
+rewrite Nat.div_small; [ idtac | apply d2n_lt_radix ].
+*)
+rewrite Nat.mod_0_l; [ idtac | apply Digit.radix_neq_0 ].
+rewrite Nat.add_0_l.
+rewrite Nat.div_small.
+ rewrite Nat.mod_0_l; [ idtac | apply Digit.radix_neq_0 ].
+ rewrite Nat.add_0_r.
+ rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
+ unfold I2S, d2n.
  rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
  reflexivity.
 
-fsimpl.
-rewrite Nat.div_mul.
+ eapply lt_le_trans.
+  apply Nat.mod_upper_bound, Digit.radix_neq_0.
 
-rewrite all_0_summation_0.
- rewrite Nat.sub_0_r; fsimpl.
- do 2 rewrite Nat.add_0_r.
- unfold I2S, d2n; simpl.
- rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
- rewrite Nat.div_mul; [ idtac | apply int_pow_neq_0, Digit.radix_neq_0 ].
- rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
- reflexivity.
+  remember (radix * radix) as a.
+  replace radix with (radix * 1) by apply Nat.mul_1_r; subst a.
+  apply Nat.mul_le_mono_l.
+  apply Digit.radix_gt_0.
+bbb.
+*)
 
- intros j (Hj, Hjn).
- unfold I2S.
- rewrite Nat.div_small.
-  rewrite Nat.mod_small; [ reflexivity | apply Digit.radix_gt_0 ].
+Theorem I_add_assoc : ∀ x y z, (x + (y + z) == (x + y) + z)%I.
+Proof.
+intros x y z i.
+unfold I_add2.
+unfold I_add_algo.
+Check S_add_assoc.
 bbb.
 
+Definition S2M (u : nat → nat) i := u i mod radix.
 
-destruct n.
-fsimpl.
- rewrite Nat.div_mul; [ idtac | intros H; discriminate H ].
- rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
- reflexivity.
+Theorem zzz : ∀ x y, (I2S (S2I 2 (I2S x + I2S y)) = S2M (I2S x + I2S y))%S.
+Proof.
+intros x y i.
+unfold I2S, S2I, S2M, S_add; fsimpl.
+rewrite d2n_n2d.
+rewrite summation_split_first; [ idtac | apply Nat.le_0_l ].
+rewrite Nat.add_0_r, Nat.sub_0_r, Nat.mul_1_r; fsimpl.
+rewrite Nat.mul_1_r.
+rewrite Nat.div_mul; [ idtac | apply radix_radix_neq_0 ].
+unfold summation; simpl.
+do 2 rewrite Nat.mul_1_r.
+rewrite Nat.add_0_r.
+remember ((d2n (x .[ i]) + d2n (y .[ i]))) as a.
+rewrite Nat.div_mul_cancel_r; try apply Digit.radix_neq_0.
+rewrite <- Nat.add_mod_idemp_r; [ |apply Digit.radix_neq_0].
+rewrite Nat.add_mod_idemp_l; [ |apply Digit.radix_neq_0].
+f_equal; symmetry.
+apply Nat_le_sub_add_r; [ reflexivity | rewrite Nat.sub_diag ].
+remember (((d2n (x .[ i + 1]) + d2n (y .[ i + 1])) / radix) mod radix) as b.
+rewrite Nat.mod_small in Heqb.
+nnn.
+(* merde c'est faux; b vaut 0 ou 1;
+   peut-être problème de retenue de merde *)
 
-fsimpl.
-rewrite Nat.div_mul.
+apply Nat.mod_divides; [ apply Digit.radix_neq_0 | ].
 
+
+Show.
+do 2 rewrite zzz.
 bbb.
 
-rewrite zzz; reflexivity.
+Show.
+Print S2I.
+simpl.
+erewrite summation_compat.
+Focus 2.
+intros j (_, Hj).
+
+
+apply summation_compat.
+intros j (_, Hj).
+f_equal; f_equal; f_equal.
+
+rewrite zzz.
+rewrite zzz.
+rewrite S_add_assoc.
+reflexivity.
 bbb.
 
+(*
+Theorem zzz : ∀ u i,
+  (∀ i, u i < radix + radix)
+  → (S2I 2 u .[i] = n2d (u i))%D.
+Proof.
+intros u i Hi.
+unfold S2I; fsimpl.
+unfold summation; simpl.
+rewrite Nat.mul_1_r.
+do 2 rewrite Nat.add_0_r.
+rewrite Nat.div_mul; [ idtac | apply radix_radix_neq_0 ].
+rewrite Nat.div_mul_cancel_r; try apply Digit.radix_neq_0.
+remember (u i mod radix) as a eqn:Ha.
+rewrite Nat.mod_small.
+rewrite Nat.mul_1_r.
+remember (u (i + 1)/radix) as b eqn:Hb.
+rewrite Nat.div_small.
+rewrite Nat.mod_0_l; [ |apply Digit.radix_neq_0].
+rewrite Nat.add_0_r.
+subst a b.
+unfold digit_eq; simpl.
+Abort. (*
+rewrite Nat.add_comm.
+rewrite <- Nat.add_mod_idemp_l; [ |apply Digit.radix_neq_0].
+unfold n2d.
+*)
+
+Show.
+(*
+Unset Printing Notations. Show.
+*)
+bbb.
+*)
+
+rewrite zzz.
+rewrite zzz.
+rewrite
+
+unfold digit_eq.
+simpl.
+rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
+rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
+bbb.
+rewrite S_add_assoc.
+rewrite zzz.
+reflexivity.
+bbb.
 
 (* OLD *)
 
