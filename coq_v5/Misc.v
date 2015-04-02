@@ -8,6 +8,7 @@ Notation "x ∉ l" := (not (List.In x l)) (at level 70).
 
 Notation "x ≤ y ≤ z" := (x <= y ∧ y <= z)%nat (at level 70, y at next level).
 Notation "x ≤ y < z" := (x <= y ∧ y < z)%nat (at level 70, y at next level).
+Notation "x < y ≤ z" := (x < y ∧ y <= z)%nat (at level 70, y at next level).
 
 Theorem Nat_le_neq_lt : ∀ a b, a ≤ b → a ≠ b → a < b.
 Proof.
