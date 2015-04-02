@@ -523,4 +523,10 @@ rewrite Nat_lt_sqr_div_mod.
          apply Nat.le_0_l.
 
        apply Nat.nlt_ge in H3.
+       destruct (lt_dec (xi1 + yi1) radix) as [H4| H4].
+        remember ((xi1 + yi1) / radix) as a eqn:Ha .
+        rewrite Nat.div_small in Ha; [ subst a | assumption ].
+        rewrite Nat.add_0_r.
+        remember ((xi1 + yi1) mod radix) as a eqn:Ha .
+        rewrite Nat.mod_small in Ha; [ subst a | assumption ].
 bbb.
