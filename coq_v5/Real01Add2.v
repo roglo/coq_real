@@ -6,24 +6,209 @@ Require Import Digit2 Real012.
 
 Open Scope nat_scope.
 
+(* *)
+
+Definition S_eq (u v : nat → nat) := ∀ i, u i = v i.
+Definition S_add (u v : nat → nat) i := u i + v i.
+Definition S_zero (i : nat) := 0.
+
+Delimit Scope S_scope with S.
+Notation "u = v" := (S_eq u v) : S_scope.
+Notation "u + v" := (S_add u v) : S_scope.
+Notation "0" := S_zero : S_scope.
+
+Theorem S_add_comm : ∀ u v, (u + v = v + u)%S.
+Proof. intros u v i; apply Nat.add_comm. Qed.
+
+Theorem S_add_0_r : ∀ u, (u + 0 = u)%S.
+Proof.
+intros u i; simpl.
+unfold S_add; simpl.
+rewrite Nat.add_0_r.
+reflexivity.
+Qed.
+
+Theorem S_add_assoc : ∀ u v w, (u + (v + w) = (u + v) + w)%S.
+Proof. intros u v w i; apply Nat.add_assoc. Qed.
+
+Theorem S_eq_refl : reflexive _ S_eq.
+Proof. intros u i; reflexivity. Qed.
+
+Theorem S_eq_sym : symmetric _ S_eq.
+Proof.
+intros u v Huv i.
+symmetry; apply Huv.
+Qed.
+
+Theorem S_eq_trans : transitive _ S_eq.
+Proof.
+intros u v w Huv Hvw i.
+unfold I_eqs in Huv, Hvw.
+rewrite Huv, Hvw; reflexivity.
+Qed.
+
+Add Parametric Relation : _ S_eq
+ reflexivity proved by S_eq_refl
+ symmetry proved by S_eq_sym
+ transitivity proved by S_eq_trans
+ as S_eq_rel.
+
+Add Parametric Morphism : S_add
+ with signature S_eq ==> S_eq ==> S_eq
+ as S_add_compat.
+Proof.
+intros u v Huv w t Hwt i; unfold S_add.
+rewrite Huv, Hwt; reflexivity.
+Qed.
+
+Add Parametric Morphism : rm
+ with signature I_eqs ==> eq ==> digit_eq
+ as rm_compat.
+Proof. intros x y Hxy i; apply Hxy. Qed.
+
+(* *)
+
 Fixpoint int_pow a b :=
   match b with
   | 0 => 1
   | S b1 => a * int_pow a b1
   end.
 
-Definition I_add_algo x y i := d2n (x.[i]) + d2n (y.[i]).
+Definition I2S x i := d2n (x.[i]).
+Definition S2I n u :=
+  {| rm i :=
+       n2d
+         (Σ (k = 0, n),
+          u (i + k) * int_pow radix (n - k) / int_pow radix n mod radix) |}.
+
+Definition I_add_algo x y := (I2S x + I2S y)%S.
 Arguments I_add_algo x%I y%I i%nat.
 
-Definition z_of_u b n u i :=
-  n2d (Σ (k = 0, n), u (i + k) * int_pow b (n - k) / int_pow b n mod b).
-
-Definition I_add2_i x y := z_of_u radix 2 (I_add_algo x y).
-Definition I_add2 x y := {| rm := I_add2_i x y |}.
-Arguments I_add2_i x%I y%I i%nat.
+Definition I_add2 x y := S2I 2 (I_add_algo x y).
 Arguments I_add2 x%I y%I.
 
 Notation "x + y" := (I_add2 x y) : I_scope.
+
+Add Parametric Morphism : S2I
+ with signature eq ==> S_eq ==> I_eqs
+ as S2I_compat.
+Proof.
+intros n u v Huv i; simpl.
+unfold digit_eq; simpl; f_equal.
+apply summation_compat; intros j (_, Hj).
+rewrite Huv; reflexivity.
+Qed.
+
+(* commutativity *)
+
+Theorem I_add2_comm : ∀ x y, (x + y == y + x)%I.
+Proof.
+intros x y.
+unfold I_eqs, I_add2, I_add_algo; intros i.
+rewrite S_add_comm; reflexivity.
+Qed.
+
+(* 0 neutral element *)
+
+Theorem I_zero_S_zero : (I2S 0%I = S_zero)%S.
+Proof.
+intros i.
+unfold I2S; simpl.
+unfold d2n; simpl.
+rewrite Nat.mod_0_l; [ reflexivity | apply Digit.radix_neq_0 ].
+Qed.
+
+Theorem int_pow_neq_0 : ∀ a b, a ≠ 0 → int_pow a b ≠ 0.
+Proof.
+intros a b Ha.
+induction b; [ intros H; discriminate H | simpl ].
+apply Nat.neq_mul_0; split; assumption.
+Qed.
+
+Theorem I_add2_0_r : ∀ x, (x + 0 == x)%I.
+Proof.
+intros x.
+unfold I_eqs, I_add2, I_add_algo; intros i.
+rewrite I_zero_S_zero.
+rewrite S_add_0_r.
+Theorem zzz : ∀ n x, (S2I n (I2S x) == x)%I.
+Proof.
+intros n x i; simpl.
+unfold digit_eq; simpl.
+rewrite summation_split_first; [ idtac | apply Nat.le_0_l ].
+rewrite Nat.add_0_r.
+rewrite Nat.sub_0_r.
+rewrite Nat.div_mul; [ idtac | apply int_pow_neq_0, Digit.radix_neq_0 ].
+unfold I2S, d2n; simpl.
+rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
+destruct n.
+ rewrite summation_empty; [ idtac | apply Nat.lt_0_1 ].
+ rewrite Nat.add_0_r.
+ rewrite Nat.mod_mod; [ reflexivity | apply Digit.radix_neq_0 ].
+
+ destruct n.
+  rewrite summation_only_one.
+  fsimpl; rewrite Nat.sub_diag.
+  do 2 rewrite Nat.mul_1_r.
+  rewrite Nat.div_small.
+   rewrite Nat.mod_0_l; [ idtac | apply Digit.radix_neq_0 ].
+   rewrite Nat.add_0_r.
+   rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
+   reflexivity.
+
+   apply Nat.mod_upper_bound, Digit.radix_neq_0.
+
+  destruct n.
+   unfold summation; simpl.
+   do 2 rewrite Nat.mul_1_r; rewrite Nat.add_0_r.
+vvv.
+
+ rewrite Nat.div_mul.
+ rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
+ rewrite Nat.div_mul; [ idtac | apply int_pow_neq_0, Digit.radix_neq_0 ].
+ rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
+ reflexivity.
+
+
+rewrite Nat.div_mul; [ idtac | intros H; discriminate H ].
+ rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
+ reflexivity.
+
+fsimpl.
+rewrite Nat.div_mul.
+
+rewrite all_0_summation_0.
+ rewrite Nat.sub_0_r; fsimpl.
+ do 2 rewrite Nat.add_0_r.
+ unfold I2S, d2n; simpl.
+ rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
+ rewrite Nat.div_mul; [ idtac | apply int_pow_neq_0, Digit.radix_neq_0 ].
+ rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
+ reflexivity.
+
+ intros j (Hj, Hjn).
+ unfold I2S.
+ rewrite Nat.div_small.
+  rewrite Nat.mod_small; [ reflexivity | apply Digit.radix_gt_0 ].
+bbb.
+
+
+destruct n.
+fsimpl.
+ rewrite Nat.div_mul; [ idtac | intros H; discriminate H ].
+ rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
+ reflexivity.
+
+fsimpl.
+rewrite Nat.div_mul.
+
+bbb.
+
+rewrite zzz; reflexivity.
+bbb.
+
+
+(* OLD *)
 
 (* commutativity *)
 

@@ -107,6 +107,7 @@ destruct (Digit.dec (x.[j-1])) as [Hxj|Hxj]; [ simpl | reflexivity ].
 rewrite Hx in Hxj; discr_digit Hxj.
 Qed.
 
+(* done in Real01Add2.v *)
 Theorem int_pow_neq_0 : ∀ a b, a ≠ 0 → int_pow a b ≠ 0.
 Proof.
 intros a b Ha.
