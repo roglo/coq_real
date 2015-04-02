@@ -28,6 +28,9 @@ rewrite Nat.add_0_r.
 reflexivity.
 Qed.
 
+Theorem S_add_assoc_i : ∀ u v w i, (u + (v + w))%S i = ((u + v) + w)%S i.
+Proof. intros u v w i; apply Nat.add_assoc. Qed.
+
 Theorem S_add_assoc : ∀ u v w, (u + (v + w) = (u + v) + w)%S.
 Proof. intros u v w i; apply Nat.add_assoc. Qed.
 
@@ -198,7 +201,7 @@ Proof.
 intros x y z i.
 unfold I_add2.
 unfold I_add_algo.
-Check S_add_assoc.
+Check S_add_assoc_i.
 bbb.
 
 Definition S2M (u : nat → nat) i := u i mod radix.
