@@ -336,6 +336,34 @@ rewrite Nat.add_1_r, Nat.pred_succ.
 reflexivity.
 Qed.
 
+Theorem Nat_mod_succ : ∀ a b, a mod b ≠ pred b → S a mod b = S (a mod b).
+Proof.
+intros a b Hab.
+destruct b; [ exfalso; apply Hab; reflexivity | idtac ].
+remember (a mod S b) as c eqn:Hc .
+symmetry in Hc.
+destruct c.
+ apply Nat.mod_divides in Hc; [ idtac | intros H; discriminate H ].
+ destruct Hc as (c, Hc).
+ subst a; rewrite <- Nat.add_1_l, Nat.mul_comm.
+ rewrite Nat.mod_add.
+ destruct b; [ exfalso; apply Hab; reflexivity | idtac ].
+  rewrite Nat.mod_small; [ reflexivity | idtac ].
+  apply lt_n_S, Nat.lt_0_succ.
+
+  intros H; discriminate H.
+
+ rewrite <- Nat.add_1_r.
+ rewrite <- Nat.add_mod_idemp_l; [ rewrite Hc | intros H; discriminate H ].
+ rewrite Nat.mod_small; [ apply Nat.add_1_r | idtac ].
+ rewrite Nat.pred_succ in Hab.
+ simpl; apply lt_n_S; rewrite Nat.add_1_r.
+ apply Nat_le_neq_lt; [ idtac | assumption ].
+ apply le_S_n; rewrite <- Hc.
+ apply Nat.mod_upper_bound.
+ intros H; discriminate H.
+Qed.
+
 Theorem I_add_assoc : ∀ x y z, (x + (y + z) == (x + y) + z)%I.
 Proof.
 intros x y z.
@@ -473,62 +501,9 @@ rewrite Nat_lt_sqr_div_mod.
            rewrite Nat.div_add in H; [ idtac | apply Digit.radix_neq_0 ].
            rewrite Nat.add_comm in H; discriminate H.
 
-         simpl.
-Theorem zzz : ∀ a b, a mod b ≠ pred b → S a mod b = S (a mod b).
-Proof.
-intros a b Hab.
-destruct b; [ exfalso; apply Hab; reflexivity | idtac ].
-remember (a mod S b) as c eqn:Hc .
-symmetry in Hc.
-destruct c.
- apply Nat.mod_divides in Hc; [ idtac | intros H; discriminate H ].
- destruct Hc as (c, Hc).
- subst a; rewrite <- Nat.add_1_l, Nat.mul_comm.
- rewrite Nat.mod_add.
- destruct b; [ exfalso; apply Hab; reflexivity | idtac ].
-  rewrite Nat.mod_small; [ reflexivity | idtac ].
-  apply lt_n_S, Nat.lt_0_succ.
-
-  intros H; discriminate H.
-
- rewrite <- Nat.add_1_r.
- rewrite <- Nat.add_mod_idemp_l; [ rewrite Hc | intros H; discriminate H ].
- rewrite Nat.mod_small; [ apply Nat.add_1_r | idtac ].
- rewrite Nat.pred_succ in Hab.
- simpl; apply lt_n_S; rewrite Nat.add_1_r.
- apply Nat_le_neq_lt; [ idtac | assumption ].
- apply le_S_n; rewrite <- Hc.
- apply Nat.mod_upper_bound.
- intros H; discriminate H.
-Qed.
-bbb.
-
-Theorem zzz : ∀ a b c, (a + b) mod c ≠ 0 → (a + b) mod c = a mod c + b.
-Proof.
-intros a b c Hab.
-remember (a mod c) as r eqn:Hr.
-symmetry in Hr.
-destruct r.
- apply Nat.mod_divides in Hr.
- destruct Hr as (r, Hr).
- rewrite Nat.mul_comm in Hr; subst a.
- rewrite Nat.add_comm.
- rewrite Nat.mod_add; simpl.
-bbb.
-  Hab : (r * c + b) mod c ≠ 0
-  ============================
-   b mod c = b
-
-destruct c; [ exfalso; apply Hab; reflexivity | idtac ].
-destruct c; [ exfalso; apply Hab; reflexivity | idtac ].
-rewrite Nat.add_mod; [ idtac | intros H; discriminate H ].
-rewrite Nat.add_mod in Hab; [ idtac | intros H; discriminate H ].
-remember (a mod S c) as ac eqn:Hac.
-remember (b mod S c) as bc eqn:Hbc.
-bbb.
-Show.
-rewrite zzz.
-*)
+         rewrite Nat.add_1_r.
+         rewrite Nat_mod_succ; [ idtac | assumption ].
+         rewrite Nat.add_succ_l, <- Nat.add_succ_r.
 bbb.
 
 do 6 rewrite d2n_add_div_4, Nat.add_0_r.
