@@ -474,9 +474,30 @@ rewrite Nat_lt_sqr_div_mod.
            rewrite Nat.add_comm in H; discriminate H.
 
          simpl.
-SearchAbout ((_ + _) mod _).
+(*
+Theorem zzz : ∀ a b c, (a + b) mod c ≠ 0 → (a + b) mod c = a mod c + b.
+Proof.
+intros a b c Hab.
+remember (a mod c) as r eqn:Hr.
+symmetry in Hr.
+destruct r.
+ apply Nat.mod_divides in Hr.
+ destruct Hr as (r, Hr).
+ rewrite Nat.mul_comm in Hr; subst a.
+ rewrite Nat.add_comm.
+ rewrite Nat.mod_add; simpl.
 bbb.
-(* (a + b) mod c ≠ 0 → (a + b) mod c = a mod c + b *)
+destruct c; [ exfalso; apply Hab; reflexivity | idtac ].
+destruct c; [ exfalso; apply Hab; reflexivity | idtac ].
+rewrite Nat.add_mod; [ idtac | intros H; discriminate H ].
+rewrite Nat.add_mod in Hab; [ idtac | intros H; discriminate H ].
+remember (a mod S c) as ac eqn:Hac.
+remember (b mod S c) as bc eqn:Hbc.
+bbb.
+Show.
+rewrite zzz.
+*)
+bbb.
 
 do 6 rewrite d2n_add_div_4, Nat.add_0_r.
 do 6 rewrite Nat_mul_2_div_4.
