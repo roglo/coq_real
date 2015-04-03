@@ -353,9 +353,15 @@ Set Printing Depth 10. Show.
 Set Printing Depth 24. Show.
 remember (((ui2 * radix + ui3) / rr + ui1) mod radix) as a eqn:Ha.
 remember (((ui3 * radix + ui4) / rr + ui2) mod radix) as b eqn:Hb.
-do 2 rewrite <- Nat.add_assoc.
-remember (a * radix + (xi2 + b)) as c eqn:Hc.
+rewrite Nat.add_shuffle0.
+remember (xi1 * radix + a * radix + b + xi2) as c eqn:Hc.
+do 2 rewrite <- Nat.add_assoc in Hc.
+rewrite Nat.add_comm in Hc.
 rewrite Nat.add_assoc in Hc.
+subst c.
+remember (a * radix + b) as c eqn:Hc.
+rewrite Nat.add_shuffle0.
+subst a b.
 bbb.
 
 Unset Printing Notations. Show.
