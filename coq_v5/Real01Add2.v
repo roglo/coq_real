@@ -6,24 +6,94 @@ Require Import Digit2 Real012.
 
 Open Scope nat_scope.
 
+Definition S_eq (u v : nat → nat) := ∀ i, u i = v i.
+Definition S_add (u v : nat → nat) i := u i + v i.
+Definition S_zero (i : nat) := 0.
+
+Delimit Scope S_scope with S.
+Notation "u = v" := (S_eq u v) : S_scope.
+Notation "u + v" := (S_add u v) : S_scope.
+Notation "0" := S_zero : S_scope.
+
+Theorem S_add_comm : ∀ u v, (u + v = v + u)%S.
+Proof. intros u v i; apply Nat.add_comm. Qed.
+
+Theorem S_add_0_r : ∀ u, (u + 0 = u)%S.
+Proof.
+intros u i; simpl.
+unfold S_add; simpl.
+rewrite Nat.add_0_r.
+reflexivity.
+Qed.
+
+Theorem S_eq_refl : reflexive _ S_eq.
+Proof. intros u i; reflexivity. Qed.
+
+Theorem S_eq_sym : symmetric _ S_eq.
+Proof.
+intros u v Huv i.
+symmetry; apply Huv.
+Qed.
+
+Theorem S_eq_trans : transitive _ S_eq.
+Proof.
+intros u v w Huv Hvw i.
+unfold I_eqs in Huv, Hvw.
+rewrite Huv, Hvw; reflexivity.
+Qed.
+
+Add Parametric Relation : _ S_eq
+ reflexivity proved by S_eq_refl
+ symmetry proved by S_eq_sym
+ transitivity proved by S_eq_trans
+ as S_eq_rel.
+
+Add Parametric Morphism : S_add
+ with signature S_eq ==> S_eq ==> S_eq
+ as S_add_compat.
+Proof.
+intros u v Huv w t Hwt i; unfold S_add.
+rewrite Huv, Hwt; reflexivity.
+Qed.
+
+Add Parametric Morphism : rm
+ with signature I_eqs ==> eq ==> digit_eq
+ as rm_compat.
+Proof. intros x y Hxy i; apply Hxy. Qed.
+
+(* *)
+
 Fixpoint int_pow a b :=
   match b with
   | 0 => 1
   | S b1 => a * int_pow a b1
   end.
 
-Definition I_add_algo x y i := d2n (x.[i]) + d2n (y.[i]).
+Definition I2S x i := d2n (x.[i]).
+Definition S2I n u :=
+  let b := radix in
+  {| rm i :=
+       n2d (Σ (k = 0, n),
+            u (i + k) * int_pow b (n - k) / int_pow b n mod b) |}.
+
+(* todo: supprimer l'intermédiaire I_add_algo *)
+Definition I_add_algo x y := (I2S x + I2S y)%S.
 Arguments I_add_algo x%I y%I i%nat.
 
-Definition z_of_u b n u i :=
-  n2d (Σ (k = 0, n), u (i + k) * int_pow b (n - k) / int_pow b n mod b).
-
-Definition I_add2_i x y := z_of_u radix 2 (I_add_algo x y).
-Definition I_add2 x y := {| rm := I_add2_i x y |}.
-Arguments I_add2_i x%I y%I i%nat.
+Definition I_add2 x y := S2I 2 (I_add_algo x y).
 Arguments I_add2 x%I y%I.
 
 Notation "x + y" := (I_add2 x y) : I_scope.
+
+Add Parametric Morphism : S2I
+ with signature eq ==> S_eq ==> I_eqs
+ as S2I_compat.
+Proof.
+intros n u v Huv i; simpl.
+unfold digit_eq; simpl; f_equal.
+apply summation_compat; intros j (_, Hj).
+rewrite Huv; reflexivity.
+Qed.
 
 (* commutativity *)
 
@@ -34,96 +104,53 @@ unfold I_add_algo; simpl.
 apply Nat.add_comm.
 Qed.
 
-Theorem z_of_u_compat_l : ∀ b u v i n,
-  (∀ j, j ≤ n → u (i + j) = v (i + j))
-  → z_of_u b n u i = z_of_u b n v i.
-Proof.
-intros b u v i n Huv.
-unfold z_of_u.
-unfold z_of_u; f_equal.
-apply summation_compat; intros j (_, Hj).
-f_equal; f_equal; f_equal.
-apply Huv; assumption.
-Qed.
-
-Theorem I_add2_i_comm : ∀ x y i, I_add2_i x y i = I_add2_i y x i.
-Proof.
-intros x y i.
-unfold I_add2_i; simpl.
-apply z_of_u_compat_l; intros j Hj.
-apply I_add_algo_comm.
-Qed.
-
 Theorem I_add2_comm : ∀ x y, (x + y == y + x)%I.
 Proof.
 intros x y.
-unfold I_eqs; intros i; simpl.
-rewrite I_add2_i_comm; reflexivity.
+unfold I_eqs, I_add2, I_add_algo; intros i.
+rewrite S_add_comm; reflexivity.
 Qed.
 
 (* 0 neutral element *)
 
-Theorem I_add2_i_0_r : ∀ x i, (I_add2_i x 0 i = x.[i])%D.
+Theorem I_zero_S_zero : (I2S 0%I = S_zero)%S.
 Proof.
-intros x i.
-unfold I_add2_i; simpl.
-rewrite z_of_u_compat_l with (v := λ k, d2n (x .[ k])).
- Focus 2.
- intros j Hj.
- unfold I_add_algo; simpl.
- rewrite d2n_0, Nat.add_0_r.
- reflexivity.
-
- unfold z_of_u, summation.
- rewrite Nat.sub_0_r; simpl.
- do 2 rewrite Nat.add_0_r, Nat.mul_1_r.
- rewrite Nat.div_mul.
-  2: apply Nat.neq_mul_0; split; apply Digit.radix_neq_0.
-
-  rewrite Nat.div_mul_cancel_r; try apply Digit.radix_neq_0.
-  rewrite Nat.mod_small.
-   2: apply Nat.mod_upper_bound, Digit.radix_neq_0.
-
-   rewrite Nat.mod_small.
-    rewrite Nat.mod_small.
-     rewrite Nat.div_small; [ idtac | apply d2n_lt_radix ].
-     rewrite Nat.div_small.
-      rewrite Nat.add_0_r.
-      apply n2d_d2n.
-
-      eapply lt_trans.
-       apply Nat.mod_upper_bound, Digit.radix_neq_0.
-
-       apply le_lt_trans with (m := 1 * radix).
-        rewrite Nat.mul_1_l; reflexivity.
-
-        apply Nat.mul_lt_mono_pos_r.
-         apply Digit.radix_gt_0.
-
-         apply Digit.radix_gt_1.
-
-     apply Nat.div_lt_upper_bound.
-      apply Nat.neq_mul_0; split; apply Digit.radix_neq_0.
-
-      apply lt_trans with (m := 1 * radix).
-       rewrite Nat.mul_1_l; apply d2n_lt_radix.
-
-       apply Nat.mul_lt_mono_pos_r; [ apply Digit.radix_gt_0 | idtac ].
-       replace 1 with (1 * 1) by reflexivity.
-       apply Nat.mul_lt_mono; apply Digit.radix_gt_1.
-
-    apply Nat.div_lt_upper_bound; [ apply Digit.radix_neq_0 | idtac ].
-    apply lt_trans with (m := 1 * radix).
-     rewrite Nat.mul_1_l; apply d2n_lt_radix.
-
-     apply Nat.mul_lt_mono_pos_r; [ apply Digit.radix_gt_0 | idtac ].
-     apply Digit.radix_gt_1.
+intros i.
+unfold I2S; simpl.
+unfold d2n; simpl.
+rewrite Nat.mod_0_l; [ reflexivity | apply Digit.radix_neq_0 ].
 Qed.
 
 Theorem I_add2_0_r : ∀ x, (x + 0 == x)%I.
 Proof.
-intros x i; simpl.
-apply I_add2_i_0_r.
+intros x.
+unfold I_eqs, I_add2, I_add_algo; intros i.
+rewrite I_zero_S_zero.
+rewrite S_add_0_r.
+unfold digit_eq, S2I; fsimpl.
+unfold summation.
+remember modulo as fmod; remember div as fdiv; simpl; subst fmod fdiv.
+do 2 rewrite Nat.add_0_r, Nat.mul_1_r; fsimpl.
+rewrite Nat.div_mul; [ idtac | apply radix_radix_neq_0 ].
+rewrite Nat.div_mul_cancel_r; try apply Digit.radix_neq_0.
+rewrite Nat.div_small; [ idtac | apply d2n_lt_radix ].
+rewrite Nat.mod_0_l; [ idtac | apply Digit.radix_neq_0 ].
+rewrite Nat.add_0_l.
+rewrite Nat.div_small.
+ rewrite Nat.mod_0_l; [ idtac | apply Digit.radix_neq_0 ].
+ rewrite Nat.add_0_r.
+ rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
+ unfold I2S, d2n.
+ rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
+ reflexivity.
+
+ eapply lt_le_trans.
+  apply Nat.mod_upper_bound, Digit.radix_neq_0.
+
+  remember (radix * radix) as a.
+  replace radix with (radix * 1) by apply Nat.mul_1_r; subst a.
+  apply Nat.mul_le_mono_l.
+  apply Digit.radix_gt_0.
 Qed.
 
 (* associativity *)
@@ -136,66 +163,8 @@ rewrite Nat.add_0_r, Nat.sub_1_r.
 apply Nat.add_le_mono; apply Nat.lt_le_pred, d2n_lt_radix.
 Qed.
 
-(*
-Theorem d2n_add_iff : ∀ d e n,
-  d2n d + d2n e = n
-  ↔ n = 0 ∧ (d = 0)%D ∧ (e = 0)%D ∨
-    n = 1 ∧ (d = 0)%D ∧ (e = 1)%D ∨
-    n = 1 ∧ (d = 1)%D ∧ (e = 0)%D ∨
-    n = 2 ∧ (d = 1)%D ∧ (e = 1)%D.
-Proof.
-intros d e n.
-split; intros H.
- unfold d2n in H; simpl in H.
- destruct (Digit.dec d) as [H1| H1]; rewrite H1.
-  destruct (Digit.dec e) as [H2| H2]; rewrite H2, <- H.
-   right; right; right; split; [ reflexivity | split; reflexivity ].
-
-   right; right; left; split; [ reflexivity | split; reflexivity ].
-
-  destruct (Digit.dec e) as [H2| H2]; rewrite H2, <- H.
-   right; left; split; [ reflexivity | split; reflexivity ].
-
-   left; split; [ reflexivity | split; reflexivity ].
-
- destruct H as [H| [H| [H| H]]]; destruct H as (Hn, (Hd, He)); subst n.
-  apply eq_d2n_0 in Hd.
-  apply eq_d2n_0 in He.
-  rewrite Hd, He; reflexivity.
-
-  apply eq_d2n_0 in Hd.
-  apply eq_d2n_1 in He.
-  rewrite Hd, He; reflexivity.
-
-  apply eq_d2n_1 in Hd.
-  apply eq_d2n_0 in He.
-  rewrite Hd, He; reflexivity.
-
-  apply eq_d2n_1 in Hd.
-  apply eq_d2n_1 in He.
-  rewrite Hd, He; reflexivity.
-Qed.
-*)
-
-(*
-Theorem d2n_add_div_2_radix : ∀ d e, (d2n d + d2n e) / (radix + radix) = 0.
-Proof.
-intros d e.
-rewrite Nat.div_small; [ reflexivity | idtac ].
-replace 4 with (2 + 2) by reflexivity.
-apply Nat.add_lt_mono; apply d2n_lt_radix.
-Qed.
-
-Theorem Nat_mul_2_div_4 : ∀ n, n * 2 / 4 = n / 2.
-Proof.
-intros n.
-replace 4 with (2 * 2) by reflexivity.
-apply Nat.div_mul_cancel_r; intros H; discriminate H.
-Qed.
-*)
-
 Theorem I_add_algo_div_sqr_radix : ∀ x y i,
-  I_add_algo x y i / (radix * radix) = 0.
+  (d2n (x .[i]) + d2n (y .[i])) / (radix * radix) = 0.
 Proof.
 intros x y i.
 rewrite Nat.div_small; [ reflexivity | idtac ].
@@ -207,52 +176,6 @@ eapply le_lt_trans with (m := radix * pred radix).
  apply Nat.mul_lt_mono_pos_l; [ apply Digit.radix_gt_0 | idtac ].
  apply Digit.pred_radix_lt_radix.
 Qed.
-
-Theorem I_add_algo_assoc : ∀ x y z i,
-  I_add_algo x (y + z) i = I_add_algo (x + y) z i.
-Proof.
-intros x y z i.
-unfold I_add_algo; simpl.
-unfold I_add2_i; simpl.
-unfold z_of_u; fsimpl.
-rewrite Nat.mul_1_r.
-do 2 rewrite d2n_n2d.
-unfold summation; simpl.
-do 3 rewrite Nat.mul_1_r.
-rewrite Nat.add_0_r.
-rewrite Nat.div_mul.
- rewrite Nat.div_mul.
-  rewrite Nat.div_mul_cancel_r; try apply Digit.radix_neq_0.
-  rewrite Nat.div_mul_cancel_r; try apply Digit.radix_neq_0.
-  do 2 rewrite I_add_algo_div_sqr_radix.
-  rewrite Nat.mod_0_l; [ idtac | apply Digit.radix_neq_0 ].
-  do 2 rewrite Nat.add_0_r.
-  unfold I_add_algo; simpl.
-  remember (d2n (x .[i])) as xi eqn:Hxi.
-  remember (d2n (y .[i])) as yi eqn:Hyi.
-  remember (d2n (z .[i])) as zi eqn:Hzi.
-  remember (d2n (x .[i+1])) as xi1 eqn:Hxi1.
-  remember (d2n (y .[i+1])) as yi1 eqn:Hyi1.
-  remember (d2n (z .[i+1])) as zi1 eqn:Hzi1.
-  destruct (lt_dec (yi1 + zi1) radix) as [H1| H1].
-   rewrite Nat.div_small; [ idtac | assumption ].
-   rewrite Nat.mod_0_l; [ rewrite Nat.add_0_r | apply Digit.radix_neq_0 ].
-   rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
-   destruct (lt_dec (xi1 + yi1) radix) as [H2| H2].
-    rewrite Nat.div_small; [ idtac | assumption ].
-    rewrite Nat.mod_0_l; [ rewrite Nat.add_0_r | apply Digit.radix_neq_0 ].
-    rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
-    destruct (lt_dec (yi + zi) radix) as [H3| H3].
-     rewrite Nat.mod_small; [ idtac | assumption ].
-     destruct (lt_dec (xi + yi) radix) as [H4| H4].
-      rewrite Nat.mod_small; [ idtac | assumption ].
-      apply Nat.add_assoc.
-
-      apply Nat.nlt_ge in H4.
-Abort. (*
-bbb.
-(* mouais, bin le théorème doit être faux... *)
-*)
 
 Theorem double_radix_le_square_radix : radix + radix ≤ radix * radix.
 Proof.
@@ -378,22 +301,17 @@ Qed.
 Theorem I_add_assoc : ∀ x y z, (x + (y + z) == (x + y) + z)%I.
 Proof.
 intros x y z.
-unfold I_eqs; intros i; simpl.
-unfold I_add2_i; simpl.
-unfold z_of_u.
+unfold I_eqs; intros i.
+unfold I_add2, S2I, I_add_algo, I2S, S_add; fsimpl.
 unfold summation; rewrite Nat.sub_0_r; simpl.
 do 3 rewrite Nat.add_0_r.
 do 2 rewrite Nat.mul_1_r.
 do 2 rewrite Nat.add_assoc.
 do 2 (rewrite Nat.div_mul; [ idtac | apply radix_radix_neq_0 ]).
-unfold I_add_algo; simpl.
-unfold I_add2_i, z_of_u.
-unfold summation; rewrite Nat.sub_0_r; simpl.
-do 8 rewrite Nat.mul_1_r.
+do 7 rewrite Nat.mul_1_r.
 do 6 rewrite I_add_algo_div_sqr_radix.
-unfold I_add_algo.
 do 4 rewrite Nat.add_0_r.
-do 4 rewrite <- Nat.add_assoc; simpl.
+do 3 rewrite <- Nat.add_assoc; simpl.
 do 8 rewrite Nat.add_assoc.
 remember (d2n (x .[ i])) as xi eqn:Hxi .
 remember (d2n (y .[ i])) as yi eqn:Hyi .
