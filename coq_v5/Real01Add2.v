@@ -8,53 +8,53 @@ Open Scope nat_scope.
 
 (* addition numbers with numbers *)
 
-Definition S_eq (u v : nat → nat) := ∀ i, u i = v i.
-Definition S_add (u v : nat → nat) i := u i + v i.
-Definition S_zero (i : nat) := 0.
+Definition NN_eq (u v : nat → nat) := ∀ i, u i = v i.
+Definition NN_add (u v : nat → nat) i := u i + v i.
+Definition NN_zero (i : nat) := 0.
 
-Delimit Scope S_scope with S.
-Notation "u = v" := (S_eq u v) : S_scope.
-Notation "u + v" := (S_add u v) : S_scope.
-Notation "0" := S_zero : S_scope.
+Delimit Scope NN_scope with NN.
+Notation "u = v" := (NN_eq u v) : NN_scope.
+Notation "u + v" := (NN_add u v) : NN_scope.
+Notation "0" := NN_zero : NN_scope.
 
-Theorem S_add_comm : ∀ u v, (u + v = v + u)%S.
+Theorem NN_add_comm : ∀ u v, (u + v = v + u)%NN.
 Proof. intros u v i; apply Nat.add_comm. Qed.
 
-Theorem S_add_0_r : ∀ u, (u + 0 = u)%S.
+Theorem NN_add_0_r : ∀ u, (u + 0 = u)%NN.
 Proof.
 intros u i; simpl.
-unfold S_add; simpl.
+unfold NN_add; simpl.
 rewrite Nat.add_0_r.
 reflexivity.
 Qed.
 
-Theorem S_eq_refl : reflexive _ S_eq.
+Theorem NN_eq_refl : reflexive _ NN_eq.
 Proof. intros u i; reflexivity. Qed.
 
-Theorem S_eq_sym : symmetric _ S_eq.
+Theorem NN_eq_sym : symmetric _ NN_eq.
 Proof.
 intros u v Huv i.
 symmetry; apply Huv.
 Qed.
 
-Theorem S_eq_trans : transitive _ S_eq.
+Theorem NN_eq_trans : transitive _ NN_eq.
 Proof.
 intros u v w Huv Hvw i.
 unfold I_eqs in Huv, Hvw.
 rewrite Huv, Hvw; reflexivity.
 Qed.
 
-Add Parametric Relation : _ S_eq
- reflexivity proved by S_eq_refl
- symmetry proved by S_eq_sym
- transitivity proved by S_eq_trans
- as S_eq_rel.
+Add Parametric Relation : _ NN_eq
+ reflexivity proved by NN_eq_refl
+ symmetry proved by NN_eq_sym
+ transitivity proved by NN_eq_trans
+ as NN_eq_rel.
 
-Add Parametric Morphism : S_add
- with signature S_eq ==> S_eq ==> S_eq
- as S_add_compat.
+Add Parametric Morphism : NN_add
+ with signature NN_eq ==> NN_eq ==> NN_eq
+ as NN_add_compat.
 Proof.
-intros u v Huv w t Hwt i; unfold S_add.
+intros u v Huv w t Hwt i; unfold NN_add.
 rewrite Huv, Hwt; reflexivity.
 Qed.
 
@@ -71,24 +71,24 @@ Fixpoint int_pow a b :=
   | S b1 => a * int_pow a b1
   end.
 
-Definition I2S x i := d2n (x.[i]).
-Definition S2I n u :=
+Definition I2NN x i := d2n (x.[i]).
+Definition NN2I n u :=
   let b := radix in
   {| rm i :=
        n2d (Σ (k = 0, n),
             u (i + k) * int_pow b (n - k) / int_pow b n mod b) |}.
 
-Definition I_add_algo x y := (I2S x + I2S y)%S.
+Definition I_add_algo x y := (I2NN x + I2NN y)%NN.
 Arguments I_add_algo x%I y%I i%nat.
 
-Definition I_add2 x y := S2I 2 (I_add_algo x y).
+Definition I_add2 x y := NN2I 2 (I_add_algo x y).
 Arguments I_add2 x%I y%I.
 
 Notation "x + y" := (I_add2 x y) : I_scope.
 
-Add Parametric Morphism : S2I
- with signature eq ==> S_eq ==> I_eqs
- as S2I_compat.
+Add Parametric Morphism : NN2I
+ with signature eq ==> NN_eq ==> I_eqs
+ as NN2I_compat.
 Proof.
 intros n u v Huv i; simpl.
 unfold digit_eq; simpl; f_equal.
@@ -102,15 +102,15 @@ Theorem I_add2_comm : ∀ x y, (x + y == y + x)%I.
 Proof.
 intros x y.
 unfold I_eqs, I_add2, I_add_algo; intros i.
-rewrite S_add_comm; reflexivity.
+rewrite NN_add_comm; reflexivity.
 Qed.
 
 (* 0 neutral element *)
 
-Theorem I_zero_S_zero : (I2S 0%I = S_zero)%S.
+Theorem I_zero_NN_zero : (I2NN 0%I = NN_zero)%NN.
 Proof.
 intros i.
-unfold I2S; simpl.
+unfold I2NN; simpl.
 unfold d2n; simpl.
 rewrite Nat.mod_0_l; [ reflexivity | apply Digit.radix_neq_0 ].
 Qed.
@@ -119,9 +119,9 @@ Theorem I_add2_0_r : ∀ x, (x + 0 == x)%I.
 Proof.
 intros x.
 unfold I_eqs, I_add2, I_add_algo; intros i.
-rewrite I_zero_S_zero.
-rewrite S_add_0_r.
-unfold digit_eq, S2I; fsimpl.
+rewrite I_zero_NN_zero.
+rewrite NN_add_0_r.
+unfold digit_eq, NN2I; fsimpl.
 unfold summation.
 remember modulo as fmod; remember div as fdiv; simpl; subst fmod fdiv.
 do 2 rewrite Nat.add_0_r, Nat.mul_1_r; fsimpl.
@@ -134,7 +134,7 @@ rewrite Nat.div_small.
  rewrite Nat.mod_0_l; [ idtac | apply Digit.radix_neq_0 ].
  rewrite Nat.add_0_r.
  rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
- unfold I2S, d2n.
+ unfold I2NN, d2n.
  rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
  reflexivity.
 
@@ -245,7 +245,7 @@ Theorem I_add_assoc : ∀ x y z, (x + (y + z) == (x + y) + z)%I.
 Proof.
 intros x y z i.
 unfold I_add2, I_add_algo.
-unfold S2I, I2S, S_add; fsimpl.
+unfold NN2I, I2NN, NN_add; fsimpl.
 unfold summation; rewrite Nat.sub_0_r; simpl.
 do 3 rewrite Nat.add_0_r.
 do 2 rewrite Nat.mul_1_r.
