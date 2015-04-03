@@ -216,3 +216,54 @@ destruct b; [ reflexivity | idtac ].
 rewrite Nat.mod_small; [ reflexivity | idtac ].
 apply Nat.div_lt_upper_bound; [ intros H; discriminate H | assumption ].
 Qed.
+
+Theorem Nat_sub_div : ∀ a b, 0 < b ≤ a → (a - b) / b = pred (a / b).
+Proof.
+intros a b (Hb, Hba).
+apply lt_0_neq, Nat.neq_sym in Hb.
+remember (a - b) as c eqn:Hc.
+apply Nat_le_sub_add_r in Hc; [ subst a | assumption ].
+replace (b + c) with (c + 1 * b) by (rewrite Nat.mul_1_l; apply Nat.add_comm).
+rewrite Nat.div_add; [ idtac | assumption ].
+rewrite Nat.add_1_r, Nat.pred_succ.
+reflexivity.
+Qed.
+
+Theorem Nat_mod_succ_l : ∀ a b, a mod b ≠ pred b → S a mod b = S (a mod b).
+Proof.
+intros a b Hab.
+destruct b; [ exfalso; apply Hab; reflexivity | idtac ].
+remember (a mod S b) as c eqn:Hc .
+symmetry in Hc.
+destruct c.
+ apply Nat.mod_divides in Hc; [ idtac | intros H; discriminate H ].
+ destruct Hc as (c, Hc).
+ subst a; rewrite <- Nat.add_1_l, Nat.mul_comm.
+ rewrite Nat.mod_add.
+ destruct b; [ exfalso; apply Hab; reflexivity | idtac ].
+  rewrite Nat.mod_small; [ reflexivity | idtac ].
+  apply lt_n_S, Nat.lt_0_succ.
+
+  intros H; discriminate H.
+
+ rewrite <- Nat.add_1_r.
+ rewrite <- Nat.add_mod_idemp_l; [ rewrite Hc | intros H; discriminate H ].
+ rewrite Nat.mod_small; [ apply Nat.add_1_r | idtac ].
+ rewrite Nat.pred_succ in Hab.
+ simpl; apply lt_n_S; rewrite Nat.add_1_r.
+ apply Nat_le_neq_lt; [ idtac | assumption ].
+ apply le_S_n; rewrite <- Hc.
+ apply Nat.mod_upper_bound.
+ intros H; discriminate H.
+Qed.
+
+Theorem Nat_succ_div_sub : ∀ a b, 0 < b ≤ a → S ((a - b) / b) = a / b.
+Proof.
+intros a b (Hb, Hba).
+remember (a - b) as c eqn:Hc.
+apply Nat_le_sub_add_r in Hc; [ idtac | assumption ].
+replace b with (1 * b) in Hc by apply Nat.mul_1_l; subst a.
+rewrite Nat.add_comm.
+rewrite Nat.div_add; [ symmetry; apply Nat.add_1_r | idtac ].
+intros H; subst b; revert Hb; apply Nat.nlt_0_r.
+Qed.
