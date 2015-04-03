@@ -291,6 +291,17 @@ erewrite summation_compat.
 2: intros; rewrite Nat.add_0_r; reflexivity.
 
 fsimpl.
+rewrite summation_split_first; [ idtac | apply Nat.le_0_l ].
+rewrite Nat.sub_0_r; fsimpl.
+rewrite Nat.mul_1_r, Nat.add_0_r.
+do 2 rewrite <- Nat.add_assoc; fsimpl.
+do 2 rewrite Nat.add_assoc.
+bbb.
+(* faut diviser le premier de la liste par radix² *)
+
+Unset Printing Notations. Show.
+
+
 bbb.
 
 erewrite summation_compat.
