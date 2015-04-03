@@ -244,13 +244,113 @@ rewrite <- Hc.
 apply Nat.add_lt_mono; apply d2n_lt_radix.
 Qed.
 
+Theorem summation_add_mod : ∀ b e f r,
+  r ≠ 0
+  → (Σ (i = b, e), (f i)) mod r =
+    (Σ (i = b, e), (f i mod r)) mod r.
+Proof.
+intros b e f r Hr.
+unfold summation.
+remember (S e - b) as len.
+clear e Heqlen.
+revert b.
+induction len; intros; [ reflexivity | simpl ].
+rewrite Nat.add_mod; [ idtac | assumption ].
+rewrite IHlen.
+rewrite <- Nat.add_mod; [ idtac | assumption ].
+rewrite Nat.add_mod_idemp_l; [ reflexivity | assumption ].
+Qed.
+
 Theorem zzz : ∀ x y z i,
   (NN2I 2 (I2NN x + I2NN (NN2I 2 (I2NN y + I2NN z)))%NN .[ i] =
    NN2I 2 (I2NN x + (I2NN y + I2NN z))%NN .[ i])%D.
 Proof.
 intros x y z i.
 unfold NN2I, I2NN, NN_add; fsimpl.
-unfold digit_eq.
+unfold digit_eq; fsimpl.
+rewrite Nat.mul_1_r.
+erewrite summation_compat.
+Focus 2.
+intros j (_, Hj).
+rewrite d2n_n2d.
+unfold summation.
+rewrite Nat.sub_0_r; fsimpl.
+remember (i + j) as k.
+remember (int_pow radix (2 - j)) as a; simpl; subst a.
+do 3 rewrite Nat.add_0_r.
+do 2 rewrite Nat.mul_1_r.
+remember (plus (d2n (x.[k]))) as a.
+rewrite Nat.add_comm; subst a.
+rewrite Nat.div_add; [ idtac | apply radix_radix_neq_0 ].
+rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
+do 2 rewrite Nat.add_assoc.
+subst k; reflexivity.
+
+do 2 (rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ]).
+erewrite summation_compat.
+2: intros; rewrite Nat.add_0_r; reflexivity.
+
+fsimpl.
+bbb.
+
+erewrite summation_compat.
+Focus 2.
+intros j (_, Hj).
+destruct j.
+simpl.
+do 2 rewrite Nat.add_0_r.
+rewrite Nat.mul_1_r.
+bbb.
+
+rewrite summation_add_mod.
+
+rewrite summation_split_first; [ symmetry | apply Nat.le_0_l ].
+rewrite summation_split_first; [ symmetry | apply Nat.le_0_l ].
+rewrite Nat.add_mod.
+
+rewrite Nat.add_mod; [ symmetry | apply Digit.radix_neq_0 ].
+
+f_equal; f_equal; f_equal.
+rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
+rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
+
+
+
+Unset Printing Notations. Show.
+
+
+rewrite summation_add_mod.
+
+bbb.
+reflexivity.
+
+erewrite summation_compat.
+Focus 2.
+intros j (_, Hj).
+
+f_equal; f_equal; f_equal.
+apply summation_compat.
+intros j (_, Hj).
+remember (i + j) as k.
+f_equal.
+f_equal.
+bbb.
+
+(d2n (y .[ k + 1]) + d2n (z .[ k + 1])) * radix + d2n (y .[ k + 2]) +
+      d2n (z .[ k + 2])
+≤ 2(r-1)r+(r-1)+r-1
+  = 2r²-2r+2r-2
+  = 2r²-2
+  = 2(r²-1)
+
+rewrite Nat.add_comm.
+do 2 rewrite Nat.add_assoc.
+; subst a.
+
+bbb.
+subst k; reflexivity.
+
+
 f_equal; f_equal; f_equal; f_equal; f_equal.
 apply summation_compat; intros j (_, Hj).
 f_equal; f_equal.
@@ -259,7 +359,7 @@ unfold summation; simpl.
 do 2 rewrite Nat.add_0_r.
 do 2 rewrite Nat.mul_1_r.
 remember (i + j) as k.
-bbb. (* pb mod radix *)
+bbb.
 
 Theorem I_add_assoc : ∀ x y z, (x + (y + z) == (x + y) + z)%I.
 Proof.
