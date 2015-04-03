@@ -261,6 +261,14 @@ rewrite <- Nat.add_mod; [ idtac | assumption ].
 rewrite Nat.add_mod_idemp_l; [ reflexivity | assumption ].
 Qed.
 
+(* is it true? *)
+Theorem zzzz : ∀ x u i,
+  (NN2I 2 (I2NN x + I2NN (NN2I 2 u))%NN .[ i] =
+   NN2I 2 (I2NN x + u)%NN .[ i])%D.
+Proof.
+intros x u i.
+bbb.
+
 Theorem zzz : ∀ x y z i,
   (NN2I 2 (I2NN x + I2NN (NN2I 2 (I2NN y + I2NN z)))%NN .[ i] =
    NN2I 2 (I2NN x + (I2NN y + I2NN z))%NN .[ i])%D.
@@ -416,11 +424,13 @@ do 2 rewrite Nat.add_0_r.
 do 2 rewrite Nat.mul_1_r.
 remember (i + j) as k.
 bbb.
+*)
 
 Theorem I_add_assoc : ∀ x y z, (x + (y + z) == (x + y) + z)%I.
 Proof.
 intros x y z i.
 unfold I_add2, I_add_algo.
+rewrite zzzz.
 bbb.
 unfold NN2I, I2NN, NN_add; fsimpl.
 unfold summation; rewrite Nat.sub_0_r; simpl.
