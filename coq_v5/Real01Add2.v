@@ -371,6 +371,7 @@ rewrite <- Nat.add_assoc.
 remember (xi1 * radix + xi2) as a eqn:Ha.
 rewrite <- Nat.add_assoc.
 remember (ui1 * radix + ui2) as b eqn:Hb.
+replace (b / rr) with 0.
 bbb.
 
 Unset Printing Notations. Show.
