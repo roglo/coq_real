@@ -332,6 +332,30 @@ erewrite summation_compat.
 subst a.
 Set Printing Depth 11. Show.
 remember (radix * radix) as rr.
+rewrite Nat.add_comm.
+unfold summation; simpl.
+Set Printing Depth 16. Show.
+do 2 rewrite Nat.add_assoc.
+do 3 rewrite Nat.mul_1_r.
+do 2 rewrite Nat.add_0_r.
+rewrite <- Hxi2, <- Hui2, <- Hxi1, <- Hui1.
+do 2 rewrite Nat.add_assoc.
+do 2 rewrite Nat.mul_add_distr_r.
+do 8 rewrite <- Nat.add_assoc; simpl.
+do 4 rewrite Nat.add_assoc.
+Set Printing Depth 24. Show.
+rewrite <- Hui2.
+remember (d2n (x .[ i + 3])) as xi3 eqn:Hxi3 .
+remember (u (i + 3)) as ui3 eqn:Hui3 .
+remember (d2n (x .[ i + 4])) as xi4 eqn:Hxi4 .
+remember (u (i + 4)) as ui4 eqn:Hui4 .
+Set Printing Depth 10. Show.
+Set Printing Depth 24. Show.
+remember (((ui2 * radix + ui3) / rr + ui1) mod radix) as a eqn:Ha.
+remember (((ui3 * radix + ui4) / rr + ui2) mod radix) as b eqn:Hb.
+do 2 rewrite <- Nat.add_assoc.
+remember (a * radix + (xi2 + b)) as c eqn:Hc.
+rewrite Nat.add_assoc in Hc.
 bbb.
 
 Unset Printing Notations. Show.
