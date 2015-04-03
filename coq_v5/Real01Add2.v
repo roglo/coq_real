@@ -362,6 +362,15 @@ subst c.
 remember (a * radix + b) as c eqn:Hc.
 rewrite Nat.add_shuffle0.
 subst a b.
+symmetry.
+rewrite <- Nat.add_assoc.
+rewrite Nat.add_shuffle0, Nat.add_assoc.
+rewrite Nat.add_shuffle0.
+symmetry.
+rewrite <- Nat.add_assoc.
+remember (xi1 * radix + xi2) as a eqn:Ha.
+rewrite <- Nat.add_assoc.
+remember (ui1 * radix + ui2) as b eqn:Hb.
 bbb.
 
 Unset Printing Notations. Show.
