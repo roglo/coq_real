@@ -263,11 +263,79 @@ Qed.
 
 (* is it true? *)
 Theorem zzzz : ∀ x u i,
-  (NN2I 2 (I2NN x + I2NN (NN2I 2 u))%NN .[ i] =
-   NN2I 2 (I2NN x + u)%NN .[ i])%D.
+  (∀ j, u j ≤ 2 * pred radix)
+  → (NN2I 2 (I2NN x + I2NN (NN2I 2 u))%NN .[ i] =
+     NN2I 2 (I2NN x + u)%NN .[ i])%D.
 Proof.
-intros x u i.
+intros x u i Hu.
+unfold NN2I, I2NN, NN_add; fsimpl.
+unfold digit_eq; fsimpl.
+rewrite Nat.mul_1_r.
+erewrite summation_compat.
+ Focus 2.
+ intros j (_, Hj).
+ rewrite d2n_n2d.
+ unfold summation.
+ rewrite Nat.sub_0_r; fsimpl.
+ remember (i + j) as k.
+ remember (int_pow radix (2 - j)) as a; simpl; subst a.
+ do 3 rewrite Nat.add_0_r.
+ do 2 rewrite Nat.mul_1_r.
+ remember (plus (d2n (x .[ k]))) as a.
+ rewrite Nat.add_comm; subst a.
+ rewrite Nat.div_add; [ idtac | apply radix_radix_neq_0 ].
+ rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
+ subst k; reflexivity.
+
+ do 2 (rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ]).
+ erewrite summation_compat.
+  2: intros; rewrite Nat.add_0_r; reflexivity.
+
+  fsimpl.
+  rewrite summation_split_first; [ idtac | apply Nat.le_0_l ].
+  rewrite Nat.sub_0_r; fsimpl.
+  rewrite Nat.mul_1_r, Nat.add_0_r.
+  rewrite Nat.div_add_l; [ idtac | apply radix_radix_neq_0 ].
+  symmetry.
+  rewrite summation_split_first; [ idtac | apply Nat.le_0_l ].
+  rewrite Nat.sub_0_r; fsimpl.
+  rewrite Nat.mul_1_r, Nat.add_0_r.
+  rewrite <- Nat.add_assoc; fsimpl.
+  rewrite Nat.add_assoc.
+  rewrite Nat.div_add_l; [ idtac | apply radix_radix_neq_0 ].
+  do 2 rewrite <- Nat.add_assoc.
+  rewrite Nat.add_mod; [ symmetry | apply Digit.radix_neq_0 ].
+  rewrite Nat.add_mod; [ symmetry | apply Digit.radix_neq_0 ].
+  f_equal; f_equal.
+  symmetry.
+  remember (d2n (x .[ i])) as xi eqn:Hxi .
+  remember (u i) as ui eqn:Hui .
+  remember (d2n (x .[ i + 1])) as xi1 eqn:Hxi1 .
+  remember (u (i + 1)) as ui1 eqn:Hui1 .
+  remember (d2n (x .[ i + 2])) as xi2 eqn:Hxi2 .
+  remember (u (i + 2)) as ui2 eqn:Hui2 .
+  remember ((ui1 * radix + ui2) / (radix * radix)) as a.
+  remember ((a + ui) mod radix) as b eqn:Hb .
+  rewrite Nat.add_mod in Hb; [ idtac | apply Digit.radix_neq_0 ].
+  symmetry.
+  rewrite Nat.add_mod; [ idtac | apply Digit.radix_neq_0 ].
+  symmetry; subst b.
+  rewrite Nat.add_mod_idemp_l; [ idtac | apply Digit.radix_neq_0 ].
+  rewrite Nat.add_shuffle0, Nat.add_comm.
+  rewrite <- Nat.add_mod_idemp_r; [ idtac | apply Digit.radix_neq_0 ].
+  f_equal; f_equal; subst a.
+  remember (radix * radix) as rr.
+  remember (((ui1 * radix + ui2) / rr) mod radix) as a eqn:Ha .
+  subst rr.
+  rewrite Nat.mod_small in Ha.
+  (* subgoal 2 à vérifier *)
+subst a.
+Set Printing Depth 10. Show.
 bbb.
+
+Unset Printing Notations. Show.
+Set Printing Depth 14. Show.
+*)
 
 Theorem zzz : ∀ x y z i,
   (NN2I 2 (I2NN x + I2NN (NN2I 2 (I2NN y + I2NN z)))%NN .[ i] =
@@ -348,6 +416,7 @@ erewrite summation_compat.
   remember ((((yi1 + zi1) * radix + yi2 + zi2) / rr) mod radix) as a eqn:Ha .
   subst rr.
   rewrite Nat.mod_small in Ha.
+Abort. (*
 bbb.
 (* ouais, bon, qu'est-ce qu'y faut faire, main'nant ? *)
 
@@ -431,6 +500,10 @@ Proof.
 intros x y z i.
 unfold I_add2, I_add_algo.
 rewrite zzzz.
+Focus 2.
+intros j.
+unfold NN_add, I2NN; simpl.
+(* ouais, c'est bon *)
 bbb.
 unfold NN2I, I2NN, NN_add; fsimpl.
 unfold summation; rewrite Nat.sub_0_r; simpl.
