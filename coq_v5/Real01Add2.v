@@ -330,7 +330,8 @@ erewrite summation_compat.
   rewrite Nat.mod_small in Ha.
   (* subgoal 2 à vérifier *)
 subst a.
-Set Printing Depth 10. Show.
+Set Printing Depth 11. Show.
+remember (radix * radix) as rr.
 bbb.
 
 Unset Printing Notations. Show.
