@@ -244,10 +244,28 @@ rewrite <- Hc.
 apply Nat.add_lt_mono; apply d2n_lt_radix.
 Qed.
 
+Theorem zzz : ∀ x y z i,
+  (NN2I 2 (I2NN x + I2NN (NN2I 2 (I2NN y + I2NN z)))%NN .[ i] =
+   NN2I 2 (I2NN x + (I2NN y + I2NN z))%NN .[ i])%D.
+Proof.
+intros x y z i.
+unfold NN2I, I2NN, NN_add; fsimpl.
+unfold digit_eq.
+f_equal; f_equal; f_equal; f_equal; f_equal.
+apply summation_compat; intros j (_, Hj).
+f_equal; f_equal.
+rewrite d2n_n2d.
+unfold summation; simpl.
+do 2 rewrite Nat.add_0_r.
+do 2 rewrite Nat.mul_1_r.
+remember (i + j) as k.
+bbb. (* pb mod radix *)
+
 Theorem I_add_assoc : ∀ x y z, (x + (y + z) == (x + y) + z)%I.
 Proof.
 intros x y z i.
 unfold I_add2, I_add_algo.
+bbb.
 unfold NN2I, I2NN, NN_add; fsimpl.
 unfold summation; rewrite Nat.sub_0_r; simpl.
 do 12 rewrite Nat.add_0_r.
