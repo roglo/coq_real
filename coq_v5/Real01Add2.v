@@ -6,6 +6,8 @@ Require Import Digit2 Real012.
 
 Open Scope nat_scope.
 
+(* addition numbers with numbers *)
+
 Definition S_eq (u v : nat → nat) := ∀ i, u i = v i.
 Definition S_add (u v : nat → nat) i := u i + v i.
 Definition S_zero (i : nat) := 0.
@@ -61,7 +63,7 @@ Add Parametric Morphism : rm
  as rm_compat.
 Proof. intros x y Hxy i; apply Hxy. Qed.
 
-(* *)
+(* addition numbers with digits *)
 
 Fixpoint int_pow a b :=
   match b with
