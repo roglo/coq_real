@@ -244,7 +244,8 @@ Qed.
 Theorem I_add_assoc : ∀ x y z, (x + (y + z) == (x + y) + z)%I.
 Proof.
 intros x y z i.
-unfold I_add2, S2I, I_add_algo, I2S, S_add; fsimpl.
+unfold I_add2, I_add_algo.
+unfold S2I, I2S, S_add; fsimpl.
 unfold summation; rewrite Nat.sub_0_r; simpl.
 do 3 rewrite Nat.add_0_r.
 do 2 rewrite Nat.mul_1_r.
