@@ -1,4 +1,4 @@
-(** second version of adding reals in interval [0..1[ *)
+(* second version of adding reals in interval [0..1[ *)
 
 Require Import Utf8 QArith NPeano.
 Require Import Misc Summation.
@@ -74,9 +74,7 @@ Fixpoint int_pow a b :=
 Definition I2NN x i := d2n (x.[i]).
 Definition NN2I n u :=
   let b := radix in
-  {| rm i :=
-       n2d (Σ (k = 0, n), (u (i + k) * int_pow b (n - k) / int_pow b n)
-            mod b) |}.
+  {| rm i := n2d (Σ (k = 0, n), (u (i + k) / int_pow b k) mod b) |}.
 
 Definition I_add_algo x y := (I2NN x + I2NN y)%NN.
 Arguments I_add_algo x%I y%I i%nat.
@@ -85,6 +83,8 @@ Definition I_add2 x y := NN2I 2 (I_add_algo x y).
 Arguments I_add2 x%I y%I.
 
 Notation "x + y" := (I_add2 x y) : I_scope.
+
+(* *)
 
 Add Parametric Morphism : NN2I
  with signature eq ==> NN_eq ==> I_eqs
@@ -124,9 +124,8 @@ rewrite NN_add_0_r.
 unfold digit_eq, NN2I; fsimpl.
 unfold summation.
 remember modulo as fmod; remember div as fdiv; simpl; subst fmod fdiv.
-do 2 rewrite Nat.add_0_r, Nat.mul_1_r; fsimpl.
-rewrite Nat.div_mul; [ idtac | apply radix_radix_neq_0 ].
-rewrite Nat.div_mul_cancel_r; try apply Digit.radix_neq_0.
+do 2 rewrite Nat.add_0_r; rewrite Nat.mul_1_r; fsimpl.
+rewrite Nat.div_1_r.
 rewrite Nat.div_small; [ idtac | apply d2n_lt_radix ].
 rewrite Nat.mod_0_l; [ idtac | apply Digit.radix_neq_0 ].
 rewrite Nat.add_0_l.
@@ -246,12 +245,11 @@ Proof.
 intros x y z i.
 unfold I_add2, I_add_algo.
 unfold NN2I, I2NN, NN_add; fsimpl.
-unfold summation; rewrite Nat.sub_0_r; simpl.
+unfold summation; rewrite Nat.sub_0_r; fsimpl.
 do 3 rewrite Nat.add_0_r.
-do 2 rewrite Nat.mul_1_r.
+rewrite Nat.mul_1_r.
+do 8 rewrite Nat.div_1_r.
 do 2 rewrite Nat.add_assoc.
-do 2 (rewrite Nat.div_mul; [ idtac | apply radix_radix_neq_0 ]).
-do 7 rewrite Nat.mul_1_r.
 do 6 rewrite I_add_algo_div_sqr_radix.
 do 4 rewrite Nat.add_0_r.
 do 3 rewrite <- Nat.add_assoc; simpl.
@@ -265,8 +263,6 @@ remember (d2n (z .[ i + 1])) as zi1 eqn:Hzi1 .
 remember (d2n (x .[ i + 2])) as xi2 eqn:Hxi2 .
 remember (d2n (y .[ i + 2])) as yi2 eqn:Hyi2 .
 remember (d2n (z .[ i + 2])) as zi2 eqn:Hzi2 .
-do 6 (rewrite Nat.div_mul; [ idtac | apply radix_radix_neq_0 ]).
-do 8 (rewrite Nat.div_mul_cancel_r; try apply Digit.radix_neq_0).
 rewrite Nat.mod_0_l; [ idtac | apply Digit.radix_neq_0 ].
 do 6 rewrite Nat.add_0_r.
 do 6 rewrite d2n_n2d.
