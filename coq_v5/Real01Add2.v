@@ -1,4 +1,4 @@
-(* second version of adding reals in interval [0..1[ *)
+(** second version of adding reals in interval [0..1[ *)
 
 Require Import Utf8 QArith NPeano.
 Require Import Misc Summation.
@@ -74,7 +74,9 @@ Fixpoint int_pow a b :=
 Definition I2NN x i := d2n (x.[i]).
 Definition NN2I n u :=
   let b := radix in
-  {| rm i := n2d (Σ (k = 0, n), (u (i + k) / int_pow b k) mod b) |}.
+  {| rm i :=
+       let s := Σ (k = 0, n), (u (i + k) * int_pow b (n - k)) in
+       n2d (s / int_pow b n mod b) |}.
 
 Definition I_add_algo x y := (I2NN x + I2NN y)%NN.
 Arguments I_add_algo x%I y%I i%nat.
@@ -84,14 +86,12 @@ Arguments I_add2 x%I y%I.
 
 Notation "x + y" := (I_add2 x y) : I_scope.
 
-(* *)
-
 Add Parametric Morphism : NN2I
  with signature eq ==> NN_eq ==> I_eqs
  as NN2I_compat.
 Proof.
 intros n u v Huv i; simpl.
-unfold digit_eq; simpl; f_equal.
+unfold digit_eq; simpl; f_equal; f_equal; f_equal.
 apply summation_compat; intros j (_, Hj).
 rewrite Huv; reflexivity.
 Qed.
@@ -115,35 +115,39 @@ unfold d2n; simpl.
 rewrite Nat.mod_0_l; [ reflexivity | apply Digit.radix_neq_0 ].
 Qed.
 
+Theorem radix_le_sqr_radix : radix ≤ radix * radix.
+Proof.
+remember (radix * radix) as a.
+replace radix with (1 * radix) by apply Nat.mul_1_l; subst a.
+apply Nat.mul_le_mono_r, Digit.radix_gt_0.
+Qed.
+
 Theorem I_add2_0_r : ∀ x, (x + 0 == x)%I.
 Proof.
 intros x.
 unfold I_eqs, I_add2, I_add_algo; intros i.
 rewrite I_zero_NN_zero.
 rewrite NN_add_0_r.
-unfold digit_eq, NN2I; fsimpl.
+unfold digit_eq, NN2I, I2NN; fsimpl.
 unfold summation.
 remember modulo as fmod; remember div as fdiv; simpl; subst fmod fdiv.
-do 2 rewrite Nat.add_0_r; rewrite Nat.mul_1_r; fsimpl.
-rewrite Nat.div_1_r.
-rewrite Nat.div_small; [ idtac | apply d2n_lt_radix ].
-rewrite Nat.mod_0_l; [ idtac | apply Digit.radix_neq_0 ].
-rewrite Nat.add_0_l.
+do 2 rewrite Nat.add_0_r, Nat.mul_1_r; fsimpl.
+rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
+rewrite Nat.div_add_l; [ idtac | apply radix_radix_neq_0 ].
 rewrite Nat.div_small.
- rewrite Nat.mod_0_l; [ idtac | apply Digit.radix_neq_0 ].
- rewrite Nat.add_0_r.
- rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
- unfold I2NN, d2n.
- rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
- reflexivity.
+ rewrite Nat.add_0_r; unfold d2n.
+ rewrite Nat.mod_mod; [ reflexivity | apply Digit.radix_neq_0 ].
 
- eapply lt_le_trans.
-  apply Nat.mod_upper_bound, Digit.radix_neq_0.
+ apply le_lt_trans with (m := pred radix * radix + pred radix).
+  apply Nat.add_le_mono; [ idtac | apply le_d2n_1 ].
+  apply Nat.mul_le_mono_r, le_d2n_1.
 
-  remember (radix * radix) as a.
-  replace radix with (radix * 1) by apply Nat.mul_1_r; subst a.
-  apply Nat.mul_le_mono_l.
-  apply Digit.radix_gt_0.
+  rewrite <- Nat.sub_1_r.
+  rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+  rewrite Nat.add_sub_assoc; [ idtac | apply Digit.radix_gt_0 ].
+  rewrite Nat.sub_add; [ idtac | apply radix_le_sqr_radix ].
+  rewrite Nat.sub_1_r.
+  apply Nat.lt_pred_l, radix_radix_neq_0.
 Qed.
 
 (* associativity *)
@@ -245,11 +249,33 @@ Proof.
 intros x y z i.
 unfold I_add2, I_add_algo.
 unfold NN2I, I2NN, NN_add; fsimpl.
-unfold summation; rewrite Nat.sub_0_r; fsimpl.
-do 3 rewrite Nat.add_0_r.
-rewrite Nat.mul_1_r.
-do 8 rewrite Nat.div_1_r.
-do 2 rewrite Nat.add_assoc.
+unfold summation; rewrite Nat.sub_0_r; simpl.
+do 12 rewrite Nat.add_0_r.
+do 9 rewrite Nat.mul_1_r.
+do 6 rewrite d2n_n2d.
+do 4 rewrite <- Nat.add_assoc; simpl.
+do 6 (rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ]).
+do 8 (rewrite Nat.div_add_l; [ idtac | apply radix_radix_neq_0 ]).
+remember (d2n (x .[ i])) as xi eqn:Hxi .
+remember (d2n (y .[ i])) as yi eqn:Hyi .
+remember (d2n (z .[ i])) as zi eqn:Hzi .
+remember (d2n (x .[ i + 1])) as xi1 eqn:Hxi1 .
+remember (d2n (y .[ i + 1])) as yi1 eqn:Hyi1 .
+remember (d2n (z .[ i + 1])) as zi1 eqn:Hzi1 .
+remember (d2n (x .[ i + 2])) as xi2 eqn:Hxi2 .
+remember (d2n (y .[ i + 2])) as yi2 eqn:Hyi2 .
+remember (d2n (z .[ i + 2])) as zi2 eqn:Hzi2 .
+remember (d2n (x .[ i + 3])) as xi3 eqn:Hxi3 .
+remember (d2n (y .[ i + 3])) as yi3 eqn:Hyi3 .
+remember (d2n (z .[ i + 3])) as zi3 eqn:Hzi3 .
+remember (d2n (x .[ i + 4])) as xi4 eqn:Hxi4 .
+remember (d2n (y .[ i + 4])) as yi4 eqn:Hyi4 .
+remember (d2n (z .[ i + 4])) as zi4 eqn:Hzi4 .
+do 8 rewrite Nat.add_assoc.
+bbb.
+
+do 2 (rewrite Nat.div_mul; [ idtac | apply radix_radix_neq_0 ]).
+do 7 rewrite Nat.mul_1_r.
 do 6 rewrite I_add_algo_div_sqr_radix.
 do 4 rewrite Nat.add_0_r.
 do 3 rewrite <- Nat.add_assoc; simpl.
@@ -263,6 +289,8 @@ remember (d2n (z .[ i + 1])) as zi1 eqn:Hzi1 .
 remember (d2n (x .[ i + 2])) as xi2 eqn:Hxi2 .
 remember (d2n (y .[ i + 2])) as yi2 eqn:Hyi2 .
 remember (d2n (z .[ i + 2])) as zi2 eqn:Hzi2 .
+do 6 (rewrite Nat.div_mul; [ idtac | apply radix_radix_neq_0 ]).
+do 8 (rewrite Nat.div_mul_cancel_r; try apply Digit.radix_neq_0).
 rewrite Nat.mod_0_l; [ idtac | apply Digit.radix_neq_0 ].
 do 6 rewrite Nat.add_0_r.
 do 6 rewrite d2n_n2d.
