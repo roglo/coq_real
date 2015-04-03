@@ -75,8 +75,8 @@ Definition I2NN x i := d2n (x.[i]).
 Definition NN2I n u :=
   let b := radix in
   {| rm i :=
-       n2d (Σ (k = 0, n),
-            u (i + k) * int_pow b (n - k) / int_pow b n mod b) |}.
+       n2d (Σ (k = 0, n), (u (i + k) * int_pow b (n - k) / int_pow b n)
+            mod b) |}.
 
 Definition I_add_algo x y := (I2NN x + I2NN y)%NN.
 Arguments I_add_algo x%I y%I i%nat.
