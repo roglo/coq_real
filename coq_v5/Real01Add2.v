@@ -379,6 +379,11 @@ rewrite <- Nat.add_assoc.
 remember (xi1 * radix + xi2) as a eqn:Ha.
 rewrite <- Nat.add_assoc.
 remember (ui1 * radix + ui2) as b eqn:Hb.
+bbb.
+
+Unset Printing Notations. Show.
+Set Printing Depth 14. Show.
+(*
 assert (b < rr) as H.
  subst b rr.
  apply lt_trans with (m := pred radix * S radix).
@@ -392,7 +397,7 @@ r²-2(r-1)² = -r²+4r+2
 merde, c'est négatif...
 donc le assert est faux
 
-Bon, peut-être que le truc est faux.
+Bon, peut-être que le théorème total est faux.
 Un truc cool, ce serait de faire un contre-exemple.
 bbb.
 
