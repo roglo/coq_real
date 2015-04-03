@@ -270,36 +270,81 @@ unfold NN2I, I2NN, NN_add; fsimpl.
 unfold digit_eq; fsimpl.
 rewrite Nat.mul_1_r.
 erewrite summation_compat.
-Focus 2.
-intros j (_, Hj).
-rewrite d2n_n2d.
-unfold summation.
-rewrite Nat.sub_0_r; fsimpl.
-remember (i + j) as k.
-remember (int_pow radix (2 - j)) as a; simpl; subst a.
-do 3 rewrite Nat.add_0_r.
-do 2 rewrite Nat.mul_1_r.
-remember (plus (d2n (x.[k]))) as a.
-rewrite Nat.add_comm; subst a.
-rewrite Nat.div_add; [ idtac | apply radix_radix_neq_0 ].
-rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
-do 2 rewrite Nat.add_assoc.
-subst k; reflexivity.
+ Focus 2.
+ intros j (_, Hj).
+ rewrite d2n_n2d.
+ unfold summation.
+ rewrite Nat.sub_0_r; fsimpl.
+ remember (i + j) as k.
+ remember (int_pow radix (2 - j)) as a; simpl; subst a.
+ do 3 rewrite Nat.add_0_r.
+ do 2 rewrite Nat.mul_1_r.
+ remember (plus (d2n (x .[ k]))) as a.
+ rewrite Nat.add_comm; subst a.
+ rewrite Nat.div_add; [ idtac | apply radix_radix_neq_0 ].
+ rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
+ do 2 rewrite Nat.add_assoc.
+ subst k; reflexivity.
 
-do 2 (rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ]).
-erewrite summation_compat.
-2: intros; rewrite Nat.add_0_r; reflexivity.
+ do 2 (rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ]).
+ erewrite summation_compat.
+  2: intros; rewrite Nat.add_0_r; reflexivity.
 
-fsimpl.
-rewrite summation_split_first; [ idtac | apply Nat.le_0_l ].
-rewrite Nat.sub_0_r; fsimpl.
-rewrite Nat.mul_1_r, Nat.add_0_r.
-do 2 rewrite <- Nat.add_assoc; fsimpl.
-do 2 rewrite Nat.add_assoc.
+  fsimpl.
+  rewrite summation_split_first; [ idtac | apply Nat.le_0_l ].
+  rewrite Nat.sub_0_r; fsimpl.
+  rewrite Nat.mul_1_r, Nat.add_0_r.
+  do 2 rewrite <- Nat.add_assoc; fsimpl.
+  do 2 rewrite Nat.add_assoc.
+  rewrite Nat.div_add_l; [ idtac | apply radix_radix_neq_0 ].
+  symmetry.
+  rewrite summation_split_first; [ idtac | apply Nat.le_0_l ].
+  rewrite Nat.sub_0_r; fsimpl.
+  rewrite Nat.mul_1_r, Nat.add_0_r.
+  do 2 rewrite <- Nat.add_assoc; fsimpl.
+  do 3 rewrite Nat.add_assoc.
+  rewrite Nat.div_add_l; [ idtac | apply radix_radix_neq_0 ].
+  do 5 rewrite <- Nat.add_assoc.
+  rewrite Nat.add_mod; [ symmetry | apply Digit.radix_neq_0 ].
+  rewrite Nat.add_mod; [ symmetry | apply Digit.radix_neq_0 ].
+  f_equal; f_equal.
+  do 3 rewrite Nat.add_assoc.
+  symmetry.
+  remember (d2n (x .[ i])) as xi eqn:Hxi .
+  remember (d2n (y .[ i])) as yi eqn:Hyi .
+  remember (d2n (z .[ i])) as zi eqn:Hzi .
+  remember (d2n (x .[ i + 1])) as xi1 eqn:Hxi1 .
+  remember (d2n (y .[ i + 1])) as yi1 eqn:Hyi1 .
+  remember (d2n (z .[ i + 1])) as zi1 eqn:Hzi1 .
+  remember (d2n (x .[ i + 2])) as xi2 eqn:Hxi2 .
+  remember (d2n (y .[ i + 2])) as yi2 eqn:Hyi2 .
+  remember (d2n (z .[ i + 2])) as zi2 eqn:Hzi2 .
+  remember (d2n (x .[ i + 3])) as xi3 eqn:Hxi3 .
+  remember (d2n (y .[ i + 3])) as yi3 eqn:Hyi3 .
+  remember (d2n (z .[ i + 3])) as zi3 eqn:Hzi3 .
+  remember (d2n (x .[ i + 4])) as xi4 eqn:Hxi4 .
+  remember (d2n (y .[ i + 4])) as yi4 eqn:Hyi4 .
+  remember (d2n (z .[ i + 4])) as zi4 eqn:Hzi4 .
+  remember (((yi1 + zi1) * radix + yi2 + zi2) / (radix * radix)) as a.
+  remember ((a + yi + zi) mod radix) as b eqn:Hb .
+  rewrite <- Nat.add_assoc, Nat.add_comm in Hb.
+  rewrite Nat.add_mod in Hb; [ idtac | apply Digit.radix_neq_0 ].
+  symmetry.
+  rewrite Nat.add_mod; [ idtac | apply Digit.radix_neq_0 ].
+  symmetry; subst b.
+  rewrite Nat.add_mod_idemp_l; [ idtac | apply Digit.radix_neq_0 ].
+  rewrite <- Nat.add_assoc.
+  rewrite <- Nat.add_mod_idemp_r; [ idtac | apply Digit.radix_neq_0 ].
+  f_equal; f_equal; subst a.
+  remember (radix * radix) as rr.
+  remember ((((yi1 + zi1) * radix + yi2 + zi2) / rr) mod radix) as a eqn:Ha .
+  subst rr.
+  rewrite Nat.mod_small in Ha.
 bbb.
-(* faut diviser le premier de la liste par radix² *)
+(* ouais, bon, qu'est-ce qu'y faut faire, main'nant ? *)
 
 Unset Printing Notations. Show.
+Set Printing Depth 14. Show.
 
 
 bbb.
