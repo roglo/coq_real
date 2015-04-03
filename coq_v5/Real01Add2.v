@@ -329,6 +329,14 @@ erewrite summation_compat.
   subst rr.
   rewrite Nat.mod_small in Ha.
   (* subgoal 2 à vérifier *)
+(*
+2(r-1)r+(r-1)=(r-1)(2r+1)=2r²-r-1
+r³-2r²+r+1
+f' = 3r²-2r+1
+Δ' = 1-3 = -2
+f'' = 6r-2 = 3(r-1)
+donc r₃-2r²+r+1 > 0 donc en principe c'est bon
+*)
 subst a.
 Set Printing Depth 11. Show.
 remember (radix * radix) as rr.
@@ -371,7 +379,21 @@ rewrite <- Nat.add_assoc.
 remember (xi1 * radix + xi2) as a eqn:Ha.
 rewrite <- Nat.add_assoc.
 remember (ui1 * radix + ui2) as b eqn:Hb.
-replace (b / rr) with 0.
+assert (b < rr) as H.
+ subst b rr.
+ apply lt_trans with (m := pred radix * S radix).
+ rewrite <- Nat.add_1_r, Nat.mul_add_distr_l, Nat.mul_1_r.
+bbb.
+u₁ ≤ 2(r-1)
+u₁r ≤ 2r(r-1)
+u₂ ≤ 2(r-1)
+u₁r+u2 ≤ 2(r-1)²
+r²-2(r-1)² = -r²+4r+2
+merde, c'est négatif...
+donc le assert est faux
+
+Bon, peut-être que le truc est faux.
+Un truc cool, ce serait de faire un contre-exemple.
 bbb.
 
 Unset Printing Notations. Show.
@@ -457,7 +479,6 @@ erewrite summation_compat.
   remember ((((yi1 + zi1) * radix + yi2 + zi2) / rr) mod radix) as a eqn:Ha .
   subst rr.
   rewrite Nat.mod_small in Ha.
-Abort. (*
 bbb.
 (* ouais, bon, qu'est-ce qu'y faut faire, main'nant ? *)
 
