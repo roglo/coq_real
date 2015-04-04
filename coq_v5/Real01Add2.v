@@ -660,11 +660,24 @@ remember (d2n (x .[ i + 4])) as xi4 eqn:Hxi4 .
 remember (d2n (y .[ i + 4])) as yi4 eqn:Hyi4 .
 remember (d2n (z .[ i + 4])) as zi4 eqn:Hzi4 .
 do 8 rewrite Nat.add_assoc.
-Set Printing Depth 14. Show.
+unfold digit_eq; simpl.
+rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
+rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
+Set Printing Depth 12. Show.
+Set Printing Depth 50. Show.
+symmetry.
+rewrite <- Nat.add_assoc.
+rewrite Nat.add_mod_idemp_l; [ idtac | apply Digit.radix_neq_0 ].
+Set Printing Depth 11. Show.
+do 16 rewrite <- Nat.add_assoc.
+rewrite Nat.add_comm; symmetry.
+rewrite Nat.add_comm; symmetry.
+Set Printing Depth 13. Show.
+symmetry.
 bbb.
 
 Unset Printing Notations. Show.
-Set Printing Depth 14. Show.
+Set Printing Depth 11. Show.
 
 do 2 (rewrite Nat.div_mul; [ idtac | apply radix_radix_neq_0 ]).
 do 7 rewrite Nat.mul_1_r.
