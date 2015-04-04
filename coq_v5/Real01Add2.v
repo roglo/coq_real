@@ -381,6 +381,7 @@ rewrite <- Nat.add_assoc.
 remember (ui1 * radix + ui2) as b eqn:Hb.
 Print NN2I.
 Print I2NN.
+Abort. (*
 bbb.
           i  1  2
        x  .  1  1
@@ -422,6 +423,7 @@ bbb.
 
 Unset Printing Notations. Show.
 Set Printing Depth 14. Show.
+*)
 *)
 
 Theorem zzz : ∀ x y z i,
@@ -503,12 +505,12 @@ erewrite summation_compat.
   remember ((((yi1 + zi1) * radix + yi2 + zi2) / rr) mod radix) as a eqn:Ha .
   subst rr.
   rewrite Nat.mod_small in Ha.
+Abort. (*
 bbb.
 (* ouais, bon, qu'est-ce qu'y faut faire, main'nant ? *)
 
 Unset Printing Notations. Show.
 Set Printing Depth 14. Show.
-
 
 bbb.
 
@@ -533,10 +535,7 @@ f_equal; f_equal; f_equal.
 rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
 rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
 
-
-
 Unset Printing Notations. Show.
-
 
 rewrite summation_add_mod.
 
