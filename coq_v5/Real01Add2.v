@@ -50,18 +50,30 @@ Add Parametric Relation : _ NN_eq
  transitivity proved by NN_eq_trans
  as NN_eq_rel.
 
+Theorem NN_add_compat : ∀ u v w x,
+  (u = v)%NN
+  → (w = x)%NN
+  → (u + w = v + x)%NN.
+Proof.
+intros u v w x Huv Hwx i; unfold NN_add.
+rewrite Huv, Hwx; reflexivity.
+Qed.
+
 Add Parametric Morphism : NN_add
  with signature NN_eq ==> NN_eq ==> NN_eq
- as NN_add_compat.
+ as NN_add_morph.
 Proof.
-intros u v Huv w t Hwt i; unfold NN_add.
-rewrite Huv, Hwt; reflexivity.
+intros u v Huv w t Hwt.
+apply NN_add_compat; assumption.
 Qed.
+
+Theorem rm_compat : ∀ x y i, (x == y)%I → (x .[i] = y .[i])%D.
+Proof. intros x y i Hxy; apply Hxy. Qed.
 
 Add Parametric Morphism : rm
  with signature I_eqs ==> eq ==> digit_eq
- as rm_compat.
-Proof. intros x y Hxy i; apply Hxy. Qed.
+ as rm_morph.
+Proof. intros; apply rm_compat; assumption. Qed.
 
 (* addition numbers with digits *)
 
@@ -86,15 +98,20 @@ Arguments I_add2 x%I y%I.
 
 Notation "x + y" := (I_add2 x y) : I_scope.
 
-Add Parametric Morphism : NN2I
- with signature eq ==> NN_eq ==> I_eqs
- as NN2I_compat.
+Theorem NN2I_compat : ∀ n u v,
+  (u = v)%NN
+  → (NN2I n u == NN2I n v)%I.
 Proof.
 intros n u v Huv i; simpl.
 unfold digit_eq; simpl; f_equal; f_equal; f_equal.
 apply summation_compat; intros j (_, Hj).
 rewrite Huv; reflexivity.
 Qed.
+
+Add Parametric Morphism : NN2I
+ with signature eq ==> NN_eq ==> I_eqs
+ as NN2I_morph.
+Proof. intros; apply NN2I_compat; assumption. Qed.
 
 (* commutativity *)
 
@@ -172,8 +189,7 @@ Proof.
 intros x y z Hxy.
 rewrite I_add2_comm; symmetry.
 rewrite I_add2_comm; symmetry.
-apply I_add_compat_r.
-assumption.
+apply I_add_compat_r; assumption.
 Qed.
 
 Add Parametric Morphism : I_add2
