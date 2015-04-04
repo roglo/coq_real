@@ -672,8 +672,10 @@ Set Printing Depth 11. Show.
 do 16 rewrite <- Nat.add_assoc.
 rewrite Nat.add_comm; symmetry.
 rewrite Nat.add_comm; symmetry.
-Set Printing Depth 13. Show.
-symmetry.
+Set Printing Depth 12. Show.
+rewrite Nat.add_mod; [ symmetry | apply Digit.radix_neq_0 ].
+rewrite Nat.add_mod; [ symmetry | apply Digit.radix_neq_0 ].
+f_equal; f_equal.
 bbb.
 
 Unset Printing Notations. Show.
