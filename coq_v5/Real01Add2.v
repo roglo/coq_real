@@ -695,6 +695,11 @@ f_equal; f_equal.
 clear xi yi zi Hxi Hyi Hzi.
 remember (radix * radix) as rr.
 Set Printing Depth 30. Show.
+do 12 rewrite Nat.add_assoc.
+remember radix as r.
+do 8 rewrite Nat.mul_add_distr_r.
+bbb.
+
 remember (xi1+yi1) as xyi1 eqn:Hxyi1.
 remember (xi2+yi2) as xyi2 eqn:Hxyi2.
 remember (xi3+yi3) as xyi3 eqn:Hxyi3.
