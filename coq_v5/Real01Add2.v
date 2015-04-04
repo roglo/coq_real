@@ -150,6 +150,41 @@ rewrite Nat.div_small.
   apply Nat.lt_pred_l, radix_radix_neq_0.
 Qed.
 
+(* compatibility with == *)
+
+Theorem I_add_compat_r : ∀ x y z, (x == y)%I → (x + z == y + z)%I.
+Proof.
+intros x y z Hxy i.
+unfold I_add2, I_add_algo.
+unfold I2NN, NN2I, NN_add; fsimpl.
+rewrite Nat.mul_1_r.
+unfold summation.
+rewrite Nat.sub_0_r; simpl.
+do 3 rewrite Nat.add_0_r.
+do 3 rewrite Nat.mul_1_r.
+unfold I_eqs in Hxy.
+unfold d2n.
+do 3 rewrite Hxy; reflexivity.
+Qed.
+
+Theorem I_add_compat_l : ∀ x y z, (y == z)%I → (x + y == x + z)%I.
+Proof.
+intros x y z Hxy.
+rewrite I_add2_comm; symmetry.
+rewrite I_add2_comm; symmetry.
+apply I_add_compat_r.
+assumption.
+Qed.
+
+Add Parametric Morphism : I_add2
+ with signature I_eqs ==> I_eqs ==> I_eqs
+ as I_add2_morph.
+Proof.
+intros x y Hxy z t Hzt.
+rewrite I_add_compat_r; [ idtac | eassumption ].
+rewrite I_add_compat_l; [ reflexivity | eassumption ].
+Qed.
+
 (* associativity *)
 
 Theorem I_add_algo_upper_bound : ∀ x y i, I_add_algo x y i ≤ 2 * (radix - 1).
