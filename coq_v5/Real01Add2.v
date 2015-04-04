@@ -584,12 +584,6 @@ Theorem I_add_assoc : ∀ x y z, (x + (y + z) == (x + y) + z)%I.
 Proof.
 intros x y z i.
 unfold I_add2, I_add_algo.
-rewrite zzzz.
-Focus 2.
-intros j.
-unfold NN_add, I2NN; simpl.
-(* ouais, c'est bon *)
-bbb.
 unfold NN2I, I2NN, NN_add; fsimpl.
 unfold summation; rewrite Nat.sub_0_r; simpl.
 do 12 rewrite Nat.add_0_r.
