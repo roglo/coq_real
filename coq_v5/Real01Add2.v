@@ -379,7 +379,26 @@ rewrite <- Nat.add_assoc.
 remember (xi1 * radix + xi2) as a eqn:Ha.
 rewrite <- Nat.add_assoc.
 remember (ui1 * radix + ui2) as b eqn:Hb.
+Print NN2I.
+Print I2NN.
 bbb.
+          i  1  2
+       x  .  1  1
+       u  .  2  2
+NN2I 2 u
+
+NN2I 2 u = (ui + (2 ui1 + ui2) / 4) mod 2
+I2NN (NN2I 2 u) = NN2I 2 u
+
+(ui + 1) mod 2
+ui mod 2
+
+bordel c'est faux fait chier chais plus
+
+ ((Σ (k = 0, 2), (u (i + k) b (2 - k))) / 4) mod 2
+  (∀ j, u j ≤ 2)
+  → (NN2I 2 (I2NN x + I2NN (NN2I 2 u))%NN .[ i] =
+     NN2I 2 (I2NN x + u)%NN .[ i])%D.
 
 Unset Printing Notations. Show.
 Set Printing Depth 14. Show.
