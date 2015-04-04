@@ -676,8 +676,44 @@ Set Printing Depth 12. Show.
 rewrite Nat.add_mod; [ symmetry | apply Digit.radix_neq_0 ].
 rewrite Nat.add_mod; [ symmetry | apply Digit.radix_neq_0 ].
 f_equal; f_equal.
+Set Printing Depth 13. Show.
+rewrite Nat.add_mod_idemp_l; [ idtac | apply Digit.radix_neq_0 ].
+do 2 rewrite <- Nat.add_assoc.
+rewrite Nat.add_comm; symmetry.
+rewrite Nat.add_comm; symmetry.
+rewrite Nat.add_mod; [ symmetry | apply Digit.radix_neq_0 ].
+rewrite Nat.add_mod; [ symmetry | apply Digit.radix_neq_0 ].
+f_equal; f_equal.
+Set Printing Depth 11. Show.
+rewrite Nat.add_comm.
+rewrite <- Nat.add_assoc.
+rewrite Nat.add_comm; symmetry.
+rewrite Nat.add_comm; symmetry.
+rewrite Nat.add_mod; [ symmetry | apply Digit.radix_neq_0 ].
+rewrite Nat.add_mod; [ symmetry | apply Digit.radix_neq_0 ].
+f_equal; f_equal.
+clear xi yi zi Hxi Hyi Hzi.
+remember (radix * radix) as rr.
+Set Printing Depth 30. Show.
+remember (xi1+yi1) as xyi1 eqn:Hxyi1.
+remember (xi2+yi2) as xyi2 eqn:Hxyi2.
+remember (xi3+yi3) as xyi3 eqn:Hxyi3.
+remember (xi4+yi4) as xyi4 eqn:Hxyi4.
+remember (yi1+zi1) as yzi1 eqn:Hyzi1.
+remember (yi2+zi2) as yzi2 eqn:Hyzi2.
+remember (yi3+zi3) as yzi3 eqn:Hyzi3.
+remember (yi4+zi4) as yzi4 eqn:Hyzi4.
+do 6 rewrite Nat.add_assoc.
+rewrite <- Hxyi1, <- Hxyi2.
+do 2 rewrite Nat.mul_add_distr_r.
 bbb.
 
+rewrite Nat.add_mod; [ symmetry | apply Digit.radix_neq_0 ].
+rewrite Nat.add_mod; [ symmetry | apply Digit.radix_neq_0 ].
+Set Printing Depth 11. Show.
+bbb.
+
+do 8 rewrite Nat.mul_add_distr_r.
 Unset Printing Notations. Show.
 Set Printing Depth 11. Show.
 
