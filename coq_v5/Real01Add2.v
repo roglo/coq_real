@@ -169,7 +169,7 @@ Qed.
 
 (* compatibility with == *)
 
-Theorem I_add_compat_r : ∀ x y z, (x == y)%I → (x + z == y + z)%I.
+Theorem I_add2_compat_r : ∀ x y z, (x == y)%I → (x + z == y + z)%I.
 Proof.
 intros x y z Hxy i.
 unfold I_add2, I_add_algo.
@@ -184,22 +184,22 @@ unfold d2n.
 do 3 rewrite Hxy; reflexivity.
 Qed.
 
-Theorem I_add_compat_l : ∀ x y z, (y == z)%I → (x + y == x + z)%I.
+Theorem I_add2_compat : ∀ x y z t,
+  (x == y)%I
+  → (z == t)%I
+  → (x + z == y + t)%I.
 Proof.
-intros x y z Hxy.
+intros x y z t Hxy Hzt.
+rewrite I_add2_compat_r; [ idtac | eassumption ].
 rewrite I_add2_comm; symmetry.
 rewrite I_add2_comm; symmetry.
-apply I_add_compat_r; assumption.
+apply I_add2_compat_r; assumption.
 Qed.
 
 Add Parametric Morphism : I_add2
  with signature I_eqs ==> I_eqs ==> I_eqs
  as I_add2_morph.
-Proof.
-intros x y Hxy z t Hzt.
-rewrite I_add_compat_r; [ idtac | eassumption ].
-rewrite I_add_compat_l; [ reflexivity | eassumption ].
-Qed.
+Proof. intros; apply I_add2_compat; assumption. Qed.
 
 (* associativity *)
 
@@ -631,9 +631,10 @@ remember (i + j) as k.
 bbb.
 *)
 
-Theorem I_add_assoc : ∀ x y z, (x + (y + z) == (x + y) + z)%I.
+Theorem I_add2_assoc : ∀ x y z, (x + (y + z) == (x + y) + z)%I.
 Proof.
-intros x y z i.
+intros x y z.
+intros i.
 unfold I_add2, I_add_algo.
 unfold NN2I, I2NN, NN_add; fsimpl.
 unfold summation; rewrite Nat.sub_0_r; simpl.
