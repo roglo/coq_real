@@ -258,8 +258,17 @@ unfold NN2I; fsimpl.
 rewrite Nat.mul_1_r.
 unfold digit_eq; fsimpl.
 do 2 (rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ]).
-rewrite summation_split_first; [ symmetry | apply Nat.le_0_l ].
-rewrite summation_split_first; [ symmetry | apply Nat.le_0_l ].
+apply Nat.nlt_ge in Hn.
+destruct n; [ exfalso; apply Hn, Nat.lt_0_succ | idtac ].
+rewrite summation_split_last; [ symmetry | apply Nat.le_0_l ].
+rewrite summation_split_last; [ symmetry | apply Nat.le_0_l ].
+do 2 rewrite Nat.sub_diag; fsimpl.
+do 2 rewrite Nat.mul_1_r.
+bbb.
+
+, Nat.sub_succ, Nat.sub_0_r; fsimpl.
+rewrite Nat.mul_1_r.
+
 do 2 rewrite Nat.sub_0_r; rewrite Nat.add_0_r.
 SearchAbout ((_ + _)/_).
 bbb.
