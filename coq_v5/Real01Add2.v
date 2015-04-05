@@ -248,10 +248,12 @@ rewrite Nat.div_small.
   apply d2n_lt_radix.
 Qed.
 
-Theorem I2NN_NN2I : ∀ u, ∃ x m, ∀ n, n ≥ m → (NN2I n u == x)%I.
+(* mmm... depends on what is inside u, therefore needs oracle
+Theorem NN2I_lim : ∀ u, ∃ x m, ∀ n, n ≥ m → (NN2I n u == x)%I.
 Proof.
 intros u.
 bbb.
+*)
 
 (* associativity *)
 
@@ -345,23 +347,6 @@ rewrite Nat.mul_1_l in Hc.
 apply Nat.add_lt_mono_l with (p := radix).
 rewrite <- Hc.
 apply Nat.add_lt_mono; apply d2n_lt_radix.
-Qed.
-
-Theorem summation_add_mod : ∀ b e f r,
-  r ≠ 0
-  → (Σ (i = b, e), (f i)) mod r =
-    (Σ (i = b, e), (f i mod r)) mod r.
-Proof.
-intros b e f r Hr.
-unfold summation.
-remember (S e - b) as len.
-clear e Heqlen.
-revert b.
-induction len; intros; [ reflexivity | simpl ].
-rewrite Nat.add_mod; [ idtac | assumption ].
-rewrite IHlen.
-rewrite <- Nat.add_mod; [ idtac | assumption ].
-rewrite Nat.add_mod_idemp_l; [ reflexivity | assumption ].
 Qed.
 
 (* is it true? *)

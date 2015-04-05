@@ -313,3 +313,20 @@ destruct (le_dec b k) as [H1| H1].
  rewrite Nat.add_sub_assoc; [ idtac | assumption ].
  rewrite Nat.add_comm, Nat.add_sub; assumption.
 Qed.
+
+Theorem summation_add_mod : ∀ b e f r,
+  r ≠ 0
+  → (Σ (i = b, e), (f i)) mod r =
+    (Σ (i = b, e), (f i mod r)) mod r.
+Proof.
+intros b e f r Hr.
+unfold summation.
+remember (S e - b) as len.
+clear e Heqlen.
+revert b.
+induction len; intros; [ reflexivity | simpl ].
+rewrite Nat.add_mod; [ idtac | assumption ].
+rewrite IHlen.
+rewrite <- Nat.add_mod; [ idtac | assumption ].
+rewrite Nat.add_mod_idemp_l; [ reflexivity | assumption ].
+Qed.
