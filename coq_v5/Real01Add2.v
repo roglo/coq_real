@@ -89,6 +89,7 @@ Definition NN2I n u :=
   {| rm i :=
        let s := Σ (k = 0, n), (u (i + k) * int_pow b (n - k)) in
        n2d (s / int_pow b n mod b) |}.
+Arguments NN2I n%nat u%NN.
 
 Definition I_add_algo x y := (I2NN x + I2NN y)%NN.
 Arguments I_add_algo x%I y%I i%nat.
@@ -311,6 +312,184 @@ rewrite IHlen.
 rewrite <- Nat.add_mod; [ idtac | assumption ].
 rewrite Nat.add_mod_idemp_l; [ reflexivity | assumption ].
 Qed.
+
+(* is it true? *)
+Theorem yyy : ∀ u v,
+  (∀ j, u j ≤ 2 * pred radix)
+  → (∀ j, v j ≤ 2 * pred radix)
+  → (NN2I 2 (u + I2NN (NN2I 2 v)) == NN2I 2 (u + v))%I.
+Proof.
+intros u v Hu Hv i.
+unfold NN2I, I2NN, NN_add; fsimpl.
+unfold digit_eq; fsimpl.
+rewrite Nat.mul_1_r.
+unfold summation; simpl.
+do 9 rewrite Nat.add_0_r.
+do 6 rewrite Nat.mul_1_r.
+do 4 rewrite <- Nat.add_assoc; simpl.
+do 7 rewrite Nat.add_assoc.
+do 3 rewrite d2n_n2d.
+do 5 (rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ]).
+Set Printing Depth 13. Show.
+do 7 rewrite <- Nat.add_assoc.
+do 5 (rewrite Nat.div_add_l; [ idtac | apply radix_radix_neq_0 ]).
+Set Printing Depth 10. Show.
+do 2 rewrite <- Nat.add_assoc.
+do 2 (rewrite Nat.add_comm; symmetry).
+rewrite <- Nat.add_mod_idemp_l; [ symmetry | apply Digit.radix_neq_0 ].
+rewrite <- Nat.add_mod_idemp_l; [ symmetry | apply Digit.radix_neq_0 ].
+f_equal; f_equal.
+Set Printing Depth 12. Show.
+rewrite Nat.add_mod; [ symmetry | apply Digit.radix_neq_0 ].
+rewrite Nat.add_comm; symmetry.
+rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
+Set Printing Depth 18. Show.
+rewrite Nat.add_mod_idemp_l; [ idtac | apply Digit.radix_neq_0 ].
+rewrite <- Nat.add_assoc, Nat.add_comm; symmetry.
+rewrite <- Nat.add_mod_idemp_l; [ symmetry | apply Digit.radix_neq_0 ].
+rewrite <- Nat.add_mod_idemp_l; [ symmetry | apply Digit.radix_neq_0 ].
+f_equal; f_equal.
+Set Printing Depth 9. Show.
+rewrite Nat.add_mod_idemp_r; [ idtac | apply Digit.radix_neq_0 ].
+do 2 rewrite Nat.add_assoc.
+Set Printing Depth 11. Show.
+remember radix as r.
+remember (r * r) as rr.
+Set Printing Depth 14. Show.
+do 2 rewrite Nat.mul_add_distr_r.
+Set Printing Depth 25. Show.
+remember (u (i + 1)) as u1 eqn:Hu1.
+remember (u (i + 2)) as u2 eqn:Hu2.
+remember (u (i + 3)) as u3 eqn:Hu3.
+remember (u (i + 4)) as u4 eqn:Hu4.
+remember (v (i + 1)) as v1 eqn:Hv1.
+remember (v (i + 2)) as v2 eqn:Hv2.
+remember (v (i + 3)) as v3 eqn:Hv3.
+remember (v (i + 4)) as v4 eqn:Hv4.
+bbb.
+
+Set Printing Depth 12. Show.
+Set Printing Depth 14. Show.
+bbb.
+
+bbb.
+
+remember radix as r.
+remember (r * r) as rr.
+Set Printing Depth 11. Show.
+do 2 (rewrite Nat.add_mod; [ symmetry | apply Digit.radix_neq_0 ]).
+
+erewrite summation_compat.
+ Focus 2.
+ intros j (_, Hj).
+ rewrite d2n_n2d.
+ unfold summation.
+ rewrite Nat.sub_0_r; fsimpl.
+ remember (i + j) as k.
+ remember (int_pow radix (2 - j)) as a; simpl; subst a.
+ do 3 rewrite Nat.add_0_r.
+ do 2 rewrite Nat.mul_1_r.
+ remember (plus (d2n (x .[ k]))) as a.
+ rewrite Nat.add_comm; subst a.
+ rewrite Nat.div_add; [ idtac | apply radix_radix_neq_0 ].
+ rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
+ subst k; reflexivity.
+
+ do 2 (rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ]).
+ erewrite summation_compat.
+  2: intros; rewrite Nat.add_0_r; reflexivity.
+
+  fsimpl.
+  rewrite summation_split_first; [ idtac | apply Nat.le_0_l ].
+  rewrite Nat.sub_0_r; fsimpl.
+  rewrite Nat.mul_1_r, Nat.add_0_r.
+  rewrite Nat.div_add_l; [ idtac | apply radix_radix_neq_0 ].
+  symmetry.
+  rewrite summation_split_first; [ idtac | apply Nat.le_0_l ].
+  rewrite Nat.sub_0_r; fsimpl.
+  rewrite Nat.mul_1_r, Nat.add_0_r.
+  rewrite <- Nat.add_assoc; fsimpl.
+  rewrite Nat.add_assoc.
+  rewrite Nat.div_add_l; [ idtac | apply radix_radix_neq_0 ].
+  do 2 rewrite <- Nat.add_assoc.
+  rewrite Nat.add_mod; [ symmetry | apply Digit.radix_neq_0 ].
+  rewrite Nat.add_mod; [ symmetry | apply Digit.radix_neq_0 ].
+  f_equal; f_equal.
+  symmetry.
+  remember (d2n (x .[ i])) as xi eqn:Hxi .
+  remember (u i) as ui eqn:Hui .
+  remember (d2n (x .[ i + 1])) as xi1 eqn:Hxi1 .
+  remember (u (i + 1)) as ui1 eqn:Hui1 .
+  remember (d2n (x .[ i + 2])) as xi2 eqn:Hxi2 .
+  remember (u (i + 2)) as ui2 eqn:Hui2 .
+  remember ((ui1 * radix + ui2) / (radix * radix)) as a.
+  remember ((a + ui) mod radix) as b eqn:Hb .
+  rewrite Nat.add_mod in Hb; [ idtac | apply Digit.radix_neq_0 ].
+  symmetry.
+  rewrite Nat.add_mod; [ idtac | apply Digit.radix_neq_0 ].
+  symmetry; subst b.
+  rewrite Nat.add_mod_idemp_l; [ idtac | apply Digit.radix_neq_0 ].
+  rewrite Nat.add_shuffle0, Nat.add_comm.
+  rewrite <- Nat.add_mod_idemp_r; [ idtac | apply Digit.radix_neq_0 ].
+  f_equal; f_equal; subst a.
+  remember (radix * radix) as rr.
+  remember (((ui1 * radix + ui2) / rr) mod radix) as a eqn:Ha .
+  subst rr.
+  rewrite Nat.mod_small in Ha.
+  (* subgoal 2 à vérifier *)
+(*
+2(r-1)r+(r-1)=(r-1)(2r+1)=2r²-r-1
+r³-2r²+r+1
+f' = 3r²-2r+1
+Δ' = 1-3 = -2
+f'' = 6r-2 = 3(r-1)
+donc r₃-2r²+r+1 > 0 donc en principe c'est bon
+*)
+subst a.
+Set Printing Depth 11. Show.
+remember (radix * radix) as rr.
+rewrite Nat.add_comm.
+unfold summation; simpl.
+Set Printing Depth 16. Show.
+do 2 rewrite Nat.add_assoc.
+do 3 rewrite Nat.mul_1_r.
+do 2 rewrite Nat.add_0_r.
+rewrite <- Hxi2, <- Hui2, <- Hxi1, <- Hui1.
+do 2 rewrite Nat.add_assoc.
+do 2 rewrite Nat.mul_add_distr_r.
+do 8 rewrite <- Nat.add_assoc; simpl.
+do 4 rewrite Nat.add_assoc.
+Set Printing Depth 24. Show.
+rewrite <- Hui2.
+remember (d2n (x .[ i + 3])) as xi3 eqn:Hxi3 .
+remember (u (i + 3)) as ui3 eqn:Hui3 .
+remember (d2n (x .[ i + 4])) as xi4 eqn:Hxi4 .
+remember (u (i + 4)) as ui4 eqn:Hui4 .
+Set Printing Depth 10. Show.
+Set Printing Depth 24. Show.
+remember (((ui2 * radix + ui3) / rr + ui1) mod radix) as a eqn:Ha.
+remember (((ui3 * radix + ui4) / rr + ui2) mod radix) as b eqn:Hb.
+rewrite Nat.add_shuffle0.
+remember (xi1 * radix + a * radix + b + xi2) as c eqn:Hc.
+do 2 rewrite <- Nat.add_assoc in Hc.
+rewrite Nat.add_comm in Hc.
+rewrite Nat.add_assoc in Hc.
+subst c.
+remember (a * radix + b) as c eqn:Hc.
+rewrite Nat.add_shuffle0.
+subst a b.
+symmetry.
+rewrite <- Nat.add_assoc.
+rewrite Nat.add_shuffle0, Nat.add_assoc.
+rewrite Nat.add_shuffle0.
+symmetry.
+rewrite <- Nat.add_assoc.
+remember (xi1 * radix + xi2) as a eqn:Ha.
+rewrite <- Nat.add_assoc.
+remember (ui1 * radix + ui2) as b eqn:Hb.
+Print NN2I.
+Print I2NN.
+bbb.
 
 (* is it true? *)
 Theorem zzzz : ∀ x u i,
