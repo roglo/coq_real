@@ -248,11 +248,25 @@ rewrite Nat.div_small.
   apply d2n_lt_radix.
 Qed.
 
-(* mmm... depends on what is inside u, therefore needs oracle
-Theorem NN2I_lim : ∀ u, ∃ x m, ∀ n, n ≥ m → (NN2I n u == x)%I.
+Theorem NN2I_lim : ∀ u,
+  (∀ j, u j ≤ 2 * pred radix)
+  → ∀ n, n ≥ 2
+  → (NN2I n u == NN2I 2 u)%I.
 Proof.
-intros u.
+intros u Hu n Hn i.
+unfold NN2I; fsimpl.
+rewrite Nat.mul_1_r.
+unfold digit_eq; fsimpl.
+do 2 (rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ]).
+rewrite summation_split_first; [ symmetry | apply Nat.le_0_l ].
+rewrite summation_split_first; [ symmetry | apply Nat.le_0_l ].
+do 2 rewrite Nat.sub_0_r; rewrite Nat.add_0_r.
+SearchAbout ((_ + _)/_).
 bbb.
+
+rewrite <- Nat.add_mod_idemp_r.
+Unset Printing Notations. Show.
+Set Printing Depth 14. Show.
 *)
 
 (* associativity *)
