@@ -264,6 +264,7 @@ rewrite summation_split_last; [ symmetry | apply Nat.le_0_l ].
 rewrite summation_split_last; [ symmetry | apply Nat.le_0_l ].
 do 2 rewrite Nat.sub_diag; fsimpl.
 do 2 rewrite Nat.mul_1_r.
+Print NN2I.
 bbb.
 
 , Nat.sub_succ, Nat.sub_0_r; fsimpl.
