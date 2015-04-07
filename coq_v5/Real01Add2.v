@@ -349,6 +349,8 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
           assumption.
 
      apply Nat.nlt_ge in H5.
+     assert (u12 + v12 < rr + rr) as H6.
+     (* mouais, chuis pas certain que ça soit bon, ça... *)
 bbb.
 
 2(r-1)r+(r-1) = 2(r-1)(r+1) = 2r²-2
