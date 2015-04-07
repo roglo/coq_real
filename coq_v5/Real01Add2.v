@@ -364,6 +364,7 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
        rewrite Nat.div_small in Ha; [ subst a | assumption ].
        rewrite Nat.add_0_r.
 Set Printing Depth 14. Show.
+Set Printing Depth 18. Show.
 bbb.
 
 Set Printing Depth 14. Show.
