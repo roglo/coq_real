@@ -280,6 +280,9 @@ remember (u (i + 4)) as u4 eqn:Hu4.
 remember (u (i + 3)) as u3 eqn:Hu3.
 remember (u (i + 2)) as u2 eqn:Hu2.
 remember (u (i + 1)) as u1 eqn:Hu1.
+do 10 rewrite <- Nat.add_assoc.
+do 8 (rewrite Nat.div_add_l; [ idtac | subst r rr; apply radix_radix_neq_0 ]).
+do 2 rewrite Nat.add_assoc.
 bbb.
 
 Theorem zzz : ∀ n u v, n = 2 →
