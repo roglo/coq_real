@@ -248,6 +248,16 @@ rewrite Nat.div_small.
   apply d2n_lt_radix.
 Qed.
 
+Theorem I2NN_NN2I : ∀ u n, (NN2I n (I2NN (NN2I n u)) == NN2I n u)%I.
+Proof. intros; apply NN2I_I2NN. Qed.
+
+Theorem zzz : ∀ u v n, (NN2I n (u + I2NN (NN2I n v)) == NN2I n (u + v))%I.
+Proof.
+intros u v n.
+bbb.
+apply I_add2_compat.
+Check I_add2_compat.
+
 Theorem NN2I_lim : ∀ u,
   (∀ j, u j ≤ 2 * pred radix)
   → ∀ n, n ≥ 2
