@@ -359,6 +359,14 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
        rewrite Nat.add_0_r.
 bbb.
 
+u1 mod r * r + u2 mod r + (v1 mod r * r + v2 mod r)
+  ≤ (r-1)r+(r-1)+ " = (r-1)(r+1) + " = 2r²-2
+(u1 mod r * r + u2 mod r + (v1 mod r * r + v2 mod r))/rr
+  ≤ (2r²-2)/r² = 2 - 2/r²
+
+(u1 mod r * r + u2 mod r + (v1 mod r * r + v2 mod r))/rr
+  = 0 ou 1
+
 u12 ≤ 2rr-2
 v12 ≤ 2rr-2
 u12+v12 ≤ 4rr-4
