@@ -272,6 +272,14 @@ do 10 rewrite Nat.add_assoc.
 do 6 (rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ]).
 remember (radix * radix) as rr.
 remember radix as r.
+remember (v (i + 4)) as v4 eqn:Hv4.
+remember (v (i + 3)) as v3 eqn:Hv3.
+remember (v (i + 2)) as v2 eqn:Hv2.
+remember (v (i + 1)) as v1 eqn:Hv1.
+remember (u (i + 4)) as u4 eqn:Hu4.
+remember (u (i + 3)) as u3 eqn:Hu3.
+remember (u (i + 2)) as u2 eqn:Hu2.
+remember (u (i + 1)) as u1 eqn:Hu1.
 bbb.
 
 Theorem zzz : ∀ n u v, n = 2 →
