@@ -299,6 +299,7 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
     remember ((v2 * r + v3) / rr) as a eqn:Ha .
     rewrite Nat.div_small in Ha; [ subst a | assumption ].
     rewrite Nat.add_0_r.
+    clear u3 u4 v3 v4 Hu3 Hu4 Hv3 Hv4 H1 H2 H3 H4.
     do 2 rewrite Nat.mul_add_distr_r.
     assert (∀ a b c d, a + b + c + d = a + c + (b + d)) by (intros; omega).
     do 2 rewrite H; clear H.
