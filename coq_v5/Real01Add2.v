@@ -302,6 +302,12 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
     do 2 rewrite Nat.mul_add_distr_r.
     assert (∀ a b c d, a + b + c + d = (a + c) + (b + d)) by (intros; omega).
     do 2 rewrite H; clear H.
+    remember (u1 * r + u2) as u12 eqn:Hu12.
+    remember (v1 * r + v2) as v12 eqn:Hv12.
+bbb.
+
+2(r-1)r+(r-1) = 2(r-1)(r+1) = 2r²-2
+
 bbb.
 
 Theorem zzz : ∀ n u v, n = 2 →
