@@ -304,6 +304,20 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
     do 2 rewrite H; clear H.
     remember (u1 * r + u2) as u12 eqn:Hu12.
     remember (v1 * r + v2) as v12 eqn:Hv12.
+    destruct (lt_dec (u12 + v12) rr) as [H5| H5].
+     remember ((u12 + v12) / rr) as a eqn:Ha.
+     rewrite Nat.div_small in Ha; [ subst a | assumption ].
+     rewrite Nat.add_0_r.
+     remember H5 as H; clear HeqH.
+     apply lt_le_trans with (n := u12) in H; [ idtac | omega ].
+     rename H into H6.
+     rewrite Nat.div_small; [ idtac | assumption ].
+     rewrite Nat.add_0_r.
+     remember H5 as H; clear HeqH; rewrite Nat.add_comm in H.
+     apply lt_le_trans with (n := v12) in H; [ idtac | omega ].
+     rename H into H7.
+     rewrite Nat.div_small; [ idtac | assumption ].
+     rewrite Nat.add_0_r.
 bbb.
 
 2(r-1)r+(r-1) = 2(r-1)(r+1) = 2r²-2
