@@ -349,12 +349,21 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
           assumption.
 
      apply Nat.nlt_ge in H5.
-     destruct (lt_dec (u12 + v12) (rr + rr)) as [H6| H6].
-      assert ((u12 + v12) / rr = 1) as H.
-
+     destruct (lt_dec u12 rr) as [H6 | H6].
+      remember (u12 / rr) as a eqn:Ha.
+      rewrite Nat.div_small in Ha; [ subst a | assumption ].
+      rewrite Nat.add_0_r.
+      destruct (lt_dec v12 rr) as [H7 | H7].
+       remember (v12 / rr) as a eqn:Ha.
+       rewrite Nat.div_small in Ha; [ subst a | assumption ].
+       rewrite Nat.add_0_r.
 bbb.
 
-2(r-1)r+(r-1) = 2(r-1)(r+1) = 2r²-2
+u12 ≤ 2rr-2
+v12 ≤ 2rr-2
+u12+v12 ≤ 4rr-4
+
+u12 = u1 r + u2 ≤ 2(r-1)r+(r-1) = 2(r-1)(r+1) = 2r²-2
 
 bbb.
 
