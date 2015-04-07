@@ -263,9 +263,10 @@ Theorem zzz : ∀ n u v, n = 2 →
 Proof.
 intros n u v Hn.
 symmetry; rewrite <- I2NN_NN2I; symmetry.
-Unset Printing Notations. Show.
 subst n.
 Print fold_I_add2.
+Check I_add2_compat.
+Unset Printing Notations. Show.
 rewrite fold_I_add2.
 bbb.
   ============================
