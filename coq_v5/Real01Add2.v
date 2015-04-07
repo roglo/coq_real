@@ -269,6 +269,7 @@ do 9 rewrite Nat.mul_1_r.
 do 12 rewrite Nat.add_0_r.
 do 4 rewrite <- Nat.add_assoc; simpl.
 do 10 rewrite Nat.add_assoc.
+do 6 (rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ]).
 remember (radix * radix) as rr.
 remember radix as r.
 bbb.
