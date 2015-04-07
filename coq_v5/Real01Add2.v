@@ -272,40 +272,40 @@ do 10 rewrite Nat.add_assoc.
 do 6 (rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ]).
 remember (radix * radix) as rr.
 remember radix as r.
-remember (v (i + 4)) as v4 eqn:Hv4.
-remember (v (i + 3)) as v3 eqn:Hv3.
-remember (v (i + 2)) as v2 eqn:Hv2.
-remember (v (i + 1)) as v1 eqn:Hv1.
-remember (u (i + 4)) as u4 eqn:Hu4.
-remember (u (i + 3)) as u3 eqn:Hu3.
-remember (u (i + 2)) as u2 eqn:Hu2.
-remember (u (i + 1)) as u1 eqn:Hu1.
+remember (v (i + 4)) as v4 eqn:Hv4 .
+remember (v (i + 3)) as v3 eqn:Hv3 .
+remember (v (i + 2)) as v2 eqn:Hv2 .
+remember (v (i + 1)) as v1 eqn:Hv1 .
+remember (u (i + 4)) as u4 eqn:Hu4 .
+remember (u (i + 3)) as u3 eqn:Hu3 .
+remember (u (i + 2)) as u2 eqn:Hu2 .
+remember (u (i + 1)) as u1 eqn:Hu1 .
 do 10 rewrite <- Nat.add_assoc.
 do 8 (rewrite Nat.div_add_l; [ idtac | subst r rr; apply radix_radix_neq_0 ]).
 do 2 rewrite Nat.add_assoc.
 destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
- remember ((u3 * r + u4) / rr) as a eqn:Ha.
+ remember ((u3 * r + u4) / rr) as a eqn:Ha .
  rewrite Nat.div_small in Ha; [ subst a | assumption ].
  rewrite Nat.add_0_r.
  destruct (lt_dec (v3 * r + v4) rr) as [H2| H2].
-  remember ((v3 * r + v4) / rr) as a eqn:Ha.
+  remember ((v3 * r + v4) / rr) as a eqn:Ha .
   rewrite Nat.div_small in Ha; [ subst a | assumption ].
   rewrite Nat.add_0_r.
   destruct (lt_dec (u2 * r + u3) rr) as [H3| H3].
-   remember ((u2 * r + u3) / rr) as a eqn:Ha.
+   remember ((u2 * r + u3) / rr) as a eqn:Ha .
    rewrite Nat.div_small in Ha; [ subst a | assumption ].
    rewrite Nat.add_0_r.
    destruct (lt_dec (v2 * r + v3) rr) as [H4| H4].
-    remember ((v2 * r + v3) / rr) as a eqn:Ha.
+    remember ((v2 * r + v3) / rr) as a eqn:Ha .
     rewrite Nat.div_small in Ha; [ subst a | assumption ].
     rewrite Nat.add_0_r.
     do 2 rewrite Nat.mul_add_distr_r.
-    assert (∀ a b c d, a + b + c + d = (a + c) + (b + d)) by (intros; omega).
+    assert (∀ a b c d, a + b + c + d = a + c + (b + d)) by (intros; omega).
     do 2 rewrite H; clear H.
-    remember (u1 * r + u2) as u12 eqn:Hu12.
-    remember (v1 * r + v2) as v12 eqn:Hv12.
+    remember (u1 * r + u2) as u12 eqn:Hu12 .
+    remember (v1 * r + v2) as v12 eqn:Hv12 .
     destruct (lt_dec (u12 + v12) rr) as [H5| H5].
-     remember ((u12 + v12) / rr) as a eqn:Ha.
+     remember ((u12 + v12) / rr) as a eqn:Ha .
      rewrite Nat.div_small in Ha; [ subst a | assumption ].
      rewrite Nat.add_0_r.
      remember H5 as H; clear HeqH.
@@ -318,6 +318,37 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
      rename H into H7.
      rewrite Nat.div_small; [ idtac | assumption ].
      rewrite Nat.add_0_r.
+     rewrite Nat.div_small.
+      rewrite Nat.add_0_r; subst r.
+      rewrite Nat.add_mod; [ reflexivity | apply Digit.radix_neq_0 ].
+
+      rewrite <- Nat.add_assoc.
+      eapply le_lt_trans.
+       apply -> Nat.add_le_mono_r.
+       apply Nat.mul_le_mono_r; subst r.
+       apply Nat.mod_le, Digit.radix_neq_0.
+
+       rewrite Nat.add_comm, <- Nat.add_assoc.
+       eapply le_lt_trans.
+        apply -> Nat.add_le_mono_r.
+        subst r; apply Nat.mod_le, Digit.radix_neq_0.
+
+        rewrite Nat.add_comm.
+        do 2 rewrite <- Nat.add_assoc.
+        eapply le_lt_trans.
+         apply -> Nat.add_le_mono_r.
+         apply Nat.mul_le_mono_r; subst r.
+         apply Nat.mod_le, Digit.radix_neq_0.
+
+         rewrite Nat.add_comm, <- Nat.add_assoc.
+         eapply le_lt_trans.
+          apply -> Nat.add_le_mono_r.
+          subst r; apply Nat.mod_le, Digit.radix_neq_0.
+
+          rewrite Nat.add_comm, <- Nat.add_assoc, <- Hu12, <- Hv12.
+          assumption.
+
+     apply Nat.nlt_ge in H5.
 bbb.
 
 2(r-1)r+(r-1) = 2(r-1)(r+1) = 2r²-2
