@@ -348,6 +348,12 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
           rewrite Nat.add_comm, <- Nat.add_assoc, <- Hu12, <- Hv12.
           assumption.
 
+     do 2 rewrite <- Nat.add_assoc.
+     rewrite Nat.add_mod_idemp_l; [ idtac | subst; apply Digit.radix_neq_0 ].
+     do 2 rewrite Nat.add_assoc.
+     symmetry; rewrite Nat.add_shuffle0.
+     rewrite Nat.add_mod_idemp_r; [ idtac | subst; apply Digit.radix_neq_0 ].
+     rewrite Nat.add_shuffle0; symmetry.
      apply Nat.nlt_ge in H5.
      destruct (lt_dec u12 rr) as [H6 | H6].
       remember (u12 / rr) as a eqn:Ha.
@@ -357,7 +363,11 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
        remember (v12 / rr) as a eqn:Ha.
        rewrite Nat.div_small in Ha; [ subst a | assumption ].
        rewrite Nat.add_0_r.
+Set Printing Depth 14. Show.
 bbb.
+
+Set Printing Depth 14. Show.
+Unset Printing Notations. Show.
 
 u1 mod r * r + u2 mod r + (v1 mod r * r + v2 mod r)
   ≤ (r-1)r+(r-1)+ " = (r-1)(r+1) + " = 2r²-2
