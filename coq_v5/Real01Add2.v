@@ -91,10 +91,14 @@ Definition NN2I n u :=
        n2d (s / int_pow b n mod b) |}.
 Arguments NN2I n%nat u%NN.
 
+(*
 Definition I_add_algo x y := (I2NN x + I2NN y)%NN.
 Arguments I_add_algo x%I y%I i%nat.
 
 Definition I_add2 x y := NN2I 2 (I_add_algo x y).
+Arguments I_add2 x%I y%I.
+*)
+Definition I_add2 x y := NN2I 2 (I2NN x + I2NN y).
 Arguments I_add2 x%I y%I.
 
 Notation "x + y" := (I_add2 x y) : I_scope.
@@ -119,7 +123,7 @@ Proof. intros; apply NN2I_compat; assumption. Qed.
 Theorem I_add2_comm : ∀ x y, (x + y == y + x)%I.
 Proof.
 intros x y.
-unfold I_eqs, I_add2, I_add_algo; intros i.
+unfold I_eqs, I_add2; intros i.
 rewrite NN_add_comm; reflexivity.
 Qed.
 
@@ -143,7 +147,7 @@ Qed.
 Theorem I_add2_0_r : ∀ x, (x + 0 == x)%I.
 Proof.
 intros x.
-unfold I_eqs, I_add2, I_add_algo; intros i.
+unfold I_eqs, I_add2; intros i.
 rewrite I_zero_NN_zero.
 rewrite NN_add_0_r.
 unfold digit_eq, NN2I, I2NN; fsimpl.
@@ -173,7 +177,7 @@ Qed.
 Theorem I_add2_compat_r : ∀ x y z, (x == y)%I → (x + z == y + z)%I.
 Proof.
 intros x y z Hxy i.
-unfold I_add2, I_add_algo.
+unfold I_add2.
 unfold I2NN, NN2I, NN_add; fsimpl.
 rewrite Nat.mul_1_r.
 unfold summation.
@@ -251,13 +255,36 @@ Qed.
 Theorem I2NN_NN2I : ∀ u n, (NN2I n (I2NN (NN2I n u)) == NN2I n u)%I.
 Proof. intros; apply NN2I_I2NN. Qed.
 
-Theorem zzz : ∀ u v n, (NN2I n (u + I2NN (NN2I n v)) == NN2I n (u + v))%I.
+Theorem fold_I_add2 : ∀ x y, NN2I 2 (I2NN x + I2NN y) = I_add2 x y.
+Proof. reflexivity. Qed.
+
+Theorem zzz : ∀ n u v, n = 2 →
+  (NN2I n (u + I2NN (NN2I n v)) == NN2I n (u + v))%I.
 Proof.
-intros u v n.
+intros n u v Hn.
+symmetry; rewrite <- I2NN_NN2I; symmetry.
+Unset Printing Notations. Show.
+subst n.
+Print fold_I_add2.
+rewrite fold_I_add2.
+bbb.
+  ============================
+   I_eqs (NN2I u (NN_add v (I2NN (NN2I u n))))
+     (NN2I u (I2NN (NN2I u (NN_add v n))))
+fold_I_add2 =
+fun x y : I => eq_refl
+     : forall x y : I,
+       eq (NN2I (S (S O)) (NN_add (I2NN x) (I2NN y))) (I_add2 x y)
+
+
+I2NN (NN2I 2 (u + v)) = u + v
+
+rewrite fold_I_add2.
+
+Check I_add2_compat.
 bbb.
 (*
 symmetry.
-rewrite <- I2NN_NN2I.
 apply NN2I_compat.
 *)
 unfold NN_eq; intros i; simpl.
