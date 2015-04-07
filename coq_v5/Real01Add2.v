@@ -255,8 +255,30 @@ Theorem zzz : ∀ u v n, (NN2I n (u + I2NN (NN2I n v)) == NN2I n (u + v))%I.
 Proof.
 intros u v n.
 bbb.
-apply I_add2_compat.
-Check I_add2_compat.
+(*
+symmetry.
+rewrite <- I2NN_NN2I.
+apply NN2I_compat.
+*)
+unfold NN_eq; intros i; simpl.
+NN_eq.
+
+bbb.
+  ============================
+   I_eqs (NN2I n (NN_add u (I2NN (NN2I n v)))) (NN2I n (NN_add u v))
+
+NN_add ok
+NN2I ok
+
+rewrite NN2I_compat.
+apply NN_add_compat; [ reflexivity | idtac ].
+SearchAbout I2NN.
+(*
+pose proof I2NN_NN2I v n as Hv.
+Check NN2I_morph.
+Check NN2I_compat.
+*)
+bbb.
 
 Theorem NN2I_lim : ∀ u,
   (∀ j, u j ≤ 2 * pred radix)
