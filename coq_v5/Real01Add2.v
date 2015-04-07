@@ -258,6 +258,21 @@ Proof. intros; apply NN2I_I2NN. Qed.
 Theorem fold_I_add2 : ∀ x y, NN2I 2 (I2NN x + I2NN y) = I_add2 x y.
 Proof. reflexivity. Qed.
 
+Theorem uuu : ∀ u v, (NN2I 2 (u + v) == NN2I 2 u + NN2I 2 v)%I.
+Proof.
+intros u v i.
+unfold I_add2, NN_add.
+unfold I2NN, NN2I; fsimpl.
+unfold summation; simpl.
+do 6 rewrite d2n_n2d.
+do 9 rewrite Nat.mul_1_r.
+do 12 rewrite Nat.add_0_r.
+do 4 rewrite <- Nat.add_assoc; simpl.
+do 10 rewrite Nat.add_assoc.
+remember (radix * radix) as rr.
+remember radix as r.
+bbb.
+
 Theorem zzz : ∀ n u v, n = 2 →
   (NN2I n (u + I2NN (NN2I n v)) == NN2I n (u + v))%I.
 Proof.
