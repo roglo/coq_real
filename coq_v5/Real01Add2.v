@@ -283,6 +283,25 @@ remember (u (i + 1)) as u1 eqn:Hu1.
 do 10 rewrite <- Nat.add_assoc.
 do 8 (rewrite Nat.div_add_l; [ idtac | subst r rr; apply radix_radix_neq_0 ]).
 do 2 rewrite Nat.add_assoc.
+destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
+ remember ((u3 * r + u4) / rr) as a eqn:Ha.
+ rewrite Nat.div_small in Ha; [ subst a | assumption ].
+ rewrite Nat.add_0_r.
+ destruct (lt_dec (v3 * r + v4) rr) as [H2| H2].
+  remember ((v3 * r + v4) / rr) as a eqn:Ha.
+  rewrite Nat.div_small in Ha; [ subst a | assumption ].
+  rewrite Nat.add_0_r.
+  destruct (lt_dec (u2 * r + u3) rr) as [H3| H3].
+   remember ((u2 * r + u3) / rr) as a eqn:Ha.
+   rewrite Nat.div_small in Ha; [ subst a | assumption ].
+   rewrite Nat.add_0_r.
+   destruct (lt_dec (v2 * r + v3) rr) as [H4| H4].
+    remember ((v2 * r + v3) / rr) as a eqn:Ha.
+    rewrite Nat.div_small in Ha; [ subst a | assumption ].
+    rewrite Nat.add_0_r.
+    do 2 rewrite Nat.mul_add_distr_r.
+    assert (∀ a b c d, a + b + c + d = (a + c) + (b + d)) by (intros; omega).
+    do 2 rewrite H; clear H.
 bbb.
 
 Theorem zzz : ∀ n u v, n = 2 →
