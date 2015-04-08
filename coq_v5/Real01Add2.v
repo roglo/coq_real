@@ -364,8 +364,7 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
        remember (v12 / rr) as a eqn:Ha.
        rewrite Nat.div_small in Ha; [ subst a | assumption ].
        rewrite Nat.add_0_r.
-Set Printing Depth 14. Show.
-Set Printing Depth 18. Show.
+       assert ((u12 + v12) / rr = 1) as H.
 bbb.
 
 Set Printing Depth 14. Show.
