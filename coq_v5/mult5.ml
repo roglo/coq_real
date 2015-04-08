@@ -105,6 +105,36 @@ list_of_r (nn2i 2 v) 10;
 "u+v";
 list_of_r (nn2i 2 (nn_add u v)) 10;
 list_of_r (i_add2 (nn2i 2 u) (nn2i 2 v)) 10;
+value i = 0;
+value r = radix.val;
+value rr = r * r;
+value v2 = v (i+2);
+value v1 = v (i+1);
+value u2 = u (i+2);
+value u1 = u (i+1);
+"u12";
+value u12 = u1 * r + u2;
+"v12";
+value v12 = v1 * r + v2;
+printf "rr ≤ u12 + v12\n%!";
+rr ≤ u12 + v12;
+printf "u1 * r + u2 < rr\n%!";
+v1 * r + v2 < rr;
+printf "u1 < r\n%!";
+u1 < r;
+printf "v1 < r\n%!";
+v1 < r;
+printf "(u1 * r + u2 + (v1 * r + v2)) / rr = 1\n%!";
+(u1 * r + u2 + (v1 * r + v2)) / rr = 1;
+printf "(u1 * r + u2 mod r + (v1 * r + v2 mod r)) / rr = 0\n%!";
+(u1 * r + u2 mod r + (v1 * r + v2 mod r)) / rr = 0;
+(*
+Theorem NN2I_add2_inj : ∀ u v, (NN2I 2 (u + v) == NN2I 2 u + NN2I 2 v)%I.
+*)
+list_of_r (nn2i 2 (nn_add u v)) 10;
+list_of_r (i_add2 (nn2i 2 u) (nn2i 2 v)) 10;
+n2d ((u i + v i + 1) mod r);
+n2d ((u i + v i + 0) mod r);
 
 glop;
 
