@@ -88,7 +88,7 @@ Definition NN2I n u :=
   let b := radix in
   {| rm i :=
        let s := Σ (k = 0, n), (u (i + k) * int_pow b (n - k)) in
-       n2d (s / int_pow b n mod b) |}.
+       n2d (s / int_pow b n) |}.
 Arguments NN2I n%nat u%NN.
 
 Definition I_add2 x y := NN2I 2 (I2NN x + I2NN y).
@@ -101,7 +101,7 @@ Theorem NN2I_compat : ∀ n u v,
   → (NN2I n u == NN2I n v)%I.
 Proof.
 intros n u v Huv i; simpl.
-unfold digit_eq; simpl; f_equal; f_equal; f_equal.
+unfold digit_eq; simpl; f_equal; f_equal.
 apply summation_compat; intros j (_, Hj).
 rewrite Huv; reflexivity.
 Qed.
@@ -147,7 +147,9 @@ unfold digit_eq, NN2I, I2NN; fsimpl.
 unfold summation.
 remember modulo as fmod; remember div as fdiv; simpl; subst fmod fdiv.
 do 2 rewrite Nat.add_0_r, Nat.mul_1_r; fsimpl.
+(*
 rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
+*)
 rewrite Nat.div_add_l; [ idtac | apply sqr_radix_neq_0 ].
 rewrite Nat.div_small.
  rewrite Nat.add_0_r; unfold d2n.
@@ -213,7 +215,9 @@ Proof.
 intros x n i; simpl.
 unfold I2NN; simpl.
 unfold digit_eq; simpl.
+(*
 rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
+*)
 rewrite summation_split_first; [ idtac | apply Nat.le_0_l ].
 rewrite Nat.sub_0_r, Nat.add_0_r; fsimpl.
 rewrite Nat.div_add_l; [ idtac | apply int_pow_neq_0, Digit.radix_neq_0 ].
@@ -266,7 +270,9 @@ do 9 rewrite Nat.mul_1_r.
 do 12 rewrite Nat.add_0_r.
 do 4 rewrite <- Nat.add_assoc; simpl.
 do 10 rewrite Nat.add_assoc.
-do 6 (rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ]).
+(*
+do 1 (rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ]).
+*)
 remember (radix * radix) as rr eqn:Hrr.
 remember radix as r eqn:Hr.
 remember (v (i + 4)) as v4 eqn:Hv4 .
@@ -317,6 +323,7 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
      rewrite Nat.add_0_r.
      rewrite Nat.div_small.
       rewrite Nat.add_0_r; subst r.
+      unfold digit_eq, n2d; simpl.
       rewrite Nat.add_mod; [ reflexivity | apply Digit.radix_neq_0 ].
 
       rewrite <- Nat.add_assoc.
@@ -346,6 +353,7 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
           assumption.
 
      do 2 rewrite <- Nat.add_assoc.
+bbb.
      rewrite Nat.add_mod_idemp_l; [ idtac | subst; apply Digit.radix_neq_0 ].
      do 2 rewrite Nat.add_assoc.
      symmetry; rewrite Nat.add_shuffle0.
