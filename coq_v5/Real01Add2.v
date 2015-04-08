@@ -374,6 +374,22 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
          split; [ apply sqr_radix_gt_0 | assumption ].
 
         rewrite Hurr.
+        remember H6 as H; clear HeqH.
+        rewrite Hu12, Hrr in H.
+        apply le_lt_trans with (n := u1 * r) in H; [ idtac | omega ].
+        rewrite Hr in H.
+        apply Nat.mul_lt_mono_pos_r in H; [ idtac | apply Digit.radix_gt_0 ].
+        rewrite <- Hr in H; rename H into Hu1r.
+        remember (u1 mod r) as a eqn:Ha.
+        rewrite Nat.mod_small in Ha; [ subst a | assumption ].
+        remember H7 as H; clear HeqH.
+        rewrite Hv12, Hrr in H.
+        apply le_lt_trans with (n := v1 * r) in H; [ idtac | omega ].
+        rewrite Hr in H.
+        apply Nat.mul_lt_mono_pos_r in H; [ idtac | apply Digit.radix_gt_0 ].
+        rewrite <- Hr in H; rename H into Hv1r.
+        remember (v1 mod r) as a eqn:Ha.
+        rewrite Nat.mod_small in Ha; [ subst a | assumption ].
 bbb.
 
 Set Printing Depth 14. Show.
@@ -387,17 +403,8 @@ Unset Printing Notations. Show.
 ((u1 mod r * r + u2 mod r) + (v1 mod r * r + v2 mod r))/rr
   = 0 ou 1
 
-u12 < rr
- u1 r + u2 < r²
- donc u1 < r
- donc u1 mod r = u1
-v12 < rr
- v1 r + v2 < r²
- donc v1 < r
- donc v1 mod r = v1
-
 (u1 mod r * r + u2 mod r) + (v1 mod r * r + v2 mod r)
-= (u1 + u2 mod r) + (v1 + v2 mod r)
+= (u1 * r + u2 mod r) + (v1 * r + v2 mod r)
 
 u12 ≤ 2rr-2
 v12 ≤ 2rr-2
