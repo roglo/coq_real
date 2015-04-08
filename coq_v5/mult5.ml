@@ -2,6 +2,19 @@
 
 open Printf.
 
+value list_of_seq u =
+  list_rec [] where rec list_rec l n =
+    if n ≤ 0 then l
+    else list_rec [u (n-1) :: l] (n-1)
+;
+
+value nn_add u v i = u i + v i;
+
+value radix = ref 10;
+
+value d2n d = d mod radix.val;
+value n2d n = n;
+
 type real01 = { rm : int → int };
 
 value b2n b = b (*if b then 1 else 0*);
@@ -33,8 +46,6 @@ value rec int_pow a b =
     else r
 ;
 
-value base = ref 10;
-
 value i_add_algo x y i = x.rm i + y.rm i;
 
 value i_mul_algo x y i =
@@ -62,14 +73,44 @@ value z_of_u b n u i =
 
 value i_add x y =
   let u = i_add_algo x y in
-  {rm = z_of_u 2 base.val u}
+  {rm = z_of_u 2 radix.val u}
 ;
+
+value i2nn x i = d2n (x.rm i);
+value nn2i n u =
+  let b = radix.val in
+  {rm i =
+     let s = summation 0 n (fun k → u (i + k) * int_pow b (n - k)) in
+     n2d (s / int_pow b n)}
+;
+
+value i_add2 x y = nn2i 2 (nn_add (i2nn x) (i2nn y));
+
+(* seems that nn2i is wrong on v below *)
+radix.val := 2;
+value v i = if i = 2 then 2 else 0;
+list_of_seq v 10;
+list_of_seq (nn2i 2 v).rm 10;
+oups;
+
+(*
+radix.val := 2;
+value u i = if i = 1 then 1 else 0;
+value v i = if i = 2 then 2 else 0;
+list_of_seq u 10;
+list_of_seq v 10;
+list_of_seq (nn2i 2 u).rm 10;
+list_of_seq (nn2i 2 v).rm 10;
+list_of_seq v 10;
+list_of_seq (nn2i 2 u).rm 10;
+list_of_seq (nn2i 2 v).rm 10;
+*)
 
 value i_mul x y =
   let u = i_mul_algo x y in
   {rm i =
-     let n = logn base.val (i * (base.val - 1) + base.val) + 2 in
-     z_of_u base.val n u i}
+     let n = logn radix.val (i * (radix.val - 1) + radix.val) + 2 in
+     z_of_u radix.val n u i}
 ;
 
 value r_of_string s =
@@ -77,20 +118,14 @@ value r_of_string s =
      if i ≥ String.length s then 0
      else
        let c = Char.code s.[i] - Char.code '0' in
-       if c >= base.val then
+       if c >= radix.val then
          failwith
            (sprintf "r_of_string \"%s\" (digit %d is %c > %d)" s i s.[i]
-              (base.val - 1))
+              (radix.val - 1))
        else c}
 ;
 
-value list_of_seq u =
-  list_rec [] where rec list_rec l n =
-    if n ≤ 0 then l
-    else list_rec [u (n-1) :: l] (n-1)
-;
-
-base.val := 10;
+radix.val := 10;
 
 239*4649;
 list_of_seq (i_mul (r_of_string "239") (r_of_string "4649")).rm 10;
@@ -107,7 +142,7 @@ list_of_seq (i_mul (r_of_string "4656") (r_of_string "7532")).rm 10;
 list_of_seq (i_mul (r_of_string "9468025") (r_of_string "7023342")).rm 20;
 
 (* overflows *)
-value one = {rm i = base.val-1};
+value one = {rm i = radix.val-1};
 value u = i_mul_algo one one;
 (*
 list_of_seq u 20;
@@ -132,10 +167,10 @@ let n = 9 in (carry_lower_bound u 0 n, carry_upper_bound u 0 n);
 let n = 6 in (carry_lower_bound_num u 0 n, carry_upper_bound_num u 0 n);
 *)
 
-value x = {rm i = i mod base.val};
+value x = {rm i = i mod radix.val};
 
-base.val := 2;
-value one = {rm i = base.val-1};
+radix.val := 2;
+value one = {rm i = radix.val-1};
 list_of_seq one.rm 20;
 value u = i_mul_algo one one;
 list_of_seq u 20;
@@ -151,13 +186,13 @@ let n = 5 in (carry_lower_bound_num u 0 n, carry_upper_bound_num u 0 n);
 let n = 6 in (carry_lower_bound_num u 0 n, carry_upper_bound_num u 0 n);
 *)
 
-base.val := 2;
-value one = {rm i = base.val - 1};
+radix.val := 2;
+value one = {rm i = radix.val - 1};
 list_of_seq (i_mul_algo (r_of_string "1") one) 20;
 (* should answer 0.1000... but the 0.0111... is equivalent! *)
 list_of_seq (i_mul (r_of_string "1") one).rm 20;
 
-base.val := 2;
+radix.val := 2;
 value zero = {rm i = 0};
 value x = {rm i = if i < 5 then 0 else 1};
 value x0 = i_add x zero;
