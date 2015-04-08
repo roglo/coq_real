@@ -390,6 +390,15 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
         rewrite <- Hr in H; rename H into Hv1r.
         remember (v1 mod r) as a eqn:Ha.
         rewrite Nat.mod_small in Ha; [ subst a | assumption ].
+        remember ((u1 * r + u2 mod r + (v1 * r + v2 mod r)) / rr) as a eqn:Ha.
+        symmetry in Ha.
+        destruct a; [ exfalso | destruct a; [ reflexivity | exfalso ] ].
+         rewrite Hu12, Hv12 in Hurr.
+         rename Ha into Hmrr; move Hurr before Hmrr.
+bbb.
+         rewrite Hrr, Hr in Ha.
+         rewrite Nat.div_small_iff in Ha; [ idtac | apply sqr_radix_neq_0 ].
+         rewrite <- Hr, <- Hrr in Ha.
 bbb.
 
 Set Printing Depth 14. Show.
