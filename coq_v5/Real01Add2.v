@@ -379,13 +379,25 @@ bbb.
 Set Printing Depth 14. Show.
 Unset Printing Notations. Show.
 
-u1 mod r * r + u2 mod r + (v1 mod r * r + v2 mod r)
-  ≤ (r-1)r+(r-1)+ " = (r-1)(r+1) + " = 2r²-2
-(u1 mod r * r + u2 mod r + (v1 mod r * r + v2 mod r))/rr
+(u1 mod r * r + u2 mod r) + (v1 mod r * r + v2 mod r)
+  ≤ (r-1)r+(r-1)+ .. = (r-1)(r+1) + .. = 2r²-2
+((u1 mod r * r + u2 mod r) + (v1 mod r * r + v2 mod r))/rr
   ≤ (2r²-2)/r² = 2 - 2/r²
 
-(u1 mod r * r + u2 mod r + (v1 mod r * r + v2 mod r))/rr
+((u1 mod r * r + u2 mod r) + (v1 mod r * r + v2 mod r))/rr
   = 0 ou 1
+
+u12 < rr
+ u1 r + u2 < r²
+ donc u1 < r
+ donc u1 mod r = u1
+v12 < rr
+ v1 r + v2 < r²
+ donc v1 < r
+ donc v1 mod r = v1
+
+(u1 mod r * r + u2 mod r) + (v1 mod r * r + v2 mod r)
+= (u1 + u2 mod r) + (v1 + v2 mod r)
 
 u12 ≤ 2rr-2
 v12 ≤ 2rr-2
