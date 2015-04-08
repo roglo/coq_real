@@ -353,11 +353,14 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
           assumption.
 
      do 2 rewrite <- Nat.add_assoc.
-bbb.
+(*
      rewrite Nat.add_mod_idemp_l; [ idtac | subst; apply Digit.radix_neq_0 ].
+*)
      do 2 rewrite Nat.add_assoc.
      symmetry; rewrite Nat.add_shuffle0.
+(*
      rewrite Nat.add_mod_idemp_r; [ idtac | subst; apply Digit.radix_neq_0 ].
+*)
      rewrite Nat.add_shuffle0; symmetry.
      apply Nat.nlt_ge in H5.
      destruct (lt_dec u12 rr) as [H6 | H6].
@@ -396,6 +399,15 @@ bbb.
         rewrite Nat.mod_small in Ha; [ subst a | assumption ].
         remember ((u1 * r + u2 mod r + (v1 * r + v2 mod r)) / rr) as a eqn:Ha.
         symmetry in Ha.
+        unfold digit_eq, n2d; simpl.
+        do 2 rewrite <- Nat.add_assoc.
+        rewrite Hr; symmetry.
+        rewrite Nat.add_mod_idemp_l; [ idtac | apply Digit.radix_neq_0 ].
+        rewrite Nat.add_comm, <- Nat.add_assoc.
+        rewrite Nat.add_mod_idemp_l; [ idtac | apply Digit.radix_neq_0 ].
+        rewrite Nat.add_assoc.
+        rewrite Nat.add_comm; symmetry.
+        do 2 rewrite Nat.add_assoc.
         destruct a; [ (*exfalso*) | destruct a; [ reflexivity | exfalso ] ].
 (*
          rewrite Hrr, Hr in Ha.
