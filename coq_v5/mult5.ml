@@ -2,6 +2,8 @@
 
 open Printf.
 
+type digit = { dig : int };
+
 value list_of_seq u =
   list_rec [] where rec list_rec l n =
     if n ≤ 0 then l
@@ -12,10 +14,10 @@ value nn_add u v i = u i + v i;
 
 value radix = ref 10;
 
-value d2n d = d mod radix.val;
-value n2d n = n;
+value d2n d = d.dig mod radix.val;
+value n2d n = {dig = n};
 
-type real01 = { rm : int → int };
+type real01 = { rm : int → digit };
 
 value list_of_r x n =
   let l = list_of_seq x.rm n in
@@ -51,6 +53,7 @@ value rec int_pow a b =
     else r
 ;
 
+(*
 value i_add_algo x y i = x.rm i + y.rm i;
 
 value i_mul_algo x y i =
@@ -58,6 +61,7 @@ value i_mul_algo x y i =
 ;
 
 value q_floor p q = p / q;
+*)
 
 value logn n a =
   loop a a - 1 where rec loop m a =
@@ -70,6 +74,7 @@ value logn n a =
     end
 ;
 
+(*
 value z_of_u b n u i =
   (q_floor
     (summation 0 n (fun k → u (i + k) * int_pow b (n - k))) (int_pow b n))
@@ -80,6 +85,7 @@ value i_add x y =
   let u = i_add_algo x y in
   {rm = z_of_u 2 radix.val u}
 ;
+*)
 
 value i2nn x i = d2n (x.rm i);
 value nn2i n u =
