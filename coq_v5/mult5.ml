@@ -89,10 +89,10 @@ value i_add x y =
 
 value i2nn x i = d2n (x.rm i);
 value nn2i n u =
-  let b = radix.val in
+  let r = radix.val in
   {rm i =
-     let s = summation 0 n (fun k → u (i + k) * int_pow b (n - k)) in
-     n2d (s / int_pow b n)}
+     let s = summation 0 n (fun k → u (i + k) * int_pow r (n - k)) in
+     n2d (s / int_pow r n)}
 ;
 
 value i_add2 x y = nn2i 2 (nn_add (i2nn x) (i2nn y));

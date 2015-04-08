@@ -85,10 +85,10 @@ Fixpoint int_pow a b :=
 
 Definition I2NN x i := d2n (x.[i]).
 Definition NN2I n u :=
-  let b := radix in
+  let r := radix in
   {| rm i :=
-       let s := Σ (k = 0, n), (u (i + k) * int_pow b (n - k)) in
-       n2d (s / int_pow b n) |}.
+       let s := Σ (k = 0, n), (u (i + k) * int_pow r (n - k)) in
+       n2d (s / int_pow r n) |}.
 Arguments NN2I n%nat u%NN.
 
 Definition I_add2 x y := NN2I 2 (I2NN x + I2NN y).
