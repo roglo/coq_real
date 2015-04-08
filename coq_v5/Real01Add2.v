@@ -258,6 +258,10 @@ Proof. intros; apply NN2I_I2NN. Qed.
 Theorem fold_I_add2 : ∀ x y, NN2I 2 (I2NN x + I2NN y) = I_add2 x y.
 Proof. reflexivity. Qed.
 
+Theorem Nat_add_shuffle3 : ∀ a b c d,
+  a + b + c + d = a + c + (b + d).
+Proof. intros; omega. Qed.
+
 Theorem NN2I_add2_inj : ∀ u v, (NN2I 2 (u + v) == NN2I 2 u + NN2I 2 v)%I.
 Proof.
 intros u v i.
@@ -301,8 +305,7 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
     rewrite Nat.add_0_r.
     clear u3 u4 v3 v4 Hu3 Hu4 Hv3 Hv4 H1 H2 H3 H4.
     do 2 rewrite Nat.mul_add_distr_r.
-    assert (∀ a b c d, a + b + c + d = a + c + (b + d)) by (intros; omega).
-    do 2 rewrite H; clear H.
+    do 2 rewrite Nat_add_shuffle3.
     remember (u1 * r + u2) as u12 eqn:Hu12 .
     remember (v1 * r + v2) as v12 eqn:Hv12 .
     destruct (lt_dec (u12 + v12) rr) as [H5| H5].
@@ -393,12 +396,17 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
         remember ((u1 * r + u2 mod r + (v1 * r + v2 mod r)) / rr) as a eqn:Ha.
         symmetry in Ha.
         destruct a; [ exfalso | destruct a; [ reflexivity | exfalso ] ].
-         rewrite Hu12, Hv12 in Hurr.
-         rename Ha into Hmrr; move Hurr before Hmrr.
-bbb.
+(*
          rewrite Hrr, Hr in Ha.
          rewrite Nat.div_small_iff in Ha; [ idtac | apply sqr_radix_neq_0 ].
          rewrite <- Hr, <- Hrr in Ha.
+*)
+         rewrite Hu12, Hv12 in Hurr.
+         rename Ha into Hmrr; move Hurr before Hmrr.
+         rewrite Hu12 in H6; rewrite Hv12 in H7.
+bbb.
+         rewrite <- Nat_add_shuffle3 in Hurr, Hmrr.
+         rewrite <- Nat.mul_add_distr_r in Hurr, Hmrr.
 bbb.
 
 Set Printing Depth 14. Show.
