@@ -91,13 +91,6 @@ Definition NN2I n u :=
        n2d (s / int_pow b n mod b) |}.
 Arguments NN2I n%nat u%NN.
 
-(*
-Definition I_add_algo x y := (I2NN x + I2NN y)%NN.
-Arguments I_add_algo x%I y%I i%nat.
-
-Definition I_add2 x y := NN2I 2 (I_add_algo x y).
-Arguments I_add2 x%I y%I.
-*)
 Definition I_add2 x y := NN2I 2 (I2NN x + I2NN y).
 Arguments I_add2 x%I y%I.
 
