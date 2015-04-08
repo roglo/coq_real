@@ -826,9 +826,12 @@ rewrite Nat.mod_mod in H; [ idtac | apply Digit.radix_neq_0 ].
 assumption.
 Qed.
 
-Theorem radix_radix_neq_0 : radix * radix ≠ 0.
+Theorem sqr_radix_neq_0 : radix * radix ≠ 0.
 Proof.
 intros H.
 apply Nat.eq_mul_0 in H.
 destruct H; revert H; apply Digit.radix_neq_0.
 Qed.
+
+Theorem sqr_radix_gt_0 : radix * radix > 0.
+Proof. apply neq_0_lt, Nat.neq_sym, sqr_radix_neq_0. Qed.
