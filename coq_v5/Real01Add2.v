@@ -283,6 +283,23 @@ remember (u (i + 1)) as u1 eqn:Hu1 .
 do 10 rewrite <- Nat.add_assoc.
 do 8 (rewrite Nat.div_add_l; [ idtac | subst r rr; apply sqr_radix_neq_0 ]).
 do 2 rewrite Nat.add_assoc.
+unfold digit_eq, n2d; rewrite <- Hr; simpl.
+pose proof Digit.radix_neq_0 as Hr0; rewrite <- Hr in Hr0.
+symmetry; rewrite <- Nat.add_assoc.
+rewrite Nat.add_mod_idemp_l; [ idtac | assumption ].
+do 4 rewrite <- Nat.add_assoc.
+rewrite Nat.add_mod; [ symmetry | assumption ].
+rewrite Nat.add_mod; [ symmetry | assumption ].
+f_equal; f_equal.
+rewrite Nat.add_comm.
+rewrite <- Nat.add_assoc.
+rewrite Nat.add_mod_idemp_l; [ idtac | assumption ].
+rewrite <- Nat.add_assoc.
+rewrite Nat.add_mod; [ symmetry | assumption ].
+rewrite Nat.add_mod; [ symmetry | assumption ].
+f_equal; f_equal.
+rewrite Nat.add_comm.
+do 2 rewrite Nat.add_assoc; symmetry.
 destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
  remember ((u3 * r + u4) / rr) as a eqn:Ha .
  rewrite Nat.div_small in Ha; [ subst a | assumption ].
@@ -322,27 +339,27 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
     destruct (lt_dec (u12 + v12) rr) as [H5| H5].
      remember ((u12 + v12) / rr) as a eqn:Ha .
      rewrite Nat.div_small in Ha; [ subst a | assumption ].
-     rewrite Nat.add_0_r.
+     rewrite Nat.mod_0_l; [ idtac | assumption ].
      remember H5 as H; clear HeqH.
      apply lt_le_trans with (n := u12) in H; [ idtac | omega ].
      rename H into H6.
-     rewrite Nat.div_small; [ idtac | assumption ].
+     remember (u12 / rr) as a eqn:Ha .
+     rewrite Nat.div_small in Ha; [ subst a | assumption ].
      rewrite Nat.add_0_r.
      remember H5 as H; clear HeqH; rewrite Nat.add_comm in H.
      apply lt_le_trans with (n := v12) in H; [ idtac | omega ].
      rename H into H7.
-     rewrite Nat.div_small; [ idtac | assumption ].
+     remember (v12 / rr) as a eqn:Ha .
+     rewrite Nat.div_small in Ha; [ subst a | assumption ].
      rewrite Nat.add_0_r.
      rewrite Nat.div_small.
-      rewrite Nat.add_0_r; subst r.
-      unfold digit_eq, n2d; simpl.
-      rewrite Nat.add_mod; [ reflexivity | apply Digit.radix_neq_0 ].
+      rewrite Nat.mod_0_l; [ reflexivity | assumption ].
 
       rewrite <- Nat.add_assoc.
       eapply le_lt_trans.
        apply -> Nat.add_le_mono_r.
        apply Nat.mul_le_mono_r; subst r.
-       apply Nat.mod_le, Digit.radix_neq_0.
+       apply Nat.mod_le; assumption.
 
        rewrite Nat.add_comm, <- Nat.add_assoc.
        rewrite Nat.add_comm.
@@ -350,7 +367,7 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
        eapply le_lt_trans.
         apply -> Nat.add_le_mono_r.
         apply Nat.mul_le_mono_r; subst r.
-        apply Nat.mod_le, Digit.radix_neq_0.
+        apply Nat.mod_le; assumption.
 
         rewrite Nat.add_comm, <- Nat.add_assoc.
         rewrite Nat.add_comm, <- Nat.add_assoc, <- Hu12, <- Hv12.
@@ -396,19 +413,14 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
         remember (v1 mod r) as a eqn:Ha .
         rewrite Nat.mod_small in Ha; [ subst a | assumption ].
         rewrite <- Hu12, <- Hv12.
-        rewrite Hurr.
-        unfold digit_eq, n2d; simpl.
-        do 2 rewrite <- Nat.add_assoc.
-        rewrite Hr; symmetry.
-        rewrite Nat.add_mod_idemp_l; [ idtac | apply Digit.radix_neq_0 ].
-        rewrite Nat.add_comm, <- Nat.add_assoc.
-        rewrite Nat.add_mod_idemp_l; [ idtac | apply Digit.radix_neq_0 ].
-        rewrite Nat.add_assoc.
-        rewrite Nat.add_comm; symmetry.
-        reflexivity.
+        rewrite Hurr; reflexivity.
 
        apply Nat.nlt_ge in H7.
 bbb.
+
+v12 = v1 * r + v2 ≤ 2(r-1)r+2(r-1)=2r²-2
+u12+v12 ≤ 4r²-4
+(u12+v12)/rr = 0, 1, 2 ou 3
 
 Set Printing Depth 14. Show.
 Unset Printing Notations. Show.
