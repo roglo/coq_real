@@ -285,6 +285,7 @@ do 8 (rewrite Nat.div_add_l; [ idtac | subst r rr; apply sqr_radix_neq_0 ]).
 do 2 rewrite Nat.add_assoc.
 unfold digit_eq, n2d; rewrite <- Hr; simpl.
 pose proof Digit.radix_neq_0 as Hr0; rewrite <- Hr in Hr0.
+pose proof Digit.radix_gt_0 as Hrp; rewrite <- Hr in Hrp.
 symmetry; rewrite <- Nat.add_assoc.
 rewrite Nat.add_mod_idemp_l; [ idtac | assumption ].
 do 4 rewrite <- Nat.add_assoc.
@@ -311,10 +312,9 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
   destruct (lt_dec (u2 * r + u3) rr) as [H3| H3].
    remember H3 as H; clear HeqH.
    rewrite Hrr in H.
-   apply le_lt_trans with (n := u2 * r) in H; [ idtac | omega ].
-   rewrite Hr in H.
-   apply Nat.mul_lt_mono_pos_r in H; [ idtac | apply Digit.radix_gt_0 ].
-   rewrite <- Hr in H; rename H into Hu2r.
+   eapply lt_le_trans in H; [ idtac | apply le_n_S, Nat.le_add_r ].
+   apply Nat.mul_lt_mono_pos_r in H; [ idtac | assumption ].
+   rename H into Hu2r.
    remember (u2 mod r) as a eqn:Ha .
    rewrite Nat.mod_small in Ha; [ subst a | assumption ].
    remember ((u2 * r + u3) / rr) as a eqn:Ha .
@@ -323,10 +323,9 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
    destruct (lt_dec (v2 * r + v3) rr) as [H4| H4].
     remember H4 as H; clear HeqH.
     rewrite Hrr in H.
-    apply le_lt_trans with (n := v2 * r) in H; [ idtac | omega ].
-    rewrite Hr in H.
-    apply Nat.mul_lt_mono_pos_r in H; [ idtac | apply Digit.radix_gt_0 ].
-    rewrite <- Hr in H; rename H into Hv2r.
+    eapply lt_le_trans in H; [ idtac | apply le_n_S, Nat.le_add_r ].
+    apply Nat.mul_lt_mono_pos_r in H; [ idtac | assumption ].
+    rename H into Hv2r.
     remember (v2 mod r) as a eqn:Ha .
     rewrite Nat.mod_small in Ha; [ subst a | assumption ].
     remember ((v2 * r + v3) / rr) as a eqn:Ha .
@@ -341,13 +340,13 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
      rewrite Nat.div_small in Ha; [ subst a | assumption ].
      rewrite Nat.mod_0_l; [ idtac | assumption ].
      remember H5 as H; clear HeqH.
-     apply lt_le_trans with (n := u12) in H; [ idtac | omega ].
+     eapply lt_le_trans in H; [ idtac | apply le_n_S, Nat.le_add_r ].
      rename H into H6.
      remember (u12 / rr) as a eqn:Ha .
      rewrite Nat.div_small in Ha; [ subst a | assumption ].
      rewrite Nat.add_0_r.
      remember H5 as H; clear HeqH; rewrite Nat.add_comm in H.
-     apply lt_le_trans with (n := v12) in H; [ idtac | omega ].
+     eapply lt_le_trans in H; [ idtac | apply le_n_S, Nat.le_add_r ].
      rename H into H7.
      remember (v12 / rr) as a eqn:Ha .
      rewrite Nat.div_small in Ha; [ subst a | assumption ].
@@ -398,24 +397,30 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
         rewrite Hurr.
         remember H6 as H; clear HeqH.
         rewrite Hu12, Hrr in H.
-        apply le_lt_trans with (n := u1 * r) in H; [ idtac | omega ].
-        rewrite Hr in H.
-        apply Nat.mul_lt_mono_pos_r in H; [ idtac | apply Digit.radix_gt_0 ].
-        rewrite <- Hr in H; rename H into Hu1r.
+        eapply le_lt_trans in H; [ idtac | apply Nat.le_add_r ].
+        apply Nat.mul_lt_mono_pos_r in H; [ idtac | assumption ].
+        rename H into Hu1r.
         remember (u1 mod r) as a eqn:Ha .
         rewrite Nat.mod_small in Ha; [ subst a | assumption ].
         remember H7 as H; clear HeqH.
         rewrite Hv12, Hrr in H.
-        apply le_lt_trans with (n := v1 * r) in H; [ idtac | omega ].
-        rewrite Hr in H.
-        apply Nat.mul_lt_mono_pos_r in H; [ idtac | apply Digit.radix_gt_0 ].
-        rewrite <- Hr in H; rename H into Hv1r.
+        eapply le_lt_trans in H; [ idtac | apply Nat.le_add_r ].
+        apply Nat.mul_lt_mono_pos_r in H; [ idtac | assumption ].
+        rename H into Hv1r.
         remember (v1 mod r) as a eqn:Ha .
         rewrite Nat.mod_small in Ha; [ subst a | assumption ].
         rewrite <- Hu12, <- Hv12.
         rewrite Hurr; reflexivity.
 
        apply Nat.nlt_ge in H7.
+       assert (u1 < r) as Hu1r.
+        apply Nat.mul_lt_mono_pos_r with (p := r); [ assumption | idtac ].
+        apply Nat.add_lt_mono_r with (p := u2); rewrite <- Hu12, <- Hrr.
+        eapply Nat.lt_le_trans; [ eassumption | apply Nat.le_add_r ].
+
+        remember (u1 mod r) as a eqn:Ha.
+        rewrite Nat.mod_small in Ha; [ subst a | assumption ].
+        rewrite <- Hu12.
 bbb.
 
 v12 = v1 * r + v2 ≤ 2(r-1)r+2(r-1)=2r²-2
