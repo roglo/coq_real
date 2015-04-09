@@ -432,7 +432,7 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
          replace r with (1 * r) by apply Nat.mul_1_l; rewrite Hrr.
          apply Nat.mul_le_mono_pos_r; assumption.
 
-         simpl.
+         rewrite Nat.add_assoc.
 bbb.
 
 v12 = v1 * r + v2 ≤ 2(r-1)r+2(r-1)=2r²-2
