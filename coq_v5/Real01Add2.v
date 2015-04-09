@@ -421,6 +421,18 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
         remember (u1 mod r) as a eqn:Ha.
         rewrite Nat.mod_small in Ha; [ subst a | assumption ].
         rewrite <- Hu12.
+        assert (v1 ≥ r) as Hv1r.
+         apply Nat.nlt_ge; intros H.
+         apply Nat.lt_le_pred in H; rewrite <- Nat.sub_1_r in H.
+         eapply Nat.mul_le_mono_pos_r in H; [ idtac | eassumption ].
+         eapply Nat.add_le_lt_mono in H; [ idtac | apply Hv2r ].
+         rewrite Nat.mul_sub_distr_r, Nat.mul_1_l, <- Hv12, <- Hrr in H.
+         apply Nat.nlt_ge in H7.
+         rewrite Nat.sub_add in H; [ contradiction | idtac ].
+         replace r with (1 * r) by apply Nat.mul_1_l; rewrite Hrr.
+         apply Nat.mul_le_mono_pos_r; assumption.
+
+         simpl.
 bbb.
 
 v12 = v1 * r + v2 ≤ 2(r-1)r+2(r-1)=2r²-2
