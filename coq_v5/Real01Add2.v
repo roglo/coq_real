@@ -302,7 +302,9 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
     remember ((v2 * r + v3) / rr) as a eqn:Ha .
     rewrite Nat.div_small in Ha; [ subst a | assumption ].
     rewrite Nat.add_0_r.
+(*
     clear u3 u4 v3 v4 Hu3 Hu4 Hv3 Hv4 H1 H2 H3 H4.
+*)
     do 2 rewrite Nat.mul_add_distr_r.
     do 2 rewrite Nat_add_shuffle3.
     remember (u1 * r + u2) as u12 eqn:Hu12 .
@@ -352,6 +354,10 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
           rewrite Nat.add_comm, <- Nat.add_assoc, <- Hu12, <- Hv12.
           assumption.
 
+     apply Nat.nlt_ge in H5.
+bbb.
+(* perhaps incompatibility with H3-H4 *)
+
      do 2 rewrite <- Nat.add_assoc.
 (*
      rewrite Nat.add_mod_idemp_l; [ idtac | subst; apply Digit.radix_neq_0 ].
@@ -362,7 +368,6 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
      rewrite Nat.add_mod_idemp_r; [ idtac | subst; apply Digit.radix_neq_0 ].
 *)
      rewrite Nat.add_shuffle0; symmetry.
-     apply Nat.nlt_ge in H5.
      destruct (lt_dec u12 rr) as [H6 | H6].
       remember (u12 / rr) as a eqn:Ha.
       rewrite Nat.div_small in Ha; [ subst a | assumption ].
@@ -418,6 +423,50 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
          rename Ha into Hmrr; move Hurr before Hmrr.
          rewrite Hu12 in H6; rewrite Hv12 in H7.
 bbb.
+Definition g n u :=
+  let r := 2 in
+  {| rm i :=
+       let s := Σ (k = 0, n), (u (i + k) * int_pow r (n - k)) in
+       n2d (s / int_pow r n) |}.
+Arguments g n%nat u%NN.
+Definition u i := if eq_nat_dec i 1 then 1 else 0.
+Definition v i := if eq_nat_dec i 2 then 2 else 0.
+Definition r := 2.
+Definition rr := 4.
+Eval compute in (u 1 * r + u 2 + (v 1 * r + v 2)) / rr.
+Eval compute in ((u 1 * r + u 2 mod r + (v 1 * r + v 2 mod r)) / rr).
+Eval compute in (g 2 (u + v)).[0]. (* 1 *)
+Eval compute in (g 2 (u + v)).[1]. (* 2 *)
+Eval compute in (g 2 (u + v)).[2]. (* 2 *)
+Eval compute in (g 2 (u + v)).[3]. (* 0 *)
+Definition dd2n d := dig d mod 2.
+Definition f x i := dd2n (x.[i]).
+Definition add2 x y := g 2 (f x + f y).
+Eval compute in ((add2 (g 2 u) (g 2 v)) .[0]). (* 1 *)
+Eval compute in ((add2 (g 2 u) (g 2 v)) .[1]). (* 2 *)
+Eval compute in ((add2 (g 2 u) (g 2 v)) .[2]). (* 0 *)
+Eval compute in ((add2 (g 2 u) (g 2 v)) .[3]). (* 0 *)
+Definition u12 := u 1 * r + u 2.
+Eval compute in u12. (* 2 *)
+Definition v12 := v 1 * r + v 2.
+Eval compute in v12. (* 2 *)
+Eval compute in (u 1 * r + u 2). (* 2 *)
+Eval compute in (v 1 * r + v 2). (* 2 *)
+Eval compute in (u 1). (* 1 *)
+Eval compute in (v 1). (* 0 *)
+Eval compute in ((u 1 * r + u 2 + (v 1 * r + v 2)) / rr). (* 1 *)
+Eval compute in ((u 1 * r + u 2 mod r + (v 1 * r + v 2 mod r)) / rr). (* 0 *)
+bbb.
+  Hu12 : u12 = u1 * r + u2
+  Hv12 : v12 = v1 * r + v2
+  H5 : rr ≤ u12 + v12
+  H6 : u1 * r + u2 < rr
+  H7 : v1 * r + v2 < rr
+  Hu1r : u1 < r
+  Hv1r : v1 < r
+  Hurr : (u1 * r + u2 + (v1 * r + v2)) / rr = 1
+  Hmrr : (u1 * r + u2 mod r + (v1 * r + v2 mod r)) / rr = 0
+  ============================
          rewrite <- Nat_add_shuffle3 in Hurr, Hmrr.
          rewrite <- Nat.mul_add_distr_r in Hurr, Hmrr.
 bbb.
