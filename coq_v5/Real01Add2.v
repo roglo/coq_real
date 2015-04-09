@@ -270,11 +270,8 @@ do 9 rewrite Nat.mul_1_r.
 do 12 rewrite Nat.add_0_r.
 do 4 rewrite <- Nat.add_assoc; simpl.
 do 10 rewrite Nat.add_assoc.
-(*
-do 1 (rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ]).
-*)
-remember (radix * radix) as rr eqn:Hrr.
-remember radix as r eqn:Hr.
+remember (radix * radix) as rr eqn:Hrr .
+remember radix as r eqn:Hr .
 remember (v (i + 4)) as v4 eqn:Hv4 .
 remember (v (i + 3)) as v3 eqn:Hv3 .
 remember (v (i + 2)) as v2 eqn:Hv2 .
@@ -295,16 +292,29 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
   rewrite Nat.div_small in Ha; [ subst a | assumption ].
   rewrite Nat.add_0_r.
   destruct (lt_dec (u2 * r + u3) rr) as [H3| H3].
+   remember H3 as H; clear HeqH.
+   rewrite Hrr in H.
+   apply le_lt_trans with (n := u2 * r) in H; [ idtac | omega ].
+   rewrite Hr in H.
+   apply Nat.mul_lt_mono_pos_r in H; [ idtac | apply Digit.radix_gt_0 ].
+   rewrite <- Hr in H; rename H into Hu2r.
+   remember (u2 mod r) as a eqn:Ha .
+   rewrite Nat.mod_small in Ha; [ subst a | assumption ].
    remember ((u2 * r + u3) / rr) as a eqn:Ha .
    rewrite Nat.div_small in Ha; [ subst a | assumption ].
    rewrite Nat.add_0_r.
    destruct (lt_dec (v2 * r + v3) rr) as [H4| H4].
+    remember H4 as H; clear HeqH.
+    rewrite Hrr in H.
+    apply le_lt_trans with (n := v2 * r) in H; [ idtac | omega ].
+    rewrite Hr in H.
+    apply Nat.mul_lt_mono_pos_r in H; [ idtac | apply Digit.radix_gt_0 ].
+    rewrite <- Hr in H; rename H into Hv2r.
+    remember (v2 mod r) as a eqn:Ha .
+    rewrite Nat.mod_small in Ha; [ subst a | assumption ].
     remember ((v2 * r + v3) / rr) as a eqn:Ha .
     rewrite Nat.div_small in Ha; [ subst a | assumption ].
     rewrite Nat.add_0_r.
-(*
-    clear u3 u4 v3 v4 Hu3 Hu4 Hv3 Hv4 H1 H2 H3 H4.
-*)
     do 2 rewrite Nat.mul_add_distr_r.
     do 2 rewrite Nat_add_shuffle3.
     remember (u1 * r + u2) as u12 eqn:Hu12 .
@@ -335,45 +345,28 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
        apply Nat.mod_le, Digit.radix_neq_0.
 
        rewrite Nat.add_comm, <- Nat.add_assoc.
+       rewrite Nat.add_comm.
+       do 2 rewrite <- Nat.add_assoc.
        eapply le_lt_trans.
         apply -> Nat.add_le_mono_r.
-        subst r; apply Nat.mod_le, Digit.radix_neq_0.
+        apply Nat.mul_le_mono_r; subst r.
+        apply Nat.mod_le, Digit.radix_neq_0.
 
-        rewrite Nat.add_comm.
-        do 2 rewrite <- Nat.add_assoc.
-        eapply le_lt_trans.
-         apply -> Nat.add_le_mono_r.
-         apply Nat.mul_le_mono_r; subst r.
-         apply Nat.mod_le, Digit.radix_neq_0.
-
-         rewrite Nat.add_comm, <- Nat.add_assoc.
-         eapply le_lt_trans.
-          apply -> Nat.add_le_mono_r.
-          subst r; apply Nat.mod_le, Digit.radix_neq_0.
-
-          rewrite Nat.add_comm, <- Nat.add_assoc, <- Hu12, <- Hv12.
-          assumption.
+        rewrite Nat.add_comm, <- Nat.add_assoc.
+        rewrite Nat.add_comm, <- Nat.add_assoc, <- Hu12, <- Hv12.
+        assumption.
 
      apply Nat.nlt_ge in H5.
-bbb.
-(* perhaps incompatibility with H3-H4 *)
-
      do 2 rewrite <- Nat.add_assoc.
-(*
-     rewrite Nat.add_mod_idemp_l; [ idtac | subst; apply Digit.radix_neq_0 ].
-*)
      do 2 rewrite Nat.add_assoc.
      symmetry; rewrite Nat.add_shuffle0.
-(*
-     rewrite Nat.add_mod_idemp_r; [ idtac | subst; apply Digit.radix_neq_0 ].
-*)
      rewrite Nat.add_shuffle0; symmetry.
-     destruct (lt_dec u12 rr) as [H6 | H6].
-      remember (u12 / rr) as a eqn:Ha.
+     destruct (lt_dec u12 rr) as [H6| H6].
+      remember (u12 / rr) as a eqn:Ha .
       rewrite Nat.div_small in Ha; [ subst a | assumption ].
       rewrite Nat.add_0_r.
-      destruct (lt_dec v12 rr) as [H7 | H7].
-       remember (v12 / rr) as a eqn:Ha.
+      destruct (lt_dec v12 rr) as [H7| H7].
+       remember (v12 / rr) as a eqn:Ha .
        rewrite Nat.div_small in Ha; [ subst a | assumption ].
        rewrite Nat.add_0_r.
        assert ((u12 + v12) / rr = 1) as Hurr.
@@ -392,7 +385,7 @@ bbb.
         rewrite Hr in H.
         apply Nat.mul_lt_mono_pos_r in H; [ idtac | apply Digit.radix_gt_0 ].
         rewrite <- Hr in H; rename H into Hu1r.
-        remember (u1 mod r) as a eqn:Ha.
+        remember (u1 mod r) as a eqn:Ha .
         rewrite Nat.mod_small in Ha; [ subst a | assumption ].
         remember H7 as H; clear HeqH.
         rewrite Hv12, Hrr in H.
@@ -400,10 +393,10 @@ bbb.
         rewrite Hr in H.
         apply Nat.mul_lt_mono_pos_r in H; [ idtac | apply Digit.radix_gt_0 ].
         rewrite <- Hr in H; rename H into Hv1r.
-        remember (v1 mod r) as a eqn:Ha.
+        remember (v1 mod r) as a eqn:Ha .
         rewrite Nat.mod_small in Ha; [ subst a | assumption ].
-        remember ((u1 * r + u2 mod r + (v1 * r + v2 mod r)) / rr) as a eqn:Ha.
-        symmetry in Ha.
+        rewrite <- Hu12, <- Hv12.
+        rewrite Hurr.
         unfold digit_eq, n2d; simpl.
         do 2 rewrite <- Nat.add_assoc.
         rewrite Hr; symmetry.
@@ -412,101 +405,13 @@ bbb.
         rewrite Nat.add_mod_idemp_l; [ idtac | apply Digit.radix_neq_0 ].
         rewrite Nat.add_assoc.
         rewrite Nat.add_comm; symmetry.
-        do 2 rewrite Nat.add_assoc.
-        destruct a; [ (*exfalso*) | destruct a; [ reflexivity | exfalso ] ].
-(*
-         rewrite Hrr, Hr in Ha.
-         rewrite Nat.div_small_iff in Ha; [ idtac | apply sqr_radix_neq_0 ].
-         rewrite <- Hr, <- Hrr in Ha.
-*)
-         rewrite Hu12, Hv12 in Hurr.
-         rename Ha into Hmrr; move Hurr before Hmrr.
-         rewrite Hu12 in H6; rewrite Hv12 in H7.
-bbb.
-Definition g n u :=
-  let r := 2 in
-  {| rm i :=
-       let s := Σ (k = 0, n), (u (i + k) * int_pow r (n - k)) in
-       n2d (s / int_pow r n) |}.
-Arguments g n%nat u%NN.
-Definition u i := if eq_nat_dec i 1 then 1 else 0.
-Definition v i := if eq_nat_dec i 2 then 2 else 0.
-Definition r := 2.
-Definition rr := 4.
-Eval compute in (u 1 * r + u 2 + (v 1 * r + v 2)) / rr.
-Eval compute in ((u 1 * r + u 2 mod r + (v 1 * r + v 2 mod r)) / rr).
-Eval compute in (g 2 (u + v)).[0]. (* 1 *)
-Eval compute in (g 2 (u + v)).[1]. (* 2 *)
-Eval compute in (g 2 (u + v)).[2]. (* 2 *)
-Eval compute in (g 2 (u + v)).[3]. (* 0 *)
-Definition dd2n d := dig d mod 2.
-Definition f x i := dd2n (x.[i]).
-Definition add2 x y := g 2 (f x + f y).
-Eval compute in ((add2 (g 2 u) (g 2 v)) .[0]). (* 1 *)
-Eval compute in ((add2 (g 2 u) (g 2 v)) .[1]). (* 2 *)
-Eval compute in ((add2 (g 2 u) (g 2 v)) .[2]). (* 0 *)
-Eval compute in ((add2 (g 2 u) (g 2 v)) .[3]). (* 0 *)
-Definition u12 := u 1 * r + u 2.
-Eval compute in u12. (* 2 *)
-Definition v12 := v 1 * r + v 2.
-Eval compute in v12. (* 2 *)
-Eval compute in (u 1 * r + u 2). (* 2 *)
-Eval compute in (v 1 * r + v 2). (* 2 *)
-Eval compute in (u 1). (* 1 *)
-Eval compute in (v 1). (* 0 *)
-Eval compute in ((u 1 * r + u 2 + (v 1 * r + v 2)) / rr). (* 1 *)
-Eval compute in ((u 1 * r + u 2 mod r + (v 1 * r + v 2 mod r)) / rr). (* 0 *)
-bbb.
-  Hu12 : u12 = u1 * r + u2
-  Hv12 : v12 = v1 * r + v2
-  H5 : rr ≤ u12 + v12
-  H6 : u1 * r + u2 < rr
-  H7 : v1 * r + v2 < rr
-  Hu1r : u1 < r
-  Hv1r : v1 < r
-  Hurr : (u1 * r + u2 + (v1 * r + v2)) / rr = 1
-  Hmrr : (u1 * r + u2 mod r + (v1 * r + v2 mod r)) / rr = 0
-  ============================
-         rewrite <- Nat_add_shuffle3 in Hurr, Hmrr.
-         rewrite <- Nat.mul_add_distr_r in Hurr, Hmrr.
-bbb.
+        reflexivity.
 
-r=2
-u=0.010
-v=0.002
-u1=1 u2=0
-v1=0 v2=2
-u12=2
-v12=2
-(u1 * r + u2 + (v1 * r + v2)) / rr =
-( 1 * 2 +  0 + (0  * 2 +  2)) / 4 = (2 + 2)/4 = 1
-(u1 * r + u2 mod r + (v1 * r + v2 mod r)) / rr =
-( 1 * 1 +  0       + ( 0 * 2 + 0)) / 4 = 0
-u+v=0.012
-NN2I 2 (u + v) = 0.100
-NN2I 2 u = 0.010
-NN2I 2 v = 0.010
-NN2I 2 u + NN2I 2 v = 0.020 → 0.100
+       simpl.
+bbb.
 
 Set Printing Depth 14. Show.
 Unset Printing Notations. Show.
-
-(u1 mod r * r + u2 mod r) + (v1 mod r * r + v2 mod r)
-  ≤ (r-1)r+(r-1)+ .. = (r-1)(r+1) + .. = 2r²-2
-((u1 mod r * r + u2 mod r) + (v1 mod r * r + v2 mod r))/rr
-  ≤ (2r²-2)/r² = 2 - 2/r²
-
-((u1 mod r * r + u2 mod r) + (v1 mod r * r + v2 mod r))/rr
-  = 0 ou 1
-
-(u1 mod r * r + u2 mod r) + (v1 mod r * r + v2 mod r)
-= (u1 * r + u2 mod r) + (v1 * r + v2 mod r)
-
-u12 ≤ 2rr-2
-v12 ≤ 2rr-2
-u12+v12 ≤ 4rr-4
-
-u12 = u1 r + u2 ≤ 2(r-1)r+(r-1) = 2(r-1)(r+1) = 2r²-2
 
 bbb.
 
