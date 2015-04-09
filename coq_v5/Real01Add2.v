@@ -407,7 +407,7 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
         rewrite Nat.add_comm; symmetry.
         reflexivity.
 
-       simpl.
+       apply Nat.nlt_ge in H7.
 bbb.
 
 Set Printing Depth 14. Show.
