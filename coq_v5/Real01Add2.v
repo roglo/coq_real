@@ -438,7 +438,16 @@ bbb.
 v12 = v1 * r + v2 ≤ 2(r-1)r+2(r-1)=2r²-2
 u12+v12 ≤ 4r²-4
 (u12+v12)/rr = 0, 1, 2 ou 3
+v1≥r   v1.r ≥ r²   v12 ≥ r²
 (u12+v12)/rr = 1, 2 ou 3
+
+u = 0.000
+v = 0.020
+u12 = 0
+v12 = 4
+
+(u12 + v12) / rr = 1
+(u12 + v1 mod r * r + v2) / rr + v12 / rr = 1
 
 Set Printing Depth 14. Show.
 Unset Printing Notations. Show.
