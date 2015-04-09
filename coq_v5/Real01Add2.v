@@ -418,7 +418,7 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
         apply Nat.add_lt_mono_r with (p := u2); rewrite <- Hu12, <- Hrr.
         eapply Nat.lt_le_trans; [ eassumption | apply Nat.le_add_r ].
 
-        remember (u1 mod r) as a eqn:Ha.
+        remember (u1 mod r) as a eqn:Ha .
         rewrite Nat.mod_small in Ha; [ subst a | assumption ].
         rewrite <- Hu12.
         assert (v1 ≥ r) as Hv1r.
@@ -433,6 +433,41 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
          apply Nat.mul_le_mono_pos_r; assumption.
 
          rewrite Nat.add_assoc.
+         pose proof (Nat.div_mod v1 r Hr0) as H.
+         assert (v12 / rr = v1 / r) as Hv12rr.
+          rewrite H in Hv12; rewrite Hv12.
+          rewrite Nat.mul_add_distr_r, Nat.mul_shuffle0, <- Hrr.
+          rewrite <- Nat.add_assoc, Nat.mul_comm.
+          rewrite Hrr, Hr.
+          rewrite Nat.div_add_l; [ idtac | apply sqr_radix_neq_0 ].
+          rewrite <- Hr, <- Hrr, Nat.add_comm.
+          rewrite Nat.div_small; [ reflexivity | idtac ].
+          apply Nat.le_lt_trans with (m := (r - 1) * r + (r - 1)).
+           apply Nat.lt_le_pred in Hv2r; rewrite <- Nat.sub_1_r in Hv2r.
+           apply Nat.add_le_mono; [ idtac | assumption ].
+           apply Nat.mul_le_mono_pos_r; [ assumption | idtac ].
+           rewrite Nat.sub_1_r; apply Nat.lt_le_pred.
+           apply Nat.mod_upper_bound; assumption.
+
+           rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+           rewrite Nat.add_sub_assoc; [ idtac | assumption ].
+           rewrite Nat.sub_1_r, Hrr, Hr.
+           pose proof sqr_radix_neq_0 as H8.
+           rewrite Nat.sub_add; [ apply Nat.lt_pred_l; assumption | idtac ].
+           rewrite <- Hr, <- Hrr.
+           replace r with (1 * r) by apply Nat.mul_1_l; rewrite Hrr.
+           apply Nat.mul_le_mono_pos_r; assumption.
+
+          rewrite Nat.add_comm in H.
+          rewrite H in Hv12.
+          rewrite Hv12rr, Hv12, <- Nat.add_assoc.
+          rewrite Nat.mul_add_distr_r, Nat.add_shuffle0.
+          remember (v1 mod r * r) as a.
+          rewrite Nat.mul_shuffle0, Nat.mul_comm, <- Hrr; subst a.
+          rewrite Nat.add_assoc, Hrr, Hr.
+          rewrite Nat.div_add; [ reflexivity | apply sqr_radix_neq_0 ].
+
+      rewrite Nat.nlt_ge in H6.
 bbb.
 
 v12 = v1 * r + v2 ≤ 2(r-1)r+2(r-1)=2r²-2
@@ -440,14 +475,6 @@ u12+v12 ≤ 4r²-4
 (u12+v12)/rr = 0, 1, 2 ou 3
 v1≥r   v1.r ≥ r²   v12 ≥ r²
 (u12+v12)/rr = 1, 2 ou 3
-
-u = 0.000
-v = 0.020
-u12 = 0
-v12 = 4
-
-(u12 + v12) / rr = 1
-(u12 + v1 mod r * r + v2) / rr + v12 / rr = 1
 
 Set Printing Depth 14. Show.
 Unset Printing Notations. Show.
