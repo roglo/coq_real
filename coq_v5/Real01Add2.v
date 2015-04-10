@@ -409,12 +409,15 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
       apply Nat.nlt_ge in H5.
       symmetry; rewrite Nat.add_shuffle0.
       rewrite Nat.add_shuffle0; symmetry.
+      do 3 rewrite Nat.add_assoc.
+      rewrite Nat.add_mod; [ symmetry | assumption ].
+      rewrite Nat.add_mod; [ symmetry | assumption ].
+      f_equal; f_equal.
       destruct (lt_dec u12 rr) as [H6| H6].
        remember (u12 / rr) as a eqn:Ha .
-       rewrite Nat.div_small in Ha; [ subst a; simpl | assumption ].
+       rewrite Nat.div_small in Ha; [ subst a | assumption ].
+       rewrite Nat.add_0_r.
        destruct (lt_dec v12 rr) as [H7| H7].
-        rewrite Nat.div_small in Hv12rr; [ rewrite <- Hv12rr | assumption ].
-        do 2 rewrite Nat.add_0_r.
         remember H6 as H; clear HeqH.
         rewrite Hu12, Hrr in H.
         eapply le_lt_trans in H; [ idtac | apply Nat.le_add_r ].
