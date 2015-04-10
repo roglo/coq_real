@@ -529,8 +529,21 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
       eapply Nat.le_lt_trans; [ apply Nat.le_add_r | apply H2 ].
 
       assert (v2 ≥ r) as Hv2r.
-       apply Nat.mul_le_mono_pos_r with (p := r); [ assumption | idtac ].
-       rewrite <- Hrr.
+       apply Nat.nlt_ge; intros H.
+       apply Nat.lt_le_pred in H; rewrite <- Nat.sub_1_r in H.
+       apply Nat.mul_le_mono_pos_r with (p := r) in H; [ idtac | assumption ].
+       apply Nat.add_le_mono_r with (p := v3) in H.
+       eapply Nat.le_trans in H; [ idtac | eassumption ].
+       rewrite Nat.mul_sub_distr_r, Nat.mul_1_l, <- Hrr in H.
+       apply Nat.add_le_mono_l with (p := r) in H.
+       rewrite Nat.add_assoc in H.
+       rewrite Nat.add_sub_assoc in H.
+        rewrite Nat.add_comm, Nat.add_sub in H.
+        apply Nat.add_le_mono_l, Nat.nlt_ge in H; contradiction.
+
+        replace r with (1 * r) by apply Nat.mul_1_l; rewrite Hrr.
+        apply Nat.mul_le_mono_pos_r; assumption.
+
 bbb.
 
      remember v1 as a eqn:Ha in |-*.
