@@ -515,7 +515,20 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
      rename H into Hu1r.
      remember (u1 mod r) as a eqn:Ha.
      rewrite Nat.mod_small in Ha; [ subst a | assumption ].
+     rewrite Nat.mul_add_distr_r, Nat_add_shuffle3, <- Hu12.
+     rewrite Nat.add_assoc.
+     remember (v1 + (v2 * r + v3) / rr) as a eqn:Ha.
+     rewrite Nat.add_comm in Ha.
+     rewrite <- Nat.div_add in Ha; [ idtac | assumption ].
+     rewrite Nat.add_comm, Nat.add_assoc in Ha.
+     rewrite Hrr, Nat.mul_assoc, <- Nat.mul_add_distr_r in Ha.
+     rewrite <- Hv12, <- Hrr in Ha; subst a.
 bbb.
+
+     remember v1 as a eqn:Ha in |-*.
+     rewrite <- Nat.div_mul with (b := rr) in Ha; subst a.
+bbb.
+   0 = ((u12 + ((v1 + (v2 * r + v3) / rr) mod r * r + v2 mod r)) / rr) mod r
 
 Set Printing Depth 14. Show.
 Unset Printing Notations. Show.
