@@ -491,6 +491,8 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
        rewrite Nat.div_add; [ reflexivity | assumption ].
 
     apply Nat.nlt_ge in H4.
+    rewrite Nat.mul_add_distr_r.
+    rewrite Nat_add_shuffle3, <- Hu12, <- Hv12.
 bbb.
 
 rr ≤ u1 r + u2 ≤ (r-1)r +(r-1) = r²-1
