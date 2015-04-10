@@ -493,9 +493,29 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
     apply Nat.nlt_ge in H4.
     rewrite Nat.mul_add_distr_r.
     rewrite Nat_add_shuffle3, <- Hu12, <- Hv12.
+    destruct (lt_dec (u12 + v12) rr) as [H5| H5].
+     remember ((u12 + v12) / rr) as a eqn:Ha .
+     rewrite Nat.div_small in Ha; [ subst a | assumption ].
+     rewrite Nat.mod_0_l; [ idtac | assumption ].
+     remember H5 as H; clear HeqH.
+     eapply lt_le_trans in H; [ idtac | apply le_n_S, Nat.le_add_r ].
+     rename H into H6.
+     remember (u12 / rr) as a eqn:Ha .
+     rewrite Nat.div_small in Ha; [ subst a | assumption ].
+     rewrite Nat.add_0_r.
+     remember H5 as H; clear HeqH; rewrite Nat.add_comm in H.
+     eapply lt_le_trans in H; [ idtac | apply le_n_S, Nat.le_add_r ].
+     remember (v12 / rr) as a eqn:Ha.
+     rewrite Nat.div_small in Ha; [ subst a | assumption ].
+     rewrite Nat.add_0_r.
+     rename H into H7.
+     symmetry in Hu12rr.
+     remember Hu12rr as H; clear HeqH.
+     apply Nat.div_small_iff in H; [ idtac | assumption ].
+     rename H into Hu1r.
+     remember (u1 mod r) as a eqn:Ha.
+     rewrite Nat.mod_small in Ha; [ subst a | assumption ].
 bbb.
-
-rr ≤ u1 r + u2 ≤ (r-1)r +(r-1) = r²-1
 
 Set Printing Depth 14. Show.
 Unset Printing Notations. Show.
