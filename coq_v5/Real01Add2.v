@@ -325,6 +325,7 @@ do 2 rewrite Nat.add_assoc.
 unfold digit_eq, n2d; rewrite <- Hr; simpl.
 pose proof Digit.radix_neq_0 as Hr0; rewrite <- Hr in Hr0.
 pose proof Digit.radix_gt_0 as Hrp; rewrite <- Hr in Hrp.
+assert (rr ≠ 0) as Hrr0 by (subst rr; apply Nat.neq_mul_0; split; assumption).
 symmetry; rewrite <- Nat.add_assoc.
 rewrite Nat.add_mod_idemp_l; [ idtac | assumption ].
 do 4 rewrite <- Nat.add_assoc.
@@ -476,7 +477,20 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
         apply Nat.mul_le_mono_pos_r; assumption.
 
        apply Nat.nlt_ge in H7.
-       rewrite Hu12rr.
+       rewrite Hu12rr, Hu12.
+       pose proof (Nat.div_mod u1 r Hr0) as Hu1m.
+       remember (u1 * r) as a eqn:Ha in |-*.
+       rewrite Hu1m, Nat.add_comm, Nat.mul_add_distr_r in Ha.
+       rewrite Nat.mul_shuffle0, <- Hrr in Ha; subst a.
+       do 5 rewrite <- Nat.add_assoc; rewrite Nat.add_comm.
+       do 3 rewrite <- Nat.add_assoc; rewrite Nat.add_comm.
+       do 4 rewrite Nat.add_assoc; rewrite Nat.add_shuffle0, Nat.add_comm.
+       do 3 rewrite Nat.add_assoc.
+       remember (rr * (u1 / r)) as a eqn:Ha.
+       rewrite Nat.mul_comm in Ha; subst a.
+       rewrite Nat.div_add; [ reflexivity | assumption ].
+
+    apply Nat.nlt_ge in H4.
 bbb.
 
 rr ≤ u1 r + u2 ≤ (r-1)r +(r-1) = r²-1
