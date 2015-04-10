@@ -468,6 +468,15 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
           rewrite Nat.div_add; [ reflexivity | apply sqr_radix_neq_0 ].
 
        rewrite Nat.nlt_ge in H6.
+       pose proof (Nat.div_mod v1 r Hr0) as H.
+       rewrite Nat.add_comm in H.
+       rewrite H in Hv12.
+       rewrite Hv12, <- Nat.add_assoc.
+       rewrite Nat.mul_add_distr_r, Nat.add_shuffle0.
+       remember (v1 mod r * r) as a.
+       rewrite Nat.mul_shuffle0, Nat.mul_comm, <- Hrr; subst a.
+       rewrite Nat.add_assoc, Hrr, Hr.
+       rewrite Nat.div_add; [ rewrite <- Hr, <- Hrr | apply sqr_radix_neq_0 ].
 bbb.
 
 v12 = v1 * r + v2 ≤ 2(r-1)r+2(r-1)=2r²-2
