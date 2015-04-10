@@ -397,44 +397,32 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
          rewrite Nat.add_comm, <- Nat.add_assoc, <- Hu12, <- Hv12.
          assumption.
 
+      pose proof (Nat.div_mod v1 r Hr0) as Hv1m.
+      rewrite Nat.add_comm in Hv1m.
+      rewrite Hv1m in Hv12.
+      rewrite Hv12, <- Nat.add_assoc.
+      rewrite Nat.mul_add_distr_r, Nat.add_shuffle0.
+      remember (v1 mod r * r) as a.
+      rewrite Nat.mul_shuffle0, Nat.mul_comm, <- Hrr; subst a.
+      rewrite Nat.add_assoc, Hrr, Hr.
+      rewrite Nat.div_add; [ rewrite <- Hr, <- Hrr | apply sqr_radix_neq_0 ].
       apply Nat.nlt_ge in H5.
-      do 2 rewrite <- Nat.add_assoc.
-      do 2 rewrite Nat.add_assoc.
       symmetry; rewrite Nat.add_shuffle0.
       rewrite Nat.add_shuffle0; symmetry.
       destruct (lt_dec u12 rr) as [H6| H6].
        remember (u12 / rr) as a eqn:Ha .
-       rewrite Nat.div_small in Ha; [ subst a | assumption ].
-       rewrite Nat.add_0_r.
+       rewrite Nat.div_small in Ha; [ subst a; simpl | assumption ].
        destruct (lt_dec v12 rr) as [H7| H7].
         rewrite Nat.div_small in Hv12rr; [ rewrite <- Hv12rr | assumption ].
-        rewrite Nat.add_0_r.
-        assert ((u12 + v12) / rr = 1) as Hurr.
-         rewrite <- Nat_succ_div_sub.
-          apply Nat.succ_inj_wd.
-          rewrite Nat.div_small; [ reflexivity | idtac ].
-          revert H6 H7; clear; intros; omega.
-
-          subst r rr.
-          split; [ apply sqr_radix_gt_0 | assumption ].
-
-         rewrite Hurr.
-         remember H6 as H; clear HeqH.
-         rewrite Hu12, Hrr in H.
-         eapply le_lt_trans in H; [ idtac | apply Nat.le_add_r ].
-         apply Nat.mul_lt_mono_pos_r in H; [ idtac | assumption ].
-         rename H into Hu1r.
-         remember (u1 mod r) as a eqn:Ha .
-         rewrite Nat.mod_small in Ha; [ subst a | assumption ].
-         remember H7 as H; clear HeqH.
-         rewrite Hv12, Hrr in H.
-         eapply le_lt_trans in H; [ idtac | apply Nat.le_add_r ].
-         apply Nat.mul_lt_mono_pos_r in H; [ idtac | assumption ].
-         rename H into Hv1r.
-         remember (v1 mod r) as a eqn:Ha .
-         rewrite Nat.mod_small in Ha; [ subst a | assumption ].
-         rewrite <- Hu12, <- Hv12.
-         rewrite Hurr; reflexivity.
+        do 2 rewrite Nat.add_0_r.
+        remember H6 as H; clear HeqH.
+        rewrite Hu12, Hrr in H.
+        eapply le_lt_trans in H; [ idtac | apply Nat.le_add_r ].
+        apply Nat.mul_lt_mono_pos_r in H; [ idtac | assumption ].
+        rename H into Hu1r.
+        remember (u1 mod r) as a eqn:Ha .
+        rewrite Nat.mod_small in Ha; [ subst a | assumption ].
+        rewrite Hu12; reflexivity.
 
         apply Nat.nlt_ge in H7.
         assert (u1 < r) as Hu1r.
@@ -444,39 +432,9 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
 
          remember (u1 mod r) as a eqn:Ha .
          rewrite Nat.mod_small in Ha; [ subst a | assumption ].
-         rewrite <- Hu12.
-         assert (v1 ≥ r) as Hv1r.
-          apply Nat.nlt_ge; intros H.
-          apply Nat.lt_le_pred in H; rewrite <- Nat.sub_1_r in H.
-          eapply Nat.mul_le_mono_pos_r in H; [ idtac | eassumption ].
-          eapply Nat.add_le_lt_mono in H; [ idtac | apply Hv2r ].
-          rewrite Nat.mul_sub_distr_r, Nat.mul_1_l, <- Hv12, <- Hrr in H.
-          apply Nat.nlt_ge in H7.
-          rewrite Nat.sub_add in H; [ contradiction | idtac ].
-          replace r with (1 * r) by apply Nat.mul_1_l; rewrite Hrr.
-          apply Nat.mul_le_mono_pos_r; assumption.
-
-          rewrite Nat.add_assoc.
-          pose proof (Nat.div_mod v1 r Hr0) as H.
-          rewrite Nat.add_comm in H.
-          rewrite H in Hv12.
-          rewrite Hv12, <- Nat.add_assoc.
-          rewrite Nat.mul_add_distr_r, Nat.add_shuffle0.
-          remember (v1 mod r * r) as a.
-          rewrite Nat.mul_shuffle0, Nat.mul_comm, <- Hrr; subst a.
-          rewrite Nat.add_assoc, Hrr, Hr.
-          rewrite Nat.div_add; [ reflexivity | apply sqr_radix_neq_0 ].
+         rewrite <- Hu12; reflexivity.
 
        rewrite Nat.nlt_ge in H6.
-       pose proof (Nat.div_mod v1 r Hr0) as H.
-       rewrite Nat.add_comm in H.
-       rewrite H in Hv12.
-       rewrite Hv12, <- Nat.add_assoc.
-       rewrite Nat.mul_add_distr_r, Nat.add_shuffle0.
-       remember (v1 mod r * r) as a.
-       rewrite Nat.mul_shuffle0, Nat.mul_comm, <- Hrr; subst a.
-       rewrite Nat.add_assoc, Hrr, Hr.
-       rewrite Nat.div_add; [ rewrite <- Hr, <- Hrr | apply sqr_radix_neq_0 ].
 bbb.
 
 v12 = v1 * r + v2 ≤ 2(r-1)r+2(r-1)=2r²-2
