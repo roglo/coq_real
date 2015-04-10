@@ -259,6 +259,36 @@ Theorem Nat_add_shuffle3 : ∀ a b c d,
   a + b + c + d = a + c + (b + d).
 Proof. intros; omega. Qed.
 
+Theorem Nat_div_add_sqr : ∀ a b c, a < c → (a + b * c) / (c * c) = b / c.
+Proof.
+intros a b c Hac.
+assert (c ≠ 0) as Hc by omega.
+     pose proof (Nat.div_mod b c Hc) as H.
+rewrite Nat.add_comm in H.
+remember (b * c) as d; rewrite H in Heqd; subst d.
+     rewrite Nat.mul_add_distr_r, Nat.mul_shuffle0.
+remember (b mod c * c) as d.
+     rewrite Nat.add_assoc, Nat.mul_comm; subst d.
+     rewrite Nat.div_add; [ idtac | ].
+     rewrite Nat.div_small; [ reflexivity | idtac ].
+     apply Nat.le_lt_trans with (m := (c - 1) * c + (c - 1)).
+      apply Nat.lt_le_pred in Hac; rewrite <- Nat.sub_1_r in Hac.
+bbb. (* ouais, bon faut voir *)
+      apply Nat.add_le_mono; [ idtac | ]. assumption ].
+      apply Nat.mul_le_mono_pos_r; [ assumption | idtac ].
+      rewrite Nat.sub_1_r; apply Nat.lt_le_pred.
+      apply Nat.mod_upper_bound; assumption.
+
+      rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+      rewrite Nat.add_sub_assoc; [ idtac | assumption ].
+      rewrite Nat.sub_1_r, Hrr, Hr.
+      pose proof sqr_radix_neq_0 as H8.
+      rewrite Nat.sub_add; [ apply Nat.lt_pred_l; assumption | idtac ].
+      rewrite <- Hr, <- Hrr.
+      replace r with (1 * r) by apply Nat.mul_1_l; rewrite Hrr.
+      apply Nat.mul_le_mono_pos_r; assumption.
+bbb.
+
 Theorem NN2I_add2_inj : ∀ u v, (NN2I 2 (u + v) == NN2I 2 u + NN2I 2 v)%I.
 Proof.
 intros u v i.
@@ -335,6 +365,33 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
     do 2 rewrite Nat_add_shuffle3.
     remember (u1 * r + u2) as u12 eqn:Hu12 .
     remember (v1 * r + v2) as v12 eqn:Hv12 .
+    assert (u12 / rr = u1 / r) as Hu12rr.
+(* utiliser Nat_div_add_sqr quand terminé *)
+bbb.
+     pose proof (Nat.div_mod u1 r Hr0) as H.
+     rewrite H in Hu12; rewrite Hu12.
+     rewrite Nat.mul_add_distr_r, Nat.mul_shuffle0, <- Hrr.
+     rewrite <- Nat.add_assoc, Nat.mul_comm.
+     rewrite Hrr, Hr.
+     rewrite Nat.div_add_l; [ idtac | apply sqr_radix_neq_0 ].
+     rewrite <- Hr, <- Hrr, Nat.add_comm.
+     rewrite Nat.div_small; [ reflexivity | idtac ].
+     apply Nat.le_lt_trans with (m := (r - 1) * r + (r - 1)).
+      apply Nat.lt_le_pred in Hu2r; rewrite <- Nat.sub_1_r in Hu2r.
+      apply Nat.add_le_mono; [ idtac | assumption ].
+      apply Nat.mul_le_mono_pos_r; [ assumption | idtac ].
+      rewrite Nat.sub_1_r; apply Nat.lt_le_pred.
+      apply Nat.mod_upper_bound; assumption.
+
+      rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+      rewrite Nat.add_sub_assoc; [ idtac | assumption ].
+      rewrite Nat.sub_1_r, Hrr, Hr.
+      pose proof sqr_radix_neq_0 as H8.
+      rewrite Nat.sub_add; [ apply Nat.lt_pred_l; assumption | idtac ].
+      rewrite <- Hr, <- Hrr.
+      replace r with (1 * r) by apply Nat.mul_1_l; rewrite Hrr.
+      apply Nat.mul_le_mono_pos_r; assumption.
+bbb.
     assert (v12 / rr = v1 / r) as Hv12rr.
      pose proof (Nat.div_mod v1 r Hr0) as H.
      rewrite H in Hv12; rewrite Hv12.
