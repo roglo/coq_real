@@ -523,6 +523,14 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
      rewrite Nat.add_comm, Nat.add_assoc in Ha.
      rewrite Hrr, Nat.mul_assoc, <- Nat.mul_add_distr_r in Ha.
      rewrite <- Hv12, <- Hrr in Ha; subst a.
+     assert (v3 < r) as Hv3r.
+      apply Nat.mul_lt_mono_pos_r with (p := r); [ assumption | idtac ].
+      rewrite <- Hrr.
+      eapply Nat.le_lt_trans; [ apply Nat.le_add_r | apply H2 ].
+
+      assert (v2 ≥ r) as Hv2r.
+       apply Nat.mul_le_mono_pos_r with (p := r); [ assumption | idtac ].
+       rewrite <- Hrr.
 bbb.
 
      remember v1 as a eqn:Ha in |-*.
