@@ -350,7 +350,6 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
       apply Nat.mul_le_mono_pos_r; [ assumption | idtac ].
       rewrite Nat.sub_1_r; apply Nat.lt_le_pred.
       apply Nat.mod_upper_bound; assumption.
-
       rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
       rewrite Nat.add_sub_assoc; [ idtac | assumption ].
       rewrite Nat.sub_1_r, Hrr, Hr.
@@ -438,13 +437,29 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
          rewrite <- Hu12; reflexivity.
 
        rewrite Nat.nlt_ge in H6.
+       destruct (lt_dec u1 r) as [H7| H7].
+        exfalso.
+        rewrite Hu12 in H6.
+        apply Nat.nlt_ge in H6; apply H6; clear H6.
+        apply Nat.le_lt_trans with (m := (r - 1) * r + (r - 1)).
+         apply Nat.lt_le_pred in Hu2r; rewrite <- Nat.sub_1_r in Hu2r.
+         apply Nat.add_le_mono; [ idtac | assumption ].
+         apply Nat.mul_le_mono_pos_r; [ assumption | idtac ].
+         rewrite Nat.sub_1_r; apply Nat.lt_le_pred; assumption.
+
+         rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+         rewrite Nat.add_sub_assoc; [ idtac | assumption ].
+         rewrite Nat.sub_1_r, Hrr, Hr.
+         pose proof sqr_radix_neq_0 as H8.
+         rewrite Nat.sub_add; [ apply Nat.lt_pred_l; assumption | idtac ].
+         rewrite <- Hr, <- Hrr.
+         replace r with (1 * r) by apply Nat.mul_1_l; rewrite Hrr.
+         apply Nat.mul_le_mono_pos_r; assumption.
+
+        apply Nat.nlt_ge in H7.
 bbb.
 
-v12 = v1 * r + v2 ≤ 2(r-1)r+2(r-1)=2r²-2
-u12+v12 ≤ 4r²-4
-(u12+v12)/rr = 0, 1, 2 ou 3
-v1≥r   v1.r ≥ r²   v12 ≥ r²
-(u12+v12)/rr = 1, 2 ou 3
+rr ≤ u1 r + u2 ≤ (r-1)r +(r-1) = r²-1
 
 Set Printing Depth 14. Show.
 Unset Printing Notations. Show.
