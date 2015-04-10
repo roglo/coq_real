@@ -262,28 +262,39 @@ Proof. intros; omega. Qed.
 Theorem Nat_div_add_sqr : ∀ a b c, a < c → (a + b * c) / (c * c) = b / c.
 Proof.
 intros a b c Hac.
-assert (c ≠ 0) as Hc by omega.
-     pose proof (Nat.div_mod b c Hc) as H.
+destruct c; [ exfalso; revert Hac; apply Nat.nlt_0_r | idtac ].
+remember (S c) as c'.
+assert (c' ≠ 0) as Hc by (subst c'; intros H; discriminate H).
+clear c Heqc'; rename c' into c.
+pose proof (Nat.div_mod b c Hc) as H.
 rewrite Nat.add_comm in H.
 remember (b * c) as d; rewrite H in Heqd; subst d.
-     rewrite Nat.mul_add_distr_r, Nat.mul_shuffle0.
+rewrite Nat.mul_add_distr_r, Nat.mul_shuffle0.
 remember (b mod c * c) as d.
-     rewrite Nat.add_assoc, Nat.mul_comm; subst d.
-     rewrite Nat.div_add; [ idtac | ].
-     rewrite Nat.div_small; [ reflexivity | idtac ].
-     apply Nat.le_lt_trans with (m := (c - 1) * c + (c - 1)).
-      apply Nat.lt_le_pred in Hac; rewrite <- Nat.sub_1_r in Hac.
-bbb. (* ouais, bon faut voir *)
-      apply Nat.add_le_mono; [ idtac | ]. assumption ].
-      apply Nat.mul_le_mono_pos_r; [ assumption | idtac ].
-      rewrite Nat.sub_1_r; apply Nat.lt_le_pred.
-      apply Nat.mod_upper_bound; assumption.
+rewrite Nat.add_assoc, Nat.mul_comm; subst d.
+rewrite Nat.div_add.
+ rewrite Nat.div_small; [ reflexivity | idtac ].
+ apply Nat.le_lt_trans with (m := (c - 1) + (c - 1) * c).
+  apply Nat.lt_le_pred in Hac; rewrite <- Nat.sub_1_r in Hac.
+  apply Nat.add_le_mono; [ assumption | idtac ].
+  apply Nat.mul_le_mono_pos_r.
+   apply neq_0_lt, Nat.neq_sym; assumption.
 
-      rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
-      rewrite Nat.add_sub_assoc; [ idtac | assumption ].
-      rewrite Nat.sub_1_r, Hrr, Hr.
-      pose proof sqr_radix_neq_0 as H8.
-      rewrite Nat.sub_add; [ apply Nat.lt_pred_l; assumption | idtac ].
+   rewrite Nat.sub_1_r; apply Nat.lt_le_pred.
+   apply Nat.mod_upper_bound; assumption.
+
+  rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+  rewrite Nat.add_sub_assoc.
+   rewrite Nat.add_comm.
+   rewrite Nat.add_sub_assoc.
+    rewrite Nat_sub_shuffle0, Nat.add_sub.
+    rewrite Nat.sub_1_r.
+    apply Nat.lt_pred_l.
+
+    bbb.
+
+
+   rewrite Nat.sub_add; [ apply Nat.lt_pred_l; assumption | idtac ].
       rewrite <- Hr, <- Hrr.
       replace r with (1 * r) by apply Nat.mul_1_l; rewrite Hrr.
       apply Nat.mul_le_mono_pos_r; assumption.
