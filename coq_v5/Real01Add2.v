@@ -350,6 +350,7 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
       apply Nat.mul_le_mono_pos_r; [ assumption | idtac ].
       rewrite Nat.sub_1_r; apply Nat.lt_le_pred.
       apply Nat.mod_upper_bound; assumption.
+
       rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
       rewrite Nat.add_sub_assoc; [ idtac | assumption ].
       rewrite Nat.sub_1_r, Hrr, Hr.
