@@ -360,6 +360,10 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
    remember ((u2 * r + u3) / rr) as a eqn:Ha .
    rewrite Nat.div_small in Ha; [ subst a | assumption ].
    rewrite Nat.add_0_r.
+   remember (u1 * r + u2) as u12 eqn:Hu12 .
+   remember (v1 * r + v2) as v12 eqn:Hv12 .
+   pose proof (Nat_div_add_sqr u2 u1 r Hu2r) as Hu12rr.
+   rewrite Nat.add_comm, <- Hrr, <- Hu12 in Hu12rr.
    destruct (lt_dec (v2 * r + v3) rr) as [H4| H4].
     remember H4 as H; clear HeqH.
     rewrite Hrr in H.
@@ -373,13 +377,9 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
     rewrite Nat.add_0_r.
     do 2 rewrite Nat.mul_add_distr_r.
     do 2 rewrite Nat_add_shuffle3.
-    remember (u1 * r + u2) as u12 eqn:Hu12 .
-    remember (v1 * r + v2) as v12 eqn:Hv12 .
-    pose proof (Nat_div_add_sqr u2 u1 r Hu2r) as Hu12rr.
-    rewrite Nat.add_comm, <- Hrr, <- Hu12 in Hu12rr.
     pose proof (Nat_div_add_sqr v2 v1 r Hv2r) as Hv12rr.
     rewrite Nat.add_comm, <- Hrr, <- Hv12 in Hv12rr.
-    rewrite Hv12rr.
+    rewrite Hv12rr, <- Hu12, <- Hv12.
     destruct (lt_dec (u12 + v12) rr) as [H5| H5].
      remember ((u12 + v12) / rr) as a eqn:Ha .
      rewrite Nat.div_small in Ha; [ subst a | assumption ].
