@@ -543,7 +543,10 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
 
         replace r with (1 * r) by apply Nat.mul_1_l; rewrite Hrr.
         apply Nat.mul_le_mono_pos_r; assumption.
-
+        assert (v1 < r) as Hv1r.
+         apply Nat.mul_lt_mono_pos_r with (p := r); [ assumption | idtac ].
+         rewrite Hv12 in H7; rewrite <- Hrr.
+         eapply Nat.le_lt_trans; [ apply Nat.le_add_r | apply H7 ].
 bbb.
 
      remember v1 as a eqn:Ha in |-*.
