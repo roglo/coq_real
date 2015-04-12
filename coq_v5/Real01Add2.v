@@ -547,7 +547,24 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
          apply Nat.mul_lt_mono_pos_r with (p := r); [ assumption | idtac ].
          rewrite Hv12 in H7; rewrite <- Hrr.
          eapply Nat.le_lt_trans; [ apply Nat.le_add_r | apply H7 ].
+
+         subst u12 v12.
+         rewrite Nat.mul_add_distr_r, <- Nat.mul_assoc, <- Hrr.
+         destruct (eq_nat_dec v1 (r - 1)) as [H8| H8].
+          rewrite H8.
 bbb.
+  H5 : u12 + v12 < rr
+  Hv2r : v2 ≥ r
+  H4 : rr ≤ v2 * r + v3
+  Hv3r : v3 < r
+
+rr ≤ (v2 + 1) r - 1
+
+u12 + v1 r + v2 ≤ rr - 1 ≤ (v2 + 1) r - 2
+
+u12 + v1 r + v2 + 2 ≤ v2 r + r
+
+(v2 + 1) (r - 1) ≥ u1 r + u2 + v1 r + 1
 
      remember v1 as a eqn:Ha in |-*.
      rewrite <- Nat.div_mul with (b := rr) in Ha; subst a.
