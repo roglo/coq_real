@@ -551,7 +551,14 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
          subst u12 v12.
          rewrite Nat.mul_add_distr_r, <- Nat.mul_assoc, <- Hrr.
          destruct (eq_nat_dec v1 (r - 1)) as [H8| H8].
-          rewrite H8.
+          rewrite H8, Nat.mul_sub_distr_r, Nat.mul_1_l, <- Hrr in H7.
+          rewrite <- Nat.add_sub_swap in H7.
+           apply Nat.lt_sub_lt_add_l in H7.
+           rewrite Nat.add_comm, <- Nat.add_lt_mono_r in H7.
+           apply Nat.nle_gt in H7; contradiction.
+
+           replace r with (1 * r) by apply Nat.mul_1_l; rewrite Hrr.
+           apply Nat.mul_le_mono_pos_r; assumption.
 bbb.
   H5 : u12 + v12 < rr
   Hv2r : v2 ≥ r
