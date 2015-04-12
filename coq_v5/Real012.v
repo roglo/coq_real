@@ -70,7 +70,7 @@ split; intros Hi.
 
    split; [ idtac | assumption ].
    intros dj Hdj.
-   remember Hdj as H; clear HeqH.
+   generalize Hdj; intros H.
    apply Hn1 in H.
    destruct (eq_nat_dec (u (i + dj)) 1); [ assumption | discriminate H ].
 

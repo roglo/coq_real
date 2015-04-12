@@ -475,7 +475,7 @@ rewrite Nat.mod_small.
 
       apply Nat.nlt_ge in H1.
       remember (dr + er - radix) as x eqn:Hx .
-      remember Hx as H; clear HeqH.
+      generalize Hx; intros H.
       apply Nat_le_sub_add_r in H; [ idtac | assumption ].
       rewrite H, Nat.sub_add_distr, Nat.add_comm, Nat.add_sub.
       rewrite Nat.add_mod; [ idtac | apply radix_neq_0 ].
@@ -537,7 +537,7 @@ intros d e f dr er fr Hdr Her Hfr H1 H2.
 apply Nat.nle_gt; intros H3.
 assert (fr = er + radix) as H.
  remember (dr + fr - radix) as x eqn:Hx .
- remember Hx as H; clear HeqH.
+ generalize Hx; intros H.
  apply Nat_le_sub_add_r in H; [ idtac | assumption ].
  apply Nat.add_cancel_l with (p := dr).
  rewrite Nat.add_assoc, H1, H, Nat.add_comm.
@@ -589,10 +589,10 @@ destruct (lt_dec (dr + er) radix) as [H1| H1].
   apply Nat.nlt_ge in H2.
   remember (dr + er - radix) as x eqn:Hx.
   remember (dr + fr - radix) as y eqn:Hy.
-  remember Hx as H; clear HeqH.
+  generalize Hx; intros H.
   apply Nat_le_sub_add_r in H; [ idtac | assumption ].
   rewrite H in Hd; clear H.
-  remember Hy as H; clear HeqH.
+  generalize Hy; intros H.
   apply Nat_le_sub_add_r in H; [ idtac | assumption ].
   rewrite H in Hd; clear H.
   rewrite Nat.add_mod in Hd; symmetry in Hd; [ idtac | apply radix_neq_0 ].

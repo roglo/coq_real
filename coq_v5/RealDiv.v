@@ -50,25 +50,25 @@ Theorem same_carry_fst_same_none : ∀ x y,
 Proof.
 intros x y Hixy Hs2 i.
 apply not_false_iff_true; intros Ht1.
-remember Hs2 as H; clear HeqH.
+generalize Hs2; intros H.
 apply fst_same_iff in H; simpl in H.
 rename H into Hn2.
 unfold carry in Hixy; simpl in Hixy.
 remember (fst_same x 0 0) as s3 eqn:Hs3 .
 remember (fst_same y 0 0) as s4 eqn:Hs4 .
 destruct s3 as [dj3| ].
- remember Hs3 as H; clear HeqH.
+ generalize Hs3; intros H.
  apply fst_same_sym_iff in H; simpl in H.
  destruct H as (Hn3, Ht3).
  rewrite Ht3 in Hixy.
  destruct s4 as [dj4| ]; [ idtac | discriminate Hixy ].
- remember Hs4 as H; clear HeqH.
+ generalize Hs4; intros H.
  apply fst_same_sym_iff in H; simpl in H.
  destruct H as (Hn4, Ht4).
  pose proof (Hn2 dj4) as H.
  rewrite Nat.sub_0_r, Ht4 in H; discriminate H.
 
- remember Hs3 as H; clear HeqH.
+ generalize Hs3; intros H.
  apply fst_same_sym_iff in H; simpl in H.
  rename H into Hn3.
  rewrite Hn3 in Ht1; discriminate Ht1.
@@ -119,7 +119,7 @@ Theorem R_div_2_0_iff : ∀ x, (x = 0)%R ↔ (R_div_2 x = 0)%R.
 Proof.
 intros x.
 split; intros Hx.
- remember Hx as H; clear HeqH.
+ generalize Hx; intros H.
  apply R_zero_iff in H; simpl in H.
  destruct H as [(Hi, Hf)| (Hi, Hf)].
   unfold R_eq; simpl.
@@ -182,7 +182,7 @@ split; intros Hx.
     destruct (zerop i) as [H1| H1]; [ reflexivity | idtac ].
     rewrite Hf; reflexivity.
 
- remember Hx as H; clear HeqH.
+ generalize Hx; intros H.
  apply R_zero_iff in H; simpl in H.
  destruct H as [(Hi, Hf)| (Hi, Hf)].
   pose proof (Hf O) as H; simpl in H.
@@ -382,7 +382,7 @@ destruct s1 as [dj1| ].
     symmetry in Hc.
     destruct c.
      injection Hmxy; clear Hmxy; intros; subst mx my.
-     remember Hbx as H; clear HeqH.
+     generalize Hbx; intros H.
      apply I_div_lt_pred_0_l in H; [ simpl in H | reflexivity ].
      rename H into Hx1.
      rewrite Hx1, Hy1 in H2.
@@ -392,7 +392,7 @@ destruct s1 as [dj1| ].
      revert H1; apply I_lt_irrefl.
 
      apply R_div_equiv_0_l in Hmxy.
-      remember Hbx as H; clear HeqH.
+      generalize Hbx; intros H.
       apply I_div_lt_pred_0_l in H; [ idtac | assumption ].
       rename H into Hx1.
       rewrite Hx1, Hy1 in H2.
@@ -404,7 +404,7 @@ destruct s1 as [dj1| ].
       unfold R_abs; simpl.
       apply R_div_2_0.
 
-   remember Hmxy as H; clear HeqH.
+   generalize Hmxy; intros H.
    apply R_div_equiv_0_l in H; [ idtac | apply R_abs_0 ].
    rewrite H in H1; rename H into Hmx.
    apply I_ge_0_l_eqs_iff in H1.
@@ -429,7 +429,7 @@ destruct s1 as [dj1| ].
  symmetry in Hrif.
  destruct rif as (ri, rf); simpl in H.
  rename H into Hrf.
- remember Hmxy as H; clear HeqH.
+ generalize Hmxy; intros H.
  apply R_div_equiv_0_l in H; [ idtac | apply R_abs_0 ].
  rename H into Hmx.
  destruct m2; simpl in Hrif.
@@ -445,7 +445,7 @@ destruct s1 as [dj1| ].
    destruct bx as (b, x1); simpl in Hrf.
    remember (I_div_2 (I_div_2_pow my i)) as y1 eqn:Hy1.
    destruct (I_lt_dec x1 y1) as [H2| H2]; simpl in Hrf.
-    remember Hbx as H; clear HeqH.
+    generalize Hbx; intros H.
     apply I_div_lt_pred_0_l in H; [ idtac | assumption ].
     rewrite H in H2; rename H into Hx1.
     destruct (I_lt_dec x1 (I_div_2 y1)) as [H3| H3].
@@ -460,7 +460,7 @@ destruct s1 as [dj1| ].
     destruct (I_lt_dec (x1 - y1)%I (I_div_2 y1)) as [H3| H3].
      discriminate Hrf.
 
-     remember Hbx as H; clear HeqH.
+     generalize Hbx; intros H.
      apply I_div_lt_pred_0_l in H; [ idtac | assumption ].
      rewrite H, Hy1 in H2; rename H into Hx1.
      apply I_ge_0_l_eqs_iff in H2.
@@ -917,7 +917,7 @@ destruct m2; simpl in Hrif.
   injection Hrif; clear Hrif; intros; subst ri rf; simpl.
   destruct (R_is_neg x); reflexivity.
 
-  remember Hmxy as H; clear HeqH.
+  generalize Hmxy; intros H.
   apply R_div_equiv_0_l in H; [ idtac | apply R_abs_0 ].
   rename H into Hmx.
   rewrite Hmx in H1.
@@ -935,7 +935,7 @@ destruct m2; simpl in Hrif.
     exfalso; apply Hx.
     unfold R_eq; simpl.
     apply Z.eqb_eq in Hc.
-    remember H1 as H; clear HeqH.
+    generalize H1; intros H.
     apply R_frac_R_abs_0 in H.
     rename H into Hfx.
     split; [ idtac | assumption ].
@@ -1004,7 +1004,7 @@ destruct s1 as [dj1| ]; simpl.
  remember (R_div_equiv m (R_abs 0) (R_abs x)) as xym eqn:Hxym .
  symmetry in Hxym.
  destruct xym as (xm, ym); simpl in H.
- remember Hxym as H1; clear HeqH1.
+ generalize Hxym; intros H1.
  apply R_div_equiv_0_l in H1; [ idtac | reflexivity ].
  rename H1 into Hxm.
  remember (I_div_max_iter_int ym) as m2 eqn:Hm2 .
@@ -1081,7 +1081,7 @@ destruct s1 as [dj1| ]; simpl.
      rewrite Hxm in H1.
      apply I_ge_0_l_eqs_iff in H1.
      rename H into Hrf.
-     remember Hxym as H; clear HeqH.
+     generalize Hxym; intros H.
      rewrite <- Nat.add_1_r in Hm.
      eapply formula_1 in H; try eassumption; try reflexivity.
      apply Z.div_small_iff in H; [ idtac | apply Z_two_pow_neq_0 ].
@@ -1198,7 +1198,7 @@ induction m2; intros; simpl in Hrif.
     destruct bx as (b1, x1); simpl.
     remember (I_div_2 (I_div_2_pow mx i)) as y1 eqn:Hy1.
     destruct (I_lt_dec x1 y1) as [H2| H2]; [ reflexivity | exfalso ].
-    remember Hbx as H; clear HeqH.
+    generalize Hbx; intros H.
     apply I_div_lt_pred_0_l in H.
      rewrite H, Hy1 in H2.
      apply I_ge_0_l_eqs_iff in H2.
@@ -1319,7 +1319,7 @@ induction m2; intros; simpl in Hrif.
 
       apply Z.le_0_1.
 
-     remember Hxym as H; clear HeqH.
+     generalize Hxym; intros H.
      exfalso.
      rewrite <- Nat.add_1_r in Hm.
      eapply formula_3 in H; try eassumption; [ idtac | reflexivity ].
@@ -1515,11 +1515,11 @@ destruct s1 as [dj1| ].
       remember (Z.odd (R_int (R_abs x))) as b.
       remember (I_div_2_inc (R_frac (R_abs x)) b) as x1 eqn:Hx1; subst b.
       remember (I_div_2_inc 0 true) as y1 eqn:Hy1 .
-      remember Hx1 as H; clear HeqH.
+      generalize Hx1; intros H.
       apply I_eql_eqs in H.
       apply I_div_2_inc_iff in H; simpl in H.
       destruct H as (Hx1_0, Hx1_S).
-      remember Hy1 as H; clear HeqH.
+      generalize Hy1; intros H.
       apply I_eql_eqs in H.
       apply I_div_2_inc_iff in H; simpl in H.
       destruct H as (Hy1_0, Hy1_S).
@@ -1587,7 +1587,7 @@ destruct s1 as [dj1| ].
 
               clear Ht2.
               remember (I_div_2 y2) as y3 eqn:Hy3 .
-              remember Hy3 as H; clear HeqH.
+              generalize Hy3; intros H.
               unfold I_div_2 in H.
               apply I_eql_eqs in H.
               apply I_div_2_inc_iff in H; simpl in H.
@@ -1604,7 +1604,7 @@ destruct s1 as [dj1| ].
               destruct dj3.
                rewrite Hy3_0 in Ht3; discriminate Ht3.
 
-               remember Ht3 as H; clear HeqH.
+               generalize Ht3; intros H.
                rewrite Hy3_S in H.
                destruct dj2.
                 simpl in Hbx.
@@ -1629,16 +1629,16 @@ bbb.
         destruct i.
          simpl in Hbx3.
          injection Hbx3; clear Hbx3; intros; subst b3 x3 y3.
-         remember Hx1 as H; clear HeqH.
+         generalize Hx1; intros H.
          apply I_div_2_inc_0 in H.
          rename H into Vx1.
-         remember Hy1 as H; clear HeqH.
+         generalize Hy1; intros H.
          apply I_div_2_inc_0 in H.
          rename H into Vy1.
-         remember Hx1 as H; clear HeqH.
+         generalize Hx1; intros H.
          apply I_div_2_inc_1 in H.
          rename H into Vx2.
-         remember Hy1 as H; clear HeqH.
+         generalize Hy1; intros H.
          apply I_div_2_inc_1 in H.
          simpl in H.
          rename H into Vy2.
@@ -1659,7 +1659,7 @@ bbb.
           destruct dj3.
            clear Ht3.
            rename H into Wx1.
-           remember Hx3 as H; clear HeqH.
+           generalize Hx3; intros H.
            rewrite Vx2 in H.
            unfold R_abs in H; simpl in H.
            remember (R_is_neg x) as nx eqn:Hnx .
@@ -1677,7 +1677,7 @@ bbb.
            unfold R_abs in Hx1.
            rewrite Hnx in Hx1; simpl in Hx1.
            rename H into Hfx.
-           remember Hnx as H; clear HeqH.
+           generalize Hnx; intros H.
            unfold R_is_neg in H; simpl in H.
            apply Z.ltb_lt in H.
            rewrite <- Vx1, Wx1 in Hx1.
@@ -1704,12 +1704,12 @@ bbb.
               clear Ht2.
               remember (x1 .[ 2]) as b eqn:Hx2 .
               symmetry in Hx2.
-              remember Hx2 as H; clear HeqH.
+              generalize Hx2; intros H.
               rewrite Hx1 in H; simpl in H.
               rewrite <- H in Hx2; clear b H.
               remember (x1 .[ S (S dj1)]) as b eqn:Hxj1 .
               symmetry in Hxj1.
-              remember Hxj1 as H; clear HeqH.
+              generalize Hxj1; intros H.
               rewrite Hx1 in H; simpl in H.
               simpl in Ht1; rewrite Ht1 in H; simpl in H.
               rewrite <- H in Hxj1; clear b H.
@@ -1741,7 +1741,7 @@ bbb.
                pose proof (Hn1 O (Nat.lt_0_succ dj1)) as H; simpl in H.
                rewrite H in Hx2; simpl in Hx2.
                rename H into Hx01.
-               remember Hx1 as H; clear HeqH.
+               generalize Hx1; intros H.
                apply I_eql_eqs in H.
                apply I_div_2_inc_iff in H; simpl in H.
                destruct H as (Hx1_0, Hx1_S).

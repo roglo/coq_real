@@ -571,7 +571,7 @@ destruct Hxy as [Hxy| (i, (Hlt, (Heq, Hgt)))].
     remember (fst_same y 0 (S j)) as s1 eqn:Hs1.
     apply fst_same_sym_iff in Hs1; simpl in Hs1.
     destruct (lt_eq_lt_dec j i) as [[H2| H2]| H2].
-     remember H2 as H; clear HeqH.
+     generalize H2; intros H.
      apply Hlt in H; rewrite H.
      destruct s1 as [dj1| ].
       destruct Hs1 as (Hn1, Ht1).
@@ -631,7 +631,7 @@ bbb.
 
    exfalso; apply Hyn1; intros k.
    destruct (lt_eq_lt_dec k i) as [[H2| H2]| H2].
-    remember H2 as H; clear HeqH.
+    generalize H2; intros H.
     apply Hlt in H.
 bbb.
 
@@ -838,7 +838,7 @@ destruct s1 as [di1| ].
      destruct (zerop (vi (S (i + di3)))) as [H3| H3].
       clear Ht3.
       destruct (lt_eq_lt_dec di1 di2) as [[H6| H6]| H6].
-       remember H6 as H; clear HeqH.
+       generalize H6; intros H.
        apply Hn2 in H.
 bbb.
       destruct (le_dec (uvi i) 1) as [H4| H4].
@@ -912,13 +912,13 @@ destruct s1 as [di1| ].
         destruct (le_dec (v i) 1) as [H5| H5].
          clear Ht1.
          destruct (lt_eq_lt_dec di1 di2) as [[H6| H6]| H6].
-          remember H6 as H; clear HeqH.
+          generalize H6; intros H.
           apply Hn2 in H.
           rewrite Hu in H; discriminate H.
 
           subst di2.
           destruct (lt_eq_lt_dec di1 di3) as [[H7| H7]| H7].
-           remember H7 as H; clear HeqH.
+           generalize H7; intros H.
            apply Hn3 in H.
            rewrite Hv in H; discriminate H.
 

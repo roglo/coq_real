@@ -846,7 +846,7 @@ Theorem yyy : ∀ x y z,
   → (x / z == y)%I.
 Proof.
 intros x y z Hxy Hz Hxyz i.
-remember Hxyz as Hxdyz; clear HeqHxdyz.
+generalize Hxyz; intros Hxdyz.
 induction i.
  pose proof (Hxyz O) as H.
  unfold I_div in H; simpl in H.

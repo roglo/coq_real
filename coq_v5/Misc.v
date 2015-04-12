@@ -203,7 +203,7 @@ Qed.
 Theorem Nat_pred_le_mod : ∀ a b, a ≠ 0 → pred a ≤ b mod a → b mod a = pred a.
 Proof.
 intros a b Ha H.
-remember H as HH; clear HeqHH.
+generalize H; intros HH.
 apply Nat.le_antisymm in H; [ assumption | idtac ].
 apply Nat.mod_upper_bound with (a := b) in Ha.
 apply Nat.lt_le_pred; assumption.

@@ -158,7 +158,7 @@ destruct s1 as [dj1| ]; [ idtac | clear Hxy ].
   apply fst_same_sym_iff in Hs2; simpl in Hs2.
   destruct Hs2 as (Hn2, Ht2).
   destruct (lt_eq_lt_dec dj1 dj2) as [[H1| H1]| H1].
-   remember H1 as H; clear HeqH.
+   generalize H1; intros H.
    apply Hn2 in H; rewrite Digit.opp_involutive in H.
    rewrite Ht1 in H; symmetry in H.
    exfalso; revert H; apply Digit.no_fixpoint_opp.
@@ -172,7 +172,7 @@ destruct s1 as [dj1| ]; [ idtac | clear Hxy ].
 
      rewrite H1, H2 in Ht1; discr_digit Ht1.
 
-   remember H1 as H; clear HeqH.
+   generalize H1; intros H.
    apply Hn1 in H; rewrite Digit.opp_involutive in H.
    rewrite Ht2 in H; symmetry in H.
    exfalso; revert H; apply Digit.no_fixpoint_opp.
@@ -229,7 +229,7 @@ destruct s1 as [dj1| ]; [ idtac | clear Hxy ].
  destruct u as [Hy2|Hy2]; [ apply Hyz; reflexivity | clear Hequ ].
  clear Hxy Hyz.
   destruct (lt_eq_lt_dec dj1 dj2) as [[H1| H1]| H1].
-   remember H1 as H; clear HeqH.
+   generalize H1; intros H.
    apply Hn2 in H.
    rewrite Digit.opp_involutive in H.
    destruct (lt_eq_lt_dec dj1 dj3) as [[H2| H2]| H2].
@@ -240,10 +240,10 @@ destruct s1 as [dj1| ]; [ idtac | clear Hxy ].
     rewrite Hx1 in Hx3; discr_digit Hx3.
 
     rename H into Hyz.
-    remember H2 as H; clear HeqH.
+    generalize H2; intros H.
     apply Hn1 in H.
     apply Nat.lt_trans with (n := dj3) in H1; [ idtac | assumption ].
-    remember H1 as HH; clear HeqHH.
+    generalize H1; intros HH.
     apply Hn2 in HH.
     rewrite Hx3, HH, Ht3 in H.
     discr_digit H.
@@ -251,18 +251,18 @@ destruct s1 as [dj1| ]; [ idtac | clear Hxy ].
    subst dj2.
    rewrite Hx1, Hy2 in Ht1; discr_digit Ht1.
 
-   remember H1 as H; clear HeqH.
+   generalize H1; intros H.
    apply Hn1 in H; simpl in H.
    rename H into Hxy.
    destruct (lt_eq_lt_dec dj2 dj3) as [[H2| H2]| H2].
-    remember H2 as H; clear HeqH.
+    generalize H2; intros H.
     apply Hn3 in H.
     rewrite Hxy, <- Ht2, Hy2 in H; discr_digit H.
 
     subst dj3.
     rewrite Ht3, Hy2 in Ht2; discr_digit Ht2.
 
-    remember H2 as H; clear HeqH.
+    generalize H2; intros H.
     apply Hn2 in H; simpl in H.
     rewrite Ht3 in H.
     apply Nat.lt_trans with (n := dj3) in H1; [ idtac | assumption ].
@@ -270,7 +270,7 @@ destruct s1 as [dj1| ]; [ idtac | clear Hxy ].
     rewrite Hx3, H in H1; discr_digit H1.
 
   destruct (lt_eq_lt_dec dj1 dj3) as [[H1| H1]| H1].
-   remember H1 as H; clear HeqH.
+   generalize H1; intros H.
    apply Hn3 in H.
    rewrite Hx1, <- Hs2 in H.
    rewrite Hx1, <- H in Ht1; discr_digit Ht1.
@@ -278,7 +278,7 @@ destruct s1 as [dj1| ]; [ idtac | clear Hxy ].
    subst dj3.
    rewrite Hx3 in Hx1; discr_digit Hx1.
 
-   remember H1 as H; clear HeqH.
+   generalize H1; intros H.
    apply Hn1 in H.
    rewrite Hx3, Hs2, Ht3 in H; discr_digit H.
 
@@ -288,14 +288,14 @@ destruct s1 as [dj1| ]; [ idtac | clear Hxy ].
   remember (Digit.dec (y .[ dj2])) as u.
   destruct u as [Hy2|Hy2]; [ apply Hyz; reflexivity | clear Hyz Hequ ].
   destruct (lt_eq_lt_dec dj2 dj3) as [[H1| H1]| H1].
-   remember H1 as H; clear HeqH.
+   generalize H1; intros H.
    apply Hn3 in H.
    rewrite Hs1, <- Ht2, Hy2 in H; discr_digit H.
 
    subst dj3.
    rewrite Ht3, Hy2 in Ht2; discr_digit Ht2.
 
-   remember H1 as H; clear HeqH.
+   generalize H1; intros H.
    apply Hn2 in H.
    rewrite H, Ht3 in Hx3; discr_digit Hx3.
 
@@ -420,24 +420,24 @@ destruct s1 as [j1| ].
   destruct (Digit.dec (x.[j1])) as [H1| H1].
    destruct (Digit.dec (y.[j2])) as [H2| H2]; [ reflexivity | idtac ].
    destruct (lt_eq_lt_dec j1 j2) as [[H3| H3]| H3].
-    remember H3 as H; clear HeqH; apply Hn2 in H.
+    generalize H3; intros H; apply Hn2 in H.
     rewrite <- Hxy, <- Hzt, <- Ht1, H1 in H; discr_digit H.
 
     subst j2.
     rewrite <- Hxy, H1 in H2; discr_digit H2.
 
-    remember H3 as H; clear HeqH; apply Hn1 in H.
+    generalize H3; intros H; apply Hn1 in H.
     rewrite Hxy, Hzt, <- Ht2, H2 in H; discr_digit H.
 
    destruct (Digit.dec (y.[j2])) as [H2| H2]; [ idtac | reflexivity ].
    destruct (lt_eq_lt_dec j1 j2) as [[H3| H3]| H3].
-    remember H3 as H; clear HeqH; apply Hn2 in H.
+    generalize H3; intros H; apply Hn2 in H.
     rewrite <- Hxy, <- Hzt, <- Ht1, H1 in H; discr_digit H.
 
     subst j2.
     rewrite <- Hxy, H1 in H2; discr_digit H2.
 
-    remember H3 as H; clear HeqH; apply Hn1 in H.
+    generalize H3; intros H; apply Hn1 in H.
     rewrite Hxy, Hzt, <- Ht2, H2 in H; discr_digit H.
 
   exfalso.
@@ -625,14 +625,14 @@ split; intros H.
   remember (Digit.dec (y .[ j1])) as u.
   destruct u as [Hy1| Hy1]; [ reflexivity | clear Hequ ].
   destruct (lt_eq_lt_dec j1 j2) as [[H1| H1]| H1].
-   remember H1 as H; clear HeqH.
+   generalize H1; intros H.
    apply Hn2, Digit.opp_sym in H.
    rewrite <- Ht1, Hy1 in H; discr_digit H.
 
    subst j2.
    rewrite Ht2, Hy1 in Hx2; discr_digit Hx2.
 
-   remember H1 as H; clear HeqH.
+   generalize H1; intros H.
    apply Hn1, Digit.opp_sym in H.
    rewrite <- Ht2, Hx2 in H; discr_digit H.
 
@@ -652,14 +652,14 @@ split; intros H.
    rewrite Hx in Ht2.
    rewrite Hy in Ht1.
    destruct (lt_eq_lt_dec j1 j2) as [[H1| H1]| H1].
-    remember H1 as H; clear HeqH.
+    generalize H1; intros H.
     apply Hn2 in H.
     rewrite H, Hy in Ht1; discr_digit Ht1.
 
     subst j2.
     rewrite Hy in Ht2; discr_digit Ht2.
 
-    remember H1 as H; clear HeqH.
+    generalize H1; intros H.
     apply Hn1 in H.
     rewrite H, Hx in Ht2; discr_digit Ht2.
 
@@ -785,14 +785,14 @@ destruct s1 as [dj1| ].
   apply fst_same_sym_iff in Hs2; simpl in Hs2.
   destruct Hs2 as (Hn2, Ht2).
   destruct (lt_eq_lt_dec dj1 dj2) as [[H1| H1]| H1].
-   remember H1 as H; clear HeqH.
+   generalize H1; intros H.
    apply Hn2 in H.
    rewrite Hxy, Hzt, H in Ht1.
    exfalso; revert Ht1; apply Digit.no_fixpoint_opp.
 
    subst dj2; apply Hxy.
 
-   remember H1 as H; clear HeqH.
+   generalize H1; intros H.
    apply Hn1 in H.
    rewrite Hxy, Hzt, Ht2 in H.
    symmetry in H.

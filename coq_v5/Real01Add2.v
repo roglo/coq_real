@@ -350,7 +350,7 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
   rewrite Nat.div_small in Ha; [ subst a | assumption ].
   rewrite Nat.add_0_r.
   destruct (lt_dec (u2 * r + u3) rr) as [H3| H3].
-   remember H3 as H; clear HeqH.
+   generalize H3; intros H.
    rewrite Hrr in H.
    eapply lt_le_trans in H; [ idtac | apply le_n_S, Nat.le_add_r ].
    apply Nat.mul_lt_mono_pos_r in H; [ idtac | assumption ].
@@ -365,7 +365,7 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
    pose proof (Nat_div_add_sqr u2 u1 r Hu2r) as Hu12rr.
    rewrite Nat.add_comm, <- Hrr, <- Hu12 in Hu12rr.
    destruct (lt_dec (v2 * r + v3) rr) as [H4| H4].
-    remember H4 as H; clear HeqH.
+    generalize H4; intros H.
     rewrite Hrr in H.
     eapply lt_le_trans in H; [ idtac | apply le_n_S, Nat.le_add_r ].
     apply Nat.mul_lt_mono_pos_r in H; [ idtac | assumption ].
@@ -384,13 +384,13 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
      remember ((u12 + v12) / rr) as a eqn:Ha .
      rewrite Nat.div_small in Ha; [ subst a | assumption ].
      rewrite Nat.mod_0_l; [ idtac | assumption ].
-     remember H5 as H; clear HeqH.
+     generalize H5; intros H.
      eapply lt_le_trans in H; [ idtac | apply le_n_S, Nat.le_add_r ].
      rename H into H6.
      remember (u12 / rr) as a eqn:Ha .
      rewrite Nat.div_small in Ha; [ subst a | assumption ].
      rewrite Nat.add_0_r.
-     remember H5 as H; clear HeqH; rewrite Nat.add_comm in H.
+     generalize H5; intros H; rewrite Nat.add_comm in H.
      eapply lt_le_trans in H; [ idtac | apply le_n_S, Nat.le_add_r ].
      rename H into H7.
      rewrite Nat.div_small in Hv12rr; [ rewrite <- Hv12rr | assumption ].
@@ -437,7 +437,7 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
       rewrite Nat.div_small in Ha; [ subst a | assumption ].
       rewrite Nat.add_0_r.
       destruct (lt_dec v12 rr) as [H7| H7].
-       remember H6 as H; clear HeqH.
+       generalize H6; intros H.
        rewrite Hu12, Hrr in H.
        eapply le_lt_trans in H; [ idtac | apply Nat.le_add_r ].
        apply Nat.mul_lt_mono_pos_r in H; [ idtac | assumption ].
@@ -497,20 +497,20 @@ destruct (lt_dec (u3 * r + u4) rr) as [H1| H1].
      remember ((u12 + v12) / rr) as a eqn:Ha .
      rewrite Nat.div_small in Ha; [ subst a | assumption ].
      rewrite Nat.mod_0_l; [ idtac | assumption ].
-     remember H5 as H; clear HeqH.
+     generalize H5; intros H.
      eapply lt_le_trans in H; [ idtac | apply le_n_S, Nat.le_add_r ].
      rename H into H6.
      remember (u12 / rr) as a eqn:Ha .
      rewrite Nat.div_small in Ha; [ subst a | assumption ].
      rewrite Nat.add_0_r.
-     remember H5 as H; clear HeqH; rewrite Nat.add_comm in H.
+     generalize H5; intros H; rewrite Nat.add_comm in H.
      eapply lt_le_trans in H; [ idtac | apply le_n_S, Nat.le_add_r ].
      remember (v12 / rr) as a eqn:Ha.
      rewrite Nat.div_small in Ha; [ subst a | assumption ].
      rewrite Nat.add_0_r.
      rename H into H7.
      symmetry in Hu12rr.
-     remember Hu12rr as H; clear HeqH.
+     generalize Hu12rr; intros H.
      apply Nat.div_small_iff in H; [ idtac | assumption ].
      rename H into Hu1r.
      remember (u1 mod r) as a eqn:Ha.
