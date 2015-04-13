@@ -301,6 +301,17 @@ Qed.
 Theorem NN2I_add2_inj : ∀ u v, (NN2I 2 (u + v) == NN2I 2 u + NN2I 2 v)%I.
 Proof.
 intros u v i.
+bbb.
+This theorem is false.
+Counter-example (g=NN2I 2)
+           u 0.0210
+           v 0.0102
+      g(u+v) 0.1000
+   g(u)+g(v) 0.0000
+
+However u+v = 0.0312 = 3/4 + 1/8 + 2/16 = 16/16 = 1, i.e. 0 in I.
+Likely not enough iterations (2 in NN2I 2).
+
 unfold I_add2, NN_add.
 unfold I2NN, NN2I; fsimpl.
 unfold summation; simpl.

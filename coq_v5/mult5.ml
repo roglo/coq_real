@@ -97,7 +97,34 @@ value nn2i n u =
 
 value i_add2 x y = nn2i 2 (nn_add (i2nn x) (i2nn y));
 
-bbb; (* à voir à partir de là *)
+(* problème avec théorème de Coq : (NN2I 2 (u + v) == NN2I 2 u + NN2I 2 v)%I
+   je ne sais pas s'il est bon ou pas; tests *)
+
+radix.val := 2;
+value rn () = Array.init 4 (fun i → if i = 0 then 0 else Random.int 3);
+value u = let a = rn () in fun i → if i < Array.length a then a.(i) else 0;
+value v = let a = rn () in fun i → if i < Array.length a then a.(i) else 0;
+"u";
+list_of_seq u 15;
+"v";
+list_of_seq v 15;
+"g (u + v)";
+"g u + g v";
+list_of_r (nn2i 2 (nn_add u v)) 15;
+list_of_r (i_add2 (nn2i 2 u) (nn2i 2 v)) 15;
+
+(* contre-exemples trouvés (facilement) :
+     u=0,1212 v=0,0101 g(u+v)=0,0001 g(u)+g(v)=0,1001
+     u=0,0102 v=0,0212 g(u+v)=0,1010 g(u)+g(v)=0,0010
+     u=0,0210 v=0,0102 g(u+v)=0,1000 g(u)+g(v)=0,0000
+
+last one:
+u+v=0,0312=3/4+1/8+2/16=16/16=1
+    likely, not enough iterations
+
+*)
+
+bbb; (* fin des tests; à voir à partir de là *)
 
 value i_mul x y =
   let u = i_mul_algo x y in
