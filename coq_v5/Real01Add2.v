@@ -28,6 +28,9 @@ rewrite Nat.add_0_r.
 reflexivity.
 Qed.
 
+Theorem NN_add_assoc : ∀ u v w, (u + (v + w) = (u + v) + w)%NN.
+Proof. intros u v w i; apply Nat.add_assoc. Qed.
+
 Theorem NN_eq_refl : reflexive _ NN_eq.
 Proof. intros u i; reflexivity. Qed.
 
@@ -298,9 +301,12 @@ rewrite Nat.div_add.
  apply Nat.neq_mul_0; split; assumption.
 Qed.
 
-Theorem NN2I_add2_inj : ∀ u v, (NN2I 2 (u + v) == NN2I 2 u + NN2I 2 v)%I.
+Theorem NN2I_add2_inj : ∀ u v,
+  (∀ i, u i < radix ∧ v i < radix)
+  → (NN2I 2 (u + v) == NN2I 2 u + NN2I 2 v)%I.
 Proof.
-intros u v i.
+intros u v Huv i.
+Admitted. (*
 bbb.
 This theorem is false.
 Counter-example (g=NN2I 2)
@@ -597,7 +603,9 @@ Set Printing Depth 14. Show.
 Unset Printing Notations. Show.
 
 bbb.
+*)
 
+(*
 Theorem zzz : ∀ n u v, n = 2 →
   (NN2I n (u + I2NN (NN2I n v)) == NN2I n (u + v))%I.
 Proof.
@@ -647,7 +655,9 @@ Check NN2I_morph.
 Check NN2I_compat.
 *)
 bbb.
+*)
 
+(*
 Theorem NN2I_lim : ∀ u,
   (∀ j, u j ≤ 2 * pred radix)
   → ∀ n, n ≥ 2
@@ -681,6 +691,7 @@ Set Printing Depth 14. Show.
 
 (* associativity *)
 
+(*
 Theorem I_add_algo_upper_bound : ∀ x y i, I_add_algo x y i ≤ 2 * (radix - 1).
 Proof.
 intros x y i; simpl.
@@ -702,6 +713,7 @@ eapply le_lt_trans with (m := radix * pred radix).
  apply Nat.mul_lt_mono_pos_l; [ apply Digit.radix_gt_0 | idtac ].
  apply Digit.pred_radix_lt_radix.
 Qed.
+*)
 
 Theorem double_radix_le_square_radix : radix + radix ≤ radix * radix.
 Proof.
@@ -774,6 +786,7 @@ apply Nat.add_lt_mono; apply d2n_lt_radix.
 Qed.
 
 (* is it true? *)
+(* no
 Theorem yyy : ∀ u v,
   (∀ j, u j ≤ 2 * pred radix)
   → (∀ j, v j ≤ 2 * pred radix)
@@ -953,6 +966,7 @@ bbb.
 *)
 
 (* is it true? *)
+(* no
 Theorem zzzz : ∀ x u i,
   (∀ j, u j ≤ 2 * pred radix)
   → (NN2I 2 (I2NN x + I2NN (NN2I 2 u))%NN .[ i] =
@@ -1116,7 +1130,9 @@ Unset Printing Notations. Show.
 Set Printing Depth 14. Show.
 *)
 *)
+*)
 
+(*
 Theorem zzz : ∀ x y z i,
   (NN2I 2 (I2NN x + I2NN (NN2I 2 (I2NN y + I2NN z)))%NN .[ i] =
    NN2I 2 (I2NN x + (I2NN y + I2NN z))%NN .[ i])%D.
@@ -1270,12 +1286,63 @@ do 2 rewrite Nat.mul_1_r.
 remember (i + j) as k.
 bbb.
 *)
+*)
+
+(**** [ NN2I_add2_inj : 
+∀ u v : nat → nat,
+(∀ i : nat, u i < radix ∧ v i < radix)
+→ (NN2I 2 (u + v) == NN2I 2 u + NN2I 2 v)%I ]
+*)
+
+Add Parametric Morphism : I2NN
+  with signature I_eqs ==> NN_eq
+  as I2NN_morph.
+Proof. intros x y Hxy i; apply Hxy. Qed.
 
 Theorem I_add2_assoc : ∀ x y z, (x + (y + z) == (x + y) + z)%I.
 Proof.
 intros x y z.
-intros i.
-unfold I_add2, I_add_algo.
+unfold I_add2.
+(*
+remember (I2NN x) as ux.
+remember (I2NN y) as uy.
+remember (I2NN z) as uz.
+*)
+SearchAbout (I_eqs (NN2I _ _)).
+rewrite NN2I_compat.
+Focus 2.
+SearchAbout (NN_eq (NN_add _ _)).
+rewrite NN_add_compat; [ idtac | reflexivity | idtac ].
+Focus 2.
+rewrite NN2I_add2_inj.
+reflexivity.
+Unfocus.
+rewrite NN2I_I2NN.
+rewrite NN2I_I2NN.
+reflexivity.
+Unfocus.
+unfold I_add2.
+Unset Printing Notations. Show.
+Check NN_add_assoc.
+Check I2NN_NN2I.
+rewrite I2NN_NN2I.
+bbb.
+
+NN2I 2 (I2NN (NN2I 2 (I2NN y)
+
+NN2I
+NN_add
+I2NN
+
+bbb.
+   NN2I 2 (I2NN y + I2NN z) == NN2I 2 (I2NN y) + NN2I 2 (I2NN z)
+  ============================
+   I_eqs
+     (NN2I (S (S O))
+        (NN_add (I2NN x) (I2NN (NN2I (S (S O)) (NN_add (I2NN y) (I2NN z))))))
+     (NN2I (S (S O))
+        (NN_add (I2NN (NN2I (S (S O)) (NN_add (I2NN x) (I2NN y)))) (I2NN z)))
+
 unfold NN2I, I2NN, NN_add; fsimpl.
 unfold summation; rewrite Nat.sub_0_r; simpl.
 do 12 rewrite Nat.add_0_r.
