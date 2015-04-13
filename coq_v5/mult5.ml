@@ -24,6 +24,18 @@ value list_of_r x n =
   List.map d2n l
 ;
 
+value r_of_string s =
+  {rm i =
+     if i ≥ String.length s then {dig = 0}
+     else
+       let c = Char.code s.[i] - Char.code '0' in
+       if c >= radix.val then
+         failwith
+           (sprintf "r_of_string \"%s\" (digit %d is %c > %d)" s i s.[i]
+              (radix.val - 1))
+       else {dig = c}}
+;
+
 value b2n b = b (*if b then 1 else 0*);
 
 value add_check_ov a b =
@@ -97,31 +109,72 @@ value nn2i n u =
 
 value i_add2 x y = nn2i 2 (nn_add (i2nn x) (i2nn y));
 
-(* problème avec théorème de Coq : (NN2I 2 (u + v) == NN2I 2 u + NN2I 2 v)%I
-   je ne sais pas s'il est bon ou pas; tests *)
+(* addition carrément fausse ! n=2 est insuffisant *)
 
 radix.val := 2;
-value rn () = Array.init 4 (fun i → if i = 0 then 0 else Random.int 3);
-value u = let a = rn () in fun i → if i < Array.length a then a.(i) else 0;
-value v = let a = rn () in fun i → if i < Array.length a then a.(i) else 0;
-"u";
-list_of_seq u 15;
-"v";
-list_of_seq v 15;
-"g (u + v)";
-"g u + g v";
-list_of_r (nn2i 2 (nn_add u v)) 15;
-list_of_r (i_add2 (nn2i 2 u) (nn2i 2 v)) 15;
+value x = r_of_string "0011";
+value y = r_of_string "0101";
+"x, y";
+list_of_r x 7;
+list_of_r y 7;
+"f x + f y";
+list_of_seq (nn_add (i2nn x) (i2nn y)) 7;
+"x + y";
+list_of_r (i_add2 x y) 7;
 
-(* contre-exemples trouvés (facilement) :
-     u=0,1212 v=0,0101 g(u+v)=0,0001 g(u)+g(v)=0,1001
-     u=0,0102 v=0,0212 g(u+v)=0,1010 g(u)+g(v)=0,0010
-     u=0,0210 v=0,0102 g(u+v)=0,1000 g(u)+g(v)=0,0000
+glop;
 
-last one:
-u+v=0,0312=3/4+1/8+2/16=16/16=1
-    likely, not enough iterations
+(* est-ce que cette addition est associative ? Je n'en suis pas sûr *)
 
+value d0 = {dig = 0};
+(*
+value rn () = Array.init 4 (fun i → {dig = if i = 0 then 0 else Random.int 2});
+value x = let a = rn () in {rm i = if i < Array.length a then a.(i) else d0};
+value y = let a = rn () in {rm i = if i < Array.length a then a.(i) else d0};
+value z = let a = rn () in {rm i = if i < Array.length a then a.(i) else d0};
+"x, y, z";
+list_of_r x 7;
+list_of_r y 7;
+list_of_r z 7;
+"x + (y + z)";
+"(x + y) + z";
+list_of_r (i_add2 x (i_add2 y z)) 7;
+list_of_r (i_add2 (i_add2 x y) z) 7;
+*)
+(*
+- : string = "x, y, z"
+- : list int = [0; 0; 1; 1; 0; 0; 0]
+- : list int = [0; 1; 0; 1; 0; 0; 0]
+- : list int = [0; 1; 0; 0; 0; 0; 0]
+- : string = "x + (y + z)"
+- : string = "(x + y) + z"
+- : list int = [1; 1; 0; 0; 0; 0; 0]
+- : list int = [0; 1; 0; 0; 0; 0; 0]
+
+x = 0,0011 = 1/8+1/16 = 3/16
+y = 0,0101 = 1/4+1/16 = 5/16
+z = 0,0100 = 1/4
+
+en vrai x+y+z=(3+5+4)/16=12/16=3/4
+
+x+(y+z) = 0,11 = 1/2+1/4=3/4 ok!
+(x+y)+z = 0,01 = 1/4 faux
+*)
+
+(*
+value x = r_of_string "0011";
+value y = r_of_string "0101";
+value z = r_of_string "0100";
+"x, y, z";
+list_of_r x 7;
+list_of_r y 7;
+list_of_r z 7;
+"x + (y + z)";
+"(x + y) + z";
+list_of_r (i_add2 x (i_add2 y z)) 7;
+list_of_r (i_add2 (i_add2 x y) z) 7;
+
+list_of_r (i_add2 x y) 7;
 *)
 
 bbb; (* fin des tests; à voir à partir de là *)
@@ -131,18 +184,6 @@ value i_mul x y =
   {rm i =
      let n = logn radix.val (i * (radix.val - 1) + radix.val) + 2 in
      z_of_u radix.val n u i}
-;
-
-value r_of_string s =
-  {rm i =
-     if i ≥ String.length s then 0
-     else
-       let c = Char.code s.[i] - Char.code '0' in
-       if c >= radix.val then
-         failwith
-           (sprintf "r_of_string \"%s\" (digit %d is %c > %d)" s i s.[i]
-              (radix.val - 1))
-       else c}
 ;
 
 radix.val := 10;
