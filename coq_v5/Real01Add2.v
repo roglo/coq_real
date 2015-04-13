@@ -312,6 +312,10 @@ Counter-example (g=NN2I 2)
 However u+v = 0.0312 = 3/4 + 1/8 + 2/16 = 16/16 = 1, i.e. 0 in I.
 Likely not enough iterations (2 in NN2I 2).
 
+Faut-il ajouter comme conditions que u et v sont des représentations
+en nombres à nombres de nombres à chiffres normaux ? c'est-à-dire
+   ∀ i, u i < r et v i < r
+
 unfold I_add2, NN_add.
 unfold I2NN, NN2I; fsimpl.
 unfold summation; simpl.
