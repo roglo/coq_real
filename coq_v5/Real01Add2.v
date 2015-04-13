@@ -306,7 +306,6 @@ Theorem NN2I_add2_inj : ∀ u v,
   → (NN2I 2 (u + v) == NN2I 2 u + NN2I 2 v)%I.
 Proof.
 intros u v Huv i.
-Admitted. (*
 bbb.
 This theorem is false.
 Counter-example (g=NN2I 2)
@@ -321,7 +320,7 @@ Likely not enough iterations (2 in NN2I 2).
 Faut-il ajouter comme conditions que u et v sont des représentations
 en nombres à nombres de nombres à chiffres normaux ? c'est-à-dire
    ∀ i, u i < r et v i < r
-
+*)
 unfold I_add2, NN_add.
 unfold I2NN, NN2I; fsimpl.
 unfold summation; simpl.
