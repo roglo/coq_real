@@ -307,7 +307,7 @@ Theorem NN2I_add2_inj : ∀ u v,
 Proof.
 intros u v Huv i.
 bbb.
-This theorem is false.
+This theorem without Hu is false.
 Counter-example (g=NN2I 2)
            u 0.0210
            v 0.0102
