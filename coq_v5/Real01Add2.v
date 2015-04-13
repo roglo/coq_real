@@ -1299,25 +1299,36 @@ Add Parametric Morphism : I2NN
   as I2NN_morph.
 Proof. intros x y Hxy i; apply Hxy. Qed.
 
+Theorem I2NN_NN2I_1 : ∀ u n,
+  (∀ i, u i ≤ 2 * (radix - 1))
+  → (I2NN (NN2I n u) = u)%NN.
+Proof.
+intros u n Hu.
+bbb.
+*)
+
 Theorem I_add2_assoc : ∀ x y z, (x + (y + z) == (x + y) + z)%I.
 Proof.
 intros x y z.
 unfold I_add2.
+rewrite I2NN_NN2I_1.
+bbb.
 (*
 remember (I2NN x) as ux.
 remember (I2NN y) as uy.
 remember (I2NN z) as uz.
 *)
-SearchAbout (I_eqs (NN2I _ _)).
+Unset Printing Notations. Show.
+Check I2NN_NN2I_1.
 rewrite NN2I_compat.
 Focus 2.
-SearchAbout (NN_eq (NN_add _ _)).
-rewrite NN_add_compat; [ idtac | reflexivity | idtac ].
-Focus 2.
-rewrite NN2I_add2_inj.
+rewrite <- NN2I_add2_inj.
 reflexivity.
 Unfocus.
-rewrite NN2I_I2NN.
+bbb.
+I2NN (NN2I
+
+rewrite NN2I_I2NN_1.
 rewrite NN2I_I2NN.
 reflexivity.
 Unfocus.
