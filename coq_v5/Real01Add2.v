@@ -86,10 +86,10 @@ Fixpoint int_pow a b :=
   | S b1 => a * int_pow a b1
   end.
 
-Definition seq_not_pred_r_to_0 (u : nat → nat) i k :=
-  if eq_nat_dec (u (i + k)) (pred radix) then 1 else 0.
+Definition seq_pred_r_to_0 (u : nat → nat) i k :=
+  if eq_nat_dec (u (i + k)) (pred radix) then 0 else 1.
 
-Definition fst_not_pred_r u i := first_nonzero (seq_not_pred_r_to_0 u i).
+Definition fst_not_pred_r u i := first_nonzero (seq_pred_r_to_0 u i).
 
 Definition carry u i :=
   match fst_not_pred_r u (S i) with
