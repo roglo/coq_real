@@ -122,7 +122,7 @@ value i_add2 x y = nn2i (nn_add (i2nn x) (i2nn y));
 value nn2i_mul u =
   let r = radix.val in
   {rm i =
-     let n = logn r (i * (r - 1) + r) + 2 in
+     let n = logn r (i * (r - 1) + r) + 4 in
      let s = summation 0 n (fun k → u (i + k) * int_pow r (n - k)) in
      n2d ((s / int_pow r n) mod r)}
 ;
@@ -138,8 +138,8 @@ value int_of_i x ndec =
 ;
 
 value d0 = {dig = 0};
-radix.val := 2;
-value ndec = 4;
+radix.val := 10;
+value ndec = 5;
 
 value (n_iter, x, y, axy, xy) =
   loop 0 where rec loop n =
@@ -159,7 +159,7 @@ value (n_iter, x, y, axy, xy) =
 value big_nn2i_mul u =
   let r = radix.val in
   {rm i =
-     let n = logn r (i * (r - 1) + r) + 7 in
+     let n = logn r (i * (r - 1) + r) + 5 in
      let s = summation 0 n (fun k → u (i + k) * int_pow r (n - k)) in
      n2d ((s / int_pow r n) mod r)}
 ;
