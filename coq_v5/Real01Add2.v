@@ -101,10 +101,6 @@ Definition I2NN x i := d2n (x.[i]).
 Definition NN2I u := {| rm i := n2d (u i + carry u i) |}.
 Arguments NN2I u%NN.
 
-(* this addition is false ; the value n=2 is not sufficient for the
-   example 0.0011+0.0101 whose result in NN is 0.0112 (correct) but
-   the conversion back to I gives 0 instead of 0.1 *)
-
 Definition I_add2 x y := NN2I (I2NN x + I2NN y).
 Arguments I_add2 x%I y%I.
 
