@@ -148,8 +148,8 @@ value int_of_i x ndec =
 ;
 
 value d0 = {dig = 0};
-radix.val := 10;
-value ndec = 3;
+radix.val := 2;
+value ndec = 4;
 
 value (n, x, y, axy, xy) =
   loop 0 where rec loop n =
@@ -166,9 +166,23 @@ value (n, x, y, axy, xy) =
     else (n, x, y, axy, xy)
 ;
 
+value big_nn2i_mul u =
+  let r = radix.val in
+  {rm i =
+     let n = logn r (i * (r - 1) + r) + 7 in
+     let s = summation 0 n (fun k → u (i + k) * int_pow r (n - k)) in
+     n2d ((s / int_pow r n) mod r)}
+;
+
 "x, y, z";
 list_of_r x ndec;
 list_of_r y ndec;
+"x * y = nn";
+let u = nn_mul (i2nn x) (i2nn y) in
+list_of_seq u (3 * ndec);
+"x * y (big)";
+let u = nn_mul (i2nn x) (i2nn y) in
+list_of_r (big_nn2i_mul u) (3 * ndec);
 "x * y";
 list_of_r (i_mul x y) (3 * ndec);
 axy;
