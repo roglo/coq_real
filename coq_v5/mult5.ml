@@ -38,6 +38,7 @@ value r_of_string s =
 
 value b2n b = b (*if b then 1 else 0*);
 
+(*
 value add_check_ov a b =
   if a < 0 then
     failwith (sprintf "summation negative arg %d" a)
@@ -55,6 +56,7 @@ value rec summation_loop b len g =
   end.
 
 value summation b e g = summation_loop b (e + 1 - b) g;
+*)
 
 value rec int_pow a b =
   if b < 0 then invalid_arg "int_pow"
@@ -94,19 +96,43 @@ value z_of_u b n u i =
 ;
 *)
 
-value rec fst_not_pred_r u i =
-  if u i = radix.val - 1 then 1 + fst_not_pred_r u (i + 1)
-  else 1
+value max_iter = 50;
+
+value find_nonzero u =
+  loop max_iter 0 where rec loop m i =
+    if m = 0 then None
+    else if u i = 0 then loop (m - 1) (i + 1) else Some i
 ;
 
+mmm.... faut voir...
+
+value rec first_nonzero_loop (u : int → int) m i =
+  if u i = 0 then
+    match m with
+    | 0 → 0
+    | _ → first_nonzero_loop u (m - 1) (i + 1)
+    end
+  else i.
+
+value first_nonzero u =
+  match find_nonzero u with
+  | Some i → Some (first_nonzero_loop u i 0)
+  | None → None
+  end.
+
+value seq_not_pred_r_to_0 (u : int → int) i k =
+  if u (i + k) = radix.val - 1 then 1 else 0;
+
+value fst_not_pred_r u i = first_nonzero (seq_not_pred_r_to_0 u i).
+
+value carry u i =
+  match fst_not_pred_r u (i + 1) with
+  | Some n → if u (i + n + 1) < radix.val then 0 else 1
+  | None → 1
+  end.
+
 value i2nn x i = d2n (x.rm i);
-value nn2i u =
-  let r = radix.val in
-  {rm i =
-     let n = fst_not_pred_r u (i + 1) in
-     let s = summation 0 n (fun k → u (i + k) * int_pow r (n - k)) in
-     n2d (s / int_pow r n)}
-;
+value nn2i u = {rm i = n2d (u i + carry u i)}.
 
 value i_add2 x y = nn2i (nn_add (i2nn x) (i2nn y));
 
@@ -114,8 +140,8 @@ value i_add2 x y = nn2i (nn_add (i2nn x) (i2nn y));
    voyons ce que ça donne maintenant... *)
 
 radix.val := 2;
-value x = r_of_string "0011";
-value y = r_of_string "0101";
+value x = r_of_string "011";
+value y = r_of_string "001";
 "x, y";
 list_of_r x 7;
 list_of_r y 7;
@@ -124,13 +150,33 @@ list_of_seq (nn_add (i2nn x) (i2nn y)) 7;
 "x + y";
 list_of_r (i_add2 x y) 7;
 
+bug;
+
 (* est-ce que cette addition est associative ? *)
 
-radix.val := 10;
+radix.val := 2;
+value x = r_of_string "010";
+value y = r_of_string "001";
+value z = r_of_string "001";
+"x, y, z";
+value ndec = 15;
+list_of_r x ndec;
+list_of_r y ndec;
+list_of_r z ndec;
+"(y + z), (x + y)";
+list_of_r (i_add2 y z) ndec;
+list_of_r (i_add2 x y) ndec;
+"x + (y + z)";
+"(x + y) + z";
+list_of_r (i_add2 x (i_add2 y z)) ndec;
+list_of_r (i_add2 (i_add2 x y) z) ndec;
+
+glop;
+
+radix.val := 2;
 value d0 = {dig = 0};
 value rn () =
-  Array.init 20
-    (fun i → {dig = if i = 0 then 0 else Random.int (radix.val - 1)})
+  Array.init 3 (fun i → {dig = if i = 0 then 0 else Random.int radix.val})
 ;
 value x = let a = rn () in {rm i = if i < Array.length a then a.(i) else d0};
 value y = let a = rn () in {rm i = if i < Array.length a then a.(i) else d0};
