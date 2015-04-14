@@ -94,11 +94,16 @@ value z_of_u b n u i =
 ;
 *)
 
+value rec fst_not_pred_r u i =
+  if u i = radix.val - 1 then 1 + fst_not_pred_r u (i + 1)
+  else 1
+;
+
 value i2nn x i = d2n (x.rm i);
 value nn2i u =
   let r = radix.val in
   {rm i =
-     let n = fst_not_pred_r u in
+     let n = fst_not_pred_r u (i + 1) in
      let s = summation 0 n (fun k → u (i + k) * int_pow r (n - k)) in
      n2d (s / int_pow r n)}
 ;
@@ -119,25 +124,26 @@ list_of_seq (nn_add (i2nn x) (i2nn y)) 7;
 "x + y";
 list_of_r (i_add2 x y) 7;
 
-glop;
+(* est-ce que cette addition est associative ? *)
 
-(* est-ce que cette addition est associative ? Je n'en suis pas sûr *)
-
+radix.val := 10;
 value d0 = {dig = 0};
-(*
-value rn () = Array.init 4 (fun i → {dig = if i = 0 then 0 else Random.int 2});
+value rn () =
+  Array.init 20
+    (fun i → {dig = if i = 0 then 0 else Random.int (radix.val - 1)})
+;
 value x = let a = rn () in {rm i = if i < Array.length a then a.(i) else d0};
 value y = let a = rn () in {rm i = if i < Array.length a then a.(i) else d0};
 value z = let a = rn () in {rm i = if i < Array.length a then a.(i) else d0};
 "x, y, z";
-list_of_r x 7;
-list_of_r y 7;
-list_of_r z 7;
+value ndec = 15;
+list_of_r x ndec;
+list_of_r y ndec;
+list_of_r z ndec;
 "x + (y + z)";
 "(x + y) + z";
-list_of_r (i_add2 x (i_add2 y z)) 7;
-list_of_r (i_add2 (i_add2 x y) z) 7;
-*)
+list_of_r (i_add2 x (i_add2 y z)) ndec;
+list_of_r (i_add2 (i_add2 x y) z) ndec;
 (*
 - : string = "x, y, z"
 - : list int = [0; 0; 1; 1; 0; 0; 0]
