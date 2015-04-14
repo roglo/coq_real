@@ -104,8 +104,6 @@ value find_nonzero u =
     else if u i = 0 then loop (m - 1) (i + 1) else Some i
 ;
 
-mmm.... faut voir...
-
 value rec first_nonzero_loop (u : int → int) m i =
   if u i = 0 then
     match m with
@@ -120,10 +118,10 @@ value first_nonzero u =
   | None → None
   end.
 
-value seq_not_pred_r_to_0 (u : int → int) i k =
-  if u (i + k) = radix.val - 1 then 1 else 0;
+value seq_pred_r_to_0 (u : int → int) i k =
+  if u (i + k) = radix.val - 1 then 0 else 1;
 
-value fst_not_pred_r u i = first_nonzero (seq_not_pred_r_to_0 u i).
+value fst_not_pred_r u i = first_nonzero (seq_pred_r_to_0 u i).
 
 value carry u i =
   match fst_not_pred_r u (i + 1) with
@@ -139,6 +137,7 @@ value i_add2 x y = nn2i (nn_add (i2nn x) (i2nn y));
 (* addition était carrément fausse ! n=2 était insuffisant ;
    voyons ce que ça donne maintenant... *)
 
+(*
 radix.val := 2;
 value x = r_of_string "011";
 value y = r_of_string "001";
@@ -149,11 +148,11 @@ list_of_r y 7;
 list_of_seq (nn_add (i2nn x) (i2nn y)) 7;
 "x + y";
 list_of_r (i_add2 x y) 7;
-
-bug;
+*)
 
 (* est-ce que cette addition est associative ? *)
 
+(*
 radix.val := 2;
 value x = r_of_string "010";
 value y = r_of_string "001";
@@ -170,13 +169,12 @@ list_of_r (i_add2 x y) ndec;
 "(x + y) + z";
 list_of_r (i_add2 x (i_add2 y z)) ndec;
 list_of_r (i_add2 (i_add2 x y) z) ndec;
+*)
 
-glop;
-
-radix.val := 2;
+radix.val := 10;
 value d0 = {dig = 0};
 value rn () =
-  Array.init 3 (fun i → {dig = if i = 0 then 0 else Random.int radix.val})
+  Array.init 10 (fun i → {dig = if i = 0 then 0 else Random.int radix.val})
 ;
 value x = let a = rn () in {rm i = if i < Array.length a then a.(i) else d0};
 value y = let a = rn () in {rm i = if i < Array.length a then a.(i) else d0};
