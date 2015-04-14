@@ -131,9 +131,51 @@ value i_mul x y = nn2i_mul (nn_mul (i2nn x) (i2nn y));
 
 (* multiplication *)
 
-radix.val := 10;
+(*
+value string_of_i r x ndec =
+  loop x [] where rec loop x l =
+    if List.length l = ndec then String.concat "" l
+    else
+      let c = Char.chr (Char.code '0' + x mod r) in
+      loop (x / r) [String.make 1 c :: l]
+;
+*)
+
+value int_of_i x ndec =
+  loop 0 0 where rec loop r i =
+    if i = ndec then r
+    else loop (r * radix.val + d2n (x.rm i)) (i + 1)
+;
+
 value d0 = {dig = 0};
-value ndec = 12;
+radix.val := 10;
+value ndec = 3;
+
+value (n, x, y, axy, xy) =
+  loop 0 where rec loop n =
+    let rn () = Array.init ndec (fun i → {dig = Random.int radix.val}) in
+    let x =
+      let a = rn () in {rm i = if i < Array.length a then a.(i) else d0}
+    in
+    let y =
+      let a = rn () in {rm i = if i < Array.length a then a.(i) else d0}
+    in
+    let axy = int_of_i (i_mul x y) (2 * ndec) in
+    let xy = int_of_i x ndec * int_of_i y ndec in
+    if axy = xy then loop (n + 1)
+    else (n, x, y, axy, xy)
+;
+
+"x, y, z";
+list_of_r x ndec;
+list_of_r y ndec;
+"x * y";
+list_of_r (i_mul x y) (3 * ndec);
+axy;
+let _ = Printf.printf "%d*%d;\n%!" (int_of_i x ndec) (int_of_i y ndec) in
+xy;
+
+bbb;
 
 value (x, y, z) =
 loop () where rec loop () =
