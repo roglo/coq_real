@@ -133,10 +133,11 @@ value i_mul x y = nn2i_mul (nn_mul (i2nn x) (i2nn y));
 
 radix.val := 10;
 value d0 = {dig = 0};
+value ndec = 12;
 
 value (x, y, z) =
 loop () where rec loop () =
-let rn () = Array.init 3 (fun i → {dig = Random.int radix.val}) in
+let rn () = Array.init 4 (fun i → {dig = Random.int radix.val}) in
 let x = let a = rn () in {rm i = if i < Array.length a then a.(i) else d0} in
 let y = let a = rn () in {rm i = if i < Array.length a then a.(i) else d0} in
 let z = let a = rn () in {rm i = if i < Array.length a then a.(i) else d0} in
@@ -145,7 +146,6 @@ then loop ()
 else (x, y, z);
 
 "x, y, z";
-value ndec = 10;
 list_of_r x ndec;
 list_of_r y ndec;
 list_of_r z ndec;
