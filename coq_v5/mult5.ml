@@ -131,7 +131,7 @@ value i_mul x y = nn2i_mul (nn_mul (i2nn x) (i2nn y));
 
 (* multiplication *)
 
-radix.val := 10;
+radix.val := 2;
 value d0 = {dig = 0};
 value ndec = 12;
 
