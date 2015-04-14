@@ -131,16 +131,6 @@ value i_mul x y = nn2i_mul (nn_mul (i2nn x) (i2nn y));
 
 (* multiplication *)
 
-(*
-value string_of_i r x ndec =
-  loop x [] where rec loop x l =
-    if List.length l = ndec then String.concat "" l
-    else
-      let c = Char.chr (Char.code '0' + x mod r) in
-      loop (x / r) [String.make 1 c :: l]
-;
-*)
-
 value int_of_i x ndec =
   loop 0 0 where rec loop r i =
     if i = ndec then r
@@ -151,7 +141,7 @@ value d0 = {dig = 0};
 radix.val := 2;
 value ndec = 4;
 
-value (n, x, y, axy, xy) =
+value (n_iter, x, y, axy, xy) =
   loop 0 where rec loop n =
     let rn () = Array.init ndec (fun i → {dig = Random.int radix.val}) in
     let x =
