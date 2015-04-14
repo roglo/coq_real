@@ -92,24 +92,21 @@ value z_of_u b n u i =
     (summation 0 n (fun k → u (i + k) * int_pow b (n - k))) (int_pow b n))
     mod b
 ;
-
-value i_add x y =
-  let u = i_add_algo x y in
-  {rm = z_of_u 2 radix.val u}
-;
 *)
 
 value i2nn x i = d2n (x.rm i);
-value nn2i n u =
+value nn2i u =
   let r = radix.val in
   {rm i =
+     let n = fst_not_pred_r u in
      let s = summation 0 n (fun k → u (i + k) * int_pow r (n - k)) in
      n2d (s / int_pow r n)}
 ;
 
-value i_add2 x y = nn2i 2 (nn_add (i2nn x) (i2nn y));
+value i_add2 x y = nn2i (nn_add (i2nn x) (i2nn y));
 
-(* addition carrément fausse ! n=2 est insuffisant *)
+(* addition était carrément fausse ! n=2 était insuffisant ;
+   voyons ce que ça donne maintenant... *)
 
 radix.val := 2;
 value x = r_of_string "0011";
