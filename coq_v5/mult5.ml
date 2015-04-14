@@ -2,6 +2,28 @@
 
 open Printf.
 
+(* summation *)
+
+value add_check_ov a b =
+  if a < 0 then
+    failwith (sprintf "summation negative arg %d" a)
+  else
+    let c = a + b in
+    if c < 0 then
+      failwith (sprintf "summation overflow %d+%d" a b)
+    else c
+;
+
+value rec summation_loop b len g =
+  match len with
+  | 0 → 0
+  | _ → add_check_ov (g b) (summation_loop (b + 1) (len - 1) g)
+  end.
+
+value summation b e g = summation_loop b (e + 1 - b) g;
+
+(* operations in numbers with numbers *)
+
 type digit = { dig : int };
 
 value list_of_seq u =
@@ -11,6 +33,9 @@ value list_of_seq u =
 ;
 
 value nn_add u v i = u i + v i;
+value nn_mul u v i = summation 1 i (fun j → u (j - 1) * v (i - j));
+
+(* *)
 
 value radix = ref 10;
 
@@ -36,28 +61,6 @@ value r_of_string s =
        else {dig = c}}
 ;
 
-value b2n b = b (*if b then 1 else 0*);
-
-(*
-value add_check_ov a b =
-  if a < 0 then
-    failwith (sprintf "summation negative arg %d" a)
-  else
-    let c = a + b in
-    if c < 0 then
-      failwith (sprintf "summation overflow %d+%d" a b)
-    else c
-;
-
-value rec summation_loop b len g =
-  match len with
-  | 0 → 0
-  | _ → add_check_ov (g b) (summation_loop (b + 1) (len - 1) g)
-  end.
-
-value summation b e g = summation_loop b (e + 1 - b) g;
-*)
-
 value rec int_pow a b =
   if b < 0 then invalid_arg "int_pow"
   else if b = 0 then 1
@@ -66,16 +69,6 @@ value rec int_pow a b =
     if a > 0 && r < 0 then failwith (sprintf "int_pow overflow %d %d" a b)
     else r
 ;
-
-(*
-value i_add_algo x y i = x.rm i + y.rm i;
-
-value i_mul_algo x y i =
-  summation 1 i (fun j → b2n (x.rm (j - 1)) * b2n (y.rm (i - j)))
-;
-
-value q_floor p q = p / q;
-*)
 
 value logn n a =
   loop a a - 1 where rec loop m a =
@@ -87,14 +80,6 @@ value logn n a =
         else 1 + loop m1 (a / n)
     end
 ;
-
-(*
-value z_of_u b n u i =
-  (q_floor
-    (summation 0 n (fun k → u (i + k) * int_pow b (n - k))) (int_pow b n))
-    mod b
-;
-*)
 
 value max_iter = 50;
 
@@ -134,6 +119,74 @@ value nn2i u = {rm i = n2d (u i + carry u i)}.
 
 value i_add2 x y = nn2i (nn_add (i2nn x) (i2nn y));
 
+value nn2i_mul u =
+  let r = radix.val in
+  {rm i =
+     let n = logn r (i * (r - 1) + r) + 2 in
+     let s = summation 0 n (fun k → u (i + k) * int_pow r (n - k)) in
+     n2d ((s / int_pow r n) mod r)}
+;
+
+value i_mul x y = nn2i_mul (nn_mul (i2nn x) (i2nn y));
+
+(* multiplication *)
+
+radix.val := 10;
+value d0 = {dig = 0};
+
+value (x, y, z) =
+loop () where rec loop () =
+let rn () = Array.init 3 (fun i → {dig = Random.int radix.val}) in
+let x = let a = rn () in {rm i = if i < Array.length a then a.(i) else d0} in
+let y = let a = rn () in {rm i = if i < Array.length a then a.(i) else d0} in
+let z = let a = rn () in {rm i = if i < Array.length a then a.(i) else d0} in
+if list_of_r (i_mul x (i_mul y z)) ndec = list_of_r (i_mul (i_mul x y) z) ndec
+then loop ()
+else (x, y, z);
+
+"x, y, z";
+value ndec = 10;
+list_of_r x ndec;
+list_of_r y ndec;
+list_of_r z ndec;
+"x * (y * z)";
+"(x * y) * z";
+list_of_r (i_mul x (i_mul y z)) ndec;
+list_of_r (i_mul (i_mul x y) z) ndec;
+
+bbb.
+
+(*
+base 2
+- : list int = [1; 1; 1; 0; 0; 0; 0; 0; 0; 0]
+- : list int = [1; 1; 0; 1; 0; 0; 0; 0; 0; 0]
+- : list int = [1; 1; 0; 1; 0; 0; 0; 0; 0; 0]
+- : string = "x * (y * z)"
+- : string = "(x * y) * z"
+- : list int = [1; 0; 0; 1; 0; 0; 1; 1; 1; 1]
+- : list int = [0; 0; 0; 1; 0; 0; 1; 1; 1; 1]
+
+base 10
+- : list int = [1; 6; 7; 0; 0; 0; 0; 0; 0; 0]
+- : list int = [5; 9; 9; 0; 0; 0; 0; 0; 0; 0]
+- : list int = [5; 6; 0; 0; 0; 0; 0; 0; 0; 0]
+- : string = "x * (y * z)"
+- : string = "(x * y) * z"
+- : list int = [0; 5; 6; 0; 1; 8; 4; 8; 0; 0]
+- : list int = [0; 5; 0; 4; 1; 8; 4; 8; 0; 0]
+
+167*599*560;
+- : int = 56018480
+*)
+
+radix.val := 10;
+239*4649;
+list_of_seq (nn_mul (i2nn (r_of_string "239")) (i2nn (r_of_string "4649")))
+ ndec;
+list_of_r (i_mul (r_of_string "239") (r_of_string "4649")) ndec;
+
+bbb.
+
 (* addition était carrément fausse ! n=2 était insuffisant ;
    voyons ce que ça donne maintenant... *)
 
@@ -171,6 +224,8 @@ list_of_r (i_add2 x (i_add2 y z)) ndec;
 list_of_r (i_add2 (i_add2 x y) z) ndec;
 *)
 
+(* addition *)
+
 radix.val := 10;
 value d0 = {dig = 0};
 value rn () =
@@ -188,6 +243,7 @@ list_of_r z ndec;
 "(x + y) + z";
 list_of_r (i_add2 x (i_add2 y z)) ndec;
 list_of_r (i_add2 (i_add2 x y) z) ndec;
+
 (*
 - : string = "x, y, z"
 - : list int = [0; 0; 1; 1; 0; 0; 0]
@@ -225,13 +281,6 @@ list_of_r (i_add2 x y) 7;
 *)
 
 bbb; (* fin des tests; à voir à partir de là *)
-
-value i_mul x y =
-  let u = i_mul_algo x y in
-  {rm i =
-     let n = logn radix.val (i * (radix.val - 1) + radix.val) + 2 in
-     z_of_u radix.val n u i}
-;
 
 radix.val := 10;
 
