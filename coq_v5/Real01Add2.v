@@ -2,7 +2,7 @@
 
 Require Import Utf8 QArith NPeano.
 Require Import Misc Summation.
-Require Import Digit2 Real012.
+Require Import Oracle Digit2 Real012.
 
 Open Scope nat_scope.
 
@@ -86,22 +86,29 @@ Fixpoint int_pow a b :=
   | S b1 => a * int_pow a b1
   end.
 
+Definition seq_not_pred_r_to_0 (u : nat → nat) i k :=
+  if eq_nat_dec (u (i + k)) (pred radix) then 1 else 0.
+
+Definition fst_not_pred_r u i := first_nonzero (seq_not_pred_r_to_0 u i).
+
+Definition carry u i :=
+  match fst_not_pred_r u (S i) with
+  | Some n => if lt_dec (u (S (i + n))) radix then 0 else 1
+  | None => 1
+  end.
+
 Definition I2NN x i := d2n (x.[i]).
-Definition NN2I n u :=
-  let r := radix in
-  {| rm i :=
-       let s := Σ (k = 0, n), (u (i + k) * int_pow r (n - k)) in
-       n2d (s / int_pow r n) |}.
-Arguments NN2I n%nat u%NN.
+Definition NN2I u := {| rm i := n2d (u i + carry u i) |}.
+Arguments NN2I u%NN.
 
 (* this addition is false ; the value n=2 is not sufficient for the
    example 0.0011+0.0101 whose result in NN is 0.0112 (correct) but
    the conversion back to I gives 0 instead of 0.1 *)
 
-Definition I_add2 x y := NN2I 2 (I2NN x + I2NN y).
+Definition I_add2 x y := NN2I (I2NN x + I2NN y).
 Arguments I_add2 x%I y%I.
 
-bbb.
+bbb. (* addition to be checked in mult5.ml first *)
 
 Notation "x + y" := (I_add2 x y) : I_scope.
 
