@@ -248,6 +248,8 @@ base 10
 *)
 
 radix.val := 10;
+value ndec = 40;
+
 239*4649;
 list_of_seq (nn_mul (i2nn (r_of_string "239")) (i2nn (r_of_string "4649")))
  ndec;
