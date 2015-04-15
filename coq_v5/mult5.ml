@@ -146,7 +146,15 @@ value carry_mul u i =
       let dt = int_pow r n in
       nt / dt
   | None →
-      r - 1 - u i mod r
+      (* the following value of n ensures that the integer part of the
+         error is 0 *)
+      let n = logn r (i * (r - 1) + r) + 2 in
+      let nt = summation 1 n (fun k → u (i + k) * int_pow r (n - k)) in
+      let dt = int_pow r n in
+let ft = nt - nt / dt * dt in
+let fe = (i + n + 1) * (r - 1) + 1 in
+let _ = printf "i %d et %d/%d ef %d/%d\n%!" i nt dt (ft + fe) dt in
+      nt / dt + 1
   end.
 
 value nn2i_mul u = {rm i = n2d (u i + carry_mul u i)}.
@@ -154,17 +162,23 @@ value i_mul x y = nn2i_mul (nn_mul (i2nn x) (i2nn y));
 
 (* test multiplication *)
 
-(* one times one (fails in the current version because of carry_mul) *)
+(* one times one *)
 
 radix.val := 2;
 value one () = {rm _ = n2d (radix.val - 1)};
+"1*1";
 list_of_seq (nn_mul (i2nn (one ())) (i2nn (one ()))) 15;
-list_of_r (i_mul (one ()) (one ())) 15;
+list_of_r (i_mul (one ()) (one ())) 50;
 
+"1*101110";
 list_of_seq (nn_mul (i2nn (one ())) (i2nn (r_of_string "101110"))) 15;
 list_of_r (i_mul (one ()) (r_of_string "101110")) 15;
 
-bbb; (* ci-dessus pas bon *)
+"101110*1";
+list_of_seq (nn_mul (i2nn (r_of_string "101110")) (i2nn (one ()))) 15;
+list_of_r (i_mul (r_of_string "101110") (one ())) 15;
+
+bbb;
 
 (* *)
 
