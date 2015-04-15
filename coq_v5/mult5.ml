@@ -108,7 +108,7 @@ value seq_pred_r_to_0 (u : int → int) i k =
 
 value fst_not_pred_r u i = first_nonzero (seq_pred_r_to_0 u i).
 
-value carry u i =
+value carry_add u i =
   match fst_not_pred_r u (i + 1) with
   | Some n → if u (i + n + 1) < radix.val then 0 else 1
   | None → 1
@@ -116,54 +116,24 @@ value carry u i =
 
 value i2nn x i = d2n (x.rm i);
 
-value nn2i u = {rm i = n2d (u i + carry u i)}.
-value i_add2 x y = nn2i (nn_add (i2nn x) (i2nn y));
+value nn2i_add u = {rm i = n2d (u i + carry_add u i)}.
+value i_add2 x y = nn2i_add (nn_add (i2nn x) (i2nn y));
 
 value carry_mul u i =
   let r = radix.val in
-(*
-  let n = logn r (i * (r - 1) + r) + 2 in
-*)
-  let n = 0 in
-  loop n where rec loop n =
+  loop 0 where rec loop n =
     let nt = summation 1 n (fun k → u (i + k) * int_pow r (n - k)) in
     let dt = int_pow r n in
-    let ft = nt - (nt / dt) * dt in
-    let ub_sum_frac = ft + (i + n + 1) * (r - 1) + 1 in
+    let ub_sum_frac =
+      let ft = nt - (nt / dt) * dt in
+      ft + (i + n + 1) * (r - 1) + 1
+    in
     if ub_sum_frac ≥ dt then loop (n + 1)
     else nt / dt
 ;
 
 value nn2i_mul u = {rm i = n2d (u i + carry_mul u i)}.
 value i_mul x y = nn2i_mul (nn_mul (i2nn x) (i2nn y));
-
-(* seems to work but we don't know the number of times n must be
-   increased; perhaps using the oracle?
-value nn2i_mul u =
-  let r = radix.val in
-  {rm i =
-     let n = logn r (i * (r - 1) + r) + 2 in
-loop 0 n where rec loop niter n =
-     let nt = summation 0 n (fun k → u (i + k) * int_pow r (n - k)) in
-     let dt = int_pow r n in
-     let et = nt / dt in
-     let ft = nt - (nt / dt) * dt in
-     let ub_sum_frac = ft + (i + n + 1) * (r - 1) + 1 in
-     if ub_sum_frac ≥ dt then
-(*
-let _ = printf "oups<%d:%d/%d (%d)>%!\n" i ub_sum_frac dt (et mod r)in
-*)
-loop (niter + 1) (n + 1)
-(*
-       n2d ((et (*+ 1*)) mod r)
-*)
-     else
-(*
-let _ = if niter > 0 then if niter = 1 then () else printf "<%d:%d/%d (%d)>%!"i ub_sum_frac dt niter else () in
-*)
-       n2d (et mod r)}
-;
-*)
 
 (* test multiplication *)
 
@@ -175,7 +145,7 @@ value int_of_i x ndec =
 value d0 = {dig = 0};
 
 (* seems to work *)
-radix.val := 2;
+radix.val := 7;
 value ndec = 40;
 
 value (n_iter, x, y, axy, xy) =
@@ -217,52 +187,6 @@ axy;
 let _ = Printf.printf "%d*%d;\n%!" (int_of_i x ndec) (int_of_i y ndec) in
 xy;
 
-ccc;
-
-value (x, y, z) =
-loop () where rec loop () =
-let rn () = Array.init 4 (fun i → {dig = Random.int radix.val}) in
-let x = let a = rn () in {rm i = if i < Array.length a then a.(i) else d0} in
-let y = let a = rn () in {rm i = if i < Array.length a then a.(i) else d0} in
-let z = let a = rn () in {rm i = if i < Array.length a then a.(i) else d0} in
-if list_of_r (i_mul x (i_mul y z)) ndec = list_of_r (i_mul (i_mul x y) z) ndec
-then loop ()
-else (x, y, z);
-
-"x, y, z";
-list_of_r x ndec;
-list_of_r y ndec;
-list_of_r z ndec;
-"x * (y * z)";
-"(x * y) * z";
-list_of_r (i_mul x (i_mul y z)) ndec;
-list_of_r (i_mul (i_mul x y) z) ndec;
-
-bbb.
-
-(*
-base 2
-- : list int = [1; 1; 1; 0; 0; 0; 0; 0; 0; 0]
-- : list int = [1; 1; 0; 1; 0; 0; 0; 0; 0; 0]
-- : list int = [1; 1; 0; 1; 0; 0; 0; 0; 0; 0]
-- : string = "x * (y * z)"
-- : string = "(x * y) * z"
-- : list int = [1; 0; 0; 1; 0; 0; 1; 1; 1; 1]
-- : list int = [0; 0; 0; 1; 0; 0; 1; 1; 1; 1]
-
-base 10
-- : list int = [1; 6; 7; 0; 0; 0; 0; 0; 0; 0]
-- : list int = [5; 9; 9; 0; 0; 0; 0; 0; 0; 0]
-- : list int = [5; 6; 0; 0; 0; 0; 0; 0; 0; 0]
-- : string = "x * (y * z)"
-- : string = "(x * y) * z"
-- : list int = [0; 5; 6; 0; 1; 8; 4; 8; 0; 0]
-- : list int = [0; 5; 0; 4; 1; 8; 4; 8; 0; 0]
-
-167*599*560;
-- : int = 56018480
-*)
-
 radix.val := 10;
 value ndec = 40;
 
@@ -270,8 +194,6 @@ value ndec = 40;
 list_of_seq (nn_mul (i2nn (r_of_string "239")) (i2nn (r_of_string "4649")))
  ndec;
 list_of_r (i_mul (r_of_string "239") (r_of_string "4649")) ndec;
-
-bbb.
 
 (* addition était carrément fausse ! n=2 était insuffisant ;
    voyons ce que ça donne maintenant... *)
@@ -366,85 +288,28 @@ list_of_r (i_add2 (i_add2 x y) z) 7;
 list_of_r (i_add2 x y) 7;
 *)
 
-bbb; (* fin des tests; à voir à partir de là *)
-
 radix.val := 10;
 
 239*4649;
-list_of_seq (i_mul (r_of_string "239") (r_of_string "4649")).rm 10;
+list_of_r (i_mul (r_of_string "239") (r_of_string "4649")) 10;
 4821*107;
-list_of_seq (i_mul (r_of_string "4821") (r_of_string "107")).rm 10;
+list_of_r (i_mul (r_of_string "4821") (r_of_string "107")) 10;
 9344*685;
-list_of_seq (i_mul (r_of_string "9344") (r_of_string "685")).rm 10;
+list_of_r (i_mul (r_of_string "9344") (r_of_string "685")) 10;
 9725*483;
-list_of_seq (i_mul (r_of_string "9725") (r_of_string "483")).rm 10;
+list_of_r (i_mul (r_of_string "9725") (r_of_string "483")) 10;
 4656*7532;
-list_of_seq (i_mul (r_of_string "4656") (r_of_string "7532")).rm 10;
+list_of_r (i_mul (r_of_string "4656") (r_of_string "7532")) 10;
 (* for 64 bits *)
 9468025*7023342;
-list_of_seq (i_mul (r_of_string "9468025") (r_of_string "7023342")).rm 20;
+list_of_r (i_mul (r_of_string "9468025") (r_of_string "7023342")) 20;
 
-(* overflows *)
-value one = {rm i = radix.val-1};
-value u = i_mul_algo one one;
-(*
-list_of_seq u 20;
-carry_lower_bound_num u 0 1;
-carry_lower_bound_num u 0 2;
-carry_lower_bound_num u 0 3;
-carry_lower_bound_num u 0 4;
-carry_lower_bound_num u 0 5;
-carry_lower_bound_num u 0 6;
-carry_upper_bound_num u 0 6;
-*)
+value one = r_of_string "1";
 
 39872*1;
-list_of_seq (i_mul (r_of_string "39872") one).rm 20;
+list_of_r (i_mul (r_of_string "39872") one) 20;
 3*1;
-list_of_seq (i_mul (r_of_string "3") one).rm 20;
-
-value u = i_mul_algo (r_of_string "3") one;
-(*
-let n = 8 in (carry_lower_bound u 0 n, carry_upper_bound u 0 n);
-let n = 9 in (carry_lower_bound u 0 n, carry_upper_bound u 0 n);
-let n = 6 in (carry_lower_bound_num u 0 n, carry_upper_bound_num u 0 n);
-*)
-
-value x = {rm i = i mod radix.val};
-
-radix.val := 2;
-value one = {rm i = radix.val-1};
-list_of_seq one.rm 20;
-value u = i_mul_algo one one;
-list_of_seq u 20;
-list_of_seq (i_mul one one).rm 30;
-(*
-carry_lower_bound u 0 7;
-carry_upper_bound u 0 7;
-let n = 1 in (carry_lower_bound_num u 0 n, carry_upper_bound_num u 0 n);
-let n = 2 in (carry_lower_bound_num u 0 n, carry_upper_bound_num u 0 n);
-let n = 3 in (carry_lower_bound_num u 0 n, carry_upper_bound_num u 0 n);
-let n = 4 in (carry_lower_bound_num u 0 n, carry_upper_bound_num u 0 n);
-let n = 5 in (carry_lower_bound_num u 0 n, carry_upper_bound_num u 0 n);
-let n = 6 in (carry_lower_bound_num u 0 n, carry_upper_bound_num u 0 n);
-*)
-
-radix.val := 2;
-value one = {rm i = radix.val - 1};
-list_of_seq (i_mul_algo (r_of_string "1") one) 20;
-(* should answer 0.1000... but the 0.0111... is equivalent! *)
-list_of_seq (i_mul (r_of_string "1") one).rm 20;
-
-radix.val := 2;
-value zero = {rm i = 0};
-value x = {rm i = if i < 5 then 0 else 1};
-value x0 = i_add x zero;
-list_of_seq x.rm 20;
-(* this implementation of add does not normalise numbers; this can be
-   a good thing but this is strange: how it works? and I have to add
-   a function to normalise (0.99999... → 1); how many iterations are
-   required for addition? here I put the same as for multiplication
-   but perhaps it is different, perhaps 1 iteration is sufficient *)
+list_of_r (i_mul (r_of_string "3") one) 20;
 
 (*
 # 9344*685;
