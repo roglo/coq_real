@@ -119,8 +119,21 @@ value nn2i u = {rm i = n2d (u i + carry u i)}.
 
 value i_add2 x y = nn2i (nn_add (i2nn x) (i2nn y));
 
+value nn2i_mul u =
+  let r = radix.val in
+  {rm i =
+     let n = logn r (i * (r - 1) + r) + 2 in
+     loop 0 n where rec loop niter n =
+       let nt = summation 0 n (fun k → u (i + k) * int_pow r (n - k)) in
+       let dt = int_pow r n in
+       let ft = nt - (nt / dt) * dt in
+       let ub_sum_frac = ft + (i + n + 1) * (r - 1) + 1 in
+       if ub_sum_frac ≥ dt then loop (niter + 1) (n + 1)
+       else n2d (nt / dt mod r)}
+;
+
 (* seems to work but we don't know the number of times n must be
-   increased; perhaps using the oracle? *)
+   increased; perhaps using the oracle?
 value nn2i_mul u =
   let r = radix.val in
   {rm i =
@@ -145,6 +158,7 @@ let _ = if niter > 0 then if niter = 1 then () else printf "<%d:%d/%d (%d)>%!"i 
 *)
        n2d (et mod r)}
 ;
+*)
 
 value i_mul x y = nn2i_mul (nn_mul (i2nn x) (i2nn y));
 
