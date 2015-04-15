@@ -121,7 +121,10 @@ value i_add2 x y = nn2i (nn_add (i2nn x) (i2nn y));
 
 value carry_mul u i =
   let r = radix.val in
+(*
   let n = logn r (i * (r - 1) + r) + 2 in
+*)
+  let n = 0 in
   loop n where rec loop n =
     let nt = summation 1 n (fun k → u (i + k) * int_pow r (n - k)) in
     let dt = int_pow r n in
