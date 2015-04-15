@@ -103,6 +103,8 @@ value first_nonzero u =
   | None → None
   end.
 
+(* addition *)
+
 value seq_pred_r_to_0 (u : int → int) i k =
   if u (i + k) = radix.val - 1 then 0 else 1;
 
@@ -119,23 +121,44 @@ value i2nn x i = d2n (x.rm i);
 value nn2i_add u = {rm i = n2d (u i + carry_add u i)}.
 value i_add2 x y = nn2i_add (nn_add (i2nn x) (i2nn y));
 
-value carry_mul u i =
+(* multiplication *)
+
+value rec nb_iter_mul u i =
   let r = radix.val in
-  loop 0 where rec loop n =
-    let nt = summation 1 n (fun k → u (i + k) * int_pow r (n - k)) in
-    let dt = int_pow r n in
-    let ub_sum_frac =
-      let ft = nt - (nt / dt) * dt in
-      ft + (i + n + 1) * (r - 1) + 1
-    in
-    if ub_sum_frac ≥ dt then loop (n + 1)
-    else nt / dt
+  loop max_iter 0 where rec loop m n =
+    if m = 0 then None
+    else
+      let nt = summation 1 n (fun k → u (i + k) * int_pow r (n - k)) in
+      let dt = int_pow r n in
+      let ub_sum_frac =
+        let ft = nt - (nt / dt) * dt in
+        ft + (i + n + 1) * (r - 1) + 1
+      in
+      if ub_sum_frac ≥ dt then loop (m - 1) (n + 1)
+      else Some n
 ;
+
+value carry_mul u i =
+  match nb_iter_mul u i with
+  | Some n →
+      let r = radix.val in
+      let nt = summation 1 n (fun k → u (i + k) * int_pow r (n - k)) in
+      let dt = int_pow r n in
+      nt / dt
+  | None →
+      match () with []
+  end.
 
 value nn2i_mul u = {rm i = n2d (u i + carry_mul u i)}.
 value i_mul x y = nn2i_mul (nn_mul (i2nn x) (i2nn y));
 
 (* test multiplication *)
+
+(* one times one (fails in the current version because of carry_mul) *)
+radix.val := 2;
+value one () = {rm _ = n2d (radix.val - 1)};
+list_of_seq (nn_mul (i2nn (one ())) (i2nn (one ()))) 15;
+list_of_r (i_mul (one ()) (one ())) 15;
 
 value int_of_i x ndec =
   loop 0 0 where rec loop r i =
@@ -144,7 +167,7 @@ value int_of_i x ndec =
 ;
 value d0 = {dig = 0};
 
-(* seems to work *)
+(* checking; infinite lines of "." → ok *)
 radix.val := 7;
 value ndec = 40;
 
