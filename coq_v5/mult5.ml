@@ -119,12 +119,31 @@ value nn2i u = {rm i = n2d (u i + carry u i)}.
 
 value i_add2 x y = nn2i (nn_add (i2nn x) (i2nn y));
 
+(* seems to work but we don't know the number of times n must be
+   increased; perhaps using the oracle? *)
 value nn2i_mul u =
   let r = radix.val in
   {rm i =
-     let n = logn r (i * (r - 1) + r) + 4 in
-     let s = summation 0 n (fun k → u (i + k) * int_pow r (n - k)) in
-     n2d ((s / int_pow r n) mod r)}
+     let n = logn r (i * (r - 1) + r) + 2 in
+loop 0 n where rec loop niter n =
+     let nt = summation 0 n (fun k → u (i + k) * int_pow r (n - k)) in
+     let dt = int_pow r n in
+     let et = nt / dt in
+     let ft = nt - (nt / dt) * dt in
+     let ub_sum_frac = ft + (i + n + 1) * (r - 1) + 1 in
+     if ub_sum_frac ≥ dt then
+(*
+let _ = printf "oups<%d:%d/%d (%d)>%!\n" i ub_sum_frac dt (et mod r)in
+*)
+loop (niter + 1) (n + 1)
+(*
+       n2d ((et (*+ 1*)) mod r)
+*)
+     else
+(*
+let _ = if niter > 0 then if niter = 1 then printf ".%!" else printf "<%d>%!" niter else () in
+*)
+       n2d (et mod r)}
 ;
 
 value i_mul x y = nn2i_mul (nn_mul (i2nn x) (i2nn y));
@@ -136,13 +155,15 @@ value int_of_i x ndec =
     if i = ndec then r
     else loop (r * radix.val + d2n (x.rm i)) (i + 1)
 ;
-
 value d0 = {dig = 0};
-radix.val := 10;
-value ndec = 5;
+
+(* seems to work
+radix.val := 2;
+value ndec = 40;
 
 value (n_iter, x, y, axy, xy) =
   loop 0 where rec loop n =
+let _ = if n mod 10 = 0 then printf ".%!" else () in
     let rn () = Array.init ndec (fun i → {dig = Random.int radix.val}) in
     let x =
       let a = rn () in {rm i = if i < Array.length a then a.(i) else d0}
@@ -201,6 +222,7 @@ list_of_r (i_mul x (i_mul y z)) ndec;
 list_of_r (i_mul (i_mul x y) z) ndec;
 
 bbb.
+*)
 
 (*
 base 2
