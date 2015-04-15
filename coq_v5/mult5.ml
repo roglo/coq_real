@@ -141,7 +141,7 @@ loop (niter + 1) (n + 1)
 *)
      else
 (*
-let _ = if niter > 0 then if niter = 1 then printf ".%!" else printf "<%d>%!" niter else () in
+let _ = if niter > 0 then if niter = 1 then () else printf "<%d:%d/%d (%d)>%!"i ub_sum_frac dt niter else () in
 *)
        n2d (et mod r)}
 ;
@@ -157,7 +157,7 @@ value int_of_i x ndec =
 ;
 value d0 = {dig = 0};
 
-(* seems to work
+(* seems to work *)
 radix.val := 2;
 value ndec = 40;
 
@@ -222,7 +222,6 @@ list_of_r (i_mul x (i_mul y z)) ndec;
 list_of_r (i_mul (i_mul x y) z) ndec;
 
 bbb.
-*)
 
 (*
 base 2
