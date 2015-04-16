@@ -6,15 +6,17 @@ Require Import Oracle Digit2 Real012.
 
 Open Scope nat_scope.
 
-(* addition numbers with numbers *)
+(* addition and multiplication numbers with numbers *)
 
 Definition NN_eq (u v : nat → nat) := ∀ i, u i = v i.
 Definition NN_add (u v : nat → nat) i := u i + v i.
+Definition NN_mul u v i := Σ (j = 1, i), u (j - 1) * v (i - j).
 Definition NN_zero (i : nat) := 0.
 
 Delimit Scope NN_scope with NN.
 Notation "u = v" := (NN_eq u v) : NN_scope.
 Notation "u + v" := (NN_add u v) : NN_scope.
+Notation "u * v" := (NN_mul u v) : NN_scope.
 Notation "0" := NN_zero : NN_scope.
 
 Theorem NN_add_comm : ∀ u v, (u + v = v + u)%NN.
@@ -78,7 +80,7 @@ Add Parametric Morphism : rm
  as rm_morph.
 Proof. intros; apply rm_compat; assumption. Qed.
 
-(* addition numbers with digits *)
+(* some extra functions *)
 
 Fixpoint int_pow a b :=
   match b with
@@ -86,27 +88,74 @@ Fixpoint int_pow a b :=
   | S b1 => a * int_pow a b1
   end.
 
+Fixpoint logn_loop m n a :=
+  match m with
+  | 0 => 0
+  | S m1 =>
+      if zerop a then 0
+      else S (logn_loop m1 n (a / n))
+  end.
+
+Definition logn n a := pred (logn_loop a n a).
+
+(* addition *)
+
 Definition seq_pred_r_to_0 (u : nat → nat) i k :=
   if eq_nat_dec (u (i + k)) (pred radix) then 0 else 1.
 
 Definition fst_not_pred_r u i := first_nonzero (seq_pred_r_to_0 u i).
 
-Definition carry u i :=
+Definition carry_add u i :=
   match fst_not_pred_r u (S i) with
   | Some n => if lt_dec (u (S (i + n))) radix then 0 else 1
   | None => 1
   end.
 
 Definition I2NN x i := d2n (x.[i]).
-Definition NN2I u := {| rm i := n2d (u i + carry u i) |}.
-Arguments NN2I u%NN.
 
-Definition I_add2 x y := NN2I (I2NN x + I2NN y).
+Definition NN2I_add u := {| rm i := n2d (u i + carry_add u i) |}.
+Arguments NN2I_add u%NN.
+
+Definition I_add2 x y := NN2I_add (I2NN x + I2NN y).
 Arguments I_add2 x%I y%I.
 
-bbb. (* addition to be checked in mult5.ml first *)
-
 Notation "x + y" := (I_add2 x y) : I_scope.
+
+(* multiplication *)
+
+Definition seq_sum_frac_lt_1 (u : nat → nat) i n :=
+  let nt := Σ (k = 1, n), u (i + k) * int_pow radix (n - k) in
+  let dt := int_pow radix n in
+  let ub_sum_frac :=
+    let ft := nt - (nt / dt) * dt in
+    ft + (i + n + 1) * (radix - 1) + 1
+  in
+  if lt_dec ub_sum_frac dt then 1 else 0.
+
+Definition carry_mul u i :=
+  match first_nonzero (seq_sum_frac_lt_1 u i) with
+  | Some n =>
+      let nt := Σ (k = 1, n), u (i + k) * int_pow radix (n - k) in
+      let dt := int_pow radix n in
+      nt / dt
+  | None =>
+      let n := logn radix (i * (radix - 1) + radix) + 2 in
+      let nt := Σ (k = 1, n), u (i + k) * int_pow radix (n - k) in
+      let dt := int_pow radix n in
+      S (nt / dt)
+  end.
+
+Definition NN2I_mul u := {| rm i := n2d (u i + carry_mul u i) |}.
+Arguments NN2I_mul u%NN.
+
+Definition I_mul x y := NN2I_mul (NN_mul (I2NN x) (I2NN y)).
+Arguments I_mul x%I y%I.
+
+Notation "x * y" := (I_mul x y) : I_scope.
+
+bbb. (* donc, à voir, pour la suite... *)
+
+(* *)
 
 Theorem NN2I_compat : ∀ n u v,
   (u = v)%NN
