@@ -136,23 +136,17 @@ value rec nb_iter_mul u i n nt dt =
         let nt = add_check_ov (nt * r) (u (i + n + 1)) in
         let dt = dt * r in
         loop (m - 1) (n + 1) nt dt
-      else Some n
+      else Some (n, nt, dt)
 ;
 
 value carry_mul u i =
   let r = radix.val in
-  (* the following value of n ensures that the integer part of the
-     error is 0 *)
   let n = logn r (i * (r - 1) + r) + 2 in
   let nt = summation 1 n (fun k → u (i + k) * int_pow r (n - k)) in
   let dt = int_pow r n in
   match nb_iter_mul u i n nt dt with
-  | Some n →
-      let nt = summation 1 n (fun k → u (i + k) * int_pow r (n - k)) in
-      let dt = int_pow r n in
-      nt / dt
-  | None →
-      nt / dt + 1
+  | Some (n, nt, dt) → nt / dt
+  | None → nt / dt + 1
   end.
 
 value nn2i_mul u = {rm i = n2d (u i + carry_mul u i)}.
