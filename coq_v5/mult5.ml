@@ -123,9 +123,9 @@ value i_add2 x y = nn2i_add (nn_add (i2nn x) (i2nn y));
 
 (* multiplication *)
 
-value rec nb_iter_mul u i =
+value rec nb_iter_mul u i n =
   let r = radix.val in
-  loop max_iter.val 0 where rec loop m n =
+  loop max_iter.val n where rec loop m n =
     if m = 0 then None
     else
       let nt = summation 1 n (fun k → u (i + k) * int_pow r (n - k)) in
@@ -140,7 +140,7 @@ value rec nb_iter_mul u i =
 
 value carry_mul u i =
   let r = radix.val in
-  match nb_iter_mul u i with
+  match nb_iter_mul u i 0 with
   | Some n →
       let nt = summation 1 n (fun k → u (i + k) * int_pow r (n - k)) in
       let dt = int_pow r n in
