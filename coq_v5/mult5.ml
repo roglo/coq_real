@@ -126,17 +126,18 @@ value i_add2 x y = nn2i_add (nn_add (i2nn x) (i2nn y));
 value rec nb_iter_mul u i n =
   let r = radix.val in
   let nt = summation 1 n (fun k → u (i + k) * int_pow r (n - k)) in
-  loop max_iter.val n nt where rec loop m n nt =
+  let dt = int_pow r n in
+  loop max_iter.val n nt dt where rec loop m n nt dt =
     if m = 0 then None
     else
-      let dt = int_pow r n in
       let ub_sum_frac =
         let ft = nt - (nt / dt) * dt in
         ft + (i + n + 1) * (r - 1) + 1
       in
       if ub_sum_frac ≥ dt then
         let nt = add_check_ov (nt * r) (u (i + n + 1)) in
-        loop (m - 1) (n + 1) nt
+        let dt = dt * r in
+        loop (m - 1) (n + 1) nt dt
       else Some n
 ;
 
@@ -182,7 +183,7 @@ list_of_r (i_mul (one ()) (r_of_string "101110")) 15;
 list_of_seq (nn_mul (i2nn (r_of_string "101110")) (i2nn (one ()))) 15;
 list_of_r (i_mul (r_of_string "101110") (one ())) 15;
 
-bbb;
+(*bbb;*)
 
 (* *)
 
