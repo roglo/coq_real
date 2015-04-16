@@ -123,31 +123,34 @@ value i_add2 x y = nn2i_add (nn_add (i2nn x) (i2nn y));
 
 (* multiplication *)
 
-value rec nb_iter_mul u i n nt dt =
+value rec nb_iter_mul u i =
   let r = radix.val in
-  loop max_iter.val n nt dt where rec loop m n nt dt =
+  loop max_iter.val 0 where rec loop m n =
     if m = 0 then
       None
     else
+      let nt = summation 1 n (fun k → u (i + k) * int_pow r (n - k)) in
+      let dt = int_pow r n in
       let ub_sum_frac =
         let ft = nt - (nt / dt) * dt in
         ft + (i + n + 1) * (r - 1) + 1
       in
-      if ub_sum_frac ≥ dt then
-        let nt = add_check_ov (nt * r) (u (i + n + 1)) in
-        let dt = dt * r in
-        loop (m - 1) (n + 1) nt dt
-      else Some (n, nt, dt)
+      if ub_sum_frac ≥ dt then loop (m - 1) (n + 1)
+      else Some n
 ;
 
 value carry_mul u i =
   let r = radix.val in
-  let n = logn r (i * (r - 1) + r) + 2 in
-  let nt = summation 1 n (fun k → u (i + k) * int_pow r (n - k)) in
-  let dt = int_pow r n in
-  match nb_iter_mul u i n nt dt with
-  | Some (n, nt, dt) → nt / dt
-  | None → nt / dt + 1
+  match nb_iter_mul u i with
+  | Some n →
+      let nt = summation 1 n (fun k → u (i + k) * int_pow r (n - k)) in
+      let dt = int_pow r n in
+      nt / dt
+  | None →
+      let n = logn r (i * (r - 1) + r) + 2 in
+      let nt = summation 1 n (fun k → u (i + k) * int_pow r (n - k)) in
+      let dt = int_pow r n in
+      nt / dt + 1
   end.
 
 value nn2i_mul u = {rm i = n2d (u i + carry_mul u i)}.
