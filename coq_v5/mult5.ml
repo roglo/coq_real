@@ -123,25 +123,20 @@ value i_add2 x y = nn2i_add (nn_add (i2nn x) (i2nn y));
 
 (* multiplication *)
 
-value rec nb_iter_mul u i =
+value seq_nb_iter (u : int → int) i n =
   let r = radix.val in
-  loop max_iter.val 0 where rec loop m n =
-    if m = 0 then
-      None
-    else
-      let nt = summation 1 n (fun k → u (i + k) * int_pow r (n - k)) in
-      let dt = int_pow r n in
-      let ub_sum_frac =
-        let ft = nt - (nt / dt) * dt in
-        ft + (i + n + 1) * (r - 1) + 1
-      in
-      if ub_sum_frac ≥ dt then loop (m - 1) (n + 1)
-      else Some n
+  let nt = summation 1 n (fun k → u (i + k) * int_pow r (n - k)) in
+  let dt = int_pow r n in
+  let ub_sum_frac =
+    let ft = nt - (nt / dt) * dt in
+    ft + (i + n + 1) * (r - 1) + 1
+  in
+  if ub_sum_frac < dt then 1 else 0
 ;
 
 value carry_mul u i =
   let r = radix.val in
-  match nb_iter_mul u i with
+  match first_nonzero (seq_nb_iter u i) with
   | Some n →
       let nt = summation 1 n (fun k → u (i + k) * int_pow r (n - k)) in
       let dt = int_pow r n in
