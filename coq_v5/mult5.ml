@@ -81,7 +81,7 @@ value logn n a =
     end
 ;
 
-value max_iter = ref (logn 2 max_int - 4);
+value max_iter = ref (logn 2 max_int / 2);
 
 value find_nonzero u =
   loop max_iter.val 0 where rec loop m i =
@@ -140,15 +140,15 @@ value rec nb_iter_mul u i n =
 
 value carry_mul u i =
   let r = radix.val in
-  match nb_iter_mul u i 0 with
+  (* the following value of n ensures that the integer part of the
+     error is 0 *)
+  let n = logn r (i * (r - 1) + r) + 2 in
+  match nb_iter_mul u i n with
   | Some n →
       let nt = summation 1 n (fun k → u (i + k) * int_pow r (n - k)) in
       let dt = int_pow r n in
       nt / dt
   | None →
-      (* the following value of n ensures that the integer part of the
-         error is 0 *)
-      let n = logn r (i * (r - 1) + r) + 2 in
       let nt = summation 1 n (fun k → u (i + k) * int_pow r (n - k)) in
       let dt = int_pow r n in
 let ft = nt - nt / dt * dt in
