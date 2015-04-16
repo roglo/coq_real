@@ -123,10 +123,8 @@ value i_add2 x y = nn2i_add (nn_add (i2nn x) (i2nn y));
 
 (* multiplication *)
 
-value rec nb_iter_mul u i n =
+value rec nb_iter_mul u i n nt dt =
   let r = radix.val in
-  let nt = summation 1 n (fun k → u (i + k) * int_pow r (n - k)) in
-  let dt = int_pow r n in
   loop max_iter.val n nt dt where rec loop m n nt dt =
     if m = 0 then None
     else
@@ -146,19 +144,14 @@ value carry_mul u i =
   (* the following value of n ensures that the integer part of the
      error is 0 *)
   let n = logn r (i * (r - 1) + r) + 2 in
-  match nb_iter_mul u i n with
+  let nt = summation 1 n (fun k → u (i + k) * int_pow r (n - k)) in
+  let dt = int_pow r n in
+  match nb_iter_mul u i n nt dt with
   | Some n →
       let nt = summation 1 n (fun k → u (i + k) * int_pow r (n - k)) in
       let dt = int_pow r n in
       nt / dt
   | None →
-      let nt = summation 1 n (fun k → u (i + k) * int_pow r (n - k)) in
-      let dt = int_pow r n in
-(*
-let ft = nt - nt / dt * dt in
-let fe = (i + n + 1) * (r - 1) + 1 in
-let _ = printf "i %d et %d/%d ef %d/%d\n%!" i nt dt (ft + fe) dt in
-*)
       nt / dt + 1
   end.
 
