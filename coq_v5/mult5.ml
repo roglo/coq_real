@@ -125,16 +125,18 @@ value i_add2 x y = nn2i_add (nn_add (i2nn x) (i2nn y));
 
 value rec nb_iter_mul u i n =
   let r = radix.val in
-  loop max_iter.val n where rec loop m n =
+  let nt = summation 1 n (fun k → u (i + k) * int_pow r (n - k)) in
+  loop max_iter.val n nt where rec loop m n nt =
     if m = 0 then None
     else
-      let nt = summation 1 n (fun k → u (i + k) * int_pow r (n - k)) in
       let dt = int_pow r n in
       let ub_sum_frac =
         let ft = nt - (nt / dt) * dt in
         ft + (i + n + 1) * (r - 1) + 1
       in
-      if ub_sum_frac ≥ dt then loop (m - 1) (n + 1)
+      if ub_sum_frac ≥ dt then
+        let nt = add_check_ov (nt * r) (u (i + n + 1)) in
+        loop (m - 1) (n + 1) nt
       else Some n
 ;
 
@@ -220,10 +222,10 @@ value big_nn2i_mul u =
      n2d ((s / int_pow r n) mod r)}
 ;
 
-"x, y, z";
+"x, y";
 list_of_r x ndec;
 list_of_r y ndec;
-"x * y = nn";
+"u";
 let u = nn_mul (i2nn x) (i2nn y) in
 list_of_seq u (3 * ndec);
 "x * y (big)";
@@ -234,6 +236,8 @@ list_of_r (i_mul x y) (3 * ndec);
 axy;
 let _ = Printf.printf "%d*%d;\n%!" (int_of_i x ndec) (int_of_i y ndec) in
 xy;
+
+bbb.
 
 radix.val := 10;
 value ndec = 40;
