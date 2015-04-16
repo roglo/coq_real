@@ -126,7 +126,8 @@ value i_add2 x y = nn2i_add (nn_add (i2nn x) (i2nn y));
 value rec nb_iter_mul u i n nt dt =
   let r = radix.val in
   loop max_iter.val n nt dt where rec loop m n nt dt =
-    if m = 0 then None
+    if m = 0 then
+      None
     else
       let ub_sum_frac =
         let ft = nt - (nt / dt) * dt in
@@ -184,11 +185,11 @@ value d0 = {dig = 0};
 (* checking; infinite lines of "." → ok *)
 
 radix.val := 7;
-value ndec = 20;
+value ndec = 16;
 
 value (n_iter, x, y, axy, xy) =
   loop 0 where rec loop n =
-let _ = if n mod 10 = 0 then printf ".%!" else () in
+let _ = if n mod 100 = 0 then printf ".%!" else () in
     let rn () = Array.init ndec (fun i → {dig = Random.int radix.val}) in
     let x =
       let a = rn () in {rm i = if i < Array.length a then a.(i) else d0}
