@@ -103,10 +103,10 @@ Definition logn n a := pred (logn_loop a n a).
 Definition seq_pred_r_to_0 (u : nat → nat) i k :=
   if eq_nat_dec (u (i + k)) (pred radix) then 0 else 1.
 
-Definition fst_not_pred_r u i := first_nonzero (seq_pred_r_to_0 u i).
+Definition fst_neq_pred_r u i := first_nonzero (seq_pred_r_to_0 u i).
 
 Definition carry_add u i :=
-  match fst_not_pred_r u (S i) with
+  match fst_neq_pred_r u (S i) with
   | Some n => if lt_dec (u (S (i + n))) radix then 0 else 1
   | None => 1
   end.
@@ -153,24 +153,58 @@ Arguments I_mul x%I y%I.
 
 Notation "x * y" := (I_mul x y) : I_scope.
 
-bbb. (* donc, à voir, pour la suite... *)
-
 (* *)
 
-Theorem NN2I_compat : ∀ n u v,
+Theorem seq_pred_r_to_0_compat : ∀ u v i j,
   (u = v)%NN
-  → (NN2I n u == NN2I n v)%I.
+  → seq_pred_r_to_0 u i j = seq_pred_r_to_0 v i j.
 Proof.
-intros n u v Huv i; simpl.
-unfold digit_eq; simpl; f_equal; f_equal.
-apply summation_compat; intros j (_, Hj).
+intros u v i j Huv.
+unfold seq_pred_r_to_0; simpl.
 rewrite Huv; reflexivity.
 Qed.
 
-Add Parametric Morphism : NN2I
- with signature eq ==> NN_eq ==> I_eqs
- as NN2I_morph.
-Proof. intros; apply NN2I_compat; assumption. Qed.
+Theorem fst_neq_pred_r_compat : ∀ u v i,
+  (u = v)%NN
+  → fst_neq_pred_r u i = fst_neq_pred_r v i.
+Proof.
+intros u v i Huv.
+unfold fst_neq_pred_r; simpl.
+apply first_nonzero_iff.
+remember (first_nonzero (seq_pred_r_to_0 u i)) as s1 eqn:Hs1.
+apply first_nonzero_iff in Hs1.
+destruct s1 as [ i1 | ].
+ destruct Hs1 as (Hn1, Ht1).
+ split.
+  intros j Hj.
+  erewrite seq_pred_r_to_0_compat; [ idtac | symmetry; eassumption ].
+  apply Hn1; assumption.
+
+  erewrite seq_pred_r_to_0_compat; [ idtac | symmetry; eassumption ].
+  assumption.
+
+ intros j.
+ erewrite seq_pred_r_to_0_compat; [ idtac | symmetry; eassumption ].
+ apply Hs1.
+Qed.
+
+Theorem NN2I_add_compat : ∀ u v,
+  (u = v)%NN
+  → (NN2I_add u == NN2I_add v)%I.
+Proof.
+intros u v Huv i; simpl.
+unfold digit_eq; simpl; f_equal; f_equal; [ apply Huv | idtac ].
+unfold carry_add; simpl.
+rewrite fst_neq_pred_r_compat with (v := v); [ idtac | assumption ].
+remember (fst_neq_pred_r v (S i)) as s1 eqn:Hs1.
+destruct s1 as [n1| ]; [ idtac | reflexivity ].
+rewrite Huv; reflexivity.
+Qed.
+
+Add Parametric Morphism : NN2I_add
+ with signature NN_eq ==> I_eqs
+ as NN2I_add_morph.
+Proof. intros; apply NN2I_add_compat; assumption. Qed.
 
 (* commutativity *)
 
@@ -204,6 +238,8 @@ intros x.
 unfold I_eqs, I_add2; intros i.
 rewrite I_zero_NN_zero.
 rewrite NN_add_0_r.
+bbb.
+
 unfold digit_eq, NN2I, I2NN; fsimpl.
 unfold summation.
 remember modulo as fmod; remember div as fdiv; simpl; subst fmod fdiv.
