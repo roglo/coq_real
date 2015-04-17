@@ -272,10 +272,13 @@ Qed.
 
 Theorem I_eq_iff : ∀ x y,
   (x = y)%I
-  ↔ I_eqs x y ∨
+  ↔ (x == y)%I ∨
     ∃ i,
     (∀ j, j < i → (x.[j] = y.[j])%D) ∧
-    ((d2n (x.[i]) = S (d2n (y.[i]))) ∧
+    ((i = 0 ∧
+     ((∀ j, (x.[j] = 0)%D ∧ (y.[j] = n2d (pred radix))) ∨
+      (∀ j, (y.[j] = 0)%D ∧ (x.[j] = n2d (pred radix))))) ∨
+     (d2n (x.[i]) = S (d2n (y.[i]))) ∧
      (∀ di, (x.[i+S di] = 0)%D ∧ (y.[i+S di] = n2d (pred radix))) ∨
      (d2n (y.[i]) = S (d2n (x.[i]))) ∧
      (∀ di, (y.[i+S di] = 0)%D ∧ (x.[i+S di] = n2d (pred radix)))).
@@ -299,14 +302,67 @@ split; intros Hxy.
    destruct (Digit.eq_dec (x.[i]) (y.[i])); [ assumption | idtac ].
    discriminate Hi.
 
+   destruct n1.
+    left; split; [ reflexivity | clear Hn1 ].
+    destruct (Digit.eq_dec (x.[0]) 0) as [H1| H1]; [ left | right ].
+     intros i.
+     pose proof Hxy i as Hn.
+     unfold I_norm in Hn; simpl in Hn.
+     do 2 rewrite NN_add_add_0_r in Hn.
+     do 2 rewrite carry_add_add_0_r2 in Hn.
+     unfold digit_eq in Hn; simpl in Hn.
+     unfold I2NN in Hn at 1; simpl in Hn.
+     unfold I2NN in Hn at 2; simpl in Hn.
+     unfold carry_add in Hn; simpl in Hn.
+     remember (fst_neq_pred_r (I2NN x) (S i)) as s2 eqn:Hs2.
+     remember (fst_neq_pred_r (I2NN y) (S i)) as s3 eqn:Hs3.
+     apply first_nonzero_iff in Hs2; simpl in Hs2.
+     apply first_nonzero_iff in Hs3; simpl in Hs3.
+     destruct s2 as [n2| ].
+      destruct Hs2 as (Hn2, Ht2).
+      unfold seq_pred_r_to_0 in Ht2; simpl in Ht2.
+      destruct (eq_nat_dec (I2NN x (S (i + n2))) (pred radix)) as [H2| H2].
+       exfalso; apply Ht2; reflexivity.
+
+       clear Ht2.
+bbb.
+
+    unfold seq_eq in Ht1.
+    destruct (Digit.eq_dec (x .[ 0]) (y .[ 0])) as [H1| H1].
+     exfalso; apply Ht1; reflexivity.
+
+     clear Hn1 Ht1.
+     pose proof Hxy 0 as Hn; simpl in Hn.
+     do 2 rewrite NN_add_add_0_r in Hn.
+     do 2 rewrite carry_add_add_0_r2 in Hn.
+     unfold digit_eq in Hn; simpl in Hn.
+     unfold I2NN in Hn at 1; simpl in Hn.
+     unfold I2NN in Hn at 2; simpl in Hn.
+     unfold carry_add in Hn; simpl in Hn.
+     remember (fst_neq_pred_r (I2NN x) 1) as s2 eqn:Hs2.
+     remember (fst_neq_pred_r (I2NN y) 1) as s3 eqn:Hs3.
+     apply first_nonzero_iff in Hs2; simpl in Hs2.
+     apply first_nonzero_iff in Hs3; simpl in Hs3.
+     destruct s2 as [n2| ].
+      destruct Hs2 as (Hn2, Ht2).
+      unfold seq_pred_r_to_0 in Ht2; simpl in Ht2.
+      destruct (eq_nat_dec (I2NN x (S n2)) (pred radix)) as [H2| H2].
+       exfalso; apply Ht2; reflexivity.
+
+       clear Ht2.
+bbb.
+
    unfold seq_eq in Ht1.
    destruct (lt_eq_lt_dec (d2n (x.[n1])) (d2n (y.[n1]))) as [[H1| H1]| H1].
-    right; split.
+    right; split; clear Ht1.
+    unfold seq_eq in Hn1.
     pose proof Hxy n1 as Hn; simpl in Hn.
     do 2 rewrite NN_add_add_0_r in Hn.
     do 2 rewrite carry_add_add_0_r2 in Hn.
     unfold digit_eq in Hn; simpl in Hn.
-    unfold carry_add in Hn.
+    unfold I2NN in Hn at 1; simpl in Hn.
+    unfold I2NN in Hn at 2; simpl in Hn.
+    unfold carry_add in Hn; simpl in Hn.
     remember (fst_neq_pred_r (I2NN x) (S n1)) as s2 eqn:Hs2.
     remember (fst_neq_pred_r (I2NN y) (S n1)) as s3 eqn:Hs3.
     apply first_nonzero_iff in Hs2; simpl in Hs2.
@@ -318,6 +374,11 @@ split; intros Hxy.
       exfalso; apply Ht2; reflexivity.
 
       clear Ht2.
+      destruct (lt_dec (I2NN x (S (n1 + n2))) (pred radix)) as [H3| H3].
+       unfold I2NN in H3; simpl in H3.
+       unfold seq_pred_r_to_0 in Hn2; simpl in Hn2.
+bbb.
+
       destruct s3 as [n3| ].
        destruct Hs3 as (Hn3, Ht3).
        unfold seq_pred_r_to_0 in Ht3; simpl in Ht3.
@@ -325,6 +386,7 @@ split; intros Hxy.
         exfalso; apply Ht3; reflexivity.
 
         clear Ht3.
+Print seq_pred_r_to_0.
 bbb.
 
     rewrite carry_add_compat with (v := I2NN y) in Hn.
