@@ -351,12 +351,75 @@ intros u v Huv w x Hwx i.
 apply toto_compat; assumption.
 Qed.
 
-Theorem I2NN_NN2I_add : ∀ u, (NN2I_add (I2NN (NN2I_add u)) == NN2I_add u)%I.
+Theorem NN_add_add_0_r : ∀ u, (u + I2NN 0 = u)%NN.
+Proof.
+intros u i.
+unfold NN_eq, NN_add, I2NN; simpl.
+rewrite d2n_0, Nat.add_0_r.
+reflexivity.
+Qed.
+
+Theorem NN2I_add_I2NN : ∀ x, (NN2I_add (I2NN x) = x)%I.
+Proof.
+intros u.
+unfold I_eq, I_norm; simpl.
+unfold I_add2; simpl.
+rewrite I_zero_NN_zero.
+do 2 rewrite NN2I_add_0_r.
+intros i; simpl.
+unfold digit_eq; simpl.
+SearchAbout NN2I_add.
+unfold I2NN; simpl.
+rewrite d2n_n2d.
+bbb.
+
+SearchAbout I2NN.
+
+unfold NN2I_add, I2NN; simpl.
+bbb.
+
+Theorem I2NN_NN2I_add : ∀ u, (NN2I_add (I2NN (NN2I_add u)) = NN2I_add u)%I.
 (*
 Proof. intros; apply NN2I_I2NN. Qed.
 *)
 Proof.
 intros u i; simpl.
+unfold digit_eq, n2d; simpl.
+do 2 rewrite NN_add_add_0_r.
+do 2 rewrite fold_toto.
+rewrite I_zero_NN_zero.
+unfold toto; simpl.
+erewrite carry_add_compat; [ idtac | apply NN_add_0_r ].
+
+rewrite zzz.
+bbb.
+
+unfold carry_add at 1; simpl.
+remember (fst_neq_pred_r (I2NN (NN2I_add u)) (S i)) as s1 eqn:Hs1.
+apply first_nonzero_iff in Hs1; simpl in Hs1.
+destruct s1 as [n1| ].
+ destruct (lt_dec (I2NN (NN2I_add u) (S (i + n1))) (pred radix)) as [H1| H1].
+  rewrite Nat.add_0_r.
+  unfold I2NN, NN2I_add; simpl.
+  rewrite d2n_n2d, Nat.mod_mod; [ reflexivity | apply Digit.radix_neq_0 ].
+
+  apply Nat.nlt_ge in H1.
+  destruct Hs1 as (Hn1, Ht1).
+  destruct n1.
+   unfold seq_pred_r_to_0 in Ht1.
+   rewrite Nat.add_0_r in Ht1, H1.
+   destruct (eq_nat_dec (I2NN (NN2I_add u) (S i)) (pred radix)) as [H2| H2].
+    exfalso; apply Ht1; reflexivity.
+
+    clear Ht1.
+Print NN2I_add.
+unfold I2NN, NN2I_add; simpl.
+rewrite d2n_n2d.
+bbb.
+
+unfold I2NN, NN2I_add; simpl.
+rewrite d2n_n2d.
+unfold fst_neq_pred_r; simpl.
 bbb.
 
 Theorem NN2I_add_I2NN : ∀ x, (NN2I_add (I2NN x) == x)%I.

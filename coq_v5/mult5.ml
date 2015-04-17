@@ -174,7 +174,7 @@ list_of_r (i_add2 x (zero ())) 10;
 "0+x";
 list_of_r (i_add2 (zero ()) x) 10;
 
-bbb.
+(*bbb.*)
 
 (* test multiplication *)
 
