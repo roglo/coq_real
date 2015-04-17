@@ -107,7 +107,7 @@ Definition fst_neq_pred_r u i := first_nonzero (seq_pred_r_to_0 u i).
 
 Definition carry_add u i :=
   match fst_neq_pred_r u (S i) with
-  | Some n => if lt_dec (u (S (i + n))) radix then 0 else 1
+  | Some n => if lt_dec (u (S (i + n))) (pred radix) then 0 else 1
   | None => 1
   end.
 
@@ -238,9 +238,32 @@ intros x.
 unfold I_eqs, I_add2; intros i.
 rewrite I_zero_NN_zero.
 rewrite NN_add_0_r.
+unfold digit_eq, NN2I_add, carry_add; simpl.
+remember (fst_neq_pred_r (I2NN x) (S i)) as s1 eqn:Hs1.
+apply first_nonzero_iff in Hs1.
+destruct s1 as [n | ].
+ unfold seq_pred_r_to_0 in Hs1; simpl in Hs1.
+ destruct Hs1 as (Hn1, Ht1).
+ destruct (lt_dec (I2NN x (S (i + n))) (pred radix)) as [H1| H1].
+  rewrite Nat.add_0_r; unfold I2NN, d2n.
+  rewrite Nat.mod_mod; [ reflexivity | apply Digit.radix_neq_0 ].
+
+  apply Nat.nlt_ge in H1.
+  destruct (eq_nat_dec (I2NN x (S (i + n))) (pred radix)) as [H2| H2].
+   exfalso; apply Ht1; reflexivity.
+
+   clear Ht1.
+   unfold I2NN, d2n.
+bbb.
+   destruct n.
+    clear Hn1.
+    Focus 2.
+    assert (n < S n) as H by apply Nat.lt_succ_diag_r.
+    apply Hn1 in H.
+    destruct (eq_nat_dec (I2NN x (S (i + n))) (pred radix)) as [H3| H3].
+     unfold I2NN, d2n in H3.
 bbb.
 
-unfold digit_eq, NN2I, I2NN; fsimpl.
 unfold summation.
 remember modulo as fmod; remember div as fdiv; simpl; subst fmod fdiv.
 do 2 rewrite Nat.add_0_r, Nat.mul_1_r; fsimpl.

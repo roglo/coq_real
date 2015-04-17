@@ -112,7 +112,7 @@ value fst_not_pred_r u i = first_nonzero (seq_pred_r_to_0 u i).
 
 value carry_add u i =
   match fst_not_pred_r u (i + 1) with
-  | Some n → if u (i + n + 1) < radix.val then 0 else 1
+  | Some n → if u (i + n + 1) < radix.val - 1 then 0 else 1
   | None → 1
   end.
 
