@@ -153,18 +153,201 @@ Add Parametric Relation : _ I_eq
  transitivity proved by I_eq_trans
  as I_eq_rel.
 
+Definition seq_eq x y i := if Digit.eq_dec (x.[i]) (y.[i]) then 0 else 1.
+
+Add Parametric Morphism : I2NN
+  with signature I_eqs ==> NN_eq
+  as I2NN_morph.
+Proof. intros x y Hxy i; apply Hxy. Qed.
+
+Theorem I_zero_NN_zero : (I2NN 0%I = NN_zero)%NN.
+Proof.
+intros i.
+unfold I2NN; simpl.
+unfold d2n; simpl.
+rewrite Nat.mod_0_l; [ reflexivity | apply Digit.radix_neq_0 ].
+Qed.
+
+Theorem NN_add_add_0_r : ∀ u, (u + I2NN 0 = u)%NN.
+Proof.
+intros u i.
+unfold NN_eq, NN_add, I2NN; simpl.
+rewrite d2n_0, Nat.add_0_r.
+reflexivity.
+Qed.
+
+Theorem seq_pred_r_to_0_add_0_r : ∀ u i j,
+  seq_pred_r_to_0 (u + 0)%NN i j = seq_pred_r_to_0 u i j.
+Proof.
+intros u i j.
+unfold seq_pred_r_to_0; simpl.
+unfold NN_add, NN_zero; simpl.
+rewrite Nat.add_0_r; reflexivity.
+Qed.
+
+Theorem fst_neq_pred_r_add_0_r : ∀ u i,
+  fst_neq_pred_r (u + 0%NN) i = fst_neq_pred_r u i.
+Proof.
+intros u i.
+apply first_nonzero_iff; simpl.
+remember (fst_neq_pred_r (u + 0%NN) i) as s1 eqn:Hs1.
+apply first_nonzero_iff in Hs1; simpl in Hs1.
+destruct s1 as [n1| ].
+ destruct Hs1 as (Hn1, Ht1).
+  split.
+   intros j Hj.
+   apply Hn1 in Hj.
+   rewrite seq_pred_r_to_0_add_0_r in Hj.
+   assumption.
+
+   rewrite seq_pred_r_to_0_add_0_r in Ht1.
+   assumption.
+
+ intros j.
+ rewrite <- seq_pred_r_to_0_add_0_r.
+ apply Hs1.
+Qed.
+
+Theorem seq_pred_r_to_0_compat : ∀ u v i j,
+  (u = v)%NN
+  → seq_pred_r_to_0 u i j = seq_pred_r_to_0 v i j.
+Proof.
+intros u v i j Huv.
+unfold seq_pred_r_to_0; simpl.
+rewrite Huv; reflexivity.
+Qed.
+
+Theorem fst_neq_pred_r_compat : ∀ u v i,
+  (u = v)%NN
+  → fst_neq_pred_r u i = fst_neq_pred_r v i.
+Proof.
+intros u v i Huv.
+unfold fst_neq_pred_r; simpl.
+apply first_nonzero_iff.
+remember (first_nonzero (seq_pred_r_to_0 u i)) as s1 eqn:Hs1.
+apply first_nonzero_iff in Hs1.
+destruct s1 as [ i1 | ].
+ destruct Hs1 as (Hn1, Ht1).
+ split.
+  intros j Hj.
+  erewrite seq_pred_r_to_0_compat; [ idtac | symmetry; eassumption ].
+  apply Hn1; assumption.
+
+  erewrite seq_pred_r_to_0_compat; [ idtac | symmetry; eassumption ].
+  assumption.
+
+ intros j.
+ erewrite seq_pred_r_to_0_compat; [ idtac | symmetry; eassumption ].
+ apply Hs1.
+Qed.
+
+Theorem carry_add_compat : ∀ u v i,
+  (u = v)%NN
+  → carry_add u i = carry_add v i.
+Proof.
+intros u v i Huv.
+unfold carry_add.
+erewrite fst_neq_pred_r_compat; [ idtac | eassumption ].
+remember (fst_neq_pred_r v (S i)) as s1 eqn:Hs1.
+destruct s1 as [n1| ]; [ idtac | reflexivity ].
+rewrite Huv; reflexivity.
+Qed.
+
+Theorem carry_add_add_0_r : ∀ u i, carry_add (u + 0%NN) i = carry_add u i.
+Proof.
+intros u i.
+apply carry_add_compat.
+apply NN_add_0_r.
+Qed.
+
+Theorem carry_add_add_0_r2 : ∀ u i, carry_add (u + I2NN 0) i = carry_add u i.
+Proof.
+intros u i.
+apply carry_add_compat.
+clear i; intros i; simpl.
+unfold NN_add, I2NN, d2n; simpl.
+rewrite Nat.mod_0_l; [ idtac | apply Digit.radix_neq_0 ].
+apply Nat.add_0_r.
+Qed.
+
 Theorem I_eq_iff : ∀ x y,
   (x = y)%I
   ↔ I_eqs x y ∨
     ∃ i,
     (∀ j, j < i → (x.[j] = y.[j])%D) ∧
-    (d2n (x.[i]) = S (d2n (y.[i]))) ∧
-    (∀ di, (x.[i+S di] = 0)%D ∧ (y.[i+S di] = n2d (pred radix))) ∨
-    (d2n (y.[i]) = S (d2n (x.[i]))) ∧
-    (∀ di, (y.[i+S di] = 0)%D ∧ (x.[i+S di] = n2d (pred radix))).
+    ((d2n (x.[i]) = S (d2n (y.[i]))) ∧
+     (∀ di, (x.[i+S di] = 0)%D ∧ (y.[i+S di] = n2d (pred radix))) ∨
+     (d2n (y.[i]) = S (d2n (x.[i]))) ∧
+     (∀ di, (y.[i+S di] = 0)%D ∧ (x.[i+S di] = n2d (pred radix)))).
 Proof.
 intros x y.
 split; intros Hxy.
+ remember (first_nonzero (seq_eq x y)) as s1 eqn:Hs1.
+ apply first_nonzero_iff in Hs1.
+ destruct s1 as [n1| ].
+  Focus 2.
+  left; unfold seq_eq in Hs1; intros i.
+  pose proof Hs1 i as H.
+  destruct (Digit.eq_dec (x.[i]) (y.[i])) as [H1| H1]; [ assumption | idtac ].
+  discriminate H.
+
+  right; destruct Hs1 as (Hn1, Ht1).
+  exists n1.
+  split.
+   intros i Hi; unfold seq_eq in Hn1.
+   apply Hn1 in Hi.
+   destruct (Digit.eq_dec (x.[i]) (y.[i])); [ assumption | idtac ].
+   discriminate Hi.
+
+   unfold seq_eq in Ht1.
+   destruct (lt_eq_lt_dec (d2n (x.[n1])) (d2n (y.[n1]))) as [[H1| H1]| H1].
+    right; split.
+    pose proof Hxy n1 as Hn; simpl in Hn.
+    do 2 rewrite NN_add_add_0_r in Hn.
+    do 2 rewrite carry_add_add_0_r2 in Hn.
+    unfold digit_eq in Hn; simpl in Hn.
+    unfold carry_add in Hn.
+    remember (fst_neq_pred_r (I2NN x) (S n1)) as s2 eqn:Hs2.
+    remember (fst_neq_pred_r (I2NN y) (S n1)) as s3 eqn:Hs3.
+    apply first_nonzero_iff in Hs2; simpl in Hs2.
+    apply first_nonzero_iff in Hs3; simpl in Hs3.
+    destruct s2 as [n2| ].
+     destruct Hs2 as (Hn2, Ht2).
+     unfold seq_pred_r_to_0 in Ht2; simpl in Ht2.
+     destruct (eq_nat_dec (I2NN x (S (n1 + n2))) (pred radix)) as [H2| H2].
+      exfalso; apply Ht2; reflexivity.
+
+      clear Ht2.
+      destruct s3 as [n3| ].
+       destruct Hs3 as (Hn3, Ht3).
+       unfold seq_pred_r_to_0 in Ht3; simpl in Ht3.
+       destruct ( eq_nat_dec (I2NN y (S (n1 + n3))) (pred radix)) as [H3| H3].
+        exfalso; apply Ht3; reflexivity.
+
+        clear Ht3.
+bbb.
+
+    rewrite carry_add_compat with (v := I2NN y) in Hn.
+     Focus 2.
+     intros i; unfold I2NN; simpl.
+
+    unfold I2NN in Hn; simpl in Hn.
+    unfold carry_add in Hn.
+SearchAbout d2n.
+
+    rewrite <- Nat.add_mod_idemp_l in Hn; [ idtac | apply Digit.radix_neq_0 ].
+    symmetry in Hn.
+    rewrite <- Nat.add_mod_idemp_l in Hn; [ idtac | apply Digit.radix_neq_0 ].
+    symmetry in Hn.
+SearchAbout (_ mod _ = _ mod _).
+
+bbb.
+
+    rewrite carry_add_add_0_r in Hn at 1.
+bbb.
+
+    unfold digit_eq in Hn; simpl in Hn.
+    rewrite I_zero_NN_zero in Hn at 1.
 bbb.
 
  remember (fst_neq_pred_r x (- y) 0) as s1 eqn:Hs1 .
@@ -504,51 +687,6 @@ Notation "x * y" := (I_mul x y) : I_scope.
 
 (* *)
 
-Theorem seq_pred_r_to_0_compat : ∀ u v i j,
-  (u = v)%NN
-  → seq_pred_r_to_0 u i j = seq_pred_r_to_0 v i j.
-Proof.
-intros u v i j Huv.
-unfold seq_pred_r_to_0; simpl.
-rewrite Huv; reflexivity.
-Qed.
-
-Theorem fst_neq_pred_r_compat : ∀ u v i,
-  (u = v)%NN
-  → fst_neq_pred_r u i = fst_neq_pred_r v i.
-Proof.
-intros u v i Huv.
-unfold fst_neq_pred_r; simpl.
-apply first_nonzero_iff.
-remember (first_nonzero (seq_pred_r_to_0 u i)) as s1 eqn:Hs1.
-apply first_nonzero_iff in Hs1.
-destruct s1 as [ i1 | ].
- destruct Hs1 as (Hn1, Ht1).
- split.
-  intros j Hj.
-  erewrite seq_pred_r_to_0_compat; [ idtac | symmetry; eassumption ].
-  apply Hn1; assumption.
-
-  erewrite seq_pred_r_to_0_compat; [ idtac | symmetry; eassumption ].
-  assumption.
-
- intros j.
- erewrite seq_pred_r_to_0_compat; [ idtac | symmetry; eassumption ].
- apply Hs1.
-Qed.
-
-Theorem carry_add_compat : ∀ u v i,
-  (u = v)%NN
-  → carry_add u i = carry_add v i.
-Proof.
-intros u v i Huv.
-unfold carry_add.
-erewrite fst_neq_pred_r_compat; [ idtac | eassumption ].
-remember (fst_neq_pred_r v (S i)) as s1 eqn:Hs1.
-destruct s1 as [n1| ]; [ idtac | reflexivity ].
-rewrite Huv; reflexivity.
-Qed.
-
 Theorem NN2I_add_compat : ∀ u v,
   (u = v)%NN
   → (NN2I_add u == NN2I_add v)%I.
@@ -563,11 +701,6 @@ Add Parametric Morphism : NN2I_add
  as NN2I_add_morph.
 Proof. intros; apply NN2I_add_compat; assumption. Qed.
 
-Add Parametric Morphism : I2NN
-  with signature I_eqs ==> NN_eq
-  as I2NN_morph.
-Proof. intros x y Hxy i; apply Hxy. Qed.
-
 (* commutativity *)
 
 Theorem I_add2_comm : ∀ x y, (x + y == y + x)%I.
@@ -578,14 +711,6 @@ rewrite NN_add_comm; reflexivity.
 Qed.
 
 (* 0 neutral element *)
-
-Theorem I_zero_NN_zero : (I2NN 0%I = NN_zero)%NN.
-Proof.
-intros i.
-unfold I2NN; simpl.
-unfold d2n; simpl.
-rewrite Nat.mod_0_l; [ reflexivity | apply Digit.radix_neq_0 ].
-Qed.
 
 Theorem radix_le_sqr_radix : radix ≤ radix * radix.
 Proof.
@@ -607,49 +732,6 @@ Proof.
 intros u v Huv w x Hwx i a.
 unfold add_NN_add_l, NN_add; simpl.
 rewrite Huv, Hwx; reflexivity.
-Qed.
-
-Theorem seq_pred_r_to_0_add_0_r : ∀ u i j,
-  seq_pred_r_to_0 (u + 0)%NN i j = seq_pred_r_to_0 u i j.
-Proof.
-intros u i j.
-unfold seq_pred_r_to_0; simpl.
-unfold NN_add, NN_zero; simpl.
-rewrite Nat.add_0_r; reflexivity.
-Qed.
-
-Theorem fst_neq_pred_r_add_0_r : ∀ u i,
-  fst_neq_pred_r (u + 0%NN) i = fst_neq_pred_r u i.
-Proof.
-intros u i.
-apply first_nonzero_iff; simpl.
-remember (fst_neq_pred_r (u + 0%NN) i) as s1 eqn:Hs1.
-apply first_nonzero_iff in Hs1; simpl in Hs1.
-destruct s1 as [n1| ].
- destruct Hs1 as (Hn1, Ht1).
-  split.
-   intros j Hj.
-   apply Hn1 in Hj.
-   rewrite seq_pred_r_to_0_add_0_r in Hj.
-   assumption.
-
-   rewrite seq_pred_r_to_0_add_0_r in Ht1.
-   assumption.
-
- intros j.
- rewrite <- seq_pred_r_to_0_add_0_r.
- apply Hs1.
-Qed.
-
-Theorem carry_add_add_0_r : ∀ u i, carry_add (u + 0%NN) i = carry_add u i.
-Proof.
-intros u i.
-unfold carry_add.
-rewrite fst_neq_pred_r_add_0_r.
-remember (fst_neq_pred_r u (S i)) as s1 eqn:Hs1.
-destruct s1 as [n1| ]; [ idtac | reflexivity ].
-unfold NN_add, NN_zero; simpl.
-rewrite Nat.add_0_r; reflexivity.
 Qed.
 
 Theorem NN2I_add_0_r : ∀ u, (NN2I_add (u + 0%NN) == NN2I_add u)%I.
@@ -688,14 +770,6 @@ Add Parametric Morphism : toto
 Proof.
 intros u v Huv w x Hwx i.
 apply toto_compat; assumption.
-Qed.
-
-Theorem NN_add_add_0_r : ∀ u, (u + I2NN 0 = u)%NN.
-Proof.
-intros u i.
-unfold NN_eq, NN_add, I2NN; simpl.
-rewrite d2n_0, Nat.add_0_r.
-reflexivity.
 Qed.
 
 Theorem NN2I_add_I2NN : ∀ x, (NN2I_add (I2NN x) = x)%I.
