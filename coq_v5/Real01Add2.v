@@ -121,6 +121,13 @@ Arguments I_add2 x%I y%I.
 
 Notation "x + y" := (I_add2 x y) : I_scope.
 
+(* normalisation and equality *)
+
+Definition I_norm x := (x + 0)%I.
+Definition I_eq x y := (I_norm x == I_norm y)%I.
+
+Notation "x = y" := (I_eq x y) : I_scope.
+
 (* multiplication *)
 
 Definition seq_sum_frac_lt_1 (u : nat → nat) i n :=
@@ -206,6 +213,11 @@ Add Parametric Morphism : NN2I_add
  as NN2I_add_morph.
 Proof. intros; apply NN2I_add_compat; assumption. Qed.
 
+Add Parametric Morphism : I2NN
+  with signature I_eqs ==> NN_eq
+  as I2NN_morph.
+Proof. intros x y Hxy i; apply Hxy. Qed.
+
 (* commutativity *)
 
 Theorem I_add2_comm : ∀ x y, (x + y == y + x)%I.
@@ -232,12 +244,42 @@ replace radix with (1 * radix) by apply Nat.mul_1_l; subst a.
 apply Nat.mul_le_mono_r, Digit.radix_gt_0.
 Qed.
 
-Theorem I_add2_0_r : ∀ x, (x + 0 == x)%I.
+Theorem NN_add_add_compat : ∀ u v w x i a,
+  (u = v)%NN
+  → (w = x)%NN
+  → NN_add u w i + a = NN_add v x i + a.
+Proof.
+intros u v w x i a Huv Hwx; unfold NN_add.
+rewrite Huv, Hwx; reflexivity.
+Qed.
+
+Definition add_NN_add_l u v i a := NN_add u v i + a.
+
+Theorem fold_add_NN_add_l : ∀ u v i a,
+  NN_add u v i + a = add_NN_add_l u v i a.
+Proof. intros; reflexivity. Qed.
+
+Add Parametric Morphism : add_NN_add_l
+ with signature NN_eq ==> NN_eq ==> eq ==> eq ==> eq
+ as toto_morph.
+Proof.
+intros u v Huv w x Hwx i a.
+apply NN_add_add_compat; assumption.
+Qed.
+
+Theorem I_add2_0_r : ∀ x, (x + 0 = x)%I.
 Proof.
 intros x.
-unfold I_eqs, I_add2; intros i.
-rewrite I_zero_NN_zero.
-rewrite NN_add_0_r.
+unfold I_add2; intros i; simpl.
+do 2 rewrite fold_add_NN_add_l.
+rewrite I_zero_NN_zero at 1.
+rewrite I_zero_NN_zero at 1.
+rewrite I_zero_NN_zero at 3.
+unfold add_NN_add_l.
+bbb.
+rewrite I_zero_NN_zero at 1; simpl.
+
+bbb.
 unfold digit_eq, NN2I_add, carry_add; simpl.
 remember (fst_neq_pred_r (I2NN x) (S i)) as s1 eqn:Hs1.
 apply first_nonzero_iff in Hs1.
@@ -1409,11 +1451,6 @@ bbb.
 (∀ i : nat, u i < radix ∧ v i < radix)
 → (NN2I 2 (u + v) == NN2I 2 u + NN2I 2 v)%I ]
 *)
-
-Add Parametric Morphism : I2NN
-  with signature I_eqs ==> NN_eq
-  as I2NN_morph.
-Proof. intros x y Hxy i; apply Hxy. Qed.
 
 Theorem I2NN_NN2I_1 : ∀ u,
   (∀ i, u i ≤ 2 * (radix - 1))
