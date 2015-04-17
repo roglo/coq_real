@@ -104,14 +104,17 @@ Definition seq_pred_r_to_0 (u : nat → nat) i k :=
   if eq_nat_dec (u (i + k)) (pred radix) then 0 else 1.
 
 Definition fst_neq_pred_r u i := first_nonzero (seq_pred_r_to_0 u i).
+Arguments fst_neq_pred_r u%NN i%nat.
 
 Definition carry_add u i :=
   match fst_neq_pred_r u (S i) with
   | Some n => if lt_dec (u (S (i + n))) (pred radix) then 0 else 1
   | None => 1
   end.
+Arguments carry_add u%NN i%nat.
 
 Definition I2NN x i := d2n (x.[i]).
+Arguments I2NN x%I i%nat.
 
 Definition NN2I_add u := {| rm i := n2d (u i + carry_add u i) |}.
 Arguments NN2I_add u%NN.
@@ -195,17 +198,25 @@ destruct s1 as [ i1 | ].
  apply Hs1.
 Qed.
 
+Theorem carry_add_compat : ∀ u v i,
+  (u = v)%NN
+  → carry_add u i = carry_add v i.
+Proof.
+intros u v i Huv.
+unfold carry_add.
+erewrite fst_neq_pred_r_compat; [ idtac | eassumption ].
+remember (fst_neq_pred_r v (S i)) as s1 eqn:Hs1.
+destruct s1 as [n1| ]; [ idtac | reflexivity ].
+rewrite Huv; reflexivity.
+Qed.
+
 Theorem NN2I_add_compat : ∀ u v,
   (u = v)%NN
   → (NN2I_add u == NN2I_add v)%I.
 Proof.
 intros u v Huv i; simpl.
 unfold digit_eq; simpl; f_equal; f_equal; [ apply Huv | idtac ].
-unfold carry_add; simpl.
-rewrite fst_neq_pred_r_compat with (v := v); [ idtac | assumption ].
-remember (fst_neq_pred_r v (S i)) as s1 eqn:Hs1.
-destruct s1 as [n1| ]; [ idtac | reflexivity ].
-rewrite Huv; reflexivity.
+apply carry_add_compat; assumption.
 Qed.
 
 Add Parametric Morphism : NN2I_add
@@ -244,15 +255,6 @@ replace radix with (1 * radix) by apply Nat.mul_1_l; subst a.
 apply Nat.mul_le_mono_r, Digit.radix_gt_0.
 Qed.
 
-Theorem NN_add_add_compat : ∀ u v w x i a,
-  (u = v)%NN
-  → (w = x)%NN
-  → NN_add u w i + a = NN_add v x i + a.
-Proof.
-intros u v w x i a Huv Hwx; unfold NN_add.
-rewrite Huv, Hwx; reflexivity.
-Qed.
-
 Definition add_NN_add_l u v i a := NN_add u v i + a.
 
 Theorem fold_add_NN_add_l : ∀ u v i a,
@@ -261,23 +263,108 @@ Proof. intros; reflexivity. Qed.
 
 Add Parametric Morphism : add_NN_add_l
  with signature NN_eq ==> NN_eq ==> eq ==> eq ==> eq
- as toto_morph.
+ as add_NN_add_l_morph.
 Proof.
 intros u v Huv w x Hwx i a.
-apply NN_add_add_compat; assumption.
+unfold add_NN_add_l, NN_add; simpl.
+rewrite Huv, Hwx; reflexivity.
+Qed.
+
+Theorem seq_pred_r_to_0_add_0_r : ∀ u i j,
+  seq_pred_r_to_0 (u + 0)%NN i j = seq_pred_r_to_0 u i j.
+Proof.
+intros u i j.
+unfold seq_pred_r_to_0; simpl.
+unfold NN_add, NN_zero; simpl.
+rewrite Nat.add_0_r; reflexivity.
+Qed.
+
+Theorem fst_neq_pred_r_add_0_r : ∀ u i,
+  fst_neq_pred_r (u + 0%NN) i = fst_neq_pred_r u i.
+Proof.
+intros u i.
+apply first_nonzero_iff; simpl.
+remember (fst_neq_pred_r (u + 0%NN) i) as s1 eqn:Hs1.
+apply first_nonzero_iff in Hs1; simpl in Hs1.
+destruct s1 as [n1| ].
+ destruct Hs1 as (Hn1, Ht1).
+  split.
+   intros j Hj.
+   apply Hn1 in Hj.
+   rewrite seq_pred_r_to_0_add_0_r in Hj.
+   assumption.
+
+   rewrite seq_pred_r_to_0_add_0_r in Ht1.
+   assumption.
+
+ intros j.
+ rewrite <- seq_pred_r_to_0_add_0_r.
+ apply Hs1.
+Qed.
+
+Theorem carry_add_add_0_r : ∀ u i, carry_add (u + 0%NN) i = carry_add u i.
+Proof.
+intros u i.
+unfold carry_add.
+rewrite fst_neq_pred_r_add_0_r.
+remember (fst_neq_pred_r u (S i)) as s1 eqn:Hs1.
+destruct s1 as [n1| ]; [ idtac | reflexivity ].
+unfold NN_add, NN_zero; simpl.
+rewrite Nat.add_0_r; reflexivity.
 Qed.
 
 Theorem I_add2_0_r : ∀ x, (x + 0 = x)%I.
 Proof.
 intros x.
 unfold I_add2; intros i; simpl.
-do 2 rewrite fold_add_NN_add_l.
-rewrite I_zero_NN_zero at 1.
-rewrite I_zero_NN_zero at 1.
-rewrite I_zero_NN_zero at 3.
-unfold add_NN_add_l.
+
+Definition toto u v := carry_add (u + v).
+Theorem fold_toto : ∀ u v, carry_add (u + v) = toto u v.
+Proof. intros; reflexivity. Qed.
+
+Theorem toto_compat : ∀ u v w x i,
+  (u = v)%NN
+  → (w = x)%NN
+  → toto u w i = toto v x i.
+Proof.
+intros u v w x i Huv Hwx; unfold toto.
+unfold carry_add; simpl.
+erewrite fst_neq_pred_r_compat.
+2: erewrite NN_add_compat; [ reflexivity | eassumption | eassumption ].
+remember (fst_neq_pred_r (v + x) (S i)) as s1 eqn:Hs1.
+apply first_nonzero_iff in Hs1; simpl in Hs1.
+unfold seq_pred_r_to_0 in Hs1; simpl in Hs1.
+destruct s1 as [n1| ]; [ idtac | reflexivity ].
+unfold NN_add.
+rewrite Huv, Hwx; reflexivity.
+Qed.
+
+Add Parametric Morphism : toto
+ with signature NN_eq ==> NN_eq ==> eq ==> eq
+ as toto_morph.
+Proof.
+intros u v Huv w x Hwx i.
+apply toto_compat; assumption.
+Qed.
+
+do 2 rewrite fold_add_NN_add_l, fold_toto.
+rewrite I_zero_NN_zero.
+unfold add_NN_add_l, toto; simpl.
+do 2 rewrite NN_add_0_r.
+
+Theorem NN2I_add_0_r : ∀ u, (NN2I_add (u + 0%NN) == NN2I_add u)%I.
+Proof.
+intros u i; simpl.
+unfold digit_eq; simpl.
+f_equal; f_equal; [ apply NN_add_0_r | idtac ].
+rewrite carry_add_add_0_r.
+reflexivity.
+Qed.
+
+rewrite fold_toto.
+erewrite toto_compat.
 bbb.
-rewrite I_zero_NN_zero at 1; simpl.
+rewrite NN2I_add_0_r.
 
 bbb.
 unfold digit_eq, NN2I_add, carry_add; simpl.
