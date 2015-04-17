@@ -313,10 +313,14 @@ unfold NN_add, NN_zero; simpl.
 rewrite Nat.add_0_r; reflexivity.
 Qed.
 
-Theorem I_add2_0_r : ∀ x, (x + 0 = x)%I.
+Theorem NN2I_add_0_r : ∀ u, (NN2I_add (u + 0%NN) == NN2I_add u)%I.
 Proof.
-intros x.
-unfold I_add2; intros i; simpl.
+intros u i; simpl.
+unfold digit_eq; simpl.
+f_equal; f_equal; [ apply NN_add_0_r | idtac ].
+rewrite carry_add_add_0_r.
+reflexivity.
+Qed.
 
 Definition toto u v := carry_add (u + v).
 Theorem fold_toto : ∀ u v, carry_add (u + v) = toto u v.
@@ -347,24 +351,80 @@ intros u v Huv w x Hwx i.
 apply toto_compat; assumption.
 Qed.
 
+Theorem I2NN_NN2I_add : ∀ u, (NN2I_add (I2NN (NN2I_add u)) == NN2I_add u)%I.
+(*
+Proof. intros; apply NN2I_I2NN. Qed.
+*)
+Proof.
+intros u i; simpl.
+bbb.
+
+Theorem NN2I_add_I2NN : ∀ x, (NN2I_add (I2NN x) == x)%I.
+Proof.
+intros x i; simpl.
+unfold I2NN; simpl.
+unfold digit_eq; simpl.
+(*
+rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
+*)
+rewrite summation_split_first; [ idtac | apply Nat.le_0_l ].
+rewrite Nat.sub_0_r, Nat.add_0_r; fsimpl.
+rewrite Nat.div_add_l; [ idtac | apply int_pow_neq_0, Digit.radix_neq_0 ].
+rewrite Nat.div_small.
+ rewrite Nat.add_0_r; unfold d2n.
+ rewrite Nat.mod_mod; [ reflexivity | apply Digit.radix_neq_0 ].
+
+ revert i.
+ induction n; intros j; [ unfold summation; apply Nat.lt_0_1 | fsimpl ].
+ rewrite summation_split_first; [ idtac | apply le_n_S, Nat.le_0_l ].
+ rewrite Nat.sub_succ, Nat.sub_0_r.
+ erewrite summation_shift; try (apply le_n_S, Nat.le_0_l).
+ do 2 (rewrite Nat.sub_succ, Nat.sub_0_r).
+ erewrite summation_compat.
+  Focus 2.
+  intros k (Hk, Hkn).
+  rewrite Nat.add_assoc, Nat.add_shuffle0, Nat.add_1_r.
+  rewrite Nat.add_1_r, Nat.sub_succ; reflexivity.
+
+  remember (S j) as sj; simpl; subst sj.
+  eapply lt_le_trans; [ apply Nat.add_lt_mono_l, IHn | idtac ].
+  remember (int_pow radix n) as rn eqn:Hrn.
+  remember (d2n (x .[ j + 1]) * rn) as a.
+  remember (radix * rn) as b.
+  replace rn with (1 * rn) by apply Nat.mul_1_l; subst a b rn.
+  rewrite <- Nat.mul_add_distr_r.
+  apply Nat.mul_le_mono; [ idtac | reflexivity ].
+  rewrite Nat.add_comm.
+  apply d2n_lt_radix.
+Qed.
+
+Theorem I_add2_0_r : ∀ x, (x + 0 = x)%I.
+Proof.
+intros x.
+unfold I_add2; intros i; simpl.
 do 2 rewrite fold_add_NN_add_l, fold_toto.
 rewrite I_zero_NN_zero.
 unfold add_NN_add_l, toto; simpl.
 do 2 rewrite NN_add_0_r.
-
-Theorem NN2I_add_0_r : ∀ u, (NN2I_add (u + 0%NN) == NN2I_add u)%I.
-Proof.
-intros u i; simpl.
-unfold digit_eq; simpl.
-f_equal; f_equal; [ apply NN_add_0_r | idtac ].
-rewrite carry_add_add_0_r.
-reflexivity.
-Qed.
-
 rewrite fold_toto.
 erewrite toto_compat.
+2: rewrite NN2I_add_0_r; reflexivity.
+2: reflexivity.
+unfold toto; simpl.
 bbb.
-rewrite NN2I_add_0_r.
+SearchAbout NN2I_add.
+  ============================
+   (n2d
+      (I2NN (NN2I_add (I2NN x + 0%NN)) i +
+       carry_add (I2NN (NN2I_add (I2NN x + 0%NN)) + 0%NN) i) =
+    n2d (I2NN x i + carry_add (I2NN x + 0%NN) i))%D
+  ============================
+   (n2d
+      (I2NN (NN2I_add (I2NN x + 0%NN)) i +
+       carry_add (I2NN (NN2I_add (I2NN x)) + 0%NN) i) =
+    n2d (I2NN x i + carry_add (I2NN x + 0%NN) i))%D
+
+bbb.
 
 bbb.
 unfold digit_eq, NN2I_add, carry_add; simpl.
@@ -458,48 +518,6 @@ intros a b Ha.
 induction b; [ intros H; discriminate H | simpl ].
 apply Nat.neq_mul_0; split; assumption.
 Qed.
-
-Theorem NN2I_I2NN : ∀ x n, (NN2I n (I2NN x) == x)%I.
-Proof.
-intros x n i; simpl.
-unfold I2NN; simpl.
-unfold digit_eq; simpl.
-(*
-rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
-*)
-rewrite summation_split_first; [ idtac | apply Nat.le_0_l ].
-rewrite Nat.sub_0_r, Nat.add_0_r; fsimpl.
-rewrite Nat.div_add_l; [ idtac | apply int_pow_neq_0, Digit.radix_neq_0 ].
-rewrite Nat.div_small.
- rewrite Nat.add_0_r; unfold d2n.
- rewrite Nat.mod_mod; [ reflexivity | apply Digit.radix_neq_0 ].
-
- revert i.
- induction n; intros j; [ unfold summation; apply Nat.lt_0_1 | fsimpl ].
- rewrite summation_split_first; [ idtac | apply le_n_S, Nat.le_0_l ].
- rewrite Nat.sub_succ, Nat.sub_0_r.
- erewrite summation_shift; try (apply le_n_S, Nat.le_0_l).
- do 2 (rewrite Nat.sub_succ, Nat.sub_0_r).
- erewrite summation_compat.
-  Focus 2.
-  intros k (Hk, Hkn).
-  rewrite Nat.add_assoc, Nat.add_shuffle0, Nat.add_1_r.
-  rewrite Nat.add_1_r, Nat.sub_succ; reflexivity.
-
-  remember (S j) as sj; simpl; subst sj.
-  eapply lt_le_trans; [ apply Nat.add_lt_mono_l, IHn | idtac ].
-  remember (int_pow radix n) as rn eqn:Hrn.
-  remember (d2n (x .[ j + 1]) * rn) as a.
-  remember (radix * rn) as b.
-  replace rn with (1 * rn) by apply Nat.mul_1_l; subst a b rn.
-  rewrite <- Nat.mul_add_distr_r.
-  apply Nat.mul_le_mono; [ idtac | reflexivity ].
-  rewrite Nat.add_comm.
-  apply d2n_lt_radix.
-Qed.
-
-Theorem I2NN_NN2I : ∀ u n, (NN2I n (I2NN (NN2I n u)) == NN2I n u)%I.
-Proof. intros; apply NN2I_I2NN. Qed.
 
 Theorem fold_I_add2 : ∀ x y, NN2I 2 (I2NN x + I2NN y) = I_add2 x y.
 Proof. reflexivity. Qed.
