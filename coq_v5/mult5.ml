@@ -151,6 +151,31 @@ value carry_mul u i =
 value nn2i_mul u = {rm i = n2d (u i + carry_mul u i)}.
 value i_mul x y = nn2i_mul (nn_mul (i2nn x) (i2nn y));
 
+(* test addition *)
+
+(* x + 0 *)
+
+radix.val := 2;
+value zero () = {rm _ = n2d 0};
+value one () = {rm _ = n2d (radix.val - 1)};
+value x = {rm i = n2d (if i < 3 then 0 else radix.val - 1)}.
+"0";
+list_of_r (zero ()) 10;
+"1";
+list_of_r (one ()) 10;
+"0+1";
+list_of_r (i_add2 (zero ()) (one ())) 10;
+"1+0";
+list_of_r (i_add2 (one ()) (zero ())) 10;
+"x";
+list_of_r x 10;
+"x+0";
+list_of_r (i_add2 x (zero ())) 10;
+"0+x";
+list_of_r (i_add2 (zero ()) x) 10;
+
+bbb.
+
 (* test multiplication *)
 
 (* one times one *)
