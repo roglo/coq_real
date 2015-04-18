@@ -306,10 +306,34 @@ split; intros Hxy.
     apply Hn1 in Hi.
     destruct (Digit.eq_dec (x.[i]) (y.[i])); [ assumption | idtac ].
     discriminate Hi.
-
+    destruct n1.
+     clear Hn1.
+     destruct (Digit.eq_dec (x.[0]) 0) as [H2| H2].
+      destruct (Digit.eq_dec (y.[0]) (n2d (pred radix))) as [H3| H3].
+       left; split; [ reflexivity | idtac ].
+       left; clear H1; intros i.
 bbb.
-
-
+       pose proof Hxy 0 as Hn; unfold I_norm in Hn; simpl in Hn.
+       do 2 rewrite NN_add_add_0_r in Hn.
+       do 2 rewrite carry_add_add_0_r2 in Hn.
+       unfold digit_eq in Hn; simpl in Hn.
+       unfold I2NN in Hn at 1; simpl in Hn.
+       unfold I2NN in Hn at 2; simpl in Hn.
+       apply -> digit_d2n_eq_iff in H2; rewrite d2n_0 in H2.
+       apply -> digit_d2n_eq_iff in H3; rewrite d2n_n2d, Nat_pred_mod in H3.
+       rewrite H2, H3, Nat.add_0_l in Hn.
+bbb.
+       unfold carry_add in Hn; simpl in Hn.
+       remember (fst_neq_pred_r (I2NN x) 1) as s2 eqn:Hs2.
+       remember (fst_neq_pred_r (I2NN y) 1) as s3 eqn:Hs3.
+       apply first_nonzero_iff in Hs2; simpl in Hs2.
+       apply first_nonzero_iff in Hs3; simpl in Hs3.
+       destruct s2 as [n2| ].
+        destruct Hs2 as (Hn2, Ht2).
+        unfold seq_pred_r in Ht2; simpl in Ht2.
+        destruct (eq_nat_dec (I2NN x (S (i + n2))) (pred radix)) as [H2| H2].
+         exfalso; apply Ht2; reflexivity.
+bbb.
    destruct n1.
     left; split; [ reflexivity | clear Hn1 ].
     destruct (Digit.eq_dec (x.[0]) 0) as [H1| H1]; [ left | right ].
