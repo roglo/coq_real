@@ -488,6 +488,38 @@ split; intros Hxy.
 
           pose proof Hn2 0 (Nat.lt_0_succ n2) as H.
           unfold seq_pred_r in H; rewrite Nat.add_0_r in H.
+          destruct s3 as [n3| ].
+           destruct Hs3 as (Hn3, Ht3).
+           unfold seq_pred_r in Ht3; simpl in Ht3.
+           rewrite Nat.add_succ_r in Hn.
+           unfold I2NN in H, Ht3; simpl in H, Ht3.
+           remember (d2n (x .[ S (S (i + n2))])) as a.
+           destruct (lt_dec a (pred radix)) as [H1| H1]; subst a.
+            remember (d2n (y .[ S (i + n3)])) as a.
+            destruct (eq_nat_dec a (pred radix)) as [H5| H5]; subst a.
+             exfalso; apply Ht3; reflexivity.
+
+             clear Ht3 H.
+             remember (d2n (y .[ S (i + n3)])) as a.
+             destruct (lt_dec a (pred radix)) as [H6| H6]; subst a.
+              rewrite Nat.mod_0_l in Hn; [ idtac | apply Digit.radix_neq_0 ].
+              rewrite Nat.add_0_r, Nat_pred_mod in Hn; symmetry in Hn.
+              apply Nat.eq_pred_0 in Hn; exfalso.
+              destruct Hn; revert H; [ apply Digit.radix_neq_0 | idtac ].
+              apply Digit.radix_neq_1.
+
+              exfalso; apply H6; clear H6.
+              pose proof (d2n_lt_radix (y .[ S (i + n3)])) as H.
+              apply Nat_le_neq_lt; [ idtac | assumption ].
+              apply Nat.lt_le_pred; assumption.
+
+            exfalso; apply H1; clear H1 H.
+            rewrite Nat.add_succ_r in H4.
+            pose proof (d2n_lt_radix (x .[ S (S (i + n2))])) as H.
+            apply Nat_le_neq_lt; [ idtac | assumption ].
+            apply Nat.lt_le_pred; assumption.
+
+           simpl.
 bbb.
 
 SearchAbout (_ → S _ < _).
