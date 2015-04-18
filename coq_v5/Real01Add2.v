@@ -295,6 +295,13 @@ split; intros Hxy.
   discriminate H.
 
   right; destruct Hs1 as (Hn1, Ht1).
+  unfold seq_eq in Hn1, Ht1.
+  destruct (Digit.eq_dec (x.[n1]) (y.[n1])) as [H1| H1].
+   exfalso; apply Ht1; reflexivity.
+
+   clear Ht1.
+bbb.
+
   exists n1.
   split.
    intros i Hi; unfold seq_eq in Hn1.
@@ -327,6 +334,7 @@ split; intros Hxy.
        clear Ht2.
        destruct s3 as [n3| ].
         destruct Hs3 as (Hn3, Ht3).
+        unfold seq_pred_r in Ht3.
 bbb.
 
     unfold seq_eq in Ht1.
