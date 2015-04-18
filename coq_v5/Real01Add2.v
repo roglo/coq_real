@@ -481,7 +481,13 @@ split; intros Hxy.
 
              discriminate H.
 
-           apply Nat.nlt_ge in H1.
+           exfalso; apply H1; clear H1.
+           pose proof (d2n_lt_radix (x .[ S i])) as H.
+           apply Nat_le_neq_lt; [ idtac | assumption ].
+           apply Nat.lt_le_pred; assumption.
+
+          pose proof Hn2 0 (Nat.lt_0_succ n2) as H.
+          unfold seq_pred_r in H; rewrite Nat.add_0_r in H.
 bbb.
 
 SearchAbout (_ → S _ < _).
