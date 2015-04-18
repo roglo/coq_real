@@ -519,7 +519,17 @@ split; intros Hxy.
             apply Nat_le_neq_lt; [ idtac | assumption ].
             apply Nat.lt_le_pred; assumption.
 
-           simpl.
+           remember (d2n (x .[ S (i + S n2)])) as a.
+           destruct (lt_dec a (pred radix)) as [H1| H1]; subst a.
+            rename H into Hxi.
+            unfold seq_pred_r in Hs3; simpl in Hs3.
+            pose proof Hs3 0 as H; rewrite Nat.add_0_r in H.
+            remember (I2NN y (S i)) as a.
+            destruct (eq_nat_dec a (pred radix)) as [H5| H5]; subst a.
+             clear H; unfold I2NN in H5.
+             remember (I2NN x (S i)) as a.
+             destruct (eq_nat_dec a (pred radix)) as [H6| H6]; subst a.
+              unfold I2NN in H6; clear Hn Hxi.
 bbb.
 
 SearchAbout (_ → S _ < _).
