@@ -276,12 +276,12 @@ Theorem I_eq_iff : ∀ x y,
     ∃ i,
     (∀ j, j < i → (x.[j] = y.[j])%D) ∧
     ((i = 0 ∧
-     ((∀ j, (x.[j] = 0)%D ∧ (y.[j] = n2d (pred radix))) ∨
-      (∀ j, (y.[j] = 0)%D ∧ (x.[j] = n2d (pred radix))))) ∨
+     ((∀ j, (x.[j] = 0)%D ∧ (y.[j] = n2d (pred radix))%D) ∨
+      (∀ j, (y.[j] = 0)%D ∧ (x.[j] = n2d (pred radix))%D))) ∨
      (d2n (x.[i]) = S (d2n (y.[i]))) ∧
-     (∀ di, (x.[i+S di] = 0)%D ∧ (y.[i+S di] = n2d (pred radix))) ∨
+     (∀ di, (x.[i+S di] = 0)%D ∧ (y.[i+S di] = n2d (pred radix))%D) ∨
      (d2n (y.[i]) = S (d2n (x.[i]))) ∧
-     (∀ di, (y.[i+S di] = 0)%D ∧ (x.[i+S di] = n2d (pred radix)))).
+     (∀ di, (y.[i+S di] = 0)%D ∧ (x.[i+S di] = n2d (pred radix))%D)).
 Proof.
 intros x y.
 split; intros Hxy.
@@ -312,6 +312,7 @@ split; intros Hxy.
       destruct (Digit.eq_dec (y.[0]) (n2d (pred radix))) as [H3| H3].
        left; split; [ reflexivity | idtac ].
        left; clear H1; intros i.
+       induction i; [ split; assumption | idtac ].
 bbb.
        pose proof Hxy 0 as Hn; unfold I_norm in Hn; simpl in Hn.
        do 2 rewrite NN_add_add_0_r in Hn.
