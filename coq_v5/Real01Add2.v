@@ -100,10 +100,10 @@ Definition logn n a := pred (logn_loop a n a).
 
 (* addition *)
 
-Definition seq_pred_r_to_0 (u : nat → nat) i k :=
+Definition seq_pred_r (u : nat → nat) i k :=
   if eq_nat_dec (u (i + k)) (pred radix) then 0 else 1.
 
-Definition fst_neq_pred_r u i := first_nonzero (seq_pred_r_to_0 u i).
+Definition fst_neq_pred_r u i := first_nonzero (seq_pred_r u i).
 Arguments fst_neq_pred_r u%NN i%nat.
 
 Definition carry_add u i :=
@@ -176,11 +176,11 @@ rewrite d2n_0, Nat.add_0_r.
 reflexivity.
 Qed.
 
-Theorem seq_pred_r_to_0_add_0_r : ∀ u i j,
-  seq_pred_r_to_0 (u + 0)%NN i j = seq_pred_r_to_0 u i j.
+Theorem seq_pred_r_add_0_r : ∀ u i j,
+  seq_pred_r (u + 0)%NN i j = seq_pred_r u i j.
 Proof.
 intros u i j.
-unfold seq_pred_r_to_0; simpl.
+unfold seq_pred_r; simpl.
 unfold NN_add, NN_zero; simpl.
 rewrite Nat.add_0_r; reflexivity.
 Qed.
@@ -197,23 +197,23 @@ destruct s1 as [n1| ].
   split.
    intros j Hj.
    apply Hn1 in Hj.
-   rewrite seq_pred_r_to_0_add_0_r in Hj.
+   rewrite seq_pred_r_add_0_r in Hj.
    assumption.
 
-   rewrite seq_pred_r_to_0_add_0_r in Ht1.
+   rewrite seq_pred_r_add_0_r in Ht1.
    assumption.
 
  intros j.
- rewrite <- seq_pred_r_to_0_add_0_r.
+ rewrite <- seq_pred_r_add_0_r.
  apply Hs1.
 Qed.
 
-Theorem seq_pred_r_to_0_compat : ∀ u v i j,
+Theorem seq_pred_r_compat : ∀ u v i j,
   (u = v)%NN
-  → seq_pred_r_to_0 u i j = seq_pred_r_to_0 v i j.
+  → seq_pred_r u i j = seq_pred_r v i j.
 Proof.
 intros u v i j Huv.
-unfold seq_pred_r_to_0; simpl.
+unfold seq_pred_r; simpl.
 rewrite Huv; reflexivity.
 Qed.
 
@@ -224,20 +224,20 @@ Proof.
 intros u v i Huv.
 unfold fst_neq_pred_r; simpl.
 apply first_nonzero_iff.
-remember (first_nonzero (seq_pred_r_to_0 u i)) as s1 eqn:Hs1.
+remember (first_nonzero (seq_pred_r u i)) as s1 eqn:Hs1.
 apply first_nonzero_iff in Hs1.
 destruct s1 as [ i1 | ].
  destruct Hs1 as (Hn1, Ht1).
  split.
   intros j Hj.
-  erewrite seq_pred_r_to_0_compat; [ idtac | symmetry; eassumption ].
+  erewrite seq_pred_r_compat; [ idtac | symmetry; eassumption ].
   apply Hn1; assumption.
 
-  erewrite seq_pred_r_to_0_compat; [ idtac | symmetry; eassumption ].
+  erewrite seq_pred_r_compat; [ idtac | symmetry; eassumption ].
   assumption.
 
  intros j.
- erewrite seq_pred_r_to_0_compat; [ idtac | symmetry; eassumption ].
+ erewrite seq_pred_r_compat; [ idtac | symmetry; eassumption ].
  apply Hs1.
 Qed.
 
@@ -320,11 +320,13 @@ split; intros Hxy.
      apply first_nonzero_iff in Hs3; simpl in Hs3.
      destruct s2 as [n2| ].
       destruct Hs2 as (Hn2, Ht2).
-      unfold seq_pred_r_to_0 in Ht2; simpl in Ht2.
+      unfold seq_pred_r in Ht2; simpl in Ht2.
       destruct (eq_nat_dec (I2NN x (S (i + n2))) (pred radix)) as [H2| H2].
        exfalso; apply Ht2; reflexivity.
 
        clear Ht2.
+       destruct s3 as [n3| ].
+        destruct Hs3 as (Hn3, Ht3).
 bbb.
 
     unfold seq_eq in Ht1.
@@ -345,7 +347,7 @@ bbb.
      apply first_nonzero_iff in Hs3; simpl in Hs3.
      destruct s2 as [n2| ].
       destruct Hs2 as (Hn2, Ht2).
-      unfold seq_pred_r_to_0 in Ht2; simpl in Ht2.
+      unfold seq_pred_r in Ht2; simpl in Ht2.
       destruct (eq_nat_dec (I2NN x (S n2)) (pred radix)) as [H2| H2].
        exfalso; apply Ht2; reflexivity.
 
@@ -369,24 +371,24 @@ bbb.
     apply first_nonzero_iff in Hs3; simpl in Hs3.
     destruct s2 as [n2| ].
      destruct Hs2 as (Hn2, Ht2).
-     unfold seq_pred_r_to_0 in Ht2; simpl in Ht2.
+     unfold seq_pred_r in Ht2; simpl in Ht2.
      destruct (eq_nat_dec (I2NN x (S (n1 + n2))) (pred radix)) as [H2| H2].
       exfalso; apply Ht2; reflexivity.
 
       clear Ht2.
       destruct (lt_dec (I2NN x (S (n1 + n2))) (pred radix)) as [H3| H3].
        unfold I2NN in H3; simpl in H3.
-       unfold seq_pred_r_to_0 in Hn2; simpl in Hn2.
+       unfold seq_pred_r in Hn2; simpl in Hn2.
 bbb.
 
       destruct s3 as [n3| ].
        destruct Hs3 as (Hn3, Ht3).
-       unfold seq_pred_r_to_0 in Ht3; simpl in Ht3.
+       unfold seq_pred_r in Ht3; simpl in Ht3.
        destruct ( eq_nat_dec (I2NN y (S (n1 + n3))) (pred radix)) as [H3| H3].
         exfalso; apply Ht3; reflexivity.
 
         clear Ht3.
-Print seq_pred_r_to_0.
+Print seq_pred_r.
 bbb.
 
     rewrite carry_add_compat with (v := I2NN y) in Hn.
@@ -820,7 +822,7 @@ erewrite fst_neq_pred_r_compat.
 2: erewrite NN_add_compat; [ reflexivity | eassumption | eassumption ].
 remember (fst_neq_pred_r (v + x) (S i)) as s1 eqn:Hs1.
 apply first_nonzero_iff in Hs1; simpl in Hs1.
-unfold seq_pred_r_to_0 in Hs1; simpl in Hs1.
+unfold seq_pred_r in Hs1; simpl in Hs1.
 destruct s1 as [n1| ]; [ idtac | reflexivity ].
 unfold NN_add.
 rewrite Huv, Hwx; reflexivity.
@@ -883,7 +885,7 @@ destruct s1 as [n1| ].
   apply Nat.nlt_ge in H1.
   destruct Hs1 as (Hn1, Ht1).
   destruct n1.
-   unfold seq_pred_r_to_0 in Ht1.
+   unfold seq_pred_r in Ht1.
    rewrite Nat.add_0_r in Ht1, H1.
    destruct (eq_nat_dec (I2NN (NN2I_add u) (S i)) (pred radix)) as [H2| H2].
     exfalso; apply Ht1; reflexivity.
@@ -971,7 +973,7 @@ unfold digit_eq, NN2I_add, carry_add; simpl.
 remember (fst_neq_pred_r (I2NN x) (S i)) as s1 eqn:Hs1.
 apply first_nonzero_iff in Hs1.
 destruct s1 as [n | ].
- unfold seq_pred_r_to_0 in Hs1; simpl in Hs1.
+ unfold seq_pred_r in Hs1; simpl in Hs1.
  destruct Hs1 as (Hn1, Ht1).
  destruct (lt_dec (I2NN x (S (i + n))) (pred radix)) as [H1| H1].
   rewrite Nat.add_0_r; unfold I2NN, d2n.
