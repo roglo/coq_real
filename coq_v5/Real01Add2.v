@@ -450,6 +450,52 @@ split; intros Hxy.
                 apply Nat.lt_le_pred; assumption.
 
               unfold seq_pred_r in Hs4; simpl in Hs4.
+              destruct s5 as [n5| ].
+                 destruct Hs5 as (Hn5, Ht5).
+                 remember (I2NN y (S (S (i + n5)))) as a.
+                 destruct (lt_dec a (pred radix)) as [H8| H8]; subst a.
+                  pose proof (Hs3 (S n5)) as H.
+                  rewrite Nat.add_succ_r in H.
+                  remember (I2NN y (S (S (i + n5)))) as a.
+                  destruct (eq_nat_dec a (pred radix)) as [H9| H9]; subst a.
+                   rewrite H9 in H8.
+                   exfalso; revert H8; apply Nat.lt_irrefl.
+
+                   discriminate H.
+
+                  do 2 rewrite Nat.add_1_r in Hn; simpl in Hn.
+                  pose proof Digit.radix_neq_0 as H.
+                  rewrite Nat.succ_pred in Hn; [|assumption ].
+                  rewrite Nat.mod_same in Hn; [ idtac | assumption ].
+                  rewrite Nat.mod_small in Hn; [ discriminate Hn|].
+bbb.
+
+SearchAbout (_ → S _ < _).
+apply Nat.lt_pred_lt.
+
+rewrite Nat_mod_succ_l in Hn; [ discriminate Hn|].
+
+                  rewrite Nat.mod_small in Hn; [ idtac | apply d2n_lt_radix ].
+                  apply eq_d2n_0 in Hn.
+                  split; [ assumption | idtac ].
+                  apply digit_d2n_eq_iff; rewrite d2n_n2d, Nat_pred_mod.
+                  assumption.
+
+                 unfold seq_pred_r in Hs5; simpl in Hs5.
+                 rewrite Nat.add_1_r in Hn; simpl in Hn.
+                 pose proof Digit.radix_neq_0 as H.
+                 rewrite Nat.succ_pred in Hn; [ idtac | assumption ].
+                 rewrite Nat.mod_same in Hn; [ idtac | assumption ].
+                 rewrite Nat.mod_small in Hn; [ idtac | apply d2n_lt_radix ].
+                 apply eq_d2n_0 in Hn.
+                 split; [ assumption | idtac ].
+                 apply digit_d2n_eq_iff; rewrite d2n_n2d, Nat_pred_mod.
+                 assumption.
+
+                exfalso; apply H7; clear H7.
+                pose proof d2n_lt_radix (x.[S (S (i + n4))]) as H.
+                apply Nat_le_neq_lt; [ idtac | assumption ].
+                apply Nat.lt_le_pred; assumption.
 bbb.
 Set Printing Width 65. Show.
              exfalso; apply Ht3; reflexivity.
