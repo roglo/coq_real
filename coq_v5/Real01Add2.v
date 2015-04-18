@@ -300,14 +300,15 @@ split; intros Hxy.
    exfalso; apply Ht1; reflexivity.
 
    clear Ht1.
+   exists n1.
+   split.
+    intros i Hi; unfold seq_eq in Hn1.
+    apply Hn1 in Hi.
+    destruct (Digit.eq_dec (x.[i]) (y.[i])); [ assumption | idtac ].
+    discriminate Hi.
+
 bbb.
 
-  exists n1.
-  split.
-   intros i Hi; unfold seq_eq in Hn1.
-   apply Hn1 in Hi.
-   destruct (Digit.eq_dec (x.[i]) (y.[i])); [ assumption | idtac ].
-   discriminate Hi.
 
    destruct n1.
     left; split; [ reflexivity | clear Hn1 ].
