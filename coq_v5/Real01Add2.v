@@ -355,9 +355,18 @@ split; intros Hxy.
                destruct Hn; revert H; [ apply Digit.radix_neq_0 | idtac ].
                apply Digit.radix_neq_1.
 
-               exfalso; apply H6; unfold d2n.
-bbb.
+               exfalso; apply H6; clear H6.
+               pose proof d2n_lt_radix (y.[S i]) as H.
+               apply Nat_le_neq_lt; [ idtac | assumption ].
+               apply Nat.lt_le_pred; assumption.
+
+              pose proof Hn3 0 (Nat.lt_0_succ n3) as H.
+              unfold seq_pred_r, I2NN in H.
 Set Printing Width 65. Show.
+              rewrite Nat.add_0_r in H.
+              destruct (eq_nat_dec (d2n (y .[ S i])) (pred radix)) as [H6| H6].
+               clear H.
+bbb.
 
 
            rewrite Nat.mod_0_l in Hn; [ idtac | apply Digit.radix_neq_0 ].
