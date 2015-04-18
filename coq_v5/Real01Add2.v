@@ -423,8 +423,33 @@ split; intros Hxy.
 
                    discriminate H.
 
-                  apply Nat.nlt_ge in H8.
-                  unfold seq_pred_r in Ht5; simpl in Ht5.
+                  rewrite Nat.add_1_r in Hn; simpl in Hn.
+                  pose proof Digit.radix_neq_0 as H.
+                  rewrite Nat.succ_pred in Hn; [ idtac | assumption ].
+                  rewrite Nat.mod_same in Hn; [ idtac | assumption ].
+                  rewrite Nat.mod_small in Hn; [ idtac | apply d2n_lt_radix ].
+                  apply eq_d2n_0 in Hn.
+                  split; [ assumption | idtac ].
+                  apply digit_d2n_eq_iff; rewrite d2n_n2d, Nat_pred_mod.
+                  assumption.
+
+                 unfold seq_pred_r in Hs5; simpl in Hs5.
+                 rewrite Nat.add_1_r in Hn; simpl in Hn.
+                 pose proof Digit.radix_neq_0 as H.
+                 rewrite Nat.succ_pred in Hn; [ idtac | assumption ].
+                 rewrite Nat.mod_same in Hn; [ idtac | assumption ].
+                 rewrite Nat.mod_small in Hn; [ idtac | apply d2n_lt_radix ].
+                 apply eq_d2n_0 in Hn.
+                 split; [ assumption | idtac ].
+                 apply digit_d2n_eq_iff; rewrite d2n_n2d, Nat_pred_mod.
+                 assumption.
+
+                exfalso; apply H7; clear H7.
+                pose proof d2n_lt_radix (x.[S (S (i + n4))]) as H.
+                apply Nat_le_neq_lt; [ idtac | assumption ].
+                apply Nat.lt_le_pred; assumption.
+
+              unfold seq_pred_r in Hs4; simpl in Hs4.
 bbb.
 Set Printing Width 65. Show.
              exfalso; apply Ht3; reflexivity.
