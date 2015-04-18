@@ -342,7 +342,7 @@ split; intros Hxy.
            destruct s3 as [n3| ].
             destruct Hs3 as (Hn3, Ht3).
             unfold I2NN, seq_pred_r in Ht3; simpl in Ht3.
-            remember (d2n (y.[S (i + n3)])) as a.
+            remember (d2n (y .[ S (i + n3)])) as a.
             destruct (eq_nat_dec a (pred radix)) as [H5| H5]; subst a.
              exfalso; apply Ht3; reflexivity.
 
@@ -356,11 +356,11 @@ split; intros Hxy.
                apply Digit.radix_neq_1.
 
                exfalso; apply H6; clear H6.
-               pose proof d2n_lt_radix (y.[S i]) as H.
+               pose proof (d2n_lt_radix (y .[ S i])) as H.
                apply Nat_le_neq_lt; [ idtac | assumption ].
                apply Nat.lt_le_pred; assumption.
 
-              pose proof Hn3 0 (Nat.lt_0_succ n3) as H.
+              pose proof (Hn3 0 (Nat.lt_0_succ n3)) as H.
               unfold seq_pred_r, I2NN in H.
               rewrite Nat.add_0_r in H.
               remember (d2n (y .[ S i])) as a.
@@ -374,7 +374,7 @@ split; intros Hxy.
                 apply Digit.radix_neq_1.
 
                 exfalso; apply H7; clear H7.
-                pose proof d2n_lt_radix (y.[S (i + S n3)]) as H.
+                pose proof (d2n_lt_radix (y .[ S (i + S n3)])) as H.
                 apply Nat_le_neq_lt; [ idtac | assumption ].
                 apply Nat.lt_le_pred; assumption.
 
@@ -445,29 +445,43 @@ split; intros Hxy.
                  assumption.
 
                 exfalso; apply H7; clear H7.
-                pose proof d2n_lt_radix (x.[S (S (i + n4))]) as H.
+                pose proof (d2n_lt_radix (x .[ S (S (i + n4))])) as H.
                 apply Nat_le_neq_lt; [ idtac | assumption ].
                 apply Nat.lt_le_pred; assumption.
 
               unfold seq_pred_r in Hs4; simpl in Hs4.
               destruct s5 as [n5| ].
-                 destruct Hs5 as (Hn5, Ht5).
-                 remember (I2NN y (S (S (i + n5)))) as a.
-                 destruct (lt_dec a (pred radix)) as [H8| H8]; subst a.
-                  pose proof (Hs3 (S n5)) as H.
-                  rewrite Nat.add_succ_r in H.
-                  remember (I2NN y (S (S (i + n5)))) as a.
-                  destruct (eq_nat_dec a (pred radix)) as [H9| H9]; subst a.
-                   rewrite H9 in H8.
-                   exfalso; revert H8; apply Nat.lt_irrefl.
+               destruct Hs5 as (Hn5, Ht5).
+               remember (I2NN y (S (S (i + n5)))) as a.
+               destruct (lt_dec a (pred radix)) as [H8| H8]; subst a.
+                pose proof (Hs3 (S n5)) as H.
+                rewrite Nat.add_succ_r in H.
+                remember (I2NN y (S (S (i + n5)))) as a.
+                destruct (eq_nat_dec a (pred radix)) as [H9| H9]; subst a.
+                 rewrite H9 in H8.
+                 exfalso; revert H8; apply Nat.lt_irrefl.
 
-                   discriminate H.
+                 discriminate H.
 
-                  do 2 rewrite Nat.add_1_r in Hn; simpl in Hn.
-                  pose proof Digit.radix_neq_0 as H.
-                  rewrite Nat.succ_pred in Hn; [|assumption ].
-                  rewrite Nat.mod_same in Hn; [ idtac | assumption ].
-                  rewrite Nat.mod_small in Hn; [ discriminate Hn|].
+                do 2 rewrite Nat.add_1_r in Hn; simpl in Hn.
+                pose proof Digit.radix_neq_0 as H.
+                rewrite Nat.succ_pred in Hn; [ idtac | assumption ].
+                rewrite Nat.mod_same in Hn; [ idtac | assumption ].
+                rewrite Nat.mod_small in Hn; [ discriminate Hn | idtac ].
+                rewrite <- Nat.succ_pred; [ idtac | assumption ].
+                apply lt_n_S; assumption.
+
+               do 2 rewrite Nat.add_1_r in Hn; simpl in Hn.
+               pose proof Digit.radix_neq_0 as H.
+               rewrite Nat.succ_pred in Hn; [ idtac | assumption ].
+               rewrite Nat.mod_same in Hn; [ idtac | assumption ].
+               rewrite Nat.mod_small in Hn; [ discriminate Hn | idtac ].
+               rewrite <- Nat.succ_pred; [ idtac | assumption ].
+               apply lt_n_S; assumption.
+
+             discriminate H.
+
+           apply Nat.nlt_ge in H1.
 bbb.
 
 SearchAbout (_ → S _ < _).
