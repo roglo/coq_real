@@ -285,55 +285,87 @@ Theorem I_eq_iff : ∀ x y,
 Proof.
 intros x y.
 split; intros Hxy.
- remember (first_nonzero (seq_eq x y)) as s1 eqn:Hs1.
+ remember (first_nonzero (seq_eq x y)) as s1 eqn:Hs1 .
  apply first_nonzero_iff in Hs1.
  destruct s1 as [n1| ].
   Focus 2.
   left; unfold seq_eq in Hs1; intros i.
-  pose proof Hs1 i as H.
-  destruct (Digit.eq_dec (x.[i]) (y.[i])) as [H1| H1]; [ assumption | idtac ].
+  pose proof (Hs1 i) as H.
+  destruct (Digit.eq_dec (x .[ i]) (y .[ i])); [ assumption | idtac ].
   discriminate H.
 
   right; destruct Hs1 as (Hn1, Ht1).
   unfold seq_eq in Hn1, Ht1.
-  destruct (Digit.eq_dec (x.[n1]) (y.[n1])) as [H1| H1].
+  destruct (Digit.eq_dec (x .[ n1]) (y .[ n1])) as [H1| H1].
    exfalso; apply Ht1; reflexivity.
 
-   clear Ht1.
-   exists n1.
+   exists n1; clear Ht1.
    split.
     intros i Hi; unfold seq_eq in Hn1.
     apply Hn1 in Hi.
-    destruct (Digit.eq_dec (x.[i]) (y.[i])); [ assumption | idtac ].
+    destruct (Digit.eq_dec (x .[ i]) (y .[ i])); [ assumption | idtac ].
     discriminate Hi.
+
     destruct n1.
      clear Hn1.
-     destruct (Digit.eq_dec (x.[0]) 0) as [H2| H2].
-      destruct (Digit.eq_dec (y.[0]) (n2d (pred radix))) as [H3| H3].
+     destruct (Digit.eq_dec (x .[ 0]) 0) as [H2| H2].
+      destruct (Digit.eq_dec (y .[ 0]) (n2d (pred radix))) as [H3| H3].
        left; split; [ reflexivity | idtac ].
        left; clear H1; intros i.
        induction i; [ split; assumption | idtac ].
-bbb.
-       pose proof Hxy 0 as Hn; unfold I_norm in Hn; simpl in Hn.
+       pose proof (Hxy i) as Hn; unfold I_norm in Hn; simpl in Hn.
        do 2 rewrite NN_add_add_0_r in Hn.
        do 2 rewrite carry_add_add_0_r2 in Hn.
        unfold digit_eq in Hn; simpl in Hn.
        unfold I2NN in Hn at 1; simpl in Hn.
        unfold I2NN in Hn at 2; simpl in Hn.
-       apply -> digit_d2n_eq_iff in H2; rewrite d2n_0 in H2.
-       apply -> digit_d2n_eq_iff in H3; rewrite d2n_n2d, Nat_pred_mod in H3.
-       rewrite H2, H3, Nat.add_0_l in Hn.
-bbb.
+       destruct IHi as (Hx, Hy).
+       apply -> digit_d2n_eq_iff in Hx; rewrite d2n_0 in Hx.
+       apply -> digit_d2n_eq_iff in Hy; rewrite d2n_n2d, Nat_pred_mod in Hy.
+       rewrite Hx, Hy, Nat.add_0_l in Hn.
        unfold carry_add in Hn; simpl in Hn.
-       remember (fst_neq_pred_r (I2NN x) 1) as s2 eqn:Hs2.
-       remember (fst_neq_pred_r (I2NN y) 1) as s3 eqn:Hs3.
+       remember (fst_neq_pred_r (I2NN x) (S i)) as s2 eqn:Hs2 .
+       remember (fst_neq_pred_r (I2NN y) (S i)) as s3 eqn:Hs3 .
        apply first_nonzero_iff in Hs2; simpl in Hs2.
        apply first_nonzero_iff in Hs3; simpl in Hs3.
        destruct s2 as [n2| ].
         destruct Hs2 as (Hn2, Ht2).
         unfold seq_pred_r in Ht2; simpl in Ht2.
-        destruct (eq_nat_dec (I2NN x (S (i + n2))) (pred radix)) as [H2| H2].
+        destruct (eq_nat_dec (I2NN x (S (i + n2))) (pred radix)) as [H4| H4].
          exfalso; apply Ht2; reflexivity.
+
+         clear Ht2.
+         unfold I2NN in H4, Hn.
+         destruct n2; [ clear Hn2; rewrite Nat.add_0_r in H4, Hn | idtac ].
+          destruct (lt_dec (d2n (x .[ S i])) (pred radix)) as [H1| H1].
+           rewrite Nat.mod_0_l in Hn; [ idtac | apply Digit.radix_neq_0 ].
+           destruct s3 as [n3| ].
+            destruct Hs3 as (Hn3, Ht3).
+            unfold I2NN, seq_pred_r in Ht3; simpl in Ht3.
+            remember (d2n (y.[S (i + n3)])) as a.
+            destruct (eq_nat_dec a (pred radix)) as [H5| H5]; subst a.
+             exfalso; apply Ht3; reflexivity.
+
+             clear Ht3.
+             destruct n3.
+              clear Hn3; rewrite Nat.add_0_r in H5, Hn.
+              destruct (lt_dec (d2n (y .[ S i])) (pred radix)) as [H6| H6].
+               rewrite Nat.add_0_r, Nat_pred_mod in Hn; symmetry in Hn.
+               apply Nat.eq_pred_0 in Hn; exfalso.
+               destruct Hn; revert H; [ apply Digit.radix_neq_0 | idtac ].
+               apply Digit.radix_neq_1.
+
+               exfalso; apply H6; unfold d2n.
+bbb.
+Set Printing Width 65. Show.
+
+
+           rewrite Nat.mod_0_l in Hn; [ idtac | apply Digit.radix_neq_0 ].
+           destruct s3 as [n3| ].
+            destruct Hs3 as (Hn3, Ht3).
+            unfold seq_pred_r in Ht3; simpl in Ht3.
+            destruct (eq_nat_dec (I2NN y (S (i + n3))) (pred radix)) as [H5| H5].
+            exfalso; apply Ht3; reflexivity.
 bbb.
    destruct n1.
     left; split; [ reflexivity | clear Hn1 ].
