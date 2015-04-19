@@ -270,6 +270,9 @@ rewrite Nat.mod_0_l; [ idtac | apply Digit.radix_neq_0 ].
 apply Nat.add_0_r.
 Qed.
 
+Theorem n2d_1 : (n2d 1 = 1)%D.
+Proof. reflexivity. Qed.
+
 Theorem I_eq_iff : ∀ x y,
   (x = y)%I
   ↔ (x == y)%I ∨
@@ -310,6 +313,8 @@ split; intros Hxy.
      clear Hn1.
      destruct (Digit.eq_dec (x .[ 0]) 0) as [H2| H2].
       destruct (Digit.eq_dec (y .[ 0]) (n2d (pred radix))) as [H3| H3].
+bbb.
+(* false if radix = 2, the right case could apply *)
        left; split; [ reflexivity | idtac ].
        left; clear H1; intros i.
        induction i; [ split; assumption | idtac ].
@@ -530,6 +535,10 @@ split; intros Hxy.
              remember (I2NN x (S i)) as a.
              destruct (eq_nat_dec a (pred radix)) as [H6| H6]; subst a.
               unfold I2NN in H6; clear Hn Hxi.
+Set Printing Width 65. Show.
+destruct radix; simpl in *. Focus 2.
+destruct n; simpl in *. Focus 2.
+destruct n; simpl in *.
 bbb.
 
 SearchAbout (_ → S _ < _).
