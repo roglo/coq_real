@@ -507,7 +507,9 @@ split; intros Hxy.
              apply Nat_le_neq_lt; [ idtac | assumption ].
              apply Nat.lt_le_pred; assumption.
 
-          simpl. (* cf Hs2 *)
+          destruct s3 as [n3| ].
+           remember (I2NN y (S (i + n3))) as a.
+           destruct (lt_dec a (pred radix)) as [H4| H4]; subst a.
 bbb.
 
 rewrite Hr in Hn.
