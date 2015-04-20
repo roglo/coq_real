@@ -565,7 +565,12 @@ split; intros Hxy.
                     apply Nat_le_neq_lt; [ idtac | assumption ].
                     apply Nat.lt_le_pred; assumption.
 
-                  clear Hn.
+                  clear Hn Hn3.
+destruct i.
+apply eq_d2n_0 in H1.
+rewrite H1 in H5; discriminate H5.
+
+bbb.
                   unfold seq_pred_r, I2NN in Ht3.
                   rewrite Nat.add_0_r in Ht3.
                   remember (d2n (y .[ S i])) as a.
