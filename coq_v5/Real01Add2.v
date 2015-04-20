@@ -575,7 +575,9 @@ split; intros Hxy.
 
                    clear H.
                    assert (I2NN x (S (S (i + n4))) = 0) as H7.
-                    Focus 2.
+                    rewrite Hr in H9; simpl in H9.
+                    apply Nat.lt_1_r; assumption.
+
                     clear H8 H9.
                     destruct n4.
                      rewrite Nat.add_0_r in H7.
@@ -701,7 +703,7 @@ split; intros Hxy.
 
                          discriminate H.
 
-                    simpl.
+                 simpl.
 vvv.
 
 (* false if radix = 2, the right case could apply *)
