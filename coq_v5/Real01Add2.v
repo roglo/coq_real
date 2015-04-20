@@ -703,7 +703,12 @@ split; intros Hxy.
 
                          discriminate H.
 
-                 simpl.
+                 exfalso; apply H9; clear H9.
+                 pose proof (d2n_lt_radix (x .[ S (S (i + n4))])) as H.
+                 apply Nat_le_neq_lt; [ idtac | assumption ].
+                 apply Nat.lt_le_pred; assumption.
+
+               simpl.
 vvv.
 
 (* false if radix = 2, the right case could apply *)
