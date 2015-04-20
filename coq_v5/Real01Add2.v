@@ -708,7 +708,15 @@ split; intros Hxy.
                  apply Nat_le_neq_lt; [ idtac | assumption ].
                  apply Nat.lt_le_pred; assumption.
 
-               simpl.
+               destruct s5 as [n5| ].
+                destruct Hs5 as (Hn5, Ht5).
+                unfold seq_pred_r in Ht5; simpl in Ht5.
+                remember (I2NN y (S (S (i + n5)))) as a.
+                destruct (eq_nat_dec a (pred radix)) as [H6| H6].
+                 exfalso; apply Ht5; reflexivity.
+
+                 clear Ht5.
+                 destruct (lt_dec a (pred radix)) as [H7| H7]; subst a.
 vvv.
 
 (* false if radix = 2, the right case could apply *)
