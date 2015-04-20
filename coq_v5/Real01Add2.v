@@ -693,7 +693,16 @@ split; intros Hxy.
                          discriminate H.
 
                      rewrite Nat.add_0_r in H7.
-                     pose proof (Hxy (S (S i))) as H.
+                     pose proof (Hs2 1) as H.
+                     unfold seq_pred_r in H; simpl in H.
+                     rewrite Nat.add_1_r in H.
+                     rewrite H7 in H.
+                     destruct (eq_nat_dec 0 (pred radix)) as [H9| H9].
+                      rewrite Hr in H9; discriminate H9.
+
+                      discriminate H.
+
+                    simpl.
 vvv.
 
 (* false if radix = 2, the right case could apply *)
