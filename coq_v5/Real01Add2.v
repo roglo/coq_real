@@ -566,9 +566,35 @@ split; intros Hxy.
                     apply Nat.lt_le_pred; assumption.
 
                   clear Hn Hn3.
+                  pose proof Hs5 0 as H.
+                  unfold seq_pred_r, I2NN in H.
+                  rewrite Nat.add_0_r in H.
+                  remember (d2n (y .[ S (S i)])) as a.
+                  destruct (eq_nat_dec a (pred radix)) as [H6| H6]; subst a.
+                  2: discriminate H.
+                  clear H.
+assert (I2NN x (S (S (i+n4))) = 0) as H7.
+Focus 2.
+clear H8 H9.
+destruct n4.
+rewrite Nat.add_0_r in H7.
+pose proof Hxy (S (S i)) as H.
+Focus 2.
+pose proof Hn4 0 (Nat.lt_0_succ n4) as H.
+unfold seq_pred_r, I2NN in H; simpl in H.
+rewrite Nat.add_0_r in H.
+remember (d2n (x.[S (S i)])) as a.
+destruct (eq_nat_dec a (pred radix)) as [H8|H8]; subst a.
+2:discriminate H.
+clear H.
+pose proof Hxy (S (S i)) as H.
+unfold I_norm in H; simpl in H.
+
+bbb.
 destruct i.
 apply eq_d2n_0 in H1.
 rewrite H1 in H5; discriminate H5.
+destruct i.
 
 bbb.
                   unfold seq_pred_r, I2NN in Ht3.
