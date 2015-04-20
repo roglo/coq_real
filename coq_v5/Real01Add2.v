@@ -578,7 +578,16 @@ split; intros Hxy.
                     Focus 2.
                     clear H8 H9.
                     destruct n4.
-                     Focus 2.
+                     rewrite Nat.add_0_r in H7.
+                     pose proof (Hs2 1) as H.
+                     unfold seq_pred_r in H; simpl in H.
+                     rewrite Nat.add_1_r in H.
+                     rewrite H7 in H.
+                     destruct (eq_nat_dec 0 (pred radix)) as [H9| H9].
+                      rewrite Hr in H9; discriminate H9.
+
+                      discriminate H.
+
                      pose proof (Hn4 0 (Nat.lt_0_succ n4)) as H.
                      unfold seq_pred_r, I2NN in H; simpl in H.
                      rewrite Nat.add_0_r in H.
@@ -691,16 +700,6 @@ split; intros Hxy.
                          rewrite Hr in H9; discriminate H9.
 
                          discriminate H.
-
-                     rewrite Nat.add_0_r in H7.
-                     pose proof (Hs2 1) as H.
-                     unfold seq_pred_r in H; simpl in H.
-                     rewrite Nat.add_1_r in H.
-                     rewrite H7 in H.
-                     destruct (eq_nat_dec 0 (pred radix)) as [H9| H9].
-                      rewrite Hr in H9; discriminate H9.
-
-                      discriminate H.
 
                     simpl.
 vvv.
