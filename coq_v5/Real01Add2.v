@@ -565,7 +565,24 @@ split; intros Hxy.
                     apply Nat_le_neq_lt; [ idtac | assumption ].
                     apply Nat.lt_le_pred; assumption.
 
-                  simpl.
+                  clear Hn.
+                  unfold seq_pred_r, I2NN in Ht3.
+                  rewrite Nat.add_0_r in Ht3.
+                  remember (d2n (y .[ S i])) as a.
+                  destruct (eq_nat_dec a (pred radix)) as [H6| H6]; subst a.
+                   exfalso; apply Ht3; reflexivity.
+
+                   clear Ht3.
+bbb.
+                   pose proof Hs2 0 as H.
+                   unfold seq_pred_r, I2NN in H.
+                   rewrite Nat.add_0_r in H.
+                   remember (d2n (x .[ S i])) as a.
+                   destruct (eq_nat_dec a (pred radix)) as [H7| H7]; subst a.
+                    exfalso; apply H; reflexivity.
+
+                   clear Ht3.
+                   pose proof Hs2 0 as H.
 bbb.
                    destruct s5 as [n5| ].
                     destruct Hs5 as (Hn5, Ht5).
