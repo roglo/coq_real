@@ -326,7 +326,9 @@ split; intros Hxy.
        apply -> digit_d2n_eq_iff in H; rewrite d2n_n2d in H.
        rewrite Nat_pred_mod in H; rewrite H; clear H.
        destruct (eq_nat_dec radix 2) as [Hr| Hr].
-        rewrite Hr in H3; simpl in H3; rewrite Hr; simpl.
+        rewrite Hr in H3; simpl in H3; rewrite n2d_1 in H3.
+        rewrite Hr; simpl.
+bbb.
         destruct (Digit.eq_dec (x .[ 1]) 0) as [H1| H1].
          left; split; [ reflexivity | left; intros i; rewrite n2d_1 ].
          induction i; [ split; assumption | idtac ].
