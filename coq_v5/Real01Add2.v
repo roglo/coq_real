@@ -348,12 +348,28 @@ destruct sx as [dx| ].
    destruct (lt_dec (I2NN y a) (pred radix)) as [H2| H2]; subst a.
     rewrite Nat.add_0_r in Hn.
     apply d2n_mod_radix in Hn.
+    apply digit_d2n_eq_iff in Hn.
+Theorem zzz : ∀ a, (a ≠ a + 1)%D.
+Proof.
+intros a H.
+bbb.
+
     rewrite d2n_add, d2n_1 in Hn.
+
+
     remember (d2n (x.[i])) as n; clear Heqn.
-    revert Hn; clear; intros; exfalso.
+    exfalso; revert Hn; clear; intros.
     induction n; simpl in Hn.
      rewrite Nat.mod_small in Hn; [ discriminate Hn | idtac ].
      apply Digit.radix_gt_1.
+     destruct (eq_nat_dec ((n + 1) mod radix) (pred radix)) as [H1| H1].
+Focus 2.
+rewrite Nat_mod_succ_l in Hn; [ | assumption ].
+apply IHn, eq_add_S.
+assumption.
+
+      rewrite H1 in IHn.
+
 bbb.
 
     apply digit_d2n_eq_iff in Hn.
