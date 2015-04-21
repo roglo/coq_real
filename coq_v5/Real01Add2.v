@@ -312,6 +312,33 @@ unfold d2n; simpl.
 rewrite Nat.add_mod; [ reflexivity | apply Digit.radix_neq_0 ].
 Qed.
 
+Theorem digit_neq_succ_digit : ∀ a, (a ≠ a + 1)%D.
+Proof.
+intros a H.
+unfold digit_eq in H; simpl in H.
+remember (dig a) as n; revert H; clear; intros.
+rewrite <- Nat.add_mod_idemp_l in H; [ idtac | apply Digit.radix_neq_0 ].
+destruct (eq_nat_dec (n mod radix) (pred radix)) as [H1| H1].
+ rewrite H1, Nat.add_1_r in H.
+ rewrite Nat.succ_pred in H; [ idtac | apply Digit.radix_neq_0 ].
+ rewrite Nat.mod_same in H; [ idtac | apply Digit.radix_neq_0 ].
+ remember radix as r eqn:Hr; symmetry in Hr.
+ destruct r; [ revert Hr; apply Digit.radix_neq_0 | simpl in H ].
+ destruct r; [ revert Hr; apply Digit.radix_neq_1 | discriminate H ].
+
+ symmetry in H.
+ rewrite Nat.mod_small in H.
+  rewrite Nat.add_1_r in H.
+  revert H; apply Nat.neq_succ_diag_l.
+
+  pose proof Digit.radix_neq_0 as H2.
+  apply Nat.mod_upper_bound with (a := n) in H2.
+  apply Nat.lt_add_lt_sub_r; rewrite Nat.sub_1_r.
+  apply Nat_le_neq_lt; [ idtac | assumption ].
+  rewrite <- Nat.sub_1_r; apply Nat.le_add_le_sub_r.
+  rewrite Nat.add_1_r; assumption.
+Qed.
+
 (* borrowed from Read01Add.v and adapted for this implementation *)
 Theorem I_eq_neq_prop : ∀ x y i,
   (x = y)%I
@@ -349,39 +376,16 @@ destruct sx as [dx| ].
     rewrite Nat.add_0_r in Hn.
     apply d2n_mod_radix in Hn.
     apply digit_d2n_eq_iff in Hn.
-Theorem zzz : ∀ a, (a ≠ a + 1)%D.
-Proof.
-intros a H.
+    exfalso; revert Hn; apply digit_neq_succ_digit.
+
+    unfold I2NN in Hty, H2; simpl in Hty, H2.
+    exfalso; apply H2; clear H2.
+    pose proof (d2n_lt_radix (y .[ S (i + dy)])) as H.
+    apply Nat_le_neq_lt; [ idtac | assumption ].
+    apply Nat.lt_le_pred; assumption.
+
+  simpl.
 bbb.
-
-    rewrite d2n_add, d2n_1 in Hn.
-
-
-    remember (d2n (x.[i])) as n; clear Heqn.
-    exfalso; revert Hn; clear; intros.
-    induction n; simpl in Hn.
-     rewrite Nat.mod_small in Hn; [ discriminate Hn | idtac ].
-     apply Digit.radix_gt_1.
-     destruct (eq_nat_dec ((n + 1) mod radix) (pred radix)) as [H1| H1].
-Focus 2.
-rewrite Nat_mod_succ_l in Hn; [ | assumption ].
-apply IHn, eq_add_S.
-assumption.
-
-      rewrite H1 in IHn.
-
-bbb.
-
-    apply digit_d2n_eq_iff in Hn.
-bbb.
-    destruct (Digit.eq_dec (x .[ i]) 0) as [H3| H3].
-     rewrite H3, Digit.add_0_l in Hn.
-     apply Digit.neq_0_1 in Hn; contradiction.
-
-bbb.
-
-  rewrite Hty in H.
-  exfalso;  revert H; apply Digit.neq_1_0.
 
   right.
   generalize Hsy; intros Hny.
