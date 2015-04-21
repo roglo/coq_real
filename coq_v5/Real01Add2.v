@@ -305,6 +305,13 @@ split; intros Hu.
  intros H; discriminate H.
 Qed.
 
+Theorem d2n_add : ∀ a b, d2n (a + b) = (d2n a + d2n b) mod radix.
+Proof.
+intros a b.
+unfold d2n; simpl.
+rewrite Nat.add_mod; [ reflexivity | apply Digit.radix_neq_0 ].
+Qed.
+
 (* borrowed from Read01Add.v and adapted for this implementation *)
 Theorem I_eq_neq_prop : ∀ x y i,
   (x = y)%I
@@ -340,7 +347,17 @@ destruct sx as [dx| ].
    remember (S (i + dy)) as a.
    destruct (lt_dec (I2NN y a) (pred radix)) as [H2| H2]; subst a.
     rewrite Nat.add_0_r in Hn.
-    apply d2n_mod_radix, digit_d2n_eq_iff in Hn.
+    apply d2n_mod_radix in Hn.
+    rewrite d2n_add, d2n_1 in Hn.
+    remember (d2n (x.[i])) as n; clear Heqn.
+    revert Hn; clear; intros; exfalso.
+    induction n; simpl in Hn.
+     rewrite Nat.mod_small in Hn; [ discriminate Hn | idtac ].
+     apply Digit.radix_gt_1.
+bbb.
+
+    apply digit_d2n_eq_iff in Hn.
+bbb.
     destruct (Digit.eq_dec (x .[ i]) 0) as [H3| H3].
      rewrite H3, Digit.add_0_l in Hn.
      apply Digit.neq_0_1 in Hn; contradiction.
