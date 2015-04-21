@@ -330,14 +330,25 @@ pose proof (Hxy i) as Hn.
          apply first_nonzero_iff in Hsy; simpl in Hsy.
 destruct sx as [dx| ].
  destruct Hsx as (Hnx, Htx).
-apply seq_pred_r_neq in Htx.
+apply seq_pred_r_neq in Htx; simpl in Htx.
+remember ( (S (i + dx))) as a.
+destruct ( lt_dec (I2NN x a) (pred radix)) as [H1|H1]; subst a.
+rewrite Nat.add_0_r in Hn.
+ destruct sy as [dy| ].
+(*
+  generalize Hsy; intros HH.
+*)
+destruct Hsy as (Hny, Hty).
+apply seq_pred_r_neq in Hty; simpl in Hty.
+remember ( (S (i + dy))) as a.
+destruct ( lt_dec (I2NN y a) (pred radix)) as [H2|H2]; subst a.
+rewrite Nat.add_0_r in Hn.
+apply d2n_mod_radix, digit_d2n_eq_iff in Hn.
+destruct (Digit.eq_dec (x.[i]) 0) as [H3|H3].
+rewrite H3, Digit.add_0_l in Hn.
+apply Digit.neq_0_1 in Hn; contradiction.
 bbb.
 
-; rewrite Htx in Hn.
- destruct sy as [dy| ]; [ idtac | clear H ].
-  generalize Hsy; intros HH.
-  apply fst_same_sym_iff in HH; simpl in HH.
-  destruct HH as (Hny, Hty).
   rewrite Hty in H.
   exfalso;  revert H; apply Digit.neq_1_0.
 
