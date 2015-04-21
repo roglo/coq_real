@@ -384,7 +384,9 @@ destruct sx as [dx| ].
     apply Nat_le_neq_lt; [ idtac | assumption ].
     apply Nat.lt_le_pred; assumption.
 
-  simpl.
+  left.
+   split; intros di.
+
 bbb.
 
   right.
