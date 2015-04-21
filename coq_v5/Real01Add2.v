@@ -316,37 +316,35 @@ Proof.
 intros x y i Hxy Hy.
 unfold I_eq, I_eqs in Hxy; simpl in Hxy.
 pose proof (Hxy i) as Hn.
-         do 2 rewrite NN_add_add_0_r in Hn.
-         do 2 rewrite carry_add_add_0_r2 in Hn.
-         unfold digit_eq in Hn; simpl in Hn.
-         unfold I2NN in Hn at 1; simpl in Hn.
-         unfold I2NN in Hn at 2; simpl in Hn.
-         apply -> digit_d2n_eq_iff in Hy.
-         rewrite Hy in Hn; simpl in Hn.
-         unfold carry_add in Hn; simpl in Hn.
-         remember (fst_neq_pred_r (I2NN x) (S i)) as sx eqn:Hsx .
-         remember (fst_neq_pred_r (I2NN y) (S i)) as sy eqn:Hsy .
-         apply first_nonzero_iff in Hsx; simpl in Hsx.
-         apply first_nonzero_iff in Hsy; simpl in Hsy.
+do 2 rewrite NN_add_add_0_r in Hn.
+do 2 rewrite carry_add_add_0_r2 in Hn.
+unfold digit_eq in Hn; simpl in Hn.
+unfold I2NN in Hn at 1; simpl in Hn.
+unfold I2NN in Hn at 2; simpl in Hn.
+apply -> digit_d2n_eq_iff in Hy.
+rewrite Hy in Hn; simpl in Hn.
+unfold carry_add in Hn; simpl in Hn.
+remember (fst_neq_pred_r (I2NN x) (S i)) as sx eqn:Hsx .
+remember (fst_neq_pred_r (I2NN y) (S i)) as sy eqn:Hsy .
+apply first_nonzero_iff in Hsx; simpl in Hsx.
+apply first_nonzero_iff in Hsy; simpl in Hsy.
 destruct sx as [dx| ].
  destruct Hsx as (Hnx, Htx).
-apply seq_pred_r_neq in Htx; simpl in Htx.
-remember ( (S (i + dx))) as a.
-destruct ( lt_dec (I2NN x a) (pred radix)) as [H1|H1]; subst a.
-rewrite Nat.add_0_r in Hn.
- destruct sy as [dy| ].
-(*
-  generalize Hsy; intros HH.
-*)
-destruct Hsy as (Hny, Hty).
-apply seq_pred_r_neq in Hty; simpl in Hty.
-remember ( (S (i + dy))) as a.
-destruct ( lt_dec (I2NN y a) (pred radix)) as [H2|H2]; subst a.
-rewrite Nat.add_0_r in Hn.
-apply d2n_mod_radix, digit_d2n_eq_iff in Hn.
-destruct (Digit.eq_dec (x.[i]) 0) as [H3|H3].
-rewrite H3, Digit.add_0_l in Hn.
-apply Digit.neq_0_1 in Hn; contradiction.
+ apply seq_pred_r_neq in Htx; simpl in Htx.
+ remember (S (i + dx)) as a.
+ destruct (lt_dec (I2NN x a) (pred radix)) as [H1| H1]; subst a.
+  rewrite Nat.add_0_r in Hn.
+  destruct sy as [dy| ].
+   destruct Hsy as (Hny, Hty).
+   apply seq_pred_r_neq in Hty; simpl in Hty.
+   remember (S (i + dy)) as a.
+   destruct (lt_dec (I2NN y a) (pred radix)) as [H2| H2]; subst a.
+    rewrite Nat.add_0_r in Hn.
+    apply d2n_mod_radix, digit_d2n_eq_iff in Hn.
+    destruct (Digit.eq_dec (x .[ i]) 0) as [H3| H3].
+     rewrite H3, Digit.add_0_l in Hn.
+     apply Digit.neq_0_1 in Hn; contradiction.
+
 bbb.
 
   rewrite Hty in H.
