@@ -463,8 +463,18 @@ Print carry_add.
             split.
              apply eq_d2n_0.
 *)
-remember (d2n (x .[ S (S (i + dx))]))
+           remember (d2n (x .[ S (S (i + dx))])) as a.
+           destruct (lt_dec a (pred radix)) as [H5| H5]; subst a.
+            rewrite Nat.mod_small in Hn; [ idtac | apply Digit.radix_gt_1 ].
+            destruct s3 as [n3| ].
+             destruct Hs3 as (Hn3, Ht3).
+             unfold seq_pred_r, I2NN in Ht3; simpl in Ht3.
+             remember ((d2n (y .[ S (S (i + dx + n3))]))) as a.
+             destruct (eq_nat_dec a (pred radix)) as [H6| H6].
+              exfalso; apply Ht3; reflexivity.
 
+              clear Ht3.
+              destruct (lt_dec a (pred radix)) as [H7| H7]; subst a.
 bbb.
              pose proof (d2n_lt_radix (x .[ S i])) as H.
              rewrite Hr in H4, H; simpl in H4, H.
