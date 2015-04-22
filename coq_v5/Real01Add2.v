@@ -339,6 +339,15 @@ destruct (eq_nat_dec (n mod radix) (pred radix)) as [H1| H1].
   rewrite Nat.add_1_r; assumption.
 Qed.
 
+Theorem Nat_mod_add_divides : ∀ a b c, c ≠ 0 → (a + b) mod c = a → (c | b).
+Proof.
+intros a b c Hc Hab.
+apply Nat.div_mod with (x := a + b) in Hc.
+rewrite Hab, Nat.add_comm, Nat.mul_comm in Hc.
+apply Nat.add_cancel_r in Hc.
+exists ((b + a) / c); assumption.
+Qed.
+
 (* borrowed from Read01Add.v and adapted for this implementation *)
 Theorem I_eq_neq_prop : ∀ x y i,
   (x = y)%I
@@ -385,37 +394,13 @@ destruct sx as [dx| ].
     apply Nat.lt_le_pred; assumption.
 
   rewrite d2n_add in Hn.
-  rewrite Nat.add_mod_idemp_l in Hn; [ idtac | apply Digit.radix_neq_0 ].
+  pose proof Digit.radix_neq_0 as Hrnz.
+  rewrite Nat.add_mod_idemp_l in Hn; [ idtac | assumption ].
   rewrite d2n_1, <- Nat.add_assoc in Hn; simpl in Hn.
-Theorem zzz : ∀ a b, b ≥ 2 → (a + 2) mod b = a mod b → b = 2.
-Proof.
-intros a b Hb Hab.
-rewrite <- Nat.add_mod_idemp_l in Hab.
-remember (a mod b) as c.
-clear a Heqc; rename c into a.
-bbb.
-
-revert b Hb Hab.
-induction c; intros.
- simpl in Hab.
- destruct (eq_nat_dec b 2) as [H1| H1]; [ assumption | idtac ].
- rewrite Nat.mod_small in Hab; [ discriminate Hab |].
- apply Nat_le_neq_lt; [ assumption | idtac ].
- apply Nat.neq_sym; assumption.
-
-simpl in Hab.
-destruct (eq_nat_dec ((c+2)mod b) (pred b)) as [H1|H1].
-
-rewrite Nat_mod_succ_l in Hab.
-
-
-
-SearchAbout (S _ mod _).
-
-bbb.
-
-  apply d2n_mod_radix in Hn.
-  rewrite digit_d2n_eq_iff in Hn.
+  symmetry in Hn.
+  rewrite <- Nat.add_mod_idemp_l in Hn; [ idtac | assumption ].
+  apply Nat_mod_add_divides in Hn; [ idtac | assumption ].
+  destruct Hn as (c, Hn); symmetry in Hn.
 bbb.
   right.
   generalize Hsy; intros Hny.
