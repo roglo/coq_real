@@ -408,15 +408,14 @@ destruct sx as [dx| ].
   rewrite Hn, Nat.mul_1_r in H.
   apply lt_S_n, Nat.lt_1_r in H; subst c.
   rewrite Nat.mul_1_l in Hn; clear Hc.
-bbb.
   right; split; [ assumption | idtac ].
 (*
   generalize Hsy; intros Hny.
   apply fst_same_sym_iff in Hny; simpl in Hny.
 *)
   rename H1 into Hxlt.
-bbb.
   split; intros di.
+bbb.
    destruct (lt_eq_lt_dec di dx) as [[H1| H1]| H1].
     pose proof (Hnx di H1) as H.
     rename H into Hdi.
