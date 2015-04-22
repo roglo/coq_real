@@ -442,6 +442,9 @@ remember (I2NN y (S (i + dx))) as a.
 destruct (eq_nat_dec a (pred radix)) as [H3| H3]; subst a.
 unfold I2NN in H3; rewrite Hr in H3; simpl in H3.
 rewrite H3 in Hn; clear H.
+simpl in Hn.
+SearchAbout carry_add.
+bbb.
          unfold carry_add in Hn; simpl in Hn.
          remember (fst_neq_pred_r (I2NN x) (S (S (i + dx)))) as s2 eqn:Hs2 .
          remember (fst_neq_pred_r (I2NN y) (S (S (i + dx)))) as s3 eqn:Hs3 .
