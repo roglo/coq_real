@@ -430,12 +430,24 @@ destruct sx as [dx| ].
          apply -> digit_d2n_eq_iff in Hy; rewrite d2n_1 in Hy.
          rewrite Hx, Hy, Nat.add_0_l in Hn.
 *)
-bbb.
+pose proof Hnx dx (Nat.lt_succ_diag_r dx) as H.
+unfold seq_pred_r in H; simpl in H.
+remember (I2NN x (S (i + dx))) as a.
+destruct (eq_nat_dec a (pred radix)) as [H2| H2]; subst a.
+unfold I2NN in H2; rewrite Hr in H2; simpl in H2.
+rewrite H2 in Hn; clear H.
+pose proof Hsy dx as H.
+unfold seq_pred_r in H; simpl in H.
+remember (I2NN y (S (i + dx))) as a.
+destruct (eq_nat_dec a (pred radix)) as [H3| H3]; subst a.
+unfold I2NN in H3; rewrite Hr in H3; simpl in H3.
+rewrite H3 in Hn; clear H.
          unfold carry_add in Hn; simpl in Hn.
          remember (fst_neq_pred_r (I2NN x) (S (S (i + dx)))) as s2 eqn:Hs2 .
          remember (fst_neq_pred_r (I2NN y) (S (S (i + dx)))) as s3 eqn:Hs3 .
          apply first_nonzero_iff in Hs2; simpl in Hs2.
          apply first_nonzero_iff in Hs3; simpl in Hs3.
+bbb.
          destruct s2 as [n2| ].
           destruct Hs2 as (Hn2, Ht2).
           unfold seq_pred_r in Ht2; simpl in Ht2.
