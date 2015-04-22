@@ -443,14 +443,12 @@ destruct (eq_nat_dec a (pred radix)) as [H3| H3]; subst a.
 unfold I2NN in H3; rewrite Hr in H3; simpl in H3.
 rewrite H3 in Hn; clear H.
 simpl in Hn.
-SearchAbout carry_add.
-bbb.
+Print carry_add.
          unfold carry_add in Hn; simpl in Hn.
          remember (fst_neq_pred_r (I2NN x) (S (S (i + dx)))) as s2 eqn:Hs2 .
          remember (fst_neq_pred_r (I2NN y) (S (S (i + dx)))) as s3 eqn:Hs3 .
          apply first_nonzero_iff in Hs2; simpl in Hs2.
          apply first_nonzero_iff in Hs3; simpl in Hs3.
-bbb.
          destruct s2 as [n2| ].
           destruct Hs2 as (Hn2, Ht2).
           unfold seq_pred_r in Ht2; simpl in Ht2.
@@ -465,6 +463,7 @@ bbb.
             split.
              apply eq_d2n_0.
 *)
+bbb.
              pose proof (d2n_lt_radix (x .[ S i])) as H.
              rewrite Hr in H4, H; simpl in H4, H.
              remember (d2n (x .[ S i])) as a eqn:Ha .
