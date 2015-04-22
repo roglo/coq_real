@@ -463,6 +463,8 @@ Print carry_add.
             split.
              apply eq_d2n_0.
 *)
+remember (d2n (x .[ S (S (i + dx))]))
+
 bbb.
              pose proof (d2n_lt_radix (x .[ S i])) as H.
              rewrite Hr in H4, H; simpl in H4, H.
