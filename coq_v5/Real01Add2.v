@@ -414,13 +414,11 @@ destruct sx as [dx| ].
   apply fst_same_sym_iff in Hny; simpl in Hny.
 *)
   rename H1 into Hxlt.
+  rename Hn into Hr.
   split; intros di.
-bbb.
    destruct (lt_eq_lt_dec di dx) as [[H1| H1]| H1].
-    pose proof (Hnx di H1) as H.
-    rename H into Hdi.
+    pose proof (Hnx di H1) as Hdi.
     destruct dx; [ exfalso; revert H1; apply Nat.nlt_0_r | idtac ].
-    rename Hn into Hr.
     pose proof (Hxy (S (i + dx))%nat) as Hn.
          do 2 rewrite NN_add_add_0_r in Hn.
          do 2 rewrite carry_add_add_0_r2 in Hn.
@@ -432,6 +430,7 @@ bbb.
          apply -> digit_d2n_eq_iff in Hy; rewrite d2n_1 in Hy.
          rewrite Hx, Hy, Nat.add_0_l in Hn.
 *)
+bbb.
          unfold carry_add in Hn; simpl in Hn.
          remember (fst_neq_pred_r (I2NN x) (S (S (i + dx)))) as s2 eqn:Hs2 .
          remember (fst_neq_pred_r (I2NN y) (S (S (i + dx)))) as s3 eqn:Hs3 .
