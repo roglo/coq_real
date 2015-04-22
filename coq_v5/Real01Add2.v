@@ -409,15 +409,18 @@ destruct sx as [dx| ].
   apply lt_S_n, Nat.lt_1_r in H; subst c.
   rewrite Nat.mul_1_l in Hn; clear Hc.
   right; split; [ assumption | idtac ].
-bbb.
+(*
   generalize Hsy; intros Hny.
   apply fst_same_sym_iff in Hny; simpl in Hny.
+*)
+  rename H1 into Hxlt.
   split; intros di.
    destruct (lt_eq_lt_dec di dx) as [[H1| H1]| H1].
     pose proof (Hnx di H1) as H.
     rename H into Hdi.
     destruct dx; [ exfalso; revert H1; apply Nat.nlt_0_r | idtac ].
     pose proof (Hxy (S (i + dx))%nat) as H.
+bbb.
     unfold I_add_i in H; simpl in H.
     do 2 rewrite Digit.add_0_r in H.
     rewrite Hnx in H; [ idtac | apply Nat.lt_succ_diag_r ].
