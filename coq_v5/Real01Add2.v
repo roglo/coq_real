@@ -408,21 +408,62 @@ destruct sx as [dx| ].
   rewrite Hn, Nat.mul_1_r in H.
   apply lt_S_n, Nat.lt_1_r in H; subst c.
   rewrite Nat.mul_1_l in Hn; clear Hc.
+bbb.
   right; split; [ assumption | idtac ].
 (*
   generalize Hsy; intros Hny.
   apply fst_same_sym_iff in Hny; simpl in Hny.
 *)
   rename H1 into Hxlt.
+bbb.
   split; intros di.
    destruct (lt_eq_lt_dec di dx) as [[H1| H1]| H1].
     pose proof (Hnx di H1) as H.
     rename H into Hdi.
     destruct dx; [ exfalso; revert H1; apply Nat.nlt_0_r | idtac ].
-    pose proof (Hxy (S (i + dx))%nat) as H.
-bbb.
+    rename Hn into Hr.
+    pose proof (Hxy (S (i + dx))%nat) as Hn.
+         do 2 rewrite NN_add_add_0_r in Hn.
+         do 2 rewrite carry_add_add_0_r2 in Hn.
+         unfold digit_eq in Hn; simpl in Hn.
+         unfold I2NN in Hn at 1; simpl in Hn.
+         unfold I2NN in Hn at 2; simpl in Hn.
+(*
+         apply -> digit_d2n_eq_iff in Hx; rewrite d2n_0 in Hx.
+         apply -> digit_d2n_eq_iff in Hy; rewrite d2n_1 in Hy.
+         rewrite Hx, Hy, Nat.add_0_l in Hn.
+*)
+         unfold carry_add in Hn; simpl in Hn.
+         remember (fst_neq_pred_r (I2NN x) (S (S (i + dx)))) as s2 eqn:Hs2 .
+         remember (fst_neq_pred_r (I2NN y) (S (S (i + dx)))) as s3 eqn:Hs3 .
+         apply first_nonzero_iff in Hs2; simpl in Hs2.
+         apply first_nonzero_iff in Hs3; simpl in Hs3.
+         destruct s2 as [n2| ].
+          destruct Hs2 as (Hn2, Ht2).
+          unfold seq_pred_r in Ht2; simpl in Ht2.
+          remember (I2NN x (S (S (i + dx + n2)))) as a.
+          destruct (eq_nat_dec a (pred radix)) as [H4| H4]; subst a.
+           exfalso; apply Ht2; reflexivity.
+
+           clear Ht2.
+           unfold I2NN in H4, Hn.
+           destruct n2; [ clear Hn2; rewrite Nat.add_0_r in H4, Hn | idtac ].
+(*
+            split.
+             apply eq_d2n_0.
+*)
+             pose proof (d2n_lt_radix (x .[ S i])) as H.
+             rewrite Hr in H4, H; simpl in H4, H.
+             remember (d2n (x .[ S i])) as a eqn:Ha .
+             destruct a; [ reflexivity | exfalso; apply H4 ].
+             destruct a; [ reflexivity | exfalso ].
+             apply Nat.nle_gt in H; apply H; clear H.
+             do 2 apply le_n_S; apply Nat.le_0_l.
+*)
+(*
     unfold I_add_i in H; simpl in H.
     do 2 rewrite Digit.add_0_r in H.
+*)
     rewrite Hnx in H; [ idtac | apply Nat.lt_succ_diag_r ].
     rewrite Hny in H.
     rewrite Digit.add_1_l in H.
