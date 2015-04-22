@@ -401,8 +401,15 @@ destruct sx as [dx| ].
   rewrite <- Nat.add_mod_idemp_l in Hn; [ idtac | assumption ].
   apply Nat_mod_add_divides in Hn; [ idtac | assumption ].
   destruct Hn as (c, Hn); symmetry in Hn.
+  destruct c; [ discriminate Hn | idtac ].
+  pose proof Digit.radix_gt_1 as H.
+  assert (0 < S c) as Hc by apply Nat.lt_0_succ.
+  eapply Nat.mul_lt_mono_pos_l in H; [ idtac | eassumption ].
+  rewrite Hn, Nat.mul_1_r in H.
+  apply lt_S_n, Nat.lt_1_r in H; subst c.
+  rewrite Nat.mul_1_l in Hn; clear Hc.
+  right; split; [ assumption | idtac ].
 bbb.
-  right.
   generalize Hsy; intros Hny.
   apply fst_same_sym_iff in Hny; simpl in Hny.
   split; intros di.
