@@ -384,11 +384,39 @@ destruct sx as [dx| ].
     apply Nat_le_neq_lt; [ idtac | assumption ].
     apply Nat.lt_le_pred; assumption.
 
-  left.
-   split; intros di.
+  rewrite d2n_add in Hn.
+  rewrite Nat.add_mod_idemp_l in Hn; [ idtac | apply Digit.radix_neq_0 ].
+  rewrite d2n_1, <- Nat.add_assoc in Hn; simpl in Hn.
+Theorem zzz : ∀ a b, b ≥ 2 → (a + 2) mod b = a mod b → b = 2.
+Proof.
+intros a b Hb Hab.
+rewrite <- Nat.add_mod_idemp_l in Hab.
+remember (a mod b) as c.
+clear a Heqc; rename c into a.
+bbb.
+
+revert b Hb Hab.
+induction c; intros.
+ simpl in Hab.
+ destruct (eq_nat_dec b 2) as [H1| H1]; [ assumption | idtac ].
+ rewrite Nat.mod_small in Hab; [ discriminate Hab |].
+ apply Nat_le_neq_lt; [ assumption | idtac ].
+ apply Nat.neq_sym; assumption.
+
+simpl in Hab.
+destruct (eq_nat_dec ((c+2)mod b) (pred b)) as [H1|H1].
+
+rewrite Nat_mod_succ_l in Hab.
+
+
+
+SearchAbout (S _ mod _).
 
 bbb.
 
+  apply d2n_mod_radix in Hn.
+  rewrite digit_d2n_eq_iff in Hn.
+bbb.
   right.
   generalize Hsy; intros Hny.
   apply fst_same_sym_iff in Hny; simpl in Hny.
