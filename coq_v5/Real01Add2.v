@@ -460,8 +460,37 @@ destruct sx as [dx| ].
      apply first_nonzero_iff in Hs3; simpl in Hs3.
      destruct s2 as [n2| ].
       destruct Hs2 as (Hn2, Ht2).
-      apply seq_pred_r_I2NN_neq in Ht2.
+      apply seq_pred_r_I2NN_neq in Ht2; simpl in Ht2.
       apply neq_d2n_pred_radix in Ht2.
+Theorem zzz : ∀ d, radix = 2 → (d ≠ 9)%D → (d = 0)%D.
+Proof.
+intros d Hr Hd.
+apply neq_d2n_pred_radix in Hd.
+unfold digit_eq in Hd; simpl in Hd.
+unfold digit_eq; simpl.
+rewrite Nat.mod_0_l; [ idtac | apply Digit.radix_neq_0 ].
+unfold d2n in Hd; simpl in Hd.
+rewrite Hr in Hd; rewrite Hr.
+remember (dig d mod 2) as n eqn:Hn.
+destruct n; [ reflexivity | exfalso; apply Hd; clear Hd; simpl ].
+destruct n; [ reflexivity | exfalso ].
+pose proof Nat.mod_upper_bound (S (S n)) radix Digit.radix_neq_0 as H.
+SearchAbout (_ mod _ < _).
+bbb.
+
+rewrite Hn, Hr in H.
+rewrite Nat.mod_mod in H; [|intros HH; discriminate HH].
+
+bbb.
+      assert (x .[ S (S (i + dx + n2))] = 0)%D as H.
+       pose proof d2n_lt_radix (x .[ S (S (i + dx + n2))]) as H.
+       rewrite Hr in H.
+       unfold d2n in Ht2.
+
+
+       unfold digit_eq in Ht2; simpl in Ht2.
+       unfold digit_eq; simpl.
+
       assert (9 = 1)%D as H by (unfold digit_rm1; rewrite Hr; reflexivity).
       rewrite H in Ht2.
 bbb.
