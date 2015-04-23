@@ -433,12 +433,6 @@ destruct sx as [dx| ].
       destruct (eq_nat_dec a (pred radix)) as [H3| H3]; subst a.
        unfold I2NN in H3; rewrite Hr in H3; simpl in H3.
        rewrite H3 in Hn; clear H; simpl in Hn.
-bbb.
-        i  i+1  .   di  .   dx
-x   .   .   1   1   1   1   0
-        ≠
-y   .   .   1   1   1   1   1 …
-
        unfold carry_add in Hn; simpl in Hn.
        remember (fst_neq_pred_r (I2NN x) (S (S (i + dx)))) as s2 eqn:Hs2 .
        remember (fst_neq_pred_r (I2NN y) (S (S (i + dx)))) as s3 eqn:Hs3 .
@@ -477,7 +471,28 @@ y   .   .   1   1   1   1   1 …
 
                 discriminate H.
 
-               pose proof (Hn3 0 (Nat.lt_0_succ n3)) as H.
+               pose proof Hsy (S (dx + S n3)) as H.
+               unfold seq_pred_r, I2NN in H; simpl in H.
+               rewrite Nat.add_succ_r, Nat.add_assoc in H.
+               remember (d2n (y .[ S (S (i + dx + S n3))])) as a.
+               destruct (eq_nat_dec a (pred radix)) as [H8| H8]; subst a.
+                contradiction.
+
+                discriminate H.
+
+              exfalso; apply H7; clear H7.
+              pose proof (d2n_lt_radix (y .[ S (S (i + dx + n3))])) as H.
+              apply Nat_le_neq_lt; [ idtac | assumption ].
+              apply Nat.lt_le_pred; assumption.
+
+            rewrite Hr in Hn; discriminate Hn.
+
+           exfalso; apply H5; clear H5.
+           pose proof (d2n_lt_radix (x .[ S (S (i + dx))])) as H.
+           apply Nat_le_neq_lt; [ idtac | assumption ].
+           apply Nat.lt_le_pred; assumption.
+
+          simpl.
 bbb.
              pose proof (d2n_lt_radix (x .[ S i])) as H.
              rewrite Hr in H4, H; simpl in H4, H.
