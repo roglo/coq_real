@@ -475,6 +475,18 @@ Print carry_add.
 
               clear Ht3.
               destruct (lt_dec a (pred radix)) as [H7| H7]; subst a.
+               destruct n3.
+                rewrite Nat.add_0_r in H6.
+                pose proof Hsy (S dx) as H.
+                unfold seq_pred_r, I2NN in H; simpl in H.
+                rewrite Nat.add_succ_r in H.
+                remember (d2n (y .[ S (S (i + dx))])) as a.
+                destruct (eq_nat_dec a (pred radix)) as [H8| H8]; subst a.
+                 contradiction.
+
+                 discriminate H.
+
+               pose proof Hn3 0 (Nat.lt_0_succ n3) as H.
 bbb.
              pose proof (d2n_lt_radix (x .[ S i])) as H.
              rewrite Hr in H4, H; simpl in H4, H.
