@@ -462,10 +462,9 @@ destruct sx as [dx| ].
       destruct Hs2 as (Hn2, Ht2).
       apply seq_pred_r_I2NN_neq in Ht2.
       apply neq_d2n_pred_radix in Ht2.
-bbb.
       assert (9 = 1)%D as H by (unfold digit_rm1; rewrite Hr; reflexivity).
       rewrite H in Ht2.
-
+bbb.
       rewrite Hr in Ht2; simpl in Ht2.
 Check eq_d2n_1.
 apply <- eq_d2n_1 in Ht2.
