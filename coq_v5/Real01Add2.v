@@ -460,12 +460,9 @@ destruct sx as [dx| ].
      apply first_nonzero_iff in Hs3; simpl in Hs3.
      destruct s2 as [n2| ].
       destruct Hs2 as (Hn2, Ht2).
-      unfold seq_pred_r in Ht2; simpl in Ht2.
-      remember (I2NN x (S (S (i + dx + n2)))) as a.
-      destruct (eq_nat_dec a (pred radix)) as [H4| H4]; subst a.
-       exfalso; apply Ht2; reflexivity.
-
-       clear Ht2.
+      apply seq_pred_r_I2NN_neq in Ht2.
+      rewrite Hr in Ht2; simpl in Ht2.
+bbb.
        unfold I2NN in H4, Hn.
        destruct n2; [ clear Hn2; rewrite Nat.add_0_r in H4, Hn | idtac ].
         remember (d2n (x .[ S (S (i + dx))])) as a.
