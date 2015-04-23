@@ -492,40 +492,36 @@ destruct sx as [dx| ].
            apply Nat_le_neq_lt; [ idtac | assumption ].
            apply Nat.lt_le_pred; assumption.
 
-          simpl.
+          pose proof Hn2 0 (Nat.lt_0_succ n2) as H.
+          unfold seq_pred_r, I2NN in H; simpl in H.
+          rewrite Nat.add_0_r, <- Nat.add_succ_r in H.
+          unfold I2NN in Htx; simpl in Htx.
+          remember (d2n (x .[ S (i + S dx)])) as a.
+          destruct (eq_nat_dec a (pred radix)) as [H5| H5]; subst a.
+           contradiction.
+
+           discriminate H.
+
+        pose proof Hs2 0 as H.
+        unfold seq_pred_r, I2NN in H; simpl in H.
+        rewrite Nat.add_0_r, <- Nat.add_succ_r in H.
+        unfold I2NN in Htx; simpl in Htx.
+        remember (d2n (x .[ S (i + S dx)])) as a.
+        destruct (eq_nat_dec a (pred radix)) as [H5| H5]; subst a.
+         contradiction.
+
+         discriminate H.
+
+       discriminate H.
+
+      discriminate H.
+
+     subst di; rewrite Nat.add_succ_r.
+     unfold I2NN in Hxlt; rewrite Hr in Hxlt; simpl in Hxlt.
+     apply Nat.lt_1_r, eq_d2n_0 in Hxlt; assumption.
+
+     remember (di - S dx)%nat as n eqn:Hn .
 bbb.
-             pose proof (d2n_lt_radix (x .[ S i])) as H.
-             rewrite Hr in H4, H; simpl in H4, H.
-             remember (d2n (x .[ S i])) as a eqn:Ha .
-             destruct a; [ reflexivity | exfalso; apply H4 ].
-             destruct a; [ reflexivity | exfalso ].
-             apply Nat.nle_gt in H; apply H; clear H.
-             do 2 apply le_n_S; apply Nat.le_0_l.
-*)
-(*
-    unfold I_add_i in H; simpl in H.
-    do 2 rewrite Digit.add_0_r in H.
-*)
-    rewrite Hnx in H; [ idtac | apply Nat.lt_succ_diag_r ].
-    rewrite Hny in H.
-    rewrite Digit.add_1_l in H.
-    symmetry in H.
-    rewrite Digit.add_1_l in H.
-    apply Digit.opp_eq in H.
-    rewrite <- Nat.add_succ_l in H.
-    symmetry in Hsx, H.
-    erewrite carry_before_relay9 in H; [ idtac | eassumption | auto ].
-    symmetry in Hsy.
-    simpl in H.
-    do 2 rewrite <- Nat.add_succ_l in H.
-    rewrite carry_before_inf_relay9 in H; [ idtac | assumption ].
-    simpl in H; rewrite Htx in H.
-    discr_digit H.
-
-    subst di.
-    rewrite Nat.add_succ_r; assumption.
-
-    remember (di - S dx)%nat as n eqn:Hn .
     apply Nat_sub_add_r in Hn; [ idtac | assumption ].
     subst di; clear H1.
     rewrite Nat.add_succ_r.
