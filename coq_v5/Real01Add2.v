@@ -434,6 +434,11 @@ destruct sx as [dx| ].
        unfold I2NN in H3; rewrite Hr in H3; simpl in H3.
        rewrite H3 in Hn; clear H; simpl in Hn.
 bbb.
+        i  i+1  .   di  .   dx
+x   .   .   1   1   1   1   0
+        ≠
+y   .   .   1   1   1   1   1 …
+
        unfold carry_add in Hn; simpl in Hn.
        remember (fst_neq_pred_r (I2NN x) (S (S (i + dx)))) as s2 eqn:Hs2 .
        remember (fst_neq_pred_r (I2NN y) (S (S (i + dx)))) as s3 eqn:Hs3 .
