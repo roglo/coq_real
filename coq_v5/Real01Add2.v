@@ -398,6 +398,13 @@ do 2 apply lt_S_n in H.
 apply Nat.nlt_0_r in H; contradiction.
 Qed.
 
+Theorem radix_2_eq_pred_r_1 : radix = 2 → (9 = 1)%D.
+Proof.
+intros H.
+unfold digit_eq; simpl.
+rewrite H; reflexivity.
+Qed.
+
 (* borrowed from Read01Add.v and adapted for this implementation *)
 
 (*
@@ -921,9 +928,8 @@ split; intros Hxy.
    split; [ assumption | idtac ].
     destruct (Digit.eq_dec (x .[ di1]) 1) as [Hx1| Hx1].
      rewrite Hx1 in Ht1; apply Digit.neq_sym in Ht1.
-SearchAbout (_ ≠ 9)%D.
-bbb.
-apply radix_2_not_1 in Ht1.
+     rewrite <- radix_2_eq_pred_r_1 in Ht1; [ idtac|assumption].
+     apply radix_2_not_1 in Ht1; [ | assumption].
 bbb.
      generalize Hx1; intros Hxi1.
      eapply I_eq_neq_prop in Hxi1; try eassumption.
