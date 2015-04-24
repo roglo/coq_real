@@ -589,8 +589,8 @@ y   .   1   1   1   1   …
          pose proof (Hn1 0 (Nat.lt_0_succ di1)) as H.
 apply seq_pred_r_I2NN in H.
 bbb.
-    i   .   dx
-x   .   0
+    i   .   dx  .  di1
+x   .   0   0   1   0
     ≠
 y   .   1   1   1   1   1 …
 
