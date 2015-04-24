@@ -296,6 +296,12 @@ split; intros Hxy.
  contradiction.
 Qed.
 
+Theorem seq_eq_neq : ∀ x y i, seq_eq x y i ≠ 0 ↔ (x.[i] ≠ y.[i])%D.
+Proof.
+intros x y i.
+split; intros HH H; apply HH, seq_eq_eq; assumption.
+Qed.
+
 Theorem seq_pred_r_neq : ∀ u i k,
   seq_pred_r u i k ≠ 0 ↔ u (i + k) ≠ pred radix.
 Proof.
@@ -447,6 +453,7 @@ eapply first_nonzero in Hs1; try eassumption.
 Qed.
 *)
 
+(*
 Theorem I_eq_neq_prop : ∀ x y i,
   (x = y)%I
   → (y.[i] = x.[i] + 1)%D
@@ -455,7 +462,6 @@ Theorem I_eq_neq_prop : ∀ x y i,
      (∀ di, (x.[i+S di] = 0)%D) ∧ (∀ di, (y.[i+S di] = 1)%D).
 Proof.
 intros x y i Hxy Hy.
-bbb.
 unfold I_eq, I_eqs in Hxy; simpl in Hxy.
 pose proof (Hxy i) as Hn.
 do 2 rewrite NN_add_add_0_r in Hn.
@@ -888,6 +894,7 @@ y   .   1   1   1   1   1 …
 
    discr_digit H.
 Qed.
+*)
 
 Theorem I_eq_iff_radix_2 : ∀ x y,
   radix = 2
@@ -899,23 +906,25 @@ Theorem I_eq_iff_radix_2 : ∀ x y,
       (i = 0 ∧ (∀ j, (x.[j] = x.[0])%D) ∧ (∀ j, (y.[j] = y.[0])%D) ∨
        (∀ di, (x.[i+S di] = y.[i])%D) ∧ (∀ di, (y.[i+S di] = x.[i])%D)).
 Proof.
-(* à nettoyer (la 2ème partie) *)
 intros x y Hr.
 split; intros Hxy.
  remember (first_nonzero (seq_eq x y)) as s1 eqn:Hs1 .
  apply first_nonzero_iff in Hs1.
  destruct s1 as [di1| ].
   destruct Hs1 as (Hn1, Ht1).
+  apply seq_eq_neq in Ht1.
   right; exists di1.
   split.
    intros j Hdj.
    apply seq_eq_eq, Hn1; assumption.
 
-   split; [ intros H; apply seq_eq_eq in H; contradiction | idtac ].
-(*
-    apply Digit.opp_sym in Ht1.
-*)
+   split; [ assumption | idtac ].
     destruct (Digit.eq_dec (x .[ di1]) 1) as [Hx1| Hx1].
+     rewrite Hx1 in Ht1; apply Digit.neq_sym in Ht1.
+SearchAbout (_ ≠ 9)%D.
+bbb.
+apply radix_2_not_1 in Ht1.
+bbb.
      generalize Hx1; intros Hxi1.
      eapply I_eq_neq_prop in Hxi1; try eassumption.
       destruct Hxi1 as [(Hx, Hy)| (Hx, Hy)].
