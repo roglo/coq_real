@@ -506,12 +506,19 @@ destruct sx as [dx| ].
     pose proof (Hnx di H1) as H.
     rename H into Hdi.
     destruct dx; [ exfalso; revert H1; apply Nat.nlt_0_r | idtac ].
-    pose proof (Hxy (S (i + dx))%nat) as H.
+    pose proof (Hxy (S (i + dx))%nat) as Hn.
+do 2 rewrite NN_add_add_0_r in Hn.
+do 2 rewrite carry_add_add_0_r2 in Hn.
+unfold digit_eq in Hn; simpl in Hn.
+unfold I2NN in Hn at 1; simpl in Hn.
+unfold I2NN in Hn at 2; simpl in Hn.
+pose proof Hnx dx (Nat.lt_succ_diag_r dx) as H.
+apply seq_pred_r_I2NN in H. rewrite Hr in H; simpl in H.
+rewrite H in Hn; clear H.
+pose proof Hsy dx as H.
+apply seq_pred_r_I2NN in H; rewrite Hr in H; simpl in H.
+rewrite H in Hn; clear H.
 bbb.
-    unfold I_add_i in H; simpl in H.
-    do 2 rewrite Digit.add_0_r in H.
-    rewrite Hnx in H; [ idtac | apply Nat.lt_succ_diag_r ].
-    rewrite Hny in H.
     rewrite Digit.add_1_l in H.
     symmetry in H.
     rewrite Digit.add_1_l in H.
