@@ -519,12 +519,6 @@ pose proof Hsy dx as H.
 apply seq_pred_r_I2NN in H; rewrite Hr in H; simpl in H.
 rewrite H in Hn; clear H.
 bbb.
-    rewrite Digit.add_1_l in H.
-    symmetry in H.
-    rewrite Digit.add_1_l in H.
-    apply Digit.opp_eq in H.
-    rewrite <- Nat.add_succ_l in H.
-    symmetry in Hsx, H.
     erewrite carry_before_relay9 in H; [ idtac | eassumption | auto ].
     symmetry in Hsy.
     simpl in H.
