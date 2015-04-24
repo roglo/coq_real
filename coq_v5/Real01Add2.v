@@ -394,6 +394,7 @@ Qed.
 
 (* borrowed from Read01Add.v and adapted for this implementation *)
 
+(*
 Theorem carry_before_relay : ∀ u i di,
   fst_neq_pred_r u i = Some di
   → ∀ dj, dj ≤ di → carry_add u (i + dj) = carry_add u i.
@@ -444,6 +445,7 @@ eapply first_nonzero in Hs1; try eassumption.
 
   apply Nat.add_le_mono_l; assumption.
 Qed.
+*)
 
 Theorem I_eq_neq_prop : ∀ x y i,
   (x = y)%I
@@ -453,6 +455,7 @@ Theorem I_eq_neq_prop : ∀ x y i,
      (∀ di, (x.[i+S di] = 0)%D) ∧ (∀ di, (y.[i+S di] = 1)%D).
 Proof.
 intros x y i Hxy Hy.
+bbb.
 unfold I_eq, I_eqs in Hxy; simpl in Hxy.
 pose proof (Hxy i) as Hn.
 do 2 rewrite NN_add_add_0_r in Hn.
