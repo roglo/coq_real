@@ -528,15 +528,33 @@ destruct sx as [dx| ].
      destruct n.
       clear IHn.
       rewrite Nat.add_0_r.
+(*
+destruct dx.
+ clear Hnx; rewrite Nat.add_0_r in Hxlt; rewrite Nat.add_0_r.
+ pose proof Hxy (S i) as Hn.
+     do 2 rewrite NN_add_add_0_r in Hn.
+     do 2 rewrite carry_add_add_0_r2 in Hn.
+     unfold digit_eq in Hn; simpl in Hn.
+     unfold I2NN in Hn at 1; simpl in Hn.
+     unfold I2NN in Hn at 2; simpl in Hn.
+rewrite Hxlt in Hn.
+pose proof Hsy 0 as H.
+apply seq_pred_r_I2NN in H.
+rewrite Hr, Nat.add_0_r in H; simpl in H.
+rewrite H in Hn.
+unfold carry_add in Hn; simpl in Hn.
 bbb.
+    i   .   dx
+x   .   1   0   .   .
+    ≠
+y   .   1   1   1   1   …
+*)
       pose proof (Hxy (S (i + dx))) as Hn.
       do 2 rewrite NN_add_add_0_r in Hn.
       do 2 rewrite carry_add_add_0_r2 in Hn.
       unfold digit_eq in Hn; simpl in Hn.
       unfold I2NN in Hn at 1; simpl in Hn.
       unfold I2NN in Hn at 2; simpl in Hn.
-      rewrite Hr in Hxlt; simpl in Hxlt.
-      apply Nat.lt_1_r in Hxlt; unfold I2NN in Hxlt.
       rewrite Hxlt, Nat.add_0_l in Hn.
       pose proof (Hsy dx) as H.
       apply seq_pred_r_I2NN in H.
@@ -567,12 +585,12 @@ bbb.
          rewrite Nat.add_0_r in Ht1.
          apply eq_d2n_0; assumption.
 
-         rename H into Hyn.
+         rename H into Hyn; clear Hn.
          pose proof (Hn1 0 (Nat.lt_0_succ di1)) as H.
 apply seq_pred_r_I2NN in H.
 bbb.
-    i   .
-x   .   .
+    i   .   dx
+x   .   0
     ≠
 y   .   1   1   1   1   1 …
 
