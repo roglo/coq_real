@@ -414,6 +414,16 @@ destruct (eq_nat_dec (u (i + n)) (pred radix)); [ idtac | assumption ].
 exfalso; apply Hu; reflexivity.
 Qed.
  apply zzz in Ht1.
+ remember ( (u (S (i + dj + n1)))) as a.
+ destruct (lt_dec a (pred radix)) as [H1| H1]; subst a.
+destruct s2 as [n2| ].
+destruct Hs2 as (Hn2, Ht2).
+apply zzz in Ht2.
+ remember ( (u (S (i + n2)))) as a.
+ destruct (lt_dec a (pred radix)) as [H2| H2]; subst a.
+reflexivity.
+exfalso; apply H2; clear H2.
+
 bbb.
  unfold seq_pred_r in Ht1; simpl in Ht1.
  apply seq_pred_r_nz in Ht1.
@@ -434,7 +444,6 @@ eapply first_nonzero in Hs1; try eassumption.
 
   apply Nat.add_le_mono_l; assumption.
 Qed.
-
 
 Theorem I_eq_neq_prop : ∀ x y i,
   (x = y)%I
