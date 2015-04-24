@@ -527,12 +527,8 @@ destruct sx as [dx| ].
      induction n as (n, IHn) using all_lt_all.
      destruct n.
       clear IHn.
-rewrite Nat.add_0_r.
+      rewrite Nat.add_0_r.
 bbb.
-destruct dx.
- simpl; rewrite Nat.add_1_r; simpl.
-
-      rewrite Nat.add_1_r, Nat.add_succ_r.
       pose proof (Hxy (S (i + dx))) as Hn.
       do 2 rewrite NN_add_add_0_r in Hn.
       do 2 rewrite carry_add_add_0_r2 in Hn.
