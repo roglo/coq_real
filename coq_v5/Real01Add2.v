@@ -393,6 +393,49 @@ apply Nat.nlt_0_r in H; contradiction.
 Qed.
 
 (* borrowed from Read01Add.v and adapted for this implementation *)
+
+Theorem carry_before_relay : ∀ u i di,
+  fst_neq_pred_r u i = Some di
+  → ∀ dj, dj ≤ di → carry_add u (i + dj) = carry_add u i.
+Proof.
+intros u i di Hs dj Hdj.
+unfold carry_add; simpl.
+remember (fst_neq_pred_r u (S (i + dj))) as s1 eqn:Hs1 .
+remember (fst_neq_pred_r u (S i)) as s2 eqn:Hs2 .
+apply first_nonzero_iff in Hs1.
+apply first_nonzero_iff in Hs2.
+destruct s1 as [n1| ].
+ destruct Hs1 as (Hn1, Ht1).
+Theorem zzz : ∀ u i n, seq_pred_r u i n ≠ 0 → u (i + n) ≠ pred radix.
+Proof.
+intros u i n Hu.
+unfold seq_pred_r in Hu; simpl in Hu.
+destruct (eq_nat_dec (u (i + n)) (pred radix)); [ idtac | assumption ].
+exfalso; apply Hu; reflexivity.
+Qed.
+ apply zzz in Ht1.
+bbb.
+ unfold seq_pred_r in Ht1; simpl in Ht1.
+ apply seq_pred_r_nz in Ht1.
+ destruct s2 as [n2| ].
+  destruct Hs2 as (Hn2, Ht2).
+
+eapply first_nonzero in Hs1; try eassumption.
+ subst s1.
+ rewrite Nat.add_sub_assoc.
+  rewrite Nat.add_comm, Nat.add_sub; reflexivity.
+
+  apply Nat.add_le_mono_l; assumption.
+
+ split.
+  apply Nat.le_sub_le_add_l.
+  rewrite Nat.sub_diag.
+  apply Nat.le_0_l.
+
+  apply Nat.add_le_mono_l; assumption.
+Qed.
+
+
 Theorem I_eq_neq_prop : ∀ x y i,
   (x = y)%I
   → (y.[i] = x.[i] + 1)%D
@@ -473,6 +516,7 @@ destruct sx as [dx| ].
      pose proof (Hsy dx) as H.
      apply seq_pred_r_I2NN in H; simpl in H; rename H into H3.
      rewrite H3 in Hn; simpl in Hn.
+bbb.
      unfold carry_add in Hn; simpl in Hn.
      remember (fst_neq_pred_r (I2NN x) (S (S (i + dx)))) as s2 eqn:Hs2 .
      remember (fst_neq_pred_r (I2NN y) (S (S (i + dx)))) as s3 eqn:Hs3 .
