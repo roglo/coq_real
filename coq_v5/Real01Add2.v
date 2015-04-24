@@ -453,30 +453,9 @@ destruct sx as [dx| ].
    apply lt_S_n, Nat.lt_1_r in H; subst c.
    rewrite Nat.mul_1_l in Hn; clear Hc.
    rename Hn into Hr.
-unfold I2NN in H1.
-      rewrite Hr in H1; simpl in H1.
-      apply Nat.lt_1_r in H1; clear Htx.
+   unfold I2NN in H1; rewrite Hr in H1; simpl in H1.
+   apply Nat.lt_1_r in H1; clear Htx.
    rename H1 into Hxlt.
-destruct (Digit.eq_dec (x.[i]) 0) as [H1|H1].
-Focus 2.
-SearchAbout (_ ≠ 0)%D.
-assert (x.[i] = 9)%D as H2.
-SearchAbout (_ = 9)%D.
-apply eq_d2n_pred_radix.
-rewrite Hr; simpl.
-SearchAbout (d2n _ = _).
-SearchAbout (_ ≠ _)%D.
-bbb.
-apply eq_d2n_1.
-apply -> eq_d2n_pred_radix.
-unfold digit_eq; simpl.
-rewrite Hr.
-rewrite Nat.mod_small.
-rewrite Nat.mod_small; [|apply Nat.lt_1_2].
-remember (dig(x.[i])) as d eqn:Hd.
-destruct d; simpl in H1; [ exfalso; apply H1; reflexivity|].
-SearchAbout divmod.
-
    right; split; [ assumption | idtac ].
    split; intros di.
     destruct (lt_eq_lt_dec di dx) as [[H1| H1]| H1].
@@ -536,16 +515,11 @@ SearchAbout divmod.
       pose proof (Hs2 0) as H.
       apply seq_pred_r_I2NN in H.
       rewrite Nat.add_0_r, <- Nat.add_succ_r in H.
-      remember (d2n (x .[ S (i + S dx)])) as a.
-      destruct (eq_nat_dec a (pred radix)); contradiction.
+      rewrite Hxlt, Hr in H; discriminate H.
 
      subst di; rewrite Nat.add_succ_r.
-     unfold I2NN in Hxlt; rewrite Hr in Hxlt; simpl in Hxlt.
-     apply Nat.lt_1_r, eq_d2n_0 in Hxlt; assumption.
+     apply eq_d2n_0 in Hxlt; assumption.
 
-unfold I2NN in Hxlt.
-      rewrite Hr in Hxlt; simpl in Hxlt.
-      apply Nat.lt_1_r in Hxlt; unfold I2NN in Hxlt; clear Htx.
      remember (di - S dx)%nat as n eqn:Hn .
      apply Nat_sub_add_r in Hn; [ idtac | assumption ].
      subst di; clear H1.
