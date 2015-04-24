@@ -476,35 +476,38 @@ do 2 rewrite carry_add_add_0_r2 in Hn.
 unfold digit_eq in Hn; simpl in Hn.
 unfold I2NN in Hn at 1; simpl in Hn.
 unfold I2NN in Hn at 2; simpl in Hn.
-apply -> digit_d2n_eq_iff in Hx.
-apply -> digit_d2n_eq_iff in Hy.
-rewrite Hx, Hy, d2n_0, d2n_1 in Hn; simpl in Hn.
+apply -> digit_d2n_eq_iff in Hx; rewrite d2n_1 in Hx.
+apply -> digit_d2n_eq_iff in Hy; rewrite d2n_0 in Hy.
+rewrite Hx, Hy in Hn; simpl in Hn.
 unfold carry_add in Hn; simpl in Hn.
 remember (fst_neq_pred_r (I2NN x) (S i)) as sx eqn:Hsx .
 remember (fst_neq_pred_r (I2NN y) (S i)) as sy eqn:Hsy .
 apply first_nonzero_iff in Hsx; simpl in Hsx.
 apply first_nonzero_iff in Hsy; simpl in Hsy.
 destruct sx as [dx| ].
- generalize Hsx; intros HH.
-bbb.
- apply fst_same_sym_iff in HH; simpl in HH.
- destruct HH as (Hnx, Htx); rewrite Htx in H.
- destruct sy as [dy| ]; [ idtac | clear H ].
-  generalize Hsy; intros HH.
-  apply fst_same_sym_iff in HH; simpl in HH.
-  destruct HH as (Hny, Hty).
-  rewrite Hty in H.
-  exfalso;  revert H; apply Digit.neq_1_0.
+ destruct Hsx as (Hnx, Htx).
+ apply seq_pred_r_I2NN_neq in Htx; simpl in Htx.
+ apply neq_d2n_pred_radix in Htx.
+ apply radix_2_not_1 in Htx; [ idtac | assumption ].
+ apply eq_d2n_0 in Htx.
+ unfold I2NN in Hn; rewrite Htx, Hr in Hn; fsimpl_in Hn.
+ rewrite Nat.mod_small in Hn; [ idtac | apply Nat.lt_1_2 ].
+ destruct sy as [dy| ]; [ idtac | clear Hn ].
+  destruct Hsy as (Hny, Hty).
+  apply seq_pred_r_I2NN_neq in Hty; simpl in Hty.
+  apply neq_d2n_pred_radix in Hty.
+  apply radix_2_not_1 in Hty; [ idtac | assumption ].
+  apply eq_d2n_0 in Hty.
+  rewrite Hty in Hn; discriminate Hn.
 
   right.
-  generalize Hsy; intros Hny.
-  apply fst_same_sym_iff in Hny; simpl in Hny.
   split; intros di.
    destruct (lt_eq_lt_dec di dx) as [[H1| H1]| H1].
     pose proof (Hnx di H1) as H.
     rename H into Hdi.
     destruct dx; [ exfalso; revert H1; apply Nat.nlt_0_r | idtac ].
     pose proof (Hxy (S (i + dx))%nat) as H.
+bbb.
     unfold I_add_i in H; simpl in H.
     do 2 rewrite Digit.add_0_r in H.
     rewrite Hnx in H; [ idtac | apply Nat.lt_succ_diag_r ].
