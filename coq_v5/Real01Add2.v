@@ -460,6 +460,27 @@ eapply first_nonzero in Hs1; try eassumption.
 Qed.
 *)
 
+Theorem carry_add_inf : ∀ u i,
+  (∀ j, seq_pred_r u i j = 0)
+  → ∀ di, carry_add u (i + di) = 1.
+Proof.
+intros u i Hj di.
+unfold carry_add; simpl.
+remember (fst_neq_pred_r u (S (i + di))) as s1 eqn:Hs1 .
+apply first_nonzero_iff in Hs1; simpl in Hs1.
+destruct s1 as [n1| ]; [ idtac | reflexivity ].
+destruct Hs1 as (Hn1, Ht1).
+remember (u (S (i + di + n1))) as a.
+destruct (lt_dec a (pred radix)) as [H1| H1]; [ subst a | reflexivity ].
+pose proof (Hj (S (di + n1))) as H.
+unfold seq_pred_r in H.
+rewrite Nat.add_succ_r, Nat.add_assoc in H.
+remember (u (S (i + di + n1))) as a.
+destruct (eq_nat_dec a (pred radix)) as [H2| H2]; [ idtac | discriminate H ].
+rewrite H2 in H1.
+exfalso; revert H1; apply Nat.lt_irrefl.
+Qed.
+
 Theorem I_eq_neq_prop : ∀ x y i,
   (x = y)%I
   → radix = 2
@@ -518,6 +539,9 @@ rewrite H in Hn; clear H.
 pose proof Hsy dx as H.
 apply seq_pred_r_I2NN in H; rewrite Hr in H; simpl in H.
 rewrite H in Hn; clear H.
+symmetry in Hn.
+rewrite <- Nat.add_succ_l in Hn.
+rewrite carry_add_inf in Hn; [|assumption].
 bbb.
     erewrite carry_before_relay9 in H; [ idtac | eassumption | auto ].
     symmetry in Hsy.
