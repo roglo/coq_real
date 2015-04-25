@@ -634,8 +634,7 @@ destruct sx as [dx| ].
 
      apply Nat.lt_succ_diag_r.
 
-    subst di.
-bbb.
+    subst di; apply eq_d2n_0 in Htx.
     rewrite Nat.add_succ_r; assumption.
 
     remember (di - S dx)%nat as n eqn:Hn .
@@ -646,6 +645,7 @@ bbb.
     destruct n.
      rewrite Nat.add_1_r, Nat.add_succ_r.
      pose proof (Hxy (S (i + dx))) as H.
+bbb.
      unfold I_add_i in H; simpl in H.
      do 2 rewrite Digit.add_0_r in H.
      rewrite Htx, Hny, Digit.add_0_l, Digit.add_1_l in H.
