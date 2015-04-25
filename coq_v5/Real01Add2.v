@@ -628,16 +628,14 @@ destruct sx as [dx| ].
     rewrite <- Nat.add_succ_l in Hn.
     rewrite carry_add_inf in Hn; [ idtac | symmetry; assumption ].
     erewrite carry_add_fin in Hn; [ idtac | symmetry; eassumption | idtac ].
-bbb.
-    erewrite carry_before_relay9 in H; [ idtac | eassumption | auto ].
-    symmetry in Hsy.
-    simpl in H.
-    do 2 rewrite <- Nat.add_succ_l in H.
-    rewrite carry_before_inf_relay9 in H; [ idtac | assumption ].
-    simpl in H; rewrite Htx in H.
-    discr_digit H.
+     unfold carry_indic in Hn; simpl in Hn.
+     unfold I2NN in Hn; rewrite Htx in Hn.
+     rewrite Hr in Hn; discriminate Hn.
+
+     apply Nat.lt_succ_diag_r.
 
     subst di.
+bbb.
     rewrite Nat.add_succ_r; assumption.
 
     remember (di - S dx)%nat as n eqn:Hn .
