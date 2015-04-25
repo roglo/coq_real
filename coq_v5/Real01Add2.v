@@ -304,18 +304,22 @@ intros x y i.
 split; intros HH H; apply HH, seq_eq_eq; assumption.
 Qed.
 
+Theorem seq_pred_r_eq : ∀ u i k,
+  seq_pred_r u i k = 0 ↔ u (i + k) = pred radix.
+Proof.
+intros u i k; unfold seq_pred_r.
+remember (u (i + k)) as a.
+destruct (eq_nat_dec a (pred radix)) as [H1| H1].
+ split; intros Hu; [ assumption | reflexivity ].
+
+ split; intros Hu; [ discriminate Hu | contradiction ].
+Qed.
+
 Theorem seq_pred_r_neq : ∀ u i k,
   seq_pred_r u i k ≠ 0 ↔ u (i + k) ≠ pred radix.
 Proof.
-intros u i k; unfold seq_pred_r.
-split; intros Hu.
- remember (u (i + k)) as a.
- destruct (eq_nat_dec a (pred radix)) as [H1| H1]; [ idtac | assumption ].
- exfalso; apply Hu; reflexivity.
-
- remember (u (i + k)) as a.
- destruct (eq_nat_dec a (pred radix)) as [H1| H1]; [ contradiction | idtac ].
- intros H; discriminate H.
+intros u i k.
+split; intros HH H; apply HH, seq_pred_r_eq; assumption.
 Qed.
 
 Theorem seq_pred_r_I2NN : ∀ x i di,
@@ -480,11 +484,10 @@ destruct s as [dj| ].
   apply Nat.lt_add_lt_sub_l in H1; rename H1 into H.
   apply Nat_lt_add_sub_lt_l in H.
    apply Hni in H; simpl in H.
-bbb.
+   apply seq_pred_r_eq in H.
    rewrite Nat.add_sub_assoc in H.
     rewrite Nat.add_comm, Nat.add_sub in H.
-    rewrite Hsj in H; symmetry in H.
-    exfalso; revert H; apply Digit.no_fixpoint_opp.
+    apply seq_pred_r_neq in Hsj; contradiction.
 
     eapply le_trans; eauto; apply Nat.le_add_r.
 
@@ -494,71 +497,45 @@ bbb.
   rewrite H1; reflexivity.
 
   apply Hnj in H1.
+  apply seq_pred_r_eq in H1.
   rewrite Nat.add_sub_assoc in H1; [ idtac | assumption ].
   rewrite Nat.add_comm, Nat.add_sub in H1.
-  rewrite Hsi in H1; symmetry in H1.
-  exfalso; revert H1; apply Digit.no_fixpoint_opp.
+  apply seq_pred_r_neq in Hsi; contradiction.
 
- apply fst_same_iff in Hj; simpl in Hj.
+ symmetry in Hj.
+ apply first_nonzero_iff in Hj; simpl in Hj.
  pose proof (Hj (i + di - j)) as H.
+ apply seq_pred_r_eq in H.
  rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
  rewrite Nat.add_comm, Nat.add_sub in H.
- rewrite Hsi in H; symmetry in H.
- exfalso; revert H; apply Digit.no_fixpoint_opp.
+ apply seq_pred_r_neq in Hsi; contradiction.
 Qed.
 
 Theorem carry_add_fin : ∀ u i di,
   fst_neq_pred_r u i = Some di
-  → ∀ dj, dj ≤ di → carry_add u (i + dj) = carry_indic (u (i + di)).
+  → ∀ dj, dj < di → carry_add u (i + dj) = carry_indic (u (i + di)).
 Proof.
 intros u i di H dj Hdi.
 unfold carry_add.
-bbb.
-Print carry_add.
-bbb.
-    i  i+1  .   . i+1+n
-u   .   9   9   9   .
-                    ≠9
-fst_neq_pred_r =
-λ (u : nat → nat) (i : nat), first_nonzero (seq_pred_r u i)
-     : (nat → nat) → nat → option nat
+assert (S (i + dj) ≤ i + di) as Hs by (apply Nat.add_lt_mono_l; assumption).
+remember (fst_neq_pred_r u (S (i + dj))) as s1 eqn:Hs1 .
+symmetry in Hs1.
+eapply fst_neq_pred_r_in_range in Hs1; try eassumption.
+ subst s1.
+ rewrite Nat.add_sub_assoc; [ idtac | assumption ].
+ rewrite <- Nat.sub_succ_l, <- Nat.add_succ_l.
+  rewrite Nat.add_comm, Nat.add_sub; reflexivity.
 
-symmetry in H; apply first_nonzero_iff in H.
-destruct H as (Hn, Ht).
-unfold carry_add; simpl.
-remember (fst_neq_pred_r u (S (i + di))) as s1 eqn:Hs1 .
-apply first_nonzero_iff in Hs1.
-destruct s1 as [n1| ].
- destruct Hs1 as (Hn1, Ht1).
- generalize Hdi; intros H.
- apply Hn in H.
- unfold seq_pred_r in Ht1; simpl in Ht1.
- unfold carry_indic.
- remember (u (S (i + di + n1))) as a.
- destruct (lt_dec a (pred radix)) as [H1| H1].
-  destruct (eq_nat_dec a (pred radix)) as [H2| H2]; subst a.
-   exfalso; apply Ht1; reflexivity.
+  apply Nat.le_sub_le_add_l.
+  rewrite Nat.sub_succ_l; [ rewrite Nat.sub_diag | reflexivity ].
+  destruct di; [ exfalso; revert Hdi; apply Nat.nlt_0_r | idtac ].
+  rewrite Nat.add_succ_r.
+  apply le_n_S, Nat.le_0_l.
 
-   clear Ht1.
-   unfold seq_pred_r in H; simpl in H.
-   unfold seq_pred_r in Ht; simpl in Ht.
-   remember (u (S (i + n))) as a.
-   destruct (lt_dec a (pred radix)) as [H3| H3].
-    reflexivity.
-
-    apply Nat.nlt_ge in H3.
-    destruct (eq_nat_dec a (pred radix)) as [H4| H4]; subst a.
-     exfalso; apply Ht; reflexivity.
-
-     clear Ht.
-     remember (u (S (i + di))) as a.
-     destruct (eq_nat_dec a (pred radix)) as [H5| H5]; subst a.
-destruct (lt_dec n (di + n1)) as [H6|H6].
-clear H.
-assert (n - di < n1) as H by omega.
-apply Hn1 in H.
-bbb.
-*)
+ split; [ idtac | assumption ].
+ rewrite <- Nat.add_succ_r.
+ apply Nat.le_add_r.
+Qed.
 
 Theorem carry_add_inf : ∀ u i,
   fst_neq_pred_r u i = None
@@ -571,6 +548,7 @@ remember (fst_neq_pred_r u (S (i + di))) as s1 eqn:Hs1 .
 apply first_nonzero_iff in Hs1; simpl in Hs1.
 destruct s1 as [n1| ]; [ idtac | reflexivity ].
 destruct Hs1 as (Hn1, Ht1).
+unfold carry_indic.
 remember (u (S (i + di + n1))) as a.
 destruct (lt_dec a (pred radix)) as [H1| H1]; [ subst a | reflexivity ].
 pose proof (Hj (S (di + n1))) as H.
@@ -612,6 +590,7 @@ destruct sx as [dx| ].
  apply neq_d2n_pred_radix in Htx.
  apply radix_2_not_1 in Htx; [ idtac | assumption ].
  apply eq_d2n_0 in Htx.
+ unfold carry_indic in Hn.
  unfold I2NN in Hn; rewrite Htx, Hr in Hn; fsimpl_in Hn.
  rewrite Nat.mod_small in Hn; [ idtac | apply Nat.lt_1_2 ].
  destruct sy as [dy| ]; [ idtac | clear Hn ].
@@ -648,6 +627,7 @@ destruct sx as [dx| ].
     rewrite H in Hn; clear H; symmetry in Hn.
     rewrite <- Nat.add_succ_l in Hn.
     rewrite carry_add_inf in Hn; [ idtac | symmetry; assumption ].
+    erewrite carry_add_fin in Hn; [ idtac | symmetry; eassumption | idtac ].
 bbb.
     erewrite carry_before_relay9 in H; [ idtac | eassumption | auto ].
     symmetry in Hsy.
