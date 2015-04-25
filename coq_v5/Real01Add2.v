@@ -462,11 +462,56 @@ eapply first_nonzero in Hs1; try eassumption.
 Qed.
 *)
 
-Theorem carry_add_fin : ∀ u i n,
-  fst_neq_pred_r u (S i) = Some n
-  → ∀ di, di < n → carry_add u (i + di) = carry_indic (u (S (i + n))).
+Theorem fst_neq_pred_r_in_range : ∀ u i j di s,
+  fst_neq_pred_r u i = Some di
+  → fst_neq_pred_r u j = s
+  → i ≤ j ≤ i + di
+  → s = Some (i + di - j).
 Proof.
-intros u i n H di Hdi.
+intros u i j di s Hi Hj (Hij, Hji).
+symmetry in Hi.
+apply first_nonzero_iff in Hi; simpl in Hi.
+destruct Hi as (Hni, Hsi).
+destruct s as [dj| ].
+ symmetry in Hj.
+ apply first_nonzero_iff in Hj; simpl in Hj.
+ destruct Hj as (Hnj, Hsj).
+ destruct (lt_eq_lt_dec dj (i + di - j)) as [[H1| H1]| H1].
+  apply Nat.lt_add_lt_sub_l in H1; rename H1 into H.
+  apply Nat_lt_add_sub_lt_l in H.
+   apply Hni in H; simpl in H.
+bbb.
+   rewrite Nat.add_sub_assoc in H.
+    rewrite Nat.add_comm, Nat.add_sub in H.
+    rewrite Hsj in H; symmetry in H.
+    exfalso; revert H; apply Digit.no_fixpoint_opp.
+
+    eapply le_trans; eauto; apply Nat.le_add_r.
+
+   apply le_n_S.
+   eapply le_trans; eauto; apply Nat.le_add_r.
+
+  rewrite H1; reflexivity.
+
+  apply Hnj in H1.
+  rewrite Nat.add_sub_assoc in H1; [ idtac | assumption ].
+  rewrite Nat.add_comm, Nat.add_sub in H1.
+  rewrite Hsi in H1; symmetry in H1.
+  exfalso; revert H1; apply Digit.no_fixpoint_opp.
+
+ apply fst_same_iff in Hj; simpl in Hj.
+ pose proof (Hj (i + di - j)) as H.
+ rewrite Nat.add_sub_assoc in H; [ idtac | assumption ].
+ rewrite Nat.add_comm, Nat.add_sub in H.
+ rewrite Hsi in H; symmetry in H.
+ exfalso; revert H; apply Digit.no_fixpoint_opp.
+Qed.
+
+Theorem carry_add_fin : ∀ u i di,
+  fst_neq_pred_r u i = Some di
+  → ∀ dj, dj ≤ di → carry_add u (i + dj) = carry_indic (u (i + di)).
+Proof.
+intros u i di H dj Hdi.
 unfold carry_add.
 bbb.
 Print carry_add.
