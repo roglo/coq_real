@@ -665,28 +665,24 @@ destruct sx as [dx| ].
 
         rewrite Hr in Hn; discriminate Hn.
 
-(*
-       remember (d2n (x .[ S (S (i + dx + S n1))])) as a.
-       destruct (lt_dec a (pred radix)) as [H1| H1]; subst a.
-        rewrite Hr in H1; simpl in H1.
-        apply Nat.lt_1_r in H1.
-*)
-rename H into Hyi.
+       rename H into Hyi.
        generalize Hs1; intros H.
        apply first_nonzero_iff in H; simpl in H.
        destruct H as (Hn1, Ht1).
        pose proof (Hxy (S (S (i + dx)))) as H.
-      do 2 rewrite NN_add_add_0_r in H.
-      do 2 rewrite carry_add_add_0_r2 in H.
-      unfold digit_eq in H; simpl in H.
-      unfold I2NN in H at 1; simpl in H.
-      unfold I2NN in H at 2; simpl in H.
-symmetry in H.
-rewrite <- Nat.add_succ_l in H.
-do 2 rewrite <- Nat.add_succ_r in H.
-rewrite carry_add_inf in H; [ | eassumption ].
-Focus 1.
-Check carry_add_fin.
+       do 2 rewrite NN_add_add_0_r in H.
+       do 2 rewrite carry_add_add_0_r2 in H.
+       unfold digit_eq in H; simpl in H.
+       unfold I2NN in H at 1; simpl in H.
+       unfold I2NN in H at 2; simpl in H.
+       symmetry in H.
+       rewrite <- Nat.add_succ_l in H.
+       do 2 rewrite <- Nat.add_succ_r in H.
+       rewrite carry_add_inf in H; [ idtac | eassumption ].
+       symmetry in Hs1.
+       replace (S i + S (S dx)) with (S (S (i + dx)) + 1) in H by omega.
+       erewrite carry_add_fin in H; [ idtac | eassumption | idtac ].
+        simpl.
 bbb.
 
        rewrite <- Nat.add_succ_r in H.
