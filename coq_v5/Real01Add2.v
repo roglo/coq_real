@@ -717,9 +717,8 @@ destruct sx as [dx| ].
      symmetry in H, Hsx, Hsy.
      rewrite <- Nat.add_succ_l, <- Nat.add_succ_r in H.
      rewrite carry_add_inf in H; [ idtac | assumption ].
+     unfold carry_add in H; simpl in H.
 bbb.
-     rewrite carry_before_inf_relay9 in H; [ simpl in H | assumption ].
-     symmetry in H.
      unfold carry in H; simpl in H.
      remember (fst_same x 0 (S (S (i + (dx + S n))))) as s1 eqn:Hs1 .
      destruct s1 as [di1| ].
