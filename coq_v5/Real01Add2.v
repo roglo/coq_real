@@ -732,6 +732,7 @@ destruct sx as [dx| ].
      rewrite <- Nat.add_succ_l, <- Nat.add_succ_r in H.
      rewrite carry_add_inf in H; [ idtac | assumption ].
      unfold carry_add in H; simpl in H.
+Abort. (*
 bbb.
      unfold carry in H; simpl in H.
      remember (fst_same x 0 (S (S (i + (dx + S n))))) as s1 eqn:Hs1 .
@@ -1742,7 +1743,6 @@ split; intros Hxy.
        destruct (eq_nat_dec radix 2) as [Hr| Hr].
         rewrite Hr in H3; simpl in H3; rewrite n2d_1 in H3.
         rewrite Hr; simpl.
-Abort. (*
 bbb.
         destruct (Digit.eq_dec (x .[ 1]) 0) as [H1| H1].
          left; split; [ reflexivity | left; intros i; rewrite n2d_1 ].
