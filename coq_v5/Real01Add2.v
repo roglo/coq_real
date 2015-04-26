@@ -703,14 +703,21 @@ destruct sx as [dx| ].
 
      rewrite Nat.add_succ_r.
      pose proof (Hxy (S (i + dx + S n))) as H.
-bbb.
-     unfold I_add_i in H; simpl in H.
-     do 2 rewrite Digit.add_0_r in H.
+     do 2 rewrite NN_add_add_0_r in H.
+     do 2 rewrite carry_add_add_0_r2 in H.
+     unfold digit_eq in H; simpl in H.
+     unfold I2NN in H at 1; simpl in H.
+     unfold I2NN in H at 2; simpl in H.
      rewrite <- Nat.add_assoc in H.
-     rewrite IHn in H; [ idtac | apply Nat.lt_succ_diag_r ].
-     rewrite Hny, Digit.add_0_l, Digit.add_1_l in H.
+     pose proof IHn n (Nat.lt_succ_diag_r n) as HH.
+     apply eq_d2n_0 in HH; rewrite HH, Nat.add_0_l in H; clear HH.
+     pose proof Hty (dx + S n) as HH.
+     apply seq_pred_r_I2NN in HH; simpl in  HH.
+     rewrite HH in H; clear HH.
      symmetry in H, Hsx, Hsy.
-     rewrite <- Nat.add_succ_l in H.
+     rewrite <- Nat.add_succ_l, <- Nat.add_succ_r in H.
+     rewrite carry_add_inf in H; [ idtac | assumption ].
+bbb.
      rewrite carry_before_inf_relay9 in H; [ simpl in H | assumption ].
      symmetry in H.
      unfold carry in H; simpl in H.
