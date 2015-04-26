@@ -1793,6 +1793,15 @@ split; intros Hxy.
           rewrite Nat.add_0_r, H2 in H.
           revert H; apply Digit.neq_0_9.
 
+         generalize Hs1; intros H.
+         apply first_nonzero_iff in H.
+         rename H into Hn1.
+         pose proof Hn1 0 as H.
+         apply seq_pred_r_I2NN, eq_d2n_pred_radix in H.
+         rewrite Nat.add_0_r, H2 in H.
+         revert H; apply Digit.neq_0_9.
+
+        idtac.
 bbb.
 
 
