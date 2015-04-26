@@ -551,6 +551,20 @@ rewrite H2 in H1.
 exfalso; revert H1; apply Nat.lt_irrefl.
 Qed.
 
+Theorem NN2I_add_compat : ∀ u v,
+  (u = v)%NN
+  → (NN2I_add u == NN2I_add v)%I.
+Proof.
+intros u v Huv i; simpl.
+unfold digit_eq; simpl; f_equal; f_equal; [ apply Huv | idtac ].
+apply carry_add_compat; assumption.
+Qed.
+
+Add Parametric Morphism : NN2I_add
+ with signature NN_eq ==> I_eqs
+ as NN2I_add_morph.
+Proof. intros; apply NN2I_add_compat; assumption. Qed.
+
 Theorem I_eq_neq_prop_radix_2 : ∀ x y i,
   (x = y)%I
   → radix = 2
@@ -918,6 +932,7 @@ bbb.
 
    discr_digit H.
 Qed.
+*)
 
 (*
 Theorem I_eq_neq_prop : ∀ x y i,
@@ -1389,6 +1404,7 @@ split; intros Hxy.
      rewrite Hx1 in Ht1; apply Digit.neq_sym in Ht1.
      rewrite <- radix_2_eq_pred_r_1 in Ht1; [ idtac|assumption].
      apply radix_2_not_1 in Ht1; [ | assumption].
+Abort. (*
 bbb.
      generalize Hx1; intros Hxi1.
      eapply I_eq_neq_prop in Hxi1; try eassumption.
@@ -1676,6 +1692,7 @@ bbb.
       rewrite Hs2 in H.
       symmetry in H; contradiction.
 Qed.
+*)
 
 Theorem I_eq_iff : ∀ x y,
   (x = y)%I
@@ -1725,6 +1742,7 @@ split; intros Hxy.
        destruct (eq_nat_dec radix 2) as [Hr| Hr].
         rewrite Hr in H3; simpl in H3; rewrite n2d_1 in H3.
         rewrite Hr; simpl.
+Abort. (*
 bbb.
         destruct (Digit.eq_dec (x .[ 1]) 0) as [H1| H1].
          left; split; [ reflexivity | left; intros i; rewrite n2d_1 ].
@@ -2815,6 +2833,7 @@ bbb.
       rewrite Hs2 in H.
       symmetry in H; contradiction.
 Qed.
+*)
 
 (* multiplication *)
 
@@ -2847,22 +2866,6 @@ Definition I_mul x y := NN2I_mul (NN_mul (I2NN x) (I2NN y)).
 Arguments I_mul x%I y%I.
 
 Notation "x * y" := (I_mul x y) : I_scope.
-
-(* *)
-
-Theorem NN2I_add_compat : ∀ u v,
-  (u = v)%NN
-  → (NN2I_add u == NN2I_add v)%I.
-Proof.
-intros u v Huv i; simpl.
-unfold digit_eq; simpl; f_equal; f_equal; [ apply Huv | idtac ].
-apply carry_add_compat; assumption.
-Qed.
-
-Add Parametric Morphism : NN2I_add
- with signature NN_eq ==> I_eqs
- as NN2I_add_morph.
-Proof. intros; apply NN2I_add_compat; assumption. Qed.
 
 (* commutativity *)
 
@@ -2919,7 +2922,7 @@ intros u v w x i Huv Hwx; unfold toto.
 unfold carry_add; simpl.
 erewrite fst_neq_pred_r_compat.
 2: erewrite NN_add_compat; [ reflexivity | eassumption | eassumption ].
-remember (fst_neq_pred_r (v + x) (S i)) as s1 eqn:Hs1.
+remember (fst_neq_pred_r (v + x) i) as s1 eqn:Hs1.
 apply first_nonzero_iff in Hs1; simpl in Hs1.
 unfold seq_pred_r in Hs1; simpl in Hs1.
 destruct s1 as [n1| ]; [ idtac | reflexivity ].
@@ -2935,17 +2938,28 @@ intros u v Huv w x Hwx i.
 apply toto_compat; assumption.
 Qed.
 
+Theorem I_add2_0 : ∀ x, (x + 0 = NN2I_add (I2NN x))%I.
+Proof.
+intros x.
+unfold I_eq, I_norm, I_add2.
+do 3 rewrite NN_add_add_0_r; reflexivity.
+Qed.
+
 Theorem NN2I_add_I2NN : ∀ x, (NN2I_add (I2NN x) = x)%I.
 Proof.
 intros u.
-bbb.
-
+(*
+unfold I_eq, I_norm, I_add2.
+rewrite NN_add_add_0_r.
+rewrite NN_add_add_0_r.
+*)
 unfold I_eq, I_norm; simpl.
 unfold I_add2; simpl.
 rewrite I_zero_NN_zero.
 do 2 rewrite NN2I_add_0_r.
 intros i; simpl.
 unfold digit_eq; simpl.
+Abort. (*
 SearchAbout NN2I_add.
 unfold I2NN; simpl.
 rewrite d2n_n2d.
@@ -2955,6 +2969,7 @@ SearchAbout I2NN.
 
 unfold NN2I_add, I2NN; simpl.
 bbb.
+*)
 
 Theorem I2NN_NN2I_add : ∀ u, (NN2I_add (I2NN (NN2I_add u)) = NN2I_add u)%I.
 (*
@@ -2969,6 +2984,7 @@ rewrite I_zero_NN_zero.
 unfold toto; simpl.
 erewrite carry_add_compat; [ idtac | apply NN_add_0_r ].
 
+Abort. (*
 rewrite zzz.
 bbb.
 
@@ -2999,6 +3015,7 @@ unfold I2NN, NN2I_add; simpl.
 rewrite d2n_n2d.
 unfold fst_neq_pred_r; simpl.
 bbb.
+*)
 
 Theorem NN2I_add_I2NN : ∀ x, (NN2I_add (I2NN x) == x)%I.
 Proof.
@@ -3008,6 +3025,7 @@ unfold digit_eq; simpl.
 (*
 rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
 *)
+Abort. (*
 rewrite summation_split_first; [ idtac | apply Nat.le_0_l ].
 rewrite Nat.sub_0_r, Nat.add_0_r; fsimpl.
 rewrite Nat.div_add_l; [ idtac | apply int_pow_neq_0, Digit.radix_neq_0 ].
@@ -3038,10 +3056,14 @@ rewrite Nat.div_small.
   rewrite Nat.add_comm.
   apply d2n_lt_radix.
 Qed.
+*)
 
 Theorem I_add2_0_r : ∀ x, (x + 0 = x)%I.
 Proof.
 intros x.
+rewrite I_add2_0.
+bbb.
+
 unfold I_add2; intros i; simpl.
 do 2 rewrite fold_add_NN_add_l, fold_toto.
 rewrite I_zero_NN_zero.
