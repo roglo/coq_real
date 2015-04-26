@@ -653,9 +653,9 @@ destruct sx as [dx| ].
      rewrite Nat.add_succ_r in Hn.
      remember (fst_neq_pred_r (I2NN x) (S (S (i + dx)))) as s1 eqn:Hs1 .
      destruct s1 as [n1| ].
-      unfold carry_indic in Hn.
-      unfold I2NN in Hn; simpl in Hn.
       destruct n1.
+       unfold carry_indic in Hn.
+       unfold I2NN in Hn; simpl in Hn.
        rewrite Nat.add_0_r in Hn.
        remember (d2n (x .[ S (S (i + dx))])) as a.
        destruct (lt_dec a (pred radix)) as [H1| H1]; subst a.
@@ -682,27 +682,27 @@ destruct sx as [dx| ].
        symmetry in Hs1.
        replace (S i + S (S dx)) with (S (S (i + dx)) + 1) in H by omega.
        erewrite carry_add_fin in H; [ idtac | eassumption | idtac ].
-        simpl.
+        symmetry in H; rewrite <- Nat.add_mod_idemp_r in H.
+         rewrite <- Nat.add_succ_l in Hn; rewrite Hn in H.
+         rewrite Nat.add_mod_idemp_r in H.
+          pose proof (Hn1 0 (Nat.lt_0_succ n1)) as HH.
+          apply seq_pred_r_I2NN in HH.
+          rewrite Nat.add_0_r, <- Nat.add_succ_r in HH.
+          simpl in H; rewrite HH in H; clear HH.
+          pose proof (Hty (S dx)) as HH.
+          apply seq_pred_r_I2NN in HH; simpl in HH.
+          rewrite HH, Hr in H; discriminate H.
+
+          apply Digit.radix_neq_0.
+
+         apply Digit.radix_neq_0.
+
+        apply le_n_S, Nat.le_0_l.
+
+      rewrite Hr in Hn; discriminate Hn.
+
+     simpl.
 bbb.
-
-       rewrite <- Nat.add_succ_r in H.
-       rewrite Hny, Digit.add_1_l, Nat.add_succ_r in H.
-       symmetry in H.
-       rewrite <- Nat.add_succ_l, <- Nat.add_succ_r in H;
-       rewrite carry_before_inf_relay9 in H; [ idtac | assumption ].
-       symmetry in H, Hs1.
-       replace dx with (dx + 0)%nat in H by apply Nat.add_0_r.
-       simpl in H.
-       rewrite Nat.add_succ_r, Nat.add_assoc in H.
-       do 2 rewrite <- Nat.add_succ_l in H.
-       assert (0 < S di1)%nat as HH by apply Nat.lt_0_succ.
-       erewrite carry_before_relay9 in H; try eassumption.
-       simpl in H.
-       rewrite Hx1, Digit.add_0_r, Nat.add_0_r in H.
-       assumption.
-
-      discr_digit H.
-
      rewrite Nat.add_succ_r.
      pose proof (Hxy (S (i + dx + S n))) as H.
      unfold I_add_i in H; simpl in H.
