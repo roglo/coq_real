@@ -1731,6 +1731,7 @@ split; intros Hxy.
     destruct (Digit.eq_dec (x .[ i]) (y .[ i])); [ assumption | idtac ].
     discriminate Hi.
 
+bbb.
     destruct n1.
      clear Hn1.
      destruct (Digit.eq_dec (x .[ 0]) 0) as [H2| H2]; simpl.
