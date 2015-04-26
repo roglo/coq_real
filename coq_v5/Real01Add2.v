@@ -1732,6 +1732,29 @@ split; intros Hxy.
     discriminate Hi.
 
 bbb.
+différencier les différents cas
+   n1 = 0 ou n1 ≠ 0
+   etc.
+
+pose proof Hxy n1 as Hn; simpl in Hn.
+     do 2 rewrite NN_add_add_0_r in Hn.
+     do 2 rewrite carry_add_add_0_r2 in Hn.
+     unfold digit_eq in Hn; simpl in Hn.
+     unfold I2NN in Hn at 1; simpl in Hn.
+     unfold I2NN in Hn at 2; simpl in Hn.
+unfold carry_add in Hn; simpl in Hn.
+remember (fst_neq_pred_r (I2NN x) (S n1)) as s2 eqn:Hs2.
+remember (fst_neq_pred_r (I2NN y) (S n1)) as s3 eqn:Hs3.
+destruct s2 as [n2| ].
+generalize Hs2; intros H.
+apply first_nonzero_iff in H; simpl in H.
+destruct H as (Hn2, Ht2).
+destruct s3 as [n3| ].
+generalize Hs3; intros H.
+apply first_nonzero_iff in H; simpl in H.
+destruct H as (Hn3, Ht3).
+
+bbb.
     destruct n1.
      clear Hn1.
      destruct (Digit.eq_dec (x .[ 0]) 0) as [H2| H2]; simpl.
