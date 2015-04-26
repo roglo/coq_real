@@ -551,7 +551,7 @@ rewrite H2 in H1.
 exfalso; revert H1; apply Nat.lt_irrefl.
 Qed.
 
-Theorem I_eq_neq_prop : ∀ x y i,
+Theorem I_eq_neq_prop_radix_2 : ∀ x y i,
   (x = y)%I
   → radix = 2
   → (x.[i] = 1)%D
@@ -701,10 +701,9 @@ destruct sx as [dx| ].
 
       rewrite Hr in Hn; discriminate Hn.
 
-     simpl.
-bbb.
      rewrite Nat.add_succ_r.
      pose proof (Hxy (S (i + dx + S n))) as H.
+bbb.
      unfold I_add_i in H; simpl in H.
      do 2 rewrite Digit.add_0_r in H.
      rewrite <- Nat.add_assoc in H.
