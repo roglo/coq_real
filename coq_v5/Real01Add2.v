@@ -1701,39 +1701,39 @@ Theorem I_eq_iff : ∀ x y,
     ∃ i,
     (∀ j, j < i → (x.[j] = y.[j])%D) ∧
     ((i = 0 ∧
-     ((∀ j, (x.[j] = 0)%D ∧ (y.[j] = n2d (pred radix))%D) ∨
-      (∀ j, (y.[j] = 0)%D ∧ (x.[j] = n2d (pred radix))%D))) ∨
+     ((∀ j, (x.[j] = 0)%D ∧ (y.[j] = 9)%D) ∨
+      (∀ j, (y.[j] = 0)%D ∧ (x.[j] = 9)%D))) ∨
      (d2n (x.[i]) = S (d2n (y.[i]))) ∧
-     (∀ di, (x.[i+S di] = 0)%D ∧ (y.[i+S di] = n2d (pred radix))%D) ∨
+     (∀ di, (x.[i+S di] = 0)%D ∧ (y.[i+S di] = 9)%D) ∨
      (d2n (y.[i]) = S (d2n (x.[i]))) ∧
-     (∀ di, (y.[i+S di] = 0)%D ∧ (x.[i+S di] = n2d (pred radix))%D)).
+     (∀ di, (y.[i+S di] = 0)%D ∧ (x.[i+S di] = 9)%D)).
 Proof.
 intros x y.
 split; intros Hxy.
- remember (first_nonzero (seq_eq x y)) as s1 eqn:Hs1 .
- apply first_nonzero_iff in Hs1.
- destruct s1 as [n1| ].
+ remember (first_nonzero (seq_eq x y)) as s eqn:Hs .
+ apply first_nonzero_iff in Hs.
+ destruct s as [i| ].
   Focus 2.
-  left; unfold seq_eq in Hs1; intros i.
-  pose proof (Hs1 i) as H.
+  left; unfold seq_eq in Hs; intros i.
+  pose proof (Hs i) as H.
   destruct (Digit.eq_dec (x .[ i]) (y .[ i])); [ assumption | idtac ].
   discriminate H.
 
-  right; destruct Hs1 as (Hn1, Ht1).
-  unfold seq_eq in Hn1, Ht1.
-  destruct (Digit.eq_dec (x .[ n1]) (y .[ n1])) as [H1| H1].
-   exfalso; apply Ht1; reflexivity.
+  right; destruct Hs as (Hn, Ht).
+  unfold seq_eq in Hn, Ht.
+  destruct (Digit.eq_dec (x .[ i]) (y .[ i])) as [H1| H1].
+   exfalso; apply Ht; reflexivity.
 
-   exists n1; clear Ht1.
+   exists i; clear Ht.
    split.
-    intros i Hi; unfold seq_eq in Hn1.
-    apply Hn1 in Hi.
-    destruct (Digit.eq_dec (x .[ i]) (y .[ i])); [ assumption | idtac ].
-    discriminate Hi.
+    intros j Hj; unfold seq_eq in Hn.
+    apply Hn in Hj.
+    destruct (Digit.eq_dec (x .[ j]) (y .[ j])); [ assumption | idtac ].
+    discriminate Hj.
 
 bbb.
 différencier les différents cas
-   n1 = 0 ou n1 ≠ 0
+   i = 0 ou i ≠ 0
    etc.
 
 pose proof Hxy n1 as Hn; simpl in Hn.
