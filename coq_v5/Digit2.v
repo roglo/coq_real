@@ -616,14 +616,10 @@ unfold digit_eq, n2d, d2n; simpl.
 apply Nat.mod_mod, Digit.radix_neq_0.
 Qed.
 
-Theorem d2n_mod_radix : ∀ d e,
-  d2n d mod radix = d2n e mod radix → d2n d = d2n e.
+Theorem d2n_mod_radix : ∀ d, d2n d mod radix = d2n d.
 Proof.
-intros d e H.
-unfold d2n in H; unfold d2n.
-rewrite Nat.mod_mod in H; [ idtac | apply Digit.radix_neq_0 ].
-rewrite Nat.mod_mod in H; [ idtac | apply Digit.radix_neq_0 ].
-assumption.
+intros d; unfold d2n.
+rewrite Nat.mod_mod; [ reflexivity | apply Digit.radix_neq_0 ].
 Qed.
 
 Theorem sqr_radix_neq_0 : radix * radix ≠ 0.
