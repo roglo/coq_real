@@ -1801,9 +1801,13 @@ split; intros Hxy.
          rewrite Nat.add_0_r, H2 in H.
          revert H; apply Digit.neq_0_9.
 
-        idtac.
+        destruct j.
+         split; [ assumption | idtac ].
 bbb.
-
+    0   1
+x   .   0   .   .
+    ≠
+y   9   .   .   .
 
 
      0   1      n₁+1
