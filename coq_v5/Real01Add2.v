@@ -1924,9 +1924,9 @@ split; intros Hxy.
         remember (fst_neq_pred_r (I2NN x) (S i)) as s1 eqn:Hs1 .
         remember (fst_neq_pred_r (I2NN y) (S i)) as s2 eqn:Hs2 .
         unfold I2NN in Hn; simpl in Hn.
+        generalize Hs1; intros Hn1.
+        apply first_nonzero_iff in Hn1; simpl in Hn1.
         destruct s1 as [n1| ].
-         generalize Hs1; intros Hn1.
-         apply first_nonzero_iff in Hn1; simpl in Hn1.
          destruct Hn1 as (Hn1, Ht1).
          remember (d2n (x .[ S (i + n1)])) as a.
          destruct (lt_dec a (pred radix)) as [H5| H5]; subst a.
@@ -1998,7 +1998,13 @@ split; intros Hxy.
           apply Nat_le_neq_lt; [ idtac | assumption ].
           apply Nat.lt_le_pred; assumption.
 
-         idtac.
+         pose proof Hn1 0 as H.
+         apply seq_pred_r_I2NN in H; rewrite Nat.add_0_r in H.
+         apply eq_d2n_pred_radix in H; contradiction.
+
+        discriminate H.
+
+      idtac.
 bbb.
      0   1   .   i  i+1 i+2
 x    .   .   .   .   .   0
