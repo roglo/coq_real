@@ -1757,11 +1757,15 @@ split; intros Hxy.
 
     destruct (Digit.eq_dec (x .[ S i]) 0) as [H2| H2].
      destruct (Digit.eq_dec (y .[ i]) 9) as [H3| H3].
+      rewrite H3 in H1.
       destruct i; [ clear Hn | exfalso ].
        left; split; [ reflexivity | left; intros j ].
        induction j as (j, IHj) using all_lt_all.
        destruct j.
-        split; [ rewrite H3 in H1 | assumption ].
+(*
+        split; [ idtac | assumption ].
+*)
+(*1*)
         pose proof (Hxy 0) as Hn; simpl in Hn.
         unfold digit_eq in Hn; simpl in Hn.
         unfold I2NN in Hn at 1; simpl in Hn.
@@ -1784,19 +1788,24 @@ split; intros Hxy.
             unfold I2NN in Ht2.
             destruct (lt_dec (d2n (y .[ S n2])) (pred radix)) as [H4| H4].
              rewrite Nat.add_0_r, Nat_pred_mod, d2n_mod_radix in Hn.
-             apply neq_d2n_pred_radix in H1.
-             contradiction.
+             apply eq_d2n_pred_radix in Hn; contradiction.
 
              apply H4; clear H4.
              pose proof (d2n_lt_radix (y .[ S n2])) as H.
              apply Nat_le_neq_lt; [ idtac | assumption ].
              apply Nat.lt_le_pred; assumption.
 
+(*
+  Hn : d2n (x .[ 0]) mod radix = (pred radix + 1) mod radix
+  ============================
+   (x .[ 0] = 0)%D
+*)
             rewrite Nat.add_1_r in Hn.
             rewrite Nat.succ_pred in Hn; [ idtac | apply Digit.radix_neq_0 ].
             rewrite Nat.mod_same in Hn; [ idtac | apply Digit.radix_neq_0 ].
             rewrite d2n_mod_radix in Hn.
-            apply eq_d2n_0; assumption.
+            split; [ apply eq_d2n_0; assumption | idtac ].
+            apply eq_d2n_pred_radix; assumption.
 
            apply H4, pred_radix_gt_0.
 
@@ -1817,8 +1826,11 @@ split; intros Hxy.
          revert H; apply Digit.neq_0_9.
 
         destruct j.
+(*
          split; [ assumption | idtac ].
+*)
 (* on essaye comme pour le premier cas, les yeux fermés... *)
+(*2*)
         pose proof (Hxy 0) as Hn; simpl in Hn.
         unfold digit_eq in Hn; simpl in Hn.
         unfold I2NN in Hn at 1; simpl in Hn.
@@ -1841,7 +1853,6 @@ split; intros Hxy.
             unfold I2NN in Ht2.
             destruct (lt_dec (d2n (y .[ S n2])) (pred radix)) as [H4| H4].
              rewrite Nat.add_0_r, Nat_pred_mod, d2n_mod_radix in Hn.
-             apply eq_d2n_pred_radix in H3; rewrite H3 in H1.
              apply eq_d2n_pred_radix in Hn; contradiction.
 
              apply H4; clear H4.
@@ -1849,11 +1860,17 @@ split; intros Hxy.
              apply Nat_le_neq_lt; [ idtac | assumption ].
              apply Nat.lt_le_pred; assumption.
 
+(*
+  Hn : d2n (x .[ 0]) mod radix = (pred radix + 1) mod radix
+  ============================
+   (y .[ 1] = 9)%D
+*)
             generalize Hs2; intros H.
             apply first_nonzero_iff in H; simpl in H.
             rename H into Hn2.
             pose proof Hn2 0 as H.
             apply seq_pred_r_I2NN, eq_d2n_pred_radix in H.
+            split; [ apply eq_d2n_0; assumption | idtac ].
             rewrite Nat.add_0_r in H; assumption.
 
            apply H4, pred_radix_gt_0.
