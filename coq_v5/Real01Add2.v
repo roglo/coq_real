@@ -2004,7 +2004,42 @@ split; intros Hxy.
 
         discriminate H.
 
-      right; left.
+      right; left; rename Hn into Hj.
+      pose proof Hxy i as Hn.
+      unfold digit_eq in Hn; simpl in Hn.
+      unfold I2NN in Hn at 1; simpl in Hn.
+      unfold I2NN in Hn at 2; simpl in Hn.
+      unfold carry_add, carry_indic in Hn; simpl in Hn.
+      remember (fst_neq_pred_r (I2NN x) (S i)) as s1 eqn:Hs1 .
+      remember (fst_neq_pred_r (I2NN y) (S i)) as s2 eqn:Hs2 .
+      unfold I2NN in Hn; simpl in Hn.
+      generalize Hs1; intros Hn1.
+      apply first_nonzero_iff in Hn1; simpl in Hn1.
+      generalize Hs2; intros Hn2.
+      apply first_nonzero_iff in Hn2; simpl in Hn2.
+      destruct s1 as [n1| ].
+       destruct Hn1 as (Hn1, Ht1).
+       apply seq_pred_r_I2NN_neq in Ht1; simpl in Ht1.
+       remember (d2n (x .[ S (i + n1)])) as a.
+       destruct (lt_dec a (pred radix)) as [H4| H4]; subst a.
+        rewrite Nat.add_0_r, d2n_mod_radix in Hn.
+        destruct s2 as [n2| ].
+         destruct Hn2 as (Hn2, Ht2).
+         apply seq_pred_r_I2NN_neq in Ht2; simpl in Ht2.
+         remember (d2n (y .[ S (i + n2)])) as a.
+         destruct (lt_dec a (pred radix)) as [H5| H5]; subst a.
+          rewrite Nat.add_0_r, d2n_mod_radix in Hn.
+          apply digit_d2n_eq_iff in Hn; contradiction.
+
+          exfalso; apply H5; clear H5.
+          pose proof (d2n_lt_radix (y .[ S (i + n2)])) as H.
+          apply Nat_le_neq_lt; [ idtac | assumption ].
+          apply Nat.lt_le_pred; assumption.
+
+         rewrite <- d2n_1, <- d2n_add in Hn.
+         apply digit_d2n_eq_iff in Hn.
+SearchAbout (S (d2n _)).
+Check digit_neq_succ_digit.
 bbb.
      0   1   .   i  i+1
 x    .   .   .   7   0   .
