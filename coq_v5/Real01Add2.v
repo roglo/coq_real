@@ -1758,7 +1758,7 @@ split; intros Hxy.
     destruct (Digit.eq_dec (x .[ S i]) 0) as [H2| H2].
      destruct (Digit.eq_dec (y .[ i]) 9) as [H3| H3].
       rewrite H3 in H1.
-      destruct i; [ clear Hn | exfalso ].
+      destruct i; [ clear Hn | idtac ].
        left; split; [ reflexivity | left; intros j ].
        induction j as (j, IHj) using all_lt_all.
        pose proof (Hxy 0) as Hn; simpl in Hn.
@@ -1911,12 +1911,12 @@ split; intros Hxy.
         rewrite Nat.add_0_r, H2 in H.
         revert H; apply Digit.neq_0_9.
 
-       idtac.
+       right; left.
 bbb.
-     0   1
-x    .   0   .   .   .
-     ≠
-y    9   .   .   .   .
+     0   1   .   i  i+1 i+2
+x    .   .   .   .   .   0
+     =   =   =   =   ≠
+y    .   .   .   .   9   .
 
 
 pose proof Hxy n1 as Hn; simpl in Hn.
