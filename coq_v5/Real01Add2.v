@@ -2004,12 +2004,12 @@ split; intros Hxy.
 
         discriminate H.
 
-      idtac.
+      right; left.
 bbb.
-     0   1   .   i  i+1 i+2
-x    .   .   .   .   .   0
-     =   =   =   =   ≠
-y    .   .   .   .   9   .
+     0   1   .   i  i+1
+x    .   .   .   7   0   .
+     =   =   =
+y    .   .   .   6   .   .
 
 
 pose proof Hxy n1 as Hn; simpl in Hn.
