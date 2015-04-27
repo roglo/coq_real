@@ -1849,12 +1849,12 @@ split; intros Hxy.
               apply Nat_le_neq_lt; [ idtac | assumption ].
               apply Nat.lt_le_pred; assumption.
 
-             rewrite Nat.add_1_r in Hn.
-             rewrite Nat.succ_pred in Hn; [ idtac | apply Digit.radix_neq_0 ].
-             rewrite Nat.mod_same in Hn; [ idtac | apply Digit.radix_neq_0 ].
-             rewrite d2n_mod_radix in Hn.
-bbb.
-             apply eq_d2n_0; assumption.
+             generalize Hs2; intros H.
+             apply first_nonzero_iff in H; simpl in H.
+             rename H into Hn2.
+             pose proof Hn2 0 as H.
+             apply seq_pred_r_I2NN, eq_d2n_pred_radix in H.
+             rewrite Nat.add_0_r in H; assumption.
 
             apply H4, pred_radix_gt_0.
 
@@ -1873,18 +1873,9 @@ bbb.
           apply seq_pred_r_I2NN, eq_d2n_pred_radix in H.
           rewrite Nat.add_0_r, H2 in H.
           revert H; apply Digit.neq_0_9.
-
-         destruct j.
-          split; [ assumption | idtac ].
 bbb.
-    0   1
-x   .   0   .   .
-    ≠
-y   9   .   .   .
-
-
-     0   1      n₁+1
-x    .   0   9  ≠9   .
+     0   1
+x    .   0   .   .   .
      ≠
 y    9   .   .   .   .
 
