@@ -1984,8 +1984,13 @@ split; intros Hxy.
 
               apply le_n_S, Nat.le_0_l.
 
-            idtac.
-(* contradiction in Hn *)
+            rewrite <- d2n_1, <- d2n_add in Hn.
+            apply digit_d2n_eq_iff in Hn.
+            revert Hn; apply digit_neq_succ_digit.
+
+           rewrite <- d2n_1, <- d2n_add in Hn.
+           apply digit_d2n_eq_iff in Hn.
+           revert Hn; apply digit_neq_succ_digit.
 bbb.
      0   1   .   i  i+1 i+2
 x    .   .   .   .   .   0
