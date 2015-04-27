@@ -1703,6 +1703,21 @@ destruct r; [ exfalso; revert Hr; apply Digit.radix_neq_1 | idtac ].
 apply Nat.lt_0_succ.
 Qed.
 
+Theorem I_add2_0 : ∀ x, (x + 0 == NN2I_add (I2NN x))%I.
+Proof.
+intros x.
+unfold I_add2.
+rewrite NN_add_add_0_r; reflexivity.
+Qed.
+
+Theorem I_eq_NN2I_I2NN : ∀ x y,
+  (x = y)%I
+  ↔ (NN2I_add (I2NN x) == NN2I_add (I2NN y))%I.
+Proof.
+intros x y; unfold I_eq, I_norm.
+do 2 rewrite I_add2_0; split; intros; assumption.
+Qed.
+
 Theorem I_eq_iff : ∀ x y,
   (x = y)%I
   ↔ (x == y)%I ∨
@@ -1718,6 +1733,7 @@ Theorem I_eq_iff : ∀ x y,
 Proof.
 intros x y.
 split; intros Hxy.
+ apply I_eq_NN2I_I2NN in Hxy.
  remember (first_nonzero (seq_eq x y)) as s eqn:Hs .
  apply first_nonzero_iff in Hs.
  destruct s as [i| ].
@@ -1746,8 +1762,6 @@ split; intros Hxy.
        destruct j.
         split; [ rewrite H3 in H1 | assumption ].
         pose proof (Hxy 0) as Hn; simpl in Hn.
-        do 2 rewrite NN_add_add_0_r in Hn.
-        do 2 rewrite carry_add_add_0_r2 in Hn.
         unfold digit_eq in Hn; simpl in Hn.
         unfold I2NN in Hn at 1; simpl in Hn.
         unfold I2NN in Hn at 2; simpl in Hn.
@@ -1805,8 +1819,6 @@ split; intros Hxy.
          split; [ assumption | idtac ].
 (* on essaye comme pour le premier cas, les yeux fermés... *)
          pose proof (Hxy 0) as Hn; simpl in Hn.
-         do 2 rewrite NN_add_add_0_r in Hn.
-         do 2 rewrite carry_add_add_0_r2 in Hn.
          unfold digit_eq in Hn; simpl in Hn.
          unfold I2NN in Hn at 1; simpl in Hn.
          unfold I2NN in Hn at 2; simpl in Hn.
@@ -3101,13 +3113,6 @@ Add Parametric Morphism : toto
 Proof.
 intros u v Huv w x Hwx i.
 apply toto_compat; assumption.
-Qed.
-
-Theorem I_add2_0 : ∀ x, (x + 0 = NN2I_add (I2NN x))%I.
-Proof.
-intros x.
-unfold I_eq, I_norm, I_add2.
-do 3 rewrite NN_add_add_0_r; reflexivity.
 Qed.
 
 Theorem NN2I_add_I2NN : ∀ x, (NN2I_add (I2NN x) = x)%I.
