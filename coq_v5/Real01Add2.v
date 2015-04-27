@@ -1912,6 +1912,7 @@ split; intros Hxy.
         revert H; apply Digit.neq_0_9.
 
        rename Hn into Hj.
+bbb.
        pose proof (Hxy i) as Hn.
        unfold digit_eq in Hn; simpl in Hn.
        unfold I2NN in Hn at 1; simpl in Hn.
