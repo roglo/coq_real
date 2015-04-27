@@ -1912,11 +1912,17 @@ split; intros Hxy.
         revert H; apply Digit.neq_0_9.
 
        rename Hn into Hj.
-       pose proof (Hxy (S i)) as Hn.
+       pose proof (Hxy i) as Hn.
        unfold digit_eq in Hn; simpl in Hn.
        unfold I2NN in Hn at 1; simpl in Hn.
        unfold I2NN in Hn at 2; simpl in Hn.
-       apply eq_d2n_pred_radix in H3; rewrite H3 in Hn.
+       pose proof Hj i (Nat.lt_succ_diag_r i) as H.
+       destruct (Digit.eq_dec (x.[i]) (y.[i])) as [H4| H4].
+        apply -> digit_d2n_eq_iff in H4.
+        rewrite H4 in Hn.
+        unfold carry_add, carry_indic in Hn; simpl in Hn.
+bbb.
+
        unfold carry_add, carry_indic in Hn; simpl in Hn.
        remember (fst_neq_pred_r (I2NN x) (S (S i))) as s1 eqn:Hs1.
        remember (fst_neq_pred_r (I2NN y) (S (S i))) as s2 eqn:Hs2.
@@ -1933,7 +1939,9 @@ split; intros Hxy.
          destruct (lt_dec a (pred radix)) as [H5| H5]; subst a.
           rewrite Nat.add_0_r in Hn; contradiction.
 
-          idtac.
+          destruct n1.
+           rewrite Nat.add_0_r in H4.
+           apply seq_pred_r_I2NN_neq in Ht1.
 (*
           apply H5; clear H5.
           pose proof (d2n_lt_radix (y .[ S (S (i + n2))])) as H.
