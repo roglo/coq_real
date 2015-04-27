@@ -2036,10 +2036,17 @@ split; intros Hxy.
           apply Nat_le_neq_lt; [ idtac | assumption ].
           apply Nat.lt_le_pred; assumption.
 
-         rewrite <- d2n_1, <- d2n_add in Hn.
-         apply digit_d2n_eq_iff in Hn.
-SearchAbout (S (d2n _)).
-Check digit_neq_succ_digit.
+         apply neq_d2n_pred_radix in H3.
+         rewrite Nat.add_1_r in Hn.
+         rewrite Nat.mod_small in Hn.
+          Focus 2.
+          pose proof (d2n_lt_radix (y .[ i])) as H.
+          apply Nat.lt_succ_lt_pred.
+          apply Nat_le_neq_lt; [ idtac | assumption ].
+          apply Nat.lt_le_pred; assumption.
+
+          split; [ assumption | idtac ].
+          intros di.
 bbb.
      0   1   .   i  i+1
 x    .   .   .   7   0   .
