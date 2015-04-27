@@ -1918,26 +1918,50 @@ split; intros Hxy.
        unfold I2NN in Hn at 2; simpl in Hn.
        pose proof Hj i (Nat.lt_succ_diag_r i) as H.
        destruct (Digit.eq_dec (x.[i]) (y.[i])) as [H4| H4].
-        apply -> digit_d2n_eq_iff in H4.
+        clear H; apply -> digit_d2n_eq_iff in H4.
         rewrite H4 in Hn.
         unfold carry_add, carry_indic in Hn; simpl in Hn.
+        remember (fst_neq_pred_r (I2NN x) (S i)) as s1 eqn:Hs1.
+        remember (fst_neq_pred_r (I2NN y) (S i)) as s2 eqn:Hs2.
+        unfold I2NN in Hn; simpl in Hn.
+        destruct s1 as [n1| ].
+         generalize Hs1; intros Hn1.
+         apply first_nonzero_iff in Hn1; simpl in Hn1.
+         destruct Hn1 as (Hn1, Ht1).
+         remember (d2n (x .[ S (i + n1)])) as a.
+         destruct (lt_dec a (pred radix)) as [H5| H5]; subst a.
+          rewrite Nat.add_0_r, d2n_mod_radix in Hn.
+          destruct s2 as [n2| ].
+          remember (d2n (y .[ S (i + n2)])) as a.
+          destruct (lt_dec a (pred radix)) as [H6| H6]; subst a.
+           destruct n2.
+            rewrite Nat.add_0_r in H6.
+            apply eq_d2n_pred_radix in H3; rewrite H3 in H6.
+            revert H6; apply Nat.lt_irrefl.
+
+            generalize Hs2; intros H.
+            apply first_nonzero_iff in H; simpl in H.
+            destruct H as (Hn2, Ht2).
+            clear Hn; pose proof Hxy (S i) as Hn.
+            unfold digit_eq in Hn; simpl in Hn.
+            unfold I2NN in Hn at 1; simpl in Hn.
+            unfold I2NN in Hn at 2; simpl in Hn.
+            apply eq_d2n_pred_radix in H3; rewrite H3 in Hn.
+Check carry_add_fin.
+symmetry in Hn, Hs2.
+rewrite <-Nat.add_1_r in Hn.
+erewrite carry_add_fin in Hn; [ |eassumption|].
+destruct n1.
 bbb.
 
-       unfold carry_add, carry_indic in Hn; simpl in Hn.
-       remember (fst_neq_pred_r (I2NN x) (S (S i))) as s1 eqn:Hs1.
-       remember (fst_neq_pred_r (I2NN y) (S (S i))) as s2 eqn:Hs2.
-       unfold I2NN in Hn; simpl in Hn.
-       destruct s1 as [n1| ].
-        generalize Hs1; intros Hn1.
-        apply first_nonzero_iff in Hn1; simpl in Hn1.
-        destruct Hn1 as (Hn1, Ht1).
-        remember (d2n (x .[ S (S (i + n1))])) as a.
-        destruct (lt_dec a (pred radix)) as [H4| H4]; subst a.
-         rewrite Nat.add_0_r, d2n_mod_radix in Hn.
-         destruct s2 as [n2| ].
-         remember (d2n (y .[ S (S (i + n2))])) as a.
-         destruct (lt_dec a (pred radix)) as [H5| H5]; subst a.
-          rewrite Nat.add_0_r in Hn; contradiction.
+symmetry in Hs1.
+erewrite carry_add_fin in Hn; [ |eassumption|].
+bbb.
+
+            pose proof Hn2 0 (Nat.lt_0_succ n2) as H.
+bbb.
+
+           rewrite Nat.add_0_r in Hn; contradiction.
 
           destruct n1.
            rewrite Nat.add_0_r in H4.
