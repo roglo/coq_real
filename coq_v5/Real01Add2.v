@@ -1758,7 +1758,7 @@ split; intros Hxy.
     destruct (Digit.eq_dec (x .[ S i]) 0) as [H2| H2].
      destruct (Digit.eq_dec (y .[ i]) 9) as [H3| H3].
       rewrite H3 in H1.
-      destruct i; [ clear Hn | idtac ].
+      destruct i; [ clear Hn | exfalso ].
        left; split; [ reflexivity | left; intros j ].
        induction j as (j, IHj) using all_lt_all.
        pose proof (Hxy 0) as Hn; simpl in Hn.
@@ -1911,7 +1911,35 @@ split; intros Hxy.
         rewrite Nat.add_0_r, H2 in H.
         revert H; apply Digit.neq_0_9.
 
-       right; left.
+       rename Hn into Hj.
+       pose proof (Hxy (S i)) as Hn.
+       unfold digit_eq in Hn; simpl in Hn.
+       unfold I2NN in Hn at 1; simpl in Hn.
+       unfold I2NN in Hn at 2; simpl in Hn.
+       apply eq_d2n_pred_radix in H3; rewrite H3 in Hn.
+       unfold carry_add, carry_indic in Hn; simpl in Hn.
+       remember (fst_neq_pred_r (I2NN x) (S (S i))) as s1 eqn:Hs1.
+       remember (fst_neq_pred_r (I2NN y) (S (S i))) as s2 eqn:Hs2.
+       unfold I2NN in Hn; simpl in Hn.
+       destruct s1 as [n1| ].
+        generalize Hs1; intros Hn1.
+        apply first_nonzero_iff in Hn1; simpl in Hn1.
+        destruct Hn1 as (Hn1, Ht1).
+        remember (d2n (x .[ S (S (i + n1))])) as a.
+        destruct (lt_dec a (pred radix)) as [H4| H4]; subst a.
+         rewrite Nat.add_0_r, d2n_mod_radix in Hn.
+         destruct s2 as [n2| ].
+         remember (d2n (y .[ S (S (i + n2))])) as a.
+         destruct (lt_dec a (pred radix)) as [H5| H5]; subst a.
+          rewrite Nat.add_0_r in Hn; contradiction.
+
+          idtac.
+(*
+          apply H5; clear H5.
+          pose proof (d2n_lt_radix (y .[ S (S (i + n2))])) as H.
+          apply Nat_le_neq_lt; [ idtac |  ].
+          apply Nat.lt_le_pred; assumption.
+*)
 bbb.
      0   1   .   i  i+1 i+2
 x    .   .   .   .   .   0
