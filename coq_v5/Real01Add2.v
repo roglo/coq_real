@@ -1762,9 +1762,6 @@ split; intros Hxy.
        left; split; [ reflexivity | left; intros j ].
        induction j as (j, IHj) using all_lt_all.
        destruct j.
-(*
-        split; [ idtac | assumption ].
-*)
 (*1*)
         pose proof (Hxy 0) as Hn; simpl in Hn.
         unfold digit_eq in Hn; simpl in Hn.
@@ -1798,7 +1795,7 @@ split; intros Hxy.
 (*
   Hn : d2n (x .[ 0]) mod radix = (pred radix + 1) mod radix
   ============================
-   (x .[ 0] = 0)%D
+   (x .[ 0] = 0)%D ∧ (y .[ 0] = 9)%D
 *)
             rewrite Nat.add_1_r in Hn.
             rewrite Nat.succ_pred in Hn; [ idtac | apply Digit.radix_neq_0 ].
@@ -1826,9 +1823,6 @@ split; intros Hxy.
          revert H; apply Digit.neq_0_9.
 
         destruct j.
-(*
-         split; [ assumption | idtac ].
-*)
 (* on essaye comme pour le premier cas, les yeux fermés... *)
 (*2*)
         pose proof (Hxy 0) as Hn; simpl in Hn.
@@ -1863,7 +1857,7 @@ split; intros Hxy.
 (*
   Hn : d2n (x .[ 0]) mod radix = (pred radix + 1) mod radix
   ============================
-   (y .[ 1] = 9)%D
+   (x .[ 1] = 0)%D ∧ (y .[ 1] = 9)%D
 *)
             generalize Hs2; intros H.
             apply first_nonzero_iff in H; simpl in H.
