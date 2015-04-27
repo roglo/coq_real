@@ -1759,6 +1759,7 @@ split; intros Hxy.
      destruct (Digit.eq_dec (y .[ i]) 9) as [H3| H3].
       destruct i; [ clear Hn | exfalso ].
        left; split; [ reflexivity | left; intros j ].
+       induction j as (j, IHj) using all_lt_all.
        destruct j.
         split; [ rewrite H3 in H1 | assumption ].
         pose proof (Hxy 0) as Hn; simpl in Hn.
@@ -1818,61 +1819,60 @@ split; intros Hxy.
         destruct j.
          split; [ assumption | idtac ].
 (* on essaye comme pour le premier cas, les yeux fermés... *)
-         pose proof (Hxy 0) as Hn; simpl in Hn.
-         unfold digit_eq in Hn; simpl in Hn.
-         unfold I2NN in Hn at 1; simpl in Hn.
-         unfold I2NN in Hn at 2; simpl in Hn.
-         apply eq_d2n_pred_radix in H3; rewrite H3 in Hn.
-         unfold carry_add in Hn; simpl in Hn.
-         remember (fst_neq_pred_r (I2NN x) 1) as s1 eqn:Hs1 .
-         remember (fst_neq_pred_r (I2NN y) 1) as s2 eqn:Hs2 .
-         destruct s1 as [n1| ]; [ idtac | exfalso ].
-          destruct n1; [ idtac | exfalso ].
-           unfold carry_indic, I2NN in Hn.
-           apply eq_d2n_0 in H2; rewrite H2 in Hn.
-           destruct (lt_dec 0 (pred radix)) as [H4| H4]; [ idtac | exfalso ].
-            rewrite Nat.add_0_r in Hn; clear H4.
-            destruct s2 as [n2| ]; [ exfalso | idtac ].
-             generalize Hs2; intros H.
-             apply first_nonzero_iff in H; simpl in H.
-             destruct H as (Hn2, Ht2).
-             apply seq_pred_r_neq in Ht2; simpl in Ht2.
-             unfold I2NN in Ht2.
-             destruct (lt_dec (d2n (y .[ S n2])) (pred radix)) as [H4| H4].
-              rewrite Nat.add_0_r, Nat_pred_mod, d2n_mod_radix in Hn.
-              apply eq_d2n_pred_radix in H3; rewrite H3 in H1.
-              apply eq_d2n_pred_radix in Hn.
-              contradiction.
+        pose proof (Hxy 0) as Hn; simpl in Hn.
+        unfold digit_eq in Hn; simpl in Hn.
+        unfold I2NN in Hn at 1; simpl in Hn.
+        unfold I2NN in Hn at 2; simpl in Hn.
+        apply eq_d2n_pred_radix in H3; rewrite H3 in Hn.
+        unfold carry_add in Hn; simpl in Hn.
+        remember (fst_neq_pred_r (I2NN x) 1) as s1 eqn:Hs1 .
+        remember (fst_neq_pred_r (I2NN y) 1) as s2 eqn:Hs2 .
+        destruct s1 as [n1| ]; [ idtac | exfalso ].
+         destruct n1; [ idtac | exfalso ].
+          unfold carry_indic, I2NN in Hn.
+          apply eq_d2n_0 in H2; rewrite H2 in Hn.
+          destruct (lt_dec 0 (pred radix)) as [H4| H4]; [ idtac | exfalso ].
+           rewrite Nat.add_0_r in Hn; clear H4.
+           destruct s2 as [n2| ]; [ exfalso | idtac ].
+            generalize Hs2; intros H.
+            apply first_nonzero_iff in H; simpl in H.
+            destruct H as (Hn2, Ht2).
+            apply seq_pred_r_neq in Ht2; simpl in Ht2.
+            unfold I2NN in Ht2.
+            destruct (lt_dec (d2n (y .[ S n2])) (pred radix)) as [H4| H4].
+             rewrite Nat.add_0_r, Nat_pred_mod, d2n_mod_radix in Hn.
+             apply eq_d2n_pred_radix in H3; rewrite H3 in H1.
+             apply eq_d2n_pred_radix in Hn; contradiction.
 
-              apply H4; clear H4.
-              pose proof (d2n_lt_radix (y .[ S n2])) as H.
-              apply Nat_le_neq_lt; [ idtac | assumption ].
-              apply Nat.lt_le_pred; assumption.
+             apply H4; clear H4.
+             pose proof (d2n_lt_radix (y .[ S n2])) as H.
+             apply Nat_le_neq_lt; [ idtac | assumption ].
+             apply Nat.lt_le_pred; assumption.
 
-             generalize Hs2; intros H.
-             apply first_nonzero_iff in H; simpl in H.
-             rename H into Hn2.
-             pose proof Hn2 0 as H.
-             apply seq_pred_r_I2NN, eq_d2n_pred_radix in H.
-             rewrite Nat.add_0_r in H; assumption.
+            generalize Hs2; intros H.
+            apply first_nonzero_iff in H; simpl in H.
+            rename H into Hn2.
+            pose proof Hn2 0 as H.
+            apply seq_pred_r_I2NN, eq_d2n_pred_radix in H.
+            rewrite Nat.add_0_r in H; assumption.
 
-            apply H4, pred_radix_gt_0.
-
-           generalize Hs1; intros H.
-           apply first_nonzero_iff in H.
-           destruct H as (Hn1, Ht1).
-           pose proof Hn1 0 (Nat.lt_0_succ n1) as H.
-           apply seq_pred_r_I2NN, eq_d2n_pred_radix in H.
-           rewrite Nat.add_0_r, H2 in H.
-           revert H; apply Digit.neq_0_9.
+           apply H4, pred_radix_gt_0.
 
           generalize Hs1; intros H.
           apply first_nonzero_iff in H.
-          rename H into Hn1.
-          pose proof Hn1 0 as H.
+          destruct H as (Hn1, Ht1).
+          pose proof Hn1 0 (Nat.lt_0_succ n1) as H.
           apply seq_pred_r_I2NN, eq_d2n_pred_radix in H.
           rewrite Nat.add_0_r, H2 in H.
           revert H; apply Digit.neq_0_9.
+
+         generalize Hs1; intros H.
+         apply first_nonzero_iff in H.
+         rename H into Hn1.
+         pose proof Hn1 0 as H.
+         apply seq_pred_r_I2NN, eq_d2n_pred_radix in H.
+         rewrite Nat.add_0_r, H2 in H.
+         revert H; apply Digit.neq_0_9.
 bbb.
      0   1
 x    .   0   .   .   .
