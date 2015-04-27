@@ -1991,6 +1991,14 @@ split; intros Hxy.
            rewrite <- d2n_1, <- d2n_add in Hn.
            apply digit_d2n_eq_iff in Hn.
            revert Hn; apply digit_neq_succ_digit.
+
+          apply seq_pred_r_I2NN_neq in Ht1.
+          apply H5; clear H5.
+          pose proof (d2n_lt_radix (x .[ S (i + n1)])) as H.
+          apply Nat_le_neq_lt; [ idtac | assumption ].
+          apply Nat.lt_le_pred; assumption.
+
+         idtac.
 bbb.
      0   1   .   i  i+1 i+2
 x    .   .   .   .   .   0
