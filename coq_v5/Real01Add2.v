@@ -1810,7 +1810,8 @@ split; intros Hxy.
              rename H into Hn2.
              pose proof Hn2 j as Hj.
              apply seq_pred_r_I2NN, eq_d2n_pred_radix in Hj.
-             split; [ idtac | assumption ].
+             split; [ simpl in Hj | assumption ].
+bbb. (* à réfléchir *)
              clear Hn.
              pose proof Hxy (S j) as Hn.
              unfold digit_eq in Hn; simpl in Hn.
@@ -1846,6 +1847,26 @@ exfalso; apply H4; clear H4.
                   pose proof (d2n_lt_radix (x .[ S (S (j + n3))])) as H.
                   apply Nat_le_neq_lt; [ idtac | assumption ].
                   apply Nat.lt_le_pred; assumption.
+clear Hn.
+pose proof Hxy j as Hn.
+             unfold digit_eq in Hn; simpl in Hn.
+             unfold I2NN in Hn at 1; simpl in Hn.
+             unfold I2NN in Hn at 2; simpl in Hn.
+symmetry in Hn.
+rewrite <- Nat.add_1_l in Hn.
+rewrite carry_add_inf in Hn; [|assumption].
+symmetry in Hn.
+unfold carry_add, carry_indic in Hn; simpl in Hn.
+remember (fst_neq_pred_r (I2NN x) (S j)) as s4 eqn:Hs4.
+destruct s4 as [n4|].
+apply first_nonzero_iff in Hs4; simpl in Hs4.
+destruct Hs4 as (Hn4, Ht4).
+unfold I2NN in Hn; simpl in Hn.
+apply seq_pred_r_I2NN_neq in Ht4; simpl in Ht4.
+remember (d2n (x .[ S (j + n4)])) as a.
+destruct (lt_dec a (pred radix)) as [H4|H4]; subst a.
+destruct n4.
+rewrite Nat.add_0_r in Ht4, H4.
 bbb.
 
            apply H4, pred_radix_gt_0.
