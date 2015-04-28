@@ -2149,48 +2149,34 @@ split; intros Hxy.
               remember (d2n (x .[ S (S (S (i + di + n4)))])) as a.
               destruct (lt_dec a (pred radix)) as [H5| H5]; subst a.
                rewrite Nat.add_0_r, d2n_mod_radix in Hn.
-rewrite Hxi in Hn.
-exfalso; revert Hn; apply pred_radix_neq_0.
-apply seq_pred_r_I2NN_neq in Ht4.
-exfalso; apply H5; clear H5.
+               rewrite Hxi in Hn.
+               exfalso; revert Hn; apply pred_radix_neq_0.
+
+               apply seq_pred_r_I2NN_neq in Ht4.
+               exfalso; apply H5; clear H5.
                pose proof (d2n_lt_radix (x .[ S (S (S (i + di + n4)))])) as H.
                apply Nat_le_neq_lt; [ idtac | assumption ].
                apply Nat.lt_le_pred; assumption.
+
+              generalize Hs4; intros H.
+              apply first_nonzero_iff in H; simpl in H.
+              rename H into Hn4.
+              pose proof (Hn4 n3) as H.
+              apply seq_pred_r_I2NN_neq in Ht3; simpl in Ht3.
+              apply seq_pred_r_I2NN in H; simpl in H.
+              rewrite Nat.add_succ_r in Ht3; contradiction.
+
+            rewrite Nat.mod_small in Hn; [ idtac | apply Digit.radix_gt_1 ].
+            discriminate Hn.
+
+        exfalso; apply H4; clear H4.
+        pose proof (d2n_lt_radix (x .[ S (i + n1)])) as H.
+        apply Nat_le_neq_lt; [ idtac | assumption ].
+        apply Nat.lt_le_pred; assumption.
+
+       idtac.
 bbb.
 
-              exfalso; apply Ht3; clear Ht3.
-              rewrite Nat.add_1_r in Hn.
-              apply Nat_mod_succ_pred in Hn.
-              rewrite d2n_mod_radix in Hn; assumption.
-
-bbb.
-
-     0   1   .   i  i+1
-x    .   .   .   7   0   .
-     =   =   =
-y    .   .   .   6   9   9   9 …
-
-
-pose proof Hxy n1 as Hn; simpl in Hn.
-     do 2 rewrite NN_add_add_0_r in Hn.
-     do 2 rewrite carry_add_add_0_r2 in Hn.
-     unfold digit_eq in Hn; simpl in Hn.
-     unfold I2NN in Hn at 1; simpl in Hn.
-     unfold I2NN in Hn at 2; simpl in Hn.
-unfold carry_add in Hn; simpl in Hn.
-remember (fst_neq_pred_r (I2NN x) (S n1)) as s2 eqn:Hs2.
-remember (fst_neq_pred_r (I2NN y) (S n1)) as s3 eqn:Hs3.
-destruct s2 as [n2| ].
-generalize Hs2; intros H.
-apply first_nonzero_iff in H; simpl in H.
-destruct H as (Hn2, Ht2).
-destruct s3 as [n3| ].
-generalize Hs3; intros H.
-apply first_nonzero_iff in H; simpl in H.
-destruct H as (Hn3, Ht3).
-
-bbb.
-    destruct n1.
      clear Hn1.
      destruct (Digit.eq_dec (x .[ 0]) 0) as [H2| H2]; simpl.
       apply eq_d2n_0 in H2; rewrite H2; apply eq_d2n_0 in H2.
