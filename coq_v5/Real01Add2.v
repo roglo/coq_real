@@ -2212,7 +2212,22 @@ destruct H1 as [H1| H1]; rewrite H1 in Hn.
   apply digit_d2n_eq_iff in Hn; assumption.
 
   left.
-  apply digit_d2n_eq_iff.
+  rewrite <- d2n_1, <- d2n_add in Hn.
+  apply digit_d2n_eq_iff in Hn; assumption.
+
+ destruct H2 as [H2| H2]; rewrite H2 in Hn.
+  right; right.
+  rewrite Nat.add_0_r, d2n_mod_radix in Hn.
+  rewrite <- d2n_1, <- d2n_add in Hn.
+  apply digit_d2n_eq_iff in Hn; assumption.
+
+  left.
+  rewrite <- d2n_1 in Hn.
+  do 2 rewrite <- d2n_add in Hn.
+  apply digit_d2n_eq_iff in Hn.
+SearchAbout (_ + _ = _)%I.
+  apply I_add2_compat_r.
+
 bbb.
 
 unfold carry_add, carry_indic in Hn; simpl in Hn.
