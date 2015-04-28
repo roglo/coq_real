@@ -411,6 +411,57 @@ unfold digit_eq; simpl.
 rewrite H; reflexivity.
 Qed.
 
+(* commutativity *)
+
+Theorem I_add2_comm : ∀ x y, (x + y == y + x)%I.
+Proof.
+intros x y i; simpl.
+rewrite NN_add_comm.
+erewrite carry_add_compat; [ reflexivity | apply NN_add_comm ].
+Qed.
+
+(* compatibility with == *)
+
+Theorem I_eqs_add2_compat_r : ∀ x y z, (x == y)%I → (x + z == y + z)%I.
+Proof.
+intros x y z Hxy i; simpl.
+apply I2NN_morph in Hxy.
+erewrite NN_add_compat; [ idtac | eassumption | reflexivity ].
+erewrite carry_add_compat; [ reflexivity | idtac ].
+apply NN_add_compat; [ assumption | reflexivity ].
+Qed.
+
+Theorem I_eqs_add2_compat : ∀ x y z t,
+  (x == y)%I
+  → (z == t)%I
+  → (x + z == y + t)%I.
+Proof.
+intros x y z t Hxy Hzt.
+rewrite I_eqs_add2_compat_r; [ idtac | eassumption ].
+rewrite I_add2_comm; symmetry.
+rewrite I_add2_comm; symmetry.
+apply I_eqs_add2_compat_r; assumption.
+Qed.
+
+Add Parametric Morphism : I_add2
+ with signature I_eqs ==> I_eqs ==> I_eqs
+ as I_add2_morph.
+Proof. intros; apply I_eqs_add2_compat; assumption. Qed.
+
+Theorem NN2I_add_compat : ∀ u v,
+  (u = v)%NN
+  → (NN2I_add u == NN2I_add v)%I.
+Proof.
+intros u v Huv i; simpl.
+unfold digit_eq; simpl; f_equal; f_equal; [ apply Huv | idtac ].
+apply carry_add_compat; assumption.
+Qed.
+
+Add Parametric Morphism : NN2I_add
+ with signature NN_eq ==> I_eqs
+ as NN2I_add_morph.
+Proof. intros; apply NN2I_add_compat; assumption. Qed.
+
 (* borrowed from Read01Add.v and adapted for this implementation *)
 
 (*
@@ -550,20 +601,6 @@ destruct (eq_nat_dec a (pred radix)) as [H2| H2]; [ idtac | discriminate H ].
 rewrite H2 in H1.
 exfalso; revert H1; apply Nat.lt_irrefl.
 Qed.
-
-Theorem NN2I_add_compat : ∀ u v,
-  (u = v)%NN
-  → (NN2I_add u == NN2I_add v)%I.
-Proof.
-intros u v Huv i; simpl.
-unfold digit_eq; simpl; f_equal; f_equal; [ apply Huv | idtac ].
-apply carry_add_compat; assumption.
-Qed.
-
-Add Parametric Morphism : NN2I_add
- with signature NN_eq ==> I_eqs
- as NN2I_add_morph.
-Proof. intros; apply NN2I_add_compat; assumption. Qed.
 
 Theorem I_eq_neq_prop_radix_2 : ∀ x y i,
   (x = y)%I
@@ -2225,9 +2262,11 @@ destruct H1 as [H1| H1]; rewrite H1 in Hn.
   rewrite <- d2n_1 in Hn.
   do 2 rewrite <- d2n_add in Hn.
   apply digit_d2n_eq_iff.
-SearchAbout (_ + _ = _)%I.
-  apply I_add2_compat_r.
+  unfold d2n, digit_1 in Hn; simpl in Hn.
+bbb.
+SearchAbout ((_ + _) mod _).
 
+Check I_add2_compat.
 bbb.
 
 unfold carry_add, carry_indic in Hn; simpl in Hn.
@@ -3424,15 +3463,6 @@ Arguments I_mul x%I y%I.
 
 Notation "x * y" := (I_mul x y) : I_scope.
 
-(* commutativity *)
-
-Theorem I_add2_comm : ∀ x y, (x + y == y + x)%I.
-Proof.
-intros x y.
-unfold I_eqs, I_add2; intros i.
-rewrite NN_add_comm; reflexivity.
-Qed.
-
 (* 0 neutral element *)
 
 Theorem radix_le_sqr_radix : radix ≤ radix * radix.
@@ -3688,40 +3718,6 @@ rewrite Nat.div_small.
   rewrite Nat.sub_1_r.
   apply Nat.lt_pred_l, sqr_radix_neq_0.
 Qed.
-
-(* compatibility with == *)
-
-Theorem I_add2_compat_r : ∀ x y z, (x == y)%I → (x + z == y + z)%I.
-Proof.
-intros x y z Hxy i.
-unfold I_add2.
-unfold I2NN, NN2I, NN_add; fsimpl.
-rewrite Nat.mul_1_r.
-unfold summation.
-rewrite Nat.sub_0_r; simpl.
-do 3 rewrite Nat.add_0_r.
-do 3 rewrite Nat.mul_1_r.
-unfold I_eqs in Hxy.
-unfold d2n.
-do 3 rewrite Hxy; reflexivity.
-Qed.
-
-Theorem I_add2_compat : ∀ x y z t,
-  (x == y)%I
-  → (z == t)%I
-  → (x + z == y + t)%I.
-Proof.
-intros x y z t Hxy Hzt.
-rewrite I_add2_compat_r; [ idtac | eassumption ].
-rewrite I_add2_comm; symmetry.
-rewrite I_add2_comm; symmetry.
-apply I_add2_compat_r; assumption.
-Qed.
-
-Add Parametric Morphism : I_add2
- with signature I_eqs ==> I_eqs ==> I_eqs
- as I_add2_morph.
-Proof. intros; apply I_add2_compat; assumption. Qed.
 
 (* *)
 
