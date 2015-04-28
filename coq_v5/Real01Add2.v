@@ -1818,9 +1818,9 @@ Theorem I_eq_iff : ∀ x y,
     ((i = 0 ∧
      ((∀ j, (x.[j] = 0)%D ∧ (y.[j] = 9)%D) ∨
       (∀ j, (y.[j] = 0)%D ∧ (x.[j] = 9)%D))) ∨
-     (d2n (x.[i]) = S (d2n (y.[i]))) ∧
+     (d2n (x.[i]) = d2n (y.[i]) + 1) ∧
      (∀ di, (x.[i+S di] = 0)%D ∧ (y.[i+S di] = 9)%D) ∨
-     (d2n (y.[i]) = S (d2n (x.[i]))) ∧
+     (d2n (y.[i]) = d2n (x.[i]) + 1) ∧
      (∀ di, (y.[i+S di] = 0)%D ∧ (x.[i+S di] = 9)%D)).
 Proof.
 intros x y.
@@ -2128,8 +2128,7 @@ split; intros Hxy.
           apply Nat_le_neq_lt; [ idtac | assumption ].
           apply Nat.lt_le_pred; assumption.
 
-          split; [ assumption | intros di ].
-(**)
+          split; [ rewrite Nat.add_1_r; assumption | intros di ].
           induction di as (di, IHdi) using all_lt_all.
           destruct di.
            rewrite Nat.add_1_r.
