@@ -2181,6 +2181,10 @@ split; intros Hxy.
 
      idtac.
 bbb.
+   .   .   i  i+1
+x  .   .   .  ≠0
+   =   =   ≠
+y  .   .   .   .
 
      clear Hn1.
      destruct (Digit.eq_dec (x .[ 0]) 0) as [H2| H2]; simpl.
