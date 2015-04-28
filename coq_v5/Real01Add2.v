@@ -2046,17 +2046,18 @@ split; intros Hxy.
           apply Nat.lt_le_pred; assumption.
 
           split; [ assumption | intros di ].
-          rename Hn into Hxsy.
-          pose proof Hxy (S i) as Hn.
-          unfold digit_eq in Hn; simpl in Hn.
-          unfold I2NN in Hn at 1; simpl in Hn.
-          unfold I2NN in Hn at 2; simpl in Hn.
+          pose proof Hn2 di as H.
+          apply seq_pred_r_I2NN in H; simpl in H.
+          apply eq_d2n_pred_radix in H.
+          rewrite Nat.add_succ_r.
+          split; [ idtac | assumption ].
+          rename H into Hyi.
 bbb.
 
      0   1   .   i  i+1
 x    .   .   .   7   0   .
      =   =   =
-y    .   .   .   6   .   .
+y    .   .   .   6   9   9   9 …
 
 
 pose proof Hxy n1 as Hn; simpl in Hn.
