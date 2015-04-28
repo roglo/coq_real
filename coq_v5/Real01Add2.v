@@ -1921,28 +1921,22 @@ split; intros Hxy.
             rewrite <- Nat.add_1_l, <- Nat.add_succ_r in Hn.
             rewrite carry_add_inf in Hn; [ idtac | assumption ].
             symmetry in Hn, Hs1.
-            unfold carry_add, carry_indic in Hn; simpl in Hn.
+            unfold carry_add in Hn; simpl in Hn.
             remember (fst_neq_pred_r (I2NN x) (S (S j))) as s3 eqn:Hs3 .
-            apply first_nonzero_iff in Hs3; simpl in Hs3.
+            generalize Hs3; intros Hn3.
+            apply first_nonzero_iff in Hn3; simpl in Hn3.
             pose proof Digit.radix_neq_0 as Hrnz.
             destruct s3 as [n3| ].
-             destruct Hs3 as (Hn3, Ht3).
-             apply seq_pred_r_I2NN_neq in Ht3.
-             unfold I2NN in Hn.
-             remember (d2n (x .[ S (S (j + n3))])) as a.
-             destruct (lt_dec a (pred radix)) as [H4| H4]; subst a.
-              rewrite Nat.add_0_r in Hn.
-              rewrite d2n_mod_radix in Hn.
-              simpl in Hj; apply eq_d2n_pred_radix in Hj.
-              rewrite Hj, Nat.add_1_r in Hn.
-              rewrite Nat.succ_pred in Hn; [ idtac | assumption ].
-              rewrite Nat.mod_same in Hn; [ idtac | assumption ].
-              apply eq_d2n_0; assumption.
-
-              exfalso; apply H4; clear H4.
-              pose proof (d2n_lt_radix (x .[ S (S (j + n3))])) as H.
-              apply Nat_le_neq_lt; [ idtac | assumption ].
-              apply Nat.lt_le_pred; assumption.
+             symmetry in Hs3.
+             do 2 rewrite <- Nat.add_succ_l in Hn.
+             rewrite carry_indic_I2NN in Hn; [ idtac | assumption ].
+             destruct Hn3 as (Hn3, Ht3).
+             rewrite Nat.add_0_r, d2n_mod_radix in Hn.
+             simpl in Hj; apply eq_d2n_pred_radix in Hj.
+             rewrite Hj, Nat.add_1_r in Hn.
+             rewrite Nat.succ_pred in Hn; [ idtac | assumption ].
+             rewrite Nat.mod_same in Hn; [ idtac | assumption ].
+             apply eq_d2n_0; assumption.
 
              do 2 rewrite Nat.add_1_r in Hn.
              apply eq_d2n_pred_radix in Hj.
@@ -1958,29 +1952,26 @@ split; intros Hxy.
              rewrite <- Nat.add_1_l in Hn.
              rewrite carry_add_inf in Hn; [ idtac | assumption ].
              symmetry in Hn.
-             unfold carry_add, carry_indic in Hn; simpl in Hn.
+             unfold carry_add in Hn; simpl in Hn.
              remember (fst_neq_pred_r (I2NN x) (S j)) as s4 eqn:Hs4 .
              destruct s4 as [n4| ].
-              apply first_nonzero_iff in Hs4; simpl in Hs4.
-              destruct Hs4 as (Hn4, Ht4).
-              unfold I2NN in Hn; simpl in Hn.
+              generalize Hs4; intros H.
+              apply first_nonzero_iff in H; simpl in H.
+              destruct H as (Hn4, Ht4).
               apply seq_pred_r_I2NN_neq in Ht4; simpl in Ht4.
-              remember (d2n (x .[ S (j + n4)])) as a.
-              destruct (lt_dec a (pred radix)) as [H4| H4]; subst a.
-               destruct n4.
-                rewrite Nat.add_0_r in Ht4, H4; clear Hn4.
-                exfalso; apply Ht4; clear Ht4.
-                apply Nat_mod_succ_pred in Hn1.
-                rewrite d2n_mod_radix in Hn1; assumption.
+              symmetry in Hs4.
+              rewrite <- Nat.add_succ_l in Hn.
+              rewrite carry_indic_I2NN in Hn; [ idtac | assumption ].
+              destruct n4.
+               rewrite Nat.add_0_r in Ht4 (*, H4*); clear Hn4.
+               exfalso; apply Ht4; clear Ht4.
+               apply Nat_mod_succ_pred in Hn1.
+               rewrite d2n_mod_radix in Hn1; assumption.
 
-                pose proof (Hs3 n4) as H.
-                apply seq_pred_r_I2NN in H; simpl in H.
-                rewrite <- Nat.add_succ_r in H; contradiction.
-
-               exfalso; apply H4; clear H4.
-               pose proof (d2n_lt_radix (x .[ S (j + n4)])) as H.
-               apply Nat_le_neq_lt; [ idtac | assumption ].
-               apply Nat.lt_le_pred; assumption.
+               apply first_nonzero_iff in Hs3; simpl in Hs3.
+               pose proof (Hs3 n4) as H.
+               apply seq_pred_r_I2NN in H; simpl in H.
+               rewrite <- Nat.add_succ_r in H; contradiction.
 
               pose proof (IHj j (Nat.lt_succ_diag_r j)) as H.
               destruct H as (Hx, Hy).
@@ -2319,6 +2310,7 @@ split; intros Hxy.
           remember 1 as one in Hn.
           rewrite <- Nat.add_1_l in Hn; subst one.
           rewrite carry_indic_I2NN in Hn; [ idtac | assumption ].
+          rewrite Nat.add_0_r in Hn.
 bbb.
 
 unfold carry_add, carry_indic in Hn; simpl in Hn.
