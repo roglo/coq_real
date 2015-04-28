@@ -2045,9 +2045,14 @@ split; intros Hxy.
           apply Nat_le_neq_lt; [ idtac | assumption ].
           apply Nat.lt_le_pred; assumption.
 
-          split; [ assumption | idtac ].
-          intros di.
+          split; [ assumption | intros di ].
+          rename Hn into Hxsy.
+          pose proof Hxy (S i) as Hn.
+          unfold digit_eq in Hn; simpl in Hn.
+          unfold I2NN in Hn at 1; simpl in Hn.
+          unfold I2NN in Hn at 2; simpl in Hn.
 bbb.
+
      0   1   .   i  i+1
 x    .   .   .   7   0   .
      =   =   =
