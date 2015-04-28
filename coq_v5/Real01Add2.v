@@ -128,7 +128,7 @@ Notation "x + y" := (I_add2 x y) : I_scope.
 
 (* normalisation and equality *)
 
-Definition I_norm x := (x + 0)%I.
+Definition I_norm x := NN2I_add (I2NN x).
 Definition I_eq x y := (I_norm x == I_norm y)%I.
 
 Notation "x = y" := (I_eq x y) : I_scope.
@@ -576,8 +576,6 @@ Proof.
 intros x y i Hxy Hr Hx Hy.
 unfold I_eq, I_eqs in Hxy; simpl in Hxy.
 pose proof (Hxy i) as Hn.
-do 2 rewrite NN_add_add_0_r in Hn.
-do 2 rewrite carry_add_add_0_r2 in Hn.
 unfold digit_eq in Hn; simpl in Hn.
 unfold I2NN in Hn at 1; simpl in Hn.
 unfold I2NN in Hn at 2; simpl in Hn.
@@ -618,8 +616,6 @@ destruct sx as [dx| ].
     rename H into Hdi.
     destruct dx; [ exfalso; revert H1; apply Nat.nlt_0_r | idtac ].
     pose proof (Hxy (S (i + dx))%nat) as Hn.
-    do 2 rewrite NN_add_add_0_r in Hn.
-    do 2 rewrite carry_add_add_0_r2 in Hn.
     unfold digit_eq in Hn; simpl in Hn.
     unfold I2NN in Hn at 1; simpl in Hn.
     unfold I2NN in Hn at 2; simpl in Hn.
@@ -650,8 +646,6 @@ destruct sx as [dx| ].
     destruct n.
      rewrite Nat.add_1_r, Nat.add_succ_r.
      pose proof (Hxy (S (i + dx))) as Hn.
-     do 2 rewrite NN_add_add_0_r in Hn.
-     do 2 rewrite carry_add_add_0_r2 in Hn.
      unfold digit_eq in Hn; simpl in Hn.
      unfold I2NN in Hn at 1; simpl in Hn.
      unfold I2NN in Hn at 2; simpl in Hn.
@@ -684,8 +678,6 @@ destruct sx as [dx| ].
        apply first_nonzero_iff in H; simpl in H.
        destruct H as (Hn1, Ht1).
        pose proof (Hxy (S (S (i + dx)))) as H.
-       do 2 rewrite NN_add_add_0_r in H.
-       do 2 rewrite carry_add_add_0_r2 in H.
        unfold digit_eq in H; simpl in H.
        unfold I2NN in H at 1; simpl in H.
        unfold I2NN in H at 2; simpl in H.
@@ -717,8 +709,6 @@ destruct sx as [dx| ].
 
      rewrite Nat.add_succ_r.
      pose proof (Hxy (S (i + dx + S n))) as H.
-     do 2 rewrite NN_add_add_0_r in H.
-     do 2 rewrite carry_add_add_0_r2 in H.
      unfold digit_eq in H; simpl in H.
      unfold I2NN in H at 1; simpl in H.
      unfold I2NN in H at 2; simpl in H.
@@ -1710,14 +1700,6 @@ unfold I_add2.
 rewrite NN_add_add_0_r; reflexivity.
 Qed.
 
-Theorem I_eq_NN2I_I2NN : ∀ x y,
-  (x = y)%I
-  ↔ (NN2I_add (I2NN x) == NN2I_add (I2NN y))%I.
-Proof.
-intros x y; unfold I_eq, I_norm.
-do 2 rewrite I_add2_0; split; intros; assumption.
-Qed.
-
 Theorem I_eq_iff : ∀ x y,
   (x = y)%I
   ↔ (x == y)%I ∨
@@ -1733,7 +1715,7 @@ Theorem I_eq_iff : ∀ x y,
 Proof.
 intros x y.
 split; intros Hxy.
- apply I_eq_NN2I_I2NN in Hxy.
+ unfold I_eq, I_norm in Hxy.
  remember (first_nonzero (seq_eq x y)) as s eqn:Hs .
  apply first_nonzero_iff in Hs.
  destruct s as [i| ].
@@ -2046,40 +2028,41 @@ split; intros Hxy.
           apply Nat.lt_le_pred; assumption.
 
           split; [ assumption | intros di ].
-(*
-induction di as (di, IHdi) using all_lt_all.
-destruct di.
-rewrite Nat.add_1_r.
-split; [assumption|].
-pose proof Hn2 0 as H.
-apply seq_pred_r_I2NN in H; simpl in H.
-apply eq_d2n_pred_radix in H.
-rewrite Nat.add_0_r in H; assumption.
-rename Hn into Hxsy.
-pose proof Hxy (S (i + di)) as Hn.
-unfold digit_eq in Hn; simpl in Hn.
-unfold I2NN in Hn at 1; simpl in Hn.
-unfold I2NN in Hn at 2; simpl in Hn.
-pose proof IHdi di (Nat.lt_succ_diag_r di) as H.
-rewrite Nat.add_succ_r in H.
-destruct H as (Hsx, Hsy).
-apply eq_d2n_0 in Hsx.
-apply eq_d2n_pred_radix in Hsy.
-rewrite Hsx, Hsy in Hn; simpl in Hn.
-symmetry in Hn, Hs2.
-rewrite <- Nat.add_succ_l, <- Nat.add_succ_r in Hn.
-rewrite carry_add_inf in Hn; [|assumption].
-rewrite Nat.add_1_r in Hn.
-            pose proof Digit.radix_neq_0 as Hrnz.
-rewrite Nat.succ_pred in Hn; [ |assumption].
-rewrite Nat.mod_same in Hn;[|assumption].
-symmetry in Hn; simpl in Hn.
-rewrite Nat.add_succ_r in Hn.
-unfold carry_add, carry_indic in Hn; simpl in Hn.
-remember (fst_neq_pred_r (I2NN x) (S (S (i + di)))) as s3 eqn:Hs3.
-apply first_nonzero_iff in Hs3; simpl in Hs3.
-destruct s3 as [n3|].
-destruct Hs3 as (Hn3, Ht3).
+(**)
+          induction di as (di, IHdi) using all_lt_all.
+          destruct di.
+           rewrite Nat.add_1_r.
+           split; [ assumption | idtac ].
+           pose proof (Hn2 0) as H.
+           apply seq_pred_r_I2NN in H; simpl in H.
+           apply eq_d2n_pred_radix in H.
+           rewrite Nat.add_0_r in H; assumption.
+
+           rename Hn into Hxsy.
+           pose proof (Hxy (S (i + di))) as Hn.
+           unfold digit_eq in Hn; simpl in Hn.
+           unfold I2NN in Hn at 1; simpl in Hn.
+           unfold I2NN in Hn at 2; simpl in Hn.
+           pose proof (IHdi di (Nat.lt_succ_diag_r di)) as H.
+           rewrite Nat.add_succ_r in H.
+           destruct H as (Hsx, Hsy).
+           apply eq_d2n_0 in Hsx.
+           apply eq_d2n_pred_radix in Hsy.
+           rewrite Hsx, Hsy in Hn; simpl in Hn.
+           symmetry in Hn, Hs2.
+           rewrite <- Nat.add_succ_l, <- Nat.add_succ_r in Hn.
+           rewrite carry_add_inf in Hn; [ idtac | assumption ].
+           rewrite Nat.add_1_r in Hn.
+           pose proof Digit.radix_neq_0 as Hrnz.
+           rewrite Nat.succ_pred in Hn; [ idtac | assumption ].
+           rewrite Nat.mod_same in Hn; [ idtac | assumption ].
+           symmetry in Hn; simpl in Hn.
+           rewrite Nat.add_succ_r in Hn.
+           unfold carry_add, carry_indic in Hn; simpl in Hn.
+           remember (fst_neq_pred_r (I2NN x) (S (S (i + di)))) as s3 eqn:Hs3 .
+           apply first_nonzero_iff in Hs3; simpl in Hs3.
+           destruct s3 as [n3| ].
+            destruct Hs3 as (Hn3, Ht3).
 bbb.
 *)
           pose proof Hn2 di as H.
@@ -2090,6 +2073,14 @@ bbb.
           rename H into Hyi.
           induction di as (di, IHdi) using all_lt_all.
           destruct di; [ rewrite Nat.add_0_r; assumption | idtac ].
+(*
+pose proof Hn2 di as H.
+apply seq_pred_r_I2NN in H; simpl in H.
+apply eq_d2n_pred_radix in H.
+pose proof IHdi di (Nat.lt_succ_diag_r di) as H.
+destruct H as (Hxi, Hyi).
+pose proof Hxy (i + di) as H; simpl in H.
+*)
 bbb.
 
      0   1   .   i  i+1
