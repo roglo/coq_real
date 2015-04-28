@@ -2221,10 +2221,10 @@ destruct H1 as [H1| H1]; rewrite H1 in Hn.
   rewrite <- d2n_1, <- d2n_add in Hn.
   apply digit_d2n_eq_iff in Hn; assumption.
 
-  left.
+  right; left.
   rewrite <- d2n_1 in Hn.
   do 2 rewrite <- d2n_add in Hn.
-  apply digit_d2n_eq_iff in Hn.
+  apply digit_d2n_eq_iff.
 SearchAbout (_ + _ = _)%I.
   apply I_add2_compat_r.
 
