@@ -1810,6 +1810,23 @@ destruct H1 as [H1| H1]; rewrite H1 in Hn.
   assumption.
 Qed.
 
+Theorem carry_indic_I2NN : ∀ x i n,
+  fst_neq_pred_r (I2NN x) i = Some n
+  → carry_indic (I2NN x (i + n)) = 0.
+Proof.
+intros x i n H.
+unfold I2NN, carry_indic; simpl.
+remember (d2n (x .[ i + n])) as a.
+destruct (lt_dec a (pred radix)) as [H1| H1]; [ reflexivity | idtac ].
+exfalso; apply H1; clear H1; subst a.
+symmetry in H; apply first_nonzero_iff in H; simpl in H.
+destruct H as (Hn, Ht).
+apply seq_pred_r_I2NN_neq in Ht.
+pose proof (d2n_lt_radix (x .[i + n])) as H.
+apply Nat_le_neq_lt; [ idtac | assumption ].
+apply Nat.lt_le_pred; assumption.
+Qed.
+
 Theorem I_eq_iff : ∀ x y,
   (x = y)%I
   ↔ (x == y)%I ∨
@@ -2279,7 +2296,29 @@ split; intros Hxy.
      generalize Hxy; intros H.
      eapply I_eq_diff with (i := i) in H.
      2: intros; apply seq_eq_eq, Hj; eassumption.
-     destruct H as [H| [H| H]]; [ idtac | contradiction | idtac ].
+     pose proof Digit.radix_neq_0 as Hrnz.
+     destruct H as [H3| [H3| H3]]; [ idtac | contradiction | idtac ].
+      destruct (eq_nat_dec i 0) as [H4| H4]; [ idtac | exfalso ].
+       left; subst i; split; [ reflexivity | idtac ].
+       left; intros j; clear Hj.
+       induction j as (j, IHj) using all_lt_all.
+        destruct j; [ clear IHj | idtac ].
+         pose proof Hxy 0 as Hn.
+         unfold digit_eq in Hn; simpl in Hn.
+         unfold I2NN in Hn at 1; simpl in Hn.
+         unfold I2NN in Hn at 2; simpl in Hn.
+         apply -> digit_d2n_eq_iff in H3.
+         rewrite H3, d2n_add, d2n_1 in Hn; simpl in Hn.
+         rewrite Nat.add_mod_idemp_l in Hn; [ idtac | assumption ].
+         unfold carry_add (*, carry_indic*) in Hn; simpl in Hn.
+         remember (fst_neq_pred_r (I2NN x) 1) as s1 eqn:Hs1 .
+         remember (fst_neq_pred_r (I2NN y) 1) as s2 eqn:Hs2 .
+
+         destruct s1 as [n1| ].
+          symmetry in Hs1.
+          remember 1 as one in Hn.
+          rewrite <- Nat.add_1_l in Hn; subst one.
+          rewrite carry_indic_I2NN in Hn; [ idtac | assumption ].
 bbb.
 
 unfold carry_add, carry_indic in Hn; simpl in Hn.
