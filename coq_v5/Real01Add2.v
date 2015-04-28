@@ -2003,7 +2003,7 @@ split; intros Hxy.
       apply first_nonzero_iff in Hn1; simpl in Hn1.
       generalize Hs2; intros Hn2.
       apply first_nonzero_iff in Hn2; simpl in Hn2.
-      destruct s1 as [n1| ].
+      destruct s1 as [n1| ]; [ idtac | exfalso ].
        destruct Hn1 as (Hn1, Ht1).
        apply seq_pred_r_I2NN_neq in Ht1; simpl in Ht1.
        remember (d2n (x .[ S (i + n1)])) as a.
@@ -2174,7 +2174,12 @@ split; intros Hxy.
         apply Nat_le_neq_lt; [ idtac | assumption ].
         apply Nat.lt_le_pred; assumption.
 
-       idtac.
+       pose proof Hn1 0 as H.
+       apply seq_pred_r_I2NN in H; rewrite Nat.add_0_r in H.
+       apply eq_d2n_pred_radix in H.
+       rewrite H2 in H; revert H; apply Digit.neq_0_9.
+
+     idtac.
 bbb.
 
      clear Hn1.
