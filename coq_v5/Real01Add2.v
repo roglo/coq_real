@@ -2046,12 +2046,50 @@ split; intros Hxy.
           apply Nat.lt_le_pred; assumption.
 
           split; [ assumption | intros di ].
+(*
+induction di as (di, IHdi) using all_lt_all.
+destruct di.
+rewrite Nat.add_1_r.
+split; [assumption|].
+pose proof Hn2 0 as H.
+apply seq_pred_r_I2NN in H; simpl in H.
+apply eq_d2n_pred_radix in H.
+rewrite Nat.add_0_r in H; assumption.
+rename Hn into Hxsy.
+pose proof Hxy (S (i + di)) as Hn.
+unfold digit_eq in Hn; simpl in Hn.
+unfold I2NN in Hn at 1; simpl in Hn.
+unfold I2NN in Hn at 2; simpl in Hn.
+pose proof IHdi di (Nat.lt_succ_diag_r di) as H.
+rewrite Nat.add_succ_r in H.
+destruct H as (Hsx, Hsy).
+apply eq_d2n_0 in Hsx.
+apply eq_d2n_pred_radix in Hsy.
+rewrite Hsx, Hsy in Hn; simpl in Hn.
+symmetry in Hn, Hs2.
+rewrite <- Nat.add_succ_l, <- Nat.add_succ_r in Hn.
+rewrite carry_add_inf in Hn; [|assumption].
+rewrite Nat.add_1_r in Hn.
+            pose proof Digit.radix_neq_0 as Hrnz.
+rewrite Nat.succ_pred in Hn; [ |assumption].
+rewrite Nat.mod_same in Hn;[|assumption].
+symmetry in Hn; simpl in Hn.
+rewrite Nat.add_succ_r in Hn.
+unfold carry_add, carry_indic in Hn; simpl in Hn.
+remember (fst_neq_pred_r (I2NN x) (S (S (i + di)))) as s3 eqn:Hs3.
+apply first_nonzero_iff in Hs3; simpl in Hs3.
+destruct s3 as [n3|].
+destruct Hs3 as (Hn3, Ht3).
+bbb.
+*)
           pose proof Hn2 di as H.
           apply seq_pred_r_I2NN in H; simpl in H.
           apply eq_d2n_pred_radix in H.
           rewrite Nat.add_succ_r.
           split; [ idtac | assumption ].
           rename H into Hyi.
+          induction di as (di, IHdi) using all_lt_all.
+          destruct di; [ rewrite Nat.add_0_r; assumption | idtac ].
 bbb.
 
      0   1   .   i  i+1
