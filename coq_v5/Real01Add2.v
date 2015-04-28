@@ -2290,8 +2290,16 @@ split; intros Hxy.
      pose proof Digit.radix_neq_0 as Hrnz.
      destruct H as [H3| [H3| H3]]; [ idtac | contradiction | idtac ].
       destruct (eq_nat_dec i 0) as [H4| H4]; [ idtac | exfalso ].
-       left; subst i; split; [ reflexivity | idtac ].
-       left; intros j; clear Hj.
+       subst i; clear Hj.
+(*
+bbb.
+     0   1
+x   n+1  ≠0
+
+y   n    .
+*)
+       left; split; [ reflexivity | idtac ].
+       left; intros j.
        induction j as (j, IHj) using all_lt_all.
         destruct j; [ clear IHj | idtac ].
          pose proof Hxy 0 as Hn.
@@ -2301,7 +2309,7 @@ split; intros Hxy.
          apply -> digit_d2n_eq_iff in H3.
          rewrite H3, d2n_add, d2n_1 in Hn; simpl in Hn.
          rewrite Nat.add_mod_idemp_l in Hn; [ idtac | assumption ].
-         unfold carry_add (*, carry_indic*) in Hn; simpl in Hn.
+         unfold carry_add in Hn; simpl in Hn.
          remember (fst_neq_pred_r (I2NN x) 1) as s1 eqn:Hs1 .
          remember (fst_neq_pred_r (I2NN y) 1) as s2 eqn:Hs2 .
 
@@ -2311,7 +2319,25 @@ split; intros Hxy.
           rewrite <- Nat.add_1_l in Hn; subst one.
           rewrite carry_indic_I2NN in Hn; [ idtac | assumption ].
           rewrite Nat.add_0_r in Hn.
-bbb.
+          destruct s2 as [n2| ].
+           symmetry in Hs2.
+           remember 1 as one in Hn.
+           rewrite <- Nat.add_1_l in Hn; subst one.
+           rewrite carry_indic_I2NN in Hn; [ idtac | assumption ].
+           rewrite Nat.add_0_r, d2n_mod_radix in Hn.
+           rewrite <- d2n_1, <- d2n_add in Hn.
+           apply digit_d2n_eq_iff in Hn; symmetry in Hn.
+           exfalso; revert Hn; apply digit_neq_succ_digit.
+
+           clear Hn.
+           pose proof Hxy 1 as Hn; simpl in Hn.
+           unfold digit_eq in Hn; simpl in Hn.
+           unfold I2NN in Hn at 1; simpl in Hn.
+           unfold I2NN in Hn at 2; simpl in Hn.
+bbb. pffff.... faut voir...
+     0   1
+x   n+1  ≠0
+y    n   9   9   9   9   9 …
 
 unfold carry_add, carry_indic in Hn; simpl in Hn.
 remember (fst_neq_pred_r (I2NN x) (S i)) as s1 eqn:Hs1 .
