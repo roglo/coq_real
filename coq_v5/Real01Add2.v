@@ -2289,6 +2289,31 @@ split; intros Hxy.
      2: intros; apply seq_eq_eq, Hj; eassumption.
      pose proof Digit.radix_neq_0 as Hrnz.
      destruct H as [H3| [H3| H3]]; [ idtac | contradiction | idtac ].
+destruct (Digit.eq_dec (y.[i]) 9) as [H4| H4].
+rewrite H4, Digit.add_comm, digit_add_1_9 in H3.
+destruct (eq_nat_dec i 0) as [H5| H5]; [idtac|exfalso].
+subst i; clear Hj; simpl.
+destruct (eq_nat_dec radix 2) as [H6|H6]; [idtac|exfalso].
+right; right.
+split.
+apply eq_d2n_0 in H3; rewrite H3.
+apply eq_d2n_pred_radix in H4; rewrite H4.
+rewrite H6; reflexivity.
+intros di.
+bbb.
+     i  i+1
+x    0   1
+y    1   .
+
+     i  i+1
+x    0   ≠0
+y    9   .
+
+     0   1   .   i  i+1
+x    .   .   .   0   ≠0
+     =   =   =
+y    .   .   .   9   .
+
       destruct (eq_nat_dec i 0) as [H4| H4]; [ idtac | exfalso ].
        subst i; clear Hj.
 (*
@@ -2330,6 +2355,7 @@ y   n    .
            exfalso; revert Hn; apply digit_neq_succ_digit.
 
            clear Hn.
+bbb.
            pose proof Hxy 1 as Hn; simpl in Hn.
            unfold digit_eq in Hn; simpl in Hn.
            unfold I2NN in Hn at 1; simpl in Hn.
