@@ -2413,12 +2413,12 @@ destruct di.
 
              rewrite H6 in Hn; discriminate Hn.
 
+           idtac.
 bbb.
      0   1   .   d  d+1 d+2
 x    0   1   1   1   1   .
 y    1   0   0   0   0   .
 
-           idtac.
            pose proof Hxy (S di) as Hn.
          unfold digit_eq in Hn; simpl in Hn.
          unfold I2NN in Hn at 1; simpl in Hn.
