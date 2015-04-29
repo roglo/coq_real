@@ -2383,10 +2383,43 @@ split; intros Hxy.
               apply radix_2_not_0 in H2; [ idtac | assumption ].
               rewrite radix_2_eq_pred_r_1; assumption.
 
-              clear Hn.
-              pose proof Hn2 0 (Nat.lt_0_succ n2) as H.
+              exfalso.
+              clear Hn; pose proof (Hxy 1) as Hn.
+              unfold digit_eq in Hn; simpl in Hn.
+              unfold I2NN in Hn at 1; simpl in Hn.
+              unfold I2NN in Hn at 2; simpl in Hn.
+              pose proof (Hn2 0 (Nat.lt_0_succ n2)) as H.
               apply seq_pred_r_I2NN in H.
-bbb. c'est quoi, ce bordel ?
+              rewrite Nat.add_0_r in H.
+              rename H into Hy.
+              rewrite Hy in Hn.
+              symmetry in Hs1.
+              replace 2 with (1 + 1) in Hn by reflexivity.
+              rewrite carry_add_inf in Hn; [ idtac | assumption ].
+              apply radix_2_not_0 in H2; [ idtac | assumption ].
+              apply -> digit_d2n_eq_iff in H2.
+              rewrite H2, d2n_1 in Hn; simpl in Hn.
+              unfold carry_add in Hn.
+              remember (fst_neq_pred_r (I2NN y) 2) as s3 eqn:Hs3 .
+              destruct s3 as [n3| ].
+               symmetry in Hs3.
+               rewrite carry_indic_I2NN in Hn; [ idtac | assumption ].
+               rewrite H6 in Hn; discriminate Hn.
+
+               apply first_nonzero_iff in Hs3; simpl in Hs3.
+               pose proof (Hs3 n2) as H.
+               apply seq_pred_r_I2NN in H.
+               apply seq_pred_r_I2NN_neq in Ht2.
+               contradiction.
+
+             rewrite H6 in Hn; discriminate Hn.
+
+           idtac.
+bbb.
+
+     0   1   .  n2 n2+1  .
+x    0   1   1   1   1
+y    1   1   1   1   0
 
 unfold digit_eq, digit_0 in H2; simpl in H2.
 rewrite Nat.mod_0_l in H2; [|assumption].
