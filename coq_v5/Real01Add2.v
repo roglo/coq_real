@@ -2312,7 +2312,7 @@ split; intros Hxy.
           split; [ rewrite H6; reflexivity | idtac ].
           intros di.
           induction di as (di, IHdi) using all_lt_all.
-destruct di.
+          destruct di.
            pose proof (Hxy 0) as Hn.
            unfold digit_eq in Hn; simpl in Hn.
            unfold I2NN in Hn at 1; simpl in Hn.
