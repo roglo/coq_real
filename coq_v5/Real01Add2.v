@@ -1855,22 +1855,19 @@ apply -> digit_d2n_eq_iff in Hx; rewrite d2n_1 in Hx.
 apply -> digit_d2n_eq_iff in Hy; rewrite d2n_0 in Hy.
 rewrite Hx, Hy in H.
 unfold carry_add in H; simpl in H.
-bbb.
-
-remember (fst_same x 0 (S i)) as sx eqn:Hsx .
-remember (fst_same y 0 (S i)) as sy eqn:Hsy .
+remember (fst_neq_pred_r (I2NN x) (S i)) as sx eqn:Hsx .
+remember (fst_neq_pred_r (I2NN y) (S i)) as sy eqn:Hsy .
 destruct sx as [dx| ].
- generalize Hsx; intros HH.
- apply fst_same_sym_iff in HH; simpl in HH.
- destruct HH as (Hnx, Htx); rewrite Htx in H.
+ symmetry in  Hsx.
+ rewrite <- Nat.add_succ_l in H.
+ rewrite carry_indic_I2NN in H; [ idtac | assumption ].
  destruct sy as [dy| ]; [ idtac | clear H ].
-  generalize Hsy; intros HH.
-  apply fst_same_sym_iff in HH; simpl in HH.
-  destruct HH as (Hny, Hty).
-  rewrite Hty in H.
-  exfalso;  revert H; apply Digit.neq_1_0.
+  symmetry in Hsy.
+  rewrite <- Nat.add_succ_l in H.
+  rewrite carry_indic_I2NN in H; [ idtac | assumption ].
+  rewrite Hr in H; discriminate H.
 
-  right.
+bbb.
   generalize Hsy; intros Hny.
   apply fst_same_sym_iff in Hny; simpl in Hny.
   split; intros di.
