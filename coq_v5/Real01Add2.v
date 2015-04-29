@@ -1844,11 +1844,11 @@ Theorem I_eq_iff : ∀ x y,
     (∀ j, j < i → (x.[j] = y.[j])%D) ∧
     ((i = 0 ∧
      ((∀ j, (x.[j] = 0)%D ∧ (y.[j] = 9)%D) ∨
-      (∀ j, (y.[j] = 0)%D ∧ (x.[j] = 9)%D))) ∨
+      (∀ j, (x.[j] = 9)%D ∧ (y.[j] = 0)%D))) ∨
      (d2n (x.[i]) = d2n (y.[i]) + 1) ∧
      (∀ di, (x.[i+S di] = 0)%D ∧ (y.[i+S di] = 9)%D) ∨
-     (d2n (y.[i]) = d2n (x.[i]) + 1) ∧
-     (∀ di, (y.[i+S di] = 0)%D ∧ (x.[i+S di] = 9)%D)).
+     (d2n (x.[i]) + 1 = d2n (y.[i])) ∧
+     (∀ di, (x.[i+S di] = 9)%D ∧ (y.[i+S di] = 0)%D)).
 Proof.
 intros x y.
 split; intros Hxy.
