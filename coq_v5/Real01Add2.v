@@ -386,9 +386,17 @@ apply Nat.add_cancel_r in Hc.
 exists ((b + a) / c); assumption.
 Qed.
 
-Theorem radix_2_not_1 : ∀ d, radix = 2 → (d ≠ 9)%D → (d = 0)%D.
+Theorem radix_2_eq_pred_r_1 : radix = 2 → (9 = 1)%D.
+Proof.
+intros H.
+unfold digit_eq; simpl.
+rewrite H; reflexivity.
+Qed.
+
+Theorem radix_2_not_1 : ∀ d, radix = 2 → (d ≠ 1)%D → (d = 0)%D.
 Proof.
 intros d Hr Hd.
+rewrite <- radix_2_eq_pred_r_1 in Hd; [ idtac | assumption ].
 apply neq_d2n_pred_radix in Hd.
 unfold digit_eq in Hd; simpl in Hd.
 unfold digit_eq; simpl; rewrite Hr.
@@ -404,11 +412,11 @@ do 2 apply lt_S_n in H.
 apply Nat.nlt_0_r in H; contradiction.
 Qed.
 
-Theorem radix_2_eq_pred_r_1 : radix = 2 → (9 = 1)%D.
+Theorem radix_2_not_0 : ∀ d, radix = 2 → (d ≠ 0)%D → (d = 1)%D.
 Proof.
-intros H.
-unfold digit_eq; simpl.
-rewrite H; reflexivity.
+intros d Hr Hd.
+destruct (Digit.eq_dec d 1) as [H1| H1]; [ assumption | exfalso ].
+apply Hd, radix_2_not_1; assumption.
 Qed.
 
 (* commutativity *)
@@ -628,6 +636,7 @@ destruct sx as [dx| ].
  destruct H as (Hnx, Htx).
  apply seq_pred_r_I2NN_neq in Htx; simpl in Htx.
  apply neq_d2n_pred_radix in Htx.
+ rewrite radix_2_eq_pred_r_1 in Htx; [ idtac | assumption ].
  apply radix_2_not_1 in Htx; [ idtac | assumption ].
  apply eq_d2n_0 in Htx.
  unfold carry_indic in Hn.
@@ -639,6 +648,7 @@ destruct sx as [dx| ].
   destruct H as (Hny, Hty).
   apply seq_pred_r_I2NN_neq in Hty; simpl in Hty.
   apply neq_d2n_pred_radix in Hty.
+  rewrite radix_2_eq_pred_r_1 in Hty; [ idtac | assumption ].
   apply radix_2_not_1 in Hty; [ idtac | assumption ].
   apply eq_d2n_0 in Hty.
   rewrite Hty in Hn; discriminate Hn.
@@ -1431,6 +1441,7 @@ split; intros Hxy.
     destruct (Digit.eq_dec (x .[ di1]) 1) as [Hx1| Hx1].
      rewrite Hx1 in Ht1; apply Digit.neq_sym in Ht1.
      rewrite <- radix_2_eq_pred_r_1 in Ht1; [ idtac|assumption].
+     rewrite radix_2_eq_pred_r_1 in Ht1; [ idtac | assumption ].
      apply radix_2_not_1 in Ht1; [ | assumption].
 Abort. (*
 bbb.
@@ -2352,14 +2363,30 @@ split; intros Hxy.
               apply seq_pred_r_I2NN_neq in Ht1; simpl in Ht1.
               destruct n1.
                apply neq_d2n_pred_radix in Ht1.
+               rewrite radix_2_eq_pred_r_1 in Ht1; [ idtac | assumption ].
                apply radix_2_not_1 in Ht1; [ contradiction | assumption ].
 
                apply first_nonzero_iff in Hs3; simpl in Hs3.
                pose proof (Hs3 n1) as H.
                apply seq_pred_r_I2NN in H; contradiction.
 
-            idtac.
-bbb.
+            destruct s2 as [n2| ].
+             generalize Hs2; intros H.
+             apply first_nonzero_iff in H; simpl in H.
+             destruct H as (Hn2, Ht2).
+             destruct n2.
+              apply seq_pred_r_I2NN_neq in Ht2.
+              apply neq_d2n_pred_radix in Ht2.
+              rewrite radix_2_eq_pred_r_1 in Ht2; [ idtac | assumption ].
+              apply radix_2_not_1 in Ht2; [ idtac | assumption ].
+              split; [ assumption | idtac ].
+              apply radix_2_not_0 in H2; [ idtac | assumption ].
+              rewrite radix_2_eq_pred_r_1; assumption.
+
+              clear Hn.
+              pose proof Hn2 0 (Nat.lt_0_succ n2) as H.
+              apply seq_pred_r_I2NN in H.
+bbb. c'est quoi, ce bordel ?
 
 unfold digit_eq, digit_0 in H2; simpl in H2.
 rewrite Nat.mod_0_l in H2; [|assumption].
