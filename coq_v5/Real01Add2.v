@@ -2376,6 +2376,18 @@ destruct di.
 rewrite H2 in Hn.
 symmetry in Hn.
 exfalso; revert Hn; apply Digit.neq_0_1.
+destruct n1.
+Focus 2.
+symmetry in Hs1.
+apply first_nonzero_iff in Hs1.
+destruct Hs1 as (Hn1, Ht1).
+pose proof Hn1 0 (Nat.lt_0_succ n1) as H.
+apply seq_pred_r_I2NN in H; simpl in H.
+rewrite Nat.add_0_r in H.
+apply eq_d2n_pred_radix in H.
+rewrite Hn in H.
+symmetry in H.
+revert H; apply Digit.neq_9_0.
 bbb.
               rewrite Hn in H2; exfalso; revert H2; apply Digit.neq_0_1.
 
