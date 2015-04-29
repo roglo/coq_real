@@ -2307,6 +2307,7 @@ split; intros Hxy.
          subst i; clear Hj; simpl.
          destruct (eq_nat_dec radix 2) as [H6| H6]; [ idtac | exfalso ].
           right; right.
+          apply radix_2_not_0 in H2; [ idtac | assumption ].
           apply eq_d2n_0 in H3; rewrite H3.
           apply eq_d2n_pred_radix in H4; rewrite H4.
           split; [ rewrite H6; reflexivity | idtac ].
@@ -2355,7 +2356,7 @@ split; intros Hxy.
               rewrite carry_indic_I2NN in Hn; [ idtac | assumption ].
               rewrite Nat.add_0_r, d2n_mod_radix in Hn.
               symmetry in Hn; apply eq_d2n_0 in Hn.
-              contradiction.
+              rewrite Hn in H2; exfalso; revert H2; apply Digit.neq_0_1.
 
               symmetry in Hs1.
               apply first_nonzero_iff in Hs1.
@@ -2364,7 +2365,7 @@ split; intros Hxy.
               destruct n1.
                apply neq_d2n_pred_radix in Ht1.
                rewrite radix_2_eq_pred_r_1 in Ht1; [ idtac | assumption ].
-               apply radix_2_not_1 in Ht1; [ contradiction | assumption ].
+               contradiction.
 
                apply first_nonzero_iff in Hs3; simpl in Hs3.
                pose proof (Hs3 n1) as H.
@@ -2380,7 +2381,6 @@ split; intros Hxy.
               rewrite radix_2_eq_pred_r_1 in Ht2; [ idtac | assumption ].
               apply radix_2_not_1 in Ht2; [ idtac | assumption ].
               split; [ assumption | idtac ].
-              apply radix_2_not_0 in H2; [ idtac | assumption ].
               rewrite radix_2_eq_pred_r_1; assumption.
 
               exfalso.
@@ -2396,7 +2396,6 @@ split; intros Hxy.
               symmetry in Hs1.
               replace 2 with (1 + 1) in Hn by reflexivity.
               rewrite carry_add_inf in Hn; [ idtac | assumption ].
-              apply radix_2_not_0 in H2; [ idtac | assumption ].
               apply -> digit_d2n_eq_iff in H2.
               rewrite H2, d2n_1 in Hn; simpl in Hn.
               unfold carry_add in Hn.
@@ -2418,8 +2417,8 @@ split; intros Hxy.
 bbb.
 
      0   1   .  n2 n2+1  .
-x    0   1   1   1   1
-y    1   1   1   1   0
+x    .   .   .   .   .   .
+y    .   .   .   .   .   .
 
 unfold digit_eq, digit_0 in H2; simpl in H2.
 rewrite Nat.mod_0_l in H2; [|assumption].
