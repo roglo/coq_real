@@ -2346,7 +2346,13 @@ split; intros Hxy.
                symmetry in Hn; apply eq_d2n_0 in Hn.
                contradiction.
 
-               idtac.
+               destruct n1.
+                symmetry in Hs1.
+                apply first_nonzero_iff in Hs1.
+                destruct Hs1 as (Hn1, Ht1).
+                apply seq_pred_r_I2NN_neq in Ht1; simpl in Ht1.
+                apply neq_d2n_pred_radix in Ht1.
+revert H6 H2 Ht1; clear; intros.
 bbb.
 
 unfold digit_eq, digit_0 in H2; simpl in H2.
