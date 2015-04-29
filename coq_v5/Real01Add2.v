@@ -2352,7 +2352,7 @@ split; intros Hxy.
                 destruct Hs1 as (Hn1, Ht1).
                 apply seq_pred_r_I2NN_neq in Ht1; simpl in Ht1.
                 apply neq_d2n_pred_radix in Ht1.
-revert H6 H2 Ht1; clear; intros.
+                apply radix_2_not_1 in Ht1; [contradiction|assumption].
 bbb.
 
 unfold digit_eq, digit_0 in H2; simpl in H2.
