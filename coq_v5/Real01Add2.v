@@ -1837,6 +1837,17 @@ apply Nat_le_neq_lt; [ idtac | assumption ].
 apply Nat.lt_le_pred; assumption.
 Qed.
 
+Theorem radix_2_I_eq_neq_prop : ∀ x y i,
+  (x = y)%I
+  → radix = 2
+  → (x.[i] = 1)%D
+  → (y.[i] = 0)%D
+  → (y.[S i] = 1)%D
+  → (∀ di, (x.[i+S di] = 0)%D ∧ (y.[i+S di] = 1)%D).
+Proof.
+bbb.
+cf la preuve de I_eq_neq_prop dans Real01Add.v
+
 Theorem I_eq_iff : ∀ x y,
   (x = y)%I
   ↔ (x == y)%I ∨
@@ -2305,12 +2316,26 @@ split; intros Hxy.
         destruct (eq_nat_dec i 0) as [H5| H5]; [ idtac | exfalso ].
          subst i; clear Hj; simpl.
          destruct (eq_nat_dec radix 2) as [H6| H6]; [ idtac | exfalso ].
-          right; right.
           apply radix_2_not_0 in H2; [ idtac | assumption ].
+          right; right.
           apply eq_d2n_0 in H3; rewrite H3.
           apply eq_d2n_pred_radix in H4.
           rewrite H6 in H4; simpl in H4; rewrite H4.
           split; [ reflexivity | idtac ].
+apply eq_d2n_0 in H3.
+rewrite <- d2n_1 in H4.
+SearchAbout (d2n _ = d2n _).
+apply digit_d2n_eq_iff in H4.
+generalize Hxy; intros H.
+Focus 1.
+symmetry in H.
+intros di.
+replace (S di) with (0 + S di) by reflexivity.
+rewrite and_comm.
+rewrite radix_2_eq_pred_r_1; [ |assumption].
+apply radix_2_I_eq_neq_prop; assumption.
+bbb.
+
           intros di.
           rewrite radix_2_eq_pred_r_1; [ idtac | assumption ].
 Focus 1.
