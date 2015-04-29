@@ -1887,25 +1887,29 @@ pose proof Hnx dx (Nat.lt_succ_diag_r dx) as HH.
 apply seq_pred_r_I2NN in HH.
 rewrite Hr in HH; simpl in HH.
 rewrite HH in H; clear HH.
-bbb.
-
-   rewrite Hny in H.
-   rewrite Digit.add_1_l in H.
-   symmetry in H.
-   rewrite Digit.add_1_l in H.
-   apply Digit.opp_eq in H.
-   rewrite <- Nat.add_succ_l in H.
-   symmetry in Hsx, H.
-   erewrite carry_before_relay9 in H; [ idtac | eassumption | auto ].
+pose proof Hny dx as HH.
+apply seq_pred_r_I2NN in HH.
+rewrite Hr in HH; simpl in HH.
+rewrite HH in H; clear HH.
+   symmetry in Hsx.
+rewrite <- Nat.add_succ_l, <- Nat.add_succ_r in H.
+erewrite carry_add_fin in H; [| eassumption|reflexivity].
    symmetry in Hsy.
-   simpl in H.
-   do 2 rewrite <- Nat.add_succ_l in H.
-   rewrite carry_before_inf_relay9 in H; [ idtac | assumption ].
-   simpl in H; rewrite Htx in H.
-   discr_digit H.
+   rewrite carry_add_inf in H; [ idtac | assumption ].
+rewrite carry_indic_I2NN in H; [|assumption].
+rewrite Hr in H; discriminate H.
 
    subst di.
-   rewrite Nat.add_succ_r; assumption.
+apply seq_pred_r_I2NN_neq in Htx.
+apply neq_d2n_pred_radix in Htx.
+rewrite radix_2_eq_pred_r_1 in Htx;[|assumption].
+        apply radix_2_not_1 in Htx; [ idtac | assumption ].
+rewrite Nat.add_succ_r.
+split; [assumption|].
+pose proof Hny dx as H.
+apply seq_pred_r_I2NN in H.
+rewrite Hr in H; simpl in H.
+apply eq_d2n_1 in H; assumption.
 
    remember (di - S dx)%nat as n eqn:Hn .
    apply Nat_sub_add_r in Hn; [ idtac | assumption ].
@@ -1915,6 +1919,8 @@ bbb.
    destruct n.
     rewrite Nat.add_1_r, Nat.add_succ_r.
     pose proof (Hxy (S (i + dx))) as H.
+bbb.
+
     unfold I_add_i in H; simpl in H.
     do 2 rewrite Digit.add_0_r in H.
     rewrite Htx, Hny, Digit.add_0_l, Digit.add_1_l in H.
