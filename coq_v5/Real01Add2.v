@@ -2066,15 +2066,24 @@ destruct sx as [dx| ].
      rewrite Hr in H; discriminate H.
 
  destruct sy as [dy| ]; [ idtac | rewrite Hr in H; discriminate H ].
-bbb.
- symmetry in H; simpl in H.
  generalize Hsy; intros HH.
  apply first_nonzero_iff in HH; simpl in HH.
  destruct HH as (Hny, Hty); clear H.
+(**)
+ destruct dy.
+  apply seq_pred_r_I2NN_neq in Hty.
+  rewrite Nat.add_0_r in Hty.
+  exfalso; apply Hty; clear Hty.
+  rewrite Hr; simpl.
+  apply eq_d2n_1; assumption.
+
+  pose proof Hny 0 (Nat.lt_0_succ dy) as H.
+bbb.
+(*
 left.
+*)
  generalize Hsx; intros Hnx.
- apply fst_same_sym_iff in Hnx; simpl in Hnx.
- split; intros di.
+ apply first_nonzero_iff in Hnx; simpl in Hnx.
   destruct (lt_eq_lt_dec di dy) as [[H1| H1]| H1].
    pose proof (Hny di H1) as H.
    destruct dy; [ exfalso; revert H1; apply Nat.nlt_0_r | idtac ].
