@@ -1837,6 +1837,14 @@ apply Nat_le_neq_lt; [ idtac | assumption ].
 apply Nat.lt_le_pred; assumption.
 Qed.
 
+Theorem seq_pred_r_d2n : ∀ x i,
+  (∀ j, seq_pred_r (I2NN x) i j = 0)
+  → (∀ j, d2n (x.[i + j]) = pred radix).
+Proof.
+intros x i Hj j.
+apply seq_pred_r_I2NN, Hj.
+Qed.
+
 Theorem radix_2_I_eq_neq_prop : ∀ x y i,
   (x = y)%I
   → radix = 2
@@ -2032,12 +2040,13 @@ destruct sx as [dx| ].
        rewrite <- Nat.add_succ_r in H.
        rewrite <- Nat.add_assoc in H.
        rewrite Nat.add_succ_r in H.
-bbb.
-       rewrite Hny, Digit.add_1_l in H.
-       rewrite <- Nat.add_succ_l in H.
-       symmetry in H.
-       rewrite carry_before_inf_relay9 in H; [ idtac | assumption ].
+symmetry in H.
+rewrite <- Nat.add_succ_l in H.
+rewrite seq_pred_r_d2n in H; [|assumption].
+       rewrite <- Nat.add_succ_r in H.
+rewrite carry_add_inf in H;[|assumption].
        symmetry in H, Hs1.
+bbb.
        remember (S i + S (dx + S n))%nat as z.
        replace (S z) with (S z + 0)%nat in H by apply Nat.add_0_r.
        subst z.
