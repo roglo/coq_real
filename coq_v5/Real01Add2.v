@@ -4,6 +4,8 @@ Require Import Utf8 QArith NPeano.
 Require Import Misc Summation.
 Require Import Oracle Digit2 Real012.
 
+Notation "⊥" := False.
+
 Open Scope nat_scope.
 
 (* addition and multiplication numbers with numbers *)
