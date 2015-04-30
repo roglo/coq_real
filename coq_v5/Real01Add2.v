@@ -2065,14 +2065,13 @@ destruct sx as [dx| ].
 
      rewrite Hr in H; discriminate H.
 
- idtac.
  destruct sy as [dy| ]; [ idtac | rewrite Hr in H; discriminate H ].
 bbb.
  symmetry in H; simpl in H.
  generalize Hsy; intros HH.
- apply fst_same_sym_iff in HH; simpl in HH.
+ apply first_nonzero_iff in HH; simpl in HH.
  destruct HH as (Hny, Hty); clear H.
- left.
+left.
  generalize Hsx; intros Hnx.
  apply fst_same_sym_iff in Hnx; simpl in Hnx.
  split; intros di.
