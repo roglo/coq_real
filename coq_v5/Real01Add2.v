@@ -1965,83 +1965,74 @@ destruct sx as [dx| ].
       unfold I2NN in H at 1; simpl in H.
       unfold I2NN in H at 2; simpl in H.
       rewrite <- Nat.add_succ_r in H.
-pose proof Hny (S dx) as HH.
-apply seq_pred_r_I2NN in HH.
-rewrite Hr in HH; simpl in HH.
-rewrite HH in H.
-rewrite Nat.add_succ_r in HH.
-split; [clear HH|apply eq_d2n_1; assumption].
-       symmetry in H.
-       rewrite <- Nat.add_succ_l, <- Nat.add_succ_r in H;
-rewrite carry_add_inf in H;[|assumption].
-(*
-       symmetry in H, Hs1.
-       replace dx with (dx + 0)%nat in H by apply Nat.add_0_r.
-       simpl in H.
-       rewrite Nat.add_succ_r, Nat.add_assoc in H.
-       do 2 rewrite <- Nat.add_succ_l in H.
-       assert (0 < S di1)%nat as HH by apply Nat.lt_0_succ.
-*)
-symmetry in Hs1, H; simpl in H.
-do 3 rewrite Nat.add_succ_r in H.
-remember (S (S (i + dx))) as a.
-rewrite <- Nat.add_1_r in H; subst a.
-assert (1 ≤ S di1) as HH by apply le_n_S, Nat.le_0_l.
-erewrite carry_add_fin in H; try eassumption.
-rewrite carry_indic_I2NN in H; [|assumption].
-rewrite Nat.add_0_r, d2n_mod_radix in H.
-rewrite Hr in H; simpl in H.
-apply eq_d2n_0; assumption.
-rewrite Hr in H; discriminate H.
+      pose proof (Hny (S dx)) as HH.
+      apply seq_pred_r_I2NN in HH.
+      rewrite Hr in HH; simpl in HH.
+      rewrite HH in H.
+      rewrite Nat.add_succ_r in HH.
+      split; [ clear HH | apply eq_d2n_1; assumption ].
+      symmetry in H.
+      rewrite <- Nat.add_succ_l, <- Nat.add_succ_r in H;
+       rewrite carry_add_inf in H; [ idtac | assumption ].
+      symmetry in Hs1, H; simpl in H.
+      do 3 rewrite Nat.add_succ_r in H.
+      remember (S (S (i + dx))) as a.
+      rewrite <- Nat.add_1_r in H; subst a.
+      assert (1 ≤ S di1) as HH by apply le_n_S, Nat.le_0_l.
+      erewrite carry_add_fin in H; try eassumption.
+      rewrite carry_indic_I2NN in H; [ idtac | assumption ].
+      rewrite Nat.add_0_r, d2n_mod_radix in H.
+      rewrite Hr in H; simpl in H.
+      apply eq_d2n_0; assumption.
 
-     rewrite Nat.add_succ_r.
-     pose proof (Hxy (S (i + dx + S n))) as H.
-      unfold digit_eq in H; simpl in H.
-      unfold I2NN in H at 1; simpl in H.
-      unfold I2NN in H at 2; simpl in H.
-pose proof IHn n (Nat.lt_succ_diag_r n) as HH.
-destruct HH as (Hxi, Hyi).
-apply eq_d2n_0 in Hxi.
-apply eq_d2n_1 in Hyi.
-     rewrite <- Nat.add_assoc in H.
-rewrite Hxi, Hyi in H.
-     symmetry in H, Hsx, Hsy.
-   rewrite <- Nat.add_succ_l, <- Nat.add_succ_r in H.
-rewrite carry_add_inf in H; [|assumption].
-rewrite Nat.add_succ_r in H.
-     symmetry in H.
-     unfold carry_add in H.
-(*
-unfold carry_indic in H.
-*)
-remember ((S i + S (dx + S n))) as a.
-     remember (fst_neq_pred_r (I2NN x) a) as s1 eqn:Hs1; subst a.
-     destruct s1 as [di1| ].
-      rename H into Hx1.
-      destruct di1.
-apply first_nonzero_iff in Hs1.
-destruct Hs1 as (Hn1, Ht1).
-apply seq_pred_r_I2NN_neq in Ht1.
-    apply neq_d2n_pred_radix in Ht1.
-    rewrite radix_2_eq_pred_r_1 in Ht1; [ idtac | assumption ].
-    apply radix_2_not_1 in Ht1; [ idtac | assumption ].
-rewrite Nat.add_0_r in Ht1; simpl in Ht1.
-split; [assumption|].
-pose proof Hny (S (dx + S n)) as H.
-apply seq_pred_r_I2NN in H.
-apply eq_d2n_pred_radix in H.
-rewrite radix_2_eq_pred_r_1 in H;assumption.
-bbb.
+     rewrite Hr in H; discriminate H.
 
-       generalize Hs1; intros H.
-       apply fst_same_sym_iff in H; simpl in H.
-       destruct H as (Hn1, _).
+    rewrite Nat.add_succ_r.
+    pose proof (Hxy (S (i + dx + S n))) as H.
+    unfold digit_eq in H; simpl in H.
+    unfold I2NN in H at 1; simpl in H.
+    unfold I2NN in H at 2; simpl in H.
+    pose proof (IHn n (Nat.lt_succ_diag_r n)) as HH.
+    destruct HH as (Hxi, Hyi).
+    apply eq_d2n_0 in Hxi.
+    apply eq_d2n_1 in Hyi.
+    rewrite <- Nat.add_assoc in H.
+    rewrite Hxi, Hyi in H.
+    symmetry in H, Hsx, Hsy.
+    rewrite <- Nat.add_succ_l, <- Nat.add_succ_r in H.
+    rewrite carry_add_inf in H; [ idtac | assumption ].
+    rewrite Nat.add_succ_r in H.
+    symmetry in H.
+    unfold carry_add in H.
+    remember (S i + S (dx + S n)) as a.
+    remember (fst_neq_pred_r (I2NN x) a) as s1 eqn:Hs1 ; subst a.
+    destruct s1 as [di1| ].
+     rename H into Hx1.
+     destruct di1.
+      apply first_nonzero_iff in Hs1.
+      destruct Hs1 as (Hn1, Ht1).
+      apply seq_pred_r_I2NN_neq in Ht1.
+      apply neq_d2n_pred_radix in Ht1.
+      rewrite radix_2_eq_pred_r_1 in Ht1; [ idtac | assumption ].
+      apply radix_2_not_1 in Ht1; [ idtac | assumption ].
+      rewrite Nat.add_0_r in Ht1; simpl in Ht1.
+      split; [ assumption | idtac ].
+      pose proof (Hny (S (dx + S n))) as H.
+      apply seq_pred_r_I2NN in H.
+      apply eq_d2n_pred_radix in H.
+      rewrite radix_2_eq_pred_r_1 in H; assumption.
+
+      generalize Hs1; intros H.
+       apply first_nonzero_iff in H; simpl in H.
+       destruct H as (Hn1, Ht1).
        pose proof (Hxy (S (S (i + dx + S n)))) as H.
-       unfold I_add_i in H; simpl in H.
-       do 2 rewrite Digit.add_0_r in H.
+    unfold digit_eq in H; simpl in H.
+    unfold I2NN in H at 1; simpl in H.
+    unfold I2NN in H at 2; simpl in H.
        rewrite <- Nat.add_succ_r in H.
        rewrite <- Nat.add_assoc in H.
        rewrite Nat.add_succ_r in H.
+bbb.
        rewrite Hny, Digit.add_1_l in H.
        rewrite <- Nat.add_succ_l in H.
        symmetry in H.
