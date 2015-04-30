@@ -2099,6 +2099,11 @@ destruct sx as [dx| ].
   rewrite Hr in H; discriminate H.
 Qed.
 
+Theorem mod_1_radix : 1 mod radix = 1.
+Proof.
+rewrite Nat.mod_small; [ reflexivity | apply Digit.radix_gt_1 ].
+Qed.
+
 Theorem I_eq_iff : ∀ x y,
   (x = y)%I
   ↔ (x == y)%I ∨
@@ -2742,6 +2747,8 @@ split; intros Hxy.
            rewrite carry_add_inf in Hn; [ idtac | eassumption ].
            unfold carry_add in Hn; simpl in Hn.
            remember (fst_neq_pred_r (I2NN y) (S (i + 1))) as s3 eqn:Hs3 .
+           apply radix_2_not_0 in H2; [ idtac | assumption ].
+           apply eq_d2n_1 in H2.
            destruct s3 as [n3| ].
             symmetry in Hs3.
             rewrite <- Nat.add_succ_l in Hn.
@@ -2750,32 +2757,54 @@ split; intros Hxy.
             apply first_nonzero_iff in Hs2.
             destruct Hs2 as (Hn2, Ht2).
             destruct n2.
-Focus 2.
-exfalso.
-pose proof Hn2 0 (Nat.lt_0_succ n2) as H.
-apply seq_pred_r_I2NN in H; simpl in H.
-rewrite Nat.add_0_r in H.
-apply radix_2_not_0 in H2; [|assumption].
-apply eq_d2n_1 in H2.
-do 2 rewrite Nat.add_1_r in Hn.
-rewrite H2, H, Hr in Hn; discriminate Hn.
+             right; right.
+             rewrite Hr in H4; simpl in H4.
+             rewrite H3, H4; split; [ reflexivity | idtac ].
+             intros di.
+             rewrite and_comm.
+             rewrite radix_2_eq_pred_r_1; [ idtac | assumption ].
+             symmetry in Hxy.
+             apply eq_d2n_0 in H3.
+             apply eq_d2n_1 in H4.
+             apply seq_pred_r_I2NN_neq in Ht2.
+             rewrite Nat.add_0_r in Ht2.
+             apply radix_2_I_eq_neq_prop; try assumption.
+             apply eq_d2n_1 in H2; assumption.
 
-right; right.
-rewrite Hr in H4; simpl in H4.
-rewrite H3, H4; split; [reflexivity|].
-intros di.
-rewrite and_comm.
-rewrite radix_2_eq_pred_r_1; [|assumption].
-Focus 1.
-Inspect 1.
-symmetry in Hxy.
-apply eq_d2n_0  in H3.
-apply eq_d2n_1  in H4.
-apply seq_pred_r_I2NN_neq in Ht2.
-rewrite Nat.add_0_r in Ht2.
-apply radix_2_I_eq_neq_prop; try assumption.
-bbb. oh con ! j'ai merdé...
+             exfalso.
+             pose proof (Hn2 0 (Nat.lt_0_succ n2)) as H.
+             apply seq_pred_r_I2NN in H; simpl in H.
+             rewrite Nat.add_0_r in H.
+             do 2 rewrite Nat.add_1_r in Hn.
+             rewrite H2, H, Hr in Hn; discriminate Hn.
 
+            symmetry in Hs2.
+            apply first_nonzero_iff in Hs2.
+            destruct Hs2 as (Hn2, Ht2).
+            destruct n2.
+             apply seq_pred_r_I2NN_neq in Ht2.
+             rewrite Nat.add_0_r in Ht2.
+             apply neq_d2n_pred_radix in Ht2.
+             rewrite radix_2_eq_pred_r_1 in Ht2; [ idtac | assumption ].
+             apply radix_2_not_1 in Ht2; [ idtac | assumption ].
+             apply eq_d2n_0 in Ht2.
+             do 2 rewrite Nat.add_1_r in Hn.
+             rewrite H2, Ht2, Hr in Hn; discriminate Hn.
+
+             apply first_nonzero_iff in Hs3; simpl in Hs3.
+             pose proof Hs3 n2 as H.
+             apply seq_pred_r_I2NN_neq in Ht2.
+             apply seq_pred_r_I2NN in H.
+             rewrite Nat.add_1_r, Nat.add_succ_l, <- Nat.add_succ_r in H.
+             contradiction.
+
+           rewrite mod_1_radix in Hn.
+           rewrite Nat.add_1_r in Hn.
+           rewrite Nat.succ_pred in Hn; [ idtac | assumption ].
+           rewrite Nat.mod_same in Hn; [ discriminate Hn | assumption ].
+
+        idtac.
+bbb.
 
 do 2 rewrite Nat.add_1_r in Hn.
 rewrite Ht2 in Hn; simpl in Hn.
