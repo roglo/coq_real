@@ -2728,7 +2728,19 @@ Focus 1.
             rewrite Nat.add_0_r, Nat_pred_mod in Hn.
             rewrite Nat.mod_small in Hn; [ idtac | apply Digit.radix_gt_1 ].
             symmetry in Hn; apply eq_S in Hn.
-            rewrite Nat.succ_pred in Hn; [  | assumption ].
+            rewrite Nat.succ_pred in Hn; [ idtac | assumption ].
+            apply first_nonzero_iff in Hs1.
+pose proof Hs1 0 as H.
+apply seq_pred_r_I2NN in H; rewrite Nat.add_0_r in H.
+rewrite Hn in H; simpl in H.
+rewrite Hn in H4; simpl in H4.
+unfold carry_add in H7; simpl in H7.
+remember (fst_neq_pred_r (I2NN y) (S i)) as s2 eqn:Hs2.
+destruct s2 as [n2|]; [|discriminate H7].
+apply first_nonzero_iff in Hs2; simpl in Hs2.
+destruct Hs2 as (Hn2, Ht2).
+apply seq_pred_r_I2NN_neq in Ht2.
+rewrite Hn in Ht2; simpl in Ht2.
 bbb.
 
             rewrite Nat.add_1_r in Hn.
