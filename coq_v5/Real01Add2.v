@@ -2591,16 +2591,16 @@ split; intros Hxy.
           apply eq_d2n_0 in H3.
           apply eq_d2n_pred_radix in H4.
           rewrite H3, H4 in Hn.
-          unfold carry_add in Hn; simpl in Hn.
+          unfold carry_add at 1 in Hn; simpl in Hn.
           remember (fst_neq_pred_r (I2NN x) 1) as s1 eqn:Hs1 .
-          remember (fst_neq_pred_r (I2NN y) 1) as s2 eqn:Hs2 .
           destruct s1 as [n1| ].
            symmetry in Hs1.
            rewrite <- Nat.add_1_l in Hn.
            rewrite carry_indic_I2NN in Hn; [ idtac | assumption ].
+           unfold carry_add in Hn.
+           remember (fst_neq_pred_r (I2NN y) 1) as s2 eqn:Hs2 .
            destruct s2 as [n2| ].
             symmetry in Hs2.
-            rewrite <- Nat.add_1_l in Hn.
             rewrite carry_indic_I2NN in Hn; [ idtac | assumption ].
             rewrite Nat.mod_0_l in Hn; [ idtac | assumption ].
             rewrite Nat.add_0_r in Hn.
@@ -2646,16 +2646,22 @@ split; intros Hxy.
              rewrite Nat.add_0_r, d2n_mod_radix in Hn.
              apply eq_d2n_0 in Hn; contradiction.
 
-           idtac.
-bbb.
-   0   1
-x  0   ≠0
-y  9   .
+           pose proof (carry_add_0_or_1 (I2NN y) 1) as H7.
+           destruct H7 as [H7| H7]; rewrite H7 in Hn.
+            rewrite Nat.add_0_r, Nat_pred_mod in Hn.
+            rewrite Nat.mod_small in Hn; [ idtac | apply Digit.radix_gt_1 ].
+            symmetry in Hn; apply eq_S in Hn.
+            rewrite Nat.succ_pred in Hn; [ contradiction | assumption ].
 
-   0   1
-x  0   <9
-y  9   .
-0+0 9+1
+            rewrite Nat.add_1_r in Hn.
+            rewrite Nat.succ_pred in Hn; [ idtac | assumption ].
+            rewrite Nat.mod_small in Hn; [ idtac | apply Digit.radix_gt_1 ].
+            rewrite Nat.mod_same in Hn; [ idtac | assumption ].
+            discriminate Hn.
+
+         idtac.
+bbb.
+
 (* false if radix = 2, the right case could apply *)
        left; split; [ reflexivity | idtac ].
        left; clear H1; intros i.
