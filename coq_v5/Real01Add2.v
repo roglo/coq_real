@@ -1980,8 +1980,8 @@ destruct sx as [dx| ].
       rewrite Nat.add_succ_r in HH.
       split; [ clear HH | apply eq_d2n_1; assumption ].
       symmetry in H.
-      rewrite <- Nat.add_succ_l, <- Nat.add_succ_r in H;
-       rewrite carry_add_inf in H; [ idtac | assumption ].
+      rewrite <- Nat.add_succ_l, <- Nat.add_succ_r in H.
+      rewrite carry_add_inf in H; [ idtac | assumption ].
       symmetry in Hs1, H; simpl in H.
       do 3 rewrite Nat.add_succ_r in H.
       remember (S (S (i + dx))) as a.
@@ -2066,19 +2066,33 @@ destruct sx as [dx| ].
      rewrite Hr in H; discriminate H.
 
  destruct sy as [dy| ]; [ idtac | rewrite Hr in H; discriminate H ].
- generalize Hsy; intros HH.
- apply first_nonzero_iff in HH; simpl in HH.
- destruct HH as (Hny, Hty); clear H.
-(**)
+ clear H; exfalso.
+(*
+ symmetry in Hsx, Hsy.
+ revert i Hx Hy Hy1 Hsx Hsy.
+*)
  destruct dy.
+  generalize Hsy; intros HH.
+(*
+  symmetry in HH.
+*)
+  apply first_nonzero_iff in HH; simpl in HH.
+  destruct HH as (Hny, Hty).
   apply seq_pred_r_I2NN_neq in Hty.
   rewrite Nat.add_0_r in Hty.
   exfalso; apply Hty; clear Hty.
   rewrite Hr; simpl.
   apply eq_d2n_1; assumption.
 
+bbb.
   pose proof Hny 0 (Nat.lt_0_succ dy) as H.
 bbb.
+  apply IHdy with (i := S i).
+   symmetry in Hsx.
+   apply first_nonzero_iff in Hsx.
+   pose proof Hsx 0 as H.
+   apply seq_pred_r_I2NN in H.
+   rewrite Nat.add_0_r, Hr in H; assumption.
 (*
 left.
 *)
