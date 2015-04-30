@@ -2067,6 +2067,17 @@ destruct sx as [dx| ].
 
  destruct sy as [dy| ]; [ idtac | rewrite Hr in H; discriminate H ].
  clear H; exfalso.
+
+(*
+rewrite <- Nat.add_1_r in Hy1.
+remember 1 as n in Hy1; clear di Heqn.
+revert i dy Hy1 Hsx Hsy Hx Hy.
+induction n; intros.
+rewrite Nat.add_0_r in Hy1.
+apply eq_d2n_1 in Hy1.
+rewrite Hy1 in Hy; discriminate Hy.
+destruct i.
+*)
  generalize Hsy; intros HH.
  apply first_nonzero_iff in HH; simpl in HH.
  destruct HH as (Hny, Hty).
