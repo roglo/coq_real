@@ -2046,28 +2046,30 @@ rewrite seq_pred_r_d2n in H; [|assumption].
        rewrite <- Nat.add_succ_r in H.
 rewrite carry_add_inf in H;[|assumption].
        symmetry in H, Hs1.
-bbb.
-       remember (S i + S (dx + S n))%nat as z.
-       replace (S z) with (S z + 0)%nat in H by apply Nat.add_0_r.
+rewrite Nat.add_comm, Nat.add_succ_r in H.
+simpl in H, Hs1.
+       remember (S (i + S (dx + S n))) as z.
+       replace (S z) with (z + 1)%nat in H by apply Nat.add_1_r.
+(*
        subst z.
-       rewrite Digit.add_comm in H.
        rewrite <- Nat.add_succ_l in H; simpl in H.
        rewrite <- Nat.add_succ_l in H.
+*)
+(*
        rewrite <- Nat.add_succ_r in Hs1.
-       assert (0 < S di1)%nat as HH by apply Nat.lt_0_succ.
-       erewrite carry_before_relay9 in H; try eassumption.
-       simpl in H.
-       do 4 rewrite Nat.add_succ_r in H.
-       do 3 rewrite Nat.add_succ_r in Hx1.
-       simpl in H.
-       rewrite Nat.add_assoc in Hx1.
-       simpl in Hx1.
-       rewrite Nat.add_assoc, Hx1, <- Digit.opp_add_l in H.
-       apply Digit.opp_eq in H.
-       rewrite Digit.add_1_l in H.
-       apply Digit.opp_1_iff in H.
-       do 3 rewrite Nat.add_succ_r.
-       rewrite Nat.add_assoc; assumption.
+*)
+(*
+rewrite <- Nat.add_succ_l in H.
+*)
+      assert (1 ≤ S di1) as HH by apply le_n_S, Nat.le_0_l.
+erewrite carry_add_fin in H; try eassumption.
+rewrite carry_indic_I2NN in H; [|assumption].
+rewrite Nat.add_0_l, d2n_mod_radix, Nat.add_1_r in H.
+rewrite Nat.succ_pred in  H; [ | apply Digit.radix_neq_0].
+rewrite Nat.mod_same in  H; [ | apply Digit.radix_neq_0].
+apply eq_d2n_0 in H.
+split; [assumption|].
+bbb.
 
       discr_digit H.
 
