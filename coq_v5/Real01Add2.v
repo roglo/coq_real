@@ -2067,18 +2067,11 @@ destruct sx as [dx| ].
 
  destruct sy as [dy| ]; [ idtac | rewrite Hr in H; discriminate H ].
  clear H; exfalso.
-(*
- symmetry in Hsx, Hsy.
- revert i Hx Hy Hy1 Hsx Hsy.
-*)
+ generalize Hsy; intros HH.
+ apply first_nonzero_iff in HH; simpl in HH.
+ destruct HH as (Hny, Hty).
+ apply seq_pred_r_I2NN_neq in Hty.
  destruct dy.
-  generalize Hsy; intros HH.
-(*
-  symmetry in HH.
-*)
-  apply first_nonzero_iff in HH; simpl in HH.
-  destruct HH as (Hny, Hty).
-  apply seq_pred_r_I2NN_neq in Hty.
   rewrite Nat.add_0_r in Hty.
   exfalso; apply Hty; clear Hty.
   rewrite Hr; simpl.
