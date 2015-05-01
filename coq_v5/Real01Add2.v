@@ -2941,6 +2941,7 @@ apply neq_d2n_pred_radix in Ht2.
 destruct (eq_nat_dec radix 2) as [H5| H5]; [|exfalso].
 destruct (eq_nat_dec i 0) as [H6|H6]; [|exfalso].
 left; subst i; split; [reflexivity|right; intros j].
+Check radix_2_I_eq_neq_prop.
 bbb.
     i
 x   .   1   1   1 …
