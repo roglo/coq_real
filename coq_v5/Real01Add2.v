@@ -2805,15 +2805,33 @@ split; intros Hxy.
            rewrite Nat.succ_pred in Hn; [ idtac | assumption ].
            rewrite Nat.mod_same in Hn; [ discriminate Hn | assumption ].
 
-        right; left.
-        apply -> digit_d2n_eq_iff in H3.
-        rewrite d2n_add, d2n_1, Nat.add_1_r in H3.
-        apply neq_d2n_pred_radix in H4.
-        rewrite <- d2n_mod_radix in H4.
-        rewrite Nat_mod_succ_l in H3; [ idtac | assumption ].
-        rewrite d2n_mod_radix, <- Nat.add_1_r in H3.
-        split; [ assumption | intros di ].
-        rewrite d2n_mod_radix in H4.
+exfalso.
+pose proof Hxy i as Hn.
+      unfold digit_eq in Hn; simpl in Hn.
+      unfold I2NN in Hn at 1; simpl in Hn.
+      unfold I2NN in Hn at 2; simpl in Hn.
+      unfold carry_add in Hn; simpl in Hn.
+      remember (fst_neq_pred_r (I2NN x) (S i)) as s1 eqn:Hs1 .
+      remember (fst_neq_pred_r (I2NN y) (S i)) as s2 eqn:Hs2 .
+      generalize Hs1; intros Hn1.
+      apply first_nonzero_iff in Hn1; simpl in Hn1.
+      generalize Hs2; intros Hn2.
+      apply first_nonzero_iff in Hn2; simpl in Hn2.
+      destruct s1 as [n1| ].
+rewrite <- Nat.add_succ_l in Hn.
+symmetry in Hs1.
+rewrite carry_indic_I2NN in Hn; [|assumption].
+rewrite Nat.add_0_r, d2n_mod_radix in Hn.
+destruct s2 as [n2| ].
+rewrite <- Nat.add_succ_l in Hn.
+symmetry in Hs2.
+rewrite carry_indic_I2NN in Hn; [|assumption].
+rewrite Nat.add_0_r, d2n_mod_radix in Hn.
+apply digit_d2n_eq_iff in Hn.
+rewrite H3 in Hn.
+symmetry in Hn; revert Hn; apply digit_neq_succ_digit.
+
+clear Hn.
 bbb.
 *)
 
