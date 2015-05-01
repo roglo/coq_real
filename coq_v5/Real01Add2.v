@@ -2003,7 +2003,7 @@ apply I_eq_case_x0_y9; try eassumption.
 rewrite Hy; apply Digit.neq_0_9.
 Qed.
 
-Theorem radix_2_I_eq_neq_prop : ∀ x y i,
+Theorem I_eq_case_x10_ya1_radix_2 : ∀ x y i,
   (x = y)%I
   → radix = 2
   → (x.[i] = 1)%D
@@ -2626,7 +2626,7 @@ split; intros Hxy.
           replace (S di) with (0 + S di) by reflexivity.
           rewrite and_comm.
           rewrite radix_2_eq_9_1; [ idtac | assumption ].
-          apply radix_2_I_eq_neq_prop; assumption.
+          apply I_eq_case_x10_ya1_radix_2; assumption.
 
           pose proof (Hxy 0) as Hn.
           unfold digit_eq in Hn; simpl in Hn.
@@ -2807,7 +2807,7 @@ split; intros Hxy.
              apply eq_d2n_1 in H4.
              apply seq_9_I2NN_neq in Ht2.
              rewrite Nat.add_0_r in Ht2.
-             apply radix_2_I_eq_neq_prop; try assumption.
+             apply I_eq_case_x10_ya1_radix_2; try assumption.
              apply eq_d2n_1 in H2; assumption.
 
              exfalso.
@@ -2955,28 +2955,31 @@ split; intros Hxy.
            clear Hn2.
            apply neq_d2n_9 in Ht2.
            destruct (eq_nat_dec radix 2) as [H5| H5]; [ idtac | exfalso ].
+            rewrite radix_2_eq_9_1 in H4; [ idtac | assumption ].
+            apply radix_2_not_1 in H4; [ idtac | assumption ].
+            rewrite radix_2_eq_9_1 in Ht2; [ idtac | assumption ].
+            apply radix_2_not_1 in Ht2; [ idtac | assumption ].
             destruct (eq_nat_dec i 0) as [H6| H6]; [ idtac | exfalso ].
              left; subst i; split; [ reflexivity | right; intros j ].
              apply I_eq_case_x9_y00; try assumption.
-              rewrite radix_2_eq_9_1; [ idtac | assumption ].
-              apply radix_2_not_0; [ assumption | idtac ].
-              intros H; rewrite H in H1.
-              apply H1; symmetry.
-              apply radix_2_not_1; [ assumption | idtac ].
-              rewrite radix_2_eq_9_1 in H4; assumption.
-
-              apply radix_2_not_1; [ assumption | idtac ].
-              rewrite radix_2_eq_9_1 in H4; assumption.
-
-              apply radix_2_not_1; [ assumption | idtac ].
-              rewrite radix_2_eq_9_1 in Ht2; assumption.
+             rewrite radix_2_eq_9_1; [ idtac | assumption ].
+             apply radix_2_not_0; [ assumption | idtac ].
+             intros H; rewrite H in H1.
+             symmetry in H4; contradiction.
 
              idtac.
 bbb.
-apply neq_d2n_9 in H4.
-    i
-x   .   1   1   1 …
-y   .   .   .   .
+SearchAbout (_ .[S _] = _)%D.
+Focus 1.
+symmetry in Hxy.
+Check I_eq_case_x0_y9.
+
+             apply I_eq_case_x10_ya1_radix_2; try assumption.
+Inspect 4.
+bbb.
+    .   i
+x   .   1   1   1   1 …
+y   .   0   0   .   .
 
     i
 x   .   9   9   9 …
