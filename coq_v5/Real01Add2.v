@@ -2822,6 +2822,7 @@ pose proof Hxy i as Hn.
       unfold digit_eq in Hn; simpl in Hn.
       unfold I2NN in Hn at 1; simpl in Hn.
       unfold I2NN in Hn at 2; simpl in Hn.
+(*
 pose proof carry_add_0_or_1 (I2NN x) (S i) as H.
 destruct H as [H5|H5]; rewrite H5 in Hn.
 rewrite Nat.add_0_r, d2n_mod_radix in Hn.
@@ -2836,7 +2837,6 @@ clear Hn.
 apply eq_carry_add_0 in H5; simpl in H5.
 destruct H5 as (n1, (Hs1, Hx)).
 unfold I2NN in Hx; simpl in Hx.
-bbb.
 
 pose proof Hxy (S i) as Hn.
       unfold digit_eq in Hn; simpl in Hn.
@@ -2861,6 +2861,7 @@ symmetry in Hs2; apply first_nonzero_iff in Hs2.
 destruct Hs2 as (Hn2, Ht2).
 
 bbb.
+*)
 
       unfold carry_add in Hn; simpl in Hn.
       remember (fst_neq_pred_r (I2NN x) (S i)) as s1 eqn:Hs1 .
