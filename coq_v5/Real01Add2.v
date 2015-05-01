@@ -1847,6 +1847,15 @@ intros x i Hj j.
 apply seq_pred_r_I2NN, Hj.
 Qed.
 
+Theorem I_eq_neq_prop2 : ∀ x y,
+  (x = y)%I
+  → (x .[ 0] = 9)%D
+  → (y .[ 0] = 0)%D
+  → (y .[ 1] = 0)%D
+  → ∀ j : nat, (x .[ j] = 9)%D ∧ (y .[ j] = 0)%D.
+Proof.
+bbb.
+
 Theorem radix_2_I_eq_neq_prop : ∀ x y i,
   (x = y)%I
   → radix = 2
@@ -2942,7 +2951,22 @@ destruct (eq_nat_dec radix 2) as [H5| H5]; [|exfalso].
 destruct (eq_nat_dec i 0) as [H6|H6]; [|exfalso].
 left; subst i; split; [reflexivity|right; intros j].
 Check radix_2_I_eq_neq_prop.
+Focus 1.
+eapply I_eq_neq_prop2 in Hxy.
+eassumption.
+rewrite radix_2_eq_pred_r_1; [|assumption].
+apply radix_2_not_0; [assumption|].
+intros H; rewrite H in H1.
+apply H1; symmetry.
+SearchAbout (_ = 1)%D.
+apply radix_2_not_1;[assumption|].
+rewrite radix_2_eq_pred_r_1 in H4; assumption.
+apply radix_2_not_1;[assumption|].
+rewrite radix_2_eq_pred_r_1 in H4; assumption.
+apply radix_2_not_1;[assumption|].
+rewrite radix_2_eq_pred_r_1 in Ht2; assumption.
 bbb.
+apply neq_d2n_pred_radix in H4.
     i
 x   .   1   1   1 …
 y   .   .   .   .
