@@ -2106,6 +2106,18 @@ Proof.
 rewrite Nat.mod_small; [ reflexivity | apply Digit.radix_gt_1 ].
 Qed.
 
+Theorem eq_carry_add_0 : ∀ u i,
+  carry_add u i = 0
+  → ∃ n, fst_neq_pred_r u i = Some n ∧ u (i + n) < pred radix.
+Proof.
+intros u i H.
+unfold carry_add, carry_indic in H.
+remember (fst_neq_pred_r u i) as s1 eqn:Hs1.
+destruct s1 as [n1|]; [|discriminate H].
+exists n1; split; [ reflexivity|].
+destruct (lt_dec (u (i + n1)) (pred radix)); [assumption|discriminate H].
+Qed.
+
 Theorem I_eq_iff : ∀ x y,
   (x = y)%I
   ↔ (x == y)%I ∨
@@ -2810,6 +2822,46 @@ pose proof Hxy i as Hn.
       unfold digit_eq in Hn; simpl in Hn.
       unfold I2NN in Hn at 1; simpl in Hn.
       unfold I2NN in Hn at 2; simpl in Hn.
+pose proof carry_add_0_or_1 (I2NN x) (S i) as H.
+destruct H as [H5|H5]; rewrite H5 in Hn.
+rewrite Nat.add_0_r, d2n_mod_radix in Hn.
+pose proof carry_add_0_or_1 (I2NN y) (S i) as H.
+destruct H as [H6|H6]; rewrite H6 in Hn.
+rewrite Nat.add_0_r, d2n_mod_radix in Hn.
+apply digit_d2n_eq_iff in Hn.
+rewrite H3 in Hn; symmetry in Hn.
+revert Hn; apply digit_neq_succ_digit.
+
+clear Hn.
+apply eq_carry_add_0 in H5; simpl in H5.
+destruct H5 as (n1, (Hs1, Hx)).
+unfold I2NN in Hx; simpl in Hx.
+bbb.
+
+pose proof Hxy (S i) as Hn.
+      unfold digit_eq in Hn; simpl in Hn.
+      unfold I2NN in Hn at 1; simpl in Hn.
+      unfold I2NN in Hn at 2; simpl in Hn.
+pose proof carry_add_0_or_1 (I2NN x) (S (S i)) as H.
+destruct H as [H7|H7]; rewrite H7 in Hn.
+rewrite Nat.add_0_r, d2n_mod_radix in Hn.
+pose proof carry_add_0_or_1 (I2NN y) (S (S i)) as H.
+destruct H as [H8|H8]; rewrite H8 in Hn.
+rewrite Nat.add_0_r, d2n_mod_radix in Hn.
+apply eq_carry_add_0 in H7; simpl in H7.
+destruct H7 as (n1, (Hs1, Hx)).
+apply eq_carry_add_0 in H8; simpl in H8.
+destruct H8 as (n2, (Hs2, Hy)).
+symmetry in Hs1; apply first_nonzero_iff in Hs1.
+destruct Hs1 as (Hn1, Ht1).
+apply seq_pred_r_I2NN_neq in Ht1.
+unfold I2NN in Hx; simpl in Hx.
+
+symmetry in Hs2; apply first_nonzero_iff in Hs2.
+destruct Hs2 as (Hn2, Ht2).
+
+bbb.
+
       unfold carry_add in Hn; simpl in Hn.
       remember (fst_neq_pred_r (I2NN x) (S i)) as s1 eqn:Hs1 .
       remember (fst_neq_pred_r (I2NN y) (S i)) as s2 eqn:Hs2 .
