@@ -2817,7 +2817,9 @@ split; intros Hxy.
            rewrite Nat.succ_pred in Hn; [ idtac | assumption ].
            rewrite Nat.mod_same in Hn; [ discriminate Hn | assumption ].
 
+(*
         exfalso.
+*)
         pose proof (Hxy i) as Hn.
         unfold digit_eq in Hn; simpl in Hn.
         unfold I2NN in Hn at 1; simpl in Hn.
@@ -2840,8 +2842,8 @@ split; intros Hxy.
           rewrite carry_indic_I2NN in Hn; [ idtac | assumption ].
           rewrite Nat.add_0_r, d2n_mod_radix in Hn.
           apply digit_d2n_eq_iff in Hn.
-          rewrite H3 in Hn.
-          symmetry in Hn; revert Hn; apply digit_neq_succ_digit.
+          rewrite H3 in Hn; symmetry in Hn.
+          exfalso; revert Hn; apply digit_neq_succ_digit.
 
           clear Hn.
         pose proof (Hxy (S i)) as Hn.
@@ -2930,7 +2932,24 @@ rewrite carry_indic_I2NN in Hn;[|assumption].
 rewrite Nat.add_0_r, d2n_mod_radix in Hn.
 apply -> digit_d2n_eq_iff in H3.
 rewrite H3 in Hn.
+destruct n2.
+destruct Hn2 as (Hn2, Ht2).
+apply seq_pred_r_I2NN_neq in Ht2.
+rewrite Nat.add_0_r in Ht2.
+clear Hn2.
+apply neq_d2n_pred_radix in Ht2.
+destruct (eq_nat_dec radix 2) as [H5| H5]; [|exfalso].
+destruct (eq_nat_dec i 0) as [H6|H6]; [|exfalso].
+left; subst i; split; [reflexivity|right; intros j].
 bbb.
+    i
+x   .   1   1   1 …
+y   .   .   .   .
+
+    i
+x   .   9   9   9 …
+y   .   .   .   .
+
 revert Hn; clear; intros.
 
 bbb.
