@@ -2887,9 +2887,61 @@ rewrite Nat.succ_pred in Hn; [|assumption].
 rewrite Nat.mod_same in Hn; [|assumption].
 apply eq_d2n_0 in Hn; contradiction.
 
+unfold carry_add in Hn.
+        remember (fst_neq_pred_r (I2NN y) (S (S i))) as s4 eqn:Hs4 .
+        generalize Hs4; intros Hn4.
+        apply first_nonzero_iff in Hn4; simpl in Hn4.
+         destruct s4 as [n4| ].
+          symmetry in Hs4.
+          rewrite carry_indic_I2NN in Hn; [ idtac | assumption ].
+          rewrite Nat.add_0_r, d2n_mod_radix in Hn.
+destruct Hn4 as (Hn4, Ht4).
+pose proof Hn2 (S n4) as H.
+apply seq_pred_r_I2NN_neq in Ht4.
+apply seq_pred_r_I2NN in H.
+rewrite Nat.add_succ_r in H; contradiction.
+pose proof Hn2 0 as H.
+apply seq_pred_r_I2NN in H.
+rewrite Nat.add_0_r in H.
+rewrite H in Hn.
+rewrite Nat.add_1_r in Hn.
+destruct n1.
+destruct Hn1 as (Hn1, Ht1).
+apply seq_pred_r_I2NN_neq in Ht1.
+rewrite Nat.add_0_r in Ht1.
+rewrite Nat.add_1_r in Hn.
+rewrite Nat.succ_pred in Hn; [|assumption].
+rewrite Nat.mod_same in Hn; [|assumption].
+SearchAbout (S _ mod _).
+apply Nat_mod_succ_pred in Hn.
+rewrite d2n_mod_radix in Hn.
+contradiction.
+
+destruct Hn1 as (Hn1, Ht1).
+clear H.
+pose proof Hn3 n1 as H.
+apply seq_pred_r_I2NN_neq in Ht1.
+apply seq_pred_r_I2NN in H.
+rewrite Nat.add_succ_r in Ht1; contradiction.
+destruct s2 as[n2|].
+rewrite <-Nat.add_succ_l in Hn.
+symmetry in Hs2.
+rewrite carry_indic_I2NN in Hn;[|assumption].
+rewrite Nat.add_0_r, d2n_mod_radix in Hn.
+apply -> digit_d2n_eq_iff in H3.
+rewrite H3 in Hn.
+bbb.
+revert Hn; clear; intros.
+
+bbb.
+
 pose proof carry_add_0_or_1 (I2NN y) (S (S i)) as H.
 destruct H as [H5|H5]; rewrite H5 in Hn.
 rewrite Nat.add_0_r, d2n_mod_radix in Hn.
+pose proof Hn2 0 as H.
+apply seq_pred_r_I2NN in H.
+rewrite Nat.add_0_r in H.
+rewrite H in Hn.
 bbb.
 
 pose proof carry_add_0_or_1 (I2NN y) (S i) as H.
