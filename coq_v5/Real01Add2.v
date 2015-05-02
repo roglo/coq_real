@@ -2987,14 +2987,33 @@ split; intros Hxy.
                rewrite <- Nat.add_succ_l in Hn.
                symmetry in Hs4.
                rewrite carry_indic_I2NN in Hn; [ idtac | assumption ].
-bbb.
-SearchAbout (_ .[S _] = _)%D.
-Focus 1.
-symmetry in Hxy.
-Check I_eq_case_x0_y9.
+               symmetry in Hs3.
+               apply first_nonzero_iff in Hs3.
+               destruct Hs3 as (Hn3, Ht3).
+               apply seq_not_9_I2NN_neq in Ht3.
+               destruct n3.
+               rewrite Nat.add_0_r in Ht3.
+                apply neq_d2n_9 in Ht3.
+                rewrite H4 in H1.
+                apply radix_2_not_0 in H1;[|assumption].
+                rewrite radix_2_eq_9_1 in Ht3;[contradiction|assumption].
 
-             apply I_eq_case_x10_ya1_radix_2; try assumption.
-Inspect 4.
+                pose proof Hn1 n3 as H.
+                apply seq_not_9_I2NN in H.
+                rewrite Nat.add_succ_r in Ht3; contradiction.
+
+               symmetry in Hs2.
+               apply first_nonzero_iff in Hs4.
+               pose proof Hs4 1 as H.
+               apply seq_not_9_I2NN, eq_d2n_9 in H.
+               rewrite Nat.add_1_r, Ht2 in H.
+               revert H; apply Digit.neq_0_9.
+
+              destruct s4 as [n4| ].
+               rewrite <- Nat.add_succ_l in Hn.
+               symmetry in Hs4.
+               rewrite carry_indic_I2NN in Hn; [ idtac | assumption ].
+               rewrite Nat.add_0_r, d2n_mod_radix in Hn.
 bbb.
     .   i
 x   .   1   1   1   1 …
