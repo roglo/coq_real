@@ -3070,24 +3070,39 @@ split; intros Hxy.
                rewrite Nat.add_1_r, Ht2 in H.
                revert H; apply Digit.neq_0_9.
 
-            idtac.
-revert Hrnz Hn H5; clear; intros.
-rewrite <- d2n_1, <- d2n_add in Hn.
-rewrite <- Digit.add_assoc in Hn.
-unfold d2n in Hn; simpl in Hn.
-rewrite <- Nat.add_mod_idemp_l in Hn; [ idtac | assumption ].
-remember (dig (y .[i]) mod radix) as d eqn:Hd.
-pose proof Digit.radix_neq_0 as H.
-apply Nat.div_mod with (x := d+2) in H.
-rewrite Hn, Nat.add_comm in H.
-apply Nat.add_cancel_r in H.
-symmetry in H.
-bbb.
-remember radix as r eqn:Hr; symmetry in Hr.
-destruct r; [ apply Hrnz; reflexivity | idtac ].
-destruct r; [ revert Hr; apply Digit.radix_neq_1 | ].
-destruct r; [ apply H5; reflexivity | ].
-SearchAbout (_ * _ = _ → _).
+            revert Hrnz Hn H5; clear; intros.
+            rewrite <- d2n_1, <- d2n_add in Hn.
+            rewrite <- Digit.add_assoc in Hn.
+            unfold d2n in Hn; simpl in Hn.
+            rewrite <- Nat.add_mod_idemp_l in Hn; [ idtac | assumption ].
+            remember (dig (y .[i]) mod radix) as d eqn:Hd.
+            pose proof Digit.radix_neq_0 as H.
+            apply Nat.mod_upper_bound with (a := dig (y .[i])) in H.
+            rewrite <- Hd in H.
+            destruct (lt_dec (d + 2) radix) as [H1| H1].
+             rewrite Nat.mod_small in Hn; [ idtac | assumption ].
+             apply Nat.add_sub_eq_l in Hn.
+             rewrite Nat.sub_diag in Hn; discriminate Hn.
+
+             apply Nat.nlt_ge in H1.
+             apply Nat.div_le_mono with (c:=radix) in H1; [idtac |assumption].
+             rewrite Nat.div_same in H1; [idtac | assumption ].
+             apply Nat.mul_le_mono with (n:=3) (m:=radix) in H1.
+              pose proof Digit.radix_neq_0 as H2.
+              apply Nat.div_mod with (x := d+2) in H2.
+              rewrite Hn, Nat.add_comm in H2.
+              apply Nat.add_cancel_r in H2.
+              rewrite Nat.add_comm, <- H2 in H1.
+              apply Nat.nlt_ge in H1; simpl in H1.
+              apply H1, lt_n_S, Nat.lt_1_2.
+
+              remember radix as r eqn:Hr; symmetry in Hr.
+              destruct r; [ exfalso; apply Hrnz; reflexivity | idtac ].
+              destruct r; [ exfalso; revert Hr; apply Digit.radix_neq_1 | ].
+              destruct r; [ exfalso; apply H5; reflexivity | ].
+              do 3 apply le_n_S; apply Nat.le_0_l.
+
+           idtac.
 bbb.
 
 Unset Printing Notations. Show.
