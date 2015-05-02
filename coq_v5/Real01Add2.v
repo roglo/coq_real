@@ -3071,9 +3071,27 @@ split; intros Hxy.
                revert H; apply Digit.neq_0_9.
 
             idtac.
-revert Hn H5; clear; intros.
+revert Hrnz Hn H5; clear; intros.
 rewrite <- d2n_1, <- d2n_add in Hn.
 rewrite <- Digit.add_assoc in Hn.
+unfold d2n in Hn; simpl in Hn.
+rewrite <- Nat.add_mod_idemp_l in Hn; [ idtac | assumption ].
+remember (dig (y .[i]) mod radix) as d eqn:Hd.
+pose proof Digit.radix_neq_0 as H.
+apply Nat.div_mod with (x := d+2) in H.
+rewrite Hn, Nat.add_comm in H.
+apply Nat.add_cancel_r in H.
+symmetry in H.
+bbb.
+remember radix as r eqn:Hr; symmetry in Hr.
+destruct r; [ apply Hrnz; reflexivity | idtac ].
+destruct r; [ revert Hr; apply Digit.radix_neq_1 | ].
+destruct r; [ apply H5; reflexivity | ].
+SearchAbout (_ * _ = _ → _).
+bbb.
+
+Unset Printing Notations. Show.
+
 apply digit_d2n_eq_iff in Hn.
 SearchAbout (_ + _)%D.
 Check digit_neq_succ_digit.
