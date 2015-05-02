@@ -2642,26 +2642,16 @@ split; intros Hxy.
         destruct (eq_nat_dec i 0) as [H5| H5]; [ idtac | idtac ].
          subst i; clear Hj; simpl.
          destruct (eq_nat_dec radix 2) as [H6| H6]; [ idtac | exfalso ].
-          apply radix_2_not_0 in H2; [ idtac | assumption ].
           right; right.
-Focus 1.
-symmetry in Hxy.
-eapply I_eq_case_x10_ya1_radix_2 in Hxy; try eassumption.
-bbb.
-          apply eq_d2n_0 in H3; rewrite H3.
-          apply eq_d2n_9 in H4.
-          rewrite H6 in H4; simpl in H4; rewrite H4.
-          split; [ reflexivity | idtac ].
-          apply eq_d2n_0 in H3.
-          rewrite <- d2n_1 in H4.
-          apply digit_d2n_eq_iff in H4.
-          generalize Hxy; intros H.
-          symmetry in H.
-          intros di.
-          replace (S di) with (0 + S di) by reflexivity.
-          rewrite and_comm.
-          rewrite radix_2_eq_9_1; [ idtac | assumption ].
-          apply I_eq_case_x10_ya1_radix_2; assumption.
+          apply radix_2_not_0 in H2; [ idtac | assumption ].
+          rewrite radix_2_eq_9_1 in H4; [ idtac | assumption ].
+          apply -> digit_d2n_eq_iff in H3; rewrite H3.
+          apply -> digit_d2n_eq_iff in H4; rewrite H4.
+          unfold d2n; rewrite H6.
+          split; [ reflexivity | intros di ].
+          symmetry in Hxy.
+          eapply I_eq_case_x10_ya1_radix_2 in Hxy; try eassumption.
+          rewrite and_comm, <- radix_2_eq_9_1 in Hxy; eassumption.
 
           pose proof (Hxy 0) as Hn.
           unfold digit_eq in Hn; simpl in Hn.
