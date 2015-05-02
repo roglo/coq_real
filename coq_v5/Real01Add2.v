@@ -2972,6 +2972,21 @@ split; intros Hxy.
              unfold digit_eq in Hn; simpl in Hn.
              unfold I2NN in Hn at 1; simpl in Hn.
              unfold I2NN in Hn at 2; simpl in Hn.
+             pose proof Hj i (Nat.lt_succ_diag_r i) as H.
+             apply seq_eq_eq in H.
+             apply -> digit_d2n_eq_iff in H.
+             rewrite H in Hn; clear H.
+             unfold carry_add in Hn; simpl in Hn.
+             remember (fst_neq_9 (I2NN x) (S i)) as s3 eqn:Hs3.
+             remember (fst_neq_9 (I2NN y) (S i)) as s4 eqn:Hs4.
+             destruct s3 as [n3| ].
+              rewrite <- Nat.add_succ_l in Hn.
+              symmetry in Hs3.
+              rewrite carry_indic_I2NN in Hn; [ idtac | assumption ].
+              destruct s4 as [n4| ].
+               rewrite <- Nat.add_succ_l in Hn.
+               symmetry in Hs4.
+               rewrite carry_indic_I2NN in Hn; [ idtac | assumption ].
 bbb.
 SearchAbout (_ .[S _] = _)%D.
 Focus 1.
