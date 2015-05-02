@@ -472,6 +472,14 @@ Add Parametric Morphism : NN2I_add
  as NN2I_add_morph.
 Proof. intros; apply NN2I_add_compat; assumption. Qed.
 
+Add Parametric Morphism : d2n
+ with signature digit_eq ==> eq
+ as d2n_morph.
+Proof.
+intros x y Hxy.
+apply -> digit_d2n_eq_iff; assumption.
+Qed.
+
 (* borrowed from Read01Add.v and adapted for this implementation *)
 
 (*
@@ -3064,6 +3072,9 @@ split; intros Hxy.
 
             idtac.
 revert Hn H5; clear; intros.
+rewrite <- d2n_1, <- d2n_add in Hn.
+rewrite <- Digit.add_assoc in Hn.
+unfold d2n in Hn; simpl in Hn.
 bbb.
     .   i
 x   .   1   1   1   1 …
