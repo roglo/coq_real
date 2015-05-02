@@ -2644,6 +2644,8 @@ split; intros Hxy.
          destruct (eq_nat_dec radix 2) as [H6| H6]; [ idtac | exfalso ].
           apply radix_2_not_0 in H2; [ idtac | assumption ].
           right; right.
+Check I_eq_case_x10_ya1_radix_2.
+bbb.
           apply eq_d2n_0 in H3; rewrite H3.
           apply eq_d2n_9 in H4.
           rewrite H6 in H4; simpl in H4; rewrite H4.
