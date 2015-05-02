@@ -3102,7 +3102,10 @@ split; intros Hxy.
               destruct r; [ exfalso; apply H5; reflexivity | ].
               do 3 apply le_n_S; apply Nat.le_0_l.
 
-           idtac.
+           destruct Hn2 as (Hn2, Ht2).
+           pose proof Hn2 0 (Nat.lt_0_succ n2) as H.
+           apply seq_not_9_I2NN in H.
+           rewrite Nat.add_0_r in H.
 bbb.
 
 Unset Printing Notations. Show.
