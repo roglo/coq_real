@@ -2653,6 +2653,7 @@ split; intros Hxy.
           eapply I_eq_case_x10_ya1_radix_2 in Hxy; try eassumption.
           rewrite and_comm, <- radix_2_eq_9_1 in Hxy; eassumption.
 
+bbb.
           pose proof (Hxy 0) as Hn.
           unfold digit_eq in Hn; simpl in Hn.
           unfold I2NN in Hn at 1; simpl in Hn.
