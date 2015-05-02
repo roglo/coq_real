@@ -3052,6 +3052,18 @@ split; intros Hxy.
                symmetry in Hs4.
                rewrite carry_indic_I2NN in Hn; [ idtac | assumption ].
                rewrite Nat.add_0_r, d2n_mod_radix in Hn.
+               rewrite <- d2n_1, <- d2n_add in Hn.
+               apply digit_d2n_eq_iff in Hn; symmetry in Hn.
+               revert Hn; apply digit_neq_succ_digit.
+
+               apply first_nonzero_iff in Hs4.
+               pose proof Hs4 1 as H.
+               apply seq_not_9_I2NN, eq_d2n_9 in H.
+               rewrite Nat.add_1_r, Ht2 in H.
+               revert H; apply Digit.neq_0_9.
+
+            idtac.
+revert Hn H5; clear; intros.
 bbb.
     .   i
 x   .   1   1   1   1 …
