@@ -3074,7 +3074,9 @@ split; intros Hxy.
 revert Hn H5; clear; intros.
 rewrite <- d2n_1, <- d2n_add in Hn.
 rewrite <- Digit.add_assoc in Hn.
-unfold d2n in Hn; simpl in Hn.
+apply digit_d2n_eq_iff in Hn.
+SearchAbout (_ + _)%D.
+Check digit_neq_succ_digit.
 bbb.
     .   i
 x   .   1   1   1   1 …
