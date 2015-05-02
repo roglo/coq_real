@@ -2967,7 +2967,11 @@ split; intros Hxy.
              intros H; rewrite H in H1.
              symmetry in H4; contradiction.
 
-             idtac.
+             destruct i; [ apply H6; reflexivity | clear H6 ].
+             clear Hn; pose proof Hxy i as Hn.
+             unfold digit_eq in Hn; simpl in Hn.
+             unfold I2NN in Hn at 1; simpl in Hn.
+             unfold I2NN in Hn at 2; simpl in Hn.
 bbb.
 SearchAbout (_ .[S _] = _)%D.
 Focus 1.
