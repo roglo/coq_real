@@ -2011,103 +2011,102 @@ Theorem I_eq_case_x_0_y9 : ∀ x y i,
   → (y .[ i] = 9)%D
   → (x .[ i] = 9)%D.
 Proof.
-intros x y i Hi Hxy Hn H2 H3.
-bbb.
-       rename Hn into Hj.
-       pose proof (Hxy i) as Hn.
-       unfold digit_eq in Hn; simpl in Hn.
-       unfold I2NN in Hn at 1; simpl in Hn.
-       unfold I2NN in Hn at 2; simpl in Hn.
-       pose proof (Hj i (Nat.lt_succ_diag_r i)) as H.
-       unfold seq_eq in H.
-       destruct (Digit.eq_dec (x .[ i]) (y .[ i])) as [H4| H4].
-        clear H; apply -> digit_d2n_eq_iff in H4.
-        rewrite H4 in Hn.
-        unfold carry_add, carry_indic in Hn; simpl in Hn.
-        remember (fst_neq_9 (I2NN x) (S i)) as s1 eqn:Hs1 .
-        remember (fst_neq_9 (I2NN y) (S i)) as s2 eqn:Hs2 .
-        unfold I2NN in Hn; simpl in Hn.
-        generalize Hs1; intros Hn1.
-        apply first_nonzero_iff in Hn1; simpl in Hn1.
-        destruct s1 as [n1| ].
-         destruct Hn1 as (Hn1, Ht1).
-         remember (d2n (x .[ S (i + n1)])) as a.
-         destruct (lt_dec a (pred radix)) as [H5| H5]; subst a.
-          rewrite Nat.add_0_r, d2n_mod_radix in Hn.
-          destruct s2 as [n2| ].
-           remember (d2n (y .[ S (i + n2)])) as a.
-           destruct (lt_dec a (pred radix)) as [H6| H6]; subst a.
-            destruct n2.
-             rewrite Nat.add_0_r in H6.
-             apply eq_d2n_9 in H3; rewrite H3 in H6.
-             revert H6; apply Nat.lt_irrefl.
+intros x y i Hxy Hi Hn H2 H3.
+destruct i; [ exfalso; apply Hi; reflexivity | clear Hi ].
+rename Hn into Hj.
+pose proof (Hxy i) as Hn.
+unfold digit_eq in Hn; simpl in Hn.
+unfold I2NN in Hn at 1; simpl in Hn.
+unfold I2NN in Hn at 2; simpl in Hn.
+pose proof (Hj i (Nat.lt_succ_diag_r i)) as H.
+unfold seq_eq in H.
+destruct (Digit.eq_dec (x .[ i]) (y .[ i])) as [H4| H4].
+ clear H; apply -> digit_d2n_eq_iff in H4.
+ rewrite H4 in Hn.
+ unfold carry_add, carry_indic in Hn; simpl in Hn.
+ remember (fst_neq_9 (I2NN x) (S i)) as s1 eqn:Hs1 .
+ remember (fst_neq_9 (I2NN y) (S i)) as s2 eqn:Hs2 .
+ unfold I2NN in Hn; simpl in Hn.
+ generalize Hs1; intros Hn1.
+ apply first_nonzero_iff in Hn1; simpl in Hn1.
+ destruct s1 as [n1| ].
+  destruct Hn1 as (Hn1, Ht1).
+  remember (d2n (x .[ S (i + n1)])) as a.
+  destruct (lt_dec a (pred radix)) as [H5| H5]; subst a.
+   rewrite Nat.add_0_r, d2n_mod_radix in Hn.
+   destruct s2 as [n2| ].
+    remember (d2n (y .[ S (i + n2)])) as a.
+    destruct (lt_dec a (pred radix)) as [H6| H6]; subst a.
+     destruct n2.
+      rewrite Nat.add_0_r in H6.
+      apply eq_d2n_9 in H3; rewrite H3 in H6.
+      exfalso; revert H6; apply Nat.lt_irrefl.
 
-             generalize Hs2; intros H.
-             apply first_nonzero_iff in H; simpl in H.
-             destruct H as (Hn2, Ht2).
-             clear Hn; pose proof (Hxy (S i)) as Hn.
-             unfold digit_eq in Hn; simpl in Hn.
-             unfold I2NN in Hn at 1; simpl in Hn.
-             unfold I2NN in Hn at 2; simpl in Hn.
-             apply eq_d2n_9 in H3; rewrite H3 in Hn.
-             symmetry in Hn, Hs2.
-             rewrite <- Nat.add_1_r in Hn.
-             erewrite carry_add_fin in Hn; [ idtac | eassumption | idtac ].
-              unfold carry_indic in Hn; simpl in Hn.
-              remember (I2NN y (S (i + S n2))) as a.
-              destruct (lt_dec a (pred radix)) as [H7| H7]; subst a.
-               rewrite Nat.add_0_r, Nat_pred_mod in Hn.
-               unfold carry_add in Hn.
-               rewrite Nat.add_1_r in Hn; simpl in Hn.
-               remember (fst_neq_9 (I2NN x) (S (S i))) as s3 eqn:Hs3 .
-               destruct s3 as [n3| ].
-                unfold carry_indic, I2NN in Hn; simpl in Hn.
-                remember (d2n (x .[ S (S (i + n3))])) as a.
-                destruct (lt_dec a (pred radix)) as [H8| H8]; subst a.
-                 rewrite Nat.add_0_r, d2n_mod_radix in Hn; symmetry in Hn.
-                 apply eq_d2n_9 in Hn; contradiction.
+      generalize Hs2; intros H.
+      apply first_nonzero_iff in H; simpl in H.
+      destruct H as (Hn2, Ht2).
+      clear Hn; pose proof (Hxy (S i)) as Hn.
+      unfold digit_eq in Hn; simpl in Hn.
+      unfold I2NN in Hn at 1; simpl in Hn.
+      unfold I2NN in Hn at 2; simpl in Hn.
+      apply eq_d2n_9 in H3; rewrite H3 in Hn.
+      symmetry in Hn, Hs2.
+      rewrite <- Nat.add_1_r in Hn.
+      erewrite carry_add_fin in Hn; [ idtac | eassumption | idtac ].
+       unfold carry_indic in Hn; simpl in Hn.
+       remember (I2NN y (S (i + S n2))) as a.
+       destruct (lt_dec a (pred radix)) as [H7| H7]; subst a.
+        rewrite Nat.add_0_r, Nat_pred_mod in Hn.
+        unfold carry_add in Hn.
+        rewrite Nat.add_1_r in Hn; simpl in Hn.
+        remember (fst_neq_9 (I2NN x) (S (S i))) as s3 eqn:Hs3 .
+        destruct s3 as [n3| ].
+         unfold carry_indic, I2NN in Hn; simpl in Hn.
+         remember (d2n (x .[ S (S (i + n3))])) as a.
+         destruct (lt_dec a (pred radix)) as [H8| H8]; subst a.
+          rewrite Nat.add_0_r, d2n_mod_radix in Hn; symmetry in Hn.
+          apply eq_d2n_9 in Hn; assumption.
 
-                 apply first_nonzero_iff in Hs3; simpl in Hs3.
-                 destruct Hs3 as (Hn3, Ht3).
-                 apply seq_not_9_I2NN_neq in Ht3; simpl in Ht3.
-                 apply H8; clear H8.
-                 pose proof (d2n_lt_radix (x .[ S (S (i + n3))])) as H.
-                 apply Nat_le_neq_lt; [ idtac | assumption ].
-                 apply Nat.lt_le_pred; assumption.
-
-                apply first_nonzero_iff in Hs3; simpl in Hs3.
-                pose proof (Hs3 0) as H.
-                apply seq_not_9_I2NN in H.
-                rewrite Nat.add_0_r in H.
-                apply eq_d2n_9 in H.
-                rewrite H2 in H.
-                revert H; apply Digit.neq_0_9.
-
-               unfold I2NN in H7; contradiction.
-
-              apply le_n_S, Nat.le_0_l.
-
-            rewrite <- d2n_1, <- d2n_add in Hn.
-            apply digit_d2n_eq_iff in Hn.
-            revert Hn; apply digit_neq_succ_digit.
-
-           rewrite <- d2n_1, <- d2n_add in Hn.
-           apply digit_d2n_eq_iff in Hn.
-           revert Hn; apply digit_neq_succ_digit.
-
-          apply seq_not_9_I2NN_neq in Ht1.
-          apply H5; clear H5.
-          pose proof (d2n_lt_radix (x .[ S (i + n1)])) as H.
+          apply first_nonzero_iff in Hs3; simpl in Hs3.
+          destruct Hs3 as (Hn3, Ht3).
+          apply seq_not_9_I2NN_neq in Ht3; simpl in Ht3.
+          exfalso; apply H8; clear H8.
+          pose proof (d2n_lt_radix (x .[ S (S (i + n3))])) as H.
           apply Nat_le_neq_lt; [ idtac | assumption ].
           apply Nat.lt_le_pred; assumption.
 
-         pose proof (Hn1 0) as H.
-         apply seq_not_9_I2NN in H; rewrite Nat.add_0_r in H.
-         apply eq_d2n_9 in H; contradiction.
+         apply first_nonzero_iff in Hs3; simpl in Hs3.
+         pose proof (Hs3 0) as H.
+         apply seq_not_9_I2NN in H.
+         rewrite Nat.add_0_r in H.
+         apply eq_d2n_9 in H.
+         rewrite H2 in H.
+         exfalso; revert H; apply Digit.neq_0_9.
 
-        discriminate H.
-bbb.
-*)
+        unfold I2NN in H7; contradiction.
+
+       apply le_n_S, Nat.le_0_l.
+
+     rewrite <- d2n_1, <- d2n_add in Hn.
+     apply digit_d2n_eq_iff in Hn.
+     exfalso; revert Hn; apply digit_neq_succ_digit.
+
+    rewrite <- d2n_1, <- d2n_add in Hn.
+    apply digit_d2n_eq_iff in Hn.
+    exfalso; revert Hn; apply digit_neq_succ_digit.
+
+   apply seq_not_9_I2NN_neq in Ht1.
+   exfalso; apply H5; clear H5.
+   pose proof (d2n_lt_radix (x .[ S (i + n1)])) as H.
+   apply Nat_le_neq_lt; [ idtac | assumption ].
+   apply Nat.lt_le_pred; assumption.
+
+  pose proof (Hn1 0) as H.
+  apply seq_not_9_I2NN in H; rewrite Nat.add_0_r in H.
+  apply eq_d2n_9 in H; assumption.
+
+ contradiction.
+Qed.
 
 Theorem I_eq_case_x10_ya1_radix_2 : ∀ x y i,
   (x = y)%I
@@ -2424,102 +2423,11 @@ split; intros Hxy.
        apply I_eq_case_x0_y9; assumption.
 
        apply H1; clear H1.
-bbb.
-       apply I_eq_case_x_0_y9; assumption.
+       eapply I_eq_case_x_0_y9; try eassumption.
+        intros H; discriminate H.
 
-       rename Hn into Hj.
-       pose proof (Hxy i) as Hn.
-       unfold digit_eq in Hn; simpl in Hn.
-       unfold I2NN in Hn at 1; simpl in Hn.
-       unfold I2NN in Hn at 2; simpl in Hn.
-       pose proof (Hj i (Nat.lt_succ_diag_r i)) as H.
-       unfold seq_eq in H.
-       destruct (Digit.eq_dec (x .[ i]) (y .[ i])) as [H4| H4].
-        clear H; apply -> digit_d2n_eq_iff in H4.
-        rewrite H4 in Hn.
-        unfold carry_add, carry_indic in Hn; simpl in Hn.
-        remember (fst_neq_9 (I2NN x) (S i)) as s1 eqn:Hs1 .
-        remember (fst_neq_9 (I2NN y) (S i)) as s2 eqn:Hs2 .
-        unfold I2NN in Hn; simpl in Hn.
-        generalize Hs1; intros Hn1.
-        apply first_nonzero_iff in Hn1; simpl in Hn1.
-        destruct s1 as [n1| ].
-         destruct Hn1 as (Hn1, Ht1).
-         remember (d2n (x .[ S (i + n1)])) as a.
-         destruct (lt_dec a (pred radix)) as [H5| H5]; subst a.
-          rewrite Nat.add_0_r, d2n_mod_radix in Hn.
-          destruct s2 as [n2| ].
-           remember (d2n (y .[ S (i + n2)])) as a.
-           destruct (lt_dec a (pred radix)) as [H6| H6]; subst a.
-            destruct n2.
-             rewrite Nat.add_0_r in H6.
-             apply eq_d2n_9 in H3; rewrite H3 in H6.
-             revert H6; apply Nat.lt_irrefl.
-
-             generalize Hs2; intros H.
-             apply first_nonzero_iff in H; simpl in H.
-             destruct H as (Hn2, Ht2).
-             clear Hn; pose proof (Hxy (S i)) as Hn.
-             unfold digit_eq in Hn; simpl in Hn.
-             unfold I2NN in Hn at 1; simpl in Hn.
-             unfold I2NN in Hn at 2; simpl in Hn.
-             apply eq_d2n_9 in H3; rewrite H3 in Hn.
-             symmetry in Hn, Hs2.
-             rewrite <- Nat.add_1_r in Hn.
-             erewrite carry_add_fin in Hn; [ idtac | eassumption | idtac ].
-              unfold carry_indic in Hn; simpl in Hn.
-              remember (I2NN y (S (i + S n2))) as a.
-              destruct (lt_dec a (pred radix)) as [H7| H7]; subst a.
-               rewrite Nat.add_0_r, Nat_pred_mod in Hn.
-               unfold carry_add in Hn.
-               rewrite Nat.add_1_r in Hn; simpl in Hn.
-               remember (fst_neq_9 (I2NN x) (S (S i))) as s3 eqn:Hs3 .
-               destruct s3 as [n3| ].
-                unfold carry_indic, I2NN in Hn; simpl in Hn.
-                remember (d2n (x .[ S (S (i + n3))])) as a.
-                destruct (lt_dec a (pred radix)) as [H8| H8]; subst a.
-                 rewrite Nat.add_0_r, d2n_mod_radix in Hn; symmetry in Hn.
-                 apply eq_d2n_9 in Hn; contradiction.
-
-                 apply first_nonzero_iff in Hs3; simpl in Hs3.
-                 destruct Hs3 as (Hn3, Ht3).
-                 apply seq_not_9_I2NN_neq in Ht3; simpl in Ht3.
-                 apply H8; clear H8.
-                 pose proof (d2n_lt_radix (x .[ S (S (i + n3))])) as H.
-                 apply Nat_le_neq_lt; [ idtac | assumption ].
-                 apply Nat.lt_le_pred; assumption.
-
-                apply first_nonzero_iff in Hs3; simpl in Hs3.
-                pose proof (Hs3 0) as H.
-                apply seq_not_9_I2NN in H.
-                rewrite Nat.add_0_r in H.
-                apply eq_d2n_9 in H.
-                rewrite H2 in H.
-                revert H; apply Digit.neq_0_9.
-
-               unfold I2NN in H7; contradiction.
-
-              apply le_n_S, Nat.le_0_l.
-
-            rewrite <- d2n_1, <- d2n_add in Hn.
-            apply digit_d2n_eq_iff in Hn.
-            revert Hn; apply digit_neq_succ_digit.
-
-           rewrite <- d2n_1, <- d2n_add in Hn.
-           apply digit_d2n_eq_iff in Hn.
-           revert Hn; apply digit_neq_succ_digit.
-
-          apply seq_not_9_I2NN_neq in Ht1.
-          apply H5; clear H5.
-          pose proof (d2n_lt_radix (x .[ S (i + n1)])) as H.
-          apply Nat_le_neq_lt; [ idtac | assumption ].
-          apply Nat.lt_le_pred; assumption.
-
-         pose proof (Hn1 0) as H.
-         apply seq_not_9_I2NN in H; rewrite Nat.add_0_r in H.
-         apply eq_d2n_9 in H; contradiction.
-
-        discriminate H.
+        intros j Hj.
+        apply Hn, seq_eq_eq in Hj; assumption.
 
       right; left; rename Hn into Hj.
       pose proof (Hxy i) as Hn.
