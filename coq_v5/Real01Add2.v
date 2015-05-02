@@ -2430,6 +2430,7 @@ split; intros Hxy.
         apply Hn, seq_eq_eq in Hj; assumption.
 
       right; left; rename Hn into Hj.
+bbb.
       pose proof (Hxy i) as Hn.
       unfold digit_eq in Hn; simpl in Hn.
       unfold I2NN in Hn at 1; simpl in Hn.
