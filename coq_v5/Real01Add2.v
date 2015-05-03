@@ -3130,29 +3130,6 @@ split; intros Hxy.
           rewrite H3; apply Digit.neq_0_9.
 bbb.
 
-Focus 1.
-eapply I_eq_case_x9_y0n0 in Hxy; try eassumption.
-simpl in Hxy; eassumption.
-
-Inspect 4.
-bbb.
-Est-ce qu'on ne pourrait pas avoir une version plus générale de ça
-
-I_eq_case_x10_ya1_radix_2 :
-∀ (x y : I) (i : nat),
-(x = y)%I
-→ radix = 2
-  → (x .[ i] = 1)%D
-    → (y .[ i] = 0)%D
-      → (y .[ S i] = 1)%D
-        → ∀ di : nat, (x .[ i + S di] = 0)%D ∧ (y .[ i + S di] = 1)%D
-
-avec, comme hypothèses :
-
-    .   i
-x   .   9   .   .   .
-y   .   0   ≠0  .   .
-
 Theorem I_eq_case_x9_y0n0 : ∀ x y i,
   (x = y)%I
   → radix ≠ 2 ∨ i ≠ 0
