@@ -3124,8 +3124,13 @@ split; intros Hxy.
             rewrite radix_2_eq_9_1; [ idtac | assumption ].
             eapply I_eq_case_x10_ya1_radix_2 in Hxy; eassumption.
 
-          idtac.
-exfalso; revert H1 Hn; clear; intros.
+          exfalso; revert H1 Hn; clear; intros.
+          rewrite <- d2n_1 in Hn.
+          do 2 rewrite <- d2n_add in Hn.
+          apply digit_d2n_eq_iff in Hn.
+          apply Digit.add_cancel_r in Hn; contradiction.
+
+       idtac.
 bbb.
 
 Unset Printing Notations. Show.
