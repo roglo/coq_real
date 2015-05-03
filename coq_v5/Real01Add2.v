@@ -3110,6 +3110,22 @@ split; intros Hxy.
             rewrite Nat.add_0_r in H.
             rewrite radix_2_eq_9_1 in H4; [ idtac | assumption ].
             apply radix_2_not_1 in H4; [ idtac | assumption ].
+            rewrite H5 in H; simpl in H; rename H into Hy.
+            apply radix_2_not_0 in H2; [ idtac | assumption ].
+            right; left.
+            apply eq_d2n_1 in Hy.
+            rewrite H4 in H1.
+            apply radix_2_not_0 in H1; [ idtac | assumption ].
+            apply -> digit_d2n_eq_iff in H1.
+            apply -> digit_d2n_eq_iff in H4.
+            rewrite H1, H4.
+            split; [ unfold d2n; rewrite H5; reflexivity | idtac ].
+            intros di.
+            rewrite radix_2_eq_9_1; [ idtac | assumption ].
+            eapply I_eq_case_x10_ya1_radix_2 in Hxy; eassumption.
+
+          idtac.
+exfalso; revert H1 Hn; clear; intros.
 bbb.
 
 Unset Printing Notations. Show.
