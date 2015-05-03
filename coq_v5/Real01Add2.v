@@ -3128,27 +3128,22 @@ split; intros Hxy.
           rewrite and_comm; symmetry in Hxy.
           apply I_eq_case_x0_y9; try eassumption.
           rewrite H3; apply Digit.neq_0_9.
+
+          idtac.
 bbb.
 
-Theorem I_eq_case_x9_y0n0 : ∀ x y i,
+Theorem I_eq_case_x9n0_y0n0 : ∀ x y i,
   (x = y)%I
-  → radix ≠ 2 ∨ i ≠ 0
-  → (x .[ i] = 9)%D
-  → (y .[ i] = 0)%D
-  → (y .[ S i] ≠ 0)%D
-  → ∀ di : nat, (x .[ i + S di] = 9)%D ∧ (y .[ i + S di] = 0)%D.
+  → (x .[ 0] = 0)%D
+  → (y .[ 0] = 9)%D
+  → (x .[ 1] ≠ 0)%D
+  → (x .[ 1] ≠ 0)%D
+  → ⊥.
 Proof.
-euh non, ça va pas... bon... faut réfléchir...
-
-Unset Printing Notations. Show.
-
-apply digit_d2n_eq_iff in Hn.
-SearchAbout (_ + _)%D.
-Check digit_neq_succ_digit.
 bbb.
-    .   i
-x   .   1   1   1   1 …
-y   .   0   0   .   .
+    0   1
+x   0   ≠0
+y   9   ≠0
 
     i
 x   .   9   9   9 …
