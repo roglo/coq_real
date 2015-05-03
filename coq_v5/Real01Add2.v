@@ -2994,9 +2994,9 @@ split; intros Hxy.
           rewrite Nat.add_0_r, d2n_mod_radix in Hn.
           apply -> digit_d2n_eq_iff in H3.
           rewrite H3 in Hn.
+          destruct Hn2 as (Hn2, Ht2).
+          apply seq_not_9_I2NN_neq in Ht2.
           destruct n2.
-           destruct Hn2 as (Hn2, Ht2).
-           apply seq_not_9_I2NN_neq in Ht2.
            rewrite Nat.add_0_r in Ht2.
            clear Hn2.
            apply neq_d2n_9 in Ht2.
@@ -3102,10 +3102,12 @@ split; intros Hxy.
               destruct r; [ exfalso; apply H5; reflexivity | ].
               do 3 apply le_n_S; apply Nat.le_0_l.
 
-           destruct Hn2 as (Hn2, Ht2).
            pose proof Hn2 0 (Nat.lt_0_succ n2) as H.
            apply seq_not_9_I2NN in H.
            rewrite Nat.add_0_r in H.
+           destruct (eq_nat_dec radix 2) as [H5| H5]; [ idtac | exfalso ].
+            rewrite radix_2_eq_9_1 in H4; [ idtac | assumption ].
+            apply radix_2_not_1 in H4; [ idtac | assumption ].
 bbb.
 
 Unset Printing Notations. Show.
