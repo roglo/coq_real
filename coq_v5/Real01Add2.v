@@ -3128,6 +3128,12 @@ split; intros Hxy.
           rewrite and_comm; symmetry in Hxy.
           apply I_eq_case_x0_y9; try eassumption.
           rewrite H3; apply Digit.neq_0_9.
+bbb.
+
+Focus 1.
+eapply I_eq_case_x9_y0n0 in Hxy; try eassumption.
+simpl in Hxy; eassumption.
+
 Inspect 4.
 bbb.
 Est-ce qu'on ne pourrait pas avoir une version plus générale de ça
@@ -3147,6 +3153,15 @@ avec, comme hypothèses :
 x   .   9   .   .   .
 y   .   0   ≠0  .   .
 
+Theorem I_eq_case_x9_y0n0 : ∀ x y i,
+  (x = y)%I
+  → radix ≠ 2 ∨ i ≠ 0
+  → (x .[ i] = 9)%D
+  → (y .[ i] = 0)%D
+  → (y .[ S i] ≠ 0)%D
+  → ∀ di : nat, (x .[ i + S di] = 9)%D ∧ (y .[ i + S di] = 0)%D.
+Proof.
+euh non, ça va pas... bon... faut réfléchir...
 
 Unset Printing Notations. Show.
 
