@@ -1997,20 +1997,6 @@ destruct s1 as [n1| ]; [ idtac | exfalso ].
  revert H; apply Digit.neq_0_9.
 Qed.
 
-Theorem I_eq_case_x9_y00 : ∀ x y,
-  (x = y)%I
-  → (x .[ 0] = 9)%D
-  → (y .[ 0] = 0)%D
-  → (y .[ 1] = 0)%D
-  → ∀ j : nat, (x .[ j] = 9)%D ∧ (y .[ j] = 0)%D.
-Proof.
-intros x y Hxy Hx Hy Hy1 j.
-symmetry in Hxy.
-rewrite and_comm.
-apply I_eq_case_x0_y9; try eassumption.
-rewrite Hy; apply Digit.neq_0_9.
-Qed.
-
 Theorem I_eq_case_x_0_y9 : ∀ x y i,
   (x = y)%I
   → i ≠ 0
@@ -3042,11 +3028,12 @@ split; intros Hxy.
             apply radix_2_not_1 in Ht2; [ idtac | assumption ].
             destruct (eq_nat_dec i 0) as [H6| H6]; [ idtac | exfalso ].
              left; subst i; split; [ reflexivity | right; intros j ].
-             apply I_eq_case_x9_y00; try assumption.
-             rewrite radix_2_eq_9_1; [ idtac | assumption ].
-             apply radix_2_not_0; [ assumption | idtac ].
-             intros H; rewrite H in H1.
-             symmetry in H4; contradiction.
+             rewrite and_comm; symmetry in Hxy; rewrite H4 in H1.
+             apply radix_2_not_0 in H1; [ idtac | assumption].
+             apply radix_2_not_0 in H2; [ idtac | assumption].
+             rewrite <- radix_2_eq_9_1 in H1; [ idtac | assumption].
+             apply I_eq_case_x0_y9; try eassumption.
+             rewrite H4; apply Digit.neq_0_9.
 
              destruct i; [ apply H6; reflexivity | clear H6 ].
              clear Hn; pose proof (Hxy i) as Hn.
@@ -3137,8 +3124,29 @@ split; intros Hxy.
          subst i.
          left; split; [ reflexivity | right; intros j ].
          destruct j; [ split; assumption | clear Hj H1 ].
-Inspect 10.
+         destruct (Digit.eq_dec (y.[1]) 0) as [H5| H5].
+          rewrite and_comm; symmetry in Hxy.
+          apply I_eq_case_x0_y9; try eassumption.
+          rewrite H3; apply Digit.neq_0_9.
+Inspect 4.
 bbb.
+Est-ce qu'on ne pourrait pas avoir une version plus générale de ça
+
+I_eq_case_x10_ya1_radix_2 :
+∀ (x y : I) (i : nat),
+(x = y)%I
+→ radix = 2
+  → (x .[ i] = 1)%D
+    → (y .[ i] = 0)%D
+      → (y .[ S i] = 1)%D
+        → ∀ di : nat, (x .[ i + S di] = 0)%D ∧ (y .[ i + S di] = 1)%D
+
+avec, comme hypothèses :
+
+    .   i
+x   .   9   .   .   .
+y   .   0   ≠0  .   .
+
 
 Unset Printing Notations. Show.
 
