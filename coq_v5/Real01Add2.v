@@ -2640,6 +2640,25 @@ destruct s1 as [n1| ].
   discriminate Hn.
 Qed.
 
+Theorem I_eq_case_x9n0_y0n0 : ∀ x y,
+  (x = y)%I
+  → (x .[ 0] = 0)%D
+  → (y .[ 0] = 9)%D
+  → (x .[ 1] ≠ 0)%D
+  → (y .[ 1] ≠ 0)%D
+  → ⊥.
+Proof.
+intros x y Hxy Hx0 Hy0 Hx1 Hy1.
+pose proof Hxy 0 as Hn.
+unfold digit_eq in Hn; simpl in Hn.
+unfold I2NN in Hn at 1; simpl in Hn.
+unfold I2NN in Hn at 2; simpl in Hn.
+rewrite Hx0, Hy0 in Hn.
+bbb.
+    0   1
+x   0   ≠0
+y   9   ≠0
+
 Theorem mod_1_radix : 1 mod radix = 1.
 Proof.
 rewrite Nat.mod_small; [ reflexivity | apply Digit.radix_gt_1 ].
@@ -3130,20 +3149,8 @@ split; intros Hxy.
           rewrite H3; apply Digit.neq_0_9.
 
           idtac.
+apply I_eq_case_x9n0_y0n0.
 bbb.
-
-Theorem I_eq_case_x9n0_y0n0 : ∀ x y i,
-  (x = y)%I
-  → (x .[ 0] = 0)%D
-  → (y .[ 0] = 9)%D
-  → (x .[ 1] ≠ 0)%D
-  → (x .[ 1] ≠ 0)%D
-  → ⊥.
-Proof.
-bbb.
-    0   1
-x   0   ≠0
-y   9   ≠0
 
     i
 x   .   9   9   9 …
