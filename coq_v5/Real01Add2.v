@@ -2996,11 +2996,46 @@ split; intros Hxy.
           rewrite H3 in Hn.
           destruct Hn2 as (Hn2, Ht2).
           apply seq_not_9_I2NN_neq in Ht2.
-          destruct n2.
-           rewrite Nat.add_0_r in Ht2.
-           clear Hn2.
-           apply neq_d2n_9 in Ht2.
-           destruct (eq_nat_dec radix 2) as [H5| H5]; [ idtac | exfalso ].
+          destruct (eq_nat_dec radix 2) as [H5| H5]; [ idtac | exfalso ].
+           Focus 2.
+           revert Hrnz Hn H5; clear; intros.
+           rewrite <- d2n_1, <- d2n_add in Hn.
+           rewrite <- Digit.add_assoc in Hn.
+           unfold d2n in Hn; simpl in Hn.
+           rewrite <- Nat.add_mod_idemp_l in Hn; [ idtac | assumption ].
+           remember (dig (y .[ i]) mod radix) as d eqn:Hd .
+           pose proof Digit.radix_neq_0 as H.
+           apply Nat.mod_upper_bound with (a := dig (y .[ i])) in H.
+           rewrite <- Hd in H.
+           destruct (lt_dec (d + 2) radix) as [H1| H1].
+            rewrite Nat.mod_small in Hn; [ idtac | assumption ].
+            apply Nat.add_sub_eq_l in Hn.
+            rewrite Nat.sub_diag in Hn; discriminate Hn.
+
+            apply Nat.nlt_ge in H1.
+            eapply Nat.div_le_mono in H1; [ idtac | eassumption ].
+            rewrite Nat.div_same in H1; [ idtac | assumption ].
+            apply Nat.mul_le_mono with (n := 3) (m := radix) in H1.
+             pose proof Digit.radix_neq_0 as H2.
+             apply Nat.div_mod with (x := d + 2) in H2.
+             rewrite Hn, Nat.add_comm in H2.
+             apply Nat.add_cancel_r in H2.
+             rewrite Nat.add_comm, <- H2 in H1.
+             apply Nat.nlt_ge in H1; simpl in H1.
+             apply H1, lt_n_S, Nat.lt_1_2.
+
+             remember radix as r eqn:Hr ; symmetry in Hr.
+             destruct r; [ exfalso; apply Hrnz; reflexivity | idtac ].
+             destruct r.
+              exfalso; revert Hr; apply Digit.radix_neq_1.
+
+              destruct r; [ exfalso; apply H5; reflexivity | idtac ].
+              do 3 apply le_n_S; apply Nat.le_0_l.
+
+           destruct n2.
+            rewrite Nat.add_0_r in Ht2.
+            clear Hn2.
+            apply neq_d2n_9 in Ht2.
             rewrite radix_2_eq_9_1 in H4; [ idtac | assumption ].
             apply radix_2_not_1 in H4; [ idtac | assumption ].
             rewrite radix_2_eq_9_1 in Ht2; [ idtac | assumption ].
@@ -3014,17 +3049,17 @@ split; intros Hxy.
              symmetry in H4; contradiction.
 
              destruct i; [ apply H6; reflexivity | clear H6 ].
-             clear Hn; pose proof Hxy i as Hn.
+             clear Hn; pose proof (Hxy i) as Hn.
              unfold digit_eq in Hn; simpl in Hn.
              unfold I2NN in Hn at 1; simpl in Hn.
              unfold I2NN in Hn at 2; simpl in Hn.
-             pose proof Hj i (Nat.lt_succ_diag_r i) as H.
+             pose proof (Hj i (Nat.lt_succ_diag_r i)) as H.
              apply seq_eq_eq in H.
              apply -> digit_d2n_eq_iff in H.
              rewrite H in Hn; clear H.
              unfold carry_add in Hn; simpl in Hn.
-             remember (fst_neq_9 (I2NN x) (S i)) as s3 eqn:Hs3.
-             remember (fst_neq_9 (I2NN y) (S i)) as s4 eqn:Hs4.
+             remember (fst_neq_9 (I2NN x) (S i)) as s3 eqn:Hs3 .
+             remember (fst_neq_9 (I2NN y) (S i)) as s4 eqn:Hs4 .
              destruct s3 as [n3| ].
               rewrite <- Nat.add_succ_l in Hn.
               symmetry in Hs3.
@@ -3038,19 +3073,19 @@ split; intros Hxy.
                destruct Hs3 as (Hn3, Ht3).
                apply seq_not_9_I2NN_neq in Ht3.
                destruct n3.
-               rewrite Nat.add_0_r in Ht3.
+                rewrite Nat.add_0_r in Ht3.
                 apply neq_d2n_9 in Ht3.
                 rewrite H4 in H1.
-                apply radix_2_not_0 in H1;[|assumption].
-                rewrite radix_2_eq_9_1 in Ht3;[contradiction|assumption].
+                apply radix_2_not_0 in H1; [ idtac | assumption ].
+                rewrite radix_2_eq_9_1 in Ht3; [ contradiction | assumption ].
 
-                pose proof Hn1 n3 as H.
+                pose proof (Hn1 n3) as H.
                 apply seq_not_9_I2NN in H.
                 rewrite Nat.add_succ_r in Ht3; contradiction.
 
                symmetry in Hs2.
                apply first_nonzero_iff in Hs4.
-               pose proof Hs4 1 as H.
+               pose proof (Hs4 1) as H.
                apply seq_not_9_I2NN, eq_d2n_9 in H.
                rewrite Nat.add_1_r, Ht2 in H.
                revert H; apply Digit.neq_0_9.
@@ -3065,47 +3100,14 @@ split; intros Hxy.
                revert Hn; apply digit_neq_succ_digit.
 
                apply first_nonzero_iff in Hs4.
-               pose proof Hs4 1 as H.
+               pose proof (Hs4 1) as H.
                apply seq_not_9_I2NN, eq_d2n_9 in H.
                rewrite Nat.add_1_r, Ht2 in H.
                revert H; apply Digit.neq_0_9.
 
-            revert Hrnz Hn H5; clear; intros.
-            rewrite <- d2n_1, <- d2n_add in Hn.
-            rewrite <- Digit.add_assoc in Hn.
-            unfold d2n in Hn; simpl in Hn.
-            rewrite <- Nat.add_mod_idemp_l in Hn; [ idtac | assumption ].
-            remember (dig (y .[i]) mod radix) as d eqn:Hd.
-            pose proof Digit.radix_neq_0 as H.
-            apply Nat.mod_upper_bound with (a := dig (y .[i])) in H.
-            rewrite <- Hd in H.
-            destruct (lt_dec (d + 2) radix) as [H1| H1].
-             rewrite Nat.mod_small in Hn; [ idtac | assumption ].
-             apply Nat.add_sub_eq_l in Hn.
-             rewrite Nat.sub_diag in Hn; discriminate Hn.
-
-             apply Nat.nlt_ge in H1.
-             apply Nat.div_le_mono with (c:=radix) in H1; [idtac |assumption].
-             rewrite Nat.div_same in H1; [idtac | assumption ].
-             apply Nat.mul_le_mono with (n:=3) (m:=radix) in H1.
-              pose proof Digit.radix_neq_0 as H2.
-              apply Nat.div_mod with (x := d+2) in H2.
-              rewrite Hn, Nat.add_comm in H2.
-              apply Nat.add_cancel_r in H2.
-              rewrite Nat.add_comm, <- H2 in H1.
-              apply Nat.nlt_ge in H1; simpl in H1.
-              apply H1, lt_n_S, Nat.lt_1_2.
-
-              remember radix as r eqn:Hr; symmetry in Hr.
-              destruct r; [ exfalso; apply Hrnz; reflexivity | idtac ].
-              destruct r; [ exfalso; revert Hr; apply Digit.radix_neq_1 | ].
-              destruct r; [ exfalso; apply H5; reflexivity | ].
-              do 3 apply le_n_S; apply Nat.le_0_l.
-
-           pose proof Hn2 0 (Nat.lt_0_succ n2) as H.
-           apply seq_not_9_I2NN in H.
-           rewrite Nat.add_0_r in H.
-           destruct (eq_nat_dec radix 2) as [H5| H5]; [ idtac | exfalso ].
+            pose proof (Hn2 0 (Nat.lt_0_succ n2)) as H.
+            apply seq_not_9_I2NN in H.
+            rewrite Nat.add_0_r in H.
             rewrite radix_2_eq_9_1 in H4; [ idtac | assumption ].
             apply radix_2_not_1 in H4; [ idtac | assumption ].
 bbb.
