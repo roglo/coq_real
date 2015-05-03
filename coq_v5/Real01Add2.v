@@ -3130,7 +3130,14 @@ split; intros Hxy.
           apply digit_d2n_eq_iff in Hn.
           apply Digit.add_cancel_r in Hn; contradiction.
 
-       idtac.
+       destruct (Digit.eq_dec (x.[i]) 9) as [H4| H4].
+        rewrite H4, Digit.add_comm in H3; symmetry in H3.
+        rewrite digit_add_1_9 in H3.
+        destruct (eq_nat_dec i 0) as [H5| H5].
+         subst i.
+         left; split; [ reflexivity | right; intros j ].
+         destruct j; [ split; assumption | clear Hj H1 ].
+Inspect 10.
 bbb.
 
 Unset Printing Notations. Show.
