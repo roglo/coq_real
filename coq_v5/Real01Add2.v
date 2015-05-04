@@ -2800,13 +2800,6 @@ destruct s1 as [n1| ].
    Focus 2.
    pose proof (carry_add_0_or_1 (I2NN x) (S (S i))) as H.
    destruct H as [H1| H1]; rewrite H1 in Hn.
-    Focus 2.
-    rewrite <- d2n_1 in Hn.
-    do 2 rewrite <- d2n_add in Hn.
-    rewrite Digit.add_0_l, Digit.add_comm, Digit.add_1_9 in Hn.
-    apply digit_d2n_eq_iff in Hn.
-    exfalso; revert Hn; apply Digit.neq_0_1.
-
     rewrite <- d2n_1, <- d2n_0 in Hn.
     do 2 rewrite <- d2n_add in Hn.
     rewrite Digit.add_0_l, Digit.add_0_r in Hn.
@@ -2830,6 +2823,12 @@ destruct s1 as [n1| ].
      split; [ reflexivity | intros j ].
      rewrite <- radix_2_eq_1_9; [ idtac | assumption ].
      eapply I_eq_case_x10_ya1_radix_2 in Hxy; eassumption.
+
+    rewrite <- d2n_1 in Hn.
+    do 2 rewrite <- d2n_add in Hn.
+    rewrite Digit.add_0_l, Digit.add_comm, Digit.add_1_9 in Hn.
+    apply digit_d2n_eq_iff in Hn.
+    exfalso; revert Hn; apply Digit.neq_0_1.
 
    idtac.
 bbb.
