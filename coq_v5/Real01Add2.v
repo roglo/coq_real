@@ -2827,7 +2827,14 @@ destruct s1 as [n1| ].
      apply Nat_mod_succ_pred in Hn.
      rewrite d2n_mod_radix in Hn; contradiction.
 
-    idtac.
+    assert (1 ≤ S n1) as HY by apply le_n_S, Nat.le_0_l.
+    erewrite carry_add_fin in Hn; [ idtac | eassumption | assumption ].
+    rewrite carry_indic_I2NN in Hn; [ idtac | assumption ].
+    rewrite Nat.add_0_r, d2n_mod_radix in Hn.
+    apply eq_d2n_0 in Hn; contradiction.
+
+   rewrite H1 in Hn.
+   rewrite Nat.mod_same in Hn; [ idtac | apply Digit.radix_neq_0 ].
 bbb.
 
    split; [ assumption | intros di ].
