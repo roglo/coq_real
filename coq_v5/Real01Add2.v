@@ -2668,7 +2668,51 @@ destruct s1 as [n1| ].
   apply digit_d2n_eq_iff in Hn.
   revert Hn; apply Digit.neq_0_9.
 
-  idtac.
+  clear Hn; pose proof Hxy 1 as Hn.
+  unfold digit_eq in Hn; simpl in Hn.
+  unfold I2NN in Hn at 1; simpl in Hn.
+  unfold I2NN in Hn at 2; simpl in Hn.
+  generalize Hs2; intros H.
+  apply first_nonzero_iff in H.
+  rename H into Hn2.
+  pose proof Hn2 0 as H.
+  apply seq_not_9_I2NN in H.
+  rewrite Nat.add_0_r in H.
+  rename H into Hy.
+  rewrite Hy in Hn.
+  symmetry in Hn.
+  rewrite <- Nat.add_1_r in Hn.
+  symmetry in Hs2.
+  rewrite carry_add_inf in Hn; [ idtac | assumption ].
+  rewrite Nat.add_1_r in Hn.
+  rewrite Nat.succ_pred in Hn; [ idtac | apply Digit.radix_neq_0 ].
+  rewrite Nat.mod_same in Hn; [ idtac | apply Digit.radix_neq_0 ].
+  symmetry in Hn; simpl in Hn.
+  pose proof carry_add_0_or_1 (I2NN x) 2 as H.
+  destruct H as [H1| H1]; rewrite H1 in Hn.
+   rewrite Nat.add_0_r, d2n_mod_radix in Hn.
+   apply eq_d2n_0 in Hn; contradiction.
+
+   rewrite Nat.add_1_r in Hn.
+   apply Nat_mod_succ_pred in Hn.
+   rewrite d2n_mod_radix in Hn.
+   apply eq_d2n_9 in Hn.
+   destruct n1.
+    symmetry in Hs1.
+    apply first_nonzero_iff in Hs1.
+    destruct Hs1 as (Hn1, Ht1).
+    apply seq_not_9_I2NN_neq in Ht1.
+    rewrite Nat.add_0_r in Ht1.
+    apply -> digit_d2n_eq_iff in Hn.
+    rewrite d2n_9 in Hn; contradiction.
+
+    rewrite <- Nat.add_1_r in H1.
+    erewrite carry_add_fin in H1; [ idtac | eassumption | idtac ].
+     rewrite carry_indic_I2NN in H1; [ discriminate H1 | assumption ].
+
+     apply le_n_S, Nat.le_0_l.
+
+ idtac.
 bbb.
     0   1
 x   0   ≠0

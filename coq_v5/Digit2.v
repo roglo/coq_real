@@ -554,6 +554,13 @@ destruct r; [ exfalso; apply H, Nat.lt_1_2 | idtac ].
 apply lt_n_S, Nat.lt_0_succ.
 Qed.
 
+Theorem d2n_9 : d2n 9 = pred radix.
+Proof.
+unfold d2n.
+rewrite Nat.mod_small; [ reflexivity | idtac ].
+apply Digit.pred_radix_lt_radix.
+Qed.
+
 Theorem eq_d2n_0 : ∀ b, d2n b = 0 ↔ (b = 0)%D.
 Proof.
 intros b.
