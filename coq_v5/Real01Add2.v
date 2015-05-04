@@ -2856,17 +2856,14 @@ destruct s1 as [n1| ].
   rewrite <- d2n_1, <- d2n_add in Hn.
   apply digit_d2n_eq_iff in Hn; symmetry in Hn.
   exfalso; revert Hn; apply digit_neq_succ_digit.
-bbb.
-    i  i+1
-x   .   1
-    =
-y   .   0   1   1   1 …
 
-      rewrite <- Nat.add_1_r in H1.
-      symmetry in Hs2.
-      erewrite carry_add_fin in H1; [ idtac | eassumption | idtac ].
-bbb.
-*)
+ apply first_nonzero_iff in Hs1.
+ pose proof Hs1 0 as H.
+ apply seq_not_9_I2NN in H.
+ rewrite Nat.add_0_r in H.
+ apply eq_d2n_9 in H; rewrite Hy in H.
+ exfalso; revert H; apply Digit.neq_0_9.
+Qed.
 
 Theorem mod_1_radix : 1 mod radix = 1.
 Proof.
@@ -3359,12 +3356,11 @@ split; intros Hxy.
           exfalso; symmetry in Hxy.
           eapply I_eq_case_x9n0_y0n0 with (x := y); eassumption.
 
-         idtac.
-right; left.
-Focus 1.
-apply I_eq_case_x9_y0; try eassumption.
-intros j Hji.
-apply seq_eq_eq, Hj; assumption.
+         right; left.
+         apply I_eq_case_x9_y0; try eassumption.
+         intros j Hji; apply seq_eq_eq, Hj; assumption.
+
+        idtac.
 bbb.
     .   i  i+1
 x   .   9   .
