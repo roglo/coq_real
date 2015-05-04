@@ -2763,6 +2763,40 @@ destruct s1 as [n1| ].
     apply le_n_S, Nat.le_0_l.
 Qed.
 
+Theorem I_eq_case_x_n0_y9 : ∀ x y i,
+  (x = y)%I
+  → (∀ j : nat, j < i → (x .[ j] = y .[ j])%D)
+  → (x .[ i] ≠ y .[ i])%D
+  → (x .[ S i] ≠ 0)%D
+  → (x .[ i] ≠ 9)%D
+  → d2n (x .[ i]) = d2n (y .[ i]) + 1
+    ∧ (∀ di : nat, (x .[ i + S di] = 0)%D ∧ (y .[ i + S di] = 9)%D).
+Proof.
+intros x y i Hxy Hj Hdxy Hxsi Hxi.
+pose proof Hxy i as Hn.
+unfold digit_eq in Hn; simpl in Hn.
+unfold I2NN in Hn at 1; simpl in Hn.
+unfold I2NN in Hn at 2; simpl in Hn.
+unfold carry_add in Hn.
+remember (fst_neq_9 (I2NN x) (S i)) as s1 eqn:Hs1.
+remember (fst_neq_9 (I2NN y) (S i)) as s2 eqn:Hs2.
+destruct s1 as [n1| ].
+ symmetry in Hs1.
+ rewrite carry_indic_I2NN in Hn; [ idtac | assumption ].
+ rewrite Nat.add_0_r, d2n_mod_radix in Hn.
+ destruct s2 as [n2| ].
+  symmetry in Hs2.
+  rewrite carry_indic_I2NN in Hn; [ idtac | assumption ].
+  rewrite Nat.add_0_r, d2n_mod_radix in Hn.
+  apply digit_d2n_eq_iff in Hn; contradiction.
+
+  idtac.
+bbb.
+    .   i  i+1
+x   .   3   ≠0
+    =   ≠
+y   .   4   .   .   .
+
 Theorem I_eq_case_x9_y0 : ∀ x y i,
   (x = y)%I
   → (∀ j, j < i → (x.[j] = y.[j])%D)
@@ -3360,11 +3394,11 @@ split; intros Hxy.
          apply I_eq_case_x9_y0; try eassumption.
          intros j Hji; apply seq_eq_eq, Hj; assumption.
 
-        idtac.
+        right; left.
+Focus 1.
+apply I_eq_case_x_n0_y9; try assumption.
+intros j Hji; apply seq_eq_eq, Hj; assumption.
 bbb.
-    .   i  i+1
-x   .   9   .
-y   .   0  .   .   .
 
 revert Hn; clear; intros.
 
