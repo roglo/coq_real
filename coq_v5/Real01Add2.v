@@ -2769,7 +2769,9 @@ Theorem I_eq_case_x_n0_y9 : ∀ x y i,
   → (x .[ S i] ≠ 0)%D
   → (x .[ i] ≠ 9)%D
   → d2n (x .[ i]) = d2n (y .[ i]) + 1
-    ∧ (∀ di : nat, (x .[ i + S di] = 0)%D ∧ (y .[ i + S di] = 9)%D).
+    ∧ (∀ di : nat, (x .[ i + S di] = 0)%D ∧ (y .[ i + S di] = 9)%D)
+    ∨ d2n (x .[ i]) + 1 = d2n (y .[ i])
+      ∧ (∀ di : nat, (x .[ i + S di] = 9)%D ∧ (y .[ i + S di] = 0)%D).
 Proof.
 intros x y i Hxy Hj Hdxy Hxsi Hxi.
 pose proof Hxy i as Hn.
@@ -2930,11 +2932,39 @@ destruct s1 as [n1| ].
    apply Nat.nle_gt in H1; exfalso; apply H1.
    rewrite Nat.add_1_r; assumption.
 
- idtac.
+ destruct s2 as [n2| ].
+  symmetry in Hs2.
+  rewrite carry_indic_I2NN in Hn; [ idtac | assumption ].
+  rewrite Nat.add_0_r, d2n_mod_radix in Hn.
+  rewrite <- d2n_1, <- d2n_add in Hn.
+  right; split.
+   rewrite <- Hn.
+   rewrite d2n_add.
+   pose proof Digit.radix_neq_0 as H.
+   apply Nat.div_mod with (x := d2n (x .[ i]) + d2n 1) in H.
+   rewrite Nat.div_small in H.
+    rewrite Nat.mul_0_r, Nat.add_0_l, d2n_1 in H.
+    rewrite d2n_1; assumption.
+
+    rewrite d2n_1, Nat.add_1_r.
+    rewrite <- succ_pred_radix.
+    apply lt_n_S.
+    apply Nat_le_neq_lt; [ apply le_d2n_1 | idtac ].
+    apply neq_d2n_9; assumption.
+
+   intros di.
 bbb.
-    0   1
-x   0   ≠0
-y   9   9   9   9 …
+
+        i  i+1
+x   .   3   9   9   9 …
+    =   ≠
+y   .   4   .
+
+        i  i+1
+x   .   ≠9   9   9   9 …
+    =   ≠
+y   .   ≠0   .
+*)
 
 Theorem I_eq_case_x9_y0 : ∀ x y i,
   (x = y)%I
@@ -3533,7 +3563,7 @@ split; intros Hxy.
          apply I_eq_case_x9_y0; try eassumption.
          intros j Hji; apply seq_eq_eq, Hj; assumption.
 
-        right; left.
+        right.
 Focus 1.
 apply I_eq_case_x_n0_y9; try assumption.
 intros j Hji; apply seq_eq_eq, Hj; assumption.
