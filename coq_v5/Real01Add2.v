@@ -2654,6 +2654,21 @@ unfold digit_eq in Hn; simpl in Hn.
 unfold I2NN in Hn at 1; simpl in Hn.
 unfold I2NN in Hn at 2; simpl in Hn.
 rewrite Hx0, Hy0 in Hn.
+unfold carry_add in Hn.
+remember (fst_neq_9 (I2NN x) 1) as s1 eqn:Hs1.
+remember (fst_neq_9 (I2NN y) 1) as s2 eqn:Hs2.
+destruct s1 as [n1| ].
+ symmetry in Hs1.
+ rewrite carry_indic_I2NN in Hn; [ idtac | assumption ].
+ rewrite Nat.add_0_r, d2n_mod_radix in Hn.
+ destruct s2 as [n2| ].
+  symmetry in Hs2.
+  rewrite carry_indic_I2NN in Hn; [ idtac | assumption ].
+  rewrite Nat.add_0_r, d2n_mod_radix in Hn.
+  apply digit_d2n_eq_iff in Hn.
+  revert Hn; apply Digit.neq_0_9.
+
+  idtac.
 bbb.
     0   1
 x   0   ≠0
