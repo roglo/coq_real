@@ -264,6 +264,12 @@ apply carry_add_compat.
 apply NN_add_0_r.
 Qed.
 
+Theorem succ_pred_radix : S (pred radix) = radix.
+Proof. apply Nat.succ_pred, Digit.radix_neq_0. Qed.
+
+Theorem radix_mod_radix : radix mod radix = 0.
+Proof. apply Nat.mod_same, Digit.radix_neq_0. Qed.
+
 Theorem carry_add_add_0_r2 : ∀ u i, carry_add (u + I2NN 0) i = carry_add u i.
 Proof.
 intros u i.
@@ -359,9 +365,7 @@ unfold digit_eq in H; simpl in H.
 remember (dig a) as n; revert H; clear; intros.
 rewrite <- Nat.add_mod_idemp_l in H; [ idtac | apply Digit.radix_neq_0 ].
 destruct (eq_nat_dec (n mod radix) (pred radix)) as [H1| H1].
- rewrite H1, Nat.add_1_r in H.
- rewrite Nat.succ_pred in H; [ idtac | apply Digit.radix_neq_0 ].
- rewrite Nat.mod_same in H; [ idtac | apply Digit.radix_neq_0 ].
+ rewrite H1, Nat.add_1_r, succ_pred_radix, radix_mod_radix in H.
  remember radix as r eqn:Hr; symmetry in Hr.
  destruct r; [ revert Hr; apply Digit.radix_neq_0 | simpl in H ].
  destruct r; [ revert Hr; apply Digit.radix_neq_1 | discriminate H ].
@@ -395,7 +399,7 @@ split; intros H; [ rewrite H; reflexivity | idtac ].
 rewrite Nat_pred_mod in H.
 rewrite Nat.mod_1_l in H; [ idtac | apply Digit.radix_gt_1 ].
 apply eq_S in H; symmetry in H.
-rewrite Nat.succ_pred in H; [ assumption | apply Digit.radix_neq_0 ].
+rewrite succ_pred_radix in H; assumption.
 Qed.
 
 Theorem radix_2_eq_1_9 : radix = 2 → (1 = 9)%D.
@@ -1894,9 +1898,7 @@ destruct s1 as [n1| ]; [ idtac | exfalso ].
 
     destruct j.
      rewrite Nat.add_1_r in Hn.
-     rewrite Nat.succ_pred in Hn; [ idtac | apply Digit.radix_neq_0 ].
-     rewrite Nat.mod_same in Hn; [ idtac | apply Digit.radix_neq_0 ].
-     rewrite d2n_mod_radix in Hn.
+     rewrite succ_pred_radix, radix_mod_radix, d2n_mod_radix in Hn.
      split; [ apply eq_d2n_0; assumption | idtac ].
      apply eq_d2n_9; assumption.
 
@@ -1928,15 +1930,12 @@ destruct s1 as [n1| ]; [ idtac | exfalso ].
       rewrite Nat.add_0_r, d2n_mod_radix in Hn.
       simpl in Hj; apply eq_d2n_9 in Hj.
       rewrite Hj, Nat.add_1_r in Hn.
-      rewrite Nat.succ_pred in Hn; [ idtac | assumption ].
-      rewrite Nat.mod_same in Hn; [ idtac | assumption ].
+      rewrite succ_pred_radix, radix_mod_radix in Hn.
       apply eq_d2n_0; assumption.
 
       do 2 rewrite Nat.add_1_r in Hn.
       apply eq_d2n_9 in Hj.
-      rewrite Hj in Hn.
-      rewrite Nat.succ_pred in Hn; [ idtac | assumption ].
-      rewrite Nat.mod_same in Hn; [ idtac | assumption ].
+      rewrite Hj, succ_pred_radix, radix_mod_radix in Hn.
       rename Hn into Hn1.
       pose proof (Hxy j) as Hn.
       unfold digit_eq in Hn; simpl in Hn.
@@ -2887,12 +2886,52 @@ destruct s1 as [n1| ].
      apply seq_not_9_I2NN in H.
      rewrite Nat.add_succ_r in H; contradiction.
 
-    idtac.
+    exfalso.
+    rename Hn into Hx.
+    pose proof Hxy 1 as Hn.
+    unfold digit_eq in Hn; simpl in Hn.
+    unfold I2NN in Hn at 1; simpl in Hn.
+    unfold I2NN in Hn at 2; simpl in Hn.
+    generalize Hs2; intros H.
+    apply first_nonzero_iff in H.
+    rename H into Hn2.
+    pose proof Hn2 0 as H.
+    apply seq_not_9_I2NN in H; simpl in H.
+    rewrite H in Hn; clear H.
+    symmetry in Hn.
+    rewrite <- Nat.add_1_r in Hn.
+    symmetry in Hs2.
+    rewrite carry_add_inf in Hn; [ idtac | assumption ].
+    rewrite Nat.add_1_r in Hn.
+    rewrite succ_pred_radix, radix_mod_radix in Hn.
+    symmetry in Hn.
+    destruct n1.
+     pose proof carry_add_0_or_1 (I2NN x) (1 + 1) as H.
+     destruct H as [H2| H2]; rewrite H2 in Hn.
+      rewrite Nat.add_0_r, d2n_mod_radix in Hn.
+      apply eq_d2n_0 in Hn; contradiction.
+
+      rewrite Nat.add_1_r in Hn.
+      apply Nat_mod_succ_pred in Hn.
+      rewrite d2n_mod_radix in Hn.
+      symmetry in Hs1.
+      apply first_nonzero_iff in Hs1.
+      destruct Hs1 as (Hn1, Ht1).
+      apply seq_not_9_I2NN_neq in Ht1.
+      rewrite Nat.add_0_r in Ht1; contradiction.
+
+     assert (1 ≤ S n1) as HY by apply le_n_S, Nat.le_0_l.
+     erewrite carry_add_fin in Hn; [ idtac | eassumption | assumption ].
+     rewrite carry_indic_I2NN in Hn; [ idtac | assumption ].
+     rewrite Nat.add_0_r, d2n_mod_radix in Hn.
+     apply eq_d2n_0 in Hn; contradiction.
+     apply eq_d2n_0 in Hn; contradiction.
+
+   idtac.
 bbb.
-    .   i  i+1
-x   .   3   ≠0
-    =   ≠
-y   .   4   .   .   .
+    0   1
+x   0   ≠0
+y   9   9   9   9 …
 
 Theorem I_eq_case_x9_y0 : ∀ x y i,
   (x = y)%I
