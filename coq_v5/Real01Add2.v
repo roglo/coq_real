@@ -2792,6 +2792,18 @@ destruct s1 as [n1| ].
 
   idtac.
 bbb.
+  rewrite Nat.mod_small in Hn.
+   Focus 2.
+   destruct (lt_eq_lt_dec (d2n (y .[ i]) + 1) radix) as [[H1| H1]| H1].
+    assumption.
+
+    rewrite H1 in Hn.
+    rewrite Nat.mod_same in Hn; [ idtac | apply Digit.radix_neq_0 ].
+    apply eq_d2n_0 in Hn.
+    destruct n1.
+     symmetry in Hs1.
+     apply first_nonzero_iff in Hs1; simpl in Hs1.
+bbb.
     .   i  i+1
 x   .   3   ≠0
     =   ≠
