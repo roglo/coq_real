@@ -2830,7 +2830,17 @@ destruct s1 as [n1| ].
     apply digit_d2n_eq_iff in Hn.
     exfalso; revert Hn; apply Digit.neq_0_1.
 
-   idtac.
+   symmetry in Hs4.
+   rewrite carry_indic_I2NN in Hn; [ idtac | assumption ].
+   rewrite d2n_0, Nat.add_0_r in Hn.
+   rewrite Nat.mod_0_l in Hn; [ idtac | apply Digit.radix_neq_0 ].
+   pose proof carry_add_0_or_1 (I2NN x) (S (S i)) as H.
+   destruct H as [H1| H1]; rewrite H1 in Hn.
+    rewrite d2n_9, Nat.add_0_r in Hn.
+    rewrite Nat_pred_mod in Hn.
+    exfalso; revert Hn; apply pred_radix_neq_0.
+
+    clear Hn.
 bbb.
     i  i+1
 x   .   1
