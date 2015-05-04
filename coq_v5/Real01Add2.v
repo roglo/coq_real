@@ -2853,7 +2853,9 @@ destruct s1 as [n1| ].
     apply digit_d2n_eq_iff in Hn.
     exfalso; revert Hn; apply Digit.neq_0_1.
 
-  idtac.
+  rewrite <- d2n_1, <- d2n_add in Hn.
+  apply digit_d2n_eq_iff in Hn; symmetry in Hn.
+  exfalso; revert Hn; apply digit_neq_succ_digit.
 bbb.
     i  i+1
 x   .   1
