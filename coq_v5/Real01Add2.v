@@ -1777,14 +1777,6 @@ destruct (eq_nat_dec (a mod b) (pred b)) as [H1|H1]; [ assumption | idtac ].
 rewrite Nat_mod_succ_l in Hab; [discriminate|assumption].
 Qed.
 
-Theorem digit_add_1_9 : (1 + 9 = 0)%D.
-Proof.
-unfold digit_eq; simpl.
-rewrite Nat.succ_pred; [ idtac | apply Digit.radix_neq_0 ].
-rewrite Nat.mod_same; [ idtac | apply Digit.radix_neq_0 ].
-rewrite Nat.mod_0_l; [ reflexivity | apply Digit.radix_neq_0 ].
-Qed.
-
 Theorem carry_add_0_or_1 : ∀ u i, carry_add u i = 0 ∨ carry_add u i = 1.
 Proof.
 intros u i.
@@ -1831,9 +1823,9 @@ destruct H1 as [H1| H1]; rewrite H1 in Hn.
   apply digit_d2n_eq_iff in Hn.
   eapply Digit.add_compat with (x := 9%D) in Hn; [ idtac | reflexivity ].
   rewrite Digit.add_comm, <- Digit.add_assoc in Hn.
-  rewrite digit_add_1_9, Digit.add_0_r in Hn.
+  rewrite Digit.add_1_9, Digit.add_0_r in Hn.
   rewrite Digit.add_comm, <- Digit.add_assoc in Hn.
-  rewrite digit_add_1_9, Digit.add_0_r in Hn.
+  rewrite Digit.add_1_9, Digit.add_0_r in Hn.
   assumption.
 Qed.
 
@@ -2731,7 +2723,7 @@ destruct s1 as [n1| ].
   rewrite <- d2n_1 in Hn.
   do 2 rewrite <- d2n_add in Hn.
   apply digit_d2n_eq_iff in Hn.
-  rewrite Digit.add_0_l, Digit.add_comm, digit_add_1_9 in Hn.
+  rewrite Digit.add_0_l, Digit.add_comm, Digit.add_1_9 in Hn.
   symmetry in Hn; revert Hn; apply Digit.neq_0_1.
 
   rewrite <- d2n_1, <- d2n_0 in Hn.
@@ -2770,6 +2762,59 @@ destruct s1 as [n1| ].
 
     apply le_n_S, Nat.le_0_l.
 Qed.
+
+Theorem I_eq_case_x9_y9 : ∀ x y i,
+  (x = y)%I
+  → (∀ j, j < i → (x.[j] = y.[j])%D)
+  → (x.[i] = 9)%D
+  → (y.[i] = 0)%D
+  → i = 0.
+Proof.
+intros x y i Hxy Hj Hx Hy.
+destruct i; [ reflexivity | exfalso ].
+pose proof Hxy i as Hn.
+unfold digit_eq in Hn; simpl in Hn.
+unfold I2NN in Hn at 1; simpl in Hn.
+unfold I2NN in Hn at 2; simpl in Hn.
+pose proof Hj i (Nat.lt_succ_diag_r i) as H.
+rewrite H in Hn; clear H.
+unfold carry_add at 2 in Hn.
+remember (fst_neq_9 (I2NN y) (S i)) as s1 eqn:Hs1.
+destruct s1 as [n1| ].
+ symmetry in Hs1.
+ rewrite carry_indic_I2NN in Hn; [ idtac | assumption ].
+ rewrite Nat.add_0_r, d2n_mod_radix in Hn.
+ unfold carry_add in Hn.
+ remember (fst_neq_9 (I2NN x) (S i)) as s2 eqn:Hs2.
+ destruct s2 as [n2| ].
+(*
+  apply first_nonzero_iff in Hs2.
+  destruct Hs2 as (Hn2, Ht2).
+  destruct n2.
+   apply seq_not_9_I2NN_neq in Ht2.
+   rewrite Nat.add_0_r in Ht2.
+   apply neq_d2n_9 in Ht2; contradiction.
+*)
+   clear Hn; pose proof Hxy (S i) as Hn.
+   unfold digit_eq in Hn; simpl in Hn.
+   unfold I2NN in Hn at 1; simpl in Hn.
+   unfold I2NN in Hn at 2; simpl in Hn.
+   rewrite Hx, Hy in Hn.
+   unfold carry_add at 2 in Hn.
+   remember (fst_neq_9 (I2NN y) (S (S i))) as s4 eqn:Hs4.
+   destruct s4 as [n4| ].
+    Focus 2.
+    pose proof carry_add_0_or_1 (I2NN x) (S (S i)) as H.
+    destruct H as [H1| H1]; rewrite H1 in Hn.
+     Focus 2.
+     rewrite <- d2n_1 in Hn.
+     do 2 rewrite <- d2n_add in Hn.
+     rewrite Digit.add_0_l, Digit.add_comm, Digit.add_1_9 in Hn.
+     apply digit_d2n_eq_iff in Hn.
+     revert Hn; apply Digit.neq_0_1.
+
+     idtac.
+bbb.
 
 Theorem mod_1_radix : 1 mod radix = 1.
 Proof.
@@ -2849,7 +2894,7 @@ split; intros Hxy.
       pose proof Digit.radix_neq_0 as Hrnz.
       destruct H as [H3| [H3| H3]]; [ idtac | contradiction | idtac ].
        destruct (Digit.eq_dec (y .[ i]) 9) as [H4| H4].
-        rewrite H4, Digit.add_comm, digit_add_1_9 in H3.
+        rewrite H4, Digit.add_comm, Digit.add_1_9 in H3.
         destruct (eq_nat_dec i 0) as [H5| H5]; [ idtac | idtac ].
          subst i; clear Hj; simpl.
          destruct (eq_nat_dec radix 2) as [H6| H6]; [ idtac | exfalso ].
@@ -3249,7 +3294,7 @@ split; intros Hxy.
 
        destruct (Digit.eq_dec (x.[i]) 9) as [H4| H4].
         rewrite H4, Digit.add_comm in H3; symmetry in H3.
-        rewrite digit_add_1_9 in H3.
+        rewrite Digit.add_1_9 in H3.
         destruct (eq_nat_dec i 0) as [H5| H5].
          subst i.
          left; split; [ reflexivity | right; intros j ].
@@ -3262,12 +3307,14 @@ split; intros Hxy.
           exfalso; symmetry in Hxy.
           eapply I_eq_case_x9n0_y0n0 with (x := y); eassumption.
 
-         right.
+         exfalso.
+eapply H5, zzz; try eassumption.
+intros j Hji.
+apply seq_eq_eq, Hj; assumption.
 bbb.
-
-    i
-x   .   9   9   9 …
-y   .   .   .   .
+    .   i  i+1
+x   .   9   .
+y   .   0  .   .   .
 
 revert Hn; clear; intros.
 

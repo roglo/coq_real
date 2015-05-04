@@ -521,6 +521,14 @@ rewrite add_comm in Hd; symmetry in Hd.
 apply add_cancel_l in Hd; assumption.
 Qed.
 
+Theorem add_1_9 : (1 + 9 = 0)%D.
+Proof.
+unfold digit_eq; simpl.
+rewrite Nat.succ_pred; [ idtac | apply Digit.radix_neq_0 ].
+rewrite Nat.mod_same; [ idtac | apply Digit.radix_neq_0 ].
+rewrite Nat.mod_0_l; [ reflexivity | apply Digit.radix_neq_0 ].
+Qed.
+
 End Digit.
 
 Theorem eq_digit_eq : ∀ d e, d = e → (d = e)%D.
