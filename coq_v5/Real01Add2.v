@@ -2826,7 +2826,9 @@ destruct s1 as [n1| ].
      rewrite Nat.add_0_r in H.
      apply eq_d2n_9 in H.
      rewrite <- radix_2_eq_1_9 in H; [ idtac | assumption ].
-bbb.
+     rewrite Hx, Hy; unfold d2n; rewrite Hn.
+     split; [ reflexivity | intros j ].
+     rewrite <- radix_2_eq_1_9; [ idtac | assumption ].
      eapply I_eq_case_x10_ya1_radix_2 in Hxy; eassumption.
 
    idtac.
