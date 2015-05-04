@@ -388,7 +388,7 @@ apply Nat.add_cancel_r in Hc.
 exists ((b + a) / c); assumption.
 Qed.
 
-Theorem radix_2_eq_1_9 : radix = 2 ↔ (1 = 9)%D.
+Theorem radix_2_eq_1_9_iff : radix = 2 ↔ (1 = 9)%D.
 Proof.
 unfold digit_eq; simpl.
 split; intros H; [ rewrite H; reflexivity | idtac ].
@@ -397,6 +397,9 @@ rewrite Nat.mod_1_l in H; [ idtac | apply Digit.radix_gt_1 ].
 apply eq_S in H; symmetry in H.
 rewrite Nat.succ_pred in H; [ assumption | apply Digit.radix_neq_0 ].
 Qed.
+
+Theorem radix_2_eq_1_9 : radix = 2 → (1 = 9)%D.
+Proof. intros H; apply radix_2_eq_1_9_iff; assumption. Qed.
 
 Theorem radix_2_not_1 : ∀ d, radix = 2 → (d ≠ 1)%D → (d = 0)%D.
 Proof.
@@ -2736,7 +2739,7 @@ destruct s1 as [n1| ].
   apply digit_d2n_eq_iff in Hn.
   rewrite Digit.add_0_l, Digit.add_0_r in Hn.
   rewrite <- Hn in Hy0.
-  apply radix_2_eq_1_9 in Hn.
+  apply radix_2_eq_1_9_iff in Hn.
   rename Hn into Hr.
   apply radix_2_not_0 in Hx1; [ idtac | assumption ].
   apply radix_2_not_0 in Hy1; [ idtac | assumption ].
@@ -2852,17 +2855,13 @@ split; intros Hxy.
          destruct (eq_nat_dec radix 2) as [H6| H6]; [ idtac | exfalso ].
           right; right.
           apply radix_2_not_0 in H2; [ idtac | assumption ].
-          apply radix_2_eq_1_9 in H6.
-          rewrite <- H6 in H4.
+          rewrite <- radix_2_eq_1_9 in H4; [ idtac | assumption ].
           apply -> digit_d2n_eq_iff in H3; rewrite H3.
           apply -> digit_d2n_eq_iff in H4; rewrite H4.
-          apply radix_2_eq_1_9 in H6.
-          unfold d2n; rewrite H6.
-          split; [ reflexivity | intros di ].
+          split; [ unfold d2n; rewrite H6; reflexivity | intros di ].
           symmetry in Hxy.
           eapply I_eq_case_x10_ya1_radix_2 in Hxy; try eassumption.
-          apply radix_2_eq_1_9 in H6.
-          rewrite and_comm, H6 in Hxy; eassumption.
+          rewrite and_comm, radix_2_eq_1_9 in Hxy; eassumption.
 
           apply H2.
           eapply I_eq_case_x0_y9_radix_neq_2; eassumption.
@@ -2963,14 +2962,12 @@ split; intros Hxy.
              rewrite Hr in H4; simpl in H4.
              rewrite H3, H4; split; [ reflexivity | idtac ].
              intros di.
-             rewrite and_comm.
-             apply radix_2_eq_1_9 in Hr; rewrite <- Hr.
+             rewrite and_comm, <- radix_2_eq_1_9; [ idtac | assumption ].
              symmetry in Hxy.
              apply eq_d2n_0 in H3.
              apply eq_d2n_1 in H4.
              apply seq_not_9_I2NN_neq in Ht2.
              rewrite Nat.add_0_r in Ht2.
-             apply radix_2_eq_1_9 in Hr.
              apply I_eq_case_x10_ya1_radix_2; try assumption.
              apply eq_d2n_1 in H2; assumption.
 
@@ -2988,8 +2985,7 @@ split; intros Hxy.
              apply seq_not_9_I2NN_neq in Ht2.
              rewrite Nat.add_0_r in Ht2.
              apply neq_d2n_9 in Ht2.
-             apply radix_2_eq_1_9 in Hr; rewrite <- Hr in Ht2.
-             apply radix_2_eq_1_9 in Hr.
+             rewrite <- radix_2_eq_1_9 in Ht2; [ idtac | assumption ].
              apply radix_2_not_1 in Ht2; [ idtac | assumption ].
              apply eq_d2n_0 in Ht2.
              do 2 rewrite Nat.add_1_r in Hn.
@@ -3155,8 +3151,8 @@ split; intros Hxy.
             rewrite Nat.add_0_r in Ht2.
             clear Hn2.
             apply neq_d2n_9 in Ht2.
-            apply radix_2_eq_1_9 in H5; rewrite <- H5 in H4, Ht2.
-            apply radix_2_eq_1_9 in H5.
+            rewrite <- radix_2_eq_1_9 in H4; [ idtac | assumption ].
+            rewrite <- radix_2_eq_1_9 in Ht2; [ idtac | assumption ].
             apply radix_2_not_1 in H4; [ idtac | assumption ].
             apply radix_2_not_1 in Ht2; [ idtac | assumption ].
             destruct (eq_nat_dec i 0) as [H6| H6]; [ idtac | exfalso ].
@@ -3229,8 +3225,7 @@ split; intros Hxy.
             pose proof (Hn2 0 (Nat.lt_0_succ n2)) as H.
             apply seq_not_9_I2NN in H.
             rewrite Nat.add_0_r in H.
-bbb.
-            rewrite radix_2_eq_9_1 in H4; [ idtac | assumption ].
+            rewrite <- radix_2_eq_1_9 in H4; [ idtac | assumption ].
             apply radix_2_not_1 in H4; [ idtac | assumption ].
             rewrite H5 in H; simpl in H; rename H into Hy.
             apply radix_2_not_0 in H2; [ idtac | assumption ].
@@ -3243,7 +3238,7 @@ bbb.
             rewrite H1, H4.
             split; [ unfold d2n; rewrite H5; reflexivity | idtac ].
             intros di.
-            rewrite radix_2_eq_9_1; [ idtac | assumption ].
+            rewrite <- radix_2_eq_1_9; [ idtac | assumption ].
             eapply I_eq_case_x10_ya1_radix_2 in Hxy; eassumption.
 
           exfalso; revert H1 Hn; clear; intros.
@@ -3264,8 +3259,10 @@ bbb.
           apply I_eq_case_x0_y9; try eassumption.
           rewrite H3; apply Digit.neq_0_9.
 
-          idtac.
-apply I_eq_case_x9n0_y0n0.
+          exfalso; symmetry in Hxy.
+          eapply I_eq_case_x9n0_y0n0 with (x := y); eassumption.
+
+         right.
 bbb.
 
     i
