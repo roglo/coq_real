@@ -2925,9 +2925,12 @@ destruct s1 as [n1| ].
      rewrite carry_indic_I2NN in Hn; [ idtac | assumption ].
      rewrite Nat.add_0_r, d2n_mod_radix in Hn.
      apply eq_d2n_0 in Hn; contradiction.
-     apply eq_d2n_0 in Hn; contradiction.
 
-   idtac.
+   pose proof d2n_lt_radix (y.[i]) as H.
+   apply Nat.nle_gt in H1; exfalso; apply H1.
+   rewrite Nat.add_1_r; assumption.
+
+ idtac.
 bbb.
     0   1
 x   0   ≠0
