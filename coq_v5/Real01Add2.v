@@ -2835,12 +2835,18 @@ destruct s1 as [n1| ].
 
    rewrite H1 in Hn.
    rewrite Nat.mod_same in Hn; [ idtac | apply Digit.radix_neq_0 ].
+   destruct i.
+    Focus 2.
+    rename Hn into Hx.
+    pose proof Hxy i as Hn.
+    unfold digit_eq in Hn; simpl in Hn.
+    unfold I2NN in Hn at 1; simpl in Hn.
+    unfold I2NN in Hn at 2; simpl in Hn.
 bbb.
 
    split; [ assumption | intros di ].
    destruct (Digit.eq_dec (x .[i]) 0) as [H2| H2].
 bbb.
-
    Focus 2.
     assumption.
 
