@@ -2842,20 +2842,52 @@ destruct s1 as [n1| ].
     unfold digit_eq in Hn; simpl in Hn.
     unfold I2NN in Hn at 1; simpl in Hn.
     unfold I2NN in Hn at 2; simpl in Hn.
-bbb.
+    pose proof Hj i (Nat.lt_succ_diag_r i) as H.
+    apply -> digit_d2n_eq_iff in H.
+    rewrite H in Hn; clear H.
+    unfold carry_add in Hn; simpl in Hn.
+    remember (fst_neq_9 (I2NN x) (S i)) as s3 eqn:Hs3.
+    remember (fst_neq_9 (I2NN y) (S i)) as s4 eqn:Hs4.
+    destruct s3 as [n3| ].
+     rewrite <- Nat.add_succ_l in Hn.
+     symmetry in Hs3.
+     rewrite carry_indic_I2NN in Hn; [ idtac | assumption ].
+     rewrite Nat.add_0_r, d2n_mod_radix in Hn.
+     destruct s4 as [n4| ].
+      rewrite <- Nat.add_succ_l in Hn.
+      symmetry in Hs4.
+      rewrite carry_indic_I2NN in Hn; [ idtac | assumption ].
+      rewrite Nat.add_0_r in Hn.
+      symmetry in Hs4.
+      apply first_nonzero_iff in Hs4.
+      destruct Hs4 as (Hn4, Ht4).
+      apply seq_not_9_I2NN_neq in Ht4.
+      destruct n4.
+       rewrite Nat.add_0_r in Ht4.
+       rewrite Nat.add_1_r in H1.
+       exfalso; apply Ht4.
+       apply Nat.succ_inj.
+       rewrite H1, Nat.succ_pred; [ reflexivity | apply Digit.radix_neq_0 ].
 
-   split; [ assumption | intros di ].
-   destruct (Digit.eq_dec (x .[i]) 0) as [H2| H2].
-bbb.
-   Focus 2.
-    assumption.
+       apply first_nonzero_iff in Hs2.
+       pose proof Hs2 n4 as H.
+       apply seq_not_9_I2NN in H.
+       rewrite Nat.add_succ_r in Ht4; contradiction.
 
-    rewrite H1 in Hn.
-    rewrite Nat.mod_same in Hn; [ idtac | apply Digit.radix_neq_0 ].
-    apply eq_d2n_0 in Hn.
-    destruct n1.
+      rewrite <- d2n_1, <- d2n_add in Hn.
+      apply digit_d2n_eq_iff in Hn.
+      exfalso; revert Hn; apply digit_neq_succ_digit.
+
      symmetry in Hs1.
-     apply first_nonzero_iff in Hs1; simpl in Hs1.
+     apply first_nonzero_iff in Hs1.
+     apply first_nonzero_iff in Hs3.
+     destruct Hs1 as (Hn1, Ht1).
+     pose proof Hs3 (S n1) as H.
+     apply seq_not_9_I2NN_neq in Ht1.
+     apply seq_not_9_I2NN in H.
+     rewrite Nat.add_succ_r in H; contradiction.
+
+    idtac.
 bbb.
     .   i  i+1
 x   .   3   ≠0
