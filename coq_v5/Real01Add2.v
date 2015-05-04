@@ -2797,7 +2797,30 @@ destruct s1 as [n1| ].
   unfold carry_add at 2 in Hn.
   remember (fst_neq_9 (I2NN y) (S (S i))) as s4 eqn:Hs4 .
   destruct s4 as [n4| ].
-   Focus 2.
+   symmetry in Hs4.
+   rewrite carry_indic_I2NN in Hn; [ idtac | assumption ].
+   rewrite d2n_0, Nat.add_0_r in Hn.
+   rewrite Nat.mod_0_l in Hn; [ idtac | apply Digit.radix_neq_0 ].
+   pose proof carry_add_0_or_1 (I2NN x) (S (S i)) as H.
+   destruct H as [H1| H1]; rewrite H1 in Hn.
+    rewrite d2n_9, Nat.add_0_r in Hn.
+    rewrite Nat_pred_mod in Hn.
+    exfalso; revert Hn; apply pred_radix_neq_0.
+
+    clear Hn.
+    destruct n2.
+     apply first_nonzero_iff in Hs2.
+     destruct Hs2 as (Hn2, Ht2).
+     apply seq_not_9_I2NN_neq in Ht2.
+     rewrite Nat.add_0_r in Ht2.
+     apply neq_d2n_9 in Ht2; contradiction.
+
+     rewrite <- Nat.add_1_r in H1; symmetry in Hs2.
+     assert (1 ≤ S n2) as H by apply le_n_S, Nat.le_0_l.
+     erewrite carry_add_fin in H1; [ idtac | eassumption | assumption ].
+     rewrite carry_indic_I2NN in H1; [ idtac | assumption ].
+     discriminate H1.
+
    pose proof (carry_add_0_or_1 (I2NN x) (S (S i))) as H.
    destruct H as [H1| H1]; rewrite H1 in Hn.
     rewrite <- d2n_1, <- d2n_0 in Hn.
@@ -2830,17 +2853,7 @@ destruct s1 as [n1| ].
     apply digit_d2n_eq_iff in Hn.
     exfalso; revert Hn; apply Digit.neq_0_1.
 
-   symmetry in Hs4.
-   rewrite carry_indic_I2NN in Hn; [ idtac | assumption ].
-   rewrite d2n_0, Nat.add_0_r in Hn.
-   rewrite Nat.mod_0_l in Hn; [ idtac | apply Digit.radix_neq_0 ].
-   pose proof carry_add_0_or_1 (I2NN x) (S (S i)) as H.
-   destruct H as [H1| H1]; rewrite H1 in Hn.
-    rewrite d2n_9, Nat.add_0_r in Hn.
-    rewrite Nat_pred_mod in Hn.
-    exfalso; revert Hn; apply pred_radix_neq_0.
-
-    clear Hn.
+  idtac.
 bbb.
     i  i+1
 x   .   1
