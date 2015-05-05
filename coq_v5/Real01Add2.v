@@ -3149,6 +3149,41 @@ exists n1; split; [ reflexivity|].
 destruct (lt_dec (u (i + n1)) (pred radix)); [assumption|discriminate H].
 Qed.
 
+Theorem all_0_all_9_eq : ∀ x y,
+ (∀ i, (x.[i] = 0)%D ∧ (y.[i] = 9)%D)
+ → (x = y)%I.
+Proof.
+intros x y Hxy.
+intros i.
+unfold digit_eq; simpl.
+unfold I2NN at 1; simpl.
+unfold I2NN at 2; simpl.
+pose proof (Hxy i) as (H1, H2).
+rewrite H1, H2, d2n_0, d2n_9; simpl.
+replace (S i) with (S i + 0) by apply Nat.add_0_r.
+assert (Some 0 = fst_neq_9 (I2NN x) (S i)) as H3.
+ apply first_nonzero_iff.
+ split; [ intros j Hj; exfalso; revert Hj; apply Nat.nlt_0_r | idtac ].
+ apply seq_not_9_I2NN_neq, neq_d2n_9.
+ rewrite Nat.add_0_r.
+ pose proof (Hxy (S i)) as (H, _); rewrite H.
+ apply Digit.neq_0_9.
+
+ symmetry in H3.
+ erewrite carry_add_fin; [ idtac | eassumption | reflexivity ].
+ rewrite carry_indic_I2NN; [ idtac | assumption ].
+ assert (None = fst_neq_9 (I2NN y) (S i)) as H4.
+  apply first_nonzero_iff; intros j.
+  apply seq_not_9_I2NN; simpl.
+  pose proof (Hxy (S (i + j))) as (_, H).
+  apply eq_d2n_9; assumption.
+
+  symmetry in H4.
+  rewrite carry_add_inf; [ idtac | assumption ].
+  rewrite Nat.add_1_r, succ_pred_radix, radix_mod_radix.
+  apply zero_mod_radix.
+Qed.
+
 Theorem I_eq_iff : ∀ x y,
   (x = y)%I
   ↔ (x == y)%I ∨
@@ -3645,36 +3680,12 @@ split; intros Hxy.
   destruct Hxy as [(Hi, Hxy)| Hxy].
    subst i; clear Hj.
    destruct Hxy as [Hxy| Hxy].
-    intros i.
-    unfold digit_eq; simpl.
-    unfold I2NN at 1; simpl.
-    unfold I2NN at 2; simpl.
-    pose proof Hxy i as (H1, H2).
-    rewrite H1, H2, d2n_0, d2n_9; simpl.
-    replace (S i) with (S i + 0) by apply Nat.add_0_r.
-    assert (Some 0 = fst_neq_9 (I2NN x) (S i)) as H3.
-     apply first_nonzero_iff.
-     split; [ intros j Hj; exfalso; revert Hj; apply Nat.nlt_0_r | idtac ].
-     apply seq_not_9_I2NN_neq, neq_d2n_9.
-     rewrite Nat.add_0_r.
-     pose proof Hxy (S i) as (H, _); rewrite H.
-     apply Digit.neq_0_9.
+    apply all_0_all_9_eq; assumption.
 
-     symmetry in H3.
-     erewrite carry_add_fin; [ idtac | eassumption | reflexivity ].
-     rewrite carry_indic_I2NN; [ idtac | assumption ].
-     assert (None = fst_neq_9 (I2NN y) (S i)) as H4.
-      apply first_nonzero_iff; intros j.
-      apply seq_not_9_I2NN; simpl.
-      pose proof Hxy (S (i + j)) as (_, H).
-      apply eq_d2n_9; assumption.
+    symmetry; apply all_0_all_9_eq; intros i; rewrite and_comm.
+    apply Hxy.
 
-      symmetry in H4.
-      rewrite carry_add_inf; [ idtac | assumption ].
-      rewrite Nat.add_1_r, succ_pred_radix, radix_mod_radix.
-      apply zero_mod_radix.
-
-    idtac.
+   idtac.
 bbb.
 *)
 
