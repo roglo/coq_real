@@ -3248,8 +3248,13 @@ destruct s1 as [n1| ].
    rewrite d2n_9, add_pred_radix_1_mod_radix, zero_mod_radix.
    reflexivity.
 
- idtac.
-bbb.
+ apply first_nonzero_iff in Hs1.
+ pose proof Hxy j as (H1, _).
+ pose proof Hs1 i as H2.
+ apply seq_not_9_I2NN, eq_d2n_9 in H2.
+ rewrite Nat.add_comm, H1 in H2.
+ exfalso; revert H2; apply Digit.neq_0_9.
+Qed.
 
 Theorem I_eq_iff : ∀ x y,
   (x = y)%I
@@ -3753,8 +3758,14 @@ split; intros Hxy.
     apply Hxy.
 
    destruct Hxy as [(Hxyi, Hxy)| (Hxyi, Hxy)].
-bbb.
-*)
+    eapply eq_999_000; eassumption.
+
+    symmetry in Hxyi.
+    symmetry; eapply eq_999_000; try eassumption.
+     intros j Hji; symmetry; apply Hj; assumption.
+
+     intros dj; rewrite and_comm; apply Hxy.
+Qed.
 
 (* multiplication *)
 
