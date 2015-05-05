@@ -270,6 +270,9 @@ Proof. apply Nat.succ_pred, Digit.radix_neq_0. Qed.
 Theorem radix_mod_radix : radix mod radix = 0.
 Proof. apply Nat.mod_same, Digit.radix_neq_0. Qed.
 
+Theorem zero_mod_radix : 0 mod radix = 0.
+Proof. apply Nat.mod_small, Digit.radix_gt_0. Qed.
+
 Theorem carry_add_add_0_r2 : ∀ u i, carry_add (u + I2NN 0) i = carry_add u i.
 Proof.
 intros u i.
@@ -3643,9 +3646,35 @@ split; intros Hxy.
    subst i; clear Hj.
    destruct Hxy as [Hxy| Hxy].
     intros i.
-    unfold I_norm.
-    unfold NN2I_add; simpl.
+    unfold digit_eq; simpl.
     unfold I2NN at 1; simpl.
+    unfold I2NN at 2; simpl.
+    pose proof Hxy i as (H1, H2).
+    rewrite H1, H2, d2n_0, d2n_9; simpl.
+    replace (S i) with (S i + 0) by apply Nat.add_0_r.
+    assert (Some 0 = fst_neq_9 (I2NN x) (S i)) as H3.
+     apply first_nonzero_iff.
+     split; [ intros j Hj; exfalso; revert Hj; apply Nat.nlt_0_r | idtac ].
+     apply seq_not_9_I2NN_neq, neq_d2n_9.
+     rewrite Nat.add_0_r.
+     pose proof Hxy (S i) as (H, _); rewrite H.
+     apply Digit.neq_0_9.
+
+     symmetry in H3.
+     erewrite carry_add_fin; [ idtac | eassumption | reflexivity ].
+     rewrite carry_indic_I2NN; [ idtac | assumption ].
+     assert (None = fst_neq_9 (I2NN y) (S i)) as H4.
+      apply first_nonzero_iff; intros j.
+      apply seq_not_9_I2NN; simpl.
+      pose proof Hxy (S (i + j)) as (_, H).
+      apply eq_d2n_9; assumption.
+
+      symmetry in H4.
+      rewrite carry_add_inf; [ idtac | assumption ].
+      rewrite Nat.add_1_r, succ_pred_radix, radix_mod_radix.
+      apply zero_mod_radix.
+
+    idtac.
 bbb.
 *)
 
