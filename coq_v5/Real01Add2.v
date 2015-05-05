@@ -3686,6 +3686,57 @@ split; intros Hxy.
     apply Hxy.
 
    destruct Hxy as [(Hxyi, Hxy)| (Hxyi, Hxy)].
+Theorem eq_999_000 : ∀ x y i,
+  (∀ j, j < i → (x .[ j] = y .[ j])%D)
+  → d2n (x .[ i]) = d2n (y .[ i]) + 1
+  → (∀ di, (x .[ i + S di] = 0)%D ∧ (y .[ i + S di] = 9)%D)
+  → (x = y)%I.
+Proof.
+intros x y i Hj Hxyi Hxy j.
+unfold I_norm; simpl.
+unfold I2NN at 1; unfold I2NN at 2.
+(*
+destruct (lt_eq_lt_dec j i) as [[H1| H1]| H1].
+ generalize H1; intros Hxyj.
+ apply Hj in Hxyj; rewrite Hxyj.
+*)
+ unfold carry_add at 1.
+ remember (fst_neq_9 (I2NN x) (S j)) as s1 eqn:Hs1.
+ destruct s1 as [n1| ].
+  symmetry in Hs1.
+  rewrite carry_indic_I2NN; [ idtac | assumption ].
+  rewrite Nat.add_0_r, n2d_d2n.
+  unfold carry_add.
+  remember (fst_neq_9 (I2NN y) (S j)) as s2 eqn:Hs2.
+  destruct s2 as [n2| ].
+   symmetry in Hs2.
+   rewrite carry_indic_I2NN; [ idtac | assumption ].
+   rewrite Nat.add_0_r, n2d_d2n.
+
+destruct (lt_dec j i) as [H1| H1].
+ apply Hj; assumption.
+
+(*
+ subst j.
+*)
+ symmetry in  Hs2.
+apply first_nonzero_iff in Hs2.
+destruct Hs2 as (Hn2, Ht2).
+pose proof Hxy n2 as (_, H).
+apply seq_not_9_I2NN_neq, neq_d2n_9 in Ht2.
+rewrite Nat.add_succ_r in H.
+destruct (eq_nat_dec j i) as [H2| H2].
+subst j; contradiction.
+apply Nat.neq_sym in H2.
+apply Nat.nlt_ge in H1.
+apply Nat_le_neq_lt in H1; [|assumption].
+rename H into Hy.
+pose proof Hxy (j - S i + S n2) as (_, H).
+rewrite Nat.add_succ_r, <- Nat.add_succ_l, Nat.add_assoc in H.
+rewrite Nat.add_sub_assoc in H; [|assumption].
+rewrite Nat.add_comm in H; remember (plus (S n2)) as f.
+rewrite Nat.add_comm, Nat.add_sub in H; subst f; simpl in H.
+rewrite Nat.add_comm in H; contradiction.
 bbb.
 *)
 
