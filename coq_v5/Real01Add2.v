@@ -3020,18 +3020,12 @@ destruct s1 as [n1| ].
    rewrite H in Hn.
    revert Hn; apply pred_radix_neq_0.
 
-  idtac.
-bbb.
-        i  i+1
-x   .   3   9   9   9 …
-    =   ≠
-y   .   4   9   .
-
-        i  i+1
-x   .   ≠9   9   9   9 …
-    =   ≠
-y   .   ≠0   .
-*)
+  rewrite <- d2n_1 in Hn.
+  do 2 rewrite <- d2n_add in Hn.
+  apply digit_d2n_eq_iff in Hn.
+  apply Digit.add_cancel_r in Hn.
+  contradiction.
+Qed.
 
 Theorem I_eq_case_x9_y0 : ∀ x y i,
   (x = y)%I
