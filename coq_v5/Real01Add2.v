@@ -3889,6 +3889,26 @@ destruct s1 as [n1| ].
   apply eq_d2n_9; assumption.
 
 bbb.
+  assert (∃ n, ∀ j, (x.[n + j] = 9)%D) as Hx.
+   pose proof Hi 0 as H.
+   rewrite Nat.add_0_r in H.
+   unfold digit_eq in H; simpl in H.
+   unfold I2NN at 1 in H; simpl in H.
+   rewrite Nat_pred_mod in H.
+   unfold carry_add in H; simpl in H.
+   remember (fst_neq_9 (I2NN x) (S (S i))) as s2 eqn:Hs2.
+   destruct s2 as [n2| ].
+    symmetry in Hs2.
+    do 2 rewrite <- Nat.add_succ_l in H.
+    rewrite carry_indic_I2NN in H; [ idtac | assumption ].
+    rewrite Nat.add_0_r, d2n_mod_radix in H.
+    exists (S i); intros j.
+    apply eq_d2n_9.
+    destruct j; [ rewrite Nat.add_0_r; assumption | idtac ].
+    symmetry in Hs2.
+    apply first_nonzero_iff in Hs2; simpl in Hs2.
+    destruct Hs2 as (Hn2, Ht2).
+bbb.
 *)
 
 Theorem I2NN_NN2I_add : ∀ u, (NN2I_add (I2NN (NN2I_add u)) = NN2I_add u)%I.
