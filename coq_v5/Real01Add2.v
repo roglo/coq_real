@@ -3863,27 +3863,31 @@ Qed.
 
 Theorem NN2I_add_I2NN : ∀ x, (NN2I_add (I2NN x) = x)%I.
 Proof.
-intros u.
-(*
-unfold I_eq, I_norm, I_add2.
-rewrite NN_add_add_0_r.
-rewrite NN_add_add_0_r.
-*)
-unfold I_eq, I_norm; simpl.
-unfold I_add2; simpl.
-rewrite I_zero_NN_zero.
-do 2 rewrite NN2I_add_0_r.
-intros i; simpl.
+intros x i.
 unfold digit_eq; simpl.
-Abort. (*
-SearchAbout NN2I_add.
-unfold I2NN; simpl.
-rewrite d2n_n2d.
-bbb.
+unfold I2NN at 1; simpl.
+unfold I2NN at 5; simpl.
+rewrite n2d_add, d2n_add.
+do 2 rewrite d2n_n2d.
+unfold I2NN at 1; simpl.
+rewrite <- Nat.add_mod; [ idtac | apply Digit.radix_neq_0 ].
+unfold carry_add at 2; simpl.
+remember (fst_neq_9 (I2NN (NN2I_add (I2NN x))) (S i)) as s1 eqn:Hs1.
+destruct s1 as [n1| ].
+ symmetry in Hs1.
+ rewrite <- Nat.add_succ_l.
+ rewrite carry_indic_I2NN; [ idtac | assumption ].
+ rewrite Nat.add_0_r.
+ rewrite Nat.mod_mod; [ reflexivity | apply Digit.radix_neq_0 ].
 
-SearchAbout I2NN.
+ exfalso.
+ apply first_nonzero_iff in Hs1.
+ assert (∀ j, (NN2I_add (I2NN x) .[ S (i + j)] = 9)%D) as Hi.
+  intros j.
+  pose proof Hs1 j as H.
+  apply seq_not_9_I2NN in H.
+  apply eq_d2n_9; assumption.
 
-unfold NN2I_add, I2NN; simpl.
 bbb.
 *)
 
