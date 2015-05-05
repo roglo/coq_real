@@ -3685,7 +3685,7 @@ split; intros Hxy.
     symmetry; apply all_0_all_9_eq; intros i; rewrite and_comm.
     apply Hxy.
 
-   idtac.
+   destruct Hxy as [(Hxyi, Hxy)| (Hxyi, Hxy)].
 bbb.
 *)
 
