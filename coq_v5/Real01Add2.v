@@ -3627,37 +3627,10 @@ split; intros Hxy.
          intros j Hji; apply seq_eq_eq, Hj; assumption.
 
         right.
-Focus 1.
-apply I_eq_case_x_n0_y9; try assumption.
-intros j Hji; apply seq_eq_eq, Hj; assumption.
-bbb.
+        apply I_eq_case_x_n0_y9; try assumption.
+        intros j Hji; apply seq_eq_eq, Hj; assumption.
 
-revert Hn; clear; intros.
-
-bbb.
-
-pose proof carry_add_0_or_1 (I2NN y) (S (S i)) as H.
-destruct H as [H5|H5]; rewrite H5 in Hn.
-rewrite Nat.add_0_r, d2n_mod_radix in Hn.
-pose proof Hn2 0 as H.
-apply seq_not_9_I2NN in H.
-rewrite Nat.add_0_r in H.
-rewrite H in Hn.
-bbb.
-
-pose proof carry_add_0_or_1 (I2NN y) (S i) as H.
-destruct H as [H6|H6]; rewrite H6 in Hn.
-rewrite Nat.add_0_r, d2n_mod_radix in Hn.
-apply digit_d2n_eq_iff in Hn.
-rewrite H3 in Hn; symmetry in Hn.
-revert Hn; apply digit_neq_succ_digit.
-
-bbb.
-
-          rewrite H3 in Hn.
-          symmetry in Hn; revert Hn; apply digit_neq_succ_digit.
-
-          clear Hn.
+ idtac.
 bbb.
 *)
 
