@@ -3630,7 +3630,22 @@ split; intros Hxy.
         apply I_eq_case_x_n0_y9; try assumption.
         intros j Hji; apply seq_eq_eq, Hj; assumption.
 
- idtac.
+ destruct Hxy as [Hxy| Hxy].
+  intros i.
+  unfold I_norm; simpl.
+  unfold I2NN at 1.
+  unfold I2NN at 2.
+  rewrite Hxy at 1.
+  erewrite carry_add_compat; [ reflexivity | apply Hxy ].
+
+  destruct Hxy as (i, (Hj, Hxy)).
+  destruct Hxy as [(Hi, Hxy)| Hxy].
+   subst i; clear Hj.
+   destruct Hxy as [Hxy| Hxy].
+    intros i.
+    unfold I_norm.
+    unfold NN2I_add; simpl.
+    unfold I2NN at 1; simpl.
 bbb.
 *)
 
