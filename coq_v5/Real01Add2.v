@@ -2778,47 +2778,6 @@ intros u.
 apply NN2I_add_I2NN.
 Qed.
 
-Theorem NN2I_add_I2NN : ∀ x, (NN2I_add (I2NN x) == x)%I.
-Proof.
-intros x i; simpl.
-unfold I2NN; simpl.
-unfold digit_eq; simpl.
-(*
-rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
-*)
-Abort. (*
-rewrite summation_split_first; [ idtac | apply Nat.le_0_l ].
-rewrite Nat.sub_0_r, Nat.add_0_r; fsimpl.
-rewrite Nat.div_add_l; [ idtac | apply int_pow_neq_0, Digit.radix_neq_0 ].
-rewrite Nat.div_small.
- rewrite Nat.add_0_r; unfold d2n.
- rewrite Nat.mod_mod; [ reflexivity | apply Digit.radix_neq_0 ].
-
- revert i.
- induction n; intros j; [ unfold summation; apply Nat.lt_0_1 | fsimpl ].
- rewrite summation_split_first; [ idtac | apply le_n_S, Nat.le_0_l ].
- rewrite Nat.sub_succ, Nat.sub_0_r.
- erewrite summation_shift; try (apply le_n_S, Nat.le_0_l).
- do 2 (rewrite Nat.sub_succ, Nat.sub_0_r).
- erewrite summation_compat.
-  Focus 2.
-  intros k (Hk, Hkn).
-  rewrite Nat.add_assoc, Nat.add_shuffle0, Nat.add_1_r.
-  rewrite Nat.add_1_r, Nat.sub_succ; reflexivity.
-
-  remember (S j) as sj; simpl; subst sj.
-  eapply lt_le_trans; [ apply Nat.add_lt_mono_l, IHn | idtac ].
-  remember (int_pow radix n) as rn eqn:Hrn.
-  remember (d2n (x .[ j + 1]) * rn) as a.
-  remember (radix * rn) as b.
-  replace rn with (1 * rn) by apply Nat.mul_1_l; subst a b rn.
-  rewrite <- Nat.mul_add_distr_r.
-  apply Nat.mul_le_mono; [ idtac | reflexivity ].
-  rewrite Nat.add_comm.
-  apply d2n_lt_radix.
-Qed.
-*)
-
 Theorem I_add2_0_r : ∀ x, (x + 0 = x)%I.
 Proof.
 intros x.
