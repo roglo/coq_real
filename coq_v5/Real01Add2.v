@@ -2773,51 +2773,10 @@ destruct s1 as [n1| ].
 Qed.
 
 Theorem I2NN_NN2I_add : ∀ u, (NN2I_add (I2NN (NN2I_add u)) = NN2I_add u)%I.
-(*
-Proof. intros; apply NN2I_I2NN. Qed.
-*)
 Proof.
-intros u i; simpl.
-unfold digit_eq, n2d; simpl.
-bbb.
-do 2 rewrite NN_add_add_0_r.
-do 2 rewrite fold_toto.
-rewrite I_zero_NN_zero.
-unfold toto; simpl.
-erewrite carry_add_compat; [ idtac | apply NN_add_0_r ].
-
-Abort. (*
-rewrite zzz.
-bbb.
-
-unfold carry_add at 1; simpl.
-remember (fst_neq_9 (I2NN (NN2I_add u)) (S i)) as s1 eqn:Hs1.
-apply first_nonzero_iff in Hs1; simpl in Hs1.
-destruct s1 as [n1| ].
- destruct (lt_dec (I2NN (NN2I_add u) (S (i + n1))) (pred radix)) as [H1| H1].
-  rewrite Nat.add_0_r.
-  unfold I2NN, NN2I_add; simpl.
-  rewrite d2n_n2d, Nat.mod_mod; [ reflexivity | apply Digit.radix_neq_0 ].
-
-  apply Nat.nlt_ge in H1.
-  destruct Hs1 as (Hn1, Ht1).
-  destruct n1.
-   unfold seq_not_9 in Ht1.
-   rewrite Nat.add_0_r in Ht1, H1.
-   destruct (eq_nat_dec (I2NN (NN2I_add u) (S i)) (pred radix)) as [H2| H2].
-    exfalso; apply Ht1; reflexivity.
-
-    clear Ht1.
-Print NN2I_add.
-unfold I2NN, NN2I_add; simpl.
-rewrite d2n_n2d.
-bbb.
-
-unfold I2NN, NN2I_add; simpl.
-rewrite d2n_n2d.
-unfold fst_neq_9; simpl.
-bbb.
-*)
+intros u.
+apply NN2I_add_I2NN.
+Qed.
 
 Theorem NN2I_add_I2NN : ∀ x, (NN2I_add (I2NN x) == x)%I.
 Proof.
