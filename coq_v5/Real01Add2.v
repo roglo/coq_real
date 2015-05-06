@@ -3888,8 +3888,7 @@ destruct s1 as [n1| ].
   apply seq_not_9_I2NN in H.
   apply eq_d2n_9; assumption.
 
-bbb.
-  assert (∀ j, (x.[S (S (i + j))] = 9)%D) as Hx.
+  assert (∀ j, (x.[S (i + j)] = 8)%D ∨ (x.[S (i + j)] = 9)%D) as Hx.
    intros j.
    pose proof (Hi j) as H.
    unfold digit_eq in H; simpl in H.
@@ -3902,34 +3901,26 @@ bbb.
     do 3 rewrite <- Nat.add_succ_l in H.
     rewrite carry_indic_I2NN in H; [ idtac | assumption ].
     rewrite Nat.add_0_r, d2n_mod_radix in H; simpl in H.
-    rename H into Hx.
-    destruct n2.
-     generalize Hs2; intros H; symmetry in H.
-     apply first_nonzero_iff in H; simpl in H.
-     destruct H as (Hn, Ht).
-     apply seq_not_9_I2NN_neq in Ht.
-     rewrite Nat.add_0_r in Ht.
+    right; apply eq_d2n_9; assumption.
 
+    rewrite Nat.add_1_r in H.
+    destruct (Digit.eq_dec (x.[S(i+j)]) 9) as [H1| H1].
+     right; assumption.
 
-  assert (∃ n, ∀ j, (x.[n + j] = 9)%D) as Hx.
-   pose proof Hi 0 as H.
-   rewrite Nat.add_0_r in H.
-   unfold digit_eq in H; simpl in H.
-   unfold I2NN at 1 in H; simpl in H.
-   rewrite Nat_pred_mod in H.
-   unfold carry_add in H; simpl in H.
-   remember (fst_neq_9 (I2NN x) (S (S i))) as s2 eqn:Hs2.
-   destruct s2 as [n2| ].
-    symmetry in Hs2.
-    do 2 rewrite <- Nat.add_succ_l in H.
-    rewrite carry_indic_I2NN in H; [ idtac | assumption ].
-    rewrite Nat.add_0_r, d2n_mod_radix in H.
-    exists (S i); intros j.
-    apply eq_d2n_9.
-    destruct j; [ rewrite Nat.add_0_r; assumption | idtac ].
-    symmetry in Hs2.
-    apply first_nonzero_iff in Hs2; simpl in Hs2.
-    destruct Hs2 as (Hn2, Ht2).
+     left; apply neq_d2n_9 in H1; rewrite <- d2n_mod_radix in H1.
+     rewrite Nat_mod_succ_l in H; [ idtac | assumption ].
+     apply digit_d2n_eq_iff; unfold d2n at 2; simpl.
+     apply Nat.succ_inj.
+     rewrite Nat.mod_small.
+      rewrite Nat.succ_pred; [ idtac | apply pred_radix_neq_0 ].
+      rewrite Nat.mod_small in H; [ assumption | apply d2n_lt_radix ].
+
+      do 2 rewrite <- Nat.sub_1_r.
+      rewrite <- Nat.sub_add_distr; simpl.
+      apply Nat.sub_lt; [ idtac | apply Nat.lt_0_2 ].
+      apply radix_ge_2.
+
+   idtac.
 bbb.
 *)
 

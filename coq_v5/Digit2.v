@@ -14,14 +14,16 @@ Definition radix := radix_value rad.
 Record digit := { dig : nat }.
 Definition digit_0 := {| dig := 0 |}.
 Definition digit_1 := {| dig := 1 |}.
-Definition digit_rm1 := {| dig := pred radix |}.
+Definition digit_8 := {| dig := pred (pred radix) |}.
+Definition digit_9 := {| dig := pred radix |}.
 Definition digit_eq x y := dig x mod radix = dig y mod radix.
 Arguments dig d%D.
 Arguments digit_eq x%D y%D.
 
 Notation "0" := digit_0 : digit_scope.
 Notation "1" := digit_1 : digit_scope.
-Notation "9" := digit_rm1 : digit_scope.
+Notation "8" := digit_8 : digit_scope.
+Notation "9" := digit_9 : digit_scope.
 Notation "x = y" := (digit_eq x y) : digit_scope.
 Notation "x ≠ y" := (¬digit_eq x y) : digit_scope.
 
