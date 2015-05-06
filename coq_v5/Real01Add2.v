@@ -3888,37 +3888,39 @@ destruct s1 as [n1| ].
   apply seq_not_9_I2NN in H.
   apply eq_d2n_9; assumption.
 
-  assert (∀ j, (x.[S (i + j)] = 8)%D ∨ (x.[S (i + j)] = 9)%D) as Hx.
+  assert (∀ j, (x .[ S (i + j)] = 9)%D) as Hx.
    intros j.
    pose proof (Hi j) as H.
    unfold digit_eq in H; simpl in H.
    unfold I2NN at 1 in H; simpl in H.
    rewrite Nat_pred_mod in H.
    unfold carry_add in H; simpl in H.
-   remember (fst_neq_9 (I2NN x) (S (S (i + j)))) as s2 eqn:Hs2.
+   remember (fst_neq_9 (I2NN x) (S (S (i + j)))) as s2 eqn:Hs2 .
    destruct s2 as [n2| ].
     symmetry in Hs2.
     do 3 rewrite <- Nat.add_succ_l in H.
     rewrite carry_indic_I2NN in H; [ idtac | assumption ].
     rewrite Nat.add_0_r, d2n_mod_radix in H; simpl in H.
-    right; apply eq_d2n_9; assumption.
+    apply eq_d2n_9; assumption.
 
     rewrite Nat.add_1_r in H.
-    destruct (Digit.eq_dec (x.[S(i+j)]) 9) as [H1| H1].
-     right; assumption.
-
-     left; apply neq_d2n_9 in H1; rewrite <- d2n_mod_radix in H1.
-     rewrite Nat_mod_succ_l in H; [ idtac | assumption ].
-     apply digit_d2n_eq_iff; unfold d2n at 2; simpl.
-     apply Nat.succ_inj.
-     rewrite Nat.mod_small.
-      rewrite Nat.succ_pred; [ idtac | apply pred_radix_neq_0 ].
-      rewrite Nat.mod_small in H; [ assumption | apply d2n_lt_radix ].
-
-      do 2 rewrite <- Nat.sub_1_r.
-      rewrite <- Nat.sub_add_distr; simpl.
-      apply Nat.sub_lt; [ idtac | apply Nat.lt_0_2 ].
-      apply radix_ge_2.
+    rename H into Hx.
+    pose proof (Hi (S j)) as H.
+    unfold digit_eq in H; simpl in H.
+    unfold I2NN at 1 in H; simpl in H.
+    rewrite Nat_pred_mod in H.
+    generalize Hs2; intros H1.
+    apply first_nonzero_iff in H1.
+    pose proof (H1 0) as H2.
+    apply seq_not_9_I2NN in H2.
+    rewrite Nat.add_0_r, <- Nat.add_succ_r in H2.
+    rewrite H2 in H; clear H2.
+    rewrite Nat.add_succ_r, <- Nat.add_1_r in H.
+    symmetry in Hs2.
+    rewrite carry_add_inf in H; [ idtac | assumption ].
+    rewrite add_pred_radix_1_mod_radix in H.
+    symmetry in H.
+    exfalso; revert H; apply pred_radix_neq_0.
 
    idtac.
 bbb.
