@@ -3861,6 +3861,71 @@ intros u v Huv w x Hwx i.
 apply toto_compat; assumption.
 Qed.
 
+Theorem fst_neq_9_I2NN : ∀ x i,
+  fst_neq_9 (I2NN (NN2I_add (I2NN x))) i ≠ None.
+Proof.
+intros x i Hs1; symmetry in Hs1.
+apply first_nonzero_iff in Hs1.
+assert (∀ j, (NN2I_add (I2NN x) .[ i + j] = 9)%D) as Hi.
+ intros j.
+ pose proof (Hs1 j) as H.
+ apply seq_not_9_I2NN in H.
+ apply eq_d2n_9; assumption.
+
+ assert (∀ j, (x .[ i + j] = 9)%D) as Hx.
+  intros j.
+  pose proof (Hi j) as H.
+  unfold digit_eq in H; simpl in H.
+  unfold I2NN at 1 in H; simpl in H.
+  rewrite Nat_pred_mod in H.
+  unfold carry_add in H; simpl in H.
+  remember (fst_neq_9 (I2NN x) (S (i + j))) as s2 eqn:Hs2 .
+  destruct s2 as [n2| ].
+   symmetry in Hs2.
+   do 2 rewrite <- Nat.add_succ_l in H.
+   rewrite carry_indic_I2NN in H; [ idtac | assumption ].
+   rewrite Nat.add_0_r, d2n_mod_radix in H; simpl in H.
+   apply eq_d2n_9; assumption.
+
+   rewrite Nat.add_1_r in H.
+   rename H into Hx.
+   pose proof (Hi (S j)) as H.
+   unfold digit_eq in H; simpl in H.
+   unfold I2NN at 1 in H; simpl in H.
+   rewrite Nat_pred_mod in H.
+   generalize Hs2; intros H1.
+   apply first_nonzero_iff in H1.
+   pose proof (H1 0) as H2.
+   apply seq_not_9_I2NN in H2.
+   rewrite Nat.add_0_r, <- Nat.add_succ_r in H2.
+   rewrite H2 in H; clear H2.
+   rewrite Nat.add_succ_r, <- Nat.add_1_r in H.
+   symmetry in Hs2.
+   rewrite carry_add_inf in H; [ idtac | assumption ].
+   rewrite add_pred_radix_1_mod_radix in H.
+   symmetry in H.
+   exfalso; revert H; apply pred_radix_neq_0.
+
+  pose proof (Hi 0) as Hn.
+  pose proof (Hx 0) as H.
+  apply eq_d2n_9 in H.
+  rewrite Nat.add_0_r in Hn, H.
+  unfold digit_eq in Hn; simpl in Hn.
+  unfold I2NN at 1 in Hn.
+  rewrite H, Nat_pred_mod in Hn.
+  unfold carry_add in Hn; simpl in Hn.
+  remember (fst_neq_9 (I2NN x) (S i)) as s2 eqn:Hs2 .
+  destruct s2 as [n2| ].
+   apply first_nonzero_iff in Hs2.
+   destruct Hs2 as (Hn2, Ht2).
+   apply seq_not_9_I2NN_neq, neq_d2n_9 in Ht2.
+   clear H; pose proof (Hx (S n2)) as H.
+   rewrite Nat.add_succ_r in H; contradiction.
+
+   rewrite add_pred_radix_1_mod_radix in Hn.
+   symmetry in Hn; revert Hn; apply pred_radix_neq_0.
+Qed.
+
 Theorem NN2I_add_I2NN : ∀ x, (NN2I_add (I2NN x) = x)%I.
 Proof.
 intros x i.
@@ -3880,51 +3945,9 @@ destruct s1 as [n1| ].
  rewrite Nat.add_0_r.
  rewrite Nat.mod_mod; [ reflexivity | apply Digit.radix_neq_0 ].
 
- exfalso.
- apply first_nonzero_iff in Hs1.
- assert (∀ j, (NN2I_add (I2NN x) .[ S (i + j)] = 9)%D) as Hi.
-  intros j.
-  pose proof Hs1 j as H.
-  apply seq_not_9_I2NN in H.
-  apply eq_d2n_9; assumption.
-
-  assert (∀ j, (x .[ S (i + j)] = 9)%D) as Hx.
-   intros j.
-   pose proof (Hi j) as H.
-   unfold digit_eq in H; simpl in H.
-   unfold I2NN at 1 in H; simpl in H.
-   rewrite Nat_pred_mod in H.
-   unfold carry_add in H; simpl in H.
-   remember (fst_neq_9 (I2NN x) (S (S (i + j)))) as s2 eqn:Hs2 .
-   destruct s2 as [n2| ].
-    symmetry in Hs2.
-    do 3 rewrite <- Nat.add_succ_l in H.
-    rewrite carry_indic_I2NN in H; [ idtac | assumption ].
-    rewrite Nat.add_0_r, d2n_mod_radix in H; simpl in H.
-    apply eq_d2n_9; assumption.
-
-    rewrite Nat.add_1_r in H.
-    rename H into Hx.
-    pose proof (Hi (S j)) as H.
-    unfold digit_eq in H; simpl in H.
-    unfold I2NN at 1 in H; simpl in H.
-    rewrite Nat_pred_mod in H.
-    generalize Hs2; intros H1.
-    apply first_nonzero_iff in H1.
-    pose proof (H1 0) as H2.
-    apply seq_not_9_I2NN in H2.
-    rewrite Nat.add_0_r, <- Nat.add_succ_r in H2.
-    rewrite H2 in H; clear H2.
-    rewrite Nat.add_succ_r, <- Nat.add_1_r in H.
-    symmetry in Hs2.
-    rewrite carry_add_inf in H; [ idtac | assumption ].
-    rewrite add_pred_radix_1_mod_radix in H.
-    symmetry in H.
-    exfalso; revert H; apply pred_radix_neq_0.
-
-   idtac.
-bbb.
-*)
+ exfalso; symmetry in Hs1; revert Hs1.
+ apply fst_neq_9_I2NN.
+Qed.
 
 Theorem I2NN_NN2I_add : ∀ u, (NN2I_add (I2NN (NN2I_add u)) = NN2I_add u)%I.
 (*
