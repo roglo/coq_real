@@ -445,7 +445,7 @@ Qed.
 
 (* commutativity *)
 
-Theorem I_add2_comm : ∀ x y, (x + y == y + x)%I.
+Theorem I_eqs_add2_comm : ∀ x y, (x + y == y + x)%I.
 Proof.
 intros x y i; simpl.
 rewrite NN_add_comm.
@@ -470,8 +470,8 @@ Theorem I_eqs_add2_compat : ∀ x y z t,
 Proof.
 intros x y z t Hxy Hzt.
 rewrite I_eqs_add2_compat_r; [ idtac | eassumption ].
-rewrite I_add2_comm; symmetry.
-rewrite I_add2_comm; symmetry.
+rewrite I_eqs_add2_comm; symmetry.
+rewrite I_eqs_add2_comm; symmetry.
 apply I_eqs_add2_compat_r; assumption.
 Qed.
 
@@ -2781,83 +2781,9 @@ Qed.
 Theorem I_add2_0_r : ∀ x, (x + 0 = x)%I.
 Proof.
 intros x.
-rewrite I_add2_0.
+unfold I_add2.
+SearchAbout I_add2.
 bbb.
-
-unfold I_add2; intros i; simpl.
-do 2 rewrite fold_add_NN_add_l, fold_toto.
-rewrite I_zero_NN_zero.
-unfold add_NN_add_l, toto; simpl.
-do 2 rewrite NN_add_0_r.
-rewrite fold_toto.
-erewrite toto_compat.
-2: rewrite NN2I_add_0_r; reflexivity.
-2: reflexivity.
-unfold toto; simpl.
-bbb.
-SearchAbout NN2I_add.
-  ============================
-   (n2d
-      (I2NN (NN2I_add (I2NN x + 0%NN)) i +
-       carry_add (I2NN (NN2I_add (I2NN x + 0%NN)) + 0%NN) i) =
-    n2d (I2NN x i + carry_add (I2NN x + 0%NN) i))%D
-  ============================
-   (n2d
-      (I2NN (NN2I_add (I2NN x + 0%NN)) i +
-       carry_add (I2NN (NN2I_add (I2NN x)) + 0%NN) i) =
-    n2d (I2NN x i + carry_add (I2NN x + 0%NN) i))%D
-
-bbb.
-
-bbb.
-unfold digit_eq, NN2I_add, carry_add; simpl.
-remember (fst_neq_9 (I2NN x) (S i)) as s1 eqn:Hs1.
-apply first_nonzero_iff in Hs1.
-destruct s1 as [n | ].
- unfold seq_not_9 in Hs1; simpl in Hs1.
- destruct Hs1 as (Hn1, Ht1).
- destruct (lt_dec (I2NN x (S (i + n))) (pred radix)) as [H1| H1].
-  rewrite Nat.add_0_r; unfold I2NN, d2n.
-  rewrite Nat.mod_mod; [ reflexivity | apply Digit.radix_neq_0 ].
-
-  apply Nat.nlt_ge in H1.
-  destruct (eq_nat_dec (I2NN x (S (i + n))) (pred radix)) as [H2| H2].
-   exfalso; apply Ht1; reflexivity.
-
-   clear Ht1.
-   unfold I2NN, d2n.
-bbb.
-   destruct n.
-    clear Hn1.
-    Focus 2.
-    assert (n < S n) as H by apply Nat.lt_succ_diag_r.
-    apply Hn1 in H.
-    destruct (eq_nat_dec (I2NN x (S (i + n))) (pred radix)) as [H3| H3].
-     unfold I2NN, d2n in H3.
-bbb.
-
-unfold summation.
-remember modulo as fmod; remember div as fdiv; simpl; subst fmod fdiv.
-do 2 rewrite Nat.add_0_r, Nat.mul_1_r; fsimpl.
-(*
-rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
-*)
-rewrite Nat.div_add_l; [ idtac | apply sqr_radix_neq_0 ].
-rewrite Nat.div_small.
- rewrite Nat.add_0_r; unfold d2n.
- rewrite Nat.mod_mod; [ reflexivity | apply Digit.radix_neq_0 ].
-
- apply le_lt_trans with (m := pred radix * radix + pred radix).
-  apply Nat.add_le_mono; [ idtac | apply le_d2n_1 ].
-  apply Nat.mul_le_mono_r, le_d2n_1.
-
-  rewrite <- Nat.sub_1_r.
-  rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
-  rewrite Nat.add_sub_assoc; [ idtac | apply Digit.radix_gt_0 ].
-  rewrite Nat.sub_add; [ idtac | apply radix_le_sqr_radix ].
-  rewrite Nat.sub_1_r.
-  apply Nat.lt_pred_l, sqr_radix_neq_0.
-Qed.
 
 (* *)
 
