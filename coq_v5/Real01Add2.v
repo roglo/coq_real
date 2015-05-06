@@ -502,61 +502,6 @@ intros x y Hxy.
 apply -> digit_d2n_eq_iff; assumption.
 Qed.
 
-(* borrowed from Read01Add.v and adapted for this implementation *)
-
-(*
-Theorem carry_before_relay : ∀ u i di,
-  fst_neq_9 u i = Some di
-  → ∀ dj, dj ≤ di → carry_add u (i + dj) = carry_add u i.
-Proof.
-intros u i di Hs dj Hdj.
-unfold carry_add; simpl.
-remember (fst_neq_9 u (S (i + dj))) as s1 eqn:Hs1 .
-remember (fst_neq_9 u (S i)) as s2 eqn:Hs2 .
-apply first_nonzero_iff in Hs1.
-apply first_nonzero_iff in Hs2.
-destruct s1 as [n1| ].
- destruct Hs1 as (Hn1, Ht1).
-Theorem zzz : ∀ u i n, seq_not_9 u i n ≠ 0 → u (i + n) ≠ pred radix.
-Proof.
-intros u i n Hu.
-unfold seq_not_9 in Hu; simpl in Hu.
-destruct (eq_nat_dec (u (i + n)) (pred radix)); [ idtac | assumption ].
-exfalso; apply Hu; reflexivity.
-Qed.
- apply zzz in Ht1.
- remember ( (u (S (i + dj + n1)))) as a.
- destruct (lt_dec a (pred radix)) as [H1| H1]; subst a.
-destruct s2 as [n2| ].
-destruct Hs2 as (Hn2, Ht2).
-apply zzz in Ht2.
- remember ( (u (S (i + n2)))) as a.
- destruct (lt_dec a (pred radix)) as [H2| H2]; subst a.
-reflexivity.
-exfalso; apply H2; clear H2.
-
-bbb.
- unfold seq_not_9 in Ht1; simpl in Ht1.
- apply seq_not_9_nz in Ht1.
- destruct s2 as [n2| ].
-  destruct Hs2 as (Hn2, Ht2).
-
-eapply first_nonzero in Hs1; try eassumption.
- subst s1.
- rewrite Nat.add_sub_assoc.
-  rewrite Nat.add_comm, Nat.add_sub; reflexivity.
-
-  apply Nat.add_le_mono_l; assumption.
-
- split.
-  apply Nat.le_sub_le_add_l.
-  rewrite Nat.sub_diag.
-  apply Nat.le_0_l.
-
-  apply Nat.add_le_mono_l; assumption.
-Qed.
-*)
-
 Theorem fst_neq_9_in_range : ∀ u i j di s,
   fst_neq_9 u i = Some di
   → fst_neq_9 u j = s
