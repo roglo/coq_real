@@ -2639,35 +2639,39 @@ destruct s1 as [n1| ].
        apply eq_d2n_9; assumption.
 
     right; left.
-    split.
-     simpl.
-     rewrite carry_add_add_0_r2, NN_add_add_0_r.
-     unfold I2NN at 1; simpl.
-     rewrite d2n_n2d.
-     apply first_nonzero_iff in Hs1.
-     destruct Hs1 as (_, Ht1).
-     apply seq_eq_neq in Ht1.
-     simpl in Ht1.
-     rewrite carry_add_add_0_r2, NN_add_add_0_r in Ht1.
-     unfold I2NN at 1 in Ht1; simpl in Ht1.
-     unfold carry_add in Ht1; unfold carry_add.
-     remember (fst_neq_9 (I2NN x) 1) as s2 eqn:Hs2 .
-     destruct s2 as [n2| ].
-      symmetry in Hs2.
-      rewrite carry_indic_I2NN in Ht1; [ idtac | assumption ].
-      rewrite Nat.add_0_r in Ht1.
-      rewrite n2d_d2n in Ht1.
-      exfalso; apply Ht1; reflexivity.
+    generalize Hs1; intros H.
+    apply first_nonzero_iff in H.
+    destruct H as (_, Ht1).
+    apply seq_eq_neq in Ht1; simpl in Ht1; simpl.
+    rewrite carry_add_add_0_r2, NN_add_add_0_r.
+    unfold I2NN at 1; simpl.
+    rewrite d2n_n2d.
+    rewrite carry_add_add_0_r2, NN_add_add_0_r in Ht1.
+    unfold I2NN at 1 in Ht1; simpl in Ht1.
+    unfold carry_add in Ht1; unfold carry_add at 1.
+    remember (fst_neq_9 (I2NN x) 1) as s2 eqn:Hs2 .
+    destruct s2 as [n2| ].
+     symmetry in Hs2.
+     rewrite carry_indic_I2NN in Ht1; [ idtac | assumption ].
+     rewrite Nat.add_0_r in Ht1.
+     rewrite n2d_d2n in Ht1.
+     exfalso; apply Ht1; reflexivity.
 
+     apply neq_d2n_9 in H1.
+     split.
       apply Nat.mod_small.
       rewrite Nat.add_1_r.
-      apply neq_d2n_9 in H1.
       apply Nat_le_neq_lt; [ apply d2n_lt_radix | idtac ].
       intros H; apply H1.
       apply Nat.succ_inj.
       rewrite succ_pred_radix; assumption.
 
-     intros di.
+      intros di.
+      rewrite carry_add_add_0_r2, NN_add_add_0_r.
+      unfold I2NN at 1; simpl.
+      remember (S di) as sdi; rewrite <- Nat.add_1_l; subst sdi.
+      symmetry in Hs2.
+      rewrite carry_add_inf; [ idtac | assumption ].
 bbb.
 
 (* *)
