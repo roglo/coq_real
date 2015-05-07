@@ -2774,8 +2774,28 @@ destruct s1 as [n1| ].
        apply eq_d2n_9, Nat.succ_inj.
        rewrite succ_pred_radix; assumption.
 
- idtac.
+ left; intros i.
+ apply first_nonzero_iff in Hs1.
+ pose proof Hs1 i as H.
+ apply seq_eq_eq in H; assumption.
+Qed.
+
+(* compatibility with = *)
+
+Theorem I_add2_compat_r : ∀ x y z : I, (x = y)%I → (x + z = y + z)%I.
+Proof.
+intros x y z Hxy.
+apply I_eq_iff in Hxy.
+destruct Hxy as [Hxy| Hxy].
+ apply I_eqs_eq, I_eqs_add2_compat_r; assumption.
+
+ destruct Hxy as (i, (Hj, Hxy)).
+ destruct Hxy as [(Hi, Hxy)| Hxy].
+  subst i; clear Hj.
+  destruct Hxy as [Hxy| Hxy].
 bbb.
+
+(* *)
 
 Theorem eq_carry_add_0 : ∀ u i,
   carry_add u i = 0
