@@ -2659,7 +2659,6 @@ destruct s1 as [n1| ].
        apply eq_d2n_9; assumption.
 
     right; left.
-(*
 Theorem zzz : ∀ x i,
   first_nonzero (seq_eq (x + 0) x) = Some i
   → (x .[i] ≠ 9)%D
