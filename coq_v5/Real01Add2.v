@@ -158,6 +158,7 @@ Add Parametric Relation : _ I_eq
  as I_eq_rel.
 
 Definition seq_eq x y i := if Digit.eq_dec (x.[i]) (y.[i]) then 0 else 1.
+Arguments seq_eq x%I y%I i%nat.
 
 Add Parametric Morphism : I2NN
   with signature I_eqs ==> NN_eq
@@ -2580,7 +2581,18 @@ Theorem I_add2_0_r : ∀ x, (x + 0 = x)%I.
 Proof.
 intros x.
 apply I_eq_iff.
-right.
+remember (first_nonzero (seq_eq (x + 0%I) x)) as s1 eqn:Hs1.
+destruct s1 as [n1| ].
+ right; exists n1.
+ split.
+  intros j Hj.
+  apply first_nonzero_iff in Hs1.
+  destruct Hs1 as (Hn1, Ht1).
+  apply Hn1 in Hj.
+  unfold seq_eq in Hj.
+  remember ((x + 0)%I .[ j]) as a.
+  destruct (Digit.eq_dec a (x .[ j])); [ assumption | idtac ].
+  exfalso; discriminate Hj.
 bbb.
 
 (* *)
