@@ -2577,9 +2577,62 @@ Qed.
 
 (* addition neutral element *)
 
+Theorem NN2I_add_compat : ∀ u v,
+  (u = v)%NN
+  → (NN2I_add u == NN2I_add v)%I.
+Proof.
+intros u v Huv i; simpl.
+unfold digit_eq; simpl; f_equal; f_equal; [ apply Huv | idtac ].
+apply carry_add_compat; assumption.
+Qed.
+
+Add Parametric Morphism : NN2I_add
+ with signature NN_eq ==> I_eqs
+ as NN2I_add_morph.
+Proof. intros; apply NN2I_add_compat; assumption. Qed.
+
+Theorem I_add2_0 : ∀ x, (x + 0 == NN2I_add (I2NN x))%I.
+Proof.
+intros x.
+unfold I_add2.
+rewrite NN_add_add_0_r; reflexivity.
+Qed.
+
 Theorem I_add2_0_r : ∀ x, (x + 0 = x)%I.
 Proof.
 intros x.
+(**)
+unfold I_eq, I_norm.
+apply NN2I_add_compat.
+rewrite I_add2_0.
+intros i.
+unfold I2NN at 1; simpl.
+unfold I2NN at 1 3; simpl.
+rewrite d2n_n2d.
+unfold carry_add; simpl.
+remember (fst_neq_9 (I2NN x) (S i)) as s1 eqn:Hs1.
+destruct s1 as [n1| ].
+ rewrite <- Nat.add_succ_l.
+ symmetry in Hs1.
+ rewrite carry_indic_I2NN; [ idtac | assumption ].
+ rewrite Nat.add_0_r, d2n_mod_radix; reflexivity.
+
+SearchAbout fst_neq_9.
+Print I2NN.
+Print d2n.
+bbb.
+ apply first_nonzero_iff in Hs1.
+Print d2n.
+
+ pose proof Hs1 0 as H.
+ apply seq_not_9_I2NN in H.
+ rewrite Nat.add_0_r in H.
+ unfold d2n in H.
+
+bbb.
+  ============================
+   (I2NN (NN2I_add (I2NN x)) = I2NN x)%NN
+
 apply I_eq_iff.
 remember (first_nonzero (seq_eq (x + 0%I) x)) as s1 eqn:Hs1 .
 destruct s1 as [n1| ].
@@ -2685,27 +2738,6 @@ destruct s1 as [n1| ].
 bbb.
 
 (* *)
-
-Theorem NN2I_add_compat : ∀ u v,
-  (u = v)%NN
-  → (NN2I_add u == NN2I_add v)%I.
-Proof.
-intros u v Huv i; simpl.
-unfold digit_eq; simpl; f_equal; f_equal; [ apply Huv | idtac ].
-apply carry_add_compat; assumption.
-Qed.
-
-Add Parametric Morphism : NN2I_add
- with signature NN_eq ==> I_eqs
- as NN2I_add_morph.
-Proof. intros; apply NN2I_add_compat; assumption. Qed.
-
-Theorem I_add2_0 : ∀ x, (x + 0 == NN2I_add (I2NN x))%I.
-Proof.
-intros x.
-unfold I_add2.
-rewrite NN_add_add_0_r; reflexivity.
-Qed.
 
 Theorem eq_carry_add_0 : ∀ u i,
   carry_add u i = 0
