@@ -2793,6 +2793,37 @@ destruct Hxy as [Hxy| Hxy].
  destruct Hxy as [(Hi, Hxy)| Hxy].
   subst i; clear Hj.
   destruct Hxy as [Hxy| Hxy].
+   apply I_eq_iff.
+   right.
+   (* if z does not end with 999.. else ... *)
+bbb.
+0.00000000
+0.2345
+0.2345
+
+0.99999999
+0.2345
+0.23449999
+
+0.00000000
+0.23459999
+0.2346
+
+0.99999999
+0.23459999
+0.23459999
+
+   intros i; simpl.
+
+   pose proof Hxy i as (Hx, Hy).
+   apply eq_d2n_0 in Hx.
+   apply eq_d2n_9 in Hy.
+   unfold I2NN at 1; simpl.
+   unfold NN_add at 1; simpl.
+   unfold I2NN at 1; simpl.
+   rewrite Hx, Nat.add_0_l.
+unfold carry_add at 1; simpl.
+
 bbb.
 
 (* *)
