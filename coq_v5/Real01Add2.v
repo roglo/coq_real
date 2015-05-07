@@ -2593,6 +2593,69 @@ destruct s1 as [n1| ].
   remember ((x + 0)%I .[ j]) as a.
   destruct (Digit.eq_dec a (x .[ j])); [ assumption | idtac ].
   exfalso; discriminate Hj.
+
+  destruct n1.
+bbb.
+   (* j'ai été trop rapide en disant 'left' ci-dessous *)
+   (* c'est left si x = 0.9999… mais right si x = 0.099999… *)
+
+   left; split; [ reflexivity | left; intros i ].
+   apply first_nonzero_iff in Hs1.
+   destruct Hs1 as (_, Ht1).
+   unfold seq_eq in Ht1.
+   remember ((x + 0)%I .[ 0]) as a.
+   destruct (Digit.eq_dec a (x .[0])) as [H1| H1].
+    exfalso; apply Ht1; reflexivity.
+
+    clear Ht1; subst a; simpl in H1.
+    rewrite carry_add_add_0_r2, NN_add_add_0_r in H1.
+    unfold I2NN at 1 in H1.
+    unfold carry_add in H1.
+    remember (fst_neq_9 (I2NN x) 1) as s1 eqn:Hs1.
+    destruct s1 as [n1| ].
+     symmetry in Hs1.
+     rewrite carry_indic_I2NN in H1; [ idtac | assumption ].
+     rewrite Nat.add_0_r, n2d_d2n in H1.
+     exfalso; apply H1; reflexivity.
+
+     simpl.
+     rewrite carry_add_add_0_r2, NN_add_add_0_r.
+     unfold I2NN at 1, carry_add.
+     destruct i.
+      rewrite <- Hs1.
+      remember (d2n (x .[ 0]) + 1) as d eqn:Hd.
+      rewrite Nat.add_1_r in Hd; symmetry in Hd.
+      destruct d; [ discriminate Hd | idtac ].
+      apply Nat.succ_inj in Hd.
+
+       rew
+
+      destruct (Digit.eq_dec d 0) as [H2| H2].
+      split; [ assumption | idtac ].
+      rewrite H2 in H1.
+
+      unfold n2d, d2n in Hd; simpl in Hd.
+
+
+
+      apply first_nonzero_iff in Hs1.
+      pose proof Hs1 0 as H.
+      apply seq_not_9_I2NN in H.
+      rewrite Nat.add_0_r in H.
+
+
+
+     rewrite carry_indic_I2NN; [ idtac | assumption ].
+     rewrite Nat.add_0_r, n2d_d2n.
+    destruct i.
+
+     apply first_nonzero_iff in Hs1.
+     destruct i.
+      simpl.
+bbb.
+
+     pose proof Hs1 i as H.
+     apply seq_not_9_I2NN in H; simpl in H.
 bbb.
 
 (* *)
