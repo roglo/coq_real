@@ -2581,7 +2581,7 @@ Theorem I_add2_0_r : ∀ x, (x + 0 = x)%I.
 Proof.
 intros x.
 apply I_eq_iff.
-remember (first_nonzero (seq_eq (x + 0%I) x)) as s1 eqn:Hs1.
+remember (first_nonzero (seq_eq (x + 0%I) x)) as s1 eqn:Hs1 .
 destruct s1 as [n1| ].
  right; exists n1.
  split.
@@ -2595,67 +2595,79 @@ destruct s1 as [n1| ].
   exfalso; discriminate Hj.
 
   destruct n1.
-bbb.
-   (* j'ai été trop rapide en disant 'left' ci-dessous *)
-   (* c'est left si x = 0.9999… mais right si x = 0.099999… *)
+   destruct (Digit.eq_dec (x .[ 0]) 9) as [H1| H1].
+    left; split; [ reflexivity | left; intros i ].
+    apply first_nonzero_iff in Hs1.
+    destruct Hs1 as (_, Ht1).
+    unfold seq_eq in Ht1.
+    remember ((x + 0)%I .[ 0]) as a.
+    destruct (Digit.eq_dec a (x .[ 0])) as [H2| H2].
+     exfalso; apply Ht1; reflexivity.
 
-   left; split; [ reflexivity | left; intros i ].
-   apply first_nonzero_iff in Hs1.
-   destruct Hs1 as (_, Ht1).
-   unfold seq_eq in Ht1.
-   remember ((x + 0)%I .[ 0]) as a.
-   destruct (Digit.eq_dec a (x .[0])) as [H1| H1].
-    exfalso; apply Ht1; reflexivity.
+     clear Ht1; subst a; simpl in H2.
+     rewrite carry_add_add_0_r2, NN_add_add_0_r in H2.
+     unfold I2NN at 1 in H2.
+     unfold carry_add in H2.
+     remember (fst_neq_9 (I2NN x) 1) as s1 eqn:Hs1 .
+     destruct s1 as [n1| ].
+      symmetry in Hs1.
+      rewrite carry_indic_I2NN in H2; [ idtac | assumption ].
+      rewrite Nat.add_0_r, n2d_d2n in H2.
+      exfalso; apply H2; reflexivity.
 
-    clear Ht1; subst a; simpl in H1.
-    rewrite carry_add_add_0_r2, NN_add_add_0_r in H1.
-    unfold I2NN at 1 in H1.
-    unfold carry_add in H1.
-    remember (fst_neq_9 (I2NN x) 1) as s1 eqn:Hs1.
-    destruct s1 as [n1| ].
-     symmetry in Hs1.
-     rewrite carry_indic_I2NN in H1; [ idtac | assumption ].
-     rewrite Nat.add_0_r, n2d_d2n in H1.
-     exfalso; apply H1; reflexivity.
+      simpl.
+      rewrite carry_add_add_0_r2, NN_add_add_0_r.
+      rewrite <- Nat.add_1_l.
+      symmetry in Hs1.
+      rewrite carry_add_inf; [ idtac | assumption ].
+      unfold I2NN at 1.
+      destruct i.
+       split; [ idtac | assumption ].
+       rewrite H1.
+       rewrite d2n_9; unfold digit_eq, n2d; simpl.
+       rewrite add_pred_radix_1_mod_radix.
+       rewrite Nat.mod_small; [ reflexivity | apply Digit.radix_gt_0 ].
 
+       symmetry in Hs1.
+       apply first_nonzero_iff in Hs1.
+       pose proof (Hs1 i) as H.
+       apply seq_not_9_I2NN in H; simpl in H; rewrite H.
+       unfold digit_eq at 1; simpl.
+       rewrite add_pred_radix_1_mod_radix.
+       rewrite Nat.mod_0_l; [ idtac | apply Digit.radix_neq_0 ].
+       split; [ reflexivity | idtac ].
+       apply eq_d2n_9; assumption.
+
+    right; left.
+    split.
      simpl.
      rewrite carry_add_add_0_r2, NN_add_add_0_r.
-     unfold I2NN at 1, carry_add.
-     destruct i.
-      rewrite <- Hs1.
-      remember (d2n (x .[ 0]) + 1) as d eqn:Hd.
-      rewrite Nat.add_1_r in Hd; symmetry in Hd.
-      destruct d; [ discriminate Hd | idtac ].
-      apply Nat.succ_inj in Hd.
-
-       rew
-
-      destruct (Digit.eq_dec d 0) as [H2| H2].
-      split; [ assumption | idtac ].
-      rewrite H2 in H1.
-
-      unfold n2d, d2n in Hd; simpl in Hd.
-
-
-
-      apply first_nonzero_iff in Hs1.
-      pose proof Hs1 0 as H.
-      apply seq_not_9_I2NN in H.
-      rewrite Nat.add_0_r in H.
-
-
-
-     rewrite carry_indic_I2NN; [ idtac | assumption ].
-     rewrite Nat.add_0_r, n2d_d2n.
-    destruct i.
-
+     unfold I2NN at 1; simpl.
+     rewrite d2n_n2d.
      apply first_nonzero_iff in Hs1.
-     destruct i.
-      simpl.
-bbb.
+     destruct Hs1 as (_, Ht1).
+     apply seq_eq_neq in Ht1.
+     simpl in Ht1.
+     rewrite carry_add_add_0_r2, NN_add_add_0_r in Ht1.
+     unfold I2NN at 1 in Ht1; simpl in Ht1.
+     unfold carry_add in Ht1; unfold carry_add.
+     remember (fst_neq_9 (I2NN x) 1) as s2 eqn:Hs2 .
+     destruct s2 as [n2| ].
+      symmetry in Hs2.
+      rewrite carry_indic_I2NN in Ht1; [ idtac | assumption ].
+      rewrite Nat.add_0_r in Ht1.
+      rewrite n2d_d2n in Ht1.
+      exfalso; apply Ht1; reflexivity.
 
-     pose proof Hs1 i as H.
-     apply seq_not_9_I2NN in H; simpl in H.
+      apply Nat.mod_small.
+      rewrite Nat.add_1_r.
+      apply neq_d2n_9 in H1.
+      apply Nat_le_neq_lt; [ apply d2n_lt_radix | idtac ].
+      intros H; apply H1.
+      apply Nat.succ_inj.
+      rewrite succ_pred_radix; assumption.
+
+     intros di.
 bbb.
 
 (* *)
