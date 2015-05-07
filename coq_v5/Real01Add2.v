@@ -2601,7 +2601,7 @@ Qed.
 Theorem I_add2_0_r : ∀ x, (x + 0 = x)%I.
 Proof.
 intros x.
-(**)
+(*
 unfold I_eq, I_norm.
 apply NN2I_add_compat.
 rewrite I_add2_0.
@@ -2617,7 +2617,8 @@ destruct s1 as [n1| ].
  rewrite carry_indic_I2NN; [ idtac | assumption ].
  rewrite Nat.add_0_r, d2n_mod_radix; reflexivity.
 
-SearchAbout fst_neq_9.
+ exfalso.
+
 Print I2NN.
 Print d2n.
 bbb.
@@ -2632,7 +2633,7 @@ Print d2n.
 bbb.
   ============================
    (I2NN (NN2I_add (I2NN x)) = I2NN x)%NN
-
+*)
 apply I_eq_iff.
 remember (first_nonzero (seq_eq (x + 0%I) x)) as s1 eqn:Hs1 .
 destruct s1 as [n1| ].
@@ -2691,6 +2692,7 @@ destruct s1 as [n1| ].
        apply eq_d2n_9; assumption.
 
     right; left.
+(**)
     generalize Hs1; intros H.
     apply first_nonzero_iff in H.
     destruct H as (_, Ht1).
@@ -2734,8 +2736,19 @@ destruct s1 as [n1| ].
       rewrite add_pred_radix_1_mod_radix, zero_mod_radix.
       reflexivity.
 
-   right.
+   right; left.
 bbb.
+  Hs1 : Some 0 = first_nonzero (seq_eq (x + 0) x)
+  H1 : (x .[ 0] ≠ 9)%D
+  ============================
+   d2n ((x + 0)%I .[ 0]) = d2n (x .[ 0]) + 1
+   ∧ (∀ di : nat, ((x + 0)%I .[ 0 + S di] = 0)%D ∧ (x .[ 0 + S di] = 9)%D)
+
+  Hs1 : Some (S n1) = first_nonzero (seq_eq (x + 0) x)
+  ============================
+   d2n ((x + 0)%I .[ S n1]) = d2n (x .[ S n1]) + 1
+   ∧ (∀ di : nat,
+      ((x + 0)%I .[ S n1 + S di] = 0)%D ∧ (x .[ S n1 + S di] = 9)%D)
 
 (* *)
 
