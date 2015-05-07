@@ -2625,16 +2625,15 @@ destruct s1 as [n1| ].
        split; [ idtac | assumption ].
        rewrite H1.
        rewrite d2n_9; unfold digit_eq, n2d; simpl.
-       rewrite add_pred_radix_1_mod_radix.
-       rewrite Nat.mod_small; [ reflexivity | apply Digit.radix_gt_0 ].
+       rewrite add_pred_radix_1_mod_radix, zero_mod_radix.
+       reflexivity.
 
        symmetry in Hs1.
        apply first_nonzero_iff in Hs1.
        pose proof (Hs1 i) as H.
        apply seq_not_9_I2NN in H; simpl in H; rewrite H.
        unfold digit_eq at 1; simpl.
-       rewrite add_pred_radix_1_mod_radix.
-       rewrite Nat.mod_0_l; [ idtac | apply Digit.radix_neq_0 ].
+       rewrite add_pred_radix_1_mod_radix, zero_mod_radix.
        split; [ reflexivity | idtac ].
        apply eq_d2n_9; assumption.
 
@@ -2672,6 +2671,17 @@ destruct s1 as [n1| ].
       remember (S di) as sdi; rewrite <- Nat.add_1_l; subst sdi.
       symmetry in Hs2.
       rewrite carry_add_inf; [ idtac | assumption ].
+      generalize Hs2; intros H.
+      symmetry in H; apply first_nonzero_iff in H.
+      rename H into Ht2.
+      pose proof (Ht2 di) as H.
+      apply seq_not_9_I2NN, eq_d2n_9 in H.
+      rewrite H, d2n_9.
+      split; [ unfold digit_eq; simpl | reflexivity ].
+      rewrite add_pred_radix_1_mod_radix, zero_mod_radix.
+      reflexivity.
+
+   right.
 bbb.
 
 (* *)
