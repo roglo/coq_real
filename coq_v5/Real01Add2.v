@@ -2601,39 +2601,6 @@ Qed.
 Theorem I_add2_0_r : ∀ x, (x + 0 = x)%I.
 Proof.
 intros x.
-(*
-unfold I_eq, I_norm.
-apply NN2I_add_compat.
-rewrite I_add2_0.
-intros i.
-unfold I2NN at 1; simpl.
-unfold I2NN at 1 3; simpl.
-rewrite d2n_n2d.
-unfold carry_add; simpl.
-remember (fst_neq_9 (I2NN x) (S i)) as s1 eqn:Hs1.
-destruct s1 as [n1| ].
- rewrite <- Nat.add_succ_l.
- symmetry in Hs1.
- rewrite carry_indic_I2NN; [ idtac | assumption ].
- rewrite Nat.add_0_r, d2n_mod_radix; reflexivity.
-
- exfalso.
-
-Print I2NN.
-Print d2n.
-bbb.
- apply first_nonzero_iff in Hs1.
-Print d2n.
-
- pose proof Hs1 0 as H.
- apply seq_not_9_I2NN in H.
- rewrite Nat.add_0_r in H.
- unfold d2n in H.
-
-bbb.
-  ============================
-   (I2NN (NN2I_add (I2NN x)) = I2NN x)%NN
-*)
 apply I_eq_iff.
 remember (first_nonzero (seq_eq (x + 0%I) x)) as s1 eqn:Hs1 .
 destruct s1 as [n1| ].
@@ -2692,7 +2659,15 @@ destruct s1 as [n1| ].
        apply eq_d2n_9; assumption.
 
     right; left.
-(**)
+(*
+Theorem zzz : ∀ x i,
+  first_nonzero (seq_eq (x + 0) x) = Some i
+  → (x .[i] ≠ 9)%D
+  → d2n ((x + 0)%I .[i]) = d2n (x.[i]) + 1
+    ∧ (∀ di : nat, ((x + 0)%I .[i + S di] = 0)%D ∧ (x .[i + S di] = 9)%D).
+Proof.
+bbb.
+*)
     generalize Hs1; intros H.
     apply first_nonzero_iff in H.
     destruct H as (_, Ht1).
@@ -2737,6 +2712,111 @@ destruct s1 as [n1| ].
       reflexivity.
 
    right; left.
+   generalize Hs1; intros H.
+   apply first_nonzero_iff in H.
+   destruct H as (Hn1, Ht1).
+   apply seq_eq_neq in Ht1; simpl in Ht1; simpl.
+   rewrite carry_add_add_0_r2, NN_add_add_0_r.
+   unfold I2NN at 1; simpl.
+   rewrite d2n_n2d.
+   rewrite carry_add_add_0_r2, NN_add_add_0_r in Ht1.
+   unfold I2NN at 1 in Ht1; simpl in Ht1.
+   unfold carry_add in Ht1; unfold carry_add at 1.
+   remember (fst_neq_9 (I2NN x) (S (S n1))) as s2 eqn:Hs2 .
+   destruct s2 as [n2| ].
+    symmetry in Hs2.
+    rewrite carry_indic_I2NN in Ht1; [ idtac | assumption ].
+    rewrite Nat.add_0_r in Ht1.
+    rewrite n2d_d2n in Ht1.
+    exfalso; apply Ht1; reflexivity.
+
+    destruct (Digit.eq_dec (x .[ S n1]) 9) as [H1| H1].
+     Focus 2.
+     apply neq_d2n_9 in H1.
+     split.
+      apply Nat.mod_small.
+      rewrite Nat.add_1_r.
+      apply Nat_le_neq_lt; [ apply d2n_lt_radix | idtac ].
+      intros H; apply H1.
+      apply Nat.succ_inj.
+      rewrite succ_pred_radix; assumption.
+
+      intros di.
+      rewrite carry_add_add_0_r2, NN_add_add_0_r.
+      unfold I2NN at 1; simpl.
+      do 2 rewrite <- Nat.add_succ_l.
+      symmetry in Hs2.
+      rewrite carry_add_inf; [ idtac | assumption ].
+      generalize Hs2; intros H.
+      symmetry in H; apply first_nonzero_iff in H.
+      rename H into Ht2.
+      pose proof (Ht2 di) as H.
+      apply seq_not_9_I2NN, eq_d2n_9 in H.
+      do 2 rewrite Nat.add_succ_r.
+      rewrite H, d2n_9, <- Nat.add_succ_r.
+      split; [ unfold digit_eq; simpl | reflexivity ].
+      rewrite add_pred_radix_1_mod_radix, zero_mod_radix.
+      reflexivity.
+
+     clear Ht1.
+     pose proof (Hn1 n1 (Nat.lt_succ_diag_r n1)) as H.
+     apply seq_eq_eq in H; simpl in H.
+     rewrite carry_add_add_0_r2, NN_add_add_0_r in H.
+     unfold I2NN at 1 in H.
+     unfold carry_add in H; simpl in H.
+     remember (fst_neq_9 (I2NN x) (S n1)) as s3 eqn:Hs3 .
+     destruct s3 as [n3| ].
+      clear H.
+      apply first_nonzero_iff in Hs3.
+      destruct Hs3 as (Hn3, Ht3).
+      destruct n3.
+       apply seq_not_9_neq in Ht3.
+       rewrite Nat.add_0_r in Ht3.
+       unfold I2NN in Ht3.
+       apply neq_d2n_9 in Ht3; contradiction.
+
+       generalize Hs2; intros H.
+       apply first_nonzero_iff in H.
+       rename H into Hn2.
+       pose proof (Hn2 n3) as H.
+       apply seq_not_9_neq in Ht3.
+       apply seq_not_9_eq in H.
+       rewrite Nat.add_succ_r in Ht3; contradiction.
+
+      apply -> digit_d2n_eq_iff in H.
+      rewrite d2n_n2d in H.
+      destruct (Digit.eq_dec (x .[ n1]) 9) as [H2| H2].
+       rewrite H2, d2n_9 in H.
+       rewrite add_pred_radix_1_mod_radix in H.
+       exfalso; symmetry in H; revert H; apply pred_radix_neq_0.
+
+       rewrite Nat.mod_small in H.
+        apply Nat.add_sub_eq_l in H.
+        rewrite Nat.sub_diag in H; discriminate H.
+
+        rewrite Nat.add_1_r.
+        clear H.
+        apply Nat_le_neq_lt; [ apply d2n_lt_radix | idtac ].
+        intros H; apply H2.
+        apply eq_d2n_9.
+        apply Nat.succ_inj.
+        rewrite succ_pred_radix; assumption.
+
+ idtac.
+bbb.
+
+apply first_nonzero_iff in Hs3.
+clear H.
+pose proof Hs3 0 as H.
+apply seq_not_9_eq in H.
+rewrite Nat.add_0_r in H.
+unfold I2NN in H.
+apply neq_d2n_9.
+bbb.
+
+rewrite <- Nat.add_succ_l in H.
+symmetry in Hs3.
+rewrite carry_indic_I2NN in H; [|assumption].
 bbb.
   Hs1 : Some 0 = first_nonzero (seq_eq (x + 0) x)
   H1 : (x .[ 0] ≠ 9)%D
