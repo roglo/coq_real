@@ -2782,6 +2782,20 @@ Qed.
 
 (* compatibility with = *)
 
+Definition seq_end_with_999 (u : nat → nat) i :=
+  match fst_neq_9 u i with
+  | Some _ => 0
+  | None => 1
+  end.
+
+Definition fst_999 u := first_nonzero (seq_end_with_999 u).
+Arguments fst_999 u%NN.
+
+Theorem I_eqs_dec : ∀ x y, {(x == y)%I} + {(x ≠≠ y)%I}.
+Proof.
+intros x y.
+bbb.
+
 Theorem I_add2_compat_r : ∀ x y z : I, (x = y)%I → (x + z = y + z)%I.
 Proof.
 intros x y z Hxy.
