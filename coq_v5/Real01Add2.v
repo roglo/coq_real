@@ -2833,6 +2833,22 @@ z 0.23459999
   0.23459999
 *)
 apply le_S_n in Hj.
+unfold NN_add at 1 3.
+unfold I2NN at 1 2 5 6.
+pose proof Hxy j as (Hx, Hy).
+apply eq_d2n_0 in Hx.
+apply eq_d2n_9 in Hy.
+rewrite Hx, Hy; simpl.
+unfold carry_add.
+remember (fst_neq_9 (I2NN x + I2NN z) (S j)) as s2 eqn:Hs2.
+remember (fst_neq_9 (I2NN y + I2NN z) (S j)) as s3 eqn:Hs3.
+unfold NN_add; simpl.
+unfold I2NN; simpl.
+unfold carry_indic.
+destruct s2 as [n2| ].
+pose proof Hxy (S (j + n2)) as (H, _).
+apply eq_d2n_0 in H; rewrite H; clear H; simpl.
+destruct s3 as [n3| ].
 bbb.
 
      apply first_nonzero_iff in Hs1.
