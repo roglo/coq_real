@@ -601,7 +601,7 @@ split; intros Hb.
  rewrite Nat.mod_small; [ reflexivity | apply radix_ge_2 ].
 Qed.
 
-Theorem le_d2n_1 : ∀ b, d2n b ≤ pred radix.
+Theorem le_d2n_9 : ∀ b, d2n b ≤ pred radix.
 Proof.
 intros b.
 unfold d2n.
