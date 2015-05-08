@@ -2821,12 +2821,25 @@ destruct Hxy as [Hxy| Hxy].
      intros j Hj.
      apply first_nonzero_iff in Hs1.
      destruct Hs1 as (Hn1, Ht1).
+(**)
      unfold seq_end_with_999 in Ht1.
      remember (fst_neq_9 (I2NN z) n1) as s2 eqn:Hs2.
      destruct s2; [ exfalso; apply Ht1; reflexivity | clear Ht1 ].
      apply first_nonzero_iff in Hs2.
      pose proof forall_seq_not_9 z n1 Hs2 as H.
      clear Hs2; rename H into Hs2.
+(**)
+     generalize Hj; intros H.
+     apply Hn1 in H.
+     unfold seq_end_with_999 in H.
+     remember (fst_neq_9 (I2NN z) j) as s3 eqn:Hs3.
+     destruct s3 as [n3| ]; [ clear H | discriminate H ].
+     apply first_nonzero_iff in Hs3.
+     destruct Hs3 as (Hn3, Ht3).
+     apply seq_not_9_neq in Ht3.
+     simpl; unfold NN_add at 1 3; simpl.
+     unfold I2NN at 1 2 5 6; simpl.
+     (* chais pas ; faut réfléchir *)
 bbb.
 x 0.00000000
 z 0.23459999
