@@ -2819,6 +2819,22 @@ destruct Hxy as [Hxy| Hxy].
     exists n1.
     split.
      intros j Hj.
+simpl.
+destruct n1; [exfalso; revert Hj; apply Nat.nlt_0_r|].
+(*
+       n1
+       v
+x 0.00000000
+z 0.23459999
+  0.2346
+
+y 0.99999999
+z 0.23459999
+  0.23459999
+*)
+apply le_S_n in Hj.
+bbb.
+
      apply first_nonzero_iff in Hs1.
      destruct Hs1 as (Hn1, Ht1).
 (**)
@@ -2841,13 +2857,6 @@ destruct Hxy as [Hxy| Hxy].
      unfold I2NN at 1 2 5 6; simpl.
      (* chais pas ; faut réfléchir *)
 bbb.
-x 0.00000000
-z 0.23459999
-  0.2346
-
-y 0.99999999
-z 0.23459999
-  0.23459999
 
 x 0.00000000
 z 0.2345
