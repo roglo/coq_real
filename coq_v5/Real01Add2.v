@@ -2848,7 +2848,6 @@ unfold carry_indic.
 destruct s2 as [n2| ].
 pose proof Hxy (S (j + n2)) as (H, _).
 apply eq_d2n_0 in H; rewrite H; clear H; simpl.
-destruct s3 as [n3| ].
 bbb.
 
      apply first_nonzero_iff in Hs1.
