@@ -2814,40 +2814,79 @@ destruct Hxy as [Hxy| Hxy].
   destruct Hxy as [Hxy| Hxy].
    apply I_eq_iff.
    right.
-   remember (fst_999 (I2NN z)) as s1 eqn:Hs1.
+   remember (fst_999 (I2NN z)) as s1 eqn:Hs1 .
    destruct s1 as [n1| ].
     exists n1.
     split.
-     intros j Hj.
-simpl.
-destruct n1; [exfalso; revert Hj; apply Nat.nlt_0_r|].
-(*
-       n1
-       v
-x 0.00000000
-z 0.23459999
-  0.2346
+     intros j Hj; simpl.
+     destruct n1; [ exfalso; revert Hj; apply Nat.nlt_0_r | idtac ].
+     apply le_S_n in Hj.
+     unfold NN_add at 1 3.
+     unfold I2NN at 1 2 5 6.
+     pose proof (Hxy j) as (Hx, Hy).
+     apply eq_d2n_0 in Hx.
+     apply eq_d2n_9 in Hy.
+     rewrite Hx, Hy; simpl.
+     unfold carry_add.
+     remember (fst_neq_9 (I2NN x + I2NN z) (S j)) as s2 eqn:Hs2 .
+     remember (fst_neq_9 (I2NN y + I2NN z) (S j)) as s3 eqn:Hs3 .
+     unfold NN_add; simpl.
+     unfold I2NN; simpl.
+     destruct s2 as [n2| ].
+      pose proof (Hxy (S (j + n2))) as (H, _).
+      apply eq_d2n_0 in H; rewrite H; clear H; simpl.
+      unfold carry_indic.
+      remember (d2n (z .[ S (j + n2)])) as a.
+      destruct (lt_dec a (pred radix)) as [H1| H1]; subst a.
+       rewrite Nat.add_0_r, n2d_d2n.
+       destruct s3 as [n3| ].
+        pose proof (Hxy (S (j + n3))) as (_, H).
+        apply eq_d2n_9 in H; rewrite H; clear H; simpl.
+        remember (pred radix + d2n (z .[ S (j + n3)])) as a.
+        destruct (lt_dec a (pred radix)) as [H2| H2]; subst a.
+         exfalso; apply Nat.nle_gt in H2; apply H2, Nat.le_add_r.
 
-y 0.99999999
-z 0.23459999
-  0.23459999
+         rewrite Nat.add_shuffle0, Nat.add_1_r, succ_pred_radix.
+         rewrite n2d_add, n2d_d2n; unfold digit_eq; simpl.
+         rewrite Nat.add_comm.
+         rewrite Nat_mod_add_once; [ reflexivity | apply Digit.radix_neq_0 ].
+
+        rewrite Nat.add_shuffle0, Nat.add_1_r, succ_pred_radix.
+        rewrite n2d_add, n2d_d2n; unfold digit_eq; simpl.
+        rewrite Nat.add_comm.
+        rewrite Nat_mod_add_once; [ reflexivity | apply Digit.radix_neq_0 ].
+
+       apply Nat.nlt_ge in H1.
+(* mmm... perhaps case not possible because of Hxy (x=0), Hs2, H1 *)
+bbb.
+
+generalize Hs1; intros H.
+apply first_nonzero_iff in H.
+destruct H as (Hn1, Ht1).
+destruct (lt_dec (S (j + n2)) n1) as [H1| H1].
+generalize H1; intros H.
+apply lt_n_S in H.
+apply Hn1 in H.
+unfold seq_end_with_999 in H.
+remember (fst_neq_9 (I2NN z) (S (S (j + n2)))) as s4 eqn:Hs4.
+destruct s4 as [n4|]; [clear H|discriminate H].
+generalize Hs4; intros H.
+apply first_nonzero_iff in H.
+destruct H as (Hn4, Ht4).
+destruct n4.
+apply seq_not_9_I2NN_neq in Ht4.
+clear Hn4; rewrite Nat.add_0_r in Ht4.
+unfold seq_end_with_999 in Ht1.
+remember (fst_neq_9 (I2NN z) (S n1)) as s5 eqn:Hs5.
+destruct s5 as [n5|]; [exfalso; apply Ht1; reflexivity| clear Ht1].
+generalize Hs5; intros H.
+apply first_nonzero_iff in H.
+rename H into Hn5.
+     pose proof forall_seq_not_9 z (S n1) Hn5 as H.
+clear Hn5; rename H into Hn5.
+(*
+pose proof Hn5 (j + n2 - n1) as H.
 *)
-apply le_S_n in Hj.
-unfold NN_add at 1 3.
-unfold I2NN at 1 2 5 6.
-pose proof Hxy j as (Hx, Hy).
-apply eq_d2n_0 in Hx.
-apply eq_d2n_9 in Hy.
-rewrite Hx, Hy; simpl.
-unfold carry_add.
-remember (fst_neq_9 (I2NN x + I2NN z) (S j)) as s2 eqn:Hs2.
-remember (fst_neq_9 (I2NN y + I2NN z) (S j)) as s3 eqn:Hs3.
-unfold NN_add; simpl.
-unfold I2NN; simpl.
-unfold carry_indic.
-destruct s2 as [n2| ].
-pose proof Hxy (S (j + n2)) as (H, _).
-apply eq_d2n_0 in H; rewrite H; clear H; simpl.
 bbb.
 
      apply first_nonzero_iff in Hs1.

@@ -267,3 +267,11 @@ rewrite Nat.add_comm.
 rewrite Nat.div_add; [ symmetry; apply Nat.add_1_r | idtac ].
 intros H; subst b; revert Hb; apply Nat.nlt_0_r.
 Qed.
+
+Theorem Nat_mod_add_once : ∀ a b, b ≠ 0 → (a + b) mod b = a mod b.
+Proof.
+intros a b Hb.
+apply Nat.mod_add with (a := a) (b := 1) in Hb.
+rewrite Nat.mul_1_l in Hb.
+assumption.
+Qed.
