@@ -2791,10 +2791,15 @@ Definition seq_end_with_999 (u : nat → nat) i :=
 Definition fst_999 u := first_nonzero (seq_end_with_999 u).
 Arguments fst_999 u%NN.
 
-Theorem I_eqs_dec : ∀ x y, {(x == y)%I} + {(x ≠≠ y)%I}.
+Theorem forall_seq_not_9 : ∀ x i,
+  (∀ j, seq_not_9 (I2NN x) i j = 0)
+  → (∀ di, (x.[i + di] = 9)%D).
 Proof.
-intros x y.
-bbb.
+intros x i Hx j.
+pose proof Hx j as H.
+apply seq_not_9_I2NN in H.
+apply eq_d2n_9; assumption.
+Qed.
 
 Theorem I_add2_compat_r : ∀ x y z : I, (x = y)%I → (x + z = y + z)%I.
 Proof.
@@ -2809,23 +2814,35 @@ destruct Hxy as [Hxy| Hxy].
   destruct Hxy as [Hxy| Hxy].
    apply I_eq_iff.
    right.
-   (* if z does not end with 999.. else ... *)
+   remember (fst_999 (I2NN z)) as s1 eqn:Hs1.
+   destruct s1 as [n1| ].
+    exists n1.
+    split.
+     intros j Hj.
+     apply first_nonzero_iff in Hs1.
+     destruct Hs1 as (Hn1, Ht1).
+     unfold seq_end_with_999 in Ht1.
+     remember (fst_neq_9 (I2NN z) n1) as s2 eqn:Hs2.
+     destruct s2; [ exfalso; apply Ht1; reflexivity | clear Ht1 ].
+     apply first_nonzero_iff in Hs2.
+     pose proof forall_seq_not_9 z n1 Hs2 as H.
+     clear Hs2; rename H into Hs2.
 bbb.
-0.00000000
-0.2345
-0.2345
+x 0.00000000
+z 0.23459999
+  0.2346
 
-0.99999999
-0.2345
-0.23449999
+y 0.99999999
+z 0.23459999
+  0.23459999
 
-0.00000000
-0.23459999
-0.2346
+x 0.00000000
+z 0.2345
+  0.2345
 
-0.99999999
-0.23459999
-0.23459999
+y 0.99999999
+z 0.2345
+  0.23449999
 
    intros i; simpl.
 
