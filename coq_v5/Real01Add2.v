@@ -2874,56 +2874,77 @@ destruct Hxy as [Hxy| Hxy].
       generalize Hs2; intros H.
       apply first_nonzero_iff in H.
       rename H into Hn2.
-apply first_nonzero_iff in Hs1.
-destruct Hs1 as (Hn1, Ht1).
-unfold seq_end_with_999 in Ht1.
-remember (fst_neq_9 (I2NN z) (S n1)) as s4 eqn:Hs4.
-destruct s4 as [n4| ]; [exfalso; apply Ht1; reflexivity| clear Ht1].
-generalize Hs4; intros H.
-apply first_nonzero_iff in H.
-rename H into Hn4.
-destruct (lt_dec j n1) as [H1| H1].
-apply le_n_S, Hn1 in H1.
-unfold seq_end_with_999 in H1.
-remember (fst_neq_9 (I2NN z) (S j)) as s5 eqn:Hs5.
-destruct s5 as [n5| ]; [clear H1|discriminate H1].
-apply first_nonzero_iff in Hs5.
-destruct Hs5 as (Hn5, Ht5).
-apply seq_not_9_I2NN_neq in Ht5; simpl in Ht5.
-pose proof Hn2 n5 as H.
-unfold seq_not_9, NN_add, I2NN in H; simpl in H.
-pose proof Hxy (S (j + n5)) as (H1, _).
-apply eq_d2n_0 in H1.
-rewrite H1 in H; simpl in H.
-remember (d2n (z .[ S (j + n5)])) as a.
-destruct (eq_nat_dec a (pred radix)) as [H2|H2].
-contradiction.
-discriminate H.
-apply Nat.nlt_ge in H1.
-apply Nat.le_antisymm in Hj; [subst j|assumption].
-clear H1.
-      destruct s3 as [n3| ].
-       pose proof Hxy (S (n1 + n3)) as (_, H).
-       apply eq_d2n_9 in H; rewrite H; clear H.
-       unfold carry_indic.
-       remember (d2n (z .[ S (n1 + n3)])) as a.
-       destruct (lt_dec (pred radix + a) (pred radix)) as [H1| H1]; subst a.
-        exfalso; apply Nat.nle_gt in H1; apply H1, Nat.le_add_r.
+      apply first_nonzero_iff in Hs1.
+      destruct Hs1 as (Hn1, Ht1).
+      unfold seq_end_with_999 in Ht1.
+      remember (fst_neq_9 (I2NN z) (S n1)) as s4 eqn:Hs4 .
+      destruct s4 as [n4| ]; [ exfalso; apply Ht1; reflexivity | clear Ht1 ].
+      generalize Hs4; intros H.
+      apply first_nonzero_iff in H.
+      rename H into Hn4.
+      destruct (lt_dec j n1) as [H1| H1].
+       apply le_n_S, Hn1 in H1.
+       unfold seq_end_with_999 in H1.
+       remember (fst_neq_9 (I2NN z) (S j)) as s5 eqn:Hs5 .
+       destruct s5 as [n5| ]; [ clear H1 | discriminate H1 ].
+       apply first_nonzero_iff in Hs5.
+       destruct Hs5 as (Hn5, Ht5).
+       apply seq_not_9_I2NN_neq in Ht5; simpl in Ht5.
+       pose proof (Hn2 n5) as H.
+       unfold seq_not_9, NN_add, I2NN in H; simpl in H.
+       pose proof (Hxy (S (j + n5))) as (H1, _).
+       apply eq_d2n_0 in H1.
+       rewrite H1 in H; simpl in H.
+       remember (d2n (z .[ S (j + n5)])) as a.
+       destruct (eq_nat_dec a (pred radix)) as [H2| H2].
+        contradiction.
 
-        clear H1; exfalso.
-        generalize Hs3; intros H.
-        apply first_nonzero_iff in H.
-        destruct H as (Hn3, Ht3).
-        unfold seq_not_9 in Ht3.
-        unfold NN_add, I2NN in Ht3; simpl in Ht3.
-        pose proof Hxy (S (n1 + n3)) as (_, H).
-        apply eq_d2n_9 in H; rewrite H in Ht3; clear H; simpl in Ht3.
-        remember (pred radix + d2n (z .[ S (n1 + n3)])) as a.
-        destruct (eq_nat_dec a (pred radix)) as [H1| H1]; subst a.
-         exfalso; apply Ht3; reflexivity.
+        discriminate H.
 
-         clear Ht3.
-bbb.
+       apply Nat.nlt_ge in H1.
+       apply Nat.le_antisymm in Hj; [ subst j | assumption ].
+       clear H1.
+       destruct s3 as [n3| ].
+        pose proof (Hxy (S (n1 + n3))) as (_, H).
+        apply eq_d2n_9 in H; rewrite H; clear H.
+        unfold carry_indic.
+        remember (d2n (z .[ S (n1 + n3)])) as a.
+        destruct (lt_dec (pred radix + a) (pred radix)) as [H1| H1]; subst a.
+         exfalso; apply Nat.nle_gt in H1; apply H1, Nat.le_add_r.
+
+         clear H1; exfalso.
+         generalize Hs3; intros H.
+         apply first_nonzero_iff in H.
+         destruct H as (Hn3, Ht3).
+         unfold seq_not_9 in Ht3.
+         unfold NN_add, I2NN in Ht3; simpl in Ht3.
+         pose proof (Hxy (S (n1 + n3))) as (_, H).
+         apply eq_d2n_9 in H; rewrite H in Ht3; clear H; simpl in Ht3.
+         remember (pred radix + d2n (z .[ S (n1 + n3)])) as a.
+         destruct (eq_nat_dec a (pred radix)) as [H1| H1]; subst a.
+          exfalso; apply Ht3; reflexivity.
+
+          clear Ht3.
+          destruct n3.
+           Focus 2.
+           pose proof (Hn3 0 (Nat.lt_0_succ n3)) as H.
+           unfold seq_not_9, NN_add, I2NN in H; rewrite Nat.add_0_r in H.
+           pose proof (Hxy (S n1)) as (_, H2).
+           apply eq_d2n_9 in H2; rewrite H2 in H; clear H2.
+           remember (pred radix + d2n (z .[ S n1])) as a.
+           destruct (eq_nat_dec a (pred radix)) as [H2| H2]; subst a.
+            clear H; apply Nat.add_sub_eq_l in H2.
+            rewrite Nat.sub_diag in H2; symmetry in H2.
+            pose proof (Hn4 0) as H.
+            apply seq_not_9_I2NN in H.
+            rewrite Nat.add_0_r in H.
+            rewrite H in H2.
+            revert H2; apply pred_radix_neq_0.
+
+            discriminate H.
+
+           clear Hn3; rewrite Nat.add_0_r in H1.
+bbb. (* blocked. Something went wrong. *)
 
 pose proof Hn4 n3 as H.
 apply seq_not_9_I2NN in H; simpl in H.
