@@ -2923,6 +2923,8 @@ clear H1.
          exfalso; apply Ht3; reflexivity.
 
          clear Ht3.
+bbb.
+
 pose proof Hn4 n3 as H.
 apply seq_not_9_I2NN in H; simpl in H.
 bbb. (* ouais, zut, c'est pas ça... *)
