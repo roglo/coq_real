@@ -2874,7 +2874,6 @@ destruct Hxy as [Hxy| Hxy].
       generalize Hs2; intros H.
       apply first_nonzero_iff in H.
       rename H into Hn2.
-exfalso.
 bbb.
       destruct s3 as [n3| ].
        pose proof Hxy (S (j + n3)) as (_, H).
