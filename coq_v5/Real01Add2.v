@@ -2873,7 +2873,34 @@ destruct Hxy as [Hxy| Hxy].
 
       generalize Hs2; intros H.
       apply first_nonzero_iff in H.
-      rename H into Hn3.
+      rename H into Hn2.
+bbb. (* bon, et alors ? faut réfléchir... *)
+
+pose proof Hn2 0 as H.
+        unfold seq_not_9 in H.
+rewrite Nat.add_0_r in H.
+        unfold NN_add, I2NN in H; simpl in H.
+        pose proof Hxy (S j) as (H1, _).
+        apply eq_d2n_0 in H1; rewrite H1 in H; clear H1; simpl in H.
+remember (d2n (z.[S j])) as a.
+destruct (eq_nat_dec a (pred radix)) as [H1|H1]; subst a.
+clear H.
+apply first_nonzero_iff in Hs1.
+destruct Hs1 as (Hn1, Ht1).
+generalize Hj; intros H2.
+apply le_n_S, Hn1 in H2.
+unfold seq_end_with_999 in H2.
+remember (fst_neq_9 (I2NN z) j) as s4 eqn:Hs4.
+destruct s4 as [n4| ]; [clear H2|discriminate H2].
+generalize Hs4; intros H2.
+apply first_nonzero_iff in H2.
+destruct H2 as (Hn4, Ht4).
+destruct n4.
+apply seq_not_9_I2NN_neq in Ht4.
+rewrite Nat.add_0_r in Ht4.
+clear Hn4.
+
+
       destruct s3 as [n3| ].
        pose proof Hxy (S (j + n3)) as (_, H).
        apply eq_d2n_9 in H; rewrite H; clear H.
@@ -2883,6 +2910,17 @@ destruct Hxy as [Hxy| Hxy].
         exfalso; apply Nat.nle_gt in H1; apply H1, Nat.le_add_r.
 
         clear H1; exfalso.
+        generalize Hs3; intros H.
+        apply first_nonzero_iff in H.
+        destruct H as (Hn3, Ht3).
+        unfold seq_not_9 in Ht3.
+        unfold NN_add, I2NN in Ht3; simpl in Ht3.
+        pose proof Hxy (S (j + n3)) as (_, H).
+        apply eq_d2n_9 in H; rewrite H in Ht3; clear H; simpl in Ht3.
+        remember (pred radix + d2n (z .[ S (j + n3)])) as a.
+        destruct (eq_nat_dec a (pred radix)) as [H1| H1]; subst a.
+         exfalso; apply Ht3; reflexivity.
+
 bbb. (* ouais, chais pas *)
 
 pose proof Hn3 0 as H.
