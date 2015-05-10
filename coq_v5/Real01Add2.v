@@ -32,6 +32,13 @@ rewrite Nat.add_0_r.
 reflexivity.
 Qed.
 
+Theorem NN_add_0_l : ∀ u, (0 + u = u)%NN.
+Proof.
+intros u i; simpl.
+unfold NN_add; simpl.
+reflexivity.
+Qed.
+
 Theorem NN_add_assoc : ∀ u v w, (u + (v + w) = (u + v) + w)%NN.
 Proof. intros u v w i; apply Nat.add_assoc. Qed.
 
@@ -82,6 +89,26 @@ Add Parametric Morphism : rm
  as rm_morph.
 Proof. intros; apply rm_compat; assumption. Qed.
 
+Add Parametric Morphism : first_nonzero
+ with signature NN_eq ==> eq
+ as first_nonzero_morph.
+Proof.
+intros u v Huv.
+apply first_nonzero_iff.
+remember (first_nonzero u) as s1 eqn:Hs1.
+apply first_nonzero_iff in Hs1.
+destruct s1 as [n1| ].
+ destruct Hs1 as (Hn1, Ht1).
+ split.
+  intros j Hj; rewrite <- Huv.
+  apply Hn1; assumption.
+
+  intros H; apply Ht1; clear Ht1.
+  rewrite Huv; assumption.
+
+ intros j; rewrite <- Huv; apply Hs1.
+Qed.
+
 (* some extra functions *)
 
 Fixpoint int_pow a b :=
@@ -127,6 +154,45 @@ Definition I_add2 x y := NN2I_add (I2NN x + I2NN y).
 Arguments I_add2 x%I y%I.
 
 Notation "x + y" := (I_add2 x y) : I_scope.
+
+Add Parametric Morphism : seq_not_9
+ with signature NN_eq ==> eq ==> NN_eq
+ as seq_not_9_morph.
+Proof.
+intros u v Huv i k.
+unfold seq_not_9; simpl.
+rewrite Huv; reflexivity.
+Qed.
+
+Add Parametric Morphism : fst_neq_9
+ with signature NN_eq ==> eq ==> eq
+ as fst_neq_9_morph.
+Proof.
+intros u v Huv i.
+unfold fst_neq_9.
+rewrite Huv; reflexivity.
+Qed.
+
+Add Parametric Morphism : carry_add
+ with signature NN_eq ==> eq ==> eq
+ as carry_add_morph.
+Proof.
+intros u v Huv i.
+unfold carry_add; simpl.
+rewrite Huv.
+remember (fst_neq_9 v i) as s1 eqn:Hs1.
+destruct s1 as [n1| ]; [ idtac | reflexivity ].
+rewrite Huv; reflexivity.
+Qed.
+
+Theorem carry_add_add_compat_r : ∀ u v w,
+  (∀ i, u i = v i)
+  → (∀ i, carry_add (u + w) i = carry_add (v + w) i).
+Proof.
+intros u v w Huv i.
+apply carry_add_morph; [ idtac | reflexivity ].
+apply NN_add_compat; [ assumption | reflexivity ].
+Qed.
 
 (* normalisation and equality *)
 
@@ -493,15 +559,15 @@ Proof.
 intros x y z Hxy i; simpl.
 apply I2NN_morph in Hxy.
 erewrite NN_add_compat; [ idtac | eassumption | reflexivity ].
-erewrite carry_add_compat; [ reflexivity | idtac ].
-apply NN_add_compat; [ assumption | reflexivity ].
+erewrite NN_add_compat; [ reflexivity | eassumption | reflexivity ].
 Qed.
 
 Theorem I_eqs_add2_comm : ∀ x y, (x + y == y + x)%I.
 Proof.
 intros x y i; simpl.
-rewrite NN_add_comm.
-erewrite carry_add_compat; [ reflexivity | apply NN_add_comm ].
+remember carry_add as f.
+rewrite NN_add_comm; subst f.
+rewrite NN_add_comm; reflexivity.
 Qed.
 
 Theorem I_eqs_add2_compat : ∀ x y z t,
@@ -2819,14 +2885,25 @@ destruct Hxy as [Hxy| Hxy].
     exists n1.
     split.
      intros j Hj; simpl.
+unfold NN_add at 1 3.
+unfold I2NN at 1 2 5 6.
+pose proof (Hxy j) as (Hx, Hy).
+apply eq_d2n_0 in Hx.
+apply eq_d2n_9 in Hy.
+rewrite Hx, Hy; simpl; clear Hx Hy.
+assert (∀ i, I2NN x i = 0%NN i) as Hx by (intros; apply eq_d2n_0, Hxy).
+erewrite carry_add_add_compat_r, NN_add_0_l; [ idtac | assumption ].
+bbb.
+
+Focus 2. intros i.
+unfold I2NN.
+pose proof Hxy i as (H, _).
+apply eq_d2n_0 in H; rewrite H.
+reflexivity.
+bbb.
+
      destruct n1; [ exfalso; revert Hj; apply Nat.nlt_0_r | idtac ].
      apply le_S_n in Hj.
-     unfold NN_add at 1 3.
-     unfold I2NN at 1 2 5 6.
-     pose proof (Hxy j) as (Hx, Hy).
-     apply eq_d2n_0 in Hx.
-     apply eq_d2n_9 in Hy.
-     rewrite Hx, Hy; simpl.
      unfold carry_add.
      remember (fst_neq_9 (I2NN x + I2NN z) (S j)) as s2 eqn:Hs2 .
      remember (fst_neq_9 (I2NN y + I2NN z) (S j)) as s3 eqn:Hs3 .
