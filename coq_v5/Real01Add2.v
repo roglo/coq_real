@@ -2949,6 +2949,7 @@ destruct Hxy as [Hxy| Hxy].
 
       idtac.
 bbb.
+(* seems impossible since carry_add = 0 or 1, except if radix = 2 *)
 
 Focus 2. intros i.
 unfold I2NN.
