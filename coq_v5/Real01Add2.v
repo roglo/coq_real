@@ -2876,6 +2876,19 @@ remember (X + Y + Z) as XYZ eqn:HXYZ.
 do 2 rewrite <- Nat.add_assoc.
 rewrite <- Nat.add_mod_idemp_r; [ symmetry | apply Digit.radix_neq_0 ].
 rewrite <- Nat.add_mod_idemp_r; [ symmetry | apply Digit.radix_neq_0 ].
+f_equal; f_equal; subst X Y Z XYZ.
+pose proof carry_add_0_or_1 (I2NN y + I2NN z)%NN (S i) as H1.
+rewrite <- Hc1 in H1.
+pose proof carry_add_0_or_1 (I2NN x + I2NN y)%NN (S i) as H2.
+rewrite <- Hc2 in H2.
+pose proof carry_add_0_or_1 (I2NN x + I2NN (y + z))%NN (S i) as H3.
+rewrite <- Hc3 in H3.
+pose proof carry_add_0_or_1 (I2NN (x + y) + I2NN z)%NN (S i) as H4.
+rewrite <- Hc4 in H4.
+symmetry in Hc1, Hc2, Hc3, Hc4.
+move H1 before c1; move H2 before c2.
+move H3 before c3; move H4 before c4.
+destruct H1, H2, H3, H4; subst c1 c2 c3 c4; try reflexivity; exfalso.
 bbb.
 
 (* warning: + is not compatible with = *)
