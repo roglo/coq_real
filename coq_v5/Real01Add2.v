@@ -2893,6 +2893,12 @@ apply eq_d2n_9 in Hy.
 rewrite Hx, Hy; simpl; clear Hx Hy.
 assert (∀ i, I2NN x i = 0%NN i) as Hx by (intros; apply eq_d2n_0, Hxy).
 erewrite carry_add_add_compat_r, NN_add_0_l; [ idtac | assumption ].
+unfold carry_add at 1.
+remember (fst_neq_9 (I2NN z) (S j)) as s2 eqn:Hs2.
+destruct s2 as [n2|].
+symmetry in Hs2.
+rewrite carry_indic_I2NN; [ |assumption].
+rewrite Nat.add_0_r, n2d_d2n.
 bbb.
 
 Focus 2. intros i.
