@@ -552,7 +552,7 @@ intros x y Hxy.
 apply -> digit_d2n_eq_iff; assumption.
 Qed.
 
-(* compatibility with == *)
+(* compatibility + with == *)
 
 Theorem I_eqs_add2_compat_r : ∀ x y z, (x == y)%I → (x + z == y + z)%I.
 Proof.
@@ -2846,8 +2846,41 @@ destruct s1 as [n1| ].
  apply seq_eq_eq in H; assumption.
 Qed.
 
-(* compatibility with = *)
+(* associativity + *)
 
+(* is it true with == ? *)
+Theorem I_eqs_add2_assoc : ∀ x y z : I, (x + (y + z) == (x + y) + z)%I.
+Proof.
+intros x y z i; simpl.
+unfold NN_add at 1 3.
+unfold I2NN at 1 2 5 6; simpl.
+unfold NN_add at 1 4.
+unfold I2NN at 1 2 7 8.
+do 2 rewrite d2n_n2d.
+remember (d2n (x.[i])) as X.
+remember (d2n (y.[i])) as Y.
+remember (d2n (z.[i])) as Z.
+remember (carry_add (I2NN y + I2NN z) (S i)) as c1 eqn:Hc1.
+remember (carry_add (I2NN x + I2NN y) (S i)) as c2 eqn:Hc2.
+remember (carry_add (I2NN x + I2NN (y + z)) (S i)) as c3 eqn:Hc3.
+remember (carry_add (I2NN (x + y) + I2NN z) (S i)) as c4 eqn:Hc4.
+unfold digit_eq; simpl.
+rewrite Nat.add_comm, Nat.add_assoc.
+rewrite Nat.add_mod_idemp_r; [ idtac | apply Digit.radix_neq_0 ].
+symmetry; rewrite <- Nat.add_assoc.
+rewrite Nat.add_mod_idemp_l; [ idtac | apply Digit.radix_neq_0 ].
+rewrite Nat.add_shuffle0; symmetry.
+rewrite <- Nat.add_assoc, Nat.add_comm.
+do 3 rewrite Nat.add_assoc.
+remember (X + Y + Z) as XYZ eqn:HXYZ.
+do 2 rewrite <- Nat.add_assoc.
+rewrite <- Nat.add_mod_idemp_r; [ symmetry | apply Digit.radix_neq_0 ].
+rewrite <- Nat.add_mod_idemp_r; [ symmetry | apply Digit.radix_neq_0 ].
+bbb.
+
+(* warning: + is not compatible with = *)
+
+(*
 Definition seq_end_with_999 (u : nat → nat) i :=
   match fst_neq_9 u i with
   | Some _ => 0
@@ -2949,7 +2982,6 @@ destruct Hxy as [Hxy| Hxy].
 
       idtac.
 bbb.
-(* seems impossible since carry_add = 0 or 1, except if radix = 2 *)
 
 Focus 2. intros i.
 unfold I2NN.
@@ -3077,11 +3109,11 @@ bbb.
             discriminate H.
 
            clear Hn3; rewrite Nat.add_0_r in H1.
-bbb. (* blocked. Something went wrong. *)
+bbb.
 
 pose proof Hn4 n3 as H.
 apply seq_not_9_I2NN in H; simpl in H.
-bbb. (* ouais, zut, c'est pas ça... *)
+bbb.
 
 pose proof Hn2 0 as H.
         unfold seq_not_9 in H.
@@ -3128,7 +3160,7 @@ clear Hn4.
         destruct (eq_nat_dec a (pred radix)) as [H1| H1]; subst a.
          exfalso; apply Ht3; reflexivity.
 
-bbb. (* ouais, chais pas *)
+bbb.
 
 pose proof Hn3 0 as H.
       unfold seq_not_9 in H; simpl in H.
@@ -3180,6 +3212,7 @@ bbb.
 unfold carry_add at 1; simpl.
 
 bbb.
+*)
 
 (* *)
 
