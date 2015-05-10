@@ -2816,7 +2816,6 @@ destruct Hxy as [Hxy| Hxy].
    right.
    remember (fst_999 (I2NN z)) as s1 eqn:Hs1 .
    destruct s1 as [n1| ].
-bbb. (* is it really 'n1', here? *)
     exists n1.
     split.
      intros j Hj; simpl.
