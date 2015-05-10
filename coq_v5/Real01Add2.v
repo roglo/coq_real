@@ -2885,20 +2885,69 @@ destruct Hxy as [Hxy| Hxy].
     exists n1.
     split.
      intros j Hj; simpl.
-unfold NN_add at 1 3.
-unfold I2NN at 1 2 5 6.
-pose proof (Hxy j) as (Hx, Hy).
-apply eq_d2n_0 in Hx.
-apply eq_d2n_9 in Hy.
-rewrite Hx, Hy; simpl; clear Hx Hy.
-assert (∀ i, I2NN x i = 0%NN i) as Hx by (intros; apply eq_d2n_0, Hxy).
-erewrite carry_add_add_compat_r, NN_add_0_l; [ clear Hx | assumption ].
-unfold carry_add at 1.
-remember (fst_neq_9 (I2NN z) (S j)) as s2 eqn:Hs2.
-destruct s2 as [n2|].
-symmetry in Hs2.
-rewrite carry_indic_I2NN; [ |assumption].
-rewrite Nat.add_0_r, n2d_d2n.
+     unfold NN_add at 1 3.
+     unfold I2NN at 1 2 5 6.
+     pose proof (Hxy j) as (Hx, Hy).
+     apply eq_d2n_0 in Hx.
+     apply eq_d2n_9 in Hy.
+     rewrite Hx, Hy; simpl; clear Hx Hy.
+     assert (∀ i, I2NN x i = 0%NN i) as Hx by (intros; apply eq_d2n_0, Hxy).
+     erewrite carry_add_add_compat_r, NN_add_0_l; [ clear Hx | assumption ].
+     unfold carry_add at 1.
+     remember (fst_neq_9 (I2NN z) (S j)) as s2 eqn:Hs2 .
+     destruct s2 as [n2| ].
+      symmetry in Hs2.
+      rewrite carry_indic_I2NN; [ idtac | assumption ].
+      rewrite Nat.add_0_r, n2d_d2n.
+      generalize Hs1; intros H.
+      apply first_nonzero_iff in H.
+      destruct H as (Hn1, Ht1).
+      generalize Hj; intros H.
+      apply Hn1 in H.
+      unfold seq_end_with_999 in Ht1.
+      remember (fst_neq_9 (I2NN z) n1) as s3 eqn:Hs3 .
+      destruct s3; [ exfalso; apply Ht1; reflexivity | clear Ht1 ].
+      unfold seq_end_with_999 in H.
+      remember (fst_neq_9 (I2NN z) j) as s4 eqn:Hs4 .
+      destruct s4 as [n4| ]; [ clear H | discriminate H ].
+      generalize Hs3; intros H.
+      apply first_nonzero_iff in H.
+      rename H into Hn3.
+      generalize Hs4; intros H.
+      apply first_nonzero_iff in H.
+      destruct H as (Hn4, Ht4).
+      apply seq_not_9_I2NN_neq in Ht4.
+      unfold carry_add.
+      remember (fst_neq_9 (I2NN y + I2NN z) (S j)) as s5 eqn:Hs5 .
+      destruct s5 as [n5| ].
+       symmetry in Hs5.
+       unfold carry_indic, NN_add, I2NN; simpl.
+       pose proof (Hxy (S (j + n5))) as (_, H).
+       apply eq_d2n_9 in H; rewrite H; clear H.
+       remember (pred radix + d2n (z .[ S (j + n5)])) as a.
+       destruct (lt_dec a (pred radix)) as [H1| H1]; subst a.
+        apply Nat.lt_add_lt_sub_l in H1.
+        rewrite Nat.sub_diag in H1.
+        exfalso; revert H1; apply Nat.nlt_0_r.
+
+        clear H1.
+        rewrite Nat.add_shuffle0, Nat.add_1_r, succ_pred_radix.
+        unfold digit_eq; simpl.
+        rewrite Nat.add_comm.
+        rewrite Nat_mod_add_once; [ idtac | apply Digit.radix_neq_0 ].
+        unfold d2n.
+        rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
+        reflexivity.
+
+       rewrite Nat.add_shuffle0, Nat.add_1_r, succ_pred_radix.
+       unfold digit_eq; simpl.
+       rewrite Nat.add_comm.
+       rewrite Nat_mod_add_once; [ idtac | apply Digit.radix_neq_0 ].
+       unfold d2n.
+       rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
+       reflexivity.
+
+      idtac.
 bbb.
 
 Focus 2. intros i.
