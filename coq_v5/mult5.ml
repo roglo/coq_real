@@ -105,13 +105,13 @@ value first_nonzero u =
 
 (* addition *)
 
-value seq_pred_r_to_0 (u : int → int) i k =
+value seq_not_9 (u : int → int) i k =
   if u (i + k) = radix.val - 1 then 0 else 1;
 
-value fst_not_pred_r u i = first_nonzero (seq_pred_r_to_0 u i).
+value fst_not_9 u i = first_nonzero (seq_not_9 u i).
 
 value carry_add u i =
-  match fst_not_pred_r u (i + 1) with
+  match fst_not_9 u (i + 1) with
   | Some n → if u (i + n + 1) < radix.val - 1 then 0 else 1
   | None → 1
   end.
