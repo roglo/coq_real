@@ -2893,7 +2893,7 @@ split; intros H.
  apply Nat.lt_le_incl, Nat.nlt_ge in H1; contradiction.
 Qed.
 
-(* is it true with == ? not 100% sure *)
+(* have been tested in ocaml with == *)
 Theorem I_eqs_add2_assoc : ∀ x y z : I, (x + (y + z) == (x + y) + z)%I.
 Proof.
 intros x y z i; simpl.

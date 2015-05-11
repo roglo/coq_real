@@ -203,23 +203,27 @@ value int_of_i x ndec =
 ;
 value d0 = {dig = 0};
 
-(* test  ∀ x y, (x + y == x + NN2I_add (I2NN y))%I. *)
+(* test  ∀ x y, (x + (y + z) == (x + y) + z)%I *)
 
-value f1 x y = i_add2 x y;
-value f2 x y = i_add2 x (nn2i_add (i2nn y));
+value f1 x y z = i_add2 x (i_add2 y z);
+value f2 x y z = i_add2 (i_add2 x y) z;
 
-value ftest f u v = list_of_r (f u v) ndec;
+value ndec = 16;
+radix.val := 10;
+
+value ftest f x y z = list_of_r (f x y z) ndec;
 
 value ar () = Array.init ndec (fun i → Random.int (radix.val));
 value rx () =
   let a = ar () in
   {rm i = {dig = if i < Array.length a then a.(i) else 0} }.
 
-radix.val := 10;
 value x = rx ();
 value y = rx ();
-ftest f1 x y;
-ftest f2 x y;
+value z = rx ();
+ftest f1 x y z;
+ftest f2 x y z;
+ftest f1 x y z = ftest f2 x y z;
 
 aaa.
 
