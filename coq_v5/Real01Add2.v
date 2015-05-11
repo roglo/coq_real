@@ -2848,7 +2848,52 @@ Qed.
 
 (* associativity + *)
 
-(* is it true with == ? *)
+Theorem carry_add_0_iff : ∀ u i,
+ carry_add u i = 0 ↔ ∃ n, fst_neq_9 u i = Some n ∧ u (i + n) < pred radix.
+Proof.
+intros u i.
+split; intros H.
+ unfold carry_add in H.
+ remember (fst_neq_9 u i) as s eqn:Hs.
+ destruct s as [n| ]; [ idtac | discriminate H ].
+ exists n; split; [ reflexivity | idtac ].
+ unfold carry_indic in H.
+ destruct (lt_dec (u (i + n)) (pred radix)); [ assumption | discriminate H ].
+
+ destruct H as (n, (H, H1)).
+ unfold carry_add; rewrite H; unfold carry_indic.
+ destruct (lt_dec (u (i + n)) (pred radix)); [ reflexivity | contradiction ].
+Qed.
+
+Theorem carry_add_1_iff : ∀ u i,
+ carry_add u i = 1
+ ↔ (∃ n, fst_neq_9 u i = Some n ∧ u (i + n) > pred radix)
+   ∨ fst_neq_9 u i = None.
+Proof.
+intros u i.
+split; intros H.
+ unfold carry_add in H.
+ remember (fst_neq_9 u i) as s eqn:Hs.
+ destruct s as [n| ]; [ idtac | right; reflexivity ].
+ left; exists n; split; [ reflexivity | idtac ].
+ unfold carry_indic in H.
+ remember (u (i + n)) as a.
+ destruct (lt_dec a (pred radix)) as [H1| H1]; [ discriminate H | subst a ].
+ apply Nat.nlt_ge in H1.
+ apply first_nonzero_iff in Hs.
+ destruct Hs as (Hn, Ht).
+ apply seq_not_9_neq, Nat.neq_sym in Ht.
+ apply Nat_le_neq_lt; assumption.
+
+ unfold carry_add.
+ destruct H as [(n, (H, H1))| H]; rewrite H; [ idtac | reflexivity ].
+ unfold carry_indic.
+ remember (u (i + n)) as a.
+ destruct (lt_dec a (pred radix)) as [H2| H2]; [ subst a | reflexivity ].
+ apply Nat.lt_le_incl, Nat.nlt_ge in H1; contradiction.
+Qed.
+
+(* is it true with == ? not 100% sure *)
 Theorem I_eqs_add2_assoc : ∀ x y z : I, (x + (y + z) == (x + y) + z)%I.
 Proof.
 intros x y z i; simpl.
@@ -2889,6 +2934,20 @@ symmetry in Hc1, Hc2, Hc3, Hc4.
 move H1 before c1; move H2 before c2.
 move H3 before c3; move H4 before c4.
 destruct H1, H2, H3, H4; subst c1 c2 c3 c4; try reflexivity; exfalso.
+ apply carry_add_0_iff in Hc1.
+ destruct Hc1 as (n1, (Hc1, H1)).
+ unfold NN_add, I2NN in H1; simpl in H1.
+ apply carry_add_0_iff in Hc2.
+ destruct Hc2 as (n2, (Hc2, H2)).
+ unfold NN_add, I2NN in H2; simpl in H2.
+ apply carry_add_0_iff in Hc3.
+ destruct Hc3 as (n3, (Hc3, H3)).
+ unfold NN_add in H3; simpl in H3.
+ unfold I2NN at 1 in H3; simpl in H3.
+ apply carry_add_1_iff in Hc4.
+ destruct Hc4 as [(n4, (Hc4, H4))| Hc4].
+ unfold NN_add in H4; simpl in H4.
+ unfold I2NN at 2 in H4; simpl in H4.
 bbb.
 
 (* warning: + is not compatible with = *)
