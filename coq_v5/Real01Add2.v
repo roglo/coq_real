@@ -2953,11 +2953,22 @@ destruct H1, H2, H3, H4; subst c1 c2 c3 c4; try reflexivity; exfalso.
  unfold I2NN in H4; simpl in H4.
  rewrite d2n_n2d in H4.
  unfold NN_add at 1, I2NN at 1 2 in H4.
-bbb.
-
- generalize Hc4; intros H.
- symmetry in H; apply first_nonzero_iff in H.
- destruct H as (Hn4, Ht4).
+ destruct (lt_eq_lt_dec n3 n4) as [[H5| H5]| H5].
+  generalize Hc4; intros H.
+  symmetry in H; apply first_nonzero_iff in H.
+  destruct H as (Hn4, Ht4).
+  generalize H5; intros H.
+  apply Hn4, seq_not_9_eq in H.
+  unfold NN_add, I2NN in H; simpl in H.
+  rewrite d2n_n2d in H.
+  unfold NN_add at 1, I2NN at 1 2 in H; simpl in H.
+  move H3 before H.
+  remember (d2n (x.[S (i + n3)])) as X.
+  remember (d2n (y.[S (i + n3)])) as Y.
+  remember (d2n (z.[S (i + n3)])) as Z.
+  remember (carry_add (I2NN y + I2NN z) (S (S (i + n3)))) as YZ.
+  remember (carry_add (I2NN x + I2NN y) (S (S (i + n3)))) as XY.
+  move H3 before H.
 bbb.
 
 (* warning: + is not compatible with = *)
