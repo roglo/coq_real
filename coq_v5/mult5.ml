@@ -203,10 +203,16 @@ value int_of_i x ndec =
 ;
 value d0 = {dig = 0};
 
-(* test  ∀ x y, (x + (y + z) == (x + y) + z)%I *)
+(* test
+Theorem zzz : ∀ x y z,
+  (x + (y + z) == NN2I_add (I2NN x + (I2NN y + I2NN z))%NN)%I.
+
+failed: this is normal, because the number of iterations is insufficient
+in NN2I_add when adding 3 numbers
+ *)
 
 value f1 x y z = i_add2 x (i_add2 y z);
-value f2 x y z = i_add2 (i_add2 x y) z;
+value f2 x y z = nn2i_add (nn_add (i2nn x) (nn_add (i2nn y) (i2nn z)));
 
 value ndec = 16;
 radix.val := 10;
