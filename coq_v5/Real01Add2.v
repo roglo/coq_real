@@ -2943,11 +2943,21 @@ destruct H1, H2, H3, H4; subst c1 c2 c3 c4; try reflexivity; exfalso.
  apply carry_add_0_iff in Hc3.
  destruct Hc3 as (n3, (Hc3, H3)).
  unfold NN_add in H3; simpl in H3.
- unfold I2NN at 1 in H3; simpl in H3.
+ unfold I2NN in H3; simpl in H3.
+ rewrite d2n_n2d in H3.
+ unfold NN_add at 1, I2NN at 1 2 in H3.
  apply carry_add_1_iff in Hc4.
  destruct Hc4 as [(n4, (Hc4, H4))| Hc4].
  unfold NN_add in H4; simpl in H4.
  unfold I2NN at 2 in H4; simpl in H4.
+ unfold I2NN in H4; simpl in H4.
+ rewrite d2n_n2d in H4.
+ unfold NN_add at 1, I2NN at 1 2 in H4.
+bbb.
+
+ generalize Hc4; intros H.
+ symmetry in H; apply first_nonzero_iff in H.
+ destruct H as (Hn4, Ht4).
 bbb.
 
 (* warning: + is not compatible with = *)
