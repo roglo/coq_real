@@ -2893,44 +2893,6 @@ split; intros H.
  apply Nat.lt_le_incl, Nat.nlt_ge in H1; contradiction.
 Qed.
 
-Theorem zzz : ∀ u v, (NN2I_add (u + v) == NN2I_add (u + I2NN (NN2I_add v)))%I.
-Proof.
-intros u v i; simpl.
-unfold NN_add at 1 3; simpl.
-unfold NN2I_add at 1, I2NN at 1; simpl.
-do 5 rewrite n2d_add; rewrite n2d_d2n.
-do 3 rewrite <- Digit.add_assoc.
-apply Digit.add_compat; [ reflexivity | idtac ].
-apply Digit.add_compat; [ reflexivity | idtac ].
-remember (carry_add (u + v) (S i)) as c1 eqn:Hc1.
-remember (carry_add v (S i)) as c2 eqn:Hc2.
-remember (carry_add (u + I2NN (NN2I_add v)) (S i)) as c3 eqn:Hc3.
-pose proof carry_add_0_or_1 (u + v)%NN (S i) as H1.
-rewrite <- Hc1 in H1.
-pose proof carry_add_0_or_1 v (S i) as H2.
-rewrite <- Hc2 in H2.
-pose proof carry_add_0_or_1 (u + I2NN (NN2I_add v))%NN (S i) as H3.
-rewrite <- Hc3 in H3.
-symmetry in Hc1, Hc2, Hc3.
-move H1 before c1; move H2 before c2; move H3 before c3.
-destruct H1, H2, H3; subst c1 c2 c3; try reflexivity; exfalso.
-bbb.
-
-unfold carry_add at 1.
-remember (fst_neq_9 (u + v) (S i)) as s1 eqn:Hs1.
-destruct s1 as [n1| ].
-unfold NN_add at 1; simpl.
-unfold carry_add at 1.
-remember (fst_neq_9 v (S i)) as s2 eqn:Hs2.
-destruct s2 as [n2| ].
-simpl.
-unfold carry_add; simpl.
-remember (u + I2NN (NN2I_add v))%NN as a.
-remember (fst_neq_9 a (S i)) as s3 eqn:Hs3; subst a.
-destruct s3 as [n3| ].
-unfold NN_add.
-bbb.
-
 (* is it true with == ? not 100% sure *)
 Theorem I_eqs_add2_assoc : ∀ x y z : I, (x + (y + z) == (x + y) + z)%I.
 Proof.

@@ -194,8 +194,6 @@ list_of_r (i_mul (one ()) (r_of_string "101110")) 15;
 list_of_seq (nn_mul (i2nn (r_of_string "101110")) (i2nn (one ()))) 15;
 list_of_r (i_mul (r_of_string "101110") (one ())) 15;
 
-(*bbb;*)
-
 (* *)
 
 value int_of_i x ndec =
@@ -204,6 +202,26 @@ value int_of_i x ndec =
     else loop (r * radix.val + d2n (x.rm i)) (i + 1)
 ;
 value d0 = {dig = 0};
+
+(* test  ∀ x y, (x + y == x + NN2I_add (I2NN y))%I. *)
+
+value f1 x y = i_add2 x y;
+value f2 x y = i_add2 x (nn2i_add (i2nn y));
+
+value ftest f u v = list_of_r (f u v) ndec;
+
+value ar () = Array.init ndec (fun i → Random.int (radix.val));
+value rx () =
+  let a = ar () in
+  {rm i = {dig = if i < Array.length a then a.(i) else 0} }.
+
+radix.val := 10;
+value x = rx ();
+value y = rx ();
+ftest f1 x y;
+ftest f2 x y;
+
+aaa.
 
 (* checking; infinite lines of "." → ok *)
 
