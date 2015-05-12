@@ -107,19 +107,23 @@ value first_nonzero u =
 
 value partial_sum_num u n =
   summation 0 n (fun k → u k * int_pow radix.val (n - k));
-value partial_sum_den (u : int → int) n =
-  int_pow radix.val n;
 
 value sum_int_part_lb u n i =
-  (partial_sum_num u n * int_pow radix.val (i - min i n)) /
-  partial_sum_den u (n - min i n);
+  partial_sum_num u n * int_pow radix.val (i - min i n) /
+  int_pow radix.val (n - min i n);
 value sum_int_part_ub u n i m =
-  ((partial_sum_num u n + m) * int_pow radix.val (i - min i n)) /
-  partial_sum_den u (n - min i n);
+  (partial_sum_num u n + m) * int_pow radix.val (i - min i n) /
+  int_pow radix.val (n - min i n);
+value rest_int_part_num u n i m =
+  m * int_pow radix.val (i - min i n);
+value rest_int_part_den u n i m =
+  int_pow radix.val (n - min i n);
 
-hou_la_la_c_est_pas_du_tout_ca.
 value seq_same_int_part u i m n =
-  let _ = printf "[%d≤%d]%!" (sum_int_part_lb u n i) (sum_int_part_ub u n i m) in
+if rest_int_part_num u n i m > rest_int_part_den u n i m then 0 else
+(*
+  let _ = printf "[%d/%d:%d≤%d]%!" i n (sum_int_part_lb u n i) (sum_int_part_ub u n i m) in
+*)
   if sum_int_part_lb u n i = sum_int_part_ub u n i m then 1 else 0;
 
 value i2nn x i = d2n (x.rm i);
@@ -127,7 +131,7 @@ value i2nn x i = d2n (x.rm i);
 value nn2i_add u =
   {rm i =
      match first_nonzero (seq_same_int_part u i 2) with
-     | Some n → let _ = printf "<%d>%!" n in n2d (sum_int_part_lb u n i)
+     | Some n → (*let _ = printf "<%d>%!" n in *) n2d (sum_int_part_lb u n i)
      | None → n2d (sum_int_part_lb u 6 i + 1)
      end};
 value i_add x y = nn2i_add (nn_add (i2nn x) (i2nn y));
