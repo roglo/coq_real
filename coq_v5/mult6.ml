@@ -128,9 +128,11 @@ if rest_int_part_num u n i m > rest_int_part_den u n i m then 0 else
 
 value i2nn x i = d2n (x.rm i);
 
+value number_of_numbers_added = 2;
+
 value nn2i_add u =
   {rm i =
-     match first_nonzero (seq_same_int_part u i 2) with
+     match first_nonzero (seq_same_int_part u i number_of_numbers_added) with
      | Some n → (*let _ = printf "<%d>%!" n in *) n2d (sum_int_part_lb u n i)
      | None → n2d (sum_int_part_lb u 6 i + 1)
      end};
