@@ -106,18 +106,39 @@ value first_nonzero u =
 
 value i2nn x i = d2n (x.rm i);
 
+value glop u m i =
+  let x = i + logn radix.val m + 1 in
+  fun n →
+    if n < x then 0
+    else
+      let xn = summation 0 n (fun k → u k * int_pow radix.val (n - k)) in
+      let rni = int_pow radix.val (n - i) in
+      if xn mod rni + m < rni then 1 else 0;
+
 (* could help proof of associativity, taking 3 instead of 2 *)
 value number_of_numbers_added = 2;
 
 value nn2i_add u =
   let m = number_of_numbers_added in
   {rm i =
+(**)
+     match first_nonzero (glop u m i) with
+     | Some n →
+         let xn = summation 0 n (fun k → u k * int_pow radix.val (n - k)) in
+         let rni = int_pow radix.val (n - i) in
+         n2d (xn / rni)
+     | None →
+         n2d 0 (* quelle valeur lui mettre ? *)
+     end
+(*
      loop 0 (i + logn radix.val m + 1) where rec loop niter n =
        let xn = summation 0 n (fun k → u k * int_pow radix.val (n - k)) in
        let rni = int_pow radix.val (n - i) in
        if niter > 10 then n2d (xn / rni + 1)
        else if xn mod rni + m < rni then n2d (xn / rni)
-       else loop (niter + 1) (n + 1) };
+       else loop (niter + 1) (n + 1)
+*)
+   };
 value i_add x y = nn2i_add (nn_add (i2nn x) (i2nn y));
 
 (* test addition *)
