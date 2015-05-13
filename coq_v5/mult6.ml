@@ -133,6 +133,7 @@ value seq_same_int_part u i m n =
 
 value i2nn x i = d2n (x.rm i);
 
+(* could help proof of associativity, taking 3 instead of 2 *)
 value number_of_numbers_added = 2;
 
 value nn2i_add u =
