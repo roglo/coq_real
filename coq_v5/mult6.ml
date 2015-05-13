@@ -120,11 +120,16 @@ value rest_int_part_den u n i m =
   int_pow radix.val (n - min i n);
 
 value seq_same_int_part u i m n =
-if rest_int_part_num u n i m > rest_int_part_den u n i m then 0 else
+  if n < i then (* optimization *) 0
+  else if rest_int_part_num u n i m ≥ rest_int_part_den u n i m then
+    (* optimization *) 0
+  else if sum_int_part_lb u n i = sum_int_part_ub u n i m then
+    (* normal case *) 1
+   else
 (*
   let _ = printf "[%d/%d:%d≤%d]%!" i n (sum_int_part_lb u n i) (sum_int_part_ub u n i m) in
 *)
-  if sum_int_part_lb u n i = sum_int_part_ub u n i m then 1 else 0;
+    (* normal case *) 0;
 
 value i2nn x i = d2n (x.rm i);
 
@@ -134,7 +139,7 @@ value nn2i_add u =
   {rm i =
      match first_nonzero (seq_same_int_part u i number_of_numbers_added) with
      | Some n → (*let _ = printf "<%d>%!" n in *) n2d (sum_int_part_lb u n i)
-     | None → n2d (sum_int_part_lb u 6 i + 1)
+     | None → let _ = printf "<***>%!" in n2d (sum_int_part_lb u 6 i + 1)
      end};
 value i_add x y = nn2i_add (nn_add (i2nn x) (i2nn y));
 
@@ -176,7 +181,8 @@ radix.val := 10;
 value ar () = Array.init ndec (fun i → Random.int (radix.val));
 value rx () =
   let a = ar () in
-  {rm i = {dig = if i < Array.length a then a.(i) else 0} }.
+  let e = Random.int radix.val in
+  {rm i = {dig = if i < Array.length a then a.(i) else e} }.
 
 value x = rx ();
 value y = rx ();
