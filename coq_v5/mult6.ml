@@ -33,7 +33,6 @@ value list_of_seq u =
 ;
 
 value nn_add u v i = u i + v i;
-value nn_mul u v i = summation 1 i (fun j → u (j - 1) * v (i - j));
 
 (* *)
 
@@ -105,43 +104,20 @@ value first_nonzero u =
 
 (* addition *)
 
-value partial_sum_num u n =
-  summation 0 n (fun k → u k * int_pow radix.val (n - k));
-
-value sum_int_part_lb u n i =
-  partial_sum_num u n * int_pow radix.val (i - min i n) /
-  int_pow radix.val (n - min i n);
-value sum_int_part_ub u n i m =
-  (partial_sum_num u n + m) * int_pow radix.val (i - min i n) /
-  int_pow radix.val (n - min i n);
-value rest_int_part_num u n i m =
-  m * int_pow radix.val (i - min i n);
-value rest_int_part_den u n i m =
-  int_pow radix.val (n - min i n);
-
-value seq_same_int_part u i m n =
-  if n < i then (* optimization *) 0
-  else if rest_int_part_num u n i m ≥ rest_int_part_den u n i m then
-    (* optimization *) 0
-  else if sum_int_part_lb u n i = sum_int_part_ub u n i m then
-    (* normal case *) 1
-   else
-(*
-  let _ = printf "[%d/%d:%d≤%d]%!" i n (sum_int_part_lb u n i) (sum_int_part_ub u n i m) in
-*)
-    (* normal case *) 0;
-
 value i2nn x i = d2n (x.rm i);
 
 (* could help proof of associativity, taking 3 instead of 2 *)
 value number_of_numbers_added = 2;
 
 value nn2i_add u =
+  let m = number_of_numbers_added in
   {rm i =
-     match first_nonzero (seq_same_int_part u i number_of_numbers_added) with
-     | Some n → (*let _ = printf "<%d>%!" n in *) n2d (sum_int_part_lb u n i)
-     | None → let _ = printf "<***>%!" in n2d (sum_int_part_lb u 6 i + 1)
-     end};
+     loop 0 (i + logn radix.val m + 1) where rec loop niter n =
+       let xn = summation 0 n (fun k → u k * int_pow radix.val (n - k)) in
+       let rni = int_pow radix.val (n - i) in
+       if niter > 10 then n2d (xn / rni + 1)
+       else if xn mod rni + m < rni then n2d (xn / rni)
+       else loop (niter + 1) (n + 1) };
 value i_add x y = nn2i_add (nn_add (i2nn x) (i2nn y));
 
 (* test addition *)
@@ -188,10 +164,6 @@ value rx () =
 value x = rx ();
 value y = rx ();
 
-list_of_r x ndec;
-list_of_r y ndec;
+list_of_r x (ndec + 4);
+list_of_r y (ndec + 4);
 list_of_r (i_add x y) ndec;
-
-(* seems to work... *)
-
-bbb.
