@@ -26,16 +26,16 @@ Proof. intros u v i; apply Nat.add_comm. Qed.
 
 Theorem NN_add_0_r : ∀ u, (u + 0 = u)%NN.
 Proof.
-intros u i; simpl.
-unfold NN_add; simpl.
+intros u i.
+unfold NN_add.
 rewrite Nat.add_0_r.
 reflexivity.
 Qed.
 
 Theorem NN_add_0_l : ∀ u, (0 + u = u)%NN.
 Proof.
-intros u i; simpl.
-unfold NN_add; simpl.
+intros u i.
+unfold NN_add.
 reflexivity.
 Qed.
 
@@ -160,7 +160,7 @@ Add Parametric Morphism : seq_not_9
  as seq_not_9_morph.
 Proof.
 intros u v Huv i k.
-unfold seq_not_9; simpl.
+unfold seq_not_9.
 rewrite Huv; reflexivity.
 Qed.
 
@@ -178,7 +178,7 @@ Add Parametric Morphism : carry_add
  as carry_add_morph.
 Proof.
 intros u v Huv i.
-unfold carry_add; simpl.
+unfold carry_add.
 rewrite Huv.
 remember (fst_neq_9 v i) as s1 eqn:Hs1.
 destruct s1 as [n1| ]; [ idtac | reflexivity ].
@@ -2899,6 +2899,10 @@ Theorem zzz : ∀ x y z,
 Proof.
 intros x y z i.
 unfold I_add2; simpl.
+Print ex.
+Print sig.
+About ex.
+About sig.
 bbb.
 
 (* have been tested in ocaml indeed with == *)
