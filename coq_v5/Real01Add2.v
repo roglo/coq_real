@@ -9,10 +9,10 @@ Notation "⊥" := False.
 Axiom univalence : ∀ A (equiv : relation A), Equivalence equiv →
   ∀ a b, equiv a b → a = b.
 
-Theorem eta_equiv : ∀ A (equiv : relation A),
-  Equivalence equiv → Equivalence (λ f g, ∀ (x : A), equiv (f x) (g x)).
+Theorem eta_equiv : ∀ A B (equiv : relation A),
+  Equivalence equiv → Equivalence (λ f g, ∀ (x : B), equiv (f x) (g x)).
 Proof.
-intros A equiv H.
+intros A B equiv H.
 constructor.
  intros f g; apply H.
 
@@ -20,6 +20,13 @@ constructor.
 
  intros f g h Hfg Hgh x.
  transitivity (g x); [ apply Hfg | apply Hgh ].
+Qed.
+
+Theorem extension : ∀ A B (f g : A → B), (∀ x, f x = g x) → f = g.
+Proof.
+intros A B f g H.
+eapply univalence; [ eapply eta_equiv, eq_equivalence | idtac ].
+simpl; apply H.
 Qed.
 
 Open Scope nat_scope.
@@ -133,9 +140,8 @@ Theorem carry_add_add_compat_r : ∀ u v w,
   → (∀ i, carry_add (u + w) i = carry_add (v + w) i).
 Proof.
 intros u v w Huv i.
-bbb.
-apply extension in Huv; subst u.
-reflexivity.
+apply extension in Huv.
+subst u; reflexivity.
 Qed.
 
 (* normalisation and equality *)
@@ -158,6 +164,7 @@ Theorem I_eq_trans : transitive _ I_eq.
 Proof.
 intros u v w Huv Hvw i.
 unfold I_eq in Huv, Hvw.
+bbb.
 rewrite Huv, Hvw; reflexivity.
 Qed.
 
