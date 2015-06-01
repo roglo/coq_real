@@ -2512,8 +2512,8 @@ split; intros Hxy.
   unfold I2NN at 1.
   unfold I2NN at 2.
   rewrite Hxy at 1.
-bbb.
-  erewrite carry_add_compat; [ reflexivity | apply Hxy ].
+  erewrite carry_add_compat; [ reflexivity | idtac ].
+  apply extension, Hxy.
 
   destruct Hxy as (i, (Hj, Hxy)).
   destruct Hxy as [(Hi, Hxy)| Hxy].
