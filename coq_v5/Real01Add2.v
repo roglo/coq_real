@@ -13,12 +13,12 @@ Theorem eta_equiv : ∀ A B (equiv : relation A),
   Equivalence equiv → Equivalence (λ f g, ∀ (x : B), equiv (f x) (g x)).
 Proof.
 intros A B equiv H.
-constructor.
- intros f g; apply H.
+constructor; intros f g.
+ apply H.
 
- intros f g H1 x; symmetry; apply H1.
+ intros H1 x; symmetry; apply H1.
 
- intros f g h Hfg Hgh x.
+ intros h Hfg Hgh x.
  transitivity (g x); [ apply Hfg | apply Hgh ].
 Qed.
 
