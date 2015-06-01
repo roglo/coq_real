@@ -6,7 +6,15 @@ Require Import Oracle Digit2 Real012.
 
 Notation "⊥" := False.
 
+(* il faudrait pouvoir dire que toute relation d'équivalence est une
+   égalité de Leibnitz, y compris si c'est fonctionnel *)
+Axiom univalence : ∀ A (equiv : relation A), Equivalence equiv →
+  ∀ a b, equiv a b → a = b.
+bbb.
+
 Axiom extension : ∀ A B (f g : A → B), (∀ x, f x = g x) → f = g.
+
+Check univalence.
 
 Open Scope nat_scope.
 
@@ -22,7 +30,16 @@ Notation "u * v" := (NN_mul u v) : NN_scope.
 Notation "0" := NN_zero : NN_scope.
 
 Theorem NN_add_comm : ∀ u v, (u + v = v + u)%NN.
-Proof. intros u v; apply extension; intros i; apply Nat.add_comm. Qed.
+Proof. intros u v.
+eapply univalence with (equiv := λ f g, ∀ x, f x = g x).
+ constructor; [ constructor | intros f g H; symmetry; apply H | idtac ].
+  unfold Transitive.
+  intros f g h Hfg Hgh x; etransitivity; [ apply Hfg | apply Hgh ].
+
+ intros x; simpl.
+ apply Nat.add_comm.
+bbb.
+Qed.
 
 Theorem NN_add_0_r : ∀ u, (u + 0 = u)%NN.
 Proof.
