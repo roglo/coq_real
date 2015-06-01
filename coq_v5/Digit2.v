@@ -96,7 +96,7 @@ Add Parametric Relation : digit digit_eq
  reflexivity proved by eq_refl
  symmetry proved by eq_sym
  transitivity proved by eq_trans
- as eq_rel.
+ as eq_equivalence.
 
 Theorem eq_dec : ∀ x y, {(x = y)%D} + {(x ≠ y)%D}.
 Proof. intros x y; apply Nat.eq_dec. Qed.

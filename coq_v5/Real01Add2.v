@@ -45,6 +45,8 @@ Qed.
 
 Theorem NN_add_0_r : ∀ u, (u + 0 = u)%NN.
 Proof.
+Check eq_equivalence.
+Check Digit.eq_equivalence.
 bbb.
 
 intros u; apply extension; intros i.
