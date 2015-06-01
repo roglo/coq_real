@@ -39,46 +39,48 @@ Theorem NN_add_comm : ∀ u v, (u + v = v + u)%NN.
 Proof.
 intros u v.
 eapply univalence; [ apply eta_equiv, eq_equivalence | idtac ].
-simpl; intros x.
+simpl; intros i.
 apply Nat.add_comm.
 Qed.
 
 Theorem NN_add_0_r : ∀ u, (u + 0 = u)%NN.
 Proof.
-Check eq_equivalence.
-Check Digit.eq_equivalence.
-bbb.
-
-intros u; apply extension; intros i.
-unfold NN_add.
-rewrite Nat.add_0_r.
-reflexivity.
+intros u.
+eapply univalence; [ apply eta_equiv, eq_equivalence | idtac ].
+simpl; intros i.
+apply Nat.add_0_r.
 Qed.
 
 Theorem NN_add_0_l : ∀ u, (0 + u = u)%NN.
 Proof.
-intros u; apply extension; intros i.
-unfold NN_add.
-reflexivity.
+intros u.
+rewrite NN_add_comm.
+apply NN_add_0_r.
 Qed.
 
 Theorem NN_add_assoc : ∀ u v w, (u + (v + w) = (u + v) + w)%NN.
-Proof. intros u v w; apply extension; intros i; apply Nat.add_assoc. Qed.
+Proof.
+intros u v w.
+eapply univalence; [ apply eta_equiv, eq_equivalence | idtac ].
+simpl; intros i.
+apply Nat.add_assoc.
+Qed.
 
 Theorem NN_add_compat : ∀ u v w x,
   (u = v)%NN
   → (w = x)%NN
   → (u + w = v + x)%NN.
-Proof.
-intros u v w x Huv Hwx; subst u w; reflexivity. Qed.
+Proof. intros u v w x Huv Hwx; subst u w; reflexivity. Qed.
 
 Theorem rm_compat : ∀ x y i, (x == y)%I → (x .[i] = y .[i])%D.
 Proof. intros x y i Hxy; apply Hxy. Qed.
 
+(*
 Add Parametric Morphism : rm
  with signature I_eqs ==> eq ==> digit_eq
  as rm_morph.
 Proof. intros; apply rm_compat; assumption. Qed.
+*)
 
 (* some extra functions *)
 
@@ -131,6 +133,7 @@ Theorem carry_add_add_compat_r : ∀ u v w,
   → (∀ i, carry_add (u + w) i = carry_add (v + w) i).
 Proof.
 intros u v w Huv i.
+bbb.
 apply extension in Huv; subst u.
 reflexivity.
 Qed.
