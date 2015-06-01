@@ -6,27 +6,27 @@ Require Import Oracle Digit2 Real012.
 
 Notation "⊥" := False.
 
+Axiom extension : ∀ A B (f g : A → B), (∀ x, f x = g x) → f = g.
+
 Open Scope nat_scope.
 
 (* addition and multiplication numbers with numbers *)
 
-Definition NN_eq (u v : nat → nat) := ∀ i, u i = v i.
 Definition NN_add (u v : nat → nat) i := u i + v i.
 Definition NN_mul u v i := Σ (j = 1, i), u (j - 1) * v (i - j).
 Definition NN_zero (i : nat) := 0.
 
 Delimit Scope NN_scope with NN.
-Notation "u = v" := (NN_eq u v) : NN_scope.
 Notation "u + v" := (NN_add u v) : NN_scope.
 Notation "u * v" := (NN_mul u v) : NN_scope.
 Notation "0" := NN_zero : NN_scope.
 
 Theorem NN_add_comm : ∀ u v, (u + v = v + u)%NN.
-Proof. intros u v i; apply Nat.add_comm. Qed.
+Proof. intros u v; apply extension; intros i; apply Nat.add_comm. Qed.
 
 Theorem NN_add_0_r : ∀ u, (u + 0 = u)%NN.
 Proof.
-intros u i.
+intros u; apply extension; intros i.
 unfold NN_add.
 rewrite Nat.add_0_r.
 reflexivity.
@@ -34,52 +34,20 @@ Qed.
 
 Theorem NN_add_0_l : ∀ u, (0 + u = u)%NN.
 Proof.
-intros u i.
+intros u; apply extension; intros i.
 unfold NN_add.
 reflexivity.
 Qed.
 
 Theorem NN_add_assoc : ∀ u v w, (u + (v + w) = (u + v) + w)%NN.
-Proof. intros u v w i; apply Nat.add_assoc. Qed.
-
-Theorem NN_eq_refl : reflexive _ NN_eq.
-Proof. intros u i; reflexivity. Qed.
-
-Theorem NN_eq_sym : symmetric _ NN_eq.
-Proof.
-intros u v Huv i.
-symmetry; apply Huv.
-Qed.
-
-Theorem NN_eq_trans : transitive _ NN_eq.
-Proof.
-intros u v w Huv Hvw i.
-unfold I_eqs in Huv, Hvw.
-rewrite Huv, Hvw; reflexivity.
-Qed.
-
-Add Parametric Relation : _ NN_eq
- reflexivity proved by NN_eq_refl
- symmetry proved by NN_eq_sym
- transitivity proved by NN_eq_trans
- as NN_eq_rel.
+Proof. intros u v w; apply extension; intros i; apply Nat.add_assoc. Qed.
 
 Theorem NN_add_compat : ∀ u v w x,
   (u = v)%NN
   → (w = x)%NN
   → (u + w = v + x)%NN.
 Proof.
-intros u v w x Huv Hwx i; unfold NN_add.
-rewrite Huv, Hwx; reflexivity.
-Qed.
-
-Add Parametric Morphism : NN_add
- with signature NN_eq ==> NN_eq ==> NN_eq
- as NN_add_morph.
-Proof.
-intros u v Huv w t Hwt.
-apply NN_add_compat; assumption.
-Qed.
+intros u v w x Huv Hwx; subst u w; reflexivity. Qed.
 
 Theorem rm_compat : ∀ x y i, (x == y)%I → (x .[i] = y .[i])%D.
 Proof. intros x y i Hxy; apply Hxy. Qed.
@@ -88,26 +56,6 @@ Add Parametric Morphism : rm
  with signature I_eqs ==> eq ==> digit_eq
  as rm_morph.
 Proof. intros; apply rm_compat; assumption. Qed.
-
-Add Parametric Morphism : first_nonzero
- with signature NN_eq ==> eq
- as first_nonzero_morph.
-Proof.
-intros u v Huv.
-apply first_nonzero_iff.
-remember (first_nonzero u) as s1 eqn:Hs1.
-apply first_nonzero_iff in Hs1.
-destruct s1 as [n1| ].
- destruct Hs1 as (Hn1, Ht1).
- split.
-  intros j Hj; rewrite <- Huv.
-  apply Hn1; assumption.
-
-  intros H; apply Ht1; clear Ht1.
-  rewrite Huv; assumption.
-
- intros j; rewrite <- Huv; apply Hs1.
-Qed.
 
 (* some extra functions *)
 
@@ -155,43 +103,13 @@ Arguments I_add2 x%I y%I.
 
 Notation "x + y" := (I_add2 x y) : I_scope.
 
-Add Parametric Morphism : seq_not_9
- with signature NN_eq ==> eq ==> NN_eq
- as seq_not_9_morph.
-Proof.
-intros u v Huv i k.
-unfold seq_not_9.
-rewrite Huv; reflexivity.
-Qed.
-
-Add Parametric Morphism : fst_neq_9
- with signature NN_eq ==> eq ==> eq
- as fst_neq_9_morph.
-Proof.
-intros u v Huv i.
-unfold fst_neq_9.
-rewrite Huv; reflexivity.
-Qed.
-
-Add Parametric Morphism : carry_add
- with signature NN_eq ==> eq ==> eq
- as carry_add_morph.
-Proof.
-intros u v Huv i.
-unfold carry_add.
-rewrite Huv.
-remember (fst_neq_9 v i) as s1 eqn:Hs1.
-destruct s1 as [n1| ]; [ idtac | reflexivity ].
-rewrite Huv; reflexivity.
-Qed.
-
 Theorem carry_add_add_compat_r : ∀ u v w,
   (∀ i, u i = v i)
   → (∀ i, carry_add (u + w) i = carry_add (v + w) i).
 Proof.
 intros u v w Huv i.
-apply carry_add_morph; [ idtac | reflexivity ].
-apply NN_add_compat; [ assumption | reflexivity ].
+apply extension in Huv; subst u.
+reflexivity.
 Qed.
 
 (* normalisation and equality *)
@@ -225,24 +143,17 @@ Add Parametric Relation : _ I_eq
 
 Definition seq_eq x y i := if Digit.eq_dec (x.[i]) (y.[i]) then 0 else 1.
 Arguments seq_eq x%I y%I i%nat.
-
-Add Parametric Morphism : I2NN
-  with signature I_eqs ==> NN_eq
-  as I2NN_morph.
-Proof. intros x y Hxy i; apply Hxy. Qed.
-
-Theorem I_zero_NN_zero : (I2NN 0%I = NN_zero)%NN.
+ 
+Theorem I_eqs_I2NN_eq : ∀ x y, (x == y)%I → I2NN x = I2NN y.
 Proof.
-intros i.
-unfold I2NN; simpl.
-unfold d2n; simpl.
-rewrite Nat.mod_0_l; [ reflexivity | apply Digit.radix_neq_0 ].
+intros x y Hxy; apply extension; intros i.
+apply Hxy.
 Qed.
 
 Theorem NN_add_add_0_r : ∀ u, (u + I2NN 0 = u)%NN.
 Proof.
-intros u i.
-unfold NN_eq, NN_add, I2NN; simpl.
+intros u. apply extension; intros i.
+unfold NN_add, I2NN; simpl.
 rewrite d2n_0, Nat.add_0_r.
 reflexivity.
 Qed.
@@ -349,7 +260,7 @@ Theorem carry_add_add_0_r2 : ∀ u i, carry_add (u + I2NN 0) i = carry_add u i.
 Proof.
 intros u i.
 apply carry_add_compat.
-clear i; intros i; simpl.
+clear i; apply extension; intros i; simpl.
 unfold NN_add, I2NN, d2n; simpl.
 rewrite Nat.mod_0_l; [ idtac | apply Digit.radix_neq_0 ].
 apply Nat.add_0_r.
@@ -557,9 +468,7 @@ Qed.
 Theorem I_eqs_add2_compat_r : ∀ x y z, (x == y)%I → (x + z == y + z)%I.
 Proof.
 intros x y z Hxy i; simpl.
-apply I2NN_morph in Hxy.
-erewrite NN_add_compat; [ idtac | eassumption | reflexivity ].
-erewrite NN_add_compat; [ reflexivity | eassumption | reflexivity ].
+erewrite NN_add_compat; [ reflexivity | apply extension, Hxy | reflexivity].
 Qed.
 
 Theorem I_eqs_add2_comm : ∀ x y, (x + y == y + x)%I.
@@ -2603,6 +2512,7 @@ split; intros Hxy.
   unfold I2NN at 1.
   unfold I2NN at 2.
   rewrite Hxy at 1.
+bbb.
   erewrite carry_add_compat; [ reflexivity | apply Hxy ].
 
   destruct Hxy as (i, (Hj, Hxy)).
