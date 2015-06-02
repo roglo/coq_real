@@ -7,9 +7,47 @@ Open Scope nat_scope.
 
 Delimit Scope digit_scope with D.
 
-Record radix_type := { radix_value : nat; radix_ge_2 : radix_value ≥ 2 }.
+Inductive radix_type := Rad : ∀ r, r ≥ 2 → radix_type.
 Parameter rad : radix_type.
-Definition radix := radix_value rad.
+Definition radix := match rad with Rad r _ => r end.
+
+Theorem radix_neq_0 : radix ≠ 0.
+Proof.
+intros Hr.
+unfold radix in Hr.
+destruct rad as (r, H).
+subst r; apply Nat.nlt_ge in H.
+apply H, Nat.lt_0_succ.
+Qed.
+
+Theorem radix_gt_0 : 0 < radix.
+Proof. apply neq_0_lt, Nat.neq_sym, radix_neq_0. Qed.
+
+Theorem radix_gt_1 : 1 < radix.
+Proof.
+unfold radix; destruct rad.
+eapply lt_le_trans; [ apply Nat.lt_1_2 | assumption ].
+Qed.
+
+Theorem radix_gt_8 : pred (pred radix) < radix.
+Proof.
+unfold radix; destruct rad as (r, Hr).
+destruct r.
+ exfalso; apply Nat.nlt_ge in Hr; apply Hr, Nat.lt_0_succ.
+
+ apply lt_S_n; simpl.
+SearchAbout (S (pred _)).
+
+ rewrite Nat.succ_pred.
+
+bbb.
+
+Inductive digit := dig : ∀ k, k < radix → digit.
+Definition digit_0 := (dig 0 radix_gt_0).
+Definition digit_1 := (dig 1 radix_gt_1).
+Definition digit_8 := (dig (pred (pred radix)) radix_gt_8).
+Definition digit_9 := (dig 9 radix_gt_9).
+
 
 Record digit := { dig : nat }.
 Definition digit_0 := {| dig := 0 |}.
