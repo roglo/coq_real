@@ -62,9 +62,7 @@ Qed.
 Theorem NN_add_assoc : ∀ u v w, (u + (v + w) = (u + v) + w)%NN.
 Proof.
 intros u v w.
-bbb.
-eapply univalence; [ apply eta_equiv, eq_equivalence | idtac ].
-simpl; intros i.
+apply extensionality; intros i.
 apply Nat.add_assoc.
 Qed.
 
@@ -77,12 +75,10 @@ Proof. intros u v w x Huv Hwx; subst u w; reflexivity. Qed.
 Theorem rm_compat : ∀ x y i, (x == y)%I → (x .[i] = y .[i])%D.
 Proof. intros x y i Hxy; apply Hxy. Qed.
 
-(*
 Add Parametric Morphism : rm
  with signature I_eqs ==> eq ==> digit_eq
  as rm_morph.
 Proof. intros; apply rm_compat; assumption. Qed.
-*)
 
 (* some extra functions *)
 
@@ -519,10 +515,12 @@ rewrite I_eqs_add2_comm; symmetry.
 apply I_eqs_add2_compat_r; assumption.
 Qed.
 
+(*
 Add Parametric Morphism : I_add2
  with signature I_eqs ==> I_eqs ==> I_eqs
  as I_add2_morph.
 Proof. intros; apply I_eqs_add2_compat; assumption. Qed.
+*)
 
 (* I_eq iff *)
 
@@ -2539,10 +2537,9 @@ split; intros Hxy.
   unfold I_norm; simpl.
   unfold I2NN at 1.
   unfold I2NN at 2.
-bbb.
   rewrite Hxy at 1.
   erewrite carry_add_compat; [ reflexivity | idtac ].
-  apply extension, Hxy.
+  apply extensionality, Hxy.
 
   destruct Hxy as (i, (Hj, Hxy)).
   destruct Hxy as [(Hi, Hxy)| Hxy].
@@ -2587,14 +2584,15 @@ Theorem NN2I_add_compat : ∀ u v,
   → (NN2I_add u == NN2I_add v)%I.
 Proof.
 intros u v Huv i; simpl.
-unfold digit_eq; simpl; f_equal; f_equal; [ apply Huv | idtac ].
-apply carry_add_compat; assumption.
+subst u; reflexivity.
 Qed.
 
+(*
 Add Parametric Morphism : NN2I_add
  with signature NN_eq ==> I_eqs
  as NN2I_add_morph.
 Proof. intros; apply NN2I_add_compat; assumption. Qed.
+*)
 
 Theorem I_add2_0 : ∀ x, (x + 0 == NN2I_add (I2NN x))%I.
 Proof.
@@ -2639,7 +2637,9 @@ destruct s2 as [n2| ].
   rewrite succ_pred_radix; assumption.
 
   intros di.
+(*
   rewrite carry_add_add_0_r2, NN_add_add_0_r.
+*)
   unfold I2NN at 1; simpl.
   rewrite <- Nat.add_succ_l.
   symmetry in Hs2.
@@ -2838,6 +2838,8 @@ Theorem zzz : ∀ x y z,
 Proof.
 intros x y z i.
 unfold I_add2; simpl.
+bbb.
+
 Print ex.
 Print sig.
 About ex.
@@ -3320,6 +3322,7 @@ Theorem fold_add_NN_add_l : ∀ u v i a,
   NN_add u v i + a = add_NN_add_l u v i a.
 Proof. intros; reflexivity. Qed.
 
+(*
 Add Parametric Morphism : add_NN_add_l
  with signature NN_eq ==> NN_eq ==> eq ==> eq ==> eq
  as add_NN_add_l_morph.
@@ -3328,6 +3331,7 @@ intros u v Huv w x Hwx i a.
 unfold add_NN_add_l, NN_add; simpl.
 rewrite Huv, Hwx; reflexivity.
 Qed.
+*)
 
 Theorem NN2I_add_0_r : ∀ u, (NN2I_add (u + 0%NN) == NN2I_add u)%I.
 Proof.
@@ -3359,6 +3363,7 @@ unfold NN_add.
 rewrite Huv, Hwx; reflexivity.
 Qed.
 
+(*
 Add Parametric Morphism : toto
  with signature NN_eq ==> NN_eq ==> eq ==> eq
  as toto_morph.
@@ -3366,6 +3371,7 @@ Proof.
 intros u v Huv w x Hwx i.
 apply toto_compat; assumption.
 Qed.
+*)
 
 Theorem fst_neq_9_I2NN : ∀ x i,
   fst_neq_9 (I2NN (NN2I_add (I2NN x))) i ≠ None.
