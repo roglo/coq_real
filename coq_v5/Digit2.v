@@ -280,44 +280,57 @@ Theorem opp_1_iff : ∀ d, (oppd d = 9)%D ↔ (d = 0)%D.
 Proof.
 intros d.
 split; intros H1.
-bbb.
- apply opp_compat in H1.
- rewrite opp_involutive in H1; rewrite H1.
- unfold digit_eq; simpl.
- rewrite Nat.mod_small.
-  rewrite Nat.mod_small; [ idtac | apply pred_radix_lt_radix ].
-  rewrite Nat.mod_small; [ apply Nat.sub_diag | apply radix_gt_0 ].
+ unfold digit_0.
+ destruct d as (d, Hd).
+ apply eq_dig_eq.
+ unfold oppd, digit_9 in H1.
+ injection H1; intros H.
+ symmetry in H.
+ apply Nat_le_sub_add_r in H.
+  rewrite Nat.add_comm in H.
+  apply plus_minus in H.
+  rewrite Nat.sub_diag in H; assumption.
 
-  rewrite Nat.mod_small; [ rewrite Nat.sub_diag | apply pred_radix_lt_radix ].
-  apply radix_gt_0.
+  apply Nat.succ_le_mono.
+  rewrite Nat.succ_pred; [ assumption | apply radix_neq_0 ].
 
- apply opp_compat in H1; rewrite H1.
- unfold digit_eq; simpl.
- rewrite Nat.mod_0_l; [ rewrite Nat.sub_0_r | apply radix_neq_0 ].
- reflexivity.
+ subst d; simpl.
+ apply eq_dig_eq, Nat.sub_0_r.
 Qed.
 
+(*
 Theorem neq_sym : ∀ d e, (d ≠ e)%D → (e ≠ d)%D.
 Proof.
 intros d e Hde.
 intros H; apply Hde.
 symmetry; assumption.
 Qed.
+*)
 
 Theorem add_assoc : ∀ d e f, (d + (e + f) = (d + e) + f)%D.
 Proof.
 intros d e f.
-unfold digit_eq.
-unfold digit_add, oppd; fsimpl.
+unfold digit_add, oppd.
+destruct d as (d, Hd).
+destruct e as (e, He).
+destruct f as (f, Hf).
+apply eq_dig_eq.
+rewrite Nat.add_mod_idemp_l; [ idtac | apply radix_neq_0 ].
+rewrite Nat.add_mod_idemp_r; [ idtac | apply radix_neq_0 ].
 rewrite Nat.add_assoc; reflexivity.
 Qed.
 
 Theorem add_shuffle0 : ∀ d e f, (d + e + f = d + f + e)%D.
 Proof.
 intros d e f.
-do 2 rewrite <- add_assoc.
-apply add_compat; [ reflexivity | idtac ].
-apply add_comm.
+unfold digit_add.
+destruct d as (d, Hd).
+destruct e as (e, He).
+destruct f as (f, Hf).
+apply eq_dig_eq.
+rewrite Nat.add_mod_idemp_l; [ idtac | apply radix_neq_0 ].
+rewrite Nat.add_mod_idemp_l; [ idtac | apply radix_neq_0 ].
+rewrite Nat.add_shuffle0; reflexivity.
 Qed.
 
 Theorem opp_0 : (oppd 0 = 9)%D.
@@ -333,30 +346,12 @@ Qed.
 Theorem opp_add_diag_l : ∀ d, (oppd d + d = 9)%D.
 Proof.
 intros d.
-unfold digit_eq; simpl.
-symmetry; rewrite Nat.mod_small; [ symmetry | apply pred_radix_lt_radix ].
-rewrite Nat.add_mod; [ idtac | apply radix_neq_0 ].
-rewrite Nat.mod_small.
- rewrite Nat.mod_small.
-  rewrite <- Nat.add_sub_swap; [ apply Nat.add_sub | apply le_S_n ].
-  rewrite Nat.succ_pred; [ idtac | apply radix_neq_0 ].
-  apply Nat.mod_upper_bound, radix_neq_0.
-
-  eapply le_lt_trans; [ idtac | apply pred_radix_lt_radix ].
-  apply Nat.le_sub_le_add_r, Nat.le_sub_le_add_l.
-  rewrite Nat.sub_diag; apply Nat.le_0_l.
-
- rewrite Nat.mod_small.
-  rewrite <- Nat.add_sub_swap.
-   rewrite Nat.add_sub; apply pred_radix_lt_radix.
-
-   apply le_S_n.
-   rewrite Nat.succ_pred; [ idtac | apply radix_neq_0 ].
-   apply Nat.mod_upper_bound, radix_neq_0.
-
-  eapply le_lt_trans; [ idtac | apply pred_radix_lt_radix ].
-  apply Nat.le_sub_le_add_r, Nat.le_sub_le_add_l.
-  rewrite Nat.sub_diag; apply Nat.le_0_l.
+unfold digit_add, oppd, digit_9.
+destruct d as (d, Hd).
+apply eq_dig_eq.
+rewrite Nat.sub_add; [ apply Nat_pred_mod | idtac ].
+apply Nat.succ_le_mono.
+rewrite Nat.succ_pred; [ assumption | apply radix_neq_0 ].
 Qed.
 
 Theorem opp_add_diag_r : ∀ d, (d + oppd d = 9)%D.
@@ -369,22 +364,36 @@ Qed.
 Theorem opp_sym : ∀ d d', (d' = oppd d)%D → (d = oppd d')%D.
 Proof.
 intros d d' Hd'.
-apply opp_compat in Hd'.
-rewrite opp_involutive in Hd'.
-symmetry; assumption.
+symmetry; rewrite <- opp_involutive.
+subst d'; reflexivity.
 Qed.
 
 Theorem opp_eq : ∀ d e, (oppd d = oppd e)%D → (d = e)%D.
 Proof.
 intros d e Hde.
-apply opp_compat in Hde.
-do 2 rewrite opp_involutive in Hde.
-assumption.
+rewrite <- opp_involutive, <- Hde.
+symmetry; apply opp_involutive.
 Qed.
 
 Theorem opp_add : ∀ d e, (oppd (d + e) = oppd d + oppd e + 1)%D.
 Proof.
 intros d e.
+unfold oppd, digit_add, digit_1; simpl.
+destruct d as (d, Hd).
+destruct e as (e, He).
+apply eq_dig_eq.
+rewrite Nat.add_mod_idemp_l; [ idtac | apply radix_neq_0 ].
+destruct (lt_dec (d + e) radix) as [H1| H1].
+ rewrite Nat.mod_small; [ idtac | assumption ].
+ rewrite Nat.add_sub_assoc.
+SearchAbout (_ - _ + _).
+ rewrite Nat.add_sub_swap.
+SearchAbout (_ - _ - _).
+ rewrite <- Nat.sub_add_distr.
+ rewrite <- Nat.add_assoc, Nat.add_1_r.
+
+bbb.
+
 unfold digit_eq, digit_add, oppd; simpl.
 remember ((dig d + dig e) mod radix) as x eqn:Hx .
 rewrite Nat.add_mod in Hx; [ subst x | apply radix_neq_0 ].
