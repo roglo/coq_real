@@ -3,6 +3,8 @@
 Require Import Utf8 QArith NPeano.
 Require Import Misc.
 
+Axiom proof_irrelevance : ∀ (P : Prop) (a b : P), a = b.
+
 Open Scope nat_scope.
 
 Delimit Scope digit_scope with D.
@@ -55,6 +57,11 @@ Definition digit_0 := (dig 0 radix_gt_0).
 Definition digit_1 := (dig 1 radix_gt_1).
 Definition digit_8 := (dig (pred (pred radix)) radix_gt_8).
 Definition digit_9 := (dig (pred radix) radix_gt_9).
+
+Notation "0" := digit_0 : digit_scope.
+Notation "1" := digit_1 : digit_scope.
+Notation "8" := digit_8 : digit_scope.
+Notation "9" := digit_9 : digit_scope.
 
 Definition digit_add x y :=
   match (x, y) with
@@ -147,19 +154,27 @@ Add Parametric Relation : digit digit_eq
  as eq_equivalence.
 *)
 
+Theorem eq_dig_eq : ∀ a b Ha Hb, a = b → dig a Ha = dig b Hb.
+Proof.
+intros a b Ha Hb Hab.
+subst a; f_equal.
+apply proof_irrelevance.
+Qed.
+
 Theorem eq_dec : ∀ x y : digit, {x = y} + {x ≠ y}.
 Proof.
 intros x y.
 destruct x as (a, Ha).
 destruct y as (b, Hb).
 destruct (eq_nat_dec a b) as [H1| H1].
- left; subst a; f_equal.
-bbb.
+ left; apply eq_dig_eq; assumption.
 
-Theorem eq_dec : ∀ x y, {(x = y)%D} + {(x ≠ y)%D}.
-Proof. intros x y; apply Nat.eq_dec. Qed.
+ right; intros H; apply H1; clear H1.
+ injection H; intros; assumption.
+Qed.
 Arguments eq_dec x%D y%D.
 
+(*
 Add Parametric Morphism : digit_add
   with signature digit_eq ==> digit_eq ==> digit_eq
   as add_compat.
@@ -179,19 +194,25 @@ intros x y Hxy.
 unfold digit_eq in Hxy; unfold digit_eq, oppd.
 rewrite Hxy; reflexivity.
 Qed.
+*)
 
 Theorem add_comm : ∀ d e, (d + e = e + d)%D.
 Proof.
 intros d e.
-unfold digit_eq, digit_add, oppd; fsimpl.
+destruct d as (d, Hd).
+destruct e as (e, He).
+unfold digit_add; simpl.
 rewrite Nat.add_comm; reflexivity.
 Qed.
 
 Theorem add_0_r : ∀ d, (d + 0 = d)%D.
 Proof.
 intros d.
-unfold digit_eq, digit_add; fsimpl.
-rewrite Nat.add_0_r; reflexivity.
+unfold digit_add.
+destruct d as (d, Hd); simpl.
+rewrite Nat.add_0_r.
+apply eq_dig_eq.
+apply Nat.mod_small; assumption.
 Qed.
 
 Theorem add_0_l : ∀ d, (0 + d = d)%D.
@@ -200,6 +221,8 @@ intros d.
 rewrite add_comm.
 apply add_0_r.
 Qed.
+
+bbb.
 
 Theorem neq_0_9 : (0 ≠ 9)%D.
 Proof.
