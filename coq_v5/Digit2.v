@@ -411,12 +411,36 @@ destruct (lt_dec (d + e) radix) as [H1| H1].
   rewrite Nat.succ_pred; [ assumption | apply radix_neq_0 ].
 
  apply Nat.nlt_ge in H1.
+(*
+remember (d + e - radix) as x eqn:Hx.
+      generalize Hx; intros H.
+      apply Nat_le_sub_add_r in H; [ idtac | assumption ].
+rewrite H.
+rewrite Nat.add_sub_assoc.
+bbb.
+
+      rewrite H, Nat.sub_add_distr, Nat.add_comm, Nat.add_sub.
+      rewrite Nat.add_mod; [ idtac | apply radix_neq_0 ].
+      rewrite Nat.mod_same; [ simpl | apply radix_neq_0 ].
+      rewrite Nat.mod_mod; [ simpl | apply radix_neq_0 ].
+      rewrite Nat.mod_small.
+*)
+
  rewrite Nat.add_sub_assoc.
   rewrite <- Nat.add_sub_swap.
    rewrite <- Nat.add_assoc, Nat.add_1_r.
    rewrite <- Nat.add_sub_swap.
    rewrite Nat.succ_pred; [ idtac | apply radix_neq_0 ].
    rewrite <- Nat.sub_add_distr.
+remember (d + e - radix) as x eqn:Hx.
+      generalize Hx; intros H.
+      apply Nat_le_sub_add_r in H; [ idtac | assumption ].
+rewrite H, Nat.sub_add_distr, Nat.add_sub, Nat.add_comm.
+   rewrite Nat_mod_add_once; [ idtac | apply radix_neq_0 ].
+SearchAbout ((_ - _) mod _).
+bbb.
+
+
    symmetry.
    rewrite Nat.mod_small.
 pose proof Nat.div_mod (d + e) radix radix_neq_0 as H.
@@ -445,6 +469,7 @@ apply Nat_le_sub_add_r; [assumption|].
 SearchAbout (_ + _ < _ + _).
 eapply Nat.add_lt_le_mono in Hd; [|eassumption].
 rewrite Nat.add_succ_r in Hd; simpl in Hd.
+Check Nat.mod_same.
 bbb.
 
 unfold digit_eq, digit_add, oppd; simpl.
