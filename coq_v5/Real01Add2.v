@@ -41,16 +41,14 @@ Notation "0" := NN_zero : NN_scope.
 Theorem NN_add_comm : ∀ u v, (u + v = v + u)%NN.
 Proof.
 intros u v.
-eapply univalence; [ apply eta_equiv, eq_equivalence | idtac ].
-simpl; intros i.
+apply extensionality; intros i.
 apply Nat.add_comm.
 Qed.
 
 Theorem NN_add_0_r : ∀ u, (u + 0 = u)%NN.
 Proof.
 intros u.
-eapply univalence; [ apply eta_equiv, eq_equivalence | idtac ].
-simpl; intros i.
+apply extensionality; intros i.
 apply Nat.add_0_r.
 Qed.
 
@@ -64,6 +62,7 @@ Qed.
 Theorem NN_add_assoc : ∀ u v w, (u + (v + w) = (u + v) + w)%NN.
 Proof.
 intros u v w.
+bbb.
 eapply univalence; [ apply eta_equiv, eq_equivalence | idtac ].
 simpl; intros i.
 apply Nat.add_assoc.
