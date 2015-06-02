@@ -411,7 +411,13 @@ destruct (lt_dec (d + e) radix) as [H1| H1].
   rewrite Nat.succ_pred; [ assumption | apply radix_neq_0 ].
 
  apply Nat.nlt_ge in H1.
-
+ rewrite Nat.add_sub_assoc.
+  rewrite <- Nat.add_sub_swap.
+   rewrite <- Nat.add_assoc, Nat.add_1_r.
+   rewrite <- Nat.add_sub_swap.
+   rewrite Nat.add_succ_r, <- Nat.add_succ_l.
+   rewrite Nat.succ_pred; [ idtac | apply radix_neq_0 ].
+   rewrite <- Nat.sub_add_distr.
 bbb.
 
 unfold digit_eq, digit_add, oppd; simpl.
