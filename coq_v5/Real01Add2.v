@@ -12,17 +12,13 @@ Axiom univalence : ∀ A (equiv : relation A), Equivalence equiv →
 Theorem eta_equiv : ∀ A B (equiv : relation A),
   Equivalence equiv → Equivalence (λ f g, ∀ (x : B), equiv (f x) (g x)).
 Proof.
-intros A B equiv H.
-constructor; intros f g.
- apply H.
-
- intros H1 x; symmetry; apply H1.
-
- intros h Hfg Hgh x.
- transitivity (g x); [ apply Hfg | apply Hgh ].
+intros A B equiv H1.
+constructor; intros f g; [ apply H1 | intros H x; symmetry; apply H | idtac ].
+intros h Hfg Hgh x.
+transitivity (g x); [ apply Hfg | apply Hgh ].
 Qed.
 
-Theorem extension : ∀ A B (f g : A → B), (∀ x, f x = g x) → f = g.
+Theorem extensionality : ∀ A B (f g : A → B), (∀ x, f x = g x) → f = g.
 Proof.
 intros A B f g H.
 eapply univalence; [ eapply eta_equiv, eq_equivalence | idtac ].
@@ -140,7 +136,7 @@ Theorem carry_add_add_compat_r : ∀ u v w,
   → (∀ i, carry_add (u + w) i = carry_add (v + w) i).
 Proof.
 intros u v w Huv i.
-apply extension in Huv.
+apply extensionality in Huv.
 subst u; reflexivity.
 Qed.
 
@@ -162,9 +158,8 @@ Qed.
 
 Theorem I_eq_trans : transitive _ I_eq.
 Proof.
-intros u v w Huv Hvw i.
-unfold I_eq in Huv, Hvw.
-bbb.
+intros u v w Huv Hvw.
+unfold I_eq in Huv, Hvw; unfold I_eq.
 rewrite Huv, Hvw; reflexivity.
 Qed.
 
@@ -172,20 +167,20 @@ Add Parametric Relation : _ I_eq
  reflexivity proved by I_eq_refl
  symmetry proved by I_eq_sym
  transitivity proved by I_eq_trans
- as I_eq_rel.
+ as I_eq_equivalence.
 
 Definition seq_eq x y i := if Digit.eq_dec (x.[i]) (y.[i]) then 0 else 1.
 Arguments seq_eq x%I y%I i%nat.
  
 Theorem I_eqs_I2NN_eq : ∀ x y, (x == y)%I → I2NN x = I2NN y.
 Proof.
-intros x y Hxy; apply extension; intros i.
+intros x y Hxy; apply extensionality; intros i.
 apply Hxy.
 Qed.
 
 Theorem NN_add_add_0_r : ∀ u, (u + I2NN 0 = u)%NN.
 Proof.
-intros u. apply extension; intros i.
+intros u; apply extensionality; intros i.
 unfold NN_add, I2NN; simpl.
 rewrite d2n_0, Nat.add_0_r.
 reflexivity.
@@ -293,7 +288,7 @@ Theorem carry_add_add_0_r2 : ∀ u i, carry_add (u + I2NN 0) i = carry_add u i.
 Proof.
 intros u i.
 apply carry_add_compat.
-clear i; apply extension; intros i; simpl.
+clear i; apply extensionality; intros i; simpl.
 unfold NN_add, I2NN, d2n; simpl.
 rewrite Nat.mod_0_l; [ idtac | apply Digit.radix_neq_0 ].
 apply Nat.add_0_r.
@@ -501,7 +496,8 @@ Qed.
 Theorem I_eqs_add2_compat_r : ∀ x y z, (x == y)%I → (x + z == y + z)%I.
 Proof.
 intros x y z Hxy i; simpl.
-erewrite NN_add_compat; [ reflexivity | apply extension, Hxy | reflexivity].
+erewrite NN_add_compat; try reflexivity.
+apply extensionality, Hxy.
 Qed.
 
 Theorem I_eqs_add2_comm : ∀ x y, (x + y == y + x)%I.
@@ -2544,6 +2540,7 @@ split; intros Hxy.
   unfold I_norm; simpl.
   unfold I2NN at 1.
   unfold I2NN at 2.
+bbb.
   rewrite Hxy at 1.
   erewrite carry_add_compat; [ reflexivity | idtac ].
   apply extension, Hxy.
