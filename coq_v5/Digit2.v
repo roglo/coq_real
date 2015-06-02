@@ -598,15 +598,11 @@ Proof.
 intros b.
 split; intros Hb.
  unfold d2n in Hb.
-bbb.
- unfold digit_eq.
- rewrite Hb; simpl.
- rewrite Nat.mod_0_l; [ reflexivity | apply Digit.radix_neq_0 ].
+ destruct b as (b, H); subst b.
+ apply Digit.eq_dig_eq; reflexivity.
 
- unfold d2n.
- unfold digit_eq in Hb.
- rewrite Hb; simpl.
- rewrite Nat.mod_0_l; [ reflexivity | apply Digit.radix_neq_0 ].
+ destruct b as (b, H).
+ rewrite Hb; reflexivity.
 Qed.
 
 Theorem eq_d2n_1 : ∀ b, d2n b = 1 ↔ (b = 1)%D.
@@ -614,36 +610,38 @@ Proof.
 intros b.
 split; intros Hb.
  unfold d2n in Hb.
- unfold digit_eq.
- rewrite Hb; simpl.
- rewrite Nat.mod_small; [ reflexivity | apply radix_ge_2 ].
+ destruct b as (b, H); subst b.
+ apply Digit.eq_dig_eq; reflexivity.
 
- unfold d2n.
- unfold digit_eq in Hb.
- rewrite Hb; simpl.
- rewrite Nat.mod_small; [ reflexivity | apply radix_ge_2 ].
+ destruct b as (b, H).
+ rewrite Hb; reflexivity.
 Qed.
 
 Theorem le_d2n_9 : ∀ b, d2n b ≤ pred radix.
 Proof.
 intros b.
 unfold d2n.
-destruct radix; [ reflexivity | idtac ].
-apply le_S_n, Nat.mod_upper_bound.
-intros H; discriminate H.
+destruct b as (b, Hb).
+apply le_S_n.
+rewrite Nat.succ_pred; [ assumption | apply radix_neq_0 ].
 Qed.
 
 Theorem n2d_eq : ∀ a b, a = b → (n2d a = n2d b)%D.
 Proof. intros; subst; reflexivity. Qed.
 
 Theorem digit_d2n_eq_iff : ∀ d e, (d = e)%D ↔ d2n d = d2n e.
-Proof. intros d e; split; intros; assumption. Qed.
+Proof.
+intros d e.
+split; intros; [ subst; reflexivity | idtac ].
+destruct d as (d, Hd).
+destruct e as (e, He).
+apply Digit.eq_dig_eq; assumption.
+Qed.
 
 Theorem d2n_lt_radix : ∀ d, d2n d < radix.
 Proof.
 intros d.
-unfold d2n; simpl.
-apply Nat.mod_upper_bound, Digit.radix_neq_0.
+destruct d; assumption.
 Qed.
 
 Theorem d2n_n2d : ∀ n, d2n (n2d n) = n mod radix.
@@ -652,21 +650,23 @@ Proof. intros n; reflexivity. Qed.
 Theorem n2d_d2n : ∀ d, (n2d (d2n d) = d)%D.
 Proof.
 intros d.
-unfold digit_eq, n2d, d2n; simpl.
-apply Nat.mod_mod, Digit.radix_neq_0.
+unfold n2d, d2n; simpl.
+destruct d as (d, Hd).
+apply Digit.eq_dig_eq, Nat.mod_small; assumption.
 Qed.
 
 Theorem d2n_mod_radix : ∀ d, d2n d mod radix = d2n d.
 Proof.
 intros d; unfold d2n.
-rewrite Nat.mod_mod; [ reflexivity | apply Digit.radix_neq_0 ].
+destruct d as (d, Hd).
+apply Nat.mod_small; assumption.
 Qed.
 
 Theorem sqr_radix_neq_0 : radix * radix ≠ 0.
 Proof.
 intros H.
 apply Nat.eq_mul_0 in H.
-destruct H; revert H; apply Digit.radix_neq_0.
+destruct H; revert H; apply radix_neq_0.
 Qed.
 
 Theorem sqr_radix_gt_0 : radix * radix > 0.
