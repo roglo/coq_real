@@ -386,11 +386,31 @@ rewrite Nat.add_mod_idemp_l; [ idtac | apply radix_neq_0 ].
 destruct (lt_dec (d + e) radix) as [H1| H1].
  rewrite Nat.mod_small; [ idtac | assumption ].
  rewrite Nat.add_sub_assoc.
-SearchAbout (_ - _ + _).
- rewrite Nat.add_sub_swap.
-SearchAbout (_ - _ - _).
- rewrite <- Nat.sub_add_distr.
- rewrite <- Nat.add_assoc, Nat.add_1_r.
+  rewrite Nat.add_sub_swap.
+   rewrite <- Nat.sub_add_distr.
+   rewrite <- Nat.add_assoc, Nat.add_1_r.
+   rewrite Nat.succ_pred; [ idtac | apply radix_neq_0 ].
+   rewrite Nat_mod_add_once; [ idtac | apply radix_neq_0 ].
+   rewrite Nat.mod_small; [ reflexivity | idtac ].
+   unfold lt.
+   rewrite <- Nat.sub_succ_l.
+    rewrite Nat.succ_pred; [ idtac | apply radix_neq_0 ].
+    apply Nat.le_sub_le_add_r.
+    rewrite Nat.add_comm.
+    apply Nat.le_sub_le_add_r.
+    rewrite Nat.sub_diag.
+    apply Nat.le_0_l.
+
+    apply Nat.succ_le_mono.
+    rewrite Nat.succ_pred; [ assumption | apply radix_neq_0 ].
+
+   apply Nat.le_add_le_sub_l, Nat.succ_le_mono.
+   rewrite Nat.succ_pred; [ assumption | apply radix_neq_0 ].
+
+  apply Nat.succ_le_mono.
+  rewrite Nat.succ_pred; [ assumption | apply radix_neq_0 ].
+
+ apply Nat.nlt_ge in H1.
 
 bbb.
 
