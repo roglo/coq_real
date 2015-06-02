@@ -22,6 +22,16 @@ subst r; apply Nat.nlt_ge in H.
 apply H, Nat.lt_0_succ.
 Qed.
 
+Theorem pred_radix_neq_0 : pred radix ≠ 0.
+Proof.
+intros Hr.
+unfold radix in Hr.
+destruct rad as (r, H).
+apply Nat.eq_pred_0 in Hr.
+apply Nat.nle_gt in H; apply H.
+destruct Hr; subst r; [ apply Nat.le_0_1 | reflexivity ].
+Qed.
+
 Theorem radix_gt_0 : 0 < radix.
 Proof. apply neq_0_lt, Nat.neq_sym, radix_neq_0. Qed.
 
@@ -222,36 +232,24 @@ rewrite add_comm.
 apply add_0_r.
 Qed.
 
-bbb.
-
 Theorem neq_0_9 : (0 ≠ 9)%D.
 Proof.
-unfold digit_eq; simpl.
-unfold radix; simpl; intros Hr.
-pose proof radix_ge_2 rad as H.
-remember (radix_value rad) as r; clear Heqr.
-apply Nat.nlt_ge in H; apply H; clear H.
-destruct r; [ apply Nat.lt_0_succ | apply lt_n_S, Nat.lt_1_r ].
-fsimpl_in Hr; symmetry in Hr.
-rewrite Nat.mod_0_l in Hr; [ idtac | intros H; discriminate H ].
-apply Nat_mod_succ_diag_r_eq_0; assumption.
+unfold digit_0, digit_9.
+intros Heq; injection Heq; intros H.
+symmetry in H; revert H; apply pred_radix_neq_0.
 Qed.
 
 Theorem neq_9_0 : (9 ≠ 0)%D.
 Proof. intros H; symmetry in H; revert H; apply neq_0_9. Qed.
 
 Theorem neq_0_1 : (0 ≠ 1)%D.
-Proof.
-unfold digit_eq; simpl.
-rewrite Nat.mod_small; [ idtac | apply radix_gt_0 ].
-rewrite Nat.mod_small; [ idtac | apply radix_gt_1 ].
-intros H; discriminate H.
-Qed.
+Proof. intros Heq; discriminate Heq. Qed.
 
 Theorem opp_0_iff : ∀ d, (oppd d = 0)%D ↔ (d = 9)%D.
 Proof.
 intros d.
 split; intros H1.
+bbb.
  unfold digit_eq in H1; fsimpl_in H1.
  unfold digit_eq; simpl.
  rewrite Nat.mod_0_l in H1; [ idtac | apply radix_neq_0 ].
