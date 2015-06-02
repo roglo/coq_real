@@ -442,7 +442,9 @@ apply Nat.mod_upper_bound, radix_neq_0.
 rewrite Nat.mul_1_r.
 SearchAbout (_ = _ + _).
 apply Nat_le_sub_add_r; [assumption|].
-
+SearchAbout (_ + _ < _ + _).
+eapply Nat.add_lt_le_mono in Hd; [|eassumption].
+rewrite Nat.add_succ_r in Hd; simpl in Hd.
 bbb.
 
 unfold digit_eq, digit_add, oppd; simpl.
