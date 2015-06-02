@@ -411,150 +411,49 @@ destruct (lt_dec (d + e) radix) as [H1| H1].
   rewrite Nat.succ_pred; [ assumption | apply radix_neq_0 ].
 
  apply Nat.nlt_ge in H1.
-(*
-remember (d + e - radix) as x eqn:Hx.
-      generalize Hx; intros H.
-      apply Nat_le_sub_add_r in H; [ idtac | assumption ].
-rewrite H.
-rewrite Nat.add_sub_assoc.
-bbb.
-
-      rewrite H, Nat.sub_add_distr, Nat.add_comm, Nat.add_sub.
-      rewrite Nat.add_mod; [ idtac | apply radix_neq_0 ].
-      rewrite Nat.mod_same; [ simpl | apply radix_neq_0 ].
-      rewrite Nat.mod_mod; [ simpl | apply radix_neq_0 ].
-      rewrite Nat.mod_small.
-*)
-
  rewrite Nat.add_sub_assoc.
   rewrite <- Nat.add_sub_swap.
    rewrite <- Nat.add_assoc, Nat.add_1_r.
    rewrite <- Nat.add_sub_swap.
-   rewrite Nat.succ_pred; [ idtac | apply radix_neq_0 ].
-   rewrite <- Nat.sub_add_distr.
-remember (d + e - radix) as x eqn:Hx.
-      generalize Hx; intros H.
-      apply Nat_le_sub_add_r in H; [ idtac | assumption ].
-rewrite H, Nat.sub_add_distr, Nat.add_sub, Nat.add_comm.
-   rewrite Nat_mod_add_once; [ idtac | apply radix_neq_0 ].
-SearchAbout ((_ - _) mod _).
-bbb.
-
-
-   symmetry.
-   rewrite Nat.mod_small.
-pose proof Nat.div_mod (d + e) radix radix_neq_0 as H.
-SearchAbout (_ = _ - _ ).
-symmetry.
-rewrite <- Nat_sub_sub_distr.
-f_equal.
-rewrite H at 2.
-symmetry.
-rewrite Nat.add_comm.
-SearchAbout (_ = _ + _).
-rewrite <- Nat.add_sub_assoc.
-SearchAbout (_ = _ + _).
-symmetry.
-apply Nat_le_sub_add_r.
-reflexivity.
-rewrite Nat.sub_diag.
-assert ((d + e) / radix = 1).
-SearchAbout (_ = _ / _).
-symmetry.
-apply Nat.div_unique with (r:= (d + e) mod radix).
-apply Nat.mod_upper_bound, radix_neq_0.
-rewrite Nat.mul_1_r.
-SearchAbout (_ = _ + _).
-apply Nat_le_sub_add_r; [assumption|].
-SearchAbout (_ + _ < _ + _).
-eapply Nat.add_lt_le_mono in Hd; [|eassumption].
-rewrite Nat.add_succ_r in Hd; simpl in Hd.
-Check Nat.mod_same.
-bbb.
-
-unfold digit_eq, digit_add, oppd; simpl.
-remember ((dig d + dig e) mod radix) as x eqn:Hx .
-rewrite Nat.add_mod in Hx; [ subst x | apply radix_neq_0 ].
-remember (dig d mod radix) as dr eqn:Hdr .
-remember (dig e mod radix) as er eqn:Her .
-rewrite Nat.mod_small.
- symmetry.
- rewrite Nat.add_comm.
- rewrite Nat.add_sub_assoc.
-  rewrite Nat.add_sub_assoc.
-   rewrite Nat.add_assoc.
-   rewrite Nat.add_sub_assoc.
-    rewrite Nat.add_1_l.
     rewrite Nat.succ_pred; [ idtac | apply radix_neq_0 ].
-    rewrite <- Nat.add_sub_swap.
-     rewrite <- Nat.sub_add_distr.
-     destruct (lt_dec (dr + er) radix) as [H1| H1].
-      rewrite Nat.add_comm.
-      rewrite Nat.add_sub_swap.
-       rewrite Nat.add_mod; [ idtac | apply radix_neq_0 ].
-       rewrite Nat.mod_same; [ idtac | apply radix_neq_0 ].
-       rewrite Nat.add_0_r.
-       rewrite Nat.mod_mod; [ idtac | apply radix_neq_0 ].
-       rewrite Nat.mod_small.
-        rewrite Nat.mod_small; [ reflexivity | assumption ].
+    rewrite <- Nat.sub_add_distr.
+    remember (d + e - radix) as x eqn:Hx .
+    generalize Hx; intros H.
+    apply Nat_le_sub_add_r in H; [ idtac | assumption ].
+    rewrite H, Nat.sub_add_distr, Nat.add_sub, Nat.add_comm.
+    rewrite Nat_mod_add_once; [ idtac | apply radix_neq_0 ].
+    rewrite Nat.mod_small.
+     rewrite Nat.mod_small; [ reflexivity | idtac ].
+     eapply Nat.le_lt_trans; [ idtac | apply radix_gt_9 ].
+     apply Nat.le_sub_le_add_r, Nat.le_sub_le_add_l.
+     rewrite Nat.sub_diag; apply Nat.le_0_l.
 
-        eapply le_lt_trans; [ idtac | apply pred_radix_lt_radix ].
-        apply Nat.le_sub_le_add_r, Nat.le_sub_le_add_l.
-        rewrite Nat.sub_diag; apply Nat.le_0_l.
+     rewrite Hx.
+     eapply Nat_lt_add_sub_lt_l.
+      apply Nat.add_lt_mono; assumption.
 
-       apply Nat.le_succ_le_pred; assumption.
+      apply le_n_S; assumption.
 
-      apply Nat.nlt_ge in H1.
-      remember (dr + er - radix) as x eqn:Hx .
-      generalize Hx; intros H.
-      apply Nat_le_sub_add_r in H; [ idtac | assumption ].
-      rewrite H, Nat.sub_add_distr, Nat.add_comm, Nat.add_sub.
-      rewrite Nat.add_mod; [ idtac | apply radix_neq_0 ].
-      rewrite Nat.mod_same; [ simpl | apply radix_neq_0 ].
-      rewrite Nat.mod_mod; [ simpl | apply radix_neq_0 ].
-      rewrite Nat.mod_small.
-       rewrite Nat.mod_small; [ reflexivity | rewrite Hx ].
-       eapply Nat_lt_add_sub_lt_l.
-        subst dr er.
-        apply Nat.add_lt_mono; apply Nat.mod_upper_bound, radix_neq_0.
+    apply Nat.succ_le_mono.
+    rewrite Nat.succ_pred; [ assumption | apply radix_neq_0 ].
 
-        rewrite H; apply le_n_S.
-        apply Nat.le_sub_le_add_l.
-        rewrite Nat.sub_diag.
-        apply Nat.le_0_l.
+   rewrite <- Nat.add_sub_swap.
+    apply Nat.le_add_le_sub_r.
+    apply Nat.add_le_mono.
+     apply Nat.succ_le_mono.
+     rewrite Nat.succ_pred; [ assumption | apply radix_neq_0 ].
 
-       eapply le_lt_trans; [ idtac | apply pred_radix_lt_radix ].
-       apply Nat.le_sub_le_add_r, Nat.le_sub_le_add_l.
-       rewrite Nat.sub_diag; apply Nat.le_0_l.
+     apply Nat.succ_le_mono.
+     rewrite Nat.succ_pred; [ assumption | apply radix_neq_0 ].
 
-     rewrite Hdr.
-     apply Nat.lt_le_incl, Nat.mod_upper_bound, radix_neq_0.
+    apply Nat.succ_le_mono.
+    rewrite Nat.succ_pred; [ assumption | apply radix_neq_0 ].
 
-    rewrite Hdr.
-    apply le_S_n.
-    rewrite Nat.succ_pred; [ idtac | apply radix_neq_0 ].
-    apply Nat.mod_upper_bound, radix_neq_0.
-
-   rewrite Nat.add_comm.
-   rewrite Her.
-   apply le_trans with (m := pred radix).
-    apply le_S_n.
-    rewrite Nat.succ_pred; [ idtac | apply radix_neq_0 ].
-    apply Nat.mod_upper_bound, radix_neq_0.
-
-    apply Nat.le_sub_le_add_l.
-    rewrite Nat.sub_diag.
-    apply Nat.le_0_l.
-
-  rewrite Her.
-  apply le_S_n.
-  rewrite Nat.succ_pred; [ idtac | apply radix_neq_0 ].
-  apply Nat.mod_upper_bound, radix_neq_0.
-
- eapply le_lt_trans; [ idtac | apply pred_radix_lt_radix ].
- apply Nat.le_sub_le_add_r, Nat.le_sub_le_add_l.
- rewrite Nat.sub_diag; apply Nat.le_0_l.
+  apply Nat.succ_le_mono.
+  rewrite Nat.succ_pred; [ assumption | apply radix_neq_0 ].
 Qed.
+
+bbb.
 
 Theorem add_cancel_lt_lt : ∀ d e f dr er fr,
   dr = dig d mod radix
