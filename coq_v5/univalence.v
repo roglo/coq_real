@@ -10,16 +10,16 @@ Notation "A ≃ B" := (equiv A B) (at level 60).
 
 Axiom univalence : ∀ A B, (A ≃ B) ≃ (A = B).
 
-Inductive glop := toto : glop | titi : glop.
+Inductive t := foo : t | bar : t.
 
-Theorem bool_eq_glop : @eq Type bool glop.
+Theorem bool_eq_t : @eq Type bool t.
 Proof.
-pose proof univalence bool glop as H.
+pose proof univalence bool t as H.
 unfold equiv at 1 in H.
 destruct H as (f, (g, (Hx, Hy))).
 apply f.
 unfold equiv.
-exists (λ b : bool, if b then toto else titi).
-exists (λ b : glop, if b then true else false).
+exists (λ b : bool, if b then foo else bar).
+exists (λ b : t, if b then true else false).
 split; intros x; destruct x; reflexivity.
 Qed.
