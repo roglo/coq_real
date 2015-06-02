@@ -266,32 +266,21 @@ Qed.
 Theorem opp_involutive : ∀ d, (oppd (oppd d) = d)%D.
 Proof.
 intros d.
-bbb.
+unfold oppd.
+destruct d as (d, Hd).
+apply eq_dig_eq.
+rewrite Nat_sub_sub_distr.
+ rewrite Nat.add_comm; apply Nat.add_sub.
 
-unfold digit_eq, oppd; simpl.
-rewrite Nat.mod_small.
- rewrite Nat.mod_small.
-  apply Nat.add_sub_eq_r.
-  rewrite Nat.add_sub_assoc.
-   rewrite Nat.add_comm, Nat.add_sub; reflexivity.
-
-   destruct radix; [ reflexivity | idtac ].
-   apply le_S_n, Nat.mod_upper_bound.
-   intros H; discriminate H.
-
-  eapply Nat.le_lt_trans; [ idtac | apply pred_radix_lt_radix ].
-  apply Nat.le_sub_le_add_r, Nat.le_sub_le_add_l.
-  rewrite Nat.sub_diag; apply Nat.le_0_l.
-
- eapply Nat.le_lt_trans; [ idtac | apply pred_radix_lt_radix ].
- apply Nat.le_sub_le_add_r, Nat.le_sub_le_add_l.
- rewrite Nat.sub_diag; apply Nat.le_0_l.
+ apply Nat.succ_le_mono.
+ rewrite Nat.succ_pred; [ assumption | apply radix_neq_0 ].
 Qed.
 
 Theorem opp_1_iff : ∀ d, (oppd d = 9)%D ↔ (d = 0)%D.
 Proof.
 intros d.
 split; intros H1.
+bbb.
  apply opp_compat in H1.
  rewrite opp_involutive in H1; rewrite H1.
  unfold digit_eq; simpl.
