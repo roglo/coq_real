@@ -6,9 +6,6 @@ Require Import Oracle Digit2 Real012.
 
 Notation "⊥" := False.
 
-Axiom univalence : ∀ A (equiv : relation A), Equivalence equiv →
-  ∀ a b, equiv a b → a = b.
-
 Theorem eta_equiv : ∀ A B (equiv : relation A),
   Equivalence equiv → Equivalence (λ f g, ∀ (x : B), equiv (f x) (g x)).
 Proof.
@@ -18,12 +15,14 @@ intros h Hfg Hgh x.
 transitivity (g x); [ apply Hfg | apply Hgh ].
 Qed.
 
+(*
 Theorem extensionality : ∀ A B (f g : A → B), (∀ x, f x = g x) → f = g.
 Proof.
 intros A B f g H.
 eapply univalence; [ eapply eta_equiv, eq_equivalence | idtac ].
 simpl; apply H.
 Qed.
+*)
 
 Open Scope nat_scope.
 
@@ -41,6 +40,7 @@ Notation "0" := NN_zero : NN_scope.
 Theorem NN_add_comm : ∀ u v, (u + v = v + u)%NN.
 Proof.
 intros u v.
+bbb.
 apply extensionality; intros i.
 apply Nat.add_comm.
 Qed.
@@ -75,10 +75,12 @@ Proof. intros u v w x Huv Hwx; subst u w; reflexivity. Qed.
 Theorem rm_compat : ∀ x y i, (x == y)%I → (x .[i] = y .[i])%D.
 Proof. intros x y i Hxy; apply Hxy. Qed.
 
+(*
 Add Parametric Morphism : rm
  with signature I_eqs ==> eq ==> digit_eq
  as rm_morph.
 Proof. intros; apply rm_compat; assumption. Qed.
+*)
 
 (* some extra functions *)
 
