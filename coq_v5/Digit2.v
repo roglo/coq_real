@@ -434,6 +434,14 @@ symmetry.
 apply Nat_le_sub_add_r.
 reflexivity.
 rewrite Nat.sub_diag.
+assert ((d + e) / radix = 1).
+SearchAbout (_ = _ / _).
+symmetry.
+apply Nat.div_unique with (r:= (d + e) mod radix).
+apply Nat.mod_upper_bound, radix_neq_0.
+rewrite Nat.mul_1_r.
+SearchAbout (_ = _ + _).
+apply Nat_le_sub_add_r; [assumption|].
 
 bbb.
 
