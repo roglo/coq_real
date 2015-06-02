@@ -453,23 +453,21 @@ destruct (lt_dec (d + e) radix) as [H1| H1].
   rewrite Nat.succ_pred; [ assumption | apply radix_neq_0 ].
 Qed.
 
-bbb.
-
-Theorem add_cancel_lt_lt : ∀ d e f dr er fr,
-  dr = dig d mod radix
-  → er = dig e mod radix
-  → fr = dig f mod radix
-  → dr + er = (dr + fr) mod radix
-  → dr + er < radix
-  → dr + fr < radix.
+Theorem add_cancel_lt_lt : ∀ d e f,
+  d < radix
+  → e < radix
+  → f < radix
+  → d + e = (d + f) mod radix
+  → d + e < radix
+  → d + f < radix.
 Proof.
-intros d e f dr er fr Hdr Her Hfr H1 H2.
+intros d e f Hdr Her Hfr H1 H2.
 apply Nat.nle_gt; intros H3.
-assert (fr = er + radix) as H.
- remember (dr + fr - radix) as x eqn:Hx .
+assert (f = e + radix) as H.
+ remember (d + f - radix) as x eqn:Hx .
  generalize Hx; intros H.
  apply Nat_le_sub_add_r in H; [ idtac | assumption ].
- apply Nat.add_cancel_l with (p := dr).
+ apply Nat.add_cancel_l with (p := d).
  rewrite Nat.add_assoc, H1, H, Nat.add_comm.
  apply Nat.add_cancel_r; symmetry.
  rewrite Nat.add_mod; [ idtac | apply radix_neq_0 ].
@@ -477,61 +475,56 @@ assert (fr = er + radix) as H.
  rewrite Nat.mod_mod; [ idtac | apply radix_neq_0 ].
  apply Nat.mod_small; rewrite Hx.
  eapply Nat_lt_add_sub_lt_r; [ idtac | apply radix_gt_0 ].
- subst dr fr.
- apply Nat.add_lt_mono; apply Nat.mod_upper_bound, radix_neq_0.
+ apply Nat.add_lt_mono; assumption.
 
- subst fr er.
- pose proof radix_neq_0 as H4.
- apply Nat.mod_upper_bound with (a := dig f) in H4.
- rewrite H in H4.
- apply Nat.lt_add_lt_sub_r in H4.
- rewrite Nat.sub_diag in H4.
- apply Nat.nlt_ge in H4.
- apply H4, Nat.lt_0_succ.
+ rewrite H in Hfr.
+ apply Nat.lt_add_lt_sub_r in Hfr.
+ rewrite Nat.sub_diag in Hfr.
+ revert Hfr; apply Nat.nlt_0_r.
 Qed.
 
 Theorem add_cancel_l : ∀ d e f, (d + e = d + f)%D → (e = f)%D.
 Proof.
-intros d e f Hd.
-unfold digit_eq, digit_add, oppd in Hd; simpl in Hd.
-unfold digit_eq; simpl.
-rewrite Nat.add_mod in Hd; [ symmetry in Hd | apply radix_neq_0 ].
-rewrite Nat.add_mod in Hd; [ symmetry in Hd | apply radix_neq_0 ].
-remember (dig d mod radix) as dr eqn:Hdr .
-remember (dig e mod radix) as er eqn:Her .
-remember (dig f mod radix) as fr eqn:Hfr .
-destruct (lt_dec (dr + er) radix) as [H1| H1].
- rewrite Nat.mod_small in Hd; [ idtac | assumption ].
- destruct (lt_dec (dr + fr) radix) as [H2| H2].
-  rewrite Nat.mod_small in Hd; [ idtac | assumption ].
-  apply Nat.add_cancel_l in Hd; assumption.
+intros d e f Hdef.
+unfold digit_add, oppd in Hdef.
+destruct d as (d, Hd).
+destruct e as (e, He).
+destruct f as (f, Hf).
+injection Hdef; intros H.
+apply eq_dig_eq.
+destruct (lt_dec (d + e) radix) as [H1| H1].
+ rewrite Nat.mod_small in H; [ idtac | assumption ].
+ destruct (lt_dec (d + f) radix) as [H2| H2].
+  rewrite Nat.mod_small in H; [ idtac | assumption ].
+  apply Nat.add_cancel_l in H; assumption.
 
   exfalso; apply H2.
-  eapply add_cancel_lt_lt with (er := er); eassumption.
+  eapply add_cancel_lt_lt with (e := e); eassumption.
 
- destruct (lt_dec (dr + fr) radix) as [H2| H2].
-  symmetry in Hd.
-  rewrite Nat.mod_small in Hd; [ idtac | assumption ].
+ destruct (lt_dec (d + f) radix) as [H2| H2].
+  symmetry in H.
+  rewrite Nat.mod_small in H; [ idtac | assumption ].
   exfalso; apply H1.
-  eapply add_cancel_lt_lt with (er := fr); eassumption.
+  eapply add_cancel_lt_lt with (e := f); eassumption.
 
   apply Nat.nlt_ge in H1.
   apply Nat.nlt_ge in H2.
-  remember (dr + er - radix) as x eqn:Hx.
-  remember (dr + fr - radix) as y eqn:Hy.
+  remember (d + e - radix) as x eqn:Hx.
+  remember (d + f - radix) as y eqn:Hy.
+  rename H into H3.
   generalize Hx; intros H.
   apply Nat_le_sub_add_r in H; [ idtac | assumption ].
-  rewrite H in Hd; clear H.
+  rewrite H in H3; clear H.
   generalize Hy; intros H.
   apply Nat_le_sub_add_r in H; [ idtac | assumption ].
-  rewrite H in Hd; clear H.
-  rewrite Nat.add_mod in Hd; symmetry in Hd; [ idtac | apply radix_neq_0 ].
-  rewrite Nat.add_mod in Hd; symmetry in Hd; [ idtac | apply radix_neq_0 ].
-  rewrite Nat.mod_same in Hd; [ simpl in Hd | apply radix_neq_0 ].
-  rewrite Nat.mod_mod in Hd; [ idtac | apply radix_neq_0 ].
-  rewrite Nat.mod_mod in Hd; [ idtac | apply radix_neq_0 ].
-  rewrite Nat.mod_small in Hd.
-   rewrite Nat.mod_small in Hd.
+  rewrite H in H3; clear H.
+  rewrite Nat.add_mod in H3; symmetry in H3; [ idtac | apply radix_neq_0 ].
+  rewrite Nat.add_mod in H3; symmetry in H3; [ idtac | apply radix_neq_0 ].
+  rewrite Nat.mod_same in H3; [ simpl in H3 | apply radix_neq_0 ].
+  rewrite Nat.mod_mod in H3; [ idtac | apply radix_neq_0 ].
+  rewrite Nat.mod_mod in H3; [ idtac | apply radix_neq_0 ].
+  rewrite Nat.mod_small in H3.
+   rewrite Nat.mod_small in H3.
     subst y; rewrite Hy in Hx.
     apply Nat_le_sub_add_r in Hx; [ idtac | assumption ].
     rewrite Nat.add_sub_assoc in Hx; [ idtac | assumption ].
@@ -543,13 +536,11 @@ destruct (lt_dec (dr + er) radix) as [H1| H1].
 
     rewrite Hy.
     eapply Nat_lt_add_sub_lt_r; [ idtac | apply radix_gt_0 ].
-    subst dr fr.
-    apply Nat.add_lt_mono; apply Nat.mod_upper_bound, radix_neq_0.
+    apply Nat.add_lt_mono; assumption.
 
    rewrite Hx.
    eapply Nat_lt_add_sub_lt_r; [ idtac | apply radix_gt_0 ].
-   subst dr er.
-   apply Nat.add_lt_mono; apply Nat.mod_upper_bound, radix_neq_0.
+   apply Nat.add_lt_mono; assumption.
 Qed.
 
 Theorem add_cancel_r : ∀ d e f, (d + f = e + f)%D → (d = e)%D.
@@ -562,57 +553,52 @@ Qed.
 
 Theorem add_1_9 : (1 + 9 = 0)%D.
 Proof.
-unfold digit_eq; simpl.
-rewrite Nat.succ_pred; [ idtac | apply Digit.radix_neq_0 ].
-rewrite Nat.mod_same; [ idtac | apply Digit.radix_neq_0 ].
-rewrite Nat.mod_0_l; [ reflexivity | apply Digit.radix_neq_0 ].
+unfold digit_1, digit_9, digit_0, digit_add; simpl.
+apply eq_dig_eq.
+rewrite Nat.succ_pred; [ idtac | apply radix_neq_0 ].
+rewrite Nat.mod_same; [ reflexivity | apply radix_neq_0 ].
 Qed.
 
 End Digit.
 
+(*
 Theorem eq_digit_eq : ∀ d e, d = e → (d = e)%D.
 Proof. intros d e H; subst d; reflexivity. Qed.
+*)
 
 (*
 Ltac discr_digit H :=
   exfalso; revert x; try apply Digit.neq_1_0; apply Digit.neq_0_1.
 *)
 
+(*
 Definition d2n d := dig d mod radix.
 Definition n2d n := {| dig := n |}.
+*)
+Definition d2n d :=
+  match d with
+  | dig a _ => a
+  end.
+Definition n2d n :=
+  dig (n mod radix) (Nat.mod_upper_bound n radix radix_neq_0).
 Arguments d2n d%D.
 Arguments n2d n%nat.
 
 Theorem d2n_0 : d2n 0 = 0.
-Proof.
-unfold d2n.
-rewrite Nat.mod_0_l; [ reflexivity | apply Digit.radix_neq_0 ].
-Qed.
+Proof. reflexivity. Qed.
 
 Theorem d2n_1 : d2n 1 = 1.
-Proof.
-unfold d2n.
-rewrite Nat.mod_small; [ reflexivity | simpl ].
-pose proof radix_ge_2 rad as H; unfold radix.
-remember (radix_value rad) as r.
-apply Nat.nlt_ge in H.
-destruct r; [ exfalso; apply H, Nat.lt_0_succ | idtac ].
-destruct r; [ exfalso; apply H, Nat.lt_1_2 | idtac ].
-apply lt_n_S, Nat.lt_0_succ.
-Qed.
+Proof. reflexivity. Qed.
 
 Theorem d2n_9 : d2n 9 = pred radix.
-Proof.
-unfold d2n.
-rewrite Nat.mod_small; [ reflexivity | idtac ].
-apply Digit.pred_radix_lt_radix.
-Qed.
+Proof. reflexivity. Qed.
 
 Theorem eq_d2n_0 : ∀ b, d2n b = 0 ↔ (b = 0)%D.
 Proof.
 intros b.
 split; intros Hb.
  unfold d2n in Hb.
+bbb.
  unfold digit_eq.
  rewrite Hb; simpl.
  rewrite Nat.mod_0_l; [ reflexivity | apply Digit.radix_neq_0 ].
