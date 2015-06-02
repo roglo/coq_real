@@ -36,11 +36,12 @@ destruct r.
  exfalso; apply Nat.nlt_ge in Hr; apply Hr, Nat.lt_0_succ.
 
  apply lt_S_n; simpl.
-SearchAbout (S (pred _)).
-
  rewrite Nat.succ_pred.
+  apply Nat.lt_lt_succ_r, Nat.lt_succ_r; reflexivity.
 
-bbb.
+  intros H; subst r; apply Nat.nle_gt in Hr.
+  apply Hr; reflexivity.
+Qed.
 
 Inductive digit := dig : ∀ k, k < radix → digit.
 Definition digit_0 := (dig 0 radix_gt_0).
