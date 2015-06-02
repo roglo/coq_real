@@ -43,34 +43,41 @@ destruct r.
   apply Hr; reflexivity.
 Qed.
 
+Theorem radix_gt_9 : pred radix < radix.
+Proof.
+unfold radix; destruct rad as (r, Hr).
+destruct r; [ idtac | apply Nat.lt_succ_r; reflexivity ].
+exfalso; apply Nat.nlt_ge in Hr; apply Hr, Nat.lt_0_succ.
+Qed.
+
 Inductive digit := dig : ∀ k, k < radix → digit.
 Definition digit_0 := (dig 0 radix_gt_0).
 Definition digit_1 := (dig 1 radix_gt_1).
 Definition digit_8 := (dig (pred (pred radix)) radix_gt_8).
-Definition digit_9 := (dig 9 radix_gt_9).
+Definition digit_9 := (dig (pred radix) radix_gt_9).
 
+Definition digit_add x y :=
+  match (x, y) with
+  | (dig a _, dig b _) =>
+      dig ((a + b) mod radix) (Nat.mod_upper_bound (a + b) radix radix_neq_0)
+  end.
 
-Record digit := { dig : nat }.
-Definition digit_0 := {| dig := 0 |}.
-Definition digit_1 := {| dig := 1 |}.
-Definition digit_8 := {| dig := pred (pred radix) |}.
-Definition digit_9 := {| dig := pred radix |}.
-Definition digit_eq x y := dig x mod radix = dig y mod radix.
-Arguments dig d%D.
-Arguments digit_eq x%D y%D.
+Theorem pred_radix_sub_lt : ∀ a, pred radix - a < radix.
+Proof.
+intros a.
+eapply Nat.le_lt_trans; [ apply Nat.le_sub_l | apply radix_gt_9 ].
+Qed.
 
-Notation "0" := digit_0 : digit_scope.
-Notation "1" := digit_1 : digit_scope.
-Notation "8" := digit_8 : digit_scope.
-Notation "9" := digit_9 : digit_scope.
-Notation "x = y" := (digit_eq x y) : digit_scope.
-Notation "x ≠ y" := (¬digit_eq x y) : digit_scope.
+Definition oppd x :=
+  match x with
+  | dig a Ha => dig (pred radix - a) (pred_radix_sub_lt a)
+  end.
 
-Definition digit_add x y := {| dig := dig x + dig y |}.
-Definition oppd x := {| dig := pred radix - dig x mod radix |}.
+Check oppd.
 
 Notation "x + y" := (digit_add x y) : digit_scope.
 
+(*
 Ltac fsimpl_in H :=
   remember minus as fminus;
   remember div as fdiv;
@@ -82,9 +89,11 @@ Ltac fsimpl :=
   remember div as fdiv;
   remember modulo as fmod;
   simpl; subst fminus fdiv fmod.
+*)
 
 Module Digit.
 
+(*
 Theorem pred_radix_lt_radix : pred radix < radix.
 Proof.
 pose proof (radix_ge_2 rad) as H.
@@ -136,6 +145,16 @@ Add Parametric Relation : digit digit_eq
  symmetry proved by eq_sym
  transitivity proved by eq_trans
  as eq_equivalence.
+*)
+
+Theorem eq_dec : ∀ x y : digit, {x = y} + {x ≠ y}.
+Proof.
+intros x y.
+destruct x as (a, Ha).
+destruct y as (b, Hb).
+destruct (eq_nat_dec a b) as [H1| H1].
+ left; subst a; f_equal.
+bbb.
 
 Theorem eq_dec : ∀ x y, {(x = y)%D} + {(x ≠ y)%D}.
 Proof. intros x y; apply Nat.eq_dec. Qed.
