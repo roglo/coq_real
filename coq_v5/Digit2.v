@@ -415,9 +415,26 @@ destruct (lt_dec (d + e) radix) as [H1| H1].
   rewrite <- Nat.add_sub_swap.
    rewrite <- Nat.add_assoc, Nat.add_1_r.
    rewrite <- Nat.add_sub_swap.
-   rewrite Nat.add_succ_r, <- Nat.add_succ_l.
    rewrite Nat.succ_pred; [ idtac | apply radix_neq_0 ].
    rewrite <- Nat.sub_add_distr.
+   symmetry.
+   rewrite Nat.mod_small.
+pose proof Nat.div_mod (d + e) radix radix_neq_0 as H.
+SearchAbout (_ = _ - _ ).
+symmetry.
+rewrite <- Nat_sub_sub_distr.
+f_equal.
+rewrite H at 2.
+symmetry.
+rewrite Nat.add_comm.
+SearchAbout (_ = _ + _).
+rewrite <- Nat.add_sub_assoc.
+SearchAbout (_ = _ + _).
+symmetry.
+apply Nat_le_sub_add_r.
+reflexivity.
+rewrite Nat.sub_diag.
+
 bbb.
 
 unfold digit_eq, digit_add, oppd; simpl.
