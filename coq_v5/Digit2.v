@@ -249,42 +249,25 @@ Theorem opp_0_iff : ∀ d, (oppd d = 0)%D ↔ (d = 9)%D.
 Proof.
 intros d.
 split; intros H1.
-bbb.
- unfold digit_eq in H1; fsimpl_in H1.
- unfold digit_eq; simpl.
- rewrite Nat.mod_0_l in H1; [ idtac | apply radix_neq_0 ].
- symmetry.
- rewrite Nat.mod_small; [ symmetry | apply Nat.lt_pred_l, radix_neq_0 ].
- apply Nat.mod_divides in H1; [ idtac | apply radix_neq_0 ].
- destruct H1 as (c, Hc); rewrite Nat.mul_comm in Hc.
- destruct c; simpl in Hc.
-  apply Nat.sub_0_le in Hc.
-  apply Nat_pred_le_mod in Hc; [ assumption | apply radix_neq_0 ].
+ destruct d as (d, Hd); simpl in H1.
+ unfold digit_9; simpl.
+ apply eq_dig_eq.
+ injection H1; intros H.
+ apply Nat.sub_0_le in H.
+ apply Nat.le_antisymm; [ idtac | assumption ].
+ apply Nat.succ_le_mono.
+ rewrite Nat.succ_pred; [ assumption | apply radix_neq_0 ].
 
-  apply Nat.add_sub_eq_nz in Hc.
-   rewrite Nat.add_comm in Hc.
-   destruct radix; [ reflexivity | simpl in Hc ].
-   rewrite <- Nat.add_1_r in Hc.
-   do 2 rewrite <- Nat.add_assoc in Hc.
-   apply Nat.add_sub_eq_l in Hc.
-   rewrite Nat.sub_diag, Nat.add_assoc, Nat.add_1_r in Hc.
-   discriminate Hc.
-
-   intros H.
-   apply Nat.eq_add_0 in H.
-   destruct H as (H, _).
-   revert H; apply radix_neq_0.
-
- unfold digit_eq in H1; fsimpl_in H1.
- unfold digit_eq; simpl.
- symmetry in H1.
- rewrite Nat.mod_small in H1; [ idtac | apply Nat.lt_pred_l, radix_neq_0 ].
- rewrite H1, Nat.sub_diag; reflexivity.
+ subst d; simpl.
+ unfold digit_0; simpl.
+ apply eq_dig_eq, Nat.sub_diag.
 Qed.
 
 Theorem opp_involutive : ∀ d, (oppd (oppd d) = d)%D.
 Proof.
 intros d.
+bbb.
+
 unfold digit_eq, oppd; simpl.
 rewrite Nat.mod_small.
  rewrite Nat.mod_small.
