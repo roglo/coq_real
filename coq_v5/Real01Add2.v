@@ -6,23 +6,7 @@ Require Import Oracle Digit2 Real012.
 
 Notation "⊥" := False.
 
-Theorem eta_equiv : ∀ A B (equiv : relation A),
-  Equivalence equiv → Equivalence (λ f g, ∀ (x : B), equiv (f x) (g x)).
-Proof.
-intros A B equiv H1.
-constructor; intros f g; [ apply H1 | intros H x; symmetry; apply H | idtac ].
-intros h Hfg Hgh x.
-transitivity (g x); [ apply Hfg | apply Hgh ].
-Qed.
-
-(*
-Theorem extensionality : ∀ A B (f g : A → B), (∀ x, f x = g x) → f = g.
-Proof.
-intros A B f g H.
-eapply univalence; [ eapply eta_equiv, eq_equivalence | idtac ].
-simpl; apply H.
-Qed.
-*)
+Axiom extensionality : ∀ A B (f g : A → B), (∀ x, f x = g x) → f = g.
 
 Open Scope nat_scope.
 
@@ -40,7 +24,6 @@ Notation "0" := NN_zero : NN_scope.
 Theorem NN_add_comm : ∀ u v, (u + v = v + u)%NN.
 Proof.
 intros u v.
-bbb.
 apply extensionality; intros i.
 apply Nat.add_comm.
 Qed.
@@ -74,13 +57,6 @@ Proof. intros u v w x Huv Hwx; subst u w; reflexivity. Qed.
 
 Theorem rm_compat : ∀ x y i, (x == y)%I → (x .[i] = y .[i])%D.
 Proof. intros x y i Hxy; apply Hxy. Qed.
-
-(*
-Add Parametric Morphism : rm
- with signature I_eqs ==> eq ==> digit_eq
- as rm_morph.
-Proof. intros; apply rm_compat; assumption. Qed.
-*)
 
 (* some extra functions *)
 
@@ -137,7 +113,7 @@ apply extensionality in Huv.
 subst u; reflexivity.
 Qed.
 
-(* normalisation and equality *)
+(* normalisation and equality of reals in interval [0..1[ *)
 
 Definition I_norm x := NN2I_add (I2NN x).
 Definition I_eq x y := (I_norm x == I_norm y)%I.
@@ -172,15 +148,14 @@ Arguments seq_eq x%I y%I i%nat.
 Theorem I_eqs_I2NN_eq : ∀ x y, (x == y)%I → I2NN x = I2NN y.
 Proof.
 intros x y Hxy; apply extensionality; intros i.
-apply Hxy.
+unfold I2NN; rewrite Hxy; reflexivity.
 Qed.
 
 Theorem NN_add_add_0_r : ∀ u, (u + I2NN 0 = u)%NN.
 Proof.
 intros u; apply extensionality; intros i.
 unfold NN_add, I2NN; simpl.
-rewrite d2n_0, Nat.add_0_r.
-reflexivity.
+rewrite Nat.add_0_r; reflexivity.
 Qed.
 
 Theorem seq_not_9_add_0_r : ∀ u i j,
@@ -268,13 +243,13 @@ apply NN_add_0_r.
 Qed.
 
 Theorem succ_pred_radix : S (pred radix) = radix.
-Proof. apply Nat.succ_pred, Digit.radix_neq_0. Qed.
+Proof. apply Nat.succ_pred, radix_neq_0. Qed.
 
 Theorem radix_mod_radix : radix mod radix = 0.
-Proof. apply Nat.mod_same, Digit.radix_neq_0. Qed.
+Proof. apply Nat.mod_same, radix_neq_0. Qed.
 
 Theorem zero_mod_radix : 0 mod radix = 0.
-Proof. apply Nat.mod_small, Digit.radix_gt_0. Qed.
+Proof. apply Nat.mod_small, radix_gt_0. Qed.
 
 Theorem add_pred_radix_1_mod_radix : (pred radix + 1) mod radix = 0.
 Proof.
@@ -287,21 +262,27 @@ intros u i.
 apply carry_add_compat.
 clear i; apply extensionality; intros i; simpl.
 unfold NN_add, I2NN, d2n; simpl.
-rewrite Nat.mod_0_l; [ idtac | apply Digit.radix_neq_0 ].
 apply Nat.add_0_r.
 Qed.
 
 Theorem n2d_1 : (n2d 1 = 1)%D.
-Proof. reflexivity. Qed.
+Proof.
+apply Digit.eq_dig_eq.
+rewrite Nat.mod_small; [ reflexivity | apply radix_gt_1 ].
+Qed.
 
 Theorem eq_d2n_9 : ∀ d, d2n d = pred radix ↔ (d = 9)%D.
 Proof.
-intros d; unfold digit_eq; simpl; rewrite Nat_pred_mod.
-split; intros; assumption.
+intros d; rewrite <- d2n_9.
+split; intros H; [ idtac | subst d; reflexivity ].
+unfold d2n in H; simpl in H.
+destruct d as (d, Hd).
+apply Digit.eq_dig_eq; assumption.
 Qed.
 
 Theorem neq_d2n_9 : ∀ d, d2n d ≠ pred radix ↔ (d ≠ 9)%D.
 Proof.
+bbb.
 intros d; unfold digit_eq; simpl; rewrite Nat_pred_mod.
 split; intros; assumption.
 Qed.
@@ -369,7 +350,7 @@ Theorem d2n_add : ∀ a b, d2n (a + b) = (d2n a + d2n b) mod radix.
 Proof.
 intros a b.
 unfold d2n; simpl.
-rewrite Nat.add_mod; [ reflexivity | apply Digit.radix_neq_0 ].
+rewrite Nat.add_mod; [ reflexivity | apply radix_neq_0 ].
 Qed.
 
 Theorem digit_neq_succ_digit : ∀ a, (a ≠ a + 1)%D.
@@ -377,11 +358,11 @@ Proof.
 intros a H.
 unfold digit_eq in H; simpl in H.
 remember (dig a) as n; revert H; clear; intros.
-rewrite <- Nat.add_mod_idemp_l in H; [ idtac | apply Digit.radix_neq_0 ].
+rewrite <- Nat.add_mod_idemp_l in H; [ idtac | apply radix_neq_0 ].
 destruct (eq_nat_dec (n mod radix) (pred radix)) as [H1| H1].
  rewrite H1, add_pred_radix_1_mod_radix in H.
  remember radix as r eqn:Hr; symmetry in Hr.
- destruct r; [ revert Hr; apply Digit.radix_neq_0 | simpl in H ].
+ destruct r; [ revert Hr; apply radix_neq_0 | simpl in H ].
  destruct r; [ revert Hr; apply Digit.radix_neq_1 | discriminate H ].
 
  symmetry in H.
@@ -389,7 +370,7 @@ destruct (eq_nat_dec (n mod radix) (pred radix)) as [H1| H1].
   rewrite Nat.add_1_r in H.
   revert H; apply Nat.neq_succ_diag_l.
 
-  pose proof Digit.radix_neq_0 as H2.
+  pose proof radix_neq_0 as H2.
   apply Nat.mod_upper_bound with (a := n) in H2.
   apply Nat.lt_add_lt_sub_r; rewrite Nat.sub_1_r.
   apply Nat_le_neq_lt; [ idtac | assumption ].
@@ -432,7 +413,7 @@ unfold d2n in Hd; rewrite Hr in Hd; unfold pred in Hd.
 remember (dig d mod 2) as n eqn:Hn.
 destruct n; [ reflexivity | idtac ].
 destruct n; [ exfalso; apply Hd; reflexivity | idtac ].
-pose proof Digit.radix_neq_0 as H; rewrite Hr in H.
+pose proof radix_neq_0 as H; rewrite Hr in H.
 apply Nat.mod_upper_bound with (a := dig d) in H.
 rewrite <- Hn in H.
 do 2 apply lt_S_n in H.
@@ -449,7 +430,7 @@ Qed.
 Theorem pred_radix_gt_0 : 0 < pred radix.
 Proof.
 remember radix as r eqn:Hr; symmetry in Hr.
-destruct r; [ exfalso; revert Hr; apply Digit.radix_neq_0 | idtac ].
+destruct r; [ exfalso; revert Hr; apply radix_neq_0 | idtac ].
 destruct r; [ exfalso; revert Hr; apply Digit.radix_neq_1 | idtac ].
 apply Nat.lt_0_succ.
 Qed.
@@ -628,7 +609,7 @@ destruct s1 as [n1| ]; [ idtac | exfalso ].
      remember (fst_neq_9 (I2NN x) (S (S j))) as s3 eqn:Hs3 .
      generalize Hs3; intros Hn3.
      apply first_nonzero_iff in Hn3; simpl in Hn3.
-     pose proof Digit.radix_neq_0 as Hrnz.
+     pose proof radix_neq_0 as Hrnz.
      destruct s3 as [n3| ].
       symmetry in Hs3.
       do 2 rewrite <- Nat.add_succ_l in Hn.
@@ -982,7 +963,7 @@ destruct s1 as [n1| ]; [ idtac | exfalso ].
      rewrite <- Nat.add_succ_l, <- Nat.add_succ_r in Hn.
      rewrite carry_add_inf in Hn; [ idtac | assumption ].
      rewrite Nat.add_1_r in Hn.
-     pose proof Digit.radix_neq_0 as Hrnz.
+     pose proof radix_neq_0 as Hrnz.
      rewrite Nat.succ_pred in Hn; [ idtac | assumption ].
      rewrite Nat.mod_same in Hn; [ idtac | assumption ].
      symmetry in Hn; simpl in Hn.
@@ -1362,8 +1343,8 @@ destruct sx as [dx| ].
       erewrite carry_add_fin in H; try eassumption.
       rewrite carry_indic_I2NN in H; [ idtac | assumption ].
       rewrite Nat.add_0_l, d2n_mod_radix, Nat.add_1_r in H.
-      rewrite Nat.succ_pred in H; [ idtac | apply Digit.radix_neq_0 ].
-      rewrite Nat.mod_same in H; [ idtac | apply Digit.radix_neq_0 ].
+      rewrite Nat.succ_pred in H; [ idtac | apply radix_neq_0 ].
+      rewrite Nat.mod_same in H; [ idtac | apply radix_neq_0 ].
       apply eq_d2n_0 in H.
       split; [ assumption | clear H ].
       pose proof (Hny (S (dx + S n))) as H.
@@ -1415,7 +1396,7 @@ Theorem I_eq_case_x0_y9_radix_neq_2 : ∀ x y,
   → (x .[ 1] = 0)%D.
 Proof.
 intros x y Hxy H6 H3 H4.
-pose proof Digit.radix_neq_0 as Hrnz.
+pose proof radix_neq_0 as Hrnz.
 pose proof (Hxy 0) as Hn.
 unfold digit_eq in Hn; simpl in Hn.
 unfold I2NN in Hn at 1; simpl in Hn.
@@ -1539,8 +1520,8 @@ destruct s1 as [n1| ].
   symmetry in Hs2.
   rewrite carry_add_inf in Hn; [ idtac | assumption ].
   rewrite Nat.add_1_r in Hn.
-  rewrite Nat.succ_pred in Hn; [ idtac | apply Digit.radix_neq_0 ].
-  rewrite Nat.mod_same in Hn; [ idtac | apply Digit.radix_neq_0 ].
+  rewrite Nat.succ_pred in Hn; [ idtac | apply radix_neq_0 ].
+  rewrite Nat.mod_same in Hn; [ idtac | apply radix_neq_0 ].
   symmetry in Hn; simpl in Hn.
   pose proof carry_add_0_or_1 (I2NN x) 2 as H.
   destruct H as [H1| H1]; rewrite H1 in Hn.
@@ -1649,7 +1630,7 @@ destruct s1 as [n1| ].
    symmetry in Hs4.
    rewrite carry_indic_I2NN in Hn; [ idtac | assumption ].
    rewrite d2n_0, Nat.add_0_r in Hn.
-   rewrite Nat.mod_0_l in Hn; [ idtac | apply Digit.radix_neq_0 ].
+   rewrite Nat.mod_0_l in Hn; [ idtac | apply radix_neq_0 ].
    pose proof carry_add_0_or_1 (I2NN x) (S (S i)) as H.
    destruct H as [H1| H1]; rewrite H1 in Hn.
     rewrite d2n_9, Nat.add_0_r in Hn.
@@ -1761,8 +1742,8 @@ destruct s1 as [n1| ].
    rewrite <- Nat.add_1_r in Hn.
    erewrite carry_add_inf in Hn; [ idtac | eassumption ].
    rewrite Nat.add_1_r in Hn.
-   rewrite Nat.succ_pred in Hn; [ idtac | apply Digit.radix_neq_0 ].
-   rewrite Nat.mod_same in Hn; [ idtac | apply Digit.radix_neq_0 ].
+   rewrite Nat.succ_pred in Hn; [ idtac | apply radix_neq_0 ].
+   rewrite Nat.mod_same in Hn; [ idtac | apply radix_neq_0 ].
    symmetry in Hn.
    destruct n1.
     symmetry in Hs1.
@@ -1786,7 +1767,7 @@ destruct s1 as [n1| ].
     apply eq_d2n_0 in Hn; contradiction.
 
    rewrite H1 in Hn.
-   rewrite Nat.mod_same in Hn; [ idtac | apply Digit.radix_neq_0 ].
+   rewrite Nat.mod_same in Hn; [ idtac | apply radix_neq_0 ].
    destruct i.
     Focus 2.
     rename Hn into Hx.
@@ -1819,7 +1800,7 @@ destruct s1 as [n1| ].
        rewrite Nat.add_1_r in H1.
        exfalso; apply Ht4.
        apply Nat.succ_inj.
-       rewrite H1, Nat.succ_pred; [ reflexivity | apply Digit.radix_neq_0 ].
+       rewrite H1, Nat.succ_pred; [ reflexivity | apply radix_neq_0 ].
 
        apply first_nonzero_iff in Hs2.
        pose proof Hs2 n4 as H.
@@ -2110,7 +2091,7 @@ split; intros Hxy.
      eapply I_eq_diff with (i := i) in H.
       2: intros; apply seq_eq_eq, Hj; eassumption.
 
-      pose proof Digit.radix_neq_0 as Hrnz.
+      pose proof radix_neq_0 as Hrnz.
       destruct H as [H3| [H3| H3]]; [ idtac | contradiction | idtac ].
        destruct (Digit.eq_dec (y .[ i]) 9) as [H4| H4].
         rewrite H4, Digit.add_comm, Digit.add_1_9 in H3.
@@ -2383,7 +2364,7 @@ split; intros Hxy.
            unfold d2n in Hn; simpl in Hn.
            rewrite <- Nat.add_mod_idemp_l in Hn; [ idtac | assumption ].
            remember (dig (y .[ i]) mod radix) as d eqn:Hd .
-           pose proof Digit.radix_neq_0 as H.
+           pose proof radix_neq_0 as H.
            apply Nat.mod_upper_bound with (a := dig (y .[ i])) in H.
            rewrite <- Hd in H.
            destruct (lt_dec (d + 2) radix) as [H1| H1].
@@ -2395,7 +2376,7 @@ split; intros Hxy.
             eapply Nat.div_le_mono in H1; [ idtac | eassumption ].
             rewrite Nat.div_same in H1; [ idtac | assumption ].
             apply Nat.mul_le_mono with (n := 3) (m := radix) in H1.
-             pose proof Digit.radix_neq_0 as H2.
+             pose proof radix_neq_0 as H2.
              apply Nat.div_mod with (x := d + 2) in H2.
              rewrite Hn, Nat.add_comm in H2.
              apply Nat.add_cancel_r in H2.
@@ -2866,16 +2847,16 @@ remember (carry_add (I2NN x + I2NN (y + z)) (S i)) as c3 eqn:Hc3.
 remember (carry_add (I2NN (x + y) + I2NN z) (S i)) as c4 eqn:Hc4.
 unfold digit_eq; simpl.
 rewrite Nat.add_comm, Nat.add_assoc.
-rewrite Nat.add_mod_idemp_r; [ idtac | apply Digit.radix_neq_0 ].
+rewrite Nat.add_mod_idemp_r; [ idtac | apply radix_neq_0 ].
 symmetry; rewrite <- Nat.add_assoc.
-rewrite Nat.add_mod_idemp_l; [ idtac | apply Digit.radix_neq_0 ].
+rewrite Nat.add_mod_idemp_l; [ idtac | apply radix_neq_0 ].
 rewrite Nat.add_shuffle0; symmetry.
 rewrite <- Nat.add_assoc, Nat.add_comm.
 do 3 rewrite Nat.add_assoc.
 remember (X + Y + Z) as XYZ eqn:HXYZ.
 do 2 rewrite <- Nat.add_assoc.
-rewrite <- Nat.add_mod_idemp_r; [ symmetry | apply Digit.radix_neq_0 ].
-rewrite <- Nat.add_mod_idemp_r; [ symmetry | apply Digit.radix_neq_0 ].
+rewrite <- Nat.add_mod_idemp_r; [ symmetry | apply radix_neq_0 ].
+rewrite <- Nat.add_mod_idemp_r; [ symmetry | apply radix_neq_0 ].
 f_equal; f_equal; subst X Y Z XYZ.
 pose proof carry_add_0_or_1 (I2NN y + I2NN z)%NN (S i) as H1.
 rewrite <- Hc1 in H1.
@@ -3016,17 +2997,17 @@ destruct Hxy as [Hxy| Hxy].
         rewrite Nat.add_shuffle0, Nat.add_1_r, succ_pred_radix.
         unfold digit_eq; simpl.
         rewrite Nat.add_comm.
-        rewrite Nat_mod_add_once; [ idtac | apply Digit.radix_neq_0 ].
+        rewrite Nat_mod_add_once; [ idtac | apply radix_neq_0 ].
         unfold d2n.
-        rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
+        rewrite Nat.mod_mod; [ idtac | apply radix_neq_0 ].
         reflexivity.
 
        rewrite Nat.add_shuffle0, Nat.add_1_r, succ_pred_radix.
        unfold digit_eq; simpl.
        rewrite Nat.add_comm.
-       rewrite Nat_mod_add_once; [ idtac | apply Digit.radix_neq_0 ].
+       rewrite Nat_mod_add_once; [ idtac | apply radix_neq_0 ].
        unfold d2n.
-       rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
+       rewrite Nat.mod_mod; [ idtac | apply radix_neq_0 ].
        reflexivity.
 
       idtac.
@@ -3063,12 +3044,12 @@ bbb.
          rewrite Nat.add_shuffle0, Nat.add_1_r, succ_pred_radix.
          rewrite n2d_add, n2d_d2n; unfold digit_eq; simpl.
          rewrite Nat.add_comm.
-         rewrite Nat_mod_add_once; [ reflexivity | apply Digit.radix_neq_0 ].
+         rewrite Nat_mod_add_once; [ reflexivity | apply radix_neq_0 ].
 
         rewrite Nat.add_shuffle0, Nat.add_1_r, succ_pred_radix.
         rewrite n2d_add, n2d_d2n; unfold digit_eq; simpl.
         rewrite Nat.add_comm.
-        rewrite Nat_mod_add_once; [ reflexivity | apply Digit.radix_neq_0 ].
+        rewrite Nat_mod_add_once; [ reflexivity | apply radix_neq_0 ].
 
        apply Nat.nlt_ge in H1.
        exfalso; revert Hxy Hs2 H1; clear; intros.
@@ -3315,7 +3296,7 @@ Theorem radix_le_sqr_radix : radix ≤ radix * radix.
 Proof.
 remember (radix * radix) as a.
 replace radix with (1 * radix) by apply Nat.mul_1_l; subst a.
-apply Nat.mul_le_mono_r, Digit.radix_gt_0.
+apply Nat.mul_le_mono_r, radix_gt_0.
 Qed.
 
 Definition add_NN_add_l u v i a := NN_add u v i + a.
@@ -3449,7 +3430,7 @@ unfold I2NN at 5; simpl.
 rewrite n2d_add, d2n_add.
 do 2 rewrite d2n_n2d.
 unfold I2NN at 1; simpl.
-rewrite <- Nat.add_mod; [ idtac | apply Digit.radix_neq_0 ].
+rewrite <- Nat.add_mod; [ idtac | apply radix_neq_0 ].
 unfold carry_add at 2; simpl.
 remember (fst_neq_9 (I2NN (NN2I_add (I2NN x))) (S i)) as s1 eqn:Hs1.
 destruct s1 as [n1| ].
@@ -3457,7 +3438,7 @@ destruct s1 as [n1| ].
  rewrite <- Nat.add_succ_l.
  rewrite carry_indic_I2NN; [ idtac | assumption ].
  rewrite Nat.add_0_r.
- rewrite Nat.mod_mod; [ reflexivity | apply Digit.radix_neq_0 ].
+ rewrite Nat.mod_mod; [ reflexivity | apply radix_neq_0 ].
 
  exfalso; symmetry in Hs1; revert Hs1.
  apply fst_neq_9_I2NN.
@@ -3566,8 +3547,8 @@ do 10 rewrite <- Nat.add_assoc.
 do 8 (rewrite Nat.div_add_l; [ idtac | subst r rr; apply sqr_radix_neq_0 ]).
 do 2 rewrite Nat.add_assoc.
 unfold digit_eq, n2d; rewrite <- Hr; simpl.
-pose proof Digit.radix_neq_0 as Hr0; rewrite <- Hr in Hr0.
-pose proof Digit.radix_gt_0 as Hrp; rewrite <- Hr in Hrp.
+pose proof radix_neq_0 as Hr0; rewrite <- Hr in Hr0.
+pose proof radix_gt_0 as Hrp; rewrite <- Hr in Hrp.
 assert (rr ≠ 0) as Hrr0 by (subst rr; apply Nat.neq_mul_0; split; assumption).
 symmetry; rewrite <- Nat.add_assoc.
 rewrite Nat.add_mod_idemp_l; [ idtac | assumption ].
@@ -3889,7 +3870,7 @@ intros u Hu n Hn i.
 unfold NN2I; fsimpl.
 rewrite Nat.mul_1_r.
 unfold digit_eq; fsimpl.
-do 2 (rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ]).
+do 2 (rewrite Nat.mod_mod; [ idtac | apply radix_neq_0 ]).
 apply Nat.nlt_ge in Hn.
 destruct n; [ exfalso; apply Hn, Nat.lt_0_succ | idtac ].
 rewrite summation_split_last; [ symmetry | apply Nat.le_0_l ].
@@ -3932,7 +3913,7 @@ rewrite Nat.sub_1_r.
 eapply le_lt_trans with (m := radix * pred radix).
  apply Nat.mul_le_mono; [ apply radix_ge_2 | reflexivity ].
 
- apply Nat.mul_lt_mono_pos_l; [ apply Digit.radix_gt_0 | idtac ].
+ apply Nat.mul_lt_mono_pos_l; [ apply radix_gt_0 | idtac ].
  apply Digit.pred_radix_lt_radix.
 Qed.
 *)
@@ -3982,7 +3963,7 @@ remember (d2n a + d2n b - radix) as c eqn:Hc.
 apply Nat_le_sub_add_r in Hc; [ idtac | assumption ].
 replace radix with (1 * radix) in Hc by apply Nat.mul_1_l.
 rewrite Hc, Nat.add_comm.
-rewrite Nat.div_add; [ idtac | apply Digit.radix_neq_0 ].
+rewrite Nat.div_add; [ idtac | apply radix_neq_0 ].
 rewrite Nat.div_small; [ reflexivity | idtac ].
 rewrite Nat.mul_1_l in Hc.
 apply Nat.add_lt_mono_l with (p := radix).
@@ -3999,7 +3980,7 @@ remember (d2n a + d2n b - radix) as c eqn:Hc.
 apply Nat_le_sub_add_r in Hc; [ idtac | assumption ].
 replace radix with (1 * radix) in Hc by apply Nat.mul_1_l.
 rewrite Hc, Nat.add_comm.
-rewrite Nat.mod_add; [ idtac | apply Digit.radix_neq_0 ].
+rewrite Nat.mod_add; [ idtac | apply radix_neq_0 ].
 rewrite Nat.mod_small; [ reflexivity | idtac ].
 rewrite Nat.mul_1_l in Hc.
 apply Nat.add_lt_mono_l with (p := radix).
@@ -4024,28 +4005,28 @@ do 6 rewrite Nat.mul_1_r.
 do 4 rewrite <- Nat.add_assoc; simpl.
 do 7 rewrite Nat.add_assoc.
 do 3 rewrite d2n_n2d.
-do 5 (rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ]).
+do 5 (rewrite Nat.mod_mod; [ idtac | apply radix_neq_0 ]).
 Set Printing Depth 13. Show.
 do 7 rewrite <- Nat.add_assoc.
 do 5 (rewrite Nat.div_add_l; [ idtac | apply sqr_radix_neq_0 ]).
 Set Printing Depth 10. Show.
 do 2 rewrite <- Nat.add_assoc.
 do 2 (rewrite Nat.add_comm; symmetry).
-rewrite <- Nat.add_mod_idemp_l; [ symmetry | apply Digit.radix_neq_0 ].
-rewrite <- Nat.add_mod_idemp_l; [ symmetry | apply Digit.radix_neq_0 ].
+rewrite <- Nat.add_mod_idemp_l; [ symmetry | apply radix_neq_0 ].
+rewrite <- Nat.add_mod_idemp_l; [ symmetry | apply radix_neq_0 ].
 f_equal; f_equal.
 Set Printing Depth 12. Show.
-rewrite Nat.add_mod; [ symmetry | apply Digit.radix_neq_0 ].
+rewrite Nat.add_mod; [ symmetry | apply radix_neq_0 ].
 rewrite Nat.add_comm; symmetry.
-rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
+rewrite Nat.mod_mod; [ idtac | apply radix_neq_0 ].
 Set Printing Depth 18. Show.
-rewrite Nat.add_mod_idemp_l; [ idtac | apply Digit.radix_neq_0 ].
+rewrite Nat.add_mod_idemp_l; [ idtac | apply radix_neq_0 ].
 rewrite <- Nat.add_assoc, Nat.add_comm; symmetry.
-rewrite <- Nat.add_mod_idemp_l; [ symmetry | apply Digit.radix_neq_0 ].
-rewrite <- Nat.add_mod_idemp_l; [ symmetry | apply Digit.radix_neq_0 ].
+rewrite <- Nat.add_mod_idemp_l; [ symmetry | apply radix_neq_0 ].
+rewrite <- Nat.add_mod_idemp_l; [ symmetry | apply radix_neq_0 ].
 f_equal; f_equal.
 Set Printing Depth 9. Show.
-rewrite Nat.add_mod_idemp_r; [ idtac | apply Digit.radix_neq_0 ].
+rewrite Nat.add_mod_idemp_r; [ idtac | apply radix_neq_0 ].
 do 2 rewrite Nat.add_assoc.
 Set Printing Depth 11. Show.
 remember radix as r.
@@ -4072,7 +4053,7 @@ bbb.
 remember radix as r.
 remember (r * r) as rr.
 Set Printing Depth 11. Show.
-do 2 (rewrite Nat.add_mod; [ symmetry | apply Digit.radix_neq_0 ]).
+do 2 (rewrite Nat.add_mod; [ symmetry | apply radix_neq_0 ]).
 
 erewrite summation_compat.
  Focus 2.
@@ -4087,10 +4068,10 @@ erewrite summation_compat.
  remember (plus (d2n (x .[ k]))) as a.
  rewrite Nat.add_comm; subst a.
  rewrite Nat.div_add; [ idtac | apply sqr_radix_neq_0 ].
- rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
+ rewrite Nat.mod_mod; [ idtac | apply radix_neq_0 ].
  subst k; reflexivity.
 
- do 2 (rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ]).
+ do 2 (rewrite Nat.mod_mod; [ idtac | apply radix_neq_0 ]).
  erewrite summation_compat.
   2: intros; rewrite Nat.add_0_r; reflexivity.
 
@@ -4107,8 +4088,8 @@ erewrite summation_compat.
   rewrite Nat.add_assoc.
   rewrite Nat.div_add_l; [ idtac | apply sqr_radix_neq_0 ].
   do 2 rewrite <- Nat.add_assoc.
-  rewrite Nat.add_mod; [ symmetry | apply Digit.radix_neq_0 ].
-  rewrite Nat.add_mod; [ symmetry | apply Digit.radix_neq_0 ].
+  rewrite Nat.add_mod; [ symmetry | apply radix_neq_0 ].
+  rewrite Nat.add_mod; [ symmetry | apply radix_neq_0 ].
   f_equal; f_equal.
   symmetry.
   remember (d2n (x .[ i])) as xi eqn:Hxi .
@@ -4119,13 +4100,13 @@ erewrite summation_compat.
   remember (u (i + 2)) as ui2 eqn:Hui2 .
   remember ((ui1 * radix + ui2) / (radix * radix)) as a.
   remember ((a + ui) mod radix) as b eqn:Hb .
-  rewrite Nat.add_mod in Hb; [ idtac | apply Digit.radix_neq_0 ].
+  rewrite Nat.add_mod in Hb; [ idtac | apply radix_neq_0 ].
   symmetry.
-  rewrite Nat.add_mod; [ idtac | apply Digit.radix_neq_0 ].
+  rewrite Nat.add_mod; [ idtac | apply radix_neq_0 ].
   symmetry; subst b.
-  rewrite Nat.add_mod_idemp_l; [ idtac | apply Digit.radix_neq_0 ].
+  rewrite Nat.add_mod_idemp_l; [ idtac | apply radix_neq_0 ].
   rewrite Nat.add_shuffle0, Nat.add_comm.
-  rewrite <- Nat.add_mod_idemp_r; [ idtac | apply Digit.radix_neq_0 ].
+  rewrite <- Nat.add_mod_idemp_r; [ idtac | apply radix_neq_0 ].
   f_equal; f_equal; subst a.
   remember (radix * radix) as rr.
   remember (((ui1 * radix + ui2) / rr) mod radix) as a eqn:Ha .
@@ -4211,10 +4192,10 @@ erewrite summation_compat.
  remember (plus (d2n (x .[ k]))) as a.
  rewrite Nat.add_comm; subst a.
  rewrite Nat.div_add; [ idtac | apply sqr_radix_neq_0 ].
- rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
+ rewrite Nat.mod_mod; [ idtac | apply radix_neq_0 ].
  subst k; reflexivity.
 
- do 2 (rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ]).
+ do 2 (rewrite Nat.mod_mod; [ idtac | apply radix_neq_0 ]).
  erewrite summation_compat.
   2: intros; rewrite Nat.add_0_r; reflexivity.
 
@@ -4231,8 +4212,8 @@ erewrite summation_compat.
   rewrite Nat.add_assoc.
   rewrite Nat.div_add_l; [ idtac | apply sqr_radix_neq_0 ].
   do 2 rewrite <- Nat.add_assoc.
-  rewrite Nat.add_mod; [ symmetry | apply Digit.radix_neq_0 ].
-  rewrite Nat.add_mod; [ symmetry | apply Digit.radix_neq_0 ].
+  rewrite Nat.add_mod; [ symmetry | apply radix_neq_0 ].
+  rewrite Nat.add_mod; [ symmetry | apply radix_neq_0 ].
   f_equal; f_equal.
   symmetry.
   remember (d2n (x .[ i])) as xi eqn:Hxi .
@@ -4243,13 +4224,13 @@ erewrite summation_compat.
   remember (u (i + 2)) as ui2 eqn:Hui2 .
   remember ((ui1 * radix + ui2) / (radix * radix)) as a.
   remember ((a + ui) mod radix) as b eqn:Hb .
-  rewrite Nat.add_mod in Hb; [ idtac | apply Digit.radix_neq_0 ].
+  rewrite Nat.add_mod in Hb; [ idtac | apply radix_neq_0 ].
   symmetry.
-  rewrite Nat.add_mod; [ idtac | apply Digit.radix_neq_0 ].
+  rewrite Nat.add_mod; [ idtac | apply radix_neq_0 ].
   symmetry; subst b.
-  rewrite Nat.add_mod_idemp_l; [ idtac | apply Digit.radix_neq_0 ].
+  rewrite Nat.add_mod_idemp_l; [ idtac | apply radix_neq_0 ].
   rewrite Nat.add_shuffle0, Nat.add_comm.
-  rewrite <- Nat.add_mod_idemp_r; [ idtac | apply Digit.radix_neq_0 ].
+  rewrite <- Nat.add_mod_idemp_r; [ idtac | apply radix_neq_0 ].
   f_equal; f_equal; subst a.
   remember (radix * radix) as rr.
   remember (((ui1 * radix + ui2) / rr) mod radix) as a eqn:Ha .
@@ -4376,11 +4357,11 @@ erewrite summation_compat.
  remember (plus (d2n (x .[ k]))) as a.
  rewrite Nat.add_comm; subst a.
  rewrite Nat.div_add; [ idtac | apply sqr_radix_neq_0 ].
- rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
+ rewrite Nat.mod_mod; [ idtac | apply radix_neq_0 ].
  do 2 rewrite Nat.add_assoc.
  subst k; reflexivity.
 
- do 2 (rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ]).
+ do 2 (rewrite Nat.mod_mod; [ idtac | apply radix_neq_0 ]).
  erewrite summation_compat.
   2: intros; rewrite Nat.add_0_r; reflexivity.
 
@@ -4399,8 +4380,8 @@ erewrite summation_compat.
   do 3 rewrite Nat.add_assoc.
   rewrite Nat.div_add_l; [ idtac | apply sqr_radix_neq_0 ].
   do 5 rewrite <- Nat.add_assoc.
-  rewrite Nat.add_mod; [ symmetry | apply Digit.radix_neq_0 ].
-  rewrite Nat.add_mod; [ symmetry | apply Digit.radix_neq_0 ].
+  rewrite Nat.add_mod; [ symmetry | apply radix_neq_0 ].
+  rewrite Nat.add_mod; [ symmetry | apply radix_neq_0 ].
   f_equal; f_equal.
   do 3 rewrite Nat.add_assoc.
   symmetry.
@@ -4422,13 +4403,13 @@ erewrite summation_compat.
   remember (((yi1 + zi1) * radix + yi2 + zi2) / (radix * radix)) as a.
   remember ((a + yi + zi) mod radix) as b eqn:Hb .
   rewrite <- Nat.add_assoc, Nat.add_comm in Hb.
-  rewrite Nat.add_mod in Hb; [ idtac | apply Digit.radix_neq_0 ].
+  rewrite Nat.add_mod in Hb; [ idtac | apply radix_neq_0 ].
   symmetry.
-  rewrite Nat.add_mod; [ idtac | apply Digit.radix_neq_0 ].
+  rewrite Nat.add_mod; [ idtac | apply radix_neq_0 ].
   symmetry; subst b.
-  rewrite Nat.add_mod_idemp_l; [ idtac | apply Digit.radix_neq_0 ].
+  rewrite Nat.add_mod_idemp_l; [ idtac | apply radix_neq_0 ].
   rewrite <- Nat.add_assoc.
-  rewrite <- Nat.add_mod_idemp_r; [ idtac | apply Digit.radix_neq_0 ].
+  rewrite <- Nat.add_mod_idemp_r; [ idtac | apply radix_neq_0 ].
   f_equal; f_equal; subst a.
   remember (radix * radix) as rr.
   remember ((((yi1 + zi1) * radix + yi2 + zi2) / rr) mod radix) as a eqn:Ha .
@@ -4458,11 +4439,11 @@ rewrite summation_split_first; [ symmetry | apply Nat.le_0_l ].
 rewrite summation_split_first; [ symmetry | apply Nat.le_0_l ].
 rewrite Nat.add_mod.
 
-rewrite Nat.add_mod; [ symmetry | apply Digit.radix_neq_0 ].
+rewrite Nat.add_mod; [ symmetry | apply radix_neq_0 ].
 
 f_equal; f_equal; f_equal.
-rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
-rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
+rewrite Nat.mod_mod; [ idtac | apply radix_neq_0 ].
+rewrite Nat.mod_mod; [ idtac | apply radix_neq_0 ].
 
 Unset Printing Notations. Show.
 
@@ -4600,7 +4581,7 @@ do 12 rewrite Nat.add_0_r.
 do 9 rewrite Nat.mul_1_r.
 do 6 rewrite d2n_n2d.
 do 4 rewrite <- Nat.add_assoc; simpl.
-do 6 (rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ]).
+do 6 (rewrite Nat.mod_mod; [ idtac | apply radix_neq_0 ]).
 do 8 (rewrite Nat.div_add_l; [ idtac | apply sqr_radix_neq_0 ]).
 remember (d2n (x .[ i])) as xi eqn:Hxi .
 remember (d2n (y .[ i])) as yi eqn:Hyi .
@@ -4619,36 +4600,36 @@ remember (d2n (y .[ i + 4])) as yi4 eqn:Hyi4 .
 remember (d2n (z .[ i + 4])) as zi4 eqn:Hzi4 .
 do 8 rewrite Nat.add_assoc.
 unfold digit_eq; simpl.
-rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
-rewrite Nat.mod_mod; [ idtac | apply Digit.radix_neq_0 ].
+rewrite Nat.mod_mod; [ idtac | apply radix_neq_0 ].
+rewrite Nat.mod_mod; [ idtac | apply radix_neq_0 ].
 Set Printing Depth 12. Show.
 Set Printing Depth 50. Show.
 symmetry.
 rewrite <- Nat.add_assoc.
-rewrite Nat.add_mod_idemp_l; [ idtac | apply Digit.radix_neq_0 ].
+rewrite Nat.add_mod_idemp_l; [ idtac | apply radix_neq_0 ].
 Set Printing Depth 11. Show.
 do 16 rewrite <- Nat.add_assoc.
 rewrite Nat.add_comm; symmetry.
 rewrite Nat.add_comm; symmetry.
 Set Printing Depth 12. Show.
-rewrite Nat.add_mod; [ symmetry | apply Digit.radix_neq_0 ].
-rewrite Nat.add_mod; [ symmetry | apply Digit.radix_neq_0 ].
+rewrite Nat.add_mod; [ symmetry | apply radix_neq_0 ].
+rewrite Nat.add_mod; [ symmetry | apply radix_neq_0 ].
 f_equal; f_equal.
 Set Printing Depth 13. Show.
-rewrite Nat.add_mod_idemp_l; [ idtac | apply Digit.radix_neq_0 ].
+rewrite Nat.add_mod_idemp_l; [ idtac | apply radix_neq_0 ].
 do 2 rewrite <- Nat.add_assoc.
 rewrite Nat.add_comm; symmetry.
 rewrite Nat.add_comm; symmetry.
-rewrite Nat.add_mod; [ symmetry | apply Digit.radix_neq_0 ].
-rewrite Nat.add_mod; [ symmetry | apply Digit.radix_neq_0 ].
+rewrite Nat.add_mod; [ symmetry | apply radix_neq_0 ].
+rewrite Nat.add_mod; [ symmetry | apply radix_neq_0 ].
 f_equal; f_equal.
 Set Printing Depth 11. Show.
 rewrite Nat.add_comm.
 rewrite <- Nat.add_assoc.
 rewrite Nat.add_comm; symmetry.
 rewrite Nat.add_comm; symmetry.
-rewrite Nat.add_mod; [ symmetry | apply Digit.radix_neq_0 ].
-rewrite Nat.add_mod; [ symmetry | apply Digit.radix_neq_0 ].
+rewrite Nat.add_mod; [ symmetry | apply radix_neq_0 ].
+rewrite Nat.add_mod; [ symmetry | apply radix_neq_0 ].
 f_equal; f_equal.
 clear xi yi zi Hxi Hyi Hzi.
 remember (radix * radix) as rr.
@@ -4671,8 +4652,8 @@ rewrite <- Hxyi1, <- Hxyi2.
 do 2 rewrite Nat.mul_add_distr_r.
 bbb.
 
-rewrite Nat.add_mod; [ symmetry | apply Digit.radix_neq_0 ].
-rewrite Nat.add_mod; [ symmetry | apply Digit.radix_neq_0 ].
+rewrite Nat.add_mod; [ symmetry | apply radix_neq_0 ].
+rewrite Nat.add_mod; [ symmetry | apply radix_neq_0 ].
 Set Printing Depth 11. Show.
 bbb.
 
@@ -4696,8 +4677,8 @@ remember (d2n (x .[ i + 2])) as xi2 eqn:Hxi2 .
 remember (d2n (y .[ i + 2])) as yi2 eqn:Hyi2 .
 remember (d2n (z .[ i + 2])) as zi2 eqn:Hzi2 .
 do 6 (rewrite Nat.div_mul; [ idtac | apply sqr_radix_neq_0 ]).
-do 8 (rewrite Nat.div_mul_cancel_r; try apply Digit.radix_neq_0).
-rewrite Nat.mod_0_l; [ idtac | apply Digit.radix_neq_0 ].
+do 8 (rewrite Nat.div_mul_cancel_r; try apply radix_neq_0).
+rewrite Nat.mod_0_l; [ idtac | apply radix_neq_0 ].
 do 6 rewrite Nat.add_0_r.
 do 6 rewrite d2n_n2d.
 rewrite Nat_lt_sqr_div_mod; [ idtac | subst; apply d2n_add_lt_sqr_radix ].
@@ -4705,7 +4686,7 @@ rewrite Nat_lt_sqr_div_mod.
  Focus 2.
  eapply lt_le_trans; [ idtac | apply double_radix_le_square_radix ].
  apply Nat.add_lt_mono; [ subst xi1; apply d2n_lt_radix | idtac ].
- apply Nat.mod_upper_bound, Digit.radix_neq_0.
+ apply Nat.mod_upper_bound, radix_neq_0.
 
  rewrite Nat_lt_sqr_div_mod; [ idtac | subst; apply d2n_add_lt_sqr_radix ].
  rewrite Nat_lt_sqr_div_mod; [ idtac | subst; apply d2n_add_lt_sqr_radix ].
@@ -4714,31 +4695,31 @@ rewrite Nat_lt_sqr_div_mod.
   Focus 2.
   eapply lt_le_trans; [ idtac | apply double_radix_le_square_radix ].
   apply Nat.add_lt_mono; [ idtac | subst zi1; apply d2n_lt_radix ].
-  apply Nat.mod_upper_bound, Digit.radix_neq_0.
+  apply Nat.mod_upper_bound, radix_neq_0.
 
   rewrite Nat_lt_sqr_div_mod; [ idtac | subst; apply d2n_add_lt_sqr_radix ].
   rewrite Nat_lt_sqr_div_mod; [ idtac | subst; apply d2n_add_lt_sqr_radix ].
   rewrite lt_radix_div_add_sqr_radix.
    2: rewrite Hxi2; apply d2n_lt_radix.
 
-   2: apply Nat.mod_upper_bound, Digit.radix_neq_0.
+   2: apply Nat.mod_upper_bound, radix_neq_0.
 
    rewrite lt_radix_div_add_sqr_radix.
-    2: apply Nat.mod_upper_bound, Digit.radix_neq_0.
+    2: apply Nat.mod_upper_bound, radix_neq_0.
 
     2: rewrite Hzi2; apply d2n_lt_radix.
 
-    rewrite Nat.mod_0_l; [ idtac | apply Digit.radix_neq_0 ].
+    rewrite Nat.mod_0_l; [ idtac | apply radix_neq_0 ].
     do 2 rewrite Nat.add_0_r.
-    rewrite Nat.add_mod_idemp_r; [ idtac | apply Digit.radix_neq_0 ].
-    rewrite Nat.add_mod_idemp_l; [ idtac | apply Digit.radix_neq_0 ].
-    rewrite Nat.add_mod_idemp_l; [ idtac | apply Digit.radix_neq_0 ].
-    rewrite Nat.add_mod_idemp_l; [ idtac | apply Digit.radix_neq_0 ].
+    rewrite Nat.add_mod_idemp_r; [ idtac | apply radix_neq_0 ].
+    rewrite Nat.add_mod_idemp_l; [ idtac | apply radix_neq_0 ].
+    rewrite Nat.add_mod_idemp_l; [ idtac | apply radix_neq_0 ].
+    rewrite Nat.add_mod_idemp_l; [ idtac | apply radix_neq_0 ].
     rewrite Nat.add_assoc, Nat.add_shuffle0.
-    rewrite Nat.add_mod_idemp_r; [ idtac | apply Digit.radix_neq_0 ].
+    rewrite Nat.add_mod_idemp_r; [ idtac | apply radix_neq_0 ].
     rewrite Nat.add_shuffle0, Nat.add_assoc; symmetry.
     rewrite <- Nat.add_assoc.
-    rewrite Nat.add_mod_idemp_l; [ idtac | apply Digit.radix_neq_0 ].
+    rewrite Nat.add_mod_idemp_l; [ idtac | apply radix_neq_0 ].
     rewrite Nat.add_assoc, Nat.add_shuffle0.
     destruct (lt_dec (yi2 + zi2) radix) as [H1| H1].
      remember ((yi2 + zi2) / radix) as a eqn:Ha .
@@ -4774,33 +4755,33 @@ rewrite Nat_lt_sqr_div_mod.
         rewrite <- Hxi1, <- Hyi1 in H4, Ha; subst a.
         destruct (eq_nat_dec ((xi + yi + zi) mod radix) (pred radix))
          as [H5| H5].
-         rewrite <- Nat.add_mod_idemp_l; [ idtac | apply Digit.radix_neq_0 ].
+         rewrite <- Nat.add_mod_idemp_l; [ idtac | apply radix_neq_0 ].
          rewrite H5, Nat.add_1_r.
-         rewrite Nat.succ_pred; [ idtac | apply Digit.radix_neq_0 ].
-         rewrite Nat.mod_same; [ idtac | apply Digit.radix_neq_0 ].
+         rewrite Nat.succ_pred; [ idtac | apply radix_neq_0 ].
+         rewrite Nat.mod_same; [ idtac | apply radix_neq_0 ].
          rewrite Nat.add_0_l.
          rewrite Nat.add_comm.
          rewrite Nat.add_sub_assoc; [ idtac | assumption ].
          rewrite Nat_sub_div.
           2: split;
-              [ apply Digit.radix_gt_0 | revert H4; clear; intros; omega ].
+              [ apply radix_gt_0 | revert H4; clear; intros; omega ].
 
           rewrite Nat.add_comm.
-          rewrite Nat.add_pred_l; [ idtac | apply Digit.radix_neq_0 ].
+          rewrite Nat.add_pred_l; [ idtac | apply radix_neq_0 ].
           symmetry; rewrite Nat.add_comm.
           unfold digit_eq; simpl.
           rewrite <- Nat.add_pred_l.
-           rewrite Nat.add_mod; [ idtac | apply Digit.radix_neq_0 ].
-           rewrite Nat.mod_same; [ idtac | apply Digit.radix_neq_0 ].
+           rewrite Nat.add_mod; [ idtac | apply radix_neq_0 ].
+           rewrite Nat.mod_same; [ idtac | apply radix_neq_0 ].
            rewrite Nat.add_0_r.
-           rewrite Nat.mod_mod; [ reflexivity | apply Digit.radix_neq_0 ].
+           rewrite Nat.mod_mod; [ reflexivity | apply radix_neq_0 ].
 
            intros H.
            remember (xi1 + yi1 - radix) as c eqn:Hc .
            apply Nat_le_sub_add_r in Hc; [ idtac | assumption ].
            replace radix with (1 * radix) in Hc by apply Nat.mul_1_l.
            rewrite Hc, <- Nat.add_assoc, Nat.add_comm in H.
-           rewrite Nat.div_add in H; [ idtac | apply Digit.radix_neq_0 ].
+           rewrite Nat.div_add in H; [ idtac | apply radix_neq_0 ].
            rewrite Nat.add_comm in H; discriminate H.
 
          rewrite Nat.add_1_r.
@@ -4808,7 +4789,7 @@ rewrite Nat_lt_sqr_div_mod.
          rewrite Nat.add_succ_l, <- Nat.add_succ_r.
          rewrite <- Nat.add_sub_swap; [ idtac | assumption ].
          rewrite Nat_succ_div_sub; [ reflexivity | idtac ].
-         split; [ apply Digit.radix_gt_0 | idtac ].
+         split; [ apply radix_gt_0 | idtac ].
          eapply le_trans; [ eassumption | idtac ].
          rewrite <- Nat.le_sub_le_add_l, Nat.sub_diag.
          apply Nat.le_0_l.
