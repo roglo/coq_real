@@ -12,13 +12,16 @@ Axiom univalence : ∀ A B : Set, (A ≃ B) ≃ (A = B).
 
 Inductive t := foo : t | bar : t.
 
-Theorem bool_eq_t : bool = t.
+Theorem bool_equiv_t : bool ≃ t.
 Proof.
-apply univalence.
-unfold equiv.
 exists (λ b : bool, if b then foo else bar).
 exists (λ b : t, if b then true else false).
 split; intros x; destruct x; reflexivity.
+Defined.
+
+Theorem bool_eq_t : bool = t.
+Proof.
+apply univalence, bool_equiv_t.
 Defined.
 
 Definition negt : t → t.
