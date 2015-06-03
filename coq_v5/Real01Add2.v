@@ -410,19 +410,14 @@ intros d Hr Hd.
 generalize Hr; intros H; apply radix_2_eq_1_9 in H.
 rewrite H in Hd; clear H.
 apply neq_d2n_9 in Hd.
-bbb.
-unfold digit_eq in Hd; simpl in Hd.
-unfold digit_eq; simpl; rewrite Hr.
-rewrite Nat.mod_0_l; [ idtac | intros H; discriminate H ].
-unfold d2n in Hd; rewrite Hr in Hd; unfold pred in Hd.
-remember (dig d mod 2) as n eqn:Hn.
-destruct n; [ reflexivity | idtac ].
-destruct n; [ exfalso; apply Hd; reflexivity | idtac ].
-pose proof radix_neq_0 as H; rewrite Hr in H.
-apply Nat.mod_upper_bound with (a := dig d) in H.
-rewrite <- Hn in H.
-do 2 apply lt_S_n in H.
-apply Nat.nlt_0_r in H; contradiction.
+unfold d2n in Hd.
+destruct d as (d, Hdlt).
+apply Digit.eq_dig_eq.
+rewrite Hr in Hd, Hdlt; simpl in Hd.
+destruct d; [ reflexivity | exfalso; apply Hd; clear Hd ].
+destruct d; [ reflexivity | exfalso ].
+do 2 apply Nat.succ_lt_mono in Hdlt.
+revert Hdlt; apply Nat.nlt_0_r.
 Qed.
 
 Theorem radix_2_not_0 : ∀ d, radix = 2 → (d ≠ 0)%D → (d = 1)%D.
@@ -456,7 +451,7 @@ Qed.
 
 Theorem mod_1_radix : 1 mod radix = 1.
 Proof.
-rewrite Nat.mod_small; [ reflexivity | apply Digit.radix_gt_1 ].
+rewrite Nat.mod_small; [ reflexivity | apply radix_gt_1 ].
 Qed.
 
 Theorem Nat_mod_succ_pred : ∀ a b, S a mod b = 0 → a mod b = pred b.
@@ -466,20 +461,13 @@ destruct (eq_nat_dec (a mod b) (pred b)) as [H1|H1]; [ assumption | idtac ].
 rewrite Nat_mod_succ_l in Hab; [ discriminate | assumption ].
 Qed.
 
-Add Parametric Morphism : d2n
- with signature digit_eq ==> eq
- as d2n_morph.
-Proof.
-intros x y Hxy.
-apply -> digit_d2n_eq_iff; assumption.
-Qed.
-
 (* compatibility + with == *)
 
 Theorem I_eqs_add2_compat_r : ∀ x y z, (x == y)%I → (x + z == y + z)%I.
 Proof.
 intros x y z Hxy i; simpl.
 erewrite NN_add_compat; try reflexivity.
+bbb.
 apply extensionality, Hxy.
 Qed.
 

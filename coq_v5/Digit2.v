@@ -90,8 +90,6 @@ Definition oppd x :=
   | dig a Ha => dig (pred radix - a) (pred_radix_sub_lt a)
   end.
 
-Check oppd.
-
 Notation "x + y" := (digit_add x y) : digit_scope.
 
 (*
@@ -128,17 +126,18 @@ rewrite Hr in H.
 apply Nat.nlt_ge in H.
 apply H, Nat.lt_0_succ.
 Qed.
+*)
 
 Theorem radix_neq_1 : radix ≠ 1.
 Proof.
 intros Hr.
 unfold radix in Hr.
-pose proof radix_ge_2 rad as H.
-rewrite Hr in H.
-apply Nat.nlt_ge in H.
+destruct rad as (r, H).
+subst r; apply Nat.nlt_ge in H.
 apply H, Nat.lt_1_2.
 Qed.
 
+(*
 Theorem radix_gt_0 : 0 < radix.
 Proof. apply neq_0_lt, Nat.neq_sym, radix_neq_0. Qed.
 
