@@ -282,13 +282,17 @@ Qed.
 
 Theorem neq_d2n_9 : ∀ d, d2n d ≠ pred radix ↔ (d ≠ 9)%D.
 Proof.
-bbb.
-intros d; unfold digit_eq; simpl; rewrite Nat_pred_mod.
-split; intros; assumption.
+intros d; split; intros H1 H2; apply H1, eq_d2n_9; assumption.
 Qed.
 
 Theorem n2d_add : ∀ a b, n2d (a + b) = (n2d a + n2d b)%D.
-Proof. reflexivity. Qed.
+Proof.
+intros a b.
+apply Digit.eq_dig_eq.
+rewrite Nat.add_mod_idemp_l; [ idtac | apply radix_neq_0 ].
+rewrite Nat.add_mod_idemp_r; [ idtac | apply radix_neq_0 ].
+reflexivity.
+Qed.
 
 Theorem seq_eq_eq : ∀ x y i, seq_eq x y i = 0 ↔ (x.[i] = y.[i])%D.
 Proof.
@@ -350,12 +354,19 @@ Theorem d2n_add : ∀ a b, d2n (a + b) = (d2n a + d2n b) mod radix.
 Proof.
 intros a b.
 unfold d2n; simpl.
-rewrite Nat.add_mod; [ reflexivity | apply radix_neq_0 ].
+destruct a as (a, Ha).
+destruct b as (b, Hb).
+reflexivity.
 Qed.
 
 Theorem digit_neq_succ_digit : ∀ a, (a ≠ a + 1)%D.
 Proof.
 intros a H.
+unfold digit_add in H.
+destruct a as (a, Ha); simpl in H.
+injection H; intros H1.
+bbb.
+
 unfold digit_eq in H; simpl in H.
 remember (dig a) as n; revert H; clear; intros.
 rewrite <- Nat.add_mod_idemp_l in H; [ idtac | apply radix_neq_0 ].
