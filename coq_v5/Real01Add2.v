@@ -393,13 +393,12 @@ Qed.
 
 Theorem radix_2_eq_1_9_iff : radix = 2 ↔ (1 = 9)%D.
 Proof.
-bbb.
-unfold digit_eq; simpl.
-split; intros H; [ rewrite H; reflexivity | idtac ].
-rewrite Nat_pred_mod in H.
-rewrite Nat.mod_1_l in H; [ idtac | apply Digit.radix_gt_1 ].
-apply eq_S in H; symmetry in H.
-rewrite succ_pred_radix in H; assumption.
+unfold digit_1, digit_9.
+split; intros H; [ apply Digit.eq_dig_eq; rewrite H; reflexivity | idtac ].
+injection H; intros H1.
+apply Nat.succ_inj_wd in H1.
+rewrite succ_pred_radix in H1.
+symmetry; assumption.
 Qed.
 
 Theorem radix_2_eq_1_9 : radix = 2 → (1 = 9)%D.
@@ -411,6 +410,7 @@ intros d Hr Hd.
 generalize Hr; intros H; apply radix_2_eq_1_9 in H.
 rewrite H in Hd; clear H.
 apply neq_d2n_9 in Hd.
+bbb.
 unfold digit_eq in Hd; simpl in Hd.
 unfold digit_eq; simpl; rewrite Hr.
 rewrite Nat.mod_0_l; [ idtac | intros H; discriminate H ].
