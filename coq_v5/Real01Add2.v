@@ -365,28 +365,21 @@ intros a H.
 unfold digit_add in H.
 destruct a as (a, Ha); simpl in H.
 injection H; intros H1.
-bbb.
+destruct (eq_nat_dec a (pred radix)) as [H2| H2].
+ rewrite H2, Nat.add_1_r in H1.
+ rewrite Nat.succ_pred in H1; [ idtac | apply radix_neq_0 ].
+ rewrite Nat.mod_same in H1; [ idtac | apply radix_neq_0 ].
+ revert H1; apply pred_radix_neq_0.
 
-unfold digit_eq in H; simpl in H.
-remember (dig a) as n; revert H; clear; intros.
-rewrite <- Nat.add_mod_idemp_l in H; [ idtac | apply radix_neq_0 ].
-destruct (eq_nat_dec (n mod radix) (pred radix)) as [H1| H1].
- rewrite H1, add_pred_radix_1_mod_radix in H.
- remember radix as r eqn:Hr; symmetry in Hr.
- destruct r; [ revert Hr; apply radix_neq_0 | simpl in H ].
- destruct r; [ revert Hr; apply Digit.radix_neq_1 | discriminate H ].
+ rewrite Nat.mod_small in H1.
+  rewrite Nat.add_1_r in H1.
+  revert H1; apply Nat.neq_succ_diag_r.
 
- symmetry in H.
- rewrite Nat.mod_small in H.
-  rewrite Nat.add_1_r in H.
-  revert H; apply Nat.neq_succ_diag_l.
-
-  pose proof radix_neq_0 as H2.
-  apply Nat.mod_upper_bound with (a := n) in H2.
-  apply Nat.lt_add_lt_sub_r; rewrite Nat.sub_1_r.
+  apply Nat.lt_add_lt_sub_r.
+  rewrite Nat.sub_1_r.
   apply Nat_le_neq_lt; [ idtac | assumption ].
-  rewrite <- Nat.sub_1_r; apply Nat.le_add_le_sub_r.
-  rewrite Nat.add_1_r; assumption.
+  apply Nat.succ_le_mono.
+  rewrite Nat.succ_pred; [ assumption | apply radix_neq_0 ].
 Qed.
 
 Theorem Nat_mod_add_divides : ∀ a b c, c ≠ 0 → (a + b) mod c = a → (c | b).
@@ -400,6 +393,7 @@ Qed.
 
 Theorem radix_2_eq_1_9_iff : radix = 2 ↔ (1 = 9)%D.
 Proof.
+bbb.
 unfold digit_eq; simpl.
 split; intros H; [ rewrite H; reflexivity | idtac ].
 rewrite Nat_pred_mod in H.
