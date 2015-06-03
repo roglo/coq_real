@@ -30,6 +30,9 @@ Defined.
 Theorem aaa : negt foo = bar.
 Proof.
 unfold negt.
+unfold negb; simpl.
+
+bbb.
 unfold eq_rec; simpl.
 unfold eq_rect; simpl.
 unfold bool_eq_t.
