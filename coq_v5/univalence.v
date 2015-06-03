@@ -14,15 +14,12 @@ Inductive t := foo : t | bar : t.
 
 Theorem bool_eq_t : bool = t.
 Proof.
-pose proof univalence bool t as H.
-unfold equiv at 1 in H.
-destruct H as (f, (g, (Hx, Hy))).
-apply f.
+apply univalence.
 unfold equiv.
 exists (λ b : bool, if b then foo else bar).
 exists (λ b : t, if b then true else false).
 split; intros x; destruct x; reflexivity.
-Qed.
+Defined.
 
 Definition negt : t → t.
 Proof.
@@ -35,4 +32,8 @@ Proof.
 unfold negt.
 unfold eq_rec; simpl.
 unfold eq_rect; simpl.
+unfold bool_eq_t.
+remember (univalence bool t) as v eqn:Hv.
+destruct v as (f, H); simpl.
+destruct H as (g, (H1, H2)).
 bbb.
