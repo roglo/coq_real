@@ -28,3 +28,8 @@ Add Parametric Relation {A B} : _ (@homotopy A B)
  symmetry proved by homotopy_symm
  transitivity proved by homotopy_trans
  as homotopy_equivalence.
+
+Lemma hott_2_4_3 : ∀ (A : Prop) B (f g : A → B) (H : f ~~ g)
+  (eq_A : A → A → Prop) x y (p : eq_A x y),
+  H x . g p = f p . H y.
+
