@@ -4,7 +4,7 @@ Require Import Utf8.
 
 (* version Jérémy *)
 
-Definition is_equiv {A B : Set} (f : A → B) :=
+Definition is_equiv {A B} (f : A → B) :=
  ∃ g : B → A,
  (∀ x, g (f x) = x) ∧ (∀ y, f (g y) = y).
 
