@@ -467,8 +467,8 @@ Theorem I_eqs_add2_compat_r : ∀ x y z, (x == y)%I → (x + z == y + z)%I.
 Proof.
 intros x y z Hxy i; simpl.
 erewrite NN_add_compat; try reflexivity.
-bbb.
-apply extensionality, Hxy.
+apply extensionality; intros j.
+unfold I2NN; rewrite Hxy; reflexivity.
 Qed.
 
 Theorem I_eqs_add2_comm : ∀ x y, (x + y == y + x)%I.
@@ -550,6 +550,7 @@ Proof.
 intros x y j Hxy Hx Hy Hx1.
 induction j as (j, IHj) using all_lt_all.
 pose proof (Hxy 0) as Hn; simpl in Hn.
+bbb.
 unfold digit_eq in Hn; simpl in Hn.
 unfold I2NN in Hn at 1; simpl in Hn.
 unfold I2NN in Hn at 2; simpl in Hn.
