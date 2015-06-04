@@ -550,8 +550,6 @@ Proof.
 intros x y j Hxy Hx Hy Hx1.
 induction j as (j, IHj) using all_lt_all.
 pose proof (Hxy 0) as Hn; simpl in Hn.
-bbb.
-unfold digit_eq in Hn; simpl in Hn.
 unfold I2NN in Hn at 1; simpl in Hn.
 unfold I2NN in Hn at 2; simpl in Hn.
 apply eq_d2n_9 in Hy; rewrite Hy in Hn.
@@ -571,8 +569,9 @@ destruct s1 as [n1| ]; [ idtac | exfalso ].
     apply seq_not_9_neq in Ht2; simpl in Ht2.
     unfold I2NN in Ht2.
     destruct (lt_dec (d2n (y .[ S n2])) (pred radix)) as [H4| H4].
-     rewrite Nat.add_0_r, Nat_pred_mod, d2n_mod_radix in Hn.
-     apply eq_d2n_9 in Hn; contradiction.
+     rewrite n2d_d2n, Nat.add_0_r in Hn.
+     apply Hx; rewrite Hn; unfold digit_9.
+     apply Digit.eq_dig_eq, Nat_pred_mod.
 
      apply H4; clear H4.
      pose proof (d2n_lt_radix (y .[ S n2])) as H.
@@ -580,9 +579,10 @@ destruct s1 as [n1| ]; [ idtac | exfalso ].
      apply Nat.lt_le_pred; assumption.
 
     destruct j.
-     rewrite add_pred_radix_1_mod_radix, d2n_mod_radix in Hn.
-     split; [ apply eq_d2n_0; assumption | idtac ].
-     apply eq_d2n_9; assumption.
+     split; [ idtac | apply eq_d2n_9; assumption ].
+     rewrite n2d_d2n in Hn; rewrite Hn.
+     apply Digit.eq_dig_eq.
+     apply add_pred_radix_1_mod_radix.
 
      generalize Hs2; intros H.
      apply first_nonzero_iff in H; simpl in H.
@@ -592,7 +592,7 @@ destruct s1 as [n1| ]; [ idtac | exfalso ].
      split; [ simpl in Hj | assumption ].
      clear Hn.
      pose proof (Hxy (S j)) as Hn.
-     unfold digit_eq in Hn; simpl in Hn.
+     unfold I_norm in Hn; simpl in Hn.
      unfold I2NN in Hn at 1; simpl in Hn.
      unfold I2NN in Hn at 2; simpl in Hn.
      symmetry in Hn, Hs2.
@@ -609,12 +609,14 @@ destruct s1 as [n1| ]; [ idtac | exfalso ].
       do 2 rewrite <- Nat.add_succ_l in Hn.
       rewrite carry_indic_I2NN in Hn; [ idtac | assumption ].
       destruct Hn3 as (Hn3, Ht3).
-      rewrite Nat.add_0_r, d2n_mod_radix in Hn.
       simpl in Hj; apply eq_d2n_9 in Hj.
-      rewrite Hj, add_pred_radix_1_mod_radix in Hn.
-      apply eq_d2n_0; assumption.
+      rewrite Nat.add_0_r, n2d_d2n in Hn.
+      rewrite Hn, Hj.
+      apply Digit.eq_dig_eq.
+      apply add_pred_radix_1_mod_radix.
 
       apply eq_d2n_9 in Hj.
+bbb.
       rewrite Hj, add_pred_radix_1_mod_radix, Nat.add_1_r in Hn.
       apply Nat_mod_succ_pred in Hn.
       rewrite d2n_mod_radix in Hn.
