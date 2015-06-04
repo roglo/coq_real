@@ -4,6 +4,7 @@ Require Import Utf8.
 
 (* version Jérémy *)
 
+(*
 Definition is_equiv {A B} (f : A → B) :=
  ∃ g : B → A,
  (∀ x, g (f x) = x) ∧ (∀ y, f (g y) = y).
@@ -58,6 +59,7 @@ unfold bool_equiv_t.
 remember (univalence bool t) as v eqn:Hv.
 destruct v as (v, (f, g)).
 bbb.
+*)
 
 (* ma version initiale *)
 
@@ -95,8 +97,6 @@ unfold negt.
 unfold negb; simpl.
 unfold eq_rec; simpl.
 unfold eq_rect; simpl.
-bbb.
-
 unfold bool_eq_t.
 remember (univalence bool t) as v eqn:Hv.
 destruct v as (f, H); simpl.
