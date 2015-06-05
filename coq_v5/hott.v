@@ -6,19 +6,6 @@ Set Implicit Arguments.
 
 Open Scope nat_scope.
 
-Print nat_ind.
-
-Theorem toto : ∀ P : nat → Prop,
-  P 0
-  → (∀ n : nat, P n → P (S n))
-  → ∀ n : nat, P n.
-Proof.
-intros P P0 Pn.
-fix 1.
-destruct n; [ assumption | idtac ].
-apply Pn, toto.
-Qed.
-
 (* hott section 1.12 *)
 
 Inductive paths {A} : A -> A -> Type :=
@@ -26,17 +13,6 @@ Inductive paths {A} : A -> A -> Type :=
 
 Inductive Id {A} : A → A → Type :=
   | refl : ∀ x : A, Id x x.
-
-Print Id_ind.
-
-Theorem my_Id_ind : ∀ A (P : ∀ a b : A, Id a b → Prop),
-  (∀ a : A, P a a (refl a))
-  → ∀ x y (p : Id x y), P x y p.
-Proof.
-intros A P Hr x y p.
-destruct p.
-apply Hr.
-Qed.
 
 Theorem option_is : ∀ A (x : option A), x = None ∨ ∃ y, x = Some y.
 Proof.
@@ -87,14 +63,39 @@ Axiom choice : ∀ A B (R : A → B → Prop),
   (∀ x, ∃ y, R x y) → ∃ f, ∀ x, R x (f x).
 *)
 
+Print Id_ind.
+
+Theorem my_Id_ind : ∀ A P,
+  (∀ a : A, P a a (refl a))
+  → ∀ x y (p : Id x y), P x y p.
+Proof.
+intros A P Hr x y p.
+destruct p.
+apply Hr.
+Qed.
+
+Theorem path_induction0 :
+  ∀ A,
+  ∀ (C : A → A → Prop),
+  ∀ (c : ∀ x, C x x),
+  ∃ (f : ∀ x y : A, C x y),
+  ∀ x, f x x = c x.
+Proof.
+intros A C c.
+bbb.
+
 Theorem path_induction :
   ∀ A,
-  ∀ (C : ∀ x y : A, Id x y → Type),
-  ∀ (c : ∀ x : A, C x x (refl x)),
+  ∀ (C : ∀ x y : A, Id x y → Prop),
+  ∀ (c : ∀ x, C x x (refl x)),
   ∃ (f : ∀ x y : A, ∀ p : Id x y, C x y p),
   ∀ x, f x x (refl x) = c x.
 Proof.
 intros A C c.
+generalize c; intros d.
+eapply my_Id_ind in c.
+
+exists (λ x y p, c x).
 bbb.
 
 (* *)
