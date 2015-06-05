@@ -16,10 +16,18 @@ destruct x as [y| ]; [ right; exists y; reflexivity | idtac ].
 left; reflexivity.
 Qed.
 
-(*
+Definition glop (A : Type) (x y : A) (p : Id x y) :=
+  match p with
+  | refl x => x
+  end.
+
+Print glop.
+
 Theorem id_is : ∀ A (x : A) (p : Id x x), p = refl x.
 Proof.
 intros A x p.
+remember (glop p) as y eqn:Hy.
+unfold glop in Hy.
 destruct p.
 bbb.
 
