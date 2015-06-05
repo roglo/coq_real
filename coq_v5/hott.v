@@ -27,6 +27,17 @@ Inductive paths {A} : A -> A -> Type :=
 Inductive Id {A} : A → A → Type :=
   | refl : ∀ x : A, Id x x.
 
+Print Id_ind.
+
+Theorem my_Id_ind : ∀ A (P : ∀ a b : A, Id a b → Prop),
+  (∀ a : A, P a a (refl a))
+  → ∀ x y (p : Id x y), P x y p.
+Proof.
+intros A P Hr x y p.
+destruct p.
+apply Hr.
+Qed.
+
 Theorem option_is : ∀ A (x : option A), x = None ∨ ∃ y, x = Some y.
 Proof.
 intros A x.
@@ -70,6 +81,11 @@ bbb.
 (* hott section 1.12.1 *)
 
 Print Id_ind.
+
+(*
+Axiom choice : ∀ A B (R : A → B → Prop),
+  (∀ x, ∃ y, R x y) → ∃ f, ∀ x, R x (f x).
+*)
 
 Theorem path_induction :
   ∀ A,
