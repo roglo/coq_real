@@ -749,8 +749,7 @@ intros x y i Hxy Hi Hn H2 H3.
 destruct i; [ exfalso; apply Hi; reflexivity | clear Hi ].
 rename Hn into Hj.
 pose proof (Hxy i) as Hn.
-bbb.
-unfold digit_eq in Hn; simpl in Hn.
+unfold I_norm in Hn; simpl in Hn.
 unfold I2NN in Hn at 1; simpl in Hn.
 unfold I2NN in Hn at 2; simpl in Hn.
 pose proof (Hj i (Nat.lt_succ_diag_r i)) as H.
@@ -768,7 +767,7 @@ destruct (Digit.eq_dec (x .[ i]) (y .[ i])) as [H4| H4].
   destruct Hn1 as (Hn1, Ht1).
   remember (d2n (x .[ S (i + n1)])) as a.
   destruct (lt_dec a (pred radix)) as [H5| H5]; subst a.
-   rewrite Nat.add_0_r, d2n_mod_radix in Hn.
+   rewrite Nat.add_0_r, n2d_d2n in Hn.
    destruct s2 as [n2| ].
     remember (d2n (y .[ S (i + n2)])) as a.
     destruct (lt_dec a (pred radix)) as [H6| H6]; subst a.
@@ -781,7 +780,7 @@ destruct (Digit.eq_dec (x .[ i]) (y .[ i])) as [H4| H4].
       apply first_nonzero_iff in H; simpl in H.
       destruct H as (Hn2, Ht2).
       clear Hn; pose proof (Hxy (S i)) as Hn.
-      unfold digit_eq in Hn; simpl in Hn.
+      unfold I_norm in Hn; simpl in Hn.
       unfold I2NN in Hn at 1; simpl in Hn.
       unfold I2NN in Hn at 2; simpl in Hn.
       apply eq_d2n_9 in H3; rewrite H3 in Hn.
@@ -791,6 +790,7 @@ destruct (Digit.eq_dec (x .[ i]) (y .[ i])) as [H4| H4].
        unfold carry_indic in Hn; simpl in Hn.
        remember (I2NN y (S (i + S n2))) as a.
        destruct (lt_dec a (pred radix)) as [H7| H7]; subst a.
+        injection Hn; clear Hn; intros Hn.
         rewrite Nat.add_0_r, Nat_pred_mod in Hn.
         unfold carry_add in Hn.
         rewrite Nat.add_1_r in Hn; simpl in Hn.
@@ -822,6 +822,7 @@ destruct (Digit.eq_dec (x .[ i]) (y .[ i])) as [H4| H4].
 
        apply le_n_S, Nat.le_0_l.
 
+bbb.
      rewrite <- d2n_1, <- d2n_add in Hn.
      apply digit_d2n_eq_iff in Hn.
      exfalso; revert Hn; apply digit_neq_succ_digit.
