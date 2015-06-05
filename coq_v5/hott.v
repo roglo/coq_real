@@ -2,6 +2,25 @@
 
 Require Import Utf8 QArith.
 
+Inductive eqA {A} : A → A → Prop :=
+  | refl : ∀ x : A, eqA x x.
+
+(* hott section 1.12.1 *)
+Theorem path_induction :
+  ∀ A,
+  ∀ (C : ∀ x y : A, eqA x y → Type),
+  ∀ (c : ∀ x : A, C x x (refl x)),
+  ∃ (f : ∀ x y : A, ∀ p : eqA x y, C x y p),
+  ∀ x, f x x (refl x) = c x.
+Proof.
+intros A C c.
+
+Check @refl.
+bbb.
+
+
+(* *)
+
 Definition pi_type (A : Prop) (B : A → Prop) := ∀ x : A, B x.
 
 Notation "'Π' ( x : A ) , B" :=
