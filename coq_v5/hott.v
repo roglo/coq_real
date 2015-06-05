@@ -2,22 +2,55 @@
 
 Require Import Utf8 QArith.
 
-Inductive eqA {A} : A → A → Prop :=
-  | refl : ∀ x : A, eqA x x.
+(* hott section 1.12 *)
+
+Inductive Id {A} : A → A → Set :=
+  | refl : ∀ x : A, Id x x.
+
+Theorem option_is : ∀ A (x : option A), x = None ∨ ∃ y, x = Some y.
+Proof.
+intros A x.
+destruct x as [y| ]; [ right; exists y; reflexivity | idtac ].
+left; reflexivity.
+Qed.
+
+Theorem id_is : ∀ A (x : A) (p : Id x x), p = refl x.
+Proof.
+intros A x p.
+destruct p.
+bbb.
+
+Print Id_ind.
+
+(*
+Id_ind =
+λ (A : Type) (P : A → A → Prop) (f : ∀ a : A, P a a)
+(x y : A) (p : Id x y),
+match p in (Id y1 y2) return (P y1 y2) with
+| refl x => f x
+end
+     : ∀ (A : Type) (P : A → A → Prop),
+       (∀ a : A, P a a) → ∀ x y : A, Id x y → P x y
+*)
+
+Theorem indiscernability : ∀ A (C : A → Type),
+  ∃ (f : ∀ x y (p : Id x y), C x → C y → Type),
+  ∀ x, f x x (refl x) = Id.
+Proof.
+intros A C.
+bbb.
 
 (* hott section 1.12.1 *)
+
 Theorem path_induction :
   ∀ A,
-  ∀ (C : ∀ x y : A, eqA x y → Type),
+  ∀ (C : ∀ x y : A, Id x y → Type),
   ∀ (c : ∀ x : A, C x x (refl x)),
-  ∃ (f : ∀ x y : A, ∀ p : eqA x y, C x y p),
+  ∃ (f : ∀ x y : A, ∀ p : Id x y, C x y p),
   ∀ x, f x x (refl x) = c x.
 Proof.
 intros A C c.
-
-Check @refl.
 bbb.
-
 
 (* *)
 
