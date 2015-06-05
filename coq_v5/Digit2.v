@@ -183,6 +183,15 @@ destruct (eq_nat_dec a b) as [H1| H1].
 Qed.
 Arguments eq_dec x%D y%D.
 
+Theorem add_compat : ∀ x y z t,
+  x = y
+  → z = t
+  → (x + z)%D = (y + t)%D.
+Proof.
+intros x y z t Hxy Hzt.
+subst x z; reflexivity.
+Qed.
+
 (*
 Add Parametric Morphism : digit_add
   with signature digit_eq ==> digit_eq ==> digit_eq
