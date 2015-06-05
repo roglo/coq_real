@@ -651,10 +651,10 @@ destruct s1 as [n1| ]; [ idtac | exfalso ].
        apply eq_d2n_9 in Hyj; rewrite Hyj in Hn.
        simpl in Hn; rewrite Nat.add_1_r in Hn.
        rewrite Nat.succ_pred in Hn; [ idtac | assumption ].
-bbb.
+       injection Hn; clear Hn; intros Hn.
        rewrite Nat.mod_same in Hn; [ idtac | assumption ].
        rewrite Nat.mod_small in Hn; [ discriminate Hn | idtac ].
-       apply Digit.radix_gt_1.
+       apply radix_gt_1.
 
    apply H4, pred_radix_gt_0.
 
@@ -749,6 +749,7 @@ intros x y i Hxy Hi Hn H2 H3.
 destruct i; [ exfalso; apply Hi; reflexivity | clear Hi ].
 rename Hn into Hj.
 pose proof (Hxy i) as Hn.
+bbb.
 unfold digit_eq in Hn; simpl in Hn.
 unfold I2NN in Hn at 1; simpl in Hn.
 unfold I2NN in Hn at 2; simpl in Hn.

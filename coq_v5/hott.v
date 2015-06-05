@@ -2,9 +2,11 @@
 
 Require Import Utf8 QArith.
 
+Set Implicit Arguments.
+
 (* hott section 1.12 *)
 
-Inductive Id {A} : A → A → Set :=
+Inductive Id {A} : A → A → Type :=
   | refl : ∀ x : A, Id x x.
 
 Theorem option_is : ∀ A (x : option A), x = None ∨ ∃ y, x = Some y.
