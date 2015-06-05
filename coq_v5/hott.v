@@ -4,6 +4,21 @@ Require Import Utf8 QArith.
 
 Set Implicit Arguments.
 
+Open Scope nat_scope.
+
+Print nat_ind.
+
+Theorem toto : ∀ P : nat → Prop,
+  P 0
+  → (∀ n : nat, P n → P (S n))
+  → ∀ n : nat, P n.
+Proof.
+intros P P0 Pn.
+fix 1.
+destruct n; [ assumption | idtac ].
+apply Pn, toto.
+Qed.
+
 (* hott section 1.12 *)
 
 Inductive paths {A} : A -> A -> Type :=

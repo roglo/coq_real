@@ -1593,7 +1593,8 @@ destruct s1 as [n1| ].
   rewrite Hx1, Hy1 in Hn.
   rewrite <- Nat.add_1_r in Hn.
   symmetry in Hs1.
-bbb.
+  injection Hn; clear Hn; intros Hn.
+  replace 2 with (1 + 1) in Hn by reflexivity.
   erewrite carry_add_inf in Hn; [ idtac | assumption ].
   unfold carry_add in H1.
   remember (fst_neq_9 (I2NN y) 1) as s2 eqn:Hs2.
@@ -1637,6 +1638,7 @@ remember (fst_neq_9 (I2NN y) (S i)) as s1 eqn:Hs1 .
 destruct s1 as [n1| ].
  symmetry in Hs1.
  rewrite carry_indic_I2NN in Hn; [ idtac | assumption ].
+ injection Hn; clear Hn; intros Hn.
  rewrite Nat.add_0_r, d2n_mod_radix in Hn.
  unfold carry_add in Hn.
  remember (fst_neq_9 (I2NN x) (S i)) as s2 eqn:Hs2 .
@@ -1652,10 +1654,11 @@ destruct s1 as [n1| ].
    symmetry in Hs4.
    rewrite carry_indic_I2NN in Hn; [ idtac | assumption ].
    rewrite d2n_0, Nat.add_0_r in Hn.
+   injection Hn; clear Hn; intros Hn.
    rewrite Nat.mod_0_l in Hn; [ idtac | apply radix_neq_0 ].
    pose proof carry_add_0_or_1 (I2NN x) (S (S i)) as H.
    destruct H as [H1| H1]; rewrite H1 in Hn.
-    rewrite d2n_9, Nat.add_0_r in Hn.
+    rewrite Nat.add_0_r in Hn.
     rewrite Nat_pred_mod in Hn.
     exfalso; revert Hn; apply pred_radix_neq_0.
 
@@ -1676,10 +1679,11 @@ destruct s1 as [n1| ].
    pose proof (carry_add_0_or_1 (I2NN x) (S (S i))) as H.
    destruct H as [H1| H1]; rewrite H1 in Hn.
     rewrite <- d2n_1, <- d2n_0 in Hn.
-    do 2 rewrite <- d2n_add in Hn.
-    rewrite Digit.add_0_l, Digit.add_0_r in Hn.
-    apply digit_d2n_eq_iff in Hn; symmetry in Hn.
-    apply radix_2_eq_1_9_iff in Hn.
+    injection Hn; clear Hn; intros Hn.
+    rewrite Nat.add_0_r, Nat_pred_mod in Hn.
+    rewrite Nat.mod_small in Hn; [ idtac | apply radix_gt_1 ].
+    apply Nat.succ_inj_wd in Hn.
+    rewrite succ_pred_radix in Hn.
     destruct n2.
      apply first_nonzero_iff in Hs2.
      destruct Hs2 as (Hn2, Ht2).
@@ -1694,16 +1698,18 @@ destruct s1 as [n1| ].
      rewrite Nat.add_0_r in H.
      apply eq_d2n_9 in H.
      rewrite <- radix_2_eq_1_9 in H; [ idtac | assumption ].
-     rewrite Hx, Hy; unfold d2n; rewrite Hn.
+     rewrite Hx, Hy; unfold d2n; simpl.
      split; [ reflexivity | intros j ].
      rewrite <- radix_2_eq_1_9; [ idtac | assumption ].
-     eapply I_eq_case_x10_ya1_radix_2 in Hxy; eassumption.
+     eapply I_eq_case_x10_ya1_radix_2 in Hxy; try eassumption.
+     simpl in Hxy; eassumption.
 
     rewrite <- d2n_1 in Hn.
-    do 2 rewrite <- d2n_add in Hn.
-    rewrite Digit.add_0_l, Digit.add_comm, Digit.add_1_9 in Hn.
-    apply digit_d2n_eq_iff in Hn.
-    exfalso; revert Hn; apply Digit.neq_0_1.
+    injection Hn; clear Hn; intros Hn.
+    rewrite Nat.add_1_r, succ_pred_radix in Hn.
+    rewrite Nat.mod_same in Hn; [ idtac | apply radix_neq_0 ].
+    rewrite Nat.mod_small in Hn; [ idtac | apply radix_gt_1 ].
+    discriminate Hn.
 
   rewrite <- d2n_1, <- d2n_add in Hn.
   apply digit_d2n_eq_iff in Hn; symmetry in Hn.
@@ -1739,9 +1745,11 @@ remember (fst_neq_9 (I2NN y) (S i)) as s2 eqn:Hs2.
 destruct s1 as [n1| ].
  symmetry in Hs1.
  rewrite carry_indic_I2NN in Hn; [ idtac | assumption ].
+ injection Hn; clear Hn; intros Hn.
  rewrite Nat.add_0_r, d2n_mod_radix in Hn.
  destruct s2 as [n2| ].
   symmetry in Hs2.
+  rewrite <- Nat.add_succ_l in Hn.
   rewrite carry_indic_I2NN in Hn; [ idtac | assumption ].
   rewrite Nat.add_0_r, d2n_mod_radix in Hn.
   apply digit_d2n_eq_iff in Hn; contradiction.
@@ -1765,6 +1773,7 @@ destruct s1 as [n1| ].
    erewrite carry_add_inf in Hn; [ idtac | eassumption ].
    rewrite Nat.add_1_r in Hn.
    rewrite Nat.succ_pred in Hn; [ idtac | apply radix_neq_0 ].
+   injection Hn; clear Hn; intros Hn.
    rewrite Nat.mod_same in Hn; [ idtac | apply radix_neq_0 ].
    symmetry in Hn.
    destruct n1.
@@ -1773,7 +1782,7 @@ destruct s1 as [n1| ].
     destruct Hs1 as (Hn1, Ht1).
     apply seq_not_9_I2NN_neq in Ht1.
     rewrite Nat.add_0_r in Ht1.
-    pose proof carry_add_0_or_1 (I2NN x) (S i + 1) as H.
+    pose proof carry_add_0_or_1 (I2NN x) (S (i + 1)) as H.
     destruct H as [H2| H2]; rewrite H2 in Hn.
      rewrite Nat.add_0_r, d2n_mod_radix in Hn.
      apply eq_d2n_0 in Hn; contradiction.
@@ -1783,6 +1792,7 @@ destruct s1 as [n1| ].
      rewrite d2n_mod_radix in Hn; contradiction.
 
     assert (1 ≤ S n1) as HY by apply le_n_S, Nat.le_0_l.
+    rewrite <- Nat.add_succ_l in Hn.
     erewrite carry_add_fin in Hn; [ idtac | eassumption | assumption ].
     rewrite carry_indic_I2NN in Hn; [ idtac | assumption ].
     rewrite Nat.add_0_r, d2n_mod_radix in Hn.
@@ -1807,6 +1817,7 @@ destruct s1 as [n1| ].
      rewrite <- Nat.add_succ_l in Hn.
      symmetry in Hs3.
      rewrite carry_indic_I2NN in Hn; [ idtac | assumption ].
+     injection Hn; clear Hn; intros Hn.
      rewrite Nat.add_0_r, d2n_mod_radix in Hn.
      destruct s4 as [n4| ].
       rewrite <- Nat.add_succ_l in Hn.
@@ -1858,9 +1869,10 @@ destruct s1 as [n1| ].
     rewrite <- Nat.add_1_r in Hn.
     symmetry in Hs2.
     rewrite carry_add_inf in Hn; [ idtac | assumption ].
+    injection Hn; clear Hn; intros Hn.
     rewrite add_pred_radix_1_mod_radix in Hn; symmetry in Hn.
     destruct n1.
-     pose proof carry_add_0_or_1 (I2NN x) (1 + 1) as H.
+     pose proof carry_add_0_or_1 (I2NN x) 2 as H.
      destruct H as [H2| H2]; rewrite H2 in Hn.
       rewrite Nat.add_0_r, d2n_mod_radix in Hn.
       apply eq_d2n_0 in Hn; contradiction.
@@ -1875,6 +1887,7 @@ destruct s1 as [n1| ].
       rewrite Nat.add_0_r in Ht1; contradiction.
 
      assert (1 ≤ S n1) as HY by apply le_n_S, Nat.le_0_l.
+     replace 2 with (1 + 1) in Hn by reflexivity.
      erewrite carry_add_fin in Hn; [ idtac | eassumption | assumption ].
      rewrite carry_indic_I2NN in Hn; [ idtac | assumption ].
      rewrite Nat.add_0_r, d2n_mod_radix in Hn.
@@ -1887,6 +1900,7 @@ destruct s1 as [n1| ].
  destruct s2 as [n2| ].
   symmetry in Hs2.
   rewrite carry_indic_I2NN in Hn; [ idtac | assumption ].
+  injection Hn; clear Hn; intros Hn.
   rewrite Nat.add_0_r, d2n_mod_radix in Hn.
   rewrite <- d2n_1, <- d2n_add in Hn.
   right.
@@ -1905,7 +1919,7 @@ destruct s1 as [n1| ].
 
     intros j Hji; symmetry; apply Hj; assumption.
 
-    apply Nat.neq_sym; assumption.
+    intros H1; symmetry in H1; contradiction.
 
    exfalso.
    rename Hn into Hsxy.
@@ -1923,8 +1937,10 @@ destruct s1 as [n1| ].
    rewrite <- Nat.add_1_r in Hn.
    symmetry in Hs1.
    rewrite carry_add_inf in Hn; [ idtac | assumption ].
+   injection Hn; clear Hn; intros Hn.
    rewrite add_pred_radix_1_mod_radix in Hn; symmetry in Hn.
    assert (1 ≤ S n2) as HY by apply le_n_S, Nat.le_0_l.
+   rewrite <- Nat.add_succ_l in Hn.
    erewrite carry_add_fin in Hn; [ idtac | eassumption | assumption ].
    rewrite carry_indic_I2NN in Hn; [ idtac | assumption ].
    rewrite Nat.add_0_r, d2n_mod_radix in Hn.
@@ -1937,6 +1953,7 @@ destruct s1 as [n1| ].
    rewrite H in Hn.
    revert Hn; apply pred_radix_neq_0.
 
+  injection Hn; clear Hn; intros Hn.
   rewrite <- d2n_1 in Hn.
   do 2 rewrite <- d2n_add in Hn.
   apply digit_d2n_eq_iff in Hn.
@@ -1975,6 +1992,7 @@ assert (Some 0 = fst_neq_9 (I2NN x) (S i)) as H3.
 
   symmetry in H4.
   rewrite carry_add_inf; [ idtac | assumption ].
+  apply Digit.eq_dig_eq.
   rewrite add_pred_radix_1_mod_radix, zero_mod_radix; reflexivity.
 Qed.
 
@@ -2042,7 +2060,8 @@ destruct s1 as [n1| ].
    rewrite Nat.add_comm, Nat.add_sub in H.
    destruct H as (H2, H3); rewrite H2, H3.
    unfold I_norm; simpl.
-   rewrite d2n_9, add_pred_radix_1_mod_radix, zero_mod_radix.
+   apply Digit.eq_dig_eq.
+   rewrite add_pred_radix_1_mod_radix.
    reflexivity.
 
  apply first_nonzero_iff in Hs1.
@@ -2125,8 +2144,10 @@ split; intros Hxy.
           rewrite <- radix_2_eq_1_9 in H4; [ idtac | assumption ].
           apply -> digit_d2n_eq_iff in H3; rewrite H3.
           apply -> digit_d2n_eq_iff in H4; rewrite H4.
-          split; [ unfold d2n; rewrite H6; reflexivity | intros di ].
+          split; [ reflexivity | intros di ].
           symmetry in Hxy.
+          apply digit_d2n_eq_iff in H3.
+          apply digit_d2n_eq_iff in H4.
           eapply I_eq_case_x10_ya1_radix_2 in Hxy; try eassumption.
           rewrite and_comm, radix_2_eq_1_9 in Hxy; eassumption.
 
@@ -2151,6 +2172,7 @@ split; intros Hxy.
           destruct s2 as [n2| ].
            symmetry in Hs2.
            rewrite carry_indic_I2NN in Hn; [ idtac | assumption ].
+           injection Hn; clear Hn; intros Hn.
            rewrite Nat.mod_0_l in Hn; [ idtac | assumption ].
            rewrite Nat.add_0_r in Hn.
            rewrite Nat_pred_mod in Hn.
@@ -2172,6 +2194,7 @@ split; intros Hxy.
            rewrite H in Hn.
            rewrite Nat.add_1_r in Hn.
            rewrite Nat.succ_pred in Hn; [ idtac | assumption ].
+           injection Hn; clear Hn; intros Hn.
            rewrite Nat.mod_same in Hn; [ idtac | assumption ].
            symmetry in Hn.
            destruct n1.
@@ -2191,6 +2214,7 @@ split; intros Hxy.
              rewrite d2n_mod_radix in Hn; contradiction.
 
             assert (1 ≤ S n1) as HY by apply le_n_S, Nat.le_0_l.
+bbb.
             erewrite carry_add_fin in Hn; try eassumption.
             rewrite carry_indic_I2NN in Hn; [ idtac | assumption ].
             rewrite Nat.add_0_r, d2n_mod_radix in Hn.
