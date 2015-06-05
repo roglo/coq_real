@@ -6,6 +6,9 @@ Set Implicit Arguments.
 
 (* hott section 1.12 *)
 
+Inductive paths {A} : A -> A -> Type :=
+  | idpath : ∀ x, paths x x.
+
 Inductive Id {A} : A → A → Type :=
   | refl : ∀ x : A, Id x x.
 
@@ -16,6 +19,7 @@ destruct x as [y| ]; [ right; exists y; reflexivity | idtac ].
 left; reflexivity.
 Qed.
 
+(*
 Definition glop (A : Type) (x y : A) (p : Id x y) :=
   match p with
   | refl x => x
@@ -31,8 +35,6 @@ unfold glop in Hy.
 destruct p.
 bbb.
 
-Print Id_ind.
-
 Id_ind =
 λ (A : Type) (P : A → A → Prop) (f : ∀ a : A, P a a)
 (x y : A) (p : Id x y),
@@ -41,7 +43,6 @@ match p in (Id y1 y2) return (P y1 y2) with
 end
      : ∀ (A : Type) (P : A → A → Prop),
        (∀ a : A, P a a) → ∀ x y : A, Id x y → P x y
-*)
 
 Theorem indiscernability : ∀ A (C : A → Type),
   ∃ (f : ∀ x y (p : Id x y), C x → C y → Type),
@@ -49,8 +50,11 @@ Theorem indiscernability : ∀ A (C : A → Type),
 Proof.
 intros A C.
 bbb.
+*)
 
 (* hott section 1.12.1 *)
+
+Print Id_ind.
 
 Theorem path_induction :
   ∀ A,
