@@ -616,13 +616,13 @@ destruct s1 as [n1| ]; [ idtac | exfalso ].
       apply add_pred_radix_1_mod_radix.
 
       apply eq_d2n_9 in Hj.
-bbb.
+      injection Hn; clear Hn; intros Hn.
       rewrite Hj, add_pred_radix_1_mod_radix, Nat.add_1_r in Hn.
       apply Nat_mod_succ_pred in Hn.
       rewrite d2n_mod_radix in Hn.
       rename Hn into Hn1.
       pose proof (Hxy j) as Hn.
-      unfold digit_eq in Hn; simpl in Hn.
+      unfold I_norm in Hn; simpl in Hn.
       unfold I2NN in Hn at 1; simpl in Hn.
       unfold I2NN in Hn at 2; simpl in Hn.
       symmetry in Hn.
@@ -651,6 +651,7 @@ bbb.
        apply eq_d2n_9 in Hyj; rewrite Hyj in Hn.
        simpl in Hn; rewrite Nat.add_1_r in Hn.
        rewrite Nat.succ_pred in Hn; [ idtac | assumption ].
+bbb.
        rewrite Nat.mod_same in Hn; [ idtac | assumption ].
        rewrite Nat.mod_small in Hn; [ discriminate Hn | idtac ].
        apply Digit.radix_gt_1.
