@@ -16,6 +16,7 @@ destruct x as [y| ]; [ right; exists y; reflexivity | idtac ].
 left; reflexivity.
 Qed.
 
+(*
 Theorem id_is : ∀ A (x : A) (p : Id x x), p = refl x.
 Proof.
 intros A x p.
@@ -24,7 +25,6 @@ bbb.
 
 Print Id_ind.
 
-(*
 Id_ind =
 λ (A : Type) (P : A → A → Prop) (f : ∀ a : A, P a a)
 (x y : A) (p : Id x y),
