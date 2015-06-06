@@ -63,6 +63,9 @@ Theorem path_based_path_induction_iff : ∀ A,
 Proof.
 intros A.
 split.
+ intros H a C c.
+ pose proof H a as HH.
+ clear H; rename HH into H.
  Focus 2.
  intros H x C c.
  pose proof H x (C x) (c x) as H1.
