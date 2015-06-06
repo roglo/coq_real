@@ -52,13 +52,32 @@ exists
 reflexivity.
 Qed.
 
-Theorem path_based_path_induction_iff : ∀ A C c,
-  (∃ f : ∀ (x y : A) (p : Id x y), C x y p, ∀ x : A, f x x (refl x) = c x)
-  ↔ ∀ a d, ∃ g : ∀ (x : A) (p : Id a x), C a x p, g a (refl a) = d.
+Theorem path_based_path_induction_iff : ∀ A,
+  (∀ (x : A) C c,
+   ∃ (f : ∀ (x y : A) (p : Id x y), C x y p),
+   ∀ x, f x x (refl x) = c x)
+  ↔
+  (∀ a C c,
+   ∃ (f : ∀ (x : A) (p : Id a x), C x p),
+   f a (refl a) = c).
 Proof.
-intros A C c.
+intros A.
 split.
- intros (f, Hf) a d.
+ Focus 2.
+ intros H x C c.
+ pose proof H x (C x) (c x) as H1.
+ destruct H1 as (g, Hg).
+bbb.
+ exists (λ u y (p : Id x y), g y p).
+
+(*
+ exists
+   (λ x p,
+    match p as q in (Id u v) return (∀ D, D u (refl u) → D v q) with
+    | refl _ => λ _ d, d
+    end (C a) d).
+  mais c'est de la triche :-) *)
+bbb.
  exists (f a).
  rewrite Hf.
 bbb.
