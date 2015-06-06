@@ -11,8 +11,8 @@ Open Scope nat_scope.
 Inductive Id {A} : A → A → Type :=
   | refl : ∀ x : A, Id x x.
 
-Theorem indiscernability : ∀ A (C : A → Set),
-  ∃ (f : ∀ x y (p : Id x y), C x → C y),
+Theorem indiscernability : ∀ A C,
+  ∃ (f : ∀ (x y : A) (p : Id x y), C x → C y),
   ∀ x, f x x (refl x) = id.
 Proof.
 intros A C.
@@ -26,11 +26,8 @@ Qed.
 
 (* hott section 1.12.1 *)
 
-Theorem path_induction :
-  ∀ A,
-  ∀ (C : ∀ x y : A, Id x y → Prop),
-  ∀ (c : ∀ x, C x x (refl x)),
-  ∃ (f : ∀ x y : A, ∀ p : Id x y, C x y p),
+Theorem path_induction : ∀ A C c,
+  ∃ (f : ∀ (x y : A) (p : Id x y), C x y p),
   ∀ x, f x x (refl x) = c x.
 Proof.
 intros A C c.
