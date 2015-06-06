@@ -78,6 +78,11 @@ Definition logn n a := pred (logn_loop a n a).
 
 (* addition *)
 
+(* definition not satisfactory; it is just the old definition using
+   numbers with numbers, but not Franchini's formula; for it, I need
+   to compute the maximum of iteration of the sum and prove it is
+   sufficient *)
+
 Definition seq_not_9 (u : nat → nat) i k :=
   if eq_nat_dec (u (i + k)) (pred radix) then 0 else 1.
 
