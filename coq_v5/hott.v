@@ -11,7 +11,7 @@ Open Scope nat_scope.
 Inductive Id {A} : A → A → Type :=
   | refl : ∀ x : A, Id x x.
 
-Definition indisc_ident {A} (C : A → Set) x y (p : Id x y) cx :=
+Definition indisc_ident {A} (C : A → Type) x y (p : Id x y) cx :=
   match p in (Id a b) return (C a → C b) with
   | refl _ => id
   end cx.
