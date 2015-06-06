@@ -6,10 +6,35 @@ Set Implicit Arguments.
 
 Open Scope nat_scope.
 
+(* trying to understand match in dependent types *)
+
+Inductive listn : nat -> Set :=
+  | niln : listn 0
+  | consn : forall n:nat, nat -> listn n -> listn (S n).
+
+Definition length1 (n:nat) (l:listn n) := n.
+
+Definition length2 (n:nat) (l:listn n) :=
+  match l with
+  | niln => 0
+  | consn n _ _ => S n
+  end.
+
+Fixpoint concat (n:nat) (l:listn n) (m:nat) (l':listn m) {struct l} :
+ listn (n + m) :=
+  match l with
+  | niln => l'
+  | consn n' a y => consn a (concat y l')
+  end.
+
+Print concat.
+
 (* hott section 1.12 *)
 
 Inductive Id {A} : A → A → Type :=
   | refl : ∀ x : A, Id x x.
+
+Print Id_rect.
 
 Theorem indiscernability : ∀ A C,
   ∃ (f : ∀ (x y : A) (p : Id x y), C x → C y),
@@ -18,11 +43,13 @@ Proof.
 intros A C.
 exists
   (λ _ _ p,
-   match p in (Id a b) return (C a → C b) with
+   match p with
    | refl _ => id
    end).
 reflexivity.
 Qed.
+
+Print indiscernability.
 
 (* hott section 1.12.1 *)
 
@@ -33,7 +60,7 @@ Proof.
 intros A C c.
 exists
   (λ _ _ p,
-   match p as q in (Id a b) return (C a b q) with
+   match p return (C _ _ p) with
    | refl a => c a
    end).
 reflexivity.
