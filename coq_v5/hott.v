@@ -45,12 +45,15 @@ match p in (Id y1 y2) return (P y1 y2) with
 end
      : ∀ (A : Type) (P : A → A → Prop),
        (∀ a : A, P a a) → ∀ x y : A, Id x y → P x y
+*)
 
-Theorem indiscernability : ∀ A (C : A → Type),
-  ∃ (f : ∀ x y (p : Id x y), C x → C y → Type),
-  ∀ x, f x x (refl x) = Id.
+Theorem indiscernability : ∀ A (C : A → Set),
+  ∃ (f : ∀ x y (p : Id x y), C x → C y),
+  ∀ x, f x x (refl x) = id.
 Proof.
 intros A C.
+Print Id_rec.
+exists (λ (x y : A) (p : Id x y) (cx : C x), cx).
 bbb.
 *)
 
@@ -65,7 +68,7 @@ Axiom choice : ∀ A B (R : A → B → Prop),
 
 Print Id_ind.
 
-Theorem my_Id_ind : ∀ A P,
+Theorem my_Id_ind : ∀ A (P : ∀ x y : A, Id x y → Prop),
   (∀ a : A, P a a (refl a))
   → ∀ x y (p : Id x y), P x y p.
 Proof.
