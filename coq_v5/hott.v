@@ -52,6 +52,28 @@ exists
 reflexivity.
 Qed.
 
+Theorem path_based_path_induction_iff : ∀ A C c,
+  (∃ f : ∀ (x y : A) (p : Id x y), C x y p, ∀ x : A, f x x (refl x) = c x)
+  ↔ ∀ a d, ∃ g : ∀ (x : A) (p : Id a x), C a x p, g a (refl a) = d.
+Proof.
+intros A C c.
+split.
+ intros (f, Hf) a d.
+ exists (f a).
+ rewrite Hf.
+bbb.
+
+Check path_induction.
+Check based_path_induction.
+path_induction
+     : ∀ (A : Type) (C : ∀ x x0 : A, Id x x0 → Type)
+       (c : ∀ x : A, C x x (refl x)),
+       ∃ f : ∀ (x y : A) (p : Id x y), C x y p, ∀ x : A, f x x (refl x) = c x
+based_path_induction
+     : ∀ (A : Type) (a : A) (C : ∀ x : A, Id a x → Type)
+       (c : C a (refl a)),
+       ∃ f : ∀ (x : A) (p : Id a x), C x p, f a (refl a) = c
+
 (* *)
 
 Definition pi_type (A : Prop) (B : A → Prop) := ∀ x : A, B x.
