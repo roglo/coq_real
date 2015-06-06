@@ -8,20 +8,10 @@ Open Scope nat_scope.
 
 (* hott section 1.12 *)
 
-Inductive paths {A} : A -> A -> Type :=
-  | idpath : ∀ x, paths x x.
-
 Inductive Id {A} : A → A → Type :=
   | refl : ∀ x : A, Id x x.
 
-Theorem option_is : ∀ A (x : option A), x = None ∨ ∃ y, x = Some y.
-Proof.
-intros A x.
-destruct x as [y| ]; [ right; exists y; reflexivity | idtac ].
-left; reflexivity.
-Qed.
-
-Definition indisc_fun {A} (C : A → Set) x y (p : Id x y) cx :=
+Definition indisc_ident {A} (C : A → Set) x y (p : Id x y) cx :=
   match p in (Id a b) return (C a → C b) with
   | refl _ => id
   end cx.
@@ -31,7 +21,7 @@ Theorem indiscernability : ∀ A (C : A → Set),
   ∀ x, f x x (refl x) = id.
 Proof.
 intros A C.
-exists (indisc_fun C).
+exists (indisc_ident C).
 intros x; reflexivity.
 Qed.
 
