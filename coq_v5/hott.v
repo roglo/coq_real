@@ -11,7 +11,7 @@ Open Scope nat_scope.
 Inductive Id {A} : A → A → Type :=
   | refl : ∀ x : A, Id x x.
 
-Definition indisc_ident {A} (C : A → Type) x y (p : Id x y) cx :=
+Definition indiscernable_identical {A} (C : A → Type) x y (p : Id x y) cx :=
   match p in (Id a b) return (C a → C b) with
   | refl _ => id
   end cx.
@@ -21,7 +21,7 @@ Theorem indiscernability : ∀ A (C : A → Set),
   ∀ x, f x x (refl x) = id.
 Proof.
 intros A C.
-exists (indisc_ident C).
+exists (indiscernable_identical C).
 intros x; reflexivity.
 Qed.
 
