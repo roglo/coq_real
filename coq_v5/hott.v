@@ -27,26 +27,11 @@ Qed.
 
 (* hott section 1.12.1 *)
 
-Print Id_ind.
-
-Theorem my_Id_ind : ∀ A (P : ∀ x y : A, Id x y → Prop),
-  (∀ a : A, P a a (refl a))
-  → ∀ x y (p : Id x y), P x y p.
-Proof.
-intros A P Hr x y p.
-destruct p.
-apply Hr.
-Qed.
-
-Theorem path_induction0 :
-  ∀ A,
-  ∀ (C : A → A → Prop),
-  ∀ (c : ∀ x, C x x),
-  ∃ (f : ∀ x y : A, C x y),
-  ∀ x, f x x = c x.
-Proof.
-intros A C c.
-bbb.
+Definition R {A} (C : ∀ (x y : A), Id x y → Type) (c : ∀ x, C x x (refl x))
+    x y (p : Id x y) :=
+  match p as p in (Id a b) return (C a b p) with
+  | refl a => c a
+  end.
 
 Theorem path_induction :
   ∀ A,
@@ -56,11 +41,9 @@ Theorem path_induction :
   ∀ x, f x x (refl x) = c x.
 Proof.
 intros A C c.
-generalize c; intros d.
-eapply my_Id_ind in c.
-
-exists (λ x y p, c x).
-bbb.
+exists (R C c).
+intros x; reflexivity.
+Qed.
 
 (* *)
 
