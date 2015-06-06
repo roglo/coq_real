@@ -21,50 +21,21 @@ destruct x as [y| ]; [ right; exists y; reflexivity | idtac ].
 left; reflexivity.
 Qed.
 
-(*
-Definition glop (A : Type) (x y : A) (p : Id x y) :=
-  match p with
-  | refl x => x
-  end.
-
-Print glop.
-
-Theorem id_is : ∀ A (x : A) (p : Id x x), p = refl x.
-Proof.
-intros A x p.
-remember (glop p) as y eqn:Hy.
-unfold glop in Hy.
-destruct p.
-bbb.
-
-Id_ind =
-λ (A : Type) (P : A → A → Prop) (f : ∀ a : A, P a a)
-(x y : A) (p : Id x y),
-match p in (Id y1 y2) return (P y1 y2) with
-| refl x => f x
-end
-     : ∀ (A : Type) (P : A → A → Prop),
-       (∀ a : A, P a a) → ∀ x y : A, Id x y → P x y
-*)
+Definition indisc_fun {A} (C : A → Set) x y (p : Id x y) cx :=
+  match p in (Id y z) return (C y → C z) with
+  | refl _ => id
+  end cx.
 
 Theorem indiscernability : ∀ A (C : A → Set),
   ∃ (f : ∀ x y (p : Id x y), C x → C y),
   ∀ x, f x x (refl x) = id.
 Proof.
 intros A C.
-Print Id_rec.
-exists (λ (x y : A) (p : Id x y) (cx : C x), cx).
-bbb.
-*)
+exists (indisc_fun C).
+intros x; reflexivity.
+Qed.
 
 (* hott section 1.12.1 *)
-
-Print Id_ind.
-
-(*
-Axiom choice : ∀ A B (R : A → B → Prop),
-  (∀ x, ∃ y, R x y) → ∃ f, ∀ x, R x (f x).
-*)
 
 Print Id_ind.
 
