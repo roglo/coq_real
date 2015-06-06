@@ -22,7 +22,7 @@ left; reflexivity.
 Qed.
 
 Definition indisc_fun {A} (C : A → Set) x y (p : Id x y) cx :=
-  match p in (Id y z) return (C y → C z) with
+  match p in (Id a b) return (C a → C b) with
   | refl _ => id
   end cx.
 
