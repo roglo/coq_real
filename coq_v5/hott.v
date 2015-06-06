@@ -17,7 +17,7 @@ Theorem indiscernability : ∀ A C,
 Proof.
 intros A C.
 exists
-  (λ x y p,
+  (λ _ _ p,
    match p in (Id a b) return (C a → C b) with
    | refl _ => id
    end).
@@ -32,8 +32,8 @@ Theorem path_induction : ∀ A C c,
 Proof.
 intros A C c.
 exists
-  (λ x y p,
-   match p as p in (Id a b) return (C a b p) with
+  (λ _ _ p,
+   match p as q in (Id a b) return (C a b q) with
    | refl a => c a
    end).
 reflexivity.
