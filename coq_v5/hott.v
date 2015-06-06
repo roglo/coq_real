@@ -22,13 +22,13 @@ Theorem indiscernability : ∀ A (C : A → Set),
 Proof.
 intros A C.
 exists (indiscernable_identical C).
-intros x; reflexivity.
+reflexivity.
 Qed.
 
 (* hott section 1.12.1 *)
 
-Definition R {A} (C : ∀ (x y : A), Id x y → Type) (c : ∀ x, C x x (refl x))
-    x y (p : Id x y) :=
+Definition inductive_path {A} (C : ∀ (x y : A), Id x y → Type) c x y
+    (p : Id x y) :=
   match p as p in (Id a b) return (C a b p) with
   | refl a => c a
   end.
@@ -41,8 +41,8 @@ Theorem path_induction :
   ∀ x, f x x (refl x) = c x.
 Proof.
 intros A C c.
-exists (R C c).
-intros x; reflexivity.
+exists (inductive_path C c).
+reflexivity.
 Qed.
 
 (* *)
