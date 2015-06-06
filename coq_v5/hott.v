@@ -39,6 +39,19 @@ exists
 reflexivity.
 Qed.
 
+Theorem based_path_induction : ∀ A a C c,
+  ∃ (f : ∀ (x : A) (p : Id a x), C x p),
+  f a (refl a) = c.
+Proof.
+intros A a C c.
+exists
+  (λ x p,
+   match p as q in (Id u v) return (∀ D, D u (refl u) → D v q) with
+   | refl _ => λ _ d, d
+   end C c).
+reflexivity.
+Qed.
+
 (* *)
 
 Definition pi_type (A : Prop) (B : A → Prop) := ∀ x : A, B x.
