@@ -31,6 +31,11 @@ Theorem path_induction : ∀ A C c,
   ∀ x, f x x (refl x) = c x.
 Proof.
 intros A C c.
+(*
+exists (Id_rect A C c).
+intros x.
+reflexivity.
+*)
 exists
   (λ _ _ p,
    match p return (C _ _ p) with
