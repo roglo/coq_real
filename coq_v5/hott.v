@@ -116,11 +116,10 @@ based_path_induction
 
 (* hott section 2.1 *)
 
-Lemma hott_2_1_1 : ∀ A,
-  ∃ (f : ∀ (x y : A), Id x y → Id y x), ∀ x, refl x = f x x (refl x).
+Lemma hott_2_1_1 : ∀ A (x y : A),
+  ∃ (f : Id x y → Id y x), refl x = f (refl x).
 Proof.
 intros A.
-bbb.
 induction p.
 apply refl.
 Qed.
