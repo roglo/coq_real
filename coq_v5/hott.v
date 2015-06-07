@@ -50,8 +50,8 @@ Theorem based_path_induction : ∀ A a C c,
 Proof.
 intros A a C c.
 exists
-  (λ x p,
-   match p as q in (Id u v) return (∀ D, D u (refl u) → D v q) with
+  (λ _ p,
+   match p return (∀ D, D _ (refl _) → D _ p) with
    | refl _ => λ _ d, d
    end C c).
 reflexivity.
