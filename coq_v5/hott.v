@@ -116,15 +116,28 @@ based_path_induction
 
 (* hott section 2.1 *)
 
-Lemma hott_2_1_1 : ∀ A (x y : A),
-  ∃ (f : Id x y → Id y x), refl x = f (refl x).
+Definition inverse {A} {x y : A} : Id x y → Id y x.
 Proof.
-intros A.
+intros p.
 induction p.
 apply refl.
-Qed.
+Defined.
 
-Print aaa.
+Definition inverse2 {A} (x y : A) (p : Id x y) :=
+  Id_rect A (λ u v _, Id v u) refl x y p.
+
+Check (@inverse = @inverse2).
+
+(*
+inverse
+     : ∀ (A : Type) (x y : A), Id x y → Id y x
+inverse2
+     : ∀ (A : Type) (x y : A) (p : Id x y),
+       (λ (u v : A) (_ : Id u v), Id v u) x y p
+*)
+
+Lemma hott_2_1_1 : ∀ A (x : A), refl x = inverse (refl x).
+Proof. reflexivity. Qed.
 
 (* *)
 
