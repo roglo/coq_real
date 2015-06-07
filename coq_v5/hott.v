@@ -80,6 +80,7 @@ split.
  rewrite <- HeqC' in c'.
  pose proof H A x C' c' as H1.
  destruct H1 as (g, Hg).
+Abort. (*
 bbb.
 
 exists
@@ -90,13 +91,12 @@ exists
 bbb.
  exists (λ u y (p : Id x y), g y p).
 
-(*
  exists
    (λ x p,
     match p as q in (Id u v) return (∀ D, D u (refl u) → D v q) with
     | refl _ => λ _ d, d
     end (C a) d).
-  mais c'est de la triche :-) *)
+  mais c'est de la triche :-)
 bbb.
  exists (f a).
  rewrite Hf.
@@ -112,6 +112,20 @@ based_path_induction
      : ∀ (A : Type) (a : A) (C : ∀ x : A, Id a x → Type)
        (c : C a (refl a)),
        ∃ f : ∀ (x : A) (p : Id a x), C x p, f a (refl a) = c
+*)
+
+(* hott section 2.1 *)
+
+Lemma hott_2_1_1 : ∀ A,
+  ∃ (f : ∀ (x y : A), Id x y → Id y x), ∀ x, refl x = f x x (refl x).
+Proof.
+intros A.
+bbb.
+induction p.
+apply refl.
+Qed.
+
+Print aaa.
 
 (* *)
 
