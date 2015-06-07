@@ -71,6 +71,13 @@ split.
  pose proof H x (C x) (c x) as H1.
  destruct H1 as (g, Hg).
 bbb.
+
+exists
+  (λ _ _ p,
+   match p return (C _ _ p) with
+   | refl a => c a
+   end).
+bbb.
  exists (λ u y (p : Id x y), g y p).
 
 (*
