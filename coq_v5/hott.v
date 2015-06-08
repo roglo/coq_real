@@ -127,9 +127,16 @@ Definition inverse2 {A} {x y : A} (p : Id x y) :=
   Id_rect A (λ u v _, Id v u) refl x y p.
 
 Definition inverse3 {A} {x y : A} (p : Id x y) :=
-  match p in (Id y1 y2) return (Id y2 y1) with
+  match p in (Id y1 y2) return (Id y1 y2) with
   | refl x => refl x
   end.
+
+Definition inverse4 {A} {x y : A} (p : Id x y) : Id y x :=
+  match p with
+  | refl x => refl x
+  end.
+
+Check @inverse4.
 
 (*
 inverse
