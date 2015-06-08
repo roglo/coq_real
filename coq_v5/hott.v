@@ -116,20 +116,20 @@ based_path_induction
 
 (* hott section 2.1 *)
 
-Definition inverse {A} {x y : A} (p : Id x y) : Id y x :=
+Definition invert {A} {x y : A} (p : Id x y) : Id y x :=
   match p with
   | refl x => refl x
   end.
 
-Lemma hott_2_1_1 : ∀ A (x : A), refl x = inverse (refl x).
+Lemma hott_2_1_1 : ∀ A (x : A), refl x = invert (refl x).
 Proof. reflexivity. Qed.
 
-Definition composite {A} {x y z : A} (p : Id x y) : Id y z → Id x z :=
+Definition compose {A} {x y z : A} (p : Id x y) : Id y z → Id x z :=
   match p with
   | refl _ => id
   end.
 
-Lemma hott_2_1_2 : ∀ A (x : A), refl x = composite (refl x) (refl x).
+Lemma hott_2_1_2 : ∀ A (x : A), refl x = compose (refl x) (refl x).
 Proof. reflexivity. Qed.
 
 (* *)
