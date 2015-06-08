@@ -123,10 +123,13 @@ induction p.
 apply refl.
 Defined.
 
-Definition inverse2 {A} (x y : A) (p : Id x y) :=
+Definition inverse2 {A} {x y : A} (p : Id x y) :=
   Id_rect A (λ u v _, Id v u) refl x y p.
 
-Check (@inverse = @inverse2).
+Definition inverse3 {A} {x y : A} (p : Id x y) :=
+  match p in (Id y1 y2) return (Id y2 y1) with
+  | refl x => refl x
+  end.
 
 (*
 inverse
@@ -134,9 +137,11 @@ inverse
 inverse2
      : ∀ (A : Type) (x y : A) (p : Id x y),
        (λ (u v : A) (_ : Id u v), Id v u) x y p
+inverse3
+     : ∀ (A : Type) (x y : A), Id x y → Id y x
 *)
 
-Lemma hott_2_1_1 : ∀ A (x : A), refl x = inverse (refl x).
+Lemma hott_2_1_1 : ∀ A (x : A), refl x = inverse3 (refl x).
 Proof. reflexivity. Qed.
 
 (* *)
