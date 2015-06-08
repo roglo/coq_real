@@ -3,10 +3,6 @@
 Require Import Utf8 QArith NPeano.
 Require Import Misc.
 
-(*
-Axiom proof_irrelevance : ∀ (P : Prop) (a b : P), a = b.
-*)
-
 Open Scope nat_scope.
 
 Delimit Scope digit_scope with D.
@@ -165,86 +161,11 @@ Add Parametric Relation : digit digit_eq
  as eq_equivalence.
 *)
 
-Theorem bbb : ∀ a : nat, a = a.
-Proof.
-intros a.
-reflexivity.
-Qed.
-
-Print bbb.
-
-Theorem glop : 0 = 1 → False.
-Proof.
-intros H.
-change (match 1 with 0 => True | S _ => False end).
-rewrite <- H.
-constructor.
-Qed.
-
-Theorem aaa : ∀ p, p ≠ eq_refl tt → False.
-Proof.
-intros p H.
-apply H.
-destruct H.
-
-change (match eq_refl nat with eq_refl => False end).
-bbb.
-
-change (match eq_refl 0 with eq_refl => False end).
-change (match 1 with 0 => True | S _ => False end).
-bbb.
-
-Theorem aaa : ∀ p, p = eq_refl 0.
-Proof.
-intros p.
-
-destruct (eq_nat_dec 0 1) as [H1| H1].
-change (match 1 with 0 => True | S _ => p = eq_refl end).
-rewrite <- H1; reflexivity.
-bbb.
-
-Theorem aaa : ∀ p, p = eq_refl tt.
-Proof.
-intros p.
-change (match 0 with 0 => p = eq_refl | S _ => True end).
-
-bbb.
-
-(* parait que ça peut se démontrer...
-   ça m'éviterait de devoir faire proof irrelevance *)
-Theorem aaa : ∀ (a : nat) p, p = eq_refl a.
-Proof.
-intros a p.
-Unset Printing Notations. Show.
-change (match p with eq_refl => eq_refl end) in p.
-bbb.
-
-Theorem nat_le_uniq_proof : ∀ a p, p = le_n a.
-Proof.
-intros a p.
-Abort.
-
-Theorem nat_le_uniq_proof : ∀ a b (p q : a ≤ b), p = q.
-Proof.
-intros a b p q.
-bbb.
-
 Theorem eq_dig_eq : ∀ a b pa pb, a = b → dig a pa = dig b pb.
 Proof.
 intros a b pa pb Hab.
 subst a; f_equal.
-unfold lt in pa, pb.
-bbb.
-
-revert pa pb.
-destruct (eq_nat_dec (S b) radix) as [H1| H1].
-Focus 2.
- destruct pa as [|n]; [ exfalso; apply H1; reflexivity | idtac ].
- intros pb.
-
-unfold lt in pa, pb.
-
-apply proof_irrelevance.
+apply le_unique.
 Qed.
 
 Theorem eq_dec : ∀ x y : digit, {x = y} + {x ≠ y}.
