@@ -139,16 +139,36 @@ Proof. reflexivity. Qed.
 Inductive andt (A B : Type) : Type := conjt : A → B → andt A B.
 Notation "u '∧∧' v" := (andt u v) (at level 80, right associativity).
 
-Lemma hott_2_1_4 : ∀ A (x y z w : A) (p : x == y) (q : y == z) (r : z == w),
-  p == p • refl y ∧∧ p == refl x • p ∧∧
-  p⁻¹ • p == refl y ∧∧ p • p⁻¹ == refl x ∧∧
-  (p⁻¹)⁻¹ == p ∧∧
+Lemma hott_2_1_4_i :
+  ∀ A (x y z w : A) (p : x == y) (q : y == z) (r : z == w),
+  p == p • refl y ∧∧ p == refl x • p.
+Proof.
+intros A x y z w p q r.
+destruct p; split; constructor.
+Qed.
+
+Lemma hott_2_1_4_ii :
+  ∀ A (x y z w : A) (p : x == y) (q : y == z) (r : z == w),
+  p⁻¹ • p == refl y ∧∧ p • p⁻¹ == refl x.
+Proof.
+intros A x y z w p q r.
+destruct p; split; constructor.
+Qed.
+
+Lemma hott_2_1_4_iii :
+  ∀ A (x y z w : A) (p : x == y) (q : y == z) (r : z == w),
+  (p⁻¹)⁻¹ == p.
+Proof.
+intros A x y z w p q r.
+destruct p; constructor.
+Qed.
+
+Lemma hott_2_1_4_iv :
+  ∀ A (x y z w : A) (p : x == y) (q : y == z) (r : z == w),
   p • (q • r) == (p • q) • r.
 Proof.
 intros A x y z w p q r.
-destruct p.
-do 5 split; [ constructor | idtac ].
-constructor.
+destruct p; constructor.
 Qed.
 
 (* *)
