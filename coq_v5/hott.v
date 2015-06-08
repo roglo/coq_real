@@ -2,8 +2,6 @@
 
 Require Import Utf8 QArith.
 
-(*Set Implicit Arguments.*)
-
 Open Scope nat_scope.
 
 (* hott section 1.12 *)
@@ -33,11 +31,6 @@ Theorem path_induction : ∀ A C c,
   ∀ x, f x x (refl x) = c x.
 Proof.
 intros A C c.
-(*
-exists (Id_rect A C c).
-intros x.
-reflexivity.
-*)
 exists
   (λ _ _ p,
    match p return (C _ _ p) with
@@ -70,51 +63,7 @@ Theorem path_based_path_induction_iff :
    ∃ (f : ∀ (x : A) (p : a == x), C x p),
    f a (refl a) = c).
 Proof.
-split.
- intros H A a C c.
- pose proof H A a as HH.
- clear H; rename HH into H.
- Focus 2.
- intros H A x C c.
- remember (C x) as C'.
- remember (c x) as c'.
- clear Heqc'.
- rewrite <- HeqC' in c'.
- pose proof H A x C' c' as H1.
- destruct H1 as (g, Hg).
-Abort. (*
-bbb.
-
-exists
-  (λ _ _ p,
-   match p return (C _ _ p) with
-   | refl a => c a
-   end).
-bbb.
- exists (λ u y (p : Id x y), g y p).
-
- exists
-   (λ x p,
-    match p as q in (Id u v) return (∀ D, D u (refl u) → D v q) with
-    | refl _ => λ _ d, d
-    end (C a) d).
-  mais c'est de la triche :-)
-bbb.
- exists (f a).
- rewrite Hf.
-bbb.
-
-Check path_induction.
-Check based_path_induction.
-path_induction
-     : ∀ (A : Type) (C : ∀ x x0 : A, Id x x0 → Type)
-       (c : ∀ x : A, C x x (refl x)),
-       ∃ f : ∀ (x y : A) (p : Id x y), C x y p, ∀ x : A, f x x (refl x) = c x
-based_path_induction
-     : ∀ (A : Type) (a : A) (C : ∀ x : A, Id a x → Type)
-       (c : C a (refl a)),
-       ∃ f : ∀ (x : A) (p : Id a x), C x p, f a (refl a) = c
-*)
+Abort. (* to be done *)
 
 (* hott section 2.1 *)
 
@@ -171,9 +120,7 @@ intros p q r.
 destruct p; constructor.
 Qed.
 
-Inspect 4.
-
-(* *)
+(* hott, later... *)
 
 Definition pi_type (A : Prop) (B : A → Prop) := ∀ x : A, B x.
 
