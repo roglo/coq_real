@@ -165,14 +165,26 @@ Add Parametric Relation : digit digit_eq
  as eq_equivalence.
 *)
 
+Theorem bbb : ∀ a : nat, a = a.
+Proof.
+intros a.
+reflexivity.
+Qed.
+
+Print bbb.
+
+Theorem aaa : ∀ p, p = eq_refl tt.
+Proof.
+intros p.
+bbb.
+
 (* parait que ça peut se démontrer...
    ça m'éviterait de devoir faire proof irrelevance *)
 Theorem aaa : ∀ (a : nat) p, p = eq_refl a.
 Proof.
 intros a p.
-revert p.
-induction a; intros p.
 Unset Printing Notations. Show.
+change (match p with eq_refl => eq_refl end) in p.
 bbb.
 
 Theorem nat_le_uniq_proof : ∀ a p, p = le_n a.
