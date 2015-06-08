@@ -3,7 +3,9 @@
 Require Import Utf8 QArith NPeano.
 Require Import Misc.
 
+(*
 Axiom proof_irrelevance : ∀ (P : Prop) (a b : P), a = b.
+*)
 
 Open Scope nat_scope.
 
@@ -163,10 +165,41 @@ Add Parametric Relation : digit digit_eq
  as eq_equivalence.
 *)
 
-Theorem eq_dig_eq : ∀ a b Ha Hb, a = b → dig a Ha = dig b Hb.
+(* parait que ça peut se démontrer...
+   ça m'éviterait de devoir faire proof irrelevance *)
+Theorem aaa : ∀ (a : nat) p, p = eq_refl a.
 Proof.
-intros a b Ha Hb Hab.
+intros a p.
+revert p.
+induction a; intros p.
+Unset Printing Notations. Show.
+bbb.
+
+Theorem nat_le_uniq_proof : ∀ a p, p = le_n a.
+Proof.
+intros a p.
+Abort.
+
+Theorem nat_le_uniq_proof : ∀ a b (p q : a ≤ b), p = q.
+Proof.
+intros a b p q.
+bbb.
+
+Theorem eq_dig_eq : ∀ a b pa pb, a = b → dig a pa = dig b pb.
+Proof.
+intros a b pa pb Hab.
 subst a; f_equal.
+unfold lt in pa, pb.
+bbb.
+
+revert pa pb.
+destruct (eq_nat_dec (S b) radix) as [H1| H1].
+Focus 2.
+ destruct pa as [|n]; [ exfalso; apply H1; reflexivity | idtac ].
+ intros pb.
+
+unfold lt in pa, pb.
+
 apply proof_irrelevance.
 Qed.
 

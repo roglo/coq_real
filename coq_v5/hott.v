@@ -120,6 +120,10 @@ intros p q r.
 destruct p; constructor.
 Qed.
 
+Definition Ω A {a : A} := (a == a).
+
+...
+
 (* hott, later... *)
 
 Definition pi_type (A : Prop) (B : A → Prop) := ∀ x : A, B x.
