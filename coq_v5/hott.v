@@ -11,8 +11,10 @@ Open Scope nat_scope.
 Inductive Id {A} : A → A → Type :=
   | refl : ∀ x : A, Id x x.
 
+Notation "x == y" := (Id x y) (at level 70).
+
 Theorem indiscernability : ∀ A C,
-  ∃ (f : ∀ (x y : A) (p : Id x y), C x → C y),
+  ∃ (f : ∀ (x y : A) (p : x == y), C x → C y),
   ∀ x, f x x (refl x) = id.
 Proof.
 intros A C.
@@ -27,7 +29,7 @@ Qed.
 (* hott section 1.12.1 *)
 
 Theorem path_induction : ∀ A C c,
-  ∃ (f : ∀ (x y : A) (p : Id x y), C x y p),
+  ∃ (f : ∀ (x y : A) (p : x == y), C x y p),
   ∀ x, f x x (refl x) = c x.
 Proof.
 intros A C c.
@@ -45,7 +47,7 @@ reflexivity.
 Qed.
 
 Theorem based_path_induction : ∀ A a C c,
-  ∃ (f : ∀ (x : A) (p : Id a x), C x p),
+  ∃ (f : ∀ (x : A) (p : a == x), C x p),
   f a (refl a) = c.
 Proof.
 intros A a C c.
@@ -61,11 +63,11 @@ Qed.
 
 Theorem path_based_path_induction_iff :
   (∀ A (x : A) C c,
-   ∃ (f : ∀ (x y : A) (p : Id x y), C x y p),
+   ∃ (f : ∀ (x y : A) (p : x == y), C x y p),
    ∀ x, f x x (refl x) = c x)
   ↔
   (∀ A a C c,
-   ∃ (f : ∀ (x : A) (p : Id a x), C x p),
+   ∃ (f : ∀ (x : A) (p : a == x), C x p),
    f a (refl a) = c).
 Proof.
 split.
@@ -116,29 +118,38 @@ based_path_induction
 
 (* hott section 2.1 *)
 
-Definition invert {A} {x y : A} (p : Id x y) : Id y x :=
+Definition invert {A} {x y : A} (p : x == y) : y == x :=
   match p with
   | refl x => refl x
   end.
+Notation "p '⁻¹'" := (invert p) (at level 10).
 
-Lemma hott_2_1_1 : ∀ A (x : A), refl x = invert (refl x).
+Lemma hott_2_1_1 : ∀ A (x : A), refl x = (refl x)⁻¹.
 Proof. reflexivity. Qed.
 
-Definition compose {A} {x y z : A} (p : Id x y) : Id y z → Id x z :=
+Definition compose {A} {x y z : A} (p : x == y) : y == z → x == z :=
   match p with
   | refl _ => id
   end.
+Notation "p • q" := (compose p q) (at level 40, left associativity).
 
-Lemma hott_2_1_2 : ∀ A (x : A), refl x = compose (refl x) (refl x).
+Lemma hott_2_1_2 : ∀ A (x : A), refl x = refl x • refl x.
 Proof. reflexivity. Qed.
 
-Lemma hott_2_1_4 :
-   ∀ A (x y z w : A) (p : Id x y) (q : Id y z) (r : Id z w),
-   p = compose p (refl y).
+Inductive andt (A B : Type) : Type := conjt : A → B → andt A B.
+Notation "u '∧∧' v" := (andt u v) (at level 80, right associativity).
+
+Lemma hott_2_1_4 : ∀ A (x y z w : A) (p : x == y) (q : y == z) (r : z == w),
+  p == p • refl y ∧∧ p == refl x • p ∧∧
+  p⁻¹ • p == refl y ∧∧ p • p⁻¹ == refl x ∧∧
+  (p⁻¹)⁻¹ == p ∧∧
+  p • (q • r) == (p • q) • r.
 Proof.
 intros A x y z w p q r.
-destruct p; reflexivity.
-bbb. (* à suivre... *)
+destruct p.
+do 5 split; [ constructor | idtac ].
+constructor.
+Qed.
 
 (* *)
 
