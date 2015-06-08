@@ -116,39 +116,20 @@ based_path_induction
 
 (* hott section 2.1 *)
 
-Definition inverse {A} {x y : A} : Id x y → Id y x.
-Proof.
-intros p.
-induction p.
-apply refl.
-Defined.
-
-Definition inverse2 {A} {x y : A} (p : Id x y) :=
-  Id_rect A (λ u v _, Id v u) refl x y p.
-
-Definition inverse3 {A} {x y : A} (p : Id x y) :=
-  match p in (Id y1 y2) return (Id y1 y2) with
-  | refl x => refl x
-  end.
-
-Definition inverse4 {A} {x y : A} (p : Id x y) : Id y x :=
+Definition inverse {A} {x y : A} (p : Id x y) : Id y x :=
   match p with
   | refl x => refl x
   end.
 
-Check @inverse4.
+Lemma hott_2_1_1 : ∀ A (x : A), refl x = inverse (refl x).
+Proof. reflexivity. Qed.
 
-(*
-inverse
-     : ∀ (A : Type) (x y : A), Id x y → Id y x
-inverse2
-     : ∀ (A : Type) (x y : A) (p : Id x y),
-       (λ (u v : A) (_ : Id u v), Id v u) x y p
-inverse3
-     : ∀ (A : Type) (x y : A), Id x y → Id y x
-*)
+Definition composite {A} {x y z : A} (p : Id x y) : Id y z → Id x z :=
+  match p with
+  | refl _ => id
+  end.
 
-Lemma hott_2_1_1 : ∀ A (x : A), refl x = inverse3 (refl x).
+Lemma hott_2_1_2 : ∀ A (x : A), refl x = composite (refl x) (refl x).
 Proof. reflexivity. Qed.
 
 (* *)
