@@ -173,9 +173,18 @@ Qed.
 
 Print bbb.
 
+Theorem glop : 0 = 1 → False.
+Proof.
+intros H.
+change (match 1 with 0 => True | S _ => False end).
+rewrite <- H.
+constructor.
+Qed.
+
 Theorem aaa : ∀ p, p = eq_refl tt.
 Proof.
 intros p.
+change (match tt with tt => p = eq_refl end).
 bbb.
 
 (* parait que ça peut se démontrer...
