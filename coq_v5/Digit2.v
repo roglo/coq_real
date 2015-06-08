@@ -181,10 +181,33 @@ rewrite <- H.
 constructor.
 Qed.
 
+Theorem aaa : ∀ p, p ≠ eq_refl tt → False.
+Proof.
+intros p H.
+apply H.
+destruct H.
+
+change (match eq_refl nat with eq_refl => False end).
+bbb.
+
+change (match eq_refl 0 with eq_refl => False end).
+change (match 1 with 0 => True | S _ => False end).
+bbb.
+
+Theorem aaa : ∀ p, p = eq_refl 0.
+Proof.
+intros p.
+
+destruct (eq_nat_dec 0 1) as [H1| H1].
+change (match 1 with 0 => True | S _ => p = eq_refl end).
+rewrite <- H1; reflexivity.
+bbb.
+
 Theorem aaa : ∀ p, p = eq_refl tt.
 Proof.
 intros p.
-change (match tt with tt => p = eq_refl end).
+change (match 0 with 0 => p = eq_refl | S _ => True end).
+
 bbb.
 
 (* parait que ça peut se démontrer...
