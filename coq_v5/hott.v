@@ -122,7 +122,7 @@ Qed.
 
 Definition Ω A {a : A} := (a == a).
 
-...
+bbb.
 
 (* hott, later... *)
 
