@@ -132,6 +132,14 @@ Definition compose {A} {x y z : A} (p : Id x y) : Id y z → Id x z :=
 Lemma hott_2_1_2 : ∀ A (x : A), refl x = compose (refl x) (refl x).
 Proof. reflexivity. Qed.
 
+Lemma hott_2_1_4 :
+   ∀ A (x y z w : A) (p : Id x y) (q : Id y z) (r : Id z w),
+   p = compose p (refl y).
+Proof.
+intros A x y z w p q r.
+destruct p; reflexivity.
+bbb. (* à suivre... *)
+
 (* *)
 
 Definition pi_type (A : Prop) (B : A → Prop) := ∀ x : A, B x.
