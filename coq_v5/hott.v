@@ -134,8 +134,7 @@ Parameter r s : b == c.
 
 (* whiskering *)
 Definition dotr {A} (a b c : A)
-  (p : a == b) (q : a == b) (r : b == c) (s : b == c)
-  (α : p == q) (β : r == s) : (p • r == q • r).
+  (p : a == b) (q : a == b) (r : b == c) (α : p == q) : (p • r == q • r).
 Proof.
 induction r as (b).
 pose proof (@hott_2_1_4_i A a b a b p (p ⁻¹) p) as (H1, H2).
@@ -147,8 +146,7 @@ Defined.
 
 (* whiskering *)
 Definition dotl {A} (a b c : A)
-  (p : a == b) (q : a == b) (r : b == c) (s : b == c)
-  (α : p == q) (β : r == s) : (q • r == q • s).
+  (q : a == b) (r : b == c) (s : b == c) (β : r == s) : (q • r == q • s).
 Proof.
 induction q as (b).
 pose proof (@hott_2_1_4_i A b c b c r (r⁻¹) r) as (H1, H2).
@@ -169,20 +167,50 @@ Definition ru {A} (a b c : A) (p : a == b) (r : b == c) :=
   | conjt x _ => x
   end.
 
+Definition ru2 {A} (a b c : A) (p : a == b) q (r : b == c) :=
+  match hott_2_1_4_i p q r with
+  | conjt x _ => x
+  end.
+
+Print ru2.
+
 Check (λ a b c p q r α, (ru a b c p r)⁻¹ • α • ru a b c q r).
 (* ∀ (a b c : A) (p q : a == b), b == c → p == q
    → p • refl b == q • refl b *)
 Check @dotr.
-(* ∀ (A : Type) (a b c : A) (p q : a == b) (r s : b == c), p == q → r == s
+(* ∀ (A : Type) (a b c : A) (p q : a == b) (r : b == c), p == q
    → p • r == q • r *)
 
 Check ru.
+(* ∀ (a b c : A) (p : a == b), b == c
+   → p == p • refl b *)
+
+Theorem aaa : ∀ A (a b : A) p q r α,
+  dotr a b b p q (refl b) α =
+  (ru2 a b b p (refl b) r)⁻¹ • α • ru2 a b b p q r.
+Proof.
+bbb.
+
+Theorem aaa : ∀ A (a b : A) p q r α,
+  dotr a b b p q (refl b) α =
+  (ru a b b p r)⁻¹ • α • ru a b b q r.
+Proof.
+
+Definition dotr2 A (a b c : A) p q r α :=
+  (ru a b c p r)⁻¹ • α • ru a b c q r.
+
+Print dotr2.
+
+intros.
+unfold dotr; simpl.
+unfold ru; simpl.
+bbb.
 
 (* mmm... *)
-Theorem aaa : ∀ a b c p q r s α,
-  dotr a b c p q r s α (refl b) = (ru a b c p r)⁻¹ • α • ru a b c q r.
+Theorem aaa : ∀ a b c p q r s α β,
+  dotr a b c p q r r α (*refl b*)β = (ru a b c p r)⁻¹ • α • ru a b c q r.
 
-Theorem aaa : ∀ α, dotr a b c p q r s α (refl b) = rup⁻¹ • α • ruq.
+Theorem aaa : ∀ α, dotr a b b p q r s α (refl b) = rup⁻¹ • α • ruq.
 Proof.
 bbb.
 
