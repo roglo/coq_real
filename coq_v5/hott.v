@@ -123,15 +123,13 @@ Qed.
 Definition Ω {A} (a : A) := (a == a).
 Definition Ω2 {A} (a : A) := (refl a == refl a).
 
-Definition star {A} (a : A) : Ω2 a → Ω2 a → Ω2 a.
-Proof.
-unfold Ω2.
-intros α β.
-bbb.
+Definition star {A} {a : A} (α β : Ω2 a) : Ω2 a := α • β.
+Notation "α ★ β" := (star α β) (at level 40).
 
 Theorem hott_2_1_6 {A} : ∀ (a : A) (α β : Ω2 a), α • β == β • α.
 Proof.
 intros a α β.
+Check @star.
 unfold Ω2 in α, β.
 
 bbb.
