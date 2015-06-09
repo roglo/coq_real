@@ -131,7 +131,7 @@ Parameter p q : a == b.
 Parameter r s : b == c.
 
 (* whiskering *)
-Definition dotr {A} (a b c : A)
+Definition dotr
   (p : a == b) (q : a == b) (r : b == c) (s : b == c)
   (α : p == q) (β : r == s) : (p • r == q • r).
 Proof.
@@ -144,7 +144,7 @@ eapply compose; [ apply α | apply H3 ].
 Defined.
 
 (* whiskering *)
-Definition dotl {A} (a b c : A)
+Definition dotl
   (p : a == b) (q : a == b) (r : b == c) (s : b == c)
   (α : p == q) (β : r == s) : (q • r == q • s).
 Proof.
@@ -157,7 +157,7 @@ eapply compose; [ apply β | apply H4 ].
 Qed.
 
 (* (α •r r) • (q •l β) : p == q → r == s → p • r == q • s *)
-Definition star α β := dotr a b c p q r s α β • dotl a b c p q r s α β.
+Definition star α β := dotr p q r s α β • dotl p q r s α β.
 Notation "α ★ β" := (star α β) (at level 40).
 
 Definition ru (p : a == b) :=
@@ -166,14 +166,15 @@ Definition ru (p : a == b) :=
   end.
 
 Check (λ α, (ru p)⁻¹ • α • ru q).
-(* λ (α : p == q), (ru p) ⁻¹ • α • ru q : p == q → p • refl b == q • refl b *)
+(* λ (α : p == q), (ru p) ⁻¹ • α • ru q : p == q
+   → p • refl b == q • refl b *)
 Check @dotr.
-(* ∀ (A : Type) (a b c : A) (p q : a == b) (r s : b == c),
-   p == q → r == s → p • r == q • r *)
+(* ∀ (p q : a == b) (r s : b == c), p == q → r == s
+   → p • r == q • r *)
 
 
 (* mmm... *)
-Theorem aaa : ∀ α β, dotr a b c p q r s α β = (ru p)⁻¹ • α • ru q.
+Theorem aaa : ∀ α β, dotr p q r s α β = (ru p)⁻¹ • α • ru q.
 
 Check (∀ α β, dotr a b c p q r s α β).
 Check (∀ α r, dotr a b c p q r s α (refl b)).
