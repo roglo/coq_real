@@ -123,8 +123,25 @@ Qed.
 Definition Ω {A} (a : A) := (a == a).
 Definition Ω2 {A} (a : A) := (refl a == refl a).
 
+(*
 Definition star {A} {a : A} (α β : Ω2 a) : Ω2 a := α • β.
 Notation "α ★ β" := (star α β) (at level 40).
+*)
+
+Definition star {A} (a b c : A)
+  (p : a == b) (q : a == b) (r : b == c) (s : b == c)
+  (α : p == q) (β : r == s) : (p • r == q • s).
+Proof.
+induction r as [b].
+bbb. mouais, chais pas...
+assert (p == p • refl b) as ru.
+eapply hott_2_1_4_i.
+eapply invert.
+apply p.
+apply q.
+
+induction q as [c].
+bbb.
 
 Theorem hott_2_1_6 {A} : ∀ (a : A) (α β : Ω2 a), α • β == β • α.
 Proof.
