@@ -123,15 +123,17 @@ Qed.
 Definition Ω {A} (a : A) := (a == a).
 Definition Ω2 {A} (a : A) := (refl a == refl a).
 
+(*
 Section omega.
 
 Parameter A : Type.
 Parameter a b c : A.
 Parameter p q : a == b.
 Parameter r s : b == c.
+*)
 
 (* whiskering *)
-Definition dotr
+Definition dotr {A} (a b c : A)
   (p : a == b) (q : a == b) (r : b == c) (s : b == c)
   (α : p == q) (β : r == s) : (p • r == q • r).
 Proof.
@@ -144,7 +146,7 @@ eapply compose; [ apply α | apply H3 ].
 Defined.
 
 (* whiskering *)
-Definition dotl
+Definition dotl {A} (a b c : A)
   (p : a == b) (q : a == b) (r : b == c) (s : b == c)
   (α : p == q) (β : r == s) : (q • r == q • s).
 Proof.
@@ -157,27 +159,28 @@ eapply compose; [ apply β | apply H4 ].
 Qed.
 
 (* (α •r r) • (q •l β) : p == q → r == s → p • r == q • s *)
+(*
 Definition star α β := dotr p q r s α β • dotl p q r s α β.
 Notation "α ★ β" := (star α β) (at level 40).
+*)
 
-Definition ru (p : a == b) :=
+Definition ru {A} (a b c : A) (p : a == b) (r : b == c) :=
   match hott_2_1_4_i p (refl b) r with
   | conjt x _ => x
   end.
 
-Check (λ α, (ru p)⁻¹ • α • ru q).
-(* λ (α : p == q), (ru p) ⁻¹ • α • ru q : p == q
+Check (λ a b c p q r α, (ru a b c p r)⁻¹ • α • ru a b c q r).
+(* ∀ (a b c : A) (p q : a == b), b == c → p == q
    → p • refl b == q • refl b *)
 Check @dotr.
-(* ∀ (p q : a == b) (r s : b == c), p == q → r == s
+(* ∀ (A : Type) (a b c : A) (p q : a == b) (r s : b == c), p == q → r == s
    → p • r == q • r *)
 
+Check ru.
 
 (* mmm... *)
-Theorem aaa : ∀ α β, dotr p q r s α β = (ru p)⁻¹ • α • ru q.
-
-Check (∀ α β, dotr a b c p q r s α β).
-Check (∀ α r, dotr a b c p q r s α (refl b)).
+Theorem aaa : ∀ a b c p q r s α,
+  dotr a b c p q r s α (refl b) = (ru a b c p r)⁻¹ • α • ru a b c q r.
 
 Theorem aaa : ∀ α, dotr a b c p q r s α (refl b) = rup⁻¹ • α • ruq.
 Proof.
