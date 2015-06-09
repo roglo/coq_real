@@ -170,9 +170,13 @@ Definition ruq :=
   | conjt x _ => x
   end.
 
+(* mmm... *)
+Theorem aaa : ∀ α β, dotr a b c p q r s α β = rup⁻¹ • α • ruq.
+
+Check (∀ α β, dotr a b c p q r s α β).
 Check (∀ α r, dotr a b c p q r s α (refl b)).
 
-Theorem aaa : ∀ α, dotr a b c p q r s α (refl b). = rup⁻¹ • α • ruq.
+Theorem aaa : ∀ α, dotr a b c p q r s α (refl b) = rup⁻¹ • α • ruq.
 Proof.
 bbb.
 
