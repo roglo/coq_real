@@ -156,48 +156,14 @@ pose proof (@hott_2_1_4_i A b c b c s (s⁻¹) s) as (H3, H4).
 eapply compose; [ apply β | apply H4 ].
 Qed.
 
-(* (α •r r) • (q •l β) *)
+(* (α •r r) • (q •l β) : p == q → r == s → p • r == q • s *)
 Definition star α β := dotr a b c p q r s α β • dotl a b c p q r s α β.
 Notation "α ★ β" := (star α β) (at level 40).
 
-(* (p •l β) • (α •r s) *)
-Definition glop α β := dotl a b c q p s r α β.
-(* glop: q == p → s == r → p • s == p • r *)
-Definition glip α β := dotr a b c q p s r α β.
-(* glip: q == p → s == r → q • s == p • s *)
+(* chais pas... *)
+Definition star' α β := dotr a b c q p s r α β • dotl a b c q p s r α β.
+Check star'.
 
-Definition star' α β := dotl a b c p q r s α β • dotr a b c p q r s α β.
-
-Definition star' α β := dotr a b c p q r s α β • dotl a b c p q r s α β.
-Notation "α ★ β" := (star α β) (at level 40).
-
-
-
-(* whiskering (saved) *)
-Definition dotr {A} (a b c : A)
-  (p : a == b) (q : a == b) (r : b == c) (s : b == c)
-  (α : p == q) (β : r == s) : (p • r == q • r).
-Proof.
-induction r as (b).
-pose proof (@hott_2_1_4_i A a b a b p (p ⁻¹) p) as (H1, H2).
-apply invert in H1.
-eapply compose; [ apply H1 | idtac ].
-pose proof (@hott_2_1_4_i A a b a b q (q ⁻¹) q) as (H3, H4).
-eapply compose; [ apply α | apply H3 ].
-Defined.
-
-(* whiskering (saved) *)
-Definition dotl {A} (a b c : A)
-  (p : a == b) (q : a == b) (r : b == c) (s : b == c)
-  (α : p == q) (β : r == s) : (q • r == q • s).
-Proof.
-induction q as (b).
-pose proof (@hott_2_1_4_i A b c b c r (r⁻¹) r) as (H1, H2).
-apply invert in H2.
-eapply compose; [ apply H2 | idtac ].
-pose proof (@hott_2_1_4_i A b c b c s (s⁻¹) s) as (H3, H4).
-eapply compose; [ apply β | apply H4 ].
-Qed.
 bbb.
 
 Theorem hott_2_1_6 {A} : ∀ (a : A) (α β : Ω2 a), α • β == β • α.
