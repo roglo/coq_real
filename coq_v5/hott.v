@@ -128,11 +128,25 @@ Definition star {A} {a : A} (α β : Ω2 a) : Ω2 a := α • β.
 Notation "α ★ β" := (star α β) (at level 40).
 *)
 
+Definition dotr {A} (a b c : A)
+  (p : a == b) (q : a == b) (r : b == c) (s : b == c)
+  (α : p == q) (β : r == s) : (p • r == q • r).
+Proof.
+induction r as (b).
+pose proof (@hott_2_1_4_i A a b a b p (p ⁻¹) p) as (H1, H2).
+apply invert in H1.
+eapply compose; [ apply H1 | idtac ].
+pose proof (@hott_2_1_4_i A a b a b q (q ⁻¹) q) as (H3, H4).
+eapply compose; [ apply α | eassumption ].
+Defined.
+
+Check @dotr.
+bbb. not sure at all that dotr is correct.
+
 Definition star {A} (a b c : A)
   (p : a == b) (q : a == b) (r : b == c) (s : b == c)
   (α : p == q) (β : r == s) : (p • r == q • s).
 Proof.
-Print hott_2_1_4_i.
 bbb.
 
 Definition dotr {A} (a b : A) (p : a == b) (q : a == b) α r :=
