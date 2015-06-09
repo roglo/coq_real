@@ -160,18 +160,20 @@ Qed.
 Definition star α β := dotr a b c p q r s α β • dotl a b c p q r s α β.
 Notation "α ★ β" := (star α β) (at level 40).
 
-Definition rup :=
+Definition ru (p : a == b) :=
   match hott_2_1_4_i p (refl b) r with
   | conjt x _ => x
   end.
 
-Definition ruq :=
-  match hott_2_1_4_i q (refl b) r with
-  | conjt x _ => x
-  end.
+Check (λ α, (ru p)⁻¹ • α • ru q).
+(* λ (α : p == q), (ru p) ⁻¹ • α • ru q : p == q → p • refl b == q • refl b *)
+Check @dotr.
+(* ∀ (A : Type) (a b c : A) (p q : a == b) (r s : b == c),
+   p == q → r == s → p • r == q • r *)
+
 
 (* mmm... *)
-Theorem aaa : ∀ α β, dotr a b c p q r s α β = rup⁻¹ • α • ruq.
+Theorem aaa : ∀ α β, dotr a b c p q r s α β = (ru p)⁻¹ • α • ru q.
 
 Check (∀ α β, dotr a b c p q r s α β).
 Check (∀ α r, dotr a b c p q r s α (refl b)).
