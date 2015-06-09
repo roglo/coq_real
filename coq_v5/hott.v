@@ -132,6 +132,13 @@ Definition star {A} (a b c : A)
   (p : a == b) (q : a == b) (r : b == c) (s : b == c)
   (α : p == q) (β : r == s) : (p • r == q • s).
 Proof.
+Print hott_2_1_4_i.
+bbb.
+
+Definition dotr {A} (a b : A) (p : a == b) (q : a == b) α r :=
+  let rup :=
+  rup⁻¹ • α • ruq.
+
 induction r as [b].
 bbb. mouais, chais pas...
 assert (p == p • refl b) as ru.
