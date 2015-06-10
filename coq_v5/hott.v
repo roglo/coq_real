@@ -177,6 +177,7 @@ Theorem q_refl_a_r {A} : ∀ (a : A) p s α β,
 Proof.
 intros.
 unfold star.
+bbb.
 unfold glop.
 unfold ru.
 unfold dotr, dotl; simpl.
