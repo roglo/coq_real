@@ -94,7 +94,7 @@ Lemma hott_2_1_4_i {A} {x y z w : A} :
 Proof.
 intros p q r.
 destruct p; split; constructor.
-Qed.
+Defined.
 
 Lemma hott_2_1_4_ii {A} {x y z w : A} :
   ∀ (p : x == y) (q : y == z) (r : z == w),
@@ -120,17 +120,10 @@ intros p q r.
 destruct p; constructor.
 Qed.
 
+(* Theorem 2.1.6 (Eckmann-Hilton) *)
+
 Definition Ω {A} (a : A) := (a == a).
 Definition Ω2 {A} (a : A) := (refl a == refl a).
-
-(*
-Section omega.
-
-Parameter A : Type.
-Parameter a b c : A.
-Parameter p q : a == b.
-Parameter r s : b == c.
-*)
 
 (* whiskering *)
 Definition dotr {A} (a b c : A)
@@ -154,13 +147,46 @@ apply invert in H2.
 eapply compose; [ apply H2 | idtac ].
 pose proof (@hott_2_1_4_i A b c b c s (s⁻¹) s) as (H3, H4).
 eapply compose; [ apply β | apply H4 ].
-Qed.
+Defined.
 
-(* (α •r r) • (q •l β) : p == q → r == s → p • r == q • s *)
 (*
-Definition star α β := dotr p q r s α β • dotl p q r s α β.
+Definition star α β := dotr a b c p q r α • dotl a b c q r s β.
 Notation "α ★ β" := (star α β) (at level 40).
 *)
+
+Definition star {A} (a b c : A) p q r s α β :=
+  dotr a b c p q r α • dotl a b c q r s β.
+
+Definition star' {A} (a b c : A) p q r s α β :=
+  dotl a b c p r s β • dotr a b c p q s α.
+
+Definition ru {A} (a b c : A) (p : a == b) (r : b == c) :=
+  match hott_2_1_4_i p (refl b) r with
+  | conjt x _ => x
+  end.
+
+Check @ru.
+(* ru
+     : ∀ (A : Type) (a b c : A) (p : a == b), b == c → p == p • refl b *)
+
+Definition glop {A} (a : A) p s (αβ : p == s) :=
+  (ru a a a p p) ⁻¹ • refl p • αβ.
+
+Theorem q_refl_a_r {A} : ∀ (a : A) p s α β,
+  star a a a p (refl a) (refl a) s α β == glop a p s (α • β).
+Proof.
+intros.
+unfold star.
+unfold glop.
+unfold ru.
+unfold dotr, dotl; simpl.
+unfold hott_2_1_4_i; simpl.
+unfold compose; simpl.
+unfold id; simpl.
+(* pas de la tarte ! *)
+bbb.
+
+(* *)
 
 Definition ru {A} (a b c : A) (p : a == b) (r : b == c) :=
   match hott_2_1_4_i p (refl b) r with
