@@ -186,6 +186,14 @@ Actually, we must start with the hypothesis that a ≡ b ≡ c supposed later
 *)
 
 (* expérimentation perso... *)
+Theorem agaga {A} : ∀ (a : A)
+    (p : a == a) (q := p) (r := p) (s := p) (α : p == q) (β : r == s),
+  α • β == β • α.
+Proof.
+intros.
+bbb.
+
+(* autre expérimentation perso... *)
 Theorem agaga {A} : ∀ (a : A) (p : a == a) (α : p == p) (β : p == p),
   α • β == β • α.
 Proof.
