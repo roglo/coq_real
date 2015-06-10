@@ -82,6 +82,15 @@ Definition compose {A} {x y z : A} (p : x == y) : y == z → x == z :=
   end.
 Notation "p • q" := (compose p q) (at level 40, left associativity).
 
+Print compose.
+
+Theorem fold_compose : ∀ A (x y z : A) p,
+  (λ p,
+   match p in (a == a0) return (a0 == z → a == z) with
+   | refl x0 => id
+   end) p = @compose A x y z p.
+Proof. reflexivity. Qed.
+
 Lemma hott_2_1_2 : ∀ A (x : A), refl x = refl x • refl x.
 Proof. reflexivity. Qed.
 
@@ -185,8 +194,27 @@ Actually, we must start with the hypothesis that a ≡ b ≡ c supposed later
 (below in the same page).
 *)
 
-(* expérimentation perso... *)
-Theorem agaga {A} : ∀ (a : A)
+(* expérimentations perso... *)
+Theorem agaga3 {A} : ∀ (a : A)
+    (p := refl a) (q := p) (r := p) (s := p) (α : p == q) (β : r == s),
+  α • β ==
+    (refl (refl a))⁻¹ • α • (refl (refl a)) •
+    (refl (refl a))⁻¹ • β • (refl (refl a)).
+Proof.
+intros.
+remember ((refl (refl a)) ⁻¹ • α • refl (refl a) • (refl (refl a)) ⁻¹ • β).
+apply @compose with (y := i); [ subst i | eapply hott_2_1_4_i; apply i ].
+bbb.
+
+Theorem agaga4 {A} : ∀ (a : A)
+    (p := refl a) (q := p) (r := p) (s := p) (α : p == q) (β : r == s),
+  α • β == β • α.
+Proof.
+intros.
+subst q r s.
+bbb.
+
+Theorem agaga2 {A} : ∀ (a : A)
     (p : a == a) (q := p) (r := p) (s := p) (α : p == q) (β : r == s),
   α • β == β • α.
 Proof.
@@ -194,7 +222,7 @@ intros.
 bbb.
 
 (* autre expérimentation perso... *)
-Theorem agaga {A} : ∀ (a : A) (p : a == a) (α : p == p) (β : p == p),
+Theorem agaga1 {A} : ∀ (a : A) (p : a == a) (α : p == p) (β : p == p),
   α • β == β • α.
 Proof.
 intros a p α β.
