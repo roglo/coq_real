@@ -169,6 +169,22 @@ Check @ru.
 (* ru
      : ∀ (A : Type) (a b c : A) (p : a == b), b == c → p == p • refl b *)
 
+Check (λ A a b c p q r α, (@ru A a b c p r)⁻¹ • α • (@ru A a b c q r)).
+(* p • refl b == q • refl b *)
+
+(*
+Bug in hott page 69
+  α •_r refl_b is ill typed
+Indeed,
+  Check (λ A a b c p q α, @dotr A a b c p q (refl b) α).
+Coq answer
+  The term "refl b" has type "b == b" while it is expected to have type
+   "b == c".
+
+Actually, we must start with the hypothesis that a ≡ b ≡ c supposed later
+(below in the same page).
+*)
+
 Definition glop {A} (a : A) p s (αβ : p == s) :=
   (ru a a a p p) ⁻¹ • refl p • αβ.
 
