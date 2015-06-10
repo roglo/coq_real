@@ -185,6 +185,14 @@ Actually, we must start with the hypothesis that a ≡ b ≡ c supposed later
 (below in the same page).
 *)
 
+(* expérimentation perso... *)
+Theorem agaga {A} : ∀ (a : A) (p : a == a) (α : p == p) (β : p == p),
+  α • β == β • α.
+Proof.
+intros a p α β.
+induction p as (b).
+bbb.
+
 Definition glop {A} (a : A) p s (αβ : p == s) :=
   (ru a a a p p) ⁻¹ • refl p • αβ.
 
