@@ -194,8 +194,7 @@ Actually, we must start with the hypothesis that a ≡ b ≡ c supposed later
 (below in the same page).
 *)
 
-(* expérimentations perso... *)
-Theorem agaga3 {A} : ∀ (a : A)
+Theorem step3 {A} : ∀ (a : A)
     (p := refl a) (q := p) (r := p) (s := p) (α : p == q) (β : r == s),
   α • β ==
     (refl (refl a))⁻¹ • α • (refl (refl a)) •
@@ -207,13 +206,11 @@ apply @compose with (y := i); [ subst i | eapply hott_2_1_4_i; apply i ].
 rewrite <- hott_2_1_1.
 eapply @compose; [ idtac | apply hott_2_1_4_iv ].
 eapply @compose; [ idtac | apply hott_2_1_4_iv ].
-eapply @compose; [ idtac | apply hott_2_1_4_iv ].
-eapply @compose; [ idtac | eapply hott_2_1_4_i ].
-2: eapply invert; eassumption.
-2: eassumption.
-eapply @compose; [ idtac | eapply invert; apply hott_2_1_4_iv].
-eapply @compose; [ idtac | eapply invert; apply hott_2_1_4_iv].
-bbb.
+constructor.
+Qed.
+
+Check @ru.
+Check @lu.
 
 Theorem agaga4 {A} : ∀ (a : A)
     (p := refl a) (q := p) (r := p) (s := p) (α : p == q) (β : r == s),
