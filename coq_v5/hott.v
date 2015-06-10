@@ -204,6 +204,15 @@ Proof.
 intros.
 remember ((refl (refl a)) ⁻¹ • α • refl (refl a) • (refl (refl a)) ⁻¹ • β).
 apply @compose with (y := i); [ subst i | eapply hott_2_1_4_i; apply i ].
+rewrite <- hott_2_1_1.
+eapply @compose; [ idtac | apply hott_2_1_4_iv ].
+eapply @compose; [ idtac | apply hott_2_1_4_iv ].
+eapply @compose; [ idtac | apply hott_2_1_4_iv ].
+eapply @compose; [ idtac | eapply hott_2_1_4_i ].
+2: eapply invert; eassumption.
+2: eassumption.
+eapply @compose; [ idtac | eapply invert; apply hott_2_1_4_iv].
+eapply @compose; [ idtac | eapply invert; apply hott_2_1_4_iv].
 bbb.
 
 Theorem agaga4 {A} : ∀ (a : A)
