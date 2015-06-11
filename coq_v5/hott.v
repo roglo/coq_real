@@ -223,6 +223,7 @@ simpl; unfold id.
 eapply hott_2_1_4_i; constructor.
 Qed.
 
+(*
 Theorem step2 {A} : ∀ (a : A)
     (p := refl a) (q := p) (r := p) (s := p) (α : p == q) (β : r == s),
   α • β ==
@@ -234,9 +235,12 @@ bbb.
 
 Check @ru.
 Check @lu.
+*)
 
+(*
 Theorem agaga4 {A} : ∀ (a : A)
-    (p := refl a) (q := p) (r := p) (s := p) (α : p == q) (β : r == s),
+    (p := refl a) (q := refl a) (r := refl a) (s := refl a)
+    (α : p == q) (β : r == s),
   α • β == β • α.
 Proof.
 intros.
@@ -275,14 +279,29 @@ unfold compose; simpl.
 unfold id; simpl.
 (* pas de la tarte ! *)
 bbb.
+*)
 
 (* *)
 
+(*
 Theorem hott_2_1_6 {A} : ∀ (a : A) (α β : Ω2 a), α • β == β • α.
 Proof.
 intros a α β.
 Check @star.
 unfold Ω2 in α, β.
+*)
+
+(* hott section 2.2 *)
+
+Definition ap {A B} (f : A → B) x y (p : x == y) :=
+  match p in (y1 == y2) return (f y1 == f y2) with
+  | refl x => refl (f x)
+  end.
+
+Print ap.
+
+Theorem hott_2_2_1 {A B} : ∀ (f : A → B) x, ap f x x (refl x) = refl (f x).
+Proof. constructor. Qed.
 
 bbb.
 
