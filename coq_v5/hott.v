@@ -97,11 +97,10 @@ Proof. reflexivity. Qed.
 Inductive andt (A B : Type) : Type := conjt : A → B → andt A B.
 Notation "u '∧∧' v" := (andt u v) (at level 80, right associativity).
 
-Lemma hott_2_1_4_i {A} {x y z w : A} :
-  ∀ (p : x == y) (q : y == z) (r : z == w),
+Lemma hott_2_1_4_i {A} {x y : A} : ∀ (p : x == y),
   p == p • refl y ∧∧ p == refl x • p.
 Proof.
-intros p q r.
+intros p.
 destruct p; split; constructor.
 Defined.
 
@@ -139,10 +138,10 @@ Definition dotr {A} (a b c : A)
   (p : a == b) (q : a == b) (r : b == c) (α : p == q) : (p • r == q • r).
 Proof.
 induction r as (b).
-pose proof (@hott_2_1_4_i A a b a b p (p ⁻¹) p) as (H1, H2).
+pose proof (@hott_2_1_4_i A a b p) as (H1, H2).
 apply invert in H1.
 eapply compose; [ apply H1 | idtac ].
-pose proof (@hott_2_1_4_i A a b a b q (q ⁻¹) q) as (H3, H4).
+pose proof (@hott_2_1_4_i A a b q) as (H3, H4).
 eapply compose; [ apply α | apply H3 ].
 Defined.
 
@@ -151,10 +150,10 @@ Definition dotl {A} (a b c : A)
   (q : a == b) (r : b == c) (s : b == c) (β : r == s) : (q • r == q • s).
 Proof.
 induction q as (b).
-pose proof (@hott_2_1_4_i A b c b c r (r⁻¹) r) as (H1, H2).
+pose proof (@hott_2_1_4_i A b c r) as (H1, H2).
 apply invert in H2.
 eapply compose; [ apply H2 | idtac ].
-pose proof (@hott_2_1_4_i A b c b c s (s⁻¹) s) as (H3, H4).
+pose proof (@hott_2_1_4_i A b c s) as (H3, H4).
 eapply compose; [ apply β | apply H4 ].
 Defined.
 
@@ -170,7 +169,7 @@ Definition star' {A} (a b c : A) p q r s α β :=
   dotl a b c p r s β • dotr a b c p q s α.
 
 Definition ru {A} (a b : A) (p : a == b) :=
-  match hott_2_1_4_i p (refl b) (refl b) with
+  match hott_2_1_4_i p with
   | conjt x _ => x
   end.
 
@@ -181,37 +180,20 @@ Check @ru.
 Check (λ A a b p q α, (@ru A a b p)⁻¹ • α • (@ru A a b q)).
 (* p • refl b == q • refl b *)
 
-Definition lu2 {A} (b c : A) (r : b == c) :=
-  match hott_2_1_4_i r (refl c) (refl c) with
-  | conjt _ x => x
-  end.
-
-Check @lu2.
-
-(* lu2
-     : ∀ (A : Type) (b c : A) (r : b == c), r == refl b • r *)
-
 Definition lu {A} (b c : A) (r : b == c) :=
-  match hott_2_1_4_i r (r⁻¹) r with
-  | conjt _ x => x
-  end.
-
-Print lu.
-(* lu
-     : ∀ (A : Type) (b c : A) (r : b == c), r == refl b • r *)
-
-Definition lu {A} (a b c : A) (p : a == b) (r : b == c) :=
-  match hott_2_1_4_i p (refl b) r with
+  match hott_2_1_4_i r with
   | conjt _ x => x
   end.
 
 Check @lu.
+
 (* lu
-     : ∀ (A : Type) (a b c : A) (p : a == b), b == c → p == refl a • p *)
+     : ∀ (A : Type) (b c : A) (r : b == c), r == refl b • r *)
+
+bbb.
 
 Check (λ A a b c p q r β, (@lu A a b c p r)⁻¹ • β • (@lu A a b c q r)).
 (* refl a • p == refl a • q *)
-*)
 
 (*
 Bug in hott page 69
