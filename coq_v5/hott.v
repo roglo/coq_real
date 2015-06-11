@@ -174,12 +174,26 @@ Definition ru {A} (a b c : A) (p : a == b) (r : b == c) :=
   | conjt x _ => x
   end.
 
+(* ça me plaît pas, ça, je voudrais refl b, pas refl a, par symétrie *)
+bbb.
+Definition lu {A} (a b c : A) (p : a == b) (r : b == c) :=
+  match hott_2_1_4_i p (refl b) r with
+  | conjt _ x => x
+  end.
+
 Check @ru.
 (* ru
      : ∀ (A : Type) (a b c : A) (p : a == b), b == c → p == p • refl b *)
 
 Check (λ A a b c p q r α, (@ru A a b c p r)⁻¹ • α • (@ru A a b c q r)).
 (* p • refl b == q • refl b *)
+
+Check @lu.
+(* lu
+     : ∀ (A : Type) (a b c : A) (p : a == b), b == c → p == refl a • p *)
+
+Check (λ A a b c p q r β, (@lu A a b c p r)⁻¹ • β • (@lu A a b c q r)).
+(* refl a • p == refl a • q *)
 
 (*
 Bug in hott page 69
@@ -208,6 +222,15 @@ eapply @compose; [ idtac | apply hott_2_1_4_iv ].
 eapply @compose; [ idtac | apply hott_2_1_4_iv ].
 constructor.
 Qed.
+
+Theorem step2 {A} : ∀ (a : A)
+    (p := refl a) (q := p) (r := p) (s := p) (α : p == q) (β : r == s),
+  α • β ==
+    (ru (refl a))⁻¹ • α • (ru (refl a)) •
+    (lu (refl a))⁻¹ • β • (lu (refl a)).
+Proof.
+intros.
+bbb.
 
 Check @ru.
 Check @lu.
@@ -254,64 +277,6 @@ unfold id; simpl.
 bbb.
 
 (* *)
-
-Definition ru {A} (a b c : A) (p : a == b) (r : b == c) :=
-  match hott_2_1_4_i p (refl b) r with
-  | conjt x _ => x
-  end.
-
-Definition ru2 {A} (a b c : A) (p : a == b) q (r : b == c) :=
-  match hott_2_1_4_i p q r with
-  | conjt x _ => x
-  end.
-
-Print ru2.
-
-Check (λ a b c p q r α, (ru a b c p r)⁻¹ • α • ru a b c q r).
-(* ∀ (a b c : A) (p q : a == b), b == c → p == q
-   → p • refl b == q • refl b *)
-Check @dotr.
-(* ∀ (A : Type) (a b c : A) (p q : a == b) (r : b == c), p == q
-   → p • r == q • r *)
-
-Check ru.
-(* ∀ (a b c : A) (p : a == b), b == c
-   → p == p • refl b *)
-
-Theorem aaa : ∀ A (a b : A) p q r α,
-  dotr a b b p q (refl b) α =
-  (ru2 a b b p (refl b) r)⁻¹ • α • ru2 a b b p q r.
-Proof.
-bbb.
-
-Theorem aaa : ∀ A (a b : A) p q r α,
-  dotr a b b p q (refl b) α =
-  (ru a b b p r)⁻¹ • α • ru a b b q r.
-Proof.
-
-Definition dotr2 A (a b c : A) p q r α :=
-  (ru a b c p r)⁻¹ • α • ru a b c q r.
-
-Print dotr2.
-
-intros.
-unfold dotr; simpl.
-unfold ru; simpl.
-bbb.
-
-(* mmm... *)
-Theorem aaa : ∀ a b c p q r s α β,
-  dotr a b c p q r r α (*refl b*)β = (ru a b c p r)⁻¹ • α • ru a b c q r.
-
-Theorem aaa : ∀ α, dotr a b b p q r s α (refl b) = rup⁻¹ • α • ruq.
-Proof.
-bbb.
-
-(* chais pas... *)
-Definition star' α β := dotr a b c q p s r α β • dotl a b c q p s r α β.
-Check star'.
-
-bbb.
 
 Theorem hott_2_1_6 {A} : ∀ (a : A) (α β : Ω2 a), α • β == β • α.
 Proof.
