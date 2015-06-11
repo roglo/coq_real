@@ -169,19 +169,37 @@ Definition star {A} (a b c : A) p q r s α β :=
 Definition star' {A} (a b c : A) p q r s α β :=
   dotl a b c p r s β • dotr a b c p q s α.
 
-Definition ru {A} (a b c : A) (p : a == b) (r : b == c) :=
-  match hott_2_1_4_i p (refl b) r with
+Definition ru {A} (a b : A) (p : a == b) :=
+  match hott_2_1_4_i p (refl b) (refl b) with
   | conjt x _ => x
   end.
 
 Check @ru.
 (* ru
-     : ∀ (A : Type) (a b c : A) (p : a == b), b == c → p == p • refl b *)
+     : ∀ (A : Type) (a b : A) (p : a == b) → p == p • refl b *)
 
-Check (λ A a b c p q r α, (@ru A a b c p r)⁻¹ • α • (@ru A a b c q r)).
+Check (λ A a b p q α, (@ru A a b p)⁻¹ • α • (@ru A a b q)).
 (* p • refl b == q • refl b *)
 
-(* ça me plaît pas, ça, je voudrais refl b, pas refl a, par symétrie
+Definition lu2 {A} (b c : A) (r : b == c) :=
+  match hott_2_1_4_i r (refl c) (refl c) with
+  | conjt _ x => x
+  end.
+
+Check @lu2.
+
+(* lu2
+     : ∀ (A : Type) (b c : A) (r : b == c), r == refl b • r *)
+
+Definition lu {A} (b c : A) (r : b == c) :=
+  match hott_2_1_4_i r (r⁻¹) r with
+  | conjt _ x => x
+  end.
+
+Print lu.
+(* lu
+     : ∀ (A : Type) (b c : A) (r : b == c), r == refl b • r *)
+
 Definition lu {A} (a b c : A) (p : a == b) (r : b == c) :=
   match hott_2_1_4_i p (refl b) r with
   | conjt _ x => x
