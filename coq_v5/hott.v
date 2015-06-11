@@ -305,9 +305,7 @@ Proof. constructor. Qed.
 
 Theorem hott_2_2_2_i {A B} : ∀ (f : A → B) x y z (p : x == y) (q : y == z),
   ap f x z (p • q) = ap f x y p • ap f y z q.
-Proof.
-intros.
-bbb.
+Proof. induction p, q; constructor. Qed.
 
 bbb.
 
