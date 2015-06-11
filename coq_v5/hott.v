@@ -174,13 +174,6 @@ Definition ru {A} (a b c : A) (p : a == b) (r : b == c) :=
   | conjt x _ => x
   end.
 
-(* ça me plaît pas, ça, je voudrais refl b, pas refl a, par symétrie *)
-bbb.
-Definition lu {A} (a b c : A) (p : a == b) (r : b == c) :=
-  match hott_2_1_4_i p (refl b) r with
-  | conjt _ x => x
-  end.
-
 Check @ru.
 (* ru
      : ∀ (A : Type) (a b c : A) (p : a == b), b == c → p == p • refl b *)
@@ -188,12 +181,19 @@ Check @ru.
 Check (λ A a b c p q r α, (@ru A a b c p r)⁻¹ • α • (@ru A a b c q r)).
 (* p • refl b == q • refl b *)
 
+(* ça me plaît pas, ça, je voudrais refl b, pas refl a, par symétrie
+Definition lu {A} (a b c : A) (p : a == b) (r : b == c) :=
+  match hott_2_1_4_i p (refl b) r with
+  | conjt _ x => x
+  end.
+
 Check @lu.
 (* lu
      : ∀ (A : Type) (a b c : A) (p : a == b), b == c → p == refl a • p *)
 
 Check (λ A a b c p q r β, (@lu A a b c p r)⁻¹ • β • (@lu A a b c q r)).
 (* refl a • p == refl a • q *)
+*)
 
 (*
 Bug in hott page 69
@@ -217,10 +217,10 @@ Proof.
 intros.
 remember ((refl (refl a)) ⁻¹ • α • refl (refl a) • (refl (refl a)) ⁻¹ • β).
 apply @compose with (y := i); [ subst i | eapply hott_2_1_4_i; apply i ].
-rewrite <- hott_2_1_1.
+apply dotr; simpl; unfold id.
 eapply @compose; [ idtac | apply hott_2_1_4_iv ].
-eapply @compose; [ idtac | apply hott_2_1_4_iv ].
-constructor.
+simpl; unfold id.
+eapply hott_2_1_4_i; constructor.
 Qed.
 
 Theorem step2 {A} : ∀ (a : A)
