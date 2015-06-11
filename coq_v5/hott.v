@@ -134,8 +134,8 @@ Definition Ω {A} (a : A) := (a == a).
 Definition Ω2 {A} (a : A) := (refl a == refl a).
 
 (* whiskering *)
-Definition dotr {A} (a b c : A)
-  (p : a == b) (q : a == b) (r : b == c) (α : p == q) : (p • r == q • r).
+Definition dotr {A} {a b c : A} (p q : a == b)
+  (α : p == q) (r : b == c) : (p • r == q • r).
 Proof.
 induction r as (b).
 pose proof (@hott_2_1_4_i A a b p) as (H1, H2).
@@ -157,6 +157,48 @@ pose proof (@hott_2_1_4_i A b c s) as (H3, H4).
 eapply compose; [ apply β | apply H4 ].
 Defined.
 
+Definition ru {A} {a b : A} (p : a == b) :=
+  match hott_2_1_4_i p with
+  | conjt x _ => x
+  end.
+
+Check @ru.
+(* ru
+     : ∀ (A : Type) (a b : A) (p : a == b) → p == p • refl b *)
+
+Check (λ a b (p q : a == b) α, dotr p q α (refl b)).
+(* p • refl b == q • refl b *)
+
+Check (λ A (a b : A) (p q : a == b) α, (ru p)⁻¹ • α • (ru q)).
+(* p • refl b == q • refl b *)
+
+Theorem dotr_rup {A} {a b : A} : ∀ (p q : a == b) α,
+  dotr p q α (refl b) == (ru p)⁻¹ • α • (ru q).
+Proof.
+intros.
+induction p, α; simpl.
+unfold ru; simpl.
+destruct (hott_2_1_4_i x0); simpl.
+unfold id; simpl.
+apply dotr, ru.
+Qed.
+
+Definition lu {A} {b c : A} (r : b == c) :=
+  match hott_2_1_4_i r with
+  | conjt _ x => x
+  end.
+
+Check @lu.
+
+bbb.
+
+(* lu
+     : ∀ (A : Type) (b c : A) (r : b == c), r == refl b • r *)
+
+Check (λ A (b c : A) (r s : b == c) β, (lu r)⁻¹ • β • (lu s)).
+(* refl b • r == refl b • s *)
+
+
 (*
 Definition star α β := dotr a b c p q r α • dotl a b c q r s β.
 Notation "α ★ β" := (star α β) (at level 40).
@@ -168,45 +210,7 @@ Definition star {A} (a b c : A) p q r s α β :=
 Definition star' {A} (a b c : A) p q r s α β :=
   dotl a b c p r s β • dotr a b c p q s α.
 
-Definition ru {A} {a b : A} (p : a == b) :=
-  match hott_2_1_4_i p with
-  | conjt x _ => x
-  end.
-
-Check @ru.
-(* ru
-     : ∀ (A : Type) (a b : A) (p : a == b) → p == p • refl b *)
-
-Check (λ A (a b : A) (p q : a == b) α, (ru p)⁻¹ • α • (ru q)).
-(* p • refl b == q • refl b *)
-
-Definition lu {A} {b c : A} (r : b == c) :=
-  match hott_2_1_4_i r with
-  | conjt _ x => x
-  end.
-
-Check @lu.
-
-(* lu
-     : ∀ (A : Type) (b c : A) (r : b == c), r == refl b • r *)
-
 bbb.
-
-Check (λ A a b c p q r β, (@lu A a b c p r)⁻¹ • β • (@lu A a b c q r)).
-(* refl a • p == refl a • q *)
-
-(*
-Bug in hott page 69
-  α •_r refl_b is ill typed
-Indeed,
-  Check (λ A a b c p q α, @dotr A a b c p q (refl b) α).
-Coq answer
-  The term "refl b" has type "b == b" while it is expected to have type
-   "b == c".
-
-Actually, we must start with the hypothesis that a ≡ b ≡ c supposed later
-(below in the same page).
-*)
 
 Theorem step3 {A} : ∀ (a : A)
     (p := refl a) (q := p) (r := p) (s := p) (α : p == q) (β : r == s),
