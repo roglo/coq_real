@@ -307,6 +307,29 @@ Theorem hott_2_2_2_i {A B} : ∀ (f : A → B) x y z (p : x == y) (q : y == z),
   ap f x z (p • q) = ap f x y p • ap f y z q.
 Proof. induction p, q; constructor. Qed.
 
+Theorem hott_2_2_2_ii {A B} : ∀ (f : A → B) x y (p : x == y),
+  ap f y x (p⁻¹) = (ap f x y p)⁻¹.
+Proof. induction p; constructor. Qed.
+
+Definition compose_function {A B C} (f : B → C) (g : A → B) x := f (g x).
+Notation "f 'o' g" := (compose_function f g) (at level 40).
+
+Theorem hott_2_2_2_iii {A B C} : ∀ (f : A → B) (g : B → C) x y p,
+  ap g (f x) (f y) (ap f x y p) = ap (g o f) x y p.
+Proof. induction p; constructor. Qed.
+
+Theorem hott_2_2_2_iv {A} : ∀ (x y : A) p, ap id x y p = p.
+Proof. induction p; constructor. Qed.
+
+(* hott section 2.3 *)
+
+Definition transport {A} P (x y : A) (p : x == y) :=
+  match p in (y1 == y2) return (P y1 → P y2) with
+  | refl x => id
+  end.
+
+Print transport.
+
 bbb.
 
 (* hott, later... *)
