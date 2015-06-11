@@ -134,7 +134,7 @@ Definition Ω {A} (a : A) := (a == a).
 Definition Ω2 {A} (a : A) := (refl a == refl a).
 
 (* whiskering *)
-Definition dotr {A} {a b c : A} (p q : a == b)
+Definition dotr {A} {a b c : A} {p q : a == b}
   (α : p == q) (r : b == c) : (p • r == q • r).
 Proof.
 induction r as (b).
@@ -144,6 +144,8 @@ eapply compose; [ apply H1 | idtac ].
 pose proof (@hott_2_1_4_i A a b q) as (H3, H4).
 eapply compose; [ apply α | apply H3 ].
 Defined.
+
+Notation "α '•r' r" := (dotr α r) (at level 40).
 
 (* whiskering *)
 Definition dotl {A} (a b c : A)
@@ -166,14 +168,8 @@ Check @ru.
 (* ru
      : ∀ (A : Type) (a b : A) (p : a == b) → p == p • refl b *)
 
-Check (λ a b (p q : a == b) α, dotr p q α (refl b)).
-(* p • refl b == q • refl b *)
-
-Check (λ A (a b : A) (p q : a == b) α, (ru p)⁻¹ • α • (ru q)).
-(* p • refl b == q • refl b *)
-
 Theorem dotr_rup {A} {a b : A} : ∀ (p q : a == b) α,
-  dotr p q α (refl b) == (ru p)⁻¹ • α • (ru q).
+  α •r refl b == (ru p)⁻¹ • α • (ru q).
 Proof.
 intros.
 induction p, α; simpl.
