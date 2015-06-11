@@ -303,6 +303,12 @@ Print ap.
 Theorem hott_2_2_1 {A B} : ∀ (f : A → B) x, ap f x x (refl x) = refl (f x).
 Proof. constructor. Qed.
 
+Theorem hott_2_2_2_i {A B} : ∀ (f : A → B) x y z (p : x == y) (q : y == z),
+  ap f x z (p • q) = ap f x y p • ap f y z q.
+Proof.
+intros.
+bbb.
+
 bbb.
 
 (* hott, later... *)
