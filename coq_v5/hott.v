@@ -168,7 +168,7 @@ Definition star {A} (a b c : A) p q r s α β :=
 Definition star' {A} (a b c : A) p q r s α β :=
   dotl a b c p r s β • dotr a b c p q s α.
 
-Definition ru {A} (a b : A) (p : a == b) :=
+Definition ru {A} {a b : A} (p : a == b) :=
   match hott_2_1_4_i p with
   | conjt x _ => x
   end.
@@ -177,10 +177,10 @@ Check @ru.
 (* ru
      : ∀ (A : Type) (a b : A) (p : a == b) → p == p • refl b *)
 
-Check (λ A a b p q α, (@ru A a b p)⁻¹ • α • (@ru A a b q)).
+Check (λ A (a b : A) (p q : a == b) α, (ru p)⁻¹ • α • (ru q)).
 (* p • refl b == q • refl b *)
 
-Definition lu {A} (b c : A) (r : b == c) :=
+Definition lu {A} {b c : A} (r : b == c) :=
   match hott_2_1_4_i r with
   | conjt _ x => x
   end.
