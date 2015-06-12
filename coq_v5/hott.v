@@ -207,11 +207,18 @@ Definition star {A} {a b c : A} {p q : a == b} {r s : b == c} α β
 
 Notation "α ★ β" := (star α β) (at level 40).
 
-Theorem star_dot {A} {a : A} : ∀ (α β : refl a == refl a),
-  α ★ β == α • β.
+Theorem star_dot {A} {a : A} : ∀ (α β : refl a == refl a), α ★ β == α • β.
 Proof.
 intros.
-bbb.
+unfold star; simpl; unfold id.
+eapply compose; [ apply hott_2_1_4_iv | idtac ].
+remember (α • refl (refl a) • β) as p.
+pose proof @hott_2_1_4_i (a == a) (refl a) (refl a) p as H.
+destruct H as (γ, δ).
+eapply invert.
+eapply compose; [ idtac | eassumption ].
+subst; apply dotr, ru.
+Qed.
 
 Definition star' {A} {a b c : A} {p q : a == b} {r s : b == c} α β
   : p • r == q • s
