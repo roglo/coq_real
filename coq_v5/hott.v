@@ -271,6 +271,7 @@ Theorem aaa : ∀ A (c : A) (q : @Id A c c),
      (@star' A c c c q q q q (@refl (@Id A c c) q) (@refl (@Id A c c) q)).
 Proof.
 intros.
+Abort. (* bon, ça marche pas, faut voir...
 induction q.
 
 (*
@@ -289,55 +290,78 @@ intros.
 eapply compose; [ eapply invert, star_dot | idtac ].
 eapply compose; [ idtac | apply star'_dot ].
 bbb.
+*)
 
 (* *)
 
-(*
-Theorem hott_2_1_6 {A} : ∀ (a : A) (α β : Ω2 a), α • β == β • α.
-Proof.
-intros a α β.
-Check @star.
-unfold Ω2 in α, β.
-*)
-
 (* hott section 2.2 *)
 
-Definition ap {A B} (f : A → B) x y (p : x == y) :=
+Definition ap {A B} (f : A → B) {x y} (p : x == y) :=
   match p in (y1 == y2) return (f y1 == f y2) with
   | refl x => refl (f x)
   end.
 
 Print ap.
 
-Theorem hott_2_2_1 {A B} : ∀ (f : A → B) x, ap f x x (refl x) = refl (f x).
+Theorem hott_2_2_1 {A B} : ∀ (f : A → B) x, ap f (refl x) = refl (f x).
 Proof. constructor. Qed.
 
 Theorem hott_2_2_2_i {A B} : ∀ (f : A → B) x y z (p : x == y) (q : y == z),
-  ap f x z (p • q) = ap f x y p • ap f y z q.
+  ap f (p • q) = ap f (*x y*) p • ap f (*y z*) q.
 Proof. induction p, q; constructor. Qed.
 
 Theorem hott_2_2_2_ii {A B} : ∀ (f : A → B) x y (p : x == y),
-  ap f y x (p⁻¹) = (ap f x y p)⁻¹.
+  ap f (p⁻¹) = (ap f p)⁻¹.
 Proof. induction p; constructor. Qed.
 
 Definition compose_function {A B C} (f : B → C) (g : A → B) x := f (g x).
 Notation "f 'o' g" := (compose_function f g) (at level 40).
 
-Theorem hott_2_2_2_iii {A B C} : ∀ (f : A → B) (g : B → C) x y p,
-  ap g (f x) (f y) (ap f x y p) = ap (g o f) x y p.
+Theorem hott_2_2_2_iii {A B C} : ∀ (f : A → B) (g : B → C) (x y : A) p,
+  ap g (@ap A B f x y p) = ap (g o f) p.
 Proof. induction p; constructor. Qed.
 
-Theorem hott_2_2_2_iv {A} : ∀ (x y : A) p, ap id x y p = p.
+Theorem hott_2_2_2_iv {A} : ∀ (x y : A) p, @ap A A id x y p = p.
 Proof. induction p; constructor. Qed.
 
 (* hott section 2.3 *)
 
-Definition transport {A} P (x y : A) (p : x == y) :=
+(* p* = transport P p *)
+Definition transport {A} P {x y : A} (p : x == y) : P x → P y :=
   match p in (y1 == y2) return (P y1 → P y2) with
   | refl x => id
   end.
 
-Print transport.
+Check @transport.
+(* transport =
+     : ∀ (A : Type) (P : A → Type) (x y : A), x == y → P x → P y *)
+
+(* lemma 2.3.2 *)
+Definition lift {A P} {x y : A} (u : P x) (p : x == y) := (y, transport P p u).
+
+Check @lift.
+(* lift
+     : ∀ (A : Type) (P : A → Type) (x y : A), P x → x == y → A * P y *)
+
+bbb.
+
+Definition lift {A P} {x y : A} (u : P x) (p : x == y)
+  : (x, u) == (y, @transport A P x y p u).
+(*
+Toplevel input, characters 69-96:
+Error: In environment
+A : Type
+P : A → Type
+x : A
+y : A
+u : P x
+p : x == y
+The term "(y, transport p u)" has type "(A * P y)%type"
+ while it is expected to have type "(A * P x)%type".
+*)
+
+Lemma path_lifting_property : ∀ A (P : A → Type) x y (u : P x) (p : x == y),
+  lift u p ...
 
 bbb.
 
