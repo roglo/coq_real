@@ -214,8 +214,7 @@ unfold star; simpl; unfold id.
 eapply compose; [ apply hott_2_1_4_iv | idtac ].
 remember (α • refl (refl a) • β) as p.
 pose proof @hott_2_1_4_i (a == a) (refl a) (refl a) p as H.
-destruct H as (γ, δ).
-eapply invert.
+destruct H as (γ, δ); eapply invert.
 eapply compose; [ idtac | eassumption ].
 subst; apply dotr, ru.
 Qed.
@@ -226,30 +225,25 @@ Definition star' {A} {a b c : A} {p q : a == b} {r s : b == c} α β
 
 Notation "α ★' β" := (star' α β) (at level 40).
 
-bbb.
-
-Theorem step3 {A} : ∀ (a : A)
-    (p := refl a) (q := p) (r := p) (s := p) (α : p == q) (β : r == s),
-  α • β ==
-    (refl (refl a))⁻¹ • α • (refl (refl a)) •
-    (refl (refl a))⁻¹ • β • (refl (refl a)).
+Theorem star'_dot {A} {a : A} : ∀ (α β : refl a == refl a), α ★' β == β • α.
 Proof.
 intros.
-remember ((refl (refl a)) ⁻¹ • α • refl (refl a) • (refl (refl a)) ⁻¹ • β).
-apply @compose with (y := i); [ subst i | eapply hott_2_1_4_i; apply i ].
-apply dotr; simpl; unfold id.
-eapply @compose; [ idtac | apply hott_2_1_4_iv ].
-simpl; unfold id.
-eapply hott_2_1_4_i; constructor.
+unfold star'; simpl; unfold id.
+eapply compose; [ apply hott_2_1_4_iv | idtac ].
+remember (β • refl (refl a) • α) as p.
+pose proof @hott_2_1_4_i (a == a) (refl a) (refl a) p as H.
+destruct H as (γ, δ); eapply invert.
+eapply compose; [ idtac | eassumption ].
+subst; apply dotr, ru.
 Qed.
 
-Theorem step2 {A} : ∀ (a : A)
-    (p := refl a) (q := p) (r := p) (s := p) (α : p == q) (β : r == s),
-  α • β ==
-    (ru (refl a))⁻¹ • α • (ru (refl a)) •
-    (lu (refl a))⁻¹ • β • (lu (refl a)).
+Theorem eckmann_hilton {A} {a : A} : ∀ (α β : refl a == refl a),
+  α • β == β • α.
 Proof.
 intros.
+eapply compose.
+
+
 bbb.
 
 (* *)
