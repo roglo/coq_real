@@ -358,14 +358,22 @@ The term "(y, transport p u)" has type "(A * P y)%type"
 *)
 
 (* lemma 2.3.4 *)
+
 Lemma dependent_map {A P} : ∀ (f : ∀ (x : A), P x),
   ∀ x y (p : x == y), transport P p (f x) == f y.
 Proof. induction p; constructor. Qed.
 
-Definition dependent_map_proof_term {A P} f (x y : A) (p : x == y) :=
+Definition apd {A P} f {x y : A} {p : x == y} :=
   match p in (y1 == y2) return (transport P p (f y1) == f y2) with
   | refl x => refl (f x)
   end.
+
+(* ap
+     : ∀ (A B : Type) (f : A → B) (x y : A),
+       x == y → f x == f y *)
+(* apd
+     : ∀ (A : Type) (P : A → Type) (f : ∀ x : A, P x) (x y : A)
+       (p : x == y), transport P p (f x) == f y *)
 
 (* hott, later... *)
 
