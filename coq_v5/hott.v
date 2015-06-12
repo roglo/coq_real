@@ -211,7 +211,7 @@ Notation "α ★ β" := (star α β) (at level 40).
 Theorem star_dot {A} {a : A} : ∀ (α β : refl a == refl a), α ★ β == α • β.
 Proof.
 intros.
-unfold star; simpl; unfold id.
+unfold "★"; simpl; unfold id.
 eapply compose; [ apply hott_2_1_4_iv | idtac ].
 remember (α • refl (refl a) • β) as p.
 pose proof @hott_2_1_4_i (a == a) (refl a) (refl a) p as H.
@@ -229,7 +229,7 @@ Notation "α ★' β" := (star' α β) (at level 40).
 Theorem star'_dot {A} {a : A} : ∀ (α β : refl a == refl a), α ★' β == β • α.
 Proof.
 intros.
-unfold star'; simpl; unfold id.
+unfold "★'"; simpl; unfold id.
 eapply compose; [ apply hott_2_1_4_iv | idtac ].
 remember (β • refl (refl a) • α) as p.
 pose proof @hott_2_1_4_i (a == a) (refl a) (refl a) p as H.
@@ -244,9 +244,8 @@ Proof.
 intros.
 induction α as (p).
 induction β as (r).
-induction p.
-induction r.
-unfold star, star'; simpl.
+induction p, r.
+unfold "★", "★'"; simpl.
 constructor.
 Qed.
 
