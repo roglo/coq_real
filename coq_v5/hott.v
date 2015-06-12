@@ -148,8 +148,8 @@ Defined.
 Notation "α '•r' r" := (dotr α r) (at level 40).
 
 (* whiskering *)
-Definition dotl {A} (a b c : A)
-  (q : a == b) (r : b == c) (s : b == c) (β : r == s) : (q • r == q • s).
+Definition dotl {A} {a b c : A} {r s : b == c}
+  (q : a == b) (β : r == s) : (q • r == q • s).
 Proof.
 induction q as (b).
 pose proof (@hott_2_1_4_i A b c r) as (H1, H2).
@@ -158,6 +158,8 @@ eapply compose; [ apply H2 | idtac ].
 pose proof (@hott_2_1_4_i A b c s) as (H3, H4).
 eapply compose; [ apply β | apply H4 ].
 Defined.
+
+Notation "q '•l' β" := (dotl q β) (at level 40).
 
 Definition ru {A} {a b : A} (p : a == b) :=
   match hott_2_1_4_i p with
@@ -168,13 +170,13 @@ Check @ru.
 (* ru
      : ∀ (A : Type) (a b : A) (p : a == b) → p == p • refl b *)
 
-Theorem dotr_rup {A} {a b : A} : ∀ (p q : a == b) α,
+Theorem dotr_rupq {A} {a b : A} : ∀ (p q : a == b) α,
   α •r refl b == (ru p)⁻¹ • α • (ru q).
 Proof.
 intros.
-induction p, α; simpl.
+induction p as (b), α as (p); simpl.
 unfold ru; simpl.
-destruct (hott_2_1_4_i x0); simpl.
+destruct (hott_2_1_4_i p) as (α, β); simpl.
 unfold id; simpl.
 apply dotr, ru.
 Qed.
@@ -185,26 +187,30 @@ Definition lu {A} {b c : A} (r : b == c) :=
   end.
 
 Check @lu.
-
-bbb.
-
 (* lu
      : ∀ (A : Type) (b c : A) (r : b == c), r == refl b • r *)
 
-Check (λ A (b c : A) (r s : b == c) β, (lu r)⁻¹ • β • (lu s)).
-(* refl b • r == refl b • s *)
+Theorem dotl_lurs {A} {b c : A} : ∀ (r s : b == c) β,
+  refl b •l β == (lu r)⁻¹ • β • (lu s).
+Proof.
+intros.
+induction r as (b), β as (r); simpl.
+unfold lu; simpl.
+destruct (hott_2_1_4_i r) as (α, β); simpl.
+unfold id; simpl.
+apply dotr, ru.
+Qed.
 
+Definition star {A} (a b c : A) {p q : a == b} {r s : b == c} α β
+  : p • r == q • s
+  := (α •r r) • (q •l β).
 
-(*
-Definition star α β := dotr a b c p q r α • dotl a b c q r s β.
+Definition star' {A} (a b c : A) {p q : a == b} {r s : b == c} α β
+  : p • r == q • s
+  := (p •l β) • (α •r s).
+
 Notation "α ★ β" := (star α β) (at level 40).
-*)
-
-Definition star {A} (a b c : A) p q r s α β :=
-  dotr a b c p q r α • dotl a b c q r s β.
-
-Definition star' {A} (a b c : A) p q r s α β :=
-  dotl a b c p r s β • dotr a b c p q s α.
+Notation "α ★' β" := (star' α β) (at level 40).
 
 bbb.
 
