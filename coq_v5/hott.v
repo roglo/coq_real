@@ -96,6 +96,7 @@ Proof. reflexivity. Qed.
 
 Inductive andt (A B : Type) : Type := conjt : A → B → andt A B.
 Notation "u '∧∧' v" := (andt u v) (at level 80, right associativity).
+Arguments conjt {A B} _ _.
 
 Lemma hott_2_1_4_i {A} {x y : A} : ∀ (p : x == y),
   p == p • refl y ∧∧ p == refl x • p.
