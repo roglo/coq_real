@@ -340,13 +340,6 @@ Check @transport.
      : ∀ (A : Type) (P : A → Type) (x y : A), x == y → P x → P y *)
 
 (* lemma 2.3.2 *)
-Definition lift {A P} {x y : A} (u : P x) (p : x == y) := (y, transport P p u).
-
-Check @lift.
-(* lift
-     : ∀ (A : Type) (P : A → Type) (x y : A), P x → x == y → A * P y *)
-
-bbb.
 
 Definition lift {A P} {x y : A} (u : P x) (p : x == y)
   : (x, u) == (y, @transport A P x y p u).
