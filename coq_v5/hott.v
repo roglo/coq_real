@@ -211,7 +211,7 @@ Notation "α ★ β" := (star α β) (at level 40).
 Theorem star_dot {A} {a : A} : ∀ (α β : refl a == refl a), α ★ β == α • β.
 Proof.
 intros.
-unfold star; simpl; unfold id.
+unfold "★"; simpl; unfold id.
 eapply compose; [ apply hott_2_1_4_iv | idtac ].
 remember (α • refl (refl a) • β) as p.
 pose proof @hott_2_1_4_i (a == a) (refl a) (refl a) p as H.
@@ -229,7 +229,7 @@ Notation "α ★' β" := (star' α β) (at level 40).
 Theorem star'_dot {A} {a : A} : ∀ (α β : refl a == refl a), α ★' β == β • α.
 Proof.
 intros.
-unfold star'; simpl; unfold id.
+unfold "★'"; simpl; unfold id.
 eapply compose; [ apply hott_2_1_4_iv | idtac ].
 remember (β • refl (refl a) • α) as p.
 pose proof @hott_2_1_4_i (a == a) (refl a) (refl a) p as H.
@@ -238,16 +238,14 @@ eapply compose; [ idtac | eassumption ].
 subst; apply dotr, ru.
 Qed.
 
-(* perhaps not required *)
-Theorem star_star' {A} {a b c : A} {p q : a == b} {r s : b == c} : ∀ α β,
+Theorem gen_star_star' {A} {a b c : A} {p q : a == b} {r s : b == c} : ∀ α β,
   @star A a b c p q r s α β == @star' A a b c p q r s α β.
 Proof.
 intros.
 induction α as (p).
 induction β as (r).
-induction p.
-induction r.
-unfold star, star'; simpl.
+induction p, r.
+unfold "★", "★'"; simpl.
 constructor.
 Qed.
 
@@ -289,6 +287,11 @@ Proof.
 intros.
 eapply compose; [ eapply invert, star_dot | idtac ].
 eapply compose; [ idtac | apply star'_dot ].
+apply star_star'.
+Qed.
+
+Check @eckmann_hilton.
+
 bbb.
 *)
 
