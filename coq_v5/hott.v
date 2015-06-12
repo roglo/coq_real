@@ -238,8 +238,7 @@ eapply compose; [ idtac | eassumption ].
 subst; apply dotr, ru.
 Qed.
 
-(* perhaps not required *)
-Theorem star_star' {A} {a b c : A} {p q : a == b} {r s : b == c} : ∀ α β,
+Theorem gen_star_star' {A} {a b c : A} {p q : a == b} {r s : b == c} : ∀ α β,
   @star A a b c p q r s α β == @star' A a b c p q r s α β.
 Proof.
 intros.
@@ -251,37 +250,9 @@ unfold star, star'; simpl.
 constructor.
 Qed.
 
-Check @compose.
-
-Theorem eckmann_hilton {A} {a : A} : ∀ α β : refl a == refl a,
-  @compose (a == a) (refl a) (refl a) (refl a) α β ==
-  @compose (a == a) (refl a) (refl a) (refl a) β α.
-Proof.
-intros.
-eapply compose; [ eapply invert, star_dot | idtac ].
-eapply compose; [ idtac | apply star'_dot ].
-induction α as (p).
-induction β as (q).
-induction i as (b).
-induction p as (c).
-
-Theorem aaa : ∀ A (c : A) (q : @Id A c c),
-   @Id (@Id (@Id A c c) (@compose A c c c q q) (@compose A c c c q q))
-     (@star A c c c q q q q (@refl (@Id A c c) q) (@refl (@Id A c c) q))
-     (@star' A c c c q q q q (@refl (@Id A c c) q) (@refl (@Id A c c) q)).
-Proof.
-intros.
-Abort. (* bon, ça marche pas, faut voir...
-induction q.
-
-(*
-Toplevel input, characters 0-11:
-Error: Abstracting over the terms "c0", "c0" and "q" leads to a term
-"λ (c0 c1 : A) (q : c0 == c1), refl q ★ refl q == refl q ★' refl q"
-which is ill-typed.
-*)
-
-bbb.
+Theorem star_star' {A} {a : A} : ∀ (α β : refl a == refl a),
+  star α β == star' α β.
+Proof. apply gen_star_star'. Qed.
 
 Theorem eckmann_hilton {A} {a : A} : ∀ (α β : refl a == refl a),
   α • β == β • α.
@@ -289,8 +260,12 @@ Proof.
 intros.
 eapply compose; [ eapply invert, star_dot | idtac ].
 eapply compose; [ idtac | apply star'_dot ].
+apply star_star'.
+Qed.
+
+Check @eckmann_hilton.
+
 bbb.
-*)
 
 (* *)
 
