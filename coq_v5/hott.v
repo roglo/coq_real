@@ -201,15 +201,22 @@ unfold id; simpl.
 apply dotr, ru.
 Qed.
 
-Definition star {A} (a b c : A) {p q : a == b} {r s : b == c} α β
+Definition star {A} {a b c : A} {p q : a == b} {r s : b == c} α β
   : p • r == q • s
   := (α •r r) • (q •l β).
 
-Definition star' {A} (a b c : A) {p q : a == b} {r s : b == c} α β
+Notation "α ★ β" := (star α β) (at level 40).
+
+Theorem star_dot {A} {a : A} : ∀ (α β : refl a == refl a),
+  α ★ β == α • β.
+Proof.
+intros.
+bbb.
+
+Definition star' {A} {a b c : A} {p q : a == b} {r s : b == c} α β
   : p • r == q • s
   := (p •l β) • (α •r s).
 
-Notation "α ★ β" := (star α β) (at level 40).
 Notation "α ★' β" := (star' α β) (at level 40).
 
 bbb.
