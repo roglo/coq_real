@@ -341,9 +341,10 @@ Check @transport.
 
 (* lemma 2.3.2 *)
 
+(* moi pas comprendre..
 Definition lift {A P} {x y : A} (u : P x) (p : x == y)
   : (x, u) == (y, @transport A P x y p u).
-(*
+
 Toplevel input, characters 69-96:
 Error: In environment
 A : Type
@@ -356,10 +357,15 @@ The term "(y, transport p u)" has type "(A * P y)%type"
  while it is expected to have type "(A * P x)%type".
 *)
 
-Lemma path_lifting_property : ∀ A (P : A → Type) x y (u : P x) (p : x == y),
-  lift u p ...
+(* lemma 2.3.4 *)
+Lemma dependent_map {A P} : ∀ (f : ∀ (x : A), P x),
+  ∀ x y (p : x == y), transport P p (f x) == f y.
+Proof. induction p; constructor. Qed.
 
-bbb.
+Definition dependent_map_proof_term {A P} f (x y : A) (p : x == y) :=
+  match p in (y1 == y2) return (transport P p (f y1) == f y2) with
+  | refl x => refl (f x)
+  end.
 
 (* hott, later... *)
 
