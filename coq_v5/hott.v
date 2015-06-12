@@ -263,7 +263,14 @@ induction α as (p).
 induction β as (q).
 induction i as (b).
 induction p as (c).
-induction q as (d).
+
+Theorem aaa : ∀ A (c : A) (q : @Id A c c),
+   @Id (@Id (@Id A c c) (@compose A c c c q q) (@compose A c c c q q))
+     (@star A c c c q q q q (@refl (@Id A c c) q) (@refl (@Id A c c) q))
+     (@star' A c c c q q q q (@refl (@Id A c c) q) (@refl (@Id A c c) q)).
+Proof.
+intros.
+induction q.
 
 (*
 Toplevel input, characters 0-11:
