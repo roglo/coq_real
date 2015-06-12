@@ -236,7 +236,6 @@ simpl; unfold id.
 eapply hott_2_1_4_i; constructor.
 Qed.
 
-(*
 Theorem step2 {A} : ∀ (a : A)
     (p := refl a) (q := p) (r := p) (s := p) (α : p == q) (β : r == s),
   α • β ==
@@ -245,54 +244,6 @@ Theorem step2 {A} : ∀ (a : A)
 Proof.
 intros.
 bbb.
-
-Check @ru.
-Check @lu.
-*)
-
-(*
-Theorem agaga4 {A} : ∀ (a : A)
-    (p := refl a) (q := refl a) (r := refl a) (s := refl a)
-    (α : p == q) (β : r == s),
-  α • β == β • α.
-Proof.
-intros.
-subst q r s.
-bbb.
-
-Theorem agaga2 {A} : ∀ (a : A)
-    (p : a == a) (q := p) (r := p) (s := p) (α : p == q) (β : r == s),
-  α • β == β • α.
-Proof.
-intros.
-bbb.
-
-(* autre expérimentation perso... *)
-Theorem agaga1 {A} : ∀ (a : A) (p : a == a) (α : p == p) (β : p == p),
-  α • β == β • α.
-Proof.
-intros a p α β.
-induction p as (b).
-bbb.
-
-Definition glop {A} (a : A) p s (αβ : p == s) :=
-  (ru a a a p p) ⁻¹ • refl p • αβ.
-
-Theorem q_refl_a_r {A} : ∀ (a : A) p s α β,
-  star a a a p (refl a) (refl a) s α β == glop a p s (α • β).
-Proof.
-intros.
-unfold star.
-bbb.
-unfold glop.
-unfold ru.
-unfold dotr, dotl; simpl.
-unfold hott_2_1_4_i; simpl.
-unfold compose; simpl.
-unfold id; simpl.
-(* pas de la tarte ! *)
-bbb.
-*)
 
 (* *)
 
