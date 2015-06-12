@@ -145,7 +145,7 @@ pose proof (@hott_2_1_4_i A a b q) as (H3, H4).
 eapply compose; [ apply α | apply H3 ].
 Defined.
 
-Notation "α '•r' r" := (dotr α r) (at level 40).
+Notation "α '•r' r" := (dotr α r) (at level 50).
 
 (* whiskering *)
 Definition dotl {A} {a b c : A} {r s : b == c}
@@ -159,7 +159,7 @@ pose proof (@hott_2_1_4_i A b c s) as (H3, H4).
 eapply compose; [ apply β | apply H4 ].
 Defined.
 
-Notation "q '•l' β" := (dotl q β) (at level 40).
+Notation "q '•l' β" := (dotl q β) (at level 50).
 
 Definition ru {A} {a b : A} (p : a == b) :=
   match hott_2_1_4_i p with
@@ -237,13 +237,49 @@ eapply compose; [ idtac | eassumption ].
 subst; apply dotr, ru.
 Qed.
 
+(* perhaps not required *)
+Theorem star_star' {A} {a b c : A} {p q : a == b} {r s : b == c} : ∀ α β,
+  @star A a b c p q r s α β == @star' A a b c p q r s α β.
+Proof.
+intros.
+induction α as (p).
+induction β as (r).
+induction p.
+induction r.
+unfold star, star'; simpl.
+constructor.
+Qed.
+
+Check @compose.
+
+Theorem eckmann_hilton {A} {a : A} : ∀ α β : refl a == refl a,
+  @compose (a == a) (refl a) (refl a) (refl a) α β ==
+  @compose (a == a) (refl a) (refl a) (refl a) β α.
+Proof.
+intros.
+eapply compose; [ eapply invert, star_dot | idtac ].
+eapply compose; [ idtac | apply star'_dot ].
+induction α as (p).
+induction β as (q).
+induction i as (b).
+induction p as (c).
+induction q as (d).
+
+(*
+Toplevel input, characters 0-11:
+Error: Abstracting over the terms "c0", "c0" and "q" leads to a term
+"λ (c0 c1 : A) (q : c0 == c1), refl q ★ refl q == refl q ★' refl q"
+which is ill-typed.
+*)
+
+bbb.
+
 Theorem eckmann_hilton {A} {a : A} : ∀ (α β : refl a == refl a),
   α • β == β • α.
 Proof.
 intros.
-eapply compose.
-
-
+eapply compose; [ eapply invert, star_dot | idtac ].
+eapply compose; [ idtac | apply star'_dot ].
 bbb.
 
 (* *)
