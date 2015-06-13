@@ -279,7 +279,7 @@ Theorem hott_2_2_1 {A B} : ∀ (f : A → B) x, ap f (refl x) = refl (f x).
 Proof. constructor. Qed.
 
 Theorem hott_2_2_2_i {A B} : ∀ (f : A → B) x y z (p : x == y) (q : y == z),
-  ap f (p • q) = ap f (*x y*) p • ap f (*y z*) q.
+  ap f (p • q) = ap f p • ap f q.
 Proof. induction p, q; constructor. Qed.
 
 Theorem hott_2_2_2_ii {A B} : ∀ (f : A → B) x y (p : x == y),
@@ -310,9 +310,9 @@ Check @transport.
 
 (* lemma 2.3.2 *)
 
-(*
 Definition lift {A P} {x y : A} (u : P x) (p : x == y)
   : (x, u) == (y, @transport A P x y p u).
+
 Toplevel input, characters 69-96:
 Error: In environment
 A : Type
