@@ -375,6 +375,22 @@ Definition apd {A P} f {x y : A} {p : x == y} :=
      : ∀ (A : Type) (P : A → Type) (f : ∀ x : A, P x) (x y : A)
        (p : x == y), transport P p (f x) == f y *)
 
+Lemma hott_2_3_5 {A} : ∀ (P : A → Type) B, (∀ x, P x = B) →
+  ∀ x y (p : x == y) (b : B), transport P p b == b.
+
+Toplevel input, characters 114-115:
+Error:
+In environment
+A : Type
+P : A → Type
+B : Type
+x : A
+y : A
+p : x == y
+b : B
+The term "b" has type "B" while it is expected to have type
+"P x".
+
 bbb.
 
 (* hott, later... *)
