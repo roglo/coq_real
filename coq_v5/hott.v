@@ -375,6 +375,8 @@ Definition apd {A P} f {x y : A} {p : x == y} :=
      : ∀ (A : Type) (P : A → Type) (f : ∀ x : A, P x) (x y : A)
        (p : x == y), transport P p (f x) == f y *)
 
+bbb.
+
 (* hott, later... *)
 
 Definition pi_type (A : Prop) (B : A → Prop) := ∀ x : A, B x.
