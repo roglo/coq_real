@@ -310,11 +310,11 @@ Check @transport.
 
 (* lemma 2.3.2 *)
 
-Arguments existT {A P} _ _.
+Arguments existT {A P} x _.
 
 Definition lift {A P} {x y : A} (u : P x) (p : x == y) :=
   match p in (y1 == y2)
-    return (∀ v : P y1, existT y1 v == existT y2 (transport P p v))
+    return (∀ v, existT y1 v == existT y2 (transport P p v))
   with
   | refl x => λ v, refl (existT x (transport P (refl x) v))
   end u.
