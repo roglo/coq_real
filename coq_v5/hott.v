@@ -332,6 +332,7 @@ Lemma path_lifting_property : ∀ A P (x y : A) (u : P x) (p : x == y),
 Proof. constructor. Qed.
 *)
 
+(* à voir, ça marche pas...
 Lemma path_lifting_property : ∀ A P (x y : A) (u : P x) (p : x == y),
   projT1 (lift u p) == p.
 
@@ -345,6 +346,7 @@ u : P x
 p : x == y
 The term "lift u p" has type "existT x u == existT y (transport P p u)"
  while it is expected to have type "sigT ?1330".
+*)
 
 (* lemma 2.3.4 *)
 
