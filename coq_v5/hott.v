@@ -310,22 +310,20 @@ Check @transport.
 
 (* lemma 2.3.2 *)
 
-Definition lift {A P} {x y : A} (u : P x) (p : x == y)
-  : (x, u) == (y, @transport A P x y p u).
+Arguments existT {A P} _ _.
 
-Toplevel input, characters 69-96:
-Error: In environment
-A : Type
-P : A → Type
-x : A
-y : A
-u : P x
-p : x == y
-The term "(y, transport p u)" has type "(A * P y)%type"
- while it is expected to have type "(A * P x)%type".
-*)
+Definition lift {A P} {x y : A} (u : P x) (p : x == y) :=
+  match p in (y1 == y2)
+    return (∀ v : P y1, existT y1 v == existT y2 (transport P p v))
+  with
+  | refl x => λ v, refl (existT x (transport P (refl x) v))
+  end u.
 
-(* lemma 2.3.4 *)
+(* lift
+     : ∀ (A : Type) (P : A → Type) (x y : A) (u : P x) (p : x == y),
+       existT x u == existT y (transport P p u) *)
+
+(* Lemma 2.3.4 *)
 
 Lemma dependent_map {A P} : ∀ (f : ∀ (x : A), P x),
   ∀ x y (p : x == y), transport P p (f x) == f y.
