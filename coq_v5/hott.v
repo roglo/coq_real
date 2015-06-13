@@ -323,7 +323,7 @@ Definition lift {A P} {x y : A} (u : P x) (p : x == y) :=
      : ∀ (A : Type) (P : A → Type) (x y : A) (u : P x) (p : x == y),
        existT x u == existT y (transport P p u) *)
 
-(* Lemma 2.3.4 *)
+(* lemma 2.3.4 *)
 
 Lemma dependent_map {A P} : ∀ (f : ∀ (x : A), P x),
   ∀ x y (p : x == y), transport P p (f x) == f y.
