@@ -4,20 +4,6 @@ Require Import Utf8 QArith.
 
 Open Scope nat_scope.
 
-(* hott chapter 1 exercises *)
-
-(* exercise 1 *)
-
-Definition composite {A B C} (f : A → B) (g : B → C) x := g (f x).
-Notation "g 'o' f" := (composite f g) (at level 40).
-(* composite : ∀ A B C : Type, (A → B) → (B → C) → A → C *)
-
-Theorem composite_assoc {A B C D} : ∀ (f : A → B) (g : B → C) (h : C → D),
-  h o (g o f) = (h o g) o f.
-Proof. reflexivity. Qed.
-
-(* ... *)
-
 (* hott section 1.12 *)
 
 Inductive Id {A} : A → A → Type :=
@@ -78,6 +64,28 @@ Theorem path_based_path_induction_iff :
    f a (refl a) = c).
 Proof.
 Abort. (* to be done *)
+
+(* hott chapter 1 exercises *)
+
+(* Exercise 1.1. Given functions f : A → B and g : B → C, define their
+  composite g o f : A → C.
+    Show that we have h o (g o f ) ≡ (h o g) o f. *)
+
+Definition composite {A B C} (f : A → B) (g : B → C) x := g (f x).
+Notation "g 'o' f" := (composite f g) (at level 40).
+(* composite : ∀ A B C : Type, (A → B) → (B → C) → A → C *)
+
+Theorem composite_assoc {A B C D} : ∀ (f : A → B) (g : B → C) (h : C → D),
+  h o (g o f) = (h o g) o f.
+Proof. reflexivity. Qed.
+
+(* Exercise 1.2. Derive the recursion principle for products rec_{AxB}
+   using only the projections, and verify that the definitional
+   equalities are valid. Do the same for Σ-types. *)
+
+bbb.
+
+(* ... *)
 
 (* hott section 2.1 *)
 
