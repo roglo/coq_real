@@ -11,18 +11,18 @@ Inductive Id {A} : A → A → Type :=
 
 Notation "x == y" := (Id x y) (at level 70).
 
-Theorem indiscernability : ∀ A C,
-  ∃ (f : ∀ (x y : A) (p : x == y), C x → C y),
-  ∀ x, f x x (refl x) = id.
-Proof.
-intros A C.
-exists
-  (λ _ _ p,
-   match p with
-   | refl _ => id
-   end).
-reflexivity.
-Qed.
+Definition indiscernability {A} C (x y : A) (p : x == y) :=
+  match p in (y1 == y2) return (C y1 → C y2) with
+  | refl _ => id
+  end.
+
+Check @indiscernability.
+(* indiscernability
+     : ∀ (A : Type) (C : A → Type) (x y : A), x == y → C x → C y *)
+
+Theorem indiscernability_prop : ∀ A C (x : A),
+  indiscernability C x x (refl x) = id.
+Proof. reflexivity. Qed.
 
 (* hott section 1.12.1 *)
 
