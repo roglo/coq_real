@@ -4,6 +4,20 @@ Require Import Utf8 QArith.
 
 Open Scope nat_scope.
 
+(* hott chapter 1 exercises *)
+
+(* exercise 1 *)
+
+Definition composite {A B C} (f : A → B) (g : B → C) x := g (f x).
+Notation "g 'o' f" := (composite f g) (at level 40).
+(* composite : ∀ A B C : Type, (A → B) → (B → C) → A → C *)
+
+Theorem composite_assoc {A B C D} : ∀ (f : A → B) (g : B → C) (h : C → D),
+  h o (g o f) = (h o g) o f.
+Proof. reflexivity. Qed.
+
+(* ... *)
+
 (* hott section 1.12 *)
 
 Inductive Id {A} : A → A → Type :=
@@ -285,9 +299,6 @@ Proof. induction p, q; constructor. Qed.
 Theorem hott_2_2_2_ii {A B} : ∀ (f : A → B) x y (p : x == y),
   ap f (p⁻¹) = (ap f p)⁻¹.
 Proof. induction p; constructor. Qed.
-
-Definition compose_function {A B C} (f : B → C) (g : A → B) x := f (g x).
-Notation "f 'o' g" := (compose_function f g) (at level 40).
 
 Theorem hott_2_2_2_iii {A B C} : ∀ (f : A → B) (g : B → C) (x y : A) p,
   ap g (@ap A B f x y p) = ap (g o f) p.
