@@ -323,15 +323,6 @@ Definition lift {A P} {x y : A} (u : P x) (p : x == y) :=
      : ∀ (A : Type) (P : A → Type) (x y : A) (u : P x) (p : x == y),
        existT x u == existT y (transport P p u) *)
 
-(*
-Definition glop {A P} {x y : A} (u : P x) (p : x == y) :=
-  existT x y.
-
-Lemma path_lifting_property : ∀ A P (x y : A) (u : P x) (p : x == y),
-  projT1 (glop u p) == x.
-Proof. constructor. Qed.
-*)
-
 (* à voir, ça marche pas...
 Lemma path_lifting_property : ∀ A P (x y : A) (u : P x) (p : x == y),
   projT1 (lift u p) == p.
