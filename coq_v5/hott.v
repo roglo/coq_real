@@ -323,7 +323,7 @@ Definition lift {A P} {x y : A} (u : P x) (p : x == y) :=
      : ∀ (A : Type) (P : A → Type) (x y : A) (u : P x) (p : x == y),
        existT x u == existT y (transport P p u) *)
 
-(* à voir, ça marche pas...
+(* à voir, car ça marche pas...
 Lemma path_lifting_property : ∀ A P (x y : A) (u : P x) (p : x == y),
   projT1 (lift u p) == p.
 
@@ -387,6 +387,7 @@ constructor.
 Qed.
 *)
 
+(*
 Lemma hott_2_3_5 {A} : ∀ (P : A → Type) B, (∀ x, P x = B) →
   ∀ x y (p : x == y) (b : B), transport P p b == b.
 
@@ -402,6 +403,15 @@ p : x == y
 b : B
 The term "b" has type "B" while it is expected to have type
 "P x".
+*)
+
+Check @apd.
+(* apd
+     : ∀ (A : Type) (P : A → Type) (f : ∀ x : A, P x)
+       (x y : A) (p : x == y), transport P p (f x) == f y *)
+
+Definition hott_2_3_8 A B P (f : A → B) x y (p : x == y) glop
+  : @apd A P f x y p == glop • ap f p.
 
 bbb.
 
