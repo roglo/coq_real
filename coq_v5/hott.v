@@ -46,8 +46,8 @@ Proof.
 intros A a C c.
 exists
   (λ _ p,
-   match p return (∀ D, D _ (refl _) → D _ p) with
-   | refl _ => λ _ d, d
+   match p in (x1 == x2) return (∀ D, D x1 (refl x1) → D x2 p) with
+   | refl _ => λ _, id
    end C c).
 reflexivity.
 Qed.
