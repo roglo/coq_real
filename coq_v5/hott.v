@@ -94,9 +94,9 @@ Proof. reflexivity. Qed.
 
 Arguments existT {A P} x _.
 
-Definition Σpr₁ {A B} (p : @sigT A B) : A :=
+Definition Σpr₁ {A B} (p : { x : A & B x }) : A :=
   match p with existT a _ => a end.
-Definition Σpr₂ {A B} (p : @sigT A B) : B (Σpr₁ p) :=
+Definition Σpr₂ {A B} (p : { x : A & B x }) : B (Σpr₁ p) :=
   match p with existT _ b => b end.
 
 Definition rec_Σ {A B C} (g : ∀ x : A, B x → C) x := g (Σpr₁ x) (Σpr₂ x).
@@ -104,6 +104,8 @@ Definition rec_Σ {A B C} (g : ∀ x : A, B x → C) x := g (Σpr₁ x) (Σpr₂
 Theorem verif_rec_Σ_eq_def : ∀ A B C (g : ∀ x : A, B x → C) a b,
   rec_Σ g (existT a b) = g a b.
 Proof. reflexivity. Qed.
+
+bbb.
 
 (* Exercise 1.3. Derive the induction principle for products ind_{AxB},
    using only the projections and the propositional uniqueness principle
