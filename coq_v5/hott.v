@@ -88,7 +88,7 @@ Definition AxBpr₂ {A B} (x : A * B) := match x with (_, b) => b end.
 
 Definition rec_AxB {A B C} (g : A → B → C) x := g (AxBpr₁ x) (AxBpr₂ x).
 
-Theorem rec_AxB_eq_def : ∀ A B C (g : A → B → C) a b,
+Theorem verif_rec_AxB_eq_def : ∀ A B C (g : A → B → C) a b,
   rec_AxB g (a, b) = g a b.
 Proof. reflexivity. Qed.
 
@@ -101,9 +101,15 @@ Definition Σpr₂ {A B} (p : @sigT A B) : B (Σpr₁ p) :=
 
 Definition rec_Σ {A B C} (g : ∀ x : A, B x → C) x := g (Σpr₁ x) (Σpr₂ x).
 
-Theorem rec_Σ_eq_def : ∀ A B C (g : ∀ x : A, B x → C) a b,
+Theorem verif_rec_Σ_eq_def : ∀ A B C (g : ∀ x : A, B x → C) a b,
   rec_Σ g (existT a b) = g a b.
 Proof. reflexivity. Qed.
+
+(* Exercise 1.3. Derive the induction principle for products ind_{AxB},
+   using only the projections and the propositional uniqueness principle
+   uppt. Verify that the definitional equalities are valid. Generalize
+   uppt to Σ-types, and do the same for Σ-types. (This requires concepts
+   from Chapter 2.) *)
 
 bbb.
 
