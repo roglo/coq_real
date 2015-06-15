@@ -115,12 +115,10 @@ Definition uupt {A B} (x : A * B) :=
   let (a, b) return ((AxBpr₁ x, AxBpr₂ x) == x) := x in
   refl (a, b).
 
-(* normal definition *)
-
-Definition ind_AxB {A B} (C : A * B → Type) (g : ∀ x y, _) x : C x :=
-  let (a, b) return C x := x in g a b.
-
-(* definition from AxBpr₁, AxBpr₂, uupt *)
+Definition ind_AxB {A B} C (g : ∀ x y, C (x, y)) (x : A * B) :=
+  match uupt x in (y1 == y2) return (C y1 → C y2) with
+  | refl x => id
+  end (g (AxBpr₁ x) (AxBpr₂ x)).
 
 bbb.
 
