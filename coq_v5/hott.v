@@ -105,13 +105,22 @@ Theorem verif_rec_Σ_eq_def : ∀ A B C (g : ∀ x : A, B x → C) a b,
   rec_Σ g (existT a b) = g a b.
 Proof. reflexivity. Qed.
 
-bbb.
-
 (* Exercise 1.3. Derive the induction principle for products ind_{AxB},
    using only the projections and the propositional uniqueness principle
    uppt. Verify that the definitional equalities are valid. Generalize
    uppt to Σ-types, and do the same for Σ-types. (This requires concepts
    from Chapter 2.) *)
+
+Definition uupt {A B} (x : A * B) :=
+  let (a, b) return ((AxBpr₁ x, AxBpr₂ x) == x) := x in
+  refl (a, b).
+
+(* normal definition *)
+
+Definition ind_AxB {A B} (C : A * B → Type) (g : ∀ x y, _) x : C x :=
+  let (a, b) return C x := x in g a b.
+
+(* definition from AxBpr₁, AxBpr₂, uupt *)
 
 bbb.
 
