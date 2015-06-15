@@ -83,13 +83,26 @@ Proof. reflexivity. Qed.
    using only the projections, and verify that the definitional
    equalities are valid. Do the same for Σ-types. *)
 
-Definition pr₁ {A B} (x : A * B) := match x with (a, _) => a end.
-Definition pr₂ {A B} (x : A * B) := match x with (_, b) => b end.
+Definition AxBpr₁ {A B} (x : A * B) := match x with (a, _) => a end.
+Definition AxBpr₂ {A B} (x : A * B) := match x with (_, b) => b end.
 
-Definition rec_AxB {A B C} (g : A → B → C) x := g (pr₁ x) (pr₂ x).
+Definition rec_AxB {A B C} (g : A → B → C) x := g (AxBpr₁ x) (AxBpr₂ x).
 
 Theorem rec_AxB_eq_def : ∀ A B C (g : A → B → C) a b,
   rec_AxB g (a, b) = g a b.
+Proof. reflexivity. Qed.
+
+Arguments existT {A P} x _.
+
+Definition Σpr₁ {A B} (p : @sigT A B) : A :=
+  match p with existT a _ => a end.
+Definition Σpr₂ {A B} (p : @sigT A B) : B (Σpr₁ p) :=
+  match p with existT _ b => b end.
+
+Definition rec_Σ {A B C} (g : ∀ x : A, B x → C) x := g (Σpr₁ x) (Σpr₂ x).
+
+Theorem rec_Σ_eq_def : ∀ A B C (g : ∀ x : A, B x → C) a b,
+  rec_Σ g (existT a b) = g a b.
 Proof. reflexivity. Qed.
 
 bbb.
@@ -337,8 +350,6 @@ Check @transport.
      : ∀ (A : Type) (P : A → Type) (x y : A), x == y → P x → P y *)
 
 (* lemma 2.3.2 path lifting property *)
-
-Arguments existT {A P} x _.
 
 Definition lift {A P} {x y : A} (u : P x) (p : x == y) :=
   match p in (y1 == y2)
