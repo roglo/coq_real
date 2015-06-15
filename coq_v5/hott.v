@@ -83,6 +83,15 @@ Proof. reflexivity. Qed.
    using only the projections, and verify that the definitional
    equalities are valid. Do the same for Σ-types. *)
 
+Definition pr₁ {A B} (x : A * B) := match x with (a, _) => a end.
+Definition pr₂ {A B} (x : A * B) := match x with (_, b) => b end.
+
+Definition rec_AxB {A B C} (g : A → B → C) x := g (pr₁ x) (pr₂ x).
+
+Theorem rec_AxB_eq_def : ∀ A B C (g : A → B → C) a b,
+  rec_AxB g (a, b) = g a b.
+Proof. reflexivity. Qed.
+
 bbb.
 
 (* ... *)
