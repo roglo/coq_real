@@ -94,10 +94,10 @@ Proof. reflexivity. Qed.
 
 Arguments existT {A P} x _.
 
-Definition Σpr₁ {A B} (p : { x : A & B x }) : A :=
-  match p with existT a _ => a end.
-Definition Σpr₂ {A B} (p : { x : A & B x }) : B (Σpr₁ p) :=
-  match p with existT _ b => b end.
+Definition Σpr₁ {A B} (x : { y : A & B y }) : A :=
+  match x with existT a _ => a end.
+Definition Σpr₂ {A B} (x : { y : A & B y }) : B (Σpr₁ x) :=
+  match x with existT _ b => b end.
 
 Definition rec_Σ {A B C} (g : ∀ x : A, B x → C) x := g (Σpr₁ x) (Σpr₂ x).
 
@@ -123,6 +123,10 @@ Definition ind_AxB {A B} C (g : ∀ x y, C (x, y)) (x : A * B) :=
 Theorem verif_ind_AxB_eq_def : ∀ A B C (g : ∀ x y, C (x, y)) (a : A) (b : B),
   ind_AxB C g (a, b) = g a b.
 Proof. reflexivity. Qed.
+
+Definition Σ_uupt {A B} (x : {y : A & B y}) :=
+ let (a, b) return (existT (Σpr₁ x) (Σpr₂ x) == x) := x in
+ refl (existT a b).
 
 bbb.
 
