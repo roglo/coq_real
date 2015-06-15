@@ -83,10 +83,10 @@ Proof. reflexivity. Qed.
    using only the projections, and verify that the definitional
    equalities are valid. Do the same for Σ-types. *)
 
-Definition AxBpr₁ {A B} (x : A * B) := match x with (a, _) => a end.
-Definition AxBpr₂ {A B} (x : A * B) := match x with (_, b) => b end.
+Definition AxB_pr₁ {A B} (x : A * B) := match x with (a, _) => a end.
+Definition AxB_pr₂ {A B} (x : A * B) := match x with (_, b) => b end.
 
-Definition rec_AxB {A B C} (g : A → B → C) x := g (AxBpr₁ x) (AxBpr₂ x).
+Definition rec_AxB {A B C} (g : A → B → C) x := g (AxB_pr₁ x) (AxB_pr₂ x).
 
 Theorem verif_rec_AxB_eq_def : ∀ A B C (g : A → B → C) a b,
   rec_AxB g (a, b) = g a b.
@@ -94,12 +94,12 @@ Proof. reflexivity. Qed.
 
 Arguments existT {A P} x _.
 
-Definition Σpr₁ {A B} (x : { y : A & B y }) : A :=
+Definition Σ_pr₁ {A B} (x : { y : A & B y }) : A :=
   match x with existT a _ => a end.
-Definition Σpr₂ {A B} (x : { y : A & B y }) : B (Σpr₁ x) :=
+Definition Σ_pr₂ {A B} (x : { y : A & B y }) : B (Σ_pr₁ x) :=
   match x with existT _ b => b end.
 
-Definition rec_Σ {A B C} (g : ∀ x : A, B x → C) x := g (Σpr₁ x) (Σpr₂ x).
+Definition rec_Σ {A B C} (g : ∀ x : A, B x → C) x := g (Σ_pr₁ x) (Σ_pr₂ x).
 
 Theorem verif_rec_Σ_eq_def : ∀ A B C (g : ∀ x : A, B x → C) a b,
   rec_Σ g (existT a b) = g a b.
@@ -112,20 +112,20 @@ Proof. reflexivity. Qed.
    from Chapter 2.) *)
 
 Definition uupt {A B} (x : A * B) :=
-  let (a, b) return ((AxBpr₁ x, AxBpr₂ x) == x) := x in
+  let (a, b) return ((AxB_pr₁ x, AxB_pr₂ x) == x) := x in
   refl (a, b).
 
 Definition ind_AxB {A B} C (g : ∀ x y, C (x, y)) (x : A * B) :=
   match uupt x in (y1 == y2) return (C y1 → C y2) with
   | refl x => id
-  end (g (AxBpr₁ x) (AxBpr₂ x)).
+  end (g (AxB_pr₁ x) (AxB_pr₂ x)).
 
 Theorem verif_ind_AxB_eq_def : ∀ A B C (g : ∀ x y, C (x, y)) (a : A) (b : B),
   ind_AxB C g (a, b) = g a b.
 Proof. reflexivity. Qed.
 
 Definition Σ_uupt {A B} (x : {y : A & B y}) :=
- let (a, b) return (existT (Σpr₁ x) (Σpr₂ x) == x) := x in
+ let (a, b) return (existT (Σ_pr₁ x) (Σ_pr₂ x) == x) := x in
  refl (existT a b).
 
 bbb.
