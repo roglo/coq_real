@@ -120,6 +120,10 @@ Definition ind_AxB {A B} C (g : ∀ x y, C (x, y)) (x : A * B) :=
   | refl x => id
   end (g (AxBpr₁ x) (AxBpr₂ x)).
 
+Theorem verif_ind_AxB_eq_def : ∀ A B C (g : ∀ x y, C (x, y)) (a : A) (b : B),
+  ind_AxB C g (a, b) = g a b.
+Proof. reflexivity. Qed.
+
 bbb.
 
 (* ... *)
