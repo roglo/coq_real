@@ -201,12 +201,14 @@ Qed.
 Theorem rec_ℕ_0 : ∀ C c₀ cs, rec_ℕ C c₀ cs 0 = c₀.
 Proof. reflexivity. Qed.
 
-Theorem rec_ℕ_succ : ∀ C c₀ cs n,
-  rec_ℕ C c₀ cs (S n) = cs n (rec_ℕ C c₀ cs n).
+Arguments iter [C] c₀ cs m.
+Arguments rec_ℕ [C] c₀ cs n.
+
+Theorem rec_ℕ_succ : ∀ C (c₀ : C) cs n,
+  rec_ℕ c₀ cs (S n) = cs n (rec_ℕ c₀ cs n).
 Proof.
 intros.
 induction n; [ reflexivity | idtac ].
-destruct n; [ reflexivity | idtac ].
 destruct n; [ reflexivity | idtac ].
 destruct n; [ reflexivity | idtac ].
 destruct n; [ reflexivity | idtac ].
