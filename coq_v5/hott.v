@@ -206,6 +206,14 @@ Theorem rec_ℕ_succ : ∀ C c₀ cs n,
 Proof.
 intros.
 induction n; [ reflexivity | idtac ].
+destruct n; [ reflexivity | idtac ].
+destruct n; [ reflexivity | idtac ].
+destruct n; [ reflexivity | idtac ].
+destruct n; [ reflexivity | idtac ].
+destruct n; [ reflexivity | idtac ].
+destruct n; [ reflexivity | idtac ].
+destruct n; [ reflexivity | idtac ].
+
 bbb.
 
 (*
