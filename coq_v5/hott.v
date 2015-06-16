@@ -148,6 +148,12 @@ Proof. reflexivity. Qed.
    the defining equations of the recursor hold propositionally for this
    function, using the induction principle for ℕ. *)
 
+Fixpoint iter C c₀ (cs : C → C) m :=
+  match m with
+  | 0 => c₀
+  | S n => cs (iter C c₀ cs n)
+  end.
+
 bbb.
 
 (* ... *)
