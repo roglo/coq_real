@@ -128,11 +128,12 @@ Definition Σ_uupt {A B} (x : {y : A & B y}) :=
  let (a, b) return (existT (Σ_pr₁ x) (Σ_pr₂ x) == x) := x in
  refl (existT a b).
 
-Definition ind_Σ
-     : ∀ (A : Type) (B : A → Type) (C : { x : A & B x } → Type),
-       (∀ (a : A) (b : B a), C (existT a b)) → ∀ p : { x : A & B x }, C p.
-Proof.
-intros.
+(* normal definition, definition required still to be found *)
+
+Definition ind_Σ {A B} C (g : ∀ a (b : B a), C (existT a b))
+    (x : {y : A & B y}) :=
+  let (a, b) as x return (C x) := x in
+  g a b.
 
 bbb.
 
