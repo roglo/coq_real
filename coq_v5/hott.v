@@ -162,6 +162,8 @@ Fixpoint iter C c₀ (cs : C → C) m :=
 Definition rec_ℕ C (c₀ : C) (cs : nat → C → C) (n : nat) :=
   snd (iter (nat * C) (0, c₀) (λ r, (S (fst r), cs (fst r) (snd r))) n).
 
+Eval compute in rec_ℕ (list nat) nil (λ n l, cons n (cons 7 l)) 5.
+
 Theorem rec_ℕ_0 : ∀ C c₀ cs, rec_ℕ C c₀ cs 0 = c₀.
 Proof. reflexivity. Qed.
 
