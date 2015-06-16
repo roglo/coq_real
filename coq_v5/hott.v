@@ -134,6 +134,10 @@ Definition ind_Σ {A B} C (g : ∀ a (b : B a), C (existT a b))
   | refl _ => id
   end (g (Σ_pr₁ x) (Σ_pr₂ x)).
 
+Theorem verif_ind_Σ_eq_def : ∀ A B C g (a : A) (b : B),
+  ind_Σ C g (existT a b) = g a b.
+Proof. reflexivity. Qed.
+
 bbb.
 
 (* ... *)
@@ -478,10 +482,12 @@ Check @apd.
      : ∀ (A : Type) (P : A → Type) (f : ∀ x : A, P x)
        (x y : A) (p : x == y), transport P p (f x) == f y *)
 
+(*
 Definition hott_2_3_8 A B P (f : A → B) x y (p : x == y) glop
   : @apd A P f x y p == glop • ap f p.
 
 bbb.
+*)
 
 (* hott, later... *)
 
