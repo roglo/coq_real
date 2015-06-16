@@ -154,6 +154,21 @@ Fixpoint iter C c₀ (cs : C → C) m :=
   | S n => cs (iter C c₀ cs n)
   end.
 
+(* iter : ∀ C : Type, C → (C → C) → nat → C *)
+
+(* iter C c₀ cs n ≡ cs (cs (cs (cs … (cs c₀)))) with 'n' cs *)
+(* rec_ℕ C c₀ cs n ≡ cs n (cs (n-1) (cs (n-2) … (cs 0 c₀))) with 'n' cs *)
+
+Definition rec_ℕ C (c₀ : C) (cs : nat → C → C) (n : nat) : C.
+bbb.
+
+Theorem rec_ℕ_0 : ∀ C c₀ cs, rec_ℕ C c₀ cs 0 = c₀.
+Proof. reflexivity. Qed.
+
+Theorem rec_ℕ_succ : ∀ C c₀ cs n,
+  rec_ℕ C c₀ cs (S n) = cs n (rec_ℕ C c₀ cs n).
+Proof.
+intros.
 bbb.
 
 (* ... *)
