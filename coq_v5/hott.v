@@ -117,7 +117,7 @@ Definition uupt {A B} (x : A * B) :=
 
 Definition ind_AxB {A B} C (g : ∀ x y, C (x, y)) (x : A * B) :=
   match uupt x in (y1 == y2) return (C y1 → C y2) with
-  | refl x => id
+  | refl _ => id
   end (g (AxB_pr₁ x) (AxB_pr₂ x)).
 
 Theorem verif_ind_AxB_eq_def : ∀ A B C (g : ∀ x y, C (x, y)) (a : A) (b : B),
@@ -128,12 +128,11 @@ Definition Σ_uupt {A B} (x : {y : A & B y}) :=
  let (a, b) return (existT (Σ_pr₁ x) (Σ_pr₂ x) == x) := x in
  refl (existT a b).
 
-(* normal definition, definition required still to be found *)
-
 Definition ind_Σ {A B} C (g : ∀ a (b : B a), C (existT a b))
     (x : {y : A & B y}) :=
-  let (a, b) as x return (C x) := x in
-  g a b.
+  match Σ_uupt x in (y1 == y2) return (C y1 → C y2) with
+  | refl _ => id
+  end (g (Σ_pr₁ x) (Σ_pr₂ x)).
 
 bbb.
 
