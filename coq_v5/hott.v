@@ -180,8 +180,6 @@ destruct n; [ reflexivity | idtac ].
 destruct n; [ reflexivity | idtac ].
 Abort. (* induction pas évidente *)
 
-bbb.
-
 (* expérimentations diverses et variées *)
 
 Arguments iter [C] c₀ cs m.
@@ -208,6 +206,7 @@ Theorem rec_ℕ_rec_ℕ_2 : ∀ C (c₀ : C) cs n, rec_ℕ c₀ cs n = rec_ℕ_2
 Proof.
 intros.
 induction n; [ reflexivity | idtac ].
+simpl.
 Abort. (*
 bbb.
 *)
