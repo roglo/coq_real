@@ -162,29 +162,92 @@ Fixpoint iter C c₀ (cs : C → C) m :=
 Definition rec_ℕ C (c₀ : C) (cs : nat → C → C) (n : nat) :=
   snd (iter (nat * C) (0, c₀) (λ r, (S (fst r), cs (fst r) (snd r))) n).
 
-Eval compute in iter (list nat) nil (cons 4) 5.
-Eval compute in rec_ℕ (list nat) nil (λ n l, cons n (cons 7 l)) 5.
-Eval compute in rec_ℕ (list nat) nil (λ n l, cons n (cons 0 l)) 4.
-Eval compute in rec_ℕ (list nat) nil (λ n l, cons n (cons 0 l)) 1.
-Eval compute in rec_ℕ (list nat) nil (λ n l, cons n (cons 0 l)) 0.
-
 Theorem rec_ℕ_0 : ∀ C c₀ cs, rec_ℕ C c₀ cs 0 = c₀.
 Proof. reflexivity. Qed.
+
+Theorem rec_ℕ_succ : ∀ C (c₀ : C) cs n,
+  rec_ℕ C c₀ cs (S n) = cs n (rec_ℕ C c₀ cs n).
+Proof.
+intros.
+induction n; [ reflexivity | idtac ].
+destruct n; [ reflexivity | idtac ].
+destruct n; [ reflexivity | idtac ].
+destruct n; [ reflexivity | idtac ].
+destruct n; [ reflexivity | idtac ].
+destruct n; [ reflexivity | idtac ].
+destruct n; [ reflexivity | idtac ].
+Abort. (* induction pas évidente *)
+
+bbb.
+
+(* expérimentations diverses et variées *)
 
 Arguments iter [C] c₀ cs m.
 Arguments rec_ℕ [C] c₀ cs n.
 
-Theorem rec_ℕ_succ : ∀ C (c₀ : C) cs n,
-  rec_ℕ c₀ cs (S n) = cs n (rec_ℕ c₀ cs n).
+Theorem iter_succ : ∀ C (c₀ : C) cs n, iter c₀ cs (S n) = cs (iter c₀ cs n).
+Proof. reflexivity. Qed.
+
+Fixpoint rec_ℕ_2 {C} c₀ (cs : nat → C → C) m :=
+  match m with
+  | 0 => c₀
+  | S n => cs n (rec_ℕ_2 c₀ cs n)
+  end.
+
+Eval compute in iter nil (cons 4) 5.
+Eval compute in rec_ℕ nil (λ n l, cons n (cons 7 l)) 5.
+Eval compute in rec_ℕ_2 nil (λ n l, cons n (cons 7 l)) 5.
+
+Theorem rec_ℕ_2_succ : ∀ C (c₀ : C) cs n,
+  rec_ℕ_2 c₀ cs (S n) = cs n (rec_ℕ_2 c₀ cs n).
+Proof. reflexivity. Qed.
+
+Theorem rec_ℕ_rec_ℕ_2 : ∀ C (c₀ : C) cs n, rec_ℕ c₀ cs n = rec_ℕ_2 c₀ cs n.
 Proof.
 intros.
-destruct n; [ reflexivity | idtac ].
-destruct n; [ reflexivity | idtac ].
-destruct n; [ reflexivity | idtac ].
-destruct n; [ reflexivity | idtac ].
-destruct n; [ reflexivity | idtac ].
-destruct n; [ reflexivity | idtac ].
+induction n; [ reflexivity | idtac ].
+Abort. (*
+bbb.
+*)
 
+Require Import NPeano.
+
+Theorem glop : ∀ C (c₀ : C) cs m n,
+  rec_ℕ (rec_ℕ c₀ cs m) cs n = rec_ℕ (rec_ℕ c₀ cs n) cs m.
+Proof.
+intros.
+revert c₀ m.
+induction n; intros; [ reflexivity | idtac ].
+simpl.
+bbb.
+
+Theorem glop : ∀ C (c₀ : C) cs m n,
+  rec_ℕ c₀ cs (m + n) = rec_ℕ (rec_ℕ c₀ cs m) cs n.
+Proof.
+intros.
+revert c₀ m.
+induction n; intros.
+ rewrite Nat.add_0_r.
+ induction m; intros; [ reflexivity | idtac ].
+ simpl.
+
+ reflexivity.
+
+revert c₀ n.
+induction m; intros; [ reflexivity | idtac ].
+
+rewrite Nat.add_succ_l, <- Nat.add_succ_r.
+rewrite IHm; simpl.
+symmetry.
+rewrite <- Nat.add_1_r.
+rewrite IHm; simpl.
+
+rewrite Nat.add_succ_l, <- Nat.add_succ_r.
+rewrite IHm; simpl.
+
+rewrite <- Nat.add_1_l.
+
+simpl.
 bbb.
 
 (*
