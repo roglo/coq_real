@@ -138,6 +138,16 @@ Theorem verif_ind_Σ_eq_def : ∀ A B C g (a : A) (b : B),
   ind_Σ C g (existT a b) = g a b.
 Proof. reflexivity. Qed.
 
+(* Exercise 1.4. Assuming as given only the 'iterator' for natural numbers
+         iter : Π (C : U) C → (C → C) → ℕ → C
+   with the defining equations
+             iter(C, c₀, cs, 0) :≡ c₀,
+       iter(C, c₀, cs, succ(n)) :≡ cs(iter(C, c₀, cs, n)),
+
+   derive a function having the type of the recursor rec_ℕ. Show that
+   the defining equations of the recursor hold propositionally for this
+   function, using the induction principle for ℕ. *)
+
 bbb.
 
 (* ... *)
