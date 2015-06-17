@@ -268,12 +268,30 @@ rewrite <- Hx; apply H.
 Qed.
 
 (* same definition, by value *)
-Definition ind_AxB'_2 {A B : U} :
-  Π (C : AxB' A B → U),
-    (Π  (x : A), Π  (y : B), C (AxB'_pair x y))
-    →  Π (x : AxB' A B), C x :=
+Definition ind_AxB'_2 {A B : U} C
+     (H : Π (x : A), Π (y : B), C (AxB'_pair x y)) x :=
+  match AxB'_pair_proj x in (_ = y) return (C y) with
+  | eq_refl => H (AxB'_pr₁ x) (AxB'_pr₂ x)
+  end.
 
-aaa.
+(* ind_AxB'_1
+     : Π (A : U),
+       Π (B : U),
+       Π (C : Π (_ : AxB' A B), U),
+       Π (_ : Π (x : A), Π (y : B), C (AxB'_pair x y)), Π (x : AxB' A B), C x
+*)
+(* ind_AxB'_2
+     : Π (A : U),
+       Π (B : U),
+       Π (C : Π (_ : AxB' A B), Type),
+       Π (_ : Π (x : A), Π (y : B), C (AxB'_pair x y)), Π (x : AxB' A B), C x
+*)
+
+(* Exercise 1.7. Give an alternative derivation of ... from ...
+  which avoids the use of universes.  (This is easiest using concepts
+  from later chapters.) *)
+
+bbb.
 
 (* ... *)
 
