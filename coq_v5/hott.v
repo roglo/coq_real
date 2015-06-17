@@ -180,6 +180,29 @@ Qed.
    then we can give a definition of ind_A+B for which the definitional
    equalities stated in §1.7 hold. *)
 
+Notation "'Σ' ( x : A ) , B" :=
+  ({ x : A & B }) (at level 0, x at level 0, B at level 100).
+Notation "'Π' ( x : A ) , B" :=
+  (∀ x : A, B) (at level 0, x at level 0, B at level 100).
+Definition U := Type.
+
+Definition rec₂ C (c₀ c₁ : C) (b : bool) := if b then c₀ else c₁.
+
+Definition ApB {A B} := Σ (x : bool), rec₂ U A B x.
+
+Definition ApB_inl (A B : U) (a : A) :=
+  @existT bool (rec₂ U A B) true a.
+Definition ApB_inr (A B : U) (b : B) :=
+  @existT bool (rec₂ U A B) false b.
+
+Definition ApB_ind {A B : U} :
+  Π (C : ApB → U),
+    (Π  (a : A), C (ApB_inl A B a)) →
+    (Π  (b : B), C (ApB_inr A B b)) →
+    Π (x : ApB), C x.
+Proof.
+intros C HA HB x.
+
 bbb.
 
 (* ... *)
