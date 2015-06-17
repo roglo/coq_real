@@ -196,7 +196,7 @@ Definition ApB_inr (A B : U) (b : B) :=
   @existT bool (rec₂ U A B) false b.
 
 (* definition by tactics *)
-Definition ApB_ind2 {A B : U} :
+Definition ApB_ind_1 {A B : U} :
   Π (C : ApB A B → U),
     (Π  (a : A), C (ApB_inl A B a)) →
     (Π  (b : B), C (ApB_inr A B b)) →
@@ -207,24 +207,22 @@ induction x as (b, x).
 destruct b; [ apply HA | apply HB ].
 Qed.
 
-(* definition by value *)
-Definition ApB_ind {A B : U} (C : Π (_ : ApB A B), U)
+(* same definition, by value *)
+Definition ApB_ind_2 {A B : U} (C : Π (_ : ApB A B), U)
     (HA : Π (a : A), C (ApB_inl A B a))
     (HB : Π (b : B), C (ApB_inr A B b))
     (x : ApB A B) :=
   let (v, u) as s return (C s) := x in
-  (if v return Π (x1 : rec₂ U A B v), C (existT v x1)
-   then λ a : rec₂ U A B true, HA a
-   else λ b : rec₂ U A B false, HB b) (u : rec₂ U A B v).
+  (if v return Π (z : _), C (existT v z) then HA else HB) u.
 
-Check @ApB_ind2.
+Check @ApB_ind_1.
 (* ApB_ind2
      : Π (A : U),
        Π (B : U),
        Π (C : Π (_ : ApB A B), U),
        Π (_ : Π (a : A), C (ApB_inl A B a)),
        Π (_ : Π (b : B), C (ApB_inr A B b)), Π (x : ApB A B), C x *)
-Check @ApB_ind.
+Check @ApB_ind_2.
 (* ApB_ind
      : Π (A : U),
        Π (B : U),
@@ -576,12 +574,10 @@ Check @apd.
      : ∀ (A : Type) (P : A → Type) (f : ∀ x : A, P x)
        (x y : A) (p : x == y), transport P p (f x) == f y *)
 
-(*
 Definition hott_2_3_8 A B P (f : A → B) x y (p : x == y) glop
   : @apd A P f x y p == glop • ap f p.
 
 bbb.
-*)
 
 (* hott, later... *)
 
