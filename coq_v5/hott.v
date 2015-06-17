@@ -288,8 +288,8 @@ Definition ind_AxB'_2 {A B : U} C
 *)
 
 (* Exercise 1.7. Give an alternative derivation of ... from ...
-  which avoids the use of universes.  (This is easiest using concepts
-  from later chapters.) *)
+   which avoids the use of universes.  (This is easiest using concepts
+   from later chapters.) *)
 
 bbb.
 
