@@ -208,46 +208,31 @@ destruct b; [ apply HA | apply HB ].
 Qed.
 
 (* definition by value *)
-Definition ApB_ind A B C (HA : ∀ a, _) (HB : ∀ b, _) x :=
-@sigT_rect bool (fun x : bool => rec₂ U A B x)
-  (fun x : @sigT bool (fun x : bool => rec₂ U A B x) => C x)
-  (fun (b : bool) (x : rec₂ U A B b) =>
-   match
-     b as b0
-     return
-       (forall x1 : rec₂ U A B b0,
-        C (@existT bool (fun x2 : bool => rec₂ U A B x2) b0 x1))
-   with
-   | true => fun x1 : rec₂ U A B true => HA x1
-   | false => fun x1 : rec₂ U A B false => HB x1
-   end x) x.
+Definition ApB_ind {A B : U} (C : Π (_ : ApB A B), U)
+    (HA : Π (a : A), C (ApB_inl A B a))
+    (HB : Π (b : B), C (ApB_inr A B b))
+    (x : ApB A B) :=
+  let (v, u) as s return (C s) := x in
+  (if v return Π (x1 : rec₂ U A B v), C (existT v x1)
+   then λ a : rec₂ U A B true, HA a
+   else λ b : rec₂ U A B false, HB b) (u : rec₂ U A B v).
 
-bbb. (* above to be simplified *)
+Check @ApB_ind2.
+(* ApB_ind2
+     : Π (A : U),
+       Π (B : U),
+       Π (C : Π (_ : ApB A B), U),
+       Π (_ : Π (a : A), C (ApB_inl A B a)),
+       Π (_ : Π (b : B), C (ApB_inr A B b)), Π (x : ApB A B), C x *)
+Check @ApB_ind.
+(* ApB_ind
+     : Π (A : U),
+       Π (B : U),
+       Π (C : Π (_ : ApB A B), U),
+       Π (_ : Π (a : A), C (ApB_inl A B a)),
+       Π (_ : Π (b : B), C (ApB_inr A B b)), Π (x : ApB A B), C x *)
 
-Check ApB_ind.
-
-Set Printing All.
-Print ApB_ind.
-ApB_ind =
-fun (A B : U) (C : @ApB A B -> U) (HA : forall a : A, C (ApB_inl A B a))
-  (HB : forall b : B, C (ApB_inr A B b)) (x : @ApB A B) =>
-@sigT_rect bool (fun x0 : bool => rec₂ U A B x0)
-  (fun x0 : @sigT bool (fun x0 : bool => rec₂ U A B x0) => C x0)
-  (fun (b : bool) (x0 : rec₂ U A B b) =>
-   match
-     b as b0
-     return
-       (forall x1 : rec₂ U A B b0,
-        C (@existT bool (fun x2 : bool => rec₂ U A B x2) b0 x1))
-   with
-   | true => fun x1 : rec₂ U A B true => HA x1
-   | false => fun x1 : rec₂ U A B false => HB x1
-   end x0) x
-     : forall (A B : U) (C : @ApB A B -> U),
-       (forall a : A, C (ApB_inl A B a)) ->
-       (forall b : B, C (ApB_inr A B b)) -> forall x : @ApB A B, C x
-
-Arguments A, B are implicit and maximally inserted
+bbb.
 
 (* ... *)
 
