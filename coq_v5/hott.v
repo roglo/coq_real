@@ -244,14 +244,36 @@ Definition AxB'_pair {A B} (a : A) (b : B) : AxB' A B :=
 Definition AxB'_pr₁ {A B} (x : AxB' A B) : A := x true.
 Definition AxB'_pr₂ {A B} (x : AxB' A B) : B := x false.
 
-Definition ind_AxB' {A B : U} :
+Axiom function_extensionality : ∀ A B (f g : ∀ x : A, B x),
+  (∀ x, f x = g x) → f = g.
+
+Theorem AxB'_pair_proj {A B} : ∀ x : AxB' A B,
+  AxB'_pair (AxB'_pr₁ x) (AxB'_pr₂ x) = x.
+Proof.
+intros x.
+apply function_extensionality.
+intros b.
+destruct b; reflexivity.
+Qed.
+
+(* definition by tactics *)
+Definition ind_AxB'_1 {A B : U} :
   Π (C : AxB' A B → U),
     (Π  (x : A), Π  (y : B), C (AxB'_pair x y))
     →  Π (x : AxB' A B), C x.
 Proof.
 intros C H x.
-bbb.
-pose proof H x as H1.
+pose proof AxB'_pair_proj x as Hx.
+rewrite <- Hx; apply H.
+Qed.
+
+(* same definition, by value *)
+Definition ind_AxB'_2 {A B : U} :
+  Π (C : AxB' A B → U),
+    (Π  (x : A), Π  (y : B), C (AxB'_pair x y))
+    →  Π (x : AxB' A B), C x :=
+
+aaa.
 
 (* ... *)
 
