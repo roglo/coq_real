@@ -92,8 +92,6 @@ Theorem verif_rec_AxB_eq_def : ∀ A B C (g : A → B → C) a b,
   rec_AxB g (a, b) = g a b.
 Proof. reflexivity. Qed.
 
-Arguments existT {A P} x _.
-
 Definition Σ_pr₁ {A B} (x : { y : A & B y }) : A :=
   match x with existT a _ => a end.
 Definition Σ_pr₂ {A B} (x : { y : A & B y }) : B (Σ_pr₁ x) :=
@@ -102,7 +100,7 @@ Definition Σ_pr₂ {A B} (x : { y : A & B y }) : B (Σ_pr₁ x) :=
 Definition rec_Σ {A B C} (g : ∀ x : A, B x → C) x := g (Σ_pr₁ x) (Σ_pr₂ x).
 
 Theorem verif_rec_Σ_eq_def : ∀ A B C (g : ∀ x : A, B x → C) a b,
-  rec_Σ g (existT a b) = g a b.
+  rec_Σ g (existT B a b) = g a b.
 Proof. reflexivity. Qed.
 
 (* Exercise 1.3. Derive the induction principle for products ind_{AxB},
@@ -125,17 +123,17 @@ Theorem verif_ind_AxB_eq_def : ∀ A B C (g : ∀ x y, C (x, y)) (a : A) (b : B)
 Proof. reflexivity. Qed.
 
 Definition Σ_uupt {A B} (x : {y : A & B y}) :=
- let (a, b) return (existT (Σ_pr₁ x) (Σ_pr₂ x) == x) := x in
- refl (existT a b).
+ let (a, b) return (existT _ (Σ_pr₁ x) (Σ_pr₂ x) == x) := x in
+ refl (existT _ a b).
 
-Definition ind_Σ {A B} C (g : ∀ a (b : B a), C (existT a b))
+Definition ind_Σ {A B} C (g : ∀ a (b : B a), C (existT _ a b))
     (x : {y : A & B y}) :=
   match Σ_uupt x in (y1 == y2) return (C y1 → C y2) with
   | refl _ => id
   end (g (Σ_pr₁ x) (Σ_pr₂ x)).
 
 Theorem verif_ind_Σ_eq_def : ∀ A B C g (a : A) (b : B),
-  ind_Σ C g (existT a b) = g a b.
+  ind_Σ C g (existT _ a b) = g a b.
 Proof. reflexivity. Qed.
 
 (* Exercise 1.4. Assuming as given only the 'iterator' for natural numbers
@@ -190,10 +188,8 @@ Definition rec₂ C (c₀ c₁ : C) (b : bool) := if b then c₀ else c₁.
 
 Definition ApB A B := Σ (x : bool), rec₂ U A B x.
 
-Definition ApB_inl (A B : U) (a : A) :=
-  @existT bool (rec₂ U A B) true a.
-Definition ApB_inr (A B : U) (b : B) :=
-  @existT bool (rec₂ U A B) false b.
+Definition ApB_inl (A B : U) (a : A) := existT (rec₂ U A B) true a.
+Definition ApB_inr (A B : U) (b : B) := existT (rec₂ U A B) false b.
 
 (* definition by tactics *)
 Definition ApB_ind_1 {A B : U} :
@@ -213,7 +209,7 @@ Definition ApB_ind_2 {A B : U} (C : Π (_ : ApB A B), U)
     (HB : Π (b : B), C (ApB_inr A B b))
     (x : ApB A B) :=
   let (v, u) as s return (C s) := x in
-  (if v return Π (z : _), C (existT v z) then HA else HB) u.
+  (if v return Π (z : _), C (existT _ v z) then HA else HB) u.
 
 Check @ApB_ind_1.
 (* ApB_ind2
@@ -235,6 +231,8 @@ Check @ApB_ind_2.
    equalities stated in §1.5 hold propositionally (i.e. using equality
    types). (This requires the function extensionality axiom, which is
    introduced in §2.9.) *)
+
+Definition AxB A B := Π (x : bool), rec₂ U A B x.
 
 bbb.
 
