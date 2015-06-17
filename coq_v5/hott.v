@@ -287,8 +287,8 @@ Definition ind_AxB'_2 {A B : U} C
        Π (_ : Π (x : A), Π (y : B), C (AxB'_pair x y)), Π (x : AxB' A B), C x
 *)
 
-(* Exercise 1.7. Give an alternative derivation of ... from ...
-   which avoids the use of universes.  (This is easiest using concepts
+(* Exercise 1.7. Give an alternative derivation of ind'_=A from ind_=A
+   which avoids the use of universes. (This is easiest using concepts
    from later chapters.) *)
 
 bbb.
