@@ -230,10 +230,11 @@ Check @ApB_ind_2.
        Π (_ : Π (a : A), C (ApB_inl A B a)),
        Π (_ : Π (b : B), C (ApB_inr A B b)), Π (x : ApB A B), C x *)
 
-(* Exercise 1.6. Show that if we define ..., then we can give a definition
-   of ind_AxB for which the definitional equalities stated in §1.5 hold
-   propositionally (i.e. using equality types). (This requires the function
-   extensionality axiom, which is introduced in §2.9.) *)
+(* Exercise 1.6. Show that if we define AxB :≡ Π (x:2) rec₂(U,A,B,x),
+   then we can give a definition of ind_AxB for which the definitional
+   equalities stated in §1.5 hold propositionally (i.e. using equality
+   types). (This requires the function extensionality axiom, which is
+   introduced in §2.9.) *)
 
 bbb.
 
