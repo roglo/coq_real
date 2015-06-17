@@ -192,7 +192,7 @@ Definition ApB_inl (A B : U) (a : A) := existT (rec₂ U A B) true a.
 Definition ApB_inr (A B : U) (b : B) := existT (rec₂ U A B) false b.
 
 (* definition by tactics *)
-Definition ApB_ind_1 {A B : U} :
+Definition ind_ApB_1 {A B : U} :
   Π (C : ApB A B → U),
     (Π  (a : A), C (ApB_inl A B a)) →
     (Π  (b : B), C (ApB_inr A B b)) →
@@ -204,22 +204,22 @@ destruct b; [ apply HA | apply HB ].
 Qed.
 
 (* same definition, by value *)
-Definition ApB_ind_2 {A B : U} (C : Π (_ : ApB A B), U)
+Definition ind_ApB_2 {A B : U} (C : Π (_ : ApB A B), U)
     (HA : Π (a : A), C (ApB_inl A B a))
     (HB : Π (b : B), C (ApB_inr A B b))
     (x : ApB A B) :=
   let (v, u) as s return (C s) := x in
   (if v return Π (z : _), C (existT _ v z) then HA else HB) u.
 
-Check @ApB_ind_1.
-(* ApB_ind2
+Check @ind_ApB_1.
+(* ind_ApB_1
      : Π (A : U),
        Π (B : U),
        Π (C : Π (_ : ApB A B), U),
        Π (_ : Π (a : A), C (ApB_inl A B a)),
        Π (_ : Π (b : B), C (ApB_inr A B b)), Π (x : ApB A B), C x *)
-Check @ApB_ind_2.
-(* ApB_ind
+Check @ind_ApB_2.
+(* ind_ApB_2
      : Π (A : U),
        Π (B : U),
        Π (C : Π (_ : ApB A B), U),
@@ -232,7 +232,37 @@ Check @ApB_ind_2.
    types). (This requires the function extensionality axiom, which is
    introduced in §2.9.) *)
 
+Print rec₂.
+
 Definition AxB A B := Π (x : bool), rec₂ U A B x.
+
+Definition AxB' (A B : U) := Π (x : bool), if x then A else B.
+
+(*
+rec₂ =  λ (C : Type) (c₀ c₁ : C) (b : bool), if b then c₀ else c₁
+     : Π (C : Type), Π (_ : C), Π (_ : C), Π (_ : bool), C
+AxB = λ A B : U, Π (x : bool), rec₂ U A B x
+     : Π (_ : U), Π (_ : U), Type
+AxB' = λ A B : U, Π (x : bool), (if x then A else B)
+     : Π (_ : U), Π (_ : U), Type
+*)
+
+Definition ind_AxB {A B : U} :
+  Π (C : AxB A B → U),
+    (Π  (x : A), Π  (y : B), C (λ b, if b then x else y))
+    →  Π (x : AxB A B), C x.
+
+Toplevel input, characters 107-108:
+Error:
+In environment
+A : U
+B : U
+C : Π (_ : AxB A B), U
+x : A
+y : B
+b : bool
+The term "x" has type "A" while it is expected to have type 
+"rec₂ U A B b".
 
 bbb.
 
