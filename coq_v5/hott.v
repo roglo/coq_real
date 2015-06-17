@@ -188,22 +188,66 @@ Definition U := Type.
 
 Definition rec₂ C (c₀ c₁ : C) (b : bool) := if b then c₀ else c₁.
 
-Definition ApB {A B} := Σ (x : bool), rec₂ U A B x.
+Definition ApB A B := Σ (x : bool), rec₂ U A B x.
 
 Definition ApB_inl (A B : U) (a : A) :=
   @existT bool (rec₂ U A B) true a.
 Definition ApB_inr (A B : U) (b : B) :=
   @existT bool (rec₂ U A B) false b.
 
-Definition ApB_ind {A B : U} :
-  Π (C : ApB → U),
+(* definition by tactics *)
+Definition ApB_ind2 {A B : U} :
+  Π (C : ApB A B → U),
     (Π  (a : A), C (ApB_inl A B a)) →
     (Π  (b : B), C (ApB_inr A B b)) →
-    Π (x : ApB), C x.
+    Π (x : ApB A B), C x.
 Proof.
 intros C HA HB x.
+induction x as (b, x).
+destruct b; [ apply HA | apply HB ].
+Qed.
 
-bbb.
+(* definition by value *)
+Definition ApB_ind A B C (HA : ∀ a, _) (HB : ∀ b, _) x :=
+@sigT_rect bool (fun x : bool => rec₂ U A B x)
+  (fun x : @sigT bool (fun x : bool => rec₂ U A B x) => C x)
+  (fun (b : bool) (x : rec₂ U A B b) =>
+   match
+     b as b0
+     return
+       (forall x1 : rec₂ U A B b0,
+        C (@existT bool (fun x2 : bool => rec₂ U A B x2) b0 x1))
+   with
+   | true => fun x1 : rec₂ U A B true => HA x1
+   | false => fun x1 : rec₂ U A B false => HB x1
+   end x) x.
+
+bbb. (* above to be simplified *)
+
+Check ApB_ind.
+
+Set Printing All.
+Print ApB_ind.
+ApB_ind =
+fun (A B : U) (C : @ApB A B -> U) (HA : forall a : A, C (ApB_inl A B a))
+  (HB : forall b : B, C (ApB_inr A B b)) (x : @ApB A B) =>
+@sigT_rect bool (fun x0 : bool => rec₂ U A B x0)
+  (fun x0 : @sigT bool (fun x0 : bool => rec₂ U A B x0) => C x0)
+  (fun (b : bool) (x0 : rec₂ U A B b) =>
+   match
+     b as b0
+     return
+       (forall x1 : rec₂ U A B b0,
+        C (@existT bool (fun x2 : bool => rec₂ U A B x2) b0 x1))
+   with
+   | true => fun x1 : rec₂ U A B true => HA x1
+   | false => fun x1 : rec₂ U A B false => HB x1
+   end x0) x
+     : forall (A B : U) (C : @ApB A B -> U),
+       (forall a : A, C (ApB_inl A B a)) ->
+       (forall b : B, C (ApB_inr A B b)) -> forall x : @ApB A B, C x
+
+Arguments A, B are implicit and maximally inserted
 
 (* ... *)
 
