@@ -178,6 +178,8 @@ Qed.
    then we can give a definition of ind_A+B for which the definitional
    equalities stated in §1.7 hold. *)
 
+Section notation_Σ_Π.
+
 Notation "'Σ' ( x : A ) , B" :=
   ({ x : A & B }) (at level 0, x at level 0, B at level 100).
 Notation "'Π' ( x : A ) , B" :=
@@ -226,11 +228,20 @@ Check @ind_ApB_2.
        Π (_ : Π (a : A), C (ApB_inl A B a)),
        Π (_ : Π (b : B), C (ApB_inr A B b)), Π (x : ApB A B), C x *)
 
+End notation_Σ_Π.
+
 (* Exercise 1.6. Show that if we define AxB :≡ Π (x:2) rec₂(U,A,B,x),
    then we can give a definition of ind_AxB for which the definitional
    equalities stated in §1.5 hold propositionally (i.e. using equality
    types). (This requires the function extensionality axiom, which is
    introduced in §2.9.) *)
+
+Section notation_Σ_Π_2.
+
+Notation "'Σ' ( x : A ) , B" :=
+  ({ x : A & B }) (at level 0, x at level 0, B at level 100).
+Notation "'Π' ( x : A ) , B" :=
+  (∀ x : A, B) (at level 0, x at level 0, B at level 100).
 
 Definition AxB' A B := Π (x : bool), rec₂ U A B x.
 
@@ -287,9 +298,63 @@ Definition ind_AxB'_2 {A B : U} C
        Π (_ : Π (x : A), Π (y : B), C (AxB'_pair x y)), Π (x : AxB' A B), C x
 *)
 
+End notation_Σ_Π_2.
+
 (* Exercise 1.7. Give an alternative derivation of ind'_=A from ind_=A
    which avoids the use of universes. (This is easiest using concepts
    from later chapters.) *)
+
+Check Id_ind.
+Check path_induction.
+
+Section notation_Σ_Π_3.
+
+Notation "'Σ' ( x : A ) , B" :=
+  ({ x : A & B }) (at level 0, x at level 0, B at level 100).
+Notation "'Π' ( x : A ) , B" :=
+  (∀ x : A, B) (at level 0, x at level 0, B at level 100).
+
+Definition ind_eqA {A} :
+  Π (C : Π (x : A), Π (y : A), (x == y) → U),
+    (Π (x : A), C x x (refl x))
+    → Π (x : A), Π (y : A), Π (p : x == y), C x y p
+  := λ C P x y p,
+     match p in (y1 == y2) return (C y1 y2 p) with
+     | refl x => P x
+     end.
+
+Theorem ind_eqA_def_eq {A} : ∀ C c (x : A), ind_eqA C c x x (refl x) = c x.
+Proof. reflexivity. Qed.
+
+(* definition from §1.12.1 *)
+Definition ind'_eqA {A} :
+  Π (a : A),
+  Π (C : Π (x : A), (a == x) → U), C a (refl a)
+  → Π (x : A), Π (p : a == x), C x p
+  := λ a C P x p,
+     match p in (y1 == y2) return (Π (D : _), Π (_ : _), D y2 p) with
+     | refl x => λ _ y, y
+     end C P.
+
+Theorem ind'_eqA_def_eq {A} : ∀ (a : A) C c, ind'_eqA a C c a (refl a) = c.
+Proof. reflexivity. Qed.
+
+(* alternative definition from ind_eqA *)
+Definition ind'_eqA_bis {A} :
+  Π (a : A),
+  Π (C : Π (x : A), (a == x) → U), C a (refl a)
+  → Π (x : A), Π (p : a == x), C x p
+  := λ a C P x p,
+     ind_eqA (λ y1 y2 p, Π (D : _), Π (_ : _), D y2 p)
+       (λ x _ y, y) a x p C P.
+
+Error: Universe inconsistency.
+
+(* ça je l'ai encore jamais eu :-), c'est mon premier Universe
+   inconsistency depuis 4 ans que je fais du Coq *)
+bbb.
+
+End notation_Σ_Π_3.
 
 bbb.
 
