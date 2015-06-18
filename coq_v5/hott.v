@@ -319,9 +319,9 @@ Definition ind_eqA {A} :
   Π (C : Π (x : A), Π (y : A), (x == y) → U),
     (Π (x : A), C x x (refl x))
     → Π (x : A), Π (y : A), Π (p : x == y), C x y p
-  := λ C P x y p,
+  := λ C c x y p,
      match p in (y1 == y2) return (C y1 y2 p) with
-     | refl x => P x
+     | refl x => c x
      end.
 
 Theorem ind_eqA_def_eq {A} : ∀ C c (x : A), ind_eqA C c x x (refl x) = c x.
