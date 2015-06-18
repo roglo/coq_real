@@ -340,18 +340,36 @@ Theorem ind'_eqA_def_eq {A} : ∀ (a : A) C c, ind'_eqA a C c a (refl a) = c.
 Proof. reflexivity. Qed.
 
 (* alternative definition from ind_eqA *)
-Definition ind'_eqA_bis {A} :
-  Π (a : A),
-  Π (C : Π (x : A), (a == x) → U), C a (refl a)
-  → Π (x : A), Π (p : a == x), C x p
-  := λ a C P x p,
-     ind_eqA (λ y1 y2 p, Π (D : _), Π (_ : _), D y2 p)
-       (λ x _ y, y) a x p C P.
+Definition ind'_eqA_bis {A : Type} a C (x : A) p :=
+  ind_eqA (λ y1 y2 p, Π (D : _), Π (_ : _), D y2 p) (λ x _ y, y) a x p C.
 
-Error: Universe inconsistency.
+Theorem ind'_eqA_bis_def_eq {A} : ∀ (a : A) C c,
+  ind'_eqA_bis a C c a (refl a) = c.
+Proof. reflexivity. Qed.
 
-(* ça je l'ai encore jamais eu :-), c'est mon premier Universe
-   inconsistency depuis 4 ans que je fais du Coq *)
+Toplevel input, characters 93-94:
+Error:
+In environment
+A : Type
+a : A
+C : Π (x0 : A), Π (_ : a == x0), Type
+c : A
+The term "a" has type "A" while it is expected to have type
+"a == c".
+
+Check @ind'_eqA_bis.
+(* ind'_eqA
+     : Π (A : Type),
+       Π (a : A),
+       Π (C : Π (x : A), Π (_ : a == x), U),
+       Π (_ : C a (refl a)),
+       Π (x : A), Π (p : a == x), C x p
+  ind'_eqA_bis
+     : Π (A : Type),
+       Π (a : A),
+       Π (C : Π (x : A), Π (_ : a == x), Type),
+       Π (x : A), Π (p : a == x), Π (_ : C a (refl a)), C x p
+*)
 bbb.
 
 End notation_Σ_Π_3.
