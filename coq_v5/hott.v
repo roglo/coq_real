@@ -314,6 +314,7 @@ Notation "'Σ' ( x : A ) , B" :=
 Notation "'Π' ( x : A ) , B" :=
   (∀ x : A, B) (at level 0, x at level 0, B at level 100).
 
+(* definition from §1.12.1 *)
 Definition ind_eqA {A} :
   Π (C : Π (x : A), Π (y : A), (x == y) → U),
     (Π (x : A), C x x (refl x))
@@ -339,7 +340,52 @@ Definition ind'_eqA {A} :
 Theorem ind'_eqA_def_eq {A} : ∀ (a : A) C c, ind'_eqA a C c a (refl a) = c.
 Proof. reflexivity. Qed.
 
+(*
+ind_eqA =
+λ (A : Type) (C : Π (x : A), Π (y : A), Π (_ : x == y), U)
+(P : Π (x : A), C x x (refl x)) (x y : A) (p : x == y), ...
+ind'_eqA =
+λ (A : Type) (a : A) (C : Π (x : A), Π (_ : a == x), U)
+(P : C a (refl a)) (x : A) (p : a == x), ...
+*)
+
 (* alternative definition from ind_eqA *)
+Definition ind'_eqA_bis {A} :
+  Π (a : A),
+  Π (C : Π (x : A), (a == x) → U), C a (refl a)
+  → Π (x : A), Π (p : a == x), C x p.
+intros a C c x p.
+Check @ind_eqA.
+assert (Π (x : A), Π (y : A), Π (p : x == y), U) as D.
+intros.
+eapply C, p.
+bbb.
+
+assert ((Π (x : A), D x x (refl x)), Π (x : A), Π (y : A), Π (p : x == y), D x y p) as E.
+bbb.
+
+Definition ind'_eqA_bis {A} :
+  Π (a : A),
+  Π (C : Π (x : A), (a == x) → U), C a (refl a)
+  → Π (x : A), Π (p : a == x), C x p
+  := λ a C P x p,
+ind_eqA (λ x y (p : x == y), C y p).
+
+     match p in (y1 == y2) return (Π (D : _), Π (_ : _), D y2 p) with
+     | refl x => λ _ y, y
+     end C P.
+bbb.
+
+Definition ind_eqA {A} :
+  Π (C : Π (x : A), Π (y : A), (x == y) → U),
+    (Π (x : A), C x x (refl x))
+    → Π (x : A), Π (y : A), Π (p : x == y), C x y p
+  := λ C P x y p,
+     match p in (y1 == y2) return (C y1 y2 p) with
+     | refl x => P x
+     end.
+
+(* mouais... chais pas... *)
 Definition ind'_eqA_bis {A : Type} a C (x : A) p :=
   ind_eqA (λ y1 y2 p, Π (D : _), Π (_ : _), D y2 p) (λ x _ y, y) a x p C.
 
