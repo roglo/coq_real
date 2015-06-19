@@ -146,10 +146,10 @@ Proof. reflexivity. Qed.
    the defining equations of the recursor hold propositionally for this
    function, using the induction principle for ℕ. *)
 
-Fixpoint iter C c₀ (cs : C → C) m :=
+Fixpoint iter {C} c₀ (cs : C → C) m :=
   match m with
   | 0 => c₀
-  | S n => cs (iter C c₀ cs n)
+  | S n => cs (iter c₀ cs n)
   end.
 
 (* iter : ∀ C : Type, C → (C → C) → nat → C *)
@@ -157,8 +157,11 @@ Fixpoint iter C c₀ (cs : C → C) m :=
 (* iter C c₀ cs n ≡ cs (cs (cs (cs … (cs c₀)))) with 'n' cs *)
 (* rec_ℕ C c₀ cs n ≡ cs n (cs (n-1) (cs (n-2) … (cs 0 c₀))) with 'n' cs *)
 
+Definition iter_f {A B} (cs : _ → _ → B) (r : nat * A) :=
+  (S (fst r), cs (fst r) (snd r)).
+
 Definition rec_ℕ C (c₀ : C) (cs : nat → C → C) (n : nat) :=
-  snd (iter (nat * C) (0, c₀) (λ r, (S (fst r), cs (fst r) (snd r))) n).
+  snd (iter (0, c₀) (iter_f cs) n).
 
 Eval compute in rec_ℕ (list nat) nil (λ n l, cons n (cons 7 l)) 5.
 
@@ -404,75 +407,34 @@ apply ind_ℕ with (n := x).
  apply IHy.
 Qed.
 
-End notation_Σ_Π_4.
+(* f_equal
+     : ∀ (A B : Type) (f : A → B) (x y : A), x = y → f x = f y *)
 
-Check f_equal.
-
-bbb.
+Definition pair_succ r := (S (fst r), S (snd r)).
 
 Definition ℕ_add_comm_2 x y :=
   ind_ℕ _
     (ind_ℕ _ eq_refl
        (λ x (H : ℕ_add 0 x = ℕ_add x 0),
         eq_trans
-          (f_equal
-             (λ f, f (snd (iter _ (0, 0) (λ r, (S (fst r), S (snd r))) x)))
-             eq_refl)
+          (f_equal (λ f, f (snd (iter (0, 0) pair_succ x))) eq_refl)
           (f_equal S H)))
-    (λ (x0 : nat) (IHx : Π (y0 : nat), ℕ_add x0 y0 = ℕ_add y0 x0) 
-     (y0 : nat),
+    (λ x0 IHx y0,
      eq_ind
-       (snd
-          (iter (nat * nat) (0, x0) (λ r : nat * nat, (S (fst r), S (snd r)))
-             y0))
-       (λ n : nat,
-        snd
-          (iter (nat * nat) (0, S x0) (λ r : nat * nat, (S (fst r), S (snd r)))
-             y0) = S n)
+       (snd (iter (0, x0) pair_succ y0))
+       (λ n, snd (iter (0, S x0) pair_succ y0) = S n)
        (ind_ℕ
-          (λ y1 : nat,
-           snd
-             (iter (nat * nat) (0, S x0)
-                (λ r : nat * nat, (S (fst r), S (snd r))) y1) =
-           S
-             (snd
-                (iter (nat * nat) (0, x0)
-                   (λ r : nat * nat, (S (fst r), S (snd r))) y1))) eq_refl
-          (λ (y1 : nat)
-           (IHy : snd
-                    (iter (nat * nat) (0, S x0)
-                       (λ r : nat * nat, (S (fst r), S (snd r))) y1) =
-                  S
-                    (snd
-                       (iter (nat * nat) (0, x0)
-                          (λ r : nat * nat, (S (fst r), S (snd r))) y1))),
-           (λ
-            H : snd
-                  (iter (nat * nat) (0, S x0)
-                     (λ r : nat * nat, (S (fst r), S (snd r))) y1) =
-                S
-                  (snd
-                     (iter (nat * nat) (0, x0)
-                        (λ r : nat * nat, (S (fst r), S (snd r))) y1)),
-            (λ
-             H0 : snd
-                    (iter (nat * nat) (0, S x0)
-                       (λ r : nat * nat, (S (fst r), S (snd r))) y1) =
-                  S
-                    (snd
-                       (iter (nat * nat) (0, x0)
-                          (λ r : nat * nat, (S (fst r), S (snd r))) y1)),
-             eq_trans
-               (f_equal
-                  (λ f : Π (_ : nat), nat,
-                   f
-                     (snd
-                        (iter (nat * nat) (0, S x0)
-                           (λ r : nat * nat, (S (fst r), S (snd r))) y1)))
-                  eq_refl) (f_equal S H0)) H) IHy) y0)
-       (snd
-          (iter (nat * nat) (0, y0) (λ r : nat * nat, (S (fst r), S (snd r)))
-             x0)) (IHx y0)) x y.
+          (λ y1,
+           snd (iter (0, S x0) pair_succ y1) =
+           S (snd (iter (0, x0) pair_succ y1)))
+          eq_refl
+          (λ y1 IHy,
+           eq_trans
+             (f_equal (λ f, f (snd (iter (0, S x0) pair_succ y1))) eq_refl)
+             (f_equal S IHy))
+           y0)
+       (snd (iter (0, y0) pair_succ x0)) (IHx y0))
+    x y.
 
 Check ℕ_add_comm_2.
 
