@@ -1,6 +1,7 @@
 (* experimentations on HoTT *)
 
 Require Import Utf8 QArith.
+Require Import NPeano.
 
 Open Scope nat_scope.
 
@@ -411,6 +412,16 @@ Check ℕ_add_comm_2.
 (* Exercise 1.9. Define the type family Fin : ℕ → U mentioned at the
    end of §1.3, and the dependent function fmax: Π (n : ℕ) Fin(n + 1)
    mentioned in §1.4. *)
+
+Inductive Fin n := elem : ∀ i, i < n → Fin n.
+Definition fmax n := elem (n + 1) n (Nat.lt_add_pos_r 1 n Nat.lt_0_1).
+
+Check fmax.
+(* fmax
+     : ∀ n : nat, Fin (n + 1) *)
+
+(* Exercise 1.10. Show that the Ackermann function ... is definable
+   using only ... satisfying the following equations: ... *)
 
 bbb.
 
