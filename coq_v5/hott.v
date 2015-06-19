@@ -369,6 +369,117 @@ Eval vm_compute in (ℕ_mul 3 7).
 Eval vm_compute in (ℕ_exp 2 9).
 Eval vm_compute in (ℕ_tet 2 3).
 
+Section notation_Σ_Π_4.
+
+Notation "'Σ' ( x : A ) , B" :=
+  ({ x : A & B }) (at level 0, x at level 0, B at level 100).
+Notation "'Π' ( x : A ) , B" :=
+  (∀ x : A, B) (at level 0, x at level 0, B at level 100).
+
+Fixpoint ind_ℕ (C : nat → U) P0 Pn n :=
+  match n return C n with
+  | 0 => P0
+  | S n' => Pn n' (ind_ℕ C P0 Pn n')
+  end.
+
+Theorem ℕ_add_comm : ∀ x y, ℕ_add x y = ℕ_add y x.
+Proof.
+intros.
+revert y.
+apply ind_ℕ with (n := x).
+ intros y.
+ apply ind_ℕ with (n := y); [ reflexivity | idtac ].
+ clear x y; intros x y.
+ unfold ℕ_add; simpl.
+ unfold rec_ℕ; simpl; f_equal.
+ assumption.
+
+ clear x; intros x IHx y.
+ unfold ℕ_add; simpl.
+ unfold rec_ℕ; simpl; f_equal.
+ unfold ℕ_add in IHx.
+ unfold rec_ℕ in IHx; rewrite <- IHx.
+ apply ind_ℕ with (n := y); [ reflexivity | simpl ].
+ clear y; intros y IHy; f_equal.
+ apply IHy.
+Qed.
+
+End notation_Σ_Π_4.
+
+Check f_equal.
+
+bbb.
+
+Definition ℕ_add_comm_2 x y :=
+  ind_ℕ _
+    (ind_ℕ _ eq_refl
+       (λ x (H : ℕ_add 0 x = ℕ_add x 0),
+        eq_trans
+          (f_equal
+             (λ f, f (snd (iter _ (0, 0) (λ r, (S (fst r), S (snd r))) x)))
+             eq_refl)
+          (f_equal S H)))
+    (λ (x0 : nat) (IHx : Π (y0 : nat), ℕ_add x0 y0 = ℕ_add y0 x0) 
+     (y0 : nat),
+     eq_ind
+       (snd
+          (iter (nat * nat) (0, x0) (λ r : nat * nat, (S (fst r), S (snd r)))
+             y0))
+       (λ n : nat,
+        snd
+          (iter (nat * nat) (0, S x0) (λ r : nat * nat, (S (fst r), S (snd r)))
+             y0) = S n)
+       (ind_ℕ
+          (λ y1 : nat,
+           snd
+             (iter (nat * nat) (0, S x0)
+                (λ r : nat * nat, (S (fst r), S (snd r))) y1) =
+           S
+             (snd
+                (iter (nat * nat) (0, x0)
+                   (λ r : nat * nat, (S (fst r), S (snd r))) y1))) eq_refl
+          (λ (y1 : nat)
+           (IHy : snd
+                    (iter (nat * nat) (0, S x0)
+                       (λ r : nat * nat, (S (fst r), S (snd r))) y1) =
+                  S
+                    (snd
+                       (iter (nat * nat) (0, x0)
+                          (λ r : nat * nat, (S (fst r), S (snd r))) y1))),
+           (λ
+            H : snd
+                  (iter (nat * nat) (0, S x0)
+                     (λ r : nat * nat, (S (fst r), S (snd r))) y1) =
+                S
+                  (snd
+                     (iter (nat * nat) (0, x0)
+                        (λ r : nat * nat, (S (fst r), S (snd r))) y1)),
+            (λ
+             H0 : snd
+                    (iter (nat * nat) (0, S x0)
+                       (λ r : nat * nat, (S (fst r), S (snd r))) y1) =
+                  S
+                    (snd
+                       (iter (nat * nat) (0, x0)
+                          (λ r : nat * nat, (S (fst r), S (snd r))) y1)),
+             eq_trans
+               (f_equal
+                  (λ f : Π (_ : nat), nat,
+                   f
+                     (snd
+                        (iter (nat * nat) (0, S x0)
+                           (λ r : nat * nat, (S (fst r), S (snd r))) y1)))
+                  eq_refl) (f_equal S H0)) H) IHy) y0)
+       (snd
+          (iter (nat * nat) (0, y0) (λ r : nat * nat, (S (fst r), S (snd r)))
+             x0)) (IHx y0)) x y.
+
+Check ℕ_add_comm_2.
+
+bbb.
+
+End notation_Σ_Π_4.
+
 bbb.
 
 (* ... *)
