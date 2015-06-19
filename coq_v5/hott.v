@@ -161,16 +161,16 @@ Fixpoint iter {C} c₀ (cs : C → C) m :=
 Definition iter_f {A B} (cs : _ → _ → B) (r : nat * A) :=
   (S (fst r), cs (fst r) (snd r)).
 
-Definition rec_ℕ C (c₀ : C) (cs : nat → C → C) (n : nat) :=
+Definition rec_ℕ {C} (c₀ : C) (cs : nat → C → C) (n : nat) :=
   snd (iter (0, c₀) (iter_f cs) n).
 
-Eval compute in rec_ℕ (list nat) nil (λ n l, cons n (cons 7 l)) 5.
+Eval compute in rec_ℕ nil (λ n l, cons n (cons 7 l)) 5.
 
-Theorem rec_ℕ_0 : ∀ C c₀ cs, rec_ℕ C c₀ cs 0 = c₀.
+Theorem rec_ℕ_0 : ∀ C (c₀ : C) cs, rec_ℕ c₀ cs 0 = c₀.
 Proof. reflexivity. Qed.
 
 Theorem rec_ℕ_succ : ∀ C (c₀ : C) cs n,
-  rec_ℕ C c₀ cs (S n) = cs n (rec_ℕ C c₀ cs n).
+  rec_ℕ c₀ cs (S n) = cs n (rec_ℕ c₀ cs n).
 Proof.
 intros.
 unfold rec_ℕ; simpl; f_equal.
@@ -339,11 +339,11 @@ Abort. (* not obvious, see that later *)
    Lemmas 2.1.1 and 2.1.2. *)
 
 (* doing more: defining hypeoperations... *)
-Definition ℕ_add x := rec_ℕ nat x (λ _, S).
-Definition ℕ_mul x := rec_ℕ nat 0 (λ _, ℕ_add x).
-Definition ℕ_exp x := rec_ℕ nat 1 (λ _, ℕ_mul x).
-Definition ℕ_tet x := rec_ℕ nat 1 (λ _, ℕ_exp x).
-Definition ℕ_pen x := rec_ℕ nat 1 (λ _, ℕ_tet x).
+Definition ℕ_add x := rec_ℕ x (λ _, S).
+Definition ℕ_mul x := rec_ℕ 0 (λ _, ℕ_add x).
+Definition ℕ_exp x := rec_ℕ 1 (λ _, ℕ_mul x).
+Definition ℕ_tet x := rec_ℕ 1 (λ _, ℕ_exp x).
+Definition ℕ_pen x := rec_ℕ 1 (λ _, ℕ_tet x).
 
 Eval vm_compute in (ℕ_add 3 7).
 Eval vm_compute in (ℕ_mul 3 7).
@@ -420,10 +420,65 @@ Check fmax.
 (* fmax
      : ∀ n : nat, Fin (n + 1) *)
 
-(* Exercise 1.10. Show that the Ackermann function ... is definable
-   using only ... satisfying the following equations: ... *)
+(* Exercise 1.10. Show that the Ackermann function ack : ℕ → ℕ → ℕ
+   is definable using only rec_ℕ satisfying the following equations:
+                 ack(0,n) ≡ succ(n),
+           ack(succ(m),0) ≡ ack(m,1),
+      ack(succ(m),succ(n) ≡ ack(m,ack(succ(m),n)). *)
+
+(*
+Definition ack : nat → nat → nat.
+Proof.
+fix ack 1.
+intros m n.
+destruct m; [ apply (S n) | idtac ].
+destruct n.
+ apply ack; [ apply m | apply 1 ].
+
+ apply ack; [ apply m | idtac ].
+ apply ack; [ apply (S m) | apply n ].
+
+Show Proof.
+*)
+(*
+(fix ack (m n : nat) {struct m} : nat :=
+   match m with
+   | 0 => S n
+   | S m0 =>
+let rm = ack m0 n in
+       match n with
+       | 0 => ack m0 1
+       | S n0 =>
+let rn = ack m0 n in
+           ack m0 (ack (S m0) n0)
+       end
+   end)
+*)
+
+Print rec_ℕ.
+(* rec_ℕ = 
+λ (C : Type) (c₀ : C) (cs : nat → C → C) (n : nat),
+snd (iter (0, c₀) (iter_f cs) n)
+     : ∀ C : Type, C → (nat → C → C) → nat → C
+*)
 
 bbb.
+
+(* mmm... faut voir... *)
+
+Definition ack m n :=
+  rec_ℕ (S n, ) (λ m rm, rec_ℕ 
+
+  rec_ℕ (ack m 1) (λ n _, ack m (ack (S m) n)) n) m.
+
+  rec_ℕ n (λ m _, rec_ℕ (ack m 1) (λ n _, ack m (ack (S m) n)) n) m.
+
+Theorem ack_0 : ∀ n, ack 0 n = S n.
+
+bbb.
+
+Definition rec_ℕ C (c₀ : C) (cs : nat → C → C) (n : nat) :=
+  snd (iter (0, c₀) (iter_f cs) n).
 
 (* ... *)
 
