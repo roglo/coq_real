@@ -340,85 +340,30 @@ Definition ind'_eqA {A} :
 Theorem ind'_eqA_def_eq {A} : ∀ (a : A) C c, ind'_eqA a C c a (refl a) = c.
 Proof. reflexivity. Qed.
 
-(*
-ind_eqA =
-λ (A : Type) (C : Π (x : A), Π (y : A), Π (_ : x == y), U)
-(P : Π (x : A), C x x (refl x)) (x y : A) (p : x == y), ...
-ind'_eqA =
-λ (A : Type) (a : A) (C : Π (x : A), Π (_ : a == x), U)
-(P : C a (refl a)) (x : A) (p : a == x), ...
-*)
-
 (* alternative definition from ind_eqA *)
 Definition ind'_eqA_bis {A} :
   Π (a : A),
   Π (C : Π (x : A), (a == x) → U), C a (refl a)
   → Π (x : A), Π (p : a == x), C x p.
-intros a C c x p.
-Check @ind_eqA.
-assert (Π (x : A), Π (y : A), Π (p : x == y), U) as D.
-intros.
-eapply C, p.
-bbb.
+Proof.
+Abort. (* not obvious, see that later *)
 
-assert ((Π (x : A), D x x (refl x)), Π (x : A), Π (y : A), Π (p : x == y), D x y p) as E.
-bbb.
-
-Definition ind'_eqA_bis {A} :
-  Π (a : A),
-  Π (C : Π (x : A), (a == x) → U), C a (refl a)
-  → Π (x : A), Π (p : a == x), C x p
-  := λ a C P x p,
-ind_eqA (λ x y (p : x == y), C y p).
-
-     match p in (y1 == y2) return (Π (D : _), Π (_ : _), D y2 p) with
-     | refl x => λ _ y, y
-     end C P.
-bbb.
-
-Definition ind_eqA {A} :
-  Π (C : Π (x : A), Π (y : A), (x == y) → U),
-    (Π (x : A), C x x (refl x))
-    → Π (x : A), Π (y : A), Π (p : x == y), C x y p
-  := λ C P x y p,
-     match p in (y1 == y2) return (C y1 y2 p) with
-     | refl x => P x
-     end.
-
-(* mouais... chais pas... *)
-Definition ind'_eqA_bis {A : Type} a C (x : A) p :=
-  ind_eqA (λ y1 y2 p, Π (D : _), Π (_ : _), D y2 p) (λ x _ y, y) a x p C.
-
-Theorem ind'_eqA_bis_def_eq {A} : ∀ (a : A) C c,
-  ind'_eqA_bis a C c a (refl a) = c.
-Proof. reflexivity. Qed.
-
-Toplevel input, characters 93-94:
-Error:
-In environment
-A : Type
-a : A
-C : Π (x0 : A), Π (_ : a == x0), Type
-c : A
-The term "a" has type "A" while it is expected to have type
-"a == c".
-
-Check @ind'_eqA_bis.
-(* ind'_eqA
-     : Π (A : Type),
-       Π (a : A),
-       Π (C : Π (x : A), Π (_ : a == x), U),
-       Π (_ : C a (refl a)),
-       Π (x : A), Π (p : a == x), C x p
-  ind'_eqA_bis
-     : Π (A : Type),
-       Π (a : A),
-       Π (C : Π (x : A), Π (_ : a == x), Type),
-       Π (x : A), Π (p : a == x), Π (_ : C a (refl a)), C x p
-*)
-bbb.
+(* exercise abandoned... *)
 
 End notation_Σ_Π_3.
+
+(* Exercise 1.8. Define multiplication and exponentiation using rec_ℕ.
+   Verify that (ℕ, +, 0, ×, 1) is a semiring using only ind_ℕ. You will
+   probably also need to use symmetry and transitivity of equality,
+   Lemmas 2.1.1 and 2.1.2. *)
+
+Check rec_ℕ.
+
+Definition ℕ_mul x y := rec_ℕ nat 0 (λ _ acc, acc + x) y.
+Definition ℕ_exp x y := rec_ℕ nat 1 (λ _ acc, ℕ_mul acc x) y.
+
+Eval compute in (ℕ_mul 3 7).
+Eval compute in (ℕ_exp 2 10).
 
 bbb.
 
