@@ -435,8 +435,6 @@ Definition ℕ_add_comm_2 x y :=
 
 Check ℕ_add_comm_2.
 
-bbb.
-
 End notation_Σ_Π_4.
 
 bbb.
