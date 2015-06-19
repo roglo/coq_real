@@ -408,8 +408,9 @@ Check ℕ_add_comm_2.
 (* bon, mais après ça, j'arrête cet exo paskeu j'ai déjà fait des
    preuves de ce genre, c'est long et casse-couilles *)
 
-(* Exercise 1.9. Define the type family ... mentioned at the end of
-   ..., and the dependent function ... mentioned in ... *)
+(* Exercise 1.9. Define the type family Fin : ℕ → U mentioned at the
+   end of §1.3, and the dependent function fmax: Π (n : ℕ) Fin(n + 1)
+   mentioned in §1.4. *)
 
 bbb.
 
