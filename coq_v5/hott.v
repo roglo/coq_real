@@ -181,12 +181,10 @@ Qed.
    then we can give a definition of ind_A+B for which the definitional
    equalities stated in §1.7 hold. *)
 
-Section notation_Σ_Π.
-
 Notation "'Σ' ( x : A ) , B" :=
-  ({ x : A & B }) (at level 0, x at level 0, B at level 100).
+  ({ x : A & B }) (at level 0, x at level 0, B at level 100, only parsing).
 Notation "'Π' ( x : A ) , B" :=
-  (∀ x : A, B) (at level 0, x at level 0, B at level 100).
+  (∀ x : A, B) (at level 0, x at level 0, B at level 100, only parsing).
 Definition U := Type.
 
 Definition rec₂ C (c₀ c₁ : C) (b : bool) := if b then c₀ else c₁.
@@ -207,6 +205,8 @@ intros C HA HB x.
 induction x as (b, x).
 destruct b; [ apply HA | apply HB ].
 Qed.
+
+Check ind_ApB_1.
 
 (* same definition, by value *)
 Definition ind_ApB_2 {A B : U} (C : Π (_ : ApB A B), U)
@@ -231,20 +231,11 @@ Check @ind_ApB_2.
        Π (_ : Π (a : A), C (ApB_inl A B a)),
        Π (_ : Π (b : B), C (ApB_inr A B b)), Π (x : ApB A B), C x *)
 
-End notation_Σ_Π.
-
 (* Exercise 1.6. Show that if we define AxB :≡ Π (x:2) rec₂(U,A,B,x),
    then we can give a definition of ind_AxB for which the definitional
    equalities stated in §1.5 hold propositionally (i.e. using equality
    types). (This requires the function extensionality axiom, which is
    introduced in §2.9.) *)
-
-Section notation_Σ_Π_2.
-
-Notation "'Σ' ( x : A ) , B" :=
-  ({ x : A & B }) (at level 0, x at level 0, B at level 100).
-Notation "'Π' ( x : A ) , B" :=
-  (∀ x : A, B) (at level 0, x at level 0, B at level 100).
 
 Definition AxB' A B := Π (x : bool), rec₂ U A B x.
 
@@ -301,21 +292,9 @@ Definition ind_AxB'_2 {A B : U} C
        Π (_ : Π (x : A), Π (y : B), C (AxB'_pair x y)), Π (x : AxB' A B), C x
 *)
 
-End notation_Σ_Π_2.
-
 (* Exercise 1.7. Give an alternative derivation of ind'_=A from ind_=A
    which avoids the use of universes. (This is easiest using concepts
    from later chapters.) *)
-
-Check Id_ind.
-Check path_induction.
-
-Section notation_Σ_Π_3.
-
-Notation "'Σ' ( x : A ) , B" :=
-  ({ x : A & B }) (at level 0, x at level 0, B at level 100).
-Notation "'Π' ( x : A ) , B" :=
-  (∀ x : A, B) (at level 0, x at level 0, B at level 100).
 
 (* definition from §1.12.1 *)
 Definition ind_eqA {A} :
@@ -353,8 +332,6 @@ Abort. (* not obvious, see that later *)
 
 (* exercise abandoned... *)
 
-End notation_Σ_Π_3.
-
 (* Exercise 1.8. Define multiplication and exponentiation using rec_ℕ.
    Verify that (ℕ, +, 0, ×, 1) is a semiring using only ind_ℕ. You will
    probably also need to use symmetry and transitivity of equality,
@@ -371,13 +348,6 @@ Eval vm_compute in (ℕ_add 3 7).
 Eval vm_compute in (ℕ_mul 3 7).
 Eval vm_compute in (ℕ_exp 2 9).
 Eval vm_compute in (ℕ_tet 2 3).
-
-Section notation_Σ_Π_4.
-
-Notation "'Σ' ( x : A ) , B" :=
-  ({ x : A & B }) (at level 0, x at level 0, B at level 100).
-Notation "'Π' ( x : A ) , B" :=
-  (∀ x : A, B) (at level 0, x at level 0, B at level 100).
 
 Fixpoint ind_ℕ (C : nat → U) P0 Pn n :=
   match n return C n with
@@ -434,8 +404,6 @@ Definition ℕ_add_comm_2 x y :=
     x y.
 
 Check ℕ_add_comm_2.
-
-End notation_Σ_Π_4.
 
 bbb.
 
