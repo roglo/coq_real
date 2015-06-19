@@ -362,11 +362,11 @@ Definition ℕ_add x := rec_ℕ nat x (λ _, S).
 Definition ℕ_mul x := rec_ℕ nat 0 (λ _, ℕ_add x).
 Definition ℕ_exp x := rec_ℕ nat 1 (λ _, ℕ_mul x).
 Definition ℕ_tet x := rec_ℕ nat 1 (λ _, ℕ_exp x).
-Definition ℕ_qui x := rec_ℕ nat 1 (λ _, ℕ_tet x).
+Definition ℕ_pen x := rec_ℕ nat 1 (λ _, ℕ_tet x).
 
 Eval vm_compute in (ℕ_add 3 7).
 Eval vm_compute in (ℕ_mul 3 7).
-Eval vm_compute in (ℕ_exp 2 10).
+Eval vm_compute in (ℕ_exp 2 9).
 Eval vm_compute in (ℕ_tet 2 3).
 
 bbb.
