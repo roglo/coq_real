@@ -405,6 +405,12 @@ Definition ℕ_add_comm_2 x y :=
 
 Check ℕ_add_comm_2.
 
+(* bon, mais après ça, j'arrête cet exo paskeu j'ai déjà fait des
+   preuves de ce genre, c'est long et casse-couilles *)
+
+(* Exercise 1.9. Define the type family ... mentioned at the end of
+   ..., and the dependent function ... mentioned in ... *)
+
 bbb.
 
 (* ... *)
