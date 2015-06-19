@@ -407,9 +407,6 @@ apply ind_ℕ with (n := x).
  apply IHy.
 Qed.
 
-(* f_equal
-     : ∀ (A B : Type) (f : A → B) (x y : A), x = y → f x = f y *)
-
 Definition pair_succ r := (S (fst r), S (snd r)).
 
 Definition ℕ_add_comm_2 x y :=
