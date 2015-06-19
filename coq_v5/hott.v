@@ -357,13 +357,17 @@ End notation_Σ_Π_3.
    probably also need to use symmetry and transitivity of equality,
    Lemmas 2.1.1 and 2.1.2. *)
 
-Check rec_ℕ.
+(* doing more: defining hypeoperations... *)
+Definition ℕ_add x := rec_ℕ nat x (λ _, S).
+Definition ℕ_mul x := rec_ℕ nat 0 (λ _, ℕ_add x).
+Definition ℕ_exp x := rec_ℕ nat 1 (λ _, ℕ_mul x).
+Definition ℕ_tet x := rec_ℕ nat 1 (λ _, ℕ_exp x).
+Definition ℕ_qui x := rec_ℕ nat 1 (λ _, ℕ_tet x).
 
-Definition ℕ_mul x y := rec_ℕ nat 0 (λ _ acc, acc + x) y.
-Definition ℕ_exp x y := rec_ℕ nat 1 (λ _ acc, ℕ_mul acc x) y.
-
-Eval compute in (ℕ_mul 3 7).
-Eval compute in (ℕ_exp 2 10).
+Eval vm_compute in (ℕ_add 3 7).
+Eval vm_compute in (ℕ_mul 3 7).
+Eval vm_compute in (ℕ_exp 2 10).
+Eval vm_compute in (ℕ_tet 2 3).
 
 bbb.
 
