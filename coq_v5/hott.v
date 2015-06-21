@@ -494,6 +494,12 @@ Check not_not_not_4.
     (ii) If A, then not (not A).
    (iii) If (not A or not B), then not (A and B). *)
 
+Theorem hott_ex_1_12_i : ∀ A B, if A then if B then A.
+
+Toplevel input, characters 55-56:
+Syntax error: 'else' expected after [constr:operconstr level 200] (in [constr:binder_constr]).
+
+
 bbb.
 
 (* ... *)
