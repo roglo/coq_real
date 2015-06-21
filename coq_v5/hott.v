@@ -338,7 +338,7 @@ Abort. (* not obvious, see that later *)
    probably also need to use symmetry and transitivity of equality,
    Lemmas 2.1.1 and 2.1.2. *)
 
-(* doing more: defining hypeoperations... *)
+(* doing more: playing with hypeoperations... *)
 Definition ℕ_add x := rec_ℕ' x (λ _, S).
 Definition ℕ_mul x := rec_ℕ' 0 (λ _, ℕ_add x).
 Definition ℕ_exp x := rec_ℕ' 1 (λ _, ℕ_mul x).
