@@ -426,59 +426,69 @@ Check fmax.
            ack(succ(m),0) ≡ ack(m,1),
       ack(succ(m),succ(n) ≡ ack(m,ack(succ(m),n)). *)
 
-(*
-Definition ack : nat → nat → nat.
-Proof.
-fix ack 1.
-intros m n.
-destruct m; [ apply (S n) | idtac ].
-destruct n.
- apply ack; [ apply m | apply 1 ].
+Fixpoint ack m n :=
+  match m with
+  | 0 => S n
+  | S m' => rec_ℕ (ack m' 1) (λ n r, ack m' r) n
+  end.
 
- apply ack; [ apply m | idtac ].
- apply ack; [ apply (S m) | apply n ].
-
-Show Proof.
-*)
-(*
-(fix ack (m n : nat) {struct m} : nat :=
-   match m with
-   | 0 => S n
-   | S m0 =>
-let rm = ack m0 n in
-       match n with
-       | 0 => ack m0 1
-       | S n0 =>
-let rn = ack m0 n in
-           ack m0 (ack (S m0) n0)
-       end
-   end)
-*)
-
-Print rec_ℕ.
-(* rec_ℕ = 
-λ (C : Type) (c₀ : C) (cs : nat → C → C) (n : nat),
-snd (iter (0, c₀) (iter_f cs) n)
-     : ∀ C : Type, C → (nat → C → C) → nat → C
-*)
-
-bbb.
-
-(* mmm... faut voir... *)
-
-Definition ack m n :=
-  rec_ℕ (S n, ) (λ m rm, rec_ℕ 
-
-  rec_ℕ (ack m 1) (λ n _, ack m (ack (S m) n)) n) m.
-
-  rec_ℕ n (λ m _, rec_ℕ (ack m 1) (λ n _, ack m (ack (S m) n)) n) m.
+(* not sure it is what is required since a Fixpoint is used even so
+   and two recursive calls but I don't know how to do it without
+   Fixpoint at all (i.e. using Definition) and only rec_ℕ (perhaps
+   two rec_ℕs, one for m and one for n). However this rec_ℕ is
+   mandatory, otherwise Coq would not accept a recursive call with
+   (S m) in"ack (S m) n": what means that the simple definition of
+   ack with Fixpoint and recursive calls cannot be written in Coq *)
 
 Theorem ack_0 : ∀ n, ack 0 n = S n.
+Proof. reflexivity. Qed.
+
+Theorem ack_succ_0 : ∀ m, ack (S m) 0 = ack m 1.
+Proof. reflexivity. Qed.
+
+Theorem ack_succ_succ : ∀ m n, ack (S m) (S n) = ack m (ack (S m) n).
+Proof. reflexivity. Qed.
+
+(* Exercise 1.11. Show that for any type A, we have ¬¬¬A → ¬A *)
+
+(* solution with tactics *)
+Theorem not_not_not_1 : ∀ A, ¬¬¬A → ¬A.
+Proof.
+intros A Hnnn a.
+apply Hnnn; intros HnA.
+apply HnA; assumption.
+Qed.
+
+(* solution with proof term *)
+Definition not_not_not_2 A (Hnnn : ¬¬¬A) : ¬A := λ a, Hnnn (λ HnA, HnA a).
+
+Check not_not_not_1.
+Check not_not_not_2.
+
+(* this was on Prop; solutions on Types: *)
+
+(* with tactics *)
+Theorem not_not_not_3 : ∀ A, notT (notT (notT A)) → notT A.
+Proof.
+intros A Hnnn a.
+apply Hnnn; intros HnA.
+apply HnA; assumption.
+Qed.
+
+(* with proof term *)
+Definition not_not_not_4 A (Hnnn : notT (notT (notT A))) : notT A :=
+  λ a, Hnnn (λ HnA, HnA a).
+
+Check not_not_not_3.
+Check not_not_not_4.
+
+(* Exercise 1.12. Using the propositions as types interpretation,
+   derive the following tautologies.
+     (i) If A, then (if B then A).
+    (ii) If A, then not (not A).
+   (iii) If (not A or not B), then not (A and B). *)
 
 bbb.
-
-Definition rec_ℕ C (c₀ : C) (cs : nat → C → C) (n : nat) :=
-  snd (iter (0, c₀) (iter_f cs) n).
 
 (* ... *)
 
