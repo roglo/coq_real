@@ -426,6 +426,12 @@ Check fmax.
            ack(succ(m),0) ≡ ack(m,1),
       ack(succ(m),succ(n) ≡ ack(m,ack(succ(m),n)). *)
 
+Fixpoint rec_ℕ {C} (c₀ : C) cs n :=
+  match n with
+  | 0 => c₀
+  | S n' => cs n (rec_ℕ c₀ cs n')
+  end.
+
 Fixpoint ack m n :=
   match m with
   | 0 => S n
