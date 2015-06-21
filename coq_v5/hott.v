@@ -534,6 +534,7 @@ eq_refl
 Theorem bbb : ∀ (p : eq_nat 0 0), p = I.
 Proof. intros; destruct p; reflexivity. Qed.
 
+(*
 Inductive my_eq_nat : nat → nat → Prop := my_eq_refl : ∀ x, my_eq_nat x x.
 Inductive my_eq_nat2 (x : nat) : nat → Prop := my_eq_refl2 : my_eq_nat2 x x.
 Inductive my_eq_nat3 (x y : nat) : Prop := my_eq_refl3 : x = y → my_eq_nat3 x y.
@@ -543,8 +544,17 @@ Proof.
 intros.
 destruct p.
 destruct e.
+*)
 
-Theorem aaa : ∀ (p : 0 = 0), p = eq_refl 0.
+Set Printing All.
+Definition ddd : 0 = 0. Proof. reflexivity. Qed. Print ddd.
+(*
+ddd = @eq_refl nat O
+     : @eq nat O O
+*)
+Unset Printing All.
+
+Theorem aaa : ∀ (p : 0 = 0), p = @eq_refl nat 0.
 Proof.
 intros.
 destruct p.
