@@ -7,10 +7,26 @@ Open Scope nat_scope.
 
 (* hott section 1.12 *)
 
+(*
+Axiom random : ∀ A, A → A → bool.
+
+Inductive Id {A} : A → A → Type :=
+  | refl : ∀ x : A, Id x x
+  | phony : ∀ x y : A, random A x y = true → Id x y.
+*)
 Inductive Id {A} : A → A → Type :=
   | refl : ∀ x : A, Id x x.
+(**)
 
 Notation "x == y" := (Id x y) (at level 70).
+
+(*
+Definition indiscernability {A} C (x y : A) (p : x == y) : C x → C y.
+Proof.
+induction p as [| x y p]; [ intros H; assumption | idtac ].
+intros H.
+bbb.
+*)
 
 Definition indiscernability {A} C (x y : A) (p : x == y) :=
   match p in (y1 == y2) return (C y1 → C y2) with
@@ -493,6 +509,29 @@ Check not_not_not_4.
      (i) If A, then (if B then A).
     (ii) If A, then not (not A).
    (iii) If (not A or not B), then not (A and B). *)
+
+(* some questions I have... nothing to do with this exercise *)
+
+Definition toto A (x0 : A) (p : x0 = x0) :=
+  @eq (@eq A x0 x0) p (@eq_refl A x0).
+
+Set Printing Implicit.
+Check toto.
+
+Theorem aaa : ∀ A (x : A) (p : x = x), p = eq_refl x.
+Proof.
+intros.
+induction p.
+
+Toplevel input, characters 21-32:
+Error: Abstracting over the term "x0" leads to a term
+"λ x0 : A, p = eq_refl" which is ill-typed.
+
+Toplevel input, characters 0-11:
+Error: Abstracting over the term "x0" leads to a term
+"fun x0 : A => @eq (@eq A x0 x0) p (@eq_refl A x0)" which is ill-typed.
+
+bbb.
 
 Theorem hott_ex_1_12_i : ∀ A B, if A then if B then A.
 
