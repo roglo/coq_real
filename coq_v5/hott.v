@@ -521,6 +521,12 @@ Check toto.
 Theorem aaa : ∀ A (x : A) (p : x = x), p = eq_refl x.
 Proof.
 intros.
+(*
+Print eq_refl.
+Print refl.
+Inductive eq (A : Type) (x : A) : A → Prop :=  eq_refl : x = x
+Inductive Id (A : Type) : A → A → Type :=  refl : ∀ x : A, x == x
+*)
 induction p.
 
 Toplevel input, characters 21-32:
