@@ -512,22 +512,50 @@ Check not_not_not_4.
 
 (* some questions I have... nothing to do with this exercise *)
 
-Definition toto A (x0 : A) (p : x0 = x0) :=
-  @eq (@eq A x0 x0) p (@eq_refl A x0).
-
-Set Printing Implicit.
-Check toto.
-
-Theorem aaa : ∀ A (x : A) (p : x = x), p = eq_refl x.
-Proof.
-intros.
-(*
 Print eq_refl.
 Print refl.
+(*
 Inductive eq (A : Type) (x : A) : A → Prop :=  eq_refl : x = x
 Inductive Id (A : Type) : A → A → Type :=  refl : ∀ x : A, x == x
 *)
-induction p.
+
+Theorem eee : ∀ (p : unit), p = tt.
+Proof. intros; destruct p; reflexivity. Qed.
+
+Check (I : eq_nat 0 0).
+Check (eq_refl 0 : 0 = 0).
+(*
+I
+     : eq_nat 0 0
+eq_refl
+     : 0 = 0
+*)
+
+Theorem bbb : ∀ (p : eq_nat 0 0), p = I.
+Proof. intros; destruct p; reflexivity. Qed.
+
+Inductive my_eq_nat : nat → nat → Prop := my_eq_refl : ∀ x, my_eq_nat x x.
+Inductive my_eq_nat2 (x : nat) : nat → Prop := my_eq_refl2 : my_eq_nat2 x x.
+Inductive my_eq_nat3 (x y : nat) : Prop := my_eq_refl3 : x = y → my_eq_nat3 x y.
+
+Theorem ccc : ∀ (p : my_eq_nat3 0 0), p = my_eq_refl3 0 0 eq_refl.
+Proof.
+intros.
+destruct p.
+destruct e.
+
+Theorem aaa : ∀ (p : 0 = 0), p = eq_refl 0.
+Proof.
+intros.
+destruct p.
+
+Toplevel input, characters 0-10:
+Error: Abstracting over the terms "n" and "p" leads to a term
+"λ (n : nat) (p : n = n), p = @eq_refl nat n" which is ill-typed.
+
+Toplevel input, characters 0-11:
+Error: Abstracting over the terms "n" leads to a term
+"λ (n : nat) (p : n = n), p = @eq_refl nat n" which is ill-typed.
 
 Toplevel input, characters 21-32:
 Error: Abstracting over the term "x0" leads to a term
