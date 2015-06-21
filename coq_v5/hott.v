@@ -533,9 +533,9 @@ Toplevel input, characters 21-32:
 Error: Abstracting over the term "x0" leads to a term
 "λ x0 : A, p = eq_refl" which is ill-typed.
 
-Toplevel input, characters 0-11:
+Toplevel input, characters 21-32:
 Error: Abstracting over the term "x0" leads to a term
-"fun x0 : A => @eq (@eq A x0 x0) p (@eq_refl A x0)" which is ill-typed.
+"λ x0 : A, p = @eq_refl A x0" which is ill-typed.
 
 bbb.
 
