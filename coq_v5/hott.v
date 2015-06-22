@@ -532,12 +532,16 @@ Definition hott_ex_1_13 : (∀ P, orT P (notT P))
   := λ Hem P Hno, Hno (Hem P).
 
 (* Exercise 1.14. Why do the induction principles for identity types
-   not allow us to construct a function ... with the defining equation
-   ... ? *)
+   not allow us to construct a function f : Π (x:A) Π (p:x=x) (p=refl x)
+   with the defining equation
+          f(x,refl_x) :≡ refl_{refl_x}    ? *)
 
+(* j'aimerais bien le savoir ! :-) *)
+
+Definition hott_ex_1_14 {A} : Π (x : A), Π (p : x == x), p = refl x.
+Proof.
+intros x p.
 bbb.
-
-(* some questions I have... nothing to do with this exercise *)
 
 Print eq_refl.
 Print refl.
