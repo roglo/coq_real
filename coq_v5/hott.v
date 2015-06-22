@@ -527,6 +527,14 @@ Definition hot_ex_1_12_iii : ∀ A B, orT (notT A) (notT B) → notT (andT A B) 
 (* Exercise 1.13. Using propositions-as-types, derive the double negation
    of the principle of excluded middle, i.e. prove not (not (P or not P)). *)
 
+Definition hott_ex_1_13 : (∀ P, orT P (notT P))
+    → ∀ P, notT (notT (orT P (notT P)))
+  := λ Hem P Hno, Hno (Hem P).
+
+(* Exercise 1.14. Why do the induction principles for identity types
+   not allow us to construct a function ... with the defining equation
+   ... ? *)
+
 bbb.
 
 (* some questions I have... nothing to do with this exercise *)
