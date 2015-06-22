@@ -510,6 +510,25 @@ Check not_not_not_4.
     (ii) If A, then not (not A).
    (iii) If (not A or not B), then not (A and B). *)
 
+Inductive andT A B := conjT : A → B → andT A B.
+Inductive orT A B :=
+  | orT_introl : A → orT A B
+  | orT_intror : B → orT A B.
+
+Definition hott_ex_1_12_i : ∀ A B, A → B → A := λ A B HA HB, HA.
+Definition hot_ex_1_12_ii : ∀ A, A → notT (notT A) := λ A HA HnA, HnA HA.
+Definition hot_ex_1_12_iii : ∀ A B, orT (notT A) (notT B) → notT (andT A B) :=
+  λ A B Hor Hand,
+  match Hor with
+  | orT_introl Hna => Hna (andT_rect A B (λ _, A) (λ a _, a) Hand)
+  | orT_intror Hnb => Hnb (andT_rect A B (λ _, B) (λ _ b, b) Hand)
+  end.
+
+(* Exercise 1.13. Using propositions-as-types, derive the double negation
+   of the principle of excluded middle, i.e. prove not (not (P or not P)). *)
+
+bbb.
+
 (* some questions I have... nothing to do with this exercise *)
 
 Print eq_refl.
@@ -574,13 +593,6 @@ Error: Abstracting over the term "x0" leads to a term
 Toplevel input, characters 21-32:
 Error: Abstracting over the term "x0" leads to a term
 "λ x0 : A, p = @eq_refl A x0" which is ill-typed.
-
-bbb.
-
-Theorem hott_ex_1_12_i : ∀ A B, if A then if B then A.
-
-Toplevel input, characters 55-56:
-Syntax error: 'else' expected after [constr:operconstr level 200] (in [constr:binder_constr]).
 
 bbb.
 
