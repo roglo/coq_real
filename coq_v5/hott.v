@@ -543,6 +543,11 @@ Definition hott_ex_1_13 : (∀ P, orT P (notT P))
 
 (* not sure *)
 
+(* à voir... *)
+
+(* Exercise 1.15. Show that indiscernability of identicals follows
+   from path induction. *)
+
 bbb.
 
 (* ... *)
