@@ -562,6 +562,7 @@ Theorem path_induction_indiscernability {A} :
   ∀ (C : A → U) (x y : A), x == y → C x → C y.
 Proof.
 intros C x y p px.
+pose proof @path_induction A as H.
 
 bbb.
 
