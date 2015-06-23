@@ -541,6 +541,8 @@ Definition hott_ex_1_13 : (∀ P, orT P (notT P))
    and x = x, by transitivity, which creates another proof that x = x,
    which is different from refl. *)
 
+(* not sure *)
+
 bbb.
 
 (* ... *)
