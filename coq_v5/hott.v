@@ -43,7 +43,7 @@ Proof. reflexivity. Qed.
 
 (* hott section 1.12.1 *)
 
-Theorem path_induction : ∀ A C c,
+Theorem path_induction0 : ∀ A C c,
   ∃ (f : ∀ (x y : A) (p : x == y), C x y p),
   ∀ x, f x x (refl x) = c x.
 Proof.
@@ -547,6 +547,23 @@ Definition hott_ex_1_13 : (∀ P, orT P (notT P))
 
 (* Exercise 1.15. Show that indiscernability of identicals follows
    from path induction. *)
+
+Definition path_induction {A} (C : Π (x : A), Π (y : A), Π (p : x == y), U)
+    c (x y : A) (p : x == y) :=
+  match p return (C _ _ p) with
+  | refl => c x
+  end.
+
+Theorem path_induction_def : ∀ A (x : A) C c,
+  path_induction C c x x (refl x) = c x.
+Proof. reflexivity. Qed.
+
+Theorem path_induction_indiscernability :
+  (∀ A (C : ∀ x y : A, x == y → U),
+     (∀ x : A, C x x (refl x)) → ∀ (x y : A) (p : x == y), C x y p)
+  → (∀ A (C : A → U) (x y : A), x == y → C x → C y).
+Proof.
+intros path_ind A C x y p px.
 
 bbb.
 
