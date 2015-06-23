@@ -48,12 +48,10 @@ Theorem path_induction : ∀ A C c,
   ∀ x, f x x (refl x) = c x.
 Proof.
 intros A C c.
-bbb.
-
 exists
-  (λ _ _ p,
+  (λ a _ p,
    match p return (C _ _ p) with
-   | refl a => c a
+   | refl => c a
    end).
 reflexivity.
 Qed.
@@ -63,10 +61,12 @@ Theorem based_path_induction : ∀ A a C c,
   f a (refl a) = c.
 Proof.
 intros A a C c.
+bbb.
+
 exists
   (λ _ p,
    match p in (x1 == x2) return (∀ D, D x1 (refl x1) → D x2 p) with
-   | refl _ => λ _, id
+   | refl => λ _, id
    end C c).
 reflexivity.
 Qed.
