@@ -558,12 +558,10 @@ Theorem path_induction_def : ∀ A (x : A) C c,
   path_induction C c x x (refl x) = c x.
 Proof. reflexivity. Qed.
 
-Theorem path_induction_indiscernability :
-  (∀ A (C : ∀ x y : A, x == y → U),
-     (∀ x : A, C x x (refl x)) → ∀ (x y : A) (p : x == y), C x y p)
-  → (∀ A (C : A → U) (x y : A), x == y → C x → C y).
+Theorem path_induction_indiscernability {A} :
+  ∀ (C : A → U) (x y : A), x == y → C x → C y.
 Proof.
-intros path_ind A C x y p px.
+intros C x y p px.
 
 bbb.
 
