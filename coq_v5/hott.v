@@ -14,8 +14,8 @@ Inductive Id {A} : A → A → Type :=
   | refl : ∀ x : A, Id x x
   | phony : ∀ x y : A, random A x y = true → Id x y.
 *)
-Inductive Id {A} : A → A → Type :=
-  | refl : ∀ x : A, Id x x.
+Inductive Id {A} x : A → Type :=
+  | refl : Id x x.
 (**)
 
 Notation "x == y" := (Id x y) (at level 70).
@@ -29,8 +29,8 @@ bbb.
 *)
 
 Definition indiscernability {A} C (x y : A) (p : x == y) :=
-  match p in (y1 == y2) return (C y1 → C y2) with
-  | refl _ => id
+  match p return (C x → C _) with
+  | refl => id
   end.
 
 Check @indiscernability.
@@ -48,6 +48,8 @@ Theorem path_induction : ∀ A C c,
   ∀ x, f x x (refl x) = c x.
 Proof.
 intros A C c.
+bbb.
+
 exists
   (λ _ _ p,
    match p return (C _ _ p) with
@@ -538,9 +540,15 @@ Definition hott_ex_1_13 : (∀ P, orT P (notT P))
 
 (* j'aimerais bien le savoir ! :-) *)
 
-Definition hott_ex_1_14 {A} : Π (x : A), Π (p : x == x), p = refl x.
+bbb.
+
+Definition hott_ex_1_14 {A : Type} : Π (x : nat), Π (p : x = x), p = eq_refl x.
 Proof.
 intros x p.
+induction x.
+ refine (match p with eq_refl => _ end).
+ reflexivity.
+Show Proof.
 bbb.
 
 Print eq_refl.
