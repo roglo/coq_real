@@ -536,79 +536,10 @@ Definition hott_ex_1_13 : (∀ P, orT P (notT P))
    with the defining equation
           f(x,refl_x) :≡ refl_{refl_x}    ? *)
 
-(* j'aimerais bien le savoir ! :-) *)
-
-Definition hott_ex_1_14 {A : Type} : Π (x : nat), Π (p : x = x), p = eq_refl x.
-Proof.
-intros x p.
-induction x.
- refine (match p with eq_refl => _ end).
- reflexivity.
-bbb.
-bbb.
-
-Print eq_refl.
-Print refl.
-(*
-Inductive eq (A : Type) (x : A) : A → Prop :=  eq_refl : x = x
-Inductive Id (A : Type) : A → A → Type :=  refl : ∀ x : A, x == x
-*)
-
-Theorem eee : ∀ (p : unit), p = tt.
-Proof. intros; destruct p; reflexivity. Qed.
-
-Check (I : eq_nat 0 0).
-Check (eq_refl 0 : 0 = 0).
-(*
-I
-     : eq_nat 0 0
-eq_refl
-     : 0 = 0
-*)
-
-Theorem bbb : ∀ (p : eq_nat 0 0), p = I.
-Proof. intros; destruct p; reflexivity. Qed.
-
-(*
-Inductive my_eq_nat : nat → nat → Prop := my_eq_refl : ∀ x, my_eq_nat x x.
-Inductive my_eq_nat2 (x : nat) : nat → Prop := my_eq_refl2 : my_eq_nat2 x x.
-Inductive my_eq_nat3 (x y : nat) : Prop := my_eq_refl3 : x = y → my_eq_nat3 x y.
-
-Theorem ccc : ∀ (p : my_eq_nat3 0 0), p = my_eq_refl3 0 0 eq_refl.
-Proof.
-intros.
-destruct p.
-destruct e.
-*)
-
-Set Printing All.
-Definition ddd : 0 = 0. Proof. reflexivity. Qed. Print ddd.
-(*
-ddd = @eq_refl nat O
-     : @eq nat O O
-*)
-Unset Printing All.
-
-Theorem aaa : ∀ (p : 0 = 0), p = @eq_refl nat 0.
-Proof.
-intros.
-destruct p.
-
-Toplevel input, characters 0-10:
-Error: Abstracting over the terms "n" and "p" leads to a term
-"λ (n : nat) (p : n = n), p = @eq_refl nat n" which is ill-typed.
-
-Toplevel input, characters 0-11:
-Error: Abstracting over the terms "n" leads to a term
-"λ (n : nat) (p : n = n), p = @eq_refl nat n" which is ill-typed.
-
-Toplevel input, characters 21-32:
-Error: Abstracting over the term "x0" leads to a term
-"λ x0 : A, p = eq_refl" which is ill-typed.
-
-Toplevel input, characters 21-32:
-Error: Abstracting over the term "x0" leads to a term
-"λ x0 : A, p = @eq_refl A x0" which is ill-typed.
+(* I suppose it is because if there is y such that x = y, then there is
+   another proof that x = x, because x = y implies y = x by symmetry
+   and x = x, by transitivity, which creates another proof that x = x,
+   which is different from refl. *)
 
 bbb.
 
