@@ -61,11 +61,9 @@ Theorem based_path_induction : ∀ A a C c,
   f a (refl a) = c.
 Proof.
 intros A a C c.
-bbb.
-
 exists
   (λ _ p,
-   match p in (x1 == x2) return (∀ D, D x1 (refl x1) → D x2 p) with
+   match p return (∀ D, D _ (refl _) → D _ p) with
    | refl => λ _, id
    end C c).
 reflexivity.
@@ -133,8 +131,8 @@ Definition uupt {A B} (x : A * B) :=
   refl (a, b).
 
 Definition ind_AxB {A B} C (g : ∀ x y, C (x, y)) (x : A * B) :=
-  match uupt x in (y1 == y2) return (C y1 → C y2) with
-  | refl _ => id
+  match uupt x return (C _ → C _) with
+  | refl => id
   end (g (AxB_pr₁ x) (AxB_pr₂ x)).
 
 Theorem verif_ind_AxB_eq_def : ∀ A B C (g : ∀ x y, C (x, y)) (a : A) (b : B),
@@ -147,8 +145,8 @@ Definition Σ_uupt {A B} (x : {y : A & B y}) :=
 
 Definition ind_Σ {A B} C (g : ∀ a (b : B a), C (existT _ a b))
     (x : {y : A & B y}) :=
-  match Σ_uupt x in (y1 == y2) return (C y1 → C y2) with
-  | refl _ => id
+  match Σ_uupt x with
+  | refl => id
   end (g (Σ_pr₁ x) (Σ_pr₂ x)).
 
 Theorem verif_ind_Σ_eq_def : ∀ A B C g (a : A) (b : B),
@@ -321,8 +319,8 @@ Definition ind_eqA {A} :
     (Π (x : A), C x x (refl x))
     → Π (x : A), Π (y : A), Π (p : x == y), C x y p
   := λ C c x y p,
-     match p in (y1 == y2) return (C y1 y2 p) with
-     | refl x => c x
+     match p with
+     | refl => c x
      end.
 
 Theorem ind_eqA_def_eq {A} : ∀ C c (x : A), ind_eqA C c x x (refl x) = c x.
@@ -334,8 +332,8 @@ Definition ind'_eqA {A} :
   Π (C : Π (x : A), (a == x) → U), C a (refl a)
   → Π (x : A), Π (p : a == x), C x p
   := λ a C P x p,
-     match p in (y1 == y2) return (Π (D : _), Π (_ : _), D y2 p) with
-     | refl x => λ _ y, y
+     match p with
+     | refl => λ _ y, y
      end C P.
 
 Theorem ind'_eqA_def_eq {A} : ∀ (a : A) C c, ind'_eqA a C c a (refl a) = c.
@@ -540,15 +538,13 @@ Definition hott_ex_1_13 : (∀ P, orT P (notT P))
 
 (* j'aimerais bien le savoir ! :-) *)
 
-bbb.
-
 Definition hott_ex_1_14 {A : Type} : Π (x : nat), Π (p : x = x), p = eq_refl x.
 Proof.
 intros x p.
 induction x.
  refine (match p with eq_refl => _ end).
  reflexivity.
-Show Proof.
+bbb.
 bbb.
 
 Print eq_refl.
