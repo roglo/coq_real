@@ -566,10 +566,6 @@ apply (path_induction (λ x y _, C x → C y) (λ _, id) x y p).
 assumption.
 Qed.
 
-(* truc qui serait pas mal : comprendre pourquoi la preuve ci-dessus
-   est correcte ; essayer de voir ce qu'elle signifie, graphiquement
-   par exemple *)
-
 bbb.
 
 
