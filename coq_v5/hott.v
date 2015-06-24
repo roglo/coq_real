@@ -566,10 +566,16 @@ apply (path_induction (λ x y _, C x → C y) (λ _, id) x y p).
 assumption.
 Qed.
 
+(* Chapter 2 *)
+
+Lemma aaa : ∀ A (x y : A), x == y → y == x.
+Proof.
+intros A x y p.
+refine (match p in (_ == z) with refl => _ end).
+apply refl.
+Show Proof.
 bbb.
-
-
-(* ... *)
+apply path_induction.
 
 (* hott section 2.1 *)
 
