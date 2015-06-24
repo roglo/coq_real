@@ -562,21 +562,16 @@ Theorem path_induction_indiscernability {A} :
   ∀ (C : A → U) (x y : A), x == y → C x → C y.
 Proof.
 intros C x y p px.
-remember (λ (x y : A) (p : x == y), C x → C y) as D.
-assert (∀ x : A, D x x (refl x)) as c.
- intros z.
- subst D.
- intros; assumption.
+apply (path_induction (λ x y _, C x → C y) (λ _, id) x y p).
+assumption.
+Qed.
 
- pose proof @path_induction A D c x y p as H.
- subst D.
- apply H; assumption.
-(* It works, but I would like a simpler proof like the one using Coq
-   usual induction:
-(λ (A : Type) (C : A → U) (x y : A) (p : x == y) (px : C x),
- Id_rect A x (λ (y0 : A) (_ : x == y0), C y0) px y p)
-*)
-qed.
+(* truc qui serait pas mal : comprendre pourquoi la preuve ci-dessus
+   est correcte ; essayer de voir ce qu'elle signifie, graphiquement
+   par exemple *)
+
+bbb.
+
 
 (* ... *)
 
