@@ -549,7 +549,7 @@ Definition hott_ex_1_13 : (∀ P, orT P (notT P))
    from path induction. *)
 
 Definition path_induction {A} (C : Π (x : A), Π (y : A), Π (p : x == y), U)
-    c (x y : A) (p : x == y) :=
+    (c : Π (x : A), C x x (refl x)) (x y : A) (p : x == y) : C x y p :=
   match p return (C _ _ p) with
   | refl => c x
   end.
@@ -559,7 +559,7 @@ Theorem path_induction_def : ∀ A (x : A) C c,
 Proof. reflexivity. Qed.
 
 Theorem path_induction_indiscernability {A} :
-  ∀ (C : A → U) (x y : A), x == y → C x → C y.
+  Π (C : A → U), Π (x : A), Π (y : A), x == y → C x → C y.
 Proof.
 intros C x y p px.
 apply (path_induction (λ x y _, C x → C y) (λ _, id) x y p).
