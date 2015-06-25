@@ -536,8 +536,6 @@ Definition hott_ex_1_13 : (∀ P, orT P (notT P))
    with the defining equation
           f(x,refl_x) :≡ refl_{refl_x}    ? *)
 
-bbb.
-
 (* Wrong explanation: I suppose it is because if there is y such that
    x = y, then there is another proof that x = x, because x = y
    implies y = x by symmetry and x = x, by transitivity, which creates
@@ -622,11 +620,26 @@ reflexivity.
 (* ah bin merdalor! ça marche *)
 Qed.
 
+(*
+toto =
+λ (A : Type) (x y : A) (p : x == y),
+Id_ind A x (λ (z : A) (q : x == z), q • q ⁻¹ = refl x) eq_refl y p
+     : ∀ (A : Type) (x y : A) (p : x == y), p • p ⁻¹ = refl x
+*)
+
 Lemma titi {A} : ∀ x : A, ∀ p : x == x, p = refl x.
 Proof.
 intros.
 induction p.
-(* et là, ça marche pas *)
+
+Toplevel input, characters 0-11:
+Error: Abstracting over the terms "x0" and "p" leads to a term
+"λ (x0 : A) (p : x0 == x0), p = refl x0" which is ill-typed.
+
+refine (
+  Id_ind A x (λ (z : A) (q : z == z), q = refl z) eq_refl x p
+).
+
 bbb.
 
 Lemma hott_2_1_4_ii {A} {x y z w : A} :
