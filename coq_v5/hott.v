@@ -572,7 +572,7 @@ Qed.
 
 Definition invert {A} {x y : A} (p : x == y) : y == x :=
   match p with
-  | refl x => refl x
+  | refl => refl x
   end.
 Notation "p '⁻¹'" := (invert p) (at level 10).
 
@@ -581,11 +581,13 @@ Proof. reflexivity. Qed.
 
 Definition compose {A} {x y z : A} (p : x == y) : y == z → x == z :=
   match p with
-  | refl _ => id
+  | refl => id
   end.
 Notation "p • q" := (compose p q) (at level 40, left associativity).
 
 Print compose.
+
+bbb.
 
 Theorem fold_compose : ∀ A (x y z : A) p,
   (λ p,
