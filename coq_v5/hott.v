@@ -587,13 +587,10 @@ Notation "p • q" := (compose p q) (at level 40, left associativity).
 
 Print compose.
 
-bbb.
-
 Theorem fold_compose : ∀ A (x y z : A) p,
-  (λ p,
-   match p in (a == a0) return (a0 == z → a == z) with
-   | refl x0 => id
-   end) p = @compose A x y z p.
+   match p with
+   | refl => id
+   end = @compose A x y z p.
 Proof. reflexivity. Qed.
 
 Lemma hott_2_1_2 : ∀ A (x : A), refl x = refl x • refl x.
@@ -652,6 +649,8 @@ eapply compose; [ apply α | apply H3 ].
 Defined.
 
 Notation "α '•r' r" := (dotr α r) (at level 50).
+
+bbb.
 
 (* whiskering *)
 Definition dotl {A} {a b c : A} {r s : b == c}
