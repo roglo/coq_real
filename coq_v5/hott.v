@@ -600,12 +600,18 @@ Inductive andt (A B : Type) : Type := conjt : A → B → andt A B.
 Notation "u '∧∧' v" := (andt u v) (at level 80, right associativity).
 Arguments conjt {A B} _ _.
 
-Lemma hott_2_1_4_i {A} {x y : A} : ∀ (p : x == y),
-  p == p • refl y ∧∧ p == refl x • p.
-Proof.
-intros p.
-destruct p; split; constructor.
-Defined.
+Definition hott_2_1_4_i {A} {x y : A} : ∀ (p : x == y),
+    p == p • refl y ∧∧ p == refl x • p
+ := (λ (p : x == y),
+ conjt
+   match p return (p == p • refl _) with
+   | refl => refl (refl x • refl x)
+   end
+   match p return (p == refl _ • p) with
+   | refl => refl (refl x • refl x)
+   end).
+
+bbb.
 
 Lemma hott_2_1_4_ii {A} {x y z w : A} :
   ∀ (p : x == y) (q : y == z) (r : z == w),
