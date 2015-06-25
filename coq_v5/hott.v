@@ -611,6 +611,19 @@ Definition hott_2_1_4_i {A} {x y : A} : ∀ (p : x == y),
    | refl => refl (refl x • refl x)
    end).
 
+Lemma toto {A} : ∀ x y : A, ∀ p : x == y, p • p⁻¹ = refl x.
+Proof.
+intros.
+induction p.
+reflexivity.
+(* ah bin merdalor! ça marche *)
+Qed.
+
+Lemma titi {A} : ∀ x : A, ∀ p : x == x, p = refl x.
+Proof.
+intros.
+induction p.
+(* et là, ça marche pas *)
 bbb.
 
 Lemma hott_2_1_4_ii {A} {x y z w : A} :
