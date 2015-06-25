@@ -536,10 +536,13 @@ Definition hott_ex_1_13 : (∀ P, orT P (notT P))
    with the defining equation
           f(x,refl_x) :≡ refl_{refl_x}    ? *)
 
-(* I suppose it is because if there is y such that x = y, then there is
-   another proof that x = x, because x = y implies y = x by symmetry
-   and x = x, by transitivity, which creates another proof that x = x,
-   which is different from refl. *)
+bbb.
+
+(* Wrong explanation: I suppose it is because if there is y such that
+   x = y, then there is another proof that x = x, because x = y
+   implies y = x by symmetry and x = x, by transitivity, which creates
+   another proof that x = x, ...
+   ... which is different from refl <- no, it is equal! *)
 
 (* not sure *)
 
