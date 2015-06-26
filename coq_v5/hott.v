@@ -586,7 +586,26 @@ Definition compose {A} {x y z : A} (p : x == y) : y == z → x == z :=
   end.
 Notation "p • q" := (compose p q) (at level 40, left associativity).
 
-Print compose.
+(* same theorem with another proof *)
+Definition compose2 {A} {x y z : A} (p : x == y) : y == z → x == z :=
+  λ q,
+  match p with
+  | refl =>
+      match q in (_ == t) return (x == t) with
+      | refl => p
+      end
+ end.
+
+(* proof that the proofs are equal *)
+Definition compose_compose2 {A} {x y z : A} : ∀ (p : x == y) (q : y == z),
+    compose p q = compose2 p q :=
+  λ p q,
+  match q return (p • q = compose2 p q) with
+  | refl =>
+      match p return (p • refl _ = compose2 p (refl _)) with
+      | refl => eq_refl
+      end
+  end.
 
 Theorem fold_compose : ∀ A (x y z : A) p,
    match p with
