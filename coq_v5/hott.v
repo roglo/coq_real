@@ -646,6 +646,16 @@ Id_ind A x (λ (z : A) (q : x == z), q • q ⁻¹ = refl x) eq_refl y p
      : ∀ (A : Type) (x y : A) (p : x == y), p • p ⁻¹ = refl x
 *)
 
+Lemma titi {A} : ∀ x : A, ∀ p : x = x, p = eq_refl x.
+Proof.
+intros.
+pose proof eq_ind x
+(λ y, y = y) eq_refl x eq_refl.
+
+eq_ind
+     : ∀ (A : Type) (x : A) (P : A → Prop), P x → ∀ y : A, x = y → P y
+bbb.
+
 Lemma titi {A} : ∀ x : A, ∀ p : x == x, p = refl x.
 Proof.
 intros.
