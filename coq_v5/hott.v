@@ -649,7 +649,23 @@ Id_ind A x (λ (z : A) (q : x == z), q • q ⁻¹ = refl x) eq_refl y p
 Lemma titi {A} : ∀ x : A, ∀ p : x == x, p = refl x.
 Proof.
 intros.
+Check @path_induction.
+pose proof @path_induction A (λ x y p, p == refl x)
+  (λ x, refl (refl x)) x x p.
+simpl in H.
 induction p.
+
+1 subgoals, subgoal 1 (ID 1176)
+
+  A : Type
+  x : A
+  p : x == x
+  X : ∀ C : ∀ x0 y : A, x0 == y → U,
+      (∀ x0 : A, C x0 x0 (refl x0)) → ∀ (x0 y : A) (p0 : x0 == y), C x0 y p0
+  ============================
+   p = refl x
+
+
 
 Toplevel input, characters 0-11:
 Error: Abstracting over the terms "x0" and "p" leads to a term
