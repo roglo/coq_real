@@ -684,7 +684,7 @@ Definition glip m n : m == m + n → Type :=
   | S n1 => λ _ : m == m + S n1, ID
   end.
 
-Definition glop n :=
+Definition glop n : 2 == n → Type :=
   match n return (2 == n → Type) with
    | 0 => λ _ : 2 == 0, ID
    | S n0 =>
@@ -693,8 +693,6 @@ Definition glop n :=
        | S n1 => glip 2 n1
        end
    end.
-
-Check glop.
 
 Definition tratra (p : 2 == 2) := 
   match
