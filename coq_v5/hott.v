@@ -673,26 +673,29 @@ intros.
 refine (match H with refl => refl (f x)  end).
 Qed.
 
-Theorem pouet m : m == m + 0.
-Proof.
-induction m; [ reflexivity | simpl; apply f_id; assumption ].
-Qed.
+Fixpoint pouet n : n == n + 0 :=
+  match n return (n == n + 0) with
+  | 0 => refl (0 + 0)
+  | S n1 => f_id n1 (n1 + 0) S (pouet n1)
+  end.
 
 Definition glip m n : m == m + n → Type :=
   match n return (m == m + n → Type) with
-  | 0 => λ p : m == m + 0, p == pouet m
-  | S n1 => λ _ : m == m + S n1, ID
+  | 0 => λ p, p == pouet m
+  | S n1 => λ _, ID
+  end.
+
+Definition glup n : 2 == S n → Type :=
+  match n return (2 == S n → Type) with
+  | 0 => λ _ : 2 == 1, ID
+  | S n1 => glip 2 n1
   end.
 
 Definition glop n : 2 == n → Type :=
   match n return (2 == n → Type) with
-   | 0 => λ _ : 2 == 0, ID
-   | S n0 =>
-       match n0 return (2 == S n0 → Type) with
-       | 0 => λ _ : 2 == 1, ID
-       | S n1 => glip 2 n1
-       end
-   end.
+  | 0 => λ _ : 2 == 0, ID
+  | S n0 => glup n0
+  end.
 
 Definition tratra (p : 2 == 2) := 
   match
@@ -714,6 +717,7 @@ Definition tratra (p : 2 == 2) :=
   | refl => refl (refl 2)
   end.
 
+bbb.
 
 Lemma tintin : ∀ (n : nat) p, p == refl n.
 Proof.
