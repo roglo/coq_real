@@ -649,17 +649,16 @@ Id_ind A x (λ (z : A) (q : x == z), q • q ⁻¹ = refl x) eq_refl y p
 Lemma tutu : ∀ (x : nat) (p : x == x), p == refl x.
 Proof.
 intros.
-induction x.
+revert p.
+induction x; intros.
  refine (match p with refl => _ end).
  reflexivity.
 
  destruct x.
  refine (match p with refl => _ end).
  reflexivity.
-
 Show Proof.
 bbb.
-induction p.
 
 Lemma titi {A} : ∀ x : A, ∀ p : x == x, p = refl x.
 Proof.
