@@ -656,12 +656,45 @@ Definition tete (p : 1 == 1) : p == refl 1 :=
   | refl => refl (refl 1)
   end.
 
+Theorem f_id {A B} : ∀ x y (f : A → B), x == y → f x == f y.
+Proof.
+intros.
+refine (match H with refl => refl (f x)  end).
+Defined.
+
+Fixpoint pouet n : n == n + 0 :=
+  match n return (n == n + 0) with
+  | 0 => refl (0 + 0)
+  | S n1 => f_id n1 (n1 + 0) S (pouet n1)
+  end.
+
+Definition glip m n : m == m + n → Type :=
+  match n return (m == m + n → Type) with
+  | 0 => λ p, p == pouet m
+  | S n1 => λ _, ID
+  end.
+
+Definition glup n : 2 == S n → Type :=
+  match n return (2 == S n → Type) with
+  | 0 => λ _ : 2 == 1, ID
+  | S n1 => glip 2 n1
+  end.
+
+Definition glop n : 2 == n → Type :=
+  match n return (2 == n → Type) with
+  | 0 => λ _ : 2 == 0, ID
+  | S n0 => glup n0
+  end.
+
 Definition toutou (p : 2 == 2) : p == refl 2 :=
   match p with
   | refl => refl (refl 2)
   end.
 
-Print toutou.
+Definition toutou2 (p : 2 == 2) : p == refl 2 :=
+match p in (_ == n) return (glop n p) with
+| refl => refl (refl 2)
+end.
 
 bbb.
 
