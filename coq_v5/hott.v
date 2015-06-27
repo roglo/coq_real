@@ -646,6 +646,66 @@ Id_ind A x (λ (z : A) (q : x == z), q • q ⁻¹ = refl x) eq_refl y p
      : ∀ (A : Type) (x y : A) (p : x == y), p • p ⁻¹ = refl x
 *)
 
+Lemma tete : ∀ p, p == refl 1.
+Proof.
+intros.
+refine (match p with refl => _ end); reflexivity.
+Qed.
+
+Lemma tata : ∀ p, p == refl 0.
+Proof.
+intros.
+refine (match p with refl => _ end); reflexivity.
+Qed.
+
+bbb.
+
+tata = 
+λ p : 0 == 0,
+match
+  p as p0 in (_ == n)
+  return
+    (match n as x return (0 == x → Type) with
+     | 0 => λ p1 : 0 == 0, p1 == refl 0
+     | S n0 => λ _ : 0 == S n0, ID
+     end p0)
+with
+| refl => refl (refl 0)
+end
+     : ∀ p : 0 == 0, p == refl 0
+
+tete = 
+λ p : 1 == 1,
+match
+  p as p0 in (_ == n)
+  return
+    (match n as x return (1 == x → Type) with
+     | 0 => λ _ : 1 == 0, ID
+     | S n0 =>
+         match n0 as n1 return (1 == S n1 → Type) with
+         | 0 => λ p1 : 1 == 1, p1 == refl 1
+         | S n1 => λ _ : 1 == S (S n1), ID
+         end
+     end p0)
+with
+| refl => refl (refl 1)
+end
+     : ∀ p : 1 == 1, p == refl 1
+
+bbb.
+
+(λ p : 0 == 0,
+ match
+   p as p0 in (_ == n)
+   return
+     (match n as x return (0 == x → Type) with
+      | 0 => λ p1 : 0 == 0, p1 == refl 0
+      | S n0 => λ _ : 0 == S n0, ID
+      end p0)
+ with
+ | refl => refl (refl 0)
+ end)
+
 Lemma tutu : ∀ (n : nat) p, p == refl n.
 Proof.
 intros.
