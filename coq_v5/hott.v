@@ -658,7 +658,77 @@ intros.
 refine (match p with refl => _ end); reflexivity.
 Qed.
 
-bbb.
+Lemma toutou : ∀ p, p == refl 2.
+Proof.
+intros.
+refine (match p with refl => _ end).
+Show Proof.
+reflexivity.
+Qed.
+Print toutou.
+
+Theorem f_id {A B} : ∀ x y (f : A → B), x == y → f x == f y.
+Proof.
+intros.
+refine (match H with refl => refl (f x)  end).
+Qed.
+
+Theorem pouet m : m == m + 0.
+Proof.
+induction m; [ reflexivity | simpl; apply f_id; assumption ].
+Qed.
+
+Definition glip m n : m == m + n → Type :=
+  match n return (m == m + n → Type) with
+  | 0 => λ p : m == m + 0, p == pouet m
+  | S n1 => λ _ : m == m + S n1, ID
+  end.
+
+Definition glop n :=
+  match n return (2 == n → Type) with
+   | 0 => λ _ : 2 == 0, ID
+   | S n0 =>
+       match n0 return (2 == S n0 → Type) with
+       | 0 => λ _ : 2 == 1, ID
+       | S n1 => glip 2 n1
+       end
+   end.
+
+Check glop.
+
+Definition tratra (p : 2 == 2) := 
+  match
+    p as p0 in (_ == n)
+    return
+      (match n as x return (2 == x → Type) with
+       | 0 => λ _ : 2 == 0, ID
+       | S n0 =>
+           match n0 as n1 return (2 == S n1 → Type) with
+           | 0 => λ _ : 2 == 1, ID
+           | S n1 =>
+               match n1 as n2 return (2 == S (S n2) → Type) with
+               | 0 => λ p1 : 2 == 2, p1 == refl 2
+               | S n2 => λ _ : 2 == S (S (S n2)), ID
+               end
+           end
+       end p0)
+  with
+  | refl => refl (refl 2)
+  end.
+
+
+Lemma tintin : ∀ (n : nat) p, p == refl n.
+Proof.
+intros.
+revert p.
+induction n; intros.
+ refine (match p with refl => _ end); reflexivity.
+
+ assert (n == n) as p1 by reflexivity.
+ pose proof IHn p1 as p2.
+ refine (match p with refl => _ end).
+ 
+Show Proof.
 
 tata = 
 λ p : 0 == 0,
