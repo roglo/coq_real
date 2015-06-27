@@ -671,7 +671,7 @@ Theorem f_id {A B} : ∀ x y (f : A → B), x == y → f x == f y.
 Proof.
 intros.
 refine (match H with refl => refl (f x)  end).
-Qed.
+Defined.
 
 Fixpoint pouet n : n == n + 0 :=
   match n return (n == n + 0) with
@@ -697,24 +697,9 @@ Definition glop n : 2 == n → Type :=
   | S n0 => glup n0
   end.
 
-Definition tratra (p : 2 == 2) := 
-  match
-    p as p0 in (_ == n)
-    return
-      (match n as x return (2 == x → Type) with
-       | 0 => λ _ : 2 == 0, ID
-       | S n0 =>
-           match n0 as n1 return (2 == S n1 → Type) with
-           | 0 => λ _ : 2 == 1, ID
-           | S n1 =>
-               match n1 as n2 return (2 == S (S n2) → Type) with
-               | 0 => λ p1 : 2 == 2, p1 == refl 2
-               | S n2 => λ _ : 2 == S (S (S n2)), ID
-               end
-           end
-       end p0)
-  with
-  | refl => refl (refl 2)
+Definition tratra (p : 2 == 2) : p == refl 2 :=
+  match p in (_ == n) return (glop n p) with
+  | refl => refl (pouet 2)
   end.
 
 bbb.
