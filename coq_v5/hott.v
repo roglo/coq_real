@@ -661,6 +661,8 @@ Definition toutou (p : 2 == 2) : p == refl 2 :=
   | refl => refl (refl 2)
   end.
 
+Print toutou.
+
 bbb.
 
 Lemma tintin : ∀ (n : nat) p, p == refl n.
