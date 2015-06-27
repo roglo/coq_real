@@ -686,15 +686,32 @@ Definition glop n : 2 == 0 + n → Type :=
   | S n0 => glup n0
   end.
 
-Fixpoint tagada m n p q : m == p + n → Type :=
+Fixpoint tagada m n p q : m == m + n → Type :=
   match q with
   | 0 => glip m n
   | S q1 =>
-      match n return (m == p + n → Type) with
-      | 0 => λ _ : m == p, ID
+      match n with
+      | 0 => λ _, ID
       | S n0 => tagada m n (S p) q1
       end
   end.
+
+Definition rien (m : nat) : m == m + 0 → Type := tagada m 0 0 m.
+Definition tout (m : nat) : m == m → Type.
+  intros p.
+  apply rien with (m := m).
+  apply pouet.
+Qed.  
+
+Definition toutou3 (m : nat) (p : m == m) : p == refl m :=
+match p in (_ == n) return (tout m p) with
+| refl => refl (refl m)
+end.
+
+glip
+     : ∀ m n : nat, m == m + n → Type
+tagada
+     : ∀ m n : nat, nat → nat → m == m + n → Type
 
 Definition toutou (p : 2 == 2) : p == refl 2 :=
   match p with
