@@ -674,16 +674,26 @@ Definition glip m n : m == m + n → Type :=
   | S n1 => λ _, ID
   end.
 
-Definition glup n : 2 == S n → Type :=
-  match n return (2 == S n → Type) with
+Definition glup n : 2 == 1 + n → Type :=
+  match n return (2 == 1 + n → Type) with
   | 0 => λ _ : 2 == 1, ID
   | S n1 => glip 2 n1
   end.
 
-Definition glop n : 2 == n → Type :=
-  match n return (2 == n → Type) with
+Definition glop n : 2 == 0 + n → Type :=
+  match n return (2 == 0 + n → Type) with
   | 0 => λ _ : 2 == 0, ID
   | S n0 => glup n0
+  end.
+
+Fixpoint tagada m n p q : m == p + n → Type :=
+  match q with
+  | 0 => glip m n
+  | S q1 =>
+      match n return (m == p + n → Type) with
+      | 0 => λ _ : m == p, ID
+      | S n0 => tagada m n (S p) q1
+      end
   end.
 
 Definition toutou (p : 2 == 2) : p == refl 2 :=
