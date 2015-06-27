@@ -646,18 +646,96 @@ Id_ind A x (λ (z : A) (q : x == z), q • q ⁻¹ = refl x) eq_refl y p
      : ∀ (A : Type) (x y : A) (p : x == y), p • p ⁻¹ = refl x
 *)
 
-Lemma tutu : ∀ (x : nat) (p : x == x), p == refl x.
+Lemma tutu : ∀ (n : nat) p, p == refl n.
 Proof.
 intros.
-revert p.
-induction x; intros.
- refine (match p with refl => _ end).
- reflexivity.
-
- destruct x.
- refine (match p with refl => _ end).
- reflexivity.
+destruct n; [ refine (match p with refl => _ end); reflexivity | idtac ].
+destruct n; [ refine (match p with refl => _ end); reflexivity | idtac ].
+destruct n; [ refine (match p with refl => _ end); reflexivity | idtac ].
+destruct n; [ refine (match p with refl => _ end); reflexivity | idtac ].
+destruct n; [ refine (match p with refl => _ end); reflexivity | idtac ].
+destruct n; [ refine (match p with refl => _ end); reflexivity | idtac ].
+destruct n; [ refine (match p with refl => _ end); reflexivity | idtac ].
+bbb.
 Show Proof.
+(λ (x : nat) (p : x == x),
+ match x as n return (∀ p0 : n == n, p0 == refl n) with
+ | 0 =>
+     λ p0 : 0 == 0,
+     match
+       p0 as p1 in (_ == n)
+       return
+         (match n as x0 return (0 == x0 → Type) with
+          | 0 => λ p2 : 0 == 0, p2 == refl 0
+          | S n0 => λ _ : 0 == S n0, ID
+          end p1)
+     with
+     | refl => refl (refl 0)
+     end
+ | S x0 =>
+     λ p0 : S x0 == S x0,
+     match x0 as n return (∀ p1 : S n == S n, p1 == refl (S n)) with
+     | 0 =>
+         λ p1 : 1 == 1,
+         match
+           p1 as p2 in (_ == n)
+           return
+             (match n as x1 return (1 == x1 → Type) with
+              | 0 => λ _ : 1 == 0, ID
+              | S n0 =>
+                  match n0 as n1 return (1 == S n1 → Type) with
+                  | 0 => λ p3 : 1 == 1, p3 == refl 1
+                  | S n1 => λ _ : 1 == S (S n1), ID
+                  end
+              end p2)
+         with
+         | refl => refl (refl 1)
+         end
+     | S x1 => λ p1 : S (S x1) == S (S x1), ?1195
+     end p0
+ end p)
+
+
+(λ (x : nat) (p : x == x),
+ nat_ind (λ x0 : nat, ∀ p0 : x0 == x0, p0 == refl x0)
+   (λ p0 : 0 == 0,
+    match
+      p0 as p1 in (_ == n)
+      return
+        (match n as x0 return (0 == x0 → Type) with
+         | 0 => λ p2 : 0 == 0, p2 == refl 0
+         | S n0 => λ _ : 0 == S n0, ID
+         end p1)
+    with
+    | refl => refl (refl 0)
+    end)
+   (λ (x0 : nat) (IHx : ∀ p0 : x0 == x0, p0 == refl x0) 
+    (p0 : S x0 == S x0),
+    match
+      x0 as n
+      return
+        ((∀ p1 : n == n, p1 == refl n) → ∀ p1 : S n == S n, p1 == refl (S n))
+    with
+    | 0 =>
+        λ (_ : ∀ p1 : 0 == 0, p1 == refl 0) (p1 : 1 == 1),
+        match
+          p1 as p2 in (_ == n)
+          return
+            (match n as x1 return (1 == x1 → Type) with
+             | 0 => λ _ : 1 == 0, ID
+             | S n0 =>
+                 match n0 as n1 return (1 == S n1 → Type) with
+                 | 0 => λ p3 : 1 == 1, p3 == refl 1
+                 | S n1 => λ _ : 1 == S (S n1), ID
+                 end
+             end p2)
+        with
+        | refl => refl (refl 1)
+        end
+    | S x1 =>
+        λ (IHx0 : ∀ p1 : S x1 == S x1, p1 == refl (S x1))
+        (p1 : S (S x1) == S (S x1)), ?1198
+    end IHx p0) x p)
 bbb.
 
 Lemma titi {A} : ∀ x : A, ∀ p : x == x, p = refl x.
