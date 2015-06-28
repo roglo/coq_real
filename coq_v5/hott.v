@@ -931,15 +931,19 @@ Definition hott_2_3_11 {A x y} : ∀ (P Q : A → U) (f : Π (x : A), P x → Q 
 
 Definition homotopy {A B} (f g : A → B) := Π (x : A), (f x = g x).
 
-Notation "f '~' g" := (homotopy f g) (at level 110, g at level 110).
+Notation "f '~~' g" := (homotopy f g) (at level 110, g at level 110).
 
 Definition homotopy_refl {A B} : reflexive _ (@homotopy A B) :=
   λ _ _, eq_refl.
 
-bbb.
+Definition homotopy_refl2 {A B} : Π (f : A → B), (f ~~ f) :=
+  λ _ _, eq_refl.
 
-Theorem homotopy_symm {A B} : symmetric _ (@homotopy A B).
-Proof. intros f g H x; symmetry; apply H. Qed.
+Definition homotopy_sym {A B} : symmetric _ (@homotopy A B) :=
+  λ f g (p : f ~~ g) x,
+  match p x with eq_refl => eq_refl end.
+
+bbb.
 
 Theorem homotopy_trans {A B} : transitive _ (@homotopy A B).
 Proof.
