@@ -631,6 +631,305 @@ Definition hott_2_1_4_i {A} {x y : A} : ∀ (p : x == y),
    | refl => refl (refl x • refl x)
    end).
 
+Lemma hott_2_1_4_ii {A} {x y z w : A} :
+  ∀ (p : x == y) (q : y == z) (r : z == w),
+  p⁻¹ • p == refl y ∧∧ p • p⁻¹ == refl x.
+Proof.
+intros p q r.
+destruct p; split; constructor.
+Qed.
+
+Lemma hott_2_1_4_iii {A} {x y z w : A} :
+  ∀ (p : x == y) (q : y == z) (r : z == w),
+  (p⁻¹)⁻¹ == p.
+Proof.
+intros p q r.
+destruct p; constructor.
+Qed.
+
+Lemma hott_2_1_4_iv {A} {x y z w : A} :
+  ∀ (p : x == y) (q : y == z) (r : z == w),
+  p • (q • r) == (p • q) • r.
+Proof.
+intros p q r.
+destruct p; constructor.
+Qed.
+
+(* Theorem 2.1.6 (Eckmann-Hilton) *)
+
+Definition Ω {A} (a : A) := (a == a).
+Definition Ω2 {A} (a : A) := (refl a == refl a).
+
+(* whiskering *)
+Definition dotr {A} {a b c : A} {p q : a == b}
+  (α : p == q) (r : b == c) : (p • r == q • r).
+Proof.
+induction r as (b).
+pose proof (@hott_2_1_4_i A a b p) as (H1, H2).
+apply invert in H1.
+eapply compose; [ apply H1 | idtac ].
+pose proof (@hott_2_1_4_i A a b q) as (H3, H4).
+eapply compose; [ apply α | apply H3 ].
+Defined.
+
+Notation "α '•r' r" := (dotr α r) (at level 50).
+
+(* whiskering *)
+Definition dotl {A} {a b c : A} {r s : b == c}
+  (q : a == b) (β : r == s) : (q • r == q • s).
+Proof.
+induction q.
+pose proof (@hott_2_1_4_i A a c r) as (H1, H2).
+apply invert in H2.
+eapply compose; [ apply H2 | idtac ].
+pose proof (@hott_2_1_4_i A a c s) as (H3, H4).
+eapply compose; [ apply β | apply H4 ].
+Defined.
+
+Notation "q '•l' β" := (dotl q β) (at level 50).
+
+Definition ru {A} {a b : A} (p : a == b) :=
+  match hott_2_1_4_i p with
+  | conjt x _ => x
+  end.
+
+Check @ru.
+(* ru
+     : ∀ (A : Type) (a b : A) (p : a == b) → p == p • refl b *)
+
+Theorem dotr_rupq {A} {a b : A} : ∀ (p q : a == b) α,
+  α •r refl b == (ru p)⁻¹ • α • (ru q).
+Proof.
+intros.
+induction p, α; simpl.
+reflexivity.
+Qed.
+
+Definition lu {A} {b c : A} (r : b == c) :=
+  match hott_2_1_4_i r with
+  | conjt _ x => x
+  end.
+
+Check @lu.
+(* lu
+     : ∀ (A : Type) (b c : A) (r : b == c), r == refl b • r *)
+
+Theorem dotl_lurs {A} {b c : A} : ∀ (r s : b == c) β,
+  refl b •l β == (lu r)⁻¹ • β • (lu s).
+Proof.
+intros.
+induction r, β; simpl.
+reflexivity.
+Qed.
+
+Definition star {A} {a b c : A} {p q : a == b} {r s : b == c} α β
+  : p • r == q • s
+  := (α •r r) • (q •l β).
+
+Notation "α ★ β" := (star α β) (at level 40).
+
+Theorem star_dot {A} {a : A} : ∀ (α β : refl a == refl a), α ★ β == α • β.
+Proof.
+intros.
+unfold "★"; simpl; unfold id.
+eapply compose; [ apply hott_2_1_4_iv | idtac ].
+remember (α • refl (refl a) • β) as p.
+pose proof @hott_2_1_4_i (a == a) (refl a) (refl a) p as H.
+destruct H as (γ, δ); eapply invert.
+eapply compose; [ idtac | eassumption ].
+subst; apply dotr, ru.
+Qed.
+
+Definition star' {A} {a b c : A} {p q : a == b} {r s : b == c} α β
+  : p • r == q • s
+  := (p •l β) • (α •r s).
+
+Notation "α ★' β" := (star' α β) (at level 40).
+
+Theorem star'_dot {A} {a : A} : ∀ (α β : refl a == refl a), α ★' β == β • α.
+Proof.
+intros.
+unfold "★'"; simpl; unfold id.
+eapply compose; [ apply hott_2_1_4_iv | idtac ].
+remember (β • refl (refl a) • α) as p.
+pose proof @hott_2_1_4_i (a == a) (refl a) (refl a) p as H.
+destruct H as (γ, δ); eapply invert.
+eapply compose; [ idtac | eassumption ].
+subst; apply dotr, ru.
+Qed.
+
+Theorem gen_star_star' {A} {a b c : A} {p q : a == b} {r s : b == c} : ∀ α β,
+  @star A a b c p q r s α β == @star' A a b c p q r s α β.
+Proof.
+intros.
+induction α as (p).
+induction β as (r).
+induction p, r.
+unfold "★", "★'"; simpl.
+constructor.
+Qed.
+
+Theorem star_star' {A} {a : A} : ∀ (α β : refl a == refl a),
+  star α β == star' α β.
+Proof. apply gen_star_star'. Qed.
+
+Theorem eckmann_hilton {A} {a : A} : ∀ (α β : refl a == refl a),
+  α • β == β • α.
+Proof.
+intros.
+eapply compose; [ eapply invert, star_dot | idtac ].
+eapply compose; [ idtac | apply star'_dot ].
+apply star_star'.
+Qed.
+
+Check @eckmann_hilton.
+
+(* *)
+
+(* hott section 2.2 *)
+
+Definition ap {A B} (f : A → B) {x y} (p : x == y) : f x == f y :=
+  match p with
+  | refl => refl (f x)
+  end.
+
+Theorem hott_2_2_1 {A B} : ∀ (f : A → B) x, ap f (refl x) = refl (f x).
+Proof. constructor. Qed.
+
+Theorem hott_2_2_2_i {A B} : ∀ (f : A → B) x y z (p : x == y) (q : y == z),
+  ap f (p • q) = ap f p • ap f q.
+Proof. induction p, q; constructor. Qed.
+
+Theorem hott_2_2_2_ii {A B} : ∀ (f : A → B) x y (p : x == y),
+  ap f (p⁻¹) = (ap f p)⁻¹.
+Proof. induction p; constructor. Qed.
+
+Theorem hott_2_2_2_iii {A B C} : ∀ (f : A → B) (g : B → C) (x y : A) p,
+  ap g (@ap A B f x y p) = ap (g o f) p.
+Proof. induction p; constructor. Qed.
+
+Theorem hott_2_2_2_iv {A} : ∀ (x y : A) p, @ap A A id x y p = p.
+Proof. induction p; constructor. Qed.
+
+(* hott section 2.3 *)
+
+bbb.
+
+(* p* = transport P p *)
+Definition transport {A} P {x y : A} (p : x == y) : P x → P y :=
+  match p in (y1 == y2) return (P y1 → P y2) with
+  | refl x => id
+  end.
+
+Check @transport.
+(* transport =
+     : ∀ (A : Type) (P : A → Type) (x y : A), x == y → P x → P y *)
+
+(* lemma 2.3.2 path lifting property *)
+
+Definition lift {A P} {x y : A} (u : P x) (p : x == y) :=
+  match p in (y1 == y2)
+    return (∀ v, existT y1 v == existT y2 (transport P p v))
+  with
+  | refl x => λ v, refl (existT x (transport P (refl x) v))
+  end u.
+
+(* lift
+     : ∀ (A : Type) (P : A → Type) (x y : A) (u : P x) (p : x == y),
+       existT x u == existT y (transport P p u) *)
+
+(* à voir, car ça marche pas... *)
+Lemma path_lifting_property : ∀ A P (x y : A) (u : P x) (p : x == y),
+  projT1 (lift u p) == p.
+
+Toplevel input, characters 103-111:
+Error: In environment
+A : Type
+P : A → Type
+x : A
+y : A
+u : P x
+p : x == y
+The term "lift u p" has type "existT x u == existT y (transport P p u)"
+ while it is expected to have type "sigT ?1330".
+*)
+
+(* lemma 2.3.4 *)
+
+Lemma dependent_map {A P} : ∀ (f : ∀ (x : A), P x),
+  ∀ x y (p : x == y), transport P p (f x) == f y.
+Proof. induction p; constructor. Qed.
+
+Definition apd {A P} f {x y : A} {p : x == y} :=
+  match p in (y1 == y2) return (transport P p (f y1) == f y2) with
+  | refl x => refl (f x)
+  end.
+
+(* ap
+     : ∀ (A B : Type) (f : A → B) (x y : A),
+       x == y → f x == f y *)
+(* apd
+     : ∀ (A : Type) (P : A → Type) (f : ∀ x : A, P x) (x y : A)
+       (p : x == y), transport P p (f x) == f y *)
+
+(*
+Lemma hott_2_3_5 {A} : ∀ (P : A → Type) B, (∀ x, P x = B) →
+  ∀ x y (p : x == y) (b : P x), transport P p b == b.
+                                                   ^
+The term "b" has type "P x" while it is expected to have type
+"P y".
+*)
+
+(*
+Lemma hott_2_3_5 {A} : ∀ (P : A → Type) B, (∀ x, P x = B) →
+  ∀ x y (p : x == y) (b : P y), transport P p b == b.
+                                              ^
+The term "b" has type "P y" while it is expected to have type
+"P x".
+*)
+
+Check @transport.
+
+(*
+Lemma toto {A} : ∀ (P : A → Type) B, (∀ x, P x = B) →
+  ∀ x y (p : x == y) (b : P x) (f : ∀ z, P z → B),
+  f y (transport P p b) == f x b.
+Proof.
+intros.
+induction p; simpl.
+unfold id; simpl.
+constructor.
+Qed.
+*)
+
+(*
+Lemma hott_2_3_5 {A} : ∀ (P : A → Type) B, (∀ x, P x = B) →
+  ∀ x y (p : x == y) (b : B), transport P p b == b.
+
+Toplevel input, characters 114-115:
+Error:
+In environment
+A : Type
+P : A → Type
+B : Type
+x : A
+y : A
+p : x == y
+b : B
+The term "b" has type "B" while it is expected to have type
+"P x".
+*)
+
+Check @apd.
+(* apd
+     : ∀ (A : Type) (P : A → Type) (f : ∀ x : A, P x)
+       (x y : A) (p : x == y), transport P p (f x) == f y *)
+
+Definition hott_2_3_8 A B P (f : A → B) x y (p : x == y) glop
+  : @apd A P f x y p == glop • ap f p.
+
+bbb.
+
 Lemma toto {A} : ∀ x y : A, ∀ p : x == y, p • p⁻¹ = refl x.
 Proof.
 intros.
@@ -701,7 +1000,7 @@ Definition tout (m : nat) : m == m → Type.
   intros p.
   apply rien with (m := m).
   apply pouet.
-Qed.  
+Qed.
 
 Definition toutou3 (m : nat) (p : m == m) : p == refl m :=
 match p in (_ == n) return (tout m p) with
@@ -735,10 +1034,10 @@ induction n; intros.
  assert (n == n) as p1 by reflexivity.
  pose proof IHn p1 as p2.
  refine (match p with refl => _ end).
- 
+
 Show Proof.
 
-tata = 
+tata =
 λ p : 0 == 0,
 match
   p as p0 in (_ == n)
@@ -752,7 +1051,7 @@ with
 end
      : ∀ p : 0 == 0, p == refl 0
 
-tete = 
+tete =
 λ p : 1 == 1,
 match
   p as p0 in (_ == n)
@@ -847,7 +1146,7 @@ Show Proof.
     with
     | refl => refl (refl 0)
     end)
-   (λ (x0 : nat) (IHx : ∀ p0 : x0 == x0, p0 == refl x0) 
+   (λ (x0 : nat) (IHx : ∀ p0 : x0 == x0, p0 == refl x0)
     (p0 : S x0 == S x0),
     match
       x0 as n
@@ -904,313 +1203,6 @@ Error: Abstracting over the terms "x0" and "p" leads to a term
 refine (
   Id_ind A x (λ (z : A) (q : z == z), q = refl z) eq_refl x p
 ).
-
-bbb.
-
-Lemma hott_2_1_4_ii {A} {x y z w : A} :
-  ∀ (p : x == y) (q : y == z) (r : z == w),
-  p⁻¹ • p == refl y ∧∧ p • p⁻¹ == refl x.
-Proof.
-intros p q r.
-destruct p; split; constructor.
-Qed.
-
-Lemma hott_2_1_4_iii {A} {x y z w : A} :
-  ∀ (p : x == y) (q : y == z) (r : z == w),
-  (p⁻¹)⁻¹ == p.
-Proof.
-intros p q r.
-destruct p; constructor.
-Qed.
-
-Lemma hott_2_1_4_iv {A} {x y z w : A} :
-  ∀ (p : x == y) (q : y == z) (r : z == w),
-  p • (q • r) == (p • q) • r.
-Proof.
-intros p q r.
-destruct p; constructor.
-Qed.
-
-(* Theorem 2.1.6 (Eckmann-Hilton) *)
-
-Definition Ω {A} (a : A) := (a == a).
-Definition Ω2 {A} (a : A) := (refl a == refl a).
-
-(* whiskering *)
-Definition dotr {A} {a b c : A} {p q : a == b}
-  (α : p == q) (r : b == c) : (p • r == q • r).
-Proof.
-induction r as (b).
-pose proof (@hott_2_1_4_i A a b p) as (H1, H2).
-apply invert in H1.
-eapply compose; [ apply H1 | idtac ].
-pose proof (@hott_2_1_4_i A a b q) as (H3, H4).
-eapply compose; [ apply α | apply H3 ].
-Defined.
-
-Notation "α '•r' r" := (dotr α r) (at level 50).
-
-bbb.
-
-(* whiskering *)
-Definition dotl {A} {a b c : A} {r s : b == c}
-  (q : a == b) (β : r == s) : (q • r == q • s).
-Proof.
-induction q as (b).
-pose proof (@hott_2_1_4_i A b c r) as (H1, H2).
-apply invert in H2.
-eapply compose; [ apply H2 | idtac ].
-pose proof (@hott_2_1_4_i A b c s) as (H3, H4).
-eapply compose; [ apply β | apply H4 ].
-Defined.
-
-Notation "q '•l' β" := (dotl q β) (at level 50).
-
-Definition ru {A} {a b : A} (p : a == b) :=
-  match hott_2_1_4_i p with
-  | conjt x _ => x
-  end.
-
-Check @ru.
-(* ru
-     : ∀ (A : Type) (a b : A) (p : a == b) → p == p • refl b *)
-
-Theorem dotr_rupq {A} {a b : A} : ∀ (p q : a == b) α,
-  α •r refl b == (ru p)⁻¹ • α • (ru q).
-Proof.
-intros.
-induction p as (b), α as (p); simpl.
-unfold ru; simpl.
-destruct (hott_2_1_4_i p) as (α, β); simpl.
-unfold id; simpl.
-apply dotr, ru.
-Qed.
-
-Definition lu {A} {b c : A} (r : b == c) :=
-  match hott_2_1_4_i r with
-  | conjt _ x => x
-  end.
-
-Check @lu.
-(* lu
-     : ∀ (A : Type) (b c : A) (r : b == c), r == refl b • r *)
-
-Theorem dotl_lurs {A} {b c : A} : ∀ (r s : b == c) β,
-  refl b •l β == (lu r)⁻¹ • β • (lu s).
-Proof.
-intros.
-induction r as (b), β as (r); simpl.
-unfold lu; simpl.
-destruct (hott_2_1_4_i r) as (α, β); simpl.
-unfold id; simpl.
-apply dotr, ru.
-Qed.
-
-Definition star {A} {a b c : A} {p q : a == b} {r s : b == c} α β
-  : p • r == q • s
-  := (α •r r) • (q •l β).
-
-Notation "α ★ β" := (star α β) (at level 40).
-
-Theorem star_dot {A} {a : A} : ∀ (α β : refl a == refl a), α ★ β == α • β.
-Proof.
-intros.
-unfold "★"; simpl; unfold id.
-eapply compose; [ apply hott_2_1_4_iv | idtac ].
-remember (α • refl (refl a) • β) as p.
-pose proof @hott_2_1_4_i (a == a) (refl a) (refl a) p as H.
-destruct H as (γ, δ); eapply invert.
-eapply compose; [ idtac | eassumption ].
-subst; apply dotr, ru.
-Qed.
-
-Definition star' {A} {a b c : A} {p q : a == b} {r s : b == c} α β
-  : p • r == q • s
-  := (p •l β) • (α •r s).
-
-Notation "α ★' β" := (star' α β) (at level 40).
-
-Theorem star'_dot {A} {a : A} : ∀ (α β : refl a == refl a), α ★' β == β • α.
-Proof.
-intros.
-unfold "★'"; simpl; unfold id.
-eapply compose; [ apply hott_2_1_4_iv | idtac ].
-remember (β • refl (refl a) • α) as p.
-pose proof @hott_2_1_4_i (a == a) (refl a) (refl a) p as H.
-destruct H as (γ, δ); eapply invert.
-eapply compose; [ idtac | eassumption ].
-subst; apply dotr, ru.
-Qed.
-
-Theorem gen_star_star' {A} {a b c : A} {p q : a == b} {r s : b == c} : ∀ α β,
-  @star A a b c p q r s α β == @star' A a b c p q r s α β.
-Proof.
-intros.
-induction α as (p).
-induction β as (r).
-induction p, r.
-unfold "★", "★'"; simpl.
-constructor.
-Qed.
-
-Theorem star_star' {A} {a : A} : ∀ (α β : refl a == refl a),
-  star α β == star' α β.
-Proof. apply gen_star_star'. Qed.
-
-Theorem eckmann_hilton {A} {a : A} : ∀ (α β : refl a == refl a),
-  α • β == β • α.
-Proof.
-intros.
-eapply compose; [ eapply invert, star_dot | idtac ].
-eapply compose; [ idtac | apply star'_dot ].
-apply star_star'.
-Qed.
-
-Check @eckmann_hilton.
-
-(* *)
-
-(* hott section 2.2 *)
-
-Definition ap {A B} (f : A → B) {x y} (p : x == y) :=
-  match p in (y1 == y2) return (f y1 == f y2) with
-  | refl x => refl (f x)
-  end.
-
-Print ap.
-
-Theorem hott_2_2_1 {A B} : ∀ (f : A → B) x, ap f (refl x) = refl (f x).
-Proof. constructor. Qed.
-
-Theorem hott_2_2_2_i {A B} : ∀ (f : A → B) x y z (p : x == y) (q : y == z),
-  ap f (p • q) = ap f p • ap f q.
-Proof. induction p, q; constructor. Qed.
-
-Theorem hott_2_2_2_ii {A B} : ∀ (f : A → B) x y (p : x == y),
-  ap f (p⁻¹) = (ap f p)⁻¹.
-Proof. induction p; constructor. Qed.
-
-Theorem hott_2_2_2_iii {A B C} : ∀ (f : A → B) (g : B → C) (x y : A) p,
-  ap g (@ap A B f x y p) = ap (g o f) p.
-Proof. induction p; constructor. Qed.
-
-Theorem hott_2_2_2_iv {A} : ∀ (x y : A) p, @ap A A id x y p = p.
-Proof. induction p; constructor. Qed.
-
-(* hott section 2.3 *)
-
-(* p* = transport P p *)
-Definition transport {A} P {x y : A} (p : x == y) : P x → P y :=
-  match p in (y1 == y2) return (P y1 → P y2) with
-  | refl x => id
-  end.
-
-Check @transport.
-(* transport =
-     : ∀ (A : Type) (P : A → Type) (x y : A), x == y → P x → P y *)
-
-(* lemma 2.3.2 path lifting property *)
-
-Definition lift {A P} {x y : A} (u : P x) (p : x == y) :=
-  match p in (y1 == y2)
-    return (∀ v, existT y1 v == existT y2 (transport P p v))
-  with
-  | refl x => λ v, refl (existT x (transport P (refl x) v))
-  end u.
-
-(* lift
-     : ∀ (A : Type) (P : A → Type) (x y : A) (u : P x) (p : x == y),
-       existT x u == existT y (transport P p u) *)
-
-(* à voir, car ça marche pas...
-Lemma path_lifting_property : ∀ A P (x y : A) (u : P x) (p : x == y),
-  projT1 (lift u p) == p.
-
-Toplevel input, characters 103-111:
-Error: In environment
-A : Type
-P : A → Type
-x : A
-y : A
-u : P x
-p : x == y
-The term "lift u p" has type "existT x u == existT y (transport P p u)"
- while it is expected to have type "sigT ?1330".
-*)
-
-(* lemma 2.3.4 *)
-
-Lemma dependent_map {A P} : ∀ (f : ∀ (x : A), P x),
-  ∀ x y (p : x == y), transport P p (f x) == f y.
-Proof. induction p; constructor. Qed.
-
-Definition apd {A P} f {x y : A} {p : x == y} :=
-  match p in (y1 == y2) return (transport P p (f y1) == f y2) with
-  | refl x => refl (f x)
-  end.
-
-(* ap
-     : ∀ (A B : Type) (f : A → B) (x y : A),
-       x == y → f x == f y *)
-(* apd
-     : ∀ (A : Type) (P : A → Type) (f : ∀ x : A, P x) (x y : A)
-       (p : x == y), transport P p (f x) == f y *)
-
-(*
-Lemma hott_2_3_5 {A} : ∀ (P : A → Type) B, (∀ x, P x = B) →
-  ∀ x y (p : x == y) (b : P x), transport P p b == b.
-                                                   ^
-The term "b" has type "P x" while it is expected to have type
-"P y".
-*)
-
-(*
-Lemma hott_2_3_5 {A} : ∀ (P : A → Type) B, (∀ x, P x = B) →
-  ∀ x y (p : x == y) (b : P y), transport P p b == b.
-                                              ^
-The term "b" has type "P y" while it is expected to have type
-"P x".
-*)
-
-Check @transport.
-
-(*
-Lemma toto {A} : ∀ (P : A → Type) B, (∀ x, P x = B) →
-  ∀ x y (p : x == y) (b : P x) (f : ∀ z, P z → B),
-  f y (transport P p b) == f x b.
-Proof.
-intros.
-induction p; simpl.
-unfold id; simpl.
-constructor.
-Qed.
-*)
-
-(*
-Lemma hott_2_3_5 {A} : ∀ (P : A → Type) B, (∀ x, P x = B) →
-  ∀ x y (p : x == y) (b : B), transport P p b == b.
-
-Toplevel input, characters 114-115:
-Error:
-In environment
-A : Type
-P : A → Type
-B : Type
-x : A
-y : A
-p : x == y
-b : B
-The term "b" has type "B" while it is expected to have type
-"P x".
-*)
-
-Check @apd.
-(* apd
-     : ∀ (A : Type) (P : A → Type) (f : ∀ x : A, P x)
-       (x y : A) (p : x == y), transport P p (f x) == f y *)
-
-Definition hott_2_3_8 A B P (f : A → B) x y (p : x == y) glop
-  : @apd A P f x y p == glop • ap f p.
 
 bbb.
 
