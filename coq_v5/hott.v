@@ -865,17 +865,10 @@ The term "lift u p" has type "existT x u == existT y (transport P p u)"
 
 (* lemma 2.3.4 *)
 
-Definition apd {A P} f {x y : A} {p : x == y} : transport P p (f x) == f y :=
+Definition apd {A P} f {x y : A} (p : x == y) : transport P p (f x) == f y :=
   match p with
   | refl => refl (f x)
   end.
-
-(* ap
-     : ∀ (A B : Type) (f : A → B) (x y : A)
-       (p : x == y), f x == f y *)
-(* apd
-     : ∀ (A : Type) (P : A → Type) (f : ∀ x : A, P x) (x y : A)
-       (p : x == y), transport P p (f x) == f y *)
 
 (* lemma hott_2_3_5 *)
 
@@ -891,10 +884,18 @@ Check @transportconst.
      : ∀ (A : U) (x y : A) (B : Type) (P:=λ _ : A, B)
        (p : x == y) (b : B), transport P p b == b *)
 
-bbb.
+(* ap
+     : ∀ (A B : Type) (f : A → B) (x y : A)
+       (p : x == y), f x == f y *)
+(* apd
+     : ∀ (A : Type) (P : A → Type) (f : ∀ x : A, P x) (x y : A)
+       (p : x == y), transport P p (f x) == f y *)
 
-Definition hott_2_3_8 A B P (f : A → B) x y (p : x == y) glop
-  : @apd A P f x y p == glop • ap f p.
+Definition hott_2_3_8 A B (P := λ _ : A, B) (f : A → B) x y (p : x == y)
+  : apd f p == transportconst B p (f x) • ap f p
+  := match p with refl => refl (apd f (refl x)) end.
+
+Print hott_2_3_8.
 
 bbb.
 
