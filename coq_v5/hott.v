@@ -813,12 +813,10 @@ Proof. induction p; constructor. Qed.
 
 (* hott section 2.3 *)
 
-bbb.
-
 (* p* = transport P p *)
 Definition transport {A} P {x y : A} (p : x == y) : P x → P y :=
-  match p in (y1 == y2) return (P y1 → P y2) with
-  | refl x => id
+  match p with
+  | refl => id
   end.
 
 Check @transport.
@@ -827,20 +825,24 @@ Check @transport.
 
 (* lemma 2.3.2 path lifting property *)
 
-Definition lift {A P} {x y : A} (u : P x) (p : x == y) :=
-  match p in (y1 == y2)
-    return (∀ v, existT y1 v == existT y2 (transport P p v))
-  with
-  | refl x => λ v, refl (existT x (transport P (refl x) v))
-  end u.
+Definition lift {A P} {x y : A} (u : P x) (p : x == y)
+  : existT _ x u == existT _ y (transport P p u)
+  := match p with
+     | refl => refl (existT P x (transport P (refl x) u))
+     end.
+
+Check @lift.
 
 (* lift
      : ∀ (A : Type) (P : A → Type) (x y : A) (u : P x) (p : x == y),
        existT x u == existT y (transport P p u) *)
 
-(* à voir, car ça marche pas... *)
+Check projT1.
+(* projT1
+     : ∀ (A : Type) (P : A → Type), sigT P → A *)
+
 Lemma path_lifting_property : ∀ A P (x y : A) (u : P x) (p : x == y),
-  projT1 (lift u p) == p.
+  @projT1 A P (lift u p) == p.
 
 Toplevel input, characters 103-111:
 Error: In environment
