@@ -920,6 +920,13 @@ Definition hott_2_3_10 {A B x y} :
     | refl => refl (transport P (ap f (refl x)) u)
     end.
 
+Definition hott_2_3_11 {A x y} : ∀ (P Q : A → U) (f : Π (x : A), P x → Q x),
+  ∀ (p : x == y) (u : P x), transport Q p (f x u) == f y (transport P p u)
+  := λ P Q f p u,
+     match p with
+     | refl => refl (f x (transport P (refl x) u))
+     end.
+
 bbb.
 
 Lemma toto {A} : ∀ x y : A, ∀ p : x == y, p • p⁻¹ = refl x.
