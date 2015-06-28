@@ -877,67 +877,21 @@ Definition apd {A P} f {x y : A} {p : x == y} : transport P p (f x) == f y :=
      : ∀ (A : Type) (P : A → Type) (f : ∀ x : A, P x) (x y : A)
        (p : x == y), transport P p (f x) == f y *)
 
-Lemma hott_2_3_5 {A B : U} : ∀ (P := λ C _, C) (x y : A) (p : x == y) (b : B),
- transport (P B) p b == b.
-Proof.
-intros P x y p b.
-refine (match p with refl => _ end).
-reflexivity.
-Show Proof.
-Defined.
+(* lemma hott_2_3_5 *)
+
+Definition transportconst {A : U} {x y : A}
+  : ∀ B (P := λ _, B) (p : x == y) (b : B), transport P p b == b
+  := λ B (P := λ _, B) p b,
+     match p return (transport P p b == b) with
+     | refl => refl b
+     end.
+
+Check @transportconst.
+(* transportconst
+     : ∀ (A : U) (x y : A) (B : Type) (P:=λ _ : A, B)
+       (p : x == y) (b : B), transport P p b == b *)
+
 bbb.
-
-Lemma hott_2_3_5 {A} : ∀ (P : A → Type) B, (∀ x, P x == B) →
-  ∀ x y (p : x == y) (b : P x), transport P p b == b.
-                                                   ^
-The term "b" has type "P x" while it is expected to have type
-"P y".
-*)
-
-(*
-Lemma hott_2_3_5 {A} : ∀ (P : A → Type) B, (∀ x, P x = B) →
-  ∀ x y (p : x == y) (b : P y), transport P p b == b.
-                                              ^
-The term "b" has type "P y" while it is expected to have type
-"P x".
-*)
-
-Check @transport.
-
-(*
-Lemma toto {A} : ∀ (P : A → Type) B, (∀ x, P x = B) →
-  ∀ x y (p : x == y) (b : P x) (f : ∀ z, P z → B),
-  f y (transport P p b) == f x b.
-Proof.
-intros.
-induction p; simpl.
-unfold id; simpl.
-constructor.
-Qed.
-*)
-
-(*
-Lemma hott_2_3_5 {A} : ∀ (P : A → Type) B, (∀ x, P x = B) →
-  ∀ x y (p : x == y) (b : B), transport P p b == b.
-
-Toplevel input, characters 114-115:
-Error:
-In environment
-A : Type
-P : A → Type
-B : Type
-x : A
-y : A
-p : x == y
-b : B
-The term "b" has type "B" while it is expected to have type
-"P x".
-*)
-
-Check @apd.
-(* apd
-     : ∀ (A : Type) (P : A → Type) (f : ∀ x : A, P x)
-       (x y : A) (p : x == y), transport P p (f x) == f y *)
 
 Definition hott_2_3_8 A B P (f : A → B) x y (p : x == y) glop
   : @apd A P f x y p == glop • ap f p.
