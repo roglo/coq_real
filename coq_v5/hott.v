@@ -877,9 +877,6 @@ Definition apd {A P} f {x y : A} {p : x == y} : transport P p (f x) == f y :=
      : ∀ (A : Type) (P : A → Type) (f : ∀ x : A, P x) (x y : A)
        (p : x == y), transport P p (f x) == f y *)
 
-bbb.
-
-(*
 Lemma hott_2_3_5 {A} : ∀ (P : A → Type) B, (∀ x, P x = B) →
   ∀ x y (p : x == y) (b : P x), transport P p b == b.
                                                    ^
