@@ -927,6 +927,8 @@ Definition hott_2_3_11 {A x y} : ∀ (P Q : A → U) (f : Π (x : A), P x → Q 
      | refl => refl (f x (transport P (refl x) u))
      end.
 
+(* hott section 2.4 - Homotopies and Equivalences *)
+
 bbb.
 
 Definition homotopy {A : Prop} {B} (f g : A → B) := Π (x : A), (f x = g x).
