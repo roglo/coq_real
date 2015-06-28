@@ -825,10 +825,12 @@ Check @transport.
 (* transport =
      : ∀ (A : Type) (P : A → Type) (x y : A), x == y → P x → P y *)
 
+Notation "p _*" := (transport _ p) (at level 5).
+
 (* lemma 2.3.2 path lifting property *)
 
 Definition lift {A P} {x y : A} (u : P x) (p : x == y)
-  : existT _ x u == existT _ y (transport P p u)
+  : existT _ x u == existT _ y (transport P _ u)
   := match p with
      | refl => refl (existT P x (transport P (refl x) u))
      end.
@@ -898,6 +900,17 @@ Definition hott_2_3_8 A B (P := λ _ : A, B) (f : A → B) x y (p : x == y)
   := match p with refl => refl (apd f (refl x)) end.
 
 Print hott_2_3_8.
+
+Definition hott_2_3_9 {A x y z} :
+    ∀ (P : A → U) (p : x == y) (q : y == z) (u : P x),
+    transport P q (transport P p u) == transport P (p • q) u :=
+  λ P p q u,
+  match q with
+  | refl =>
+      match p with
+      | refl => refl (transport P (refl x • refl x) u)
+      end
+  end.
 
 bbb.
 
