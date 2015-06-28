@@ -788,7 +788,7 @@ Check @eckmann_hilton.
 
 (* hott section 2.2 *)
 
-Definition ap {A B} (f : A → B) {x y} (p : x == y) : f x == f y :=
+Definition ap {A B x y} (f : A → B) (p : x == y) : f x == f y :=
   match p with
   | refl => refl (f x)
   end.
@@ -804,12 +804,14 @@ Theorem hott_2_2_2_ii {A B} : ∀ (f : A → B) x y (p : x == y),
   ap f (p⁻¹) = (ap f p)⁻¹.
 Proof. induction p; constructor. Qed.
 
-Theorem hott_2_2_2_iii {A B C} : ∀ (f : A → B) (g : B → C) (x y : A) p,
-  ap g (@ap A B f x y p) = ap (g o f) p.
-Proof. induction p; constructor. Qed.
+Definition hott_2_2_2_iii {A B C x y}
+  : ∀ (f : A → B) (g : B → C) (p : x == y),
+    ap g (ap f p) == ap (g o f) p
+  := λ f g p,
+     match p with refl => refl (ap g (ap f (refl x))) end.
 
-Theorem hott_2_2_2_iv {A} : ∀ (x y : A) p, @ap A A id x y p = p.
-Proof. induction p; constructor. Qed.
+Definition hott_2_2_2_iv {A} {x y : A} : ∀ (p : x == y), ap id p == p
+  := λ p, match p with refl => refl (refl x) end.
 
 (* hott section 2.3 *)
 
