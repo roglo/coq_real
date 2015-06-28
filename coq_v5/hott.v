@@ -929,14 +929,14 @@ Definition hott_2_3_11 {A x y} : ∀ (P Q : A → U) (f : Π (x : A), P x → Q 
 
 (* hott section 2.4 - Homotopies and Equivalences *)
 
+Definition homotopy {A B} (f g : A → B) := Π (x : A), (f x = g x).
+
+Notation "f '~' g" := (homotopy f g) (at level 110, g at level 110).
+
+Definition homotopy_refl {A B} : reflexive _ (@homotopy A B) :=
+  λ _ _, eq_refl.
+
 bbb.
-
-Definition homotopy {A : Prop} {B} (f g : A → B) := Π (x : A), (f x = g x).
-
-Notation "f '~~' g" := (homotopy f g) (at level 110, g at level 110).
-
-Theorem homotopy_refl {A B} : reflexive _ (@homotopy A B).
-Proof. intros f x; reflexivity. Qed.
 
 Theorem homotopy_symm {A B} : symmetric _ (@homotopy A B).
 Proof. intros f g H x; symmetry; apply H. Qed.
