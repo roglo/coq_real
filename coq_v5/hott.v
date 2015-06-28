@@ -841,6 +841,13 @@ Check projT1.
 (* projT1
      : ∀ (A : Type) (P : A → Type), sigT P → A *)
 
+Check @ap.
+(* ap
+     : ∀ (A B : Type) (f : A → B) (x y : A), x == y → f x == f y *)
+
+(*
+Mystery in hott book:
+
 Lemma path_lifting_property : ∀ A P (x y : A) (u : P x) (p : x == y),
   @projT1 A P (lift u p) == p.
 
@@ -858,21 +865,19 @@ The term "lift u p" has type "existT x u == existT y (transport P p u)"
 
 (* lemma 2.3.4 *)
 
-Lemma dependent_map {A P} : ∀ (f : ∀ (x : A), P x),
-  ∀ x y (p : x == y), transport P p (f x) == f y.
-Proof. induction p; constructor. Qed.
-
-Definition apd {A P} f {x y : A} {p : x == y} :=
-  match p in (y1 == y2) return (transport P p (f y1) == f y2) with
-  | refl x => refl (f x)
+Definition apd {A P} f {x y : A} {p : x == y} : transport P p (f x) == f y :=
+  match p with
+  | refl => refl (f x)
   end.
 
 (* ap
-     : ∀ (A B : Type) (f : A → B) (x y : A),
-       x == y → f x == f y *)
+     : ∀ (A B : Type) (f : A → B) (x y : A)
+       (p : x == y), f x == f y *)
 (* apd
      : ∀ (A : Type) (P : A → Type) (f : ∀ x : A, P x) (x y : A)
        (p : x == y), transport P p (f x) == f y *)
+
+bbb.
 
 (*
 Lemma hott_2_3_5 {A} : ∀ (P : A → Type) B, (∀ x, P x = B) →
