@@ -1021,23 +1021,23 @@ Inductive qinv {A B} (f : A → B) : Prop :=
 Example ex_2_4_7 A : qinv (id : A → A) := qi id id refl refl.
 Print ex_2_4_7.
 
-Example ex_2_4_8 A : ∀ x y z : A, ∀ (p : x == y),
+Example ex_2_4_8_i A : ∀ x y z : A, ∀ (p : x == y),
   qinv (λ (q : y == z), p • q).
 Proof.
 intros.
 apply qi with (g := λ q, p⁻¹ • q).
- intros t; unfold id; simpl.
+ intros t; unfold id, "o"; simpl.
  eapply compose; [ idtac | apply invert, hott_2_1_4_i_2 ].
  eapply compose; [ apply hott_2_1_4_iv | apply dotr ].
  eapply hott_2_1_4_ii_2; reflexivity.
 
- intros t; unfold id; simpl.
+ intros t; unfold id, "o"; simpl.
  eapply compose; [ idtac | apply invert, hott_2_1_4_i_2 ].
  eapply compose; [ apply hott_2_1_4_iv | apply dotr ].
  eapply hott_2_1_4_ii_1; reflexivity.
 Qed.
 
-Example ex_2_4_8_bis A : ∀ x y z : A, ∀ (p : x == y),
+Example ex_2_4_8_i_bis A : ∀ x y z : A, ∀ (p : x == y),
   qinv (λ (q : y == z), p • q)
   := λ x y z p,
      qi (λ q : y == z, p • q) (λ q : x == z, p ⁻¹ • q)
@@ -1048,17 +1048,34 @@ Example ex_2_4_8_bis A : ∀ x y z : A, ∀ (p : x == y),
         hott_2_1_4_iv (p ⁻¹) p t • (hott_2_1_4_ii_1 p (refl y) (refl y) •r t)
         • (hott_2_1_4_i_2 t) ⁻¹).
 
-bbb.
+Example ex_2_4_8_ii A : ∀ x y z : A, ∀ (p : x == y),
+  qinv (λ (q : z == x), q • p).
+Proof.
+intros.
+apply qi with (g := λ q, q • p⁻¹).
+ intros t; unfold id, "o"; simpl.
+ eapply compose; [ idtac | apply invert, hott_2_1_4_i_1 ].
+ eapply compose; [ eapply invert, hott_2_1_4_iv | apply dotl ].
+ eapply hott_2_1_4_ii_1; reflexivity.
 
-pose proof @hott_2_4_3 A A x x (λ x, f (f x)) f (λ x, ap f (H x)) (refl x) as p.
-simpl in p; unfold id in p; simpl in p.
+ intros t; unfold id, "o"; simpl.
+ eapply compose; [ idtac | apply invert, hott_2_1_4_i_1 ].
+ eapply compose; [ eapply invert, hott_2_1_4_iv | apply dotl ].
+ eapply hott_2_1_4_ii_2; reflexivity.
+Qed.
 
-pose proof @hott_2_4_3 A A x x (λ x, f (f x)) f (λ x, H (f x)) (refl x) as p.
-simpl in p; unfold id in p; simpl in p.
-Print ap.
-
-assert (∀ y : A, f (f y) ~~ f).
-simpl in p.
+Example ex_2_4_8_ii_bis A : ∀ x y z : A, ∀ (p : x == y),
+  qinv (λ (q : z == x), q • p)
+  := λ x y z p,
+     qi (λ q : z == x, q • p) (λ q : z == y, q • p ⁻¹)
+       (λ t : z == y,
+        (hott_2_1_4_iv t (p ⁻¹) p) ⁻¹
+        • (t •l hott_2_1_4_ii_1 p (refl y) (refl y)) •
+        (hott_2_1_4_i_1 t) ⁻¹)
+       (λ t : z == x,
+        (hott_2_1_4_iv t p (p ⁻¹)) ⁻¹
+        • (t •l hott_2_1_4_ii_2 p (refl y) (refl y)) •
+        (hott_2_1_4_i_1 t) ⁻¹).
 
 bbb.
 
