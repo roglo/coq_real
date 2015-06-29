@@ -1023,6 +1023,15 @@ Inductive qinv {A B} (f : A → B) : Prop :=
 Example ex_2_4_7 A : qinv (id : A → A) := qi id id refl refl.
 Print ex_2_4_7.
 
+Example ex_2_4_8 A : ∀ x y z : A, ∀ (p : x == y),
+  qinv (λ (q : y == z), p • q).
+Proof.
+intros.
+eapply qi.
+bbb.
+
+eapply qi with (g := λ q, p⁻¹ • q).
+
 bbb.
 
 pose proof @hott_2_4_3 A A x x (λ x, f (f x)) f (λ x, ap f (H x)) (refl x) as p.
