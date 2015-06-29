@@ -1015,6 +1015,14 @@ assert (ap f (H x) • H x == H (f x) • H x) as p.
   eapply hott_2_1_4_ii_2; reflexivity.
 Qed.
 
+(* quasi-inverse *)
+
+Inductive qinv {A B} (f : A → B) : Prop :=
+  qi : ∀ (g : B → A) (α : (f o g) ~~ id) (β : (g o f) ~~ id), qinv f.
+
+Example ex_2_4_7 A : qinv (id : A → A) := qi id id refl refl.
+Print ex_2_4_7.
+
 bbb.
 
 pose proof @hott_2_4_3 A A x x (λ x, f (f x)) f (λ x, ap f (H x)) (refl x) as p.
