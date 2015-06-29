@@ -620,13 +620,16 @@ Inductive andt (A B : Type) : Type := conjt : A → B → andt A B.
 Notation "u '∧∧' v" := (andt u v) (at level 80, right associativity).
 Arguments conjt {A B} _ _.
 
-Definition hott_2_1_4_i {A} {x y : A} : ∀ (p : x == y),
-    p == p • refl y ∧∧ p == refl x • p
+Definition hott_2_1_4_i_1 {A} {x y : A} : ∀ (p : x == y),
+    p == p • refl y
  := (λ (p : x == y),
- conjt
-   match p return (p == p • refl _) with
-   | refl => refl (refl x • refl x)
-   end
+     match p return (p == p • refl _) with
+     | refl => refl (refl x • refl x)
+     end).
+
+Definition hott_2_1_4_i_2 {A} {x y : A} : ∀ (p : x == y),
+    p == refl x • p
+ := (λ (p : x == y),
    match p return (p == refl _ • p) with
    | refl => refl (refl x • refl x)
    end).
@@ -672,11 +675,11 @@ Definition Ω2 {A} (a : A) := (refl a == refl a).
 Definition dotr {A} {a b c : A} {p q : a == b}
   (α : p == q) (r : b == c) : (p • r == q • r).
 Proof.
-induction r as (b).
-pose proof (@hott_2_1_4_i A a b p) as (H1, H2).
+induction r.
+pose proof (@hott_2_1_4_i_1 A a b p) as H1.
 apply invert in H1.
 eapply compose; [ apply H1 | idtac ].
-pose proof (@hott_2_1_4_i A a b q) as (H3, H4).
+pose proof (@hott_2_1_4_i_1 A a b q) as H3.
 eapply compose; [ apply α | apply H3 ].
 Defined.
 
@@ -687,19 +690,17 @@ Definition dotl {A} {a b c : A} {r s : b == c}
   (q : a == b) (β : r == s) : (q • r == q • s).
 Proof.
 induction q.
-pose proof (@hott_2_1_4_i A a c r) as (H1, H2).
+pose proof (@hott_2_1_4_i_2 A a c r) as H2.
 apply invert in H2.
 eapply compose; [ apply H2 | idtac ].
-pose proof (@hott_2_1_4_i A a c s) as (H3, H4).
+pose proof (@hott_2_1_4_i_2 A a c s) as H4.
 eapply compose; [ apply β | apply H4 ].
 Defined.
 
 Notation "q '•l' β" := (dotl q β) (at level 50).
 
-Definition ru {A} {a b : A} (p : a == b) :=
-  match hott_2_1_4_i p with
-  | conjt x _ => x
-  end.
+Definition ru {A} {a b : A} (p : a == b) : p == p • refl b :=
+  hott_2_1_4_i_1 p.
 
 Check @ru.
 (* ru
@@ -713,10 +714,8 @@ induction p, α; simpl.
 reflexivity.
 Qed.
 
-Definition lu {A} {b c : A} (r : b == c) :=
-  match hott_2_1_4_i r with
-  | conjt _ x => x
-  end.
+Definition lu {A} {b c : A} (r : b == c) : r == refl b • r :=
+  hott_2_1_4_i_2 r.
 
 Check @lu.
 (* lu
@@ -742,8 +741,8 @@ intros.
 unfold "★"; simpl; unfold id.
 eapply compose; [ apply hott_2_1_4_iv | idtac ].
 remember (α • refl (refl a) • β) as p.
-pose proof @hott_2_1_4_i (a == a) (refl a) (refl a) p as H.
-destruct H as (γ, δ); eapply invert.
+pose proof @hott_2_1_4_i_1 (a == a) (refl a) (refl a) p as H.
+eapply invert.
 eapply compose; [ idtac | eassumption ].
 subst; apply dotr, ru.
 Qed.
@@ -760,8 +759,8 @@ intros.
 unfold "★'"; simpl; unfold id.
 eapply compose; [ apply hott_2_1_4_iv | idtac ].
 remember (β • refl (refl a) • α) as p.
-pose proof @hott_2_1_4_i (a == a) (refl a) (refl a) p as H.
-destruct H as (γ, δ); eapply invert.
+pose proof @hott_2_1_4_i_1 (a == a) (refl a) (refl a) p as H.
+eapply invert.
 eapply compose; [ idtac | eassumption ].
 subst; apply dotr, ru.
 Qed.
@@ -1005,7 +1004,7 @@ assert (ap f (H x) • H x == H (f x) • H x) as p.
    eapply hott_2_1_4_ii_2; reflexivity.
 
    unfold id in p; simpl in p.
-
+   eapply compose in p; [ idtac | apply hott_2_1_4_i_1 ].
 bbb.
 
 Show Proof.
