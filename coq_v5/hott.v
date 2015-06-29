@@ -990,33 +990,30 @@ Definition hott_2_4_3 {A B x y}
      end.
 
 Definition hott_2_4_4 {A x}
-  : ∀ (f : A → A) (H : f ~~ id), H (f x) == ap f (H x)
-.
+  : ∀ (f : A → A) (H : f ~~ id), H (f x) == ap f (H x).
+Proof.
 intros.
 assert (ap f (H x) • H x == H (f x) • H x) as p.
- Focus 2.
- apply dotr with (r := (H x)⁻¹) in p.
- eapply compose in p; [ | apply hott_2_1_4_iv ].
+ symmetry.
+ eapply compose; [ idtac | apply hott_2_4_3 ].
+ apply dotl, invert, hott_2_2_2_iv.
+
+ apply dotr with (r := (H x) ⁻¹) in p.
+ eapply compose in p; [ idtac | apply hott_2_1_4_iv ].
+ eapply compose in p.
+  unfold id in p; simpl in p.
+  eapply compose in p; [ idtac | apply hott_2_1_4_i_1 ].
+  symmetry in p.
+  eapply compose in p; [ idtac | apply hott_2_1_4_iv ].
   eapply compose in p.
-   Focus 2.
+   eapply compose in p; [ eassumption | apply hott_2_1_4_i_1 ].
+
    eapply dotl; symmetry.
    eapply hott_2_1_4_ii_2; reflexivity.
 
-   unfold id in p; simpl in p.
-   eapply compose in p; [ idtac | apply hott_2_1_4_i_1 ].
-   symmetry in p.
-   eapply compose in p; [ idtac | apply hott_2_1_4_iv ].
-   eapply compose in p.
-    Focus 2.
-    eapply dotl; symmetry.
-    eapply hott_2_1_4_ii_2; reflexivity.
-
-   eapply compose in p; [ idtac | apply hott_2_1_4_i_1 ].
-   assumption.
-bbb.
-
-Show Proof.
-Check (H x).
+  eapply dotl; symmetry.
+  eapply hott_2_1_4_ii_2; reflexivity.
+Qed.
 
 bbb.
 
