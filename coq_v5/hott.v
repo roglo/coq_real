@@ -943,19 +943,32 @@ Definition homotopy_sym {A B} : symmetric _ (@homotopy A B) :=
   λ f g (p : f ~~ g) x,
   match p x with eq_refl => eq_refl end.
 
-bbb.
+Definition homotopy_sym2 {A B} : Π (f : A → B), Π (g : A → B),
+    (f ~~ g) → (g ~~ f) :=
+  λ f g (p : f ~~ g) x,
+  match p x with eq_refl => eq_refl end.
 
-Theorem homotopy_trans {A B} : transitive _ (@homotopy A B).
-Proof.
-intros f g h Hfg Hgh x.
-transitivity (g x); [ apply Hfg | apply Hgh ].
-Qed.
+Definition homotopy_trans {A B} : transitive _ (@homotopy A B) :=
+  λ f g h (p : f ~~ g) (q : g ~~ h) x,
+  match q x with
+  | eq_refl => p x
+  end.
+
+Definition homotopy_trans2 {A B}
+  : Π (f : A → B), Π (g : A → B), Π (h : A → B),
+    (f ~~ g) → (g ~~ h) → (f ~~ h)
+  := λ f g h (p : f ~~ g) (q : g ~~ h) x,
+     match q x with
+     | eq_refl => p x
+     end.
 
 Add Parametric Relation {A B} : _ (@homotopy A B)
- reflexivity proved by homotopy_refl
- symmetry proved by homotopy_symm
- transitivity proved by homotopy_trans
+ reflexivity proved by homotopy_refl2
+ symmetry proved by homotopy_sym2
+ transitivity proved by homotopy_trans2
  as homotopy_equivalence.
+
+bbb.
 
 Lemma hott_2_4_3 : ∀ (A : Prop) B (f g : A → B) (H : f ~~ g)
   (eq_A : A → A → Prop) x y (p : eq_A x y),
