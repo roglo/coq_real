@@ -929,29 +929,29 @@ Definition hott_2_3_11 {A x y} : ∀ (P Q : A → U) (f : Π (x : A), P x → Q 
 
 (* hott section 2.4 - Homotopies and Equivalences *)
 
-Definition homotopy {A B} (f g : A → B) := Π (x : A), (f x = g x).
+Definition homotopy {A B} (f g : A → B) := Π (x : A), (f x == g x).
 
 Notation "f '~~' g" := (homotopy f g) (at level 110, g at level 110).
 
 Definition homotopy_refl {A B} : reflexive _ (@homotopy A B) :=
-  λ _ _, eq_refl.
+  λ _ _, refl _.
 
 Definition homotopy_refl2 {A B} : Π (f : A → B), (f ~~ f) :=
-  λ _ _, eq_refl.
+  λ _ _, refl _.
 
 Definition homotopy_sym {A B} : symmetric _ (@homotopy A B) :=
   λ f g (p : f ~~ g) x,
-  match p x with eq_refl => eq_refl end.
+  match p x with refl => refl (f x) end.
 
 Definition homotopy_sym2 {A B} : Π (f : A → B), Π (g : A → B),
     (f ~~ g) → (g ~~ f) :=
   λ f g (p : f ~~ g) x,
-  match p x with eq_refl => eq_refl end.
+  match p x with refl => refl (f x) end.
 
 Definition homotopy_trans {A B} : transitive _ (@homotopy A B) :=
   λ f g h (p : f ~~ g) (q : g ~~ h) x,
   match q x with
-  | eq_refl => p x
+  | refl => p x
   end.
 
 Definition homotopy_trans2 {A B}
@@ -959,7 +959,7 @@ Definition homotopy_trans2 {A B}
     (f ~~ g) → (g ~~ h) → (f ~~ h)
   := λ f g h (p : f ~~ g) (q : g ~~ h) x,
      match q x with
-     | eq_refl => p x
+     | refl => p x
      end.
 
 Add Parametric Relation {A B} : _ (@homotopy A B)
@@ -968,11 +968,19 @@ Add Parametric Relation {A B} : _ (@homotopy A B)
  transitivity proved by homotopy_trans2
  as homotopy_equivalence.
 
-bbb.
-
-Lemma hott_2_4_3 : ∀ (A : Prop) B (f g : A → B) (H : f ~~ g)
-  (eq_A : A → A → Prop) x y (p : eq_A x y),
-  H x . g p = f p . H y.
+Definition hott_2_4_3 {A B x y}
+  : ∀ (f g : A → B) (H : f ~~ g) (p : x == y), H x • ap g p == ap f p • H y
+  := λ f g H p,
+     match p with
+     | refl =>
+         match
+           match H x as q in (_ == a) return (q == q • refl a) with
+           | refl => refl (refl (f x) • refl (f x))
+           end
+         with
+         | refl => refl (id (H x))
+         end
+     end.
 
 bbb.
 
