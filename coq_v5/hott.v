@@ -516,8 +516,8 @@ Inductive orT A B :=
   | orT_intror : B → orT A B.
 
 Definition hott_ex_1_12_i : ∀ A B, A → B → A := λ A B HA HB, HA.
-Definition hot_ex_1_12_ii : ∀ A, A → notT (notT A) := λ A HA HnA, HnA HA.
-Definition hot_ex_1_12_iii : ∀ A B, orT (notT A) (notT B) → notT (andT A B) :=
+Definition hott_ex_1_12_ii : ∀ A, A → notT (notT A) := λ A HA HnA, HnA HA.
+Definition hott_ex_1_12_iii : ∀ A B, orT (notT A) (notT B) → notT (andT A B) :=
   λ A B Hor Hand,
   match Hor with
   | orT_introl Hna => Hna (andT_rect A B (λ _, A) (λ a _, a) Hand)
@@ -631,12 +631,20 @@ Definition hott_2_1_4_i {A} {x y : A} : ∀ (p : x == y),
    | refl => refl (refl x • refl x)
    end).
 
-Lemma hott_2_1_4_ii {A} {x y z w : A} :
+Lemma hott_2_1_4_ii_1 {A} {x y z w : A} :
   ∀ (p : x == y) (q : y == z) (r : z == w),
-  p⁻¹ • p == refl y ∧∧ p • p⁻¹ == refl x.
+  p⁻¹ • p == refl y.
 Proof.
 intros p q r.
-destruct p; split; constructor.
+induction p; constructor.
+Qed.
+
+Lemma hott_2_1_4_ii_2 {A} {x y z w : A} :
+  ∀ (p : x == y) (q : y == z) (r : z == w),
+  p • p⁻¹ == refl x.
+Proof.
+intros p q r.
+induction p; constructor.
 Qed.
 
 Lemma hott_2_1_4_iii {A} {x y z w : A} :
@@ -986,7 +994,23 @@ Definition hott_2_4_4 {A x}
   : ∀ (f : A → A) (H : f ~~ id), H (f x) == ap f (H x)
 .
 intros.
-unfold "~~" in H; simpl in H.
+assert (ap f (H x) • H x == H (f x) • H x) as p.
+ Focus 2.
+ apply dotr with (r := (H x)⁻¹) in p.
+ eapply compose in p; [ | apply hott_2_1_4_iv ].
+  eapply compose in p.
+   Focus 2.
+   eapply dotl.
+   symmetry.
+   eapply hott_2_1_4_ii_2; reflexivity.
+
+   unfold id in p; simpl in p.
+
+bbb.
+
+Show Proof.
+Check (H x).
+
 bbb.
 
 pose proof @hott_2_4_3 A A x x (λ x, f (f x)) f (λ x, ap f (H x)) (refl x) as p.
