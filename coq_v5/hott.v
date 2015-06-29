@@ -974,7 +974,7 @@ Definition hott_2_4_3 {A B x y}
      match p with
      | refl =>
          match
-           match H x as q in (_ == a) return (q == q • refl a) with
+           match H x as q return (q == q • refl _) with
            | refl => refl (refl (f x) • refl (f x))
            end
          with
