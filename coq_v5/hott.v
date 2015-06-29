@@ -994,8 +994,7 @@ Definition hott_2_4_4 {A x}
 Proof.
 intros.
 assert (ap f (H x) • H x == H (f x) • H x) as p.
- symmetry.
- eapply compose; [ idtac | apply hott_2_4_3 ].
+ eapply invert, compose; [ idtac | apply hott_2_4_3 ].
  apply dotl, invert, hott_2_2_2_iv.
 
  apply dotr with (r := (H x) ⁻¹) in p.
@@ -1003,15 +1002,14 @@ assert (ap f (H x) • H x == H (f x) • H x) as p.
  eapply compose in p.
   unfold id in p; simpl in p.
   eapply compose in p; [ idtac | apply hott_2_1_4_i_1 ].
-  symmetry in p.
-  eapply compose in p; [ idtac | apply hott_2_1_4_iv ].
+  eapply invert, compose in p; [ idtac | apply hott_2_1_4_iv ].
   eapply compose in p.
    eapply compose in p; [ eassumption | apply hott_2_1_4_i_1 ].
 
-   eapply dotl; symmetry.
+   eapply dotl, invert.
    eapply hott_2_1_4_ii_2; reflexivity.
 
-  eapply dotl; symmetry.
+  eapply dotl, invert.
   eapply hott_2_1_4_ii_2; reflexivity.
 Qed.
 
@@ -1027,10 +1025,28 @@ Example ex_2_4_8 A : ∀ x y z : A, ∀ (p : x == y),
   qinv (λ (q : y == z), p • q).
 Proof.
 intros.
-eapply qi.
-bbb.
+apply qi with (g := λ q, p⁻¹ • q).
+ intros t; unfold id; simpl.
+ eapply compose; [ idtac | apply invert, hott_2_1_4_i_2 ].
+ eapply compose; [ apply hott_2_1_4_iv | apply dotr ].
+ eapply hott_2_1_4_ii_2; reflexivity.
 
-eapply qi with (g := λ q, p⁻¹ • q).
+ intros t; unfold id; simpl.
+ eapply compose; [ idtac | apply invert, hott_2_1_4_i_2 ].
+ eapply compose; [ apply hott_2_1_4_iv | apply dotr ].
+ eapply hott_2_1_4_ii_1; reflexivity.
+Qed.
+
+Example ex_2_4_8_bis A : ∀ x y z : A, ∀ (p : x == y),
+  qinv (λ (q : y == z), p • q)
+  := λ x y z p,
+     qi (λ q : y == z, p • q) (λ q : x == z, p ⁻¹ • q)
+       (λ t : x == z,
+        hott_2_1_4_iv p (p ⁻¹) t • (hott_2_1_4_ii_2 p (refl y) (refl y) •r t)
+        • (hott_2_1_4_i_2 t) ⁻¹)
+       (λ t : y == z,
+        hott_2_1_4_iv (p ⁻¹) p t • (hott_2_1_4_ii_1 p (refl y) (refl y) •r t)
+        • (hott_2_1_4_i_2 t) ⁻¹).
 
 bbb.
 
