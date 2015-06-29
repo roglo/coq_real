@@ -999,12 +999,20 @@ assert (ap f (H x) • H x == H (f x) • H x) as p.
  eapply compose in p; [ | apply hott_2_1_4_iv ].
   eapply compose in p.
    Focus 2.
-   eapply dotl.
-   symmetry.
+   eapply dotl; symmetry.
    eapply hott_2_1_4_ii_2; reflexivity.
 
    unfold id in p; simpl in p.
    eapply compose in p; [ idtac | apply hott_2_1_4_i_1 ].
+   symmetry in p.
+   eapply compose in p; [ idtac | apply hott_2_1_4_iv ].
+   eapply compose in p.
+    Focus 2.
+    eapply dotl; symmetry.
+    eapply hott_2_1_4_ii_2; reflexivity.
+
+   eapply compose in p; [ idtac | apply hott_2_1_4_i_1 ].
+   assumption.
 bbb.
 
 Show Proof.
