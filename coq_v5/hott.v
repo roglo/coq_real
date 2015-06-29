@@ -982,6 +982,23 @@ Definition hott_2_4_3 {A B x y}
          end
      end.
 
+Definition hott_2_4_4 {A x}
+  : ∀ (f : A → A) (H : f ~~ id), H (f x) == ap f (H x)
+.
+intros.
+unfold "~~" in H; simpl in H.
+bbb.
+
+pose proof @hott_2_4_3 A A x x (λ x, f (f x)) f (λ x, ap f (H x)) (refl x) as p.
+simpl in p; unfold id in p; simpl in p.
+
+pose proof @hott_2_4_3 A A x x (λ x, f (f x)) f (λ x, H (f x)) (refl x) as p.
+simpl in p; unfold id in p; simpl in p.
+Print ap.
+
+assert (∀ y : A, f (f y) ~~ f).
+simpl in p.
+
 bbb.
 
 Lemma toto {A} : ∀ x y : A, ∀ p : x == y, p • p⁻¹ = refl x.
