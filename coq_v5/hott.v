@@ -1151,7 +1151,7 @@ apply (equiv _ f).
  induction H4 as (h2, q2).
  unfold "~~", id in p1, q1, p2, q2.
  unfold "~~", id.
- Abort. (* proof postponed, they say, to sections §2.6, §2.7 and §4.3...
+Admitted. (* proof postponed, they say, to sections §2.6, §2.7 and §4.3...
 bbb.
 *)
 
@@ -1173,8 +1173,23 @@ Definition hott_2_4_12_i_bis : ∀ A, A ≃ A :=
   existT isequiv id
   (existT (λ g, id o g ~~ id) id refl, existT (λ h, h o id ~~ id) id refl).
 
-bbb.
+Lemma hott_2_4_12_ii : ∀ A B (f : A ≃ B), B ≃ A.
+Proof.
+intros A B f.
+induction f as (f, H).
+unfold equivalence.
+SearchAbout isequiv.
+pose proof @equivalence_isequiv_1 A B f as Heq.
+refine (match Heq with equiv _ _ _  _ => _ end).
 
+Error:
+Incorrect elimination of "Heq" in the inductive type "equiv_prop":
+the return type has sort "Type" while it should be "Prop".
+Elimination of an inductive object of sort Prop
+is not allowed on a predicate in sort Type
+because proofs can be eliminated only to build proofs.
+
+bbb.
 
 Lemma toto {A} : ∀ x y : A, ∀ p : x == y, p • p⁻¹ = refl x.
 Proof.
