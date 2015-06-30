@@ -1123,6 +1123,29 @@ apply (equiv _ f).
  intros H; unfold isequiv_1; simpl.
  refine (match H with qi _ _ _ => _ end).
  split; econstructor; eassumption.
+
+ intros H; unfold isequiv_1 in H; simpl in H.
+ destruct H as (Hg, Hh).
+ refine (match Hg with existT g p => _ end).
+ refine (match Hh with existT h q => _ end).
+ econstructor; [ eassumption | idtac ].
+ intros x.
+  unfold homotopy in p, q.
+  assert (∀ y, (h o f o g) y == g y) as H1 by (intros; apply q).
+  assert (∀ y, (h o f o g) y == h y) as H2.
+   intros; rewrite <- composite_assoc.
+   unfold "o"; apply ap, p.
+
+   transitivity ((h o f) x); [ idtac | apply q ].
+   assert (∀ y, g y == h y) as H3; [ idtac | apply H3 ].
+   intros.
+   transitivity ((h o f o g) y); [ symmetry; apply H1 | apply H2 ].
+
+ intros.
+ unfold isequiv_1 in e₁, e₂.
+ destruct e₁ as (H1, H2).
+ destruct e₂ as (H3, H4).
+
 bbb.
 
 Lemma toto {A} : ∀ x y : A, ∀ p : x == y, p • p⁻¹ = refl x.
