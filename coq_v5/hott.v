@@ -1104,22 +1104,21 @@ Example ex_2_4_9_bis A x y : ∀ (p : x == y) (P : A → U), qinv (transport P p
       | refl => refl
       end z).
 
-Inductive equiv_prop {A B} isequiv : Prop :=
-  equiv : ∀ f : A → B,
-    (qinv f → isequiv f)
-    → (isequiv f → qinv f)
-    → (∀ e₁ e₂ : isequiv f, e₁ == e₂)
-    → equiv_prop isequiv.
+Definition equiv_prop {A B} isequiv :=
+  ∀ f : A → B,
+  (qinv f → isequiv f) ∧∧
+  (isequiv f → qinv f) ∧∧
+  (∀ e₁ e₂ : isequiv f, e₁ == e₂).
 
 Check @equiv_prop.
 
 Definition isequiv {A B} f :=
   ((Σ (g : B → A), (f o g ~~ id)) * (Σ (h : B → A), (h o f ~~ id)))%type.
 
-Definition equivalence_isequiv_1 {A B} {f : A → B} :
-  equiv_prop (@isequiv A B).
+Definition equivalence_isequiv_1 {A B} : equiv_prop (@isequiv A B).
 Proof.
-apply (equiv _ f).
+unfold equiv_prop; intros f.
+split; [ idtac | split ].
  intros H; unfold isequiv; simpl.
  refine (match H with qi _ _ _ => _ end).
  split; econstructor; eassumption.
@@ -1177,10 +1176,14 @@ Lemma hott_2_4_12_ii : ∀ A B (f : A ≃ B), B ≃ A.
 Proof.
 intros A B f.
 induction f as (f, H).
-unfold equivalence.
-pose proof @equivalence_isequiv_1 A B f as Heq.
+unfold isequiv in H.
+destruct H as ((g, Hg), (h, Hh)).
+bbb.
+split with (x := g).
 
 bbb.
+
+(* *)
 
 Lemma toto {A} : ∀ x y : A, ∀ p : x == y, p • p⁻¹ = refl x.
 Proof.
