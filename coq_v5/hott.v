@@ -1178,16 +1178,7 @@ Proof.
 intros A B f.
 induction f as (f, H).
 unfold equivalence.
-SearchAbout isequiv.
 pose proof @equivalence_isequiv_1 A B f as Heq.
-refine (match Heq with equiv _ _ _  _ => _ end).
-
-Error:
-Incorrect elimination of "Heq" in the inductive type "equiv_prop":
-the return type has sort "Type" while it should be "Prop".
-Elimination of an inductive object of sort Prop
-is not allowed on a predicate in sort Type
-because proofs can be eliminated only to build proofs.
 
 bbb.
 
