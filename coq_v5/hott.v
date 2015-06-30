@@ -1077,6 +1077,33 @@ Example ex_2_4_8_ii_bis A : ∀ x y z : A, ∀ (p : x == y),
         • (t •l hott_2_1_4_ii_2 p (refl y) (refl y)) •
         (hott_2_1_4_i_1 t) ⁻¹).
 
+Example ex_2_4_9 A x y : ∀ (p : x == y) (P : A → U), qinv (transport P p).
+Proof.
+intros.
+apply qi with (g := transport P (p⁻¹)).
+ intros z; unfold id, "o"; simpl.
+ eapply compose; [ apply hott_2_3_9 | idtac ].
+ induction p; reflexivity.
+
+ intros z; unfold id, "o"; simpl.
+ eapply compose; [ apply hott_2_3_9 | idtac ].
+ induction p; reflexivity.
+Qed.
+
+Example ex_2_4_9_bis A x y : ∀ (p : x == y) (P : A → U), qinv (transport P p)
+  := λ p P,
+ qi (transport P p) (transport P (p ⁻¹))
+   (λ z : P y,
+    hott_2_3_9 P (p ⁻¹) p z
+    • match p return (∀ t, transport P (p ⁻¹ • p) t == t) with
+      | refl => refl
+      end z)
+   (λ z : P x,
+    hott_2_3_9 P p (p ⁻¹) z
+    • match p return (∀ t, transport P (p • p ⁻¹) t == t) with
+      | refl => refl
+      end z).
+
 bbb.
 
 Lemma toto {A} : ∀ x y : A, ∀ p : x == y, p • p⁻¹ = refl x.
