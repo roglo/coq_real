@@ -1104,6 +1104,17 @@ Example ex_2_4_9_bis A x y : ∀ (p : x == y) (P : A → U), qinv (transport P p
       | refl => refl
       end z).
 
+Inductive equivalence {A B} isequiv : Prop :=
+  equiv : ∀ f : A → B,
+    (qinv f → isequiv f)
+    → (isequiv f → qinv f)
+    → (∀ e₁ e₂ : isequiv f, e₁ == e₂)
+    → equivalence isequiv.
+
+Definition isequiv_1 {A B} :
+  : ∀ f : (Σ (g : B → A), (f o g ~~ id)) * (Σ (h : B → A), (h o f ~~ id)),
+    equivalence …
+
 bbb.
 
 Inductive isequiv {A B} : (A → B) → Prop :=
