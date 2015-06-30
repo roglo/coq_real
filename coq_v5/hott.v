@@ -1164,9 +1164,17 @@ Notation "A '≃' B" := (equivalence A B) (at level 110, g at level 110).
 Lemma hott_2_4_12_i : ∀ A, A ≃ A.
 Proof.
 intros.
-unfold equivalence.
+apply existT with (x := id).
+split; apply existT with (x := id); reflexivity.
+Qed.
+
+Definition hott_2_4_12_i_bis : ∀ A, A ≃ A :=
+  λ A,
+  existT isequiv id
+  (existT (λ g, id o g ~~ id) id refl, existT (λ h, h o id ~~ id) id refl).
 
 bbb.
+
 
 Lemma toto {A} : ∀ x y : A, ∀ p : x == y, p • p⁻¹ = refl x.
 Proof.
