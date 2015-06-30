@@ -1106,6 +1106,11 @@ Example ex_2_4_9_bis A x y : ∀ (p : x == y) (P : A → U), qinv (transport P p
 
 bbb.
 
+Inductive isequiv {A B} : (A → B) → Prop :=
+  ie : ∀ f, qinv f → isequiv f.
+
+bbb.
+
 Lemma toto {A} : ∀ x y : A, ∀ p : x == y, p • p⁻¹ = refl x.
 Proof.
 intros.
