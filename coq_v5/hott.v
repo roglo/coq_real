@@ -1113,10 +1113,14 @@ Inductive equivalence {A B} isequiv : Prop :=
 
 Check @equivalence.
 
-Definition isequiv_1 {A B} f :=
+Definition isequiv_1 A B f :=
   ((Σ (g : B → A), (f o g ~~ id)) * (Σ (h : B → A), (h o f ~~ id)))%type.
 
-Definition equivalence_isequiv_1 {A B} : equivalence (@isequiv_1 A B).
+Definition equivalence_isequiv_1 {A B} {f : A → B} :
+  equivalence (isequiv_1 A B).
+Proof.
+apply (equiv _ f).
+ intros H; unfold isequiv_1; simpl.
 
 bbb.
 
