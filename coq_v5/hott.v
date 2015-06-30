@@ -1146,6 +1146,14 @@ apply (equiv _ f).
  destruct e₁ as (H1, H2).
  destruct e₂ as (H3, H4).
 
+Abort. (* proof postponed, they say, to sections §2.6, §2.7 and §4.3...
+ induction H1 as (g1, p1).
+ induction H2 as (h1, q1).
+ induction H3 as (g2, p2).
+ induction H4 as (h2, q2).
+bbb.
+*)
+
 bbb.
 
 Lemma toto {A} : ∀ x y : A, ∀ p : x == y, p • p⁻¹ = refl x.
