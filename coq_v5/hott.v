@@ -1104,27 +1104,27 @@ Example ex_2_4_9_bis A x y : ∀ (p : x == y) (P : A → U), qinv (transport P p
       | refl => refl
       end z).
 
-Inductive equivalence {A B} isequiv : Prop :=
+Inductive equiv_prop {A B} isequiv : Prop :=
   equiv : ∀ f : A → B,
     (qinv f → isequiv f)
     → (isequiv f → qinv f)
     → (∀ e₁ e₂ : isequiv f, e₁ == e₂)
-    → equivalence isequiv.
+    → equiv_prop isequiv.
 
-Check @equivalence.
+Check @equiv_prop.
 
-Definition isequiv_1 A B f :=
+Definition isequiv {A B} f :=
   ((Σ (g : B → A), (f o g ~~ id)) * (Σ (h : B → A), (h o f ~~ id)))%type.
 
 Definition equivalence_isequiv_1 {A B} {f : A → B} :
-  equivalence (isequiv_1 A B).
+  equiv_prop (@isequiv A B).
 Proof.
 apply (equiv _ f).
- intros H; unfold isequiv_1; simpl.
+ intros H; unfold isequiv; simpl.
  refine (match H with qi _ _ _ => _ end).
  split; econstructor; eassumption.
 
- intros H; unfold isequiv_1 in H; simpl in H.
+ intros H; unfold isequiv in H; simpl in H.
  destruct H as (Hg, Hh).
  refine (match Hg with existT g p => _ end).
  refine (match Hh with existT h q => _ end).
@@ -1142,10 +1142,9 @@ apply (equiv _ f).
    transitivity ((h o f o g) y); [ symmetry; apply H1 | apply H2 ].
 
  intros.
- unfold isequiv_1 in e₁, e₂.
+ unfold isequiv in e₁, e₂.
  destruct e₁ as (H1, H2).
  destruct e₂ as (H3, H4).
-
  induction H1 as (g1, p1).
  induction H2 as (h1, q1).
  induction H3 as (g2, p2).
@@ -1155,6 +1154,17 @@ apply (equiv _ f).
  Abort. (* proof postponed, they say, to sections §2.6, §2.7 and §4.3...
 bbb.
 *)
+
+Check isequiv.
+
+Definition equivalence A B := Σ (f : A → B), isequiv f.
+
+Notation "A '≃' B" := (equivalence A B) (at level 110, g at level 110).
+
+Lemma hott_2_4_12_i : ∀ A, A ≃ A.
+Proof.
+intros.
+unfold equivalence.
 
 bbb.
 
