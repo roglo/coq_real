@@ -1015,7 +1015,7 @@ Qed.
 
 (* quasi-inverse *)
 
-Inductive qinv {A B} (f : A → B) : Prop :=
+Inductive qinv {A B} (f : A → B) : Type :=
   qi : ∀ (g : B → A) (α : (f o g) ~~ id) (β : (g o f) ~~ id), qinv f.
 
 Example ex_2_4_7 A : qinv (id : A → A) := qi id id refl refl.
@@ -1121,12 +1121,8 @@ Definition equivalence_isequiv_1 {A B} {f : A → B} :
 Proof.
 apply (equiv _ f).
  intros H; unfold isequiv_1; simpl.
-
-bbb.
-
-Inductive isequiv {A B} : (A → B) → Prop :=
-  ie : ∀ f, qinv f → isequiv f.
-
+ refine (match H with qi _ _ _ => _ end).
+ split; econstructor; eassumption.
 bbb.
 
 Lemma toto {A} : ∀ x y : A, ∀ p : x == y, p • p⁻¹ = refl x.
