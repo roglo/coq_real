@@ -1218,6 +1218,9 @@ apply existT with (x := h).
 unfold isequiv.
 split.
  apply existT with (x := h¹); subst h h¹.
+ change (g o (f o f¹) o g¹ ~~ id).
+SearchAbout composite.
+
 Show Proof.
 bbb.
 
