@@ -1204,11 +1204,15 @@ Print sigT_rect. (* à faire… *)
 
 Lemma hott_2_4_12_iii : ∀ A B C, A ≃ B → B ≃ C → A ≃ C.
 Proof.
-intros A B C f g.
-set (finv := quasi_inv f).
-set (ginv := quasi_inv g).
-bbb.
-
+intros A B C pf pg.
+remember (quasi_inv pf) as pf¹ eqn:Hf.
+remember (quasi_inv pg) as pg¹ eqn:Hg.
+remember (Σ_pr₁ pf) as f.
+remember (Σ_pr₁ pg) as g.
+remember (g o f) as h.
+remember (Σ_pr₁ pf¹) as f¹.
+remember (Σ_pr₁ pg¹) as g¹.
+remember (f¹ o g¹) as h¹.
 bbb.
 
 (* *)
