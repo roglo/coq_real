@@ -1213,6 +1213,11 @@ set (h := g o f).
 set (f¹ := Σ_pr₁ eqf¹).
 set (g¹ := Σ_pr₁ eqg¹).
 set (h¹ := f¹ o g¹).
+unfold equivalence.
+apply existT with (x := h).
+unfold isequiv.
+split.
+ apply existT with (x := h¹); subst h h¹.
 Show Proof.
 bbb.
 
