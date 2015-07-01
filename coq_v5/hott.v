@@ -1236,6 +1236,28 @@ Qed.
 
 (* 2.5 The higher groupoid structure of type formers *)
 
+Check @transport.
+(* transport
+     : ∀ (A : Type) (P : A → Type) (x y : A), x == y → P x → P y *)
+Check transport.
+(* transport
+     : ∀ (P : ?3610 → Type) (x y : ?3610), x == y → P x → P y *)
+
+Theorem transport_pair : ∀ A B C (x y : A) (p : x == y) b c,
+  transport (λ z, (B z * C z)%type) p (b, c) ==
+  (transport B p b, transport C p c).
+Proof.
+intros.
+refine (match p with refl => _ end); reflexivity.
+Qed.
+
+Definition transport_pair_bis {A} B C x y (p : x == y) b c
+  : transport (λ z : A, (B z * C z)%type) p (b, c) ==
+    (transport B p b, transport C p c)
+  := match p with
+     | refl => refl (transport B (refl x) b, transport C (refl x) c)
+     end.
+
 bbb.
 
 (* *)
