@@ -1187,7 +1187,7 @@ apply existT with (x := finv).
 split; apply existT with (x := f); assumption.
 Qed.
 
-Definition finv {A B} (f : A ≃ B) : B ≃ A :=
+Definition quasi_inv {A B} (f : A ≃ B) : B ≃ A :=
   sigT_rect (λ _, B ≃ A)
     (λ g H,
      match equivalence_isequiv_1 g with
@@ -1205,6 +1205,8 @@ Print sigT_rect. (* à faire… *)
 Lemma hott_2_4_12_iii : ∀ A B C, A ≃ B → B ≃ C → A ≃ C.
 Proof.
 intros A B C f g.
+set (finv := quasi_inv f).
+set (ginv := quasi_inv g).
 bbb.
 
 bbb.
