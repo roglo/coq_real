@@ -1202,6 +1202,11 @@ Definition finv {A B} (f : A ≃ B) : B ≃ A :=
 
 Print sigT_rect. (* à faire… *)
 
+Lemma hott_2_4_12_iii : ∀ A B C, A ≃ B → B ≃ C → A ≃ C.
+Proof.
+intros A B C f g.
+bbb.
+
 bbb.
 
 (* *)
