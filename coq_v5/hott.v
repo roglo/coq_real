@@ -1158,7 +1158,9 @@ Check isequiv.
 
 Definition equivalence A B := Σ (f : A → B), isequiv f.
 
-Notation "A '≃' B" := (equivalence A B) (at level 110, g at level 110).
+Print Grammar constr.
+
+Notation "A ≃ B" := (equivalence A B) (at level 70).
 
 Lemma hott_2_4_12_i : ∀ A, A ≃ A.
 Proof.
@@ -1172,14 +1174,33 @@ Definition hott_2_4_12_i_bis : ∀ A, A ≃ A :=
   existT isequiv id
   (existT (λ g, id o g ~~ id) id refl, existT (λ h, h o id ~~ id) id refl).
 
-Lemma hott_2_4_12_ii : ∀ A B (f : A ≃ B), B ≃ A.
+Lemma hott_2_4_12_ii : ∀ A B, A ≃ B → B ≃ A.
 Proof.
 intros A B f.
 induction f as (f, H).
-unfold isequiv in H.
-destruct H as ((g, Hg), (h, Hh)).
-bbb.
-split with (x := g).
+pose proof (@equivalence_isequiv_1 A B f) as Heq.
+destruct Heq as (Hqe, (Heq, Hee)).
+generalize H; intros finv.
+apply Heq in finv.
+destruct finv as (finv, α, β).
+apply existT with (x := finv).
+split; apply existT with (x := f); assumption.
+Qed.
+
+Definition finv {A B} (f : A ≃ B) : B ≃ A :=
+  sigT_rect (λ _, B ≃ A)
+    (λ g H,
+     match equivalence_isequiv_1 g with
+     | conjt _ (conjt Heq _) =>
+         match Heq H with
+         | qi finv1 α β =>
+             existT isequiv finv1
+               (existT (λ g, finv1 o g ~~ id) g β,
+                existT (λ h, h o finv1 ~~ id) g α)
+         end
+      end) f.
+
+Print sigT_rect. (* à faire… *)
 
 bbb.
 
