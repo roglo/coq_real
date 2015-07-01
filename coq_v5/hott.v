@@ -1234,6 +1234,8 @@ split.
  transitivity (f¹ (f a)); [ assumption | apply βf ].
 Qed.
 
+(* 2.5 The higher groupoid structure of type formers *)
+
 bbb.
 
 (* *)
