@@ -1205,23 +1205,35 @@ Print sigT_rect. (* à faire… *)
 Lemma hott_2_4_12_iii : ∀ A B C, A ≃ B → B ≃ C → A ≃ C.
 Proof.
 intros A B C eqf eqg.
-set (eqf¹ := quasi_inv eqf).
-set (eqg¹ := quasi_inv eqg).
-set (f := Σ_pr₁ eqf).
-set (g := Σ_pr₁ eqg).
-set (h := g o f).
-set (f¹ := Σ_pr₁ eqf¹).
-set (g¹ := Σ_pr₁ eqg¹).
-set (h¹ := f¹ o g¹).
+destruct eqf as (f, eqf).
+destruct eqg as (g, eqg).
+pose proof (@equivalence_isequiv_1 A B f) as H.
+destruct H as (Hfqe, (Hfeq, Hfee)).
+apply Hfeq in eqf.
+induction eqf as (f¹, αf, βf).
+pose proof (@equivalence_isequiv_1 B C g) as H.
+destruct H as (Hgqe, (Hgeq, Hgee)).
+apply Hgeq in eqg.
+induction eqg as (g¹, αg, βg).
 unfold equivalence.
-apply existT with (x := h).
+apply existT with (x := g o f).
 unfold isequiv.
 split.
- apply existT with (x := h¹); subst h h¹.
- change (g o (f o f¹) o g¹ ~~ id).
-SearchAbout composite.
+ apply existT with (x := f¹ o g¹).
+ intros c.
+ pose proof αf (g¹ c) as H.
+ apply (ap g) in H.
+ unfold id in H; simpl in H.
+ transitivity (g (g¹ c)); [ assumption | apply αg ].
 
-Show Proof.
+ apply existT with (x := f¹ o g¹).
+ intros a.
+ pose proof βg (f a) as H.
+ apply (ap f¹) in H.
+ unfold id in H; simpl in H.
+ transitivity (f¹ (f a)); [ assumption | apply βf ].
+Qed.
+
 bbb.
 
 (* *)
