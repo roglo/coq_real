@@ -1272,10 +1272,9 @@ split; refine (match p with refl => _ end); reflexivity.
 Qed.
 
 Theorem hott_2_6_2 {A B} : ∀ x y : A * B,
-  (x == y) ↔ (pr₁ x == pr₁ y) * (pr₂ x == pr₂ y).
+  (pr₁ x == pr₁ y) * (pr₂ x == pr₂ y) → x == y.
 Proof.
-intros x y.
-split; [ apply hott_2_6_1 | intros p ].
+intros x y p.
 destruct x as (a, b).
 destruct y as (a', b').
 simpl in p.
@@ -1286,18 +1285,17 @@ reflexivity.
 Qed.
 
 Definition hott_2_6_2_bis {A B} (x y : A * B)
-  : x == y ↔ (pr₁ x == pr₁ y) * (pr₂ x == pr₂ y)
- := conj (hott_2_6_1 x y)
-      (let (a, b) as x
-           return ((pr₁ x == pr₁ y) * (pr₂ x == pr₂ y) → x == y) := x in
-       let (a', b') as y
-           return ((pr₁ (a, b) == pr₁ y) * (pr₂ (a, b) == pr₂ y)
-              → (a, b) == y) := y in
-       λ pq,
-       let (p, q) := pq in
-       match p in (_ == a') return ((a, b) == (a', b')) with
-       | refl => match q with refl => refl (a, b) end
-       end).
+  : (pr₁ x == pr₁ y) * (pr₂ x == pr₂ y) → x == y
+  := let (a, b) as x
+         return ((pr₁ x == pr₁ y) * (pr₂ x == pr₂ y) → x == y) := x in
+     let (a', b') as y
+         return ((pr₁ (a, b) == pr₁ y) * (pr₂ (a, b) == pr₂ y) → (a, b) == y)
+         := y in
+     λ pq,
+     let (p, q) := pq in
+     match p in (_ == a') return ((a, b) == (a', b')) with
+     | refl => match q with refl => refl (a, b) end
+     end.
 
 bbb.
 
