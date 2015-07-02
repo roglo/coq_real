@@ -1296,7 +1296,6 @@ pose proof (equivalence_isequiv_1 f) as H.
 destruct H as (H, _); apply H; clear H.
 apply (qi f) with (g := g).
  intros r; unfold id; simpl.
- unfold hott_2_6_1, hott_2_6_1_recip, "o"; simpl.
  induction r as (p, q).
  induction x as (a, b).
  induction y as (a', b').
