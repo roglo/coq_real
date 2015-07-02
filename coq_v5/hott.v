@@ -1277,6 +1277,8 @@ Proof.
 intros.
 apply hott_2_4_12_ii.
 apply existT with (x := hott_2_6_1 x y).
+split.
+
 unfold hott_2_6_1.
 
 bbb.
