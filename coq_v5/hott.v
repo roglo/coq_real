@@ -1272,8 +1272,12 @@ split; refine (match p with refl => _ end); reflexivity.
 Qed.
 
 Theorem hott_2_6_2 {A B} : ∀ x y : A * B,
-  (pr₁ x == pr₁ y) * (pr₂ x == pr₂ y) → x == y.
+  (pr₁ x == pr₁ y) * (pr₂ x == pr₂ y) ≃ (x == y).
 Proof.
+intros.
+
+bbb.
+
 intros x y p.
 destruct x as (a, b).
 destruct y as (a', b').
@@ -1285,7 +1289,7 @@ reflexivity.
 Qed.
 
 Definition hott_2_6_2_bis {A B} (x y : A * B)
-  : (pr₁ x == pr₁ y) * (pr₂ x == pr₂ y) → x == y
+  : (pr₁ x == pr₁ y) * (pr₂ x == pr₂ y) ≃ x == y
   := let (a, b) as x
          return ((pr₁ x == pr₁ y) * (pr₂ x == pr₂ y) → x == y) := x in
      let (a', b') as y
