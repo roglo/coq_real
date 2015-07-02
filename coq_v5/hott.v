@@ -1269,12 +1269,15 @@ Theorem hott_2_6_1 {A B} : ∀ x y : A * B,
 Proof.
 intros x y p.
 split; refine (match p with refl => _ end); reflexivity.
-Qed.
+Defined.
 
 Theorem hott_2_6_2 {A B} : ∀ x y : A * B,
   (pr₁ x == pr₁ y) * (pr₂ x == pr₂ y) ≃ (x == y).
 Proof.
 intros.
+apply hott_2_4_12_ii.
+apply existT with (x := hott_2_6_1 x y).
+unfold hott_2_6_1.
 
 bbb.
 
