@@ -1258,6 +1258,15 @@ Definition transport_pair_bis {A} B C x y (p : x == y) b c
      | refl => refl (transport B (refl x) b, transport C (refl x) c)
      end.
 
+(* 2.6 Cartesian product types *)
+
+Theorem hott_2_6_1 {A B} : ∀ x y : A * B,
+  (x == y) → (AxB_pr₁ x == AxB_pr₁ y) * (AxB_pr₂ x == AxB_pr₂ y).
+Proof.
+intros x y p.
+split; refine (match p with refl => _ end); reflexivity.
+Qed.
+
 bbb.
 
 (* *)
