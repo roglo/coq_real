@@ -1125,8 +1125,8 @@ split; [ idtac | split ].
 
  intros H; unfold isequiv in H; simpl in H.
  destruct H as (Hg, Hh).
- refine (match Hg with existT g p => _ end).
- refine (match Hh with existT h q => _ end).
+ destruct Hg as (g, p).
+ destruct Hh as (h, q).
  econstructor; [ eassumption | idtac ].
  intros x.
   unfold homotopy in p, q.
