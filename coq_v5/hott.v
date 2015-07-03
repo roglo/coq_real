@@ -1344,6 +1344,21 @@ destruct r; simpl.
 destruct x as (a, b); reflexivity.
 Qed.
 
+Theorem refl_pair_eq {A B} : ∀ z : A * B,
+  refl z == pair_eq (refl (pr₁ z), refl (pr₂ z)).
+Proof.
+intros.
+destruct z as (x, y); reflexivity.
+Qed.
+
+Theorem inv_pair_eq {A B} {x y : A * B} : ∀ p : x == y,
+  p⁻¹ == pair_eq (ap_pr₁ p⁻¹ , ap_pr₂ p⁻¹).
+Proof.
+intros.
+destruct p; simpl.
+destruct x as (a, b); reflexivity.
+Qed.
+
 bbb.
 
 (* *)
