@@ -1271,10 +1271,10 @@ intros x y p.
 split; destruct p; reflexivity.
 Defined.
 
-Theorem pair_eq {A B} : ∀ x y : A * B,
+Theorem pair_eq {A B} {x y : A * B} :
   (pr₁ x == pr₁ y) * (pr₂ x == pr₂ y) → (x == y).
 Proof.
-intros x y p.
+intros p.
 destruct x as (a, b).
 destruct y as (a', b').
 simpl in p.
@@ -1287,7 +1287,7 @@ Theorem hott_2_6_2 {A B} : ∀ x y : A * B,
 Proof.
 intros.
 set (f := hott_2_6_1 x y).
-set (g := pair_eq x y).
+set (g := @pair_eq A B x y).
 apply hott_2_4_12_ii.
 apply existT with (x := f).
 pose proof (equivalence_isequiv_1 f) as H.
@@ -1317,7 +1317,7 @@ Definition ap_pr₂ {A B} {x y : A * B} : x == y → pr₂ x == pr₂ y :=
   end.
 
 Theorem ap_pr₁_pair {A B} : ∀ (x y : A * B) (p : pr₁ x == pr₁ y) q,
-  ap_pr₁ (pair_eq x y (p, q)) == p.
+  ap_pr₁ (pair_eq (p, q)) == p.
 Proof.
 intros.
 
