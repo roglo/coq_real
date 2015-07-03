@@ -1320,6 +1320,21 @@ Theorem ap_pr₁_pair {A B} : ∀ (x y : A * B) (p : pr₁ x == pr₁ y) q,
   ap_pr₁ (pair_eq (p, q)) == p.
 Proof.
 intros.
+destruct x as (a, b).
+destruct y as (a', b').
+simpl in p, q.
+induction p, q; reflexivity.
+Qed.
+
+Theorem ap_pr₂_pair {A B} : ∀ (x y : A * B) p (q : pr₂ x == pr₂ y),
+  ap_pr₂ (pair_eq (p, q)) == q.
+Proof.
+intros.
+destruct x as (a, b).
+destruct y as (a', b').
+simpl in p, q.
+induction p, q; reflexivity.
+Qed.
 
 bbb.
 
