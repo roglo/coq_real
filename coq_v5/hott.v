@@ -1304,11 +1304,22 @@ apply (qi f) with (g := g).
  destruct p, x; reflexivity.
 Qed.
 
-Theorem ap_pr₁ {A B} : ∀ x y : A * B, x = y → pr₁ x = pr₁ y.
+Definition ap_pr₁ {A B} {x y : A * B} : x == y → pr₁ x == pr₁ y :=
+  λ p,
+  match p in (_ == z) return (pr₁ x == pr₁ z) with
+  | refl => refl (pr₁ x)
+  end.
+
+Definition ap_pr₂ {A B} {x y : A * B} : x == y → pr₂ x == pr₂ y :=
+  λ p,
+  match p in (_ == z) return (pr₂ x == pr₂ z) with
+  | refl => refl (pr₂ x)
+  end.
+
+Theorem ap_pr₁_pair {A B} : ∀ (x y : A * B) (p : pr₁ x == pr₁ y) q,
+  ap_pr₁ (pair_eq x y (p, q)) == p.
 Proof.
-intros x y p.
-destruct p; reflexivity.
-Qed.
+intros.
 
 bbb.
 
