@@ -1336,6 +1336,14 @@ simpl in p, q.
 induction p, q; reflexivity.
 Qed.
 
+Theorem pair_uniqueness {A B}  {x y : A * B} : ∀ (r : x == y),
+  r == pair_eq (ap_pr₁ r, ap_pr₂ r).
+Proof.
+intros.
+destruct r; simpl.
+destruct x as (a, b); reflexivity.
+Qed.
+
 bbb.
 
 (* *)
