@@ -1271,7 +1271,7 @@ intros x y p.
 split; refine (match p with refl => _ end); reflexivity.
 Defined.
 
-Theorem hott_2_6_1_recip {A B} : ∀ x y : A * B,
+Theorem pair_eq {A B} : ∀ x y : A * B,
   (pr₁ x == pr₁ y) * (pr₂ x == pr₂ y) → (x == y).
 Proof.
 intros x y p.
@@ -1289,7 +1289,7 @@ Theorem hott_2_6_2 {A B} : ∀ x y : A * B,
 Proof.
 intros.
 set (f := hott_2_6_1 x y).
-set (g := hott_2_6_1_recip x y).
+set (g := pair_eq x y).
 apply hott_2_4_12_ii.
 apply existT with (x := f).
 pose proof (equivalence_isequiv_1 f) as H.
@@ -1307,10 +1307,7 @@ apply (qi f) with (g := g).
  induction p, x; reflexivity.
 Qed.
 
-Definition hott_2_6_3 {A B} := @hott_2_6_1_recip A B.
-Definition pair_eq {A B}
-  : ∀ x y : A * B, (pr₁ x == pr₁ y) * (pr₂ x == pr₂ y) → (x == y)
-  := @hott_2_6_1_recip A B.
+bbb.
 
 (* *)
 
