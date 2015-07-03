@@ -1248,7 +1248,7 @@ Theorem transport_pair : ∀ A B C (x y : A) (p : x == y) b c,
   (transport B p b, transport C p c).
 Proof.
 intros.
-refine (match p with refl => _ end); reflexivity.
+destruct p; reflexivity.
 Qed.
 
 Definition transport_pair_bis {A} B C x y (p : x == y) b c
@@ -1268,7 +1268,7 @@ Theorem hott_2_6_1 {A B} : ∀ x y : A * B,
   (x == y) → (pr₁ x == pr₁ y) * (pr₂ x == pr₂ y).
 Proof.
 intros x y p.
-split; refine (match p with refl => _ end); reflexivity.
+split; destruct p; reflexivity.
 Defined.
 
 Theorem pair_eq {A B} : ∀ x y : A * B,
@@ -1279,9 +1279,7 @@ destruct x as (a, b).
 destruct y as (a', b').
 simpl in p.
 destruct p as (p, q).
-refine (match p with refl => _ end).
-refine (match q with refl => _ end).
-reflexivity.
+destruct p, q; reflexivity.
 Defined.
 
 Theorem hott_2_6_2 {A B} : ∀ x y : A * B,
@@ -1296,15 +1294,20 @@ pose proof (equivalence_isequiv_1 f) as H.
 destruct H as (H, _); apply H; clear H.
 apply (qi f) with (g := g).
  intros r; unfold id; simpl.
- induction r as (p, q).
- induction x as (a, b).
- induction y as (a', b').
+ destruct r as (p, q).
+ destruct x as (a, b).
+ destruct y as (a', b').
  simpl in p, q, f, g.
- induction p, q; simpl.
- reflexivity.
+ destruct p, q; reflexivity.
 
  intros p; unfold id; simpl.
- induction p, x; reflexivity.
+ destruct p, x; reflexivity.
+Qed.
+
+Theorem ap_pr₁ {A B} : ∀ x y : A * B, x = y → pr₁ x = pr₁ y.
+Proof.
+intros x y p.
+destruct p; reflexivity.
 Qed.
 
 bbb.
