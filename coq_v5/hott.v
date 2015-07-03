@@ -1352,11 +1352,19 @@ destruct z as (x, y); reflexivity.
 Qed.
 
 Theorem inv_pair_eq {A B} {x y : A * B} : ∀ p : x == y,
-  p⁻¹ == pair_eq (ap_pr₁ p⁻¹ , ap_pr₂ p⁻¹).
+  p⁻¹ == pair_eq (ap_pr₁ p⁻¹, ap_pr₂ p⁻¹).
 Proof.
 intros.
 destruct p; simpl.
 destruct x as (a, b); reflexivity.
+Qed.
+
+Theorem comp_pair_eq {A B} {x y z : A * B} : ∀ (p : x == y) (q : y == z),
+  p • q == pair_eq (ap_pr₁ p • ap_pr₁ q, ap_pr₂ p • ap_pr₂ q).
+Proof.
+intros.
+destruct p, q; simpl.
+destruct x; reflexivity.
 Qed.
 
 bbb.
