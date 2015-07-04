@@ -1413,5 +1413,16 @@ assert (w == w' → Σ (p : pr₁ w == pr₁ w'), transport P p (pr₂ w) == pr�
  destruct p; simpl.
  apply existT with (x := refl (pr₁ w)); reflexivity.
 
+  assert ((Σ (p : pr₁ w == pr₁ w'), transport P p (pr₂ w) == pr₂ w') → w == w')
+    as g.
+   intros p.
+   destruct w as (w₁, w₂).
+   destruct w' as (w'₁, w'₂); simpl.
+   simpl in p.
+   destruct p as (p, q).
+   destruct p, q; reflexivity.
+
+bbb.
  destruct w as (a, r).
  destruct w' as (b, s); simpl.
+ simpl in f.
