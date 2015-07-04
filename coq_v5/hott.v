@@ -1367,6 +1367,19 @@ destruct p, q; simpl.
 destruct x; reflexivity.
 Qed.
 
+Check @transport.
+(* transport
+     : ∀ (A : Type) (P : A → Type) (x y : A), x == y → P x → P y *)
+
+Theorem hott_2_6_4 {Z} {A B : Z → U} : ∀ (z w : Z) (p : z == w) x,
+  transport (λ y, (A y * B y)%type) p x ==
+  (transport A p (pr₁ x), transport B p (pr₂ x)).
+Proof.
+intros.
+destruct p; simpl.
+destruct x; reflexivity.
+Qed.
+
 bbb.
 
 (* *)
