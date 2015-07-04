@@ -1376,46 +1376,15 @@ destruct p; simpl.
 destruct x; reflexivity.
 Qed.
 
-Check pair_eq.
-(* pair_eq
-     : (pr₁ ?4245 == pr₁ ?4246) * (pr₂ ?4245 == pr₂ ?4246) → ?4245 == ?4246 *)
-
-Check ap.
-(* ap
-     : ∀ f : ?4247 → ?4248, ?4249 == ?4250 → f ?4249 == f ?4250 *)
-
-(* g : A → A' *)
-(* p : pr₁ x == pr₁ y *)
-(* ap g p : g (pr₁ x) == g (pr₁ y) *)
-(* (ap g p, ap h q) : (g (pr₁ x) == g (pr₁ y), h (pr₂ x) == h (pr₂ y)) *)
-Check @ap_pr₁.
-(* ap_pr₁
-     : ∀ (A B : Type) (x y : A * B), x == y → pr₁ x == pr₁ y *)
+Definition pair_eq_ap {A B A' B' x y} (f : A * B → A' * B') :=
+  @pair_eq A' B' (f x) (f y).
 
 Theorem hott_2_6_5 {A B A' B'} :
   ∀ (g : A → A') (h : B → B') (f := λ x, (g (pr₁ x), h (pr₂ x)))
     (x y : A * B) (p : pr₁ x == pr₁ y) (q : pr₂ x == pr₂ y),
-  pair_eq (ap g p, ap h q) ==
-  pair_eq (ap g p, ap h q).
-
-Theorem hott_2_6_5 {A B A' B'} :
-  ∀ (g : A → A') (h : B → B') (f := λ x, (g (pr₁ x), h (pr₂ x)))
-    (x y : A * B) (p : pr₁ x == pr₁ y) (q : pr₂ x == pr₂ y),
-  ap f (pair_eq (p, q)) == pair_eq (ap g p, ap h q).
-
-Toplevel input, characters 196-212:
-Error:
-In environment
-g : A → A'
-h : B → B'
-x : A * B
-y : A * B
-p : pr₁ x == pr₁ y
-q : pr₂ x == pr₂ y
-The term "(ap g p, ap h q)" has type
- "((g (pr₁ x) == g (pr₁ y)) * (h (pr₂ x) == h (pr₂ y)))%type"
- while it is expected to have type
- "((pr₁ ?4270 == pr₁ ?4271) * (pr₂ ?4270 == pr₂ ?4271))%type".
+  ap f (pair_eq (p, q)) == pair_eq_ap f (ap g p, ap h q).
+Proof.
+intros; unfold pair_eq_ap.
 
 bbb.
 
