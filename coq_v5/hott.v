@@ -1407,3 +1407,6 @@ Theorem hott_2_7_2 {A} : ∀ (P : A → U) (w w' : Σ (x : A), P x),
   (w == w') ≃ Σ (p : pr₁ w == pr₁ w'), transport P p (pr₂ w) = pr₂ w'.
 Proof.
 intros.
+destruct w as (a, r).
+destruct w' as (b, s); simpl.
+unfold equivalence.
