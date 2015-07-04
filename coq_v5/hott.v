@@ -1385,5 +1385,11 @@ Theorem hott_2_6_5 {A B A' B'} :
   ap f (pair_eq (p, q)) == pair_eq_ap f (ap g p, ap h q).
 Proof.
 intros; unfold pair_eq_ap.
+destruct x as (a, b).
+destruct y as (c, d).
+simpl in p, q.
+destruct p, q; simpl.
+reflexivity.
+Qed.
 
-bbb.
+(* 2.7 Σ-types *)
