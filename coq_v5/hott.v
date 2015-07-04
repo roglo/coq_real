@@ -1260,6 +1260,8 @@ Definition transport_pair_bis {A} B C x y (p : x == y) b c
 
 (* 2.6 Cartesian product types *)
 
+Module cartesian.
+
 (* shortcuts *)
 Definition pr₁ {A B} := @AxB_pr₁ A B.
 Definition pr₂ {A B} := @AxB_pr₂ A B.
@@ -1392,4 +1394,16 @@ destruct p, q; simpl.
 reflexivity.
 Qed.
 
+End cartesian.
+
 (* 2.7 Σ-types *)
+
+Module Σ_type.
+
+Definition pr₁ {A B} := @Σ_pr₁ A B.
+Definition pr₂ {A B} := @Σ_pr₂ A B.
+
+Theorem hott_2_7_2 {A} : ∀ (P : A → U) (w w' : Σ (x : A), P x),
+  (w == w') ≃ Σ (p : pr₁ w == pr₁ w'), transport P p (pr₂ w) = pr₂ w'.
+Proof.
+intros.
