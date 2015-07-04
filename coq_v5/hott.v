@@ -1376,11 +1376,9 @@ destruct p; simpl.
 destruct x; reflexivity.
 Qed.
 
-Check @pair_eq.
-
 Theorem hott_2_6_5 {A B A' B'} :
-  ∀ (g : A → A') (h : B → B') (f : A * B → A' * B')(x y : A * B)
-    (p : pr₁ x == pr₁ y) (q : pr₂ x == pr₂ y),
+  ∀ (g : A → A') (h : B → B') (f := λ x, (g (pr₁ x), h (pr₂ x)))
+    (x y : A * B) (p : pr₁ x == pr₁ y) (q : pr₂ x == pr₂ y),
   ap f (pair_eq (p, q)) == pair_eq (ap g p, ap h q).
 
 Toplevel input, characters 196-212:
