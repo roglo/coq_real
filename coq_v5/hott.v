@@ -1404,9 +1404,14 @@ Definition pr₁ {A B} := @Σ_pr₁ A B.
 Definition pr₂ {A B} := @Σ_pr₂ A B.
 
 Theorem hott_2_7_2 {A} : ∀ (P : A → U) (w w' : Σ (x : A), P x),
-  (w == w') ≃ Σ (p : pr₁ w == pr₁ w'), transport P p (pr₂ w) = pr₂ w'.
+  (w == w') ≃ Σ (p : pr₁ w == pr₁ w'), transport P p (pr₂ w) == pr₂ w'.
 Proof.
 intros.
-destruct w as (a, r).
-destruct w' as (b, s); simpl.
-unfold equivalence.
+assert (w == w' → Σ (p : pr₁ w == pr₁ w'), transport P p (pr₂ w) == pr₂ w')
+  as f.
+ intros p.
+ destruct p; simpl.
+ apply existT with (x := refl (pr₁ w)); reflexivity.
+
+ destruct w as (a, r).
+ destruct w' as (b, s); simpl.
