@@ -1376,6 +1376,27 @@ destruct p; simpl.
 destruct x; reflexivity.
 Qed.
 
+Check @pair_eq.
+
+Theorem hott_2_6_5 {A B A' B'} :
+  ∀ (g : A → A') (h : B → B') (f : A * B → A' * B')(x y : A * B)
+    (p : pr₁ x == pr₁ y) (q : pr₂ x == pr₂ y),
+  ap f (pair_eq (p, q)) == pair_eq (ap g p, ap h q).
+
+Toplevel input, characters 196-212:
+Error:
+In environment
+g : A → A'
+h : B → B'
+x : A * B
+y : A * B
+p : pr₁ x == pr₁ y
+q : pr₂ x == pr₂ y
+The term "(ap g p, ap h q)" has type
+ "((g (pr₁ x) == g (pr₁ y)) * (h (pr₂ x) == h (pr₂ y)))%type"
+ while it is expected to have type
+ "((pr₁ ?4270 == pr₁ ?4271) * (pr₂ ?4270 == pr₂ ?4271))%type".
+
 bbb.
 
 (* *)
