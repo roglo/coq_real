@@ -1422,6 +1422,22 @@ assert (w == w' → Σ (p : pr₁ w == pr₁ w'), transport P p (pr₂ w) == pr�
    destruct p as (p, q).
    destruct p, q; reflexivity.
 
+   apply existT with (x := f).
+   pose proof (equivalence_isequiv_1 f) as H.
+   destruct H as (H, _); apply H; clear H.
+   apply (qi f) with (g := g).
+    intros r; unfold id; simpl.
+    destruct r as (p, q).
+    destruct w as (a, b).
+    destruct w' as (a', b').
+    simpl in p, q, f, g; simpl.
+    destruct p, q; simpl.
+    simpl in f, g.
+bbb.
+
+ intros p; unfold id; simpl.
+ destruct p, x; reflexivity.
+
 bbb.
  destruct w as (a, r).
  destruct w' as (b, s); simpl.
