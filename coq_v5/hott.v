@@ -1406,44 +1406,51 @@ Definition pr₂ {A B} := @Σ_pr₂ A B.
 Lemma hott_2_7_2_f {A} : ∀ P (w w' : Σ (x : A), P x),
   w == w' → Σ (p : pr₁ w == pr₁ w'), transport P p (pr₂ w) == pr₂ w'.
 Proof.
- intros P w w' p.
- destruct p; simpl.
- apply existT with (x := refl (pr₁ w)); reflexivity.
+intros P w w' p.
+destruct p; simpl.
+apply existT with (x := refl (pr₁ w)); reflexivity.
+Defined.
+
+Lemma hott_2_7_2_g {A} : ∀ P (w w' : Σ (x : A), P x),
+  (Σ (p : pr₁ w == pr₁ w'), transport P p (pr₂ w) == pr₂ w') → w == w'.
+Proof.
+intros P w w' p.
+destruct w as (w₁, w₂).
+destruct w' as (w'₁, w'₂); simpl.
+simpl in p.
+destruct p as (p, q).
+destruct p, q; reflexivity.
 Defined.
 
 Theorem hott_2_7_2 {A} : ∀ (P : A → U) (w w' : Σ (x : A), P x),
   (w == w') ≃ Σ (p : pr₁ w == pr₁ w'), transport P p (pr₂ w) == pr₂ w'.
 Proof.
 intros.
-  assert ((Σ (p : pr₁ w == pr₁ w'), transport P p (pr₂ w) == pr₂ w') → w == w')
-    as g.
-   intros p.
-   destruct w as (w₁, w₂).
-   destruct w' as (w'₁, w'₂); simpl.
-   simpl in p.
-   destruct p as (p, q).
-   destruct p, q; reflexivity.
+set (f := hott_2_7_2_f P w w').
+set (g := hott_2_7_2_g P w w').
+apply existT with (x := f).
+pose proof (equivalence_isequiv_1 f) as H.
+destruct H as (H, _); apply H; clear H.
+apply (qi f) with (g := g).
+ intros r; unfold id; simpl.
+ destruct r as (p, q).
+ destruct w as (a, b).
+ destruct w' as (a', b').
+ simpl in p, q, f, g; simpl.
+ destruct p, q; simpl.
+ subst f g; simpl.
+ unfold hott_2_7_2_f; simpl.
+ unfold hott_2_7_2_g; simpl.
+ unfold "o"; simpl.
+ reflexivity.
 
-   set (f := hott_2_7_2_f P w w').
-   apply existT with (x := f).
-   pose proof (equivalence_isequiv_1 f) as H.
-   destruct H as (H, _); apply H; clear H.
-   apply (qi f) with (g := g).
-    intros r; unfold id; simpl.
-    destruct r as (p, q).
-    destruct w as (a, b).
-    destruct w' as (a', b').
-    simpl in p, q, f, g; simpl.
-    destruct p, q; simpl.
-    simpl in f, g.
-    subst f; simpl.
-    unfold hott_2_7_2_f; simpl.
-bbb.
-
- intros p; unfold id; simpl.
- destruct p, x; reflexivity.
-
-bbb.
- destruct w as (a, r).
- destruct w' as (b, s); simpl.
- simpl in f.
+ intros r; unfold id; simpl.
+ destruct r as (p, q).
+ destruct w as (a, b).
+ simpl in f, g; simpl.
+ subst f g; simpl.
+ unfold hott_2_7_2_f; simpl.
+ unfold hott_2_7_2_g; simpl.
+ unfold "o"; simpl.
+ reflexivity.
+Qed.
