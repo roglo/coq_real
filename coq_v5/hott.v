@@ -1454,3 +1454,8 @@ apply (qi f) with (g := g).
  unfold "o"; simpl.
  reflexivity.
 Qed.
+
+Corollary hott_2_7_3 {A} : ∀ P (z : Σ (x : A), P x),
+  z == existT P (pr₁ z) (pr₂ z).
+Proof.
+intros.
