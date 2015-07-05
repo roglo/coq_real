@@ -1462,3 +1462,6 @@ Corollary hott_2_7_3 {A} : ∀ P (z : Σ (x : A), P x),
 Proof.
 intros; destruct z as (x, y); reflexivity.
 Qed.
+
+Theorem hott_2_7_4 {A} : ∀ (P : A → U) (Q : (Σ (x : A) P x) → U)
+  x y (p : x == y) (uz : Σ (u : P x), Q (x, u))
