@@ -1455,13 +1455,10 @@ apply (qi f) with (g := g).
  reflexivity.
 Qed.
 
-(* hott_2_7_2
-     : ∀ (A : Type) (P : A → U) (w w' : {x : A & P x}),
-       (w == w') ≃ {p : pr₁ w == pr₁ w' & transport P p (pr₂ w) == pr₂ w'} *)
+(* I don't see in what it is a corollary of 2.7.2... *)
 
 Corollary hott_2_7_3 {A} : ∀ P (z : Σ (x : A), P x),
   z == existT P (pr₁ z) (pr₂ z).
 Proof.
-intros.
-assert (pr₁ z == pr₁ (existT _ (pr₁ z) (pr₂ z))) as p by reflexivity.
-assert (pr₂ z == pr₂ (existT _ (pr₁ z) (pr₂ z))) as q by reflexivity.
+intros; destruct z as (x, y); reflexivity.
+Qed.
