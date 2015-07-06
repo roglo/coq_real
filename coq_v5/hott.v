@@ -1482,10 +1482,10 @@ destruct y as (a', b').
 induction p; reflexivity.
 Defined.
 
-Check transport.
+Check @transport.
 (* transport
-     : ∀ (P : ?4034 → Type) (x y : ?4034), x == y → P == existT _ (transport _ _ _) (pair_eq _). x → P y *)
-(* transport
+     : ∀ (P : ?4089 → Type) (x y : ?4089), x == y → P x → P y
+   transport
      : ∀ (A : Type) (P : A → Type) (x y : A), x == y → P x → P y *)
 
 Check pair_eq.
@@ -1497,9 +1497,16 @@ Check pair_eq.
        (P : {z : A & B z} → U) (p : x == y) (u : P x),
        existT P x u == existT P y (transport P p u) *)
 
-Theorem hott_2_7_4 {A} : ∀ (P : A → U) (Q : (Σ (x : A), P x) → U),
-  ∀ (x y : A) (p : x == y) (uz vt : Σ (u : P x), Q (existT _ x u))
-    (puv : uz == vt),
-  uz == existT _ (pr₁ uz) (pair_eq _).
+(* Notation "{ x : A & P }" := (sigT (fun x:A => P)) : type_scope. *)
 
+Theorem hott_2_7_4 {A} : ∀ (P : A → U) (Q : (Σ (x : A), P x) → U),
+  ∀ (x y : A) (p : x == y) (uz : Σ (u : P x), Q (existT _ x u))
+    (u := pr₁ uz) (z := pr₂ uz),
+  transport (λ x, Σ (u : P x), Q (existT _ x u)) p uz ==
+  transport (λ x, Σ (u : P x), Q (existT _ x u)) p uz.
+bbb.
+
+  transport (λ x, Σ (u : P x), Q (existT _ x u)) p uz ==
+  transport (λ x, Σ (u : P x), Q (existT _ x u)) p uz.
+  uz == existT _ (pr₁ uz) (pr₂ uz).
   transport _ _ uz == existT _ (transport _ _ _) (pair_eq _).
