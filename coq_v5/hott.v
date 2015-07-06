@@ -1532,3 +1532,29 @@ Abort. (* 1/ not sure how to do that, 2/ don't know what zzz should b
    transport (λ x0 : A, {u0 : P x0 & Q (existT P x0 u0)}) p uz ==
    existT (λ u0 : P y, Q (existT P y u0)) (transport P p u) zzz
 *)
+
+End Σ_type.
+
+(* 2.8 The unit type *)
+
+Check @Id.
+
+Theorem hott_2_8_1 : ∀ x y : unit, (x == y) ≃ unit.
+Proof.
+intros.
+destruct x, y.
+set (f := λ _ : tt == tt, tt).
+set (g := λ _ : unit, refl tt).
+unfold equivalence.
+apply (existT _ f), equivalence_isequiv_1.
+apply (qi f g).
+ subst f g; simpl.
+ unfold "o"; simpl.
+ intros x; destruct x; reflexivity.
+
+ subst f g; simpl.
+ unfold "o"; simpl.
+ intros x.
+ refine (match x with refl => _ end).
+ reflexivity.
+Qed.
