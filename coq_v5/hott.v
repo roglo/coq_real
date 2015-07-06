@@ -1463,19 +1463,38 @@ Proof.
 intros; destruct z as (x, y); reflexivity.
 Qed.
 
-Theorem pair_eq {A B} {x y : Σ (z : A), B z} (p : Σ_pr₁ x == Σ_pr₁ y) :
-  (pr₁ x == pr₁ y) * (transport _ p (pr₂ x) == pr₂ y) → (x == y).
+Theorem pair_eq {A B} {x y : Σ (z : A), B z} :
+  { p : pr₁ x == pr₁ y & transport _ p (pr₂ x) == pr₂ y } → (x == y).
 Proof.
-intros q.
+intros p.
 destruct x as (a, b).
 destruct y as (a', b').
-simpl in p, q.
-destruct p.
-destruct q as (p, q).
-destruct q; reflexivity.
+simpl in p.
+destruct p as (p, q).
+destruct p, q; reflexivity.
 Defined.
 
+Check transport.
+(* transport
+     : ∀ (P : ?4034 → Type) (x y : ?4034), x == y → P == existT _ (transport _ _ _) (pair_eq _). x → P y *)
+(* transport
+     : ∀ (A : Type) (P : A → Type) (x y : A), x == y → P x → P y *)
+
+Check pair_eq.
+(* pair_eq
+     : {p : pr₁ ?4037 == pr₁ ?4038 &
+       transport ?4036 p (pr₂ ?4037) == pr₂ ?4038} →
+       ?4037 == ?4038 *)
+
+Print sigT.
+(* Inductive sigT (A : Type) (P : A → Type) : Type :=
+    existT : ∀ x : A, P x → sigT P
+
+For sigT: Argument A is implicit *)
+
 Theorem hott_2_7_4 {A} : ∀ (P : A → U) (Q : (Σ (x : A), P x) → U),
-  ∀ x y (p : x == y) (q : Σ_pr₁ x == Σ_pr₁ y)
-    (uz : Σ (u : P x), Q (existT _ x u)),
-  transport _ p uz == existT _ (transport _ _ _) (pair_eq q (refl _)).
+  ∀ (x y : A) (p : x == y) (uz vt : Σ (u : P x), Q (existT _ x u))
+    (puv : uz == vt),
+  uz == existT _ (pr₁ uz) (pair_eq _).
+
+  transport _ _ uz == existT _ (transport _ _ _) (pair_eq _).
