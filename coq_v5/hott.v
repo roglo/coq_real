@@ -1499,11 +1499,16 @@ Check pair_eq.
 
 (* Notation "{ x : A & P }" := (sigT (fun x:A => P)) : type_scope. *)
 
+(* {u : P y & Q (existT P y u)}) *)
+
+Definition foo {A} P Q (x : A) := Σ (u : P x), Q (existT _ x u).
+
+Set Printing All.
 Theorem hott_2_7_4 {A} : ∀ (P : A → U) (Q : (Σ (x : A), P x) → U),
-  ∀ (x y : A) (p : x == y) (uz : Σ (u : P x), Q (existT _ x u))
-    (u := pr₁ uz) (z := pr₂ uz),
+  ∀ (x y : A) (p : x == y) (uz : foo P Q x) (vt : foo P Q y)
+    (u := pr₁ uz) (z := pr₂ uz) (q : u == pr₁ vt),
   transport (λ x, Σ (u : P x), Q (existT _ x u)) p uz ==
-  transport (λ x, Σ (u : P x), Q (existT _ x u)) p uz.
+  existT _ (@transport _ P _ _ _ _) _.
 bbb.
 
   transport (λ x, Σ (u : P x), Q (existT _ x u)) p uz ==
