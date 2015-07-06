@@ -1463,5 +1463,19 @@ Proof.
 intros; destruct z as (x, y); reflexivity.
 Qed.
 
-Theorem hott_2_7_4 {A} : ∀ (P : A → U) (Q : (Σ (x : A) P x) → U)
-  x y (p : x == y) (uz : Σ (u : P x), Q (x, u))
+Theorem pair_eq {A B} {x y : Σ (z : A), B z} (p : Σ_pr₁ x == Σ_pr₁ y) :
+  (pr₁ x == pr₁ y) * (transport _ p (pr₂ x) == pr₂ y) → (x == y).
+Proof.
+intros q.
+destruct x as (a, b).
+destruct y as (a', b').
+simpl in p, q.
+destruct p.
+destruct q as (p, q).
+destruct q; reflexivity.
+Defined.
+
+Theorem hott_2_7_4 {A} : ∀ (P : A → U) (Q : (Σ (x : A), P x) → U),
+  ∀ x y (p : x == y) (q : Σ_pr₁ x == Σ_pr₁ y)
+    (uz : Σ (u : P x), Q (existT _ x u)),
+  transport _ p uz == existT _ (transport _ _ _) (pair_eq q (refl _)).
