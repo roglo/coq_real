@@ -1503,12 +1503,33 @@ Check pair_eq.
 
 Definition foo {A} P Q (x : A) := Σ (u : P x), Q (existT _ x u).
 
-Set Printing All.
 Theorem hott_2_7_4 {A} : ∀ (P : A → U) (Q : (Σ (x : A), P x) → U),
-  ∀ (x y : A) (p : x == y) (uz : foo P Q x) (vt : foo P Q y)
-    (u := pr₁ uz) (z := pr₂ uz) (q : u == pr₁ vt),
-  transport (λ x, Σ (u : P x), Q (existT _ x u)) p uz ==
-  existT _ (@transport _ P _ _ _ _) _.
+  ∀ (x y : A) (p : x == y) (uz : foo P Q x)
+    (vt : foo P Q y)
+    (u := pr₁ uz) (z := pr₂ uz)
+    (zzz : (λ v : P y, Q (existT P y v)) (transport P p u)),
+  transport (foo P Q) p uz ==
+  existT _ (@transport _ P x y p u) zzz.
+intros.
+
+bbb.
+1 subgoals, subgoal 1 (ID 4136)
+  
+  A : Type
+  P : A → U
+  Q : {x : A & P x} → U
+  x : A
+  y : A
+  p : x == y
+  uz : foo P Q x
+  vt : foo P Q y
+  u := pr₁ uz : P x
+  z := pr₂ uz : (λ u0 : P x, Q (existT P x u0)) (Σ_pr₁ uz)
+  zzz : (λ u0 : P y, Q (existT P y u0)) (transport P p u)
+  ============================
+   transport (λ x0 : A, {u0 : P x0 & Q (existT P x0 u0)}) p uz ==
+   existT (λ u0 : P y, Q (existT P y u0)) (transport P p u) zzz
+
 bbb.
 
   transport (λ x, Σ (u : P x), Q (existT _ x u)) p uz ==
