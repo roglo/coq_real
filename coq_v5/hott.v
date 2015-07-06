@@ -1607,4 +1607,4 @@ apply (qi f g).
 
  subst f g; unfold "o"; simpl.
  intros x; destruct x; reflexivity.
-Qed.
+Defined.
