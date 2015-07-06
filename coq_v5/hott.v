@@ -1510,9 +1510,11 @@ Theorem hott_2_7_4 {A} : ∀ (P : A → U) (Q : (Σ (x : A), P x) → U),
     (zzz : (λ v : P y, Q (existT P y v)) (transport P p u)),
   transport (foo P Q) p uz ==
   existT _ (@transport _ P x y p u) zzz.
+Proof.
 intros.
+Abort. (* 1/ not sure how to do that, 2/ don't know what zzz should b
+          3/ I don't understand the whole thing → I give up for the moment
 
-bbb.
 1 subgoals, subgoal 1 (ID 4136)
   
   A : Type
@@ -1529,10 +1531,4 @@ bbb.
   ============================
    transport (λ x0 : A, {u0 : P x0 & Q (existT P x0 u0)}) p uz ==
    existT (λ u0 : P y, Q (existT P y u0)) (transport P p u) zzz
-
-bbb.
-
-  transport (λ x, Σ (u : P x), Q (existT _ x u)) p uz ==
-  transport (λ x, Σ (u : P x), Q (existT _ x u)) p uz.
-  uz == existT _ (pr₁ uz) (pr₂ uz).
-  transport _ _ uz == existT _ (transport _ _ _) (pair_eq _).
+*)
