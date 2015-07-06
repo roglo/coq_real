@@ -1537,8 +1537,6 @@ End Σ_type.
 
 (* 2.8 The unit type *)
 
-Check @Id.
-
 Theorem hott_2_8_1 : ∀ x y : unit, (x == y) ≃ unit.
 Proof.
 intros.
@@ -1558,3 +1556,12 @@ apply (qi f g).
  refine (match x with refl => _ end).
  reflexivity.
 Qed.
+
+Definition unit_intro : unit := tt.
+Definition unit_elim : unit → unit := id.
+Definition unit_comp : unit → unit := id.
+Definition unit_transport := @transportconst unit tt tt.
+Print unit_transport.
+
+(* 2.9 Π-types and the function extensionality axiom *)
+
