@@ -1565,3 +1565,46 @@ Print unit_transport.
 
 (* 2.9 Π-types and the function extensionality axiom *)
 
+Definition happly {A B} (f g : Π (x : A), B x)
+  : f == g → Π (x : A), f x == g x
+  := λ p x,
+     match p with
+     | refl => refl (f x)
+     end.
+
+Axiom extensionality : ∀ {A B} (f g : Π (x : A), B x),
+  (f == g) ≃ Π (x : A), f x == g x.
+
+Definition funext {A B} (f g : Π (x : A), B x)
+  : (Π (x : A), f x == g x) → (f == g).
+Proof.
+intros p.
+pose proof extensionality f g as q.
+unfold equivalence in q.
+destruct q as (q, H).
+apply equivalence_isequiv_1 in H.
+destruct H as (h, α, β).
+apply h, p.
+Defined.
+
+Print funext.
+
+bbb.
+
+(* my experiments *)
+
+Inductive t := foo : t | bar : t.
+
+Theorem equiv_bool_t : bool ≃ t.
+Proof.
+set (f := λ b : bool, if b then foo else bar).
+set (g := λ x : t, if x then true else false).
+unfold equivalence.
+apply (existT _ f), equivalence_isequiv_1.
+apply (qi f g).
+ subst f g; unfold "o"; simpl.
+ intros x; destruct x; reflexivity.
+
+ subst f g; unfold "o"; simpl.
+ intros x; destruct x; reflexivity.
+Qed.
