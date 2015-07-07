@@ -1589,9 +1589,32 @@ Defined.
 
 Print funext.
 
-bbb.
-
 (* my experiments *)
+
+(* mouais, bof, ça enfonce des portes ouvertes, ce truc...
+   ou pas, chais pas *)
+Theorem equiv_fun : ∀ A B (f g : A → B), (∀ x, f x == g x) → ∀ x,
+  {y | y == f x} ≃ {y | y == g x}.
+Proof.
+intros A B f g p x.
+unfold equivalence.
+set (u := λ (_ : {y : B | y == f x}),
+  exist (λ y : B, y == g x) (g x) (refl (g x))).
+assert (∀ x, g x == f x) as q by (intros y; apply invert, p).
+set (v := λ (_ : {y : B | y == g x}),
+  exist (λ y : B, y == f x) (f x) (refl (f x))).
+apply (existT _ u), equivalence_isequiv_1.
+apply (qi u v).
+ subst u v; unfold "o", id; simpl.
+ intros z; destruct z as (z1, z2); simpl.
+ rewrite z2; reflexivity.
+
+ subst u v; unfold "o", id; simpl.
+ intros z; destruct z as (z1, z2); simpl.
+ rewrite z2; reflexivity.
+Qed.
+
+bbb.
 
 Inductive t := foo : t | bar : t.
 
