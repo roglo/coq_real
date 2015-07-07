@@ -1608,6 +1608,26 @@ apply (qi f g).
 Defined.
 
 Axiom unival1 : ∀ A B : Set, (A ≃ B) → (A == B).
+
+Theorem unival2 : ∀ A B (f : (A == B) → (A ≃ B)) (g : (A ≃ B) → (A == B)),
+  f o g ~~ id.
+Proof.
+intros A B f g x.
+unfold id, "o"; simpl.
+destruct f.
+unfold isequiv in i.
+destruct i as (u, v).
+rename x0 into f.
+bbb.
+
+destruct x.
+destruct f.
+induction i.
+destruct a; simpl.
+destruct b; simpl.
+destruct i0.
+destruct s, s0.
+
 Axiom unival2 : ∀ A B (f : (A == B) → (A ≃ B)) (g : (A ≃ B) → (A == B)),
   f o g ~~ id.
 Axiom unival3 : ∀ A B (f : (A == B) → (A ≃ B)) (g : (A ≃ B) → (A == B)),
