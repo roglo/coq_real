@@ -1608,6 +1608,7 @@ destruct vh as (vh, α, β).
 unfold "~~", "o", id in α, β.
 remember (vh h) as vhh.
 destruct vhh.
+apply invert.
 (*
 set (hx := h x).
 refine (match hx with refl => _ end _).
