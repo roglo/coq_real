@@ -1596,6 +1596,13 @@ unfold happly.
 unfold funext; simpl.
 set (qH := extensionality f g).
 destruct qH as (q, H).
+(**)
+set (X := equivalence_isequiv_1 q).
+destruct X as (Hqi, (Hiq, Hee)).
+assert (qinv q) as H1 by apply Hiq, H.
+generalize H1; intros H2.
+destruct H2 as (k, α, β).
+*)
 set (p := equivalence_isequiv_1 q).
 destruct p as (u, (v, p)).
 set (vh := v H).
@@ -1603,16 +1610,20 @@ destruct vh as (vh, α, β).
 unfold "~~", "o", id in α, β.
 remember (vh h) as vhh.
 destruct vhh.
+(*
+set (hx := h x).
+refine (match hx with refl => _ end _).
+bbb.
+*)
 pose proof α h as H1.
 rewrite <- H1.
 rewrite <- Heqvhh.
 destruct Heqvhh.
-Abort.
-(* bon chuis peut-être pas loin, j'en sais rien mais j'arrête parce que
-   je ne comprends même pas ce que je fais...
-*)
+bbb.
+  ============================
+   refl (f x) == q (refl f) x
 
-
+bbb.
 
 (* my experiments *)
 
