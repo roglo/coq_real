@@ -1596,14 +1596,13 @@ unfold happly.
 unfold funext; simpl.
 set (qH := extensionality f g).
 destruct qH as (q, H).
+set (p := equivalence_isequiv_1 q).
 (**)
-set (X := equivalence_isequiv_1 q).
-destruct X as (Hqi, (Hiq, Hee)).
+destruct p as (Hqi, (Hiq, Hee)).
 assert (qinv q) as H1 by apply Hiq, H.
 generalize H1; intros H2.
 destruct H2 as (k, α, β).
 *)
-set (p := equivalence_isequiv_1 q).
 destruct p as (u, (v, p)).
 set (vh := v H).
 destruct vh as (vh, α, β).
