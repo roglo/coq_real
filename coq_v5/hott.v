@@ -1597,14 +1597,13 @@ unfold funext; simpl.
 set (qH := extensionality f g).
 destruct qH as (q, H).
 set (p := equivalence_isequiv_1 q).
-(**)
 destruct p as (Hqi, (Hiq, Hee)).
+(*
 assert (qinv q) as H1 by apply Hiq, H.
 generalize H1; intros H2.
 destruct H2 as (k, α, β).
 *)
-destruct p as (u, (v, p)).
-set (vh := v H).
+set (vh := Hiq H).
 destruct vh as (vh, α, β).
 unfold "~~", "o", id in α, β.
 remember (vh h) as vhh.
