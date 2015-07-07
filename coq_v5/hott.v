@@ -1591,6 +1591,10 @@ Print funext.
 
 (* my experiments *)
 
+(* too naive, I guess... *)
+
+bbb.
+
 Theorem fun_impl : ∀ A B (f g : A → B), (∀ x, f x == g x) →
   {z | snd z == f (fst z)} → {z | snd z == g (fst z)}.
 Proof.
