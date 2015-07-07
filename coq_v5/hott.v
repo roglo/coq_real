@@ -1591,7 +1591,34 @@ Print funext.
 
 (* my experiments *)
 
-(* mouais, bof, ça enfonce des portes ouvertes, ce truc...
+Theorem fun_impl : ∀ A B (f g : A → B), (∀ x, f x == g x) →
+  {z | snd z == f (fst z)} → {z | snd z == g (fst z)}.
+Proof.
+intros A B f g p z.
+destruct z as (z, q).
+eapply exist.
+transitivity (f (fst z)); [ eassumption | apply p ].
+Defined.
+
+(* cherche à voir si on peut pas transformer l'homotopie f ~ g en C ≃ D
+   pour montrer que l'univalence implique l'extentionalité *)
+
+Theorem equiv_fun2 : ∀ A B (f g : A → B), (∀ x, f x == g x)
+  → {z | snd z == f (fst z)} ≃ {z | snd z == g (fst z)}.
+Proof.
+intros A B f g p.
+unfold equivalence.
+set (u := fun_impl A B f g p).
+assert (∀ x, g x == f x) as q by (intros y; apply invert, p).
+set (v := fun_impl A B g f q).
+apply (existT _ u), equivalence_isequiv_1.
+apply (qi u v).
+ subst u v; unfold "o", id, fun_impl; simpl.
+ intros z; destruct z as (z1, z2); simpl.
+ apply ap.
+bbb.
+
+(* mouais, bof, ça enfonce des portes ouvertes, cette version-là...
    ou pas, chais pas *)
 Theorem equiv_fun : ∀ A B (f g : A → B), (∀ x, f x == g x) → ∀ x,
   {y | y == f x} ≃ {y | y == g x}.
