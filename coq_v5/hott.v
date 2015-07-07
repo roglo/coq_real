@@ -1587,42 +1587,21 @@ destruct H as (h, α, β).
 apply h, p.
 Defined.
 
-Print funext.
-
 Theorem funext_quasi_inverse_of_happly {A B} :
   ∀ (f g : Π (x : A), B x) (h : Π (x : A), f x == g x) x,
   happly (funext h) x == h x.
 Proof.
 intros.
 unfold happly.
-bbb.
-
 unfold funext; simpl.
-remember (extensionality f g) as qH.
+set (qH := extensionality f g).
 destruct qH as (q, H).
-remember (equivalence_isequiv_1 q) as p.
+set (p := equivalence_isequiv_1 q).
 destruct p as (u, (v, p)).
-remember (v H) as vh.
+set (vh := v H).
 destruct vh as (vh, α, β).
-remember (vh h) as i.
-destruct i.
-bbb.
-
-destruct p.
-destruct a.
-simpl.
-
-set (q := happly p x).
-refine (match q with refl => _ end).
-
-unfold happly; simpl.
-remember (funext h) as p.
-destruct p.
-destruct Heqp.
-set (y := h x).
-refine (match y with refl => _ end).
-destruct y.
-
+remember (vh h) as vhh.
+destruct vhh.
 bbb.
 
 (* my experiments *)
