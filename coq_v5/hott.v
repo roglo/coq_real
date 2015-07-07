@@ -1591,9 +1591,48 @@ Print funext.
 
 (* my experiments *)
 
-(* too naive, I guess... *)
+Inductive t := foo : t | bar : t.
 
+Theorem equiv_bool_t : bool ≃ t.
+Proof.
+set (f := λ b : bool, if b then foo else bar).
+set (g := λ x : t, if x then true else false).
+unfold equivalence.
+apply (existT _ f), equivalence_isequiv_1.
+apply (qi f g).
+ subst f g; unfold "o"; simpl.
+ intros x; destruct x; reflexivity.
+
+ subst f g; unfold "o"; simpl.
+ intros x; destruct x; reflexivity.
+Defined.
+
+Axiom unival1 : ∀ A B : Set, (A ≃ B) → (A == B).
+Axiom unival2 : ∀ A B (f : (A == B) → (A ≃ B)) (g : (A ≃ B) → (A == B)),
+  f o g ~~ id.
+Axiom unival3 : ∀ A B (f : (A == B) → (A ≃ B)) (g : (A ≃ B) → (A == B)),
+  g o f ~~ id.
+
+Theorem eq_bool_t : bool == t.
+Proof.
+apply unival1, equiv_bool_t.
+Defined.
+
+Definition negt : t → t.
+Proof.
+rewrite <- eq_bool_t.
+apply negb.
+Defined.
+
+Theorem toto : negt foo == bar.
+Proof.
+unfold negt; simpl.
+unfold internal_Id_rew.
+unfold eq_bool_t.
+unfold equiv_bool_t.
 bbb.
+
+(* that, below, is too naive, I guess... *)
 
 Theorem fun_impl : ∀ A B (f g : A → B), (∀ x, f x == g x) →
   {z | snd z == f (fst z)} → {z | snd z == g (fst z)}.
@@ -1646,19 +1685,3 @@ apply (qi u v).
 Qed.
 
 bbb.
-
-Inductive t := foo : t | bar : t.
-
-Theorem equiv_bool_t : bool ≃ t.
-Proof.
-set (f := λ b : bool, if b then foo else bar).
-set (g := λ x : t, if x then true else false).
-unfold equivalence.
-apply (existT _ f), equivalence_isequiv_1.
-apply (qi f g).
- subst f g; unfold "o"; simpl.
- intros x; destruct x; reflexivity.
-
- subst f g; unfold "o"; simpl.
- intros x; destruct x; reflexivity.
-Defined.
