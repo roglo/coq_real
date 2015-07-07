@@ -1579,10 +1579,6 @@ Definition funext {A B} {f g : Π (x : A), B x}
   : (Π (x : A), f x == g x) → (f == g).
 Proof.
 intros p.
-(*
-pose proof equivalence_isequiv_1 (extensionality f g) as q.
-*)
-bbb.
 pose proof extensionality f g as q.
 unfold equivalence in q.
 destruct q as (q, H).
