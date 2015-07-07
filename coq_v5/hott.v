@@ -1600,9 +1600,19 @@ set (p := equivalence_isequiv_1 q).
 destruct p as (u, (v, p)).
 set (vh := v H).
 destruct vh as (vh, α, β).
+unfold "~~", "o", id in α, β.
 remember (vh h) as vhh.
 destruct vhh.
-bbb.
+pose proof α h as H1.
+rewrite <- H1.
+rewrite <- Heqvhh.
+destruct Heqvhh.
+Abort.
+(* bon chuis peut-être pas loin, j'en sais rien mais j'arrête parce que
+   je ne comprends même pas ce que je fais...
+*)
+
+
 
 (* my experiments *)
 
