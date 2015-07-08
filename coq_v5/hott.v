@@ -1115,7 +1115,7 @@ Check @equiv_prop.
 Definition isequiv {A B} f :=
   ((Σ (g : B → A), (f o g ~~ id)) * (Σ (h : B → A), (h o f ~~ id)))%type.
 
-Definition equivalence_isequiv_1 {A B} : equiv_prop (@isequiv A B).
+Definition equivalence_isequiv {A B} : equiv_prop (@isequiv A B).
 Proof.
 unfold equiv_prop; intros f.
 split; [ idtac | split ].
@@ -1178,7 +1178,7 @@ Lemma hott_2_4_12_ii : ∀ A B, A ≃ B → B ≃ A.
 Proof.
 intros A B f.
 induction f as (f, H).
-pose proof (@equivalence_isequiv_1 A B f) as Heq.
+pose proof (@equivalence_isequiv A B f) as Heq.
 destruct Heq as (Hqe, (Heq, Hee)).
 generalize H; intros finv.
 apply Heq in finv.
@@ -1190,7 +1190,7 @@ Qed.
 Definition quasi_inv {A B} (f : A ≃ B) : B ≃ A :=
   sigT_rect (λ _, B ≃ A)
     (λ g H,
-     match equivalence_isequiv_1 g with
+     match equivalence_isequiv g with
      | conjt _ (conjt Heq _) =>
          match Heq H with
          | qi finv1 α β =>
@@ -1207,11 +1207,11 @@ Proof.
 intros A B C eqf eqg.
 destruct eqf as (f, eqf).
 destruct eqg as (g, eqg).
-pose proof (@equivalence_isequiv_1 A B f) as H.
+pose proof (@equivalence_isequiv A B f) as H.
 destruct H as (Hfqe, (Hfeq, Hfee)).
 apply Hfeq in eqf.
 induction eqf as (f¹, αf, βf).
-pose proof (@equivalence_isequiv_1 B C g) as H.
+pose proof (@equivalence_isequiv B C g) as H.
 destruct H as (Hgqe, (Hgeq, Hgee)).
 apply Hgeq in eqg.
 induction eqg as (g¹, αg, βg).
@@ -1292,7 +1292,7 @@ set (f := hott_2_6_1 x y).
 set (g := @pair_eq A B x y).
 apply hott_2_4_12_ii.
 apply existT with (x := f).
-pose proof (equivalence_isequiv_1 f) as H.
+pose proof (equivalence_isequiv f) as H.
 destruct H as (H, _); apply H; clear H.
 apply (qi f) with (g := g).
  intros r; unfold id; simpl.
@@ -1429,7 +1429,7 @@ intros.
 set (f := hott_2_7_2_f P w w').
 set (g := hott_2_7_2_g P w w').
 apply existT with (x := f).
-pose proof (equivalence_isequiv_1 f) as H.
+pose proof (equivalence_isequiv f) as H.
 destruct H as (H, _); apply H; clear H.
 apply (qi f) with (g := g).
  intros r; unfold id; simpl.
@@ -1544,7 +1544,7 @@ destruct x, y.
 set (f := λ _ : tt == tt, tt).
 set (g := λ _ : unit, refl tt).
 unfold equivalence.
-apply (existT _ f), equivalence_isequiv_1.
+apply (existT _ f), equivalence_isequiv.
 apply (qi f g).
  subst f g; simpl.
  unfold "o"; simpl.
@@ -1575,22 +1575,10 @@ Definition happly {A B} {f g : Π (x : A), B x}
 Axiom extensionality : ∀ {A B} (f g : Π (x : A), B x),
   (f == g) ≃ Π (x : A), f x == g x.
 
-Definition funext_by_tac {A B} {f g : Π (x : A), B x}
-  : (Π (x : A), f x == g x) → (f == g).
-Proof.
-intros p.
-pose proof extensionality f g as q.
-unfold equivalence in q.
-destruct q as (q, H).
-apply equivalence_isequiv_1 in H.
-destruct H as (h, α, β).
-apply h, p.
-Defined.
-
 Definition funext {A B} {f g : ∀ x : A, B x}
   : (Π (x : A), f x == g x) → (f == g)
   := let (h, iseq) := extensionality f g in
-     match equivalence_isequiv_1 h with
+     match equivalence_isequiv h with
      | conjt _ (conjt iseq_qinv _) =>
          match iseq_qinv iseq with
          | qi h _ _ => h
@@ -1606,7 +1594,7 @@ unfold happly.
 unfold funext; simpl.
 set (qH := extensionality f g).
 destruct qH as (k, iseq).
-set (p := equivalence_isequiv_1 k).
+set (p := equivalence_isequiv k).
 destruct p as (Hqi, (Hiq, Hee)).
 (*
 assert (qinv q) as H1 by apply Hiq, H.
@@ -1630,6 +1618,16 @@ rewrite <- Heqvhh.
 assert (qinv k) as H2 by apply Hiq, iseq.
 destruct H2 as (g, γ, δ).
 unfold "~~", "o", id in γ, δ.
+assert (∀ e : isequiv k, e == iseq) as He by (intros; apply Hee).
+bbb.
+
+assert (∀ e : qinv k, e == Hiq iseq).
+ intros.
+ destruct e.
+
+Print isequiv.
+bbb.
+
 Abort. (* bon, bloqué, voyons la suite...
 bbb.
   ============================
@@ -1646,7 +1644,7 @@ destruct p.
 unfold funext, happly; simpl.
 set (hiseq := extensionality f f).
 destruct hiseq as (h, iseq).
-set (q := equivalence_isequiv_1 h).
+set (q := equivalence_isequiv h).
 destruct q as (Hqi, (Hiq, Hee)).
 set (vh := Hiq iseq).
 destruct vh as (vh, α, β).
@@ -1666,7 +1664,7 @@ intros.
 unfold funext; simpl.
 set (hiseq := extensionality f f).
 destruct hiseq as (h, iseq).
-set (q := equivalence_isequiv_1 h).
+set (q := equivalence_isequiv h).
 destruct q as (Hqi, (Hiq, Hee)).
 set (vh := Hiq iseq).
 destruct vh as (vh, α, β).
@@ -1687,7 +1685,7 @@ induction α; simpl.
 unfold funext; simpl.
 set (hiseq := extensionality f f).
 destruct hiseq as (h, iseq).
-set (q := equivalence_isequiv_1 h).
+set (q := equivalence_isequiv h).
 destruct q as (Hqi, (Hiq, Hee)).
 set (vh := Hiq iseq).
 destruct vh as (vh, α, β).
@@ -1707,7 +1705,7 @@ Proof.
 set (f := λ b : bool, if b then foo else bar).
 set (g := λ x : t, if x then true else false).
 unfold equivalence.
-apply (existT _ f), equivalence_isequiv_1.
+apply (existT _ f), equivalence_isequiv.
 apply (qi f g).
  subst f g; unfold "o"; simpl.
  intros x; destruct x; reflexivity.
@@ -1783,7 +1781,7 @@ unfold equivalence.
 set (u := fun_impl A B f g p).
 assert (∀ x, g x == f x) as q by (intros y; apply invert, p).
 set (v := fun_impl A B g f q).
-apply (existT _ u), equivalence_isequiv_1.
+apply (existT _ u), equivalence_isequiv.
 apply (qi u v).
  subst u v; unfold "o", id, fun_impl; simpl.
  intros z; destruct z as (z1, z2); simpl.
@@ -1802,7 +1800,7 @@ set (u := λ (_ : {y : B | y == f x}),
 assert (∀ x, g x == f x) as q by (intros y; apply invert, p).
 set (v := λ (_ : {y : B | y == g x}),
   exist (λ y : B, y == f x) (f x) (refl (f x))).
-apply (existT _ u), equivalence_isequiv_1.
+apply (existT _ u), equivalence_isequiv.
 apply (qi u v).
  subst u v; unfold "o", id; simpl.
  intros z; destruct z as (z1, z2); simpl.
