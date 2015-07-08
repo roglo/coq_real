@@ -1589,12 +1589,11 @@ Defined.
 
 Definition funext {A B} {f g : ∀ x : A, B x}
   : (Π (x : A), f x == g x) → (f == g)
-  := λ p,
-     let (h, iseq) := extensionality f g in
+  := let (h, iseq) := extensionality f g in
      match equivalence_isequiv_1 h with
      | conjt _ (conjt iseq_qinv _) =>
          match iseq_qinv iseq with
-         | qi h _ _ => h p
+         | qi h _ _ => h
          end
      end.
 
@@ -1631,7 +1630,7 @@ rewrite <- Heqvhh.
 assert (qinv k) as H2 by apply Hiq, iseq.
 destruct H2 as (g, γ, δ).
 unfold "~~", "o", id in γ, δ.
-Abort. (* bon, bloqué, on verra plus tard...
+Abort. (* bon, bloqué, voyons la suite...
 bbb.
   ============================
    k (refl f) x == refl (f x)
