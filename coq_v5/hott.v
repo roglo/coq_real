@@ -1631,9 +1631,53 @@ rewrite <- Heqvhh.
 assert (qinv k) as H2 by apply Hiq, iseq.
 destruct H2 as (g, γ, δ).
 unfold "~~", "o", id in γ, δ.
+Abort. (* bon, bloqué, on verra plus tard...
 bbb.
   ============================
    k (refl f) x == refl (f x)
+*)
+
+(* propositional uniqueness principle *)
+
+Theorem funext_prop_uniq_princ {A B} : ∀ (f g : Π (x : A), B x) (p : f == g),
+  p == funext (happly p).
+Proof.
+intros.
+destruct p.
+unfold funext, happly; simpl.
+set (hiseq := extensionality f f).
+destruct hiseq as (h, iseq).
+set (q := equivalence_isequiv_1 h).
+destruct q as (Hqi, (Hiq, Hee)).
+set (vh := Hiq iseq).
+destruct vh as (vh, α, β).
+unfold "~~", "o", id in α, β.
+apply invert.
+rewrite <- β.
+apply ap.
+Abort. (* lol, bloqué au même endroit, tu le crois, ça ?
+  ============================
+   (λ x : A, refl (f x)) == h (refl f)
+*)
+
+Theorem funext_identity {A B} : ∀ (f : A → B),
+  refl f == funext (λ x, refl (f x)).
+Proof.
+intros.
+unfold funext; simpl.
+set (hiseq := extensionality f f).
+destruct hiseq as (h, iseq).
+set (q := equivalence_isequiv_1 h).
+destruct q as (Hqi, (Hiq, Hee)).
+set (vh := Hiq iseq).
+destruct vh as (vh, α, β).
+unfold "~~", "o", id in α, β.
+apply invert.
+rewrite <- β.
+apply ap.
+bbb. (* encore bloqué. Pareil. *)
+  ============================
+   (λ x : A, refl (f x)) == h (refl f)
 
 bbb.
 
