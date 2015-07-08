@@ -1575,7 +1575,7 @@ Definition happly {A B} {f g : Π (x : A), B x}
 Axiom extensionality : ∀ {A B} (f g : Π (x : A), B x),
   (f == g) ≃ Π (x : A), f x == g x.
 
-Definition funext {A B} {f g : Π (x : A), B x}
+Definition funext_by_tac {A B} {f g : Π (x : A), B x}
   : (Π (x : A), f x == g x) → (f == g).
 Proof.
 intros p.
@@ -1587,7 +1587,7 @@ destruct H as (h, α, β).
 apply h, p.
 Defined.
 
-Definition funext2 {A B} {f g : ∀ x : A, B x}
+Definition funext {A B} {f g : ∀ x : A, B x}
   : (Π (x : A), f x == g x) → (f == g)
   := λ p,
      let (h, iseq) := extensionality f g in
@@ -1606,15 +1606,15 @@ intros.
 unfold happly.
 unfold funext; simpl.
 set (qH := extensionality f g).
-destruct qH as (q, H).
-set (p := equivalence_isequiv_1 q).
+destruct qH as (k, iseq).
+set (p := equivalence_isequiv_1 k).
 destruct p as (Hqi, (Hiq, Hee)).
 (*
 assert (qinv q) as H1 by apply Hiq, H.
 generalize H1; intros H2.
 destruct H2 as (k, α, β).
 *)
-set (vh := Hiq H).
+set (vh := Hiq iseq).
 destruct vh as (vh, α, β).
 unfold "~~", "o", id in α, β.
 remember (vh h) as vhh.
@@ -1628,12 +1628,12 @@ bbb.
 pose proof α h as H1.
 rewrite <- H1.
 rewrite <- Heqvhh.
-assert (qinv q) as H2 by apply Hiq, H.
+assert (qinv k) as H2 by apply Hiq, iseq.
 destruct H2 as (g, γ, δ).
 unfold "~~", "o", id in γ, δ.
 bbb.
   ============================
-   refl (f x) == q (refl f) x
+   k (refl f) x == refl (f x)
 
 bbb.
 
