@@ -1587,6 +1587,17 @@ destruct H as (h, α, β).
 apply h, p.
 Defined.
 
+Definition funext2 {A B} {f g : ∀ x : A, B x}
+  : (Π (x : A), f x == g x) → (f == g)
+  := λ p,
+     let (h, iseq) := extensionality f g in
+     match equivalence_isequiv_1 h with
+     | conjt _ (conjt iseq_qinv _) =>
+         match iseq_qinv iseq with
+         | qi h _ _ => h p
+         end
+     end.
+
 Theorem funext_quasi_inverse_of_happly {A B} :
   ∀ (f g : Π (x : A), B x) (h : Π (x : A), f x == g x) x,
   happly (funext h) x == h x.
