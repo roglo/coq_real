@@ -1619,11 +1619,10 @@ assert (qinv k) as H2 by apply Hiq, iseq.
 destruct H2 as (g, γ, δ).
 unfold "~~", "o", id in γ, δ.
 assert (∀ e : isequiv k, e == iseq) as He by (intros; apply Hee).
-bbb.
-
-assert (∀ e : qinv k, e == Hiq iseq).
+assert (∀ e : qinv k, e == Hiq iseq) as Hq.
  intros.
  destruct e.
+Focus 2.
 
 Print isequiv.
 bbb.
