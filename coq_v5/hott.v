@@ -1695,6 +1695,7 @@ unfold "~~", "o", id in α, β.
 apply invert.
 rewrite <- β.
 apply ap.
+
 bbb. (* toujours pareil *)
 
 (* my experiments *)
