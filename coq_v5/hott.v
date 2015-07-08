@@ -1565,6 +1565,73 @@ Print unit_transport.
 
 (* 2.9 Π-types and the function extensionality axiom *)
 
+(* 1/ version not Π-type *)
+
+Definition happly {A B} {f g : A → B}
+  : f == g → ∀ x, f x == g x
+  := λ p,
+     match p with
+     | refl => λ y, refl (f y)
+     end.
+
+Axiom extensionality : ∀ {A B} (f g : A → B),
+  (f == g) ≃ ∀ x, f x == g x.
+
+Definition funext {A B} {f g : A → B}
+  : (∀ x, f x == g x) → (f == g)
+  := let (h, iseq) := extensionality f g in
+     match equivalence_isequiv h with
+     | conjt _ (conjt iseq_qinv _) =>
+         match iseq_qinv iseq with
+         | qi h _ _ => h
+         end
+     end.
+
+Theorem funext_quasi_inverse_of_happly {A B} :
+  ∀ (f g : A → B) (h : ∀ x, f x == g x) x,
+  happly (funext h) x == h x.
+Proof.
+intros.
+(**)
+unfold funext; simpl.
+set (qH := extensionality f g).
+destruct qH as (k, iseq).
+set (p := equivalence_isequiv k).
+destruct p as (Hqi, (Hiq, Hee)).
+set (vh := Hiq iseq).
+destruct vh as (m, α, β).
+assert (∃ y, h = k y).
+Focus 2.
+destruct H as (y, Hy).
+subst h.
+unfold "~~", "o", id in α, β.
+rewrite β.
+destruct y.
+unfold happly; simpl.
+
+bbb.
+
+*)
+unfold happly.
+unfold funext; simpl.
+set (qH := extensionality f g).
+destruct qH as (k, iseq).
+set (p := equivalence_isequiv k).
+destruct p as (Hqi, (Hiq, Hee)).
+set (vh := Hiq iseq).
+destruct vh as (m, α, β).
+remember (match m h in (_ == b) return (∀ x0 : A, f x0 == b x0) with
+   | refl => λ y : A, refl (f y)
+   end) as toto.
+apply happly.
+
+remember (m h) as mh.
+induction mh.
+remember (h x) as hx.
+bbb.
+
+(* *)
+
 Definition happly {A B} {f g : Π (x : A), B x}
   : f == g → Π (x : A), f x == g x
   := λ p,
