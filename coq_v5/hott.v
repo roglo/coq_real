@@ -1674,11 +1674,28 @@ unfold "~~", "o", id in α, β.
 apply invert.
 rewrite <- β.
 apply ap.
-bbb. (* encore bloqué. Pareil. *)
+Abort. (* encore bloqué. Pareil.
   ============================
    (λ x : A, refl (f x)) == h (refl f)
+*)
 
-bbb.
+Theorem funext_invert {A B} {f g : Π (x : A), B x} : ∀ (α : f == g),
+  α⁻¹ == funext (λ x, (happly α x)⁻¹).
+Proof.
+intros.
+induction α; simpl.
+unfold funext; simpl.
+set (hiseq := extensionality f f).
+destruct hiseq as (h, iseq).
+set (q := equivalence_isequiv_1 h).
+destruct q as (Hqi, (Hiq, Hee)).
+set (vh := Hiq iseq).
+destruct vh as (vh, α, β).
+unfold "~~", "o", id in α, β.
+apply invert.
+rewrite <- β.
+apply ap.
+bbb. (* toujours pareil *)
 
 (* my experiments *)
 
