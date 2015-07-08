@@ -1617,7 +1617,9 @@ bbb.
 pose proof α h as H1.
 rewrite <- H1.
 rewrite <- Heqvhh.
-destruct Heqvhh.
+assert (qinv q) as H2 by apply Hiq, H.
+destruct H2 as (g, γ, δ).
+unfold "~~", "o", id in γ, δ.
 bbb.
   ============================
    refl (f x) == q (refl f) x
