@@ -1567,9 +1567,9 @@ Print unit_transport.
 
 Definition happly {A B} {f g : Π (x : A), B x}
   : f == g → Π (x : A), f x == g x
-  := λ p x,
+  := λ p,
      match p with
-     | refl => refl (f x)
+     | refl => λ y, refl (f y)
      end.
 
 Axiom extensionality : ∀ {A B} (f g : Π (x : A), B x),
@@ -1596,17 +1596,33 @@ set (qH := extensionality f g).
 destruct qH as (k, iseq).
 set (p := equivalence_isequiv k).
 destruct p as (Hqi, (Hiq, Hee)).
-(*
-assert (qinv q) as H1 by apply Hiq, H.
-generalize H1; intros H2.
-destruct H2 as (k, α, β).
-*)
 set (vh := Hiq iseq).
-destruct vh as (vh, α, β).
-unfold "~~", "o", id in α, β.
-remember (vh h) as vhh.
-destruct vhh.
+destruct vh as (m, α, β).
+remember (m h) as mh.
+assert (mh == m h) as Hmh by (subst mh; reflexivity).
+clear Heqmh.
+destruct mh.
+(*
+remember (h x) as hx.
+assert (hx == h x) as Hhx by (subst hx; reflexivity).
+clear Heqhx.
+destruct Hhx.
+*)
+refine (match h x as hx in (_ == b) return (∀ y, _ == refl (f y)) with
+        | refl => λ y, refl (refl (f y)) end
+        x).
+bbb.
+
+revert x.
+apply extensionality.
+bbb.
+
 apply invert.
+remember (m h) as mh.
+destruct mh.
+bbb.
+unfold "~~", "o", id in α, β.
+
 (*
 set (hx := h x).
 refine (match hx with refl => _ end _).
