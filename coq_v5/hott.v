@@ -1603,63 +1603,49 @@ Theorem funext_prop_uniq_princ {A B} : ∀ (f g : Π (x : A), B x) (p : f == g),
   p == funext (happly p).
 Proof.
 intros.
-bbb.
-
-destruct p.
-unfold funext, happly; simpl.
-set (hiseq := extensionality f f).
-destruct hiseq as (h, iseq).
-set (q := equivalence_isequiv h).
+unfold funext; simpl.
+set (q := equivalence_isequiv happly).
 destruct q as (Hqi, (Hiq, Hee)).
-set (vh := Hiq iseq).
-destruct vh as (vh, α, β).
-unfold "~~", "o", id in α, β.
+set (qH := Hiq (extensionality f g)).
+destruct qH as (m, α, β).
+unfold "~~", "o", id in β.
 apply invert.
-rewrite <- β.
-apply ap.
-Abort. (* lol, bloqué au même endroit, tu le crois, ça ?
-  ============================
-   (λ x : A, refl (f x)) == h (refl f)
-*)
+rewrite β; reflexivity.
+Qed.
 
-Theorem funext_identity {A B} : ∀ (f : A → B),
+Theorem funext_identity {A B} : ∀ (f : Π (x : A), B x),
   refl f == funext (λ x, refl (f x)).
 Proof.
 intros.
 unfold funext; simpl.
-set (hiseq := extensionality f f).
-destruct hiseq as (h, iseq).
-set (q := equivalence_isequiv h).
+set (q := equivalence_isequiv happly).
 destruct q as (Hqi, (Hiq, Hee)).
-set (vh := Hiq iseq).
-destruct vh as (vh, α, β).
+set (qH := Hiq (extensionality f f)).
+destruct qH as (m, α, β).
 unfold "~~", "o", id in α, β.
-apply invert.
-rewrite <- β.
-apply ap.
-Abort. (* encore bloqué. Pareil.
-  ============================
-   (λ x : A, refl (f x)) == h (refl f)
-*)
+pose proof β (refl f) as H.
+apply invert, H.
+Qed.
 
 Theorem funext_invert {A B} {f g : Π (x : A), B x} : ∀ (α : f == g),
   α⁻¹ == funext (λ x, (happly α x)⁻¹).
 Proof.
 intros.
-induction α; simpl.
-unfold funext; simpl.
-set (hiseq := extensionality f f).
-destruct hiseq as (h, iseq).
-set (q := equivalence_isequiv h).
-destruct q as (Hqi, (Hiq, Hee)).
-set (vh := Hiq iseq).
-destruct vh as (vh, α, β).
-unfold "~~", "o", id in α, β.
-apply invert.
-rewrite <- β.
-apply ap.
+destruct α; simpl.
+apply funext_identity.
+Qed.
 
-bbb. (* toujours pareil *)
+Theorem funext_compose {A B} {f g h : Π (x : A), B x} :
+    ∀ (α : f == g) (β : g == h),
+  α • β == funext (λ x, happly α x • happly β x).
+Proof.
+intros.
+destruct α, β; simpl.
+unfold id; simpl.
+apply funext_identity.
+Qed.
+
+bbb.
 
 (* my experiments *)
 
