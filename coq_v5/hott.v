@@ -1601,6 +1601,21 @@ destruct p as (Hqi, (Hiq, Hee)).
 set (vh := Hiq iseq).
 destruct vh as (m, α, β).
 unfold happly.
+refine
+  (match h x with refl =>
+   match _
+   return
+     (∀ u, match m h in (_ == g) return (f x == g x) with
+      | refl => u (* u (f x) *)
+      end == h x)
+   with
+   | refl => _
+   end (refl (f x)) end).
+Focus 2.
+intros n.
+bbb.
+
+destruct (h x).
 bbb.
 
 assert (∃ y, h = k y).
