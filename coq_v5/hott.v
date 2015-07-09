@@ -1601,18 +1601,48 @@ destruct p as (Hqi, (Hiq, Hee)).
 set (vh := Hiq iseq).
 destruct vh as (m, α, β).
 unfold happly.
+(*
+destruct (h x).
+Toplevel input, characters 0-14:
+Error: Abstracting over the terms "b" and "i" leads to a term
+"λ (b : B) (i : f x == b),
+ match m h in (_ == b0) return (f x == b0 x) with
+ | refl => refl (f x)
+ end == i" which is ill-typed.
+*)
 refine
   (match h x with refl =>
    match _
    return
      (∀ u, match m h in (_ == g) return (f x == g x) with
-      | refl => u (* u (f x) *)
+      | refl => u
       end == h x)
    with
    | refl => _
    end (refl (f x)) end).
 Focus 2.
 intros n.
+destruct (m h).
+
+  f : A → B
+  g : A → B
+  h : ∀ x : A, f x == g x
+  x : A
+  k : f == g → ∀ x0 : A, f x0 == g x0
+  iseq : isequiv k
+  Hqi : qinv k → isequiv k
+  Hiq : isequiv k → qinv k
+  Hee : ∀ e₁ e₂ : isequiv k, e₁ == e₂
+  m : (∀ x0 : A, f x0 == g x0) → f == g
+  α : k o m ~~ id
+  β : m o k ~~ id
+  n : f x == f x
+  ============================
+   match m h in (_ == g0) return (f x == g0 x) with
+   | refl => n
+   end == h x
+
+destruct (h x).
 bbb.
 
 destruct (h x).
