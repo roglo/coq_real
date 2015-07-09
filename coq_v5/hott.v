@@ -1565,144 +1565,6 @@ Print unit_transport.
 
 (* 2.9 Π-types and the function extensionality axiom *)
 
-(* 1/ version not Π-type *)
-
-Definition happly {A B} {f g : A → B}
-  : f == g → ∀ x, f x == g x
-  := λ p x,
-     match p with
-     | refl => refl (f x)
-     end.
-
-Axiom extensionality : ∀ {A B} (f g : A → B),
-  (f == g) ≃ ∀ x, f x == g x.
-
-(* je ne peux pas définir funext comme quasi-inverse de happly parce
-   que je n'ai pas de fonction qui calcule un quasi-inverse ; j'ai
-   juste un type inductif, qinv, qui dit si une fonction a un
-   quasi-inverse *)
-
-(* je ne peux donc pas définir funext à partir de happly ; je peux
-   définir funext et essayer d'affirmer que c'est bien un quasi-inverse
-   de happly. Mais en l'occurrence j'y arrive pas *)
-
-Definition funext {A B} {f g : A → B}
-  : (∀ x, f x == g x) → (f == g)
-  := let (h, iseq) := extensionality f g in
-     match equivalence_isequiv h with
-     | conjt _ (conjt iseq_qinv _) =>
-         match iseq_qinv iseq with
-         | qi h _ _ => h
-         end
-     end.
-
-Theorem funext_quasi_inverse_of_happly {A B} :
-  ∀ (f g : A → B) (h : ∀ x, f x == g x) x,
-  happly (funext h) x == h x.
-Proof.
-intros.
-(**)
-unfold funext; simpl.
-set (qH := extensionality f g).
-destruct qH as (k, iseq).
-set (p := equivalence_isequiv k).
-destruct p as (Hqi, (Hiq, Hee)).
-set (vh := Hiq iseq).
-destruct vh as (m, α, β).
-unfold happly.
-bbb.
-(*
-destruct (h x).
-Toplevel input, characters 0-14:
-Error: Abstracting over the terms "b" and "i" leads to a term
-"λ (b : B) (i : f x == b),
- match m h in (_ == b0) return (f x == b0 x) with
- | refl => refl (f x)
- end == i" which is ill-typed.
-*)
-(**)
-refine
-  (match h x in _ == k return
-     (match m h in (_ == b) return (f x == b x) with
-      | refl => refl (f x)
-      end == h x)
-   with
-   | refl => _
-   end).
-intros u.
-bbb.
-
-refine
-  (match _
-   return
-     (∀ u, match m h in (_ == g) return (f x == g x) with
-      | refl => u
-      end == h x)
-   with
-   | refl => _
-   end (refl (f x))).
-Focus 2.
-intros n.
-destruct n.
-
-destruct (h x).
-
-  f : A → B
-  g : A → B
-  h : ∀ x : A, f x == g x
-  x : A
-  k : f == g → ∀ x0 : A, f x0 == g x0
-  iseq : isequiv k
-  Hqi : qinv k → isequiv k
-  Hiq : isequiv k → qinv k
-  Hee : ∀ e₁ e₂ : isequiv k, e₁ == e₂
-  m : (∀ x0 : A, f x0 == g x0) → f == g
-  α : k o m ~~ id
-  β : m o k ~~ id
-  n : f x == f x
-  ============================
-   match m h in (_ == g0) return (f x == g0 x) with
-   | refl => n
-   end == h x
-
-destruct (h x).
-bbb.
-
-destruct (h x).
-bbb.
-
-assert (∃ y, h = k y).
-Focus 2.
-destruct H as (y, Hy).
-subst h.
-unfold "~~", "o", id in α, β.
-rewrite β.
-destruct y.
-unfold happly; simpl.
-
-bbb.
-
-*)
-unfold happly.
-unfold funext; simpl.
-set (qH := extensionality f g).
-destruct qH as (k, iseq).
-set (p := equivalence_isequiv k).
-destruct p as (Hqi, (Hiq, Hee)).
-set (vh := Hiq iseq).
-destruct vh as (m, α, β).
-remember (match m h in (_ == b) return (∀ x0 : A, f x0 == b x0) with
-   | refl => λ y : A, refl (f y)
-   end) as toto.
-apply happly.
-
-remember (m h) as mh.
-induction mh.
-remember (h x) as hx.
-bbb.
-
-(* *)
-
 Definition happly {A B} {f g : Π (x : A), B x}
   : f == g → Π (x : A), f x == g x
   := λ p,
@@ -1710,90 +1572,39 @@ Definition happly {A B} {f g : Π (x : A), B x}
      | refl => λ y, refl (f y)
      end.
 
-Axiom extensionality : ∀ {A B} (f g : Π (x : A), B x),
-  (f == g) ≃ Π (x : A), f x == g x.
+Axiom extensionality : ∀ {A B} f g, isequiv (@happly A B f g).
 
-Definition funext {A B} {f g : ∀ x : A, B x}
-  : (Π (x : A), f x == g x) → (f == g)
-  := let (h, iseq) := extensionality f g in
-     match equivalence_isequiv h with
-     | conjt _ (conjt iseq_qinv _) =>
-         match iseq_qinv iseq with
-         | qi h _ _ => h
-         end
+Definition funext {A B} {f g : Π (x : A), B x}
+  : (∀ x, f x == g x) → (f == g)
+  := λ p,
+     match
+       match equivalence_isequiv happly with
+       | conjt _ (conjt Hiq _) => Hiq (extensionality f g)
+       end
+     with
+     | qi h _ _ => h p
      end.
 
 Theorem funext_quasi_inverse_of_happly {A B} :
-  ∀ (f g : Π (x : A), B x) (h : Π (x : A), f x == g x) x,
+  ∀ (f g : Π (x : A), B x) (h : ∀ x, f x == g x) x,
   happly (funext h) x == h x.
 Proof.
 intros.
-unfold happly.
 unfold funext; simpl.
-set (qH := extensionality f g).
-destruct qH as (k, iseq).
-set (p := equivalence_isequiv k).
+set (p := equivalence_isequiv happly).
 destruct p as (Hqi, (Hiq, Hee)).
-set (vh := Hiq iseq).
-destruct vh as (m, α, β).
-remember (m h) as mh.
-assert (mh == m h) as Hmh by (subst mh; reflexivity).
-clear Heqmh.
-destruct mh.
-(*
-remember (h x) as hx.
-assert (hx == h x) as Hhx by (subst hx; reflexivity).
-clear Heqhx.
-destruct Hhx.
-*)
-refine (match h x as hx in (_ == b) return (∀ y, _ == refl (f y)) with
-        | refl => λ y, refl (refl (f y)) end
-        x).
-bbb.
-
-revert x.
-apply extensionality.
-bbb.
-
-apply invert.
-remember (m h) as mh.
-destruct mh.
-bbb.
-unfold "~~", "o", id in α, β.
-
-(*
-set (hx := h x).
-refine (match hx with refl => _ end _).
-bbb.
-*)
-pose proof α h as H1.
-rewrite <- H1.
-rewrite <- Heqvhh.
-assert (qinv k) as H2 by apply Hiq, iseq.
-destruct H2 as (g, γ, δ).
-unfold "~~", "o", id in γ, δ.
-assert (∀ e : isequiv k, e == iseq) as He by (intros; apply Hee).
-bbb.
-
-assert (∀ e : qinv k, e == Hiq iseq) as Hq.
- intros.
- destruct e.
-
-Print isequiv.
-bbb.
-
-Abort. (* bon, bloqué, voyons la suite...
-bbb.
-  ============================
-   k (refl f) x == refl (f x)
-*)
-
-(* propositional uniqueness principle *)
+set (qH := Hiq (extensionality f g)).
+destruct qH as (m, α, β).
+unfold "~~", "o", id in α.
+rewrite α; reflexivity.
+Qed.
 
 Theorem funext_prop_uniq_princ {A B} : ∀ (f g : Π (x : A), B x) (p : f == g),
   p == funext (happly p).
 Proof.
 intros.
+bbb.
+
 destruct p.
 unfold funext, happly; simpl.
 set (hiseq := extensionality f f).
