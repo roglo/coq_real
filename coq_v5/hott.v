@@ -1569,9 +1569,9 @@ Print unit_transport.
 
 Definition happly {A B} {f g : A → B}
   : f == g → ∀ x, f x == g x
-  := λ p,
+  := λ p x,
      match p with
-     | refl => λ y, refl (f y)
+     | refl => refl (f x)
      end.
 
 Axiom extensionality : ∀ {A B} (f g : A → B),
