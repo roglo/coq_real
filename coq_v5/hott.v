@@ -1579,12 +1579,12 @@ Axiom extensionality : ∀ {A B} (f g : A → B),
 
 (* je ne peux pas définir funext comme quasi-inverse de happly parce
    que je n'ai pas de fonction qui calcule un quasi-inverse ; j'ai
-   juste un type inductif, qinv qui dit si une fonction a un
+   juste un type inductif, qinv, qui dit si une fonction a un
    quasi-inverse *)
 
 (* je ne peux donc pas définir funext à partir de happly ; je peux
    définir funext et essayer d'affirmer que c'est bien un quasi-inverse
-   de happly. Mais j'y arrive pas *)
+   de happly. Mais en l'occurrence j'y arrive pas *)
 
 Definition funext {A B} {f g : A → B}
   : (∀ x, f x == g x) → (f == g)
