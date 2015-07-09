@@ -1600,6 +1600,9 @@ set (p := equivalence_isequiv k).
 destruct p as (Hqi, (Hiq, Hee)).
 set (vh := Hiq iseq).
 destruct vh as (m, α, β).
+unfold happly.
+bbb.
+
 assert (∃ y, h = k y).
 Focus 2.
 destruct H as (y, Hy).
