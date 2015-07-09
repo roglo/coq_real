@@ -1577,6 +1577,15 @@ Definition happly {A B} {f g : A → B}
 Axiom extensionality : ∀ {A B} (f g : A → B),
   (f == g) ≃ ∀ x, f x == g x.
 
+(* je ne peux pas définir funext comme quasi-inverse de happly parce
+   que je n'ai pas de fonction qui calcule un quasi-inverse ; j'ai
+   juste un type inductif, qinv qui dit si une fonction a un
+   quasi-inverse *)
+
+(* je ne peux donc pas définir funext à partir de happly ; je peux
+   définir funext et essayer d'affirmer que c'est bien un quasi-inverse
+   de happly. Mais j'y arrive pas *)
+
 Definition funext {A B} {f g : A → B}
   : (∀ x, f x == g x) → (f == g)
   := let (h, iseq) := extensionality f g in
@@ -1601,6 +1610,7 @@ destruct p as (Hqi, (Hiq, Hee)).
 set (vh := Hiq iseq).
 destruct vh as (m, α, β).
 unfold happly.
+bbb.
 (*
 destruct (h x).
 Toplevel input, characters 0-14:
@@ -1610,19 +1620,32 @@ Error: Abstracting over the terms "b" and "i" leads to a term
  | refl => refl (f x)
  end == i" which is ill-typed.
 *)
+(**)
 refine
-  (match h x with refl =>
-   match _
+  (match h x in _ == k return
+     (match m h in (_ == b) return (f x == b x) with
+      | refl => refl (f x)
+      end == h x)
+   with
+   | refl => _
+   end).
+intros u.
+bbb.
+
+refine
+  (match _
    return
      (∀ u, match m h in (_ == g) return (f x == g x) with
       | refl => u
       end == h x)
    with
    | refl => _
-   end (refl (f x)) end).
+   end (refl (f x))).
 Focus 2.
 intros n.
-destruct (m h).
+destruct n.
+
+destruct (h x).
 
   f : A → B
   g : A → B
