@@ -575,7 +575,7 @@ Definition invert {A} {x y : A} (p : x == y) : y == x :=
   match p with
   | refl => refl x
   end.
-Notation "p '⁻¹'" := (invert p) (at level 10).
+Notation "p '⁻¹'" := (invert p) (at level 8).
 
 Lemma hott_2_1_1 : ∀ A (x : A), refl x = (refl x)⁻¹.
 Proof. reflexivity. Qed.
@@ -1665,17 +1665,23 @@ Definition pair_eq {A B x y P} := @Σ_type.pair_eq A B x y P.
 Check @pair_eq.
 (* pair_eq
      : ∀ (A : Type) (B : A → Type) (x y : {z : A & B z})
-       (P : {z : A & B z} → U) (p : x == y) (u : P x),
+       (P : Σ (z : A), B z) → U) (p : x == y) (u : P x),
        existT P x u == existT P y (transport P p u) *)
 
 Check @Σ_pr₁.
+Check @transport.
+(* transport
+     : ∀ (A : Type) (P : A → Type) (x y : A), x == y → P x → P y *)
+
+Set Printing All.
 
 Definition transp_dep_fun {X} {A : X → U} {B : Π (x : X), A x → U} {x₁ x₂ : X} :
   ∀ (p : x₁ == x₂) (f : Π (a : A x₁), B x₁ a) (a : A x₂),
+  ∀ (q : existT _ x₁ (transport A p⁻¹ a) == existT _ x₂ a),
   transport (λ x, Π (a : A x), B x a) p f a ==
   transport (λ w : {x : X & A x}, B (pr₁ w) (pr₂ w))
-    ((pair_eq (p⁻¹) refl)⁻¹)
-    (f (transport A (p⁻¹) a)).
+    (pair_eq p⁻¹ refl)⁻¹
+    (f (transport A p⁻¹ a)).
 
 bbb.
 
