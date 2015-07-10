@@ -1565,6 +1565,8 @@ Print unit_transport.
 
 (* 2.9 Π-types and the function extensionality axiom *)
 
+Module Π_type.
+
 Definition happly {A B} {f g : Π (x : A), B x}
   : f == g → Π (x : A), f x == g x
   := λ p,
@@ -1653,6 +1655,27 @@ Definition transp {X A B} {x₁ x₂ : X} : ∀ (p : x₁ == x₂) (f : A x₁ �
      | refl =>
          refl (λ x, transport B (refl x₁) (f (transport A ((refl x₁) ⁻¹) x)))
      end.
+
+Print transp.
+
+Definition pr₁ {A B} := @Σ_pr₁ A B.
+Definition pr₂ {A B} := @Σ_pr₂ A B.
+Definition pair_eq {A B x y P} := @Σ_type.pair_eq A B x y P.
+
+Check @pair_eq.
+(* pair_eq
+     : ∀ (A : Type) (B : A → Type) (x y : {z : A & B z})
+       (P : {z : A & B z} → U) (p : x == y) (u : P x),
+       existT P x u == existT P y (transport P p u) *)
+
+Set Printing All.
+
+Definition transp_dep_fun {X} {A : X → U} {B : Π (x : X), A x → U} {x₁ x₂ : X} :
+  ∀ (p : x₁ == x₂) (f : Π (a : A x₁), B x₁ a) (a : A x₂),
+  transport (λ x, Π (a : A x), B x a) p f a ==
+  transport (λ w, B (pr₁ w) (pr₂ w))
+    ((pair_eq (p⁻¹) refl)⁻¹)
+    (f (transport A (p⁻¹) a)).
 
 bbb.
 
