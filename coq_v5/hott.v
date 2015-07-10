@@ -1645,6 +1645,15 @@ unfold id; simpl.
 apply funext_identity.
 Qed.
 
+Definition transp {X A B} {x₁ x₂ : X} : ∀ (p : x₁ == x₂) (f : A x₁ → B x₁),
+     transport (λ x, A x → B x) p f ==
+     λ x, transport B p (f (transport A (p⁻¹) x))
+  := λ p f,
+     match p with
+     | refl =>
+         refl (λ x, transport B (refl x₁) (f (transport A ((refl x₁) ⁻¹) x)))
+     end.
+
 bbb.
 
 (* my experiments *)
