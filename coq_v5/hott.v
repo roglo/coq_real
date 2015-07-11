@@ -1675,7 +1675,8 @@ Check @pair_eq.
 
 Definition transp_dep_fun {X} {A : X → U} {B : Π (x : X), A x → U} {x₁ x₂ : X} :
   ∀ (p : x₁ == x₂) (f : Π (a : A x₁), B x₁ a) (a₂ : A x₂)
-    (a₁ := transport A p⁻¹ a₂) (b₁ := f a₁) g,
+    (a₁ := transport A p⁻¹ a₂) (b₁ := f a₁)
+    g,
   transport (λ x, Π (a : A x), B x a) p f a₂ ==
   g b₁.
 Proof.
