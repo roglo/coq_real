@@ -1676,14 +1676,22 @@ Check @pair_eq.
 Definition transp_dep_fun {X} {A : X → U} {B : Π (x : X), A x → U} {x₁ x₂ : X} :
   ∀ (p : x₁ == x₂) (f : Π (a : A x₁), B x₁ a) (a₂ : A x₂)
     (a₁ := transport A p⁻¹ a₂) (b₁ := f a₁)
-    (y₁ := existT A x₁ a₁) (y₂ := existT A x₂ a₂)
+    (y₁ := existT A x₁ a₁)
+    (y₂ := existT A x₂ a₂)
     (u₁ : B (pr₁ y₁) (pr₂ y₁)) (q : y₁ == y₂)
+P
+    (aaa := @pair_eq X A y₂ y₁ P q⁻¹)
     g,
   transport (λ x, Π (a : A x), B x a) p f a₂ ==
   g b₁.
 Proof.
 intros.
 Check (transport (λ w, B (pr₁ w) (pr₂ w)) q u₁).
+
+  P : {z : X & A z} → U
+  aaa := pair_eq q⁻¹
+      : ∀ (P : {z : X & A z} → U) (p0 : y₂ == y₁) (u : P y₂),
+        existT P y₂ u == existT P y₁ (transport P p0 u)
 
 bbb.
   f : ∀ a : A x₁, B x₁ a
