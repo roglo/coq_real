@@ -1678,15 +1678,17 @@ Definition transp_dep_fun {X} {A : X → U} {B : Π (x : X), A x → U} {x₁ x�
     (a₁ := transport A p⁻¹ a₂) (b₁ := f a₁)
     (y₁ := existT A x₁ a₁)
     (y₂ := existT A x₂ a₂)
-    (u₁ : B (pr₁ y₁) (pr₂ y₁)) (q : y₁ == y₂)
-P
-    (aaa := @pair_eq X A y₂ y₁ P q⁻¹)
-    g,
+(q : y₁ == y₂)
+(P : sigT A → _)
+(aaa := @pair_eq X A y₂ y₁ P q⁻¹)
+g,
   transport (λ x, Π (a : A x), B x a) p f a₂ ==
   g b₁.
 Proof.
 intros.
-Check (transport (λ w, B (pr₁ w) (pr₂ w)) q u₁).
+Print sigT.
+Check (transport (λ w : sigT A, B (pr₁ w) (pr₂ w)) q b₁).
+bbb.
 
   P : {z : X & A z} → U
   aaa := pair_eq q⁻¹
