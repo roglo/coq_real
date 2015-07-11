@@ -575,7 +575,7 @@ Definition invert {A} {x y : A} (p : x == y) : y == x :=
   match p with
   | refl => refl x
   end.
-Notation "p '⁻¹'" := (invert p) (at level 10).
+Notation "p '⁻¹'" := (invert p) (at level 8, format "'[v' p ']' ⁻¹").
 
 Lemma hott_2_1_1 : ∀ A (x : A), refl x = (refl x)⁻¹.
 Proof. reflexivity. Qed.
@@ -1649,7 +1649,7 @@ Qed.
 
 Definition transp {X A B} {x₁ x₂ : X} : ∀ (p : x₁ == x₂) (f : A x₁ → B x₁),
      transport (λ x, A x → B x) p f ==
-     λ x, transport B p (f (transport A (p⁻¹) x))
+     λ x, transport B p (f (transport A p⁻¹ x))
   := λ p f,
      match p with
      | refl =>
@@ -1665,17 +1665,63 @@ Definition pair_eq {A B x y P} := @Σ_type.pair_eq A B x y P.
 Check @pair_eq.
 (* pair_eq
      : ∀ (A : Type) (B : A → Type) (x y : {z : A & B z})
-       (P : {z : A & B z} → U) (p : x == y) (u : P x),
+       (P : Σ (z : A), B z) → U) (p : x == y) (u : P x),
        existT P x u == existT P y (transport P p u) *)
 
-Set Printing All.
+(* transport
+     : ∀ {A : Type} (P : A → Type) {x y : A}, x == y → P x → P y *)
+(* invert
+     : ∀ {A : Type} {x y : A}, x == y → y == x *)
+
+Definition transp_dep_fun {X} {A : X → U} {B : Π (x : X), A x → U} {x₁ x₂ : X} :
+  ∀ (p : x₁ == x₂) (f : Π (a : A x₁), B x₁ a) (a₂ : A x₂)
+    (a₁ := transport A p⁻¹ a₂) (b₁ := f a₁) g,
+  transport (λ x, Π (a : A x), B x a) p f a₂ ==
+  g b₁.
+Proof.
+intros.
+bbb.
+  f : ∀ a : A x₁, B x₁ a
+  a₂ : A x₂
+  a₁ := transport A p⁻¹ a₂ : A x₁
+  b₁ := f a₁ : B x₁ a₁
+  g : B x₁ a₁ → B x₂ a₂
+  ============================
+   transport (λ x : X, ∀ a : A x, B x a) p f a₂ == g b₁
+
+∀ C (y₁ y₂ : C) (q : y₁ == y₂) g,
+  transport (λ _ : C, B x₂ a₂) q (g (f (transport A p⁻¹ a₂))).
+bbb.
+
+Definition transp_dep_fun {X} {A : X → U} {B : Π (x : X), A x → U} {x₁ x₂ : X} :
+  ∀ (p : x₁ == x₂) (f : Π (a : A x₁), B x₁ a) (a : A x₂),
+∀ C y₁ y₂ (q : y₁ == y₂) g,
+  transport (λ x, Π (a : A x), B x a) p f a ==
+  transport (λ _ : C, B x₂ a) q (g (transport A p⁻¹ a)).
+intros.
+bbb.
+
+  a : A x₂
+  C : Type
+  y₁ : C
+  y₂ : C
+  q : y₁ == y₂
+  g : A x₁ → B x₂ a
+  ============================
+   transport (λ x : X, ∀ a0 : A x, B x a0) p f a ==
+   transport (λ _ : C, B x₂ a) q (g (transport A p ⁻¹ a))
 
 Definition transp_dep_fun {X} {A : X → U} {B : Π (x : X), A x → U} {x₁ x₂ : X} :
   ∀ (p : x₁ == x₂) (f : Π (a : A x₁), B x₁ a) (a : A x₂),
   transport (λ x, Π (a : A x), B x a) p f a ==
-  transport (λ w, B (pr₁ w) (pr₂ w))
-    ((pair_eq (p⁻¹) refl)⁻¹)
-    (f (transport A (p⁻¹) a)).
+  transport (λ w : {x : X & A x}, B (pr₁ w) (pr₂ w))
+    (pair_eq p⁻¹ refl)⁻¹
+    (f (transport A p⁻¹ a)).
+
+p⁻¹ de type
+   x₂ ==X x₁
+au lieu de type
+   _ ==(sigT _ _) _
 
 bbb.
 
