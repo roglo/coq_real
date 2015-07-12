@@ -1678,7 +1678,12 @@ Definition transp_dep_fun {X} {A : X → U} {B : Π (x : X), A x → U} {x₁ x�
     (a₁ := transport A p⁻¹ a₂) (b₁ := f a₁)
     (y₁ := existT A x₁ a₁)
     (y₂ := existT A x₂ a₂)
-(q : y₁ == y₂)
+(q :=
+ match p in (_ == y)
+   return (∀ a₂, existT A x₁ (transport A p⁻¹ a₂) == existT A y a₂)
+ with
+ | refl => λ a₂, refl (existT A x₁ a₂)
+ end a₂)
 (P : sigT A → _)
 (aaa := @pair_eq X A y₂ y₁ P q⁻¹)
 ,
