@@ -267,10 +267,10 @@ Definition AxB'_pr₁ {A B} (x : AxB' A B) : A := x true.
 Definition AxB'_pr₂ {A B} (x : AxB' A B) : B := x false.
 
 Axiom function_extensionality : ∀ A B (f g : ∀ x : A, B x),
-  (∀ x, f x = g x) → f = g.
+  (∀ x, f x == g x) → f == g.
 
 Theorem AxB'_pair_proj {A B} : ∀ x : AxB' A B,
-  AxB'_pair (AxB'_pr₁ x) (AxB'_pr₂ x) = x.
+  AxB'_pair (AxB'_pr₁ x) (AxB'_pr₂ x) == x.
 Proof.
 intros x.
 apply function_extensionality.
@@ -292,8 +292,8 @@ Qed.
 (* same definition, by value *)
 Definition ind_AxB'_2 {A B : U} C
      (H : Π (x : A), Π (y : B), C (AxB'_pair x y)) x :=
-  match AxB'_pair_proj x in (_ = y) return (C y) with
-  | eq_refl => H (AxB'_pr₁ x) (AxB'_pr₂ x)
+  match AxB'_pair_proj x in (_ == y) return (C y) with
+  | refl => H (AxB'_pr₁ x) (AxB'_pr₂ x)
   end.
 
 (* ind_AxB'_1
@@ -1663,10 +1663,23 @@ Qed.
 
 Lemma hott_2_9_6 {X} {A B : X → U} {x y : X} (p : x == y) :
   ∀ (f : A x → B x) (g : A y → B y),
-  (transport (λ x, A x → B x) p f == g) ≃
+  (transport (λ z, A z → B z) p f == g) ≃
   Π (a : A x), (transport _ p (f a) == g (transport _ p a)).
+Proof.
+intros.
+destruct p; simpl.
+unfold id; simpl.
+apply hott_2_4_12_ii.
+assert (f == g → ∀ a : A x, f a == g a) as u.
+ intros H a; destruct H; reflexivity.
 
-Error: Impossible to unify "A y → B y" with "?4164 y".
+ unfold equivalence.
+ apply existT with (x := function_extensionality _ _ _ _).
+ unfold isequiv.
+ split; apply existT with (x := u).
+  intros a; simpl.
+  destruct a; simpl.
+  unfold id; simpl.
 
 bbb.
 
