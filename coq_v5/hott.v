@@ -1655,21 +1655,18 @@ Definition transp_dep_fun {X} {A : X → U} {B : Π (x : X), A x → U} {x₁ x�
 Proof.
 intros.
 destruct p; reflexivity.
+Show Proof.
 Qed.
 
-bbb.
+(* transport
+     : ∀ {A : Type} (P : A → Type) {x y : A}, x == y → P x → P y *)
 
-Definition transp_dep_fun {X} {A : X → U} {B : Π (x : X), A x → U} {x₁ x₂ : X} :
-  ∀ (p : x₁ == x₂) (f : Π (a : A x₁), B x₁ a) (a : A x₂),
-  transport (λ x, Π (a : A x), B x a) p f a ==
-  transport (λ w : {x : X & A x}, B (pr₁ w) (pr₂ w))
-    (pair_eq p⁻¹ refl)⁻¹
-    (f (transport A p⁻¹ a)).
+Lemma hott_2_9_6 {X} {A B : X → U} {x y : X} (p : x == y) :
+  ∀ (f : A x → B x) (g : A y → B y),
+  (transport _ p f == g) ≃
+  Π (a : A x), (transport _ p (f a) == g (transport _ p a)).
 
-p⁻¹ de type
-   x₂ ==X x₁
-au lieu de type
-   _ ==(sigT _ _) _
+Error: Impossible to unify "A y → B y" with "?4164 y".
 
 bbb.
 
