@@ -1640,11 +1640,10 @@ Definition pair_eq {A B x y P} := @Σ_type.pair_eq A B x y P.
      : ∀ {A : Type} (P : A → Type) {x y : A}, x == y → P x → P y *)
 
 Definition pair_eq2 {A B} {x y : A} (p : x == y)
-  : ∀ u, existT B y u == existT B x (transport B p⁻¹ u)
-  := match p in (_ == z)
-       return (∀ u, existT B z u == existT B x (transport B p⁻¹ u))
-     with
-     | refl => λ u, refl (existT B x u)
+  : ∀ u, existT B x u == existT B y (transport B p u)
+  := λ u,
+     match p with
+     | refl => refl (existT B x (transport B (refl x) u))
      end.
 
 (* pair_eq
@@ -1652,14 +1651,14 @@ Definition pair_eq2 {A B} {x y : A} (p : x == y)
        (P : Σ (z : A), B z) → U) (p : x == y) (u : P x),
        existT P x u == existT P y (transport P p u) *)
 (* pair_eq2
-     : ∀ (A : Type) (B : A → Type) (x y : A) (p : x == y) (u : B y),
-       existT B y u == existT B x (transport B p⁻¹ u) *)
+     : ∀ (A : Type) (B : A → Type) (x y : A) (p : x == y) (u : B x),
+       existT B x u == existT B y (transport B p u) *)
 
 Definition transp_dep_fun {X} {A : X → U} {B : Π (x : X), A x → U} {x₁ x₂ : X} :
   ∀ (p : x₁ == x₂) (f : Π (a : A x₁), B x₁ a) (a : A x₂),
   transport (λ x, Π (a : A x), B x a) p f a ==
   transport (λ w : sigT A, B (pr₁ w) (pr₂ w))
-    (pair_eq2 p a)⁻¹ (f (transport A p⁻¹ a)).
+    (pair_eq2 p⁻¹ a)⁻¹ (f (transport A p⁻¹ a)).
 Proof.
 intros.
 destruct p; reflexivity.
