@@ -1663,7 +1663,7 @@ Qed.
 
 Lemma hott_2_9_6 {X} {A B : X → U} {x y : X} (p : x == y) :
   ∀ (f : A x → B x) (g : A y → B y),
-  (transport _ p f == g) ≃
+  (transport (λ x, A x → B x) p f == g) ≃
   Π (a : A x), (transport _ p (f a) == g (transport _ p a)).
 
 Error: Impossible to unify "A y → B y" with "?4164 y".
