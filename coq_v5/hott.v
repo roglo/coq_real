@@ -1680,6 +1680,7 @@ assert (f == g → ∀ a : A x, f a == g a) as u.
   intros a; simpl.
   destruct a; simpl.
   unfold id; simpl.
+  unfold "o"; simpl.
 
 bbb.
 
