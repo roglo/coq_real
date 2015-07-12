@@ -1634,9 +1634,8 @@ Print transp.
 
 Definition pr₁ {A B} := @Σ_pr₁ A B.
 Definition pr₂ {A B} := @Σ_pr₂ A B.
-Definition pair_eq {A B x y P} := @Σ_type.pair_eq A B x y P.
 
-Definition pair_eq2 {A B} {x y : A} (p : x == y)
+Definition pair_eq {A B} {x y : A} (p : x == y)
   : ∀ u, existT B x u == existT B y (transport B p u)
   := λ u,
      match p with
@@ -1644,10 +1643,6 @@ Definition pair_eq2 {A B} {x y : A} (p : x == y)
      end.
 
 (* pair_eq
-     : ∀ (A : Type) (B : A → Type) (x y : {z : A & B z})
-       (P : Σ (z : A), B z) → U) (p : x == y) (u : P x),
-       existT P x u == existT P y (transport P p u) *)
-(* pair_eq2
      : ∀ (A : Type) (B : A → Type) (x y : A) (p : x == y) (u : B x),
        existT B x u == existT B y (transport B p u) *)
 
@@ -1655,7 +1650,7 @@ Definition transp_dep_fun {X} {A : X → U} {B : Π (x : X), A x → U} {x₁ x�
   ∀ (p : x₁ == x₂) (f : Π (a : A x₁), B x₁ a) (a : A x₂),
   transport (λ x, Π (a : A x), B x a) p f a ==
   transport (λ w : sigT A, B (pr₁ w) (pr₂ w))
-    (pair_eq2 p⁻¹ a)⁻¹
+    (pair_eq p⁻¹ a)⁻¹
     (f (transport A p⁻¹ a)).
 Proof.
 intros.
