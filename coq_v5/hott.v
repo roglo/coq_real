@@ -1636,9 +1636,6 @@ Definition pr₁ {A B} := @Σ_pr₁ A B.
 Definition pr₂ {A B} := @Σ_pr₂ A B.
 Definition pair_eq {A B x y P} := @Σ_type.pair_eq A B x y P.
 
-(* transport
-     : ∀ {A : Type} (P : A → Type) {x y : A}, x == y → P x → P y *)
-
 Definition pair_eq2 {A B} {x y : A} (p : x == y)
   : ∀ u, existT B x u == existT B y (transport B p u)
   := λ u,
@@ -1658,7 +1655,8 @@ Definition transp_dep_fun {X} {A : X → U} {B : Π (x : X), A x → U} {x₁ x�
   ∀ (p : x₁ == x₂) (f : Π (a : A x₁), B x₁ a) (a : A x₂),
   transport (λ x, Π (a : A x), B x a) p f a ==
   transport (λ w : sigT A, B (pr₁ w) (pr₂ w))
-    (pair_eq2 p⁻¹ a)⁻¹ (f (transport A p⁻¹ a)).
+    (pair_eq2 p⁻¹ a)⁻¹
+    (f (transport A p⁻¹ a)).
 Proof.
 intros.
 destruct p; reflexivity.
