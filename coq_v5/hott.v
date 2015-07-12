@@ -1636,71 +1636,36 @@ Definition pr₁ {A B} := @Σ_pr₁ A B.
 Definition pr₂ {A B} := @Σ_pr₂ A B.
 Definition pair_eq {A B x y P} := @Σ_type.pair_eq A B x y P.
 
-Check @pair_eq.
+(* transport
+     : ∀ {A : Type} (P : A → Type) {x y : A}, x == y → P x → P y *)
+
+Definition pair_eq2 {A B} {x y : A} (p : x == y)
+  : ∀ u, existT B y u == existT B x (transport B p⁻¹ u)
+  := match p in (_ == z)
+       return (∀ u, existT B z u == existT B x (transport B p⁻¹ u))
+     with
+     | refl => λ u, refl (existT B x u)
+     end.
+
 (* pair_eq
      : ∀ (A : Type) (B : A → Type) (x y : {z : A & B z})
        (P : Σ (z : A), B z) → U) (p : x == y) (u : P x),
        existT P x u == existT P y (transport P p u) *)
-
-(* transport
-     : ∀ {A : Type} (P : A → Type) {x y : A}, x == y → P x → P y *)
-(* invert
-     : ∀ {A : Type} {x y : A}, x == y → y == x *)
-
-Definition toto {X A} {x₁ x₂ : X} (p : x₁ == x₂)
-  : ∀ a₂, existT A x₂ a₂ == existT A x₁ (transport A p⁻¹ a₂)
-  := match p
-       in (_ == y)
-       return (∀ a₂, existT A y a₂ == existT A x₁ (transport A p⁻¹ a₂))
-     with
-     | refl => λ a₂, refl (existT A x₁ a₂)
-     end.
-
-Definition titi {X A} {x₁ x₂ : X} (p : x₁ == x₂)
-  : ∀ a₂, existT A x₂ a₂ == existT A x₁ (transport A p⁻¹ a₂).
-intros.
-Set Printing All.
-eapply pair_eq.
-bbb.
-
-Definition transp_dep_fun {X} {A : X → U} {B : Π (x : X), A x → U} {x₁ x₂ : X} :
-  ∀ (p : x₁ == x₂) (f : Π (a : A x₁), B x₁ a) (a₂ : A x₂),
-  transport (λ x, Π (a : A x), B x a) p f a₂ ==
-  transport (λ w : sigT A, B (pr₁ w) (pr₂ w))
-    (toto p a₂)⁻¹ (f (transport A p⁻¹ a₂)).
-Proof.
-intros.
-bbb.
-
-  f : ∀ a : A x₁, B x₁ a
-  a₂ : A x₂
-  q := toto p a₂ : existT A x₂ a₂ == existT A x₁ (transport A p⁻¹ a₂)
-  P : sigT A → U
-  aaa := pair_eq q
-      : ∀ u : P (existT A x₂ a₂),
-        existT P (existT A x₂ a₂) u ==
-        existT P (existT A x₁ (transport A p⁻¹ a₂)) (transport P q u)
-  ============================
-   transport (λ x : X, ∀ a : A x, B x a) p f a₂ ==
-   transport (λ w : sigT A, B (pr₁ w) (pr₂ w)) q⁻¹ (f (transport A p⁻¹ a₂))
+(* pair_eq2
+     : ∀ (A : Type) (B : A → Type) (x y : A) (p : x == y) (u : B y),
+       existT B y u == existT B x (transport B p⁻¹ u) *)
 
 Definition transp_dep_fun {X} {A : X → U} {B : Π (x : X), A x → U} {x₁ x₂ : X} :
   ∀ (p : x₁ == x₂) (f : Π (a : A x₁), B x₁ a) (a : A x₂),
-∀ C y₁ y₂ (q : y₁ == y₂) g,
   transport (λ x, Π (a : A x), B x a) p f a ==
-  transport (λ _ : C, B x₂ a) q (g (transport A p⁻¹ a)).
+  transport (λ w : sigT A, B (pr₁ w) (pr₂ w))
+    (pair_eq2 p a)⁻¹ (f (transport A p⁻¹ a)).
+Proof.
 intros.
-bbb.
+destruct p; reflexivity.
+Qed.
 
-  a : A x₂
-  C : Type
-  y₁ : C
-  y₂ : C
-  q : y₁ == y₂
-  g : A x₁ → B x₂ a
-  ============================
-   transport (λ x : X, ∀ a0 : A x, B x a0) p f a ==
-   transport (λ _ : C, B x₂ a) q (g (transport A p ⁻¹ a))
+bbb.
 
 Definition transp_dep_fun {X} {A : X → U} {B : Π (x : X), A x → U} {x₁ x₂ : X} :
   ∀ (p : x₁ == x₂) (f : Π (a : A x₁), B x₁ a) (a : A x₂),
