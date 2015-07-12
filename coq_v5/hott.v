@@ -1468,23 +1468,8 @@ Definition pair_eq {A B} {x y : Σ (z : A), B z} {P : (Σ (z : A), B z) → U}
 Proof.
 destruct x as (a, b).
 destruct y as (a', b').
-induction p; reflexivity.
+destruct p; reflexivity.
 Defined.
-
-Check @transport.
-(* transport
-     : ∀ (P : ?4089 → Type) (x y : ?4089), x == y → P x → P y
-   transport
-     : ∀ (A : Type) (P : A → Type) (x y : A), x == y → P x → P y *)
-
-Check pair_eq.
-(* pair_eq
-     : ∀ (p : ?4092 == ?4093) (u : ?4094 ?4092),
-       existT ?4094 ?4092 u == existT ?4094 ?4093 (transport ?4094 p u)
-   pair_eq
-     : ∀ (A : Type) (B : A → Type) (x y : {z : A & B z})
-       (P : {z : A & B z} → U) (p : x == y) (u : P x),
-       existT P x u == existT P y (transport P p u) *)
 
 (* Notation "{ x : A & P }" := (sigT (fun x:A => P)) : type_scope. *)
 
