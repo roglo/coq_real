@@ -1681,9 +1681,7 @@ Definition hott_2_9_6_iii {X} {A B : X → U} {x y : X} (p : x == y)
     transport (λ z, A z → B z) p f (p⁎ a) ==
     transport B p (f ((p⁻¹)⁎ (p⁎ a))).
 Proof.
-intros.
-rewrite hott_2_9_4.
-reflexivity.
+intros; destruct p; reflexivity.
 Qed.
 
 Definition hott_2_9_6_iv {X} {A B : X → U} {x y : X} (p : x == y)
@@ -1692,9 +1690,19 @@ Definition hott_2_9_6_iv {X} {A B : X → U} {x y : X} (p : x == y)
     transport (λ z, A z → B z) p f (p⁎ a) ==
     p⁎ (f a).
 Proof.
-intros.
-destruct p; reflexivity.
+intros; destruct p; reflexivity.
 Qed.
+
+Definition hott_2_9_6_v {X} {A B : X → U} {x y : X} (p : x == y)
+  : ∀ (f : A x → B x) (g : A y → B y) (a : A x)
+      (q : transport (λ z, A z → B z) p f == g),
+    transport (λ z, A z → B z) p f (p⁎ a) ==
+    g (p⁎ a).
+Proof.
+intros; destruct p, q; reflexivity.
+Qed.
+
+Lemma hott_2_9_7 :
 
 bbb.
 
