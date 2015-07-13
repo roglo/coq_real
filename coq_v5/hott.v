@@ -1702,14 +1702,14 @@ Proof.
 intros; destruct p, q; reflexivity.
 Qed.
 
-Set Printing All.
-
 Lemma hott_2_9_7 {X} {A : X → U} {B : Π (x : X), A x → U} {x y : X} :
   ∀ (p : x == y) (f : Π (a : A x), B x a) (g : Π (a : A y), B y a),
   (p⁎ f == g) ≃
   (Π (a : A x),
    transport (λ w : sigT A, B (pr₁ w) (pr₂ w)) (pair⁼ p a) (f a) ==
    g (transport A p a)).
+
+Error: Impossible to unify "forall a : A x, B x a" with "?4353 x".
 Proof.
 
 bbb.
