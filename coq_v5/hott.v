@@ -7,16 +7,8 @@ Open Scope nat_scope.
 
 (* hott section 1.12 *)
 
-(*
-Axiom random : ∀ A, A → A → bool.
-
-Inductive Id {A} : A → A → Type :=
-  | refl : ∀ x : A, Id x x
-  | phony : ∀ x y : A, random A x y = true → Id x y.
-*)
 Inductive Id {A} x : A → Type :=
   | refl : Id x x.
-(**)
 
 Notation "x == y" := (Id x y) (at level 70).
 
@@ -1690,6 +1682,9 @@ Definition hott_2_9_6_iii {X} {A B : X → U} {x y : X} (p : x == y)
     transport B p (f ((p⁻¹)⁎ (p⁎ a))).
 Proof.
 intros.
+rewrite hott_2_9_4.
+reflexivity.
+Qed.
 
 bbb.
 
