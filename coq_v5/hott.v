@@ -1278,6 +1278,8 @@ destruct p as (p, q).
 destruct p, q; reflexivity.
 Defined.
 
+Notation "'pair⁼'" := pair_eq.
+
 Theorem hott_2_6_2 {A B} : ∀ x y : A * B,
   (pr₁ x == pr₁ y) * (pr₂ x == pr₂ y) ≃ (x == y).
 Proof.
@@ -1635,15 +1637,13 @@ Definition pair_eq {A B} {x y : A} (p : x == y)
      | refl => refl (existT B x (transport B (refl x) u))
      end.
 
-(* pair_eq
-     : ∀ (A : Type) (B : A → Type) (x y : A) (p : x == y) (u : B x),
-       existT B x u == existT B y (transport B p u) *)
+Notation "'pair⁼'" := pair_eq.
 
 Definition transp_dep_fun {X} {A : X → U} {B : Π (x : X), A x → U} {x₁ x₂ : X} :
   ∀ (p : x₁ == x₂) (f : Π (a : A x₁), B x₁ a) (a : A x₂),
   transport (λ x, Π (a : A x), B x a) p f a ==
   transport (λ w : sigT A, B (pr₁ w) (pr₂ w))
-    (pair_eq p⁻¹ a)⁻¹
+    (pair⁼ p⁻¹ a)⁻¹
     (f (transport A p⁻¹ a)).
 Proof.
 intros.
