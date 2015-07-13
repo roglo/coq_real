@@ -1669,18 +1669,10 @@ Proof.
 intros.
 destruct p; simpl.
 unfold id; simpl.
-apply hott_2_4_12_ii.
-assert (f == g → ∀ a : A x, f a == g a) as u.
- intros H a; destruct H; reflexivity.
-
- unfold equivalence.
- apply existT with (x := function_extensionality _ _ _ _).
- unfold isequiv.
- split; apply existT with (x := u).
-  intros a; simpl.
-  destruct a; simpl.
-  unfold id; simpl.
-  unfold "o"; simpl.
+unfold equivalence.
+apply existT with (x := happly).
+apply extensionality.
+Qed.
 
 bbb.
 
