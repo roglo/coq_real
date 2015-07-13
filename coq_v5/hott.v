@@ -1661,10 +1661,10 @@ Qed.
 (* transport
      : ∀ {A : Type} (P : A → Type) {x y : A}, x == y → P x → P y *)
 
-Lemma hott_2_9_6 {X} {A B : X → U} {x y : X} (p : x == y) :
+Lemma hott_2_9_6_i {X} {A B : X → U} {x y : X} (p : x == y) :
   ∀ (f : A x → B x) (g : A y → B y),
   (transport (λ z, A z → B z) p f == g) ≃
-  Π (a : A x), (transport _ p (f a) == g (transport _ p a)).
+  Π (a : A x), (transport B p (f a) == g (transport A p a)).
 Proof.
 intros.
 destruct p; simpl.
@@ -1673,6 +1673,13 @@ unfold equivalence.
 apply existT with (x := happly).
 apply extensionality.
 Qed.
+
+Definition hott_2_9_6_ii {X} {A B : X → U} {x y : X} (p : x == y)
+  : ∀ (f : A x → B x) (g : A y → B y) (a : A x)
+      (q : transport (λ z, A z → B z) p f == g),
+    transport (λ z, A z → B z) p f (transport A p a) ==
+    g (transport A p a)
+  := λ f g a q, happly q (transport A p a).
 
 bbb.
 
