@@ -1686,6 +1686,16 @@ rewrite hott_2_9_4.
 reflexivity.
 Qed.
 
+Definition hott_2_9_6_iv {X} {A B : X → U} {x y : X} (p : x == y)
+  : ∀ (f : A x → B x) (g : A y → B y) (a : A x)
+      (q : transport (λ z, A z → B z) p f == g),
+    transport (λ z, A z → B z) p f (p⁎ a) ==
+    p⁎ (f a).
+Proof.
+intros.
+destruct p; reflexivity.
+Qed.
+
 bbb.
 
 (* my experiments *)
