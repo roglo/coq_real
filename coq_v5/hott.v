@@ -832,7 +832,7 @@ Check @transport.
 (* transport =
      : ∀ (A : Type) (P : A → Type) (x y : A), x == y → P x → P y *)
 
-(* Notation "p _*" := (transport _ p) (at level 5). *)
+Notation "p '⁎'" := (transport _ p) (at level 8, format "'[v' p ']' ⁎").
 
 (* lemma 2.3.2 path lifting property *)
 
@@ -1621,7 +1621,8 @@ unfold id; simpl.
 apply funext_identity.
 Qed.
 
-Definition transp {X A B} {x₁ x₂ : X} : ∀ (p : x₁ == x₂) (f : A x₁ → B x₁),
+Definition hott_2_9_4 {X A B} {x₁ x₂ : X}
+  : ∀ (p : x₁ == x₂) (f : A x₁ → B x₁),
      transport (λ x, A x → B x) p f ==
      λ x, transport B p (f (transport A p⁻¹ x))
   := λ p f,
@@ -1629,8 +1630,6 @@ Definition transp {X A B} {x₁ x₂ : X} : ∀ (p : x₁ == x₂) (f : A x₁ �
      | refl =>
          refl (λ x, transport B (refl x₁) (f (transport A ((refl x₁) ⁻¹) x)))
      end.
-
-Print transp.
 
 Definition pr₁ {A B} := @Σ_pr₁ A B.
 Definition pr₂ {A B} := @Σ_pr₂ A B.
@@ -1680,6 +1679,19 @@ Definition hott_2_9_6_ii {X} {A B : X → U} {x y : X} (p : x == y)
     transport (λ z, A z → B z) p f (transport A p a) ==
     g (transport A p a)
   := λ f g a q, happly q (transport A p a).
+
+(* hott_2_9_4
+     : ∀ {X : Type} {A B : X → Type} {x₁ x₂ : X} (p : x₁ == x₂)
+       (f : A x₁ → B x₁),
+       transport (λ x : X, A x → B x) p f ==
+       (λ x : A x₂, transport B p (f (transport A p⁻¹ x))) *)
+
+Definition hott_2_9_6_iii {X} {A B : X → U} {x y : X} (p : x == y)
+  : ∀ (f : A x → B x) (g : A y → B y) (a : A x)
+      (q : transport (λ z, A z → B z) p f == g),
+    transport (λ z, A z → B z) p f (p⁎ a) ==
+    transport B p (f ((p⁻¹)⁎ (p⁎ a))).
+Proof.
 
 bbb.
 
