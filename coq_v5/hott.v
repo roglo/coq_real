@@ -575,7 +575,8 @@ Definition invert {A} {x y : A} (p : x == y) : y == x :=
   match p with
   | refl => refl x
   end.
-Notation "p '⁻¹'" := (invert p) (at level 8, format "'[v' p ']' ⁻¹").
+Notation "p '⁻¹'" := (invert p)
+  (at level 8, left associativity, format "'[v' p ']' ⁻¹").
 
 Lemma hott_2_1_1 : ∀ A (x : A), refl x = (refl x)⁻¹.
 Proof. reflexivity. Qed.
@@ -832,7 +833,8 @@ Check @transport.
 (* transport =
      : ∀ (A : Type) (P : A → Type) (x y : A), x == y → P x → P y *)
 
-Notation "p '⁎'" := (transport _ p) (at level 8, format "'[v' p ']' ⁎").
+Notation "p '⁎'" := (transport _ p)
+  (at level 8, left associativity, format "'[v' p ']' ⁎").
 
 (* lemma 2.3.2 path lifting property *)
 
@@ -1678,13 +1680,8 @@ Definition hott_2_9_6_ii {X} {A B : X → U} {x y : X} (p : x == y)
       (q : transport (λ z, A z → B z) p f == g),
     transport (λ z, A z → B z) p f (transport A p a) ==
     g (transport A p a)
-  := λ f g a q, happly q (transport A p a).
-
-(* hott_2_9_4
-     : ∀ {X : Type} {A B : X → Type} {x₁ x₂ : X} (p : x₁ == x₂)
-       (f : A x₁ → B x₁),
-       transport (λ x : X, A x → B x) p f ==
-       (λ x : A x₂, transport B p (f (transport A p⁻¹ x))) *)
+  := λ f g a q,
+     happly q (transport A p a).
 
 Definition hott_2_9_6_iii {X} {A B : X → U} {x y : X} (p : x == y)
   : ∀ (f : A x → B x) (g : A y → B y) (a : A x)
@@ -1692,6 +1689,7 @@ Definition hott_2_9_6_iii {X} {A B : X → U} {x y : X} (p : x == y)
     transport (λ z, A z → B z) p f (p⁎ a) ==
     transport B p (f ((p⁻¹)⁎ (p⁎ a))).
 Proof.
+intros.
 
 bbb.
 
