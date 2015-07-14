@@ -1152,8 +1152,6 @@ Check isequiv.
 
 Definition equivalence A B := Σ (f : A → B), isequiv f.
 
-Print Grammar constr.
-
 Notation "A ≃ B" := (equivalence A B) (at level 70).
 
 Lemma hott_2_4_12_i : ∀ A, A ≃ A.
@@ -1708,6 +1706,17 @@ apply extensionality.
 Qed.
 
 (* 2.10 Universes and the univalence axiom *)
+
+(* lemma 2.10.1 *)
+
+Definition idtoeqv {A B : U} : A == B → A ≃ B
+  := λ (p : A == B),
+     existT isequiv (transport id p)
+       match p with
+       | refl =>
+           (existT (λ g, id o g ~~ id) id (reflexivity id),
+            existT (λ h, h o id ~~ id) id (reflexivity id))
+       end.
 
 bbb.
 
