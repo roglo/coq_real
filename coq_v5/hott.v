@@ -1734,19 +1734,24 @@ Definition idtoeqv2 {A B} : A == B → A ≃ B :=
          existT (λ h, h o id ~~ id) id (reflexivity id))).
 
 (* propositional computation rule *)
-Definition pcr {A B} : ∀ (f : A ≃ B), transport id (ua f) == projT1 f.
+(* how the eliminator idtoeqv acts on the constructor A == B *)
+Definition pcr {A B} : ∀ (f : A ≃ B) (x : A),
+  transport id (ua f) x == projT1 f x.
 Proof.
+intros.
+unfold transport.
+bbb.
+
 intros; unfold projT1, ua.
 destruct f as (f, Hf).
 unfold transport.
+
 bbb.
 
 Definition pcr {A B} : ∀ (f : A ≃ B) (x : A),
   transport id (ua f) x == projT1 f x.
 Proof.
 intros; unfold projT1.
-
-bbb.
 
 bbb.
 
