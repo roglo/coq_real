@@ -1467,10 +1467,6 @@ destruct y as (a', b').
 destruct p; reflexivity.
 Defined.
 
-(* Notation "{ x : A & P }" := (sigT (fun x:A => P)) : type_scope. *)
-
-(* {u : P y & Q (existT P y u)}) *)
-
 Definition foo {A} P Q (x : A) := Σ (u : P x), Q (existT _ x u).
 
 Theorem hott_2_7_4 {A} : ∀ (P : A → U) (Q : (Σ (x : A), P x) → U),
@@ -1639,20 +1635,17 @@ Definition pair_eq {A B} {x y : A} (p : x == y)
 
 Notation "'pair⁼'" := pair_eq.
 
-Definition transp_dep_fun {X} {A : X → U} {B : Π (x : X), A x → U} {x₁ x₂ : X} :
-  ∀ (p : x₁ == x₂) (f : Π (a : A x₁), B x₁ a) (a : A x₂),
-  transport (λ x, Π (a : A x), B x a) p f a ==
-  transport (λ w : sigT A, B (pr₁ w) (pr₂ w))
-    (pair⁼ p⁻¹ a)⁻¹
-    (f (transport A p⁻¹ a)).
-Proof.
-intros.
-destruct p; reflexivity.
-Show Proof.
-Qed.
+Notation "'Π' A ( B )" := (λ x, Π (a : A x), B x a) (at level 0, A at level 0).
+Notation "B ^" := (λ w, B (pr₁ w) (pr₂ w)) (at level 0).
 
-(* transport
-     : ∀ {A : Type} (P : A → Type) {x y : A}, x == y → P x → P y *)
+Definition hott_2_9_5 {X} {A : X → U} {B : Π (x : X), A x → U} {x₁ x₂ : X}
+  : ∀ (p : x₁ == x₂) (f : ∀ a : A x₁, B x₁ a) (a : A x₂),
+      transport (Π A (B)) p f a ==
+      transport B^ (pair⁼ p⁻¹ a)⁻¹ (f (transport A p⁻¹ a))
+  := λ p f,
+     match p with
+     | refl => λ _, refl _
+     end.
 
 Lemma hott_2_9_6_i {X} {A B : X → U} {x y : X} (p : x == y) :
   ∀ (f : A x → B x) (g : A y → B y),
