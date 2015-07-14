@@ -1720,10 +1720,23 @@ Definition idtoeqv {A B : U} : A == B → A ≃ B
 
 Axiom univalence : ∀ A B : U, isequiv (@idtoeqv A B).
 
+(* introduction rule *)
 Definition ua {A B} : A ≃ B → A == B :=
   match univalence A B with
   | (_, existT f _) => f
   end.
+
+(* elimination rule = idtoeqv (alternative proof) *)
+Definition idtoeqv2 {A B} : A == B → A ≃ B :=
+  λ p,
+  p⁎ (existT isequiv id
+        (existT (λ g, id o g ~~ id) id (reflexivity id),
+         existT (λ h, h o id ~~ id) id (reflexivity id))).
+
+(* propositional computation rule *)
+Definition pcr {A B} : ∀ (f : A ≃ B) (x : A),
+  transport (λ X : U, X) (ua f) x == projT1 f x.
+bbb.
 
 bbb.
 
