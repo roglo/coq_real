@@ -1740,22 +1740,15 @@ Definition pcr {A B} : ∀ (f : A ≃ B) (x : A),
 Proof.
 intros.
 unfold transport.
+set (q := ua f).
+destruct f as (f, p); simpl.
+pose proof equivalence_isequiv f as r.
+destruct r as (Hqi, (Hiq, Hee)).
+pose proof Hiq p as r.
+destruct r as (g, α, β).
 bbb.
 
-intros; unfold projT1, ua.
-destruct f as (f, Hf).
-unfold transport.
-
-bbb.
-
-Definition pcr {A B} : ∀ (f : A ≃ B) (x : A),
-  transport id (ua f) x == projT1 f x.
-Proof.
-intros; unfold projT1.
-
-bbb.
-
-(* my experiments *)
+(* some experiments... *)
 
 Inductive t := foo : t | bar : t.
 
