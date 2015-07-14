@@ -1718,6 +1718,13 @@ Definition idtoeqv {A B : U} : A == B → A ≃ B
             existT (λ h, h o id ~~ id) id (reflexivity id))
        end.
 
+Axiom univalence : ∀ A B : U, isequiv (@idtoeqv A B).
+
+Definition ua {A B} : A ≃ B → A == B :=
+  match univalence A B with
+  | (_, existT f _) => f
+  end.
+
 bbb.
 
 (* my experiments *)
