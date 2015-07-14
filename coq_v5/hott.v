@@ -1613,14 +1613,13 @@ unfold id; simpl.
 apply funext_identity.
 Qed.
 
-Definition hott_2_9_4 {X A B} {x₁ x₂ : X}
-  : ∀ (p : x₁ == x₂) (f : A x₁ → B x₁),
+Definition hott_2_9_4 {X A B} {x y : X}
+  : ∀ (p : x == y) (f : A x → B x),
      transport (λ x, A x → B x) p f ==
-     λ x, transport B p (f (transport A p⁻¹ x))
+     λ a, transport B p (f (transport A p⁻¹ a))
   := λ p f,
      match p with
-     | refl =>
-         refl (λ x, transport B (refl x₁) (f (transport A ((refl x₁) ⁻¹) x)))
+     | refl => refl _
      end.
 
 Definition pr₁ {A B} := @Σ_pr₁ A B.
@@ -1638,13 +1637,13 @@ Notation "'pair⁼'" := pair_eq.
 Notation "'Π' A ( B )" := (λ x, Π (a : A x), B x a) (at level 0, A at level 0).
 Notation "B ^" := (λ w, B (pr₁ w) (pr₂ w)) (at level 0).
 
-Definition hott_2_9_5 {X} {A : X → U} {B : Π (x : X), A x → U} {x₁ x₂ : X}
-  : ∀ (p : x₁ == x₂) (f : ∀ a : A x₁, B x₁ a) (a : A x₂),
-      transport (Π A (B)) p f a ==
-      transport B^ (pair⁼ p⁻¹ a)⁻¹ (f (transport A p⁻¹ a))
+Definition hott_2_9_5 {X} {A : X → U} {B : Π (x : X), A x → U} {x y : X}
+  : ∀ (p : x == y) (f : ∀ a : A x, B x a),
+      transport (Π A (B)) p f ==
+      λ a, transport B^ (pair⁼ p⁻¹ a)⁻¹ (f (transport A p⁻¹ a))
   := λ p f,
      match p with
-     | refl => λ _, refl _
+     | refl => refl _
      end.
 
 Lemma hott_2_9_6_i {X} {A B : X → U} {x y : X} (p : x == y) :
@@ -1686,8 +1685,8 @@ Proof.
 intros; destruct p; reflexivity.
 Qed.
 
-Definition hott_2_9_6_v {X} {A B : X → U} {x y : X} (p : x == y)
-  : ∀ (f : A x → B x) (g : A y → B y) (a : A x)
+Definition hott_2_9_6_v {X} {A B : X → U} {x y : X}
+  : ∀ (p : x == y) (f : A x → B x) (g : A y → B y) (a : A x)
       (q : transport (λ z, A z → B z) p f == g),
     transport (λ z, A z → B z) p f (p⁎ a) ==
     g (p⁎ a).
@@ -1697,13 +1696,18 @@ Qed.
 
 Lemma hott_2_9_7 {X} {A : X → U} {B : Π (x : X), A x → U} {x y : X} :
   ∀ (p : x == y) (f : Π (a : A x), B x a) (g : Π (a : A y), B y a),
-  (p⁎ f == g) ≃
-  (Π (a : A x),
-   transport (λ w : sigT A, B (pr₁ w) (pr₂ w)) (pair⁼ p a) (f a) ==
-   g (transport A p a)).
-
-Error: Impossible to unify "forall a : A x, B x a" with "?4353 x".
+  (transport (λ x, ∀ a : A x, B x a) p f == g) ≃
+  (Π (a : A x), transport B^ (pair⁼ p a) (f a) == g (transport A p a)).
 Proof.
+intros.
+destruct p; simpl.
+unfold id; simpl.
+unfold equivalence.
+apply existT with (x := happly).
+apply extensionality.
+Qed.
+
+(* 2.10 Universes and the univalence axiom *)
 
 bbb.
 
