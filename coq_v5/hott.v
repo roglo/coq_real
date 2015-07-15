@@ -1739,12 +1739,13 @@ Definition pcr {A B} : ∀ (f : A ≃ B) (x : A),
   transport id (ua f) x == projT1 f x.
 Proof.
 intros.
-set (q := ua f).
+pose proof ua (idtoeqv (ua f)) as g.
+destruct g.
 destruct f as (f, p); simpl.
 pose proof equivalence_isequiv f as r.
 destruct r as (Hqi, (Hiq, Hee)).
 pose proof Hiq p as r.
-destruct r as (g, α, β).
+destruct r as (h, α, β).
 unfold "⁎".
 bbb.
 
