@@ -1769,6 +1769,13 @@ unfold ua; simpl.
 unfold transport.
 destruct f as (f, p); simpl.
 unfold id at 2 3.
+destruct g.
+change (match q in _ == C return (A → C) with refl => id end x == f x).
+bbb.
+
+change ((λ f, match q in (_ == C) return (A → C) with refl => λ x, x end x == f x) f).
+
+bbb.
 
 Check (@id Type).
 Check (@transport Type (@id Type)).
