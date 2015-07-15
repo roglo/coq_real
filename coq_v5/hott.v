@@ -1753,13 +1753,19 @@ Definition ua' {A B} : A ≃ B → A == B :=
 (* propositional computation rule *)
 (* how the eliminator idtoeqv acts on the constructor A == B *)
 Definition pcr {A B} : ∀ (f : A ≃ B) (x : A),
-  transport id (ua' f) x == projT1 f x.
+  transport id (ua f) x == projT1 f x.
 Proof.
+(*
 intros.
 assert (A == B) as p by (apply ua; assumption).
 destruct p.
-set (q := ua' f).
+set (q := ua f).
 destruct f as (f, p); simpl.
+unfold ua in q.
+subst q; simpl.
+set (q := univalence A A).
+
+destruct q.
 unfold ua' in q; simpl in q.
 bbb.
 
@@ -1788,8 +1794,9 @@ destruct r as (Hqi, (Hiq, Hee)).
 pose proof Hiq p as r.
 destruct r as (h, α, β).
 unfold "⁎".
+*)
 
-
+intros.
 set (q := ua f).
 pose proof ua (idtoeqv2 (ua f)) as g.
 unfold ua; simpl.
@@ -1799,8 +1806,18 @@ destruct f as (f, p); simpl.
 pose proof equivalence_isequiv f as r.
 destruct r as (Hqi, (Hiq, Hee)).
 pose proof Hiq p as r.
-destruct r as (h, α, β).
+destruct r as (g, α, β).
+unfold transport.
+unfold id at 2 3; simpl.
+bbb.
+
+change (match q in (_ == a) return A → a with refl => id end x == f x).
+
+bbb.
+
+
 unfold "⁎".
+refine ((match q with refl => λ A id, _ end) A id).
 destruct q.
 
 Toplevel input, characters 0-10:
@@ -1809,6 +1826,8 @@ Error: Abstracting over the terms "A0" and "q" leads to a term
  match q in (_ == a) return (id A0 → id a) with
  | refl => id
  end x == f x" which is ill-typed.
+
+refine ((match q with refl => λ f, _ end) f).
 
 bbb.
 
