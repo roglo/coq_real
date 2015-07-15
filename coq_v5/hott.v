@@ -1763,6 +1763,27 @@ Definition pcr {A B} : ∀ (f : A ≃ B) (x : A),
   transport id (ua f) x == projT1 f x.
 Proof.
 intros.
+set (q := ua f).
+pose proof ua (idtoeqv2 (ua f)) as g.
+unfold ua; simpl.
+unfold transport.
+destruct f as (f, p); simpl.
+unfold id at 2 3.
+
+Check (@id Type).
+Check (@transport Type (@id Type)).
+Check (@transport Type (@id Type) A B).
+
+transport id
+     : ∀ x y : Type, x == y → id x → id y
+id
+     : Type → Type
+
+  ============================
+   @Id (@id Type B) (@transport Type (@id Type) A B (@ua A B f) x)
+     (@projT1 (A -> B) (fun f0 : A -> B => @isequiv A B f0) f x)
+
+
 (*
 unfold transport.
 unfold id at 2 3; simpl.
