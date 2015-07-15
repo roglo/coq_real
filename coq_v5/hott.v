@@ -1770,13 +1770,25 @@ unfold id at 2 3; simpl.
 set (q := ua f).
 pose proof ua (idtoeqv2 (ua f)) as g.
 unfold ua; simpl.
-set (u := univalence A B).
 destruct g.
 destruct f as (f, p); simpl.
+unfold ua in q.
+destruct (univalence A A) as (k, l).
+destruct l as (h, Hl).
+unfold q.
+unfold transport.
+simpl.
+SearchAbout funext.
+Print happly.
+
+
+set (u := univalence A B).
 pose proof equivalence_isequiv f as r.
 destruct r as (Hqi, (Hiq, Hee)).
 pose proof Hiq p as r.
 destruct r as (g, α, β).
+destruct p as (k, l).
+
 unfold transport.
 unfold id at 2 3; simpl.
 bbb.
