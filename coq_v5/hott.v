@@ -1772,6 +1772,10 @@ pose proof ua (idtoeqv2 (ua f)) as g.
 unfold ua; simpl.
 destruct g.
 destruct f as (f, p); simpl.
+unfold transport.
+change (match q in (_ == a) return (A → a) with refl => id end x == f x).
+bbb.
+
 unfold ua in q.
 destruct (univalence A A) as (k, l).
 destruct l as (h, Hl).
