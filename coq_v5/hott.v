@@ -1745,6 +1745,7 @@ pose proof equivalence_isequiv f as r.
 destruct r as (Hqi, (Hiq, Hee)).
 pose proof Hiq p as r.
 destruct r as (g, α, β).
+unfold "⁎".
 bbb.
 
 (* some experiments... *)
