@@ -1797,6 +1797,8 @@ unfold "⁎".
 *)
 
 intros.
+Check (@transport Type (@id Type) A B).
+(* transport id: A == B → id A → id B *)
 set (q := ua f).
 pose proof ua (idtoeqv2 (ua f)) as g.
 unfold ua; simpl.
