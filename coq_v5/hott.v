@@ -1749,6 +1749,13 @@ Definition ua' {A B} : A ≃ B → A == B :=
   end.
 
 (* elimination rule = idtoeqv = idtoeqv2 *)
+(* ... *)
+
+Lemma aaa : ∀ A (p : A == A) (x : A), transport id p x == x.
+Proof.
+intros.
+(* je pense que c'est faux car on ne peut pas démontrer que p == refl *)
+Abort.
 
 (* propositional computation rule *)
 (* how the eliminator idtoeqv acts on the constructor A == B *)
@@ -1756,32 +1763,10 @@ Definition pcr {A B} : ∀ (f : A ≃ B) (x : A),
   transport id (ua f) x == projT1 f x.
 Proof.
 intros.
+(*
 unfold transport.
 unfold id at 2 3; simpl.
-bbb.
-
-  ============================
-   match
-     (let (x0, i) := univalence2 A B in
-      let (_, s0) := i in let (x1, _) := s0 in x1) f in 
-     (_ == a) return (A → a)
-   with
-   | refl => id
-   end x == projT1 f x
-
-  ============================
-   match
-     (let (_, s0) := univalence A B in let (f0, _) := s0 in f0) f in (_ == a)
-     return (A → a)
-   with
-   | refl => id
-   end x == projT1 f x
-
-
-
-intros.
-Check (@transport Type (@id Type) A B).
-(* transport id: A == B → id A → id B *)
+*)
 set (q := ua f).
 pose proof ua (idtoeqv2 (ua f)) as g.
 unfold ua; simpl.
