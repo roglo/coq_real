@@ -1718,7 +1718,23 @@ Definition idtoeqv {A B : U} : A == B → A ≃ B
             existT (λ h, h o id ~~ id) id (reflexivity id))
        end.
 
-Axiom univalence : ∀ A B : U, isequiv (@idtoeqv A B).
+Definition idtoeqv2 {A B} : A == B → A ≃ B :=
+  λ p,
+  p⁎ (existT isequiv id
+        (existT (λ g, id o g ~~ id) id (reflexivity id),
+         existT (λ h, h o id ~~ id) id (reflexivity id))).
+
+Axiom univalence : ∀ A B : U, isequiv (@idtoeqv2 A B).
+Theorem univalence2 : ∀ A B : U, (A == B) ≃ (A ≃ B).
+Proof.
+intros.
+pose proof (@univalence A B) as p.
+pose proof equivalence_isequiv (@idtoeqv2 A B) as r.
+destruct r as (Hqi, (Hiq, Hee)).
+pose proof Hiq p as r.
+destruct r as (f, α, β).
+esplit; eassumption.
+Qed.
 
 (* introduction rule *)
 Definition ua {A B} : A ≃ B → A == B :=
@@ -1726,12 +1742,8 @@ Definition ua {A B} : A ≃ B → A == B :=
   | (_, existT f _) => f
   end.
 
-(* elimination rule = idtoeqv (alternative proof) *)
-Definition idtoeqv2 {A B} : A == B → A ≃ B :=
-  λ p,
-  p⁎ (existT isequiv id
-        (existT (λ g, id o g ~~ id) id (reflexivity id),
-         existT (λ h, h o id ~~ id) id (reflexivity id))).
+(* elimination rule = idtoeqv *)
+Definition idtoeqv3 {A B} : A == B → A ≃ B := idtoeqv2.
 
 (* propositional computation rule *)
 (* how the eliminator idtoeqv acts on the constructor A == B *)
@@ -1739,9 +1751,44 @@ Definition pcr {A B} : ∀ (f : A ≃ B) (x : A),
   transport id (ua f) x == projT1 f x.
 Proof.
 intros.
-pose proof ua (idtoeqv (ua f)) as g.
-destruct g.
+assert (A == B) as p by (apply ua; assumption).
+destruct p.
+bbb.
+
 set (q := ua f).
+destruct f as (f, p); simpl.
+pose proof equivalence_isequiv f as r.
+destruct r as (Hqi, (Hiq, Hee)).
+pose proof Hiq p as r.
+destruct r as (h, α, β).
+pose proof univalence2 A A as r.
+destruct r as (g, Hg).
+
+bbb.
+
+pose proof ua (idtoeqv2 (ua f)) as g.
+destruct g.
+destruct f as (f, p); simpl.
+destruct r as (Hqi, (Hiq, Hee)).
+pose proof Hiq p as r.
+destruct r as (h, α, β).
+bbb.
+
+unfold "⁎".
+bbb.
+
+pose proof equivalence_isequiv f as r.
+destruct r as (Hqi, (Hiq, Hee)).
+pose proof Hiq p as r.
+destruct r as (h, α, β).
+unfold "⁎".
+
+
+set (q := ua f).
+pose proof ua (idtoeqv2 (ua f)) as g.
+unfold ua; simpl.
+set (u := univalence A B).
+destruct g.
 destruct f as (f, p); simpl.
 pose proof equivalence_isequiv f as r.
 destruct r as (Hqi, (Hiq, Hee)).
