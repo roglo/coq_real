@@ -1734,7 +1734,7 @@ destruct r as (Hqi, (Hiq, Hee)).
 pose proof Hiq p as r.
 destruct r as (f, α, β).
 esplit; eassumption.
-Qed.
+Defined.
 
 (* introduction rule *)
 Definition ua {A B} : A ≃ B → A == B :=
@@ -1742,21 +1742,27 @@ Definition ua {A B} : A ≃ B → A == B :=
   | (_, existT f _) => f
   end.
 
-(* elimination rule = idtoeqv *)
-Definition idtoeqv3 {A B} : A == B → A ≃ B := idtoeqv2.
+(* ... or, with univalence2: *)
+Definition ua' {A B} : A ≃ B → A == B :=
+  match univalence2 A B with
+  | existT _ (_, existT x _) => x
+  end.
+
+(* elimination rule = idtoeqv = idtoeqv2 *)
 
 (* propositional computation rule *)
 (* how the eliminator idtoeqv acts on the constructor A == B *)
 Definition pcr {A B} : ∀ (f : A ≃ B) (x : A),
-  transport id (ua f) x == projT1 f x.
+  transport id (ua' f) x == projT1 f x.
 Proof.
 intros.
 assert (A == B) as p by (apply ua; assumption).
 destruct p.
+set (q := ua' f).
+destruct f as (f, p); simpl.
+unfold ua' in q; simpl in q.
 bbb.
 
-set (q := ua f).
-destruct f as (f, p); simpl.
 pose proof equivalence_isequiv f as r.
 destruct r as (Hqi, (Hiq, Hee)).
 pose proof Hiq p as r.
