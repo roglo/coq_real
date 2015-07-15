@@ -1741,12 +1741,22 @@ Proof.
 intros.
 pose proof ua (idtoeqv (ua f)) as g.
 destruct g.
+set (q := ua f).
 destruct f as (f, p); simpl.
 pose proof equivalence_isequiv f as r.
 destruct r as (Hqi, (Hiq, Hee)).
 pose proof Hiq p as r.
 destruct r as (h, α, β).
 unfold "⁎".
+destruct q.
+
+Toplevel input, characters 0-10:
+Error: Abstracting over the terms "A0" and "q" leads to a term
+"λ (A0 : Type) (q : A0 == A0),
+ match q in (_ == a) return (id A0 → id a) with
+ | refl => id
+ end x == f x" which is ill-typed.
+
 bbb.
 
 (* some experiments... *)
