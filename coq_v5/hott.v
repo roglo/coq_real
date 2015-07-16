@@ -1755,14 +1755,11 @@ destruct (Hiq (univalence A B)) as (g, α, β).
 apply α.
 Defined.
 
-Definition pcr {A B} : ∀ (f : A ≃ B) x, transport id (ua f) x == projT1 f x.
-Proof.
-intros.
-pose proof idtoeqv_ua f as p.
-set (q := ua f).
-rewrite <- p; subst q.
-reflexivity.
-Defined.
+Definition pcr {A B} : ∀ (f : A ≃ B) x, transport id (ua f) x == projT1 f x :=
+  λ f x,
+  match idtoeqv_ua f with
+  | refl => refl (projT1 (idtoeqv (ua f)) x)
+  end.
 
 bbb.
 
