@@ -1709,13 +1709,7 @@ Qed.
 
 (* lemma 2.10.1 *)
 
-Definition idtoeqv {A B} : A == B → A ≃ B :=
-  λ p,
-  p⁎ (existT isequiv id
-        (existT (λ g, id o g ~~ id) id (reflexivity id),
-         existT (λ h, h o id ~~ id) id (reflexivity id))).
-
-Definition idtoeqv2 {A B : U} : A == B → A ≃ B :=
+Definition idtoeqv {A B : U} : A == B → A ≃ B :=
   λ p,
   existT isequiv (transport id p)
     match p with
@@ -1723,6 +1717,12 @@ Definition idtoeqv2 {A B : U} : A == B → A ≃ B :=
         (existT (λ g, id o g ~~ id) id (reflexivity id),
          existT (λ h, h o id ~~ id) id (reflexivity id))
     end.
+
+Definition idtoeqv2 {A B} : A == B → A ≃ B :=
+  λ p,
+  p⁎ (existT isequiv id
+        (existT (λ g, id o g ~~ id) id (reflexivity id),
+         existT (λ h, h o id ~~ id) id (reflexivity id))).
 
 Axiom univalence : ∀ A B : U, isequiv (@idtoeqv A B).
 Theorem univalence2 : ∀ A B : U, (A == B) ≃ (A ≃ B).
@@ -1761,7 +1761,7 @@ Definition ua3 {A B} : A ≃ B → A == B :=
 (* propositional computation rule *)
 (* how the eliminator idtoeqv acts on the constructor A == B *)
 
-Definition pcr {A B} : ∀ (f : A ≃ B), idtoeqv (ua f) == f.
+Definition idtoeqv_ua {A B} : ∀ (f : A ≃ B), idtoeqv (ua f) == f.
 Proof.
 intros.
 unfold ua; simpl.
@@ -1771,11 +1771,14 @@ destruct (Hiq (univalence A B)) as (g, α, β).
 apply α.
 Defined.
 
-Definition pcr2 {A B} : ∀ (f : A ≃ B) x, transport id (ua f) x == projT1 f x.
+Definition pcr {A B} : ∀ (f : A ≃ B) x, transport id (ua f) x == projT1 f x.
 Proof.
 intros.
-pose proof pcr f as p.
-destruct f as (f, q); simpl.
+pose proof idtoeqv_ua f as p.
+set (q := ua f).
+rewrite <- p; subst q.
+reflexivity.
+Defined.
 
 bbb.
 
