@@ -1778,7 +1778,7 @@ Proof.
 intros.
 destruct p; simpl.
 split; apply existT with (x := id); reflexivity.
-Qed.
+Defined.
 
 Definition pup {A B} : ∀ (p : A == B),
   p == ua (existT _ (transport id p) (isequiv_transport p)).
@@ -1790,6 +1790,9 @@ destruct q as (Hqi, (Hiq, Hee)).
 unfold id at 1 2; simpl.
 set (r := Hiq (univalence A B)).
 destruct r.
+unfold isequiv_transport; simpl.
+destruct p.
+simpl.
 bbb.
 
 (* some experiments... *)
