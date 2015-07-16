@@ -1757,6 +1757,85 @@ intros.
 (* je pense que c'est faux car on ne peut pas démontrer que p == refl *)
 Abort.
 
+(* http://disi.unitn.it/~zunino/teaching/formalTechniques/dependentMatch.html *)
+
+Definition foo (P : nat → Prop) (H0 : P 0) (HS : ∀ m, P (S m)) (x : nat) :=
+  match x with
+  | 0 => H0
+  | S y => HS y
+  end.
+
+Print foo.
+ Inductive color : Set := white | black .
+ Definition match_as_0 (P : color -> Prop) (Hw : P white) (Hb : P black)
+                      (f : color -> color) := (*: P (f white) :=*)
+  match f white as n return P n with
+  | white => Hw
+  | black => Hb
+  end.
+
+Print match_as_0.
+
+Inductive isBlack : color -> Prop :=
+  | B : isBlack black.
+
+Definition match_in_0 (P : color -> Prop) (H : P black)
+   (x : color) (H2 : isBlack x) : P x :=
+  match H2 with
+  | B => H
+  end.
+
+Print match_in_0.
+
+ Inductive opposite : color -> color -> Prop :=
+  | WB : opposite white black
+  | BW : opposite black white
+.
+(*
+ Definition match_in_1 (P : color -> Prop) (H : P black)
+                      (x : color) (H2: opposite white x) : P x :=
+  H .
+Toplevel input, characters 124-125:
+Error:
+In environment
+P : color → Prop
+H : P black
+x : color
+H2 : opposite white x
+The term "H" has type "P black" while it is expected to have type 
+"P x".
+*)
+
+Definition glop : ∀ a b, opposite a b
+  → a = white ∧ b = black ∨ a = black ∧ b = white.
+Proof.
+intros.
+destruct H; [ left | right ]; split; reflexivity.
+Qed.
+
+Definition match_in_1_pfff (P : color -> Prop) (H : P black)
+                     (x : color) (H2: opposite white x) : P x.
+Proof.
+destruct x; [ idtac | assumption ].
+apply glop in H2.
+destruct H2 as [(_, H2)| (H2, _)]; discriminate H2.
+Qed.
+
+ Definition match_in_1 (P : color -> Prop) (H : P black)
+                      (x : color) (H2: opposite white x) : P x :=
+  let f (a b : color) : Prop :=
+        match a with | white => P b
+                     | black => True
+        end
+  in
+  match H2 in opposite a b return f a b with
+  | WB => H
+  | BW => I
+  end
+.
+
+Print match_in_1.
+
 (* propositional computation rule *)
 (* how the eliminator idtoeqv acts on the constructor A == B *)
 Definition pcr {A B} : ∀ (f : A ≃ B) (x : A),
@@ -1771,6 +1850,80 @@ destruct f as (f, p); simpl.
 unfold id at 2 3.
 destruct g.
 change (match q in _ == C return (A → C) with refl => id end x == f x).
+
+(*
+Definition toto :
+∀ (A0 : Type) (x : A0) (f : A0 → A0) (q : A0 == A0),
+ match q in (_ == C) return (A0 → C) with
+ | refl => id
+ end x == f x.
+Proof.
+intros A x f q.
+destruct q.
+*)
+Definition pcr2 : ∀ (f : bool ≃ bool) (x : bool),
+  transport id (ua f) x == projT1 f x.
+Proof.
+intros.
+set (q := ua f).
+pose proof ua (idtoeqv2 (ua f)) as g.
+unfold ua; simpl.
+unfold transport.
+destruct f as (f, p); simpl.
+unfold id at 2 3.
+destruct g.
+subst P.
+unfold id at 2.
+unfold ua in q.
+Print univalence.
+set (r := univalence bool bool) in q.
+destruct r as (g, h).
+destruct h as (h, Hh).
+destruct g as (g, Hg).
+Print idtoeqv2.
+unfold idtoeqv2, "o", "~~" in Hh; simpl in Hh.
+unfold transport in Hh; simpl in Hh.
+bbb.
+destruct q.
+
+bbb.
+
+Print id.
+Print transport.
+
+ Rough summary:
+
+    The type for a match expression can be expressed as a function of
+    the term being matched;
+
+    The branches C => e are then checked by applying said function to
+    C, hence obtaining a type, and then checking e against that.
+
+ Rough summary:
+
+    The type of "match A" can be expressed as a function of the type
+    of A;
+
+    Checking a branch "C => e" is done by applying said function to
+    the type of the constructor C, and then checking e against this
+    type.
+
+
+in | refl -> id below, id has to have type P x → P a where a is the
+value of type A for which we have refl : _ == a.
+
+I think it is y.
+
+transport = 
+λ (A : Type) (P : A → Type) (x y : A) (p : x == y),
+match p in (_ == a) return (P x → P a) with
+| refl => id
+end
+     : ∀ (A : Type) (P : A → Type) (x y : A), x == y → P x → P y
+
+Arguments A, x, y are implicit and maximally inserted
+Argument scopes are [type_scope _ _ _ _ _]
+
 bbb.
 
 change ((λ f, match q in (_ == C) return (A → C) with refl => λ x, x end x == f x) f).
