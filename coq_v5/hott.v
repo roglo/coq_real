@@ -1835,9 +1835,48 @@ Qed.
 .
 
 Print match_in_1.
+Print "≃".
+
 
 (* propositional computation rule *)
 (* how the eliminator idtoeqv acts on the constructor A == B *)
+Definition negbisequiv : isequiv negb.
+Proof.
+split.
+ apply (existT _ negb).
+ intros b; destruct b; reflexivity.
+
+ apply (existT _ negb).
+ intros b; destruct b; reflexivity.
+Qed.
+
+Definition transport' {A} P {x y : A} (u : P x → P x) (p : x == y) : P x → P y
+  := match p with
+     | refl => u
+     end.
+
+Definition pcr_not_counter_example :
+  ∀ (f := existT _ negb negbisequiv : bool ≃ bool) (x : bool),
+  transport' id negb (ua f) x == projT1 f x.
+Proof.
+intros.
+set (p := ua f).
+subst f; simpl.
+unfold transport'.
+unfold p; simpl.
+(* une chance de s'en sortir quoique pas gagné *)
+Abort.
+
+Definition pcr_counter_example :
+  ∀ (f := existT _ negb negbisequiv : bool ≃ bool) (x : bool),
+  transport id (ua f) x == projT1 f x.
+Proof.
+intros.
+subst f; simpl.
+unfold transport.
+Print transport.
+bbb.
+
 Definition pcr {A B} : ∀ (f : A ≃ B) (x : A),
   transport id (ua f) x == projT1 f x.
 Proof.
@@ -1877,6 +1916,28 @@ unfold id at 1 2.
 Print ua.
 Print univalence.
 Print idtoeqv2.
+
+Theorem toto :
+  ∀ (f : bool → bool) (p : isequiv f) (x : bool)
+    (q := ua (existT (λ f0 : bool → bool, isequiv f0) f p)),
+   match q in (_ == a) return (bool → a) with
+   | refl => id
+   end x == f x.
+Proof.
+intros.
+
+Theorem titi :
+  ∀ (f := negb) (p : isequiv f) (x : bool)
+    (q := ua (existT (λ g : bool → bool, isequiv g) f p)),
+   match q in (_ == a) return (bool → a) with
+   | refl => id
+   end x == f x.
+Proof.
+intros.
+subst f.
+destruct p as ((f, Hf), (g, Hg)).
+simpl in q.
+
 bbb.
 
 unfold ua in q.
