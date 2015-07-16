@@ -1784,15 +1784,11 @@ Definition pup {A B} : ∀ (p : A == B),
   p == ua (existT _ (transport id p) (isequiv_transport p)).
 Proof.
 intros.
-unfold ua; simpl.
-set (q := equivalence_isequiv idtoeqv).
-destruct q as (Hqi, (Hiq, Hee)).
-unfold id at 1 2; simpl.
-set (r := Hiq (univalence A B)).
-destruct r.
-unfold isequiv_transport; simpl.
-destruct p.
-simpl.
+pose proof (ua_idtoeqv p) as q.
+destruct p; simpl.
+destruct q; reflexivity.
+Defined.
+
 bbb.
 
 (* some experiments... *)
