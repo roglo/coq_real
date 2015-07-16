@@ -1784,12 +1784,51 @@ unfold p; simpl.
 (* une chance de s'en sortir quoique pas gagné *)
 Abort.
 
+Check @idtoeqv.
+Check @transport.
+(* transport
+     : ∀ (A : Type) (P : A → Type) (x y : A), x == y → P x → P y *)
+(* idtoeqv
+     : ∀ A B : U, A == B → A ≃ B *)
+
+(*
+Lemma toto : ∀ g,
+  transport id g == projT1 (idtoeqv g).
+*)
+
 Definition pcr_counter_example :
   ∀ (f := existT _ negb negbisequiv : bool ≃ bool) (x : bool),
+(**)
+  idtoeqv2 (ua f) == f.
+(*
   transport id (ua f) x == projT1 f x.
+*)
 Proof.
 intros.
+unfold ua; simpl.
+set (p := univalence bool bool).
+pose proof equivalence_isequiv (@idtoeqv2 bool bool) as r.
+destruct r as (Hqi, (Hiq, Hee)).
+pose proof Hiq p as r.
+destruct r as (g, α, β).
+
+
+bbb.
+
+
+
+unfold "~~", "o" in α, β.
+
+unfold ua; simpl.
+
+
+
+
+bbb.
 destruct f as (f, Hf); simpl.
+unfold transport.
+Print transport.
+
 Check @ap.
 bbb.
 
