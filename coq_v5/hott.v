@@ -1796,6 +1796,54 @@ Lemma toto : ∀ g,
   transport id g == projT1 (idtoeqv g).
 *)
 
+Check @ua.
+Check @idtoeqv.
+
+Definition toto {A B} : ∀ (f : A ≃ B), idtoeqv2 (ua f) == f.
+Proof.
+intros.
+(*
+set (g := ua f).
+unfold ua in g.
+set (q := univalence A B) in g.
+destruct q as ((h, Hh), (i, Hi)).
+subst g.
+*)
+set (g := ua f).
+unfold ua in g.
+set (q := univalence A B) in g.
+pose proof equivalence_isequiv (@idtoeqv2 A B) as r.
+destruct r as (Hqi, (Hiq, Hee)).
+pose proof Hiq q as r.
+destruct r as (h, α, β).
+subst g.
+bbb.
+
+pose proof equivalence_isequiv (@idtoeqv2 A B) as r.
+destruct r as (Hqi, (Hiq, Hee)).
+pose proof Hiq q as r.
+destruct r as (h, α, β).
+unfold idtoeqv2.
+simpl.
+bbb.
+
+
+destruct q as ((g, Hg), (h, Hh)).
+
+
+(*
+Definition titi {A B} : ∀ (f : A → B) g x (p : isequiv f), f (g x) == x.
+Proof.
+intros.
+*)
+
+Print ua.
+bbb.
+
+unfold idtoeqv, idtoeqv2, ua, ua'; simpl.
+unfold transport.
+destruct f as (f, p).
+
 Definition pcr_counter_example :
   ∀ (f := existT _ negb negbisequiv : bool ≃ bool) (x : bool),
 (**)
