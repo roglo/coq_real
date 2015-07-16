@@ -826,7 +826,7 @@ Check @transport.
      : ∀ (A : Type) (P : A → Type) (x y : A), x == y → P x → P y *)
 
 Notation "p '⁎'" := (transport _ p)
-  (at level 8, left associativity, format "'[v' p ']' ⁎").
+  (at level 8, left associativity, format "'[v' p ']' ⁎", only parsing).
 
 (* lemma 2.3.2 path lifting property *)
 
@@ -1784,23 +1784,36 @@ unfold p; simpl.
 (* une chance de s'en sortir quoique pas gagné *)
 Abort.
 
-(*
-Notation "p '⁎'" := (transport _ p)
-  (at level 8, left associativity, format "'[v' p ']' ⁎").
-
-comment faire pour éliminer une notation ?
-ou pour dire de ne pas - localement - l'utiliser ?
-*)
-
 Definition pcr_counter_example :
   ∀ (f := existT _ negb negbisequiv : bool ≃ bool) (x : bool),
   transport id (ua f) x == projT1 f x.
 Proof.
 intros.
+destruct f as (f, Hf); simpl.
+Check @ap.
+bbb.
+
+eapply compose.
+
+
+Focus 2.
+Set Printing All. Show.
+Check @funext.
+Abort. (*
+eapply ua.
+
+(* ua
+     : ∀ A B : Type, A ≃ B → A == B *)
+
+unfold transport.
+Check @univalence.
+Check @univalence2.
+
 subst f; simpl.
 unfold transport.
 Print transport.
 bbb.
+*)
 
 Definition pcr {A B} : ∀ (f : A ≃ B) (x : A),
   transport id (ua f) x == projT1 f x.
