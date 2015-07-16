@@ -1866,6 +1866,14 @@ unfold p; simpl.
 (* une chance de s'en sortir quoique pas gagné *)
 Abort.
 
+(*
+Notation "p '⁎'" := (transport _ p)
+  (at level 8, left associativity, format "'[v' p ']' ⁎").
+
+comment faire pour éliminer une notation ?
+ou pour dire de ne pas - localement - l'utiliser ?
+*)
+
 Definition pcr_counter_example :
   ∀ (f := existT _ negb negbisequiv : bool ≃ bool) (x : bool),
   transport id (ua f) x == projT1 f x.
@@ -1889,16 +1897,6 @@ unfold id at 2 3.
 destruct g.
 change (match q in _ == C return (A → C) with refl => id end x == f x).
 
-(*
-Definition toto :
-∀ (A0 : Type) (x : A0) (f : A0 → A0) (q : A0 == A0),
- match q in (_ == C) return (A0 → C) with
- | refl => id
- end x == f x.
-Proof.
-intros A x f q.
-destruct q.
-*)
 Definition pcr2 : ∀ (f : bool ≃ bool) (x : bool),
   transport id (ua f) x == projT1 f x.
 Proof.
