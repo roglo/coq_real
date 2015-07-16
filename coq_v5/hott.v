@@ -1740,7 +1740,7 @@ Defined.
 Definition ua {A B} : A ≃ B → A == B :=
   match equivalence_isequiv idtoeqv with
   | conjt _ (conjt Hiq _) =>
-      match  Hiq (univalence A B) with
+      match Hiq (univalence A B) with
       | qi f _ _ => f
       end
   end.
