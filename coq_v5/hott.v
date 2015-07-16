@@ -1837,7 +1837,6 @@ Qed.
 Print match_in_1.
 Print "≃".
 
-
 (* propositional computation rule *)
 (* how the eliminator idtoeqv acts on the constructor A == B *)
 Definition negbisequiv : isequiv negb.
