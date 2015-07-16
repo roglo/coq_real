@@ -1873,7 +1873,12 @@ destruct f as (f, p); simpl.
 unfold id at 2 3.
 destruct g.
 subst P.
-unfold id at 2.
+unfold id at 1 2.
+Print ua.
+Print univalence.
+Print idtoeqv2.
+bbb.
+
 unfold ua in q.
 Print univalence.
 set (r := univalence bool bool) in q.
