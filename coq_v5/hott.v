@@ -1739,7 +1739,7 @@ Definition ua {A B} : A ≃ B → A == B :=
       end
   end.
 
-(* elimination rule = idtoeqv = idtoeqv2 *)
+(* elimination rule = idtoeqv *)
 (* ... *)
 
 (* propositional computation rule *)
@@ -1761,6 +1761,35 @@ Definition pcr {A B} : ∀ (f : A ≃ B) x, transport id (ua f) x == projT1 f x 
   | refl => refl (projT1 (idtoeqv (ua f)) x)
   end.
 
+(* propositional uniqueness principle *)
+
+Definition ua_idtoeqv {A B} : ∀ (p : A == B), ua (idtoeqv p) == p.
+Proof.
+intros.
+unfold ua; simpl.
+set (r := equivalence_isequiv idtoeqv).
+destruct r as (Hqi, (Hiq, Hee)).
+destruct (Hiq (univalence A B)) as (g, α, β).
+apply β.
+Defined.
+
+Definition isequiv_transport {A B} : ∀ (p : A == B), isequiv (transport id p).
+Proof.
+intros.
+destruct p; simpl.
+split; apply existT with (x := id); reflexivity.
+Qed.
+
+Definition pup {A B} : ∀ (p : A == B),
+  p == ua (existT _ (transport id p) (isequiv_transport p)).
+Proof.
+intros.
+unfold ua; simpl.
+set (q := equivalence_isequiv idtoeqv).
+destruct q as (Hqi, (Hiq, Hee)).
+unfold id at 1 2; simpl.
+set (r := Hiq (univalence A B)).
+destruct r.
 bbb.
 
 (* some experiments... *)
