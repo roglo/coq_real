@@ -1718,12 +1718,6 @@ Definition idtoeqv {A B : U} : A == B → A ≃ B :=
          existT (λ h, h o id ~~ id) id (reflexivity id))
     end.
 
-Definition idtoeqv2 {A B} : A == B → A ≃ B :=
-  λ p,
-  p⁎ (existT isequiv id
-        (existT (λ g, id o g ~~ id) id (reflexivity id),
-         existT (λ h, h o id ~~ id) id (reflexivity id))).
-
 Axiom univalence : ∀ A B : U, isequiv (@idtoeqv A B).
 Theorem univalence2 : ∀ A B : U, (A == B) ≃ (A ≃ B).
 Proof.
@@ -1743,16 +1737,6 @@ Definition ua {A B} : A ≃ B → A == B :=
       match Hiq (univalence A B) with
       | qi f _ _ => f
       end
-  end.
-
-Definition ua2 {A B} : A ≃ B → A == B :=
-  match univalence A B with
-  | (_, existT f _) => f
-  end.
-
-Definition ua3 {A B} : A ≃ B → A == B :=
-  match univalence2 A B with
-  | existT _ (_, existT x _) => x
   end.
 
 (* elimination rule = idtoeqv = idtoeqv2 *)
