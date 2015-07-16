@@ -1709,27 +1709,27 @@ Qed.
 
 (* lemma 2.10.1 *)
 
-Definition idtoeqv {A B : U} : A == B → A ≃ B
-  := λ (p : A == B),
-     existT isequiv (transport id p)
-       match p with
-       | refl =>
-           (existT (λ g, id o g ~~ id) id (reflexivity id),
-            existT (λ h, h o id ~~ id) id (reflexivity id))
-       end.
-
-Definition idtoeqv2 {A B} : A == B → A ≃ B :=
+Definition idtoeqv {A B} : A == B → A ≃ B :=
   λ p,
   p⁎ (existT isequiv id
         (existT (λ g, id o g ~~ id) id (reflexivity id),
          existT (λ h, h o id ~~ id) id (reflexivity id))).
 
-Axiom univalence : ∀ A B : U, isequiv (@idtoeqv2 A B).
+Definition idtoeqv2 {A B : U} : A == B → A ≃ B :=
+  λ p,
+  existT isequiv (transport id p)
+    match p with
+    | refl =>
+        (existT (λ g, id o g ~~ id) id (reflexivity id),
+         existT (λ h, h o id ~~ id) id (reflexivity id))
+    end.
+
+Axiom univalence : ∀ A B : U, isequiv (@idtoeqv A B).
 Theorem univalence2 : ∀ A B : U, (A == B) ≃ (A ≃ B).
 Proof.
 intros.
 pose proof (@univalence A B) as p.
-pose proof equivalence_isequiv (@idtoeqv2 A B) as r.
+pose proof equivalence_isequiv (@idtoeqv A B) as r.
 destruct r as (Hqi, (Hiq, Hee)).
 pose proof Hiq p as r.
 destruct r as (f, α, β).
@@ -1738,12 +1738,19 @@ Defined.
 
 (* introduction rule *)
 Definition ua {A B} : A ≃ B → A == B :=
+  match equivalence_isequiv idtoeqv with
+  | conjt _ (conjt Hiq _) =>
+      match  Hiq (univalence A B) with
+      | qi f _ _ => f
+      end
+  end.
+
+Definition ua2 {A B} : A ≃ B → A == B :=
   match univalence A B with
   | (_, existT f _) => f
   end.
 
-(* ... or, with univalence2: *)
-Definition ua' {A B} : A ≃ B → A == B :=
+Definition ua3 {A B} : A ≃ B → A == B :=
   match univalence2 A B with
   | existT _ (_, existT x _) => x
   end.
@@ -1754,368 +1761,21 @@ Definition ua' {A B} : A ≃ B → A == B :=
 (* propositional computation rule *)
 (* how the eliminator idtoeqv acts on the constructor A == B *)
 
-(* problem: seems to be not provable, and perhaps false;
-   counterexample below *)
-
-Definition negbisequiv : isequiv negb.
-Proof.
-split.
- apply (existT _ negb).
- intros b; destruct b; reflexivity.
-
- apply (existT _ negb).
- intros b; destruct b; reflexivity.
-Qed.
-
-Definition transport' {A} P {x y : A} (u : P x → P x) (p : x == y) : P x → P y
-  := match p with
-     | refl => u
-     end.
-
-Definition pcr_not_counter_example :
-  ∀ (f := existT _ negb negbisequiv : bool ≃ bool) (x : bool),
-  transport' id negb (ua f) x == projT1 f x.
-Proof.
-intros.
-set (p := ua f).
-subst f; simpl.
-unfold transport'.
-unfold p; simpl.
-(* une chance de s'en sortir quoique pas gagné *)
-Abort.
-
-Check @idtoeqv.
-Check @transport.
-(* transport
-     : ∀ (A : Type) (P : A → Type) (x y : A), x == y → P x → P y *)
-(* idtoeqv
-     : ∀ A B : U, A == B → A ≃ B *)
-
-(*
-Lemma toto : ∀ g,
-  transport id g == projT1 (idtoeqv g).
-*)
-
-Check @ua.
-Check @idtoeqv.
-
-Definition toto {A B} : ∀ (f : A ≃ B), idtoeqv2 (ua f) == f.
-Proof.
-intros.
-(*
-set (g := ua f).
-unfold ua in g.
-set (q := univalence A B) in g.
-destruct q as ((h, Hh), (i, Hi)).
-subst g.
-*)
-set (g := ua f).
-unfold ua in g.
-set (q := univalence A B) in g.
-pose proof equivalence_isequiv (@idtoeqv2 A B) as r.
-destruct r as (Hqi, (Hiq, Hee)).
-pose proof Hiq q as r.
-destruct r as (h, α, β).
-subst g.
-bbb.
-
-pose proof equivalence_isequiv (@idtoeqv2 A B) as r.
-destruct r as (Hqi, (Hiq, Hee)).
-pose proof Hiq q as r.
-destruct r as (h, α, β).
-unfold idtoeqv2.
-simpl.
-bbb.
-
-
-destruct q as ((g, Hg), (h, Hh)).
-
-
-(*
-Definition titi {A B} : ∀ (f : A → B) g x (p : isequiv f), f (g x) == x.
-Proof.
-intros.
-*)
-
-Print ua.
-bbb.
-
-unfold idtoeqv, idtoeqv2, ua, ua'; simpl.
-unfold transport.
-destruct f as (f, p).
-
-Definition pcr_counter_example :
-  ∀ (f := existT _ negb negbisequiv : bool ≃ bool) (x : bool),
-(**)
-  idtoeqv2 (ua f) == f.
-(*
-  transport id (ua f) x == projT1 f x.
-*)
+Definition pcr {A B} : ∀ (f : A ≃ B), idtoeqv (ua f) == f.
 Proof.
 intros.
 unfold ua; simpl.
-set (p := univalence bool bool).
-pose proof equivalence_isequiv (@idtoeqv2 bool bool) as r.
+set (r := equivalence_isequiv idtoeqv).
 destruct r as (Hqi, (Hiq, Hee)).
-pose proof Hiq p as r.
-destruct r as (g, α, β).
+destruct (Hiq (univalence A B)) as (g, α, β).
+apply α.
+Defined.
 
-
-bbb.
-
-
-
-unfold "~~", "o" in α, β.
-
-unfold ua; simpl.
-
-
-
-
-bbb.
-destruct f as (f, Hf); simpl.
-unfold transport.
-Print transport.
-
-Check @ap.
-bbb.
-
-eapply compose.
-
-
-Focus 2.
-Set Printing All. Show.
-Check @funext.
-Abort. (*
-eapply ua.
-
-(* ua
-     : ∀ A B : Type, A ≃ B → A == B *)
-
-unfold transport.
-Check @univalence.
-Check @univalence2.
-
-subst f; simpl.
-unfold transport.
-Print transport.
-bbb.
-*)
-
-Definition pcr {A B} : ∀ (f : A ≃ B) (x : A),
-  transport id (ua f) x == projT1 f x.
+Definition pcr2 {A B} : ∀ (f : A ≃ B) x, transport id (ua f) x == projT1 f x.
 Proof.
 intros.
-set (q := ua f).
-pose proof ua (idtoeqv2 (ua f)) as g.
-unfold ua; simpl.
-unfold transport.
-destruct f as (f, p); simpl.
-unfold id at 2 3.
-destruct g.
-change (match q in _ == C return (A → C) with refl => id end x == f x).
-
-Definition pcr2 : ∀ (f : bool ≃ bool) (x : bool),
-  transport id (ua f) x == projT1 f x.
-Proof.
-intros.
-set (q := ua f).
-pose proof ua (idtoeqv2 (ua f)) as g.
-unfold ua; simpl.
-unfold transport.
-destruct f as (f, p); simpl.
-unfold id at 2 3.
-destruct g.
-subst P.
-unfold id at 1 2.
-Print ua.
-Print univalence.
-Print idtoeqv2.
-
-Theorem toto :
-  ∀ (f : bool → bool) (p : isequiv f) (x : bool)
-    (q := ua (existT (λ f0 : bool → bool, isequiv f0) f p)),
-   match q in (_ == a) return (bool → a) with
-   | refl => id
-   end x == f x.
-Proof.
-intros.
-
-Theorem titi :
-  ∀ (f := negb) (p : isequiv f) (x : bool)
-    (q := ua (existT (λ g : bool → bool, isequiv g) f p)),
-   match q in (_ == a) return (bool → a) with
-   | refl => id
-   end x == f x.
-Proof.
-intros.
-subst f.
-destruct p as ((f, Hf), (g, Hg)).
-simpl in q.
-
-bbb.
-
-unfold ua in q.
-Print univalence.
-set (r := univalence bool bool) in q.
-destruct r as (g, h).
-destruct h as (h, Hh).
-destruct g as (g, Hg).
-Print idtoeqv2.
-unfold idtoeqv2, "o", "~~" in Hh; simpl in Hh.
-unfold transport in Hh; simpl in Hh.
-bbb.
-destruct q.
-
-bbb.
-
-Print id.
-Print transport.
-
- Rough summary:
-
-    The type for a match expression can be expressed as a function of
-    the term being matched;
-
-    The branches C => e are then checked by applying said function to
-    C, hence obtaining a type, and then checking e against that.
-
- Rough summary:
-
-    The type of "match A" can be expressed as a function of the type
-    of A;
-
-    Checking a branch "C => e" is done by applying said function to
-    the type of the constructor C, and then checking e against this
-    type.
-
-
-in | refl -> id below, id has to have type P x → P a where a is the
-value of type A for which we have refl : _ == a.
-
-I think it is y.
-
-transport = 
-λ (A : Type) (P : A → Type) (x y : A) (p : x == y),
-match p in (_ == a) return (P x → P a) with
-| refl => id
-end
-     : ∀ (A : Type) (P : A → Type) (x y : A), x == y → P x → P y
-
-Arguments A, x, y are implicit and maximally inserted
-Argument scopes are [type_scope _ _ _ _ _]
-
-bbb.
-
-change ((λ f, match q in (_ == C) return (A → C) with refl => λ x, x end x == f x) f).
-
-bbb.
-
-Check (@id Type).
-Check (@transport Type (@id Type)).
-Check (@transport Type (@id Type) A B).
-
-transport id
-     : ∀ x y : Type, x == y → id x → id y
-id
-     : Type → Type
-
-  ============================
-   @Id (@id Type B) (@transport Type (@id Type) A B (@ua A B f) x)
-     (@projT1 (A -> B) (fun f0 : A -> B => @isequiv A B f0) f x)
-
-
-(*
-unfold transport.
-unfold id at 2 3; simpl.
-*)
-set (q := ua f).
-pose proof ua (idtoeqv2 (ua f)) as g.
-unfold ua; simpl.
-destruct g.
-destruct f as (f, p); simpl.
-unfold transport.
-change (match q in (_ == a) return (A → a) with refl => id end x == f x).
-bbb.
-
-unfold ua in q.
-destruct (univalence A A) as (k, l).
-destruct l as (h, Hl).
-unfold q.
-unfold transport.
-simpl.
-SearchAbout funext.
-Print happly.
-
-
-set (u := univalence A B).
-pose proof equivalence_isequiv f as r.
-destruct r as (Hqi, (Hiq, Hee)).
-pose proof Hiq p as r.
-destruct r as (g, α, β).
-destruct p as (k, l).
-
-unfold transport.
-unfold id at 2 3; simpl.
-bbb.
-
-change (match q in (_ == a) return A → a with refl => id end x == f x).
-(*
-intros.
-assert (A == B) as p by (apply ua; assumption).
-destruct p.
-set (q := ua f).
-destruct f as (f, p); simpl.
-unfold ua in q.
-subst q; simpl.
-set (q := univalence A A).
-
-destruct q.
-unfold ua' in q; simpl in q.
-bbb.
-
-pose proof equivalence_isequiv f as r.
-destruct r as (Hqi, (Hiq, Hee)).
-pose proof Hiq p as r.
-destruct r as (h, α, β).
-pose proof univalence2 A A as r.
-destruct r as (g, Hg).
-
-bbb.
-
-pose proof ua (idtoeqv2 (ua f)) as g.
-destruct g.
-destruct f as (f, p); simpl.
-destruct r as (Hqi, (Hiq, Hee)).
-pose proof Hiq p as r.
-destruct r as (h, α, β).
-bbb.
-
-unfold "⁎".
-bbb.
-
-pose proof equivalence_isequiv f as r.
-destruct r as (Hqi, (Hiq, Hee)).
-pose proof Hiq p as r.
-destruct r as (h, α, β).
-unfold "⁎".
-*)
-
-bbb.
-
-
-unfold "⁎".
-refine ((match q with refl => λ A id, _ end) A id).
-destruct q.
-
-Toplevel input, characters 0-10:
-Error: Abstracting over the terms "A0" and "q" leads to a term
-"λ (A0 : Type) (q : A0 == A0),
- match q in (_ == a) return (id A0 → id a) with
- | refl => id
- end x == f x" which is ill-typed.
-
-refine ((match q with refl => λ f, _ end) f).
+pose proof pcr f as p.
+destruct f as (f, q); simpl.
 
 bbb.
 
