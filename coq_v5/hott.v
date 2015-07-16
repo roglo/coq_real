@@ -1751,94 +1751,12 @@ Definition ua' {A B} : A ≃ B → A == B :=
 (* elimination rule = idtoeqv = idtoeqv2 *)
 (* ... *)
 
-Lemma aaa : ∀ A (p : A == A) (x : A), transport id p x == x.
-Proof.
-intros.
-(* je pense que c'est faux car on ne peut pas démontrer que p == refl *)
-Abort.
-
-(* http://disi.unitn.it/~zunino/teaching/formalTechniques/dependentMatch.html *)
-
-Definition foo (P : nat → Prop) (H0 : P 0) (HS : ∀ m, P (S m)) (x : nat) :=
-  match x with
-  | 0 => H0
-  | S y => HS y
-  end.
-
-Print foo.
- Inductive color : Set := white | black .
- Definition match_as_0 (P : color -> Prop) (Hw : P white) (Hb : P black)
-                      (f : color -> color) := (*: P (f white) :=*)
-  match f white as n return P n with
-  | white => Hw
-  | black => Hb
-  end.
-
-Print match_as_0.
-
-Inductive isBlack : color -> Prop :=
-  | B : isBlack black.
-
-Definition match_in_0 (P : color -> Prop) (H : P black)
-   (x : color) (H2 : isBlack x) : P x :=
-  match H2 with
-  | B => H
-  end.
-
-Print match_in_0.
-
- Inductive opposite : color -> color -> Prop :=
-  | WB : opposite white black
-  | BW : opposite black white
-.
-(*
- Definition match_in_1 (P : color -> Prop) (H : P black)
-                      (x : color) (H2: opposite white x) : P x :=
-  H .
-Toplevel input, characters 124-125:
-Error:
-In environment
-P : color → Prop
-H : P black
-x : color
-H2 : opposite white x
-The term "H" has type "P black" while it is expected to have type 
-"P x".
-*)
-
-Definition glop : ∀ a b, opposite a b
-  → a = white ∧ b = black ∨ a = black ∧ b = white.
-Proof.
-intros.
-destruct H; [ left | right ]; split; reflexivity.
-Qed.
-
-Definition match_in_1_pfff (P : color -> Prop) (H : P black)
-                     (x : color) (H2: opposite white x) : P x.
-Proof.
-destruct x; [ idtac | assumption ].
-apply glop in H2.
-destruct H2 as [(_, H2)| (H2, _)]; discriminate H2.
-Qed.
-
- Definition match_in_1 (P : color -> Prop) (H : P black)
-                      (x : color) (H2: opposite white x) : P x :=
-  let f (a b : color) : Prop :=
-        match a with | white => P b
-                     | black => True
-        end
-  in
-  match H2 in opposite a b return f a b with
-  | WB => H
-  | BW => I
-  end
-.
-
-Print match_in_1.
-Print "≃".
-
 (* propositional computation rule *)
 (* how the eliminator idtoeqv acts on the constructor A == B *)
+
+(* problem: seems to be not provable, and perhaps false;
+   counterexample below *)
+
 Definition negbisequiv : isequiv negb.
 Proof.
 split.
