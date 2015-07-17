@@ -1750,11 +1750,12 @@ destruct (Hiq (univalence A B)) as (g, α, β).
 apply α.
 Defined.
 
-Definition pcr {A B} : ∀ (f : A ≃ B) x, transport id (ua f) x == projT1 f x :=
-  λ f x,
-  match idtoeqv_ua f with
-  | refl => refl (projT1 (idtoeqv (ua f)) x)
-  end.
+Definition ua_pcr {A B}
+  : ∀ (f : A ≃ B) x, transport id (ua f) x == projT1 f x
+  := λ f x,
+     match idtoeqv_ua f with
+     | refl => refl (projT1 (idtoeqv (ua f)) x)
+     end.
 
 (* propositional uniqueness principle *)
 
@@ -1776,7 +1777,7 @@ Definition isequiv_transport {A B} : ∀ (p : A == B), isequiv (transport id p)
           existT (λ h : id A → id A, h o id ~~ id) id (reflexivity id))
      end.
 
-Definition pup {A B}
+Definition ua_pup {A B}
   : ∀ (p : A == B),
     p == ua (existT isequiv (transport id p) (isequiv_transport p))
   := λ (p : A == B),
@@ -1796,7 +1797,7 @@ Definition pup {A B}
 Definition idtoeqv_refl (A : U) : ideqv A == idtoeqv (refl A) :=
   refl (idtoeqv (refl A)).
 
-Definition reflex : ∀ A, refl A == ua (ideqv A) :=
+Definition ua_refl : ∀ A, refl A == ua (ideqv A) :=
   λ A,
   match idtoeqv_refl A with
   | refl =>
