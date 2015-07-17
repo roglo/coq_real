@@ -1806,6 +1806,52 @@ Definition ua_refl : ∀ A, refl A == ua (ideqv A) :=
       end
   end.
 
+Definition toto {A B C} :
+  ∀ (f : A ≃ B) (g : B ≃ C), isequiv (projT1 g ◦ projT1 f).
+intros.
+destruct f as (f, Hf); simpl.
+pose proof equivalence_isequiv f as r.
+destruct r as (Fqi, (Fiq, Fee)).
+pose proof Fiq Hf as F.
+destruct F as (f₁, αf, βf).
+destruct g as (g, Hg); simpl.
+pose proof equivalence_isequiv g as r.
+destruct r as (Gqi, (Giq, Gee)).
+pose proof Giq Hg as G.
+destruct G as (g₁, αg, βg).
+unfold "~~" in αf, βf, αg, βg.
+split.
+ apply existT with (x := f₁ ◦ g₁).
+ intros x.
+ rewrite <- αg.
+ rewrite composite_assoc.
+ rewrite <- (@composite_assoc B A).
+bbb.
+
+ intros x.
+ assert (((g ◦ (f ◦ f₁)) ◦ g₁) x = ((g ◦ id) ◦ g₁) x).
+  f_equal; f_equal.
+ unfold "~~" in αf.
+
+bbb.
+ rewrite <- composite_assoc f₁ f g.
+
+Check (@idtoeqv A B).
+Check @equivalence_isequiv.
+Check @equiv_prop.
+pose proof (@univalence A B) as p.
+bbb.
+
+destruct Hf as (f₁, f₂).
+destruct f₁ as (f₃, Hf₃).
+destruct f₂ as (f₄, Hf₄).
+simpl.
+destruct g as (g, Hg); simpl.
+
+split.
+apply existT with (x := invert (g ◦ f)).
+
+
 Definition ua_concat {A B C} :
   ∀ (f : A ≃ B) (g : B ≃ C) (u : isequiv (projT1 g ◦ projT1 f)),
   ua f • ua g == ua (existT _ (projT1 g ◦ projT1 f) u).
