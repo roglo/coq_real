@@ -1806,9 +1806,25 @@ Definition ua_refl : ∀ A, refl A == ua (ideqv A) :=
       end
   end.
 
+Lemma composite_cancel_r {A B C} : ∀ (f g : B → C) (h : A → B),
+  (f ~~ g) → (f ◦ h) ~~ (g ◦ h).
+Proof.
+intros; intros x; apply H.
+Defined.
+
+Lemma composite_cancel_l {A B C} : ∀ (f : B → C) (g h : A → B),
+  (g ~~ h) → (f ◦ g) ~~ (f ◦ h).
+Proof.
+intros; intros x; unfold "◦".
+rewrite H; reflexivity.
+Defined.
+
 Definition toto {A B C} :
   ∀ (f : A ≃ B) (g : B ≃ C), isequiv (projT1 g ◦ projT1 f).
 intros.
+(*
+pose proof hott_2_4_12_iii A B C f g as h.
+*)
 destruct f as (f, Hf); simpl.
 pose proof equivalence_isequiv f as r.
 destruct r as (Fqi, (Fiq, Fee)).
@@ -1819,13 +1835,40 @@ pose proof equivalence_isequiv g as r.
 destruct r as (Gqi, (Giq, Gee)).
 pose proof Giq Hg as G.
 destruct G as (g₁, αg, βg).
+(*
+destruct h as (h, Hh); simpl.
+pose proof equivalence_isequiv h as r.
+destruct r as (Hqi, (Hiq, Hee)).
+pose proof Hiq Hh as H.
+destruct H as (h₁, αh, βh).
+*)
+split.
+ apply existT with (x := f₁ ◦ g₁).
+ rewrite composite_assoc.
+ rewrite <- (@composite_assoc B A).
+ transitivity ((g ◦ id) ◦ g₁).
+ apply composite_cancel_r.
+ apply composite_cancel_l.
+ assumption.
+bbb.
+
 unfold "~~" in αf, βf, αg, βg.
 split.
  apply existT with (x := f₁ ◦ g₁).
- intros x.
- rewrite <- αg.
+ intros x; unfold id; simpl.
  rewrite composite_assoc.
  rewrite <- (@composite_assoc B A).
+ apply @compose with (y := ((g ◦ id) ◦ g₁) x).
+SearchAbout (_ _ == _ _).
+
+ assert (∀ y, (h ◦ f ◦ g) y == g y) as H1 by (intros; apply q).
+  assert (∀ y, (h ◦ f ◦ g) y == h y) as H2.
+   intros; rewrite <- composite_assoc.
+   unfold "◦"; apply ap, p.
+bbb.
+
+ intros x.
+ rewrite <- αg.
 bbb.
 
  intros x.
