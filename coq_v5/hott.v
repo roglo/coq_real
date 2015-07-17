@@ -1807,13 +1807,23 @@ Definition ua_refl : ∀ A, refl A == ua (ideqv A) :=
   end.
 
 Definition ua_concat {A B C} :
+  ∀ (f : A ≃ B) (g : B ≃ C) (u : isequiv (projT1 g ◦ projT1 f)),
+  ua f • ua g == ua (existT _ (projT1 g ◦ projT1 f) u).
+intros.
+Check @hott_2_3_9.
+
+bbb.
+
+Definition ua_concat {A B C} :
   ∀ (f : A ≃ B) (g : B ≃ C) u, (* (u := λ f, existT _ f _) *)
   ua f • ua g == ua (u (projT1 g ◦ projT1 f)).
 intros.
 Print "≃".
+Check (λ f, existT _ f _ : @equivalence A C).
+
+u : (A → C) → A ≃ C
 
 Check (projT1 f).
-Check (λ f, existT _ (projT1 f) _ : @equivalence A C).
 
 equivalence = λ A B : Type, {f : A → B & isequiv f}
      : Type → Type → Type
