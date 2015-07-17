@@ -1798,14 +1798,17 @@ Definition pup {A B}
 
 (* reflexivity *)
 
-Definition reflex : ∀ A, refl A = ua (ideqv A).
-bbb.
+Definition idtoeqv_refl (A : U) : ideqv A == idtoeqv (refl A) :=
+  refl (idtoeqv (refl A)).
 
-Definition reflex : ∀ A, refl A = ua (idtoeqv (refl A)).
-Proof.
-intros.
-Check (idtoeqv (refl A)).
-bbb.
+Definition reflex : ∀ A, refl A == ua (ideqv A) :=
+  λ A,
+  match idtoeqv_refl A with
+  | refl =>
+      match ua_idtoeqv (refl A) in (_ == p) return (p == _) with
+      | refl => refl _
+      end
+  end.
 
 bbb.
 
