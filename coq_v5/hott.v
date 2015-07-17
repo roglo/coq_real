@@ -1154,17 +1154,12 @@ Definition equivalence A B := Σ (f : A → B), isequiv f.
 
 Notation "A ≃ B" := (equivalence A B) (at level 70).
 
-Lemma hott_2_4_12_i : ∀ A, A ≃ A.
-Proof.
-intros.
-apply existT with (x := id).
-split; apply existT with (x := id); reflexivity.
-Qed.
+(* Lemma 2.4.12 i *)
 
-Definition hott_2_4_12_i_bis : ∀ A, A ≃ A :=
-  λ A,
-  existT isequiv id
-  (existT (λ g, id o g ~~ id) id refl, existT (λ h, h o id ~~ id) id refl).
+Definition ideqv A : A ≃ A :=
+  existT (λ f : A → A, isequiv f) id
+    (existT (λ g : A → A, id o g ~~ id) id (reflexivity id),
+     existT (λ h : A → A, h o id ~~ id) id (reflexivity id)).
 
 Lemma hott_2_4_12_ii : ∀ A B, A ≃ B → B ≃ A.
 Proof.
@@ -1773,21 +1768,44 @@ destruct (Hiq (univalence A B)) as (g, α, β).
 apply β.
 Defined.
 
-Definition isequiv_transport {A B} : ∀ (p : A == B), isequiv (transport id p).
-Proof.
-intros.
-destruct p; simpl.
-split; apply existT with (x := id); reflexivity.
-Defined.
+Definition isequiv_transport {A B} : ∀ (p : A == B), isequiv (transport id p)
+  := λ p,
+     match p with
+     | refl =>
+         (existT (λ g : id A → id A, id o g ~~ id) id (reflexivity id),
+          existT (λ h : id A → id A, h o id ~~ id) id (reflexivity id))
+     end.
 
-Definition pup {A B} : ∀ (p : A == B),
-  p == ua (existT _ (transport id p) (isequiv_transport p)).
+Definition pup {A B}
+  : ∀ (p : A == B),
+    p == ua (existT isequiv (transport id p) (isequiv_transport p))
+  := λ (p : A == B),
+     match p return
+       (ua (idtoeqv p) == p
+        → p == ua (existT isequiv (transport id p) (isequiv_transport p)))
+     with
+     | refl =>
+         let g :=
+           existT isequiv id
+             (existT (λ g, id o g ~~ id) id (reflexivity id),
+              existT (λ h, h o id ~~ id) id (reflexivity id))
+         in
+         λ q,
+         match q in (_ == r) return (r == ua g) with
+         | refl => refl (ua g)
+         end
+     end (ua_idtoeqv p).
+
+(* reflexivity *)
+
+Definition reflex : ∀ A, refl A = ua (ideqv A).
+bbb.
+
+Definition reflex : ∀ A, refl A = ua (idtoeqv (refl A)).
 Proof.
 intros.
-pose proof (ua_idtoeqv p) as q.
-destruct p; simpl.
-destruct q; reflexivity.
-Defined.
+Check (idtoeqv (refl A)).
+bbb.
 
 bbb.
 
