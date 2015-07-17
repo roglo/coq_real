@@ -1819,81 +1819,64 @@ intros; intros x; unfold "◦".
 rewrite H; reflexivity.
 Defined.
 
-Definition toto {A B C} :
+Definition isequiv_compose {A B C} :
   ∀ (f : A ≃ B) (g : B ≃ C), isequiv (projT1 g ◦ projT1 f).
 intros.
-(*
-pose proof hott_2_4_12_iii A B C f g as h.
-*)
 destruct f as (f, Hf); simpl.
-pose proof equivalence_isequiv f as r.
+pose proof (equivalence_isequiv f) as r.
 destruct r as (Fqi, (Fiq, Fee)).
-pose proof Fiq Hf as F.
+pose proof (Fiq Hf) as F.
 destruct F as (f₁, αf, βf).
 destruct g as (g, Hg); simpl.
-pose proof equivalence_isequiv g as r.
+pose proof (equivalence_isequiv g) as r.
 destruct r as (Gqi, (Giq, Gee)).
-pose proof Giq Hg as G.
+pose proof (Giq Hg) as G.
 destruct G as (g₁, αg, βg).
-(*
-destruct h as (h, Hh); simpl.
-pose proof equivalence_isequiv h as r.
-destruct r as (Hqi, (Hiq, Hee)).
-pose proof Hiq Hh as H.
-destruct H as (h₁, αh, βh).
-*)
 split.
  apply existT with (x := f₁ ◦ g₁).
  rewrite composite_assoc.
  rewrite <- (@composite_assoc B A).
  transitivity ((g ◦ id) ◦ g₁).
- apply composite_cancel_r.
- apply composite_cancel_l.
- assumption.
-bbb.
+  apply composite_cancel_r, composite_cancel_l.
+  assumption.
 
-unfold "~~" in αf, βf, αg, βg.
-split.
+  transitivity (g ◦ g₁); [ idtac | assumption ].
+  apply composite_cancel_r; reflexivity.
+
  apply existT with (x := f₁ ◦ g₁).
- intros x; unfold id; simpl.
  rewrite composite_assoc.
- rewrite <- (@composite_assoc B A).
- apply @compose with (y := ((g ◦ id) ◦ g₁) x).
-SearchAbout (_ _ == _ _).
+ rewrite <- (@composite_assoc B C).
+ transitivity ((f₁ ◦ id) ◦ f).
+  apply composite_cancel_r, composite_cancel_l.
+  assumption.
 
- assert (∀ y, (h ◦ f ◦ g) y == g y) as H1 by (intros; apply q).
-  assert (∀ y, (h ◦ f ◦ g) y == h y) as H2.
-   intros; rewrite <- composite_assoc.
-   unfold "◦"; apply ap, p.
+  transitivity (f₁ ◦ f); [ idtac | assumption ].
+  apply composite_cancel_r; reflexivity.
+Defined.
+
+(* isequiv_compose :
+∀ (A B C : Type) (f : A ≃ B) (g : B ≃ C), isequiv (projT1 g ◦ projT1 f) *)
+
+Definition ua_concat {A B C} : ∀ (f : A ≃ B) (g : B ≃ C),
+  ua f • ua g == ua (existT _ (projT1 g ◦ projT1 f) (isequiv_compose f g)).
+Proof.
+intros.
+set (p := ua f).
+set (q := ua g).
+(* hott_2_3_9
+     : ∀ (A : Type) (x y z : A) (P : A → U) (p : x == y)
+       (q : y == z) (u : P x),
+       transport P q (transport P p u) == transport P (p • q) u
+   idtoeqv
+     : ∀ A B : U, A == B → A ≃ B
+   ua
+     : ∀ A B : Type, A ≃ B → A == B *)
+
+pose proof hott_2_3_9 id p q.
+simpl in H.
+Print "•".
+
 bbb.
-
- intros x.
- rewrite <- αg.
-bbb.
-
- intros x.
- assert (((g ◦ (f ◦ f₁)) ◦ g₁) x = ((g ◦ id) ◦ g₁) x).
-  f_equal; f_equal.
- unfold "~~" in αf.
-
-bbb.
- rewrite <- composite_assoc f₁ f g.
-
-Check (@idtoeqv A B).
-Check @equivalence_isequiv.
-Check @equiv_prop.
-pose proof (@univalence A B) as p.
-bbb.
-
-destruct Hf as (f₁, f₂).
-destruct f₁ as (f₃, Hf₃).
-destruct f₂ as (f₄, Hf₄).
-simpl.
-destruct g as (g, Hg); simpl.
-
-split.
-apply existT with (x := invert (g ◦ f)).
-
 
 Definition ua_concat {A B C} :
   ∀ (f : A ≃ B) (g : B ≃ C) (u : isequiv (projT1 g ◦ projT1 f)),
