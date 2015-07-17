@@ -1870,11 +1870,11 @@ set (q := ua g).
    idtoeqv
      : ∀ A B : U, A == B → A ≃ B
    ua
-     : ∀ A B : Type, A ≃ B → A == B *)
+     : ∀ A B : Type, A ≃ B → A == B
+   •
+     : ∀ (A : Type) (x y z : A), x == y → y == z → x == z *)
 
 pose proof hott_2_3_9 id p q.
-simpl in H.
-Print "•".
 
 bbb.
 
