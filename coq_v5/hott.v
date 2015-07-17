@@ -1785,14 +1785,9 @@ Definition pup {A B}
         → p == ua (existT isequiv (transport id p) (isequiv_transport p)))
      with
      | refl =>
-         let g :=
-           existT isequiv id
-             (existT (λ g, id o g ~~ id) id (reflexivity id),
-              existT (λ h, h o id ~~ id) id (reflexivity id))
-         in
          λ q,
-         match q in (_ == r) return (r == ua g) with
-         | refl => refl (ua g)
+         match q in (_ == r) return (r == ua (ideqv A)) with
+         | refl => refl _
          end
      end (ua_idtoeqv p).
 
