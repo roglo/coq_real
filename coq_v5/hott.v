@@ -81,11 +81,11 @@ Abort. (* to be done *)
     Show that we have h o (g o f ) ≡ (h o g) o f. *)
 
 Definition composite {A B C} (f : A → B) (g : B → C) x := g (f x).
-Notation "g 'o' f" := (composite f g) (at level 40).
+Notation "g '◦' f" := (composite f g) (at level 40).
 (* composite : ∀ A B C : Type, (A → B) → (B → C) → A → C *)
 
 Theorem composite_assoc {A B C D} : ∀ (f : A → B) (g : B → C) (h : C → D),
-  h o (g o f) = (h o g) o f.
+  h ◦ (g ◦ f) = (h ◦ g) ◦ f.
 Proof. reflexivity. Qed.
 
 (* Exercise 1.2. Derive the recursion principle for products rec_{AxB}
@@ -806,7 +806,7 @@ Proof. induction p; constructor. Qed.
 
 Definition hott_2_2_2_iii {A B C x y}
   : ∀ (f : A → B) (g : B → C) (p : x == y),
-    ap g (ap f p) == ap (g o f) p
+    ap g (ap f p) == ap (g ◦ f) p
   := λ f g p,
      match p with refl => refl (ap g (ap f (refl x))) end.
 
@@ -915,7 +915,7 @@ Definition hott_2_3_9 {A x y z} :
 
 Definition hott_2_3_10 {A B x y} :
     ∀ (f : A → B) (P : B → U) (p : x == y) (u : P (f x)),
-    transport (P o f) p u == transport P (ap f p) u
+    transport (P ◦ f) p u == transport P (ap f p) u
  := λ f P p u,
     match p with
     | refl => refl (transport P (ap f (refl x)) u)
@@ -1010,7 +1010,7 @@ Qed.
 (* quasi-inverse *)
 
 Inductive qinv {A B} (f : A → B) : Type :=
-  qi : ∀ (g : B → A) (α : (f o g) ~~ id) (β : (g o f) ~~ id), qinv f.
+  qi : ∀ (g : B → A) (α : (f ◦ g) ~~ id) (β : (g ◦ f) ~~ id), qinv f.
 
 Example ex_2_4_7 A : qinv (id : A → A) := qi id id refl refl.
 Print ex_2_4_7.
@@ -1020,12 +1020,12 @@ Example ex_2_4_8_i A : ∀ x y z : A, ∀ (p : x == y),
 Proof.
 intros.
 apply qi with (g := λ q, p⁻¹ • q).
- intros t; unfold id, "o"; simpl.
+ intros t; unfold id, "◦"; simpl.
  eapply compose; [ idtac | apply invert, hott_2_1_4_i_2 ].
  eapply compose; [ apply hott_2_1_4_iv | apply dotr ].
  eapply hott_2_1_4_ii_2; reflexivity.
 
- intros t; unfold id, "o"; simpl.
+ intros t; unfold id, "◦"; simpl.
  eapply compose; [ idtac | apply invert, hott_2_1_4_i_2 ].
  eapply compose; [ apply hott_2_1_4_iv | apply dotr ].
  eapply hott_2_1_4_ii_1; reflexivity.
@@ -1047,12 +1047,12 @@ Example ex_2_4_8_ii A : ∀ x y z : A, ∀ (p : x == y),
 Proof.
 intros.
 apply qi with (g := λ q, q • p⁻¹).
- intros t; unfold id, "o"; simpl.
+ intros t; unfold id, "◦"; simpl.
  eapply compose; [ idtac | apply invert, hott_2_1_4_i_1 ].
  eapply compose; [ eapply invert, hott_2_1_4_iv | apply dotl ].
  eapply hott_2_1_4_ii_1; reflexivity.
 
- intros t; unfold id, "o"; simpl.
+ intros t; unfold id, "◦"; simpl.
  eapply compose; [ idtac | apply invert, hott_2_1_4_i_1 ].
  eapply compose; [ eapply invert, hott_2_1_4_iv | apply dotl ].
  eapply hott_2_1_4_ii_2; reflexivity.
@@ -1075,11 +1075,11 @@ Example ex_2_4_9 A x y : ∀ (p : x == y) (P : A → U), qinv (transport P p).
 Proof.
 intros.
 apply qi with (g := transport P (p⁻¹)).
- intros z; unfold id, "o"; simpl.
+ intros z; unfold id, "◦"; simpl.
  eapply compose; [ apply hott_2_3_9 | idtac ].
  induction p; reflexivity.
 
- intros z; unfold id, "o"; simpl.
+ intros z; unfold id, "◦"; simpl.
  eapply compose; [ apply hott_2_3_9 | idtac ].
  induction p; reflexivity.
 Qed.
@@ -1107,7 +1107,7 @@ Definition equiv_prop {A B} isequiv :=
 Check @equiv_prop.
 
 Definition isequiv {A B} f :=
-  ((Σ (g : B → A), (f o g ~~ id)) * (Σ (h : B → A), (h o f ~~ id)))%type.
+  ((Σ (g : B → A), (f ◦ g ~~ id)) * (Σ (h : B → A), (h ◦ f ~~ id)))%type.
 
 Definition equivalence_isequiv {A B} : equiv_prop (@isequiv A B).
 Proof.
@@ -1124,15 +1124,15 @@ split; [ idtac | split ].
  econstructor; [ eassumption | idtac ].
  intros x.
   unfold homotopy in p, q.
-  assert (∀ y, (h o f o g) y == g y) as H1 by (intros; apply q).
-  assert (∀ y, (h o f o g) y == h y) as H2.
+  assert (∀ y, (h ◦ f ◦ g) y == g y) as H1 by (intros; apply q).
+  assert (∀ y, (h ◦ f ◦ g) y == h y) as H2.
    intros; rewrite <- composite_assoc.
-   unfold "o"; apply ap, p.
+   unfold "◦"; apply ap, p.
 
-   transitivity ((h o f) x); [ idtac | apply q ].
+   transitivity ((h ◦ f) x); [ idtac | apply q ].
    assert (∀ y, g y == h y) as H3; [ idtac | apply H3 ].
    intros.
-   transitivity ((h o f o g) y); [ symmetry; apply H1 | apply H2 ].
+   transitivity ((h ◦ f ◦ g) y); [ symmetry; apply H1 | apply H2 ].
 
  intros.
  unfold isequiv in e₁, e₂.
@@ -1158,8 +1158,8 @@ Notation "A ≃ B" := (equivalence A B) (at level 70).
 
 Definition ideqv A : A ≃ A :=
   existT (λ f : A → A, isequiv f) id
-    (existT (λ g : A → A, id o g ~~ id) id (reflexivity id),
-     existT (λ h : A → A, h o id ~~ id) id (reflexivity id)).
+    (existT (λ g : A → A, id ◦ g ~~ id) id (reflexivity id),
+     existT (λ h : A → A, h ◦ id ~~ id) id (reflexivity id)).
 
 Lemma hott_2_4_12_ii : ∀ A B, A ≃ B → B ≃ A.
 Proof.
@@ -1182,8 +1182,8 @@ Definition quasi_inv {A B} (f : A ≃ B) : B ≃ A :=
          match Heq H with
          | qi finv1 α β =>
              existT isequiv finv1
-               (existT (λ g, finv1 o g ~~ id) g β,
-                existT (λ h, h o finv1 ~~ id) g α)
+               (existT (λ g, finv1 ◦ g ~~ id) g β,
+                existT (λ h, h ◦ finv1 ~~ id) g α)
          end
       end) f.
 
@@ -1203,17 +1203,17 @@ destruct H as (Hgqe, (Hgeq, Hgee)).
 apply Hgeq in eqg.
 induction eqg as (g¹, αg, βg).
 unfold equivalence.
-apply existT with (x := g o f).
+apply existT with (x := g ◦ f).
 unfold isequiv.
 split.
- apply existT with (x := f¹ o g¹).
+ apply existT with (x := f¹ ◦ g¹).
  intros c.
  pose proof αf (g¹ c) as H.
  apply (ap g) in H.
  unfold id in H; simpl in H.
  transitivity (g (g¹ c)); [ assumption | apply αg ].
 
- apply existT with (x := f¹ o g¹).
+ apply existT with (x := f¹ ◦ g¹).
  intros a.
  pose proof βg (f a) as H.
  apply (ap f¹) in H.
@@ -1430,7 +1430,7 @@ apply (qi f) with (g := g).
  subst f g; simpl.
  unfold hott_2_7_2_f; simpl.
  unfold hott_2_7_2_g; simpl.
- unfold "o"; simpl.
+ unfold "◦"; simpl.
  reflexivity.
 
  intros r; unfold id; simpl.
@@ -1440,7 +1440,7 @@ apply (qi f) with (g := g).
  subst f g; simpl.
  unfold hott_2_7_2_f; simpl.
  unfold hott_2_7_2_g; simpl.
- unfold "o"; simpl.
+ unfold "◦"; simpl.
  reflexivity.
 Qed.
 
@@ -1506,11 +1506,11 @@ unfold equivalence.
 apply (existT _ f), equivalence_isequiv.
 apply (qi f g).
  subst f g; simpl.
- unfold "o"; simpl.
+ unfold "◦"; simpl.
  intros x; destruct x; reflexivity.
 
  subst f g; simpl.
- unfold "o"; simpl.
+ unfold "◦"; simpl.
  intros x.
  refine (match x with refl => _ end).
  reflexivity.
@@ -1556,7 +1556,7 @@ set (p := equivalence_isequiv happly).
 destruct p as (Hqi, (Hiq, Hee)).
 set (qH := Hiq (extensionality f g)).
 destruct qH as (m, α, β).
-unfold "~~", "o", id in α.
+unfold "~~", "◦", id in α.
 rewrite α; reflexivity.
 Qed.
 
@@ -1569,7 +1569,7 @@ set (q := equivalence_isequiv happly).
 destruct q as (Hqi, (Hiq, Hee)).
 set (qH := Hiq (extensionality f g)).
 destruct qH as (m, α, β).
-unfold "~~", "o", id in β.
+unfold "~~", "◦", id in β.
 apply invert.
 rewrite β; reflexivity.
 Qed.
@@ -1583,7 +1583,7 @@ set (q := equivalence_isequiv happly).
 destruct q as (Hqi, (Hiq, Hee)).
 set (qH := Hiq (extensionality f f)).
 destruct qH as (m, α, β).
-unfold "~~", "o", id in α, β.
+unfold "~~", "◦", id in α, β.
 pose proof β (refl f) as H.
 apply invert, H.
 Qed.
@@ -1709,8 +1709,8 @@ Definition idtoeqv {A B : U} : A == B → A ≃ B :=
   existT isequiv (transport id p)
     match p with
     | refl =>
-        (existT (λ g, id o g ~~ id) id (reflexivity id),
-         existT (λ h, h o id ~~ id) id (reflexivity id))
+        (existT (λ g, id ◦ g ~~ id) id (reflexivity id),
+         existT (λ h, h ◦ id ~~ id) id (reflexivity id))
     end.
 
 Axiom univalence : ∀ A B : U, isequiv (@idtoeqv A B).
@@ -1773,8 +1773,8 @@ Definition isequiv_transport {A B} : ∀ (p : A == B), isequiv (transport id p)
   := λ p,
      match p with
      | refl =>
-         (existT (λ g : id A → id A, id o g ~~ id) id (reflexivity id),
-          existT (λ h : id A → id A, h o id ~~ id) id (reflexivity id))
+         (existT (λ g : id A → id A, id ◦ g ~~ id) id (reflexivity id),
+          existT (λ h : id A → id A, h ◦ id ~~ id) id (reflexivity id))
      end.
 
 Definition ua_pup {A B}
@@ -1806,6 +1806,17 @@ Definition ua_refl : ∀ A, refl A == ua (ideqv A) :=
       end
   end.
 
+Definition ua_concat {A B C} :
+  ∀ (f : A ≃ B) (g : B ≃ C) u,
+  ua f • ua g == ua (u (projT1 g ◦ projT1 f)).
+intros.
+destruct f.
+destruct g.
+simpl.
+bbb.
+
+SearchAbout ((_ ≃ _)).
+
 bbb.
 
 (* some experiments... *)
@@ -1819,20 +1830,20 @@ set (g := λ x : t, if x then true else false).
 unfold equivalence.
 apply (existT _ f), equivalence_isequiv.
 apply (qi f g).
- subst f g; unfold "o"; simpl.
+ subst f g; unfold "◦"; simpl.
  intros x; destruct x; reflexivity.
 
- subst f g; unfold "o"; simpl.
+ subst f g; unfold "◦"; simpl.
  intros x; destruct x; reflexivity.
 Defined.
 
 Axiom unival1 : ∀ A B : Set, (A ≃ B) → (A == B).
 
 Theorem unival2 : ∀ A B (f : (A == B) → (A ≃ B)) (g : (A ≃ B) → (A == B)),
-  f o g ~~ id.
+  f ◦ g ~~ id.
 Proof.
 intros A B f g x.
-unfold id, "o"; simpl.
+unfold id, "◦"; simpl.
 destruct f.
 unfold isequiv in i.
 destruct i as (u, v).
@@ -1848,9 +1859,9 @@ destruct i0.
 destruct s, s0.
 
 Axiom unival2 : ∀ A B (f : (A == B) → (A ≃ B)) (g : (A ≃ B) → (A == B)),
-  f o g ~~ id.
+  f ◦ g ~~ id.
 Axiom unival3 : ∀ A B (f : (A == B) → (A ≃ B)) (g : (A ≃ B) → (A == B)),
-  g o f ~~ id.
+  g ◦ f ~~ id.
 
 Theorem eq_bool_t : bool == t.
 Proof.
@@ -1895,7 +1906,7 @@ assert (∀ x, g x == f x) as q by (intros y; apply invert, p).
 set (v := fun_impl A B g f q).
 apply (existT _ u), equivalence_isequiv.
 apply (qi u v).
- subst u v; unfold "o", id, fun_impl; simpl.
+ subst u v; unfold "◦", id, fun_impl; simpl.
  intros z; destruct z as (z1, z2); simpl.
  apply ap.
 bbb.
@@ -1914,11 +1925,11 @@ set (v := λ (_ : {y : B | y == g x}),
   exist (λ y : B, y == f x) (f x) (refl (f x))).
 apply (existT _ u), equivalence_isequiv.
 apply (qi u v).
- subst u v; unfold "o", id; simpl.
+ subst u v; unfold "◦", id; simpl.
  intros z; destruct z as (z1, z2); simpl.
  rewrite z2; reflexivity.
 
- subst u v; unfold "o", id; simpl.
+ subst u v; unfold "◦", id; simpl.
  intros z; destruct z as (z1, z2); simpl.
  rewrite z2; reflexivity.
 Qed.
