@@ -1819,10 +1819,15 @@ Definition ua_refl : ∀ A, refl A == ua (ideqv A) :=
 
 (* concatenation *)
 
+Lemma transport_eq {A} P {x y : A} : ∀ (p : x == y) u v,
+  transport P p u == transport P p v → u == v.
+Proof. intros. destruct p; simpl in H; apply H. Qed.
+
 Definition ua_concat {A B C} : ∀ (f : A ≃ B) (g : B ≃ C),
   ua f • ua g == ua (g ◦◦ f).
 Proof.
 intros.
+symmetry.
 set (p := ua f).
 set (q := ua g).
 rewrite <- (idtoeqv_ua g).
@@ -1830,6 +1835,11 @@ rewrite <- (idtoeqv_ua f).
 subst p q.
 set (p := ua f).
 set (q := ua g).
+apply (transport_eq (@Id Type A) (refl _)).
+bbb.
+
+eapply compose; [ idtac | eapply hott_2_3_9 ].
+
 bbb.
 
 hott_2_3_9
@@ -1909,10 +1919,6 @@ Defined.
 
 (* isequiv_compose :
 ∀ (A B C : Type) (f : A ≃ B) (g : B ≃ C), isequiv (projT1 g ◦ projT1 f) *)
-
-Lemma transport_eq {A} P {x y : A} : ∀ (p : x == y) u v,
-  transport P p u == transport P p v → u == v.
-Proof. intros. destruct p; simpl in H; apply H. Qed.
 
 Definition ua_concat {A B C} : ∀ (f : A ≃ B) (g : B ≃ C),
   ua f • ua g == ua (existT _ (projT1 g ◦ projT1 f) (isequiv_compose f g)).
