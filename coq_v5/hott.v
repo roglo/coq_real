@@ -1187,9 +1187,11 @@ Definition quasi_inv {A B} (f : A ≃ B) : B ≃ A :=
 
 Print sigT_rect. (* à faire… *)
 
-Lemma hott_2_4_12_iii : ∀ A B C, A ≃ B → B ≃ C → A ≃ C.
+(* Lemma 2.4.12 iii *)
+
+Lemma equiv_compose {A B C} : A ≃ B → B ≃ C → A ≃ C.
 Proof.
-intros A B C eqf eqg.
+intros eqf eqg.
 destruct eqf as (f, eqf).
 destruct eqg as (g, eqg).
 pose proof (@equivalence_isequiv A B f) as H.
@@ -1217,7 +1219,9 @@ split.
  apply (ap f¹) in H.
  unfold id in H; simpl in H.
  transitivity (f¹ (f a)); [ assumption | apply βf ].
-Qed.
+Defined.
+
+Notation "g '◦◦' f" := (equiv_compose f g) (at level 40).
 
 (* 2.5 The higher groupoid structure of type formers *)
 
@@ -1812,6 +1816,37 @@ Definition ua_refl : ∀ A, refl A == ua (ideqv A) :=
       | refl => refl _
       end
   end.
+
+(* concatenation *)
+
+Definition ua_concat {A B C} : ∀ (f : A ≃ B) (g : B ≃ C),
+  ua f • ua g == ua (g ◦◦ f).
+Proof.
+intros.
+set (p := ua f).
+set (q := ua g).
+bbb.
+unfold equiv_compose.
+destruct f as (f, Hf).
+destruct g as (g, Hg).
+set (r := equivalence_isequiv f).
+destruct r as (Fqi, (Fiq, Fee)).
+unfold qinv_rect; simpl.
+set (r := Fiq Hf).
+destruct r as (f₁, αf, βf).
+set (r := equivalence_isequiv g).
+destruct r as (Gqi, (Giq, Gee)).
+set (r := Giq Hg).
+destruct r as (g₁, αg, βg).
+Check @hott_2_3_9.
+Check @equiv_compose.
+Check @idtoeqv.
+
+bbb.
+
+(* ... *)
+
+bbb.
 
 Lemma composite_homotopy_cancel_r {A B C} : ∀ (f g : B → C) (h : A → B),
   (f ~~ g) → (f ◦ h) ~~ (g ◦ h).
