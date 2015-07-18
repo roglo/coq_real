@@ -1835,8 +1835,23 @@ rewrite <- (idtoeqv_ua f).
 subst p q.
 set (p := ua f).
 set (q := ua g).
+pose proof @transport_eq (@Id Type A).
+
 apply (transport_eq (@Id Type A) (refl _)).
-bbb.
+pose proof @hott_2_3_9 U A B C (Id A) p .
+
+hott_2_3_9
+     : forall (A : Type) (x y z : A) (P : A -> U) (p : @Id A x y)
+         (q : @Id A y z) (u : P x),
+       @Id (P z) (@transport A P y z q (@transport A P x y p u))
+         (@transport A P x z (@compose A x y z p q) u)
+  ============================
+   @Id (@Id Type A C)
+     (@transport Type (@Id Type A) C C (@refl Type C)
+        (@ua A C (@equiv_compose A B C (@idtoeqv A B p) (@idtoeqv B C q))))
+     (@transport Type (@Id Type A) C C (@refl Type C)
+        (@compose Type A B C p q))
+
 
 eapply compose; [ idtac | eapply hott_2_3_9 ].
 
