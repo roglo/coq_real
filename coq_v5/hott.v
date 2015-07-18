@@ -1888,8 +1888,30 @@ set (q := ua g).
 pose proof hott_2_3_9 id p q.
 (* transport_eq
      : ∀ (A : Type) (P : A → Type) (x y : A) (p : x == y)
-       (u v : P x), transport P p u == transport P p v → u == v *)
+       (u v : P x), transport P p u == transport P p v → u == v
+   transport_eq
+     : forall (A : Type) (P : A -> Type) (x y : A) 
+         (p : @Id A x y) (u v : P x),
+       @Id (P y) (@transport A P x y p u) (@transport A P x y p v) ->
+       @Id (P x) u v *)
+pose proof (p • q) as r.
+pose proof (@transport_eq (A == C)).
+bbb.
+
 apply (transport_eq id (p • q)).
+(@id Type A)
+(@Id Type A C)
+P x = @Id Type A C
+
+   @Id (P x) u v
+   @Id (@Id Type A C) (@compose Type A B C p q)
+     (@ua A C
+        (@existT (A -> C) (@isequiv A C)
+           (@composite A B C
+              (@projT1 (A -> B) (fun f0 : A -> B => @isequiv A B f0) f)
+              (@projT1 (B -> C) (fun f0 : B -> C => @isequiv B C f0) g))
+           (@isequiv_compose A B C f g)))
+
 
 bbb.
 
