@@ -900,8 +900,6 @@ Definition hott_2_3_8 A B (P := λ _ : A, B) (f : A → B) x y (p : x == y)
   : apd f p == transportconst B p (f x) • ap f p
   := match p with refl => refl (apd f (refl x)) end.
 
-Print hott_2_3_8.
-
 Definition hott_2_3_9 {A x y z} :
     ∀ (P : A → U) (p : x == y) (q : y == z) (u : P x),
     transport P q (transport P p u) == transport P (p • q) u :=
@@ -1806,13 +1804,13 @@ Definition ua_refl : ∀ A, refl A == ua (ideqv A) :=
       end
   end.
 
-Lemma composite_cancel_r {A B C} : ∀ (f g : B → C) (h : A → B),
+Lemma composite_homotopy_cancel_r {A B C} : ∀ (f g : B → C) (h : A → B),
   (f ~~ g) → (f ◦ h) ~~ (g ◦ h).
 Proof.
 intros; intros x; apply H.
 Defined.
 
-Lemma composite_cancel_l {A B C} : ∀ (f : B → C) (g h : A → B),
+Lemma composite_homotopy_cancel_l {A B C} : ∀ (f : B → C) (g h : A → B),
   (g ~~ h) → (f ◦ g) ~~ (f ◦ h).
 Proof.
 intros; intros x; unfold "◦".
@@ -1837,21 +1835,21 @@ split.
  rewrite composite_assoc.
  rewrite <- (@composite_assoc B A).
  transitivity ((g ◦ id) ◦ g₁).
-  apply composite_cancel_r, composite_cancel_l.
+  apply composite_homotopy_cancel_r, composite_homotopy_cancel_l.
   assumption.
 
   transitivity (g ◦ g₁); [ idtac | assumption ].
-  apply composite_cancel_r; reflexivity.
+  apply composite_homotopy_cancel_r; reflexivity.
 
  apply existT with (x := f₁ ◦ g₁).
  rewrite composite_assoc.
  rewrite <- (@composite_assoc B C).
  transitivity ((f₁ ◦ id) ◦ f).
-  apply composite_cancel_r, composite_cancel_l.
+  apply composite_homotopy_cancel_r, composite_homotopy_cancel_l.
   assumption.
 
   transitivity (f₁ ◦ f); [ idtac | assumption ].
-  apply composite_cancel_r; reflexivity.
+  apply composite_homotopy_cancel_r; reflexivity.
 Defined.
 
 (* isequiv_compose :
