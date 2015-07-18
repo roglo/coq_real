@@ -1825,6 +1825,17 @@ Proof.
 intros.
 set (p := ua f).
 set (q := ua g).
+rewrite <- (idtoeqv_ua g).
+rewrite <- (idtoeqv_ua f).
+subst p q.
+set (p := ua f).
+set (q := ua g).
+bbb.
+
+hott_2_3_9
+     : ∀ (A : Type) (x y z : A) (P : A → U) (p : x == y)
+       (q : y == z) (u : P x),
+       transport P q (transport P p u) == transport P (p • q) u
 bbb.
 unfold equiv_compose.
 destruct f as (f, Hf).
