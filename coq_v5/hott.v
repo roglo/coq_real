@@ -1864,6 +1864,10 @@ Defined.
 (* isequiv_compose :
 ∀ (A B C : Type) (f : A ≃ B) (g : B ≃ C), isequiv (projT1 g ◦ projT1 f) *)
 
+Lemma transport_eq {A} P {x y : A} : ∀ (p : x == y) u v,
+  transport P p u == transport P p v → u == v.
+Proof. intros. destruct p; simpl in H; apply H. Qed.
+
 Definition ua_concat {A B C} : ∀ (f : A ≃ B) (g : B ≃ C),
   ua f • ua g == ua (existT _ (projT1 g ◦ projT1 f) (isequiv_compose f g)).
 Proof.
@@ -1882,6 +1886,13 @@ set (q := ua g).
      : ∀ (A : Type) (x y z : A), x == y → y == z → x == z *)
 
 pose proof hott_2_3_9 id p q.
+(* transport_eq
+     : ∀ (A : Type) (P : A → Type) (x y : A) (p : x == y)
+       (u v : P x), transport P p u == transport P p v → u == v *)
+apply (transport_eq id (p • q)).
+
+bbb.
+
 destruct f as (f, eqf).
 destruct g as (g, eqg).
 simpl in *.
@@ -1893,6 +1904,7 @@ set (Fiq eqf) as qif.
 set (Giq eqg) as qig.
 destruct qif as (f₁, αf, βf).
 destruct qig as (g₁, αg, βg).
+unfold ua; simpl.
 
 bbb.
 
