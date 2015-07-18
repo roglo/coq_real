@@ -1732,6 +1732,15 @@ Definition ua {A B} : A ≃ B → A == B :=
       end
   end.
 
+Definition ua' {A B} : A ≃ B → A == B :=
+  λ p,
+  match equivalence_isequiv idtoeqv with
+  | conjt _ (conjt Hiq _) =>
+      match Hiq (univalence A B) with
+      | qi f _ _ => f p
+      end
+  end.
+
 (* elimination rule = idtoeqv *)
 (* ... *)
 
@@ -1873,6 +1882,17 @@ set (q := ua g).
      : ∀ (A : Type) (x y z : A), x == y → y == z → x == z *)
 
 pose proof hott_2_3_9 id p q.
+destruct f as (f, eqf).
+destruct g as (g, eqg).
+simpl in *.
+set (r := equivalence_isequiv f).
+destruct r as (Fqi, (Fiq, Fee)).
+set (r := equivalence_isequiv g).
+destruct r as (Gqi, (Giq, Gee)).
+set (Fiq eqf) as qif.
+set (Giq eqg) as qig.
+destruct qif as (f₁, αf, βf).
+destruct qig as (g₁, αg, βg).
 
 bbb.
 
