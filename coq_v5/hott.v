@@ -1832,6 +1832,21 @@ Lemma transport_eq {A} P {x y : A} : ∀ (p : x == y) u v,
   transport P p u == transport P p v → u == v.
 Proof. intros. destruct p; simpl in H; apply H. Qed.
 
+Definition idtoeqv_concat1 {A B C} : ∀ (p : A == B) (q : B == C),
+  idtoeqv (p • q) == idtoeqv q ◦◦ idtoeqv p.
+Proof.
+intros.
+destruct p, q.
+rewrite <- idtoeqv_refl.
+rewrite <- idtoeqv_refl.
+bbb.
+
+Definition idtoeqv_concat2 {A B C} : ∀ (f : A ≃ B) (g : B ≃ C),
+  idtoeqv (ua f • ua g) == idtoeqv (ua g) ◦◦ idtoeqv (ua f).
+Proof.
+intros.
+bbb.
+
 Definition ua_concat {A B C} : ∀ (f : A ≃ B) (g : B ≃ C),
   ua f • ua g == ua (g ◦◦ f).
 Proof.
@@ -1846,9 +1861,16 @@ set (p := ua f).
 set (q := ua g).
 apply (transport_eq (Id A) (refl _)).
 pose proof @hott_2_3_9 U A B C (Id A) p q (refl _).
+assert (idtoeqv q ◦◦ idtoeqv p == idtoeqv (p • q)).
+
+  f : A ≃ B
+  g : B ≃ C
+  p := ua f : A == B
+  q := ua g : B == C
+  ============================
+   idtoeqv q ◦◦ idtoeqv p == idtoeqv (p • q)
 bbb.
 
-assert (idtoeqv q ◦◦ idtoeqv p == idtoeqv (p • q)).
 bbb.
 
 Focus 2.
