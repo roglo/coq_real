@@ -1835,11 +1835,16 @@ rewrite <- (idtoeqv_ua f).
 subst p q.
 set (p := ua f).
 set (q := ua g).
-pose proof @transport_eq (@Id Type A).
+pose proof @hott_2_3_9 U A B C (Id A) p q (refl _).
+assert (idtoeqv q ◦◦ idtoeqv p == idtoeqv (p • q)).
+ unfold idtoeqv.
+ simpl.
+bbb.
+Check @hott_2_3_9.
+bbb.
 
-apply (transport_eq (@Id Type A) (refl _)).
-pose proof @hott_2_3_9 U A B C (Id A) p .
-
+set (r := p • q).
+eapply (transport_eq (Id A) (refl _)).
 hott_2_3_9
      : forall (A : Type) (x y z : A) (P : A -> U) (p : @Id A x y)
          (q : @Id A y z) (u : P x),
