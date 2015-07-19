@@ -1837,8 +1837,9 @@ set (p := ua f).
 set (q := ua g).
 pose proof @hott_2_3_9 U A B C (Id A) p q (refl _).
 assert (idtoeqv q ◦◦ idtoeqv p == idtoeqv (p • q)).
- unfold idtoeqv.
- simpl.
+bbb.
+
+Focus 2.
 bbb.
 Check @hott_2_3_9.
 bbb.
