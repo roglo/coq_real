@@ -1710,10 +1710,19 @@ Definition idtoeqv {A B : U} : A == B → A ≃ B :=
   λ p,
   existT isequiv (transport id p)
     match p with
+    | refl => projT2 (ideqv A)
+    end.
+
+(*
+Definition idtoeqv {A B : U} : A == B → A ≃ B :=
+  λ p,
+  existT isequiv (transport id p)
+    match p with
     | refl =>
         (existT (λ g, id ◦ g ~~ id) id (reflexivity id),
          existT (λ h, h ◦ id ~~ id) id (reflexivity id))
     end.
+*)
 
 Axiom univalence : ∀ A B : U, isequiv (@idtoeqv A B).
 Theorem univalence2 : ∀ A B : U, (A == B) ≃ (A ≃ B).
@@ -1837,6 +1846,7 @@ set (p := ua f).
 set (q := ua g).
 pose proof @hott_2_3_9 U A B C (Id A) p q (refl _).
 assert (idtoeqv q ◦◦ idtoeqv p == idtoeqv (p • q)).
+ unfold idtoeqv.
 bbb.
 
 Focus 2.
