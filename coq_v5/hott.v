@@ -1844,7 +1844,10 @@ rewrite <- (idtoeqv_ua f).
 subst p q.
 set (p := ua f).
 set (q := ua g).
+apply (transport_eq (Id A) (refl _)).
 pose proof @hott_2_3_9 U A B C (Id A) p q (refl _).
+bbb.
+
 assert (idtoeqv q ◦◦ idtoeqv p == idtoeqv (p • q)).
 bbb.
 
