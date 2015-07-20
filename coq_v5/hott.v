@@ -1937,9 +1937,12 @@ bbb.
 
 Definition glop {A B C} {f : A ≃ B} {g : B ≃ C} :
   ∀ (p := ua f : A == B) (q := ua g : B == C),
-  idtoeqv q ◦◦ idtoeqv p == idtoeqv (p • q).
+  ua (idtoeqv q ◦◦ idtoeqv p) == ua (idtoeqv (p • q)).
 Proof.
 intros.
+apply ap.
+unfold idtoeqv.
+pose proof hott_2_3_9 id p q.
 bbb.
 
 Definition ua_concat {A B C} : ∀ (f : A ≃ B) (g : B ≃ C),
@@ -1954,73 +1957,7 @@ transitivity (ua (idtoeqv q ◦◦ idtoeqv p)).
  do 2 rewrite idtoeqv_ua;
  reflexivity.
 
- transitivity (ua (idtoeqv (p • q))).
-  apply ap.
-
-bbb.
-rewrite <- (idtoeqv_ua g).
-rewrite <- (idtoeqv_ua f).
-subst p q.
-set (p := ua f).
-set (q := ua g).
-apply (transport_eq (Id A) (refl _)).
-pose proof @hott_2_3_9 U A B C (Id A) p q (refl _).
-assert (idtoeqv q ◦◦ idtoeqv p == idtoeqv (p • q)).
-
-  f : A ≃ B
-  g : B ≃ C
-  p := ua f : A == B
-  q := ua g : B == C
-  ============================
-   idtoeqv q ◦◦ idtoeqv p == idtoeqv (p • q)
-bbb.
-
-bbb.
-
-Focus 2.
-bbb.
-Check @hott_2_3_9.
-bbb.
-
-set (r := p • q).
-eapply (transport_eq (Id A) (refl _)).
-hott_2_3_9
-     : forall (A : Type) (x y z : A) (P : A -> U) (p : @Id A x y)
-         (q : @Id A y z) (u : P x),
-       @Id (P z) (@transport A P y z q (@transport A P x y p u))
-         (@transport A P x z (@compose A x y z p q) u)
-  ============================
-   @Id (@Id Type A C)
-     (@transport Type (@Id Type A) C C (@refl Type C)
-        (@ua A C (@equiv_compose A B C (@idtoeqv A B p) (@idtoeqv B C q))))
-     (@transport Type (@Id Type A) C C (@refl Type C)
-        (@compose Type A B C p q))
-
-
-eapply compose; [ idtac | eapply hott_2_3_9 ].
-
-bbb.
-
-hott_2_3_9
-     : ∀ (A : Type) (x y z : A) (P : A → U) (p : x == y)
-       (q : y == z) (u : P x),
-       transport P q (transport P p u) == transport P (p • q) u
-bbb.
-unfold equiv_compose.
-destruct f as (f, Hf).
-destruct g as (g, Hg).
-set (r := equivalence_isequiv f).
-destruct r as (Fqi, (Fiq, Fee)).
-unfold qinv_rect; simpl.
-set (r := Fiq Hf).
-destruct r as (f₁, αf, βf).
-set (r := equivalence_isequiv g).
-destruct r as (Gqi, (Giq, Gee)).
-set (r := Giq Hg).
-destruct r as (g₁, αg, βg).
-Check @hott_2_3_9.
-Check @equiv_compose.
-Check @idtoeqv.
+ transitivity (ua (idtoeqv (p • q))); [ idtac | apply ua_idtoeqv ].
 
 bbb.
 
