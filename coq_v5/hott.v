@@ -1907,8 +1907,6 @@ Qed.
 
 bbb.
 
-(* ... *)
-
 (* some experiments... *)
 
 Inductive t := foo : t | bar : t.
