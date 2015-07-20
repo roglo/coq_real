@@ -1189,8 +1189,21 @@ Print sigT_rect. (* à faire… *)
 
 (* Lemma 2.4.12 iii *)
 
+(* For any f : A ≃ B and g : B ≃ C, we have g o f : A ≃ C *)
+
+Lemma equiv_compose {A B C} : ∀ (f : A ≃ B) (g : B ≃ C), A ≃ C.
+Proof.
+intros.
+(* see and follow the proof p. 79 *)
+bbb.
+
 Lemma equiv_compose_by_tactics {A B C} : A ≃ B → B ≃ C → A ≃ C.
 Proof.
+intros eqf eqg.
+destruct eqf as (f, eqf).
+destruct eqg as (g, eqg).
+bbb.
+
 intros eqf eqg.
 destruct eqf as (f, eqf).
 destruct eqg as (g, eqg).
