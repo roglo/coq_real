@@ -1189,7 +1189,7 @@ Print sigT_rect. (* à faire… *)
 
 (* Lemma 2.4.12 iii *)
 
-Lemma equiv_compose {A B C} : A ≃ B → B ≃ C → A ≃ C.
+Lemma equiv_compose_by_tactics {A B C} : A ≃ B → B ≃ C → A ≃ C.
 Proof.
 intros eqf eqg.
 destruct eqf as (f, eqf).
@@ -1197,11 +1197,11 @@ destruct eqg as (g, eqg).
 pose proof (@equivalence_isequiv A B f) as H.
 destruct H as (Hfqe, (Hfeq, Hfee)).
 apply Hfeq in eqf.
-induction eqf as (f¹, αf, βf).
+destruct eqf as (f¹, αf, βf).
 pose proof (@equivalence_isequiv B C g) as H.
 destruct H as (Hgqe, (Hgeq, Hgee)).
 apply Hgeq in eqg.
-induction eqg as (g¹, αg, βg).
+destruct eqg as (g¹, αg, βg).
 unfold equivalence.
 apply existT with (x := g ◦ f).
 unfold isequiv.
@@ -1220,6 +1220,34 @@ split.
  unfold id in H; simpl in H.
  transitivity (f¹ (f a)); [ assumption | apply βf ].
 Defined.
+
+Definition equiv_compose {A B C} : A ≃ B → B ≃ C → A ≃ C :=
+  λ eqf eqg,
+  let (f, eqvf) := eqf in
+  let (g, eqvg) := eqg in
+  match equivalence_isequiv f with
+  | conjt _ (conjt Hfeq _) =>
+      match Hfeq eqvf with
+      | qi f₁ αf βf =>
+           match equivalence_isequiv g with
+           | conjt _ (conjt Hgeq _) =>
+                match Hgeq eqvg with
+                | qi g₁ αg βg =>
+                    existT isequiv (g ◦ f)
+                      (existT (λ h, (g ◦ f) ◦ h ~~ id) (f₁ ◦ g₁)
+                         (λ c : C,
+                          match αg c with
+                          | refl => ap g (αf (g₁ c))
+                          end),
+                       existT (λ h, h ◦ (g ◦ f) ~~ id) (f₁ ◦ g₁)
+                         (λ a : A,
+                          match βf a with
+                          | refl => ap f₁ (βg (f a))
+                          end))
+                end
+           end
+      end
+ end.
 
 Notation "g '◦◦' f" := (equiv_compose f g) (at level 40).
 
@@ -1839,6 +1867,9 @@ intros.
 destruct p, q.
 rewrite <- idtoeqv_refl.
 rewrite <- idtoeqv_refl.
+unfold "◦◦"; simpl.
+set (ei := equivalence_isequiv id).
+destruct ei as (_, (Hgeq, _)).
 bbb.
 
 Definition idtoeqv_concat2 {A B C} : ∀ (f : A ≃ B) (g : B ≃ C),
