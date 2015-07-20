@@ -1189,7 +1189,7 @@ Print sigT_rect. (* à faire… *)
 
 (* Lemma 2.4.12 iii *)
 
-Lemma equiv_compose {A B C} : ∀ (f : A ≃ B) (g : B ≃ C), A ≃ C.
+Lemma equiv_compose_tac {A B C} : ∀ (f : A ≃ B) (g : B ≃ C), A ≃ C.
 Proof.
 intros eqf eqg.
 destruct eqf as (f, ((f₁, eqf₁), (f₂, eqf₂))).
@@ -1199,11 +1199,42 @@ apply (existT _ (g ◦ f)).
 split.
  apply (existT _ (f₁ ◦ g₁)).
  intros c; unfold "◦"; simpl.
- transitivity (g (g₁ c)).
- apply ap, eqf₁.
+ transitivity (g (g₁ c)); [ apply ap, eqf₁ | apply eqg₁ ].
 
-(* see and follow the proof p. 79 *)
-bbb.
+ apply (existT _ (f₂ ◦ g₂)).
+ intros a; unfold "◦"; simpl.
+ transitivity (f₂ (f a)); [ apply ap, eqg₂ | apply eqf₂ ].
+Defined.
+
+Definition equiv_compose {A B C} : A ≃ B → B ≃ C → A ≃ C :=
+  λ (eqf : A ≃ B) (eqg : B ≃ C),
+  match eqf with
+  | existT f (existT f₁ eqf₁, existT f₂ eqf₂) =>
+      match eqg with
+      | existT g (existT g₁ eqg₁, existT g₂ eqg₂) =>
+  existT (λ f0 : A → C, isequiv f0) (g ◦ f)
+    (existT (λ g0 : C → A, (g ◦ f) ◦ g0 ~~ id) (f₁ ◦ g₁)
+       (λ c : C,
+        (λ H : g (g₁ c) == id c,
+         (λ H0 : g (f (f₁ (g₁ c))) == g (g₁ c),
+          (λ (H1 : g (f (f₁ (g₁ c))) == g (g₁ c)) (H2 : g (g₁ c) == id c),
+           match H2 in (_ == y) return (g (f (f₁ (g₁ c))) == y) with
+           | refl => H1
+           end) H0) (ap g (eqf₁ (g₁ c))) H) (eqg₁ c)),
+    existT (λ h : C → A, h ◦ (g ◦ f) ~~ id) (f₂ ◦ g₂)
+      (λ a : A,
+       (λ H : f₂ (f a) == id a,
+        (λ H0 : f₂ (g₂ (g (f a))) == f₂ (f a),
+         (λ (H1 : f₂ (g₂ (g (f a))) == f₂ (f a)) (H2 : f₂ (f a) == id a),
+          match H2 in (_ == y) return (f₂ (g₂ (g (f a))) == y) with
+          | refl => H1
+          end) H0) (ap f₂ (eqg₂ (f a))) H) (eqf₂ a)))
+      end
+  end.
+
+Arguments A, B, C are implicit and maximally inserted
+Argument scopes are [type_scope type_scope type_scope _ _]
+
 
 Lemma equiv_compose_by_tactics {A B C} : A ≃ B → B ≃ C → A ≃ C.
 Proof.
