@@ -1940,15 +1940,42 @@ Definition glop {A B C} {f : A ≃ B} {g : B ≃ C} :
   ua (idtoeqv q ◦◦ idtoeqv p) == ua (idtoeqv (p • q)).
 Proof.
 intros.
+(*
 apply ap.
+*)
 unfold idtoeqv.
 pose proof hott_2_3_9 id p q.
+bbb.
+
 pose proof @extensionality A (λ _, C)
   (λ u, transport id q (transport id p u)) (transport id (p • q)) as H1.
 destruct H1 as ((h, Hh), (i, Hi)).
 apply h in H.
 clear h Hh i Hi.
 set (qq := (@transport Type (@id Type) A C (@compose Type A B C p q))) in *.
+subst qq.
+subst p q.
+rewrite <- H.
+
+rewrite <- H.
+Toplevel input, characters 0-12:
+Error: Abstracting over the term "qq" leads to a term
+"λ qq : A → C,
+ ua
+   (existT isequiv (transport id q)
+      match q as p in (_ == u) return (isequiv (transport id p)) with
+      | refl => projT2 (ideqv B)
+      end
+    ◦◦ existT isequiv (transport id p)
+         match p in (_ == u) return (isequiv (transport id p)) with
+         | refl => projT2 (ideqv A)
+         end) ==
+ ua
+   (existT isequiv qq
+      match p • q as p in (_ == u) return (isequiv (transport id p)) with
+      | refl => projT2 (ideqv A)
+      end)" which is ill-typed.
+
 bbb.
 
 simpl.
