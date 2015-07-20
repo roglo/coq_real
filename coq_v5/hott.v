@@ -1943,6 +1943,14 @@ intros.
 apply ap.
 unfold idtoeqv.
 pose proof hott_2_3_9 id p q.
+pose proof @extensionality A (λ _, C)
+  (λ u, transport id q (transport id p u)) (transport id (p • q)) as H1.
+destruct H1 as ((h, Hh), (i, Hi)).
+apply h in H.
+clear h Hh i Hi.
+set (v := transport id (p • q)) in H.
+set (w := transport id (p • q)).
+move w before v.
 bbb.
 
 Definition ua_concat {A B C} : ∀ (f : A ≃ B) (g : B ≃ C),
