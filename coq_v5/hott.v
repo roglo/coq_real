@@ -1935,16 +1935,66 @@ Error: Impossible to unify "g (f x)" with
 bbb.
 *)
 
+Check (λ A B, @transport U id A B).
+Check (λ A B (p : A == B), projT1 (idtoeqv p)).
+Check (λ A B (p : A == B), idtoeqv p).
+(* λ A B : U, transport id
+     : ∀ A B : U, A == B → id A → id B
+   λ (A B : U) (p : A == B), projT1 (idtoeqv p)
+     : ∀ A B : U, A == B → A → B
+   λ (A B : U) (p : A == B), idtoeqv p
+     : ∀ A B : U, A == B → A ≃ B *)
+
+Print "≃".
+
+Definition glip {A B} : ∀ (p : A == B), A ≃ B.
+Proof.
+intros.
+set (q := transport id p).
+pose proof isequiv_transport p as Hq.
+pose proof existT _ q Hq as r.
+unfold "≃".
+assumption.
+Defined.
+
+Definition transport_id₀ {A B} : ∀ (p : A == B),
+  transport id p == projT1 (idtoeqv p).
+Proof. reflexivity. Qed.
+
+Definition transport_id {A B} : ∀ (p : A == B),
+  existT _ (transport id p) (isequiv_transport p) == idtoeqv p.
+Proof. reflexivity. Qed.
+
 Definition glop {A B C} {f : A ≃ B} {g : B ≃ C} :
-  ∀ (p := ua f : A == B) (q := ua g : B == C),
+  ∀ (x : A) (p := ua f : A == B) (q := ua g : B == C),
   ua (idtoeqv q ◦◦ idtoeqv p) == ua (idtoeqv (p • q)).
 Proof.
 intros.
+apply ap.
+do 3 rewrite <- transport_id.
+pose proof hott_2_3_9 id p q x as H.
+pose proof @extensionality A (λ _, C)
+  (λ u, transport id q (transport id p u)) (transport id (p • q)) as H1.
+destruct H1 as ((h, Hh), (i, Hi)).
+bbb.
+
+apply h in H.
+
+clear h Hh i Hi.
+set (qq := (@transport Type (@id Type) A C (@compose Type A B C p q))) in *.
+subst qq.
+subst p q.
+rewrite <- H.
+rewrite <- H.
+bbb.
+bbb.
+
+Print ua.
+
 (*
 apply ap.
 *)
 unfold idtoeqv.
-pose proof hott_2_3_9 id p q.
 bbb.
 
 pose proof @extensionality A (λ _, C)
