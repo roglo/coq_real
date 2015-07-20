@@ -1860,6 +1860,10 @@ Lemma transport_eq {A} P {x y : A} : ∀ (p : x == y) u v,
   transport P p u == transport P p v → u == v.
 Proof. intros. destruct p; simpl in H; apply H. Qed.
 
+Definition pair_eq₀ : ∀ A B (a b : A) (c d : B),
+  a == b → c == d → (a, c) == (b, d).
+Proof. intros A B a b c d H1 H2; rewrite H1, H2; reflexivity. Qed.
+
 Definition idtoeqv_concat1 {A B C} : ∀ (p : A == B) (q : B == C),
   idtoeqv (p • q) == idtoeqv q ◦◦ idtoeqv p.
 Proof.
@@ -1870,12 +1874,158 @@ rewrite <- idtoeqv_refl.
 unfold "◦◦"; simpl.
 set (ei := equivalence_isequiv id).
 destruct ei as (_, (Hgeq, _)).
+unfold ideqv; simpl.
+unfold id; simpl.
+set (iid := λ x : A, x).
+set (toto := Hgeq
+       (existT (λ g : A → A, iid ◦ g ~~ iid) iid (reflexivity iid),
+       existT (λ h : A → A, h ◦ iid ~~ iid) iid (reflexivity iid))).
+destruct toto.
+Abort. (* du coup, chais pas si c'est vrai...
 bbb.
+*)
 
 Definition idtoeqv_concat2 {A B C} : ∀ (f : A ≃ B) (g : B ≃ C),
   idtoeqv (ua f • ua g) == idtoeqv (ua g) ◦◦ idtoeqv (ua f).
 Proof.
 intros.
+do 2 rewrite idtoeqv_ua.
+unfold compose; simpl.
+unfold idtoeqv; simpl.
+unfold transport; simpl.
+unfold "◦◦"; simpl.
+destruct f as (f, eqvf).
+destruct g as (g, eqvg).
+set (eif := equivalence_isequiv f).
+destruct eif as (_, (Hfeq, _)).
+set (eig := equivalence_isequiv g).
+destruct eig as (_, (Hgeq, _)).
+set (r := Hfeq eqvf).
+destruct r as (f₁, αf, βf).
+set (r := Hgeq eqvg).
+destruct r as (g₁, αg, βg).
+unfold id; simpl.
+Print pair_eq.
+eapply compose; [ eapply pair_eq | idtac ].
+symmetry.
+apply pair_eq.
+
+Toplevel input, characters 6-13:
+Error: Impossible to unify "g (f x)" with
+ "match
+    match
+      ua (existT (λ f : A → B, isequiv f) f eqvf) in (_ == a)
+      return (a == C → A == C)
+    with
+    | refl => λ x : A == C, x
+    end (ua (existT (λ f : B → C, isequiv f) g eqvg)) in 
+    (_ == a) return (A → a)
+  with
+  | refl => λ x : A, x
+  end x".
+bbb.
+
+  ============================
+   @Id (equivalence A C)
+     (@existT (A -> C) (@isequiv A C)
+        match
+          match
+            @ua A B
+              (@existT (A -> B) (fun f0 : A -> B => @isequiv A B f0) f eqvf)
+            in (@Id _ _ a) return (@Id Type a C -> @Id Type A C)
+          with
+          | refl => fun x : @Id Type A C => x
+          end
+            (@ua B C
+               (@existT (B -> C) (fun f0 : B -> C => @isequiv B C f0) g eqvg))
+          in (@Id _ _ a) return (A -> a)
+        with
+        | refl => fun x : A => x
+        end
+        match
+          match
+            @ua A B
+              (@existT (A -> B) (fun f0 : A -> B => @isequiv A B f0) f eqvf)
+            in (@Id _ _ a) return (@Id Type a C -> @Id Type A C)
+          with
+          | refl => fun x : @Id Type A C => x
+          end
+            (@ua B C
+               (@existT (B -> C) (fun f0 : B -> C => @isequiv B C f0) g eqvg))
+          as p in (@Id _ _ u)
+          return
+            (@isequiv A u
+               match p in (@Id _ _ a) return (A -> a) with
+               | refl => fun x : A => x
+               end)
+        with
+        | refl =>
+            @pair
+              (@sigT (A -> A)
+                 (fun g0 : A -> A =>
+                  @homotopy A A (@composite A A A g0 (fun x : A => x))
+                    (fun x : A => x)))
+              (@sigT (A -> A)
+                 (fun h : A -> A =>
+                  @homotopy A A (@composite A A A (fun x : A => x) h)
+                    (fun x : A => x)))
+              (@existT (A -> A)
+                 (fun g0 : A -> A =>
+                  @homotopy A A (@composite A A A g0 (fun x : A => x))
+                    (fun x : A => x)) (fun x : A => x)
+                 (@reflexivity (A -> A) (@homotopy A A)
+                    (@homotopy_equivalence_Reflexive A A) 
+                    (fun x : A => x)))
+              (@existT (A -> A)
+                 (fun h : A -> A =>
+                  @homotopy A A (@composite A A A (fun x : A => x) h)
+                    (fun x : A => x)) (fun x : A => x)
+                 (@reflexivity (A -> A) (@homotopy A A)
+                    (@homotopy_equivalence_Reflexive A A) 
+                    (fun x : A => x)))
+        end)
+     (@existT (A -> C) (@isequiv A C) (@composite A B C f g)
+        (@pair
+           (@sigT (C -> A)
+              (fun h : C -> A =>
+               @homotopy C C (@composite C A C h (@composite A B C f g))
+                 (fun x : C => x)))
+           (@sigT (C -> A)
+              (fun h : C -> A =>
+               @homotopy A A (@composite A C A (@composite A B C f g) h)
+                 (fun x : A => x)))
+           (@existT (C -> A)
+              (fun h : C -> A =>
+               @homotopy C C (@composite C A C h (@composite A B C f g))
+                 (fun x : C => x)) (@composite C B A g₁ f₁)
+              (fun c : C =>
+               match
+                 αg c in (@Id _ _ c0)
+                 return
+                   (@Id C
+                      (@composite C A C (@composite C B A g₁ f₁)
+                         (@composite A B C f g) c) c0)
+               with
+               | refl =>
+                   @ap B C (@composite B A B f₁ f (g₁ c)) 
+                     (g₁ c) g (αf (g₁ c))
+               end))
+           (@existT (C -> A)
+              (fun h : C -> A =>
+               @homotopy A A (@composite A C A (@composite A B C f g) h)
+                 (fun x : A => x)) (@composite C B A g₁ f₁)
+              (fun a : A =>
+               match
+                 βf a in (@Id _ _ a0)
+                 return
+                   (@Id A
+                      (@composite A C A (@composite A B C f g)
+                         (@composite C B A g₁ f₁) a) a0)
+               with
+               | refl =>
+                   @ap B A (@composite B C B g g₁ (f a)) (f a) f₁ (βg (f a))
+               end))))
+
 bbb.
 
 Definition ua_concat {A B C} : ∀ (f : A ≃ B) (g : B ≃ C),
