@@ -1948,9 +1948,12 @@ pose proof @extensionality A (λ _, C)
 destruct H1 as ((h, Hh), (i, Hi)).
 apply h in H.
 clear h Hh i Hi.
-set (v := transport id (p • q)) in H.
-set (w := transport id (p • q)).
-move w before v.
+set (qq := (@transport Type (@id Type) A C (@compose Type A B C p q))) in *.
+bbb.
+
+simpl.
+set (r := @equivalence_isequiv A B (@transport Type (@id Type) A B p)).
+destruct r as (_, (Hfeq, _)).
 bbb.
 
 Definition ua_concat {A B C} : ∀ (f : A ≃ B) (g : B ≃ C),
