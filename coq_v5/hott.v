@@ -1890,6 +1890,15 @@ Definition idtoeqv_concat2 {A B C} : ∀ (f : A ≃ B) (g : B ≃ C),
 Proof.
 intros.
 do 2 rewrite idtoeqv_ua.
+destruct f as (f, eqvf).
+destruct g as (g, eqvg).
+Check @hott_2_3_9.
+simpl.
+
+Abort. (*
+bbb.
+intros.
+do 2 rewrite idtoeqv_ua.
 unfold compose; simpl.
 unfold idtoeqv; simpl.
 unfold transport; simpl.
@@ -1924,108 +1933,13 @@ Error: Impossible to unify "g (f x)" with
   | refl => λ x : A, x
   end x".
 bbb.
+*)
 
-  ============================
-   @Id (equivalence A C)
-     (@existT (A -> C) (@isequiv A C)
-        match
-          match
-            @ua A B
-              (@existT (A -> B) (fun f0 : A -> B => @isequiv A B f0) f eqvf)
-            in (@Id _ _ a) return (@Id Type a C -> @Id Type A C)
-          with
-          | refl => fun x : @Id Type A C => x
-          end
-            (@ua B C
-               (@existT (B -> C) (fun f0 : B -> C => @isequiv B C f0) g eqvg))
-          in (@Id _ _ a) return (A -> a)
-        with
-        | refl => fun x : A => x
-        end
-        match
-          match
-            @ua A B
-              (@existT (A -> B) (fun f0 : A -> B => @isequiv A B f0) f eqvf)
-            in (@Id _ _ a) return (@Id Type a C -> @Id Type A C)
-          with
-          | refl => fun x : @Id Type A C => x
-          end
-            (@ua B C
-               (@existT (B -> C) (fun f0 : B -> C => @isequiv B C f0) g eqvg))
-          as p in (@Id _ _ u)
-          return
-            (@isequiv A u
-               match p in (@Id _ _ a) return (A -> a) with
-               | refl => fun x : A => x
-               end)
-        with
-        | refl =>
-            @pair
-              (@sigT (A -> A)
-                 (fun g0 : A -> A =>
-                  @homotopy A A (@composite A A A g0 (fun x : A => x))
-                    (fun x : A => x)))
-              (@sigT (A -> A)
-                 (fun h : A -> A =>
-                  @homotopy A A (@composite A A A (fun x : A => x) h)
-                    (fun x : A => x)))
-              (@existT (A -> A)
-                 (fun g0 : A -> A =>
-                  @homotopy A A (@composite A A A g0 (fun x : A => x))
-                    (fun x : A => x)) (fun x : A => x)
-                 (@reflexivity (A -> A) (@homotopy A A)
-                    (@homotopy_equivalence_Reflexive A A) 
-                    (fun x : A => x)))
-              (@existT (A -> A)
-                 (fun h : A -> A =>
-                  @homotopy A A (@composite A A A (fun x : A => x) h)
-                    (fun x : A => x)) (fun x : A => x)
-                 (@reflexivity (A -> A) (@homotopy A A)
-                    (@homotopy_equivalence_Reflexive A A) 
-                    (fun x : A => x)))
-        end)
-     (@existT (A -> C) (@isequiv A C) (@composite A B C f g)
-        (@pair
-           (@sigT (C -> A)
-              (fun h : C -> A =>
-               @homotopy C C (@composite C A C h (@composite A B C f g))
-                 (fun x : C => x)))
-           (@sigT (C -> A)
-              (fun h : C -> A =>
-               @homotopy A A (@composite A C A (@composite A B C f g) h)
-                 (fun x : A => x)))
-           (@existT (C -> A)
-              (fun h : C -> A =>
-               @homotopy C C (@composite C A C h (@composite A B C f g))
-                 (fun x : C => x)) (@composite C B A g₁ f₁)
-              (fun c : C =>
-               match
-                 αg c in (@Id _ _ c0)
-                 return
-                   (@Id C
-                      (@composite C A C (@composite C B A g₁ f₁)
-                         (@composite A B C f g) c) c0)
-               with
-               | refl =>
-                   @ap B C (@composite B A B f₁ f (g₁ c)) 
-                     (g₁ c) g (αf (g₁ c))
-               end))
-           (@existT (C -> A)
-              (fun h : C -> A =>
-               @homotopy A A (@composite A C A (@composite A B C f g) h)
-                 (fun x : A => x)) (@composite C B A g₁ f₁)
-              (fun a : A =>
-               match
-                 βf a in (@Id _ _ a0)
-                 return
-                   (@Id A
-                      (@composite A C A (@composite A B C f g)
-                         (@composite C B A g₁ f₁) a) a0)
-               with
-               | refl =>
-                   @ap B A (@composite B C B g g₁ (f a)) (f a) f₁ (βg (f a))
-               end))))
-
+Definition glop {A B C} {f : A ≃ B} {g : B ≃ C} :
+  ∀ (p := ua f : A == B) (q := ua g : B == C),
+  idtoeqv q ◦◦ idtoeqv p == idtoeqv (p • q).
+Proof.
+intros.
 bbb.
 
 Definition ua_concat {A B C} : ∀ (f : A ≃ B) (g : B ≃ C),
@@ -2035,6 +1949,15 @@ intros.
 symmetry.
 set (p := ua f).
 set (q := ua g).
+transitivity (ua (idtoeqv q ◦◦ idtoeqv p)).
+ subst p q.
+ do 2 rewrite idtoeqv_ua;
+ reflexivity.
+
+ transitivity (ua (idtoeqv (p • q))).
+  apply ap.
+
+bbb.
 rewrite <- (idtoeqv_ua g).
 rewrite <- (idtoeqv_ua f).
 subst p q.
