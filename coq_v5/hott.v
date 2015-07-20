@@ -1189,11 +1189,19 @@ Print sigT_rect. (* à faire… *)
 
 (* Lemma 2.4.12 iii *)
 
-(* For any f : A ≃ B and g : B ≃ C, we have g o f : A ≃ C *)
-
 Lemma equiv_compose {A B C} : ∀ (f : A ≃ B) (g : B ≃ C), A ≃ C.
 Proof.
-intros.
+intros eqf eqg.
+destruct eqf as (f, ((f₁, eqf₁), (f₂, eqf₂))).
+destruct eqg as (g, ((g₁, eqg₁), (g₂, eqg₂))).
+unfold equivalence.
+apply (existT _ (g ◦ f)).
+split.
+ apply (existT _ (f₁ ◦ g₁)).
+ intros c; unfold "◦"; simpl.
+ transitivity (g (g₁ c)).
+ apply ap, eqf₁.
+
 (* see and follow the proof p. 79 *)
 bbb.
 
