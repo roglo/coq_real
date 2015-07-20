@@ -1207,42 +1207,28 @@ split.
 Defined.
 
 Definition equiv_compose {A B C} : A ≃ B → B ≃ C → A ≃ C :=
-  λ (eqf : A ≃ B) (eqg : B ≃ C),
+  λ eqf eqg,
   match eqf with
   | existT f (existT f₁ eqf₁, existT f₂ eqf₂) =>
       match eqg with
       | existT g (existT g₁ eqg₁, existT g₂ eqg₂) =>
-  existT (λ f0 : A → C, isequiv f0) (g ◦ f)
-    (existT (λ g0 : C → A, (g ◦ f) ◦ g0 ~~ id) (f₁ ◦ g₁)
-       (λ c : C,
-        (λ H : g (g₁ c) == id c,
-         (λ H0 : g (f (f₁ (g₁ c))) == g (g₁ c),
-          (λ (H1 : g (f (f₁ (g₁ c))) == g (g₁ c)) (H2 : g (g₁ c) == id c),
-           match H2 in (_ == y) return (g (f (f₁ (g₁ c))) == y) with
-           | refl => H1
-           end) H0) (ap g (eqf₁ (g₁ c))) H) (eqg₁ c)),
-    existT (λ h : C → A, h ◦ (g ◦ f) ~~ id) (f₂ ◦ g₂)
-      (λ a : A,
-       (λ H : f₂ (f a) == id a,
-        (λ H0 : f₂ (g₂ (g (f a))) == f₂ (f a),
-         (λ (H1 : f₂ (g₂ (g (f a))) == f₂ (f a)) (H2 : f₂ (f a) == id a),
-          match H2 in (_ == y) return (f₂ (g₂ (g (f a))) == y) with
-          | refl => H1
-          end) H0) (ap f₂ (eqg₂ (f a))) H) (eqf₂ a)))
+          existT _ (g ◦ f)
+            (existT (λ h, (g ◦ f) ◦ h ~~ id) (f₁ ◦ g₁)
+               (λ c,
+                match eqg₁ c with
+                | refl => ap g (eqf₁ (g₁ c))
+                end),
+             existT (λ h, h ◦ (g ◦ f) ~~ id) (f₂ ◦ g₂)
+               (λ a,
+                match eqf₂ a with
+                | refl => ap f₂ (eqg₂ (f a))
+                end))
       end
   end.
 
-Arguments A, B, C are implicit and maximally inserted
-Argument scopes are [type_scope type_scope type_scope _ _]
-
-
+(*
 Lemma equiv_compose_by_tactics {A B C} : A ≃ B → B ≃ C → A ≃ C.
 Proof.
-intros eqf eqg.
-destruct eqf as (f, eqf).
-destruct eqg as (g, eqg).
-bbb.
-
 intros eqf eqg.
 destruct eqf as (f, eqf).
 destruct eqg as (g, eqg).
@@ -1300,6 +1286,7 @@ Definition equiv_compose {A B C} : A ≃ B → B ≃ C → A ≃ C :=
            end
       end
  end.
+*)
 
 Notation "g '◦◦' f" := (equiv_compose f g) (at level 40).
 
@@ -1793,18 +1780,8 @@ Definition idtoeqv {A B : U} : A == B → A ≃ B :=
     | refl => projT2 (ideqv A)
     end.
 
-(*
-Definition idtoeqv {A B : U} : A == B → A ≃ B :=
-  λ p,
-  existT isequiv (transport id p)
-    match p with
-    | refl =>
-        (existT (λ g, id ◦ g ~~ id) id (reflexivity id),
-         existT (λ h, h ◦ id ~~ id) id (reflexivity id))
-    end.
-*)
-
 Axiom univalence : ∀ A B : U, isequiv (@idtoeqv A B).
+
 Theorem univalence2 : ∀ A B : U, (A == B) ≃ (A ≃ B).
 Proof.
 intros.
@@ -1908,350 +1885,29 @@ Definition ua_refl : ∀ A, refl A == ua (ideqv A) :=
 
 (* concatenation *)
 
-Lemma transport_eq {A} P {x y : A} : ∀ (p : x == y) u v,
-  transport P p u == transport P p v → u == v.
-Proof. intros. destruct p; simpl in H; apply H. Qed.
-
-Definition pair_eq₀ : ∀ A B (a b : A) (c d : B),
-  a == b → c == d → (a, c) == (b, d).
-Proof. intros A B a b c d H1 H2; rewrite H1, H2; reflexivity. Qed.
-
-Definition idtoeqv_concat1 {A B C} : ∀ (p : A == B) (q : B == C),
+Definition idtoeqv_concat {A B C} : ∀ (p : A == B) (q : B == C),
   idtoeqv (p • q) == idtoeqv q ◦◦ idtoeqv p.
 Proof.
-intros.
-destruct p, q.
-rewrite <- idtoeqv_refl.
-rewrite <- idtoeqv_refl.
-unfold "◦◦"; simpl.
-set (ei := equivalence_isequiv id).
-destruct ei as (_, (Hgeq, _)).
-unfold ideqv; simpl.
-unfold id; simpl.
-set (iid := λ x : A, x).
-set (toto := Hgeq
-       (existT (λ g : A → A, iid ◦ g ~~ iid) iid (reflexivity iid),
-       existT (λ h : A → A, h ◦ iid ~~ iid) iid (reflexivity iid))).
-destruct toto.
-Abort. (* du coup, chais pas si c'est vrai...
-bbb.
-*)
-
-Definition idtoeqv_concat2 {A B C} : ∀ (f : A ≃ B) (g : B ≃ C),
-  idtoeqv (ua f • ua g) == idtoeqv (ua g) ◦◦ idtoeqv (ua f).
-Proof.
-intros.
-do 2 rewrite idtoeqv_ua.
-destruct f as (f, eqvf).
-destruct g as (g, eqvg).
-Check @hott_2_3_9.
-simpl.
-
-Abort. (*
-bbb.
-intros.
-do 2 rewrite idtoeqv_ua.
-unfold compose; simpl.
-unfold idtoeqv; simpl.
-unfold transport; simpl.
-unfold "◦◦"; simpl.
-destruct f as (f, eqvf).
-destruct g as (g, eqvg).
-set (eif := equivalence_isequiv f).
-destruct eif as (_, (Hfeq, _)).
-set (eig := equivalence_isequiv g).
-destruct eig as (_, (Hgeq, _)).
-set (r := Hfeq eqvf).
-destruct r as (f₁, αf, βf).
-set (r := Hgeq eqvg).
-destruct r as (g₁, αg, βg).
-unfold id; simpl.
-Print pair_eq.
-eapply compose; [ eapply pair_eq | idtac ].
-symmetry.
-apply pair_eq.
-
-Toplevel input, characters 6-13:
-Error: Impossible to unify "g (f x)" with
- "match
-    match
-      ua (existT (λ f : A → B, isequiv f) f eqvf) in (_ == a)
-      return (a == C → A == C)
-    with
-    | refl => λ x : A == C, x
-    end (ua (existT (λ f : B → C, isequiv f) g eqvg)) in 
-    (_ == a) return (A → a)
-  with
-  | refl => λ x : A, x
-  end x".
-bbb.
-*)
-
-Check (λ A B, @transport U id A B).
-Check (λ A B (p : A == B), projT1 (idtoeqv p)).
-Check (λ A B (p : A == B), idtoeqv p).
-(* λ A B : U, transport id
-     : ∀ A B : U, A == B → id A → id B
-   λ (A B : U) (p : A == B), projT1 (idtoeqv p)
-     : ∀ A B : U, A == B → A → B
-   λ (A B : U) (p : A == B), idtoeqv p
-     : ∀ A B : U, A == B → A ≃ B *)
-
-Print "≃".
-
-Definition glip {A B} : ∀ (p : A == B), A ≃ B.
-Proof.
-intros.
-set (q := transport id p).
-pose proof isequiv_transport p as Hq.
-pose proof existT _ q Hq as r.
-unfold "≃".
-assumption.
-Defined.
-
-Definition transport_id₀ {A B} : ∀ (p : A == B),
-  transport id p == projT1 (idtoeqv p).
-Proof. reflexivity. Qed.
-
-Definition transport_id {A B} : ∀ (p : A == B),
-  existT _ (transport id p) (isequiv_transport p) == idtoeqv p.
-Proof. reflexivity. Qed.
-
-Definition glop {A B C} {f : A ≃ B} {g : B ≃ C} :
-  ∀ (x : A) (p := ua f : A == B) (q := ua g : B == C),
-  ua (idtoeqv q ◦◦ idtoeqv p) == ua (idtoeqv (p • q)).
-Proof.
-intros.
-apply ap.
-do 3 rewrite <- transport_id.
-pose proof hott_2_3_9 id p q x as H.
-pose proof @extensionality A (λ _, C)
-  (λ u, transport id q (transport id p u)) (transport id (p • q)) as H1.
-destruct H1 as ((h, Hh), (i, Hi)).
-bbb.
-
-apply h in H.
-
-clear h Hh i Hi.
-set (qq := (@transport Type (@id Type) A C (@compose Type A B C p q))) in *.
-subst qq.
-subst p q.
-rewrite <- H.
-rewrite <- H.
-bbb.
-bbb.
-
-Print ua.
-
-(*
-apply ap.
-*)
-unfold idtoeqv.
-bbb.
-
-pose proof @extensionality A (λ _, C)
-  (λ u, transport id q (transport id p u)) (transport id (p • q)) as H1.
-destruct H1 as ((h, Hh), (i, Hi)).
-apply h in H.
-clear h Hh i Hi.
-set (qq := (@transport Type (@id Type) A C (@compose Type A B C p q))) in *.
-subst qq.
-subst p q.
-rewrite <- H.
-
-rewrite <- H.
-Toplevel input, characters 0-12:
-Error: Abstracting over the term "qq" leads to a term
-"λ qq : A → C,
- ua
-   (existT isequiv (transport id q)
-      match q as p in (_ == u) return (isequiv (transport id p)) with
-      | refl => projT2 (ideqv B)
-      end
-    ◦◦ existT isequiv (transport id p)
-         match p in (_ == u) return (isequiv (transport id p)) with
-         | refl => projT2 (ideqv A)
-         end) ==
- ua
-   (existT isequiv qq
-      match p • q as p in (_ == u) return (isequiv (transport id p)) with
-      | refl => projT2 (ideqv A)
-      end)" which is ill-typed.
-
-bbb.
-
-simpl.
-set (r := @equivalence_isequiv A B (@transport Type (@id Type) A B p)).
-destruct r as (_, (Hfeq, _)).
-bbb.
+intros; destruct p, q; reflexivity.
+Qed.
 
 Definition ua_concat {A B C} : ∀ (f : A ≃ B) (g : B ≃ C),
   ua f • ua g == ua (g ◦◦ f).
 Proof.
 intros.
-symmetry.
 set (p := ua f).
 set (q := ua g).
 transitivity (ua (idtoeqv q ◦◦ idtoeqv p)).
- subst p q.
- do 2 rewrite idtoeqv_ua;
- reflexivity.
+ transitivity (ua (idtoeqv (p • q))); [ symmetry; apply ua_idtoeqv | idtac ].
+ apply ap, idtoeqv_concat.
 
- transitivity (ua (idtoeqv (p • q))); [ idtac | apply ua_idtoeqv ].
+ subst p q.
+ do 2 rewrite idtoeqv_ua; reflexivity.
+Qed.
 
 bbb.
 
 (* ... *)
-
-bbb.
-
-Lemma composite_homotopy_cancel_r {A B C} : ∀ (f g : B → C) (h : A → B),
-  (f ~~ g) → (f ◦ h) ~~ (g ◦ h).
-Proof.
-intros; intros x; apply H.
-Defined.
-
-Lemma composite_homotopy_cancel_l {A B C} : ∀ (f : B → C) (g h : A → B),
-  (g ~~ h) → (f ◦ g) ~~ (f ◦ h).
-Proof.
-intros; intros x; unfold "◦".
-rewrite H; reflexivity.
-Defined.
-
-Definition isequiv_compose {A B C} :
-  ∀ (f : A ≃ B) (g : B ≃ C), isequiv (projT1 g ◦ projT1 f).
-intros.
-destruct f as (f, Hf); simpl.
-pose proof (equivalence_isequiv f) as r.
-destruct r as (Fqi, (Fiq, Fee)).
-pose proof (Fiq Hf) as F.
-destruct F as (f₁, αf, βf).
-destruct g as (g, Hg); simpl.
-pose proof (equivalence_isequiv g) as r.
-destruct r as (Gqi, (Giq, Gee)).
-pose proof (Giq Hg) as G.
-destruct G as (g₁, αg, βg).
-split.
- apply existT with (x := f₁ ◦ g₁).
- rewrite composite_assoc.
- rewrite <- (@composite_assoc B A).
- transitivity ((g ◦ id) ◦ g₁).
-  apply composite_homotopy_cancel_r, composite_homotopy_cancel_l.
-  assumption.
-
-  transitivity (g ◦ g₁); [ idtac | assumption ].
-  apply composite_homotopy_cancel_r; reflexivity.
-
- apply existT with (x := f₁ ◦ g₁).
- rewrite composite_assoc.
- rewrite <- (@composite_assoc B C).
- transitivity ((f₁ ◦ id) ◦ f).
-  apply composite_homotopy_cancel_r, composite_homotopy_cancel_l.
-  assumption.
-
-  transitivity (f₁ ◦ f); [ idtac | assumption ].
-  apply composite_homotopy_cancel_r; reflexivity.
-Defined.
-
-(* isequiv_compose :
-∀ (A B C : Type) (f : A ≃ B) (g : B ≃ C), isequiv (projT1 g ◦ projT1 f) *)
-
-Definition ua_concat {A B C} : ∀ (f : A ≃ B) (g : B ≃ C),
-  ua f • ua g == ua (existT _ (projT1 g ◦ projT1 f) (isequiv_compose f g)).
-Proof.
-intros.
-set (p := ua f).
-set (q := ua g).
-(* hott_2_3_9
-     : ∀ (A : Type) (x y z : A) (P : A → U) (p : x == y)
-       (q : y == z) (u : P x),
-       transport P q (transport P p u) == transport P (p • q) u
-   idtoeqv
-     : ∀ A B : U, A == B → A ≃ B
-   ua
-     : ∀ A B : Type, A ≃ B → A == B
-   •
-     : ∀ (A : Type) (x y z : A), x == y → y == z → x == z *)
-
-pose proof hott_2_3_9 id p q.
-(* transport_eq
-     : ∀ (A : Type) (P : A → Type) (x y : A) (p : x == y)
-       (u v : P x), transport P p u == transport P p v → u == v
-   transport_eq
-     : forall (A : Type) (P : A -> Type) (x y : A) 
-         (p : @Id A x y) (u v : P x),
-       @Id (P y) (@transport A P x y p u) (@transport A P x y p v) ->
-       @Id (P x) u v *)
-pose proof (p • q) as r.
-pose proof (@transport_eq (A == C)).
-bbb.
-
-apply (transport_eq id (p • q)).
-(@id Type A)
-(@Id Type A C)
-P x = @Id Type A C
-
-   @Id (P x) u v
-   @Id (@Id Type A C) (@compose Type A B C p q)
-     (@ua A C
-        (@existT (A -> C) (@isequiv A C)
-           (@composite A B C
-              (@projT1 (A -> B) (fun f0 : A -> B => @isequiv A B f0) f)
-              (@projT1 (B -> C) (fun f0 : B -> C => @isequiv B C f0) g))
-           (@isequiv_compose A B C f g)))
-
-
-bbb.
-
-destruct f as (f, eqf).
-destruct g as (g, eqg).
-simpl in *.
-set (r := equivalence_isequiv f).
-destruct r as (Fqi, (Fiq, Fee)).
-set (r := equivalence_isequiv g).
-destruct r as (Gqi, (Giq, Gee)).
-set (Fiq eqf) as qif.
-set (Giq eqg) as qig.
-destruct qif as (f₁, αf, βf).
-destruct qig as (g₁, αg, βg).
-unfold ua; simpl.
-
-bbb.
-
-Definition ua_concat {A B C} :
-  ∀ (f : A ≃ B) (g : B ≃ C) (u : isequiv (projT1 g ◦ projT1 f)),
-  ua f • ua g == ua (existT _ (projT1 g ◦ projT1 f) u).
-intros.
-Check @hott_2_3_9.
-
-bbb.
-
-Definition ua_concat {A B C} :
-  ∀ (f : A ≃ B) (g : B ≃ C) u, (* (u := λ f, existT _ f _) *)
-  ua f • ua g == ua (u (projT1 g ◦ projT1 f)).
-intros.
-Print "≃".
-Check (λ f, existT _ f _ : @equivalence A C).
-
-u : (A → C) → A ≃ C
-
-Check (projT1 f).
-
-equivalence = λ A B : Type, {f : A → B & isequiv f}
-     : Type → Type → Type
-
-Argument scopes are [type_scope type_scope]
-
-bbb.
-destruct f.
-destruct g.
-Check (existT _ (A → C) _).
-simpl.
-bbb.
-
-SearchAbout ((_ ≃ _)).
-
-bbb.
 
 (* some experiments... *)
 
