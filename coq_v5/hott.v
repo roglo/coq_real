@@ -1608,58 +1608,58 @@ Axiom extensionality : ∀ {A B} f g, isequiv (@happly A B f g).
 Definition funext_tac {A B} {f g : Π (x : A), B x}
   : (∀ x, f x == g x) → (f == g).
 Proof.
-apply extensionality.
-Qed.
+intros p.
+pose proof @extensionality A B f g as H.
+apply isequiv_qinv in H.
+destruct H as (h, α, β).
+apply h, p.
+Defined.
 
+Definition funext {A B} {f g : ∀ x : A, B x}
+  : (∀ x : A, f x == g x) → f == g
+  := λ p,
+     match isequiv_qinv happly (extensionality f g) with
+     | qi h _ _ => h p
+     end.
+
+(*
 Definition funext {A B} {f g : Π (x : A), B x}
   : (∀ x : A, f x == g x) → f == g
   := match extensionality f g with
      | (_, existT p _) => p
      end.
+*)
 
-Theorem funext_quasi_inverse_of_happly {A B} :
+Theorem funext_quasi_inverse_of_happly_tac {A B} :
   ∀ (f g : Π (x : A), B x) (h : ∀ x, f x == g x) x,
   happly (funext h) x == h x.
 Proof.
 intros.
 unfold funext; simpl.
-set (p := extensionality f g).
-destruct p as ((i, Hi), (j, Hj)).
-set (r := j h).
-bbb.
-destruct r.
+set (p := isequiv_qinv happly (extensionality f g)).
+destruct p as (k, α, β).
+unfold "◦" in α.
+pose proof α h; simpl in H.
+eapply happly in H.
+eassumption.
+Defined.
 
-generalize p; intros q.
-
-apply isequiv_qinv in p.
-destruct p as (k, αk, βk).
-destruct q as ((i, Hi), (j, Hj)).
-
-apply isequiv_qinv in p.
-
-generalize p at 0; intros q.
-apply isequiv_qinv in q.
-
-assert ( @isequiv (@Id (forall x0 : A, B x0) f g)
-        (forall x0 : A, @Id (B x0) (f x0) (g x0)) (@happly A B f g)).
-
-bbb.
-
-intros.
-unfold funext; simpl.
-set (p := equivalence_isequiv happly).
-destruct p as (Hqi, (Hiq, Hee)).
-set (qH := Hiq (extensionality f g)).
-destruct qH as (m, α, β).
-unfold "~~", "◦", id in α.
-rewrite α; reflexivity.
-Qed.
+Definition funext_quasi_inverse_of_happly {A B}
+  : ∀ (f g : Π (x : A), B x) (h : ∀ x, f x == g x) (x : A),
+    happly (funext h) x == h x
+  := λ f g h x,
+     match isequiv_qinv happly (extensionality f g) as q
+     return (happly match q with qi k _ _ => k h end x == h x)
+     with
+     | qi k α _ => happly (α h) x
+     end.
 
 Theorem funext_prop_uniq_princ {A B} : ∀ (f g : Π (x : A), B x) (p : f == g),
   p == funext (happly p).
 Proof.
 intros.
 unfold funext; simpl.
+bbb.
 set (q := equivalence_isequiv happly).
 destruct q as (Hqi, (Hiq, Hee)).
 set (qH := Hiq (extensionality f g)).
