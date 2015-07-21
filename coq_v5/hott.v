@@ -1623,8 +1623,30 @@ Theorem funext_quasi_inverse_of_happly {A B} :
 Proof.
 intros.
 unfold funext; simpl.
+set (p := extensionality f g).
+destruct p as ((i, Hi), (j, Hj)).
+set (r := j h).
+bbb.
+destruct r.
+
+generalize p; intros q.
+
+apply isequiv_qinv in p.
+destruct p as (k, αk, βk).
+destruct q as ((i, Hi), (j, Hj)).
+
+apply isequiv_qinv in p.
+
+generalize p at 0; intros q.
+apply isequiv_qinv in q.
+
+assert ( @isequiv (@Id (forall x0 : A, B x0) f g)
+        (forall x0 : A, @Id (B x0) (f x0) (g x0)) (@happly A B f g)).
+
 bbb.
 
+intros.
+unfold funext; simpl.
 set (p := equivalence_isequiv happly).
 destruct p as (Hqi, (Hiq, Hee)).
 set (qH := Hiq (extensionality f g)).
