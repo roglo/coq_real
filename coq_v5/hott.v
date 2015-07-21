@@ -1212,6 +1212,7 @@ Notation "f '⁻⁻¹'" := (quasi_inv f)
 
 (* Lemma 2.4.12 iii *)
 
+(*
 Lemma equiv_compose_tac {A B C} : ∀ (f : A ≃ B) (g : B ≃ C), A ≃ C.
 Proof.
 intros eqf eqg.
@@ -1256,9 +1257,7 @@ Definition equiv_compose {A B C} : A ≃ B → B ≃ C → A ≃ C :=
           end
       end
   end.
-
-(* marche bien mais c'est peut être pas comme ça qu'il faut le
-   définir:
+*)
 
 Lemma equiv_compose_tac {A B C} : ∀ (f : A ≃ B) (g : B ≃ C), A ≃ C.
 Proof.
@@ -1296,7 +1295,6 @@ Definition equiv_compose {A B C} : A ≃ B → B ≃ C → A ≃ C :=
                 end))
       end
   end.
-*)
 
 Notation "g '◦◦' f" := (equiv_compose f g) (at level 40).
 
@@ -1911,57 +1909,8 @@ Definition idtoeqv_concat {A B C} : ∀ (p : A == B) (q : B == C),
   idtoeqv (p • q) == idtoeqv q ◦◦ idtoeqv p.
 Proof.
 intros.
-unfold idtoeqv.
-destruct p, q.
-rewrite <- lu.
-set (p := existT isequiv (transport id (refl A)) (projT2 (ideqv A))).
-bbb.
-
-unfold "◦◦".
-destruct p as (f, Hf).
-set (p := @isequiv_qinv A A f Hf).
-destruct p as (f₁, αf, βf).
-simpl.
-
-intros.
-pose proof @hott_2_3_9 Type A B C id p q.
-SearchAbout (transport id).
-Check @ua_pcr.
-(* ua_pcr
-     : ∀ (A B : Type) (f : A ≃ B) (x : A),
-       transport id (ua f) x == projT1 f x *)
-unfold idtoeqv.
-destruct p, q.
-rewrite <- lu.
-
-unfold "◦◦".
-set (r := idtoeqv p).
-set (s := idtoeqv q).
-destruct r as (f, Hf).
-destruct s as (g, Hg).
-set (t := isequiv_qinv f Hf).
-destruct t as (f₁, αf, βf).
-set (t := isequiv_qinv g Hg).
-destruct t as (g₁, αg, βg).
-unfold idtoeqv.
-
-(*
-SearchAbout (refl _ • _).
-rewrite <- lu.
-set (p := idtoeqv (refl A)).
-destruct p as (f, Hf).
-set (p := isequiv_qinv f Hf).
-destruct p as (g, α, β).
-simpl.
-
-
-set (p := isequiv_qinv id).
-
-
-unfold idtoeqv.
-Check @hott_2_3_9.
-pose proof @hott_2_3_9 Type A B C id p q.
-Abort.
+destruct p, q; reflexivity.
+Defined.
 
 Definition ua_concat {A B C} : ∀ (f : A ≃ B) (g : B ≃ C),
   ua f • ua g == ua (g ◦◦ f).
@@ -1971,22 +1920,11 @@ set (p := ua f).
 set (q := ua g).
 transitivity (ua (idtoeqv q ◦◦ idtoeqv p)).
  transitivity (ua (idtoeqv (p • q))); [ symmetry; apply ua_idtoeqv | idtac ].
- apply ap.
-
- subst p q.
- do 2 rewrite idtoeqv_ua; reflexivity.
-bbb.
-
-intros.
-set (p := ua f).
-set (q := ua g).
-transitivity (ua (idtoeqv q ◦◦ idtoeqv p)).
- transitivity (ua (idtoeqv (p • q))); [ symmetry; apply ua_idtoeqv | idtac ].
  apply ap, idtoeqv_concat.
 
  subst p q.
  do 2 rewrite idtoeqv_ua; reflexivity.
-Qed.
+Defined.
 
 (* inverse *)
 
@@ -1994,6 +1932,8 @@ Definition ua_inverse {A B} : ∀ f : A ≃ B, (ua f)⁻¹ == ua f⁻⁻¹.
 Proof.
 intros.
 destruct f as (f, Hf).
+bbb.
+
 unfold quasi_inv.
 set (p := equivalence_isequiv f).
 destruct p as (Hqi, (Hiq, Hee)).
