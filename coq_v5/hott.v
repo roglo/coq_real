@@ -1867,11 +1867,11 @@ destruct p as (Hqi, (Hiq, Hee)).
 destruct (Hiq Hf) as (g, α, β).
 unfold invert.
 (* supposed to be used in ua_concat, but I did not use it: *)
-Print hott_2_3_10.
-(* hott_2_3_10
-     : ∀ (A B : Type) (x y : A) (f : A → B) (P : B → U)
-       (p : x == y) (u : P (f x)),
-       transport (P ◦ f) p u == transport P (ap f p) u *)
+Print hott_2_3_9.
+(* hott_2_3_9
+     : ∀ (A : Type) (x y z : A) (P : A → U) (p : x == y)
+       (q : y == z) (u : P x),
+       transport P q (transport P p u) == transport P (p • q) u *)
 (* because the solution I found for ua_concat does not work
    here in ua_inverse. *)
 bbb.
