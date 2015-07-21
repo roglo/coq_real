@@ -1639,7 +1639,7 @@ unfold funext; simpl.
 set (p := isequiv_qinv happly (extensionality f g)).
 destruct p as (k, α, β).
 unfold "◦" in α.
-pose proof α h; simpl in H.
+pose proof α h as H; simpl in H.
 eapply happly in H.
 eassumption.
 Defined.
@@ -1659,29 +1659,20 @@ Theorem funext_prop_uniq_princ {A B} : ∀ (f g : Π (x : A), B x) (p : f == g),
 Proof.
 intros.
 unfold funext; simpl.
-bbb.
-set (q := equivalence_isequiv happly).
-destruct q as (Hqi, (Hiq, Hee)).
-set (qH := Hiq (extensionality f g)).
-destruct qH as (m, α, β).
-unfold "~~", "◦", id in β.
-apply invert.
-rewrite β; reflexivity.
-Qed.
+set (q := isequiv_qinv happly (extensionality f g)).
+destruct q as (k, α, β).
+apply invert, β.
+Defined.
 
 Theorem funext_identity {A B} : ∀ (f : Π (x : A), B x),
   refl f == funext (λ x, refl (f x)).
 Proof.
 intros.
 unfold funext; simpl.
-set (q := equivalence_isequiv happly).
-destruct q as (Hqi, (Hiq, Hee)).
-set (qH := Hiq (extensionality f f)).
-destruct qH as (m, α, β).
-unfold "~~", "◦", id in α, β.
-pose proof β (refl f) as H.
-apply invert, H.
-Qed.
+set (p := isequiv_qinv happly (extensionality f f)).
+destruct p as (k, α, β).
+apply invert, (β (refl f)).
+Defined.
 
 Theorem funext_invert {A B} {f g : Π (x : A), B x} : ∀ (α : f == g),
   α⁻¹ == funext (λ x, (happly α x)⁻¹).
@@ -1811,6 +1802,8 @@ Axiom univalence : ∀ A B : U, isequiv (@idtoeqv A B).
 Theorem univalence2 : ∀ A B : U, (A == B) ≃ (A ≃ B).
 Proof.
 intros.
+bbb.
+
 pose proof (@univalence A B) as p.
 pose proof equivalence_isequiv (@idtoeqv A B) as r.
 destruct r as (Hqi, (Hiq, Hee)).
