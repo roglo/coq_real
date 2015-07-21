@@ -1797,20 +1797,20 @@ destruct p.
 apply ideqv.
 Defined.
 
+(*
 Definition idtoeqv {A B : U} : A == B → A ≃ B :=
   λ p,
   match p with
   | refl => ideqv A
   end.
+*)
 
-(*
 Definition idtoeqv {A B : U} : A == B → A ≃ B :=
   λ p,
   existT isequiv (transport id p)
     match p with
     | refl => projT2 (ideqv A)
     end.
-*)
 
 Axiom univalence : ∀ A B : U, isequiv (@idtoeqv A B).
 
@@ -1850,15 +1850,8 @@ destruct q as (g, α, β).
 apply α.
 Defined.
 
-Definition ua_pcr_tac {A B}
-  : ∀ (f : A ≃ B) x, transport id (ua f) x == projT1 f x.
-Proof.
-intros.
-pose proof idtoeqv_ua f as p.
-bbb.
-
 Definition ua_pcr {A B}
-  : ∀ (f : A ≃ B) x, transport id (ua f) x == projT1 f x
+  : ∀ (f : A ≃ B) (x : A), transport id (ua f) x == projT1 f x
   := λ f x,
      match idtoeqv_ua f with
      | refl => refl (projT1 (idtoeqv (ua f)) x)
@@ -1918,24 +1911,72 @@ Definition idtoeqv_concat {A B C} : ∀ (p : A == B) (q : B == C),
   idtoeqv (p • q) == idtoeqv q ◦◦ idtoeqv p.
 Proof.
 intros.
+unfold idtoeqv.
 destruct p, q.
+rewrite <- lu.
+set (p := existT isequiv (transport id (refl A)) (projT2 (ideqv A))).
 bbb.
 
 unfold "◦◦".
-destruct (idtoeqv (refl A)) as (f, Hf).
+destruct p as (f, Hf).
+set (p := @isequiv_qinv A A f Hf).
+destruct p as (f₁, αf, βf).
+simpl.
+
+intros.
+pose proof @hott_2_3_9 Type A B C id p q.
+SearchAbout (transport id).
+Check @ua_pcr.
+(* ua_pcr
+     : ∀ (A B : Type) (f : A ≃ B) (x : A),
+       transport id (ua f) x == projT1 f x *)
+unfold idtoeqv.
+destruct p, q.
+rewrite <- lu.
+
+unfold "◦◦".
+set (r := idtoeqv p).
+set (s := idtoeqv q).
+destruct r as (f, Hf).
+destruct s as (g, Hg).
+set (t := isequiv_qinv f Hf).
+destruct t as (f₁, αf, βf).
+set (t := isequiv_qinv g Hg).
+destruct t as (g₁, αg, βg).
+unfold idtoeqv.
+
+(*
+SearchAbout (refl _ • _).
+rewrite <- lu.
+set (p := idtoeqv (refl A)).
+destruct p as (f, Hf).
 set (p := isequiv_qinv f Hf).
-destruct p as (g, α, β); simpl.
-unfold id; simpl.
-unfold idtoeqv; simpl.
+destruct p as (g, α, β).
+simpl.
 
 
+set (p := isequiv_qinv id).
 
-intros; destruct p, q; reflexivity.
-Qed.
+
+unfold idtoeqv.
+Check @hott_2_3_9.
+pose proof @hott_2_3_9 Type A B C id p q.
+Abort.
 
 Definition ua_concat {A B C} : ∀ (f : A ≃ B) (g : B ≃ C),
   ua f • ua g == ua (g ◦◦ f).
 Proof.
+intros.
+set (p := ua f).
+set (q := ua g).
+transitivity (ua (idtoeqv q ◦◦ idtoeqv p)).
+ transitivity (ua (idtoeqv (p • q))); [ symmetry; apply ua_idtoeqv | idtac ].
+ apply ap.
+
+ subst p q.
+ do 2 rewrite idtoeqv_ua; reflexivity.
+bbb.
+
 intros.
 set (p := ua f).
 set (q := ua g).
