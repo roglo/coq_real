@@ -1790,44 +1790,49 @@ Qed.
 
 (* lemma 2.10.1 *)
 
+Definition idtoeqv_tac {A B : U} : A == B → A ≃ B.
+Proof.
+intros p.
+destruct p.
+apply ideqv.
+Defined.
+
+Definition idtoeqv {A B : U} : A == B → A ≃ B :=
+  λ p,
+  match p with
+  | refl => ideqv A
+  end.
+
+(*
 Definition idtoeqv {A B : U} : A == B → A ≃ B :=
   λ p,
   existT isequiv (transport id p)
     match p with
     | refl => projT2 (ideqv A)
     end.
+*)
 
 Axiom univalence : ∀ A B : U, isequiv (@idtoeqv A B).
 
 Theorem univalence2 : ∀ A B : U, (A == B) ≃ (A ≃ B).
 Proof.
 intros.
-bbb.
-
 pose proof (@univalence A B) as p.
-pose proof equivalence_isequiv (@idtoeqv A B) as r.
-destruct r as (Hqi, (Hiq, Hee)).
-pose proof Hiq p as r.
-destruct r as (f, α, β).
 esplit; eassumption.
 Defined.
 
 (* introduction rule *)
-Definition ua {A B} : A ≃ B → A == B :=
-  match equivalence_isequiv idtoeqv with
-  | conjt _ (conjt Hiq _) =>
-      match Hiq (univalence A B) with
-      | qi f _ _ => f
-      end
-  end.
+Definition ua_tac {A B} : A ≃ B → A == B.
+Proof.
+intros p.
+set (q := isequiv_qinv idtoeqv (univalence A B)).
+destruct q as (f, _, _).
+apply f, p.
+Defined.
 
-Definition ua' {A B} : A ≃ B → A == B :=
-  λ p,
-  match equivalence_isequiv idtoeqv with
-  | conjt _ (conjt Hiq _) =>
-      match Hiq (univalence A B) with
-      | qi f _ _ => f p
-      end
+Definition ua {A B} : A ≃ B → A == B :=
+  match isequiv_qinv idtoeqv (univalence A B) with
+  | qi f _ _ => f
   end.
 
 (* elimination rule = idtoeqv *)
@@ -1840,11 +1845,17 @@ Definition idtoeqv_ua {A B} : ∀ (f : A ≃ B), idtoeqv (ua f) == f.
 Proof.
 intros.
 unfold ua; simpl.
-set (r := equivalence_isequiv idtoeqv).
-destruct r as (Hqi, (Hiq, Hee)).
-destruct (Hiq (univalence A B)) as (g, α, β).
+set (q := isequiv_qinv idtoeqv (univalence A B)).
+destruct q as (g, α, β).
 apply α.
 Defined.
+
+Definition ua_pcr_tac {A B}
+  : ∀ (f : A ≃ B) x, transport id (ua f) x == projT1 f x.
+Proof.
+intros.
+pose proof idtoeqv_ua f as p.
+bbb.
 
 Definition ua_pcr {A B}
   : ∀ (f : A ≃ B) x, transport id (ua f) x == projT1 f x
@@ -1859,9 +1870,8 @@ Definition ua_idtoeqv {A B} : ∀ (p : A == B), ua (idtoeqv p) == p.
 Proof.
 intros.
 unfold ua; simpl.
-set (r := equivalence_isequiv idtoeqv).
-destruct r as (Hqi, (Hiq, Hee)).
-destruct (Hiq (univalence A B)) as (g, α, β).
+set (q := isequiv_qinv idtoeqv (univalence A B)).
+destruct q as (f, α, β).
 apply β.
 Defined.
 
@@ -1907,6 +1917,19 @@ Definition ua_refl : ∀ A, refl A == ua (ideqv A) :=
 Definition idtoeqv_concat {A B C} : ∀ (p : A == B) (q : B == C),
   idtoeqv (p • q) == idtoeqv q ◦◦ idtoeqv p.
 Proof.
+intros.
+destruct p, q.
+bbb.
+
+unfold "◦◦".
+destruct (idtoeqv (refl A)) as (f, Hf).
+set (p := isequiv_qinv f Hf).
+destruct p as (g, α, β); simpl.
+unfold id; simpl.
+unfold idtoeqv; simpl.
+
+
+
 intros; destruct p, q; reflexivity.
 Qed.
 
