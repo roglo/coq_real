@@ -1102,10 +1102,43 @@ Definition equiv_prop {A B} isequiv :=
   (isequiv f → qinv f) ∧∧
   (∀ e₁ e₂ : isequiv f, e₁ == e₂).
 
-Check @equiv_prop.
+(* Mouais, bon, mais qu'est-ce que je dois prendre comme définition
+   de isequiv ? il m'en faut bien une, puisque j'aimerais pouvoir
+   définir A ≃ B, syntaxe pour Σ (f : A → B), isequiv f.
+     Je pourrais prendre isequiv :≡ qinv, mais il manquerait la
+   preuve que ∀ e₁ e₂ : qinv f, e₁ == e₂ (c'est-à-dire que l'inverse
+   est unique). Et puis, ce ne serait pas assez général.
+     Mais pour être général, il faudrait en fait avoir isequiv en
+   paramètre à tous les théorèmes et définitions, ce qui ne serait
+   guère commode. *)
+
+(* Je pourrais prendre le isequiv ci-dessous, avec equivalence_isequiv
+   comme presque axiome (vu que la preuve du 3e point est renvoyée à la
+   section 4.3) *)
 
 Definition isequiv {A B} f :=
   ((Σ (g : B → A), (f ◦ g ~~ id)) * (Σ (h : B → A), (h ◦ f ~~ id)))%type.
+
+Definition isequiv_qinv {A B} (f : A → B) : isequiv f → qinv f.
+Proof.
+intros p.
+destruct p as ((g, Hg), (h, Hh)).
+econstructor; [ eassumption | idtac ].
+bbb.
+(* mais... mais... c'est donc démontrable ? il me semble que j'avais
+   été bloqué à un moment, dans une telle situation... *)
+
+ intros x.
+  unfold homotopy in p, q.
+  assert (∀ y, (h ◦ f ◦ g) y == g y) as H1 by (intros; apply q).
+  assert (∀ y, (h ◦ f ◦ g) y == h y) as H2.
+   intros; rewrite <- composite_assoc.
+   unfold "◦"; apply ap, p.
+
+   transitivity ((h ◦ f) x); [ idtac | apply q ].
+   assert (∀ y, g y == h y) as H3; [ idtac | apply H3 ].
+   intros.
+   transitivity ((h ◦ f ◦ g) y); [ symmetry; apply H1 | apply H2 ].
 
 Definition equivalence_isequiv {A B} : equiv_prop (@isequiv A B).
 Proof.
@@ -1217,6 +1250,11 @@ split.
  intros a; unfold "◦"; simpl.
  transitivity (f₂ (f a)); [ apply ap, eqg₂ | apply eqf₂ ].
 Defined.
+
+bbb.
+
+(* pas la définition qu'il faudrait, bien que ce soit celle-ci qui
+   marche... *)
 
 Definition equiv_compose {A B C} : A ≃ B → B ≃ C → A ≃ C :=
   λ eqf eqg,
