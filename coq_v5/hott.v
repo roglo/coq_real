@@ -1867,7 +1867,9 @@ destruct p as (Hqi, (Hiq, Hee)).
 destruct (Hiq Hf) as (g, α, β).
 unfold invert.
 (* supposed to be used in ua_concat, but I did not use it: *)
-Check @hott_2_3_10.
+Print hott_2_3_10.
+(* because the solution I found for ua_concat does not work
+   here in ua_inverse. *)
 bbb.
 
 (* some experiments... *)
