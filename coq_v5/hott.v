@@ -1353,11 +1353,8 @@ set (f := hott_2_6_1 x y).
 set (g := @pair_eq A B x y).
 apply quasi_inv.
 apply existT with (x := f).
-bbb.
-
-pose proof (equivalence_isequiv f) as H.
-destruct H as (H, _); apply H; clear H.
-apply (qi f) with (g := g).
+apply qinv_isequiv.
+apply (qi f g).
  intros r; unfold id; simpl.
  destruct r as (p, q).
  destruct x as (a, b).
@@ -1492,9 +1489,8 @@ intros.
 set (f := hott_2_7_2_f P w w').
 set (g := hott_2_7_2_g P w w').
 apply existT with (x := f).
-pose proof (equivalence_isequiv f) as H.
-destruct H as (H, _); apply H; clear H.
-apply (qi f) with (g := g).
+apply qinv_isequiv.
+apply (qi f g).
  intros r; unfold id; simpl.
  destruct r as (p, q).
  destruct w as (a, b).
@@ -1508,7 +1504,7 @@ apply (qi f) with (g := g).
  reflexivity.
 
  intros r; unfold id; simpl.
- destruct r as (p, q).
+ destruct r.
  destruct w as (a, b).
  simpl in f, g; simpl.
  subst f g; simpl.
@@ -1577,7 +1573,7 @@ destruct x, y.
 set (f := λ _ : tt == tt, tt).
 set (g := λ _ : unit, refl tt).
 unfold equivalence.
-apply (existT _ f), equivalence_isequiv.
+apply (existT _ f), qinv_isequiv.
 apply (qi f g).
  subst f g; simpl.
  unfold "◦"; simpl.
@@ -1609,15 +1605,16 @@ Definition happly {A B} {f g : Π (x : A), B x}
 
 Axiom extensionality : ∀ {A B} f g, isequiv (@happly A B f g).
 
+Definition funext_tac {A B} {f g : Π (x : A), B x}
+  : (∀ x, f x == g x) → (f == g).
+Proof.
+apply extensionality.
+Qed.
+
 Definition funext {A B} {f g : Π (x : A), B x}
-  : (∀ x, f x == g x) → (f == g)
-  := λ p,
-     match
-       match equivalence_isequiv happly with
-       | conjt _ (conjt Hiq _) => Hiq (extensionality f g)
-       end
-     with
-     | qi h _ _ => h p
+  : (∀ x : A, f x == g x) → f == g
+  := match extensionality f g with
+     | (_, existT p _) => p
      end.
 
 Theorem funext_quasi_inverse_of_happly {A B} :
@@ -1626,6 +1623,8 @@ Theorem funext_quasi_inverse_of_happly {A B} :
 Proof.
 intros.
 unfold funext; simpl.
+bbb.
+
 set (p := equivalence_isequiv happly).
 destruct p as (Hqi, (Hiq, Hee)).
 set (qH := Hiq (extensionality f g)).
