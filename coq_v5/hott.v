@@ -1196,37 +1196,46 @@ apply (existT _ g).
 split; [ apply (existT _ f), β | apply (existT _ f), α ].
 Defined.
 
-Definition quasi_inv : ∀ A B : Type, A ≃ B → B ≃ A :=
-λ (A B : Type) (eqf : A ≃ B),
-let (f, Hf) := eqf in
-(λ Hf0 : qinv f,
- match Hf0 with
- | qi g α β =>
-     existT (λ f0 : B → A, isequiv f0) g
-       (existT (λ g0 : A → B, g ◦ g0 ~~ id) f β,
-       existT (λ h : A → B, h ◦ g ~~ id) f α)
- end) (isequiv_qinv f Hf).
-
-bbb.
-
 Definition quasi_inv {A B} : A ≃ B → B ≃ A :=
-  λ eqv,
-  match eqv with
+  λ eqf,
+  match eqf with
   | existT f Hf =>
-      match equivalence_isequiv f with
-      | conjt _ (conjt Heq _) =>
-         match Heq Hf with
-         | qi g α β =>  existT _ g (existT _ f β, existT _ f α)
-         end
+      match isequiv_qinv f Hf with
+      | qi g α β => existT _ g (existT _ f β, existT _ f α)
       end
-  end.
+   end.
 
 Notation "f '⁻⁻¹'" := (quasi_inv f)
   (at level 8, left associativity, format "'[v' f ']' ⁻⁻¹").
 
-Print sigT_rect. (* à faire… *)
-
 (* Lemma 2.4.12 iii *)
+
+Lemma equiv_compose_tac {A B C} : ∀ (f : A ≃ B) (g : B ≃ C), A ≃ C.
+Proof.
+intros eqf eqg.
+destruct eqf as (f, Hf).
+destruct eqg as (g, Hg).
+apply isequiv_qinv in Hf.
+apply isequiv_qinv in Hg.
+destruct Hf as (f₁, αf, βf).
+destruct Hg as (g₁, αg, βg).
+apply (existT _ (g ◦ f)).
+bbb.
+
+destruct eqf as (f, ((f₁, eqf₁), (f₂, eqf₂))).
+destruct eqg as (g, ((g₁, eqg₁), (g₂, eqg₂))).
+unfold equivalence.
+apply (existT _ (g ◦ f)).
+split.
+ apply (existT _ (f₁ ◦ g₁)).
+ intros c; unfold "◦"; simpl.
+ transitivity (g (g₁ c)); [ apply ap, eqf₁ | apply eqg₁ ].
+
+ apply (existT _ (f₂ ◦ g₂)).
+ intros a; unfold "◦"; simpl.
+ transitivity (f₂ (f a)); [ apply ap, eqg₂ | apply eqf₂ ].
+Defined.
+bbb.
 
 Lemma equiv_compose_tac {A B C} : ∀ (f : A ≃ B) (g : B ≃ C), A ≃ C.
 Proof.
@@ -1244,8 +1253,6 @@ split.
  intros a; unfold "◦"; simpl.
  transitivity (f₂ (f a)); [ apply ap, eqg₂ | apply eqf₂ ].
 Defined.
-
-bbb.
 
 (* pas la définition qu'il faudrait, bien que ce soit celle-ci qui
    marche... *)
