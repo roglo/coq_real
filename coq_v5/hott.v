@@ -1124,21 +1124,18 @@ Proof.
 intros p.
 destruct p as ((g, Hg), (h, Hh)).
 econstructor; [ eassumption | idtac ].
-bbb.
-(* mais... mais... c'est donc démontrable ? il me semble que j'avais
-   été bloqué à un moment, dans une telle situation... *)
+intros x.
+ unfold homotopy in Hg, Hh.
+ assert (∀ y, (h ◦ f ◦ g) y == g y) as H1 by (intros; apply Hh).
+ assert (∀ y, (h ◦ f ◦ g) y == h y) as H2.
+  intros; rewrite <- composite_assoc.
+  unfold "◦"; apply ap, Hg.
 
- intros x.
-  unfold homotopy in p, q.
-  assert (∀ y, (h ◦ f ◦ g) y == g y) as H1 by (intros; apply q).
-  assert (∀ y, (h ◦ f ◦ g) y == h y) as H2.
-   intros; rewrite <- composite_assoc.
-   unfold "◦"; apply ap, p.
-
-   transitivity ((h ◦ f) x); [ idtac | apply q ].
-   assert (∀ y, g y == h y) as H3; [ idtac | apply H3 ].
-   intros.
-   transitivity ((h ◦ f ◦ g) y); [ symmetry; apply H1 | apply H2 ].
+  transitivity ((h ◦ f) x); [ idtac | apply Hh ].
+  assert (∀ y, g y == h y) as H3; [ idtac | apply H3 ].
+  intros.
+  transitivity ((h ◦ f ◦ g) y); [ symmetry; apply H1 | apply H2 ].
+Qed.
 
 Definition equivalence_isequiv {A B} : equiv_prop (@isequiv A B).
 Proof.
@@ -1148,22 +1145,7 @@ split; [ idtac | split ].
  refine (match H with qi _ _ _ => _ end).
  split; econstructor; eassumption.
 
- intros H; unfold isequiv in H; simpl in H.
- destruct H as (Hg, Hh).
- destruct Hg as (g, p).
- destruct Hh as (h, q).
- econstructor; [ eassumption | idtac ].
- intros x.
-  unfold homotopy in p, q.
-  assert (∀ y, (h ◦ f ◦ g) y == g y) as H1 by (intros; apply q).
-  assert (∀ y, (h ◦ f ◦ g) y == h y) as H2.
-   intros; rewrite <- composite_assoc.
-   unfold "◦"; apply ap, p.
-
-   transitivity ((h ◦ f) x); [ idtac | apply q ].
-   assert (∀ y, g y == h y) as H3; [ idtac | apply H3 ].
-   intros.
-   transitivity ((h ◦ f ◦ g) y); [ symmetry; apply H1 | apply H2 ].
+ apply isequiv_qinv.
 
  intros.
  unfold isequiv in e₁, e₂.
@@ -1175,7 +1157,7 @@ split; [ idtac | split ].
  induction H4 as (h2, q2).
  unfold "~~", id in p1, q1, p2, q2.
  unfold "~~", id.
-Admitted. (* proof postponed, they say, to sections §2.6, §2.7 and §4.3...
+Abort. (* proof postponed, they say, to sections §2.6, §2.7 and §4.3...
 bbb.
 *)
 
@@ -1208,12 +1190,24 @@ Definition quasi_inv_tac {A B} : A ≃ B → B ≃ A.
 Proof.
 intros eqf.
 destruct eqf as (f, Hf).
-pose proof equivalence_isequiv f as H.
-destruct H as (_, (Heq, _)).
-destruct (Heq Hf) as (g, α, β).
+apply isequiv_qinv in Hf.
+destruct Hf as (g, α, β).
 apply (existT _ g).
 split; [ apply (existT _ f), β | apply (existT _ f), α ].
 Defined.
+
+Definition quasi_inv : ∀ A B : Type, A ≃ B → B ≃ A :=
+λ (A B : Type) (eqf : A ≃ B),
+let (f, Hf) := eqf in
+(λ Hf0 : qinv f,
+ match Hf0 with
+ | qi g α β =>
+     existT (λ f0 : B → A, isequiv f0) g
+       (existT (λ g0 : A → B, g ◦ g0 ~~ id) f β,
+       existT (λ h : A → B, h ◦ g ~~ id) f α)
+ end) (isequiv_qinv f Hf).
+
+bbb.
 
 Definition quasi_inv {A B} : A ≃ B → B ≃ A :=
   λ eqv,
