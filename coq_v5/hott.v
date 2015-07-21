@@ -1119,6 +1119,13 @@ Definition equiv_prop {A B} isequiv :=
 Definition isequiv {A B} f :=
   ((Σ (g : B → A), (f ◦ g ~~ id)) * (Σ (h : B → A), (h ◦ f ~~ id)))%type.
 
+Definition qinv_isequiv {A B} (f : A → B) : qinv f → isequiv f.
+Proof.
+intros p.
+destruct p as (g, α, β).
+split; apply (existT _ g); assumption.
+Defined.
+
 Definition isequiv_qinv {A B} (f : A → B) : isequiv f → qinv f.
 Proof.
 intros p.
@@ -1140,23 +1147,18 @@ Qed.
 Definition equivalence_isequiv {A B} : equiv_prop (@isequiv A B).
 Proof.
 unfold equiv_prop; intros f.
-split; [ idtac | split ].
- intros H; unfold isequiv; simpl.
- refine (match H with qi _ _ _ => _ end).
- split; econstructor; eassumption.
-
- apply isequiv_qinv.
-
- intros.
- unfold isequiv in e₁, e₂.
- destruct e₁ as (H1, H2).
- destruct e₂ as (H3, H4).
- induction H1 as (g1, p1).
- induction H2 as (h1, q1).
- induction H3 as (g2, p2).
- induction H4 as (h2, q2).
- unfold "~~", id in p1, q1, p2, q2.
- unfold "~~", id.
+split; [ apply qinv_isequiv | idtac ].
+split; [ apply isequiv_qinv | idtac ].
+intros.
+unfold isequiv in e₁, e₂.
+destruct e₁ as (H1, H2).
+destruct e₂ as (H3, H4).
+induction H1 as (g1, p1).
+induction H2 as (h1, q1).
+induction H3 as (g2, p2).
+induction H4 as (h2, q2).
+unfold "~~", id in p1, q1, p2, q2.
+unfold "~~", id.
 Abort. (* proof postponed, they say, to sections §2.6, §2.7 and §4.3...
 bbb.
 *)
@@ -1220,22 +1222,43 @@ apply isequiv_qinv in Hg.
 destruct Hf as (f₁, αf, βf).
 destruct Hg as (g₁, αg, βg).
 apply (existT _ (g ◦ f)).
-bbb.
-
-destruct eqf as (f, ((f₁, eqf₁), (f₂, eqf₂))).
-destruct eqg as (g, ((g₁, eqg₁), (g₂, eqg₂))).
-unfold equivalence.
-apply (existT _ (g ◦ f)).
-split.
- apply (existT _ (f₁ ◦ g₁)).
+apply qinv_isequiv.
+eapply (qi _ (f₁ ◦ g₁)).
  intros c; unfold "◦"; simpl.
- transitivity (g (g₁ c)); [ apply ap, eqf₁ | apply eqg₁ ].
+ transitivity (g (g₁ c)); [ apply ap, αf | apply αg ].
 
- apply (existT _ (f₂ ◦ g₂)).
  intros a; unfold "◦"; simpl.
- transitivity (f₂ (f a)); [ apply ap, eqg₂ | apply eqf₂ ].
+ transitivity (f₁ (f a)); [ apply ap, βg | apply βf ].
 Defined.
-bbb.
+
+Definition equiv_compose {A B C} : A ≃ B → B ≃ C → A ≃ C :=
+  λ eqf eqg,
+  match eqf with
+  | existT f Hf =>
+      match eqg with
+      | existT g Hg =>
+          match isequiv_qinv f Hf with
+          | qi f₁ αf βf =>
+              match isequiv_qinv g Hg with
+              | qi g₁ αg βg =>
+                  existT _ (g ◦ f)
+                    (qinv_isequiv (g ◦ f)
+                       (qi (g ◦ f) (f₁ ◦ g₁)
+                          (λ c,
+                           match αg c with
+                           | refl => ap g (αf (g₁ c))
+                           end)
+                          (λ a,
+                           match βf a with
+                           | refl => ap f₁ (βg (f a))
+                           end)))
+              end
+          end
+      end
+  end.
+
+(* marche bien mais c'est peut être pas comme ça qu'il faut le
+   définir:
 
 Lemma equiv_compose_tac {A B C} : ∀ (f : A ≃ B) (g : B ≃ C), A ≃ C.
 Proof.
@@ -1253,9 +1276,6 @@ split.
  intros a; unfold "◦"; simpl.
  transitivity (f₂ (f a)); [ apply ap, eqg₂ | apply eqf₂ ].
 Defined.
-
-(* pas la définition qu'il faudrait, bien que ce soit celle-ci qui
-   marche... *)
 
 Definition equiv_compose {A B C} : A ≃ B → B ≃ C → A ≃ C :=
   λ eqf eqg,
@@ -1276,19 +1296,13 @@ Definition equiv_compose {A B C} : A ≃ B → B ≃ C → A ≃ C :=
                 end))
       end
   end.
+*)
 
 Notation "g '◦◦' f" := (equiv_compose f g) (at level 40).
 
 (* 2.5 The higher groupoid structure of type formers *)
 
-Check @transport.
-(* transport
-     : ∀ (A : Type) (P : A → Type) (x y : A), x == y → P x → P y *)
-Check transport.
-(* transport
-     : ∀ (P : ?3610 → Type) (x y : ?3610), x == y → P x → P y *)
-
-Theorem transport_pair : ∀ A B C (x y : A) (p : x == y) b c,
+Theorem transport_pair_tac : ∀ A B C (x y : A) (p : x == y) b c,
   transport (λ z, (B z * C z)%type) p (b, c) ==
   (transport B p b, transport C p c).
 Proof.
@@ -1296,7 +1310,7 @@ intros.
 destruct p; reflexivity.
 Qed.
 
-Definition transport_pair_bis {A} B C x y (p : x == y) b c
+Definition transport_pair {A} B C x y (p : x == y) b c
   : transport (λ z : A, (B z * C z)%type) p (b, c) ==
     (transport B p b, transport C p c)
   := match p with
@@ -1339,6 +1353,8 @@ set (f := hott_2_6_1 x y).
 set (g := @pair_eq A B x y).
 apply quasi_inv.
 apply existT with (x := f).
+bbb.
+
 pose proof (equivalence_isequiv f) as H.
 destruct H as (H, _); apply H; clear H.
 apply (qi f) with (g := g).
