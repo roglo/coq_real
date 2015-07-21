@@ -1159,31 +1159,43 @@ Definition ideqv A : A ≃ A :=
     (existT (λ g : A → A, id ◦ g ~~ id) id (reflexivity id),
      existT (λ h : A → A, h ◦ id ~~ id) id (reflexivity id)).
 
-Lemma hott_2_4_12_ii : ∀ A B, A ≃ B → B ≃ A.
-Proof.
-intros A B f.
-induction f as (f, H).
-pose proof (@equivalence_isequiv A B f) as Heq.
-destruct Heq as (Hqe, (Heq, Hee)).
-generalize H; intros finv.
-apply Heq in finv.
-destruct finv as (finv, α, β).
-apply existT with (x := finv).
-split; apply existT with (x := f); assumption.
-Qed.
+(*
+Definition quasi_inv_tac {A B} (f : A ≃ B) : B ≃ A.
+destruct f as (f, ((f₁, eqf₁), (f₂, eqf₂))).
+unfold equivalence.
+apply (existT _ f₁).
+split.
+ apply (existT _ f).
+bbb.
+*)
 
-Definition quasi_inv {A B} (f : A ≃ B) : B ≃ A :=
-  sigT_rect (λ _, B ≃ A)
-    (λ g H,
-     match equivalence_isequiv g with
-     | conjt _ (conjt Heq _) =>
-         match Heq H with
-         | qi finv1 α β =>
-             existT isequiv finv1
-               (existT (λ g, finv1 ◦ g ~~ id) g β,
-                existT (λ h, h ◦ finv1 ~~ id) g α)
+(* quasi-inverse : lemma 2.4.12 ii *)
+
+Definition quasi_inv_tac {A B} : A ≃ B → B ≃ A.
+Proof.
+intros eqf.
+destruct eqf as (f, Hf).
+pose proof equivalence_isequiv f as H.
+destruct H as (_, (Heq, _)).
+destruct (Heq Hf) as (g, α, β).
+apply (existT _ g).
+split; [ apply (existT _ f), β | apply (existT _ f), α ].
+Defined.
+
+Definition quasi_inv {A B} : A ≃ B → B ≃ A :=
+  λ eqv,
+  match eqv with
+  | existT f Hf =>
+      match equivalence_isequiv f with
+      | conjt _ (conjt Heq _) =>
+         match Heq Hf with
+         | qi g α β =>  existT _ g (existT _ f β, existT _ f α)
          end
-      end) f.
+      end
+  end.
+
+Notation "f '⁻⁻¹'" := (quasi_inv f)
+  (at level 8, left associativity, format "'[v' f ']' ⁻⁻¹").
 
 Print sigT_rect. (* à faire… *)
 
@@ -1225,68 +1237,6 @@ Definition equiv_compose {A B C} : A ≃ B → B ≃ C → A ≃ C :=
                 end))
       end
   end.
-
-(*
-Lemma equiv_compose_by_tactics {A B C} : A ≃ B → B ≃ C → A ≃ C.
-Proof.
-intros eqf eqg.
-destruct eqf as (f, eqf).
-destruct eqg as (g, eqg).
-pose proof (@equivalence_isequiv A B f) as H.
-destruct H as (Hfqe, (Hfeq, Hfee)).
-apply Hfeq in eqf.
-destruct eqf as (f¹, αf, βf).
-pose proof (@equivalence_isequiv B C g) as H.
-destruct H as (Hgqe, (Hgeq, Hgee)).
-apply Hgeq in eqg.
-destruct eqg as (g¹, αg, βg).
-unfold equivalence.
-apply existT with (x := g ◦ f).
-unfold isequiv.
-split.
- apply existT with (x := f¹ ◦ g¹).
- intros c.
- pose proof αf (g¹ c) as H.
- apply (ap g) in H.
- unfold id in H; simpl in H.
- transitivity (g (g¹ c)); [ assumption | apply αg ].
-
- apply existT with (x := f¹ ◦ g¹).
- intros a.
- pose proof βg (f a) as H.
- apply (ap f¹) in H.
- unfold id in H; simpl in H.
- transitivity (f¹ (f a)); [ assumption | apply βf ].
-Defined.
-
-Definition equiv_compose {A B C} : A ≃ B → B ≃ C → A ≃ C :=
-  λ eqf eqg,
-  let (f, eqvf) := eqf in
-  let (g, eqvg) := eqg in
-  match equivalence_isequiv f with
-  | conjt _ (conjt Hfeq _) =>
-      match Hfeq eqvf with
-      | qi f₁ αf βf =>
-           match equivalence_isequiv g with
-           | conjt _ (conjt Hgeq _) =>
-                match Hgeq eqvg with
-                | qi g₁ αg βg =>
-                    existT isequiv (g ◦ f)
-                      (existT (λ h, (g ◦ f) ◦ h ~~ id) (f₁ ◦ g₁)
-                         (λ c : C,
-                          match αg c with
-                          | refl => ap g (αf (g₁ c))
-                          end),
-                       existT (λ h, h ◦ (g ◦ f) ~~ id) (f₁ ◦ g₁)
-                         (λ a : A,
-                          match βf a with
-                          | refl => ap f₁ (βg (f a))
-                          end))
-                end
-           end
-      end
- end.
-*)
 
 Notation "g '◦◦' f" := (equiv_compose f g) (at level 40).
 
@@ -1348,7 +1298,7 @@ Proof.
 intros.
 set (f := hott_2_6_1 x y).
 set (g := @pair_eq A B x y).
-apply hott_2_4_12_ii.
+apply quasi_inv.
 apply existT with (x := f).
 pose proof (equivalence_isequiv f) as H.
 destruct H as (H, _); apply H; clear H.
@@ -1905,6 +1855,19 @@ transitivity (ua (idtoeqv q ◦◦ idtoeqv p)).
  do 2 rewrite idtoeqv_ua; reflexivity.
 Qed.
 
+(* inverse *)
+
+Definition ua_inverse {A B} : ∀ f : A ≃ B, (ua f)⁻¹ == ua f⁻⁻¹.
+Proof.
+intros.
+destruct f as (f, Hf).
+unfold quasi_inv.
+set (p := equivalence_isequiv f).
+destruct p as (Hqi, (Hiq, Hee)).
+destruct (Hiq Hf) as (g, α, β).
+unfold invert.
+(* supposed to be used in ua_concat, but I did not use it: *)
+Check @hott_2_3_10.
 bbb.
 
 (* some experiments... *)
