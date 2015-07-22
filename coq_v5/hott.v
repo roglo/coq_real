@@ -1207,8 +1207,10 @@ Definition quasi_inv {A B} : A ≃ B → B ≃ A :=
       end
    end.
 
+(*
 Notation "f '⁻⁻¹'" := (quasi_inv f)
   (at level 8, left associativity, format "'[v' f ']' ⁻⁻¹").
+*)
 
 (* Lemma 2.4.12 iii *)
 
@@ -1928,24 +1930,78 @@ Defined.
 
 (* inverse *)
 
-Definition idtoeqv_invert {A B} : ∀ (f : A ≃ B),
-  idtoeqv (ua f)⁻¹ == f⁻⁻¹.
-Proof.
-intros.
-Abort.
+Definition equiv_inv {A B} (f : A ≃ B) : B ≃ A := idtoeqv (ua f)⁻¹.
+
+Notation "f '⁻⁻¹'" := (equiv_inv f)
+  (at level 8, left associativity, format "'[v' f ']' ⁻⁻¹").
 
 Definition ua_inverse {A B} : ∀ f : A ≃ B, (ua f)⁻¹ == ua f⁻⁻¹.
 Proof.
 intros.
 set (p := ua f).
 transitivity (ua (idtoeqv p⁻¹)); [ symmetry; apply ua_idtoeqv | idtac ].
-apply ap.
+subst p; reflexivity.
+Defined.
+
+(* oui, mais est-ce kasher de définir justement l'inverse d'une équivalence
+   de la sorte ? En fait, quasi_inv est de même type de equiv_inv. On aurait
+   donc pu prendre quasi_inv comme définition de ⁻⁻¹ *)
+
+(*
+equiv_inv = 
+λ (A B : Type) (f : A ≃ B), idtoeqv (ua f)⁻¹
+     : ∀ A B : Type, A ≃ B → B ≃ A
+
+quasi_inv = 
+λ (A B : Type) (eqf : A ≃ B),
+let (f, Hf) := eqf in
+match isequiv_qinv f Hf with
+| qi g α β =>
+    existT (λ f0 : B → A, isequiv f0) g
+      (existT (λ g0 : A → B, g ◦ g0 ~~ id) f β,
+      existT (λ h : A → B, h ◦ g ~~ id) f α)
+end
+     : ∀ A B : Type, A ≃ B → B ≃ A
+
+Definition quasi_inv {A B} : A ≃ B → B ≃ A :=
+  λ eqf,
+  match eqf with
+  | existT f Hf =>
+      match isequiv_qinv f Hf with
+      | qi g α β => existT _ g (existT _ f β, existT _ f α)
+      end
+   end.
+*)
+
+(* Et ça, est-ce que ça fait du sens ? Est-ce que c'est vrai ? *)
+
+Definition equiv_quasi_inv {A B} : ∀ (f : A ≃ B), equiv_inv f == quasi_inv f.
+Proof.
+intros.
+destruct f as (f, Hf).
+unfold equiv_inv, quasi_inv, idtoeqv.
+set (p := isequiv_qinv f Hf).
+destruct p as (g, α, β).
+simpl.
 bbb.
 
-(* hott_2_3_9
-     : ∀ (A : Type) (x y z : A) (P : A → U) (p : x == y)
-       (q : y == z) (u : P x),
-       transport P q (transport P p u) == transport P (p • q) u *)
+Lemma hott_2_10_5_i {A} {B : A → U} {x y : A} : ∀ (p : x == y) (u : B x),
+  transport B p u = transport id (ap B p) u.
+Proof.
+intros.
+destruct p; reflexivity.
+Defined.
+
+Lemma hott_2_10_5_ii {A} {B : A → U} {x y : A} : ∀ (p : x == y) (u : B x),
+  transport id (ap B p) u == projT1 (idtoeqv (ap B p)) u.
+Proof. reflexivity. Qed.
+
+Lemma hott_2_10_5 {A} {B : A → U} {x y : A} : ∀ (p : x == y) (u : B x),
+  transport B p u == projT1 (idtoeqv (ap B p)) u.
+Proof. intros; destruct p; reflexivity. Qed.
+
+(* 2.11 Identity type *)
+
 bbb.
 
 (* some experiments... *)
