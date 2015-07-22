@@ -1947,6 +1947,10 @@ Defined.
    de la sorte ? En fait, quasi_inv est de même type de equiv_inv. On aurait
    donc pu prendre quasi_inv comme définition de ⁻⁻¹ *)
 
+(* selon Cyprien Mangin, il semblerait qu'une définition de ⁻⁻¹ qui
+   n'utilise *pas* l'axiome d'univalence, c'est-à-dire quasi_inv, est
+   ce qu'il faut *)
+
 (*
 equiv_inv = 
 λ (A B : Type) (f : A ≃ B), idtoeqv (ua f)⁻¹
