@@ -1119,15 +1119,11 @@ intros p.
 destruct p as ((g, Hg), (h, Hh)).
 econstructor; split; [ eassumption | idtac ].
 intros x.
- unfold homotopy in Hg, Hh.
- assert (∀ y, (h ◦ f ◦ g) y == g y) as H1 by (intros; apply Hh).
- assert (∀ y, (h ◦ f ◦ g) y == h y) as H2.
-  intros; rewrite <- composite_assoc.
-  unfold "◦"; apply ap, Hg.
-
-  transitivity ((h ◦ f) x); [ idtac | apply Hh ].
-  assert (∀ y, g y == h y) as H3; [ intros | apply H3 ].
-  transitivity ((h ◦ f ◦ g) y); [ symmetry; apply H1 | apply H2 ].
+unfold homotopy, "◦", id in Hg, Hh; unfold "◦", id.
+eapply compose; [ idtac | apply Hh ].
+apply invert.
+eapply compose; [ idtac | apply Hh ].
+apply ap, invert, Hg.
 Defined.
 
 Definition equivalence_isequiv {A B} : equiv_prop (@isequiv A B).
@@ -1162,6 +1158,21 @@ Definition ideqv A : A ≃ A :=
      existT (λ h : A → A, h ◦ id ~~ id) id (reflexivity id)).
 
 (* quasi-inverse : lemma 2.4.12 ii *)
+
+(*
+Definition toto {A B} (p : A ≃ B) : qinv (projT1 p).
+Proof.
+destruct p as (f, p); simpl.
+destruct p as ((g, Hg), (h, Hh)).
+econstructor; split; [ eassumption | idtac ].
+intros x.
+unfold homotopy, "◦", id in Hg, Hh; unfold "◦", id.
+eapply compose; [ idtac | apply Hh ].
+apply invert.
+eapply compose; [ | apply Hh ].
+apply ap, invert, Hg.
+Show Proof.
+*)
 
 Definition quasi_inv_tac {A B} : A ≃ B → B ≃ A.
 Proof.
@@ -1877,7 +1888,37 @@ intros.
 set (p := ua f).
 transitivity (ua (idtoeqv p⁻¹)); [ symmetry; apply ua_idtoeqv | idtac ].
 apply ap.
+unfold idtoeqv; simpl.
+Print quasi_inv.
+bbb.
+
+unfold quasi_inv.
+destruct f as (f, Hf).
+unfold isequiv_qinv; simpl.
+
+destruct Hf.
+destruct s.
+destruct s0.
+subst p.
+unfold ua.
+simpl.
+unfold isequiv_qinv; simpl.
+set (p := univalence A B).
+destruct p.
+destruct s.
+destruct s0.
+simpl.
+unfold idtoeqv.
+simpl.
+
+
+Print quasi_inv.
+bbb.
+
+unfold quasi_inv.
 destruct f as (f, Hf); simpl.
+unfold isequiv_qinv.
+
 set (q := isequiv_qinv f Hf).
 unfold isequiv_qinv in q.
 destruct Hf.
@@ -1887,6 +1928,15 @@ destruct q.
 destruct p0.
 unfold idtoeqv.
 SearchAbout (transport id).
+assert (transport id p⁻¹ == x1).
+subst p.
+unfold ua.
+unfold transport.
+set (p := isequiv_qinv idtoeqv (univalence A B)).
+destruct p.
+destruct p.
+simpl.
+
 bbb.
 destruct q as (g, (α, β)).
 unfold "⁻¹"; simpl.
