@@ -1928,25 +1928,24 @@ Defined.
 
 (* inverse *)
 
+Definition idtoeqv_invert {A B} : ∀ (f : A ≃ B),
+  idtoeqv (ua f)⁻¹ == f⁻⁻¹.
+Proof.
+intros.
+Abort.
+
 Definition ua_inverse {A B} : ∀ f : A ≃ B, (ua f)⁻¹ == ua f⁻⁻¹.
 Proof.
 intros.
-destruct f as (f, Hf).
+set (p := ua f).
+transitivity (ua (idtoeqv p⁻¹)); [ symmetry; apply ua_idtoeqv | idtac ].
+apply ap.
 bbb.
 
-unfold quasi_inv.
-set (p := equivalence_isequiv f).
-destruct p as (Hqi, (Hiq, Hee)).
-destruct (Hiq Hf) as (g, α, β).
-unfold invert.
-(* supposed to be used in ua_concat, but I did not use it: *)
-Print hott_2_3_9.
 (* hott_2_3_9
      : ∀ (A : Type) (x y z : A) (P : A → U) (p : x == y)
        (q : y == z) (u : P x),
        transport P q (transport P p u) == transport P (p • q) u *)
-(* because the solution I found for ua_concat does not work
-   here in ua_inverse. *)
 bbb.
 
 (* some experiments... *)
