@@ -1155,15 +1155,51 @@ Definition ideqv A : A ≃ A :=
 
 (* quasi-inverse : lemma 2.4.12 ii *)
 
+(*
+Definition isequiv_qinv_tac {A B} (f : A → B) : isequiv f → qinv f.
+Proof.
+intros p.
+destruct p as ((g, Hg), (h, Hh)).
+econstructor; split; [ eassumption | idtac ].
+intros x.
+unfold "◦", homotopy, id in Hg, Hh.
+unfold "◦", homotopy, id.
+eapply compose; [ idtac | apply Hh ].
+apply invert.
+eapply compose; [ | apply Hh ].
+apply invert, ap, Hg.
+Defined.
+*)
+
 Definition quasi_inv_tac {A B} : A ≃ B → B ≃ A.
 Proof.
 intros eqf.
 destruct eqf as (f, Hf).
-apply isequiv_qinv in Hf.
-destruct Hf as (g, (α, β)).
+destruct Hf as ((g, Hg), (h, Hh)).
 apply (existT _ g).
-split; [ apply (existT _ f), β | apply (existT _ f), α ].
+split; [ idtac | apply (existT _ f); assumption ].
+apply (existT _ f).
+unfold "◦", homotopy, id in Hg, Hh.
+unfold "◦", homotopy, id; intros x.
+eapply compose; [ idtac | apply Hh ].
+apply invert.
+eapply compose; [ | apply Hh ].
+apply invert, ap, Hg.
 Defined.
+
+Definition quasi_inv {A B} : A ≃ B → B ≃ A :=
+λ (eqf : A ≃ B),
+let (f, Hf) := eqf in
+let (s, x) := Hf in
+(let (g, Hg) := s in
+ λ s0 : {h : B → A & h ◦ f ~~ id},
+ let (h, Hh) := s0 in
+ existT (λ f0 : B → A, isequiv f0) g
+   (existT (λ g0 : A → B, g ◦ g0 ~~ id) f
+      (λ x : A, ((ap h (Hg (f x)))⁻¹ • Hh (g (f x)))⁻¹ • Hh x),
+   existT (λ h0 : A → B, h0 ◦ g ~~ id) f Hg)) x.
+
+bbb.
 
 Definition quasi_inv {A B} : A ≃ B → B ≃ A :=
   λ eqf,
@@ -1173,6 +1209,53 @@ Definition quasi_inv {A B} : A ≃ B → B ≃ A :=
       | existT g (α, β) => existT _ g (existT _ f β, existT _ f α)
       end
    end.
+
+Definition quasi_inv_inv {A B : U} : ∀ (p : A ≃ B),
+  quasi_inv (quasi_inv p) == p.
+Proof.
+intros p.
+destruct p as (f, p); simpl.
+unfold isequiv_qinv; simpl.
+destruct p; simpl.
+destruct s.
+destruct s0; simpl.
+apply ap.
+Theorem toto {A B} : ∀ (a1 a2 : A) (b1 b2 : B), a1 == a2 → b1 == b2 → (a1, b1) == (a2, b2).
+intros; destruct H, H0; reflexivity.
+Qed.
+apply toto.
+apply ap.
+unfold "~~", "◦" in h, h0.
+bbb.
+
+Print isequiv_qinv.
+bbb.
+
+unfold quasi_inv.
+unfold isequiv_qinv; simpl.
+destruct p.
+destruct i.
+destruct s.
+destruct s0.
+apply ap.
+SearchAbout ((_, _) == (_, _)).
+Theorem toto {A B} : ∀ (a1 a2 : A) (b1 b2 : B), a1 == a2 → b1 == b2 → (a1, b1) == (a2, b2).
+intros; destruct H, H0; reflexivity.
+Qed.
+apply toto.
+
+set (q := isequiv_qinv f p).
+destruct q as (g, (α, β)).
+
+unfold quasi_inv.
+set (q :=
+        isequiv_qinv g
+          (existT (λ g0 : A → B, g ◦ g0 ~~ id) f β,
+          existT (λ h : A → B, h ◦ g ~~ id) f α)).
+destruct q as (h, (αh, βh)).
+bbb.
+
+Defined.
 
 (*
 Notation "f '⁻⁻¹'" := (quasi_inv f)
@@ -1878,53 +1961,6 @@ Defined.
 (* selon Cyprien Mangin, il semblerait qu'une définition de ⁻⁻¹ qui
    n'utilise *pas* l'axiome d'univalence, c'est-à-dire quasi_inv, est
    ce qu'il faut *)
-
-Definition quasi_inv_inv {A B : U} : ∀ (p : A ≃ B),
-  quasi_inv (quasi_inv p) == p.
-Proof.
-intros p.
-destruct p as (f, p); simpl.
-unfold isequiv_qinv; simpl.
-destruct p; simpl.
-destruct s.
-destruct s0; simpl.
-apply ap.
-Theorem toto {A B} : ∀ (a1 a2 : A) (b1 b2 : B), a1 == a2 → b1 == b2 → (a1, b1) == (a2, b2).
-intros; destruct H, H0; reflexivity.
-Qed.
-apply toto.
-apply ap.
-unfold "~~", "◦" in h, h0.
-bbb.
-
-Print isequiv_qinv.
-bbb.
-
-unfold quasi_inv.
-unfold isequiv_qinv; simpl.
-destruct p.
-destruct i.
-destruct s.
-destruct s0.
-apply ap.
-SearchAbout ((_, _) == (_, _)).
-Theorem toto {A B} : ∀ (a1 a2 : A) (b1 b2 : B), a1 == a2 → b1 == b2 → (a1, b1) == (a2, b2).
-intros; destruct H, H0; reflexivity.
-Qed.
-apply toto.
-
-set (q := isequiv_qinv f p).
-destruct q as (g, (α, β)).
-
-unfold quasi_inv.
-set (q :=
-        isequiv_qinv g
-          (existT (λ g0 : A → B, g ◦ g0 ~~ id) f β,
-          existT (λ h : A → B, h ◦ g ~~ id) f α)).
-destruct q as (h, (αh, βh)).
-bbb.
-
-Defined.
 
 Definition ua_inverse2 {A B} : ∀ f : A ≃ B, (ua f)⁻¹ == ua (quasi_inv f).
 Proof.
