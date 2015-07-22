@@ -1128,7 +1128,7 @@ intros x.
   transitivity ((h ◦ f) x); [ idtac | apply Hh ].
   assert (∀ y, g y == h y) as H3; [ intros | apply H3 ].
   transitivity ((h ◦ f ◦ g) y); [ symmetry; apply H1 | apply H2 ].
-Qed.
+Defined.
 
 Definition equivalence_isequiv {A B} : equiv_prop (@isequiv A B).
 Proof.
@@ -1879,6 +1879,14 @@ transitivity (ua (idtoeqv p⁻¹)); [ symmetry; apply ua_idtoeqv | idtac ].
 apply ap.
 destruct f as (f, Hf); simpl.
 set (q := isequiv_qinv f Hf).
+unfold isequiv_qinv in q.
+destruct Hf.
+destruct s.
+destruct s0.
+destruct q.
+destruct p0.
+unfold idtoeqv.
+bbb.
 destruct q as (g, (α, β)).
 unfold "⁻¹"; simpl.
 bbb.
