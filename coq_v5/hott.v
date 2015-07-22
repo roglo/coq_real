@@ -1886,6 +1886,7 @@ destruct s0.
 destruct q.
 destruct p0.
 unfold idtoeqv.
+SearchAbout (transport id).
 bbb.
 destruct q as (g, (α, β)).
 unfold "⁻¹"; simpl.
