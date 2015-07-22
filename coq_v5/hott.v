@@ -1182,8 +1182,10 @@ Definition quasi_inv {A B} : A ≃ B → B ≃ A :=
       end
    end.
 
+(*
 Notation "f '⁻⁻¹'" := (quasi_inv f)
   (at level 8, left associativity, format "'[v' f ']' ⁻⁻¹").
+*)
 
 (* Lemma 2.4.12 iii *)
 
@@ -1280,8 +1282,7 @@ set (g := @pair_eq A B x y).
 apply quasi_inv.
 apply existT with (x := f).
 apply qinv_isequiv.
-bbb.
-apply (qi f g).
+apply (existT _ g); split.
  intros r; unfold id; simpl.
  destruct r as (p, q).
  destruct x as (a, b).
@@ -1417,7 +1418,7 @@ set (f := hott_2_7_2_f P w w').
 set (g := hott_2_7_2_g P w w').
 apply existT with (x := f).
 apply qinv_isequiv.
-apply (qi f g).
+apply (existT _ g); split.
  intros r; unfold id; simpl.
  destruct r as (p, q).
  destruct w as (a, b).
@@ -1501,7 +1502,7 @@ set (f := λ _ : tt == tt, tt).
 set (g := λ _ : unit, refl tt).
 unfold equivalence.
 apply (existT _ f), qinv_isequiv.
-apply (qi f g).
+apply (existT _ g); split.
  subst f g; simpl.
  unfold "◦"; simpl.
  intros x; destruct x; reflexivity.
@@ -1546,16 +1547,8 @@ Definition funext {A B} {f g : ∀ x : A, B x}
   : (∀ x : A, f x == g x) → f == g
   := λ p,
      match isequiv_qinv happly (extensionality f g) with
-     | qi h _ _ => h p
+     | existT h _ => h p
      end.
-
-(*
-Definition funext {A B} {f g : Π (x : A), B x}
-  : (∀ x : A, f x == g x) → f == g
-  := match extensionality f g with
-     | (_, existT p _) => p
-     end.
-*)
 
 Theorem funext_quasi_inverse_of_happly_tac {A B} :
   ∀ (f g : Π (x : A), B x) (h : ∀ x, f x == g x) x,
@@ -1564,7 +1557,7 @@ Proof.
 intros.
 unfold funext; simpl.
 set (p := isequiv_qinv happly (extensionality f g)).
-destruct p as (k, α, β).
+destruct p as (k, (α, β)).
 unfold "◦" in α.
 pose proof α h as H; simpl in H.
 eapply happly in H.
@@ -1576,9 +1569,9 @@ Definition funext_quasi_inverse_of_happly {A B}
     happly (funext h) x == h x
   := λ f g h x,
      match isequiv_qinv happly (extensionality f g) as q
-     return (happly match q with qi k _ _ => k h end x == h x)
+     return (happly match q with existT k _ => k h end x == h x)
      with
-     | qi k α _ => happly (α h) x
+     | existT k (α, _) => happly (α h) x
      end.
 
 Theorem funext_prop_uniq_princ {A B} : ∀ (f g : Π (x : A), B x) (p : f == g),
@@ -1587,7 +1580,7 @@ Proof.
 intros.
 unfold funext; simpl.
 set (q := isequiv_qinv happly (extensionality f g)).
-destruct q as (k, α, β).
+destruct q as (k, (α, β)).
 apply invert, β.
 Defined.
 
@@ -1597,7 +1590,7 @@ Proof.
 intros.
 unfold funext; simpl.
 set (p := isequiv_qinv happly (extensionality f f)).
-destruct p as (k, α, β).
+destruct p as (k, (α, β)).
 apply invert, (β (refl f)).
 Defined.
 
@@ -1759,7 +1752,7 @@ Defined.
 
 Definition ua {A B} : A ≃ B → A == B :=
   match isequiv_qinv idtoeqv (univalence A B) with
-  | qi f _ _ => f
+  | existT f _ => f
   end.
 
 (* elimination rule = idtoeqv *)
@@ -1791,7 +1784,7 @@ Proof.
 intros.
 unfold ua; simpl.
 set (q := isequiv_qinv idtoeqv (univalence A B)).
-destruct q as (f, α, β).
+destruct q as (f, (α, β)).
 apply β.
 Defined.
 
@@ -1886,7 +1879,7 @@ transitivity (ua (idtoeqv p⁻¹)); [ symmetry; apply ua_idtoeqv | idtac ].
 apply ap.
 destruct f as (f, Hf); simpl.
 set (q := isequiv_qinv f Hf).
-destruct q as (g, α, β).
+destruct q as (g, (α, β)).
 unfold "⁻¹"; simpl.
 bbb.
 (* probablement pas bon, parce qu'il n'y a aucune raison que p soit refl
