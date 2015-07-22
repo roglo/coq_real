@@ -1983,6 +1983,22 @@ unfold equiv_inv, quasi_inv, idtoeqv.
 set (p := isequiv_qinv f Hf).
 destruct p as (g, α, β).
 simpl.
+pose proof univalence A B as H.
+apply isequiv_qinv in H.
+destruct H as (h, αh, βh).
+SearchAbout idtoeqv.
+assert (g == transport id (ua (existT isequiv f Hf))⁻¹).
+SearchAbout (transport id).
+Print isequiv_transport.
+bbb.
+
+ua_pup:
+  ∀ (A B : Type) (p : A == B),
+  p == ua (existT isequiv (transport id p) (isequiv_transport p))
+isequiv_transport: ∀ (A B : Type) (p : A == B), isequiv (transport id p)
+ua_pcr:
+  ∀ (A B : Type) (f : A ≃ B) (x : A), transport id (ua f) x == projT1 f x
+
 bbb.
 
 Lemma hott_2_10_5_i {A} {B : A → U} {x y : A} : ∀ (p : x == y) (u : B x),
