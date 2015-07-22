@@ -1177,54 +1177,43 @@ intros eqf.
 destruct eqf as (f, Hf).
 destruct Hf as ((g, Hg), (h, Hh)).
 apply (existT _ g).
-split; [ idtac | apply (existT _ f); assumption ].
+split; [ idtac | apply (existT _ f), Hg ].
 apply (existT _ f).
+bbb.
+
 unfold "◦", homotopy, id in Hg, Hh.
 unfold "◦", homotopy, id; intros x.
-eapply compose; [ idtac | apply Hh ].
-apply invert.
-eapply compose; [ | apply Hh ].
-apply invert, ap, Hg.
+eapply compose; [ eapply invert | apply Hh ].
+eapply compose; [ apply invert, ap, Hg | apply Hh ].
 Defined.
-
-Definition quasi_inv {A B} : A ≃ B → B ≃ A :=
-λ (eqf : A ≃ B),
-let (f, Hf) := eqf in
-let (s, x) := Hf in
-(let (g, Hg) := s in
- λ s0 : {h : B → A & h ◦ f ~~ id},
- let (h, Hh) := s0 in
- existT (λ f0 : B → A, isequiv f0) g
-   (existT (λ g0 : A → B, g ◦ g0 ~~ id) f
-      (λ x : A, ((ap h (Hg (f x)))⁻¹ • Hh (g (f x)))⁻¹ • Hh x),
-   existT (λ h0 : A → B, h0 ◦ g ~~ id) f Hg)) x.
-
-bbb.
 
 Definition quasi_inv {A B} : A ≃ B → B ≃ A :=
   λ eqf,
   match eqf with
-  | existT f Hf =>
-      match isequiv_qinv f Hf with
-      | existT g (α, β) => existT _ g (existT _ f β, existT _ f α)
-      end
-   end.
+  | existT f (existT g Hg, existT h Hh) =>
+      existT isequiv g
+        (existT _ f (λ x, ((ap h (Hg (f x)))⁻¹ • Hh (g (f x)))⁻¹ • Hh x),
+         existT _ f Hg)
+  end.
 
 Definition quasi_inv_inv {A B : U} : ∀ (p : A ≃ B),
   quasi_inv (quasi_inv p) == p.
 Proof.
 intros p.
-destruct p as (f, p); simpl.
-unfold isequiv_qinv; simpl.
-destruct p; simpl.
-destruct s.
-destruct s0; simpl.
+unfold quasi_inv; simpl.
+destruct p.
+destruct i.
+destruct s, s0.
 apply ap.
 Theorem toto {A B} : ∀ (a1 a2 : A) (b1 b2 : B), a1 == a2 → b1 == b2 → (a1, b1) == (a2, b2).
 intros; destruct H, H0; reflexivity.
 Qed.
 apply toto.
+bbb.
+
 apply ap.
+bbb.
+
 unfold "~~", "◦" in h, h0.
 bbb.
 
