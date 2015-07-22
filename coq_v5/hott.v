@@ -627,36 +627,26 @@ Definition hott_2_1_4_i_2 {A} {x y : A} : ∀ (p : x == y),
    | refl => refl (refl x • refl x)
    end).
 
-Lemma hott_2_1_4_ii_1 {A} {x y z w : A} :
-  ∀ (p : x == y) (q : y == z) (r : z == w),
-  p⁻¹ • p == refl y.
+Lemma hott_2_1_4_ii_1 {A} {x y : A} : ∀ (p : x == y), p⁻¹ • p == refl y.
 Proof.
-intros p q r.
-induction p; constructor.
+intros p; destruct p; reflexivity.
 Qed.
 
-Lemma hott_2_1_4_ii_2 {A} {x y z w : A} :
-  ∀ (p : x == y) (q : y == z) (r : z == w),
-  p • p⁻¹ == refl x.
+Lemma hott_2_1_4_ii_2 {A} {x y : A} : ∀ (p : x == y), p • p⁻¹ == refl x.
 Proof.
-intros p q r.
-induction p; constructor.
+intros p; destruct p; reflexivity.
 Qed.
 
-Lemma hott_2_1_4_iii {A} {x y z w : A} :
-  ∀ (p : x == y) (q : y == z) (r : z == w),
-  (p⁻¹)⁻¹ == p.
+Lemma hott_2_1_4_iii {A} {x y : A} : ∀ (p : x == y), (p⁻¹)⁻¹ == p.
 Proof.
-intros p q r.
-destruct p; constructor.
+intros p; destruct p; reflexivity.
 Qed.
 
 Lemma hott_2_1_4_iv {A} {x y z w : A} :
   ∀ (p : x == y) (q : y == z) (r : z == w),
   p • (q • r) == (p • q) • r.
 Proof.
-intros p q r.
-destruct p; constructor.
+intros p q r; destruct p; reflexivity.
 Qed.
 
 (* Theorem 2.1.6 (Eckmann-Hilton) *)
@@ -1022,24 +1012,24 @@ apply (existT _ (λ q, p⁻¹ • q)); split.
  intros t; unfold id, "◦"; simpl.
  eapply compose; [ idtac | apply invert, hott_2_1_4_i_2 ].
  eapply compose; [ apply hott_2_1_4_iv | apply dotr ].
- eapply hott_2_1_4_ii_2; reflexivity.
+ apply hott_2_1_4_ii_2.
 
  intros t; unfold id, "◦"; simpl.
  eapply compose; [ idtac | apply invert, hott_2_1_4_i_2 ].
  eapply compose; [ apply hott_2_1_4_iv | apply dotr ].
- eapply hott_2_1_4_ii_1; reflexivity.
+ apply hott_2_1_4_ii_1.
 Qed.
 
 Example ex_2_4_8_i A : ∀ x y z : A, ∀ (p : x == y),
-  qinv (λ (q : y == z), p • q) :=
-  λ x y z p,
-  existT _ (compose p⁻¹)
-    (λ t,
-     hott_2_1_4_iv p p⁻¹ t • (hott_2_1_4_ii_2 p (refl y) (refl y) •r t)
-     • (hott_2_1_4_i_2 t)⁻¹,
-     λ t,
-     hott_2_1_4_iv p⁻¹ p t • (hott_2_1_4_ii_1 p (refl y) (refl y) •r t)
-     • (hott_2_1_4_i_2 t)⁻¹).
+  qinv (λ (q : y == z), p • q)
+  := λ x y z p,
+     existT _ (compose p⁻¹)
+       (λ t : x == z,
+        hott_2_1_4_iv p p⁻¹ t • (hott_2_1_4_ii_2 p •r t)
+        • (hott_2_1_4_i_2 t)⁻¹,
+        λ t : y == z,
+        hott_2_1_4_iv p⁻¹ p t • (hott_2_1_4_ii_1 p •r t)
+        • (hott_2_1_4_i_2 t)⁻¹).
 
 Example ex_2_4_8_ii_tac A : ∀ x y z : A, ∀ (p : x == y),
   qinv (λ (q : z == x), q • p).
@@ -1049,12 +1039,12 @@ apply (existT _ (λ q, q • p⁻¹)); split.
  intros t; unfold id, "◦"; simpl.
  eapply compose; [ idtac | apply invert, hott_2_1_4_i_1 ].
  eapply compose; [ eapply invert, hott_2_1_4_iv | apply dotl ].
- eapply hott_2_1_4_ii_1; reflexivity.
+ eapply hott_2_1_4_ii_1.
 
  intros t; unfold id, "◦"; simpl.
  eapply compose; [ idtac | apply invert, hott_2_1_4_i_1 ].
  eapply compose; [ eapply invert, hott_2_1_4_iv | apply dotl ].
- eapply hott_2_1_4_ii_2; reflexivity.
+ eapply hott_2_1_4_ii_2.
 Defined.
 
 Example ex_2_4_8_ii A : ∀ x y z : A, ∀ (p : x == y),
@@ -1062,12 +1052,10 @@ Example ex_2_4_8_ii A : ∀ x y z : A, ∀ (p : x == y),
   := λ x y z p,
      existT _ (λ q, q • p⁻¹)
        (λ t : z == y,
-        (hott_2_1_4_iv t p⁻¹ p)⁻¹
-        • (t •l hott_2_1_4_ii_1 p (refl y) (refl y))
+        (hott_2_1_4_iv t p⁻¹ p)⁻¹ • (t •l hott_2_1_4_ii_1 p)
         • (hott_2_1_4_i_1 t)⁻¹,
         λ t : z == x,
-        (hott_2_1_4_iv t p p⁻¹)⁻¹
-        • (t •l hott_2_1_4_ii_2 p (refl y) (refl y))
+        (hott_2_1_4_iv t p p⁻¹)⁻¹ • (t •l hott_2_1_4_ii_2 p)
         • (hott_2_1_4_i_1 t)⁻¹).
 
 Example ex_2_4_9_tac A x y : ∀ (p : x == y) (P : A → U), qinv (transport P p).
@@ -1866,6 +1854,22 @@ Defined.
 (* oui, mais est-ce kasher de définir justement l'inverse d'une équivalence
    de la sorte ? En fait, quasi_inv est de même type de equiv_inv. On aurait
    donc pu prendre quasi_inv comme définition de ⁻⁻¹ *)
+
+Definition titi {A B : U} : ∀ (p : A ≃ B), idtoeqv (ua p)⁻¹⁻¹ == p.
+Proof.
+intros.
+eapply compose; [ eapply ap | idtac ].
+apply hott_2_1_4_iii, idtoeqv_ua.
+Qed.
+
+bbb.
+
+Definition toto {A B : U} : ∀ (p : A ≃ B), p⁻⁻¹⁻⁻¹ == p.
+Proof.
+intros p.
+unfold "⁻⁻¹".
+eapply compose; [ eapply ap, ap, ua_idtoeqv | idtac ].
+bbb.
 
 (* selon Cyprien Mangin, il semblerait qu'une définition de ⁻⁻¹ qui
    n'utilise *pas* l'axiome d'univalence, c'est-à-dire quasi_inv, est
