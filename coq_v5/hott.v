@@ -1007,17 +1007,18 @@ Qed.
 
 (* quasi-inverse *)
 
-Inductive qinv {A B} (f : A → B) : Type :=
-  qi : ∀ (g : B → A) (α : (f ◦ g) ~~ id) (β : (g ◦ f) ~~ id), qinv f.
+Definition qinv {A B} (f : A → B) :=
+  Σ (g : B → A), ((f ◦ g ~~ id) * (g ◦ f ~~ id))%type.
 
-Example ex_2_4_7 A : qinv (id : A → A) := qi id id refl refl.
+Example ex_2_4_7 A : qinv (id : A → A) := existT _ id (refl, refl).
+
 Print ex_2_4_7.
 
-Example ex_2_4_8_i A : ∀ x y z : A, ∀ (p : x == y),
+Example ex_2_4_8_i_tac A : ∀ x y z : A, ∀ (p : x == y),
   qinv (λ (q : y == z), p • q).
 Proof.
 intros.
-apply qi with (g := λ q, p⁻¹ • q).
+apply (existT _ (λ q, p⁻¹ • q)); split.
  intros t; unfold id, "◦"; simpl.
  eapply compose; [ idtac | apply invert, hott_2_1_4_i_2 ].
  eapply compose; [ apply hott_2_1_4_iv | apply dotr ].
@@ -1029,22 +1030,22 @@ apply qi with (g := λ q, p⁻¹ • q).
  eapply hott_2_1_4_ii_1; reflexivity.
 Qed.
 
-Example ex_2_4_8_i_bis A : ∀ x y z : A, ∀ (p : x == y),
-  qinv (λ (q : y == z), p • q)
-  := λ x y z p,
-     qi (λ q : y == z, p • q) (λ q : x == z, p ⁻¹ • q)
-       (λ t : x == z,
-        hott_2_1_4_iv p (p ⁻¹) t • (hott_2_1_4_ii_2 p (refl y) (refl y) •r t)
-        • (hott_2_1_4_i_2 t) ⁻¹)
-       (λ t : y == z,
-        hott_2_1_4_iv (p ⁻¹) p t • (hott_2_1_4_ii_1 p (refl y) (refl y) •r t)
-        • (hott_2_1_4_i_2 t) ⁻¹).
+Example ex_2_4_8_i A : ∀ x y z : A, ∀ (p : x == y),
+  qinv (λ (q : y == z), p • q) :=
+  λ x y z p,
+  existT _ (compose p⁻¹)
+    (λ t,
+     hott_2_1_4_iv p p⁻¹ t • (hott_2_1_4_ii_2 p (refl y) (refl y) •r t)
+     • (hott_2_1_4_i_2 t)⁻¹,
+     λ t,
+     hott_2_1_4_iv p⁻¹ p t • (hott_2_1_4_ii_1 p (refl y) (refl y) •r t)
+     • (hott_2_1_4_i_2 t)⁻¹).
 
-Example ex_2_4_8_ii A : ∀ x y z : A, ∀ (p : x == y),
+Example ex_2_4_8_ii_tac A : ∀ x y z : A, ∀ (p : x == y),
   qinv (λ (q : z == x), q • p).
 Proof.
 intros.
-apply qi with (g := λ q, q • p⁻¹).
+apply (existT _ (λ q, q • p⁻¹)); split.
  intros t; unfold id, "◦"; simpl.
  eapply compose; [ idtac | apply invert, hott_2_1_4_i_1 ].
  eapply compose; [ eapply invert, hott_2_1_4_iv | apply dotl ].
@@ -1054,47 +1055,47 @@ apply qi with (g := λ q, q • p⁻¹).
  eapply compose; [ idtac | apply invert, hott_2_1_4_i_1 ].
  eapply compose; [ eapply invert, hott_2_1_4_iv | apply dotl ].
  eapply hott_2_1_4_ii_2; reflexivity.
-Qed.
+Defined.
 
-Example ex_2_4_8_ii_bis A : ∀ x y z : A, ∀ (p : x == y),
+Example ex_2_4_8_ii A : ∀ x y z : A, ∀ (p : x == y),
   qinv (λ (q : z == x), q • p)
   := λ x y z p,
-     qi (λ q : z == x, q • p) (λ q : z == y, q • p ⁻¹)
+     existT _ (λ q, q • p⁻¹)
        (λ t : z == y,
-        (hott_2_1_4_iv t (p ⁻¹) p) ⁻¹
-        • (t •l hott_2_1_4_ii_1 p (refl y) (refl y)) •
-        (hott_2_1_4_i_1 t) ⁻¹)
-       (λ t : z == x,
-        (hott_2_1_4_iv t p (p ⁻¹)) ⁻¹
-        • (t •l hott_2_1_4_ii_2 p (refl y) (refl y)) •
-        (hott_2_1_4_i_1 t) ⁻¹).
+        (hott_2_1_4_iv t p⁻¹ p)⁻¹
+        • (t •l hott_2_1_4_ii_1 p (refl y) (refl y))
+        • (hott_2_1_4_i_1 t)⁻¹,
+        λ t : z == x,
+        (hott_2_1_4_iv t p p⁻¹)⁻¹
+        • (t •l hott_2_1_4_ii_2 p (refl y) (refl y))
+        • (hott_2_1_4_i_1 t)⁻¹).
 
-Example ex_2_4_9 A x y : ∀ (p : x == y) (P : A → U), qinv (transport P p).
+Example ex_2_4_9_tac A x y : ∀ (p : x == y) (P : A → U), qinv (transport P p).
 Proof.
 intros.
-apply qi with (g := transport P (p⁻¹)).
+apply (existT _ (transport P (p⁻¹))); split.
  intros z; unfold id, "◦"; simpl.
  eapply compose; [ apply hott_2_3_9 | idtac ].
- induction p; reflexivity.
+ destruct p; reflexivity.
 
  intros z; unfold id, "◦"; simpl.
  eapply compose; [ apply hott_2_3_9 | idtac ].
- induction p; reflexivity.
+ destruct p; reflexivity.
 Qed.
 
-Example ex_2_4_9_bis A x y : ∀ (p : x == y) (P : A → U), qinv (transport P p)
-  := λ p P,
- qi (transport P p) (transport P (p ⁻¹))
-   (λ z : P y,
-    hott_2_3_9 P (p ⁻¹) p z
-    • match p return (∀ t, transport P (p ⁻¹ • p) t == t) with
-      | refl => refl
-      end z)
-   (λ z : P x,
-    hott_2_3_9 P p (p ⁻¹) z
-    • match p return (∀ t, transport P (p • p ⁻¹) t == t) with
-      | refl => refl
-      end z).
+Example ex_2_4_9 A x y : ∀ (p : x == y) (P : A → U), qinv (transport P p) :=
+  λ p P,
+  existT _ (transport P p⁻¹)
+  (λ z : P y,
+   hott_2_3_9 P p⁻¹ p z
+   • match p return (∀ t, transport P (p⁻¹ • p) t == t) with
+     | refl => λ z0 : P x, refl z0
+     end z,
+   λ z : P x,
+   hott_2_3_9 P p p⁻¹ z
+   • match p return (transport P (p • p⁻¹) z == z) with
+     | refl => refl z
+     end).
 
 Definition equiv_prop {A B} isequiv :=
   ∀ f : A → B,
@@ -1102,27 +1103,13 @@ Definition equiv_prop {A B} isequiv :=
   (isequiv f → qinv f) ∧∧
   (∀ e₁ e₂ : isequiv f, e₁ == e₂).
 
-(* Mouais, bon, mais qu'est-ce que je dois prendre comme définition
-   de isequiv ? il m'en faut bien une, puisque j'aimerais pouvoir
-   définir A ≃ B, syntaxe pour Σ (f : A → B), isequiv f.
-     Je pourrais prendre isequiv :≡ qinv, mais il manquerait la
-   preuve que ∀ e₁ e₂ : qinv f, e₁ == e₂ (c'est-à-dire que l'inverse
-   est unique). Et puis, ce ne serait pas assez général.
-     Mais pour être général, il faudrait en fait avoir isequiv en
-   paramètre à tous les théorèmes et définitions, ce qui ne serait
-   guère commode. *)
-
-(* Je pourrais prendre le isequiv ci-dessous, avec equivalence_isequiv
-   comme presque axiome (vu que la preuve du 3e point est renvoyée à la
-   section 4.3) *)
-
 Definition isequiv {A B} f :=
   ((Σ (g : B → A), (f ◦ g ~~ id)) * (Σ (h : B → A), (h ◦ f ~~ id)))%type.
 
 Definition qinv_isequiv {A B} (f : A → B) : qinv f → isequiv f.
 Proof.
 intros p.
-destruct p as (g, α, β).
+destruct p as (g, (α, β)).
 split; apply (existT _ g); assumption.
 Defined.
 
@@ -1130,7 +1117,7 @@ Definition isequiv_qinv {A B} (f : A → B) : isequiv f → qinv f.
 Proof.
 intros p.
 destruct p as ((g, Hg), (h, Hh)).
-econstructor; [ eassumption | idtac ].
+econstructor; split; [ eassumption | idtac ].
 intros x.
  unfold homotopy in Hg, Hh.
  assert (∀ y, (h ◦ f ◦ g) y == g y) as H1 by (intros; apply Hh).
@@ -1139,8 +1126,7 @@ intros x.
   unfold "◦"; apply ap, Hg.
 
   transitivity ((h ◦ f) x); [ idtac | apply Hh ].
-  assert (∀ y, g y == h y) as H3; [ idtac | apply H3 ].
-  intros.
+  assert (∀ y, g y == h y) as H3; [ intros | apply H3 ].
   transitivity ((h ◦ f ◦ g) y); [ symmetry; apply H1 | apply H2 ].
 Qed.
 
@@ -1148,8 +1134,7 @@ Definition equivalence_isequiv {A B} : equiv_prop (@isequiv A B).
 Proof.
 unfold equiv_prop; intros f.
 split; [ apply qinv_isequiv | idtac ].
-split; [ apply isequiv_qinv | idtac ].
-intros.
+split; [ apply isequiv_qinv | intros ].
 unfold isequiv in e₁, e₂.
 destruct e₁ as (H1, H2).
 destruct e₂ as (H3, H4).
@@ -1176,16 +1161,6 @@ Definition ideqv A : A ≃ A :=
     (existT (λ g : A → A, id ◦ g ~~ id) id (reflexivity id),
      existT (λ h : A → A, h ◦ id ~~ id) id (reflexivity id)).
 
-(*
-Definition quasi_inv_tac {A B} (f : A ≃ B) : B ≃ A.
-destruct f as (f, ((f₁, eqf₁), (f₂, eqf₂))).
-unfold equivalence.
-apply (existT _ f₁).
-split.
- apply (existT _ f).
-bbb.
-*)
-
 (* quasi-inverse : lemma 2.4.12 ii *)
 
 Definition quasi_inv_tac {A B} : A ≃ B → B ≃ A.
@@ -1193,7 +1168,7 @@ Proof.
 intros eqf.
 destruct eqf as (f, Hf).
 apply isequiv_qinv in Hf.
-destruct Hf as (g, α, β).
+destruct Hf as (g, (α, β)).
 apply (existT _ g).
 split; [ apply (existT _ f), β | apply (existT _ f), α ].
 Defined.
@@ -1203,63 +1178,14 @@ Definition quasi_inv {A B} : A ≃ B → B ≃ A :=
   match eqf with
   | existT f Hf =>
       match isequiv_qinv f Hf with
-      | qi g α β => existT _ g (existT _ f β, existT _ f α)
+      | existT g (α, β) => existT _ g (existT _ f β, existT _ f α)
       end
    end.
 
-(*
 Notation "f '⁻⁻¹'" := (quasi_inv f)
   (at level 8, left associativity, format "'[v' f ']' ⁻⁻¹").
-*)
 
 (* Lemma 2.4.12 iii *)
-
-(*
-Lemma equiv_compose_tac {A B C} : ∀ (f : A ≃ B) (g : B ≃ C), A ≃ C.
-Proof.
-intros eqf eqg.
-destruct eqf as (f, Hf).
-destruct eqg as (g, Hg).
-apply isequiv_qinv in Hf.
-apply isequiv_qinv in Hg.
-destruct Hf as (f₁, αf, βf).
-destruct Hg as (g₁, αg, βg).
-apply (existT _ (g ◦ f)).
-apply qinv_isequiv.
-eapply (qi _ (f₁ ◦ g₁)).
- intros c; unfold "◦"; simpl.
- transitivity (g (g₁ c)); [ apply ap, αf | apply αg ].
-
- intros a; unfold "◦"; simpl.
- transitivity (f₁ (f a)); [ apply ap, βg | apply βf ].
-Defined.
-
-Definition equiv_compose {A B C} : A ≃ B → B ≃ C → A ≃ C :=
-  λ eqf eqg,
-  match eqf with
-  | existT f Hf =>
-      match eqg with
-      | existT g Hg =>
-          match isequiv_qinv f Hf with
-          | qi f₁ αf βf =>
-              match isequiv_qinv g Hg with
-              | qi g₁ αg βg =>
-                  existT _ (g ◦ f)
-                    (qinv_isequiv (g ◦ f)
-                       (qi (g ◦ f) (f₁ ◦ g₁)
-                          (λ c,
-                           match αg c with
-                           | refl => ap g (αf (g₁ c))
-                           end)
-                          (λ a,
-                           match βf a with
-                           | refl => ap f₁ (βg (f a))
-                           end)))
-              end
-          end
-      end
-  end.
-*)
 
 Lemma equiv_compose_tac {A B C} : ∀ (f : A ≃ B) (g : B ≃ C), A ≃ C.
 Proof.
@@ -1354,6 +1280,7 @@ set (g := @pair_eq A B x y).
 apply quasi_inv.
 apply existT with (x := f).
 apply qinv_isequiv.
+bbb.
 apply (qi f g).
  intros r; unfold id; simpl.
  destruct r as (p, q).
