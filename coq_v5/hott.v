@@ -1101,22 +1101,26 @@ destruct p as (g, (α, β)).
 split; apply (existT _ g); assumption.
 Defined.
 
-Definition isequiv_qinv {A B} (f : A → B) : isequiv f → qinv f.
+Definition isequiv_qinv_tac {A B} (f : A → B) : isequiv f → qinv f.
 Proof.
 intros p.
 destruct p as ((g, Hg), (h, Hh)).
 econstructor; split; [ eassumption | idtac ].
 intros x.
- unfold homotopy in Hg, Hh.
- assert (∀ y, (h ◦ f ◦ g) y == g y) as H1 by (intros; apply Hh).
- assert (∀ y, (h ◦ f ◦ g) y == h y) as H2.
-  intros; rewrite <- composite_assoc.
-  unfold "◦"; apply ap, Hg.
-
-  transitivity ((h ◦ f) x); [ idtac | apply Hh ].
-  assert (∀ y, g y == h y) as H3; [ intros | apply H3 ].
-  transitivity ((h ◦ f ◦ g) y); [ symmetry; apply H1 | apply H2 ].
+unfold "◦", homotopy, id in Hg, Hh.
+unfold "◦", homotopy, id.
+eapply compose; [ idtac | apply Hh ].
+apply invert.
+eapply compose; [ | apply Hh ].
+apply invert, ap, Hg.
 Defined.
+
+Definition isequiv_qinv {A B} (f : A → B) : isequiv f → qinv f :=
+  λ p,
+  match p with
+  | (existT g Hg, existT h Hh) =>
+      existT _ g (Hg, λ x, ((ap h (Hg (f x)))⁻¹ • Hh (g (f x)))⁻¹ • Hh x)
+  end.
 
 Definition equivalence_isequiv {A B} : equiv_prop (@isequiv A B).
 Proof.
@@ -1879,12 +1883,39 @@ Definition quasi_inv_inv {A B : U} : ∀ (p : A ≃ B),
   quasi_inv (quasi_inv p) == p.
 Proof.
 intros p.
-Print quasi_inv.
+destruct p as (f, p); simpl.
+unfold isequiv_qinv; simpl.
+destruct p; simpl.
+destruct s.
+destruct s0; simpl.
+apply ap.
+Theorem toto {A B} : ∀ (a1 a2 : A) (b1 b2 : B), a1 == a2 → b1 == b2 → (a1, b1) == (a2, b2).
+intros; destruct H, H0; reflexivity.
+Qed.
+apply toto.
+apply ap.
+unfold "~~", "◦" in h, h0.
 bbb.
 
-destruct p as (f, p); simpl.
+Print isequiv_qinv.
+bbb.
+
+unfold quasi_inv.
+unfold isequiv_qinv; simpl.
+destruct p.
+destruct i.
+destruct s.
+destruct s0.
+apply ap.
+SearchAbout ((_, _) == (_, _)).
+Theorem toto {A B} : ∀ (a1 a2 : A) (b1 b2 : B), a1 == a2 → b1 == b2 → (a1, b1) == (a2, b2).
+intros; destruct H, H0; reflexivity.
+Qed.
+apply toto.
+
 set (q := isequiv_qinv f p).
 destruct q as (g, (α, β)).
+
 unfold quasi_inv.
 set (q :=
         isequiv_qinv g
