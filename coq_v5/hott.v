@@ -1951,6 +1951,35 @@ Defined.
    n'utilise *pas* l'axiome d'univalence, c'est-à-dire quasi_inv, est
    ce qu'il faut *)
 
+Definition ua_inverse2 {A B} : ∀ f : A ≃ B, (ua f)⁻¹ == ua (quasi_inv f).
+Proof.
+intros.
+set (p := ua f).
+transitivity (ua (idtoeqv p⁻¹)); [ symmetry; apply ua_idtoeqv | idtac ].
+apply ap.
+destruct f as (f, Hf); simpl.
+set (q := isequiv_qinv f Hf).
+destruct q as (g, α, β).
+unfold "⁻¹"; simpl.
+bbb.
+(* probablement pas bon, parce qu'il n'y a aucune raison que p soit refl
+   et du coup, on ne peut rien faire avec ça...
+  f : A → B
+  Hf : isequiv f
+  p := ua (existT (λ f0 : A → B, isequiv f0) f Hf) : A == B
+  g : B → A
+  α : f ◦ g ~~ id
+  β : g ◦ f ~~ id
+  ============================
+   idtoeqv match p in (_ == a) return (a == A) with
+           | refl => refl A
+           end ==
+   existT (λ f0 : B → A, isequiv f0) g
+     (existT (λ g0 : A → B, g ◦ g0 ~~ id) f β,
+     existT (λ h : A → B, h ◦ g ~~ id) f α)
+
+bbb.
+
 (*
 equiv_inv = 
 λ (A B : Type) (f : A ≃ B), idtoeqv (ua f)⁻¹
