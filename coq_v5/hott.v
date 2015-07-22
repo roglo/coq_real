@@ -1855,25 +1855,45 @@ Defined.
    de la sorte ? En fait, quasi_inv est de même type de equiv_inv. On aurait
    donc pu prendre quasi_inv comme définition de ⁻⁻¹ *)
 
-Definition titi {A B : U} : ∀ (p : A ≃ B), idtoeqv (ua p)⁻¹⁻¹ == p.
+Definition idtoeqv_ua_equiv_inv_inv {A B : U} : ∀ (p : A ≃ B),
+  idtoeqv (ua p)⁻¹⁻¹ == p.
 Proof.
 intros.
-eapply compose; [ eapply ap | idtac ].
-apply hott_2_1_4_iii, idtoeqv_ua.
-Qed.
+eapply compose; [ eapply ap, hott_2_1_4_iii | idtac ].
+apply idtoeqv_ua.
+Defined.
 
-bbb.
-
-Definition toto {A B : U} : ∀ (p : A ≃ B), p⁻⁻¹⁻⁻¹ == p.
+Definition equiv_inv_inv {A B : U} : ∀ (p : A ≃ B), p⁻⁻¹⁻⁻¹ == p.
 Proof.
 intros p.
 unfold "⁻⁻¹".
 eapply compose; [ eapply ap, ap, ua_idtoeqv | idtac ].
-bbb.
+apply idtoeqv_ua_equiv_inv_inv.
+Defined.
 
 (* selon Cyprien Mangin, il semblerait qu'une définition de ⁻⁻¹ qui
    n'utilise *pas* l'axiome d'univalence, c'est-à-dire quasi_inv, est
    ce qu'il faut *)
+
+Definition quasi_inv_inv {A B : U} : ∀ (p : A ≃ B),
+  quasi_inv (quasi_inv p) == p.
+Proof.
+intros p.
+Print quasi_inv.
+bbb.
+
+destruct p as (f, p); simpl.
+set (q := isequiv_qinv f p).
+destruct q as (g, (α, β)).
+unfold quasi_inv.
+set (q :=
+        isequiv_qinv g
+          (existT (λ g0 : A → B, g ◦ g0 ~~ id) f β,
+          existT (λ h : A → B, h ◦ g ~~ id) f α)).
+destruct q as (h, (αh, βh)).
+bbb.
+
+Defined.
 
 Definition ua_inverse2 {A B} : ∀ f : A ≃ B, (ua f)⁻¹ == ua (quasi_inv f).
 Proof.
