@@ -2045,6 +2045,7 @@ Proof.
 intros.
 set (p := ua f).
 transitivity (ua (idtoeqv p⁻¹)); [ symmetry; apply ua_idtoeqv | idtac ].
+apply ap.
 bbb.
 
 Check ua_pup p⁻¹.
