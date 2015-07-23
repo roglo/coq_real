@@ -1171,6 +1171,13 @@ apply invert, ap, Hg.
 Defined.
 *)
 
+Definition composite_cancel {A B C} {x y : B → C} {z t : A → B} :
+  (x ~~ y) → (z ~~ t) → (x ◦ z ~~ y ◦ t).
+Proof.
+intros p q a.
+transitivity (y (z a)); [ apply p | unfold "◦"; apply ap, q ].
+Defined.
+
 Definition quasi_inv_tac {A B} : A ≃ B → B ≃ A.
 Proof.
 intros eqf.
@@ -1179,6 +1186,23 @@ destruct Hf as ((g, Hg), (h, Hh)).
 apply (existT _ g).
 split; [ idtac | apply (existT _ f), Hg ].
 apply (existT _ f).
+assert (g ~~ h) as H.
+(*
+ apply (homotopy_trans2 _ (id ◦ g)); [ reflexivity | idtac ].
+*)
+ transitivity (id ◦ g); [ reflexivity | idtac ].
+(**)
+bbb. (* je voudrais éliminer les coupures *)
+ transitivity ((h ◦ f) ◦ g).
+  apply composite_cancel; [ symmetry; assumption | reflexivity ].
+
+  transitivity (h ◦ (f ◦ g)); [ reflexivity | idtac ].
+  transitivity (h ◦ id); [ idtac | reflexivity ].
+  apply composite_cancel; [ reflexivity | assumption ].
+
+ transitivity (h ◦ f); [ idtac | assumption ].
+ apply composite_cancel; [ assumption | reflexivity ].
+Show Proof.
 bbb.
 
 unfold "◦", homotopy, id in Hg, Hh.
