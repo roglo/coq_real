@@ -1823,17 +1823,27 @@ Qed.
 Definition idtoeqv_tac {A B : U} : A == B → A ≃ B.
 Proof.
 intros p.
+set (q := transport id p).
+apply (existT _ q).
+destruct p.
+subst q; simpl.
+apply qinv_isequiv, ex_2_4_7.
+Defined.
+
+Definition idtoeqv {A B : U} : A == B → A ≃ B :=
+  λ p,
+  existT isequiv (transport id p)
+    match p with
+    | refl => (existT _ id refl, existT _ id refl)
+    end.
+
+(*
+Definition idtoeqv_tac2 {A B : U} : A == B → A ≃ B.
+Proof.
+intros p.
 destruct p.
 apply ideqv.
 Defined.
-
-(*
-Definition idtoeqv {A B : U} : A == B → A ≃ B :=
-  λ p,
-  match p with
-  | refl => ideqv A
-  end.
-*)
 
 Definition idtoeqv {A B : U} : A == B → A ≃ B :=
   λ p,
@@ -1841,6 +1851,7 @@ Definition idtoeqv {A B : U} : A == B → A ≃ B :=
     match p with
     | refl => projT2 (ideqv A)
     end.
+*)
 
 Axiom univalence : ∀ A B : U, isequiv (@idtoeqv A B).
 
@@ -1925,6 +1936,10 @@ Definition ua_pup {A B}
 
 Definition idtoeqv_refl (A : U) : ideqv A == idtoeqv (refl A) :=
   refl (idtoeqv (refl A)).
+
+Definition ua_refl_tac : ∀ A, refl A == ua (ideqv A).
+intros.
+bbb.
 
 Definition ua_refl : ∀ A, refl A == ua (ideqv A) :=
   λ A,
