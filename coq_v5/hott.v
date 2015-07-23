@@ -1939,9 +1939,23 @@ Definition idtoeqv_refl (A : U) : ideqv A == idtoeqv (refl A) :=
 
 Definition ua_refl_tac : ∀ A, refl A == ua (ideqv A).
 intros.
-bbb.
+rewrite idtoeqv_refl, ua_idtoeqv.
+reflexivity.
+Defined.
 
 Definition ua_refl : ∀ A, refl A == ua (ideqv A) :=
+  λ A,
+  (λ p,
+   match p with
+   | refl =>
+       match ua_idtoeqv (refl A) in (_ == p) return (_ == p → _) with
+       | refl => id
+       end (refl (refl A))
+   end)
+  (idtoeqv_refl A).
+
+(*
+Definition ua_refl2 : ∀ A, refl A == ua (ideqv A) :=
   λ A,
   match idtoeqv_refl A with
   | refl =>
@@ -1949,6 +1963,7 @@ Definition ua_refl : ∀ A, refl A == ua (ideqv A) :=
       | refl => refl _
       end
   end.
+*)
 
 (* concatenation *)
 
@@ -2016,16 +2031,17 @@ Definition ua_inverse2 {A B} : ∀ f : A ≃ B, (ua f)⁻¹ == ua (quasi_inv f).
 Proof.
 intros.
 set (p := ua f).
-transitivity (ua (idtoeqv p⁻¹)); [ symmetry; apply ua_idtoeqv | idtac ].
-apply ap.
 bbb.
 
+transitivity (ua (idtoeqv p⁻¹)); [ symmetry; apply ua_idtoeqv | idtac ].
+apply ap.
 unfold idtoeqv; simpl.
-unfold quasi_inv.
+unfold quasi_inv; simpl.
 destruct f as (f, Hf).
 destruct Hf.
 destruct s.
 destruct s0.
+subst p; simpl.
 Print hott_2_3_9.
 bbb.
 
