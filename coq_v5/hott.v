@@ -1231,26 +1231,23 @@ eapply compose; [ apply invert, ap, Hg | apply Hh ].
 Defined.
 
 Definition quasi_inv {A B} : A ≃ B → B ≃ A :=
-λ (eqf : A ≃ B),
-let (f, Hf) := eqf in
-let (s, x) := Hf in
-(let (g, Hg) := s in
- λ s0 : {h : B → A & h ◦ f ~~ id},
- let (h, Hh) := s0 in
- existT (λ f0 : B → A, isequiv f0) g
-   (existT (λ g0 : A → B, g ◦ g0 ~~ id) f
-      (λ y : A,
-       (λ H : ∀ x : B, g x == h x, H (f y) • Hh y)
-         (λ x : B,
-          refl (id (g x))
-          • ((λ H : h (f (g x)) == id (g x),
-              (λ H0 : h (f (g x)) == id (g x),
-               match H0 in (_ == y0) return (y0 == h (f (g x))) with
-               | refl => refl (h (f (g x)))
-               end) H) (Hh (id (g x))) • ap h (Hg x)))),
-   existT (λ h0 : A → B, h0 ◦ g ~~ id) f Hg)) x.
+  λ eqf,
+  match eqf with
+  | existT f (existT g Hg, existT h Hh) =>
+      existT _ g
+        (existT _ f
+           (λ x : A,
+            refl (g (f x))
+            • match Hh (g (f x)) with
+              | refl => refl (h (f (g (f x))))
+              end
+            • ap h (Hg (f x))
+            • Hh x),
+         existT _ f Hg)
+  end.
 
-bbb. (* ci-dessus, à simplifier *)
+bbb. (* essayer de voir si, malgré le fait que cette définition soit
+        plus compliquée, on peut arriver à démontrer que quasi_inv² = id *)
 
 Definition quasi_inv {A B} : A ≃ B → B ≃ A :=
   λ eqf,
