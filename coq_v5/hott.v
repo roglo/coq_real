@@ -1186,13 +1186,22 @@ destruct Hf as ((g, Hg), (h, Hh)).
 apply (existT _ g).
 split; [ idtac | apply (existT _ f), Hg ].
 apply (existT _ f).
-assert (g ~~ h) as H.
 (*
+assert (g ~~ h) as H.
  apply (homotopy_trans2 _ (id ◦ g)); [ reflexivity | idtac ].
+ apply (homotopy_trans2 _ ((h ◦ f) ◦ g)).
+  apply composite_cancel; [ symmetry; assumption | reflexivity ].
+
+  apply (homotopy_trans2 _ (h ◦ (f ◦ g))); [ reflexivity | idtac ].
+  apply (homotopy_trans2 _ (h ◦ id)); [ idtac | reflexivity ].
+  apply composite_cancel; [ reflexivity | assumption ].
+
+ apply (homotopy_trans2 _ (h ◦ f)); [ idtac | assumption ].
+ apply composite_cancel; [ assumption | reflexivity ].
 *)
+(*
+assert (g ~~ h) as H.
  transitivity (id ◦ g); [ reflexivity | idtac ].
-(**)
-bbb. (* je voudrais éliminer les coupures *)
  transitivity ((h ◦ f) ◦ g).
   apply composite_cancel; [ symmetry; assumption | reflexivity ].
 
@@ -1202,14 +1211,15 @@ bbb. (* je voudrais éliminer les coupures *)
 
  transitivity (h ◦ f); [ idtac | assumption ].
  apply composite_cancel; [ assumption | reflexivity ].
-Show Proof.
-bbb.
-
+*)
 unfold "◦", homotopy, id in Hg, Hh.
 unfold "◦", homotopy, id; intros x.
 eapply compose; [ eapply invert | apply Hh ].
 eapply compose; [ apply invert, ap, Hg | apply Hh ].
+(**)
 Defined.
+
+bbb. (* bizarre, ci-dessus *)
 
 Definition quasi_inv {A B} : A ≃ B → B ≃ A :=
   λ eqf,
