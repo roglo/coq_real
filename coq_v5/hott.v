@@ -2045,7 +2045,19 @@ Proof.
 intros.
 set (p := ua f).
 transitivity (ua (idtoeqv p⁻¹)); [ symmetry; apply ua_idtoeqv | idtac ].
-apply ap.
+bbb.
+
+Check ua_pup p⁻¹.
+unfold idtoeqv.
+
+
+unfold idtoeqv.
+SearchAbout (transport id).
+pose proof ua_pup p⁻¹.
+unfold isequiv_transport in H.
+rewrite <- H.
+bbb.
+
 subst p; simpl.
 unfold idtoeqv, quasi_inv.
 destruct f as (f, Hf).
