@@ -1283,8 +1283,6 @@ h ◦ f ~~ id   --->   f⁻¹ ◦ h⁻¹ ~~ id
 (* pourquoi choisir g comme inverse plutôt que h, ça semble
    disymétrique. Et puis, normalement h ~~ g *)
 
-bbb.
-
 Definition quasi_inv {A B} : A ≃ B → B ≃ A :=
   λ eqf,
   match eqf with
@@ -1293,56 +1291,6 @@ Definition quasi_inv {A B} : A ≃ B → B ≃ A :=
         (existT _ f (λ x, ((ap h (Hg (f x)))⁻¹ • Hh (g (f x)))⁻¹ • Hh x),
          existT _ f Hg)
   end.
-
-Definition quasi_inv_inv {A B : U} : ∀ (p : A ≃ B),
-  quasi_inv (quasi_inv p) == p.
-Proof.
-intros p.
-unfold quasi_inv; simpl.
-destruct p.
-destruct i.
-destruct s, s0.
-apply ap.
-Theorem toto {A B} : ∀ (a1 a2 : A) (b1 b2 : B), a1 == a2 → b1 == b2 → (a1, b1) == (a2, b2).
-intros; destruct H, H0; reflexivity.
-Qed.
-apply toto.
-bbb.
-
-apply ap.
-bbb.
-
-unfold "~~", "◦" in h, h0.
-bbb.
-
-Print isequiv_qinv.
-bbb.
-
-unfold quasi_inv.
-unfold isequiv_qinv; simpl.
-destruct p.
-destruct i.
-destruct s.
-destruct s0.
-apply ap.
-SearchAbout ((_, _) == (_, _)).
-Theorem toto {A B} : ∀ (a1 a2 : A) (b1 b2 : B), a1 == a2 → b1 == b2 → (a1, b1) == (a2, b2).
-intros; destruct H, H0; reflexivity.
-Qed.
-apply toto.
-
-set (q := isequiv_qinv f p).
-destruct q as (g, (α, β)).
-
-unfold quasi_inv.
-set (q :=
-        isequiv_qinv g
-          (existT (λ g0 : A → B, g ◦ g0 ~~ id) f β,
-          existT (λ h : A → B, h ◦ g ~~ id) f α)).
-destruct q as (h, (αh, βh)).
-bbb.
-
-Defined.
 
 (*
 Notation "f '⁻⁻¹'" := (quasi_inv f)
@@ -2056,16 +2004,14 @@ set (p := ua f).
 transitivity (ua (idtoeqv p⁻¹)); [ symmetry; apply ua_idtoeqv | idtac ].
 apply ap.
 unfold idtoeqv; simpl.
-Print quasi_inv.
-bbb.
-
 unfold quasi_inv.
 destruct f as (f, Hf).
-unfold isequiv_qinv; simpl.
-
 destruct Hf.
 destruct s.
 destruct s0.
+Print hott_2_3_9.
+bbb.
+
 subst p.
 unfold ua.
 simpl.
