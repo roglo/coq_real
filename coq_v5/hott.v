@@ -2027,21 +2027,33 @@ Defined.
    n'utilise *pas* l'axiome d'univalence, c'est-à-dire quasi_inv, est
    ce qu'il faut *)
 
+(*
+Definition toto {A B}
+     : ∀ (f : A → B) (g : B → A),
+       (f ◦ g ~~ id) → ∀ h : B → A, (h ◦ f ~~ id) → B → A
+  := λ f g Hg h Hh,
+     transport id
+        (ua
+           (existT (λ f0 : A → B, isequiv f0) f
+              (existT (λ g0 : B → A, f ◦ g0 ~~ id) g Hg,
+              existT (λ h0 : B → A, h0 ◦ f ~~ id) h Hh)))⁻¹.
+Print toto.
+*)
+
 Definition ua_inverse2 {A B} : ∀ f : A ≃ B, (ua f)⁻¹ == ua (quasi_inv f).
 Proof.
 intros.
 set (p := ua f).
 transitivity (ua (idtoeqv p⁻¹)); [ symmetry; apply ua_idtoeqv | idtac ].
 apply ap.
-Print quasi_inv.
-bbb.
-
+subst p; simpl.
 unfold idtoeqv, quasi_inv.
 destruct f as (f, Hf).
 destruct Hf.
-destruct s.
-destruct s0.
-subst p; simpl.
+destruct s as (g, Hg).
+destruct s0 as (h, Hh).
+bbb.
+
 apply ap.
 subst p; simpl.
 Print hott_2_3_9.
