@@ -1194,12 +1194,9 @@ destruct eqf as (f, ((g, Hg), (h, Hh))).
 apply (existT _ g).
 split; [ idtac | apply (existT _ f), Hg ].
 apply (existT _ f).
-unfold "~~", "◦", id in Hg, Hh |-*.
-assert (g ~~ h) as H; intros x.
- apply (@compose _ _ (h (f (g x)))); [ apply invert, Hh | apply ap, Hg ].
-
- unfold "~~", "◦", id in H.
- apply (@compose _ _ (h (f x))); [ apply H | apply Hh ].
+unfold "~~", "◦", id in Hg, Hh |-*; intros x.
+apply (@compose _ _ (h (f x))); [ idtac | apply Hh ].
+apply (@compose _ _ (h (f (g (f x))))); [ apply invert, Hh | apply ap, Hg ].
 Defined.
 
 Definition quasi_inv {A B} : A ≃ B → B ≃ A :=
@@ -1956,13 +1953,13 @@ Print toto.
 
 Definition ua_inverse2 {A B} : ∀ f : A ≃ B, (ua f)⁻¹ == ua (quasi_inv f).
 Proof.
-intros.
-set (p := ua f).
+intros eqf.
+set (p := ua eqf).
 transitivity (ua (idtoeqv p⁻¹)); [ symmetry; apply ua_idtoeqv | idtac ].
 apply ap.
 unfold idtoeqv.
 unfold quasi_inv.
-destruct f as (f, ((g, Hg), (h, Hh))).
+destruct eqf as (f, ((g, Hg), (h, Hh))).
 assert (g ~~ transport id p⁻¹).
  assert (transport id p⁻¹ ◦ f ~~ id).
   subst p.
@@ -1970,7 +1967,6 @@ bbb.
 
 Check ua_pup p⁻¹.
 unfold idtoeqv.
-
 
 unfold idtoeqv.
 SearchAbout (transport id).
