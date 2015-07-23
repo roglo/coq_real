@@ -1190,8 +1190,7 @@ Defined.
 Definition quasi_inv_tac {A B} : A ≃ B → B ≃ A.
 Proof.
 intros eqf.
-destruct eqf as (f, Hf).
-destruct Hf as ((g, Hg), (h, Hh)).
+destruct eqf as (f, ((g, Hg), (h, Hh))).
 apply (existT _ g).
 split; [ idtac | apply (existT _ f), Hg ].
 apply (existT _ f).
