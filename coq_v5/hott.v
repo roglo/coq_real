@@ -1109,11 +1109,41 @@ econstructor; split; [ eassumption | idtac ].
 intros x.
 unfold "◦", homotopy, id in Hg, Hh.
 unfold "◦", homotopy, id.
+(**)
+assert (∀ x, g x == h x) as H.
+ intros y.
+ apply (@compose _ _ (id (g y))); [ reflexivity | idtac ].
+ apply (@compose _ _ (h (f (g y)))); [ idtac | apply ap, Hg ].
+ symmetry; apply Hh.
+
+ apply (@compose _ _ (h (f x))); [ apply H | apply Hh ].
+(*
 eapply compose; [ idtac | apply Hh ].
 apply invert.
 eapply compose; [ | apply Hh ].
 apply invert, ap, Hg.
+*)
 Defined.
+
+Definition isequiv_qinv {A B} (f : A → B) : isequiv f → qinv f :=
+λ (p : isequiv f),
+let (s, x) := p in
+(let (g, Hg) := s in
+ λ s0 : {h : B → A & h ◦ f ~~ id},
+ let (h, Hh) := s0 in
+ existT (λ g0 : B → A, ((f ◦ g0 ~~ id) * (g0 ◦ f ~~ id))%type) g
+   (Hg,
+   λ x : A,
+   (λ H : ∀ x0 : B, g x0 == h x0, H (f x) • Hh x)
+     (λ y : B,
+      refl (id (g y))
+      • ((λ H : h (f (g y)) == id (g y),
+          (λ H0 : h (f (g y)) == id (g y),
+           match H0 in (_ == y0) return (y0 == h (f (g y))) with
+           | refl => refl (h (f (g y)))
+           end) H) (Hh (id (g y))) • ap h (Hg y))))) x.
+
+bbb. (* ci-dessus à simplifier et comparer avec version ci-dessous *)
 
 Definition isequiv_qinv {A B} (f : A → B) : isequiv f → qinv f :=
   λ p,
@@ -1180,6 +1210,13 @@ Defined.
 
 Definition quasi_inv_tac {A B} : A ≃ B → B ≃ A.
 Proof.
+intros eqf.
+destruct eqf as (f, Hf).
+apply isequiv_qinv in Hf.
+Show Proof.
+Print isequiv_qinv.
+bbb.
+
 intros eqf.
 destruct eqf as (f, Hf).
 destruct Hf as ((g, Hg), (h, Hh)).
