@@ -1211,7 +1211,7 @@ destruct Hf as ((g, Hg), (h, Hh)).
 apply (existT _ g).
 split; [ idtac | apply (existT _ f), Hg ].
 apply (existT _ f).
-(**)
+(*
 unfold "◦", "~~", id in Hg, Hh.
 unfold "◦", "~~", id; intros y.
 assert (∀ x, g x == h x) as H.
@@ -1221,6 +1221,14 @@ assert (∀ x, g x == h x) as H.
  symmetry; apply Hh.
 
  apply (@compose _ _ (h (f y))); [ apply H | apply Hh ].
+*)
+unfold "~~", "◦", id in Hg, Hh |-*.
+assert (g ~~ h) as H; intros x.
+ apply (@compose _ _ (h (f (g x)))); [ apply invert, Hh | apply ap, Hg ].
+
+ unfold "~~", "◦", id in H.
+ apply (@compose _ _ (h (f x))); [ apply H | apply Hh ].
+(**)
 (*
 assert (g ~~ h) as H.
  apply (homotopy_trans2 _ (id ◦ g)); [ reflexivity | idtac ].
@@ -1283,6 +1291,22 @@ h ◦ f ~~ id   --->   f⁻¹ ◦ h⁻¹ ~~ id
 (* pourquoi choisir g comme inverse plutôt que h, ça semble
    disymétrique. Et puis, normalement h ~~ g *)
 
+Definition isequiv_transport {A B} : ∀ (p : A == B), isequiv (transport id p)
+  := λ p,
+     match p with
+     | refl => (existT _ id refl, existT _ id refl)
+     end.
+
+Definition quasi_inv {A B} : A ≃ B → B ≃ A :=
+  λ eqf,
+  match eqf with
+  | existT f (existT g Hg, existT h Hh) =>
+      existT isequiv g
+        (existT _ f (λ x, (Hh (g (f x)))⁻¹ • ap h (Hg (f x)) • Hh x),
+        existT _ f Hg)
+ end.
+
+(*
 Definition quasi_inv {A B} : A ≃ B → B ≃ A :=
   λ eqf,
   match eqf with
@@ -1291,6 +1315,7 @@ Definition quasi_inv {A B} : A ≃ B → B ≃ A :=
         (existT _ f (λ x, ((ap h (Hg (f x)))⁻¹ • Hh (g (f x)))⁻¹ • Hh x),
          existT _ f Hg)
   end.
+*)
 
 (*
 Notation "f '⁻⁻¹'" := (quasi_inv f)
@@ -1832,10 +1857,7 @@ Defined.
 
 Definition idtoeqv {A B : U} : A == B → A ≃ B :=
   λ p,
-  existT isequiv (transport id p)
-    match p with
-    | refl => (existT _ id refl, existT _ id refl)
-    end.
+  existT isequiv (transport id p) (isequiv_transport p).
 
 (*
 Definition idtoeqv_tac2 {A B : U} : A == B → A ≃ B.
@@ -1908,14 +1930,6 @@ set (q := isequiv_qinv idtoeqv (univalence A B)).
 destruct q as (f, (α, β)).
 apply β.
 Defined.
-
-Definition isequiv_transport {A B} : ∀ (p : A == B), isequiv (transport id p)
-  := λ p,
-     match p with
-     | refl =>
-         (existT (λ g : id A → id A, id ◦ g ~~ id) id (reflexivity id),
-          existT (λ h : id A → id A, h ◦ id ~~ id) id (reflexivity id))
-     end.
 
 Definition ua_pup {A B}
   : ∀ (p : A == B),
@@ -2046,6 +2060,13 @@ intros.
 set (p := ua f).
 transitivity (ua (idtoeqv p⁻¹)); [ symmetry; apply ua_idtoeqv | idtac ].
 apply ap.
+unfold idtoeqv.
+unfold quasi_inv.
+unfold isequiv_transport.
+destruct f as (f, ((g, Hg), (h, Hh))).
+assert (g ~~ transport id p⁻¹).
+ assert (transport id p⁻¹ ◦ f ~~ id).
+  subst p.
 bbb.
 
 Check ua_pup p⁻¹.
