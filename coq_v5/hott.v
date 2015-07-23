@@ -1246,8 +1246,22 @@ Definition quasi_inv {A B} : A ≃ B → B ≃ A :=
          existT _ f Hg)
   end.
 
-bbb. (* essayer de voir si, malgré le fait que cette définition soit
-        plus compliquée, on peut arriver à démontrer que quasi_inv² = id *)
+Definition quasi_inv_inv {A B : U} : ∀ (p : A ≃ B),
+  quasi_inv (quasi_inv p) == p.
+Proof.
+intros p.
+unfold quasi_inv; simpl.
+destruct p.
+destruct i.
+destruct s.
+destruct s0.
+apply ap.
+Theorem toto {A B} : ∀ (a1 a2 : A) (b1 b2 : B), a1 == a2 → b1 == b2 → (a1, b1) == (a2, b2).
+intros; destruct H, H0; reflexivity.
+Qed.
+apply toto.
+apply ap.
+bbb.
 
 Definition quasi_inv {A B} : A ≃ B → B ≃ A :=
   λ eqf,
