@@ -1125,25 +1125,20 @@ apply invert, ap, Hg.
 *)
 Defined.
 
-Definition isequiv_qinv {A B} (f : A → B) : isequiv f → qinv f :=
-λ (p : isequiv f),
-let (s, x) := p in
-(let (g, Hg) := s in
- λ s0 : {h : B → A & h ◦ f ~~ id},
- let (h, Hh) := s0 in
- existT (λ g0 : B → A, ((f ◦ g0 ~~ id) * (g0 ◦ f ~~ id))%type) g
-   (Hg,
-   λ x : A,
-   (λ H : ∀ x0 : B, g x0 == h x0, H (f x) • Hh x)
-     (λ y : B,
-      refl (id (g y))
-      • ((λ H : h (f (g y)) == id (g y),
-          (λ H0 : h (f (g y)) == id (g y),
-           match H0 in (_ == y0) return (y0 == h (f (g y))) with
-           | refl => refl (h (f (g y)))
-           end) H) (Hh (id (g y))) • ap h (Hg y))))) x.
-
-bbb. (* ci-dessus à simplifier et comparer avec version ci-dessous *)
+Definition isequiv_qinv2 {A B} (f : A → B) : isequiv f → qinv f :=
+  λ eqf,
+  match eqf with
+  | (existT g Hg, existT h Hh) =>
+      existT _ g
+       (Hg,
+        λ x : A,
+        refl (g (f x))
+        • match Hh (g (f x)) with
+          | refl => refl (h (f (g (f x))))
+          end
+        • ap h (Hg (f x))
+        • Hh x)
+  end.
 
 Definition isequiv_qinv {A B} (f : A → B) : isequiv f → qinv f :=
   λ p,
@@ -1212,13 +1207,6 @@ Definition quasi_inv_tac {A B} : A ≃ B → B ≃ A.
 Proof.
 intros eqf.
 destruct eqf as (f, Hf).
-apply isequiv_qinv in Hf.
-Show Proof.
-Print isequiv_qinv.
-bbb.
-
-intros eqf.
-destruct eqf as (f, Hf).
 destruct Hf as ((g, Hg), (h, Hh)).
 apply (existT _ g).
 split; [ idtac | apply (existT _ f), Hg ].
@@ -1267,37 +1255,34 @@ eapply compose; [ apply invert, ap, Hg | apply Hh ].
 *)
 Defined.
 
+(*
 Definition quasi_inv {A B} : A ≃ B → B ≃ A :=
   λ eqf,
   match eqf with
   | existT f (existT g Hg, existT h Hh) =>
       existT _ g
         (existT _ f
-           (λ x : A,
+        λ x : A,
             refl (g (f x))
-            • match Hh (g (f x)) with
-              | refl => refl (h (f (g (f x))))
-              end
-            • ap h (Hg (f x))
-            • Hh x),
+        • match Hh (g (f x)) with
+          | refl => refl (h (f (g (f x))))
+          end
+        • ap h (Hg (f x))
+        • Hh x),
          existT _ f Hg)
   end.
+*)
 
-Definition quasi_inv_inv {A B : U} : ∀ (p : A ≃ B),
-  quasi_inv (quasi_inv p) == p.
-Proof.
-intros p.
-unfold quasi_inv; simpl.
-destruct p.
-destruct i.
-destruct s.
-destruct s0.
-apply ap.
-Theorem toto {A B} : ∀ (a1 a2 : A) (b1 b2 : B), a1 == a2 → b1 == b2 → (a1, b1) == (a2, b2).
-intros; destruct H, H0; reflexivity.
-Qed.
-apply toto.
-apply ap.
+Print isequiv.
+
+(*
+f ◦ g ~~ id   --->   g⁻¹ ◦ f⁻¹ ~~ id
+h ◦ f ~~ id   --->   f⁻¹ ◦ h⁻¹ ~~ id
+*)
+
+(* pourquoi choisir g comme inverse plutôt que h, ça semble
+   disymétrique. Et puis, normalement h ~~ g *)
+
 bbb.
 
 Definition quasi_inv {A B} : A ≃ B → B ≃ A :=
