@@ -2002,6 +2002,18 @@ Proof.
 intros.
 set (p := ua f).
 transitivity (ua (idtoeqv p⁻¹)); [ symmetry; apply ua_idtoeqv | idtac ].
+Check @hott_2_3_9.
+(*
+hott_2_3_9
+     : ∀ (A : Type) (x y z : A) (P : A → U) (p : x == y) 
+       (q : y == z) (u : P x),
+       transport P q (transport P p u) == transport P (p • q) u
+*)
+bbb.
+
+intros.
+set (p := ua f).
+transitivity (ua (idtoeqv p⁻¹)); [ symmetry; apply ua_idtoeqv | idtac ].
 apply ap.
 unfold idtoeqv; simpl.
 unfold quasi_inv.
