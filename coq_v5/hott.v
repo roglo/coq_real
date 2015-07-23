@@ -1180,22 +1180,6 @@ Definition ideqv A : A ≃ A :=
 
 (* quasi-inverse : lemma 2.4.12 ii *)
 
-(*
-Definition isequiv_qinv_tac {A B} (f : A → B) : isequiv f → qinv f.
-Proof.
-intros p.
-destruct p as ((g, Hg), (h, Hh)).
-econstructor; split; [ eassumption | idtac ].
-intros x.
-unfold "◦", homotopy, id in Hg, Hh.
-unfold "◦", homotopy, id.
-eapply compose; [ idtac | apply Hh ].
-apply invert.
-eapply compose; [ | apply Hh ].
-apply invert, ap, Hg.
-Defined.
-*)
-
 Definition composite_cancel {A B C} {x y : B → C} {z t : A → B} :
   (x ~~ y) → (z ~~ t) → (x ◦ z ~~ y ◦ t).
 Proof.
@@ -1211,91 +1195,13 @@ destruct Hf as ((g, Hg), (h, Hh)).
 apply (existT _ g).
 split; [ idtac | apply (existT _ f), Hg ].
 apply (existT _ f).
-(*
-unfold "◦", "~~", id in Hg, Hh.
-unfold "◦", "~~", id; intros y.
-assert (∀ x, g x == h x) as H.
- intros x.
- apply (@compose _ _ (id (g x))); [ reflexivity | idtac ].
- apply (@compose _ _ (h (f (g x)))); [ idtac | apply ap, Hg ].
- symmetry; apply Hh.
-
- apply (@compose _ _ (h (f y))); [ apply H | apply Hh ].
-*)
 unfold "~~", "◦", id in Hg, Hh |-*.
 assert (g ~~ h) as H; intros x.
  apply (@compose _ _ (h (f (g x)))); [ apply invert, Hh | apply ap, Hg ].
 
  unfold "~~", "◦", id in H.
  apply (@compose _ _ (h (f x))); [ apply H | apply Hh ].
-(**)
-(*
-assert (g ~~ h) as H.
- apply (homotopy_trans2 _ (id ◦ g)); [ reflexivity | idtac ].
- apply (homotopy_trans2 _ ((h ◦ f) ◦ g)).
-  apply composite_cancel; [ symmetry; assumption | reflexivity ].
-
-  apply (homotopy_trans2 _ (h ◦ (f ◦ g))); [ reflexivity | idtac ].
-  apply (homotopy_trans2 _ (h ◦ id)); [ idtac | reflexivity ].
-  apply composite_cancel; [ reflexivity | assumption ].
-
- apply (homotopy_trans2 _ (h ◦ f)); [ idtac | assumption ].
- apply composite_cancel; [ assumption | reflexivity ].
-*)
-(*
-assert (g ~~ h) as H.
- transitivity (id ◦ g); [ reflexivity | idtac ].
- transitivity ((h ◦ f) ◦ g).
-  apply composite_cancel; [ symmetry; assumption | reflexivity ].
-
-  transitivity (h ◦ (f ◦ g)); [ reflexivity | idtac ].
-  transitivity (h ◦ id); [ idtac | reflexivity ].
-  apply composite_cancel; [ reflexivity | assumption ].
-
- transitivity (h ◦ f); [ idtac | assumption ].
- apply composite_cancel; [ assumption | reflexivity ].
-*)
-(*
-unfold "◦", homotopy, id in Hg, Hh.
-unfold "◦", homotopy, id; intros x.
-eapply compose; [ eapply invert | apply Hh ].
-eapply compose; [ apply invert, ap, Hg | apply Hh ].
-*)
 Defined.
-
-(*
-Definition quasi_inv {A B} : A ≃ B → B ≃ A :=
-  λ eqf,
-  match eqf with
-  | existT f (existT g Hg, existT h Hh) =>
-      existT _ g
-        (existT _ f
-        λ x : A,
-            refl (g (f x))
-        • match Hh (g (f x)) with
-          | refl => refl (h (f (g (f x))))
-          end
-        • ap h (Hg (f x))
-        • Hh x),
-         existT _ f Hg)
-  end.
-*)
-
-Print isequiv.
-
-(*
-f ◦ g ~~ id   --->   g⁻¹ ◦ f⁻¹ ~~ id
-h ◦ f ~~ id   --->   f⁻¹ ◦ h⁻¹ ~~ id
-*)
-
-(* pourquoi choisir g comme inverse plutôt que h, ça semble
-   disymétrique. Et puis, normalement h ~~ g *)
-
-Definition isequiv_transport {A B} : ∀ (p : A == B), isequiv (transport id p)
-  := λ p,
-     match p with
-     | refl => (existT _ id refl, existT _ id refl)
-     end.
 
 Definition quasi_inv {A B} : A ≃ B → B ≃ A :=
   λ eqf,
@@ -1303,19 +1209,8 @@ Definition quasi_inv {A B} : A ≃ B → B ≃ A :=
   | existT f (existT g Hg, existT h Hh) =>
       existT isequiv g
         (existT _ f (λ x, (Hh (g (f x)))⁻¹ • ap h (Hg (f x)) • Hh x),
-        existT _ f Hg)
- end.
-
-(*
-Definition quasi_inv {A B} : A ≃ B → B ≃ A :=
-  λ eqf,
-  match eqf with
-  | existT f (existT g Hg, existT h Hh) =>
-      existT isequiv g
-        (existT _ f (λ x, ((ap h (Hg (f x)))⁻¹ • Hh (g (f x)))⁻¹ • Hh x),
          existT _ f Hg)
-  end.
-*)
+ end.
 
 (*
 Notation "f '⁻⁻¹'" := (quasi_inv f)
@@ -1855,6 +1750,12 @@ subst q; simpl.
 apply qinv_isequiv, ex_2_4_7.
 Defined.
 
+Definition isequiv_transport {A B} : ∀ (p : A == B), isequiv (transport id p)
+  := λ p,
+     match p with
+     | refl => (existT _ id refl, existT _ id refl)
+     end.
+
 Definition idtoeqv {A B : U} : A == B → A ≃ B :=
   λ p,
   existT isequiv (transport id p) (isequiv_transport p).
@@ -2062,7 +1963,6 @@ transitivity (ua (idtoeqv p⁻¹)); [ symmetry; apply ua_idtoeqv | idtac ].
 apply ap.
 unfold idtoeqv.
 unfold quasi_inv.
-unfold isequiv_transport.
 destruct f as (f, ((g, Hg), (h, Hh))).
 assert (g ~~ transport id p⁻¹).
  assert (transport id p⁻¹ ◦ f ~~ id).
