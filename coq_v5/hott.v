@@ -2002,6 +2002,7 @@ Proof.
 intros.
 set (p := ua f).
 transitivity (ua (idtoeqv p⁻¹)); [ symmetry; apply ua_idtoeqv | idtac ].
+subst p.
 Check @hott_2_3_9.
 (*
 hott_2_3_9
@@ -2035,7 +2036,6 @@ destruct s0.
 simpl.
 unfold idtoeqv.
 simpl.
-
 
 Print quasi_inv.
 bbb.
