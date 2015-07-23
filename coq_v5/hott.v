@@ -2031,16 +2031,18 @@ Definition ua_inverse2 {A B} : ∀ f : A ≃ B, (ua f)⁻¹ == ua (quasi_inv f).
 Proof.
 intros.
 set (p := ua f).
-bbb.
-
 transitivity (ua (idtoeqv p⁻¹)); [ symmetry; apply ua_idtoeqv | idtac ].
 apply ap.
-unfold idtoeqv; simpl.
-unfold quasi_inv; simpl.
+Print quasi_inv.
+bbb.
+
+unfold idtoeqv, quasi_inv.
 destruct f as (f, Hf).
 destruct Hf.
 destruct s.
 destruct s0.
+subst p; simpl.
+apply ap.
 subst p; simpl.
 Print hott_2_3_9.
 bbb.
