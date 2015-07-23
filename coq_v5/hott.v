@@ -1186,6 +1186,16 @@ destruct Hf as ((g, Hg), (h, Hh)).
 apply (existT _ g).
 split; [ idtac | apply (existT _ f), Hg ].
 apply (existT _ f).
+(**)
+unfold "◦", "~~", id in Hg, Hh.
+unfold "◦", "~~", id; intros y.
+assert (∀ x, g x == h x) as H.
+ intros x.
+ apply (@compose _ _ (id (g x))); [ reflexivity | idtac ].
+ apply (@compose _ _ (h (f (g x)))); [ idtac | apply ap, Hg ].
+ symmetry; apply Hh.
+
+ apply (@compose _ _ (h (f y))); [ apply H | apply Hh ].
 (*
 assert (g ~~ h) as H.
  apply (homotopy_trans2 _ (id ◦ g)); [ reflexivity | idtac ].
@@ -1212,14 +1222,35 @@ assert (g ~~ h) as H.
  transitivity (h ◦ f); [ idtac | assumption ].
  apply composite_cancel; [ assumption | reflexivity ].
 *)
+(*
 unfold "◦", homotopy, id in Hg, Hh.
 unfold "◦", homotopy, id; intros x.
 eapply compose; [ eapply invert | apply Hh ].
 eapply compose; [ apply invert, ap, Hg | apply Hh ].
-(**)
+*)
 Defined.
 
-bbb. (* bizarre, ci-dessus *)
+Definition quasi_inv {A B} : A ≃ B → B ≃ A :=
+λ (eqf : A ≃ B),
+let (f, Hf) := eqf in
+let (s, x) := Hf in
+(let (g, Hg) := s in
+ λ s0 : {h : B → A & h ◦ f ~~ id},
+ let (h, Hh) := s0 in
+ existT (λ f0 : B → A, isequiv f0) g
+   (existT (λ g0 : A → B, g ◦ g0 ~~ id) f
+      (λ y : A,
+       (λ H : ∀ x : B, g x == h x, H (f y) • Hh y)
+         (λ x : B,
+          refl (id (g x))
+          • ((λ H : h (f (g x)) == id (g x),
+              (λ H0 : h (f (g x)) == id (g x),
+               match H0 in (_ == y0) return (y0 == h (f (g x))) with
+               | refl => refl (h (f (g x)))
+               end) H) (Hh (id (g x))) • ap h (Hg x)))),
+   existT (λ h0 : A → B, h0 ◦ g ~~ id) f Hg)) x.
+
+bbb. (* ci-dessus, à simplifier *)
 
 Definition quasi_inv {A B} : A ≃ B → B ≃ A :=
   λ eqf,
