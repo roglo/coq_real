@@ -1149,7 +1149,7 @@ Notation "A ≃ B" := (equivalence A B) (at level 70).
 (* Lemma 2.4.12 i *)
 
 Definition ideqv A : A ≃ A :=
-  existT (λ f : A → A, isequiv f) id
+  existT isequiv id
     (existT (λ g : A → A, id ◦ g ~~ id) id (reflexivity id),
      existT (λ h : A → A, h ◦ id ~~ id) id (reflexivity id)).
 
