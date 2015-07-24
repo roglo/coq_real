@@ -1214,6 +1214,23 @@ Definition quasi_inv {A B} : A ≃ B → B ≃ A :=
 Notation "f '⁻⁻¹'" := (quasi_inv f)
   (at level 8, left associativity, format "'[v' f ']' ⁻⁻¹").
 
+Definition quasi_inv_tac' {A B} : A ≈ B → B ≈ A.
+Proof.
+intros eqf.
+destruct eqf as (f, (g, (Hg, Hh))).
+apply (existT _ g), (existT _ f).
+split; assumption.
+Defined.
+
+Definition quasi_inv' {A B} : A ≈ B → B ≈ A :=
+  λ eqf,
+  match eqf with
+  | existT f (existT g (Hg, Hh)) => existT _ g (existT _ f (Hh, Hg))
+  end.
+
+Notation "f '⁻⁻⁻¹'" := (quasi_inv' f)
+  (at level 8, left associativity, format "'[v' f ']' ⁻⁻⁻¹").
+
 (* Lemma 2.4.12 iii *)
 
 Lemma equiv_compose_tac {A B C} : ∀ (f : A ≃ B) (g : B ≃ C), A ≃ C.
@@ -1254,6 +1271,43 @@ Definition equiv_compose {A B C} : A ≃ B → B ≃ C → A ≃ C :=
   end.
 
 Notation "g '◦◦' f" := (equiv_compose f g) (at level 40).
+
+Lemma equiv_compose_tac' {A B C} : ∀ (f : A ≈ B) (g : B ≈ C), A ≈ C.
+Proof.
+intros eqf eqg.
+destruct eqf as (f, (f₁, (eqf₁, eqf₂))).
+destruct eqg as (g, (g₁, (eqg₁, eqg₂))).
+unfold equivalence'.
+apply (existT _ (g ◦ f)).
+apply (existT _ (f₁ ◦ g₁)).
+split.
+ intros c; unfold "◦"; simpl.
+ transitivity (g (g₁ c)); [ apply ap, eqf₁ | apply eqg₁ ].
+
+ intros a; unfold "◦"; simpl.
+ transitivity (f₁ (f a)); [ apply ap, eqg₂ | apply eqf₂ ].
+Defined.
+
+Definition equiv_compose' {A B C} : A ≈ B → B ≈ C → A ≈ C :=
+  λ eqf eqg,
+  match eqf with
+  | existT f (existT f₁ (eqf₁, eqf₂)) =>
+      match eqg with
+      | existT g (existT g₁ (eqg₁, eqg₂)) =>
+          existT _ (g ◦ f)
+            (existT _ (f₁ ◦ g₁)
+               (λ c,
+                match eqg₁ c in (_ == y) return (g (f (f₁ (g₁ c))) == y) with
+                | refl => ap g (eqf₁ (g₁ c))
+                end,
+                λ a,
+                match eqf₂ a in (_ == y) return (f₁ (g₁ (g (f a))) == y) with
+                | refl => ap f₁ (eqg₂ (f a))
+               end))
+      end
+  end.
+
+Notation "g '◦◦◦' f" := (equiv_compose' f g) (at level 40).
 
 (* 2.5 The higher groupoid structure of type formers *)
 
@@ -1977,22 +2031,21 @@ Definition idtoeqv_concat' {A B C} : ∀ (p : A == B) (q : B == C),
   idtoeqv' (p • q) == idtoeqv' q ◦◦◦ idtoeqv' p.
 Proof.
 intros.
-bbb.
 destruct p, q; reflexivity.
 Defined.
 
-Definition ua_concat {A B C} : ∀ (f : A ≃ B) (g : B ≃ C),
-  ua f • ua g == ua (g ◦◦ f).
+Definition ua_concat' {A B C} : ∀ (f : A ≈ B) (g : B ≈ C),
+  ua' f • ua' g == ua' (g ◦◦◦ f).
 Proof.
 intros.
-set (p := ua f).
-set (q := ua g).
-transitivity (ua (idtoeqv q ◦◦ idtoeqv p)).
- transitivity (ua (idtoeqv (p • q))); [ symmetry; apply ua_idtoeqv | idtac ].
- apply ap, idtoeqv_concat.
+set (p := ua' f).
+set (q := ua' g).
+transitivity (ua' (idtoeqv' q ◦◦◦ idtoeqv' p)).
+ transitivity (ua' (idtoeqv' (p • q))); [ apply invert, ua_idtoeqv' | idtac ].
+ apply ap, idtoeqv_concat'.
 
  subst p q.
- do 2 rewrite idtoeqv_ua; reflexivity.
+ do 2 rewrite idtoeqv_ua'; reflexivity.
 Defined.
 
 (* inverse *)
@@ -2036,6 +2089,19 @@ Defined.
 (* selon Cyprien Mangin, il semblerait qu'une définition de ⁻⁻¹ qui
    n'utilise *pas* l'axiome d'univalence, c'est-à-dire quasi_inv, est
    ce qu'il faut *)
+
+Definition ua_inverse2' {A B} : ∀ f : A ≈ B, (ua' f)⁻¹ == ua' f⁻⁻⁻¹.
+Proof.
+intros eqf.
+set (p := ua' eqf).
+transitivity (ua' (idtoeqv' p⁻¹)); [ symmetry; apply ua_idtoeqv' | idtac ].
+apply ap.
+unfold idtoeqv'; simpl.
+unfold quasi_inv'; simpl.
+destruct eqf as (f, (g, (Hg, Hh))).
+assert (g ~~ transport id p⁻¹).
+ intros y.
+bbb.
 
 Definition ua_inverse2 {A B} : ∀ f : A ≃ B, (ua f)⁻¹ == ua f⁻⁻¹.
 Proof.
