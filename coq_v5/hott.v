@@ -2090,17 +2090,28 @@ Defined.
    n'utilise *pas* l'axiome d'univalence, c'est-à-dire quasi_inv, est
    ce qu'il faut *)
 
+Definition idtoeqv_inv' {A B} : ∀ (f : A == B), ua' (idtoeqv' f)⁻⁻⁻¹ == f⁻¹.
+Proof.
+intros.
+destruct f; simpl.
+unfold ua'.
+set (q := univalence' A A).
+destruct q as (f, (Hf, Hg)).
+unfold "◦", "~~" in Hg.
+pose proof Hg (refl A) as H.
+apply H.
+Defined.
+
 Definition ua_inverse2' {A B} : ∀ f : A ≈ B, (ua' f)⁻¹ == ua' f⁻⁻⁻¹.
 Proof.
 intros eqf.
-set (p := ua' eqf).
-transitivity (ua' (idtoeqv' p⁻¹)); [ symmetry; apply ua_idtoeqv' | idtac ].
-apply ap.
-unfold idtoeqv'; simpl.
-unfold quasi_inv'; simpl.
-destruct eqf as (f, (g, (Hg, Hh))).
-assert (g ~~ transport id p⁻¹).
- intros y.
+symmetry.
+transitivity (ua' (idtoeqv' (ua' eqf))⁻⁻⁻¹).
+ rewrite idtoeqv_ua'; reflexivity.
+
+ apply idtoeqv_inv'.
+Defined.
+
 bbb.
 
 Definition ua_inverse2 {A B} : ∀ f : A ≃ B, (ua f)⁻¹ == ua f⁻⁻¹.
