@@ -1168,15 +1168,18 @@ bbb.
 Check isequiv.
 
 Definition equivalence A B := Σ (f : A → B), isequiv f.
-
 Notation "A ≃ B" := (equivalence A B) (at level 70).
+
+Definition equivalence' A B := Σ (f : A → B), qinv f.
+Notation "A ≈ B" := (equivalence' A B) (at level 70).
 
 (* Lemma 2.4.12 i *)
 
 Definition ideqv A : A ≃ A :=
-  existT isequiv id
-    (existT (λ g : A → A, id ◦ g ~~ id) id (reflexivity id),
-     existT (λ h : A → A, h ◦ id ~~ id) id (reflexivity id)).
+  existT isequiv id (existT _ id refl, existT _ id refl).
+
+Definition ideqv' A : A ≈ A :=
+  existT qinv id (existT _ id (refl, refl)).
 
 (* quasi-inverse : lemma 2.4.12 ii *)
 
@@ -1744,6 +1747,14 @@ subst q; simpl.
 apply qinv_isequiv, ex_2_4_7.
 Defined.
 
+Definition idtoeqv_tac' {A B : U} : A == B → A ≈ B.
+Proof.
+intros p.
+apply (existT _ (transport id p)).
+destruct p; simpl.
+apply ex_2_4_7.
+Defined.
+
 Definition isequiv_transport {A B} : ∀ (p : A == B), isequiv (transport id p)
   := λ p,
      match p with
@@ -1754,23 +1765,18 @@ Definition idtoeqv {A B : U} : A == B → A ≃ B :=
   λ p,
   existT isequiv (transport id p) (isequiv_transport p).
 
-(*
-Definition idtoeqv_tac2 {A B : U} : A == B → A ≃ B.
-Proof.
-intros p.
-destruct p.
-apply ideqv.
-Defined.
+Definition qinv_transport {A B} : ∀ (p : A == B), qinv (transport id p)
+  := λ p,
+     match p with
+     | refl => existT _ id (refl, refl)
+     end.
 
-Definition idtoeqv {A B : U} : A == B → A ≃ B :=
+Definition idtoeqv' {A B : U} : A == B → A ≈ B :=
   λ p,
-  existT isequiv (transport id p)
-    match p with
-    | refl => projT2 (ideqv A)
-    end.
-*)
+  existT qinv (transport id p) (qinv_transport p).
 
 Axiom univalence : ∀ A B : U, isequiv (@idtoeqv A B).
+Axiom univalence' : ∀ A B : U, qinv (@idtoeqv' A B).
 
 Theorem univalence2 : ∀ A B : U, (A == B) ≃ (A ≃ B).
 Proof.
@@ -1779,17 +1785,36 @@ pose proof (@univalence A B) as p.
 esplit; eassumption.
 Defined.
 
+Theorem univalence2' : ∀ A B : U, (A == B) ≈ (A ≈ B).
+Proof.
+intros.
+pose proof (@univalence' A B) as p.
+esplit; eassumption.
+Defined.
+
 (* introduction rule *)
+
 Definition ua_tac {A B} : A ≃ B → A == B.
 Proof.
 intros p.
 set (q := isequiv_qinv idtoeqv (univalence A B)).
-destruct q as (f, _, _).
+destruct q as (f, _).
 apply f, p.
 Defined.
 
 Definition ua {A B} : A ≃ B → A == B :=
   match isequiv_qinv idtoeqv (univalence A B) with
+  | existT f _ => f
+  end.
+
+Definition ua_tac' {A B} : A ≈ B → A == B.
+Proof.
+intros p.
+apply univalence', p.
+Defined.
+
+Definition ua' {A B} : A ≈ B → A == B :=
+  match univalence' A B with
   | existT f _ => f
   end.
 
@@ -1804,7 +1829,16 @@ Proof.
 intros.
 unfold ua; simpl.
 set (q := isequiv_qinv idtoeqv (univalence A B)).
-destruct q as (g, α, β).
+destruct q as (g, (α, β)).
+apply α.
+Defined.
+
+Definition idtoeqv_ua' {A B} : ∀ (f : A ≈ B), idtoeqv' (ua' f) == f.
+Proof.
+intros.
+unfold ua'; simpl.
+set (q := univalence' A B).
+destruct q as (g, (α, β)).
 apply α.
 Defined.
 
@@ -1815,6 +1849,13 @@ Definition ua_pcr {A B}
      | refl => refl (projT1 (idtoeqv (ua f)) x)
      end.
 
+Definition ua_pcr' {A B}
+  : ∀ (f : A ≈ B) (x : A), transport id (ua' f) x == projT1 f x
+  := λ f x,
+     match idtoeqv_ua' f with
+     | refl => refl (projT1 (idtoeqv' (ua' f)) x)
+     end.
+
 (* propositional uniqueness principle *)
 
 Definition ua_idtoeqv {A B} : ∀ (p : A == B), ua (idtoeqv p) == p.
@@ -1822,6 +1863,15 @@ Proof.
 intros.
 unfold ua; simpl.
 set (q := isequiv_qinv idtoeqv (univalence A B)).
+destruct q as (f, (α, β)).
+apply β.
+Defined.
+
+Definition ua_idtoeqv' {A B} : ∀ (p : A == B), ua' (idtoeqv' p) == p.
+Proof.
+intros.
+unfold ua'; simpl.
+set (q := univalence' A B).
 destruct q as (f, (α, β)).
 apply β.
 Defined.
@@ -1841,12 +1891,28 @@ Definition ua_pup {A B}
          end
      end (ua_idtoeqv p).
 
+Definition ua_pup' {A B}
+  : ∀ (p : A == B),
+    p == ua' (existT qinv (transport id p) (qinv_transport p))
+  := λ (p : A == B),
+     match p return
+       (ua' (idtoeqv' p) == p
+        → p == ua' (existT qinv (transport id p) (qinv_transport p)))
+     with
+     | refl =>
+         λ q,
+         match q in (_ == r) return (r == ua' (ideqv' A)) with
+         | refl => refl _
+         end
+     end (ua_idtoeqv' p).
+
 (* reflexivity *)
 
 Definition idtoeqv_refl (A : U) : ideqv A == idtoeqv (refl A) :=
   refl (idtoeqv (refl A)).
 
 Definition ua_refl_tac : ∀ A, refl A == ua (ideqv A).
+Proof.
 intros.
 rewrite idtoeqv_refl, ua_idtoeqv.
 reflexivity.
@@ -1863,16 +1929,26 @@ Definition ua_refl : ∀ A, refl A == ua (ideqv A) :=
    end)
   (idtoeqv_refl A).
 
-(*
-Definition ua_refl2 : ∀ A, refl A == ua (ideqv A) :=
+Definition idtoeqv_refl' (A : U) : ideqv' A == idtoeqv' (refl A) :=
+  refl (idtoeqv' (refl A)).
+
+Definition ua_refl_tac' : ∀ A, refl A == ua' (ideqv' A).
+Proof.
+intros.
+rewrite idtoeqv_refl', ua_idtoeqv'.
+reflexivity.
+Defined.
+
+Definition ua_refl' : ∀ A, refl A == ua' (ideqv' A) :=
   λ A,
-  match idtoeqv_refl A with
-  | refl =>
-      match ua_idtoeqv (refl A) in (_ == p) return (p == _) with
-      | refl => refl _
-      end
-  end.
-*)
+  (λ p,
+   match p with
+   | refl =>
+       match ua_idtoeqv' (refl A) in (_ == p) return (_ == p → _) with
+       | refl => id
+       end (refl (refl A))
+   end)
+  (idtoeqv_refl' A).
 
 (* concatenation *)
 
@@ -1880,6 +1956,28 @@ Definition idtoeqv_concat {A B C} : ∀ (p : A == B) (q : B == C),
   idtoeqv (p • q) == idtoeqv q ◦◦ idtoeqv p.
 Proof.
 intros.
+destruct p, q; reflexivity.
+Defined.
+
+Definition ua_concat {A B C} : ∀ (f : A ≃ B) (g : B ≃ C),
+  ua f • ua g == ua (g ◦◦ f).
+Proof.
+intros.
+set (p := ua f).
+set (q := ua g).
+transitivity (ua (idtoeqv q ◦◦ idtoeqv p)).
+ transitivity (ua (idtoeqv (p • q))); [ symmetry; apply ua_idtoeqv | idtac ].
+ apply ap, idtoeqv_concat.
+
+ subst p q.
+ do 2 rewrite idtoeqv_ua; reflexivity.
+Defined.
+
+Definition idtoeqv_concat' {A B C} : ∀ (p : A == B) (q : B == C),
+  idtoeqv' (p • q) == idtoeqv' q ◦◦◦ idtoeqv' p.
+Proof.
+intros.
+bbb.
 destruct p, q; reflexivity.
 Defined.
 
