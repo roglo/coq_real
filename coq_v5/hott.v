@@ -12,14 +12,6 @@ Inductive Id {A} x : A → Type :=
 
 Notation "x == y" := (Id x y) (at level 70).
 
-(*
-Definition indiscernability {A} C (x y : A) (p : x == y) : C x → C y.
-Proof.
-induction p as [| x y p]; [ intros H; assumption | idtac ].
-intros H.
-bbb.
-*)
-
 Definition indiscernability {A} C (x y : A) (p : x == y) :=
   match p return (C x → C _) with
   | refl => id
@@ -1165,21 +1157,13 @@ Abort. (* proof postponed, they say, to sections §2.6, §2.7 and §4.3...
 bbb.
 *)
 
-Check isequiv.
-
 Definition equivalence A B := Σ (f : A → B), isequiv f.
 Notation "A ≃ B" := (equivalence A B) (at level 70).
-
-Definition equivalence' A B := Σ (f : A → B), qinv f.
-Notation "A ≈ B" := (equivalence' A B) (at level 70).
 
 (* Lemma 2.4.12 i *)
 
 Definition ideqv A : A ≃ A :=
   existT isequiv id (existT _ id refl, existT _ id refl).
-
-Definition ideqv' A : A ≈ A :=
-  existT qinv id (existT _ id (refl, refl)).
 
 (* quasi-inverse : lemma 2.4.12 ii *)
 
@@ -1213,23 +1197,6 @@ Definition quasi_inv {A B} : A ≃ B → B ≃ A :=
 
 Notation "f '⁻⁻¹'" := (quasi_inv f)
   (at level 8, left associativity, format "'[v' f ']' ⁻⁻¹").
-
-Definition quasi_inv_tac' {A B} : A ≈ B → B ≈ A.
-Proof.
-intros eqf.
-destruct eqf as (f, (g, (Hg, Hh))).
-apply (existT _ g), (existT _ f).
-split; assumption.
-Defined.
-
-Definition quasi_inv' {A B} : A ≈ B → B ≈ A :=
-  λ eqf,
-  match eqf with
-  | existT f (existT g (Hg, Hh)) => existT _ g (existT _ f (Hh, Hg))
-  end.
-
-Notation "f '⁻⁻⁻¹'" := (quasi_inv' f)
-  (at level 8, left associativity, format "'[v' f ']' ⁻⁻⁻¹").
 
 (* Lemma 2.4.12 iii *)
 
@@ -1271,43 +1238,6 @@ Definition equiv_compose {A B C} : A ≃ B → B ≃ C → A ≃ C :=
   end.
 
 Notation "g '◦◦' f" := (equiv_compose f g) (at level 40).
-
-Lemma equiv_compose_tac' {A B C} : ∀ (f : A ≈ B) (g : B ≈ C), A ≈ C.
-Proof.
-intros eqf eqg.
-destruct eqf as (f, (f₁, (eqf₁, eqf₂))).
-destruct eqg as (g, (g₁, (eqg₁, eqg₂))).
-unfold equivalence'.
-apply (existT _ (g ◦ f)).
-apply (existT _ (f₁ ◦ g₁)).
-split.
- intros c; unfold "◦"; simpl.
- transitivity (g (g₁ c)); [ apply ap, eqf₁ | apply eqg₁ ].
-
- intros a; unfold "◦"; simpl.
- transitivity (f₁ (f a)); [ apply ap, eqg₂ | apply eqf₂ ].
-Defined.
-
-Definition equiv_compose' {A B C} : A ≈ B → B ≈ C → A ≈ C :=
-  λ eqf eqg,
-  match eqf with
-  | existT f (existT f₁ (eqf₁, eqf₂)) =>
-      match eqg with
-      | existT g (existT g₁ (eqg₁, eqg₂)) =>
-          existT _ (g ◦ f)
-            (existT _ (f₁ ◦ g₁)
-               (λ c,
-                match eqg₁ c in (_ == y) return (g (f (f₁ (g₁ c))) == y) with
-                | refl => ap g (eqf₁ (g₁ c))
-                end,
-                λ a,
-                match eqf₂ a in (_ == y) return (f₁ (g₁ (g (f a))) == y) with
-                | refl => ap f₁ (eqg₂ (f a))
-               end))
-      end
-  end.
-
-Notation "g '◦◦◦' f" := (equiv_compose' f g) (at level 40).
 
 (* 2.5 The higher groupoid structure of type formers *)
 
@@ -1801,14 +1731,6 @@ subst q; simpl.
 apply qinv_isequiv, ex_2_4_7.
 Defined.
 
-Definition idtoeqv_tac' {A B : U} : A == B → A ≈ B.
-Proof.
-intros p.
-apply (existT _ (transport id p)).
-destruct p; simpl.
-apply ex_2_4_7.
-Defined.
-
 Definition isequiv_transport {A B} : ∀ (p : A == B), isequiv (transport id p)
   := λ p,
      match p with
@@ -1819,30 +1741,12 @@ Definition idtoeqv {A B : U} : A == B → A ≃ B :=
   λ p,
   existT isequiv (transport id p) (isequiv_transport p).
 
-Definition qinv_transport {A B} : ∀ (p : A == B), qinv (transport id p)
-  := λ p,
-     match p with
-     | refl => existT _ id (refl, refl)
-     end.
-
-Definition idtoeqv' {A B : U} : A == B → A ≈ B :=
-  λ p,
-  existT qinv (transport id p) (qinv_transport p).
-
 Axiom univalence : ∀ A B : U, isequiv (@idtoeqv A B).
-Axiom univalence' : ∀ A B : U, qinv (@idtoeqv' A B).
 
 Theorem univalence2 : ∀ A B : U, (A == B) ≃ (A ≃ B).
 Proof.
 intros.
 pose proof (@univalence A B) as p.
-esplit; eassumption.
-Defined.
-
-Theorem univalence2' : ∀ A B : U, (A == B) ≈ (A ≈ B).
-Proof.
-intros.
-pose proof (@univalence' A B) as p.
 esplit; eassumption.
 Defined.
 
@@ -1861,17 +1765,6 @@ Definition ua {A B} : A ≃ B → A == B :=
   | existT f _ => f
   end.
 
-Definition ua_tac' {A B} : A ≈ B → A == B.
-Proof.
-intros p.
-apply univalence', p.
-Defined.
-
-Definition ua' {A B} : A ≈ B → A == B :=
-  match univalence' A B with
-  | existT f _ => f
-  end.
-
 (* elimination rule = idtoeqv *)
 (* ... *)
 
@@ -1887,27 +1780,11 @@ destruct q as (g, (α, β)).
 apply α.
 Defined.
 
-Definition idtoeqv_ua' {A B} : ∀ (f : A ≈ B), idtoeqv' (ua' f) == f.
-Proof.
-intros.
-unfold ua'; simpl.
-set (q := univalence' A B).
-destruct q as (g, (α, β)).
-apply α.
-Defined.
-
 Definition ua_pcr {A B}
   : ∀ (f : A ≃ B) (x : A), transport id (ua f) x == projT1 f x
   := λ f x,
      match idtoeqv_ua f with
      | refl => refl (projT1 (idtoeqv (ua f)) x)
-     end.
-
-Definition ua_pcr' {A B}
-  : ∀ (f : A ≈ B) (x : A), transport id (ua' f) x == projT1 f x
-  := λ f x,
-     match idtoeqv_ua' f with
-     | refl => refl (projT1 (idtoeqv' (ua' f)) x)
      end.
 
 (* propositional uniqueness principle *)
@@ -1917,15 +1794,6 @@ Proof.
 intros.
 unfold ua; simpl.
 set (q := isequiv_qinv idtoeqv (univalence A B)).
-destruct q as (f, (α, β)).
-apply β.
-Defined.
-
-Definition ua_idtoeqv' {A B} : ∀ (p : A == B), ua' (idtoeqv' p) == p.
-Proof.
-intros.
-unfold ua'; simpl.
-set (q := univalence' A B).
 destruct q as (f, (α, β)).
 apply β.
 Defined.
@@ -1944,21 +1812,6 @@ Definition ua_pup {A B}
          | refl => refl _
          end
      end (ua_idtoeqv p).
-
-Definition ua_pup' {A B}
-  : ∀ (p : A == B),
-    p == ua' (existT qinv (transport id p) (qinv_transport p))
-  := λ (p : A == B),
-     match p return
-       (ua' (idtoeqv' p) == p
-        → p == ua' (existT qinv (transport id p) (qinv_transport p)))
-     with
-     | refl =>
-         λ q,
-         match q in (_ == r) return (r == ua' (ideqv' A)) with
-         | refl => refl _
-         end
-     end (ua_idtoeqv' p).
 
 (* reflexivity *)
 
@@ -1983,27 +1836,6 @@ Definition ua_refl : ∀ A, refl A == ua (ideqv A) :=
    end)
   (idtoeqv_refl A).
 
-Definition idtoeqv_refl' (A : U) : ideqv' A == idtoeqv' (refl A) :=
-  refl (idtoeqv' (refl A)).
-
-Definition ua_refl_tac' : ∀ A, refl A == ua' (ideqv' A).
-Proof.
-intros.
-rewrite idtoeqv_refl', ua_idtoeqv'.
-reflexivity.
-Defined.
-
-Definition ua_refl' : ∀ A, refl A == ua' (ideqv' A) :=
-  λ A,
-  (λ p,
-   match p with
-   | refl =>
-       match ua_idtoeqv' (refl A) in (_ == p) return (_ == p → _) with
-       | refl => id
-       end (refl (refl A))
-   end)
-  (idtoeqv_refl' A).
-
 (* concatenation *)
 
 Definition idtoeqv_concat {A B C} : ∀ (p : A == B) (q : B == C),
@@ -2027,243 +1859,36 @@ transitivity (ua (idtoeqv q ◦◦ idtoeqv p)).
  do 2 rewrite idtoeqv_ua; reflexivity.
 Defined.
 
-Definition idtoeqv_concat' {A B C} : ∀ (p : A == B) (q : B == C),
-  idtoeqv' (p • q) == idtoeqv' q ◦◦◦ idtoeqv' p.
-Proof.
-intros.
-destruct p, q; reflexivity.
-Defined.
-
-Definition ua_concat' {A B C} : ∀ (f : A ≈ B) (g : B ≈ C),
-  ua' f • ua' g == ua' (g ◦◦◦ f).
-Proof.
-intros.
-set (p := ua' f).
-set (q := ua' g).
-transitivity (ua' (idtoeqv' q ◦◦◦ idtoeqv' p)).
- transitivity (ua' (idtoeqv' (p • q))); [ apply invert, ua_idtoeqv' | idtac ].
- apply ap, idtoeqv_concat'.
-
- subst p q.
- do 2 rewrite idtoeqv_ua'; reflexivity.
-Defined.
-
 (* inverse *)
 
-Definition equiv_inv {A B} (f : A ≃ B) : B ≃ A := idtoeqv (ua f)⁻¹.
-
-(*
-Notation "f '⁻⁻¹'" := (equiv_inv f)
-  (at level 8, left associativity, format "'[v' f ']' ⁻⁻¹").
-*)
-
-Definition ua_inverse {A B} : ∀ f : A ≃ B, (ua f)⁻¹ == ua (equiv_inv f).
-Proof.
-intros.
-set (p := ua f).
-transitivity (ua (idtoeqv p⁻¹)); [ symmetry; apply ua_idtoeqv | idtac ].
-subst p; reflexivity.
-Defined.
-
-(* oui, mais est-ce kasher de définir justement l'inverse d'une équivalence
-   de la sorte ? En fait, quasi_inv est de même type de equiv_inv. On aurait
-   donc pu prendre quasi_inv comme définition de ⁻⁻¹ *)
-
-Definition idtoeqv_ua_equiv_inv_inv {A B : U} : ∀ (p : A ≃ B),
-  idtoeqv (ua p)⁻¹⁻¹ == p.
-Proof.
-intros.
-eapply compose; [ eapply ap, hott_2_1_4_iii | idtac ].
-apply idtoeqv_ua.
-Defined.
-
-Definition equiv_inv_inv {A B : U} :
-  ∀ (p : A ≃ B), equiv_inv (equiv_inv p) == p.
-Proof.
-intros p.
-unfold equiv_inv.
-eapply compose; [ eapply ap, ap, ua_idtoeqv | idtac ].
-apply idtoeqv_ua_equiv_inv_inv.
-Defined.
-
-(* selon Cyprien Mangin, il semblerait qu'une définition de ⁻⁻¹ qui
-   n'utilise *pas* l'axiome d'univalence, c'est-à-dire quasi_inv, est
-   ce qu'il faut *)
-
-Definition idtoeqv_inv' {A B} : ∀ (f : A == B), ua' (idtoeqv' f)⁻⁻⁻¹ == f⁻¹.
+Definition idtoeqv_inv {A B} : ∀ (f : A == B), ua (idtoeqv f)⁻⁻¹ == f⁻¹.
 Proof.
 intros.
 destruct f; simpl.
-unfold ua'.
-set (q := univalence' A A).
-destruct q as (f, (Hf, Hg)).
-unfold "◦", "~~" in Hg.
-pose proof Hg (refl A) as H.
-apply H.
+unfold ua.
+set (q := univalence A A).
+destruct q as ((g, Hg), (h, Hh)); simpl.
+unfold "◦", "~~", id in Hg, Hh.
+pose proof Hh (refl A) as H.
+unfold id in H.
+rewrite <- H; simpl.
+unfold idtoeqv; simpl.
+assert (g ~~ h) as Hgh.
+ intros x; set (y := g x).
+ apply (@compose _ _ (h (idtoeqv y))); [ apply invert, Hh | apply ap, Hg ].
+
+ apply Hgh.
 Defined.
 
-Definition ua_inverse2' {A B} : ∀ f : A ≈ B, (ua' f)⁻¹ == ua' f⁻⁻⁻¹.
+Definition ua_inverse {A B} : ∀ f : A ≃ B, (ua f)⁻¹ == ua f⁻⁻¹.
 Proof.
 intros eqf.
 symmetry.
-transitivity (ua' (idtoeqv' (ua' eqf))⁻⁻⁻¹).
- rewrite idtoeqv_ua'; reflexivity.
+transitivity (ua (idtoeqv (ua eqf))⁻⁻¹).
+ rewrite idtoeqv_ua; reflexivity.
 
- apply idtoeqv_inv'.
+ apply idtoeqv_inv.
 Defined.
-
-bbb.
-
-Definition ua_inverse2 {A B} : ∀ f : A ≃ B, (ua f)⁻¹ == ua f⁻⁻¹.
-Proof.
-intros eqf.
-set (p := ua eqf).
-transitivity (ua (idtoeqv p⁻¹)); [ symmetry; apply ua_idtoeqv | idtac ].
-apply ap.
-unfold idtoeqv.
-unfold quasi_inv.
-destruct eqf as (f, ((g, Hg), (h, Hh))).
-assert (g ~~ transport id p⁻¹).
- assert (transport id p⁻¹ ◦ f ~~ id).
-  subst p.
-bbb.
-
-Check ua_pup p⁻¹.
-unfold idtoeqv.
-
-unfold idtoeqv.
-SearchAbout (transport id).
-pose proof ua_pup p⁻¹.
-unfold isequiv_transport in H.
-rewrite <- H.
-bbb.
-
-subst p; simpl.
-unfold idtoeqv, quasi_inv.
-destruct f as (f, Hf).
-destruct Hf.
-destruct s as (g, Hg).
-destruct s0 as (h, Hh).
-bbb.
-
-apply ap.
-subst p; simpl.
-Print hott_2_3_9.
-bbb.
-
-subst p.
-unfold ua.
-simpl.
-unfold isequiv_qinv; simpl.
-set (p := univalence A B).
-destruct p.
-destruct s.
-destruct s0.
-simpl.
-unfold idtoeqv.
-simpl.
-
-Print quasi_inv.
-bbb.
-
-unfold quasi_inv.
-destruct f as (f, Hf); simpl.
-unfold isequiv_qinv.
-
-set (q := isequiv_qinv f Hf).
-unfold isequiv_qinv in q.
-destruct Hf.
-destruct s.
-destruct s0.
-destruct q.
-destruct p0.
-unfold idtoeqv.
-SearchAbout (transport id).
-assert (transport id p⁻¹ == x1).
-subst p.
-unfold ua.
-unfold transport.
-set (p := isequiv_qinv idtoeqv (univalence A B)).
-destruct p.
-destruct p.
-simpl.
-
-bbb.
-destruct q as (g, (α, β)).
-unfold "⁻¹"; simpl.
-bbb.
-(* probablement pas bon, parce qu'il n'y a aucune raison que p soit refl
-   et du coup, on ne peut rien faire avec ça...
-  f : A → B
-  Hf : isequiv f
-  p := ua (existT (λ f0 : A → B, isequiv f0) f Hf) : A == B
-  g : B → A
-  α : f ◦ g ~~ id
-  β : g ◦ f ~~ id
-  ============================
-   idtoeqv match p in (_ == a) return (a == A) with
-           | refl => refl A
-           end ==
-   existT (λ f0 : B → A, isequiv f0) g
-     (existT (λ g0 : A → B, g ◦ g0 ~~ id) f β,
-     existT (λ h : A → B, h ◦ g ~~ id) f α)
-*)
-
-bbb.
-
-(*
-equiv_inv = 
-λ (A B : Type) (f : A ≃ B), idtoeqv (ua f)⁻¹
-     : ∀ A B : Type, A ≃ B → B ≃ A
-
-quasi_inv = 
-λ (A B : Type) (eqf : A ≃ B),
-let (f, Hf) := eqf in
-match isequiv_qinv f Hf with
-| qi g α β =>
-    existT (λ f0 : B → A, isequiv f0) g
-      (existT (λ g0 : A → B, g ◦ g0 ~~ id) f β,
-      existT (λ h : A → B, h ◦ g ~~ id) f α)
-end
-     : ∀ A B : Type, A ≃ B → B ≃ A
-
-Definition quasi_inv {A B} : A ≃ B → B ≃ A :=
-  λ eqf,
-  match eqf with
-  | existT f Hf =>
-      match isequiv_qinv f Hf with
-      | qi g α β => existT _ g (existT _ f β, existT _ f α)
-      end
-   end.
-*)
-
-(* Et ça, est-ce que ça fait du sens ? Est-ce que c'est vrai ? *)
-
-Definition equiv_quasi_inv {A B} : ∀ (f : A ≃ B), equiv_inv f == quasi_inv f.
-Proof.
-intros.
-destruct f as (f, Hf).
-unfold equiv_inv, quasi_inv, idtoeqv.
-set (p := isequiv_qinv f Hf).
-destruct p as (g, α, β).
-simpl.
-pose proof univalence A B as H.
-apply isequiv_qinv in H.
-destruct H as (h, αh, βh).
-SearchAbout idtoeqv.
-assert (g == transport id (ua (existT isequiv f Hf))⁻¹).
-SearchAbout (transport id).
-Print isequiv_transport.
-bbb.
-
-ua_pup:
-  ∀ (A B : Type) (p : A == B),
-  p == ua (existT isequiv (transport id p) (isequiv_transport p))
-isequiv_transport: ∀ (A B : Type) (p : A == B), isequiv (transport id p)
-ua_pcr:
-  ∀ (A B : Type) (f : A ≃ B) (x : A), transport id (ua f) x == projT1 f x
-
-bbb.
 
 Lemma hott_2_10_5_i {A} {B : A → U} {x y : A} : ∀ (p : x == y) (u : B x),
   transport B p u = transport id (ap B p) u.
@@ -2281,6 +1906,16 @@ Lemma hott_2_10_5 {A} {B : A → U} {x y : A} : ∀ (p : x == y) (u : B x),
 Proof. intros; destruct p; reflexivity. Qed.
 
 (* 2.11 Identity type *)
+
+(* Theorem 2.11.1 *)
+
+Theorem hott_2_11_1 {A B} : ∀ (f : A → B), isequiv f → ∀ (a a' : A),
+  (a == a') ≃ (f a == f a').
+Proof.
+intros f Hf a a'.
+Check (@ap _ _ f ).
+(* ap
+     : ∀ (y : A → B) (f0 : (A → B) → U), f == y → f0 f == f0 y *)
 
 bbb.
 
