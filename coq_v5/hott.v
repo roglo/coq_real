@@ -1208,10 +1208,8 @@ Definition quasi_inv {A B} : A ≃ B → B ≃ A :=
          existT _ f Hg)
  end.
 
-(*
 Notation "f '⁻⁻¹'" := (quasi_inv f)
   (at level 8, left associativity, format "'[v' f ']' ⁻⁻¹").
-*)
 
 (* Lemma 2.4.12 iii *)
 
@@ -1903,10 +1901,12 @@ Defined.
 
 Definition equiv_inv {A B} (f : A ≃ B) : B ≃ A := idtoeqv (ua f)⁻¹.
 
+(*
 Notation "f '⁻⁻¹'" := (equiv_inv f)
   (at level 8, left associativity, format "'[v' f ']' ⁻⁻¹").
+*)
 
-Definition ua_inverse {A B} : ∀ f : A ≃ B, (ua f)⁻¹ == ua f⁻⁻¹.
+Definition ua_inverse {A B} : ∀ f : A ≃ B, (ua f)⁻¹ == ua (equiv_inv f).
 Proof.
 intros.
 set (p := ua f).
@@ -1926,10 +1926,11 @@ eapply compose; [ eapply ap, hott_2_1_4_iii | idtac ].
 apply idtoeqv_ua.
 Defined.
 
-Definition equiv_inv_inv {A B : U} : ∀ (p : A ≃ B), p⁻⁻¹⁻⁻¹ == p.
+Definition equiv_inv_inv {A B : U} :
+  ∀ (p : A ≃ B), equiv_inv (equiv_inv p) == p.
 Proof.
 intros p.
-unfold "⁻⁻¹".
+unfold equiv_inv.
 eapply compose; [ eapply ap, ap, ua_idtoeqv | idtac ].
 apply idtoeqv_ua_equiv_inv_inv.
 Defined.
@@ -1938,20 +1939,7 @@ Defined.
    n'utilise *pas* l'axiome d'univalence, c'est-à-dire quasi_inv, est
    ce qu'il faut *)
 
-(*
-Definition toto {A B}
-     : ∀ (f : A → B) (g : B → A),
-       (f ◦ g ~~ id) → ∀ h : B → A, (h ◦ f ~~ id) → B → A
-  := λ f g Hg h Hh,
-     transport id
-        (ua
-           (existT (λ f0 : A → B, isequiv f0) f
-              (existT (λ g0 : B → A, f ◦ g0 ~~ id) g Hg,
-              existT (λ h0 : B → A, h0 ◦ f ~~ id) h Hh)))⁻¹.
-Print toto.
-*)
-
-Definition ua_inverse2 {A B} : ∀ f : A ≃ B, (ua f)⁻¹ == ua (quasi_inv f).
+Definition ua_inverse2 {A B} : ∀ f : A ≃ B, (ua f)⁻¹ == ua f⁻⁻¹.
 Proof.
 intros eqf.
 set (p := ua eqf).
