@@ -1926,9 +1926,37 @@ assert (f₁ ~~ f₂) as H.
 
   clear β; rename β₁ into β; move β before f₂.
   clear f₂ H.
+  set (g₁ := λ q, (β a)⁻¹ • ap f₁ q • β a').
+  assert (∀ q, ap f (g₁ q) == q).
+   intros; subst g₁; simpl.
+   do 2 rewrite hott_2_2_2_i.
+set (u := α (f a')).
+set (v := ap f (β a')).
+assert (u == v).
+subst u v.
+bbb.
+
+Check (ap f (β a')).
+ap f (β a')
+     : f (f₁ (f a')) == f a'
+ap f (β a)
+     : f (f₁ (f a)) == f a
+
+lhs : preuve que f (f₁ (f a')) == f a'
+β a' : preuve que f₁ (f a') == a'
+
+rhs : preuve que ...
+bbb.
+
+Focus 2.
+rewrite <- H.
+subst u.
+  ============================
+*)
+
+bbb.
   set (g := λ r : a == a',
     match r in (_ == c) return (f a == f c) with refl => refl (f a) end).
-  set (g₁ := λ r, (β a)⁻¹ • ap f₁ r • β a').
   apply (existT _ g).
   split; apply (existT _ g₁).
    subst g g₁.
