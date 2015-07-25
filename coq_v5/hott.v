@@ -1928,8 +1928,8 @@ assert (f₁ ~~ f₂) as H.
   clear f₂ H.
   set (g := λ r : a == a',
     match r in (_ == c) return (f a == f c) with refl => refl (f a) end).
-  apply (existT _ g).
   set (g₁ := λ r, (β a)⁻¹ • ap f₁ r • β a').
+  apply (existT _ g).
   split; apply (existT _ g₁).
    subst g g₁.
    unfold "◦", id; simpl; intros y.
