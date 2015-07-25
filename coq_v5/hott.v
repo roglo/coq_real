@@ -1932,6 +1932,14 @@ split.
   apply hott_2_1_4_i_1.
 
 bbb.
+  set (r := (α (f a))⁻¹ • α (f a)).
+  do 2 rewrite <- hott_2_1_4_iv.
+subst p.
+rewrite <- hott_2_4_3.
+  do 3 rewrite <- hott_2_1_4_iv.
+  Check @hott_2_4_3.
+
+bbb.
  unfold "◦", "~~", id; intros p.
 bbb.
 
