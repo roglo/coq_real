@@ -1922,7 +1922,14 @@ Check (@ap B A (f a) (f a') f₁).
 apply (existT _ (λ q, (β a)⁻¹ • ap f₁ q • β a')).
 split.
  unfold "◦", "~~", id; intros q.
- do 2 rewrite hott_2_2_2_i.
+ set (p :=
+   ap f
+     (@compose _ _ _ a' (@invert _ (f₁ (f a)) a (β a) • (ap f₁ q)) (β a'))).
+ apply (@compose _ _ ((α (f a))⁻¹ • α (f a) • p • (α (f a'))⁻¹ • α (f a'))).
+  rewrite hott_2_1_4_ii_1; simpl.
+  rewrite <- hott_2_1_4_iv.
+  rewrite hott_2_1_4_ii_1; simpl.
+  apply hott_2_1_4_i_1.
 
 bbb.
  unfold "◦", "~~", id; intros p.
