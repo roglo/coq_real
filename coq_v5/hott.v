@@ -1914,59 +1914,18 @@ Theorem hott_2_11_1 {A B} : ∀ (f : A → B), isequiv f → ∀ (a a' : A),
 Proof.
 intros f Hf a a'.
 apply (existT _ (@ap A B a a' f)).
+apply isequiv_qinv in Hf.
+destruct Hf as (f₁, (α, β)).
+apply qinv_isequiv.
+Check (@ap B A (f a) (f a') f₁).
+(* ap f₁ : f a == f a' → f₁ (f a) == f₁ (f a') *)
+apply (existT _ (λ q, (β a)⁻¹ • ap f₁ q • β a')).
 split.
+ unfold "◦", "~~", id; intros q.
+ do 2 rewrite hott_2_2_2_i.
 
 bbb.
-intros f Hf a a'.
-assert (A ≃ B) as p by apply (existT _  f Hf).
-destruct Hf as ((f₁, α), (f₂, β)).
-unfold "◦", "~~", id in α.
-assert (f₁ ~~ f₂) as H.
- intros y.
- apply (@compose _ _ (f₂ (f (f₁ y)))); [ apply invert, β | apply ap, α ].
-
- assert (Π (x : A), f₁ (f x) == x) as β₁.
-  intros x.
-  apply (@compose _ _ (f₂ (f x))); [ apply H | apply β ].
-
-  clear β; rename β₁ into β; move β before f₂.
-  clear f₂ H.
-  set (g₁ := λ q, (β a)⁻¹ • ap f₁ q • β a').
-  assert (∀ q, ap f (g₁ q) == q).
-   intros; subst g₁; simpl.
-   do 2 rewrite hott_2_2_2_i.
-set (u := α (f a')).
-set (v := ap f (β a')).
-assert (u == v).
-subst u v.
-bbb.
-
-Check (ap f (β a')).
-ap f (β a')
-     : f (f₁ (f a')) == f a'
-ap f (β a)
-     : f (f₁ (f a)) == f a
-
-lhs : preuve que f (f₁ (f a')) == f a'
-β a' : preuve que f₁ (f a') == a'
-
-rhs : preuve que ...
-bbb.
-
-Focus 2.
-rewrite <- H.
-subst u.
-  ============================
-*)
-
-bbb.
-  set (g := λ r : a == a',
-    match r in (_ == c) return (f a == f c) with refl => refl (f a) end).
-  apply (existT _ g).
-  split; apply (existT _ g₁).
-   subst g g₁.
-   unfold "◦", id; simpl; intros y.
-   set (q := (β a)⁻¹ • ap f₁ y • β a').
+ unfold "◦", "~~", id; intros p.
 bbb.
 
 (* some experiments... *)
