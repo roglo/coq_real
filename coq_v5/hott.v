@@ -1914,11 +1914,6 @@ Theorem hott_2_11_1 {A B} : ∀ (f : A → B), isequiv f → ∀ (a a' : A),
 Proof.
 intros f Hf a a'.
 assert (A ≃ B) as p by apply (existT _  f Hf).
-(*
-set (q := quasi_inv p).
-generalize q; intros r.
-destruct r as (f', Hf').
-*)
 destruct Hf as ((f₁, α), (f₂, β)).
 unfold "◦", "~~", id in α.
 assert (f₁ ~~ f₂) as H.
@@ -1931,6 +1926,17 @@ assert (f₁ ~~ f₂) as H.
 
   clear β; rename β₁ into β; move β before f₂.
   clear f₂ H.
+  assert ((a == a') → (f a == f a')) as g.
+   intros; destruct H; reflexivity.
+
+   apply (existT _ g).
+   assert ((f a == f a') → (a == a')) as g₁.
+    intros H.
+    apply (@compose _ _ (f₁ (f a'))); [ idtac | apply β ].
+    apply (@compose _ _ (f₁ (f a))); [ apply invert, β | idtac ].
+    apply ap, H.
+
+    split; apply (existT _ g₁).
 bbb.
 
 (* some experiments... *)
