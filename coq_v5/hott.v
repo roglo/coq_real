@@ -1926,17 +1926,14 @@ assert (f₁ ~~ f₂) as H.
 
   clear β; rename β₁ into β; move β before f₂.
   clear f₂ H.
-  assert ((a == a') → (f a == f a')) as g.
-   intros; destruct H; reflexivity.
-
-   apply (existT _ g).
-   assert ((f a == f a') → (a == a')) as g₁.
-    intros H.
-    apply (@compose _ _ (f₁ (f a'))); [ idtac | apply β ].
-    apply (@compose _ _ (f₁ (f a))); [ apply invert, β | idtac ].
-    apply ap, H.
-
-    split; apply (existT _ g₁).
+  set (g := λ r : a == a',
+    match r in (_ == c) return (f a == f c) with refl => refl (f a) end).
+  apply (existT _ g).
+  set (g₁ := λ r, (β a)⁻¹ • ap f₁ r • β a').
+  split; apply (existT _ g₁).
+   subst g g₁.
+   unfold "◦", id; simpl; intros y.
+   set (q := (β a)⁻¹ • ap f₁ y • β a').
 bbb.
 
 (* some experiments... *)
