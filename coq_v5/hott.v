@@ -1913,6 +1913,11 @@ Theorem hott_2_11_1 {A B} : ∀ (f : A → B), isequiv f → ∀ (a a' : A),
   (a == a') ≃ (f a == f a').
 Proof.
 intros f Hf a a'.
+apply (existT _ (@ap A B a a' f)).
+split.
+
+bbb.
+intros f Hf a a'.
 assert (A ≃ B) as p by apply (existT _  f Hf).
 destruct Hf as ((f₁, α), (f₂, β)).
 unfold "◦", "~~", id in α.
