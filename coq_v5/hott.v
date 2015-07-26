@@ -1923,23 +1923,24 @@ apply (existT _ (λ q, (β a)⁻¹ • ap f₁ q • β a')).
 split.
  unfold "◦", "~~", id; intros q.
  set (p :=
-   ap f
      (@compose _ _ _ a' (@invert _ (f₁ (f a)) a (β a) • (ap f₁ q)) (β a'))).
- apply (@compose _ _ ((α (f a))⁻¹ • α (f a) • p • (α (f a'))⁻¹ • α (f a'))).
+ apply
+   (@compose _ _ ((α (f a))⁻¹ • α (f a) • ap f p • (α (f a'))⁻¹ • α (f a'))).
   rewrite hott_2_1_4_ii_1; simpl.
   rewrite <- hott_2_1_4_iv.
   rewrite hott_2_1_4_ii_1; simpl.
   apply hott_2_1_4_i_1.
 
-bbb.
-  set (r := (α (f a))⁻¹ • α (f a)).
-  do 2 rewrite <- hott_2_1_4_iv.
-subst p.
-rewrite <- hott_2_4_3.
-  do 3 rewrite <- hott_2_1_4_iv.
-  Check @hott_2_4_3.
+  set (H := λ a, (α (f a))⁻¹ • α (f a)).
+  apply (@compose _ _ (H a • ap f p • (α (f a'))⁻¹ • α (f a'))).
+   subst H; reflexivity.
 
+   unfold id; simpl.
+   rewrite hott_2_4_3.
+   unfold id in H; simpl in H.
+   subst H; simpl.
 bbb.
+
  unfold "◦", "~~", id; intros p.
 bbb.
 
