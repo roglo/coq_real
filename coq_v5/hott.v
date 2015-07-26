@@ -634,7 +634,9 @@ Proof.
 intros p; destruct p; reflexivity.
 Qed.
 
-Lemma hott_2_1_4_iv {A} {x y z w : A} :
+(* Lemma hott_2_1_4_iv *)
+
+Lemma compose_assoc {A} {x y z w : A} :
   ∀ (p : x == y) (q : y == z) (r : z == w),
   p • (q • r) == (p • q) • r.
 Proof.
@@ -714,7 +716,7 @@ Theorem star_dot {A} {a : A} : ∀ (α β : refl a == refl a), α ★ β == α �
 Proof.
 intros.
 unfold "★"; simpl; unfold id.
-eapply compose; [ apply hott_2_1_4_iv | idtac ].
+eapply compose; [ apply compose_assoc | idtac ].
 remember (α • refl (refl a) • β) as p.
 pose proof @hott_2_1_4_i_1 (a == a) (refl a) (refl a) p as H.
 eapply invert.
@@ -732,7 +734,7 @@ Theorem star'_dot {A} {a : A} : ∀ (α β : refl a == refl a), α ★' β == β
 Proof.
 intros.
 unfold "★'"; simpl; unfold id.
-eapply compose; [ apply hott_2_1_4_iv | idtac ].
+eapply compose; [ apply compose_assoc | idtac ].
 remember (β • refl (refl a) • α) as p.
 pose proof @hott_2_1_4_i_1 (a == a) (refl a) (refl a) p as H.
 eapply invert.
@@ -972,11 +974,11 @@ assert (ap f (H x) • H x == H (f x) • H x) as p.
  apply dotl, invert, hott_2_2_2_iv.
 
  apply dotr with (r := (H x) ⁻¹) in p.
- eapply compose in p; [ idtac | apply hott_2_1_4_iv ].
+ eapply compose in p; [ idtac | apply compose_assoc ].
  eapply compose in p.
   unfold id in p; simpl in p.
   eapply compose in p; [ idtac | apply hott_2_1_4_i_1 ].
-  eapply invert, compose in p; [ idtac | apply hott_2_1_4_iv ].
+  eapply invert, compose in p; [ idtac | apply compose_assoc ].
   eapply compose in p.
    eapply compose in p; [ eassumption | apply hott_2_1_4_i_1 ].
 
@@ -1003,12 +1005,12 @@ intros.
 apply (existT _ (λ q, p⁻¹ • q)); split.
  intros t; unfold id, "◦"; simpl.
  eapply compose; [ idtac | apply invert, hott_2_1_4_i_2 ].
- eapply compose; [ apply hott_2_1_4_iv | apply dotr ].
+ eapply compose; [ apply compose_assoc | apply dotr ].
  apply hott_2_1_4_ii_2.
 
  intros t; unfold id, "◦"; simpl.
  eapply compose; [ idtac | apply invert, hott_2_1_4_i_2 ].
- eapply compose; [ apply hott_2_1_4_iv | apply dotr ].
+ eapply compose; [ apply compose_assoc | apply dotr ].
  apply hott_2_1_4_ii_1.
 Qed.
 
@@ -1017,10 +1019,10 @@ Example ex_2_4_8_i A : ∀ x y z : A, ∀ (p : x == y),
   := λ x y z p,
      existT _ (compose p⁻¹)
        (λ t : x == z,
-        hott_2_1_4_iv p p⁻¹ t • (hott_2_1_4_ii_2 p •r t)
+        compose_assoc p p⁻¹ t • (hott_2_1_4_ii_2 p •r t)
         • (hott_2_1_4_i_2 t)⁻¹,
         λ t : y == z,
-        hott_2_1_4_iv p⁻¹ p t • (hott_2_1_4_ii_1 p •r t)
+        compose_assoc p⁻¹ p t • (hott_2_1_4_ii_1 p •r t)
         • (hott_2_1_4_i_2 t)⁻¹).
 
 Example ex_2_4_8_ii_tac A : ∀ x y z : A, ∀ (p : x == y),
@@ -1030,12 +1032,12 @@ intros.
 apply (existT _ (λ q, q • p⁻¹)); split.
  intros t; unfold id, "◦"; simpl.
  eapply compose; [ idtac | apply invert, hott_2_1_4_i_1 ].
- eapply compose; [ eapply invert, hott_2_1_4_iv | apply dotl ].
+ eapply compose; [ eapply invert, compose_assoc | apply dotl ].
  eapply hott_2_1_4_ii_1.
 
  intros t; unfold id, "◦"; simpl.
  eapply compose; [ idtac | apply invert, hott_2_1_4_i_1 ].
- eapply compose; [ eapply invert, hott_2_1_4_iv | apply dotl ].
+ eapply compose; [ eapply invert, compose_assoc | apply dotl ].
  eapply hott_2_1_4_ii_2.
 Defined.
 
@@ -1044,10 +1046,10 @@ Example ex_2_4_8_ii A : ∀ x y z : A, ∀ (p : x == y),
   := λ x y z p,
      existT _ (λ q, q • p⁻¹)
        (λ t : z == y,
-        (hott_2_1_4_iv t p⁻¹ p)⁻¹ • (t •l hott_2_1_4_ii_1 p)
+        (compose_assoc t p⁻¹ p)⁻¹ • (t •l hott_2_1_4_ii_1 p)
         • (hott_2_1_4_i_1 t)⁻¹,
         λ t : z == x,
-        (hott_2_1_4_iv t p p⁻¹)⁻¹ • (t •l hott_2_1_4_ii_2 p)
+        (compose_assoc t p p⁻¹)⁻¹ • (t •l hott_2_1_4_ii_2 p)
         • (hott_2_1_4_i_1 t)⁻¹).
 
 Example ex_2_4_9_tac A x y : ∀ (p : x == y) (P : A → U), qinv (transport P p).
@@ -1927,10 +1929,26 @@ split.
  apply
    (@compose _ _ ((α (f a))⁻¹ • α (f a) • ap f p • (α (f a'))⁻¹ • α (f a'))).
   rewrite hott_2_1_4_ii_1; simpl.
-  rewrite <- hott_2_1_4_iv.
+  rewrite <- compose_assoc.
   rewrite hott_2_1_4_ii_1; simpl.
   apply hott_2_1_4_i_1.
 
+  apply (@compose _ _ ((α (f a))⁻¹ • ap f (ap f₁ (ap f p)) • α (f a'))).
+  apply dotr.
+  eapply compose; [ apply invert, compose_assoc | idtac ].
+  eapply compose; [ apply invert, compose_assoc | apply dotl ].
+  eapply compose; [ apply compose_assoc | idtac ].
+  set (H := λ x, α (f x)).
+  apply (@compose _ _ (H a • ap f p • (α (f a'))⁻¹)).
+   subst H; reflexivity.
+
+   unfold id; simpl.
+   unfold id in H; simpl in H.
+bbb.
+   apply (@compose _ _ (ap f p • H a' • (α (f a'))⁻¹)).
+   Check @hott_2_4_3.
+   rewrite hott_2_4_3.
+bbb.
   set (H := λ a, (α (f a))⁻¹ • α (f a)).
   apply (@compose _ _ (H a • ap f p • (α (f a'))⁻¹ • α (f a'))).
    subst H; reflexivity.
