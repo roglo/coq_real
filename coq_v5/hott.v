@@ -1927,6 +1927,7 @@ apply (existT _ g); subst g.
 unfold "◦", "~~", id; simpl.
 split; [ intros y | intros x ].
  do 2 rewrite hott_2_2_2_i.
+ unfold "◦", "~~", id in α, β.
 bbb.
 
 Check (@ap B A (f a) (f a') f₁).
