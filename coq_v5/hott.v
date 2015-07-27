@@ -1925,63 +1925,14 @@ set (g := λ r, (β a)⁻¹ • ap f₁ r • β a').
 unfold "◦", id in g; simpl in g.
 apply (existT _ g); subst g.
 unfold "◦", "~~", id; simpl.
-split; [ intros y | intros x ].
+split; intros q.
+ Focus 2.
+ rewrite (hott_2_2_2_iii f f₁ q).
+ destruct q; simpl.
+ unfold "◦", "~~", id in β; simpl in β.
+ unfold "◦"; simpl; rewrite β; reflexivity.
+
  do 2 rewrite hott_2_2_2_i.
-bbb.
-
-subgoal 2 (ID 5203) is:
- @Id (@Id A a a')
-   (@compose A a (f₁ (f a')) a'
-      (@compose A a (f₁ (f a)) (f₁ (f a')) (@invert A (f₁ (f a)) a (β a))
-         (@ap B A (f a) (f a') f₁ (@ap A B a a' f x)))
-      (β a')) x
- set (H := (ap f (β a)⁻¹ • ap f (ap f₁ y))).
-Check @hott_2_4_3.
- unfold "◦", "~~", id in α, β.
-bbb.
-
-Check (@ap B A (f a) (f a') f₁).
-(* ap f₁ : f a == f a' → f₁ (f a) == f₁ (f a') *)
-bbb.
-apply (existT _ (λ q, (β a)⁻¹ • ap f₁ q • β a')).
-split.
- unfold "◦", "~~", id; intros q.
- set (p :=
-     (@compose _ _ _ a' (@invert _ (f₁ (f a)) a (β a) • (ap f₁ q)) (β a'))).
- apply
-   (@compose _ _ ((α (f a))⁻¹ • α (f a) • ap f p • (α (f a'))⁻¹ • α (f a'))).
-  rewrite hott_2_1_4_ii_1; simpl.
-  rewrite <- compose_assoc.
-  rewrite hott_2_1_4_ii_1; simpl.
-  apply hott_2_1_4_i_1.
-
-  apply (@compose _ _ ((α (f a))⁻¹ • ap f (ap f₁ (ap f p)) • α (f a'))).
-  apply dotr.
-  eapply compose; [ apply invert, compose_assoc | idtac ].
-  eapply compose; [ apply invert, compose_assoc | apply dotl ].
-  eapply compose; [ apply compose_assoc | idtac ].
-  set (H := λ x, α (f x)).
-  apply (@compose _ _ (H a • ap f p • (α (f a'))⁻¹)).
-   subst H; reflexivity.
-
-   unfold id; simpl.
-   unfold id in H; simpl in H.
-bbb.
-   apply (@compose _ _ (ap f p • H a' • (α (f a'))⁻¹)).
-   Check @hott_2_4_3.
-   rewrite hott_2_4_3.
-bbb.
-  set (H := λ a, (α (f a))⁻¹ • α (f a)).
-  apply (@compose _ _ (H a • ap f p • (α (f a'))⁻¹ • α (f a'))).
-   subst H; reflexivity.
-
-   unfold id; simpl.
-   rewrite hott_2_4_3.
-   unfold id in H; simpl in H.
-   subst H; simpl.
-bbb.
-
- unfold "◦", "~~", id; intros p.
 bbb.
 
 (* some experiments... *)
