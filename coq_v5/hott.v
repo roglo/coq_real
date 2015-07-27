@@ -1927,6 +1927,16 @@ apply (existT _ g); subst g.
 unfold "◦", "~~", id; simpl.
 split; [ intros y | intros x ].
  do 2 rewrite hott_2_2_2_i.
+bbb.
+
+subgoal 2 (ID 5203) is:
+ @Id (@Id A a a')
+   (@compose A a (f₁ (f a')) a'
+      (@compose A a (f₁ (f a)) (f₁ (f a')) (@invert A (f₁ (f a)) a (β a))
+         (@ap B A (f a) (f a') f₁ (@ap A B a a' f x)))
+      (β a')) x
+ set (H := (ap f (β a)⁻¹ • ap f (ap f₁ y))).
+Check @hott_2_4_3.
  unfold "◦", "~~", id in α, β.
 bbb.
 
