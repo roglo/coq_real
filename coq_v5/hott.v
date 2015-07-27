@@ -1932,6 +1932,20 @@ split; intros q.
  unfold "◦", "~~", id in β; simpl in β.
  unfold "◦"; simpl; rewrite β; reflexivity.
 
+ set (r :=
+     (@compose _ _ _ a' (@invert _ (f₁ (f a)) a (β a) • (ap f₁ q)) (β a'))).
+ apply (@compose _ _ ((α (f a))⁻¹ • α (f a) • ap f r)).
+  rewrite hott_2_1_4_ii_1; reflexivity.
+
+  rewrite <- compose_assoc.
+  set (H := α).
+  set (x := f a).
+  set (G := f).
+  set (P := r).
+  Check @hott_2_4_3.
+bbb.
+pose proof (@hott_2_4_3 _ _ x _ _ G H P).
+
  do 2 rewrite hott_2_2_2_i.
 bbb.
 
