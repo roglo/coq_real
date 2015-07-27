@@ -1921,6 +1921,13 @@ apply isequiv_qinv in Hf.
 destruct Hf as (f₁, (α, β)).
 apply qinv_isequiv.
 unfold qinv.
+set (g := λ r, (β a)⁻¹ • ap f₁ r • β a').
+unfold "◦", id in g; simpl in g.
+apply (existT _ g); subst g.
+unfold "◦", "~~", id; simpl.
+split; [ intros y | intros x ].
+bbb.
+
 Check (@ap B A (f a) (f a') f₁).
 (* ap f₁ : f a == f a' → f₁ (f a) == f₁ (f a') *)
 bbb.
