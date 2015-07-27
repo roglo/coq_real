@@ -1938,13 +1938,23 @@ split; intros q.
   rewrite hott_2_1_4_ii_1; reflexivity.
 
   rewrite <- compose_assoc.
-  set (H := α).
-  set (x := f a).
-  set (G := f).
-  set (P := r).
-  Check @hott_2_4_3.
+(* hott_2_4_3
+     : ∀ (A B : Type) (x y : A) (f g : A → B) (H : f ~~ g)
+       (p : x == y), H x • ap g p == ap f p • H y *)
+pose proof (@hott_2_4_3 A B a a' (λ a, (f ◦ f₁) (f a)) f (λ a, α (f a)) r).
+simpl in H.
+unfold id; simpl.
+rewrite H; simpl.
 bbb.
-pose proof (@hott_2_4_3 _ _ x _ _ G H P).
+
+ do 2 rewrite hott_2_2_2_i.
+pose proof @hott_2_2_2_i A B.
+pose proof @hott_2_2_2_i A B f a (f₁ (f a)).
+ rewrite (hott_2_2_2_iii f₁ f q).
+
+assert (∀ a, f a == f a) as H by reflexivity.
+pose proof (@hott_2_4_3 A B a a' f f H r).
+bbb.
 
  do 2 rewrite hott_2_2_2_i.
 bbb.
