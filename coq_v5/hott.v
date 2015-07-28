@@ -1971,6 +1971,29 @@ rewrite <- (ap_composite f f₁ r).
      rewrite compose_invert; simpl.
      rewrite <- ru; reflexivity.
 
+unfold id, composite; simpl.
+bbb.
+
+     rewrite <- compose_assoc.
+
+Check @hott_2_4_3.
+(* hott_2_4_3
+     : ∀ (A B : Type) (x y : A) (f g : A → B) (H : f ~~ g) 
+       (p : x == y), H x • ap g p == ap f p • H y *)
+pose proof @hott_2_4_3 A B a a' f (f ◦ f₁ ◦ f).
+Check (λ a, α (f a)).
+λ a : A, α (f a)
+     : ∀ a : A, (f ◦ f₁) (f a) == id (f a)
+
+H0 x • ap g p0 == ap f0 p0       • H0 y
+                  ap f (ap f₁ q) • α (f a')
+
+  H0 : ∀ (A0 B0 : Type) (x y : A0) (f0 g : A0 → B0) 
+       (H0 : f0 ~~ g) (p0 : x == y), H0 x • ap g p0 == ap f0 p0 • H0 y
+  ============================
+   (α (f a))⁻¹ • (ap f (ap f₁ q) • α (f a')) == q
+
+rewrite <- hott_2_4_3.
 bbb.
 
 Check (ap f r).
