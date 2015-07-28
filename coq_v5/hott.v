@@ -788,7 +788,9 @@ Theorem hott_2_2_2_ii {A B} : ∀ (f : A → B) x y (p : x == y),
   ap f (p⁻¹) = (ap f p)⁻¹.
 Proof. induction p; constructor. Qed.
 
-Definition hott_2_2_2_iii {A B C x y}
+(* Lemma 2.2.2 iii *)
+
+Definition ap_composite {A B C x y}
   : ∀ (f : A → B) (g : B → C) (p : x == y),
     ap g (ap f p) == ap (g ◦ f) p
   := λ f g p,
@@ -1927,7 +1929,7 @@ apply (existT _ g); subst g.
 unfold "◦", "~~", id; simpl.
 split; intros q.
  Focus 2.
- rewrite (hott_2_2_2_iii f f₁ q).
+ rewrite (ap_composite f f₁ q).
  destruct q; simpl.
  unfold "◦", "~~", id in β; simpl in β.
  unfold "◦"; simpl; rewrite β; reflexivity.
@@ -1940,14 +1942,18 @@ split; intros q.
   rewrite <- compose_assoc.
   unfold id, composite; simpl.
   pose proof (hott_2_4_3 (f ◦ f₁ ◦ f) f (λ a, α (f a)) r).
-  unfold "◦" in H; simpl in H.
-  rewrite H.
+  unfold "◦" in H; simpl in H; rewrite H.
+  apply (@compose _ _ ((α (f a))⁻¹ • (ap f (ap f₁ (ap f r)) • α (f a')))).
+   apply dotl, dotr.
+   rewrite (ap_composite f₁ f (ap f r)).
+   rewrite (ap_composite f (f ◦ f₁) r); reflexivity.
+
 bbb.
 
  do 2 rewrite hott_2_2_2_i.
 pose proof @hott_2_2_2_i A B.
 pose proof @hott_2_2_2_i A B f a (f₁ (f a)).
- rewrite (hott_2_2_2_iii f₁ f q).
+ rewrite (ap_composite f₁ f q).
 
 assert (∀ a, f a == f a) as H by reflexivity.
 pose proof (@hott_2_4_3 A B a a' f f H r).
