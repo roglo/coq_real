@@ -624,7 +624,9 @@ Proof.
 intros p; destruct p; reflexivity.
 Qed.
 
-Lemma hott_2_1_4_ii_2 {A} {x y : A} : ∀ (p : x == y), p • p⁻¹ == refl x.
+(* Lemma 2.1.4 ii_2 *)
+
+Lemma compose_invert {A} {x y : A} : ∀ (p : x == y), p • p⁻¹ == refl x.
 Proof.
 intros p; destruct p; reflexivity.
 Qed.
@@ -987,10 +989,10 @@ assert (ap f (H x) • H x == H (f x) • H x) as p.
    eapply compose in p; [ eassumption | apply hott_2_1_4_i_1 ].
 
    eapply dotl, invert.
-   eapply hott_2_1_4_ii_2; reflexivity.
+   eapply compose_invert; reflexivity.
 
   eapply dotl, invert.
-  eapply hott_2_1_4_ii_2; reflexivity.
+  eapply compose_invert; reflexivity.
 Qed.
 
 (* quasi-inverse *)
@@ -1010,7 +1012,7 @@ apply (existT _ (λ q, p⁻¹ • q)); split.
  intros t; unfold id, "◦"; simpl.
  eapply compose; [ idtac | apply invert, hott_2_1_4_i_2 ].
  eapply compose; [ apply compose_assoc | apply dotr ].
- apply hott_2_1_4_ii_2.
+ apply compose_invert.
 
  intros t; unfold id, "◦"; simpl.
  eapply compose; [ idtac | apply invert, hott_2_1_4_i_2 ].
@@ -1023,7 +1025,7 @@ Example ex_2_4_8_i A : ∀ x y z : A, ∀ (p : x == y),
   := λ x y z p,
      existT _ (compose p⁻¹)
        (λ t : x == z,
-        compose_assoc p p⁻¹ t • (hott_2_1_4_ii_2 p •r t)
+        compose_assoc p p⁻¹ t • (compose_invert p •r t)
         • (hott_2_1_4_i_2 t)⁻¹,
         λ t : y == z,
         compose_assoc p⁻¹ p t • (hott_2_1_4_ii_1 p •r t)
@@ -1042,7 +1044,7 @@ apply (existT _ (λ q, q • p⁻¹)); split.
  intros t; unfold id, "◦"; simpl.
  eapply compose; [ idtac | apply invert, hott_2_1_4_i_1 ].
  eapply compose; [ eapply invert, compose_assoc | apply dotl ].
- eapply hott_2_1_4_ii_2.
+ eapply compose_invert.
 Defined.
 
 Example ex_2_4_8_ii A : ∀ x y z : A, ∀ (p : x == y),
@@ -1053,7 +1055,7 @@ Example ex_2_4_8_ii A : ∀ x y z : A, ∀ (p : x == y),
         (compose_assoc t p⁻¹ p)⁻¹ • (t •l hott_2_1_4_ii_1 p)
         • (hott_2_1_4_i_1 t)⁻¹,
         λ t : z == x,
-        (compose_assoc t p p⁻¹)⁻¹ • (t •l hott_2_1_4_ii_2 p)
+        (compose_assoc t p p⁻¹)⁻¹ • (t •l compose_invert p)
         • (hott_2_1_4_i_1 t)⁻¹).
 
 Example ex_2_4_9_tac A x y : ∀ (p : x == y) (P : A → U), qinv (transport P p).
@@ -1957,7 +1959,18 @@ split; intros q.
 (*
 rewrite <- (ap_composite f f₁ r).
 *)
-Check @hott_2_4_3.
+    Check @hott_2_4_3.
+
+    Focus 2.
+    apply (@compose _ _ ((α (f a))⁻¹ • ap f (ap f₁ q) • α (f a'))).
+     apply dotr, dotl, ap; subst r.
+     do 2 rewrite compose_assoc.
+     rewrite compose_invert; simpl.
+     unfold id; simpl.
+     rewrite <- compose_assoc.
+     rewrite compose_invert; simpl.
+     rewrite <- ru; reflexivity.
+
 bbb.
 
 Check (ap f r).
