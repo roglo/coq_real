@@ -1941,10 +1941,43 @@ split; intros q.
 (* hott_2_4_3
      : ∀ (A B : Type) (x y : A) (f g : A → B) (H : f ~~ g)
        (p : x == y), H x • ap g p == ap f p • H y *)
+Check (λ a, (f ◦ f₁) (f a)).
+(* λ a : A, (f ◦ f₁) (f a) : A → B *)
+Check (α (f a))⁻¹.
+Check (ap f (ap f₁ (ap f r))).
+(* ap f (ap f₁ (ap f r)) : f (f₁ (f a)) == f (f₁ (f a')) *)
+Check (ap f₁ (ap f r) ).
+(* ap f₁ (ap f r) : f₁ (f a) == f₁ (f a') *)
+
+Check (ap (f ◦ f₁ ◦ f) r).
+Check (ap (λ a0 : A, (f ◦ f₁) (f a0)) r).
+
+pose proof (@hott_2_4_3 A B a a' (f ◦ f₁ ◦ f) f (λ a, α (f a)) r).
+(*
 pose proof (@hott_2_4_3 A B a a' (λ a, (f ◦ f₁) (f a)) f (λ a, α (f a)) r).
+*)
 simpl in H.
 unfold id; simpl.
+(*
+  H : α (f a) • ap f r == ap ((f ◦ f₁) ◦ f) r • α (f a')
+  ============================
+   (α (f a))⁻¹ • (α (f a) • ap f r) == q
+*)
+(*
+α (f a) • ap f r
+
+@compose B (@composite A B B f (@composite B A B f₁ f) a)
+  (f a) (f a') (α (f a)) (@ap A B a a' f r)
+  ============================
+@compose B (@composite B A B f₁ f (f a))
+  (f a) (f a') (α (f a)) (@ap A B a a' f r)
+*)
+
 rewrite H; simpl.
+
+ap f (ap f₁ (ap f r))
+ap (λ a0 : A, (f ◦ f₁) (f a0)) r
+
 bbb.
 
  do 2 rewrite hott_2_2_2_i.
