@@ -780,7 +780,9 @@ Definition ap {A B x y} (f : A → B) (p : x == y) : f x == f y :=
 Theorem hott_2_2_1 {A B} : ∀ (f : A → B) x, ap f (refl x) = refl (f x).
 Proof. constructor. Qed.
 
-Theorem hott_2_2_2_i {A B} : ∀ (f : A → B) x y z (p : x == y) (q : y == z),
+(* Lemma 2.2.2 i *)
+
+Theorem ap_compose {A B} : ∀ (f : A → B) x y z (p : x == y) (q : y == z),
   ap f (p • q) = ap f p • ap f q.
 Proof. induction p, q; constructor. Qed.
 
@@ -1951,19 +1953,29 @@ split; intros q.
    rewrite compose_assoc.
    rewrite (ap_composite f f₁ r).
    apply (@compose _ _ ((α (f a))⁻¹ • ap f (β a • r • (β a')⁻¹) • α (f a'))).
-   apply dotr, dotl, ap.
+    apply dotr, dotl, ap.
+(*
+    rewrite <- (ap_composite f f₁ r).
+*)
 bbb.
 
- do 2 rewrite hott_2_2_2_i.
-pose proof @hott_2_2_2_i A B.
-pose proof @hott_2_2_2_i A B f a (f₁ (f a)).
+Check (ap f r).
+Check @hott_2_4_3.
+subst r.
+do 2 rewrite ap_compose.
+
+bbb.
+
+ do 2 rewrite ap_compose.
+pose proof @ap_compose A B.
+pose proof @ap_compose A B f a (f₁ (f a)).
  rewrite (ap_composite f₁ f q).
 
 assert (∀ a, f a == f a) as H by reflexivity.
 pose proof (@hott_2_4_3 A B a a' f f H r).
 bbb.
 
- do 2 rewrite hott_2_2_2_i.
+ do 2 rewrite ap_compose.
 bbb.
 
 (* some experiments... *)
