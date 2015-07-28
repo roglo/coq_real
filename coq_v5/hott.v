@@ -1948,7 +1948,17 @@ split; intros q.
    rewrite (ap_composite f₁ f (ap f r)).
    rewrite (ap_composite f (f ◦ f₁) r); reflexivity.
 
-   rewrite compose_assoc; subst r.
+   rewrite compose_assoc.
+   rewrite (ap_composite f f₁ r).
+
+ap f₁ (ap f r)
+β a • r • (β a')⁻¹
+
+ap f₁ (ap f ((β a)⁻¹ • ap f₁ q • β a'))
+β a • (β a)⁻¹ • ap f₁ q • β a' • (β a')⁻¹
+
+   rewrite (ap_composite f₁ f (ap f r)).
+
 bbb.
 
  do 2 rewrite hott_2_2_2_i.
