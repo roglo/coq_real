@@ -1955,8 +1955,9 @@ split; intros q.
    apply (@compose _ _ ((α (f a))⁻¹ • ap f (β a • r • (β a')⁻¹) • α (f a'))).
     apply dotr, dotl, ap.
 (*
-    rewrite <- (ap_composite f f₁ r).
+rewrite <- (ap_composite f f₁ r).
 *)
+Check @hott_2_4_3.
 bbb.
 
 Check (ap f r).
