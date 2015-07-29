@@ -166,10 +166,10 @@ split; intros Hab.
  rewrite IHa; reflexivity.
 Qed.
 
-Theorem divmod_div : ∀ a b, fst (divmod a b 0 b) = (a / S b)%nat.
+Theorem divmod_div : ∀ a b, fst (Nat.divmod a b 0 b) = (a / S b)%nat.
 Proof. intros a b; reflexivity. Qed.
 
-Theorem divmod_mod : ∀ a b, b - snd (divmod a b 0 b) = (a mod S b)%nat.
+Theorem divmod_mod : ∀ a b, b - snd (Nat.divmod a b 0 b) = (a mod S b)%nat.
 Proof. intros a b; reflexivity. Qed.
 
 Theorem fold_sub_succ_l : ∀ a b,
@@ -179,7 +179,7 @@ Proof. reflexivity. Qed.
 Theorem Nat_mod_succ_diag_r_eq_0 : ∀ a, a mod S a = 0 → a = 0.
 Proof.
 intros a Ha.
-apply Nat.mod_divides in Ha; [ idtac | intros H; discriminate H ].
+apply Nat.mod_divides in Ha; [ idtac | intros H1; discriminate H1 ].
 destruct Ha as (c, Hc).
 rewrite Nat.mul_comm in Hc.
 destruct c; [ assumption | simpl in Hc ].
@@ -236,7 +236,7 @@ destruct b; [ exfalso; apply Hab; reflexivity | idtac ].
 remember (a mod S b) as c eqn:Hc .
 symmetry in Hc.
 destruct c.
- apply Nat.mod_divides in Hc; [ idtac | intros H; discriminate H ].
+ apply Nat.mod_divides in Hc; [ idtac | intros H1; discriminate H1 ].
  destruct Hc as (c, Hc).
  subst a; rewrite <- Nat.add_1_l, Nat.mul_comm.
  rewrite Nat.mod_add.
