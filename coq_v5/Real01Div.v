@@ -296,7 +296,10 @@ destruct (I_eqs_dec x 0%I) as [Hx| Hx].
 Qed.
 
 Theorem I_mul_2_div_2 : ∀ x, (I_mul_2 (I_div_2 x) == x)%I.
-Proof. intros x; destruct i; reflexivity. Qed.
+Proof.
+bbb.
+intros x; destruct x; reflexivity.
+Qed.
 
 Theorem I_div_eqs_compat_l : ∀ x y z, (x == y)%I → (x / z == y / z)%I.
 Proof.

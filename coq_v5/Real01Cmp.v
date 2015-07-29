@@ -143,7 +143,9 @@ destruct Hs1 as (Hn1, Ht1).
 symmetry in Ht1; revert Ht1; apply Digit.no_fixpoint_opp.
 Qed.
 
-Theorem I_le_antisym : Antisymmetric _ I_eq I_le.
+(* à voir : changé de la 8.4 à la 8.5 : ça ne compile plus *)
+
+Theorem I_le_antisym : ∀ x y, (x ≤ y)%I → (y ≤ x)%I → (x = y)%I.
 Proof.
 intros x y Hxy Hyx.
 unfold I_le in Hxy, Hyx.
@@ -318,7 +320,7 @@ destruct Hs1 as (Hn1, Ht1).
 symmetry in Ht1; revert Ht1; apply Digit.no_fixpoint_opp.
 Qed.
 
-Theorem I_ge_antisym : Antisymmetric _ I_eq I_ge.
+Theorem I_ge_antisym : ∀ x y, (x ≥ y)%I → (y ≥ x)%I → (x = y)%I.
 Proof.
 intros x y Hxy Hyx.
 apply I_le_antisym; intros H.

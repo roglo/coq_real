@@ -387,7 +387,9 @@ destruct (eq_nat_dec a (pred radix)) as [H2| H2].
   rewrite Nat.succ_pred; [ assumption | apply radix_neq_0 ].
 Qed.
 
-Theorem Nat_mod_add_divides : ∀ a b c, c ≠ 0 → (a + b) mod c = a → (c | b).
+Theorem Nat_mod_add_divides : ∀ a b c, c ≠ 0
+  → (a + b) mod c = a
+  → Nat.divide c b.
 Proof.
 intros a b c Hc Hab.
 apply Nat.div_mod with (x := a + b) in Hc.

@@ -2191,7 +2191,7 @@ symmetry in Ht1.
 revert Ht1; apply Digit.no_fixpoint_opp.
 Qed.
 
-Theorem R_le_antisym : Antisymmetric _ R_eq R_le.
+Theorem R_le_antisym : ∀ x y : ℝ, (x ≤ y)%R → (y ≤ x)%R → (x = y)%R.
 Proof.
 intros x y Hxy Hyx.
 unfold R_le in Hxy, Hyx.
@@ -2462,7 +2462,7 @@ symmetry in Ht1.
 revert Ht1; apply Digit.no_fixpoint_opp.
 Qed.
 
-Theorem R_ge_antisym : Antisymmetric _ R_eq R_ge.
+Theorem R_ge_antisym : ∀ x y, (x ≥ y)%R → (y ≥ x)%R → (x = y)%R.
 Proof.
 intros x y Hxy Hyx.
 apply R_le_antisym; intros H.
@@ -3024,6 +3024,7 @@ eapply R_add_compat in Hxyz; [ idtac | reflexivity ].
 rewrite R_add_comm in Hxyz; symmetry in Hxyz.
 rewrite R_add_comm in Hxyz; symmetry in Hxyz.
 do 2 rewrite <- R_add_assoc in Hxyz.
+bbb. (* worked in 8.4; does not work in 8.5; to be seen... *)
 rewrite fold_R_sub, R_sub_diag in Hxyz.
 do 2 rewrite R_add_0_r in Hxyz.
 assumption.

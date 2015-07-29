@@ -196,7 +196,7 @@ Proof.
 intros x y z i Hxy.
 unfold I_mul_i.
 unfold z_of_u.
-remember modulo as f; simpl; subst f.
+remember Nat.modulo as f; simpl; subst f.
 apply n2d_eq.
 apply summation_compat; intros k Hk; f_equal; f_equal; f_equal.
 apply I_eqs_mul_algo_compat_r; assumption.
