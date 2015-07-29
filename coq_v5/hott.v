@@ -1761,6 +1761,24 @@ pose proof (@univalence A B) as p.
 esplit; eassumption.
 Defined.
 
+(* funny thing about univalence axiom: it is equivalent to the axiom
+   where the middle ≃ is replaced by equality *)
+
+Theorem univ_eq : (∀ A B, (A ≃ B) ≃ (A == B)) → (∀ A B, (A ≃ B) == (A == B)).
+Proof.
+intros H A B.
+apply H.
+apply H.
+Qed.
+
+Theorem eq_univ : (∀ A B, (A ≃ B) == (A == B)) → (∀ A B, (A ≃ B) ≃ (A == B)).
+Proof.
+intros H A B.
+rewrite H.
+rewrite H.
+reflexivity.
+Qed.
+
 (* introduction rule *)
 
 Definition ua_tac {A B} : A ≃ B → A == B.
@@ -1998,21 +2016,6 @@ split; intros q.
     apply ap.
     do 2 rewrite ap_compose.
 rewrite <- compose_assoc.
-
-Theorem toto : (∀ A B, (A ≃ B) ≃ (A == B)) → (∀ A B, (A ≃ B) == (A == B)).
-Proof.
-intros H A B.
-apply H.
-apply H.
-Qed.
-
-Theorem titi : (∀ A B, (A ≃ B) == (A == B)) → (∀ A B, (A ≃ B) ≃ (A == B)).
-Proof.
-intros H A B.
-rewrite H.
-rewrite H.
-reflexivity.
-Qed.
 
 bbb.
 
