@@ -1,4 +1,5 @@
 (* experimentations on HoTT *)
+(* requires coq 8.5 *)
 
 Require Import Utf8 QArith.
 Require Import NPeano.
@@ -14,7 +15,7 @@ Notation "x == y" := (Id x y) (at level 70).
 
 Definition indiscernability {A} C (x y : A) (p : x == y) :=
   match p return (C x → C _) with
-  | refl => id
+  | refl _ => id
   end.
 
 Check @indiscernability.
@@ -35,7 +36,7 @@ intros A C c.
 exists
   (λ a _ p,
    match p return (C _ _ p) with
-   | refl => c a
+   | refl _ => c a
    end).
 reflexivity.
 Qed.
@@ -48,7 +49,7 @@ intros A a C c.
 exists
   (λ _ p,
    match p return (∀ D, D _ (refl _) → D _ p) with
-   | refl => λ _, id
+   | refl _ => λ _, id
    end C c).
 reflexivity.
 Qed.
@@ -94,9 +95,9 @@ Theorem verif_rec_AxB_eq_def : ∀ A B C (g : A → B → C) a b,
 Proof. reflexivity. Qed.
 
 Definition Σ_pr₁ {A B} (x : { y : A & B y }) : A :=
-  match x with existT a _ => a end.
+  match x with existT _ a _ => a end.
 Definition Σ_pr₂ {A B} (x : { y : A & B y }) : B (Σ_pr₁ x) :=
-  match x with existT _ b => b end.
+  match x with existT _ _ b => b end.
 
 Definition rec_Σ {A B C} (g : ∀ x : A, B x → C) x := g (Σ_pr₁ x) (Σ_pr₂ x).
 
@@ -116,7 +117,7 @@ Definition uupt {A B} (x : A * B) :=
 
 Definition ind_AxB {A B} C (g : ∀ x y, C (x, y)) (x : A * B) :=
   match uupt x return (C _ → C _) with
-  | refl => id
+  | refl _ => id
   end (g (AxB_pr₁ x) (AxB_pr₂ x)).
 
 Theorem verif_ind_AxB_eq_def : ∀ A B C (g : ∀ x y, C (x, y)) (a : A) (b : B),
@@ -130,7 +131,7 @@ Definition Σ_uupt {A B} (x : {y : A & B y}) :=
 Definition ind_Σ {A B} C (g : ∀ a (b : B a), C (existT _ a b))
     (x : {y : A & B y}) :=
   match Σ_uupt x with
-  | refl => id
+  | refl _ => id
   end (g (Σ_pr₁ x) (Σ_pr₂ x)).
 
 Theorem verif_ind_Σ_eq_def : ∀ A B C g (a : A) (b : B),
@@ -277,7 +278,7 @@ Qed.
 Definition ind_AxB'_2 {A B : U} C
      (H : Π (x : A), Π (y : B), C (AxB'_pair x y)) x :=
   match AxB'_pair_proj x in (_ == y) return (C y) with
-  | refl => H (AxB'_pr₁ x) (AxB'_pr₂ x)
+  | refl _ => H (AxB'_pr₁ x) (AxB'_pr₂ x)
   end.
 
 (* ind_AxB'_1
@@ -304,7 +305,7 @@ Definition ind_eqA {A} :
     → Π (x : A), Π (y : A), Π (p : x == y), C x y p
   := λ C c x y p,
      match p with
-     | refl => c x
+     | refl _ => c x
      end.
 
 Theorem ind_eqA_def_eq {A} : ∀ C c (x : A), ind_eqA C c x x (refl x) = c x.
@@ -317,7 +318,7 @@ Definition ind'_eqA {A} :
   → Π (x : A), Π (p : a == x), C x p
   := λ a C P x p,
      match p with
-     | refl => λ _ y, y
+     | refl _ => λ _ y, y
      end C P.
 
 Theorem ind'_eqA_def_eq {A} : ∀ (a : A) C c, ind'_eqA a C c a (refl a) = c.
@@ -504,8 +505,8 @@ Definition hott_ex_1_12_ii : ∀ A, A → notT (notT A) := λ A HA HnA, HnA HA.
 Definition hott_ex_1_12_iii : ∀ A B, orT (notT A) (notT B) → notT (andT A B) :=
   λ A B Hor Hand,
   match Hor with
-  | orT_introl Hna => Hna (andT_rect A B (λ _, A) (λ a _, a) Hand)
-  | orT_intror Hnb => Hnb (andT_rect A B (λ _, B) (λ _ b, b) Hand)
+  | orT_introl _ _ Hna => Hna (andT_rect A B (λ _, A) (λ a _, a) Hand)
+  | orT_intror _ _ Hnb => Hnb (andT_rect A B (λ _, B) (λ _ b, b) Hand)
   end.
 
 (* Exercise 1.13. Using propositions-as-types, derive the double negation
@@ -536,7 +537,7 @@ Definition hott_ex_1_13 : (∀ P, orT P (notT P))
 Definition path_induction {A} (C : Π (x : A), Π (y : A), Π (p : x == y), U)
     (c : Π (x : A), C x x (refl x)) (x y : A) (p : x == y) : C x y p :=
   match p return (C _ _ p) with
-  | refl => c x
+  | refl _ => c x
   end.
 
 Theorem path_induction_def : ∀ A (x : A) C c,
@@ -557,7 +558,7 @@ Qed.
 
 Definition invert {A} {x y : A} (p : x == y) : y == x :=
   match p with
-  | refl => refl x
+  | refl _ => refl x
   end.
 Notation "p '⁻¹'" := (invert p)
   (at level 8, left associativity, format "'[v' p ']' ⁻¹").
@@ -567,7 +568,7 @@ Proof. reflexivity. Qed.
 
 Definition compose {A} {x y z : A} (p : x == y) : y == z → x == z :=
   match p with
-  | refl => id
+  | refl _ => id
   end.
 Notation "p • q" := (compose p q) (at level 40, left associativity).
 
@@ -575,9 +576,9 @@ Notation "p • q" := (compose p q) (at level 40, left associativity).
 Definition compose2 {A} {x y z : A} (p : x == y) : y == z → x == z :=
   λ q,
   match p with
-  | refl =>
+  | refl _ =>
       match q in (_ == t) return (x == t) with
-      | refl => p
+      | refl _ => p
       end
  end.
 
@@ -586,15 +587,15 @@ Definition compose_compose2 {A} {x y z : A} : ∀ (p : x == y) (q : y == z),
     compose p q = compose2 p q :=
   λ p q,
   match q return (p • q = compose2 p q) with
-  | refl =>
+  | refl _ =>
       match p return (p • refl _ = compose2 p (refl _)) with
-      | refl => eq_refl
+      | refl _ => eq_refl
       end
   end.
 
 Theorem fold_compose : ∀ A (x y z : A) p,
    match p with
-   | refl => id
+   | refl _ => id
    end = @compose A x y z p.
 Proof. reflexivity. Qed.
 
@@ -609,14 +610,14 @@ Definition hott_2_1_4_i_1 {A} {x y : A} : ∀ (p : x == y),
     p == p • refl y
  := (λ (p : x == y),
      match p return (p == p • refl _) with
-     | refl => refl (refl x • refl x)
+     | refl _ => refl (refl x • refl x)
      end).
 
 Definition hott_2_1_4_i_2 {A} {x y : A} : ∀ (p : x == y),
     p == refl x • p
  := (λ (p : x == y),
    match p return (p == refl _ • p) with
-   | refl => refl (refl x • refl x)
+   | refl _ => refl (refl x • refl x)
    end).
 
 (* Lemma hott_2.1.4 ii_1 *)
@@ -656,7 +657,7 @@ Definition Ω2 {A} (a : A) := (refl a == refl a).
 Definition dotr {A} {a b c : A} {p q : a == b}
   (α : p == q) (r : b == c) : (p • r == q • r).
 Proof.
-induction r.
+destruct r.
 pose proof (@hott_2_1_4_i_1 A a b p) as H1.
 apply invert in H1.
 eapply compose; [ apply H1 | idtac ].
@@ -670,7 +671,7 @@ Notation "α '•r' r" := (dotr α r) (at level 50).
 Definition dotl {A} {a b c : A} {r s : b == c}
   (q : a == b) (β : r == s) : (q • r == q • s).
 Proof.
-induction q.
+destruct q.
 pose proof (@hott_2_1_4_i_2 A a c r) as H2.
 apply invert in H2.
 eapply compose; [ apply H2 | idtac ].
@@ -691,7 +692,7 @@ Theorem dotr_rupq {A} {a b : A} : ∀ (p q : a == b) α,
   α •r refl b == (ru p)⁻¹ • α • (ru q).
 Proof.
 intros.
-induction p, α; simpl.
+destruct p, α; simpl.
 reflexivity.
 Qed.
 
@@ -706,7 +707,7 @@ Theorem dotl_lurs {A} {b c : A} : ∀ (r s : b == c) β,
   refl b •l β == (lu r)⁻¹ • β • (lu s).
 Proof.
 intros.
-induction r, β; simpl.
+destruct r, β; simpl.
 reflexivity.
 Qed.
 
@@ -750,9 +751,9 @@ Theorem gen_star_star' {A} {a b c : A} {p q : a == b} {r s : b == c} : ∀ α β
   @star A a b c p q r s α β == @star' A a b c p q r s α β.
 Proof.
 intros.
-induction α as (p).
-induction β as (r).
-induction p, r.
+destruct α as (p).
+destruct β as (r).
+destruct p, r.
 unfold "★", "★'"; simpl.
 constructor.
 Qed.
@@ -778,7 +779,7 @@ Check @eckmann_hilton.
 
 Definition ap {A B x y} (f : A → B) (p : x == y) : f x == f y :=
   match p with
-  | refl => refl (f x)
+  | refl _ => refl (f x)
   end.
 
 Theorem hott_2_2_1 {A B} : ∀ (f : A → B) x, ap f (refl x) = refl (f x).
@@ -788,11 +789,11 @@ Proof. constructor. Qed.
 
 Theorem ap_compose {A B} : ∀ (f : A → B) x y z (p : x == y) (q : y == z),
   ap f (p • q) = ap f p • ap f q.
-Proof. induction p, q; constructor. Qed.
+Proof. destruct p, q; constructor. Qed.
 
 Theorem hott_2_2_2_ii {A B} : ∀ (f : A → B) x y (p : x == y),
   ap f (p⁻¹) = (ap f p)⁻¹.
-Proof. induction p; constructor. Qed.
+Proof. destruct p; constructor. Qed.
 
 (* Lemma 2.2.2 iii *)
 
@@ -800,17 +801,17 @@ Definition ap_composite {A B C x y}
   : ∀ (f : A → B) (g : B → C) (p : x == y),
     ap g (ap f p) == ap (g ◦ f) p
   := λ f g p,
-     match p with refl => refl (ap g (ap f (refl x))) end.
+     match p with refl _ => refl (ap g (ap f (refl x))) end.
 
 Definition hott_2_2_2_iv {A} {x y : A} : ∀ (p : x == y), ap id p == p
-  := λ p, match p with refl => refl (refl x) end.
+  := λ p, match p with refl _ => refl (refl x) end.
 
 (* hott section 2.3 *)
 
 (* p* = transport P p *)
 Definition transport {A} P {x y : A} (p : x == y) : P x → P y :=
   match p with
-  | refl => id
+  | refl _ => id
   end.
 
 Check @transport.
@@ -825,7 +826,7 @@ Notation "p '⁎'" := (transport _ p)
 Definition lift {A P} {x y : A} (u : P x) (p : x == y)
   : existT _ x u == existT _ y (transport P _ u)
   := match p with
-     | refl => refl (existT P x (transport P (refl x) u))
+     | refl _ => refl (existT P x (transport P (refl x) u))
      end.
 
 Check @lift.
@@ -864,7 +865,7 @@ The term "lift u p" has type "existT x u == existT y (transport P p u)"
 
 Definition apd {A P} f {x y : A} (p : x == y) : transport P p (f x) == f y :=
   match p with
-  | refl => refl (f x)
+  | refl _ => refl (f x)
   end.
 
 (* lemma hott_2_3_5 *)
@@ -873,7 +874,7 @@ Definition transportconst {A : U} {x y : A}
   : ∀ B (P := λ _, B) (p : x == y) (b : B), transport P p b == b
   := λ B (P := λ _, B) p b,
      match p return (transport P p b == b) with
-     | refl => refl b
+     | refl _ => refl b
      end.
 
 Check @transportconst.
@@ -890,16 +891,16 @@ Check @transportconst.
 
 Definition hott_2_3_8 A B (P := λ _ : A, B) (f : A → B) x y (p : x == y)
   : apd f p == transportconst B p (f x) • ap f p
-  := match p with refl => refl (apd f (refl x)) end.
+  := match p with refl _ => refl (apd f (refl x)) end.
 
 Definition hott_2_3_9 {A x y z} :
     ∀ (P : A → U) (p : x == y) (q : y == z) (u : P x),
     transport P q (transport P p u) == transport P (p • q) u :=
   λ P p q u,
   match q with
-  | refl =>
+  | refl _ =>
       match p with
-      | refl => refl (transport P (refl x • refl x) u)
+      | refl _ => refl (transport P (refl x • refl x) u)
       end
   end.
 
@@ -908,14 +909,14 @@ Definition hott_2_3_10 {A B x y} :
     transport (P ◦ f) p u == transport P (ap f p) u
  := λ f P p u,
     match p with
-    | refl => refl (transport P (ap f (refl x)) u)
+    | refl _ => refl (transport P (ap f (refl x)) u)
     end.
 
 Definition hott_2_3_11 {A x y} : ∀ (P Q : A → U) (f : Π (x : A), P x → Q x),
   ∀ (p : x == y) (u : P x), transport Q p (f x u) == f y (transport P p u)
   := λ P Q f p u,
      match p with
-     | refl => refl (f x (transport P (refl x) u))
+     | refl _ => refl (f x (transport P (refl x) u))
      end.
 
 (* hott section 2.4 - Homotopies and Equivalences *)
@@ -932,17 +933,17 @@ Definition homotopy_refl2 {A B} : Π (f : A → B), (f ~~ f) :=
 
 Definition homotopy_sym {A B} : symmetric _ (@homotopy A B) :=
   λ f g (p : f ~~ g) x,
-  match p x with refl => refl (f x) end.
+  match p x with refl _ => refl (f x) end.
 
 Definition homotopy_sym2 {A B} : Π (f : A → B), Π (g : A → B),
     (f ~~ g) → (g ~~ f) :=
   λ f g (p : f ~~ g) x,
-  match p x with refl => refl (f x) end.
+  match p x with refl _ => refl (f x) end.
 
 Definition homotopy_trans {A B} : transitive _ (@homotopy A B) :=
   λ f g h (p : f ~~ g) (q : g ~~ h) x,
   match q x with
-  | refl => p x
+  | refl _ => p x
   end.
 
 Definition homotopy_trans2 {A B}
@@ -950,7 +951,7 @@ Definition homotopy_trans2 {A B}
     (f ~~ g) → (g ~~ h) → (f ~~ h)
   := λ f g h (p : f ~~ g) (q : g ~~ h) x,
      match q x with
-     | refl => p x
+     | refl _ => p x
      end.
 
 Add Parametric Relation {A B} : _ (@homotopy A B)
@@ -963,13 +964,13 @@ Definition hott_2_4_3 {A B x y}
   : ∀ (f g : A → B) (H : f ~~ g) (p : x == y), H x • ap g p == ap f p • H y
   := λ f g H p,
      match p with
-     | refl =>
+     | refl _ =>
          match
            match H x as q return (q == q • refl _) with
-           | refl => refl (refl (f x) • refl (f x))
+           | refl _ => refl (refl (f x) • refl (f x))
            end
          with
-         | refl => refl (id (H x))
+         | refl _ => refl (id (H x))
          end
      end.
 
@@ -1012,12 +1013,12 @@ Proof.
 intros.
 apply (existT _ (λ q, p⁻¹ • q)); split.
  intros t; unfold id, "◦"; simpl.
- eapply compose; [ idtac | apply invert, hott_2_1_4_i_2 ].
+ eapply compose; [ idtac | eapply invert, hott_2_1_4_i_2 ].
  eapply compose; [ apply compose_assoc | apply dotr ].
  apply compose_invert.
 
  intros t; unfold id, "◦"; simpl.
- eapply compose; [ idtac | apply invert, hott_2_1_4_i_2 ].
+ eapply compose; [ idtac | eapply invert, hott_2_1_4_i_2 ].
  eapply compose; [ apply compose_assoc | apply dotr ].
  apply invert_compose.
 Qed.
@@ -1039,12 +1040,12 @@ Proof.
 intros.
 apply (existT _ (λ q, q • p⁻¹)); split.
  intros t; unfold id, "◦"; simpl.
- eapply compose; [ idtac | apply invert, hott_2_1_4_i_1 ].
+ eapply compose; [ idtac | eapply invert, hott_2_1_4_i_1 ].
  eapply compose; [ eapply invert, compose_assoc | apply dotl ].
  eapply invert_compose.
 
  intros t; unfold id, "◦"; simpl.
- eapply compose; [ idtac | apply invert, hott_2_1_4_i_1 ].
+ eapply compose; [ idtac | eapply invert, hott_2_1_4_i_1 ].
  eapply compose; [ eapply invert, compose_assoc | apply dotl ].
  eapply compose_invert.
 Defined.
@@ -1079,12 +1080,12 @@ Example ex_2_4_9 A x y : ∀ (p : x == y) (P : A → U), qinv (transport P p) :=
   (λ z : P y,
    hott_2_3_9 P p⁻¹ p z
    • match p return (∀ t, transport P (p⁻¹ • p) t == t) with
-     | refl => λ z0 : P x, refl z0
+     | refl _ => λ z0 : P x, refl z0
      end z,
    λ z : P x,
    hott_2_3_9 P p p⁻¹ z
    • match p return (transport P (p • p⁻¹) z == z) with
-     | refl => refl z
+     | refl _ => refl z
      end).
 
 Definition equiv_prop {A B} isequiv :=
@@ -1130,13 +1131,13 @@ Defined.
 Definition isequiv_qinv2 {A B} (f : A → B) : isequiv f → qinv f :=
   λ eqf,
   match eqf with
-  | (existT g Hg, existT h Hh) =>
+  | (existT _ g Hg, existT _ h Hh) =>
       existT _ g
        (Hg,
         λ x : A,
         refl (g (f x))
         • match Hh (g (f x)) with
-          | refl => refl (h (f (g (f x))))
+          | refl _ => refl (h (f (g (f x))))
           end
         • ap h (Hg (f x))
         • Hh x)
@@ -1145,7 +1146,7 @@ Definition isequiv_qinv2 {A B} (f : A → B) : isequiv f → qinv f :=
 Definition isequiv_qinv {A B} (f : A → B) : isequiv f → qinv f :=
   λ p,
   match p with
-  | (existT g Hg, existT h Hh) =>
+  | (existT _ g Hg, existT _ h Hh) =>
       existT _ g (Hg, λ x, ((ap h (Hg (f x)))⁻¹ • Hh (g (f x)))⁻¹ • Hh x)
   end.
 
@@ -1157,10 +1158,10 @@ split; [ apply isequiv_qinv | intros ].
 unfold isequiv in e₁, e₂.
 destruct e₁ as (H1, H2).
 destruct e₂ as (H3, H4).
-induction H1 as (g1, p1).
-induction H2 as (h1, q1).
-induction H3 as (g2, p2).
-induction H4 as (h2, q2).
+destruct H1 as (g1, p1).
+destruct H2 as (h1, q1).
+destruct H3 as (g2, p2).
+destruct H4 as (h2, q2).
 unfold "~~", id in p1, q1, p2, q2.
 unfold "~~", id.
 Abort. (* proof postponed, they say, to sections §2.6, §2.7 and §4.3...
@@ -1199,7 +1200,7 @@ Defined.
 Definition quasi_inv {A B} : A ≃ B → B ≃ A :=
   λ eqf,
   match eqf with
-  | existT f (existT g Hg, existT h Hh) =>
+  | existT _ f (existT _ g Hg, existT _ h Hh) =>
       existT isequiv g
         (existT _ f (λ x, (Hh (g (f x)))⁻¹ • ap h (Hg (f x)) • Hh x),
          existT _ f Hg)
@@ -1230,19 +1231,19 @@ Defined.
 Definition equiv_compose {A B C} : A ≃ B → B ≃ C → A ≃ C :=
   λ eqf eqg,
   match eqf with
-  | existT f (existT f₁ eqf₁, existT f₂ eqf₂) =>
+  | existT _ f (existT _ f₁ eqf₁, existT _ f₂ eqf₂) =>
       match eqg with
-      | existT g (existT g₁ eqg₁, existT g₂ eqg₂) =>
+      | existT _ g (existT _ g₁ eqg₁, existT _ g₂ eqg₂) =>
           existT _ (g ◦ f)
             (existT (λ h, (g ◦ f) ◦ h ~~ id) (f₁ ◦ g₁)
                (λ c,
                 match eqg₁ c with
-                | refl => ap g (eqf₁ (g₁ c))
+                | refl _ => ap g (eqf₁ (g₁ c))
                 end),
              existT (λ h, h ◦ (g ◦ f) ~~ id) (f₂ ◦ g₂)
                (λ a,
                 match eqf₂ a with
-                | refl => ap f₂ (eqg₂ (f a))
+                | refl _ => ap f₂ (eqg₂ (f a))
                 end))
       end
   end.
@@ -1263,7 +1264,7 @@ Definition transport_pair {A} B C x y (p : x == y) b c
   : transport (λ z : A, (B z * C z)%type) p (b, c) ==
     (transport B p b, transport C p c)
   := match p with
-     | refl => refl (transport B (refl x) b, transport C (refl x) c)
+     | refl _ => refl (transport B (refl x) b, transport C (refl x) c)
      end.
 
 (* 2.6 Cartesian product types *)
@@ -1318,13 +1319,13 @@ Qed.
 Definition ap_pr₁ {A B} {x y : A * B} : x == y → pr₁ x == pr₁ y :=
   λ p,
   match p in (_ == z) return (pr₁ x == pr₁ z) with
-  | refl => refl (pr₁ x)
+  | refl _ => refl (pr₁ x)
   end.
 
 Definition ap_pr₂ {A B} {x y : A * B} : x == y → pr₂ x == pr₂ y :=
   λ p,
   match p in (_ == z) return (pr₂ x == pr₂ z) with
-  | refl => refl (pr₂ x)
+  | refl _ => refl (pr₂ x)
   end.
 
 Theorem ap_pr₁_pair {A B} : ∀ (x y : A * B) (p : pr₁ x == pr₁ y) q,
@@ -1334,7 +1335,7 @@ intros.
 destruct x as (a, b).
 destruct y as (a', b').
 simpl in p, q.
-induction p, q; reflexivity.
+destruct p, q; reflexivity.
 Qed.
 
 Theorem ap_pr₂_pair {A B} : ∀ (x y : A * B) p (q : pr₂ x == pr₂ y),
@@ -1344,7 +1345,7 @@ intros.
 destruct x as (a, b).
 destruct y as (a', b').
 simpl in p, q.
-induction p, q; reflexivity.
+destruct p, q; reflexivity.
 Qed.
 
 Theorem pair_uniqueness {A B}  {x y : A * B} : ∀ (r : x == y),
@@ -1531,7 +1532,7 @@ apply (existT _ g); split.
  subst f g; simpl.
  unfold "◦"; simpl.
  intros x.
- refine (match x with refl => _ end).
+ refine (match x with refl _ => _ end).
  reflexivity.
 Qed.
 
@@ -1549,7 +1550,7 @@ Definition happly {A B} {f g : Π (x : A), B x}
   : f == g → Π (x : A), f x == g x
   := λ p,
      match p with
-     | refl => λ y, refl (f y)
+     | refl _ => λ y, refl (f y)
      end.
 
 Axiom extensionality : ∀ {A B} f g, isequiv (@happly A B f g).
@@ -1568,7 +1569,7 @@ Definition funext {A B} {f g : ∀ x : A, B x}
   : (∀ x : A, f x == g x) → f == g
   := λ p,
      match isequiv_qinv happly (extensionality f g) with
-     | existT h _ => h p
+     | existT _ h _ => h p
      end.
 
 Theorem funext_quasi_inverse_of_happly_tac {A B} :
@@ -1590,9 +1591,9 @@ Definition funext_quasi_inverse_of_happly {A B}
     happly (funext h) x == h x
   := λ f g h x,
      match isequiv_qinv happly (extensionality f g) as q
-     return (happly match q with existT k _ => k h end x == h x)
+     return (happly match q with existT _ k _ => k h end x == h x)
      with
-     | existT k (α, _) => happly (α h) x
+     | existT _ k (α, _) => happly (α h) x
      end.
 
 Theorem funext_prop_uniq_princ {A B} : ∀ (f g : Π (x : A), B x) (p : f == g),
@@ -1639,7 +1640,7 @@ Definition hott_2_9_4 {X A B} {x y : X}
      λ a, transport B p (f (transport A p⁻¹ a))
   := λ p f,
      match p with
-     | refl => refl _
+     | refl _ => refl _
      end.
 
 Definition pr₁ {A B} := @Σ_pr₁ A B.
@@ -1649,7 +1650,7 @@ Definition pair_eq {A B} {x y : A} (p : x == y)
   : ∀ u, existT B x u == existT B y (transport B p u)
   := λ u,
      match p with
-     | refl => refl (existT B x (transport B (refl x) u))
+     | refl _ => refl (existT B x (transport B (refl x) u))
      end.
 
 Notation "'pair⁼'" := pair_eq.
@@ -1663,7 +1664,7 @@ Definition hott_2_9_5 {X} {A : X → U} {B : Π (x : X), A x → U} {x y : X}
       λ a, transport B^ (pair⁼ p⁻¹ a)⁻¹ (f (transport A p⁻¹ a))
   := λ p f,
      match p with
-     | refl => refl _
+     | refl _ => refl _
      end.
 
 Lemma hott_2_9_6_i {X} {A B : X → U} {x y : X} (p : x == y) :
@@ -1744,7 +1745,7 @@ Defined.
 Definition isequiv_transport {A B} : ∀ (p : A == B), isequiv (transport id p)
   := λ p,
      match p with
-     | refl => (existT _ id refl, existT _ id refl)
+     | refl _ => (existT _ id refl, existT _ id refl)
      end.
 
 Definition idtoeqv {A B : U} : A == B → A ≃ B :=
@@ -1772,7 +1773,7 @@ Defined.
 
 Definition ua {A B} : A ≃ B → A == B :=
   match isequiv_qinv idtoeqv (univalence A B) with
-  | existT f _ => f
+  | existT _ f _ => f
   end.
 
 (* elimination rule = idtoeqv *)
@@ -1794,7 +1795,7 @@ Definition ua_pcr {A B}
   : ∀ (f : A ≃ B) (x : A), transport id (ua f) x == projT1 f x
   := λ f x,
      match idtoeqv_ua f with
-     | refl => refl (projT1 (idtoeqv (ua f)) x)
+     | refl _ => refl (projT1 (idtoeqv (ua f)) x)
      end.
 
 (* propositional uniqueness principle *)
@@ -1816,10 +1817,10 @@ Definition ua_pup {A B}
        (ua (idtoeqv p) == p
         → p == ua (existT isequiv (transport id p) (isequiv_transport p)))
      with
-     | refl =>
+     | refl _ =>
          λ q,
          match q in (_ == r) return (r == ua (ideqv A)) with
-         | refl => refl _
+         | refl _ => refl _
          end
      end (ua_idtoeqv p).
 
@@ -1839,9 +1840,9 @@ Definition ua_refl : ∀ A, refl A == ua (ideqv A) :=
   λ A,
   (λ p,
    match p with
-   | refl =>
+   | refl _ =>
        match ua_idtoeqv (refl A) in (_ == p) return (_ == p → _) with
-       | refl => id
+       | refl _ => id
        end (refl (refl A))
    end)
   (idtoeqv_refl A).
@@ -1862,7 +1863,7 @@ intros.
 set (p := ua f).
 set (q := ua g).
 transitivity (ua (idtoeqv q ◦◦ idtoeqv p)).
- transitivity (ua (idtoeqv (p • q))); [ symmetry; apply ua_idtoeqv | idtac ].
+ transitivity (ua (idtoeqv (p • q))); [ apply invert, ua_idtoeqv | idtac ].
  apply ap, idtoeqv_concat.
 
  subst p q.
@@ -2075,7 +2076,7 @@ bbb.
 
 destruct x.
 destruct f.
-induction i.
+destruct i.
 destruct a; simpl.
 destruct b; simpl.
 destruct i0.
