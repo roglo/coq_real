@@ -619,7 +619,9 @@ Definition hott_2_1_4_i_2 {A} {x y : A} : ∀ (p : x == y),
    | refl => refl (refl x • refl x)
    end).
 
-Lemma hott_2_1_4_ii_1 {A} {x y : A} : ∀ (p : x == y), p⁻¹ • p == refl y.
+(* Lemma hott_2.1.4 ii_1 *)
+
+Lemma invert_compose {A} {x y : A} : ∀ (p : x == y), p⁻¹ • p == refl y.
 Proof.
 intros p; destruct p; reflexivity.
 Qed.
@@ -1017,7 +1019,7 @@ apply (existT _ (λ q, p⁻¹ • q)); split.
  intros t; unfold id, "◦"; simpl.
  eapply compose; [ idtac | apply invert, hott_2_1_4_i_2 ].
  eapply compose; [ apply compose_assoc | apply dotr ].
- apply hott_2_1_4_ii_1.
+ apply invert_compose.
 Qed.
 
 Example ex_2_4_8_i A : ∀ x y z : A, ∀ (p : x == y),
@@ -1028,7 +1030,7 @@ Example ex_2_4_8_i A : ∀ x y z : A, ∀ (p : x == y),
         compose_assoc p p⁻¹ t • (compose_invert p •r t)
         • (hott_2_1_4_i_2 t)⁻¹,
         λ t : y == z,
-        compose_assoc p⁻¹ p t • (hott_2_1_4_ii_1 p •r t)
+        compose_assoc p⁻¹ p t • (invert_compose p •r t)
         • (hott_2_1_4_i_2 t)⁻¹).
 
 Example ex_2_4_8_ii_tac A : ∀ x y z : A, ∀ (p : x == y),
@@ -1039,7 +1041,7 @@ apply (existT _ (λ q, q • p⁻¹)); split.
  intros t; unfold id, "◦"; simpl.
  eapply compose; [ idtac | apply invert, hott_2_1_4_i_1 ].
  eapply compose; [ eapply invert, compose_assoc | apply dotl ].
- eapply hott_2_1_4_ii_1.
+ eapply invert_compose.
 
  intros t; unfold id, "◦"; simpl.
  eapply compose; [ idtac | apply invert, hott_2_1_4_i_1 ].
@@ -1052,7 +1054,7 @@ Example ex_2_4_8_ii A : ∀ x y z : A, ∀ (p : x == y),
   := λ x y z p,
      existT _ (λ q, q • p⁻¹)
        (λ t : z == y,
-        (compose_assoc t p⁻¹ p)⁻¹ • (t •l hott_2_1_4_ii_1 p)
+        (compose_assoc t p⁻¹ p)⁻¹ • (t •l invert_compose p)
         • (hott_2_1_4_i_1 t)⁻¹,
         λ t : z == x,
         (compose_assoc t p p⁻¹)⁻¹ • (t •l compose_invert p)
@@ -1938,14 +1940,13 @@ split; intros q.
  unfold "◦", "~~", id in β; simpl in β.
  unfold "◦"; simpl; rewrite β; reflexivity.
 
- set (r :=
-     (@compose _ _ _ a' (@invert _ (f₁ (f a)) a (β a) • (ap f₁ q)) (β a'))).
+ set (r := @compose _ _ _ a' (@invert _ (f₁ (f a)) a (β a) • ap f₁ q) (β a')).
  apply (@compose _ _ ((α (f a))⁻¹ • α (f a) • ap f r)).
-  rewrite hott_2_1_4_ii_1; reflexivity.
+  rewrite invert_compose; reflexivity.
 
   rewrite <- compose_assoc.
   unfold id, composite; simpl.
-  pose proof (hott_2_4_3 (f ◦ f₁ ◦ f) f (λ a, α (f a)) r).
+  pose proof (hott_2_4_3 ((f ◦ f₁) ◦ f) f (λ a, α (f a)) r).
   unfold "◦" in H; simpl in H; rewrite H.
   apply (@compose _ _ ((α (f a))⁻¹ • (ap f (ap f₁ (ap f r)) • α (f a')))).
    apply dotl, dotr.
@@ -1955,12 +1956,6 @@ split; intros q.
    rewrite compose_assoc.
    rewrite (ap_composite f f₁ r).
    apply (@compose _ _ ((α (f a))⁻¹ • ap f (β a • r • (β a')⁻¹) • α (f a'))).
-    apply dotr, dotl, ap.
-(*
-rewrite <- (ap_composite f f₁ r).
-*)
-    Check @hott_2_4_3.
-
     Focus 2.
     apply (@compose _ _ ((α (f a))⁻¹ • ap f (ap f₁ q) • α (f a'))).
      apply dotr, dotl, ap; subst r.
@@ -1971,15 +1966,26 @@ rewrite <- (ap_composite f f₁ r).
      rewrite compose_invert; simpl.
      rewrite <- ru; reflexivity.
 
-unfold id, composite; simpl.
+     assert (α (f a) • q == ap (f ◦ f₁) q • α (f a')) as H1.
+      rewrite <- (hott_2_4_3 (f ◦ f₁) id α q).
+      apply dotl, invert, hott_2_2_2_iv.
+
+      unfold id, composite; simpl.
+      pose proof (@ap_composite B A B (f a) (f a') f₁ f q) as H2.
+      rewrite H2.
+      rewrite <- compose_assoc.
+      unfold id, composite in H1; simpl in H1.
+      unfold composite; simpl.
+      rewrite <- H1.
+      rewrite compose_assoc, invert_compose.
+      reflexivity.
+
+    apply dotr, dotl, ap.
 bbb.
 
      rewrite <- compose_assoc.
 
 Check @hott_2_4_3.
-(* hott_2_4_3
-     : ∀ (A B : Type) (x y : A) (f g : A → B) (H : f ~~ g) 
-       (p : x == y), H x • ap g p == ap f p • H y *)
 pose proof @hott_2_4_3 A B a a' f (f ◦ f₁ ◦ f).
 Check (λ a, α (f a)).
 λ a : A, α (f a)
