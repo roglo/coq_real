@@ -1990,6 +1990,36 @@ split; intros q.
     rewrite <- ru.
     rewrite compose_assoc.
     unfold composite at 1 2; simpl.
+    pose proof ap_composite f f₁ ((β a)⁻¹ • ap f₁ q • β a') as H1.
+    unfold id in H1; simpl in H1.
+    unfold composite at 1 2 4 5 in H1.
+    rewrite <- H1.
+    apply ap.
+    do 2 rewrite ap_compose.
+rewrite <- compose_assoc.
+bbb.
+
+(* hott_2_4_3
+     : ∀ (A B : Type) (x y : A) (f g : A → B) (H : f ~~ g) 
+       (p : x == y), H x • ap g p == ap f p • H y *)
+assert (f ~~ f) by reflexivity.
+pose proof @hott_2_4_3 A B (f₁ (f a)) (f₁ (f a')) f f H0 (ap f₁ q).
+Check (ap f (β a')).
+Check (H0 (f₁ (f a'))).
+H0 (f₁ (f a'))
+     : f (f₁ (f a')) == f (f₁ (f a'))
+
+ap f (β a')
+     : f ((f₁ ◦ f) a') == f (id a')
+Check (ap f₁ q).
+
+ap f p         • H y
+ap f (ap f₁ q) • ap f (β a')
+
+rewrite <- hott_2_4_3.
+bbb.
+  ============================
+   ap f ((β a)⁻¹ • ap f₁ q • β a') == q
 bbb.
 
     do 2 rewrite ap_compose.
