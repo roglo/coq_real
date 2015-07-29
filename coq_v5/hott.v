@@ -2014,9 +2014,46 @@ split; intros q.
     unfold composite at 1 2 4 5 in H1.
     rewrite <- H1.
     apply ap.
+(*
     do 2 rewrite ap_compose.
 rewrite <- compose_assoc.
+*)
+assert (a == a') as r.
+Check @ap.
+clear H H1.
+apply (ap f₁) in q.
+unfold "◦", "~~", id in α, β.
+do 2 rewrite β in q.
+apply q.
 
+assert (β a • r == ap f₁ q • β a').
+bbb.
+  r : a == a'
+  ============================
+   β a • r == ap f₁ q • β a'
+
+Focus 2.
+rewrite <- compose_assoc.
+unfold id, composite; simpl.
+unfold id, composite in H0; simpl in H0.
+rewrite <- H0.
+rewrite compose_assoc.
+rewrite invert_compose; simpl.
+unfold id; simpl.
+(*
+  ============================
+   ap f r == q
+*)
+bbb.
+
+
+Check ((β a)⁻¹).
+Check (ap f₁ q).
+Check ((β a)⁻¹ • ap f₁ q).
+(* a == f₁ (f a') *)
+Check (refl a').
+Check ((β a')⁻¹).
+Check (refl a' • (β a')⁻¹).
 bbb.
 
 (* hott_2_4_3
