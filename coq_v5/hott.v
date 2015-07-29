@@ -1981,44 +1981,19 @@ split; intros q.
       reflexivity.
 
     apply dotr, dotl, ap.
+    subst r.
+    do 2 rewrite compose_assoc.
+    rewrite compose_invert; simpl.
+    unfold id; simpl.
+    do 2 rewrite <- compose_assoc.
+    rewrite compose_invert; simpl.
+    rewrite <- ru.
+    rewrite compose_assoc.
+    unfold composite at 1 2; simpl.
 bbb.
 
-     rewrite <- compose_assoc.
-
-Check @hott_2_4_3.
-pose proof @hott_2_4_3 A B a a' f (f ◦ f₁ ◦ f).
-Check (λ a, α (f a)).
-λ a : A, α (f a)
-     : ∀ a : A, (f ◦ f₁) (f a) == id (f a)
-
-H0 x • ap g p0 == ap f0 p0       • H0 y
-                  ap f (ap f₁ q) • α (f a')
-
-  H0 : ∀ (A0 B0 : Type) (x y : A0) (f0 g : A0 → B0) 
-       (H0 : f0 ~~ g) (p0 : x == y), H0 x • ap g p0 == ap f0 p0 • H0 y
-  ============================
-   (α (f a))⁻¹ • (ap f (ap f₁ q) • α (f a')) == q
-
-rewrite <- hott_2_4_3.
-bbb.
-
-Check (ap f r).
-Check @hott_2_4_3.
-subst r.
-do 2 rewrite ap_compose.
-
-bbb.
-
- do 2 rewrite ap_compose.
-pose proof @ap_compose A B.
-pose proof @ap_compose A B f a (f₁ (f a)).
- rewrite (ap_composite f₁ f q).
-
-assert (∀ a, f a == f a) as H by reflexivity.
-pose proof (@hott_2_4_3 A B a a' f f H r).
-bbb.
-
- do 2 rewrite ap_compose.
+    do 2 rewrite ap_compose.
+    rewrite (ap_composite f₁ (f₁ ◦ f) q).
 bbb.
 
 (* some experiments... *)
