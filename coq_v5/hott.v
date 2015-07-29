@@ -1997,6 +1997,22 @@ split; intros q.
     apply ap.
     do 2 rewrite ap_compose.
 rewrite <- compose_assoc.
+
+Theorem toto : (∀ A B, (A ≃ B) ≃ (A == B)) → (∀ A B, (A ≃ B) == (A == B)).
+Proof.
+intros H A B.
+apply H.
+apply H.
+Qed.
+
+Theorem titi : (∀ A B, (A ≃ B) == (A == B)) → (∀ A B, (A ≃ B) ≃ (A == B)).
+Proof.
+intros H A B.
+rewrite H.
+rewrite H.
+reflexivity.
+Qed.
+
 bbb.
 
 (* hott_2_4_3
