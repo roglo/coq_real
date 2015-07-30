@@ -1942,7 +1942,6 @@ Theorem hott_2_11_1 {A B} : ∀ (f : A → B), isequiv f → ∀ (a a' : A),
   (a == a') ≃ (f a == f a').
 Proof.
 intros f Hf a a'.
-assert (A ≃ B) as p by apply (existT _ f Hf).
 apply (existT _ (@ap A B a a' f)).
 apply isequiv_qinv in Hf.
 destruct Hf as (f₁, (α, β)).
@@ -1953,12 +1952,6 @@ unfold "◦", id in g; simpl in g.
 apply (existT _ g); subst g.
 unfold "◦", "~~", id; simpl.
 split; intros q.
- Focus 2.
- rewrite (ap_composite f f₁ q).
- destruct q; simpl.
- unfold "◦", "~~", id in β; simpl in β.
- unfold "◦"; simpl; rewrite β; reflexivity.
-
  set (r := @compose _ _ _ a' (@invert _ (f₁ (f a)) a (β a) • ap f₁ q) (β a')).
  apply (@compose _ _ ((α (f a))⁻¹ • α (f a) • ap f r)).
   rewrite invert_compose; reflexivity.
@@ -2002,6 +1995,11 @@ split; intros q.
       rewrite <- H1.
       rewrite compose_assoc, invert_compose.
       reflexivity.
+
+ rewrite (ap_composite f f₁ q).
+ destruct q; simpl.
+ unfold "◦", "~~", id in β; simpl in β.
+ unfold "◦"; simpl; rewrite β; reflexivity.
 Defined.
 
 bbb.
