@@ -1728,6 +1728,8 @@ apply existT with (x := happly).
 apply extensionality.
 Qed.
 
+End Π_type.
+
 (* 2.10 Universes and the univalence axiom *)
 
 (* lemma 2.10.1 *)
@@ -2005,7 +2007,24 @@ split; intros q.
  unfold "◦"; simpl; rewrite β; reflexivity.
 Defined.
 
+Module cartesian2.
+
+(* Paths p = q, where p,q : w =_{AxB} w', are equivalent to pairs of
+   paths
+       ap_{pr₁} p =_{pr₁ w =_A pr₁ w'} ap_{pr₁} q
+       ap_{pr₂} p =_{pr₂ w =_A pr₂ w'} ap_{pr₂} q *)
+
+Definition pr₁ {A B} := @AxB_pr₁ A B.
+Definition pr₂ {A B} := @AxB_pr₂ A B.
+
+Theorem aaa {A B} {w w' : A * B} : ∀ (p q : w == w'),
+  (p == q) ≃ ((ap pr₁ p == ap pr₁ q) * (ap pr₂ p == ap pr₂ q)).
+Proof.
+intros.
+Inspect 4.
 bbb.
+
+End cartesian2.
 
 (* some experiments... *)
 
