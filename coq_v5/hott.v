@@ -2017,75 +2017,36 @@ Module cartesian2.
 Definition pr₁ {A B} := @AxB_pr₁ A B.
 Definition pr₂ {A B} := @AxB_pr₂ A B.
 
-Definition titi {A B} : ∀ (a b : A) (c d : B),
-  (a, c) == (b, d) → (a == b) * (c == d).
-Proof.
-intros.
-split.
-bbb.
-
-intros.
-inversion H.
-subst; split; reflexivity.
-Defined.
-
-Definition titi {A B} : ∀ (a b : A) (c d : B),
+Definition pair_eq_split {A B} : ∀ (a b : A) (c d : B),
   (a, c) == (b, d) → (a == b) * (c == d)
-:= λ (a b : A) (c d : B) (H : (a, c) == (b, d)),
-match H with
-| refl _ =>
-    λ H1 : (a, c) = (b, d),
-     (λ H y H0,
-      eq_ind b (λ y0, (λ a0, c = d → (a0 == b) * (c == d)) y0)
-        H y (eq_sym H0))
- 
-      (λ H6 : c = d,
-       (λ H7 : c = d,
-        eq_ind_r (λ b0 : B, ((b == b) * (b0 == d))%type)
-          (eq_ind_r (λ c0 : B, (a, c0) == (b, d) → (b == b) * (d == d))
-             (λ H8 : (a, d) == (b, d),
-              eq_ind_r (λ a0 : A, (a0, d) == (b, d) → (b == b) * (d == d))
-                (λ _ : (b, d) == (b, d), (refl b, refl d))
-                (f_equal (λ e : A * B, let (a0, _) := e in a0) H1) H8) H6 H)
-          H7) H6) a (f_equal (λ e : A * B, let (a0, _) := e in a0) H1)
-      (f_equal (λ e : A * B, let (_, b0) := e in b0) H1)
-end eq_refl.
+:= λ a b c d H, (cartesian.ap_pr₁ H, cartesian.ap_pr₂ H).
 
-Print eq_ind_r.
-eq_ind_r = 
-λ (A : Type) (x : A) (P : A → Prop) (H : P x) (y : A) 
-(H0 : y = x), eq_ind x (λ y0 : A, P y0) H y (eq_sym H0)
-     : ∀ (A : Type) (x : A) (P : A → Prop), P x → ∀ y : A, y = x → P y
-
-Arguments A, x, y are implicit
-Argument scopes are [type_scope _ _ _ _ _]
-
- intros.
- inversion H.
- subst; split; reflexivity.
+Definition split_pair_eq {A B} : ∀ (a b : A) (c d : B),
+  (a == b) * (c == d) → (a, c) == (b, d)
+:= λ a b c d H,
+   match pr₁ H with
+   | refl _ =>
+       match pr₂ H with
+       | refl _ => refl (a, c)
+       end
+   end.
 
 Lemma toto {A B} : ∀ (a b : A) (c d : B),
   ((a, c) == (b, d)) ≃ (a == b) * (c == d).
 Proof.
 intros.
 unfold equivalence.
-assert (f : (a, c) == (b, d) → (a == b) * (c == d)).
- intros.
- inversion H.
- subst; split; reflexivity.
+apply (existT _ (split_pair_eq a b c d)).
+apply qinv_isequiv.
+unfold qinv.
+assert (g : (a == b) * (c == d) → (a, c) == (b, d)).
+ intros H.
+ destruct H as (Ha, Hc).
+ rewrite Ha, Hc; reflexivity.
 
- apply (existT _ f).
- apply qinv_isequiv.
- unfold qinv.
- assert (g : (a == c) * (b == d) → (a, b) == (c, d)).
-  intros H.
-  destruct H as (Ha, Hc).
-  rewrite Ha, Hc; reflexivity.
-
-  apply (existT _ g).
-  split.
-   intros x; unfold "◦", id; simpl.
-SearchAbout AxB_pr₁.
+ apply (existT _ g).
+ split.
+  intros x; unfold "◦", id; simpl.
 bbb.
 
 Theorem aaa {A B} {w w' : A * B} : ∀ (p q : w == w'),
