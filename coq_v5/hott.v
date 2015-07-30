@@ -1982,7 +1982,7 @@ split; intros q.
      rewrite compose_invert; simpl.
      rewrite <- ru; reflexivity.
 
-     assert (α (f a) • q == ap (f ◦ f₁) q • α (f a')) as H1.
+     assert (H1 : α (f a) • q == ap (f ◦ f₁) q • α (f a')).
       rewrite <- (hott_2_4_3 (f ◦ f₁) id α q).
       apply dotl, invert, hott_2_2_2_iv.
 
