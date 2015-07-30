@@ -2017,10 +2017,45 @@ Module cartesian2.
 Definition pr₁ {A B} := @AxB_pr₁ A B.
 Definition pr₂ {A B} := @AxB_pr₂ A B.
 
+Lemma toto {A} : ∀ a b c d : A, ((a, b) == (c, d)) ≃ (a == c) * (b == d).
+Proof.
+intros.
+unfold equivalence.
+assert (f : (a, b) == (c, d) → (a == c) * (b == d)).
+ intros.
+ inversion H.
+ subst; split; reflexivity.
+
+ apply (existT _ f).
+ apply qinv_isequiv.
+ unfold qinv.
+ assert (g : (a == c) * (b == d) → (a, b) == (c, d)).
+  intros H.
+  destruct H as (Ha, Hc).
+  rewrite Ha, Hc; reflexivity.
+
+  apply (existT _ g).
+  split.
+   intros x; unfold "◦", id; simpl.
+bbb.
+
 Theorem aaa {A B} {w w' : A * B} : ∀ (p q : w == w'),
   (p == q) ≃ ((ap pr₁ p == ap pr₁ q) * (ap pr₂ p == ap pr₂ q)).
 Proof.
 intros.
+set (f := λ a : w == w', (ap pr₁ a, ap pr₂ a)).
+assert (H1 : isequiv f).
+Focus 2.
+pose proof @hott_2_11_1 _ _ f H1 p q as H.
+subst f; simpl in H.
+eapply equiv_compose; [ eassumption | idtac ].
+bbb.
+
+SearchAbout (_ ≃ _ ).
+
+SearchAbout (_ ≃ _ → _ ≃ _ → _ ≃ _).
+eapply equiv_compose.
+eapply hott_2_11_1.
 Check @hott_2_11_1.
 bbb.
 
