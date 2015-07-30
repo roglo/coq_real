@@ -2017,11 +2017,59 @@ Module cartesian2.
 Definition pr₁ {A B} := @AxB_pr₁ A B.
 Definition pr₂ {A B} := @AxB_pr₂ A B.
 
-Lemma toto {A} : ∀ a b c d : A, ((a, b) == (c, d)) ≃ (a == c) * (b == d).
+Definition titi {A B} : ∀ (a b : A) (c d : B),
+  (a, c) == (b, d) → (a == b) * (c == d).
+Proof.
+intros.
+split.
+bbb.
+
+intros.
+inversion H.
+subst; split; reflexivity.
+Defined.
+
+Definition titi {A B} : ∀ (a b : A) (c d : B),
+  (a, c) == (b, d) → (a == b) * (c == d)
+:= λ (a b : A) (c d : B) (H : (a, c) == (b, d)),
+match H with
+| refl _ =>
+    λ H1 : (a, c) = (b, d),
+     (λ H y H0,
+      eq_ind b (λ y0, (λ a0, c = d → (a0 == b) * (c == d)) y0)
+        H y (eq_sym H0))
+ 
+      (λ H6 : c = d,
+       (λ H7 : c = d,
+        eq_ind_r (λ b0 : B, ((b == b) * (b0 == d))%type)
+          (eq_ind_r (λ c0 : B, (a, c0) == (b, d) → (b == b) * (d == d))
+             (λ H8 : (a, d) == (b, d),
+              eq_ind_r (λ a0 : A, (a0, d) == (b, d) → (b == b) * (d == d))
+                (λ _ : (b, d) == (b, d), (refl b, refl d))
+                (f_equal (λ e : A * B, let (a0, _) := e in a0) H1) H8) H6 H)
+          H7) H6) a (f_equal (λ e : A * B, let (a0, _) := e in a0) H1)
+      (f_equal (λ e : A * B, let (_, b0) := e in b0) H1)
+end eq_refl.
+
+Print eq_ind_r.
+eq_ind_r = 
+λ (A : Type) (x : A) (P : A → Prop) (H : P x) (y : A) 
+(H0 : y = x), eq_ind x (λ y0 : A, P y0) H y (eq_sym H0)
+     : ∀ (A : Type) (x : A) (P : A → Prop), P x → ∀ y : A, y = x → P y
+
+Arguments A, x, y are implicit
+Argument scopes are [type_scope _ _ _ _ _]
+
+ intros.
+ inversion H.
+ subst; split; reflexivity.
+
+Lemma toto {A B} : ∀ (a b : A) (c d : B),
+  ((a, c) == (b, d)) ≃ (a == b) * (c == d).
 Proof.
 intros.
 unfold equivalence.
-assert (f : (a, b) == (c, d) → (a == c) * (b == d)).
+assert (f : (a, c) == (b, d) → (a == b) * (c == d)).
  intros.
  inversion H.
  subst; split; reflexivity.
@@ -2037,6 +2085,7 @@ assert (f : (a, b) == (c, d) → (a == c) * (b == d)).
   apply (existT _ g).
   split.
    intros x; unfold "◦", id; simpl.
+SearchAbout AxB_pr₁.
 bbb.
 
 Theorem aaa {A B} {w w' : A * B} : ∀ (p q : w == w'),
