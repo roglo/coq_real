@@ -2021,7 +2021,7 @@ Theorem aaa {A B} {w w' : A * B} : ∀ (p q : w == w'),
   (p == q) ≃ ((ap pr₁ p == ap pr₁ q) * (ap pr₂ p == ap pr₂ q)).
 Proof.
 intros.
-Inspect 4.
+Check @hott_2_11_1.
 bbb.
 
 End cartesian2.
