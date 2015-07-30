@@ -1954,18 +1954,21 @@ unfold "◦", "~~", id; simpl.
 split; intros q.
  set (r := @compose _ _ _ a' (@invert _ (f₁ (f a)) a (β a) • ap f₁ q) (β a')).
  apply (@compose _ _ ((α (f a))⁻¹ • α (f a) • ap f r)).
-  rewrite invert_compose; reflexivity.
+  eapply compose; [ apply lu | idtac ].
+  apply dotr, invert, invert_compose.
 
-  rewrite <- compose_assoc.
+  eapply compose; [ eapply invert, compose_assoc | idtac ].
   unfold id, composite; simpl.
-  pose proof (hott_2_4_3 ((f ◦ f₁) ◦ f) f (λ a, α (f a)) r).
-  unfold "◦" in H; simpl in H; rewrite H.
+  pose proof (hott_2_4_3 ((f ◦ f₁) ◦ f) f (λ a, α (f a)) r) as H.
+  unfold "◦" in H; simpl in H.
+  eapply compose; [ eapply dotl, H | simpl ].
   apply (@compose _ _ ((α (f a))⁻¹ • (ap f (ap f₁ (ap f r)) • α (f a')))).
    apply dotl, dotr.
-   rewrite (ap_composite f₁ f (ap f r)).
-   rewrite (ap_composite f (f ◦ f₁) r); reflexivity.
+   apply (@compose _ _ (ap (f ◦ f₁ ◦ f) r)); [ reflexivity | idtac ].
+   eapply invert, compose; [ idtac | eapply ap_composite ].
+   eapply compose; [ apply (ap_composite f₁ f (ap f r)) | reflexivity ].
 
-   rewrite compose_assoc.
+   eapply compose; [ apply compose_assoc | idtac ].
    rewrite (ap_composite f f₁ r).
    apply (@compose _ _ ((α (f a))⁻¹ • ap f (β a • r • (β a')⁻¹) • α (f a'))).
     apply dotr, dotl, ap.
