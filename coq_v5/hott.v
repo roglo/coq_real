@@ -1975,7 +1975,11 @@ split; intros q.
    rewrite compose_assoc.
    rewrite (ap_composite f f₁ r).
    apply (@compose _ _ ((α (f a))⁻¹ • ap f (β a • r • (β a')⁻¹) • α (f a'))).
-    Focus 2.
+    apply dotr, dotl, ap.
+    rewrite r; simpl.
+    rewrite <- ru, compose_invert.
+    reflexivity.
+
     apply (@compose _ _ ((α (f a))⁻¹ • ap f (ap f₁ q) • α (f a'))).
      apply dotr, dotl, ap; subst r.
      do 2 rewrite compose_assoc.
@@ -1998,89 +2002,8 @@ split; intros q.
       rewrite <- H1.
       rewrite compose_assoc, invert_compose.
       reflexivity.
+Defined.
 
-    apply dotr, dotl, ap.
-    subst r.
-    do 2 rewrite compose_assoc.
-    rewrite compose_invert; simpl.
-    unfold id; simpl.
-    do 2 rewrite <- compose_assoc.
-    rewrite compose_invert; simpl.
-    rewrite <- ru.
-    rewrite compose_assoc.
-    unfold composite at 1 2; simpl.
-    pose proof ap_composite f f₁ ((β a)⁻¹ • ap f₁ q • β a') as H1.
-    unfold id in H1; simpl in H1.
-    unfold composite at 1 2 4 5 in H1.
-    rewrite <- H1.
-    apply ap.
-(*
-    do 2 rewrite ap_compose.
-rewrite <- compose_assoc.
-*)
-assert (a == a') as r.
-Check @ap.
-clear H H1.
-apply (ap f₁) in q.
-unfold "◦", "~~", id in α, β.
-do 2 rewrite β in q.
-apply q.
-
-assert (β a • r == ap f₁ q • β a').
-bbb.
-  r : a == a'
-  ============================
-   β a • r == ap f₁ q • β a'
-
-Focus 2.
-rewrite <- compose_assoc.
-unfold id, composite; simpl.
-unfold id, composite in H0; simpl in H0.
-rewrite <- H0.
-rewrite compose_assoc.
-rewrite invert_compose; simpl.
-unfold id; simpl.
-(*
-  ============================
-   ap f r == q
-*)
-bbb.
-
-
-Check ((β a)⁻¹).
-Check (ap f₁ q).
-Check ((β a)⁻¹ • ap f₁ q).
-(* a == f₁ (f a') *)
-Check (refl a').
-Check ((β a')⁻¹).
-Check (refl a' • (β a')⁻¹).
-bbb.
-
-(* hott_2_4_3
-     : ∀ (A B : Type) (x y : A) (f g : A → B) (H : f ~~ g) 
-       (p : x == y), H x • ap g p == ap f p • H y *)
-assert (f ~~ f) by reflexivity.
-pose proof @hott_2_4_3 A B (f₁ (f a)) (f₁ (f a')) f f H0 (ap f₁ q).
-Check (ap f (β a')).
-Check (H0 (f₁ (f a'))).
-H0 (f₁ (f a'))
-     : f (f₁ (f a')) == f (f₁ (f a'))
-
-ap f (β a')
-     : f ((f₁ ◦ f) a') == f (id a')
-Check (ap f₁ q).
-
-ap f p         • H y
-ap f (ap f₁ q) • ap f (β a')
-
-rewrite <- hott_2_4_3.
-bbb.
-  ============================
-   ap f ((β a)⁻¹ • ap f₁ q • β a') == q
-bbb.
-
-    do 2 rewrite ap_compose.
-    rewrite (ap_composite f₁ (f₁ ◦ f) q).
 bbb.
 
 (* some experiments... *)
