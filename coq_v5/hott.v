@@ -2052,12 +2052,9 @@ Proof. reflexivity. Qed.
 Theorem cart_pr₂ {A B} : @cartesian.pr₂ A B == pr₂.
 Proof. reflexivity. Qed.
 
-Theorem pair_equiv {A B} {w w' : A * B} : ∀ (p q : w == w'),
+Theorem equiv_pair {A B} {w w' : A * B} : ∀ (p q : w == w'),
   (p == q) ≃ ((ap pr₁ p, ap pr₂ p) == (ap pr₁ q, ap pr₂ q)).
 Proof.
-intros.
-bbb.
-
 intros.
 set (f := λ p : w == w', (ap pr₁ p, ap pr₂ p)).
 assert (isequiv f) as Hf; [ idtac | apply (hott_2_11_1 f Hf p q) ].
@@ -2068,98 +2065,20 @@ apply (existT _ g); split.
  subst f g.
  unfold "◦", "~~", id; intros (v, v').
  apply split_pair_eq; split.
-  destruct w; simpl.
-  destruct w'; simpl.
-Check @hott_2_11_1.
-pose proof @hott_2_11_1.
-Check (λ x y, @ap (A * B) A x y pr₁).
-bbb.
+  apply cartesian.ap_pr₁_pair.
 
- unfold cartesian.pair_eq; simpl.
-unfold ap; simpl.
+  apply cartesian.ap_pr₂_pair.
 
-SearchAbout (ap _ (cartesian.pair_eq _)).
-bbb.
-
-(* @cartesian.hott_2_6_5
-     : ∀ (A B A' B' : Type) (g : A → A') (h : B → B')
-       (f:=λ x : A * B, (g (cartesian.pr₁ x), h (cartesian.pr₂ x)))
-       (x y : A * B) (p : cartesian.pr₁ x == cartesian.pr₁ y)
-       (q : cartesian.pr₂ x == cartesian.pr₂ y),
-       ap f (cartesian.pair_eq (p, q)) ==
-       cartesian.pair_eq_ap f (ap g p, ap h q) *)
-pose proof @cartesian.hott_2_6_5.
-pose proof @cartesian.hott_2_6_5 A B A B id id w w' v v'.
-unfold id in H; simpl in H.
- eapply @compose.
-bbb.
-
-  H : ap (λ x : A * B, (cartesian.pr₁ x, cartesian.pr₂ x))
-        (cartesian.pair_eq (v, v')) ==
-      cartesian.pair_eq_ap (λ x : A * B, (cartesian.pr₁ x, cartesian.pr₂ x))
-        (ap (λ x : A, x) v, ap (λ x : B, x) v')
-  ============================
-   ap pr₁ (cartesian.pair_eq (v, v')) == ?y
-
-subgoal 2 (ID 3024) is:
- ?y == v
-subgoal 3 (ID 3015) is:
- ap pr₂ (cartesian.pair_eq (v, v')) == v'
-subgoal 4 (ID 2998) is:
- g ◦ f ~~ id
-
-bbb.
-
-  unfold cartesian.pair_eq; simpl.
-bbb.
-
-assert ((pr₁ w == pr₁ w') * (pr₂ w == pr₂ w') → w == w') as g.
- intros H.
- apply cartesian.pair_eq, H.
-
-intros.
-pose proof @cartesian.hott_2_6_2 A B w w' as H.
-apply quasi_inv in H.
-destruct H as (g, Hg).
-(* @hott_2_11_1
-     : ∀ (A B : Type) (f : A → B),
-       isequiv f → ∀ a a' : A, (a == a') ≃ (f a == f a') *)
-pose proof hott_2_11_1 g Hg p q as H.
-Print cartesian.hott_2_6_2.
-
-set (f := λ p : w == w', (ap pr₁ p, ap pr₂ p)).
-assert (isequiv f) as Hf; [ idtac | apply (hott_2_11_1 f Hf p q) ].
-
-apply qinv_isequiv.
-assert ((pr₁ w == pr₁ w') * (pr₂ w == pr₂ w') → w == w') as g.
- intros H.
- apply cartesian.pair_eq, H.
-
-pose proof @cartesian.hott_2_6_2 A B w w' as H.
-apply quasi_inv in H.
-(* @hott_2_11_1
-     : ∀ (A B : Type) (f : A → B),
-       isequiv f → ∀ a a' : A, (a == a') ≃ (f a == f a') *)
-
-set (f := λ p : w == w', (ap pr₁ p, ap pr₂ p)).
-
-assert (isequiv f) as Hf; [ idtac | apply (hott_2_11_1 f Hf p q) ].
-apply qinv_isequiv.
-assert ((pr₁ w == pr₁ w') * (pr₂ w == pr₂ w') → w == w') as g.
- intros H.
- apply cartesian.pair_eq, H.
-
-Print cartesian.
-     Definition pair_eq :
-       ∀ (A B : Type) (x y : A * B),
-       (pr₁ x == pr₁ y) * (pr₂ x == pr₂ y) → x == y.
-     Parameter hott_2_6_2 :
-       ∀ (A B : Type) (x y : A * B),
-       (pr₁ x == pr₁ y) * (pr₂ x == pr₂ y) ≃ (x == y).
-bbb.
-
-apply (existT _ g); split.
  subst f g.
+ unfold "◦", "~~", id; intros r.
+ apply invert, cartesian.pair_uniqueness.
+Defined.
+
+Theorem pair_equiv {A B} {w w' : A * B} : ∀ (p q : w == w'),
+  (p == q) ≃ (ap pr₁ p == ap pr₁ q) * (ap pr₂ p == ap pr₂ q).
+Proof.
+intros.
+eapply equiv_compose; [ apply equiv_pair | idtac ].
 bbb.
 
 Lemma toto {A B} : ∀ (a b : A) (c d : B),
