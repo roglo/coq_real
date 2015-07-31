@@ -2119,6 +2119,20 @@ Defined.
 
 End cartesian2.
 
+Module Σ_type2.
+
+(* Paths p = q, where p,q : f =_{Π(x:A)B(x)} g, are equivalent to
+   homotopies
+       Π (x : A) (happly (p) (x) =_{f(x)=g(x)} happly (q) (x)). *)
+
+Definition pr₁ {A B} := @Σ_pr₁ A B.
+Definition pr₂ {A B} := @Σ_pr₂ A B.
+Definition happly {A B f g} := @Π_type.happly A B f g.
+
+Theorem dep_pair_equiv {A B} {f g : Π (x : A), B x} : ∀ (p q : f == g),
+  (p == q) ≃ Π (x : A), (happly p x == happly q x).
+Proof.
+intros.
 bbb.
 
 (* some experiments... *)
