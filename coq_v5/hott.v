@@ -2083,7 +2083,11 @@ set (u₁ := ap pr₁ p).
 set (u₂ := ap pr₂ p).
 set (v₁ := ap pr₁ q).
 set (v₂ := ap pr₂ q).
-SearchAbout ((_ == _) ≃ _).
+apply quasi_inv.
+apply (existT _ (split_pair_eq u₁ v₁ u₂ v₂)).
+apply qinv_isequiv.
+unfold qinv.
+apply (existT _ (pair_eq_split u₁ v₁ u₂ v₂)).
 bbb.
 
 Lemma toto {A B} : ∀ (a b : A) (c d : B),
