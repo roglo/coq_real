@@ -2133,6 +2133,20 @@ Theorem dep_pair_equiv {A B} {f g : Π (x : A), B x} : ∀ (p q : f == g),
   (p == q) ≃ Π (x : A), (happly p x == happly q x).
 Proof.
 intros.
+set (u :=
+  λ (r : p == q) x,
+  match r in (_ == y) return (happly p x == happly y x) with
+  | refl _ => refl (happly p x)
+  end).
+apply (existT _ u).
+apply qinv_isequiv.
+unfold qinv.
+assert ((∀ x : A, happly p x == happly q x) → p == q) as v.
+ intros H.
+bbb.
+
+Focus 2.
+apply (existT _ v).
 bbb.
 
 (* some experiments... *)
