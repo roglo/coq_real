@@ -2065,6 +2065,13 @@ apply (existT _ g); split.
  subst f g.
  unfold "◦", "~~", id; intros (v, v').
  apply split_pair_eq; split.
+  destruct w; simpl.
+  destruct w'; simpl.
+bbb.
+
+ unfold cartesian.pair_eq; simpl.
+unfold ap; simpl.
+
 SearchAbout (ap _ (cartesian.pair_eq _)).
 bbb.
 
