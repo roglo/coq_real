@@ -2129,7 +2129,27 @@ Definition pr₁ {A B} := @Σ_pr₁ A B.
 Definition pr₂ {A B} := @Σ_pr₂ A B.
 Definition happly {A B f g} := @Π_type.happly A B f g.
 
-Theorem dep_pair_equiv {A B} {f g : Π (x : A), B x} : ∀ (p q : f == g),
+(*
+Theorem equiv_pair {A B} {w w' : A * B} : ∀ (p q : w == w'),
+  (p == q) ≃ ((ap pr₁ p, ap pr₂ p) == (ap pr₁ q, ap pr₂ q)).
+Theorem pair_equiv {A B} {w w' : A * B} : ∀ (p q : w == w'),
+  (p == q) ≃ (ap pr₁ p == ap pr₁ q) * (ap pr₂ p == ap pr₂ q).
+*)
+
+(*
+Theorem equiv_dep_fun {A B} {f g : Π (x : A), B x} : ∀ (p q : f == g),
+  (p == q) ≃ (happly p == happly q).
+Proof.
+intros.
+assert ((p == q) → (happly p == happly q)) as u.
+ intros r; destruct r; reflexivity.
+
+ assert ((happly p == happly q) → (p == q)) as v.
+  intros r.
+bbb.
+*)
+
+Theorem dep_fun_equiv {A B} {f g : Π (x : A), B x} : ∀ (p q : f == g),
   (p == q) ≃ Π (x : A), (happly p x == happly q x).
 Proof.
 intros.
