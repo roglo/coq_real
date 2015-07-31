@@ -2163,6 +2163,9 @@ apply qinv_isequiv.
 unfold qinv.
 assert ((∀ x : A, happly p x == happly q x) → p == q) as v.
  intros H.
+
+SearchAbout Π_type.happly.
+
 bbb.
 
 Focus 2.
