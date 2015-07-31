@@ -2056,6 +2056,9 @@ Theorem pair_equiv {A B} {w w' : A * B} : ∀ (p q : w == w'),
   (p == q) ≃ ((ap pr₁ p, ap pr₂ p) == (ap pr₁ q, ap pr₂ q)).
 Proof.
 intros.
+bbb.
+
+intros.
 set (f := λ p : w == w', (ap pr₁ p, ap pr₂ p)).
 assert (isequiv f) as Hf; [ idtac | apply (hott_2_11_1 f Hf p q) ].
 set (g := @cartesian.pair_eq A B w w').
@@ -2067,6 +2070,9 @@ apply (existT _ g); split.
  apply split_pair_eq; split.
   destruct w; simpl.
   destruct w'; simpl.
+Check @hott_2_11_1.
+pose proof @hott_2_11_1.
+Check (λ x y, @ap (A * B) A x y pr₁).
 bbb.
 
  unfold cartesian.pair_eq; simpl.
