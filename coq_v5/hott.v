@@ -2079,6 +2079,11 @@ Theorem pair_equiv {A B} {w w' : A * B} : ∀ (p q : w == w'),
 Proof.
 intros.
 eapply equiv_compose; [ apply equiv_pair | idtac ].
+set (u₁ := ap pr₁ p).
+set (u₂ := ap pr₂ p).
+set (v₁ := ap pr₁ q).
+set (v₂ := ap pr₂ q).
+SearchAbout ((_ == _) ≃ _).
 bbb.
 
 Lemma toto {A B} : ∀ (a b : A) (c d : B),
