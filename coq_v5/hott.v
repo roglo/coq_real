@@ -1282,7 +1282,7 @@ intros x y p.
 split; destruct p; reflexivity.
 Defined.
 
-Theorem pair_eq {A B} {x y : A * B} :
+Theorem pair_eq_tac {A B} {x y : A * B} :
   (pr₁ x == pr₁ y) * (pr₂ x == pr₂ y) → (x == y).
 Proof.
 intros p.
@@ -1292,6 +1292,22 @@ simpl in p.
 destruct p as (p, q).
 destruct p, q; reflexivity.
 Defined.
+
+Definition pair_eq {A B} {x y : A * B} :
+  (pr₁ x == pr₁ y) * (pr₂ x == pr₂ y) → (x == y)
+:=
+   let (a, b)
+   return ((pr₁ x == pr₁ y) * (pr₂ x == pr₂ y) → x == y) := x in
+   let (_, _)
+   return ((pr₁ (a, b) == pr₁ y) * (pr₂ (a, b) == pr₂ y) → (a, b) == y)
+   := y in
+   λ p,
+   match pr₁ p with
+   | refl _ =>
+       match pr₂ p with
+       | refl _ => refl (a, b)
+       end
+   end.
 
 Notation "'pair⁼'" := pair_eq.
 
@@ -2049,6 +2065,9 @@ apply (existT _ g); split.
  subst f g.
  unfold "◦", "~~", id; intros (v, v').
  apply split_pair_eq; split.
+SearchAbout (ap _ (cartesian.pair_eq _)).
+bbb.
+
 (* @cartesian.hott_2_6_5
      : ∀ (A B A' B' : Type) (g : A → A') (h : B → B')
        (f:=λ x : A * B, (g (cartesian.pr₁ x), h (cartesian.pr₂ x)))
@@ -2056,6 +2075,7 @@ apply (existT _ g); split.
        (q : cartesian.pr₂ x == cartesian.pr₂ y),
        ap f (cartesian.pair_eq (p, q)) ==
        cartesian.pair_eq_ap f (ap g p, ap h q) *)
+pose proof @cartesian.hott_2_6_5.
 pose proof @cartesian.hott_2_6_5 A B A B id id w w' v v'.
 unfold id in H; simpl in H.
  eapply @compose.
