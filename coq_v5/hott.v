@@ -2047,6 +2047,30 @@ Definition split_pair_eq {A B} : ∀ (a b : A) (c d : B),
        end
    end.
 
+Definition split_pair_eq_id {A B} : ∀ (a b : A) (c d : B),
+  split_pair_eq a b c d ◦ pair_eq_split a b c d ~~ id
+:= λ a b c d p,
+   match p in (_ == q)
+     return
+     ((let (b0, d0) as x return ((a, c) == x → Type) := q in
+       λ p2,
+       split_pair_eq a b0 c d0 (pair_eq_split a b0 c d0 p2) == p2) p)
+   with
+   | refl _ => refl (refl (a, c))
+   end.
+
+Definition pair_eq_split_id {A B} : ∀ (a b : A) (c d : B),
+  pair_eq_split a b c d ◦ split_pair_eq a b c d ~~ id
+:= λ a b c d p,
+   let (q, r) as p0
+   return (pair_eq_split a b c d (split_pair_eq a b c d p0) == p0) := p in
+   match q with
+   | refl _ =>
+       match r with
+       | refl _ => refl (refl a, refl c)
+       end
+   end.
+
 Theorem cart_pr₁ {A B} : @cartesian.pr₁ A B == pr₁.
 Proof. reflexivity. Qed.
 Theorem cart_pr₂ {A B} : @cartesian.pr₂ A B == pr₂.
@@ -2087,43 +2111,15 @@ apply quasi_inv.
 apply (existT _ (split_pair_eq u₁ v₁ u₂ v₂)).
 apply qinv_isequiv.
 unfold qinv.
-apply (existT _ (pair_eq_split u₁ v₁ u₂ v₂)).
-bbb.
+apply (existT _ (pair_eq_split u₁ v₁ u₂ v₂)); split.
+ apply split_pair_eq_id.
 
-Lemma toto {A B} : ∀ (a b : A) (c d : B),
-  ((a, c) == (b, d)) ≃ (a == b) * (c == d).
-Proof.
-intros.
-unfold equivalence.
-apply (existT _ (pair_eq_split a b c d)).
-apply qinv_isequiv.
-unfold qinv.
-apply (existT _ (split_pair_eq a b c d)).
-split.
-  intros x; unfold "◦", id; simpl.
-bbb.
-
-Theorem aaa {A B} {w w' : A * B} : ∀ (p q : w == w'),
-  (p == q) ≃ ((ap pr₁ p == ap pr₁ q) * (ap pr₂ p == ap pr₂ q)).
-Proof.
-intros.
-set (f := λ a : w == w', (ap pr₁ a, ap pr₂ a)).
-assert (H1 : isequiv f).
-Focus 2.
-pose proof @hott_2_11_1 _ _ f H1 p q as H.
-subst f; simpl in H.
-eapply equiv_compose; [ eassumption | idtac ].
-bbb.
-
-SearchAbout (_ ≃ _ ).
-
-SearchAbout (_ ≃ _ → _ ≃ _ → _ ≃ _).
-eapply equiv_compose.
-eapply hott_2_11_1.
-Check @hott_2_11_1.
-bbb.
+ apply pair_eq_split_id.
+Defined.
 
 End cartesian2.
+
+bbb.
 
 (* some experiments... *)
 
