@@ -2191,6 +2191,8 @@ rewrite <- ru.
 apply ideqv.
 Defined.
 
+(* 2.12 Coproducts *)
+
 bbb.
 
 (* some experiments... *)
