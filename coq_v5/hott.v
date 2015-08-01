@@ -2180,6 +2180,17 @@ Theorem hott_2_11_4 {A B} : ∀ (f g : Π (x : A), B x) a a'
   (apd f p)⁻¹ • ap (transport B p) q • apd g p.
 Proof. intros; destruct p; simpl; destruct q; reflexivity. Defined.
 
+Theorem hott_2_11_5 {A} {a a' : A} :
+  ∀ (p : a == a') (q : a == a) (r : a' == a'),
+  (transport (λ x, x == x) p q == r) ≃ (q • p == p • r).
+Proof.
+intros.
+destruct p; simpl.
+unfold id; simpl.
+rewrite <- ru.
+apply ideqv.
+Defined.
+
 bbb.
 
 (* some experiments... *)
