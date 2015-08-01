@@ -2152,6 +2152,22 @@ eapply equiv_compose; [ eapply H | idtac ].
 apply (existT _ happly), Hg.
 Defined.
 
+(* transport in families of paths *)
+
+Lemma hott_2_1_12_i {A} : ∀ (a x₁ x₂ : A) (p : x₁ == x₂) (q : a == x₁),
+  transport (λ x, a == x) p q = q • p.
+Proof. intros; destruct p, q; reflexivity. Defined.
+
+Lemma hott_2_1_12_ii {A} : ∀ (a x₁ x₂ : A) (p : x₁ == x₂) (q : x₁ == a),
+  transport (λ x, x == a) p q = p⁻¹ • q.
+Proof. intros; destruct p; reflexivity. Defined.
+
+Lemma hott_2_1_12_iii {A} : ∀ (a x₁ x₂ : A) (p : x₁ == x₂) (q : x₁ == x₁),
+  transport (λ x, x == x) p q = p⁻¹ • q • p.
+Proof. intros; destruct p; simpl; destruct q; reflexivity. Defined.
+
+Theorem hott_2_11_3.
+
 bbb.
 
 (* some experiments... *)
