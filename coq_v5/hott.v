@@ -2181,15 +2181,10 @@ set (u :=
   match r in (_ == y) return (happly p x == happly y x) with
   | refl _ => refl (happly p x)
   end).
-apply (existT
-
-bbb.
-intros f Hf a a'.
-apply (existT _ (@ap A B a a' f)).
-apply isequiv_qinv in Hf.
-destruct Hf as (f₁, (α, β)).
+apply (existT _ u).
 apply qinv_isequiv.
 unfold qinv.
+bbb.
 set (g := λ r, (β a)⁻¹ • ap f₁ r • β a').
 unfold "◦", id in g; simpl in g.
 apply (existT _ g); subst g.
