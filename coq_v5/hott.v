@@ -2166,7 +2166,19 @@ Lemma hott_2_1_12_iii {A} : ∀ (a x₁ x₂ : A) (p : x₁ == x₂) (q : x₁ =
   transport (λ x, x == x) p q = p⁻¹ • q • p.
 Proof. intros; destruct p; simpl; destruct q; reflexivity. Defined.
 
-Theorem hott_2_11_3.
+(* they pretend that this needs 2.3.10 and 2.11.2 but it can be proved
+   directly by induction: *)
+
+Theorem hott_2_11_3 {A B} : ∀ (f g : A → B) a a'
+  (p : a == a') (q : f a == g a),
+  transport (λ x, f x == g x) p q == (ap f p)⁻¹ • q • ap g p.
+Proof. intros; destruct p; simpl; destruct q; reflexivity. Defined.
+
+Theorem hott_2_11_4 {A B} : ∀ (f g : Π (x : A), B x) a a'
+  (p : a == a') (q : f a == g a),
+  transport (λ x, f x == g x) p q ==
+  (apd f p)⁻¹ • ap (transport B p) q • apd g p.
+Proof. intros; destruct p; simpl; destruct q; reflexivity. Defined.
 
 bbb.
 
