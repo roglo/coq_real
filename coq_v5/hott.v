@@ -2129,196 +2129,29 @@ Definition pr₁ {A B} := @Σ_pr₁ A B.
 Definition pr₂ {A B} := @Σ_pr₂ A B.
 Definition happly {A B f g} := @Π_type.happly A B f g.
 
-(*
-Theorem equiv_pair {A B} {w w' : A * B} : ∀ (p q : w == w'),
-  (p == q) ≃ ((ap pr₁ p, ap pr₂ p) == (ap pr₁ q, ap pr₂ q)).
-Theorem pair_equiv {A B} {w w' : A * B} : ∀ (p q : w == w'),
-  (p == q) ≃ (ap pr₁ p == ap pr₁ q) * (ap pr₂ p == ap pr₂ q).
-*)
-
-(* Π_type.happly = 
-λ (A : Type) (B : A → Type) (f g : ∀ x : A, B x) (p : f == g),
-match p in (_ == b) return (∀ x : A, f x == b x) with
-| refl _ => λ y : A, refl (f y)
-end
-     : ∀ (A : Type) (B : A → Type) (f g : ∀ x : A, B x),
-       f == g → ∀ x : A, f x == g x
-
-Arguments A, B, f, g are implicit and maximally inserted
-*)
-
-(*
-Theorem equiv_dep_fun {A B} {f g : Π (x : A), B x} : ∀ (p q : f == g),
-  (p == q) ≃ (Π (x : A), happly p x) == (Π (x : A), happly q x).
-bbb.
-*)
-
-(*
-Theorem equiv_dep_fun {A B} {f g : Π (x : A), B x} : ∀ (p q : f == g),
-  (p == q) ≃ (happly p == happly q).
-Proof.
-intros.
-assert ((p == q) → (happly p == happly q)) as u.
- intros r; destruct r; reflexivity.
-
- assert ((happly p == happly q) → (p == q)) as v.
-  intros r.
-bbb.
-*)
-
-(*
-Theorem hott_2_11_1 {A B} : ∀ (f : A → B), isequiv f → ∀ (a a' : A),
-  (a == a') ≃ (f a == f a').
-*)
-
-
-Theorem experiment {A B} {f g : Π (x : A), B x} :
-  isequiv (@happly A B f g) →
-  ∀ (p q : f == g),
-  (p == q) ≃ Π (x : A), (happly p x == happly q x).
-Proof.
-intros Hf p q.
-set (u :=
-  λ (r : p == q) x,
-  match r in (_ == y) return (happly p x == happly y x) with
-  | refl _ => refl (happly p x)
-  end).
-apply (existT _ u).
-apply qinv_isequiv.
-unfold qinv.
-apply isequiv_qinv in Hf.
-destruct Hf as (h, (α, β)).
-assert ((∀ x : A, happly p x == happly q x) → p == q) as v.
- intros H.
-
-vbb.
-
-Focus 2.
-apply (existT _ v).
-split; intros s.
-
-Check (β p)⁻¹.
-Check (λ x y, @ap _ _ x y h).
-Check (λ r, (β a)⁻¹ •
-bbb.
-set (g := λ r, (β a)⁻¹ • ap f₁ r • β a').
-unfold "◦", id in g; simpl in g.
-apply (existT _ g); subst g.
-unfold "◦", "~~", id; simpl.
-split; intros q.
- set (r := @compose _ _ _ a' (@invert _ (f₁ (f a)) a (β a) • ap f₁ q) (β a')).
- apply (@compose _ _ ((α (f a))⁻¹ • α (f a) • ap f r)).
-  eapply compose; [ apply lu | idtac ].
-  apply dotr, invert, invert_compose.
-
-  eapply compose; [ eapply invert, compose_assoc | idtac ].
-  unfold id, composite; simpl.
-  pose proof (hott_2_4_3 ((f ◦ f₁) ◦ f) f (λ a, α (f a)) r) as H.
-  unfold "◦" in H; simpl in H.
-  eapply compose; [ eapply dotl, H | simpl ].
-  apply (@compose _ _ ((α (f a))⁻¹ • (ap f (ap f₁ (ap f r)) • α (f a')))).
-   apply dotl, dotr.
-   apply (@compose _ _ (ap (f ◦ f₁ ◦ f) r)); [ reflexivity | idtac ].
-   eapply invert, compose; [ idtac | eapply ap_composite ].
-   eapply compose; [ apply (ap_composite f₁ f (ap f r)) | reflexivity ].
-
-   eapply compose; [ apply compose_assoc | idtac ].
-   rewrite (ap_composite f f₁ r).
-   apply (@compose _ _ ((α (f a))⁻¹ • ap f (β a • r • (β a')⁻¹) • α (f a'))).
-    apply dotr, dotl, ap.
-    rewrite r; simpl.
-    rewrite <- ru, compose_invert.
-    reflexivity.
-
-    apply (@compose _ _ ((α (f a))⁻¹ • ap f (ap f₁ q) • α (f a'))).
-     apply dotr, dotl, ap; subst r.
-     do 2 rewrite compose_assoc.
-     rewrite compose_invert; simpl.
-     unfold id; simpl.
-     rewrite <- compose_assoc.
-     rewrite compose_invert; simpl.
-     rewrite <- ru; reflexivity.
-
-     assert (H1 : α (f a) • q == ap (f ◦ f₁) q • α (f a')).
-      rewrite <- (hott_2_4_3 (f ◦ f₁) id α q).
-      apply dotl, invert, hott_2_2_2_iv.
-
-      unfold id, composite; simpl.
-      pose proof (@ap_composite B A B (f a) (f a') f₁ f q) as H2.
-      rewrite H2.
-      rewrite <- compose_assoc.
-      unfold id, composite in H1; simpl in H1.
-      unfold composite; simpl.
-      rewrite <- H1.
-      rewrite compose_assoc, invert_compose.
-      reflexivity.
-
- rewrite (ap_composite f f₁ q).
- destruct q; simpl.
- unfold "◦", "~~", id in β; simpl in β.
- unfold "◦"; simpl; rewrite β; reflexivity.
-Defined.
-
 Theorem dep_fun_equiv {A B} {f g : Π (x : A), B x} : ∀ (p q : f == g),
   (p == q) ≃ Π (x : A), (happly p x == happly q x).
 Proof.
-(*
-intros.
-eapply equiv_compose; [ apply equiv_dep_fun | idtac ].
-assert ((happly p == happly q) → (∀ x : A, happly p x == happly q x)) as u.
- intros r x; rewrite r; reflexivity.
+intros p q.
+pose proof hott_2_11_1 happly (Π_type.extensionality f g) p q as H.
+eapply equiv_compose; [ eapply H | idtac ].
+apply (existT _ happly), Π_type.extensionality.
+Defined.
 
- assert ((∀ x : A, happly p x == happly q x) → (happly p == happly q)) as v.
-  intros H.
-bbb.
-*)
-(*
-intros.
-set (u :=
-  λ (r : p == q) x,
-  match r in (_ == y) return (happly p x == happly y x) with
-  | refl _ => refl (happly p x)
-  end).
-apply (existT _ u).
-apply qinv_isequiv.
-unfold qinv.
-assert ((∀ x : A, happly p x == happly q x) → p == q) as v.
- intros H.
-*)
-intros.
-pose proof @Π_type.extensionality A B f g as H.
-pose proof hott_2_11_1 happly H p q as H1.
-eapply equiv_compose; [ apply H1 | idtac ].
-unfold equivalence.
-assert (happly p == happly q → ∀ x : A, happly p x == happly q x) as u.
- intros H2 x; rewrite H2; reflexivity.
+(* the same, but putting function extensionality as hypothesis instead
+   of using axiom *)
 
- apply (existT _ u).
- apply qinv_isequiv.
- apply isequiv_qinv in H.
- destruct H as (h, (α, β)).
- unfold qinv.
- assert ((∀ x : A, happly p x == happly q x) → happly p == happly q) as v.
- intros H.
+Theorem dep_fun_equiv2 {A B} {f g : Π (x : A), B x} : ∀ (p q : f == g),
+  isequiv (@happly _ _ f g)
+  → isequiv (@happly _ _ (happly p) (happly q))
+  → (p == q) ≃ Π (x : A), (happly p x == happly q x).
+Proof.
+intros p q Hf Hg.
+pose proof hott_2_11_1 happly Hf p q as H.
+eapply equiv_compose; [ eapply H | idtac ].
+apply (existT _ happly), Hg.
+Defined.
 
-bbb.
-
-apply isequiv_qinv in H.
-destruct H as (h, (α, β)).
-unfold equivalence.
-set (u :=
-  λ (r : p == q) x,
-  match r in (_ == y) return (happly p x == happly y x) with
-  | refl _ => refl (happly p x)
-  end).
-apply (existT _ u).
-apply qinv_isequiv.
-unfold qinv.
-
-bbb.
-
-Focus 2.
-apply (existT _ v).
 bbb.
 
 (* some experiments... *)
