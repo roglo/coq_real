@@ -1164,7 +1164,7 @@ destruct H3 as (g2, p2).
 destruct H4 as (h2, q2).
 unfold "~~", id in p1, q1, p2, q2.
 unfold "~~", id.
-Abort. (* proof postponed, they say, to sections §2.6, §2.7 and §4.3...
+Admitted. (* proof postponed, they say, to sections §2.6, §2.7 and §4.3...
 bbb.
 *)
 
@@ -2171,9 +2171,11 @@ Theorem hott_2_11_1 {A B} : ∀ (f : A → B), isequiv f → ∀ (a a' : A),
   (a == a') ≃ (f a == f a').
 *)
 
+
 Theorem experiment {A B} {f g : Π (x : A), B x} :
   isequiv (@happly A B f g) →
-  ∀ (p q : f == g), (p == q) ≃ Π (x : A), (happly p x == happly q x).
+  ∀ (p q : f == g),
+  (p == q) ≃ Π (x : A), (happly p x == happly q x).
 Proof.
 intros Hf p q.
 set (u :=
@@ -2184,6 +2186,20 @@ set (u :=
 apply (existT _ u).
 apply qinv_isequiv.
 unfold qinv.
+apply isequiv_qinv in Hf.
+destruct Hf as (h, (α, β)).
+assert ((∀ x : A, happly p x == happly q x) → p == q) as v.
+ intros H.
+
+vbb.
+
+Focus 2.
+apply (existT _ v).
+split; intros s.
+
+Check (β p)⁻¹.
+Check (λ x y, @ap _ _ x y h).
+Check (λ r, (β a)⁻¹ •
 bbb.
 set (g := λ r, (β a)⁻¹ • ap f₁ r • β a').
 unfold "◦", id in g; simpl in g.
