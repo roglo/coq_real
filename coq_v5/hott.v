@@ -2136,6 +2136,23 @@ Theorem pair_equiv {A B} {w w' : A * B} : ∀ (p q : w == w'),
   (p == q) ≃ (ap pr₁ p == ap pr₁ q) * (ap pr₂ p == ap pr₂ q).
 *)
 
+(* Π_type.happly = 
+λ (A : Type) (B : A → Type) (f g : ∀ x : A, B x) (p : f == g),
+match p in (_ == b) return (∀ x : A, f x == b x) with
+| refl _ => λ y : A, refl (f y)
+end
+     : ∀ (A : Type) (B : A → Type) (f g : ∀ x : A, B x),
+       f == g → ∀ x : A, f x == g x
+
+Arguments A, B, f, g are implicit and maximally inserted
+*)
+
+(*
+Theorem equiv_dep_fun {A B} {f g : Π (x : A), B x} : ∀ (p q : f == g),
+  (p == q) ≃ (Π (x : A), happly p x) == (Π (x : A), happly q x).
+bbb.
+*)
+
 (*
 Theorem equiv_dep_fun {A B} {f g : Π (x : A), B x} : ∀ (p q : f == g),
   (p == q) ≃ (happly p == happly q).
@@ -2152,6 +2169,17 @@ bbb.
 Theorem dep_fun_equiv {A B} {f g : Π (x : A), B x} : ∀ (p q : f == g),
   (p == q) ≃ Π (x : A), (happly p x == happly q x).
 Proof.
+(*
+intros.
+eapply equiv_compose; [ apply equiv_dep_fun | idtac ].
+assert ((happly p == happly q) → (∀ x : A, happly p x == happly q x)) as u.
+ intros r x; rewrite r; reflexivity.
+
+ assert ((∀ x : A, happly p x == happly q x) → (happly p == happly q)) as v.
+  intros H.
+bbb.
+*)
+(*
 intros.
 set (u :=
   λ (r : p == q) x,
@@ -2163,8 +2191,36 @@ apply qinv_isequiv.
 unfold qinv.
 assert ((∀ x : A, happly p x == happly q x) → p == q) as v.
  intros H.
+*)
+intros.
+pose proof @Π_type.extensionality A B f g as H.
+pose proof hott_2_11_1 happly H p q as H1.
+eapply equiv_compose; [ apply H1 | idtac ].
+unfold equivalence.
+assert (happly p == happly q → ∀ x : A, happly p x == happly q x) as u.
+ intros H2 x; rewrite H2; reflexivity.
 
-SearchAbout Π_type.happly.
+ apply (existT _ u).
+ apply qinv_isequiv.
+ apply isequiv_qinv in H.
+ destruct H as (h, (α, β)).
+ unfold qinv.
+ assert ((∀ x : A, happly p x == happly q x) → happly p == happly q) as v.
+ intros H.
+
+bbb.
+
+apply isequiv_qinv in H.
+destruct H as (h, (α, β)).
+unfold equivalence.
+set (u :=
+  λ (r : p == q) x,
+  match r in (_ == y) return (happly p x == happly y x) with
+  | refl _ => refl (happly p x)
+  end).
+apply (existT _ u).
+apply qinv_isequiv.
+unfold qinv.
 
 bbb.
 
