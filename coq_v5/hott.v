@@ -2265,7 +2265,29 @@ Defined.
 Definition inl_family {A B} (a₀ : A) (x : A + B) : U := inl a₀ == x.
 Definition inr_family {A B} (b₀ : B) (x : A + B) : U := inr b₀ == x.
 
-(* prove that inl_family and inr_family imply 2.12.1, 2.12.2, 2.12.3... *)
+Definition code {A B} (a₀ : A) : A + B → U :=
+  λ x,
+  match x with
+  | inl a => a₀ == a
+  | inr b => ⊥
+  end.
+
+(* I did it the reverse way: that 2.12.1 and 2.12.3 imply 2.12.5: *)
+
+Theorem hott_2_12_5 {A B} {a₀} : ∀ x : A + B, (inl a₀ == x) ≃ code a₀ x.
+Proof.
+intros.
+unfold code.
+destruct x; [ apply inl_eq_equiv | apply inl_inr_equiv ].
+Defined.
+
+bbb.
+
+(* proving that inl_family and inr_family imply 2.12.1, 2.12.2, 2.12.3... *)
+
+Definition inl_eq_equiv2 {A B} (a₁ a₂ : A) :
+  @Id (A + B) (inl a₁) (inl a₂) ≃ (a₁ == a₂).
+Proof.
 
 bbb.
 
