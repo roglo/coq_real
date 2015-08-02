@@ -2262,10 +2262,10 @@ Defined.
 
 (* Expression 2.12.4 *)
 
-Definition inl_family {A B} (a₀ : A) (x : A + B) : U := inl a₀ == x.
-Definition inr_family {A B} (b₀ : B) (x : A + B) : U := inr b₀ == x.
+Definition inl_family {A B a₀} (x : A + B) : U := inl a₀ == x.
+Definition inr_family {A B b₀} (x : A + B) : U := inr b₀ == x.
 
-Definition code {A B} (a₀ : A) : A + B → U :=
+Definition code {A B} a₀ : A + B → U :=
   λ x,
   match x with
   | inl a => a₀ == a
@@ -2274,11 +2274,20 @@ Definition code {A B} (a₀ : A) : A + B → U :=
 
 (* I did it the reverse way they did: that 2.12.1 and 2.12.3 imply 2.12.5: *)
 
-Theorem hott_2_12_5 {A B} {a₀} : ∀ x : A + B, (inl a₀ == x) ≃ code a₀ x.
+Theorem hott_2_12_5 {A B} a₀ : ∀ x : A + B, (inl a₀ == x) ≃ code a₀ x.
 Proof.
 intros.
 destruct x; [ apply inl_eq_equiv | apply inl_inr_equiv ].
 Defined.
+
+(* let's see 'their' proof... *)
+
+Definition encode {A B} a₀ (x : A + B) (p : inl a₀ == x) : code a₀ x :=
+  transport (code a₀) p (refl a₀).
+
+Theorem hott_2_12_5_bis {A B} a₀ : ∀ x : A + B, (inl a₀ == x) ≃ code a₀ x.
+Proof.
+intros.
 
 bbb.
 
