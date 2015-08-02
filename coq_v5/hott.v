@@ -2324,12 +2324,21 @@ Defined.
 
 (* and what about 2.12.2 ? *)
 
+Definition inexch {A B} (x : A + B) :=
+  match x with
+  | inl a => inr a
+  | inr b => inl b
+  end.
+
 Definition code_r {A B} b₀ : A + B → U :=
   λ x,
   match x with
   | inl a => ⊥
   | inr b => b₀ == b
   end.
+
+(* alternative definition, using inexch *)
+Definition code_r' {A B} b₀ : A + B → U := λ x, code b₀ (inexch x).
 
 Definition encode_r {A B} b₀ (x : A + B) (p : inr b₀ == x) : code_r b₀ x :=
   transport (code_r b₀) p (refl b₀).
@@ -2364,6 +2373,20 @@ Defined.
 
 (* not satisfactory, because of repetition of code; should try a version
    where code, encode, decode, etc. are defined by one generic function *)
+
+Definition toto {A B} x y : @Id (A + B) (inexch x) (inexch y) ≃ (x == y).
+Proof.
+destruct x, y; simpl.
+bof.
+
+Definition inr_eq_equiv_ter {A B} (b₁ b₂ : B) :
+  @Id (A + B) (inr b₁) (inr b₂) ≃ (b₁ == b₂).
+Proof.
+change (@Id (A + B) (inexch (inl b₁)) (inexch (inl b₂)) ≃ (b₁ == b₂)).
+bbb.
+
+eapply equiv_compose; [ apply hott_2_12_5_ter | apply ideqv ].
+Defined.
 
 bbb.
 
