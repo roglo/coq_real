@@ -2362,8 +2362,9 @@ Proof.
 eapply equiv_compose; [ apply hott_2_12_5_ter | apply ideqv ].
 Defined.
 
-(* not satisfactory, because of repetition of code; should try a version
-   where code, encode, decode, etc. are defined by one generic function *)
+(* above not satisfactory, because of repetition of code; should try a
+   version where code, encode, decode, etc. are defined by one generic
+   function *)
 
 Definition inexch {A B} (x : A + B) :=
   match x with
