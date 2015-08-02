@@ -2285,6 +2285,12 @@ Defined.
 Definition encode {A B} a₀ (x : A + B) (p : inl a₀ == x) : code a₀ x :=
   transport (code a₀) p (refl a₀).
 
+Definition decode {A B} a₀ (x : A + B) (c : code a₀ x) : (inl a₀ == x) :=
+  match x return (code a₀ x → inl a₀ == x) with
+  | inl a => ap inl
+  | inr b => λ f, match f return inl a₀ == inr b with end
+  end c.
+
 Theorem hott_2_12_5_bis {A B} a₀ : ∀ x : A + B, (inl a₀ == x) ≃ code a₀ x.
 Proof.
 intros.
