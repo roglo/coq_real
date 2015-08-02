@@ -2294,6 +2294,30 @@ Definition decode {A B} a₀ (x : A + B) (c : code a₀ x) : (inl a₀ == x) :=
 Theorem hott_2_12_5_bis {A B} a₀ : ∀ x : A + B, (inl a₀ == x) ≃ code a₀ x.
 Proof.
 intros.
+apply (existT _ (encode a₀ x)), qinv_isequiv.
+apply (existT _ (decode a₀ x)); split; intros y; destruct x, y; reflexivity.
+Defined.
+
+(* 2.12.1 again *)
+
+Definition inl_eq_equiv_bis {A B} (a₁ a₂ : A) :
+  @Id (A + B) (inl a₁) (inl a₂) ≃ (a₁ == a₂).
+Proof.
+eapply equiv_compose; [ apply hott_2_12_5_bis | apply ideqv ].
+Defined.
+
+(* 2.12.3 again *)
+
+Definition inl_inr_equiv_bis {A B} (a : A) (b : B) : inl a == inr b ≃ ⊥.
+Proof.
+eapply equiv_compose; [ apply hott_2_12_5_bis | apply ideqv ].
+Defined.
+
+(* and what about 2.12.2 ? *)
+
+Definition inr_eq_equiv_bis {A B} (b₁ b₂ : B) :
+  @Id (A + B) (inr b₁) (inr b₂) ≃ (b₁ == b₂).
+Proof.
 
 bbb.
 
