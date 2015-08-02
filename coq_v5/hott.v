@@ -2371,9 +2371,15 @@ Definition inexch {A B} (x : A + B) :=
   | inr b => inl b
   end.
 
+Definition titi {A B} : ∀ (x : A + B), inexch (inexch x) == x.
+Proof. intros; destruct x; reflexivity. Defined.
+
 Definition toto {A B} x y : @Id (A + B) (inexch x) (inexch y) ≃ (x == y).
 Proof.
-destruct x, y; simpl.
+set (f := λ p, (titi x)⁻¹ • ap inexch p • titi y).
+apply (existT _ f), qinv_isequiv.
+set (g := λ p : x == y, ap inexch p).
+apply (existT _ g); subst f g; unfold "◦", "~~", id; split; intros z.
 bof.
 
 Definition inr_eq_equiv_ter {A B} (b₁ b₂ : B) :
