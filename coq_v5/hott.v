@@ -2205,16 +2205,16 @@ Definition inr_inversion {A B} (b₁ b₂ : B) :
 Definition inl_equal {A B} (a₁ a₂ : A) :
   (a₁ == a₂) → @Id (A + B) (inl a₁) (inl a₂)
 := λ H : a₁ == a₂,
-  match H in (_ == a) return (inl a₁ == inl a) with
-   refl _ => refl (inl a₁ : A + B)
-  end.
+   match H in (_ == a) return (inl a₁ == inl a) with
+    refl _ => refl (inl a₁ : A + B)
+   end.
 
 Definition inr_equal {A B} (b₁ b₂ : B) :
   (b₁ == b₂) → @Id (A + B) (inr b₁) (inr b₂)
 := λ H : b₁ == b₂,
-  match H in (_ == b) return (inr b₁ == inr b) with
-   refl _ => refl (inr b₁ : A + B)
-  end.
+   match H in (_ == b) return (inr b₁ == inr b) with
+    refl _ => refl (inr b₁ : A + B)
+   end.
 
 (* Expression 2.12.1 *)
 
