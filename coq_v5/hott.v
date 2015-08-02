@@ -2291,11 +2291,20 @@ Definition decode {A B} a₀ (x : A + B) (c : code a₀ x) : (inl a₀ == x) :=
   | inr b => λ f, match f return inl a₀ == inr b with end
   end c.
 
+Definition encode_decode {A B} a₀ (x : A + B) :
+  encode a₀ x ◦ decode a₀ x ~~ id.
+Proof. intros y; destruct x, y; reflexivity. Defined.
+
+Definition decode_encode {A B} a₀ (x : A + B) :
+  decode a₀ x ◦ encode a₀ x ~~ id.
+Proof. intros y; destruct x, y; reflexivity. Defined.
+
 Theorem hott_2_12_5_bis {A B} a₀ : ∀ x : A + B, (inl a₀ == x) ≃ code a₀ x.
 Proof.
 intros.
 apply (existT _ (encode a₀ x)), qinv_isequiv.
-apply (existT _ (decode a₀ x)); split; intros y; destruct x, y; reflexivity.
+apply (existT _ (decode a₀ x)).
+split; [ apply encode_decode | apply decode_encode ].
 Defined.
 
 (* 2.12.1 again *)
@@ -2318,6 +2327,24 @@ Defined.
 Definition inr_eq_equiv_bis {A B} (b₁ b₂ : B) :
   @Id (A + B) (inr b₁) (inr b₂) ≃ (b₁ == b₂).
 Proof.
+bbb.
+
+apply inr_eq_equiv.
+
+Definition inr_eq_equiv {A B} (b₁ b₂ : B) :
+  @Id (A + B) (inr b₁) (inr b₂) ≃ (b₁ == b₂).
+Proof.
+apply (existT _ (inr_inversion b₁ b₂)).
+apply qinv_isequiv.
+apply (existT _ (inr_equal b₁ b₂)).
+split; [ intros p; destruct p; reflexivity | idtac ].
+intros p; simpl.
+unfold "◦", "~~", id; simpl.
+refine (match p with refl _ => _ end).
+reflexivity.
+Defined.
+bbb.
+Defined.
 
 bbb.
 
