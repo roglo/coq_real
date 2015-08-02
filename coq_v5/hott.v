@@ -2327,6 +2327,8 @@ Defined.
 Definition toto {A B} (b₁ b₂ : B) :
   @Id (A + B) (inr b₁) (inr b₂) ≃ @Id (B + A) (inl b₁) (inl b₂).
 Proof.
+assert (@Id (A + B) (inr b₁) (inr b₂) → @Id (B + A) (inl b₁) (inl b₂)) as f.
+ intros p.
 bbb.
 
 Definition inr_eq_equiv_bis {A B} (b₁ b₂ : B) :
