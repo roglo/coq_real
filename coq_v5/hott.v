@@ -2324,18 +2324,46 @@ Defined.
 
 (* and what about 2.12.2 ? *)
 
-Definition toto {A B} (b₁ b₂ : B) :
-  @Id (A + B) (inr b₁) (inr b₂) ≃ @Id (B + A) (inl b₁) (inl b₂).
+Definition code_r {A B} b₀ : A + B → U :=
+  λ x,
+  match x with
+  | inl a => ⊥
+  | inr b => b₀ == b
+  end.
+
+Definition encode_r {A B} b₀ (x : A + B) (p : inr b₀ == x) : code_r b₀ x :=
+  transport (code_r b₀) p (refl b₀).
+
+Definition decode_r {A B} b₀ (x : A + B) (c : code_r b₀ x) : (inr b₀ == x) :=
+  match x return (code_r b₀ x → inr b₀ == x) with
+  | inl a => λ f, match f return inr b₀ == inl a with end
+  | inr b => ap inr
+  end c.
+
+Definition encode_r_decode_r {A B} b₀ (x : A + B) :
+  encode_r b₀ x ◦ decode_r b₀ x ~~ id.
+Proof. intros y; destruct x, y; reflexivity. Defined.
+
+Definition decode_r_encode_r {A B} b₀ (x : A + B) :
+  decode_r b₀ x ◦ encode_r b₀ x ~~ id.
+Proof. intros y; destruct x, y; reflexivity. Defined.
+
+Theorem hott_2_12_5_ter {A B} b₀ : ∀ x : A + B, (inr b₀ == x) ≃ code_r b₀ x.
 Proof.
-assert (@Id (A + B) (inr b₁) (inr b₂) → @Id (B + A) (inl b₁) (inl b₂)) as f.
- intros p.
-bbb.
+intros.
+apply (existT _ (encode_r b₀ x)), qinv_isequiv.
+apply (existT _ (decode_r b₀ x)).
+split; [ apply encode_r_decode_r | apply decode_r_encode_r ].
+Defined.
 
 Definition inr_eq_equiv_bis {A B} (b₁ b₂ : B) :
   @Id (A + B) (inr b₁) (inr b₂) ≃ (b₁ == b₂).
 Proof.
-eapply equiv_compose; [ apply toto | idtac ].
-apply inl_eq_equiv_bis.
+eapply equiv_compose; [ apply hott_2_12_5_ter | apply ideqv ].
+Defined.
+
+(* not satisfactory, because of repetition of code; should try a version
+   where code, encode, decode, etc. are defined by one generic function *)
 
 bbb.
 
