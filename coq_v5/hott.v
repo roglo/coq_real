@@ -2324,27 +2324,16 @@ Defined.
 
 (* and what about 2.12.2 ? *)
 
+Definition toto {A B} (b₁ b₂ : B) :
+  @Id (A + B) (inr b₁) (inr b₂) ≃ @Id (B + A) (inl b₁) (inl b₂).
+Proof.
+bbb.
+
 Definition inr_eq_equiv_bis {A B} (b₁ b₂ : B) :
   @Id (A + B) (inr b₁) (inr b₂) ≃ (b₁ == b₂).
 Proof.
-bbb.
-
-apply inr_eq_equiv.
-
-Definition inr_eq_equiv {A B} (b₁ b₂ : B) :
-  @Id (A + B) (inr b₁) (inr b₂) ≃ (b₁ == b₂).
-Proof.
-apply (existT _ (inr_inversion b₁ b₂)).
-apply qinv_isequiv.
-apply (existT _ (inr_equal b₁ b₂)).
-split; [ intros p; destruct p; reflexivity | idtac ].
-intros p; simpl.
-unfold "◦", "~~", id; simpl.
-refine (match p with refl _ => _ end).
-reflexivity.
-Defined.
-bbb.
-Defined.
+eapply equiv_compose; [ apply toto | idtac ].
+apply inl_eq_equiv_bis.
 
 bbb.
 
