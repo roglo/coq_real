@@ -3,6 +3,7 @@
 
 Require Import Utf8 QArith.
 Require Import NPeano.
+Notation "⊥" := False.
 
 Open Scope nat_scope.
 
@@ -2192,6 +2193,79 @@ apply ideqv.
 Defined.
 
 (* 2.12 Coproducts *)
+
+Definition inl_inversion {A B} (a₁ a₂ : A) :
+  @Id (A + B) (inl a₁) (inl a₂) → (a₁ == a₂)
+:= ap (λ a, match a with inl a₁ => a₁ | inr _ => a₁ end).
+
+Definition inr_inversion {A B} (b₁ b₂ : B) :
+  @Id (A + B) (inr b₁) (inr b₂) → (b₁ == b₂)
+:= ap (λ a, match a with inl _ => b₁ | inr b₁ => b₁ end).
+
+Definition inl_equal {A B} (a₁ a₂ : A) :
+  (a₁ == a₂) → @Id (A + B) (inl a₁) (inl a₂)
+:= λ H : a₁ == a₂,
+  match H in (_ == a) return (inl a₁ == inl a) with
+   refl _ => refl (inl a₁ : A + B)
+  end.
+
+Definition inr_equal {A B} (b₁ b₂ : B) :
+  (b₁ == b₂) → @Id (A + B) (inr b₁) (inr b₂)
+:= λ H : b₁ == b₂,
+  match H in (_ == b) return (inr b₁ == inr b) with
+   refl _ => refl (inr b₁ : A + B)
+  end.
+
+(* Expression 2.12.1 *)
+
+Definition inl_eq_equiv {A B} (a₁ a₂ : A) :
+  @Id (A + B) (inl a₁) (inl a₂) ≃ (a₁ == a₂).
+Proof.
+apply (existT _ (inl_inversion a₁ a₂)).
+apply qinv_isequiv.
+apply (existT _ (inl_equal a₁ a₂)).
+split; [ intros p; destruct p; reflexivity | idtac ].
+intros p; simpl.
+unfold "◦", "~~", id; simpl.
+refine (match p with refl _ => _ end).
+reflexivity.
+Defined.
+
+(* Expression 2.12.2 *)
+
+Definition inr_eq_equiv {A B} (b₁ b₂ : B) :
+  @Id (A + B) (inr b₁) (inr b₂) ≃ (b₁ == b₂).
+Proof.
+apply (existT _ (inr_inversion b₁ b₂)).
+apply qinv_isequiv.
+apply (existT _ (inr_equal b₁ b₂)).
+split; [ intros p; destruct p; reflexivity | idtac ].
+intros p; simpl.
+unfold "◦", "~~", id; simpl.
+refine (match p with refl _ => _ end).
+reflexivity.
+Defined.
+
+(* Expression 2.12.3 *)
+
+Definition inl_inr_equiv {A B} (a : A) (b : B) : inl a == inr b ≃ ⊥.
+Proof.
+assert (inl a == inr b → ⊥) as f.
+ intros p.
+ change (match (inl a : A + B) with inl _ => False | inr _ => True end).
+ rewrite p; constructor.
+
+ apply (existT _ f), qinv_isequiv.
+ assert (⊥ → inl a == inr b) as g by (intros H; contradiction).
+ apply (existT _ g); split; intros x; contradiction.
+Defined.
+
+(* Expression 2.12.4 *)
+
+Definition inl_family {A B} (a₀ : A) (x : A + B) : U := inl a₀ == x.
+Definition inr_family {A B} (b₀ : B) (x : A + B) : U := inr b₀ == x.
+
+(* prove that inl_family and inr_family imply 2.12.1, 2.12.2, 2.12.3... *)
 
 bbb.
 
