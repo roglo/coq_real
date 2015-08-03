@@ -2285,14 +2285,14 @@ Defined.
 
 (* let's see 'their' proof... *)
 
-Definition encode {A B} a₀ (x : A + B) (p : inl a₀ == x) : code a₀ x :=
-  transport (code a₀) p (refl a₀).
+Definition encode {A B} a₀ (x : A + B) : ∀ (p : inl a₀ == x), code a₀ x :=
+  λ p, transport (code a₀) p (refl a₀).
 
-Definition decode {A B} a₀ (x : A + B) (c : code a₀ x) : (inl a₀ == x) :=
+Definition decode {A B} a₀ (x : A + B) : ∀ (c : code a₀ x), (inl a₀ == x) :=
   match x return (code a₀ x → inl a₀ == x) with
   | inl a => ap inl
   | inr b => λ f, match f return inl a₀ == inr b with end
-  end c.
+  end.
 
 Definition encode_decode {A B} a₀ (x : A + B) :
   encode a₀ x ◦ decode a₀ x ~~ id.
@@ -2383,6 +2383,21 @@ Definition bool_unit_unit b :=
 
 Definition hott_2_12_6 : false ≠≠ true :=
   λ p, encode_inl_inr tt tt (ap bool_unit_unit p).
+
+(*
+code =
+  λ (A B : Type) (a₀ : A) (x : A + B),
+  match x with
+  | inl a => a₀ == a
+  | inr _ => ⊥
+  end
+     : ∀ A B : Type, A → A + B → U
+
+@encode
+     : ∀ (A B : Type) (a₀ : A) (x : A + B), inl a₀ == x → code a₀ x
+@decode
+     : ∀ (A B : Type) (a₀ : A) (x : A + B), code a₀ x → inl a₀ == x
+*)
 
 bbb.
 
