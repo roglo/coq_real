@@ -13,6 +13,7 @@ Inductive Id {A} x : A → Type :=
   | refl : Id x x.
 
 Notation "x == y" := (Id x y) (at level 70).
+Notation "x ≠≠ y" := (¬Id x y) (at level 70).
 
 Definition indiscernability {A} C (x y : A) (p : x == y) :=
   match p return (C x → C _) with
@@ -2194,6 +2195,8 @@ Defined.
 
 (* 2.12 Coproducts *)
 
+(* my proof *)
+
 Definition inl_inversion {A B} (a₁ a₂ : A) :
   @Id (A + B) (inl a₁) (inl a₂) → (a₁ == a₂)
 := ap (λ a, match a with inl a₁ => a₁ | inr _ => a₁ end).
@@ -2361,6 +2364,74 @@ Definition inr_eq_equiv_bis {A B} (b₁ b₂ : B) :
 Proof.
 eapply equiv_compose; [ apply hott_2_12_5_ter | apply ideqv ].
 Defined.
+
+(* In particular, theorem 2.12.5 implies *)
+
+Definition encode_inl_inl {A B} a₀
+  : ∀ a, (@Id (A + B) (inl a₀) (inl a)) → (a₀ == a)
+  := λ a, encode a₀ (inl a).
+
+Definition encode_inl_inr {A B} a₀
+  : ∀ b, (@Id (A + B) (inl a₀) (inr b)) → ⊥
+  := λ b, encode a₀ (inr b).
+
+Remark hott_2_12_6 : false ≠≠ true.
+Proof.
+intros H.
+set (f := λ b, match b with false => inl tt | true => inr tt end).
+set (g := λ t, match t with inl tt => false | inr tt => true end).
+assert (g ◦ f ~~ id) as α by (intros x;  destruct x; reflexivity).
+assert (f ◦ g ~~ id) as β.
+ intros x; destruct x as [u| u]; destruct u; reflexivity.
+
+ pose proof α false as H1.
+ pose proof α true as H2.
+ pose proof β (inl tt) as H3.
+ unfold "◦", id in H3; simpl in H3.
+oui_bon_ca_va_pas_la.
+
+assert (isequiv f) as p.
+Focus 2.
+apply isequiv_qinv in p.
+destruct p as (h, (α, β)).
+unfold "◦", "~~", id in α, β.
+pose proof α false as H1; simpl in H1.
+pose proof α true as H2; simpl in H2.
+rewrite <- H1, <- H2 in H.
+bb.
+
+assert (isequiv (λ b : bool, if b then inr tt else inl tt)) as p.
+Focus 2.
+apply isequiv_qinv in p.
+destruct p as (h, (γ, δ)).
+unfold "◦", "~~", id in γ, δ.
+pose proof δ false as I1; simpl in I1.
+pose proof δ true as I2; simpl in I2.
+rewrite <- I1, <- I2 in H.
+bbb.
+
+
+intros H.
+assert (bool ≃ unit + unit) as p.
+Focus 2.
+destruct p as (f, p).
+apply isequiv_qinv in p.
+destruct p as (g, (α, β)).
+unfold "◦", "~~", id in α, β.
+pose proof β false as H1.
+pose proof β true as H2.
+pose proof α (inl tt) as H3.
+pose proof α (inr tt) as H4.
+assert (isequiv (λ b : bool, if b then inl tt else inr tt)) as p.
+Focus 2.
+apply isequiv_qinv in p.
+destruct p as (h, (γ, δ)).
+unfold "◦", "~~", id in γ, δ.
+pose proof δ false as I1; simpl in I1.
+pose proof δ true as I2; simpl in I2.
+rewrite <- I1, <- I2 in H.
+pose proof γ (inl tt) as I3; simpl in I3.
+pose proof γ (inr tt) as I4; simpl in I4.
 
 bbb.
 
