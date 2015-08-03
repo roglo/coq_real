@@ -2375,63 +2375,14 @@ Definition encode_inl_inr {A B} a₀
   : ∀ b, (@Id (A + B) (inl a₀) (inr b)) → ⊥
   := λ b, encode a₀ (inr b).
 
-Remark hott_2_12_6 : false ≠≠ true.
-Proof.
-intros H.
-set (f := λ b, match b with false => inl tt | true => inr tt end).
-set (g := λ t, match t with inl tt => false | inr tt => true end).
-assert (g ◦ f ~~ id) as α by (intros x;  destruct x; reflexivity).
-assert (f ◦ g ~~ id) as β.
- intros x; destruct x as [u| u]; destruct u; reflexivity.
+(* Remark 2.12.6. In particular, since the two-element type 2 is
+   equivalent to 1+1, we have 0₂ ≠ 1₂ *)
 
- pose proof α false as H1.
- pose proof α true as H2.
- pose proof β (inl tt) as H3.
- unfold "◦", id in H3; simpl in H3.
-oui_bon_ca_va_pas_la.
+Definition bool_unit_unit b :=
+  match b with true => inr tt | false => inl tt end.
 
-assert (isequiv f) as p.
-Focus 2.
-apply isequiv_qinv in p.
-destruct p as (h, (α, β)).
-unfold "◦", "~~", id in α, β.
-pose proof α false as H1; simpl in H1.
-pose proof α true as H2; simpl in H2.
-rewrite <- H1, <- H2 in H.
-bb.
-
-assert (isequiv (λ b : bool, if b then inr tt else inl tt)) as p.
-Focus 2.
-apply isequiv_qinv in p.
-destruct p as (h, (γ, δ)).
-unfold "◦", "~~", id in γ, δ.
-pose proof δ false as I1; simpl in I1.
-pose proof δ true as I2; simpl in I2.
-rewrite <- I1, <- I2 in H.
-bbb.
-
-
-intros H.
-assert (bool ≃ unit + unit) as p.
-Focus 2.
-destruct p as (f, p).
-apply isequiv_qinv in p.
-destruct p as (g, (α, β)).
-unfold "◦", "~~", id in α, β.
-pose proof β false as H1.
-pose proof β true as H2.
-pose proof α (inl tt) as H3.
-pose proof α (inr tt) as H4.
-assert (isequiv (λ b : bool, if b then inl tt else inr tt)) as p.
-Focus 2.
-apply isequiv_qinv in p.
-destruct p as (h, (γ, δ)).
-unfold "◦", "~~", id in γ, δ.
-pose proof δ false as I1; simpl in I1.
-pose proof δ true as I2; simpl in I2.
-rewrite <- I1, <- I2 in H.
-pose proof γ (inl tt) as I3; simpl in I3.
-pose proof γ (inr tt) as I4; simpl in I4.
+Definition hott_2_12_6 : false ≠≠ true :=
+  λ p, encode_inl_inr tt tt (ap bool_unit_unit p).
 
 bbb.
 
