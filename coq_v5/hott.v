@@ -2417,7 +2417,33 @@ Definition transport_coprod_r {X} {x₁ x₂ : X} (p : x₁ == x₂) {A B} : ∀
 
 (* 2.13 Natural numbers *)
 
+Module ℕ.
+
+Fixpoint code m n : U :=
+  match (m, n) with
+  | (0, 0) => unit
+  | (S m, 0) => ⊥
+  | (0, S n) => ⊥
+  | (S m, S n) => code m n
+  end.
+
 bbb.
+
+Fixpoint r n : Π (n : nat), code n n :=
+  match n with
+  | 0 => tt
+  | S n => r n
+  end.
+
+Definition r : Π (n : nat), code n n :=
+  match n with
+  | 0 => tt
+  | S n => r n
+  end.
+
+bbb.
+
+end ℕ.
 
 (* some experiments... *)
 
