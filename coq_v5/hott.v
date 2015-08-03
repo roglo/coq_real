@@ -2399,6 +2399,24 @@ code =
      : ∀ (A B : Type) (a₀ : A) (x : A + B), code a₀ x → inl a₀ == x
 *)
 
+(* action of transport in coproduct types *)
+
+Definition transport_coprod_l {X} {x₁ x₂ : X} (p : x₁ == x₂) {A B} : ∀ a,
+  transport (λ x, (A x + B x)%type) p (inl a) == inl (transport A p a)
+:= λ a,
+   match p with
+   | refl _ => refl (inl (transport A (refl x₁) a))
+   end.
+
+Definition transport_coprod_r {X} {x₁ x₂ : X} (p : x₁ == x₂) {A B} : ∀ b,
+  transport (λ x, (A x + B x)%type) p (inr b) == inr (transport B p b)
+:= λ b,
+   match p with
+   | refl _ => refl (inr (transport B (refl x₁) b))
+   end.
+
+(* 2.13 Natural numbers *)
+
 bbb.
 
 (* some experiments... *)
