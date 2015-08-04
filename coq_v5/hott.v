@@ -2442,6 +2442,38 @@ revert n p; induction m; intros.
  apply ap, IHm, p.
 Defined.
 
+Definition decode2 (m n : nat) : code m n → m == n.
+revert m n.
+fix 2.
+intros m n p.
+destruct m.
+ destruct n; [ reflexivity | refine (match p with end) ].
+
+ destruct n; [ refine (match p with end) | simpl in p ].
+ apply ap, decode2, p.
+Defined.
+
+Definition decode3 (m n : nat) : code m n → m == n :=
+  (fix decode2 m n (p : code m n) :=
+     match m with
+     | 0 =>
+         λ p0 : code 0 n,
+         match n as n1 return (code 0 n1 → 0 == n1) with
+         | 0 => λ _ : code 0 0, refl 0
+         | S n1 => λ p1 : code 0 (S n1), match p1 return (0 == S n1) with
+                                         end
+         end p0
+     | S m1 =>
+         λ p0 : code (S m1) n,
+         match n as n1 return (code (S m1) n1 → S m1 == n1) with
+         | 0 => λ p1 : code (S m1) 0, match p1 return (S m1 == 0) with
+                                      end
+         | S n1 => λ p1 : code (S m1) (S n1), ap S (decode2 m1 n1 p1)
+         end p0
+     end p) m n.
+
+bbb.
+
 Theorem hott_2_13_1 : ∀ m n, (m == n) ≃ code m n.
 Proof.
 intros.
