@@ -2418,20 +2418,6 @@ Fixpoint r n : code n n :=
   | S m => r m
   end.
 
-(*
-Definition inj_S m n : S m == S n → m == n :=
-  λ p,
-  match p with
-  | refl _ => refl m
-  end.
-
-Definition surj_S m n : m == n → S m == S n :=
-  λ p,
-  match p with
-  | refl _ => refl (S m)
-  end.
-*)
-
 Definition encode (m n : nat) : m == n → code m n :=
   λ p, transport (code m) p (r m).
 
@@ -2464,35 +2450,10 @@ revert n c; induction m; intros.
 
  simpl in c.
  destruct n; [ refine (match c with end) | simpl ].
- unfold encode; simpl.
-bbb.
-
- set (x := ap S (decode m n c)).
-simpl.
-
-bbb.
-encode(succ(m), succ(n), decode(succ(m), succ(n), c))
-
-bbb.
-
-destruct m.
- destruct n, p; reflexivity.,
-
- destruct n; [ refine (match p with end) | idtac ].
- unfold encode; simpl.
-bbb.
-
-unfold transport; simpl.
-simpl in p.
-destruct p.
-
- unfold encode, decode; simpl.
- simpl in p.
-bbb.
-
-  p : code m n
-  ============================
-   encode m n (decode m n p) == p
+ unfold encode.
+ rewrite <- (hott_2_3_10 S (code (S m)) (decode m n c)).
+ apply IHm.
+Defined.
 
 Theorem hott_2_13_1 : ∀ m n, (m == n) ≃ code m n.
 Proof.
@@ -2500,52 +2461,7 @@ intros.
 apply (existT _ (encode m n)), qinv_isequiv.
 apply (existT _ (decode m n)).
 unfold "◦", "~~", id; simpl.
-split; intros p.
-bbb.
-2 subgoals, subgoal 1 (ID 3671)
-  
-  m, n : nat
-  p : code m n
-  ============================
-   encode m n (decode m n p) == p
-
-subgoal 2 (ID 3672) is:
- decode m n (encode m n p) == p
-revert m.
-induction n; intros.
- destruct m.
-  apply (existT _ (encode 0 0)).
-  apply qinv_isequiv.
-  apply (existT _ (λ _, refl 0)).
-  unfold "◦", "~~", id; simpl.
-  split; intros; [ destruct x; reflexivity | idtac ].
-  refine (match x with refl _ => _ end); reflexivity.
-
-  apply (existT _ (encode (S m) 0)), qinv_isequiv.
-  apply (existT _ (decode (S m) 0)).
-  split; intros p; refine (match p with end).
-
- destruct m.
-  apply (existT _ (encode 0 (S n))), qinv_isequiv.
-  apply (existT _ (decode 0 (S n))).
-  split; intros p; refine (match p with end).
-
-  eapply (existT _ (encode (S m) (S n))), qinv_isequiv.
-bbb.
-
-set (e := encode (S m) (S n)).
-simpl in e.
-set (d := decode (S m) (S n)).
-simpl in d.
-
-  eapply equiv_compose; [ idtac | apply IHn ].
-  apply (existT _ (inj_S m n)).
-  apply qinv_isequiv.
-  unfold qinv.
-  apply (existT _ (surj_S m n)).
-  unfold "◦", "~~", id; simpl.
-  split; intros p; [ destruct p; reflexivity | idtac ].
-  refine (match p with refl _ => _ end); reflexivity.
+split; intros p; [ apply encode_decode | apply decode_encode ].
 Defined.
 
 bbb.
