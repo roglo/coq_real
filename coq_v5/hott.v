@@ -650,6 +650,13 @@ Proof.
 intros p q r; destruct p; reflexivity.
 Qed.
 
+Definition hott_2_1_4 A (x y z w : A)
+    (p : x == y) (q : y == z) (r : z == w) :=
+  ((@hott_2_1_4_i_1 A x y p, @hott_2_1_4_i_2 A x y p),
+   (@compose_invert A x y p, @invert_compose A x y p),
+   @hott_2_1_4_iii A x y p,
+   @compose_assoc A x y z w p q r).
+
 (* Theorem 2.1.6 (Eckmann-Hilton) *)
 
 Definition Ω {A} (a : A) := (a == a).
@@ -2480,6 +2487,37 @@ Definition SemigroupStr A :=
 Definition Semigroup := Σ (A : U), SemigroupStr A.
 
 (* 2.14.1 Lifting equivalences *)
+
+Check (λ A B (e : A ≃ B), transport SemigroupStr (ua e)).
+(* λ (A B : Type) (e : A ≃ B), transport SemigroupStr (ua e)
+     : ∀ A B : Type, A ≃ B → SemigroupStr A → SemigroupStr B *)
+
+(* hott_2_1_4
+     : ∀ (A : Type) (x y z w : A) (p : x == y) (q : y == z)
+       (r : z == w),
+       (p == p • refl y) * (p == refl x • p) *
+       ((p • p⁻¹ == refl x) * (p⁻¹ • p == refl y)) *
+       (p⁻¹⁻¹ == p) * (p • (q • r) == p • q • r) *)
+
+(* @hott_2_3_9
+     : ∀ (A : Type) (x y z : A) (P : A → U) (p : x == y)
+       (q : y == z) (u : P x),
+       transport P q (transport P p u) == transport P (p • q) u *)
+
+Definition SemigroupStr_equiv {A B} : A ≃ B → SemigroupStr A ≃ SemigroupStr B.
+Proof.
+intros e.
+eapply (existT _ (transport SemigroupStr (ua e))), qinv_isequiv.
+unfold qinv.
+eapply (existT _ (transport SemigroupStr (ua e)⁻¹)).
+unfold "◦", "~~", id; simpl.
+split; intros g.
+ eapply compose; [ apply hott_2_3_9 | idtac ].
+ rewrite invert_compose; reflexivity.
+
+ eapply compose; [ apply hott_2_3_9 | idtac ].
+ rewrite compose_invert; reflexivity.
+Defined.
 
 bbb.
 
