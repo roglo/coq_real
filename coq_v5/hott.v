@@ -2456,8 +2456,18 @@ induction n; intros.
   refine (match p with end).
 
   eapply equiv_compose; [ idtac | apply IHn ].
-  assert (S m == S n → m == n) as f.
-   intros p; apply (ap pred) in p; assumption.
+  set (f :=
+    λ p : S m == S n,
+              match p in (_ == n1)
+              return
+                match n1 with
+                | 0 => IDProp
+                | S n2 => m == n2
+                end
+              with
+              | refl _ => refl m
+              end).
+Check IDProp.
 
    apply (existT _ f), qinv_isequiv.
    unfold qinv.
