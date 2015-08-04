@@ -2433,6 +2433,13 @@ Fixpoint r n : code n n :=
   | S m => r m
   end.
 
+Theorem hott_2_13_1 : ∀ m n, (m = n) ≃ code m n.
+Proof.
+intros.
+induction n.
+ destruct m; simpl.
+Focus 2.
+
 bbb.
 
 end ℕ.
