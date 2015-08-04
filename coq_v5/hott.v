@@ -2464,6 +2464,8 @@ unfold "◦", "~~", id; simpl.
 split; intros p; [ apply encode_decode | apply decode_encode ].
 Defined.
 
+Definition hott_2_13_2 {m} : S m == 0 → ⊥ := encode (S m) 0.
+
 bbb.
 
 end ℕ.
