@@ -2456,31 +2456,29 @@ induction n; intros.
   refine (match p with end).
 
   eapply equiv_compose; [ idtac | apply IHn ].
-  set (f :=
-    λ p : S m == S n,
-              match p in (_ == n1)
-              return
-                match n1 with
-                | 0 => IDProp
-                | S n2 => m == n2
-                end
-              with
-              | refl _ => refl m
-              end).
-Check IDProp.
+  apply
+    (existT _
+       (λ p : S m == S n,
+        match p in (_ == n)
+        return match n with | 0 => ∀ P, P | S n2 => m == n2 end
+        with
+        | refl _ => refl m
+        end)).
+  apply qinv_isequiv.
+  unfold qinv.
+  apply
+    (existT _
+       (λ p,
+        match p in (_ == n) return (S m == S n) with
+        | refl _ => refl (S m)
+        end)).
+  unfold "◦", "~~", id; simpl.
+  split; intros p; [ destruct p; reflexivity | idtac ].
+  refine (match p with refl _ => _ end); reflexivity.
+Defined.
 
-   apply (existT _ f), qinv_isequiv.
-   unfold qinv.
-   apply
-     (existT _
-        (λ p,
-         match p in (_ == n) return (S m == S n) with
-         | refl _ => refl (S m)
-         end)).
+bbb.
 
-   unfold "◦", "~~", id; simpl.
-   split; intros p.
-    destruct p; simpl.
 end ℕ.
 
 (* some experiments... *)
