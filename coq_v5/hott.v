@@ -2427,18 +2427,10 @@ Fixpoint code m n : U :=
   | (S m, S n) => code m n
   end.
 
-bbb.
-
-Fixpoint r n : Π (n : nat), code n n :=
+Fixpoint r n : code n n :=
   match n with
   | 0 => tt
-  | S n => r n
-  end.
-
-Definition r : Π (n : nat), code n n :=
-  match n with
-  | 0 => tt
-  | S n => r n
+  | S m => rr m
   end.
 
 bbb.
