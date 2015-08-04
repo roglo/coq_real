@@ -2433,21 +2433,44 @@ intros.
 revert m.
 induction n; intros.
  destruct m; simpl.
- apply (existT _ (λ _, tt)).
- apply qinv_isequiv.
- apply (existT _ (λ _, refl 0)).
- unfold "◦", "~~", id; simpl.
- split; intros; [ destruct x; reflexivity | idtac ].
- refine (match x with refl _ => _ end); reflexivity.
+  apply (existT _ (λ _, tt)).
+  apply qinv_isequiv.
+  apply (existT _ (λ _, refl 0)).
+  unfold "◦", "~~", id; simpl.
+  split; intros; [ destruct x; reflexivity | idtac ].
+  refine (match x with refl _ => _ end); reflexivity.
 
- apply (existT _ (λ p, encode (S m) p⁻¹)).
- apply qinv_isequiv.
- apply (existT _ (λ p : ⊥, match p with end)).
- unfold "◦", "~~", id; simpl.
- split; intros p; [ destruct p | idtac ].
- refine (match p with end).
-bbb.
+  apply (existT _ (λ p, encode (S m) p⁻¹)).
+  apply qinv_isequiv.
+  apply (existT _ (λ p : ⊥, match p with end)).
+  unfold "◦", "~~", id; simpl.
+  split; intros p; [ destruct p | idtac ].
+  refine (match p with end).
 
+ destruct m; simpl.
+  apply (existT _ (encode (S n))).
+  apply qinv_isequiv.
+  apply (existT _ (λ p : ⊥, match p with end)).
+  unfold "◦", "~~", id; simpl.
+  split; intros p; [ destruct p | idtac ].
+  refine (match p with end).
+
+  eapply equiv_compose; [ idtac | apply IHn ].
+  assert (S m == S n → m == n) as f.
+   intros p; apply (ap pred) in p; assumption.
+
+   apply (existT _ f), qinv_isequiv.
+   unfold qinv.
+   apply
+     (existT _
+        (λ p,
+         match p in (_ == n) return (S m == S n) with
+         | refl _ => refl (S m)
+         end)).
+
+   unfold "◦", "~~", id; simpl.
+   split; intros p.
+    destruct p; simpl.
 end ℕ.
 
 (* some experiments... *)
