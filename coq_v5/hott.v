@@ -2418,15 +2418,6 @@ Fixpoint r n : code n n :=
   | S m => r m
   end.
 
-Definition encode (x : nat) : ∀ (p : 0 == x), code 0 x :=
-  λ p, transport (code 0) p (r 0).
-
-Definition decode (x : nat) : ∀ (c : code 0 x), (0 == x) :=
-  match x with
-  | 0 => λ p, refl 0
-  | S b => λ p, match p return 0 == S b with end
-  end.
-
 Definition inj_S m n : S m == S n → m == n :=
   λ p,
   match p with
@@ -2438,6 +2429,18 @@ Definition surj_S m n : m == n → S m == S n :=
   match p with
   | refl _ => refl (S m)
   end.
+
+Definition encode (m n : nat) : m == n → code m n :=
+  λ p, transport (code m) p (r m).
+
+Definition decode (m n : nat) : code m n → m == n.
+intros p.
+revert n p; induction m; intros.
+ destruct n; [ reflexivity | refine (match p with end) ].
+
+ destruct n; [ refine (match p with end) | simpl in p ].
+ apply ap, IHm, p.
+Defined.
 
 Theorem hott_2_13_1 : ∀ m n, (m == n) ≃ code m n.
 Proof.
@@ -2452,16 +2455,14 @@ induction n; intros.
   split; intros; [ destruct x; reflexivity | idtac ].
   refine (match x with refl _ => _ end); reflexivity.
 
-  apply (existT _ (λ p, encode (S m) p⁻¹)).
-  apply qinv_isequiv.
+  apply (existT _ (encode (S m) 0)), qinv_isequiv.
   apply (existT _ (λ p : ⊥, match p with end)).
   unfold "◦", "~~", id; simpl.
   split; intros p; [ destruct p | idtac ].
   refine (match p with end).
 
  destruct m; simpl.
-  apply (existT _ (encode (S n))).
-  apply qinv_isequiv.
+  apply (existT _ (encode 0 (S n))), qinv_isequiv.
   apply (existT _ (λ p : ⊥, match p with end)).
   unfold "◦", "~~", id; simpl.
   split; intros p; [ destruct p | idtac ].
