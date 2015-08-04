@@ -2447,15 +2447,45 @@ destruct m.
  apply ap, IHn, p.
 Defined.
 
-Theorem encode_decode {m n} : ∀ (p : code m n),
-  encode m n (decode m n p) == p.
+Theorem decode_encode {m n} : ∀ p, decode m n (encode m n p) == p.
 Proof.
 intros p.
+destruct p; simpl; unfold id; simpl.
+induction m; [ reflexivity | simpl ].
+apply (ap (ap S)) in IHm; assumption.
+Defined.
+
+Theorem encode_decode {m n} : ∀ c, encode m n (decode m n c) == c.
+Proof.
+intros c.
+revert n c; induction m; intros.
+ simpl in c.
+ destruct n, c; reflexivity.
+
+ simpl in c.
+ destruct n; [ refine (match c with end) | simpl ].
+ unfold encode; simpl.
+bbb.
+
+ set (x := ap S (decode m n c)).
+simpl.
+
+bbb.
+encode(succ(m), succ(n), decode(succ(m), succ(n), c))
+
+bbb.
+
 destruct m.
- destruct n, p; reflexivity.
+ destruct n, p; reflexivity.,
 
  destruct n; [ refine (match p with end) | idtac ].
- simpl.
+ unfold encode; simpl.
+bbb.
+
+unfold transport; simpl.
+simpl in p.
+destruct p.
+
  unfold encode, decode; simpl.
  simpl in p.
 bbb.
