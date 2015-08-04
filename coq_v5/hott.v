@@ -2466,6 +2466,10 @@ Defined.
 
 Definition hott_2_13_2 {m} : S m == 0 → ⊥ := encode (S m) 0.
 
+Definition hott_2_13_3 m n :
+  (S m == S n → code (S m) (S n)) == (code m n → m == n).
+Proof.
+simpl.
 bbb.
 
 end ℕ.
