@@ -2378,26 +2378,11 @@ Definition encode_inl_inr {A B} a₀
 (* Remark 2.12.6. In particular, since the two-element type 2 is
    equivalent to 1+1, we have 0₂ ≠ 1₂ *)
 
-Definition bool_unit_unit b :=
-  match b with true => inr tt | false => inl tt end.
+Definition bool_unit_unit : bool → unit + unit :=
+  λ b, match b with true => inr tt | false => inl tt end.
 
 Definition hott_2_12_6 : false ≠≠ true :=
   λ p, encode_inl_inr tt tt (ap bool_unit_unit p).
-
-(*
-code =
-  λ (A B : Type) (a₀ : A) (x : A + B),
-  match x with
-  | inl a => a₀ == a
-  | inr _ => ⊥
-  end
-     : ∀ A B : Type, A → A + B → U
-
-@encode
-     : ∀ (A B : Type) (a₀ : A) (x : A + B), inl a₀ == x → code a₀ x
-@decode
-     : ∀ (A B : Type) (a₀ : A) (x : A + B), code a₀ x → inl a₀ == x
-*)
 
 (* action of transport in coproduct types *)
 
@@ -2433,13 +2418,34 @@ Fixpoint r n : code n n :=
   | S m => r m
   end.
 
-Theorem hott_2_13_1 : ∀ m n, (m = n) ≃ code m n.
+Definition encode (x : nat) : ∀ (p : 0 == x), code 0 x :=
+  λ p, transport (code 0) p (r 0).
+
+Definition decode (x : nat) : ∀ (c : code 0 x), (0 == x) :=
+  match x with
+  | 0 => λ p, refl 0
+  | S b => λ p, match p return 0 == S b with end
+  end.
+
+Theorem hott_2_13_1 : ∀ m n, (m == n) ≃ code m n.
 Proof.
 intros.
-induction n.
+revert m.
+induction n; intros.
  destruct m; simpl.
-Focus 2.
+ apply (existT _ (λ _, tt)).
+ apply qinv_isequiv.
+ apply (existT _ (λ _, refl 0)).
+ unfold "◦", "~~", id; simpl.
+ split; intros; [ destruct x; reflexivity | idtac ].
+ refine (match x with refl _ => _ end); reflexivity.
 
+ apply (existT _ (λ p, encode (S m) p⁻¹)).
+ apply qinv_isequiv.
+ apply (existT _ (λ p : ⊥, match p with end)).
+ unfold "◦", "~~", id; simpl.
+ split; intros p; [ destruct p | idtac ].
+ refine (match p with end).
 bbb.
 
 end ℕ.
