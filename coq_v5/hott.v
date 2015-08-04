@@ -2427,6 +2427,18 @@ Definition decode (x : nat) : ∀ (c : code 0 x), (0 == x) :=
   | S b => λ p, match p return 0 == S b with end
   end.
 
+Definition inj_S m n : S m == S n → m == n :=
+  λ p,
+  match p with
+  | refl _ => refl m
+  end.
+
+Definition surj_S m n : m == n → S m == S n :=
+  λ p,
+  match p with
+  | refl _ => refl (S m)
+  end.
+
 Theorem hott_2_13_1 : ∀ m n, (m == n) ≃ code m n.
 Proof.
 intros.
@@ -2456,22 +2468,10 @@ induction n; intros.
   refine (match p with end).
 
   eapply equiv_compose; [ idtac | apply IHn ].
-  apply
-    (existT _
-       (λ p : S m == S n,
-        match p in (_ == n)
-        return match n with | 0 => ∀ P, P | S n2 => m == n2 end
-        with
-        | refl _ => refl m
-        end)).
+  apply (existT _ (inj_S m n)).
   apply qinv_isequiv.
   unfold qinv.
-  apply
-    (existT _
-       (λ p,
-        match p in (_ == n) return (S m == S n) with
-        | refl _ => refl (S m)
-        end)).
+  apply (existT _ (surj_S m n)).
   unfold "◦", "~~", id; simpl.
   split; intros p; [ destruct p; reflexivity | idtac ].
   refine (match p with refl _ => _ end); reflexivity.
