@@ -2418,6 +2418,7 @@ Fixpoint r n : code n n :=
   | S m => r m
   end.
 
+(*
 Definition inj_S m n : S m == S n → m == n :=
   λ p,
   match p with
@@ -2429,58 +2430,61 @@ Definition surj_S m n : m == n → S m == S n :=
   match p with
   | refl _ => refl (S m)
   end.
+*)
 
 Definition encode (m n : nat) : m == n → code m n :=
   λ p, transport (code m) p (r m).
 
 Definition decode (m n : nat) : code m n → m == n.
-intros p.
-revert n p; induction m; intros.
- destruct n; [ reflexivity | refine (match p with end) ].
-
- destruct n; [ refine (match p with end) | simpl in p ].
- apply ap, IHm, p.
-Defined.
-
-Definition decode2 (m n : nat) : code m n → m == n.
+Proof.
 revert m n.
-fix 2.
+fix 1; rename decode0 into IHn.
 intros m n p.
 destruct m.
  destruct n; [ reflexivity | refine (match p with end) ].
 
  destruct n; [ refine (match p with end) | simpl in p ].
- apply ap, decode2, p.
+ apply ap, IHn, p.
 Defined.
 
-Definition decode3 (m n : nat) : code m n → m == n :=
-  (fix decode2 m n (p : code m n) :=
-     match m with
-     | 0 =>
-         λ p0 : code 0 n,
-         match n as n1 return (code 0 n1 → 0 == n1) with
-         | 0 => λ _ : code 0 0, refl 0
-         | S n1 => λ p1 : code 0 (S n1), match p1 return (0 == S n1) with
-                                         end
-         end p0
-     | S m1 =>
-         λ p0 : code (S m1) n,
-         match n as n1 return (code (S m1) n1 → S m1 == n1) with
-         | 0 => λ p1 : code (S m1) 0, match p1 return (S m1 == 0) with
-                                      end
-         | S n1 => λ p1 : code (S m1) (S n1), ap S (decode2 m1 n1 p1)
-         end p0
-     end p) m n.
+Theorem encode_decode {m n} : ∀ (p : code m n),
+  encode m n (decode m n p) == p.
+Proof.
+intros p.
+destruct m.
+ destruct n, p; reflexivity.
 
+ destruct n; [ refine (match p with end) | idtac ].
+ simpl.
+ unfold encode, decode; simpl.
+ simpl in p.
 bbb.
+
+  p : code m n
+  ============================
+   encode m n (decode m n p) == p
 
 Theorem hott_2_13_1 : ∀ m n, (m == n) ≃ code m n.
 Proof.
 intros.
+apply (existT _ (encode m n)), qinv_isequiv.
+apply (existT _ (decode m n)).
+unfold "◦", "~~", id; simpl.
+split; intros p.
+bbb.
+2 subgoals, subgoal 1 (ID 3671)
+  
+  m, n : nat
+  p : code m n
+  ============================
+   encode m n (decode m n p) == p
+
+subgoal 2 (ID 3672) is:
+ decode m n (encode m n p) == p
 revert m.
 induction n; intros.
- destruct m; simpl.
-  apply (existT _ (λ _, tt)).
+ destruct m.
+  apply (existT _ (encode 0 0)).
   apply qinv_isequiv.
   apply (existT _ (λ _, refl 0)).
   unfold "◦", "~~", id; simpl.
@@ -2488,17 +2492,21 @@ induction n; intros.
   refine (match x with refl _ => _ end); reflexivity.
 
   apply (existT _ (encode (S m) 0)), qinv_isequiv.
-  apply (existT _ (λ p : ⊥, match p with end)).
-  unfold "◦", "~~", id; simpl.
-  split; intros p; [ destruct p | idtac ].
-  refine (match p with end).
+  apply (existT _ (decode (S m) 0)).
+  split; intros p; refine (match p with end).
 
- destruct m; simpl.
+ destruct m.
   apply (existT _ (encode 0 (S n))), qinv_isequiv.
-  apply (existT _ (λ p : ⊥, match p with end)).
-  unfold "◦", "~~", id; simpl.
-  split; intros p; [ destruct p | idtac ].
-  refine (match p with end).
+  apply (existT _ (decode 0 (S n))).
+  split; intros p; refine (match p with end).
+
+  eapply (existT _ (encode (S m) (S n))), qinv_isequiv.
+bbb.
+
+set (e := encode (S m) (S n)).
+simpl in e.
+set (d := decode (S m) (S n)).
+simpl in d.
 
   eapply equiv_compose; [ idtac | apply IHn ].
   apply (existT _ (inj_S m n)).
