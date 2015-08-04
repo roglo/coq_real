@@ -2473,7 +2473,17 @@ End ℕ.
 
 (* 2.14 Example: equality of structures *)
 
-(* *)
+Definition SemigroupStr A :=
+  Σ (m : A → A → A), Π (x : A), Π (y : A), Π (z : A),
+  m (m x y) z == m x (m y z).
+
+Definition Semigroup := Σ (A : U), SemigroupStr A.
+
+(* 2.14.1 Lifting equivalences *)
+
+bbb.
+
+(* test *)
 
 Theorem toto {A B} {f g : A → B} : f ~~ g → f == g.
 Proof.
