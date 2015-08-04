@@ -2430,7 +2430,7 @@ Fixpoint code m n : U :=
 Fixpoint r n : code n n :=
   match n with
   | 0 => tt
-  | S m => rr m
+  | S m => r m
   end.
 
 bbb.
