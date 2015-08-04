@@ -925,7 +925,7 @@ Definition hott_2_3_11 {A x y} : ∀ (P Q : A → U) (f : Π (x : A), P x → Q 
 
 Definition homotopy {A B} (f g : A → B) := Π (x : A), (f x == g x).
 
-Notation "f '~~' g" := (homotopy f g) (at level 110, g at level 110).
+Notation "f '~~' g" := (homotopy f g) (at level 70).
 
 Definition homotopy_refl {A B} : reflexive _ (@homotopy A B) :=
   λ _ _, refl _.
@@ -2473,4 +2473,9 @@ End ℕ.
 
 (* 2.14 Example: equality of structures *)
 
+(* *)
+
+Theorem toto {A B} {f g : A → B} : f ~~ g → f == g.
+Proof.
+intros p.
 bbb.
