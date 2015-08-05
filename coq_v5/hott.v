@@ -1516,6 +1516,8 @@ Theorem hott_2_7_4 {A} : ∀ (P : A → U) (Q : (Σ (x : A), P x) → U),
   existT _ (@transport _ P x y p u) zzz.
 Proof.
 intros.
+bbb.
+
 Abort. (* 1/ not sure how to do that, 2/ don't know what zzz should b
           3/ I don't understand the whole thing → I give up for the moment
 
@@ -2560,6 +2562,8 @@ assert (∀ b₁ b₂,
 intros b₁ b₂.
 subst m'.
 Focus 2.
+Check ex_2_7_4.
+
 bbb. je comprends que dalle, chuis complètement largué...
 
 generalize p; intros q.
