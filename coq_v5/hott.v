@@ -1439,8 +1439,12 @@ Definition pr₁ {A B} := @Σ_pr₁ A B.
 Definition pr₂ {A B} := @Σ_pr₂ A B.
 
 Definition transp_eq {A P} : ∀ (w w' : Σ (x : A), P x) (p : w == w'),
-  (ap pr₁ p)⁎ (pr₂ w) == pr₂ w'.
-Proof. intros; destruct p; reflexivity. Qed.
+  (ap pr₁ p)⁎ (pr₂ w) == pr₂ w'
+:=
+  λ w w' p,
+  match p with
+  | refl _ => refl (pr₂ w)
+  end.
 
 bbb.
 
