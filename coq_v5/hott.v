@@ -2538,10 +2538,19 @@ Print cartesian.pair_eq.
 
 Definition titi {A B} (e : A ≃ B) (m : A → A → A) (a : Assoc A m) :
   let m' : B → B → B := transport (λ X, X → X → X) (ua e) m in
+(*
+  let a' := transport _ (Π_type.pair_eq (ua e) (refl m')) a in
+*)
   ∃ a' : Assoc B m',
+(**)
   transport SemigroupStr (ua e) (existT _ m a) == existT _ m' a'.
 Proof.
 intros.
+pose proof @transport as H1.
+Check (λ x, @transport _ (Assoc B) x m').
+bbb.
+
+Check (refl m').
 (* Π_type.pair_eq = 
      : ∀ (A : Type) (B : A → Type) (x y : A) (p : x == y) 
        (u : B x), existT B x u == existT B y (transport B p u)
@@ -2549,7 +2558,6 @@ intros.
 Arguments A, B, x, y are implicit and maximally inserted
 *)
 pose proof (Assoc B m').
-pose proof @transport.
 pose proof @Π_type.pair_eq.
 pose proof (@Π_type.pair_eq U id A B (ua e)).
 bbb.
