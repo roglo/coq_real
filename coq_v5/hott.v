@@ -1438,24 +1438,22 @@ Module Σ_type.
 Definition pr₁ {A B} := @Σ_pr₁ A B.
 Definition pr₂ {A B} := @Σ_pr₂ A B.
 
-(* experimentation... *)
-
-Definition toto {A P} : ∀ (w w' : Σ (x : A), P x) (p : w == w'),
+Definition transp_eq {A P} : ∀ (w w' : Σ (x : A), P x) (p : w == w'),
   (ap pr₁ p)⁎ (pr₂ w) == pr₂ w'.
-Proof.
-intros.
+Proof. intros; destruct p; reflexivity. Qed.
+
 bbb.
 
 Lemma hott_2_7_2_f {A} : ∀ P (w w' : Σ (x : A), P x),
-  w == w' → Σ (p : pr₁ w == pr₁ w'), transport P p (pr₂ w) == pr₂ w'.
+  w == w' → Σ (p : pr₁ w == pr₁ w'), p⁎ (pr₂ w) == pr₂ w'.
 Proof.
 intros P w w' p.
 destruct p; simpl.
-apply existT with (x := refl (pr₁ w)); reflexivity.
+apply (existT _ (refl _)); reflexivity.
 Defined.
 
 Lemma hott_2_7_2_g {A} : ∀ P (w w' : Σ (x : A), P x),
-  (Σ (p : pr₁ w == pr₁ w'), transport P p (pr₂ w) == pr₂ w') → w == w'.
+  (Σ (p : pr₁ w == pr₁ w'), p⁎ (pr₂ w) == pr₂ w') → w == w'.
 Proof.
 intros P w w' p.
 destruct w as (w₁, w₂).
@@ -1469,18 +1467,15 @@ Theorem hott_2_7_2 {A} : ∀ (P : A → U) (w w' : Σ (x : A), P x),
   (w == w') ≃ Σ (p : pr₁ w == pr₁ w'), transport P p (pr₂ w) == pr₂ w'.
 Proof.
 intros.
-set (f := hott_2_7_2_f P w w').
-set (g := hott_2_7_2_g P w w').
-apply existT with (x := f).
+apply (existT _ (hott_2_7_2_f P w w')).
 apply qinv_isequiv.
-apply (existT _ g); split.
+apply (existT _ (hott_2_7_2_g P w w')); split.
  intros r; unfold id; simpl.
  destruct r as (p, q).
  destruct w as (a, b).
  destruct w' as (a', b').
- simpl in p, q, f, g; simpl.
+ simpl in p, q; simpl.
  destruct p, q; simpl.
- subst f g; simpl.
  unfold hott_2_7_2_f; simpl.
  unfold hott_2_7_2_g; simpl.
  unfold "◦"; simpl.
@@ -1488,9 +1483,7 @@ apply (existT _ g); split.
 
  intros r; unfold id; simpl.
  destruct r.
- destruct w as (a, b).
- simpl in f, g; simpl.
- subst f g; simpl.
+ destruct w as (a, b); simpl.
  unfold hott_2_7_2_f; simpl.
  unfold hott_2_7_2_g; simpl.
  unfold "◦"; simpl.
