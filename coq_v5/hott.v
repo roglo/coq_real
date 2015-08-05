@@ -2482,7 +2482,7 @@ End ℕ.
 
 Definition SemigroupStr A :=
   Σ (m : A → A → A), Π (x : A), Π (y : A), Π (z : A),
-  m (m x y) z == m x (m y z).
+  m x (m y z) == m (m x y) z.
 
 Definition Semigroup := Σ (A : U), SemigroupStr A.
 
@@ -2518,25 +2518,13 @@ split; intros g.
 Defined.
 
 Definition Assoc X m :=
-  Π (x : X), Π (y : X), Π (z : X), m x (m y z) = m (m x y) z.
+  Π (x : X), Π (y : X), Π (z : X), m x (m y z) == m (m x y) z.
 
 Check (λ A B (e : A ≃ B), Π_type.pair_eq (ua e) (refl _)).
 
 Check
   (λ A B (e : A ≃ B) m a,
    transport SemigroupStr (ua e) (existT _ m a)).
-(*
-λ (A B : Type) (e : A ≃ B) (m : A → A → A)
-(a : (λ m0 : A → A → A, ∀ x y z : A, m0 (m0 x y) z == m0 x (m0 y z)) m),
-transport SemigroupStr (ua e)
-  (existT (λ m0 : A → A → A, ∀ x y z : A, m0 (m0 x y) z == m0 x (m0 y z)) m a)
-     : ∀ A B : Type,
-       A ≃ B
-       → ∀ m : A → A → A,
-         (∀ x y z : A, m (m x y) z == m x (m y z)) → SemigroupStr B
-*)
-
-Print SemigroupStr.
 
 Print cartesian.pair_eq.
 
@@ -2548,12 +2536,54 @@ Print cartesian.pair_eq.
      : ∀ (A : Type) (B : A → Type) (x y : A) (p : x == y)
        (u : B x), existT B x u == existT B y (transport B p u) *)
 
-Definition titi {A B} (e : A ≃ B) (m : A → A → A) aaa
+Definition titi {A B} (e : A ≃ B) (m : A → A → A) (a : Assoc A m) :
+  let m' : B → B → B := transport (λ X, X → X → X) (ua e) m in
+  ∃ a' : Assoc B m',
+  transport SemigroupStr (ua e) (existT _ m a) == existT _ m' a'.
+Proof.
+intros.
+(* Π_type.pair_eq = 
+     : ∀ (A : Type) (B : A → Type) (x y : A) (p : x == y) 
+       (u : B x), existT B x u == existT B y (transport B p u)
+
+Arguments A, B, x, y are implicit and maximally inserted
+*)
+pose proof (Assoc B m').
+pose proof @transport.
+pose proof @Π_type.pair_eq.
+pose proof (@Π_type.pair_eq U id A B (ua e)).
+bbb.
+
+Definition titi {A B} (e : A ≃ B) (m : A → A → A) (a : Assoc A m) :
+  let m' : B → B → B := transport (λ X, X → X → X) (ua e) m in
+  ∃ a' : Assoc B m',
+  transport SemigroupStr (ua e) (existT _ m a) == existT _ m' a'.
+Proof.
+intros; subst m'.
+bbb.
+
+Definition titi {A B} (e : A ≃ B) (m : A → A → A) (a : Assoc A m) :
+  let m' : B → B → B := transport (λ X, X → X → X) (ua e) m in
+  let a' := transport _ (Π_type.pair_eq (ua e) (refl m')) a in
+  transport SemigroupStr (ua e) (existT _ m a) == existT _ m' a'.
+
+Definition titi {A B} (e : A ≃ B) (m : A → A → A)
     (a : ∀ x y z : A, m (m x y) z == m x (m y z)) :=
   let m' : B → B → B := transport (λ X, X → X → X) (ua e) m in
   let a' : ∀ x y z : B, m' (m' x y) z == m' x (m' y z)
     := transport _ (Π_type.pair_eq (ua e) (refl m')) aaa in
   transport SemigroupStr (ua e) (existT _ m a) == existT _ m' a'.
+
+Definition titi {A B} (e : A ≃ B) (m : A → A → A) (a : Assoc A m) :
+  let m' : B → B → B := transport (λ X, X → X → X) (ua e) m in
+  ∃ a' : Assoc B (transport (λ X : Type, X → X → X) (ua e) m),
+  transport SemigroupStr (ua e) (existT _ m a) == existT _ m' a'.
+Proof.
+intros.
+subst m'; simpl.
+Check (Assoc B (transport (λ X : Type, X → X → X) (ua e) m)).
+
+
 
 Toplevel input, characters 0-370:
 Error:
