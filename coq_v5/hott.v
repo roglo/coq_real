@@ -2508,9 +2508,7 @@ Definition SemigroupStr_equiv {A B} : A ≃ B → SemigroupStr A ≃ SemigroupSt
 Proof.
 intros e.
 eapply (existT _ (transport SemigroupStr (ua e))), qinv_isequiv.
-unfold qinv.
 eapply (existT _ (transport SemigroupStr (ua e)⁻¹)).
-unfold "◦", "~~", id; simpl.
 split; intros g.
  eapply compose; [ apply hott_2_3_9 | idtac ].
  rewrite invert_compose; reflexivity.
