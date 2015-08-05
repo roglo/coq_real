@@ -2517,6 +2517,59 @@ split; intros g.
  rewrite compose_invert; reflexivity.
 Defined.
 
+Definition Assoc X m :=
+  Π (x : X), Π (y : X), Π (z : X), m x (m y z) = m (m x y) z.
+
+Check (λ A B (e : A ≃ B), Π_type.pair_eq (ua e) (refl _)).
+
+Check
+  (λ A B (e : A ≃ B) m a,
+   transport SemigroupStr (ua e) (existT _ m a)).
+(*
+λ (A B : Type) (e : A ≃ B) (m : A → A → A)
+(a : (λ m0 : A → A → A, ∀ x y z : A, m0 (m0 x y) z == m0 x (m0 y z)) m),
+transport SemigroupStr (ua e)
+  (existT (λ m0 : A → A → A, ∀ x y z : A, m0 (m0 x y) z == m0 x (m0 y z)) m a)
+     : ∀ A B : Type,
+       A ≃ B
+       → ∀ m : A → A → A,
+         (∀ x y z : A, m (m x y) z == m x (m y z)) → SemigroupStr B
+*)
+
+Print SemigroupStr.
+
+Print cartesian.pair_eq.
+
+(* @cartesian.pair_eq
+     : ∀ (A B : Type) (x y : A * B),
+       (cartesian.pr₁ x == cartesian.pr₁ y) *
+       (cartesian.pr₂ x == cartesian.pr₂ y) → x == y *)
+(* @Π_type.pair_eq
+     : ∀ (A : Type) (B : A → Type) (x y : A) (p : x == y)
+       (u : B x), existT B x u == existT B y (transport B p u) *)
+
+Definition titi {A B} (e : A ≃ B) (m : A → A → A) aaa
+    (a : ∀ x y z : A, m (m x y) z == m x (m y z)) :=
+  let m' : B → B → B := transport (λ X, X → X → X) (ua e) m in
+  let a' : ∀ x y z : B, m' (m' x y) z == m' x (m' y z)
+    := transport _ (Π_type.pair_eq (ua e) (refl m')) aaa in
+  transport SemigroupStr (ua e) (existT _ m a) == existT _ m' a'.
+
+Toplevel input, characters 0-370:
+Error:
+In environment
+A : ?X3674
+B : ?X3675
+e : A ≃ B
+m : A → A → A
+aaa : ?X3676
+a : ∀ x y z : A, m (m x y) z == m x (m y z)
+m' := transport (λ X : ?X3678, X → X → X) (ua e) m : B → B → B
+Unable to unify "?B" with "?B".
+
+Proof.
+intros.
+subst m'; simpl.
 bbb.
 
 (* test *)
