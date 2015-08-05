@@ -2546,8 +2546,47 @@ Definition titi {A B} (e : A ≃ B) (m : A → A → A) (a : Assoc A m) :
   transport SemigroupStr (ua e) (existT _ m a) == existT _ m' a'.
 Proof.
 intros.
+Check @ex_2_4_9.
+(* ex_2_4_9
+     : ∀ (A : Type) (x y : A) (p : x == y) (P : A → U), qinv (transport P p) *)
+Check (@ex_2_4_9 U A B (ua e) id).
+(* ex_2_4_9 U A B (ua e) id
+     : qinv (transport id (ua e)) *)
+set (p := @ex_2_4_9 U A B (ua e) id).
+assert (∀ b₁ b₂,
+  m' b₁ b₂ ==
+  transport id (ua e)
+    (m (transport id (ua e)⁻¹ b₁) (transport id (ua e)⁻¹ b₂))).
+intros b₁ b₂.
+subst m'.
+Focus 2.
+bbb. je comprends que dalle, chuis complètement largué...
+
+generalize p; intros q.
+destruct q as (f, (α, β)).
+unfold "◦", "~~" in α, β.
+rewrite α.
+bbb.
+
+destruct p as (f, Hf).
+
+Check (transport SemigroupStr).
+Check (existT (Assoc B) m').
+set (cartesian.pair_eq (cartesian.pr₁ (A, B) == cartesian.pr₂ (A, B), _)).
+simpl in x.
+Check (λ x, cartesian.pair_eq (ua e, x)).
+
+The term "(ua e, x)" has type "((A == B) * ?B0)%type"
+while it is expected to have type
+ "((cartesian.pr₁ ?x == cartesian.pr₁ ?y) *
+   (cartesian.pr₂ ?x == cartesian.pr₂ ?y))%type".
+Check (Π_type.pair_eq (ua e) (refl m')).
 pose proof @transport as H1.
-Check (λ x, @transport _ (Assoc B) x m').
+Check (@transport (B → B → B) (Assoc B) m' m' (refl m')).
+Check (@transport).
+Check (@transport (A → A → A) (Assoc A) m m (refl m) a).
+Check (λ A P x y, @transport A P x y).
+Check (λ A B x y p, @Π_type.pair_eq (A → A → A) B x y p Assoc).
 bbb.
 
 Check (refl m').
