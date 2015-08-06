@@ -1446,6 +1446,15 @@ Definition transp_eq {A P} : ∀ (w w' : Σ (x : A), P x) (p : w == w'),
   | refl _ => refl (pr₂ w)
   end.
 
+Remark hott_2_7_1 {A P} : ∀ (xu xv : {x : A & P x}), xu == xv
+  → ∃ (p : projT1 xu == projT1 xv), p⁎ (projT2 xu) == projT2 xv.
+Proof.
+intros xu xv q.
+destruct q; simpl.
+exists (refl _); simpl.
+reflexivity.
+Defined.
+
 bbb.
 
 Lemma hott_2_7_2_f {A} : ∀ P (w w' : Σ (x : A), P x),
