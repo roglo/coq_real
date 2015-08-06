@@ -1438,7 +1438,7 @@ Module Σ_type.
 Definition pr₁ {A B} := @Σ_pr₁ A B.
 Definition pr₂ {A B} := @Σ_pr₂ A B.
 
-Definition transp_eq {A P} : ∀ (w w' : Σ (x : A), P x) (p : w == w'),
+Definition transport_eq {A P} : ∀ (w w' : Σ (x : A), P x) (p : w == w'),
   (ap pr₁ p)⁎ (pr₂ w) == pr₂ w'
 :=
   λ w w' p,
@@ -1446,13 +1446,43 @@ Definition transp_eq {A P} : ∀ (w w' : Σ (x : A), P x) (p : w == w'),
   | refl _ => refl (pr₂ w)
   end.
 
-Remark glop {A P} : ∀ (w w' : Σ (x : A), P x) (p : w == w'),
-  P (pr₁ w) == P (pr₁ w').
+Definition depend_eq {A P} : ∀ (w w' : Σ (x : A), P x) (p : w == w'),
+  P (pr₁ w) == P (pr₁ w')
+:=
+  λ w w' p,
+  match p with
+  | refl _ => refl (P (pr₁ w))
+  end.
+
+bbb.
+
+(* trying to find an example with w w' : Σ (x : A), P x and w = w'
+   but pr₂ w ≠ pr₂ w' *)
+
+(* problem: we can indeed prove that P (pr₁ w) == P (pr₂ w), but it
+   does not mean that we can compare their elements. The types are
+   equal, but not equal for the typing algorithm *)
+
+(* something that propositionally equal but not judmentally equal *)
+
+Definition glap {A P} : ∀ (w w' : Σ (x : A), P x) (p : w == w'),
+  ∀ (x : P (pr₁ w)) (y : P (pr₁ w')), x == y.
+
+
+Remark glip {A P} : ∀ (w w' : Σ (x : A), P x) (p : w == w'),
+  pr₂ w == pr₂ w'.
 Proof.
 intros w w' p.
-destruct p.
-reflexivity.
-Qed.
+
+Definition toto b :=
+  match b with
+  | true => bool
+  | false => nat
+  end.
+
+Definition glip := Σ (x : bool), toto (negb x).
+
+Check (existT (λ x, toto (negb x)) true 3).
 
 (* above, surprising! *)
 
