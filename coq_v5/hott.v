@@ -1454,16 +1454,16 @@ Definition depend_eq {A P} : ∀ (w w' : Σ (x : A), P x) (p : w == w'),
   | refl _ => refl (P (pr₁ w))
   end.
 
-bbb.
-
 (* trying to find an example with w w' : Σ (x : A), P x and w = w'
    but pr₂ w ≠ pr₂ w' *)
 
 (* problem: we can indeed prove that P (pr₁ w) == P (pr₂ w), but it
-   does not mean that we can compare their elements. The types are
-   equal, but not equal for the typing algorithm *)
+   does not mean that their elements are of the same type. The types
+   are equal, but not equal for the typing algorithm *)
 
-(* something that propositionally equal but not judmentally equal *)
+(* something that propositionally equal but not judmentally equal... ? *)
+
+bbb.
 
 Definition glap {A P} : ∀ (w w' : Σ (x : A), P x) (p : w == w'),
   ∀ (x : P (pr₁ w)) (y : P (pr₁ w')), x == y.
