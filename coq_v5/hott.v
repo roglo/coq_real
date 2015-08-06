@@ -1451,8 +1451,7 @@ Remark hott_2_7_1 {A P} : ∀ (w w' : Σ (x : A), P x), w == w'
 Proof.
 intros w w' q.
 destruct q; simpl.
-exists (refl _); simpl.
-reflexivity.
+exists (refl _); reflexivity.
 Defined.
 
 bbb.
