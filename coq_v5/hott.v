@@ -1446,12 +1446,24 @@ Definition transp_eq {A P} : ∀ (w w' : Σ (x : A), P x) (p : w == w'),
   | refl _ => refl (pr₂ w)
   end.
 
-Remark hott_2_7_1 {A P} : ∀ (w w' : Σ (x : A), P x), w == w'
-  → ∃ (p : pr₁ w == pr₁ w'), p⁎ (pr₂ w) == pr₂ w'.
+Remark glop {A P} : ∀ (w w' : Σ (x : A), P x) (p : w == w'),
+  P (pr₁ w) == P (pr₁ w').
 Proof.
-intros w w' q.
-destruct q; simpl.
-exists (refl _); reflexivity.
+intros w w' p.
+destruct p.
+reflexivity.
+Qed.
+
+(* above, surprising! *)
+
+bbb.
+
+Remark hott_2_7_1 {A P} : ∀ (w w' : Σ (x : A), P x) (p : w == w'),
+  (ap pr₁ p)⁎ (pr₂ w) == pr₂ w'.
+Proof.
+intros w w' p.
+destruct p.
+reflexivity.
 Defined.
 
 bbb.
