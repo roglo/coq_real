@@ -1465,6 +1465,8 @@ Definition depend_eq {A P} : ∀ (w w' : Σ (x : A), P x) (p : w == w'),
 
 (* something that propositionally equal but not judmentally equal... ? *)
 
+bbb.
+
 Definition toto {A B} : A == B → ∃ (f : A → B) (g : B → A),
   f ◦ g ~~ id ∧ g ◦ f ~~ id
 :=
