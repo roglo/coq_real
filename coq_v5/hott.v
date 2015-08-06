@@ -1451,10 +1451,7 @@ Definition transport_eq {A P} : ∀ (w w' : Σ (x : A), P x) (p : w == w'),
 Definition depend_eq {A P} : ∀ (w w' : Σ (x : A), P x) (p : w == w'),
   P (pr₁ w) == P (pr₁ w')
 :=
-  λ w w' p,
-  match p with
-  | refl _ => refl (P (pr₁ w))
-  end.
+  λ w w' p, ap P (ap pr₁ p).
 
 (* trying to find an example with w w' : Σ (x : A), P x and w = w'
    but pr₂ w ≠ pr₂ w' *)
