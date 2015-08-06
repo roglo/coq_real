@@ -1453,58 +1453,6 @@ Definition depend_eq {A P} : ∀ (w w' : Σ (x : A), P x) (p : w == w'),
 :=
   λ w w' p, ap P (ap pr₁ p).
 
-(* trying to find an example with w w' : Σ (x : A), P x and w = w'
-   but pr₂ w ≠ pr₂ w' *)
-
-(* problem: we can indeed prove that P (pr₁ w) == P (pr₂ w), but it
-   does not mean that their elements are of the same type. The types
-   are equal, but not equal for the typing algorithm *)
-
-(* something that propositionally equal but not judmentally equal... ? *)
-
-bbb.
-
-Definition toto {A B} : A == B → ∃ (f : A → B) (g : B → A),
-  f ◦ g ~~ id ∧ g ◦ f ~~ id
-:=
-  λ p,
-  match p with
-  | refl _ => ex_intro _ id (ex_intro _ id (conj refl refl))
-  end.
-
-Definition titi {A B} : A == B → (A → B) :=
-  λ p f, match p with refl _ => f end.
-
-Check (refl bool).
-Definition f := @titi bool bool (refl _).
-
-Eval compute in f false.
-
-bbb.
-
-Definition glap {A P} : ∀ (w w' : Σ (x : A), P x) (p : w == w'),
-  ∀ (x : P (pr₁ w)) (y : P (pr₁ w')), x == y.
-
-
-Remark glip {A P} : ∀ (w w' : Σ (x : A), P x) (p : w == w'),
-  pr₂ w == pr₂ w'.
-Proof.
-intros w w' p.
-
-Definition toto b :=
-  match b with
-  | true => bool
-  | false => nat
-  end.
-
-Definition glip := Σ (x : bool), toto (negb x).
-
-Check (existT (λ x, toto (negb x)) true 3).
-
-(* above, surprising! *)
-
-bbb.
-
 Remark hott_2_7_1 {A P} : ∀ (w w' : Σ (x : A), P x) (p : w == w'),
   (ap pr₁ p)⁎ (pr₂ w) == pr₂ w'.
 Proof.
@@ -1512,8 +1460,6 @@ intros w w' p.
 destruct p.
 reflexivity.
 Defined.
-
-bbb.
 
 Lemma hott_2_7_2_f {A} : ∀ P (w w' : Σ (x : A), P x),
   w == w' → Σ (p : pr₁ w == pr₁ w'), p⁎ (pr₂ w) == pr₂ w'.
@@ -1535,7 +1481,7 @@ destruct p, q; reflexivity.
 Defined.
 
 Theorem hott_2_7_2 {A} : ∀ (P : A → U) (w w' : Σ (x : A), P x),
-  (w == w') ≃ Σ (p : pr₁ w == pr₁ w'), transport P p (pr₂ w) == pr₂ w'.
+  (w == w') ≃ Σ (p : pr₁ w == pr₁ w'), p⁎ (pr₂ w) == pr₂ w'.
 Proof.
 intros.
 apply (existT _ (hott_2_7_2_f P w w')).
@@ -1568,6 +1514,8 @@ Corollary hott_2_7_3 {A} : ∀ P (z : Σ (x : A), P x),
 Proof.
 intros; destruct z as (x, y); reflexivity.
 Qed.
+
+bbb.
 
 Definition pair_eq {A B} {x y : Σ (z : A), B z} {P : (Σ (z : A), B z) → U}
     (p : x == y) (u : P x) : existT _ x u == existT _ y (transport _ p u).
