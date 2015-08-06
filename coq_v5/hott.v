@@ -193,6 +193,8 @@ Definition U := Type.
 
 Definition rec₂ C (c₀ c₁ : C) (b : bool) := if b then c₀ else c₁.
 
+Inspect 1.
+
 Definition ApB A B := Σ (x : bool), rec₂ U A B x.
 
 Definition ApB_inl (A B : U) (a : A) := existT (rec₂ U A B) true a.
@@ -1462,6 +1464,22 @@ Definition depend_eq {A P} : ∀ (w w' : Σ (x : A), P x) (p : w == w'),
    are equal, but not equal for the typing algorithm *)
 
 (* something that propositionally equal but not judmentally equal... ? *)
+
+Definition toto {A B} : A == B → ∃ (f : A → B) (g : B → A),
+  f ◦ g ~~ id ∧ g ◦ f ~~ id
+:=
+  λ p,
+  match p with
+  | refl _ => ex_intro _ id (ex_intro _ id (conj refl refl))
+  end.
+
+Definition titi {A B} : A == B → (A → B) :=
+  λ p f, match p with refl _ => f end.
+
+Check (refl bool).
+Definition f := @titi bool bool (refl _).
+
+Eval compute in f false.
 
 bbb.
 
