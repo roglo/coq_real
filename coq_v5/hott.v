@@ -1534,6 +1534,16 @@ Definition pair_eq_def {A} {P : A → U} (x y : A) (u : P x) (p : x == y) :
 :=
   pair_eq p (refl (p⁎ u)).
 
+About transport.
+
+About cartesian.hott_2_6_4.
+
+Definition glop {A B} : ∀ (x y : Σ (z : A), B z) (p : x == y),
+  transport (λ x : (Σ (z : A), B z),  → U) p x ==
+  transport ((Σ (z : A), B z) → U) p x.
+
+bbb.
+
 Definition tfam {A} P (Q : (Σ (x : A), P x) → U) (x : A) :=
   Σ (u : P x), Q (existT _ x u).
 
