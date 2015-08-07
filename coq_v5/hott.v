@@ -1515,94 +1515,26 @@ Proof.
 intros; destruct z as (x, y); reflexivity.
 Qed.
 
-Definition pair_eq {A} {x y : A} {P : A → U}
-    (p : x == y) (u : P x) : existT _ x u == existT _ y (p⁎ u).
-Proof. destruct p; reflexivity. Defined.
-
-(*
-Definition pair_eq {A B} {x y : Σ (z : A), B z} {P : (Σ (z : A), B z) → U}
-    (p : x == y) (u : P x) : existT _ x u == existT _ y (p⁎ u).
-Proof.
-destruct x as (a, b).
-destruct y as (a', b').
-destruct p; reflexivity.
-Defined.
-*)
-
-(*
-
-(*
-@pair_eq
-     : ∀ (A : Type) (B : A → Type) (x y : {z : A & B z})
-       (P : {z : A & B z} → U) (p : x == y) (u : P x),
-       existT P x u == existT P y (transport P p u)
-Arguments A, B, x, y, P are implicit and maximally inserted
-
-@transport
-     : ∀ (A : Type) (P : A → Type) (x y : A), x == y → P x → P y
-
-Notation "p '⁎'" := (transport _ p)
-  (at level 8, left associativity, format "'[v' p ']' ⁎", only parsing).
-*)
-Theorem hott_2_7_4 {A} : ∀ (P : A → U) (Q : (Σ (x : A), P x) → U),
-  ∀ (x y : A) (p : x == y) (u : P x) (z : Q (existT _ x u)),
-  @pair_eq A P (existT P x u) (existT P y (transport P p u)) Q ==
-  @pair_eq A P (existT _ x u) (existT _ y (transport P p u)) Q.
-intros.
-assert (@existT (foo P Q x) P x u == @existT _ P y (transport P p u)).
-Set Printing Implicit. Show.
-Check @pair_eq.
-
-bbb.
-
-  @pair_eq A P (existT _ x u) (existT _ x u) Q (refl (existT _ x u)) ==
-  @pair_eq A P (existT _ x u) (existT _ x u) Q (refl (existT _ x u)).
-intros.
-
-Check (λ x y, @pair_eq A P x y Q).
-
-existT Q x u == existT Q y (transport Q p u)
-
-Check (existT _ x u == existT _ x u).
-Check (transport P p).
-
-  pair_eq _ (refl (p⁎ u)) ==
-  pair_eq _ (refl (p⁎ u)).
-
-  (transport P p u, @pair_eq _ _ x y P p) ==
-  (transport P p u, @pair_eq _ _ x y P p).
-intros.
-bbb.
-
-Theorem hott_2_7_4 {A} : ∀ (P : A → U) (Q : (Σ (x : A), P x) → U),
-  ∀ (x y : A) (p : x == y) (uz : Σ (u : P x), Q (existT _ x u)),
-  (transport P p (projT1 uz), @pair_eq A P x y P p) ==
-  (transport P p (projT1 uz), @pair_eq A P x y P p).
-intros.
-Check (transport P p (projT1 uz)).
-bbb.
-
-Definition foo {A} P Q (x : A) := Σ (u : P x), Q (existT _ x u).
-*)
+Definition pair_eq {A} {P : A → U} {x y : A} {u : P x} {v : P y} :
+  ∀ (p : x == y), p⁎ u == v → existT _ x u == existT _ y v
+:=
+  λ p q,
+  match p with
+  | refl _ =>
+      λ (w : P x) (r : transport P (refl x) u == w),
+      match r in (_ == t) return (existT P x u == existT P x t) with
+      | refl _ => refl (existT P x (transport P (refl x) u))
+      end
+  end v q.
 
 Notation "'pair⁼'" := pair_eq.
-Check pair_eq.
 
-About pair_eq.
-(* pair_eq :
-∀ (A : Type) (x y : A) (P : A → U) (p : x == y) (u : P x),
-existT P x u == existT P y (transport P p u)
+Definition pair_eq_def {A} {P : A → U} (x y : A) (u : P x) (p : x == y) :
+  existT P x u == existT P y (transport P p u)
+:=
+  pair_eq p (refl (p⁎ u)).
 
-Arguments A, x, y, P are implicit and maximally inserted
-Argument scopes are [type_scope _ _ _ _ _]
-pair_eq is transparent
-Expands to: Constant Top.Σ_type.pair_eq
-
-Set Printing All.
-
-refl (transport P p (projT1 uz))
-     : transport P p (projT1 uz) == transport P p (projT1 uz)
-*)
+bbb.
 
 Definition tfam {A} P (Q : (Σ (x : A), P x) → U) (x : A) :=
   Σ (u : P x), Q (existT _ x u).
