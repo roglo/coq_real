@@ -1534,10 +1534,72 @@ Definition pair_eq_def {A} {P : A → U} (x y : A) (u : P x) (p : x == y) :
 :=
   pair_eq p (refl (p⁎ u)).
 
-bbb.
-
 Definition tfam {A} P (Q : (Σ (x : A), P x) → U) (x : A) :=
   Σ (u : P x), Q (existT _ x u).
+
+Definition hott_2_7_4 {A} P Q (x y : A) (p : x == y) (uz : tfam P Q x) :
+  let u := projT1 uz in
+  let z := projT2 uz in
+  ∀ k,
+  p⁎ uz == existT _ (p⁎ u) (k (p⁎ u)).
+Proof.
+intros.
+destruct p.
+simpl.
+unfold id; simpl.
+subst u z; simpl.
+bbb.
+
+Check k.
+Check (p⁎ u).
+(* k
+     : Q (existT (λ x : A, P x) y (transport P p u)) *)
+(* @pair_eq
+     : ∀ (A : Type) (P : A → U) (x y : A) (u : P x) 
+       (v : P y) (p : x == y),
+       transport P p u == v → existT P x u == existT P y v *)
+Check (@pair_eq A P x y u (p⁎ u) p (refl _) :
+   Q (existT (λ x : A, P x) y (transport P p u))).
+
+
+   Q (existT (λ x : A, P x) y (transport P p u))
+Check (λ q,
+  (@pair_eq A P x y u (p⁎ u) p q :
+   Q (existT (λ x : A, P x) y (transport P p u)))).
+
+Check (existT _ (p⁎ u) ((pair⁼ p (refl (p⁎ u)))⁎ (z))).
+
+transport (tfam P Q) p uz
+     : tfam P Q y
+
+(transport P p u,
+transport Q (pair⁼ p (refl (transport (λ x : A, P x) p u))) z)
+     : P y * Q (existT (λ x : A, P x) y (transport (λ x : A, P x) p u))
+
+  p⁎ uz == (p⁎ u, (pair⁼ p (refl (p⁎ u)))⁎ (z)).
+
+
+Definition hott_2_7_4 {A} P Q (x y : A) (p : x == y) :
+  tfam P Q x → tfam P Q y
+:=
+  λ uz, match p with refl _ => uz end.
+
+bbb.
+
+hott_2_7_4 = 
+λ (A : Type) (P : A → Type) (Q : {x : A & P x} → U) 
+(x y : A) (p : x == y) (uz : tfam P Q x),
+match p in (_ == a) return (tfam P Q a) with
+| refl _ => uz
+end
+     : ∀ (A : Type) (P : A → Type) (Q : {x : A & P x} → U) 
+       (x y : A), x == y → tfam P Q x → tfam P Q y
+
+Argument A is implicit and maximally inserted
+Argument scopes are [type_scope _ _ _ _ _ _]
+
+bbb.
+
 
 Theorem hott_2_7_4 {A} : ∀ P Q (x y : A) (p : x == y) (uz : tfam P Q x),
 ∀ yyy,
