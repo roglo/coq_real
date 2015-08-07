@@ -1530,7 +1530,7 @@ Definition pair_eq {A} {P : A → U} {x y : A} {u : P x} {v : P y} :
 Notation "'pair⁼'" := pair_eq.
 
 Definition pair_eq_def {A} {P : A → U} (x y : A) (u : P x) (p : x == y) :
-  existT P x u == existT P y (transport P p u)
+  existT P x u == existT P y (p⁎ u)
 :=
   pair_eq p (refl (p⁎ u)).
 
