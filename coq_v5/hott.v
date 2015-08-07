@@ -1515,6 +1515,11 @@ Proof.
 intros; destruct z as (x, y); reflexivity.
 Qed.
 
+Definition pair_eq {A} {x y : A} {P : A → U}
+    (p : x == y) (u : P x) : existT _ x u == existT _ y (p⁎ u).
+Proof. destruct p; reflexivity. Defined.
+
+(*
 Definition pair_eq {A B} {x y : Σ (z : A), B z} {P : (Σ (z : A), B z) → U}
     (p : x == y) (u : P x) : existT _ x u == existT _ y (p⁎ u).
 Proof.
@@ -1522,6 +1527,7 @@ destruct x as (a, b).
 destruct y as (a', b').
 destruct p; reflexivity.
 Defined.
+*)
 
 (*
 
@@ -1582,15 +1588,66 @@ Definition foo {A} P Q (x : A) := Σ (u : P x), Q (existT _ x u).
 Notation "'pair⁼'" := pair_eq.
 Check pair_eq.
 
+About pair_eq.
+(* pair_eq :
+∀ (A : Type) (x y : A) (P : A → U) (p : x == y) (u : P x),
+existT P x u == existT P y (transport P p u)
+
+Arguments A, x, y, P are implicit and maximally inserted
+Argument scopes are [type_scope _ _ _ _ _]
+pair_eq is transparent
+Expands to: Constant Top.Σ_type.pair_eq
+
 Set Printing All.
 
-Definition tfam {A} P Q (x : A) := Σ (u : P x), Q (existT _ x u).
+refl (transport P p (projT1 uz))
+     : transport P p (projT1 uz) == transport P p (projT1 uz)
+*)
 
-Theorem hott_2_7_4 {A} : ∀ (P : A → U) (Q : (Σ (x : A), P x) → U),
-  ∀ x y (p : x == y) (uz : Σ (u : P x), Q (existT _ x u)),
+Definition tfam {A} P (Q : (Σ (x : A), P x) → U) (x : A) :=
+  Σ (u : P x), Q (existT _ x u).
+
+Theorem hott_2_7_4 {A} : ∀ P Q (x y : A) (p : x == y) (uz : tfam P Q x),
+∀ yyy,
   transport (tfam P Q) p uz ==
-  (p⁎ (projT1 uz), (pair⁼ p (refl (p⁎ (projT1 uz))))⁎ (projT2 uz)).
+  existT _ (p⁎ (projT1 uz)) yyy.
+Proof.
+intros.
+Check (transport (tfam P Q) p uz).
+(* tfam P Q y *)
+Check existT.
+Check (@existT (P x)).
+(* existT (A:=P x)
+     : ∀ (P0 : P x → Type) (x0 : P x), P0 x0 → {x : P x & P0 x} *)
+Check (@existT (P x) (λ u, A)).
 bbb.
+
+P0 : ∀ x, Q (existT _ x u)
+P0 := λ x,
+
+Check (λ A P u p, @existT A P u p).
+Check (existT _ (p⁎ (projT1 uz)) bool).
+Check (Q _ == bool).
+
+?T x : Q (existT _ y (p⁎ (projT1 uz)))
+
+yyy
+     : Q (existT (λ x : A, P x) y (transport P p (projT1 uz)))
+
+  @pair_eq A x y P p ==
+  pair_eq p.
+intros.
+Check (@pair_eq A x y P p).
+
+  @pair_eq A x y P p (refl (p⁎ (projT1 uz))) ==
+  @pair_eq A x y P p (refl (p⁎ (projT1 uz))).
+
+  transport (tfam P Q) p uz ==
+  existT (tfam P Q) (p⁎ (projT1 uz))
+    ((pair_eq _ (refl (p⁎ (projT1 uz))))⁎ (projT2 uz)).
+bbb.
+
+Set Printing All.
 
 Toplevel input, characters 177-178:
 Error:
