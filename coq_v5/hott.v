@@ -1544,6 +1544,9 @@ Definition hott_2_7_4 {A} P Q (x y : A) (p : x == y) (uz : tfam P Q x) :
   p⁎ uz == existT _ (p⁎ u) (k (p⁎ u)).
 Proof.
 intros.
+set (l := (λ (r : P y) (e : Σ (z : A), P z), Q e)).
+bbb.
+
 destruct p.
 simpl.
 unfold id; simpl.
