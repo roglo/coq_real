@@ -1516,7 +1516,7 @@ intros; destruct z as (x, y); reflexivity.
 Qed.
 
 Definition pair_eq {A} {P : A → U} {x y : A} {u : P x} {v : P y} :
-  ∀ (p : x == y), p⁎ u == v → existT _ x u == existT _ y v
+  Π (p : x == y), p⁎ u == v → existT _ x u == existT _ y v
 :=
   λ p q,
   match p with
