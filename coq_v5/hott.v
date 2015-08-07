@@ -1515,17 +1515,15 @@ Proof.
 intros; destruct z as (x, y); reflexivity.
 Qed.
 
-bbb.
-
 Definition pair_eq {A B} {x y : Σ (z : A), B z} {P : (Σ (z : A), B z) → U}
-    (p : x == y) (u : P x) : existT _ x u == existT _ y (transport _ p u).
+    (p : x == y) (u : P x) : existT _ x u == existT _ y (p⁎ u).
 Proof.
 destruct x as (a, b).
 destruct y as (a', b').
 destruct p; reflexivity.
 Defined.
 
-Definition foo {A} P Q (x : A) := Σ (u : P x), Q (existT _ x u).
+(*
 
 (*
 @pair_eq
@@ -1555,7 +1553,6 @@ bbb.
   @pair_eq A P (existT _ x u) (existT _ x u) Q (refl (existT _ x u)).
 intros.
 
-
 Check (λ x y, @pair_eq A P x y Q).
 
 existT Q x u == existT Q y (transport Q p u)
@@ -1577,6 +1574,45 @@ Theorem hott_2_7_4 {A} : ∀ (P : A → U) (Q : (Σ (x : A), P x) → U),
   (transport P p (projT1 uz), @pair_eq A P x y P p).
 intros.
 Check (transport P p (projT1 uz)).
+bbb.
+
+Definition foo {A} P Q (x : A) := Σ (u : P x), Q (existT _ x u).
+*)
+
+Notation "'pair⁼'" := pair_eq.
+Check pair_eq.
+
+Set Printing All.
+
+Definition tfam {A} P Q (x : A) := Σ (u : P x), Q (existT _ x u).
+
+Theorem hott_2_7_4 {A} : ∀ (P : A → U) (Q : (Σ (x : A), P x) → U),
+  ∀ x y (p : x == y) (uz : Σ (u : P x), Q (existT _ x u)),
+  transport (tfam P Q) p uz ==
+  (p⁎ (projT1 uz), (pair⁼ p (refl (p⁎ (projT1 uz))))⁎ (projT2 uz)).
+bbb.
+
+Toplevel input, characters 177-178:
+Error:
+In environment
+A : Type
+P : forall _ : A, U
+Q : forall _ : @sigT A (fun x : A => P x), U
+x : A
+y : A
+p : @Id A x y
+uz : @sigT (P x) (fun u : P x => Q (@existT A (fun x : A => P x) x u))
+The term "p" has type "@Id A x y" while it is expected to have type
+ "@Id (@sigT ?A0 (fun z : ?A0 => ?B0 z)) ?x0 ?y0".
+
+
+ (uz : foo P Q x)
+    (vt : foo P Q y)
+    (u := pr₁ uz) (z := pr₂ uz)
+    (zzz : (λ v : P y, Q (existT P y v)) (transport P p u)),
+  transport (foo P Q) p uz ==
+  existT _ (@transport _ P x y p u) zzz.
+Proof.
 bbb.
 
 Theorem hott_2_7_4 {A} : ∀ (P : A → U) (Q : (Σ (x : A), P x) → U),
