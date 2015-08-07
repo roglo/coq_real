@@ -1540,7 +1540,7 @@ Definition tfam {A} P (Q : (Σ (x : A), P x) → U) (x : A) :=
 Definition hott_2_7_4 {A} P Q (x y : A) (p : x == y) (uz : tfam P Q x) :
   let u := projT1 uz in
   let z := projT2 uz in
-  ∀ k,
+  ∀ (k : P y → Q (existT (λ x : A, P x) y (transport P p u))),
   p⁎ uz == existT _ (p⁎ u) (k (p⁎ u)).
 Proof.
 intros.
