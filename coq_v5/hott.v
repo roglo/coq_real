@@ -1547,69 +1547,34 @@ destruct p.
 reflexivity.
 Defined.
 
-(* generalisation of 2.6.5 *)
+(* 2.7.5 = generalisation of 2.6.5 *)
 
-(* mouais, bon, faut réfléchir sur papier... *)
+Definition tata {A B A' B'} {x y : Σ (z : A), B z}
+    (g : A → A') (h : Π (x : A), B x → B' (g x))
+    (p : pr₁ x == pr₁ y) (q : p⁎ (pr₂ x) == pr₂ y) :
+  (transport B' (ap g p) (h (pr₁ x) (pr₂ x)) == h (pr₁ y) (pr₂ y))
+:=
+   match q with
+   | refl _ =>
+       match
+         p in (_ == y0)
+         return
+           (transport B' (ap g p) (h (pr₁ x) (pr₂ x)) ==
+            h y0 (transport B p (pr₂ x)))
+       with
+       | refl _ => refl (h (pr₁ x) (transport B (refl (pr₁ x)) (pr₂ x)))
+       end
+   end.
 
-Definition toto {A B A' B'} (x y : Σ (z : A), B z) (p : x == y)
-  (f : (Σ (z : A), B z) → (Σ (z' : A'), B' z')) : f x == f y := ap f p.
-
-Definition titi {A B} (x y : Σ (z : A), B z)
-  (p : pr₁ x == pr₁ y) (q : p⁎ (pr₂ x) == pr₂ y) : x == y.
-Proof.
-destruct x as (x₁, x₂).
-destruct y as (y₁, y₂).
-eapply pair_eq; eassumption.
-Defined.
-
-(*
-Check @pair_eq.
-
-Definition pair_eq_ap {A B A' B' x y}
-    (f : (Σ (z : A), B z) → (Σ (z' : A'), B' z')) :=
-  @pair_eq A' (Σ (z' : A'), B' z') (f x) (f y).
-*)
-
-Definition tutu {A B A' B'} (x y : Σ (z : A), B z)
+Definition hott_2_7_5 {A B A' B'} (x y : Σ (z : A), B z)
     (g : A → A') (h : Π (x : A), B x → B' (g x))
     (f := λ x, existT _ (g (pr₁ x)) (h (pr₁ x) (pr₂ x)))
     (p : pr₁ x == pr₁ y) (q : p⁎ (pr₂ x) == pr₂ y) :
-  ap f (pair_eq p q) ==
-  ap f (pair_eq p q).
-(* ap f (pair⁼ p q)
-     : f (existT B (pr₁ x) (pr₂ x)) == f (existT B (pr₁ y) (pr₂ y)) *)
-(* @pair_eq
-     : ∀ (A : Type) (P : A → U) (x y : A) (u : P x) 
-       (v : P y) (p : x == y),
-       transport P p u == v → existT P x u == existT P y v *)
-Check
- (@pair_eq A' B' (g (pr₁ x)) (g (pr₁ y))
-    (h (pr₁ x) (pr₂ x)) (h (pr₁ y) (pr₂ y)) (ap g p)
-).
-assert (transport B' (ap g p) (h (pr₁ x) (pr₂ x)) == h (pr₁ y) (pr₂ y)).
-destruct q, p; reflexivity.
-
-(* mouais, bon, faut une version sans destruct *)
-
-Check (λ ff, @apd A' B' ff (g (pr₁ x)) (g (pr₁ y))).
-
-bbb.
-
-λ ff : ∀ x : A', B' x, apd ff
-     : ∀ (ff : ∀ x : A', B' x) (p : g (pr₁ x) == g (pr₁ y)),
-       transport B' p (ff (g (pr₁ x))) == ff (g (pr₁ y))
-ap g p
-     : g (pr₁ x) == g (pr₁ y)
-
-pair⁼ (ap g p)
-     : transport B' (ap g p) (h (pr₁ x) (pr₂ x)) == h (pr₁ y) (pr₂ y)
-       → existT B' (g (pr₁ x)) (h (pr₁ x) (pr₂ x)) ==
-         existT B' (g (pr₁ y)) (h (pr₁ y) (pr₂ y))
-
+  ap f (pair⁼ p q) == pair⁼ (ap g p) (tata g h p q).
 Proof.
 bbb.
 
-bbb.
+(* from 2.6... *)
 
 Definition pair_eq {A B} {x y : A * B} :
   (pr₁ x == pr₁ y) * (pr₂ x == pr₂ y) → (x == y).
