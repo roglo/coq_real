@@ -1574,7 +1574,6 @@ Definition hott_2_7_5 {A B A' B'} (x y : Σ (z : A), B z)
     (p : pr₁ x == pr₁ y) (q : p⁎ (pr₂ x) == pr₂ y) :
   ap f (pair⁼ p q) == pair⁼ (ap g p) (toto g h p q).
 Proof.
-unfold toto; simpl.
 destruct x as (x₁, x₂); simpl.
 destruct y as (y₁, y₂); simpl.
 simpl in p, q.
