@@ -1534,9 +1534,11 @@ Definition pair_eq_def {A} {P : A → U} (x y : A) (u : P x) (p : x == y) :
 :=
   pair_eq p (refl (p⁎ u)).
 
-About transport.
+(* I'm not happy of these names tfun and tfam, but I don't know what
+   they correspond to.. *)
 
-About cartesian.hott_2_6_4.
+Definition tfun {A} P (Q : (Σ (x : A), P x) → U) (x : A) :=
+  λ u, Q (existT _ x u).
 
 Definition tfam {A} P (Q : (Σ (x : A), P x) → U) (x : A) :=
   Σ (u : P x), Q (existT _ x u).
@@ -1544,181 +1546,18 @@ Definition tfam {A} P (Q : (Σ (x : A), P x) → U) (x : A) :=
 Definition hott_2_7_4 {A} P Q (x y : A) (p : x == y) (uz : tfam P Q x) :
   let u := projT1 uz in
   let z : Q (existT P x u) := projT2 uz in
-  ∀ (k : P y → Q (existT P y (p⁎ u))),
-  p⁎ uz == existT (λ w, Q (existT P y w)) (p⁎ u) (k (p⁎ u)).
+  p⁎ uz == existT (tfun P Q y) (p⁎ u) ((pair⁼ p (refl (p⁎ u)))⁎ z).
 Proof.
 intros.
-bbb.
+destruct p; simpl.
+destruct uz as (a, b); subst u z; simpl.
+reflexivity.
+Defined.
 
-Definition glop {A B} : ∀ (x y : Σ (z : A), B z) (p : x == y),
-  transport (λ x : (Σ (z : A), B z), U) p x ==
-  transport ((Σ (z : A), B z) → U) p x.
-
-bbb.
-
-Definition hott_2_7_4 {A} P Q (x y : A) (p : x == y) (uz : tfam P Q x) :
-  let u := projT1 uz in
-  let z := projT2 uz in
-  ∀ (k : P y → Q (existT _ y (p⁎ u))),
-  p⁎ uz == existT _ (p⁎ u) (k (p⁎ u)).
-Proof.
-intros.
-set (l := (λ (r : P y) (e : Σ (z : A), P z), Q e)).
-bbb.
-
-destruct p.
-simpl.
-unfold id; simpl.
-subst u z; simpl.
-bbb.
-
-Check k.
-Check (p⁎ u).
-(* k
-     : Q (existT (λ x : A, P x) y (transport P p u)) *)
-(* @pair_eq
-     : ∀ (A : Type) (P : A → U) (x y : A) (u : P x) 
-       (v : P y) (p : x == y),
-       transport P p u == v → existT P x u == existT P y v *)
-Check (@pair_eq A P x y u (p⁎ u) p (refl _) :
-   Q (existT (λ x : A, P x) y (transport P p u))).
-
-
-   Q (existT (λ x : A, P x) y (transport P p u))
-Check (λ q,
-  (@pair_eq A P x y u (p⁎ u) p q :
-   Q (existT (λ x : A, P x) y (transport P p u)))).
-
-Check (existT _ (p⁎ u) ((pair⁼ p (refl (p⁎ u)))⁎ (z))).
-
-transport (tfam P Q) p uz
-     : tfam P Q y
-
-(transport P p u,
-transport Q (pair⁼ p (refl (transport (λ x : A, P x) p u))) z)
-     : P y * Q (existT (λ x : A, P x) y (transport (λ x : A, P x) p u))
-
-  p⁎ uz == (p⁎ u, (pair⁼ p (refl (p⁎ u)))⁎ (z)).
-
-
-Definition hott_2_7_4 {A} P Q (x y : A) (p : x == y) :
-  tfam P Q x → tfam P Q y
-:=
-  λ uz, match p with refl _ => uz end.
+(* a version with (u, z) instead of uz, perhaps? this would be more
+   like the version in hott book :-) *)
 
 bbb.
-
-hott_2_7_4 = 
-λ (A : Type) (P : A → Type) (Q : {x : A & P x} → U) 
-(x y : A) (p : x == y) (uz : tfam P Q x),
-match p in (_ == a) return (tfam P Q a) with
-| refl _ => uz
-end
-     : ∀ (A : Type) (P : A → Type) (Q : {x : A & P x} → U) 
-       (x y : A), x == y → tfam P Q x → tfam P Q y
-
-Argument A is implicit and maximally inserted
-Argument scopes are [type_scope _ _ _ _ _ _]
-
-bbb.
-
-
-Theorem hott_2_7_4 {A} : ∀ P Q (x y : A) (p : x == y) (uz : tfam P Q x),
-∀ yyy,
-  transport (tfam P Q) p uz ==
-  existT _ (p⁎ (projT1 uz)) yyy.
-Proof.
-intros.
-Check (transport (tfam P Q) p uz).
-(* tfam P Q y *)
-Check existT.
-Check (@existT (P x)).
-(* existT (A:=P x)
-     : ∀ (P0 : P x → Type) (x0 : P x), P0 x0 → {x : P x & P0 x} *)
-Check (@existT (P x) (λ u, A)).
-bbb.
-
-P0 : ∀ x, Q (existT _ x u)
-P0 := λ x,
-
-Check (λ A P u p, @existT A P u p).
-Check (existT _ (p⁎ (projT1 uz)) bool).
-Check (Q _ == bool).
-
-?T x : Q (existT _ y (p⁎ (projT1 uz)))
-
-yyy
-     : Q (existT (λ x : A, P x) y (transport P p (projT1 uz)))
-
-  @pair_eq A x y P p ==
-  pair_eq p.
-intros.
-Check (@pair_eq A x y P p).
-
-  @pair_eq A x y P p (refl (p⁎ (projT1 uz))) ==
-  @pair_eq A x y P p (refl (p⁎ (projT1 uz))).
-
-  transport (tfam P Q) p uz ==
-  existT (tfam P Q) (p⁎ (projT1 uz))
-    ((pair_eq _ (refl (p⁎ (projT1 uz))))⁎ (projT2 uz)).
-bbb.
-
-Set Printing All.
-
-Toplevel input, characters 177-178:
-Error:
-In environment
-A : Type
-P : forall _ : A, U
-Q : forall _ : @sigT A (fun x : A => P x), U
-x : A
-y : A
-p : @Id A x y
-uz : @sigT (P x) (fun u : P x => Q (@existT A (fun x : A => P x) x u))
-The term "p" has type "@Id A x y" while it is expected to have type
- "@Id (@sigT ?A0 (fun z : ?A0 => ?B0 z)) ?x0 ?y0".
-
-
- (uz : foo P Q x)
-    (vt : foo P Q y)
-    (u := pr₁ uz) (z := pr₂ uz)
-    (zzz : (λ v : P y, Q (existT P y v)) (transport P p u)),
-  transport (foo P Q) p uz ==
-  existT _ (@transport _ P x y p u) zzz.
-Proof.
-bbb.
-
-Theorem hott_2_7_4 {A} : ∀ (P : A → U) (Q : (Σ (x : A), P x) → U),
-  ∀ (x y : A) (p : x == y) (uz : foo P Q x)
-    (vt : foo P Q y)
-    (u := pr₁ uz) (z := pr₂ uz)
-    (zzz : (λ v : P y, Q (existT P y v)) (transport P p u)),
-  transport (foo P Q) p uz ==
-  existT _ (@transport _ P x y p u) zzz.
-Proof.
-intros.
-bbb.
-
-Abort. (* 1/ not sure how to do that, 2/ don't know what zzz should b
-          3/ I don't understand the whole thing → I give up for the moment
-
-1 subgoals, subgoal 1 (ID 4136)
-  
-  A : Type
-  P : A → U
-  Q : {x : A & P x} → U
-  x : A
-  y : A
-  p : x == y
-  uz : foo P Q x
-  vt : foo P Q y
-  u := pr₁ uz : P x
-  z := pr₂ uz : (λ u0 : P x, Q (existT P x u0)) (Σ_pr₁ uz)
-  zzz : (λ u0 : P y, Q (existT P y u0)) (transport P p u)
-  ============================
-   transport (λ x0 : A, {u0 : P x0 & Q (existT P x0 u0)}) p uz ==
-   existT (λ u0 : P y, Q (existT P y u0)) (transport P p u) zzz
-*)
 
 End Σ_type.
 
