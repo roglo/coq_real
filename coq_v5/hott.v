@@ -1534,18 +1534,14 @@ Definition pair_eq_def {A} {P : A → U} (x y : A) (u : P x) (p : x == y) :
 :=
   pair_eq p (refl (p⁎ u)).
 
-(* I'm not happy of these names tfun and tfam, but I don't know what
-   they correspond to.. *)
-
-Definition tfun {A} P (Q : (Σ (x : A), P x) → U) (x : A) :=
-  λ u, Q (existT _ x u).
-
 Definition tfam {A} P (Q : (Σ (x : A), P x) → U) (x : A) :=
   Σ (u : P x), Q (existT _ x u).
 
+Definition couple {A P Q} {x : A} := existT (λ u, Q (existT P x u)).
+
 Definition hott_2_7_4 {A P Q} {x y : A} (p : x == y) u z :
-  transport (tfam P Q) p (existT _ u z) ==
-  existT (tfun P Q y) (p⁎ u) ((pair⁼ p (refl (p⁎ u)))⁎ z).
+  transport (tfam P Q) p (couple u z) ==
+  couple (p⁎ u) ((pair⁼ p (refl (p⁎ u)))⁎ z).
 Proof.
 destruct p.
 reflexivity.
