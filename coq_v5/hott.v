@@ -1547,6 +1547,27 @@ destruct p.
 reflexivity.
 Defined.
 
+(* generalisation of 2.6.5 *)
+
+(* mouais, bon, faut réfléchir sur papier... *)
+
+Definition pair_eq_ap {A B A' B' x y} (f : A * B → A' * B') :=
+  @pair_eq A' B' (f x) (f y).
+
+Theorem hott_2_7_5 {A B A' B'} :
+  ∀ (g : A → A') (h : B → B') (f := λ x, (g (pr₁ x), h (pr₂ x)))
+    (x y : A * B) (p : pr₁ x == pr₁ y) (q : pr₂ x == pr₂ y),
+  ap f (pair_eq (p, q)) == pair_eq_ap f (ap g p, ap h q).
+Proof.
+bbb.
+intros; unfold pair_eq_ap.
+destruct x as (a, b).
+destruct y as (c, d).
+simpl in p, q.
+destruct p, q; simpl.
+reflexivity.
+Qed.
+
 bbb.
 
 End Σ_type.
