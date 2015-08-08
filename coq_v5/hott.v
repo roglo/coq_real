@@ -1423,9 +1423,9 @@ Theorem hott_2_6_5 {A B A' B'} :
     (x y : A * B) (p : pr₁ x == pr₁ y) (q : pr₂ x == pr₂ y),
   ap f (pair_eq (p, q)) == pair_eq_ap f (ap g p, ap h q).
 Proof.
-intros; unfold pair_eq_ap.
-destruct x as (a, b).
-destruct y as (c, d).
+intros.
+destruct x as (x₁, x₂).
+destruct y as (y₁, y₂).
 simpl in p, q.
 destruct p, q; simpl.
 reflexivity.
@@ -1549,9 +1549,7 @@ Defined.
 
 (* 2.7.5 = generalisation of 2.6.5 *)
 
-(* I'd like another proof (and another name) for toto *)
-
-Definition toto {A B A' B'} {x y : Σ (z : A), B z}
+Definition transport_pair {A B A' B'} {x y : Σ (z : A), B z}
     (g : A → A') (h : Π (x : A), B x → B' (g x))
     (p : pr₁ x == pr₁ y) (q : p⁎ (pr₂ x) == pr₂ y) :
   transport B' (ap g p) (h (pr₁ x) (pr₂ x)) == h (pr₁ y) (pr₂ y)
@@ -1572,7 +1570,7 @@ Definition hott_2_7_5 {A B A' B'} (x y : Σ (z : A), B z)
     (g : A → A') (h : Π (x : A), B x → B' (g x))
     (f := λ x, existT _ (g (pr₁ x)) (h (pr₁ x) (pr₂ x)))
     (p : pr₁ x == pr₁ y) (q : p⁎ (pr₂ x) == pr₂ y) :
-  ap f (pair⁼ p q) == pair⁼ (ap g p) (toto g h p q).
+  ap f (pair⁼ p q) == pair⁼ (ap g p) (transport_pair g h p q).
 Proof.
 destruct x as (x₁, x₂); simpl.
 destruct y as (y₁, y₂); simpl.
