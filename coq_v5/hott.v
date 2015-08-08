@@ -1535,7 +1535,7 @@ Definition pair_eq_def {A} {P : A → U} (x y : A) (u : P x) (p : x == y) :
   pair_eq p (refl (p⁎ u)).
 
 Definition tfam {A} P (Q : (Σ (x : A), P x) → U) (x : A) :=
-  Σ (u : P x), Q (existT _ x u).
+  Σ (u : P x), Q (existT P x u).
 
 Definition couple {A P Q} {x : A} := existT (λ u, Q (existT P x u)).
 
