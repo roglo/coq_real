@@ -1538,14 +1538,23 @@ About transport.
 
 About cartesian.hott_2_6_4.
 
+Definition tfam {A} P (Q : (Σ (x : A), P x) → U) (x : A) :=
+  Σ (u : P x), Q (existT _ x u).
+
+Definition hott_2_7_4 {A} P Q (x y : A) (p : x == y) (uz : tfam P Q x) :
+  let u := projT1 uz in
+  let z : Q (existT P x u) := projT2 uz in
+  ∀ (k : P y → Q (existT P y (p⁎ u))),
+  p⁎ uz == existT (λ w, Q (existT P y w)) (p⁎ u) (k (p⁎ u)).
+Proof.
+intros.
+bbb.
+
 Definition glop {A B} : ∀ (x y : Σ (z : A), B z) (p : x == y),
-  transport (λ x : (Σ (z : A), B z),  → U) p x ==
+  transport (λ x : (Σ (z : A), B z), U) p x ==
   transport ((Σ (z : A), B z) → U) p x.
 
 bbb.
-
-Definition tfam {A} P (Q : (Σ (x : A), P x) → U) (x : A) :=
-  Σ (u : P x), Q (existT _ x u).
 
 Definition hott_2_7_4 {A} P Q (x y : A) (p : x == y) (uz : tfam P Q x) :
   let u := projT1 uz in
