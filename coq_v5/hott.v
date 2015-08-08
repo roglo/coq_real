@@ -1557,10 +1557,10 @@ Definition transport_pair {A B A' B'} {x y : Σ (z : A), B z}
    match q with
    | refl _ =>
        match
-         p in (_ == y0)
+         p in (_ == z)
          return
            (transport B' (ap g p) (h (pr₁ x) (pr₂ x)) ==
-            h y0 (transport B p (pr₂ x)))
+            h z (transport B p (pr₂ x)))
        with
        | refl _ => refl (h (pr₁ x) (transport B (refl (pr₁ x)) (pr₂ x)))
        end
