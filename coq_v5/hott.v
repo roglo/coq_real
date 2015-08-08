@@ -1543,19 +1543,13 @@ Definition tfun {A} P (Q : (Σ (x : A), P x) → U) (x : A) :=
 Definition tfam {A} P (Q : (Σ (x : A), P x) → U) (x : A) :=
   Σ (u : P x), Q (existT _ x u).
 
-Definition hott_2_7_4 {A} P Q (x y : A) (p : x == y) (uz : tfam P Q x) :
-  let u := projT1 uz in
-  let z : Q (existT P x u) := projT2 uz in
-  p⁎ uz == existT (tfun P Q y) (p⁎ u) ((pair⁼ p (refl (p⁎ u)))⁎ z).
+Definition hott_2_7_4 {A P Q} {x y : A} (p : x == y) u z :
+  transport (tfam P Q) p (existT _ u z) ==
+  existT (tfun P Q y) (p⁎ u) ((pair⁼ p (refl (p⁎ u)))⁎ z).
 Proof.
-intros.
-destruct p; simpl.
-destruct uz as (a, b); subst u z; simpl.
+destruct p.
 reflexivity.
 Defined.
-
-(* a version with (u, z) instead of uz, perhaps? this would be more
-   like the version in hott book :-) *)
 
 bbb.
 
