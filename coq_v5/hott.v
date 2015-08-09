@@ -1598,6 +1598,43 @@ Definition refl_pair_eq3 {A B} (z : Σ (x : A), B x) :
   z == existT B (pr₁ z) (pr₂ z).
 Proof. destruct z; reflexivity. Defined.
 
+(* ... ah oui, parce que c'est une paire dépendante: *)
+
+Definition tutu {A B C} (z : Σ (x : A), B x)
+    (f : ∀ u : (Σ (x : A), B x), C) :
+  f z == f (existT B (pr₁ z) (pr₂ z)).
+Proof. destruct z; reflexivity. Defined.
+
+(* ... C u à la place de C et ça ne type plus: *)
+
+Definition tutu {A B C} (z : Σ (x : A), B x)
+    (f : ∀ u : (Σ (x : A), B x), C u) :
+  f z == f (existT B (pr₁ z) (pr₂ z)).
+...
+
+(* est-ce qu'on peut transporter l'un dans l'autre ? *)
+
+bbb.
+
+Check refl.
+
+Definition titi {A B} (x y : A) (f : A → B) : x == y → f x == f y.
+intros; apply ap; assumption.
+
+Definition toto {A B} (z : Σ (x : A), B x) :
+  False.
+(*
+Set Printing Implicit.
+Check (refl (existT B (pr₁ z) (pr₂ z))).
+@refl {x : A & B x} (@existT A B (@pr₁ A B z) (@pr₂ A B z))
+Check (refl z).
+@refl {x : A & B x} z
+*)
+Check (
+@refl {x : A & B x} (@existT A B (@pr₁ A B z) (@pr₂ A B z)) ==
+@refl {x : A & B x} z
+).
+
 (* that does not work (typing issue): *)
 
 Definition refl_pair_eq4 {A B} (z : Σ (x : A), B x) :
