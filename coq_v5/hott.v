@@ -1391,7 +1391,7 @@ destruct z as (x, y); reflexivity.
 Qed.
 
 Theorem inv_pair_eq {A B} {x y : A * B} : ∀ p : x == y,
-  p⁻¹ == pair_eq (ap_pr₁ p⁻¹, ap_pr₂ p⁻¹).
+  p⁻¹ == pair_eq ((ap_pr₁ p)⁻¹, (ap_pr₂ p)⁻¹).
 Proof.
 intros.
 destruct p; simpl.
@@ -1596,14 +1596,39 @@ Definition ap_pr₁ {A B} {x y : Σ (z : A), B z} : x == y → pr₁ x == pr₁ 
   | refl _ => refl (pr₁ x)
   end.
 
-(* need a transport... *)
-
 Definition ap_pr₂ {A B} {x y : Σ (z : A), B z} :
     ∀ (p : x == y), transport B (ap_pr₁ p) (pr₂ x) == pr₂ y :=
   λ p,
   match p in (_ == z) return (transport B (ap_pr₁ p) (pr₂ x) == pr₂ z) with
   | refl _ => refl (pr₂ x)
   end.
+
+Definition toto {A B} {x y : Σ (z : A), B z} : ∀ p : x == y,
+  (ap_pr₁ p)⁻¹ == ap_pr₁ p⁻¹
+:=
+  λ p,
+  match p with
+  | refl _ => refl (ap_pr₁ (refl x)⁻¹)
+  end.
+
+Definition titi {A B} {x y : Σ (z : A), B z} : ∀ p : x == y,
+  transport B (ap_pr₁ p)⁻¹ (pr₂ y) == pr₂ x
+:=
+  λ p,
+  match p with
+  | refl _ => refl _
+  end.
+
+Theorem inv_pair_eq {A B} {x y : Σ (z : A), B z} : ∀ p : x == y,
+False.
+intros.
+Check (pair⁼ (ap_pr₁ p)⁻¹ (titi p)).
+SearchAbout (existT _ _ _ == existT _ _ _).
+bbb.
+
+p⁻¹
+     : y == x
+     : existT B (pr₁ y) (pr₂ y) == existT B (pr₁ x) (pr₂ x)
 
 Theorem inv_pair_eq {A B} {x y : Σ (z : A), B z} : ∀ p : x == y,
 False.
@@ -1642,7 +1667,7 @@ Qed.
 (* reminder section 6 *)
 
 Theorem inv_pair_eq {A B} {x y : A * B} : ∀ p : x == y,
-  p⁻¹ == pair_eq (ap_pr₁ p⁻¹, ap_pr₂ p⁻¹).
+  p⁻¹ == pair_eq ((ap_pr₁ p)⁻¹, (ap_pr₂ p)⁻¹).
 Proof.
 intros.
 destruct p; simpl.
