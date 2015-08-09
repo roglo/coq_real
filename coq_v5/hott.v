@@ -1579,10 +1579,12 @@ Defined.
 
 (* reflexivity *)
 
-Definition refl_pair_eq {A B} (z : Σ (x : A), B x) :
-  transport (λ t, t == t) (hott_2_7_3 z) (refl z)
-  == pair⁼ (refl (pr₁ z)) (refl (pr₂ z)).
+Definition refl_pair_eq {A B} : ∀ (z : Σ (x : A), B x),
+  refl z
+  == transport (λ t, t == t) (hott_2_7_3 z)⁻¹
+       (pair⁼ (refl (pr₁ z)) (refl (pr₂ z))).
 Proof.
+intros.
 destruct z as (x, y); reflexivity.
 Defined.
 
