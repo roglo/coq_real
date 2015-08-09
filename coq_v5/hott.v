@@ -1427,8 +1427,7 @@ intros.
 destruct x as (x₁, x₂).
 destruct y as (y₁, y₂).
 simpl in p, q.
-destruct p, q; simpl.
-reflexivity.
+destruct p, q; reflexivity.
 Qed.
 
 End cartesian.
@@ -1578,31 +1577,11 @@ simpl in p, q.
 destruct p, q; reflexivity.
 Defined.
 
-bbb.
+(* reflexivity *)
+(* inverse *)
+(* composition *)
 
-(* from 2.6... *)
-
-Definition pair_eq {A B} {x y : A * B} :
-  (pr₁ x == pr₁ y) * (pr₂ x == pr₂ y) → (x == y).
-
-Definition pair_eq_ap {A B A' B' x y} (f : A * B → A' * B') :=
-  @pair_eq A' B' (f x) (f y).
-
-Theorem hott_2_6_5 {A B A' B'} :
-  ∀ (g : A → A') (h : B → B') (f := λ x, (g (pr₁ x), h (pr₂ x)))
-    (x y : A * B) (p : pr₁ x == pr₁ y) (q : pr₂ x == pr₂ y),
-  ap f (pair_eq (p, q)) == pair_eq_ap f (ap g p, ap h q).
-Proof.
-bbb.
-intros; unfold pair_eq_ap.
-destruct x as (a, b).
-destruct y as (c, d).
-simpl in p, q.
-destruct p, q; simpl.
-reflexivity.
-Qed.
-
-bbb.
+(* could be characterized, they say. ??? *)
 
 End Σ_type.
 
@@ -2554,6 +2533,8 @@ Definition SemigroupStr A :=
 Definition Semigroup := Σ (A : U), SemigroupStr A.
 
 (* 2.14.1 Lifting equivalences *)
+
+bbb.
 
 Check (λ A B (e : A ≃ B), transport SemigroupStr (ua e)).
 (* λ (A B : Type) (e : A ≃ B), transport SemigroupStr (ua e)
