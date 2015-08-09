@@ -1598,20 +1598,53 @@ Definition ap_pr₁ {A B} {x y : Σ (z : A), B z} : x == y → pr₁ x == pr₁ 
 
 (* need a transport... *)
 
-Definition ap_pr₂ {A B} {x y : Σ (z : A), B z} : x == y → pr₂ x == pr₂ y :=
+Definition ap_pr₂ {A B} {x y : Σ (z : A), B z} :
+    ∀ (p : x == y), transport B (ap_pr₁ p) (pr₂ x) == pr₂ y :=
   λ p,
-  match p in (_ == z) return (pr₁ x == pr₁ z) with
-  | refl _ => refl (pr₁ x)
+  match p in (_ == z) return (transport B (ap_pr₁ p) (pr₂ x) == pr₂ z) with
+  | refl _ => refl (pr₂ x)
   end.
 
-bbb.
-
 Theorem inv_pair_eq {A B} {x y : Σ (z : A), B z} : ∀ p : x == y,
+False.
+intros.
+Check (@hott_2_7_3).
+Check (p⁻¹ == transport _ (hott_2_7_3 x)⁻¹ (pair⁼ (ap_pr₁ p⁻¹) (ap_pr₂ p⁻¹))).
+
+@hott_2_7_3
+     : ∀ (A : Type) (B : A → Type) (z : {x : A & B x}),
+       z == existT B (pr₁ z) (pr₂ z)
+
+Toplevel input, characters 27-28:
+Error:
+In environment
+A : Type
+B : A → Type
+x, y : {z : A & B z}
+p : x == y
+Unable to unify "existT B (pr₁ y) (pr₂ y) == x" with 
+"y == x".
+
+Check (@transport).
+Check (@transport _ _ y x p⁻¹).
+     : y == x
+     : existT B (pr₁ y) (pr₂ y) == existT B (pr₁ x) (pr₂ x)
+
   p⁻¹ == pair_eq (ap_pr₁ p⁻¹, ap_pr₂ p⁻¹).
 Proof.
 intros.
 bbb.
 
+destruct p; simpl.
+destruct x as (a, b); reflexivity.
+Qed.
+
+(* reminder section 6 *)
+
+Theorem inv_pair_eq {A B} {x y : A * B} : ∀ p : x == y,
+  p⁻¹ == pair_eq (ap_pr₁ p⁻¹, ap_pr₂ p⁻¹).
+Proof.
+intros.
 destruct p; simpl.
 destruct x as (a, b); reflexivity.
 Qed.
