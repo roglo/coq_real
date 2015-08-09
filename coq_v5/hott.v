@@ -1592,7 +1592,7 @@ Definition refl_pair_eq2 {A B} (z : Σ (x : A), B x) :
   pair⁼ (refl (pr₁ z)) (refl (pr₂ z)).
 Proof. reflexivity. Defined.
 
-(* but that one does not: *)
+(* but that one does not (typing issue): *)
 
 Definition refl_pair_eq {A B} (z : Σ (x : A), B x) :
   refl z == pair⁼ (refl (pr₁ z)) (refl (pr₂ z)).
