@@ -1592,7 +1592,19 @@ Definition refl_pair_eq2 {A B} (z : Σ (x : A), B x) :
   pair⁼ (refl (pr₁ z)) (refl (pr₂ z)).
 Proof. reflexivity. Defined.
 
-(* but that one does not (typing issue): *)
+(* and despite this is correct: *)
+
+Definition refl_pair_eq3 {A B} (z : Σ (x : A), B x) :
+  z == existT B (pr₁ z) (pr₂ z).
+Proof. destruct z; reflexivity. Defined.
+
+(* that does not work (typing issue): *)
+
+Definition refl_pair_eq4 {A B} (z : Σ (x : A), B x) :
+  refl z == refl (existT B (pr₁ z) (pr₂ z)).
+Proof. destruct z; reflexivity. Defined.
+
+(* neither that one: *)
 
 Definition refl_pair_eq {A B} (z : Σ (x : A), B x) :
   refl z == pair⁼ (refl (pr₁ z)) (refl (pr₂ z)).
