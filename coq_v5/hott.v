@@ -1577,6 +1577,19 @@ simpl in p, q.
 destruct p, q; reflexivity.
 Defined.
 
+(* reflexivity *)
+
+Definition refl_pair_eq {A B} : ∀ (z : Σ (x : A), B x),
+  refl z
+  == transport (λ t, t == t) (hott_2_7_3 z)⁻¹
+       (pair⁼ (refl (pr₁ z)) (refl (pr₂ z))).
+Proof.
+intros.
+destruct z as (x, y); reflexivity.
+Defined.
+
+(* inverse *)
+
 Definition ap_pr₁ {A B} {x y : Σ (z : A), B z} : x == y → pr₁ x == pr₁ y :=
   λ p,
   match p in (_ == z) return (pr₁ x == pr₁ z) with
@@ -1590,19 +1603,6 @@ Definition ap_pr₂ {A B} {x y : Σ (z : A), B z} : x == y → pr₂ x == pr₂ 
   match p in (_ == z) return (pr₁ x == pr₁ z) with
   | refl _ => refl (pr₁ x)
   end.
-
-(* reflexivity *)
-
-Definition refl_pair_eq {A B} : ∀ (z : Σ (x : A), B x),
-  refl z
-  == transport (λ t, t == t) (hott_2_7_3 z)⁻¹
-       (pair⁼ (refl (pr₁ z)) (refl (pr₂ z))).
-Proof.
-intros.
-destruct z as (x, y); reflexivity.
-Defined.
-
-(* inverse *)
 
 Theorem inv_pair_eq {A B} {x y : Σ (z : A), B z} : ∀ p : x == y,
   p⁻¹ == pair_eq (ap_pr₁ p⁻¹, ap_pr₂ p⁻¹).
