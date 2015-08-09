@@ -1508,11 +1508,11 @@ Qed.
 
 (* I don't see in what it is a corollary of 2.7.2... *)
 
-Corollary hott_2_7_3 {A} : ∀ P (z : Σ (x : A), P x),
-  z == existT P (pr₁ z) (pr₂ z).
-Proof.
-intros; destruct z as (x, y); reflexivity.
-Qed.
+Definition hott_2_7_3 {A B} (z : {x : A & B x}) :
+  z == existT B (pr₁ z) (pr₂ z)
+:=
+  let (z₁, z₂) return (z == existT B (pr₁ z) (pr₂ z)) := z in
+  refl (existT B z₁ z₂).
 
 Definition pair_eq {A} {P : A → U} {x y : A} {u : P x} {v : P y} :
   Π (p : x == y), p⁎ u == v → existT _ x u == existT _ y v
@@ -1579,77 +1579,23 @@ Defined.
 
 (* reflexivity *)
 
-(* this version works: *)
-
-Definition refl_pair_eq {A B} (x : A) (y : B x) :
-  refl (existT B x y) == pair⁼ (refl x) (refl y).
-Proof. reflexivity. Defined.
-
-(* that one also: *)
-
-Definition refl_pair_eq2 {A B} (z : Σ (x : A), B x) :
-  refl (existT B (pr₁ z) (pr₂ z)) ==
-  pair⁼ (refl (pr₁ z)) (refl (pr₂ z)).
-Proof. reflexivity. Defined.
-
-(* and despite this is correct: *)
-
-Definition refl_pair_eq3 {A B} (z : Σ (x : A), B x) :
-  z == existT B (pr₁ z) (pr₂ z).
-Proof. destruct z; reflexivity. Defined.
-
-(* ... ah oui, parce que c'est une paire dépendante: *)
-
-Definition tutu {A B C} (z : Σ (x : A), B x)
-    (f : ∀ u : (Σ (x : A), B x), C) :
-  f z == f (existT B (pr₁ z) (pr₂ z)).
-Proof. destruct z; reflexivity. Defined.
-
-(* ... C u à la place de C et ça ne type plus: *)
-
-Definition tutu {A B C} (z : Σ (x : A), B x)
-    (f : ∀ u : (Σ (x : A), B x), C u) :
-  f z == f (existT B (pr₁ z) (pr₂ z)).
-...
-
-(* est-ce qu'on peut transporter l'un dans l'autre ? *)
-
-bbb.
-
-Check refl.
-
-Definition titi {A B} (x y : A) (f : A → B) : x == y → f x == f y.
-intros; apply ap; assumption.
-
-Definition toto {A B} (z : Σ (x : A), B x) :
-  False.
-(*
-Set Printing Implicit.
-Check (refl (existT B (pr₁ z) (pr₂ z))).
-@refl {x : A & B x} (@existT A B (@pr₁ A B z) (@pr₂ A B z))
-Check (refl z).
-@refl {x : A & B x} z
-*)
-Check (
-@refl {x : A & B x} (@existT A B (@pr₁ A B z) (@pr₂ A B z)) ==
-@refl {x : A & B x} z
-).
-
-(* that does not work (typing issue): *)
-
-Definition refl_pair_eq4 {A B} (z : Σ (x : A), B x) :
-  refl z == refl (existT B (pr₁ z) (pr₂ z)).
-Proof. destruct z; reflexivity. Defined.
-
-(* neither that one: *)
-
 Definition refl_pair_eq {A B} (z : Σ (x : A), B x) :
-  refl z == pair⁼ (refl (pr₁ z)) (refl (pr₂ z)).
+  transport (λ t, t == t) (hott_2_7_3 z) (refl z)
+  == pair⁼ (refl (pr₁ z)) (refl (pr₂ z)).
 Proof.
-reflexivity.
+destruct z as (x, y); reflexivity.
 Defined.
 
 bbb.
+
+(* rappel section 6 *)
+
+Theorem refl_pair_eq_sect_6 {A B} : ∀ z : A * B,
+  refl z == pair_eq (refl (pr₁ z), refl (pr₂ z)).
+Proof.
+intros.
+destruct z as (x, y); reflexivity.
+Qed.
 
 (* inverse *)
 
