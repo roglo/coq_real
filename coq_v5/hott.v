@@ -904,7 +904,9 @@ Definition hott_2_3_8 A B (P := λ _ : A, B) (f : A → B) x y (p : x == y)
   : apd f p == transportconst B p (f x) • ap f p
   := match p with refl _ => refl (apd f (refl x)) end.
 
-Definition hott_2_3_9 {A x y z} :
+(* Lemma 2.3.9 *)
+
+Definition transport_compose {A x y z} :
     ∀ (P : A → U) (p : x == y) (q : y == z) (u : P x),
     transport P q (transport P p u) == transport P (p • q) u :=
   λ P p q u,
@@ -1077,11 +1079,11 @@ Proof.
 intros.
 apply (existT _ (transport P (p⁻¹))); split.
  intros z; unfold id, "◦"; simpl.
- eapply compose; [ apply hott_2_3_9 | idtac ].
+ eapply compose; [ apply transport_compose | idtac ].
  destruct p; reflexivity.
 
  intros z; unfold id, "◦"; simpl.
- eapply compose; [ apply hott_2_3_9 | idtac ].
+ eapply compose; [ apply transport_compose | idtac ].
  destruct p; reflexivity.
 Qed.
 
@@ -1089,12 +1091,12 @@ Example ex_2_4_9 A x y : ∀ (p : x == y) (P : A → U), qinv (transport P p) :=
   λ p P,
   existT _ (transport P p⁻¹)
   (λ z : P y,
-   hott_2_3_9 P p⁻¹ p z
+   transport_compose P p⁻¹ p z
    • match p return (∀ t, transport P (p⁻¹ • p) t == t) with
      | refl _ => λ z0 : P x, refl z0
      end z,
    λ z : P x,
-   hott_2_3_9 P p p⁻¹ z
+   transport_compose P p p⁻¹ z
    • match p return (transport P (p • p⁻¹) z == z) with
      | refl _ => refl z
      end).
@@ -1633,7 +1635,7 @@ Definition transport_invert {A B} {x y : Σ (z : A), B z}
 :=
   λ q,
   ap (transport B p⁻¹) q⁻¹
-  • (hott_2_3_9 B p p⁻¹ (pr₂ x)
+  • (transport_compose B p p⁻¹ (pr₂ x)
      • (transport_compat (p • p⁻¹) (refl (pr₁ x)) (compose_invert p)
         • refl (pr₂ x))).
 
@@ -1649,7 +1651,7 @@ destruct y as (y₁, y₂).
 simpl in *; unfold id; simpl.
 unfold transport_invert; simpl.
 unfold transport_compat; simpl.
-unfold hott_2_3_9; simpl.
+unfold transport_compose; simpl.
 unfold id; simpl.
 bbb.
 
