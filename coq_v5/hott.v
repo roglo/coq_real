@@ -1627,7 +1627,8 @@ Definition glap {A P} {x₁ y₁ : A} {x₂ : P x₁} (p q : x₁ == y₁) :
   | refl _ => refl (transport P p x₂)
   end.
 
-Definition pouet {A B} {x y : Σ (z : A), B z} (p : pr₁ x == pr₁ y) :
+Definition transport_invert {A B} {x y : Σ (z : A), B z}
+    (p : pr₁ x == pr₁ y) :
   p⁎ (pr₂ x) == pr₂ y → p⁻¹⁎ (pr₂ y) == pr₂ x
 :=
   λ q,
@@ -1637,13 +1638,15 @@ Definition pouet {A B} {x y : Σ (z : A), B z} (p : pr₁ x == pr₁ y) :
 
 Definition glop {A B} {x y : Σ (z : A), B z} (r : x == y)
     (p := ap_pr₁ r) (q := ap_pr₂ r) :
-  r⁻¹ == pair_uniqueness y • pair⁼ (p⁻¹) (pouet p q) • (pair_uniqueness x)⁻¹.
+  r⁻¹ ==
+    pair_uniqueness y • pair⁼ (p⁻¹) (transport_invert p q) •
+      (pair_uniqueness x)⁻¹.
 Proof.
 subst p q.
 destruct x as (x₁, x₂).
 destruct y as (y₁, y₂).
 simpl in *; unfold id; simpl.
-unfold pouet; simpl.
+unfold transport_invert; simpl.
 unfold glap; simpl.
 unfold hott_2_3_9; simpl.
 unfold id; simpl.
