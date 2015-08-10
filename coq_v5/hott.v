@@ -1582,63 +1582,56 @@ Defined.
 
 (* inverse *)
 
-Definition ap_pr₁ {A B} {x y : Σ (z : A), B z} : x == y → pr₁ x == pr₁ y :=
+Definition ap_pr₁ {A B} {x y : Σ (z : A), B z}
+: x == y → pr₁ x == pr₁ y
+:=
   λ p,
   match p in (_ == z) return (pr₁ x == pr₁ z) with
   | refl _ => refl (pr₁ x)
   end.
 
-Definition ap_pr₂ {A B} {x y : Σ (z : A), B z} :
-    ∀ (p : x == y), transport B (ap_pr₁ p) (pr₂ x) == pr₂ y :=
+Definition ap_pr₂ {A B} {x y : Σ (z : A), B z}
+: ∀ (p : x == y), transport B (ap_pr₁ p) (pr₂ x) == pr₂ y
+:=
   λ p,
   match p in (_ == z) return (transport B (ap_pr₁ p) (pr₂ x) == pr₂ z) with
   | refl _ => refl (pr₂ x)
   end.
 
-Definition transport_compat {A P} {x₁ y₁ : A} {x₂ : P x₁} (p q : x₁ == y₁) :
-  p == q → transport P p x₂ == transport P q x₂
+Definition transport_compat {A P} {x₁ y₁ : A} {x₂ : P x₁}
+: ∀ (p q : x₁ == y₁), p == q → transport P p x₂ == transport P q x₂
 :=
-  λ r,
+  λ p q r,
   match r with
   | refl _ => refl (transport P p x₂)
   end.
 
 Definition transport_invert {A B} {x y : Σ (z : A), B z}
-    (p : pr₁ x == pr₁ y)
-:
-  p⁎ (pr₂ x) == pr₂ y
+: ∀ (p : pr₁ x == pr₁ y), p⁎ (pr₂ x) == pr₂ y
   → p⁻¹⁎ (pr₂ y) == pr₂ x
 :=
-  λ q,
+  λ p q,
   ap (transport B p⁻¹) q⁻¹
   • (transport_compose B p p⁻¹ (pr₂ x)
      • (transport_compat (p • p⁻¹) (refl (pr₁ x)) (compose_invert p)
         • refl (pr₂ x))).
 
-Definition inv_pair_eq {A B} {x y : Σ (z : A), B z} (p : x == y) :
+Definition inv_pair_eq {A B} {x y : Σ (z : A), B z}
+: ∀ p : x == y,
   p⁻¹ ==
     pair_uniqueness y
     • pair⁼ (ap_pr₁ p)⁻¹ (transport_invert (ap_pr₁ p) (ap_pr₂ p))
     • (pair_uniqueness x)⁻¹.
 Proof.
+intros.
 destruct p; simpl.
 destruct x as (x₁, x₂); simpl.
 reflexivity.
 Defined.
 
-bbb.
-
-(* reminder section 6 *)
-
-Theorem inv_pair_eq {A B} {x y : A * B} : ∀ p : x == y,
-  p⁻¹ == pair_eq ((ap_pr₁ p)⁻¹, (ap_pr₂ p)⁻¹).
-Proof.
-intros.
-destruct p; simpl.
-destruct x as (x₁, x₂); reflexivity.
-Qed.
-
 (* composition *)
+
+bbb.
 
 Theorem comp_pair_eq {A B} {x y z : A * B} : ∀ (p : x == y) (q : y == z),
   p • q == pair_eq (ap_pr₁ p • ap_pr₁ q, ap_pr₂ p • ap_pr₂ q).
