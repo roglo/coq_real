@@ -1184,7 +1184,7 @@ Notation "A ≃ B" := (equivalence A B) (at level 70).
 
 (* Lemma 2.4.12 i *)
 
-Definition ideqv A : A ≃ A :=
+Definition eqv_refl A : A ≃ A :=
   existT isequiv id (existT _ id refl, existT _ id refl).
 
 (* quasi-inverse : lemma 2.4.12 ii *)
@@ -1924,7 +1924,7 @@ Definition eq_univ :
 :=
   λ H A B,
   match H A B  in (_ == C) return ((A ≃ B) ≃ C) with
-  | refl _ => ideqv (A ≃ B)
+  | refl _ => eqv_refl (A ≃ B)
   end.
 
 (* so they are equivalent (↔) but is it an equivalence (≃) ? *)
@@ -2001,24 +2001,24 @@ Definition ua_pup {A B}
      with
      | refl _ =>
          λ q,
-         match q in (_ == r) return (r == ua (ideqv A)) with
+         match q in (_ == r) return (r == ua (eqv_refl A)) with
          | refl _ => refl _
          end
      end (ua_idtoeqv p).
 
 (* reflexivity *)
 
-Definition idtoeqv_refl (A : U) : ideqv A == idtoeqv (refl A) :=
+Definition idtoeqv_refl (A : U) : eqv_refl A == idtoeqv (refl A) :=
   refl (idtoeqv (refl A)).
 
-Definition ua_refl_tac : ∀ A, refl A == ua (ideqv A).
+Definition ua_refl_tac : ∀ A, refl A == ua (eqv_refl A).
 Proof.
 intros.
 rewrite idtoeqv_refl, ua_idtoeqv.
 reflexivity.
 Defined.
 
-Definition ua_refl : ∀ A, refl A == ua (ideqv A) :=
+Definition ua_refl : ∀ A, refl A == ua (eqv_refl A) :=
   λ A,
   (λ p,
    match p with
@@ -2334,7 +2334,7 @@ intros.
 destruct p; simpl.
 unfold id; simpl.
 rewrite <- ru.
-apply ideqv.
+apply eqv_refl.
 Defined.
 
 (* 2.12 Coproducts *)
@@ -2459,14 +2459,14 @@ Defined.
 Definition inl_eq_equiv_bis {A B} (a₁ a₂ : A) :
   @Id (A + B) (inl a₁) (inl a₂) ≃ (a₁ == a₂).
 Proof.
-eapply equiv_compose; [ apply hott_2_12_5_bis | apply ideqv ].
+eapply equiv_compose; [ apply hott_2_12_5_bis | apply eqv_refl ].
 Defined.
 
 (* 2.12.3 again *)
 
 Definition inl_inr_equiv_bis {A B} (a : A) (b : B) : inl a == inr b ≃ ⊥.
 Proof.
-eapply equiv_compose; [ apply hott_2_12_5_bis | apply ideqv ].
+eapply equiv_compose; [ apply hott_2_12_5_bis | apply eqv_refl ].
 Defined.
 
 (* and what about 2.12.2 ? *)
@@ -2506,7 +2506,7 @@ Defined.
 Definition inr_eq_equiv_bis {A B} (b₁ b₂ : B) :
   @Id (A + B) (inr b₁) (inr b₂) ≃ (b₁ == b₂).
 Proof.
-eapply equiv_compose; [ apply hott_2_12_5_ter | apply ideqv ].
+eapply equiv_compose; [ apply hott_2_12_5_ter | apply eqv_refl ].
 Defined.
 
 (* In particular, theorem 2.12.5 implies *)
