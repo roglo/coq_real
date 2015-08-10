@@ -633,10 +633,8 @@ Qed.
 
 (* Lemma 2.1.4 ii_2 *)
 
-Lemma compose_invert {A} {x y : A} : ∀ (p : x == y), p • p⁻¹ == refl x.
-Proof.
-intros p; destruct p; reflexivity.
-Qed.
+Definition compose_invert {A} {x y : A} : ∀ (p : x == y), p • p⁻¹ == refl x
+  := λ p, match p with refl _ => refl (refl x) end.
 
 Lemma hott_2_1_4_iii {A} {x y : A} : ∀ (p : x == y), (p⁻¹)⁻¹ == p.
 Proof.
@@ -1358,7 +1356,7 @@ Definition ap_pr₂ {A B} {x y : A * B} : x == y → pr₂ x == pr₂ y :=
   end.
 
 Theorem ap_pr₁_pair {A B} : ∀ (x y : A * B) (p : pr₁ x == pr₁ y) q,
-  ap_pr₁ (pair_eq (p, q)) == p.
+  ap_pr₁ (pair⁼ (p, q)) == p.
 Proof.
 intros.
 destruct x as (a, b).
@@ -1368,7 +1366,7 @@ destruct p, q; reflexivity.
 Qed.
 
 Theorem ap_pr₂_pair {A B} : ∀ (x y : A * B) p (q : pr₂ x == pr₂ y),
-  ap_pr₂ (pair_eq (p, q)) == q.
+  ap_pr₂ (pair⁼ (p, q)) == q.
 Proof.
 intros.
 destruct x as (a, b).
@@ -1378,7 +1376,7 @@ destruct p, q; reflexivity.
 Qed.
 
 Theorem pair_uniqueness {A B}  {x y : A * B} : ∀ (r : x == y),
-  r == pair_eq (ap_pr₁ r, ap_pr₂ r).
+  r == pair⁼ (ap_pr₁ r, ap_pr₂ r).
 Proof.
 intros.
 destruct r; simpl.
@@ -1386,22 +1384,22 @@ destruct x as (a, b); reflexivity.
 Qed.
 
 Theorem refl_pair_eq {A B} : ∀ z : A * B,
-  refl z == pair_eq (refl (pr₁ z), refl (pr₂ z)).
+  refl z == pair⁼ (refl (pr₁ z), refl (pr₂ z)).
 Proof.
 intros.
 destruct z as (x, y); reflexivity.
 Qed.
 
 Theorem inv_pair_eq {A B} {x y : A * B} : ∀ p : x == y,
-  p⁻¹ == pair_eq ((ap_pr₁ p)⁻¹, (ap_pr₂ p)⁻¹).
+  p⁻¹ == pair⁼ ((ap_pr₁ p)⁻¹, (ap_pr₂ p)⁻¹).
 Proof.
 intros.
 destruct p; simpl.
-destruct x as (a, b); reflexivity.
+destruct x as (x₁, x₂); reflexivity.
 Qed.
 
 Theorem comp_pair_eq {A B} {x y z : A * B} : ∀ (p : x == y) (q : y == z),
-  p • q == pair_eq (ap_pr₁ p • ap_pr₁ q, ap_pr₂ p • ap_pr₂ q).
+  p • q == pair⁼ (ap_pr₁ p • ap_pr₁ q, ap_pr₂ p • ap_pr₂ q).
 Proof.
 intros.
 destruct p, q; simpl.
@@ -1597,22 +1595,6 @@ Definition ap_pr₂ {A B} {x y : Σ (z : A), B z} :
   | refl _ => refl (pr₂ x)
   end.
 
-Definition toto {A B} {x y : Σ (z : A), B z} : ∀ p : x == y,
-  (ap_pr₁ p)⁻¹ == ap_pr₁ p⁻¹
-:=
-  λ p,
-  match p with
-  | refl _ => refl (ap_pr₁ (refl x)⁻¹)
-  end.
-
-Definition titi {A B} {x y : Σ (z : A), B z} : ∀ p : x == y,
-  transport B (ap_pr₁ p)⁻¹ (pr₂ y) == pr₂ x
-:=
-  λ p,
-  match p with
-  | refl _ => refl _
-  end.
-
 Definition transport_compat {A P} {x₁ y₁ : A} {x₂ : P x₁} (p q : x₁ == y₁) :
   p == q → transport P p x₂ == transport P q x₂
 :=
@@ -1633,19 +1615,17 @@ Definition transport_invert {A B} {x y : Σ (z : A), B z}
      • (transport_compat (p • p⁻¹) (refl (pr₁ x)) (compose_invert p)
         • refl (pr₂ x))).
 
-Definition inv_pair_eq {A B} {x y : Σ (z : A), B z} (r : x == y) :
-  r⁻¹ ==
+Definition inv_pair_eq {A B} {x y : Σ (z : A), B z} (p : x == y) :
+  p⁻¹ ==
     pair_uniqueness y
-    • pair⁼ (ap_pr₁ r)⁻¹ (transport_invert (ap_pr₁ r) (ap_pr₂ r))
+    • pair⁼ (ap_pr₁ p)⁻¹ (transport_invert (ap_pr₁ p) (ap_pr₂ p))
     • (pair_uniqueness x)⁻¹.
 Proof.
-destruct x as (x₁, x₂).
-destruct y as (y₁, y₂).
-simpl in *; unfold id; simpl.
-unfold transport_invert; simpl.
-unfold transport_compat; simpl.
-unfold transport_compose; simpl.
-unfold id; simpl.
+destruct p; simpl.
+destruct x as (x₁, x₂); simpl.
+reflexivity.
+Defined.
+
 bbb.
 
 (* reminder section 6 *)
@@ -1655,7 +1635,7 @@ Theorem inv_pair_eq {A B} {x y : A * B} : ∀ p : x == y,
 Proof.
 intros.
 destruct p; simpl.
-destruct x as (a, b); reflexivity.
+destruct x as (x₁, x₂); reflexivity.
 Qed.
 
 (* composition *)
