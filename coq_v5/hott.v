@@ -1508,7 +1508,7 @@ Qed.
 
 (* Corollary 2.7.3... but I don't see in what it is a corollary... *)
 
-Definition dep_pair_uniqueness {A B} (z : {x : A & B x}) :
+Definition pair_uniqueness {A B} (z : {x : A & B x}) :
   z == existT B (pr₁ z) (pr₂ z)
 :=
   let (z₁, z₂) return (z == existT B (pr₁ z) (pr₂ z)) := z in
@@ -1581,7 +1581,7 @@ Defined.
 
 Definition refl_pair_eq {A B} : ∀ (z : Σ (x : A), B x),
   refl z
-  == transport (λ t, t == t) (dep_pair_uniqueness z)⁻¹
+  == transport (λ t, t == t) (pair_uniqueness z)⁻¹
        (pair⁼ (refl (pr₁ z)) (refl (pr₂ z))).
 Proof.
 intros.
@@ -1637,9 +1637,7 @@ Definition pouet {A B} {x y : Σ (z : A), B z} (p : pr₁ x == pr₁ y) :
 
 Definition glop {A B} {x y : Σ (z : A), B z} (r : x == y)
     (p := ap_pr₁ r) (q := ap_pr₂ r) :
-  r⁻¹ ==
-    dep_pair_uniqueness y • pair⁼ (p⁻¹) (pouet p q) •
-      (dep_pair_uniqueness x)⁻¹.
+  r⁻¹ == pair_uniqueness y • pair⁼ (p⁻¹) (pouet p q) • (pair_uniqueness x)⁻¹.
 Proof.
 subst p q.
 destruct x as (x₁, x₂).
