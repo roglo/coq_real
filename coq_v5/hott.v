@@ -1932,9 +1932,11 @@ Definition eq_univ :
 Definition toto {A B : U} (p : ∀ A B, (A ≃ B) == (A == B)) :
   univ_eq (eq_univ p) == p.
 Proof.
+apply invert.
 unfold univ_eq, eq_univ; simpl.
 Check (∀ A B : Type, (A ≃ B) == (A == B)).
 (* the axiom is a Prop, not a Type: is this remark relevant? *)
+(* perhaps we need the univalence axiom to prove it? :-) *)
 bbb.
 
 Definition titi {A B : U} (p : ∀ A B, (A ≃ B) ≃ (A == B)) :
