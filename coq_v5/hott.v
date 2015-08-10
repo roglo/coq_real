@@ -1929,14 +1929,16 @@ Definition eq_univ :
 
 (* so they are equivalent (↔) but is it an equivalence (≃) ? *)
 
-Definition titi {A B : U} (p : ∀ A B, (A ≃ B) ≃ (A == B)) :
-  eq_univ (univ_eq p) == p.
-Proof.
-unfold univ_eq, eq_univ; simpl.
-bbb.
-
 Definition toto {A B : U} (p : ∀ A B, (A ≃ B) == (A == B)) :
   univ_eq (eq_univ p) == p.
+Proof.
+unfold univ_eq, eq_univ; simpl.
+Check (∀ A B : Type, (A ≃ B) == (A == B)).
+(* the axiom is a Prop, not a Type: is this remark relevant? *)
+bbb.
+
+Definition titi {A B : U} (p : ∀ A B, (A ≃ B) ≃ (A == B)) :
+  eq_univ (univ_eq p) == p.
 Proof.
 unfold univ_eq, eq_univ; simpl.
 bbb.
