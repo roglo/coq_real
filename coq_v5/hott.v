@@ -1619,6 +1619,37 @@ Definition titi {A B} {x y : Σ (z : A), B z} : ∀ p : x == y,
   | refl _ => refl _
   end.
 
+Definition glap {A P} {x₁ y₁ : A} {x₂ : P x₁} (p q : x₁ == y₁) :
+  p == q → transport P p x₂ == transport P q x₂
+:=
+  λ r,
+  match r with
+  | refl _ => refl (transport P p x₂)
+  end.
+
+Definition pouet {A B} {x y : Σ (z : A), B z} (p : pr₁ x == pr₁ y) :
+  p⁎ (pr₂ x) == pr₂ y → p⁻¹⁎ (pr₂ y) == pr₂ x
+:=
+  λ q,
+  ap (transport B p⁻¹) q⁻¹
+  • (hott_2_3_9 B p p⁻¹ (pr₂ x)
+     • (glap (p • p⁻¹) (refl (pr₁ x)) (compose_invert p) • refl (pr₂ x))).
+
+Definition glop {A B} {x y : Σ (z : A), B z} (p : pr₁ x == pr₁ y)
+    (q : p⁎ (pr₂ x) == pr₂ y) (r : x == y) :
+  r⁻¹ == hott_2_7_3 y • pair⁼ (p⁻¹) (pouet p q) • (hott_2_7_3 x)⁻¹.
+Proof.
+destruct x as (x₁, x₂).
+destruct y as (y₁, y₂).
+simpl in *; unfold id; simpl.
+unfold pouet; simpl.
+unfold glap; simpl.
+unfold hott_2_3_9; simpl.
+destruct p; simpl.
+destruct q; simpl.
+unfold id; simpl.
+bbb.
+
 Theorem inv_pair_eq {A B} {x y : Σ (z : A), B z} : ∀ p : x == y,
 False.
 intros.
