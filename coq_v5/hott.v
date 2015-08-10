@@ -1911,6 +1911,8 @@ Defined.
 (* funny thing about univalence axiom: it is equivalent to the axiom
    where the middle ≃ is replaced by equality *)
 
+(* initial versions
+
 Definition univ_eq :
   (∀ A B, (A ≃ B) ≃ (A == B))
   → (∀ A B, (A ≃ B) == (A == B))
@@ -1926,20 +1928,62 @@ Definition eq_univ :
   match H A B  in (_ == C) return ((A ≃ B) ≃ C) with
   | refl _ => eqv_refl (A ≃ B)
   end.
+*)
+
+(* test *)
+
+Definition foo := ∀ A B, (A ≃ B) ≃ (A == B).
+Definition bar := ∀ A B, (A ≃ B) == (A == B).
+
+Definition univ_eq : foo → bar
+:=
+  λ H A B,
+  let (f, _) := H (A ≃ B) (A == B) in f (H A B).
+
+Definition eq_univ : bar → foo
+:=
+  λ H A B,
+  match H A B  in (_ == C) return ((A ≃ B) ≃ C) with
+  | refl _ => eqv_refl (A ≃ B)
+  end.
 
 (* so they are equivalent (↔) but is it an equivalence (≃) ? *)
 
-Definition tutu :
-  (∀ A B, (A ≃ B) == (A == B))
-  ≃ (∀ A B, (A ≃ B) ≃ (A == B)).
+Definition tutu : foo ≃ bar.
+
+Toplevel input, characters 18-21:
+Error:
+The term "foo" has type
+ "Type@{max(Top.765, Top.766, Top.816, Top.817, Top.1564+1)}"
+while it is expected to have type "Type@{Top.816}" (universe inconsistency).
+
 Proof.
-apply (existT _ eq_univ).
+unfold equivalence at 1.
+(*  ============================
+   {f
+   : (∀ A B : Type, (A ≃ B) == (A == B)) → ∀ A B : Type, (A ≃ B) ≃ (A == B) &
+   isequiv f}
+eq_univ
+     : (∀ A B : Type, (A ≃ B) == (A == B)) → ∀ A B : Type, (A ≃ B) ≃ (A == B)
+*)
+apply (existT _ (eq_univ : foo → bar)).
 apply qinv_isequiv.
 unfold qinv.
-eapply (existT _ univ_eq).
+(*  ============================
+   {g
+   : (∀ A B : Type, (A ≃ B) ≃ (A == B)) → ∀ A B : Type, (A ≃ B) == (A == B) &
+   ((eq_univ ◦ g ~~ id) * (g ◦ eq_univ ~~ id))%type}
+univ_eq
+     : (∀ A B : Type, (A ≃ B) ≃ (A == B)) → ∀ A B : Type, (A ≃ B) == (A == B)
+*)
+About existT.
+eapply (existT _ (univ_eq : bar → foo)).
 
-Toplevel input, characters 22-48:
-Error: No applicable tactic.
+Toplevel input, characters 18-25:
+Error:
+The term "univ_eq" has type
+ "(∀ A B : Type, (A ≃ B) ≃ (A == B)) → ∀ A B : Type, (A ≃ B) == (A == B)"
+while it is expected to have type "bar → foo" (universe inconsistency).
 
 bbb.
 
