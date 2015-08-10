@@ -1929,6 +1929,21 @@ Definition eq_univ :
 
 (* so they are equivalent (↔) but is it an equivalence (≃) ? *)
 
+Definition tutu :
+  (∀ A B, (A ≃ B) == (A == B))
+  ≃ (∀ A B, (A ≃ B) ≃ (A == B)).
+Proof.
+unfold "≃" at 1.
+apply (existT _ eq_univ).
+apply qinv_isequiv.
+unfold qinv.
+eapply (existT _ univ_eq).
+
+Toplevel input, characters 22-48:
+Error: No applicable tactic.
+
+bbb.
+
 Definition toto {A B : U} (p : ∀ A B, (A ≃ B) == (A == B)) :
   univ_eq (eq_univ p) == p.
 Proof.
