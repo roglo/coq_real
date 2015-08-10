@@ -1631,7 +1631,8 @@ Definition transport_compat {A P} {x₁ y₁ : A} {x₂ : P x₁} (p q : x₁ ==
 
 Definition transport_invert {A B} {x y : Σ (z : A), B z}
     (p : pr₁ x == pr₁ y) :
-  p⁎ (pr₂ x) == pr₂ y → p⁻¹⁎ (pr₂ y) == pr₂ x
+  p⁎ (pr₂ x) == pr₂ y
+  → p⁻¹⁎ (pr₂ y) == pr₂ x
 :=
   λ q,
   ap (transport B p⁻¹) q⁻¹
@@ -1639,13 +1640,12 @@ Definition transport_invert {A B} {x y : Σ (z : A), B z}
      • (transport_compat (p • p⁻¹) (refl (pr₁ x)) (compose_invert p)
         • refl (pr₂ x))).
 
-Definition glop {A B} {x y : Σ (z : A), B z} (r : x == y)
-    (p := ap_pr₁ r) (q := ap_pr₂ r) :
+Definition inv_pair_eq {A B} {x y : Σ (z : A), B z} (r : x == y) :
   r⁻¹ ==
-    pair_uniqueness y • pair⁼ (p⁻¹) (transport_invert p q) •
-      (pair_uniqueness x)⁻¹.
+    pair_uniqueness y
+    • pair⁼ (ap_pr₁ r)⁻¹ (transport_invert (ap_pr₁ r) (ap_pr₂ r))
+    • (pair_uniqueness x)⁻¹.
 Proof.
-subst p q.
 destruct x as (x₁, x₂).
 destruct y as (y₁, y₂).
 simpl in *; unfold id; simpl.
@@ -1654,53 +1654,6 @@ unfold transport_compat; simpl.
 unfold transport_compose; simpl.
 unfold id; simpl.
 bbb.
-
-Theorem inv_pair_eq {A B} {x y : Σ (z : A), B z} : ∀ p : x == y,
-False.
-intros.
-Check (pair⁼ (ap_pr₁ p)⁻¹ (titi p)).
-SearchAbout (existT _ _ _ == existT _ _ _).
-Check (@pair_eq).
-Check (λ A P x y u v p q, (@pair_eq A P x y u v p q)⁻¹).
-bbb.
-
-p⁻¹
-     : y == x
-     : existT B (pr₁ y) (pr₂ y) == existT B (pr₁ x) (pr₂ x)
-
-Theorem inv_pair_eq {A B} {x y : Σ (z : A), B z} : ∀ p : x == y,
-False.
-intros.
-Check (@dep_pair_uniqueness).
-Check (p⁻¹ == transport _ (dep_pair_uniqueness x)⁻¹ (pair⁼ (ap_pr₁ p⁻¹) (ap_pr₂ p⁻¹))).
-
-@dep_pair_uniqueness
-     : ∀ (A : Type) (B : A → Type) (z : {x : A & B x}),
-       z == existT B (pr₁ z) (pr₂ z)
-
-Toplevel input, characters 27-28:
-Error:
-In environment
-A : Type
-B : A → Type
-x, y : {z : A & B z}
-p : x == y
-Unable to unify "existT B (pr₁ y) (pr₂ y) == x" with 
-"y == x".
-
-Check (@transport).
-Check (@transport _ _ y x p⁻¹).
-     : y == x
-     : existT B (pr₁ y) (pr₂ y) == existT B (pr₁ x) (pr₂ x)
-
-  p⁻¹ == pair_eq (ap_pr₁ p⁻¹, ap_pr₂ p⁻¹).
-Proof.
-intros.
-bbb.
-
-destruct p; simpl.
-destruct x as (a, b); reflexivity.
-Qed.
 
 (* reminder section 6 *)
 
