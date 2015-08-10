@@ -1635,18 +1635,17 @@ Definition pouet {A B} {x y : Σ (z : A), B z} (p : pr₁ x == pr₁ y) :
   • (hott_2_3_9 B p p⁻¹ (pr₂ x)
      • (glap (p • p⁻¹) (refl (pr₁ x)) (compose_invert p) • refl (pr₂ x))).
 
-Definition glop {A B} {x y : Σ (z : A), B z} (p : pr₁ x == pr₁ y)
-    (q : p⁎ (pr₂ x) == pr₂ y) (r : x == y) :
+Definition glop {A B} {x y : Σ (z : A), B z} (r : x == y)
+    (p := ap_pr₁ r) (q := ap_pr₂ r) :
   r⁻¹ == hott_2_7_3 y • pair⁼ (p⁻¹) (pouet p q) • (hott_2_7_3 x)⁻¹.
 Proof.
+subst p q.
 destruct x as (x₁, x₂).
 destruct y as (y₁, y₂).
 simpl in *; unfold id; simpl.
 unfold pouet; simpl.
 unfold glap; simpl.
 unfold hott_2_3_9; simpl.
-destruct p; simpl.
-destruct q; simpl.
 unfold id; simpl.
 bbb.
 
