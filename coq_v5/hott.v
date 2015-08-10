@@ -1444,10 +1444,12 @@ Definition depend_eq {A P} : ∀ (w w' : Σ (x : A), P x) (p : w == w'),
 :=
   λ w w' p, ap P (ap pr₁ p).
 
-Remark hott_2_7_1 {A P} : ∀ (w w' : Σ (x : A), P x) (p : w == w'),
+(* remark 2.7.1 *)
+
+Remark transport_ap {A P} {w w' : Σ (x : A), P x} : ∀ (p : w == w'),
   (ap pr₁ p)⁎ (pr₂ w) == pr₂ w'.
 Proof.
-intros w w' p.
+intros p.
 destruct p.
 reflexivity.
 Defined.
@@ -1631,10 +1633,26 @@ Defined.
 
 (* composition *)
 
+Theorem comp_pair_eq {A B} {x y z : Σ (t : A), B t}
+: ∀ (p : x == y) (q : y == z),
+  p • q ==
+    pair_uniqueness x
+    • pair⁼ (ap pr₁ p • ap pr₁ q)
+        ((ap (transport B (ap pr₁ q)) (transport_ap p) • transport_ap q)⁻¹
+         • transport_compose B (ap pr₁ p) (ap pr₁ q) (pr₂ x))⁻¹
+    • (pair_uniqueness z)⁻¹.
+Proof.
+intros.
+destruct p, q; simpl.
+destruct x as (x₁, x₂); reflexivity.
+Defined.
+
 bbb.
 
+(* reminder section 6 *)
+
 Theorem comp_pair_eq {A B} {x y z : A * B} : ∀ (p : x == y) (q : y == z),
-  p • q == pair_eq (ap_pr₁ p • ap_pr₁ q, ap_pr₂ p • ap_pr₂ q).
+  p • q == pair⁼ (ap_pr₁ p • ap_pr₁ q, ap_pr₂ p • ap_pr₂ q).
 Proof.
 intros.
 destruct p, q; simpl.
