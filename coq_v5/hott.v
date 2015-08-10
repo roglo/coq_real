@@ -1441,14 +1441,6 @@ Module Σ_type.
 Definition pr₁ {A B} := @Σ_pr₁ A B.
 Definition pr₂ {A B} := @Σ_pr₂ A B.
 
-Definition transport_eq {A P} : ∀ (w w' : Σ (x : A), P x) (p : w == w'),
-  (ap pr₁ p)⁎ (pr₂ w) == pr₂ w'
-:=
-  λ w w' p,
-  match p with
-  | refl _ => refl (pr₂ w)
-  end.
-
 Definition depend_eq {A P} : ∀ (w w' : Σ (x : A), P x) (p : w == w'),
   P (pr₁ w) == P (pr₁ w')
 :=
@@ -1630,7 +1622,8 @@ Definition transport_compat {A P} {x₁ y₁ : A} {x₂ : P x₁} (p q : x₁ ==
   end.
 
 Definition transport_invert {A B} {x y : Σ (z : A), B z}
-    (p : pr₁ x == pr₁ y) :
+    (p : pr₁ x == pr₁ y)
+:
   p⁎ (pr₂ x) == pr₂ y
   → p⁻¹⁎ (pr₂ y) == pr₂ x
 :=
