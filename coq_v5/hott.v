@@ -1506,9 +1506,9 @@ apply (existT _ (hott_2_7_2_g P w w')); split.
  reflexivity.
 Qed.
 
-(* I don't see in what it is a corollary of 2.7.2... *)
+(* Corollary 2.7.3... but I don't see in what it is a corollary... *)
 
-Definition hott_2_7_3 {A B} (z : {x : A & B x}) :
+Definition dep_pair_uniqueness {A B} (z : {x : A & B x}) :
   z == existT B (pr₁ z) (pr₂ z)
 :=
   let (z₁, z₂) return (z == existT B (pr₁ z) (pr₂ z)) := z in
@@ -1581,7 +1581,7 @@ Defined.
 
 Definition refl_pair_eq {A B} : ∀ (z : Σ (x : A), B x),
   refl z
-  == transport (λ t, t == t) (hott_2_7_3 z)⁻¹
+  == transport (λ t, t == t) (dep_pair_uniqueness z)⁻¹
        (pair⁼ (refl (pr₁ z)) (refl (pr₂ z))).
 Proof.
 intros.
@@ -1637,7 +1637,9 @@ Definition pouet {A B} {x y : Σ (z : A), B z} (p : pr₁ x == pr₁ y) :
 
 Definition glop {A B} {x y : Σ (z : A), B z} (r : x == y)
     (p := ap_pr₁ r) (q := ap_pr₂ r) :
-  r⁻¹ == hott_2_7_3 y • pair⁼ (p⁻¹) (pouet p q) • (hott_2_7_3 x)⁻¹.
+  r⁻¹ ==
+    dep_pair_uniqueness y • pair⁼ (p⁻¹) (pouet p q) •
+      (dep_pair_uniqueness x)⁻¹.
 Proof.
 subst p q.
 destruct x as (x₁, x₂).
@@ -1665,10 +1667,10 @@ p⁻¹
 Theorem inv_pair_eq {A B} {x y : Σ (z : A), B z} : ∀ p : x == y,
 False.
 intros.
-Check (@hott_2_7_3).
-Check (p⁻¹ == transport _ (hott_2_7_3 x)⁻¹ (pair⁼ (ap_pr₁ p⁻¹) (ap_pr₂ p⁻¹))).
+Check (@dep_pair_uniqueness).
+Check (p⁻¹ == transport _ (dep_pair_uniqueness x)⁻¹ (pair⁼ (ap_pr₁ p⁻¹) (ap_pr₂ p⁻¹))).
 
-@hott_2_7_3
+@dep_pair_uniqueness
      : ∀ (A : Type) (B : A → Type) (z : {x : A & B x}),
        z == existT B (pr₁ z) (pr₂ z)
 
