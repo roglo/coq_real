@@ -1619,7 +1619,7 @@ Definition titi {A B} {x y : Σ (z : A), B z} : ∀ p : x == y,
   | refl _ => refl _
   end.
 
-Definition glap {A P} {x₁ y₁ : A} {x₂ : P x₁} (p q : x₁ == y₁) :
+Definition transport_compat {A P} {x₁ y₁ : A} {x₂ : P x₁} (p q : x₁ == y₁) :
   p == q → transport P p x₂ == transport P q x₂
 :=
   λ r,
@@ -1634,7 +1634,8 @@ Definition transport_invert {A B} {x y : Σ (z : A), B z}
   λ q,
   ap (transport B p⁻¹) q⁻¹
   • (hott_2_3_9 B p p⁻¹ (pr₂ x)
-     • (glap (p • p⁻¹) (refl (pr₁ x)) (compose_invert p) • refl (pr₂ x))).
+     • (transport_compat (p • p⁻¹) (refl (pr₁ x)) (compose_invert p)
+        • refl (pr₂ x))).
 
 Definition glop {A B} {x y : Σ (z : A), B z} (r : x == y)
     (p := ap_pr₁ r) (q := ap_pr₂ r) :
@@ -1647,7 +1648,7 @@ destruct x as (x₁, x₂).
 destruct y as (y₁, y₂).
 simpl in *; unfold id; simpl.
 unfold transport_invert; simpl.
-unfold glap; simpl.
+unfold transport_compat; simpl.
 unfold hott_2_3_9; simpl.
 unfold id; simpl.
 bbb.
