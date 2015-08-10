@@ -626,14 +626,14 @@ Definition hott_2_1_4_i_2 {A} {x y : A} : ∀ (p : x == y),
 
 (* Lemma hott_2.1.4 ii_1 *)
 
-Lemma invert_compose {A} {x y : A} : ∀ (p : x == y), p⁻¹ • p == refl y.
+Lemma compose_invert_l {A} {x y : A} : ∀ (p : x == y), p⁻¹ • p == refl y.
 Proof.
 intros p; destruct p; reflexivity.
 Qed.
 
 (* Lemma 2.1.4 ii_2 *)
 
-Definition compose_invert {A} {x y : A} : ∀ (p : x == y), p • p⁻¹ == refl x
+Definition compose_invert_r {A} {x y : A} : ∀ (p : x == y), p • p⁻¹ == refl x
   := λ p, match p with refl _ => refl (refl x) end.
 
 Lemma hott_2_1_4_iii {A} {x y : A} : ∀ (p : x == y), (p⁻¹)⁻¹ == p.
@@ -653,7 +653,7 @@ Qed.
 Definition hott_2_1_4 A (x y z w : A)
     (p : x == y) (q : y == z) (r : z == w) :=
   ((@hott_2_1_4_i_1 A x y p, @hott_2_1_4_i_2 A x y p),
-   (@compose_invert A x y p, @invert_compose A x y p),
+   (@compose_invert_r A x y p, @compose_invert_l A x y p),
    @hott_2_1_4_iii A x y p,
    @compose_assoc A x y z w p q r).
 
@@ -1003,10 +1003,10 @@ assert (ap f (H x) • H x == H (f x) • H x) as p.
    eapply compose in p; [ eassumption | apply hott_2_1_4_i_1 ].
 
    eapply dotl, invert.
-   eapply compose_invert; reflexivity.
+   eapply compose_invert_r; reflexivity.
 
   eapply dotl, invert.
-  eapply compose_invert; reflexivity.
+  eapply compose_invert_r; reflexivity.
 Qed.
 
 (* quasi-inverse *)
@@ -1026,12 +1026,12 @@ apply (existT _ (λ q, p⁻¹ • q)); split.
  intros t; unfold id, "◦"; simpl.
  eapply compose; [ idtac | eapply invert, hott_2_1_4_i_2 ].
  eapply compose; [ apply compose_assoc | apply dotr ].
- apply compose_invert.
+ apply compose_invert_r.
 
  intros t; unfold id, "◦"; simpl.
  eapply compose; [ idtac | eapply invert, hott_2_1_4_i_2 ].
  eapply compose; [ apply compose_assoc | apply dotr ].
- apply invert_compose.
+ apply compose_invert_l.
 Qed.
 
 Example ex_2_4_8_i A : ∀ x y z : A, ∀ (p : x == y),
@@ -1039,10 +1039,10 @@ Example ex_2_4_8_i A : ∀ x y z : A, ∀ (p : x == y),
   := λ x y z p,
      existT _ (compose p⁻¹)
        (λ t : x == z,
-        compose_assoc p p⁻¹ t • (compose_invert p •r t)
+        compose_assoc p p⁻¹ t • (compose_invert_r p •r t)
         • (hott_2_1_4_i_2 t)⁻¹,
         λ t : y == z,
-        compose_assoc p⁻¹ p t • (invert_compose p •r t)
+        compose_assoc p⁻¹ p t • (compose_invert_l p •r t)
         • (hott_2_1_4_i_2 t)⁻¹).
 
 Example ex_2_4_8_ii_tac A : ∀ x y z : A, ∀ (p : x == y),
@@ -1053,12 +1053,12 @@ apply (existT _ (λ q, q • p⁻¹)); split.
  intros t; unfold id, "◦"; simpl.
  eapply compose; [ idtac | eapply invert, hott_2_1_4_i_1 ].
  eapply compose; [ eapply invert, compose_assoc | apply dotl ].
- eapply invert_compose.
+ eapply compose_invert_l.
 
  intros t; unfold id, "◦"; simpl.
  eapply compose; [ idtac | eapply invert, hott_2_1_4_i_1 ].
  eapply compose; [ eapply invert, compose_assoc | apply dotl ].
- eapply compose_invert.
+ eapply compose_invert_r.
 Defined.
 
 Example ex_2_4_8_ii A : ∀ x y z : A, ∀ (p : x == y),
@@ -1066,10 +1066,10 @@ Example ex_2_4_8_ii A : ∀ x y z : A, ∀ (p : x == y),
   := λ x y z p,
      existT _ (λ q, q • p⁻¹)
        (λ t : z == y,
-        (compose_assoc t p⁻¹ p)⁻¹ • (t •l invert_compose p)
+        (compose_assoc t p⁻¹ p)⁻¹ • (t •l compose_invert_l p)
         • (hott_2_1_4_i_1 t)⁻¹,
         λ t : z == x,
-        (compose_assoc t p p⁻¹)⁻¹ • (t •l compose_invert p)
+        (compose_assoc t p p⁻¹)⁻¹ • (t •l compose_invert_r p)
         • (hott_2_1_4_i_1 t)⁻¹).
 
 Example ex_2_4_9_tac A x y : ∀ (p : x == y) (P : A → U), qinv (transport P p).
@@ -1615,7 +1615,7 @@ Definition transport_invert {A B} {x y : Σ (z : A), B z}
   λ p q,
   ap (transport B p⁻¹) q⁻¹
   • (transport_compose B p p⁻¹ (pr₂ x)
-     • (transport_compat (p • p⁻¹) (refl (pr₁ x)) (compose_invert p)
+     • (transport_compat (p • p⁻¹) (refl (pr₁ x)) (compose_invert_r p)
         • refl (pr₂ x))).
 
 Definition inv_pair_eq {A B} {x y : Σ (z : A), B z}
@@ -1633,31 +1633,29 @@ Defined.
 
 (* composition *)
 
+Definition invert_compose {A} (x y z : A) (p : x == y) (q : y == z)
+: (p • q)⁻¹ == q⁻¹ • p⁻¹
+:=
+  match q with
+  | refl _ =>
+      match p with
+      | refl _ => refl ((refl x)⁻¹ • (refl x)⁻¹)
+      end
+  end.
+
 Theorem comp_pair_eq {A B} {x y z : Σ (t : A), B t}
 : ∀ (p : x == y) (q : y == z),
   p • q ==
     pair_uniqueness x
     • pair⁼ (ap pr₁ p • ap pr₁ q)
-        ((ap (transport B (ap pr₁ q)) (transport_ap p) • transport_ap q)⁻¹
-         • transport_compose B (ap pr₁ p) (ap pr₁ q) (pr₂ x))⁻¹
+        ((transport_compose B (ap pr₁ p) (ap pr₁ q) (pr₂ x))⁻¹ •
+         ap (transport B (ap pr₁ q)) (transport_ap p) •
+         transport_ap q)
     • (pair_uniqueness z)⁻¹.
 Proof.
-intros.
 destruct p, q; simpl.
 destruct x as (x₁, x₂); reflexivity.
 Defined.
-
-bbb.
-
-(* reminder section 6 *)
-
-Theorem comp_pair_eq {A B} {x y z : A * B} : ∀ (p : x == y) (q : y == z),
-  p • q == pair⁼ (ap_pr₁ p • ap_pr₁ q, ap_pr₂ p • ap_pr₂ q).
-Proof.
-intros.
-destruct p, q; simpl.
-destruct x; reflexivity.
-Qed.
 
 End Σ_type.
 
@@ -2104,7 +2102,7 @@ split; intros q.
  set (r := @compose _ _ _ a' (@invert _ (f₁ (f a)) a (β a) • ap f₁ q) (β a')).
  apply (@compose _ _ ((α (f a))⁻¹ • α (f a) • ap f r)).
   eapply compose; [ apply lu | idtac ].
-  apply dotr, invert, invert_compose.
+  apply dotr, invert, compose_invert_l.
 
   eapply compose; [ eapply invert, compose_assoc | idtac ].
   unfold id, composite; simpl.
@@ -2122,16 +2120,16 @@ split; intros q.
    apply (@compose _ _ ((α (f a))⁻¹ • ap f (β a • r • (β a')⁻¹) • α (f a'))).
     apply dotr, dotl, ap.
     rewrite r; simpl.
-    rewrite <- ru, compose_invert.
+    rewrite <- ru, compose_invert_r.
     reflexivity.
 
     apply (@compose _ _ ((α (f a))⁻¹ • ap f (ap f₁ q) • α (f a'))).
      apply dotr, dotl, ap; subst r.
      do 2 rewrite compose_assoc.
-     rewrite compose_invert; simpl.
+     rewrite compose_invert_r; simpl.
      unfold id; simpl.
      rewrite <- compose_assoc.
-     rewrite compose_invert; simpl.
+     rewrite compose_invert_r; simpl.
      rewrite <- ru; reflexivity.
 
      assert (H1 : α (f a) • q == ap (f ◦ f₁) q • α (f a')).
@@ -2145,7 +2143,7 @@ split; intros q.
       unfold id, composite in H1; simpl in H1.
       unfold composite; simpl.
       rewrite <- H1.
-      rewrite compose_assoc, invert_compose.
+      rewrite compose_assoc, compose_invert_l.
       reflexivity.
 
  rewrite (ap_composite f f₁ q).
@@ -2635,10 +2633,10 @@ eapply (existT _ (transport SemigroupStr (ua e))), qinv_isequiv.
 eapply (existT _ (transport SemigroupStr (ua e)⁻¹)).
 split; intros g.
  eapply compose; [ apply hott_2_3_9 | idtac ].
- rewrite invert_compose; reflexivity.
+ rewrite compose_invert_l; reflexivity.
 
  eapply compose; [ apply hott_2_3_9 | idtac ].
- rewrite compose_invert; reflexivity.
+ rewrite compose_invert_r; reflexivity.
 Defined.
 
 Definition Assoc X m :=
