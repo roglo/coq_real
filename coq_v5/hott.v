@@ -1933,7 +1933,6 @@ Definition tutu :
   (∀ A B, (A ≃ B) == (A == B))
   ≃ (∀ A B, (A ≃ B) ≃ (A == B)).
 Proof.
-unfold "≃" at 1.
 apply (existT _ eq_univ).
 apply qinv_isequiv.
 unfold qinv.
