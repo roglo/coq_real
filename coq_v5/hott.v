@@ -1911,20 +1911,35 @@ Defined.
 (* funny thing about univalence axiom: it is equivalent to the axiom
    where the middle ≃ is replaced by equality *)
 
-Theorem univ_eq : (∀ A B, (A ≃ B) ≃ (A == B)) → (∀ A B, (A ≃ B) == (A == B)).
-Proof.
-intros H A B.
-apply H.
-apply H.
-Qed.
+Definition univ_eq :
+  (∀ A B, (A ≃ B) ≃ (A == B))
+  → (∀ A B, (A ≃ B) == (A == B))
+:=
+  λ H A B,
+  let (f, _) := H (A ≃ B) (A == B) in f (H A B).
 
-Theorem eq_univ : (∀ A B, (A ≃ B) == (A == B)) → (∀ A B, (A ≃ B) ≃ (A == B)).
+Definition eq_univ :
+  (∀ A B, (A ≃ B) == (A == B))
+  → (∀ A B, (A ≃ B) ≃ (A == B))
+:=
+  λ H A B,
+  match H A B  in (_ == C) return ((A ≃ B) ≃ C) with
+  | refl _ => ideqv (A ≃ B)
+  end.
+
+(* so they are equivalent (↔) but is it an equivalence (≃) ? *)
+
+Definition titi {A B : U} (p : ∀ A B, (A ≃ B) ≃ (A == B)) :
+  eq_univ (univ_eq p) == p.
 Proof.
-intros H A B.
-rewrite H.
-rewrite H.
-reflexivity.
-Qed.
+unfold univ_eq, eq_univ; simpl.
+bbb.
+
+Definition toto {A B : U} (p : ∀ A B, (A ≃ B) == (A == B)) :
+  univ_eq (eq_univ p) == p.
+Proof.
+unfold univ_eq, eq_univ; simpl.
+bbb.
 
 (* introduction rule *)
 
