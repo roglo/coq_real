@@ -1624,6 +1624,8 @@ False.
 intros.
 Check (pair⁼ (ap_pr₁ p)⁻¹ (titi p)).
 SearchAbout (existT _ _ _ == existT _ _ _).
+Check (@pair_eq).
+Check (λ A P x y u v p q, (@pair_eq A P x y u v p q)⁻¹).
 bbb.
 
 p⁻¹
