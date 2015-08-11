@@ -2068,7 +2068,7 @@ transitivity (ua (idtoeqv (ua eqf))⁻⁻¹).
 Defined.
 
 Lemma hott_2_10_5_i {A} {B : A → U} {x y : A} : ∀ (p : x == y) (u : B x),
-  transport B p u = transport id (ap B p) u.
+  transport B p u == transport id (ap B p) u.
 Proof.
 intros.
 destruct p; reflexivity.
@@ -2609,36 +2609,52 @@ Definition Semigroup := Σ (A : U), SemigroupStr A.
 
 (* 2.14.1 Lifting equivalences *)
 
-bbb.
-
-Check (λ A B (e : A ≃ B), transport SemigroupStr (ua e)).
-(* λ (A B : Type) (e : A ≃ B), transport SemigroupStr (ua e)
-     : ∀ A B : Type, A ≃ B → SemigroupStr A → SemigroupStr B *)
-
-(* hott_2_1_4
-     : ∀ (A : Type) (x y z w : A) (p : x == y) (q : y == z)
-       (r : z == w),
-       (p == p • refl y) * (p == refl x • p) *
-       ((p • p⁻¹ == refl x) * (p⁻¹ • p == refl y)) *
-       (p⁻¹⁻¹ == p) * (p • (q • r) == p • q • r) *)
-
-(* @hott_2_3_9
-     : ∀ (A : Type) (x y z : A) (P : A → U) (p : x == y)
-       (q : y == z) (u : P x),
-       transport P q (transport P p u) == transport P (p • q) u *)
-
-Definition SemigroupStr_equiv {A B} : A ≃ B → SemigroupStr A ≃ SemigroupStr B.
+Definition SemigroupStr_equiv_tac {A B} :
+  A ≃ B → SemigroupStr A ≃ SemigroupStr B.
 Proof.
 intros e.
 eapply (existT _ (transport SemigroupStr (ua e))), qinv_isequiv.
 eapply (existT _ (transport SemigroupStr (ua e)⁻¹)).
-split; intros g.
- eapply compose; [ apply hott_2_3_9 | idtac ].
- rewrite compose_invert_l; reflexivity.
+split; intros g; unfold id; simpl.
+ eapply compose; [ apply transport_compose | idtac ].
+ eapply compose.
+  apply Σ_type.transport_compat, compose_invert_l; reflexivity.
 
- eapply compose; [ apply hott_2_3_9 | idtac ].
- rewrite compose_invert_r; reflexivity.
+  reflexivity.
+
+ eapply compose; [ apply transport_compose | idtac ].
+ eapply compose.
+  apply Σ_type.transport_compat, compose_invert_r; reflexivity.
+
+  reflexivity.
+Show Proof.
 Defined.
+
+Definition transp_semig_inv_r {A B} (e : A ≃ B) (g : SemigroupStr B)
+: transport SemigroupStr (ua e) (transport SemigroupStr (ua e)⁻¹ g) == g
+:=
+  transport_compose SemigroupStr (ua e)⁻¹ (ua e) g
+  • Σ_type.transport_compat ((ua e)⁻¹ • ua e) (refl B)
+      (compose_invert_l (ua e)).
+
+Definition transp_semig_inv_l {A B} (e : A ≃ B) (g : SemigroupStr A)
+: transport SemigroupStr (ua e)⁻¹ (transport SemigroupStr (ua e) g) == g
+:=
+  transport_compose SemigroupStr (ua e) (ua e)⁻¹ g
+  • Σ_type.transport_compat (ua e • (ua e)⁻¹) (refl A)
+      (compose_invert_r (ua e)).
+
+Definition SemigroupStr_equiv {A B} : A ≃ B → SemigroupStr A ≃ SemigroupStr B
+:=
+  λ e,
+  existT _
+    (transport SemigroupStr (ua e))
+    (qinv_isequiv (transport SemigroupStr (ua e))
+       (existT _
+          (transport SemigroupStr (ua e)⁻¹)
+          (transp_semig_inv_r e, transp_semig_inv_l e))).
+
+bbb.
 
 Definition Assoc X m :=
   Π (x : X), Π (y : X), Π (z : X), m x (m y z) == m (m x y) z.
