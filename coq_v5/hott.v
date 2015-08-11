@@ -2663,51 +2663,49 @@ Definition SemigroupStr_equiv {A B} :
 :=
   ap_equiv SemigroupStr.
 
-Print Semigroup.
-
-Definition toto {A B} (e : A ≃ B) (ma : SemigroupStr A) (m := pr₁ ma)
-    (a := pr₂ ma : Assoc A m) (ma' := transport SemigroupStr (ua e) ma)
+Definition transport_semigroup_op {A B} (e : A ≃ B)
+    (ma : SemigroupStr A) (m := pr₁ ma) (a := pr₂ ma : Assoc A m)
+    (ma' := transport SemigroupStr (ua e) ma)
     (m' := pr₁ ma') (a' := pr₂ ma' : Assoc B m')
 :
   m' == transport (λ X : U, X → X → X) (ua e) m.
 Proof.
-subst m a m' ma'.
+destruct (ua e); reflexivity.
+Defined.
+
+Definition transport_semigroup_assoc {A B} (e : A ≃ B)
+    (ma : SemigroupStr A) (m := pr₁ ma) (a := pr₂ ma : Assoc A m)
+    (ma' := transport SemigroupStr (ua e) ma)
+    (m' := pr₁ ma') (a' := pr₂ ma' : Assoc B m')
+:
+  False.
+Proof.
+(* @transport
+     : ∀ (A : Type) (P : A → Type) (x y : A), x == y → P x → P y *)
 (* @Σ_type.hott_2_7_4
      : ∀ (A : Type) (P : A → Type) (Q : {x : A & P x} → U) 
        (x y : A) (p : x == y) (u : P x) (z : Q (existT P x u)),
        transport (Σ_type.tfam P Q) p (Σ_type.couple u z) ==
        Σ_type.couple (transport P p u)
          (transport Q (Σ_type.pair_eq p (refl (transport P p u))) z)
-  ============================
-   pr₁ (transport SemigroupStr (ua e) ma) ==
-   transport (λ X : U, X → X → X) (ua e) (pr₁ ma)
 *)
-bbb.
-
-Definition toto {A B} (e : A ≃ B) m (a : Assoc A m) m' (a' : Assoc B m')
-  (ma := (existT (Assoc A) m a) : SemigroupStr A)
-:
-  m' == transport (λ X : U, X → X → X) (ua e) m
-  → existT _ m' a' == transport SemigroupStr (ua e) (existT _ m a).
-intros.
-Check ma.
-
-(* m' : B → B → B *)
-(* a' : Assoc B m' *)
-Check
-   (λ Q : Semigroup → U, @Σ_type.hott_2_7_4 U SemigroupStr Q _ _ (ua e)
-      (existT (Assoc A) m a)).
-
-set (s'' := transport SemigroupStr (ua e) (existT (Assoc A) m a)).
-(* s'' : SemigroupStr B *)
-set (m'' := pr₁ s'').
-(* m'' : B → B → B *)
-set (a'' := pr₂ s'' : Assoc B m'').
+Check (Σ_type.pair_eq (ua e) (refl ma')).
+(* Σ_type.pair_eq (ua e) (refl ma')
+     : existT SemigroupStr A ma == existT SemigroupStr B ma' *)
+Check (λ P : Semigroup → Prop, transport P (Σ_type.pair_eq (ua e) (refl ma'))).
+(* λ P : Semigroup → Prop, transport P (Σ_type.pair_eq (ua e) (refl ma'))
+     : ∀ P : Semigroup → U,
+       P (existT SemigroupStr A ma) → P (existT SemigroupStr B ma') *)
+Check (λ s : Semigroup, pr₁ s == pr₁ s).
+(* λ s : Semigroup, pr₁ s == pr₁ s
+     : Semigroup → Prop *)
+Check (transport (λ s : Semigroup, pr₂ s == pr₂ s) (Σ_type.pair_eq (ua e) (refl ma'))).
 
 bbb.
-
-Check @Σ_type.hott_2_7_4.
-
+Check (λ Q, transport (Σ_type.tfam (λ X : U, X → X → X) Q)).
+Check ({x : U & (λ X : U, X → X → X) x}).
+Print Semigroup.
+bbb.
 
 Check (Σ_type.pair_eq (ua e) (refl s'')).
 (* Σ_type.pair_eq (ua e) (refl s'')
