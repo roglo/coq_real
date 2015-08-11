@@ -1434,6 +1434,14 @@ End cartesian.
 
 (* 2.7 Σ-types *)
 
+Definition transport_compat {A P} {x₁ y₁ : A} {x₂ : P x₁}
+: ∀ (p q : x₁ == y₁), p == q → transport P p x₂ == transport P q x₂
+:=
+  λ p q r,
+  match r with
+  | refl _ => refl (transport P p x₂)
+  end.
+
 Module Σ_type.
 
 Definition pr₁ {A B} := @Σ_pr₁ A B.
@@ -1598,14 +1606,6 @@ Definition ap_pr₂ {A B} {x y : Σ (z : A), B z}
   λ p,
   match p in (_ == z) return (transport B (ap_pr₁ p) (pr₂ x) == pr₂ z) with
   | refl _ => refl (pr₂ x)
-  end.
-
-Definition transport_compat {A P} {x₁ y₁ : A} {x₂ : P x₁}
-: ∀ (p q : x₁ == y₁), p == q → transport P p x₂ == transport P q x₂
-:=
-  λ p q r,
-  match r with
-  | refl _ => refl (transport P p x₂)
   end.
 
 Definition transport_invert {A B} {x y : Σ (z : A), B z}
@@ -2618,31 +2618,28 @@ eapply (existT _ (transport SemigroupStr (ua e)⁻¹)).
 split; intros g; unfold id; simpl.
  eapply compose; [ apply transport_compose | idtac ].
  eapply compose.
-  apply Σ_type.transport_compat, compose_invert_l; reflexivity.
+  apply transport_compat, compose_invert_l; reflexivity.
 
   reflexivity.
 
  eapply compose; [ apply transport_compose | idtac ].
  eapply compose.
-  apply Σ_type.transport_compat, compose_invert_r; reflexivity.
+  apply transport_compat, compose_invert_r; reflexivity.
 
   reflexivity.
-Show Proof.
 Defined.
 
 Definition transp_semig_inv_r {A B} (e : A ≃ B) (g : SemigroupStr B)
 : transport SemigroupStr (ua e) (transport SemigroupStr (ua e)⁻¹ g) == g
 :=
   transport_compose SemigroupStr (ua e)⁻¹ (ua e) g
-  • Σ_type.transport_compat ((ua e)⁻¹ • ua e) (refl B)
-      (compose_invert_l (ua e)).
+  • transport_compat ((ua e)⁻¹ • ua e) (refl B) (compose_invert_l (ua e)).
 
 Definition transp_semig_inv_l {A B} (e : A ≃ B) (g : SemigroupStr A)
 : transport SemigroupStr (ua e)⁻¹ (transport SemigroupStr (ua e) g) == g
 :=
   transport_compose SemigroupStr (ua e) (ua e)⁻¹ g
-  • Σ_type.transport_compat (ua e • (ua e)⁻¹) (refl A)
-      (compose_invert_r (ua e)).
+  • transport_compat (ua e • (ua e)⁻¹) (refl A) (compose_invert_r (ua e)).
 
 Definition SemigroupStr_equiv {A B} : A ≃ B → SemigroupStr A ≃ SemigroupStr B
 :=
