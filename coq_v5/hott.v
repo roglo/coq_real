@@ -2656,18 +2656,23 @@ Definition ap_equiv {A B} (C : U → U) : A ≃ B → C A ≃ C B
        (existT _ (transport C (ua e)⁻¹)
           (transp_ap_inv_l C e, transp_ap_inv_r C e))).
 
+(* applied to Semigroups *)
+
 Definition SemigroupStr_equiv {A B} :
   A ≃ B → SemigroupStr A ≃ SemigroupStr B
 :=
   ap_equiv SemigroupStr.
 
-bbb.
+Print Semigroup.
 
-Definition toto {A B} (e : A ≃ B) m (a : Assoc A m) m' (a' : Assoc B m') :
+Definition toto {A B} (e : A ≃ B) m (a : Assoc A m) m' (a' : Assoc B m')
+  (s := (existT SemigroupStr A (existT (Assoc A) m a) : Semigroup))
+:
   m' == transport (λ X : U, X → X → X) (ua e) m
   → existT _ m' a' == transport SemigroupStr (ua e) (existT _ m a).
-
 intros.
+Check s.
+
 (* m' : B → B → B *)
 (* a' : Assoc B m' *)
 Check
