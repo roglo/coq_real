@@ -2651,16 +2651,73 @@ Definition SemigroupStr_equiv {A B} : A ≃ B → SemigroupStr A ≃ SemigroupSt
           (transport SemigroupStr (ua e)⁻¹)
           (transp_semig_inv_r e, transp_semig_inv_l e))).
 
-bbb.
-
 Definition Assoc X m :=
   Π (x : X), Π (y : X), Π (z : X), m x (m y z) == m (m x y) z.
 
-Check (λ A B (e : A ≃ B), Π_type.pair_eq (ua e) (refl _)).
+Definition toto {A B} (e : A ≃ B) m (a : Assoc A m) m' (a' : Assoc B m') :
+  m' == transport (λ X : U, X → X → X) (ua e) m
+  → existT _ m' a' == transport SemigroupStr (ua e) (existT _ m a).
 
-Check
-  (λ A B (e : A ≃ B) m a,
-   transport SemigroupStr (ua e) (existT _ m a)).
+intros.
+bbb.
+
+(* Σ_type.pair_eq :
+∀ (A : Type) (P : A → U) (x y : A) (u : P x) (v : P y) 
+(p : x == y), transport P p u == v → existT P x u == existT P y v
+
+Arguments A, P, x, y, u, v are implicit and maximally inserted
+*)
+Check (refl m').
+Check (ua e).
+Check (λ P u v, @Σ_type.pair_eq U P A B u v (ua e)).
+(* @Σ_type.hott_2_7_4
+     : ∀ (A : Type) (P : A → Type) (Q : {x : A & P x} → U) 
+       (x y : A) (p : x == y) (u : P x) (z : Q (existT P x u)),
+       transport (Σ_type.tfam P Q) p (Σ_type.couple u z) ==
+       Σ_type.couple (transport P p u)
+         (transport Q (Σ_type.pair_eq p (refl (transport P p u))) z)
+*)
+About Σ_type.tfam.
+(* Σ_type.tfam : ∀ (A : Type) (P : A → Type), ({x : A & P x} → U) → A → Type
+Argument A is implicit and maximally inserted
+*)
+(* Σ_type.couple :
+∀ (A : Type) (P : A → Type) (Q : {x : A & P x} → Type) 
+(x : A) (x0 : P x),
+(λ u : P x, Q (existT P x u)) x0 → {u : P x & Q (existT P x u)}
+
+Arguments A, P, Q, x are implicit and maximally inserted
+*)
+Check (λ Q z, @Σ_type.hott_2_7_4 U (λ X, X → X → X) Q _ _ (ua e) m z).
+(*
+λ Q : {x : U & (λ X : U, X → X → X) x} → U, Σ_type.hott_2_7_4 (ua e) m
+     : ∀ (Q : {x : U & x → x → x} → U)
+       (z : Q (existT (λ X : U, X → X → X) A m)),
+       transport (Σ_type.tfam (λ X : U, X → X → X) Q) 
+         (ua e) (Σ_type.couple m z) ==
+       Σ_type.couple (transport (λ X : U, X → X → X) (ua e) m)
+         (transport Q
+            (Σ_type.pair_eq (ua e)
+               (refl (transport (λ X : U, X → X → X) (ua e) m))) z)
+*)
+(* Σ_type.tfam (λ X : U, X → X → X)
+     : ({x : U & x → x → x} → U) → U → Type *)
+
+Check @Σ_type.couple.
+Check (Σ_type.pair_eq (ua e) (refl m')).
+
+Check (transport _ (Σ_type.pair_eq (ua e) (refl m')) a).
+
+a' == transport Assoc (Σ_type.pair_eq (ua(e), refl m')) a
+
+
+
+Check (m' == transport (λ X, X → X → X) (ua e) m).
+Check m'.
+
+bbb.
+
+Check (λ A B (e : A ≃ B), Π_type.pair_eq (ua e) (refl _)).
 
 Print cartesian.pair_eq.
 
