@@ -2659,28 +2659,22 @@ Definition toto {A B} (e : A ≃ B) m (a : Assoc A m) m' (a' : Assoc B m') :
   → existT _ m' a' == transport SemigroupStr (ua e) (existT _ m a).
 
 intros.
+Check
+   (λ Q : Semigroup → U, @Σ_type.hott_2_7_4 U SemigroupStr Q _ _ (ua e)
+      (existT (Assoc A) m a)).
+
+set (m'' := transport SemigroupStr (ua e) (existT (Assoc A) m a)).
+Check (λ (Q : Semigroup → U) a,
+  transport Q (Σ_type.pair_eq (ua e) (refl m'')) a).
+(* λ (Q : Semigroup → U)
+(a0 : Q (existT SemigroupStr A (existT (Assoc A) m a))),
+transport Q (Σ_type.pair_eq (ua e) (refl m'')) a0
+     : ∀ Q : Semigroup → U,
+       Q (existT SemigroupStr A (existT (Assoc A) m a))
+       → Q (existT SemigroupStr B m'')
+*)
 bbb.
 
-(* Σ_type.pair_eq :
-∀ (A : Type) (P : A → U) (x y : A) (u : P x) (v : P y) 
-(p : x == y), transport P p u == v → existT P x u == existT P y v
-
-Arguments A, P, x, y, u, v are implicit and maximally inserted
-*)
-Check (refl m').
-Check (ua e).
-Check (λ P u v, @Σ_type.pair_eq U P A B u v (ua e)).
-(* @Σ_type.hott_2_7_4
-     : ∀ (A : Type) (P : A → Type) (Q : {x : A & P x} → U) 
-       (x y : A) (p : x == y) (u : P x) (z : Q (existT P x u)),
-       transport (Σ_type.tfam P Q) p (Σ_type.couple u z) ==
-       Σ_type.couple (transport P p u)
-         (transport Q (Σ_type.pair_eq p (refl (transport P p u))) z)
-*)
-About Σ_type.tfam.
-(* Σ_type.tfam : ∀ (A : Type) (P : A → Type), ({x : A & P x} → U) → A → Type
-Argument A is implicit and maximally inserted
-*)
 (* Σ_type.couple :
 ∀ (A : Type) (P : A → Type) (Q : {x : A & P x} → Type) 
 (x : A) (x0 : P x),
