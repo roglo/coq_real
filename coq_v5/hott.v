@@ -2601,10 +2601,10 @@ End ℕ.
 
 (* 2.14 Example: equality of structures *)
 
-Definition SemigroupStr A :=
-  Σ (m : A → A → A), Π (x : A), Π (y : A), Π (z : A),
-  m x (m y z) == m (m x y) z.
+Definition Assoc X m :=
+  Π (x : X), Π (y : X), Π (z : X), m x (m y z) == m (m x y) z.
 
+Definition SemigroupStr A := Σ (m : A → A → A), Assoc A m.
 Definition Semigroup := Σ (A : U), SemigroupStr A.
 
 (* 2.14.1 Lifting equivalences *)
@@ -2651,28 +2651,42 @@ Definition SemigroupStr_equiv {A B} : A ≃ B → SemigroupStr A ≃ SemigroupSt
           (transport SemigroupStr (ua e)⁻¹)
           (transp_semig_inv_r e, transp_semig_inv_l e))).
 
-Definition Assoc X m :=
-  Π (x : X), Π (y : X), Π (z : X), m x (m y z) == m (m x y) z.
-
 Definition toto {A B} (e : A ≃ B) m (a : Assoc A m) m' (a' : Assoc B m') :
   m' == transport (λ X : U, X → X → X) (ua e) m
   → existT _ m' a' == transport SemigroupStr (ua e) (existT _ m a).
 
 intros.
+(* m' : B → B → B *)
+(* a' : Assoc B m' *)
 Check
    (λ Q : Semigroup → U, @Σ_type.hott_2_7_4 U SemigroupStr Q _ _ (ua e)
       (existT (Assoc A) m a)).
 
-set (m'' := transport SemigroupStr (ua e) (existT (Assoc A) m a)).
-Check (λ (Q : Semigroup → U) a,
-  transport Q (Σ_type.pair_eq (ua e) (refl m'')) a).
-(* λ (Q : Semigroup → U)
-(a0 : Q (existT SemigroupStr A (existT (Assoc A) m a))),
-transport Q (Σ_type.pair_eq (ua e) (refl m'')) a0
+set (s'' := transport SemigroupStr (ua e) (existT (Assoc A) m a)).
+(* s'' : SemigroupStr B *)
+set (m'' := pr₁ s'').
+(* m'' : B → B → B *)
+set (a'' := pr₂ s'' : Assoc B m'').
+
+bbb.
+
+Check @Σ_type.hott_2_7_4.
+
+Check (Σ_type.pair_eq (ua e) (refl s'')).
+(* Σ_type.pair_eq (ua e) (refl s'')
+     : existT SemigroupStr A (existT (Assoc A) m a) ==
+       existT SemigroupStr B s'' *)
+
+Check (λ (Q : Semigroup → U) v,
+  transport Q (Σ_type.pair_eq (ua e) (refl s'')) v).
+(* λ (Q : Semigroup → U) (v : Q (existT SemigroupStr A (existT (Assoc A) m a))),
+transport Q (Σ_type.pair_eq (ua e) (refl s'')) v
      : ∀ Q : Semigroup → U,
        Q (existT SemigroupStr A (existT (Assoc A) m a))
-       → Q (existT SemigroupStr B m'')
-*)
+       → Q (existT SemigroupStr B s'') *)
+
+
+Check (existT SemigroupStr A (existT (Assoc A) m a) : Semigroup).
 bbb.
 
 (* Σ_type.couple :
