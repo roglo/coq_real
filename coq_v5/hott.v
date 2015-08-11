@@ -2713,6 +2713,65 @@ Check
 (* ouais mais je peux pas faire un transport sur deux trucs qui sont
    pas égaux ((A, (m, Assoc A m)) et (B, (m', Assoc B m))) *)
 
+Print SemigroupStr.
+
+Check (transport SemigroupStr (ua e) (existT _ m a)).
+Check (λ P Q, @Σ_type.hott_2_7_4 U P Q A B (ua e)).
+
+Print SemigroupStr.
+(* SemigroupStr = λ A : Type, {m : A → A → A & Assoc A m}
+     : Type → Type
+*)
+
+Print Σ_type.tfam.
+(* Σ_type.tfam = 
+λ (A : Type) (P : A → Type) (Q : {x : A & P x} → U) 
+(x : A), {u : P x & Q (existT P x u)}
+     : ∀ (A : Type) (P : A → Type), ({x : A & P x} → U) → A → Type
+
+Argument A is implicit and maximally inserted
+*)
+(* Σ_type.tfam Type = 
+λ (P : Type → Type) (Q : {x : Type & P x} → U) 
+(x : Type), {u : P x & Q (existT P x u)}
+     : ∀ (P : Type → Type), ({x : Type & P x} → U) → Type → Type
+
+Argument A is implicit and maximally inserted
+*)
+
+Check (@Σ_type.tfam Type).
+(* Σ_type.tfam
+     : ∀ P : Type → Type, ({x : Type & P x} → U) → Type → Type
+*)
+
+Check (@Σ_type.tfam Type SemigroupStr).
+
+P x ≡ Assoc A m
+
+Goal: having Σ_type.tfam P Q ≡ SemigroupStr
+
+λ (P : U → Type) (Q : {x : U & P x} → U), Σ_type.hott_2_7_4 (ua e)
+     : ∀ (P : U → Type) (Q : {x : U & P x} → U) (u : P A)
+       (z : Q (existT P A u)),
+       transport (Σ_type.tfam P Q) (ua e) (Σ_type.couple u z) ==
+       Σ_type.couple (transport P (ua e) u)
+         (transport Q (Σ_type.pair_eq (ua e) (refl (transport P (ua e) u))) z)
+
+Σ_type.tfam P Q ≡ SemigroupStr
+
+Σ_type.couple u z ≡ existT _ m a
+
+Check @Σ_type.hott_2_7_4.
+@Σ_type.hott_2_7_4
+     : ∀ (A : Type) (P : A → Type) (Q : {x : A & P x} → U) 
+       (x y : A) (p : x == y) (u : P x) (z : Q (existT P x u)),
+       transport (Σ_type.tfam P Q) p (Σ_type.couple u z) ==
+       Σ_type.couple (transport P p u)
+         (transport Q (Σ_type.pair_eq p (refl (transport P p u))) z)
+
+Check (λ X, pr₁ (SemigroupStr X)).
+Check (pr₂ ◦ SemigroupStr).
+
 bbb.
 
 Check (@transport Semigroup (λ g, pr₂ (pr₂ g))).
