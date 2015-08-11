@@ -2665,13 +2665,32 @@ Definition SemigroupStr_equiv {A B} :
 
 Print Semigroup.
 
+Definition toto {A B} (e : A ≃ B) (ma : SemigroupStr A) (m := pr₁ ma)
+    (a := pr₂ ma : Assoc A m) (ma' := transport SemigroupStr (ua e) ma)
+    (m' := pr₁ ma') (a' := pr₂ ma' : Assoc B m')
+:
+  m' == transport (λ X : U, X → X → X) (ua e) m.
+Proof.
+subst m a m' ma'.
+(* @Σ_type.hott_2_7_4
+     : ∀ (A : Type) (P : A → Type) (Q : {x : A & P x} → U) 
+       (x y : A) (p : x == y) (u : P x) (z : Q (existT P x u)),
+       transport (Σ_type.tfam P Q) p (Σ_type.couple u z) ==
+       Σ_type.couple (transport P p u)
+         (transport Q (Σ_type.pair_eq p (refl (transport P p u))) z)
+  ============================
+   pr₁ (transport SemigroupStr (ua e) ma) ==
+   transport (λ X : U, X → X → X) (ua e) (pr₁ ma)
+*)
+bbb.
+
 Definition toto {A B} (e : A ≃ B) m (a : Assoc A m) m' (a' : Assoc B m')
-  (s := (existT SemigroupStr A (existT (Assoc A) m a) : Semigroup))
+  (ma := (existT (Assoc A) m a) : SemigroupStr A)
 :
   m' == transport (λ X : U, X → X → X) (ua e) m
   → existT _ m' a' == transport SemigroupStr (ua e) (existT _ m a).
 intros.
-Check s.
+Check ma.
 
 (* m' : B → B → B *)
 (* a' : Assoc B m' *)
@@ -2688,6 +2707,7 @@ set (a'' := pr₂ s'' : Assoc B m'').
 bbb.
 
 Check @Σ_type.hott_2_7_4.
+
 
 Check (Σ_type.pair_eq (ua e) (refl s'')).
 (* Σ_type.pair_eq (ua e) (refl s'')
