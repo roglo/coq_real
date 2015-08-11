@@ -2688,7 +2688,35 @@ Proof.
        transport (Σ_type.tfam P Q) p (Σ_type.couple u z) ==
        Σ_type.couple (transport P p u)
          (transport Q (Σ_type.pair_eq p (refl (transport P p u))) z)
+P x = Assoc A m
+P y = Assoc B m'
 *)
+
+Print SemigroupStr.
+Check (λ (g : Semigroup), pr₂ (pr₂ g)).
+(* λ g : Semigroup, pr₂ (pr₂ g)
+     : ∀ g : Semigroup, Assoc (Σ_pr₁ g) (Σ_pr₁ (pr₂ g)) *)
+Check (λ C m, (Assoc C m : Type)).
+Print Assoc.
+(* Assoc = 
+λ (X : Type) (m : X → X → X), ∀ x y z : X, m x (m y z) == m (m x y) z
+     : ∀ X : Type, (X → X → X) → Prop *)
+
+Check (λ g : Semigroup, ∀ (m := pr₁ (pr₂ g)) (x y z : pr₁ g),
+  m x (m y z) == m (m x y) z).
+
+Check
+  (@transport Semigroup
+     (λ g : Semigroup, ∀ (m := pr₁ (pr₂ g)) (x y z : pr₁ g),
+      m x (m y z) == m (m x y) z)).
+
+(* ouais mais je peux pas faire un transport sur deux trucs qui sont
+   pas égaux ((A, (m, Assoc A m)) et (B, (m', Assoc B m))) *)
+
+bbb.
+
+Check (@transport Semigroup (λ g, pr₂ (pr₂ g))).
+
 Check (Σ_type.pair_eq (ua e) (refl ma')).
 (* Σ_type.pair_eq (ua e) (refl ma')
      : existT SemigroupStr A ma == existT SemigroupStr B ma' *)
