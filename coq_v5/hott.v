@@ -1545,25 +1545,20 @@ Definition tfam {A} P (Q : (Σ (x : A), P x) → U) (x : A) :=
   Σ (u : P x), Q (existT P x u).
 
 (*
-Definition couple {A P Q} {x : A} a b
+Definition pair_map {A P Q} {x : A} a b
 :
   {y : P x & Q (x, y)_{P}}
 :=
   (a, b)_{λ y, Q (x, y)_{P}}.
 *)
 
-Definition couple {A P Q} {x : A} (a : P x) (b : Q (existT P x a))
-  : {y : P x & Q (existT P x y)} :=
-  existT (λ z, Q (existT P x z)) a b.
-
-(* I'd like to change this name: couple, and perhaps add projection
-   functions for it... *)
-
-bbb.
+Definition pair_map {A P Q} {x : A} (a : P x) (b : Q (existT P x a))
+    : {u : P x & Q (existT P x u)} :=
+  existT (λ u, Q (existT P x u)) a b.
 
 Definition hott_2_7_4 {A P Q} {x y : A} (p : x == y) u z :
-  transport (tfam P Q) p (couple u z) ==
-  couple (p⁎ u) ((pair⁼ p (refl (p⁎ u)))⁎ z).
+  transport (tfam P Q) p (pair_map u z) ==
+  pair_map (p⁎ u) ((pair⁼ p (refl (p⁎ u)))⁎ z).
 Proof.
 destruct p.
 reflexivity.
@@ -2704,14 +2699,14 @@ Definition transport_semigroup_def {A B} (e : A ≃ B)
     (m' := pr₁ ma') (a' := pr₂ ma' : Assoc B m')
 :
    ma' ==
-   @couple _ (λ X, X → X → X) (λ tm, Assoc (pr₁ tm) (pr₂ tm)) _
+   @pair_map _ (λ X, X → X → X) (λ tm, Assoc (pr₁ tm) (pr₂ tm)) _
      ((ua e)⁎ m) ((pair⁼ (ua e) (refl ((ua e)⁎ m)))⁎ a).
 Proof.
 assert (
   transport (tfam (λ X : Type, X → X → X) (λ tm, Assoc (pr₁ tm) (pr₂ tm)))
     (ua e)
-    (@couple Type (λ X, X → X → X) (λ am, Assoc (pr₁ am) (pr₂ am)) A m a) ==
-  couple (transport (λ X : Type, X → X → X) (ua e) m)
+    (@pair_map Type (λ X, X → X → X) (λ am, Assoc (pr₁ am) (pr₂ am)) A m a) ==
+  pair_map (transport (λ X : Type, X → X → X) (ua e) m)
     (transport (λ tm : {x : Type & x → x → x}, Assoc (pr₁ tm) (pr₂ tm))
        (pair⁼ (ua e)
           (refl (transport (λ X : Type, X → X → X) (ua e) m))) a)) as H.
