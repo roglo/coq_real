@@ -2729,6 +2729,9 @@ Definition transport_semigroup_assoc {A B} (e : A ≃ B)
     ((ua e)⁎ m) ((pair⁼ (ua e) (refl ((ua e)⁎ m)))⁎ a)).
 *)
 Proof.
+assert (m' == transport (λ X : U, X → X → X) (ua e) m).
+ destruct (ua e); reflexivity.
+
 set (xxx :=
   pr₂ (
     @pair_map _ (λ X, X → X → X) (λ tm, Assoc (pr₁ tm) (pr₂ tm)) _
@@ -2736,8 +2739,7 @@ set (xxx :=
 ).
 simpl in xxx.
 subst ma'; simpl in a'.
-
-Check (m' == transport (λ X : Type, X → X → X) (ua e) m).
+pose proof transport _ H.
 
 bbb.
 
