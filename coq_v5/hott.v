@@ -2604,6 +2604,10 @@ End ℕ.
 
 (* 2.14 Example: equality of structures *)
 
+Module EqStr.
+
+Import Σ_type.
+
 Definition Assoc X m :=
   Π (x : X), Π (y : X), Π (z : X), m x (m y z) == m (m x y) z.
 
@@ -2685,25 +2689,24 @@ Definition transport_semigroup_def {A B} (e : A ≃ B)
     (m' := pr₁ ma') (a' := pr₂ ma' : Assoc B m')
 :
    ma' ==
-   @Σ_type.couple Type (λ X, X → X → X) (λ tm, Assoc (pr₁ tm) (pr₂ tm)) B
-     ((ua e)⁎ m) ((Σ_type.pair_eq (ua e) (refl ((ua e)⁎ m)))⁎ a).
+   @couple _ (λ X, X → X → X) (λ tm, Assoc (pr₁ tm) (pr₂ tm)) _
+     ((ua e)⁎ m) ((pair⁼ (ua e) (refl ((ua e)⁎ m)))⁎ a).
 Proof.
 assert (
-   transport
-     (Σ_type.tfam (λ X : Type, X → X → X) (λ tm, Assoc (pr₁ tm) (pr₂ tm))) 
-     (ua e)
-     (@Σ_type.couple Type (λ X, X → X → X) (λ am, Assoc (pr₁ am) (pr₂ am))
-        A m a) ==
-   Σ_type.couple (transport (λ X : Type, X → X → X) (ua e) m)
-     (transport (λ tm : {x : Type & x → x → x}, Assoc (pr₁ tm) (pr₂ tm))
-        (Σ_type.pair_eq (ua e)
-           (refl (transport (λ X : Type, X → X → X) (ua e) m))) a)) as H.
- eapply compose; [ apply Σ_type.hott_2_7_4 | reflexivity ].
+  transport (tfam (λ X : Type, X → X → X) (λ tm, Assoc (pr₁ tm) (pr₂ tm)))
+    (ua e)
+    (@couple Type (λ X, X → X → X) (λ am, Assoc (pr₁ am) (pr₂ am)) A m a) ==
+  couple (transport (λ X : Type, X → X → X) (ua e) m)
+    (transport (λ tm : {x : Type & x → x → x}, Assoc (pr₁ tm) (pr₂ tm))
+       (pair⁼ (ua e)
+          (refl (transport (λ X : Type, X → X → X) (ua e) m))) a)) as H.
+ eapply compose; [ apply hott_2_7_4 | reflexivity ].
 
 eapply compose; [ idtac | eapply H ].
-subst ma'.
-subst m a; simpl.
+subst ma' m a; simpl.
 destruct ma; reflexivity.
 Defined.
 
 bbb.
+
+End EqStr.
