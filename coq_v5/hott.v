@@ -2787,7 +2787,7 @@ Check
   (transport (Σ_type.tfam (λ X, X → X → X) (λ tm, Assoc (pr₁ tm) (pr₂ tm)))
      (ua e)
      (@Σ_type.couple Type (λ X, X → X → X) (λ am, Assoc (pr₁ am) (pr₂ am))
-        A m a)).
+        A m a) : SemigroupStr _).
 
 assert (
    transport
@@ -2799,12 +2799,21 @@ assert (
      (transport (λ tm : {x : Type & x → x → x}, Assoc (pr₁ tm) (pr₂ tm))
         (Σ_type.pair_eq (ua e)
            (refl (transport (λ X : Type, X → X → X) (ua e) m))) a)).
-
 eapply compose.
 apply Σ_type.hott_2_7_4.
 reflexivity.
 
-(* ouais, bon, voir pour la suite... *)
+assert (
+   ma' ==
+   @Σ_type.couple Type (λ X, X → X → X) (λ tm, Assoc (pr₁ tm) (pr₂ tm)) B
+     (transport (λ X, X → X → X) (ua e) m)
+     (transport (λ tm, Assoc (pr₁ tm) (pr₂ tm))
+        (Σ_type.pair_eq (ua e)
+           (refl (transport (λ X : Type, X → X → X) (ua e) m))) a)).
+
+eapply compose; [ idtac | eapply H ].
+subst ma'.
+
 bbb.
 
 Check (Σ_type.pair_eq (ua e) (refl ma')).
