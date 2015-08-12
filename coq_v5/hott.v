@@ -2683,16 +2683,7 @@ Definition SemigroupStr_equiv {A B} :
 :=
   ap_equiv SemigroupStr.
 
-Definition transport_semigroup_op {A B} (e : A ≃ B)
-    (ma : SemigroupStr A) (m := pr₁ ma) (a := pr₂ ma : Assoc A m)
-    (ma' := transport SemigroupStr (ua e) ma)
-    (m' := pr₁ ma') (a' := pr₂ ma' : Assoc B m')
-:
-  m' == transport (λ X : U, X → X → X) (ua e) m.
-Proof.
-destruct (ua e); reflexivity.
-Defined.
-
+(* works but perhaps not required...
 Definition transport_semigroup_def {A B} (e : A ≃ B)
     (ma : SemigroupStr A) (m := pr₁ ma) (a := pr₂ ma : Assoc A m)
     (ma' := transport SemigroupStr (ua e) ma)
@@ -2716,43 +2707,35 @@ eapply compose; [ idtac | eapply H ].
 subst ma' m a; simpl.
 destruct ma; reflexivity.
 Defined.
+*)
+
+Definition transport_semigroup_op {A B} (e : A ≃ B)
+    (ma : SemigroupStr A) (ma' := transport SemigroupStr (ua e) ma)
+    (m := pr₁ ma) (m' := pr₁ ma')
+:
+  m' == transport (λ X : U, X → X → X) (ua e) m.
+Proof.
+destruct (ua e); reflexivity.
+Defined.
 
 Definition transport_semigroup_assoc {A B} (e : A ≃ B)
-    (ma : SemigroupStr A) (m := pr₁ ma) (a := pr₂ ma : Assoc A m)
-    (ma' := transport SemigroupStr (ua e) ma)
-    (m' := pr₁ ma') (a' := pr₂ ma' : Assoc B m')
+    (ma : SemigroupStr A) (ma' := transport SemigroupStr (ua e) ma)
+    (a := pr₂ ma) (a' := pr₂ ma')
 :
-  a' == a'.
-(*
-  pr₂ (
-    @pair_map _ (λ X, X → X → X) (λ tm, Assoc (pr₁ tm) (pr₂ tm)) _
-    ((ua e)⁎ m) ((pair⁼ (ua e) (refl ((ua e)⁎ m)))⁎ a)).
-*)
+  a' ==
+    (transport_semigroup_op e ma)⁻¹⁎
+    (pr₂
+       (@pair_map _ _ (λ tm, Assoc (pr₁ tm) (pr₂ tm)) _
+          ((ua e)⁎ (pr₁ ma))
+          ((pair⁼ (ua e) (refl ((ua e)⁎ (pr₁ ma))))⁎ a))).
 Proof.
-assert (m' == transport (λ X : U, X → X → X) (ua e) m).
- destruct (ua e); reflexivity.
+SearchAbout (_⁻¹⁎).
+subst a a' ma'; simpl.
+unfold transport_semigroup_op; simpl.
+destruct (ua e); reflexivity.
+Defined.
 
-set (xxx :=
-  pr₂ (
-    @pair_map _ (λ X, X → X → X) (λ tm, Assoc (pr₁ tm) (pr₂ tm)) _
-    ((ua e)⁎ m) ((pair⁼ (ua e) (refl ((ua e)⁎ m)))⁎ a))
-).
-simpl in xxx.
-subst ma'; simpl in a'.
-pose proof transport _ H.
-
-bbb.
-
-identifier :
-- Assoc B m'
-- Assoc B (transport (λ X : Type, X → X → X) (ua e) m)
-
-pose proof transport_semigroup_def e ma as H; simpl in H.
-bbb.
-
-Check (a' == xxx).
-
-(* non c'est pas ça... *)
+(* above works but formulation not satisfactory; to be reviewed *)
 
 bbb.
 
