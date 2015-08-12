@@ -5,6 +5,8 @@ Require Import Utf8 QArith.
 Require Import NPeano.
 
 Notation "⊥" := False.
+Notation "( x , y ) '_{' P }" := (existT P x y)
+  (at level 0, format "'[' ( x ,  y ) _{ P } ']'").
 
 Open Scope nat_scope.
 
@@ -2679,9 +2681,6 @@ Definition transport_semigroup_op {A B} (e : A ≃ B)
 Proof.
 destruct (ua e); reflexivity.
 Defined.
-
-Notation "( x , y ) '_{' P }" := (existT P x y)
-  (at level 0, format "'[' ( x ,  y ) _{ P } ']'").
 
 Definition transport_semigroup_def {A B} (e : A ≃ B)
     (ma : SemigroupStr A) (m := pr₁ ma) (a := pr₂ ma : Assoc A m)
