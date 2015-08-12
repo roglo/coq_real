@@ -1552,11 +1552,14 @@ Definition couple {A P Q} {x : A} a b
   (a, b)_{λ y, Q (x, y)_{P}}.
 *)
 
-Definition couple {A P Q} {x : A} a b
-:
-  {y : P x & Q (existT P x y)}
-:=
+Definition couple {A P Q} {x : A} (a : P x) (b : Q (existT P x a))
+  : {y : P x & Q (existT P x y)} :=
   existT (λ z, Q (existT P x z)) a b.
+
+(* I'd like to change this name: couple, and perhaps add projection
+   functions for it... *)
+
+bbb.
 
 Definition hott_2_7_4 {A P Q} {x y : A} (p : x == y) u z :
   transport (tfam P Q) p (couple u z) ==
