@@ -5,8 +5,11 @@ Require Import Utf8 QArith.
 Require Import NPeano.
 
 Notation "⊥" := False.
+(*
+- notation pas mal, mais j'hésite...
 Notation "( x , y ) '_{' P }" := (existT P x y)
   (at level 0, format "'[' ( x ,  y ) _{ P } ']'").
+*)
 
 Open Scope nat_scope.
 
@@ -1541,19 +1544,19 @@ Definition pair_eq_def {A} {P : A → U} (x y : A) (u : P x) (p : x == y) :
 Definition tfam {A} P (Q : (Σ (x : A), P x) → U) (x : A) :=
   Σ (u : P x), Q (existT P x u).
 
+(*
 Definition couple {A P Q} {x : A} a b
 :
   {y : P x & Q (x, y)_{P}}
 :=
   (a, b)_{λ y, Q (x, y)_{P}}.
+*)
 
-(*
 Definition couple {A P Q} {x : A} a b
 :
   {y : P x & Q (existT P x y)}
 :=
   existT (λ z, Q (existT P x z)) a b.
-*)
 
 Definition hott_2_7_4 {A P Q} {x y : A} (p : x == y) u z :
   transport (tfam P Q) p (couple u z) ==
