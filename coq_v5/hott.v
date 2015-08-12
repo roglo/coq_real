@@ -2727,6 +2727,10 @@ Definition transport_semigroup_assoc {A B} (e : A ≃ B)
       (transport (λ tm, Assoc (pr₁ tm) (pr₂ tm))
          (pair⁼ (ua e) (refl ((ua e)⁎ (pr₁ ma)))) a).
 Proof.
+set (P C := C → C → C).
+set (p := pair⁼ (ua e) (refl ((ua e)⁎ (pr₁ ma)))).
+Check (existT P A (pr₁ ma) == existT P B ((ua e)⁎ (pr₁ ma))).
+
 subst a a' ma'; simpl.
 unfold transport_semigroup_op; simpl.
 destruct (ua e); reflexivity.
