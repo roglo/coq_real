@@ -3,6 +3,7 @@
 
 Require Import Utf8 QArith.
 Require Import NPeano.
+
 Notation "⊥" := False.
 
 Open Scope nat_scope.
@@ -2675,6 +2676,9 @@ Proof.
 destruct (ua e); reflexivity.
 Defined.
 
+Notation "( x , y ) '_{' P }" := (existT P x y)
+  (at level 0, format "'[' ( x ,  y ) _{ P } ']'").
+
 Definition transport_semigroup_def {A B} (e : A ≃ B)
     (ma : SemigroupStr A) (m := pr₁ ma) (a := pr₂ ma : Assoc A m)
     (ma' := transport SemigroupStr (ua e) ma)
@@ -2682,10 +2686,7 @@ Definition transport_semigroup_def {A B} (e : A ≃ B)
 :
    ma' ==
    @Σ_type.couple Type (λ X, X → X → X) (λ tm, Assoc (pr₁ tm) (pr₂ tm)) B
-     (transport (λ X, X → X → X) (ua e) m)
-     (transport (λ tm, Assoc (pr₁ tm) (pr₂ tm))
-        (Σ_type.pair_eq (ua e)
-           (refl (transport (λ X : Type, X → X → X) (ua e) m))) a).
+     ((ua e)⁎ m) ((Σ_type.pair_eq (ua e) (refl ((ua e)⁎ m)))⁎ a).
 Proof.
 assert (
    transport
@@ -2702,8 +2703,7 @@ assert (
 eapply compose; [ idtac | eapply H ].
 subst ma'.
 subst m a; simpl.
-destruct ma; simpl.
-reflexivity.
+destruct ma; reflexivity.
 Defined.
 
 bbb.
