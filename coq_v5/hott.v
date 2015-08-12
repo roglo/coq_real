@@ -2717,6 +2717,26 @@ subst ma' m a; simpl.
 destruct ma; reflexivity.
 Defined.
 
+Definition transport_semigroup_assoc {A B} (e : A ≃ B)
+    (ma : SemigroupStr A) (m := pr₁ ma) (a := pr₂ ma : Assoc A m)
+    (ma' := transport SemigroupStr (ua e) ma)
+    (m' := pr₁ ma') (a' := pr₂ ma' : Assoc B m')
+:
+  a' == a'.
+(*
+  pr₂ (
+    @pair_map _ (λ X, X → X → X) (λ tm, Assoc (pr₁ tm) (pr₂ tm)) _
+    ((ua e)⁎ m) ((pair⁼ (ua e) (refl ((ua e)⁎ m)))⁎ a)).
+*)
+Proof.
+set (xxx :=
+  pr₂ (
+    @pair_map _ (λ X, X → X → X) (λ tm, Assoc (pr₁ tm) (pr₂ tm)) _
+    ((ua e)⁎ m) ((pair⁼ (ua e) (refl ((ua e)⁎ m)))⁎ a))
+).
+simpl in xxx.
+(* non c'est pas ça... *)
+
 bbb.
 
 End EqStr.
