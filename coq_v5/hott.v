@@ -2735,6 +2735,21 @@ set (xxx :=
     ((ua e)⁎ m) ((pair⁼ (ua e) (refl ((ua e)⁎ m)))⁎ a))
 ).
 simpl in xxx.
+subst ma'; simpl in a'.
+
+Check (m' == transport (λ X : Type, X → X → X) (ua e) m).
+
+bbb.
+
+identifier :
+- Assoc B m'
+- Assoc B (transport (λ X : Type, X → X → X) (ua e) m)
+
+pose proof transport_semigroup_def e ma as H; simpl in H.
+bbb.
+
+Check (a' == xxx).
+
 (* non c'est pas ça... *)
 
 bbb.
