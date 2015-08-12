@@ -2719,19 +2719,23 @@ Check (transport SemigroupStr (ua e) (existT _ m a)).
 Check (λ P Q, @Σ_type.hott_2_7_4 U P Q A B (ua e)).
 
 Print SemigroupStr.
-(* SemigroupStr = λ A : Type, {m : A → A → A & Assoc A m}
+(* SemigroupStr = λ A, Σ (m : A → A → A), Assoc A m
+
+λ A : Type, {m : A → A → A & Assoc A m}
      : Type → Type
 *)
 
 Print Σ_type.tfam.
-(* Σ_type.tfam = 
+(* Σ_type.tfam = λ x, Σ (u : P x), Q (x, u)
+
 λ (A : Type) (P : A → Type) (Q : {x : A & P x} → U) 
 (x : A), {u : P x & Q (existT P x u)}
      : ∀ (A : Type) (P : A → Type), ({x : A & P x} → U) → A → Type
 
 Argument A is implicit and maximally inserted
 *)
-(* Σ_type.tfam Type = 
+(* Σ_type.tfam Type = λ A, Σ (u : P A), Q (A, u)
+
 λ (P : Type → Type) (Q : {x : Type & P x} → U) 
 (x : Type), {u : P x & Q (existT P x u)}
      : ∀ (P : Type → Type), ({x : Type & P x} → U) → Type → Type
@@ -2744,37 +2748,64 @@ Check (@Σ_type.tfam Type).
      : ∀ P : Type → Type, ({x : Type & P x} → U) → Type → Type
 *)
 
-Check (@Σ_type.tfam Type SemigroupStr).
+(* SemigroupStr     = λ A, Σ (m : A → A → A), Assoc A m *)
+(* Σ_type.tfam Type = λ A, Σ (u : P A), Q (A, u) *)
 
-P x ≡ Assoc A m
-
-Goal: having Σ_type.tfam P Q ≡ SemigroupStr
-
-λ (P : U → Type) (Q : {x : U & P x} → U), Σ_type.hott_2_7_4 (ua e)
-     : ∀ (P : U → Type) (Q : {x : U & P x} → U) (u : P A)
-       (z : Q (existT P A u)),
-       transport (Σ_type.tfam P Q) (ua e) (Σ_type.couple u z) ==
-       Σ_type.couple (transport P (ua e) u)
-         (transport Q (Σ_type.pair_eq (ua e) (refl (transport P (ua e) u))) z)
-
-Σ_type.tfam P Q ≡ SemigroupStr
-
-Σ_type.couple u z ≡ existT _ m a
+Check (@Σ_type.tfam Type (λ X, X → X → X) (λ tm, Assoc (pr₁ tm) (pr₂ tm))).
+Check (Σ_type.tfam (λ X, X → X → X) (λ tm, Assoc (pr₁ tm) (pr₂ tm))).
+(* Σ_type.tfam (λ X : Type, X → X → X)
+  (λ tm : {x : Type & (λ X : Type, X → X → X) x}, Assoc (pr₁ tm) (pr₂ tm))
+     : Type → Type *)
 
 Check @Σ_type.hott_2_7_4.
-@Σ_type.hott_2_7_4
+(* @Σ_type.hott_2_7_4
      : ∀ (A : Type) (P : A → Type) (Q : {x : A & P x} → U) 
        (x y : A) (p : x == y) (u : P x) (z : Q (existT P x u)),
        transport (Σ_type.tfam P Q) p (Σ_type.couple u z) ==
        Σ_type.couple (transport P p u)
          (transport Q (Σ_type.pair_eq p (refl (transport P p u))) z)
+*)
 
-Check (λ X, pr₁ (SemigroupStr X)).
-Check (pr₂ ◦ SemigroupStr).
+(* Σ_type.couple = Σ (u : P x), Q (x u) *)
+Check @Σ_type.couple.
+(* @Σ_type.couple
+     : ∀ (A : Type) (P : A → Type) (Q : {x : A & P x} → Type) 
+       (x : A) (x0 : P x), Q (existT P x x0) → {u : P x & Q (existT P x u)} *)
 
+(* Σ_type.couple = Σ (u : P x), Q (x, u) *)
+(* SemigroupStr  = Σ (m : A → A → A), Assoc A m *)
+
+Check
+  (@Σ_type.couple Type (λ X, X → X → X) (λ am, Assoc (pr₁ am) (pr₂ am))
+     A m a == ma).
+
+Check
+  (transport (Σ_type.tfam (λ X, X → X → X) (λ tm, Assoc (pr₁ tm) (pr₂ tm)))
+     (ua e) ma : SemigroupStr B).
+
+Check
+  (transport (Σ_type.tfam (λ X, X → X → X) (λ tm, Assoc (pr₁ tm) (pr₂ tm)))
+     (ua e)
+     (@Σ_type.couple Type (λ X, X → X → X) (λ am, Assoc (pr₁ am) (pr₂ am))
+        A m a)).
+
+assert (
+   transport
+     (Σ_type.tfam (λ X : Type, X → X → X) (λ tm, Assoc (pr₁ tm) (pr₂ tm))) 
+     (ua e)
+     (@Σ_type.couple Type (λ X, X → X → X) (λ am, Assoc (pr₁ am) (pr₂ am))
+        A m a) ==
+   Σ_type.couple (transport (λ X : Type, X → X → X) (ua e) m)
+     (transport (λ tm : {x : Type & x → x → x}, Assoc (pr₁ tm) (pr₂ tm))
+        (Σ_type.pair_eq (ua e)
+           (refl (transport (λ X : Type, X → X → X) (ua e) m))) a)).
+
+eapply compose.
+apply Σ_type.hott_2_7_4.
+reflexivity.
+
+(* ouais, bon, voir pour la suite... *)
 bbb.
-
-Check (@transport Semigroup (λ g, pr₂ (pr₂ g))).
 
 Check (Σ_type.pair_eq (ua e) (refl ma')).
 (* Σ_type.pair_eq (ua e) (refl ma')
