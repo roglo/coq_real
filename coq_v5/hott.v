@@ -2813,7 +2813,9 @@ assert (
 
 eapply compose; [ idtac | eapply H ].
 subst ma'.
-
+subst m a; simpl.
+destruct ma; simpl.
+reflexivity.
 bbb.
 
 Check (Σ_type.pair_eq (ua e) (refl ma')).
