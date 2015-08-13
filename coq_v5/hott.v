@@ -2718,6 +2718,8 @@ Proof.
 destruct (ua e); reflexivity.
 Defined.
 
+(* formula 2.14.2 *)
+
 Definition transport_semigroup_assoc {A B} (e : A ≃ B)
     (ma : SemigroupStr A) (ma' := transport SemigroupStr (ua e) ma)
     (a := pr₂ ma) (a' := pr₂ ma')
@@ -2729,9 +2731,6 @@ Proof.
 unfold transport_semigroup_op; simpl.
 destruct (ua e); reflexivity.
 Defined.
-
-(* above: better, but temporary formulation. Should put m' instead
-   of (transport_semigroup_op e ma)⁻¹ *)
 
 bbb.
 
