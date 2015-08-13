@@ -2723,20 +2723,15 @@ Definition transport_semigroup_assoc {A B} (e : A ≃ B)
     (a := pr₂ ma) (a' := pr₂ ma')
 :
   a' ==
-    transport (Assoc B) (transport_semigroup_op e ma)⁻¹
-      (transport (λ tm, Assoc (pr₁ tm) (pr₂ tm))
-         (pair⁼ (ua e) (refl ((ua e)⁎ (pr₁ ma)))) a).
+    transport (λ Xm, Assoc (pr₁ Xm) (pr₂ Xm))
+      (pair⁼ (ua e) (transport_semigroup_op e ma)⁻¹) a.
 Proof.
-set (P C := C → C → C).
-set (p := pair⁼ (ua e) (refl ((ua e)⁎ (pr₁ ma)))).
-Check (existT P A (pr₁ ma) == existT P B ((ua e)⁎ (pr₁ ma))).
-
-subst a a' ma'; simpl.
 unfold transport_semigroup_op; simpl.
 destruct (ua e); reflexivity.
 Defined.
 
-(* above works but formulation not satisfactory; to be reviewed *)
+(* above: better, but temporary formulation. Should put m' instead
+   of (transport_semigroup_op e ma)⁻¹ *)
 
 bbb.
 
