@@ -2755,84 +2755,6 @@ subst m m' a a' ma'; simpl.
 destruct (ua e); reflexivity.
 Defined.
 
-Definition ua_pcr_inv {A B}
-  : ∀ (f : A ≃ B) (x : B), transport id (ua f)⁻¹ x == projT1 f⁻⁻¹ x.
-intros.
-Check (ua f)⁻¹.
-Print ua_pcr.
-Check (transport id (ua f)).
-Check @ua_idtoeqv.
-
-Definition ua_pcr2 {A B}
-  : ∀ (f : A ≃ B) (x : A), transport id (ua f) x == projT1 f x
-  := λ f x,
-     match idtoeqv_ua f with
-     | refl _ => refl (projT1 (idtoeqv (ua f)) x)
-     end.
-
-Definition titi {A B}
-  : ∀ (f : A ≃ B) (x : A), transport id (ua f) x == projT1 f x.
-intros.
-destruct f as (f, ((g, α), (h, β))).
-simpl.
-destruct Hf.
-
-destruct p; simpl.
-
-pose proof (idtoeqv_ua f) as Hf.
-
-
-
-eapply compose.
-2: rewrite <- Hf; simpl.
-
-apply (ap ua) in Hf.
-rewrite <- Hf.
-rewrite idtoeqv_ua.
-
-destruct (idtoeqv_ua f).
-eapply (
-    @refl B
-      (@projT1 (forall _ : A, B)
-         (fun f0 : forall _ : A, B => @isequiv A B f0)
-         (@idtoeqv A B (@ua A B f)) x)).
-
-apply (refl (projT1 (idtoeqv (ua f)) x)).
-
-simpl.
-  ============================
-   transport id (ua (idtoeqv (ua f))) x == transport id (ua f) x
-
-destruct (ua f).
-destruct f.
-simpl.
-simpl.
-set (p := idtoeqv_ua f).
-destruct p.
-bbb.
-
-simpl.
-apply ap.
-reflexivity.
-bbb.
-
-
-bbb.
-Print quasi_inv.
-unfold quasi_inv; simpl.
-destruct f as (f, Hf).
-destruct Hf, s, s0.
-simpl.
-unfold invert; simpl.
-bbb.
-
-destruct f as (f₁, Hf) at 2.
-
-bbb.
-eapply compose; [ idtac | apply ua_pcr ].
-pose proof idtoeqv_ua f⁻⁻¹.
-bbb.
-
 Definition transport_semigroup_op_def_2 {A B} (e : A ≃ B)
     (ma : SemigroupStr A) (ma' := transport SemigroupStr (ua e) ma)
     (m := pr₁ ma) (m' := pr₁ ma')
@@ -2842,65 +2764,8 @@ Definition transport_semigroup_op_def_2 {A B} (e : A ≃ B)
 Proof.
 eapply compose; [ eapply transport_semigroup_op_def | idtac ].
 eapply compose; [ apply ua_pcr | apply ap ].
-
-bbb.
-
-Show.
-rewrite ua_pcr_inv.
-simpl.
-apply ap.
-apply ua_pcr_inv.
-bbb.
-
-pose proof @transport_semigroup_op_def A B e ma b₁ b₂.
-Check (transport id (ua e)).
-Check (transport id (ua e)⁻¹).
-set (f := transport id (ua e)) in H.
-set (g := transport id (ua e)⁻¹) in H.
-unfold id in f, g.
-subst m m' a a' ma'; simpl.
-destruct (ua e); simpl; unfold id; simpl.
-simpl in f, g.
-subst f g; simpl in H.
-unfold id in H; simpl in H.
-bbb.
-
-Check (idtoeqv (ua e)).
-
-SearchAbout ua.
-Check @idtoeqv_inv.
-pose proof @idtoeqv_inv.
-Print idtoeqv.
-(* idtoeqv = 
-λ (A B : U) (p : A == B),
-existT isequiv (transport id p) (isequiv_transport p)
-     : ∀ A B : U, A == B → A ≃ B
-
-Arguments A, B are implicit and maximally inserted
-*)
-subst m m' a a' ma'; simpl.
-bbb.
-
-unfold idtoeqv in H.
-bbb.
-
-subst m m' a a' ma'; simpl.
-destruct (ua e); simpl; unfold id; simpl.
-unfold "⁻⁻¹"; simpl.
-destruct e; simpl.
-destruct i; simpl.
-destruct s; simpl.
-destruct s0; simpl.
-unfold "◦", "~~", id in h, h0; simpl.
-bbb.
-
-eapply compose; [ eapply transport_semigroup_op_def | idtac ].
-Check @ua.
-SearchAbout (transport id).
-Check @ua_pup.
-bbb.
-
-(* à voir... *)
+rewrite ua_inverse, ua_pcr, ua_pcr; reflexivity.
+Defined.
 
 bbb.
 
