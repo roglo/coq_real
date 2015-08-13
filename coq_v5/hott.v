@@ -800,6 +800,14 @@ Definition ap {A B x y} (f : A → B) (p : x == y) : f x == f y :=
 Theorem hott_2_2_1 {A B} : ∀ (f : A → B) x, ap f (refl x) = refl (f x).
 Proof. constructor. Qed.
 
+(* personnal add *)
+
+Definition ap2 {A B C} (x y : A) (z : B) (f : A → B → C) (p : x == y) :
+  f x z == f y z :=
+  match p with
+  | refl _ => refl (f x z)
+  end.
+
 (* Lemma 2.2.2 i *)
 
 Theorem ap_compose {A B} : ∀ (f : A → B) x y z (p : x == y) (q : y == z),
@@ -2083,6 +2091,16 @@ transitivity (ua (idtoeqv (ua eqf))⁻⁻¹).
  apply idtoeqv_inv.
 Defined.
 
+(* ua_pcr_inv: personnal add *)
+
+Definition ua_pcr_inv {A B}
+  : ∀ (f : A ≃ B) (x : B), transport id (ua f)⁻¹ x == projT1 f⁻⁻¹ x.
+Proof.
+intros.
+eapply compose; [ idtac | apply ua_pcr ].
+apply ap2, ua_inverse.
+Defined.
+
 Lemma hott_2_10_5_i {A} {B : A → U} {x y : A} : ∀ (p : x == y) (u : B x),
   transport B p u == transport id (ap B p) u.
 Proof.
@@ -2755,7 +2773,7 @@ subst m m' a a' ma'; simpl.
 destruct (ua e); reflexivity.
 Defined.
 
-Definition transport_semigroup_op_def_2 {A B} (e : A ≃ B)
+Definition transport_semigroup_op_def_2_tac {A B} (e : A ≃ B)
     (ma : SemigroupStr A) (ma' := transport SemigroupStr (ua e) ma)
     (m := pr₁ ma) (m' := pr₁ ma')
     (a := pr₂ ma) (a' := pr₂ ma')
@@ -2764,8 +2782,24 @@ Definition transport_semigroup_op_def_2 {A B} (e : A ≃ B)
 Proof.
 eapply compose; [ eapply transport_semigroup_op_def | idtac ].
 eapply compose; [ apply ua_pcr | apply ap ].
-rewrite ua_inverse, ua_pcr, ua_pcr; reflexivity.
+eapply compose; [ apply ap2, ua_pcr_inv | idtac ].
+eapply compose; [ eapply ap, ua_pcr_inv | idtac ].
+reflexivity.
 Defined.
+
+Definition transport_semigroup_op_def_2 {A B} (e : A ≃ B)
+    (ma : SemigroupStr A) (ma' := transport SemigroupStr (ua e) ma)
+    (m := pr₁ ma) (m' := pr₁ ma')
+    (a := pr₂ ma) (a' := pr₂ ma')
+    b₁ b₂ :
+  m' b₁ b₂ == pr₁ e (m (pr₁ e⁻⁻¹ b₁) (pr₁ e⁻⁻¹ b₂))
+:=
+  transport_semigroup_op_def e ma b₁ b₂
+  • ua_pcr e (pr₁ ma (transport id (ua e)⁻¹ b₁) (transport id (ua e)⁻¹ b₂))
+  • ap (pr₁ e)
+      (ap2 (transport id (ua e)⁻¹ b₁) (projT1 e⁻⁻¹ b₁)
+         (transport id (ua e)⁻¹ b₂) (pr₁ ma) (ua_pcr_inv e b₁)
+       • ap (pr₁ ma (projT1 e⁻⁻¹ b₁)) (ua_pcr_inv e b₂)).
 
 bbb.
 
