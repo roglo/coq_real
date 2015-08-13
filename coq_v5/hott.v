@@ -2789,9 +2789,7 @@ Defined.
 
 Definition transport_semigroup_op_def_2 {A B} (e : A ≃ B)
     (ma : SemigroupStr A) (ma' := transport SemigroupStr (ua e) ma)
-    (m := pr₁ ma) (m' := pr₁ ma')
-    (a := pr₂ ma) (a' := pr₂ ma')
-    b₁ b₂ :
+    (m := pr₁ ma) (m' := pr₁ ma') (a := pr₂ ma) (a' := pr₂ ma') b₁ b₂ :
   m' b₁ b₂ == pr₁ e (m (pr₁ e⁻⁻¹ b₁) (pr₁ e⁻⁻¹ b₂))
 :=
   transport_semigroup_op_def e ma b₁ b₂
