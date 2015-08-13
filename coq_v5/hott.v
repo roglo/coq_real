@@ -2799,13 +2799,74 @@ Definition transport_semigroup_op_def_2 {A B} (e : A ≃ B)
          (transport id (ua e)⁻¹ b₂) (pr₁ ma) (ua_pcr_inv e b₁)
        • ap (pr₁ ma (projT1 e⁻⁻¹ b₁)) (ua_pcr_inv e b₂)).
 
+Definition quasi_inv_l_eq_r_tac {A B} (f : A → B) (g h : B → A) :
+  f ◦ g ~~ id
+  → h ◦ f ~~ id
+  → g ~~ h.
+Proof.
+intros Hfg Hhf x.
+unfold "◦", "~~", id in Hfg, Hhf.
+pose proof Hfg x as H.
+apply (ap h) in H.
+eapply compose; [ idtac | eassumption ].
+apply invert, Hhf.
+Defined.
+
+Definition quasi_inv_l_eq_r {A B} (f : A → B) (g h : B → A) :
+  f ◦ g ~~ id
+  → h ◦ f ~~ id
+  → g ~~ h
+:=
+  λ Hfg Hhf x, (Hhf (g x))⁻¹ • ap h (Hfg x).
+
 Check @transport_semigroup_assoc.
 
-Definition transport_semigroup_assoc2 {A B} (e : A ≃ B)
+Definition hott_2_14_3 {A B} (e : A ≃ B)
     (ma : SemigroupStr A) (ma' := transport SemigroupStr (ua e) ma)
     (m := pr₁ ma) (m' := pr₁ ma') (a := pr₂ ma) (a' := pr₂ ma') b₁ b₂ b₃ :
   m' (m' b₁ b₂) b₃ == m' b₁ (m' b₂ b₃).
 Proof.
+eapply compose; [ apply transport_semigroup_op_def_2 | idtac ].
+set (E := pr₁ e).
+set (E₁ := pr₁ e⁻⁻¹).
+subst m; set (m := pr₁ ma).
+subst m' ma'.
+rewrite transport_semigroup_op_def_2.
+set (ma' := transport SemigroupStr (ua e) ma).
+set (m' := pr₁ ma').
+subst m; set (m := pr₁ ma).
+subst E E₁; set (E := pr₁ e); set (E₁ := pr₁ e⁻⁻¹).
+assert (∀ x : A, E₁ (E x) == x) as Hx.
+ intros x.
+ subst E E₁; simpl.
+ unfold pr₁; simpl.
+ unfold Σ_pr₁; simpl.
+ destruct e as (f, ((g, Hg), (h, Hh))); simpl.
+ pose proof quasi_inv_l_eq_r f g h Hg Hh as H.
+ unfold "~~" in H.
+ eapply compose; [ apply H | apply Hh ].
+
+ rewrite Hx, <- a.
+ subst E E₁; set (E := pr₁ e); set (E₁ := pr₁ e⁻⁻¹).
+ subst m; set (m := Σ_pr₁ ma).
+ subst E E₁.
+ set (u := m (pr₁ e⁻⁻¹ b₂) (pr₁ e⁻⁻¹ b₃)).
+ pose proof Hx u as Hu.
+ rewrite <- Hu; clear Hu; subst u.
+ set (E := pr₁ e); set (E₁ := pr₁ e⁻⁻¹).
+ set (u := E (m (E₁ b₂) (E₁ b₃))).
+ subst E E₁.
+ pose proof transport_semigroup_op_def_2 e ma b₂ b₃ as H.
+ subst ma'; set (ma' := transport SemigroupStr (ua e) ma) in *.
+ subst u.
+ set (E := pr₁ e) in *; set (E₁ := pr₁ e⁻⁻¹) in *.
+ subst m.
+ set (u := E (m (E₁ b₂) (E₁ b₃))).
+(* oh, puis zut, on verra plus tard *)
+
+simpl.
+bbb.
+
 subst ma' m'.
 do 4 rewrite transport_semigroup_op_def_2.
 subst m; set (m := pr₁ ma).
