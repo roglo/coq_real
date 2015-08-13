@@ -2732,6 +2732,28 @@ unfold transport_semigroup_op; simpl.
 destruct (ua e); reflexivity.
 Defined.
 
+Check @Π_type.hott_2_9_4.
+(* @hott_2_9_4
+     : ∀ (X : Type) (A B : X → Type) (x y : X) (p : x == y)
+       (f : A x → B x),
+       transport (λ x0 : X, A x0 → B x0) p f ==
+       (λ a : A y, transport B p (f (transport A p⁻¹ a))) *)
+
+Definition toto {A B} (e : A ≃ B)
+    (ma : SemigroupStr A) (ma' := transport SemigroupStr (ua e) ma)
+    (m := pr₁ ma) (m' := pr₁ ma')
+    (a := pr₂ ma) (a' := pr₂ ma')
+    b₁ b₂ :
+  m' b₁ b₂ ==
+   transport id (ua e)
+      (m (transport id (ua e)⁻¹ b₁) (transport id (ua e)⁻¹ b₂)).
+Proof.
+pose proof
+  (@Π_type.hott_2_9_4 U id id A B (ua e) (m (transport id (ua e)⁻¹ b₁))).
+unfold id in H at 1 2 3 4 6.
+
+(* à voir... *)
+
 bbb.
 
 End EqStr.
