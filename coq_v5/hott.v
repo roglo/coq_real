@@ -2742,7 +2742,7 @@ Check @Π_type.hott_2_9_4.
 (* they pretend we need 2.9.4 (twice) to prove that, but it works
    with a simple induction on (ua e) *)
 
-Definition transporrt_semigroup_op {A B} (e : A ≃ B)
+Definition transport_semigroup_op_def {A B} (e : A ≃ B)
     (ma : SemigroupStr A) (ma' := transport SemigroupStr (ua e) ma)
     (m := pr₁ ma) (m' := pr₁ ma')
     (a := pr₂ ma) (a' := pr₂ ma')
