@@ -2755,6 +2755,64 @@ subst m m' a a' ma'; simpl.
 destruct (ua e); reflexivity.
 Defined.
 
+Definition transport_semigroup_op_def_2 {A B} (e : A ≃ B)
+    (ma : SemigroupStr A) (ma' := transport SemigroupStr (ua e) ma)
+    (m := pr₁ ma) (m' := pr₁ ma')
+    (a := pr₂ ma) (a' := pr₂ ma')
+    b₁ b₂ :
+  m' b₁ b₂ == pr₁ e (m (pr₁ e⁻⁻¹ b₁) (pr₁ e⁻⁻¹ b₂)).
+Proof.
+eapply compose; [ eapply transport_semigroup_op_def | idtac ].
+bbb.
+
+pose proof @transport_semigroup_op_def A B e ma b₁ b₂.
+Check (transport id (ua e)).
+Check (transport id (ua e)⁻¹).
+set (f := transport id (ua e)) in H.
+set (g := transport id (ua e)⁻¹) in H.
+unfold id in f, g.
+subst m m' a a' ma'; simpl.
+destruct (ua e); simpl; unfold id; simpl.
+simpl in f, g.
+subst f g; simpl in H.
+unfold id in H; simpl in H.
+bbb.
+
+Check (idtoeqv (ua e)).
+
+SearchAbout ua.
+Check @idtoeqv_inv.
+pose proof @idtoeqv_inv.
+Print idtoeqv.
+(* idtoeqv = 
+λ (A B : U) (p : A == B),
+existT isequiv (transport id p) (isequiv_transport p)
+     : ∀ A B : U, A == B → A ≃ B
+
+Arguments A, B are implicit and maximally inserted
+*)
+subst m m' a a' ma'; simpl.
+bbb.
+
+unfold idtoeqv in H.
+bbb.
+
+subst m m' a a' ma'; simpl.
+destruct (ua e); simpl; unfold id; simpl.
+unfold "⁻⁻¹"; simpl.
+destruct e; simpl.
+destruct i; simpl.
+destruct s; simpl.
+destruct s0; simpl.
+unfold "◦", "~~", id in h, h0; simpl.
+bbb.
+
+eapply compose; [ eapply transport_semigroup_op_def | idtac ].
+Check @ua.
+SearchAbout (transport id).
+Check @ua_pup.
+bbb.
+
 (* à voir... *)
 
 bbb.
