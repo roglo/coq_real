@@ -2755,6 +2755,12 @@ subst m m' a a' ma'; simpl.
 destruct (ua e); reflexivity.
 Defined.
 
+Definition ua_pcr_inv {A B}
+  : ∀ (f : A ≃ B) (x : B), transport id (ua f)⁻¹ x == projT1 f⁻⁻¹ x.
+intros.
+eapply compose; [ idtac | apply ua_pcr ].
+bbb.
+
 Definition transport_semigroup_op_def_2 {A B} (e : A ≃ B)
     (ma : SemigroupStr A) (ma' := transport SemigroupStr (ua e) ma)
     (m := pr₁ ma) (m' := pr₁ ma')
@@ -2763,6 +2769,15 @@ Definition transport_semigroup_op_def_2 {A B} (e : A ≃ B)
   m' b₁ b₂ == pr₁ e (m (pr₁ e⁻⁻¹ b₁) (pr₁ e⁻⁻¹ b₂)).
 Proof.
 eapply compose; [ eapply transport_semigroup_op_def | idtac ].
+eapply compose; [ apply ua_pcr | apply ap ].
+
+bbb.
+
+Show.
+rewrite ua_pcr_inv.
+simpl.
+apply ap.
+apply ua_pcr_inv.
 bbb.
 
 pose proof @transport_semigroup_op_def A B e ma b₁ b₂.
