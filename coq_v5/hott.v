@@ -2758,7 +2758,79 @@ Defined.
 Definition ua_pcr_inv {A B}
   : ∀ (f : A ≃ B) (x : B), transport id (ua f)⁻¹ x == projT1 f⁻⁻¹ x.
 intros.
+Check (ua f)⁻¹.
+Print ua_pcr.
+Check (transport id (ua f)).
+Check @ua_idtoeqv.
+
+Definition ua_pcr2 {A B}
+  : ∀ (f : A ≃ B) (x : A), transport id (ua f) x == projT1 f x
+  := λ f x,
+     match idtoeqv_ua f with
+     | refl _ => refl (projT1 (idtoeqv (ua f)) x)
+     end.
+
+Definition titi {A B}
+  : ∀ (f : A ≃ B) (x : A), transport id (ua f) x == projT1 f x.
+intros.
+destruct f as (f, ((g, α), (h, β))).
+simpl.
+destruct Hf.
+
+destruct p; simpl.
+
+pose proof (idtoeqv_ua f) as Hf.
+
+
+
+eapply compose.
+2: rewrite <- Hf; simpl.
+
+apply (ap ua) in Hf.
+rewrite <- Hf.
+rewrite idtoeqv_ua.
+
+destruct (idtoeqv_ua f).
+eapply (
+    @refl B
+      (@projT1 (forall _ : A, B)
+         (fun f0 : forall _ : A, B => @isequiv A B f0)
+         (@idtoeqv A B (@ua A B f)) x)).
+
+apply (refl (projT1 (idtoeqv (ua f)) x)).
+
+simpl.
+  ============================
+   transport id (ua (idtoeqv (ua f))) x == transport id (ua f) x
+
+destruct (ua f).
+destruct f.
+simpl.
+simpl.
+set (p := idtoeqv_ua f).
+destruct p.
+bbb.
+
+simpl.
+apply ap.
+reflexivity.
+bbb.
+
+
+bbb.
+Print quasi_inv.
+unfold quasi_inv; simpl.
+destruct f as (f, Hf).
+destruct Hf, s, s0.
+simpl.
+unfold invert; simpl.
+bbb.
+
+destruct f as (f₁, Hf) at 2.
+
+bbb.
 eapply compose; [ idtac | apply ua_pcr ].
+pose proof idtoeqv_ua f⁻⁻¹.
 bbb.
 
 Definition transport_semigroup_op_def_2 {A B} (e : A ≃ B)
