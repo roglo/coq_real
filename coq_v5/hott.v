@@ -2799,6 +2799,16 @@ Definition transport_semigroup_op_def_2 {A B} (e : A ≃ B)
          (transport id (ua e)⁻¹ b₂) (pr₁ ma) (ua_pcr_inv e b₁)
        • ap (pr₁ ma (projT1 e⁻⁻¹ b₁)) (ua_pcr_inv e b₂)).
 
+Check @transport_semigroup_assoc.
+
+Definition transport_semigroup_assoc2 {A B} (e : A ≃ B)
+    (ma : SemigroupStr A) (ma' := transport SemigroupStr (ua e) ma)
+    (m := pr₁ ma) (m' := pr₁ ma') (a := pr₂ ma) (a' := pr₂ ma') b₁ b₂ b₃ :
+  m' (m' b₁ b₂) b₃ == m' b₁ (m' b₂ b₃).
+Proof.
+subst ma' m'.
+do 4 rewrite transport_semigroup_op_def_2.
+subst m; set (m := pr₁ ma).
 bbb.
 
 End EqStr.
