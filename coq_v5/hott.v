@@ -2861,15 +2861,15 @@ Defined.
 Definition semigroup_path_type {A B} m a m' a' :
   (existT SemigroupStr A (existT (Assoc A) m a) ==
    existT SemigroupStr B (existT (Assoc B) m' a'))
-  ≃ {p₁ : A == B &
-     transport SemigroupStr p₁ (existT _ m a) == existT _ m' a'}.
+  ≃ Σ (p₁ : A == B),
+    transport SemigroupStr p₁ (existT _ m a) == existT _ m' a'.
 Proof.
 apply hott_2_7_2.
 Defined.
 
 (* other formulation *)
 
-Definition toto {A B} w w' m a m' a' :
+Definition semigroup_path_type2 {A B} w w' m a m' a' :
   w == existT SemigroupStr A (existT (Assoc A) m a)
   → w' == existT SemigroupStr B (existT (Assoc B) m' a')
   → w == w'
@@ -2879,8 +2879,29 @@ intros Hw Hw'.
 apply (@hott_2_7_2 _ _ w w').
 Defined.
 
-bbb.
-  transport SemigroupStr p₁ (existT _ m a) == existT _ m' a')
+Definition toto {A B} m a m' a' (e : A ≃ B) :
+  transport SemigroupStr (ua e) (existT _ m a) == existT _ m' a'
   ≃
+    Σ (_ :
+       Π (y₁ : B), Π (y₂ : B),
+       pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂),
+    ∀ b₁ b₂ b₃, m' (m' b₁ b₂) b₃ == m' b₁ (m' b₂ b₃).
+Proof.
+set (f := λ y₁ y₂ : B, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂).
+set (g := ∀ y₁ y₂ : B, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂).
+assert (g == ∀ y₁ y₂, f y₁ y₂) as Hg by (subst f g; reflexivity).
+rewrite Hg; clear g Hg.
+set (g := ∀ y₁ y₂, f y₁ y₂).
+bbb.
+
+assert (f == g).
+pose proof function_extensionality B (λ X, B → Prop) f.
+simpl in H.
+
+Axiom function_extensionality : ∀ A B (f g : ∀ x : A, B x),
+  (∀ x, f x == g x) → f == g.
+
+Check @hott_2_7_2.
+destruct (ua e); simpl; unfold id; simpl.
 
 bbb.
