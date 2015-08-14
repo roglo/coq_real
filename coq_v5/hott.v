@@ -2856,6 +2856,19 @@ subst ma'; set (ma' := transport SemigroupStr (ua e) ma) in *.
 apply invert, H1.
 Defined.
 
-bbb.
-
 End EqStr.
+
+(* 2.14.2 Equality of semigroups *)
+
+Import EqStr.
+
+Definition semigroup_path_type {A B} m a m' a' :
+  (existT SemigroupStr A (existT (Assoc A) m a) ==
+   existT SemigroupStr B (existT (Assoc B) m' a'))
+  ≃ {p₁ : A == B &
+     transport SemigroupStr p₁ (existT _ m a) == existT _ m' a'}.
+Proof.
+apply Σ_type.hott_2_7_2.
+Defined.
+
+bbb.
