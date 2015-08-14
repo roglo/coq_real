@@ -2860,16 +2860,17 @@ assert (∀ x : A, E₁ (E x) == x) as Hx.
  subst ma'; set (ma' := transport SemigroupStr (ua e) ma) in *.
  subst u.
  set (E := pr₁ e) in *; set (E₁ := pr₁ e⁻⁻¹) in *.
- subst m.
- set (u := E (m (E₁ b₂) (E₁ b₃))).
-(* oh, puis zut, on verra plus tard *)
+ unfold pr₁ in H.
+ subst m; set (m := Σ_pr₁ ma) in *.
+ set (u := E (m (E₁ b₂) (E₁ b₃))) in *.
+ rewrite <- H.
+ subst m'; unfold pr₁; set (m' := Σ_pr₁ ma').
+ pose proof transport_semigroup_op_def_2 e ma b₁ (m' b₂ b₃) as H1.
+ subst ma'; set (ma' := transport SemigroupStr (ua e) ma) in *.
+ subst E E₁ m.
+ apply invert, H1.
+Defined.
 
-simpl.
-bbb.
-
-subst ma' m'.
-do 4 rewrite transport_semigroup_op_def_2.
-subst m; set (m := pr₁ ma).
 bbb.
 
 End EqStr.
