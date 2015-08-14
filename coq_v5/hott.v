@@ -2867,4 +2867,20 @@ Proof.
 apply hott_2_7_2.
 Defined.
 
+(* other formulation *)
+
+Definition toto {A B} w w' m a m' a' :
+  w == existT SemigroupStr A (existT (Assoc A) m a)
+  → w' == existT SemigroupStr B (existT (Assoc B) m' a')
+  → w == w'
+  → Σ (p : pr₁ w == pr₁ w'), p⁎ (pr₂ w) == pr₂ w'.
+Proof.
+intros Hw Hw'.
+apply (@hott_2_7_2 _ _ w w').
+Defined.
+
+bbb.
+  transport SemigroupStr p₁ (existT _ m a) == existT _ m' a')
+  ≃
+
 bbb.
