@@ -2819,6 +2819,17 @@ Definition quasi_inv_l_eq_r {A B} (f : A → B) (g h : B → A) :
 :=
   λ Hfg Hhf x, (Hhf (g x))⁻¹ • ap h (Hfg x).
 
+SearchAbout (_ ◦ _ ~~ id).
+
+Definition quasi_inv_comp_l {A B} (e : A ≃ B) : pr₁ e⁻⁻¹ ◦ pr₁ e ~~ id.
+Proof.
+intros x.
+destruct e as (f, ((g, Hg), (h, Hh))); simpl.
+pose proof quasi_inv_l_eq_r f g h Hg Hh as H.
+unfold "~~" in H.
+eapply compose; [ apply H | apply Hh ].
+Defined.
+
 Check @transport_semigroup_assoc.
 
 Definition hott_2_14_3 {A B} (e : A ≃ B)
@@ -2829,26 +2840,20 @@ Proof.
 subst ma' m m' a a'.
 eapply compose; [ apply transport_semigroup_op_def_2 | idtac ].
 rewrite transport_semigroup_op_def_2.
-assert (∀ x : A, pr₁ e⁻⁻¹ (pr₁ e x) == x) as Hx.
- intros x.
- unfold pr₁, Σ_pr₁; simpl.
- destruct e as (f, ((g, Hg), (h, Hh))); simpl.
- pose proof quasi_inv_l_eq_r f g h Hg Hh as H.
- unfold "~~" in H.
- eapply compose; [ apply H | apply Hh ].
-
- rewrite Hx, <- (pr₂ ma).
- set (u := Σ_pr₁ ma (pr₁ e⁻⁻¹ b₂) (pr₁ e⁻⁻¹ b₃)).
- pose proof Hx u as Hu.
- rewrite <- Hu; clear Hu; subst u.
- pose proof transport_semigroup_op_def_2 e ma b₂ b₃ as H.
- unfold pr₁ in H; unfold pr₁.
- set (u := Σ_pr₁ e (Σ_pr₁ ma (Σ_pr₁ e⁻⁻¹ b₂) (Σ_pr₁ e⁻⁻¹ b₃))) in *.
- rewrite <- H.
- set (ma' := transport SemigroupStr (ua e) ma).
- pose proof transport_semigroup_op_def_2 e ma b₁ (Σ_pr₁ ma' b₂ b₃) as H1.
- subst ma'; set (ma' := transport SemigroupStr (ua e) ma) in *.
- apply invert, H1.
+pose proof (quasi_inv_comp_l e) as Hx.
+unfold "◦", id in Hx.
+rewrite Hx, <- (pr₂ ma).
+set (u := Σ_pr₁ ma (pr₁ e⁻⁻¹ b₂) (pr₁ e⁻⁻¹ b₃)).
+pose proof Hx u as Hu.
+rewrite <- Hu; clear Hu; subst u.
+pose proof transport_semigroup_op_def_2 e ma b₂ b₃ as H.
+unfold pr₁ in H; unfold pr₁.
+set (u := Σ_pr₁ e (Σ_pr₁ ma (Σ_pr₁ e⁻⁻¹ b₂) (Σ_pr₁ e⁻⁻¹ b₃))) in *.
+rewrite <- H.
+set (ma' := transport SemigroupStr (ua e) ma).
+pose proof transport_semigroup_op_def_2 e ma b₁ (Σ_pr₁ ma' b₂ b₃) as H1.
+subst ma'; set (ma' := transport SemigroupStr (ua e) ma) in *.
+apply invert, H1.
 Defined.
 
 bbb.
