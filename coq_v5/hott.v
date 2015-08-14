@@ -2887,16 +2887,11 @@ Definition toto {A B} m a m' a' (e : A ≃ B) :
        pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂),
     ∀ b₁ b₂ b₃, m' (m' b₁ b₂) b₃ == m' b₁ (m' b₂ b₃).
 Proof.
-set (f := λ y₁ y₂ : B, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂).
-set (g := ∀ y₁ y₂ : B, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂).
-assert (g == ∀ y₁ y₂, f y₁ y₂) as Hg by (subst f g; reflexivity).
-rewrite Hg; clear g Hg.
-set (g := ∀ y₁ y₂, f y₁ y₂).
+set (w := transport SemigroupStr (ua e) (existT (Assoc A) m a)).
+set (w' := existT (Assoc B) m' a' : SemigroupStr B).
+pose proof hott_2_7_2 (λ X : B → B → B, Assoc B X) w w' as H; simpl in H.
+eapply equiv_compose; [ eapply H | idtac ].
 bbb.
-
-assert (f == g).
-pose proof function_extensionality B (λ X, B → Prop) f.
-simpl in H.
 
 Axiom function_extensionality : ∀ A B (f g : ∀ x : A, B x),
   (∀ x, f x == g x) → f == g.
