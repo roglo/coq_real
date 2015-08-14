@@ -2826,48 +2826,28 @@ Definition hott_2_14_3 {A B} (e : A ≃ B)
     (m := pr₁ ma) (m' := pr₁ ma') (a := pr₂ ma) (a' := pr₂ ma') b₁ b₂ b₃ :
   m' (m' b₁ b₂) b₃ == m' b₁ (m' b₂ b₃).
 Proof.
+subst ma' m m' a a'.
 eapply compose; [ apply transport_semigroup_op_def_2 | idtac ].
-set (E := pr₁ e).
-set (E₁ := pr₁ e⁻⁻¹).
-subst m; set (m := pr₁ ma).
-subst m' ma'.
 rewrite transport_semigroup_op_def_2.
-set (ma' := transport SemigroupStr (ua e) ma).
-set (m' := pr₁ ma').
-subst m; set (m := pr₁ ma).
-subst E E₁; set (E := pr₁ e); set (E₁ := pr₁ e⁻⁻¹).
-assert (∀ x : A, E₁ (E x) == x) as Hx.
+assert (∀ x : A, pr₁ e⁻⁻¹ (pr₁ e x) == x) as Hx.
  intros x.
- subst E E₁; simpl.
- unfold pr₁; simpl.
- unfold Σ_pr₁; simpl.
+ unfold pr₁, Σ_pr₁; simpl.
  destruct e as (f, ((g, Hg), (h, Hh))); simpl.
  pose proof quasi_inv_l_eq_r f g h Hg Hh as H.
  unfold "~~" in H.
  eapply compose; [ apply H | apply Hh ].
 
- rewrite Hx, <- a.
- subst E E₁; set (E := pr₁ e); set (E₁ := pr₁ e⁻⁻¹).
- subst m; set (m := Σ_pr₁ ma).
- subst E E₁.
- set (u := m (pr₁ e⁻⁻¹ b₂) (pr₁ e⁻⁻¹ b₃)).
+ rewrite Hx, <- (pr₂ ma).
+ set (u := Σ_pr₁ ma (pr₁ e⁻⁻¹ b₂) (pr₁ e⁻⁻¹ b₃)).
  pose proof Hx u as Hu.
  rewrite <- Hu; clear Hu; subst u.
- set (E := pr₁ e); set (E₁ := pr₁ e⁻⁻¹).
- set (u := E (m (E₁ b₂) (E₁ b₃))).
- subst E E₁.
  pose proof transport_semigroup_op_def_2 e ma b₂ b₃ as H.
- subst ma'; set (ma' := transport SemigroupStr (ua e) ma) in *.
- subst u.
- set (E := pr₁ e) in *; set (E₁ := pr₁ e⁻⁻¹) in *.
- unfold pr₁ in H.
- subst m; set (m := Σ_pr₁ ma) in *.
- set (u := E (m (E₁ b₂) (E₁ b₃))) in *.
+ unfold pr₁ in H; unfold pr₁.
+ set (u := Σ_pr₁ e (Σ_pr₁ ma (Σ_pr₁ e⁻⁻¹ b₂) (Σ_pr₁ e⁻⁻¹ b₃))) in *.
  rewrite <- H.
- subst m'; unfold pr₁; set (m' := Σ_pr₁ ma').
- pose proof transport_semigroup_op_def_2 e ma b₁ (m' b₂ b₃) as H1.
+ set (ma' := transport SemigroupStr (ua e) ma).
+ pose proof transport_semigroup_op_def_2 e ma b₁ (Σ_pr₁ ma' b₂ b₃) as H1.
  subst ma'; set (ma' := transport SemigroupStr (ua e) ma) in *.
- subst E E₁ m.
  apply invert, H1.
 Defined.
 
