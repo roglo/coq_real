@@ -2901,6 +2901,15 @@ unfold transp_sg, U in p.
 destruct p; apply invert, transport_semigroup_op_def_2.
 Defined.
 
+Definition titi {A B} m a m' (e : A ≃ B) (ma := existT (Assoc A) m a)
+     : pr₁ (transp_sg (ua e) ma) == m'
+       → ∀ y₁ y₂, pr₁ e (pr₁ ma (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂
+:=
+  λ p y₁ y₂,
+  match p with
+  | refl _ => (transport_semigroup_op_def_2 e ma y₁ y₂)⁻¹
+  end.
+
 Definition tutu_tac {A B} m a m' (e : A ≃ B) :
   let ma := existT (Assoc A) m a in
   (∀ y₁ y₂ : B, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)
@@ -2913,6 +2922,8 @@ apply function_extensionality; intros y₂.
 eapply compose; [ idtac | apply H ].
 eapply transport_semigroup_op_def_2.
 Defined.
+
+bbb. make tutu (without _tac).
 
 Definition toto {A B} m a m' a' (e : A ≃ B) :
   let ma := existT (Assoc A) m a in
@@ -2930,10 +2941,10 @@ clear ma; set (ma := existT (Assoc A) m a).
 assert
  (pr₁ (transp_sg (ua e) ma) == m'
   ≃ (∀ y₁ y₂ : B, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)).
- apply (existT _ (titi_tac m a m' e)), qinv_isequiv.
+ apply (existT _ (titi m a m' e)), qinv_isequiv.
  apply (existT _ (tutu_tac m a m' e)).
  split; unfold "◦", "~~", id; intros f.
-  unfold titi_tac, tutu_tac; simpl.
+  unfold titi, tutu_tac; simpl.
   apply function_extensionality; intros y₁.
   apply function_extensionality; intros y₂.
 
