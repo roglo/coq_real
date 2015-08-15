@@ -2897,7 +2897,15 @@ Definition toto {A B} m a m' a' (e : A ≃ B) :
     ∀ b₁ b₂ b₃, m' (m' b₁ b₂) b₃ == m' b₁ (m' b₂ b₃).
 Proof.
 intros.
+eapply equiv_compose; [ apply semigroupstr_path_type | simpl ].
+clear w; set (w := transport SemigroupStr (ua e) (existT _ m a)).
+assert
+ ((pr₁ w == m')
+  ≃ (∀ y₁ y₂ : B, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)).
+bbb.
+
 set (w' := existT (Assoc B) m' a' : SemigroupStr B).
+
 bbb.
 
 pose proof hott_2_7_2 (Assoc B) w w' as H; simpl in H.
