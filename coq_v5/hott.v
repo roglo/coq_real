@@ -2892,8 +2892,8 @@ apply hott_2_7_2.
 Defined.
 
 Definition toto {A B} m a m' a' (e : A ≃ B) :
-  let ma := existT _ m a in
-  let ma' := existT _ m' a' in
+  let ma := existT (Assoc A) m a in
+  let ma' := existT (Assoc B) m' a' in
   transp_sg (ua e) ma == ma'
   ≃
     Σ (_ :
@@ -2902,27 +2902,13 @@ Definition toto {A B} m a m' a' (e : A ≃ B) :
     ∀ b₁ b₂ b₃, m' (m' b₁ b₂) b₃ == m' b₁ (m' b₂ b₃).
 Proof.
 intros.
-bbb.
-
-bbb.
-
-Definition toto {A B} m a m' a' (e : A ≃ B) :
-  let ma' := transport SemigroupStr (ua e) (existT _ m a) in
-  ma' == existT _ m' a'
-  ≃
-    Σ (_ :
-       Π (y₁ : B), Π (y₂ : B),
-       pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂),
-    ∀ b₁ b₂ b₃, m' (m' b₁ b₂) b₃ == m' b₁ (m' b₂ b₃).
-Proof.
-intros.
 eapply equiv_compose; [ apply semigroupstr_path_type | simpl ].
-clear ma'; set (ma' := transport SemigroupStr (ua e) (existT _ m a)).
+clear ma; set (ma := existT (Assoc A) m a).
 assert
- ((pr₁ ma' == m')
+ (pr₁ (transp_sg (ua e) ma) == m'
   ≃ (∀ y₁ y₂ : B, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)).
  assert
-  ((pr₁ ma' == m')
+  (pr₁ (transp_sg (ua e) ma) == m'
    → (∀ y₁ y₂ : B, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)) as f.
   intros p y₁ y₂.
   rewrite <- p.
@@ -2931,7 +2917,7 @@ assert
   apply (existT _ f), qinv_isequiv.
   assert
     ((∀ y₁ y₂ : B, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)
-     → pr₁ ma' == m') as g.
+     → pr₁ (transp_sg (ua e) ma) == m') as g.
    intros H.
    apply function_extensionality; intros y₁.
    apply function_extensionality; intros y₂.
