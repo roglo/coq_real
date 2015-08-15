@@ -2901,6 +2901,19 @@ rewrite <- p.
 apply invert, transport_semigroup_op_def_2.
 Defined.
 
+Definition tutu_tac {A B} m a m' (e : A ≃ B) :
+  let ma := existT (Assoc A) m a in
+  (∀ y₁ y₂ : B, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)
+  → pr₁ (transp_sg (ua e) ma) == m'.
+Proof.
+intros ma H.
+apply function_extensionality; intros y₁.
+apply function_extensionality; intros y₂.
+pose proof H y₁ y₂ as p.
+eapply compose; [ idtac | apply p ].
+eapply transport_semigroup_op_def_2.
+Defined.
+
 Definition toto {A B} m a m' a' (e : A ≃ B) :
   let ma := existT (Assoc A) m a in
   let ma' := existT (Assoc B) m' a' in
@@ -2918,27 +2931,12 @@ assert
  (pr₁ (transp_sg (ua e) ma) == m'
   ≃ (∀ y₁ y₂ : B, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)).
  apply (existT _ (titi_tac m a m' e)), qinv_isequiv.
-bbb.
+ apply (existT _ (tutu_tac m a m' e)).
+ split; unfold "◦", "~~", id; intros f.
+  unfold titi_tac, tutu_tac; simpl.
+  apply function_extensionality; intros y₁.
+  apply function_extensionality; intros y₂.
 
- assert
-  (pr₁ (transp_sg (ua e) ma) == m'
-   → (∀ y₁ y₂ : B, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)) as f.
-  intros p y₁ y₂.
-  rewrite <- p.
-  apply invert, transport_semigroup_op_def_2.
-
-  apply (existT _ f), qinv_isequiv.
-  assert
-    ((∀ y₁ y₂ : B, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)
-     → pr₁ (transp_sg (ua e) ma) == m') as g.
-   intros H.
-   apply function_extensionality; intros y₁.
-   apply function_extensionality; intros y₂.
-   pose proof H y₁ y₂ as p.
-   eapply compose; [ idtac | apply p ].
-   eapply transport_semigroup_op_def_2.
-
-   apply (existT _ g); split; unfold "◦", "~~", id; intros x.
 bbb.
 
 pose proof hott_2_7_2 (Assoc B) w w' as H; simpl in H.
