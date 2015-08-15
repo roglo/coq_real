@@ -5,11 +5,8 @@ Require Import Utf8 QArith.
 Require Import NPeano.
 
 Notation "⊥" := False.
-(*
-- notation pas mal, mais j'hésite...
 Notation "( x , y ) '_{' P }" := (existT P x y)
-  (at level 0, format "'[' ( x ,  y ) _{ P } ']'").
-*)
+  (at level 0, format "'[' ( x ,  y ) _{ P } ']'", only parsing).
 
 Open Scope nat_scope.
 
@@ -2859,8 +2856,8 @@ Defined.
 (* 2.14.2 Equality of semigroups *)
 
 Definition semigroup_path_type {A B} m a m' a' :
-  (existT SemigroupStr A (existT (Assoc A) m a) ==
-   existT SemigroupStr B (existT (Assoc B) m' a'))
+  (A, (m, a)_{Assoc A})_{SemigroupStr} ==
+  (B, (m', a')_{Assoc B})_{SemigroupStr}
   ≃ Σ (p₁ : A == B),
     transport SemigroupStr p₁ (existT _ m a) == existT _ m' a'.
 Proof.
@@ -2878,14 +2875,36 @@ intros.
 apply hott_2_7_2.
 Defined.
 
+(* equality in semigroup str *)
+
+Check @transport.
+
+Definition transp_sg {A B} := @transport U SemigroupStr A B.
+
 Definition semigroupstr_path_type {A B} m a m' a' (e : A ≃ B) :
-  let ma' := transport SemigroupStr (ua e) (existT _ m a) in
-  ma' == existT _ m' a'
-  ≃ {p : pr₁ ma' == m' & transport (Assoc B) p (pr₂ ma') == a'}.
+  let ma := existT _ m a in
+  let ma' := existT _ m' a' in
+  transp_sg (ua e) ma == ma'
+  ≃ {p : pr₁ (transp_sg (ua e) ma) == m' &
+     transport (Assoc B) p (pr₂ (transp_sg (ua e) ma)) == a'}.
 Proof.
-intros.
 apply hott_2_7_2.
 Defined.
+
+Definition toto {A B} m a m' a' (e : A ≃ B) :
+  let ma := existT _ m a in
+  let ma' := existT _ m' a' in
+  transp_sg (ua e) ma == ma'
+  ≃
+    Σ (_ :
+       Π (y₁ : B), Π (y₂ : B),
+       pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂),
+    ∀ b₁ b₂ b₃, m' (m' b₁ b₂) b₃ == m' b₁ (m' b₂ b₃).
+Proof.
+intros.
+bbb.
+
+bbb.
 
 Definition toto {A B} m a m' a' (e : A ≃ B) :
   let ma' := transport SemigroupStr (ua e) (existT _ m a) in
