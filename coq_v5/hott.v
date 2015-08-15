@@ -2879,17 +2879,17 @@ apply hott_2_7_2.
 Defined.
 
 Definition semigroupstr_path_type {A B} m a m' a' (e : A ≃ B) :
-  let w := transport SemigroupStr (ua e) (existT _ m a) in
-  w == existT _ m' a'
-  ≃ {p : pr₁ w == m' & transport (Assoc B) p (pr₂ w) == a'}.
+  let ma' := transport SemigroupStr (ua e) (existT _ m a) in
+  ma' == existT _ m' a'
+  ≃ {p : pr₁ ma' == m' & transport (Assoc B) p (pr₂ ma') == a'}.
 Proof.
 intros.
 apply hott_2_7_2.
 Defined.
 
 Definition toto {A B} m a m' a' (e : A ≃ B) :
-  let w := transport SemigroupStr (ua e) (existT _ m a) in
-  w == existT _ m' a'
+  let ma' := transport SemigroupStr (ua e) (existT _ m a) in
+  ma' == existT _ m' a'
   ≃
     Σ (_ :
        Π (y₁ : B), Π (y₂ : B),
@@ -2898,14 +2898,18 @@ Definition toto {A B} m a m' a' (e : A ≃ B) :
 Proof.
 intros.
 eapply equiv_compose; [ apply semigroupstr_path_type | simpl ].
-clear w; set (w := transport SemigroupStr (ua e) (existT _ m a)).
+clear ma'; set (ma' := transport SemigroupStr (ua e) (existT _ m a)).
 assert
- ((pr₁ w == m')
+ ((pr₁ ma' == m')
   ≃ (∀ y₁ y₂ : B, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)).
-bbb.
+ assert
+  ((pr₁ ma' == m')
+   → (∀ y₁ y₂ : B, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)) as f.
+  intros p y₁ y₂.
+  apply invert; rewrite <- p.
+  apply transport_semigroup_op_def_2.
 
-set (w' := existT (Assoc B) m' a' : SemigroupStr B).
-
+ apply (existT _ f), qinv_isequiv.
 bbb.
 
 pose proof hott_2_7_2 (Assoc B) w w' as H; simpl in H.
