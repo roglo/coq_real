@@ -2869,29 +2869,38 @@ Defined.
 
 (* other formulation *)
 
-Definition semigroup_path_type2 {A B} w w' m a m' a' :
-  w == existT SemigroupStr A (existT (Assoc A) m a)
-  → w' == existT SemigroupStr B (existT (Assoc B) m' a')
-  → w == w'
-  → Σ (p : pr₁ w == pr₁ w'), p⁎ (pr₂ w) == pr₂ w'.
+Definition semigroup_path_type2 {A B} m a m' a' :
+  let w := existT SemigroupStr A (existT (Assoc A) m a) in
+  let w' := existT SemigroupStr B (existT (Assoc B) m' a') in
+  w == w' ≃ Σ (p : pr₁ w == pr₁ w'), p⁎ (pr₂ w) == pr₂ w'.
 Proof.
-intros Hw Hw'.
-apply (@hott_2_7_2 _ _ w w').
+intros.
+apply hott_2_7_2.
 Defined.
 
-Definition toto {A B} m (a : Assoc A m) m' (a' : Assoc B m') (e : A ≃ B) :
-  transport SemigroupStr (ua e) (existT _ m a) == existT _ m' a'
+Definition semigroupstr_path_type {A B} m a m' a' (e : A ≃ B) :
+  let w := transport SemigroupStr (ua e) (existT _ m a) in
+  w == existT _ m' a'
+  ≃ {p : pr₁ w == m' & transport (Assoc B) p (pr₂ w) == a'}.
+Proof.
+intros.
+apply hott_2_7_2.
+Defined.
+
+Definition toto {A B} m a m' a' (e : A ≃ B) :
+  let w := transport SemigroupStr (ua e) (existT _ m a) in
+  w == existT _ m' a'
   ≃
     Σ (_ :
        Π (y₁ : B), Π (y₂ : B),
        pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂),
     ∀ b₁ b₂ b₃, m' (m' b₁ b₂) b₃ == m' b₁ (m' b₂ b₃).
 Proof.
-set (w := transport SemigroupStr (ua e) (existT (Assoc A) m a)).
+intros.
 set (w' := existT (Assoc B) m' a' : SemigroupStr B).
-pose proof hott_2_7_2 (Assoc B) w w' as H; simpl in H.
 bbb.
 
+pose proof hott_2_7_2 (Assoc B) w w' as H; simpl in H.
 eapply equiv_compose; [ eapply H | idtac ].
 
 bbb.
