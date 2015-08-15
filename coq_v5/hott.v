@@ -2897,8 +2897,8 @@ Definition titi_tac {A B} m a m' (e : A ≃ B) :
    → (∀ y₁ y₂ : B, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)).
 Proof.
 intros ma p y₁ y₂.
-rewrite <- p.
-apply invert, transport_semigroup_op_def_2.
+unfold transp_sg, U in p.
+destruct p; apply invert, transport_semigroup_op_def_2.
 Defined.
 
 Definition tutu_tac {A B} m a m' (e : A ≃ B) :
@@ -2907,10 +2907,10 @@ Definition tutu_tac {A B} m a m' (e : A ≃ B) :
   → pr₁ (transp_sg (ua e) ma) == m'.
 Proof.
 intros ma H.
+unfold transp_sg, U.
 apply function_extensionality; intros y₁.
 apply function_extensionality; intros y₂.
-pose proof H y₁ y₂ as p.
-eapply compose; [ idtac | apply p ].
+eapply compose; [ idtac | apply H ].
 eapply transport_semigroup_op_def_2.
 Defined.
 
