@@ -2915,15 +2915,25 @@ Definition tutu_tac {A B} m a m' (e : A ≃ B) :
   (∀ y₁ y₂ : B, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)
   → pr₁ (transp_sg (ua e) ma) == m'.
 Proof.
-intros ma H.
+intros ma f.
 unfold transp_sg, U.
 apply function_extensionality; intros y₁.
 apply function_extensionality; intros y₂.
-eapply compose; [ idtac | apply H ].
+eapply compose; [ idtac | apply f ].
 eapply transport_semigroup_op_def_2.
 Defined.
 
-bbb. make tutu (without _tac).
+Definition tutu {A B} m a m' (e : A ≃ B) :
+  let ma := existT (Assoc A) m a in
+  (∀ y₁ y₂ : B, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)
+  → pr₁ (transp_sg (ua e) ma) == m'
+:=
+  let ma := existT (Assoc A) m a in
+  λ f,
+  function_extensionality B (λ _, B → B) (pr₁ (transp_sg (ua e) ma)) m'
+    (λ y₁ : B,
+     function_extensionality B (λ _, B) (pr₁ (transp_sg (ua e) ma) y₁) (m' y₁)
+       (λ y₂ : B, transport_semigroup_op_def_2 e ma y₁ y₂ • f y₁ y₂)).
 
 Definition toto {A B} m a m' a' (e : A ≃ B) :
   let ma := existT (Assoc A) m a in
@@ -2942,12 +2952,15 @@ assert
  (pr₁ (transp_sg (ua e) ma) == m'
   ≃ (∀ y₁ y₂ : B, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)).
  apply (existT _ (titi m a m' e)), qinv_isequiv.
- apply (existT _ (tutu_tac m a m' e)).
+ apply (existT _ (tutu m a m' e)).
  split; unfold "◦", "~~", id; intros f.
-  unfold titi, tutu_tac; simpl.
+bbb.
+  unfold titi (*, tutu *); simpl.
   apply function_extensionality; intros y₁.
   apply function_extensionality; intros y₂.
-
+  destruct (tutu m a m' e f).
+  unfold transport_semigroup_op_def_2; simpl.
+  unfold transport_semigroup_op_def; simpl.
 bbb.
 
 pose proof hott_2_7_2 (Assoc B) w w' as H; simpl in H.
