@@ -2891,6 +2891,16 @@ Proof.
 apply hott_2_7_2.
 Defined.
 
+Definition titi_tac {A B} m a m' (e : A ≃ B) :
+  let ma := existT (Assoc A) m a in
+  (pr₁ (transp_sg (ua e) ma) == m'
+   → (∀ y₁ y₂ : B, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)).
+Proof.
+intros ma p y₁ y₂.
+rewrite <- p.
+apply invert, transport_semigroup_op_def_2.
+Defined.
+
 Definition toto {A B} m a m' a' (e : A ≃ B) :
   let ma := existT (Assoc A) m a in
   let ma' := existT (Assoc B) m' a' in
@@ -2907,6 +2917,9 @@ clear ma; set (ma := existT (Assoc A) m a).
 assert
  (pr₁ (transp_sg (ua e) ma) == m'
   ≃ (∀ y₁ y₂ : B, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)).
+ apply (existT _ (titi_tac m a m' e)), qinv_isequiv.
+bbb.
+
  assert
   (pr₁ (transp_sg (ua e) ma) == m'
    → (∀ y₁ y₂ : B, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)) as f.
