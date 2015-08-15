@@ -2879,7 +2879,7 @@ intros Hw Hw'.
 apply (@hott_2_7_2 _ _ w w').
 Defined.
 
-Definition toto {A B} m a m' a' (e : A ≃ B) :
+Definition toto {A B} m (a : Assoc A m) m' (a' : Assoc B m') (e : A ≃ B) :
   transport SemigroupStr (ua e) (existT _ m a) == existT _ m' a'
   ≃
     Σ (_ :
@@ -2889,8 +2889,11 @@ Definition toto {A B} m a m' a' (e : A ≃ B) :
 Proof.
 set (w := transport SemigroupStr (ua e) (existT (Assoc A) m a)).
 set (w' := existT (Assoc B) m' a' : SemigroupStr B).
-pose proof hott_2_7_2 (λ X : B → B → B, Assoc B X) w w' as H; simpl in H.
+pose proof hott_2_7_2 (Assoc B) w w' as H; simpl in H.
+bbb.
+
 eapply equiv_compose; [ eapply H | idtac ].
+
 bbb.
 
 Axiom function_extensionality : ∀ A B (f g : ∀ x : A, B x),
