@@ -2935,6 +2935,30 @@ Definition tutu {A B} m a m' (e : A ≃ B) :
      function_extensionality B (λ _, B) (pr₁ (transp_sg (ua e) ma) y₁) (m' y₁)
        (λ y₂ : B, transport_semigroup_op_def_2 e ma y₁ y₂ • f y₁ y₂)).
 
+(*
+Definition toto {A B} m a m' a' (e : A ≃ B) :
+  let ma := existT _ m a in
+  let ma' := existT _ m' a' in
+  transp_sg (ua e) ma == ma'
+  ≃ {p : pr₁ (transp_sg (ua e) ma) == m' &
+     transport (Assoc B) p (pr₂ (transp_sg (ua e) ma)) == a'}.
+
+Definition toto {A B} m a m' a' :
+  (A, (m, a)_{Assoc A})_{SemigroupStr} ==
+  (B, (m', a')_{Assoc B})_{SemigroupStr}
+  ≃ Σ (p₁ : A == B),
+    transport SemigroupStr p₁ (existT _ m a) == existT _ m' a'.
+*)
+
+Definition toto {A B} m a m' a'
+    (x : Σ (p₁ : A == B),
+         transport SemigroupStr p₁ (existT _ m a) == existT _ m' a') :
+  pr₂ x == pr₂ x.
+Check (pr₂ x).
+bbb.
+
+Boh, chais pas, je comprends pas ce que je fais...
+
 Definition toto {A B} m a m' a' (e : A ≃ B) :
   let ma := existT (Assoc A) m a in
   let ma' := existT (Assoc B) m' a' in
