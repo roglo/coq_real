@@ -2903,20 +2903,39 @@ Proof.
 apply hott_2_7_2.
 Defined.
 
+Check (pr₂ : Π (x : Semigroup), (_ ◦ pr₁) x).
+
 Definition semigroupstr_path_type {A B} m a m' a'
     (ma := existT (Assoc A) m a)
     (ma' := existT (Assoc B) m' a')
     (p : Σ (p₁ : A == B), transp_sg p₁ ma == ma')
     (p₁ := pr₁ p)
-    (p₂ : transp_sg p₁ ma == ma')
+    (p₂ := pr₂ p : transp_sg p₁ ma == ma')
     (e := idtoeqv p₁) :
   (transp_sg p₁ ma == ma') ≃
   (Π (y₁ : B), Π (y₂ : B), pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)
   * (∀ b₁ b₂ b₃, m' (m' b₁ b₂) b₃ == m' b₁ (m' b₂ b₃)).
 Proof.
+simpl in p₂.
 eapply equiv_compose; [ eapply hott_2_7_2 | idtac ].
-bbb.
 
+Theorem toto : ∀ A B C D,
+  (A ≃ C)
+  → (∀ a : A, B a ≃ D)
+  → (Σ (a : A), B a) ≃ (C * D).
+Proof.
+intros A B C D HAC HBD.
+Admitted. Show.
+
+apply toto; [ idtac | intros q ].
+ destruct p as (p1, p2).
+ simpl in p₁, p₂; subst p₁ p₂.
+ rename p1 into p₁; rename p2 into p₂.
+ destruct p₁, p₂; simpl.
+ destruct e as (f, Hf); simpl.
+ unfold id; simpl.
+
+bbb.
 Axiom function_extensionality : ∀ A B (f g : ∀ x : A, B x),
   (∀ x, f x == g x) → f == g.
 
