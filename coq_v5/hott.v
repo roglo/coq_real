@@ -2881,15 +2881,21 @@ Check @transport.
 
 Definition transp_sg {A B} := @transport U SemigroupStr A B.
 
-Definition semigroupstr_path_type {A B} m a m' a' (e : A ≃ B) :
-  let ma := existT _ m a in
-  let ma' := existT _ m' a' in
-  transp_sg (ua e) ma == ma'
-  ≃ {p : pr₁ (transp_sg (ua e) ma) == m' &
-     transport (Assoc B) p (pr₂ (transp_sg (ua e) ma)) == a'}.
+Definition semigroupstr_path_type_initial_version {A B} m a m' a'
+    (ma := existT (Assoc A) m a)
+    (ma' := existT (Assoc B) m' a')
+    (p : Σ (p₁ : A == B), transp_sg p₁ ma == ma')
+    (p₁ := pr₁ p)
+    (p₂ : transp_sg p₁ ma == ma')
+    (e := idtoeqv p₁) :
+  (transp_sg p₁ ma == ma')
+   ≃ {p : pr₁ (transp_sg p₁ ma) == m' &
+      transport (Assoc B) p (pr₂ (transp_sg p₁ ma)) == a'}.
 Proof.
 apply hott_2_7_2.
 Defined.
+
+bbb.
 
 Definition titi_tac {A B} m a m' (e : A ≃ B) :
   let ma := existT (Assoc A) m a in
@@ -2951,13 +2957,25 @@ Definition toto {A B} m a m' a' :
 *)
 
 Definition toto {A B} m a m' a'
-    (x : Σ (p₁ : A == B),
-         transport SemigroupStr p₁ (existT _ m a) == existT _ m' a') :
-  pr₂ x == pr₂ x.
-Check (pr₂ x).
-bbb.
+    (ma := existT (Assoc A) m a)
+    (ma' := existT (Assoc B) m' a')
+    (p : Σ (p₁ : A == B), transp_sg p₁ ma == ma')
+    (p₁ := pr₁ p)
+    (p₂ : transp_sg p₁ ma == ma')
+    (e := idtoeqv p₁) :
+  (transp_sg p₁ ma == ma') ≃
+   Σ (_ :
+      Π (y₁ : B), Π (y₂ : B),
+      pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂),
+   ∀ b₁ b₂ b₃, m' (m' b₁ b₂) b₃ == m' b₁ (m' b₂ b₃).
+Proof.
+assert (p₁ == ua e) as Hp₁ by (apply invert, ua_idtoeqv).
+eapply equiv_compose.
+ Check @semigroupstr_path_type.
+ Check @semigroupstr_path_type A B m a m' a' e.
+ apply semigroupstr_path_type.
 
-Boh, chais pas, je comprends pas ce que je fais...
+bbb.
 
 Definition toto {A B} m a m' a' (e : A ≃ B) :
   let ma := existT (Assoc A) m a in
