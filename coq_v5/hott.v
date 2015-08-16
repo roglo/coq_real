@@ -2916,7 +2916,10 @@ Check (pr₁ : Semigroup → U).
      : Semigroup → U *)
 
 Check (@pr₂ : Π (A : _), Π (B : A → _), Π (x : _), (B ◦ pr₁) x).
+
 (* quel est pr₂ restreint aux semi-groupes ? *)
+
+Check (@pr₂ : Π (A : _), Π (B : A → _), Π (x : Semigroup), (B ◦ pr₁) x).
 
 bbb.
 
