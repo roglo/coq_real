@@ -2907,6 +2907,42 @@ Definition semigroupstr_path_type {A B} m a m' a'
   * (∀ b₁ b₂ b₃, m' (m' b₁ b₂) b₃ == m' b₁ (m' b₂ b₃)).
 Proof.
 eapply equiv_compose; [ eapply hott_2_7_2 | idtac ].
+Check (λ X f p, pr₂ (existT SemigroupStr X (existT (Assoc X) f p))).
+Check (λ X f p, (pr₂ (existT SemigroupStr X (existT (Assoc X) f p))
+: (SemigroupStr ◦ pr₁) _)).
+
+Check (pr₁ : Semigroup → U).
+(* pr₁ : Semigroup → U
+     : Semigroup → U *)
+
+Check (@pr₂ : Π (A : _), Π (B : A → _), Π (x : _), (B ◦ pr₁) x).
+(* quel est pr₂ restreint aux semi-groupes ? *)
+
+bbb.
+
+Check (@pr₂ : Π (A : _), Π (B : A → _), Π (x : _), (B ◦ pr₁) x).
+(* @pr₂ : ∀ (A : Type) (B : A → Type) (x : {y : A & B y}), (B ◦ pr₁) x *)
+
+Check (@pr₂ _ SemigroupStr).
+(* pr₂
+     : ∀ x : {y : Type & SemigroupStr y}, SemigroupStr (Σ_pr₁ x) *)
+Check (@pr₂ _ SemigroupStr : Π (x : _), (_ ◦ pr₁) x).
+(* @pr₂
+     : ∀ (A : Type) (B : A → Type) (x : {y : A & B y}), B (Σ_pr₁ x) *)
+Check (λ X, (pr₂ : ∀ x : SemigroupStr X, _)).
+
+Check (λ (x : Semigroup), (SemigroupStr ◦ pr₁) x).
+Check (λ (x : Semigroup), (pr₂ x : (SemigroupStr ◦ pr₁) x)).
+λ x : Semigroup, pr₂ x : (SemigroupStr ◦ pr₁) x
+     : ∀ x : Semigroup, (SemigroupStr ◦ pr₁) x
+
+Check (λ X f p, (existT SemigroupStr X (existT (Assoc X) f p) :
+{A : U & {m : A → A → A & Assoc A m}})).
+Check (λ A ma, existT SemigroupStr A ma).
+Print Semigroup.
+Check ({A : U & { m : A → A → A & Assoc A m }}).
+{A : U & {m : A → A → A & Assoc A m}}
+     : Type
 bbb.
 
 Axiom function_extensionality : ∀ A B (f g : ∀ x : A, B x),
