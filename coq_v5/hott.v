@@ -2903,6 +2903,36 @@ Proof.
 apply hott_2_7_2.
 Defined.
 
+Theorem toto : ∀ A B C D,
+  (A ≃ C)
+  → (Σ (a : A), B a ≃ D)
+  → (Σ (a : A), B a) ≃ (C * D).
+Proof.
+intros A B C D HAC HBD.
+(*
+  destruct HBD as (x, (f, Hfg)).
+*)
+unfold equivalence.
+assert ((Σ (a : A), B a) → C * D) as f.
+ intros (x, y).
+ split.
+  destruct HAC as (f, Hf).
+  apply f, x.
+
+  destruct HBD as (z, (f, Hfg)).
+  apply f.
+bbb.
+(* bin non, ça va pas *)
+  apply f, y.
+
+ apply (existT _ f), qinv_isequiv.
+ assert (C * D → (Σ (a : A), B a)) as g.
+  intros (x, y).
+  destruct HAC as (g, Hg).
+bbb.
+(* bin non, c'est faux *)
+bbb.
+
 Check (pr₂ : Π (x : Semigroup), (_ ◦ pr₁) x).
 
 Definition semigroupstr_path_type {A B} m a m' a'
@@ -2918,15 +2948,6 @@ Definition semigroupstr_path_type {A B} m a m' a'
 Proof.
 simpl in p₂.
 eapply equiv_compose; [ eapply hott_2_7_2 | idtac ].
-
-Theorem toto : ∀ A B C D,
-  (A ≃ C)
-  → (∀ a : A, B a ≃ D)
-  → (Σ (a : A), B a) ≃ (C * D).
-Proof.
-intros A B C D HAC HBD.
-Admitted. Show.
-
 apply toto; [ idtac | intros q ].
  destruct p as (p1, p2).
  simpl in p₁, p₂; subst p₁ p₂.
