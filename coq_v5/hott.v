@@ -2875,6 +2875,14 @@ intros.
 apply hott_2_7_2.
 Defined.
 
+(* pr₁ and pr₂ on semigroups *)
+
+Check (pr₁ : Semigroup → U).
+(* pr₁ : Semigroup → U *)
+
+Check (pr₂ : Π (x : Semigroup), (_ ◦ pr₁) x).
+(* pr₂ : ∀ x : Semigroup, (SemigroupStr ◦ pr₁) x *)
+
 (* equality in semigroup str *)
 
 Check @transport.
@@ -2894,12 +2902,6 @@ Definition semigroupstr_path_type_initial_version {A B} m a m' a'
 Proof.
 apply hott_2_7_2.
 Defined.
-
-Check (pr₁ : Semigroup → U).
-(* pr₁ : Semigroup → U *)
-
-Check (@pr₂ _ _ : Π (x : Semigroup), (_ ◦ pr₁) x).
-(* pr₂ : ∀ x : Semigroup, (SemigroupStr ◦ pr₁) x *)
 
 Definition semigroupstr_path_type {A B} m a m' a'
     (ma := existT (Assoc A) m a)
