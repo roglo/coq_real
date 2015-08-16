@@ -2906,8 +2906,11 @@ Definition semigroupstr_path_type {A B} m a m' a'
   (Π (y₁ : B), Π (y₂ : B), pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)
   * (∀ b₁ b₂ b₃, m' (m' b₁ b₂) b₃ == m' b₁ (m' b₂ b₃)).
 Proof.
-eapply equiv_compose.
- eapply semigroupstr_path_type_initial_version; assumption.
+eapply equiv_compose; [ eapply hott_2_7_2 | idtac ].
+bbb.
+
+Axiom function_extensionality : ∀ A B (f g : ∀ x : A, B x),
+  (∀ x, f x == g x) → f == g.
 
 bbb.
 
