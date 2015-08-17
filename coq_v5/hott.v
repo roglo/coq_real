@@ -2780,7 +2780,6 @@ Defined.
 Definition transport_semigroup_op_def_2_tac {A B} (e : A ≃ B)
     (ma : SemigroupStr A) (ma' := transport SemigroupStr (ua e) ma)
     (m := pr₁ ma) (m' := pr₁ ma')
-    (a := pr₂ ma) (a' := pr₂ ma')
     b₁ b₂ :
   m' b₁ b₂ == pr₁ e (m (pr₁ e⁻⁻¹ b₁) (pr₁ e⁻⁻¹ b₂)).
 Proof.
@@ -2793,7 +2792,7 @@ Defined.
 
 Definition transport_semigroup_op_def_2 {A B} (e : A ≃ B)
     (ma : SemigroupStr A) (ma' := transport SemigroupStr (ua e) ma)
-    (m := pr₁ ma) (m' := pr₁ ma') (a := pr₂ ma) (a' := pr₂ ma') b₁ b₂ :
+    (m := pr₁ ma) (m' := pr₁ ma') b₁ b₂ :
   m' b₁ b₂ == pr₁ e (m (pr₁ e⁻⁻¹ b₁) (pr₁ e⁻⁻¹ b₂))
 :=
   transport_semigroup_op_def e ma b₁ b₂
@@ -2952,8 +2951,37 @@ Definition semigroupstr_path_type {A B} m a m' a'
   (Π (y₁ : B), Π (y₂ : B), pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)
   * (∀ b₁ b₂ b₃, m' (m' b₁ b₂) b₃ == m' b₁ (m' b₂ b₃)).
 Proof.
+assert (m' == λ y₁ y₂, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂))).
+ apply function_extensionality; intros y₁.
+ apply function_extensionality; intros y₂.
+ eapply compose; [ idtac | apply (transport_semigroup_op_def_2 e ma) ].
+ eapply hap, hap.
+assert (m' == pr₁ ma').
+subst ma'; reflexivity.
+rewrite H.
+subst ma ma'.
+apply ap.
+
+bbb.
+
+ subst ma ma' e; simpl.
+ rewrite ua_idtoeqv; simpl.
+
 eapply equiv_compose; [ eapply hott_2_7_2 | idtac ].
 apply eq_pair_dep_pair; [ idtac | intros q ].
+bbb.
+
+bbb.
+
+ destruct p₁; simpl.
+
+pose proof (transport_semigroup_op_def_2 e ma y₁ y₂) as H.
+subst ma ma'.
+apply H.
+
+ apply (transport_semigroup_op_def_2 e ma y₁ y₂).
+
+
 (*
 assert
   ((pr₁ (transp_sg p₁ ma) == pr₁ ma')
