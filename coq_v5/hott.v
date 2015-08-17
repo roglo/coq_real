@@ -2910,29 +2910,23 @@ Theorem toto : ∀ A B C D,
 Proof.
 intros A B C D HAC HBD.
 unfold equivalence.
-assert ((Σ (a : A), B a) → C * D) as f.
+set (f xy := (pr₁ HAC (pr₁ xy), pr₁ (HBD (pr₁ xy)) (pr₂ xy))).
+apply (existT _ f), qinv_isequiv.
+assert (C * D → (Σ (a : A), B a)) as g.
+ clear f.
  intros (x, y).
- split.
-  destruct HAC as (f, Hf).
-  apply f, x.
+ apply quasi_inv in HAC.
+ destruct HAC as (g, Hg).
+ apply (existT _ (g x)).
+ pose proof (HBD (g x))⁻⁻¹ as H.
+ destruct H as (h, Hh).
+ apply h, y.
 
-  destruct (HBD x) as (f, Hf).
-  apply f, y.
-
- apply (existT _ f), qinv_isequiv.
- assert (C * D → (Σ (a : A), B a)) as g.
+ apply (existT _ g); split; unfold "◦", "~~", id.
   intros (x, y).
-  apply quasi_inv in HAC.
-  destruct HAC as (g, Hg).
-  apply (existT _ (g x)).
-  pose proof (HBD (g x))⁻⁻¹ as H.
-  destruct H as (h, Hh).
-  apply h, y.
-
-  apply (existT _ g); split; unfold "◦", "~~", id.
-   intros (x, y).
+  subst f; simpl.
 bbb.
-(* faut le code de f et g *)
+(* faut le code de g *)
 
 Check (pr₂ : Π (x : Semigroup), (_ ◦ pr₁) x).
 
