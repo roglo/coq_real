@@ -2816,8 +2816,6 @@ Definition quasi_inv_l_eq_r {A B} (f : A → B) (g h : B → A) :
 :=
   λ Hfg Hhf x, (Hhf (g x))⁻¹ • ap h (Hfg x).
 
-SearchAbout (_ ◦ _ ~~ id).
-
 Definition quasi_inv_comp_l {A B} (e : A ≃ B) : pr₁ e⁻⁻¹ ◦ pr₁ e ~~ id.
 Proof.
 intros x.
@@ -2825,6 +2823,13 @@ destruct e as (f, ((g, Hg), (h, Hh))); simpl.
 pose proof quasi_inv_l_eq_r f g h Hg Hh as H.
 unfold "~~" in H.
 eapply compose; [ apply H | apply Hh ].
+Defined.
+
+Definition quasi_inv_comp_r {A B} (e : A ≃ B) : pr₁ e ◦ pr₁ e⁻⁻¹ ~~ id.
+Proof.
+intros x.
+destruct e as (f, ((g, Hg), (h, Hh))); simpl.
+apply Hg.
 Defined.
 
 Check @transport_semigroup_assoc.
@@ -2903,7 +2908,7 @@ Proof.
 apply hott_2_7_2.
 Defined.
 
-Theorem toto : ∀ A B C D,
+Theorem eq_pair_dep_pair : ∀ A B C D,
   (A ≃ C)
   → (∀ (a : A), B a ≃ D)
   → (Σ (a : A), B a) ≃ (C * D).
@@ -2912,21 +2917,29 @@ intros A B C D HAC HBD.
 unfold equivalence.
 set (f xy := (pr₁ HAC (pr₁ xy), pr₁ (HBD (pr₁ xy)) (pr₂ xy))).
 apply (existT _ f), qinv_isequiv.
-assert (C * D → (Σ (a : A), B a)) as g.
- clear f.
+set
+ (g xy :=
+    existT B (pr₁ HAC⁻⁻¹ (fst xy))
+      (pr₁ (HBD (pr₁ HAC⁻⁻¹ (fst xy)))⁻⁻¹ (snd xy))).
+apply (existT _ g); split; unfold "◦", "~~", id.
  intros (x, y).
- apply quasi_inv in HAC.
- destruct HAC as (g, Hg).
- apply (existT _ (g x)).
- pose proof (HBD (g x))⁻⁻¹ as H.
- destruct H as (h, Hh).
- apply h, y.
+ subst f g; simpl.
+ destruct HAC as (f, ((g, Hg), (h, Hh))); simpl.
+ unfold "◦", id in Hg; rewrite Hg.
+ pose proof quasi_inv_comp_r (HBD (g x)) as H.
+ unfold "◦", id in H; rewrite H; reflexivity.
 
- apply (existT _ g); split; unfold "◦", "~~", id.
-  intros (x, y).
-  subst f; simpl.
-bbb.
-(* faut le code de g *)
+ intros (x, y).
+ subst f g; simpl.
+ destruct HAC as (f, ((g, Hg), (h, Hh))); simpl.
+ pose proof quasi_inv_l_eq_r f g h Hg Hh as H.
+ unfold "◦", "~~", id in Hh, H.
+ rewrite H, Hh.
+ destruct (HBD x) as (f₁, ((g₁, Hg₁), (h₁, Hh₁))); simpl.
+ pose proof quasi_inv_l_eq_r f₁ g₁ h₁ Hg₁ Hh₁ as H₁.
+ unfold "◦", "~~", id in H₁, Hh₁.
+ rewrite H₁, Hh₁; reflexivity.
+Defined.
 
 Check (pr₂ : Π (x : Semigroup), (_ ◦ pr₁) x).
 
@@ -2943,7 +2956,7 @@ Definition semigroupstr_path_type {A B} m a m' a'
 Proof.
 simpl in p₂.
 eapply equiv_compose; [ eapply hott_2_7_2 | idtac ].
-apply toto; [ idtac | intros q ].
+apply eq_pair_dep_pair; [ idtac | intros q ].
  destruct p as (p1, p2).
  simpl in p₁, p₂; subst p₁ p₂.
  rename p1 into p₁; rename p2 into p₂.
