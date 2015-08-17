@@ -2912,6 +2912,11 @@ Definition semigroupstr_path_type_initial_version {A B} m a m' a'
    ≃ {p : pr₁ (transp_sg p₁ ma) == m' &
       transport (Assoc B) p (pr₂ (transp_sg p₁ ma)) == a'}.
 Proof.
+(* ouais, bon, ça va pas, le premier type est refl !
+   y a quequ'chose qui cloche là-d'dans,
+   j'y retourne immédiatement *)
+bbb.
+
 apply hott_2_7_2.
 Defined.
 
