@@ -2974,6 +2974,14 @@ Definition pr₁_transp_eq_inv {A B} m a m' a'
   (∀ y₁ y₂ : B, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)
   → pr₁ (transp_sg p₁ ma) == pr₁ ma'.
 Proof.
+intros q; clear q.
+destruct p as (f, Hf); simpl.
+subst p₁; simpl.
+rewrite Hf.
+subst ma'; simpl.
+reflexivity.
+(* what? I didn't need q *)
+(*
 intros q.
 subst p₁; simpl.
 apply function_extensionality; intros y₁.
@@ -2995,11 +3003,8 @@ unfold transp_sg in Hf.
 rewrite Hf.
 subst ma'.
 reflexivity.
+*)
 Defined.
-
-(* proof completed above, but not satisfactory; must be simplified *)
-
-bbb.
 
 Definition semigroupstr_path_type {A B} m a m' a'
     (ma := existT (Assoc A) m a)
@@ -3012,6 +3017,15 @@ Definition semigroupstr_path_type {A B} m a m' a'
   (Π (y₁ : B), Π (y₂ : B), pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)
   * (∀ b₁ b₂ b₃, m' (m' b₁ b₂) b₃ == m' b₁ (m' b₂ b₃)).
 Proof.
+subst ma ma'; simpl.
+subst p₁; simpl.
+destruct p as (f, Hf); simpl.
+rewrite Hf.
+(* ouais, bon, ça va pas, le premier type est refl !
+   y a quequ'chose qui cloche là-d'dans,
+   j'y retourne immédiatement *)
+bbb.
+
 simpl in p₂.
 eapply equiv_compose; [ eapply hott_2_7_2 | idtac ].
 apply eq_pair_dep_pair; [ idtac | intros q ].
