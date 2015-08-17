@@ -1549,14 +1549,6 @@ Definition pair_eq_def {A} {P : A → U} (x y : A) (u : P x) (p : x == y) :
 Definition tfam {A} P (Q : (Σ (x : A), P x) → U) (x : A) :=
   Σ (u : P x), Q (existT P x u).
 
-(*
-Definition pair_map {A P Q} {x : A} a b
-:
-  {y : P x & Q (x, y)_{P}}
-:=
-  (a, b)_{λ y, Q (x, y)_{P}}.
-*)
-
 Definition pair_map {A P Q} {x : A} (a : P x) (b : Q (existT P x a))
     : {u : P x & Q (existT P x u)} :=
   existT (λ u, Q (existT P x u)) a b.
@@ -2705,27 +2697,22 @@ Definition SemigroupStr_equiv {A B} :
 :=
   ap_equiv SemigroupStr.
 
+(* First, because SemigroupStr (X) is defined to be a Σ-type, by
+   Theorem 2.7.4, *)
+
 Definition toto {A B} (e : A ≃ B) m a m' a'
-    (ma := existT (Assoc A) m a) (ma' := existT (Assoc B) m' a')
-:
+     (ma := existT (Assoc A) m a)
+     (ma' := existT (Assoc B) m' a') :
   transport SemigroupStr (ua e) ma == ma'.
 Proof.
-pose proof @hott_2_7_4.
-Print tfam.
-(* tfam = 
-λ (A : Type) (P : A → Type) (Q : {x : A & P x} → U) 
-(x : A), {u : P x & Q (existT P x u)}
-     : ∀ (A : Type) (P : A → Type), ({x : A & P x} → U) → A → Type *)
-pose proof @tfam Type.
-Print SemigroupStr.
-bbb.
-(* bon, ça va pas du tout, ça. Comment faire que tfam P Q = SemigroupStr ?
-   ça a pas l'air possible ! Aurais-je une mauvaise définition de 2.7.4 ? *)
+eapply compose.
+ apply
+   (@hott_2_7_4 U (λ X, X → X → X) (λ xu, Assoc (pr₁ xu) (pr₂ xu)) A B (ua e)
+    m a).
 
-tfam P Q = SemigroupStr
-p = ua e
-
+ unfold pair_map; subst ma'; simpl.
 bbb.
+(* bon. Doc à relire... ça devrait le faire... *)
 
 Definition transport_semigroup_op_new {A B} (e : A ≃ B) m a m' a'
     (ma := existT (Assoc A) m a) (ma' := existT (Assoc B) m' a')
