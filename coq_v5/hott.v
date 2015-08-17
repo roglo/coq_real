@@ -2897,26 +2897,16 @@ Check (pr₂ : Π (x : Semigroup), (_ ◦ pr₁) x).
 
 (* equality in semigroup str *)
 
-Check @transport.
-
 Definition transp_sg {A B} := @transport U SemigroupStr A B.
 
 Definition semigroupstr_path_type_initial_version {A B} m a m' a'
     (ma := existT (Assoc A) m a)
     (ma' := existT (Assoc B) m' a')
-    (p : Σ (p₁ : A == B), transp_sg p₁ ma == ma')
-    (p₁ := pr₁ p)
-    (p₂ : transp_sg p₁ ma == ma')
-    (e := idtoeqv p₁) :
+    (p₁ : A == B) :
   (transp_sg p₁ ma == ma')
    ≃ {p : pr₁ (transp_sg p₁ ma) == m' &
       transport (Assoc B) p (pr₂ (transp_sg p₁ ma)) == a'}.
 Proof.
-(* ouais, bon, ça va pas, le premier type est refl !
-   y a quequ'chose qui cloche là-d'dans,
-   j'y retourne immédiatement *)
-bbb.
-
 apply hott_2_7_2.
 Defined.
 
@@ -2953,6 +2943,7 @@ apply (existT _ g); split; unfold "◦", "~~", id.
  rewrite H₁, Hh₁; reflexivity.
 Defined.
 
+(*
 Definition pr₁_transp_eq {A B} m a m' a'
     (ma := existT (Assoc A) m a)
     (ma' := existT (Assoc B) m' a')
@@ -3010,19 +3001,35 @@ subst ma'.
 reflexivity.
 *)
 Defined.
+*)
 
 Definition semigroupstr_path_type {A B} m a m' a'
     (ma := existT (Assoc A) m a)
     (ma' := existT (Assoc B) m' a')
-    (p : Σ (p₁ : A == B), transp_sg p₁ ma == ma')
-    (p₁ := pr₁ p)
-    (p₂ := pr₂ p : transp_sg p₁ ma == ma')
+    (p₁ : A == B)
     (e := idtoeqv p₁) :
   (transp_sg p₁ ma == ma') ≃
   (Π (y₁ : B), Π (y₂ : B), pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)
   * (∀ b₁ b₂ b₃, m' (m' b₁ b₂) b₃ == m' b₁ (m' b₂ b₃)).
 Proof.
-subst ma ma'; simpl.
+destruct p₁; simpl.
+unfold id; simpl.
+eapply equiv_compose; [ eapply hott_2_7_2 | idtac ].
+apply eq_pair_dep_pair; [ idtac | intros q ].
+ subst ma ma'; simpl.
+ set (f (p : m == m') y₁ y₂ := hap (hap p y₁) y₂).
+ apply (existT _ f), qinv_isequiv.
+ assert ((∀ y₁ y₂ : A, m y₁ y₂ == m' y₁ y₂) → (m == m')) as g.
+  intros H.
+  apply function_extensionality; intros y₁.
+  apply function_extensionality; intros y₂.
+  apply H.
+  
+  apply (existT _ g); simpl.
+  subst g.
+bbb.
+(* faire une version avec le code de g *)
+
 subst p₁; simpl.
 destruct p as (f, Hf); simpl.
 rewrite Hf.
