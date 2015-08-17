@@ -2975,9 +2975,30 @@ Definition pr₁_transp_eq_inv {A B} m a m' a'
   → pr₁ (transp_sg p₁ ma) == pr₁ ma'.
 Proof.
 intros q.
-Check @transport_semigroup_op_def_2.
-pose proof semigroupstr_path_type_initial_version m a m' a' p as H.
+subst p₁; simpl.
+apply function_extensionality; intros y₁.
+apply function_extensionality; intros y₂.
+pose proof q y₁ y₂ as H.
+eapply compose; [ idtac | apply H ].
+unfold transp_sg; simpl.
+unfold isequiv_transport; simpl.
+destruct (pr₁ p); simpl.
+unfold id; simpl.
 simpl in H.
+unfold id in H.
+apply invert in H.
+eapply compose; [ idtac | apply H ].
+apply hap, hap, invert.
+subst ma; simpl.
+destruct p as (f, Hf); simpl.
+unfold transp_sg in Hf.
+rewrite Hf.
+subst ma'.
+reflexivity.
+Defined.
+
+(* proof completed above, but not satisfactory; must be simplified *)
+
 bbb.
 
 Definition semigroupstr_path_type {A B} m a m' a'
