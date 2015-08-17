@@ -2952,6 +2952,54 @@ Definition semigroupstr_path_type {A B} m a m' a'
   (Π (y₁ : B), Π (y₂ : B), pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)
   * (∀ b₁ b₂ b₃, m' (m' b₁ b₂) b₃ == m' b₁ (m' b₂ b₃)).
 Proof.
+eapply equiv_compose; [ eapply hott_2_7_2 | idtac ].
+apply eq_pair_dep_pair; [ idtac | intros q ].
+(*
+assert
+  ((pr₁ (transp_sg p₁ ma) == pr₁ ma')
+   → (∀ y₁ y₂ : B, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)) as f.
+ intros p y₁ y₂.
+ apply invert.
+ eapply compose; [ idtac | apply (transport_semigroup_op_def_2 e ma) ].
+ apply invert.
+ subst ma ma' e; simpl in p; simpl.
+ eapply hap, hap, compose; [ idtac | apply p ].
+ apply ap, hap, ap, ua_idtoeqv.
+Show Proof.
+*)
+set
+  (f (p : pr₁ (transp_sg p₁ ma) == pr₁ ma') (y₁ y₂ : B) :=
+   ((hap
+       (hap
+              (ap pr₁
+                 (hap (ap transp_sg (ua_idtoeqv p₁)) (existT (Assoc A) m a))
+               • p) y₁) y₂)⁻¹
+    • transport_semigroup_op_def_2 e ma y₁ y₂)⁻¹).
+apply (existT _ f), qinv_isequiv.
+assert
+  ((∀ y₁ y₂ : B, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)
+   → (pr₁ (transp_sg p₁ ma) == pr₁ ma')) as g.
+ intros p.
+
+bbb.
+
+
+bbb.
+ set (m₁ := pr₁ (transp_sg p₁ ma)).
+ set (f (p : m₁ == m') y₁ y₂ := hap (hap p y₁) y₂).
+ apply (existT _ f), qinv_isequiv.
+ set
+   (g p :=
+      function_extensionality _ _ m m'
+        (λ y₁, function_extensionality _ _ (m y₁) (m' y₁) (p y₁))).
+ apply (existT _ g); simpl.
+ subst f g; unfold "◦", id; simpl; split; intros f.
+  apply function_extensionality; intros y₁.
+  apply function_extensionality; intros y₂.
+  apply invert.
+  unfold hap; simpl.
+
+bbb.
 destruct p₁; simpl.
 unfold id; simpl.
 eapply equiv_compose; [ eapply hott_2_7_2 | idtac ].
