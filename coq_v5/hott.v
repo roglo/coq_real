@@ -2943,66 +2943,6 @@ apply (existT _ g); split; unfold "◦", "~~", id.
  rewrite H₁, Hh₁; reflexivity.
 Defined.
 
-(*
-Definition pr₁_transp_eq {A B} m a m' a'
-    (ma := existT (Assoc A) m a)
-    (ma' := existT (Assoc B) m' a')
-    (p : Σ (p₁ : A == B), transp_sg p₁ ma == ma')
-    (p₁ := pr₁ p)
-    (e := idtoeqv p₁) :
-  pr₁ (transp_sg p₁ ma) == pr₁ ma'
-  → ∀ y₁ y₂ : B, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂.
-Proof.
-intros q y₁ y₂.
-pose proof @transport_semigroup_op_def_2 A B e ma y₁ y₂ as H.
-eapply invert, compose; [ clear H | apply H ].
-destruct p as (f, p); simpl in *.
-destruct q; simpl; subst e.
-apply hap, hap, ap, hap, ap, invert, ua_idtoeqv.
-Defined.
-
-Definition pr₁_transp_eq_inv {A B} m a m' a'
-    (ma := existT (Assoc A) m a)
-    (ma' := existT (Assoc B) m' a')
-    (p : Σ (p₁ : A == B), transp_sg p₁ ma == ma')
-    (p₁ := pr₁ p)
-    (e := idtoeqv p₁) :
-  (∀ y₁ y₂ : B, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)
-  → pr₁ (transp_sg p₁ ma) == pr₁ ma'.
-Proof.
-intros q; clear q.
-destruct p as (f, Hf); simpl.
-subst p₁; simpl.
-rewrite Hf.
-subst ma'; simpl.
-reflexivity.
-(* what? I didn't need q *)
-(*
-intros q.
-subst p₁; simpl.
-apply function_extensionality; intros y₁.
-apply function_extensionality; intros y₂.
-pose proof q y₁ y₂ as H.
-eapply compose; [ idtac | apply H ].
-unfold transp_sg; simpl.
-unfold isequiv_transport; simpl.
-destruct (pr₁ p); simpl.
-unfold id; simpl.
-simpl in H.
-unfold id in H.
-apply invert in H.
-eapply compose; [ idtac | apply H ].
-apply hap, hap, invert.
-subst ma; simpl.
-destruct p as (f, Hf); simpl.
-unfold transp_sg in Hf.
-rewrite Hf.
-subst ma'.
-reflexivity.
-*)
-Defined.
-*)
-
 Definition semigroupstr_path_type {A B} m a m' a'
     (ma := existT (Assoc A) m a)
     (ma' := existT (Assoc B) m' a')
@@ -3028,12 +2968,13 @@ apply eq_pair_dep_pair; [ idtac | intros q ].
   apply function_extensionality; intros y₁.
   apply function_extensionality; intros y₂.
   apply invert.
-  destruct (
+  unfold hap; simpl.
+bbb.
+  set (p :=
      function_extensionality A (λ _ : A, A → A) m m'
        (λ y₁0 : A,
         function_extensionality A (λ _ : A, A) (m y₁0) (m' y₁0) (f y₁0))).
-  unfold hap; simpl.
-  refine (match f y₁ y₂ with refl _ => _ end).
+  destruct p; simpl.
 bbb.
 
 simpl in p₂.
