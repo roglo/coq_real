@@ -2700,60 +2700,21 @@ Definition SemigroupStr_equiv {A B} :
 (* First, because SemigroupStr (X) is defined to be a Σ-type, by
    Theorem 2.7.4, *)
 
-Definition toto {A B} (e : A ≃ B) m a m' a'
-     (ma := existT (Assoc A) m a)
-     (ma' := existT (Assoc B) m' a') :
-  transport SemigroupStr (ua e) ma == ma'.
+Definition transport_semigroup {A B} (e : A ≃ B) m (a : Assoc A m) :
+  let m' : B → B → B := transport (λ X : U, X → X → X) (ua e) m in
+  let a' : Assoc B m' :=
+    transport (λ xu, Assoc (pr₁ xu) (pr₂ xu)) (pair⁼ (ua e) (refl m')) a
+  in
+  transport SemigroupStr (ua e) (existT _ m a) == existT _ m' a'.
 Proof.
-eapply compose.
- apply
-   (@hott_2_7_4 U (λ X, X → X → X) (λ xu, Assoc (pr₁ xu) (pr₂ xu)) A B (ua e)
-    m a).
+apply
+  (@hott_2_7_4 U (λ X, X → X → X) (λ xu, Assoc (pr₁ xu) (pr₂ xu)) A B (ua e)
+   m a).
+Defined.
 
- unfold pair_map; subst ma'; simpl.
+(* had formula 2.14.2 *)
+
 bbb.
-(* bon. Doc à relire... ça devrait le faire... *)
-
-Definition transport_semigroup_op_new {A B} (e : A ≃ B) m a m' a'
-    (ma := existT (Assoc A) m a) (ma' := existT (Assoc B) m' a')
-:
-  m' == transport (λ X : U, X → X → X) (ua e) m.
-Proof.
-pose proof @hott_2_7_4.
-Print tfam.
-vvv.
-
-destruct (ua e); reflexivity.
-Defined.
-
-Definition transport_semigroup_op {A B} (e : A ≃ B)
-    (ma : SemigroupStr A) (ma' := transport SemigroupStr (ua e) ma)
-    (m := pr₁ ma) (m' := pr₁ ma')
-:
-  m' == transport (λ X : U, X → X → X) (ua e) m.
-Proof.
-destruct (ua e); reflexivity.
-Defined.
-
-(* formula 2.14.2 *)
-
-Definition transport_semigroup_assoc {A B} (e : A ≃ B)
-    (ma : SemigroupStr A) (ma' := transport SemigroupStr (ua e) ma)
-    (a := pr₂ ma) (a' := pr₂ ma')
-:
-  a' ==
-    transport (λ Xm, Assoc (pr₁ Xm) (pr₂ Xm))
-      (pair⁼ (ua e) (transport_semigroup_op e ma)⁻¹) a.
-Proof.
-unfold transport_semigroup_op; simpl.
-destruct (ua e); reflexivity.
-Defined.
-
-Check @transport_semigroup_op.
-(* @transport_semigroup_op
-     : ∀ (A B : Type) (e : A ≃ B) (ma : SemigroupStr A)
-       (ma':=transport SemigroupStr (ua e) ma) (m:=pr₁ ma) 
-       (m':=pr₁ ma'), m' == transport (λ X : U, X → X → X) (ua e) m *)
 
 Check @Π_type.hott_2_9_4.
 (* @hott_2_9_4
