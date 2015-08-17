@@ -2957,13 +2957,17 @@ Proof.
 simpl in p₂.
 eapply equiv_compose; [ eapply hott_2_7_2 | idtac ].
 apply eq_pair_dep_pair; [ idtac | intros q ].
- destruct p as (p1, p2).
- simpl in p₁, p₂; subst p₁ p₂.
- rename p1 into p₁; rename p2 into p₂.
- destruct p₁, p₂; simpl.
- destruct e as (f, Hf); simpl.
- unfold id; simpl.
+ assert
+   ((pr₁ (transp_sg p₁ ma) == pr₁ ma')
+    → (∀ y₁ y₂ : B, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)) as f.
+  intros q y₁ y₂.
+  pose proof @transport_semigroup_op_def_2 A B e ma y₁ y₂ as H.
+  eapply invert, compose; [ clear H | apply H ].
+  destruct p as (f, p); simpl in *.
+  subst e; rewrite ua_idtoeqv.
+  destruct q; reflexivity.
 
+  apply (existT _ f).
 bbb.
 Axiom function_extensionality : ∀ A B (f g : ∀ x : A, B x),
   (∀ x, f x == g x) → f == g.
@@ -2980,7 +2984,7 @@ assert (p₁ == ua e) as Hp₁ by (apply invert, ua_idtoeqv).
 eapply equiv_compose.
  Check @semigroupstr_path_type.
  Check @semigroupstr_path_type A B m a m' a' e.
- apply semigroupstr_path_type.D
+ apply semigroupstr_path_type.
 Check @hott_2_7_2.
 Defined.
 
