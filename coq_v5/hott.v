@@ -2951,6 +2951,7 @@ Definition semigroupstr_path_type {A B} m a m' a'
   (Π (y₁ : B), Π (y₂ : B), pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)
   * (∀ b₁ b₂ b₃, m' (m' b₁ b₂) b₃ == m' b₁ (m' b₂ b₃)).
 Proof.
+bbb.
 assert (m' == λ y₁ y₂, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂))).
  apply function_extensionality; intros y₁.
  apply function_extensionality; intros y₂.
