@@ -1710,6 +1710,13 @@ Print unit_transport.
 
 (* 2.9 Π-types and the function extensionality axiom *)
 
+Definition hap {A B} {f g : A → B}
+  : f == g → Π (x : A), f x == g x
+  := λ p,
+     match p with
+     | refl _ => λ y, refl (f y)
+     end.
+
 Module Π_type.
 
 Definition happly {A B} {f g : Π (x : A), B x}
@@ -2941,7 +2948,37 @@ apply (existT _ g); split; unfold "◦", "~~", id.
  rewrite H₁, Hh₁; reflexivity.
 Defined.
 
-Check (pr₂ : Π (x : Semigroup), (_ ◦ pr₁) x).
+Definition pr₁_transp_eq {A B} m a m' a'
+    (ma := existT (Assoc A) m a)
+    (ma' := existT (Assoc B) m' a')
+    (p : Σ (p₁ : A == B), transp_sg p₁ ma == ma')
+    (p₁ := pr₁ p)
+    (e := idtoeqv p₁) :
+  pr₁ (transp_sg p₁ ma) == pr₁ ma'
+  → ∀ y₁ y₂ : B, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂.
+Proof.
+intros q y₁ y₂.
+pose proof @transport_semigroup_op_def_2 A B e ma y₁ y₂ as H.
+eapply invert, compose; [ clear H | apply H ].
+destruct p as (f, p); simpl in *.
+destruct q; simpl; subst e.
+apply hap, hap, ap, hap, ap, invert, ua_idtoeqv.
+Defined.
+
+Definition pr₁_transp_eq_inv {A B} m a m' a'
+    (ma := existT (Assoc A) m a)
+    (ma' := existT (Assoc B) m' a')
+    (p : Σ (p₁ : A == B), transp_sg p₁ ma == ma')
+    (p₁ := pr₁ p)
+    (e := idtoeqv p₁) :
+  (∀ y₁ y₂ : B, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)
+  → pr₁ (transp_sg p₁ ma) == pr₁ ma'.
+Proof.
+intros q.
+Check @transport_semigroup_op_def_2.
+pose proof semigroupstr_path_type_initial_version m a m' a' p as H.
+simpl in H.
+bbb.
 
 Definition semigroupstr_path_type {A B} m a m' a'
     (ma := existT (Assoc A) m a)
@@ -2957,17 +2994,9 @@ Proof.
 simpl in p₂.
 eapply equiv_compose; [ eapply hott_2_7_2 | idtac ].
 apply eq_pair_dep_pair; [ idtac | intros q ].
- assert
-   ((pr₁ (transp_sg p₁ ma) == pr₁ ma')
-    → (∀ y₁ y₂ : B, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)) as f.
-  intros q y₁ y₂.
-  pose proof @transport_semigroup_op_def_2 A B e ma y₁ y₂ as H.
-  eapply invert, compose; [ clear H | apply H ].
-  destruct p as (f, p); simpl in *.
-  subst e; rewrite ua_idtoeqv.
-  destruct q; reflexivity.
+ set (f := pr₁_transp_eq m a m' a' p).
+ eapply (existT _ f).
 
-  apply (existT _ f).
 bbb.
 Axiom function_extensionality : ∀ A B (f g : ∀ x : A, B x),
   (∀ x, f x == g x) → f == g.
