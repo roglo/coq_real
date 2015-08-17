@@ -2705,31 +2705,39 @@ Definition SemigroupStr_equiv {A B} :
 :=
   ap_equiv SemigroupStr.
 
-(* works but perhaps not required...
-Definition transport_semigroup_def {A B} (e : A ≃ B)
-    (ma : SemigroupStr A) (m := pr₁ ma) (a := pr₂ ma : Assoc A m)
-    (ma' := transport SemigroupStr (ua e) ma)
-    (m' := pr₁ ma') (a' := pr₂ ma' : Assoc B m')
+Definition toto {A B} (e : A ≃ B) m a m' a'
+    (ma := existT (Assoc A) m a) (ma' := existT (Assoc B) m' a')
 :
-   ma' ==
-   @pair_map _ (λ X, X → X → X) (λ tm, Assoc (pr₁ tm) (pr₂ tm)) _
-     ((ua e)⁎ m) ((pair⁼ (ua e) (refl ((ua e)⁎ m)))⁎ a).
+  transport SemigroupStr (ua e) ma == ma'.
 Proof.
-assert (
-  transport (tfam (λ X : Type, X → X → X) (λ tm, Assoc (pr₁ tm) (pr₂ tm)))
-    (ua e)
-    (@pair_map Type (λ X, X → X → X) (λ am, Assoc (pr₁ am) (pr₂ am)) A m a) ==
-  pair_map (transport (λ X : Type, X → X → X) (ua e) m)
-    (transport (λ tm : {x : Type & x → x → x}, Assoc (pr₁ tm) (pr₂ tm))
-       (pair⁼ (ua e)
-          (refl (transport (λ X : Type, X → X → X) (ua e) m))) a)) as H.
- eapply compose; [ apply hott_2_7_4 | reflexivity ].
+pose proof @hott_2_7_4.
+Print tfam.
+(* tfam = 
+λ (A : Type) (P : A → Type) (Q : {x : A & P x} → U) 
+(x : A), {u : P x & Q (existT P x u)}
+     : ∀ (A : Type) (P : A → Type), ({x : A & P x} → U) → A → Type *)
+pose proof @tfam Type.
+Print SemigroupStr.
+bbb.
+(* bon, ça va pas du tout, ça. Comment faire que tfam P Q = SemigroupStr ?
+   ça a pas l'air possible ! Aurais-je une mauvaise définition de 2.7.4 ? *)
 
-eapply compose; [ idtac | eapply H ].
-subst ma' m a; simpl.
-destruct ma; reflexivity.
+tfam P Q = SemigroupStr
+p = ua e
+
+bbb.
+
+Definition transport_semigroup_op_new {A B} (e : A ≃ B) m a m' a'
+    (ma := existT (Assoc A) m a) (ma' := existT (Assoc B) m' a')
+:
+  m' == transport (λ X : U, X → X → X) (ua e) m.
+Proof.
+pose proof @hott_2_7_4.
+Print tfam.
+vvv.
+
+destruct (ua e); reflexivity.
 Defined.
-*)
 
 Definition transport_semigroup_op {A B} (e : A ≃ B)
     (ma : SemigroupStr A) (ma' := transport SemigroupStr (ua e) ma)
@@ -2754,12 +2762,41 @@ unfold transport_semigroup_op; simpl.
 destruct (ua e); reflexivity.
 Defined.
 
+Check @transport_semigroup_op.
+(* @transport_semigroup_op
+     : ∀ (A B : Type) (e : A ≃ B) (ma : SemigroupStr A)
+       (ma':=transport SemigroupStr (ua e) ma) (m:=pr₁ ma) 
+       (m':=pr₁ ma'), m' == transport (λ X : U, X → X → X) (ua e) m *)
+
 Check @Π_type.hott_2_9_4.
 (* @hott_2_9_4
      : ∀ (X : Type) (A B : X → Type) (x y : X) (p : x == y)
        (f : A x → B x),
        transport (λ x0 : X, A x0 → B x0) p f ==
        (λ a : A y, transport B p (f (transport A p⁻¹ a))) *)
+
+Definition transport_semigroup_op_def_new {A B} (e : A ≃ B) m a m' a'
+    (ma := existT (Assoc A) m a) (ma' := existT (Assoc B) m' a') b₁ b₂ :
+  m' b₁ b₂ ==
+    transport id (ua e)
+      (m (transport id (ua e)⁻¹ b₁) (transport id (ua e)⁻¹ b₂)).
+Proof.
+pose proof @Π_type.hott_2_9_4.
+bbb.
+
+pose proof @Π_type.hott_2_9_4 U id id A A (refl A) id.
+apply invert.
+destruct (ua e).
+simpl.
+bbb.
+
+
+
+bbb.
+eapply compose.
+ pose proof @Π_type.hott_2_9_4.
+
+bbb.
 
 (* they pretend we need 2.9.4 (twice) to prove that, but it works
    with a simple induction on (ua e) *)
@@ -2896,19 +2933,6 @@ Check (pr₂ : Π (x : Semigroup), (_ ◦ pr₁) x).
 
 (* equality in semigroup str *)
 
-Definition transp_sg {A B} := @transport U SemigroupStr A B.
-
-Definition semigroupstr_path_type_initial_version {A B} m a m' a'
-    (ma := existT (Assoc A) m a)
-    (ma' := existT (Assoc B) m' a')
-    (p₁ : A == B) :
-  (transp_sg p₁ ma == ma')
-   ≃ {p : pr₁ (transp_sg p₁ ma) == m' &
-      transport (Assoc B) p (pr₂ (transp_sg p₁ ma)) == a'}.
-Proof.
-apply hott_2_7_2.
-Defined.
-
 Theorem eq_pair_dep_pair : ∀ A B C D,
   (A ≃ C)
   → (∀ (a : A), B a ≃ D)
@@ -2942,6 +2966,19 @@ apply (existT _ g); split; unfold "◦", "~~", id.
  rewrite H₁, Hh₁; reflexivity.
 Defined.
 
+Definition transp_sg {A B} := @transport U SemigroupStr A B.
+
+Definition semigroupstr_path_type_initial_version {A B} m a m' a'
+    (ma := existT (Assoc A) m a)
+    (ma' := existT (Assoc B) m' a')
+    (p₁ : A == B) :
+  (transp_sg p₁ ma == ma')
+   ≃ {p : pr₁ (transp_sg p₁ ma) == m' &
+      transport (Assoc B) p (pr₂ (transp_sg p₁ ma)) == a'}.
+Proof.
+apply hott_2_7_2.
+Defined.
+
 Definition semigroupstr_path_type {A B} m a m' a'
     (ma := existT (Assoc A) m a)
     (ma' := existT (Assoc B) m' a')
@@ -2951,6 +2988,16 @@ Definition semigroupstr_path_type {A B} m a m' a'
   (Π (y₁ : B), Π (y₂ : B), pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)
   * (∀ b₁ b₂ b₃, m' (m' b₁ b₂) b₃ == m' b₁ (m' b₂ b₃)).
 Proof.
+eapply equiv_compose; [ eapply hott_2_7_2 | idtac ].
+apply eq_pair_dep_pair; [ idtac | intros q ].
+
+Check @transport_semigroup_op_def_2.
+(* @transport_semigroup_op_def_2
+     : ∀ (A B : Type) (e : A ≃ B) (ma : SemigroupStr A)
+       (ma':=transport SemigroupStr (ua e) ma) (m:=pr₁ ma) 
+       (m':=pr₁ ma') (b₁ b₂ : B),
+       m' b₁ b₂ == pr₁ e (m (pr₁ e⁻⁻¹ b₁) (pr₁ e⁻⁻¹ b₂)) *)
+
 bbb.
 assert (m' == λ y₁ y₂, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂))).
  apply function_extensionality; intros y₁.
@@ -2966,8 +3013,6 @@ bbb.
  subst ma ma' e; simpl.
  rewrite ua_idtoeqv; simpl.
 
-eapply equiv_compose; [ eapply hott_2_7_2 | idtac ].
-apply eq_pair_dep_pair; [ idtac | intros q ].
 bbb.
 
 bbb.
