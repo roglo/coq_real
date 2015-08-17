@@ -2956,12 +2956,10 @@ assert (m' == λ y₁ y₂, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y
  apply function_extensionality; intros y₂.
  eapply compose; [ idtac | apply (transport_semigroup_op_def_2 e ma) ].
  eapply hap, hap.
-assert (m' == pr₁ ma').
-subst ma'; reflexivity.
-rewrite H.
-subst ma ma'.
-apply ap.
-
+ assert (m' == pr₁ ma') as H1 by reflexivity.
+ assert (m == pr₁ ma) as H2 by reflexivity.
+ subst ma ma'.
+ destruct p₁; simpl.
 bbb.
 
  subst ma ma' e; simpl.
