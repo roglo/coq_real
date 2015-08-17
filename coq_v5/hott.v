@@ -3019,23 +3019,21 @@ apply eq_pair_dep_pair; [ idtac | intros q ].
  subst ma ma'; simpl.
  set (f (p : m == m') y₁ y₂ := hap (hap p y₁) y₂).
  apply (existT _ f), qinv_isequiv.
- assert ((∀ y₁ y₂ : A, m y₁ y₂ == m' y₁ y₂) → (m == m')) as g.
-  intros H.
+ set
+   (g p :=
+      function_extensionality _ _ m m'
+        (λ y₁, function_extensionality _ _ (m y₁) (m' y₁) (p y₁))).
+ apply (existT _ g); simpl.
+ subst f g; unfold "◦", id; simpl; split; intros f.
   apply function_extensionality; intros y₁.
   apply function_extensionality; intros y₂.
-  apply H.
-  
-  apply (existT _ g); simpl.
-  subst g.
-bbb.
-(* faire une version avec le code de g *)
-
-subst p₁; simpl.
-destruct p as (f, Hf); simpl.
-rewrite Hf.
-(* ouais, bon, ça va pas, le premier type est refl !
-   y a quequ'chose qui cloche là-d'dans,
-   j'y retourne immédiatement *)
+  apply invert.
+  destruct (
+     function_extensionality A (λ _ : A, A → A) m m'
+       (λ y₁0 : A,
+        function_extensionality A (λ _ : A, A) (m y₁0) (m' y₁0) (f y₁0))).
+  unfold hap; simpl.
+  refine (match f y₁ y₂ with refl _ => _ end).
 bbb.
 
 simpl in p₂.
