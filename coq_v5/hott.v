@@ -3011,7 +3011,7 @@ assert
    eapply compose; [ idtac | apply Hm ].
    destruct e as (f, ((g, Hg), (h, Hh))); simpl; simpl in Hm.
    pose proof quasi_inv_l_eq_r f g h Hg Hh as H.
-   unfold "◦", "~~", id in H.
+   unfold "◦", "~~", id in Hg, Hh, H.
 bbb.
 
    apply (existT _ f).
