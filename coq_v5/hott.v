@@ -2811,65 +2811,40 @@ Defined.
   (see (2.14.2)) is equal to a function sending b1, b2, b3 : B to a
   path given by the following steps: *)
 
-Definition hott_2_14_3 {A B} (e : A ≃ B) m (a : Assoc A m) b₁ b₂ b₃ :
+Definition hott_2_14_3_tac {A B} (e : A ≃ B) m (a : Assoc A m) b₁ b₂ b₃ :
   let m' : B → B → B := transport (λ X : U, X → X → X) (ua e) m in
   m' (m' b₁ b₂) b₃ == m' b₁ (m' b₂ b₃).
 Proof.
-simpl.
-set (m' := transport (λ X : U, X → X → X) (ua e) m).
+simpl; set (m' := transport (λ X : U, X → X → X) (ua e) m).
 eapply compose; [ apply transport_op | idtac ].
 eapply compose; [ eapply ap, hap, ap, ap, transport_op | idtac ].
-pose proof (quasi_inv_comp_l e) as Hx.
-set (E := pr₁ e) in *; set (E₁ := pr₁ e⁻⁻¹) in *.
-unfold "◦", "~~", id in Hx.
-bbb.
-
-rewrite Hx.
-set (u := m (pr₁ e⁻⁻¹ b₁) (pr₁ e⁻⁻¹ b₂)).
-pose proof Hx u as Hu.
-rewrite <- Hu; clear Hu; subst u.
-rewrite <- (transport_op e m b₁ b₂).
-set (ma := existT _ m a).
-set (ma' := transport SemigroupStr (ua e) ma).
-eapply invert, compose; [ idtac | apply transport_op ].
-set (m' := transport (λ X : U, X → X → X) (ua e) m).
-(* bordel *)
-bbb.
-
-pose proof transport_op e m b₁ (pr₁ ma' b₂ b₃) as H1.
-subst ma'; simpl in H1.
-apply invert.
-eapply compose; [ eapply H1 | ].
-
-set (ma' := transport SemigroupStr (ua e) ma).
-pose proof transport_semigroup_op_def_2 e ma b₁ (Σ_pr₁ ma' b₂ b₃) as H1.
-subst ma'; set (ma' := transport SemigroupStr (ua e) ma) in *.
-apply invert, H1.
+eapply compose; [ eapply ap, hap, ap, quasi_inv_comp_l | unfold id ].
+eapply compose; [ eapply ap, invert, a | idtac ].
+eapply compose; [ eapply ap, ap, invert, (quasi_inv_comp_l e) | unfold "◦" ].
+eapply compose; [ eapply ap, ap, ap, invert, transport_op | idtac ].
+eapply compose; [ eapply invert, transport_op | reflexivity ].
 Defined.
 
-Definition hott_2_14_3 {A B} (e : A ≃ B)
-    (ma : SemigroupStr A) (ma' := transport SemigroupStr (ua e) ma)
-    (m := pr₁ ma) (m' := pr₁ ma') (a := pr₂ ma) (a' := pr₂ ma') b₁ b₂ b₃ :
-  m' (m' b₁ b₂) b₃ == m' b₁ (m' b₂ b₃).
-Proof.
-subst ma' m m' a a'.
-eapply compose; [ apply transport_semigroup_op_def_2 | idtac ].
-rewrite transport_semigroup_op_def_2.
-pose proof (quasi_inv_comp_l e) as Hx.
-unfold "◦", id in Hx.
-rewrite Hx, <- (pr₂ ma).
-set (u := Σ_pr₁ ma (pr₁ e⁻⁻¹ b₂) (pr₁ e⁻⁻¹ b₃)).
-pose proof Hx u as Hu.
-rewrite <- Hu; clear Hu; subst u.
-pose proof transport_semigroup_op_def_2 e ma b₂ b₃ as H.
-unfold pr₁ in H; unfold pr₁.
-set (u := Σ_pr₁ e (Σ_pr₁ ma (Σ_pr₁ e⁻⁻¹ b₂) (Σ_pr₁ e⁻⁻¹ b₃))) in *.
-rewrite <- H.
-set (ma' := transport SemigroupStr (ua e) ma).
-pose proof transport_semigroup_op_def_2 e ma b₁ (Σ_pr₁ ma' b₂ b₃) as H1.
-subst ma'; set (ma' := transport SemigroupStr (ua e) ma) in *.
-apply invert, H1.
-Defined.
+Definition hott_2_14_3 {A B} (e : A ≃ B) m (a : Assoc A m) b₁ b₂ b₃ :
+  let m' : B → B → B := transport (λ X : U, X → X → X) (ua e) m in
+  m' (m' b₁ b₂) b₃ == m' b₁ (m' b₂ b₃)
+:=
+  let m' : B → B → B := transport (λ X : U, X → X → X) (ua e) m in
+  transport_op e m (m' b₁ b₂) b₃
+  • ap (pr₁ e)
+      (hap (ap m (ap (pr₁ e⁻⁻¹) (transport_op e m b₁ b₂))) (pr₁ e⁻⁻¹ b₃))
+  • ap (pr₁ e)
+      (hap (ap m (quasi_inv_comp_l e (m (pr₁ e⁻⁻¹ b₁) (pr₁ e⁻⁻¹ b₂))))
+         (pr₁ e⁻⁻¹ b₃))
+  • ap (pr₁ e) (a (pr₁ e⁻⁻¹ b₁) (pr₁ e⁻⁻¹ b₂) (pr₁ e⁻⁻¹ b₃))⁻¹
+  • ap (pr₁ e)
+      (ap (m (pr₁ e⁻⁻¹ b₁))
+         (quasi_inv_comp_l e (m (pr₁ e⁻⁻¹ b₂) (pr₁ e⁻⁻¹ b₃)))⁻¹)
+  • ap (pr₁ e)
+      (ap (m (pr₁ e⁻⁻¹ b₁)) (ap (pr₁ e⁻⁻¹) (transport_op e m b₂ b₃)⁻¹))
+  • (transport_op e m b₁ (transport (λ X : U, X → X → X) (ua e) m b₂ b₃))⁻¹.
+
+bbb.
 
 (* 2.14.2 Equality of semigroups *)
 
