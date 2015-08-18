@@ -2714,53 +2714,37 @@ Defined.
 
 (* had formula 2.14.2 *)
 
-bbb.
+(* By applying (2.9.4) twice, we have that m'(b1, b2) is equal to *)
 
-Check @Π_type.hott_2_9_4.
-(* @hott_2_9_4
-     : ∀ (X : Type) (A B : X → Type) (x y : X) (p : x == y)
-       (f : A x → B x),
-       transport (λ x0 : X, A x0 → B x0) p f ==
-       (λ a : A y, transport B p (f (transport A p⁻¹ a))) *)
-
-Definition transport_semigroup_op_def_new {A B} (e : A ≃ B) m a m' a'
-    (ma := existT (Assoc A) m a) (ma' := existT (Assoc B) m' a') b₁ b₂ :
-  m' b₁ b₂ ==
-    transport id (ua e)
-      (m (transport id (ua e)⁻¹ b₁) (transport id (ua e)⁻¹ b₂)).
-Proof.
-pose proof @Π_type.hott_2_9_4.
-bbb.
-
-pose proof @Π_type.hott_2_9_4 U id id A A (refl A) id.
-apply invert.
-destruct (ua e).
-simpl.
-bbb.
-
-
-
-bbb.
-eapply compose.
- pose proof @Π_type.hott_2_9_4.
-
-bbb.
-
-(* they pretend we need 2.9.4 (twice) to prove that, but it works
-   with a simple induction on (ua e) *)
-
-Definition transport_semigroup_op_def {A B} (e : A ≃ B)
-    (ma : SemigroupStr A) (ma' := transport SemigroupStr (ua e) ma)
-    (m := pr₁ ma) (m' := pr₁ ma')
-    (a := pr₂ ma) (a' := pr₂ ma')
-    b₁ b₂ :
+Definition transport_semigroup_op_tac {A B} (e : A ≃ B) m b₁ b₂ :
+  let m' : B → B → B := transport (λ X : U, X → X → X) (ua e) m in
   m' b₁ b₂ ==
    transport id (ua e)
      (m (transport id (ua e)⁻¹ b₁) (transport id (ua e)⁻¹ b₂)).
 Proof.
-subst m m' a a' ma'; simpl.
-destruct (ua e); reflexivity.
+eapply compose.
+ eapply hap, hap.
+ apply (@Π_type.hott_2_9_4 U id (λ X, X → X) A B (ua e) m).
+
+ apply
+   (hap
+      (@Π_type.hott_2_9_4 U id id A B (ua e) (m (transport id (ua e)⁻¹ b₁)))).
 Defined.
+
+Definition transport_semigroup_op {A B} (e : A ≃ B) m b₁ b₂ :
+  let m' : B → B → B := transport (λ X : U, X → X → X) (ua e) m in
+  m' b₁ b₂ ==
+   transport id (ua e)
+     (m (transport id (ua e)⁻¹ b₁) (transport id (ua e)⁻¹ b₂))
+:=
+  hap
+    (hap (@Π_type.hott_2_9_4 U id (λ X : U, X → X) A B (ua e) m) b₁)
+    b₂
+  • hap
+      (@Π_type.hott_2_9_4 U id id A B (ua e) (m (transport id (ua e)⁻¹ b₁)))
+      b₂.
+
+bbb.
 
 Definition transport_semigroup_op_def_2_tac {A B} (e : A ≃ B)
     (ma : SemigroupStr A) (ma' := transport SemigroupStr (ua e) ma)
