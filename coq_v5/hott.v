@@ -2717,7 +2717,7 @@ Defined.
 (* By applying (2.9.4) twice, we have that m'(b1, b2) is equal to *)
 (* (personal remark: provable also with "destruct (ua e)") *)
 
-Definition transport_op_tac {A B} (e : A ≃ B) m b₁ b₂ :
+Definition transport_op_1_tac {A B} (e : A ≃ B) m b₁ b₂ :
   let m' : B → B → B := transport (λ X : U, X → X → X) (ua e) m in
   m' b₁ b₂ ==
    transport id (ua e)
@@ -2732,7 +2732,7 @@ eapply compose.
       (@Π_type.hott_2_9_4 U id id A B (ua e) (m (transport id (ua e)⁻¹ b₁)))).
 Defined.
 
-Definition transport_op {A B} (e : A ≃ B) m b₁ b₂ :
+Definition transport_op_1 {A B} (e : A ≃ B) m b₁ b₂ :
   let m' : B → B → B := transport (λ X : U, X → X → X) (ua e) m in
   m' b₁ b₂ ==
    transport id (ua e)
@@ -2745,32 +2745,31 @@ Definition transport_op {A B} (e : A ≃ B) m b₁ b₂ :
       (@Π_type.hott_2_9_4 U id id A B (ua e) (m (transport id (ua e)⁻¹ b₁)))
       b₂.
 
-bbb.
+(* Then, because ua is quasi-inverse to transport^(X→X), this is equal to *)
 
-Definition transport_semigroup_op_def_2_tac {A B} (e : A ≃ B)
-    (ma : SemigroupStr A) (ma' := transport SemigroupStr (ua e) ma)
-    (m := pr₁ ma) (m' := pr₁ ma')
-    b₁ b₂ :
+Definition transport_op_tac {A B} (e : A ≃ B) m b₁ b₂ :
+  let m' : B → B → B := transport (λ X : U, X → X → X) (ua e) m in
   m' b₁ b₂ == pr₁ e (m (pr₁ e⁻⁻¹ b₁) (pr₁ e⁻⁻¹ b₂)).
 Proof.
-eapply compose; [ eapply transport_semigroup_op_def | idtac ].
+eapply compose; [ eapply transport_op_1 | idtac ].
 eapply compose; [ apply ua_pcr | apply ap ].
 eapply compose; [ apply ap2, ua_pcr_inv | idtac ].
 eapply compose; [ eapply ap, ua_pcr_inv | idtac ].
 reflexivity.
 Defined.
 
-Definition transport_semigroup_op_def_2 {A B} (e : A ≃ B)
-    (ma : SemigroupStr A) (ma' := transport SemigroupStr (ua e) ma)
-    (m := pr₁ ma) (m' := pr₁ ma') b₁ b₂ :
+Definition transport_op {A B} (e : A ≃ B) m b₁ b₂ :
+  let m' : B → B → B := transport (λ X : U, X → X → X) (ua e) m in
   m' b₁ b₂ == pr₁ e (m (pr₁ e⁻⁻¹ b₁) (pr₁ e⁻⁻¹ b₂))
 :=
-  transport_semigroup_op_def e ma b₁ b₂
-  • ua_pcr e (pr₁ ma (transport id (ua e)⁻¹ b₁) (transport id (ua e)⁻¹ b₂))
+  transport_op_1 e m b₁ b₂
+  • ua_pcr e (m (transport id (ua e)⁻¹ b₁) (transport id (ua e)⁻¹ b₂))
   • ap (pr₁ e)
       (ap2 (transport id (ua e)⁻¹ b₁) (projT1 e⁻⁻¹ b₁)
-         (transport id (ua e)⁻¹ b₂) (pr₁ ma) (ua_pcr_inv e b₁)
-       • ap (pr₁ ma (projT1 e⁻⁻¹ b₁)) (ua_pcr_inv e b₂)).
+         (transport id (ua e)⁻¹ b₂) m (ua_pcr_inv e b₁)
+       • (ap (m (projT1 e⁻⁻¹ b₁)) (ua_pcr_inv e b₂))).
+
+(* misc theorems *)
 
 Definition quasi_inv_l_eq_r_tac {A B} (f : A → B) (g h : B → A) :
   f ◦ g ~~ id
@@ -2808,7 +2807,45 @@ destruct e as (f, ((g, Hg), (h, Hh))); simpl.
 apply Hg.
 Defined.
 
-Check @transport_semigroup_assoc.
+(* one can calculate that the induced proof that m' is associative
+  (see (2.14.2)) is equal to a function sending b1, b2, b3 : B to a
+  path given by the following steps: *)
+
+Definition hott_2_14_3 {A B} (e : A ≃ B) m (a : Assoc A m) b₁ b₂ b₃ :
+  let m' : B → B → B := transport (λ X : U, X → X → X) (ua e) m in
+  m' (m' b₁ b₂) b₃ == m' b₁ (m' b₂ b₃).
+Proof.
+simpl.
+set (m' := transport (λ X : U, X → X → X) (ua e) m).
+eapply compose; [ apply transport_op | idtac ].
+eapply compose; [ eapply ap, hap, ap, ap, transport_op | idtac ].
+pose proof (quasi_inv_comp_l e) as Hx.
+set (E := pr₁ e) in *; set (E₁ := pr₁ e⁻⁻¹) in *.
+unfold "◦", "~~", id in Hx.
+bbb.
+
+rewrite Hx.
+set (u := m (pr₁ e⁻⁻¹ b₁) (pr₁ e⁻⁻¹ b₂)).
+pose proof Hx u as Hu.
+rewrite <- Hu; clear Hu; subst u.
+rewrite <- (transport_op e m b₁ b₂).
+set (ma := existT _ m a).
+set (ma' := transport SemigroupStr (ua e) ma).
+eapply invert, compose; [ idtac | apply transport_op ].
+set (m' := transport (λ X : U, X → X → X) (ua e) m).
+(* bordel *)
+bbb.
+
+pose proof transport_op e m b₁ (pr₁ ma' b₂ b₃) as H1.
+subst ma'; simpl in H1.
+apply invert.
+eapply compose; [ eapply H1 | ].
+
+set (ma' := transport SemigroupStr (ua e) ma).
+pose proof transport_semigroup_op_def_2 e ma b₁ (Σ_pr₁ ma' b₂ b₃) as H1.
+subst ma'; set (ma' := transport SemigroupStr (ua e) ma) in *.
+apply invert, H1.
+Defined.
 
 Definition hott_2_14_3 {A B} (e : A ≃ B)
     (ma : SemigroupStr A) (ma' := transport SemigroupStr (ua e) ma)
