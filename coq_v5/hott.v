@@ -2842,7 +2842,7 @@ Definition hott_2_14_3 {A B} (e : A ≃ B) m (a : Assoc A m) b₁ b₂ b₃ :
          (quasi_inv_comp_l e (m (pr₁ e⁻⁻¹ b₂) (pr₁ e⁻⁻¹ b₃)))⁻¹)
   • ap (pr₁ e)
       (ap (m (pr₁ e⁻⁻¹ b₁)) (ap (pr₁ e⁻⁻¹) (transport_op e m b₂ b₃)⁻¹))
-  • (transport_op e m b₁ (transport (λ X : U, X → X → X) (ua e) m b₂ b₃))⁻¹.
+  • (transport_op e m b₁ (m' b₂ b₃))⁻¹.
 
 bbb.
 
