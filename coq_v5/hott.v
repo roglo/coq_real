@@ -2933,14 +2933,10 @@ Definition semigroupstr_path_type {A B} m a m' a'
 Proof.
 eapply equiv_compose; [ eapply hott_2_7_2 | idtac ].
 apply eq_pair_dep_pair; [ idtac | intros q ].
-
-bbb.
-
-Check @transport_semigroup_op_def_2.
-(* @transport_semigroup_op_def_2
-     : ∀ (A B : Type) (e : A ≃ B) (ma : SemigroupStr A)
-       (ma':=transport SemigroupStr (ua e) ma) (m:=pr₁ ma) 
-       (m':=pr₁ ma') (b₁ b₂ : B),
+Check @transport_op.
+(* @transport_op
+     : ∀ (A B : Type) (e : A ≃ B) (m : A → A → A) 
+       (b₁ b₂ : B) (m':=transport (λ X : U, X → X → X) (ua e) m),
        m' b₁ b₂ == pr₁ e (m (pr₁ e⁻⁻¹ b₁) (pr₁ e⁻⁻¹ b₂)) *)
 
 bbb.
