@@ -2938,17 +2938,19 @@ Check @transport_op.
      : ∀ (A B : Type) (e : A ≃ B) (m : A → A → A) 
        (b₁ b₂ : B) (m':=transport (λ X : U, X → X → X) (ua e) m),
        m' b₁ b₂ == pr₁ e (m (pr₁ e⁻⁻¹ b₁) (pr₁ e⁻⁻¹ b₂)) *)
-
-bbb.
 assert (m' == λ y₁ y₂, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂))).
  apply function_extensionality; intros y₁.
  apply function_extensionality; intros y₂.
- eapply compose; [ idtac | apply (transport_semigroup_op_def_2 e ma) ].
+ eapply compose; [ idtac | apply (transport_op e) ].
  eapply hap, hap.
  assert (m' == pr₁ ma') as H1 by reflexivity.
  assert (m == pr₁ ma) as H2 by reflexivity.
  subst ma ma'.
+ destruct H1, H2.
  destruct p₁; simpl.
+ subst e; simpl.
+ rewrite ua_idtoeqv; simpl.
+(* bordel *)
 bbb.
 
  subst ma ma' e; simpl.
