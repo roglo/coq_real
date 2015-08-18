@@ -2909,15 +2909,13 @@ apply (existT _ g); split; unfold "◦", "~~", id.
  rewrite H₁, Hh₁; reflexivity.
 Defined.
 
-Definition transp_sg {A B} := @transport U SemigroupStr A B.
-
 Definition semigroupstr_path_type_initial_version {A B} m a m' a'
     (ma := existT (Assoc A) m a)
     (ma' := existT (Assoc B) m' a')
     (p₁ : A == B) :
-  (transp_sg p₁ ma == ma')
-   ≃ {p : pr₁ (transp_sg p₁ ma) == m' &
-      transport (Assoc B) p (pr₂ (transp_sg p₁ ma)) == a'}.
+  (transport SemigroupStr p₁ ma == ma')
+   ≃ {p : pr₁ (transport SemigroupStr p₁ ma) == m' &
+      transport (Assoc B) p (pr₂ (transport SemigroupStr p₁ ma)) == a'}.
 Proof.
 apply hott_2_7_2.
 Defined.
@@ -3005,13 +3003,13 @@ assert
   intros (Hm, Ha); clear f.
   subst ma ma'; simpl.
   assert (pr₁ (transport SemigroupStr p₁ (existT (Assoc A) m a)) == m') as f.
-   destruct p₁; simpl.
    apply function_extensionality; intros y₁.
    apply function_extensionality; intros y₂.
    eapply compose; [ idtac | apply Hm ].
    destruct e as (f, ((g, Hg), (h, Hh))); simpl; simpl in Hm.
    pose proof quasi_inv_l_eq_r f g h Hg Hh as H.
    unfold "◦", "~~", id in Hg, Hh, H.
+   destruct p₁; simpl.
 bbb.
 
    apply (existT _ f).
