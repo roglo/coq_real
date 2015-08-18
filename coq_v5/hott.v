@@ -2715,6 +2715,7 @@ Defined.
 (* had formula 2.14.2 *)
 
 (* By applying (2.9.4) twice, we have that m'(b1, b2) is equal to *)
+(* (personal remark: provable also with "destruct (ua e)") *)
 
 Definition transport_semigroup_op_tac {A B} (e : A ≃ B) m b₁ b₂ :
   let m' : B → B → B := transport (λ X : U, X → X → X) (ua e) m in
