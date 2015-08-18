@@ -2844,8 +2844,6 @@ Definition hott_2_14_3 {A B} (e : A ≃ B) m (a : Assoc A m) b₁ b₂ b₃ :
       (ap (m (pr₁ e⁻⁻¹ b₁)) (ap (pr₁ e⁻⁻¹) (transport_op e m b₂ b₃)⁻¹))
   • (transport_op e m b₁ (m' b₂ b₃))⁻¹.
 
-bbb.
-
 (* 2.14.2 Equality of semigroups *)
 
 Definition semigroup_path_type {A B} m a m' a' :
@@ -2935,6 +2933,8 @@ Definition semigroupstr_path_type {A B} m a m' a'
 Proof.
 eapply equiv_compose; [ eapply hott_2_7_2 | idtac ].
 apply eq_pair_dep_pair; [ idtac | intros q ].
+
+bbb.
 
 Check @transport_semigroup_op_def_2.
 (* @transport_semigroup_op_def_2
