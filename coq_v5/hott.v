@@ -2980,6 +2980,33 @@ Definition semigroupstr_path_type {A B} m a m' a'
   * (∀ b₁ b₂ b₃, m' (m' b₁ b₂) b₃ == m' b₁ (m' b₂ b₃)).
 Proof.
 eapply equiv_compose; [ eapply hott_2_7_2 | idtac ].
+assert
+  ({p : pr₁ (transport SemigroupStr p₁ ma) == pr₁ ma' &
+   transport (Assoc B) p (pr₂ (transport SemigroupStr p₁ ma)) == pr₂ ma'}
+   → (∀ y₁ y₂ : B, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂) *
+     (∀ b₁ b₂ b₃ : B, m' (m' b₁ b₂) b₃ == m' b₁ (m' b₂ b₃))) as f.
+ intros (p, q).
+ split; [ idtac | intros; apply invert, a' ].
+ intros y₁ y₂.
+ eapply invert, compose; [ idtac | apply transport_op ].
+ apply hap, hap.
+ subst ma ma'; simpl in p, q.
+ eapply invert, compose; [ idtac | apply p ].
+ subst e; destruct p₁; simpl.
+ rewrite ua_idtoeqv; reflexivity.
+
+ apply (existT _ f), qinv_isequiv.
+ assert
+   ((∀ y₁ y₂ : B, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂) *
+    (∀ b₁ b₂ b₃ : B, m' (m' b₁ b₂) b₃ == m' b₁ (m' b₂ b₃))
+   → {p : pr₁ (transport SemigroupStr p₁ ma) == pr₁ ma' &
+     transport (Assoc B) p (pr₂ (transport SemigroupStr p₁ ma)) == pr₂ ma'})
+   as g.
+  intros (Hm, Ha); clear f.
+  subst ma ma'; simpl.
+
+bbb.
+eapply equiv_compose; [ eapply hott_2_7_2 | idtac ].
 apply eq_pair_dep_pair; [ idtac | intros q ].
 apply (existT _ (semigroup_path_fun m a m' a' p₁)).
 assert
