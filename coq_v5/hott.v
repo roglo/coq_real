@@ -3004,6 +3004,17 @@ assert
    as g.
   intros (Hm, Ha); clear f.
   subst ma ma'; simpl.
+  assert (pr₁ (transport SemigroupStr p₁ (existT (Assoc A) m a)) == m') as f.
+   destruct p₁; simpl.
+   apply function_extensionality; intros y₁.
+   apply function_extensionality; intros y₂.
+   eapply compose; [ idtac | apply Hm ].
+   destruct e as (f, ((g, Hg), (h, Hh))); simpl; simpl in Hm.
+   pose proof quasi_inv_l_eq_r f g h Hg Hh as H.
+   unfold "◦", "~~", id in H.
+bbb.
+
+   apply (existT _ f).
 
 bbb.
 eapply equiv_compose; [ eapply hott_2_7_2 | idtac ].
