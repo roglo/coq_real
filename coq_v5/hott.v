@@ -2717,7 +2717,7 @@ Defined.
 (* By applying (2.9.4) twice, we have that m'(b1, b2) is equal to *)
 (* (personal remark: provable also with "destruct (ua e)") *)
 
-Definition transport_semigroup_op_tac {A B} (e : A ≃ B) m b₁ b₂ :
+Definition transport_op_tac {A B} (e : A ≃ B) m b₁ b₂ :
   let m' : B → B → B := transport (λ X : U, X → X → X) (ua e) m in
   m' b₁ b₂ ==
    transport id (ua e)
@@ -2732,7 +2732,7 @@ eapply compose.
       (@Π_type.hott_2_9_4 U id id A B (ua e) (m (transport id (ua e)⁻¹ b₁)))).
 Defined.
 
-Definition transport_semigroup_op {A B} (e : A ≃ B) m b₁ b₂ :
+Definition transport_op {A B} (e : A ≃ B) m b₁ b₂ :
   let m' : B → B → B := transport (λ X : U, X → X → X) (ua e) m in
   m' b₁ b₂ ==
    transport id (ua e)
