@@ -2922,90 +2922,71 @@ Proof.
 apply hott_2_7_2.
 Defined.
 
+Definition semigroup_path_fun_tac {A B} m a m' a'
+    (ma := existT (Assoc A) m a)
+    (ma' := existT (Assoc B) m' a')
+    (p₁ : A == B)
+    (e := idtoeqv p₁) :
+  pr₁ (transport SemigroupStr p₁ ma) == pr₁ ma'
+  → (∀ y₁ y₂ : B, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂).
+Proof.
+subst ma ma' e.
+destruct p₁.
+intros p y₁ y₂.
+eapply compose; [ eapply invert, transport_op | idtac ].
+apply hap, hap.
+eapply compose; [ idtac | apply p ].
+eapply compose; [ eapply hap, ap, ua_idtoeqv | idtac ].
+reflexivity.
+Show Proof.
+
+Definition semigroup_path_fun {A B} m a m' a'
+    (ma := existT (Assoc A) m a)
+    (ma' := existT (Assoc B) m' a')
+    (p₁ : A == B)
+    (e := idtoeqv p₁) :
+  pr₁ (transport SemigroupStr p₁ ma) == pr₁ ma'
+  → (∀ y₁ y₂ : B, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)
+:=
+  match p₁ in (_ == B)
+  return
+    ∀ (m' : B → B → B) (a' : Assoc B m'),
+    pr₁ (transport SemigroupStr p₁ (existT (Assoc A) m a)) ==
+    pr₁ (existT (Assoc B) m' a')
+    → ∀ y₁ y₂ : B,
+      pr₁ (idtoeqv p₁) (m (pr₁ (idtoeqv p₁)⁻⁻¹ y₁) (pr₁ (idtoeqv p₁)⁻⁻¹ y₂)) ==
+      m' y₁ y₂
+  with
+  | refl _ =>
+      λ m' a' p y₁ y₂,
+      (transport_op (idtoeqv (refl A)) m y₁ y₂)⁻¹
+      • hap
+          (hap
+             (hap
+                (ap (transport (λ X : U, X → X → X)) (ua_idtoeqv (refl A)))
+                m
+              • p)
+             y₁)
+          y₂
+  end m' a'.
+
 Definition semigroupstr_path_type {A B} m a m' a'
     (ma := existT (Assoc A) m a)
     (ma' := existT (Assoc B) m' a')
     (p₁ : A == B)
     (e := idtoeqv p₁) :
-  (transp_sg p₁ ma == ma') ≃
+  (transport SemigroupStr p₁ ma == ma') ≃
   (Π (y₁ : B), Π (y₂ : B), pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)
   * (∀ b₁ b₂ b₃, m' (m' b₁ b₂) b₃ == m' b₁ (m' b₂ b₃)).
 Proof.
 eapply equiv_compose; [ eapply hott_2_7_2 | idtac ].
 apply eq_pair_dep_pair; [ idtac | intros q ].
-Check @transport_op.
-(* @transport_op
-     : ∀ (A B : Type) (e : A ≃ B) (m : A → A → A) 
-       (b₁ b₂ : B) (m':=transport (λ X : U, X → X → X) (ua e) m),
-       m' b₁ b₂ == pr₁ e (m (pr₁ e⁻⁻¹ b₁) (pr₁ e⁻⁻¹ b₂)) *)
-assert (m' == λ y₁ y₂, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂))).
- apply function_extensionality; intros y₁.
- apply function_extensionality; intros y₂.
- eapply compose; [ idtac | apply (transport_op e) ].
- eapply hap, hap.
- assert (m' == pr₁ ma') as H1 by reflexivity.
- assert (m == pr₁ ma) as H2 by reflexivity.
- subst ma ma'.
- destruct H1, H2.
- destruct p₁; simpl.
- subst e; simpl.
- rewrite ua_idtoeqv; simpl.
-(* bordel *)
-bbb.
-
- subst ma ma' e; simpl.
- rewrite ua_idtoeqv; simpl.
-
-bbb.
-
-bbb.
-
- destruct p₁; simpl.
-
-pose proof (transport_semigroup_op_def_2 e ma y₁ y₂) as H.
-subst ma ma'.
-apply H.
-
- apply (transport_semigroup_op_def_2 e ma y₁ y₂).
-
-
-(*
-assert
-  ((pr₁ (transp_sg p₁ ma) == pr₁ ma')
-   → (∀ y₁ y₂ : B, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)) as f.
- intros p y₁ y₂.
- apply invert.
- eapply compose; [ idtac | apply (transport_semigroup_op_def_2 e ma) ].
- apply invert.
- subst ma ma' e; simpl in p; simpl.
- eapply hap, hap, compose; [ idtac | apply p ].
- apply ap, hap, ap, ua_idtoeqv.
-Show Proof.
-*)
-set
-  (f (p : pr₁ (transp_sg p₁ ma) == pr₁ ma') (y₁ y₂ : B) :=
-   ((hap
-       (hap
-              (ap pr₁
-                 (hap (ap transp_sg (ua_idtoeqv p₁)) (existT (Assoc A) m a))
-               • p) y₁) y₂)⁻¹
-    • transport_semigroup_op_def_2 e ma y₁ y₂)⁻¹).
-apply (existT _ f), qinv_isequiv.
+apply (existT _ (semigroup_path_fun m a m' a' p₁)).
 assert
   ((∀ y₁ y₂ : B, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)
-   → (pr₁ (transp_sg p₁ ma) == pr₁ ma')) as g.
- intros p.
-
+   → pr₁ (transport SemigroupStr p₁ ma) == pr₁ ma') as g.
+ intros H.
 bbb.
-
-
-bbb.
- set (m₁ := pr₁ (transp_sg p₁ ma)).
- set (f (p : m₁ == m') y₁ y₂ := hap (hap p y₁) y₂).
- apply (existT _ f), qinv_isequiv.
- set
-   (g p :=
-      function_extensionality _ _ m m'
         (λ y₁, function_extensionality _ _ (m y₁) (m' y₁) (p y₁))).
  apply (existT _ g); simpl.
  subst f g; unfold "◦", id; simpl; split; intros f.
