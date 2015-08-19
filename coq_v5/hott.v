@@ -3003,6 +3003,29 @@ Definition semigroup_path_inv {A B} m a m' a'
         (λ y₁, function_extensionality A (λ _, A) (m y₁) (m' y₁) (p y₁))
   end m' a'.
 
+(* p₂ is equivalent to the pair of proofs... ????
+   do they mean : the type of p₂ is equivalent to the pair of types ... ?
+   because this version is ill-typed, p₂ not being a type *)
+(* and I am blocked in the proof of the version just below this one *)
+
+Definition semigroupstr_path_type {A B} m a m' a'
+    (ma := existT (Assoc A) m a)
+    (ma' := existT (Assoc B) m' a')
+    (p₁ : A == B)
+    (p₂ : transport SemigroupStr p₁ ma == ma')
+    (e := idtoeqv p₁)
+    (p₃ :
+       Π (y₁ : B), Π (y₂ : B), pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) ==
+         m' y₁ y₂)
+    (p₄ : ∀ b₁ b₂ b₃, m' (m' b₁ b₂) b₃ == m' b₁ (m' b₂ b₃)) :
+  p₂ ≃ (p₃, p₄).
+
+The term "p₂" has type "transport SemigroupStr p₁ ma == ma'"
+while it is expected to have type "Type".
+
+Proof.
+bbb.
+
 Definition semigroupstr_path_type {A B} m a m' a'
     (ma := existT (Assoc A) m a)
     (ma' := existT (Assoc B) m' a')
