@@ -2714,6 +2714,29 @@ Defined.
 
 (* had formula 2.14.2 *)
 
+(* is the following true? is it the good formulation of 2.14.2? *)
+
+Definition hott_2_14_2 {A B} (e : A ≃ B) m (a : Assoc A m) a' :
+  let m' : B → B → B := transport (λ X : U, X → X → X) (ua e) m in
+  transport SemigroupStr (ua e) (existT _ m a) == existT _ m' a'
+  → a' == transport (λ xu, Assoc (pr₁ xu) (pr₂ xu)) (pair⁼ (ua e) (refl m')) a.
+Proof.
+intros m' H; simpl.
+Check @hott_2_7_4.
+(* @hott_2_7_4
+     : ∀ (A : Type) (P : A → Type) (Q : {x : A & P x} → U) 
+       (x y : A) (p : x == y) (u : P x) (z : Q (existT P x u)),
+       transport (tfam P Q) p (pair_map u z) ==
+       pair_map (transport P p u)
+         (transport Q (pair⁼ p (refl (transport P p u))) z) *)
+bbb.
+
+destruct (ua e); simpl in *.
+unfold id in a', m', H; simpl in H.
+subst m'.
+
+bbb.
+
 (* By applying (2.9.4) twice, we have that m'(b1, b2) is equal to *)
 (* (personal remark: provable also with "destruct (ua e)") *)
 
@@ -3009,6 +3032,37 @@ assert
    subst e; destruct p₁; apply H.
 
    apply (existT _ f).
+pose proof @transport_semigroup A B e m a as H.
+simpl in H.
+subst e; rewrite ua_idtoeqv in H; simpl in H.
+bbb.
+
+subst e; destruct p₁; simpl in f, H; simpl.
+rewrite ua_idtoeqv in H; simpl in H.
+
+eapply compose.
+eapply hap.
+
+
+   unfold Assoc in a, a'.
+   subst e; destruct p₁; simpl in f; simpl.
+   destruct f; simpl; unfold id; simpl; simpl in Hm.
+Check @transport_semigroup.
+(* @transport_semigroup
+     : ∀ (A B : Type) (e : A ≃ B) (m : A → A → A) 
+       (a : Assoc A m) (m':=transport (λ X : U, X → X → X) (ua e) m)
+       (a':=
+        transport (λ xu : {y : Type & y → y → y}, Assoc (pr₁ xu) (pr₂ xu))
+          (pair⁼ (ua e) (refl m')) a),
+       transport SemigroupStr (ua e) (existT (Assoc A) m a) ==
+       existT (Assoc B) m' a' *)
+Check @hott_2_14_2.
+bbb.
+
+   apply function_extensionality; intros x.
+   apply function_extensionality; intros y.
+   apply function_extensionality; intros z.
+
 
 bbb.
 eapply equiv_compose; [ eapply hott_2_7_2 | idtac ].
