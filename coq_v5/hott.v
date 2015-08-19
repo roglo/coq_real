@@ -2994,8 +2994,6 @@ Proof.
        ≃ {p₁ : A == B &
          transport SemigroupStr p₁ (existT (Assoc A) m a) ==
          existT (Assoc B) m' a'} *)
-
-bbb.
 eapply equiv_compose; [ eapply hott_2_7_2 | idtac ].
 assert
   ({p : pr₁ (transport SemigroupStr p₁ ma) == pr₁ ma' &
