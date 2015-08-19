@@ -2920,32 +2920,6 @@ Proof.
 apply hott_2_7_2.
 Defined.
 
-Definition semigroup_path_fun_tac2 {A B} m a m' a'
-    (ma := existT (Assoc A) m a)
-    (ma' := existT (Assoc B) m' a')
-    (e : A ≃ B)
-    (p₁ : A == B := ua e) :
-  pr₁ (transport SemigroupStr p₁ ma) == pr₁ ma'
-  → (∀ y₁ y₂ : B, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂).
-Proof.
-intros p y₁ y₂; simpl in p.
-subst ma ma'; simpl in p.
-destruct e as (f, ((g, Hg), (h, Hh))); simpl in p₁; simpl.
-unfold "◦", "~~", id in Hg, Hh.
-destruct p₁; simpl in p; simpl.
-
-bbb.
-
-subst ma ma' p₁; simpl.
-destruct (ua e); simpl in p.
-destruct e as (f, ((g, Hg), (h, Hh))); simpl.
-destruct p; simpl.
-bbb.
-
-eapply compose; [ eapply hap, ap, ua_idtoeqv | idtac ].
-reflexivity.
-bbb.
-
 Definition semigroup_path_fun_tac {A B} m a m' a'
     (ma := existT (Assoc A) m a)
     (ma' := existT (Assoc B) m' a')
@@ -2992,6 +2966,8 @@ Definition semigroup_path_fun {A B} m a m' a'
              y₁)
           y₂
   end m' a'.
+
+bbb.
 
 Definition semigroup_path_inv_tac {A B} m a m' a'
     (ma := existT (Assoc A) m a)
@@ -3042,13 +3018,17 @@ Definition semigroupstr_path_type {A B} m a m' a'
   (Π (y₁ : B), Π (y₂ : B), pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)
   * (∀ b₁ b₂ b₃, m' (m' b₁ b₂) b₃ == m' b₁ (m' b₂ b₃)).
 Proof.
+(* can't prove this version! *)
+Abort. (*
+bbb.
+
 eapply equiv_compose; [ eapply hott_2_7_2 | idtac ].
 apply eq_pair_dep_pair; [ idtac | intros q ].
  apply (existT _ (semigroup_path_fun2 m a m' a' p₁)), qinv_isequiv.
  apply (existT _ (semigroup_path_inv2 m a m' a' p₁)).
  split; simpl.
-
 bbb.
+*)
 
 Definition semigroupstr_path_type {A B} m a m' a'
     (ma := existT (Assoc A) m a)
@@ -3064,7 +3044,6 @@ apply eq_pair_dep_pair; [ idtac | intros q ].
  apply (existT _ (semigroup_path_fun m a m' a' p₁)), qinv_isequiv.
  apply (existT _ (semigroup_path_inv m a m' a' p₁)).
  split; simpl.
-bbb.
   unfold semigroup_path_fun, semigroup_path_inv; simpl.
   subst e; destruct p₁; simpl.
   unfold "◦", "~~", id; intros f.
