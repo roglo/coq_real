@@ -3006,27 +3006,6 @@ Definition semigroup_path_inv {A B} m a m' a'
 Definition semigroupstr_path_type {A B} m a m' a'
     (ma := existT (Assoc A) m a)
     (ma' := existT (Assoc B) m' a')
-    (e : A ≃ B)
-    (p₁ : A == B := ua e) :
-  (transport SemigroupStr p₁ ma == ma') ≃
-  (Π (y₁ : B), Π (y₂ : B), pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)
-  * (∀ b₁ b₂ b₃, m' (m' b₁ b₂) b₃ == m' b₁ (m' b₂ b₃)).
-Proof.
-(* can't prove this version! *)
-Abort. (*
-bbb.
-
-eapply equiv_compose; [ eapply hott_2_7_2 | idtac ].
-apply eq_pair_dep_pair; [ idtac | intros q ].
- apply (existT _ (semigroup_path_fun2 m a m' a' p₁)), qinv_isequiv.
- apply (existT _ (semigroup_path_inv2 m a m' a' p₁)).
- split; simpl.
-bbb.
-*)
-
-Definition semigroupstr_path_type {A B} m a m' a'
-    (ma := existT (Assoc A) m a)
-    (ma' := existT (Assoc B) m' a')
     (p₁ : A == B)
     (e := idtoeqv p₁) :
   (transport SemigroupStr p₁ ma == ma') ≃
@@ -3044,6 +3023,13 @@ apply eq_pair_dep_pair; [ idtac | intros q ].
   apply invert.
   apply function_extensionality; intros y₁.
   apply function_extensionality; intros y₂.
+bbb.
+
+Focus 2.
+  unfold semigroup_path_fun, semigroup_path_inv; simpl.
+  subst e; destruct p₁; simpl.
+  unfold "◦", "~~", id; intros p.
+  destruct p; simpl.
 bbb.
 
 assert
