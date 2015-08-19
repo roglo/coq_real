@@ -2968,6 +2968,20 @@ Definition semigroup_path_fun {A B} m a m' a'
           y₂
   end m' a'.
 
+Definition semigroup_path_inv_tac {A B} m a m' a'
+    (ma := existT (Assoc A) m a)
+    (ma' := existT (Assoc B) m' a')
+    (p₁ : A == B)
+    (e := idtoeqv p₁) :
+  (∀ y₁ y₂ : B, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)
+  → pr₁ (transport SemigroupStr p₁ ma) == pr₁ ma'.
+Proof.
+subst ma ma' e.
+destruct p₁.
+intros p; simpl in p; simpl.
+(* ouais, ça devrait le faire, par extentionalité *)
+bbb.
+
 Definition semigroupstr_path_type {A B} m a m' a'
     (ma := existT (Assoc A) m a)
     (ma' := existT (Assoc B) m' a')
@@ -2995,6 +3009,10 @@ Proof.
          transport SemigroupStr p₁ (existT (Assoc A) m a) ==
          existT (Assoc B) m' a'} *)
 eapply equiv_compose; [ eapply hott_2_7_2 | idtac ].
+apply eq_pair_dep_pair; [ idtac | intros q ].
+apply (existT _ (semigroup_path_fun m a m' a' p₁)).
+
+bbb.
 assert
   ({p : pr₁ (transport SemigroupStr p₁ ma) == pr₁ ma' &
    transport (Assoc B) p (pr₂ (transport SemigroupStr p₁ ma)) == pr₂ ma'}
