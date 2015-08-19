@@ -2929,8 +2929,8 @@ Definition semigroup_path_fun_tac {A B} m a m' a'
   → (∀ y₁ y₂ : B, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂).
 Proof.
 subst ma ma' e.
-destruct p₁.
 intros p y₁ y₂.
+destruct p₁.
 eapply compose; [ eapply invert, transport_op | idtac ].
 apply hap, hap.
 eapply compose; [ idtac | apply p ].
@@ -2947,27 +2947,21 @@ Definition semigroup_path_fun {A B} m a m' a'
   → (∀ y₁ y₂ : B, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)
 :=
   match p₁ in (_ == X) return
-    ∀ (m' : X → X → X) (a' : Assoc X m'),
+    ∀ m₁ a₁,
     pr₁ (transport SemigroupStr p₁ (existT (Assoc A) m a)) ==
-    pr₁ (existT (Assoc X) m' a')
-    → ∀ y₁ y₂ : X,
-      pr₁ (idtoeqv p₁) (m (pr₁ (idtoeqv p₁)⁻⁻¹ y₁) (pr₁ (idtoeqv p₁)⁻⁻¹ y₂)) ==
-      m' y₁ y₂
+    pr₁ (existT (Assoc X) m₁ a₁)
+    → ∀ x₁ x₂ : X,
+      pr₁ (idtoeqv p₁) (m (pr₁ (idtoeqv p₁)⁻⁻¹ x₁) (pr₁ (idtoeqv p₁)⁻⁻¹ x₂)) ==
+      m₁ x₁ x₂
   with
   | refl _ =>
-      λ m' a' p y₁ y₂,
-      (transport_op (idtoeqv (refl A)) m y₁ y₂)⁻¹
+      λ m₁ a₁ p x₁ x₂,
+      (transport_op (idtoeqv (refl A)) m x₁ x₂)⁻¹
       • hap
           (hap
-             (hap
-                (ap (transport (λ X : U, X → X → X)) (ua_idtoeqv (refl A)))
-                m
-              • p)
-             y₁)
-          y₂
+             (hap (ap (transport (λ X : U, X → X → X)) (ua_idtoeqv (refl A))) m
+              • p) x₁) x₂
   end m' a'.
-
-bbb.
 
 Definition semigroup_path_inv_tac {A B} m a m' a'
     (ma := existT (Assoc A) m a)
@@ -3047,6 +3041,7 @@ apply eq_pair_dep_pair; [ idtac | intros q ].
   unfold semigroup_path_fun, semigroup_path_inv; simpl.
   subst e; destruct p₁; simpl.
   unfold "◦", "~~", id; intros f.
+  apply invert.
   apply function_extensionality; intros y₁.
   apply function_extensionality; intros y₂.
 bbb.
