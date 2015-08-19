@@ -2977,6 +2977,25 @@ Definition semigroupstr_path_type {A B} m a m' a'
   (Π (y₁ : B), Π (y₂ : B), pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)
   * (∀ b₁ b₂ b₃, m' (m' b₁ b₂) b₃ == m' b₁ (m' b₂ b₃)).
 Proof.
+(* @semigroup_path_type2
+     : ∀ (A B : Type) (m : A → A → A) (a : Assoc A m) 
+       (m' : B → B → B) (a' : Assoc B m')
+       (w:=existT SemigroupStr A (existT (Assoc A) m a))
+       (w':=existT SemigroupStr B (existT (Assoc B) m' a')),
+       (w == w')
+       ≃ {p : pr₁ w == pr₁ w' &
+         transport (λ A0 : Type, {m0 : A0 → A0 → A0 & Assoc A0 m0}) p (pr₂ w) ==
+         pr₂ w'}
+   @semigroup_path_type
+     : ∀ (A B : Type) (m : A → A → A) (a : Assoc A m) 
+       (m' : B → B → B) (a' : Assoc B m'),
+       (existT SemigroupStr A (existT (Assoc A) m a) ==
+        existT SemigroupStr B (existT (Assoc B) m' a'))
+       ≃ {p₁ : A == B &
+         transport SemigroupStr p₁ (existT (Assoc A) m a) ==
+         existT (Assoc B) m' a'} *)
+
+bbb.
 eapply equiv_compose; [ eapply hott_2_7_2 | idtac ].
 assert
   ({p : pr₁ (transport SemigroupStr p₁ ma) == pr₁ ma' &
@@ -3012,7 +3031,11 @@ assert
 pose proof @transport_semigroup A B e m a as H.
 simpl in H.
 subst e; rewrite ua_idtoeqv in H; simpl in H.
+set (ma₁ := transport SemigroupStr p₁ (existT (Assoc A) m a)) in *.
+eapply compose.
+eapply ap; rewrite H; simpl.
 bbb.
+(* chuis un peu perdu, là *)
 
 subst e; destruct p₁; simpl in f, H; simpl.
 rewrite ua_idtoeqv in H; simpl in H.
