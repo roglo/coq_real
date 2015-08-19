@@ -3005,12 +3005,8 @@ assert
   assert (pr₁ (transport SemigroupStr p₁ (existT (Assoc A) m a)) == m') as f.
    apply function_extensionality; intros y₁.
    apply function_extensionality; intros y₂.
-   eapply compose; [ idtac | apply Hm ].
-   destruct e as (f, ((g, Hg), (h, Hh))); simpl; simpl in Hm.
-   pose proof quasi_inv_l_eq_r f g h Hg Hh as H.
-   unfold "◦", "~~", id in Hg, Hh, H.
-   destruct p₁; simpl.
-bbb.
+   pose proof Hm y₁ y₂ as H.
+   subst e; destruct p₁; apply H.
 
    apply (existT _ f).
 
