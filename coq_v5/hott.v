@@ -2930,27 +2930,10 @@ Definition semigroup_path_fun_tac2 {A B} m a m' a'
 Proof.
 intros p y₁ y₂; simpl in p.
 subst ma ma'; simpl in p.
-apply hap with (x := y₁) in p.
-apply hap with (x := y₂) in p.
-eapply compose; [ clear p | apply p ].
 destruct e as (f, ((g, Hg), (h, Hh))); simpl in p₁; simpl.
-destruct p₁; simpl.
+unfold "◦", "~~", id in Hg, Hh.
+destruct p₁; simpl in p; simpl.
 
-bbb.
-  ============================
-   pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) ==
-   pr₁ (transport SemigroupStr (ua e) (existT (Assoc A) m a)) y₁ y₂
-destruct e as (f, ((g, Hg), (h, Hh))); simpl.
-  ============================
-   f (m (g y₁) (g y₂)) ==
-   pr₁
-     (transport SemigroupStr
-        (ua
-           (existT (λ f0 : A → B, isequiv f0) f
-              (existT (λ g0 : B → A, f ◦ g0 ~~ id) g Hg,
-              existT (λ h0 : B → A, h0 ◦ f ~~ id) h Hh)))
-        (existT (Assoc A) m a)) y₁ y₂
-SearchAbout (ua (existT _ _ _)).
 bbb.
 
 subst ma ma' p₁; simpl.
