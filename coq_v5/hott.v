@@ -2946,12 +2946,11 @@ Definition semigroup_path_fun {A B} m a m' a'
   pr₁ (transport SemigroupStr p₁ ma) == pr₁ ma'
   → (∀ y₁ y₂ : B, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)
 :=
-  match p₁ in (_ == B)
-  return
-    ∀ (m' : B → B → B) (a' : Assoc B m'),
+  match p₁ in (_ == X) return
+    ∀ (m' : X → X → X) (a' : Assoc X m'),
     pr₁ (transport SemigroupStr p₁ (existT (Assoc A) m a)) ==
-    pr₁ (existT (Assoc B) m' a')
-    → ∀ y₁ y₂ : B,
+    pr₁ (existT (Assoc X) m' a')
+    → ∀ y₁ y₂ : X,
       pr₁ (idtoeqv p₁) (m (pr₁ (idtoeqv p₁)⁻⁻¹ y₁) (pr₁ (idtoeqv p₁)⁻⁻¹ y₂)) ==
       m' y₁ y₂
   with
@@ -2993,8 +2992,7 @@ Definition semigroup_path_inv {A B} m a m' a'
   → pr₁ (transport SemigroupStr p₁ ma) == pr₁ ma'
 :=
   match
-    p₁ in (_ == X)
-    return
+    p₁ in (_ == X) return
       ∀ m' a',
        (∀ y₁ y₂,
         pr₁ (idtoeqv p₁) (m (pr₁ (idtoeqv p₁)⁻⁻¹ y₁)
@@ -3024,15 +3022,13 @@ apply eq_pair_dep_pair; [ idtac | intros q ].
  apply (existT _ (semigroup_path_inv m a m' a' p₁)).
  split; simpl.
 bbb.
-  unfold "◦", "~~", id; intros f.
   unfold semigroup_path_fun, semigroup_path_inv; simpl.
+  subst e; destruct p₁; simpl.
+  unfold "◦", "~~", id; intros f.
   apply function_extensionality; intros y₁.
   apply function_extensionality; intros y₂.
-  subst e; destruct p₁; simpl in f; simpl.
-  unfold id in f.
-  set (x := f y₁ y₂).
-
 bbb.
+
 assert
   ({p : pr₁ (transport SemigroupStr p₁ ma) == pr₁ ma' &
    transport (Assoc B) p (pr₂ (transport SemigroupStr p₁ ma)) == pr₂ ma'}
