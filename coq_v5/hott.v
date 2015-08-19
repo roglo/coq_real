@@ -3023,6 +3023,7 @@ apply eq_pair_dep_pair; [ idtac | intros q ].
  apply (existT _ (semigroup_path_fun m a m' a' p₁)), qinv_isequiv.
  apply (existT _ (semigroup_path_inv m a m' a' p₁)).
  split; simpl.
+bbb.
   unfold "◦", "~~", id; intros f.
   unfold semigroup_path_fun, semigroup_path_inv; simpl.
   apply function_extensionality; intros y₁.
