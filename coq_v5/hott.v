@@ -2714,29 +2714,6 @@ Defined.
 
 (* had formula 2.14.2 *)
 
-(* is the following true? is it the good formulation of 2.14.2? *)
-
-Definition hott_2_14_2 {A B} (e : A ≃ B) m (a : Assoc A m) a' :
-  let m' : B → B → B := transport (λ X : U, X → X → X) (ua e) m in
-  transport SemigroupStr (ua e) (existT _ m a) == existT _ m' a'
-  → a' == transport (λ xu, Assoc (pr₁ xu) (pr₂ xu)) (pair⁼ (ua e) (refl m')) a.
-Proof.
-intros m' H; simpl.
-Check @hott_2_7_4.
-(* @hott_2_7_4
-     : ∀ (A : Type) (P : A → Type) (Q : {x : A & P x} → U) 
-       (x y : A) (p : x == y) (u : P x) (z : Q (existT P x u)),
-       transport (tfam P Q) p (pair_map u z) ==
-       pair_map (transport P p u)
-         (transport Q (pair⁼ p (refl (transport P p u))) z) *)
-bbb.
-
-destruct (ua e); simpl in *.
-unfold id in a', m', H; simpl in H.
-subst m'.
-
-bbb.
-
 (* By applying (2.9.4) twice, we have that m'(b1, b2) is equal to *)
 (* (personal remark: provable also with "destruct (ua e)") *)
 
