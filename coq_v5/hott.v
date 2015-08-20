@@ -3052,7 +3052,7 @@ apply eq_pair_dep_pair.
   apply ap, Π_type.funext; intros x.
   apply Π_type.funext_identity.
 
- intros q.
+ intros q; simpl in q.
  apply (existT _ (semigroup_path2_fun_tac m a m' a' p₁ q)).
 bbb.
  assert
