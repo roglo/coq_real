@@ -3002,24 +3002,23 @@ Definition semigroup_path2_fun_tac {A B} m a m' a'
     (p₁ : A == B)
     (e := idtoeqv p₁)
     (q : pr₁ (transport SemigroupStr p₁ ma) == m') :
+(*
   transport (Assoc B) q (pr₂ (transport SemigroupStr p₁ ma)) == a'
-  → (∀ x₁ x₂ : A, pr₁ e (m x₁ x₂) == m' (pr₁ e x₁) (pr₁ e x₂)).
+  → *) (∀ x₁ x₂ : A, pr₁ e (m x₁ x₂) == m' (pr₁ e x₁) (pr₁ e x₂)).
 Proof.
+(*
 intros p x₁ x₂.
-eapply compose.
- pose proof @transport_op A B e m (pr₁ e x₁) (pr₁ e x₂) as H.
- remember e as f; simpl in H; subst f.
- pose proof @quasi_inv_comp_l A B e as H1.
- unfold "◦", "~~", id in H1.
- do 2 rewrite H1 in H.
- apply invert in H.
- apply H.
-
- apply hap, hap.
- eapply compose; [ idtac | apply q ].
- subst ma; simpl.
- subst e; destruct p₁; simpl.
- rewrite ua_idtoeqv; reflexivity.
+clear p.
+*)
+intros x₁ x₂.
+eapply compose; [ eapply ap, ap2, invert, (quasi_inv_comp_l e) | idtac ].
+eapply compose; [ eapply ap, ap, invert, (quasi_inv_comp_l e) | idtac ].
+eapply compose; [ apply (transport_op e m (pr₁ e x₁) (pr₁ e x₂))⁻¹ | idtac ].
+apply hap, hap.
+eapply compose; [ idtac | apply q ].
+subst ma; simpl.
+subst e; destruct p₁; simpl.
+rewrite ua_idtoeqv; reflexivity.
 Defined.
 
 Definition semigroupstr_path_type {A B} m a m' a'
@@ -3053,6 +3052,9 @@ apply eq_pair_dep_pair.
   apply Π_type.funext_identity.
 
  intros q; simpl in q.
+bbb.
+(* actually the hypothesis (transport (Assoc B) q ...) is not used! *)
+
  apply (existT _ (semigroup_path2_fun_tac m a m' a' p₁ q)).
 bbb.
  assert
