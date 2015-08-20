@@ -261,6 +261,10 @@ Definition AxB'_pr₂ {A B} (x : AxB' A B) : B := x false.
 Axiom function_extensionality : ∀ A B (f g : ∀ x : A, B x),
   (∀ x, f x == g x) → f == g.
 
+(* when need of extensionality and its reverse, rather consider using
+   Π_type.funext, defined later, than this function_extensionality as
+   extensionality axiom *)
+
 Theorem AxB'_pair_proj {A B} : ∀ x : AxB' A B,
   AxB'_pair (AxB'_pr₁ x) (AxB'_pr₂ x) == x.
 Proof.
