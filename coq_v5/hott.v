@@ -2931,12 +2931,9 @@ Proof.
 subst ma ma' e.
 intros p y₁ y₂.
 destruct p₁; simpl in p; simpl; unfold id.
-(* instead of hap, I'd rather use the reverse proof of
-   function_extensionality, in order to cancel it when
-   trying to prove the f ◦ g ~~ id thing *)
-bbb.
-
-apply hap, hap, p.
+apply Π_type.happly with (x := y₂).
+apply Π_type.happly with (x := y₁).
+apply p.
 Defined.
 
 Definition semigroup_path_fun {A B} m a m' a'
@@ -2955,7 +2952,7 @@ Definition semigroup_path_fun {A B} m a m' a'
       pr₁ (idtoeqv p₁) (m (pr₁ (idtoeqv p₁)⁻⁻¹ x₁) (pr₁ (idtoeqv p₁)⁻⁻¹ x₂)) ==
       m₁ x₁ x₂
   with
-  | refl _ => λ m₁ a₁ p x₁ x₂, hap (hap p x₁) x₂
+  | refl _ => λ m₁ a₁ p x₁ x₂, Π_type.happly (Π_type.happly p x₁) x₂
   end m' a'.
 
 Definition semigroup_path_inv_tac {A B} m a m' a'
@@ -2969,8 +2966,8 @@ Proof.
 subst ma ma' e.
 destruct p₁.
 intros p; simpl in p; simpl.
-apply function_extensionality; intros y₁.
-apply function_extensionality; intros y₂.
+apply Π_type.funext; intros y₁.
+apply Π_type.funext; intros y₂.
 apply p.
 Defined.
 
@@ -2992,10 +2989,7 @@ Definition semigroup_path_inv {A B} m a m' a'
        → pr₁ (transport SemigroupStr p₁ (existT (Assoc A) m a)) ==
          pr₁ (existT (Assoc X) m' a')
   with
-  | refl _ =>
-      λ m' a' p,
-      function_extensionality A (λ _, A → A) m m'
-        (λ y₁, function_extensionality A (λ _, A) (m y₁) (m' y₁) (p y₁))
+  | refl _ => λ m' a' p, Π_type.funext (λ y₁, Π_type.funext (p y₁))
   end m' a'.
 
 Definition semigroupstr_path_type {A B} m a m' a'
@@ -3016,28 +3010,12 @@ apply eq_pair_dep_pair; [ idtac | intros q ].
   subst e; destruct p₁; simpl.
   unfold "◦", "~~", id; intros f.
   apply invert.
-  apply function_extensionality; intros y₁.
-  apply function_extensionality; intros y₂.
+  apply Π_type.funext; intros y₁.
+  apply Π_type.funext; intros y₂.
+  do 2 rewrite Π_type.funext_quasi_inverse_of_happly.
+  reflexivity.
 
-Definition hap_funext A B f g p x :
-  happly (function_extensionality A (λ _ : A, B) f g p) x == p x.
-Proof.
-simpl in f, g.
-unfold happly; simpl.
-unfold Π_type.happly; simpl.
-destruct (function_extensionality A (λ _ : A, B) f g p); simpl.
 bbb.
-
-set (q := function_extensionality A (λ _ : A, B) f g p).
-unfold hap.
-bbb.
-
-destruct (function_extensionality A (λ _ : A, B) f g p); simpl.
-apply invert; set (y := p x).
-bbb.
-
-rewrite hap_funext.
-rewrite hap_funext.
 
 bbb.
 Axiom function_extensionality : ∀ A B (f g : ∀ x : A, B x),
