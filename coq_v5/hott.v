@@ -3052,26 +3052,22 @@ apply eq_pair_dep_pair; [ idtac | intros q ].
   as g.
    intros p; simpl in q; simpl.
    subst ma; simpl.
-   subst e; destruct p₁; simpl in p; simpl.
-   unfold id in p; simpl in p.
-   destruct q; simpl in p; simpl.
-   simpl in a', ma'.
+pose proof @transport_semigroup A B e m a.
+simpl in H.
+set (m₁ := transport (λ X : U, X → X → X) (ua e) m) in H.
+set (a₁ :=
+   transport
+      (λ xu : {y : Type & (λ X : U, X → X → X) y},
+       Assoc (pr₁ xu) (pr₂ xu)) (pair⁼ (ua e) (refl m₁)) a) in H.
+subst e; destruct p₁; simpl.
+rewrite ua_idtoeqv in H.
+simpl in H.
+unfold id in H.
+simpl in q.
+destruct q.
+simpl.
+simpl in p.
+unfold id in p.
+destruct H.
 bbb.
-
- assert
-   (transport (Assoc B) q (pr₂ (transport SemigroupStr p₁ ma)) == a'
-    → (∀ b₁ b₂ b₃ : B, m' (m' b₁ b₂) b₃ == m' b₁ (m' b₂ b₃))) as f.
-  intros p b₁ b₂ b₃.
-  apply invert, a'.
-
-  apply (existT _ f).
-  assert
-     ((∀ b₁ b₂ b₃ : B, m' (m' b₁ b₂) b₃ == m' b₁ (m' b₂ b₃))
-      → transport (Assoc B) q (pr₂ (transport SemigroupStr p₁ ma)) == a')
-  as g.
-   intros p.
-   subst ma; simpl.
-   subst e; destruct p₁; simpl.
-   simpl in q.
-
-bbb.
+(* bof *)
