@@ -2930,12 +2930,8 @@ Definition semigroup_path_fun_tac {A B} m a m' a'
 Proof.
 subst ma ma' e.
 intros p y₁ y₂.
-destruct p₁.
-eapply compose; [ eapply invert, transport_op | idtac ].
-apply hap, hap.
-eapply compose; [ idtac | apply p ].
-eapply compose; [ eapply hap, ap, ua_idtoeqv | idtac ].
-reflexivity.
+destruct p₁; simpl in p; simpl; unfold id.
+apply hap, hap, p.
 Defined.
 
 Definition semigroup_path_fun {A B} m a m' a'
@@ -2954,13 +2950,7 @@ Definition semigroup_path_fun {A B} m a m' a'
       pr₁ (idtoeqv p₁) (m (pr₁ (idtoeqv p₁)⁻⁻¹ x₁) (pr₁ (idtoeqv p₁)⁻⁻¹ x₂)) ==
       m₁ x₁ x₂
   with
-  | refl _ =>
-      λ m₁ a₁ p x₁ x₂,
-      (transport_op (idtoeqv (refl A)) m x₁ x₂)⁻¹
-      • hap
-          (hap
-             (hap (ap (transport (λ X : U, X → X → X)) (ua_idtoeqv (refl A))) m
-              • p) x₁) x₂
+  | refl _ => λ m₁ a₁ p x₁ x₂, hap (hap p x₁) x₂
   end m' a'.
 
 Definition semigroup_path_inv_tac {A B} m a m' a'
@@ -3006,7 +2996,7 @@ Definition semigroup_path_inv {A B} m a m' a'
 (* p₂ is equivalent to the pair of proofs... ????
    do they mean : the type of p₂ is equivalent to the pair of types ... ?
    because this version is ill-typed, p₂ not being a type *)
-(* and I am blocked in the proof of the version just below this one *)
+(* and I am blocked in the proof of the version just below this one
 
 Definition semigroupstr_path_type {A B} m a m' a'
     (ma := existT (Assoc A) m a)
@@ -3025,6 +3015,7 @@ while it is expected to have type "Type".
 
 Proof.
 bbb.
+*)
 
 Definition semigroupstr_path_type {A B} m a m' a'
     (ma := existT (Assoc A) m a)
@@ -3046,6 +3037,20 @@ apply eq_pair_dep_pair; [ idtac | intros q ].
   apply invert.
   apply function_extensionality; intros y₁.
   apply function_extensionality; intros y₂.
+bbb.
+
+set
+  (p :=
+    (@invert A
+       (@transport U (fun X : U => forall (_ : X) (_ : X), X) A A
+          (@ua A A (eqv_refl A)) m y₁ y₂) 
+       (m y₁ y₂)
+       (@transport_op A A (@idtoeqv A A (@refl Type A)) m y₁ y₂))) in |-*.
+simpl in p; unfold id in p.
+rewrite ua_idtoeqv in p; simpl in p.
+
+Toplevel input, characters 0-36:
+Error: Cannot change p, it is used in conclusion.
 bbb.
 
 Focus 2.
