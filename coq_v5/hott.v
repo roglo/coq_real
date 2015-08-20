@@ -3003,7 +3003,7 @@ Definition semigroupstr_path_type {A B} m a m' a'
     (e := idtoeqv p₁) :
   (transport SemigroupStr p₁ ma == ma') ≃
   (Π (y₁ : B), Π (y₂ : B), pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)
-  * (∀ b₁ b₂ b₃, m' (m' b₁ b₂) b₃ == m' b₁ (m' b₂ b₃)).
+  * (Π (x₁ : A), Π (x₂ : A), pr₁ e (m x₁ x₂) == m' (pr₁ e x₁) (pr₁ e x₂)).
 Proof.
 eapply equiv_compose; [ eapply hott_2_7_2 | idtac ].
 apply eq_pair_dep_pair; [ idtac | intros q ].
@@ -3026,7 +3026,38 @@ apply eq_pair_dep_pair; [ idtac | intros q ].
   apply ap, Π_type.funext; intros x.
   apply Π_type.funext_identity.
 
- simpl.
+ assert
+   (transport (Assoc B) q (pr₂ (transport SemigroupStr p₁ ma)) == pr₂ ma'
+    → (∀ x₁ x₂ : A, pr₁ e (m x₁ x₂) == m' (pr₁ e x₁) (pr₁ e x₂)))
+ as f.
+  intros p x₁ x₂.
+  apply invert.
+  pose proof @transport_op A B e m (pr₁ e x₁) (pr₁ e x₂) as H.
+  set (m₁ := transport (λ X : U, X → X → X) (ua e) m) in H.
+  remember e as f; simpl in H; subst f.
+  pose proof @quasi_inv_comp_l A B e as H1.
+  unfold "◦", "~~", id in H1.
+  do 2 rewrite H1 in H.
+  eapply compose; [ idtac | apply H ].
+  apply hap, hap; subst m₁.
+  eapply invert, compose; [ idtac | apply q ].
+  subst ma; simpl.
+  subst e; destruct p₁; simpl.
+  rewrite ua_idtoeqv; reflexivity.
+
+  apply (existT _ f).
+  assert
+    ((∀ x₁ x₂ : A, pr₁ e (m x₁ x₂) == m' (pr₁ e x₁) (pr₁ e x₂))
+     → transport (Assoc B) q (pr₂ (transport SemigroupStr p₁ ma)) == pr₂ ma')
+  as g.
+   intros p; simpl in q; simpl.
+   subst ma; simpl.
+   subst e; destruct p₁; simpl in p; simpl.
+   unfold id in p; simpl in p.
+   destruct q; simpl in p; simpl.
+   simpl in a', ma'.
+bbb.
+
  assert
    (transport (Assoc B) q (pr₂ (transport SemigroupStr p₁ ma)) == a'
     → (∀ b₁ b₂ b₃ : B, m' (m' b₁ b₂) b₃ == m' b₁ (m' b₂ b₃))) as f.
