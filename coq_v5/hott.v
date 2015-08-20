@@ -3026,4 +3026,19 @@ apply eq_pair_dep_pair; [ idtac | intros q ].
   apply ap, Π_type.funext; intros x.
   apply Π_type.funext_identity.
 
+ simpl.
+ assert
+   (transport (Assoc B) q (pr₂ (transport SemigroupStr p₁ ma)) == a'
+    → (∀ b₁ b₂ b₃ : B, m' (m' b₁ b₂) b₃ == m' b₁ (m' b₂ b₃))) as f.
+  intros p b₁ b₂ b₃.
+  apply invert, a'.
+
+  apply (existT _ f).
+  assert
+     ((∀ b₁ b₂ b₃ : B, m' (m' b₁ b₂) b₃ == m' b₁ (m' b₂ b₃))
+      → transport (Assoc B) q (pr₂ (transport SemigroupStr p₁ ma)) == a')
+  as g.
+   intros p.
+   subst ma; simpl.
+
 bbb.
