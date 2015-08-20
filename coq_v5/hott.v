@@ -3052,10 +3052,9 @@ apply eq_pair_dep_pair.
   apply Π_type.funext_identity.
 
  intros q; simpl in q.
-bbb.
-(* actually the hypothesis (transport (Assoc B) q ...) is not used! *)
-
- apply (existT _ (semigroup_path2_fun_tac m a m' a' p₁ q)).
+ (* actually the hypothesis (transport (Assoc B) q ...) is not used! *)
+ apply (existT _ (Basics.const (semigroup_path2_fun_tac m a m' a' p₁ q))).
+ unfold Basics.const; simpl.
 bbb.
  assert
    ((∀ x₁ x₂ : A, pr₁ e (m x₁ x₂) == m' (pr₁ e x₁) (pr₁ e x₂))
