@@ -3037,144 +3037,17 @@ apply eq_pair_dep_pair; [ idtac | intros q ].
   apply invert.
   apply function_extensionality; intros y₁.
   apply function_extensionality; intros y₂.
+
+Definition hap_funext A B f g p x :
+  hap (function_extensionality A (λ _ : A, B) f g p) x == p x.
+Proof.
+destruct (function_extensionality A (λ _ : A, B) f g p); simpl.
+simpl in f.
+set (y := p x).
 bbb.
 
-set
-  (p :=
-    (@invert A
-       (@transport U (fun X : U => forall (_ : X) (_ : X), X) A A
-          (@ua A A (eqv_refl A)) m y₁ y₂) 
-       (m y₁ y₂)
-       (@transport_op A A (@idtoeqv A A (@refl Type A)) m y₁ y₂))) in |-*.
-simpl in p; unfold id in p.
-rewrite ua_idtoeqv in p; simpl in p.
-
-Toplevel input, characters 0-36:
-Error: Cannot change p, it is used in conclusion.
-bbb.
-
-Focus 2.
-  unfold semigroup_path_fun, semigroup_path_inv; simpl.
-  subst e; destruct p₁; simpl.
-  unfold "◦", "~~", id; intros p.
-  destruct p; simpl.
-bbb.
-
-assert
-  ({p : pr₁ (transport SemigroupStr p₁ ma) == pr₁ ma' &
-   transport (Assoc B) p (pr₂ (transport SemigroupStr p₁ ma)) == pr₂ ma'}
-   → (∀ y₁ y₂ : B, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂) *
-     (∀ b₁ b₂ b₃ : B, m' (m' b₁ b₂) b₃ == m' b₁ (m' b₂ b₃))) as f.
- intros (p, q).
- split; [ idtac | intros; apply invert, a' ].
- intros y₁ y₂.
- eapply invert, compose; [ idtac | apply transport_op ].
- apply hap, hap.
- subst ma ma'; simpl in p, q.
- eapply invert, compose; [ idtac | apply p ].
- subst e; destruct p₁; simpl.
- rewrite ua_idtoeqv; reflexivity.
-
- apply (existT _ f), qinv_isequiv.
- assert
-   ((∀ y₁ y₂ : B, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂) *
-    (∀ b₁ b₂ b₃ : B, m' (m' b₁ b₂) b₃ == m' b₁ (m' b₂ b₃))
-   → {p : pr₁ (transport SemigroupStr p₁ ma) == pr₁ ma' &
-     transport (Assoc B) p (pr₂ (transport SemigroupStr p₁ ma)) == pr₂ ma'})
-   as g.
-  intros (Hm, Ha); clear f.
-  subst ma ma'; simpl.
-  assert (pr₁ (transport SemigroupStr p₁ (existT (Assoc A) m a)) == m') as f.
-   apply function_extensionality; intros y₁.
-   apply function_extensionality; intros y₂.
-   pose proof Hm y₁ y₂ as H.
-   subst e; destruct p₁; apply H.
-
-   apply (existT _ f).
-pose proof @transport_semigroup A B e m a as H.
-simpl in H.
-subst e; rewrite ua_idtoeqv in H; simpl in H.
-set (ma₁ := transport SemigroupStr p₁ (existT (Assoc A) m a)) in *.
-eapply compose.
-eapply ap; rewrite H; simpl.
-bbb.
-(* chuis un peu perdu, là *)
-
-subst e; destruct p₁; simpl in f, H; simpl.
-rewrite ua_idtoeqv in H; simpl in H.
-
-eapply compose.
-eapply hap.
-
-
-   unfold Assoc in a, a'.
-   subst e; destruct p₁; simpl in f; simpl.
-   destruct f; simpl; unfold id; simpl; simpl in Hm.
-Check @transport_semigroup.
-(* @transport_semigroup
-     : ∀ (A B : Type) (e : A ≃ B) (m : A → A → A) 
-       (a : Assoc A m) (m':=transport (λ X : U, X → X → X) (ua e) m)
-       (a':=
-        transport (λ xu : {y : Type & y → y → y}, Assoc (pr₁ xu) (pr₂ xu))
-          (pair⁼ (ua e) (refl m')) a),
-       transport SemigroupStr (ua e) (existT (Assoc A) m a) ==
-       existT (Assoc B) m' a' *)
-Check @hott_2_14_2.
-bbb.
-
-   apply function_extensionality; intros x.
-   apply function_extensionality; intros y.
-   apply function_extensionality; intros z.
-
-
-bbb.
-eapply equiv_compose; [ eapply hott_2_7_2 | idtac ].
-apply eq_pair_dep_pair; [ idtac | intros q ].
-apply (existT _ (semigroup_path_fun m a m' a' p₁)).
-assert
-  ((∀ y₁ y₂ : B, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)
-   → pr₁ (transport SemigroupStr p₁ ma) == pr₁ ma') as g.
- intros H.
-bbb.
-        (λ y₁, function_extensionality _ _ (m y₁) (m' y₁) (p y₁))).
- apply (existT _ g); simpl.
- subst f g; unfold "◦", id; simpl; split; intros f.
-  apply function_extensionality; intros y₁.
-  apply function_extensionality; intros y₂.
-  apply invert.
-  unfold hap; simpl.
-
-bbb.
-destruct p₁; simpl.
-unfold id; simpl.
-eapply equiv_compose; [ eapply hott_2_7_2 | idtac ].
-apply eq_pair_dep_pair; [ idtac | intros q ].
- subst ma ma'; simpl.
- set (f (p : m == m') y₁ y₂ := hap (hap p y₁) y₂).
- apply (existT _ f), qinv_isequiv.
- set
-   (g p :=
-      function_extensionality _ _ m m'
-        (λ y₁, function_extensionality _ _ (m y₁) (m' y₁) (p y₁))).
- apply (existT _ g); simpl.
- subst f g; unfold "◦", id; simpl; split; intros f.
-  apply function_extensionality; intros y₁.
-  apply function_extensionality; intros y₂.
-  apply invert.
-  unfold hap; simpl.
-bbb.
-  set (p :=
-     function_extensionality A (λ _ : A, A → A) m m'
-       (λ y₁0 : A,
-        function_extensionality A (λ _ : A, A) (m y₁0) (m' y₁0) (f y₁0))).
-  destruct p; simpl.
-bbb.
-
-simpl in p₂.
-eapply equiv_compose; [ eapply hott_2_7_2 | idtac ].
-apply eq_pair_dep_pair; [ idtac | intros q ].
- set (f := pr₁_transp_eq m a m' a' p).
- eapply (existT _ f).
+rewrite hap_funext.
+rewrite hap_funext.
 
 bbb.
 Axiom function_extensionality : ∀ A B (f g : ∀ x : A, B x),
