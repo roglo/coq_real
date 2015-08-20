@@ -3040,5 +3040,7 @@ apply eq_pair_dep_pair; [ idtac | intros q ].
   as g.
    intros p.
    subst ma; simpl.
+   subst e; destruct p₁; simpl.
+   simpl in q.
 
 bbb.
