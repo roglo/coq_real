@@ -3009,10 +3009,17 @@ apply eq_pair_dep_pair; [ idtac | intros q ].
   unfold semigroup_path_fun, semigroup_path_inv; simpl.
   subst e; destruct p₁; simpl.
   unfold "◦", "~~", id; intros f.
-  apply invert.
   apply Π_type.funext; intros y₁.
   apply Π_type.funext; intros y₂.
   do 2 rewrite Π_type.funext_quasi_inverse_of_happly.
   reflexivity.
+
+  unfold semigroup_path_fun, semigroup_path_inv; simpl.
+  subst e; destruct p₁; simpl.
+  unfold "◦", "~~", id; intros f.
+  destruct f; simpl.
+  eapply invert, compose; [ apply Π_type.funext_identity | idtac ].
+  apply ap, Π_type.funext; intros x.
+  apply Π_type.funext_identity.
 
 bbb.
