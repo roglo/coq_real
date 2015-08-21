@@ -3068,7 +3068,19 @@ apply eq_pair_dep_pair.
    → (hott_2_14_3 e m a == (λ b₁ b₂ b₃ : B, (a₁ b₁ b₂ b₃)⁻¹))
  ) as f.
   intros p; simpl in p.
+bbb.
   unfold hott_2_14_3.
+  apply Π_type.funext; intros b₁.
+  apply Π_type.funext; intros b₂.
+  apply Π_type.funext; intros b₃.
+  subst a₁.
+  subst e; destruct p₁; simpl in *.
+  unfold id; simpl.
+  unfold "◦"; simpl.
+  destruct q; simpl.
+  unfold transport_op; simpl.
+  unfold transport_op_1; simpl.
+  unfold Π_type.hott_2_9_4; simpl.
 bbb.
 
 Definition old_semigroupstr_path_type {A B} m a m' a'
