@@ -2874,12 +2874,22 @@ Definition new_hott_2_14_3 {A B} (e : A ≃ B) m (a : Assoc A m) :
   a' == λ b₁ b₂ b₃, (hott_2_14_3_tac e m a b₁ b₂ b₃)⁻¹.
 Proof.
 intros; simpl in a'.
-set (t := {X : Type & X → X → X}) in a'.
-set (u := λ X : U, X → X → X) in a'.
-set (P (xu : t) := Assoc (@pr₁ Type u xu) (@pr₂ Type u xu)) in a'.
+eapply Π_type.funext; intros b₁.
+eapply Π_type.funext; intros b₂.
+eapply Π_type.funext; intros b₃.
+
+set (f₁ := transport_op e m (m' b₁ b₂) b₃); simpl in f₁.
+set (f₂ := ap (pr₁ e) (hap (ap m (ap (pr₁ e⁻⁻¹) (transport_op e m b₁ b₂))) (pr₁ e⁻⁻¹ b₃))); simpl in f₂.
+
+set (t := {X : Type & X → X → X}) in *.
+set (u := λ X : U, X → X → X) in *.
+set (P (xu : t) := Assoc (@pr₁ Type u xu) (@pr₂ Type u xu)) in *.
 set (p := @pair_eq Type u _ _ _ _ (ua e) (refl m')) in a'.
-Check (transport P p).
-Check (@transport t P).
+
+set (E := pr₁ e) in *.
+set (E₁ := pr₁ e⁻⁻¹) in *.
+
+Check (@transport t P (existT u A m) (existT u B m') p a).
 bbb.
 
 intros.
