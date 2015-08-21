@@ -3028,7 +3028,8 @@ Definition new_semigroupstr_path_type {A B} m a m' a'
     (ma := existT (Assoc A) m a)
     (ma' := existT (Assoc B) m' a')
     (p₁ : A == B)
-    (e := idtoeqv p₁) :
+    (e := idtoeqv p₁)
+    (m₁ := transport (λ X, X → X → X) (ua e) m) :
   (transport SemigroupStr p₁ ma == ma') ≃
   (Π (y₁ : B), Π (y₂ : B), pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)
   * (a' == a').
