@@ -3022,7 +3022,40 @@ subst e; destruct p₁; simpl.
 rewrite ua_idtoeqv; reflexivity.
 Defined.
 
-Definition semigroupstr_path_type {A B} m a m' a'
+Check @hott_2_14_3.
+
+Definition new_semigroupstr_path_type {A B} m a m' a'
+    (ma := existT (Assoc A) m a)
+    (ma' := existT (Assoc B) m' a')
+    (p₁ : A == B)
+    (e := idtoeqv p₁) :
+  (transport SemigroupStr p₁ ma == ma') ≃
+  (Π (y₁ : B), Π (y₂ : B), pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)
+  * (a' == a').
+Proof.
+Check (hott_2_14_3 e m a).
+Check (λ b₁ b₂ b₃, (a' b₁ b₂ b₃)⁻¹).
+(* the problem is that the m' if the a' expression is not judgmentally
+   equal to transport (λ X, X → X → X) (ua e) m, and the two expressions
+   are not comparable; perhaps with a "good" transport? *)
+Check (hott_2_14_3 e m a == λ b₁ b₂ b₃, (a' b₁ b₂ b₃)⁻¹).
+The term "(a' b₁ b₂ b₃)⁻¹" has type "m' (m' b₁ b₂) b₃ == m' b₁ (m' b₂ b₃)"
+while it is expected to have type
+ "let m' := transport (λ X : U, X → X → X) (ua e) m in
+  m' (m' b₁ b₂) b₃ == m' b₁ (m' b₂ b₃)".
+bbb.
+λ b₁ b₂ b₃ : B, (a' b₁ b₂ b₃)⁻¹
+     : ∀ b₁ b₂ b₃ : B,
+       m' (m' b₁ b₂) b₃ == m' b₁ (m' b₂ b₃)
+hott_2_14_3 e m a
+     : ∀ (b₁ b₂ b₃ : B) (m':=transport (λ X : U, X → X → X) (ua e) m),
+       m' (m' b₁ b₂) b₃ == m' b₁ (m' b₂ b₃)
+bbb.
+
+eapply equiv_compose; [ eapply hott_2_7_2 | idtac ].
+bbb.
+
+Definition old_semigroupstr_path_type {A B} m a m' a'
     (ma := existT (Assoc A) m a)
     (ma' := existT (Assoc B) m' a')
     (p₁ : A == B)
