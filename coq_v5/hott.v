@@ -2890,6 +2890,11 @@ set (E := pr₁ e) in *.
 set (E₁ := pr₁ e⁻⁻¹) in *.
 
 Check (@transport t P (existT u A m) (existT u B m') p a).
+Print Assoc.
+set
+  (Assoc2 (Xm : t) (x y z : pr₁ Xm) :=
+     pr₂ Xm x (pr₂ Xm y z) == pr₂ Xm (pr₂ Xm x y) z).
+
 bbb.
 
 intros.
