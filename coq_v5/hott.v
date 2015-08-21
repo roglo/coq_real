@@ -2940,6 +2940,22 @@ apply Π_type.happly with (x := y₁).
 apply p.
 Defined.
 
+Definition semigroup_path_inv_tac {A B} m a m' a'
+    (ma := existT (Assoc A) m a)
+    (ma' := existT (Assoc B) m' a')
+    (p₁ : A == B)
+    (e := idtoeqv p₁) :
+  (∀ y₁ y₂ : B, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)
+  → pr₁ (transport SemigroupStr p₁ ma) == pr₁ ma'.
+Proof.
+subst ma ma' e.
+destruct p₁.
+intros p; simpl in p; simpl.
+apply Π_type.funext; intros y₁.
+apply Π_type.funext; intros y₂.
+apply p.
+Defined.
+
 Definition semigroup_path_fun {A B} m a m' a'
     (ma := existT (Assoc A) m a)
     (ma' := existT (Assoc B) m' a')
@@ -2958,22 +2974,6 @@ Definition semigroup_path_fun {A B} m a m' a'
   with
   | refl _ => λ m₁ a₁ p x₁ x₂, Π_type.happly (Π_type.happly p x₁) x₂
   end m' a'.
-
-Definition semigroup_path_inv_tac {A B} m a m' a'
-    (ma := existT (Assoc A) m a)
-    (ma' := existT (Assoc B) m' a')
-    (p₁ : A == B)
-    (e := idtoeqv p₁) :
-  (∀ y₁ y₂ : B, pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)
-  → pr₁ (transport SemigroupStr p₁ ma) == pr₁ ma'.
-Proof.
-subst ma ma' e.
-destruct p₁.
-intros p; simpl in p; simpl.
-apply Π_type.funext; intros y₁.
-apply Π_type.funext; intros y₂.
-apply p.
-Defined.
 
 Definition semigroup_path_inv {A B} m a m' a'
     (ma := existT (Assoc A) m a)
@@ -2996,6 +2996,7 @@ Definition semigroup_path_inv {A B} m a m' a'
   | refl _ => λ m' a' p, Π_type.funext (λ y₁, Π_type.funext (p y₁))
   end m' a'.
 
+(* strangely, the main hypothesis is not useful *)
 Definition semigroup_path2_fun_tac {A B} m a m' a'
     (ma := existT (Assoc A) m a)
     (ma' := existT (Assoc B) m' a')
