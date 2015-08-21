@@ -3041,6 +3041,34 @@ simpl in m₁, a₁.
 (* formulation not really satisfactory since a₁ is used instead of a';
    but required for hott_2_14_3 be compared with a'; perhaps I should
    change the definition of 2.14.3 instead? *)
+eapply equiv_compose; [ eapply hott_2_7_2 | idtac ].
+apply eq_pair_dep_pair.
+ apply (existT _ (semigroup_path_fun m a m' a' p₁)), qinv_isequiv.
+ apply (existT _ (semigroup_path_inv m a m' a' p₁)).
+ split; simpl.
+  unfold semigroup_path_fun, semigroup_path_inv; simpl.
+  subst e; destruct p₁; simpl.
+  unfold "◦", "~~", id; intros f.
+  apply Π_type.funext; intros y₁.
+  apply Π_type.funext; intros y₂.
+  do 2 rewrite Π_type.funext_quasi_inverse_of_happly.
+  reflexivity.
+
+  unfold semigroup_path_fun, semigroup_path_inv; simpl.
+  subst e; destruct p₁; simpl.
+  unfold "◦", "~~", id; intros f.
+  destruct f; simpl.
+  eapply invert, compose; [ apply Π_type.funext_identity | idtac ].
+  apply ap, Π_type.funext; intros x.
+  apply Π_type.funext_identity.
+
+ intros q; simpl in q.
+ assert (
+   (transport (Assoc B) q (pr₂ (transport SemigroupStr p₁ ma)) == pr₂ ma')
+   → (hott_2_14_3 e m a == (λ b₁ b₂ b₃ : B, (a₁ b₁ b₂ b₃)⁻¹))
+ ) as f.
+  intros p; simpl in p.
+  unfold hott_2_14_3.
 bbb.
 
 Definition old_semigroupstr_path_type {A B} m a m' a'
