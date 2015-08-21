@@ -3029,31 +3029,18 @@ Definition new_semigroupstr_path_type {A B} m a m' a'
     (ma' := existT (Assoc B) m' a')
     (p₁ : A == B)
     (e := idtoeqv p₁)
-    (m₁ := transport (λ X, X → X → X) (ua e) m) :
+    (m₁ :=
+       transport (λ X, X → X → X) (ua e) m)
+    (a₁ :=
+       transport (λ xu, Assoc (pr₁ xu) (pr₂ xu)) (pair⁼ (ua e) (refl m₁)) a) :
   (transport SemigroupStr p₁ ma == ma') ≃
   (Π (y₁ : B), Π (y₂ : B), pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)
-  * (a' == a').
+  * (hott_2_14_3 e m a == λ b₁ b₂ b₃, (a₁ b₁ b₂ b₃)⁻¹).
 Proof.
-Check (hott_2_14_3 e m a).
-Check (λ b₁ b₂ b₃, (a' b₁ b₂ b₃)⁻¹).
-(* the problem is that the m' if the a' expression is not judgmentally
-   equal to transport (λ X, X → X → X) (ua e) m, and the two expressions
-   are not comparable; perhaps with a "good" transport? *)
-Check (hott_2_14_3 e m a == λ b₁ b₂ b₃, (a' b₁ b₂ b₃)⁻¹).
-The term "(a' b₁ b₂ b₃)⁻¹" has type "m' (m' b₁ b₂) b₃ == m' b₁ (m' b₂ b₃)"
-while it is expected to have type
- "let m' := transport (λ X : U, X → X → X) (ua e) m in
-  m' (m' b₁ b₂) b₃ == m' b₁ (m' b₂ b₃)".
-bbb.
-λ b₁ b₂ b₃ : B, (a' b₁ b₂ b₃)⁻¹
-     : ∀ b₁ b₂ b₃ : B,
-       m' (m' b₁ b₂) b₃ == m' b₁ (m' b₂ b₃)
-hott_2_14_3 e m a
-     : ∀ (b₁ b₂ b₃ : B) (m':=transport (λ X : U, X → X → X) (ua e) m),
-       m' (m' b₁ b₂) b₃ == m' b₁ (m' b₂ b₃)
-bbb.
-
-eapply equiv_compose; [ eapply hott_2_7_2 | idtac ].
+simpl in m₁, a₁.
+(* formulation not really satisfactory since a₁ is used instead of a';
+   but required for hott_2_14_3 be compared with a'; perhaps I should
+   change the definition of 2.14.3 instead? *)
 bbb.
 
 Definition old_semigroupstr_path_type {A B} m a m' a'
