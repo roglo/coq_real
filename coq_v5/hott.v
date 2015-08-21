@@ -3052,6 +3052,13 @@ apply eq_pair_dep_pair.
 destruct q; simpl.
 destruct p; simpl.
 simpl in *.
+subst ma ma' m₁ a₁; simpl.
+(*
+@hap
+     : ∀ (A B : Type) (f g : A → B), f == g → ∀ x : A, f x == g x
+@ap
+     : ∀ (A B : Type) (x y : A) (f : A → B), x == y → f x == f y
+*)
 bbb.
 
   destruct q; simpl.
