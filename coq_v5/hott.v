@@ -2996,34 +2996,6 @@ Definition semigroup_path_inv {A B} m a m' a'
   | refl _ => λ m' a' p, Π_type.funext (λ y₁, Π_type.funext (p y₁))
   end m' a'.
 
-(* strangely, the main hypothesis is not useful *)
-Definition semigroup_path2_fun_tac {A B} m a m' a'
-    (ma := existT (Assoc A) m a)
-    (ma' := existT (Assoc B) m' a')
-    (p₁ : A == B)
-    (e := idtoeqv p₁)
-    (q : pr₁ (transport SemigroupStr p₁ ma) == m') :
-(*
-  transport (Assoc B) q (pr₂ (transport SemigroupStr p₁ ma)) == a'
-  → *) (∀ x₁ x₂ : A, pr₁ e (m x₁ x₂) == m' (pr₁ e x₁) (pr₁ e x₂)).
-Proof.
-(*
-intros p x₁ x₂.
-clear p.
-*)
-intros x₁ x₂.
-eapply compose; [ eapply ap, ap2, invert, (quasi_inv_comp_l e) | idtac ].
-eapply compose; [ eapply ap, ap, invert, (quasi_inv_comp_l e) | idtac ].
-eapply compose; [ apply (transport_op e m (pr₁ e x₁) (pr₁ e x₂))⁻¹ | idtac ].
-apply hap, hap.
-eapply compose; [ idtac | apply q ].
-subst ma; simpl.
-subst e; destruct p₁; simpl.
-rewrite ua_idtoeqv; reflexivity.
-Defined.
-
-Check @hott_2_14_3.
-
 Definition new_semigroupstr_path_type {A B} m a m' a'
     (ma := existT (Assoc A) m a)
     (ma' := existT (Assoc B) m' a')
@@ -3068,15 +3040,20 @@ apply eq_pair_dep_pair.
    → (hott_2_14_3 e m a == (λ b₁ b₂ b₃ : B, (a₁ b₁ b₂ b₃)⁻¹))
  ) as f.
   intros p; simpl in p.
-bbb.
+  unfold invert; simpl.
   unfold hott_2_14_3.
   apply Π_type.funext; intros b₁.
   apply Π_type.funext; intros b₂.
   apply Π_type.funext; intros b₃.
-  subst a₁.
   subst e; destruct p₁; simpl in *.
   unfold id; simpl.
   unfold "◦"; simpl.
+  do 2 rewrite <- ru.
+destruct q; simpl.
+destruct p; simpl.
+simpl in *.
+bbb.
+
   destruct q; simpl.
   unfold transport_op; simpl.
   unfold transport_op_1; simpl.
