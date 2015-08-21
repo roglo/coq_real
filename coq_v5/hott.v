@@ -2815,17 +2815,35 @@ Defined.
   (see (2.14.2)) is equal to a function sending b1, b2, b3 : B to a
   path given by the following steps: *)
 
+Print Assoc.
+
+Definition new_hott_2_14_3_tac {A B} (e : A ≃ B) m (a : Assoc A m) :
+  let m' : B → B → B := transport (λ X : U, X → X → X) (ua e) m in
+  let a' : Assoc B m' :=
+    transport (λ xu, Assoc (pr₁ xu) (pr₂ xu)) (pair⁼ (ua e) (refl m')) a
+  in
+  Assoc B m' == (∀ b₁ b₂ b₃, m' b₁ (m' b₂ b₃) == m' (m' b₁ b₂) b₃).
+Proof.
+Abort.
+
 Definition hott_2_14_3_tac {A B} (e : A ≃ B) m (a : Assoc A m) b₁ b₂ b₃ :
   let m' : B → B → B := transport (λ X : U, X → X → X) (ua e) m in
   m' (m' b₁ b₂) b₃ == m' b₁ (m' b₂ b₃).
 Proof.
 simpl; set (m' := transport (λ X : U, X → X → X) (ua e) m).
+(* m'(m'(b₁, b₂), b₃) = e(m(e⁻¹(m'(b₁, b₂)), e⁻¹(b₃))) *)
 eapply compose; [ apply transport_op | idtac ].
+(*                    = e(m(e⁻¹(e(m(e⁻¹(b₁), e⁻¹(b₂)))), e⁻¹(b₃))) *)
 eapply compose; [ eapply ap, hap, ap, ap, transport_op | idtac ].
+(*                    = e(m(m(e⁻¹(b₁), e⁻¹(b₂)), e⁻¹(b₃))) *)
 eapply compose; [ eapply ap, hap, ap, quasi_inv_comp_l | unfold id ].
+(*                    = e(m(e⁻¹(b₁), m(e⁻¹(b₂), e⁻¹(b₃)))) *)
 eapply compose; [ eapply ap, invert, a | idtac ].
+(*                    = e(m(e⁻¹(b₁), e⁻¹(e(m(e⁻¹(b₂), e⁻¹(b₃)))))) *)
 eapply compose; [ eapply ap, ap, invert, (quasi_inv_comp_l e) | unfold "◦" ].
+(*                    = e(m(e⁻¹(b₁), e⁻¹(m'(b₂, b3)))) *)
 eapply compose; [ eapply ap, ap, ap, invert, transport_op | idtac ].
+(*                    = m'(b₁,m'(b₂, b₃)) *)
 eapply compose; [ eapply invert, transport_op | reflexivity ].
 Defined.
 
@@ -2847,6 +2865,23 @@ Definition hott_2_14_3 {A B} (e : A ≃ B) m (a : Assoc A m) b₁ b₂ b₃ :
   • ap (pr₁ e)
       (ap (m (pr₁ e⁻⁻¹ b₁)) (ap (pr₁ e⁻⁻¹) (transport_op e m b₂ b₃)⁻¹))
   • (transport_op e m b₁ (m' b₂ b₃))⁻¹.
+
+Definition new_hott_2_14_3 {A B} (e : A ≃ B) m (a : Assoc A m) :
+  let m' : B → B → B := transport (λ X : U, X → X → X) (ua e) m in
+  let a' : Assoc B m' :=
+    transport (λ xu, Assoc (pr₁ xu) (pr₂ xu)) (pair⁼ (ua e) (refl m')) a
+  in
+  a' == λ b₁ b₂ b₃, (hott_2_14_3_tac e m a b₁ b₂ b₃)⁻¹.
+Proof.
+intros.
+subst m' a'; simpl.
+eapply Π_type.funext; intros b₁.
+eapply Π_type.funext; intros b₂.
+eapply Π_type.funext; intros b₃.
+bbb.
+unfold transport; simpl.
+unfold pair_eq; simpl.
+bbb.
 
 (* 2.14.2 Equality of semigroups *)
 
