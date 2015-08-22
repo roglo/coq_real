@@ -2887,8 +2887,7 @@ set
      ap (pr₁ e)
        (hap
           (ap m (@ap _ _ (m' b₁ b₂) _ (pr₁ e⁻⁻¹) (transport_op e m b₁ b₂)))
-          (pr₁ e⁻⁻¹ b₃))).
-bbb.
+          (pr₁ e⁻⁻¹ b₃))) in *; simpl in f₂.
 
 set (t := {X : Type & X → X → X}) in *.
 set (u := λ X : U, X → X → X) in *.
@@ -2905,6 +2904,9 @@ set
 
 Check (@transport t P (existT u A m) (existT u B m') p a).
 subst a'.
+subst m'.
+set (m' := transport u (ua e) m : B → B → B) in *.
+set (q := transport P p a b₁ b₂ b₃); simpl in q.
 bbb.
 
 intros.
