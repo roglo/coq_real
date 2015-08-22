@@ -2719,60 +2719,47 @@ Defined.
 (* had formula 2.14.2 *)
 
 (* By applying (2.9.4) twice, we have that m'(b1, b2) is equal to *)
-(* (personal remark: provable also with "destruct (ua e)") *)
+(* (personal remark: provable also with "destruct p") *)
 
-Definition transport_op_1_tac {A B} (e : A ≃ B) m b₁ b₂ :
-  transport (λ X : U, X → X → X) (ua e) m b₁ b₂ ==
-  transport id (ua e)
-    (m (transport id (ua e)⁻¹ b₁) (transport id (ua e)⁻¹ b₂)).
+Definition transport_op_1_tac {A B} (p : A == B) m b₁ b₂ :
+  transport (λ X : U, X → X → X) p m b₁ b₂ ==
+  transport id p (m (transport id p⁻¹ b₁) (transport id p⁻¹ b₂)).
 Proof.
 eapply compose.
  eapply hap, hap.
- apply (@Π_type.hott_2_9_4 U id (λ X, X → X) A B (ua e) m).
-
- apply
-   (hap
-      (@Π_type.hott_2_9_4 U id id A B (ua e) (m (transport id (ua e)⁻¹ b₁)))).
+ apply (@Π_type.hott_2_9_4 _ _ (λ X, X → X) _ _ p m).
+ apply (hap (Π_type.hott_2_9_4 p (m (transport id p⁻¹ b₁)))).
 Defined.
 
-Definition transport_op_1 {A B} (e : A ≃ B) m b₁ b₂ :
-  transport (λ X : U, X → X → X) (ua e) m b₁ b₂ ==
-  transport id (ua e)
-    (m (transport id (ua e)⁻¹ b₁) (transport id (ua e)⁻¹ b₂))
+Definition transport_op_1 {A B} (p : A == B) m b₁ b₂ :
+  transport (λ X : U, X → X → X) p m b₁ b₂ ==
+  transport id p (m (transport id p⁻¹ b₁) (transport id p⁻¹ b₂))
 :=
-  hap
-    (hap (@Π_type.hott_2_9_4 U id (λ X : U, X → X) A B (ua e) m) b₁)
-    b₂
-  • hap
-      (@Π_type.hott_2_9_4 U id id A B (ua e) (m (transport id (ua e)⁻¹ b₁)))
-      b₂.
+  hap (hap (@Π_type.hott_2_9_4 _ _ (λ X : U, X → X) _ _ p m) b₁) b₂
+  • hap (Π_type.hott_2_9_4 p (m (transport id p⁻¹ b₁))) b₂.
 
-Definition transport_op_2_tac {A B} (e : A ≃ B) m b₁ b₂ :
-  transport (λ X : U, X → X → X) (ua e) m b₁ b₂ ==
-  transport id (ua e)
-    (m (transport id (ua e)⁻¹ b₁) (transport id (ua e)⁻¹ b₂)).
+Definition transport_op_2_tac {A B} (p : A == B) m b₁ b₂ :
+  transport (λ X : U, X → X → X) p m b₁ b₂ ==
+  transport id p (m (transport id p⁻¹ b₁) (transport id p⁻¹ b₂)).
 Proof.
-simpl.
-destruct (ua e); reflexivity.
+destruct p; reflexivity.
 Defined.
 
-Definition transport_op_2 {A B} (e : A ≃ B) m b₁ b₂ :
-  transport (λ X : U, X → X → X) (ua e) m b₁ b₂ ==
-  transport id (ua e)
-    (m (transport id (ua e)⁻¹ b₁) (transport id (ua e)⁻¹ b₂))
+Definition transport_op_2 {A B} (p : A == B) m b₁ b₂ :
+  transport (λ X : U, X → X → X) p m b₁ b₂ ==
+  transport id p (m (transport id p⁻¹ b₁) (transport id p⁻¹ b₂))
 :=
-  match ua e as i0 in (_ == y) return
-     (A ≃ y
-      → ∀ b₁0 b₂0 : y,
-        transport (λ X : U, X → X → X) i0 m b₁0 b₂0 ==
-        transport id i0 (m (transport id i0⁻¹ b₁0) (transport id i0⁻¹ b₂0)))
- with
- | refl _ =>
-     λ (_ : A ≃ A) (b₁0 b₂0 : A),
-     refl
-       (transport id (refl A)
-          (m (transport id (refl A)⁻¹ b₁0) (transport id (refl A)⁻¹ b₂0)))
- end e b₁ b₂.
+  match p in (_ == y) return
+    (∀ b₁ b₂ : y,
+     transport (λ X : U, X → X → X) p m b₁ b₂ ==
+     transport id p (m (transport id p⁻¹ b₁) (transport id p⁻¹ b₂)))
+  with
+  | refl _ =>
+      λ b₁ b₂ : A,
+      refl
+        (transport id (refl A)
+           (m (transport id (refl A)⁻¹ b₁) (transport id (refl A)⁻¹ b₂)))
+  end b₁ b₂.
 
 bbb.
 
