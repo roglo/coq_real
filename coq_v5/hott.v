@@ -2880,7 +2880,22 @@ eapply Π_type.funext; intros b₃.
 unfold hott_2_14_3.
 subst m'.
 set (m' := transport (λ X : U, X → X → X) (ua e) m : B → B → B) in *.
+do 6 rewrite invert_compose.
+rewrite hott_2_1_4_iii.
+do 5 rewrite compose_assoc.
+set (t := {X : Type & X → X → X}) in *.
+set (u := λ X : U, X → X → X) in *.
+set (P (xu : t) := Assoc (@pr₁ Type u xu) (@pr₂ Type u xu)) in *.
+set (p := @pair_eq Type u _ _ _ _ (ua e) (refl m')) in a'.
+subst m' a'; simpl in *.
+destruct e as (f, ((g, Hg), (h, Hh))); simpl.
+set (gg := existT (λ g : B → A, f ◦ g ~~ id) g Hg) in *.
+set (hh := existT (λ h0 : B → A, h0 ◦ f ~~ id) h Hh) in *.
+set (e := existT (λ f0 : A → B, isequiv f0) f (gg, hh) : A ≃ B) in *.
+simpl in e.
+subst gg hh.
 
+bbb.
 set (f₁ := transport_op e m (m' b₁ b₂) b₃) in *; simpl in f₁.
 set
   (f₂ :=
