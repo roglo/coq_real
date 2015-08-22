@@ -2704,16 +2704,15 @@ Definition SemigroupStr_equiv {A B} :
 (* First, because SemigroupStr (X) is defined to be a Σ-type, by
    Theorem 2.7.4, *)
 
-Definition transport_semigroup {A B} (e : A ≃ B) m (a : Assoc A m) :
-  let m' : B → B → B := transport (λ X : U, X → X → X) (ua e) m in
+Definition transport_semigroup {A B} (p : A == B) m (a : Assoc A m) :
+  let m' : B → B → B := transport (λ X : U, X → X → X) p m in
   let a' : Assoc B m' :=
-    transport (λ xu, Assoc (pr₁ xu) (pr₂ xu)) (pair⁼ (ua e) (refl m')) a
+    transport (λ xu, Assoc (pr₁ xu) (pr₂ xu)) (pair⁼ p (refl m')) a
   in
-  transport SemigroupStr (ua e) (existT _ m a) == existT _ m' a'.
+  transport SemigroupStr p (existT _ m a) == existT _ m' a'.
 Proof.
 apply
-  (@hott_2_7_4 U (λ X, X → X → X) (λ xu, Assoc (pr₁ xu) (pr₂ xu)) A B (ua e)
-   m a).
+  (@hott_2_7_4 U (λ X, X → X → X) (λ xu, Assoc (pr₁ xu) (pr₂ xu)) A B p m a).
 Defined.
 
 (* had formula 2.14.2 *)
@@ -2764,8 +2763,8 @@ Definition transport_op_2 {A B} (p : A == B) m b₁ b₂ :
 (* Then, because ua is quasi-inverse to transport^(X→X), this is equal to *)
 
 Definition transport_op_tac {A B} (e : A ≃ B) m b₁ b₂ :
-  let m' : B → B → B := transport (λ X : U, X → X → X) (ua e) m in
-  m' b₁ b₂ == pr₁ e (m (pr₁ e⁻⁻¹ b₁) (pr₁ e⁻⁻¹ b₂)).
+  transport (λ X : U, X → X → X) (ua e) m  b₁ b₂ ==
+  pr₁ e (m (pr₁ e⁻⁻¹ b₁) (pr₁ e⁻⁻¹ b₂)).
 Proof.
 eapply compose; [ eapply transport_op_1 | idtac ].
 eapply compose; [ apply ua_pcr | apply ap ].
@@ -2775,8 +2774,8 @@ reflexivity.
 Defined.
 
 Definition transport_op {A B} (e : A ≃ B) m b₁ b₂ :
-  let m' : B → B → B := transport (λ X : U, X → X → X) (ua e) m in
-  m' b₁ b₂ == pr₁ e (m (pr₁ e⁻⁻¹ b₁) (pr₁ e⁻⁻¹ b₂))
+  transport (λ X : U, X → X → X) (ua e) m b₁ b₂ ==
+  pr₁ e (m (pr₁ e⁻⁻¹ b₁) (pr₁ e⁻⁻¹ b₂))
 :=
   transport_op_1 (ua e) m b₁ b₂
   • ua_pcr e (m (transport id (ua e)⁻¹ b₁) (transport id (ua e)⁻¹ b₂))
@@ -2826,17 +2825,6 @@ Defined.
 (* one can calculate that the induced proof that m' is associative
   (see (2.14.2)) is equal to a function sending b1, b2, b3 : B to a
   path given by the following steps: *)
-
-Print Assoc.
-
-Definition new_hott_2_14_3_tac {A B} (e : A ≃ B) m (a : Assoc A m) :
-  let m' : B → B → B := transport (λ X : U, X → X → X) (ua e) m in
-  let a' : Assoc B m' :=
-    transport (λ xu, Assoc (pr₁ xu) (pr₂ xu)) (pair⁼ (ua e) (refl m')) a
-  in
-  Assoc B m' == (∀ b₁ b₂ b₃, m' b₁ (m' b₂ b₃) == m' (m' b₁ b₂) b₃).
-Proof.
-Abort.
 
 Definition hott_2_14_3_tac {A B} (e : A ≃ B) m (a : Assoc A m) b₁ b₂ b₃ :
   let m' : B → B → B := transport (λ X : U, X → X → X) (ua e) m in
