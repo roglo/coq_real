@@ -2882,7 +2882,12 @@ subst m'.
 set (m' := transport (λ X : U, X → X → X) (ua e) m : B → B → B) in *.
 
 set (f₁ := transport_op e m (m' b₁ b₂) b₃) in *; simpl in f₁.
-set (f₂ := ap (pr₁ e) (hap (ap m (ap (pr₁ e⁻⁻¹) (transport_op e m b₁ b₂))) (pr₁ e⁻⁻¹ b₃))) in *; simpl in f₂.
+set
+  (f₂ :=
+     ap (pr₁ e)
+       (hap
+          (ap m (@ap _ _ (m' b₁ b₂) _ (pr₁ e⁻⁻¹) (transport_op e m b₁ b₂)))
+          (pr₁ e⁻⁻¹ b₃))).
 bbb.
 
 set (t := {X : Type & X → X → X}) in *.
