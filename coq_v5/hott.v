@@ -2749,8 +2749,8 @@ Definition transport_op_2 {A B} (p : A == B) m b₁ b₂ :
   transport (λ X : U, X → X → X) p m b₁ b₂ ==
   transport id p (m (transport id p⁻¹ b₁) (transport id p⁻¹ b₂))
 :=
-  match p in (_ == y) return
-    (∀ b₁ b₂ : y,
+  match p in (_ == X) return
+    (∀ b₁ b₂ : X,
      transport (λ X : U, X → X → X) p m b₁ b₂ ==
      transport id p (m (transport id p⁻¹ b₁) (transport id p⁻¹ b₂)))
   with
@@ -2760,8 +2760,6 @@ Definition transport_op_2 {A B} (p : A == B) m b₁ b₂ :
         (transport id (refl A)
            (m (transport id (refl A)⁻¹ b₁) (transport id (refl A)⁻¹ b₂)))
   end b₁ b₂.
-
-bbb.
 
 (* Then, because ua is quasi-inverse to transport^(X→X), this is equal to *)
 
@@ -2780,7 +2778,7 @@ Definition transport_op {A B} (e : A ≃ B) m b₁ b₂ :
   let m' : B → B → B := transport (λ X : U, X → X → X) (ua e) m in
   m' b₁ b₂ == pr₁ e (m (pr₁ e⁻⁻¹ b₁) (pr₁ e⁻⁻¹ b₂))
 :=
-  transport_op_1 e m b₁ b₂
+  transport_op_1 (ua e) m b₁ b₂
   • ua_pcr e (m (transport id (ua e)⁻¹ b₁) (transport id (ua e)⁻¹ b₂))
   • ap (pr₁ e)
       (ap2 (transport id (ua e)⁻¹ b₁) (projT1 e⁻⁻¹ b₁)
@@ -2916,8 +2914,9 @@ subst P p; simpl.
 unfold pair_eq; simpl.
 refine (match (ua e) with refl _ => _ end).
 *)
-
 bbb.
+
+set (m' := transport (λ X : U, X → X → X) (ua e) m : B → B → B) in *.
 set (f₁ := transport_op e m (m' b₁ b₂) b₃) in *; simpl in f₁.
 set
   (f₂ :=
@@ -2925,11 +2924,6 @@ set
        (hap
           (ap m (@ap _ _ (m' b₁ b₂) _ (pr₁ e⁻⁻¹) (transport_op e m b₁ b₂)))
           (pr₁ e⁻⁻¹ b₃))) in *; simpl in f₂.
-
-set (t := {X : Type & X → X → X}) in *.
-set (u := λ X : U, X → X → X) in *.
-set (P (xu : t) := Assoc (@pr₁ Type u xu) (@pr₂ Type u xu)) in *.
-set (p := @pair_eq Type u _ _ _ _ (ua e) (refl m')) in a'.
 
 set (E := pr₁ e) in *.
 set (E₁ := pr₁ e⁻⁻¹) in *.
@@ -2940,7 +2934,6 @@ set
      pr₂ Am x (pr₂ Am y z) == pr₂ Am (pr₂ Am x y) z).
 
 Check (@transport t P (existT u A m) (existT u B m') p a).
-subst a'.
 subst m'.
 set (m' := transport u (ua e) m : B → B → B) in *.
 set (q := transport P p a b₁ b₂ b₃); simpl in q.
