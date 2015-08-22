@@ -2722,10 +2722,9 @@ Defined.
 (* (personal remark: provable also with "destruct (ua e)") *)
 
 Definition transport_op_1_tac {A B} (e : A ≃ B) m b₁ b₂ :
-  let m' : B → B → B := transport (λ X : U, X → X → X) (ua e) m in
-  m' b₁ b₂ ==
-   transport id (ua e)
-     (m (transport id (ua e)⁻¹ b₁) (transport id (ua e)⁻¹ b₂)).
+  transport (λ X : U, X → X → X) (ua e) m b₁ b₂ ==
+  transport id (ua e)
+    (m (transport id (ua e)⁻¹ b₁) (transport id (ua e)⁻¹ b₂)).
 Proof.
 eapply compose.
  eapply hap, hap.
@@ -2737,10 +2736,9 @@ eapply compose.
 Defined.
 
 Definition transport_op_1 {A B} (e : A ≃ B) m b₁ b₂ :
-  let m' : B → B → B := transport (λ X : U, X → X → X) (ua e) m in
-  m' b₁ b₂ ==
-   transport id (ua e)
-     (m (transport id (ua e)⁻¹ b₁) (transport id (ua e)⁻¹ b₂))
+  transport (λ X : U, X → X → X) (ua e) m b₁ b₂ ==
+  transport id (ua e)
+    (m (transport id (ua e)⁻¹ b₁) (transport id (ua e)⁻¹ b₂))
 :=
   hap
     (hap (@Π_type.hott_2_9_4 U id (λ X : U, X → X) A B (ua e) m) b₁)
@@ -2750,32 +2748,33 @@ Definition transport_op_1 {A B} (e : A ≃ B) m b₁ b₂ :
       b₂.
 
 Definition transport_op_2_tac {A B} (e : A ≃ B) m b₁ b₂ :
-  let m' : B → B → B := transport (λ X : U, X → X → X) (ua e) m in
-  m' b₁ b₂ ==
-   transport id (ua e)
-     (m (transport id (ua e)⁻¹ b₁) (transport id (ua e)⁻¹ b₂)).
+  transport (λ X : U, X → X → X) (ua e) m b₁ b₂ ==
+  transport id (ua e)
+    (m (transport id (ua e)⁻¹ b₁) (transport id (ua e)⁻¹ b₂)).
 Proof.
+simpl.
 destruct (ua e); reflexivity.
 Defined.
 
 Definition transport_op_2 {A B} (e : A ≃ B) m b₁ b₂ :
-  let m' : B → B → B := transport (λ X : U, X → X → X) (ua e) m in
-  m' b₁ b₂ ==
-   transport id (ua e)
-     (m (transport id (ua e)⁻¹ b₁) (transport id (ua e)⁻¹ b₂))
+  transport (λ X : U, X → X → X) (ua e) m b₁ b₂ ==
+  transport id (ua e)
+    (m (transport id (ua e)⁻¹ b₁) (transport id (ua e)⁻¹ b₂))
 :=
   match ua e as i0 in (_ == y) return
-    (A ≃ y
-     → ∀ (b₁0 b₂0 : y) (m':=transport (λ X : U, X → X → X) i0 m),
-       m' b₁0 b₂0 ==
-       transport id i0 (m (transport id i0⁻¹ b₁0) (transport id i0⁻¹ b₂0)))
-  with
-  | refl _ =>
-      λ (_ : A ≃ A) (b₁0 b₂0 : A),
-      refl
-        (transport id (refl A)
-           (m (transport id (refl A)⁻¹ b₁0) (transport id (refl A)⁻¹ b₂0)))
-  end e b₁ b₂.
+     (A ≃ y
+      → ∀ b₁0 b₂0 : y,
+        transport (λ X : U, X → X → X) i0 m b₁0 b₂0 ==
+        transport id i0 (m (transport id i0⁻¹ b₁0) (transport id i0⁻¹ b₂0)))
+ with
+ | refl _ =>
+     λ (_ : A ≃ A) (b₁0 b₂0 : A),
+     refl
+       (transport id (refl A)
+          (m (transport id (refl A)⁻¹ b₁0) (transport id (refl A)⁻¹ b₂0)))
+ end e b₁ b₂.
+
+bbb.
 
 (* Then, because ua is quasi-inverse to transport^(X→X), this is equal to *)
 
