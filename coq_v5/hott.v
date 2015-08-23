@@ -2866,7 +2866,10 @@ Definition hott_2_14_3 {A B} (e : A ≃ B) m (a : Assoc A m) b₁ b₂ b₃ :
       (ap (m (pr₁ e⁻⁻¹ b₁)) (ap (pr₁ e⁻⁻¹) (transport_op e m b₂ b₃)⁻¹))
   • (transport_op e m b₁ (m' b₂ b₃))⁻¹.
 
-Definition new_hott_2_14_3 {A B} (e : A ≃ B) m (a : Assoc A m) :
+(* true definition of 2.14.3: a' is indeed equal to this proof above;
+   I am not sure I can prove that, this seems complicated. *)
+
+Definition true_hott_2_14_3 {A B} (e : A ≃ B) m (a : Assoc A m) :
   let m' : B → B → B := transport (λ X : U, X → X → X) (ua e) m in
   let a' : Assoc B m' :=
     transport (λ xu, Assoc (pr₁ xu) (pr₂ xu)) (pair⁼ (ua e) (refl m')) a
@@ -2894,9 +2897,12 @@ do 3 rewrite hott_2_1_4_iii.
 Definition toto {A B} : ∀ (f g : A → B) (p : f == g) (x : A),
   hap p⁻¹ x = (hap p x)⁻¹.
 Proof. destruct p; reflexivity. Defined.
-Show.
 do 2 rewrite <- toto.
 do 3 rewrite <- hott_2_2_2_ii.
+set (E := pr₁ e).
+set (E₁ := pr₁ e⁻⁻¹).
+bbb.
+
 destruct e as (f, ((g, Hg), (h, Hh))); simpl.
 set (gg := existT (λ g : B → A, f ◦ g ~~ id) g Hg) in *.
 set (hh := existT (λ h0 : B → A, h0 ◦ f ~~ id) h Hh) in *.
