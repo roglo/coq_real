@@ -2823,7 +2823,7 @@ apply Hg.
 Defined.
 
 (* one can calculate that the induced proof that m' is associative
-  (see (2.14.2)) is equal to a function sending b1, b2, b3 : B to a
+  (see 2.14.2) is equal to a function sending b1, b2, b3 : B to a
   path given by the following steps: *)
 
 Definition hott_2_14_3_tac {A B} (e : A ≃ B) m (a : Assoc A m) b₁ b₂ b₃ :
