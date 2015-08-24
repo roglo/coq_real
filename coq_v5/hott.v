@@ -3263,4 +3263,25 @@ split.
  destruct x; reflexivity.
 Defined.
 
+(* There is also a version for Σ-types: (2.15.9) *)
+
+Definition Σ_clos_adjun {A B C} :
+  (Π (w : Σ (x : A), B x), C w) ≃ (Π (x : A), Π (y : B x), C (existT _ x y)).
+Proof.
+bbb.
+
+apply (existT _ (λ g a b, g (a, b a))), qinv_isequiv.
+apply (existT _ (λ f (w : A * B), let (a, b) return (C _) := w in f a b)).
+unfold "◦", "~~", id; simpl.
+split.
+ intros f.
+ apply Π_type.funext; intros a.
+ apply Π_type.funext; intros b.
+ reflexivity.
+
+ intros f.
+ apply Π_type.funext; intros x.
+ destruct x; reflexivity.
+Defined.
+
 bbb.
