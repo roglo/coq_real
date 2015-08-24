@@ -3212,20 +3212,6 @@ unfold hott_2_15_6, fun_dep_prod_prod, "◦", "~~", id; simpl.
 split; [ intros (Ha, Hb); reflexivity | idtac ].
 intros p.
 eapply Π_type.funext; intros x.
-(*
-{a : A x & P x a}
-@sigT (A x) (fun a : A x => P x a)
-     : Type
-
-∃ a : A x, P x a
-@ex (A x) (fun a : A x => P x a)
-     : Prop
-
-∀ x : X, {a : A x & P x a}
-     : Type
-∀ x : X, ∃ a : A x, P x a
-     : Prop
-*)
 destruct (p x); reflexivity.
 Defined.
 
@@ -3237,5 +3223,16 @@ Defined.
        (∀ x : X, {a : A x & P x a})
        → {g : ∀ x : X, A x & ∀ x : X, P x (g x)}
  *)
+
+(* In the case of cartesian products, the nondependent version simply
+   expresses the cartesian closure adjunction: *)
+
+Definition cart_clos_adjun {A B C} : ((A * B) → C) ≃ (A → (B → C)).
+Proof.
+apply (existT _ (λ g a b, g (a, b))), qinv_isequiv.
+apply (existT _ (λ f x, f (pr₁ x) (pr₂ x))).
+unfold "◦", "~~", id; simpl.
+split.
+ intros x.
 
 bbb.
