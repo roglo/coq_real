@@ -3212,7 +3212,30 @@ unfold hott_2_15_6, fun_dep_prod_prod, "◦", "~~", id; simpl.
 split; [ intros (Ha, Hb); reflexivity | idtac ].
 intros p.
 eapply Π_type.funext; intros x.
+(*
+{a : A x & P x a}
+@sigT (A x) (fun a : A x => P x a)
+     : Type
+
+∃ a : A x, P x a
+@ex (A x) (fun a : A x => P x a)
+     : Prop
+
+∀ x : X, {a : A x & P x a}
+     : Type
+∀ x : X, ∃ a : A x, P x a
+     : Prop
+*)
 destruct (p x); reflexivity.
 Defined.
+
+(* This is noteworthy because the propositions-as-types interpretation
+   of (2.15.6) is “the axiom of choice”. *)
+
+(* @hott_2_15_6
+     : ∀ (X : Type) (A : X → Type) (P : ∀ x : X, A x → Type),
+       (∀ x : X, {a : A x & P x a})
+       → {g : ∀ x : X, A x & ∀ x : X, P x (g x)}
+ *)
 
 bbb.
