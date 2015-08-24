@@ -3110,10 +3110,10 @@ Import cartesian.
 Definition hott_2_15_1 {X A B} : (X → A * B) → (X → A) * (X → B) :=
   λ f, (pr₁ ◦ f, pr₂ ◦ f).
 
-(* Theorem 2.15.2. (2.15.1) is an equivalence. *)
-
 Definition fun_prod_prod {X A B} : (X → A) * (X → B) → (X → A * B) :=
   λ p x, (pr₁ p x, pr₂ p x).
+
+(* Theorem 2.15.2. (2.15.1) is an equivalence. *)
 
 Definition hott_2_15_2_tac {X A B} : (X → A * B) ≃ (X → A) * (X → B).
 Proof.
@@ -3139,5 +3139,9 @@ Definition hott_2_15_2 {X A B} : (X → A * B) ≃ (X → A) * (X → B) :=
              (λ x,
               let (a, b) as p1 return (pr₁ p1, pr₂ p1) == p1 := p x in
               refl (a, b)))))).
+
+Definition hott_2_15_4 {X A B} :
+  (Π (x : X), (A x * B x)) → (Π (x : X), A x) * (Π (x : X), B x) :=
+  λ f, ((λ x, (pr₁ (f x))), (λ x, (pr₂ (f x)))).
 
 bbb.
