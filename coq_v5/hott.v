@@ -3053,38 +3053,26 @@ Definition semigroup_path_inv {A B} m a m' a'
   | refl _ => λ m' a' p, Π_type.funext (λ y₁, Π_type.funext (p y₁))
   end m' a'.
 
-(* @hott_2_14_3
-     : ∀ (A B : Type) (e : A ≃ B) (m : A → A → A) 
-       (a : Assoc A m) (m':=transport (λ X : U, X → X → X) (ua e) m)
-       (a':=
-        transport (λ xu : {y : Type & y → y → y}, Assoc (pr₁ xu) (pr₂ xu))
-          (pair⁼ (ua e) (refl m')) a),
-       a' == (λ b₁ b₂ b₃ : B, (pre_hott_2_14_3 e m a b₁ b₂ b₃)⁻¹) *)
-
-bbb.
-(* shit, I am lost... *)
-
-Definition new_semigroupstr_path_type {A B} m a m' a'
+Definition semigroupstr_path_type {A B} m a m' a'
     (ma := existT (Assoc A) m a)
     (ma' := existT (Assoc B) m' a')
     (p₁ : A == B)
     (e := idtoeqv p₁)
+(**)
     (m₁ := transport (λ X, X → X → X) (ua e) m)
     (a₁ :=
-       transport (λ xu, Assoc (pr₁ xu) (pr₂ xu)) (pair⁼ (ua e) (refl m₁)) a) :
+       transport (λ xu, Assoc (pr₁ xu) (pr₂ xu)) (pair⁼ (ua e) (refl m₁)) a)
+(**)
+:
   (transport SemigroupStr p₁ ma == ma') ≃
   (Π (y₁ : B), Π (y₂ : B), pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)
-(*
+(**)
   * (a₁ == (λ b₁ b₂ b₃, (pre_hott_2_14_3 e m a b₁ b₂ b₃)⁻¹)).
-*)
-  * (a' == λ b₁ b₂ b₃, (hott_2_14_3 e m a b₁ b₂ b₃)⁻¹).
 (**)
 Proof.
 (* a₁ == pre_hott_2_14_3 ... is put here instead of a == hott_2_14_3...
    because the proof of hott_2_14 has not been done, the book does not
    say how to prove it. But it prevents this proof to be completed :-( *)
-Check a₁.
-
 eapply equiv_compose; [ eapply hott_2_7_2 | idtac ].
 apply eq_pair_dep_pair.
  apply (existT _ (semigroup_path_fun m a m' a' p₁)), qinv_isequiv.
@@ -3107,68 +3095,10 @@ apply eq_pair_dep_pair.
   apply Π_type.funext_identity.
 
  intros q; simpl in q.
-bbb.
-
 Abort. (* not done; see remark above *)
 
-Definition old_semigroupstr_path_type {A B} m a m' a'
-    (ma := existT (Assoc A) m a)
-    (ma' := existT (Assoc B) m' a')
-    (p₁ : A == B)
-    (e := idtoeqv p₁) :
-  (transport SemigroupStr p₁ ma == ma') ≃
-  (Π (y₁ : B), Π (y₂ : B), pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)
-  * (Π (x₁ : A), Π (x₂ : A), pr₁ e (m x₁ x₂) == m' (pr₁ e x₁) (pr₁ e x₂)).
-Proof.
-eapply equiv_compose; [ eapply hott_2_7_2 | idtac ].
-apply eq_pair_dep_pair.
- apply (existT _ (semigroup_path_fun m a m' a' p₁)), qinv_isequiv.
- apply (existT _ (semigroup_path_inv m a m' a' p₁)).
- split; simpl.
-  unfold semigroup_path_fun, semigroup_path_inv; simpl.
-  subst e; destruct p₁; simpl.
-  unfold "◦", "~~", id; intros f.
-  apply Π_type.funext; intros y₁.
-  apply Π_type.funext; intros y₂.
-  do 2 rewrite Π_type.funext_quasi_inverse_of_happly.
-  reflexivity.
+(* rest of §2.14 given up because of missing proof of 2.14.2 *)
 
-  unfold semigroup_path_fun, semigroup_path_inv; simpl.
-  subst e; destruct p₁; simpl.
-  unfold "◦", "~~", id; intros f.
-  destruct f; simpl.
-  eapply invert, compose; [ apply Π_type.funext_identity | idtac ].
-  apply ap, Π_type.funext; intros x.
-  apply Π_type.funext_identity.
+(* 2.15 Universal properties *)
 
- intros q; simpl in q.
- (* actually the hypothesis (transport (Assoc B) q ...) is not used! *)
- apply (existT _ (Basics.const (semigroup_path2_fun_tac m a m' a' p₁ q))).
- unfold Basics.const; simpl.
 bbb.
- assert
-   ((∀ x₁ x₂ : A, pr₁ e (m x₁ x₂) == m' (pr₁ e x₁) (pr₁ e x₂))
-    → transport (Assoc B) q (pr₂ (transport SemigroupStr p₁ ma)) == pr₂ ma')
- as g.
-  intros p; simpl in q; simpl.
-bbb.
-   subst ma; simpl.
-pose proof @transport_semigroup A B e m a.
-simpl in H.
-set (m₁ := transport (λ X : U, X → X → X) (ua e) m) in H.
-set (a₁ :=
-   transport
-      (λ xu : {y : Type & (λ X : U, X → X → X) y},
-       Assoc (pr₁ xu) (pr₂ xu)) (pair⁼ (ua e) (refl m₁)) a) in H.
-subst e; destruct p₁; simpl.
-rewrite ua_idtoeqv in H.
-simpl in H.
-unfold id in H.
-simpl in q.
-destruct q.
-simpl.
-simpl in p.
-unfold id in p.
-destruct H.
-bbb.
-(* bof *)
