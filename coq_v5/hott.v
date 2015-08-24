@@ -3115,12 +3115,33 @@ Definition hott_2_15_1 {X A B} : (X → A * B) → (X → A) * (X → B) :=
 Definition fun_prod_prod {X A B} : (X → A) * (X → B) → (X → A * B) :=
   λ p x, (pr₁ p x, pr₂ p x).
 
-Definition hott_2_15_2 {X A B} : (X → A * B) ≃ (X → A) * (X → B).
+Definition hott_2_15_2_tac {X A B} : (X → A * B) ≃ (X → A) * (X → B).
 Proof.
 apply (existT _ hott_2_15_1), qinv_isequiv.
 apply (existT _ fun_prod_prod).
 unfold hott_2_15_1, fun_prod_prod, "◦", "~~", id; simpl.
 split; [ intros (Ha, Hb); reflexivity | idtac ].
 intros p; apply invert.
+eapply Π_type.funext; intros x.
+destruct (p x); reflexivity.
+Defined.
+
+Definition hott_2_15_2 {X A B} : (X → A * B) ≃ (X → A) * (X → B) :=
+ existT isequiv hott_2_15_1
+   (qinv_isequiv hott_2_15_1
+      (existT _
+         fun_prod_prod
+           (λ x : (X → A) * (X → B),
+            let (Ha, Hb) as p return ((λ y, pr₁ p y, λ y : X, pr₂ p y) == p)
+            := x in
+            refl (Ha, Hb),
+         λ p : X → A * B,
+         (Π_type.funext
+            (λ (x : X) (p0:=p x),
+             let
+             (a, b) as p1 return (p1 == (pr₁ p1, pr₂ p1)) := p0 in
+             refl (pr₁ (a, b), pr₂ (a, b))))⁻¹))).
+
+(* above to be simplified... *)
 
 bbb.
