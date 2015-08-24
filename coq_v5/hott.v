@@ -2826,7 +2826,7 @@ Defined.
   (see 2.14.2) is equal to a function sending b1, b2, b3 : B to a
   path given by the following steps: *)
 
-Definition hott_2_14_3_tac {A B} (e : A ≃ B) m (a : Assoc A m) b₁ b₂ b₃ :
+Definition pre_hott_2_14_3_tac {A B} (e : A ≃ B) m (a : Assoc A m) b₁ b₂ b₃ :
   let m' : B → B → B := transport (λ X : U, X → X → X) (ua e) m in
   m' (m' b₁ b₂) b₃ == m' b₁ (m' b₂ b₃).
 Proof.
@@ -2847,7 +2847,7 @@ eapply compose; [ eapply ap, ap, ap, invert, transport_op | idtac ].
 eapply compose; [ eapply invert, transport_op | reflexivity ].
 Defined.
 
-Definition hott_2_14_3 {A B} (e : A ≃ B) m (a : Assoc A m) b₁ b₂ b₃ :
+Definition pre_hott_2_14_3 {A B} (e : A ≃ B) m (a : Assoc A m) b₁ b₂ b₃ :
   let m' : B → B → B := transport (λ X : U, X → X → X) (ua e) m in
   m' (m' b₁ b₂) b₃ == m' b₁ (m' b₂ b₃)
 :=
@@ -2866,21 +2866,25 @@ Definition hott_2_14_3 {A B} (e : A ≃ B) m (a : Assoc A m) b₁ b₂ b₃ :
       (ap (m (pr₁ e⁻⁻¹ b₁)) (ap (pr₁ e⁻⁻¹) (transport_op e m b₂ b₃)⁻¹))
   • (transport_op e m b₁ (m' b₂ b₃))⁻¹.
 
-(* true definition of 2.14.3: a' is indeed equal to this proof above;
-   I am not sure I can prove that, this seems complicated. *)
+Definition hap_invert {A B} (f g : A → B) (p : f == g) (x : A) :
+  hap p⁻¹ x = (hap p x)⁻¹.
+Proof. destruct p; reflexivity. Defined.
 
-Definition true_hott_2_14_3 {A B} (e : A ≃ B) m (a : Assoc A m) :
+(* true definition of 2.14.3: a' is supposed to be equal to this proof
+   above *)
+
+Definition hott_2_14_3 {A B} (e : A ≃ B) m (a : Assoc A m) :
   let m' : B → B → B := transport (λ X : U, X → X → X) (ua e) m in
   let a' : Assoc B m' :=
     transport (λ xu, Assoc (pr₁ xu) (pr₂ xu)) (pair⁼ (ua e) (refl m')) a
   in
-  a' == λ b₁ b₂ b₃, (hott_2_14_3 e m a b₁ b₂ b₃)⁻¹.
+  a' == λ b₁ b₂ b₃, (pre_hott_2_14_3 e m a b₁ b₂ b₃)⁻¹.
 Proof.
 intros; simpl in a'.
 eapply Π_type.funext; intros b₁.
 eapply Π_type.funext; intros b₂.
 eapply Π_type.funext; intros b₃.
-unfold hott_2_14_3.
+unfold pre_hott_2_14_3.
 subst m'.
 set (m' := transport (λ X : U, X → X → X) (ua e) m : B → B → B) in *.
 simpl in m'.
@@ -2894,63 +2898,12 @@ set (p := @pair_eq Type u _ _ _ _ (ua e) (refl m')) in a'.
 subst m' a'.
 do 8 rewrite <- hott_2_2_2_ii.
 do 3 rewrite hott_2_1_4_iii.
-Definition toto {A B} : ∀ (f g : A → B) (p : f == g) (x : A),
-  hap p⁻¹ x = (hap p x)⁻¹.
-Proof. destruct p; reflexivity. Defined.
-do 2 rewrite <- toto.
+do 2 rewrite <- hap_invert.
 do 3 rewrite <- hott_2_2_2_ii.
 set (E := pr₁ e).
 set (E₁ := pr₁ e⁻⁻¹).
-bbb.
-
-destruct e as (f, ((g, Hg), (h, Hh))); simpl.
-set (gg := existT (λ g : B → A, f ◦ g ~~ id) g Hg) in *.
-set (hh := existT (λ h0 : B → A, h0 ◦ f ~~ id) h Hh) in *.
-set (e := existT (λ f0 : A → B, isequiv f0) f (gg, hh) : A ≃ B) in *.
-simpl in e.
-subst gg hh.
-(*
-unfold transport_op; simpl.
-unfold transport_op_1; simpl.
-unfold Π_type.hott_2_9_4; simpl.
-subst P p; simpl.
-unfold pair_eq; simpl.
-refine (match (ua e) with refl _ => _ end).
-*)
-bbb.
-
-set (m' := transport (λ X : U, X → X → X) (ua e) m : B → B → B) in *.
-set (f₁ := transport_op e m (m' b₁ b₂) b₃) in *; simpl in f₁.
-set
-  (f₂ :=
-     ap (pr₁ e)
-       (hap
-          (ap m (@ap _ _ (m' b₁ b₂) _ (pr₁ e⁻⁻¹) (transport_op e m b₁ b₂)))
-          (pr₁ e⁻⁻¹ b₃))) in *; simpl in f₂.
-
-set (E := pr₁ e) in *.
-set (E₁ := pr₁ e⁻⁻¹) in *.
-
-Print Assoc.
-set
-  (Assoc2 (Am : t) (x y z : pr₁ Am) :=
-     pr₂ Am x (pr₂ Am y z) == pr₂ Am (pr₂ Am x y) z).
-
-Check (@transport t P (existT u A m) (existT u B m') p a).
-subst m'.
-set (m' := transport u (ua e) m : B → B → B) in *.
-set (q := transport P p a b₁ b₂ b₃); simpl in q.
-bbb.
-
-intros.
-subst m' a'; simpl.
-eapply Π_type.funext; intros b₁.
-eapply Π_type.funext; intros b₂.
-eapply Π_type.funext; intros b₃.
-bbb.
-unfold transport; simpl.
-unfold pair_eq; simpl.
-bbb.
+Abort. (* don't know how to prove it and the book says: " we do not
+  show the proof" *)
 
 (* 2.14.2 Equality of semigroups *)
 
@@ -3100,23 +3053,38 @@ Definition semigroup_path_inv {A B} m a m' a'
   | refl _ => λ m' a' p, Π_type.funext (λ y₁, Π_type.funext (p y₁))
   end m' a'.
 
+(* @hott_2_14_3
+     : ∀ (A B : Type) (e : A ≃ B) (m : A → A → A) 
+       (a : Assoc A m) (m':=transport (λ X : U, X → X → X) (ua e) m)
+       (a':=
+        transport (λ xu : {y : Type & y → y → y}, Assoc (pr₁ xu) (pr₂ xu))
+          (pair⁼ (ua e) (refl m')) a),
+       a' == (λ b₁ b₂ b₃ : B, (pre_hott_2_14_3 e m a b₁ b₂ b₃)⁻¹) *)
+
+bbb.
+(* shit, I am lost... *)
+
 Definition new_semigroupstr_path_type {A B} m a m' a'
     (ma := existT (Assoc A) m a)
     (ma' := existT (Assoc B) m' a')
     (p₁ : A == B)
     (e := idtoeqv p₁)
-    (m₁ :=
-       transport (λ X, X → X → X) (ua e) m)
+    (m₁ := transport (λ X, X → X → X) (ua e) m)
     (a₁ :=
        transport (λ xu, Assoc (pr₁ xu) (pr₂ xu)) (pair⁼ (ua e) (refl m₁)) a) :
   (transport SemigroupStr p₁ ma == ma') ≃
   (Π (y₁ : B), Π (y₂ : B), pr₁ e (m (pr₁ e⁻⁻¹ y₁) (pr₁ e⁻⁻¹ y₂)) == m' y₁ y₂)
-  * (hott_2_14_3 e m a == λ b₁ b₂ b₃, (a₁ b₁ b₂ b₃)⁻¹).
+(*
+  * (a₁ == (λ b₁ b₂ b₃, (pre_hott_2_14_3 e m a b₁ b₂ b₃)⁻¹)).
+*)
+  * (a' == λ b₁ b₂ b₃, (hott_2_14_3 e m a b₁ b₂ b₃)⁻¹).
+(**)
 Proof.
-simpl in m₁, a₁.
-(* formulation not really satisfactory since a₁ is used instead of a';
-   but required for hott_2_14_3 be compared with a'; perhaps I should
-   change the definition of 2.14.3 instead? *)
+(* a₁ == pre_hott_2_14_3 ... is put here instead of a == hott_2_14_3...
+   because the proof of hott_2_14 has not been done, the book does not
+   say how to prove it. But it prevents this proof to be completed :-( *)
+Check a₁.
+
 eapply equiv_compose; [ eapply hott_2_7_2 | idtac ].
 apply eq_pair_dep_pair.
  apply (existT _ (semigroup_path_fun m a m' a' p₁)), qinv_isequiv.
@@ -3139,37 +3107,9 @@ apply eq_pair_dep_pair.
   apply Π_type.funext_identity.
 
  intros q; simpl in q.
- assert (
-   (transport (Assoc B) q (pr₂ (transport SemigroupStr p₁ ma)) == pr₂ ma')
-   → (hott_2_14_3 e m a == (λ b₁ b₂ b₃ : B, (a₁ b₁ b₂ b₃)⁻¹))
- ) as f.
-  intros p; simpl in p.
-  unfold invert; simpl.
-  unfold hott_2_14_3.
-  apply Π_type.funext; intros b₁.
-  apply Π_type.funext; intros b₂.
-  apply Π_type.funext; intros b₃.
-  subst e; destruct p₁; simpl in *.
-  unfold id; simpl.
-  unfold "◦"; simpl.
-  do 2 rewrite <- ru.
-destruct q; simpl.
-destruct p; simpl.
-simpl in *.
-subst ma ma' m₁ a₁; simpl.
-(*
-@hap
-     : ∀ (A B : Type) (f g : A → B), f == g → ∀ x : A, f x == g x
-@ap
-     : ∀ (A B : Type) (x y : A) (f : A → B), x == y → f x == f y
-*)
 bbb.
 
-  destruct q; simpl.
-  unfold transport_op; simpl.
-  unfold transport_op_1; simpl.
-  unfold Π_type.hott_2_9_4; simpl.
-bbb.
+Abort. (* not done; see remark above *)
 
 Definition old_semigroupstr_path_type {A B} m a m' a'
     (ma := existT (Assoc A) m a)
