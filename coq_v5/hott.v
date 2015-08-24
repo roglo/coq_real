@@ -3268,10 +3268,10 @@ Defined.
 Definition Σ_clos_adjun {A B C} :
   (Π (w : Σ (x : A), B x), C w) ≃ (Π (x : A), Π (y : B x), C (existT _ x y)).
 Proof.
-bbb.
-
-apply (existT _ (λ g a b, g (a, b a))), qinv_isequiv.
-apply (existT _ (λ f (w : A * B), let (a, b) return (C _) := w in f a b)).
+apply (existT _ (λ f a (b : B a), f (existT _ a b))), qinv_isequiv.
+apply
+  (existT _
+     (λ f (w : Σ (x : A), B x), let (a, b) return (C _) := w in f a b)).
 unfold "◦", "~~", id; simpl.
 split.
  intros f.
