@@ -3132,15 +3132,12 @@ Definition hott_2_15_2 {X A B} : (X → A * B) ≃ (X → A) * (X → B) :=
       (existT _
          fun_prod_prod
          ((λ x : (X → A) * (X → B),
-             let (Ha, Hb) as p return ((λ y, pr₁ p y, λ y : X, pr₂ p y) == p)
-             := x in
+             let (Ha, Hb) return (pr₁ x, pr₂ x) == x := x in
              refl (Ha, Hb)),
           (λ p : X → A * B,
            Π_type.funext
              (λ x,
-              let (a, b) as p1 return ((pr₁ p1, pr₂ p1) == p1) := p x in
+              let (a, b) as p1 return (pr₁ p1, pr₂ p1) == p1 := p x in
               refl (a, b)))))).
-
-(* above to be simplified... *)
 
 bbb.
