@@ -3127,21 +3127,69 @@ destruct (p x); reflexivity.
 Defined.
 
 Definition hott_2_15_2 {X A B} : (X → A * B) ≃ (X → A) * (X → B) :=
- existT isequiv hott_2_15_1
-   (qinv_isequiv hott_2_15_1
-      (existT _
-         fun_prod_prod
-         ((λ x : (X → A) * (X → B),
-             let (Ha, Hb) return (pr₁ x, pr₂ x) == x := x in
-             refl (Ha, Hb)),
-          (λ p : X → A * B,
-           Π_type.funext
-             (λ x,
-              let (a, b) as p1 return (pr₁ p1, pr₂ p1) == p1 := p x in
-              refl (a, b)))))).
+  existT isequiv hott_2_15_1
+    (qinv_isequiv hott_2_15_1
+       (existT _
+          fun_prod_prod
+          ((λ x : (X → A) * (X → B),
+              let (Ha, Hb) return (pr₁ x, pr₂ x) == x := x in
+              refl (Ha, Hb)),
+           (λ p : X → A * B,
+            Π_type.funext
+              (λ x,
+               let (a, b) as p1 return (pr₁ p1, pr₂ p1) == p1 := p x in
+               refl (a, b)))))).
 
 Definition hott_2_15_4 {X A B} :
   (Π (x : X), (A x * B x)) → (Π (x : X), A x) * (Π (x : X), B x) :=
   λ f, ((λ x, (pr₁ (f x))), (λ x, (pr₂ (f x)))).
+
+Definition fun_dep_prod_prod {X A B} :
+    (Π (x : X), A x) * (Π (x : X), B x) → (Π (x : X), (A x * B x)) :=
+  λ p x, (pr₁ p x, pr₂ p x).
+
+(* Theorem 2.15.5. (2.15.4) is an equivalence. *)
+
+Definition hott_2_15_5_tac {X A B} :
+  (Π (x : X), (A x * B x)) ≃ (Π (x : X), A x) * (Π (x : X), B x).
+Proof.
+apply (existT _ hott_2_15_4), qinv_isequiv.
+apply (existT _ fun_dep_prod_prod).
+unfold hott_2_15_4, fun_dep_prod_prod, "◦", "~~", id; simpl.
+split; [ intros (Ha, Hb); reflexivity | idtac ].
+intros p.
+eapply Π_type.funext; intros x.
+destruct (p x); reflexivity.
+Defined.
+
+Definition hott_2_15_5 {X A B} :
+   (Π (x : X), (A x * B x)) ≃ (Π (x : X), A x) * (Π (x : X), B x) :=
+  existT isequiv hott_2_15_4
+    (qinv_isequiv hott_2_15_4
+       (existT _
+          fun_dep_prod_prod
+          ((λ x : (∀ x : X, A x) * (∀ x : X, B x),
+              let (Ha, Hb) return (pr₁ x, pr₂ x) == x := x in
+              refl (Ha, Hb)),
+           (λ p : ∀ x : X, A x * B x,
+              Π_type.funext
+                (λ x,
+                 let (a, b) as p1 return (pr₁ p1, pr₂ p1) == p1 := p x in
+                 refl (a, b)))))).
+
+(* Just as Σ-types are a generalization of cartesian products, they
+   satisfy a generalized version of this universal property. Jumping
+   right to the dependently typed version, suppose we have a type X
+   and type families A : X → U and P : Π (x:X) A(x) → U. Then we have
+   a function *)
+
+Definition hott_2_15_6 {X A} P :
+  (Π (x : X), Σ (a : A x), P x a) →
+  (Σ (g : Π (x : X), A x), Π (x : X), P x (g x))
+:=
+  λ f,
+  existT (λ g, Π (x : X), P x (g x))
+    (λ x, Σ_type.pr₁ (f x))
+    (λ x, Σ_type.pr₂ (f x)).
 
 bbb.
