@@ -3234,5 +3234,33 @@ apply (existT _ (λ f x, f (pr₁ x) (pr₂ x))).
 unfold "◦", "~~", id; simpl.
 split.
  intros x.
+ apply Π_type.funext; intros a.
+ apply Π_type.funext; intros b.
+ reflexivity.
+
+ intros f.
+ apply Π_type.funext; intros x.
+ destruct x; reflexivity.
+Defined.
+
+(* The dependent version of this is formulated for a type family
+    C : A x B → U: *)
+
+Definition dep_clos_adjun {A B C} :
+  (Π (w : A * B), C w) ≃ (Π (x : A), Π (y : B), C (x, y)).
+Proof.
+apply (existT _ (λ g a b, g (a, b))), qinv_isequiv.
+apply (existT _ (λ f (w : A * B), let (a, b) return (C _) := w in f a b)).
+unfold "◦", "~~", id; simpl.
+split.
+ intros f.
+ apply Π_type.funext; intros a.
+ apply Π_type.funext; intros b.
+ reflexivity.
+
+ intros f.
+ apply Π_type.funext; intros x.
+ destruct x; reflexivity.
+Defined.
 
 bbb.
