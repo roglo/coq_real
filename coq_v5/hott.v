@@ -3192,4 +3192,13 @@ Definition hott_2_15_6 {X A} P :
     (λ x, Σ_type.pr₁ (f x))
     (λ x, Σ_type.pr₂ (f x)).
 
+(* Theorem 2.15.7. (2.15.6) is an equivalence. *)
+
+Definition hott_2_15_7 {X A} P :
+  (Π (x : X), Σ (a : A x), P x a) ≃
+  (Σ (g : Π (x : X), A x), Π (x : X), P x (g x)).
+Proof.
+apply (existT _ (hott_2_15_6 P)).
+bbb.
+
 bbb.
