@@ -3097,8 +3097,17 @@ apply eq_pair_dep_pair.
  intros q; simpl in q.
 Abort. (* not done; see remark above *)
 
+End EqStr.
+
 (* rest of §2.14 given up because of missing proof of 2.14.2 *)
 
+Module UnivProp.
+
+Import cartesian.
+
 (* 2.15 Universal properties *)
+
+Definition hott_2_15_1 {X A B} : (X → A * B) → (X → A) * (X → B) :=
+  λ f, (pr₁ ◦ f, pr₂ ◦ f).
 
 bbb.
