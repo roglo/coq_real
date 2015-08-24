@@ -3115,6 +3115,7 @@ Definition fun_prod_prod {X A B} : (X → A) * (X → B) → (X → A * B) :=
 
 (* Theorem 2.15.2. (2.15.1) is an equivalence. *)
 
+(* their proof requires 2.6.2 but I did not use it *)
 Definition hott_2_15_2_tac {X A B} : (X → A * B) ≃ (X → A) * (X → B).
 Proof.
 apply (existT _ hott_2_15_1), qinv_isequiv.
@@ -3144,18 +3145,19 @@ Definition hott_2_15_4 {X A B} :
   (Π (x : X), (A x * B x)) → (Π (x : X), A x) * (Π (x : X), B x) :=
   λ f, ((λ x, (pr₁ (f x))), (λ x, (pr₂ (f x)))).
 
-Definition fun_dep_prod_prod {X A B} :
+Definition fun_dep_fun_prod_prod {X A B} :
     (Π (x : X), A x) * (Π (x : X), B x) → (Π (x : X), (A x * B x)) :=
   λ p x, (pr₁ p x, pr₂ p x).
 
 (* Theorem 2.15.5. (2.15.4) is an equivalence. *)
 
+(* proof 'left to the reader', I do what I want :-) *)
 Definition hott_2_15_5_tac {X A B} :
   (Π (x : X), (A x * B x)) ≃ (Π (x : X), A x) * (Π (x : X), B x).
 Proof.
 apply (existT _ hott_2_15_4), qinv_isequiv.
-apply (existT _ fun_dep_prod_prod).
-unfold hott_2_15_4, fun_dep_prod_prod, "◦", "~~", id; simpl.
+apply (existT _ fun_dep_fun_prod_prod).
+unfold hott_2_15_4, fun_dep_fun_prod_prod, "◦", "~~", id; simpl.
 split; [ intros (Ha, Hb); reflexivity | idtac ].
 intros p.
 eapply Π_type.funext; intros x.
@@ -3167,7 +3169,7 @@ Definition hott_2_15_5 {X A B} :
   existT isequiv hott_2_15_4
     (qinv_isequiv hott_2_15_4
        (existT _
-          fun_dep_prod_prod
+          fun_dep_fun_prod_prod
           ((λ x : (∀ x : X, A x) * (∀ x : X, B x),
               let (Ha, Hb) return (pr₁ x, pr₂ x) == x := x in
               refl (Ha, Hb)),
@@ -3192,13 +3194,25 @@ Definition hott_2_15_6 {X A} P :
     (λ x, Σ_type.pr₁ (f x))
     (λ x, Σ_type.pr₂ (f x)).
 
+Definition fun_dep_prod_prod  {X A} P :
+    (Σ (g : Π (x : X), A x), Π (x : X), P x (g x)) →
+    (Π (x : X), Σ (a : A x), P x a) :=
+  λ p x, existT _ (Σ_type.pr₁ p x) (Σ_type.pr₂ p x).
+
 (* Theorem 2.15.7. (2.15.6) is an equivalence. *)
 
+(* their proof requires 2.7.3 but I did not use it *)
 Definition hott_2_15_7 {X A} P :
   (Π (x : X), Σ (a : A x), P x a) ≃
   (Σ (g : Π (x : X), A x), Π (x : X), P x (g x)).
 Proof.
-apply (existT _ (hott_2_15_6 P)).
-bbb.
+apply (existT _ (hott_2_15_6 P)), qinv_isequiv.
+apply (existT _ (fun_dep_prod_prod P)).
+unfold hott_2_15_6, fun_dep_prod_prod, "◦", "~~", id; simpl.
+split; [ intros (Ha, Hb); reflexivity | idtac ].
+intros p.
+eapply Π_type.funext; intros x.
+destruct (p x); reflexivity.
+Defined.
 
 bbb.
