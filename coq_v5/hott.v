@@ -3284,4 +3284,22 @@ split.
  destruct x; reflexivity.
 Defined.
 
+(* path induction is the right-to-left direction of an equivalence as
+   follows: (2.5.10) *)
+
+Definition path_ind_equiv {A} a B :
+  (Π (x : A), Π (p : a == x), B x p) ≃ B a (refl a).
+Proof.
+apply (existT _ (λ f : ∀ x p, B x p, f a (refl a))), qinv_isequiv.
+apply
+  (existT _
+     (λ p x q, match q in (_ == y) return (B y q) with refl _ => p end)).
+unfold "◦", "~~", id; simpl.
+split; [ reflexivity | idtac ].
+intros f.
+apply Π_type.funext; intros x.
+apply Π_type.funext; intros q.
+destruct q; reflexivity.
+Defined.
+
 bbb.
