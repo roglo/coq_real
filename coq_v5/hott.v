@@ -3488,6 +3488,31 @@ Definition ex_2_2 {A} {x y z : A} (p : x == y) (q : y == z) :
 Proof.
 unfold hott_2_1_2_proof_1, hott_2_1_2_proof_2, hott_2_1_2_proof_3.
 destruct p, q; simpl; unfold id.
-Set Printing All. Show.
-(* oups... *)
+
+Definition toto {A} (x : A) : ∀ p : refl x == refl x, p == refl (refl x).
+Proof.
+(* is it true ? *)
+intros p.
+Check (∀ a : x == x, refl x == a → Prop).
+(* ∀ a : x == x, refl x == a → Prop
+     : Type *)
+Check (λ (a : x == x) (p : a == a), p == refl a).
+(* λ (a : x == x) (p : a == a), p == refl a
+     : ∀ a : x == x, a == a → Prop *)
+destruct p.
+
+Toplevel input, characters 0-11:
+Error: Cannot instantiate metavariable P of type
+"∀ a : x == x, refl x == a → Prop" with abstraction
+"λ (a : x == x) (p : a == a), p == refl a" of incompatible type
+"∀ a : x == x, a == a → Prop".
+bbb.
+
+Definition titi {A} (x : A) (p q : refl x == refl x) : p == q.
+Proof.
+pose proof toto x p.
+eapply compose; [ eassumption | idtac ].
+eapply invert; apply toto.
+Defined.
+
 bbb.
