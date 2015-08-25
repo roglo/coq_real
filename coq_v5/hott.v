@@ -577,7 +577,10 @@ Notation "p '⁻¹'" := (invert p)
 Lemma hott_2_1_1 : ∀ A (x : A), refl x = (refl x)⁻¹.
 Proof. reflexivity. Qed.
 
-Definition compose {A} {x y z : A} (p : x == y) : y == z → x == z :=
+(* Lemma 2.1.2 *)
+
+Definition compose {A} {x y z : A} : x == y → y == z → x == z :=
+  λ p,
   match p with
   | refl _ => id
   end.
@@ -595,12 +598,12 @@ Definition compose2 {A} {x y z : A} (p : x == y) : y == z → x == z :=
 
 (* proof that the proofs are equal *)
 Definition compose_compose2 {A} {x y z : A} : ∀ (p : x == y) (q : y == z),
-    compose p q = compose2 p q :=
+    compose p q == compose2 p q :=
   λ p q,
-  match q return (p • q = compose2 p q) with
+  match q return (p • q == compose2 p q) with
   | refl _ =>
-      match p return (p • refl _ = compose2 p (refl _)) with
-      | refl _ => eq_refl
+      match p return (p • refl _ == compose2 p (refl _)) with
+      | refl _ => refl _
       end
   end.
 
@@ -610,7 +613,7 @@ Theorem fold_compose : ∀ A (x y z : A) p,
    end = @compose A x y z p.
 Proof. reflexivity. Qed.
 
-Lemma hott_2_1_2 : ∀ A (x : A), refl x = refl x • refl x.
+Lemma hott_2_1_2_def : ∀ A (x : A), refl x = refl x • refl x.
 Proof. reflexivity. Qed.
 
 Inductive andt (A B : Type) : Type := conjt : A → B → andt A B.
@@ -3311,5 +3314,180 @@ Definition hott_2_15_11 {A B C} (f : A → C) (g : B → C) :=
 (* this type is not necessarily inhabited since A (or B) can be empty *)
 
 End UnivProp.
+
+(* "Exercise 2.1. Show that the three obvious proofs of Lemma 2.1.2 are
+    pairwise equal." *)
+
+(* Quote from §2.1: "Lemma 2.1.2 has three obvious proofs: we could do
+   induction over p, induction over q, or induction over both of
+   them. If we proved it three different ways, we would have three
+   different elements of the same type. It’s not hard to show that
+   these three elements are equal (see Exercise 2.1), but as they are
+   not definitionally equal, there can still be reasons to prefer one
+   over another." *)
+
+Definition hott_2_1_2_proof_1_tac {A} {x y z : A} : x == y → y == z → x == z.
+Proof.
+intros p q.
+destruct p; assumption.
+Defined.
+
+Definition hott_2_1_2_proof_2_tac {A} {x y z : A} : x == y → y == z → x == z.
+Proof.
+intros p q.
+destruct q; assumption.
+Defined.
+
+Definition hott_2_1_2_proof_3_tac {A} {x y z : A} : x == y → y == z → x == z.
+Proof.
+intros p q.
+destruct p, q; reflexivity.
+Defined.
+
+(* even a fourth: induction first on q, second on p *)
+
+Definition hott_2_1_2_proof_4_tac {A} {x y z : A} : x == y → y == z → x == z.
+Proof.
+intros p q.
+destruct q, p; reflexivity.
+Defined.
+
+Definition hott_2_1_2_proof_1 {A} {x y z : A} : x == y → y == z → x == z :=
+  λ p q,
+  match p with
+  | refl _ => id
+  end q.
+
+Definition hott_2_1_2_proof_2 {A} {x y z : A} : x == y → y == z → x == z :=
+  λ p q,
+  match q with
+  | refl _ => p
+  end.
+
+Definition hott_2_1_2_proof_3 {A} {x y z : A} : x == y → y == z → x == z :=
+  λ p q,
+  match p with
+  | refl _ =>
+      λ r : x == z,
+      match r with
+      | refl _ => refl x
+      end
+  end q.
+
+Definition hott_2_1_2_proof_4 {A} {x y z : A} : x == y → y == z → x == z :=
+  λ p q,
+  match q with
+  | refl _ =>
+      match p with
+      | refl _ => refl x
+      end
+  end.
+
+Definition hott_2_1_2_proof_1_eq_proof_2_tac {A} (x y z : A)
+    (p : x == y) (q : y == z) :
+  hott_2_1_2_proof_1 p q == hott_2_1_2_proof_2 p q.
+Proof.
+unfold hott_2_1_2_proof_1, hott_2_1_2_proof_2.
+destruct p, q; reflexivity.
+Defined.
+
+Definition hott_2_1_2_proof_2_eq_proof_3_tac {A} (x y z : A)
+    (p : x == y) (q : y == z) :
+  hott_2_1_2_proof_2 p q == hott_2_1_2_proof_3 p q.
+Proof.
+unfold hott_2_1_2_proof_2, hott_2_1_2_proof_3.
+destruct p; reflexivity.
+Defined.
+
+Definition hott_2_1_2_proof_3_eq_proof_4_tac {A} (x y z : A)
+    (p : x == y) (q : y == z) :
+  hott_2_1_2_proof_3 p q == hott_2_1_2_proof_4 p q.
+Proof.
+unfold hott_2_1_2_proof_3, hott_2_1_2_proof_4.
+destruct p; reflexivity.
+Defined.
+
+Definition hott_2_1_2_proof_4_eq_proof_1_tac {A} (x y z : A)
+    (p : x == y) (q : y == z) :
+  hott_2_1_2_proof_4 p q == hott_2_1_2_proof_1 p q.
+Proof.
+unfold hott_2_1_2_proof_4, hott_2_1_2_proof_1.
+destruct p, q; reflexivity.
+Defined.
+
+Definition hott_2_1_2_proof_1_eq_proof_2 {A} (x y z : A)
+    (p : x == y) (q : y == z) :
+  hott_2_1_2_proof_1 p q == hott_2_1_2_proof_2 p q
+:=
+bbb.
+
+hott_2_1_2_proof_1_eq_proof_2_tac = 
+λ (A : Type) (x y z : A) (p : x == y) (q : y == z),
+match
+  p as i in (_ == y0)
+  return
+    (∀ q0 : y0 == z,
+     match i in (_ == a) return (a == z → x == z) with
+     | refl _ => id
+     end q0 == match q0 in (_ == a) return (x == a) with
+               | refl _ => i
+               end)
+with
+| refl _ =>
+    λ q0 : x == z,
+    match
+      q0 as i in (_ == y0)
+      return
+        (id i ==
+         match i in (_ == a) return (x == a) with
+         | refl _ => refl x
+         end)
+    with
+    | refl _ => refl (refl x)
+    end
+end q
+     : ∀ (A : Type) (x y z : A) (p : x == y) (q : y == z),
+       hott_2_1_2_proof_1 p q == hott_2_1_2_proof_2 p q
+
+Argument A is implicit and maximally inserted
+Argument scopes are [type_scope _ _ _ _ _]
+
+  λ x y (A : Type) (x y z : A) (p : x == y) (q : y == z),
+match q in (_ == y0) return (x == y0) with
+| refl _ => p
+end.
+     : ∀ (A : Type) (x y z : A), x == y → y == z → x == z
+
+Arguments A, x, y, z are implicit and maximally inserted
+Argument scopes are [type_scope _ _ _ _ _]
+bbb
+
+Definition hott_2_1_2_proof_2_eq_proof_3 {A} (x y z : A)
+    (p : x == y) (q : y == z) :
+  hott_2_1_2_proof_2 p q == hott_2_1_2_proof_3 p q.
+bbb.
+
+Definition hott_2_1_2_proof_3_eq_proof_4_tac {A} (x y z : A)
+    (p : x == y) (q : y == z) :
+  hott_2_1_2_proof_3 p q == hott_2_1_2_proof_4 p q.
+bbb.
+
+Definition hott_2_1_2_proof_4_eq_proof_1_tac {A} (x y z : A)
+    (p : x == y) (q : y == z) :
+  hott_2_1_2_proof_4 p q == hott_2_1_2_proof_1 p q.
+bbb.
+
+bbb.
+
+(* proof that the proofs are equal *)
+Definition compose_compose2 {A} {x y z : A} : ∀ (p : x == y) (q : y == z),
+    compose p q == compose2 p q :=
+  λ p q,
+  match q return (p • q == compose2 p q) with
+  | refl _ =>
+      match p return (p • refl _ == compose2 p (refl _)) with
+      | refl _ => refl _
+      end
+  end.
 
 bbb.
