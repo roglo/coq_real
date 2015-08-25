@@ -3540,10 +3540,13 @@ Fixpoint n_dim_type A n :=
   | S n' => (A * n_dim_type A n')%type
   end.
 
+Definition npr₁ {A} t := bbb.
+
 Fixpoint n_dim_path {A} n (x y : n_dim_type A n) :=
   match n with
-  | 0 => True
-  | S n' =>
+  | 0 => tt == tt
+  | S n' => npr₁ x == npr₁ y ∧∧ n_dim_path (npr₂ x) (npr₂ y)
+  end.
 bbb.
 
 Definition path1 {A} (x y : A * unit) := pr₁ x == pr₁ y.
