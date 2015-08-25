@@ -3113,7 +3113,7 @@ Definition hott_2_15_1 {X A B} : (X → A * B) → (X → A) * (X → B) :=
 Definition fun_prod_prod {X A B} : (X → A) * (X → B) → (X → A * B) :=
   λ p x, (pr₁ p x, pr₂ p x).
 
-(* Theorem 2.15.2. (2.15.1) is an equivalence. *)
+(* "Theorem 2.15.2. (2.15.1) is an equivalence." *)
 
 (* their proof requires 2.6.2 but I did not use it *)
 Definition hott_2_15_2_tac {X A B} : (X → A * B) ≃ (X → A) * (X → B).
@@ -3149,7 +3149,7 @@ Definition fun_dep_fun_prod_prod {X A B} :
     (Π (x : X), A x) * (Π (x : X), B x) → (Π (x : X), (A x * B x)) :=
   λ p x, (pr₁ p x, pr₂ p x).
 
-(* Theorem 2.15.5. (2.15.4) is an equivalence. *)
+(* "Theorem 2.15.5. (2.15.4) is an equivalence." *)
 
 (* proof 'left to the reader', I do what I want :-) *)
 Definition hott_2_15_5_tac {X A B} :
@@ -3179,11 +3179,11 @@ Definition hott_2_15_5 {X A B} :
                  let (a, b) as p1 return (pr₁ p1, pr₂ p1) == p1 := p x in
                  refl (a, b)))))).
 
-(* Just as Σ-types are a generalization of cartesian products, they
-   satisfy a generalized version of this universal property. Jumping
-   right to the dependently typed version, suppose we have a type X
-   and type families A : X → U and P : Π (x:X) A(x) → U. Then we have
-   a function *)
+(* "Just as Σ-types are a generalization of cartesian products, they
+    satisfy a generalized version of this universal property. Jumping
+    right to the dependently typed version, suppose we have a type X
+    and type families A : X → U and P : Π (x:X) A(x) → U. Then we have
+    a function" *)
 
 Definition hott_2_15_6 {X A} P :
   (Π (x : X), Σ (a : A x), P x a) →
@@ -3199,7 +3199,7 @@ Definition fun_dep_prod_prod  {X A} P :
     (Π (x : X), Σ (a : A x), P x a) :=
   λ p x, existT _ (Σ_type.pr₁ p x) (Σ_type.pr₂ p x).
 
-(* Theorem 2.15.7. (2.15.6) is an equivalence. *)
+(* "Theorem 2.15.7. (2.15.6) is an equivalence." *)
 
 (* their proof requires 2.7.3 but I did not use it *)
 Definition hott_2_15_7 {X A} P :
@@ -3215,8 +3215,8 @@ eapply Π_type.funext; intros x.
 destruct (p x); reflexivity.
 Defined.
 
-(* This is noteworthy because the propositions-as-types interpretation
-   of (2.15.6) is “the axiom of choice”. *)
+(* "This is noteworthy because the propositions-as-types interpretation
+    of (2.15.6) is “the axiom of choice”." *)
 
 (* @hott_2_15_6
      : ∀ (X : Type) (A : X → Type) (P : ∀ x : X, A x → Type),
@@ -3224,8 +3224,8 @@ Defined.
        → {g : ∀ x : X, A x & ∀ x : X, P x (g x)}
  *)
 
-(* In the case of cartesian products, the nondependent version simply
-   expresses the cartesian closure adjunction: *)
+(* "In the case of cartesian products, the nondependent version simply
+    expresses the cartesian closure adjunction:" *)
 
 Definition cart_clos_adjun {A B C} : ((A * B) → C) ≃ (A → (B → C)).
 Proof.
@@ -3243,8 +3243,8 @@ split.
  destruct x; reflexivity.
 Defined.
 
-(* The dependent version of this is formulated for a type family
-    C : A x B → U: *)
+(* "The dependent version of this is formulated for a type family
+    C : A x B → U:" *)
 
 Definition dep_clos_adjun {A B C} :
   (Π (w : A * B), C w) ≃ (Π (x : A), Π (y : B), C (x, y)).
@@ -3263,7 +3263,7 @@ split.
  destruct x; reflexivity.
 Defined.
 
-(* There is also a version for Σ-types: (2.15.9) *)
+(* "There is also a version for Σ-types: (2.15.9)" *)
 
 Definition Σ_clos_adjun {A B C} :
   (Π (w : Σ (x : A), B x), C w) ≃ (Π (x : A), Π (y : B x), C (existT _ x y)).
@@ -3284,8 +3284,8 @@ split.
  destruct x; reflexivity.
 Defined.
 
-(* path induction is the right-to-left direction of an equivalence as
-   follows: (2.5.10) *)
+(* "path induction is the right-to-left direction of an equivalence as
+    follows: (2.5.10)" *)
 
 Definition path_ind_equiv {A} a B :
   (Π (x : A), Π (p : a == x), B x p) ≃ B a (refl a).
@@ -3301,5 +3301,15 @@ apply Π_type.funext; intros x.
 apply Π_type.funext; intros q.
 destruct q; reflexivity.
 Defined.
+
+(* "the expected explicit construction works: given f : A → C and
+    g : B → C, we define (2.15.11)" *)
+
+Definition hott_2_15_11 {A B C} (f : A → C) (g : B → C) :=
+  Σ (a : A), Σ (b : B), (f a == g b).
+
+(* this type is not necessarily inhabited since A (or B) can be empty *)
+
+End UnivProp.
 
 bbb.
