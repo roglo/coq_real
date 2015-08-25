@@ -3344,14 +3344,6 @@ intros p q.
 destruct p, q; reflexivity.
 Defined.
 
-(* even a fourth: induction first on q, second on p *)
-
-Definition hott_2_1_2_proof_4_tac {A} {x y z : A} : x == y → y == z → x == z.
-Proof.
-intros p q.
-destruct q, p; reflexivity.
-Defined.
-
 (* the same proofs as expressions *)
 
 Definition hott_2_1_2_proof_1 {A} {x y z : A} : x == y → y == z → x == z :=
@@ -3376,16 +3368,7 @@ Definition hott_2_1_2_proof_3 {A} {x y z : A} : x == y → y == z → x == z :=
       end
   end q.
 
-Definition hott_2_1_2_proof_4 {A} {x y z : A} : x == y → y == z → x == z :=
-  λ p q,
-  match q with
-  | refl _ =>
-      match p with
-      | refl _ => refl x
-      end
-  end.
-
-Definition hott_2_1_2_proof_1_eq_proof_2_tac {A} (x y z : A)
+Definition hott_2_1_2_proof_1_eq_proof_2_tac {A} {x y z : A}
     (p : x == y) (q : y == z) :
   hott_2_1_2_proof_1 p q == hott_2_1_2_proof_2 p q.
 Proof.
@@ -3393,7 +3376,7 @@ unfold hott_2_1_2_proof_1, hott_2_1_2_proof_2.
 destruct p, q; reflexivity.
 Defined.
 
-Definition hott_2_1_2_proof_2_eq_proof_3_tac {A} (x y z : A)
+Definition hott_2_1_2_proof_2_eq_proof_3_tac {A} {x y z : A}
     (p : x == y) (q : y == z) :
   hott_2_1_2_proof_2 p q == hott_2_1_2_proof_3 p q.
 Proof.
@@ -3401,23 +3384,15 @@ unfold hott_2_1_2_proof_2, hott_2_1_2_proof_3.
 destruct p; reflexivity.
 Defined.
 
-Definition hott_2_1_2_proof_3_eq_proof_4_tac {A} (x y z : A)
+Definition hott_2_1_2_proof_3_eq_proof_1_tac {A} {x y z : A}
     (p : x == y) (q : y == z) :
-  hott_2_1_2_proof_3 p q == hott_2_1_2_proof_4 p q.
+  hott_2_1_2_proof_3 p q == hott_2_1_2_proof_1 p q.
 Proof.
-unfold hott_2_1_2_proof_3, hott_2_1_2_proof_4.
-destruct p; reflexivity.
-Defined.
-
-Definition hott_2_1_2_proof_4_eq_proof_1_tac {A} (x y z : A)
-    (p : x == y) (q : y == z) :
-  hott_2_1_2_proof_4 p q == hott_2_1_2_proof_1 p q.
-Proof.
-unfold hott_2_1_2_proof_4, hott_2_1_2_proof_1.
+unfold hott_2_1_2_proof_3, hott_2_1_2_proof_1.
 destruct p, q; reflexivity.
 Defined.
 
-Definition hott_2_1_2_proof_1_eq_proof_2 {A} (x y z : A)
+Definition hott_2_1_2_proof_1_eq_proof_2 {A} {x y z : A}
     (p : x == y) (q : y == z) :
   hott_2_1_2_proof_1 p q == hott_2_1_2_proof_2 p q
 :=
@@ -3429,7 +3404,7 @@ Definition hott_2_1_2_proof_1_eq_proof_2 {A} (x y z : A)
   | refl _ => λ r, match r with refl _ => refl (refl x) end
   end q.
 
-Definition hott_2_1_2_proof_2_eq_proof_3 {A} (x y z : A)
+Definition hott_2_1_2_proof_2_eq_proof_3 {A} {x y z : A}
     (p : x == y) (q : y == z) :
   hott_2_1_2_proof_2 p q == hott_2_1_2_proof_3 p q
 :=
@@ -3443,7 +3418,85 @@ Definition hott_2_1_2_proof_2_eq_proof_3 {A} (x y z : A)
   | refl _ => λ r : x == z, refl (match r with refl _ => refl x end)
   end q.
 
-Definition hott_2_1_2_proof_3_eq_proof_4 {A} (x y z : A)
+Definition hott_2_1_2_proof_3_eq_proof_1 {A} {x y z : A}
+    (p : x == y) (q : y == z) :
+  hott_2_1_2_proof_3 p q == hott_2_1_2_proof_1 p q
+:=
+  match p return
+    ∀ r,
+    match p with
+    | refl _ => λ r : x == z, match r with refl _ => refl x end
+    end r ==
+    match p with refl _ => id end r
+  with
+  | refl _ => λ r : x == z, match r with refl _ => refl (refl x) end
+  end q.
+
+(* "Exercise 2.2. Show that the three equalities of proofs constructed
+    in the previous exercise form a commutative triangle. In other
+    words, if the three definitions of concatenation are denoted by
+    (p •₁ q), (p •₂ q), and (p •₃ q), then the concatenated equality
+          (p •₁ q) == (p •₂ q) == (p •₃ q)
+    is equal to the equality
+          (p •₁ q) == (p •₃ q)" *)
+
+Notation "p '•₁' q" := (hott_2_1_2_proof_1_eq_proof_2 p q) (at level 50).
+Notation "p '•₂' q" := (hott_2_1_2_proof_2_eq_proof_3 p q) (at level 50).
+Notation "p '•₃' q" := (hott_2_1_2_proof_3_eq_proof_1 p q) (at level 50).
+
+(* not sure it is what is required, their notations being incoherent,
+   I think *)
+
+Definition ex_2_2 {A} {x y z : A} (p : x == y) (q : y == z) : 
+  (p •₁ q) • (p •₂ q) == (p •₃ q)⁻¹.
+Proof.
+destruct p, q; simpl.
+reflexivity.
+Defined.
+
+(* "Exercise 2.3. Give a fourth, different, proof of Lemma 2.1.2, and
+    prove that it is equal to the others. *)
+
+(* with induction on q before the induction on p *)
+
+Definition hott_2_1_2_proof_4_tac {A} {x y z : A} : x == y → y == z → x == z.
+Proof.
+intros p q.
+destruct q, p; reflexivity.
+Defined.
+
+Definition hott_2_1_2_proof_4 {A} {x y z : A} : x == y → y == z → x == z :=
+  λ p q,
+  match q with
+  | refl _ =>
+      match p with
+      | refl _ => refl x
+      end
+  end.
+
+(* implied by proof 3 *)
+
+Definition hott_2_1_2_proof_3_eq_proof_4_tac {A} {x y z : A}
+    (p : x == y) (q : y == z) :
+  hott_2_1_2_proof_3 p q == hott_2_1_2_proof_4 p q.
+Proof.
+unfold hott_2_1_2_proof_3, hott_2_1_2_proof_4.
+destruct p; reflexivity.
+Defined.
+
+(* implies proof 1 *)
+
+Definition hott_2_1_2_proof_4_eq_proof_1_tac {A} {x y z : A}
+    (p : x == y) (q : y == z) :
+  hott_2_1_2_proof_4 p q == hott_2_1_2_proof_1 p q.
+Proof.
+unfold hott_2_1_2_proof_4, hott_2_1_2_proof_1.
+destruct p, q; reflexivity.
+Defined.
+
+(* same proofs as above but with the proof expressions *)
+
+Definition hott_2_1_2_proof_3_eq_proof_4 {A} {x y z : A}
     (p : x == y) (q : y == z) :
   hott_2_1_2_proof_3 p q == hott_2_1_2_proof_4 p q
 :=
@@ -3459,7 +3512,7 @@ Definition hott_2_1_2_proof_3_eq_proof_4 {A} (x y z : A)
   | refl _ => λ r, refl (match r with refl _ => refl x end)
   end q.
 
-Definition hott_2_1_2_proof_4_eq_proof_1 {A} (x y z : A)
+Definition hott_2_1_2_proof_4_eq_proof_1 {A} {x y z : A}
     (p : x == y) (q : y == z) :
   hott_2_1_2_proof_4 p q == hott_2_1_2_proof_1 p q
 :=
@@ -3471,84 +3524,13 @@ Definition hott_2_1_2_proof_4_eq_proof_1 {A} (x y z : A)
   | refl _ => λ r, match r with refl _ => refl (refl x) end
   end q.
 
-(* "Exercise 2.2. Show that the three equalities of proofs constructed
-    in the previous exercise form a commutative triangle. In other
-    words, if the three definitions of concatenation are denoted by
-    (p •₁ q), (p •₂ q), and (p •₃ q), then the concatenated equality
-          (p •₁ q) == (p •₂ q) == (p •₃ q)
-    is equal to the equality
-          (p •₁ q) == (p •₃ q)" *)
+(* "Exercise 2.4. Define, by induction on n, a general notion of
+    n-dimensional path in a type A, simultaneously with the type
+    of boundaries for such paths." *)
 
-Notation "p '•₁' q" := (hott_2_1_2_proof_1 p q) (at level 50).
-Notation "p '•₂' q" := (hott_2_1_2_proof_2 p q) (at level 50).
-Notation "p '•₃' q" := (hott_2_1_2_proof_3 p q) (at level 50).
+(* faur voir... *)
 
-Definition ex_2_2 {A} {x y z : A} (p : x == y) (q : y == z) : 
-  (p •₁ q == p •₂ q ∧∧ p •₂ q == p •₃ q) == (p •₁ q == p •₃ q).
-Proof.
-unfold hott_2_1_2_proof_1, hott_2_1_2_proof_2, hott_2_1_2_proof_3.
-destruct p, q; simpl; unfold id.
-bbb.
-
-(* even with the univalence axiom, I cannot get it *)
-Definition ex_2_2 {A} {x y z : A} (p : x == y) (q : y == z) : 
-@Id Type
-  (p •₁ q == p •₂ q ∧∧ p •₂ q == p •₃ q) (p •₁ q == p •₃ q).
-Proof.
-unfold hott_2_1_2_proof_1, hott_2_1_2_proof_2, hott_2_1_2_proof_3.
-destruct p, q; simpl; unfold id.
-eapply ua.
-apply (existT _ (λ p, match p with conjt _ y => y end)), qinv_isequiv.
-apply (existT _ (λ p, conjt p p)).
-unfold "◦", "~~", id.
-split; [ reflexivity | idtac ].
-intros (p, q).
-destruct p.
-
-Toplevel input, characters 0-11:
-Error: Abstracting over the terms "refl x" and "p" leads to a term
-λ (a : x == x) (p0 : a == a), conjt q q == conjt p0 q
-which is ill-typed.
-Reason is: Illegal application: 
-The term "@conjt" of type "∀ A B : Type, A → B → A ∧∧ B"
-cannot be applied to the terms
- "a == a" : "Prop"
- "a == a" : "Prop"
- "q" : "refl x == refl x"
- "q" : "refl x == refl x"
-The 3rd term has type "refl x == refl x" which should be coercible to
- "a == a".
-
-bbb.
-
-pose proof (@ua  (refl x == refl x ∧ refl x == refl x) (refl x == refl x)).
-Set Printing All. Show.
-
-
-Definition toto {A} (x : A) : ∀ p : refl x == refl x, p == refl (refl x).
-Proof.
-(* is it true ? *)
-intros p.
-Check (∀ a : x == x, refl x == a → Prop).
-(* ∀ a : x == x, refl x == a → Prop
-     : Type *)
-Check (λ (a : x == x) (p : a == a), p == refl a).
-(* λ (a : x == x) (p : a == a), p == refl a
-     : ∀ a : x == x, a == a → Prop *)
-destruct p.
-
-Toplevel input, characters 0-11:
-Error: Cannot instantiate metavariable P of type
-"∀ a : x == x, refl x == a → Prop" with abstraction
-"λ (a : x == x) (p : a == a), p == refl a" of incompatible type
-"∀ a : x == x, a == a → Prop".
-bbb.
-
-Definition titi {A} (x : A) (p q : refl x == refl x) : p == q.
-Proof.
-pose proof toto x p.
-eapply compose; [ eassumption | idtac ].
-eapply invert; apply toto.
-Defined.
+Fixpoint path_nth_dim {A} n {x y : A} :=
+(* pr₁ x == pr₁ y ∧∧ path n (pr₂ x) (pr₂ y) *)
 
 bbb.
