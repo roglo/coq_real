@@ -3419,75 +3419,54 @@ Definition hott_2_1_2_proof_1_eq_proof_2 {A} (x y z : A)
     (p : x == y) (q : y == z) :
   hott_2_1_2_proof_1 p q == hott_2_1_2_proof_2 p q
 :=
-bbb.
-
-hott_2_1_2_proof_1_eq_proof_2_tac = 
-λ (A : Type) (x y z : A) (p : x == y) (q : y == z),
-match
-  p as i in (_ == y0)
-  return
-    (∀ q0 : y0 == z,
-     match i in (_ == a) return (a == z → x == z) with
-     | refl _ => id
-     end q0 == match q0 in (_ == a) return (x == a) with
-               | refl _ => i
-               end)
-with
-| refl _ =>
-    λ q0 : x == z,
-    match
-      q0 as i in (_ == y0)
-      return
-        (id i ==
-         match i in (_ == a) return (x == a) with
-         | refl _ => refl x
-         end)
-    with
-    | refl _ => refl (refl x)
-    end
-end q
-     : ∀ (A : Type) (x y z : A) (p : x == y) (q : y == z),
-       hott_2_1_2_proof_1 p q == hott_2_1_2_proof_2 p q
-
-Argument A is implicit and maximally inserted
-Argument scopes are [type_scope _ _ _ _ _]
-
-  λ x y (A : Type) (x y z : A) (p : x == y) (q : y == z),
-match q in (_ == y0) return (x == y0) with
-| refl _ => p
-end.
-     : ∀ (A : Type) (x y z : A), x == y → y == z → x == z
-
-Arguments A, x, y, z are implicit and maximally inserted
-Argument scopes are [type_scope _ _ _ _ _]
-bbb
+  match p in (_ == t) return
+    ∀ r : t == z,
+    match p with refl _ => id end r ==
+    match r with refl _ => p end
+  with
+  | refl _ => λ r, match r with refl _ => refl (refl x) end
+  end q.
 
 Definition hott_2_1_2_proof_2_eq_proof_3 {A} (x y z : A)
     (p : x == y) (q : y == z) :
-  hott_2_1_2_proof_2 p q == hott_2_1_2_proof_3 p q.
-bbb.
+  hott_2_1_2_proof_2 p q == hott_2_1_2_proof_3 p q
+:=
+  match p return
+    ∀ r,
+    match r with refl _ => p end ==
+    match p with
+    | refl _ => λ r : x == z, match r with refl _ => refl x end
+    end r
+  with
+  | refl _ => λ r : x == z, refl (match r with refl _ => refl x end)
+  end q.
 
-Definition hott_2_1_2_proof_3_eq_proof_4_tac {A} (x y z : A)
+Definition hott_2_1_2_proof_3_eq_proof_4 {A} (x y z : A)
     (p : x == y) (q : y == z) :
-  hott_2_1_2_proof_3 p q == hott_2_1_2_proof_4 p q.
-bbb.
+  hott_2_1_2_proof_3 p q == hott_2_1_2_proof_4 p q
+:=
+  match p in (_ == t) return
+    ∀ r : t == z,
+    match p with
+    | refl _ => λ r : x == z, match r with refl _ => refl x end
+    end r ==
+    match r with
+    | refl _ => match p with refl _ => refl x end
+    end
+  with
+  | refl _ => λ r, refl (match r with refl _ => refl x end)
+  end q.
 
-Definition hott_2_1_2_proof_4_eq_proof_1_tac {A} (x y z : A)
+Definition hott_2_1_2_proof_4_eq_proof_1 {A} (x y z : A)
     (p : x == y) (q : y == z) :
-  hott_2_1_2_proof_4 p q == hott_2_1_2_proof_1 p q.
-bbb.
-
-bbb.
-
-(* proof that the proofs are equal *)
-Definition compose_compose2 {A} {x y z : A} : ∀ (p : x == y) (q : y == z),
-    compose p q == compose2 p q :=
-  λ p q,
-  match q return (p • q == compose2 p q) with
-  | refl _ =>
-      match p return (p • refl _ == compose2 p (refl _)) with
-      | refl _ => refl _
-      end
-  end.
+  hott_2_1_2_proof_4 p q == hott_2_1_2_proof_1 p q
+:=
+  match p in (_ == t) return
+    ∀ r : t == z,
+    match r with refl _ => match p with refl _ => refl x end end ==
+    match p with refl _ => id end r
+  with
+  | refl _ => λ r, match r with refl _ => refl (refl x) end
+  end q.
 
 bbb.
