@@ -3352,6 +3352,8 @@ intros p q.
 destruct q, p; reflexivity.
 Defined.
 
+(* the same proofs as expressions *)
+
 Definition hott_2_1_2_proof_1 {A} {x y z : A} : x == y → y == z → x == z :=
   λ p q,
   match p with
@@ -3469,4 +3471,23 @@ Definition hott_2_1_2_proof_4_eq_proof_1 {A} (x y z : A)
   | refl _ => λ r, match r with refl _ => refl (refl x) end
   end q.
 
+(* "Exercise 2.2. Show that the three equalities of proofs constructed
+    in the previous exercise form a commutative triangle. In other
+    words, if the three definitions of concatenation are denoted by
+    (p •₁ q), (p •₂ q), and (p •₃ q), then the concatenated equality
+          (p •₁ q) == (p •₂ q) == (p •₃ q)
+    is equal to the equality
+          (p •₁ q) == (p •₃ q)" *)
+
+Notation "p '•₁' q" := (hott_2_1_2_proof_1 p q) (at level 50).
+Notation "p '•₂' q" := (hott_2_1_2_proof_2 p q) (at level 50).
+Notation "p '•₃' q" := (hott_2_1_2_proof_3 p q) (at level 50).
+
+Definition ex_2_2 {A} {x y z : A} (p : x == y) (q : y == z) : 
+  (p •₁ q == p •₂ q ∧ p •₂ q == p •₃ q) == (p •₁ q == p •₃ q).
+Proof.
+unfold hott_2_1_2_proof_1, hott_2_1_2_proof_2, hott_2_1_2_proof_3.
+destruct p, q; simpl; unfold id.
+Set Printing All. Show.
+(* oups... *)
 bbb.
