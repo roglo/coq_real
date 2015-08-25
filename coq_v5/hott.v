@@ -3490,7 +3490,7 @@ unfold hott_2_1_2_proof_1, hott_2_1_2_proof_2, hott_2_1_2_proof_3.
 destruct p, q; simpl; unfold id.
 bbb.
 
-(* even with the univalence axiom, I cannot make it *)
+(* even with the univalence axiom, I cannot get it *)
 Definition ex_2_2 {A} {x y z : A} (p : x == y) (q : y == z) : 
 @Id Type
   (p •₁ q == p •₂ q ∧∧ p •₂ q == p •₃ q) (p •₁ q == p •₃ q).
