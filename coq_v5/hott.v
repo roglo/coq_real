@@ -2565,6 +2565,8 @@ Definition transport_coprod_r {X} {x₁ x₂ : X} (p : x₁ == x₂) {A B} : ∀
    | refl _ => refl (inr (transport B (refl x₁) b))
    end.
 
+End Σ_type2.
+
 (* 2.13 Natural numbers *)
 
 Module ℕ.
@@ -2589,7 +2591,7 @@ Definition encode (m n : nat) : m == n → code m n :=
 Definition decode (m n : nat) : code m n → m == n.
 Proof.
 revert m n.
-fix 1; rename decode0 into IHn.
+fix 1; rename decode into IHn.
 intros m n p.
 destruct m.
  destruct n; [ reflexivity | refine (match p with end) ].
@@ -3528,9 +3530,38 @@ Definition hott_2_1_2_proof_4_eq_proof_1 {A} {x y z : A}
     n-dimensional path in a type A, simultaneously with the type
     of boundaries for such paths." *)
 
-(* faur voir... *)
+Module ex_2_4.
 
-Fixpoint path_nth_dim {A} n {x y : A} :=
-(* pr₁ x == pr₁ y ∧∧ path n (pr₂ x) (pr₂ y) *)
+Import cartesian.
+
+Fixpoint n_dim_type A n :=
+  match n with
+  | 0 => unit
+  | S n' => (A * n_dim_type A n')%type
+  end.
+
+Fixpoint n_dim_path {A} n (x y : n_dim_type A n) :=
+  match n with
+  | 0 => True
+  | S n' =>
+bbb.
+
+Definition path1 {A} (x y : A * unit) := pr₁ x == pr₁ y.
+Definition path2 {A} (x y : A * (A * unit)) :=
+  pr₁ x == pr₁ y
+  ∧∧ pr₁ (pr₂ x) == pr₁ (pr₂ y).
+Definition path3 {A} (x y : A * (A * (A * unit))) :=
+  pr₁ x == pr₁ y
+  ∧∧ pr₁ (pr₂ x) == pr₁ (pr₂ y)
+  ∧∧ pr₁ (pr₂ (pr₂ x)) == pr₁ (pr₂ (pr₂ y)).
+Definition path4 {A} (x y : A * (A * (A * (A * unit)))) :=
+  pr₁ x == pr₁ y
+  ∧∧ pr₁ (pr₂ x) == pr₁ (pr₂ y)
+  ∧∧ pr₁ (pr₂ (pr₂ x)) == pr₁ (pr₂ (pr₂ y))
+  ∧∧ pr₁ (pr₂ (pr₂ (pr₂ x))) == pr₁ (pr₂ (pr₂ (pr₂ y))).
+
+bbb.
+
+End ex_2_4.
 
 bbb.
