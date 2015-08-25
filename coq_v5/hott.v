@@ -3484,10 +3484,46 @@ Notation "p '•₂' q" := (hott_2_1_2_proof_2 p q) (at level 50).
 Notation "p '•₃' q" := (hott_2_1_2_proof_3 p q) (at level 50).
 
 Definition ex_2_2 {A} {x y z : A} (p : x == y) (q : y == z) : 
-  (p •₁ q == p •₂ q ∧ p •₂ q == p •₃ q) == (p •₁ q == p •₃ q).
+  (p •₁ q == p •₂ q ∧∧ p •₂ q == p •₃ q) == (p •₁ q == p •₃ q).
 Proof.
 unfold hott_2_1_2_proof_1, hott_2_1_2_proof_2, hott_2_1_2_proof_3.
 destruct p, q; simpl; unfold id.
+bbb.
+
+(* even with the univalence axiom, I cannot make it *)
+Definition ex_2_2 {A} {x y z : A} (p : x == y) (q : y == z) : 
+@Id Type
+  (p •₁ q == p •₂ q ∧∧ p •₂ q == p •₃ q) (p •₁ q == p •₃ q).
+Proof.
+unfold hott_2_1_2_proof_1, hott_2_1_2_proof_2, hott_2_1_2_proof_3.
+destruct p, q; simpl; unfold id.
+eapply ua.
+apply (existT _ (λ p, match p with conjt _ y => y end)), qinv_isequiv.
+apply (existT _ (λ p, conjt p p)).
+unfold "◦", "~~", id.
+split; [ reflexivity | idtac ].
+intros (p, q).
+destruct p.
+
+Toplevel input, characters 0-11:
+Error: Abstracting over the terms "refl x" and "p" leads to a term
+λ (a : x == x) (p0 : a == a), conjt q q == conjt p0 q
+which is ill-typed.
+Reason is: Illegal application: 
+The term "@conjt" of type "∀ A B : Type, A → B → A ∧∧ B"
+cannot be applied to the terms
+ "a == a" : "Prop"
+ "a == a" : "Prop"
+ "q" : "refl x == refl x"
+ "q" : "refl x == refl x"
+The 3rd term has type "refl x == refl x" which should be coercible to
+ "a == a".
+
+bbb.
+
+pose proof (@ua  (refl x == refl x ∧ refl x == refl x) (refl x == refl x)).
+Set Printing All. Show.
+
 
 Definition toto {A} (x : A) : ∀ p : refl x == refl x, p == refl (refl x).
 Proof.
