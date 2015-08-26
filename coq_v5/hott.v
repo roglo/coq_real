@@ -3577,7 +3577,7 @@ Definition n_dim_path {A n} (x y : ilist A n) := n_dim_path' x y.
 (* "Exercise 2.5. Prove that the functions (2.3.6) and (2.3.7) are
     inverse equivalences." *)
 
-Definition ex_2_5 {A B} {x y : A} (p : x == y) (f : A → B) :
+Definition ex_2_5_tac {A B} {x y : A} (p : x == y) (f : A → B) :
   (f x == f y) ≃ (p⁎ (f x) == f y).
 Proof.
 apply (existT _ (hott_2_3_6 p f)), qinv_isequiv.
@@ -3586,36 +3586,141 @@ unfold hott_2_3_6, hott_2_3_7.
 unfold "◦", "~~", id; simpl.
 split.
  intros q.
- (* ok, that should work :-) *)
+ eapply compose; [ eapply compose_assoc | idtac ].
+ eapply compose; [ eapply dotr, compose_invert_r | apply lu ].
+
+ intros q.
+ eapply compose; [ eapply compose_assoc | idtac ].
+ eapply compose; [ eapply dotr, compose_invert_l | apply lu ].
+Defined.
+
+Definition ex_2_5 {A B} {x y : A} (p : x == y) (f : A → B) :
+  (f x == f y) ≃ (p⁎ (f x) == f y)
+:=
+  existT _
+    (hott_2_3_6 p f)
+    (qinv_isequiv (hott_2_3_6 p f)
+       (existT _ (hott_2_3_7 p f)
+          (λ q,
+           compose_assoc (transportconst B p (f x))
+             (transportconst B p (f x))⁻¹ q
+           • (compose_invert_r (transportconst B p (f x)) •r q)
+           • lu (refl (transport (λ _ : A, B) p (f x)) • q),
+           λ q : f x == f y,
+           compose_assoc (transportconst B p (f x))⁻¹ 
+             (transportconst B p (f x)) q
+           • (compose_invert_l (transportconst B p (f x)) •r q)
+           • lu (refl (f x) • q)))).
+
+(* "Exercise 2.6. Prove that if p : x = y, then the function
+        (p • -) : (y = z) → ( x = z)
+    is an equivalence." *)
+
+Definition fun_2_6 {A} {x y z : A} (p : x == y) :
+  y == z → x == z
+:=
+  λ q : y == z, p • q.
+
+Definition ex_2_6_tac {A} {x y z : A} (p : x == y) : (y == z) ≃ (x == z).
+Proof.
+apply (existT _ (λ q, p • q)), qinv_isequiv.
+apply (existT _ (λ q, p⁻¹ • q)).
+unfold "◦", "~~", id.
+split.
+ intros q.
+ eapply compose; [ eapply compose_assoc | idtac ].
+ eapply compose; [ eapply dotr, compose_invert_r | apply lu ].
+
+ intros q.
+ eapply compose; [ eapply compose_assoc | idtac ].
+ eapply compose; [ eapply dotr, compose_invert_l | apply lu ].
+Defined.
+
+Definition ex_2_6 {A} {x y z : A} (p : x == y) : (y == z) ≃ (x == z)
+:=
+  existT isequiv (λ q : y == z, p • q)
+    (qinv_isequiv _
+       (existT _ (λ q : x == z, p⁻¹ • q)
+          (λ q : x == z,
+           compose_assoc p p⁻¹ q • (compose_invert_r p •r q)
+           • lu (refl x • q),
+           λ q : y == z,
+           compose_assoc p⁻¹ p q • (compose_invert_l p •r q)
+           • lu (refl y • q)))).
+
+(* "Exercise 2.7. State and prove a generalization of Theorem 2.6.5
+    from cartesian products to Σ-types." *)
+
+(* already done: see hott_2_7_5 *)
+
+(* "Exercise 2.8. State and prove an analogue of Theorem 2.6.5 for
+    coproducts." *)
+
+(* cartesian : (A * B)               constructor : pair⁼ (cartesian)
+      Σ-type : Σ (x : A), B x        constructor : pair⁼ (Σ_types)
+   coproduct : A + B := inl | inr    constructor : ... ? inl, inr?
+ *)
+
+(*
+@Σ_type.pair_eq
+     : ∀ (A : Type) (P : A → U) (x y : A) (u : P x) 
+       (v : P y) (p : x == y),
+       transport P p u == v → existT P x u == existT P y v
+@cartesian.pair_eq
+     : ∀ (A B : Type) (x y : A * B),
+       (cartesian.pr₁ x == cartesian.pr₁ y) *
+       (cartesian.pr₂ x == cartesian.pr₂ y) → x == y
+*)
+
+Definition ex_2_8 {A B A' B'} (x y : A)
+   (g : A → A') (h : B → B')
+   (f := λ x, match x with inl a => inl (g a) | inr b => inr (h b) end)
+   (p : x == y) :
+False.
+Print inl.
+bbb.
+(* mouais, bon, faut voir *)
+
+Check (f p).
+Check (inl p == inl p).
+
+  f (inl p) == f (inl p).
 bbb.
 
- destruct q.
-
-Toplevel input, characters 0-11:
-Error: Cannot instantiate metavariable P of type "∀ a : B, f x == a → Prop"
-with abstraction "λ (a : B) (q : a == a), refl a == q" of incompatible type
-"∀ a : B, a == a → Prop".
-
-bbb.
+Definition ex_2_8 {A B A' B'} (x y : Σ (z : A), B z)
+    (g : A → A') (h : Π (x : A), B x → B' (g x))
+    (f := λ x, existT _ (g (pr₁ x)) (h (pr₁ x) (pr₂ x)))
+    (p : pr₁ x == pr₁ y) (q : p⁎ (pr₂ x) == pr₂ y) :
+  ap f (pair⁼ p q) == pair⁼ (ap g p) (transport_pair g h p q).
+Proof.
 
 (* reminder *)
 
-Definition hott_2_3_6 {A B} {x y : A} (p : x == y) (f : A → B) :
-  f x == f y → p⁎ (f x) == f y
-:=
-  λ q, transportconst B p (f x) • q.
+Definition pair_eq_ap {A B A' B' x y} (f : A * B → A' * B') :=
+  @pair_eq A' B' (f x) (f y).
 
-Definition hott_2_3_6_alt {A B} {x y : A} (p : x == y) (f : A → B) :
-  f x == f y → p⁎ (f x) == f y
-:=
-  λ _, apd f p.
+Theorem hott_2_6_5 {A B A' B'} :
+  ∀ (g : A → A') (h : B → B') (f := λ x, (g (pr₁ x), h (pr₂ x)))
+    (x y : A * B) (p : pr₁ x == pr₁ y) (q : pr₂ x == pr₂ y),
+  ap f (pair_eq (p, q)) == pair_eq_ap f (ap g p, ap h q).
+Proof.
+intros.
+destruct x as (x₁, x₂).
+destruct y as (y₁, y₂).
+simpl in p, q.
+destruct p, q; reflexivity.
+Qed.
 
-Definition hott_2_3_7 {A B} {x y : A} (p : x == y) (f : A → B) :
-  p⁎ (f x) == f y → f x == f y
-:=
-  λ q, (transportconst B p (f x))⁻¹ • q.
+Definition hott_2_7_5 {A B A' B'} (x y : Σ (z : A), B z)
+    (g : A → A') (h : Π (x : A), B x → B' (g x))
+    (f := λ x, existT _ (g (pr₁ x)) (h (pr₁ x) (pr₂ x)))
+    (p : pr₁ x == pr₁ y) (q : p⁎ (pr₂ x) == pr₂ y) :
+  ap f (pair⁼ p q) == pair⁼ (ap g p) (transport_pair g h p q).
+Proof.
+destruct x as (x₁, x₂); simpl.
+destruct y as (y₁, y₂); simpl.
+simpl in p, q.
+destruct p, q; reflexivity.
+Defined.
 
-Definition hott_2_3_7_alt {A B} {x y : A} (p : x == y) (f : A → B) :
-  p⁎ (f x) == f y → f x == f y
-:=
-  λ _, ap f p.
+bbb.
