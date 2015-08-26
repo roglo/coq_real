@@ -3695,4 +3695,48 @@ End ex_2_8.
     Can you generalize this to an equivalence involving dependent
     functions?" *)
 
+Module ex_2_9.
+
+Import cartesian.
+
+Definition coproduct_map {A B C} f g (x : A + B) : C :=
+  match x with inl a => f a | inr b => g b end.
+
+(* OK, but I had to use function extensionality; is it normal? *)
+Definition ex_2_9_tac {X A B} : (A + B → X) ≃ (A → X) * (B → X).
+Proof.
+apply (existT _ (λ f, (f ◦ inl, f ◦ inr))), qinv_isequiv.
+apply (existT _ (λ f x, coproduct_map (pr₁ f) (pr₂ f) x)).
+unfold "◦", "~~", id; simpl.
+split; [ intros (f, g); reflexivity | intros f ].
+apply Π_type.funext; intros x.
+destruct x as [a| b]; reflexivity.
+Defined.
+
+Definition ex_2_9 {X A B} : (A + B → X) ≃ (A → X) * (B → X)
+:=
+  existT isequiv (λ f, (f ◦ inl, f ◦ inr))
+    (qinv_isequiv (λ f, (f ◦ inl, f ◦ inr))
+       (existT _ (λ f x, coproduct_map (pr₁ f) (pr₂ f) x)
+          (λ x : (A → X) * (B → X),
+           let (f, g) return ((pr₁ x, pr₂ x) == x) := x in
+           refl (f, g),
+           λ f : A + B → X,
+           Π_type.funext
+             (λ x,
+              match x with
+              | inl a => refl (f (inl a))
+              | inr b => refl (f (inr b))
+              end)))).
+
+(* Can I generalize this to an equivalence involving dependent
+   functions? I don't know for the moment, I have to think of it,
+   but the way the question is asked, I guess that the answer is
+   no. Otherwise they would have said: "generalize it to an
+   equivalence involving dependent funcctions". *)
+
+bbb. (* think *)
+
+End ex_2_9.
+
 bbb.
