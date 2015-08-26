@@ -3656,78 +3656,43 @@ Definition ex_2_6 {A} {x y z : A} (p : x == y) : (y == z) ≃ (x == z)
 (* "Exercise 2.8. State and prove an analogue of Theorem 2.6.5 for
     coproducts." *)
 
-Module ex_2_7.
+Module ex_2_8.
 
 Import Σ_type2.
 
-(* cartesian : (A * B)               constructor : pair⁼ (cartesian)
-      Σ-type : Σ (x : A), B x        constructor : pair⁼ (Σ_types)
-   coproduct : A + B := inl | inr    constructor : ... ? inl, inr?
- *)
-
-(*
-@Σ_type.pair_eq
-     : ∀ (A : Type) (P : A → U) (x y : A) (u : P x) 
-       (v : P y) (p : x == y),
-       transport P p u == v → existT P x u == existT P y v
-@cartesian.pair_eq
-     : ∀ (A B : Type) (x y : A * B),
-       (cartesian.pr₁ x == cartesian.pr₁ y) *
-       (cartesian.pr₂ x == cartesian.pr₂ y) → x == y
-@inl_equal
-     : ∀ (A B : Type) (a₁ a₂ : A), a₁ == a₂ → inl a₁ == inl a₂
-*)
-
-
-Definition ex_2_8 {A B A' B'} (x y : A)
+Definition ex_2_8_tac {A B A' B'} (x₁ y₁ : A) (x₂ y₂ : B)
     (g : A → A') (h : B → B')
     (f := λ x, match x with inl a => inl (g a) | inr b => inr (h b) end)
-    (p : x == y) :
- False.
-Check (ap f (inl_equal p)).
-(* ap f (inl_equal p)
-     : f (inl x) == f (inl y) *)
-Check (@inl_equal _ _ (g x) (g y)).
-bbb.
-Print inl.
-bbb.
-
-Definition ex_2_8 {A B A' B'} (x y : Σ (z : A), B z)
-    (g : A → A') (h : Π (x : A), B x → B' (g x))
-    (f := λ x, existT _ (g (pr₁ x)) (h (pr₁ x) (pr₂ x)))
-    (p : pr₁ x == pr₁ y) (q : p⁎ (pr₂ x) == pr₂ y) :
-  ap f (pair⁼ p q) == pair⁼ (ap g p) (transport_pair g h p q).
+    (p : x₁ == y₁) (q : x₂ == y₂) :
+  ap f (inl_equal p) == inl_equal (ap g p) ∧∧
+  ap f (inr_equal q) == inr_equal (ap h q).
 Proof.
-
-(* reminder *)
-
-Definition pair_eq_ap {A B A' B' x y} (f : A * B → A' * B') :=
-  @pair_eq A' B' (f x) (f y).
-
-Theorem hott_2_6_5 {A B A' B'} :
-  ∀ (g : A → A') (h : B → B') (f := λ x, (g (pr₁ x), h (pr₂ x)))
-    (x y : A * B) (p : pr₁ x == pr₁ y) (q : pr₂ x == pr₂ y),
-  ap f (pair_eq (p, q)) == pair_eq_ap f (ap g p, ap h q).
-Proof.
-intros.
-destruct x as (x₁, x₂).
-destruct y as (y₁, y₂).
-simpl in p, q.
-destruct p, q; reflexivity.
-Qed.
-
-Definition hott_2_7_5 {A B A' B'} (x y : Σ (z : A), B z)
-    (g : A → A') (h : Π (x : A), B x → B' (g x))
-    (f := λ x, existT _ (g (pr₁ x)) (h (pr₁ x) (pr₂ x)))
-    (p : pr₁ x == pr₁ y) (q : p⁎ (pr₂ x) == pr₂ y) :
-  ap f (pair⁼ p q) == pair⁼ (ap g p) (transport_pair g h p q).
-Proof.
-destruct x as (x₁, x₂); simpl.
-destruct y as (y₁, y₂); simpl.
-simpl in p, q.
-destruct p, q; reflexivity.
+split; [ destruct p | destruct q ]; reflexivity.
 Defined.
 
-End ex_2_7.
+Definition ex_2_8 {A B A' B'} (x₁ y₁ : A) (x₂ y₂ : B)
+    (g : A → A') (h : B → B')
+    (f := λ x, match x with inl a => inl (g a) | inr b => inr (h b) end)
+    (p : x₁ == y₁) (q : x₂ == y₂) :
+  ap f (inl_equal p) == inl_equal (ap g p) ∧∧
+  ap f (inr_equal q) == inr_equal (ap h q)
+:=
+  let f x := match x with inl a => inl (g a) | inr b => inr (h b) end in
+  conjt
+    match p in (_ == y) return (ap f (inl_equal p) == inl_equal (ap g p)) with
+    | refl _ => refl (inl_equal (ap g (refl x₁)))
+    end
+    match q in (_ == y) return (ap f (inr_equal q) == inr_equal (ap h q))
+    with
+    | refl _ => refl (inr_equal (ap h (refl x₂)))
+    end.
+
+End ex_2_8.
+
+(* "Exercise 2.9. Prove that coproducts have the expected universal
+    property,
+           (A + B → X) ≃ (A → X) x (B → X).
+    Can you generalize this to an equivalence involving dependent
+    functions?" *)
 
 bbb.
