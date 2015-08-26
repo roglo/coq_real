@@ -3729,14 +3729,76 @@ Definition ex_2_9 {X A B} : (A + B → X) ≃ (A → X) * (B → X)
               | inr b => refl (f (inr b))
               end)))).
 
-(* Can I generalize this to an equivalence involving dependent
-   functions? I don't know for the moment, I have to think of it,
-   but the way the question is asked, I guess that the answer is
-   no. Otherwise they would have said: "generalize it to an
-   equivalence involving dependent funcctions". *)
+Definition dep_fun_map {A B X} f g (x : A + B) : X x :=
+  match x with
+  | inl a => f a
+  | inr b => g b
+  end.
 
-bbb. (* think *)
+Definition ex_2_9_dep_fun_tac {A B X} :
+  (Π (x : A + B), X x) ≃ (Π (x : A), X (inl x)) * (Π (x : B), X (inr x)).
+Proof.
+apply (existT _ (λ f, (λ a, f (inl a), λ b, f (inr b)))), qinv_isequiv.
+apply
+  (existT _
+     (λ (fg : (∀ a, X (inl a)) * (∀ b, X (inr b))) x,
+      let (f, g) := fg in
+      dep_fun_map f g x)).
+unfold "◦", "~~", id; simpl.
+split; [ intros (f, g); reflexivity | intros f ].
+apply Π_type.funext; intros x.
+destruct x as [a| b]; reflexivity.
+Defined.
+
+Definition ex_2_9_dep_fun {A B X} :
+  (Π (x : A + B), X x) ≃ (Π (x : A), X (inl x)) * (Π (x : B), X (inr x))
+:=
+existT isequiv (λ f, (λ a, f (inl a), λ b, f (inr b)))
+  (qinv_isequiv (λ f, (λ a, f (inl a), λ b, f (inr b)))
+     (existT _
+        (λ (fg : (∀ a : A, X (inl a)) * (∀ b : B, X (inr b))) x,
+         let (f, g) := fg in dep_fun_map f g x)
+        (λ fg : (∀ x : A, X (inl x)) * (∀ x : B, X (inr x)),
+         let (f, g) as p return
+           ((λ a : A, let (f, _) := p in f a,
+            λ b : B, let (_, g) := p in g b) == p) := fg in
+         refl (f, g),
+         λ f : ∀ x : A + B, X x,
+         Π_type.funext
+           (λ x : A + B,
+            match x with
+            | inl a => refl (f (inl a))
+            | inr b => refl (f (inr b))
+            end)))).
 
 End ex_2_9.
+
+(* "Exercise 2.10. Prove that Σ-types are “associative”, in that for
+    any A : U and families B : A → U and C : (Σ (x : A), B x) → U, we
+    have
+       (Σ (x : A), Σ (y : B x), C (x, y)) ≃ Σ (p : Σ (x : A), B x), C p *)
+
+Definition ex_2_10 {A B C} :
+  (Σ (x : A), Σ (y : B x), C (existT _ x y)) ≃ (Σ (p : Σ (x : A), B x), C p).
+Proof.
+apply
+  (existT _
+    (λ xyf,
+     match xyf with
+     | existT _ x (existT _ y f) => existT C (existT B x y) f
+     end)).
+apply qinv_isequiv.
+apply
+  (existT _
+     (λ xyf : {p : {x : A & B x} & C p},
+      match xyf with
+      | existT _ (existT _ x y) f =>
+          (λ f : C (existT B x y), existT _ x (existT _ y f)) f
+      end)).
+unfold "◦", "~~", id; simpl.
+split; [ intros ((x, y), f) | intros (x, (y, f)) ]; reflexivity.
+Defined.
+
+(* "Exercise 2.11: ..." *)
 
 bbb.
