@@ -3830,33 +3830,50 @@ Definition pullback {A B C} (f : A → C) (g : B → C) :=
 
 (* "Exercise 2.13. Show that (2 ≃ 2) ≃ 2." *)
 
+(* idea: associate e.g.
+   - the bijection id/id to true
+   - the bijection negb/negb to false.
+   This is a bijection *)
+
 Definition ex_2_13_tac : (bool ≃ bool) ≃ bool.
 Proof.
-bbb. (* bon. Faut voir... *)
-
-apply (existT _ (λ p : bool ≃ bool, let (f, _) := p in f true)).
-(*
-apply (existT _ (λ p, true)).
-*)
+apply (existT _ (λ (p : bool ≃ bool), Π_type.pr₁ p true)).
 apply qinv_isequiv.
 (*
-assert (bool → (bool ≃ bool)) as g.
- intros b.
- apply (existT _ id), qinv_isequiv.
- apply (existT _ id).
- unfold "◦", "~~"; simpl.
- split; intros c; reflexivity.
+assert (bool → (bool ≃ bool)) as gggg.
+intros b.
+ destruct b.
+  apply (existT _ id), qinv_isequiv, (existT _ id).
+  unfold "◦", "~~", id; simpl; split; reflexivity.
+
+  apply (existT _ negb), qinv_isequiv, (existT _ negb).
+  unfold "◦", "~~", id; simpl; split; intros b; destruct b; reflexivity.
 *)
 apply
   (existT _
-    (λ _ : bool,
-     existT isequiv id
-       (qinv_isequiv _
-          (existT
-             (λ g : bool → bool, ((id ◦ g ~~ id) * (g ◦ id ~~ id))%type)
-             id (λ c : bool, refl (id c), λ c : bool, refl (id c)))))).
+     (λ b : bool,
+      if b then existT isequiv id (qinv_isequiv id (existT _ id (refl, refl)))
+      else
+       existT isequiv negb
+         (qinv_isequiv negb
+            (existT _ negb
+               (λ b : bool,
+                if b return (negb (negb b) == b) then refl true
+                else refl false,
+                λ b : bool,
+                if b return (negb (negb b) == b) then refl true
+                else refl false))))).
 simpl.
-unfold "◦", "~~"; simpl.
+unfold "◦", "~~", id; simpl.
 split.
+ intros x; destruct x; reflexivity.
+
+ intros (f, ((g, Hg), (h, Hh))); simpl.
+ pose proof EqStr.quasi_inv_l_eq_r f g h Hg Hh as Hgh.
+ unfold "◦", "~~", id in Hg, Hh, Hgh.
+bbb.
+ pose proof Hh true as H.
+ set (b := f true) in *.
+ destruct b.
 
 bbb.
