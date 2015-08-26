@@ -3534,19 +3534,33 @@ Module ex_2_4.
 
 Import cartesian.
 
-Inductive n_dim_type A : Type :=
-  | glop : n_dim_type A
-  | glip : A → n_dim_type A → n_dim_type A.
+Inductive n_dim_type A : nat → Type :=
+  | glop : n_dim_type A 0
+  | glip : ∀ n, A → n_dim_type A n → n_dim_type A (S n).
 
-Fixpoint n_dim_path {A} (x y : n_dim_type A) :=
+Fixpoint n_dim_path {A nx ny} (x : n_dim_type A nx) (y : n_dim_type A ny) :=
   match (x, y) with
-  | (glip _ x₁ x₂, glip _ y₁ y₂) => x₁ == y₁ ∧∧ n_dim_path x₂ y₂
+  | (glip _ _ x₁ x₂, glip _ _ y₁ y₂) => x₁ == y₁ ∧∧ n_dim_path x₂ y₂
   | _ => tt == tt
   end.
 
 Check @n_dim_path.
 
-(* ok, but the notion of dimension is missing... *)
+(* yes, but how to constrain nx to be equal to ny? *)
+
+Definition concat_n_dim_path {A n} {x y z : n_dim_type A n} :
+  n_dim_path x y → n_dim_path y z → n_dim_path x z.
+Proof.
+intros p q.
+induction n.
+ destruct x as [ | nx a]; [ reflexivity | simpl in p; simpl ].
+ destruct z as [ | nz c]; [ reflexivity | idtac ].
+ destruct y as [ | ny b].
+bbb.
+
+ destruct x as [ | nx a]; [ reflexivity | simpl in p; simpl ].
+ split.
+  simpl in q.
 bbb.
 
 Definition path1 {A} (x y : A * unit) := pr₁ x == pr₁ y.
