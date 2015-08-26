@@ -3534,19 +3534,19 @@ Module ex_2_4.
 
 Import cartesian.
 
-Fixpoint n_dim_type A n :=
-  match n with
-  | 0 => unit
-  | S n' => (A * n_dim_type A n')%type
+Inductive n_dim_type A : Type :=
+  | glop : n_dim_type A
+  | glip : A → n_dim_type A → n_dim_type A.
+
+Fixpoint n_dim_path {A} (x y : n_dim_type A) :=
+  match (x, y) with
+  | (glip _ x₁ x₂, glip _ y₁ y₂) => x₁ == y₁ ∧∧ n_dim_path x₂ y₂
+  | _ => tt == tt
   end.
 
-Definition npr₁ {A} t := bbb.
+Check @n_dim_path.
 
-Fixpoint n_dim_path {A} n (x y : n_dim_type A n) :=
-  match n with
-  | 0 => tt == tt
-  | S n' => npr₁ x == npr₁ y ∧∧ n_dim_path (npr₂ x) (npr₂ y)
-  end.
+(* ok, the notion of dimension is missing... *)
 bbb.
 
 Definition path1 {A} (x y : A * unit) := pr₁ x == pr₁ y.
