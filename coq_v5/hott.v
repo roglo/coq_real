@@ -3556,6 +3556,8 @@ induction n.
  destruct x as [ | nx a]; [ reflexivity | simpl in p; simpl ].
  destruct z as [ | nz c]; [ reflexivity | idtac ].
  destruct y as [ | ny b].
+
+(* donc, effectivement, ça va pas *)
 bbb.
 
  destruct x as [ | nx a]; [ reflexivity | simpl in p; simpl ].
