@@ -3532,11 +3532,45 @@ Definition hott_2_1_2_proof_4_eq_proof_1 {A} {x y z : A}
 
 Module ex_2_4.
 
+(* borrowed to Adam Chlipala's code found in the Web *)
 Inductive ilist A : nat → Type :=
   | Nil : ilist A 0
   | Cons : ∀ n, A → ilist A n → ilist A (S n).
-
 Arguments Cons [A] [n] x l.
+
+Definition ilist_hd {A n} (x : ilist A (S n)) :=
+  match x in ilist _ nx return match nx with 0 => unit | S _ => A end with
+  | Nil _ => tt
+  | Cons x₁ x₂ => x₁
+  end.
+
+(* just to see *)
+Definition ilist_join_hd {A n} (x y : ilist A (S n)) :=
+  match x in ilist _ nx return
+    match nx with 0 => unit | S _ => A * A end
+  with
+  | Nil _ => tt
+  | Cons x₁ x₂ =>
+      match y in ilist _ ny return
+        match ny with 0 => unit | S _ => A * A end
+      with
+      | Nil _ => tt
+      | Cons y₁ y₂ => (x₁, y₁)
+      end
+  end.
+
+(* more and more difficult... *)
+Fixpoint ilist_join {A n} (x y : ilist A n) :=
+  match x with
+  | Nil _ => nil
+  | Cons x₁ x₂ =>
+      match y as ilist _ ny return ... match ?
+      | Nil _ => nil
+      | Cons y₁ y₂ => cons (x₁, y₁) (ilist_join x₂ y₂)
+      end
+  end.
+
+bbb.
 
 Fixpoint n_dim_path {A nx ny} (x : ilist A nx) (y : ilist A ny) :=
   match (x, y) with
@@ -3553,6 +3587,22 @@ Definition n_dim_path2 {A n} (x y : ilist A n) :=
   | (Cons x₁ x₂, Cons y₁ y₂) => x₁ == y₁ ∧∧ n_dim_path x₂ y₂
   | _ => tt == tt
   end.
+
+About n_dim_path.
+(* n_dim_path : ∀ (A : Type) (nx ny : nat), ilist A nx → ilist A ny → Prop *)
+
+Definition ilist_join {A n} (x y : ilist A n) : ilist (A * A) n.
+induction n; constructor.
+refine
+  (match x in (ilist _ nx) return if eq_nat_dec nx (S n) then A else unit
+   with
+   | Nil _ => tt
+   | Cons x₁ x₂ => if eq_nat_dec x₁
+   end).
+bbbb.
+
+Fixpoint n_dim_path3 {A n} (x y : ilist A n) :=
+  match y in ilist ny return if ny = n then 
 
 Definition concat_n_dim_path {A n} {x y z : ilist A n} :
   n_dim_path2 x y → n_dim_path2 y z → n_dim_path2 x z.
