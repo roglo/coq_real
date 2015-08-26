@@ -3546,7 +3546,7 @@ Fixpoint n_dim_path {A} (x y : n_dim_type A) :=
 
 Check @n_dim_path.
 
-(* ok, the notion of dimension is missing... *)
+(* ok, but the notion of dimension is missing... *)
 bbb.
 
 Definition path1 {A} (x y : A * unit) := pr₁ x == pr₁ y.
