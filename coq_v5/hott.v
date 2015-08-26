@@ -2390,14 +2390,14 @@ Definition inr_inversion {A B} (b₁ b₂ : B) :
   @Id (A + B) (inr b₁) (inr b₂) → (b₁ == b₂)
 := ap (λ a, match a with inl _ => b₁ | inr b₁ => b₁ end).
 
-Definition inl_equal {A B} (a₁ a₂ : A) :
+Definition inl_equal {A B} {a₁ a₂ : A} :
   (a₁ == a₂) → @Id (A + B) (inl a₁) (inl a₂)
 := λ H : a₁ == a₂,
    match H in (_ == a) return (inl a₁ == inl a) with
     refl _ => refl (inl a₁ : A + B)
    end.
 
-Definition inr_equal {A B} (b₁ b₂ : B) :
+Definition inr_equal {A B} {b₁ b₂ : B} :
   (b₁ == b₂) → @Id (A + B) (inr b₁) (inr b₂)
 := λ H : b₁ == b₂,
    match H in (_ == b) return (inr b₁ == inr b) with
@@ -2411,7 +2411,7 @@ Definition inl_eq_equiv {A B} (a₁ a₂ : A) :
 Proof.
 apply (existT _ (inl_inversion a₁ a₂)).
 apply qinv_isequiv.
-apply (existT _ (inl_equal a₁ a₂)).
+apply (existT _ (@inl_equal _ _ a₁ a₂)).
 split; [ intros p; destruct p; reflexivity | idtac ].
 intros p; simpl.
 unfold "◦", "~~", id; simpl.
@@ -2426,7 +2426,7 @@ Definition inr_eq_equiv {A B} (b₁ b₂ : B) :
 Proof.
 apply (existT _ (inr_inversion b₁ b₂)).
 apply qinv_isequiv.
-apply (existT _ (inr_equal b₁ b₂)).
+apply (existT _ (@inr_equal _ _ b₁ b₂)).
 split; [ intros p; destruct p; reflexivity | idtac ].
 intros p; simpl.
 unfold "◦", "~~", id; simpl.
@@ -3656,6 +3656,10 @@ Definition ex_2_6 {A} {x y z : A} (p : x == y) : (y == z) ≃ (x == z)
 (* "Exercise 2.8. State and prove an analogue of Theorem 2.6.5 for
     coproducts." *)
 
+Module ex_2_7.
+
+Import Σ_type2.
+
 (* cartesian : (A * B)               constructor : pair⁼ (cartesian)
       Σ-type : Σ (x : A), B x        constructor : pair⁼ (Σ_types)
    coproduct : A + B := inl | inr    constructor : ... ? inl, inr?
@@ -3670,35 +3674,22 @@ Definition ex_2_6 {A} {x y z : A} (p : x == y) : (y == z) ≃ (x == z)
      : ∀ (A B : Type) (x y : A * B),
        (cartesian.pr₁ x == cartesian.pr₁ y) *
        (cartesian.pr₂ x == cartesian.pr₂ y) → x == y
-
-toto
-       a₁ == a₂ → inl a₁ == inl a₂
+@inl_equal
+     : ∀ (A B : Type) (a₁ a₂ : A), a₁ == a₂ → inl a₁ == inl a₂
 *)
+
 
 Definition ex_2_8 {A B A' B'} (x y : A)
     (g : A → A') (h : B → B')
-    (f : A → A' + B' := λ x, inl (g x))
+    (f := λ x, match x with inl a => inl (g a) | inr b => inr (h b) end)
     (p : x == y) :
  False.
-Check (ap f p).
+Check (ap f (inl_equal p)).
+(* ap f (inl_equal p)
+     : f (inl x) == f (inl y) *)
+Check (@inl_equal _ _ (g x) (g y)).
 bbb.
 Print inl.
-bbb.
-
-(* mouais, bon, faut voir *)
-Definition ex_2_8 {A B A' B'} (x y : A)
-   (g : A → A') (h : B → B')
-   (f := λ x, match x with inl a => inl (g a) | inr b => inr (h b) end)
-   (p : x == y) :
-False.
-Print inl.
-bbb.
-(* mouais, bon, faut voir *)
-
-Check (f p).
-Check (inl p == inl p).
-
-  f (inl p) == f (inl p).
 bbb.
 
 Definition ex_2_8 {A B A' B'} (x y : Σ (z : A), B z)
@@ -3736,5 +3727,7 @@ destruct y as (y₁, y₂); simpl.
 simpl in p, q.
 destruct p, q; reflexivity.
 Defined.
+
+End ex_2_7.
 
 bbb.
