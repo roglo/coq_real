@@ -919,9 +919,19 @@ Check @transportconst.
 Definition hott_2_3_6 {A B} {x y : A} (p : x == y) (f : A → B) :
   f x == f y → p⁎ (f x) == f y
 :=
+  λ q, transportconst B p (f x) • q.
+
+Definition hott_2_3_6_alt {A B} {x y : A} (p : x == y) (f : A → B) :
+  f x == f y → p⁎ (f x) == f y
+:=
   λ _, apd f p.
 
 Definition hott_2_3_7 {A B} {x y : A} (p : x == y) (f : A → B) :
+  p⁎ (f x) == f y → f x == f y
+:=
+  λ q, (transportconst B p (f x))⁻¹ • q.
+
+Definition hott_2_3_7_alt {A B} {x y : A} (p : x == y) (f : A → B) :
   p⁎ (f x) == f y → f x == f y
 :=
   λ _, ap f p.
@@ -3576,10 +3586,7 @@ unfold hott_2_3_6, hott_2_3_7.
 unfold "◦", "~~", id; simpl.
 split.
  intros q.
- destruct p; simpl in q; simpl.
- unfold id in q; unfold id.
- (* mmm... not provable *)
-Print hott_2_3_7.
+ (* ok, that should work :-) *)
 bbb.
 
  destruct q.
@@ -3596,10 +3603,19 @@ bbb.
 Definition hott_2_3_6 {A B} {x y : A} (p : x == y) (f : A → B) :
   f x == f y → p⁎ (f x) == f y
 :=
+  λ q, transportconst B p (f x) • q.
+
+Definition hott_2_3_6_alt {A B} {x y : A} (p : x == y) (f : A → B) :
+  f x == f y → p⁎ (f x) == f y
+:=
   λ _, apd f p.
 
 Definition hott_2_3_7 {A B} {x y : A} (p : x == y) (f : A → B) :
   p⁎ (f x) == f y → f x == f y
 :=
-  λ _, ap f p.
+  λ q, (transportconst B p (f x))⁻¹ • q.
 
+Definition hott_2_3_7_alt {A B} {x y : A} (p : x == y) (f : A → B) :
+  p⁎ (f x) == f y → f x == f y
+:=
+  λ _, ap f p.
