@@ -3548,23 +3548,20 @@ Check @n_dim_path.
 
 (* yes, but how to constrain nx to be equal to ny? *)
 
-Fixpoint n_dim_path2 {A n} (x y : ilist A n) :=
+Definition n_dim_path2 {A n} (x y : ilist A n) :=
   match (x, y) with
-  | (Cons x₁ x₂, Cons y₁ y₂) => x₁ == y₁ ∧∧ n_dim_path2 x₂ y₂
+  | (Cons x₁ x₂, Cons y₁ y₂) => x₁ == y₁ ∧∧ n_dim_path x₂ y₂
   | _ => tt == tt
   end.
 
-The term "y₂" has type "ilist A n1" while it is expected to have type
- "ilist A n0".
-
-bbb.
-
-Definition concat_n_dim_path {A n} {x y z : n_dim_type A n} :
-  n_dim_path x y → n_dim_path y z → n_dim_path x z.
+Definition concat_n_dim_path {A n} {x y z : ilist A n} :
+  n_dim_path2 x y → n_dim_path2 y z → n_dim_path2 x z.
 Proof.
 intros p q.
 induction n.
  destruct x as [ | nx a]; [ reflexivity | simpl in p; simpl ].
+bbb.
+
  destruct z as [ | nz c]; [ reflexivity | idtac ].
  destruct y as [ | ny b].
 
