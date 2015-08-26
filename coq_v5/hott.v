@@ -916,6 +916,17 @@ Check @transportconst.
      : ∀ (A : Type) (P : A → Type) (f : ∀ x : A, P x) (x y : A)
        (p : x == y), transport P p (f x) == f y *)
 
+Definition hott_2_3_6 {A B} {x y : A} (p : x == y) (f : A → B) :
+  f x == f y → p⁎ (f x) == f y
+:=
+  λ q, transportconst B p (f x) • q.
+
+Definition hott_2_3_7 {A B} {x y : A} (p : x == y) (f : A → B) :
+  p⁎ (f x) == f y → f x == f y
+:=
+  λ _, ap f p.
+(* so the hypothesis p⁎ (f x) == f y is useless??? *)
+
 Definition hott_2_3_8 A B (P := λ _ : A, B) (f : A → B) x y (p : x == y)
   : apd f p == transportconst B p (f x) • ap f p
   := match p with refl _ => refl (apd f (refl x)) end.
@@ -3530,117 +3541,67 @@ Definition hott_2_1_2_proof_4_eq_proof_1 {A} {x y z : A}
     n-dimensional path in a type A, simultaneously with the type
     of boundaries for such paths." *)
 
-Module ex_2_4.
-
 (* borrowed to Adam Chlipala's code found in the Web *)
 Inductive ilist A : nat → Type :=
   | Nil : ilist A 0
   | Cons : ∀ n, A → ilist A n → ilist A (S n).
+Arguments Nil [A].
 Arguments Cons [A] [n] x l.
 
-Definition ilist_hd {A n} (x : ilist A (S n)) :=
-  match x in ilist _ nx return match nx with 0 => unit | S _ => A end with
-  | Nil _ => tt
-  | Cons x₁ x₂ => x₁
-  end.
-
-(* just to see *)
-Definition ilist_join_hd {A n} (x y : ilist A (S n)) :=
-  match x in ilist _ nx return
-    match nx with 0 => unit | S _ => A * A end
-  with
-  | Nil _ => tt
-  | Cons x₁ x₂ =>
-      match y in ilist _ ny return
-        match ny with 0 => unit | S _ => A * A end
-      with
-      | Nil _ => tt
-      | Cons y₁ y₂ => (x₁, y₁)
-      end
-  end.
-
-(* more and more difficult... *)
-Fixpoint ilist_join {A n} (x y : ilist A n) :=
+Fixpoint n_dim_path' {A nx ny} (x : ilist A nx) (y : ilist A ny) :=
   match x with
-  | Nil _ => nil
+  | Nil => tt == tt
   | Cons x₁ x₂ =>
-      match y as ilist _ ny return ... match ?
-      | Nil _ => nil
-      | Cons y₁ y₂ => cons (x₁, y₁) (ilist_join x₂ y₂)
+      match y with
+      | Nil => tt == tt
+      | Cons y₁ y₂ => x₁ == y₁ ∧∧ n_dim_path' x₂ y₂
       end
   end.
 
-bbb.
+Definition n_dim_path {A n} (x y : ilist A n) := n_dim_path' x y.
 
-Fixpoint n_dim_path {A nx ny} (x : ilist A nx) (y : ilist A ny) :=
-  match (x, y) with
-  | (Cons x₁ x₂, Cons y₁ y₂) => x₁ == y₁ ∧∧ n_dim_path x₂ y₂
-  | _ => tt == tt
-  end.
+(* Not sure it it good, since it does not use type dependent matching
+   and I fear that some extra proofs are then required to be sure that
+   all equalities in x and y are taken into account. Well, let's go to
+   the next exercise... *)
 
-Check @n_dim_path.
+(* "Exercise 2.5. Prove that the functions (2.3.6) and (2.3.7) are
+    inverse equivalences." *)
 
-(* yes, but how to constrain nx to be equal to ny? *)
-
-Definition n_dim_path2 {A n} (x y : ilist A n) :=
-  match (x, y) with
-  | (Cons x₁ x₂, Cons y₁ y₂) => x₁ == y₁ ∧∧ n_dim_path x₂ y₂
-  | _ => tt == tt
-  end.
-
-About n_dim_path.
-(* n_dim_path : ∀ (A : Type) (nx ny : nat), ilist A nx → ilist A ny → Prop *)
-
-Definition ilist_join {A n} (x y : ilist A n) : ilist (A * A) n.
-induction n; constructor.
-refine
-  (match x in (ilist _ nx) return if eq_nat_dec nx (S n) then A else unit
-   with
-   | Nil _ => tt
-   | Cons x₁ x₂ => if eq_nat_dec x₁
-   end).
-bbbb.
-
-Fixpoint n_dim_path3 {A n} (x y : ilist A n) :=
-  match y in ilist ny return if ny = n then 
-
-Definition concat_n_dim_path {A n} {x y z : ilist A n} :
-  n_dim_path2 x y → n_dim_path2 y z → n_dim_path2 x z.
+Definition ex_2_5 {A B} {x y : A} (p : x == y) (f : A → B) :
+  (f x == f y) ≃ (p⁎ (f x) == f y).
 Proof.
-intros p q.
-induction n.
- destruct x as [ | nx a]; [ reflexivity | simpl in p; simpl ].
+apply (existT _ (hott_2_3_6 p f)), qinv_isequiv.
+apply (existT _ (hott_2_3_7 p f)).
+unfold hott_2_3_6, hott_2_3_7.
+unfold "◦", "~~", id; simpl.
+split.
+ intros q.
+ destruct p; simpl in q; simpl.
+ unfold id in q; unfold id.
+ (* mmm... not provable *)
 bbb.
 
- destruct z as [ | nz c]; [ reflexivity | idtac ].
- destruct y as [ | ny b].
+ destruct q.
 
-(* donc, effectivement, ça va pas *)
-bbb.
-
- destruct x as [ | nx a]; [ reflexivity | simpl in p; simpl ].
- split.
-  simpl in q.
-bbb.
-
-Import cartesian.
-
-Definition path1 {A} (x y : A * unit) := pr₁ x == pr₁ y.
-Definition path2 {A} (x y : A * (A * unit)) :=
-  pr₁ x == pr₁ y
-  ∧∧ pr₁ (pr₂ x) == pr₁ (pr₂ y).
-Definition path3 {A} (x y : A * (A * (A * unit))) :=
-  pr₁ x == pr₁ y
-  ∧∧ pr₁ (pr₂ x) == pr₁ (pr₂ y)
-  ∧∧ pr₁ (pr₂ (pr₂ x)) == pr₁ (pr₂ (pr₂ y)).
-Definition path4 {A} (x y : A * (A * (A * (A * unit)))) :=
-  pr₁ x == pr₁ y
-  ∧∧ pr₁ (pr₂ x) == pr₁ (pr₂ y)
-  ∧∧ pr₁ (pr₂ (pr₂ x)) == pr₁ (pr₂ (pr₂ y))
-  ∧∧ pr₁ (pr₂ (pr₂ (pr₂ x))) == pr₁ (pr₂ (pr₂ (pr₂ y))).
+Toplevel input, characters 0-11:
+Error: Cannot instantiate metavariable P of type "∀ a : B, f x == a → Prop"
+with abstraction "λ (a : B) (q : a == a), refl a == q" of incompatible type
+"∀ a : B, a == a → Prop".
 
 bbb.
 
-End ex_2_4.
+(* reminder *)
+
+Definition hott_2_3_6 {A B} {x y : A} (p : x == y) (f : A → B) :
+  f x == f y → p⁎ (f x) == f y
+:=
+  λ q, transportconst B p (f x) • q.
+
+Definition hott_2_3_7 {A B} {x y : A} (p : x == y) (f : A → B) :
+  p⁎ (f x) == f y → f x == f y
+:=
+  λ _, ap f p.
+(* so the hypothesis p⁎ (f x) == f y is useless??? *)
 
 bbb.
