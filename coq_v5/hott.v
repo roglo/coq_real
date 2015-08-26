@@ -3816,4 +3816,47 @@ Defined.
     is an equivalence. Prove that the pullback P :≡ A x_C B defined
     in (2.15.11) is the corner of a pullback square." *)
 
+(* same definition as hott_2_15_11, but renamed 'pullback' *)
+Definition pullback {A B C} (f : A → C) (g : B → C) :=
+  Σ (a : A), Σ (b : B), (f a == g b).
+
+(* Well, I am confused. I don't understand what they are talking about.
+   I give up. *)
+
+(* "Exercise 2.12. Suppose given two commutative squares..." *)
+
+(* Still a game with pullbacks; I don't know what are those things...
+   I see that later. *)
+
+(* "Exercise 2.13. Show that (2 ≃ 2) ≃ 2." *)
+
+Definition ex_2_13_tac : (bool ≃ bool) ≃ bool.
+Proof.
+bbb. (* bon. Faut voir... *)
+
+apply (existT _ (λ p : bool ≃ bool, let (f, _) := p in f true)).
+(*
+apply (existT _ (λ p, true)).
+*)
+apply qinv_isequiv.
+(*
+assert (bool → (bool ≃ bool)) as g.
+ intros b.
+ apply (existT _ id), qinv_isequiv.
+ apply (existT _ id).
+ unfold "◦", "~~"; simpl.
+ split; intros c; reflexivity.
+*)
+apply
+  (existT _
+    (λ _ : bool,
+     existT isequiv id
+       (qinv_isequiv _
+          (existT
+             (λ g : bool → bool, ((id ◦ g ~~ id) * (g ◦ id ~~ id))%type)
+             id (λ c : bool, refl (id c), λ c : bool, refl (id c)))))).
+simpl.
+unfold "◦", "~~"; simpl.
+split.
+
 bbb.
