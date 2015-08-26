@@ -3670,8 +3670,22 @@ Definition ex_2_6 {A} {x y z : A} (p : x == y) : (y == z) ≃ (x == z)
      : ∀ (A B : Type) (x y : A * B),
        (cartesian.pr₁ x == cartesian.pr₁ y) *
        (cartesian.pr₂ x == cartesian.pr₂ y) → x == y
+
+toto
+       a₁ == a₂ → inl a₁ == inl a₂
 *)
 
+Definition ex_2_8 {A B A' B'} (x y : A)
+    (g : A → A') (h : B → B')
+    (f : A → A' + B' := λ x, inl (g x))
+    (p : x == y) :
+ False.
+Check (ap f p).
+bbb.
+Print inl.
+bbb.
+
+(* mouais, bon, faut voir *)
 Definition ex_2_8 {A B A' B'} (x y : A)
    (g : A → A') (h : B → B')
    (f := λ x, match x with inl a => inl (g a) | inr b => inr (h b) end)
