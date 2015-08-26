@@ -3532,21 +3532,32 @@ Definition hott_2_1_2_proof_4_eq_proof_1 {A} {x y z : A}
 
 Module ex_2_4.
 
-Import cartesian.
+Inductive ilist A : nat → Type :=
+  | Nil : ilist A 0
+  | Cons : ∀ n, A → ilist A n → ilist A (S n).
 
-Inductive n_dim_type A : nat → Type :=
-  | glop : n_dim_type A 0
-  | glip : ∀ n, A → n_dim_type A n → n_dim_type A (S n).
+Arguments Cons [A] [n] x l.
 
-Fixpoint n_dim_path {A nx ny} (x : n_dim_type A nx) (y : n_dim_type A ny) :=
+Fixpoint n_dim_path {A nx ny} (x : ilist A nx) (y : ilist A ny) :=
   match (x, y) with
-  | (glip _ _ x₁ x₂, glip _ _ y₁ y₂) => x₁ == y₁ ∧∧ n_dim_path x₂ y₂
+  | (Cons x₁ x₂, Cons y₁ y₂) => x₁ == y₁ ∧∧ n_dim_path x₂ y₂
   | _ => tt == tt
   end.
 
 Check @n_dim_path.
 
 (* yes, but how to constrain nx to be equal to ny? *)
+
+Fixpoint n_dim_path2 {A n} (x y : ilist A n) :=
+  match (x, y) with
+  | (Cons x₁ x₂, Cons y₁ y₂) => x₁ == y₁ ∧∧ n_dim_path2 x₂ y₂
+  | _ => tt == tt
+  end.
+
+The term "y₂" has type "ilist A n1" while it is expected to have type
+ "ilist A n0".
+
+bbb.
 
 Definition concat_n_dim_path {A n} {x y z : n_dim_type A n} :
   n_dim_path x y → n_dim_path y z → n_dim_path x z.
@@ -3564,6 +3575,8 @@ bbb.
  split.
   simpl in q.
 bbb.
+
+Import cartesian.
 
 Definition path1 {A} (x y : A * unit) := pr₁ x == pr₁ y.
 Definition path2 {A} (x y : A * (A * unit)) :=
