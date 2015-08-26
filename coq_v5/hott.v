@@ -919,13 +919,12 @@ Check @transportconst.
 Definition hott_2_3_6 {A B} {x y : A} (p : x == y) (f : A → B) :
   f x == f y → p⁎ (f x) == f y
 :=
-  λ q, transportconst B p (f x) • q.
+  λ _, apd f p.
 
 Definition hott_2_3_7 {A B} {x y : A} (p : x == y) (f : A → B) :
   p⁎ (f x) == f y → f x == f y
 :=
   λ _, ap f p.
-(* so the hypothesis p⁎ (f x) == f y is useless??? *)
 
 Definition hott_2_3_8 A B (P := λ _ : A, B) (f : A → B) x y (p : x == y)
   : apd f p == transportconst B p (f x) • ap f p
@@ -3580,6 +3579,7 @@ split.
  destruct p; simpl in q; simpl.
  unfold id in q; unfold id.
  (* mmm... not provable *)
+Print hott_2_3_7.
 bbb.
 
  destruct q.
@@ -3596,12 +3596,10 @@ bbb.
 Definition hott_2_3_6 {A B} {x y : A} (p : x == y) (f : A → B) :
   f x == f y → p⁎ (f x) == f y
 :=
-  λ q, transportconst B p (f x) • q.
+  λ _, apd f p.
 
 Definition hott_2_3_7 {A B} {x y : A} (p : x == y) (f : A → B) :
   p⁎ (f x) == f y → f x == f y
 :=
   λ _, ap f p.
-(* so the hypothesis p⁎ (f x) == f y is useless??? *)
 
-bbb.
