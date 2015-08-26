@@ -3799,6 +3799,21 @@ unfold "◦", "~~", id; simpl.
 split; [ intros ((x, y), f) | intros (x, (y, f)) ]; reflexivity.
 Defined.
 
-(* "Exercise 2.11: ..." *)
+(* "Exercise 2.11: A (homotopy) commutative square
+                   h
+               P ----→ A
+               |       |
+             k |       | f
+               ↓       ↓
+               B ----→ C
+                   g
+    consists of functions f, g, h, and k as shown, together with a
+    path f ◦ h = g ◦ k. Note that this is exactly an element of the
+    pullback (P → A) x_{P→C} (P → B) as defined in (2.15.11). A
+    commutative square is called a (homotopy) pullback square if
+    for any X, the induced map
+            (X → P) → (X → A) x_{X→C} (X → B)
+    is an equivalence. Prove that the pullback P :≡ A x_C B defined
+    in (2.15.11) is the corner of a pullback square." *)
 
 bbb.
