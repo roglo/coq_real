@@ -3836,6 +3836,16 @@ Definition pullback {A B C} (f : A → C) (g : B → C) :=
 
 Definition ex_2_13_tac : (bool ≃ bool) ≃ bool.
 Proof.
+(*
+assert ((bool ≃ bool) → bool) as ffff.
+ intros (f, ((g, Hg), (h, Hh))).
+ pose proof EqStr.quasi_inv_l_eq_r f g h Hg Hh as Hgh.
+ unfold "◦", "~~", id in Hg, Hh, Hgh.
+ set (b := f true).
+ destruct b.
+*)
+ (* yes, but how do I decide that {f = id} + {f = negb}? *)
+
 apply (existT _ (λ (p : bool ≃ bool), Π_type.pr₁ p true)).
 apply qinv_isequiv.
 (*
@@ -3864,50 +3874,25 @@ apply
                 else refl false))))).
 simpl.
 unfold "◦", "~~", id; simpl.
-split.
- intros x; destruct x; reflexivity.
+split; [ intros x; destruct x; reflexivity | idtac ].
+intros (f, ((g, Hg), (h, Hh))); simpl.
+pose proof EqStr.quasi_inv_l_eq_r f g h Hg Hh as Hgh.
+unfold "◦", "~~", id in Hg, Hh, Hgh.
+set (b := f true).
+assert (f true == b) as Hb by (subst b; reflexivity).
+destruct b.
+ assert (f ~~ id) as H1.
+  intros b.
+  destruct b; [ assumption | unfold id ].
+  destruct (bool_dec (f false) false) as [H1| H1].
+   rewrite H1; reflexivity.
 
- intros (f, ((g, Hg), (h, Hh))); simpl.
- pose proof EqStr.quasi_inv_l_eq_r f g h Hg Hh as Hgh.
- unfold "◦", "~~", id in Hg, Hh, Hgh.
- pose proof Hh true as H.
- set (b := f true) in *.
- destruct b.
-bbb.
-(* ah bin chais pas, fait chier *)
+   apply not_false_is_true in H1.
+   pose proof Hg false as H2.
+   destruct (g false); [ idtac | assumption ].
+   rewrite Hb in H2.
+   exfalso; change (match true with true => False | false => True end).
+   rewrite H2; constructor.
 
-  pose proof
-    (@apf
-       ({g0 : bool → bool & ∀ x, g0 x == x} *
-        {h0 : bool → bool & ∀ x, h0 x == x})
-       {x : bool → bool & isequiv x})
-       (existT isequiv (λ x : bool, x)).
-       (existT (λ f0 : bool → bool, isequiv f0) f).
-
-bbb.
-  eapply H1.
-Check (existT isequiv (λ x : bool, x)).
-
-Check
-(existT (λ g0 : bool → bool, ∀ x : bool, f (g0 x) == x) g Hg,
-existT (λ h0 : bool → bool, ∀ x : bool, h0 (f x) == x) h Hh)
-     : {g0 : bool → bool & ∀ x : bool, f (g0 x) == x} *
-       {h0 : bool → bool & ∀ x : bool, h0 (f x) == x}
-(existT (λ g0 : bool → bool, ∀ x : bool, g0 x == x) (λ x : bool, x) refl,
-existT (λ h0 : bool → bool, ∀ x : bool, h0 x == x) (λ x : bool, x) refl)
-
-bbb.
-  ============================
-   existT
-     isequiv
-     (λ x : bool, x)
-     (existT (λ g0 : bool → bool, ∀ x : bool, g0 x == x) (λ x : bool, x) refl,
-      existT (λ h0 : bool → bool, ∀ x : bool, h0 x == x) (λ x : bool, x) refl)
-   ==
-   existT
-     (λ f0 : bool → bool, isequiv f0)
-     f
-     (existT (λ g0 : bool → bool, f ◦ g0 ~~ id) g Hg,
-      existT (λ h0 : bool → bool, h0 ◦ f ~~ id) h Hh)
-
+ (* oui, mais bon... f = id, c'est pas mal, mais c'est pas le tout *)
 bbb.
