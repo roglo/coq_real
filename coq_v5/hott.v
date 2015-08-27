@@ -3991,7 +3991,18 @@ Module ex_2_17.
 
 Import cartesian.
 
-Definition ex_2_17 {A B A' B'} : A ≃ A' → B ≃ B' → A * B ≃ A' * B'.
+(* with univalence *)
+Definition ex_2_17_ua_tac {A B A' B'} : A ≃ A' → B ≃ B' → A * B ≃ A' * B'.
+Proof.
+intros p q.
+apply ua in p.
+apply ua in q.
+subst A B.
+apply eqv_eq_refl.
+Defined.
+
+(* without univalence *)
+Definition ex_2_17_not_ua_tac {A B A' B'} : A ≃ A' → B ≃ B' → A * B ≃ A' * B'.
 Proof.
 intros (f, ((f₁, Hf₁), (f₂, Hf₂))).
 intros (g, ((g₁, Hg₁), (g₂, Hg₂))).
@@ -4012,8 +4023,6 @@ split.
   eapply compose; [ apply Hf | apply Hf₂ ].
   eapply compose; [ apply Hg | apply Hg₂ ].
 Defined.
-
-(* must do a proof now using univalence *)
 
 bbb.
 
