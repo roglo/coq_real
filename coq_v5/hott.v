@@ -4010,35 +4010,57 @@ Definition ex_2_17_ua {A B A' B'} : A ≃ A' → B ≃ B' → A * B ≃ A' * B' 
 (* without univalence *)
 Definition ex_2_17_not_ua_tac {A B A' B'} : A ≃ A' → B ≃ B' → A * B ≃ A' * B'.
 Proof.
-intros (f, ((f₁, Hf₁), (f₂, Hf₂))).
-intros (g, ((g₁, Hg₁), (g₂, Hg₂))).
+intros (f, ((f₁, Hf₁), (f₂, Hf₂))) (g, ((g₁, Hg₁), (g₂, Hg₂))).
 apply (existT _ (λ x : A * B, (f (pr₁ x), g (pr₂ x)))).
 apply qinv_isequiv.
 apply (existT _ (λ x' : A' * B', (f₁ (pr₁ x'), g₁ (pr₂ x')))).
 unfold "◦", "~~", id; simpl.
 split.
- intros x'; destruct x' as (a', b').
- apply apf; [ | apply Hg₁ ].
- apply apf; [ reflexivity | apply Hf₁ ].
+ intros (a', b'); simpl.
+ apply cartesian2.split_pair_eq.
+ split; [ apply Hf₁ | apply Hg₁ ].
 
- intros x; destruct x as (a, b).
- apply apf.
-  apply apf; [ reflexivity | ].
-bbb.
-
-  eapply EqStr.quasi_inv_l_eq_r in Hf₂; [ | eassumption ].
-  eapply compose; [ apply Hf₂ | ].
-
- apply pair_eq; simpl.
+ intros (a, b); simpl.
+ apply cartesian2.split_pair_eq.
  split.
-  eapply compose; [ | apply Hf₂ ].
-  eapply EqStr.quasi_inv_l_eq_r in Hf₂; [ apply Hf₂ | eassumption ].
+  generalize Hf₂; intros H.
+  eapply EqStr.quasi_inv_l_eq_r in H; [ | apply Hf₁ ].
+  eapply compose; [ apply H | apply Hf₂ ].
 
-  eapply compose; [ | apply Hg₂ ].
-  eapply EqStr.quasi_inv_l_eq_r in Hg₂; [ apply Hg₂ | eassumption ].
+  generalize Hg₂; intros H.
+  eapply EqStr.quasi_inv_l_eq_r in H; [ | apply Hg₁ ].
+  eapply compose; [ apply H | apply Hg₂ ].
 Defined.
 
-Definition ex_2_17_not_ua {A B A' B'} : A ≃ A' → B ≃ B' → A * B ≃ A' * B'.
+Definition ex_2_17_not_ua {A B A' B'} : A ≃ A' → B ≃ B' → A * B ≃ A' * B' :=
+  λ (p : A ≃ A') (q : B ≃ B'),
+  match p with
+  | existT _ f (existT _ f₁ Hf₁, existT _ f₂ Hf₂) =>
+      match q with
+      | existT _ g (existT _ g₁ Hg₁, existT _ g₂ Hg₂) =>
+          existT isequiv
+             (λ x : A * B, (f (pr₁ x), g (pr₂ x)))
+            (qinv_isequiv (λ x : A * B, (f (pr₁ x), g (pr₂ x)))
+               (existT _
+                  (λ x' : A' * B', (f₁ (pr₁ x'), g₁ (pr₂ x')))
+                  (λ x : A' * B',
+                   let (a', b') as p return
+                     ((f (f₁ (pr₁ p)), g (g₁ (pr₂ p))) = p) := x
+                   in
+                   cartesian2.split_pair_eq (f (f₁ a')) a' (g (g₁ b')) b'
+                     (Hf₁ a', Hg₁ b'),
+                   λ x : A * B,
+                   let (a, b) as p return
+                     ((f₁ (f (pr₁ p)), g₁ (g (pr₂ p))) = p) := x in
+                   cartesian2.split_pair_eq (f₁ (f a)) a (g₁ (g b)) b
+                     (EqStr.quasi_inv_l_eq_r f f₁ f₂ Hf₁ Hf₂ (f a) • Hf₂ a,
+                      EqStr.quasi_inv_l_eq_r g g₁ g₂ Hg₁ Hg₂ (g b) • Hg₂ b))))
+      end
+  end.
+
+(* bon, bin main'nant faut prouver que ex_2_17_ua est égal à ex_2_17_not_ua ;
+   ils le disent mais j'en doute ; enfin, on va voir... *)
+
 bbb.
 
 End ex_2_17.
