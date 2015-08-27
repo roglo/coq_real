@@ -3807,74 +3807,63 @@ Definition pullback {A B C} (f : A → C) (g : B → C) :=
 
 Definition ex_2_13_tac : (bool ≃ bool) ≃ bool.
 Proof.
-apply (existT _ (λ (p : bool ≃ bool), Π_type.pr₁ p true)).
+apply (existT _ (λ p : bool ≃ bool, Π_type.pr₁ p true)).
 apply qinv_isequiv.
-(*
-assert (bool → (bool ≃ bool)) as gggg.
-intros b.
- destruct b.
-  apply (existT _ id), qinv_isequiv, (existT _ id).
-  unfold "◦", "~~", id; simpl; split; reflexivity.
-
-  apply (existT _ negb), qinv_isequiv, (existT _ negb).
-  unfold "◦", "~~", id; simpl; split; intros b; destruct b; reflexivity.
-*)
 apply
-  (existT _
-     (λ b : bool,
-      if b then
-       existT isequiv id
-         (qinv_isequiv id (existT _ id (λ _, eq_refl, λ _, eq_refl)))
-      else
-       existT isequiv negb
-         (qinv_isequiv negb
-            (existT
-               (λ g, ((negb ◦ g ~~ id) * (g ◦ negb ~~ id))%type)
-               negb
-               (λ b : bool,
-                if b return (negb (negb b) = b) then eq_refl true
-                else eq_refl false,
-                λ b : bool,
-                if b return (negb (negb b) = b) then eq_refl true
-                else eq_refl false))))).
+ (existT _
+    (λ b : bool,
+     if b
+     then
+      existT isequiv id
+        (qinv_isequiv id (existT _ id (λ _, eq_refl, λ _, eq_refl)))
+     else
+      existT isequiv negb
+        (qinv_isequiv negb
+           (existT (λ g, ((negb ◦ g ~~ id) * (g ◦ negb ~~ id))%type) negb
+              (λ b : bool,
+               if b return (negb (negb b) = b)
+               then eq_refl true
+               else eq_refl false,
+              λ b : bool,
+              if b return (negb (negb b) = b)
+              then eq_refl true
+              else eq_refl false))))).
 simpl.
 unfold "◦", "~~", id; simpl.
-split; [ intros x; destruct x; reflexivity | idtac ].
+split; [ intros x; destruct x; reflexivity |  ].
 intros (f, ((g, Hg), (h, Hh))); simpl.
-pose proof EqStr.quasi_inv_l_eq_r f g h Hg Hh as Hgh.
+pose proof (EqStr.quasi_inv_l_eq_r f g h Hg Hh) as Hgh.
 unfold "◦", "~~", id in Hg, Hh, Hgh.
+pose proof (EqStr.quasi_inv_l_eq_r f g h Hg Hh) as H.
 set (b := f true).
-assert (f true = b) as Hb by (subst b; reflexivity).
+assert (Hb : f true = b) by (subst b; reflexivity).
 destruct b.
- assert (f ~~ id) as H1.
+ assert (H1 : f ~~ id).
   intros b.
   destruct b; [ assumption | unfold id ].
-  destruct (bool_dec (f false) false) as [H1| H1].
-   rewrite H1; reflexivity.
+  destruct (bool_dec (f false) false) as [H1| H1]; [ assumption | ].
+  apply not_false_is_true in H1.
+  pose proof (Hg false) as H2.
+  destruct (g false); [  | assumption ].
+  rewrite Hb in H2; discriminate H2.
 
-   apply not_false_is_true in H1.
-   pose proof Hg false as H2.
-   destruct (g false); [ idtac | assumption ].
-   rewrite Hb in H2; discriminate H2.
+  assert (H2 : g ~~ id).
+   intros b.
+   destruct (bool_dec (g b) b) as [H2| H2]; [ assumption |  ].
+   destruct b.
+    apply not_true_is_false in H2.
+    pose proof (Hh true) as H3.
+    rewrite Hb in H3.
+    rewrite H, H3 in H2.
+    discriminate H2.
 
- pose proof EqStr.quasi_inv_l_eq_r f g h Hg Hh as H.
- assert (g ~~ id) as H2.
-  intros b.
-  destruct (bool_dec (g b) b) as [H2| H2]; [ assumption | idtac ].
-  destruct b.
-   apply not_true_is_false in H2.
-   pose proof Hh true as H3.
-   rewrite Hb in H3.
-   rewrite H, H3 in H2.
-   discriminate H2.
+    apply not_false_is_true in H2.
+    pose proof (Hg false) as H3.
+    rewrite H2, Hb in H3.
+    discriminate H3.
 
-   apply not_false_is_true in H2.
-   pose proof Hg false as H3.
-   rewrite H2, Hb in H3.
-   discriminate H3.
-
-   assert (h ~~ id) as H3.
-    eapply homotopy_trans2; [ idtac | apply H2 ].
+   assert (H3 : h ~~ id).
+    eapply homotopy_trans2; [  | apply H2 ].
     apply homotopy_sym2; assumption.
 
     apply Π_type.funext in H1.
@@ -3884,75 +3873,65 @@ destruct b.
     change
       (existT isequiv id
          (existT (λ g, ∀ x, g x = x) id (λ _, eq_refl),
-          existT (λ h, ∀ x, h x = x) id (λ _, eq_refl)) =
+         existT (λ h, ∀ x, h x = x) id (λ _, eq_refl)) =
        existT isequiv id
-         (existT (λ g, ∀ x, g x = x) id Hg,
-          existT (λ h, ∀ x, h x = x) id Hh)).
-    apply apf; [ reflexivity | idtac ].
+         (existT (λ g, ∀ x, g x = x) id Hg, existT (λ h, ∀ x, h x = x) id Hh)).
+    apply apf; [ reflexivity |  ].
     apply apf.
-     apply apf; [ reflexivity | idtac ].
-     apply apf; [ reflexivity | idtac ].
+     apply apf; [ reflexivity |  ].
+     apply apf; [ reflexivity |  ].
      apply Π_type.funext; intros b.
-     unfold id in Hg, Hh.
-     pose proof Hg b as H1.
-     destruct b.
+     symmetry; apply Eqdep_dec.UIP_refl_bool.
 
+     apply apf; [ reflexivity | ].
+     apply Π_type.funext; intros b.
+     symmetry; apply Eqdep_dec.UIP_refl_bool.
+
+ assert (H1 : f ~~ negb).
+  intros b.
+  destruct b; [ assumption |  ].
+  destruct (bool_dec (f false) true) as [H1| H1]; [ assumption | ].
+  apply not_true_is_false in H1.
+  pose proof (Hg true) as H2.
+  destruct (g true); [  | assumption ].
+  rewrite Hb in H2; discriminate H2.
+
+  assert (H2 : g ~~ negb).
+   intros b.
+   destruct (bool_dec (g b) (negb b)) as [H2| H2]; [ assumption |  ].
+   destruct b.
+    apply not_false_is_true in H2.
+    pose proof (Hg true) as H3.
+    rewrite H2, Hb in H3; discriminate H3.
+
+    apply not_true_is_false in H2.
+    pose proof (Hh true) as H3.
+    rewrite Hb, <- H, H2 in H3; discriminate H3.
+
+   assert (H3 : h ~~ negb).
+    eapply homotopy_trans2; [  | apply H2 ].
+    apply homotopy_sym2; assumption.
+
+    apply Π_type.funext in H1.
+    apply Π_type.funext in H2.
+    apply Π_type.funext in H3.
+    subst f g h; unfold id; simpl.
 bbb.
 
- apply EqdepFacts.eq_dep_eq_sigT.
- change
-   (EqdepFacts.eq_dep (bool → bool) isequiv id
-     (existT (λ g₁, ∀ x, g₁ x = x) id (λ _, eq_refl),
-      existT (λ h₁, ∀ x, h₁ x = x) id (λ _, eq_refl)) f
-     (existT (λ g₁, f ◦ g₁ ~~ id) g Hg,
-      existT (λ h₁, h₁ ◦ f ~~ id) h Hh)).
-(*
-   EqdepFacts.eq_dep U:(bool → bool) P:isequiv p:id
-     x:(existT (λ g₁, ∀ x, g₁ x = x) id (λ _, eq_refl),
-        existT (λ h₁, ∀ x, h₁ x = x) id (λ _, eq_refl))
-     q:f
-     y:(existT (λ g₁, f ◦ g₁ ~~ id) g Hg,
-        existT (λ h₁, h₁ ◦ f ~~ id) h Hh)).
-*)
-SearchAbout EqdepFacts.eq_dep.
-(*
-EqdepFacts.eq_dep_refl:
-  ∀ (U : Type) (P : U → Type) (p : U) (x : P p),
-  EqdepFacts.eq_dep U P p x p x
-EqdepFacts.eq_dep_sym:
-  ∀ (U : Type) (P : U → Type) (p q : U) (x : P p) 
-  (y : P q), EqdepFacts.eq_dep U P p x q y → EqdepFacts.eq_dep U P q y p x
-EqdepFacts.eq_dep_trans:
-  ∀ (U : Type) (P : U → Type) (p q r : U) (x : P p) 
-  (y : P q) (z : P r),
-  EqdepFacts.eq_dep U P p x q y
-  → EqdepFacts.eq_dep U P q y r z → EqdepFacts.eq_dep U P p x r z
-EqdepFacts.eq_dep1_dep:
-  ∀ (U : Type) (P : U → Type) (p : U) (x : P p) (q : U) 
-  (y : P q), EqdepFacts.eq_dep1 U P p x q y → EqdepFacts.eq_dep U P p x q y
-EqdepFacts.eq_dep_dep1:
-  ∀ (U : Type) (P : U → Type) (p q : U) (x : P p) 
-  (y : P q), EqdepFacts.eq_dep U P p x q y → EqdepFacts.eq_dep1 U P p x q y
-EqdepFacts.eq_sigT_eq_dep:
-  ∀ (U : Type) (P : U → Type) (p q : U) (x : P p) 
-  (y : P q), existT P p x = existT P q y → EqdepFacts.eq_dep U P p x q y
-EqdepFacts.eq_dep_eq_sigT:
-  ∀ (U : Type) (P : U → Type) (p q : U) (x : P p) 
-  (y : P q), EqdepFacts.eq_dep U P p x q y → existT P p x = existT P q y
-EqdepFacts.eq_sigT_iff_eq_dep:
-  ∀ (U : Type) (P : U → Type) (p q : U) (x : P p) 
-  (y : P q), existT P p x = existT P q y ↔ EqdepFacts.eq_dep U P p x q y
-EqdepFacts.eq_sig_eq_dep:
-  ∀ (U : Type) (P : U → Prop) (p q : U) (x : P p) 
-  (y : P q), exist P p x = exist P q y → EqdepFacts.eq_dep U P p x q y
-EqdepFacts.eq_dep_eq_sig:
-  ∀ (U : Type) (P : U → Prop) (p q : U) (x : P p) 
-  (y : P q), EqdepFacts.eq_dep U P p x q y → exist P p x = exist P q y
-EqdepFacts.eq_sig_iff_eq_dep:
-  ∀ (U : Type) (P : U → Prop) (p q : U) (x : P p) 
-  (y : P q), exist P p x = exist P q y ↔ EqdepFacts.eq_dep U P p x q y
-EqdepFacts.f_eq_dep:
-  ∀ (U : Type) (P R : U → Type) (p q : U) (x : P p) 
-  (y : P q) (f : ∀ p0 : U, P p0 → R p0),
-  EqdepFacts.eq_dep U P p x q y → EqdepFacts.eq_dep U R p (f p x) q (f q y)
-*)
+    change
+      (existT isequiv id
+         (existT (λ g, ∀ x, g x = x) id (λ _, eq_refl),
+         existT (λ h, ∀ x, h x = x) id (λ _, eq_refl)) =
+       existT isequiv id
+         (existT (λ g, ∀ x, g x = x) id Hg, existT (λ h, ∀ x, h x = x) id Hh)).
+    apply apf; [ reflexivity |  ].
+    apply apf.
+     apply apf; [ reflexivity |  ].
+     apply apf; [ reflexivity |  ].
+     apply Π_type.funext; intros b.
+     symmetry; apply Eqdep_dec.UIP_refl_bool.
+
+     apply apf; [ reflexivity | ].
+     apply Π_type.funext; intros b.
+     symmetry; apply Eqdep_dec.UIP_refl_bool.
+bbb.
