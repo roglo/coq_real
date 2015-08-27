@@ -3922,3 +3922,10 @@ destruct b.
      destruct b; symmetry; apply Eqdep_dec.UIP_refl_bool.
 Defined.
 
+(* "Exercise 2.14. Suppose we add to type theory the 'equality
+    reflection rule' which says that if there is an element p : x = y,
+    then in fact x ≡ y. Prove that for any p : x = x we have p ≡ reflx.
+    (This implies that every type is a set in the sense to be
+    introduced in §3.1; see §7.2.)" *)
+
+bbb.
