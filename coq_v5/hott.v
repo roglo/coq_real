@@ -3986,3 +3986,35 @@ Abort.
          not using it, and show that the two proofs are equal.
     (iii) Formulate and prove analogous results for the other type
           formers: Σ, →, Π, and +." *)
+
+Module ex_2_17.
+
+Import cartesian.
+
+Definition ex_2_17 {A B A' B'} : A ≃ A' → B ≃ B' → A * B ≃ A' * B'.
+Proof.
+intros (f, ((f₁, Hf₁), (f₂, Hf₂))).
+intros (g, ((g₁, Hg₁), (g₂, Hg₂))).
+apply (existT _ (λ x : A * B, (f (pr₁ x), g (pr₂ x)))).
+apply qinv_isequiv.
+apply (existT _ (λ x' : A' * B', (f₁ (pr₁ x'), g₁ (pr₂ x')))).
+unfold "◦", "~~", id; simpl.
+split.
+ intros x'.
+ apply pair_eq; simpl.
+ split; [ apply Hf₁ | apply Hg₁ ].
+
+ intros x.
+ apply pair_eq; simpl.
+ pose proof (EqStr.quasi_inv_l_eq_r f f₁ f₂ Hf₁ Hf₂) as Hf.
+ pose proof (EqStr.quasi_inv_l_eq_r g g₁ g₂ Hg₁ Hg₂) as Hg.
+ split.
+  eapply compose; [ apply Hf | apply Hf₂ ].
+  eapply compose; [ apply Hg | apply Hg₂ ].
+Defined.
+
+(* must do a proof now using univalence *)
+
+bbb.
+
+End ex_2_17.
