@@ -806,11 +806,8 @@ Proof. constructor. Qed.
 
 (* personnal add *)
 
-Definition ap2 {A B C} (x y : A) (z : B) (f : A → B → C) (p : x == y) :
-  f x z == f y z :=
-  match p with
-  | refl _ => refl (f x z)
-  end.
+Definition apf {A B} {f g : A → B} {x y} : f == g → x == y → f x == g y :=
+  λ p q, match p with refl _ => ap f q end.
 
 (* Lemma 2.2.2 i *)
 
@@ -2121,7 +2118,8 @@ Definition ua_pcr_inv {A B}
 Proof.
 intros.
 eapply compose; [ idtac | apply ua_pcr ].
-apply ap2, ua_inverse.
+apply apf; [ idtac | reflexivity ].
+apply apf; [ reflexivity | apply ua_inverse ].
 Defined.
 
 Lemma hott_2_10_5_i {A} {B : A → U} {x y : A} : ∀ (p : x == y) (u : B x),
@@ -2793,9 +2791,10 @@ Definition transport_op_tac {A B} (e : A ≃ B) m b₁ b₂ :
 Proof.
 eapply compose; [ eapply transport_op_1 | idtac ].
 eapply compose; [ apply ua_pcr | apply ap ].
-eapply compose; [ apply ap2, ua_pcr_inv | idtac ].
-eapply compose; [ eapply ap, ua_pcr_inv | idtac ].
-reflexivity.
+eapply apf.
+ eapply apf; [ reflexivity | apply ua_pcr_inv ].
+
+ eapply compose; [ apply ua_pcr_inv | reflexivity ].
 Defined.
 
 Definition transport_op {A B} (e : A ≃ B) m b₁ b₂ :
@@ -2805,9 +2804,9 @@ Definition transport_op {A B} (e : A ≃ B) m b₁ b₂ :
   transport_op_1 (ua e) m b₁ b₂
   • ua_pcr e (m (transport id (ua e)⁻¹ b₁) (transport id (ua e)⁻¹ b₂))
   • ap (pr₁ e)
-      (ap2 (transport id (ua e)⁻¹ b₁) (projT1 e⁻⁻¹ b₁)
-         (transport id (ua e)⁻¹ b₂) m (ua_pcr_inv e b₁)
-       • (ap (m (projT1 e⁻⁻¹ b₁)) (ua_pcr_inv e b₂))).
+      (apf
+         (apf (refl m) (ua_pcr_inv e b₁))
+         (ua_pcr_inv e b₂ • refl (pr₁ e⁻⁻¹ b₂))).
 
 (* misc theorems *)
 
@@ -3871,9 +3870,44 @@ split.
  intros (f, ((g, Hg), (h, Hh))); simpl.
  pose proof EqStr.quasi_inv_l_eq_r f g h Hg Hh as Hgh.
  unfold "◦", "~~", id in Hg, Hh, Hgh.
-bbb.
  pose proof Hh true as H.
  set (b := f true) in *.
  destruct b.
+bbb.
+(* ah bin chais pas, fait chier *)
+
+  pose proof
+    (@apf
+       ({g0 : bool → bool & ∀ x, g0 x == x} *
+        {h0 : bool → bool & ∀ x, h0 x == x})
+       {x : bool → bool & isequiv x})
+       (existT isequiv (λ x : bool, x)).
+       (existT (λ f0 : bool → bool, isequiv f0) f).
+
+bbb.
+  eapply H1.
+Check (existT isequiv (λ x : bool, x)).
+
+Check
+(existT (λ g0 : bool → bool, ∀ x : bool, f (g0 x) == x) g Hg,
+existT (λ h0 : bool → bool, ∀ x : bool, h0 (f x) == x) h Hh)
+     : {g0 : bool → bool & ∀ x : bool, f (g0 x) == x} *
+       {h0 : bool → bool & ∀ x : bool, h0 (f x) == x}
+(existT (λ g0 : bool → bool, ∀ x : bool, g0 x == x) (λ x : bool, x) refl,
+existT (λ h0 : bool → bool, ∀ x : bool, h0 x == x) (λ x : bool, x) refl)
+
+bbb.
+  ============================
+   existT
+     isequiv
+     (λ x : bool, x)
+     (existT (λ g0 : bool → bool, ∀ x : bool, g0 x == x) (λ x : bool, x) refl,
+      existT (λ h0 : bool → bool, ∀ x : bool, h0 x == x) (λ x : bool, x) refl)
+   ==
+   existT
+     (λ f0 : bool → bool, isequiv f0)
+     f
+     (existT (λ g0 : bool → bool, f ◦ g0 ~~ id) g Hg,
+      existT (λ h0 : bool → bool, h0 ◦ f ~~ id) h Hh)
 
 bbb.
