@@ -4001,6 +4001,12 @@ subst A B.
 apply eqv_eq_refl.
 Defined.
 
+Definition ex_2_17_ua {A B A' B'} : A ≃ A' → B ≃ B' → A * B ≃ A' * B' :=
+  λ (p : A ≃ A') (q : B ≃ B'),
+  eq_rect_r (λ A, A * B ≃ A' * B')
+    (eq_rect_r (λ B, A' * B ≃ A' * B') (eqv_eq_refl (A' * B')) (ua q))
+    (ua p).
+
 (* without univalence *)
 Definition ex_2_17_not_ua_tac {A B A' B'} : A ≃ A' → B ≃ B' → A * B ≃ A' * B'.
 Proof.
@@ -4011,19 +4017,28 @@ apply qinv_isequiv.
 apply (existT _ (λ x' : A' * B', (f₁ (pr₁ x'), g₁ (pr₂ x')))).
 unfold "◦", "~~", id; simpl.
 split.
- intros x'.
- apply pair_eq; simpl.
- split; [ apply Hf₁ | apply Hg₁ ].
+ intros x'; destruct x' as (a', b').
+ apply apf; [ | apply Hg₁ ].
+ apply apf; [ reflexivity | apply Hf₁ ].
 
- intros x.
+ intros x; destruct x as (a, b).
+ apply apf.
+  apply apf; [ reflexivity | ].
+bbb.
+
+  eapply EqStr.quasi_inv_l_eq_r in Hf₂; [ | eassumption ].
+  eapply compose; [ apply Hf₂ | ].
+
  apply pair_eq; simpl.
- pose proof (EqStr.quasi_inv_l_eq_r f f₁ f₂ Hf₁ Hf₂) as Hf.
- pose proof (EqStr.quasi_inv_l_eq_r g g₁ g₂ Hg₁ Hg₂) as Hg.
  split.
-  eapply compose; [ apply Hf | apply Hf₂ ].
-  eapply compose; [ apply Hg | apply Hg₂ ].
+  eapply compose; [ | apply Hf₂ ].
+  eapply EqStr.quasi_inv_l_eq_r in Hf₂; [ apply Hf₂ | eassumption ].
+
+  eapply compose; [ | apply Hg₂ ].
+  eapply EqStr.quasi_inv_l_eq_r in Hg₂; [ apply Hg₂ | eassumption ].
 Defined.
 
+Definition ex_2_17_not_ua {A B A' B'} : A ≃ A' → B ≃ B' → A * B ≃ A' * B'.
 bbb.
 
 End ex_2_17.
