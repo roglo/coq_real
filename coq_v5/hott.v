@@ -3870,12 +3870,6 @@ destruct b.
     apply Π_type.funext in H2.
     apply Π_type.funext in H3.
     subst f g h; unfold id; simpl.
-    change
-      (existT isequiv id
-         (existT (λ g, ∀ x, g x = x) id (λ _, eq_refl),
-         existT (λ h, ∀ x, h x = x) id (λ _, eq_refl)) =
-       existT isequiv id
-         (existT (λ g, ∀ x, g x = x) id Hg, existT (λ h, ∀ x, h x = x) id Hh)).
     apply apf; [ reflexivity |  ].
     apply apf.
      apply apf; [ reflexivity |  ].
@@ -3916,22 +3910,15 @@ destruct b.
     apply Π_type.funext in H2.
     apply Π_type.funext in H3.
     subst f g h; unfold id; simpl.
-bbb.
-
-    change
-      (existT isequiv id
-         (existT (λ g, ∀ x, g x = x) id (λ _, eq_refl),
-         existT (λ h, ∀ x, h x = x) id (λ _, eq_refl)) =
-       existT isequiv id
-         (existT (λ g, ∀ x, g x = x) id Hg, existT (λ h, ∀ x, h x = x) id Hh)).
-    apply apf; [ reflexivity |  ].
+    apply apf; [ reflexivity | ].
     apply apf.
      apply apf; [ reflexivity |  ].
      apply apf; [ reflexivity |  ].
      apply Π_type.funext; intros b.
-     symmetry; apply Eqdep_dec.UIP_refl_bool.
+     destruct b; symmetry; apply Eqdep_dec.UIP_refl_bool.
 
      apply apf; [ reflexivity | ].
      apply Π_type.funext; intros b.
-     symmetry; apply Eqdep_dec.UIP_refl_bool.
-bbb.
+     destruct b; symmetry; apply Eqdep_dec.UIP_refl_bool.
+Defined.
+
