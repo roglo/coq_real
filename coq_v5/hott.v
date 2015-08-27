@@ -3928,4 +3928,30 @@ Defined.
     (This implies that every type is a set in the sense to be
     introduced in §3.1; see §7.2.)" *)
 
+(* Not easy to prove in Coq since there is no way to set x ≡ y as a
+   proposition. We must define a model of a type theory and reason
+   with it. I give up. *)
+
+(* "Exercise 2.15. Show that Lemma 2.10.5 can be strengthened to
+        transport^B(p, -) =_{B(x)→ B(y)} idtoeqv(ap_{B}(p))
+    without using function extensionality. (In this and other similar
+    cases, the apparently weaker formulation has been chosen for
+    readability and consistency.) *)
+
+Print hott_2_10_5.
+
+(* Well, it seems that my implementation did not use function
+   extensionality anyway, but just induction of p. Perhaps I should
+   look for a version with function extensionality to understand what
+   was the initial idea? *)
+
+(* "Exercise 2.16. Suppose that rather than function extensionality
+    (Axiom 2.9.3), we suppose only the existence of an element
+        funext : Π (a:U), Π (b:A→U), Π (f,g:Π(x:A),B(x)), (f~g) → (f=g)
+    (with no relationship to happly assumed). Prove that in fact, this
+    is sufficient to imply the whole function extensionality axiom
+    (that happly is an equivalence). This is due to Voevodsky; its
+    proof is tricky and may require concepts from later chapters." *)
+
 bbb.
+
