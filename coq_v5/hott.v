@@ -1708,6 +1708,8 @@ Definition happly {A B} {f g : Π (x : A), B x}
      | eq_refl _ => λ y, eq_refl (f y)
      end.
 
+(* Axiom 2.9.3 *)
+
 Axiom extensionality : ∀ {A B} f g, isequiv (@happly A B f g).
 
 Definition funext_tac {A B} {f g : Π (x : A), B x}
@@ -1720,7 +1722,7 @@ destruct H as (h, α, β).
 apply h, p.
 Defined.
 
-Definition funext {A B} {f g : ∀ x : A, B x}
+Definition funext {A B} {f g : Π (x : A), B x}
   : (∀ x : A, f x = g x) → f = g
   := λ p,
      match isequiv_qinv happly (extensionality f g) with
@@ -3947,11 +3949,40 @@ Print hott_2_10_5.
 
 (* "Exercise 2.16. Suppose that rather than function extensionality
     (Axiom 2.9.3), we suppose only the existence of an element
-        funext : Π (a:U), Π (b:A→U), Π (f,g:Π(x:A),B(x)), (f~g) → (f=g)
+        funext : Π (A:U), Π (B:A→U), Π (f,g:Π(x:A),B(x)), (f~g) → (f=g)
     (with no relationship to happly assumed). Prove that in fact, this
     is sufficient to imply the whole function extensionality axiom
     (that happly is an equivalence). This is due to Voevodsky; its
     proof is tricky and may require concepts from later chapters." *)
 
-bbb.
+Axiom funext2 :
+  Π (A:U), Π (B:A→U), Π (f:Π(x:A),B x), Π (g:Π(x:A),B x),
+  (∀ x, f x = g x) → (f = g).
 
+Check @Π_type.happly.
+
+Definition ex_2_16 {A B} (f g : Π (x : A), B x) : (f = g) ≃ (∀ x, f x = g x).
+Proof.
+apply
+  (existT _
+     (λ (p : f = g) (x : A),
+      match p in (_ = h) return (f x = h x) with
+      | eq_refl => eq_refl
+      end)).
+apply qinv_isequiv.
+apply (existT _ (funext2 A B f g)).
+unfold "◦", "~~", id.
+split.
+ intros h.
+ apply funext2; intros x.
+Abort.
+(* The proof is tricky, they say, and may require concept from later
+   chapters. In that case, I wonder why they propose it as exercise
+   in the present chapter. I give up. *)
+
+(* "Exercise 2.17.
+    (i) Show that if A≃A' and B≃B', then (A x B) ≃ (A' x B').
+    (ii) Give two proofs of this fact, one using univalence and one
+         not using it, and show that the two proofs are equal.
+    (iii) Formulate and prove analogous results for the other type
+          formers: Σ, →, Π, and +." *)
