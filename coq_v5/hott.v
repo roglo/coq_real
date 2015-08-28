@@ -4003,9 +4003,20 @@ Defined.
 
 Definition ex_2_17_ua {A B A' B'} : A ≃ A' → B ≃ B' → A * B ≃ A' * B' :=
   λ (p : A ≃ A') (q : B ≃ B'),
-  eq_rect_r (λ A, A * B ≃ A' * B')
-    (eq_rect_r (λ B, A' * B ≃ A' * B') (eqv_eq_refl (A' * B')) (ua q))
-    (ua p).
+  match
+    match ua p in (_ = A') return (A' = A) with
+    | eq_refl _ => eq_refl A
+    end
+  with
+  | eq_refl _ =>
+      match
+        match ua q in (_ = B') return (B' = B) with
+        | eq_refl _ => eq_refl B
+        end
+      with
+      | eq_refl _ => eqv_eq_refl (A' * B')
+      end
+  end.
 
 (* without univalence *)
 Definition ex_2_17_not_ua_tac {A B A' B'} : A ≃ A' → B ≃ B' → A * B ≃ A' * B'.
@@ -4058,9 +4069,29 @@ Definition ex_2_17_not_ua {A B A' B'} : A ≃ A' → B ≃ B' → A * B ≃ A' *
       end
   end.
 
-(* bon, bin main'nant faut prouver que ex_2_17_ua est égal à ex_2_17_not_ua ;
-   ils le disent mais j'en doute ; enfin, on va voir... *)
+Definition ex_2_17_eq : @ex_2_17_ua = @ex_2_17_not_ua.
+Proof.
+unfold ex_2_17_ua, ex_2_17_not_ua.
+apply Π_type.funext; intros A.
+apply Π_type.funext; intros B.
+apply Π_type.funext; intros A'.
+apply Π_type.funext; intros B'.
+apply Π_type.funext; intros (f, ((f₁, Hf₁), (f₂, Hf₂))).
+apply Π_type.funext; intros (g, ((g₁, Hg₁), (g₂, Hg₂))); simpl.
+unfold eq_rect_r; simpl.
+unfold eq_rect; simpl.
+unfold eq_sym; simpl.
+(* seems complicated; I am not surprised *)
+Abort.
 
-bbb.
+(* remaining to do:
+   (iii) Formulate and prove analogous results for the other type
+         formers: Σ, →, Π, and +
+   but I am tired, I do that later, I prefer attack chapter 3
+*)
 
 End ex_2_17.
+
+(* Chapter 3 - Sets and logic *)
+
+bbb.
