@@ -4109,6 +4109,7 @@ End ex_2_17.
 Definition isSet A :=
   Π (x : A), Π (y : A), Π (p : x = y), Π (q : x = y), p = q.
 
+(* personal solution *)
 Definition ex_3_1_2_tac : isSet unit.
 Proof.
 intros x y p q.
@@ -4149,4 +4150,46 @@ destruct (f p), (f q).
 subst p q; reflexivity.
 Defined.
 
+(* "Example 3.1.3. The type 0 is a set, for given any x, y : 0 we may
+    deduce anything we like, by the induction principle of 0. *)
+
+Definition ex_3_1_3_tac : isSet False.
+Proof.
+intros x y p q.
+destruct x.
+Defined.
+
+Definition ex_3_1_3 : isSet False := λ x y, match x with end.
+
+(* "Example 3.1.4. The type ℕ of natural numbers is also a set. This
+    follows from Theorem 2.13.1, since all equality types x =_{ℕ} y
+    are equivalent to either 1 or 0, and any two inhabitants of 1 or 0
+    are equal. We will see another proof of this fact in Chapter 7. *)
+
+(* ℕ.hott_2_13_1 : ∀ m n : nat, (m = n) ≃ ℕ.code m n *)
+
+Print or.
+Inductive ort (A B : Type) : Type :=
+  ort_introl : A → ort A B | ort_intror : B → ort A B.
+Notation "u '∨∨' v" := (ort u v) (at level 80, right associativity).
+Arguments ort_introl {A B} _.
+Arguments ort_intror {A B} _.
+
+Definition ex_3_1_4_tac : isSet nat.
+Proof.
+intros m n p q.
+pose proof ℕ.hott_2_13_1 m n as r.
+destruct r as (f, ((g, Hg), (h, Hh))).
+unfold "◦", "~~", id in Hg, Hh.
+pose proof Hh p as Hp.
+pose proof Hh q as Hq.
+assert (f p = f q).
+assert ((ℕ.code m n ≃ unit) ∨∨ (ℕ.code m n ≃ False)).
+ destruct (eq_nat_dec m n) as [H1| H1].
+  left; subst m.
+  apply (existT _ (λ c, tt)), qinv_isequiv.
+  apply (existT _ (λ _, ℕ.r n)).
+  unfold "◦", "~~", id; simpl.
+  split; [ intros u; destruct u; reflexivity | ].
+  intros c.
 bbb.
