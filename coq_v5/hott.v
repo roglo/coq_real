@@ -4229,4 +4229,10 @@ Definition ex_3_1_4 : isSet nat :=
       end
   end.
 
+(* "Example 3.1.5. If A and B are sets, then so is A × B." *)
+
+Definition ex_3_1_5 {A B} : isSet A → isSet B → isSet (A * B).
+Proof.
+intros p q.
+
 bbb.
