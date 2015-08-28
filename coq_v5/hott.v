@@ -1271,7 +1271,8 @@ Definition transport_pair {A} B C x y (p : x = y) b c
   : transport (λ z : A, (B z * C z)%type) p (b, c) =
     (transport B p b, transport C p c)
   := match p with
-     | eq_refl _ => eq_refl (transport B (eq_refl x) b, transport C (eq_refl x) c)
+     | eq_refl _ =>
+         eq_refl (transport B (eq_refl x) b, transport C (eq_refl x) c)
      end.
 
 (* 2.6 Cartesian product types *)
@@ -4189,23 +4190,43 @@ Definition ex_3_1_4_tac : isSet nat.
 Proof.
 intros m n p q.
 pose proof ℕ.hott_2_13_1 m n as r.
-destruct r as (f, ((g, Hg), (h, Hh))).
-unfold "◦", "~~", id in Hg, Hh.
-pose proof Hh p as Hp.
-pose proof Hh q as Hq.
-pose proof ℕ_code_equiv_1_or_0 m n as r.
-destruct r as [r| r].
-bbb.
+pose proof ℕ_code_equiv_1_or_0 m n as s.
+destruct s as [s| s].
+ eapply equiv_compose in s; [ | apply r ].
+ destruct s as (f, ((g, Hg), (h, Hh))).
+ unfold "◦", "~~", id in Hg, Hh.
+ pose proof Hh p as Hp.
+ pose proof Hh q as Hq.
+ destruct (f p), (f q).
+ subst p q; reflexivity.
 
-assert (f p = f q).
-bbb.
-assert ((ℕ.code m n ≃ unit) ∨∨ (ℕ.code m n ≃ False)).
- destruct (eq_nat_dec m n) as [H1| H1].
-  left; subst m.
-  apply (existT _ (λ c, tt)), qinv_isequiv.
-  apply (existT _ (λ _, ℕ.r n)).
-  unfold "◦", "~~", id; simpl.
-  split; [ intros u; destruct u; reflexivity | ].
-  intros c.
+ eapply equiv_compose in s; [ | apply r ].
+ destruct s as (f, ((g, Hg), (h, Hh))).
+ exfalso; apply f, p.
+Defined.
+
+Definition ex_3_1_4 : isSet nat :=
+  λ (m n : nat) (p q : m = n),
+  match ℕ_code_equiv_1_or_0 m n with
+  | inl s =>
+      match s ◦◦ ℕ.hott_2_13_1 m n with
+      | existT _ f (existT _ g Hg, existT _ h Hh) =>
+          match f p with
+          | tt =>
+              λ (Hp0 : h tt = p),
+              match f q as u1 return (h u1 = q → p = q) with
+              | tt =>
+                  λ Hq0 : h tt = q,
+                  eq_ind (h tt) (λ p0 : m = n, p0 = q)
+                    (eq_ind (h tt) (λ q0 : m = n, h tt = q0) eq_refl q Hq0) p
+                    Hp0
+              end (Hh q)
+          end (Hh p)
+      end
+  | inr s =>
+      match s ◦◦ ℕ.hott_2_13_1 m n with
+      | existT _ f _ => match f p with end
+      end
+  end.
 
 bbb.
