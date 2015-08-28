@@ -4265,11 +4265,11 @@ Check @cartesian.hott_2_6_2.
        (cartesian.pr₁ x = cartesian.pr₁ y) *
        (cartesian.pr₂ x = cartesian.pr₂ y) ≃ (x = y) *)
 Print Module Σ_type.
+destruct x as (xa, xb).
+destruct y as (ya, yb)(*; simpl in e*).
 bbb.
 
 pose proof cartesian.hott_2_6_2 x y as e.
-destruct x as (xa, xb).
-destruct y as (ya, yb)(*; simpl in e*).
 apply quasi_inv in e.
 destruct e as (f, ((g, Hg), (h, Hh))).
 unfold "◦", "~~", id in Hg, Hh.
