@@ -582,10 +582,6 @@ Proof. reflexivity. Qed.
 Lemma hott_2_1_2_def : ∀ A (x : A), eq_refl x = eq_refl x • eq_refl x.
 Proof. reflexivity. Qed.
 
-Inductive andt (A B : Type) : Type := conjt : A → B → andt A B.
-Notation "u '∧∧' v" := (andt u v) (at level 80, right associativity).
-Arguments conjt {A B} _ _.
-
 Definition hott_2_1_4_i_1 {A} {x y : A} : ∀ (p : x = y),
     p = p • eq_refl y
  := (λ (p : x = y),
@@ -1101,8 +1097,8 @@ Example ex_2_4_9 A x y : ∀ (p : x = y) (P : A → U), qinv (transport P p) :=
 
 Definition equiv_prop {A B} isequiv :=
   ∀ f : A → B,
-  (qinv f → isequiv f) ∧∧
-  (isequiv f → qinv f) ∧∧
+  (qinv f → isequiv f) *
+  (isequiv f → qinv f) *
   (∀ e₁ e₂ : isequiv f, e₁ = e₂).
 
 Definition isequiv {A B} f :=
@@ -1164,8 +1160,7 @@ Definition isequiv_qinv {A B} (f : A → B) : isequiv f → qinv f :=
 Definition equivalence_isequiv {A B} : equiv_prop (@isequiv A B).
 Proof.
 unfold equiv_prop; intros f.
-split; [ apply qinv_isequiv | idtac ].
-split; [ apply isequiv_qinv | intros ].
+split; [ split; [ apply qinv_isequiv | apply isequiv_qinv ] | intros ].
 unfold isequiv in e₁, e₂.
 destruct e₁ as (H1, H2).
 destruct e₂ as (H3, H4).
@@ -3535,7 +3530,7 @@ Fixpoint n_dim_path' {A nx ny} (x : ilist A nx) (y : ilist A ny) :=
   | Cons x₁ x₂ =>
       match y with
       | Nil => tt = tt
-      | Cons y₁ y₂ => x₁ = y₁ ∧∧ n_dim_path' x₂ y₂
+      | Cons y₁ y₂ => (x₁ = y₁) ∧ n_dim_path' x₂ y₂
       end
   end.
 
@@ -3636,8 +3631,8 @@ Definition ex_2_8_tac {A B A' B'} (x₁ y₁ : A) (x₂ y₂ : B)
     (g : A → A') (h : B → B')
     (f := λ x, match x with inl a => inl (g a) | inr b => inr (h b) end)
     (p : x₁ = y₁) (q : x₂ = y₂) :
-  ap f (inl_equal p) = inl_equal (ap g p) ∧∧
-  ap f (inr_equal q) = inr_equal (ap h q).
+  (ap f (inl_equal p) = inl_equal (ap g p)) *
+  (ap f (inr_equal q) = inr_equal (ap h q)).
 Proof.
 split; [ destruct p | destruct q ]; reflexivity.
 Defined.
@@ -3646,11 +3641,11 @@ Definition ex_2_8 {A B A' B'} (x₁ y₁ : A) (x₂ y₂ : B)
     (g : A → A') (h : B → B')
     (f := λ x, match x with inl a => inl (g a) | inr b => inr (h b) end)
     (p : x₁ = y₁) (q : x₂ = y₂) :
-  ap f (inl_equal p) = inl_equal (ap g p) ∧∧
-  ap f (inr_equal q) = inr_equal (ap h q)
+  (ap f (inl_equal p) = inl_equal (ap g p)) *
+  (ap f (inr_equal q) = inr_equal (ap h q))
 :=
   let f x := match x with inl a => inl (g a) | inr b => inr (h b) end in
-  conjt
+  pair
     match p in (_ = y) return (ap f (inl_equal p) = inl_equal (ap g p)) with
     | eq_refl _ => eq_refl (inl_equal (ap g (eq_refl x₁)))
     end
@@ -4169,13 +4164,9 @@ Definition ex_3_1_3 : isSet False := λ x y, match x with end.
 (* ℕ.hott_2_13_1 : ∀ m n : nat, (m = n) ≃ ℕ.code m n *)
 
 Print or.
-Inductive ort (A B : Type) : Type :=
-  ort_introl : A → ort A B | ort_intror : B → ort A B.
-Notation "u '∨∨' v" := (ort u v) (at level 80, right associativity).
-Arguments ort_introl {A B} _.
-Arguments ort_intror {A B} _.
 
-Definition ℕ_code_equiv {m n} : ((ℕ.code m n ≃ unit) ∨∨ (ℕ.code m n ≃ False)).
+Definition ℕ_code_equiv_1_or_0 m n :
+  (ℕ.code m n ≃ unit) + (ℕ.code m n ≃ False).
 Proof.
 destruct (eq_nat_dec m n) as [H1| H1].
  left; subst m.
@@ -4185,7 +4176,14 @@ destruct (eq_nat_dec m n) as [H1| H1].
  split; [ intros u; destruct u; reflexivity | ].
  intros c.
  induction n; [ destruct c; reflexivity | apply IHn ].
-bbb.
+
+ right.
+ apply (existT _ (λ c, H1 (ℕ.decode m n c))), qinv_isequiv.
+ apply (existT _ (λ p : False, match p with end)).
+ unfold "◦", "~~", id.
+ split; [ intros p; destruct p | ].
+ intros c; destruct (H1 (ℕ.decode m n c)).
+Defined.
 
 Definition ex_3_1_4_tac : isSet nat.
 Proof.
@@ -4195,6 +4193,10 @@ destruct r as (f, ((g, Hg), (h, Hh))).
 unfold "◦", "~~", id in Hg, Hh.
 pose proof Hh p as Hp.
 pose proof Hh q as Hq.
+pose proof ℕ_code_equiv_1_or_0 m n as r.
+destruct r as [r| r].
+bbb.
+
 assert (f p = f q).
 bbb.
 assert ((ℕ.code m n ≃ unit) ∨∨ (ℕ.code m n ≃ False)).
