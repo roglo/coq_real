@@ -4259,8 +4259,6 @@ Definition ex_3_1_5_bis {A B} :
   isSet A → (Π (x : A), isSet (B x)) → isSet (Σ (x : A), B x).
 Proof.
 intros r s x y p q.
-bbb.
-
 Check @cartesian.hott_2_6_2.
 (* @cartesian.hott_2_6_2
      : ∀ (A B : Type) (x y : A * B),
@@ -4271,7 +4269,7 @@ bbb.
 
 pose proof cartesian.hott_2_6_2 x y as e.
 destruct x as (xa, xb).
-destruct y as (ya, yb); simpl in e.
+destruct y as (ya, yb)(*; simpl in e*).
 apply quasi_inv in e.
 destruct e as (f, ((g, Hg), (h, Hh))).
 unfold "◦", "~~", id in Hg, Hh.
