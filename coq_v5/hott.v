@@ -4231,6 +4231,8 @@ Definition ex_3_1_4 : isSet nat :=
 
 (* "Example 3.1.5. If A and B are sets, then so is A × B." *)
 
+(* not sure of what I've done in this proof, but I completed it;
+   perhaps simplifiable, understandable? *)
 Definition ex_3_1_5 {A B} : isSet A → isSet B → isSet (A * B).
 Proof.
 intros r s x y p q.
@@ -4238,33 +4240,23 @@ pose proof cartesian.hott_2_6_2 x y as e.
 destruct x as (xa, xb).
 destruct y as (ya, yb); simpl in e.
 apply quasi_inv in e.
-destruct e as (f, Hf).
-unfold isSet in r, s.
-pose proof r xa ya as Hr.
-pose proof s xb yb as Hs.
-pose proof f p as (pa, pb).
-pose proof f q as (qa, qb).
-pose proof Hr pa qa as pqa.
-pose proof Hs pb qb as pqb.
-destruct pa, pb.
-bbb.
+destruct e as (f, ((g, Hg), (h, Hh))).
+unfold "◦", "~~", id in Hg, Hh.
+pose proof Hh p as Hhp.
+pose proof Hh q as Hhq.
+destruct (f p) as (fpa, fpb).
+destruct (f q) as (fqa, fqb).
+pose proof r xa ya fpa fqa as Hra.
+pose proof s xb yb fpb fqb as Hrb.
+destruct Hra, Hrb.
+destruct Hhp; assumption.
+Defined.
 
-apply (Π_type.pr₁ e) in p.
-bbb.
+(* "Similarly, if A is a set and B : A → U is such that each B(x) is a
+    set, then Σ(x:A),B(x) is a set." *)
 
-pose proof Π_type.pr₁ e p as Hp; simpl in Hp.
-pose proof Π_type.pr₁ e q as Hq; simpl in Hq.
-bbb.
+Definition ex_3_1_5_bis {A B} :
+  isSet A → (Π (x : A), isSet (B x)) → isSet (Σ (x : A), B x).
+Proof.
 
-destruct x as (xa, xb).
-destruct y as (ya, yb).
-bbb.
-
-unfold isSet in p, q.
-
-injection r; intros rxb rxa.
-injection s; intros sxb sxa.
-
-pose proof p x₁ y₁ rx₁ sx₁ as Hr.
-pose proof q x₂ y₂ rx₂ sx₂ as Hs.
 bbb.
