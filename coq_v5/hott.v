@@ -4175,6 +4175,18 @@ Notation "u '∨∨' v" := (ort u v) (at level 80, right associativity).
 Arguments ort_introl {A B} _.
 Arguments ort_intror {A B} _.
 
+Definition ℕ_code_equiv {m n} : ((ℕ.code m n ≃ unit) ∨∨ (ℕ.code m n ≃ False)).
+Proof.
+destruct (eq_nat_dec m n) as [H1| H1].
+ left; subst m.
+ apply (existT _ (λ c, tt)), qinv_isequiv.
+ apply (existT _ (λ _, ℕ.r n)).
+ unfold "◦", "~~", id; simpl.
+ split; [ intros u; destruct u; reflexivity | ].
+ intros c.
+ induction n; [ destruct c; reflexivity | apply IHn ].
+bbb.
+
 Definition ex_3_1_4_tac : isSet nat.
 Proof.
 intros m n p q.
@@ -4184,6 +4196,7 @@ unfold "◦", "~~", id in Hg, Hh.
 pose proof Hh p as Hp.
 pose proof Hh q as Hq.
 assert (f p = f q).
+bbb.
 assert ((ℕ.code m n ≃ unit) ∨∨ (ℕ.code m n ≃ False)).
  destruct (eq_nat_dec m n) as [H1| H1].
   left; subst m.
@@ -4192,4 +4205,5 @@ assert ((ℕ.code m n ≃ unit) ∨∨ (ℕ.code m n ≃ False)).
   unfold "◦", "~~", id; simpl.
   split; [ intros u; destruct u; reflexivity | ].
   intros c.
+
 bbb.
