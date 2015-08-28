@@ -4233,6 +4233,12 @@ Definition ex_3_1_4 : isSet nat :=
 
 Definition ex_3_1_5 {A B} : isSet A → isSet B → isSet (A * B).
 Proof.
-intros p q.
-
+intros p q x y r s.
+unfold isSet in p, q.
+destruct x as (x₁, x₂).
+destruct y as (y₁, y₂).
+injection r; intros rx₂ rx₁.
+injection s; intros sx₂ sx₁.
+pose proof p x₁ y₁ rx₁ sx₁ as Hr.
+pose proof q x₂ y₂ rx₂ sx₂ as Hs.
 bbb.
