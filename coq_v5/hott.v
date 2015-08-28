@@ -3807,6 +3807,15 @@ Definition pullback {A B C} (f : A → C) (g : B → C) :=
    - the bijection negb/negb to false.
    This is a bijection *)
 
+
+Definition uip_refl_bool {b : bool} : ∀ (p : b = b), p = eq_refl b.
+Proof.
+intros.
+destruct b; refine (match p with eq_refl _ => _ end); reflexivity.
+Defined.
+(* actually already in Coq library as Eqdep_dec.UIP_refl_bool, but
+   done again for sport. *)
+
 Definition ex_2_13_tac : (bool ≃ bool) ≃ bool.
 Proof.
 apply (existT _ (λ p : bool ≃ bool, Π_type.pr₁ p true)).
@@ -3877,11 +3886,10 @@ destruct b.
      apply apf; [ reflexivity |  ].
      apply apf; [ reflexivity |  ].
      apply Π_type.funext; intros b.
-     symmetry; apply Eqdep_dec.UIP_refl_bool.
-
+     symmetry; apply uip_refl_bool.
      apply apf; [ reflexivity | ].
      apply Π_type.funext; intros b.
-     symmetry; apply Eqdep_dec.UIP_refl_bool.
+     symmetry; apply uip_refl_bool.
 
  assert (H1 : f ~~ negb).
   intros b.
@@ -4093,5 +4101,52 @@ Abort.
 End ex_2_17.
 
 (* Chapter 3 - Sets and logic *)
+
+(* 3.1 Sets and n-types *)
+
+(* Definition 3.1 *)
+
+Definition isSet A :=
+  Π (x : A), Π (y : A), Π (p : x = y), Π (q : x = y), p = q.
+
+Definition ex_3_1_2_tac : isSet unit.
+Proof.
+intros x y p q.
+destruct x, y.
+refine (match p with eq_refl _ => _ end).
+refine (match q with eq_refl _ => _ end).
+reflexivity.
+Defined.
+
+Definition ex_3_1_2 : isSet unit :=
+  λ (x y : unit),
+  match x with
+  | tt =>
+      match y with
+      | tt =>
+          λ p q,
+          match p with
+          | eq_refl => match q with eq_refl _ => eq_refl _ end
+          end
+      end
+  end.
+
+(* "For by Theorem 2.8.1, for any x, y : 1 the type (x = y) is
+    equivalent to 1. Since any two elements of 1 are equal, this
+    implies that any two elements of x = y are equal." *)
+
+(* hott_2_8_1 : ∀ x y : unit, (x = y) ≃ unit *)
+
+Definition ex_3_1_2_alt_tac : isSet unit.
+Proof.
+intros x y p q.
+pose proof hott_2_8_1 x y as r.
+destruct r as (f, ((g, Hg), (h, Hh))).
+unfold "◦", "~~", id in Hg, Hh.
+pose proof Hh p as Hp.
+pose proof Hh q as Hq.
+destruct (f p), (f q).
+subst p q; reflexivity.
+Defined.
 
 bbb.
