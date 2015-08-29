@@ -4343,32 +4343,6 @@ Definition compose_cancel_l {A} {x y z : A} (p : x = y) (q r : y = z) :
   (p⁻¹ •l s) •
   compose_assoc p⁻¹ p r • (compose_invert_l p •r r) • (lu r)⁻¹.
 
-(* done but not obvious at all; I had to look at the way they did it,
-   and I am sure I don't understand the point *)
-Definition hott_3_1_8 {A} : isSet A → is1Type A.
-Proof.
-intros f x y p q r s.
-unfold isSet in f.
-set (g q := f x y p q).
-assert (∀ q q' (r : q = q'), g q • r = g q') as h.
- intros q₁ q' r₁.
- pose proof apd g r₁ as h.
- eapply compose; [ | eassumption ].
- eapply invert, hott_2_11_2_i.
-
- pose proof h p q r as Hr.
- pose proof h p q s as Hs.
- rewrite <- Hs in Hr.
- eapply compose_cancel_l; eassumption.
-Defined.
-
-End lemma_3_1_8.
-
-(* I add the proof that isProp → isSet, inspired from isSet → is1Type
-   above, but still not understanding why it works. *)
-
-Definition isProp A := ∀ x y : A, x = y.
-
 Definition compose_insert {A x} (f : Π (y : A), x = y) :
   ∀ y z p, f y • p = f z.
 Proof.
@@ -4377,6 +4351,24 @@ pose proof apd f p as h.
 eapply compose; [ | eassumption ].
 eapply invert; destruct p; simpl; unfold id; apply ru.
 Defined.
+
+(* done but not obvious at all; I had to look at the way they did it,
+   and I am sure I don't understand the point *)
+Definition hott_3_1_8 {A} : isSet A → is1Type A.
+Proof.
+intros f x y p q r s.
+pose proof compose_insert (f x y p) p q r as Hr.
+pose proof compose_insert (f x y p) p q s as Hs.
+rewrite <- Hs in Hr.
+eapply compose_cancel_l; eassumption.
+Defined.
+
+End lemma_3_1_8.
+
+(* I add the proof that isProp → isSet, inspired from isSet → is1Type
+   above, but still not understanding why it works. *)
+
+Definition isProp A := ∀ x y : A, x = y.
 
 Definition isProp_isSet {A} : isProp A → isSet A.
 Proof.
