@@ -4343,10 +4343,11 @@ Definition compose_cancel_l {A} {x y z : A} (p : x = y) (q r : y = z) :
   (p⁻¹ •l s) •
   compose_assoc p⁻¹ p r • (compose_invert_l p •r r) • (lu r)⁻¹.
 
-Definition compose_insert {A x} (f : Π (y : A), x = y) :
-  ∀ y z p, f y • p = f z.
+(* magic lemma to prove isSet → is1Type and also used later for
+   isProp → isSet *)
+Definition compose_insert {A x} (f : Π (y : A), x = y) {y z} (p : y = z) :
+  f y • p = f z.
 Proof.
-intros y z p.
 pose proof apd f p as h.
 eapply compose; [ | eassumption ].
 eapply invert; destruct p; simpl; unfold id; apply ru.
@@ -4357,8 +4358,8 @@ Defined.
 Definition hott_3_1_8 {A} : isSet A → is1Type A.
 Proof.
 intros f x y p q r s.
-pose proof compose_insert (f x y p) p q r as Hr.
-pose proof compose_insert (f x y p) p q s as Hs.
+pose proof compose_insert (f x y p) r as Hr.
+pose proof compose_insert (f x y p) s as Hs.
 rewrite <- Hs in Hr.
 eapply compose_cancel_l; eassumption.
 Defined.
@@ -4373,8 +4374,8 @@ Definition isProp A := ∀ x y : A, x = y.
 Definition isProp_isSet {A} : isProp A → isSet A.
 Proof.
 intros f x y p q.
-pose proof compose_insert (f x) x y p as Hp.
-pose proof compose_insert (f x) x y q as Hq.
+pose proof compose_insert (f x) p as Hp.
+pose proof compose_insert (f x) q as Hq.
 rewrite <- Hq in Hp.
 eapply compose_cancel_l; eassumption.
 Defined.
