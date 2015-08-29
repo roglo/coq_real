@@ -4416,7 +4416,7 @@ unfold bool_eq_bool_id, bool_eq_bool_negb in s.
 simpl in s.
 injection s; intros H _ _.
 assert (negb true = true) as H1; [ rewrite H; reflexivity | ].
-discriminate H1.
+revert H1; apply Σ_type2.hott_2_12_6.
 Defined.
 
 bbb.
