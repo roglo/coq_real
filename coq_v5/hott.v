@@ -2177,7 +2177,7 @@ split; intros q.
  unfold "◦"; simpl; rewrite β; reflexivity.
 Defined.
 
-Module cartesian2.
+Section cartesian2.
 
 (* Paths p = q, where p,q : w =_{AxB} w', are equivalent to pairs of
    paths
@@ -3624,7 +3624,7 @@ Definition ex_2_6 {A} {x y z : A} (p : x = y) : (y = z) ≃ (x = z)
 (* "Exercise 2.8. State and prove an analogue of Theorem 2.6.5 for
     coproducts." *)
 
-Module ex_2_8.
+Section ex_2_8.
 
 Import Σ_type2.
 
@@ -3663,7 +3663,7 @@ End ex_2_8.
     Can you generalize this to an equivalence involving dependent
     functions?" *)
 
-Module ex_2_9.
+Section ex_2_9.
 
 Import cartesian.
 
@@ -3991,7 +3991,7 @@ Abort.
     (iii) Formulate and prove analogous results for the other type
           formers: Σ, →, Π, and +." *)
 
-Module ex_2_17.
+Section ex_2_17.
 
 Import cartesian.
 
@@ -4032,11 +4032,11 @@ apply (existT _ (λ x' : A' * B', (f₁ (pr₁ x'), g₁ (pr₂ x')))).
 unfold "◦", "~~", id; simpl.
 split.
  intros (a', b'); simpl.
- apply cartesian2.split_pair_eq.
+ apply split_pair_eq.
  split; [ apply Hf₁ | apply Hg₁ ].
 
  intros (a, b); simpl.
- apply cartesian2.split_pair_eq.
+ apply split_pair_eq.
  split.
   generalize Hf₂; intros H.
   eapply EqStr.quasi_inv_l_eq_r in H; [ | apply Hf₁ ].
@@ -4062,12 +4062,12 @@ Definition ex_2_17_not_ua {A B A' B'} : A ≃ A' → B ≃ B' → A * B ≃ A' *
                    let (a', b') as p return
                      ((f (f₁ (pr₁ p)), g (g₁ (pr₂ p))) = p) := x
                    in
-                   cartesian2.split_pair_eq (f (f₁ a')) a' (g (g₁ b')) b'
+                   split_pair_eq (f (f₁ a')) a' (g (g₁ b')) b'
                      (Hf₁ a', Hg₁ b'),
                    λ x : A * B,
                    let (a, b) as p return
                      ((f₁ (f (pr₁ p)), g₁ (g (pr₂ p))) = p) := x in
-                   cartesian2.split_pair_eq (f₁ (f a)) a (g₁ (g b)) b
+                   split_pair_eq (f₁ (f a)) a (g₁ (g b)) b
                      (EqStr.quasi_inv_l_eq_r f f₁ f₂ Hf₁ Hf₂ (f a) • Hf₂ a,
                       EqStr.quasi_inv_l_eq_r g g₁ g₂ Hg₁ Hg₂ (g b) • Hg₂ b))))
       end
@@ -4255,22 +4255,15 @@ Defined.
 (* "Similarly, if A is a set and B : A → U is such that each B(x) is a
     set, then Σ(x:A),B(x) is a set." *)
 
+(* just like ex_3_1_5 above, not sure of what I've done in this proof,
+   but I completed it; perhaps simplifiable, understandable too? *)
 Definition ex_3_1_5_bis {A B} :
   isSet A → (Π (x : A), isSet (B x)) → isSet (Σ (x : A), B x).
 Proof.
 intros r s x y p q.
-Check @cartesian.hott_2_6_2.
-(* @cartesian.hott_2_6_2
-     : ∀ (A B : Type) (x y : A * B),
-       (cartesian.pr₁ x = cartesian.pr₁ y) *
-       (cartesian.pr₂ x = cartesian.pr₂ y) ≃ (x = y) *)
-Print Module Σ_type.
+pose proof Σ_type.hott_2_7_2 B x y as e.
 destruct x as (xa, xb).
-destruct y as (ya, yb)(*; simpl in e*).
-bbb.
-
-pose proof cartesian.hott_2_6_2 x y as e.
-apply quasi_inv in e.
+destruct y as (ya, yb); simpl in e.
 destruct e as (f, ((g, Hg), (h, Hh))).
 unfold "◦", "~~", id in Hg, Hh.
 pose proof Hh p as Hhp.
@@ -4278,9 +4271,31 @@ pose proof Hh q as Hhq.
 destruct (f p) as (fpa, fpb).
 destruct (f q) as (fqa, fqb).
 pose proof r xa ya fpa fqa as Hra.
-pose proof s xb yb fpb fqb as Hrb.
-destruct Hra, Hrb.
-destruct Hhp; assumption.
+destruct Hhp.
+subst fpa.
+rewrite <- Hhq.
+apply ap, ap, s.
 Defined.
+
+(* "Example 3.1.6. If A is any type and B : A → U is such that each
+    B(x) is a set, then the type Π (x:A), B(x) is a set." *)
+
+Section ex_3_1_6.
+
+Import Π_type.
+
+Definition ex_3_1_6 {A B} : (Π (a : A), isSet (B a)) → isSet (Π (a : A), B a).
+Proof.
+intros r f g p q.
+unfold isSet in r.
+pose proof funext_prop_uniq_princ f g p as Hp.
+pose proof funext_prop_uniq_princ f g q as Hq.
+assert (∀ x : A, happly p x = happly q x) as Hx by (intros; apply r).
+apply funext in Hx.
+rewrite Hp, Hq, Hx.
+reflexivity.
+Defined.
+
+End ex_3_1_6.
 
 bbb.
