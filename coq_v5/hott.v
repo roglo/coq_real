@@ -4369,20 +4369,22 @@ End lemma_3_1_8.
 
 Definition isProp A := ∀ x y : A, x = y.
 
-Definition glop {A} : isProp A → isSet A.
+Definition compose_insert {A x} (f : Π (y : A), x = y) :
+  ∀ y z p, f y • p = f z.
+Proof.
+intros y z p.
+pose proof apd f p as h.
+eapply compose; [ | eassumption ].
+eapply invert; destruct p; simpl; unfold id; apply ru.
+Defined.
+
+Definition isProp_isSet {A} : isProp A → isSet A.
 Proof.
 intros f x y p q.
-set (g y := f x y).
-assert (∀ y z (r : y = z), g y • r = g z) as h.
- intros y₁ z r.
- pose proof apd g r as h.
- eapply compose; [ | eassumption ].
- eapply invert; destruct r; simpl; unfold id; apply ru.
-
- pose proof h x y p as Hp.
- pose proof h x y q as Hq.
- rewrite <- Hq in Hp.
- eapply compose_cancel_l; eassumption.
+pose proof compose_insert (f x) x y p as Hp.
+pose proof compose_insert (f x) x y q as Hq.
+rewrite <- Hq in Hp.
+eapply compose_cancel_l; eassumption.
 Defined.
 
 bbb.
