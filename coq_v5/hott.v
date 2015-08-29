@@ -4399,7 +4399,7 @@ Definition isnType_isSnType {A} n : ispType A n → ispType A (S n) :=
     (λ A f x y p q,
      compose_cancel_l (f x x) p q
        (compose_insert (f x) p • (compose_insert (f x) q)⁻¹))
-    (λ n IHn A f x y p q, IHn (x = y) (f x y) p q)
+    (λ n IHn A f x y, IHn (x = y) (f x y))
     n A.
 
 (* "Example 3.1.9. The universe U is not a set." *)
@@ -4418,5 +4418,14 @@ injection s; intros H _ _.
 assert (negb true = true) as H1; [ rewrite H; reflexivity | ].
 revert H1; apply Σ_type2.hott_2_12_6.
 Defined.
+
+(* 3.2 Propositions as types? *)
+
+(* "Theorem 3.2.2. It is not the case that for all A : U we have
+    ¬(¬A)→A." *)
+
+Definition hott_3_2_2 : ¬(∀ A, ¬¬A → A).
+Proof.
+intros p.
 
 bbb.
