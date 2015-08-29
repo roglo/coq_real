@@ -2308,15 +2308,15 @@ Defined.
 
 (* transport in families of paths *)
 
-Lemma hott_2_1_12_i {A} : ∀ (a x₁ x₂ : A) (p : x₁ = x₂) (q : a = x₁),
+Lemma hott_2_11_2_i {A} : ∀ (a x₁ x₂ : A) (p : x₁ = x₂) (q : a = x₁),
   transport (λ x, a = x) p q = q • p.
 Proof. intros; destruct p, q; reflexivity. Defined.
 
-Lemma hott_2_1_12_ii {A} : ∀ (a x₁ x₂ : A) (p : x₁ = x₂) (q : x₁ = a),
+Lemma hott_2_11_2_ii {A} : ∀ (a x₁ x₂ : A) (p : x₁ = x₂) (q : x₁ = a),
   transport (λ x, x = a) p q = p⁻¹ • q.
 Proof. intros; destruct p; reflexivity. Defined.
 
-Lemma hott_2_1_12_iii {A} : ∀ (a x₁ x₂ : A) (p : x₁ = x₂) (q : x₁ = x₁),
+Lemma hott_2_11_2_iii {A} : ∀ (a x₁ x₂ : A) (p : x₁ = x₂) (q : x₁ = x₁),
   transport (λ x, x = x) p q = p⁻¹ • q • p.
 Proof. intros; destruct p; simpl; destruct q; reflexivity. Defined.
 
@@ -4297,5 +4297,69 @@ reflexivity.
 Defined.
 
 End ex_3_1_6.
+
+(* "Definition 3.1.7. A type A is a 1-type if for all x, y : A and p,
+    q : x = y and r, s : p = q, we have r = s. *)
+
+Definition is1Type A := ∀ x y : A, ∀ p q : x = y, ∀ r s : p = q, r = s.
+
+(* "Lemma 3.1.8. If A is a set (that is, isSet(A) is inhabited), then
+    A is a 1-type." *)
+
+Arguments eq_refl [A] x.
+
+Section lemma_3_1_8.
+
+Import Σ_type2.
+
+Check @compose.
+
+(* required, but general purpose lemma, tac and exp versions *)
+Definition compose_cancel_l_tac {A} {x y z : A} (p : x = y) (q r : y = z) :
+  p • q = p • r
+  → q = r.
+Proof.
+intros H.
+eapply (dotl p⁻¹) in H.
+eapply compose.
+ eapply compose; [ | apply H ].
+ eapply compose; [ | eapply invert, compose_assoc ].
+ eapply compose; [ apply lu | apply dotr ].
+ apply invert, compose_invert_l.
+
+ eapply compose; [ eapply compose_assoc | ].
+ eapply compose; [ | eapply invert, lu ].
+ apply dotr, compose_invert_l.
+Defined.
+
+Definition compose_cancel_l {A} {x y z : A} (p : x = y) (q r : y = z) :
+  p • q = p • r
+  → q = r
+:=
+  λ s,
+  lu q • ((compose_invert_l p)⁻¹ •r q) • (compose_assoc p⁻¹ p q)⁻¹ •
+  (p⁻¹ •l s) •
+  compose_assoc p⁻¹ p r • (compose_invert_l p •r r) • (lu r)⁻¹.
+
+(* done but not obvious at all; I had to look at the way they did it,
+   and I am sure I don't understand the point *)
+Definition hott_3_1_8 {A} : isSet A → is1Type A.
+Proof.
+intros f x y p q r s.
+unfold isSet in f.
+set (g q := f x y p q).
+assert (∀ q q' (r : q = q'), g q • r = g q') as h.
+ intros q₁ q' r₁.
+ pose proof apd g r₁ as h.
+ eapply compose; [ | eassumption ].
+ eapply invert, hott_2_11_2_i.
+
+ pose proof h p q r as Hr.
+ pose proof h p q s as Hs.
+ rewrite <- Hs in Hr.
+ eapply compose_cancel_l; eassumption.
+Defined.
+
+End lemma_3_1_8.
 
 bbb.
