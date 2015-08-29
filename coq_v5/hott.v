@@ -4358,9 +4358,9 @@ Defined.
 Definition hott_3_1_8 {A} : isSet A → is1Type A.
 Proof.
 intros f x y p q r s.
-pose proof compose_insert (f x y p) r as Hr.
-pose proof compose_insert (f x y p) s as Hs.
-rewrite <- Hs in Hr.
+pose proof compose_insert (f x y p) r as H1.
+pose proof compose_insert (f x y p) s as H2.
+rewrite <- H2 in H1.
 eapply compose_cancel_l; eassumption.
 Defined.
 
@@ -4374,10 +4374,28 @@ Definition isProp A := ∀ x y : A, x = y.
 Definition isProp_isSet {A} : isProp A → isSet A.
 Proof.
 intros f x y p q.
-pose proof compose_insert (f x) p as Hp.
-pose proof compose_insert (f x) q as Hq.
-rewrite <- Hq in Hp.
+pose proof compose_insert (f x) p as H1.
+pose proof compose_insert (f x) q as H2.
+rewrite <- H2 in H1.
 eapply compose_cancel_l; eassumption.
 Defined.
+
+(* seems to be working for next levels... *)
+
+Definition is2Type A := ∀ (x y : A) (p q : x = y) (r s : p = q) (t u : r = s),
+  t = u.
+
+Definition is1Type_is2Type_tac {A} : is1Type A → is2Type A.
+Proof.
+intros f x y p q r s t u.
+eapply compose_cancel_l.
+eapply compose; [ eapply (compose_insert (f x y p q r)) | ].
+apply invert, compose_insert.
+Defined.
+
+Definition is1Type_is2Type {A} : is1Type A → is2Type A :=
+  λ f x y p q r s t u,
+  compose_cancel_l (f x y p q r r) t u
+    (compose_insert (f x y p q r) t • (compose_insert (f x y p q r) u)⁻¹).
 
 bbb.
