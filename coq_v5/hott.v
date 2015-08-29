@@ -3819,28 +3819,24 @@ Definition bool_eq_bool_id : bool ≃ bool :=
   existT isequiv id
     (qinv_isequiv id (existT _ id (λ _, eq_refl _, λ _, eq_refl _))).
 
+Definition bool_eq_bool_negb : bool ≃ bool :=
+  existT isequiv negb
+    (qinv_isequiv negb
+       (existT (λ g, ((negb ◦ g ~~ id) * (g ◦ negb ~~ id))%type) negb
+          (λ b : bool,
+           if b return (negb (negb b) = b) then eq_refl true
+           else eq_refl false,
+          λ b : bool,
+          if b return (negb (negb b) = b) then eq_refl true
+          else eq_refl false))).
+
 Definition ex_2_13_tac : (bool ≃ bool) ≃ bool.
 Proof.
 apply (existT _ (λ p : bool ≃ bool, Π_type.pr₁ p true)).
 apply qinv_isequiv.
 apply
- (existT _
-    (λ b : bool,
-     if b then bool_eq_bool_id
-     else
-      existT isequiv negb
-        (qinv_isequiv negb
-           (existT (λ g, ((negb ◦ g ~~ id) * (g ◦ negb ~~ id))%type) negb
-              (λ b : bool,
-               if b return (negb (negb b) = b)
-               then eq_refl true
-               else eq_refl false,
-              λ b : bool,
-              if b return (negb (negb b) = b)
-              then eq_refl true
-              else eq_refl false))))).
-simpl.
-unfold bool_eq_bool_id.
+ (existT _ (λ b : bool, if b then bool_eq_bool_id else bool_eq_bool_negb)).
+unfold bool_eq_bool_id, bool_eq_bool_negb.
 unfold "◦", "~~", id; simpl.
 split; [ intros x; destruct x; reflexivity |  ].
 intros (f, ((g, Hg), (h, Hh))); simpl.
@@ -4412,12 +4408,15 @@ Definition ex_3_1_9 : ¬isSet U.
 Proof.
 intros r.
 unfold isSet in r.
-set (p := bool_eq_bool_id).
-
- assert (@eq U bool bool) as q.
-  apply ua, (existT _ negb), qinv_isequiv, (existT _ negb).
-  split; unfold "◦", "~~", id; intros b; apply negb_involutive.
-
-  pose proof r bool bool (ua p) q as s.
+pose proof r bool bool (ua bool_eq_bool_id) (ua bool_eq_bool_negb) as s.
+apply (ap idtoeqv) in s.
+eapply compose in s; [ | eapply invert, idtoeqv_ua ].
+eapply invert, compose in s; [ | eapply invert, idtoeqv_ua ].
+unfold bool_eq_bool_id, bool_eq_bool_negb in s.
+simpl in s.
+injection s; intros H _ _.
+assert (negb true = true) as H1; [ rewrite H; reflexivity | ].
+discriminate H1.
+Defined.
 
 bbb.
