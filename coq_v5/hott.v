@@ -4357,7 +4357,7 @@ Defined.
 Definition hott_3_1_8_tac {A} : isSet A → is1Type A.
 Proof.
 intros f x y p q r s.
-eapply compose_cancel_l.
+apply (compose_cancel_l (f x y p p)).
 eapply compose; [ eapply (compose_insert (f x y p)) | ].
 apply invert, compose_insert.
 Defined.
@@ -4369,43 +4369,9 @@ Definition hott_3_1_8 {A} : isSet A → is1Type A :=
 
 End lemma_3_1_8.
 
-(* I add the proof that isProp → isSet, inspired from isSet → is1Type
-   above, but still not understanding why it works. *)
+(* generalization *)
 
 Definition isProp A := ∀ x y : A, x = y.
-
-Definition isProp_isSet_tac {A} : isProp A → isSet A.
-Proof.
-intros f x y p q.
-eapply compose_cancel_l.
-eapply compose; [ eapply (compose_insert (f x)) | ].
-apply invert, compose_insert.
-Defined.
-
-Definition isProp_isSet {A} : isProp A → isSet A :=
-  λ f x y p q,
-  compose_cancel_l (f x x) p q
-    (compose_insert (f x) p • (compose_insert (f x) q)⁻¹).
-
-(* seems to be working for next levels... *)
-
-Definition is2Type A := ∀ (x y : A) (p q : x = y) (r s : p = q) (t u : r = s),
-  t = u.
-
-Definition is1Type_is2Type_tac {A} : is1Type A → is2Type A.
-Proof.
-intros f x y p q r s t u.
-eapply compose_cancel_l.
-eapply compose; [ eapply (compose_insert (f x y p q r)) | ].
-apply invert, compose_insert.
-Defined.
-
-Definition is1Type_is2Type {A} : is1Type A → is2Type A :=
-  λ f x y p q r s t u,
-  compose_cancel_l (f x y p q r r) t u
-    (compose_insert (f x y p q r) t • (compose_insert (f x y p q r) u)⁻¹).
-
-(* full generalization *)
 
 Fixpoint isnType A n :=
   match n with
