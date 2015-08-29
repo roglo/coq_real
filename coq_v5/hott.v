@@ -4355,13 +4355,18 @@ Defined.
 
 (* done but not obvious at all; I had to look at the way they did it,
    and I am sure I don't understand the point *)
-Definition hott_3_1_8 {A} : isSet A → is1Type A.
+Definition hott_3_1_8_tac {A} : isSet A → is1Type A.
 Proof.
 intros f x y p q r s.
 eapply compose_cancel_l.
 eapply compose; [ eapply (compose_insert (f x y p)) | ].
 apply invert, compose_insert.
 Defined.
+
+Definition hott_3_1_8 {A} : isSet A → is1Type A :=
+  λ f x y p q r s,
+  compose_cancel_l (f x y p p) r s
+    (compose_insert (f x y p) r • (compose_insert (f x y p) s)⁻¹).
 
 End lemma_3_1_8.
 
@@ -4370,13 +4375,18 @@ End lemma_3_1_8.
 
 Definition isProp A := ∀ x y : A, x = y.
 
-Definition isProp_isSet {A} : isProp A → isSet A.
+Definition isProp_isSet_tac {A} : isProp A → isSet A.
 Proof.
 intros f x y p q.
 eapply compose_cancel_l.
 eapply compose; [ eapply (compose_insert (f x)) | ].
 apply invert, compose_insert.
 Defined.
+
+Definition isProp_isSet {A} : isProp A → isSet A :=
+  λ f x y p q,
+  compose_cancel_l (f x x) p q
+    (compose_insert (f x) p • (compose_insert (f x) q)⁻¹).
 
 (* seems to be working for next levels... *)
 
