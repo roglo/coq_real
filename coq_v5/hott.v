@@ -4358,10 +4358,9 @@ Defined.
 Definition hott_3_1_8 {A} : isSet A → is1Type A.
 Proof.
 intros f x y p q r s.
-pose proof compose_insert (f x y p) r as H1.
-pose proof compose_insert (f x y p) s as H2.
-rewrite <- H2 in H1.
-eapply compose_cancel_l; eassumption.
+eapply compose_cancel_l.
+eapply compose; [ eapply (compose_insert (f x y p)) | ].
+apply invert, compose_insert.
 Defined.
 
 End lemma_3_1_8.
@@ -4374,10 +4373,9 @@ Definition isProp A := ∀ x y : A, x = y.
 Definition isProp_isSet {A} : isProp A → isSet A.
 Proof.
 intros f x y p q.
-pose proof compose_insert (f x) p as H1.
-pose proof compose_insert (f x) q as H2.
-rewrite <- H2 in H1.
-eapply compose_cancel_l; eassumption.
+eapply compose_cancel_l.
+eapply compose; [ eapply (compose_insert (f x)) | ].
+apply invert, compose_insert.
 Defined.
 
 (* seems to be working for next levels... *)
