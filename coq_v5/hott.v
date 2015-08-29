@@ -3815,6 +3815,10 @@ Defined.
 (* actually already in Coq library as Eqdep_dec.UIP_refl_bool, but
    done again for sport. *)
 
+Definition bool_eq_bool_id : bool ≃ bool :=
+  existT isequiv id
+    (qinv_isequiv id (existT _ id (λ _, eq_refl _, λ _, eq_refl _))).
+
 Definition ex_2_13_tac : (bool ≃ bool) ≃ bool.
 Proof.
 apply (existT _ (λ p : bool ≃ bool, Π_type.pr₁ p true)).
@@ -3822,10 +3826,7 @@ apply qinv_isequiv.
 apply
  (existT _
     (λ b : bool,
-     if b
-     then
-      existT isequiv id
-        (qinv_isequiv id (existT _ id (λ _, eq_refl _, λ _, eq_refl _)))
+     if b then bool_eq_bool_id
      else
       existT isequiv negb
         (qinv_isequiv negb
@@ -3839,6 +3840,7 @@ apply
               then eq_refl true
               else eq_refl false))))).
 simpl.
+unfold bool_eq_bool_id.
 unfold "◦", "~~", id; simpl.
 split; [ intros x; destruct x; reflexivity |  ].
 intros (f, ((g, Hg), (h, Hh))); simpl.
@@ -4373,13 +4375,16 @@ End lemma_3_1_8.
 
 Definition isProp A := ∀ x y : A, x = y.
 
-Fixpoint isnType A n :=
+Fixpoint ispType A n :=
   match n with
   | 0 => isProp A
-  | S n' => ∀ x y : A, isnType (x = y) n'
+  | S n' => ∀ x y : A, ispType (x = y) n'
   end.
 
-Definition isnType_isSnType_tac {A} n : isnType A n → isnType A (S n).
+(* A n-type has property 'ispType A (S n)', because the n of n-types
+   start at -1 *)
+
+Definition isnType_isSnType_tac {A} n : ispType A n → ispType A (S n).
 Proof.
 intros f x y.
 revert A f x y.
@@ -4392,13 +4397,27 @@ induction n; intros.
  intros p q; apply IHn, f.
 Defined.
 
-Definition isnType_isSnType {A} n : isnType A n → isnType A (S n) :=
+Definition isnType_isSnType {A} n : ispType A n → ispType A (S n) :=
   nat_ind
-    (λ n, ∀ A, isnType A n → isnType A (S n))
+    (λ n, ∀ A, ispType A n → ispType A (S n))
     (λ A f x y p q,
      compose_cancel_l (f x x) p q
        (compose_insert (f x) p • (compose_insert (f x) q)⁻¹))
     (λ n IHn A f x y p q, IHn (x = y) (f x y) p q)
     n A.
+
+(* "Example 3.1.9. The universe U is not a set." *)
+
+Definition ex_3_1_9 : ¬isSet U.
+Proof.
+intros r.
+unfold isSet in r.
+set (p := bool_eq_bool_id).
+
+ assert (@eq U bool bool) as q.
+  apply ua, (existT _ negb), qinv_isequiv, (existT _ negb).
+  split; unfold "◦", "~~", id; intros b; apply negb_involutive.
+
+  pose proof r bool bool (ua p) q as s.
 
 bbb.
