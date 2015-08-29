@@ -4,6 +4,9 @@
 Require Import Utf8 QArith.
 Require Import NPeano.
 
+(* no default implicit without arguments *)
+Arguments eq_refl [A] x.
+
 Notation "⊥" := False.
 Notation "( x , y ) '_{' P }" := (existT P x y)
   (at level 0, format "'[' ( x ,  y ) _{ P } ']'", only parsing).
@@ -1902,9 +1905,9 @@ Definition isequiv_transport {A B} : ∀ (p : A = B), isequiv (transport id p)
   λ p,
   match p with
   | eq_refl _ =>
-      (existT (λ g : id A → id A, transport id eq_refl ◦ g ~~ id) id
+      (existT (λ g : id A → id A, transport id (eq_refl _) ◦ g ~~ id) id
          (reflexivity id),
-       existT (λ h : id A → id A, h ◦ transport id eq_refl ~~ id) id
+       existT (λ h : id A → id A, h ◦ transport id (eq_refl _) ~~ id) id
          (reflexivity id))
   end.
 
@@ -3822,7 +3825,7 @@ apply
      if b
      then
       existT isequiv id
-        (qinv_isequiv id (existT _ id (λ _, eq_refl, λ _, eq_refl)))
+        (qinv_isequiv id (existT _ id (λ _, eq_refl _, λ _, eq_refl _)))
      else
       existT isequiv negb
         (qinv_isequiv negb
@@ -3971,7 +3974,7 @@ apply
   (existT _
      (λ (p : f = g) (x : A),
       match p in (_ = h) return (f x = h x) with
-      | eq_refl => eq_refl
+      | eq_refl _ => eq_refl _
       end)).
 apply qinv_isequiv.
 apply (existT _ (funext2 A B f g)).
@@ -4123,7 +4126,7 @@ Definition ex_3_1_2 : isSet unit :=
       | tt =>
           λ p q,
           match p with
-          | eq_refl => match q with eq_refl _ => eq_refl _ end
+          | eq_refl _ => match q with eq_refl _ => eq_refl _ end
           end
       end
   end.
@@ -4218,7 +4221,8 @@ Definition ex_3_1_4 : isSet nat :=
               | tt =>
                   λ Hq0 : h tt = q,
                   eq_ind (h tt) (λ p0 : m = n, p0 = q)
-                    (eq_ind (h tt) (λ q0 : m = n, h tt = q0) eq_refl q Hq0) p
+                    (eq_ind (h tt)
+                       (λ q0 : m = n, h tt = q0) (eq_refl _) q Hq0) p
                     Hp0
               end (Hh q)
           end (Hh p)
@@ -4306,8 +4310,6 @@ Definition is1Type A := ∀ x y : A, ∀ p q : x = y, ∀ r s : p = q, r = s.
 (* "Lemma 3.1.8. If A is a set (that is, isSet(A) is inhabited), then
     A is a 1-type." *)
 
-Arguments eq_refl [A] x.
-
 Section lemma_3_1_8.
 
 Import Σ_type2.
@@ -4361,5 +4363,26 @@ assert (∀ q q' (r : q = q'), g q • r = g q') as h.
 Defined.
 
 End lemma_3_1_8.
+
+(* I add the proof that isProp → isSet, inspired from isSet → is1Type
+   above, but still not understanding why it works. *)
+
+Definition isProp A := ∀ x y : A, x = y.
+
+Definition glop {A} : isProp A → isSet A.
+Proof.
+intros f x y p q.
+set (g y := f x y).
+assert (∀ y z (r : y = z), g y • r = g z) as h.
+ intros y₁ z r.
+ pose proof apd g r as h.
+ eapply compose; [ | eassumption ].
+ eapply invert; destruct r; simpl; unfold id; apply ru.
+
+ pose proof h x y p as Hp.
+ pose proof h x y q as Hq.
+ rewrite <- Hq in Hp.
+ eapply compose_cancel_l; eassumption.
+Defined.
 
 bbb.
