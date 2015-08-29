@@ -4105,8 +4105,7 @@ End ex_2_17.
 
 (* Definition 3.1 *)
 
-Definition isSet A :=
-  Π (x : A), Π (y : A), Π (p : x = y), Π (q : x = y), p = q.
+Definition isSet A := ∀ (x y : A) (p q : x = y), p = q.
 
 (* personal solution *)
 Definition ex_3_1_2_tac : isSet unit.
@@ -4305,7 +4304,7 @@ End ex_3_1_6.
 (* "Definition 3.1.7. A type A is a 1-type if for all x, y : A and p,
     q : x = y and r, s : p = q, we have r = s. *)
 
-Definition is1Type A := ∀ x y : A, ∀ p q : x = y, ∀ r s : p = q, r = s.
+Definition is1Type A := ∀ (x y : A) (p q : x = y) (r s : p = q), r = s.
 
 (* "Lemma 3.1.8. If A is a set (that is, isSet(A) is inhabited), then
     A is a 1-type." *)
@@ -4405,5 +4404,35 @@ Definition is1Type_is2Type {A} : is1Type A → is2Type A :=
   λ f x y p q r s t u,
   compose_cancel_l (f x y p q r r) t u
     (compose_insert (f x y p q r) t • (compose_insert (f x y p q r) u)⁻¹).
+
+(* *)
+
+Fixpoint isnType A n :=
+  match n with
+  | 0 => isProp A
+  | S n' => ∀ x y : A, isnType (x = y) n'
+  end.
+
+Definition isnType_isSnType_tac {A} n : isnType A n → isnType A (S n).
+Proof.
+intros f x y.
+revert A f x y.
+induction n; intros.
+ intros p q.
+ eapply compose_cancel_l.
+ eapply compose; [ eapply (compose_insert (f x)) | ].
+ apply invert, compose_insert.
+
+ intros p q; apply IHn, f.
+Defined.
+
+Definition isnType_isSnType {A} n : isnType A n → isnType A (S n) :=
+  nat_ind
+    (λ n, ∀ A, isnType A n → isnType A (S n))
+    (λ A f x y p q,
+     compose_cancel_l (f x x) p q
+       (compose_insert (f x) p • (compose_insert (f x) q)⁻¹))
+    (λ n IHn A f x y p q, IHn (x = y) (f x y) p q)
+    n A.
 
 bbb.
