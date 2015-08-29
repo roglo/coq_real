@@ -4405,7 +4405,7 @@ Definition is1Type_is2Type {A} : is1Type A → is2Type A :=
   compose_cancel_l (f x y p q r r) t u
     (compose_insert (f x y p q r) t • (compose_insert (f x y p q r) u)⁻¹).
 
-(* *)
+(* full generalization *)
 
 Fixpoint isnType A n :=
   match n with
@@ -4419,7 +4419,7 @@ intros f x y.
 revert A f x y.
 induction n; intros.
  intros p q.
- eapply compose_cancel_l.
+ apply (compose_cancel_l (f x x)).
  eapply compose; [ eapply (compose_insert (f x)) | ].
  apply invert, compose_insert.
 
