@@ -4432,13 +4432,13 @@ set (p := ua e).
 set (c := f bool).
 Set Printing Width 66.
 pose proof @Π_type.hott_2_9_4 U (λ A, notT (notT A)) id bool bool p (f bool).
-simpl in H; unfold id at 2 in H.
+rename H into q.
+simpl in q; unfold id at 2 in q.
 assert (∀ u v : notT (notT bool), u = v) as Huv.
  intros; apply Π_type.funext; intros x; contradiction.
 
- assert (∀ u, transport (λ A, A → notT (notT A)) p⁻¹ u = u) as Htu.
-  intros u; apply Π_type.funext; intros x.
-  apply Huv.
+ assert (∀ u, transport (λ A, notT (notT A)) p⁻¹ u = u) as Htu.
+  intros u; apply Huv.
 
   assert (∀ u, transport id p (f bool u) = f bool u) as Hu.
    intros u.
