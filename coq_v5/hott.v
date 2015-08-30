@@ -4428,17 +4428,15 @@ Definition hott_3_2_2 : notT (∀ A : U, notT (notT A) → A).
 Proof.
 intros f.
 set (e := bool_eq_bool_negb).
-assert (p_3_2_3 : ∀ u, Σ_type.pr₁ e (f bool u) = f bool u).
+assert (q1 : ∀ u, Σ_type.pr₁ e (f bool u) = f bool u).
  intros u; rewrite <- ua_pcr.
  eapply compose; [  | apply (Π_type.happly (apd f (ua e))) ].
  rewrite Π_type.hott_2_9_4.
  apply ap, ap, Π_type.funext; intros x; destruct (u x).
 
- assert (q1 : ∀ u, Σ_type.pr₁ e (f bool u) ≠ f bool u).
+ assert (q2 : ∀ u, Σ_type.pr₁ e (f bool u) ≠ f bool u).
   intros u; destruct (f bool u); intros H; discriminate H.
 
-  rename p_3_2_3 into q2.
-  move q2 after q1.
   pose proof (q1 (λ x, x true)) as H1; simpl in H1.
   pose proof (q2 (λ x, x true)) as H2; simpl in H2.
   contradiction .
