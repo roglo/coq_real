@@ -4421,6 +4421,9 @@ Defined.
 
 (* 3.2 Propositions as types? *)
 
+Section hott_3_2_2.
+Import Σ_type.
+
 (* "Theorem 3.2.2. It is not the case that for all A : U we have
     ¬(¬A)→A." *)
 
@@ -4429,7 +4432,7 @@ Proof.
 intros f.
 set (e := bool_eq_bool_negb).
 set (u := λ x : notT bool, x true).
-assert (H : Σ_type.pr₁ e (f bool u) = f bool u).
+assert (H : pr₁ e (f bool u) = f bool u).
  eapply compose; [ eapply invert, ua_pcr | ].
  eapply compose; [ | apply (Π_type.happly (apd f (ua e))) ].
  eapply compose; [ | rewrite Π_type.hott_2_9_4; reflexivity ].
@@ -4443,24 +4446,24 @@ Definition hott_3_2_2 : notT (∀ A : U, notT (notT A) → A)
   λ f,
   let e := bool_eq_bool_negb in
   let u := λ x : notT bool, x true in
-  (if f bool u as b return (Σ_type.pr₁ e b = b → ⊥) then
-     λ H : Σ_type.pr₁ e true = true,
-     match
-       eq_ind (Σ_type.pr₁ e true) (λ b, if b then ⊥ else True) I true H
+  (if f bool u as b return (pr₁ e b = b → ⊥) then
+     λ H : pr₁ e true = true,
+     match eq_ind (pr₁ e true) (λ b, if b then ⊥ else True) I true H
      with end
    else
-     λ H : Σ_type.pr₁ e false = false,
-     match
-       eq_ind (Σ_type.pr₁ e false) (λ b, if b then True else ⊥) I false H
+     λ H : pr₁ e false = false,
+     match eq_ind (pr₁ e false) (λ b, if b then True else ⊥) I false H
      with end)
   ((ua_pcr e (f bool u))⁻¹
-   • ap (ua e)⁎
-       (ap (f bool) (Π_type.funext (λ x : notT bool, match x true with end)))
+   • ap ((ua e)⁎ ◦ f bool)
+       (Π_type.funext (λ x : notT bool, match x true with end))
    • eq_ind_r
        (λ b, transport id (ua e) (f bool ((ua e)⁻¹⁎ u)) = b u)
        (eq_refl (transport id (ua e) (f bool ((ua e)⁻¹⁎ u))))
        (Π_type.hott_2_9_4 (ua e) (f bool))
    • Π_type.happly (apd f (ua e)) u).
+
+End hott_3_2_2.
 
 bbb.
 5htp
