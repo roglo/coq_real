@@ -4438,36 +4438,35 @@ assert (H : Σ_type.pr₁ e (f bool u) = f bool u).
  destruct (f bool u); discriminate H.
 Defined.
 
-bbb.
-
-(* mouais bon, le pb c'est que je ne suis pas sûr d'avoir déjà bien
-   optimisé hott_3_2_2 tac *)
-Definition hott_3_2_2_exp : notT (∀ A : U, notT (notT A) → A) :=
-  λ (f : ∀ A : U, notT (notT A) → A) (e:=bool_eq_bool_negb),
-  (if f bool (λ x : notT bool, x true) as b0 return (negb b0 = b0 → ⊥) then
-    λ H0 : negb true = true,
-    False_ind ⊥
-       (eq_ind (negb true) (λ e0 : bool, if e0 then ⊥ else True) I true H0)
+Definition hott_3_2_2_exp : notT (∀ A : U, notT (notT A) → A)
+:=
+  λ f,
+  let e := bool_eq_bool_negb in
+  let u := λ x : notT bool, x true in
+  (if f bool u as b return (Σ_type.pr₁ e b = b → ⊥) then
+     λ H : Σ_type.pr₁ e true = true,
+     match
+       eq_ind (Σ_type.pr₁ e true) (λ b, if b then ⊥ else True) I true H
+     with end
    else
-    λ H0 : negb false = false,
-    False_ind ⊥
-      (eq_ind (negb false) (λ e0 : bool, if e0 then True else ⊥) I false H0))
-  (let u := (λ x : notT bool, x true) in
-   eq_ind (transport id (ua e) (f bool u)) (λ i : bool, i = f bool u)
-     (eq_ind_r
-        (λ b : notT (notT bool) → bool, transport id (ua e) (f bool u) = b u)
-        (ap (transport (λ x : U, x) (ua e))
-           (ap (f bool)
-              (Π_type.funext
-                 (λ (x : notT bool) (f0:=u x),
-                  match
-                    f0 as f1
-                    return
-                      (f1 = transport (λ x0 : U, notT (notT x0)) (ua e)⁻¹ u x)
-                  with
-                  end)))) (Π_type.hott_2_9_4 (ua e) (f bool))
-      • Π_type.happly (apd f (ua e)) u) (projT1 e (f bool u))
-     (ua_pcr e (f bool u))).
+     λ H : Σ_type.pr₁ e false = false,
+     match
+       eq_ind (Σ_type.pr₁ e false) (λ b, if b then True else ⊥) I false H
+     with end)
+   (((eq_ind_r
+        (λ b : notT (notT bool) → bool,
+         b u =
+         transport (λ x : Type, x) (ua e)
+           (f bool (transport (λ x : Type, notT (notT x)) (ua e)⁻¹ u)))
+        (eq_refl
+           (transport (λ x : Type, x) (ua e)
+              (f bool (transport (λ x : Type, notT (notT x)) (ua e)⁻¹ u))))
+        (Π_type.hott_2_9_4 (ua e) (f bool))
+      • ap (transport id (ua e))
+          (ap (f bool)
+             (Π_type.funext (λ x : notT bool, match x true with end))))⁻¹
+     • Π_type.happly (apd f (ua e)) u)⁻¹
+    • ua_pcr e (f bool u))⁻¹.
 
 bbb.
 5htp
