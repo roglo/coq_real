@@ -4429,5 +4429,22 @@ Proof.
 intros f.
 set (e := bool_eq_bool_negb).
 set (p := ua e).
+set (c := f bool).
+Check (apd f p).
+Check (λ u, Π_type.happly (apd f p) u).
+(* λ u : notT (notT bool), Π_type.happly (apd f p) u
+     : ∀ u : notT (notT bool),
+       transport (λ A : U, notT (notT A) → A) p (f bool) u = f bool u *)
+About Π_type.hott_2_9_4.
+(* Π_type.hott_2_9_4 :
+∀ (X : Type) (A B : X → Type) (x y : X) (p : x = y)
+(f : A x → B x),
+transport (λ x0 : X, A x0 → B x0) p f =
+(λ a : A y, transport B p (f (transport A p⁻¹ a)))
 
+Arguments X, A, B, x, y are implicit and maximally inserted
+*)
+Set Printing Width 66.
+pose proof @Π_type.hott_2_9_4 U (λ A, notT (notT A)) id bool bool p (f bool).
+simpl in H; unfold id at 2 in H.
 bbb.
