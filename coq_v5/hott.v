@@ -4438,5 +4438,34 @@ assert (q1 : ∀ u, Σ_type.pr₁ e (f bool u) = f bool u).
   destruct (f bool (λ x, x true)); discriminate H.
 Defined.
 
+(* mouais bon, le pb c'est que je ne suis pas sûr d'avoir déjà bien
+   optimisé hott_3_2_2 tac *)
+Definition hott_3_2_2_exp : notT (∀ A : U, notT (notT A) → A) :=
+  λ (f : ∀ A : U, notT (notT A) → A) (e:=bool_eq_bool_negb),
+  (if f bool (λ x : notT bool, x true) as b0 return (negb b0 = b0 → ⊥) then
+    λ H0 : negb true = true,
+    False_ind ⊥
+       (eq_ind (negb true) (λ e0 : bool, if e0 then ⊥ else True) I true H0)
+   else
+    λ H0 : negb false = false,
+    False_ind ⊥
+      (eq_ind (negb false) (λ e0 : bool, if e0 then True else ⊥) I false H0))
+  (let u := (λ x : notT bool, x true) in
+   eq_ind (transport id (ua e) (f bool u)) (λ i : bool, i = f bool u)
+     (eq_ind_r
+        (λ b : notT (notT bool) → bool, transport id (ua e) (f bool u) = b u)
+        (ap (transport (λ x : U, x) (ua e))
+           (ap (f bool)
+              (Π_type.funext
+                 (λ (x : notT bool) (f0:=u x),
+                  match
+                    f0 as f1
+                    return
+                      (f1 = transport (λ x0 : U, notT (notT x0)) (ua e)⁻¹ u x)
+                  with
+                  end)))) (Π_type.hott_2_9_4 (ua e) (f bool))
+      • Π_type.happly (apd f (ua e)) u) (projT1 e (f bool u))
+     (ua_pcr e (f bool u))).
+
 bbb.
 5htp
