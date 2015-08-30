@@ -4431,41 +4431,41 @@ set (e := bool_eq_bool_negb).
 set (p := ua e).
 set (c := f bool).
 Set Printing Width 66.
-pose proof @Π_type.hott_2_9_4 U (λ A, notT (notT A)) id bool bool p (f bool).
+pose proof
+ (@Π_type.hott_2_9_4 U (λ A, notT (notT A)) id bool bool p
+    (f bool)).
 rename H into q.
 simpl in q; unfold id at 2 in q.
-assert (∀ u v : notT (notT bool), u = v) as Huv.
- intros; apply Π_type.funext; intros x; contradiction.
+assert (Htu : ∀ u, transport (λ A, notT (notT A)) p⁻¹ u = u).
+ intros u; apply Π_type.funext; intros x; destruct (u x).
 
- assert (∀ u, transport (λ A, notT (notT A)) p⁻¹ u = u) as Htu.
-  intros u; apply Huv.
+ assert
+  (q' :
+   transport (λ x : U, notT (notT x) → x) p (f bool) =
+   (λ a : notT (notT bool), transport id p (f bool a))).
+  rewrite q.
+  apply Π_type.funext; intros u.
+  rewrite Htu; reflexivity.
 
-  assert
-    (transport (λ x : U, notT (notT x) → x) p (f bool) =
-       (λ a : notT (notT bool), transport id p (f bool a))) as q'.
-   rewrite q.
-   apply Π_type.funext; intros u.
-   rewrite Htu; reflexivity.
+  assert (Hu : ∀ u, transport id p (f bool u) = f bool u).
+   intros u.
+   eapply compose; [  | apply (Π_type.happly (apd f p)) ].
+   rewrite q'; reflexivity.
 
-   assert (∀ u, transport id p (f bool u) = f bool u) as Hu.
-    intros u.
-    eapply compose; [ | apply (Π_type.happly (apd f p)) ].
-    rewrite q'; reflexivity.
+   assert (p_3_2_3 : ∀ u, Σ_type.pr₁ e (f bool u) = f bool u).
+    intros u; rewrite <- ua_pcr; apply Hu.
 
-    assert (∀ u, Σ_type.pr₁ e (f bool u) = f bool u) as p_3_2_3.
-     intros u; rewrite <- ua_pcr; apply Hu.
+    assert (p_3_2_4 : Π (x : bool), ¬ Σ_type.pr₁ e x = x).
+     intros x; destruct x; intros H; discriminate H.
 
-     assert (Π (x : bool), ¬ (Σ_type.pr₁ e x) = x) as p_3_2_4.
-      intros x; destruct x; intros H; discriminate H.
+     assert (q1 : ∀ u, Σ_type.pr₁ e (f bool u) ≠ f bool u).
+      intros u; apply p_3_2_4.
 
-      assert (∀ u, Σ_type.pr₁ e (f bool u) ≠ f bool u) as q1.
-       intros u; apply p_3_2_4.
-
-       rename p_3_2_3 into q2.
-       move q2 after q1.
-       pose proof (q1 (λ x, x true)) as H1; simpl in H1.
-       pose proof (q2 (λ x, x true)) as H2; simpl in H2.
-       contradiction.
+      rename p_3_2_3 into q2.
+      move q2 after q1.
+      pose proof (q1 (λ x, x true)) as H1; simpl in H1.
+      pose proof (q2 (λ x, x true)) as H2; simpl in H2.
+      contradiction .
 Defined.
 
 bbb.
