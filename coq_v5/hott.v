@@ -4424,7 +4424,7 @@ Defined.
 (* "Theorem 3.2.2. It is not the case that for all A : U we have
     ¬(¬A)→A." *)
 
-Definition hott_3_2_2 : notT (∀ A, notT (notT A) → A).
+Definition hott_3_2_2 : notT (∀ P, notT (notT P) → P).
 Proof.
 intros f.
 set (e := bool_eq_bool_negb).
@@ -4432,8 +4432,7 @@ set (u := λ x : notT bool, x true).
 assert (H : Σ_type.pr₁ e (f bool u) = f bool u).
  eapply invert, compose; [ | apply ua_pcr ].
  eapply invert, compose; [ | apply (Π_type.happly (apd f (ua e))) ].
- apply invert.
- rewrite Π_type.hott_2_9_4.
+ eapply invert, compose; [ rewrite Π_type.hott_2_9_4; reflexivity | ].
  apply ap, ap, Π_type.funext; intros x; destruct (x true).
 
  destruct (f bool u); discriminate H.
