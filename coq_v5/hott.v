@@ -4440,8 +4440,27 @@ assert (∀ u v : notT (notT bool), u = v) as Huv.
  assert (∀ u, transport (λ A, notT (notT A)) p⁻¹ u = u) as Htu.
   intros u; apply Huv.
 
-  assert (∀ u, transport id p (f bool u) = f bool u) as Hu.
-   intros u.
-   Check (Π_type.happly (apd f p) u).
-   set (v := Π_type.happly (apd f p) u).
+  assert
+    (transport (λ x : U, notT (notT x) → x) p (f bool) =
+       (λ a : notT (notT bool), transport id p (f bool a))) as q'.
+   rewrite q.
+   apply Π_type.funext; intros u.
+   rewrite Htu; reflexivity.
+
+   assert (∀ u, transport id p (f bool u) = f bool u) as Hu.
+    intros u.
+    eapply compose; [ | apply (Π_type.happly (apd f p)) ].
+    rewrite q'; reflexivity.
+
+    assert (∀ u, Σ_type.pr₁ e (f bool u) = f bool u) as p_3_2_3.
+     intros u; rewrite <- ua_pcr; apply Hu.
+
+     assert (Π (x : bool), ¬ (Σ_type.pr₁ e x) = x) as p_3_2_4.
+      intros x; destruct x; intros H; discriminate H.
+
+      assert (∀ u, Σ_type.pr₁ e (f bool u) ≠ f bool u) as q1.
+       intros u; apply p_3_2_4.
+
+       move p_3_2_4 after p_3_2_3.
+(* and how do I create a value of type notT (notT bool)? *)
 bbb.
