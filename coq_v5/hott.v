@@ -4436,26 +4436,23 @@ pose proof
     (f bool)).
 rename H into q.
 simpl in q; unfold id at 2 in q.
-assert (Hu : ∀ u, transport id p (f bool u) = f bool u).
- intros u.
+assert (p_3_2_3 : ∀ u, Σ_type.pr₁ e (f bool u) = f bool u).
+ intros u; rewrite <- ua_pcr.
  eapply compose; [  | apply (Π_type.happly (apd f p)) ].
  rewrite q.
  apply ap, ap, Π_type.funext; intros x; destruct (u x).
 
- assert (p_3_2_3 : ∀ u, Σ_type.pr₁ e (f bool u) = f bool u).
-  intros u; rewrite <- ua_pcr; apply Hu.
+ assert (p_3_2_4 : Π (x : bool), ¬ Σ_type.pr₁ e x = x).
+  intros x; destruct x; intros H; discriminate H.
 
-  assert (p_3_2_4 : Π (x : bool), ¬ Σ_type.pr₁ e x = x).
-   intros x; destruct x; intros H; discriminate H.
+  assert (q1 : ∀ u, Σ_type.pr₁ e (f bool u) ≠ f bool u).
+   intros u; apply p_3_2_4.
 
-   assert (q1 : ∀ u, Σ_type.pr₁ e (f bool u) ≠ f bool u).
-    intros u; apply p_3_2_4.
-
-    rename p_3_2_3 into q2.
-    move q2 after q1.
-    pose proof (q1 (λ x, x true)) as H1; simpl in H1.
-    pose proof (q2 (λ x, x true)) as H2; simpl in H2.
-    contradiction .
+   rename p_3_2_3 into q2.
+   move q2 after q1.
+   pose proof (q1 (λ x, x true)) as H1; simpl in H1.
+   pose proof (q2 (λ x, x true)) as H2; simpl in H2.
+   contradiction .
 Defined.
 
 bbb.
