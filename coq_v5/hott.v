@@ -4430,12 +4430,12 @@ intros f.
 set (e := bool_eq_bool_negb).
 assert (q1 : ∀ u, Σ_type.pr₁ e (f bool u) = f bool u).
  intros u; rewrite <- ua_pcr.
- eapply compose; [  | apply (Π_type.happly (apd f (ua e))) ].
+ eapply compose; [ | apply (Π_type.happly (apd f (ua e))) ].
  rewrite Π_type.hott_2_9_4.
  apply ap, ap, Π_type.funext; intros x; destruct (u x).
 
-  pose proof (q1 (λ x, x true)) as H; simpl in H.
-  destruct (f bool (λ x, x true)); discriminate H.
+ pose proof (q1 (λ x, x true)) as H; simpl in H.
+ destruct (f bool (λ x, x true)); discriminate H.
 Defined.
 
 (* mouais bon, le pb c'est que je ne suis pas sûr d'avoir déjà bien
