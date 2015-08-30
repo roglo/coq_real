@@ -4424,21 +4424,21 @@ Defined.
 (* "Theorem 3.2.2. It is not the case that for all A : U we have
     ¬(¬A)→A." *)
 
-Definition hott_3_2_2 : notT (∀ P, notT (notT P) → P).
+Definition hott_3_2_2_tac : notT (∀ P, notT (notT P) → P).
 Proof.
 intros f.
 set (e := bool_eq_bool_negb).
 set (u := λ x : notT bool, x true).
 assert (H : Σ_type.pr₁ e (f bool u) = f bool u).
- eapply invert, compose; [ | apply ua_pcr ].
- eapply invert, compose; [ | apply (Π_type.happly (apd f (ua e))) ].
- eapply invert, compose; [ rewrite Π_type.hott_2_9_4; reflexivity | ].
+ eapply compose; [ eapply invert, ua_pcr | ].
+ eapply compose; [ | apply (Π_type.happly (apd f (ua e))) ].
+ eapply compose; [ | rewrite Π_type.hott_2_9_4; reflexivity ].
  apply ap, ap, Π_type.funext; intros x; destruct (x true).
 
  destruct (f bool u); discriminate H.
 Defined.
 
-Definition hott_3_2_2_exp : notT (∀ A : U, notT (notT A) → A)
+Definition hott_3_2_2 : notT (∀ A : U, notT (notT A) → A)
 :=
   λ f,
   let e := bool_eq_bool_negb in
@@ -4453,20 +4453,14 @@ Definition hott_3_2_2_exp : notT (∀ A : U, notT (notT A) → A)
      match
        eq_ind (Σ_type.pr₁ e false) (λ b, if b then True else ⊥) I false H
      with end)
-   (((eq_ind_r
-        (λ b : notT (notT bool) → bool,
-         b u =
-         transport (λ x : Type, x) (ua e)
-           (f bool (transport (λ x : Type, notT (notT x)) (ua e)⁻¹ u)))
-        (eq_refl
-           (transport (λ x : Type, x) (ua e)
-              (f bool (transport (λ x : Type, notT (notT x)) (ua e)⁻¹ u))))
-        (Π_type.hott_2_9_4 (ua e) (f bool))
-      • ap (transport id (ua e))
-          (ap (f bool)
-             (Π_type.funext (λ x : notT bool, match x true with end))))⁻¹
-     • Π_type.happly (apd f (ua e)) u)⁻¹
-    • ua_pcr e (f bool u))⁻¹.
+  ((ua_pcr e (f bool u))⁻¹
+   • ap (ua e)⁎
+       (ap (f bool) (Π_type.funext (λ x : notT bool, match x true with end)))
+   • eq_ind_r
+       (λ b, transport id (ua e) (f bool ((ua e)⁻¹⁎ u)) = b u)
+       (eq_refl (transport id (ua e) (f bool ((ua e)⁻¹⁎ u))))
+       (Π_type.hott_2_9_4 (ua e) (f bool))
+   • Π_type.happly (apd f (ua e)) u).
 
 bbb.
 5htp
