@@ -4424,7 +4424,7 @@ Defined.
 (* "Theorem 3.2.2. It is not the case that for all A : U we have
     ¬(¬A)→A." *)
 
-Definition hott_3_2_2 : notT (∀ A : U, notT (notT A) → A).
+Definition hott_3_2_2 : notT (∀ A, notT (notT A) → A).
 Proof.
 intros f.
 set (e := bool_eq_bool_negb).
