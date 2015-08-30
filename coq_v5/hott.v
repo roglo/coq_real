@@ -4430,8 +4430,8 @@ intros f.
 set (e := bool_eq_bool_negb).
 set (u := λ x : notT bool, x true).
 assert (H : Σ_type.pr₁ e (f bool u) = f bool u).
- rewrite <- ua_pcr.
- eapply compose; [ | apply (Π_type.happly (apd f (ua e))) ].
+ eapply invert, compose; [ | apply ua_pcr ].
+ eapply invert, compose; [ | apply (Π_type.happly (apd f (ua e))) ].
  rewrite Π_type.hott_2_9_4.
  apply ap, ap, Π_type.funext; intros x; destruct (x true).
 
