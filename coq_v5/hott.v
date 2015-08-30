@@ -4434,12 +4434,8 @@ assert (q1 : ∀ u, Σ_type.pr₁ e (f bool u) = f bool u).
  rewrite Π_type.hott_2_9_4.
  apply ap, ap, Π_type.funext; intros x; destruct (u x).
 
- assert (q2 : ∀ u, Σ_type.pr₁ e (f bool u) ≠ f bool u).
-  intros u; destruct (f bool u); intros H; discriminate H.
-
-  pose proof (q1 (λ x, x true)) as H1; simpl in H1.
-  pose proof (q2 (λ x, x true)) as H2; simpl in H2.
-  contradiction .
+  pose proof (q1 (λ x, x true)) as H; simpl in H.
+  destruct (f bool (λ x, x true)); discriminate H.
 Defined.
 
 bbb.
