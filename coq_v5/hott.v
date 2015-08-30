@@ -4461,6 +4461,11 @@ assert (∀ u v : notT (notT bool), u = v) as Huv.
       assert (∀ u, Σ_type.pr₁ e (f bool u) ≠ f bool u) as q1.
        intros u; apply p_3_2_4.
 
-       move p_3_2_4 after p_3_2_3.
-(* and how do I create a value of type notT (notT bool)? *)
+       rename p_3_2_3 into q2.
+       move q2 after q1.
+       pose proof (q1 (λ x, x true)) as H1; simpl in H1.
+       pose proof (q2 (λ x, x true)) as H2; simpl in H2.
+       contradiction.
+Defined.
+
 bbb.
