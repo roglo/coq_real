@@ -4433,13 +4433,13 @@ intros f.
 set (e := bool_eq_bool_negb).
 set (u (g : notT bool) := g true).
 set (nn A := notT (notT A)).
-assert (p : pr₁ e (f bool u) = f bool u).
+assert (p : pr₁ e (f _ u) = f _ u).
  eapply compose; [ eapply invert, ua_pcr | ].
  eapply compose; [ | apply (happly (apd f (ua e))) ].
  eapply invert, compose.
   apply (happly (@Π_type.hott_2_9_4 _ nn id _ _ (ua e) (f bool)) u).
 
-  apply ap, ap, funext; intros x; destruct (x true).
+  apply ap, ap, funext; intros g; destruct (g true).
 
  eapply no_fixpoint_negb, p.
 Defined.
