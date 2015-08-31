@@ -4525,6 +4525,26 @@ Definition isContractible P := (isProp P * (P ≃ unit))%type.
 
 Definition hott_3_3_4 A : isProp A → isSet A := ispType_isSpType 0.
 
+(* "Lemma 3.3.5. For any type A, the types isProp(A) and isSet(A)
+    are mere propositions." *)
+
+Definition hott_3_3_5_i A : isProp (isProp A).
+Proof.
+intros p q.
+bbb.
+
+pose proof (hott_3_3_4 _ p) as H.
+unfold isSet in H.
+rename p into r.
+rename q into s.
+pose proof hott_3_3_2 A r as Hr.
+destruct Hr as (f, ((g, Hg), (h, Hh))).
+
+bbb.
+
+Definition hott_3_3_5_i A : isProp (isSet A).
+Proof.
+intros r s.
 bbb.
 
 5htp
