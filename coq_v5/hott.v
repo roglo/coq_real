@@ -4380,7 +4380,7 @@ Fixpoint ispType A n :=
 (* A n-type has property 'ispType A (S n)', because the n of n-types
    start at -1 *)
 
-Definition isnType_isSnType_tac {A} n : ispType A n → ispType A (S n).
+Definition ispType_isSpType_tac {A} n : ispType A n → ispType A (S n).
 Proof.
 intros f x y.
 revert A f x y.
@@ -4393,7 +4393,7 @@ induction n; intros.
  intros p q; apply IHn, f.
 Defined.
 
-Definition isnType_isSnType {A} n : ispType A n → ispType A (S n) :=
+Definition ispType_isSpType {A} n : ispType A n → ispType A (S n) :=
   nat_ind
     (λ n, ∀ A, ispType A n → ispType A (S n))
     (λ A f x y p q,
@@ -4518,6 +4518,12 @@ Definition hott_3_3_3 P Q : isProp P → isProp Q → (P → Q) → (Q → P) �
 :=
   λ (p : isProp P) (q : isProp Q) (f : P → Q) (g : Q → P),
   existT isequiv f (qinv_isequiv f (existT _ g (λ y, q _ y, λ x, p _ x))).
+
+Definition isContractible P := (isProp P * (P ≃ unit))%type.
+
+(* "Lemma 3.3.4. Every mere proposition is a set." *)
+
+Definition hott_3_3_4 A : isProp A → isSet A := ispType_isSpType 0.
 
 bbb.
 
