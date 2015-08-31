@@ -4431,39 +4431,34 @@ Definition hott_3_2_2_tac : notT (∀ A, notT (notT A) → A).
 Proof.
 intros f.
 set (e := bool_eq_bool_negb).
-set (u := λ x : notT bool, x true).
+set (u (x : notT bool) := x true).
 assert (H : pr₁ e (f bool u) = f bool u).
  eapply compose; [ eapply invert, ua_pcr | ].
  eapply compose; [ | apply (Π_type.happly (apd f (ua e))) ].
  eapply invert, compose.
-  apply
-    (Π_type.happly
-       (@Π_type.hott_2_9_4 _ (λ A, notT (notT A)) id _ _ (ua e) (f bool)) u).
+  set (nn A := notT (notT A)).
+  apply (Π_type.happly (@Π_type.hott_2_9_4 _ nn id _ _ (ua e) (f bool)) u).
 
   apply ap, ap, Π_type.funext; intros x; destruct (x true).
 
- destruct (f bool u); discriminate H.
+ apply Σ_type2.hott_2_12_6.
+ destruct (f bool u); [ assumption | symmetry; assumption ].
 Defined.
 
 Definition hott_3_2_2 : notT (∀ A : U, notT (notT A) → A)
 :=
   λ f,
   let e := bool_eq_bool_negb in
-  let u := λ x : notT bool, x true in
-  (if f bool u as b return (pr₁ e b = b → ⊥) then
-     λ H : pr₁ e true = true,
-     match eq_ind (pr₁ e true) (λ b, if b then ⊥ else True) I true H
-     with end
-   else
-     λ H : pr₁ e false = false,
-     match eq_ind (pr₁ e false) (λ b, if b then True else ⊥) I false H
-     with end)
-  ((ua_pcr e (f bool u))⁻¹
-   • ((Π_type.happly
-         (@Π_type.hott_2_9_4 _ (λ A, notT (notT A)) id _ _ (ua e) (f bool)) u
-       • ap ((ua e)⁎ ◦ (f bool))
-            (Π_type.funext (λ (x : notT bool), match x true with end)))⁻¹
-   • Π_type.happly (apd f (ua e)) u)).
+  let u (x : notT bool) := x true in
+  let nn A := notT (notT A) in
+  Σ_type2.hott_2_12_6
+    ((if f bool u as b return (pr₁ e b = b → false = true) then id
+      else λ H : pr₁ e false = false, eq_sym H)
+     ((ua_pcr e (f bool u))⁻¹
+       • (Π_type.happly (@Π_type.hott_2_9_4 _ nn id _ _ (ua e) (f bool)) u
+          • ap ((ua e)⁎ ◦ (f bool))
+              (Π_type.funext (λ (x : notT bool), match x true with end)))⁻¹
+       • Π_type.happly (apd f (ua e)) u)).
 
 End hott_3_2_2.
 
