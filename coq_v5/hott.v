@@ -4538,27 +4538,20 @@ Definition hott_3_3_4 A : isProp A → isSet A := ispType_isSpType 0.
 (* "Lemma 3.3.5. For any type A, the types isProp(A) and isSet(A)
     are mere propositions." *)
 
-Definition hott_3_3_5_i A : isProp (isProp A).
+Section Lemma_3_3_5.
+
+Import Π_type.
+
+Definition hott_3_3_5_i_tac A : isProp (isProp A).
 Proof.
 intros f g.
-eapply Π_type.funext; intros x.
-eapply Π_type.funext; intros y.
-unfold isProp in f, g.
-pose proof f x y as Hf.
-pose proof g x y as Hg.
-bbb.
+eapply funext; intros x.
+eapply funext; intros y.
+apply (hott_3_3_4 _ f).
+Defined.
 
-destruct Hf.
-destruct Hg.
-Check (f x x).
-bbb.
-
-pose proof (hott_3_3_4 _ p) as H.
-unfold isSet in H.
-rename p into r.
-rename q into s.
-pose proof hott_3_3_2 A r as Hr.
-destruct Hr as (f, ((g, Hg), (h, Hh))).
+Definition hott_3_3_5_i A : isProp (isProp A) :=
+  λ f g, funext (λ x, funext (λ y, hott_3_3_4 A f x y (f x y) (g x y))).
 
 bbb.
 
@@ -4566,5 +4559,7 @@ Definition hott_3_3_5_i A : isProp (isSet A).
 Proof.
 intros r s.
 bbb.
+
+End Lemma_3_3_5.
 
 5htp
