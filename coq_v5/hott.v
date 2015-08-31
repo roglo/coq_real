@@ -4548,6 +4548,11 @@ pose proof f x y as Hf.
 pose proof g x y as Hg.
 bbb.
 
+destruct Hf.
+destruct Hg.
+Check (f x x).
+bbb.
+
 pose proof (hott_3_3_4 _ p) as H.
 unfold isSet in H.
 rename p into r.
