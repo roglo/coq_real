@@ -4574,6 +4574,15 @@ Definition hott_3_3_5_ii A : isProp (isSet A) :=
            funext
              (λ q, ispType_isSpType 1 f x y p q (f x y p q) (g x y p q))))).
 
+Definition isequiv_mere_prop {A B} (f : A → B) :
+  @equiv_prop A B isequiv → isProp (isequiv f).
+Proof.
+intros p e₁ e₂.
+pose proof p f as pf.
+destruct pf as ((qi, iq), eqv).
+apply eqv.
+Defined.
+
 End Lemma_3_3_5.
 
 bbb.
