@@ -4585,6 +4585,13 @@ Defined.
 
 End Lemma_3_3_5.
 
+(* "3.4 Classical vs. intuitionistic logic" *)
+
+(* "law of excluded middle in homotopy type theory:
+       LEM : Π (A:U), (isProp(A) → (A + ¬A))      (3.4.1)" *)
+
+Definition LEM := Π (A : U), (isProp A → (A + notT A)).
+
 bbb.
 
 5htp
