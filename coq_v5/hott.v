@@ -4341,14 +4341,24 @@ Definition compose_cancel_l {A} {x y z : A} (p : x = y) (q r : y = z) :
   compose_assoc p⁻¹ p r • (compose_invert_l p •r r) • (lu r)⁻¹.
 
 (* magic lemma to prove isSet → is1Type and also used later for
-   isProp → isSet *)
-Definition compose_insert {A x} (f : Π (y : A), x = y) {y z} (p : y = z) :
+   ispType → isSpType *)
+Definition compose_insert_tac {A x} (f : Π (y : A), x = y) {y z} (p : y = z) :
   f y • p = f z.
 Proof.
 pose proof apd f p as h.
 eapply compose; [ | eassumption ].
 eapply invert; destruct p; simpl; unfold id; apply ru.
 Defined.
+
+Definition compose_insert {A x} (f : Π (y : A), x = y) {y z} (p : y = z) :
+  f y • p = f z
+:=
+  match p return f y • p = transport (eq x) p (f y) with
+  | eq_refl _ => (ru (f y))⁻¹
+  end
+  • apd f p.
+
+Print ru.
 
 (* done but not obvious at all; I had to look at the way they did it,
    and I am sure I don't understand the point *)
@@ -4530,7 +4540,12 @@ Definition hott_3_3_4 A : isProp A → isSet A := ispType_isSpType 0.
 
 Definition hott_3_3_5_i A : isProp (isProp A).
 Proof.
-intros p q.
+intros f g.
+eapply Π_type.funext; intros x.
+eapply Π_type.funext; intros y.
+unfold isProp in f, g.
+pose proof f x y as Hf.
+pose proof g x y as Hg.
 bbb.
 
 pose proof (hott_3_3_4 _ p) as H.
