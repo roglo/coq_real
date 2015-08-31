@@ -4503,6 +4503,22 @@ Definition hott_3_3_2 P : isProp P → ∀ x₀ : P, P ≃ unit
        (existT _ (λ _, x₀)
           (λ x, match x with tt => eq_refl (id tt) end,  λ x, HP _ x))).
 
+(* "Lemma 3.3.3. If P and Q are mere propositions such that P → Q and
+    Q → P, then P ≃ Q." *)
+
+Definition hott_3_3_3_tac P Q :
+  isProp P → isProp Q → (P → Q) → (Q → P) → P ≃ Q.
+Proof.
+intros p q f g.
+apply (existT _ f), qinv_isequiv, (existT _ g).
+split; intros x; [ apply q | apply p ].
+Defined.
+
+Definition hott_3_3_3 P Q : isProp P → isProp Q → (P → Q) → (Q → P) → P ≃ Q
+:=
+  λ (p : isProp P) (q : isProp Q) (f : P → Q) (g : Q → P),
+  existT isequiv f (qinv_isequiv f (existT _ g (λ y, q _ y, λ x, p _ x))).
+
 bbb.
 
 5htp
