@@ -4553,17 +4553,29 @@ Defined.
 Definition hott_3_3_5_i A : isProp (isProp A) :=
   λ f g, funext (λ x, funext (λ y, hott_3_3_4 A f x y (f x y) (g x y))).
 
-Definition hott_3_3_5_ii A : isProp (isSet A).
+Definition hott_3_3_5_ii_tac A : isProp (isSet A).
 Proof.
 intros f g.
 eapply funext; intros x.
 eapply funext; intros y.
-unfold isSet in f, g.
-pose proof f x y as Hf.
-pose proof g x y as Hg.
+eapply funext; intros p.
+eapply funext; intros q.
+apply (ispType_isSpType 1), f.
+Defined.
 
-bbb.
+Definition hott_3_3_5_ii A : isProp (isSet A) :=
+  λ f g,
+  funext
+    (λ x,
+     funext
+       (λ y,
+        funext
+          (λ p,
+           funext
+             (λ q, ispType_isSpType 1 f x y p q (f x y p q) (g x y p q))))).
 
 End Lemma_3_3_5.
+
+bbb.
 
 5htp
