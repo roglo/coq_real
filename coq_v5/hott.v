@@ -4592,6 +4592,34 @@ End Lemma_3_3_5.
 
 Definition LEM := Π (A : U), (isProp A → (A + notT A)).
 
+(* "law of double negation
+       Π (A:U), (isProp A → (¬¬A → A))            (3.4.2)" *)
+
+Definition LDN := Π (A : U), (isProp A → (notT (notT A) → A)).
+
+Definition LEM_LDN : LEM ≃ LDN.
+Proof.
+apply
+  (existT _
+     (λ HLEM A HP (HA : notT (notT A)),
+      match HLEM A HP with
+      | inl H => H
+      | inr H => match HA H return A with end
+      end)).
+apply qinv_isequiv.
+assert (LDN → LEM).
+ intros HLDN A HA.
+ pose proof HLDN A HA as H1.
+left; apply H1; intros HN; apply HN.
+apply H1; intros.
+ pose proof HLDN (notT (notT A)) as H2.
+apply H2.
+intros x y.
+unfold isProp in HA.
+pose proof (H1 x) as z.
+pose proof (H1 y) as t.
+pose proof HA z t as Hzt.
 bbb.
+
 
 5htp
