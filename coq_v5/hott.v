@@ -4369,7 +4369,7 @@ End lemma_3_1_8.
 
 (* generalization *)
 
-Definition isProp A := ∀ x y : A, x = y.
+Definition isProp A := Π (x : A), Π (y : A), x = y.
 
 Fixpoint ispType A n :=
   match n with
@@ -4437,7 +4437,7 @@ assert (p : pr₁ e (f _ u) = f _ u).
  eapply compose; [ eapply invert, ua_pcr | ].
  eapply compose; [ | apply (happly (apd f (ua e))) ].
  eapply invert, compose.
-  apply (happly (@Π_type.hott_2_9_4 _ nn id _ _ (ua e) (f bool)) u).
+  apply (happly (@hott_2_9_4 _ nn id _ _ (ua e) (f bool)) u).
 
   apply ap, ap, funext; intros g; destruct (g true).
 
@@ -4459,5 +4459,36 @@ Definition hott_3_2_2 : notT (∀ A : U, notT (notT A) → A)
 
 End hott_3_2_2.
 
+(* "Corollary 3.2.7. It is not the case that for all A : U we have A+(¬A)." *)
+
+Definition hott_3_2_7_tac : notT (∀ A, A + notT A).
+Proof.
+intros g.
+apply hott_3_2_2; intros A u.
+destruct (g A) as [a| w]; [ apply a | destruct (u w) ].
+Defined.
+
+Definition hott_3_2_7 : notT (∀ A, A + notT A)
+:=
+  λ g,
+  hott_3_2_2
+    (λ A u,
+     match g A with
+     | inl a => a
+     | inr w => match u w with end
+     end).
+
+(* "3.3 Mere propositions" *)
+
+(* "Definition 3.3.1. A type P is a mere proposition if for all x, y :
+    P we have x = y." *)
+
+Print isProp.
+
+(* "Lemma 3.3.2. If P is a mere proposition and x0 : P, then P ≃ 1." *)
+
+Definition hott_3_3_2 P : isProp P → ∀ x₀ : P, P ≃ 1.
+
 bbb.
+
 5htp
