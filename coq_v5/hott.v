@@ -4487,7 +4487,21 @@ Print isProp.
 
 (* "Lemma 3.3.2. If P is a mere proposition and x0 : P, then P ≃ 1." *)
 
-Definition hott_3_3_2 P : isProp P → ∀ x₀ : P, P ≃ 1.
+Definition hott_3_3_2_tac P : isProp P → ∀ x₀ : P, P ≃ unit.
+Proof.
+intros HP x₀.
+apply (existT _ (λ _, tt)), qinv_isequiv.
+apply (existT _ (λ _, x₀)).
+split; intros x; [ destruct x; reflexivity | apply HP ].
+Defined.
+
+Definition hott_3_3_2 P : isProp P → ∀ x₀ : P, P ≃ unit
+:=
+  λ (HP : isProp P) (x₀ : P),
+  existT isequiv (λ _, tt)
+    (qinv_isequiv (λ _, tt)
+       (existT _ (λ _, x₀)
+          (λ x, match x with tt => eq_refl (id tt) end,  λ x, HP _ x))).
 
 bbb.
 
