@@ -4807,12 +4807,13 @@ Notation "| x |" := (PT (λ _, x)) (x at level 0, format "| x |").
 Axiom PT_eq : ∀ A (x y : ∥A∥), x = y.
 Arguments PT_eq [A] x y.
 
-Definition PT_elim {A} (x : @prop_trunc A) := match x with PT f => f tt end.
+Definition PT_elim {A} (x : prop_trunc A) :=
+  match x with PT f => f tt end.
 
 (* do not use "ap PT_elim"! here is the reason *)
 Definition contradiction : False.
 Proof.
-pose proof PT_eq (PT (λ _, 1)) (PT (λ _, 2)) as H.
+pose proof PT_eq |1| |2| as H.
 apply (ap PT_elim) in H.
 discriminate H.
 (* no  more subgoals, but aborting it even so *)
@@ -4822,7 +4823,7 @@ Abort.
     induced g : ∥A∥ → B such that g(|a|) ≡ f(a) for all a : A." *)
 
 (* the hypothesis for B to be a mere proposition seems not useful... *)
-Definition prop_trunc_rec_princ {A B} : (* isProp B → *)
+Definition prop_trunc_rec_princ {A B} : (*isProp B →*)
   ∀ f : A → B, ∃ g : ∥A∥ → B, ∀ a : A, g |a| = f a.
 Proof.
 intros (*H*) f.
@@ -4839,8 +4840,6 @@ reflexivity.
 Defined.
 
 Print prop_trunc_rec_princ2.
-
-SearchAbout prop_trunc.
 
 bbb.
 
