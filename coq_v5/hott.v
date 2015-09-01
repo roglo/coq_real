@@ -1454,6 +1454,7 @@ Definition depend_eq {A P} : ∀ (w w' : Σ (x : A), P x) (p : w = w'),
 
 (* remark 2.7.1 *)
 
+(* (W) duplication of ap_pr₂ (defined later) *)
 Remark transport_ap {A P} {w w' : Σ (x : A), P x} : ∀ (p : w = w'),
   (ap pr₁ p)⁎ (pr₂ w) = pr₂ w'.
 Proof.
@@ -1602,6 +1603,7 @@ Definition ap_pr₁ {A B} {x y : Σ (z : A), B z}
   | eq_refl _ => eq_refl (pr₁ x)
   end.
 
+(* (W) duplication of transport_ap (defined before) *)
 Definition ap_pr₂ {A B} {x y : Σ (z : A), B z}
 : ∀ (p : x = y), transport B (ap_pr₁ p) (pr₂ x) = pr₂ y
 :=
@@ -4663,6 +4665,21 @@ Definition hott_3_5_1 {A} (P : A → U) :
   → u = v.
 Proof.
 intros HP u v p.
+destruct u as (ua, up); simpl in p.
+destruct v as (va, vp); simpl in p.
+eapply compose; [ eapply pair_eq | reflexivity ].
+SearchAbout (_ → transport _ _ _ = _).
+eapply compose; [ eapply hott_2_10_5 | ].
+simpl.
+bbb.
+
+@ap_pr₂
+     : ∀ (A : Type) (B : A → Type) (x y : {z : A & B z}) 
+       (p : x = y), transport B (ap_pr₁ p) (pr₂ x) = pr₂ y
+@transport_ap
+     : ∀ (A : Type) (P : A → Type) (w w' : {x : A & P x}) 
+       (p : w = w'), transport P (ap pr₁ p) (pr₂ w) = pr₂ w'
+
 bbb.
 
 End hott_3_5.
