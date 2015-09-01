@@ -4709,13 +4709,35 @@ Definition hott_3_5_1 {A} (P : A → U) :
       g (existT _ p (HP (pr₁ v) (p⁎ (pr₂ u)) (pr₂ v)))
   end.
 
-End hott_3_5.
-
 Definition SetU := {A : U & isSet A}.
 Definition PropU := {A : U & isProp A}.
 
-Check @hott_3_5_1.
-
+Definition SetU_equiv_eq A B s t :
+  (existT isSet A s = existT isSet B t) ≃ (A = B).
+Proof.
+apply
+  (existT _
+     (λ p : existT isSet A s = existT isSet B t,
+      match p in (_ = s0) return (let (b, _) := s0 in A = b) with
+      | eq_refl _ => eq_refl A
+      end)).
+apply qinv_isequiv.
+apply
+  (existT _
+     (λ p,
+      hott_3_5_1 isSet hott_3_3_5_ii (existT isSet A s)
+        (existT isSet B t) p)).
+unfold "◦", "~~", id; simpl.
+split.
+ intros p.
+ unfold hott_3_5_1; simpl.
+ destruct (hott_2_7_2 isSet (existT isSet A s) (existT isSet B t)) as (f, H).
+ destruct H as ((g, Hg), (h, Hh)).
+ unfold hott_3_3_5_ii; simpl.
+ destruct p; simpl.
+bof.
 bbb.
+
+End hott_3_5.
 
 5htp
