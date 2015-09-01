@@ -4597,29 +4597,37 @@ Definition LEM := Π (A : U), (isProp A → (A + notT A)).
 
 Definition LDN := Π (A : U), (isProp A → (notT (notT A) → A)).
 
-Definition LEM_LDN : LEM ≃ LDN.
+Definition isProp_notT_tac A : isProp (A → ⊥).
 Proof.
-apply
-  (existT _
-     (λ HLEM A HP (HA : notT (notT A)),
-      match HLEM A HP with
-      | inl H => H
-      | inr H => match HA H return A with end
-      end)).
-apply qinv_isequiv.
-assert (LDN → LEM).
- intros HLDN A HA.
- pose proof HLDN A HA as H1.
-left; apply H1; intros HN; apply HN.
-apply H1; intros.
- pose proof HLDN (notT (notT A)) as H2.
-apply H2.
 intros x y.
-unfold isProp in HA.
-pose proof (H1 x) as z.
-pose proof (H1 y) as t.
-pose proof HA z t as Hzt.
-bbb.
+apply Π_type.funext; intros z; destruct (x z).
+Defined.
 
+Definition isProp_notT A : isProp (A → ⊥) :=
+  λ x y : A → ⊥, Π_type.funext (λ (z : A), match x z with end).
+
+(* LEM and LDN are logically equivalent (ex 3.18) *)
+
+Definition LEM_LDN : (LEM → LDN) * (LDN → LEM).
+Proof.
+split.
+ intros HLEM A HP HNA.
+ destruct (HLEM A HP) as [x| x]; [ apply x | destruct (HNA x) ].
+
+ intros HLDN A HPA.
+ apply HLDN.
+ intros x y.
+ destruct x as [x| x].
+  destruct y as [y| y]; [ apply Σ_type2.inl_equal, HPA | destruct (y x) ].
+
+  destruct y as [y| y]; [ destruct (x y) | ].
+  apply Σ_type2.inr_equal.
+  apply HLDN; [ apply (ispType_isSpType 0), isProp_notT | ].
+  intros HNE; apply HNE, isProp_notT.
+
+  intros HNA; apply HNA.
+  right; intros HA; apply HNA.
+  left; apply HA.
+Defined.
 
 5htp
