@@ -4797,6 +4797,15 @@ End hott_3_6.
 
 (* "3.7 Propositional truncation" *)
 
+(* I implement the element of a propositional truncation using a
+   function of type unit → A. This way, two such elements can be
+   forced to be equal (axiom PT_eq below), but the discriminate
+   tactic, not appliable to functions, cannot be used with the
+   risk of creating a contradiction (H: |1| = |2| and using the
+   tactic 'discriminate H'). Not 100% sure since nothing prevent
+   to use 'ap PT_elim' before (see theorem 'contradiction' below).
+ *)
+
 Inductive prop_trunc A :=
 | PT : ∀ f : unit → A, prop_trunc A.
 Arguments PT [A] f.
@@ -4804,11 +4813,10 @@ Arguments PT [A] f.
 Notation "∥ A ∥" := (prop_trunc A) (A at level 0, format "∥ A ∥").
 Notation "| x |" := (PT (λ _, x)) (x at level 0, format "| x |").
 
-Axiom PT_eq : ∀ A (x y : ∥A∥), x = y.
+Axiom PT_eq : ∀ A, isProp ∥A∥.
 Arguments PT_eq [A] x y.
 
-Definition PT_elim {A} (x : prop_trunc A) :=
-  match x with PT f => f tt end.
+Definition PT_elim {A} (x : ∥A∥) : A := match x with PT f => f tt end.
 
 (* do not use "ap PT_elim"! here is the reason *)
 Definition contradiction : False.
