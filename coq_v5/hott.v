@@ -4798,15 +4798,35 @@ End hott_3_6.
 (* "3.7 Propositional truncation" *)
 
 Inductive prop_trunc A :=
-| PT_one : ∀ x : A, prop_trunc A.
+| PT : ∀ f : unit → A, prop_trunc A.
+Arguments PT [A] f.
 
-Axiom PR_two : ∀ A (x y : prop_trunc A), x = y.
+Notation "∥ A ∥" := (prop_trunc A) (A at level 0, format "∥ A ∥").
+Notation "| x |" := (PT (λ _, x)) (x at level 0, format "| x |").
 
-(* aïe aïe aïe, ça doit pas être ça *)
-Definition toto : False.
+Axiom PT_eq : ∀ A (x y : ∥A∥), x = y.
+Arguments PT_eq [A] x y.
+
+Definition PT_val {A} (x : @prop_trunc A) := match x with PT f => f tt end.
+
+(* do not use "ap PT_val"! here is the reason *)
+Definition contradiction : False.
 Proof.
-pose proof PR_two nat (PT_one _ 1) (PT_one _ 2).
+pose proof PT_eq (PT (λ _, 1)) (PT (λ _, 2)) as H.
+apply (ap PT_val) in H.
 discriminate H.
+(* no  more subgoals, but aborting it even so *)
+Abort.
+
+(* "If B is a mere proposition and we have f : A → B, then there is an
+    induced g : ∥A∥ → B such that g(|a|) ≡ f(a) for all a : A." *)
+
+Definition induced_prop_trunc_fun {A B} : isProp B →
+  ∀ f : A → B, ∃ g : ∥A∥ → B, ∀ a : A, g |a| = f a.
+Proof.
+intros H f.
+exists (λ z, f (PT_val z)).
+reflexivity.
 Defined.
 
 bbb.
