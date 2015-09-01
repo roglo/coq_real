@@ -4735,9 +4735,80 @@ split.
  destruct H as ((g, Hg), (h, Hh)).
  unfold hott_3_3_5_ii; simpl.
  destruct p; simpl.
-bof.
-bbb.
+ (* equivalent, equivalent... are they really equivalent?
+    or just logically equivalent? *)
+Abort.
+
+Print SetU.
 
 End hott_3_5.
+
+(* "Recall that for any two universes Ui and Ui+1, if A : Ui then also
+    A : Ui+1. Thus, for any (A, s) : SetUi we also have (A, s) : SetUi+1,
+    and similarly for PropUi , giving natural maps
+       SetUi → SetUi+1,              (3.5.3)
+       PropUi → PropUi+1.            (3.5.4)" *)
+
+(* ok, but I don't know how to program the hierarchy of universes in Coq;
+   and the following axiom cannot be written either *)
+
+(* "Axiom 3.5.5 (Propositional resizing). The map PropUi ! PropUi+1 is
+    an equivalence." *)
+
+(* "3.6 The logic of mere propositions" *)
+
+Section hott_3_6.
+
+(* "Example 3.6.1. If A and B are mere propositions, so is A x B." *)
+
+Definition ex_3_6_1 {A B} : isProp A → isProp B → isProp (A * B).
+Proof.
+intros HA HB x y.
+destruct x as (xa, xb).
+destruct y as (ya, yb).
+apply cartesian.pair_eq; simpl.
+split; [ apply HA | apply HB ].
+Defined.
+
+(* "Example 3.6.2. If A is any type and B : A → U is such that for all
+    x : A, the type B(x) is a mere proposition, then Π(x:A) B(x) is a
+    mere proposition." *)
+
+Import Π_type.
+
+Definition ex_3_6_2 {A B} :
+  (Π (x : A), isProp (B x)) → isProp (Π (x : A), B x).
+Proof.
+intros HP f g.
+apply funext; intros x; apply HP.
+Defined.
+
+Definition isPropImp {A B} : isProp B → isProp (A → B).
+Proof.
+intros; apply ex_3_6_2; intros x; apply H.
+Defined.
+
+Definition isPropNot {A} : isProp A → isProp (notT A).
+Proof.
+intros. apply isPropImp; intros x y; destruct x.
+Defined.
+
+End hott_3_6.
+
+(* "3.7 Propositional truncation" *)
+
+Inductive prop_trunc A :=
+| PT_one : ∀ x : A, prop_trunc A.
+
+Axiom PR_two : ∀ A (x y : prop_trunc A), x = y.
+
+(* aïe aïe aïe, ça doit pas être ça *)
+Definition toto : False.
+Proof.
+pose proof PR_two nat (PT_one _ 1) (PT_one _ 2).
+discriminate H.
+Defined.
+
+bbb.
 
 5htp
