@@ -4807,13 +4807,13 @@ Notation "| x |" := (PT (λ _, x)) (x at level 0, format "| x |").
 Axiom PT_eq : ∀ A (x y : ∥A∥), x = y.
 Arguments PT_eq [A] x y.
 
-Definition PT_val {A} (x : @prop_trunc A) := match x with PT f => f tt end.
+Definition PT_elim {A} (x : @prop_trunc A) := match x with PT f => f tt end.
 
-(* do not use "ap PT_val"! here is the reason *)
+(* do not use "ap PT_elim"! here is the reason *)
 Definition contradiction : False.
 Proof.
 pose proof PT_eq (PT (λ _, 1)) (PT (λ _, 2)) as H.
-apply (ap PT_val) in H.
+apply (ap PT_elim) in H.
 discriminate H.
 (* no  more subgoals, but aborting it even so *)
 Abort.
@@ -4821,13 +4821,26 @@ Abort.
 (* "If B is a mere proposition and we have f : A → B, then there is an
     induced g : ∥A∥ → B such that g(|a|) ≡ f(a) for all a : A." *)
 
-Definition induced_prop_trunc_fun {A B} : isProp B →
+(* the hypothesis for B to be a mere proposition seems not useful... *)
+Definition prop_trunc_rec_princ {A B} : (* isProp B → *)
   ∀ f : A → B, ∃ g : ∥A∥ → B, ∀ a : A, g |a| = f a.
 Proof.
-intros H f.
-exists (λ z, f (PT_val z)).
+intros (*H*) f.
+exists (λ z, f (PT_elim z)).
 reflexivity.
 Defined.
+
+Definition prop_trunc_rec_fun {A B} (f : A → B) := f ◦ PT_elim.
+
+Definition prop_trunc_rec_princ2 {A B} (f : A → B) a :
+  prop_trunc_rec_fun f |a| = f a.
+Proof.
+reflexivity.
+Defined.
+
+Print prop_trunc_rec_princ2.
+
+SearchAbout prop_trunc.
 
 bbb.
 
