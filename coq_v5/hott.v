@@ -4658,30 +4658,64 @@ Import Σ_type.
     a mere proposition for all x : A. If u, v : Σ(x:A) P(x) are such
     that pr₁(u) = pr₁(v), then u = v." *)
 
-Definition hott_3_5_1 {A} (P : A → U) :
+Definition hott_3_5_1_my_proof_tac {A} (P : A → U) :
   (Π (x : A), isProp (P x))
-  → ∀ u v : Σ (x : A), P x,
+  → ∀ u v : (Σ (x : A), P x),
   pr₁ u = pr₁ v
   → u = v.
 Proof.
 intros HP u v p.
 destruct u as (ua, up); simpl in p.
 destruct v as (va, vp); simpl in p.
-eapply compose; [ eapply pair_eq | reflexivity ].
-SearchAbout (_ → transport _ _ _ = _).
-eapply compose; [ eapply hott_2_10_5 | ].
-simpl.
-bbb.
+eapply compose; [ eapply (pair_eq p), HP | reflexivity ].
+Defined.
 
-@ap_pr₂
-     : ∀ (A : Type) (B : A → Type) (x y : {z : A & B z}) 
-       (p : x = y), transport B (ap_pr₁ p) (pr₂ x) = pr₂ y
-@transport_ap
-     : ∀ (A : Type) (P : A → Type) (w w' : {x : A & P x}) 
-       (p : w = w'), transport P (ap pr₁ p) (pr₂ w) = pr₂ w'
+Definition hott_3_5_1_my_proof {A} (P : A → U) :
+  (Π (x : A), isProp (P x))
+  → ∀ u v : (Σ (x : A), P x),
+  pr₁ u = pr₁ v
+  → u = v
+:=
+  λ HP u v,
+  match u with existT _ ua up =>
+    match v with existT _ va vp =>
+    λ p, pair⁼ p (HP va (transport P p up) vp)
+    end
+  end.
 
-bbb.
+(* their proof *)
+
+Definition hott_3_5_1_tac {A} (P : A → U) :
+  (Π (x : A), isProp (P x))
+  → ∀ u v : (Σ (x : A), P x),
+  pr₁ u = pr₁ v
+  → u = v.
+Proof.
+intros HP u v p.
+pose proof @hott_2_7_2 A P u v as H.
+destruct H as (f, ((g, Hg), (h, Hh))).
+apply g, (existT _ p), HP.
+Defined.
+
+Definition hott_3_5_1 {A} (P : A → U) :
+  (Π (x : A), isProp (P x))
+  → ∀ u v : (Σ (x : A), P x),
+  pr₁ u = pr₁ v
+  → u = v
+:=
+  λ HP u v p,
+  match hott_2_7_2 P u v with
+  | existT _ _ (existT _ g _, _) =>
+      g (existT _ p (HP (pr₁ v) (p⁎ (pr₂ u)) (pr₂ v)))
+  end.
 
 End hott_3_5.
+
+Definition SetU := {A : U & isSet A}.
+Definition PropU := {A : U & isProp A}.
+
+Check @hott_3_5_1.
+
+bbb.
 
 5htp
