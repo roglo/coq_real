@@ -4648,6 +4648,23 @@ Definition hasDecidableEq A := Π (a : A), Π (b : A), ((a = b) + notT (a = b)).
 
 (* "3.5 Subsets and propositional resizing" *)
 
+Section hott_3_5.
+
+Import Σ_type.
+
+(* "Lemma 3.5.1. Suppose P : A → U is a type family such that P(x) is
+    a mere proposition for all x : A. If u, v : Σ(x:A) P(x) are such
+    that pr₁(u) = pr₁(v), then u = v." *)
+
+Definition hott_3_5_1 {A} (P : A → U) :
+  (Π (x : A), isProp (P x))
+  → ∀ u v : Σ (x : A), P x,
+  pr₁ u = pr₁ v
+  → u = v.
+Proof.
+intros HP u v p.
 bbb.
+
+End hott_3_5.
 
 5htp
