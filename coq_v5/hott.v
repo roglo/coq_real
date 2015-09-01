@@ -4597,6 +4597,8 @@ Definition LEM := Π (A : U), (isProp A → (A + notT A)).
 
 Definition LDN := Π (A : U), (isProp A → (notT (notT A) → A)).
 
+(* LEM and LDN are logically equivalent (ex 3.18) *)
+
 Definition isProp_notT_tac A : isProp (A → ⊥).
 Proof.
 intros x y.
@@ -4605,8 +4607,6 @@ Defined.
 
 Definition isProp_notT A : isProp (A → ⊥) :=
   λ x y : A → ⊥, Π_type.funext (λ (z : A), match x z with end).
-
-(* LEM and LDN are logically equivalent (ex 3.18) *)
 
 Definition LEM_LDN : (LEM → LDN) * (LDN → LEM).
 Proof.
@@ -4629,5 +4629,7 @@ split.
   right; intros HA; apply HNA.
   left; apply HA.
 Defined.
+
+Check @hott_3_2_2.
 
 5htp
