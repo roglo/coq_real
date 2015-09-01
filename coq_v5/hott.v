@@ -4381,10 +4381,10 @@ End lemma_3_1_8.
 
 Definition isProp A := Π (x : A), Π (y : A), x = y.
 
-Fixpoint ispType A n :=
-  match n with
+Fixpoint ispType A p :=
+  match p with
   | 0 => isProp A
-  | S n' => ∀ x y : A, ispType (x = y) n'
+  | S p' => ∀ x y : A, ispType (x = y) p'
   end.
 
 (* A n-type has property 'ispType A (S n)', because the n of n-types
@@ -4630,6 +4630,24 @@ split.
   left; apply HA.
 Defined.
 
-Check @hott_3_2_2.
+(* "For emphasis, the proper version (3.4.1) may be denoted LEM-₁" *)
+
+Definition LEM_p p := Π (A : U), (ispType A p → (A + notT A)).
+Definition LEM_inf := Π (A : U), (A + notT A).
+
+(* "Definition 3.4.3.
+      (i) A type A is called decidable if A + ¬A.
+     (ii) Similarly, a type family B : A → U is decidable if
+              Π(a:A)(B(a) + ¬B(a)).
+    (iii) In particular, A has decidable equality if
+              Π(a,b:A)((a = b) + ¬(a = b))." *)
+
+Definition isDecidable A := (A + notT A)%type.
+Definition isDecidableFamily A B := Π (a : A), (B a + notT (B a)).
+Definition hasDecidableEq A := Π (a : A), Π (b : A), ((a = b) + notT (a = b)).
+
+(* "3.5 Subsets and propositional resizing" *)
+
+bbb.
 
 5htp
