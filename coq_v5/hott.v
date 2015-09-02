@@ -4862,6 +4862,6 @@ split; [ intros x; destruct (HLEM A HPA); apply PT_eq | ].
 intros f; apply Π_type.funext; intros x; destruct (f x).
 Defined.
 
-bbb.
+(* "3.8 The axiom of choice" *)
 
-5htp
+_5htp.
