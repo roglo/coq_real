@@ -4811,7 +4811,7 @@ Inductive prop_trunc A :=
 Arguments PT [A] f.
 
 Notation "∥ A ∥" := (prop_trunc A) (A at level 0, format "∥ A ∥").
-Notation "| x |" := (PT (λ _, x)) (x at level 0, format "| x |").
+Notation "| x |" := (PT (λ _, x)) (x at level 0, format "| x |") : type_scope.
 
 Axiom PT_eq : ∀ A, isProp ∥A∥.
 Arguments PT_eq [A] x y.
@@ -4848,6 +4848,19 @@ reflexivity.
 Defined.
 
 Print prop_trunc_rec_princ2.
+
+(* doing the exercise 3.14 in advance, just to see if my definition of
+   propositional truncation works *)
+
+Definition ex_3_14 : LEM → ∀ A, isProp A → (notT (notT A) ≃ ∥A∥).
+Proof.
+intros HLEM A HPA.
+apply (existT _ (λ p, | (pr₁ LEM_LDN HLEM A HPA p) |)), qinv_isequiv.
+apply (existT _ (λ p q, q (PT_elim p))).
+unfold "◦", "~~", id; simpl.
+split; [ intros x; destruct (HLEM A HPA); apply PT_eq | ].
+intros f; apply Π_type.funext; intros x; destruct (f x).
+Defined.
 
 bbb.
 
