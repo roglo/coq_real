@@ -4864,4 +4864,11 @@ Defined.
 
 (* "3.8 The axiom of choice" *)
 
+Axiom AC : ∀ X (A : X → U) (P : Π (x : X), (A x → U)),
+  isSet X
+  → (Π (x : X), isSet (A x))
+  → (Π (x : X), Π (a : A x), isProp (P x a))
+  → (Π (x : X), ∥ (Σ (a : A x), P x a) ∥)
+  → ∥ (Σ (g : Π (x : X), A x), Π (x : X), P x (g x)) ∥.
+
 _5htp.
