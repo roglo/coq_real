@@ -86,4 +86,3 @@ unfold Qlt; simpl.
 apply Zgt_lt.
 now rewrite Z.mul_assoc in Hm.
 Qed.
-
