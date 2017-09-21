@@ -80,6 +80,9 @@ unfold Qlt in Ha; simpl in Ha.
 rewrite Z.mul_1_r in Ha.
 enough (Hab : (0 < an * ' bd)%Z).
  specialize (Z_archimedean (an * ' bd) (bn * ' ad) Hab) as (m, Hm).
- exists m.
+ exists m; simpl.
+ unfold Qmult; simpl.
+ apply Qmult_lt_r with (z := (' ad # 1) * (' bd # 1)).
+  unfold Qmult; simpl.
 
 bbb.
