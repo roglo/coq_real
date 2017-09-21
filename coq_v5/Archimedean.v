@@ -1,3 +1,5 @@
+Require Import Utf8 NPeano QArith.
+
 Theorem nat_archimedean : ∀ a b, (0 < a → ∃ n, n * a > b)%nat.
 Proof.
 intros * Ha.
@@ -50,7 +52,7 @@ destruct b as [| b| b].
  now apply Z.lt_gt.
 
  destruct a as [| a| a]; [ easy | | ].
-  specialize (nat_archimedean a b) as H.
+  specialize (Pos_archimedean a b) as (m, Hm).
 
 bbb.
 
