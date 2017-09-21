@@ -47,13 +47,15 @@ Proof.
 intros * Ha.
 destruct b as [| b| b].
  exists 1%nat.
- replace (Z.of_nat 1) with 1%Z by easy.
  rewrite Z.mul_1_l.
  now apply Z.lt_gt.
 
  destruct a as [| a| a]; [ easy | | ].
   specialize (Pos_archimedean a b) as (m, Hm).
-
+  exists m.
+  apply Pos2Nat.inj_gt in Hm.
+  rewrite Pos2Nat.inj_mul in Hm.
+  rewrite Nat2Pos.id in Hm.
 bbb.
 
 Theorem Q_archimedean : ∀ a b, 0 < a → ∃ n, (n # 1) * a > b.
