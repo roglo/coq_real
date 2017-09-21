@@ -78,11 +78,12 @@ Proof.
 intros (an, ad) (bn, bd) Ha.
 unfold Qlt in Ha; simpl in Ha.
 rewrite Z.mul_1_r in Ha.
-enough (Hab : (0 < an * ' bd)%Z).
- specialize (Z_archimedean (an * ' bd) (bn * ' ad) Hab) as (m, Hm).
- exists m; simpl.
- unfold Qmult; simpl.
- apply Qmult_lt_r with (z := (' ad # 1) * (' bd # 1)).
-  unfold Qmult; simpl.
+assert (Hab : (0 < an * ' bd)%Z) by now apply Z.mul_pos_pos.
+specialize (Z_archimedean (an * ' bd) (bn * ' ad) Hab) as (m, Hm).
+exists m; simpl.
+unfold Qmult; simpl.
+unfold Qlt; simpl.
+apply Zgt_lt.
+now rewrite Z.mul_assoc in Hm.
+Qed.
 
-bbb.
