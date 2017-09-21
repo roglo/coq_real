@@ -52,14 +52,30 @@ destruct b as [| b| b].
 
  destruct a as [| a| a]; [ easy | | ].
   specialize (Pos_archimedean a b) as (m, Hm).
-  exists m.
+  destruct m; [ now exists 1%nat | ].
+  exists (S m).
   apply Pos2Nat.inj_gt in Hm.
   rewrite Pos2Nat.inj_mul in Hm.
-  rewrite Nat2Pos.id in Hm.
-bbb.
+  rewrite Nat2Pos.id in Hm; [ | apply Nat.neq_succ_0 ].
+  rewrite <- positive_nat_Z.
+  rewrite <- Nat2Z.inj_mul.
+  rewrite <- positive_nat_Z.
+  now apply Nat2Z.inj_gt.
+
+  apply Z.nle_gt in Ha.
+  exfalso; apply Ha.
+  apply Pos2Z.neg_is_nonpos.
+
+ exists 1%nat.
+ rewrite Z.mul_1_l.
+ apply Z.lt_gt.
+ eapply Z.lt_trans; [ | eassumption ].
+ apply Pos2Z.neg_is_neg.
+Qed.
 
 Theorem Q_archimedean : ∀ a b, 0 < a → ∃ n, (n # 1) * a > b.
 Proof.
 intros (an, ad) (bn, bd) Ha.
-specialize (nat_archimedean (an * bd) (bn * ad)) as H.
+specialize (Z_archimedean (an * ' bd) (bn * ' ad)) as H.
+
 bbb.
