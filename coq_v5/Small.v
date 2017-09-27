@@ -24,18 +24,16 @@ induction n.
  destruct (Nat.eq_dec (S n) (r * (i + 2))) as [Hn| Hn].
   rewrite Hn.
   remember (r * (i + 2) - (i + 1)) as a eqn:Ha.
-  replace (r * (i + 2) * (r - 1) + r) with (r * a).
+  replace r with (r * 1) at 3 by apply Nat.mul_1_r.
+  rewrite <- Nat.mul_assoc.
+  rewrite <- Nat.mul_add_distr_l.
+  replace ((i + 2) * (r - 1) + 1) with a.
 
 Focus 2.
    subst a.
-   do 2 rewrite Nat.mul_sub_distr_l.
-   rewrite Nat.mul_assoc.
-   do 3 rewrite Nat.mul_add_distr_l.
-   do 2 rewrite Nat.mul_1_r.
+   rewrite Nat.mul_sub_distr_l.
+   rewrite Nat.mul_1_r.
+   rewrite Nat.mul_add_distr_l.
    rewrite Nat.mul_add_distr_r.
-   rewrite Nat.mul_shuffle0.
-   replace (r * 2 * r) with (r * r * 2) by apply Nat.mul_shuffle0.
-   do 2 rewrite Nat.sub_add_distr.
-   remember (r * i * r + r * r * 2 - r * i) as a.
    rewrite <- Nat.add_sub_swap.
 bbb.
