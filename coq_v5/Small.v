@@ -1,4 +1,4 @@
-Require Import Utf8 NPeano.
+Require Import Utf8 NPeano ArithRing.
 
 Notation "a ^ b" := (Nat.pow a b).
 
@@ -31,9 +31,8 @@ induction n.
 
 Focus 2.
    subst a.
-   rewrite Nat.mul_sub_distr_l.
-   rewrite Nat.mul_1_r.
-   rewrite Nat.mul_add_distr_l.
-   rewrite Nat.mul_add_distr_r.
-   rewrite <- Nat.add_sub_swap.
+   destruct r; [ easy | ].
+   apply Nat.add_sub_eq_l.
+   rewrite Nat.sub_succ, Nat.sub_0_r.
+   ring.
 bbb.
