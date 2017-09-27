@@ -30,15 +30,12 @@ induction n.
   replace ((i + 2) * (r - 1) + 1) with a.
    assert (Ha3 : a ≥ 3).
     subst a; clear -Hr.
+    destruct r; [ easy | simpl ].
+    apply Nat.succ_le_mono in Hr.
+    destruct r; [ easy | clear Hr ].
+    do 2 rewrite Nat.add_succ_r.
+    rewrite Nat.add_0_r.
 bbb.
-
-   clear -Hr.
-   induction a.
-    rewrite Nat.mul_0_r.
-    apply Nat.lt_0_1.
-
-    rewrite Nat.mul_comm; simpl; rewrite Nat.mul_comm.
-
 
 Focus 2.
    subst a.
