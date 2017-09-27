@@ -35,6 +35,14 @@ induction n.
     destruct r; [ easy | clear Hr ].
     do 2 rewrite Nat.add_succ_r.
     rewrite Nat.add_0_r.
+    rewrite Nat.add_sub_swap; [ | apply Nat.le_succ_diag_r ].
+    rewrite Nat.sub_succ.
+    rewrite Nat.sub_succ_l; [ | easy ].
+    rewrite Nat.sub_diag; simpl.
+    do 3 apply -> Nat.succ_le_mono.
+    apply Nat.le_0_l.
+
+    clear -Hr Ha3.
 bbb.
 
 Focus 2.
