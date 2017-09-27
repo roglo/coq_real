@@ -34,7 +34,8 @@ Focus 2.
    do 2 rewrite Nat.mul_1_r.
    rewrite Nat.mul_add_distr_r.
    rewrite Nat.mul_shuffle0.
-   replace (r * 2 * r) with (r * r * 2).
+   replace (r * 2 * r) with (r * r * 2) by apply Nat.mul_shuffle0.
    do 2 rewrite Nat.sub_add_distr.
    remember (r * i * r + r * r * 2 - r * i) as a.
+   rewrite <- Nat.add_sub_swap.
 bbb.
