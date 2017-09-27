@@ -28,6 +28,17 @@ induction n.
   rewrite <- Nat.mul_assoc.
   rewrite <- Nat.mul_add_distr_l.
   replace ((i + 2) * (r - 1) + 1) with a.
+   assert (Ha3 : a ≥ 3).
+    subst a; clear -Hr.
+bbb.
+
+   clear -Hr.
+   induction a.
+    rewrite Nat.mul_0_r.
+    apply Nat.lt_0_1.
+
+    rewrite Nat.mul_comm; simpl; rewrite Nat.mul_comm.
+
 
 Focus 2.
    subst a.
