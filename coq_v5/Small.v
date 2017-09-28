@@ -62,32 +62,23 @@ induction n.
       apply Nat.neq_sym in Ha.
       assert (Ha2: a ≥ 3) by now apply Nat_le_neq_lt.
       specialize (IHa Ha2).
+      simpl.
+      destruct r; [ easy | ].
+      apply Nat.succ_le_mono in Hr.
+      apply Mult.mult_S_lt_compat_l.
+      eapply Nat.le_lt_trans; [ | eassumption ].
+      rewrite <- Nat.add_1_r; simpl.
+      apply Nat.add_le_mono; [ easy | ].
+      destruct r; [ easy | simpl ].
+      destruct a; [ easy | simpl ].
+      apply -> Nat.succ_le_mono.
+      apply Nat.le_0_l.
 
-bbb.
-
-    destruct a; [ easy | simpl ].
-    destruct r; [ easy | ].
-    apply Mult.mult_S_lt_compat_l.
-    apply Nat.succ_le_mono in Ha3.
-    apply Nat.succ_le_mono in Hr.
-destruct a; [ easy | simpl ].
-apply Nat.succ_le_mono in Ha3.
-destruct a; [ easy | simpl ].
-clear Ha3.
-destruct r; [ easy | simpl ].
-clear Hr.
-do 3 rewrite <- Nat.add_1_r.
-do 2 rewrite <- Nat.add_assoc.
-simpl.
-remember (a + 3) as b.
-do 2 rewrite <- Nat.add_1_r.
-do 2 rewrite <- Nat.add_assoc; simpl.
-bbb.
-
-Focus 2.
    subst a.
    destruct r; [ easy | ].
    apply Nat.add_sub_eq_l.
    rewrite Nat.sub_succ, Nat.sub_0_r.
    ring.
+
+  simpl.
 bbb.
