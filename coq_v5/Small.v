@@ -1,13 +1,13 @@
-Require Import Utf8 NPeano ArithRing.
+Require Import Utf8 Arith NPeano.
 
 Notation "a ^ b" := (Nat.pow a b).
 
-Theorem Nat_sub_sub_swap : ∀ a b c, a - b - c = a - c - b.
+Theorem Nat_le_neq_lt : ∀ a b, a ≤ b → a ≠ b → a < b.
 Proof.
-intros.
-do 2 rewrite <- Nat.sub_add_distr.
-f_equal.
-apply Nat.add_comm.
+intros a b Hab Hnab.
+apply le_lt_eq_dec in Hab.
+destruct Hab as [Hle| Heq]; [ assumption | idtac ].
+exfalso; apply Hnab; assumption.
 Qed.
 
 Theorem small : ∀ r, r ≥ 2 →
@@ -43,11 +43,45 @@ induction n.
     apply Nat.le_0_l.
 
     clear -Hr Ha3.
+    induction a; [ easy | ].
+     apply Nat.succ_le_mono in Ha3.
+     destruct (Nat.eq_dec a 2) as [Ha| Ha].
+      clear IHa Ha3.
+      subst a; simpl.
+      rewrite Nat.mul_1_r.
+      destruct r; [ easy | ].
+      apply Nat.succ_le_mono in Hr.
+      apply Mult.mult_S_lt_compat_l; simpl.
+      apply Lt.lt_n_S.
+      rewrite Nat.mul_comm; simpl.
+      destruct r; [ easy | clear Hr; simpl ].
+      do 3 rewrite Nat.add_succ_r.
+      do 2 apply -> Nat.succ_lt_mono.
+      apply Nat.lt_0_succ.
+
+      apply Nat.neq_sym in Ha.
+      assert (Ha2: a ≥ 3) by now apply Nat_le_neq_lt.
+      specialize (IHa Ha2).
+
+bbb.
+
     destruct a; [ easy | simpl ].
     destruct r; [ easy | ].
     apply Mult.mult_S_lt_compat_l.
     apply Nat.succ_le_mono in Ha3.
     apply Nat.succ_le_mono in Hr.
+destruct a; [ easy | simpl ].
+apply Nat.succ_le_mono in Ha3.
+destruct a; [ easy | simpl ].
+clear Ha3.
+destruct r; [ easy | simpl ].
+clear Hr.
+do 3 rewrite <- Nat.add_1_r.
+do 2 rewrite <- Nat.add_assoc.
+simpl.
+remember (a + 3) as b.
+do 2 rewrite <- Nat.add_1_r.
+do 2 rewrite <- Nat.add_assoc; simpl.
 bbb.
 
 Focus 2.
