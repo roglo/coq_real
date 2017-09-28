@@ -43,6 +43,13 @@ induction n.
     apply Nat.le_0_l.
 
     clear -Hr Ha3.
+    destruct a; [ easy | simpl ].
+    destruct r; [ easy | ].
+    apply Mult.mult_S_lt_compat_l.
+    apply Nat.succ_le_mono in Ha3.
+    destruct a; [ easy | ].
+    apply Nat.succ_le_mono in Ha3.
+    destruct a; [ easy | simpl ].
 bbb.
 
 Focus 2.
