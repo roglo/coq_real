@@ -108,10 +108,6 @@ induction n.
      apply Nat.mul_le_mono; lia.
 
     remember (n - (i + 1)) as b.
-    assert (Hb : b > 0).
-     subst b.
-bbb.
-
     remember (S b) as bb; simpl; subst bb.
     rewrite <- Nat.add_assoc.
     remember (n * ( r - 1) + r) as a.
