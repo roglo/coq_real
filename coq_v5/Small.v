@@ -107,10 +107,40 @@ induction n.
 
      apply Nat.mul_le_mono; lia.
 
-    simpl.
+    remember (n - (i + 1)) as b.
+    assert (Hb : b > 0).
+     subst b.
+bbb.
+
+    remember (S b) as bb; simpl; subst bb.
     rewrite <- Nat.add_assoc.
     remember (n * ( r - 1) + r) as a.
-    remember (n - (i + 1)) as b.
+    apply Nat.lt_le_trans with (m := r - 1 + r ^ b); [ lia | ].
+    clear -Hr.
+    destruct r; [ easy | ].
+    rewrite Nat.sub_succ, Nat.sub_0_r.
+    induction b; [ simpl; rewrite Nat.mul_1_r; lia | ].
+    remember (S (S b)) as bb; simpl; subst bb.
+    apply Nat.le_trans with (m := S r ^ S b + r * S r ^ b).
+    rewrite Nat.add_assoc, Nat.add_shuffle0.
+    apply Nat.add_le_mono.
+     simpl.
+     apply Nat.add_le_mono; [ | easy ].
+bbb.
+
+
+    apply Nat.le_trans with (m := r * S r ^ b + S r ^ S b).
+
+
+    apply Nat.le_trans with (m := 
+
+
+bbb.
+
+destruct r; [ easy | ].
+rewrite Nat.sub_succ.
+rewrite Nat.sub_0_r.
+simpl.
 bbb.
     remember (S n) as m; simpl; subst m.
 
