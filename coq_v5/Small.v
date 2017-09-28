@@ -107,7 +107,15 @@ induction n.
 
      apply Nat.mul_le_mono; lia.
 
+    simpl.
+    rewrite <- Nat.add_assoc.
+    remember (n * ( r - 1) + r) as a.
+    remember (n - (i + 1)) as b.
+bbb.
     remember (S n) as m; simpl; subst m.
+
+    apply Nat.le_trans with (m :=
+
 bbb.
     rewrite Nat.sub_add_distr.
     rewrite Nat_sub_sub_swap.
