@@ -47,9 +47,7 @@ induction n.
     destruct r; [ easy | ].
     apply Mult.mult_S_lt_compat_l.
     apply Nat.succ_le_mono in Ha3.
-    destruct a; [ easy | ].
-    apply Nat.succ_le_mono in Ha3.
-    destruct a; [ easy | simpl ].
+    apply Nat.succ_le_mono in Hr.
 bbb.
 
 Focus 2.
