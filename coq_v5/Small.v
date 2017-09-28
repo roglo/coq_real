@@ -1,4 +1,4 @@
-Require Import Utf8 Arith NPeano.
+Require Import Utf8 Arith NPeano Psatz.
 
 Notation "a ^ b" := (Nat.pow a b).
 
@@ -95,10 +95,20 @@ induction n.
    now apply Nat_le_neq_lt.
 
    specialize (IHn Hn2).
+   rewrite Nat.sub_succ_l.
+Focus 2.
+eapply Nat.le_trans; [ | apply Hn2 ].
+Unfocus.
+simpl.
+eapply
+
+bbb,
+
    rewrite Nat.sub_add_distr.
    rewrite Nat_sub_sub_swap.
    rewrite Nat.sub_succ, Nat.sub_0_r.
    simpl.
+bbb.
    apply Nat.lt_trans with (m := r - 1 + r ^ (n - (i + 1))).
 Focus 2.
 rewrite Nat.sub_add_distr.
@@ -111,6 +121,10 @@ subst r; easy.
 now rewrite Nat.add_comm in H.
 rewrite Nat_sub_sub_swap.
 rewrite Nat.sub_succ, Nat.sub_0_r.
-
-
+destruct i.
+simpl.
+rewrite Nat.sub_0_r.
+simpl in IHn.
+rewrite Nat.sub_0_r in IHn.
+rewrite <- Nat.add_sub_swap; [ | lia ].
 bbb.
