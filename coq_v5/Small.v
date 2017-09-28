@@ -96,17 +96,22 @@ induction n.
 
    specialize (IHn Hn2).
    rewrite Nat.sub_succ_l.
-Focus 2.
-eapply Nat.le_trans; [ | apply Hn2 ].
-Unfocus.
-simpl.
-eapply
+    Focus 2.
+    eapply Nat.le_trans; [ | apply Hn2 ].
+    apply Nat.le_trans with (m := r * (i + 1)).
+     rewrite Nat.mul_add_distr_l.
+     rewrite Nat.mul_1_r.
+     apply Nat.add_le_mono; [ | lia ].
+     replace i with (1 * i) at 1 by lia.
+     apply Nat.mul_le_mono; lia.
 
-bbb,
+     apply Nat.mul_le_mono; lia.
 
-   rewrite Nat.sub_add_distr.
-   rewrite Nat_sub_sub_swap.
-   rewrite Nat.sub_succ, Nat.sub_0_r.
+    remember (S n) as m; simpl; subst m.
+bbb.
+    rewrite Nat.sub_add_distr.
+    rewrite Nat_sub_sub_swap.
+    rewrite Nat.sub_succ, Nat.sub_0_r.
    simpl.
 bbb.
    apply Nat.lt_trans with (m := r - 1 + r ^ (n - (i + 1))).
