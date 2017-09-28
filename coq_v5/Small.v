@@ -10,6 +10,14 @@ destruct Hab as [Hle| Heq]; [ assumption | idtac ].
 exfalso; apply Hnab; assumption.
 Qed.
 
+Theorem Nat_sub_sub_swap : ∀ a b c, a - b - c = a - c - b.
+Proof.
+intros.
+do 2 rewrite <- Nat.sub_add_distr.
+f_equal.
+apply Nat.add_comm.
+Qed.
+
 Theorem small : ∀ r, r ≥ 2 →
   ∀ i n, n ≥ r * (i + 2) → n * (r - 1) + r < r ^ (n - (i + 1)).
 Proof.
@@ -80,5 +88,29 @@ induction n.
    rewrite Nat.sub_succ, Nat.sub_0_r.
    ring.
 
-  simpl.
+  simpl in r.
+  apply Nat.neq_sym in Hn.
+  assert (Hn2 : n ≥ r * ( i + 2)).
+   apply lt_n_Sm_le.
+   now apply Nat_le_neq_lt.
+
+   specialize (IHn Hn2).
+   rewrite Nat.sub_add_distr.
+   rewrite Nat_sub_sub_swap.
+   rewrite Nat.sub_succ, Nat.sub_0_r.
+   simpl.
+   apply Nat.lt_trans with (m := r - 1 + r ^ (n - (i + 1))).
+Focus 2.
+rewrite Nat.sub_add_distr.
+destruct n.
+apply le_n_0_eq in Hn2.
+symmetry in Hn2.
+apply mult_is_O in Hn2.
+destruct Hn2.
+subst r; easy.
+now rewrite Nat.add_comm in H.
+rewrite Nat_sub_sub_swap.
+rewrite Nat.sub_succ, Nat.sub_0_r.
+
+
 bbb.
