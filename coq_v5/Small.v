@@ -60,7 +60,30 @@ destruct (Nat.eq_dec b 0) as [Hb| Hb].
  subst b; simpl.
  rewrite Nat.mul_1_r.
  clear IHb.
-bbb.
+ induction a; [ easy | ].
+ destruct a; [ easy | simpl; lia ].
+
+ assert (Hb1 : b ≥ 1) by lia.
+ specialize (IHb Hb1); simpl.
+ apply Nat.lt_le_trans with (m := a * (a ^ b + (a - 1))).
+  rewrite Nat.mul_add_distr_l.
+  apply Nat.add_le_lt_mono; [ easy | ].
+  destruct a; [ easy | simpl ].
+  rewrite Nat.sub_0_r.
+  apply Nat.succ_le_mono in Ha.
+  destruct a; [ easy | simpl; lia ].
+
+  apply Nat.mul_le_mono_nonneg_l; [ lia | ].
+  destruct a; [ easy | ].
+  rewrite Nat.sub_succ, Nat.sub_0_r; simpl.
+  apply Nat.add_le_mono; [ easy | ].
+  destruct b; [ easy | ].
+  apply Nat.succ_le_mono in Ha.
+  replace a with (a * 1) at 1 by lia.
+  apply Nat.mul_le_mono; [ easy | ].
+  replace 1 with (S a ^ 0) by easy.
+  apply Nat.pow_le_mono_r; [ easy | lia ].
+Qed.
 
 Theorem small : ∀ r, r ≥ 2 →
   ∀ i n, n ≥ r * (i + 2) → n * (r - 1) + r < r ^ (n - (i + 1)).
@@ -108,6 +131,8 @@ assert (Hni : n ≥ i + 1).
 
     rewrite Nat.add_comm.
     apply pow_lt_pow_succ; lia.
+
+  rewrite Nat.mul_1_l.
 bbb.
 
 intros r Hr * Hnr.
