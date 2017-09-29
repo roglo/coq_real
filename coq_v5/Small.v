@@ -56,6 +56,26 @@ Theorem small : ∀ r, r ≥ 2 →
   ∀ i n, n ≥ r * (i + 2) → n * (r - 1) + r < r ^ (n - (i + 1)).
 Proof.
 intros r Hr * Hnr.
+assert (Hni : n ≥ i + 1).
+ destruct r; [ easy | ].
+ simpl in Hnr; lia.
+
+ remember (n - (i + 1)) as m eqn:Hm.
+ assert (Hn : n = m + (i + 1)) by lia.
+ subst n; clear Hm Hni.
+ apply Nat.sub_le_mono_r with (p := i + 1) in Hnr.
+ rewrite Nat.add_sub in Hnr.
+ replace (i + 1) with (1 * (i + 1)) in Hnr by lia.
+ replace (r * (i + 2)) with (r * (i + 1) + r) in Hnr by lia.
+ rewrite Nat.add_sub_swap in Hnr.
+  rewrite <- Nat.mul_sub_distr_r in Hnr.
+  rewrite Nat.mul_add_distr_r.
+  rewrite <- Nat.add_assoc.
+  rewrite Nat.mul_comm in Hnr.
+  remember ((i + 1) * (r - 1) + r) as b eqn:Hb.
+bbb.
+
+intros r Hr * Hnr.
 induction n.
  exfalso.
  apply Nat.le_0_r in Hnr.
