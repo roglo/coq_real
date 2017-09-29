@@ -52,6 +52,11 @@ induction b; [ easy | ].
   apply Nat.le_0_l.
 Qed.
 
+Theorem pow_lt_pow_succ : ∀ a b, a ^ b + (a - 1) < a ^ S b.
+Proof.
+intros.
+bbb.
+
 Theorem small : ∀ r, r ≥ 2 →
   ∀ i n, n ≥ r * (i + 2) → n * (r - 1) + r < r ^ (n - (i + 1)).
 Proof.
@@ -97,6 +102,8 @@ assert (Hni : n ≥ i + 1).
     now apply Nat.add_le_lt_mono.
 
     rewrite Nat.add_comm.
+    apply pow_lt_pow_succ.
+
 bbb.
 
 intros r Hr * Hnr.
