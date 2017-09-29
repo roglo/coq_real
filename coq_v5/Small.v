@@ -92,6 +92,11 @@ assert (Hni : n ≥ i + 1).
    apply Nat_le_neq_lt in Hbm; [ | easy ].
    apply Nat.succ_le_mono in Hbm.
    specialize (IHm Hbm).
+   apply Nat.lt_trans with (m := r - 1 + r ^ m).
+    simpl; rewrite <- Nat.add_assoc.
+    now apply Nat.add_le_lt_mono.
+
+    rewrite Nat.add_comm.
 bbb.
 
 intros r Hr * Hnr.
