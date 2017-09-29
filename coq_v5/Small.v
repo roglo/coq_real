@@ -18,6 +18,40 @@ f_equal.
 apply Nat.add_comm.
 Qed.
 
+Theorem Nat_mul_lt_pow : ∀ a b, a ≥ 2 → b ≥ 3 → a * b < a ^ b.
+Proof.
+intros a b Ha2 Hb3.
+induction b; [ easy | ].
+ apply Nat.succ_le_mono in Hb3.
+ destruct (Nat.eq_dec b 2) as [Ha| Ha].
+  subst b; simpl.
+  rewrite Nat.mul_1_r.
+  destruct a; [ easy | ].
+  apply Nat.succ_le_mono in Ha2.
+  apply Mult.mult_S_lt_compat_l; simpl.
+  apply Lt.lt_n_S.
+  rewrite Nat.mul_comm; simpl.
+  destruct a; [ easy | clear Ha2; simpl ].
+  do 3 rewrite Nat.add_succ_r.
+  do 2 apply -> Nat.succ_lt_mono.
+  apply Nat.lt_0_succ.
+
+  apply Nat.neq_sym in Ha.
+  assert (Hb: b ≥ 3) by now apply Nat_le_neq_lt.
+  specialize (IHb Hb).
+  simpl.
+  destruct a; [ easy | ].
+  apply Nat.succ_le_mono in Ha2.
+  apply Mult.mult_S_lt_compat_l.
+  eapply Nat.le_lt_trans; [ | eassumption ].
+  rewrite <- Nat.add_1_r; simpl.
+  apply Nat.add_le_mono; [ easy | ].
+  destruct a; [ easy | simpl ].
+  destruct b; [ easy | simpl ].
+  apply -> Nat.succ_le_mono.
+  apply Nat.le_0_l.
+Qed.
+
 Theorem small : ∀ r, r ≥ 2 →
   ∀ i n, n ≥ r * (i + 2) → n * (r - 1) + r < r ^ (n - (i + 1)).
 Proof.
@@ -36,51 +70,19 @@ induction n.
   rewrite <- Nat.mul_assoc.
   rewrite <- Nat.mul_add_distr_l.
   replace ((i + 2) * (r - 1) + 1) with a.
-   assert (Ha3 : a ≥ 3).
-    subst a; clear -Hr.
-    destruct r; [ easy | simpl ].
-    apply Nat.succ_le_mono in Hr.
-    destruct r; [ easy | clear Hr ].
-    do 2 rewrite Nat.add_succ_r.
-    rewrite Nat.add_0_r.
-    rewrite Nat.add_sub_swap; [ | apply Nat.le_succ_diag_r ].
-    rewrite Nat.sub_succ.
-    rewrite Nat.sub_succ_l; [ | easy ].
-    rewrite Nat.sub_diag; simpl.
-    do 3 apply -> Nat.succ_le_mono.
-    apply Nat.le_0_l.
-
-    clear -Hr Ha3.
-    induction a; [ easy | ].
-     apply Nat.succ_le_mono in Ha3.
-     destruct (Nat.eq_dec a 2) as [Ha| Ha].
-      clear IHa Ha3.
-      subst a; simpl.
-      rewrite Nat.mul_1_r.
-      destruct r; [ easy | ].
-      apply Nat.succ_le_mono in Hr.
-      apply Mult.mult_S_lt_compat_l; simpl.
-      apply Lt.lt_n_S.
-      rewrite Nat.mul_comm; simpl.
-      destruct r; [ easy | clear Hr; simpl ].
-      do 3 rewrite Nat.add_succ_r.
-      do 2 apply -> Nat.succ_lt_mono.
-      apply Nat.lt_0_succ.
-
-      apply Nat.neq_sym in Ha.
-      assert (Ha2: a ≥ 3) by now apply Nat_le_neq_lt.
-      specialize (IHa Ha2).
-      simpl.
-      destruct r; [ easy | ].
-      apply Nat.succ_le_mono in Hr.
-      apply Mult.mult_S_lt_compat_l.
-      eapply Nat.le_lt_trans; [ | eassumption ].
-      rewrite <- Nat.add_1_r; simpl.
-      apply Nat.add_le_mono; [ easy | ].
-      destruct r; [ easy | simpl ].
-      destruct a; [ easy | simpl ].
-      apply -> Nat.succ_le_mono.
-      apply Nat.le_0_l.
+   apply Nat_mul_lt_pow; [ easy | ].
+   subst a; clear -Hr.
+   destruct r; [ easy | simpl ].
+   apply Nat.succ_le_mono in Hr.
+   destruct r; [ easy | clear Hr ].
+   do 2 rewrite Nat.add_succ_r.
+   rewrite Nat.add_0_r.
+   rewrite Nat.add_sub_swap; [ | apply Nat.le_succ_diag_r ].
+   rewrite Nat.sub_succ.
+   rewrite Nat.sub_succ_l; [ | easy ].
+   rewrite Nat.sub_diag; simpl.
+   do 3 apply -> Nat.succ_le_mono.
+   apply Nat.le_0_l.
 
    subst a.
    destruct r; [ easy | ].
