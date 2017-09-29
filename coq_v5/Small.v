@@ -52,9 +52,14 @@ induction b; [ easy | ].
   apply Nat.le_0_l.
 Qed.
 
-Theorem pow_lt_pow_succ : ∀ a b, a ^ b + (a - 1) < a ^ S b.
+Theorem pow_lt_pow_succ : ∀ a b, a ≥ 2 → b ≥ 1 → a ^ b + (a - 1) < a ^ S b.
 Proof.
-intros.
+intros * Ha Hb.
+induction b; [ easy | clear Hb ].
+destruct (Nat.eq_dec b 0) as [Hb| Hb].
+ subst b; simpl.
+ rewrite Nat.mul_1_r.
+ clear IHb.
 bbb.
 
 Theorem small : ∀ r, r ≥ 2 →
@@ -102,8 +107,7 @@ assert (Hni : n ≥ i + 1).
     now apply Nat.add_le_lt_mono.
 
     rewrite Nat.add_comm.
-    apply pow_lt_pow_succ.
-
+    apply pow_lt_pow_succ; lia.
 bbb.
 
 intros r Hr * Hnr.
