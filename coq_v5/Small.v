@@ -82,6 +82,16 @@ assert (Hni : n ≥ i + 1).
    rewrite Nat.mul_comm.
    apply Nat_mul_lt_pow; [ easy | ].
    rewrite Hb.
+   apply Nat.le_trans with (m := (i + 1) * (r - 1) + 2).
+    do 2 rewrite Nat.add_succ_r.
+    do 2 apply -> Nat.succ_le_mono.
+    rewrite Nat.add_0_r, Nat.mul_add_distr_r; lia.
+
+    now apply Nat.add_le_mono_l.
+
+   apply Nat_le_neq_lt in Hbm; [ | easy ].
+   apply Nat.succ_le_mono in Hbm.
+   specialize (IHm Hbm).
 bbb.
 
 intros r Hr * Hnr.
