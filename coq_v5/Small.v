@@ -73,6 +73,15 @@ assert (Hni : n ≥ i + 1).
   rewrite <- Nat.add_assoc.
   rewrite Nat.mul_comm in Hnr.
   remember ((i + 1) * (r - 1) + r) as b eqn:Hb.
+  induction m; [ simpl; lia | ].
+  destruct (Nat.eq_dec b (S m)) as [Hbm| Hbm].
+   replace b with (b * 1) by lia.
+   move Hbm at top; subst b.
+   rewrite <- Nat.mul_add_distr_l.
+   rewrite Nat.sub_add; [ | lia ].
+   rewrite Nat.mul_comm.
+   apply Nat_mul_lt_pow; [ easy | ].
+   rewrite Hb.
 bbb.
 
 intros r Hr * Hnr.
