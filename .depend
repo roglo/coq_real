@@ -1,0 +1,4 @@
+Archimedean.vio: Archimedean.v
+Archimedean.vo Archimedean.glob Archimedean.v.beautified: Archimedean.v
+Small.vio: Small.v
+Small.vo Small.glob Small.v.beautified: Small.v
