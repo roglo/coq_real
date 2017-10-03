@@ -34,6 +34,23 @@ apply digit_eq_eq in H; subst b.
 now apply Hab.
 Qed.
 
+(* Oracle Limited Principle of Omniscience *)
+
+Axiom OLPO : ∀ (u : nat → nat), (∀ i, u i = O) + { i : nat | u i ≠ O }.
+
+Fixpoint first_such_that (P : nat → bool) n i :=
+  match n with
+  | O => i
+  | S n' => if P i then i else first_such_that P n' (S i)
+  end.
+
+...
+
 (* Frac Real *)
 
 Record FracReal {r : radix} := { freal : nat → digit }.
+
+Definition frac_real_eq {r : radix} (a b : FracReal) :=
+  match OLPO
+
+  ∀ i, freal a i = freal b i.
