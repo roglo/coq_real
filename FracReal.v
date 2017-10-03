@@ -64,6 +64,12 @@ split.
  simpl in Hj.
  apply Nat.eqb_eq in Hb.
  destruct k; [ easy | ].
+ apply IHi with (u := λ i, u (S i)); [ easy | | now apply Nat.lt_succ_l ].
+ subst j.
+ destruct i; simpl in Hk; simpl.
+  now apply Nat.succ_lt_mono in Hk.
+
+(* ouais, bon, faut generaliser le machin *)
 bbb.
 
 
