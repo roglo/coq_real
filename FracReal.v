@@ -51,7 +51,7 @@ Theorem O_LPO_fst : ∀ (u : nat → nat),
 Proof.
 intros.
 specialize (O_LPO u) as [H| (i, Hi)]; [ now left | right ].
-remember (first_such_that (λ i, u i =? 0) i 0) as j eqn:Hj.
+remember (first_such_that (λ i, negb (Nat.eqb (u i) 0)) i 0) as j eqn:Hj.
 exists j.
 split.
  intros k Hk.
@@ -60,14 +60,17 @@ split.
  simpl in Hj.
  remember (u 0 =? 0) as b eqn:Hb.
  symmetry in Hb.
- destruct b; [ now subst j | ].
- apply Nat.eqb_neq in Hb.
- destruct k.
-  destruct i.
-   simpl in Hj.
-   subst j.
-   specialize (IHi u 0 Hb).
-(* ah merde *)
+ destruct b; [ | now subst j ].
+ simpl in Hj.
+ apply Nat.eqb_eq in Hb.
+ destruct k; [ easy | ].
+ apply IHi with (u := λ i, u (S i)); [ easy | | now apply Nat.lt_succ_l ].
+ destruct i.
+  rewrite Hj in Hk; simpl in Hk.
+  now apply Nat.succ_lt_mono in Hk.
+
+  simpl in Hj; simpl.
+(* faut que je réfléchisse... *)
 bbb.
 
  set (v i := u (S i)).
