@@ -64,6 +64,55 @@ split.
  simpl in Hj.
  apply Nat.eqb_eq in Hb.
  destruct k; [ easy | ].
+bbb.
+
+
+destruct i.
+ simpl in Hj.
+ rewrite Hj in Hk.
+ now apply Nat.succ_lt_mono in Hk.
+
+ destruct i.
+  simpl in Hj.
+  remember (u 1 =? 0) as b1 eqn:Hb1.
+  symmetry in Hb1.
+  destruct b1; simpl in Hj.
+  apply Nat.eqb_eq in Hb1.
+  subst j.
+  apply Nat.succ_lt_mono in Hk.
+  destruct k; [ easy | ].
+  now apply Nat.succ_lt_mono in Hk.
+  subst j.
+  now apply Nat.succ_lt_mono in Hk.
+
+  destruct i.
+   simpl in Hj.
+   remember (u 1 =? 0) as b1 eqn:Hb1.
+   symmetry in Hb1.
+   destruct b1; simpl in Hj.
+    apply Nat.eqb_eq in Hb1.
+    remember (u 2 =? 0) as b2 eqn:Hb2.
+    symmetry in Hb2.
+    destruct b2; simpl in Hj.
+     apply Nat.eqb_eq in Hb2.
+     subst j.
+     apply Nat.succ_lt_mono in Hk.
+     destruct k; [ easy | ].
+     destruct k; [ easy | ].
+     now do 2 apply Nat.succ_lt_mono in Hk.
+
+     apply Nat.eqb_neq in Hb2.
+     subst j.
+     apply Nat.succ_lt_mono in Hk.
+     destruct k; [ easy | ].
+     now apply Nat.succ_lt_mono in Hk.
+
+    apply Nat.eqb_neq in Hb1.
+    subst j.
+    now apply Nat.succ_lt_mono in Hk.
+
+bbb.
+
  apply IHi with (u := λ i, u (S i)); [ easy | | now apply Nat.lt_succ_l ].
  destruct i.
   rewrite Hj in Hk; simpl in Hk.
