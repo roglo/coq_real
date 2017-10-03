@@ -37,7 +37,41 @@ Qed.
 (* Oracle Limited Principle of Omniscience *)
 (* Borrowed from my proof of Puiseux's Theorem *)
 
-Axiom OLPO : ∀ (u : nat → nat), (∀ i, u i = O) + { i : nat | u i ≠ O }.
+Axiom O_LPO : ∀ (u : nat → nat), (∀ i, u i = O) + { i : nat | u i ≠ O }.
+
+Fixpoint first_such_that (P : nat → bool) n i :=
+  match n with
+  | O => i
+  | S n' => if P i then i else first_such_that P n' (S i)
+  end.
+
+Theorem O_LPO_fst : ∀ (u : nat → nat),
+  (∀ i, u i = O) +
+  { i : nat | (∀ j, j < i → u j = 0) ∧ u i ≠ O }.
+Proof.
+intros.
+specialize (O_LPO u) as [H| (i, Hi)]; [ now left | right ].
+remember (first_such_that (λ i, u i =? 0) i 0) as j eqn:Hj.
+exists j.
+split.
+ intros k Hk.
+ revert u k Hi Hj Hk.
+ induction i; intros; [ now subst j | ].
+ simpl in Hj.
+ remember (u 0 =? 0) as b eqn:Hb.
+ symmetry in Hb.
+ destruct b; [ now subst j | ].
+ apply Nat.eqb_neq in Hb.
+ destruct k.
+  destruct i.
+   simpl in Hj.
+   subst j.
+   specialize (IHi u 0 Hb).
+(* ah merde *)
+bbb.
+
+ set (v i := u (S i)).
+ specialize (IHi v k Hi).
 
 bbb.
 
