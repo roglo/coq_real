@@ -1,14 +1,13 @@
 (* Real between 0 and 1, i.e. fractional part of a real. *)
 
 Require Import Utf8 Arith.
-Import Misc.
+Require Import Misc.
 
 (* Digits *)
 
 Class radix := { rad : nat; radi : rad ≥ 2 }.
 Record digit {r : radix} := { dig : nat; digi : dig < rad }.
 
-(*
 Delimit Scope digit_scope with D.
 
 Definition digit_eq {r : radix} (a b : digit) := dig a = dig b.

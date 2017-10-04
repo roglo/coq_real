@@ -1,8 +1,4 @@
-Archimedean.vio: Archimedean.v
-Archimedean.vo Archimedean.glob Archimedean.v.beautified: Archimedean.v
-FracReal.vio: FracReal.v
-FracReal.vo FracReal.glob FracReal.v.beautified: FracReal.v
-Misc.vio: Misc.v
-Misc.vo Misc.glob Misc.v.beautified: Misc.v
-Small.vio: Small.v Misc.vio
-Small.vo Small.glob Small.v.beautified: Small.v Misc.vo
+Archimedean.vo: Archimedean.v
+FracReal.vo: FracReal.v Misc.vo
+Misc.vo: Misc.v
+Small.vo: Small.v Misc.vo
