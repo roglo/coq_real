@@ -95,5 +95,12 @@ Qed.
 
 Record FracReal {r : radix} := { freal : nat → digit }.
 
-Definition frac_real_eq {r : radix} (a b : FracReal) :=
-  match OLPO
+Print first_such_that.
+Print O_LPO.
+Definition frac_real_eq_0 {r : radix} a :=
+  match O_LPO (λ i, dig (freal i)) with
+  | inl _ => true
+  | inr (exist _ n _) =>
+      match first_such_that (λ i, negb (Nat.eqb (a i) digit_9)) 0 n with
+non c'est pas ça...
+bbb.
