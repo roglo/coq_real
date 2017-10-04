@@ -82,142 +82,14 @@ Theorem O_LPO_fst : ∀ (u : nat → nat),
 Proof.
 intros.
 specialize (O_LPO u) as [H| (i, Hi)]; [ now left | right ].
-bbb.
-
 remember (first_such_that (λ i, negb (Nat.eqb (u i) 0)) i 0) as j eqn:Hj.
 exists j.
-split.
- intros k Hk.
-(**)
- destruct i; [ now subst j | ].
- simpl in Hj.
- remember (u 0 =? 0) as b eqn:Hb.
- symmetry in Hb.
- destruct b; simpl in Hj; [ | now subst j ].
- apply Nat.eqb_eq in Hb.
-(**)
- remember 1 as n eqn:Hn in Hj.
- destruct i; simpl in Hj.
-  subst j.
-  destruct k; [ easy | ].
-  now subst n; apply Nat.succ_lt_mono in Hk.
-
-  remember (u n =? 0) as b1 eqn:Hb1.
-  symmetry in Hb1.
-  destruct b1; simpl in Hj.
-   Focus 2.
-   apply Nat.eqb_neq in Hb1.
-   subst j.
-   destruct k; [ easy | ].
-   now subst n; apply Nat.succ_lt_mono in Hk.
-
-   apply Nat.eqb_eq in Hb1.
-(**)
-   destruct i; simpl in Hj.
-    subst j.
-    destruct k; [ easy | ].
-    apply Nat.succ_lt_mono in Hk.
-    destruct k; [ easy | ].
-    now apply Nat.succ_lt_mono in Hk.
-
-    remember (u 2 =? 0) as b2 eqn:Hb2.
-    symmetry in Hb2.
-    destruct b2; simpl in Hj.
-     Focus 2.
-     apply Nat.eqb_neq in Hb2.
-     subst j.
-     destruct k; [ easy | ].
-     apply Nat.succ_lt_mono in Hk.
-     destruct k; [ easy | ].
-     now apply Nat.succ_lt_mono in Hk.
-
-     apply Nat.eqb_eq in Hb2.
-(**)
-     destruct i; simpl in Hj.
-bbb.
-intros.
-specialize (O_LPO u) as [H| (i, Hi)]; [ now left | right ].
-remember (first_such_that (λ i, negb (Nat.eqb (u i) 0)) i 0) as j eqn:Hj.
-exists j.
-split.
- intros k Hk.
- revert u k Hi Hj Hk.
- induction i; intros; [ now subst j | ].
- simpl in Hj.
- remember (u 0 =? 0) as b eqn:Hb.
- symmetry in Hb.
- destruct b; [ | now subst j ].
- simpl in Hj.
- apply Nat.eqb_eq in Hb.
- destruct k; [ easy | ].
- apply IHi with (u := λ i, u (S i)); [ easy | | now apply Nat.lt_succ_l ].
- subst j.
- destruct i; simpl in Hk; simpl.
-  now apply Nat.succ_lt_mono in Hk.
-
-(* ouais, bon, faut generaliser le machin *)
-bbb.
-
-
-destruct i.
- simpl in Hj.
- rewrite Hj in Hk.
- now apply Nat.succ_lt_mono in Hk.
-
- destruct i.
-  simpl in Hj.
-  remember (u 1 =? 0) as b1 eqn:Hb1.
-  symmetry in Hb1.
-  destruct b1; simpl in Hj.
-  apply Nat.eqb_eq in Hb1.
-  subst j.
-  apply Nat.succ_lt_mono in Hk.
-  destruct k; [ easy | ].
-  now apply Nat.succ_lt_mono in Hk.
-  subst j.
-  now apply Nat.succ_lt_mono in Hk.
-
-  destruct i.
-   simpl in Hj.
-   remember (u 1 =? 0) as b1 eqn:Hb1.
-   symmetry in Hb1.
-   destruct b1; simpl in Hj.
-    apply Nat.eqb_eq in Hb1.
-    remember (u 2 =? 0) as b2 eqn:Hb2.
-    symmetry in Hb2.
-    destruct b2; simpl in Hj.
-     apply Nat.eqb_eq in Hb2.
-     subst j.
-     apply Nat.succ_lt_mono in Hk.
-     destruct k; [ easy | ].
-     destruct k; [ easy | ].
-     now do 2 apply Nat.succ_lt_mono in Hk.
-
-     apply Nat.eqb_neq in Hb2.
-     subst j.
-     apply Nat.succ_lt_mono in Hk.
-     destruct k; [ easy | ].
-     now apply Nat.succ_lt_mono in Hk.
-
-    apply Nat.eqb_neq in Hb1.
-    subst j.
-    now apply Nat.succ_lt_mono in Hk.
-
-bbb.
-
- apply IHi with (u := λ i, u (S i)); [ easy | | now apply Nat.lt_succ_l ].
- destruct i.
-  rewrite Hj in Hk; simpl in Hk.
-  now apply Nat.succ_lt_mono in Hk.
-
-  simpl in Hj; simpl.
-(* faut que je réfléchisse... *)
-bbb.
-
- set (v i := u (S i)).
- specialize (IHi v k Hi).
-
-bbb.
+assert (Hui : u (i + 0) ≠ 0) by now rewrite Nat.add_0_r.
+specialize (first_such_that_has_prop u i 0 j Hui Hj) as (Huj, H).
+split; [ | easy ].
+intros k Hkj.
+apply H; [ apply Nat.le_0_l | easy ].
+Qed.
 
 (* Frac Real *)
 
@@ -225,4 +97,3 @@ Record FracReal {r : radix} := { freal : nat → digit }.
 
 Definition frac_real_eq {r : radix} (a b : FracReal) :=
   match OLPO
-*)
