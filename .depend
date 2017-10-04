@@ -4,5 +4,5 @@ FracReal.vio: FracReal.v
 FracReal.vo FracReal.glob FracReal.v.beautified: FracReal.v
 Misc.vio: Misc.v
 Misc.vo Misc.glob Misc.v.beautified: Misc.v
-Small.vio: Small.v
-Small.vo Small.glob Small.v.beautified: Small.v
+Small.vio: Small.v Misc.vio
+Small.vo Small.glob Small.v.beautified: Small.v Misc.vo
