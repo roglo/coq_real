@@ -55,7 +55,7 @@ intros * Hn Hk.
 revert i k Hn Hk; induction n; intros.
  split; [ now subst k | simpl ].
  simpl in Hk; destruct Hk; intros j H1 H2.
- apply lt_not_le in H2; exfalso; apply H2, H1.
+ now apply lt_not_le in H2.
 
  rewrite Nat.add_succ_l, <- Nat.add_succ_r in Hn.
  simpl in Hk.
@@ -68,21 +68,12 @@ revert i k Hn Hk; induction n; intros.
   split; [ apply H2 | intros j H4 H5 ].
   destruct (Nat.eq_dec i j) as [H6| H6]; [ now destruct H6 | ].
   apply H3; [ | easy ].
-  apply Nat_le_neq_lt.
-bbb.
+  now apply Nat_le_neq_lt.
 
-
- destruct (fld_zerop (u i)) as [H1| H1].
-  pose proof IHn (S i) k Hn Hk as H2.
-  destruct H2 as (H2, H3).
-  split; [ apply H2 | intros j (H4, H5) ].
-  destruct (eq_nat_dec i j) as [H6| H6]; [ destruct H6; assumption | ].
-  apply H3; split; [ | assumption ].
-  apply Nat_le_neq_lt; assumption.
-
-  destruct Hk; split; [ assumption | ].
-  intros j (H2, H3).
-  apply lt_not_le in H3; exfalso; apply H3, H2.
+  apply Nat.eqb_neq in Hb.
+  subst k; split; [ easy | ].
+  intros j H2 H3.
+  now apply lt_not_le in H3.
 Qed.
 
 Theorem O_LPO_fst : ∀ (u : nat → nat),
@@ -91,6 +82,8 @@ Theorem O_LPO_fst : ∀ (u : nat → nat),
 Proof.
 intros.
 specialize (O_LPO u) as [H| (i, Hi)]; [ now left | right ].
+bbb.
+
 remember (first_such_that (λ i, negb (Nat.eqb (u i) 0)) i 0) as j eqn:Hj.
 exists j.
 split.
