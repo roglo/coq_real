@@ -6,7 +6,7 @@ Require Import Misc.
 (* Digits *)
 
 Class radix := { rad : nat; radi : rad ≥ 2 }.
-Record digit {r : radix} := { dig : nat; digi : dig < rad }.
+Record digit {r : radix} := mkdig { dig : nat; digi : dig < rad }.
 
 Delimit Scope digit_scope with D.
 
@@ -95,12 +95,17 @@ Qed.
 
 Record FracReal {r : radix} := { freal : nat → digit }.
 
-Print first_such_that.
-Print O_LPO.
-Definition frac_real_eq_0 {r : radix} a :=
-  match O_LPO (λ i, dig (freal i)) with
-  | inl _ => true
-  | inr (exist _ n _) =>
-      match first_such_that (λ i, negb (Nat.eqb (a i) digit_9)) 0 n with
-non c'est pas ça...
-bbb.
+Definition freal_normalize_to_digits {r : radix} x :=
+  λ i,
+  match O_LPO (λ j, pred rad - dig (freal x (i + j + 1))) with
+  | inl _ =>
+      if Nat.eq_dec (dig (freal x i)) (pred rad) then mkdig _ 0 (* proof 0 < rad *)
+      else mkdig _ (S (dig (freal x i))) (* proof < rad *)
+  | inr _ =>
+      x i
+  end.
+
+Definition freal_normalize {r : radix} x :=
+  {| freal := freal_normalize_to_digits x |}.
+
+Check freal_normalize.
