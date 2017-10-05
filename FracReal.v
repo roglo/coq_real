@@ -125,3 +125,8 @@ Definition freal_normalized_eq {r : radix} x y :=
 
 Definition freal_eq {r : radix} x y :=
   freal_normalized_eq (freal_normalize x) (freal_normalize y).
+
+Delimit Scope freal_scope with F.
+
+Notation "a = b" := (freal_eq a b) : freal_scope.
+Notation "a ≠ b" := (¬ freal_eq a b) : freal_scope.
