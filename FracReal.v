@@ -111,8 +111,17 @@ Definition digit_sequence_normalize {r : radix} (u : nat → digit) i :=
       | left P => {| dig := S (dig (u i)); digi := P |}
       | right _ => {| dig := 0; digi := radix_gt_0 |}
       end
-  | inr H => u i
+  | inr _ => u i
  end.
 
 Definition freal_normalize {r : radix} x :=
   {| freal := digit_sequence_normalize (freal x) |}.
+
+Definition freal_normalized_eq {r : radix} x y :=
+  match O_LPO (λ i, dig (freal x i) - dig (freal y i)) with
+  | inl _ => true
+  | inr _ => false
+  end.
+
+Definition freal_eq {r : radix} x y :=
+  freal_normalized_eq (freal_normalize x) (freal_normalize y).
