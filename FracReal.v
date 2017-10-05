@@ -1,11 +1,19 @@
 (* Real between 0 and 1, i.e. fractional part of a real. *)
 
-Require Import Utf8 Arith.
+Require Import Utf8 Arith Psatz.
 Require Import Misc.
+
+(* Radix *)
+
+Class radix := { rad : nat; radi : rad ≥ 2 }.
+
+Theorem radix_gt_0 {r : radix} : rad > 0.
+Proof.
+destruct r as (rad, radi); simpl; lia.
+Qed.
 
 (* Digits *)
 
-Class radix := { rad : nat; radi : rad ≥ 2 }.
 Record digit {r : radix} := mkdig { dig : nat; digi : dig < rad }.
 
 Delimit Scope digit_scope with D.
@@ -95,17 +103,16 @@ Qed.
 
 Record FracReal {r : radix} := { freal : nat → digit }.
 
-Definition freal_normalize_to_digits {r : radix} x :=
-  λ i,
-  match O_LPO (λ j, pred rad - dig (freal x (i + j + 1))) with
+Definition digit_sequence_normalize {r : radix} (u : nat → digit) i :=
+  match O_LPO (λ j : nat, rad - 1 - dig (u (i + j + 1))) with
   | inl _ =>
-      if Nat.eq_dec (dig (freal x i)) (pred rad) then mkdig _ 0 (* proof 0 < rad *)
-      else mkdig _ (S (dig (freal x i))) (* proof < rad *)
-  | inr _ =>
-      x i
-  end.
+      let s := lt_dec (S (dig (u i))) rad in
+      match s with
+      | left P => {| dig := S (dig (u i)); digi := P |}
+      | right _ => {| dig := 0; digi := radix_gt_0 |}
+      end
+  | inr H => u i
+ end.
 
 Definition freal_normalize {r : radix} x :=
-  {| freal := freal_normalize_to_digits x |}.
-
-Check freal_normalize.
+  {| freal := digit_sequence_normalize (freal x) |}.
