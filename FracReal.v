@@ -143,4 +143,12 @@ Definition freal_mul_series {r : radix} a b :=
   sequence_mul (λ i, dig (freal a i)) (λ i, dig (freal b i)).
 
 Definition freal_add {r : radix} a b i :=
+  match
+    O_LPO
+      (λ j, r - (dig (freal a (i + j + 1)) + dig (freal b (i + j + 1) + 1)))
+  with
+  | inl _ → dig (freal a i) + dig (freal b i) + 1
+
+  let c = a i + b i in
+
   let c := freal_add_series a b in
