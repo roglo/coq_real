@@ -130,3 +130,15 @@ Delimit Scope freal_scope with F.
 
 Notation "a = b" := (freal_eq a b) : freal_scope.
 Notation "a ≠ b" := (¬ freal_eq a b) : freal_scope.
+
+(* Addition, Multiplication *)
+
+Definition sequence_add (u v : nat → nat) i := u i + v i.
+
+Fixpoint sequence_mul_loop (u v : nat → nat) n i :=
+  match n with
+  | 0 => 0
+  | S n' => u n' * v (i - n') + sequence_mul_loop u v n' i
+  end.
+
+Definition sequence_mul (u v : nat → nat) i := sequence_mul_loop u v (S i) i.
