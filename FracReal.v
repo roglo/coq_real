@@ -135,3 +135,9 @@ Notation "a ≠ b" := (¬ freal_eq a b) : freal_scope.
 
 Definition sequence_add (u v : nat → nat) i := u i + v i.
 Definition sequence_mul (u v : nat → nat) i := Σ (j = 0, i), u j * v (i - j).
+
+Definition freal_add_series {r : radix} u v :=
+  sequence_add (λ i, dig (freal u i)) (λ i, dig (freal v i)).
+
+Definition freal_mul_series {r : radix} u v :=
+  sequence_mul (λ i, dig (freal u i)) (λ i, dig (freal v i)).
