@@ -141,3 +141,6 @@ Definition freal_add_series {r : radix} u v :=
 
 Definition freal_mul_series {r : radix} u v :=
   sequence_mul (λ i, dig (freal u i)) (λ i, dig (freal v i)).
+
+Definition freal_add {r : radix} a b i :=
+  let c := freal_add_series a b in
