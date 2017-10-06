@@ -133,14 +133,14 @@ Notation "a ≠ b" := (¬ freal_eq a b) : freal_scope.
 
 (* Addition, Multiplication *)
 
-Definition sequence_add (u v : nat → nat) i := u i + v i.
-Definition sequence_mul (u v : nat → nat) i := Σ (j = 0, i), u j * v (i - j).
+Definition sequence_add (a b : nat → nat) i := a i + b i.
+Definition sequence_mul (a b : nat → nat) i := Σ (j = 0, i), a j * b (i - j).
 
-Definition freal_add_series {r : radix} u v :=
-  sequence_add (λ i, dig (freal u i)) (λ i, dig (freal v i)).
+Definition freal_add_series {r : radix} a b :=
+  sequence_add (λ i, dig (freal a i)) (λ i, dig (freal b i)).
 
-Definition freal_mul_series {r : radix} u v :=
-  sequence_mul (λ i, dig (freal u i)) (λ i, dig (freal v i)).
+Definition freal_mul_series {r : radix} a b :=
+  sequence_mul (λ i, dig (freal a i)) (λ i, dig (freal b i)).
 
 Definition freal_add {r : radix} a b i :=
   let c := freal_add_series a b in
