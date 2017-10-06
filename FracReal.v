@@ -1,7 +1,7 @@
 (* Real between 0 and 1, i.e. fractional part of a real. *)
 
 Require Import Utf8 Arith Psatz.
-Require Import Misc.
+Require Import Misc Summation.
 
 (* Radix *)
 
@@ -135,10 +135,4 @@ Notation "a ≠ b" := (¬ freal_eq a b) : freal_scope.
 
 Definition sequence_add (u v : nat → nat) i := u i + v i.
 
-Fixpoint sequence_mul_loop (u v : nat → nat) n i :=
-  match n with
-  | 0 => 0
-  | S n' => u n' * v (i - n') + sequence_mul_loop u v n' i
-  end.
-
-Definition sequence_mul (u v : nat → nat) i := sequence_mul_loop u v (S i) i.
+Definition sequence_mul (u v : nat → nat) i := Σ (j = 0, i), u j * b (i - j).
