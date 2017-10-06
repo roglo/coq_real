@@ -14,9 +14,10 @@ Definition summation b e g := summation_aux b (S e - b) g.
 Notation "'Σ' ( i = b , e ) , g" := (summation b e (λ i, (g)))
   (at level 0, i at level 0, b at level 60, e at level 60, g at level 40).
 
+(*
 Theorem summation_aux_compat : ∀ g h b₁ b₂ len,
-  (∀ i, 0 ≤ i < len → (g (b₁ + i)%nat = h (b₂ + i)%nat))
-  → (summation_aux b₁ len g = summation_aux b₂ len h).
+  (∀ i, 0 ≤ i < len → g (b₁ + i) = h (b₂ + i))
+  → summation_aux b₁ len g = summation_aux b₂ len h.
 Proof.
 intros g h b₁ b₂ len Hgh.
 revert b₁ b₂ Hgh.
@@ -531,5 +532,4 @@ revert b.
 induction len; intros; [ reflexivity | simpl ].
 rewrite IHlen; reflexivity.
 Qed.
-
-End theorems_summation.
+*)
