@@ -1,6 +1,6 @@
 (* Summation.v *)
 
-Require Import Utf8 Arith NPeano.
+Require Import Utf8 Arith NPeano Psatz.
 Require Import Misc.
 
 Fixpoint summation_aux b len g :=
@@ -63,24 +63,35 @@ rewrite summation_succ_succ.
 now apply IHk.
 Qed.
 
-Theorem summation_le : ∀ g h, (∀ i, g i ≤ h i) →
-  ∀ b k, Σ (i = b, k), g i ≤ Σ (i = b, k), h i.
+Lemma summation_aux_le_compat : ∀ g h b₁ b₂ len,
+  (∀ i, 0 ≤ i < len → g (b₁ + i) ≤ h (b₂ + i))
+  → summation_aux b₁ len g ≤ summation_aux b₂ len h.
 Proof.
-intros * Hgh *.
-revert b.
-induction k; intros.
- unfold summation; simpl.
- destruct b; simpl; [ | easy ].
- now do 2 rewrite Nat.add_0_r.
+intros g h b₁ b₂ len Hgh.
+revert b₁ b₂ Hgh.
+induction len; intros; simpl; [ easy | ].
+apply Nat.add_le_mono.
+ assert (H : 0 ≤ 0 < S len).
+  split; [ easy | apply Nat.lt_0_succ ].
 
- destruct (le_dec b (S k)) as [Hbk| Hbk].
-  rewrite summation_split_last; [ | easy ].
-  rewrite summation_split_last; [ | easy ].
-  apply Nat.add_le_mono; [ apply IHk | apply Hgh ].
+  apply Hgh in H.
+  now do 2 rewrite Nat.add_0_r in H.
 
-  apply Nat.nle_gt in Hbk.
-  rewrite summation_empty; [ | easy ].
-  apply Nat.le_0_l.
+ apply IHlen; intros i Hi.
+ do 2 rewrite Nat.add_succ_comm.
+ apply Hgh.
+ split; [ apply Nat.le_0_l | ].
+ now apply -> Nat.succ_lt_mono.
+Qed.
+
+Theorem summation_le_compat : ∀ b k f g,
+  (∀ i, b ≤ i ≤ k → f i ≤ g i)
+  → Σ (i = b, k), f i ≤ Σ (i = b, k), g i.
+Proof.
+intros * Hfg.
+unfold summation.
+apply summation_aux_le_compat; intros i Hi.
+apply Hfg; lia.
 Qed.
 
 (*
@@ -105,19 +116,6 @@ rewrite IHlen.
  split; [ apply Nat.le_0_l | idtac ].
  apply lt_n_S.
  destruct Hi; assumption.
-Qed.
-
-Theorem summation_compat : ∀ g h b k,
-  (∀ i, b ≤ i ≤ k → (g i = h i))
-  → (Σ (i = b, k), g i = Σ (i = b, k), h i).
-Proof.
-intros g h b k Hgh.
-apply summation_aux_compat.
-intros i (_, Hi).
-apply Hgh.
-split; [ apply Nat.le_add_r | idtac ].
-apply Nat.lt_add_lt_sub_r, le_S_n in Hi.
-rewrite Nat.add_comm; assumption.
 Qed.
 
 Theorem summation_mul_comm : ∀ g h b k,

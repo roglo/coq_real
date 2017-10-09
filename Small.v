@@ -131,17 +131,19 @@ Qed.
 
 Theorem small_sum : ∀ r, r ≥ 2 →
   ∀ u, (∀ i, u i ≤ (i + 1) * (r - 1) ^ 2) →
-  ∀ i n, n ≥ i + 2 → ∀ m, Σ (j = n, m), u j * r ^ (i - j) < 1.
+  ∀ i m, m ≥ i + 2 → ∀ n, Σ (j = m, n), u j * r ^ (i - j) < 1.
 Proof.
-intros * Hr * Hu * Hni *.
+intros * Hr * Hu * Hmi *.
 assert
   (Hss :
-   Σ (j = n, m), u j * r ^ (i - j) ≤
-   Σ (j = n, m), (j + 1) * (r - 1) ^ 2 * r ^ (i - j)).
- apply summation_le.
- intros j.
+   Σ (j = m, n), u j * r ^ (i - j) ≤
+   Σ (j = m, n), (j + 1) * (r - 1) ^ 2 * r ^ (i - j)).
+ apply summation_le_compat.
+ intros j Hj.
  apply Nat.mul_le_mono_nonneg_r; [ apply Nat.le_0_l | ].
  apply Hu.
 
- eapply Nat.le_lt_trans; [ apply Hss | ].
+ eapply Nat.le_lt_trans; [ apply Hss | clear Hss ].
+Search (Σ (_ = _, _), _ = _).
+
 bbb.
