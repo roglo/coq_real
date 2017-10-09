@@ -131,13 +131,13 @@ Qed.
 
 Theorem small_sum : ∀ r, r ≥ 2 →
   ∀ u, (∀ i, u i ≤ (i + 1) * (r - 1) ^ 2) →
-  ∀ i m, m ≥ i + 2 → ∀ n, Σ (j = m, n), (u j * r ^ (i - j)) < 1.
+  ∀ i m, m ≥ i + 2 → ∀ n, Σ (j = m, n), u j * r ^ (i - j) < 1.
 Proof.
 intros * Hr * Hu * Hmi *.
 assert
   (Hss :
-   Σ (j = m, n), (u j * r ^ (i - j)) ≤
-   Σ (j = m, n), ((j + 1) * (r - 1) ^ 2 * r ^ (i - j))).
+   Σ (j = m, n), u j * r ^ (i - j) ≤
+   Σ (j = m, n), (j + 1) * (r - 1) ^ 2 * r ^ (i - j)).
  apply summation_le_compat.
  intros j Hj.
  apply Nat.mul_le_mono_nonneg_r; [ apply Nat.le_0_l | ].
@@ -146,8 +146,8 @@ assert
  eapply Nat.le_lt_trans; [ apply Hss | clear Hss ].
  assert
    (Hss :
-    Σ (j = m, n), ((j + 1) * (r - 1) ^ 2 * r ^ (i - j)) =
-    Σ (j = m, n), ((j + 1) * r ^ (i - j) * (r - 1) ^ 2)).
+    Σ (j = m, n), (j + 1) * (r - 1) ^ 2 * r ^ (i - j) =
+    Σ (j = m, n), (j + 1) * r ^ (i - j) * (r - 1) ^ 2).
   apply summation_eq_compat.
   intros j Hj.
   apply Nat.mul_shuffle0.

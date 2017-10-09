@@ -11,17 +11,8 @@ Fixpoint summation_aux b len g :=
 
 Definition summation b e g := summation_aux b (S e - b) g.
 
-(*
 Notation "'Σ' ( i = b , e ) , g" := (summation b e (λ i, g))
-  (at level 0, i at level 0, b at level 60, e at level 60, g at level 40).
-*)
-Notation "'Σ' ( i = b , e ) , g" := (summation b e (λ i, g))
-  (at level 0, i at level 0, b at level 60, e at level 60, g at level 0).
-(* note: due to a displaying bug of Coq (at least 8.7), I put g at level 0,
-   so Σ (i = b, e), (a * b) must have parentheses around "a * b". I would like
-   to put g at level 40, but Σ (i = b, e), (a * b) and (Σ (i = b, e), a) * b
-   are displayed by Coq the same way: Σ (i = b, e), a * b *)
-(**)
+  (at level 50, i at level 0, b at level 60, e at level 60).
 
 Lemma summation_aux_succ_last : ∀ g b len,
   summation_aux b (S len) g =
@@ -39,7 +30,7 @@ Qed.
 
 Theorem summation_split_last : ∀ g b k,
   b ≤ S k
-  → Σ (i = b, S k), (g i) = Σ (i = b, k), (g i) + g (S k).
+  → Σ (i = b, S k), g i = Σ (i = b, k), g i + g (S k).
 Proof.
 intros g b k Hbk.
 unfold summation.
@@ -50,7 +41,7 @@ now rewrite Nat.add_comm, Nat.add_sub.
 Qed.
 
 Theorem summation_succ_succ : ∀ b k g,
-  Σ (i = S b, S k), (g i) = Σ (i = b, k), (g (S i)).
+  Σ (i = S b, S k), g i = Σ (i = b, k), g (S i).
 Proof.
 intros b k g.
 unfold summation.
@@ -61,7 +52,7 @@ induction len; intros; [ reflexivity | simpl ].
 rewrite IHlen; reflexivity.
 Qed.
 
-Theorem summation_empty : ∀ g b k, k < b → Σ (i = b, k), (g i) = 0.
+Theorem summation_empty : ∀ g b k, k < b → Σ (i = b, k), g i = 0.
 Proof.
 intros * Hkb.
 unfold summation.
@@ -93,7 +84,7 @@ Qed.
 
 Theorem summation_eq_compat : ∀ g h b k,
   (∀ i, b ≤ i ≤ k → g i = h i)
-  → Σ (i = b, k), (g i) = Σ (i = b, k), (h i).
+  → Σ (i = b, k), g i = Σ (i = b, k), h i.
 Proof.
 intros g h b k Hgh.
 apply summation_aux_eq_compat.
@@ -127,7 +118,7 @@ Qed.
 
 Theorem summation_le_compat : ∀ b k f g,
   (∀ i, b ≤ i ≤ k → f i ≤ g i)
-  → Σ (i = b, k), (f i) ≤ Σ (i = b, k), (g i).
+  → Σ (i = b, k), f i ≤ Σ (i = b, k), g i.
 Proof.
 intros * Hfg.
 unfold summation.
@@ -137,7 +128,7 @@ Qed.
 
 Theorem summation_mul_distr_r : ∀ f b k a,
   (Σ (i = b, k), (f i)) * a =
-  Σ (i = b, k), (f i * a).
+  Σ (i = b, k), f i * a.
 Proof.
 intros.
 unfold summation.
