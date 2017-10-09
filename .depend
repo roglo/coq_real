@@ -4,7 +4,7 @@ FracReal.vio: FracReal.v Misc.vio Summation.vio
 FracReal.vo FracReal.glob FracReal.v.beautified: FracReal.v Misc.vo Summation.vo
 Misc.vio: Misc.v
 Misc.vo Misc.glob Misc.v.beautified: Misc.v
-Small.vio: Small.v Misc.vio
-Small.vo Small.glob Small.v.beautified: Small.v Misc.vo
+Small.vio: Small.v Misc.vio Summation.vio
+Small.vo Small.glob Small.v.beautified: Small.v Misc.vo Summation.vo
 Summation.vio: Summation.v Misc.vio
 Summation.vo Summation.glob Summation.v.beautified: Summation.v Misc.vo

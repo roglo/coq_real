@@ -1,9 +1,9 @@
 Require Import Utf8 Arith NPeano Psatz.
-Require Import Misc.
+Require Import Misc Summation.
 
 Notation "a ^ b" := (Nat.pow a b).
 
-Theorem Nat_sub_sub_swap : ∀ a b c, a - b - c = a - c - b.
+Lemma Nat_sub_sub_swap : ∀ a b c, a - b - c = a - c - b.
 Proof.
 intros.
 do 2 rewrite <- Nat.sub_add_distr.
@@ -11,7 +11,7 @@ f_equal.
 apply Nat.add_comm.
 Qed.
 
-Theorem Nat_mul_lt_pow : ∀ a b, a ≥ 2 → b ≥ 3 → a * b < a ^ b.
+Lemma Nat_mul_lt_pow : ∀ a b, a ≥ 2 → b ≥ 3 → a * b < a ^ b.
 Proof.
 intros a b Ha2 Hb3.
 induction b; [ easy | ].
@@ -45,7 +45,7 @@ induction b; [ easy | ].
   apply Nat.le_0_l.
 Qed.
 
-Theorem pow_lt_pow_succ : ∀ a b, a ≥ 2 → b ≥ 1 → a ^ b + (a - 1) < a ^ S b.
+Lemma pow_lt_pow_succ : ∀ a b, a ≥ 2 → b ≥ 1 → a ^ b + (a - 1) < a ^ S b.
 Proof.
 intros * Ha Hb.
 induction b; [ easy | clear Hb ].
@@ -128,3 +128,10 @@ assert (Hni : n ≥ i + 1).
   rewrite Nat.mul_1_l.
   destruct r; [ easy | simpl; lia ].
 Qed.
+
+Theorem small_sum : ∀ r, r ≥ 2 →
+  ∀ u, (∀ i, u i ≤ (i + 1) * (r - 1) ^ 2) →
+  ∀ i n, n ≥ i + 2 → ∀ m, Σ (j = n, m), u i * r ^ (i - j) < 1.
+Proof.
+intros * Hr * Hu * Hni *.
+bbb.
