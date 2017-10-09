@@ -14,10 +14,63 @@ Definition summation b e g := summation_aux b (S e - b) g.
 Notation "'Σ' ( i = b , e ) , g" := (summation b e (λ i, (g)))
   (at level 0, i at level 0, b at level 60, e at level 60, g at level 40).
 
-Lemma summation_le : ∀ u v, (∀ i, u i ≤ v i) →
-  ∀ b k, Σ (i = b, k), u i ≤ Σ (i = b, k), v i.
+Lemma summation_aux_succ_last : ∀ g b len,
+  summation_aux b (S len) g =
+  summation_aux b len g + g (b + len).
 Proof.
-intros * Huv *.
+intros g b len.
+revert b.
+induction len; intros.
+ now simpl; do 2 rewrite Nat.add_0_r.
+
+ remember (S len) as x; simpl; subst x.
+ rewrite IHlen; simpl.
+ now rewrite Nat.add_assoc, Nat.add_succ_r.
+Qed.
+
+Theorem summation_split_last : ∀ g b k,
+  b ≤ S k
+  → Σ (i = b, S k), g i = Σ (i = b, k), g i + g (S k).
+Proof.
+intros g b k Hbk.
+unfold summation.
+rewrite Nat.sub_succ_l; [ | easy ].
+rewrite summation_aux_succ_last; f_equal.
+rewrite Nat.add_sub_assoc; [ | easy ].
+now rewrite Nat.add_comm, Nat.add_sub.
+Qed.
+
+Theorem summation_empty : ∀ g b k, k < b → Σ (i = b, k), g i = 0.
+Proof.
+intros * Hkb.
+revert b Hkb.
+induction k; intros; [ now destruct b | ].
+destruct b; [ easy | ].
+bbb.
+
+apply Nat.succ_lt_mono in Hkb.
+specialize (IHk b Hkb).
+unfold summation; simpl.
+destruct b; [ easy | ].
+
+bbb.
+
+Theorem summation_le : ∀ g h, (∀ i, g i ≤ h i) →
+  ∀ b k, Σ (i = b, k), g i ≤ Σ (i = b, k), h i.
+Proof.
+intros * Hgh *.
+revert b.
+induction k; intros.
+ unfold summation; simpl.
+ destruct b; simpl; [ | easy ].
+ now do 2 rewrite Nat.add_0_r.
+
+ destruct (le_dec b (S k)) as [Hbk| Hbk].
+  rewrite summation_split_last; [ | easy ].
+  rewrite summation_split_last; [ | easy ].
+  apply Nat.add_le_mono; [ apply IHk | apply Hgh ].
+
+  apply Nat.nle_gt in Hbk.
 bbb.
 
 (*
@@ -100,24 +153,6 @@ destruct (le_dec i₁ (S i₂)) as [H₃| H₃].
  apply not_le_minus_0 in H₃.
  rewrite H₃, Nat.add_0_r in H₂.
  apply Nat.nle_gt in H₂; contradiction.
-Qed.
-
-Theorem summation_aux_succ_last : ∀ g b len,
-  (summation_aux r b (S len) g =
-   summation_aux r b len g + g (b + len)%nat).
-Proof.
-intros g b len.
-revert b.
-induction len; intros.
- simpl.
- rewrite rng_add_0_l, rng_add_0_r, Nat.add_0_r.
- reflexivity.
-
- remember (S len) as x; simpl; subst x.
- rewrite IHlen.
- simpl.
- rewrite rng_add_assoc, Nat.add_succ_r.
- reflexivity.
 Qed.
 
 Theorem summation_aux_rtl : ∀ g b len,
@@ -280,19 +315,6 @@ unfold summation.
 rewrite Nat.sub_succ_l; [ idtac | reflexivity ].
 rewrite Nat.sub_diag; simpl.
 rewrite rng_add_0_r; reflexivity.
-Qed.
-
-Theorem summation_split_last : ∀ g b k,
-  (b ≤ S k)
-  → (Σ (i = b, S k), g i = Σ (i = b, k), g i + g (S k)).
-Proof.
-intros g b k Hbk.
-unfold summation.
-rewrite Nat.sub_succ_l; [ idtac | assumption ].
-rewrite summation_aux_succ_last.
-rewrite Nat.add_sub_assoc; [ idtac | assumption ].
-rewrite Nat.add_comm, Nat.add_sub.
-reflexivity.
 Qed.
 
 Theorem summation_aux_succ_first : ∀ g b len,
