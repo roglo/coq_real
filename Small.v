@@ -134,4 +134,5 @@ Theorem small_sum : ∀ r, r ≥ 2 →
   ∀ i n, n ≥ i + 2 → ∀ m, Σ (j = n, m), u i * r ^ (i - j) < 1.
 Proof.
 intros * Hr * Hu * Hni *.
+Check summation_le.
 bbb.

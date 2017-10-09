@@ -14,6 +14,12 @@ Definition summation b e g := summation_aux b (S e - b) g.
 Notation "'Σ' ( i = b , e ) , g" := (summation b e (λ i, (g)))
   (at level 0, i at level 0, b at level 60, e at level 60, g at level 40).
 
+Lemma summation_le : ∀ u v, (∀ i, u i ≤ v i) →
+  ∀ b k, Σ (i = b, k), u i ≤ Σ (i = b, k), v i.
+Proof.
+intros * Huv *.
+bbb.
+
 (*
 Theorem summation_aux_compat : ∀ g h b₁ b₂ len,
   (∀ i, 0 ≤ i < len → g (b₁ + i) = h (b₂ + i))
