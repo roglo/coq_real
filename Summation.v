@@ -40,20 +40,28 @@ rewrite Nat.add_sub_assoc; [ | easy ].
 now rewrite Nat.add_comm, Nat.add_sub.
 Qed.
 
+Theorem summation_succ_succ : ∀ b k g,
+  (Σ (i = S b, S k), g i = Σ (i = b, k), g (S i)).
+Proof.
+intros b k g.
+unfold summation.
+rewrite Nat.sub_succ.
+remember (S k - b)%nat as len; clear Heqlen.
+revert b.
+induction len; intros; [ reflexivity | simpl ].
+rewrite IHlen; reflexivity.
+Qed.
+
 Theorem summation_empty : ∀ g b k, k < b → Σ (i = b, k), g i = 0.
 Proof.
 intros * Hkb.
-revert b Hkb.
+revert g b Hkb.
 induction k; intros; [ now destruct b | ].
 destruct b; [ easy | ].
-bbb.
-
 apply Nat.succ_lt_mono in Hkb.
-specialize (IHk b Hkb).
-unfold summation; simpl.
-destruct b; [ easy | ].
-
-bbb.
+rewrite summation_succ_succ.
+now apply IHk.
+Qed.
 
 Theorem summation_le : ∀ g h, (∀ i, g i ≤ h i) →
   ∀ b k, Σ (i = b, k), g i ≤ Σ (i = b, k), h i.
@@ -71,7 +79,9 @@ induction k; intros.
   apply Nat.add_le_mono; [ apply IHk | apply Hgh ].
 
   apply Nat.nle_gt in Hbk.
-bbb.
+  rewrite summation_empty; [ | easy ].
+  apply Nat.le_0_l.
+Qed.
 
 (*
 Theorem summation_aux_compat : ∀ g h b₁ b₂ len,
@@ -547,17 +557,5 @@ apply summation_aux_compat.
 intros i Hi.
 replace (b + n + i - n)%nat with (b + i)%nat by omega.
 reflexivity.
-Qed.
-
-Theorem summation_succ_succ : ∀ b k g,
-  (Σ (i = S b, S k), g i = Σ (i = b, k), g (S i)).
-Proof.
-intros b k g.
-unfold summation.
-rewrite Nat.sub_succ.
-remember (S k - b)%nat as len; clear Heqlen.
-revert b.
-induction len; intros; [ reflexivity | simpl ].
-rewrite IHlen; reflexivity.
 Qed.
 *)
