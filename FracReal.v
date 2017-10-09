@@ -142,6 +142,10 @@ Definition freal_add_series {r : radix} a b :=
 Definition freal_mul_series {r : radix} a b :=
   sequence_mul (λ i, dig (freal a i)) (λ i, dig (freal b i)).
 
+Definition freal_mul {r : radix} (a b : FracReal) i :=
+  let n := rad * (i + 2) in
+...
+
 Definition freal_add {r : radix} a b i :=
   match
     O_LPO
