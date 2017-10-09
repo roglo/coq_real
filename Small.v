@@ -144,6 +144,17 @@ assert
  apply Hu.
 
  eapply Nat.le_lt_trans; [ apply Hss | clear Hss ].
-Search (Σ (_ = _, _), _ = _).
+ assert
+   (Hss :
+    Σ (j = m, n), (j + 1) * (r - 1) ^ 2 * r ^ (i - j) =
+    Σ (j = m, n), (j + 1) * r ^ (i - j) * (r - 1) ^ 2).
+  apply summation_eq_compat.
+  intros j Hj.
+  apply Nat.mul_shuffle0.
 
+  rewrite Hss; clear Hss.
+  rewrite <- summation_mul_distr_r.
+Check summation_mul_distr_r.
+bbb.
+  rewrite Nat.mul_comm.
 bbb.

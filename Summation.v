@@ -11,7 +11,7 @@ Fixpoint summation_aux b len g :=
 
 Definition summation b e g := summation_aux b (S e - b) g.
 
-Notation "'Σ' ( i = b , e ) , g" := (summation b e (λ i, (g)))
+Notation "'Σ' ( i = b , e ) , g" := (summation b e (λ i, g))
   (at level 0, i at level 0, b at level 60, e at level 60, g at level 40).
 
 Lemma summation_aux_succ_last : ∀ g b len,
@@ -55,12 +55,44 @@ Qed.
 Theorem summation_empty : ∀ g b k, k < b → Σ (i = b, k), g i = 0.
 Proof.
 intros * Hkb.
-revert g b Hkb.
-induction k; intros; [ now destruct b | ].
-destruct b; [ easy | ].
-apply Nat.succ_lt_mono in Hkb.
-rewrite summation_succ_succ.
-now apply IHk.
+unfold summation.
+now replace (S k - b)%nat with O by lia.
+Qed.
+
+Lemma summation_aux_eq_compat : ∀ g h b₁ b₂ len,
+  (∀ i, 0 ≤ i < len → g (b₁ + i) = h (b₂ + i))
+  → summation_aux b₁ len g = summation_aux b₂ len h.
+Proof.
+intros g h b₁ b₂ len Hgh.
+revert b₁ b₂ Hgh.
+induction len; intros; [ easy | simpl ].
+erewrite IHlen.
+ f_equal.
+ assert (0 ≤ 0 < S len) as H.
+  split; [ easy | apply Nat.lt_0_succ ].
+
+  apply Hgh in H.
+  now do 2 rewrite Nat.add_0_r in H.
+
+ intros i Hi.
+ do 2 rewrite Nat.add_succ_l, <- Nat.add_succ_r.
+ apply Hgh.
+ split; [ apply Nat.le_0_l | ].
+ apply lt_n_S.
+ now destruct Hi.
+Qed.
+
+Theorem summation_eq_compat : ∀ g h b k,
+  (∀ i, b ≤ i ≤ k → g i = h i)
+  → Σ (i = b, k), g i = Σ (i = b, k), h i.
+Proof.
+intros g h b k Hgh.
+apply summation_aux_eq_compat.
+intros i (_, Hi).
+apply Hgh.
+split; [ apply Nat.le_add_r | idtac ].
+apply Nat.lt_add_lt_sub_r, le_S_n in Hi.
+now rewrite Nat.add_comm.
 Qed.
 
 Lemma summation_aux_le_compat : ∀ g h b₁ b₂ len,
@@ -94,30 +126,23 @@ apply summation_aux_le_compat; intros i Hi.
 apply Hfg; lia.
 Qed.
 
-(*
-Theorem summation_aux_compat : ∀ g h b₁ b₂ len,
-  (∀ i, 0 ≤ i < len → g (b₁ + i) = h (b₂ + i))
-  → summation_aux b₁ len g = summation_aux b₂ len h.
+Theorem summation_mul_distr_r : ∀ f b k a,
+  (Σ (i = b, k), f i) * a =
+  Σ (i = b, k), f i * a.
 Proof.
-intros g h b₁ b₂ len Hgh.
-revert b₁ b₂ Hgh.
-induction len; intros; [ reflexivity | simpl ].
-rewrite IHlen.
- apply rng_add_compat_r.
- assert (0 ≤ 0 < S len) as H.
-  split; [ reflexivity | apply Nat.lt_0_succ ].
+intros.
+(* problem of displaying: missing parentheses *)
+bbb.
 
-  apply Hgh in H.
-  do 2 rewrite Nat.add_0_r in H; assumption.
-
- intros i Hi.
- do 2 rewrite Nat.add_succ_l, <- Nat.add_succ_r.
- apply Hgh.
- split; [ apply Nat.le_0_l | idtac ].
- apply lt_n_S.
- destruct Hi; assumption.
+unfold summation.
+remember (S k - b) as len eqn:Hlen.
+clear; revert b.
+induction len; intros; simpl; [ easy | ].
+rewrite Nat.mul_add_distr_r.
+now rewrite IHlen.
 Qed.
 
+(*
 Theorem summation_mul_comm : ∀ g h b k,
   (Σ (i = b, k), g i * h i
    = Σ (i = b, k), h i * g i).
