@@ -139,6 +139,42 @@ rewrite Nat.mul_add_distr_r.
 now rewrite IHlen.
 Qed.
 
+Theorem summation_only_one : ∀ g n, (Σ (i = n, n), g i = g n).
+Proof.
+intros g n.
+unfold summation.
+rewrite Nat.sub_succ_l; [ idtac | easy ].
+rewrite Nat.sub_diag; simpl; lia.
+Qed.
+
+Theorem summation_add_distr : ∀ g h b k,
+  (Σ (i = b, k), (g i + h i) =
+   Σ (i = b, k), g i + Σ (i = b, k), h i).
+Proof.
+intros g h b k.
+destruct (le_dec b k) as [Hbk| Hbk].
+ revert b Hbk.
+ induction k; intros.
+  destruct b; [ | easy ].
+  now do 3 rewrite summation_only_one.
+
+  rewrite summation_split_last; [ idtac | assumption ].
+  rewrite summation_split_last; [ idtac | assumption ].
+  rewrite summation_split_last; [ idtac | assumption ].
+  destruct (eq_nat_dec b (S k)) as [H₂| H₂].
+   subst b.
+   unfold summation; simpl.
+   now rewrite Nat.sub_diag.
+
+   apply Nat_le_neq_lt in Hbk; [ | easy ].
+   apply Nat.succ_le_mono in Hbk.
+   rewrite IHk; [ lia | easy ].
+
+ unfold summation.
+ apply Nat.nle_gt in Hbk.
+ now replace (S k - b) with O by lia.
+Qed.
+
 (*
 Theorem summation_mul_comm : ∀ g h b k,
   (Σ (i = b, k), g i * h i
@@ -338,15 +374,6 @@ apply summation_aux_compat; intros j Hj.
 rewrite Nat.add_0_l; reflexivity.
 Qed.
 
-Theorem summation_only_one : ∀ g n, (Σ (i = n, n), g i = g n).
-Proof.
-intros g n.
-unfold summation.
-rewrite Nat.sub_succ_l; [ idtac | reflexivity ].
-rewrite Nat.sub_diag; simpl.
-rewrite rng_add_0_r; reflexivity.
-Qed.
-
 Theorem summation_aux_succ_first : ∀ g b len,
   summation_aux r b (S len) g = (g b + summation_aux r (S b) len g).
 Proof. reflexivity. Qed.
@@ -360,46 +387,6 @@ unfold summation.
 rewrite Nat.sub_succ.
 rewrite <- summation_aux_succ_first.
 rewrite <- Nat.sub_succ_l; [ reflexivity | assumption ].
-Qed.
-
-Theorem summation_add_distr : ∀ g h b k,
-  (Σ (i = b, k), (g i + h i) =
-   Σ (i = b, k), g i + Σ (i = b, k), h i).
-Proof.
-intros g h b k.
-destruct (le_dec b k) as [Hbk| Hbk].
- revert b Hbk.
- induction k; intros.
-  destruct b.
-   do 3 rewrite summation_only_one; reflexivity.
-
-   unfold summation; simpl; rewrite rng_add_0_r; reflexivity.
-
-  rewrite summation_split_last; [ idtac | assumption ].
-  rewrite summation_split_last; [ idtac | assumption ].
-  rewrite summation_split_last; [ idtac | assumption ].
-  destruct (eq_nat_dec b (S k)) as [H₂| H₂].
-   subst b.
-   unfold summation; simpl.
-   rewrite Nat.sub_diag; simpl.
-   do 2 rewrite rng_add_0_l; rewrite rng_add_0_l.
-   reflexivity.
-
-   apply Nat_le_neq_lt in Hbk; [ idtac | assumption ].
-   apply Nat.succ_le_mono in Hbk.
-   rewrite IHk; [ idtac | assumption ].
-   do 2 rewrite <- rng_add_assoc.
-   apply rng_add_compat_l.
-   rewrite rng_add_comm.
-   rewrite <- rng_add_assoc.
-   apply rng_add_compat_l.
-   rewrite rng_add_comm.
-   reflexivity.
-
- unfold summation.
- apply Nat.nle_gt in Hbk.
- replace (S k - b) with O by omega; simpl.
- rewrite rng_add_0_r; reflexivity.
 Qed.
 
 Theorem summation_summation_exch : ∀ g k,
