@@ -164,4 +164,6 @@ assert
 
    rewrite Hss; clear Hss.
    rewrite summation_add_distr.
+(* problem: the pen and paper theorem actually implicitely uses rationals,
+   not natural, since there is r ^ (i - j) and i - j can be negative... *)
 bbb.
