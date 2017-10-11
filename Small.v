@@ -129,11 +129,20 @@ assert (Hni : n ≥ i + 1).
   destruct r; [ easy | simpl; lia ].
 Qed.
 
+(* This theorem could have been written as:
 Theorem small_sum : ∀ r, r ≥ 2 →
   ∀ u, (∀ i, u i ≤ (i + 1) * (r - 1) ^ 2) →
-  ∀ i n, n ≥ i + 2 → ∀ m, Σ (j = n, m), u j * r ^ (i - j) < 1.
+  ∀ i n, n ≥ r * (i + 2) → ∀ m, Σ (j = n, m), u j * r ^ (i - j) < 1.
+But, it works in rationals not in naturals, since i-j can be negative.
+Therefore, we written the same theorem the following way to use
+naturals. *)
+Theorem small_sum : ∀ r, r ≥ 2 →
+  ∀ u, (∀ i, u i ≤ (i + 1) * (r - 1) ^ 2) →
+  ∀ i n, n ≥ r * (i + 2) →
+  ∀ m, Σ (j = n, m), u j * r ^ (m - j) < r ^ (m - i).
 Proof.
 intros * Hr * Hu * Hni *.
+bbb.
 assert
   (Hss :
    Σ (j = n, m), u j * r ^ (i - j) ≤
