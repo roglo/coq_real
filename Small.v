@@ -131,13 +131,13 @@ Qed.
 
 Theorem small_sum : ∀ r, r ≥ 2 →
   ∀ u, (∀ i, u i ≤ (i + 1) * (r - 1) ^ 2) →
-  ∀ i m, m ≥ i + 2 → ∀ n, Σ (j = m, n), u j * r ^ (i - j) < 1.
+  ∀ i n, n ≥ i + 2 → ∀ m, Σ (j = n, m), u j * r ^ (i - j) < 1.
 Proof.
-intros * Hr * Hu * Hmi *.
+intros * Hr * Hu * Hni *.
 assert
   (Hss :
-   Σ (j = m, n), u j * r ^ (i - j) ≤
-   Σ (j = m, n), (j + 1) * (r - 1) ^ 2 * r ^ (i - j)).
+   Σ (j = n, m), u j * r ^ (i - j) ≤
+   Σ (j = n, m), (j + 1) * (r - 1) ^ 2 * r ^ (i - j)).
  apply summation_le_compat.
  intros j Hj.
  apply Nat.mul_le_mono_nonneg_r; [ apply Nat.le_0_l | ].
@@ -146,8 +146,8 @@ assert
  eapply Nat.le_lt_trans; [ apply Hss | clear Hss ].
  assert
    (Hss :
-    Σ (j = m, n), (j + 1) * (r - 1) ^ 2 * r ^ (i - j) =
-    Σ (j = m, n), (j + 1) * r ^ (i - j) * (r - 1) ^ 2).
+    Σ (j = n, m), (j + 1) * (r - 1) ^ 2 * r ^ (i - j) =
+    Σ (j = n, m), (j + 1) * r ^ (i - j) * (r - 1) ^ 2).
   apply summation_eq_compat.
   intros j Hj.
   apply Nat.mul_shuffle0.
@@ -157,8 +157,8 @@ assert
   rewrite Nat.mul_comm.
   assert
     (Hss :
-       Σ (j = m, n), (j + 1) * r ^ (i - j) =
-       Σ (j = m, n), (j * r ^ (i - j) + r ^ (i - j))).
+       Σ (j = n, m), (j + 1) * r ^ (i - j) =
+       Σ (j = n, m), (j * r ^ (i - j) + r ^ (i - j))).
    apply summation_eq_compat.
    intros j Hj; lia.
 
