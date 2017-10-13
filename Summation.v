@@ -12,7 +12,7 @@ Fixpoint summation_aux b len g :=
 Definition summation b e g := summation_aux b (S e - b) g.
 
 Notation "'Σ' ( i = b , e ) , g" := (summation b e (λ i, g))
-  (at level 50, i at level 0, b at level 60, e at level 60).
+  (at level 45, i at level 0, b at level 60, e at level 60).
 
 Lemma summation_aux_succ_last : ∀ g b len,
   summation_aux b (S len) g =
