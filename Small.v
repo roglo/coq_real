@@ -142,11 +142,10 @@ Theorem small_sum : ∀ r, r ≥ 2 →
   ∀ m, Σ (j = n, m), u j * r ^ (m - j) < r ^ (m - i).
 Proof.
 intros * Hr * Hu * Hni *.
-bbb.
 assert
   (Hss :
-   Σ (j = n, m), u j * r ^ (i - j) ≤
-   Σ (j = n, m), (j + 1) * (r - 1) ^ 2 * r ^ (i - j)).
+   Σ (j = n, m), u j * r ^ (m - j) ≤
+   Σ (j = n, m), (j + 1) * (r - 1) ^ 2 * r ^ (m - j)).
  apply summation_le_compat.
  intros j Hj.
  apply Nat.mul_le_mono_nonneg_r; [ apply Nat.le_0_l | ].
@@ -155,8 +154,8 @@ assert
  eapply Nat.le_lt_trans; [ apply Hss | clear Hss ].
  assert
    (Hss :
-    Σ (j = n, m), (j + 1) * (r - 1) ^ 2 * r ^ (i - j) =
-    Σ (j = n, m), (j + 1) * r ^ (i - j) * (r - 1) ^ 2).
+    Σ (j = n, m), (j + 1) * (r - 1) ^ 2 * r ^ (m - j) =
+    Σ (j = n, m), (j + 1) * r ^ (m - j) * (r - 1) ^ 2).
   apply summation_eq_compat.
   intros j Hj.
   apply Nat.mul_shuffle0.
@@ -166,13 +165,11 @@ assert
   rewrite Nat.mul_comm.
   assert
     (Hss :
-       Σ (j = n, m), (j + 1) * r ^ (i - j) =
-       Σ (j = n, m), (j * r ^ (i - j) + r ^ (i - j))).
+       Σ (j = n, m), (j + 1) * r ^ (m - j) =
+       Σ (j = n, m), (j * r ^ (m - j) + r ^ (m - j))).
    apply summation_eq_compat.
    intros j Hj; lia.
 
    rewrite Hss; clear Hss.
    rewrite summation_add_distr.
-(* problem: the pen and paper theorem actually implicitely uses rationals,
-   not natural, since there is r ^ (i - j) and i - j can be negative... *)
 bbb.
