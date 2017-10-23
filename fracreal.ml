@@ -47,14 +47,12 @@ type fracreal = { freal : int → digit }.
 value rad x = x.rad.
 value dig x = x.dig.
 value freal x = x.freal.
-value mkrat n d =
-let _ = Printf.eprintf "mkrat %d %d\n%!" n d in
-  {num = n; den = d}.
+value mkrat n d = {num = n; den = d}.
 value num q = q.num;
 value den q = q.den;
 
 value rint q = num q / den q.
-value rfrac q = den q mod num q.
+value rfrac q = num q mod den q.
 
 value rec summation_aux b len g =
   match len with
@@ -99,6 +97,10 @@ value freal_mul (r : radix) (a : fracreal) (b : fracreal) =
   {freal i = mkdig r (u i) (freal_mul_to_seq_lt_rad a b i) }.
 
 value mkr u = {freal i = mkdig () (u i) ()};
-freal_mul {rad=10} (mkr (fun _ -> 0)) (mkr (fun _ -> 0));
+value rzero = mkr (fun _ -> 0);
+value rhalf = mkr (fun i -> if i = 0 then 1 else 0);
 
 value prr {freal = r} i = r i;
+prr (freal_mul {rad=2} rhalf rhalf) 0; (* faux *)
+prr (freal_mul {rad=2} rhalf rhalf) 1; (* faux *)
+prr (freal_mul {rad=2} rhalf rhalf) 2;
