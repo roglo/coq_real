@@ -12,6 +12,11 @@ Proof.
 destruct r as (rad, radi); simpl; lia.
 Qed.
 
+Theorem radix_ne_0 {r : radix} : rad ≠ 0.
+Proof.
+destruct r as (rad, radi); simpl; lia.
+Qed.
+
 (* Digits *)
 
 Record digit {r : radix} := mkdig { dig : nat; digi : dig < rad }.
@@ -152,13 +157,13 @@ Definition A {r : radix} i u n :=
     (Σ (j = i + 1, n - 1), u j * rad ^ (n - 1 - j))
     (rad ^ (n - 1 - i)).
 
+Definition mul_test_seq {r : radix} i u k :=
+  let n := rad * (i + k + 2) in
+  if le_dec (rad ^ k - 1) (rfrac (A i u n)) then 0 else 1.
+
 Definition freal_mul_to_seq {r : radix} (a b : FracReal) i :=
   let u := freal_mul_series a b in
-  let v k :=
-    let n := rad * (i + k + 2) in
-    if le_dec (rad ^ k - 1) (rfrac (A i u n)) then 0 else 1
-  in
-  match O_LPO v with
+  match O_LPO (mul_test_seq i u) with
   | inl _ =>
       let n := rad * (i + 2) in
       (u i + rint (A i u n) + 1) mod rad
@@ -170,8 +175,15 @@ Definition freal_mul_to_seq {r : radix} (a b : FracReal) i :=
 Theorem freal_mul_to_seq_lt_rad {r : radix} : ∀ a b i,
   freal_mul_to_seq a b i < rad.
 Proof.
-bbb.
+intros.
+unfold freal_mul_to_seq.
+remember (mul_test_seq i (freal_mul_series a b)) as v eqn:Hv.
+destruct (O_LPO v) as [Hvi| (j, Hvj)].
+1, 2: apply Nat.mod_upper_bound, radix_ne_0.
+Qed.
 
 Definition freal_mul {r : radix} (a b : FracReal) :=
   let u := freal_mul_to_seq a b in
-  λ i, mkdig r (u i) (freal_mul_to_seq_lt_rad a b i).
+  {| freal i := mkdig r (u i) (freal_mul_to_seq_lt_rad a b i) |}.
+
+Print freal_mul.
