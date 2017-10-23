@@ -142,18 +142,36 @@ Definition freal_add_series {r : radix} a b :=
 Definition freal_mul_series {r : radix} a b :=
   sequence_mul (λ i, dig (freal a i)) (λ i, dig (freal b i)).
 
-Definition freal_mul {r : radix} (a b : FracReal) i :=
-  let c := freal_mul_series a b in
+Record rational := mkrat { num : nat; den : nat }.
+
+Definition rint q := den q / num q.
+Definition rfrac q := den q mod num q.
+
+Definition A {r : radix} i u n :=
+  mkrat
+    (Σ (j = i + 1, n - 1), u j * rad ^ (n - 1 - j))
+    (rad ^ (n - 1 - i)).
+
+Definition freal_mul_to_seq {r : radix} (a b : FracReal) i :=
+  let u := freal_mul_series a b in
   let v k :=
-    let n := r * (i + k + 2) in
-    if le_dec (r ^ k - 1) (freal_frac (A n)) then 0 else 1
+    let n := rad * (i + k + 2) in
+    if le_dec (rad ^ k - 1) (rfrac (A i u n)) then 0 else 1
   in
   match O_LPO v with
   | inl _ =>
-      let n := r * (i + 2) in
-      (c i + freal_int (A n) + 1) mod r
-  | inr j =>
-      let n := r * (i + j + 2) in
-      (c i + freal_int (A n)) mod r
+      let n := rad * (i + 2) in
+      (u i + rint (A i u n) + 1) mod rad
+  | inr (exist _ j _) =>
+      let n := rad * (i + j + 2) in
+      (u i + rint (A i u n)) mod rad
   end.
+
+Theorem freal_mul_to_seq_lt_rad {r : radix} : ∀ a b i,
+  freal_mul_to_seq a b i < rad.
+Proof.
 bbb.
+
+Definition freal_mul {r : radix} (a b : FracReal) :=
+  let u := freal_mul_to_seq a b in
+  λ i, mkdig r (u i) (freal_mul_to_seq_lt_rad a b i).
