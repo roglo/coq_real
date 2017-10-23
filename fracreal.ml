@@ -1,15 +1,18 @@
 (* test real numbers *)
 
+type sum α β = [ Inl of α | Inr of β ].
+type tsig α = [ Exist of unit and α and unit ].
+
 type digit = { dig : int };
 type fracreal = { freal : int → digit };
 
-type sum α β = [ Inl of α | Inr of β ].
+value mkdig _ x _ = {dig = x};
 
 value o_LPO u =
   loop 100 0 where rec loop niter i =
     if niter = 0 then Inl ()
     else if u i = 0 then loop (niter - 1) (i + 1)
-    else Inr i
+    else Inr (Exist () i ())
 ;
 
 value digit_sequence_normalize r u i =
@@ -38,12 +41,18 @@ value le_dec a b = a < b.
 value pow a b = truncate (float a ** float b);
 
 type radix = { rad : int }.
-type digit = { dig : int }.
+type rational = { num : int; den : int }.
 type fracreal = { freal : int → digit }.
 
 value rad x = x.rad.
 value dig x = x.dig.
 value freal x = x.freal.
+value mkrat n d = {num = n; den = d}.
+value num q = q.num;
+value den q = q.den;
+
+value rint q = den q / num q.
+value rfrac q = den q mod num q.
 
 value rec summation_aux b len g =
   match len with
@@ -61,21 +70,28 @@ value sequence_mul (a : int → int) (b : int → int) i =
 value freal_mul_series (r : radix) a b =
   sequence_mul (fun i → dig (freal a i)) (fun i → dig (freal b i)).
 
+value nA (r : radix) i u n =
+  mkrat
+    (summation (i + 1) (n - 1) (fun j → u j * pow (rad r) (n - 1 - j)))
+    (pow (rad r) (n - 1 - i)).
+
 value mul_test_seq (r : radix) i u k =
   let n = rad r * (i + k + 2) in
-  if le_dec (pow (rad r) k - 1) (rfrac (A i u n)) then 0 else 1;
+  if le_dec (pow (rad r) k - 1) (rfrac (nA r i u n)) then 0 else 1;
 
 value freal_mul_to_seq (r : radix) (a : fracreal) (b : fracreal) i =
   let u = freal_mul_series r a b in
-  match o_LPO (mul_test_seq i u) with
+  match o_LPO (mul_test_seq r i u) with
   | Inl _ →
-      let n = rad * (i + 2) in
-      (u i + rint (A i u n) + 1) mod rad
+      let n = rad r * (i + 2) in
+      (u i + rint (nA r i u n) + 1) mod rad r
   | Inr (Exist _ j _) →
-      let n = rad * (i + j + 2) in
-      (u i + rint (A i u n)) mod rad
+      let n = rad r * (i + j + 2) in
+      (u i + rint (nA r i u n)) mod rad r
   end.
 
+value freal_mul_to_seq_lt_rad a b i = ();
+
 value freal_mul (r : radix) (a : fracreal) (b : fracreal) =
-  let u = freal_mul_to_seq a b in
+  let u = freal_mul_to_seq r a b in
   {freal i = mkdig r (u i) (freal_mul_to_seq_lt_rad a b i) }.
