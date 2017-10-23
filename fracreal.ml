@@ -99,6 +99,7 @@ value freal_mul (r : radix) (a : fracreal) (b : fracreal) =
 value mkr u = {freal i = mkdig () (u i) ()};
 value rzero = mkr (fun _ -> 0);
 value rhalf = mkr (fun i -> if i = 0 then 1 else 0);
+value rquat = mkr (fun i -> if i = 1 then 1 else 0);
 
 value prr {freal = r} i = r i;
 prr (freal_mul {rad=2} rhalf rhalf) 0; (* faux *)
