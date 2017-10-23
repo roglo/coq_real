@@ -79,7 +79,8 @@ destruct (Nat.eq_dec b 0) as [Hb| Hb].
 Qed.
 
 Theorem small : ∀ r, r ≥ 2 →
-  ∀ i n, n ≥ r * (i + 2) → n * (r - 1) + r < r ^ (n - (i + 1)).
+  ∀ i n, n ≥ r * (i + 2)
+  → n * (r - 1) + r < r ^ (n - (i + 1)).
 Proof.
 intros r Hr * Hnr.
 assert (Hni : n ≥ i + 1).
