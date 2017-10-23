@@ -149,8 +149,8 @@ Definition freal_mul_series {r : radix} a b :=
 
 Record rational := mkrat { num : nat; den : nat }.
 
-Definition rint q := den q / num q.
-Definition rfrac q := den q mod num q.
+Definition rint q := num q / den q.
+Definition rfrac q := num q mod den q.
 
 Definition A {r : radix} i u n :=
   mkrat
