@@ -95,3 +95,6 @@ value freal_mul_to_seq_lt_rad a b i = ();
 value freal_mul (r : radix) (a : fracreal) (b : fracreal) =
   let u = freal_mul_to_seq r a b in
   {freal i = mkdig r (u i) (freal_mul_to_seq_lt_rad a b i) }.
+
+value mkr u = {freal i = mkdig () (u i) ()};
+freal_mul {rad=10} (mkr (fun _ -> 0)) (mkr (fun _ -> 0));
