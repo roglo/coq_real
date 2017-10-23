@@ -143,16 +143,17 @@ Definition freal_mul_series {r : radix} a b :=
   sequence_mul (λ i, dig (freal a i)) (λ i, dig (freal b i)).
 
 Definition freal_mul {r : radix} (a b : FracReal) i :=
-  let n := rad * (i + 2) in
-...
-
-Definition freal_add {r : radix} a b i :=
-  match
-    O_LPO
-      (λ j, r - (dig (freal a (i + j + 1)) + dig (freal b (i + j + 1) + 1)))
-  with
-  | inl _ → dig (freal a i) + dig (freal b i) + 1
-
-  let c = a i + b i in
-
-  let c := freal_add_series a b in
+  let c := freal_mul_series a b in
+  let v k :=
+    let n := r * (i + k + 2) in
+    if le_dec (r ^ k - 1) (freal_frac (A n)) then 0 else 1
+  in
+  match O_LPO v with
+  | inl _ =>
+      let n := r * (i + 2) in
+      (c i + freal_int (A n) + 1) mod r
+  | inr j =>
+      let n := r * (i + j + 2) in
+      (c i + freal_int (A n)) mod r
+  end.
+bbb.

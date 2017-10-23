@@ -137,6 +137,7 @@ Theorem small_sum : ∀ r, r ≥ 2 →
 But, it works in rationals not in naturals, since i-j can be negative.
 Therefore, we written the same theorem the following way to use
 naturals. *)
+(*
 Theorem small_sum : ∀ r, r ≥ 2 →
   ∀ u, (∀ i, u i ≤ (i + 1) * (r - 1) ^ 2) →
   ∀ i n, n ≥ r * (i + 2) →
@@ -174,3 +175,4 @@ assert
    rewrite Hss; clear Hss.
    rewrite summation_add_distr.
 bbb.
+*)
