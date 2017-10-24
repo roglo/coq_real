@@ -194,7 +194,10 @@ Definition freal_mul {r : radix} (a b : FracReal) :=
 
 Notation "a * b" := (freal_mul a b) : freal_scope.
 
-Definition freal_mul_comm {r : radix} : ∀ x y : FracReal, (x * y = y * x)%F.
+Theorem normalize_freal_mul_comm {r : radix} : ∀ x y : FracReal
+freal (freal_normalize (x * y)%F) i
+
+Theorem freal_mul_comm {r : radix} : ∀ x y : FracReal, (x * y = y * x)%F.
 Proof.
 intros.
 unfold freal_eq.
