@@ -13,7 +13,7 @@ type fracreal = { freal : int → digit };
 value mkdig _ x _ = {dig = x};
 
 value o_LPO u =
-  loop 50 0 where rec loop niter i =
+  loop 20 0 where rec loop niter i =
     if niter = 0 then Inl ()
     else if u i = 0 then loop (niter - 1) (i + 1)
     else Inr (Exist () i ())
@@ -90,7 +90,7 @@ value num q = q.num;
 value den q = q.den;
 
 value rint q = Int.div (num q) (den q).
-value rfrac q = Int.dmod (num q) (den q).
+value rfrac q = mkrat (Int.dmod (num q) (den q)) (den q).
 
 value rec summation_aux b len g =
   match len with
@@ -125,7 +125,9 @@ value mul_test_seq (r : radix) i u k =
   let n = rad r * (i + k + 2) in
   if Int.le_dec
     (Int.pred (Int.pow (rad r) k))
-    (Int.mul (Int.pow (rad r) k) (rfrac (nA r i u n)))
+    (Int.div
+      (Int.mul (Int.pow (rad r) k) (num (rfrac (nA r i u n))))
+      (den (rfrac (nA r i u n))))
   then 0
   else 1
 ;
@@ -150,9 +152,11 @@ value freal_mul (r : radix) (a : fracreal) (b : fracreal) =
 value mkr u = {freal i = mkdig () (u i) ()};
 value rzero = mkr (fun _ -> 0);
 value rhalf = mkr (fun i -> if i = 0 then 5 else 0);
-value rquat = mkr (fun i -> if i = 1 then 1 else 0);
 
 value prr {freal = r} i = r i;
-prr (freal_mul {rad=10} rhalf rhalf) 0; (* faux *)
+prr (freal_mul {rad=10} rhalf rhalf) 0;
 prr (freal_mul {rad=10} rhalf rhalf) 1;
 prr (freal_mul {rad=10} rhalf rhalf) 2;
+
+value rquat = freal_mul {rad=10} rhalf rhalf;
+value r = mkr (fun i -> if i = 0 then 3 else 0);

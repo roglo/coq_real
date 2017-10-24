@@ -153,7 +153,7 @@ Definition freal_mul_series {r : radix} a b i :=
 Record rational := mkrat { num : nat; den : nat }.
 
 Definition rint q := num q / den q.
-Definition rfrac q := num q mod den q.
+Definition rfrac q := mkrat (num q mod den q) (den q).
 
 Definition A {r : radix} i u n :=
   mkrat
@@ -162,7 +162,10 @@ Definition A {r : radix} i u n :=
 
 Definition mul_test_seq {r : radix} i u k :=
   let n := rad * (i + k + 2) in
-  if le_dec (rad ^ k - 1) (rad ^ k * rfrac (A i u n)) then 0 else 1.
+  if le_dec (pred (rad ^ k))
+    (rad ^ k * num (rfrac (A i u n)) / den (rfrac (A i u n)))
+  then 0
+  else 1.
 
 Definition freal_mul_to_seq {r : radix} (a b : FracReal) i :=
   let u := freal_mul_series a b in
