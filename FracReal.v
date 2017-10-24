@@ -144,8 +144,11 @@ Definition sequence_mul (a b : nat → nat) i := Σ (j = 0, i), a j * b (i - j).
 Definition freal_add_series {r : radix} a b :=
   sequence_add (λ i, dig (freal a i)) (λ i, dig (freal b i)).
 
-Definition freal_mul_series {r : radix} a b :=
-  sequence_mul (λ i, dig (freal a i)) (λ i, dig (freal b i)).
+Definition freal_mul_series {r : radix} a b i :=
+  match i with
+  | 0 => 0
+  | S i' => sequence_mul (λ i, dig (freal a i)) (λ i, dig (freal b i)) i'
+  end.
 
 Record rational := mkrat { num : nat; den : nat }.
 
