@@ -133,8 +133,8 @@ Definition freal_eq {r : radix} x y :=
 
 Delimit Scope freal_scope with F.
 
-Notation "a = b" := (freal_eq a b) : freal_scope.
-Notation "a ≠ b" := (¬ freal_eq a b) : freal_scope.
+Notation "a = b" := (freal_eq a b = true) : freal_scope.
+Notation "a ≠ b" := (freal_eq a b = false) : freal_scope.
 
 (* Addition, Multiplication *)
 
@@ -192,4 +192,11 @@ Definition freal_mul {r : radix} (a b : FracReal) :=
   let u := freal_mul_to_seq a b in
   {| freal i := mkdig r (u i) (freal_mul_to_seq_lt_rad a b i) |}.
 
-Print freal_mul.
+Notation "a * b" := (freal_mul a b) : freal_scope.
+
+Definition freal_mul_comm {r : radix} : ∀ x y : FracReal, (x * y = y * x)%F.
+Proof.
+intros.
+unfold freal_eq.
+unfold freal_normalized_eq.
+bbb.
