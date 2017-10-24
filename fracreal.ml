@@ -13,7 +13,7 @@ type fracreal = { freal : int → digit };
 value mkdig _ x _ = {dig = x};
 
 value o_LPO u =
-  loop 100 0 where rec loop niter i =
+  loop 50 0 where rec loop niter i =
     if niter = 0 then Inl ()
     else if u i = 0 then loop (niter - 1) (i + 1)
     else Inr (Exist () i ())
@@ -123,7 +123,10 @@ value nA (r : radix) i u n =
 
 value mul_test_seq (r : radix) i u k =
   let n = rad r * (i + k + 2) in
-  if Int.le_dec (Int.pred (Int.pow (rad r) k)) (rfrac (nA r i u n)) then 0
+  if Int.le_dec
+    (Int.pred (Int.pow (rad r) k))
+    (Int.mul (Int.pow (rad r) k) (rfrac (nA r i u n)))
+  then 0
   else 1
 ;
 

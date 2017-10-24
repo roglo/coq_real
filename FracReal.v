@@ -162,7 +162,7 @@ Definition A {r : radix} i u n :=
 
 Definition mul_test_seq {r : radix} i u k :=
   let n := rad * (i + k + 2) in
-  if le_dec (rad ^ k - 1) (rfrac (A i u n)) then 0 else 1.
+  if le_dec (rad ^ k - 1) (rad ^ k * rfrac (A i u n)) then 0 else 1.
 
 Definition freal_mul_to_seq {r : radix} (a b : FracReal) i :=
   let u := freal_mul_series a b in
