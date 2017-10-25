@@ -199,7 +199,27 @@ Notation "a * b" := (freal_mul a b) : freal_scope.
 Theorem sequence_mul_comm : ∀ f g i, sequence_mul f g i = sequence_mul g f i.
 Proof.
 intros.
-unfold sequence
+unfold sequence_mul.
+revert f g.
+induction i; intros.
+ do 2 rewrite summation_only_one; simpl.
+ apply Nat.mul_comm.
+
+ rewrite summation_split_last; [ symmetry | lia ].
+ rewrite summation_split_first; [ symmetry | lia ].
+ rewrite Nat.sub_0_r, Nat.sub_diag.
+ rewrite Nat.add_comm; f_equal; [ lia | ].
+ rewrite summation_succ_succ.
+ specialize (IHi f (λ i, g (S i))).
+ simpl in IHi.
+ apply eq_trans with (y := Σ (j = 0, i), f j * g (S (i - j))).
+  apply summation_eq_compat; intros j Hji.
+  now rewrite <- Nat.sub_succ_l.
+
+bbb.
+  apply summation_eq_compat; intros j Hji.
+  rewrite Nat.sub_succ.
+
 bbb.
 
 Theorem freal_mul_series_comm {r : radix} : ∀ x y i,

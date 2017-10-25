@@ -373,9 +373,10 @@ rewrite Nat.sub_succ_l; [ idtac | destruct Hi; assumption ].
 apply summation_aux_compat; intros j Hj.
 rewrite Nat.add_0_l; reflexivity.
 Qed.
+*)
 
 Theorem summation_aux_succ_first : ∀ g b len,
-  summation_aux r b (S len) g = (g b + summation_aux r (S b) len g).
+  summation_aux b (S len) g = (g b + summation_aux (S b) len g).
 Proof. reflexivity. Qed.
 
 Theorem summation_split_first : ∀ g b k,
@@ -389,6 +390,7 @@ rewrite <- summation_aux_succ_first.
 rewrite <- Nat.sub_succ_l; [ reflexivity | assumption ].
 Qed.
 
+(*
 Theorem summation_summation_exch : ∀ g k,
   (Σ (j = 0, k), Σ (i = 0, j), g i j =
    Σ (i = 0, k), Σ (j = i, k), g i j).
