@@ -106,6 +106,8 @@ Qed.
 
 (* Frac Real *)
 
+Delimit Scope freal_scope with F.
+
 Record FracReal {r : radix} := { freal : nat → digit }.
 
 Definition digit_sequence_normalize {r : radix} (u : nat → digit) i :=
@@ -122,6 +124,8 @@ Definition digit_sequence_normalize {r : radix} (u : nat → digit) i :=
 Definition freal_normalize {r : radix} x :=
   {| freal := digit_sequence_normalize (freal x) |}.
 
+Arguments freal_normalize r x%F.
+
 Definition freal_normalized_eq {r : radix} x y :=
   match O_LPO (λ i, dig (freal x i) - dig (freal y i)) with
   | inl _ => true
@@ -130,8 +134,6 @@ Definition freal_normalized_eq {r : radix} x y :=
 
 Definition freal_eq {r : radix} x y :=
   freal_normalized_eq (freal_normalize x) (freal_normalize y).
-
-Delimit Scope freal_scope with F.
 
 Notation "a = b" := (freal_eq a b = true) : freal_scope.
 Notation "a ≠ b" := (freal_eq a b = false) : freal_scope.
@@ -194,8 +196,25 @@ Definition freal_mul {r : radix} (a b : FracReal) :=
 
 Notation "a * b" := (freal_mul a b) : freal_scope.
 
-Theorem normalize_freal_mul_comm {r : radix} : ∀ x y : FracReal
-freal (freal_normalize (x * y)%F) i
+Theorem normalize_freal_mul_comm {r : radix} : ∀ x y : FracReal,
+  ∀ i, freal (freal_normalize (x * y)) i = freal (freal_normalize (y * x)) i.
+Proof.
+intros.
+unfold freal_normalize.
+remember (freal (x * y)%F) as xy.
+remember (freal (y * x)%F) as yx.
+simpl.
+unfold digit_sequence_normalize.
+destruct (O_LPO (λ j : nat, rad - 1 - dig (xy (i + j + 1)))) as [Hxy| Hxy].
+ destruct (O_LPO (λ j : nat, rad - 1 - dig (yx (i + j + 1)))) as [Hyx| Hyx].
+  destruct (lt_dec (S (dig (xy i))) rad) as [Hrxy| Hrxy].
+   destruct (lt_dec (S (dig (yx i))) rad) as [Hryx| Hryx].
+    apply digit_eq_eq; unfold digit_eq; simpl.
+    subst xy yx.
+    f_equal; f_equal.
+    apply digit_eq_eq; unfold digit_eq; simpl.
+    unfold freal_mul_to_seq.
+bbb.
 
 Theorem freal_mul_comm {r : radix} : ∀ x y : FracReal, (x * y = y * x)%F.
 Proof.
