@@ -196,6 +196,14 @@ Definition freal_mul {r : radix} (a b : FracReal) :=
 
 Notation "a * b" := (freal_mul a b) : freal_scope.
 
+Theorem freal_mul_series_comm {r : radix} : ∀ x y i,
+  freal_mul_series x y i = freal_mul_series y x i.
+Proof.
+intros.
+destruct i; [ easy | simpl ].
+unfold sequence_mul.
+bbb.
+
 Theorem normalize_freal_mul_comm {r : radix} : ∀ x y : FracReal,
   ∀ i, freal (freal_normalize (x * y)) i = freal (freal_normalize (y * x)) i.
 Proof.
@@ -214,6 +222,8 @@ destruct (O_LPO (λ j : nat, rad - 1 - dig (xy (i + j + 1)))) as [Hxy| Hxy].
     f_equal; f_equal.
     apply digit_eq_eq; unfold digit_eq; simpl.
     unfold freal_mul_to_seq.
+    destruct (O_LPO (mul_test_seq i (freal_mul_series x y))) as [Hfxy| Hfxy].
+     destruct (O_LPO (mul_test_seq i (freal_mul_series y x))) as [Hfyx| Hfyx].
 bbb.
 
 Theorem freal_mul_comm {r : radix} : ∀ x y : FracReal, (x * y = y * x)%F.
