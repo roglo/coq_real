@@ -200,8 +200,8 @@ Theorem freal_mul_series_comm {r : radix} : ∀ x y i,
   freal_mul_series x y i = freal_mul_series y x i.
 Proof.
 intros.
-destruct i; [ easy | simpl ].
-unfold sequence_mul.
+unfold freal_mul_series.
+destruct i; [ easy | ].
 bbb.
 
 Theorem normalize_freal_mul_comm {r : radix} : ∀ x y : FracReal,
