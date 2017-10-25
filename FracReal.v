@@ -196,12 +196,19 @@ Definition freal_mul {r : radix} (a b : FracReal) :=
 
 Notation "a * b" := (freal_mul a b) : freal_scope.
 
+Theorem sequence_mul_comm : ∀ f g i, sequence_mul f g i = sequence_mul g f i.
+Proof.
+intros.
+unfold sequence
+bbb.
+
 Theorem freal_mul_series_comm {r : radix} : ∀ x y i,
   freal_mul_series x y i = freal_mul_series y x i.
 Proof.
 intros.
 unfold freal_mul_series.
 destruct i; [ easy | ].
+apply sequence_mul_comm.
 bbb.
 
 Theorem normalize_freal_mul_comm {r : radix} : ∀ x y : FracReal,
