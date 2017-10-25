@@ -210,17 +210,10 @@ induction i; intros.
  rewrite Nat.sub_0_r, Nat.sub_diag.
  rewrite Nat.add_comm; f_equal; [ lia | ].
  rewrite summation_succ_succ.
- specialize (IHi f (λ i, g (S i))).
- simpl in IHi.
- apply eq_trans with (y := Σ (j = 0, i), f j * g (S (i - j))).
-  apply summation_eq_compat; intros j Hji.
-  now rewrite <- Nat.sub_succ_l.
-
-bbb.
-  apply summation_eq_compat; intros j Hji.
-  rewrite Nat.sub_succ.
-
-bbb.
+ rewrite <- IHi.
+ apply summation_eq_compat; intros j Hj.
+ now rewrite <- Nat.sub_succ_l.
+Qed.
 
 Theorem freal_mul_series_comm {r : radix} : ∀ x y i,
   freal_mul_series x y i = freal_mul_series y x i.
@@ -229,7 +222,7 @@ intros.
 unfold freal_mul_series.
 destruct i; [ easy | ].
 apply sequence_mul_comm.
-bbb.
+Qed.
 
 Theorem normalize_freal_mul_comm {r : radix} : ∀ x y : FracReal,
   ∀ i, freal (freal_normalize (x * y)) i = freal (freal_normalize (y * x)) i.
@@ -251,6 +244,13 @@ destruct (O_LPO (λ j : nat, rad - 1 - dig (xy (i + j + 1)))) as [Hxy| Hxy].
     unfold freal_mul_to_seq.
     destruct (O_LPO (mul_test_seq i (freal_mul_series x y))) as [Hfxy| Hfxy].
      destruct (O_LPO (mul_test_seq i (freal_mul_series y x))) as [Hfyx| Hfyx].
+      f_equal; f_equal.
+      rewrite freal_mul_series_comm; f_equal; f_equal.
+      unfold A; f_equal.
+      apply summation_eq_compat; intros j Hji.
+      f_equal; apply freal_mul_series_comm.
+
+      destruct Hfyx as (h, Hfyx).
 bbb.
 
 Theorem freal_mul_comm {r : radix} : ∀ x y : FracReal, (x * y = y * x)%F.
