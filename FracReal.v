@@ -251,6 +251,12 @@ destruct (O_LPO (λ j : nat, rad - 1 - dig (xy (i + j + 1)))) as [Hxy| Hxy].
       f_equal; apply freal_mul_series_comm.
 
       destruct Hfyx as (h, Hfyx).
+      remember (freal_mul_series y x) as fm.
+      unfold mul_test_seq in Hfyx.
+      remember (rfrac (A i fm (rad * (i + h + 2)))) as ra.
+      remember (rad ^ h * num ra / den ra) as rnd.
+      destruct (le_dec (pred (rad ^ h)) rnd) as [| H]; [ easy | subst rnd ].
+      clear Hfyx.
 bbb.
 
 Theorem freal_mul_comm {r : radix} : ∀ x y : FracReal, (x * y = y * x)%F.
