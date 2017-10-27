@@ -154,8 +154,8 @@ Definition freal_mul_series {r : radix} a b i :=
 
 Record rational := mkrat { num : nat; den : nat }.
 
-Definition rint q := num q / den q.
-Definition rfrac q := mkrat (num q mod den q) (den q).
+Definition rdiv q := num q / den q.
+Definition rmod q := num q mod den q.
 
 Definition A {r : radix} i u n :=
   mkrat
@@ -164,9 +164,7 @@ Definition A {r : radix} i u n :=
 
 Definition mul_test_seq {r : radix} i u k :=
   let n := rad * (i + k + 2) in
-  if le_dec (pred (rad ^ k))
-    (rad ^ k * num (rfrac (A i u n)) / den (rfrac (A i u n)))
-  then 0
+  if le_dec (pred (rad ^ k)) (rad ^ k * rmod (A i u n) / den (A i u n)) then 0
   else 1.
 
 Definition freal_mul_to_seq {r : radix} (a b : FracReal) i :=
@@ -174,10 +172,10 @@ Definition freal_mul_to_seq {r : radix} (a b : FracReal) i :=
   match O_LPO (mul_test_seq i u) with
   | inl _ =>
       let n := rad * (i + 2) in
-      (u i + rint (A i u n) + 1) mod rad
+      (u i + rdiv (A i u n) + 1) mod rad
   | inr (exist _ j _) =>
       let n := rad * (i + j + 2) in
-      (u i + rint (A i u n)) mod rad
+      (u i + rdiv (A i u n)) mod rad
   end.
 
 Theorem freal_mul_to_seq_lt_rad {r : radix} : ∀ a b i,
@@ -253,11 +251,11 @@ destruct (O_LPO (λ j : nat, rad - 1 - dig (xy (i + j + 1)))) as [Hxy| Hxy].
       destruct Hfyx as (h, Hfyx).
       remember (freal_mul_series y x) as fm.
       unfold mul_test_seq in Hfyx.
-      remember (rfrac (A i fm (rad * (i + h + 2)))) as ra.
-      remember (rad ^ h * num ra / den ra) as rnd.
+      remember (A i fm (rad * (i + h + 2))) as ai.
+      remember (rad ^ h * rmod ai / den ai) as rnd.
       destruct (le_dec (pred (rad ^ h)) rnd) as [| H]; [ easy | subst rnd ].
       clear Hfyx.
-      subst fm.
+      subst fm ai.
       rewrite freal_mul_series_comm.
 bbb.
 
