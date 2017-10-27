@@ -88,7 +88,7 @@ value num q = q.num;
 value den q = q.den;
 
 value rdiv q = Int.div (num q) (den q).
-value rfrac q = mkrat (Int.dmod (num q) (den q)) (den q).
+value rmod q = Int.dmod (num q) (den q).
 
 value rec summation_aux b len g =
   match len with
@@ -124,7 +124,7 @@ value mul_test_seq (r : radix) i u k =
   if Int.le_dec
     (Int.pred (Int.pow (rad r) k))
     (Int.div
-      (Int.mul (Int.pow (rad r) k) (num (rfrac (nA r i u n))))
+      (Int.mul (Int.pow (rad r) k) (rmod (nA r i u n)))
       (den (nA r i u n)))
   then 0
   else 1
@@ -158,3 +158,11 @@ prr (freal_mul {rad=10} rhalf rhalf) 2;
 
 value rquat = freal_mul {rad=10} rhalf rhalf;
 value r = mkr (fun i -> if i = 0 then 3 else 0);
+
+(*
+prr (freal_mul {rad=10} rquat rhalf) 0;
+prr (freal_mul {rad=10} rquat rhalf) 1;
+prr (freal_mul {rad=10} rquat rhalf) 2;
+prr (freal_mul {rad=10} rquat rhalf) 3;
+prr (freal_mul {rad=10} rquat rhalf) 4;
+*)
