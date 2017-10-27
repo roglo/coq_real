@@ -87,7 +87,7 @@ value mkrat n d = {num = n; den = d}.
 value num q = q.num;
 value den q = q.den;
 
-value rint q = Int.div (num q) (den q).
+value rquot q = Int.div (num q) (den q).
 value rfrac q = mkrat (Int.dmod (num q) (den q)) (den q).
 
 value rec summation_aux b len g =
@@ -135,10 +135,10 @@ value freal_mul_to_seq (r : radix) (a : fracreal) (b : fracreal) i =
   match o_LPO (mul_test_seq r i u) with
   | Inl _ →
       let n = rad r * (i + 2) in
-      Int.modi (Int.add (u i) (Int.succ (rint (nA r i u n)))) (rad r)
+      Int.modi (Int.add (u i) (Int.succ (rquot (nA r i u n)))) (rad r)
   | Inr (Exist _ j _) →
       let n = rad r * (i + j + 2) in
-      Int.modi (Int.add (u i) (rint (nA r i u n))) (rad r)
+      Int.modi (Int.add (u i) (rquot (nA r i u n))) (rad r)
   end.
 
 value freal_mul_to_seq_lt_rad a b i = ();
