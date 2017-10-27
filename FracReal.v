@@ -250,13 +250,13 @@ destruct (O_LPO (λ j : nat, rad - 1 - dig (xy (i + j + 1)))) as [Hxy| Hxy].
 
       destruct Hfyx as (k, Hfyx).
       unfold mul_test_seq in Hfyx.
-      remember (freal_mul_series y x) as fm.
-      remember (A i fm (rad * (i + k + 2))) as ai.
+      remember (freal_mul_series y x) as u.
+      remember (A i u (rad * (i + k + 2))) as ai.
       remember (rad ^ k * rmod ai / den ai) as rnd.
       destruct (le_dec (pred (rad ^ k)) rnd) as [| H]; [ easy | subst rnd ].
       clear Hfyx.
 bbb.
-      rewrite freal_mul_series_comm, <- Heqfm.
+      rewrite freal_mul_series_comm, <- Hequ.
       rewrite <- Nat.add_assoc.
       rewrite Nat.add_mod; [ symmetry | apply radix_ne_0 ].
       rewrite Nat.add_mod; [ symmetry | apply radix_ne_0 ].
