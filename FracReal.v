@@ -256,6 +256,10 @@ destruct (O_LPO (λ j : nat, rad - 1 - dig (xy (i + j + 1)))) as [Hxy| Hxy].
       destruct (le_dec (pred (rad ^ h)) rnd) as [| H]; [ easy | subst rnd ].
       clear Hfyx.
       rewrite freal_mul_series_comm, <- Heqfm.
+      rewrite <- Nat.add_assoc.
+      rewrite Nat.add_mod; [ symmetry | apply radix_ne_0 ].
+      rewrite Nat.add_mod; [ symmetry | apply radix_ne_0 ].
+      f_equal; f_equal.
 bbb.
 
 Theorem freal_mul_comm {r : radix} : ∀ x y : FracReal, (x * y = y * x)%F.
