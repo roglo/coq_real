@@ -1,8 +1,6 @@
 (* test real numbers *)
 
-(*
 #load "nums.cma";
-*)
 
 type sum α β = [ Inl of α | Inr of β ].
 type tsig α = [ Exist of unit and α and unit ].
