@@ -255,6 +255,7 @@ destruct (O_LPO (λ j : nat, rad - 1 - dig (xy (i + j + 1)))) as [Hxy| Hxy].
       remember (rad ^ k * rmod ai / den ai) as rnd.
       destruct (le_dec (pred (rad ^ k)) rnd) as [| H]; [ easy | subst rnd ].
       clear Hfyx.
+      apply Nat.nle_gt in H.
 bbb.
       rewrite freal_mul_series_comm, <- Hequ.
       rewrite <- Nat.add_assoc.
