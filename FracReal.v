@@ -234,6 +234,15 @@ apply summation_eq_compat; intros j Hj.
 now rewrite freal_mul_series_comm.
 Qed.
 
+Theorem mul_test_seq_freal_mul_series_comm {r : radix} : ∀ x y i k,
+  mul_test_seq i (freal_mul_series x y) k =
+  mul_test_seq i (freal_mul_series y x) k.
+Proof.
+intros.
+unfold mul_test_seq.
+now rewrite A_freal_mul_series_comm.
+Qed.
+
 Theorem normalize_freal_mul_comm {r : radix} : ∀ x y : FracReal,
   ∀ i, freal (freal_normalize (x * y)) i = freal (freal_normalize (y * x)) i.
 Proof.
@@ -277,19 +286,10 @@ destruct (O_LPO (λ j : nat, rad - 1 - dig (xy (i + j + 1)))) as [Hxy| Hxy].
        now rewrite A_freal_mul_series_comm.
 
        destruct Hfyx as (k, Hfyx).
-       unfold mul_test_seq in Hfyx.
-       remember (freal_mul_series y x) as fm.
-       remember (A i (rad * (i + k + 2)) fm) as ai.
-       remember (rad ^ k * rmod ai / den ai) as rnd.
-       destruct (le_dec (pred (rad ^ k)) rnd) as [| H]; [ easy | subst rnd ].
-       clear Hfyx.
-       rewrite freal_mul_series_comm, <- Heqfm.
-       rewrite <- Nat.add_assoc.
-       rewrite Nat.add_mod; [ symmetry | apply radix_ne_0 ].
-       rewrite Nat.add_mod; [ symmetry | apply radix_ne_0 ].
-       f_equal; f_equal.
-       rewrite Heqai, Heqfm; symmetry.
-       rewrite A_freal_mul_series_comm; symmetry.
+       specialize (Hfxy k).
+       now rewrite mul_test_seq_freal_mul_series_comm in Hfxy.
+
+      destruct Hfxy as (k, Hfxy).
 bbb.
 
 Theorem freal_mul_comm {r : radix} : ∀ x y : FracReal, (x * y = y * x)%F.
