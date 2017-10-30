@@ -113,7 +113,7 @@ value freal_mul_series (r : radix) a b i =
 	(fun i → Int.of_int (dig (freal b i))) i'
   end.
 
-value nA (r : radix) i u n =
+value nA (r : radix) i n u =
   mkrat
     (summation (i + 1) (n - 1)
        (fun j → Int.mul (u j) (Int.pow (rad r) (n - 1 - j))))
@@ -124,8 +124,8 @@ value mul_test_seq (r : radix) i u k =
   if Int.le_dec
     (Int.pred (Int.pow (rad r) k))
     (Int.div
-      (Int.mul (Int.pow (rad r) k) (rmod (nA r i u n)))
-      (den (nA r i u n)))
+      (Int.mul (Int.pow (rad r) k) (rmod (nA r i n u)))
+      (den (nA r i n u)))
   then 0
   else 1
 ;
@@ -135,10 +135,10 @@ value freal_mul_to_seq (r : radix) (a : fracreal) (b : fracreal) i =
   match o_LPO (mul_test_seq r i u) with
   | Inl _ →
       let n = rad r * (i + 2) in
-      Int.modi (Int.add (u i) (Int.succ (rdiv (nA r i u n)))) (rad r)
+      Int.modi (Int.add (u i) (Int.succ (rdiv (nA r i n u)))) (rad r)
   | Inr (Exist _ j _) →
       let n = rad r * (i + j + 2) in
-      Int.modi (Int.add (u i) (rdiv (nA r i u n))) (rad r)
+      Int.modi (Int.add (u i) (rdiv (nA r i n u))) (rad r)
   end.
 
 value freal_mul_to_seq_lt_rad a b i = ();
