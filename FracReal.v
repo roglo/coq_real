@@ -290,12 +290,22 @@ destruct (O_LPO (λ j : nat, rad - 1 - dig (xy (i + j + 1)))) as [Hxy| Hxy].
        now rewrite mul_test_seq_freal_mul_series_comm in Hfxy.
 
       destruct Hfxy as (k, Hfxy).
+      rewrite mul_test_seq_freal_mul_series_comm in Hfxy.
       destruct (O_LPO (mul_test_seq i (freal_mul_series y x))) as [Hfyx| Hfyx].
-       rewrite mul_test_seq_freal_mul_series_comm in Hfxy.
        now rewrite Hfyx in Hfxy.
 
        destruct Hfyx as (l, Hfyx).
        f_equal; f_equal; [ apply freal_mul_series_comm | ].
+       rewrite A_freal_mul_series_comm.
+       remember (freal_mul_series y x) as yx.
+       unfold mul_test_seq in Hfxy, Hfyx.
+       remember (A i (rad * (i + k + 2)) yx) as a1.
+       remember (A i (rad * (i + l + 2)) yx) as a2.
+       remember (rad ^ k * rmod a1 / den a1) as r1.
+       destruct (le_dec (pred (rad ^ k)) r1) as [H1| H1]; [ easy | clear Hfxy ].
+       remember (rad ^ l * rmod a2 / den a2) as r2.
+       destruct (le_dec (pred (rad ^ l)) r2) as [H2| H2]; [ easy | clear Hfyx ].
+       subst r1 a1 r2 a2.
 bbb.
 
 Theorem freal_mul_comm {r : radix} : ∀ x y : FracReal, (x * y = y * x)%F.
