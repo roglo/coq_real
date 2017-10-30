@@ -111,8 +111,6 @@ Delimit Scope freal_scope with F.
 Record FracReal {r : radix} := { freal : nat → digit }.
 Arguments freal r _%F.
 
-bbb.
-(* possible problem here: r - 1 - uij1 = 0 → uij1 ≥ r - 1 not = *)
 Definition digit_sequence_normalize {r : radix} (u : nat → digit) i :=
   match O_LPO (λ j : nat, rad - 1 - dig (u (i + j + 1))) with
   | inl _ =>
@@ -235,43 +233,51 @@ remember (freal (y * x)%F) as yx.
 simpl.
 unfold digit_sequence_normalize.
 destruct (O_LPO (λ j : nat, rad - 1 - dig (xy (i + j + 1)))) as [Hxy| Hxy].
-(**)
-assert (∀ j, j ≥ i + 1 → dig (freal (x * y) j) = rad - 1).
- intros j Hji; subst xy.
- specialize (Hxy (j - (i + 1))).
- replace (i + (j - (i + 1)) + 1) with j in Hxy by lia.
-(* ah oui mais non *)
+ assert (H : ∀ j, j ≥ i + 1 → dig (freal (x * y) j) = rad - 1).
+  intros j Hji; subst xy.
+  specialize (Hxy (j - (i + 1))).
+  replace (i + (j - (i + 1)) + 1) with j in Hxy by lia.
+  enough (dig (freal (x * y) j) < rad) by lia.
+  apply digi.
 
-bbb.
- destruct (O_LPO (λ j : nat, rad - 1 - dig (yx (i + j + 1)))) as [Hyx| Hyx].
-  destruct (lt_dec (S (dig (xy i))) rad) as [Hrxy| Hrxy].
-   destruct (lt_dec (S (dig (yx i))) rad) as [Hryx| Hryx].
-    apply digit_eq_eq; unfold digit_eq; simpl.
-    subst xy yx.
-    f_equal; f_equal.
-    apply digit_eq_eq; unfold digit_eq; simpl.
-    unfold freal_mul_to_seq.
-    destruct (O_LPO (mul_test_seq i (freal_mul_series x y))) as [Hfxy| Hfxy].
-     destruct (O_LPO (mul_test_seq i (freal_mul_series y x))) as [Hfyx| Hfyx].
-      f_equal; f_equal.
-      rewrite freal_mul_series_comm; f_equal; f_equal.
-      unfold A; f_equal.
-      apply summation_eq_compat; intros j Hji.
-      f_equal; apply freal_mul_series_comm.
+  clear Hxy; rename H into Hxy.
+  destruct (O_LPO (λ j : nat, rad - 1 - dig (yx (i + j + 1)))) as [Hyx| Hyx].
+   assert (H : ∀ j, j ≥ i + 1 → dig (freal (y * x) j) = rad - 1).
+   intros j Hji; subst yx.
+   specialize (Hyx (j - (i + 1))).
+   replace (i + (j - (i + 1)) + 1) with j in Hyx by lia.
+   enough (dig (freal (y * x) j) < rad) by lia.
+   apply digi.
 
-      destruct Hfyx as (k, Hfyx).
-      unfold mul_test_seq in Hfyx.
-      remember (freal_mul_series y x) as fm.
-      remember (A i fm (rad * (i + k + 2))) as ai.
-      remember (rad ^ k * rmod ai / den ai) as rnd.
-      destruct (le_dec (pred (rad ^ k)) rnd) as [| H]; [ easy | subst rnd ].
-      clear Hfyx.
-      rewrite freal_mul_series_comm, <- Heqfm.
-      rewrite <- Nat.add_assoc.
-      rewrite Nat.add_mod; [ symmetry | apply radix_ne_0 ].
-      rewrite Nat.add_mod; [ symmetry | apply radix_ne_0 ].
-      f_equal; f_equal.
-      rewrite Heqai, Heqfm.
+   clear Hyx; rename H into Hyx.
+   destruct (lt_dec (S (dig (xy i))) rad) as [Hrxy| Hrxy].
+    destruct (lt_dec (S (dig (yx i))) rad) as [Hryx| Hryx].
+     apply digit_eq_eq; unfold digit_eq; simpl.
+     subst xy yx.
+     f_equal; f_equal.
+     apply digit_eq_eq; unfold digit_eq; simpl.
+     unfold freal_mul_to_seq.
+     destruct (O_LPO (mul_test_seq i (freal_mul_series x y))) as [Hfxy| Hfxy].
+      destruct (O_LPO (mul_test_seq i (freal_mul_series y x))) as [Hfyx| Hfyx].
+       f_equal; f_equal.
+       rewrite freal_mul_series_comm; f_equal; f_equal.
+       unfold A; f_equal.
+       apply summation_eq_compat; intros j Hji.
+       f_equal; apply freal_mul_series_comm.
+
+       destruct Hfyx as (k, Hfyx).
+       unfold mul_test_seq in Hfyx.
+       remember (freal_mul_series y x) as fm.
+       remember (A i fm (rad * (i + k + 2))) as ai.
+       remember (rad ^ k * rmod ai / den ai) as rnd.
+       destruct (le_dec (pred (rad ^ k)) rnd) as [| H]; [ easy | subst rnd ].
+       clear Hfyx.
+       rewrite freal_mul_series_comm, <- Heqfm.
+       rewrite <- Nat.add_assoc.
+       rewrite Nat.add_mod; [ symmetry | apply radix_ne_0 ].
+       rewrite Nat.add_mod; [ symmetry | apply radix_ne_0 ].
+       f_equal; f_equal.
+       rewrite Heqai, Heqfm.
 bbb.
 
 Theorem freal_mul_comm {r : radix} : ∀ x y : FracReal, (x * y = y * x)%F.
