@@ -251,11 +251,13 @@ destruct (O_LPO (λ j : nat, rad - 1 - dig (xy (i + j + 1)))) as [Hxy| Hxy].
 
    clear Hyx; rename H into Hyx.
    destruct (lt_dec (S (dig (xy i))) rad) as [Hrxy| Hrxy].
+    unfold freal_mul in Heqxy; simpl in Heqxy.
+    subst xy; simpl in Hrxy; simpl.
     destruct (lt_dec (S (dig (yx i))) rad) as [Hryx| Hryx].
+     unfold freal_mul in Heqyx; simpl in Heqyx.
+     subst yx; simpl in Hryx; simpl.
      apply digit_eq_eq; unfold digit_eq; simpl.
-     subst xy yx.
-     f_equal; f_equal.
-     apply digit_eq_eq; unfold digit_eq; simpl.
+     f_equal.
      unfold freal_mul_to_seq.
      destruct (O_LPO (mul_test_seq i (freal_mul_series x y))) as [Hfxy| Hfxy].
       destruct (O_LPO (mul_test_seq i (freal_mul_series y x))) as [Hfyx| Hfyx].
