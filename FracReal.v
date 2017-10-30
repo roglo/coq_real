@@ -233,21 +233,21 @@ remember (freal (y * x)%F) as yx.
 simpl.
 unfold digit_sequence_normalize.
 destruct (O_LPO (λ j : nat, rad - 1 - dig (xy (i + j + 1)))) as [Hxy| Hxy].
- assert (H : ∀ j, j ≥ i + 1 → dig (freal (x * y) j) = rad - 1).
+ assert (H : ∀ j, j ≥ i + 1 → freal_mul_to_seq x y j = rad - 1).
   intros j Hji; subst xy.
   specialize (Hxy (j - (i + 1))).
   replace (i + (j - (i + 1)) + 1) with j in Hxy by lia.
-  enough (dig (freal (x * y) j) < rad) by lia.
-  apply digi.
+  assert (dig (freal (x * y) j) < rad) by apply digi.
+  unfold freal_mul in Hxy, H; simpl in Hxy, H; lia.
 
   clear Hxy; rename H into Hxy.
   destruct (O_LPO (λ j : nat, rad - 1 - dig (yx (i + j + 1)))) as [Hyx| Hyx].
-   assert (H : ∀ j, j ≥ i + 1 → dig (freal (y * x) j) = rad - 1).
+   assert (H : ∀ j, j ≥ i + 1 → freal_mul_to_seq y x j = rad - 1).
    intros j Hji; subst yx.
    specialize (Hyx (j - (i + 1))).
    replace (i + (j - (i + 1)) + 1) with j in Hyx by lia.
-   enough (dig (freal (y * x) j) < rad) by lia.
-   apply digi.
+   assert (dig (freal (y * x) j) < rad) by apply digi.
+   unfold freal_mul in Hyx, H; simpl in Hyx, H; lia.
 
    clear Hyx; rename H into Hyx.
    destruct (lt_dec (S (dig (xy i))) rad) as [Hrxy| Hrxy].
