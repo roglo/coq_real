@@ -158,14 +158,14 @@ Record rational := mkrat { num : nat; den : nat }.
 Definition rdiv q := num q / den q.
 Definition rmod q := num q mod den q.
 
-Definition A {r : radix} i u n :=
+Definition A {r : radix} i n u :=
   mkrat
     (Σ (j = i + 1, n - 1), u j * rad ^ (n - 1 - j))
     (rad ^ (n - 1 - i)).
 
 Definition mul_test_seq {r : radix} i u k :=
   let n := rad * (i + k + 2) in
-  if le_dec (pred (rad ^ k)) (rad ^ k * rmod (A i u n) / den (A i u n)) then 0
+  if le_dec (pred (rad ^ k)) (rad ^ k * rmod (A i n u) / den (A i n u)) then 0
   else 1.
 
 Definition freal_mul_to_seq {r : radix} (a b : FracReal) i :=
@@ -173,10 +173,10 @@ Definition freal_mul_to_seq {r : radix} (a b : FracReal) i :=
   match O_LPO (mul_test_seq i u) with
   | inl _ =>
       let n := rad * (i + 2) in
-      (u i + rdiv (A i u n) + 1) mod rad
+      (u i + rdiv (A i n u) + 1) mod rad
   | inr (exist _ j _) =>
       let n := rad * (i + j + 2) in
-      (u i + rdiv (A i u n)) mod rad
+      (u i + rdiv (A i n u)) mod rad
   end.
 
 Theorem freal_mul_to_seq_lt_rad {r : radix} : ∀ a b i,
@@ -226,7 +226,7 @@ Qed.
 Print A.
 
 Theorem A_freal_mul_series_comm {r : radix} : ∀ x y i n,
-  A i (freal_mul_series x y) n = A i (freal_mul_series y x) n.
+  A i n (freal_mul_series x y) = A i n (freal_mul_series y x).
 Proof.
 intros.
 unfold A; simpl; f_equal.
@@ -279,7 +279,7 @@ destruct (O_LPO (λ j : nat, rad - 1 - dig (xy (i + j + 1)))) as [Hxy| Hxy].
        destruct Hfyx as (k, Hfyx).
        unfold mul_test_seq in Hfyx.
        remember (freal_mul_series y x) as fm.
-       remember (A i fm (rad * (i + k + 2))) as ai.
+       remember (A i (rad * (i + k + 2)) fm) as ai.
        remember (rad ^ k * rmod ai / den ai) as rnd.
        destruct (le_dec (pred (rad ^ k)) rnd) as [| H]; [ easy | subst rnd ].
        clear Hfyx.
