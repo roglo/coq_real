@@ -127,10 +127,11 @@ Definition freal_normalize {r : radix} x :=
 
 Arguments freal_normalize r x%F.
 
-(* est-ce que c'est bon, ça ? a - b = 0 n'est pas équivalent à a = b *)
-bbb.
+Definition eq_freal_seq {r : radix} x y i :=
+  if Nat.eq_dec (dig (freal x i)) (dig (freal y i)) then 0 else 1.
+
 Definition freal_normalized_eq {r : radix} x y :=
-  match O_LPO (λ i, dig (freal x i) - dig (freal y i)) with
+  match O_LPO (eq_freal_seq x y) with
   | inl _ => true
   | inr _ => false
   end.
@@ -313,10 +314,13 @@ unfold freal_eq.
 remember (freal_normalize (x * y)) as nxy eqn:Hnxy.
 remember (freal_normalize (y * x)) as nyx eqn:Hnyx.
 unfold freal_normalized_eq.
-destruct (O_LPO (λ i, dig (freal nxy i) - dig (freal nyx i))) as [H| H].
+destruct (O_LPO (eq_freal_seq nxy nyx)) as [H| H]; [ easy | ].
+exfalso.
+destruct H as (i, Hi).
+apply Hi; clear Hi.
+unfold eq_freal_seq.
+destruct (Nat.eq_dec (dig (freal nxy i)) (dig (freal nyx i))) as [H| H].
  easy.
 
- exfalso.
- destruct H as (i, Hi).
- apply Hi; clear Hi.
+ exfalso; apply H; clear H.
 bbb.
