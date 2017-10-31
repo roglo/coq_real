@@ -242,6 +242,12 @@ unfold mul_test_seq.
 now rewrite A_freal_mul_series_comm.
 Qed.
 
+Theorem dig_norm_mul_com {r : radix} : ∀ x y i,
+  dig (freal (freal_normalize (x * y)) i) = dig (freal (freal_normalize (y * x)) i).
+Proof.
+intros.
+bbb.
+
 Theorem normalize_freal_mul_comm {r : radix} : ∀ x y : FracReal,
   ∀ i, freal (freal_normalize (x * y)) i = freal (freal_normalize (y * x)) i.
 Proof.
@@ -323,4 +329,5 @@ destruct (Nat.eq_dec (dig (freal nxy i)) (dig (freal nyx i))) as [H| H].
  easy.
 
  exfalso; apply H; clear H.
+ subst nxy nyx.
 bbb.
