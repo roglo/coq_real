@@ -127,6 +127,8 @@ Definition freal_normalize {r : radix} x :=
 
 Arguments freal_normalize r x%F.
 
+(* est-ce que c'est bon, ça ? a - b = 0 n'est pas équivalent à a = b *)
+bbb.
 Definition freal_normalized_eq {r : radix} x y :=
   match O_LPO (λ i, dig (freal x i) - dig (freal y i)) with
   | inl _ => true
