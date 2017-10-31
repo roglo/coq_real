@@ -302,11 +302,19 @@ destruct (O_LPO (λ j : nat, rad - 1 - dig (xy (i + j + 1)))) as [Hxy| Hxy].
        remember (rad ^ l * rmod a2 / den a2) as r2.
        destruct (le_dec (pred (rad ^ l)) r2) as [H2| H2]; [ easy | clear Hfyx ].
        subst r1 a1 r2 a2.
-bbb.
+Abort.
 
 Theorem freal_mul_comm {r : radix} : ∀ x y : FracReal, (x * y = y * x)%F.
 Proof.
 intros.
 unfold freal_eq.
+remember (freal_normalize (x * y)) as nxy eqn:Hnxy.
+remember (freal_normalize (y * x)) as nyx eqn:Hnyx.
 unfold freal_normalized_eq.
+destruct (O_LPO (λ i, dig (freal nxy i) - dig (freal nyx i))) as [H| H].
+ easy.
+
+ exfalso.
+ destruct H as (i, Hi).
+ apply Hi; clear Hi.
 bbb.
