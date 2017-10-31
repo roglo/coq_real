@@ -171,12 +171,8 @@ Definition mul_test_seq {r : radix} i u k :=
 Definition freal_mul_to_seq {r : radix} (a b : FracReal) i :=
   let u := freal_mul_series a b in
   match O_LPO (mul_test_seq i u) with
-  | inl _ =>
-      let n := rad * (i + 2) in
-      (u i + rdiv (A i n u) + 1) mod rad
-  | inr (exist _ j _) =>
-      let n := rad * (i + j + 2) in
-      (u i + rdiv (A i n u)) mod rad
+  | inl _ => (u i + rdiv (A i (rad * (i + 2)) u) + 1) mod rad
+  | inr (exist _ j _) => (u i + rdiv (A i (rad * (i + j + 2)) u)) mod rad
   end.
 
 Theorem freal_mul_to_seq_lt_rad {r : radix} : ∀ a b i,
