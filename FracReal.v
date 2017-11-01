@@ -247,16 +247,6 @@ Theorem dig_norm_mul_com {r : radix} : ∀ x y i,
   dig (freal (freal_normalize (y * x)) i).
 Proof.
 intros.
-bbb.
-
-Theorem normalize_freal_mul_comm {r : radix} : ∀ x y : FracReal,
-  ∀ i, freal (freal_normalize (x * y)) i = freal (freal_normalize (y * x)) i.
-Proof.
-intros.
-apply digit_eq_eq.
-apply dig_norm_mul_com.
-bbb.
-
 unfold freal_normalize.
 remember (freal (x * y)%F) as xy.
 remember (freal (y * x)%F) as yx.
@@ -286,7 +276,6 @@ destruct (O_LPO (λ j : nat, rad - 1 - dig (xy (i + j + 1)))) as [Hxy| Hxy].
     destruct (lt_dec (S (dig (yx i))) rad) as [Hryx| Hryx].
      unfold freal_mul in Heqyx; simpl in Heqyx.
      subst yx; simpl in Hryx; simpl.
-     apply digit_eq_eq; unfold digit_eq; simpl.
      f_equal.
      unfold freal_mul_to_seq.
      destruct (O_LPO (mul_test_seq i (freal_mul_series x y))) as [Hfxy| Hfxy].
@@ -316,7 +305,7 @@ destruct (O_LPO (λ j : nat, rad - 1 - dig (xy (i + j + 1)))) as [Hxy| Hxy].
        remember (rad ^ l * rmod a2 / den a2) as r2.
        destruct (le_dec (pred (rad ^ l)) r2) as [H2| H2]; [ easy | clear Hfyx ].
        subst r1 a1 r2 a2.
-Abort.
+bbb.
 
 Theorem freal_mul_comm {r : radix} : ∀ x y : FracReal, (x * y = y * x)%F.
 Proof.
