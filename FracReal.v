@@ -243,7 +243,8 @@ now rewrite A_freal_mul_series_comm.
 Qed.
 
 Theorem dig_norm_mul_com {r : radix} : ∀ x y i,
-  dig (freal (freal_normalize (x * y)) i) = dig (freal (freal_normalize (y * x)) i).
+  dig (freal (freal_normalize (x * y)) i) =
+  dig (freal (freal_normalize (y * x)) i).
 Proof.
 intros.
 bbb.
@@ -252,6 +253,10 @@ Theorem normalize_freal_mul_comm {r : radix} : ∀ x y : FracReal,
   ∀ i, freal (freal_normalize (x * y)) i = freal (freal_normalize (y * x)) i.
 Proof.
 intros.
+apply digit_eq_eq.
+apply dig_norm_mul_com.
+bbb.
+
 unfold freal_normalize.
 remember (freal (x * y)%F) as xy.
 remember (freal (y * x)%F) as yx.
