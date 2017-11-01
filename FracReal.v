@@ -261,6 +261,7 @@ destruct (O_LPO (λ j : nat, rad - 1 - dig (xy (i + j + 1)))) as [Hxy| Hxy].
   unfold freal_mul in Hxy, H; simpl in Hxy, H; lia.
 
   clear Hxy; rename H into Hxy.
+bbb.
   destruct (O_LPO (λ j : nat, rad - 1 - dig (yx (i + j + 1)))) as [Hyx| Hyx].
    assert (H : ∀ j, j ≥ i + 1 → freal_mul_to_seq y x j = rad - 1).
    intros j Hji; subst yx.
