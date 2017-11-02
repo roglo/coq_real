@@ -23,7 +23,10 @@ Record digit {r : radix} := mkdig { dig : nat; digi : dig < rad }.
 
 Delimit Scope digit_scope with D.
 
+Definition digit_0 {r : radix} := mkdig _ 0 radix_gt_0.
 Definition digit_eq {r : radix} (a b : digit) := dig a = dig b.
+
+Notation "0" := (digit_0) : digit_scope.
 Notation "a = b" := (digit_eq a b) : digit_scope.
 Notation "a ≠ b" := (¬ digit_eq a b) : digit_scope.
 
@@ -130,8 +133,19 @@ Arguments freal_normalize r x%F.
 Definition eq_freal_seq {r : radix} x y i :=
   if Nat.eq_dec (dig (freal x i)) (dig (freal y i)) then 0 else 1.
 
+bbb.
+(* ah oui mains non... *)
+Definition lt_freal_seq {r : radix} x y i :=
+  if Nat.lt_dec (dig (freal x i)) (dig (freal y i)) then 0 else 1.
+
 Definition freal_normalized_eq {r : radix} x y :=
   match O_LPO (eq_freal_seq x y) with
+  | inl _ => true
+  | inr _ => false
+  end.
+
+Definition freal_normalize_lt {r : radix} x y :=
+  match O_LPO (lt_freal_seq x y) with
   | inl _ => true
   | inr _ => false
   end.
@@ -139,8 +153,15 @@ Definition freal_normalized_eq {r : radix} x y :=
 Definition freal_eq {r : radix} x y :=
   freal_normalized_eq (freal_normalize x) (freal_normalize y).
 
+Definition freal_lt {r : radix} x y :=
+  freal_normalized_lt (freal_normalize x) (freal_normalize y).
+
+Definition freal_0 {r : radix} := {| freal i := digit_0 |}.
+
+Notation "0" := (freal_0) : freal_scope.
 Notation "a = b" := (freal_eq a b = true) : freal_scope.
 Notation "a ≠ b" := (freal_eq a b = false) : freal_scope.
+Notation "a < b" := (freal_lt a b) : freal_scope.
 
 (* Addition, Multiplication *)
 
@@ -193,6 +214,10 @@ Definition freal_mul {r : radix} (a b : FracReal) :=
   {| freal i := mkdig r (u i) (freal_mul_to_seq_lt_rad a b i) |}.
 
 Notation "a * b" := (freal_mul a b) : freal_scope.
+
+Lemma freal_mul_lt {r : radix} : ∀ x y, (x ≠ 0)%F → (y ≠ 0)%F → (x * y < x)%F.
+Proof.
+bbb.
 
 Theorem sequence_mul_comm : ∀ f g i, sequence_mul f g i = sequence_mul g f i.
 Proof.
