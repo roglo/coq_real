@@ -227,6 +227,8 @@ remember (dig (freal nx i)) as xi eqn:Hxi.
 destruct (lt_dec xyi xi) as [Hlt| Hlt]; [ easy | ].
 destruct (Nat.eq_dec xyi xi) as [H| H]; [ easy | ].
 exfalso; apply Hlt; clear Hi Hlt; subst xyi xi.
+subst nxy nx; simpl.
+unfold digit_sequence_normalize; simpl.
 bbb.
 
 Theorem sequence_mul_comm : ∀ f g i, sequence_mul f g i = sequence_mul g f i.
