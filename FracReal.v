@@ -133,21 +133,18 @@ Arguments freal_normalize r x%F.
 Definition eq_freal_seq {r : radix} x y i :=
   if Nat.eq_dec (dig (freal x i)) (dig (freal y i)) then 0 else 1.
 
-bbb.
-(* ah oui mains non... *)
-Definition lt_freal_seq {r : radix} x y i :=
-  if Nat.lt_dec (dig (freal x i)) (dig (freal y i)) then 0 else 1.
-
 Definition freal_normalized_eq {r : radix} x y :=
   match O_LPO (eq_freal_seq x y) with
   | inl _ => true
   | inr _ => false
   end.
 
-Definition freal_normalize_lt {r : radix} x y :=
-  match O_LPO (lt_freal_seq x y) with
+Definition freal_normalized_lt {r : radix} x y :=
+  match O_LPO_fst (eq_freal_seq x y) with
   | inl _ => true
-  | inr _ => false
+  | inr (exist _ i _) =>
+      if lt_dec (dig (freal x i)) (dig (freal y i)) then true
+      else false
   end.
 
 Definition freal_eq {r : radix} x y :=
@@ -161,7 +158,7 @@ Definition freal_0 {r : radix} := {| freal i := digit_0 |}.
 Notation "0" := (freal_0) : freal_scope.
 Notation "a = b" := (freal_eq a b = true) : freal_scope.
 Notation "a ≠ b" := (freal_eq a b = false) : freal_scope.
-Notation "a < b" := (freal_lt a b) : freal_scope.
+Notation "a < b" := (freal_lt a b = true) : freal_scope.
 
 (* Addition, Multiplication *)
 
@@ -217,6 +214,19 @@ Notation "a * b" := (freal_mul a b) : freal_scope.
 
 Lemma freal_mul_lt {r : radix} : ∀ x y, (x ≠ 0)%F → (y ≠ 0)%F → (x * y < x)%F.
 Proof.
+intros * Hx Hy.
+unfold freal_lt.
+unfold freal_normalized_lt.
+remember (freal_normalize (x * y)) as nxy eqn:Hnxy.
+remember (freal_normalize x) as nx eqn:Hnx.
+destruct (O_LPO_fst (eq_freal_seq nxy nx)) as [H| H]; [ easy | ].
+destruct H as (i & Hj & Hi).
+unfold eq_freal_seq in Hi.
+remember (dig (freal nxy i)) as xyi eqn:Hxyi.
+remember (dig (freal nx i)) as xi eqn:Hxi.
+destruct (lt_dec xyi xi) as [Hlt| Hlt]; [ easy | ].
+destruct (Nat.eq_dec xyi xi) as [H| H]; [ easy | ].
+exfalso; apply Hlt; clear Hi Hlt; subst xyi xi.
 bbb.
 
 Theorem sequence_mul_comm : ∀ f g i, sequence_mul f g i = sequence_mul g f i.
