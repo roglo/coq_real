@@ -212,36 +212,6 @@ Definition freal_mul {r : radix} (a b : FracReal) :=
 
 Notation "a * b" := (freal_mul a b) : freal_scope.
 
-Lemma freal_mul_lt {r : radix} : ∀ x y, (x ≠ 0)%F → (y ≠ 0)%F → (x * y < x)%F.
-Proof.
-intros * Hx Hy.
-unfold freal_lt.
-unfold freal_normalized_lt.
-remember (freal_normalize (x * y)) as nxy eqn:Hnxy.
-remember (freal_normalize x) as nx eqn:Hnx.
-destruct (O_LPO_fst (eq_freal_seq nxy nx)) as [H| H]; [ easy | ].
-destruct H as (i & Hj & Hi).
-unfold eq_freal_seq in Hi.
-remember (dig (freal nxy i)) as xyi eqn:Hxyi.
-remember (dig (freal nx i)) as xi eqn:Hxi.
-destruct (lt_dec xyi xi) as [Hlt| Hlt]; [ easy | ].
-destruct (Nat.eq_dec xyi xi) as [H| H]; [ easy | ].
-exfalso; apply Hlt; clear Hi Hlt; subst xyi xi.
-subst nxy nx; simpl.
-unfold digit_sequence_normalize; simpl.
-destruct (O_LPO (λ j : nat, rad - 1 - freal_mul_to_seq x y (i + j + 1)))
-  as [H₁| H₁].
-Focus 2.
- destruct (O_LPO (λ j : nat, rad - 1 - dig (freal x (i + j + 1))))
-  as [H₂| H₂].
-Focus 2.
-simpl.
-unfold freal_mul_to_seq.
-destruct (O_LPO (mul_test_seq i (freal_mul_series x y))) as [H₃| H₃].
-Focus 2.
-destruct H₃ as (k, Hk).
-bbb.
-
 Theorem sequence_mul_comm : ∀ f g i, sequence_mul f g i = sequence_mul g f i.
 Proof.
 intros.
