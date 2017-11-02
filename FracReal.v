@@ -229,6 +229,17 @@ destruct (Nat.eq_dec xyi xi) as [H| H]; [ easy | ].
 exfalso; apply Hlt; clear Hi Hlt; subst xyi xi.
 subst nxy nx; simpl.
 unfold digit_sequence_normalize; simpl.
+destruct (O_LPO (λ j : nat, rad - 1 - freal_mul_to_seq x y (i + j + 1)))
+  as [H₁| H₁].
+Focus 2.
+ destruct (O_LPO (λ j : nat, rad - 1 - dig (freal x (i + j + 1))))
+  as [H₂| H₂].
+Focus 2.
+simpl.
+unfold freal_mul_to_seq.
+destruct (O_LPO (mul_test_seq i (freal_mul_series x y))) as [H₃| H₃].
+Focus 2.
+destruct H₃ as (k, Hk).
 bbb.
 
 Theorem sequence_mul_comm : ∀ f g i, sequence_mul f g i = sequence_mul g f i.
