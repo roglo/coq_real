@@ -279,7 +279,6 @@ destruct (O_LPO (λ j : nat, rad - 1 - dig (xy (i + j + 1)))) as [Hxy| Hxy].
   unfold freal_mul in Hxy, H; simpl in Hxy, H; lia.
 
   clear Hxy; rename H into Hxy.
-bbb.
   destruct (O_LPO (λ j : nat, rad - 1 - dig (yx (i + j + 1)))) as [Hyx| Hyx].
    assert (H : ∀ j, j ≥ i + 1 → freal_mul_to_seq y x j = rad - 1).
    intros j Hji; subst yx.
@@ -324,6 +323,9 @@ bbb.
        remember (rad ^ l * rmod a2 / den a2) as r2.
        destruct (le_dec (pred (rad ^ l)) r2) as [H2| H2]; [ easy | clear Hfyx ].
        subst r1 a1 r2 a2.
+       unfold rmod in H1, H2.
+       unfold A in H1, H2.
+       simpl in H1, H2.
 bbb.
 
 Theorem freal_mul_comm {r : radix} : ∀ x y : FracReal, (x * y = y * x)%F.
