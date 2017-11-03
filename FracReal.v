@@ -115,7 +115,7 @@ Record FracReal {r : radix} := { freal : nat → digit }.
 Arguments freal r _%F.
 
 Definition digit_sequence_normalize {r : radix} (u : nat → digit) i :=
-  match LPO (λ j : nat, rad - 1 - dig (u (i + j + 1))) with
+  match LPO_fst (λ j : nat, rad - 1 - dig (u (i + j + 1))) with
   | inl _ =>
       let s := lt_dec (S (dig (u i))) rad in
       match s with
@@ -134,7 +134,7 @@ Definition eq_freal_seq {r : radix} x y i :=
   if Nat.eq_dec (dig (freal x i)) (dig (freal y i)) then 0 else 1.
 
 Definition freal_normalized_eq {r : radix} x y :=
-  match LPO (eq_freal_seq x y) with
+  match LPO_fst (eq_freal_seq x y) with
   | inl _ => true
   | inr _ => false
   end.
@@ -270,7 +270,7 @@ remember (freal (x * y)%F) as xy.
 remember (freal (y * x)%F) as yx.
 simpl.
 unfold digit_sequence_normalize.
-destruct (LPO (λ j : nat, rad - 1 - dig (xy (i + j + 1)))) as [Hxy| Hxy].
+destruct (LPO_fst (λ j : nat, rad - 1 - dig (xy (i + j + 1)))) as [Hxy| Hxy].
  assert (H : ∀ j, j ≥ i + 1 → freal_mul_to_seq x y j = rad - 1).
   intros j Hji; subst xy.
   specialize (Hxy (j - (i + 1))).
@@ -279,7 +279,7 @@ destruct (LPO (λ j : nat, rad - 1 - dig (xy (i + j + 1)))) as [Hxy| Hxy].
   unfold freal_mul in Hxy, H; simpl in Hxy, H; lia.
 
   clear Hxy; rename H into Hxy.
-  destruct (LPO (λ j : nat, rad - 1 - dig (yx (i + j + 1)))) as [Hyx| Hyx].
+  destruct (LPO_fst (λ j : nat, rad - 1 - dig (yx (i + j + 1)))) as [Hyx| Hyx].
    assert (H : ∀ j, j ≥ i + 1 → freal_mul_to_seq y x j = rad - 1).
    intros j Hji; subst yx.
    specialize (Hyx (j - (i + 1))).
