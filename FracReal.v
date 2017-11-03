@@ -324,6 +324,14 @@ destruct (LPO_fst (λ j : nat, rad - 1 - dig (xy (i + j + 1)))) as [Hxy| Hxy].
 
         apply Hlxy in Hkl; subst xy yx.
         now rewrite mul_test_seq_freal_mul_series_comm in Hkl.
+
+     unfold freal_mul in Heqyx; simpl in Heqyx.
+     subst yx; simpl in Hryx; simpl.
+     exfalso.
+     apply not_lt in Hryx.
+     specialize (freal_mul_to_seq_lt_rad y x i) as H1.
+     assert (H : S (freal_mul_to_seq y x i) = rad) by lia.
+     clear Hryx H1.
 bbb.
 
 Theorem freal_mul_comm {r : radix} : ∀ x y : FracReal, (x * y = y * x)%F.
