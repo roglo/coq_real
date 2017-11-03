@@ -54,7 +54,7 @@ Qed.
 (* Oracle Limited Principle of Omniscience *)
 (* Borrowed from my proof of Puiseux's Theorem *)
 
-Axiom O_LPO : ∀ (u : nat → nat), (∀ i, u i = O) + { i : nat | u i ≠ O }.
+Axiom LPO : ∀ (u : nat → nat), (∀ i, u i = O) + { i : nat | u i ≠ O }.
 
 Fixpoint first_such_that (P : nat → bool) n i :=
   match n with
@@ -92,12 +92,12 @@ revert i k Hn Hk; induction n; intros.
   now apply lt_not_le in H3.
 Qed.
 
-Theorem O_LPO_fst : ∀ (u : nat → nat),
+Theorem LPO_fst : ∀ (u : nat → nat),
   (∀ i, u i = O) +
   { i : nat | (∀ j, j < i → u j = 0) ∧ u i ≠ O }.
 Proof.
 intros.
-specialize (O_LPO u) as [H| (i, Hi)]; [ now left | right ].
+specialize (LPO u) as [H| (i, Hi)]; [ now left | right ].
 remember (first_such_that (λ i, negb (Nat.eqb (u i) 0)) i 0) as j eqn:Hj.
 exists j.
 assert (Hui : u (i + 0) ≠ 0) by now rewrite Nat.add_0_r.
@@ -115,7 +115,7 @@ Record FracReal {r : radix} := { freal : nat → digit }.
 Arguments freal r _%F.
 
 Definition digit_sequence_normalize {r : radix} (u : nat → digit) i :=
-  match O_LPO (λ j : nat, rad - 1 - dig (u (i + j + 1))) with
+  match LPO (λ j : nat, rad - 1 - dig (u (i + j + 1))) with
   | inl _ =>
       let s := lt_dec (S (dig (u i))) rad in
       match s with
@@ -134,13 +134,13 @@ Definition eq_freal_seq {r : radix} x y i :=
   if Nat.eq_dec (dig (freal x i)) (dig (freal y i)) then 0 else 1.
 
 Definition freal_normalized_eq {r : radix} x y :=
-  match O_LPO (eq_freal_seq x y) with
+  match LPO (eq_freal_seq x y) with
   | inl _ => true
   | inr _ => false
   end.
 
 Definition freal_normalized_lt {r : radix} x y :=
-  match O_LPO_fst (eq_freal_seq x y) with
+  match LPO_fst (eq_freal_seq x y) with
   | inl _ => true
   | inr (exist _ i _) =>
       if lt_dec (dig (freal x i)) (dig (freal y i)) then true
@@ -191,7 +191,7 @@ Definition mul_test_seq {r : radix} i u k :=
 
 Definition freal_mul_to_seq {r : radix} (a b : FracReal) i :=
   let u := freal_mul_series a b in
-  match O_LPO (mul_test_seq i u) with
+  match LPO (mul_test_seq i u) with
   | inl _ => (u i + rdiv (A i (rad * (i + 2)) u) + 1) mod rad
   | inr (exist _ j _) => (u i + rdiv (A i (rad * (i + j + 2)) u)) mod rad
   end.
@@ -202,7 +202,7 @@ Proof.
 intros.
 unfold freal_mul_to_seq.
 remember (mul_test_seq i (freal_mul_series a b)) as v eqn:Hv.
-destruct (O_LPO v) as [Hvi| (j, Hvj)].
+destruct (LPO v) as [Hvi| (j, Hvj)].
 1, 2: apply Nat.mod_upper_bound, radix_ne_0.
 Qed.
 
@@ -270,7 +270,7 @@ remember (freal (x * y)%F) as xy.
 remember (freal (y * x)%F) as yx.
 simpl.
 unfold digit_sequence_normalize.
-destruct (O_LPO (λ j : nat, rad - 1 - dig (xy (i + j + 1)))) as [Hxy| Hxy].
+destruct (LPO (λ j : nat, rad - 1 - dig (xy (i + j + 1)))) as [Hxy| Hxy].
  assert (H : ∀ j, j ≥ i + 1 → freal_mul_to_seq x y j = rad - 1).
   intros j Hji; subst xy.
   specialize (Hxy (j - (i + 1))).
@@ -279,7 +279,7 @@ destruct (O_LPO (λ j : nat, rad - 1 - dig (xy (i + j + 1)))) as [Hxy| Hxy].
   unfold freal_mul in Hxy, H; simpl in Hxy, H; lia.
 
   clear Hxy; rename H into Hxy.
-  destruct (O_LPO (λ j : nat, rad - 1 - dig (yx (i + j + 1)))) as [Hyx| Hyx].
+  destruct (LPO (λ j : nat, rad - 1 - dig (yx (i + j + 1)))) as [Hyx| Hyx].
    assert (H : ∀ j, j ≥ i + 1 → freal_mul_to_seq y x j = rad - 1).
    intros j Hji; subst yx.
    specialize (Hyx (j - (i + 1))).
@@ -296,8 +296,8 @@ destruct (O_LPO (λ j : nat, rad - 1 - dig (xy (i + j + 1)))) as [Hxy| Hxy].
      subst yx; simpl in Hryx; simpl.
      f_equal.
      unfold freal_mul_to_seq.
-     destruct (O_LPO (mul_test_seq i (freal_mul_series x y))) as [Hfxy| Hfxy].
-      destruct (O_LPO (mul_test_seq i (freal_mul_series y x))) as [Hfyx| Hfyx].
+     destruct (LPO (mul_test_seq i (freal_mul_series x y))) as [Hfxy| Hfxy].
+      destruct (LPO (mul_test_seq i (freal_mul_series y x))) as [Hfyx| Hfyx].
        f_equal; f_equal.
        rewrite freal_mul_series_comm; f_equal; f_equal.
        now rewrite A_freal_mul_series_comm.
@@ -308,7 +308,7 @@ destruct (O_LPO (λ j : nat, rad - 1 - dig (xy (i + j + 1)))) as [Hxy| Hxy].
 
       destruct Hfxy as (k, Hfxy).
       rewrite mul_test_seq_freal_mul_series_comm in Hfxy.
-      destruct (O_LPO (mul_test_seq i (freal_mul_series y x))) as [Hfyx| Hfyx].
+      destruct (LPO (mul_test_seq i (freal_mul_series y x))) as [Hfyx| Hfyx].
        now rewrite Hfyx in Hfxy.
 
        destruct Hfyx as (l, Hfyx).
@@ -335,7 +335,7 @@ unfold freal_eq.
 remember (freal_normalize (x * y)) as nxy eqn:Hnxy.
 remember (freal_normalize (y * x)) as nyx eqn:Hnyx.
 unfold freal_normalized_eq.
-destruct (O_LPO (eq_freal_seq nxy nyx)) as [H| H]; [ easy | ].
+destruct (LPO (eq_freal_seq nxy nyx)) as [H| H]; [ easy | ].
 exfalso.
 destruct H as (i, Hi).
 apply Hi; clear Hi.
