@@ -240,8 +240,6 @@ destruct i; [ easy | ].
 apply sequence_mul_comm.
 Qed.
 
-Print A.
-
 Theorem A_freal_mul_series_comm {r : radix} : ∀ x y i n,
   A i n (freal_mul_series x y) = A i n (freal_mul_series y x).
 Proof.
@@ -307,26 +305,25 @@ destruct (LPO_fst (λ j : nat, rad - 1 - dig (xy (i + j + 1)))) as [Hxy| Hxy].
        now rewrite mul_test_seq_freal_mul_series_comm in Hfxy.
 
       destruct Hfxy as (k & Hlxy & Hfxy).
-      rewrite mul_test_seq_freal_mul_series_comm in Hfxy.
-      destruct (LPO_fst (mul_test_seq i (freal_mul_series y x))) as [Hfyx| Hfyx].
+      remember (freal_mul_series x y) as xy.
+      remember (freal_mul_series y x) as yx.
+      destruct (LPO_fst (mul_test_seq i yx)) as [Hfyx| Hfyx].
+       subst xy yx.
+       rewrite mul_test_seq_freal_mul_series_comm in Hfxy.
        now rewrite Hfyx in Hfxy.
 
        destruct Hfyx as (l & Hlyx & Hfyx).
-       f_equal; f_equal; [ apply freal_mul_series_comm | ].
-       rewrite A_freal_mul_series_comm.
-       remember (freal_mul_series y x) as yx.
-bbb.
-       unfold mul_test_seq in Hfxy, Hfyx.
-       remember (A i (rad * (i + k + 2)) yx) as a1.
-       remember (A i (rad * (i + l + 2)) yx) as a2.
-       remember (rad ^ k * rmod a1 / den a1) as r1.
-       destruct (le_dec (pred (rad ^ k)) r1) as [H1| H1]; [ easy | ].
-       remember (rad ^ l * rmod a2 / den a2) as r2.
-       destruct (le_dec (pred (rad ^ l)) r2) as [H2| H2]; [ easy | clear Hfyx ].
-       subst r1 a1 r2 a2.
-       unfold rmod in H1, H2.
-       unfold A in H1, H2.
-       simpl in H1, H2.
+       rewrite Heqxy, freal_mul_series_comm, <- Heqyx, <- Heqxy.
+       f_equal; f_equal.
+       rewrite Heqyx, A_freal_mul_series_comm, <- Heqxy.
+       destruct (lt_eq_lt_dec k l) as [ [ Hkl | Hkl ] | Hkl ].
+        apply Hlyx in Hkl; subst xy yx.
+        now rewrite mul_test_seq_freal_mul_series_comm in Hkl.
+
+        now subst k.
+
+        apply Hlxy in Hkl; subst xy yx.
+        now rewrite mul_test_seq_freal_mul_series_comm in Hkl.
 bbb.
 
 Theorem freal_mul_comm {r : radix} : ∀ x y : FracReal, (x * y = y * x)%F.
