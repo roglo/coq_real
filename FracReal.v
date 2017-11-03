@@ -258,6 +258,39 @@ unfold mul_test_seq.
 now rewrite A_freal_mul_series_comm.
 Qed.
 
+Theorem freal_mul_to_seq_i_comm {r : radix} : ∀ x y i,
+  freal_mul_to_seq x y i = freal_mul_to_seq y x i.
+Proof.
+intros.
+unfold freal_mul_to_seq.
+remember (freal_mul_series x y) as xy.
+remember (freal_mul_series y x) as yx.
+destruct (LPO_fst (mul_test_seq i xy)) as [Hxy| Hxy].
+ rewrite Heqxy, freal_mul_series_comm, <- Heqyx.
+ destruct (LPO_fst (mul_test_seq i yx)) as [Hyx| Hyx].
+  now rewrite A_freal_mul_series_comm, <- Heqyx.
+
+  destruct Hyx as (k & Hjk & Hk).
+  rewrite Heqyx, mul_test_seq_freal_mul_series_comm, <- Heqxy in Hk.
+  now rewrite Hxy in Hk.
+
+ destruct Hxy as (k & Hjk & Hk).
+ rewrite Heqxy, mul_test_seq_freal_mul_series_comm, <- Heqyx in Hk.
+ destruct (LPO_fst (mul_test_seq i yx)) as [Hyx| Hyx].
+  now rewrite Hyx in Hk.
+
+  destruct Hyx as (l & Hjl & Hl).
+  destruct (lt_eq_lt_dec k l) as [ [ Hkl | Hkl ] | Hkl ].
+   now apply Hjl in Hkl; subst xy.
+
+   rewrite Heqxy, freal_mul_series_comm, <- Heqyx.
+   rewrite A_freal_mul_series_comm, <- Heqyx.
+   now subst k.
+
+   apply Hjk in Hkl.
+   now rewrite Heqxy, mul_test_seq_freal_mul_series_comm, <- Heqyx in Hkl.
+Qed.
+
 Theorem dig_norm_mul_com {r : radix} : ∀ x y i,
   dig (freal (freal_normalize (x * y)) i) =
   dig (freal (freal_normalize (y * x)) i).
@@ -292,46 +325,10 @@ destruct (LPO_fst (λ j : nat, rad - 1 - dig (xy (i + j + 1)))) as [Hxy| Hxy].
     destruct (lt_dec (S (dig (yx i))) rad) as [Hryx| Hryx].
      unfold freal_mul in Heqyx; simpl in Heqyx.
      subst yx; simpl in Hryx; simpl.
-     f_equal.
-     unfold freal_mul_to_seq.
-     destruct (LPO_fst (mul_test_seq i (freal_mul_series x y))) as [Hfxy| Hfxy].
-      destruct (LPO_fst (mul_test_seq i (freal_mul_series y x))) as [Hfyx| Hfyx].
-       f_equal; f_equal.
-       rewrite freal_mul_series_comm; f_equal; f_equal.
-       now rewrite A_freal_mul_series_comm.
+     now rewrite freal_mul_to_seq_i_comm.
 
-       destruct Hfyx as (k, Hfyx).
-       specialize (Hfxy k).
-       now rewrite mul_test_seq_freal_mul_series_comm in Hfxy.
-
-      destruct Hfxy as (k & Hlxy & Hfxy).
-      remember (freal_mul_series x y) as xy.
-      remember (freal_mul_series y x) as yx.
-      destruct (LPO_fst (mul_test_seq i yx)) as [Hfyx| Hfyx].
-       subst xy yx.
-       rewrite mul_test_seq_freal_mul_series_comm in Hfxy.
-       now rewrite Hfyx in Hfxy.
-
-       destruct Hfyx as (l & Hlyx & Hfyx).
-       rewrite Heqxy, freal_mul_series_comm, <- Heqyx, <- Heqxy.
-       f_equal; f_equal.
-       rewrite Heqyx, A_freal_mul_series_comm, <- Heqxy.
-       destruct (lt_eq_lt_dec k l) as [ [ Hkl | Hkl ] | Hkl ].
-        apply Hlyx in Hkl; subst xy yx.
-        now rewrite mul_test_seq_freal_mul_series_comm in Hkl.
-
-        now subst k.
-
-        apply Hlxy in Hkl; subst xy yx.
-        now rewrite mul_test_seq_freal_mul_series_comm in Hkl.
-
-     unfold freal_mul in Heqyx; simpl in Heqyx.
-     subst yx; simpl in Hryx; simpl.
-     exfalso.
-     apply not_lt in Hryx.
-     specialize (freal_mul_to_seq_lt_rad y x i) as H1.
-     assert (H : S (freal_mul_to_seq y x i) = rad) by lia.
-     clear Hryx H1.
+     subst yx; simpl in Hryx.
+     now rewrite freal_mul_to_seq_i_comm in Hryx.
 bbb.
 
 Theorem freal_mul_comm {r : radix} : ∀ x y : FracReal, (x * y = y * x)%F.
