@@ -191,7 +191,7 @@ Definition mul_test_seq {r : radix} i u k :=
 
 Definition freal_mul_to_seq {r : radix} (a b : FracReal) i :=
   let u := freal_mul_series a b in
-  match LPO (mul_test_seq i u) with
+  match LPO_fst (mul_test_seq i u) with
   | inl _ => (u i + rdiv (A i (rad * (i + 2)) u) + 1) mod rad
   | inr (exist _ j _) => (u i + rdiv (A i (rad * (i + j + 2)) u)) mod rad
   end.
@@ -202,7 +202,7 @@ Proof.
 intros.
 unfold freal_mul_to_seq.
 remember (mul_test_seq i (freal_mul_series a b)) as v eqn:Hv.
-destruct (LPO v) as [Hvi| (j, Hvj)].
+destruct (LPO_fst v) as [Hvi| (j, Hvj)].
 1, 2: apply Nat.mod_upper_bound, radix_ne_0.
 Qed.
 
@@ -296,8 +296,8 @@ destruct (LPO (λ j : nat, rad - 1 - dig (xy (i + j + 1)))) as [Hxy| Hxy].
      subst yx; simpl in Hryx; simpl.
      f_equal.
      unfold freal_mul_to_seq.
-     destruct (LPO (mul_test_seq i (freal_mul_series x y))) as [Hfxy| Hfxy].
-      destruct (LPO (mul_test_seq i (freal_mul_series y x))) as [Hfyx| Hfyx].
+     destruct (LPO_fst (mul_test_seq i (freal_mul_series x y))) as [Hfxy| Hfxy].
+      destruct (LPO_fst (mul_test_seq i (freal_mul_series y x))) as [Hfyx| Hfyx].
        f_equal; f_equal.
        rewrite freal_mul_series_comm; f_equal; f_equal.
        now rewrite A_freal_mul_series_comm.
@@ -306,20 +306,21 @@ destruct (LPO (λ j : nat, rad - 1 - dig (xy (i + j + 1)))) as [Hxy| Hxy].
        specialize (Hfxy k).
        now rewrite mul_test_seq_freal_mul_series_comm in Hfxy.
 
-      destruct Hfxy as (k, Hfxy).
+      destruct Hfxy as (k & Hlxy & Hfxy).
       rewrite mul_test_seq_freal_mul_series_comm in Hfxy.
-      destruct (LPO (mul_test_seq i (freal_mul_series y x))) as [Hfyx| Hfyx].
+      destruct (LPO_fst (mul_test_seq i (freal_mul_series y x))) as [Hfyx| Hfyx].
        now rewrite Hfyx in Hfxy.
 
-       destruct Hfyx as (l, Hfyx).
+       destruct Hfyx as (l & Hlyx & Hfyx).
        f_equal; f_equal; [ apply freal_mul_series_comm | ].
        rewrite A_freal_mul_series_comm.
        remember (freal_mul_series y x) as yx.
+bbb.
        unfold mul_test_seq in Hfxy, Hfyx.
        remember (A i (rad * (i + k + 2)) yx) as a1.
        remember (A i (rad * (i + l + 2)) yx) as a2.
        remember (rad ^ k * rmod a1 / den a1) as r1.
-       destruct (le_dec (pred (rad ^ k)) r1) as [H1| H1]; [ easy | clear Hfxy ].
+       destruct (le_dec (pred (rad ^ k)) r1) as [H1| H1]; [ easy | ].
        remember (rad ^ l * rmod a2 / den a2) as r2.
        destruct (le_dec (pred (rad ^ l)) r2) as [H2| H2]; [ easy | clear Hfyx ].
        subst r1 a1 r2 a2.
