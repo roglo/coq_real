@@ -336,15 +336,12 @@ destruct (LPO_fst (λ j : nat, rad - 1 - dig (xy (i + j + 1)))) as [Hxy| Hxy].
     subst xy yx; simpl in Hrxy, Hryx.
     now rewrite freal_mul_to_seq_i_comm in Hryx.
 
-   destruct Hyx as (k & Hjk & Hk).
-   destruct (lt_dec (S (dig (xy i))) rad) as [Hrxy| Hrxy].
-    unfold freal_mul in Heqxy; simpl in Heqxy.
-    subst xy; simpl in Hrxy; simpl.
-    unfold freal_mul in Heqyx; simpl in Heqyx.
-    subst yx; simpl in Hk; simpl.
-    rewrite freal_mul_to_seq_i_comm in Hk.
-    rewrite Hxy in Hk; [ | lia ].
-    now rewrite Nat.sub_diag in Hk.
+   destruct Hyx as (k & Hjk & Hk); clear Hjk.
+   unfold freal_mul in Heqyx; simpl in Heqyx.
+   subst yx; simpl in Hk; simpl.
+   rewrite freal_mul_to_seq_i_comm in Hk.
+   rewrite Hxy in Hk; [ | lia ].
+   now rewrite Nat.sub_diag in Hk.
 bbb.
 
 Theorem freal_mul_comm {r : radix} : ∀ x y : FracReal, (x * y = y * x)%F.
