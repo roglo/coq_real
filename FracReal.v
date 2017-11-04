@@ -189,18 +189,20 @@ Definition mul_test_seq {r : radix} i u k :=
   if le_dec (pred (rad ^ k)) (rad ^ k * rmod (A i n u) / den (A i n u)) then 0
   else 1.
 
-Definition freal_mul_to_seq {r : radix} (a b : FracReal) i :=
-  let u := freal_mul_series a b in
+Definition numbers_to_digits {r : radix} u i :=
   match LPO_fst (mul_test_seq i u) with
   | inl _ => (u i + rdiv (A i (rad * (i + 2)) u) + 1) mod rad
   | inr (exist _ j _) => (u i + rdiv (A i (rad * (i + j + 2)) u)) mod rad
   end.
 
+Definition freal_mul_to_seq {r : radix} (a b : FracReal) :=
+  numbers_to_digits (freal_mul_series a b).
+
 Theorem freal_mul_to_seq_lt_rad {r : radix} : ∀ a b i,
   freal_mul_to_seq a b i < rad.
 Proof.
 intros.
-unfold freal_mul_to_seq.
+unfold freal_mul_to_seq, numbers_to_digits.
 remember (mul_test_seq i (freal_mul_series a b)) as v eqn:Hv.
 destruct (LPO_fst v) as [Hvi| (j, Hvj)].
 1, 2: apply Nat.mod_upper_bound, radix_ne_0.
@@ -262,7 +264,7 @@ Theorem freal_mul_to_seq_i_comm {r : radix} : ∀ x y i,
   freal_mul_to_seq x y i = freal_mul_to_seq y x i.
 Proof.
 intros.
-unfold freal_mul_to_seq.
+unfold freal_mul_to_seq, numbers_to_digits.
 remember (freal_mul_series x y) as xy.
 remember (freal_mul_series y x) as yx.
 destruct (LPO_fst (mul_test_seq i xy)) as [Hxy| Hxy].
