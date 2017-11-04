@@ -184,13 +184,13 @@ Definition A {r : radix} i n u :=
     (Σ (j = i + 1, n - 1), u j * rad ^ (n - 1 - j))
     (rad ^ (n - 1 - i)).
 
-Definition mul_test_seq {r : radix} i u k :=
+Definition test_seq {r : radix} i u k :=
   let n := rad * (i + k + 2) in
   if le_dec (pred (rad ^ k)) (rad ^ k * rmod (A i n u) / den (A i n u)) then 0
   else 1.
 
 Definition numbers_to_digits {r : radix} u i :=
-  match LPO_fst (mul_test_seq i u) with
+  match LPO_fst (test_seq i u) with
   | inl _ => (u i + rdiv (A i (rad * (i + 2)) u) + 1) mod rad
   | inr (exist _ j _) => (u i + rdiv (A i (rad * (i + j + 2)) u)) mod rad
   end.
@@ -203,7 +203,7 @@ Theorem freal_mul_to_seq_lt_rad {r : radix} : ∀ a b i,
 Proof.
 intros.
 unfold freal_mul_to_seq, numbers_to_digits.
-remember (mul_test_seq i (freal_mul_series a b)) as v eqn:Hv.
+remember (test_seq i (freal_mul_series a b)) as v eqn:Hv.
 destruct (LPO_fst v) as [Hvi| (j, Hvj)].
 1, 2: apply Nat.mod_upper_bound, radix_ne_0.
 Qed.
@@ -251,12 +251,12 @@ apply summation_eq_compat; intros j Hj.
 now rewrite freal_mul_series_comm.
 Qed.
 
-Theorem mul_test_seq_freal_mul_series_comm {r : radix} : ∀ x y i k,
-  mul_test_seq i (freal_mul_series x y) k =
-  mul_test_seq i (freal_mul_series y x) k.
+Theorem test_seq_freal_mul_series_comm {r : radix} : ∀ x y i k,
+  test_seq i (freal_mul_series x y) k =
+  test_seq i (freal_mul_series y x) k.
 Proof.
 intros.
-unfold mul_test_seq.
+unfold test_seq.
 now rewrite A_freal_mul_series_comm.
 Qed.
 
@@ -267,18 +267,18 @@ intros.
 unfold freal_mul_to_seq, numbers_to_digits.
 remember (freal_mul_series x y) as xy.
 remember (freal_mul_series y x) as yx.
-destruct (LPO_fst (mul_test_seq i xy)) as [Hxy| Hxy].
+destruct (LPO_fst (test_seq i xy)) as [Hxy| Hxy].
  rewrite Heqxy, freal_mul_series_comm, <- Heqyx.
- destruct (LPO_fst (mul_test_seq i yx)) as [Hyx| Hyx].
+ destruct (LPO_fst (test_seq i yx)) as [Hyx| Hyx].
   now rewrite A_freal_mul_series_comm, <- Heqyx.
 
   destruct Hyx as (k & Hjk & Hk).
-  rewrite Heqyx, mul_test_seq_freal_mul_series_comm, <- Heqxy in Hk.
+  rewrite Heqyx, test_seq_freal_mul_series_comm, <- Heqxy in Hk.
   now rewrite Hxy in Hk.
 
  destruct Hxy as (k & Hjk & Hk).
- rewrite Heqxy, mul_test_seq_freal_mul_series_comm, <- Heqyx in Hk.
- destruct (LPO_fst (mul_test_seq i yx)) as [Hyx| Hyx].
+ rewrite Heqxy, test_seq_freal_mul_series_comm, <- Heqyx in Hk.
+ destruct (LPO_fst (test_seq i yx)) as [Hyx| Hyx].
   now rewrite Hyx in Hk.
 
   destruct Hyx as (l & Hjl & Hl).
@@ -290,7 +290,7 @@ destruct (LPO_fst (mul_test_seq i xy)) as [Hxy| Hxy].
    now subst k.
 
    apply Hjk in Hkl.
-   now rewrite Heqxy, mul_test_seq_freal_mul_series_comm, <- Heqyx in Hkl.
+   now rewrite Heqxy, test_seq_freal_mul_series_comm, <- Heqyx in Hkl.
 Qed.
 
 Theorem dig_norm_mul_comm {r : radix} : ∀ x y i,
