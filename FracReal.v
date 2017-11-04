@@ -532,6 +532,16 @@ unfold sequence_add.
 apply Nat.add_0_l.
 Qed.
 
+Theorem A_freal_add_series_0_l {r : radix} : ∀ x i n,
+  A i n (freal_add_series 0 x) = A i n (λ i, dig (freal x i)).
+Proof.
+intros.
+unfold A; simpl.
+unfold freal_add_series; simpl.
+unfold sequence_add; simpl.
+easy.
+Qed.
+
 Theorem freal_add_to_seq_0_l {r : radix} : ∀ x i,
   freal_add_to_seq 0 x i = dig (freal x i).
 Proof.
@@ -540,6 +550,18 @@ unfold freal_add_to_seq, numbers_to_digits.
 remember (freal_add_series 0 x) as n0x eqn:Hn0x.
 destruct (LPO_fst (test_seq i n0x)) as [H0x| H0x].
  rewrite Hn0x, freal_add_series_0_x.
+ rewrite A_freal_add_series_0_l.
+bbb.
+
+unfold summation.
+simpl.
+f_equal.
+
+
+; f_equal.
+apply summation_eq_compat; intros j Hj.
+now rewrite freal_mul_series_comm.
+Qed.
 bbb.
  destruct (LPO_fst (test_seq i yx)) as [Hyx| Hyx].
   now rewrite A_freal_mul_series_comm, <- Heqyx.
