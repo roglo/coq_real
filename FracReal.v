@@ -168,6 +168,8 @@ Definition sequence_mul (a b : nat → nat) i := Σ (j = 0, i), a j * b (i - j).
 Definition freal_add_series {r : radix} a b :=
   sequence_add (λ i, dig (freal a i)) (λ i, dig (freal b i)).
 
+Arguments freal_add_series _ a%F b%F.
+
 Definition freal_mul_series {r : radix} a b i :=
   match i with
   | 0 => 0
@@ -517,6 +519,15 @@ destruct (Nat.eq_dec (dig (freal nxy i)) (dig (freal nyx i))) as [H| H].
  apply dig_norm_mul_comm.
 Qed.
 
+Theorem freal_add_series_0_x {r : radix} : ∀ x i,
+  freal_add_series 0 x i = dig (freal x i).
+Proof.
+intros.
+unfold freal_add_series; simpl.
+unfold sequence_add.
+apply Nat.add_0_l.
+Qed.
+
 Theorem freal_add_0_l {r : radix} : ∀ x, (0 + x = x)%F.
 Proof.
 intros.
@@ -546,8 +557,32 @@ destruct (Nat.eq_dec (dig (freal n0x i)) (dig (freal nx i))) as [H| H].
     destruct (lt_dec (S (dig (nx i))) rad) as [Hrx| Hrx].
      subst nx; simpl in Hrx; simpl.
      unfold freal_add_to_seq, numbers_to_digits.
+     remember (freal_add_series 0 x) as n0x eqn:Hn0x.
+     destruct (LPO_fst (test_seq i n0x)) as [H0x| H0x].
+      rewrite Hn0x, freal_add_series_0_x.
 bbb.
-     now rewrite freal_mul_to_seq_i_comm.
+ destruct (LPO_fst (test_seq i yx)) as [Hyx| Hyx].
+  now rewrite A_freal_mul_series_comm, <- Heqyx.
+
+  destruct Hyx as (k & Hjk & Hk).
+  rewrite Heqyx, test_seq_freal_mul_series_comm, <- Heqxy in Hk.
+  now rewrite Hxy in Hk.
+
+ destruct Hxy as (k & Hjk & Hk).
+ rewrite Heqxy, test_seq_freal_mul_series_comm, <- Heqyx in Hk.
+ destruct (LPO_fst (test_seq i yx)) as [Hyx| Hyx].
+  now rewrite Hyx in Hk.
+
+  destruct Hyx as (l & Hjl & Hl).
+  destruct (lt_eq_lt_dec k l) as [ [ Hkl | Hkl ] | Hkl ].
+   now apply Hjl in Hkl; subst xy.
+
+   rewrite Heqxy, freal_mul_series_comm, <- Heqyx.
+   rewrite A_freal_mul_series_comm, <- Heqyx.
+   now subst k.
+
+   apply Hjk in Hkl.
+   now rewrite Heqxy, test_seq_freal_mul_series_comm, <- Heqyx in Hkl.
 
      subst yx; simpl in Hryx.
      now rewrite freal_mul_to_seq_i_comm in Hryx.
