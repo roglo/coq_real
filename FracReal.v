@@ -345,9 +345,9 @@ Theorem freal_mul_comm {r : radix} : ∀ x y : FracReal, (x * y = y * x)%F.
 Proof.
 intros.
 unfold freal_eq.
+unfold freal_normalized_eq.
 remember (freal_normalize (x * y)) as nxy eqn:Hnxy.
 remember (freal_normalize (y * x)) as nyx eqn:Hnyx.
-unfold freal_normalized_eq.
 destruct (LPO_fst (eq_freal_seq nxy nyx)) as [H| H]; [ easy | ].
 exfalso.
 destruct H as (i & Hji & Hi).
