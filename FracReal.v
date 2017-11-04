@@ -291,7 +291,7 @@ destruct (LPO_fst (mul_test_seq i xy)) as [Hxy| Hxy].
    now rewrite Heqxy, mul_test_seq_freal_mul_series_comm, <- Heqyx in Hkl.
 Qed.
 
-Theorem dig_norm_mul_com {r : radix} : ∀ x y i,
+Theorem dig_norm_mul_comm {r : radix} : ∀ x y i,
   dig (freal (freal_normalize (x * y)) i) =
   dig (freal (freal_normalize (y * x)) i).
 Proof.
@@ -302,47 +302,44 @@ remember (freal (y * x)%F) as yx.
 simpl.
 unfold digit_sequence_normalize.
 destruct (LPO_fst (λ j : nat, rad - 1 - dig (xy (i + j + 1)))) as [Hxy| Hxy].
- assert (H : ∀ j, j ≥ i + 1 → freal_mul_to_seq x y j = rad - 1).
-  intros j Hji; subst xy.
-  specialize (Hxy (j - (i + 1))).
-  replace (i + (j - (i + 1)) + 1) with j in Hxy by lia.
-  assert (dig (freal (x * y) j) < rad) by apply digi.
-  unfold freal_mul in Hxy, H; simpl in Hxy, H; lia.
+ destruct (LPO_fst (λ j : nat, rad - 1 - dig (yx (i + j + 1)))) as [Hyx| Hyx].
+  unfold freal_mul in Heqxy; simpl in Heqxy.
+  unfold freal_mul in Heqyx; simpl in Heqyx.
+  destruct (lt_dec (S (dig (xy i))) rad) as [Hrxy| Hrxy].
+   subst xy; simpl in Hrxy; simpl.
+   destruct (lt_dec (S (dig (yx i))) rad) as [Hryx| Hryx].
+    unfold freal_mul in Heqyx; simpl in Heqyx.
+    subst yx; simpl in Hryx; simpl.
+    now rewrite freal_mul_to_seq_i_comm.
 
-  clear Hxy; rename H into Hxy.
-  destruct (LPO_fst (λ j : nat, rad - 1 - dig (yx (i + j + 1)))) as [Hyx| Hyx].
-   assert (H : ∀ j, j ≥ i + 1 → freal_mul_to_seq y x j = rad - 1).
-   intros j Hji; subst yx.
-   specialize (Hyx (j - (i + 1))).
-   replace (i + (j - (i + 1)) + 1) with j in Hyx by lia.
-   assert (dig (freal (y * x) j) < rad) by apply digi.
-   unfold freal_mul in Hyx, H; simpl in Hyx, H; lia.
-
-   clear Hyx; rename H into Hyx.
-   unfold freal_mul in Heqxy; simpl in Heqxy.
-   unfold freal_mul in Heqyx; simpl in Heqyx.
-   destruct (lt_dec (S (dig (xy i))) rad) as [Hrxy| Hrxy].
-    subst xy; simpl in Hrxy; simpl.
-    destruct (lt_dec (S (dig (yx i))) rad) as [Hryx| Hryx].
-     unfold freal_mul in Heqyx; simpl in Heqyx.
-     subst yx; simpl in Hryx; simpl.
-     now rewrite freal_mul_to_seq_i_comm.
-
-     subst yx; simpl in Hryx.
-     now rewrite freal_mul_to_seq_i_comm in Hryx.
-
-    destruct (lt_dec (S (dig (yx i))) rad) as [Hryx| Hryx]; [ | easy ].
-    exfalso.
-    subst xy yx; simpl in Hrxy, Hryx.
+    subst yx; simpl in Hryx.
     now rewrite freal_mul_to_seq_i_comm in Hryx.
 
-   destruct Hyx as (k & Hjk & Hk); clear Hjk.
-   unfold freal_mul in Heqyx; simpl in Heqyx.
-   subst yx; simpl in Hk; simpl.
-   rewrite freal_mul_to_seq_i_comm in Hk.
-   rewrite Hxy in Hk; [ | lia ].
-   now rewrite Nat.sub_diag in Hk.
-bbb.
+   destruct (lt_dec (S (dig (yx i))) rad) as [Hryx| Hryx]; [ | easy ].
+   exfalso.
+   subst xy yx; simpl in Hrxy, Hryx.
+   now rewrite freal_mul_to_seq_i_comm in Hryx.
+
+  destruct Hyx as (k & Hjk & Hk); clear Hjk.
+  unfold freal_mul in Heqyx; simpl in Heqyx.
+  subst yx; simpl in Hk; simpl.
+  rewrite freal_mul_to_seq_i_comm in Hk.
+  unfold freal_mul in Heqxy; simpl in Heqxy.
+  subst xy; simpl in Hxy; simpl.
+  now specialize (Hxy k).
+
+ destruct Hxy as (k & Hjk & Hk).
+ unfold freal_mul in Heqxy; simpl in Heqxy.
+ unfold freal_mul in Heqyx; simpl in Heqyx.
+ destruct (LPO_fst (λ j : nat, rad - 1 - dig (yx (i + j + 1)))) as [Hyx| Hyx].
+  exfalso; clear Hjk.
+  subst xy yx; simpl in Hk, Hyx; simpl.
+  rewrite freal_mul_to_seq_i_comm in Hk.
+  now specialize (Hyx k).
+
+  subst xy yx; simpl.
+  apply freal_mul_to_seq_i_comm.
+Qed.
 
 Theorem freal_mul_comm {r : radix} : ∀ x y : FracReal, (x * y = y * x)%F.
 Proof.
@@ -351,9 +348,9 @@ unfold freal_eq.
 remember (freal_normalize (x * y)) as nxy eqn:Hnxy.
 remember (freal_normalize (y * x)) as nyx eqn:Hnyx.
 unfold freal_normalized_eq.
-destruct (LPO (eq_freal_seq nxy nyx)) as [H| H]; [ easy | ].
+destruct (LPO_fst (eq_freal_seq nxy nyx)) as [H| H]; [ easy | ].
 exfalso.
-destruct H as (i, Hi).
+destruct H as (i & Hji & Hi).
 apply Hi; clear Hi.
 unfold eq_freal_seq.
 destruct (Nat.eq_dec (dig (freal nxy i)) (dig (freal nyx i))) as [H| H].
@@ -361,4 +358,5 @@ destruct (Nat.eq_dec (dig (freal nxy i)) (dig (freal nyx i))) as [H| H].
 
  exfalso; apply H; clear H.
  subst nxy nyx.
-bbb.
+ apply dig_norm_mul_comm.
+Qed.
