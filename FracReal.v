@@ -516,3 +516,39 @@ destruct (Nat.eq_dec (dig (freal nxy i)) (dig (freal nyx i))) as [H| H].
  subst nxy nyx.
  apply dig_norm_mul_comm.
 Qed.
+
+Theorem freal_add_0_l {r : radix} : ∀ x, (0 + x = x)%F.
+Proof.
+intros.
+unfold freal_eq, freal_normalized_eq.
+remember (freal_normalize (0%F + x)) as n0x eqn:Hn0x.
+remember (freal_normalize x) as nx eqn:Hnx.
+destruct (LPO_fst (eq_freal_seq n0x nx)) as [H| H]; [ easy | ].
+exfalso.
+destruct H as (i & Hji & Hi).
+apply Hi; clear Hi.
+unfold eq_freal_seq.
+destruct (Nat.eq_dec (dig (freal n0x i)) (dig (freal nx i))) as [H| H].
+ easy.
+
+ exfalso; apply H; clear H.
+ subst n0x nx.
+ unfold freal_normalize.
+ remember (freal (0%F + x)) as nx0 eqn:Hnx0.
+ remember (freal x) as nx eqn:Hnx.
+ simpl.
+ unfold digit_sequence_normalize.
+ destruct (LPO_fst (λ j : nat, rad - 1 - dig (nx0 (i + j + 1)))) as [Hx0| Hx0].
+  destruct (LPO_fst (λ j : nat, rad - 1 - dig (nx (i + j + 1)))) as [Hx| Hx].
+   unfold freal_add in Hnx0; simpl in Hnx0.
+   destruct (lt_dec (S (dig (nx0 i))) rad) as [ Hrx0 | Hrx0 ].
+    subst nx0; simpl in Hrx0; simpl.
+    destruct (lt_dec (S (dig (nx i))) rad) as [Hrx| Hrx].
+     subst nx; simpl in Hrx; simpl.
+     unfold freal_add_to_seq, numbers_to_digits.
+bbb.
+     now rewrite freal_mul_to_seq_i_comm.
+
+     subst yx; simpl in Hryx.
+     now rewrite freal_mul_to_seq_i_comm in Hryx.
+bbb.
