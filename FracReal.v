@@ -581,7 +581,10 @@ destruct (LPO_fst (λ j : nat, rad - 1 - dig (nx0 (i + j + 1)))) as [Hx0| Hx0].
    destruct (lt_dec (S (dig (nx i))) rad) as [Hrx| Hrx].
     subst nx; simpl in Hrx; simpl.
 simpl in Hx0.
-Abort.
+Print freal_add_to_seq.
+Print numbers_to_digits.
+Print test_seq.
+bbb.
 
 Theorem freal_add_0_l {r : radix} : ∀ x, (0 + x = x)%F.
 Proof.
