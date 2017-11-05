@@ -551,44 +551,19 @@ remember (freal_add_series 0 x) as n0x eqn:Hn0x.
 destruct (LPO_fst (test_seq i n0x)) as [H0x| H0x].
  rewrite Hn0x, freal_add_series_0_x.
  rewrite A_freal_add_series_0_l.
+ assert (∀ i, dig (freal x i) = 0).
+  intros j; specialize (H0x j).
+  unfold test_seq in H0x.
+  subst n0x; simpl in H0x.
+  rewrite A_freal_add_series_0_l in H0x.
+  destruct
+    (le_dec (Init.Nat.pred (rad ^ j))
+       (rad ^ j *
+        rmod (A i (rad * (i + j + 2)) (λ i : nat, dig (freal x i))) /
+        rad ^ (rad * (i + j + 2) - 1 - i))) as [H| H]; [ | easy ].
+  clear H0x.
 bbb.
-
-unfold summation.
-simpl.
-f_equal.
-
-
-; f_equal.
-apply summation_eq_compat; intros j Hj.
-now rewrite freal_mul_series_comm.
-Qed.
-bbb.
- destruct (LPO_fst (test_seq i yx)) as [Hyx| Hyx].
-  now rewrite A_freal_mul_series_comm, <- Heqyx.
-
-  destruct Hyx as (k & Hjk & Hk).
-  rewrite Heqyx, test_seq_freal_mul_series_comm, <- Heqxy in Hk.
-  now rewrite Hxy in Hk.
-
- destruct Hxy as (k & Hjk & Hk).
- rewrite Heqxy, test_seq_freal_mul_series_comm, <- Heqyx in Hk.
- destruct (LPO_fst (test_seq i yx)) as [Hyx| Hyx].
-  now rewrite Hyx in Hk.
-
-  destruct Hyx as (l & Hjl & Hl).
-  destruct (lt_eq_lt_dec k l) as [ [ Hkl | Hkl ] | Hkl ].
-   now apply Hjl in Hkl; subst xy.
-
-   rewrite Heqxy, freal_mul_series_comm, <- Heqyx.
-   rewrite A_freal_mul_series_comm, <- Heqyx.
-   now subst k.
-
-   apply Hjk in Hkl.
-   now rewrite Heqxy, test_seq_freal_mul_series_comm, <- Heqyx in Hkl.
-
-     subst yx; simpl in Hryx.
-     now rewrite freal_mul_to_seq_i_comm in Hryx.
-bbb.
+Abort.
 
 Theorem dig_norm_add_0_l {r : radix} : ∀ x i,
   dig (freal (freal_normalize (0 + x)) i) = dig (freal (freal_normalize x) i).
@@ -606,6 +581,7 @@ destruct (LPO_fst (λ j : nat, rad - 1 - dig (nx0 (i + j + 1)))) as [Hx0| Hx0].
    subst nx0; simpl in Hrx0; simpl.
    destruct (lt_dec (S (dig (nx i))) rad) as [Hrx| Hrx].
     subst nx; simpl in Hrx; simpl.
+simpl in Hx0.
     now rewrite freal_add_to_seq_0_l.
 bbb.
 
