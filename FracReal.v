@@ -562,7 +562,6 @@ destruct (LPO_fst (test_seq i n0x)) as [H0x| H0x].
         rmod (A i (rad * (i + j + 2)) (λ i : nat, dig (freal x i))) /
         rad ^ (rad * (i + j + 2) - 1 - i))) as [H| H]; [ | easy ].
   clear H0x.
-bbb.
 Abort.
 
 Theorem dig_norm_add_0_l {r : radix} : ∀ x i,
