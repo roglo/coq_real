@@ -564,6 +564,13 @@ destruct (LPO_fst (test_seq i n0x)) as [H0x| H0x].
   clear H0x.
 Abort.
 
+Lemma toto {r : radix} : ∀ x i,
+  (∀ k, test_seq i (λ j, dig (freal x j)) k = 0)
+  → rdiv (A i (rad * (i + 2)) (λ j, dig (freal x j))) + 1 = rad.
+Proof.
+intros * Hk.
+bbb.
+
 Theorem numbers_to_digits_id {r : radix} : ∀ x i,
   numbers_to_digits (λ j, dig (freal x j)) i = dig (freal x i).
 Proof.
