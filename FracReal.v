@@ -565,13 +565,11 @@ destruct (LPO_fst (test_seq i n0x)) as [H0x| H0x].
 Abort.
 
 Theorem numbers_to_digits_id {r : radix} : ∀ x i,
- numbers_to_digits (λ j, dig (freal x j)) i = dig (freal x i).
+  numbers_to_digits (λ j, dig (freal x j)) i = dig (freal x i).
 Proof.
 intros.
 unfold numbers_to_digits.
 destruct (LPO_fst (test_seq i (λ j, dig (freal x j)))) as [H| H].
-Print A.
-
 bbb.
 
 Theorem dig_norm_add_0_l {r : radix} : ∀ x i,
