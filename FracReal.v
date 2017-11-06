@@ -584,8 +584,8 @@ assert
  now subst n.
 
  clear Hk; rename H into Hk; simpl in Hk.
- unfold rdiv.
- simpl.
+ unfold rdiv; simpl.
+ unfold rmod in Hk; simpl in Hk.
 bbb.
 
 Lemma toto {r : radix} : ∀ x i,
