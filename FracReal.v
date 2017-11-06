@@ -580,7 +580,8 @@ destruct (LPO_fst (λ j : nat, rad - 1 - dig (nx0 (i + j + 1)))) as [Hx0| Hx0].
    subst nx0; simpl in Hrx0; simpl.
    destruct (lt_dec (S (dig (nx i))) rad) as [Hrx| Hrx].
     subst nx; simpl in Hrx; simpl.
-simpl in Hx0.
+    simpl in Hx0.
+bbb.
 assert (∀ j, rad - 1 - numbers_to_digits (λ i, dig (freal x i)) (i + j + 1) = 0).
  unfold freal_add_to_seq in Hx0.
  intros j.
