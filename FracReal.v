@@ -564,6 +564,13 @@ destruct (LPO_fst (test_seq i n0x)) as [H0x| H0x].
   clear H0x.
 Abort.
 
+Lemma titi {r : radix} : ∀ u i,
+  (∀ k, test_seq i (λ j, dig (u j)) k = 0)
+  → rdiv (A i (rad * (i + 2)) (λ j, dig (u j))) + 1 = rad.
+Proof.
+intros * Hk.
+bbb.
+
 Lemma toto {r : radix} : ∀ x i,
   (∀ k, test_seq i (λ j, dig (freal x j)) k = 0)
   → rdiv (A i (rad * (i + 2)) (λ j, dig (freal x j))) + 1 = rad.
