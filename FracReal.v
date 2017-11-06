@@ -569,6 +569,23 @@ Lemma titi {r : radix} : ∀ u i,
   → rdiv (A i (rad * (i + 2)) (λ j, dig (u j))) + 1 = rad.
 Proof.
 intros * Hk.
+assert
+  (∀ k,
+   let n := rad * (i + k + 2) in
+   rad ^ k - 1 ≤
+   (rad ^ k * rmod (A i n (λ j, dig (u j))) / rad ^ (n - 1 - i))).
+ intros.
+ specialize (Hk k).
+ unfold test_seq in Hk.
+ destruct
+   (le_dec (rad ^ k - 1)
+      (rad ^ k * rmod (A i (rad * (i + k + 2)) (λ j : nat, dig (u j))) /
+      rad ^ (rad * (i + k + 2) - 1 - i))) as [H| H]; [ | easy ].
+ now subst n.
+
+ clear Hk; rename H into Hk; simpl in Hk.
+ unfold rdiv.
+ simpl.
 bbb.
 
 Lemma toto {r : radix} : ∀ x i,
