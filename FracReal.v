@@ -188,7 +188,7 @@ Definition A {r : radix} i n u :=
 
 Definition test_seq {r : radix} i u k :=
   let n := rad * (i + k + 2) in
-  if le_dec (pred (rad ^ k)) (rad ^ k * rmod (A i n u) / den (A i n u)) then 0
+  if le_dec (rad ^ k - 1) (rad ^ k * rmod (A i n u) / rad ^ (n - 1 - i)) then 0
   else 1.
 
 Definition numbers_to_digits {r : radix} u i :=
@@ -557,7 +557,7 @@ destruct (LPO_fst (test_seq i n0x)) as [H0x| H0x].
   subst n0x; simpl in H0x.
   rewrite A_freal_add_series_0_l in H0x.
   destruct
-    (le_dec (Init.Nat.pred (rad ^ j))
+    (le_dec (rad ^ j - 1)
        (rad ^ j *
         rmod (A i (rad * (i + j + 2)) (λ i : nat, dig (freal x i))) /
         rad ^ (rad * (i + j + 2) - 1 - i))) as [H| H]; [ | easy ].
@@ -570,6 +570,8 @@ Proof.
 intros.
 unfold numbers_to_digits.
 destruct (LPO_fst (test_seq i (λ j, dig (freal x j)))) as [H| H].
+Print test_seq.
+Print A.
 bbb.
 
 Theorem dig_norm_add_0_l {r : radix} : ∀ x i,
