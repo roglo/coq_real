@@ -564,6 +564,16 @@ destruct (LPO_fst (test_seq i n0x)) as [H0x| H0x].
   clear H0x.
 Abort.
 
+Theorem numbers_to_digits_id {r : radix} : ∀ x i,
+ numbers_to_digits (λ j, dig (freal x j)) i = dig (freal x i).
+Proof.
+intros.
+unfold numbers_to_digits.
+destruct (LPO_fst (test_seq i (λ j, dig (freal x j)))) as [H| H].
+Print A.
+
+bbb.
+
 Theorem dig_norm_add_0_l {r : radix} : ∀ x i,
   dig (freal (freal_normalize (0 + x)) i) = dig (freal (freal_normalize x) i).
 Proof.
@@ -579,14 +589,16 @@ destruct (LPO_fst (λ j : nat, rad - 1 - dig (nx0 (i + j + 1)))) as [Hx0| Hx0].
   destruct (lt_dec (S (dig (nx0 i))) rad) as [ Hrx0 | Hrx0 ].
    subst nx0; simpl in Hrx0; simpl.
    destruct (lt_dec (S (dig (nx i))) rad) as [Hrx| Hrx].
-    subst nx; simpl in Hrx; simpl.
+    subst nx; simpl in Hrx; simpl; f_equal.
+clear Hx0.
+unfold freal_add_to_seq.
+bbb.
     simpl in Hx0.
     assert (∀ j, rad - 1 - numbers_to_digits (λ i, dig (freal x i)) (i + j + 1) = 0).
      unfold freal_add_to_seq in Hx0.
      intros j.
      now specialize (Hx0 j).
      clear Hx0; rename H into Hx0; move Hx0 after Hx.
-bbb.
 Print numbers_to_digits.
 Print test_seq.
 bbb.
