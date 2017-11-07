@@ -353,8 +353,7 @@ remember (freal_add_series y x) as yx.
 destruct (LPO_fst (test_seq i xy)) as [Hxy| Hxy].
  rewrite Heqxy, freal_add_series_comm, <- Heqyx.
  destruct (LPO_fst (test_seq i yx)) as [Hyx| Hyx].
-bbb.
-  now rewrite A_freal_add_series_comm, <- Heqyx.
+  now rewrite nA_freal_add_series_comm, <- Heqyx.
 
   destruct Hyx as (k & Hjk & Hk).
   rewrite Heqyx, test_seq_freal_add_series_comm, <- Heqxy in Hk.
@@ -370,7 +369,7 @@ bbb.
    now apply Hjl in Hkl; subst xy.
 
    rewrite Heqxy, freal_add_series_comm, <- Heqyx.
-   rewrite A_freal_add_series_comm, <- Heqyx.
+   rewrite nA_freal_add_series_comm, <- Heqyx.
    now subst k.
 
    apply Hjk in Hkl.
@@ -387,7 +386,7 @@ remember (freal_mul_series y x) as yx.
 destruct (LPO_fst (test_seq i xy)) as [Hxy| Hxy].
  rewrite Heqxy, freal_mul_series_comm, <- Heqyx.
  destruct (LPO_fst (test_seq i yx)) as [Hyx| Hyx].
-  now rewrite A_freal_mul_series_comm, <- Heqyx.
+  now rewrite nA_freal_mul_series_comm, <- Heqyx.
 
   destruct Hyx as (k & Hjk & Hk).
   rewrite Heqyx, test_seq_freal_mul_series_comm, <- Heqxy in Hk.
@@ -403,7 +402,7 @@ destruct (LPO_fst (test_seq i xy)) as [Hxy| Hxy].
    now apply Hjl in Hkl; subst xy.
 
    rewrite Heqxy, freal_mul_series_comm, <- Heqyx.
-   rewrite A_freal_mul_series_comm, <- Heqyx.
+   rewrite nA_freal_mul_series_comm, <- Heqyx.
    now subst k.
 
    apply Hjk in Hkl.
@@ -569,6 +568,16 @@ unfold sequence_add; simpl.
 easy.
 Qed.
 
+Theorem nA_freal_add_series_0_l {r : radix} : ∀ x i n,
+  nA i n (freal_add_series 0 x) = nA i n (λ i, dig (freal x i)).
+Proof.
+intros.
+unfold nA; simpl.
+unfold freal_add_series; simpl.
+unfold sequence_add; simpl.
+easy.
+Qed.
+
 Theorem freal_add_to_seq_0_l {r : radix} : ∀ x i,
   freal_add_to_seq 0 x i = dig (freal x i).
 Proof.
@@ -577,7 +586,7 @@ unfold freal_add_to_seq, numbers_to_digits.
 remember (freal_add_series 0 x) as n0x eqn:Hn0x.
 destruct (LPO_fst (test_seq i n0x)) as [H0x| H0x].
  rewrite Hn0x, freal_add_series_0_x.
- rewrite A_freal_add_series_0_l.
+ rewrite nA_freal_add_series_0_l.
  assert (∀ i, dig (freal x i) = 0).
   intros j; specialize (H0x j).
   unfold test_seq in H0x.
@@ -604,6 +613,8 @@ assert
  now subst n.
 
  simpl in H.
+(* the ≤ in H could be = *)
+bbb.
 Abort. (*
  clear Hk; rename H into Hk; simpl in Hk.
  unfold rdiv; simpl.
