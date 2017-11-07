@@ -614,7 +614,6 @@ assert
 
  simpl in H.
 (* the ≤ in H could be = *)
-bbb.
 Abort. (*
  clear Hk; rename H into Hk; simpl in Hk.
  unfold rdiv; simpl.
