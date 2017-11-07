@@ -197,8 +197,12 @@ Definition test_seq {r : radix} i u k :=
 
 Definition numbers_to_digits {r : radix} u i :=
   match LPO_fst (test_seq i u) with
-  | inl _ => (u i + rdiv (A i (rad * (i + 2)) u) + 1) mod rad
-  | inr (exist _ j _) => (u i + rdiv (A i (rad * (i + j + 2)) u)) mod rad
+  | inl _ =>
+      (u i + nA i (rad * (i + 2)) u / (rad ^ (rad * (i + 2) - 1 - i)) + 1)
+      mod rad
+  | inr (exist _ j _) =>
+      (u i + nA i (rad * (i + j + 2)) u / (rad ^ (rad * (i + j + 2) - 1 - i)))
+      mod rad
   end.
 
 Definition freal_add_to_seq {r : radix} (a b : FracReal) :=
@@ -349,6 +353,7 @@ remember (freal_add_series y x) as yx.
 destruct (LPO_fst (test_seq i xy)) as [Hxy| Hxy].
  rewrite Heqxy, freal_add_series_comm, <- Heqyx.
  destruct (LPO_fst (test_seq i yx)) as [Hyx| Hyx].
+bbb.
   now rewrite A_freal_add_series_comm, <- Heqyx.
 
   destruct Hyx as (k & Hjk & Hk).
@@ -599,18 +604,19 @@ assert
  now subst n.
 
  simpl in H.
-bbb.
+Abort. (*
  clear Hk; rename H into Hk; simpl in Hk.
  unfold rdiv; simpl.
  unfold rmod in Hk; simpl in Hk.
 bbb.
+*)
 
 Lemma toto {r : radix} : ∀ x i,
   (∀ k, test_seq i (λ j, dig (freal x j)) k = 0)
   → rdiv (A i (rad * (i + 2)) (λ j, dig (freal x j))) + 1 = rad.
 Proof.
 intros * Hk.
-bbb.
+Abort.
 
 Theorem numbers_to_digits_id {r : radix} : ∀ x i,
   numbers_to_digits (λ j, dig (freal x j)) i = dig (freal x i).
