@@ -181,6 +181,9 @@ Record rational := mkrat { num : nat; den : nat }.
 Definition rdiv q := num q / den q.
 Definition rmod q := num q mod den q.
 
+Definition nA {r : radix} i n u :=
+  Σ (j = i + 1, n - 1), u j * rad ^ (n - 1 - j).
+
 Definition A {r : radix} i n u :=
   mkrat
     (Σ (j = i + 1, n - 1), u j * rad ^ (n - 1 - j))
@@ -188,7 +191,8 @@ Definition A {r : radix} i n u :=
 
 Definition test_seq {r : radix} i u k :=
   let n := rad * (i + k + 2) in
-  if le_dec (rad ^ k - 1) (rad ^ k * rmod (A i n u) / rad ^ (n - 1 - i)) then 0
+  let s := rad ^ (n - 1 - i) in
+  if le_dec (rad ^ k - 1) (rad ^ k * (nA i n u mod s) / s) then 0
   else 1.
 
 Definition numbers_to_digits {r : radix} u i :=
@@ -290,11 +294,29 @@ apply summation_eq_compat; intros j Hj.
 now rewrite freal_add_series_comm.
 Qed.
 
+Theorem nA_freal_add_series_comm {r : radix} : ∀ x y i n,
+  nA i n (freal_add_series x y) = nA i n (freal_add_series y x).
+Proof.
+intros.
+unfold nA; simpl.
+apply summation_eq_compat; intros j Hj.
+now rewrite freal_add_series_comm.
+Qed.
+
 Theorem A_freal_mul_series_comm {r : radix} : ∀ x y i n,
   A i n (freal_mul_series x y) = A i n (freal_mul_series y x).
 Proof.
 intros.
 unfold A; simpl; f_equal.
+apply summation_eq_compat; intros j Hj.
+now rewrite freal_mul_series_comm.
+Qed.
+
+Theorem nA_freal_mul_series_comm {r : radix} : ∀ x y i n,
+  nA i n (freal_mul_series x y) = nA i n (freal_mul_series y x).
+Proof.
+intros.
+unfold nA; simpl.
 apply summation_eq_compat; intros j Hj.
 now rewrite freal_mul_series_comm.
 Qed.
@@ -305,7 +327,7 @@ Theorem test_seq_freal_add_series_comm {r : radix} : ∀ x y i k,
 Proof.
 intros.
 unfold test_seq.
-now rewrite A_freal_add_series_comm.
+now rewrite nA_freal_add_series_comm.
 Qed.
 
 Theorem test_seq_freal_mul_series_comm {r : radix} : ∀ x y i k,
@@ -314,7 +336,7 @@ Theorem test_seq_freal_mul_series_comm {r : radix} : ∀ x y i k,
 Proof.
 intros.
 unfold test_seq.
-now rewrite A_freal_mul_series_comm.
+now rewrite nA_freal_mul_series_comm.
 Qed.
 
 Theorem freal_add_to_seq_i_comm {r : radix} : ∀ x y i,
@@ -555,13 +577,6 @@ destruct (LPO_fst (test_seq i n0x)) as [H0x| H0x].
   intros j; specialize (H0x j).
   unfold test_seq in H0x.
   subst n0x; simpl in H0x.
-  rewrite A_freal_add_series_0_l in H0x.
-  destruct
-    (le_dec (rad ^ j - 1)
-       (rad ^ j *
-        rmod (A i (rad * (i + j + 2)) (λ i : nat, dig (freal x i))) /
-        rad ^ (rad * (i + j + 2) - 1 - i))) as [H| H]; [ | easy ].
-  clear H0x.
 Abort.
 
 Lemma titi {r : radix} : ∀ u i,
@@ -579,10 +594,12 @@ assert
  unfold test_seq in Hk.
  destruct
    (le_dec (rad ^ k - 1)
-      (rad ^ k * rmod (A i (rad * (i + k + 2)) (λ j : nat, dig (u j))) /
+      (rad ^ k * (nA i (rad * (i + k + 2)) (λ j : nat, dig (u j)) mod rad ^ (rad * (i + k + 2) - 1 - i)) /
       rad ^ (rad * (i + k + 2) - 1 - i))) as [H| H]; [ | easy ].
  now subst n.
 
+ simpl in H.
+bbb.
  clear Hk; rename H into Hk; simpl in Hk.
  unfold rdiv; simpl.
  unfold rmod in Hk; simpl in Hk.
