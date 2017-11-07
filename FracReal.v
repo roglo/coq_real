@@ -621,12 +621,15 @@ Abort. (*
 bbb.
 *)
 
+(*
 Lemma toto {r : radix} : ∀ x i,
   (∀ k, test_seq i (λ j, dig (freal x j)) k = 0)
-  → rdiv (A i (rad * (i + 2)) (λ j, dig (freal x j))) + 1 = rad.
+  → nA i (rad * (i + 2)) (λ j, dig (freal x j)) / rad ^ (rad * (i + 2) - 1 - i)
+     = rad ^ k - 1.
 Proof.
 intros * Hk.
 Abort.
+*)
 
 Theorem numbers_to_digits_id {r : radix} : ∀ x i,
   numbers_to_digits (λ j, dig (freal x j)) i = dig (freal x i).
@@ -635,7 +638,7 @@ intros.
 unfold numbers_to_digits.
 destruct (LPO_fst (test_seq i (λ j, dig (freal x j)))) as [H| H].
 Print test_seq.
-Print A.
+Print nA.
 bbb.
 
 Theorem dig_norm_add_0_l {r : radix} : ∀ x i,
