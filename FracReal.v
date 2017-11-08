@@ -563,6 +563,9 @@ destruct (LPO_fst (test_seq i u)) as [Hsu| Hsu].
   remember (rad ^ (n - 1 - i)) as s eqn:Hs.
   destruct (le_dec ((rad ^ k - 1) * s) (rad ^ k * (nA i n u mod s)))
     as [H| H]; [ clear Hsu | easy ].
+  subst u.
+  rewrite nA_freal_add_series_0_l in H.
+  simpl in H.
 bbb.
 
 Lemma titi {r : radix} : ∀ u i,
