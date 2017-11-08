@@ -184,23 +184,18 @@ Definition rmod q := num q mod den q.
 Definition nA {r : radix} i n u :=
   Σ (j = i + 1, n - 1), u j * rad ^ (n - 1 - j).
 
-Definition A {r : radix} i n u :=
-  mkrat
-    (Σ (j = i + 1, n - 1), u j * rad ^ (n - 1 - j))
-    (rad ^ (n - 1 - i)).
-
 Definition test_seq {r : radix} i u k :=
   let n := rad * (i + k + 2) in
   let s := rad ^ (n - 1 - i) in
-  if le_dec (rad ^ k - 1) (rad ^ k * (nA i n u mod s) / s) then 0
+  if le_dec ((rad ^ k - 1) * s) (rad ^ k * (nA i n u mod s)) then 0
   else 1.
+
+bbb.
 
 Definition numbers_to_digits {r : radix} u i :=
   match LPO_fst (test_seq i u) with
   | inl _ =>
       let n := rad * (i + 2) in
-      let s := rad ^ (n - 1 - i) in
-glop.
       (u i + nA i n u mod s / s) + 1) mod rad
   | inr (exist _ j _) =>
       (u i + nA i (rad * (i + j + 2)) u / (rad ^ (rad * (i + j + 2) - 1 - i)))
