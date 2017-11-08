@@ -190,17 +190,16 @@ Definition test_seq {r : radix} i u k :=
   if le_dec ((rad ^ k - 1) * s) (rad ^ k * (nA i n u mod s)) then 0
   else 1.
 
-bbb.
-
 Definition numbers_to_digits {r : radix} u i :=
   match LPO_fst (test_seq i u) with
   | inl _ =>
       let n := rad * (i + 2) in
       let s := rad ^ (n - 1 - i) in
+      (u i + nA i n u / s + 1) mod rad
+  | inr (exist _ k _) =>
+      let n := rad * (i + k + 2) in
+      let s := rad ^ (n - 1 - i) in
       (u i + nA i n u / s) mod rad
-  | inr (exist _ j _) =>
-      (u i + nA i (rad * (i + j + 2)) u / (rad ^ (rad * (i + j + 2) - 1 - i)))
-      mod rad
   end.
 
 Definition freal_add_to_seq {r : radix} (a b : FracReal) :=
@@ -287,15 +286,6 @@ destruct i; [ easy | ].
 apply sequence_mul_comm.
 Qed.
 
-Theorem A_freal_add_series_comm {r : radix} : ∀ x y i n,
-  A i n (freal_add_series x y) = A i n (freal_add_series y x).
-Proof.
-intros.
-unfold A; simpl; f_equal.
-apply summation_eq_compat; intros j Hj.
-now rewrite freal_add_series_comm.
-Qed.
-
 Theorem nA_freal_add_series_comm {r : radix} : ∀ x y i n,
   nA i n (freal_add_series x y) = nA i n (freal_add_series y x).
 Proof.
@@ -303,15 +293,6 @@ intros.
 unfold nA; simpl.
 apply summation_eq_compat; intros j Hj.
 now rewrite freal_add_series_comm.
-Qed.
-
-Theorem A_freal_mul_series_comm {r : radix} : ∀ x y i n,
-  A i n (freal_mul_series x y) = A i n (freal_mul_series y x).
-Proof.
-intros.
-unfold A; simpl; f_equal.
-apply summation_eq_compat; intros j Hj.
-now rewrite freal_mul_series_comm.
 Qed.
 
 Theorem nA_freal_mul_series_comm {r : radix} : ∀ x y i n,
@@ -556,16 +537,6 @@ unfold sequence_add.
 apply Nat.add_0_l.
 Qed.
 
-Theorem A_freal_add_series_0_l {r : radix} : ∀ x i n,
-  A i n (freal_add_series 0 x) = A i n (λ i, dig (freal x i)).
-Proof.
-intros.
-unfold A; simpl.
-unfold freal_add_series; simpl.
-unfold sequence_add; simpl.
-easy.
-Qed.
-
 Theorem nA_freal_add_series_0_l {r : radix} : ∀ x i n,
   nA i n (freal_add_series 0 x) = nA i n (λ i, dig (freal x i)).
 Proof.
@@ -581,15 +552,18 @@ Theorem freal_add_to_seq_0_l {r : radix} : ∀ x i,
 Proof.
 intros.
 unfold freal_add_to_seq, numbers_to_digits.
-remember (freal_add_series 0 x) as n0x eqn:Hn0x.
-destruct (LPO_fst (test_seq i n0x)) as [H0x| H0x].
- rewrite Hn0x, freal_add_series_0_x.
+remember (freal_add_series 0 x) as u eqn:Hu.
+destruct (LPO_fst (test_seq i u)) as [Hsu| Hsu].
+ rewrite Hu, freal_add_series_0_x.
  rewrite nA_freal_add_series_0_l.
  assert (∀ i, dig (freal x i) = 0).
-  intros j; specialize (H0x j).
-  unfold test_seq in H0x.
-  subst n0x; simpl in H0x.
-Abort.
+  intros k; specialize (Hsu k).
+  unfold test_seq in Hsu.
+  remember (rad * (i + k + 2)) as n eqn:Hn.
+  remember (rad ^ (n - 1 - i)) as s eqn:Hs.
+  destruct (le_dec ((rad ^ k - 1) * s) (rad ^ k * (nA i n u mod s)))
+    as [H| H]; [ clear Hsu | easy ].
+bbb.
 
 Lemma titi {r : radix} : ∀ u i,
   (∀ k, test_seq i (λ j, dig (u j)) k = 0)
