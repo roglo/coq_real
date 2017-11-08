@@ -196,7 +196,8 @@ Definition numbers_to_digits {r : radix} u i :=
   match LPO_fst (test_seq i u) with
   | inl _ =>
       let n := rad * (i + 2) in
-      (u i + nA i n u mod s / s) + 1) mod rad
+      let s := rad ^ (n - 1 - i) in
+      (u i + nA i n u / s) mod rad
   | inr (exist _ j _) =>
       (u i + nA i (rad * (i + j + 2)) u / (rad ^ (rad * (i + j + 2) - 1 - i)))
       mod rad
