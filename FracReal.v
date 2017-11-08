@@ -556,9 +556,8 @@ remember (freal_add_series 0 x) as u eqn:Hu.
 destruct (LPO_fst (test_seq i u)) as [Hsu| Hsu].
  rewrite Hu, freal_add_series_0_x.
  rewrite nA_freal_add_series_0_l.
-bbb.
- assert (∀ i, dig (freal x i) = 0).
-  intros k; specialize (Hsu k).
+ assert (∀ k, k > i → dig (freal x k) = 0).
+  intros k Hk; specialize (Hsu k).
   unfold test_seq in Hsu.
   remember (rad * (i + k + 2)) as n eqn:Hn.
   remember (rad ^ (n - 1 - i)) as s eqn:Hs.
@@ -566,7 +565,6 @@ bbb.
     as [H| H]; [ clear Hsu | easy ].
   subst u.
   rewrite nA_freal_add_series_0_l in H.
-  simpl in H.
 bbb.
 
 Lemma titi {r : radix} : ∀ u i,
