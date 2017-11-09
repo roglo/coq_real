@@ -601,7 +601,7 @@ destruct (LPO_fst (test_seq i (λ j, dig (freal x j)))) as [H| H].
  remember (rad ^ (n - 1 - i)) as s eqn:Hs.
 (* ouais mais nA i n u < s (à vérifier, mais je pense que c'est bon).
    du coup, c'est faux, crotte alors *)
-bbb.
+Abort.
 
 Theorem dig_norm_add_0_l {r : radix} : ∀ x i,
   dig (freal (freal_normalize (0 + x)) i) = dig (freal (freal_normalize x) i).
