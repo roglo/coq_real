@@ -578,6 +578,28 @@ destruct (LPO_fst (test_seq i (λ j, dig (freal x j)))) as [H| H].
    (Hk : ∀ k,
     let n := rad * (i + k + 2) in
     let s := rad ^ (n - 1 - i) in
+    (rad ^ k - 1) * s ≤ rad ^ k * nA i n u).
+   clear -H Hu.
+   intros k n s.
+   unfold test_seq in H.
+   specialize (H k).
+   fold n s in H.
+   destruct (le_dec ((rad ^ k - 1) * s) (rad ^ k * (nA i n u mod s)))
+    as [Hk| Hk]; [ clear H | easy ].
+   eapply Nat.le_trans; [ eassumption | ].
+   apply Nat.mul_le_mono_nonneg_l; [ lia | ].
+   enough (nA i n u < s).
+    apply Nat.mod_le; unfold s.
+    apply Nat.pow_nonzero.
+    apply radix_ne_0.
+
+    unfold nA.
+    clear Hk.
+bbb.
+ assert
+   (Hk : ∀ k,
+    let n := rad * (i + k + 2) in
+    let s := rad ^ (n - 1 - i) in
     (rad ^ k - 1) * s ≤ rad ^ k * (nA i n u mod s)).
    clear -H.
    intros k n s.
