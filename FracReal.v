@@ -576,15 +576,8 @@ destruct (LPO_fst (test_seq i (λ j, dig (freal x j)))) as [H| H].
  remember (rad * (i + 2)) as n eqn:Hn.
  remember (rad ^ (n - 1 - i)) as s eqn:Hs.
  remember (λ j, dig (freal x j)) as u eqn:Hu.
- assert (∀ j, dig (freal x j) = rad - 1).
-  intros k; clear -Hu H.
-  specialize (H k).
-  unfold test_seq in H.
-  remember (rad * (i + k + 2)) as n eqn:Hn.
-  remember (rad ^ (n - 1 - i)) as s eqn:Hs.
-  destruct (le_dec ((rad ^ k - 1) * s) (rad ^ k * (nA i n u mod s)))
-    as [Hk| Hk]; [ clear H | easy ].
-  unfold nA in Hk.
+bbb.
+ assert (∀ j, dig (freal x j) = rad - 1). => faux !
 bbb.
 
 Theorem dig_norm_add_0_l {r : radix} : ∀ x i,
