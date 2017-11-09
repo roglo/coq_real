@@ -574,6 +574,7 @@ intros.
 unfold numbers_to_digits.
 destruct (LPO_fst (test_seq i (λ j, dig (freal x j)))) as [H| H].
  remember (λ j, dig (freal x j)) as u eqn:Hu.
+(* probablement vrai mais inutile
  assert
    (Hk : ∀ k,
     let n := rad * (i + k + 2) in
@@ -595,22 +596,11 @@ destruct (LPO_fst (test_seq i (λ j, dig (freal x j)))) as [H| H].
 
     unfold nA.
     clear Hk.
-bbb.
- assert
-   (Hk : ∀ k,
-    let n := rad * (i + k + 2) in
-    let s := rad ^ (n - 1 - i) in
-    (rad ^ k - 1) * s ≤ rad ^ k * (nA i n u mod s)).
-   clear -H.
-   intros k n s.
-   unfold test_seq in H.
-   specialize (H k).
-   fold n s in H.
-   now destruct (le_dec ((rad ^ k - 1) * s) (rad ^ k * (nA i n u mod s))).
-
-   clear H.
-   remember (rad * (i + 2)) as n eqn:Hn.
-   remember (rad ^ (n - 1 - i)) as s eqn:Hs.
+*)
+ remember (rad * (i + 2)) as n eqn:Hn.
+ remember (rad ^ (n - 1 - i)) as s eqn:Hs.
+(* ouais mais nA i n u < s (à vérifier, mais je pense que c'est bon).
+   du coup, c'est faux, crotte alors *)
 bbb.
 
 Theorem dig_norm_add_0_l {r : radix} : ∀ x i,
