@@ -93,7 +93,7 @@ revert i k Hn Hk; induction n; intros.
 Qed.
 
 Theorem LPO_fst : ∀ (u : nat → nat),
-  (∀ i, u i = O) +
+  (∀ k, u k = O) +
   { i : nat | (∀ j, j < i → u j = 0) ∧ u i ≠ O }.
 Proof.
 intros.
@@ -565,45 +565,7 @@ destruct (LPO_fst (test_seq i u)) as [Hsu| Hsu].
     as [H| H]; [ clear Hsu | easy ].
   subst u.
   rewrite nA_freal_add_series_0_l in H.
-bbb.
-
-Lemma titi {r : radix} : ∀ u i,
-  (∀ k, test_seq i (λ j, dig (u j)) k = 0)
-  → rdiv (A i (rad * (i + 2)) (λ j, dig (u j))) + 1 = rad.
-Proof.
-intros * Hk.
-assert
-  (∀ k,
-   let n := rad * (i + k + 2) in
-   rad ^ k - 1 ≤
-   (rad ^ k * rmod (A i n (λ j, dig (u j))) / rad ^ (n - 1 - i))).
- intros.
- specialize (Hk k).
- unfold test_seq in Hk.
- destruct
-   (le_dec (rad ^ k - 1)
-      (rad ^ k * (nA i (rad * (i + k + 2)) (λ j : nat, dig (u j)) mod rad ^ (rad * (i + k + 2) - 1 - i)) /
-      rad ^ (rad * (i + k + 2) - 1 - i))) as [H| H]; [ | easy ].
- now subst n.
-
- simpl in H.
-(* the ≤ in H could be = *)
-Abort. (*
- clear Hk; rename H into Hk; simpl in Hk.
- unfold rdiv; simpl.
- unfold rmod in Hk; simpl in Hk.
-bbb.
-*)
-
-(*
-Lemma toto {r : radix} : ∀ x i,
-  (∀ k, test_seq i (λ j, dig (freal x j)) k = 0)
-  → nA i (rad * (i + 2)) (λ j, dig (freal x j)) / rad ^ (rad * (i + 2) - 1 - i)
-     = rad ^ k - 1.
-Proof.
-intros * Hk.
 Abort.
-*)
 
 Theorem numbers_to_digits_id {r : radix} : ∀ x i,
   numbers_to_digits (λ j, dig (freal x j)) i = dig (freal x i).
@@ -611,6 +573,9 @@ Proof.
 intros.
 unfold numbers_to_digits.
 destruct (LPO_fst (test_seq i (λ j, dig (freal x j)))) as [H| H].
+ remember (rad * (i + 2)) as n eqn:Hn.
+ remember (rad ^ (n - 1 - i)) as s eqn:Hs.
+ remember (λ j, dig (freal x j)) as u eqn:Hu.
 Print test_seq.
 Print nA.
 bbb.
