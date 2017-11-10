@@ -176,11 +176,6 @@ Definition freal_mul_series {r : radix} a b i :=
   | S i' => sequence_mul (λ i, dig (freal a i)) (λ i, dig (freal b i)) i'
   end.
 
-Record rational := mkrat { num : nat; den : nat }.
-
-Definition rdiv q := num q / den q.
-Definition rmod q := num q mod den q.
-
 Definition nA {r : radix} i n u :=
   Σ (j = i + 1, n - 1), u j * rad ^ (n - 1 - j).
 
@@ -601,7 +596,7 @@ destruct (LPO_fst (test_seq i (λ j, dig (freal x j)))) as [H| H].
  remember (rad ^ (n - 1 - i)) as s eqn:Hs.
 (* ouais mais nA i n u < s (à vérifier, mais je pense que c'est bon).
    du coup, c'est faux, crotte alors *)
-Abort.
+bbb.
 
 Theorem dig_norm_add_0_l {r : radix} : ∀ x i,
   dig (freal (freal_normalize (0 + x)) i) = dig (freal (freal_normalize x) i).
