@@ -569,6 +569,11 @@ intros.
 unfold numbers_to_digits.
 destruct (LPO_fst (test_seq i (λ j, dig (freal x j)))) as [H| H].
  remember (λ j, dig (freal x j)) as u eqn:Hu.
+ remember (rad * (i + 2)) as n eqn:Hn.
+ remember (rad ^ (n - 1 - i)) as s eqn:Hs.
+ unfold test_seq in H.
+bbb.
+
 (* probablement vrai mais inutile
  assert
    (Hk : ∀ k,
@@ -592,8 +597,6 @@ destruct (LPO_fst (test_seq i (λ j, dig (freal x j)))) as [H| H].
     unfold nA.
     clear Hk.
 *)
- remember (rad * (i + 2)) as n eqn:Hn.
- remember (rad ^ (n - 1 - i)) as s eqn:Hs.
 (* ouais mais nA i n u < s (à vérifier, mais je pense que c'est bon).
    du coup, c'est faux, crotte alors *)
 (* peut-être que le numbers_to_digits en fait renvoit un nombre normalisé.
@@ -618,6 +621,7 @@ destruct (LPO_fst (λ j : nat, rad - 1 - dig (nx0 (i + j + 1)))) as [Hx0| Hx0].
     subst nx; simpl in Hrx, Hx0; simpl; f_equal.
     unfold freal_add_to_seq.
     unfold freal_add_to_seq in Hx0.
+(*
     assert
       (∀ k, rad - 1 - numbers_to_digits (λ j, dig (freal x j)) (i + k + 1)= 0).
      intros.
@@ -625,7 +629,13 @@ destruct (LPO_fst (λ j : nat, rad - 1 - dig (nx0 (i + j + 1)))) as [Hx0| Hx0].
      unfold freal_add_series in Hx0.
      simpl in Hx0.
      now unfold sequence_add in Hx0.
+
      clear Hx0; rename H into Hx0; move Hx0 after Hx.
+*)
+    unfold freal_add_series; simpl.
+    unfold sequence_add; simpl.
+    unfold numbers_to_digits.
+    simpl.
 bbb.
     simpl in Hx0.
     assert (∀ j, rad - 1 - numbers_to_digits (λ i, dig (freal x i)) (i + j + 1) = 0).
