@@ -570,6 +570,7 @@ unfold numbers_to_digits.
 destruct (LPO_fst (test_seq i (λ j, dig (freal x j)))) as [H| H].
  remember (λ j, dig (freal x j)) as u eqn:Hu.
  unfold test_seq in H.
+bbb.
  assert (∀ k : nat, False).
   intros k.
   specialize (H k).
