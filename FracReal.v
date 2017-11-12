@@ -618,6 +618,14 @@ destruct (LPO_fst (λ j : nat, rad - 1 - dig (nx0 (i + j + 1)))) as [Hx0| Hx0].
     subst nx; simpl in Hrx, Hx0; simpl; f_equal.
     unfold freal_add_to_seq.
     unfold freal_add_to_seq in Hx0.
+    assert
+      (∀ k, rad - 1 - numbers_to_digits (λ j, dig (freal x j)) (i + k + 1)= 0).
+     intros.
+     specialize (Hx0 k).
+     unfold freal_add_series in Hx0.
+     simpl in Hx0.
+     now unfold sequence_add in Hx0.
+     clear Hx0; rename H into Hx0; move Hx0 after Hx.
 bbb.
     simpl in Hx0.
     assert (∀ j, rad - 1 - numbers_to_digits (λ i, dig (freal x i)) (i + j + 1) = 0).
