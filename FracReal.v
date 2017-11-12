@@ -569,10 +569,40 @@ intros.
 unfold numbers_to_digits.
 destruct (LPO_fst (test_seq i (λ j, dig (freal x j)))) as [H| H].
  remember (λ j, dig (freal x j)) as u eqn:Hu.
+ unfold test_seq in H.
+ assert (∀ k : nat, False).
+  intros k.
+  specialize (H k).
+  remember (rad * (i + k + 2)) as n eqn:Hn.
+  remember (rad ^ (n - 1 - i)) as s eqn:Hs.
+  destruct (le_dec ((rad ^ k - 1) * s) (rad ^ k * (nA i n u mod s)))
+   as [Hk| Hk]; [ clear H | easy ].
+bbb.
+rad ^ k - 1 = 99...99
+              -------
+                 k
+s = 100...00
+     -------
+    n - 1 - i
+
+(rad ^ k - 1) * s = 99...9900...00
+                    -------=======
+                       k    n-1-i
+
+rad ^ k = 100...00
+           -------
+              k
+nA i n u = xx...xx        ... mod s = itself
+           -------
+            n-1-i
+
+rad ^ k * (nA i n u mod s) = xx...xx00...00
+                             =======-------
+                              n-1-i    k
+
+
  remember (rad * (i + 2)) as n eqn:Hn.
  remember (rad ^ (n - 1 - i)) as s eqn:Hs.
- unfold test_seq in H.
-bbb.
 
 (* probablement vrai mais inutile
  assert
