@@ -597,6 +597,13 @@ induction n; intros; [ easy | simpl ].
 now rewrite IHn.
 Qed.
 
+(*
+Theorem power_summation_le_sup : ∀ r u b e,
+  (∀ i, u i < r)
+  → Σ (i = b, e), u i * r ^ i ≤ (S e - b) * r ^ (S e).
+Proof.
+bbb.
+
 Theorem power_summation_lt_sup : ∀ r u b e,
   (∀ i, u i < r)
   → Σ (i = b, e), u i * r ^ i < (S e - b) * r ^ (S e).
@@ -607,6 +614,7 @@ destruct (le_dec b e) as [Hbe| Hbe].
  rewrite Nat.sub_succ_l; [ | easy ].
  rewrite <- summation_1; [ | easy ].
  rewrite summation_mul_distr_r.
+
 
 bbb.
  rewrite <- power_summation.
@@ -620,6 +628,7 @@ bbb.
  now apply Nat.pow_nonzero.
 bbb.
 *)
+*)
 
 Theorem nA_freal_ub {r : radix} : ∀ x n i,
   let s := rad ^ (n - 1 - i) in
@@ -627,6 +636,7 @@ Theorem nA_freal_ub {r : radix} : ∀ x n i,
 Proof.
 intros.
 unfold nA, s.
+bbb.
 specialize (power_summation_lt_sup rad (λ j, dig (freal x (n - 1 - j))) (i + 1) (n - 1)) as H.
 remember minus as f; simpl in H; subst f.
 rewrite summation_rtl.
