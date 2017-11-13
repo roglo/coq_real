@@ -582,7 +582,9 @@ induction n.
   rewrite Nat.add_comm.
   now rewrite Nat.add_sub, Nat.mul_comm.
 
-bbb.
+  rewrite <- (Nat.pow_0_r a).
+  apply Nat.pow_le_mono_r; lia.
+Qed.
 
 Theorem power_summation_lt_sup : ∀ r u b e,
   (∀ i, u i < r)
@@ -592,6 +594,7 @@ intros * Hu.
 destruct r; [ now specialize (Hu 0) | ].
 destruct (le_dec b e) as [Hbe| Hbe].
  rewrite Nat.sub_succ_l; [ | easy ].
+bbb.
  rewrite <- power_summation.
  rewrite summation_shift; [ | easy ].
 bbb.
