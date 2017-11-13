@@ -586,14 +586,28 @@ induction n.
   apply Nat.pow_le_mono_r; lia.
 Qed.
 
+Theorem summation_1 : ∀ b e, b ≤ e → Σ (i = b, e), 1 = S (e - b).
+Proof.
+intros * Hbe.
+unfold summation.
+rewrite Nat.sub_succ_l; [ | easy ].
+remember (S (e - b)) as n; clear.
+revert b.
+induction n; intros; [ easy | simpl ].
+now rewrite IHn.
+Qed.
+
 Theorem power_summation_lt_sup : ∀ r u b e,
   (∀ i, u i < r)
-  → Σ (i = b, e), u i * r ^ i < r ^ (S e - b).
+  → Σ (i = b, e), u i * r ^ i < (S e - b) * r ^ (S e).
 Proof.
 intros * Hu.
 destruct r; [ now specialize (Hu 0) | ].
 destruct (le_dec b e) as [Hbe| Hbe].
  rewrite Nat.sub_succ_l; [ | easy ].
+ rewrite <- summation_1; [ | easy ].
+ rewrite summation_mul_distr_r.
+
 bbb.
  rewrite <- power_summation.
  rewrite summation_shift; [ | easy ].
