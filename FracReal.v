@@ -562,10 +562,14 @@ destruct (LPO_fst (test_seq i u)) as [Hsu| Hsu].
   rewrite nA_freal_add_series_0_l in H.
 Abort.
 
-Theorem power_summation_sup : ∀ r e,
+Theorem power_summation : ∀ r e,
   Σ (i = 0, e), r ^ i + 1 = r ^ S e.
 Proof.
-Admitted.
+intros.
+induction e.
+ simpl.
+(* oops... *)
+bbb.
 
 Theorem power_summation_lt_sup : ∀ r u b e,
   (∀ i, u i < r)
@@ -575,15 +579,17 @@ intros * Hu.
 destruct r; [ now specialize (Hu 0) | ].
 destruct (le_dec b e) as [Hbe| Hbe].
  rewrite Nat.sub_succ_l; [ | easy ].
- rewrite <- power_summation_sup.
+ rewrite <- power_summation.
  rewrite summation_shift; [ | easy ].
-
+bbb.
+(*
 bbb.
  apply Nat.nle_gt in Hbe.
  rewrite summation_empty; [ | easy ].
  apply Nat.neq_0_lt_0.
  now apply Nat.pow_nonzero.
 bbb.
+*)
 
 Theorem nA_freal_ub {r : radix} : ∀ x n i,
   let s := rad ^ (n - 1 - i) in
@@ -591,8 +597,9 @@ Theorem nA_freal_ub {r : radix} : ∀ x n i,
 Proof.
 intros.
 unfold nA, s.
-specialize (power_series_ub rad (λ j, dig (freal x j)) (i + 1) (n - 1)) as H.
+specialize (power_summation_lt_sup rad (λ j, dig (freal x (n - 1 - j))) (i + 1) (n - 1)) as H.
 remember minus as f; simpl in H; subst f.
+rewrite summation_rtl.
 bbb.
 
 Theorem toto {r : radix} : ∀ u i,

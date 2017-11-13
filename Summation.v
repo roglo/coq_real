@@ -187,6 +187,45 @@ rewrite Nat.sub_succ_l; [ idtac | assumption ].
 now apply summation_aux_eq_compat.
 Qed.
 
+Theorem summation_aux_rtl : ∀ g b len,
+  (summation_aux b len g =
+   summation_aux b len (λ i, g (b + len - 1 + b - i)%nat)).
+Proof.
+intros g b len.
+revert g b.
+induction len; intros; [ reflexivity | idtac ].
+remember (S len) as x.
+rewrite Heqx in |- * at 1.
+simpl; subst x.
+rewrite IHlen.
+rewrite summation_aux_succ_last.
+rewrite Nat.add_succ_l, Nat.sub_succ, Nat.sub_0_r.
+do 2 rewrite Nat.add_succ_r; rewrite Nat.sub_succ, Nat.sub_0_r.
+rewrite Nat.add_sub_swap, Nat.sub_diag; [ | easy ].
+rewrite Nat.add_comm; f_equal.
+now apply summation_aux_eq_compat.
+Qed.
+
+Theorem summation_rtl : ∀ g b k,
+  (Σ (i = b, k), g i = Σ (i = b, k), g (k + b - i)%nat).
+Proof.
+intros g b k.
+unfold summation.
+rewrite summation_aux_rtl.
+apply summation_aux_eq_compat; intros i (Hi, Hikb).
+destruct b; simpl.
+ rewrite Nat.sub_0_r; reflexivity.
+
+ rewrite Nat.sub_0_r.
+ simpl in Hikb.
+ eapply Nat.le_lt_trans in Hikb; eauto .
+ apply lt_O_minus_lt, Nat.lt_le_incl in Hikb.
+ remember (b + (k - b))%nat as x eqn:H .
+ rewrite Nat.add_sub_assoc in H; auto.
+ rewrite Nat.add_sub_swap in H; auto.
+ rewrite Nat.sub_diag in H; subst x; reflexivity.
+Qed.
+
 (*
 Theorem summation_mul_comm : ∀ g h b k,
   (Σ (i = b, k), g i * h i
@@ -231,46 +270,6 @@ destruct (le_dec i₁ (S i₂)) as [H₃| H₃].
  apply not_le_minus_0 in H₃.
  rewrite H₃, Nat.add_0_r in H₂.
  apply Nat.nle_gt in H₂; contradiction.
-Qed.
-
-Theorem summation_aux_rtl : ∀ g b len,
-  (summation_aux r b len g =
-   summation_aux r b len (λ i, g (b + len - 1 + b - i)%nat)).
-Proof.
-intros g b len.
-revert g b.
-induction len; intros; [ reflexivity | idtac ].
-remember (S len) as x.
-rewrite Heqx in |- * at 1.
-simpl; subst x.
-rewrite IHlen.
-rewrite summation_aux_succ_last.
-rewrite Nat.add_succ_l, Nat_sub_succ_1.
-do 2 rewrite Nat.add_succ_r; rewrite Nat_sub_succ_1.
-rewrite Nat.add_sub_swap, Nat.sub_diag; auto.
-rewrite rng_add_comm.
-apply rng_add_compat_r, summation_aux_eq_compat.
-intros; reflexivity.
-Qed.
-
-Theorem summation_rtl : ∀ g b k,
-  (Σ (i = b, k), g i = Σ (i = b, k), g (k + b - i)%nat).
-Proof.
-intros g b k.
-unfold summation.
-rewrite summation_aux_rtl.
-apply summation_aux_eq_compat; intros i (Hi, Hikb).
-destruct b; simpl.
- rewrite Nat.sub_0_r; reflexivity.
-
- rewrite Nat.sub_0_r.
- simpl in Hikb.
- eapply Nat.le_lt_trans in Hikb; eauto .
- apply lt_O_minus_lt, Nat.lt_le_incl in Hikb.
- remember (b + (k - b))%nat as x eqn:H .
- rewrite Nat.add_sub_assoc in H; auto.
- rewrite Nat.add_sub_swap in H; auto.
- rewrite Nat.sub_diag in H; subst x; reflexivity.
 Qed.
 
 Theorem summation_aux_mul_swap : ∀ a g b len,
