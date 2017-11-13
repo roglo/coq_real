@@ -51,7 +51,7 @@ apply digit_eq_eq in H; subst b.
 now apply Hab.
 Qed.
 
-(* Oracle Limited Principle of Omniscience *)
+(* Limited Principle of Omniscience *)
 (* Borrowed from my proof of Puiseux's Theorem *)
 
 Axiom LPO : ∀ (u : nat → nat), (∀ i, u i = O) + { i : nat | u i ≠ O }.
@@ -569,15 +569,17 @@ intros.
 unfold numbers_to_digits.
 destruct (LPO_fst (test_seq i (λ j, dig (freal x j)))) as [H| H].
  remember (λ j, dig (freal x j)) as u eqn:Hu.
- unfold test_seq in H.
+ remember (rad * (i + 2)) as n eqn:Hn.
+ remember (rad ^ (n - 1 - i)) as s eqn:Hs.
 bbb.
  assert (∀ k : nat, False).
   intros k.
-  specialize (H k).
+  pose proof (H k) as Hk.
+  unfold test_seq in Hk.
   remember (rad * (i + k + 2)) as n eqn:Hn.
   remember (rad ^ (n - 1 - i)) as s eqn:Hs.
   destruct (le_dec ((rad ^ k - 1) * s) (rad ^ k * (nA i n u mod s)))
-   as [Hk| Hk]; [ clear H | easy ].
+   as [Hle| Hgt]; [ clear Hk | easy ].
 bbb.
 rad ^ k - 1 = 99...99
               -------
