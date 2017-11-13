@@ -562,11 +562,27 @@ destruct (LPO_fst (test_seq i u)) as [Hsu| Hsu].
   rewrite nA_freal_add_series_0_l in H.
 Abort.
 
-Theorem power_series_ub : ∀ r u b e,
+Theorem power_summation_sup : ∀ r e,
+  Σ (i = 0, e), r ^ i + 1 = r ^ S e.
+Proof.
+Admitted.
+
+Theorem power_summation_lt_sup : ∀ r u b e,
   (∀ i, u i < r)
   → Σ (i = b, e), u i * r ^ i < r ^ (S e - b).
 Proof.
 intros * Hu.
+destruct r; [ now specialize (Hu 0) | ].
+destruct (le_dec b e) as [Hbe| Hbe].
+ rewrite Nat.sub_succ_l; [ | easy ].
+ rewrite <- power_summation_sup.
+ rewrite summation_shift; [ | easy ].
+
+bbb.
+ apply Nat.nle_gt in Hbe.
+ rewrite summation_empty; [ | easy ].
+ apply Nat.neq_0_lt_0.
+ now apply Nat.pow_nonzero.
 bbb.
 
 Theorem nA_freal_ub {r : radix} : ∀ x n i,

@@ -175,6 +175,18 @@ destruct (le_dec b k) as [Hbk| Hbk].
  now replace (S k - b) with O by lia.
 Qed.
 
+Theorem summation_shift : ∀ b g k,
+  b ≤ k
+  → (Σ (i = b, k), g i =
+     Σ (i = 0, k - b), g (b + i)%nat).
+Proof.
+intros b g k Hbk.
+unfold summation.
+rewrite Nat.sub_0_r.
+rewrite Nat.sub_succ_l; [ idtac | assumption ].
+now apply summation_aux_eq_compat.
+Qed.
+
 (*
 Theorem summation_mul_comm : ∀ g h b k,
   (Σ (i = b, k), g i * h i
@@ -237,7 +249,7 @@ rewrite Nat.add_succ_l, Nat_sub_succ_1.
 do 2 rewrite Nat.add_succ_r; rewrite Nat_sub_succ_1.
 rewrite Nat.add_sub_swap, Nat.sub_diag; auto.
 rewrite rng_add_comm.
-apply rng_add_compat_r, summation_aux_compat.
+apply rng_add_compat_r, summation_aux_eq_compat.
 intros; reflexivity.
 Qed.
 
@@ -247,7 +259,7 @@ Proof.
 intros g b k.
 unfold summation.
 rewrite summation_aux_rtl.
-apply summation_aux_compat; intros i (Hi, Hikb).
+apply summation_aux_eq_compat; intros i (Hi, Hikb).
 destruct b; simpl.
  rewrite Nat.sub_0_r; reflexivity.
 
@@ -348,19 +360,6 @@ replace k with (b + len) in * .
  apply Nat.add_sub.
 Qed.
 
-Theorem summation_shift : ∀ b g k,
-  b ≤ k
-  → (Σ (i = b, k), g i =
-     Σ (i = 0, k - b), g (b + i)%nat).
-Proof.
-intros b g k Hbk.
-unfold summation.
-rewrite Nat.sub_0_r.
-rewrite Nat.sub_succ_l; [ idtac | assumption ].
-apply summation_aux_compat; intros j Hj.
-reflexivity.
-Qed.
-
 Theorem summation_summation_shift : ∀ g k,
   (Σ (i = 0, k), Σ (j = i, k), g i j =
    Σ (i = 0, k), Σ (j = 0, k - i), g i (i + j)%nat).
@@ -370,7 +369,7 @@ apply summation_compat; intros i Hi.
 unfold summation.
 rewrite Nat.sub_0_r.
 rewrite Nat.sub_succ_l; [ idtac | destruct Hi; assumption ].
-apply summation_aux_compat; intros j Hj.
+apply summation_aux_eq_compat; intros j Hj.
 rewrite Nat.add_0_l; reflexivity.
 Qed.
 *)
@@ -477,7 +476,7 @@ revert n; induction k; intros.
  symmetry; rewrite Nat.add_comm; simpl.
  rewrite Nat.add_0_r, rng_add_0_r.
  apply rng_add_compat_l.
- apply summation_aux_compat; intros i Hi; simpl.
+ apply summation_aux_eq_compat; intros i Hi; simpl.
  rewrite Nat.add_succ_r; reflexivity.
 Qed.
 
@@ -495,7 +494,7 @@ destruct k; [ exfalso; revert Hk; apply Nat.lt_irrefl | clear Hk ].
 rewrite Nat.sub_succ, Nat.sub_0_r.
 rewrite <- Nat.sub_succ_l, Nat.sub_succ, Nat.sub_0_r.
  rewrite summation_aux_mul_summation_aux_summation_aux.
- apply summation_aux_compat; intros i Hi.
+ apply summation_aux_eq_compat; intros i Hi.
  rewrite Nat.sub_succ, Nat.sub_0_r, Nat.sub_0_r.
  reflexivity.
 
@@ -562,7 +561,7 @@ Proof.
 intros g b k n.
 unfold summation.
 replace (S (k + n) - (b + n))%nat with (S k - b)%nat by omega.
-apply summation_aux_compat.
+apply summation_aux_eq_compat.
 intros i Hi.
 replace (b + n + i - n)%nat with (b + i)%nat by omega.
 reflexivity.
