@@ -562,12 +562,21 @@ destruct (LPO_fst (test_seq i u)) as [Hsu| Hsu].
   rewrite nA_freal_add_series_0_l in H.
 Abort.
 
-Theorem nA_freal_lt {r : radix} : ∀ x n i,
+Theorem power_series_ub : ∀ r u b e,
+  (∀ i, u i < r)
+  → Σ (i = b, e), u i * r ^ i < r ^ (S e - b).
+Proof.
+intros * Hu.
+bbb.
+
+Theorem nA_freal_ub {r : radix} : ∀ x n i,
   let s := rad ^ (n - 1 - i) in
   nA i n (λ j, dig (freal x j)) < s.
 Proof.
 intros.
 unfold nA, s.
+specialize (power_series_ub rad (λ j, dig (freal x j)) (i + 1) (n - 1)) as H.
+remember minus as f; simpl in H; subst f.
 bbb.
 
 Theorem toto {r : radix} : ∀ u i,
