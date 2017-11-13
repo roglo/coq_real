@@ -562,6 +562,27 @@ destruct (LPO_fst (test_seq i u)) as [Hsu| Hsu].
   rewrite nA_freal_add_series_0_l in H.
 Abort.
 
+Theorem nA_freal_lt {r : radix} : ∀ x n i,
+  let s := rad ^ (n - 1 - i) in
+  nA i n (λ j, dig (freal x j)) < s.
+Proof.
+intros.
+unfold nA, s.
+bbb.
+
+Theorem toto {r : radix} : ∀ u i,
+  numbers_to_digits (λ j, dig (u j)) i =
+  dig (digit_sequence_normalize u i).
+Proof.
+intros.
+unfold numbers_to_digits.
+unfold digit_sequence_normalize.
+destruct (LPO_fst (test_seq i (λ j : nat, dig (u j)))).
+ destruct (LPO_fst (λ j : nat, rad - 1 - dig (u (i + j + 1)))).
+  destruct (lt_dec (S (dig (u i))) rad); simpl.
+  bbb.
+
+
 Theorem numbers_to_digits_id {r : radix} : ∀ x i,
   numbers_to_digits (λ j, dig (freal x j)) i = dig (freal x i).
 Proof.
