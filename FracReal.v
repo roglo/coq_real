@@ -562,13 +562,26 @@ destruct (LPO_fst (test_seq i u)) as [Hsu| Hsu].
   rewrite nA_freal_add_series_0_l in H.
 Abort.
 
-Theorem power_summation : ∀ r e,
-  Σ (i = 0, e), r ^ i + 1 = r ^ S e.
+Theorem power_summation : ∀ a n,
+  a > 1
+  → Σ (i = 0, n), a ^ i = (a ^ S n - 1) / (a - 1).
 Proof.
-intros.
-induction e.
- simpl.
-(* oops... *)
+intros * Ha.
+induction n.
+ unfold summation; simpl.
+ rewrite Nat.mul_1_r.
+ rewrite Nat.div_same; [ easy | lia ].
+
+ rewrite summation_split_last; [ rewrite IHn | lia ].
+ rewrite <- Nat.div_add; [ f_equal | lia ].
+ rewrite <- Nat.add_sub_swap.
+  f_equal.
+  replace (a ^ S n) with (a ^ S n * 1) at 1 by lia.
+  rewrite <- Nat.mul_add_distr_l.
+  rewrite Nat.add_sub_assoc; [ | lia ].
+  rewrite Nat.add_comm.
+  now rewrite Nat.add_sub, Nat.mul_comm.
+
 bbb.
 
 Theorem power_summation_lt_sup : ∀ r u b e,
