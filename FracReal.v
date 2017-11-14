@@ -611,6 +611,32 @@ apply Nat.le_add_le_sub_l.
 apply digi.
 Qed.
 
+Theorem toto {r : radix} : ∀ u i,
+  (∀ k, test_seq i u k = 0)
+  → ∀ k, u (i + k + 2) ≥ rad - 1.
+Proof.
+intros * Huk *.
+induction k.
+ rewrite Nat.add_0_r.
+ specialize (Huk 0).
+ unfold test_seq in Huk.
+ simpl in Huk.
+bbb.
+ set (n := rad * (i + k + 2)) in Huk.
+ set (s := rad ^ (n - 1 - i)) in Huk.
+induction k; [ easy | ].
+clear Hk.
+specialize (Huk k).
+unfold test_seq in Huk.
+set (n := rad * (i + k + 2)) in Huk.
+set (s := rad ^ (n - 1 - i)) in Huk.
+bbb.
+induction k.
+ rewrite Nat.add_0_r.
+ specialize (Hk 0).
+
+bbb.
+
 Theorem numbers_to_digits_is_norm {r : radix} : ∀ u i,
   numbers_to_digits (λ j, dig (u j)) i =
   dig (digit_sequence_normalize u i).
@@ -641,6 +667,9 @@ Focus 2.
 
    exfalso.
    destruct Hj as (k & Hk & Hik).
+   Show.
+   specialize (toto (λ j, dig (u j)) i Hi) as H.
+
 bbb.
    pose proof (Hi k) as Hii.
    unfold test_seq in Hii.
