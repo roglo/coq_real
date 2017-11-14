@@ -633,7 +633,24 @@ destruct (LPO_fst (test_seq i (λ j : nat, dig (u j)))) as [Hi| Hi].
     rewrite Nat.sub_succ, Nat.sub_0_r.
     rewrite Nat.mod_same; [ easy | lia ].
 
+   exfalso.
    destruct Hj as (k & Hk & Hik).
+   specialize (Hi k).
+   unfold test_seq in Hi.
+   set (n := rad * (i + k + 2)) in Hi.
+   set (s := rad ^ (n - 1 - i)) in Hi.
+   set (v j := dig (u j)) in Hi.
+   destruct (le_dec ((rad ^ k - 1) * s) (rad ^ k * (nA i n v mod s)))
+     as [H| H]; [ clear Hi | easy ].
+   rewrite Nat.mod_small in H.
+
+bbb.
+    subst n.
+    apply nA_dig_seq_ub.
+    specialize radi as Hr.
+    destruct rad as [| n]; [ lia | ].
+    simpl; lia.
+
 bbb.
   apply nA_dig_seq_ub.
   specialize radi as Hr.
