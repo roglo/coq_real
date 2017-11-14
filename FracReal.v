@@ -613,9 +613,29 @@ Qed.
 
 Theorem toto {r : radix} : ∀ u i,
   (∀ k, test_seq i u k = 0)
-  → ∀ k, k > 0 → u (i + k + 2) ≥ rad - 1.
+  → ∀ k, u (i + k + 1) ≥ rad - 1.
 Proof.
-intros * Huk * Hk.
+intros * Huk *.
+specialize (Huk (S k)).
+unfold test_seq in Huk.
+set (n := rad * (i + S k + 2)) in Huk.
+set (s := rad ^ (n - 1 - i)) in Huk.
+destruct (le_dec ((rad ^ S k - 1) * s) (rad ^ S k * (nA i n u mod s)))
+  as [H| H]; [ clear Huk | easy ].
+bbb.
+(*
+intros * Huk *.
+induction k.
+ rewrite Nat.add_0_r.
+ specialize (Huk 1).
+ unfold test_seq in Huk.
+ rewrite Nat.pow_1_r in Huk.
+ set (n := rad * (i + 1 + 2)) in Huk.
+ set (s := rad ^ (n - 1 - i)) in Huk.
+ destruct (le_dec ((rad - 1) * s) (rad * (nA i n u mod s)))
+   as [H| H]; [ clear Huk | easy ].
+bbb.
+
 induction k; [ easy | clear Hk ].
 destruct k.
  clear IHk.
@@ -642,8 +662,8 @@ bbb.
 induction k.
  rewrite Nat.add_0_r.
  specialize (Hk 0).
-
 bbb.
+*)
 
 Theorem numbers_to_digits_is_norm {r : radix} : ∀ u i,
   numbers_to_digits (λ j, dig (u j)) i =
@@ -654,12 +674,6 @@ unfold numbers_to_digits.
 unfold digit_sequence_normalize.
 destruct (LPO_fst (test_seq i (λ j : nat, dig (u j)))) as [Hi| Hi].
  rewrite Nat.div_small.
-Focus 2.
-  apply nA_dig_seq_ub.
-  specialize radi as Hr.
-  destruct rad as [| n]; [ lia | ].
-  simpl; lia.
-
   rewrite Nat.add_0_r, Nat.add_1_r.
   destruct (LPO_fst (λ j : nat, rad - 1 - dig (u (i + j + 1)))) as [Hj| Hj].
    destruct (lt_dec (S (dig (u i))) rad) as [Hlt| Hge]; simpl.
@@ -675,8 +689,18 @@ Focus 2.
 
    exfalso.
    destruct Hj as (k & Hk & Hik).
-   Show.
    specialize (toto (λ j, dig (u j)) i Hi) as H.
+   simpl in H.
+   specialize (H k); lia.
+
+  apply nA_dig_seq_ub.
+  specialize radi as Hr.
+  destruct rad as [| n]; [ lia | ].
+  simpl; lia.
+
+ destruct Hi as (k & Hk & Hik).
+  destruct (LPO_fst (λ j : nat, rad - 1 - dig (u (i + j + 1)))) as [Hj| Hj].
+   destruct (lt_dec (S (dig (u i))) rad) as [Hlt| Hge]; simpl.
 
 bbb.
    pose proof (Hi k) as Hii.
