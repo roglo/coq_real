@@ -617,15 +617,16 @@ apply digi.
 Qed.
 
 Theorem toto {r : radix} : ∀ u i,
-  (∀ k, test_seq i u k = 0)
-  → ∀ k, u (i + k + 1) ≥ rad - 1.
+  (∀ k, test_seq i (λ j, dig (u j)) k = 0)
+  → ∀ k, dig (u (i + k + 1)) = rad - 1.
 Proof.
 intros * Huk *.
 specialize (Huk (S k)).
 unfold test_seq in Huk.
 set (n := rad * (i + S k + 2)) in Huk.
 set (s := rad ^ (n - 1 - i)) in Huk.
-destruct (le_dec ((rad ^ S k - 1) * s) (rad ^ S k * (nA i n u mod s)))
+set (v j := dig (u j)) in Huk.
+destruct (le_dec ((rad ^ S k - 1) * s) (rad ^ S k * (nA i n v mod s)))
   as [H| H]; [ clear Huk | easy ].
 remember (n - 1 - i) as j eqn:Hj.
 symmetry in Hj.
@@ -636,67 +637,16 @@ destruct j.
  apply Nat.le_0_r in H.
  apply Nat.sub_0_le in H.
  exfalso; apply Nat.le_ngt in H.
- apply H; clear H; simpl.
- clear.
+ apply H; clear H; clear.
  induction k.
-  rewrite Nat.pow_0_r, Nat.mul_1_r.
+  rewrite Nat.pow_1_r.
   apply radix_gt_1.
 
-  replace 1 with (1 * 1) by lia.
+  simpl; replace 1 with (1 * 1) by lia.
   apply Nat.mul_lt_mono_nonneg; [ lia | apply radix_gt_1 | lia | easy ].
 
+ rewrite Nat.mod_small in H.
 bbb.
- subst s.
- specialize (power_summation rad j radix_gt_0) as Hs.
- rewrite Hs in H.
-
-bbb.
-
-induction k.
- rewrite Nat.add_0_r.
- rewrite Nat.pow_1_r in H.
-bbb.
-(*
-intros * Huk *.
-induction k.
- rewrite Nat.add_0_r.
- specialize (Huk 1).
- unfold test_seq in Huk.
- rewrite Nat.pow_1_r in Huk.
- set (n := rad * (i + 1 + 2)) in Huk.
- set (s := rad ^ (n - 1 - i)) in Huk.
- destruct (le_dec ((rad - 1) * s) (rad * (nA i n u mod s)))
-   as [H| H]; [ clear Huk | easy ].
-bbb.
-
-induction k; [ easy | clear Hk ].
-destruct k.
- clear IHk.
- specialize (Huk 0).
- unfold test_seq in Huk.
- simpl in Huk.
-bbb.
-
-induction k.
- rewrite Nat.add_0_r.
- specialize (Huk 0).
- unfold test_seq in Huk.
- simpl in Huk.
-bbb.
- set (n := rad * (i + k + 2)) in Huk.
- set (s := rad ^ (n - 1 - i)) in Huk.
-induction k; [ easy | ].
-clear Hk.
-specialize (Huk k).
-unfold test_seq in Huk.
-set (n := rad * (i + k + 2)) in Huk.
-set (s := rad ^ (n - 1 - i)) in Huk.
-bbb.
-induction k.
- rewrite Nat.add_0_r.
- specialize (Hk 0).
-bbb.
-*)
 
 Theorem numbers_to_digits_is_norm {r : radix} : ∀ u i,
   numbers_to_digits (λ j, dig (u j)) i =
