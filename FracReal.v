@@ -24,7 +24,7 @@ Qed.
 
 (* Digits *)
 
-Record digit {r : radix} := mkdig { dig : nat; digi : dig < rad }.
+Record digit {r : radix} := mkdig { dig : nat; dig_lt_rad : dig < rad }.
 
 Delimit Scope digit_scope with D.
 
@@ -35,6 +35,8 @@ Notation "0" := (digit_0) : digit_scope.
 Notation "a = b" := (digit_eq a b) : digit_scope.
 Notation "a ≠ b" := (¬ digit_eq a b) : digit_scope.
 
+(* the proof that x≤y is unique; this is proved in Coq library theorem
+   "le_unique" *)
 Theorem digit_eq_eq {r : radix} : ∀ a b, (a = b)%D ↔ a = b.
 Proof.
 intros.
@@ -124,8 +126,8 @@ Definition digit_sequence_normalize {r : radix} (u : nat → digit) i :=
   | inl _ =>
       let s := lt_dec (S (dig (u i))) rad in
       match s with
-      | left P => {| dig := S (dig (u i)); digi := P |}
-      | right _ => {| dig := 0; digi := radix_gt_0 |}
+      | left P => {| dig := S (dig (u i)); dig_lt_rad := P |}
+      | right _ => {| dig := 0; dig_lt_rad := radix_gt_0 |}
       end
   | inr _ => u i
  end.
@@ -593,7 +595,7 @@ replace (n - 1 + (i + 1) - (i + 1 + j)) with (n - 1 - j) by lia.
 replace (n - 1 - (n - 1 - j)) with j by lia.
 apply Nat.mul_le_mono_nonneg_r; [ lia | ].
 apply Nat.le_add_le_sub_l.
-apply digi.
+apply dig_lt_rad.
 Qed.
 
 Theorem test_seq_all_0 {r : radix} : ∀ u i,
