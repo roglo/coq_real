@@ -613,9 +613,17 @@ Qed.
 
 Theorem toto {r : radix} : ∀ u i,
   (∀ k, test_seq i u k = 0)
-  → ∀ k, u (i + k + 2) ≥ rad - 1.
+  → ∀ k, k > 0 → u (i + k + 2) ≥ rad - 1.
 Proof.
-intros * Huk *.
+intros * Huk * Hk.
+induction k; [ easy | clear Hk ].
+destruct k.
+ clear IHk.
+ specialize (Huk 0).
+ unfold test_seq in Huk.
+ simpl in Huk.
+bbb.
+
 induction k.
  rewrite Nat.add_0_r.
  specialize (Huk 0).
