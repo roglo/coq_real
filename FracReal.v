@@ -620,6 +620,12 @@ unfold numbers_to_digits.
 unfold digit_sequence_normalize.
 destruct (LPO_fst (test_seq i (λ j : nat, dig (u j)))) as [Hi| Hi].
  rewrite Nat.div_small.
+Focus 2.
+  apply nA_dig_seq_ub.
+  specialize radi as Hr.
+  destruct rad as [| n]; [ lia | ].
+  simpl; lia.
+
   rewrite Nat.add_0_r, Nat.add_1_r.
   destruct (LPO_fst (λ j : nat, rad - 1 - dig (u (i + j + 1)))) as [Hj| Hj].
    destruct (lt_dec (S (dig (u i))) rad) as [Hlt| Hge]; simpl.
@@ -635,14 +641,23 @@ destruct (LPO_fst (test_seq i (λ j : nat, dig (u j)))) as [Hi| Hi].
 
    exfalso.
    destruct Hj as (k & Hk & Hik).
-   specialize (Hi k).
-   unfold test_seq in Hi.
-   set (n := rad * (i + k + 2)) in Hi.
-   set (s := rad ^ (n - 1 - i)) in Hi.
-   set (v j := dig (u j)) in Hi.
+bbb.
+   pose proof (Hi k) as Hii.
+   unfold test_seq in Hii.
+   set (n := rad * (i + k + 2)) in Hii.
+   set (s := rad ^ (n - 1 - i)) in Hii.
+   set (v j := dig (u j)) in Hii.
    destruct (le_dec ((rad ^ k - 1) * s) (rad ^ k * (nA i n v mod s)))
-     as [H| H]; [ clear Hi | easy ].
+     as [H| H]; [ clear Hii | easy ].
    rewrite Nat.mod_small in H.
+    apply Nat.le_ngt in H; apply H; clear H.
+destruct k.
+simpl.
+clear Hk; exfalso.
+clear v.
+specialize (Hi 0).
+unfold test_seq in Hi.
+simpl in Hi.
 
 bbb.
     subst n.
@@ -652,10 +667,6 @@ bbb.
     simpl; lia.
 
 bbb.
-  apply nA_dig_seq_ub.
-  specialize radi as Hr.
-  destruct rad as [| n]; [ lia | ].
-  simpl; lia.
 bbb.
 
 Theorem numbers_to_digits_id {r : radix} : ∀ x i,
