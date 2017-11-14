@@ -586,10 +586,10 @@ induction n.
   apply Nat.mul_le_mono_nonneg_r; lia.
 Qed.
 
-Theorem nA_freal_ub {r : radix} : ∀ x n i,
+Theorem nA_dig_seq_ub {r : radix} : ∀ u n i,
   let s := rad ^ (n - 1 - i) in
   i + 1 ≤ n - 1
-  → nA i n (λ j, dig (freal x j)) < s.
+  → nA i n (λ j, dig (u j)) < s.
 Proof.
 intros * Hin.
 unfold nA, s.
@@ -611,20 +611,35 @@ apply Nat.le_add_le_sub_l.
 apply digi.
 Qed.
 
-bbb.
-
-Theorem toto {r : radix} : ∀ u i,
+Theorem numbers_to_digits_is_norm {r : radix} : ∀ u i,
   numbers_to_digits (λ j, dig (u j)) i =
   dig (digit_sequence_normalize u i).
 Proof.
 intros.
 unfold numbers_to_digits.
 unfold digit_sequence_normalize.
-destruct (LPO_fst (test_seq i (λ j : nat, dig (u j)))).
- destruct (LPO_fst (λ j : nat, rad - 1 - dig (u (i + j + 1)))).
-  destruct (lt_dec (S (dig (u i))) rad); simpl.
-  bbb.
+destruct (LPO_fst (test_seq i (λ j : nat, dig (u j)))) as [Hi| Hi].
+ rewrite Nat.div_small.
+  rewrite Nat.add_0_r, Nat.add_1_r.
+  destruct (LPO_fst (λ j : nat, rad - 1 - dig (u (i + j + 1)))) as [Hj| Hj].
+   destruct (lt_dec (S (dig (u i))) rad) as [Hlt| Hge]; simpl.
+    now rewrite Nat.mod_small.
 
+    apply Nat.nlt_ge in Hge.
+    specialize (digi (u i)) as Hd.
+    assert (H : dig (u i) = rad - 1) by lia.
+    rewrite H.
+    rewrite <- Nat.sub_succ_l; [ | lia ].
+    rewrite Nat.sub_succ, Nat.sub_0_r.
+    rewrite Nat.mod_same; [ easy | lia ].
+
+   destruct Hj as (k & Hk & Hik).
+bbb.
+  apply nA_dig_seq_ub.
+  specialize radi as Hr.
+  destruct rad as [| n]; [ lia | ].
+  simpl; lia.
+bbb.
 
 Theorem numbers_to_digits_id {r : radix} : ∀ x i,
   numbers_to_digits (λ j, dig (freal x j)) i = dig (freal x i).
