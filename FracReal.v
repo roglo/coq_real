@@ -12,6 +12,11 @@ Proof.
 destruct r as (rad, radi); simpl; lia.
 Qed.
 
+Theorem radix_gt_1 {r : radix} : rad > 1.
+Proof.
+destruct r as (rad, radi); simpl; lia.
+Qed.
+
 Theorem radix_ne_0 {r : radix} : rad ≠ 0.
 Proof.
 destruct r as (rad, radi); simpl; lia.
@@ -622,6 +627,34 @@ set (n := rad * (i + S k + 2)) in Huk.
 set (s := rad ^ (n - 1 - i)) in Huk.
 destruct (le_dec ((rad ^ S k - 1) * s) (rad ^ S k * (nA i n u mod s)))
   as [H| H]; [ clear Huk | easy ].
+remember (n - 1 - i) as j eqn:Hj.
+symmetry in Hj.
+destruct j.
+ simpl in s; subst s.
+ rewrite Nat.mul_1_r in H.
+ rewrite Nat.mod_1_r, Nat.mul_0_r in H.
+ apply Nat.le_0_r in H.
+ apply Nat.sub_0_le in H.
+ exfalso; apply Nat.le_ngt in H.
+ apply H; clear H; simpl.
+ clear.
+ induction k.
+  rewrite Nat.pow_0_r, Nat.mul_1_r.
+  apply radix_gt_1.
+
+  replace 1 with (1 * 1) by lia.
+  apply Nat.mul_lt_mono_nonneg; [ lia | apply radix_gt_1 | lia | easy ].
+
+bbb.
+ subst s.
+ specialize (power_summation rad j radix_gt_0) as Hs.
+ rewrite Hs in H.
+
+bbb.
+
+induction k.
+ rewrite Nat.add_0_r.
+ rewrite Nat.pow_1_r in H.
 bbb.
 (*
 intros * Huk *.
