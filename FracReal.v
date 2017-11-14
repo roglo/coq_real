@@ -547,26 +547,6 @@ unfold sequence_add; simpl.
 easy.
 Qed.
 
-Theorem freal_add_to_seq_0_l {r : radix} : ∀ x i,
-  freal_add_to_seq 0 x i = dig (freal x i).
-Proof.
-intros.
-unfold freal_add_to_seq, numbers_to_digits.
-remember (freal_add_series 0 x) as u eqn:Hu.
-destruct (LPO_fst (test_seq i u)) as [Hsu| Hsu].
- rewrite Hu, freal_add_series_0_x.
- rewrite nA_freal_add_series_0_l.
- assert (∀ k, k > i → dig (freal x k) = 0).
-  intros k Hk; specialize (Hsu k).
-  unfold test_seq in Hsu.
-  remember (rad * (i + k + 2)) as n eqn:Hn.
-  remember (rad ^ (n - 1 - i)) as s eqn:Hs.
-  destruct (le_dec ((rad ^ k - 1) * s) (rad ^ k * (nA i n u mod s)))
-    as [H| H]; [ clear Hsu | easy ].
-  subst u.
-  rewrite nA_freal_add_series_0_l in H.
-Abort.
-
 Theorem power_summation : ∀ a n,
   a > 0
   → a ^ S n = 1 + (a - 1) * Σ (i = 0, n), a ^ i.
@@ -616,7 +596,7 @@ apply Nat.le_add_le_sub_l.
 apply digi.
 Qed.
 
-Theorem toto {r : radix} : ∀ u i,
+Theorem test_seq_all_0 {r : radix} : ∀ u i,
   (∀ k, test_seq i (λ j, dig (u j)) k = 0)
   → ∀ k, dig (u (i + k + 1)) = rad - 1.
 Proof.
@@ -647,6 +627,14 @@ destruct j.
 
  rewrite Nat.mod_small in H.
 bbb.
+     k+1  n-1-i     n-1-i   k+1
+   ------=======   =======------
+   99..9900...00 ≤ uu...uu00..00
+                   ^(i+1)
+                         ^(n-1)
+                      ^(i+k+1)
+                   ----
+                     k
 
 Theorem numbers_to_digits_is_norm {r : radix} : ∀ u i,
   numbers_to_digits (λ j, dig (u j)) i =
@@ -672,7 +660,7 @@ destruct (LPO_fst (test_seq i (λ j : nat, dig (u j)))) as [Hi| Hi].
 
    exfalso.
    destruct Hj as (k & Hk & Hik).
-   specialize (toto (λ j, dig (u j)) i Hi) as H.
+   specialize (test_seq_all_0 u i Hi) as H.
    simpl in H.
    specialize (H k); lia.
 
@@ -710,7 +698,6 @@ bbb.
     destruct rad as [| n]; [ lia | ].
     simpl; lia.
 
-bbb.
 bbb.
 
 Theorem numbers_to_digits_id {r : radix} : ∀ x i,
