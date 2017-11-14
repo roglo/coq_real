@@ -563,83 +563,54 @@ destruct (LPO_fst (test_seq i u)) as [Hsu| Hsu].
 Abort.
 
 Theorem power_summation : ∀ a n,
-  a > 1
-  → Σ (i = 0, n), a ^ i = (a ^ S n - 1) / (a - 1).
+  a > 0
+  → a ^ S n = 1 + (a - 1) * Σ (i = 0, n), a ^ i.
 Proof.
 intros * Ha.
 induction n.
- unfold summation; simpl.
- rewrite Nat.mul_1_r.
- rewrite Nat.div_same; [ easy | lia ].
+ rewrite summation_only_one.
+ rewrite Nat.pow_0_r, Nat.mul_1_r.
+ rewrite Nat.pow_1_r; lia.
 
- rewrite summation_split_last; [ rewrite IHn | lia ].
- rewrite <- Nat.div_add; [ f_equal | lia ].
- rewrite <- Nat.add_sub_swap.
-  f_equal.
-  replace (a ^ S n) with (a ^ S n * 1) at 1 by lia.
-  rewrite <- Nat.mul_add_distr_l.
-  rewrite Nat.add_sub_assoc; [ | lia ].
-  rewrite Nat.add_comm.
-  now rewrite Nat.add_sub, Nat.mul_comm.
+ rewrite summation_split_last; [ | lia ].
+ rewrite Nat.mul_add_distr_l.
+ rewrite Nat.add_assoc.
+ rewrite <- IHn.
+ rewrite Nat.mul_sub_distr_r.
+ simpl; rewrite Nat.add_0_r.
+ rewrite Nat.add_sub_assoc.
+  now rewrite Nat.add_comm, Nat.add_sub.
 
-  rewrite <- (Nat.pow_0_r a).
-  apply Nat.pow_le_mono_r; lia.
+  apply Nat.mul_le_mono; [ easy | ].
+  replace (a ^ n) with (1 * a ^ n) at 1 by lia.
+  apply Nat.mul_le_mono_nonneg_r; lia.
 Qed.
-
-Theorem summation_1 : ∀ b e, b ≤ e → Σ (i = b, e), 1 = S (e - b).
-Proof.
-intros * Hbe.
-unfold summation.
-rewrite Nat.sub_succ_l; [ | easy ].
-remember (S (e - b)) as n; clear.
-revert b.
-induction n; intros; [ easy | simpl ].
-now rewrite IHn.
-Qed.
-
-(*
-Theorem power_summation_le_sup : ∀ r u b e,
-  (∀ i, u i < r)
-  → Σ (i = b, e), u i * r ^ i ≤ (S e - b) * r ^ (S e).
-Proof.
-bbb.
-
-Theorem power_summation_lt_sup : ∀ r u b e,
-  (∀ i, u i < r)
-  → Σ (i = b, e), u i * r ^ i < (S e - b) * r ^ (S e).
-Proof.
-intros * Hu.
-destruct r; [ now specialize (Hu 0) | ].
-destruct (le_dec b e) as [Hbe| Hbe].
- rewrite Nat.sub_succ_l; [ | easy ].
- rewrite <- summation_1; [ | easy ].
- rewrite summation_mul_distr_r.
-
-
-bbb.
- rewrite <- power_summation.
- rewrite summation_shift; [ | easy ].
-bbb.
-(*
-bbb.
- apply Nat.nle_gt in Hbe.
- rewrite summation_empty; [ | easy ].
- apply Nat.neq_0_lt_0.
- now apply Nat.pow_nonzero.
-bbb.
-*)
-*)
 
 Theorem nA_freal_ub {r : radix} : ∀ x n i,
   let s := rad ^ (n - 1 - i) in
-  nA i n (λ j, dig (freal x j)) < s.
+  i + 1 ≤ n - 1
+  → nA i n (λ j, dig (freal x j)) < s.
 Proof.
-intros.
+intros * Hin.
 unfold nA, s.
-bbb.
-specialize (power_summation_lt_sup rad (λ j, dig (freal x (n - 1 - j))) (i + 1) (n - 1)) as H.
-remember minus as f; simpl in H; subst f.
 rewrite summation_rtl.
+rewrite summation_shift; [ | easy ].
+remember (n - 1 - i) as k eqn:Hk.
+destruct k; [ lia | ].
+rewrite power_summation; [ | apply radix_gt_0 ].
+replace (n - 1 - (i + 1)) with k by lia.
+unfold lt; simpl.
+apply -> Nat.succ_le_mono.
+rewrite summation_mul_distr_l.
+apply summation_le_compat.
+intros j Hj.
+replace (n - 1 + (i + 1) - (i + 1 + j)) with (n - 1 - j) by lia.
+replace (n - 1 - (n - 1 - j)) with j by lia.
+apply Nat.mul_le_mono_nonneg_r; [ lia | ].
+apply Nat.le_add_le_sub_l.
+apply digi.
+Qed.
+
 bbb.
 
 Theorem toto {r : radix} : ∀ u i,

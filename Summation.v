@@ -139,6 +139,16 @@ rewrite Nat.mul_add_distr_r.
 now rewrite IHlen.
 Qed.
 
+Theorem summation_mul_distr_l : ∀ f b k a,
+  a * (Σ (i = b, k), f i) =
+  Σ (i = b, k), a * f i.
+Proof.
+intros.
+rewrite Nat.mul_comm, summation_mul_distr_r.
+apply summation_eq_compat.
+intros; apply Nat.mul_comm.
+Qed.
+
 Theorem summation_only_one : ∀ g n, (Σ (i = n, n), g i = g n).
 Proof.
 intros g n.
