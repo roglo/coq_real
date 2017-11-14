@@ -628,6 +628,12 @@ destruct j.
   apply Nat.mul_lt_mono_nonneg; [ lia | apply radix_gt_1 | lia | easy ].
 
  rewrite Nat.mod_small in H.
+ assert (∀ a, a < j → dig (u (i + a + 1)) = rad - 1).
+  intros * Haj.
+  revert k n Hj H.
+  induction a; intros.
+   rewrite Nat.add_0_r.
+
 bbb.
      k+1  n-1-i     n-1-i   k+1
    ------=======   =======------
