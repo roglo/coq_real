@@ -652,7 +652,7 @@ induction j.
  subst v; simpl in H.
  specialize (dig_lt_rad (u (i + 1))); lia.
 
- apply IHj.
+ apply IHj; clear IHj.
 bbb.
   apply Nat.le_trans with
     (m := Σ (k = 0, j), v (i + 1 + k) * rad ^ (j - k))
