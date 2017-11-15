@@ -643,6 +643,7 @@ destruct j.
     in H.
   2: intros k Hk; f_equal; f_equal; lia.
   remember (λ k, v (i + 1 + k) * rad ^ (j - k)) as a; subst a.
+bbb.
   apply Nat.le_trans with
     (m := Σ (k = 0, j), v (i + 1 + k) * rad ^ (j - k))
     (p := v (i + 1) * (rad ^ j - 1)) in H.
