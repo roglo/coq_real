@@ -630,14 +630,15 @@ destruct j.
  rewrite Nat.mod_small in H.
  remember (rad ^ S k * nA i n v) as a eqn:Ha.
  rewrite Nat.mul_comm in Ha; subst a.
- unfold nA in H.
-bbb.
- assert (∀ a, a < j → dig (u (i + a + 1)) = rad - 1).
-  intros * Haj.
-  revert k n Hj H.
-  induction a; intros.
-   rewrite Nat.add_0_r.
-
+ unfold nA in H; subst s.
+ destruct k.
+  rewrite Nat.add_0_r.
+  simpl in H.
+  rewrite Nat.mul_1_r in H.
+  rewrite Nat.mul_assoc, Nat.mul_shuffle0 in H.
+  apply Nat.mul_le_mono_pos_r in H; [ | apply radix_gt_0 ].
+  apply Nat.div_le_mono with (c := rad ^ j) in H.
+   rewrite Nat.div_mul in H.
 bbb.
      k+1  n-1-i     n-1-i   k+1
    ------=======   =======------
