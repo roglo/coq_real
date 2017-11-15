@@ -643,18 +643,33 @@ destruct j.
     in H.
   2: intros k Hk; f_equal; f_equal; lia.
   remember (λ k, v (i + 1 + k) * rad ^ (j - k)) as a; subst a.
-clear Hj n; subst v.
-revert u i H.
-induction j; intros.
- rewrite Nat.pow_0_r in H; simpl in H.
- rewrite summation_only_one in H.
- do 2 rewrite Nat.mul_1_r in H.
- rewrite Nat.add_0_r in H.
- specialize (dig_lt_rad (u (i + 1))); lia.
+  clear Hj n; subst v.
+  revert u i H.
+  induction j; intros.
+   rewrite Nat.pow_0_r in H; simpl in H.
+   rewrite summation_only_one in H.
+   do 2 rewrite Nat.mul_1_r in H.
+   rewrite Nat.add_0_r in H.
+   specialize (dig_lt_rad (u (i + 1))); lia.
 
-assert (Hf : ∀ f n, Σ (i = 0, n), f i = Σ (i = 0, S n), match i with 0 => 0 | S i' => f i' end).
-bbb.
- apply IHj; clear IHj.
+   apply IHj; clear IHj.
+   eapply Nat.div_le_mono in H; [ | apply radix_ne_0 ].
+   remember minus as f; simpl in H; subst f.
+   rewrite Nat.mul_assoc, Nat.mul_shuffle0 in H.
+   rewrite Nat.div_mul in H; [ | apply radix_ne_0 ].
+   eapply Nat.le_trans; [ eassumption | ].
+   rewrite summation_split_last; [ | lia ].
+   rewrite summation_eq_compat with
+     (h := λ k, dig (u (i + 1 + k)) * rad ^ (j - k) * rad).
+    rewrite <- summation_mul_distr_r.
+    rewrite Nat.div_add_l; [ | apply radix_ne_0 ].
+    rewrite Nat.sub_diag, Nat.pow_0_r, Nat.mul_1_r.
+    rewrite Nat.div_small; [ | apply dig_lt_rad ].
+    now rewrite Nat.add_0_r.
+
+    intros k Hk.
+    rewrite Nat.sub_succ_l; [ simpl; lia | easy ].
+
 bbb.
   apply Nat.le_trans with
     (m := Σ (k = 0, j), v (i + 1 + k) * rad ^ (j - k))
