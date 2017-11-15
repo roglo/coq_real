@@ -638,10 +638,13 @@ destruct j.
   rewrite Nat.mul_assoc, Nat.mul_shuffle0 in H.
   apply Nat.mul_le_mono_pos_r in H; [ | apply radix_gt_0 ].
   rewrite summation_shift in H; [ | lia ].
-  remember (λ k, v (i + 1 + k) * rad ^ (n - 1 - (i + 1 + k))) as a; subst a.
   replace (n - 1 - (i + 1)) with j in H by lia.
+  rewrite summation_eq_compat with (h := λ k, v (i + 1 + k) * rad ^ (j - k))
+    in H.
+  2: intros k Hk; f_equal; f_equal; lia.
+  remember (λ k, v (i + 1 + k) * rad ^ (j - k)) as a; subst a.
   apply Nat.le_trans with
-    (m := Σ (k = 0, j), v (i + 1 + k) * rad ^ (n - 1 - (i + 1 + k)))
+    (m := Σ (k = 0, j), v (i + 1 + k) * rad ^ (j - k))
     (p := v (i + 1) * (rad ^ j - 1)) in H.
 bbb.
      k+1  n-1-i     n-1-i   k+1
