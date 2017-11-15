@@ -628,6 +628,10 @@ destruct j.
   apply Nat.mul_lt_mono_nonneg; [ lia | apply radix_gt_1 | lia | easy ].
 
  rewrite Nat.mod_small in H.
+ remember (rad ^ S k * nA i n v) as a eqn:Ha.
+ rewrite Nat.mul_comm in Ha; subst a.
+ unfold nA in H.
+bbb.
  assert (∀ a, a < j → dig (u (i + a + 1)) = rad - 1).
   intros * Haj.
   revert k n Hj H.
