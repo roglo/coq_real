@@ -643,6 +643,16 @@ destruct j.
     in H.
   2: intros k Hk; f_equal; f_equal; lia.
   remember (λ k, v (i + 1 + k) * rad ^ (j - k)) as a; subst a.
+clear Hj.
+induction j.
+ rewrite Nat.pow_0_r in H; simpl in H.
+ rewrite summation_only_one in H.
+ do 2 rewrite Nat.mul_1_r in H.
+ rewrite Nat.add_0_r in H.
+ subst v; simpl in H.
+ specialize (dig_lt_rad (u (i + 1))); lia.
+
+ apply IHj.
 bbb.
   apply Nat.le_trans with
     (m := Σ (k = 0, j), v (i + 1 + k) * rad ^ (j - k))
