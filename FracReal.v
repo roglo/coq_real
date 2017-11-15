@@ -643,15 +643,17 @@ destruct j.
     in H.
   2: intros k Hk; f_equal; f_equal; lia.
   remember (λ k, v (i + 1 + k) * rad ^ (j - k)) as a; subst a.
-clear Hj.
-induction j.
+clear Hj n; subst v.
+revert u i H.
+induction j; intros.
  rewrite Nat.pow_0_r in H; simpl in H.
  rewrite summation_only_one in H.
  do 2 rewrite Nat.mul_1_r in H.
  rewrite Nat.add_0_r in H.
- subst v; simpl in H.
  specialize (dig_lt_rad (u (i + 1))); lia.
 
+assert (Hf : ∀ f n, Σ (i = 0, n), f i = Σ (i = 0, S n), match i with 0 => 0 | S i' => f i' end).
+bbb.
  apply IHj; clear IHj.
 bbb.
   apply Nat.le_trans with
