@@ -631,7 +631,8 @@ destruct j.
  remember (rad ^ S k * nA i n v) as a eqn:Ha.
  rewrite Nat.mul_comm in Ha; subst a.
  unfold nA in H; subst s.
- destruct k.
+ revert i j n Hj H.
+ induction k; intros.
   rewrite Nat.add_0_r.
   simpl in H.
   rewrite Nat.mul_1_r in H.
@@ -670,6 +671,7 @@ destruct j.
     intros k Hk.
     rewrite Nat.sub_succ_l; [ simpl; lia | easy ].
 
+  simpl.
 bbb.
   apply Nat.le_trans with
     (m := Σ (k = 0, j), v (i + 1 + k) * rad ^ (j - k))
