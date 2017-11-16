@@ -769,6 +769,35 @@ Theorem nA_all_9_ge {r : radix} : ∀ u i k,
   → (rad ^ k - 1) * s ≤ rad ^ k * nA i n (λ j, dig (u j)).
 Proof.
 intros * Hi.
+destruct (le_dec (i + 1) (n - 1)) as [Hin| Hin].
+Focus 2.
+bbb.
+ subst s.
+ replace (n - 1 - i) with 0 by lia.
+ unfold nA.
+ rewrite summation_empty; [ | lia ].
+
+unfold nA.
+rewrite summation_eq_compat with (h := λ j, (rad - 1) * rad ^ (n - 1 - j)).
+ Focus 2.
+ intros j Hj.
+ replace j with (i + (j - i - 1) + 1) at 1 by lia.
+ now rewrite Hi.
+
+ rewrite <- summation_mul_distr_l.
+ rewrite summation_shift.
+bbb.
+
+intros * Hi.
+remember (n - 1 - i) as j eqn:Hj.
+symmetry in Hj.
+destruct j.
+bbb
+
+rewrite Nat.mod_small in H.
+revert i n s Hi.
+induction k; intros; [ simpl; lia | ].
+
 bbb.
 
 Theorem numbers_to_digits_is_norm {r : radix} : ∀ u i,
