@@ -726,6 +726,15 @@ destruct j.
       apply Nat.mul_le_mono_nonneg_r; lia.
 
      specialize radix_gt_1 as Hr; simpl.
+     rewrite <- Nat.pow_succ_r; [ | lia ].
+     rewrite <- Nat.pow_succ_r; [ | lia ].
+     rewrite Nat.mul_add_distr_l in H.
+     rewrite Nat.mul_add_distr_l in H.
+     replace (n - 1 - (i + 1)) with (S j) in H by lia.
+     rewrite Nat.add_comm in H.
+     replace (rad ^ S j * ((rad - 1) * rad ^ S k))
+     with (rad ^ S k * ((rad - 1) * rad ^ S j))
+     in H by lia.
 bbb.
      k+1  n-1-i     n-1-i   k+1
    ------=======   =======------
