@@ -683,6 +683,12 @@ destruct j.
     destruct rad as [| n]; [ easy | ].
     rewrite Nat.mul_comm; simpl.
     rewrite Nat.mul_comm; simpl; lia.
+
+   replace (i + S k) with (S i + k) by lia.
+   apply IHk with (j := j).
+    replace (S i + S k) with (i + S (S k)) by lia.
+    fold n; lia.
+
 bbb.
      k+1  n-1-i     n-1-i   k+1
    ------=======   =======------
