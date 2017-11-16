@@ -689,6 +689,8 @@ destruct j.
     replace (S i + S k) with (i + S (S k)) by lia.
     fold n; lia.
 
+    replace (S i + S k + 2) with (i + S (S k) + 2) by lia; fold n.
+
 bbb.
      k+1  n-1-i     n-1-i   k+1
    ------=======   =======------
