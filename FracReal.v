@@ -672,6 +672,13 @@ destruct j.
 
   destruct j.
    unfold n in Hj; clear -Hj; exfalso.
+   specialize radix_gt_1 as Hr.
+   replace (rad * (i + S (S k) + 2) - 1 - i)
+   with (rad * S i + rad * (k + 3) - S i) in Hj by lia.
+   rewrite Nat.add_sub_swap in Hj.
+    destruct rad as [| n]; [ easy | ].
+    replace (S n * S i - S i) with (n * S i) in Hj by lia.
+
 bbb.
      k+1  n-1-i     n-1-i   k+1
    ------=======   =======------
