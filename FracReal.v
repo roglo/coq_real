@@ -690,7 +690,31 @@ destruct j.
     fold n; lia.
 
     replace (S i + S k + 2) with (i + S (S k) + 2) by lia; fold n.
+    replace (rad ^ S (S j)) with (rad * rad ^ S j) in H by easy.
+    replace (rad ^ S (S k)) with (rad * rad ^ S k) in H by easy.
+    setoid_rewrite Nat.mul_comm in H.
+    setoid_rewrite Nat.mul_comm.
+    do 2 rewrite <- Nat.mul_assoc in H.
+    apply Nat.mul_le_mono_pos_l in H; [ | easy ].
+    rewrite summation_split_first in H.
+    rewrite summation_shift in H; [ | lia ].
+    replace (n - 1 - S (i + 1)) with j in H by lia.
+    rewrite summation_shift; [ | lia ].
+    replace (n - 1 - (S i + 1)) with j by lia.
+    replace (rad * rad ^ S k - 1)
+    with (rad ^ S k - 1 + (rad - 1) * rad ^ S k) in H.
+    Focus 2.
+    specialize radix_gt_1 as Hr; simpl.
+    rewrite Nat.mul_sub_distr_r.
+    rewrite Nat.mul_1_l.
+    rewrite Nat.add_sub_assoc.
+    rewrite <- Nat.add_sub_swap.
+     rewrite <- Nat.add_sub_assoc.
+     now rewrite Nat.add_comm, Nat.add_sub.
 
+     rewrite <- Nat.pow_succ_r; [ | lia ].
+     rewrite <- Nat.pow_succ_r; [ | lia ].
+Search (1 ≤ _ ^ _).
 bbb.
      k+1  n-1-i     n-1-i   k+1
    ------=======   =======------
