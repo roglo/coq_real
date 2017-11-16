@@ -703,7 +703,24 @@ destruct j.
      replace (n - 1 - (S i + 1)) with j by lia.
      replace (rad * rad ^ S k - 1)
      with (rad ^ S k - 1 + (rad - 1) * rad ^ S k) in H.
-      Focus 2.
+      specialize radix_gt_1 as Hr; simpl.
+      rewrite <- Nat.pow_succ_r; [ | lia ].
+      rewrite <- Nat.pow_succ_r; [ | lia ].
+      rewrite Nat.mul_add_distr_l in H.
+      rewrite Nat.mul_add_distr_l in H.
+      replace (n - 1 - (i + 1)) with (S j) in H by lia.
+      rewrite Nat.add_comm in H.
+      setoid_rewrite Nat.add_comm in H.
+      replace (rad ^ S j * ((rad - 1) * rad ^ S k))
+      with (rad ^ S k * ((rad - 1) * rad ^ S j))
+      in H by lia.
+      apply Nat.le_le_add_le in H; [ easy | ].
+      apply Nat.mul_le_mono_nonneg_l; [ lia | ].
+      apply Nat.mul_le_mono_nonneg_r; [ lia | ].
+      unfold v; simpl.
+      rewrite Nat.sub_1_r.
+      apply Nat.lt_le_pred, dig_lt_rad.
+
       specialize radix_gt_1 as Hr; simpl.
       rewrite Nat.mul_sub_distr_r.
       rewrite Nat.mul_1_l.
@@ -724,24 +741,6 @@ destruct j.
        rewrite <- Nat.pow_succ_r; [ | lia ].
        replace (rad ^ S k) with (1 * rad ^ S k) at 1 by lia.
        apply Nat.mul_le_mono_nonneg_r; lia.
-
-      specialize radix_gt_1 as Hr; simpl.
-      rewrite <- Nat.pow_succ_r; [ | lia ].
-      rewrite <- Nat.pow_succ_r; [ | lia ].
-      rewrite Nat.mul_add_distr_l in H.
-      rewrite Nat.mul_add_distr_l in H.
-      replace (n - 1 - (i + 1)) with (S j) in H by lia.
-      rewrite Nat.add_comm in H.
-      setoid_rewrite Nat.add_comm in H.
-      replace (rad ^ S j * ((rad - 1) * rad ^ S k))
-      with (rad ^ S k * ((rad - 1) * rad ^ S j))
-      in H by lia.
-      apply Nat.le_le_add_le in H; [ easy | ].
-      apply Nat.mul_le_mono_nonneg_l; [ lia | ].
-      apply Nat.mul_le_mono_nonneg_r; [ lia | ].
-      unfold v; simpl.
-      rewrite Nat.sub_1_r.
-      apply Nat.lt_le_pred, dig_lt_rad.
 
   unfold v, s; rewrite <- Hj.
   apply nA_dig_seq_ub; lia.
