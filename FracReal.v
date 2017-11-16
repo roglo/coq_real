@@ -678,7 +678,11 @@ destruct j.
    rewrite Nat.add_sub_swap in Hj.
     destruct rad as [| n]; [ easy | ].
     replace (S n * S i - S i) with (n * S i) in Hj by lia.
+    destruct n as [| n]; [ lia | simpl in Hj; lia ].
 
+    destruct rad as [| n]; [ easy | ].
+    rewrite Nat.mul_comm; simpl.
+    rewrite Nat.mul_comm; simpl; lia.
 bbb.
      k+1  n-1-i     n-1-i   k+1
    ------=======   =======------
