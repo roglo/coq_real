@@ -600,6 +600,14 @@ apply Nat.le_add_le_sub_l.
 apply dig_lt_rad.
 Qed.
 
+Theorem rad_pow_succ_gt_1 {r : radix} : ∀ k, 1 < rad ^ S k.
+Proof.
+intros.
+induction k; [ now rewrite Nat.pow_1_r | ].
+simpl; replace 1 with (1 * 1) by lia.
+apply Nat.mul_lt_mono_nonneg; [ lia | easy | lia | easy ].
+Qed.
+
 Theorem test_seq_all_0 {r : radix} : ∀ u i,
   (∀ k, test_seq i (λ j, dig (u j)) k = 0)
   → ∀ k, dig (u (i + k + 1)) = rad - 1.
@@ -614,19 +622,19 @@ destruct (le_dec ((rad ^ S k - 1) * s) (rad ^ S k * (nA i n v mod s)))
   as [H| H]; [ clear Huk | easy ].
 remember (n - 1 - i) as j eqn:Hj.
 symmetry in Hj.
-destruct j.
- simpl in s; subst s.
- rewrite Nat.mul_1_r in H.
- rewrite Nat.mod_1_r, Nat.mul_0_r in H.
- apply Nat.le_0_r in H.
- apply Nat.sub_0_le in H.
- exfalso; apply Nat.le_ngt in H.
- apply H; clear H; clear.
- induction k; [ now rewrite Nat.pow_1_r | ].
- simpl; replace 1 with (1 * 1) by lia.
- apply Nat.mul_lt_mono_nonneg; [ lia | easy | lia | easy ].
+rewrite Nat.mod_small in H.
+ destruct j.
+  simpl in s; subst s.
+  rewrite Nat.mul_1_r in H.
+  unfold nA in H.
+  rewrite summation_empty in H; [ | lia ].
+  rewrite Nat.mul_0_r in H.
+  apply Nat.le_0_r in H.
+  apply Nat.sub_0_le in H.
+  exfalso; apply Nat.le_ngt in H.
+  apply H; clear H; clear.
+  apply rad_pow_succ_gt_1.
 
- rewrite Nat.mod_small in H.
   remember (rad ^ S k * nA i n v) as a eqn:Ha.
   rewrite Nat.mul_comm in Ha; subst a.
   unfold nA in H; subst s.
@@ -742,8 +750,16 @@ destruct j.
        replace (rad ^ S k) with (1 * rad ^ S k) at 1 by lia.
        apply Nat.mul_le_mono_nonneg_r; lia.
 
-  unfold v, s; rewrite <- Hj.
-  apply nA_dig_seq_ub; lia.
+   unfold v, s; rewrite <- Hj.
+   apply nA_dig_seq_ub.
+   destruct j; [ | lia ].
+   simpl in s; subst s.
+   rewrite Nat.mod_1_r, Nat.mul_1_r, Nat.mul_0_r in H.
+   apply Nat.le_0_r in H.
+   apply Nat.sub_0_le in H.
+   exfalso; apply Nat.le_ngt in H.
+   apply H; clear H; clear.
+   apply rad_pow_succ_gt_1.
 Qed.
 
 Theorem nA_all_9_ge {r : radix} : ∀ u i k,
