@@ -747,6 +747,15 @@ destruct j.
   apply nA_dig_seq_ub; lia.
 Qed.
 
+Theorem nA_all_9_ge {r : radix} : ∀ u i k,
+  let n := rad * (i + k + 2) in
+  let s := rad ^ (n - 1 - i) in
+  (∀ j, dig (u (i + j + 1)) = rad - 1)
+  → (rad ^ k - 1) * s ≤ rad ^ k * nA i n (λ j, dig (u j)).
+Proof.
+intros * Hi.
+bbb.
+
 Theorem numbers_to_digits_is_norm {r : radix} : ∀ u i,
   numbers_to_digits (λ j, dig (u j)) i =
   dig (digit_sequence_normalize u i).
@@ -792,9 +801,7 @@ destruct (LPO_fst (test_seq i (λ j : nat, dig (u j)))) as [Hi| Hi].
      as [H| H]; [ easy | clear Hik ].
     apply H; clear H.
     rewrite Nat.mod_small.
-     destruct k; [ simpl; lia | ].
-     destruct k.
-      rewrite Nat.pow_1_r.
+     apply nA_all_9_ge.
 bbb.
 
 Theorem numbers_to_digits_id {r : radix} : ∀ x i,
