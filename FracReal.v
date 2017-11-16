@@ -7,12 +7,12 @@ Require Import Misc Summation.
 
 Class radix := { rad : nat; radi : rad ≥ 2 }.
 
-Theorem radix_gt_0 {r : radix} : rad > 0.
+Theorem radix_gt_0 {r : radix} : 0 < rad.
 Proof.
 destruct r as (rad, radi); simpl; lia.
 Qed.
 
-Theorem radix_gt_1 {r : radix} : rad > 1.
+Theorem radix_gt_1 {r : radix} : 1 < rad.
 Proof.
 destruct r as (rad, radi); simpl; lia.
 Qed.
@@ -21,6 +21,8 @@ Theorem radix_ne_0 {r : radix} : rad ≠ 0.
 Proof.
 destruct r as (rad, radi); simpl; lia.
 Qed.
+
+Hint Resolve radix_gt_0 radix_gt_1 radix_ne_0.
 
 (* Digits *)
 
@@ -219,7 +221,7 @@ intros.
 unfold freal_add_to_seq, numbers_to_digits.
 remember (test_seq i (freal_add_series a b)) as v eqn:Hv.
 destruct (LPO_fst v) as [Hvi| (j, Hvj)].
-1, 2: apply Nat.mod_upper_bound, radix_ne_0.
+1, 2: now apply Nat.mod_upper_bound.
 Qed.
 
 Theorem freal_mul_to_seq_lt_rad {r : radix} : ∀ a b i,
@@ -229,7 +231,7 @@ intros.
 unfold freal_mul_to_seq, numbers_to_digits.
 remember (test_seq i (freal_mul_series a b)) as v eqn:Hv.
 destruct (LPO_fst v) as [Hvi| (j, Hvj)].
-1, 2: apply Nat.mod_upper_bound, radix_ne_0.
+1, 2: now apply Nat.mod_upper_bound.
 Qed.
 
 Definition freal_add {r : radix} (a b : FracReal) :=
@@ -550,7 +552,7 @@ easy.
 Qed.
 
 Theorem power_summation : ∀ a n,
-  a > 0
+  0 < a
   → a ^ S n = 1 + (a - 1) * Σ (i = 0, n), a ^ i.
 Proof.
 intros * Ha.
@@ -584,7 +586,7 @@ rewrite summation_rtl.
 rewrite summation_shift; [ | easy ].
 remember (n - 1 - i) as k eqn:Hk.
 destruct k; [ lia | ].
-rewrite power_summation; [ | apply radix_gt_0 ].
+rewrite power_summation; [ | easy ].
 replace (n - 1 - (i + 1)) with k by lia.
 unfold lt; simpl.
 apply -> Nat.succ_le_mono.
@@ -620,12 +622,9 @@ destruct j.
  apply Nat.sub_0_le in H.
  exfalso; apply Nat.le_ngt in H.
  apply H; clear H; clear.
- induction k.
-  rewrite Nat.pow_1_r.
-  apply radix_gt_1.
-
-  simpl; replace 1 with (1 * 1) by lia.
-  apply Nat.mul_lt_mono_nonneg; [ lia | apply radix_gt_1 | lia | easy ].
+ induction k; [ now rewrite Nat.pow_1_r | ].
+ simpl; replace 1 with (1 * 1) by lia.
+ apply Nat.mul_lt_mono_nonneg; [ lia | easy | lia | easy ].
 
  rewrite Nat.mod_small in H.
  remember (rad ^ S k * nA i n v) as a eqn:Ha.
@@ -637,7 +636,7 @@ destruct j.
   simpl in H.
   rewrite Nat.mul_1_r in H.
   rewrite Nat.mul_assoc, Nat.mul_shuffle0 in H.
-  apply Nat.mul_le_mono_pos_r in H; [ | apply radix_gt_0 ].
+  apply Nat.mul_le_mono_pos_r in H; [ | easy ].
   rewrite summation_shift in H; [ | lia ].
   replace (n - 1 - (i + 1)) with j in H by lia.
   rewrite summation_eq_compat with (h := λ k, v (i + 1 + k) * rad ^ (j - k))
@@ -654,16 +653,16 @@ destruct j.
    specialize (dig_lt_rad (u (i + 1))); lia.
 
    apply IHj; clear IHj.
-   eapply Nat.div_le_mono in H; [ | apply radix_ne_0 ].
+   eapply Nat.div_le_mono in H; [ | easy ].
    remember minus as f; simpl in H; subst f.
    rewrite Nat.mul_assoc, Nat.mul_shuffle0 in H.
-   rewrite Nat.div_mul in H; [ | apply radix_ne_0 ].
+   rewrite Nat.div_mul in H; [ | easy ].
    eapply Nat.le_trans; [ eassumption | ].
    rewrite summation_split_last; [ | lia ].
    rewrite summation_eq_compat with
      (h := λ k, dig (u (i + 1 + k)) * rad ^ (j - k) * rad).
     rewrite <- summation_mul_distr_r.
-    rewrite Nat.div_add_l; [ | apply radix_ne_0 ].
+    rewrite Nat.div_add_l; [ | easy ].
     rewrite Nat.sub_diag, Nat.pow_0_r, Nat.mul_1_r.
     rewrite Nat.div_small; [ | apply dig_lt_rad ].
     now rewrite Nat.add_0_r.
@@ -810,7 +809,7 @@ rad ^ k * (nA i n u mod s) = xx...xx00...00
    enough (nA i n u < s).
     apply Nat.mod_le; unfold s.
     apply Nat.pow_nonzero.
-    apply radix_ne_0.
+    easy.
 
     unfold nA.
     clear Hk.
