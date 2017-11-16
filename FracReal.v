@@ -671,21 +671,8 @@ destruct j.
     intros k Hk.
     rewrite Nat.sub_succ_l; [ simpl; lia | easy ].
 
-  replace (i + S k) with (S i + k) by lia.
   destruct j.
-   rewrite Nat.pow_1_r in H; simpl in H.
-   rewrite <- Nat.pow_succ_r in H; [ | lia ].
-   rewrite Nat.mul_assoc, Nat.mul_shuffle0 in H.
-   apply Nat.mul_le_mono_pos_r in H; [ | apply radix_gt_0 ].
-   rewrite <- Nat.pow_succ_r in H; [ | lia ].
-   eapply IHk.
-    replace (S i + S k) with (i + (S (S k))) by lia.
-    fold n.
-(* mon cul *)
-bbb.
-  apply Nat.le_trans with
-    (m := Σ (k = 0, j), v (i + 1 + k) * rad ^ (j - k))
-    (p := v (i + 1) * (rad ^ j - 1)) in H.
+   unfold n in Hj; clear -Hj; exfalso.
 bbb.
      k+1  n-1-i     n-1-i   k+1
    ------=======   =======------
