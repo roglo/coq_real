@@ -801,6 +801,12 @@ destruct j.
  subst n.
  clear -Hj; exfalso.
  revert Hj; apply rad_expr.
+
+bbb.
+  replace (i + S k) with (S i + k) by lia.
+    apply IHk with (j := j).
+
+
 bbb.
 
  replace (n - 1) with (i + 1) by lia.
