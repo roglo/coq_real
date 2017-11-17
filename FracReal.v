@@ -815,13 +815,8 @@ Theorem nA_all_9_ge {r : radix} : ∀ u i k,
 Proof.
 intros * Hi.
 set (v := λ j, dig (u j)).
-assert (HnA : nA i n v = rad ^ (n - i - 1) - 1).
- subst v.
- clear - Hi.
- now apply nA_all_9.
-
- rewrite HnA.
- subst s.
+replace (nA i n v) with (rad ^ (n - i - 1) - 1).
+2: now symmetry; apply nA_all_9.
 bbb.
 
 Theorem numbers_to_digits_is_norm {r : radix} : ∀ u i,
