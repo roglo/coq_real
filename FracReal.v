@@ -768,6 +768,29 @@ rewrite Nat.mod_small in H.
    apply rad_pow_succ_gt_1.
 Qed.
 
+Theorem glop {r : radix} : ∀ u i n,
+  (∀ j, dig (u (i + j + 1)) = rad - 1)
+  → nA i n (λ j, dig (u j)) = rad ^ (n - i) - 1.
+Proof.
+intros * Hj.
+unfold nA.
+rewrite summation_eq_compat with (h := λ j, (rad - 1) * rad ^ (n - 1 - j)).
+ Focus 2.
+ intros j Hij.
+ replace j with (i + (j - i - 1) + 1) at 1 by lia.
+ now rewrite Hj.
+
+ rewrite <- summation_mul_distr_l.
+ destruct (le_dec (i + 1) (n - 1)) as [Hin| Hin].
+  rewrite summation_shift; [ | easy ].
+  rewrite summation_rtl.
+  rewrite summation_eq_compat with (h := λ j, rad ^ j).
+  2: intros; f_equal; lia.
+  apply Nat.succ_inj_wd.
+  rewrite <- Nat.add_1_l.
+  rewrite <- power_summation; [ | easy ].
+bbb.
+
 Theorem nA_all_9_ge {r : radix} : ∀ u i k,
   let n := rad * (i + k + 2) in
   let s := rad ^ (n - 1 - i) in
@@ -775,6 +798,17 @@ Theorem nA_all_9_ge {r : radix} : ∀ u i k,
   → (rad ^ k - 1) * s ≤ rad ^ k * nA i n (λ j, dig (u j)).
 Proof.
 intros * Hi.
+set (v := λ j, dig (u j)).
+assert (HnA : nA i n v = rad ^ (n - i) - 1).
+ subst v.
+ clear - Hi.
+ now apply glop.
+bbb.
+
+Check rad_expr.
+unfold nA.
+
+bbb.
 assert (Hin : i + 1 ≤ n - 1).
  subst n; clear.
  specialize rad_ge_2 as Hr.
