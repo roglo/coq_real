@@ -807,6 +807,17 @@ rewrite summation_eq_compat with (h := λ j, (rad - 1) * rad ^ (n - 1 - j)).
   rewrite Nat.mul_0_r; simpl; lia.
 Qed.
 
+Theorem glop : ∀ r i j d, i ≤ j →
+  (r ^ (i + d) - 1) * r ^ j ≤ r ^ i * (r ^ (j + d) - 1).
+Proof.
+intros * Hij.
+destruct i.
+ simpl; rewrite Nat.add_0_r; clear Hij.
+ revert j.
+ induction d; intros; [ simpl; lia | ].
+
+bbb.
+
 Theorem pow_pow_sub_1 : ∀ r i j, i ≤ j →
   (r ^ i - 1) * r ^ j ≤ r ^ i * (r ^ j - 1).
 Proof.
