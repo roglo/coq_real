@@ -783,6 +783,8 @@ assert (Hin : i + 1 ≤ n - 1).
   now rewrite Hi.
 
   rewrite <- summation_mul_distr_l.
+  rewrite Nat.mul_assoc.
+bbb.
   rewrite summation_shift; [ | easy ].
 bbb.
 
