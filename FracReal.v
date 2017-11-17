@@ -5,7 +5,7 @@ Require Import Misc Summation.
 
 (* Radix *)
 
-Class radix := { rad : nat; radi : rad ≥ 2 }.
+Class radix := { rad : nat; rad_ge_2 : rad ≥ 2 }.
 
 Theorem radix_gt_0 {r : radix} : 0 < rad.
 Proof.
@@ -769,35 +769,21 @@ Theorem nA_all_9_ge {r : radix} : ∀ u i k,
   → (rad ^ k - 1) * s ≤ rad ^ k * nA i n (λ j, dig (u j)).
 Proof.
 intros * Hi.
-destruct (le_dec (i + 1) (n - 1)) as [Hin| Hin].
-Focus 2.
-bbb.
- subst s.
- replace (n - 1 - i) with 0 by lia.
+assert (Hin : i + 1 ≤ n - 1).
+ subst n; clear.
+ specialize rad_ge_2 as Hr.
+ destruct rad as [| n]; [ lia | ].
+ simpl; lia.
+
  unfold nA.
- rewrite summation_empty; [ | lia ].
+ rewrite summation_eq_compat with (h := λ j, (rad - 1) * rad ^ (n - 1 - j)).
+  Focus 2.
+  intros j Hj.
+  replace j with (i + (j - i - 1) + 1) at 1 by lia.
+  now rewrite Hi.
 
-unfold nA.
-rewrite summation_eq_compat with (h := λ j, (rad - 1) * rad ^ (n - 1 - j)).
- Focus 2.
- intros j Hj.
- replace j with (i + (j - i - 1) + 1) at 1 by lia.
- now rewrite Hi.
-
- rewrite <- summation_mul_distr_l.
- rewrite summation_shift.
-bbb.
-
-intros * Hi.
-remember (n - 1 - i) as j eqn:Hj.
-symmetry in Hj.
-destruct j.
-bbb
-
-rewrite Nat.mod_small in H.
-revert i n s Hi.
-induction k; intros; [ simpl; lia | ].
-
+  rewrite <- summation_mul_distr_l.
+  rewrite summation_shift; [ | easy ].
 bbb.
 
 Theorem numbers_to_digits_is_norm {r : radix} : ∀ u i,
@@ -829,7 +815,7 @@ destruct (LPO_fst (test_seq i (λ j : nat, dig (u j)))) as [Hi| Hi].
    specialize (H k); lia.
 
   apply nA_dig_seq_ub.
-  specialize radi as Hr.
+  specialize rad_ge_2 as Hr.
   destruct rad as [| n]; [ lia | ].
   simpl; lia.
 
