@@ -608,6 +608,22 @@ simpl; replace 1 with (1 * 1) by lia.
 apply Nat.mul_lt_mono_nonneg; [ lia | easy | lia | easy ].
 Qed.
 
+Theorem rad_expr {r : radix} : ∀ i k, rad * (i + k + 2) - 1 - i ≠ 1.
+Proof.
+intros * Hj.
+specialize radix_gt_1 as Hr.
+replace (rad * (i + k + 2) - 1 - i)
+with (rad * S i + rad * (k + 1) - S i) in Hj by lia.
+rewrite Nat.add_sub_swap in Hj.
+ destruct rad as [| n]; [ easy | ].
+ replace (S n * S i - S i) with (n * S i) in Hj by lia.
+ destruct n as [| n]; [ lia | simpl in Hj; lia ].
+
+ destruct rad as [| n]; [ easy | ].
+ rewrite Nat.mul_comm; simpl.
+ rewrite Nat.mul_comm; simpl; lia.
+Qed.
+
 Theorem test_seq_all_0 {r : radix} : ∀ u i,
   (∀ k, test_seq i (λ j, dig (u j)) k = 0)
   → ∀ k, dig (u (i + k + 1)) = rad - 1.
@@ -680,17 +696,7 @@ rewrite Nat.mod_small in H.
 
    destruct j.
     unfold n in Hj; clear -Hj; exfalso.
-    specialize radix_gt_1 as Hr.
-    replace (rad * (i + S (S k) + 2) - 1 - i)
-    with (rad * S i + rad * (k + 3) - S i) in Hj by lia.
-    rewrite Nat.add_sub_swap in Hj.
-     destruct rad as [| n]; [ easy | ].
-     replace (S n * S i - S i) with (n * S i) in Hj by lia.
-     destruct n as [| n]; [ lia | simpl in Hj; lia ].
-
-     destruct rad as [| n]; [ easy | ].
-     rewrite Nat.mul_comm; simpl.
-     rewrite Nat.mul_comm; simpl; lia.
+    revert Hj; apply rad_expr.
 
     replace (i + S k) with (S i + k) by lia.
     apply IHk with (j := j).
@@ -784,6 +790,29 @@ assert (Hin : i + 1 ≤ n - 1).
 
   rewrite <- summation_mul_distr_l.
   rewrite Nat.mul_assoc.
+(**)
+remember (n - 1 - i) as j eqn:Hj.
+symmetry in Hj.
+destruct j; [ lia | ].
+subst s.
+revert i j n Hi Hj Hin.
+induction k; intros; [ simpl; lia | ].
+destruct j.
+ subst n.
+ clear -Hj; exfalso.
+ revert Hj; apply rad_expr.
+bbb.
+
+ replace (n - 1) with (i + 1) by lia.
+ rewrite summation_only_one.
+ rewrite Nat.sub_diag.
+ rewrite Nat.pow_0_r, Nat.pow_1_r, Nat.mul_1_r.
+ rewrite Nat.mul_comm; simpl.
+ rewrite <- Nat.mul_assoc.
+ apply Nat.mul_le_mono_nonneg_l; [ lia | ].
+ rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+ rewrite Nat.mul_comm.
+ (* c'est faux *)
 bbb.
   revert i n s Hi Hin.
   induction k; intros; [ simpl; lia | ].
