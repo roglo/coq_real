@@ -807,6 +807,11 @@ rewrite summation_eq_compat with (h := λ j, (rad - 1) * rad ^ (n - 1 - j)).
   rewrite Nat.mul_0_r; simpl; lia.
 Qed.
 
+
+Theorem pow_pow_sub_1 : ∀ r i j, i ≤ j → (r ^ i - 1) * r ^ j ≤ r ^ i * (r ^ j - 1).
+Proof.
+bbb.
+
 Theorem nA_all_9_ge {r : radix} : ∀ u i k,
   let n := rad * (i + k + 2) in
   let s := rad ^ (n - 1 - i) in
@@ -817,7 +822,22 @@ intros * Hi.
 set (v := λ j, dig (u j)).
 replace (nA i n v) with (rad ^ (n - i - 1) - 1).
 2: now symmetry; apply nA_all_9.
-bbb.
+assert (Hk : k ≤ n - i - 1).
+ subst n; clear.
+ specialize radix_gt_1 as Hr.
+ replace (rad * (i + k + 2) - i - 1)
+ with (rad * (i + 1) + rad * (k + 1) - 1 * (i + 1)) by lia.
+ rewrite Nat.add_sub_swap.
+  rewrite <- Nat.mul_sub_distr_r.
+  apply le_trans with (m := rad * (k + 1)); [ | lia ].
+  apply le_trans with (m := rad * k); [ | lia ].
+  destruct rad as [| n]; [ lia | simpl; lia ].
+
+  apply Nat.mul_le_mono_nonneg_r; lia.
+  subst s.
+  rewrite <- Nat.sub_add_distr, Nat.add_comm, Nat.sub_add_distr.
+  now apply pow_pow_sub_1.
+Qed.
 
 Theorem numbers_to_digits_is_norm {r : radix} : ∀ u i,
   numbers_to_digits (λ j, dig (u j)) i =
