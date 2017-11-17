@@ -810,6 +810,11 @@ Qed.
 
 Theorem pow_pow_sub_1 : ∀ r i j, i ≤ j → (r ^ i - 1) * r ^ j ≤ r ^ i * (r ^ j - 1).
 Proof.
+intros * Hij.
+bbb.
+revert i Hij.
+induction j; intros; [ now apply Nat.le_0_r in Hij; subst | ].
+destruct i; [ simpl; lia | ].
 bbb.
 
 Theorem nA_all_9_ge {r : radix} : ∀ u i k,
