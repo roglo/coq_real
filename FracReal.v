@@ -785,7 +785,20 @@ assert (Hin : i + 1 ≤ n - 1).
   rewrite <- summation_mul_distr_l.
   rewrite Nat.mul_assoc.
 bbb.
-  rewrite summation_shift; [ | easy ].
+  revert i n s Hi Hin.
+  induction k; intros; [ simpl; lia | ].
+  specialize radix_gt_1 as Hr.
+  replace (rad ^ S k - 1) with (rad * (rad ^ k - 1) + (rad - 1)).
+   Focus 2.
+   rewrite Nat.mul_sub_distr_l, Nat.mul_1_r; simpl.
+   rewrite Nat.add_sub_assoc; [ | lia ].
+   rewrite Nat.sub_add; [ easy | ].
+   replace rad with (rad * 1) at 1 by lia.
+   apply Nat.mul_le_mono_nonneg_l; [ lia | ].
+   destruct k; [ easy | ].
+   apply Nat.lt_le_incl, rad_pow_succ_gt_1.
+
+   simpl.
 bbb.
 
 Theorem numbers_to_digits_is_norm {r : radix} : ∀ u i,
