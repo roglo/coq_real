@@ -813,6 +813,17 @@ Proof.
 intros * Hij.
 destruct i; [ simpl; lia | ].
 destruct j; [ lia | ].
+rewrite Nat.mul_comm; simpl.
+do 2 rewrite <- Nat.mul_assoc.
+apply Nat.mul_le_mono_nonneg_l; [ lia | ].
+rewrite <- Nat.pow_succ_r; [ | lia ].
+rewrite <- Nat.pow_succ_r; [ | lia ].
+bbb.
+
+rewrite Nat.mul_comm.
+rewrite power_summation.
+ rewrite Nat.add_sub_swap; [ | easy ].
+ rewrite Nat.sub_diag, Nat.add_0_l.
 bbb.
 
 Theorem nA_all_9_ge {r : radix} : ∀ u i k,
