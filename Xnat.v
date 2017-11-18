@@ -1,6 +1,6 @@
 (* Natural numbers in any radix. *)
 
-Require Import Utf8 Psatz.
+Require Import Utf8 Arith Psatz.
 
 (* Radix *)
 
@@ -49,14 +49,14 @@ Inductive rpositive {r : radix} :=
 
 (* Number in radix r: 0 (I0) or positive number (Ipos rpositive) *)
 
-Inductive Int {r : radix} :=
-  | I0 : Int
-  | Ipos : rpositive → Int.
+Inductive xnat {r : radix} :=
+  | I0 : xnat
+  | Ipos : rpositive → xnat.
 
-Fixpoint rpositive_of_int {r : digit} n :=
+Fixpoint rpositive_of_nat {r : digit} n :=
   match lt_dec (S n) rad with
   | left P => rH (mkpdig _ (S n) P (Nat.neq_succ_0 n))
-  | right _ => rI (S n mod rad) (rpositive_of_int ((S n - rad) / rad))
+  | right _ => rI (S n mod rad) (rpositive_of_nat ((S n - rad) / rad))
   end.
 
 Definition int_of_nat n :=
