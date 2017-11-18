@@ -86,6 +86,14 @@ Qed.
 Definition radix_10 := {| rad := 10; rad_ge_2 := ten_ge_two |}.
 Compute (@xnat_of_nat radix_10 4639).
 
+Lemma nz_add_nz a b : a ≠ 0 → a + b ≠ 0.
+Proof.
+intros.
+destruct a.
+ exfalso; apply H; reflexivity.
+ simpl; apply Nat.neq_succ_0.
+Qed.
+
 Fixpoint xpositive_add {r : radix} a b :=
   match a with
   | rH apd =>
@@ -93,7 +101,9 @@ Fixpoint xpositive_add {r : radix} a b :=
       | rH bpd =>
           let pd := pdig apd + pdig bpd in
           match lt_dec pd rad with
-          | left P => rH (mkpdig _ pd P (Nat.neq_succ_0 pd ...))
+          | left lt =>
+              let ne0 := nz_add_nz (pdig apd) (pdig bpd) (pdig_ne_0 apd) in
+              rH (mkpdig _ pd lt ne0)
           | right _ => (* not impl *) rH pdigit_1
           end
       | rI bd b' => (* not impl *) rH pdigit_1
