@@ -1,7 +1,7 @@
 (* Real between 0 and 1, i.e. fractional part of a real. *)
 
 Require Import Utf8 Arith Psatz.
-Require Import Misc Summation.
+Require Import Misc Summation Xnat.
 
 (* the proof that x≤y is unique; this is proved in Coq library theorem
    "le_unique" *)

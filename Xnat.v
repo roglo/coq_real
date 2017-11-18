@@ -53,14 +53,23 @@ Inductive xnat {r : radix} :=
   | I0 : xnat
   | Ipos : rpositive → xnat.
 
-Fixpoint rpositive_of_nat {r : digit} n :=
-  match lt_dec (S n) rad with
-  | left P => rH (mkpdig _ (S n) P (Nat.neq_succ_0 n))
-  | right _ => rI (S n mod rad) (rpositive_of_nat ((S n - rad) / rad))
+Definition pdigit_1 {r : radix} := mkpdig _ 1 radix_gt_1 (Nat.neq_succ_0 0).
+
+Fixpoint rpositive_of_nat {r : radix} iter n :=
+  match iter with
+  | 0 => rH pdigit_1
+  | S i =>
+     match lt_dec (S n) rad with
+     | left P => rH (mkpdig _ (S n) P (Nat.neq_succ_0 n))
+     | right _ =>
+         let Sn_lt_rad := Nat.mod_upper_bound (S n) rad radix_ne_0 in
+         let d := mkdig _ (S n mod rad) Sn_lt_rad in
+         rI d (rpositive_of_nat i ((S n - rad) / rad))
+     end
   end.
 
-Definition int_of_nat n :=
+Definition int_of_nat {r : radix} n :=
   match n with
   | 0 => I0
-  | S n => Ipos (rpositive_of_int n)
+  | S n => Ipos (rpositive_of_nat n n)
   end.
