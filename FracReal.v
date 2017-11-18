@@ -37,6 +37,37 @@ Notation "0" := (digit_0) : digit_scope.
 Notation "a = b" := (digit_eq a b) : digit_scope.
 Notation "a ≠ b" := (¬ digit_eq a b) : digit_scope.
 
+(* Positive number in radix r.
+   Example: 4639 (when r = 10):
+    rI 9 (rI 3 (rI 6 (rH 4))) *)
+
+Record pdigit {r : radix} :=
+  mkpdig { pdig : nat; pdig_lt_rad : pdig < rad; pdig_ne_0 : pdig ≠ 0 }.
+
+Inductive rpositive {r : radix} :=
+  | rH : pdigit → rpositive
+  | rI : digit → rpositive → rpositive.
+
+(* Number in radix r: 0 (I0) or positive number (Ipos rpositive) *)
+
+Inductive Int {r : radix} :=
+  | I0 : Int
+  | Ipos : rpositive → Int.
+
+bbb.
+
+Fixpoint rpositive_of_int {r : digit} n :=
+  match lt_dec (S n) rad with
+  | left P => rH (mkpdig _ (S n) P (Nat.neq_succ_0 n))
+  | right _ => rI (S n mod rad) (rpositive_of_int ((S n - rad) / rad))
+  end.
+
+Definition int_of_nat n :=
+  match n with
+  | 0 => I0
+  | S n => Ipos (rpositive_of_int n)
+  end.
+
 (* the proof that x≤y is unique; this is proved in Coq library theorem
    "le_unique" *)
 Theorem digit_eq_eq {r : radix} : ∀ a b, (a = b)%D ↔ a = b.
@@ -807,6 +838,7 @@ rewrite summation_eq_compat with (h := λ j, (rad - 1) * rad ^ (n - 1 - j)).
   rewrite Nat.mul_0_r; simpl; lia.
 Qed.
 
+(*
 Theorem glop : ∀ r i j d, i ≤ j →
   (r ^ (i + d) - 1) * r ^ j ≤ r ^ i * (r ^ (j + d) - 1).
 Proof.
@@ -815,32 +847,6 @@ destruct i.
  simpl; rewrite Nat.add_0_r; clear Hij.
  revert j.
  induction d; intros; [ simpl; lia | ].
-
-Require Import ZArith.
-Print N.
-Print positive.
-
-(* Positive number in radix r.
-   Example: 4639 (when r = 10):
-    rI 9 (rI 3 (rI 6 (rH 4))) *)
-
-Inductive rpositive {r : radix} :=
-  | rI : digit → rpositive → rpositive
-  | rH : pdigit → rpositive.
-
-(* Number in radix r: 0 (I0) or positive number (Ipos rpositive) *)
-
-Inductive Int {r : radix} :=
-  | I0 : Int
-  | Ipos : rpositive → Int.
-
-
-Inductive positive : Set :=
-    xI : positive → positive | xO : positive → positive | xH : positive
-
-For xI: Argument scope is [positive_scope]
-For xO: Argument scope is [positive_scope]
-
 bbb.
 
 Theorem pow_pow_sub_1 : ∀ r i j, i ≤ j →
@@ -861,6 +867,7 @@ rewrite power_summation.
  rewrite Nat.add_sub_swap; [ | easy ].
  rewrite Nat.sub_diag, Nat.add_0_l.
 bbb.
+*)
 
 Theorem nA_all_9_ge {r : radix} : ∀ u i k,
   let n := rad * (i + k + 2) in
