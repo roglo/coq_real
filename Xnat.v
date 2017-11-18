@@ -90,13 +90,16 @@ Fixpoint xpositive_add {r : radix} a b :=
   match a with
   | rH apd =>
       match b with
-      | rH bpd => pdig apd + pdig bpd
-      | rI bd b' => 0
+      | rH bpd =>
+          let pd := pdig apd + pdig bpd in
+          match lt_dec pd rad with
+          | left P => rH (mkpdig _ pd P (Nat.neq_succ_0 pd ...))
+          | right _ => (* not impl *) rH pdigit_1
+          end
+      | rI bd b' => (* not impl *) rH pdigit_1
       end
-  | rI ad a' => 0
+  | rI ad a' => (* not impl *) rH pdigit_1
   end.
-
-bbb.
 
 Fixpoint xnat_add {r : radix} a b :=
   match a with
@@ -107,3 +110,6 @@ Fixpoint xnat_add {r : radix} a b :=
        | Ipos bp => Ipos (xpositive_add ap bp)
        end
   end.
+
+Compute (@xnat_of_nat radix_10 2).
+Compute (@xnat_add radix_10 (xnat_of_nat 2) (xnat_of_nat 2)).
