@@ -85,3 +85,13 @@ Qed.
 
 Definition radix_10 := {| rad := 10; rad_ge_2 := ten_ge_two |}.
 Compute (@xnat_of_nat radix_10 4639).
+
+Fixpoint xnat_add {r : radix} a b :=
+  match a with
+  | I0 => b
+  | Ipos p =>
+       match p with
+       | rH d => ...
+       | rI d rp => ...
+       end
+  end.
