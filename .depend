@@ -8,3 +8,5 @@ Small.vio: Small.v Misc.vio Summation.vio
 Small.vo Small.glob Small.v.beautified: Small.v Misc.vo Summation.vo
 Summation.vio: Summation.v Misc.vio
 Summation.vo Summation.glob Summation.v.beautified: Summation.v Misc.vo
+Xnat.vio: Xnat.v
+Xnat.vo Xnat.glob Xnat.v.beautified: Xnat.v
