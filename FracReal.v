@@ -816,6 +816,31 @@ destruct i.
  revert j.
  induction d; intros; [ simpl; lia | ].
 
+Require Import ZArith.
+Print N.
+Print positive.
+
+(* Positive number in radix r.
+   Example: 4639 (when r = 10):
+    rI 9 (rI 3 (rI 6 (rH 4))) *)
+
+Inductive rpositive {r : radix} :=
+  | rI : digit → rpositive → rpositive
+  | rH : pdigit → rpositive.
+
+(* Number in radix r: 0 (I0) or positive number (Ipos rpositive) *)
+
+Inductive Int {r : radix} :=
+  | I0 : Int
+  | Ipos : rpositive → Int.
+
+
+Inductive positive : Set :=
+    xI : positive → positive | xO : positive → positive | xH : positive
+
+For xI: Argument scope is [positive_scope]
+For xO: Argument scope is [positive_scope]
+
 bbb.
 
 Theorem pow_pow_sub_1 : ∀ r i j, i ≤ j →
