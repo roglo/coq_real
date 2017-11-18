@@ -55,7 +55,7 @@ Inductive xnat {r : radix} :=
 
 Definition pdigit_1 {r : radix} := mkpdig _ 1 radix_gt_1 (Nat.neq_succ_0 0).
 
-Fixpoint rpositive_of_nat {r : radix} iter n :=
+Fixpoint rpon {r : radix} iter n :=
   match iter with
   | 0 => rH pdigit_1
   | S i =>
@@ -64,12 +64,24 @@ Fixpoint rpositive_of_nat {r : radix} iter n :=
      | right _ =>
          let Sn_lt_rad := Nat.mod_upper_bound (S n) rad radix_ne_0 in
          let d := mkdig _ (S n mod rad) Sn_lt_rad in
-         rI d (rpositive_of_nat i ((S n - rad) / rad))
+         rI d (rpon i ((S n - rad) / rad))
      end
   end.
 
-Definition int_of_nat {r : radix} n :=
+Definition rpositive_of_nat {r : radix} n := rpon n n.
+
+Definition xnat_of_nat {r : radix} n :=
   match n with
   | 0 => I0
-  | S n => Ipos (rpositive_of_nat n n)
+  | S n => Ipos (rpositive_of_nat n)
   end.
+
+Lemma ten_ge_two : 10 ≥ 2.
+Proof.
+apply -> Nat.succ_le_mono.
+apply -> Nat.succ_le_mono.
+apply Nat.le_0_l.
+Qed.
+
+Definition radix_10 := {| rad := 10; rad_ge_2 := ten_ge_two |}.
+Compute (@xnat_of_nat radix_10 4639).
