@@ -43,15 +43,15 @@ Notation "a ≠ b" := (¬ digit_eq a b) : digit_scope.
 Record pdigit {r : radix} :=
   mkpdig { pdig : nat; pdig_lt_rad : pdig < rad; pdig_ne_0 : pdig ≠ 0 }.
 
-Inductive rpositive {r : radix} :=
-  | rH : pdigit → rpositive
-  | rI : digit → rpositive → rpositive.
+Inductive xpositive {r : radix} :=
+  | rH : pdigit → xpositive
+  | rI : digit → xpositive → xpositive.
 
 (* Number in radix r: 0 (I0) or positive number (Ipos rpositive) *)
 
 Inductive xnat {r : radix} :=
   | I0 : xnat
-  | Ipos : rpositive → xnat.
+  | Ipos : xpositive → xnat.
 
 Definition pdigit_1 {r : radix} := mkpdig _ 1 radix_gt_1 (Nat.neq_succ_0 0).
 
@@ -68,12 +68,12 @@ Fixpoint rpon {r : radix} iter n :=
      end
   end.
 
-Definition rpositive_of_nat {r : radix} n := rpon n n.
+Definition xpositive_of_nat {r : radix} n := rpon n n.
 
 Definition xnat_of_nat {r : radix} n :=
   match n with
   | 0 => I0
-  | S n => Ipos (rpositive_of_nat n)
+  | S n => Ipos (xpositive_of_nat n)
   end.
 
 Lemma ten_ge_two : 10 ≥ 2.
@@ -86,12 +86,24 @@ Qed.
 Definition radix_10 := {| rad := 10; rad_ge_2 := ten_ge_two |}.
 Compute (@xnat_of_nat radix_10 4639).
 
+Fixpoint xpositive_add {r : radix} a b :=
+  match a with
+  | rH apd =>
+      match b with
+      | rH bpd => pdig apd + pdig bpd
+      | rI bd b' => 0
+      end
+  | rI ad a' => 0
+  end.
+
+bbb.
+
 Fixpoint xnat_add {r : radix} a b :=
   match a with
   | I0 => b
-  | Ipos p =>
-       match p with
-       | rH d => ...
-       | rI d rp => ...
+  | Ipos ap =>
+       match b with
+       | I0 => a
+       | Ipos bp => Ipos (xpositive_add ap bp)
        end
   end.
