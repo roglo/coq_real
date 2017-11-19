@@ -5,6 +5,7 @@ all: $(TARGET)
 
 clean:
 	rm -f *.glob *.vo *.cm[iox] *.out *.o
+	rm -f .*.bak .*.aux .*.cache
 
 depend:
 	mv .depend .depend.bak
