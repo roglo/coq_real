@@ -12,7 +12,7 @@ Record xnat := xn { xnatv : list nat }.
 
 Fixpoint move_carry {r : radix} iter al carry :=
   match iter with
-  | 0 => []
+  | 0 => [42]
   | S i =>
       match al with
       | [] =>
@@ -39,10 +39,27 @@ Fixpoint xnatv_add a b :=
 Definition xnat_add {r : radix} a b :=
   num_with_dig (xn (xnatv_add (xnatv a) (xnatv b))).
 
+Definition xnat_of_nat {r : radix} n := num_with_dig (xn [n]).
+Definition nat_of_xnat {r : radix} a :=
+  List.fold_right (λ d accu, accu * rad + d) 0 (xnatv a).
+
 Compute (xnatv_add [2] [2]).
 Compute (@xnat_add radix_10 (xn [4; 2]) (xn [11])).
 Compute (@xnat_add radix_2 (xn [4; 2]) (xn [11])).
-Compute (@num_with_dig radix_2 (xn [0])).
-Compute (@num_with_dig radix_2 (xn [1])).
-Compute (@num_with_dig radix_2 (xn [2])).
+Compute (@num_with_dig radix_2 (xn [0; 0])).
+Compute (@num_with_dig radix_2 (xn [1; 0])).
+Compute (@num_with_dig radix_2 (xn [2; 0])).
 Compute (@num_with_dig radix_2 (xn [3])).
+Compute (@num_with_dig radix_2 (xn [4])).
+Compute (@num_with_dig radix_2 (xn [5])).
+Compute (@num_with_dig radix_2 (xn [6])).
+Compute (@num_with_dig radix_2 (xn [7])).
+Compute (@num_with_dig radix_10 (xn [11; 11; 11; 11; 11])).
+
+Compute (@num_with_dig radix_2 (xn [11; 11; 11; 11; 11])).
+Compute (@num_with_dig radix_2 (xn [341])).
+Compute (@xnat_of_nat radix_2 341).
+Compute (11 + 2 * 11 + 4 * 11 + 8 * 11 + 16 * 11).
+
+Compute (@xnat_of_nat radix_10 341).
+Compute (@nat_of_xnat radix_10 (@xnat_of_nat radix_10 341)).
