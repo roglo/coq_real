@@ -1,6 +1,7 @@
 (* Natural numbers in any radix. *)
 
-Require Import Utf8 Arith Psatz.
+Require Import Utf8 Arith Psatz List.
+Import ListNotations.
 
 (* Radix *)
 
@@ -47,13 +48,12 @@ Inductive xpositive {r : radix} :=
   | rH : pdigit → xpositive
   | rI : digit → xpositive → xpositive.
 
-(* Number in radix r: 0 (I0) or positive number (Ipos rpositive) *)
+(* Number in radix r: 0 (x0) or positive number (xpos rpositive) *)
 
 Inductive xnat {r : radix} :=
-  | I0 : xnat
-  | Ipos : xpositive → xnat.
+  | x0 : xnat
+  | xpos : xpositive → xnat.
 
-Definition digit_1 {r : radix} := mkdig _ 1 radix_gt_1.
 Definition pdigit_1 {r : radix} := mkpdig _ 1 radix_gt_1 (Nat.neq_succ_0 0).
 
 Fixpoint rpon {r : radix} iter n :=
@@ -73,8 +73,8 @@ Definition xpositive_of_nat {r : radix} n := rpon n n.
 
 Definition xnat_of_nat {r : radix} n :=
   match n with
-  | 0 => I0
-  | S n => Ipos (xpositive_of_nat n)
+  | 0 => x0
+  | S n => xpos (xpositive_of_nat n)
   end.
 
 Lemma ten_ge_two : 10 ≥ 2.
@@ -119,8 +119,7 @@ Fixpoint xpositive_add {r : radix} a b :=
                 lt_lt_add_lt (pdig apd) (pdig bpd) rad (pdig_lt_rad apd)
                   (pdig_lt_rad bpd)
               in
-              let nzp := Nat.sub_gt pd rad gep (* à voir... *) in
-              rI digit_1 (rH (mkpdig _ pd ltp nzp))
+              rI (mkdig _ pd ltp) (rH pdigit_1)
           end
       | rI bd b' => (* not impl *) rH pdigit_1
       end
@@ -129,14 +128,30 @@ Fixpoint xpositive_add {r : radix} a b :=
 
 Fixpoint xnat_add {r : radix} a b :=
   match a with
-  | I0 => b
-  | Ipos ap =>
+  | x0 => b
+  | xpos ap =>
        match b with
-       | I0 => a
-       | Ipos bp => Ipos (xpositive_add ap bp)
+       | x0 => a
+       | xpos bp => xpos (xpositive_add ap bp)
        end
   end.
 
+Fixpoint list_of_xpositive {r : radix} a :=
+  match a with
+  | rH pd => [pdig pd]
+  | rI d xp => list_of_xpositive xp ++ [dig d]
+  end.
+
+Definition list_of_xnat {r : radix} a :=
+  match a with
+  | x0 => [0]
+  | xpos ap => list_of_xpositive ap
+  end.
+
+Delimit Scope xnat_scope with X.
+Notation "a + b" := (xnat_add a b) : xnat_scope.
+
 Compute (@xnat_of_nat radix_10 2).
-Compute (@xnat_add radix_10 (xnat_of_nat 2) (xnat_of_nat 2)).
-Compute (@xnat_add radix_10 (xnat_of_nat 2) (xnat_of_nat 8)).
+Compute (@list_of_xnat radix_10 (xnat_of_nat 4649)).
+Compute (@list_of_xnat radix_10 (xnat_of_nat 2 + xnat_of_nat 2)%X).
+Compute (@list_of_xnat radix_10 (xnat_of_nat 6 + xnat_of_nat 7)%X).
