@@ -125,7 +125,7 @@ Fixpoint xpositive_add {r : radix} a b :=
           | left ltp =>
               let nzp := nz_add_nz (pdig apd) (pdig bpd) (pdig_ne_0 apd) in
               xH (mkpdig _ pd ltp nzp)
-          | right gep =>
+          | right _ =>
               let pd := pdig apd + pdig bpd - rad in
               let ltp :=
                 lt_lt_add_lt (pdig apd) (pdig bpd) rad (pdig_lt_rad apd)
@@ -139,8 +139,13 @@ Fixpoint xpositive_add {r : radix} a b :=
           | left ltp =>
               let nzp:= nz_add_nz (pdig apd) (dig bd) (pdig_ne_0 apd) in
               xI (mkdig _ pd ltp) b'
-          | right gep =>
-              (* not impl *) xH pdigit_1
+          | right _ =>
+              let pd := pdig apd + dig bd - rad in
+              let ltp :=
+                lt_lt_add_lt (pdig apd) (dig bd) rad (pdig_lt_rad apd)
+                  (dig_lt_rad bd)
+              in
+              xI (mkdig _ pd ltp) (xpositive_add (xH pdigit_1) b')
           end
       end
   | xI ad a' => (* not impl *) xH pdigit_1
@@ -162,7 +167,7 @@ Notation "a + b" := (xnat_add a b) : xnat_scope.
 Compute (@list_of_xnat radix_10 (xnat_of_nat 4649)).
 Compute (@list_of_xnat radix_10 (xnat_of_nat 2 + xnat_of_nat 2)%X).
 Compute (@list_of_xnat radix_10 (xnat_of_nat 6 + xnat_of_nat 7)%X).
-Compute (@list_of_xnat radix_10 (xnat_of_nat 9 + xnat_of_nat 11)%X).
+Compute (@list_of_xnat radix_10 (xnat_of_nat 9 + xnat_of_nat 34)%X).
 Compute (@list_of_xnat radix_2 (xnat_of_nat 1 + xnat_of_nat 1)%X).
 Compute (@list_of_xnat radix_2 (xnat_of_nat 1 + xnat_of_nat 2)%X).
 Compute (@list_of_xnat radix_2 (xnat_of_nat 2 + xnat_of_nat 2)%X).
