@@ -89,7 +89,6 @@ Proof. lia. Qed.
 
 Definition radix_2 := {| rad := 2; rad_ge_2 := two_ge_two |}.
 Definition radix_10 := {| rad := 10; rad_ge_2 := ten_ge_two |}.
-Compute (@xnat_of_nat radix_10 4639).
 
 Lemma nz_add_nz : ∀ a b, a ≠ 0 → a + b ≠ 0.
 Proof.
@@ -103,9 +102,6 @@ Lemma lt_lt_add_lt : ∀ a b c, a < c → b < c → a + b - c < c.
 Proof.
 intros * Ha Hb; lia.
 Qed.
-
-Lemma glop : ∀ a b, ¬ a < b → b < a.
-Abort.
 
 Fixpoint xpositive_add {r : radix} a b :=
   match a with
@@ -155,7 +151,6 @@ Definition list_of_xnat {r : radix} a :=
 Delimit Scope xnat_scope with X.
 Notation "a + b" := (xnat_add a b) : xnat_scope.
 
-Compute (@xnat_of_nat radix_10 2).
 Compute (@list_of_xnat radix_10 (xnat_of_nat 4649)).
 Compute (@list_of_xnat radix_10 (xnat_of_nat 2 + xnat_of_nat 2)%X).
 Compute (@list_of_xnat radix_10 (xnat_of_nat 6 + xnat_of_nat 7)%X).
