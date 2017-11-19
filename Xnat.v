@@ -53,6 +53,7 @@ Inductive xnat {r : radix} :=
   | I0 : xnat
   | Ipos : xpositive → xnat.
 
+Definition digit_1 {r : radix} := mkdig _ 1 radix_gt_1.
 Definition pdigit_1 {r : radix} := mkpdig _ 1 radix_gt_1 (Nat.neq_succ_0 0).
 
 Fixpoint rpon {r : radix} iter n :=
@@ -101,10 +102,13 @@ Fixpoint xpositive_add {r : radix} a b :=
       | rH bpd =>
           let pd := pdig apd + pdig bpd in
           match lt_dec pd rad with
-          | left lt =>
+          | left ltp =>
               let ne0 := nz_add_nz (pdig apd) (pdig bpd) (pdig_ne_0 apd) in
-              rH (mkpdig _ pd lt ne0)
-          | right _ => (* not impl *) rH pdigit_1
+              rH (mkpdig _ pd ltp ne0)
+          | right gtp =>
+              let pd := pdig apd + pdig bpd - rad in
+              let ltp := preuve que pd < rad in
+              rI digit_1 (rH (mkdig _ pd ltp))
           end
       | rI bd b' => (* not impl *) rH pdigit_1
       end
@@ -123,3 +127,4 @@ Fixpoint xnat_add {r : radix} a b :=
 
 Compute (@xnat_of_nat radix_10 2).
 Compute (@xnat_add radix_10 (xnat_of_nat 2) (xnat_of_nat 2)).
+Compute (@xnat_add radix_10 (xnat_of_nat 2) (xnat_of_nat 8)).
