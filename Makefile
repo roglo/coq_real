@@ -1,4 +1,4 @@
-TARGET=Small.vo FracReal.vo
+TARGET=Small.vo Xnat2.vo FracReal.vo
 FILESFORDEP=`LC_ALL=C ls *.v`
 
 all: $(TARGET)
