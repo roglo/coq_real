@@ -84,6 +84,10 @@ apply -> Nat.succ_le_mono.
 apply Nat.le_0_l.
 Qed.
 
+Lemma two_ge_two : 2 ≥ 2.
+Proof. lia. Qed.
+
+Definition radix_2 := {| rad := 2; rad_ge_2 := two_ge_two |}.
 Definition radix_10 := {| rad := 10; rad_ge_2 := ten_ge_two |}.
 Compute (@xnat_of_nat radix_10 4639).
 
@@ -155,3 +159,5 @@ Compute (@xnat_of_nat radix_10 2).
 Compute (@list_of_xnat radix_10 (xnat_of_nat 4649)).
 Compute (@list_of_xnat radix_10 (xnat_of_nat 2 + xnat_of_nat 2)%X).
 Compute (@list_of_xnat radix_10 (xnat_of_nat 6 + xnat_of_nat 7)%X).
+Compute (@list_of_xnat radix_2 (xnat_of_nat 1 + xnat_of_nat 1)%X).
+Compute (@list_of_xnat radix_2 (xnat_of_nat 1 + xnat_of_nat 2)%X).
