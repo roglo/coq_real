@@ -43,6 +43,19 @@ Definition xnat_of_nat {r : radix} n := num_with_dig (xn [n]).
 Definition nat_of_xnat {r : radix} a :=
   List.fold_right (λ d accu, accu * rad + d) 0 (xnatv a).
 
+Compute (@xnat_of_nat radix_10 0).
+
+bbb.
+Theorem nat_of_xnat_inv {r : radix} : ∀ n, n = nat_of_xnat (xnat_of_nat n).
+Proof.
+intros.
+induction n.
+ unfold nat_of_xnat; simpl.
+bbb.
+
+Theorem xnat_of_nat_inv {r : radix} : ∀ a, a = xnat_of_nat (nat_of_xnat a).
+bbb.
+
 Compute (xnatv_add [2] [2]).
 Compute (@xnat_add radix_10 (xn [4; 2]) (xn [11])).
 Compute (@xnat_add radix_2 (xn [4; 2]) (xn [11])).
