@@ -39,14 +39,14 @@ Notation "a ≠ b" := (¬ digit_eq a b) : digit_scope.
 
 (* Positive number in radix r.
    Example: 4639 (when r = 10):
-    rI 9 (rI 3 (rI 6 (rH 4))) *)
+    xI 9 (xI 3 (xI 6 (xH 4))) *)
 
 Record pdigit {r : radix} :=
   mkpdig { pdig : nat; pdig_lt_rad : pdig < rad; pdig_ne_0 : pdig ≠ 0 }.
 
 Inductive xpositive {r : radix} :=
-  | rH : pdigit → xpositive
-  | rI : digit → xpositive → xpositive.
+  | xH : pdigit → xpositive
+  | xI : digit → xpositive → xpositive.
 
 (* Number in radix r: 0 (x0) or positive number (xpos rpositive) *)
 
@@ -58,14 +58,14 @@ Definition pdigit_1 {r : radix} := mkpdig _ 1 radix_gt_1 (Nat.neq_succ_0 0).
 
 Fixpoint rpon {r : radix} iter n :=
   match iter with
-  | 0 => rH pdigit_1
+  | 0 => xH pdigit_1
   | S i =>
      match lt_dec (S n) rad with
-     | left P => rH (mkpdig _ (S n) P (Nat.neq_succ_0 n))
+     | left P => xH (mkpdig _ (S n) P (Nat.neq_succ_0 n))
      | right _ =>
          let Sn_lt_rad := Nat.mod_upper_bound (S n) rad radix_ne_0 in
          let d := mkdig _ (S n mod rad) Sn_lt_rad in
-         rI d (rpon i ((S n - rad) / rad))
+         xI d (rpon i ((S n - rad) / rad))
      end
   end.
 
@@ -105,25 +105,25 @@ Qed.
 
 Fixpoint xpositive_add {r : radix} a b :=
   match a with
-  | rH apd =>
+  | xH apd =>
       match b with
-      | rH bpd =>
+      | xH bpd =>
           let pd := pdig apd + pdig bpd in
           match lt_dec pd rad with
           | left ltp =>
               let nzp := nz_add_nz (pdig apd) (pdig bpd) (pdig_ne_0 apd) in
-              rH (mkpdig _ pd ltp nzp)
+              xH (mkpdig _ pd ltp nzp)
           | right gep =>
               let pd := pdig apd + pdig bpd - rad in
               let ltp :=
                 lt_lt_add_lt (pdig apd) (pdig bpd) rad (pdig_lt_rad apd)
                   (pdig_lt_rad bpd)
               in
-              rI (mkdig _ pd ltp) (rH pdigit_1)
+              xI (mkdig _ pd ltp) (xH pdigit_1)
           end
-      | rI bd b' => (* not impl *) rH pdigit_1
+      | xI bd b' => (* not impl *) xH pdigit_1
       end
-  | rI ad a' => (* not impl *) rH pdigit_1
+  | xI ad a' => (* not impl *) xH pdigit_1
   end.
 
 Fixpoint xnat_add {r : radix} a b :=
@@ -138,8 +138,8 @@ Fixpoint xnat_add {r : radix} a b :=
 
 Fixpoint list_of_xpositive {r : radix} a :=
   match a with
-  | rH pd => [pdig pd]
-  | rI d xp => list_of_xpositive xp ++ [dig d]
+  | xH pd => [pdig pd]
+  | xI d xp => list_of_xpositive xp ++ [dig d]
   end.
 
 Definition list_of_xnat {r : radix} a :=
