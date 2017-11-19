@@ -77,6 +77,18 @@ Definition xnat_of_nat {r : radix} n :=
   | S n => xpos (xpositive_of_nat n)
   end.
 
+Fixpoint list_of_xpositive {r : radix} a :=
+  match a with
+  | xH pd => [pdig pd]
+  | xI d xp => list_of_xpositive xp ++ [dig d]
+  end.
+
+Definition list_of_xnat {r : radix} a :=
+  match a with
+  | x0 => [0]
+  | xpos ap => list_of_xpositive ap
+  end.
+
 Lemma ten_ge_two : 10 ≥ 2.
 Proof.
 apply -> Nat.succ_le_mono.
@@ -121,7 +133,15 @@ Fixpoint xpositive_add {r : radix} a b :=
               in
               xI (mkdig _ pd ltp) (xH pdigit_1)
           end
-      | xI bd b' => (* not impl *) xH pdigit_1
+      | xI bd b' =>
+          let pd := pdig apd + dig bd in
+          match lt_dec pd rad with
+          | left ltp =>
+              let nzp:= nz_add_nz (pdig apd) (dig bd) (pdig_ne_0 apd) in
+              xI (mkdig _ pd ltp) b'
+          | right gep =>
+              (* not impl *) xH pdigit_1
+          end
       end
   | xI ad a' => (* not impl *) xH pdigit_1
   end.
@@ -136,23 +156,13 @@ Fixpoint xnat_add {r : radix} a b :=
        end
   end.
 
-Fixpoint list_of_xpositive {r : radix} a :=
-  match a with
-  | xH pd => [pdig pd]
-  | xI d xp => list_of_xpositive xp ++ [dig d]
-  end.
-
-Definition list_of_xnat {r : radix} a :=
-  match a with
-  | x0 => [0]
-  | xpos ap => list_of_xpositive ap
-  end.
-
 Delimit Scope xnat_scope with X.
 Notation "a + b" := (xnat_add a b) : xnat_scope.
 
 Compute (@list_of_xnat radix_10 (xnat_of_nat 4649)).
 Compute (@list_of_xnat radix_10 (xnat_of_nat 2 + xnat_of_nat 2)%X).
 Compute (@list_of_xnat radix_10 (xnat_of_nat 6 + xnat_of_nat 7)%X).
+Compute (@list_of_xnat radix_10 (xnat_of_nat 9 + xnat_of_nat 11)%X).
 Compute (@list_of_xnat radix_2 (xnat_of_nat 1 + xnat_of_nat 1)%X).
 Compute (@list_of_xnat radix_2 (xnat_of_nat 1 + xnat_of_nat 2)%X).
+Compute (@list_of_xnat radix_2 (xnat_of_nat 2 + xnat_of_nat 2)%X).
