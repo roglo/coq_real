@@ -87,13 +87,21 @@ Qed.
 Definition radix_10 := {| rad := 10; rad_ge_2 := ten_ge_two |}.
 Compute (@xnat_of_nat radix_10 4639).
 
-Lemma nz_add_nz a b : a ≠ 0 → a + b ≠ 0.
+Lemma nz_add_nz : ∀ a b, a ≠ 0 → a + b ≠ 0.
 Proof.
 intros.
 destruct a.
  exfalso; apply H; reflexivity.
  simpl; apply Nat.neq_succ_0.
 Qed.
+
+Lemma lt_lt_add_lt : ∀ a b c, a < c → b < c → a + b - c < c.
+Proof.
+intros * Ha Hb; lia.
+Qed.
+
+Lemma glop : ∀ a b, ¬ a < b → b < a.
+Abort.
 
 Fixpoint xpositive_add {r : radix} a b :=
   match a with
@@ -103,12 +111,16 @@ Fixpoint xpositive_add {r : radix} a b :=
           let pd := pdig apd + pdig bpd in
           match lt_dec pd rad with
           | left ltp =>
-              let ne0 := nz_add_nz (pdig apd) (pdig bpd) (pdig_ne_0 apd) in
-              rH (mkpdig _ pd ltp ne0)
-          | right gtp =>
+              let nzp := nz_add_nz (pdig apd) (pdig bpd) (pdig_ne_0 apd) in
+              rH (mkpdig _ pd ltp nzp)
+          | right gep =>
               let pd := pdig apd + pdig bpd - rad in
-              let ltp := preuve que pd < rad in
-              rI digit_1 (rH (mkdig _ pd ltp))
+              let ltp :=
+                lt_lt_add_lt (pdig apd) (pdig bpd) rad (pdig_lt_rad apd)
+                  (pdig_lt_rad bpd)
+              in
+              let nzp := Nat.sub_gt pd rad gep (* à voir... *) in
+              rI digit_1 (rH (mkpdig _ pd ltp nzp))
           end
       | rI bd b' => (* not impl *) rH pdigit_1
       end
