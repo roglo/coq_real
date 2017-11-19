@@ -44,6 +44,7 @@ Definition nat_of_xnat {r : radix} a :=
   List.fold_right (λ d accu, accu * rad + d) 0 (xnatv a).
 
 Compute (@xnat_of_nat radix_10 0).
+Compute (@xnat_of_nat radix_10 10030).
 
 bbb.
 Theorem nat_of_xnat_inv {r : radix} : ∀ n, n = nat_of_xnat (xnat_of_nat n).
