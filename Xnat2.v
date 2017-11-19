@@ -24,7 +24,37 @@ Fixpoint move_carry {r : radix} iter al carry :=
   end.
 
 Definition num_with_dig {r : radix} a :=
-  xn (move_carry (List.fold_left max (xnatv a) 0) (xnatv a) 0).
+  let iter_sup := List.length (xnatv a) + List.fold_left max (xnatv a) 1 in
+  xn (move_carry iter_sup (xnatv a) 0).
+
+Definition xnat_of_nat {r : radix} n := num_with_dig (xn [n]).
+Definition nat_of_xnat {r : radix} a :=
+  List.fold_right (λ d accu, accu * rad + d) 0 (xnatv a).
+
+Compute (@xnat_of_nat radix_10 0).
+Compute (@xnat_of_nat radix_10 10030).
+
+Theorem nat_of_xnat_inv {r : radix} : rad ≠ 0 →
+  ∀ n, n = nat_of_xnat (xnat_of_nat n).
+Proof.
+intros Hr *.
+induction n.
+ unfold nat_of_xnat; simpl.
+ rewrite Nat.div_0_l; [ | easy ].
+ now rewrite Nat.mod_0_l.
+
+ unfold xnat_of_nat; simpl.
+ unfold num_with_dig; simpl.
+ rewrite Nat.add_0_r.
+ destruct (zerop (S n / rad)) as [Hs| Hs].
+  apply Nat.div_small_iff in Hs; [ | easy ].
+  now rewrite Nat.mod_small.
+
+  simpl.
+  unfold nat_of_xnat; simpl.
+bbb.
+
+bbb.
 
 Fixpoint xnatv_add a b :=
   match a with
@@ -38,21 +68,6 @@ Fixpoint xnatv_add a b :=
 
 Definition xnat_add {r : radix} a b :=
   num_with_dig (xn (xnatv_add (xnatv a) (xnatv b))).
-
-Definition xnat_of_nat {r : radix} n := num_with_dig (xn [n]).
-Definition nat_of_xnat {r : radix} a :=
-  List.fold_right (λ d accu, accu * rad + d) 0 (xnatv a).
-
-Compute (@xnat_of_nat radix_10 0).
-Compute (@xnat_of_nat radix_10 10030).
-
-bbb.
-Theorem nat_of_xnat_inv {r : radix} : ∀ n, n = nat_of_xnat (xnat_of_nat n).
-Proof.
-intros.
-induction n.
- unfold nat_of_xnat; simpl.
-bbb.
 
 Theorem xnat_of_nat_inv {r : radix} : ∀ a, a = xnat_of_nat (nat_of_xnat a).
 bbb.
