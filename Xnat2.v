@@ -73,6 +73,23 @@ induction n; simpl.
    remember (carry / rad) as c eqn:Hc2; subst carry.
    replace c with (0 + c) by easy.
    rewrite <- move_carry_cons.
+   remember (S n / rad) as c3 eqn:Hc3.
+   destruct n.
+    subst c3.
+    rewrite Nat.div_1_l in Hs; [ easy | lia ].
+
+    simpl.
+    destruct (zerop (c / rad)) as [Hs2| Hs2].
+     apply Nat.div_small_iff in Hs2; [ | lia ].
+     rewrite Nat.mod_small; [ simpl | easy ].
+     subst c3.
+     remember (S (S n)) as s.
+     remember (c * rad + (s / rad) mod rad) as t.
+     rewrite Hc2, Nat.mul_comm in Heqt.
+     rewrite <- Nat.div_mod in Heqt; [ | lia ].
+     subst t.
+     rewrite Nat.mul_comm.
+     apply Nat.div_mod; lia.
 bbb.
 
 Fixpoint xnatv_add a b :=
