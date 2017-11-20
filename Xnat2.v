@@ -49,26 +49,30 @@ Theorem nat_of_xnat_inv {r : radix} : 2 ≤ rad →
 Proof.
 intros Hr *.
 unfold nat_of_xnat, xnat_of_nat; simpl.
-
-bbb.
-intros Hr *.
-induction n.
- unfold nat_of_xnat; simpl.
+induction n; simpl.
  rewrite Nat.div_0_l; [ | lia ].
  rewrite Nat.mod_0_l; [ easy | lia ].
 
- unfold nat_of_xnat, xnat_of_nat.
- unfold xnatv.
-bbb.
  rewrite Nat.add_0_r.
- destruct (zerop (S n / rad)) as [Hs| Hs].
-  apply Nat.div_small_iff in Hs; [ | lia ].
-  now rewrite Nat.mod_small.
+ replace (n + 2) with (1 + n + 1) by lia; simpl.
+ remember (S n / rad) as carry eqn:Hc.
+ destruct (zerop carry) as [Hs| Hs].
+  rewrite Nat.mod_small; [ easy | ].
+  subst carry.
+  rewrite Nat.div_small_iff in Hs; [ easy | lia ].
 
-  remember (S n / rad) as carry eqn:Hc.
-  replace carry with (0 + carry) by lia.
+  replace carry with (0 + carry) by easy.
   rewrite <- move_carry_cons.
-  remember (move_carry (S n) carry [0]) as x eqn:Hx.
+  rewrite Nat.add_1_r; simpl.
+  destruct (zerop (carry / rad)) as [Hs1| Hs1].
+   apply Nat.div_small_iff in Hs1; [ | lia ].
+   rewrite Nat.mod_small; [ simpl | easy ].
+   subst carry; rewrite Nat.mul_comm.
+   apply Nat.div_mod; lia.
+
+   remember (carry / rad) as c eqn:Hc2; subst carry.
+   replace c with (0 + c) by easy.
+   rewrite <- move_carry_cons.
 bbb.
 
 Fixpoint xnatv_add a b :=
