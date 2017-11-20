@@ -28,10 +28,12 @@ Definition iter_sup al := List.length al + List.fold_left max al 1.
 Definition num_with_dig {r : radix} a :=
   xn (move_carry (iter_sup (xnatv a)) 0 (xnatv a)).
 
+Definition list_of_nat {r : radix} carry n :=
+  move_carry (n + 2) carry [n].
 Definition nat_of_list {r : radix} accu al :=
   List.fold_right (λ d accu, accu * rad + d) accu al.
 
-Definition xnat_of_nat {r : radix} n := num_with_dig (xn [n]).
+Definition xnat_of_nat {r : radix} n := xn (list_of_nat 0 n).
 Definition nat_of_xnat {r : radix} a := nat_of_list 0 (xnatv a).
 
 Compute (@xnat_of_nat radix_10 0).
@@ -46,12 +48,18 @@ Theorem nat_of_xnat_inv {r : radix} : 2 ≤ rad →
   ∀ n, n = nat_of_xnat (xnat_of_nat n).
 Proof.
 intros Hr *.
+unfold nat_of_xnat, xnat_of_nat; simpl.
+
+bbb.
+intros Hr *.
 induction n.
  unfold nat_of_xnat; simpl.
  rewrite Nat.div_0_l; [ | lia ].
  rewrite Nat.mod_0_l; [ easy | lia ].
 
- unfold nat_of_xnat, xnat_of_nat; simpl.
+ unfold nat_of_xnat, xnat_of_nat.
+ unfold xnatv.
+bbb.
  rewrite Nat.add_0_r.
  destruct (zerop (S n / rad)) as [Hs| Hs].
   apply Nat.div_small_iff in Hs; [ | lia ].
