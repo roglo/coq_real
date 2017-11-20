@@ -1,6 +1,6 @@
 (* natura numbers in any radix; second version; without proofs *)
 
-Require Import Utf8 Arith List.
+Require Import Utf8 Arith Psatz List.
 Import ListNotations.
 
 Class radix := { rad : nat }.
@@ -34,22 +34,28 @@ Definition nat_of_xnat {r : radix} a :=
 Compute (@xnat_of_nat radix_10 0).
 Compute (@xnat_of_nat radix_10 10030).
 
-Theorem nat_of_xnat_inv {r : radix} : rad ≠ 0 →
+Theorem nat_of_xnat_inv {r : radix} : 2 ≤ rad →
   ∀ n, n = nat_of_xnat (xnat_of_nat n).
 Proof.
 intros Hr *.
-destruct n.
+induction n.
  unfold nat_of_xnat; simpl.
- rewrite Nat.div_0_l; [ | easy ].
- now rewrite Nat.mod_0_l.
+ rewrite Nat.div_0_l; [ | lia ].
+ rewrite Nat.mod_0_l; [ easy | lia ].
 
  unfold nat_of_xnat, xnat_of_nat; simpl.
  rewrite Nat.add_0_r.
  destruct (zerop (S n / rad)) as [Hs| Hs].
-  apply Nat.div_small_iff in Hs; [ | easy ].
+  apply Nat.div_small_iff in Hs; [ | lia ].
   now rewrite Nat.mod_small.
 
   simpl.
+  unfold nat_of_xnat, xnat_of_nat in IHn.
+  simpl in IHn.
+  destruct n; [ now rewrite Nat.div_1_l in Hs | ].
+  rewrite Nat.add_0_r in IHn.
+  simpl in IHn.
+  destruct (zerop (S n / rad)) as [Hss| Hss].
 bbb.
 
 Fixpoint xnatv_add a b :=
