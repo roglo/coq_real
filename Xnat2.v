@@ -38,22 +38,18 @@ Theorem nat_of_xnat_inv {r : radix} : rad ≠ 0 →
   ∀ n, n = nat_of_xnat (xnat_of_nat n).
 Proof.
 intros Hr *.
-induction n.
+destruct n.
  unfold nat_of_xnat; simpl.
  rewrite Nat.div_0_l; [ | easy ].
  now rewrite Nat.mod_0_l.
 
- unfold xnat_of_nat; simpl.
- unfold num_with_dig; simpl.
+ unfold nat_of_xnat, xnat_of_nat; simpl.
  rewrite Nat.add_0_r.
  destruct (zerop (S n / rad)) as [Hs| Hs].
   apply Nat.div_small_iff in Hs; [ | easy ].
   now rewrite Nat.mod_small.
 
   simpl.
-  unfold nat_of_xnat; simpl.
-bbb.
-
 bbb.
 
 Fixpoint xnatv_add a b :=
