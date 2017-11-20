@@ -28,9 +28,11 @@ Definition iter_sup al := List.length al + List.fold_left max al 1.
 Definition num_with_dig {r : radix} a :=
   xn (move_carry (iter_sup (xnatv a)) 0 (xnatv a)).
 
+Definition nat_of_list {r : radix} accu al :=
+  List.fold_right (λ d accu, accu * rad + d) accu al.
+
 Definition xnat_of_nat {r : radix} n := num_with_dig (xn [n]).
-Definition nat_of_xnat {r : radix} a :=
-  List.fold_right (λ d accu, accu * rad + d) 0 (xnatv a).
+Definition nat_of_xnat {r : radix} a := nat_of_list 0 (xnatv a).
 
 Compute (@xnat_of_nat radix_10 0).
 Compute (@xnat_of_nat radix_10 10030).
@@ -59,7 +61,6 @@ induction n.
   replace carry with (0 + carry) by lia.
   rewrite <- move_carry_cons.
   remember (move_carry (S n) carry [0]) as x eqn:Hx.
-  simpl in Hx.
 bbb.
 
 Fixpoint xnatv_add a b :=
