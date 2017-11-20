@@ -58,6 +58,8 @@ induction n.
   remember (S n / rad) as carry eqn:Hc.
   replace carry with (0 + carry) by lia.
   rewrite <- move_carry_cons.
+  remember (move_carry (S n) carry [0]) as x eqn:Hx.
+  simpl in Hx.
 bbb.
 
 Fixpoint xnatv_add a b :=
