@@ -10,22 +10,23 @@ Definition radix_10 := {| rad := 10 |}.
 
 Record xnat := xn { xnatv : list nat }.
 
-Fixpoint move_carry {r : radix} iter al carry :=
+Fixpoint move_carry {r : radix} iter carry al :=
   match iter with
   | 0 => [42]
   | S i =>
       match al with
       | [] =>
           if zerop carry then []
-          else carry mod rad :: move_carry i [] (carry / rad)
+          else carry mod rad :: move_carry i (carry / rad) []
       | a :: al' =>
-          (a + carry) mod rad :: move_carry i al' ((a + carry) / rad)
+          (a + carry) mod rad :: move_carry i ((a + carry) / rad) al'
       end
   end.
 
+Definition iter_sup al := List.length al + List.fold_left max al 1.
+
 Definition num_with_dig {r : radix} a :=
-  let iter_sup := List.length (xnatv a) + List.fold_left max (xnatv a) 1 in
-  xn (move_carry iter_sup (xnatv a) 0).
+  xn (move_carry (iter_sup (xnatv a)) 0 (xnatv a)).
 
 Definition xnat_of_nat {r : radix} n := num_with_dig (xn [n]).
 Definition nat_of_xnat {r : radix} a :=
@@ -33,6 +34,11 @@ Definition nat_of_xnat {r : radix} a :=
 
 Compute (@xnat_of_nat radix_10 0).
 Compute (@xnat_of_nat radix_10 10030).
+
+Theorem move_carry_cons {r : radix} : ∀ a al carry iter,
+  move_carry (S iter) carry (a :: al) =
+  (a + carry) mod rad :: move_carry iter ((a + carry) / rad) al.
+Proof. easy. Qed.
 
 Theorem nat_of_xnat_inv {r : radix} : 2 ≤ rad →
   ∀ n, n = nat_of_xnat (xnat_of_nat n).
@@ -49,13 +55,9 @@ induction n.
   apply Nat.div_small_iff in Hs; [ | lia ].
   now rewrite Nat.mod_small.
 
-  simpl.
-  unfold nat_of_xnat, xnat_of_nat in IHn.
-  simpl in IHn.
-  destruct n; [ now rewrite Nat.div_1_l in Hs | ].
-  rewrite Nat.add_0_r in IHn.
-  simpl in IHn.
-  destruct (zerop (S n / rad)) as [Hss| Hss].
+  remember (S n / rad) as carry eqn:Hc.
+  replace carry with (0 + carry) by lia.
+  rewrite <- move_carry_cons.
 bbb.
 
 Fixpoint xnatv_add a b :=
