@@ -49,7 +49,8 @@ Theorem nat_of_xnat_inv {r : radix} : 2 ≤ rad →
 Proof.
 intros Hr *.
 unfold nat_of_xnat, xnat_of_nat; simpl.
-induction n; simpl.
+unfold list_of_nat.
+destruct n; simpl.
  rewrite Nat.div_0_l; [ | lia ].
  rewrite Nat.mod_0_l; [ easy | lia ].
 
