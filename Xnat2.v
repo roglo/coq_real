@@ -31,7 +31,7 @@ Definition num_with_dig {r : radix} a :=
 Definition list_of_nat {r : radix} carry n :=
   move_carry (n + 2) carry [n].
 Definition nat_of_list {r : radix} accu al :=
-  List.fold_right (λ d accu, accu * rad + d) accu al.
+  List.fold_right (λ a accu, accu * rad + a) accu al.
 
 Definition xnat_of_nat {r : radix} n := xn (list_of_nat 0 n).
 Definition nat_of_xnat {r : radix} a := nat_of_list 0 (xnatv a).
