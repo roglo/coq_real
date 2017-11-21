@@ -119,7 +119,6 @@ Lemma list_of_nat_inv {r : radix} : 2 ≤ rad →
   ∀ al, list_of_nat 0 (nat_of_list 0 al) = list_norm al.
 Proof.
 intros Hr *.
-unfold list_of_nat.
 bbb.
 
 Theorem xnat_of_nat_inv {r : radix} : 2 ≤ rad →
