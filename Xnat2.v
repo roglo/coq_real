@@ -147,14 +147,32 @@ destruct bl as [| b bl]; [ now destruct a | simpl ].
 now rewrite List.rev_app_distr.
 Qed.
 
-Lemma nat_of_list_norm_eq {r : radix} : ∀ al, 2 ≤ rad →
-  nat_of_list 0 al = nat_of_list 0 (list_norm al).
+Lemma nat_of_list_rem_tr_cons {r : radix} : ∀ a al,
+  nat_of_list 0 (list_remove_trailing_0s (a :: list_spread al)) =
+  nat_of_list 0 (list_remove_trailing_0s (list_spread (a :: al))).
 Proof.
-intros * Hr.
-induction al as [| a al]; [ easy | simpl ].
-rewrite IHal; clear IHal.
-unfold list_norm.
-rewrite nat_of_list_removed_trailing_0_s_mul.
+intros.
+unfold list_spread.
+remember (iter_sup al) as n eqn:Hn.
+remember (iter_sup (a :: al)) as m eqn:Hm.
+symmetry in Hm, Hn.
+unfold iter_sup in Hn, Hm.
+remember fold_left as f; simpl in Hm; subst f.
+remember 1 as x; simpl in Hm; subst x.
+destruct m; [ easy | ].
+apply Nat.succ_inj in Hm; simpl.
+rewrite Nat.add_0_r.
+destruct (lt_dec a rad) as [Har| Har].
+ rewrite Nat.mod_small; [ | easy ].
+ rewrite Nat.div_small; [ | easy ].
+ destruct al as [| b al].
+  simpl in Hn; subst n.
+  remember 1 as x; simpl in Hm; subst x.
+  destruct m; [ now destruct a | easy ].
+
+bbb.
+
+intros.
 unfold list_spread.
 remember (iter_sup (a :: al)) as n eqn:Hn.
 symmetry in Hn; simpl in Hn.
@@ -198,6 +216,22 @@ destruct n.
      now destruct a.
 
      simpl.
+bbb.
+
+Lemma nat_of_list_norm_cons {r : radix} : ∀ a al,
+  nat_of_list 0 (list_norm al) * rad + a = nat_of_list 0 (list_norm (a :: al)).
+Proof.
+intros.
+unfold list_norm.
+rewrite nat_of_list_removed_trailing_0_s_mul.
+bbb.
+
+Lemma nat_of_list_norm_eq {r : radix} : ∀ al, 2 ≤ rad →
+  nat_of_list 0 al = nat_of_list 0 (list_norm al).
+Proof.
+intros * Hr.
+induction al as [| a al]; [ easy | simpl ].
+rewrite IHal; clear IHal.
 bbb.
 
 Lemma list_of_nat_inv {r : radix} : 2 ≤ rad →
