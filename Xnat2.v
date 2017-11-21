@@ -23,11 +23,6 @@ Fixpoint move_carry {r : radix} iter carry al :=
       end
   end.
 
-Definition iter_sup al := List.length al + List.fold_left max al 1.
-
-Definition num_with_dig {r : radix} a :=
-  xn (move_carry (iter_sup (xnatv a)) 0 (xnatv a)).
-
 Definition list_of_nat {r : radix} carry n :=
   move_carry (n + 2) carry [n].
 Definition nat_of_list {r : radix} accu al :=
@@ -44,11 +39,10 @@ Theorem move_carry_cons {r : radix} : ∀ a al carry iter,
   (a + carry) mod rad :: move_carry iter ((a + carry) / rad) al.
 Proof. easy. Qed.
 
-Theorem nat_of_xnat_inv {r : radix} : 2 ≤ rad →
-  ∀ n, nat_of_xnat (xnat_of_nat n) = n.
+Lemma nat_of_list_inv {r : radix} : 2 ≤ rad →
+  ∀ n, nat_of_list 0 (list_of_nat 0 n) = n.
 Proof.
 intros Hr *.
-unfold nat_of_xnat, xnat_of_nat; simpl.
 unfold list_of_nat.
 symmetry.
 remember (n + 2) as m eqn:Hm.
@@ -79,19 +73,61 @@ destruct (zerop (n / rad)) as [Hs| Hs].
   apply Nat.div_lt; lia.
 Qed.
 
-(* xnat_norm to be defined *)
+Theorem nat_of_xnat_inv {r : radix} : 2 ≤ rad →
+  ∀ n, nat_of_xnat (xnat_of_nat n) = n.
+Proof.
+intros Hr *.
+now apply nat_of_list_inv.
+Qed.
 
+Definition iter_sup al := List.length al + List.fold_left max al 1.
+Definition list_spread {r : radix} al := move_carry (iter_sup al) 0 al.
+
+Fixpoint list_remove_heading_0s al :=
+  match al with
+  | 0 :: al' => list_remove_heading_0s al'
+  | _ => al
+  end.
+
+Definition list_remove_trailing_0s {r : radix} al :=
+  List.rev (list_remove_heading_0s (List.rev al)).
+
+Definition list_norm {r : radix} al :=
+  list_remove_trailing_0s (list_spread al).
+
+Definition xnat_norm {r : radix} a := xn (list_norm (xnatv a)).
+
+Compute (@xnat_norm radix_2 (xn [0; 0])).
+Compute (@xnat_norm radix_2 (xn [1; 0])).
+Compute (@xnat_norm radix_2 (xn [2; 0])).
+Compute (@xnat_norm radix_2 (xn [3])).
+Compute (@xnat_norm radix_2 (xn [4])).
+Compute (@xnat_norm radix_2 (xn [5])).
+Compute (@xnat_norm radix_2 (xn [6])).
+Compute (@xnat_norm radix_2 (xn [7])).
+Compute (@xnat_norm radix_10 (xn [11; 11; 11; 11; 11])).
+
+Compute (@xnat_norm radix_2 (xn [11; 11; 11; 11; 11])).
+Compute (@xnat_norm radix_2 (xn [341])).
+Compute (@xnat_of_nat radix_2 341).
+Compute (11 + 2 * 11 + 4 * 11 + 8 * 11 + 16 * 11).
+
+Compute (@xnat_of_nat radix_10 341).
+Compute (@nat_of_xnat radix_10 (@xnat_of_nat radix_10 341)).
+
+Lemma list_of_nat_inv {r : radix} : 2 ≤ rad →
+  ∀ al, list_of_nat 0 (nat_of_list 0 al) = list_norm al.
+Proof.
+intros Hr *.
+unfold list_of_nat.
 bbb.
 
 Theorem xnat_of_nat_inv {r : radix} : 2 ≤ rad →
   ∀ a, xnat_of_nat (nat_of_xnat a) = xnat_norm a.
 Proof.
 intros Hr *.
-unfold nat_of_xnat, xnat_of_nat; simpl.
-destruct a as [al].
-f_equal; simpl.
-
-bbb.
+now apply list_of_nat_inv.
+Qed.
 
 Fixpoint xnatv_add a b :=
   match a with
@@ -104,7 +140,7 @@ Fixpoint xnatv_add a b :=
   end.
 
 Definition xnat_add {r : radix} a b :=
-  num_with_dig (xn (xnatv_add (xnatv a) (xnatv b))).
+  xnat_norm (xn (xnatv_add (xnatv a) (xnatv b))).
 
 Theorem xnat_of_nat_inv {r : radix} : ∀ a, a = xnat_of_nat (nat_of_xnat a).
 bbb.
@@ -112,20 +148,3 @@ bbb.
 Compute (xnatv_add [2] [2]).
 Compute (@xnat_add radix_10 (xn [4; 2]) (xn [11])).
 Compute (@xnat_add radix_2 (xn [4; 2]) (xn [11])).
-Compute (@num_with_dig radix_2 (xn [0; 0])).
-Compute (@num_with_dig radix_2 (xn [1; 0])).
-Compute (@num_with_dig radix_2 (xn [2; 0])).
-Compute (@num_with_dig radix_2 (xn [3])).
-Compute (@num_with_dig radix_2 (xn [4])).
-Compute (@num_with_dig radix_2 (xn [5])).
-Compute (@num_with_dig radix_2 (xn [6])).
-Compute (@num_with_dig radix_2 (xn [7])).
-Compute (@num_with_dig radix_10 (xn [11; 11; 11; 11; 11])).
-
-Compute (@num_with_dig radix_2 (xn [11; 11; 11; 11; 11])).
-Compute (@num_with_dig radix_2 (xn [341])).
-Compute (@xnat_of_nat radix_2 341).
-Compute (11 + 2 * 11 + 4 * 11 + 8 * 11 + 16 * 11).
-
-Compute (@xnat_of_nat radix_10 341).
-Compute (@nat_of_xnat radix_10 (@xnat_of_nat radix_10 341)).
