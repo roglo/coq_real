@@ -45,52 +45,52 @@ Theorem move_carry_cons {r : radix} : ∀ a al carry iter,
 Proof. easy. Qed.
 
 Theorem nat_of_xnat_inv {r : radix} : 2 ≤ rad →
-  ∀ n, n = nat_of_xnat (xnat_of_nat n).
+  ∀ n, nat_of_xnat (xnat_of_nat n) = n.
 Proof.
 intros Hr *.
 unfold nat_of_xnat, xnat_of_nat; simpl.
 unfold list_of_nat.
-destruct n; simpl.
- rewrite Nat.div_0_l; [ | lia ].
- rewrite Nat.mod_0_l; [ easy | lia ].
+symmetry.
+remember (n + 2) as m eqn:Hm.
+assert (H : n + 2 ≤ m) by lia.
+clear Hm; rename H into Hm.
+revert n Hm.
+induction m; intros; simpl; [ lia | ].
+rewrite Nat.add_0_r.
+destruct m; [ lia | simpl ].
+destruct (zerop (n / rad)) as [Hs| Hs].
+ apply Nat.div_small_iff in Hs; [ simpl | lia ].
+ now rewrite Nat.mod_small.
 
- rewrite Nat.add_0_r.
- replace (n + 2) with (1 + n + 1) by lia; simpl.
- remember (S n / rad) as carry eqn:Hc.
- destruct (zerop carry) as [Hs| Hs].
-  rewrite Nat.mod_small; [ easy | ].
-  subst carry.
-  rewrite Nat.div_small_iff in Hs; [ easy | lia ].
+ replace (n / rad) with (n / rad + 0) by lia.
+ rewrite <- move_carry_cons.
+ rewrite <- IHm.
+  rewrite Nat.mul_comm.
+  apply Nat.div_mod; lia.
 
-  replace carry with (0 + carry) by easy.
-  rewrite <- move_carry_cons.
-  rewrite Nat.add_1_r; simpl.
-  destruct (zerop (carry / rad)) as [Hs1| Hs1].
-   apply Nat.div_small_iff in Hs1; [ | lia ].
-   rewrite Nat.mod_small; [ simpl | easy ].
-   subst carry; rewrite Nat.mul_comm.
-   apply Nat.div_mod; lia.
+  assert (Hnm : n ≤ m) by lia; clear Hm.
+  rewrite Nat.add_comm; simpl.
+  apply -> Nat.succ_le_mono.
+  eapply Nat.le_trans; [ | eassumption ].
+  apply -> Nat.div_str_pos_iff in Hs; [ | lia ].
+  clear - Hr Hs.
+  destruct rad as [| m]; [ lia | ].
+  destruct m as [| m]; [ lia | clear Hr ].
+  apply Nat.div_lt; lia.
+Qed.
 
-   remember (carry / rad) as c eqn:Hc2; subst carry.
-   replace c with (0 + c) by easy.
-   rewrite <- move_carry_cons.
-   remember (S n / rad) as c3 eqn:Hc3.
-   destruct n.
-    subst c3.
-    rewrite Nat.div_1_l in Hs; [ easy | lia ].
+(* xnat_norm to be defined *)
 
-    simpl.
-    destruct (zerop (c / rad)) as [Hs2| Hs2].
-     apply Nat.div_small_iff in Hs2; [ | lia ].
-     rewrite Nat.mod_small; [ simpl | easy ].
-     subst c3.
-     remember (S (S n)) as s.
-     remember (c * rad + (s / rad) mod rad) as t.
-     rewrite Hc2, Nat.mul_comm in Heqt.
-     rewrite <- Nat.div_mod in Heqt; [ | lia ].
-     subst t.
-     rewrite Nat.mul_comm.
-     apply Nat.div_mod; lia.
+bbb.
+
+Theorem xnat_of_nat_inv {r : radix} : 2 ≤ rad →
+  ∀ a, xnat_of_nat (nat_of_xnat a) = xnat_norm a.
+Proof.
+intros Hr *.
+unfold nat_of_xnat, xnat_of_nat; simpl.
+destruct a as [al].
+f_equal; simpl.
+
 bbb.
 
 Fixpoint xnatv_add a b :=
