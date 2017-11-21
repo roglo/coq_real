@@ -164,6 +164,40 @@ destruct n.
 
  rewrite move_carry_cons.
  rewrite Nat.add_0_r.
+ rewrite <- nat_of_list_removed_trailing_0_s_mul.
+ rewrite <- nat_of_list_removed_trailing_0_s_mul.
+ destruct (lt_dec a rad) as [Har| Har].
+  rewrite Nat.mod_small; [ f_equal; f_equal | easy ].
+  rewrite Nat.div_small; [ | easy ].
+  destruct n.
+   exfalso.
+   unfold iter_sup in Hn; simpl in Hn.
+   apply Nat.succ_inj in Hn.
+   apply Nat.eq_add_0 in Hn.
+   destruct Hn as (Hn, Ha).
+   apply length_zero_iff_nil in Hn; subst al.
+   now destruct a.
+
+   simpl.
+   destruct al as [| b al]; [ easy | ].
+   rewrite Nat.add_0_r; simpl.
+   rewrite <- nat_of_list_removed_trailing_0_s_mul.
+   rewrite <- nat_of_list_removed_trailing_0_s_mul.
+   rewrite Nat.add_0_r.
+   destruct b.
+    rewrite Nat.div_0_l; [ | lia ].
+    rewrite Nat.mod_0_l; [ | lia ].
+    f_equal; f_equal.
+    destruct n.
+     exfalso.
+     unfold iter_sup in Hn; simpl in Hn.
+     do 2 apply Nat.succ_inj in Hn.
+     apply Nat.eq_add_0 in Hn.
+     destruct Hn as (Hn, Ha).
+     apply length_zero_iff_nil in Hn; subst al.
+     now destruct a.
+
+     simpl.
 bbb.
 
 Lemma list_of_nat_inv {r : radix} : 2 ≤ rad →
