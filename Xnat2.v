@@ -179,13 +179,8 @@ destruct al as [| b al].
   destruct (zerop (S a / rad)) as [Ha| Ha]; [ easy | ].
   f_equal; f_equal.
   inversion H as [H1]; clear H; rename H1 into H.
-  rewrite H.
-  destruct (zerop (S a / rad / rad)) as [Hb| Hb].
-   rewrite Hb; simpl.
-   destruct a; simpl; [ | easy ].
-   rewrite Nat.div_1_l in Ha; lia.
-
-   remember (S a / rad) as c1 eqn:Hc1.
+  destruct a; [ rewrite Nat.div_1_l in Ha; lia | simpl ].
+  destruct (zerop (S (S a) / rad / rad)) as [Hb| Hb]; [ easy | ].
 bbb.
 
 Lemma nat_of_list_rem_tr_cons {r : radix} : ∀ a al,
