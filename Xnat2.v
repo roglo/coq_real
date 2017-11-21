@@ -115,10 +115,18 @@ Compute (11 + 2 * 11 + 4 * 11 + 8 * 11 + 16 * 11).
 Compute (@xnat_of_nat radix_10 341).
 Compute (@nat_of_xnat radix_10 (@xnat_of_nat radix_10 341)).
 
-Lemma nat_of_list_norm_eq {r : radix} : ∀ al,
+Lemma nat_of_list_norm_eq {r : radix} : ∀ al, 2 ≤ rad →
   nat_of_list 0 al = nat_of_list 0 (list_norm al).
 Proof.
-intros.
+intros * Hr.
+induction al as [| a al]; [ easy | simpl ].
+rewrite IHal; clear IHal.
+unfold list_norm, list_spread; simpl.
+destruct a.
+ simpl.
+ rewrite Nat.add_0_r.
+ rewrite Nat.mod_0_l; [ | lia ].
+ rewrite Nat.div_0_l; [ | lia ].
 bbb.
 
 Lemma list_of_nat_inv {r : radix} : 2 ≤ rad →
