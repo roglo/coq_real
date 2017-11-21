@@ -147,21 +147,40 @@ destruct bl as [| b bl]; [ now destruct a | simpl ].
 now rewrite List.rev_app_distr.
 Qed.
 
-Lemma iter_sup_is_enough {r : radix} : ∀ c al n,
+Lemma iter_sup_is_enough {r : radix} : ∀ al n, 2 ≤ rad →
   iter_sup al ≤ n
-  → move_carry n c al = move_carry (iter_sup al) c al.
+  → move_carry n 0 al = move_carry (iter_sup al) 0 al.
 Proof.
-intros * Hi.
+intros * Hr Hi.
 remember (n - iter_sup al) as m eqn:Hm.
 assert (H : n = m + iter_sup al) by lia.
 subst n; clear Hm Hi.
-revert c.
-induction m; intros; [ easy | simpl ].
-destruct al as [| a al].
- simpl in IHm; simpl.
- destruct (zerop c) as [Hc| Hc]; [ easy | f_equal ].
- destruct (lt_dec c rad) as [Hcr| Hcr].
-  rewrite Nat.div_small; [ | lia ].
+induction m; [ easy | simpl ].
+destruct al as [| a al]; [ easy | ].
+rewrite Nat.add_0_r.
+remember (iter_sup (a :: al)) as n eqn:Hn.
+symmetry in Hn; simpl in Hn.
+unfold iter_sup in Hn; simpl in Hn.
+rewrite Nat.add_comm in IHm.
+rewrite Nat.add_comm.
+destruct n; [ easy | simpl in IHm; simpl ].
+rewrite Nat.add_0_r in IHm.
+destruct al as [| b al].
+ simpl in Hn.
+ destruct a.
+  apply Nat.succ_inj in Hn; subst n.
+  rewrite Nat.div_0_l; [ | lia ].
+  rewrite Nat.div_0_l; [ | lia ].
+  rewrite Nat.div_0_l; [ easy | lia ].
+
+  apply Nat.succ_inj in Hn; subst n.
+  rewrite Nat.add_0_r; simpl in IHm; simpl.
+  destruct (zerop (S a / rad)) as [Ha| Ha]; [ easy | ].
+  f_equal; f_equal.
+  destruct (zerop (S a / rad / rad)) as [Hb| Hb].
+   rewrite Hb; simpl.
+   destruct a; simpl; [ | easy ].
+   rewrite Nat.div_1_l in Ha; lia.
 bbb.
 
 Lemma nat_of_list_rem_tr_cons {r : radix} : ∀ a al,
