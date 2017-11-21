@@ -155,6 +155,8 @@ intros * Hr Hi.
 remember (n - iter_sup al) as m eqn:Hm.
 assert (H : n = m + iter_sup al) by lia.
 subst n; clear Hm Hi.
+bbb.
+
 induction m; [ easy | simpl ].
 destruct al as [| a al]; [ easy | ].
 rewrite Nat.add_0_r.
@@ -181,6 +183,7 @@ destruct al as [| b al].
    rewrite Hb; simpl.
    destruct a; simpl; [ | easy ].
    rewrite Nat.div_1_l in Ha; lia.
+
 bbb.
 
 Lemma nat_of_list_rem_tr_cons {r : radix} : ∀ a al,
