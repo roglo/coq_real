@@ -115,6 +115,39 @@ Compute (11 + 2 * 11 + 4 * 11 + 8 * 11 + 16 * 11).
 Compute (@xnat_of_nat radix_10 341).
 Compute (@nat_of_xnat radix_10 (@xnat_of_nat radix_10 341)).
 
+Lemma nat_of_list_mul {r : radix} : ∀ al,
+  nat_of_list 0 al * rad = nat_of_list 0 (0 :: al).
+Proof.
+intros; simpl.
+now rewrite Nat.add_0_r.
+Qed.
+
+Lemma list_remove_heading_cons : ∀ al bl,
+  list_remove_heading_0s (al ++ bl) =
+  match list_remove_heading_0s al with
+  | [] => list_remove_heading_0s bl
+  | a :: al' => a :: al' ++ bl
+  end.
+Proof.
+intros.
+induction al as [| a al]; [ easy | simpl ].
+now destruct a.
+Qed.
+
+Lemma nat_of_list_removed_mul {r : radix} : ∀ al,
+  nat_of_list 0 (list_remove_trailing_0s al) * rad =
+  nat_of_list 0 (list_remove_trailing_0s (0 :: al)).
+Proof.
+intros.
+unfold list_remove_trailing_0s; simpl.
+rewrite list_remove_heading_cons; simpl.
+remember(list_remove_heading_0s (rev al)) as bl eqn:Hbl.
+symmetry in Hbl.
+destruct bl as [| b bl]; [ easy | simpl ].
+rewrite List.rev_app_distr; simpl.
+now rewrite Nat.add_0_r.
+Qed.
+
 Lemma nat_of_list_norm_eq {r : radix} : ∀ al, 2 ≤ rad →
   nat_of_list 0 al = nat_of_list 0 (list_norm al).
 Proof.
@@ -122,11 +155,14 @@ intros * Hr.
 induction al as [| a al]; [ easy | simpl ].
 rewrite IHal; clear IHal.
 unfold list_norm, list_spread; simpl.
+unfold iter_sup.
 destruct a.
  simpl.
  rewrite Nat.add_0_r.
  rewrite Nat.mod_0_l; [ | lia ].
  rewrite Nat.div_0_l; [ | lia ].
+ remember (move_carry (length al + fold_left Init.Nat.max al 1) 0 al) as x.
+ apply nat_of_list_removed_mul.
 bbb.
 
 Lemma list_of_nat_inv {r : radix} : 2 ≤ rad →
