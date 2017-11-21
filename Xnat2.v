@@ -147,12 +147,32 @@ destruct bl as [| b bl]; [ now destruct a | simpl ].
 now rewrite List.rev_app_distr.
 Qed.
 
+Lemma iter_sup_is_enough {r : radix} : ∀ c al n,
+  iter_sup al ≤ n
+  → move_carry n c al = move_carry (iter_sup al) c al.
+Proof.
+intros * Hi.
+remember (n - iter_sup al) as m eqn:Hm.
+assert (H : n = m + iter_sup al) by lia.
+subst n; clear Hm Hi.
+revert c.
+induction m; intros; [ easy | simpl ].
+destruct al as [| a al].
+ simpl in IHm; simpl.
+ destruct (zerop c) as [Hc| Hc]; [ easy | f_equal ].
+ destruct (lt_dec c rad) as [Hcr| Hcr].
+  rewrite Nat.div_small; [ | lia ].
+bbb.
+
 Lemma nat_of_list_rem_tr_cons {r : radix} : ∀ a al,
   nat_of_list 0 (list_remove_trailing_0s (a :: list_spread al)) =
   nat_of_list 0 (list_remove_trailing_0s (list_spread (a :: al))).
 Proof.
 intros.
 unfold list_spread.
+
+bbb.
+
 remember (iter_sup al) as n eqn:Hn.
 remember (iter_sup (a :: al)) as m eqn:Hm.
 symmetry in Hm, Hn.
