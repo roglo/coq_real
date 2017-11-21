@@ -165,10 +165,19 @@ rewrite Nat.add_0_r.
 destruct (lt_dec a rad) as [Har| Har].
  rewrite Nat.mod_small; [ | easy ].
  rewrite Nat.div_small; [ | easy ].
- destruct al as [| b al].
+
+ (* prouver que iter_sup fait suffisamment d'itérations *)
+bbb.
+ revert n m Hn Hm.
+ induction al as [| b al]; intros.
   simpl in Hn; subst n.
   remember 1 as x; simpl in Hm; subst x.
   destruct m; [ now destruct a | easy ].
+
+  destruct m; [ easy | ].
+  destruct n; [ easy | ].
+  simpl.
+  rewrite Nat.add_0_r.
 
 bbb.
 
