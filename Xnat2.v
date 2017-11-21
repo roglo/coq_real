@@ -134,18 +134,17 @@ induction al as [| a al]; [ easy | simpl ].
 now destruct a.
 Qed.
 
-Lemma nat_of_list_removed_mul {r : radix} : ∀ al,
-  nat_of_list 0 (list_remove_trailing_0s al) * rad =
-  nat_of_list 0 (list_remove_trailing_0s (0 :: al)).
+Lemma nat_of_list_removed_trailing_0_s_mul {r : radix} : ∀ a al,
+  nat_of_list 0 (list_remove_trailing_0s al) * rad + a =
+  nat_of_list 0 (list_remove_trailing_0s (a :: al)).
 Proof.
 intros.
 unfold list_remove_trailing_0s; simpl.
 rewrite list_remove_heading_cons; simpl.
 remember(list_remove_heading_0s (rev al)) as bl eqn:Hbl.
 symmetry in Hbl.
-destruct bl as [| b bl]; [ easy | simpl ].
-rewrite List.rev_app_distr; simpl.
-now rewrite Nat.add_0_r.
+destruct bl as [| b bl]; [ now destruct a | simpl ].
+now rewrite List.rev_app_distr.
 Qed.
 
 Lemma nat_of_list_norm_eq {r : radix} : ∀ al, 2 ≤ rad →
@@ -154,15 +153,17 @@ Proof.
 intros * Hr.
 induction al as [| a al]; [ easy | simpl ].
 rewrite IHal; clear IHal.
-unfold list_norm, list_spread; simpl.
-unfold iter_sup.
-destruct a.
- simpl.
+unfold list_norm.
+rewrite nat_of_list_removed_trailing_0_s_mul.
+unfold list_spread.
+remember (iter_sup (a :: al)) as n eqn:Hn.
+symmetry in Hn; simpl in Hn.
+destruct n.
+ unfold iter_sup in Hn.
+ now apply Nat.eq_add_0 in Hn.
+
+ rewrite move_carry_cons.
  rewrite Nat.add_0_r.
- rewrite Nat.mod_0_l; [ | lia ].
- rewrite Nat.div_0_l; [ | lia ].
- remember (move_carry (length al + fold_left Init.Nat.max al 1) 0 al) as x.
- apply nat_of_list_removed_mul.
 bbb.
 
 Lemma list_of_nat_inv {r : radix} : 2 ≤ rad →
