@@ -285,42 +285,21 @@ Lemma list_norm_cons_0 {r : radix} : ∀ al,
   list_norm al = [] → list_norm (0 :: al) = [].
 Proof.
 intros * Hal.
-unfold list_norm in Hal.
-apply eq_list_rem_trail_nil in Hal.
-apply eq_list_rem_trail_nil.
-simpl.
-bbb.
-
-intros * Hal.
 destruct (zerop rad) as [Hr| Hr].
- unfold list_norm; simpl.
- unfold list_norm, list_spread in Hal.
- now rewrite Hr; simpl; rewrite Hal.
+ unfold list_norm in Hal.
+ unfold list_spread in Hal; simpl in Hal.
+ unfold list_norm; simpl; rewrite Hr; simpl.
+ now rewrite Hal.
 
- unfold list_norm, list_spread in Hal.
- unfold list_norm, list_spread.
- remember list_remove_trailing_0s as f; simpl in Hal; simpl; subst f.
+ unfold list_norm in Hal.
+ apply eq_list_rem_trail_nil in Hal.
+ apply eq_list_rem_trail_nil; simpl.
+ unfold list_spread in Hal.
+ unfold list_spread; simpl.
  rewrite Nat.mod_0_l; [ | lia ].
  rewrite Nat.div_0_l; [ | lia ].
-Search list_remove_trailing_0s.
-
-bbb.
-intros * Hal.
-destruct (zerop rad) as [Hr| Hr].
- unfold list_norm; simpl.
- unfold list_norm, list_spread in Hal.
- now rewrite Hr; simpl; rewrite Hal.
-
- induction al as [| a]; [ apply list_norm_0 | ].
- unfold list_norm, list_spread in Hal.
- remember list_remove_trailing_0s as f; simpl in Hal; subst f.
- rewrite Nat.add_0_r in Hal.
- unfold list_norm, list_spread.
- remember list_remove_trailing_0s as f; simpl; subst f.
- rewrite Nat.mod_0_l; [ | lia ].
- rewrite Nat.div_0_l; [ | lia ].
- rewrite Nat.add_0_r.
-bbb.
+ now f_equal.
+Qed.
 
 Lemma list_of_nat_inv {r : radix} : 2 ≤ rad →
   ∀ al, list_of_nat 0 (nat_of_list 0 al) = list_norm al.
@@ -332,36 +311,10 @@ destruct (zerop (nat_of_list 0 al)) as [Ha| Ha].
  induction al as [| a]; [ easy | simpl in Ha ].
  apply Nat.eq_add_0 in Ha.
  destruct Ha as (Hn, Ha); subst a.
+ apply list_norm_cons_0, IHal.
  apply Nat.eq_mul_0 in Hn.
- destruct Hn as [Hn| Hn].
-  specialize (IHal Hn).
-  clear Hn.
+ destruct Hn as [Hn| Hn]; [ easy | lia ].
 
-bbb.
-
-  unfold list_norm; simpl.
-  rewrite Nat.mod_0_l; [ | lia ].
-  rewrite Nat.div_0_l; [ | lia ].
-
-   simpl in Hn.
-   apply Nat.eq_add_0 in Hn.
-   destruct Hn as (Hn, Ha); subst a.
-
-intros Hr *.
-unfold list_norm, list_spread.
-induction al as [| a]; [ easy | simpl ].
-Print list_of_nat.
-
-rewrite Nat.add_0_r.
-remember (a mod rad) as n eqn:Hn; symmetry in Hn.
-destruct n.
- apply Nat.mod_divides in Hn; [ | lia ].
- destruct Hn as (n, Hn); rewrite Nat.mul_comm in Hn.
- subst a.
- rewrite Nat.div_mul; [ | lia ].
- remember (list_remove_trailing_0s (move_carry n al)) as al' eqn:Hal'.
- symmetry in Hal'.
- destruct al' as [| a'].
 bbb.
 
 Theorem xnat_of_nat_inv {r : radix} : 2 ≤ rad →
