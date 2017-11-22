@@ -294,6 +294,7 @@ destruct (zerop rad) as [Hr| Hr].
  now f_equal.
 Qed.
 
+(*
 Lemma move_carry_cons_repeat_0 {r : radix} : ∀ a n,
   move_carry 0 (a :: repeat 0 n) = move_carry 0 [a].
 Proof.
@@ -302,8 +303,7 @@ rewrite Nat.add_0_r.
 destruct (zerop (a / rad)) as [Har| Har].
  rewrite Har; simpl.
  rewrite move_carry_repeat_0.
-
-bbb.
+*)
 
 Lemma list_norm_cons_repeat_0 {r : radix} : ∀ a n,
   list_norm (a :: repeat 0 n) = list_norm [a].
