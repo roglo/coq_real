@@ -294,15 +294,15 @@ destruct (zerop rad) as [Hr| Hr].
  now f_equal.
 Qed.
 
-(*
 Lemma list_norm_app_0 {r : radix} : ∀ al,
   list_norm (al ++ [0]) = list_norm al.
 Proof.
 intros.
 induction al as [| a]; [ apply list_norm_0 | simpl ].
 unfold list_norm.
+remember list_remove_trailing_0s as f; simpl; subst f.
+rewrite Nat.add_0_r.
 bbb.
-*)
 
 Lemma repeat_succ_app : ∀ A (a : A) n,
   repeat a (S n) = repeat a n ++ [a].
