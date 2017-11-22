@@ -294,25 +294,17 @@ destruct (zerop rad) as [Hr| Hr].
  now f_equal.
 Qed.
 
-(*
-Lemma move_carry_cons_repeat_0 {r : radix} : ∀ a n,
-  move_carry 0 (a :: repeat 0 n) = move_carry 0 [a].
+Lemma list_norm_app_0 {r : radix} : ∀ al,
+  list_norm (al ++ [0]) = list_norm al.
 Proof.
-intros; simpl; f_equal.
-rewrite Nat.add_0_r.
-destruct (zerop (a / rad)) as [Har| Har].
- rewrite Har; simpl.
- rewrite move_carry_repeat_0.
-*)
+intros.
+induction al as [| a]; [ apply list_norm_0 | ].
+simpl.
+bbb.
 
 Lemma list_norm_cons_repeat_0 {r : radix} : ∀ a n,
   list_norm (a :: repeat 0 n) = list_norm [a].
 Proof.
-intros.
-unfold list_norm.
-Search move_carry.
-
-bbb.
 intros.
 induction n; [ easy | ].
 destruct a.
@@ -320,6 +312,7 @@ destruct a.
  rewrite list_norm_0.
  now apply list_norm_cons_0.
 
+ rewrite <- IHn.
 bbb.
 
 Lemma list_of_nat_inv {r : radix} : 2 ≤ rad →
