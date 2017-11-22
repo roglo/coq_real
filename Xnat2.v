@@ -26,21 +26,6 @@ Fixpoint move_carry {r : radix} carry al :=
       (a + carry) mod rad :: move_carry ((a + carry) / rad) al'
   end.
 
-(*
-Fixpoint move_carry {r : radix} iter carry al :=
-  match iter with
-  | 0 => [42]
-  | S i =>
-      match al with
-      | [] =>
-          if zerop carry then []
-          else carry mod rad :: move_carry i (carry / rad) []
-      | a :: al' =>
-          (a + carry) mod rad :: move_carry i ((a + carry) / rad) al'
-      end
-  end.
-*)
-
 Definition list_of_nat {r : radix} carry n :=
   move_carry carry [n].
 Definition nat_of_list {r : radix} accu al :=
@@ -194,52 +179,57 @@ destruct bl as [| b bl]; [ now destruct a | simpl ].
 now rewrite List.rev_app_distr.
 Qed.
 
-(*
-Lemma iter_sup_is_enough {r : radix} : ∀ al n, 2 ≤ rad →
-  iter_sup al ≤ n
-  → move_carry n 0 al = move_carry (iter_sup al) 0 al.
+Lemma list_rem_head_app_succ : ∀ al₁ al₂ a,
+  list_remove_heading_0s (al₁ ++ S a :: al₂) =
+  list_remove_heading_0s al₁ ++ S a :: al₂.
 Proof.
-intros * Hr Hi.
-remember (n - iter_sup al) as m eqn:Hm.
-assert (H : n = m + iter_sup al) by lia.
-subst n; clear Hm Hi.
-induction m; [ easy | simpl ].
-destruct al as [| a al]; [ easy | ].
-rewrite Nat.add_0_r.
-remember (iter_sup (a :: al)) as n eqn:Hn.
-symmetry in Hn; simpl in Hn.
-unfold iter_sup in Hn; simpl in Hn.
-rewrite Nat.add_comm in IHm.
-rewrite Nat.add_comm.
-destruct n; [ easy | simpl in IHm; simpl ].
-rewrite Nat.add_0_r in IHm.
-destruct al as [| b al].
- simpl in Hn.
- destruct a.
-  apply Nat.succ_inj in Hn; subst n.
-  rewrite Nat.div_0_l; [ | lia ].
-  rewrite Nat.div_0_l; [ | lia ].
-  rewrite Nat.div_0_l; [ easy | lia ].
+intros.
+induction al₁ as [| a₁]; [ easy | simpl ].
+now destruct a₁.
+Qed.
 
-  inversion IHm as [H]; clear IHm.
-  apply Nat.succ_inj in Hn; subst n.
-  rewrite Nat.add_0_r; simpl in H; simpl.
-  destruct (zerop (S a / rad)) as [Ha| Ha]; [ easy | ].
-  f_equal; f_equal.
-  inversion H as [H1]; clear H; rename H1 into H.
-  destruct a; [ rewrite Nat.div_1_l in Ha; lia | simpl ].
-  destruct (zerop (S (S a) / rad / rad)) as [Hb| Hb]; [ easy | ].
-bbb.
-*)
+Lemma nat_of_list_app {r : radix} : ∀ a al,
+  nat_of_list 0 (al ++ [a]) =
+  nat_of_list 0 al + rad ^ length al * a.
+Proof.
+intros.
+induction al as [| a₁]; simpl; [ lia | ].
+rewrite IHal; lia.
+Qed.
 
-Lemma nat_of_list_rem_tr_cons {r : radix} : ∀ a al,
+Lemma nat_of_list_rem_tr_cons {r : radix} : ∀ a al, 2 ≤ rad →
   nat_of_list 0 (list_remove_trailing_0s (a :: list_spread al)) =
   nat_of_list 0 (list_remove_trailing_0s (list_spread (a :: al))).
 Proof.
-intros.
+intros * Hr.
 unfold list_spread; simpl.
 rewrite Nat.add_0_r.
 unfold list_remove_trailing_0s; simpl.
+destruct a.
+ rewrite Nat.mod_0_l; [ | lia ].
+ rewrite Nat.div_0_l; [ easy | lia ].
+
+ rewrite list_rem_head_app_succ; simpl.
+ rewrite List.rev_unit; simpl.
+ destruct (zerop (S a mod rad)) as [Ha| Ha].
+  rewrite Ha.
+bbb.
+
+intros * Hr.
+unfold list_spread; simpl.
+rewrite Nat.add_0_r.
+unfold list_remove_trailing_0s; simpl.
+destruct al as [| a₁ al]; simpl.
+ destruct a; simpl.
+  rewrite Nat.div_0_l; [ simpl | lia ].
+  rewrite Nat.mod_0_l; [ easy | lia ].
+
+  destruct (zerop (S a / rad)) as [Ha| Ha]; simpl.
+   apply Nat.div_small_iff in Ha; [ | lia ].
+   now rewrite Nat.mod_small.
+
+   rewrite <- List.app_assoc; simpl.
+
 bbb.
 
 Lemma nat_of_list_norm_cons {r : radix} : ∀ a al,
