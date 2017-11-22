@@ -294,13 +294,23 @@ destruct (zerop rad) as [Hr| Hr].
  now f_equal.
 Qed.
 
+(*
 Lemma list_norm_app_0 {r : radix} : ∀ al,
   list_norm (al ++ [0]) = list_norm al.
 Proof.
 intros.
-induction al as [| a]; [ apply list_norm_0 | ].
-simpl.
+induction al as [| a]; [ apply list_norm_0 | simpl ].
+unfold list_norm.
 bbb.
+*)
+
+Lemma repeat_succ_app : ∀ A (a : A) n,
+  repeat a (S n) = repeat a n ++ [a].
+Proof.
+intros; simpl.
+induction n; [ easy | simpl ].
+now rewrite <- IHn.
+Qed.
 
 Lemma list_norm_cons_repeat_0 {r : radix} : ∀ a n,
   list_norm (a :: repeat 0 n) = list_norm [a].
@@ -313,6 +323,8 @@ destruct a.
  now apply list_norm_cons_0.
 
  rewrite <- IHn.
+ rewrite repeat_succ_app.
+
 bbb.
 
 Lemma list_of_nat_inv {r : radix} : 2 ≤ rad →
