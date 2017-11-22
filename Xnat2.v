@@ -57,13 +57,6 @@ Compute (let n := 2 in let r := radix_2 in @nat_of_list r 0 (@move_carry_end r (
 Compute (let n := 3 in let r := radix_2 in @nat_of_list r 0 (@move_carry_end r (S n) n)).
 Compute (let n := 4 in let r := radix_2 in @nat_of_list r 0 (@move_carry_end r (S n) n)).
 
-(*
-Theorem move_carry_cons {r : radix} : ∀ a al carry iter,
-  move_carry (S iter) carry (a :: al) =
-  (a + carry) mod rad :: move_carry iter ((a + carry) / rad) al.
-Proof. easy. Qed.
-*)
-
 Lemma nat_of_list_move_end {r : radix} : ∀ iter n, 2 ≤ rad →
   n < iter
   → nat_of_list 0 (move_carry_end iter n) = n.
@@ -110,9 +103,6 @@ intros Hr *.
 now apply nat_of_list_inv.
 Qed.
 
-(*
-Definition iter_sup al := List.length al + List.fold_left max al 1.
-*)
 Definition list_spread {r : radix} al := move_carry 0 al.
 
 Fixpoint list_remove_heading_0s al :=
