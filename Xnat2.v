@@ -258,9 +258,53 @@ unfold list_norm.
 now rewrite list_spread_0.
 Qed.
 
+Theorem list_cons_inv : ∀ A (a b : A) al bl,
+  a :: al = b :: bl → a = b ∧ al = bl.
+Proof.
+intros * Hab.
+now inversion Hab.
+Qed.
+
+Theorem eq_list_rem_trail_nil : ∀ al,
+  list_remove_trailing_0s al = [] ↔ al = repeat 0 (length al).
+Proof.
+intros *.
+split; intros Ha.
+ induction al as [| a]; [ easy | simpl in Ha; simpl ].
+ destruct a; [ | easy ].
+ remember (list_remove_trailing_0s al) as al' eqn:Hal'.
+ destruct al' as [| a']; [ now f_equal; apply IHal | easy ].
+
+ induction al as [| a]; [ easy | simpl in Ha; simpl ].
+ apply list_cons_inv in Ha.
+ destruct Ha as (Ha, Hal); subst a.
+ now rewrite IHal.
+Qed.
+
 Lemma list_norm_cons_0 {r : radix} : ∀ al,
   list_norm al = [] → list_norm (0 :: al) = [].
 Proof.
+intros * Hal.
+unfold list_norm in Hal.
+apply eq_list_rem_trail_nil in Hal.
+apply eq_list_rem_trail_nil.
+simpl.
+bbb.
+
+intros * Hal.
+destruct (zerop rad) as [Hr| Hr].
+ unfold list_norm; simpl.
+ unfold list_norm, list_spread in Hal.
+ now rewrite Hr; simpl; rewrite Hal.
+
+ unfold list_norm, list_spread in Hal.
+ unfold list_norm, list_spread.
+ remember list_remove_trailing_0s as f; simpl in Hal; simpl; subst f.
+ rewrite Nat.mod_0_l; [ | lia ].
+ rewrite Nat.div_0_l; [ | lia ].
+Search list_remove_trailing_0s.
+
+bbb.
 intros * Hal.
 destruct (zerop rad) as [Hr| Hr].
  unfold list_norm; simpl.
