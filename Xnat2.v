@@ -107,7 +107,7 @@ Qed.
 
 Definition list_spread {r : radix} al := move_carry 0 al.
 
-Fixpoint list_remove_trailing_0s {r : radix} al :=
+Fixpoint list_remove_trailing_0s al :=
   match al with
   | [] => []
   | 0 :: al' =>
@@ -243,6 +243,41 @@ rewrite IHal; clear IHal.
 bbb.
 *)
 
+Theorem list_spread_0 {r : radix} : list_spread [0] = [0].
+Proof.
+unfold list_spread; simpl.
+destruct (zerop rad) as [Hr| Hr]; [ now rewrite Hr | ].
+rewrite Nat.mod_0_l; [ | lia ].
+rewrite Nat.div_0_l; [ easy | lia ].
+Qed.
+
+Theorem list_norm_0 {r : radix} : list_norm [0] = [].
+Proof.
+intros.
+unfold list_norm.
+now rewrite list_spread_0.
+Qed.
+
+Lemma list_norm_cons_0 {r : radix} : ∀ al,
+  list_norm al = [] → list_norm (0 :: al) = [].
+Proof.
+intros * Hal.
+destruct (zerop rad) as [Hr| Hr].
+ unfold list_norm; simpl.
+ unfold list_norm, list_spread in Hal.
+ now rewrite Hr; simpl; rewrite Hal.
+
+ induction al as [| a]; [ apply list_norm_0 | ].
+ unfold list_norm, list_spread in Hal.
+ remember list_remove_trailing_0s as f; simpl in Hal; subst f.
+ rewrite Nat.add_0_r in Hal.
+ unfold list_norm, list_spread.
+ remember list_remove_trailing_0s as f; simpl; subst f.
+ rewrite Nat.mod_0_l; [ | lia ].
+ rewrite Nat.div_0_l; [ | lia ].
+ rewrite Nat.add_0_r.
+bbb.
+
 Lemma list_of_nat_inv {r : radix} : 2 ≤ rad →
   ∀ al, list_of_nat 0 (nat_of_list 0 al) = list_norm al.
 Proof.
@@ -257,8 +292,6 @@ destruct (zerop (nat_of_list 0 al)) as [Ha| Ha].
  destruct Hn as [Hn| Hn].
   specialize (IHal Hn).
   clear Hn.
-
-Lemma glop : ∀
 
 bbb.
 
