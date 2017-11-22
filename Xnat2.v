@@ -303,30 +303,30 @@ destruct (zerop (nat_of_list 0 al)) as [Ha| Ha].
  simpl.
  rewrite Nat.add_0_r.
  destruct (zerop (nat_of_list 0 al / rad)) as [Hnr| Hnr].
- apply Nat.div_small_iff in Hnr; [ | lia ].
- rewrite Nat.mod_small; [ | easy ].
- induction al as [| a]; [ easy | ].
- simpl in Ha, Hnr; simpl.
- remember (nat_of_list 0 al) as n eqn:Hn.
- symmetry in Hn.
- destruct n.
-  simpl in Ha, Hnr; simpl.
-  unfold list_norm; simpl.
-  rewrite Nat.add_0_r.
+  apply Nat.div_small_iff in Hnr; [ | lia ].
   rewrite Nat.mod_small; [ | easy ].
-  destruct a; [ easy | ].
-  f_equal; symmetry.
-  rewrite Nat.div_small; [ | easy ].
-  apply eq_nat_of_list_0 in Hn; [ | lia ].
-  rewrite Hn; simpl.
-  remember (length al) as n; clear.
-  rewrite move_carry_repeat_0.
-  apply eq_list_rem_trail_nil.
-  induction n; [ easy | now simpl; f_equal ].
+  induction al as [| a]; [ easy | ].
+  simpl in Ha, Hnr; simpl.
+  remember (nat_of_list 0 al) as n eqn:Hn.
+  symmetry in Hn.
+  destruct n.
+   simpl in Ha, Hnr; simpl.
+   unfold list_norm; simpl.
+   rewrite Nat.add_0_r.
+   rewrite Nat.mod_small; [ | easy ].
+   destruct a; [ easy | ].
+   f_equal; symmetry.
+   rewrite Nat.div_small; [ | easy ].
+   apply eq_nat_of_list_0 in Hn; [ | lia ].
+   rewrite Hn; simpl.
+   remember (length al) as n; clear.
+   rewrite move_carry_repeat_0.
+   apply eq_list_rem_trail_nil.
+   induction n; [ easy | now simpl; f_equal ].
 
-  exfalso; clear - Hnr.
-  apply lt_not_le in Hnr; apply Hnr; clear Hnr.
-  destruct rad as [| v]; [ apply Nat.le_0_l | simpl; lia ].
+   exfalso; clear - Hnr.
+   apply lt_not_le in Hnr; apply Hnr; clear Hnr.
+   destruct rad as [| v]; [ apply Nat.le_0_l | simpl; lia ].
 bbb.
 
 Theorem xnat_of_nat_inv {r : radix} : 2 ≤ rad →
