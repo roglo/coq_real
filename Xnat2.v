@@ -28,6 +28,11 @@ Fixpoint move_carry {r : radix} carry al :=
 
 Definition list_of_nat {r : radix} carry n :=
   move_carry carry [n].
+
+Compute (@list_of_nat radix_2 0 0).
+
+bbb.
+
 Definition nat_of_list {r : radix} accu al :=
   List.fold_right (λ a accu, accu * rad + a) accu al.
 
@@ -105,6 +110,18 @@ Qed.
 
 Definition list_spread {r : radix} al := move_carry 0 al.
 
+Fixpoint list_remove_trailing_0s {r : radix} al :=
+  match al with
+  | [] => []
+  | 0 :: al' =>
+      match list_remove_trailing_0s al' with
+      | [] => []
+      | al'' => 0 :: al''
+      end
+  | a :: al' => a :: list_remove_trailing_0s al'
+  end.
+
+(*
 Fixpoint list_remove_heading_0s al :=
   match al with
   | 0 :: al' => list_remove_heading_0s al'
@@ -113,6 +130,7 @@ Fixpoint list_remove_heading_0s al :=
 
 Definition list_remove_trailing_0s {r : radix} al :=
   List.rev (list_remove_heading_0s (List.rev al)).
+*)
 
 Definition list_norm {r : radix} al :=
   list_remove_trailing_0s (list_spread al).
@@ -144,6 +162,7 @@ intros; simpl.
 now rewrite Nat.add_0_r.
 Qed.
 
+(*
 Lemma list_remove_heading_cons : ∀ al bl,
   list_remove_heading_0s (al ++ bl) =
   match list_remove_heading_0s al with
@@ -155,20 +174,19 @@ intros.
 induction al as [| a al]; [ easy | simpl ].
 now destruct a.
 Qed.
+*)
 
 Lemma nat_of_list_removed_trailing_0s_mul {r : radix} : ∀ a al,
   nat_of_list 0 (list_remove_trailing_0s al) * rad + a =
   nat_of_list 0 (list_remove_trailing_0s (a :: al)).
 Proof.
-intros.
-unfold list_remove_trailing_0s; simpl.
-rewrite list_remove_heading_cons; simpl.
-remember(list_remove_heading_0s (rev al)) as bl eqn:Hbl.
-symmetry in Hbl.
-destruct bl as [| b bl]; [ now destruct a | simpl ].
-now rewrite List.rev_app_distr.
+intros; simpl.
+remember (list_remove_trailing_0s al) as al' eqn:Hal.
+symmetry in Hal.
+now destruct a; [ destruct al' | ].
 Qed.
 
+(*
 Lemma list_rem_head_app_succ : ∀ al₁ al₂ a,
   list_remove_heading_0s (al₁ ++ S a :: al₂) =
   list_remove_heading_0s al₁ ++ S a :: al₂.
@@ -237,12 +255,17 @@ intros * Hr.
 induction al as [| a al]; [ easy | simpl ].
 rewrite IHal; clear IHal.
 bbb.
+*)
 
 Lemma list_of_nat_inv {r : radix} : 2 ≤ rad →
   ∀ al, list_of_nat 0 (nat_of_list 0 al) = list_norm al.
 Proof.
 intros Hr *.
 unfold list_norm.
+induction al as [| a]; simpl.
+ unfold list_of_nat; simpl.
+ rewrite Nat.mod_0_l; [ | lia ].
+ rewrite Nat.div_0_l; [ simpl | lia ].
 bbb.
 
 Theorem xnat_of_nat_inv {r : radix} : 2 ≤ rad →
