@@ -294,6 +294,13 @@ destruct (zerop rad) as [Hr| Hr].
  now f_equal.
 Qed.
 
+Lemma list_norm_cons_repeat_0 {r : radix} : ∀ a n,
+  list_norm (a :: repeat 0 n) = list_norm [a].
+Proof.
+intros.
+induction n; [ easy | simpl ].
+bbb.
+
 Lemma list_of_nat_inv {r : radix} : 2 ≤ rad →
   ∀ al, list_of_nat 0 (nat_of_list 0 al) = list_norm al.
 Proof.
@@ -307,6 +314,11 @@ destruct (zerop (nat_of_list 0 al)) as [Ha| Ha].
  destruct (zerop a) as [Haz| Hanz].
   subst a; simpl; symmetry.
   now apply list_norm_cons_0.
+
+  rewrite Ha.
+  remember (length al) as n eqn:Hn.
+  clear - Hr Hanz.
+  rewrite list_norm_cons_repeat_0s.
 
 bbb.
 
