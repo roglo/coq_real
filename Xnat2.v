@@ -251,6 +251,14 @@ split; intros Ha.
  now rewrite IHal.
 Qed.
 
+Lemma list_rem_trail_repeat_0 : ∀ n,
+  list_remove_trailing_0s (repeat 0 n) = [].
+Proof.
+intros.
+apply eq_list_rem_trail_nil.
+now rewrite List.repeat_length.
+Qed.
+
 Lemma eq_nat_of_list_0 {r : radix} : ∀ al, 0 < rad →
   nat_of_list 0 al = 0 ↔ al = repeat 0 (length al).
 Proof.
@@ -290,8 +298,53 @@ Lemma list_of_nat_inv {r : radix} : 2 ≤ rad →
   ∀ al, list_of_nat 0 (nat_of_list 0 al) = list_norm al.
 Proof.
 intros Hr *.
+induction al as [| a]; [ easy | simpl ].
+unfold list_of_nat in IHal; symmetry in IHal.
 unfold list_of_nat.
 destruct (zerop (nat_of_list 0 al)) as [Ha| Ha].
+ rewrite Ha, Nat.mul_0_l, Nat.add_0_l.
+ apply eq_nat_of_list_0 in Ha; [ | lia ].
+ destruct (zerop a) as [Haz| Hanz].
+  subst a; simpl; symmetry.
+  now apply list_norm_cons_0.
+
+bbb.
+
+ simpl; rewrite Ha; simpl; symmetry.
+ destruct (zerop a) as [Haz| Hanz].
+  subst a; simpl.
+  now apply list_norm_cons_0.
+
+  rewrite Nat.add_0_r.
+  destruct (zerop (a / rad)) as [Har| Har].
+   apply Nat.div_small_iff in Har; [ | lia ].
+   rewrite Nat.mod_small; [ | easy ].
+   apply eq_nat_of_list_0 in Ha; [ | lia ].
+   rewrite Ha; simpl.
+   unfold list_norm; simpl.
+   rewrite Nat.add_0_r.
+   remember (a mod rad) as b eqn:Hb.
+   symmetry in Hb.
+   destruct b; simpl.
+    exfalso; apply Nat.mod_divides in Hb; [ | lia ].
+    destruct Hb as (b, Hb); subst a.
+    destruct b; [ lia | ].
+    rewrite Nat.mul_comm in Har; simpl in Har; lia.
+
+    rewrite Nat.mod_small in Hb; [ subst a | easy ].
+    rewrite Nat.div_small; [ | easy ].
+    rewrite move_carry_repeat_0.
+    now rewrite list_rem_trail_repeat_0.
+
+   simpl.
+bbb.
+
+   apply Nat.mod_divides in Hb; [ | lia ].
+
+
+Search list_remove_trailing_0s.
+bbb.
+
  symmetry.
  induction al as [| a]; [ easy | simpl in Ha ].
  apply Nat.eq_add_0 in Ha.
@@ -327,6 +380,8 @@ destruct (zerop (nat_of_list 0 al)) as [Ha| Ha].
    exfalso; clear - Hnr.
    apply lt_not_le in Hnr; apply Hnr; clear Hnr.
    destruct rad as [| v]; [ apply Nat.le_0_l | simpl; lia ].
+
+  unfold list_norm.
 bbb.
 
 Theorem xnat_of_nat_inv {r : radix} : 2 ≤ rad →
