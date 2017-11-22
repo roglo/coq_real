@@ -27,12 +27,7 @@ Fixpoint move_carry {r : radix} carry al :=
   end.
 
 Definition list_of_nat {r : radix} carry n :=
-  move_carry carry [n].
-
-Compute (@list_of_nat radix_2 0 0).
-
-bbb.
-
+  if zerop n then [] else move_carry carry [n].
 Definition nat_of_list {r : radix} accu al :=
   List.fold_right (λ a accu, accu * rad + a) accu al.
 
@@ -86,7 +81,9 @@ Qed.
 Lemma nat_of_list_inv {r : radix} : 2 ≤ rad →
   ∀ n, nat_of_list 0 (list_of_nat 0 n) = n.
 Proof.
-intros Hr *; simpl.
+intros Hr *.
+unfold list_of_nat.
+destruct (zerop n) as [Hn| Hn]; [ easy | simpl ].
 rewrite Nat.add_0_r.
 destruct (zerop (n / rad)) as [Hs| Hs].
  apply Nat.div_small_iff in Hs; [ | lia ].
@@ -120,17 +117,6 @@ Fixpoint list_remove_trailing_0s {r : radix} al :=
       end
   | a :: al' => a :: list_remove_trailing_0s al'
   end.
-
-(*
-Fixpoint list_remove_heading_0s al :=
-  match al with
-  | 0 :: al' => list_remove_heading_0s al'
-  | _ => al
-  end.
-
-Definition list_remove_trailing_0s {r : radix} al :=
-  List.rev (list_remove_heading_0s (List.rev al)).
-*)
 
 Definition list_norm {r : radix} al :=
   list_remove_trailing_0s (list_spread al).
@@ -261,11 +247,44 @@ Lemma list_of_nat_inv {r : radix} : 2 ≤ rad →
   ∀ al, list_of_nat 0 (nat_of_list 0 al) = list_norm al.
 Proof.
 intros Hr *.
-unfold list_norm.
-induction al as [| a]; simpl.
- unfold list_of_nat; simpl.
- rewrite Nat.mod_0_l; [ | lia ].
- rewrite Nat.div_0_l; [ simpl | lia ].
+unfold list_of_nat.
+destruct (zerop (nat_of_list 0 al)) as [Ha| Ha].
+ symmetry.
+ induction al as [| a]; [ easy | simpl in Ha ].
+ apply Nat.eq_add_0 in Ha.
+ destruct Ha as (Hn, Ha); subst a.
+ apply Nat.eq_mul_0 in Hn.
+ destruct Hn as [Hn| Hn].
+  specialize (IHal Hn).
+  clear Hn.
+
+Lemma glop : ∀
+
+bbb.
+
+  unfold list_norm; simpl.
+  rewrite Nat.mod_0_l; [ | lia ].
+  rewrite Nat.div_0_l; [ | lia ].
+
+   simpl in Hn.
+   apply Nat.eq_add_0 in Hn.
+   destruct Hn as (Hn, Ha); subst a.
+
+intros Hr *.
+unfold list_norm, list_spread.
+induction al as [| a]; [ easy | simpl ].
+Print list_of_nat.
+
+rewrite Nat.add_0_r.
+remember (a mod rad) as n eqn:Hn; symmetry in Hn.
+destruct n.
+ apply Nat.mod_divides in Hn; [ | lia ].
+ destruct Hn as (n, Hn); rewrite Nat.mul_comm in Hn.
+ subst a.
+ rewrite Nat.div_mul; [ | lia ].
+ remember (list_remove_trailing_0s (move_carry n al)) as al' eqn:Hal'.
+ symmetry in Hal'.
+ destruct al' as [| a'].
 bbb.
 
 Theorem xnat_of_nat_inv {r : radix} : 2 ≤ rad →
