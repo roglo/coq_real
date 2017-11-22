@@ -325,6 +325,8 @@ destruct (zerop (nat_of_list 0 al)) as [Ha| Ha].
   induction n; [ easy | now simpl; f_equal ].
 
   exfalso; clear - Hnr.
+  apply lt_not_le in Hnr; apply Hnr; clear Hnr.
+  destruct rad as [| v]; [ apply Nat.le_0_l | simpl; lia ].
 bbb.
 
 Theorem xnat_of_nat_inv {r : radix} : 2 ≤ rad →
