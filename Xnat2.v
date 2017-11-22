@@ -1,4 +1,4 @@
-(* natura numbers in any radix; second version; without proofs *)
+(* Natural numbers in any radix; second version; without proofs *)
 
 Require Import Utf8 Arith Psatz List.
 Import ListNotations.
@@ -298,7 +298,12 @@ Lemma list_norm_cons_repeat_0 {r : radix} : ∀ a n,
   list_norm (a :: repeat 0 n) = list_norm [a].
 Proof.
 intros.
-induction n; [ easy | simpl ].
+induction n; [ easy | ].
+destruct a.
+ rewrite list_norm_0 in IHn.
+ rewrite list_norm_0.
+ now apply list_norm_cons_0.
+
 bbb.
 
 Lemma list_of_nat_inv {r : radix} : 2 ≤ rad →
