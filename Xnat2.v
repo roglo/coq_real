@@ -10,6 +10,23 @@ Definition radix_10 := {| rad := 10 |}.
 
 Record xnat := xn { xnatv : list nat }.
 
+Fixpoint move_carry_end {r : radix} iter carry :=
+  match iter with
+  | 0 => [42]
+  | S i =>
+      if zerop carry then []
+      else carry mod rad :: move_carry_end i (carry / rad)
+  end.
+
+Fixpoint move_carry {r : radix} carry al :=
+  match al with
+  | [] =>
+      if zerop carry then [] else move_carry_end (S carry) carry
+  | a :: al' =>
+      (a + carry) mod rad :: move_carry ((a + carry) / rad) al'
+  end.
+
+(*
 Fixpoint move_carry {r : radix} iter carry al :=
   match iter with
   | 0 => [42]
@@ -22,9 +39,10 @@ Fixpoint move_carry {r : radix} iter carry al :=
           (a + carry) mod rad :: move_carry i ((a + carry) / rad) al'
       end
   end.
+*)
 
 Definition list_of_nat {r : radix} carry n :=
-  move_carry (n + 2) carry [n].
+  move_carry carry [n].
 Definition nat_of_list {r : radix} accu al :=
   List.fold_right (λ a accu, accu * rad + a) accu al.
 
@@ -32,45 +50,72 @@ Definition xnat_of_nat {r : radix} n := xn (list_of_nat 0 n).
 Definition nat_of_xnat {r : radix} a := nat_of_list 0 (xnatv a).
 
 Compute (@xnat_of_nat radix_10 0).
+Compute (@xnat_of_nat radix_10 1).
+Compute (@xnat_of_nat radix_10 2).
+Compute (@xnat_of_nat radix_10 9).
+Compute (@xnat_of_nat radix_10 10).
+Compute (@xnat_of_nat radix_10 239).
+Compute (@xnat_of_nat radix_2 0).
+Compute (@xnat_of_nat radix_2 1).
+Compute (@xnat_of_nat radix_2 2).
+Compute (@xnat_of_nat radix_2 3).
+Compute (@xnat_of_nat radix_2 4).
 Compute (@xnat_of_nat radix_10 10030).
+Compute (let n := 0 in let r := radix_2 in @move_carry_end r (S n) n).
+Compute (let n := 1 in let r := radix_2 in @move_carry_end r (S n) n).
+Compute (let n := 2 in let r := radix_2 in @move_carry_end r (S n) n).
+Compute (let n := 3 in let r := radix_2 in @move_carry_end r (S n) n).
 
+Compute (let n := 0 in let r := radix_2 in @nat_of_list r 0 (@move_carry_end r (S n) n)).
+Compute (let n := 1 in let r := radix_2 in @nat_of_list r 0 (@move_carry_end r (S n) n)).
+Compute (let n := 2 in let r := radix_2 in @nat_of_list r 0 (@move_carry_end r (S n) n)).
+Compute (let n := 3 in let r := radix_2 in @nat_of_list r 0 (@move_carry_end r (S n) n)).
+Compute (let n := 4 in let r := radix_2 in @nat_of_list r 0 (@move_carry_end r (S n) n)).
+
+(*
 Theorem move_carry_cons {r : radix} : ∀ a al carry iter,
   move_carry (S iter) carry (a :: al) =
   (a + carry) mod rad :: move_carry iter ((a + carry) / rad) al.
 Proof. easy. Qed.
+*)
+
+Lemma nat_of_list_move_end {r : radix} : ∀ iter n, 2 ≤ rad →
+  n < iter
+  → nat_of_list 0 (move_carry_end iter n) = n.
+Proof.
+intros * Hr Hni.
+revert n Hni.
+induction iter; intros; [ now apply Nat.nlt_0_r in Hni | simpl ].
+destruct (zerop n) as [Hn| Hn]; [ easy | simpl ].
+rewrite IHiter.
+ rewrite Nat.mul_comm; symmetry.
+ apply Nat.div_mod; lia.
+
+ apply lt_n_Sm_le in Hni.
+ destruct rad as [| m]; [ lia | ].
+ destruct m as [| m]; [ lia | ].
+ destruct iter; [ lia | ].
+ eapply lt_le_trans; [ | eassumption ].
+ destruct n; [ easy | clear ].
+ apply Nat.div_lt; lia.
+Qed.
 
 Lemma nat_of_list_inv {r : radix} : 2 ≤ rad →
   ∀ n, nat_of_list 0 (list_of_nat 0 n) = n.
 Proof.
-intros Hr *.
-unfold list_of_nat.
-symmetry.
-remember (n + 2) as m eqn:Hm.
-assert (H : n + 2 ≤ m) by lia.
-clear Hm; rename H into Hm.
-revert n Hm.
-induction m; intros; simpl; [ lia | ].
+intros Hr *; simpl.
 rewrite Nat.add_0_r.
-destruct m; [ lia | simpl ].
 destruct (zerop (n / rad)) as [Hs| Hs].
- apply Nat.div_small_iff in Hs; [ simpl | lia ].
+ apply Nat.div_small_iff in Hs; [ | lia ].
  now rewrite Nat.mod_small.
 
- replace (n / rad) with (n / rad + 0) by lia.
- rewrite <- move_carry_cons.
- rewrite <- IHm.
-  rewrite Nat.mul_comm.
-  apply Nat.div_mod; lia.
-
-  assert (Hnm : n ≤ m) by lia; clear Hm.
-  rewrite Nat.add_comm; simpl.
-  apply -> Nat.succ_le_mono.
-  eapply Nat.le_trans; [ | eassumption ].
-  apply -> Nat.div_str_pos_iff in Hs; [ | lia ].
-  clear - Hr Hs.
-  destruct rad as [| m]; [ lia | ].
-  destruct m as [| m]; [ lia | clear Hr ].
-  apply Nat.div_lt; lia.
+ simpl.
+ rewrite nat_of_list_move_end; [ | easy | now apply Nat.div_lt ].
+ remember (n / rad) as nr eqn:Hnr.
+ replace (nr / rad * rad) with (rad * (nr / rad)) by lia.
+ rewrite <- Nat.div_mod; [ subst nr | lia ].
+ rewrite Nat.mul_comm; symmetry.
+ apply Nat.div_mod; lia.
 Qed.
 
 Theorem nat_of_xnat_inv {r : radix} : 2 ≤ rad →
@@ -80,8 +125,10 @@ intros Hr *.
 now apply nat_of_list_inv.
 Qed.
 
+(*
 Definition iter_sup al := List.length al + List.fold_left max al 1.
-Definition list_spread {r : radix} al := move_carry (iter_sup al) 0 al.
+*)
+Definition list_spread {r : radix} al := move_carry 0 al.
 
 Fixpoint list_remove_heading_0s al :=
   match al with
@@ -134,7 +181,7 @@ induction al as [| a al]; [ easy | simpl ].
 now destruct a.
 Qed.
 
-Lemma nat_of_list_removed_trailing_0_s_mul {r : radix} : ∀ a al,
+Lemma nat_of_list_removed_trailing_0s_mul {r : radix} : ∀ a al,
   nat_of_list 0 (list_remove_trailing_0s al) * rad + a =
   nat_of_list 0 (list_remove_trailing_0s (a :: al)).
 Proof.
@@ -147,6 +194,7 @@ destruct bl as [| b bl]; [ now destruct a | simpl ].
 now rewrite List.rev_app_distr.
 Qed.
 
+(*
 Lemma iter_sup_is_enough {r : radix} : ∀ al n, 2 ≤ rad →
   iter_sup al ≤ n
   → move_carry n 0 al = move_carry (iter_sup al) 0 al.
@@ -182,88 +230,16 @@ destruct al as [| b al].
   destruct a; [ rewrite Nat.div_1_l in Ha; lia | simpl ].
   destruct (zerop (S (S a) / rad / rad)) as [Hb| Hb]; [ easy | ].
 bbb.
+*)
 
 Lemma nat_of_list_rem_tr_cons {r : radix} : ∀ a al,
   nat_of_list 0 (list_remove_trailing_0s (a :: list_spread al)) =
   nat_of_list 0 (list_remove_trailing_0s (list_spread (a :: al))).
 Proof.
 intros.
-unfold list_spread.
-
-bbb.
-
-remember (iter_sup al) as n eqn:Hn.
-remember (iter_sup (a :: al)) as m eqn:Hm.
-symmetry in Hm, Hn.
-unfold iter_sup in Hn, Hm.
-remember fold_left as f; simpl in Hm; subst f.
-remember 1 as x; simpl in Hm; subst x.
-destruct m; [ easy | ].
-apply Nat.succ_inj in Hm; simpl.
+unfold list_spread; simpl.
 rewrite Nat.add_0_r.
-destruct (lt_dec a rad) as [Har| Har].
- rewrite Nat.mod_small; [ | easy ].
- rewrite Nat.div_small; [ | easy ].
-
- (* prouver que iter_sup fait suffisamment d'itérations *)
-bbb.
- revert n m Hn Hm.
- induction al as [| b al]; intros.
-  simpl in Hn; subst n.
-  remember 1 as x; simpl in Hm; subst x.
-  destruct m; [ now destruct a | easy ].
-
-  destruct m; [ easy | ].
-  destruct n; [ easy | ].
-  simpl.
-  rewrite Nat.add_0_r.
-
-bbb.
-
-intros.
-unfold list_spread.
-remember (iter_sup (a :: al)) as n eqn:Hn.
-symmetry in Hn; simpl in Hn.
-destruct n.
- unfold iter_sup in Hn.
- now apply Nat.eq_add_0 in Hn.
-
- rewrite move_carry_cons.
- rewrite Nat.add_0_r.
- rewrite <- nat_of_list_removed_trailing_0_s_mul.
- rewrite <- nat_of_list_removed_trailing_0_s_mul.
- destruct (lt_dec a rad) as [Har| Har].
-  rewrite Nat.mod_small; [ f_equal; f_equal | easy ].
-  rewrite Nat.div_small; [ | easy ].
-  destruct n.
-   exfalso.
-   unfold iter_sup in Hn; simpl in Hn.
-   apply Nat.succ_inj in Hn.
-   apply Nat.eq_add_0 in Hn.
-   destruct Hn as (Hn, Ha).
-   apply length_zero_iff_nil in Hn; subst al.
-   now destruct a.
-
-   simpl.
-   destruct al as [| b al]; [ easy | ].
-   rewrite Nat.add_0_r; simpl.
-   rewrite <- nat_of_list_removed_trailing_0_s_mul.
-   rewrite <- nat_of_list_removed_trailing_0_s_mul.
-   rewrite Nat.add_0_r.
-   destruct b.
-    rewrite Nat.div_0_l; [ | lia ].
-    rewrite Nat.mod_0_l; [ | lia ].
-    f_equal; f_equal.
-    destruct n.
-     exfalso.
-     unfold iter_sup in Hn; simpl in Hn.
-     do 2 apply Nat.succ_inj in Hn.
-     apply Nat.eq_add_0 in Hn.
-     destruct Hn as (Hn, Ha).
-     apply length_zero_iff_nil in Hn; subst al.
-     now destruct a.
-
-     simpl.
+unfold list_remove_trailing_0s; simpl.
 bbb.
 
 Lemma nat_of_list_norm_cons {r : radix} : ∀ a al,
@@ -271,7 +247,7 @@ Lemma nat_of_list_norm_cons {r : radix} : ∀ a al,
 Proof.
 intros.
 unfold list_norm.
-rewrite nat_of_list_removed_trailing_0_s_mul.
+rewrite nat_of_list_removed_trailing_0s_mul.
 bbb.
 
 Lemma nat_of_list_norm_eq {r : radix} : ∀ al, 2 ≤ rad →
