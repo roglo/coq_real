@@ -304,6 +304,11 @@ induction al as [| a]; intros.
   rewrite Nat.mul_comm in Hb; rewrite Hb.
   rewrite Nat.div_mul; [ | easy ].
   destruct b; [ easy | simpl ].
+  remember (S b mod rad) as b1 eqn:Hb1.
+  symmetry in Hb1.
+  destruct b1.
+   apply Nat.mod_divides in Hb1; [ | easy ].
+   destruct Hb1 as (b1 & Hb1).
 bbb.
   destruct c; simpl in Hab.
    destruct b; [ easy | simpl in Hab ].
