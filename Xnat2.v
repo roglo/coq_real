@@ -291,43 +291,46 @@ Qed.
 Lemma move_nz_carry {r : radix} : ∀ al n c, rad ≠ 0 → c ≠ 0 →
   move_carry c al ≠ repeat 0 n.
 Proof.
-intros * Hr Hc.
+intros * Hr Hc H.
 destruct c; [ easy | clear Hc ].
-revert c n.
+revert c n H.
 induction al as [| a]; intros.
- simpl.
- destruct (zerop (S c / rad)) as [Hc | Hc].
-  apply Nat.div_small_iff in Hc; [ | easy ].
-  rewrite Nat.mod_small; [ | easy ].
-  now destruct n.
-
-
-bbb.
- symmetry in Ha.
- destruct a.
-  apply Nat.mod_divides in Ha; [ | easy ].
-  destruct Ha as (b & Hb).
-  rewrite Nat.mul_comm in Hb; rewrite Hb.
-  rewrite Nat.div_mul; [ | easy ].
-  destruct b; [ easy | simpl ].
-  remember (S b mod rad) as b1 eqn:Hb1.
-  symmetry in Hb1.
-  destruct b1.
-   apply Nat.mod_divides in Hb1; [ | easy ].
-   destruct Hb1 as (b1 & Hb1).
-bbb.
-  destruct c; simpl in Hab.
-   destruct b; [ easy | simpl in Hab ].
-   apply List_cons_inv in Hab.
-   destruct Hab as (Hcr, Hab).
-   apply Nat.mod_divides in Hcr; [ | easy ].
-   destruct Hcr as (c, Hcr).
-   rewrite Nat.mul_comm in Hcr; rewrite Hcr in Hab.
-   rewrite Nat.div_mul in Hab; [ | easy ].
-   destruct c; [ easy | simpl in Hab ].
-   destruct b; [ easy | simpl in Hab ].
-
-bbb.
+ unfold move_carry in H.
+ remember move_carry_end as f; simpl in H; subst f.
+ remember (S c) as c1; simpl in H; subst c1.
+ remember move_carry_end as f; simpl in H; subst f.
+ remember rad as s eqn:Hs.
+ destruct s; [ easy | rewrite Hs in Hr, H ].
+ remember (S c mod rad) as c1 eqn:Hc.
+ symmetry in Hc.
+ destruct c1.
+  destruct n; [ easy | ].
+  remember move_carry_end as f; simpl in H; subst f.
+  apply List_cons_inv in H.
+  destruct H as (_, H).
+  apply Nat.mod_divides in Hc; [ | easy ].
+  destruct Hc as (c1, Hc).
+  rewrite Nat.mul_comm in Hc.
+  rewrite Hc in H.
+  rewrite Nat.div_mul in H; [ | easy ].
+  destruct c1; [ lia | ].
+  rewrite <- Hs in H; simpl in H; rewrite Hs in H.
+  clear c Hc.
+  rename c1 into c.
+ remember (S c mod rad) as c1 eqn:Hc.
+ symmetry in Hc.
+ destruct c1.
+  destruct n; [ easy | ].
+  remember move_carry_end as f; simpl in H; subst f.
+  apply List_cons_inv in H.
+  destruct H as (_, H).
+  apply Nat.mod_divides in Hc; [ | easy ].
+  destruct Hc as (c1, Hc).
+  rewrite Nat.mul_comm in Hc.
+  rewrite Hc in H.
+  rewrite Nat.div_mul in H; [ | easy ].
+  destruct c1; [ lia | ].
+  rewrite <- Hs in H; simpl in H; rewrite Hs in H.
 bbb.
 
 Lemma list_rem_trail_move_carry_comm {r : radix} : ∀ c al, rad ≠ 0 →
