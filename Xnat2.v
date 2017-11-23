@@ -345,23 +345,32 @@ Lemma list_rem_trail_move_carry_comm {r : radix} : ∀ c al, 1 < rad →
   move_carry c (list_remove_trailing_0s al).
 Proof.
 intros carry * Hr.
-remember (list_remove_trailing_0s (move_carry carry al)) as bl eqn:Hbl.
-remember (list_remove_trailing_0s al) as cl eqn:Hcl.
-symmetry in Hbl, Hcl.
-apply list_rem_trail_if in Hbl.
-apply list_rem_trail_if in Hcl.
-destruct Hbl as (b & Hab & Hbl).
-destruct Hcl as (c & Hac & Hcl).
+remember (list_remove_trailing_0s (move_carry carry al)) as bl eqn:Hml.
+remember (list_remove_trailing_0s al) as cl eqn:Hnl.
+symmetry in Hml, Hnl.
+apply list_rem_trail_if in Hml.
+apply list_rem_trail_if in Hnl.
+destruct Hml as (m & Ham & Hbl).
+destruct Hnl as (n & Han & Hcl).
 destruct Hbl as [Hbl| Hbl].
- subst bl; simpl in Hab.
+ subst bl; simpl in Ham.
  destruct Hcl as [Hcl| Hcl].
-  subst cl; simpl in Hac; simpl.
+  subst cl; simpl in Han; simpl.
   destruct (zerop carry) as [| Hc]; [ easy | exfalso ].
   destruct carry; [ easy | clear Hc ].
-  subst al; revert Hab.
+  subst al; revert Ham.
   now apply move_nz_carry.
 
+  subst al; symmetry.
+bbb.
   destruct carry.
+   destruct cl as [| c1]; [ easy | exfalso ].
+   simpl in Hcl.
+   destruct cl as [| c2].
+    simpl in Hab.
+    rewrite Nat.add_0_r in Hab.
+
+bbb.
 Focus 2.
    exfalso; revert Hab.
    now apply move_nz_carry.
@@ -369,6 +378,7 @@ Focus 2.
 Focus 2.
  destruct Hcl as [Hcl| Hcl ].
   subst al cl; simpl in Hab.
+
 bbb.
  destruct Hcl as [Hcl| Hcl ].
   subst al cl; simpl in Hab; simpl.
