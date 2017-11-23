@@ -368,6 +368,9 @@ Focus 2.
 
 Focus 2.
  destruct Hcl as [Hcl| Hcl ].
+  subst al cl; simpl in Hab.
+bbb.
+ destruct Hcl as [Hcl| Hcl ].
   subst al cl; simpl in Hab; simpl.
   destruct (zerop carry) as [Hc| Hc].
    subst carry.
