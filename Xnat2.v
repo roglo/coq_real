@@ -288,11 +288,28 @@ induction al as [| a]; intros.
   now destruct bl.
 Qed.
 
-Lemma move_carry_end_succ_ne_rep_0 {r : radix} : ∀ i c n,
-  move_carry_end i c ≠ repeat 0 n.
+Lemma move_carry_end_succ_ne_rep_0 {r : radix} : ∀ i c n, rad ≠ 0 →
+  0 < c < i
+  → move_carry_end i c ≠ repeat 0 n.
 Proof.
-intros.
-Print move_carry_end.
+intros * Hr (Hc, Hci).
+revert c n Hc Hci.
+induction i; intros; [ easy | simpl ].
+destruct (zerop c) as [H| H]; [ lia | clear H ].
+remember (c mod rad) as c1 eqn:Hc1.
+symmetry in Hc1.
+destruct c1; [ | now destruct n ].
+destruct n; [ easy | ].
+simpl; intros H; apply List_cons_inv in H.
+destruct H as (_, H).
+apply Nat.mod_divides in Hc1; [ | easy ].
+destruct Hc1 as (c1, Hc1).
+rewrite Nat.mul_comm in Hc1.
+revert H.
+rewrite Hc1, Nat.div_mul; [ | easy ].
+apply IHi; [ destruct c1; lia | ].
+apply Nat.mul_lt_mono_pos_r with (p := rad); [ lia | ].
+rewrite <- Hc1.
 bbb.
 
 Lemma move_nz_carry {r : radix} : ∀ al n c, rad ≠ 0 → c ≠ 0 →
