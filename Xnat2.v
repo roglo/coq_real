@@ -1,5 +1,6 @@
 (* Natural numbers in any radix; second version; without proofs *)
 (* Can be regarded as polynomials with natural number coefficients. *)
+(* Implemented using lists of nat. *)
 
 Require Import Utf8 Arith Psatz List.
 Import ListNotations.
