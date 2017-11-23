@@ -4,6 +4,13 @@
 Require Import Utf8 Arith Psatz List.
 Import ListNotations.
 
+Lemma List_cons_inv : ∀ A (a b : A) al bl,
+  a :: al = b :: bl → a = b ∧ al = bl.
+Proof.
+intros * Hab.
+now inversion Hab.
+Qed.
+
 Class radix := { rad : nat }.
 
 Definition radix_2 := {| rad := 2 |}.
@@ -179,13 +186,6 @@ remember move_carry as f; simpl in H; subst f.
 now rewrite H.
 Qed.
 
-Lemma list_cons_inv : ∀ A (a b : A) al bl,
-  a :: al = b :: bl → a = b ∧ al = bl.
-Proof.
-intros * Hab.
-now inversion Hab.
-Qed.
-
 Lemma eq_list_rem_trail_nil : ∀ al,
   list_remove_trailing_0s al = [] ↔ al = repeat 0 (length al).
 Proof.
@@ -197,7 +197,7 @@ split; intros Ha.
  destruct al' as [| a']; [ now f_equal; apply IHal | easy ].
 
  induction al as [| a]; [ easy | simpl in Ha; simpl ].
- apply list_cons_inv in Ha.
+ apply List_cons_inv in Ha.
  destruct Ha as (Ha, Hal); subst a.
  now rewrite IHal.
 Qed.
@@ -222,7 +222,7 @@ split; intros Hal.
  destruct Ha as [Ha| Ha]; [ now apply IHal | lia ].
 
  induction al as [| a]; [ easy | simpl in Hal; simpl ].
- apply list_cons_inv in Hal.
+ apply List_cons_inv in Hal.
  destruct Hal as (Ha, Hal); subst a.
  apply IHal in Hal.
  now rewrite Hal.
@@ -249,10 +249,51 @@ Lemma move_carry_end_succ {r : radix} : ∀ i c,
   move_carry_end (S i) (S c) = S c mod rad :: move_carry_end i (S c / rad).
 Proof. easy. Qed.
 
+Lemma list_rem_trail_if : ∀ al bl,
+  list_remove_trailing_0s al = bl
+  → ∃ n, al = bl ++ repeat 0 n ∧ (bl = [] ∨ List.last bl 0 ≠ 0).
+Proof.
+intros * Hb.
+revert bl Hb.
+induction al as [| a]; intros.
+ subst bl; simpl.
+ exists 0.
+ split; [ easy | now left ].
+
+ simpl in Hb.
+ destruct a.
+  remember (list_remove_trailing_0s al) as cl eqn:Hcl in Hb.
+  symmetry in Hcl.
+  destruct cl as [| c].
+   subst bl; simpl.
+   apply eq_list_rem_trail_nil in Hcl.
+   rewrite Hcl.
+   exists (S (length al)).
+   split; [ easy | now left ].
+
+   specialize (IHal (c :: cl) Hcl) as (m & Hal & Hm).
+   destruct Hm as [Hm| Hm]; [easy | ].
+   exists m.
+   split; [ now rewrite Hal, <- Hb | right ].
+   now subst bl; remember (c :: cl) as dl; simpl; subst dl.
+
+  destruct bl as [| b]; [ easy | ].
+  apply List_cons_inv in Hb.
+  destruct Hb as (Hab, Hbl); subst b.
+  specialize (IHal bl Hbl) as (m & Hal & Hm).
+  exists m.
+  split; [ now rewrite Hal | right ].
+  destruct Hm as [Hm| Hm]; [ now rewrite Hm | simpl ].
+  now destruct bl.
+Qed.
+
 Lemma list_rem_trail_move_carry_comm {r : radix} : ∀ c al, rad ≠ 0 →
   list_remove_trailing_0s (move_carry c al) =
   move_carry c (list_remove_trailing_0s al).
 Proof.
+intros * Hr.
+bbb.
+
 intros * Hr.
 revert c.
 induction al as [| a]; intros; simpl.
@@ -264,7 +305,9 @@ induction al as [| a]; intros; simpl.
   rewrite Nat.mul_comm.
   rewrite Nat.div_mul; [ | easy ].
   destruct d; [ lia | ].
-  destruct rad as [| s]; [ lia | ].
+  remember rad as s eqn:Hs; symmetry in Hs.
+  rewrite <- Hs in Hr.
+  destruct s as [| s]; [ lia | ].
   remember (S d * S s) as ds eqn:Hds.
   simpl in Hds; subst ds.
   rewrite move_carry_end_succ.
@@ -273,8 +316,15 @@ induction al as [| a]; intros; simpl.
   remember (list_remove_trailing_0s (S d mod rad :: al)) as bl eqn:Hbl.
   symmetry in Hbl.
   destruct bl as [| b].
-Search list_remove_trailing_0s.
-   apply eq_list_rem_trail_nil in Hbl.
+   exfalso.
+   apply eq_list_rem_trail_nil in Hbl; simpl in Hbl.
+   apply List_cons_inv in Hbl.
+   destruct Hbl as (Hdr, Ha).
+   apply Nat.mod_divides in Hdr; [ | lia ].
+   destruct Hdr as (e, He); rewrite Nat.mul_comm in He.
+   rewrite He, Nat.div_mul in Hal; [ | easy ].
+   destruct e; [ easy | ].
+Print move_carry_end.
 bbb.
 
 Lemma list_norm_action_comm {r : radix} : ∀ al, rad ≠ 0 →
