@@ -359,6 +359,21 @@ revert Han.
 now apply move_nz_carry.
 Qed.
 
+Lemma List_app_rep_0_last : ∀ al m n,
+  repeat 0 m = al ++ repeat 0 n
+  → last al 0 = 0.
+Proof.
+intros * Hr.
+revert m n Hr.
+induction al as [| a]; intros; [ easy | ].
+simpl in Hr.
+destruct a; [ | now destruct m ].
+destruct m; [ easy | simpl in Hr ].
+injection Hr; clear Hr; intros Hr; simpl.
+destruct al as [| a]; [ easy | ].
+eapply IHal; eassumption.
+Qed.
+
 Lemma list_rem_trail_move_carry_comm {r : radix} : ∀ c al, 1 < rad →
   list_remove_trailing_0s (move_carry c al) =
   move_carry c (list_remove_trailing_0s al).
@@ -380,21 +395,20 @@ destruct Hbl as [Hbl| Hbl].
   subst al; revert Ham.
   now apply move_nz_carry.
 
-  exfalso.
   subst al; rename cl into al.
   destruct carry; [ | now exfalso; revert Ham; apply move_nz_carry ].
   apply move_carry_0_is_rep_0 in Ham; [ | easy ].
-  revert m n Ham.
-  induction al as [| a]; intros; [ easy | ].
-  simpl in Ham.
-  destruct a; [ | now destruct m ].
-  destruct m; [ easy | simpl in Ham ].
-  injection Ham; clear Ham; intros Ham.
-  eapply IHal; [ | eassumption ].
-  now destruct al.
+  exfalso; apply Hcl; clear Hcl; symmetry in Ham.
+  eapply List_app_rep_0_last; eassumption.
 
  destruct Hcl as [Hcl| Hcl].
   subst cl; simpl in Han; subst al.
+  destruct carry.
+   rewrite move_carry_repeat_0 in Ham.
+   exfalso; apply Hbl; clear Hbl.
+   eapply List_app_rep_0_last; eassumption.
+
+   simpl.
 bbb.
 
 Lemma list_norm_action_comm {r : radix} : ∀ al, rad ≠ 0 →
