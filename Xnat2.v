@@ -288,6 +288,13 @@ induction al as [| a]; intros.
   now destruct bl.
 Qed.
 
+Lemma move_carry_end_succ_ne_rep_0 {r : radix} : ∀ i c n,
+  move_carry_end i c ≠ repeat 0 n.
+Proof.
+intros.
+Print move_carry_end.
+bbb.
+
 Lemma move_nz_carry {r : radix} : ∀ al n c, rad ≠ 0 → c ≠ 0 →
   move_carry c al ≠ repeat 0 n.
 Proof.
@@ -297,6 +304,9 @@ revert c n H.
 induction al as [| a]; intros.
  unfold move_carry in H.
  remember move_carry_end as f; simpl in H; subst f.
+ revert H; apply move_carry_end_succ_ne_rep_0.
+bbb.
+
  remember (S c) as c1; simpl in H; subst c1.
  remember move_carry_end as f; simpl in H; subst f.
  remember rad as s eqn:Hs.
@@ -331,7 +341,11 @@ induction al as [| a]; intros.
   rewrite Nat.div_mul in H; [ | easy ].
   destruct c1; [ lia | ].
   rewrite <- Hs in H; simpl in H; rewrite Hs in H.
+
+   revert H; apply glop.
+
 bbb.
+  clear c Hc.
 
 Lemma list_rem_trail_move_carry_comm {r : radix} : ∀ c al, rad ≠ 0 →
   list_remove_trailing_0s (move_carry c al) =
