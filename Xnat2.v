@@ -340,6 +340,25 @@ induction al as [| a]; intros.
  revert H; apply IHal.
 Qed.
 
+Lemma move_carry_0_is_rep_0 {r : radix} : ∀ al n, 1 < rad →
+  move_carry 0 al = repeat 0 n → al = repeat 0 n.
+Proof.
+intros * Hr Han.
+revert al Han.
+induction n; intros; [ now destruct al | ].
+simpl in Han; simpl.
+destruct al as [| a]; [ easy | ].
+simpl in Han; rewrite Nat.add_0_r in Han.
+injection Han; clear Han; intros Han Ha.
+apply Nat.mod_divides in Ha; [ | lia ].
+destruct Ha as (a1, Ha).
+rewrite Nat.mul_comm in Ha; subst a.
+rewrite Nat.div_mul in Han; [ | lia ].
+destruct a1; [ now f_equal; apply IHn | exfalso ].
+revert Han.
+now apply move_nz_carry.
+Qed.
+
 Lemma list_rem_trail_move_carry_comm {r : radix} : ∀ c al, 1 < rad →
   list_remove_trailing_0s (move_carry c al) =
   move_carry c (list_remove_trailing_0s al).
@@ -362,49 +381,9 @@ destruct Hbl as [Hbl| Hbl].
   now apply move_nz_carry.
 
   subst al; symmetry.
-bbb.
-  destruct carry.
-   destruct cl as [| c1]; [ easy | exfalso ].
-   simpl in Hcl.
-   destruct cl as [| c2].
-    simpl in Hab.
-    rewrite Nat.add_0_r in Hab.
-
-bbb.
-Focus 2.
-   exfalso; revert Hab.
-   now apply move_nz_carry.
-
-Focus 2.
- destruct Hcl as [Hcl| Hcl ].
-  subst al cl; simpl in Hab.
-
-bbb.
- destruct Hcl as [Hcl| Hcl ].
-  subst al cl; simpl in Hab; simpl.
-  destruct (zerop carry) as [Hc| Hc].
-   subst carry.
-   rewrite move_carry_repeat_0 in Hab.
-   revert b c Hab.
-   induction bl as [| b1]; intros; [ easy | exfalso ].
-   simpl in Hbl.
-   destruct bl as [| b2].
-    destruct b1; [ easy | now destruct c ].
-
-    destruct c; [ easy | simpl in Hab ].
-    apply List_cons_inv in Hab.
-    destruct Hab as (_, Hab); simpl in Hab.
-    now specialize (IHbl Hbl _ _ Hab).
-
-   destruct carry; [ easy | clear Hc ].
-   destruct c.
-    simpl in Hab; simpl.
-    destruct (zerop (S carry / rad)) as [Hcr| Hcr].
-    apply Nat.div_small_iff in Hcr; [ | lia ].
-    rewrite Nat.mod_small in Hab; [ | easy ].
-    rewrite Nat.mod_small; [ | easy ].
-    destruct bl as [| c]; [ easy | ].
-    now destruct bl; [ destruct b | ].
+  rename cl into al.
+  destruct carry; [ | now exfalso; revert Ham; apply move_nz_carry ].
+  apply move_carry_0_is_rep_0 in Ham.
 bbb.
 
 Lemma list_norm_action_comm {r : radix} : ∀ al, rad ≠ 0 →
