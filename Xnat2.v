@@ -296,7 +296,13 @@ destruct c; [ easy | clear Hc ].
 revert c n.
 induction al as [| a]; intros.
  simpl.
- remember (S c mod rad) as a eqn:Ha.
+ destruct (zerop (S c / rad)) as [Hc | Hc].
+  apply Nat.div_small_iff in Hc; [ | easy ].
+  rewrite Nat.mod_small; [ | easy ].
+  now destruct n.
+
+
+bbb.
  symmetry in Ha.
  destruct a.
   apply Nat.mod_divides in Ha; [ | easy ].
