@@ -291,7 +291,21 @@ Lemma list_rem_trail_move_carry_comm {r : radix} : ∀ c al, rad ≠ 0 →
   list_remove_trailing_0s (move_carry c al) =
   move_carry c (list_remove_trailing_0s al).
 Proof.
-intros * Hr.
+intros carry * Hr.
+remember (list_remove_trailing_0s (move_carry carry al)) as bl eqn:Hbl.
+remember (list_remove_trailing_0s al) as cl eqn:Hcl.
+symmetry in Hbl, Hcl.
+apply list_rem_trail_if in Hbl.
+apply list_rem_trail_if in Hcl.
+destruct Hbl as (b & Hab & Hbl).
+destruct Hcl as (c & Hac & Hcl).
+destruct Hbl as [Hbl| Hbl].
+ subst bl; simpl in Hab.
+ destruct Hcl as [Hcl| Hcl].
+  subst cl; simpl in Hac; simpl.
+  destruct (zerop carry) as [| Hc]; [ easy | exfalso ].
+  destruct carry; [ easy | clear Hc ].
+  subst al.
 bbb.
 
 intros * Hr.
