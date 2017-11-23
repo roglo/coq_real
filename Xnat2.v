@@ -380,10 +380,21 @@ destruct Hbl as [Hbl| Hbl].
   subst al; revert Ham.
   now apply move_nz_carry.
 
-  subst al; symmetry.
-  rename cl into al.
+  exfalso.
+  subst al; rename cl into al.
   destruct carry; [ | now exfalso; revert Ham; apply move_nz_carry ].
-  apply move_carry_0_is_rep_0 in Ham.
+  apply move_carry_0_is_rep_0 in Ham; [ | easy ].
+  revert m n Ham.
+  induction al as [| a]; intros; [ easy | ].
+  simpl in Ham.
+  destruct a; [ | now destruct m ].
+  destruct m; [ easy | simpl in Ham ].
+  injection Ham; clear Ham; intros Ham.
+  eapply IHal; [ | eassumption ].
+  now destruct al.
+
+ destruct Hcl as [Hcl| Hcl].
+  subst cl; simpl in Han; subst al.
 bbb.
 
 Lemma list_norm_action_comm {r : radix} : ∀ al, rad ≠ 0 →
