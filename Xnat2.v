@@ -287,6 +287,12 @@ induction al as [| a]; intros.
   now destruct bl.
 Qed.
 
+Lemma move_nz_carry {r : radix} : ∀ al n c, rad ≠ 0 → c ≠ 0 →
+  move_carry c al ≠ repeat 0 n.
+Proof.
+intros * Hr Hc.
+bbb.
+
 Lemma list_rem_trail_move_carry_comm {r : radix} : ∀ c al, rad ≠ 0 →
   list_remove_trailing_0s (move_carry c al) =
   move_carry c (list_remove_trailing_0s al).
@@ -305,7 +311,22 @@ destruct Hbl as [Hbl| Hbl].
   subst cl; simpl in Hac; simpl.
   destruct (zerop carry) as [| Hc]; [ easy | exfalso ].
   destruct carry; [ easy | clear Hc ].
-  subst al.
+  subst al; revert Hab.
+  now apply move_nz_carry.
+
+bbb.
+
+  destruct c; simpl in Hab.
+   destruct b; [ easy | simpl in Hab ].
+   apply List_cons_inv in Hab.
+   destruct Hab as (Hcr, Hab).
+   apply Nat.mod_divides in Hcr; [ | easy ].
+   destruct Hcr as (c, Hcr).
+   rewrite Nat.mul_comm in Hcr; rewrite Hcr in Hab.
+   rewrite Nat.div_mul in Hab; [ | easy ].
+   destruct c; [ easy | simpl in Hab ].
+   destruct b; [ easy | simpl in Hab ].
+
 bbb.
 
 intros * Hr.
