@@ -288,7 +288,7 @@ induction al as [| a]; intros.
   now destruct bl.
 Qed.
 
-Lemma move_carry_end_succ_ne_rep_0 {r : radix} : ∀ i c n, rad ≠ 0 →
+Lemma move_carry_end_succ_ne_rep_0 {r : radix} : ∀ i c n, 1 < rad →
   0 < c < i
   → move_carry_end i c ≠ repeat 0 n.
 Proof.
@@ -302,17 +302,21 @@ destruct c1; [ | now destruct n ].
 destruct n; [ easy | ].
 simpl; intros H; apply List_cons_inv in H.
 destruct H as (_, H).
-apply Nat.mod_divides in Hc1; [ | easy ].
+apply Nat.mod_divides in Hc1; [ | lia ].
 destruct Hc1 as (c1, Hc1).
 rewrite Nat.mul_comm in Hc1.
 revert H.
-rewrite Hc1, Nat.div_mul; [ | easy ].
+rewrite Hc1, Nat.div_mul; [ | lia ].
 apply IHi; [ destruct c1; lia | ].
 apply Nat.mul_lt_mono_pos_r with (p := rad); [ lia | ].
 rewrite <- Hc1.
-bbb.
+destruct rad as [| s]; [ easy | ].
+destruct s; [ lia | ].
+destruct i; [ lia | ].
+rewrite Nat.mul_comm; simpl; lia.
+Qed.
 
-Lemma move_nz_carry {r : radix} : ∀ al n c, rad ≠ 0 → c ≠ 0 →
+Lemma move_nz_carry {r : radix} : ∀ al n c, 1 < rad → c ≠ 0 →
   move_carry c al ≠ repeat 0 n.
 Proof.
 intros * Hr Hc H.
@@ -321,48 +325,22 @@ revert c n H.
 induction al as [| a]; intros.
  unfold move_carry in H.
  remember move_carry_end as f; simpl in H; subst f.
- revert H; apply move_carry_end_succ_ne_rep_0.
-bbb.
+ revert H; apply move_carry_end_succ_ne_rep_0; [ easy | ].
+ split; lia.
 
- remember (S c) as c1; simpl in H; subst c1.
- remember move_carry_end as f; simpl in H; subst f.
- remember rad as s eqn:Hs.
- destruct s; [ easy | rewrite Hs in Hr, H ].
- remember (S c mod rad) as c1 eqn:Hc.
- symmetry in Hc.
- destruct c1.
-  destruct n; [ easy | ].
-  remember move_carry_end as f; simpl in H; subst f.
-  apply List_cons_inv in H.
-  destruct H as (_, H).
-  apply Nat.mod_divides in Hc; [ | easy ].
-  destruct Hc as (c1, Hc).
-  rewrite Nat.mul_comm in Hc.
-  rewrite Hc in H.
-  rewrite Nat.div_mul in H; [ | easy ].
-  destruct c1; [ lia | ].
-  rewrite <- Hs in H; simpl in H; rewrite Hs in H.
-  clear c Hc.
-  rename c1 into c.
- remember (S c mod rad) as c1 eqn:Hc.
- symmetry in Hc.
- destruct c1.
-  destruct n; [ easy | ].
-  remember move_carry_end as f; simpl in H; subst f.
-  apply List_cons_inv in H.
-  destruct H as (_, H).
-  apply Nat.mod_divides in Hc; [ | easy ].
-  destruct Hc as (c1, Hc).
-  rewrite Nat.mul_comm in Hc.
-  rewrite Hc in H.
-  rewrite Nat.div_mul in H; [ | easy ].
-  destruct c1; [ lia | ].
-  rewrite <- Hs in H; simpl in H; rewrite Hs in H.
-
-   revert H; apply glop.
+ destruct n in H; [ easy | simpl in H ].
+ apply List_cons_inv in H.
+ destruct H as (Hc, H).
+ apply Nat.mod_divides in Hc; [ | lia ].
+ destruct Hc as (c1, Hc1).
+ rewrite Nat.mul_comm in Hc1.
+ rewrite Hc1 in H.
+ rewrite Nat.div_mul in H; [ | lia ].
+ destruct c1; [ lia | ].
+ revert H; apply IHal.
+Qed.
 
 bbb.
-  clear c Hc.
 
 Lemma list_rem_trail_move_carry_comm {r : radix} : ∀ c al, rad ≠ 0 →
   list_remove_trailing_0s (move_carry c al) =
