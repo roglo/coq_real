@@ -372,29 +372,26 @@ Focus 2.
   destruct (zerop carry) as [Hc| Hc].
    subst carry.
    rewrite move_carry_repeat_0 in Hab.
-   destruct bl as [| b1]; [ easy | exfalso ].
+   revert b c Hab.
+   induction bl as [| b1]; intros; [ easy | exfalso ].
    simpl in Hbl.
    destruct bl as [| b2].
-    destruct b1; [ easy | ].
-    simpl in Hab.
-    now destruct c.
+    destruct b1; [ easy | now destruct c ].
 
     destruct c; [ easy | simpl in Hab ].
     apply List_cons_inv in Hab.
-    destruct Hab as (_, Hab).
-    simpl in Hbl.
-    destruct bl as [| b3].
-     destruct c; [ easy | simpl in Hab ].
-     apply List_cons_inv in Hab; lia.
+    destruct Hab as (_, Hab); simpl in Hab.
+    now specialize (IHbl Hbl _ _ Hab).
 
-     destruct c; [ easy | simpl in Hab ].
-     apply List_cons_inv in Hab.
-     destruct Hab as (_, Hab).
-     simpl in Hbl.
-     destruct bl as [| b4].
-      destruct c; [ easy | simpl in Hab ].
-      apply List_cons_inv in Hab; lia.
-
+   destruct carry; [ easy | clear Hc ].
+   destruct c.
+    simpl in Hab; simpl.
+    destruct (zerop (S carry / rad)) as [Hcr| Hcr].
+    apply Nat.div_small_iff in Hcr; [ | lia ].
+    rewrite Nat.mod_small in Hab; [ | easy ].
+    rewrite Nat.mod_small; [ | easy ].
+    destruct bl as [| c]; [ easy | ].
+    now destruct bl; [ destruct b | ].
 bbb.
 
 Lemma list_norm_action_comm {r : radix} : ∀ al, rad ≠ 0 →
