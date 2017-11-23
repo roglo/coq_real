@@ -340,9 +340,7 @@ induction al as [| a]; intros.
  revert H; apply IHal.
 Qed.
 
-bbb.
-
-Lemma list_rem_trail_move_carry_comm {r : radix} : ∀ c al, rad ≠ 0 →
+Lemma list_rem_trail_move_carry_comm {r : radix} : ∀ c al, 1 < rad →
   list_remove_trailing_0s (move_carry c al) =
   move_carry c (list_remove_trailing_0s al).
 Proof.
@@ -363,39 +361,6 @@ destruct Hbl as [Hbl| Hbl].
   subst al; revert Hab.
   now apply move_nz_carry.
 
-bbb.
-
-intros * Hr.
-revert c.
-induction al as [| a]; intros; simpl.
- destruct (zerop c) as [Hc| Hc]; [ easy | simpl ].
- destruct (zerop (c mod rad)) as [Hcr| Hcr].
-  rewrite Hcr; simpl.
-  apply Nat.mod_divides in Hcr; [ | easy ].
-  destruct Hcr as (d, Hd); subst c.
-  rewrite Nat.mul_comm.
-  rewrite Nat.div_mul; [ | easy ].
-  destruct d; [ lia | ].
-  remember rad as s eqn:Hs; symmetry in Hs.
-  rewrite <- Hs in Hr.
-  destruct s as [| s]; [ lia | ].
-  remember (S d * S s) as ds eqn:Hds.
-  simpl in Hds; subst ds.
-  rewrite move_carry_end_succ.
-  remember list_remove_trailing_0s as f; simpl; subst f.
-  remember (move_carry_end (s + d * S s) (S d / rad)) as al eqn:Hal.
-  remember (list_remove_trailing_0s (S d mod rad :: al)) as bl eqn:Hbl.
-  symmetry in Hbl.
-  destruct bl as [| b].
-   exfalso.
-   apply eq_list_rem_trail_nil in Hbl; simpl in Hbl.
-   apply List_cons_inv in Hbl.
-   destruct Hbl as (Hdr, Ha).
-   apply Nat.mod_divides in Hdr; [ | lia ].
-   destruct Hdr as (e, He); rewrite Nat.mul_comm in He.
-   rewrite He, Nat.div_mul in Hal; [ | easy ].
-   destruct e; [ easy | ].
-Print move_carry_end.
 bbb.
 
 Lemma list_norm_action_comm {r : radix} : ∀ al, rad ≠ 0 →
