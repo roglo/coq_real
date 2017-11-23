@@ -291,6 +291,31 @@ Lemma move_nz_carry {r : radix} : ∀ al n c, rad ≠ 0 → c ≠ 0 →
   move_carry c al ≠ repeat 0 n.
 Proof.
 intros * Hr Hc.
+destruct c; [ easy | clear Hc ].
+revert c n.
+induction al as [| a]; intros.
+ simpl.
+ remember (S c mod rad) as a eqn:Ha.
+ symmetry in Ha.
+ destruct a.
+  apply Nat.mod_divides in Ha; [ | easy ].
+  destruct Ha as (b & Hb).
+  rewrite Nat.mul_comm in Hb; rewrite Hb.
+  rewrite Nat.div_mul; [ | easy ].
+  destruct b; [ easy | simpl ].
+bbb.
+  destruct c; simpl in Hab.
+   destruct b; [ easy | simpl in Hab ].
+   apply List_cons_inv in Hab.
+   destruct Hab as (Hcr, Hab).
+   apply Nat.mod_divides in Hcr; [ | easy ].
+   destruct Hcr as (c, Hcr).
+   rewrite Nat.mul_comm in Hcr; rewrite Hcr in Hab.
+   rewrite Nat.div_mul in Hab; [ | easy ].
+   destruct c; [ easy | simpl in Hab ].
+   destruct b; [ easy | simpl in Hab ].
+
+bbb.
 bbb.
 
 Lemma list_rem_trail_move_carry_comm {r : radix} : ∀ c al, rad ≠ 0 →
@@ -313,19 +338,6 @@ destruct Hbl as [Hbl| Hbl].
   destruct carry; [ easy | clear Hc ].
   subst al; revert Hab.
   now apply move_nz_carry.
-
-bbb.
-
-  destruct c; simpl in Hab.
-   destruct b; [ easy | simpl in Hab ].
-   apply List_cons_inv in Hab.
-   destruct Hab as (Hcr, Hab).
-   apply Nat.mod_divides in Hcr; [ | easy ].
-   destruct Hcr as (c, Hcr).
-   rewrite Nat.mul_comm in Hcr; rewrite Hcr in Hab.
-   rewrite Nat.div_mul in Hab; [ | easy ].
-   destruct c; [ easy | simpl in Hab ].
-   destruct b; [ easy | simpl in Hab ].
 
 bbb.
 
