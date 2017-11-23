@@ -295,10 +295,61 @@ destruct (zerop rad) as [Hr| Hr].
  now f_equal.
 Qed.
 
-Lemma list_norm_action_comm {r : radix} : ∀ al,
+Lemma move_carry_end_succ {r : radix} : ∀ i c,
+  move_carry_end (S i) (S c) = S c mod rad :: move_carry_end i (S c / rad).
+Proof. easy. Qed.
+
+Lemma list_rem_trail_move_carry_comm {r : radix} : ∀ c al, rad ≠ 0 →
+  list_remove_trailing_0s (move_carry c al) =
+  move_carry c (list_remove_trailing_0s al).
+Proof.
+intros * Hr.
+revert c.
+induction al as [| a]; intros; simpl.
+ destruct (zerop c) as [Hc| Hc]; [ easy | simpl ].
+ destruct (zerop (c mod rad)) as [Hcr| Hcr].
+  rewrite Hcr; simpl.
+  apply Nat.mod_divides in Hcr; [ | easy ].
+  destruct Hcr as (d, Hd); subst c.
+  rewrite Nat.mul_comm.
+  rewrite Nat.div_mul; [ | easy ].
+  destruct d; [ lia | ].
+  destruct rad as [| s]; [ lia | ].
+  remember (S d * S s) as ds eqn:Hds.
+  simpl in Hds; subst ds.
+  rewrite move_carry_end_succ.
+Print list_remove_trailing_0s.
+
+  remember list_remove_trailing_0s as f; simpl; subst f.
+bbb.
+
+Lemma list_norm_action_comm {r : radix} : ∀ al, rad ≠ 0 →
   list_norm al = move_carry 0 (list_remove_trailing_0s al).
 Proof.
-intros; unfold list_norm.
+intros * Hr; unfold list_norm.
+bbb.
+induction al as [| a]; [ easy | simpl ].
+rewrite Nat.add_0_r.
+destruct a.
+ rewrite Nat.mod_0_l; [ | easy ].
+ rewrite Nat.div_0_l; [ | easy ].
+ rewrite IHal.
+ remember (list_remove_trailing_0s al) as bl eqn:Hbl.
+ symmetry in Hbl.
+ destruct bl as [| b]; [ easy | simpl ].
+ rewrite Nat.add_0_r.
+ rewrite Nat.mod_0_l; [ | easy ].
+ rewrite Nat.div_0_l; [ | easy ].
+ now rewrite Nat.add_0_r.
+
+ simpl; rewrite Nat.add_0_r.
+ destruct (zerop (S a mod rad)) as [Har| Har].
+  rewrite Har.
+  apply Nat.mod_divides in Har; [ | easy ].
+  destruct Har as (c, Hc).
+  rewrite Hc, Nat.mul_comm.
+  rewrite Nat.div_mul; [ | easy ].
+
 bbb.
 
 Lemma list_norm_app_0 {r : radix} : ∀ al,
