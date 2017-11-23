@@ -147,20 +147,6 @@ intros; simpl.
 now rewrite Nat.add_0_r.
 Qed.
 
-(*
-Lemma list_remove_heading_cons : ∀ al bl,
-  list_remove_heading_0s (al ++ bl) =
-  match list_remove_heading_0s al with
-  | [] => list_remove_heading_0s bl
-  | a :: al' => a :: al' ++ bl
-  end.
-Proof.
-intros.
-induction al as [| a al]; [ easy | simpl ].
-now destruct a.
-Qed.
-*)
-
 Lemma nat_of_list_removed_trailing_0s_mul {r : radix} : ∀ a al,
   nat_of_list 0 (list_remove_trailing_0s al) * rad + a =
   nat_of_list 0 (list_remove_trailing_0s (a :: al)).
@@ -170,42 +156,6 @@ remember (list_remove_trailing_0s al) as al' eqn:Hal.
 symmetry in Hal.
 now destruct a; [ destruct al' | ].
 Qed.
-
-(*
-Lemma list_rem_head_app_succ : ∀ al₁ al₂ a,
-  list_remove_heading_0s (al₁ ++ S a :: al₂) =
-  list_remove_heading_0s al₁ ++ S a :: al₂.
-Proof.
-intros.
-induction al₁ as [| a₁]; [ easy | simpl ].
-now destruct a₁.
-Qed.
-
-Lemma nat_of_list_app {r : radix} : ∀ a al,
-  nat_of_list 0 (al ++ [a]) =
-  nat_of_list 0 al + rad ^ length al * a.
-Proof.
-intros.
-induction al as [| a₁]; simpl; [ lia | ].
-rewrite IHal; lia.
-Qed.
-
-Lemma nat_of_list_norm_cons {r : radix} : ∀ a al,
-  nat_of_list 0 (list_norm al) * rad + a = nat_of_list 0 (list_norm (a :: al)).
-Proof.
-intros.
-unfold list_norm.
-rewrite nat_of_list_removed_trailing_0s_mul.
-bbb.
-
-Lemma nat_of_list_norm_eq {r : radix} : ∀ al, 2 ≤ rad →
-  nat_of_list 0 al = nat_of_list 0 (list_norm al).
-Proof.
-intros * Hr.
-induction al as [| a al]; [ easy | simpl ].
-rewrite IHal; clear IHal.
-bbb.
-*)
 
 Lemma move_carry_repeat_0 {r : radix} : ∀ n,
   move_carry 0 (repeat 0 n) = repeat 0 n.
@@ -318,9 +268,13 @@ induction al as [| a]; intros; simpl.
   remember (S d * S s) as ds eqn:Hds.
   simpl in Hds; subst ds.
   rewrite move_carry_end_succ.
-Print list_remove_trailing_0s.
-
   remember list_remove_trailing_0s as f; simpl; subst f.
+  remember (move_carry_end (s + d * S s) (S d / rad)) as al eqn:Hal.
+  remember (list_remove_trailing_0s (S d mod rad :: al)) as bl eqn:Hbl.
+  symmetry in Hbl.
+  destruct bl as [| b].
+Search list_remove_trailing_0s.
+   apply eq_list_rem_trail_nil in Hbl.
 bbb.
 
 Lemma list_norm_action_comm {r : radix} : ∀ al, rad ≠ 0 →
