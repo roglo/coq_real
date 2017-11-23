@@ -1,4 +1,5 @@
 (* Natural numbers in any radix; second version; without proofs *)
+(* Can be regarded as polynomials with natural number coefficients. *)
 
 Require Import Utf8 Arith Psatz List.
 Import ListNotations.
@@ -294,9 +295,19 @@ destruct (zerop rad) as [Hr| Hr].
  now f_equal.
 Qed.
 
+Lemma list_norm_action_comm {r : radix} : ∀ al,
+  list_norm al = move_carry 0 (list_remove_trailing_0s al).
+Proof.
+intros; unfold list_norm.
+bbb.
+
 Lemma list_norm_app_0 {r : radix} : ∀ al,
   list_norm (al ++ [0]) = list_norm al.
 Proof.
+intros.
+do 2 rewrite list_norm_action_comm.
+
+bbb.
 intros.
 induction al as [| a]; [ apply list_norm_0 | simpl ].
 unfold list_norm.
@@ -304,7 +315,7 @@ remember list_remove_trailing_0s as f; simpl; subst f.
 rewrite Nat.add_0_r.
 bbb.
 
-Lemma repeat_succ_app : ∀ A (a : A) n,
+Lemma List_repeat_succ_app : ∀ A (a : A) n,
   repeat a (S n) = repeat a n ++ [a].
 Proof.
 intros; simpl.
@@ -323,7 +334,7 @@ destruct a.
  now apply list_norm_cons_0.
 
  rewrite <- IHn.
- rewrite repeat_succ_app.
+ rewrite List_repeat_succ_app.
 
 bbb.
 
