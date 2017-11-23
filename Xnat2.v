@@ -361,6 +361,40 @@ destruct Hbl as [Hbl| Hbl].
   subst al; revert Hab.
   now apply move_nz_carry.
 
+  destruct carry.
+Focus 2.
+   exfalso; revert Hab.
+   now apply move_nz_carry.
+
+Focus 2.
+ destruct Hcl as [Hcl| Hcl ].
+  subst al cl; simpl in Hab; simpl.
+  destruct (zerop carry) as [Hc| Hc].
+   subst carry.
+   rewrite move_carry_repeat_0 in Hab.
+   destruct bl as [| b1]; [ easy | exfalso ].
+   simpl in Hbl.
+   destruct bl as [| b2].
+    destruct b1; [ easy | ].
+    simpl in Hab.
+    now destruct c.
+
+    destruct c; [ easy | simpl in Hab ].
+    apply List_cons_inv in Hab.
+    destruct Hab as (_, Hab).
+    simpl in Hbl.
+    destruct bl as [| b3].
+     destruct c; [ easy | simpl in Hab ].
+     apply List_cons_inv in Hab; lia.
+
+     destruct c; [ easy | simpl in Hab ].
+     apply List_cons_inv in Hab.
+     destruct Hab as (_, Hab).
+     simpl in Hbl.
+     destruct bl as [| b4].
+      destruct c; [ easy | simpl in Hab ].
+      apply List_cons_inv in Hab; lia.
+
 bbb.
 
 Lemma list_norm_action_comm {r : radix} : ∀ al, rad ≠ 0 →
