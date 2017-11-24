@@ -165,7 +165,7 @@ symmetry in Hal.
 now destruct a; [ destruct al' | ].
 Qed.
 
-Lemma move_carry_repeat_0 {r : radix} : ∀ n,
+Lemma move_carry_rep_0 {r : radix} : ∀ n,
   move_carry 0 (repeat 0 n) = repeat 0 n.
 Proof.
 intros.
@@ -182,7 +182,7 @@ Lemma list_norm_0 {r : radix} : list_norm [0] = [].
 Proof.
 intros.
 unfold list_norm.
-specialize (move_carry_repeat_0 1) as H.
+specialize (move_carry_rep_0 1) as H.
 remember move_carry as f; simpl in H; subst f.
 now rewrite H.
 Qed.
@@ -429,6 +429,7 @@ destruct Hbl as [Hbl| Hbl].
 
  destruct Hcl as [Hcl| Hcl].
   subst cl; simpl in Ham.
+Search move_carry.
 bbb.
 
  destruct Hcl as [Hcl| Hcl].
