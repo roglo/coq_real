@@ -432,6 +432,24 @@ destruct Hbl as [Hbl| Hbl].
 
  destruct Hcl as [Hcl| Hcl].
   subst cl; simpl in Ham.
+(**)
+destruct n; simpl in Ham; simpl.
+destruct (zerop carry) as [Hc| Hc].
+ destruct m; [ now rewrite app_nil_r in Ham | simpl in Ham ].
+ now destruct bl.
+
+ destruct m; [ now rewrite app_nil_r in Ham | ].
+ simpl in Ham.
+ destruct bl as [| b1]; [ easy | ].
+  simpl in Ham.
+  injection Ham; clear Ham; intros Ham Hb1.
+  rewrite Hb1; f_equal.
+  exfalso.
+
+bbb.
+
+
+ simpl.
 bbb.
   destruct carry.
    rewrite move_carry_rep_0 in Ham.
