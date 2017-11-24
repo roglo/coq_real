@@ -246,46 +246,71 @@ destruct (zerop rad) as [Hr| Hr].
  now f_equal.
 Qed.
 
-Lemma move_carry_end_succ {r : radix} : ∀ i c,
-  move_carry_end (S i) (S c) = S c mod rad :: move_carry_end i (S c / rad).
+Theorem List_cons_comm_app : ∀ A (x : A) l l', l ++ x :: l' = l ++ [x] ++ l'.
 Proof. easy. Qed.
 
-Lemma list_rem_trail_if : ∀ al bl,
-  list_remove_trailing_0s al = bl
-  → ∃ n, al = bl ++ repeat 0 n ∧ (bl = [] ∨ List.last bl 0 ≠ 0).
+Lemma list_rem_trail_rep_0 : ∀ al n,
+  list_remove_trailing_0s (al ++ repeat 0 n) = list_remove_trailing_0s al.
 Proof.
-intros * Hb.
-revert bl Hb.
-induction al as [| a]; intros.
- subst bl; simpl.
- exists 0.
- split; [ easy | now left ].
+intros.
+revert al.
+induction n; intros; [ now rewrite List.app_nil_r | simpl ].
+rewrite List_cons_comm_app, List.app_assoc.
+rewrite IHn; clear.
+induction al as [| a]; [ easy | now simpl; rewrite IHal ].
+Qed.
 
- simpl in Hb.
- destruct a.
-  remember (list_remove_trailing_0s al) as cl eqn:Hcl in Hb.
-  symmetry in Hcl.
-  destruct cl as [| c].
-   subst bl; simpl.
-   apply eq_list_rem_trail_nil in Hcl.
-   rewrite Hcl.
-   exists (S (length al)).
-   split; [ easy | now left ].
+Lemma list_rem_trail_iff : ∀ al bl,
+  list_remove_trailing_0s al = bl
+  ↔ ∃ n, al = bl ++ repeat 0 n ∧ (bl = [] ∨ List.last bl 0 ≠ 0).
+Proof.
+intros *.
+split.
+ intros Hb.
+ revert bl Hb.
+ induction al as [| a]; intros.
+  subst bl; simpl.
+  exists 0.
+  split; [ easy | now left ].
 
-   specialize (IHal (c :: cl) Hcl) as (m & Hal & Hm).
-   destruct Hm as [Hm| Hm]; [easy | ].
+  simpl in Hb.
+  destruct a.
+   remember (list_remove_trailing_0s al) as cl eqn:Hcl in Hb.
+   symmetry in Hcl.
+   destruct cl as [| c].
+    subst bl; simpl.
+    apply eq_list_rem_trail_nil in Hcl.
+    rewrite Hcl.
+    exists (S (length al)).
+    split; [ easy | now left ].
+
+    specialize (IHal (c :: cl) Hcl) as (m & Hal & Hm).
+    destruct Hm as [Hm| Hm]; [easy | ].
+    exists m.
+    split; [ now rewrite Hal, <- Hb | right ].
+    now subst bl; remember (c :: cl) as dl; simpl; subst dl.
+
+   destruct bl as [| b]; [ easy | ].
+   apply List_cons_inv in Hb.
+   destruct Hb as (Hab, Hbl); subst b.
+   specialize (IHal bl Hbl) as (m & Hal & Hm).
    exists m.
-   split; [ now rewrite Hal, <- Hb | right ].
-   now subst bl; remember (c :: cl) as dl; simpl; subst dl.
+   split; [ now rewrite Hal | right ].
+   destruct Hm as [Hm| Hm]; [ now rewrite Hm | simpl ].
+   now destruct bl.
 
-  destruct bl as [| b]; [ easy | ].
-  apply List_cons_inv in Hb.
-  destruct Hb as (Hab, Hbl); subst b.
-  specialize (IHal bl Hbl) as (m & Hal & Hm).
-  exists m.
-  split; [ now rewrite Hal | right ].
-  destruct Hm as [Hm| Hm]; [ now rewrite Hm | simpl ].
-  now destruct bl.
+ intros (n & Hal & Hbl).
+ destruct Hbl as [Hbl| Hbl].
+  subst al bl; simpl.
+  apply eq_list_rem_trail_nil.
+  now rewrite repeat_length.
+
+  subst al.
+  rewrite list_rem_trail_rep_0.
+  induction bl as [| b1]; [ easy | simpl in Hbl; simpl ].
+  destruct b1.
+   now destruct bl as [| b2]; [ | rewrite IHbl ].
+   now destruct bl as [| b2]; [ | rewrite IHbl ].
 Qed.
 
 Lemma move_carry_end_succ_ne_rep_0 {r : radix} : ∀ i c n, 1 < rad →
@@ -382,24 +407,29 @@ intros carry * Hr.
 remember (list_remove_trailing_0s (move_carry carry al)) as bl eqn:Hml.
 remember (list_remove_trailing_0s al) as cl eqn:Hnl.
 symmetry in Hml, Hnl.
-apply list_rem_trail_if in Hml.
-apply list_rem_trail_if in Hnl.
+apply list_rem_trail_iff in Hml.
+apply list_rem_trail_iff in Hnl.
 destruct Hml as (m & Ham & Hbl).
 destruct Hnl as (n & Han & Hcl).
+subst al; symmetry.
 destruct Hbl as [Hbl| Hbl].
  subst bl; simpl in Ham.
  destruct Hcl as [Hcl| Hcl].
-  subst cl; simpl in Han; simpl.
+  subst cl; simpl in Ham.
+  simpl.
   destruct (zerop carry) as [| Hc]; [ easy | exfalso ].
   destruct carry; [ easy | clear Hc ].
-  subst al; revert Ham.
-  now apply move_nz_carry.
+  now revert Ham; apply move_nz_carry.
 
-  subst al; rename cl into al.
+  rename cl into al.
   destruct carry; [ | now exfalso; revert Ham; apply move_nz_carry ].
   apply move_carry_0_is_rep_0 in Ham; [ | easy ].
   exfalso; apply Hcl; clear Hcl; symmetry in Ham.
   eapply List_app_rep_0_last; eassumption.
+
+ destruct Hcl as [Hcl| Hcl].
+  subst cl; simpl in Ham.
+bbb.
 
  destruct Hcl as [Hcl| Hcl].
   subst cl; simpl in Han; subst al.
