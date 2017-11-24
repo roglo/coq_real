@@ -432,6 +432,7 @@ destruct Hbl as [Hbl| Hbl].
 
  destruct Hcl as [Hcl| Hcl].
   subst cl; simpl in Ham.
+bbb.
   destruct carry.
    rewrite move_carry_rep_0 in Ham.
    exfalso; apply Hbl; clear Hbl.
