@@ -433,15 +433,51 @@ destruct Hbl as [Hbl| Hbl].
    exfalso; apply Hbl; clear Hbl.
    eapply List_app_rep_0_last; eassumption.
 
+   revert carry Ham.
+   induction m; intros.
+    simpl in Ham.
+    rewrite List.app_nil_r in Ham.
+
+bbb.
    revert m n carry Ham.
    induction bl as [| b1]; intros; [ easy | ].
    simpl in Hbl.
    destruct bl as [| b2].
     destruct n.
+     clear IHbl.
      simpl in Ham; simpl.
      injection Ham; clear Ham; intros Ham Hb1.
      subst b1; f_equal.
      destruct (zerop (S carry / rad)) as [Hcr| Hcr]; [ easy | exfalso ].
+revert carry Hbl Hcr Ham.
+induction m; intros; [ easy | simpl in Ham ].
+injection Ham; clear Ham; intros Ham H.
+apply Nat.mod_divides in H; [ | lia ].
+destruct H as (c, Hc).
+rewrite Nat.mul_comm in Hc; rewrite Hc in Hcr, Ham.
+rewrite Nat.div_mul in Ham; [ | lia ].
+destruct c; [ easy | ].
+destruct carry.
+ rewrite Nat.div_1_l in Hc; [ lia | easy ].
+
+ simpl in Ham.
+ rewrite <- Hc in Hcr.
+ specialize (IHm (S carry) Hbl Hcr).
+ apply IHm; clear IHm.
+bbb.
+
+ destruct m; [ easy | simpl in Ham ].
+ injection Ham; clear Ham; intros Ham H.
+ apply Nat.mod_divides in H; [ | lia ].
+ destruct H as (c1, Hc1).
+ rewrite Nat.mul_comm in Hc1; rewrite Hc1 in Hcr, Ham.
+ rewrite Nat.div_mul in Ham; [ | lia ].
+ destruct c1; [ easy | ].
+ destruct carry.
+  destruct rad as [| s]; [ easy | ].
+  destruct s; [ easy | now destruct s ].
+
+bbb.
      destruct m; [ easy | simpl in Ham ].
      injection Ham; clear Ham; intros Ham H.
      apply Nat.mod_divides in H; [ | lia ].
