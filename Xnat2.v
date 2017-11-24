@@ -386,6 +386,22 @@ destruct al as [| a]; [ easy | ].
 eapply IHal; eassumption.
 Qed.
 
+Lemma move_carry_end_enough_iter {r : radix} : ∀ carry m n, rad > 1 →
+  carry < m → carry < n → move_carry_end m carry = move_carry_end n carry.
+Proof.
+intros * Hr Hm Hn.
+revert carry n Hm Hn.
+induction m; intros; [ easy | ].
+destruct n; [ easy | simpl ].
+destruct (zerop carry) as [Hc| Hc]; [ easy | f_equal ].
+apply IHm.
+ apply lt_le_trans with (m := carry); [ | lia ].
+ now apply Nat.div_lt.
+
+ apply lt_le_trans with (m := carry); [ | lia ].
+ now apply Nat.div_lt.
+Qed.
+
 Lemma list_rem_trail_move_carry_comm {r : radix} : ∀ c al, 1 < rad →
   list_remove_trailing_0s (move_carry c al) =
   move_carry c (list_remove_trailing_0s al).
@@ -461,8 +477,7 @@ destruct Hbl as [Hbl| Hbl].
          destruct carry; [ now rewrite Nat.div_1_l in Hc1 | simpl; f_equal ].
          destruct (zerop (S c1 / rad)) as [H| H]; [ lia | clear H ].
          rewrite <- Hb2; f_equal.
-Print move_carry_end.
-(* perhaps 'carry' and 'c1' are "enough" for move_carry_end? *)
+         apply move_carry_end_enough_iter; [ easy | | ].
 
 bbb.
    revert m n carry Ham.
