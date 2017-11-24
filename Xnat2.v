@@ -5,13 +5,6 @@
 Require Import Utf8 Arith Psatz List.
 Import ListNotations.
 
-Lemma List_cons_inv : ∀ A (a b : A) al bl,
-  a :: al = b :: bl → a = b ∧ al = bl.
-Proof.
-intros * Hab.
-now inversion Hab.
-Qed.
-
 Class radix := { rad : nat }.
 
 Definition radix_2 := {| rad := 2 |}.
@@ -197,8 +190,7 @@ split; intros Ha.
  destruct al' as [| a']; [ now f_equal; apply IHal | easy ].
 
  induction al as [| a]; [ easy | simpl in Ha; simpl ].
- apply List_cons_inv in Ha.
- destruct Ha as (Ha, Hal); subst a.
+ injection Ha; clear Ha; intros Hal Ha; subst a.
  now rewrite IHal.
 Qed.
 
@@ -222,8 +214,7 @@ split; intros Hal.
  destruct Ha as [Ha| Ha]; [ now apply IHal | lia ].
 
  induction al as [| a]; [ easy | simpl in Hal; simpl ].
- apply List_cons_inv in Hal.
- destruct Hal as (Ha, Hal); subst a.
+ injection Hal; clear Hal; intros Hal Ha; subst a.
  apply IHal in Hal.
  now rewrite Hal.
 Qed.
@@ -290,8 +281,7 @@ split.
     now subst bl; remember (c :: cl) as dl; simpl; subst dl.
 
    destruct bl as [| b]; [ easy | ].
-   apply List_cons_inv in Hb.
-   destruct Hb as (Hab, Hbl); subst b.
+   injection Hb; clear Hb; intros Hbl H; subst b.
    specialize (IHal bl Hbl) as (m & Hal & Hm).
    exists m.
    split; [ now rewrite Hal | right ].
@@ -324,8 +314,7 @@ remember (c mod rad) as c1 eqn:Hc1.
 symmetry in Hc1.
 destruct c1; [ | now destruct n ].
 destruct n; [ easy | ].
-simpl; intros H; apply List_cons_inv in H.
-destruct H as (_, H).
+simpl; intros H; injection H; clear H; intros H.
 apply Nat.mod_divides in Hc1; [ | lia ].
 destruct Hc1 as (c1, Hc1).
 rewrite Nat.mul_comm in Hc1.
@@ -353,8 +342,7 @@ induction al as [| a]; intros.
  split; lia.
 
  destruct n in H; [ easy | simpl in H ].
- apply List_cons_inv in H.
- destruct H as (Hc, H).
+ injection H; clear H; intros H Hc.
  apply Nat.mod_divides in Hc; [ | lia ].
  destruct Hc as (c1, Hc1).
  rewrite Nat.mul_comm in Hc1.
@@ -437,6 +425,42 @@ destruct Hbl as [Hbl| Hbl].
    induction m; intros.
     simpl in Ham.
     rewrite List.app_nil_r in Ham.
+    revert bl carry Hbl Ham.
+    induction n; intros; [ easy | ].
+    simpl in Ham.
+    rewrite Nat.add_0_r in Ham.
+    destruct bl as [| b1]; [ easy | ].
+     injection Ham; clear Ham; intros Hb1 Ham; simpl.
+     rewrite Ham; f_equal.
+     remember (S carry / rad) as c1 eqn:Hc1.
+     simpl in Hbl.
+     destruct bl as [| b2].
+      destruct c1; [ easy | now destruct n ].
+
+      clear IHn.
+      destruct c1; [ exfalso | ].
+       revert b2 bl carry Hbl Hb1 Hc1 Ham.
+       induction n; intros; [ easy | ].
+       simpl in Hb1.
+       rewrite Nat.mod_0_l in Hb1; [ | lia ].
+       rewrite Nat.div_0_l in Hb1; [ | lia ].
+       injection Hb1; clear Hb1; intros Hb1 H; subst b2.
+       simpl in Hbl.
+       destruct bl as [| b3]; [ easy | ].
+       now specialize (IHn b3 bl carry Hbl Hb1 Hc1 Ham).
+
+       revert b2 bl carry Hbl Hb1 Hc1 Ham.
+       induction n; intros.
+        simpl in Hb1.
+        injection Hb1; clear Hb1; intros Hb2 Hb1.
+        rewrite Hb1; f_equal.
+        destruct (zerop (S c1 / rad)) as [Hc| Hc].
+         subst bl; simpl in Hbl.
+         now rewrite Hc; destruct carry.
+
+         destruct carry; [ now rewrite Nat.div_1_l in Hc1 | simpl; f_equal ].
+         destruct (zerop (S c1 / rad)) as [H| H]; [ lia | ].
+         rewrite <- Hb2; f_equal.
 
 bbb.
    revert m n carry Ham.
