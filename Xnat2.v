@@ -445,6 +445,16 @@ destruct (zerop carry) as [Hc| Hc].
   injection Ham; clear Ham; intros Ham Hb1.
   rewrite Hb1; f_equal.
   exfalso.
+destruct bl as [| b2]; simpl in Hbl.
+simpl in Ham.
+replace (0 :: repeat 0 m) with (repeat 0 (S m)) in Ham by easy.
+destruct (zerop (carry / rad)) as [Hcr| Hcr].
+ rewrite Hcr in Ham.
+ now destruct carry.
+revert Ham.
+apply move_carry_end_succ_ne_rep_0; [ easy | ].
+split; [easy|].
+admit.
 
 bbb.
 
