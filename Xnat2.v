@@ -21,7 +21,7 @@ Record xnat := xn { xnatv : list nat }.
 
 Fixpoint move_carry_end {r : radix} iter carry :=
   match iter with
-  | 0 => [42]
+  | 0 => []
   | S i =>
       if zerop carry then []
       else carry mod rad :: move_carry_end i (carry / rad)
@@ -32,7 +32,7 @@ Fixpoint move_carry {r : radix} carry al :=
   | [] =>
       if zerop carry then [] else move_carry_end (S carry) carry
   | a :: al' =>
-      (a + carry) mod rad :: move_carry ((a + carry) / rad) al'
+      (carry + a) mod rad :: move_carry ((carry + a) / rad) al'
   end.
 
 Definition list_of_nat {r : radix} carry n :=
@@ -93,7 +93,6 @@ Proof.
 intros Hr *.
 unfold list_of_nat.
 destruct (zerop n) as [Hn| Hn]; [ easy | simpl ].
-rewrite Nat.add_0_r.
 destruct (zerop (n / rad)) as [Hs| Hs].
  apply Nat.div_small_iff in Hs; [ | lia ].
  now rewrite Nat.mod_small.
@@ -373,7 +372,7 @@ revert al Han.
 induction n; intros; [ now destruct al | ].
 simpl in Han; simpl.
 destruct al as [| a]; [ easy | ].
-simpl in Han; rewrite Nat.add_0_r in Han.
+simpl in Han.
 injection Han; clear Han; intros Han Ha.
 apply Nat.mod_divides in Ha; [ | lia ].
 destruct Ha as (a1, Ha).
@@ -429,64 +428,55 @@ destruct Hbl as [Hbl| Hbl].
 
  destruct Hcl as [Hcl| Hcl].
   subst cl; simpl in Ham.
-Search move_carry.
-bbb.
-
- destruct Hcl as [Hcl| Hcl].
-  subst cl; simpl in Han; subst al.
   destruct carry.
-   rewrite move_carry_repeat_0 in Ham.
+   rewrite move_carry_rep_0 in Ham.
    exfalso; apply Hbl; clear Hbl.
    eapply List_app_rep_0_last; eassumption.
 
-   destruct n.
-    replace (repeat 0 0) with ([] : list nat) in Ham by easy.
-    rewrite Ham.
-    destruct m; [ now rewrite List.app_nil_r | exfalso ].
-    remember move_carry as f; simpl in Ham; subst f.
-    revert carry m Ham.
-    induction bl as [| b1]; intros; [ easy | ].
-    simpl in Hbl.
-    destruct bl as [| b2].
-     simpl in Ham.
-     injection Ham; clear Ham; intros Ham Hb1; subst b1.
-     destruct (zerop (S carry / rad))as [Hcr| Hcr]; [ easy | ].
-     injection Ham; clear Ham; intros Ham Hc.
-     apply Nat.mod_divides in Hc; [ | lia ].
-     destruct Hc as (c1, Hc1).
-     rewrite Nat.mul_comm in Hc1; rewrite Hc1 in Ham.
-     rewrite Nat.div_mul in Ham; [ | lia ].
-     revert Ham.
-     apply move_carry_end_succ_ne_rep_0; [ easy | ].
-     destruct c1; [ lia | ].
-     split; [ lia | ].
-     (* ouais: à compléter *)
-Focus 2.
-     specialize (IHbl Hbl).
-     simpl in Ham.
-     injection Ham; clear Ham; intros Ham Hb1.
-     clear b1 Hb1.
-     destruct (zerop (S carry / rad)) as [Hcr| Hcr]; [ easy | ].
-      injection Ham; clear Ham; intros Ham Hb2.
-      simpl in Hbl.
-      destruct bl as [| b3].
-       subst b2; simpl in Ham.
-(* mouais, bof *)
-bbb.
-   revert carry n m Ham.
+   revert m n carry Ham.
    induction bl as [| b1]; intros; [ easy | ].
-   destruct n.
-    simpl in Ham; simpl; rewrite Ham.
-    f_equal.
-    destruct m; [ now rewrite List.app_nil_r | exfalso ].
-bbb.
-    injection Ham; clear Ham; intros Ham Hb1.
-    rewrite Hb1; f_equal.
-    remember (S carry / rad) as c1 eqn:Hc1.
-    symmetry in Hc1.
-    destruct c1; simpl in Ham; simpl.
-     destruct m; [ now rewrite List.app_nil_r in Ham | ].
-     now destruct bl.
+   simpl in Hbl.
+   destruct bl as [| b2].
+    destruct n.
+     simpl in Ham; simpl.
+     injection Ham; clear Ham; intros Ham Hb1.
+     subst b1; f_equal.
+     destruct (zerop (S carry / rad)) as [Hcr| Hcr]; [ easy | exfalso ].
+     destruct m; [ easy | simpl in Ham ].
+     injection Ham; clear Ham; intros Ham H.
+     apply Nat.mod_divides in H; [ | lia ].
+     destruct H as (c, Hc).
+     rewrite Nat.mul_comm in Hc; rewrite Hc in Hcr, Ham.
+     rewrite Nat.div_mul in Ham; [ | lia ].
+     destruct c; [ easy | ].
+     destruct carry.
+      rewrite Nat.div_1_l in Hc; [ lia | easy ].
+
+      destruct m; [ easy | simpl in Ham ].
+      injection Ham; clear Ham; intros Ham H.
+      apply Nat.mod_divides in H; [ | lia ].
+      destruct H as (c1, Hc1).
+      rewrite Nat.mul_comm in Hc1; rewrite Hc1 in Hcr, Ham.
+      rewrite Nat.div_mul in Ham; [ | lia ].
+      destruct c1; [ easy | ].
+      destruct carry.
+       destruct rad as [| s]; [ easy | ].
+       destruct s; [ easy | now destruct s ].
+
+       simpl in Ham.
+       destruct m; [ easy | simpl in Ham ].
+       injection Ham; clear Ham; intros Ham Hc2.
+       apply Nat.mod_divides in Hc2; [ | lia ].
+       destruct Hc2 as (c2, Hc2).
+       rewrite Nat.mul_comm in Hc2; rewrite Hc2 in Ham.
+       rewrite Nat.div_mul in Ham; [ | lia ].
+       destruct c2; [ easy | ].
+       destruct carry.
+        destruct rad as [| s]; [ easy | ].
+        destruct s; [ easy | ].
+        destruct s; [ easy | now destruct s ].
+
+        simpl in Ham.
 bbb.
 
 Lemma list_norm_action_comm {r : radix} : ∀ al, rad ≠ 0 →
