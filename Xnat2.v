@@ -459,8 +459,10 @@ destruct Hbl as [Hbl| Hbl].
          now rewrite Hc; destruct carry.
 
          destruct carry; [ now rewrite Nat.div_1_l in Hc1 | simpl; f_equal ].
-         destruct (zerop (S c1 / rad)) as [H| H]; [ lia | ].
+         destruct (zerop (S c1 / rad)) as [H| H]; [ lia | clear H ].
          rewrite <- Hb2; f_equal.
+Print move_carry_end.
+(* perhaps 'carry' and 'c1' are "enough" for move_carry_end? *)
 
 bbb.
    revert m n carry Ham.
