@@ -408,7 +408,54 @@ destruct Hbl as [Hbl| Hbl].
    exfalso; apply Hbl; clear Hbl.
    eapply List_app_rep_0_last; eassumption.
 
-   simpl.
+   destruct n.
+    replace (repeat 0 0) with ([] : list nat) in Ham by easy.
+    rewrite Ham.
+    destruct m; [ now rewrite List.app_nil_r | exfalso ].
+    remember move_carry as f; simpl in Ham; subst f.
+    revert carry m Ham.
+    induction bl as [| b1]; intros; [ easy | ].
+    simpl in Hbl.
+    destruct bl as [| b2].
+     simpl in Ham.
+     injection Ham; clear Ham; intros Ham Hb1; subst b1.
+     destruct (zerop (S carry / rad))as [Hcr| Hcr]; [ easy | ].
+     injection Ham; clear Ham; intros Ham Hc.
+     apply Nat.mod_divides in Hc; [ | lia ].
+     destruct Hc as (c1, Hc1).
+     rewrite Nat.mul_comm in Hc1; rewrite Hc1 in Ham.
+     rewrite Nat.div_mul in Ham; [ | lia ].
+     revert Ham.
+     apply move_carry_end_succ_ne_rep_0; [ easy | ].
+     destruct c1; [ lia | ].
+     split; [ lia | ].
+     (* ouais: à compléter *)
+Focus 2.
+     specialize (IHbl Hbl).
+     simpl in Ham.
+     injection Ham; clear Ham; intros Ham Hb1.
+     clear b1 Hb1.
+     destruct (zerop (S carry / rad)) as [Hcr| Hcr]; [ easy | ].
+      injection Ham; clear Ham; intros Ham Hb2.
+      simpl in Hbl.
+      destruct bl as [| b3].
+       subst b2; simpl in Ham.
+(* mouais, bof *)
+bbb.
+   revert carry n m Ham.
+   induction bl as [| b1]; intros; [ easy | ].
+   destruct n.
+    simpl in Ham; simpl; rewrite Ham.
+    f_equal.
+    destruct m; [ now rewrite List.app_nil_r | exfalso ].
+bbb.
+    injection Ham; clear Ham; intros Ham Hb1.
+    rewrite Hb1; f_equal.
+    remember (S carry / rad) as c1 eqn:Hc1.
+    symmetry in Hc1.
+    destruct c1; simpl in Ham; simpl.
+     destruct m; [ now rewrite List.app_nil_r in Ham | ].
+     now destruct bl.
 bbb.
 
 Lemma list_norm_action_comm {r : radix} : ∀ al, rad ≠ 0 →
