@@ -488,7 +488,34 @@ destruct Hbl as [Hbl| Hbl].
            clear - Hr.
            destruct rad as [| s]; [ easy | ].
            destruct s; [ lia | clear Hr ].
-simpl.
+           apply le_lt_n_Sm.
+bbb.
+           destruct s.
+            destruct carry; [ easy | ].
+            destruct carry; [ simpl; lia | ].
+            destruct carry; [ simpl; lia | ].
+            destruct carry; [ simpl; lia | ].
+            destruct carry; [ simpl; lia | ].
+bbb.
+
+           apply Nat.mul_le_mono_pos_r with (p := S (S s)); [ lia | ].
+           rewrite Nat.mul_comm.
+           eapply le_trans; [ now apply Nat.div_mul_le | ].
+           rewrite Nat.mul_comm.
+           rewrite Nat.div_mul; [ | easy ].
+           apply Nat.mul_le_mono_pos_r with (p := S (S s)); [ lia | ].
+           rewrite Nat.mul_comm.
+           eapply le_trans; [ now apply Nat.div_mul_le | ].
+           rewrite Nat.mul_comm.
+           rewrite Nat.div_mul; [ | easy ].
+           apply Nat.mul_le_mono_pos_r with (p := S (S s)); [ lia | ].
+           rewrite Nat.mul_comm.
+           eapply le_trans; [ now apply Nat.div_mul_le | ].
+           rewrite Nat.mul_comm.
+           rewrite Nat.div_mul; [ | easy ].
+destruct s.
+destruct carry; simpl.
+
 
 bbb.
    revert m n carry Ham.
