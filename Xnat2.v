@@ -680,6 +680,7 @@ destruct a.
 bbb.
 *)
 
+(*
 Lemma glop {r : radix} : ∀ al c, 1 < rad →
   list_remove_trailing_0s (move_carry c (al ++ [0])) =
   list_remove_trailing_0s (move_carry c al).
@@ -794,6 +795,7 @@ bbb.
 remember list_remove_trailing_0s as f; simpl; subst f.
 simpl.
 bbb.
+*)
 
 Lemma List_repeat_succ_app : ∀ A (a : A) n,
   repeat a (S n) = repeat a n ++ [a].
