@@ -680,6 +680,79 @@ destruct a.
 bbb.
 *)
 
+Lemma glop {r : radix} : ∀ al c, 1 < rad →
+  list_remove_trailing_0s (move_carry c (al ++ [0])) =
+  list_remove_trailing_0s (move_carry c al).
+Proof.
+intros * Hr.
+revert c.
+induction al as [| a1]; intros.
+ simpl; rewrite Nat.add_0_r.
+ remember (c mod rad) as c1 eqn:Hc1.
+ symmetry in Hc1.
+ destruct c1.
+  apply Nat.mod_divides in Hc1; [ | lia ].
+  destruct Hc1 as (c1, Hc1).
+  rewrite Nat.mul_comm in Hc1; subst c.
+  rewrite Nat.div_mul; [ | lia ].
+  destruct (zerop c1) as [Hc1| Hc1]; [ now subst c1 | ].
+  simpl.
+  remember (c1 mod rad) as c2 eqn:Hc2.
+  symmetry in Hc2.
+  destruct c2.
+   apply Nat.mod_divides in Hc2; [ | lia ].
+   destruct Hc2 as (c2, Hc2).
+    rewrite Nat.mul_comm in Hc2.
+    rewrite Hc2, Nat.div_mul; [ | lia ].
+    rewrite <- Hc2.
+    remember (list_remove_trailing_0s (move_carry_end c1 c2)) as bl eqn:Hbl.
+    symmetry in Hbl.
+    destruct bl as [| b1].
+     exfalso.
+     apply eq_list_rem_trail_nil in Hbl; simpl in Hbl.
+     remember (move_carry_end c1 c2) as al eqn:Hal.
+     symmetry in Hal.
+     assert (Hcc : 0 < c2 < c1).
+      split; [ destruct c2; lia | ].
+      rewrite Hc2.
+      destruct rad as [| s]; [ lia | ].
+      destruct s; [ lia | ].
+      destruct c2; [ lia | ].
+      rewrite Nat.mul_comm; simpl; lia.
+
+      clear Hc2.
+      revert c1 c2 Hc1 Hcc Hal.
+      induction al as [| a]; intros.
+       revert Hal; rewrite Hbl.
+       apply move_carry_end_succ_ne_rep_0; [ lia | easy ].
+
+       simpl in Hbl.
+       injection Hbl; clear Hbl; intros Hbl Ha; subst a.
+       specialize (IHal Hbl).
+       destruct c1; [ easy | ].
+       simpl in Hal.
+       destruct (zerop c2) as [Hzc2| Hnzc2]; [ easy | ].
+       injection Hal; clear Hal; intros Hcr Hal.
+       destruct c1; [ lia | ].
+       apply Nat.mod_divides in Hal; [ | lia ].
+       destruct Hal as (c3, Hc3).
+       destruct c3; [ lia | ].
+       revert Hcr.
+       apply IHal; [ lia | ].
+       split.
+        rewrite Hc3, Nat.mul_comm.
+        rewrite Nat.div_mul; lia.
+
+        apply Nat.lt_le_trans with (m := c2); [ | lia ].
+        destruct c2; [ easy | ].
+        destruct rad as [| s]; [ easy | ].
+        destruct s; [ lia | ].
+        now apply Nat.div_lt.
+
+     simpl.
+bbb.
+(* essayer aussi en commençant par list_rem_trail_iff *)
+
 Lemma list_norm_app_0 {r : radix} : ∀ al,
   list_norm (al ++ [0]) = list_norm al.
 Proof.
@@ -690,8 +763,21 @@ bbb.
 *)
 intros.
 induction al as [| a]; [ apply list_norm_0 | simpl ].
-unfold list_norm.
+unfold list_norm; simpl.
+remember (a mod rad) as c1 eqn:Hc1.
+symmetry in Hc1.
+destruct c1.
+ remember (al ++ [0]) as bl eqn:Hbl.
+ remember (list_remove_trailing_0s (move_carry (a / rad) al)) as al1 eqn:Hal1.
+ remember (list_remove_trailing_0s (move_carry (a / rad) bl)) as bl1 eqn:Hbl1.
+ symmetry in Hal1, Hbl1.
+ destruct bl1 as [| b1].
+  destruct al1 as [| a1]; [ easy | exfalso ].
+  unfold list_norm in IHal.
+bbb.
+
 remember list_remove_trailing_0s as f; simpl; subst f.
+simpl.
 bbb.
 
 Lemma List_repeat_succ_app : ∀ A (a : A) n,
