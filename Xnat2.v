@@ -432,7 +432,7 @@ destruct Hbl as [Hbl| Hbl].
 
  destruct Hcl as [Hcl| Hcl].
   subst cl; simpl in Ham.
-Search move_carry.
+bbb.
 destruct bl as [| b1]; [ easy | ].
 assert (Hnn : b1 :: bl ≠ []) by easy.
 apply (app_removelast_last 0) in Hnn.
