@@ -685,6 +685,13 @@ Lemma glop {r : radix} : ∀ al c, 1 < rad →
   list_remove_trailing_0s (move_carry c al).
 Proof.
 intros * Hr.
+apply list_rem_trail_iff.
+exists 1; simpl.
+split.
+Search move_carry.
+
+bbb.
+intros * Hr.
 revert c.
 induction al as [| a1]; intros.
  simpl; rewrite Nat.add_0_r.
@@ -707,6 +714,11 @@ induction al as [| a1]; intros.
     rewrite <- Hc2.
     remember (list_remove_trailing_0s (move_carry_end c1 c2)) as bl eqn:Hbl.
     symmetry in Hbl.
+(**)
+destruct (zerop (c1 * rad)) as [Hcr| Hcr].
+ apply Nat.eq_mul_0 in Hcr; lia.
+
+bbb.
     destruct bl as [| b1].
      exfalso.
      apply eq_list_rem_trail_nil in Hbl; simpl in Hbl.
@@ -749,7 +761,10 @@ induction al as [| a1]; intros.
         destruct s; [ lia | ].
         now apply Nat.div_lt.
 
-     simpl.
+     destruct (zerop (c1 * rad)) as [Hcr| Hcr]; [ exfalso | ].
+      apply Nat.eq_mul_0 in Hcr; lia.
+
+      simpl.
 bbb.
 (* essayer aussi en commençant par list_rem_trail_iff *)
 
