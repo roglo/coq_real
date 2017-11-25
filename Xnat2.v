@@ -402,6 +402,7 @@ apply IHm.
  now apply Nat.div_lt.
 Qed.
 
+(*
 Lemma list_rem_trail_move_carry_comm {r : radix} : ∀ c al, 1 < rad →
   list_remove_trailing_0s (move_carry c al) =
   move_carry c (list_remove_trailing_0s al).
@@ -646,7 +647,9 @@ bbb.
 
         simpl in Ham.
 bbb.
+*)
 
+(*
 Lemma list_norm_action_comm {r : radix} : ∀ al, rad ≠ 0 →
   list_norm al = move_carry 0 (list_remove_trailing_0s al).
 Proof.
@@ -675,19 +678,20 @@ destruct a.
   rewrite Nat.div_mul; [ | easy ].
 
 bbb.
+*)
 
 Lemma list_norm_app_0 {r : radix} : ∀ al,
   list_norm (al ++ [0]) = list_norm al.
 Proof.
+(*
 intros.
 do 2 rewrite list_norm_action_comm.
-
 bbb.
+*)
 intros.
 induction al as [| a]; [ apply list_norm_0 | simpl ].
 unfold list_norm.
 remember list_remove_trailing_0s as f; simpl; subst f.
-rewrite Nat.add_0_r.
 bbb.
 
 Lemma List_repeat_succ_app : ∀ A (a : A) n,
