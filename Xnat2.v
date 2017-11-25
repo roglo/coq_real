@@ -433,6 +433,26 @@ destruct Hbl as [Hbl| Hbl].
  destruct Hcl as [Hcl| Hcl].
   subst cl; simpl in Ham.
 Search move_carry.
+destruct bl as [| b1]; [ easy | ].
+assert (Hnn : b1 :: bl ≠ []) by easy.
+apply (app_removelast_last 0) in Hnn.
+rewrite Hnn in Ham.
+remember (b1 :: bl) as cl eqn:Hcl.
+clear b1 bl Hcl.
+rewrite Hnn; clear Hnn.
+remember (removelast cl) as bl eqn:Hcl.
+remember (last cl 0) as bn eqn:Hbn.
+clear cl Hcl Hbn.
+revert carry m n bn Ham Hbl.
+induction bl as [| b1]; intros.
+ simpl in Ham.
+ destruct carry.
+  rewrite move_carry_0_rep_0 in Ham.
+  destruct n; [ easy | simpl in Ham ].
+  injection Ham; clear Ham; intros Ham H.
+  now symmetry in H.
+
+Search move_carry.
 bbb.
 (**)
 destruct n; simpl in Ham; simpl.
