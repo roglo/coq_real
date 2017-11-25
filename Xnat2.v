@@ -688,7 +688,7 @@ intros * Hr.
 apply list_rem_trail_iff.
 exists 1; simpl.
 split.
-Search move_carry.
+Print move_carry.
 
 bbb.
 intros * Hr.
