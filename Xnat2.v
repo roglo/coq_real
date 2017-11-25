@@ -454,7 +454,6 @@ induction bl as [| b1]; intros.
 
 Search move_carry.
 bbb.
-(**)
 destruct n; simpl in Ham; simpl.
 destruct (zerop carry) as [Hc| Hc].
  destruct m; [ now rewrite app_nil_r in Ham | simpl in Ham ].
@@ -467,7 +466,8 @@ destruct (zerop carry) as [Hc| Hc].
   injection Ham; clear Ham; intros Ham Hb1.
   rewrite Hb1; f_equal.
   exfalso.
-destruct bl as [| b2]; simpl in Hbl.
+subst b1.
+induction bl as [| b2]; simpl in Hbl.
 simpl in Ham.
 replace (0 :: repeat 0 m) with (repeat 0 (S m)) in Ham by easy.
 destruct (zerop (carry / rad)) as [Hcr| Hcr].
@@ -476,8 +476,10 @@ destruct (zerop (carry / rad)) as [Hcr| Hcr].
 revert Ham.
 apply move_carry_end_succ_ne_rep_0; [ easy | ].
 split; [easy|].
-admit.
-
+Focus 2.
+destruct bl as [| b3].
+simpl in Ham.
+simpl in IHbl.
 bbb.
 
 
