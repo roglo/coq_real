@@ -863,6 +863,32 @@ destruct c1.
     simpl.
     exfalso; revert Hb.
     apply move_nz_carry; [ lia | easy ].
+
+   apply Nat.mod_divides in Hc1; [ | lia ].
+   destruct Hc1 as (c1 & Hc1).
+   rewrite Nat.mul_comm in Hc1.
+   rewrite Hc1 in Ha, Hb.
+   rewrite Nat.div_mul in Ha; [ | lia ].
+   rewrite Nat.div_mul in Hb; [ | lia ].
+   destruct al1 as [| a1]; [ now destruct bl1 | ].
+   destruct bl1 as [| b1]; [ easy | f_equal ].
+   clear a Hc1.
+bbb.
+   apply move_carry_0_is_rep_0 in Ha; [ | easy ].
+   subst bl.
+   destruct m; [ now apply List.app_eq_nil in Hb | ].
+   replace al with (repeat 0 m) in Ha.
+    rewrite move_carry_0_rep_0 in Ha.
+    simpl in Ha.
+    destruct m; [ easy | simpl in Ha ].
+    injection Ha; clear Ha; intros Ha Ha1; subst a1.
+    clear IHal Hb.
+    revert m n Ha.
+    induction al1 as [| a1]; intros; [ easy | ].
+    simpl in Ha.
+    destruct m; [ easy | simpl in Ha ].
+    injection Ha; clear Ha; intros Ha Ha1; subst a1.
+    now revert Ha; apply IHal1.
 bbb.
 
 Lemma List_repeat_succ_app : ∀ A (a : A) n,
