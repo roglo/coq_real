@@ -768,16 +768,12 @@ bbb.
       simpl.
 bbb.
 (* essayer aussi en commençant par list_rem_trail_iff *)
+*)
 
-Lemma list_norm_app_0 {r : radix} : ∀ al,
+Lemma list_norm_app_0 {r : radix} : ∀ al, 1 < rad →
   list_norm (al ++ [0]) = list_norm al.
 Proof.
-(*
-intros.
-do 2 rewrite list_norm_action_comm.
-bbb.
-*)
-intros.
+intros * Hr.
 induction al as [| a]; [ apply list_norm_0 | simpl ].
 unfold list_norm; simpl.
 remember (a mod rad) as c1 eqn:Hc1.
@@ -787,15 +783,46 @@ destruct c1.
  remember (list_remove_trailing_0s (move_carry (a / rad) al)) as al1 eqn:Hal1.
  remember (list_remove_trailing_0s (move_carry (a / rad) bl)) as bl1 eqn:Hbl1.
  symmetry in Hal1, Hbl1.
- destruct bl1 as [| b1].
-  destruct al1 as [| a1]; [ easy | exfalso ].
-  unfold list_norm in IHal.
+ apply list_rem_trail_iff in Hal1.
+ apply list_rem_trail_iff in Hbl1.
+ destruct Hal1 as (n & Ha & Hal1).
+ destruct Hbl1 as (m & Hb & Hbl1).
+ destruct Hal1 as [Hal1| Hal1].
+  subst al1; simpl in Ha.
+  destruct Hbl1 as [Hbl1| Hbl1]; [ now subst bl1 | ].
+  destruct bl1 as [| b1]; [ easy | exfalso ].
+  apply Nat.mod_divides in Hc1; [ | lia ].
+  destruct Hc1 as (c1 & Hc1).
+  rewrite Nat.mul_comm in Hc1.
+  rewrite Hc1 in Ha, Hb.
+  rewrite Nat.div_mul in Ha; [ | lia ].
+  rewrite Nat.div_mul in Hb; [ | lia ].
+  destruct c1.
+   apply move_carry_0_is_rep_0 in Ha; [ | easy ].
+   subst al.
+   replace (repeat 0 n ++ [0]) with (repeat 0 (S n)) in Hbl.
+    subst bl.
+    rewrite move_carry_0_rep_0 in Hb.
+    simpl in Hb.
+    injection Hb; clear Hb; intros Hb Hb1; subst b1.
+    clear IHal.
+    revert n Hb.
+    induction bl1 as [| b1]; intros; [ easy | ].
+    simpl in Hb.
+    destruct n; [ easy | ].
+    simpl in Hb.
+    injection Hb; clear Hb; intros Hb Hb1; subst b1.
+    now apply IHbl1 with (n := n).
+
+    clear; simpl.
+    induction n; [ easy | now simpl; rewrite IHn ].
+
+   simpl.
 bbb.
 
 remember list_remove_trailing_0s as f; simpl; subst f.
 simpl.
 bbb.
-*)
 
 Lemma List_repeat_succ_app : ∀ A (a : A) n,
   repeat a (S n) = repeat a n ++ [a].
@@ -815,9 +842,8 @@ destruct a.
  rewrite list_norm_0.
  now apply list_norm_cons_0.
 
- rewrite <- IHn.
  rewrite List_repeat_succ_app.
-
+ rewrite <- IHn.
 bbb.
 
 Lemma list_of_nat_inv {r : radix} : 2 ≤ rad →
