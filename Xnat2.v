@@ -872,7 +872,35 @@ destruct c1.
    rewrite Nat.div_mul in Hb; [ | lia ].
    destruct al1 as [| a1]; [ now destruct bl1 | ].
    destruct bl1 as [| b1]; [ easy | f_equal ].
+   simpl in Ha, Hb.
    clear a Hc1.
+   destruct al as [| a2].
+    simpl in Hbl; subst bl.
+    simpl in Ha, Hb; clear IHal.
+    rewrite Nat.add_0_r in Hb.
+    injection Hb; clear Hb; intros Hb Hb1; subst b1.
+    destruct (zerop c1) as [Hc1| Hc1]; [ easy | ].
+    injection Ha; clear Ha; intros Ha Ha1; subst a1; f_equal.
+    destruct (zerop (c1 / rad)) as [Hcr| Hcr].
+     rewrite Hcr in Ha.
+     destruct m; [ | now destruct bl1 ].
+     simpl in Hb; rewrite List.app_nil_r in Hb; subst bl1.
+     simpl in Hbl1, Hal1.
+     apply Nat.div_small_iff in Hcr; [ | lia ].
+     destruct al1 as [| a1]; [ easy | exfalso ].
+     now destruct c1.
+
+     destruct m.
+      simpl in Hb; rewrite List.app_nil_r in Hb.
+      symmetry in Hb.
+      destruct c1; [ easy | ].
+      simpl in Ha.
+      destruct (zerop (S c1 / rad)) as [H| H]; [ lia | clear H ].
+      destruct n.
+       simpl in Ha; rewrite List.app_nil_r in Ha.
+       symmetry in Ha.
+       rewrite Ha, Hb; f_equal.
+       apply move_carry_end_enough_iter; [ easy | | ].
 bbb.
    apply move_carry_0_is_rep_0 in Ha; [ | easy ].
    subst bl.
