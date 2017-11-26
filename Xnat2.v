@@ -789,8 +789,7 @@ destruct c1.
  destruct Hbl1 as (m & Hb & Hbl1).
  destruct Hal1 as [Hal1| Hal1].
   subst al1; simpl in Ha.
-  destruct Hbl1 as [Hbl1| Hbl1]; [ now subst bl1 | ].
-  destruct bl1 as [| b1]; [ easy | exfalso ].
+  destruct Hbl1 as [Hbl1| Hbl1]; [ now subst bl1 | exfalso ].
   apply Nat.mod_divides in Hc1; [ | lia ].
   destruct Hc1 as (c1 & Hc1).
   rewrite Nat.mul_comm in Hc1.
@@ -804,6 +803,7 @@ destruct c1.
     subst bl.
     rewrite move_carry_0_rep_0 in Hb.
     simpl in Hb.
+    destruct bl1 as [| b1]; [ easy | ].
     injection Hb; clear Hb; intros Hb Hb1; subst b1.
     clear IHal.
     revert n Hb.
@@ -817,11 +817,52 @@ destruct c1.
     clear; simpl.
     induction n; [ easy | now simpl; rewrite IHn ].
 
-   simpl.
-bbb.
+   exfalso; revert Ha.
+   apply move_nz_carry; [ lia | easy ].
 
-remember list_remove_trailing_0s as f; simpl; subst f.
-simpl.
+  destruct Hbl1 as [Hbl1| Hbl1].
+   subst bl1; simpl in Hb.
+   destruct al1 as [| a1]; [ easy | exfalso ].
+   apply Nat.mod_divides in Hc1; [ | lia ].
+   destruct Hc1 as (c1 & Hc1).
+   rewrite Nat.mul_comm in Hc1.
+   rewrite Hc1 in Ha, Hb.
+   rewrite Nat.div_mul in Ha; [ | lia ].
+   rewrite Nat.div_mul in Hb; [ | lia ].
+   destruct c1.
+    apply move_carry_0_is_rep_0 in Hb; [ | easy ].
+    subst bl.
+    destruct m; [ now apply List.app_eq_nil in Hb | ].
+    replace al with (repeat 0 m) in Ha.
+     rewrite move_carry_0_rep_0 in Ha.
+     simpl in Ha.
+     destruct m; [ easy | simpl in Ha ].
+     injection Ha; clear Ha; intros Ha Ha1; subst a1.
+     clear IHal Hb.
+     revert m n Ha.
+     induction al1 as [| a1]; intros; [ easy | ].
+     simpl in Ha.
+     destruct m; [ easy | simpl in Ha ].
+     injection Ha; clear Ha; intros Ha Ha1; subst a1.
+     now revert Ha; apply IHal1.
+
+     clear - Hb; simpl in Hb.
+     revert al Hb.
+     induction m; intros.
+      simpl in Hb.
+      apply List.app_eq_unit in Hb.
+      now destruct Hb.
+
+      simpl.
+      destruct al as [| a1]; [ easy | ].
+      simpl in Hb.
+      injection Hb; clear Hb; intros Hb Ha; subst a1.
+      f_equal.
+      now apply IHm.
+
+    simpl.
+    exfalso; revert Hb.
+    apply move_nz_carry; [ lia | easy ].
 bbb.
 
 Lemma List_repeat_succ_app : ∀ A (a : A) n,
