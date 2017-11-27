@@ -1128,6 +1128,9 @@ destruct (zerop (c mod rad)) as [Hcr| Hcr].
    apply IHi.
    split; [ easy | ].
    clear IHi Hcr.
+   assert (H : c ≤ i) by lia.
+   rename Hc into Hcr.
+bbb.
    destruct i; [ lia | ].
    destruct i.
     replace c with 1 in Hc by lia.
