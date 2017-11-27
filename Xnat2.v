@@ -1152,7 +1152,24 @@ Lemma last_move_carry_single_nz {r : radix} : ∀ a c, 1 < rad → a ≠ 0 →
 Proof.
 intros * Hr Ha.
 remember ((c + a) / rad) as d eqn:Hd.
-(* comment on fait une induction de division ? *)
+bbb.
+remember last as f; simpl; subst f.
+rewrite <- Hd.
+destruct (zerop d) as [Hzd| Hnzd].
+ simpl; subst d.
+ apply Nat.div_small_iff in Hzd; [ | lia ].
+ rewrite Nat.mod_small; [ lia | easy ].
+
+ rewrite last_cons_cons.
+Print move_carry_end.
+Lemma glop {r : radix} : ∀ i c,
+  c ≠ 0
+  → move_carry_end (S i) c = c mod rad :: move_carry_end i (c / rad).
+Proof. intros; now destruct c. Qed.
+Show.
+ destruct d; [ easy | ].
+ rewrite glop.
+ rewrite last_cons_cons.
 bbb.
 
 destruct (zerop ((c + a) / rad)) as [Hc| Hc].
