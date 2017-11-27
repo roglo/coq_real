@@ -1061,6 +1061,12 @@ destruct (zerop ((c + a) / rad)) as [Hca| Hca].
  destruct (zerop ((c + a) / rad)) as [H| H]; [ lia | easy ].
 Qed.
 
+Lemma last_move_carry_nz {r : radix} : ∀ a c, a ≠ 0 →
+  last (move_carry c [a]) 0 ≠ 0.
+Proof.
+intros * Ha.
+bbb.
+
 Lemma list_of_nat_inv {r : radix} : 2 ≤ rad →
   ∀ al, list_of_nat 0 (nat_of_list 0 al) = list_norm al.
 Proof.
@@ -1083,6 +1089,10 @@ destruct (zerop (nat_of_list 0 al)) as [Ha| Ha].
   exists 0.
   remember move_carry as f; simpl; subst f.
   split; [ now rewrite List.app_nil_r | right ].
+  clear - Hr Hanz.
+  apply last_move_carry_nz; lia.
+
+bbb.
   simpl.
   destruct (zerop (a / rad)) as [Har| Har].
    intros H.
@@ -1093,7 +1103,18 @@ destruct (zerop (nat_of_list 0 al)) as [Ha| Ha].
    apply lt_not_le in Har; apply Har; clear Har.
    rewrite Nat.mul_comm; simpl; lia.
 
-   Search move_carry_end.
+   remember (a / rad / rad) as arr eqn:Harr.
+   rewrite move_carry_end_enough_iter with (n := S arr); [ | lia | | lia ].
+    simpl.
+    destruct (zerop arr) as [Hz| Hnz].
+     subst arr.
+     intros H.
+     apply Nat.mod_divides in H; [ | lia ].
+     apply Nat.div_small_iff in Hz; [ | lia ].
+     destruct H as (c & Hc).
+     destruct c; [ rewrite Nat.mul_comm in Hc; lia | rewrite Hc in Hz ].
+     apply lt_not_le in Hz; apply Hz; clear Hz.
+     rewrite Nat.mul_comm; simpl; lia.
 bbb.
 Inspect 1.
   rewrite move_carry_rep_0
