@@ -1004,9 +1004,21 @@ induction n; [ easy | simpl ].
 now rewrite <- IHn.
 Qed.
 
+Lemma glop {r : radix} : ∀ n a, ∃ m,
+  move_carry a (repeat 0 n) = move_carry_end (S a) a ++ repeat 0 m.
+Proof.
+intros.
+bbb.
+
 Lemma move_carry_succ_rep_0 {r : radix} : ∀ n a, 1 < rad → ∃ m,
   move_carry (S a) (repeat 0 n) = move_carry (S a) [] ++ repeat 0 m.
 Proof.
+intros * Hr.
+unfold move_carry at 2.
+remember move_carry_end as f; simpl; subst f.
+now specialize (glop n (S a)) as H.
+bbb.
+
 intros * Hr.
 revert a.
 induction n; intros; simpl; [ now exists 0; rewrite List.app_nil_r | ].
