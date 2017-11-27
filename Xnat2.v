@@ -903,6 +903,24 @@ Show.
    clear b1 bl1 Hbl2.
    rewrite List_last_app_single in Hbl1.
 clear a Hc1.
+destruct al as [| a1].
+ destruct bl as [| b1]; [ easy | ].
+  simpl in Hbl.
+  injection Hbl; clear Hbl; intros Hbl Hb1; subst b1 bl.
+  simpl in Ha, Hb.
+  rewrite Nat.add_0_r in Hb.
+  destruct (zerop c1) as [Hc1| Hc1]; [ now destruct al2 | ].
+  destruct (zerop (c1 / rad)) as [Hcr| Hcr].
+   destruct bl2; [ | now destruct bl2 ].
+   simpl in Hb.
+   injection Hb; clear Hb; intros Hb Hb2; subst b2; simpl.
+   rewrite Hcr in Ha.
+   destruct al2 as [| a3]; [ now injection Ha; intros; subst a2 | ].
+   exfalso; simpl in Ha.
+   destruct c1; [ easy | clear Hc1 ].
+   injection Ha; clear Ha; intros Hal Ha; clear a3 Ha.
+   now destruct al2.
+
 bbb.
    destruct bl1 as [| b1]; [ easy | f_equal ].
    simpl in Ha, Hb.
