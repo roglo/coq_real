@@ -871,6 +871,39 @@ destruct c1.
    rewrite Nat.div_mul in Ha; [ | lia ].
    rewrite Nat.div_mul in Hb; [ | lia ].
    destruct al1 as [| a1]; [ now destruct bl1 | ].
+(**)
+   assert (Hal : a1 :: al1 ≠ []) by easy.
+   apply exists_last in Hal.
+   destruct Hal as (al2 & a2 & Hal).
+   rewrite Hal in Ha, Hal1; rewrite Hal.
+   clear a1 al1 Hal.
+Lemma List_last_app : ∀ A (al bl : list A) d, bl ≠ []
+  → last (al ++ bl) d = last bl d.
+Proof.
+intros * Hbl.
+revert bl Hbl.
+induction al as [| a1] using rev_ind; intros; [ easy | simpl ].
+rewrite <- List.app_assoc.
+now rewrite IHal; [ destruct bl | ].
+Qed.
+
+Lemma List_last_app_single : ∀ A al (a : A) d, last (al ++ [a]) d = a.
+Proof.
+intros.
+now apply List_last_app.
+Qed.
+
+Show.
+   rewrite List_last_app_single in Hal1.
+   destruct bl1 as [| b1]; [ easy | f_equal ].
+   assert (Hbl2 : b1 :: bl1 ≠ []) by easy.
+   apply exists_last in Hbl2.
+   destruct Hbl2 as (bl2 & b2 & Hbl2).
+   rewrite Hbl2 in Hb, Hbl1; rewrite Hbl2.
+   clear b1 bl1 Hbl2.
+   rewrite List_last_app_single in Hbl1.
+clear a Hc1.
+bbb.
    destruct bl1 as [| b1]; [ easy | f_equal ].
    simpl in Ha, Hb.
    clear a Hc1.
@@ -893,14 +926,19 @@ destruct c1.
      destruct m.
       simpl in Hb; rewrite List.app_nil_r in Hb.
       symmetry in Hb.
-      destruct c1; [ easy | ].
+      destruct c1; [ easy | clear Hc1 ].
       simpl in Ha.
       destruct (zerop (S c1 / rad)) as [H| H]; [ lia | clear H ].
       destruct n.
        simpl in Ha; rewrite List.app_nil_r in Ha.
        symmetry in Ha.
        rewrite Ha, Hb; f_equal.
-       apply move_carry_end_enough_iter; [ easy | | ].
+       apply move_carry_end_enough_iter; [ easy | now apply Nat.div_lt | ].
+       destruct c1; [ now rewrite Nat.div_1_l in Hcr | ].
+Search (_ ++ [_]).
+bbb.
+exists_last:
+  ∀ (A : Type) (l : list A), l ≠ [] → {l' : list A & {a : A | l = l' ++ [a]}}
 bbb.
    apply move_carry_0_is_rep_0 in Ha; [ | easy ].
    subst bl.
