@@ -1127,17 +1127,21 @@ destruct (zerop (c mod rad)) as [Hcr| Hcr].
    apply last_cons_ne; [ lia | ].
    apply IHi.
    split; [ easy | ].
-   destruct rad as [| s]; [ easy | ].
-   destruct s; [ lia | ].
-   clear IHi.
-   clear Hr Hcr Hc.
-   revert s.
-   induction i; intros; [ lia | ].
+   clear IHi Hcr.
+   destruct i; [ lia | ].
    destruct i.
-bbb.
-    destruct c; [ lia | ].
-    destruct c; [ now rewrite Nat.div_1_l | lia ].
+    replace c with 1 in Hc by lia.
+    now rewrite Nat.div_1_l in Hc.
+
     destruct i.
+     destruct c; [ lia | ].
+     destruct c; [ now rewrite Nat.div_1_l in Hc | ].
+     destruct c; [ | lia ].
+     destruct rad as [| s]; [ easy | ].
+     destruct s; [ lia | ].
+     destruct s; [ easy | now rewrite Nat.div_small in Hc ].
+
+     destruct i.
 bbb.
 
 Lemma last_move_carry_nz {r : radix} : ∀ a c al, rad ≠ 0 → a ≠ 0 →
