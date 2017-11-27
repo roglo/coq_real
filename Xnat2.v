@@ -921,6 +921,24 @@ destruct al as [| a1].
    injection Ha; clear Ha; intros Hal Ha; clear a3 Ha.
    now destruct al2.
 
+   destruct c1; [ easy | ].
+   simpl in Ha.
+   destruct (zerop (S c1 / rad)) as [Hc| Hc]; [ lia | clear Hc ].
+   destruct al2 as [| a3].
+    destruct bl2 as [| b3].
+     simpl in Ha, Hb.
+     injection Ha; clear Ha; intros Hal Ha; subst a2.
+     injection Hb; clear Hb; intros Hbl Hb; subst b2.
+     easy.
+
+     exfalso.
+     simpl in Ha.
+     injection Ha; clear Ha; intros Hal Ha; subst a2.
+     injection Hb; clear Hb; intros Hbl Hb; subst b3.
+     clear Hc1.
+     destruct n; [ easy | simpl in Hal ].
+     injection Hal; clear Hal; intros Hal Ha.
+     rewrite Ha in Hbl.
 bbb.
    destruct bl1 as [| b1]; [ easy | f_equal ].
    simpl in Ha, Hb.
