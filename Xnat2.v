@@ -1027,13 +1027,13 @@ destruct (zerop (S a / rad)) as [Har| Har].
 
   destruct a; [ now rewrite Nat.div_1_l in Hb | simpl ].
   destruct (zerop (S b / rad)) as [H| H]; [ lia | clear H; simpl ].
-  exists m.
-  f_equal; f_equal; f_equal; f_equal.
-  clear Har.
   destruct (lt_dec (S b / rad / rad) b) as [Hbb| Hbb].
    destruct (lt_dec (S b / rad / rad) a) as [Hba| Hba].
+    exists m.
+    f_equal; f_equal; f_equal; f_equal.
     now apply move_carry_end_enough_iter.
 
+    clear Har.
     apply Nat.nlt_ge in Hba.
     destruct b; [ now rewrite Nat.div_1_l in Hbr | ].
 
