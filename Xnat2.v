@@ -1065,6 +1065,10 @@ Lemma move_carry_cons {r : radix} : ∀ a al c,
   move_carry c (a :: al) = (c + a) mod rad :: move_carry ((c + a) / rad) al.
 Proof. easy. Qed.
 
+Lemma last_cons_cons : ∀ A (a b : A) al d,
+  last (a :: b :: al) d = last (b :: al) d.
+Proof. easy. Qed.
+
 Lemma last_cons_id : ∀ A (a : A) al,
   last al a ≠ a
   → last (a :: al) a ≠ a.
@@ -1073,30 +1077,72 @@ intros * Hal.
 now destruct al.
 Qed.
 
-Lemma last_cons_cons : ∀ A (a b : A) al d,
-  last (a :: b :: al) d = last (b :: al) d.
-Proof. easy. Qed.
+Lemma last_cons_ne : ∀ A (a d : A) al,
+  a ≠ d
+  → last al d ≠ d
+  → last (a :: al) d ≠ d.
+Proof.
+intros * Had Hal.
+revert a Had.
+induction al as [| a1]; intros; [ easy | ].
+rewrite last_cons_cons.
+simpl in Hal.
+destruct al as [| a2]; [ easy | ].
+now rewrite last_cons_cons.
+Qed.
+
+Lemma last_move_carry_end {r : radix} : ∀ i c, 1 < rad → 0 < c < i →
+  last (move_carry_end i c) 0 ≠ 0.
+Proof.
+intros * Hr Hci.
+revert c Hci.
+induction i; intros; [ easy | simpl ].
+destruct (zerop c) as [| Hc]; [ lia | clear Hc ].
+destruct (zerop (c mod rad)) as [Hcr| Hcr].
+ rewrite Hcr.
+ apply last_cons_id.
+ apply Nat.mod_divides in Hcr; [ | lia ].
+ destruct Hcr as (d, Hd).
+ rewrite Nat.mul_comm in Hd; rewrite Hd.
+ rewrite Nat.div_mul; [ | lia ].
+ destruct (lt_dec d i) as [Hdi| Hdi].
+  apply IHi.
+  split; [ destruct d; lia | easy ].
+
+  apply Nat.nlt_ge in Hdi.
+  assert (d * rad < S d).
+   rewrite <- Hd.
+   eapply lt_le_trans; [ apply Hci | lia ].
+
+   exfalso; apply lt_not_le in H; apply H; clear H.
+   destruct d; [ lia | ].
+   destruct rad as [| s]; [ easy | ].
+   destruct s; [ lia | ].
+   rewrite Nat.mul_comm; simpl; lia.
+
+  destruct (zerop (c / rad)) as [Hc| Hc].
+   rewrite Hc; simpl.
+   destruct i; simpl; lia.
+
+   apply last_cons_ne; [ lia | ].
+   apply IHi.
+   split; [ easy | ].
+   destruct rad as [| s]; [ easy | ].
+   destruct s; [ lia | ].
+   clear IHi.
+   clear Hr Hcr Hc.
+   revert s.
+   induction i; intros; [ lia | ].
+   destruct i.
+bbb.
+    destruct c; [ lia | ].
+    destruct c; [ now rewrite Nat.div_1_l | lia ].
+    destruct i.
+bbb.
 
 Lemma last_move_carry_nz {r : radix} : ∀ a c al, rad ≠ 0 → a ≠ 0 →
   last (move_carry c (a :: al)) 0 ≠ 0.
 Proof.
-(*
-intros * Hr Ha.
-revert a Ha.
-induction al as [| a1]; intros.
- rewrite move_carry_cons.
- destruct (zerop ((c + a) mod rad)) as [Hcr| Hcr].
-  rewrite Hcr.
-  apply last_cons_id.
-  apply Nat.mod_divides in Hcr; [ | easy ].
-  destruct Hcr as (b, Hb).
-  rewrite Nat.mul_comm in Hb; rewrite Hb.
-  rewrite Nat.div_mul; [ simpl | easy ].
-  destruct b; [ lia | ].
-  remember move_carry_end as f.
-  remember last as g; simpl; subst f g.
-bbb.
-*)
 intros * Hr Ha.
 rewrite move_carry_cons.
 destruct (zerop ((c + a) mod rad)) as [Hcr| Hcr].
@@ -1116,7 +1162,9 @@ destruct (zerop ((c + a) mod rad)) as [Hcr| Hcr].
    now rewrite Nat.mod_small.
 
    rewrite last_cons_cons.
-Search move_carry_end.
+   destruct (zerop ((S a / rad) mod rad)) as [Ha| Ha].
+    rewrite Ha.
+    apply last_cons_id.
 bbb.
 
 Lemma list_of_nat_inv {r : radix} : 2 ≤ rad →
