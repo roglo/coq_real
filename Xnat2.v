@@ -1004,11 +1004,35 @@ induction n; [ easy | simpl ].
 now rewrite <- IHn.
 Qed.
 
-Lemma glop {r : radix} : ∀ n a, ∃ m,
+Lemma move_carry_rep_0 {r : radix} : ∀ n a, 1 < rad → ∃ m,
   move_carry a (repeat 0 n) = move_carry_end (S a) a ++ repeat 0 m.
 Proof.
-intros.
-bbb.
+intros * Hr.
+revert a.
+induction n; intros; simpl.
+ destruct (zerop a); [ now exists 0 | ].
+ exists 0; simpl.
+ now rewrite List.app_nil_r.
+
+ rewrite Nat.add_0_r.
+ destruct (zerop a) as [Ha| Ha].
+  subst a.
+  rewrite Nat.mod_0_l; [ | lia ].
+  rewrite Nat.div_0_l; [ | lia ].
+  exists (S n).
+  now rewrite move_carry_0_rep_0.
+
+  simpl.
+  specialize (IHn (a / rad)) as (m & Hm).
+  exists m.
+  rewrite Hm.
+  f_equal; f_equal.
+  apply move_carry_end_enough_iter; [ easy | lia | ].
+  destruct a; [ easy | ].
+  destruct rad as [| s]; [ easy | ].
+  destruct s; [ lia | ].
+  now apply Nat.div_lt.
+Qed.
 
 Lemma move_carry_succ_rep_0 {r : radix} : ∀ n a, 1 < rad → ∃ m,
   move_carry (S a) (repeat 0 n) = move_carry (S a) [] ++ repeat 0 m.
@@ -1016,62 +1040,8 @@ Proof.
 intros * Hr.
 unfold move_carry at 2.
 remember move_carry_end as f; simpl; subst f.
-now specialize (glop n (S a)) as H.
-bbb.
-
-intros * Hr.
-revert a.
-induction n; intros; simpl; [ now exists 0; rewrite List.app_nil_r | ].
-rewrite Nat.add_0_r.
-destruct (zerop (S a / rad)) as [Har| Har].
- rewrite Har; simpl.
- rewrite move_carry_0_rep_0.
- now exists n.
-
- remember (S a / rad) as b eqn:Hb.
- symmetry in Hb.
- destruct b; [ easy | ].
- specialize (IHn b) as (m & Hm).
- rewrite Hm; simpl.
- destruct (zerop (S b / rad)) as [Hbr| Hbr].
-  rewrite Hbr; simpl.
-  now destruct a; [ rewrite Nat.div_1_l in Hb | exists m ].
-
-  destruct a; [ now rewrite Nat.div_1_l in Hb | simpl ].
-  destruct (zerop (S b / rad)) as [H| H]; [ lia | clear H; simpl ].
-  destruct (lt_dec (S b / rad / rad) b) as [Hbb| Hbb].
-   destruct (lt_dec (S b / rad / rad) a) as [Hba| Hba].
-    exists m.
-    f_equal; f_equal; f_equal; f_equal.
-    now apply move_carry_end_enough_iter.
-
-    clear Har.
-    apply Nat.nlt_ge in Hba.
-    destruct b; [ now rewrite Nat.div_1_l in Hbr | ].
-
-bbb.
-
-   destruct b; [ now rewrite Nat.div_1_l in Hbr | ].
-   destruct rad as [| s]; [ easy | ].
-   destruct s; [ lia | ].
-   apply le_lt_n_Sm.
-   apply Nat.mul_le_mono_pos_r with (p := S (S s)); [ lia | ].
-   rewrite Nat.mul_comm.
-   eapply le_trans; [ now apply Nat.div_mul_le | ].
-   rewrite Nat.mul_comm.
-   rewrite Nat.div_mul; [ | easy ].
-   apply Nat.mul_le_mono_pos_r with (p := S (S s)); [ lia | ].
-   rewrite Nat.mul_comm.
-   eapply le_trans; [ now apply Nat.div_mul_le | ].
-   rewrite Nat.mul_comm.
-   rewrite Nat.div_mul; [ | easy ].
-   destruct s; simpl.
-   rewrite Nat.mul_comm; simpl.
-   rewrite Nat.mul_comm; simpl.
-   do 2 rewrite Nat.add_0_r.
-   destruct b.
-
-bbb.
+now specialize (move_carry_rep_0 n (S a) Hr) as H.
+Qed.
 
 Lemma list_norm_cons_repeat_0 {r : radix} : ∀ a n,
   list_norm (a :: repeat 0 n) = list_norm [a].
@@ -1122,6 +1092,9 @@ destruct (zerop ((c + a) / rad)) as [Hcr| Hcr].
  now rewrite move_carry_0_rep_0.
 
  f_equal.
+Check move_carry_rep_0.
+bbb.
+
  remember ((c + a) / rad) as cr eqn:Hcar.
  symmetry in Hcar.
  destruct cr; [ easy | clear Hcr ].
