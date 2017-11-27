@@ -1061,10 +1061,62 @@ destruct (zerop ((c + a) / rad)) as [Hca| Hca].
  destruct (zerop ((c + a) / rad)) as [H| H]; [ lia | easy ].
 Qed.
 
-Lemma last_move_carry_nz {r : radix} : ∀ a c, a ≠ 0 →
-  last (move_carry c [a]) 0 ≠ 0.
+Lemma move_carry_cons {r : radix} : ∀ a al c,
+  move_carry c (a :: al) = (c + a) mod rad :: move_carry ((c + a) / rad) al.
+Proof. easy. Qed.
+
+Lemma last_cons_id : ∀ A (a : A) al,
+  last al a ≠ a
+  → last (a :: al) a ≠ a.
 Proof.
-intros * Ha.
+intros * Hal.
+now destruct al.
+Qed.
+
+Lemma last_cons_cons : ∀ A (a b : A) al d,
+  last (a :: b :: al) d = last (b :: al) d.
+Proof. easy. Qed.
+
+Lemma last_move_carry_nz {r : radix} : ∀ a c al, rad ≠ 0 → a ≠ 0 →
+  last (move_carry c (a :: al)) 0 ≠ 0.
+Proof.
+(*
+intros * Hr Ha.
+revert a Ha.
+induction al as [| a1]; intros.
+ rewrite move_carry_cons.
+ destruct (zerop ((c + a) mod rad)) as [Hcr| Hcr].
+  rewrite Hcr.
+  apply last_cons_id.
+  apply Nat.mod_divides in Hcr; [ | easy ].
+  destruct Hcr as (b, Hb).
+  rewrite Nat.mul_comm in Hb; rewrite Hb.
+  rewrite Nat.div_mul; [ simpl | easy ].
+  destruct b; [ lia | ].
+  remember move_carry_end as f.
+  remember last as g; simpl; subst f g.
+bbb.
+*)
+intros * Hr Ha.
+rewrite move_carry_cons.
+destruct (zerop ((c + a) mod rad)) as [Hcr| Hcr].
+ rewrite Hcr.
+ apply last_cons_id.
+ apply Nat.mod_divides in Hcr; [ | easy ].
+ destruct Hcr as (b, Hb).
+ rewrite Nat.mul_comm in Hb; rewrite Hb.
+ rewrite Nat.div_mul; [ | easy ].
+ destruct b; [ lia | ].
+ clear - Hr; rename b into a.
+ revert a.
+ induction al as [| a1]; intros.
+  remember last as f; simpl; subst f.
+  destruct (zerop (S a / rad)) as [Har| Har]; [ simpl | ].
+   apply Nat.div_small_iff in Har; [ | easy ].
+   now rewrite Nat.mod_small.
+
+   rewrite last_cons_cons.
+Search move_carry_end.
 bbb.
 
 Lemma list_of_nat_inv {r : radix} : 2 ≤ rad →
