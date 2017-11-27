@@ -1151,13 +1151,29 @@ Lemma last_move_carry_single_nz {r : radix} : ∀ a c, 1 < rad → a ≠ 0 →
   last (move_carry c [a]) 0 ≠ 0.
 Proof.
 intros * Hr Ha.
-rewrite move_carry_cons.
+remember ((c + a) / rad) as d eqn:Hd.
+(* comment on fait une induction de division ? *)
 bbb.
 
-simpl.
 destruct (zerop ((c + a) / rad)) as [Hc| Hc].
  apply Nat.div_small_iff in Hc; [ | lia ].
  rewrite Nat.mod_small; [ lia | easy ].
+
+ destruct (zerop ((c + a) / rad / rad)) as [Hcrr| Hcrr].
+  rewrite Hcrr.
+  simpl.
+  remember (move_carry_end ((c + a) / rad) 0) as al eqn:Hal.
+  symmetry in Hal.
+  remember ((c + a) / rad) as cr eqn:Hcr.
+  symmetry in Hcr.
+  destruct cr; [ lia | ].
+  destruct al; [ | easy ].
+  intros H.
+  apply Nat.mod_divides in H; [ | lia ].
+  destruct H as (d, Hd).
+  rewrite Hd, Nat.mul_comm in Hcrr.
+  rewrite Nat.div_mul in Hcrr; [ subst d; lia | lia ].
+
 bbb.
 
 destruct (zerop ((c + a) mod rad)) as [Hcr| Hcr].
