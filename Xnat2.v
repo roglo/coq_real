@@ -1199,6 +1199,39 @@ intros; simpl.
 now rewrite nat_of_list_0_rep_0.
 Qed.
 
+Lemma glop {r : radix} : ∀ x y n,
+  2 ≤ rad
+  → y = (n + x) / rad ^ n
+  → 0 < y
+  → last (y mod rad :: move_carry_end x (y / rad)) 0 ≠ 0.
+Proof.
+intros * Hr Hy Hyn.
+simpl.
+remember (move_carry_end x (y / rad)) as al eqn:Hal.
+destruct x.
+ destruct rad as [| s]; [ easy | ].
+ destruct s; [ lia | ].
+ rewrite Nat.div_small in Hy; [ lia | ].
+ rewrite Nat.add_0_r.
+ now apply Nat.pow_gt_lin_r.
+
+ subst al; simpl.
+ replace (n + S x) with (S n + x) in Hy by lia.
+ destruct (zerop (y / rad)) as [Hyr1| Hyr1].
+  apply Nat.div_small_iff in Hyr1; [ | lia ].
+  rewrite Nat.mod_small; [ lia | easy ].
+
+  remember (y / rad) as y1 eqn:Hy1; subst y.
+  rename y1 into y; rename Hy1 into Hy; rename Hyr1 into Hyr.
+  clear Hyn.
+  assert (H : y = (S n + x) / rad ^ S n).
+   simpl; rewrite Nat.mul_comm.
+   rewrite <- Nat.div_div; [ easy | | lia ].
+   apply Nat.pow_nonzero; lia.
+
+   clear Hy; rename H into Hy.
+bbb.
+
 Lemma list_of_nat_inv {r : radix} : 2 ≤ rad →
   ∀ al, list_of_nat 0 (nat_of_list 0 al) = list_norm al.
 Proof.
@@ -1362,6 +1395,11 @@ destruct x.
 
   remember (y / rad) as y1 eqn:Hy1; subst y; clear Hyr.
   rename y1 into y; rename Hy1 into Hy; rename Hyr1 into Hyr.
+bbb.
+subst n.
+apply glop with (n := 4); [ easy | | easy ].
+
+bbb.
 (*3*)
   simpl.
   remember (move_carry_end x (y / rad)) as al eqn:Hal.
