@@ -1219,9 +1219,20 @@ destruct (zerop (nat_of_list 0 al)) as [Ha| Ha].
   unfold list_norm in IHal.
   apply list_rem_trail_iff in IHal.
   destruct IHal as (n & IHal & Hm).
-  destruct Hm as [Hm| Hm].
-   now rewrite move_carry_cons in Hm.
+  destruct Hm as [Hm| Hm]; [ now rewrite move_carry_cons in Hm | ].
+  symmetry; unfold list_norm.
+  apply list_rem_trail_iff.
+  rewrite move_carry_cons, Nat.add_0_l.
+  exists n.
+  split.
+   simpl.
+   rewrite Nat.add_comm.
+   rewrite Nat.mod_add; [ f_equal | lia ].
+   rewrite Nat.div_add; [ | lia ].
+   destruct (zerop (a / rad + nat_of_list 0 al)) as [Han| Han].
+    apply Nat.eq_add_0 in Han; lia.
 
+    simpl.
 bbb.
   simpl.
   destruct (zerop (a / rad)) as [Har| Har].
