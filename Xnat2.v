@@ -1404,6 +1404,33 @@ destruct (zerop (nat_of_list 0 al)) as [Ha| Ha].
           destruct s; [ lia | simpl; lia ].
 
        simpl.
+simpl in IHal.
+injection IHal; clear IHal; intros IHal H.
+simpl in Ha2.
+simpl in Hz.
+remember (a / rad + a2) as a4 eqn:Ha4.
+symmetry in Ha4.
+ destruct a4; [ easy | ].
+ simpl.
+ destruct (zerop (S a4 / rad)) as [Har4| Har4].
+exfalso.
+simpl in Ha.
+rewrite <- Ha2 in Ha.
+destruct a2; [ easy |].
+clear Ha Han.
+apply Nat.div_small_iff in Har4; [ | lia ].
+simpl in Hm.
+rewrite <- Ha2 in Hm.
+destruct (zerop (S a2 / rad)) as [Har2| Har2].
+apply Nat.div_small_iff in Har2; [ | lia ].
+destruct al as [| a5].
+ simpl in Ha2.
+ simpl in Hz.
+ simpl in IHal.
+simpl in H.
+rewrite Nat.add_comm in Hz.
+destruct (zerop ((a1 / rad + a3) / rad)) as [Har3| Har3].
+
 bbb.
 
 Theorem xnat_of_nat_inv {r : radix} : 2 ≤ rad →
