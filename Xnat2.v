@@ -1272,8 +1272,13 @@ destruct (a / rad + a1); [ easy | ].
 simpl.
 destruct (zerop (S n / rad)); [ easy | ].
 f_equal.
-apply move_carry_end_enough_iter; [ easy | | ].
-(* trop bordélique mais faut peut-être insister ? *)
+apply move_carry_end_enough_iter; [ easy | | now apply Nat.div_lt ].
+apply lt_le_trans with (m := (S n / rad)).
+now apply Nat.div_lt.
+apply Nat.div_le_upper_bound; [ lia | ].
+destruct rad as [| s]; [ easy | ].
+destruct s; [ easy | ].
+destruct n; [ easy | simpl; lia ].
 
 bbb.
   simpl.
