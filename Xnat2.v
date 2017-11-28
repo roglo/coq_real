@@ -1297,16 +1297,19 @@ destruct (zerop (nat_of_list 0 al)) as [Ha| Ha].
         destruct s; [ easy | ].
         destruct x; [ easy | simpl; lia ].
 
+        clear Han Hm.
+        apply Nat.div_small_iff in Hz; [ | lia ].
+bbb.
         simpl.
         remember (move_carry_end x (S x / rad / rad)) as al eqn:Hal.
         symmetry in Hal.
+        destruct x; [ now rewrite Nat.div_small in Har | simpl in Hal ].
         destruct al as [| a2].
-         destruct x; [ now rewrite Nat.div_small in Har | simpl in Hal ].
          destruct (zerop (S (S x) / rad / rad)) as [Hxr| Hxr]; [ | easy ].
          apply Nat.div_small_iff in Hxr; [ | lia ].
          rewrite Nat.mod_small; [ lia | easy ].
 
-bbb.
+         destruct (zerop (S (S x) / rad / rad)) as [Hxr| Hxr]; [ easy | ].
          injection Hal; clear Hal; intros Hal Ha2; subst al.
          destruct x.
           rewrite Nat.div_small in Hxr; [ easy | ].
@@ -1315,6 +1318,32 @@ bbb.
           destruct s; [ easy | ].
           now rewrite Nat.div_small.
 
+          simpl.
+          remember (move_carry_end x (S (S (S x)) / rad / rad / rad / rad))
+            as al eqn:Hal.
+          symmetry in Hal.
+          destruct x.
+           rewrite Nat.div_small in Hxr; [ easy | ].
+           destruct rad as [| s]; [ easy | ].
+           destruct s; [ easy | ].
+           destruct s; [ easy | ].
+           destruct s; [ easy | ].
+           now rewrite Nat.div_small.
+
+           simpl in Hal.
+           destruct (zerop (S (S (S (S x))) / rad / rad / rad)) as [Hxr1| Hxr1].
+            subst a2.
+            apply Nat.div_small_iff in Hxr1; [ | lia ].
+            rewrite Nat.mod_small; lia.
+
+            destruct (zerop (S (S (S (S x))) / rad / rad / rad / rad)) as [Hxr2| Hxr2].
+             subst al.
+             apply Nat.div_small_iff in Hxr2; [ | lia ].
+             rewrite Nat.mod_small; [ simpl; lia | easy ].
+
+             subst al.
+             rewrite last_cons_cons.
+             simpl.
 bbb.
        simpl.
        subst al.
