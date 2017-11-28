@@ -1355,6 +1355,50 @@ destruct (zerop (nat_of_list 0 al)) as [Ha| Ha].
         apply last_cons_move_carry_end with (n0 := 1); [ easy | | easy ].
         now rewrite Nat.pow_1_r.
 
+(**)
+     simpl; simpl in Hn.
+     remember (nat_of_list 0 al * rad + a1) as a2 eqn:Ha2.
+     destruct al as [| a3].
+      simpl in Ha2, Hz; subst a2.
+      simpl in IHal; simpl.
+      destruct (zerop (a1 / rad)) as [H| H]; [ easy | clear H ].
+      remember ((a / rad + a1) / rad) as a3 eqn:Ha3.
+      symmetry in Ha3.
+      remember (a / rad + a1) as a4 eqn:Ha4.
+      symmetry in Ha4.
+      destruct a3.
+       exists 0; simpl.
+       split; [ now destruct a4 | right ].
+       destruct a4; [ easy | simpl ].
+       apply Nat.div_small_iff in Ha3; [ | lia ].
+       now rewrite Nat.mod_small.
+
+       simpl.
+       destruct (zerop (S a3 / rad)) as [Haz3 | Haz3].
+        generalize Haz3; intros H.
+        apply Nat.div_small_iff in Haz3; [ | lia ].
+        rewrite Nat.mod_small with (a := S a3); [ | easy ].
+        exists 0.
+        split.
+         destruct a4; [ easy | simpl ].
+         rewrite Nat.mod_small with (a := S a3); [ | easy ].
+         destruct a4; [ easy | simpl ].
+         now rewrite H.
+
+         right.
+         destruct a4; [ easy | simpl ].
+         destruct a4; [ now rewrite Nat.div_1_l in Ha3 | simpl ].
+         rewrite H; simpl.
+         now rewrite Nat.mod_small.
+
+        simpl.
+bbb.
+         apply Nat.div_small_iff in Haz3; [ lia | ].
+
+bbb.
+        destruct a4; [ easy | simpl ].
+        now rewrite Haz3.
+bbb.
      simpl.
      exists 0.
      split.
