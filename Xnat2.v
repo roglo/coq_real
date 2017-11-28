@@ -1244,6 +1244,37 @@ destruct (zerop (nat_of_list 0 al)) as [Ha| Ha].
      rewrite Nat.add_comm in Hx.
      rewrite Nat.mod_add in Hx; [ subst x | lia ].
      rewrite Nat.add_mod_idemp_r; [ f_equal | lia ].
+     simpl in IHal.
+     rewrite <- Nat.add_mod_idemp_l in IHal; [ | lia ].
+     rewrite Nat.mod_mul in IHal; [ | lia ].
+     rewrite Nat.add_0_l in IHal.
+     injection IHal; clear IHal; intros IHal.
+     rewrite Nat.div_add_l in IHal; [ | lia ].
+     destruct (zerop (nat_of_list 0 al + a1 / rad)) as [Hz| Hz].
+      apply Nat.eq_add_0 in Hz.
+      destruct Hz as (Hna, Hz).
+      rewrite Hna, Nat.mul_0_l, Nat.add_0_l.
+      rewrite Hz in IHal; simpl in IHal.
+      apply move_carry_0_is_rep_0 in IHal; [ | easy ].
+      destruct n.
+       simpl in IHal; subst al.
+       destruct (zerop ((a / rad + a1) / rad)) as [Har| Har].
+        rewrite Har.
+        now destruct (a / rad + a1).
+
+        simpl in Hm.
+        rewrite Hz in Hm; simpl in Hm.
+        simpl in Ha.
+        simpl in Hn.
+        simpl in Han.
+simpl.
+destruct (a / rad + a1); [ easy | ].
+simpl.
+destruct (zerop (S n / rad)); [ easy | ].
+f_equal.
+apply move_carry_end_enough_iter; [ easy | | ].
+(* trop bordélique mais faut peut-être insister ? *)
+
 bbb.
   simpl.
   destruct (zerop (a / rad)) as [Har| Har].
