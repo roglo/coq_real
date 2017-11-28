@@ -1186,6 +1186,12 @@ destruct (zerop d) as [Hzd| Hnzd].
   now apply Nat.div_lt.
 Qed.
 
+Lemma nat_of_list_0_rep_0 {r : radix} : ∀ n, nat_of_list 0 (repeat 0 n) = 0.
+Proof.
+intros.
+induction n; [ easy | simpl; now rewrite IHn ].
+Qed.
+
 Lemma list_of_nat_inv {r : radix} : 2 ≤ rad →
   ∀ al, list_of_nat 0 (nat_of_list 0 al) = list_norm al.
 Proof.
@@ -1275,6 +1281,10 @@ destruct (zerop (nat_of_list 0 al)) as [Ha| Ha].
         destruct n; [ easy | simpl; lia ].
 
        simpl.
+       subst al.
+       destruct (zerop ((a / rad + a1) / rad)) as [Har| Har].
+        exfalso.
+        rewrite Hna, Nat.mul_0_l, Nat.add_0_l in Han.
 bbb.
   simpl.
   destruct (zerop (a / rad)) as [Har| Har].
