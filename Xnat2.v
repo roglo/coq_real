@@ -1335,9 +1335,22 @@ destruct (zerop (nat_of_list 0 al)) as [Ha| Ha].
       destruct H as (m, Hm).
       rewrite <- IHal in Hm; rewrite Hm.
       exists m.
-      split.
+      split; [ | right ].
        f_equal; f_equal; f_equal.
        apply move_carry_end_enough_iter; [ easy | lia | ].
+       now apply Nat.div_lt.
+
+       remember (move_carry_end (a / rad + a1) ((a / rad + a1) / rad)) as bl.
+       rename Heqbl into Hbl; symmetry in Hbl.
+       destruct bl as [| b1].
+        remember (a / rad + a1) as a2 eqn:Ha2.
+        symmetry in Ha2.
+        destruct a2; [ easy | clear Han ].
+        simpl in Hbl.
+        remember (S a2 / rad) as a3 eqn:Ha3.
+        symmetry in Ha3.
+        destruct a3; [ clear Hbl | easy ].
+        apply Nat.div_small_iff in Ha3; [ now rewrite Nat.mod_small | lia ].
 
 bbb.
       exists (S n).
