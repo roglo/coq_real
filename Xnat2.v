@@ -1311,7 +1311,9 @@ destruct x.
   apply Nat.div_small_iff in Hyr; [ | lia ].
   rewrite Nat.mod_small; [ lia | easy ].
 
-  clear Har; simpl.
+  clear Har a.
+(*1*)
+  simpl.
   remember (y / rad) as y1 eqn:Hy1.
   remember (move_carry_end x (y1 / rad)) as al eqn:Hal.
   destruct x.
@@ -1322,29 +1324,67 @@ destruct x.
    destruct s; [ now rewrite Nat.div_same | ].
    rewrite Nat.div_small; lia.
 
-   subst al; simpl.
-   destruct (zerop (y1 / rad)) as [Hyr1| Hyr1].
-    apply Nat.div_small_iff in Hyr1; [ | lia ].
-    rewrite Nat.mod_small; [ lia | easy ].
+ subst al; simpl.
+ destruct (zerop (y1 / rad)) as [Hyr1| Hyr1].
+  apply Nat.div_small_iff in Hyr1; [ | lia ].
+  rewrite Nat.mod_small; [ lia | easy ].
 
-    clear Hyr; simpl.
-    remember (y1 / rad) as y2 eqn:Hy2.
-    remember (move_carry_end x (y2 / rad)) as al eqn:Hal.
-    destruct x.
-     destruct rad as [| s]; [ easy | ].
-     destruct s; [ lia | ].
-     rewrite Nat.div_small in Hy2; [ lia | ].
-     destruct s.
-      subst y1 y.
-      apply Nat.div_lt_upper_bound; [ easy | ].
-      apply Nat.div_lt_upper_bound; [ easy | lia ].
+  clear Hyr; subst y; rename y1 into y; rename Hy1 into Hy.
+  rename Hyr1 into Hyr.
+(*2*)
+  simpl.
+  remember (y / rad) as y1 eqn:Hy1.
+  remember (move_carry_end x (y1 / rad)) as al eqn:Hal.
+  destruct x.
+   destruct rad as [| s]; [ easy | ].
+   destruct s; [ lia | ].
+   rewrite Nat.div_small in Hy1; [ lia | ].
+   destruct s.
+    subst y1 y.
+    apply Nat.div_lt_upper_bound; [ easy | ].
+    apply Nat.div_lt_upper_bound; [ easy | lia ].
 
-      rewrite Nat.div_small in Hy1; [ lia | ].
-      subst y.
-      destruct s; [ now rewrite Nat.div_same | ].
-      rewrite Nat.div_small; lia.
+    rewrite Nat.div_small in Hy; [ lia | ].
+    subst y.
+    destruct s; [ now rewrite Nat.div_same | ].
+    rewrite Nat.div_small; lia.
 
-     subst al; simpl.
+ subst al; simpl.
+ destruct (zerop (y1 / rad)) as [Hyr1| Hyr1].
+  apply Nat.div_small_iff in Hyr1; [ | lia ].
+  rewrite Nat.mod_small; [ lia | easy ].
+
+  clear Hyr; subst y; rename y1 into y; rename Hy1 into Hy.
+  rename Hyr1 into Hyr.
+(*4*)
+  simpl.
+  remember (y / rad) as y1 eqn:Hy1.
+  remember (move_carry_end x (y1 / rad)) as al eqn:Hal.
+  destruct x.
+   destruct rad as [| s]; [ easy | ].
+   destruct s; [ lia | ].
+   rewrite Nat.div_small in Hy1; [ lia | ].
+   destruct s.
+    subst y1 y.
+    apply Nat.div_lt_upper_bound; [ easy | ].
+    apply Nat.div_lt_upper_bound; [ easy | ].
+    apply Nat.div_lt_upper_bound; [ easy | lia ].
+
+    rewrite Nat.div_small in Hy; [ lia | ].
+    subst y.
+    destruct s.
+     apply Nat.div_lt_upper_bound; [ easy | ].
+     apply Nat.div_lt_upper_bound; [ easy | lia ].
+     rewrite Nat.div_small; [ lia | ].
+     apply Nat.div_lt_upper_bound; [ easy | simpl; lia ].
+
+ subst al; simpl.
+ destruct (zerop (y1 / rad)) as [Hyr1| Hyr1].
+  apply Nat.div_small_iff in Hyr1; [ | lia ].
+  rewrite Nat.mod_small; [ lia | easy ].
+
+  clear Hyr; subst y; rename y1 into y; rename Hy1 into Hy.
+  rename Hyr1 into Hyr.
 bbb.
 *)
         simpl.
