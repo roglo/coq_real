@@ -1223,7 +1223,7 @@ destruct (zerop (nat_of_list 0 al)) as [Ha| Ha].
   symmetry; unfold list_norm.
   apply list_rem_trail_iff.
   rewrite move_carry_cons, Nat.add_0_l.
-  exists n.
+  exists 0.
   split.
    simpl.
    rewrite Nat.add_comm.
@@ -1232,7 +1232,18 @@ destruct (zerop (nat_of_list 0 al)) as [Ha| Ha].
    destruct (zerop (a / rad + nat_of_list 0 al)) as [Han| Han].
     apply Nat.eq_add_0 in Han; lia.
 
-    simpl.
+    rewrite List.app_nil_r.
+    destruct al as [| a1].
+     simpl in Han; simpl.
+     rewrite Nat.add_0_r in Han |- *.
+     destruct (zerop (a / rad)) as [Har| Har]; [ lia | easy ].
+
+     simpl in Han; simpl.
+     symmetry; rewrite <- Nat.add_mod_idemp_r; [ | lia ].
+     remember ((nat_of_list 0 al * rad + a1) mod rad) as x eqn:Hx.
+     rewrite Nat.add_comm in Hx.
+     rewrite Nat.mod_add in Hx; [ subst x | lia ].
+     rewrite Nat.add_mod_idemp_r; [ f_equal | lia ].
 bbb.
   simpl.
   destruct (zerop (a / rad)) as [Har| Har].
