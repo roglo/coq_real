@@ -1147,6 +1147,15 @@ destruct (zerop (c mod rad)) as [Hcr| Hcr].
      apply IHi; [ easy | lia ].
 Qed.
 
+Lemma last_move_carry_end' {r : radix} : ∀ i c, 1 < rad → c < i →
+  c = 0 ∨ last (move_carry_end i c) 0 ≠ 0.
+Proof.
+intros * Hr Hci.
+destruct c; [ now left | right ].
+apply last_move_carry_end; [ easy | ].
+split; [ lia | easy ].
+Qed.
+
 Lemma last_move_carry_single_nz {r : radix} : ∀ a c, 1 < rad → a ≠ 0 →
   last (move_carry c [a]) 0 ≠ 0.
 Proof.
@@ -1158,112 +1167,24 @@ destruct (zerop d) as [Hzd| Hnzd].
  apply Nat.div_small_iff in Hzd; [ | lia ].
  rewrite Nat.mod_small; [ lia | easy ].
 
-Search move_carry_end.
-Check move_carry_end_enough_iter.
-bbb.
- revert a c Ha Hd.
- induction d; intros; [ easy | ].
- remember (S d / rad) as x eqn:Hx.
- symmetry in Hx; simpl.
- destruct (zerop x) as [Hz| Hnz].
-  subst x.
-  apply Nat.div_small_iff in Hz; [ | lia ].
-  rewrite Nat.mod_small; [ lia | easy ].
+ destruct (lt_dec (d / rad) d) as [Hdd| Hdd].
+  specialize (last_move_carry_end' d (d / rad) Hr Hdd) as H.
+  destruct H as [H| H].
+   rewrite H; simpl.
+   destruct d; [ easy | simpl ].
+   intros H'.
+   apply Nat.div_small_iff in H; [ | lia ].
+   now rewrite Nat.mod_small in H'.
 
+   destruct (zerop (d mod rad)) as [Hdr| Hdr].
+    rewrite Hdr.
+    now apply last_cons_id.
 
-bbb.
-remember last as f; simpl; subst f.
-rewrite <- Hd.
- simpl; subst d.
- apply Nat.div_small_iff in Hzd; [ | lia ].
- rewrite Nat.mod_small; [ lia | easy ].
+    apply last_cons_ne; [ lia | easy ].
 
- rewrite last_cons_cons.
-Print move_carry_end.
-Lemma glop {r : radix} : ∀ i c,
-  c ≠ 0
-  → move_carry_end (S i) c = c mod rad :: move_carry_end i (c / rad).
-Proof. intros; now destruct c. Qed.
-Show.
- destruct d; [ easy | ].
- rewrite glop.
- rewrite last_cons_cons.
-bbb.
-
-destruct (zerop ((c + a) / rad)) as [Hc| Hc].
- apply Nat.div_small_iff in Hc; [ | lia ].
- rewrite Nat.mod_small; [ lia | easy ].
-
- destruct (zerop ((c + a) / rad / rad)) as [Hcrr| Hcrr].
-  rewrite Hcrr.
-  simpl.
-  remember (move_carry_end ((c + a) / rad) 0) as al eqn:Hal.
-  symmetry in Hal.
-  remember ((c + a) / rad) as cr eqn:Hcr.
-  symmetry in Hcr.
-  destruct cr; [ lia | ].
-  destruct al; [ | easy ].
-  intros H.
-  apply Nat.mod_divides in H; [ | lia ].
-  destruct H as (d, Hd).
-  rewrite Hd, Nat.mul_comm in Hcrr.
-  rewrite Nat.div_mul in Hcrr; [ subst d; lia | lia ].
-
-bbb.
-
-destruct (zerop ((c + a) mod rad)) as [Hcr| Hcr].
- rewrite Hcr.
- apply last_cons_id.
- apply Nat.mod_divides in Hcr; [ | lia ].
- destruct Hcr as (b, Hb).
- rewrite Nat.mul_comm in Hb; rewrite Hb.
- rewrite Nat.div_mul; [ | lia ].
- destruct b; [ lia | ].
- simpl.
- destruct (zerop (S b / rad)) as [Hbr| Hbr].
-  intros H.
-  apply Nat.mod_divides in H; [ | lia ].
-  apply Nat.div_small_iff in Hbr; [ | lia ].
-  destruct H as (d, Hd).
-  rewrite Hd in Hbr.
-Focus 3.
-simpl.
-bbb.
-
-intros * Hr Ha.
-rewrite move_carry_cons.
-destruct (zerop ((c + a) mod rad)) as [Hcr| Hcr].
- rewrite Hcr.
- apply last_cons_id.
- apply Nat.mod_divides in Hcr; [ | lia ].
- destruct Hcr as (b, Hb).
- rewrite Nat.mul_comm in Hb; rewrite Hb.
- rewrite Nat.div_mul; [ | lia ].
- destruct b; [ lia | ].
- clear - Hr; rename b into a.
- revert a.
- induction al as [| a1]; intros.
-  remember last as f; simpl; subst f.
-  destruct (zerop (S a / rad)) as [Har| Har]; [ simpl | ].
-   apply Nat.div_small_iff in Har; [ | lia ].
-   now rewrite Nat.mod_small.
-
-   rewrite last_cons_cons.
-   destruct (zerop ((S a / rad) mod rad)) as [Ha| Ha].
-    rewrite Ha.
-    apply last_cons_id.
-    apply Nat.mod_divides in Ha; [ | lia ].
-    destruct Ha as (c, Hc).
-    rewrite Hc, Nat.mul_comm.
-    rewrite Nat.div_mul; [ | lia ].
-    apply last_move_carry_end; [ easy | ].
-    split.
-     destruct c; [ rewrite Nat.mul_0_r in Hc; lia | lia ].
-
-     apply Nat.mul_lt_mono_pos_l with (p := rad); [ lia | ].
-     rewrite <- Hc; clear Hc.
-bbb.
-*)
+  exfalso; apply Hdd; clear Hdd.
+  now apply Nat.div_lt.
+Qed.
 
 Lemma list_of_nat_inv {r : radix} : 2 ≤ rad →
   ∀ al, list_of_nat 0 (nat_of_list 0 al) = list_norm al.
@@ -1288,6 +1209,18 @@ destruct (zerop (nat_of_list 0 al)) as [Ha| Ha].
   remember move_carry as f; simpl; subst f.
   split; [ now rewrite List.app_nil_r | right ].
   apply last_move_carry_single_nz; [ easy | lia ].
+
+ destruct (zerop (nat_of_list 0 al * rad + a)) as [Hn| Hn].
+  apply Nat.eq_add_0 in Hn.
+  destruct Hn as (Hn, _).
+  apply Nat.eq_mul_0 in Hn.
+  destruct Hn; lia.
+
+  unfold list_norm in IHal.
+  apply list_rem_trail_iff in IHal.
+  destruct IHal as (n & IHal & Hm).
+  destruct Hm as [Hm| Hm].
+   now rewrite move_carry_cons in Hm.
 
 bbb.
   simpl.
