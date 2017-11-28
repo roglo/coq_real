@@ -1192,6 +1192,13 @@ intros.
 induction n; [ easy | simpl; now rewrite IHn ].
 Qed.
 
+Lemma nat_of_list_0_cons_rep_0 {r : radix} : ∀ a n,
+  nat_of_list 0 (a :: repeat 0 n) = a.
+Proof.
+intros; simpl.
+now rewrite nat_of_list_0_rep_0.
+Qed.
+
 Lemma list_of_nat_inv {r : radix} : 2 ≤ rad →
   ∀ al, list_of_nat 0 (nat_of_list 0 al) = list_norm al.
 Proof.
@@ -1229,8 +1236,12 @@ destruct (zerop (nat_of_list 0 al)) as [Ha| Ha].
   symmetry; unfold list_norm.
   apply list_rem_trail_iff.
   rewrite move_carry_cons, Nat.add_0_l.
-  exists 0.
+  exists (S n).
   split.
+   remember move_carry as f; simpl; subst f.
+(*
+   rewrite List.app_nil_r.
+*)
    simpl.
    rewrite Nat.add_comm.
    rewrite Nat.mod_add; [ f_equal | lia ].
@@ -1238,7 +1249,6 @@ destruct (zerop (nat_of_list 0 al)) as [Ha| Ha].
    destruct (zerop (a / rad + nat_of_list 0 al)) as [Han| Han].
     apply Nat.eq_add_0 in Han; lia.
 
-    rewrite List.app_nil_r.
     destruct al as [| a1].
      simpl in Han; simpl.
      rewrite Nat.add_0_r in Han |- *.
@@ -1266,6 +1276,7 @@ destruct (zerop (nat_of_list 0 al)) as [Ha| Ha].
        simpl in IHal; subst al.
        destruct (zerop ((a / rad + a1) / rad)) as [Har| Har].
         rewrite Har.
+bbb.
         now destruct (a / rad + a1).
 
         simpl in Hm.
@@ -1283,8 +1294,16 @@ destruct (zerop (nat_of_list 0 al)) as [Ha| Ha].
        simpl.
        subst al.
        destruct (zerop ((a / rad + a1) / rad)) as [Har| Har].
-        exfalso.
         rewrite Hna, Nat.mul_0_l, Nat.add_0_l in Han.
+        rewrite nat_of_list_0_cons_rep_0 in Hn, Hm, Ha.
+        simpl in Hm; rewrite Hz in Hm; simpl in Hm.
+        apply Nat.div_small_iff in Hz; [ | lia ].
+        rewrite Nat.mod_small in Hm; [ | easy ].
+        rewrite Har; simpl.
+        rewrite Nat.div_0_l; [ | lia ].
+        rewrite Nat.mod_0_l; [ | lia ].
+        rewrite move_carry_0_rep_0.
+
 bbb.
   simpl.
   destruct (zerop (a / rad)) as [Har| Har].
