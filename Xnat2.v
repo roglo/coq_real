@@ -1328,9 +1328,28 @@ destruct (zerop (nat_of_list 0 al)) as [Ha| Ha].
         apply last_cons_move_carry_end with (n := 1); [ easy | | easy ].
         now rewrite Nat.pow_1_r.
 
+      simpl in Ha, Hn; clear Hm.
+      rewrite Hna, Nat.mul_0_l, Nat.add_0_l in Han, Ha, Hn.
+      apply Nat.div_small_iff in Hz; [ | lia ].
+      specialize (move_carry_rep_0_end (S n) ((a / rad + a1) / rad) Hr) as H.
+      destruct H as (m, Hm).
+      rewrite <- IHal in Hm; rewrite Hm.
+      exists m.
+      split.
+       f_equal; f_equal; f_equal.
+       apply move_carry_end_enough_iter; [ easy | lia | ].
+
+bbb.
       exists (S n).
       split.
        f_equal; f_equal.
+       rewrite IHal.
+       simpl.
+       rewrite Nat.add_0_r.
+bbb.
+
+       rewrite move_carry_rep_0_end.
+
 bbb.
       simpl.
       subst al.
