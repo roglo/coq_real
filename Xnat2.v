@@ -1362,7 +1362,7 @@ destruct x.
 
   clear Hyr; subst y; rename y1 into y; rename Hy1 into Hy.
   rename Hyr1 into Hyr.
-(*4*)
+(*3*)
   simpl.
   remember (y / rad) as y1 eqn:Hy1.
   remember (move_carry_end x (y1 / rad)) as al eqn:Hal.
@@ -1394,7 +1394,7 @@ destruct x.
 
   clear Hyr; subst y; rename y1 into y; rename Hy1 into Hy.
   rename Hyr1 into Hyr.
-(*5*)
+(*4*)
   simpl.
   remember (y / rad) as y1 eqn:Hy1.
   remember (move_carry_end x (y1 / rad)) as al eqn:Hal.
@@ -1430,7 +1430,6 @@ destruct x.
   clear Hyr; subst y; rename y1 into y; rename Hy1 into Hy.
   rename Hyr1 into Hyr.
 bbb.
-*)
         simpl.
         remember (move_carry_end x (S x / rad / rad)) as al eqn:Hal.
         symmetry in Hal.
