@@ -1299,7 +1299,54 @@ destruct (zerop (nat_of_list 0 al)) as [Ha| Ha].
 
         clear Han Hm.
         apply Nat.div_small_iff in Hz; [ | lia ].
+        clear Hna Hx Hn a1 Ha Hz.
+remember (S x / rad) as y eqn:Hy.
+simpl.
+remember (move_carry_end x (y / rad)) as al eqn:Hal.
+destruct x.
+ rewrite Nat.div_small in Hy; [ lia | easy ].
+
+ subst al; simpl.
+ destruct (zerop (y / rad)) as [Hyr| Hyr].
+  apply Nat.div_small_iff in Hyr; [ | lia ].
+  rewrite Nat.mod_small; [ lia | easy ].
+
+  clear Har; simpl.
+  remember (y / rad) as y1 eqn:Hy1.
+  remember (move_carry_end x (y1 / rad)) as al eqn:Hal.
+  destruct x.
+   destruct rad as [| s]; [ easy | ].
+   destruct s; [ lia | ].
+   rewrite Nat.div_small in Hy1; [ lia | ].
+   subst y.
+   destruct s; [ now rewrite Nat.div_same | ].
+   rewrite Nat.div_small; lia.
+
+   subst al; simpl.
+   destruct (zerop (y1 / rad)) as [Hyr1| Hyr1].
+    apply Nat.div_small_iff in Hyr1; [ | lia ].
+    rewrite Nat.mod_small; [ lia | easy ].
+
+    clear Hyr; simpl.
+    remember (y1 / rad) as y2 eqn:Hy2.
+    remember (move_carry_end x (y2 / rad)) as al eqn:Hal.
+    destruct x.
+     destruct rad as [| s]; [ easy | ].
+     destruct s; [ lia | ].
+     rewrite Nat.div_small in Hy2; [ lia | ].
+     destruct s.
+      subst y1 y.
+      apply Nat.div_lt_upper_bound; [ easy | ].
+      apply Nat.div_lt_upper_bound; [ easy | lia ].
+
+      rewrite Nat.div_small in Hy1; [ lia | ].
+      subst y.
+      destruct s; [ now rewrite Nat.div_same | ].
+      rewrite Nat.div_small; lia.
+
+     subst al; simpl.
 bbb.
+*)
         simpl.
         remember (move_carry_end x (S x / rad / rad)) as al eqn:Hal.
         symmetry in Hal.
@@ -1314,7 +1361,7 @@ bbb.
          destruct x.
           rewrite Nat.div_small in Hxr; [ easy | ].
           destruct rad as [| s]; [ easy | ].
-          destruct s; [ easy | ].
+          destruct s; [ lia | ].
           destruct s; [ easy | ].
           now rewrite Nat.div_small.
 
@@ -1325,7 +1372,7 @@ bbb.
           destruct x.
            rewrite Nat.div_small in Hxr; [ easy | ].
            destruct rad as [| s]; [ easy | ].
-           destruct s; [ easy | ].
+           destruct s; [ lia | ].
            destruct s; [ easy | ].
            destruct s; [ easy | ].
            now rewrite Nat.div_small.
