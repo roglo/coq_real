@@ -1430,7 +1430,22 @@ destruct al as [| a5].
 simpl in H.
 rewrite Nat.add_comm in Hz.
 destruct (zerop ((a1 / rad + a3) / rad)) as [Har3| Har3].
-
+remember (a3 + a1 / rad) as a5 eqn:Ha5.
+symmetry in Ha5.
+destruct a5.
+ simpl in IHal.
+ rewrite Nat.mod_0_l in H; [ | lia ].
+ apply Nat.div_small_iff in Har3; [ | lia ].
+ rewrite Nat.mod_small in H; [ | easy ].
+ apply Nat.eq_add_0 in H.
+ destruct H as (Ha1, Ha3); subst a3.
+ simpl in Ha2, Ha5.
+ rewrite Nat.add_0_r in Har3, Hz.
+ subst a1.
+ apply Nat.div_small_iff in Ha5; [ | lia ].
+ apply Nat.div_small_iff in Ha1; [ | lia ].
+ clear Hm Ha5 Ha1 Hn Har3 Har2.
+ rewrite <- Ha4 in Har4.
 bbb.
 
 Theorem xnat_of_nat_inv {r : radix} : 2 ≤ rad →
