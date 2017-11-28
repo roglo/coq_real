@@ -1264,22 +1264,17 @@ destruct (zerop (nat_of_list 0 al)) as [Ha| Ha].
 
         simpl in Hm.
         rewrite Hz in Hm; simpl in Hm.
-        simpl in Ha.
-        simpl in Hn.
-        simpl in Han.
-simpl.
-destruct (a / rad + a1); [ easy | ].
-simpl.
-destruct (zerop (S n / rad)); [ easy | ].
-f_equal.
-apply move_carry_end_enough_iter; [ easy | | now apply Nat.div_lt ].
-apply lt_le_trans with (m := (S n / rad)).
-now apply Nat.div_lt.
-apply Nat.div_le_upper_bound; [ lia | ].
-destruct rad as [| s]; [ easy | ].
-destruct s; [ easy | ].
-destruct n; [ easy | simpl; lia ].
+        simpl in Ha, Hn, Han.
+        destruct (a / rad + a1); [ easy | simpl ].
+        destruct (zerop (S n / rad)); [ easy | f_equal ].
+        apply move_carry_end_enough_iter; [ easy | | now apply Nat.div_lt ].
+        apply lt_le_trans with (m := (S n / rad)); [ now apply Nat.div_lt | ].
+        apply Nat.div_le_upper_bound; [ lia | ].
+        destruct rad as [| s]; [ easy | ].
+        destruct s; [ easy | ].
+        destruct n; [ easy | simpl; lia ].
 
+       simpl.
 bbb.
   simpl.
   destruct (zerop (a / rad)) as [Har| Har].
