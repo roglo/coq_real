@@ -1356,6 +1356,54 @@ destruct (zerop (nat_of_list 0 al)) as [Ha| Ha].
         now rewrite Nat.pow_1_r.
 
      simpl.
+     exists 0.
+     split.
+      f_equal; f_equal; simpl; rewrite List.app_nil_r.
+      simpl in Hn.
+      remember (nat_of_list 0 al * rad + a1) as a2 eqn:Ha2.
+      destruct al as [| a3].
+       simpl in Ha2, Hz; subst a2.
+       simpl in IHal; simpl.
+       destruct (zerop (a1 / rad)) as [H| H]; [ easy | clear H ].
+       remember ((a / rad + a1) / rad) as a3 eqn:Ha3.
+       symmetry in Ha3.
+       destruct a3; [ now destruct (a / rad + a1) | simpl ].
+       remember (a / rad + a1) as a4 eqn:Ha4.
+       symmetry in Ha4.
+       destruct a4; [ easy | simpl ].
+       f_equal.
+       destruct (zerop (S a3 / rad)) as [Haz3 | Hza3].
+        destruct a4; [ easy | simpl ].
+        now rewrite Haz3.
+
+        clear Han.
+        destruct a4; [ now rewrite Nat.div_1_l in Ha3 | simpl ].
+        destruct (zerop (S a3 / rad)) as [H| H]; [ lia | clear H ].
+        f_equal.
+        apply move_carry_end_enough_iter; [ easy | | ].
+         apply lt_le_trans with (m := S a3 / rad); [ now apply Nat.div_lt | ].
+         apply Nat.div_le_upper_bound; [ lia | ].
+         destruct rad as [| s]; [ easy | ].
+         destruct s; [ lia | ].
+         destruct a3; [ easy | ].
+         destruct s; [ lia | simpl; lia ].
+
+         rewrite <- Ha3.
+         apply Nat.div_lt_upper_bound; [ lia | ].
+         apply Nat.div_lt_upper_bound; [ lia | ].
+         apply Nat.div_lt_upper_bound; [ lia | ].
+         rewrite <- Ha3 in Hza3.
+         destruct a4; simpl.
+          destruct rad as [| s]; [ easy | ].
+          destruct s; [ lia | ].
+          destruct s; [ | now rewrite Nat.div_small in Ha3 ].
+          rewrite Nat.div_same in Hza3; [ | easy ].
+          now rewrite Nat.div_1_l in Hza3.
+
+          destruct rad as [| s]; [ easy | ].
+          destruct s; [ lia | simpl; lia ].
+
+       simpl.
 bbb.
 
 Theorem xnat_of_nat_inv {r : radix} : 2 ≤ rad →
