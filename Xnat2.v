@@ -1443,8 +1443,44 @@ destruct (zerop (nat_of_list 0 al)) as [Ha| Ha].
         destruct a4; [ easy | simpl ].
         destruct (S a4 / rad) as [Har4| Har4].
         simpl.
-        destruct al as [| a6].
-         exists 1.
+        destruct (Forall_dec (eq 0) (Nat.eq_dec 0) al) as [Haz| Hnaz].
+         exists (1 + length al).
+         split.
+          simpl; f_equal; f_equal; f_equal.
+          clear - Hr Hrz Haz.
+          induction Haz as [| a al]; [ easy | subst a; simpl ].
+          rewrite Nat.mod_0_l; [ | easy ].
+          rewrite Nat.div_0_l; [ now f_equal | easy ].
+
+          right.
+          apply Nat.eq_add_0 in Ha5.
+          destruct Ha5 as (Harr, Ha3); subst a3.
+          apply Nat.div_small_iff in Harr; [ | easy ].
+          rewrite Nat.mod_small; [ | easy ].
+          assert (nat_of_list 0 al = 0).
+           clear - Haz.
+           induction al as [| a]; [ easy | simpl ].
+           inversion_clear Haz; subst a.
+           rewrite Nat.add_0_r.
+           apply Nat.eq_mul_0; left.
+           now apply IHal.
+
+           rewrite H in Ha2; simpl in Ha2; subst a2.
+           now rewrite Ha4.
+
+         exfalso.
+         apply Exists_Forall_neg in Hnaz.
+         apply Exists_exists in Hnaz.
+         destruct Hnaz as (x & Hxal & Hx).
+         apply List.in_split in Hxal.
+         destruct Hxal as (al1 & al2 & Hxal).
+         subst al.
+bbb.
+
+
+         destruct al as [| a6]; [ easy | simpl ].
+
+
          simpl.
          split; [ easy | right ].
          apply Nat.eq_add_0 in Ha5.
@@ -1457,6 +1493,13 @@ destruct (zerop (nat_of_list 0 al)) as [Ha| Ha].
          now rewrite Ha4.
 
          simpl.
+         destruct a6.
+          rewrite Nat.mod_0_l; [ | easy ].
+          rewrite Nat.div_0_l; [ | easy ].
+          simpl in Ha2, Hz, IHal.
+          rewrite Nat.add_0_r in Ha2, Hz, IHal.
+          destruct al as [| a7].
+           exists 2.
 bbb.
 
 Theorem xnat_of_nat_inv {r : radix} : 2 ≤ rad →
