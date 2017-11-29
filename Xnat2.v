@@ -696,6 +696,18 @@ destruct (zerop (nat_of_list 0 al)) as [Ha| Ha].
  rewrite H.
  destruct (zerop a) as [Haz| Haz].
   subst a; symmetry; apply list_norm_0.
+
+  unfold list_norm; symmetry.
+  apply list_rem_trail_iff.
+  split; [ now exists 0; rewrite List.app_nil_r | right ].
+  apply last_move_carry_single_nz; [ easy | lia ].
+
+ destruct (zerop (nat_of_list 0 al * rad + a)) as [Har| Har].
+  apply Nat.eq_add_0 in Har.
+  destruct Har as (Har, _).
+  apply Nat.eq_mul_0 in Har.
+  destruct Har as [Har| Har]; [ now rewrite Har in Ha | easy ].
+
 bbb.
 
  destruct (zerop a) as [Haz| Hanz].
