@@ -316,68 +316,12 @@ split.
    apply list_rem_trail_repeat_0.
 
    subst al.
-   induction bl as [| b]; [ easy | ].
-   simpl in Hbl.
-bbb.
-
-Search list_remove_trailing_0s.
-   apply list_rem_trail_rep_0.
-
-bbb.
-
-  injection Hb; clear Hb; intros Hbl H; subst b.
-  specialize (IHal bl Hbl) as (m & Hal & Hm).
-  exists m.
-  split; [ now rewrite Hal | right ].
-  destruct Hm as [Hm| Hm]; [ now rewrite Hm | simpl ].
-  now destruct bl.
-bbb.
-intros *.
-split.
- intros Hb.
- revert bl Hb.
- induction al as [| a]; intros.
-  subst bl; simpl.
-  exists 0.
-  split; [ easy | now left ].
-
-  simpl in Hb.
-  destruct a.
-   remember (list_remove_trailing_0s al) as cl eqn:Hcl in Hb.
-   symmetry in Hcl.
-   destruct cl as [| c].
-    subst bl; simpl.
-    apply eq_list_rem_trail_nil in Hcl.
-    rewrite Hcl.
-    exists (S (length al)).
-    split; [ easy | now left ].
-
-    specialize (IHal (c :: cl) Hcl) as (m & Hal & Hm).
-    destruct Hm as [Hm| Hm]; [easy | ].
-    exists m.
-    split; [ now rewrite Hal, <- Hb | right ].
-    now subst bl; remember (c :: cl) as dl; simpl; subst dl.
-
-   destruct bl as [| b]; [ easy | ].
-   injection Hb; clear Hb; intros Hbl H; subst b.
-   specialize (IHal bl Hbl) as (m & Hal & Hm).
-   exists m.
-   split; [ now rewrite Hal | right ].
-   destruct Hm as [Hm| Hm]; [ now rewrite Hm | simpl ].
-   now destruct bl.
-
- intros (n & Hal & Hbl).
- destruct Hbl as [Hbl| Hbl].
-  subst al bl; simpl.
-  apply eq_list_rem_trail_nil.
-  now rewrite repeat_length.
-
-  subst al.
-  rewrite list_rem_trail_rep_0.
-  induction bl as [| b1]; [ easy | simpl in Hbl; simpl ].
-  destruct b1.
-   now destruct bl as [| b2]; [ | rewrite IHbl ].
-   now destruct bl as [| b2]; [ | rewrite IHbl ].
+   rewrite list_rem_trail_rep_0.
+   induction bl as [| b1]; [ easy | ].
+   simpl in Hbl; simpl.
+   destruct bl as [| b2]; [ now destruct b1 | ].
+   specialize (IHbl Hbl); rewrite IHbl.
+   now destruct b1.
 Qed.
 
 Lemma move_carry_end_succ_ne_rep_0 {r : radix} : ∀ i c n, 1 < rad →
@@ -684,6 +628,15 @@ induction x; intros.
   rewrite Nat.div_div; [ easy | | lia ].
   apply Nat.pow_nonzero; lia.
 Qed.
+
+Lemma list_of_nat_inv {r : radix} : 2 ≤ rad →
+  ∀ al, list_of_nat 0 (nat_of_list 0 al) = list_norm al.
+Proof.
+intros Hr *.
+unfold list_norm; symmetry.
+apply list_rem_trail_iff.
+split.
+bbb.
 
 Lemma list_of_nat_inv {r : radix} : 2 ≤ rad →
   ∀ al, list_of_nat 0 (nat_of_list 0 al) = list_norm al.
