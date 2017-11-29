@@ -650,7 +650,7 @@ Fixpoint logn_loop n iter a :=
 
 Definition logn n a := logn_loop n a a - 1.
 
-Lemma glop {r : radix} : 1 < rad → ∀ al,
+Lemma list_norm_cons {r : radix} : 1 < rad → ∀ al,
   list_norm al = [] → ∀ a, list_norm (a :: al) = list_norm [a].
 Proof.
 intros Hr.
@@ -669,7 +669,14 @@ split.
   exists (S m).
   now rewrite move_carry_0_rep_0.
 
-  rewrite list_rem_trail_move_carry_0_nz.
+  rewrite list_rem_trail_move_carry_0_nz; [ subst al | easy ].
+  now apply move_carry_cons_rep_0.
+
+ destruct a.
+  left; simpl.
+  now rewrite Nat.mod_0_l; [ rewrite Nat.div_0_l | ].
+
+  right.
 bbb.
 
  destruct (zerop (a / rad)) as [Har| Har].
@@ -693,7 +700,7 @@ destruct (zerop (nat_of_list 0 al)) as [Ha| Ha].
  rewrite Ha, Nat.mul_0_l, Nat.add_0_l.
  apply eq_nat_of_list_0 in Ha; [ | lia ].
 Search (list_norm (_ :: _)).
- specialize (glop al IHal) as H.
+ specialize (list_norm_cons al IHal) as H.
  rewrite H.
 
 bbb.
