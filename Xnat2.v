@@ -684,8 +684,9 @@ Qed.
 Lemma list_of_nat_inv {r : radix} : 2 ≤ rad →
   ∀ al, list_of_nat 0 (nat_of_list 0 al) = list_norm al.
 Proof.
-intros Hr *.
+intros Hr.
 assert (Hrz : rad ≠ 0) by lia.
+intros.
 induction al as [| a]; [ easy | simpl ].
 unfold list_of_nat in IHal; symmetry in IHal.
 unfold list_of_nat.
@@ -708,6 +709,42 @@ destruct (zerop (nat_of_list 0 al)) as [Ha| Ha].
   apply Nat.eq_mul_0 in Har.
   destruct Har as [Har| Har]; [ now rewrite Har in Ha | easy ].
 
+  symmetry; unfold list_norm.
+  apply list_rem_trail_iff.
+  split.
+   rewrite Nat.add_comm; simpl.
+   rewrite Nat.mod_add; [ | easy ].
+   rewrite Nat.div_add; [ | easy ].
+   rewrite Nat.add_comm.
+   remember (nat_of_list 0 al + a / rad) as a1 eqn:Ha1.
+   symmetry in Ha1.
+   destruct (zerop a1) as [Haz1| Haz1].
+    subst a1.
+    apply Nat.eq_add_0 in Haz1.
+    destruct Haz1 as (Haz1, _).
+    now rewrite Haz1 in Ha.
+
+    simpl.
+    destruct al as [| a2]; [ easy | ].
+    simpl in Ha1; simpl.
+    remember (a1 mod rad) as x eqn:Hx.
+    rewrite <- Ha1, <- Nat.add_assoc, Nat.add_comm in Hx.
+    rewrite Nat.mod_add in Hx; [ subst x | easy ].
+    destruct al as [| a3].
+     simpl in Ha1; rewrite Ha1.
+     rewrite Nat.add_comm in Ha1; rewrite Ha1.
+     unfold move_carry.
+     exists 0; rewrite List.app_nil_r.
+     f_equal; f_equal.
+     destruct (zerop (a1 / rad)) as [Hza2| Hza2].
+      now rewrite Hza2; destruct a1.
+
+      apply move_carry_end_enough_iter; [ easy | lia | ].
+      now apply Nat.div_lt.
+
+bbb.
+     simpl.
+     remember ((a / rad + a2) / rad + a3) as a4 eqn:Ha4.
 bbb.
 
  destruct (zerop a) as [Haz| Hanz].
