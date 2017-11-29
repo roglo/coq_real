@@ -1391,13 +1391,37 @@ destruct (zerop (nat_of_list 0 al)) as [Ha| Ha].
          rewrite H; simpl.
          now rewrite Nat.mod_small.
 
-        simpl.
-bbb.
-         apply Nat.div_small_iff in Haz3; [ lia | ].
+        exists 0; simpl; rewrite List.app_nil_r.
+        split.
+         destruct a4; [ easy | simpl ].
+         f_equal; f_equal; f_equal.
+         destruct a4; [ now rewrite Nat.div_1_l in Ha3 | simpl ].
+         destruct (zerop (S a3 / rad)) as [H| H]; [ lia | clear H ].
+         f_equal.
+         destruct a4.
+          rewrite <- Ha3 in Haz3.
+          destruct rad as [| s]; [ easy | ].
+          destruct s; [ lia | ].
+          destruct s; [ easy | ].
+          now rewrite Nat.div_small in Ha3.
 
-bbb.
-        destruct a4; [ easy | simpl ].
-        now rewrite Haz3.
+          apply move_carry_end_enough_iter; [ easy | | ].
+           apply Nat.div_lt_upper_bound; [ lia | ].
+           apply Nat.div_lt_upper_bound; [ lia | ].
+           destruct rad as [| s]; [ easy | ].
+           destruct s; [ lia | ].
+           destruct a3; [ easy | ].
+           destruct s; [ lia | simpl; lia ].
+
+           rewrite <- Ha3.
+           apply Nat.div_lt_upper_bound; [ lia | ].
+           apply Nat.div_lt_upper_bound; [ lia | ].
+           apply Nat.div_lt_upper_bound; [ lia | ].
+           destruct rad as [| s]; [ easy | ].
+           destruct s; [ lia | ].
+           destruct s; [ lia | simpl; lia ].
+
+         right.
 bbb.
      simpl.
      exists 0.
