@@ -250,10 +250,88 @@ rewrite IHn; clear.
 induction al as [| a]; [ easy | now simpl; rewrite IHal ].
 Qed.
 
+Lemma last_cons_cons : ∀ A (a b : A) al d,
+  last (a :: b :: al) d = last (b :: al) d.
+Proof. easy. Qed.
+
+Lemma last_cons_id : ∀ A (a : A) al,
+  last al a ≠ a
+  → last (a :: al) a ≠ a.
+Proof.
+intros * Hal.
+now destruct al.
+Qed.
+
+Lemma last_cons_ne : ∀ A (a d : A) al,
+  a ≠ d
+  → last al d ≠ d
+  → last (a :: al) d ≠ d.
+Proof.
+intros * Had Hal.
+revert a Had.
+induction al as [| a1]; intros; [ easy | ].
+rewrite last_cons_cons.
+simpl in Hal.
+destruct al as [| a2]; [ easy | ].
+now rewrite last_cons_cons.
+Qed.
+
 Lemma list_rem_trail_iff : ∀ al bl,
   list_remove_trailing_0s al = bl
-  ↔ ∃ n, al = bl ++ repeat 0 n ∧ (bl = [] ∨ List.last bl 0 ≠ 0).
+  ↔ (∃ n, al = bl ++ repeat 0 n) ∧ (bl = [] ∨ List.last bl 0 ≠ 0).
 Proof.
+intros *.
+split.
+ intros Hb.
+ split.
+  revert bl Hb.
+  induction al as [| a]; intros; [ now exists 0; subst bl | ].
+  subst bl; simpl.
+  remember (list_remove_trailing_0s al) as cl eqn:Hcl in |-*.
+  symmetry in Hcl.
+  specialize (IHal cl Hcl) as (m, Hm); subst al.
+  destruct a; [ | now exists m ].
+  now destruct cl; [ exists (S m) | exists m ].
+
+  revert al Hb.
+  induction bl as [| b]; intros; [ now left | right ].
+  destruct al as [| a]; [ easy | ].
+  simpl in Hb.
+  destruct a.
+   remember (list_remove_trailing_0s al) as cl eqn:Hcl.
+   symmetry in Hcl.
+   destruct cl as [| c]; [ easy | ].
+   injection Hb; clear Hb; intros Hbl Hb; subst b bl.
+   specialize (IHbl al Hcl).
+   destruct IHbl as [| IHbl]; [ easy | ].
+   now apply last_cons_id.
+
+   injection Hb; clear Hb; intros Hbl Hb; subst b.
+   specialize (IHbl al Hbl).
+   now destruct IHbl; [ subst bl | apply last_cons_ne ].
+
+  intros ((n, Hn), Hbl).
+  destruct Hbl as [| Hbl].
+   subst al bl; simpl.
+   apply list_rem_trail_repeat_0.
+
+   subst al.
+   induction bl as [| b]; [ easy | ].
+   simpl in Hbl.
+bbb.
+
+Search list_remove_trailing_0s.
+   apply list_rem_trail_rep_0.
+
+bbb.
+
+  injection Hb; clear Hb; intros Hbl H; subst b.
+  specialize (IHal bl Hbl) as (m & Hal & Hm).
+  exists m.
+  split; [ now rewrite Hal | right ].
+  destruct Hm as [Hm| Hm]; [ now rewrite Hm | simpl ].
+  now destruct bl.
+bbb.
 intros *.
 split.
  intros Hb.
@@ -402,600 +480,6 @@ apply IHm.
  now apply Nat.div_lt.
 Qed.
 
-(*
-Lemma list_rem_trail_move_carry_comm {r : radix} : ∀ c al, 1 < rad →
-  list_remove_trailing_0s (move_carry c al) =
-  move_carry c (list_remove_trailing_0s al).
-Proof.
-intros carry * Hr.
-remember (list_remove_trailing_0s (move_carry carry al)) as bl eqn:Hml.
-remember (list_remove_trailing_0s al) as cl eqn:Hnl.
-symmetry in Hml, Hnl.
-apply list_rem_trail_iff in Hml.
-apply list_rem_trail_iff in Hnl.
-destruct Hml as (m & Ham & Hbl).
-destruct Hnl as (n & Han & Hcl).
-subst al; symmetry.
-destruct Hbl as [Hbl| Hbl].
- subst bl; simpl in Ham.
- destruct Hcl as [Hcl| Hcl].
-  subst cl; simpl in Ham.
-  simpl.
-  destruct (zerop carry) as [| Hc]; [ easy | exfalso ].
-  destruct carry; [ easy | clear Hc ].
-  now revert Ham; apply move_nz_carry.
-
-  rename cl into al.
-  destruct carry; [ | now exfalso; revert Ham; apply move_nz_carry ].
-  apply move_carry_0_is_rep_0 in Ham; [ | easy ].
-  exfalso; apply Hcl; clear Hcl; symmetry in Ham.
-  eapply List_app_rep_0_last; eassumption.
-
- destruct Hcl as [Hcl| Hcl].
-  subst cl; simpl in Ham.
-bbb.
-destruct bl as [| b1]; [ easy | ].
-assert (Hnn : b1 :: bl ≠ []) by easy.
-apply (app_removelast_last 0) in Hnn.
-rewrite Hnn in Ham.
-remember (b1 :: bl) as cl eqn:Hcl.
-clear b1 bl Hcl.
-rewrite Hnn; clear Hnn.
-remember (removelast cl) as bl eqn:Hcl.
-remember (last cl 0) as bn eqn:Hbn.
-clear cl Hcl Hbn.
-revert carry m n bn Ham Hbl.
-induction bl as [| b1]; intros.
- simpl in Ham.
- destruct carry.
-  rewrite move_carry_0_rep_0 in Ham.
-  destruct n; [ easy | simpl in Ham ].
-  injection Ham; clear Ham; intros Ham H.
-  now symmetry in H.
-
-Search move_carry.
-bbb.
-destruct n; simpl in Ham; simpl.
-destruct (zerop carry) as [Hc| Hc].
- destruct m; [ now rewrite app_nil_r in Ham | simpl in Ham ].
- now destruct bl.
-
- destruct m; [ now rewrite app_nil_r in Ham | ].
- simpl in Ham.
- destruct bl as [| b1]; [ easy | ].
-  simpl in Ham.
-  injection Ham; clear Ham; intros Ham Hb1.
-  rewrite Hb1; f_equal.
-  exfalso.
-subst b1.
-induction bl as [| b2]; simpl in Hbl.
-simpl in Ham.
-replace (0 :: repeat 0 m) with (repeat 0 (S m)) in Ham by easy.
-destruct (zerop (carry / rad)) as [Hcr| Hcr].
- rewrite Hcr in Ham.
- now destruct carry.
-revert Ham.
-apply move_carry_end_succ_ne_rep_0; [ easy | ].
-split; [easy|].
-Focus 2.
-destruct bl as [| b3].
-simpl in Ham.
-simpl in IHbl.
-bbb.
-
-
- simpl.
-bbb.
-  destruct carry.
-   rewrite move_carry_rep_0 in Ham.
-   exfalso; apply Hbl; clear Hbl.
-   eapply List_app_rep_0_last; eassumption.
-
-   revert carry Ham.
-   induction m; intros.
-    simpl in Ham.
-    rewrite List.app_nil_r in Ham.
-    revert bl carry Hbl Ham.
-    induction n; intros; [ easy | ].
-    simpl in Ham.
-    rewrite Nat.add_0_r in Ham.
-    destruct bl as [| b1]; [ easy | ].
-     injection Ham; clear Ham; intros Hb1 Ham; simpl.
-     rewrite Ham; f_equal.
-     remember (S carry / rad) as c1 eqn:Hc1.
-     simpl in Hbl.
-     destruct bl as [| b2].
-      destruct c1; [ easy | now destruct n ].
-
-      clear IHn.
-      destruct c1; [ exfalso | ].
-       revert b2 bl carry Hbl Hb1 Hc1 Ham.
-       induction n; intros; [ easy | ].
-       simpl in Hb1.
-       rewrite Nat.mod_0_l in Hb1; [ | lia ].
-       rewrite Nat.div_0_l in Hb1; [ | lia ].
-       injection Hb1; clear Hb1; intros Hb1 H; subst b2.
-       simpl in Hbl.
-       destruct bl as [| b3]; [ easy | ].
-       now specialize (IHn b3 bl carry Hbl Hb1 Hc1 Ham).
-
-       revert b2 bl carry Hbl Hb1 Hc1 Ham.
-       induction n; intros.
-        simpl in Hb1.
-        injection Hb1; clear Hb1; intros Hb2 Hb1.
-        rewrite Hb1; f_equal.
-        destruct (zerop (S c1 / rad)) as [Hc| Hc].
-         subst bl; simpl in Hbl.
-         now rewrite Hc; destruct carry.
-
-         destruct carry; [ now rewrite Nat.div_1_l in Hc1 | simpl; f_equal ].
-         destruct (zerop (S c1 / rad)) as [H| H]; [ lia | clear H ].
-         rewrite <- Hb2; f_equal.
-         destruct carry.
-          destruct rad as [| s]; [ easy | ].
-          destruct s; [ lia | ].
-          destruct s; [ | now rewrite Nat.div_small in Hc1 ].
-          now apply Nat.succ_inj in Hc1; subst c1.
-
-          apply move_carry_end_enough_iter; [ easy | | ].
-           rewrite Hc1.
-           clear - Hr.
-           destruct rad as [| s]; [ easy | ].
-           destruct s; [ lia | clear Hr ].
-           apply le_lt_n_Sm.
-bbb.
-           destruct s.
-            destruct carry; [ easy | ].
-            destruct carry; [ simpl; lia | ].
-            destruct carry; [ simpl; lia | ].
-            destruct carry; [ simpl; lia | ].
-            destruct carry; [ simpl; lia | ].
-bbb.
-
-           apply Nat.mul_le_mono_pos_r with (p := S (S s)); [ lia | ].
-           rewrite Nat.mul_comm.
-           eapply le_trans; [ now apply Nat.div_mul_le | ].
-           rewrite Nat.mul_comm.
-           rewrite Nat.div_mul; [ | easy ].
-           apply Nat.mul_le_mono_pos_r with (p := S (S s)); [ lia | ].
-           rewrite Nat.mul_comm.
-           eapply le_trans; [ now apply Nat.div_mul_le | ].
-           rewrite Nat.mul_comm.
-           rewrite Nat.div_mul; [ | easy ].
-           apply Nat.mul_le_mono_pos_r with (p := S (S s)); [ lia | ].
-           rewrite Nat.mul_comm.
-           eapply le_trans; [ now apply Nat.div_mul_le | ].
-           rewrite Nat.mul_comm.
-           rewrite Nat.div_mul; [ | easy ].
-destruct s.
-destruct carry; simpl.
-
-
-bbb.
-   revert m n carry Ham.
-   induction bl as [| b1]; intros; [ easy | ].
-   simpl in Hbl.
-   destruct bl as [| b2].
-    destruct n.
-     clear IHbl.
-     simpl in Ham; simpl.
-     injection Ham; clear Ham; intros Ham Hb1.
-     subst b1; f_equal.
-     destruct (zerop (S carry / rad)) as [Hcr| Hcr]; [ easy | exfalso ].
-revert carry Hbl Hcr Ham.
-induction m; intros; [ easy | simpl in Ham ].
-injection Ham; clear Ham; intros Ham H.
-apply Nat.mod_divides in H; [ | lia ].
-destruct H as (c, Hc).
-rewrite Nat.mul_comm in Hc; rewrite Hc in Hcr, Ham.
-rewrite Nat.div_mul in Ham; [ | lia ].
-destruct c; [ easy | ].
-destruct carry.
- rewrite Nat.div_1_l in Hc; [ lia | easy ].
-
- simpl in Ham.
- rewrite <- Hc in Hcr.
- specialize (IHm (S carry) Hbl Hcr).
- apply IHm; clear IHm.
-bbb.
-
- destruct m; [ easy | simpl in Ham ].
- injection Ham; clear Ham; intros Ham H.
- apply Nat.mod_divides in H; [ | lia ].
- destruct H as (c1, Hc1).
- rewrite Nat.mul_comm in Hc1; rewrite Hc1 in Hcr, Ham.
- rewrite Nat.div_mul in Ham; [ | lia ].
- destruct c1; [ easy | ].
- destruct carry.
-  destruct rad as [| s]; [ easy | ].
-  destruct s; [ easy | now destruct s ].
-
-bbb.
-     destruct m; [ easy | simpl in Ham ].
-     injection Ham; clear Ham; intros Ham H.
-     apply Nat.mod_divides in H; [ | lia ].
-     destruct H as (c, Hc).
-     rewrite Nat.mul_comm in Hc; rewrite Hc in Hcr, Ham.
-     rewrite Nat.div_mul in Ham; [ | lia ].
-     destruct c; [ easy | ].
-     destruct carry.
-      rewrite Nat.div_1_l in Hc; [ lia | easy ].
-
-      destruct m; [ easy | simpl in Ham ].
-      injection Ham; clear Ham; intros Ham H.
-      apply Nat.mod_divides in H; [ | lia ].
-      destruct H as (c1, Hc1).
-      rewrite Nat.mul_comm in Hc1; rewrite Hc1 in Hcr, Ham.
-      rewrite Nat.div_mul in Ham; [ | lia ].
-      destruct c1; [ easy | ].
-      destruct carry.
-       destruct rad as [| s]; [ easy | ].
-       destruct s; [ easy | now destruct s ].
-
-       simpl in Ham.
-       destruct m; [ easy | simpl in Ham ].
-       injection Ham; clear Ham; intros Ham Hc2.
-       apply Nat.mod_divides in Hc2; [ | lia ].
-       destruct Hc2 as (c2, Hc2).
-       rewrite Nat.mul_comm in Hc2; rewrite Hc2 in Ham.
-       rewrite Nat.div_mul in Ham; [ | lia ].
-       destruct c2; [ easy | ].
-       destruct carry.
-        destruct rad as [| s]; [ easy | ].
-        destruct s; [ easy | ].
-        destruct s; [ easy | now destruct s ].
-
-        simpl in Ham.
-bbb.
-*)
-
-(*
-Lemma list_norm_action_comm {r : radix} : ∀ al, rad ≠ 0 →
-  list_norm al = move_carry 0 (list_remove_trailing_0s al).
-Proof.
-intros * Hr; unfold list_norm.
-bbb.
-induction al as [| a]; [ easy | simpl ].
-rewrite Nat.add_0_r.
-destruct a.
- rewrite Nat.mod_0_l; [ | easy ].
- rewrite Nat.div_0_l; [ | easy ].
- rewrite IHal.
- remember (list_remove_trailing_0s al) as bl eqn:Hbl.
- symmetry in Hbl.
- destruct bl as [| b]; [ easy | simpl ].
- rewrite Nat.add_0_r.
- rewrite Nat.mod_0_l; [ | easy ].
- rewrite Nat.div_0_l; [ | easy ].
- now rewrite Nat.add_0_r.
-
- simpl; rewrite Nat.add_0_r.
- destruct (zerop (S a mod rad)) as [Har| Har].
-  rewrite Har.
-  apply Nat.mod_divides in Har; [ | easy ].
-  destruct Har as (c, Hc).
-  rewrite Hc, Nat.mul_comm.
-  rewrite Nat.div_mul; [ | easy ].
-
-bbb.
-*)
-
-(*
-Lemma glop {r : radix} : ∀ al c, 1 < rad →
-  list_remove_trailing_0s (move_carry c (al ++ [0])) =
-  list_remove_trailing_0s (move_carry c al).
-Proof.
-intros * Hr.
-apply list_rem_trail_iff.
-exists 1; simpl.
-split.
-Print move_carry.
-
-bbb.
-intros * Hr.
-revert c.
-induction al as [| a1]; intros.
- simpl; rewrite Nat.add_0_r.
- remember (c mod rad) as c1 eqn:Hc1.
- symmetry in Hc1.
- destruct c1.
-  apply Nat.mod_divides in Hc1; [ | lia ].
-  destruct Hc1 as (c1, Hc1).
-  rewrite Nat.mul_comm in Hc1; subst c.
-  rewrite Nat.div_mul; [ | lia ].
-  destruct (zerop c1) as [Hc1| Hc1]; [ now subst c1 | ].
-  simpl.
-  remember (c1 mod rad) as c2 eqn:Hc2.
-  symmetry in Hc2.
-  destruct c2.
-   apply Nat.mod_divides in Hc2; [ | lia ].
-   destruct Hc2 as (c2, Hc2).
-    rewrite Nat.mul_comm in Hc2.
-    rewrite Hc2, Nat.div_mul; [ | lia ].
-    rewrite <- Hc2.
-    remember (list_remove_trailing_0s (move_carry_end c1 c2)) as bl eqn:Hbl.
-    symmetry in Hbl.
-(**)
-destruct (zerop (c1 * rad)) as [Hcr| Hcr].
- apply Nat.eq_mul_0 in Hcr; lia.
-
-bbb.
-    destruct bl as [| b1].
-     exfalso.
-     apply eq_list_rem_trail_nil in Hbl; simpl in Hbl.
-     remember (move_carry_end c1 c2) as al eqn:Hal.
-     symmetry in Hal.
-     assert (Hcc : 0 < c2 < c1).
-      split; [ destruct c2; lia | ].
-      rewrite Hc2.
-      destruct rad as [| s]; [ lia | ].
-      destruct s; [ lia | ].
-      destruct c2; [ lia | ].
-      rewrite Nat.mul_comm; simpl; lia.
-
-      clear Hc2.
-      revert c1 c2 Hc1 Hcc Hal.
-      induction al as [| a]; intros.
-       revert Hal; rewrite Hbl.
-       apply move_carry_end_succ_ne_rep_0; [ lia | easy ].
-
-       simpl in Hbl.
-       injection Hbl; clear Hbl; intros Hbl Ha; subst a.
-       specialize (IHal Hbl).
-       destruct c1; [ easy | ].
-       simpl in Hal.
-       destruct (zerop c2) as [Hzc2| Hnzc2]; [ easy | ].
-       injection Hal; clear Hal; intros Hcr Hal.
-       destruct c1; [ lia | ].
-       apply Nat.mod_divides in Hal; [ | lia ].
-       destruct Hal as (c3, Hc3).
-       destruct c3; [ lia | ].
-       revert Hcr.
-       apply IHal; [ lia | ].
-       split.
-        rewrite Hc3, Nat.mul_comm.
-        rewrite Nat.div_mul; lia.
-
-        apply Nat.lt_le_trans with (m := c2); [ | lia ].
-        destruct c2; [ easy | ].
-        destruct rad as [| s]; [ easy | ].
-        destruct s; [ lia | ].
-        now apply Nat.div_lt.
-
-     destruct (zerop (c1 * rad)) as [Hcr| Hcr]; [ exfalso | ].
-      apply Nat.eq_mul_0 in Hcr; lia.
-
-      simpl.
-bbb.
-(* essayer aussi en commençant par list_rem_trail_iff *)
-*)
-
-Lemma list_norm_app_0 {r : radix} : ∀ al, 1 < rad →
-  list_norm (al ++ [0]) = list_norm al.
-Proof.
-intros * Hr.
-induction al as [| a]; [ apply list_norm_0 | simpl ].
-unfold list_norm; simpl.
-remember (a mod rad) as c1 eqn:Hc1.
-symmetry in Hc1.
-destruct c1.
- remember (al ++ [0]) as bl eqn:Hbl.
- remember (list_remove_trailing_0s (move_carry (a / rad) al)) as al1 eqn:Hal1.
- remember (list_remove_trailing_0s (move_carry (a / rad) bl)) as bl1 eqn:Hbl1.
- symmetry in Hal1, Hbl1.
- apply list_rem_trail_iff in Hal1.
- apply list_rem_trail_iff in Hbl1.
- destruct Hal1 as (n & Ha & Hal1).
- destruct Hbl1 as (m & Hb & Hbl1).
- destruct Hal1 as [Hal1| Hal1].
-  subst al1; simpl in Ha.
-  destruct Hbl1 as [Hbl1| Hbl1]; [ now subst bl1 | exfalso ].
-  apply Nat.mod_divides in Hc1; [ | lia ].
-  destruct Hc1 as (c1 & Hc1).
-  rewrite Nat.mul_comm in Hc1.
-  rewrite Hc1 in Ha, Hb.
-  rewrite Nat.div_mul in Ha; [ | lia ].
-  rewrite Nat.div_mul in Hb; [ | lia ].
-  destruct c1.
-   apply move_carry_0_is_rep_0 in Ha; [ | easy ].
-   subst al.
-   replace (repeat 0 n ++ [0]) with (repeat 0 (S n)) in Hbl.
-    subst bl.
-    rewrite move_carry_0_rep_0 in Hb.
-    simpl in Hb.
-    destruct bl1 as [| b1]; [ easy | ].
-    injection Hb; clear Hb; intros Hb Hb1; subst b1.
-    clear IHal.
-    revert n Hb.
-    induction bl1 as [| b1]; intros; [ easy | ].
-    simpl in Hb.
-    destruct n; [ easy | ].
-    simpl in Hb.
-    injection Hb; clear Hb; intros Hb Hb1; subst b1.
-    now apply IHbl1 with (n := n).
-
-    clear; simpl.
-    induction n; [ easy | now simpl; rewrite IHn ].
-
-   exfalso; revert Ha.
-   apply move_nz_carry; [ lia | easy ].
-
-  destruct Hbl1 as [Hbl1| Hbl1].
-   subst bl1; simpl in Hb.
-   destruct al1 as [| a1]; [ easy | exfalso ].
-   apply Nat.mod_divides in Hc1; [ | lia ].
-   destruct Hc1 as (c1 & Hc1).
-   rewrite Nat.mul_comm in Hc1.
-   rewrite Hc1 in Ha, Hb.
-   rewrite Nat.div_mul in Ha; [ | lia ].
-   rewrite Nat.div_mul in Hb; [ | lia ].
-   destruct c1.
-    apply move_carry_0_is_rep_0 in Hb; [ | easy ].
-    subst bl.
-    destruct m; [ now apply List.app_eq_nil in Hb | ].
-    replace al with (repeat 0 m) in Ha.
-     rewrite move_carry_0_rep_0 in Ha.
-     simpl in Ha.
-     destruct m; [ easy | simpl in Ha ].
-     injection Ha; clear Ha; intros Ha Ha1; subst a1.
-     clear IHal Hb.
-     revert m n Ha.
-     induction al1 as [| a1]; intros; [ easy | ].
-     simpl in Ha.
-     destruct m; [ easy | simpl in Ha ].
-     injection Ha; clear Ha; intros Ha Ha1; subst a1.
-     now revert Ha; apply IHal1.
-
-     clear - Hb; simpl in Hb.
-     revert al Hb.
-     induction m; intros.
-      simpl in Hb.
-      apply List.app_eq_unit in Hb.
-      now destruct Hb.
-
-      simpl.
-      destruct al as [| a1]; [ easy | ].
-      simpl in Hb.
-      injection Hb; clear Hb; intros Hb Ha; subst a1.
-      f_equal.
-      now apply IHm.
-
-    simpl.
-    exfalso; revert Hb.
-    apply move_nz_carry; [ lia | easy ].
-
-   apply Nat.mod_divides in Hc1; [ | lia ].
-   destruct Hc1 as (c1 & Hc1).
-   rewrite Nat.mul_comm in Hc1.
-   rewrite Hc1 in Ha, Hb.
-   rewrite Nat.div_mul in Ha; [ | lia ].
-   rewrite Nat.div_mul in Hb; [ | lia ].
-   destruct al1 as [| a1]; [ now destruct bl1 | ].
-(**)
-   assert (Hal : a1 :: al1 ≠ []) by easy.
-   apply exists_last in Hal.
-   destruct Hal as (al2 & a2 & Hal).
-   rewrite Hal in Ha, Hal1; rewrite Hal.
-   clear a1 al1 Hal.
-Lemma List_last_app : ∀ A (al bl : list A) d, bl ≠ []
-  → last (al ++ bl) d = last bl d.
-Proof.
-intros * Hbl.
-revert bl Hbl.
-induction al as [| a1] using rev_ind; intros; [ easy | simpl ].
-rewrite <- List.app_assoc.
-now rewrite IHal; [ destruct bl | ].
-Qed.
-
-Lemma List_last_app_single : ∀ A al (a : A) d, last (al ++ [a]) d = a.
-Proof.
-intros.
-now apply List_last_app.
-Qed.
-
-Show.
-   rewrite List_last_app_single in Hal1.
-   destruct bl1 as [| b1]; [ easy | f_equal ].
-   assert (Hbl2 : b1 :: bl1 ≠ []) by easy.
-   apply exists_last in Hbl2.
-   destruct Hbl2 as (bl2 & b2 & Hbl2).
-   rewrite Hbl2 in Hb, Hbl1; rewrite Hbl2.
-   clear b1 bl1 Hbl2.
-   rewrite List_last_app_single in Hbl1.
-clear a Hc1.
-destruct al as [| a1].
- destruct bl as [| b1]; [ easy | ].
-  simpl in Hbl.
-  injection Hbl; clear Hbl; intros Hbl Hb1; subst b1 bl.
-  simpl in Ha, Hb.
-  rewrite Nat.add_0_r in Hb.
-  destruct (zerop c1) as [Hc1| Hc1]; [ now destruct al2 | ].
-  destruct (zerop (c1 / rad)) as [Hcr| Hcr].
-   destruct bl2; [ | now destruct bl2 ].
-   simpl in Hb.
-   injection Hb; clear Hb; intros Hb Hb2; subst b2; simpl.
-   rewrite Hcr in Ha.
-   destruct al2 as [| a3]; [ now injection Ha; intros; subst a2 | ].
-   exfalso; simpl in Ha.
-   destruct c1; [ easy | clear Hc1 ].
-   injection Ha; clear Ha; intros Hal Ha; clear a3 Ha.
-   now destruct al2.
-
-   destruct c1; [ easy | ].
-   simpl in Ha.
-   destruct (zerop (S c1 / rad)) as [Hc| Hc]; [ lia | clear Hc ].
-   destruct al2 as [| a3].
-    destruct bl2 as [| b3].
-     simpl in Ha, Hb.
-     injection Ha; clear Ha; intros Hal Ha; subst a2.
-     injection Hb; clear Hb; intros Hbl Hb; subst b2.
-     easy.
-
-     exfalso.
-     simpl in Ha.
-     injection Ha; clear Ha; intros Hal Ha; subst a2.
-     injection Hb; clear Hb; intros Hbl Hb; subst b3.
-     clear Hc1.
-     destruct n; [ easy | simpl in Hal ].
-     injection Hal; clear Hal; intros Hal Ha.
-     rewrite Ha in Hbl.
-Abort.
-(*
-bbb.
-   destruct bl1 as [| b1]; [ easy | f_equal ].
-   simpl in Ha, Hb.
-   clear a Hc1.
-   destruct al as [| a2].
-    simpl in Hbl; subst bl.
-    simpl in Ha, Hb; clear IHal.
-    rewrite Nat.add_0_r in Hb.
-    injection Hb; clear Hb; intros Hb Hb1; subst b1.
-    destruct (zerop c1) as [Hc1| Hc1]; [ easy | ].
-    injection Ha; clear Ha; intros Ha Ha1; subst a1; f_equal.
-    destruct (zerop (c1 / rad)) as [Hcr| Hcr].
-     rewrite Hcr in Ha.
-     destruct m; [ | now destruct bl1 ].
-     simpl in Hb; rewrite List.app_nil_r in Hb; subst bl1.
-     simpl in Hbl1, Hal1.
-     apply Nat.div_small_iff in Hcr; [ | lia ].
-     destruct al1 as [| a1]; [ easy | exfalso ].
-     now destruct c1.
-
-     destruct m.
-      simpl in Hb; rewrite List.app_nil_r in Hb.
-      symmetry in Hb.
-      destruct c1; [ easy | clear Hc1 ].
-      simpl in Ha.
-      destruct (zerop (S c1 / rad)) as [H| H]; [ lia | clear H ].
-      destruct n.
-       simpl in Ha; rewrite List.app_nil_r in Ha.
-       symmetry in Ha.
-       rewrite Ha, Hb; f_equal.
-       apply move_carry_end_enough_iter; [ easy | now apply Nat.div_lt | ].
-       destruct c1; [ now rewrite Nat.div_1_l in Hcr | ].
-Search (_ ++ [_]).
-bbb.
-exists_last:
-  ∀ (A : Type) (l : list A), l ≠ [] → {l' : list A & {a : A | l = l' ++ [a]}}
-bbb.
-   apply move_carry_0_is_rep_0 in Ha; [ | easy ].
-   subst bl.
-   destruct m; [ now apply List.app_eq_nil in Hb | ].
-   replace al with (repeat 0 m) in Ha.
-    rewrite move_carry_0_rep_0 in Ha.
-    simpl in Ha.
-    destruct m; [ easy | simpl in Ha ].
-    injection Ha; clear Ha; intros Ha Ha1; subst a1.
-    clear IHal Hb.
-    revert m n Ha.
-    induction al1 as [| a1]; intros; [ easy | ].
-    simpl in Ha.
-    destruct m; [ easy | simpl in Ha ].
-    injection Ha; clear Ha; intros Ha Ha1; subst a1.
-    now revert Ha; apply IHal1.
-bbb.
-*)
-
 Lemma List_repeat_succ_app : ∀ A (a : A) n,
   repeat a (S n) = repeat a n ++ [a].
 Proof.
@@ -1064,32 +548,6 @@ Qed.
 Lemma move_carry_cons {r : radix} : ∀ a al c,
   move_carry c (a :: al) = (c + a) mod rad :: move_carry ((c + a) / rad) al.
 Proof. easy. Qed.
-
-Lemma last_cons_cons : ∀ A (a b : A) al d,
-  last (a :: b :: al) d = last (b :: al) d.
-Proof. easy. Qed.
-
-Lemma last_cons_id : ∀ A (a : A) al,
-  last al a ≠ a
-  → last (a :: al) a ≠ a.
-Proof.
-intros * Hal.
-now destruct al.
-Qed.
-
-Lemma last_cons_ne : ∀ A (a d : A) al,
-  a ≠ d
-  → last al d ≠ d
-  → last (a :: al) d ≠ d.
-Proof.
-intros * Had Hal.
-revert a Had.
-induction al as [| a1]; intros; [ easy | ].
-rewrite last_cons_cons.
-simpl in Hal.
-destruct al as [| a2]; [ easy | ].
-now rewrite last_cons_cons.
-Qed.
 
 Lemma last_move_carry_end {r : radix} : ∀ i c, 1 < rad → 0 < c < i →
   last (move_carry_end i c) 0 ≠ 0.
@@ -1443,6 +901,7 @@ destruct (zerop (nat_of_list 0 al)) as [Ha| Ha].
         destruct a4; [ easy | simpl ].
         destruct (S a4 / rad) as [Har4| Har4].
         simpl.
+(*
         destruct (Forall_dec (eq 0) (Nat.eq_dec 0) al) as [Haz| Hnaz].
          exists (1 + length al).
          split.
@@ -1476,7 +935,9 @@ destruct (zerop (nat_of_list 0 al)) as [Ha| Ha].
          destruct Hxal as (al1 & al2 & Hxal).
          subst al.
 bbb.
-
+*)
+         exists (1 + List.length al).
+bbb.
 
          destruct al as [| a6]; [ easy | simpl ].
 
