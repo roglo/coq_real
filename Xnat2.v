@@ -633,9 +633,60 @@ Lemma list_of_nat_inv {r : radix} : 2 ≤ rad →
   ∀ al, list_of_nat 0 (nat_of_list 0 al) = list_norm al.
 Proof.
 intros Hr *.
+assert (Hrz : rad ≠ 0) by lia.
 unfold list_norm; symmetry.
 apply list_rem_trail_iff.
 split.
+ destruct al as [| a1]; [ now exists 0 | ].
+ revert a1.
+ induction al as [| a2]; intros.
+  remember move_carry as f; simpl; subst f.
+  destruct a1.
+   exists 1; simpl.
+   rewrite Nat.mod_0_l; [ | easy ].
+   now rewrite Nat.div_0_l.
+
+   exists 0; simpl.
+   now rewrite List.app_nil_r.
+
+  remember (a2 :: al) as bl eqn:Hbl.
+  remember nat_of_list as f; simpl; subst f.
+bbb.
+  destruct a1.
+   rewrite Nat.mod_0_l; [ | easy ].
+   rewrite Nat.div_0_l; [ | easy ].
+   simpl; rewrite Nat.add_0_r.
+   subst bl; simpl.
+   destruct a2.
+    rewrite Nat.mod_0_l; [ | easy ].
+    rewrite Nat.div_0_l; [ | easy ].
+    rewrite Nat.add_0_r.
+    simpl.
+
+bbb.
+
+  simpl.
+  remember (a1 / rad) as a2 eqn:Ha2.
+  symmetry in Ha2.
+  destruct a2.
+   rewrite Nat.div_small_iff in Ha2; [ | easy ].
+   rewrite Nat.mod_small; [ | easy ].
+   destruct a1; [ now exists 1 | simpl ].
+   rewrite Nat.mod_small; [ | easy ].
+   destruct (zerop (S a1 / rad)) as [Har2| Har2]; [ now exists 0 | ].
+   now rewrite Nat.div_small in Har2.
+
+   simpl.
+
+  destruct a1.
+
+  rewrite Nat.mod_0_l; [ | easy ].
+  rewrite Nat.div_0_l; [ | easy ].
+  rewrite Nat.add_0_r.
+
+
+ destruct IHal as (m, Hm); simpl.
+
 bbb.
 
 Lemma list_of_nat_inv {r : radix} : 2 ≤ rad →
