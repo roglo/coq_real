@@ -633,74 +633,14 @@ Theorem list_rem_trail_move_carry_0_nz {r : radix} : 1 < rad → ∀ a,
   list_remove_trailing_0s (move_carry 0 [S a]) = move_carry 0 [S a].
 Proof.
 intros Hr.
-assert (Hrz : rad ≠ 0) by lia.
 intros.
 remember (move_carry 0 [S a]) as al eqn:Hal.
 symmetry in Hal.
 apply list_rem_trail_iff.
-split; [ now exists 0; rewrite List.app_nil_r | ].
-revert a Hal.
-induction al as [| a1]; intros; [ now left | right ].
-destruct a1.
- apply last_cons_id.
- remember [] as x in Hal; simpl in Hal.
- injection Hal; clear Hal; intros Hal Ha; subst x.
- unfold move_carry in Hal.
- destruct (zerop (S a / rad)) as [Hra| Har].
-  apply Nat.div_small_iff in Hra; [ | easy ].
-  now rewrite Nat.mod_small in Ha.
-
-  apply Nat.mod_divides in Ha; [ | easy ].
-  destruct Ha as (a1, Ha1); rewrite Nat.mul_comm in Ha1.
-  rewrite Ha1, Nat.div_mul in Hal; [ | easy ].
-  subst al.
-  apply last_move_carry_end; [ easy | ].
-  split; [ | lia ].
-  destruct a1; [ easy | lia ].
-
- destruct (zerop (S a / rad)) as [Hra| Hra].
-  simpl in Hal; rewrite Hra in Hal; simpl in Hal.
-  now injection Hal; intros; subst al.
-
-  remember [] as x in Hal; simpl in Hal.
-  injection Hal; clear Hal; intros Hal Ha1; subst x.
-  apply last_cons_ne; [ easy | ].
-
-bbb.
-
-  simpl in Hal.
-
-
-Print move_carry.
- simpl in Hal.
-
-Search (last (_ :: _)).
-bbb.
-intros Hr *.
-simpl.
-destruct (zerop (S a / rad)) as [Har| Har].
- apply Nat.div_small_iff in Har; [ | easy ].
- now rewrite Nat.mod_small.
-
- remember (S a mod rad) as a1 eqn:Ha1.
- symmetry in Ha1.
- destruct a1.
-  apply Nat.mod_divides in Ha1; [ | easy ].
-  destruct Ha1 as (a1, Ha1); rewrite Nat.mul_comm in Ha1.
-  rewrite Ha1, Nat.div_mul in Har; [ | easy ].
-  rewrite Ha1, Nat.div_mul; [ | easy ].
-  clear a Ha1.
-  simpl.
-  remember (a1 mod rad) as a2 eqn:Ha2.
-  symmetry in Ha2.
-  destruct a2.
-   apply Nat.mod_divides in Ha2; [ | easy ].
-   destruct Ha2 as (a3, Ha3); rewrite Nat.mul_comm in Ha3.
-   rewrite Ha3, Nat.div_mul; [ | easy ].
-   destruct a3; [ lia | ].
-    destruct rad as [| s]; [ easy | ].
-
-bbb.
+split; [ now exists 0; rewrite List.app_nil_r | right ].
+subst al.
+now apply last_move_carry_single_nz.
+Qed.
 
 Fixpoint logn_loop n iter a :=
   match iter with
@@ -730,11 +670,6 @@ split.
   now rewrite move_carry_0_rep_0.
 
   rewrite list_rem_trail_move_carry_0_nz.
-bbb.
-
-subgoal 2 (ID 593) is:
- list_remove_trailing_0s (move_carry 0 [a]) = [] ∨ last (list_remove_trailing_0s (move_carry 0 [a])) 0 ≠ 0
-
 bbb.
 
  destruct (zerop (a / rad)) as [Har| Har].
