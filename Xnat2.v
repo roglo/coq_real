@@ -677,16 +677,9 @@ split.
   now rewrite Nat.mod_0_l; [ rewrite Nat.div_0_l | ].
 
   right.
-bbb.
-
- destruct (zerop (a / rad)) as [Har| Har].
-  simpl.
-  rewrite Har.
-  apply Nat.div_small_iff in Har; [ | easy ].
-  rewrite Nat.mod_small; [ | easy ].
-  rewrite move_carry_0_rep_0.
-  now destruct a; [ exists (S m) | exists m ].
-bbb.
+  rewrite list_rem_trail_move_carry_0_nz; [ | easy ].
+  now apply last_move_carry_single_nz.
+Qed.
 
 Lemma list_of_nat_inv {r : radix} : 2 ≤ rad →
   ∀ al, list_of_nat 0 (nat_of_list 0 al) = list_norm al.
@@ -699,10 +692,10 @@ unfold list_of_nat.
 destruct (zerop (nat_of_list 0 al)) as [Ha| Ha].
  rewrite Ha, Nat.mul_0_l, Nat.add_0_l.
  apply eq_nat_of_list_0 in Ha; [ | lia ].
-Search (list_norm (_ :: _)).
- specialize (list_norm_cons al IHal) as H.
+ specialize (list_norm_cons Hr al IHal) as H.
  rewrite H.
-
+ destruct (zerop a) as [Haz| Haz].
+  subst a; symmetry; apply list_norm_0.
 bbb.
 
  destruct (zerop a) as [Haz| Hanz].
