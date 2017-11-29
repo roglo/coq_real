@@ -629,6 +629,32 @@ induction x; intros.
   apply Nat.pow_nonzero; lia.
 Qed.
 
+Theorem list_rem_trail_move_carry_0_nz {r : radix} : rad ≠ 0 → ∀ a,
+  list_remove_trailing_0s (move_carry 0 [S a]) = move_carry 0 [S a].
+Proof.
+intros Hr *.
+simpl.
+destruct (zerop (S a / rad)) as [Har| Har].
+ apply Nat.div_small_iff in Har; [ | easy ].
+ now rewrite Nat.mod_small.
+
+ remember (S a mod rad) as a1 eqn:Ha1.
+ symmetry in Ha1.
+ destruct a1.
+  apply Nat.mod_divides in Ha1; [ | easy ].
+  destruct Ha1 as (a1, Ha1); rewrite Nat.mul_comm in Ha1.
+  rewrite Ha1, Nat.div_mul in Har; [ | easy ].
+  rewrite Ha1, Nat.div_mul; [ | easy ].
+  clear a Ha1.
+  simpl.
+  remember (a1 mod rad) as a2 eqn:Ha2.
+  symmetry in Ha2.
+  destruct a2.
+   apply Nat.mod_divides in Ha2; [ | easy ].
+   destruct Ha2 as (a3, Ha3); rewrite Nat.mul_comm in Ha3.
+   rewrite Ha3, Nat.div_mul; [ | easy ].
+bbb.
+
 Lemma glop {r : radix} : 1 < rad → ∀ al,
   list_norm al = [] → ∀ a, list_norm (a :: al) = list_norm [a].
 Proof.
@@ -642,6 +668,21 @@ apply move_carry_0_is_rep_0 in Hm; [ | easy ].
 apply list_rem_trail_iff.
 split.
  subst al.
+ destruct a.
+  simpl.
+  rewrite Nat.mod_0_l; [ | easy ].
+  rewrite Nat.div_0_l; [ simpl | easy ].
+  exists (S m).
+  now rewrite move_carry_0_rep_0.
+
+  rewrite list_rem_trail_move_carry_0_nz.
+bbb.
+
+subgoal 2 (ID 593) is:
+ list_remove_trailing_0s (move_carry 0 [a]) = [] ∨ last (list_remove_trailing_0s (move_carry 0 [a])) 0 ≠ 0
+
+bbb.
+
  destruct (zerop (a / rad)) as [Har| Har].
   simpl.
   rewrite Har.
