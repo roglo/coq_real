@@ -629,9 +629,53 @@ induction x; intros.
   apply Nat.pow_nonzero; lia.
 Qed.
 
-Theorem list_rem_trail_move_carry_0_nz {r : radix} : rad ≠ 0 → ∀ a,
+Theorem list_rem_trail_move_carry_0_nz {r : radix} : 1 < rad → ∀ a,
   list_remove_trailing_0s (move_carry 0 [S a]) = move_carry 0 [S a].
 Proof.
+intros Hr.
+assert (Hrz : rad ≠ 0) by lia.
+intros.
+remember (move_carry 0 [S a]) as al eqn:Hal.
+symmetry in Hal.
+apply list_rem_trail_iff.
+split; [ now exists 0; rewrite List.app_nil_r | ].
+revert a Hal.
+induction al as [| a1]; intros; [ now left | right ].
+destruct a1.
+ apply last_cons_id.
+ remember [] as x in Hal; simpl in Hal.
+ injection Hal; clear Hal; intros Hal Ha; subst x.
+ unfold move_carry in Hal.
+ destruct (zerop (S a / rad)) as [Hra| Har].
+  apply Nat.div_small_iff in Hra; [ | easy ].
+  now rewrite Nat.mod_small in Ha.
+
+  apply Nat.mod_divides in Ha; [ | easy ].
+  destruct Ha as (a1, Ha1); rewrite Nat.mul_comm in Ha1.
+  rewrite Ha1, Nat.div_mul in Hal; [ | easy ].
+  subst al.
+  apply last_move_carry_end; [ easy | ].
+  split; [ | lia ].
+  destruct a1; [ easy | lia ].
+
+ destruct (zerop (S a / rad)) as [Hra| Hra].
+  simpl in Hal; rewrite Hra in Hal; simpl in Hal.
+  now injection Hal; intros; subst al.
+
+  remember [] as x in Hal; simpl in Hal.
+  injection Hal; clear Hal; intros Hal Ha1; subst x.
+  apply last_cons_ne; [ easy | ].
+
+bbb.
+
+  simpl in Hal.
+
+
+Print move_carry.
+ simpl in Hal.
+
+Search (last (_ :: _)).
+bbb.
 intros Hr *.
 simpl.
 destruct (zerop (S a / rad)) as [Har| Har].
@@ -653,7 +697,18 @@ destruct (zerop (S a / rad)) as [Har| Har].
    apply Nat.mod_divides in Ha2; [ | easy ].
    destruct Ha2 as (a3, Ha3); rewrite Nat.mul_comm in Ha3.
    rewrite Ha3, Nat.div_mul; [ | easy ].
+   destruct a3; [ lia | ].
+    destruct rad as [| s]; [ easy | ].
+
 bbb.
+
+Fixpoint logn_loop n iter a :=
+  match iter with
+  | 0 => 0
+  | S i => if zerop a then 0 else S (logn_loop n i (a / n))
+  end.
+
+Definition logn n a := logn_loop n a a - 1.
 
 Lemma glop {r : radix} : 1 < rad → ∀ al,
   list_norm al = [] → ∀ a, list_norm (a :: al) = list_norm [a].
@@ -667,9 +722,8 @@ destruct Hal as ((m, Hm) & _); simpl in Hm.
 apply move_carry_0_is_rep_0 in Hm; [ | easy ].
 apply list_rem_trail_iff.
 split.
- subst al.
  destruct a.
-  simpl.
+  subst al; simpl.
   rewrite Nat.mod_0_l; [ | easy ].
   rewrite Nat.div_0_l; [ simpl | easy ].
   exists (S m).
