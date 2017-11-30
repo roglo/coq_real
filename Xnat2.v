@@ -705,15 +705,34 @@ destruct (zerop m) as [Ha| Ha].
   unfold list_norm; simpl.
   remember (a1 mod rad) as d1 eqn:Hd1.
   symmetry in Hd1.
-  destruct d1.
-   exfalso.
-   apply Nat.mod_divides in Hd1; [ | easy ].
-   destruct Hd1 as (c1, Ha1); rewrite Nat.mul_comm in Ha1.
-   rewrite Ha1 in Hm; simpl in Hm.
-   rewrite <- Nat.mul_add_distr_r in Hm.
-   remember (nat_of_list 0 al + c1) as m1 eqn:Hm1; subst m.
-   destruct m1; [ easy | simpl in Hmr; lia ].
+  simpl in Hm.
+  assert (Har1 : a1 < rad) by lia.
+  rewrite <- Hd1, Nat.mod_small; [ | easy ].
+  rewrite Nat.div_small; [ | easy ].
+  rewrite Nat.mod_small in Hd1; [ subst d1 | easy ].
+  destruct a1.
+   rewrite Nat.add_0_r in Hm; rewrite Hm in Hmr.
+   destruct (nat_of_list 0 al); [ lia | simpl in Hmr; lia ].
 
+   remember (nat_of_list 0 al) as al1 eqn:Hal1.
+   destruct al1; simpl in Hm; [ | lia ].
+   subst m; f_equal; symmetry.
+   apply eq_list_rem_trail_nil.
+   symmetry in Hal1.
+   apply eq_nat_of_list_0 in Hal1; [ | lia ].
+   rewrite Hal1.
+   rewrite move_carry_0_rep_0.
+   now rewrite List.repeat_length.
+
+  simpl.
+bbb.
+
+   simpl in Hm.
+   assert (H : a1 < rad) by lia.
+   rewrite <- Hd1, Nat.mod_small; [ | easy ].
+   rewrite Nat.div_small; [ | easy ].
+Search (move_carry 0).
+Search (_ + _ < _ → _ < _).
 bbb.
   apply Nat.eq_add_0 in Har.
   destruct Har as (Har, _).
