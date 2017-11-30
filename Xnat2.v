@@ -681,12 +681,13 @@ split.
   now apply last_move_carry_single_nz.
 Qed.
 
-Lemma glop {r : radix} : ∀ a1 a2 al, rad ≠ 0 →
+Lemma list_norm_cons_cons {r : radix} : ∀ a1 a2 al, 1 < rad →
   nat_of_list 0 (a1 :: a2 :: al) ≠ 0
   → list_norm (a1 :: a2 :: al) =
      a1 mod rad :: list_norm ((a1 / rad + a2) :: al).
 Proof.
 intros * Hr.
+assert (Hrz : rad ≠ 0) by lia.
 intros Hnl.
 unfold list_norm; simpl.
 remember (a1 mod rad) as d1 eqn:Hd1.
@@ -706,7 +707,17 @@ apply Nat.mod_divides in Hd2; [ | easy ].
 destruct Hd2 as (x2, Hx2); rewrite Nat.mul_comm in Hx2.
 rewrite Hx2, Nat.div_mul in Hc2; [ subst x2 | easy ].
 simpl in Hnl.
-bbb.
+apply eq_list_rem_trail_nil in Hal2.
+destruct c2.
+ apply move_carry_0_is_rep_0 in Hal2; [ | easy ].
+ rewrite Hal2 in Hnl.
+ rewrite nat_of_list_0_rep_0 in Hnl.
+ apply Nat.eq_add_0 in Hx2.
+ destruct Hx2; subst x1 a2.
+ now subst a1; simpl in Hnl.
+
+ now apply move_nz_carry in Hal2.
+Qed.
 
 Lemma list_of_nat_inv {r : radix} : 2 ≤ rad →
   ∀ al, list_of_nat 0 (nat_of_list 0 al) = list_norm al.
@@ -751,10 +762,130 @@ destruct (zerop m) as [Ha| Ha].
    rewrite move_carry_0_rep_0.
    now rewrite List.repeat_length.
 
+  simpl in Hm.
+  remember (nat_of_list 0 al) as m1 eqn:Hm1 in Hm.
+  specialize (IHal m1 Hm1).
+  destruct (zerop m1) as [Hzm1| Hzm1].
+   subst m1; simpl in Hm; subst a1.
+   rewrite list_norm_cons; [ | easy | easy ].
+   unfold list_norm.
+   destruct m; [ easy | ].
+   rewrite list_rem_trail_move_carry_0_nz; [ simpl | easy ].
+   now destruct (zerop (S m / rad)) as [H| ]; [ rewrite H in Hmr | ].
+
+   destruct al as [| a2]; [ now subst m1 | ].
+   destruct m1; [ easy | clear Hzm1 ].
+   rewrite list_norm_cons_cons; [ | easy | ].
+    remember (m mod rad) as x eqn:Hx.
+    rewrite Hm, Nat.add_comm in Hx.
+    rewrite Nat.mod_add in Hx; [ subst x | easy ].
+    f_equal.
+    simpl in IHal, Hm1.
+    destruct (zerop (S m1 / rad)) as [Hmr1| Hmr1].
+rewrite Hm1, Nat.add_comm in Hmr1.
+rewrite Nat.div_add in Hmr1; [ | easy ].
+apply Nat.eq_add_0 in Hmr1.
+destruct Hmr1 as (Ha2, Hn).
+rewrite Hn in Hm1; simpl in Hm1; subst a2.
+apply eq_nat_of_list_0 in Hn; [ | lia ].
+rewrite list_norm_cons; [ | easy | ].
+unfold list_norm, move_carry.
+rewrite Nat.add_0_l.
+replace (a1 / rad + S m1) with (m / rad).
+destruct (zerop (m / rad / rad)) as [Hmrr| Hmrr].
+ apply Nat.div_small_iff in Hmrr; [ | easy ].
+ rewrite Nat.mod_small; [ simpl | easy ].
+ destruct (m / rad); [ easy | simpl ].
+ now rewrite Nat.div_small.
+
+ simpl.
+ remember ((m / rad) mod rad) as x eqn:Hx.
+ symmetry in Hx.
+ destruct x.
+  destruct (zerop (m / rad / rad)) as [H| H]; [ lia | clear H ].
   simpl.
+  remember ((m / rad / rad) mod rad) as y eqn:Hy.
+  symmetry in Hy.
+  destruct y.
 bbb.
+
+ apply Nat.div_small_iff in Ha2; [ | easy ].
+ rewrite Hm, Nat.add_comm in Hmrr.
+ rewrite Nat.div_add in Hmrr; [ | easy ].
+apply Nat.div_small_iff in Ha2; [ | easy ].
+unfold list_norm.
+rewrite move_carry_cons.
+simpl.
+Search (nat_of_list _ _ = 0).
+
+bbb.
+
+
+    simpl in IHal, Hm1.
+    destruct (zerop (S m1 / rad)) as [Hmr1| Hmr1].
+rewrite Hm1, Nat.add_comm in Hmr1.
+rewrite Nat.div_add in Hmr1; [ | easy ].
+apply Nat.eq_add_0 in Hmr1.
+destruct Hmr1 as (Ha2, Hn).
+rewrite Hn in Hm1; simpl in Hm1; subst a2.
+apply Nat.div_small_iff in Ha2; [ | easy ].
+bbb.
+
+rewrite Nat.mod_small in IHal; [ | easy ].
+rewrite list_norm_cons in IHal; [ | easy | ].
+unfold list_norm in IHal; simpl in IHal.
+rewrite Nat.mod_small in IHal; simpl in IHal; [ | easy ].
+apply Nat.div_small_iff in Ha2; [ rewrite Ha2 in IHal | easy ].
+simpl in IHal.
+bbb.
+
+     apply Nat.div_small_iff in Hmr1; [ | easy ].
+     rewrite Nat.mod_small in IHal; [ | easy ].
+     unfold list_norm in IHal.
+simpl in IHal.
+remember (a2 mod rad) as d2 eqn:Hd2.
+symmetry in Hd2.
+destruct d2.
+ apply Nat.mod_divides in Hd2; [ | easy ].
+ destruct Hd2 as (d2, Hd2); rewrite Nat.mul_comm in Hd2.
+ subst a2.
+ rewrite Hm1 in Hmr1.
+ rewrite <- Nat.mul_add_distr_r in Hmr1.
+ destruct rad as [| s]; [ easy | ].
+ remember (nat_of_list 0 al + d2) as x eqn:Hx.
+ symmetry in Hx.
+ destruct x; [ | simpl in Hmr1; lia ].
+ apply Nat.eq_add_0 in Hx.
+ destruct Hx as (Hnl, Hd2); subst d2.
+ now rewrite Hnl in Hm1.
+bbb.
+
+
+
+     rewrite move_carry_cons in IHal.
+     rewrite Nat.add_0_l in IHal.
+Search (list_remove_trailing_0s (_ :: _)).
+
+     simpl in IHal.
+
+
+Focus 2.
+simpl in Hm1; simpl.
+rewrite <- Hm1.
+now destruct rad.
+bbb.
+
+Search (move_carry 0 _).
+Search (list_norm (_ :: _)).
+
+bbb.
+symmetry in Hal1.
+
 destruct al as [| a2].
-simpl in Hm; subst a1.
+Focus 2.
+rewrite list_norm_cons_cons; [ | easy | lia ].
+
+bbb.
 unfold list_norm; simpl.
 destruct (zerop (m / rad)) as [H| H]; [ | clear H ].
 now rewrite H in Hmr.
