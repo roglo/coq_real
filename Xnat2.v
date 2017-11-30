@@ -736,6 +736,52 @@ destruct (zerop m) as [Ha| Ha].
  unfold list_norm.
  now rewrite Ha, move_carry_0_rep_0, list_rem_trail_repeat_0.
 
+ specialize (IHal (nat_of_list 0 al) (eq_refl _)).
+ simpl in Hm, IHal; simpl.
+ destruct (zerop (nat_of_list 0 al)) as [Hzn| Hzn].
+  rewrite Hzn in Hm; simpl in Hm; subst a1.
+  apply eq_nat_of_list_0 in Hzn; [ | lia ].
+  rewrite list_norm_cons; [ | easy | easy ].
+  destruct (zerop (m / rad)) as [Hmr| Hmr].
+   destruct m; [ easy | ].
+   unfold list_norm.
+   rewrite list_rem_trail_move_carry_0_nz; [ simpl | easy ].
+   now rewrite Hmr.
+
+   clear al Hzn IHal.
+   unfold list_norm.
+   symmetry.
+   apply list_rem_trail_iff.
+   split.
+    simpl.
+    destruct (m / rad); [ easy | ].
+    now exists 0; rewrite List.app_nil_r.
+
+    right.
+    rewrite last_cons_cons.
+    remember ((m / rad) mod rad) as d1 eqn:Hd1.
+    symmetry in Hd1.
+    destruct d1.
+     apply last_cons_id.
+     apply Nat.mod_divides in Hd1; [ | easy ].
+     destruct Hd1 as (d1, Hd1); rewrite Nat.mul_comm in Hd1.
+     rewrite Hd1, Nat.div_mul; [ | easy ].
+     destruct d1; [ now rewrite Hd1 in Hmr | ].
+     apply last_move_carry_end; [ easy | ].
+     split; [ lia | ].
+     destruct rad as [| s]; [ easy | ].
+     destruct s; [ lia | ].
+     rewrite Nat.mul_comm; simpl; lia.
+
+     apply last_cons_ne; [ easy | ].
+     remember (m / rad / rad) as n eqn:Hn.
+     symmetry in Hn.
+     destruct n.
+      apply Nat.div_small_iff in Hn; [ | easy ].
+      rewrite Nat.mod_small in Hd1; [ | easy ].
+      rewrite Hd1.
+simpl.
+(* crotte de crotte de crotte *)
 bbb.
  simpl.
  destruct (zerop (m / rad)) as [Hmr| Hmr].
