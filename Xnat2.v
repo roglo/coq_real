@@ -743,9 +743,10 @@ symmetry in Hal2.
 destruct al2; [ exfalso | easy ].
 apply Nat.mod_divides in Hd1; [ | easy ].
 destruct Hd1 as (x1, Hx1); rewrite Nat.mul_comm in Hx1.
-rewrite Hx1, Nat.div_mul in Hd2; [ | easy ].
+rewrite Hx1, Nat.div_mul in Hd2, Hc2; [ | easy | easy ].
 apply Nat.mod_divides in Hd2; [ | easy ].
 destruct Hd2 as (x2, Hx2); rewrite Nat.mul_comm in Hx2.
+rewrite Hx2, Nat.div_mul in Hc2; [ subst x2 | easy ].
 bbb.
 
    simpl in Hm.
