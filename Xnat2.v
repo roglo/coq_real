@@ -786,6 +786,11 @@ destruct (zerop m) as [Ha| Ha].
     apply Nat.div_small_iff in Hmr; [ | easy ].
     rewrite Nat.mod_small; [ | easy ].
     rewrite Nat.add_comm in Hm.
+    destruct m1; [ easy | exfalso; clear Hzn ].
+    rewrite Hm in Hmr.
+    apply lt_not_le in Hmr; apply Hmr; clear Hmr.
+    simpl; lia.
+
 bbb.
  simpl.
  destruct (zerop (m / rad)) as [Hmr| Hmr].
