@@ -726,7 +726,8 @@ destruct (zerop m) as [Ha| Ha].
 
   simpl.
 Lemma glop {r : radix} : ∀ a1 a2 al, rad ≠ 0 →
-  list_norm (a1 :: a2 :: al) = a1 mod rad :: list_norm ((a1 / rad + a2) :: al).
+  list_norm (a1 :: a2 :: al) =
+  a1 mod rad :: list_norm ((a1 / rad + a2) :: al).
 Proof.
 intros * Hr.
 unfold list_norm; simpl.
