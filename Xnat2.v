@@ -764,9 +764,9 @@ destruct (zerop m) as [Ha| Ha].
 
   simpl in Hm.
   remember (nat_of_list 0 al) as m1 eqn:Hm1 in Hm.
-  specialize (IHal m1 Hm1).
+  specialize (IHal m1 Hm1) as Hzm.
   destruct (zerop m1) as [Hzm1| Hzm1].
-   subst m1; simpl in Hm; subst a1.
+   move Hzm1 at top; subst m1; simpl in Hm; subst a1.
    rewrite list_norm_cons; [ | easy | easy ].
    unfold list_norm.
    destruct m; [ easy | ].
