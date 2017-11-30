@@ -810,6 +810,11 @@ simpl in Hn.
 injection Hn; clear Hn; intros Hn Ha2.
 simpl in Hm1.
 simpl.
+remember (a2 / rad) as x eqn:Hx.
+symmetry in Hx.
+destruct x; [ | now apply move_nz_carry in Hn ].
+apply Nat.div_small_iff in Hx; [ | easy ].
+rewrite Nat.mod_small in Ha2; [ subst a2 | easy ].
 bbb.
  simpl.
  destruct (zerop (m / rad)) as [Hmr| Hmr].
