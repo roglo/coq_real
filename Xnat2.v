@@ -773,15 +773,19 @@ destruct (zerop m) as [Ha| Ha].
      destruct s; [ lia | ].
      rewrite Nat.mul_comm; simpl; lia.
 
-     apply last_cons_ne; [ easy | ].
-     remember (m / rad / rad) as n eqn:Hn.
-     symmetry in Hn.
-     destruct n.
-      apply Nat.div_small_iff in Hn; [ | easy ].
-      rewrite Nat.mod_small in Hd1; [ | easy ].
-      rewrite Hd1.
-simpl.
-(* crotte de crotte de crotte *)
+     rewrite <- Hd1.
+     eapply last_cons_move_carry_end with (n := 0); [ easy | | easy ].
+     now rewrite Nat.pow_0_r, Nat.div_1_r.
+
+  remember (nat_of_list 0 al) as m1 eqn:Hm1.
+  destruct (zerop (m1 / rad)) as [Hm1r| Hmr1].
+   apply Nat.div_small_iff in Hm1r; [ | easy ].
+   rewrite Nat.mod_small in IHal; [ | easy ].
+   symmetry in IHal; symmetry.
+   destruct (zerop (m / rad)) as [Hmr| Hmr].
+    apply Nat.div_small_iff in Hmr; [ | easy ].
+    rewrite Nat.mod_small; [ | easy ].
+    rewrite Nat.add_comm in Hm.
 bbb.
  simpl.
  destruct (zerop (m / rad)) as [Hmr| Hmr].
