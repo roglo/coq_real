@@ -687,23 +687,25 @@ Proof.
 intros Hr.
 assert (Hrz : rad ≠ 0) by lia.
 intros.
-induction al as [| a]; [ easy | simpl ].
+induction al as [| a1]; [ easy | simpl ].
+remember (nat_of_list 0 al) as m eqn:Hm.
 unfold list_of_nat in IHal; symmetry in IHal.
 unfold list_of_nat.
-destruct (zerop (nat_of_list 0 al)) as [Ha| Ha].
+destruct (zerop m) as [Ha| Ha].
  rewrite Ha, Nat.mul_0_l, Nat.add_0_l.
+ rewrite Hm in Ha.
  apply eq_nat_of_list_0 in Ha; [ | lia ].
  specialize (list_norm_cons Hr al IHal) as H.
  rewrite H.
- destruct (zerop a) as [Haz| Haz].
-  subst a; symmetry; apply list_norm_0.
+ destruct (zerop a1) as [Haz| Haz].
+  subst a1; symmetry; apply list_norm_0.
 
   unfold list_norm; symmetry.
   apply list_rem_trail_iff.
   split; [ now exists 0; rewrite List.app_nil_r | right ].
   apply last_move_carry_single_nz; [ easy | lia ].
 
- destruct (zerop (nat_of_list 0 al * rad + a)) as [Har| Har].
+ destruct (zerop (m * rad + a1)) as [Har| Har].
   apply Nat.eq_add_0 in Har.
   destruct Har as (Har, _).
   apply Nat.eq_mul_0 in Har.
@@ -716,32 +718,36 @@ destruct (zerop (nat_of_list 0 al)) as [Ha| Ha].
    rewrite Nat.mod_add; [ | easy ].
    rewrite Nat.div_add; [ | easy ].
    rewrite Nat.add_comm.
-   remember (nat_of_list 0 al + a / rad) as a1 eqn:Ha1.
-   symmetry in Ha1.
-   destruct (zerop a1) as [Haz1| Haz1].
-    subst a1.
-    apply Nat.eq_add_0 in Haz1.
-    destruct Haz1 as (Haz1, _).
-    now rewrite Haz1 in Ha.
+   remember (m + a1 / rad) as c2 eqn:Hc2.
+   destruct (zerop c2) as [Hzc2| Hzc2].
+    subst c2.
+    apply Nat.eq_add_0 in Hzc2.
+    destruct Hzc2 as (H, _).
+    now rewrite H in Ha.
 
     simpl.
     destruct al as [| a2]; [ easy | ].
-    simpl in Ha1; simpl.
-    remember (a1 mod rad) as x eqn:Hx.
-    rewrite <- Ha1, <- Nat.add_assoc, Nat.add_comm in Hx.
-    rewrite Nat.mod_add in Hx; [ subst x | easy ].
+    simpl in Hc2; simpl.
+    remember (c2 mod rad) as x eqn:Hx.
+    rewrite Hc2, Hm in Hx; simpl in Hx.
+    rewrite Nat.add_shuffle0 in Hx.
+    rewrite <- Nat.add_assoc, Nat.add_comm in Hx.
+    rewrite Nat.mod_add in Hx; [subst x | easy ].
     destruct al as [| a3].
-     simpl in Ha1; rewrite Ha1.
-     rewrite Nat.add_comm in Ha1; rewrite Ha1.
+     rewrite Hm, Nat.add_comm in Hc2; simpl in Hc2.
+     rewrite <- Hc2.
      unfold move_carry.
      exists 0; rewrite List.app_nil_r.
      f_equal; f_equal.
-     destruct (zerop (a1 / rad)) as [Hza2| Hza2].
-      now rewrite Hza2; destruct a1.
+     destruct (zerop (c2 / rad)) as [Hcr2| Hcr2].
+      now rewrite Hcr2; destruct c2.
 
       apply move_carry_end_enough_iter; [ easy | lia | ].
       now apply Nat.div_lt.
 
+     remember (a1 / rad + a2) as c1 eqn:Hc1.
+     rewrite Hm in Hc2; simpl in Hc2.
+     rewrite Nat.add_shuffle0, <- Nat.add_assoc, <- Hc1 in Hc2.
 bbb.
      simpl.
      remember ((a / rad + a2) / rad + a3) as a4 eqn:Ha4.
