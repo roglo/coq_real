@@ -687,25 +687,34 @@ Proof.
 intros Hr.
 assert (Hrz : rad ≠ 0) by lia.
 intros.
-induction al as [| a1]; [ easy | simpl ].
 remember (nat_of_list 0 al) as m eqn:Hm.
-unfold list_of_nat in IHal; symmetry in IHal.
+revert m Hm.
+induction al as [| a1]; intros; [ now subst m | simpl ].
+unfold list_of_nat in IHal.
 unfold list_of_nat.
 destruct (zerop m) as [Ha| Ha].
- rewrite Ha, Nat.mul_0_l, Nat.add_0_l.
  rewrite Hm in Ha.
  apply eq_nat_of_list_0 in Ha; [ | lia ].
- specialize (list_norm_cons Hr al IHal) as H.
- rewrite H.
- destruct (zerop a1) as [Haz| Haz].
-  subst a1; symmetry; apply list_norm_0.
+ unfold list_norm.
+ now rewrite Ha, move_carry_0_rep_0, list_rem_trail_repeat_0.
 
-  unfold list_norm; symmetry.
-  apply list_rem_trail_iff.
-  split; [ now exists 0; rewrite List.app_nil_r | right ].
-  apply last_move_carry_single_nz; [ easy | lia ].
+ simpl.
+ destruct (zerop (m / rad)) as [Hmr| Hmr].
+  apply Nat.div_small_iff in Hmr; [ | easy ].
+  rewrite Nat.mod_small; [ | easy ].
+  unfold list_norm; simpl.
+  remember (a1 mod rad) as d1 eqn:Hd1.
+  symmetry in Hd1.
+  destruct d1.
+   exfalso.
+   apply Nat.mod_divides in Hd1; [ | easy ].
+   destruct Hd1 as (c1, Ha1); rewrite Nat.mul_comm in Ha1.
+   rewrite Ha1 in Hm; simpl in Hm.
+   rewrite <- Nat.mul_add_distr_r in Hm.
+   remember (nat_of_list 0 al + c1) as m1 eqn:Hm1; subst m.
+   destruct m1; [ easy | simpl in Hmr; lia ].
 
- destruct (zerop (m * rad + a1)) as [Har| Har].
+bbb.
   apply Nat.eq_add_0 in Har.
   destruct Har as (Har, _).
   apply Nat.eq_mul_0 in Har.
