@@ -791,12 +791,12 @@ destruct (zerop m) as [Ha| Ha].
     apply lt_not_le in Hmr; apply Hmr; clear Hmr.
     simpl; lia.
 
-    exfalso.
     unfold list_norm in IHal.
     apply list_rem_trail_iff in IHal.
+    simpl in IHal.
     destruct IHal as ((n & Hn) & Hm1l).
     destruct Hm1l as [| Hm1l]; [ easy | ].
-bbb.
+    simpl in Hm1l.
     remember (m mod rad) as x eqn:Hx.
     rewrite Hm, Nat.add_comm in Hx.
     rewrite Nat.mod_add in Hx; [ subst x | easy ].
@@ -804,6 +804,12 @@ bbb.
     apply list_rem_trail_iff.
     split.
      simpl.
+Print move_carry.
+destruct al as [| a2]; [ easy | ].
+simpl in Hn.
+injection Hn; clear Hn; intros Hn Ha2.
+simpl in Hm1.
+simpl.
 bbb.
  simpl.
  destruct (zerop (m / rad)) as [Hmr| Hmr].
