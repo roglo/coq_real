@@ -725,10 +725,10 @@ destruct (zerop m) as [Ha| Ha].
    now rewrite List.repeat_length.
 
   simpl.
-Lemma glop {r : radix} : ∀ a1 a2 al,
+Lemma glop {r : radix} : ∀ a1 a2 al, rad ≠ 0 →
   list_norm (a1 :: a2 :: al) = a1 mod rad :: list_norm ((a1 / rad + a2) :: al).
 Proof.
-intros.
+intros * Hr.
 unfold list_norm; simpl.
 remember (a1 mod rad) as d1 eqn:Hd1.
 symmetry in Hd1.
@@ -740,7 +740,11 @@ remember ((a1 / rad + a2) / rad) as c2 eqn:Hc2.
 remember (list_remove_trailing_0s (move_carry c2 al)) as al2 eqn:Hal2.
 symmetry in Hal2.
 destruct al2; [ exfalso | easy ].
-
+apply Nat.mod_divides in Hd1; [ | easy ].
+destruct Hd1 as (x1, Hx1); rewrite Nat.mul_comm in Hx1.
+rewrite Hx1, Nat.div_mul in Hd2; [ | easy ].
+apply Nat.mod_divides in Hd2; [ | easy ].
+destruct Hd2 as (x2, Hx2); rewrite Nat.mul_comm in Hx2.
 bbb.
 
    simpl in Hm.
