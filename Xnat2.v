@@ -736,6 +736,7 @@ destruct (zerop m) as [Ha| Ha].
  unfold list_norm.
  now rewrite Ha, move_carry_0_rep_0, list_rem_trail_repeat_0.
 
+bbb.
  simpl.
  destruct (zerop (m / rad)) as [Hmr| Hmr].
   apply Nat.div_small_iff in Hmr; [ | easy ].
@@ -807,17 +808,32 @@ destruct (zerop (m / rad / rad)) as [Hmrr| Hmrr].
   remember ((m / rad / rad) mod rad) as y eqn:Hy.
   symmetry in Hy.
   destruct y.
-bbb.
-
- apply Nat.div_small_iff in Ha2; [ | easy ].
- rewrite Hm, Nat.add_comm in Hmrr.
- rewrite Nat.div_add in Hmrr; [ | easy ].
-apply Nat.div_small_iff in Ha2; [ | easy ].
-unfold list_norm.
-rewrite move_carry_cons.
+specialize (IHal (nat_of_list 0 al * rad + S m1) (eq_refl _)).
+rewrite Nat.add_comm in IHal.
+simpl in IHal.
+rewrite Hn in IHal.
+rewrite nat_of_list_0_rep_0 in IHal.
+simpl in IHal.
+rewrite Nat.add_0_r in IHal.
+rewrite Ha2 in IHal; simpl in IHal.
+rewrite Nat.mod_divides in Hx; [ | easy ].
+destruct Hx as (x, Hx).
+rewrite Hx, Nat.mul_comm, Nat.div_mul in Hy; [ | easy ].
+apply Nat.mod_divides in Hy; [ | easy ].
+destruct Hy as (y, Hy); rewrite Nat.mul_comm in Hx, Hy.
+subst x.
+rewrite Hx.
+rewrite Nat.div_mul; [ | easy ].
+rewrite Nat.div_mul; [ | easy ].
+remember (y * rad) as x eqn:Hy.
+symmetry in Hy.
+destruct x.
+ simpl in Hx.
+rewrite Hx in Hmrr.
+now rewrite Nat.div_0_l in Hmrr.
 simpl.
-Search (nat_of_list _ _ = 0).
-
+destruct y; [ easy | ].
+simpl.
 bbb.
 
 
