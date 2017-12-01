@@ -727,6 +727,7 @@ Lemma eq_list_norm_cons_cons {r : radix} : ∀ m al, 1 < rad →
      m mod rad :: (m / rad) mod rad ::
      move_carry_end (m / rad) (m / rad / rad).
 Proof.
+bbb.
 intros * Hr.
 assert (Hzr : rad ≠ 0) by lia.
 intros Hm Hmr.
