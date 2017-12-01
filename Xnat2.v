@@ -803,6 +803,9 @@ destruct (zerop m) as [Ha| Ha].
      simpl.
      apply list_rem_trail_iff in IHal.
      destruct IHal as ((p & Hp) & _); simpl in Hp.
+     remember (a1 / rad) as c1 eqn:Hc1.
+     subst mr.
+Print move_carry.
 bbb.
     unfold list_norm in IHal.
     apply list_rem_trail_iff in IHal.
