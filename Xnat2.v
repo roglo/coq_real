@@ -727,33 +727,32 @@ Lemma eq_list_norm_cons_cons {r : radix} : ∀ m al, 1 < rad →
      m mod rad :: (m / rad) mod rad ::
      move_carry_end (m / rad) (m / rad / rad).
 Proof.
-bbb.
 intros * Hr.
 assert (Hzr : rad ≠ 0) by lia.
-intros Hm Hmr.
-revert m Hm Hmr.
-destruct al as [| a1]; intros.
- rewrite Hm in Hmr; simpl in Hmr.
- now rewrite Nat.div_0_l in Hmr.
-
- simpl in Hm.
- unfold list_norm; simpl.
- remember (a1 mod rad) as d1 eqn:Hd1.
- symmetry in Hd1.
- destruct d1.
-  apply Nat.mod_divides in Hd1; [ | easy ].
-  destruct Hd1 as (d1, Hd1); rewrite Nat.mul_comm in Hd1; subst a1.
+intros Hm Hrm.
+revert m Hm Hrm.
+destruct al as [| a1]; intros; [ now rewrite Hm in Hrm | ].
+simpl in Hm.
+unfold list_norm; simpl.
+remember (a1 mod rad) as d1 eqn:Hd1.
+symmetry in Hd1.
+destruct d1.
+ apply Nat.mod_divides in Hd1; [ | easy ].
+ destruct Hd1 as (d1, Hd1); rewrite Nat.mul_comm in Hd1; subst a1.
   rewrite Nat.div_mul; [ | easy ].
   rewrite <- Nat.mul_add_distr_r in Hm.
+(*
   rewrite Hm, Nat.div_mul in Hmr; [ | easy ].
+*)
   remember (list_remove_trailing_0s (move_carry d1 al)) as bl eqn:Hbl.
   symmetry in Hbl.
   destruct bl as [| b1]; [ exfalso | ].
   apply eq_list_rem_trail_nil in Hbl.
   destruct d1.
    apply move_carry_0_is_rep_0 in Hbl; [ | easy ].
-   rewrite Hbl in Hmr.
-   now rewrite nat_of_list_0_rep_0 in Hmr.
+   rewrite Hbl in Hm.
+   rewrite nat_of_list_0_rep_0 in Hm; simpl in Hm.
+   now subst m.
 
    now apply move_nz_carry in Hbl.
 
@@ -779,11 +778,11 @@ destruct al as [| a1]; intros.
     simpl in Hc1; simpl.
     rewrite <- Nat.add_comm, <- Hc1.
     destruct (zerop (c1 / rad)) as [Hc1r| Hc1r]; [ exfalso | ].
-     clear Hb1l Hn.
      apply Nat.div_small_iff in Hc1r; [ | easy ].
      rewrite Nat.add_comm, <- Hc1 in Hb1.
      rewrite Nat.mod_small in Hb1; [ | easy ].
      subst b1.
+     clear Hb1l Hn.
 bbb.
 
  remember (nat_of_list 0 al) as m1 eqn:Hm1.
