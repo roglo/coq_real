@@ -20,6 +20,10 @@ Fixpoint move_carry_end {r : radix} iter carry :=
       else carry mod rad :: move_carry_end i (carry / rad)
   end.
 
+Compute (@move_carry_end radix_2 1 2).
+
+bbb.
+
 Fixpoint move_carry {r : radix} carry al :=
   match al with
   | [] => move_carry_end (S carry) carry
