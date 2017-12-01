@@ -724,12 +724,8 @@ Lemma eq_list_norm_cons_cons {r : radix} : ∀ m al, 1 < rad →
      move_carry_end (m / rad) (m / rad / rad).
 Proof.
 intros * Hr.
-Admitted.
-(*
 assert (Hzr : rad ≠ 0) by lia.
-Print move_carry_end.
 intros Hm Hrm.
-bbb.
 revert m Hm Hrm.
 destruct al as [| a1]; intros; [ now rewrite Hm in Hrm | ].
 simpl in Hm.
@@ -741,9 +737,6 @@ destruct d1.
  destruct Hd1 as (d1, Hd1); rewrite Nat.mul_comm in Hd1; subst a1.
   rewrite Nat.div_mul; [ | easy ].
   rewrite <- Nat.mul_add_distr_r in Hm.
-(*
-  rewrite Hm, Nat.div_mul in Hmr; [ | easy ].
-*)
   remember (list_remove_trailing_0s (move_carry d1 al)) as bl eqn:Hbl.
   symmetry in Hbl.
   destruct bl as [| b1]; [ exfalso | ].
@@ -767,7 +760,11 @@ destruct d1.
   destruct al as [| a1].
    simpl in Hc1; subst c1; simpl in Hn.
    destruct (zerop d1) as [Hzd1| Hzd1]; [ easy | ].
-   rewrite Hn.
+   destruct n; [ now rewrite Hn, List.app_nil_r | simpl in Hn ].
+   injection Hn; clear Hn; intros Hn Hdb.
+Search (move_carry_end).
+
+bbb.
    now exists n.
 
    simpl in Hn, Hc1; simpl.
