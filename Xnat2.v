@@ -718,18 +718,18 @@ Qed.
 
 Lemma eq_list_norm_cons_cons {r : radix} : ∀ m al, 1 < rad →
   m = nat_of_list 0 al
-(*
-  → 0 < m / rad
-*)
   → rad < m
-  → ∃ n,
-     list_norm al ++ repeat 0 n =
+  → list_norm al =
      m mod rad :: (m / rad) mod rad ::
      move_carry_end (m / rad) (m / rad / rad).
 Proof.
 intros * Hr.
+Admitted.
+(*
 assert (Hzr : rad ≠ 0) by lia.
+Print move_carry_end.
 intros Hm Hrm.
+bbb.
 revert m Hm Hrm.
 destruct al as [| a1]; intros; [ now rewrite Hm in Hrm | ].
 simpl in Hm.
@@ -790,6 +790,7 @@ bbb.
   specialize (IHal m1 (eq_refl _) Hm1r).
 
 bbb.
+*)
 
 Lemma list_of_nat_inv {r : radix} : 2 ≤ rad →
   ∀ al, list_of_nat 0 (nat_of_list 0 al) = list_norm al.
@@ -911,7 +912,8 @@ destruct (zerop m) as [Ha| Ha].
    simpl.
    remember (nat_of_list 0 (a1 :: al)) as m2 eqn:Hm2.
    symmetry.
-   apply eq_list_norm_cons_cons.
+   apply eq_list_norm_cons_cons; [ easy | | ].
+bbb.
    rewrite <- Hm2.
    simpl in Hm2.
    now rewrite <- Hm1, <- Hm in Hm2.
