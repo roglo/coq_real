@@ -815,6 +815,29 @@ symmetry in Hx.
 destruct x; [ | now apply move_nz_carry in Hn ].
 apply Nat.div_small_iff in Hx; [ | easy ].
 rewrite Nat.mod_small in Ha2; [ subst a2 | easy ].
+remember (m / rad) as mr eqn:Hmra.
+rewrite Hm in Hmra.
+rewrite Nat.add_comm in Hmra.
+rewrite Nat.div_add in Hmra; [ | easy ].
+rewrite <- Hmra.
+destruct al as [| a2].
+ unfold move_carry.
+ destruct (zerop (mr / rad)) as [Hzmr| Hzmr].
+  rewrite Hzmr; simpl.
+  destruct mr; [ easy | simpl ].
+  now exists 0.
+
+  exists 0.
+  f_equal; f_equal.
+  unfold repeat; rewrite List.app_nil_r.
+  apply move_carry_end_enough_iter; [ easy | lia | ].
+  now apply Nat.div_lt.
+
+exists 0; f_equal; f_equal.
+unfold repeat; rewrite List.app_nil_r.
+simpl.
+
+
 bbb.
  simpl.
  destruct (zerop (m / rad)) as [Hmr| Hmr].
