@@ -22,10 +22,8 @@ Fixpoint move_carry_end {r : radix} iter carry :=
 
 Fixpoint move_carry {r : radix} carry al :=
   match al with
-  | [] =>
-      if zerop carry then [] else move_carry_end (S carry) carry
-  | a :: al' =>
-      (carry + a) mod rad :: move_carry ((carry + a) / rad) al'
+  | [] => move_carry_end (S carry) carry
+  | a :: al' => (carry + a) mod rad :: move_carry ((carry + a) / rad) al'
   end.
 
 Definition list_of_nat {r : radix} carry n :=
@@ -359,7 +357,6 @@ destruct c; [ easy | clear Hc ].
 revert c n H.
 induction al as [| a]; intros.
  unfold move_carry in H.
- remember move_carry_end as f; simpl in H; subst f.
  revert H; apply move_carry_end_succ_ne_rep_0; [ easy | ].
  split; lia.
 
