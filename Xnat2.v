@@ -716,6 +716,31 @@ destruct c2.
  now apply move_nz_carry in Hal2.
 Qed.
 
+Lemma move_carry_end_ne_rep_0_succ {r : radix} : ∀ i c al n,
+  move_carry_end i c ≠ al ++ repeat 0 (S n).
+Proof.
+intros.
+destruct i; [ now destruct al | simpl ].
+destruct (zerop c) as [Hc| Hc]; [ now destruct al | simpl ].
+destruct i.
+ simpl.
+Print move_carry_end.
+bbb.
+
+bbb.
+intros.
+revert c al n.
+induction i; intros; [ now destruct al | ].
+simpl in IHi; simpl.
+destruct (zerop c) as [Hzc| Hzc]; [ now destruct al | ].
+destruct al as [| a1].
+ simpl.
+ intros H; injection H; clear H; intros H Hr.
+ destruct n; simpl in H.
+Print move_carry_end.
+
+bbb.
+
 Lemma eq_list_norm_cons_cons {r : radix} : ∀ m al, 1 < rad →
   m = nat_of_list 0 al
   → rad < m
@@ -763,6 +788,12 @@ destruct d1.
    destruct n; [ now rewrite Hn, List.app_nil_r | simpl in Hn ].
    injection Hn; clear Hn; intros Hn Hdb.
 Search (move_carry_end).
+
+Check move_carry_end_ne_rep_0_succ.
+bbb.
+
+move_carry_end_succ_ne_rep_0:
+  ∀ (r : radix) (i c n : nat), 1 < rad → 0 < c ∧ c < i → move_carry_end i c ≠ repeat 0 n
 
 bbb.
    now exists n.
