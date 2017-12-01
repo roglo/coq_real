@@ -716,6 +716,13 @@ destruct c2.
  now apply move_nz_carry in Hal2.
 Qed.
 
+Lemma eq_list_norm_cons_cons {r : radix} : ∀ m al,
+  m = nat_of_list 0 al
+  → list_norm al =
+     m mod rad :: (m / rad) mod rad ::
+     move_carry_end (m / rad) (m / rad / rad).
+bbb.
+
 Lemma list_of_nat_inv {r : radix} : 2 ≤ rad →
   ∀ al, list_of_nat 0 (nat_of_list 0 al) = list_norm al.
 Proof.
@@ -834,6 +841,12 @@ destruct (zerop m) as [Ha| Ha].
      now rewrite Nat.pow_0_r, Nat.div_1_r.
 
    simpl.
+   remember (nat_of_list 0 (a1 :: al)) as m2 eqn:Hm2.
+   symmetry.
+   apply eq_list_norm_cons_cons.
+   rewrite <- Hm2.
+   simpl in Hm2.
+   now rewrite <- Hm1, <- Hm in Hm2.
 bbb.
 
 Lemma old_list_of_nat_inv {r : radix} : 2 ≤ rad →
