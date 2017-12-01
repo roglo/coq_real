@@ -798,6 +798,11 @@ destruct (zerop m) as [Ha| Ha].
     rewrite Hm in Hmra.
     rewrite Nat.add_comm in Hmra.
     rewrite Nat.div_add in Hmra; [ | easy ].
+    apply list_rem_trail_iff.
+    split.
+     simpl.
+     apply list_rem_trail_iff in IHal.
+     destruct IHal as ((p & Hp) & _); simpl in Hp.
 bbb.
     unfold list_norm in IHal.
     apply list_rem_trail_iff in IHal.
