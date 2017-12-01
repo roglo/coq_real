@@ -833,6 +833,8 @@ destruct (zerop m) as [Ha| Ha].
 
      right.
      rewrite last_cons_cons.
+     apply last_cons_move_carry_end with (n := 0); [ easy | | easy ].
+     now rewrite Nat.pow_0_r, Nat.div_1_r.
 bbb.
 
 Lemma old_list_of_nat_inv {r : radix} : 2 ≤ rad →
