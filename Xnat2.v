@@ -805,7 +805,12 @@ destruct (zerop m) as [Ha| Ha].
      destruct IHal as ((p & Hp) & _); simpl in Hp.
      remember (a1 / rad) as c1 eqn:Hc1.
      subst mr.
-Print move_carry.
+     destruct al as [| a2]; [ easy | ].
+     simpl in Hp; simpl.
+     injection Hp; clear Hp; intros Hp Ha2.
+     remember ((c1 + m1) mod rad) as x eqn:Hx.
+     rewrite <- Ha2 in Hx.
+     rewrite Nat.add_mod_idemp_r in Hx; [ subst x | easy ].
 bbb.
     unfold list_norm in IHal.
     apply list_rem_trail_iff in IHal.
