@@ -716,11 +716,79 @@ destruct c2.
  now apply move_nz_carry in Hal2.
 Qed.
 
-Lemma eq_list_norm_cons_cons {r : radix} : ∀ m al,
+Lemma eq_list_norm_cons_cons {r : radix} : ∀ m al, 1 < rad →
   m = nat_of_list 0 al
-  → list_norm al =
+(*
+  → 0 < m / rad
+*)
+  → rad < m
+  → ∃ n,
+     list_norm al ++ repeat 0 n =
      m mod rad :: (m / rad) mod rad ::
      move_carry_end (m / rad) (m / rad / rad).
+Proof.
+intros * Hr.
+assert (Hzr : rad ≠ 0) by lia.
+intros Hm Hmr.
+revert m Hm Hmr.
+destruct al as [| a1]; intros.
+ rewrite Hm in Hmr; simpl in Hmr.
+ now rewrite Nat.div_0_l in Hmr.
+
+ simpl in Hm.
+ unfold list_norm; simpl.
+ remember (a1 mod rad) as d1 eqn:Hd1.
+ symmetry in Hd1.
+ destruct d1.
+  apply Nat.mod_divides in Hd1; [ | easy ].
+  destruct Hd1 as (d1, Hd1); rewrite Nat.mul_comm in Hd1; subst a1.
+  rewrite Nat.div_mul; [ | easy ].
+  rewrite <- Nat.mul_add_distr_r in Hm.
+  rewrite Hm, Nat.div_mul in Hmr; [ | easy ].
+  remember (list_remove_trailing_0s (move_carry d1 al)) as bl eqn:Hbl.
+  symmetry in Hbl.
+  destruct bl as [| b1]; [ exfalso | ].
+  apply eq_list_rem_trail_nil in Hbl.
+  destruct d1.
+   apply move_carry_0_is_rep_0 in Hbl; [ | easy ].
+   rewrite Hbl in Hmr.
+   now rewrite nat_of_list_0_rep_0 in Hmr.
+
+   now apply move_nz_carry in Hbl.
+
+  remember (nat_of_list 0 al + d1) as c1 eqn:Hc1.
+  rewrite Hm.
+  rewrite Nat.mod_mul; [ | easy ].
+  rewrite Nat.div_mul; [ | easy ].
+  apply list_rem_trail_iff in Hbl.
+  destruct Hbl as ((n, Hn), Hb1l).
+  destruct Hb1l as [Hb1l| Hb1l]; [ easy | ].
+  simpl in Hn.
+  destruct al as [| a1].
+   simpl in Hc1; subst c1; simpl in Hn.
+   destruct (zerop d1) as [Hzd1| Hzd1]; [ easy | ].
+   rewrite Hn.
+   now exists n.
+
+   simpl in Hn, Hc1; simpl.
+   injection Hn; clear Hn; intros Hn Hb1.
+   rewrite <- Hb1.
+   exists n; rewrite <- Hn.
+   destruct al as [| a2].
+    simpl in Hc1; simpl.
+    rewrite <- Nat.add_comm, <- Hc1.
+    destruct (zerop (c1 / rad)) as [Hc1r| Hc1r]; [ exfalso | ].
+     clear Hb1l Hn.
+     apply Nat.div_small_iff in Hc1r; [ | easy ].
+     rewrite Nat.add_comm, <- Hc1 in Hb1.
+     rewrite Nat.mod_small in Hb1; [ | easy ].
+     subst b1.
+bbb.
+
+ remember (nat_of_list 0 al) as m1 eqn:Hm1.
+ destruct (lt_dec 0 (m1 / rad)) as [Hm1r| Hm1r].
+  specialize (IHal m1 (eq_refl _) Hm1r).
+
 bbb.
 
 Lemma list_of_nat_inv {r : radix} : 2 ≤ rad →
