@@ -20,10 +20,6 @@ Fixpoint move_carry_end {r : radix} iter carry :=
       else carry mod rad :: move_carry_end i (carry / rad)
   end.
 
-Compute (@move_carry_end radix_2 1 2).
-
-bbb.
-
 Fixpoint move_carry {r : radix} carry al :=
   match al with
   | [] => move_carry_end (S carry) carry
@@ -720,15 +716,63 @@ destruct c2.
  now apply move_nz_carry in Hal2.
 Qed.
 
-Lemma move_carry_end_ne_rep_0_succ {r : radix} : ∀ i c al n,
-  move_carry_end i c ≠ al ++ repeat 0 (S n).
+Lemma move_carry_end_ne_rep_0_succ {r : radix} : ∀ i c al n, 1 < rad →
+  c < i
+  → move_carry_end i c ≠ al ++ repeat 0 (S n).
 Proof.
-intros.
-destruct i; [ now destruct al | simpl ].
+intros * Hr.
+assert (Hrz : rad ≠ 0) by lia.
+intros Hci.
+destruct i; [ easy | simpl ].
 destruct (zerop c) as [Hc| Hc]; [ now destruct al | simpl ].
-destruct i.
- simpl.
-Print move_carry_end.
+destruct i; [ lia | simpl ].
+destruct (zerop (c / rad)) as [Hcr| Hcr].
+ destruct al as [| a]; [ | now destruct al ].
+ apply Nat.div_small_iff in Hcr; [ | easy ].
+ rewrite Nat.mod_small; [ | easy ].
+ intros H; injection H; clear H; intros H Hcz.
+ now rewrite Hcz in Hc.
+
+ destruct al as [| a].
+  intros H; injection H; clear H; intros H Hcz.
+  apply Nat.mod_divides in Hcz; [ | easy ].
+  destruct Hcz as (d, Hd); rewrite Nat.mul_comm in Hd.
+  rewrite Hd, Nat.div_mul in Hcr; [ | easy ].
+  rewrite Hd, Nat.div_mul in H; [ | easy ].
+  destruct n; [ easy | simpl in H ].
+  injection H; clear H; intros H Hdr.
+  apply move_carry_end_succ_ne_rep_0 in H; [ easy | easy | ].
+  apply Nat.mod_divides in Hdr; [ | easy ].
+  destruct Hdr as (e, He); rewrite Nat.mul_comm in He.
+  rewrite He, Nat.div_mul; [ | easy ].
+  destruct e; [ now subst d | ].
+  split; [ lia | ].
+  destruct d; [ easy | ].
+  clear Hcr.
+  revert c d e Hc Hci Hd H He.
+  induction i; intros; [ exfalso | ].
+   replace c with 1 in Hd by lia.
+   destruct rad as [| s]; [ easy | simpl in Hd; lia ].
+
+   apply -> Nat.succ_lt_mono.
+   destruct e.
+    simpl in H.
+    rewrite Nat.mul_1_l in He.
+    rewrite He in H.
+    rewrite Nat.div_same in H; [ simpl in H | easy ].
+    rewrite Nat.mod_1_l in H; [ | easy ].
+    now destruct n.
+
+    destruct c; [ easy | clear Hc ].
+    apply Nat.succ_lt_mono in Hci.
+    destruct c.
+     destruct rad as [| s]; [ easy | ].
+     destruct s; [ lia | simpl in Hd; lia ].
+
+     destruct d.
+      destruct rad as [| s]; [ easy | simpl in He; lia ].
+
+      apply IHi with (c := S c) (d := S d); [ lia | easy | | | ].
 bbb.
 
 bbb.
