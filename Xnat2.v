@@ -736,8 +736,8 @@ destruct (zerop m) as [Ha| Ha].
  unfold list_norm.
  now rewrite Ha, move_carry_0_rep_0, list_rem_trail_repeat_0.
 
- specialize (IHal (nat_of_list 0 al) (eq_refl _)).
- simpl in Hm, IHal; simpl.
+ specialize (IHal (nat_of_list 0 al) (eq_refl _)) as IH.
+ simpl in Hm, IH; simpl.
  destruct (zerop (nat_of_list 0 al)) as [Hzn| Hzn].
   rewrite Hzn in Hm; simpl in Hm; subst a1.
   apply eq_nat_of_list_0 in Hzn; [ | lia ].
@@ -748,7 +748,7 @@ destruct (zerop m) as [Ha| Ha].
    rewrite list_rem_trail_move_carry_0_nz; [ simpl | easy ].
    now rewrite Hmr.
 
-   clear al Hzn IHal.
+   clear al Hzn IH IHal.
    unfold list_norm.
    symmetry.
    apply list_rem_trail_iff.
@@ -778,19 +778,19 @@ destruct (zerop m) as [Ha| Ha].
      now rewrite Nat.pow_0_r, Nat.div_1_r.
 
   remember (nat_of_list 0 al) as m1 eqn:Hm1.
-  destruct (zerop (m1 / rad)) as [Hm1r| Hmr1].
-   apply Nat.div_small_iff in Hm1r; [ | easy ].
-   rewrite Nat.mod_small in IHal; [ | easy ].
-   symmetry in IHal; symmetry.
-   destruct (zerop (m / rad)) as [Hmr| Hmr].
-    apply Nat.div_small_iff in Hmr; [ | easy ].
-    rewrite Nat.mod_small; [ | easy ].
-    rewrite Nat.add_comm in Hm.
-    destruct m1; [ easy | exfalso; clear Hzn ].
-    rewrite Hm in Hmr.
-    apply lt_not_le in Hmr; apply Hmr; clear Hmr.
-    simpl; lia.
+  destruct (zerop (m / rad)) as [Hmr| Hmr].
+   apply Nat.div_small_iff in Hmr; [ | easy ].
+   rewrite Nat.mod_small; [ | easy ].
+   rewrite Nat.add_comm in Hm.
+   destruct m1; [ easy | exfalso; clear Hzn ].
+   rewrite Hm in Hmr.
+   apply lt_not_le in Hmr; apply Hmr; clear Hmr.
+   simpl; lia.
 
+   destruct (zerop (m1 / rad)) as [Hm1r| Hm1r].
+    apply Nat.div_small_iff in Hm1r; [ | easy ].
+    rewrite Nat.mod_small in IH; [ | easy ].
+    symmetry in IH; symmetry.
     remember (m mod rad) as x eqn:Hx.
     rewrite Hm, Nat.add_comm in Hx.
     rewrite Nat.mod_add in Hx; [ subst x | easy ].
@@ -801,8 +801,8 @@ destruct (zerop m) as [Ha| Ha].
     apply list_rem_trail_iff.
     split.
      simpl.
-     apply list_rem_trail_iff in IHal.
-     destruct IHal as ((p & Hp) & _); simpl in Hp.
+     apply list_rem_trail_iff in IH.
+     destruct IH as ((p & Hp) & _); simpl in Hp.
      remember (a1 / rad) as c1 eqn:Hc1.
      subst mr.
      destruct al as [| a2]; [ easy | ].
@@ -835,6 +835,8 @@ destruct (zerop m) as [Ha| Ha].
      rewrite last_cons_cons.
      apply last_cons_move_carry_end with (n := 0); [ easy | | easy ].
      now rewrite Nat.pow_0_r, Nat.div_1_r.
+
+   simpl.
 bbb.
 
 Lemma old_list_of_nat_inv {r : radix} : 2 ≤ rad →
