@@ -836,7 +836,26 @@ split.
     simpl; lia.
 
    simpl in Hm; subst m; simpl.
+   remember ((nat_of_list 0 al * rad + a3) * rad + a2) as x eqn:Hx.
+   destruct al as [| a4].
+    simpl in Hx; simpl.
+    remember ((a1 / rad + a2) / rad + a3) as y eqn:Hy.
+    destruct (zerop (y / rad)) as [Hyr| Hyr].
+     apply Nat.div_small_iff in Hyr; [ | easy ].
+     remember (y mod rad) as z eqn:Hz.
+     rewrite Nat.mod_small in Hz; [ subst z | easy ].
+     exists 0; f_equal; f_equal; rewrite List.app_nil_r.
+     remember (a1 / rad + x) as z eqn:Hz.
+     symmetry in Hz.
+     destruct z.
+      apply Nat.eq_add_0 in Hz.
+      destruct Hz as (Hz, Hxx); move Hxx at top; subst x.
+      apply Nat.div_small_iff in Hz; [ lia | easy ].
 
+      simpl.
+      destruct (zerop (S z / rad)) as [Hszr| Hszr].
+       apply Nat.div_small_iff in Hszr; [ | easy ].
+       subst x y.
 bbb.
 intros * Hr.
 assert (Hzr : rad ≠ 0) by lia.
