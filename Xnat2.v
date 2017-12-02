@@ -828,6 +828,14 @@ split.
     destruct (zerop (S x / rad)) as [H| H]; [ now rewrite H in Hza2r | ].
     clear H; f_equal.
     apply move_carry_end_enough_iter; [ easy | now apply Nat.div_lt | ].
+    apply Nat.div_lt_upper_bound; [ easy | ].
+    apply Nat.div_lt_upper_bound; [ easy | ].
+    destruct x; [ now rewrite Nat.div_1_l in Hza2r | ].
+    destruct rad as [| s]; [ easy | ].
+    destruct s; [ lia | ].
+    simpl; lia.
+
+   simpl in Hm; subst m; simpl.
 
 bbb.
 intros * Hr.
