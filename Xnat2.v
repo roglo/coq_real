@@ -816,7 +816,27 @@ destruct d1.
   destruct Hbl as ((n, Hn), Hb1l).
   destruct Hb1l as [Hb1l| Hb1l]; [ easy | ].
   simpl in Hn.
+  f_equal; f_equal.
   destruct al as [| a1].
+   simpl in Hc1; subst c1; simpl in Hn.
+   destruct (zerop d1) as [Hzd1| Hzd1]; [ easy | ].
+   now injection Hn.
+
+bbb.
+simpl in Hc1.
+clear IHal.
+destruct al as [| a2].
+ simpl in Hc1; subst c1; simpl in Hn.
+ injection Hn; clear Hn; intros Hn H.
+ now rewrite Nat.add_comm in H.
+
+ simpl in Hc1.
+ destruct al as [| a3].
+  simpl in Hc1; subst c1; simpl in Hn.
+  injection Hn; clear Hn; intros Hn H.
+bbb.
+  revert b1 c1 d1 bl Hc1 Hm Hn Hb1l.
+  induction al as [| a1]; intros.
    simpl in Hc1; subst c1; simpl in Hn.
    destruct (zerop d1) as [Hzd1| Hzd1]; [ easy | ].
    destruct n; [ now rewrite Hn, List.app_nil_r | simpl in Hn ].
