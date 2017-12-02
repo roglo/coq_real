@@ -821,8 +821,15 @@ destruct d1.
    destruct (zerop d1) as [Hzd1| Hzd1]; [ easy | ].
    destruct n; [ now rewrite Hn, List.app_nil_r | simpl in Hn ].
    injection Hn; clear Hn; intros Hn Hdb.
-Search (move_carry_end).
-Check move_carry_end_ne_rep_0_succ.
+   exfalso; revert Hn.
+   apply move_carry_end_ne_rep_0_succ; [ easy | ].
+   apply Nat.div_lt_upper_bound; [ easy | ].
+   destruct d1; [ easy | ].
+   destruct rad as [| s]; [ easy | ].
+   destruct s; [ lia | simpl; lia ].
+
+   simpl.
+   simpl in Hc1, Hn.
 bbb.
 
 move_carry_end_succ_ne_rep_0:
