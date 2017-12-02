@@ -794,11 +794,11 @@ symmetry in Hd1.
 destruct d1.
  apply Nat.mod_divides in Hd1; [ | easy ].
  destruct Hd1 as (d1, Hd1); rewrite Nat.mul_comm in Hd1; subst a1.
-  rewrite Nat.div_mul; [ | easy ].
-  rewrite <- Nat.mul_add_distr_r in Hm.
-  remember (list_remove_trailing_0s (move_carry d1 al)) as bl eqn:Hbl.
-  symmetry in Hbl.
-  destruct bl as [| b1]; [ exfalso | ].
+ rewrite Nat.div_mul; [ | easy ].
+ rewrite <- Nat.mul_add_distr_r in Hm.
+ remember (list_remove_trailing_0s (move_carry d1 al)) as bl eqn:Hbl.
+ symmetry in Hbl.
+ destruct bl as [| b1]; [ exfalso | ].
   apply eq_list_rem_trail_nil in Hbl.
   destruct d1.
    apply move_carry_0_is_rep_0 in Hbl; [ | easy ].
@@ -822,7 +822,8 @@ destruct d1.
    destruct (zerop d1) as [Hzd1| Hzd1]; [ easy | ].
    now injection Hn.
 
-bbb.
+simpl in Hc1, Hn.
+ bbb.
 simpl in Hc1.
 clear IHal.
 destruct al as [| a2].
