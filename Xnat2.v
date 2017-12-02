@@ -800,14 +800,34 @@ split.
   simpl; rewrite Nat.add_0_r.
   destruct (zerop (a1 / rad)) as [Hza1r| Hza1r].
    apply Nat.div_small_iff in Hza1r; [ lia | easy ].
+
    now exists 0; rewrite List.app_nil_r.
 
-   rewrite <- Nat.add_mod_idemp_r; [ | easy ].
-   remember (nat_of_list 0 (a2 :: al) mod rad) as x eqn:Hx.
-   simpl in Hx; rewrite Nat.add_comm in Hx.
-   rewrite Nat.mod_add in Hx; [ subst x | easy ].
-   rewrite Nat.add_mod_idemp_r; [ | easy ].
-   simpl.
+  rewrite <- Nat.add_mod_idemp_r; [ | easy ].
+  remember (nat_of_list 0 (a2 :: al) mod rad) as x eqn:Hx.
+  simpl in Hx; rewrite Nat.add_comm in Hx.
+  rewrite Nat.mod_add in Hx; [ subst x | easy ].
+  rewrite Nat.add_mod_idemp_r; [ | easy ].
+  destruct al as [| a3].
+   simpl in Hm; subst m; simpl.
+   remember (a1 / rad + a2) as x eqn:Hx.
+   destruct (zerop (x / rad)) as [Hza2r| Hza2r].
+    apply Nat.div_small_iff in Hza2r; [ | easy ].
+    remember (x mod rad) as y eqn:Hy.
+    rewrite Nat.mod_small in Hy; [ subst y | easy ].
+    remember (x / rad) as y eqn:Hy.
+    rewrite Nat.div_small in Hy; [ subst y | easy ].
+    destruct x; [ | now exists 0 ].
+    symmetry in Hx.
+    apply Nat.eq_add_0 in Hx.
+    destruct Hx as (Hx, Ha2); subst a2; simpl in Hrm.
+    apply Nat.div_small_iff in Hx; lia.
+
+    exists 0; f_equal; f_equal; rewrite List.app_nil_r.
+    destruct x; [ now rewrite Nat.div_0_l in Hza2r | simpl ].
+    destruct (zerop (S x / rad)) as [H| H]; [ now rewrite H in Hza2r | ].
+    clear H; f_equal.
+    apply move_carry_end_enough_iter; [ easy | now apply Nat.div_lt | ].
 
 bbb.
 intros * Hr.
