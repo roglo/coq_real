@@ -733,8 +733,28 @@ destruct (zerop (c / rad)) as [Hcr| Hcr].
  intros H; injection H; clear H; intros H Hcz.
  now rewrite Hcz in Hc.
 
- destruct al as [| a].
+ induction al as [| a]; intros.
   intros H; injection H; clear H; intros H Hcz.
+  revert c i Hci Hc Hcr H Hcz.
+  induction n; intros; [ easy | ].
+  injection H; clear H; intros H Hcrr.
+  destruct i.
+   replace c with 1 in Hcz by lia.
+   now rewrite Nat.mod_1_l in Hcz.
+
+   simpl in H.
+   destruct (zerop (c / rad / rad)) as [Hzcrr| Hzcrr].
+    apply Nat.div_small_iff in Hzcrr; [ | easy ].
+    rewrite Nat.mod_small in Hcrr; [ | easy ].
+    now rewrite Hcrr in Hcr.
+
+    apply IHn with (c := c / rad) (i := i); try easy.
+    apply Nat.div_lt_upper_bound; [ easy | ].
+    destruct rad as [| s]; [ easy | ].
+    destruct s; [ lia | simpl; lia ].
+
+  simpl.
+bbb.
   apply Nat.mod_divides in Hcz; [ | easy ].
   destruct Hcz as (d, Hd); rewrite Nat.mul_comm in Hd.
   rewrite Hd, Nat.div_mul in Hcr; [ | easy ].
