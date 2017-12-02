@@ -733,6 +733,7 @@ destruct (zerop (c / rad)) as [Hcr| Hcr].
  intros H; injection H; clear H; intros H Hcz.
  now rewrite Hcz in Hc.
 
+ revert c i Hci Hc Hcr.
  induction al as [| a]; intros.
   intros H; injection H; clear H; intros H Hcz.
   revert c i Hci Hc Hcr H Hcz.
@@ -754,60 +755,25 @@ destruct (zerop (c / rad)) as [Hcr| Hcr].
     destruct s; [ lia | simpl; lia ].
 
   simpl.
-bbb.
-  apply Nat.mod_divides in Hcz; [ | easy ].
-  destruct Hcz as (d, Hd); rewrite Nat.mul_comm in Hd.
-  rewrite Hd, Nat.div_mul in Hcr; [ | easy ].
-  rewrite Hd, Nat.div_mul in H; [ | easy ].
-  destruct n; [ easy | simpl in H ].
-  injection H; clear H; intros H Hdr.
-  apply move_carry_end_succ_ne_rep_0 in H; [ easy | easy | ].
-  apply Nat.mod_divides in Hdr; [ | easy ].
-  destruct Hdr as (e, He); rewrite Nat.mul_comm in He.
-  rewrite He, Nat.div_mul; [ | easy ].
-  destruct e; [ now subst d | ].
-  split; [ lia | ].
-  destruct d; [ easy | ].
-  clear Hcr.
-  revert c d e Hc Hci Hd H He.
-  induction i; intros; [ exfalso | ].
-   replace c with 1 in Hd by lia.
-   destruct rad as [| s]; [ easy | simpl in Hd; lia ].
+  intros H; injection H; clear H; intros H Ha.
+  destruct i.
+   replace c with 1 in Hcr by lia.
+   now rewrite Nat.div_1_l in Hcr.
 
-   apply -> Nat.succ_lt_mono.
-   destruct e.
-    simpl in H.
-    rewrite Nat.mul_1_l in He.
-    rewrite He in H.
-    rewrite Nat.div_same in H; [ simpl in H | easy ].
-    rewrite Nat.mod_1_l in H; [ | easy ].
-    now destruct n.
+   simpl in H.
+   destruct (zerop (c / rad / rad)) as [Hzcrr| Hzcrr].
+    apply Nat.div_small_iff in Hzcrr; [ | easy ].
+    rewrite Nat.mod_small in H; [ | easy ].
+    destruct al; [ simpl in H | now destruct al ].
+    injection H; clear H; intros H H1.
+    now rewrite H1 in Hcr.
 
-    destruct c; [ easy | clear Hc ].
-    apply Nat.succ_lt_mono in Hci.
-    destruct c.
-     destruct rad as [| s]; [ easy | ].
-     destruct s; [ lia | simpl in Hd; lia ].
-
-     destruct d.
-      destruct rad as [| s]; [ easy | simpl in He; lia ].
-
-      apply IHi with (c := S c) (d := S d); [ lia | easy | | | ].
-bbb.
-
-bbb.
-intros.
-revert c al n.
-induction i; intros; [ now destruct al | ].
-simpl in IHi; simpl.
-destruct (zerop c) as [Hzc| Hzc]; [ now destruct al | ].
-destruct al as [| a1].
- simpl.
- intros H; injection H; clear H; intros H Hr.
- destruct n; simpl in H.
-Print move_carry_end.
-
-bbb.
+    revert H.
+    apply IHal; [ | easy | easy ].
+    apply Nat.div_lt_upper_bound; [ easy | ].
+    destruct rad as [| s]; [ easy | ].
+    destruct s; [ lia | simpl; lia ].
+Qed.
 
 Lemma eq_list_norm_cons_cons {r : radix} : ∀ m al, 1 < rad →
   m = nat_of_list 0 al
@@ -856,7 +822,6 @@ destruct d1.
    destruct n; [ now rewrite Hn, List.app_nil_r | simpl in Hn ].
    injection Hn; clear Hn; intros Hn Hdb.
 Search (move_carry_end).
-
 Check move_carry_end_ne_rep_0_succ.
 bbb.
 
