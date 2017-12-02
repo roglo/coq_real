@@ -785,6 +785,34 @@ Proof.
 intros * Hr.
 assert (Hzr : rad ≠ 0) by lia.
 intros Hm Hrm.
+apply list_rem_trail_iff.
+split.
+ destruct al as [| a1]; [ now rewrite Hm in Hrm | ].
+ simpl in Hm; simpl.
+ remember (m mod rad) as x eqn:Hx.
+ rewrite Hm, Nat.add_comm in Hx.
+ rewrite Nat.mod_add in Hx; [ subst x | easy ].
+ remember (m / rad) as x eqn:Hx.
+ rewrite Hm, Nat.add_comm in Hx.
+ rewrite Nat.div_add in Hx; [ subst x | easy ].
+ destruct al as [| a2].
+  simpl in Hm; subst m.
+  simpl; rewrite Nat.add_0_r.
+  destruct (zerop (a1 / rad)) as [Hza1r| Hza1r].
+   apply Nat.div_small_iff in Hza1r; [ lia | easy ].
+   now exists 0; rewrite List.app_nil_r.
+
+   rewrite <- Nat.add_mod_idemp_r; [ | easy ].
+   remember (nat_of_list 0 (a2 :: al) mod rad) as x eqn:Hx.
+   simpl in Hx; rewrite Nat.add_comm in Hx.
+   rewrite Nat.mod_add in Hx; [ subst x | easy ].
+   rewrite Nat.add_mod_idemp_r; [ | easy ].
+   simpl.
+
+bbb.
+intros * Hr.
+assert (Hzr : rad ≠ 0) by lia.
+intros Hm Hrm.
 revert m Hm Hrm.
 destruct al as [| a1]; intros; [ now rewrite Hm in Hrm | ].
 simpl in Hm.
