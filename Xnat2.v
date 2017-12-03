@@ -795,6 +795,39 @@ split.
  remember (m / rad) as x eqn:Hx.
  rewrite Hm, Nat.add_comm in Hx.
  rewrite Nat.div_add in Hx; [ subst x | easy ].
+(**)
+ remember (a1 / rad + nat_of_list 0 al) as c2 eqn:Hc2.
+ destruct al as [| a2].
+  simpl in Hm; subst m.
+  simpl in Hc2; rewrite Nat.add_0_r in Hc2; simpl.
+  destruct (zerop (a1 / rad)) as [Hza1r| Hza1r].
+   apply Nat.div_small_iff in Hza1r; [ lia | easy ].
+
+   now exists 0; subst c2; rewrite List.app_nil_r.
+
+  revert m a1 a2 c2 Hm Hrm Hc2.
+  induction al as [| a3]; intros.
+   simpl in Hc2; simpl; rewrite <- Hc2.
+   destruct (zerop (c2 / rad)) as [Hc2r| Hc2r].
+    rewrite Hc2r.
+    now exists 0; destruct c2.
+
+    destruct c2; [ now rewrite Nat.div_0_l in Hc2r | simpl ].
+    destruct (zerop (S c2 / rad)) as [H| H]; [ now rewrite H in Hc2r | ].
+    clear H; exists 0; rewrite List.app_nil_r.
+    f_equal; f_equal; f_equal.
+    apply move_carry_end_enough_iter; [ easy | now apply Nat.div_lt | ].
+    apply Nat.div_lt_upper_bound; [ easy | ].
+    apply Nat.div_lt_upper_bound; [ easy | ].
+    destruct c2; [ now rewrite Nat.div_1_l in Hc2r | ].
+    destruct rad as [| s]; [ easy | ].
+    destruct s; [ lia | ].
+    simpl; lia.
+
+   idtac.
+   remember (a3 :: al) as al3; simpl in Hc2; simpl; subst al3.
+(* oui, ça ne marche pas, ça, on est d'accord *)
+bbb.
  destruct al as [| a2].
   simpl in Hm; subst m.
   simpl; rewrite Nat.add_0_r.
