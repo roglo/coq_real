@@ -1,8 +1,12 @@
 (* Natural numbers in any radix; second version; without proofs *)
 (* Can be regarded as polynomials with natural number coefficients. *)
-(* Implemented using lists of nat. *)
 
-Require Import Utf8 Arith Psatz.
+(* Implemented using lists of nat. *)
+(* No constraints of digits having to be less than radix;
+   to build a number whose digits are less than radix, use normalization
+   by the function xnat_norm *)
+
+Require Import Utf8 Arith Psatz Misc.
 Require List.
 Import List.ListNotations.
 Open Scope list_scope.
@@ -35,29 +39,6 @@ Definition nat_of_list {r : radix} accu al :=
 
 Definition xnat_of_nat {r : radix} n := xn (list_of_nat 0 n).
 Definition nat_of_xnat {r : radix} a := nat_of_list 0 (xnatv a).
-
-Compute (@xnat_of_nat radix_10 0).
-Compute (@xnat_of_nat radix_10 1).
-Compute (@xnat_of_nat radix_10 2).
-Compute (@xnat_of_nat radix_10 9).
-Compute (@xnat_of_nat radix_10 10).
-Compute (@xnat_of_nat radix_10 239).
-Compute (@xnat_of_nat radix_2 0).
-Compute (@xnat_of_nat radix_2 1).
-Compute (@xnat_of_nat radix_2 2).
-Compute (@xnat_of_nat radix_2 3).
-Compute (@xnat_of_nat radix_2 4).
-Compute (@xnat_of_nat radix_10 10030).
-Compute (let n := 0 in let r := radix_2 in @move_carry_end r (S n) n).
-Compute (let n := 1 in let r := radix_2 in @move_carry_end r (S n) n).
-Compute (let n := 2 in let r := radix_2 in @move_carry_end r (S n) n).
-Compute (let n := 3 in let r := radix_2 in @move_carry_end r (S n) n).
-
-Compute (let n := 0 in let r := radix_2 in @nat_of_list r 0 (@move_carry_end r (S n) n)).
-Compute (let n := 1 in let r := radix_2 in @nat_of_list r 0 (@move_carry_end r (S n) n)).
-Compute (let n := 2 in let r := radix_2 in @nat_of_list r 0 (@move_carry_end r (S n) n)).
-Compute (let n := 3 in let r := radix_2 in @nat_of_list r 0 (@move_carry_end r (S n) n)).
-Compute (let n := 4 in let r := radix_2 in @nat_of_list r 0 (@move_carry_end r (S n) n)).
 
 Lemma nat_of_list_move_end {r : radix} : ∀ iter n, 2 ≤ rad →
   n < iter
@@ -116,24 +97,6 @@ Definition list_norm_with_carry {r : radix} c al :=
 Definition list_norm {r : radix} := list_norm_with_carry 0.
 
 Definition xnat_norm {r : radix} a := xn (list_norm (xnatv a)).
-
-Compute (@xnat_norm radix_2 (xn [0; 0])).
-Compute (@xnat_norm radix_2 (xn [1; 0])).
-Compute (@xnat_norm radix_2 (xn [2; 0])).
-Compute (@xnat_norm radix_2 (xn [3])).
-Compute (@xnat_norm radix_2 (xn [4])).
-Compute (@xnat_norm radix_2 (xn [5])).
-Compute (@xnat_norm radix_2 (xn [6])).
-Compute (@xnat_norm radix_2 (xn [7])).
-Compute (@xnat_norm radix_10 (xn [11; 11; 11; 11; 11])).
-
-Compute (@xnat_norm radix_2 (xn [11; 11; 11; 11; 11])).
-Compute (@xnat_norm radix_2 (xn [341])).
-Compute (@xnat_of_nat radix_2 341).
-Compute (11 + 2 * 11 + 4 * 11 + 8 * 11 + 16 * 11).
-
-Compute (@xnat_of_nat radix_10 341).
-Compute (@nat_of_xnat radix_10 (@xnat_of_nat radix_10 341)).
 
 Lemma nat_of_list_mul {r : radix} : ∀ al,
   nat_of_list 0 al * rad = nat_of_list 0 (0 :: al).
@@ -994,108 +957,47 @@ constructor.
      now apply Nat.mod_upper_bound.
 
     remember (S n) as s; simpl in Hn; subst s.
-bbb.
-    apply move_carry_end_ne_rep_0_succ in Hn.
-bbb.
-revert c al1 Hn Hlast.
-induction al as [| a1]; intros.
- simpl in Hn.
- destruct (zerop c) as [Hzc| Hzc].
-  symmetry in Hn.
-  apply List.app_eq_nil in Hn.
-  now destruct Hn; subst al1.
+    destruct al as [| a4].
+     simpl in Hn.
+     destruct (zerop ((c + a3) / rad)) as [Hscr| Hscr]; [ easy | ].
+     injection Hn; clear Hn; intros; subst a2.
+     now apply Nat.mod_upper_bound.
 
-  destruct al1 as [| a1]; [ easy | ].
-  simpl in Hn.
-  injection Hn; clear Hn; intros Hn Ha1; subst a1.
-  constructor; [ now apply Nat.mod_upper_bound | ].
-  destruct n.
-   rewrite List.app_nil_r in Hn; subst al1.
-   now apply list_carry_end_digits_lt_radix.
+     simpl in Hn.
+     injection Hn; clear Hn; intros; subst a2.
+     now apply Nat.mod_upper_bound.
 
-   apply move_carry_end_ne_rep_0_succ in Hn; [ easy | easy | ].
-   now apply Nat.div_lt.
-
- simpl in Hn.
- destruct al1 as [| a2]; [ easy | ].
- injection Hn; clear Hn; intros Hn Ha2.
- constructor; [ now subst a2; apply Nat.mod_upper_bound | ].
- destruct (zerop a2) as [Hza2| Hza2].
-  move Hza2 at top; subst a2.
-  simpl in Hlast.
-  destruct al1 as [| a2]; [ easy | ].
   destruct al as [| a3].
    simpl in Hn.
-   destruct (zerop ((c + a1) / rad)) as [Hzca| Hzca]; [ easy | ].
-   injection Hn; clear Hn; intros Hn Ha3.
+   destruct (zerop c) as [Hc| Hc]; [ easy | ].
+   injection Hn; clear Hn; intros Hn Hce.
    destruct n.
-bbb.
-   apply move_carry_end_ne_rep_0_succ in Hn.
-Search move_carry_end.
+    rewrite List.app_nil_r in Hn.
+    destruct c; [ easy | ].
+    simpl in Hn.
+    destruct (zerop (S c / rad)) as [Hcr| Hcr]; [ easy | ].
+    injection Hn; clear Hn; intros Hn Ha2; rewrite <- Hn.
+    now apply list_carry_end_digits_lt_radix.
 
- eapply IHal; [ apply Hn | ].
-Search (List.last (_ :: _)).
+    rewrite List.app_comm_cons in Hn.
+    apply move_carry_end_ne_rep_0_succ in Hn; [ easy | easy | ].
+    now apply Nat.div_lt.
 
-bbb.
-intros Hr.
-assert (Hrz : rad ≠ 0) by lia.
-intros.
-revert c.
-induction al as [| a1]; intros.
- remember (list_norm_with_carry c []) as al eqn:Hal.
- symmetry in Hal.
- apply list_rem_trail_iff in Hal.
- destruct Hal as ((n & Hnc), Hlast).
- destruct Hlast as [Hal| Hlast]; [ now subst al | ].
- simpl in Hnc.
- destruct (zerop c) as [Hzc| Hzc].
-  symmetry in Hnc.
-  apply List.app_eq_nil in Hnc.
-  now destruct Hnc; subst al.
-
-  destruct al as [| a1]; [ easy | ].
-  simpl in Hnc.
-  injection Hnc; clear Hnc; intros Hnc Ha1; subst a1.
-  constructor; [ now apply Nat.mod_upper_bound | ].
-  destruct n.
-   rewrite List.app_nil_r in Hnc; subst al.
-   now apply list_carry_end_digits_lt_radix.
-
-   apply move_carry_end_ne_rep_0_succ in Hnc; [ easy | easy | ].
-   now apply Nat.div_lt.
-
- rewrite list_norm_with_carry_cons; [ | easy ].
- remember (list_norm_with_carry ((c + a1) / rad) al) as al1 eqn:Hal1.
- symmetry in Hal1.
- apply list_rem_trail_iff in Hal1.
- destruct Hal1 as ((n & Hn), Hlast).
- destruct Hlast as [Hal1| Hlast].
-  subst al1.
-  destruct (zerop ((c + a1) mod rad)) as [Hzca| Hzca]; [ easy | ].
-  now constructor; [ apply Nat.mod_upper_bound | ].
-
-  destruct al1 as [| a2]; [ easy | ].
-  constructor; [ now apply Nat.mod_upper_bound | ].
-bbb.
+   simpl in Hn.
+   injection Hn; clear Hn; intros Hn Ha1.
+   rewrite List.app_comm_cons in Hn.
+   specialize (IHal1 Hlast ((c + a3) / rad) al Hn).
+   now apply list_Forall_inv in IHal1.
+Qed.
 
 Lemma list_norm_digits_lt_radix {r : radix} : 1 < rad →
   ∀ al, List.Forall (λ a, a < rad) (list_norm al).
 Proof.
-intros Hr.
-assert (Hrz : rad ≠ 0) by lia.
-intros.
-unfold list_norm.
-induction al as [| a1]; [ constructor | ].
-rewrite list_norm_with_carry_cons; [ simpl | easy ].
-remember (list_norm_with_carry (a1 / rad) al) as al1 eqn:Hal1.
-symmetry in Hal1.
-destruct al1 as [| a2].
- destruct (zerop (a1 mod rad)) as [Hzar| Hzar]; [ easy | ].
- now constructor; [ apply Nat.mod_upper_bound | ].
+intros Hr *.
+now apply list_norm_wc_digits_lt_radix.
+Qed.
 
- constructor; [ now apply Nat.mod_upper_bound | ].
- constructor.
-bbb.
+(* Conversion from and to nat *)
 
 Theorem nat_of_xnat_inv {r : radix} : 2 ≤ rad →
   ∀ a, xnat_of_nat (nat_of_xnat a) = xnat_norm a.
@@ -1113,6 +1015,14 @@ unfold xnat_of_nat, xnat_norm; f_equal.
 now apply list_of_nat_inv.
 Qed.
 
+Theorem xnat_norm_digits_lt_radix {r : radix} : 2 ≤ rad →
+  ∀ a, List.Forall (λ a, a < rad) (xnatv (xnat_norm a)).
+Proof.
+intros Hr *.
+unfold xnat_norm; simpl.
+now apply list_norm_digits_lt_radix.
+Qed.
+
 (* Addition *)
 
 Fixpoint xnatv_add a b :=
@@ -1127,7 +1037,3 @@ Fixpoint xnatv_add a b :=
 
 Definition xnat_add {r : radix} a b :=
   xnat_norm (xn (xnatv_add (xnatv a) (xnatv b))).
-
-Compute (xnatv_add [2] [2]).
-Compute (@xnat_add radix_10 (xn [4; 2]) (xn [11])).
-Compute (@xnat_add radix_2 (xn [4; 2]) (xn [11])).

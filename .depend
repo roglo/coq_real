@@ -10,3 +10,5 @@ Summation.vio: Summation.v Misc.vio
 Summation.vo Summation.glob Summation.v.beautified: Summation.v Misc.vo
 Xnat.vio: Xnat.v
 Xnat.vo Xnat.glob Xnat.v.beautified: Xnat.v
+Xnat2.vio: Xnat2.v Misc.vio
+Xnat2.vo Xnat2.glob Xnat2.v.beautified: Xnat2.v Misc.vo

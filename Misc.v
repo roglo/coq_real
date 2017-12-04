@@ -13,3 +13,10 @@ apply le_lt_eq_dec in Hab.
 destruct Hab as [Hle| Heq]; [ assumption | idtac ].
 exfalso; apply Hnab; assumption.
 Qed.
+
+Theorem list_Forall_inv : ∀ A (P : A → Prop) a l,
+  List.Forall P (a :: l) → P a ∧ List.Forall P l.
+Proof.
+intros A P a l H.
+inversion H; split; assumption.
+Qed.
