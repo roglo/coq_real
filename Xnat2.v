@@ -202,7 +202,7 @@ apply eq_list_rem_trail_nil.
 now rewrite List.repeat_length.
 Qed.
 
-Lemma eq_nat_of_list_0 {r : radix} : ∀ al, 0 < rad →
+Lemma eq_nat_of_list_0_0 {r : radix} : ∀ al, 0 < rad →
   nat_of_list 0 al = 0 ↔ al = repeat 0 (length al).
 Proof.
 intros * Hr.
@@ -217,6 +217,21 @@ split; intros Hal.
  injection Hal; clear Hal; intros Hal Ha; subst a.
  apply IHal in Hal.
  now rewrite Hal.
+Qed.
+
+Lemma eq_nat_of_list_0 {r : radix} : ∀ c al, rad ≠ 0 →
+  nat_of_list c al = 0 → c = 0 ∧ al = repeat 0 (length al).
+Proof.
+intros * Hr Hn.
+revert c Hn.
+induction al as [| a1]; intros; [ easy | ].
+simpl in Hn.
+apply Nat.eq_add_0 in Hn.
+destruct Hn as (Hal, Ha1); subst a1.
+apply Nat.eq_mul_0 in Hal.
+destruct Hal as [Hal| ]; [ | easy ].
+specialize (IHal c Hal).
+now split; [ | simpl; f_equal ].
 Qed.
 
 Lemma list_norm_cons_0 {r : radix} : ∀ al,
@@ -585,6 +600,14 @@ destruct (zerop d) as [Hzd| Hnzd].
 
   exfalso; apply Hdd; clear Hdd.
   now apply Nat.div_lt.
+Qed.
+
+Lemma nat_of_list_rep_0 {r : radix} : ∀ c n,
+  nat_of_list c (repeat 0 n) = c * rad ^ n.
+Proof.
+intros.
+induction n; [ now rewrite Nat.mul_1_r | ].
+simpl; rewrite IHn, Nat.add_0_r; lia.
 Qed.
 
 Lemma nat_of_list_0_rep_0 {r : radix} : ∀ n, nat_of_list 0 (repeat 0 n) = 0.
@@ -1060,6 +1083,46 @@ induction al as [| a1]; intros.
 
  rewrite list_norm_with_carry_cons; [ simpl | easy ].
  rewrite <- IHal.
+ unfold list_of_nat.
+ destruct (zerop (nat_of_list c al * rad + a1)) as [Hzna| Hzna].
+  apply Nat.eq_add_0 in Hzna.
+  destruct Hzna as (Hzna, Ha1); subst a1; rewrite Nat.add_0_r.
+  apply Nat.eq_mul_0 in Hzna.
+  destruct Hzna as [Hzna| H]; [ | easy ].
+  apply eq_nat_of_list_0 in Hzna; [ | easy ].
+  destruct Hzna as (Hc, Hal); subst c; rewrite Hal.
+  rewrite Nat.div_0_l; [ | easy ].
+  rewrite Nat.mod_0_l; [ | easy ].
+  now rewrite nat_of_list_0_rep_0.
+
+  destruct (zerop (nat_of_list ((c + a1) / rad) al)) as [Hznca| Hznca].
+   apply eq_nat_of_list_0 in Hznca; [ | easy ].
+   destruct Hznca as (Hca, Hal); rewrite Hal.
+   rewrite Hal, nat_of_list_rep_0 in Hzna.
+   apply Nat.div_small_iff in Hca; [ | easy ].
+   rewrite Nat.mod_small; [ | easy ].
+   rewrite nat_of_list_rep_0.
+   destruct (zerop (c + a1)) as [Hzca| Hzca].
+    apply Nat.eq_add_0 in Hzca.
+    now destruct Hzca; subst c a1.
+
+    remember (c * rad ^ length al * rad + a1) as x eqn:Hx.
+    destruct x; [ easy | simpl ].
+    destruct (zerop (S x / rad)) as [Hsxr| Hsxr].
+     apply Nat.div_small_iff in Hsxr; [ | easy ].
+     rewrite Nat.mod_small; [ | easy ].
+     destruct c; [ now rewrite Hx | ].
+     rewrite Hx in Hsxr.
+     exfalso; apply lt_not_le in Hsxr.
+     apply Hsxr; clear Hsxr.
+     assert (H : rad ^ length al ≠ 0) by now apply Nat.pow_nonzero.
+     destruct (rad ^ length al); [ easy | simpl; lia ].
+
+     exfalso.
+     rewrite Hx, Nat.add_comm in Hsxr.
+     rewrite Nat.div_add in Hsxr; [ | easy ].
+     rewrite Nat.div_small in Hsxr; [ simpl in Hsxr | lia ].
+     destruct c; [ easy | ].
 bbb.
 
 Lemma list_of_nat_inv {r : radix} : 2 ≤ rad →
