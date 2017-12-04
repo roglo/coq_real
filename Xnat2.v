@@ -942,6 +942,7 @@ destruct al1 as [| a2].
    apply Nat.div_small_iff in Hza1r; [ | easy ].
    now rewrite Nat.mod_small; [ | easy ].
 
+bbb.
    destruct al as [| a3].
     simpl in Hal1.
     unfold list_norm_with_carry in Hal1.
