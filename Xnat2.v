@@ -1047,6 +1047,41 @@ induction al as [| a1]; intros.
    destruct Hd as (d1, Hd1); rewrite Nat.mul_comm in Hd1.
    rewrite Hd1, Nat.div_mul; [ | easy ].
    destruct d1; [ now rewrite Hd1 in Hc | simpl ].
+   destruct (zerop (S d1 / rad)) as [Hdr| Hdr].
+    apply Nat.div_small_iff in Hdr; [ | easy ].
+    rewrite Nat.mod_small; [ | easy ].
+    remember rad as s eqn:Hs.
+    destruct s; [ easy | simpl; rewrite <- Hs ].
+    rewrite Nat.mod_small; [ | easy ].
+    rewrite Nat.div_small; [ | easy ].
+    destruct s; [ lia | easy ].
+
+bbb.
+    remember
+      (list_remove_trailing_0s (move_carry_end (rad + d1 * rad) (S d1)))
+      as x eqn:Hx.
+    symmetry in Hx.
+    destruct x.
+     exfalso.
+     remember rad as s eqn:Hs.
+     destruct s; [ easy | ].
+     destruct s; [ lia | ].
+     simpl in Hx.
+     destruct (zerop (S d1 / rad)) as [Hdr2| Hdr2].
+      apply Nat.div_small_iff in Hdr2; [ | lia ].
+      now rewrite Nat.mod_small in Hx.
+bbb.
+    remember (S d1 / rad) as e1 eqn:He1.
+    remember (S d1 mod rad) as f1 eqn:Hf1.
+    remember (e1 mod rad) as g1 eqn:Hg1.
+    remember (e1 / rad) as h1 eqn:Hh1.
+    remember rad as s eqn:Hs.
+    destruct s; [ easy | ].
+    destruct s; [ lia | ].
+    simpl; rewrite <- Hs, <- He1.
+    destruct e1.
+
+simpl.
 bbb.
 
 Lemma list_of_nat_inv {r : radix} : 2 ≤ rad →
