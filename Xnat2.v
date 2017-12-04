@@ -777,6 +777,38 @@ destruct (zerop (c / rad)) as [Hcr| Hcr].
     destruct s; [ lia | simpl; lia ].
 Qed.
 
+Lemma fold_move_carry {r : radix} : ∀ c al,
+  (fix move_carry (r0 : radix) (carry : nat) (al0 : list nat) {struct al0} :
+     list nat :=
+     match al0 with
+     | [] => move_carry_end (S carry) carry
+     | a :: al' => (carry + a) mod rad :: move_carry r0 ((carry + a) / rad) al'
+     end) r c al
+  = move_carry c al.
+Proof. easy. Qed.
+
+Lemma fold_list_norm_with_carry {r : radix} : ∀ c al,
+  list_remove_trailing_0s (move_carry c al) = list_norm_with_carry c al.
+Proof. easy. Qed.
+
+Lemma list_norm_with_carry_cons {r : radix} : ∀ c a al, rad ≠ 0 →
+  list_norm_with_carry c (a :: al) =
+  match list_norm_with_carry ((c + a) / rad) al with
+  | [] => if zerop ((c + a) mod rad) then [] else [(c + a) mod rad]
+  | b :: bl => (c + a) mod rad :: b :: bl
+  end.
+Proof.
+intros * Hr.
+unfold list_norm_with_carry, move_carry; simpl.
+remember ((c + a) mod rad) as d eqn:Hd.
+remember ((c + a) / rad) as c1 eqn:Hc1.
+destruct d; [ easy | simpl ].
+rewrite fold_move_carry.
+rewrite fold_list_norm_with_carry.
+now destruct (list_norm_with_carry c1 al).
+Qed.
+
+(*
 Lemma eq_list_norm_cons_cons {r : radix} : ∀ m al, 1 < rad →
   m = nat_of_list 0 al
   → rad < m
@@ -806,7 +838,7 @@ split.
    apply Nat.div_small_iff in Hza1r; [ lia | easy ].
 
    now exists 0; subst c2; rewrite List.app_nil_r.
-Abort. (*
+bbb.
   revert m a1 a2 c2 Hm Hrm Hc2.
   induction al as [| a3]; intros.
    simpl in Hc2; simpl; rewrite <- Hc2.
@@ -991,6 +1023,32 @@ bbb.
 bbb.
 *)
 
+Lemma list_of_nat_carry_inv {r : radix} : 2 ≤ rad →
+  ∀ c al, list_of_nat 0 (nat_of_list c al) = list_norm_with_carry c al.
+Proof.
+intros Hr.
+assert (Hrz : rad ≠ 0) by lia.
+intros.
+revert c.
+induction al as [| a1]; intros.
+ unfold list_norm_with_carry; simpl.
+ unfold list_of_nat.
+ destruct (zerop c) as [Hc| Hc]; [ now subst c | simpl ].
+ destruct (zerop (c / rad)) as [Hcr| Hcr].
+  rewrite Hcr.
+  apply Nat.div_small_iff in Hcr; [ | easy ].
+  rewrite Nat.mod_small; [ | easy ].
+  now destruct c.
+
+  remember (c mod rad) as d eqn:Hd.
+  symmetry in Hd.
+  destruct d.
+   apply Nat.mod_divides in Hd; [ | easy ].
+   destruct Hd as (d1, Hd1); rewrite Nat.mul_comm in Hd1.
+   rewrite Hd1, Nat.div_mul; [ | easy ].
+   destruct d1; [ now rewrite Hd1 in Hc | simpl ].
+bbb.
+
 Lemma list_of_nat_inv {r : radix} : 2 ≤ rad →
   ∀ al, list_of_nat 0 (nat_of_list 0 al) = list_norm al.
 Proof.
@@ -1115,77 +1173,6 @@ destruct (zerop m) as [Ha| Ha].
    revert a1 m1 m Hm1 Hm IH.
    induction al as [| a2]; intros; [ easy | ].
    simpl in Hm1.
-Search (list_norm (_ :: _)).
-Lemma list_norm_with_carry_cons {r : radix} : ∀ c a al, rad ≠ 0 →
-  list_norm_with_carry c (a :: al) =
-  match list_norm_with_carry (a / rad) al with
-  | [] => if zerop (a mod rad) then [] else [a mod rad]
-  | bl => a mod rad :: bl
-  end.
-Proof.
-intros * Hr.
-revert c a.
-induction al as [| a1]; intros.
- unfold list_norm_with_carry, move_carry.
- remember ((c + a) mod rad) as d eqn:Hd.
- symmetry in Hd.
- remember ((c + a) / rad) as c1 eqn:Hc1.
- symmetry in Hc1.
- destruct d.
-  destruct c1.
-   apply Nat.div_small_iff in Hc1; [ | easy ].
-   rewrite Nat.mod_small in Hd; [ | easy ].
-   apply Nat.eq_add_0 in Hd.
-   destruct Hd; subst c a.
-   simpl.
-   rewrite Nat.div_0_l; [ simpl | easy ].
-   now rewrite Nat.mod_0_l.
-
-   apply Nat.mod_divides in Hd; [ | easy ].
-   destruct Hd as (c2, Hc2); rewrite Nat.mul_comm in Hc2.
-   rewrite Hc2, Nat.div_mul in Hc1; [ | easy ].
-   rewrite <- Hc1; simpl.
-   destruct (zerop c2) as [H| H]; [ now rewrite H in Hc1 | clear H ].
-   destruct (zerop (a / rad)) as [Hzar| Hzar].
-    simpl.
-    remember (c2 mod rad) as cr eqn:Hcr.
-    symmetry in Hcr.
-    destruct cr.
-     destruct c2; [ easy | ].
-     simpl.
-     apply Nat.mod_divides in Hcr; [ | easy ].
-     destruct Hcr as (c3, Hc3); rewrite Nat.mul_comm in Hc3.
-     rewrite Hc3, Nat.div_mul; [ | easy ].
-     destruct (zerop c3) as [Hzc3| Hzc3].
-      now rewrite Hzc3 in Hc3.
-
-(* c'est quoi, ce bordel ? *)
-bbb.
-
-Lemma list_norm_with_carry_cons {r : radix} : ∀ c a al,
-  list_norm_with_carry c (a :: al) =
-  match a mod rad with
-  | 0 =>
-      match list_norm_with_carry (a / rad) al with
-      | [] => []
-      | bl => 0 :: bl
-      end
-  | S _ => a mod rad :: list_norm_with_carry (a / rad) al
-  end.
-Proof.
-intros.
-unfold list_norm_with_carry; simpl.
-
-bbb.
-  ============================
-  match a mod rad with
-  | 0 =>
-      match list_remove_trailing_0s (move_carry (a / rad) al) with
-      | [] => []
-      | y :: l => 0 :: y :: l
-      end
-  | S _ => a mod rad :: list_remove_trailing_0s (move_carry (a / rad) al)
-  end = []
 bbb.
    apply eq_list_norm_cons_cons; [ easy | | ].
 bbb.
