@@ -979,8 +979,6 @@ induction al as [| a1]; intros.
 
   destruct al1 as [| a2]; [ easy | ].
   constructor; [ now apply Nat.mod_upper_bound | ].
-  constructor.
-
 bbb.
 
 Lemma list_norm_digits_lt_radix {r : radix} : 1 < rad →
