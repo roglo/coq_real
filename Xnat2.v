@@ -913,6 +913,76 @@ intros Hr *.
 now specialize (list_of_nat_carry_inv Hr 0 al) as H.
 Qed.
 
+(*
+Lemma move_carry_digits_lt_radix {r : radix} : ∀ c al,
+  List.Forall (λ a, a < rad) (move_carry c al).
+Proof.
+intros.
+revert c.
+induction al as [| a1]; intros.
+ simpl.
+ destruct (zerop c) as [Hzc| Hzc]; [ easy | ].
+ constructor.
+Abort.
+*)
+
+Lemma list_carry_end_digits_lt_radix {r : radix} : rad ≠ 0 →
+  ∀ i c, List.Forall (λ a, a < rad) (move_carry_end i c).
+Proof.
+intros Hr *.
+revert c.
+induction i; intros; [ constructor | simpl ].
+destruct (zerop c) as [Hzc| Hzc]; [ easy | ].
+constructor; [ now apply Nat.mod_upper_bound | ].
+apply IHi.
+Qed.
+
+Lemma list_norm_wc_digits_lt_radix {r : radix} : 1 < rad →
+  ∀ al c, List.Forall (λ a, a < rad) (list_norm_with_carry c al).
+Proof.
+intros Hr.
+assert (Hrz : rad ≠ 0) by lia.
+intros.
+revert c.
+induction al as [| a1]; intros.
+ remember (list_norm_with_carry c []) as al eqn:Hal.
+ symmetry in Hal.
+ apply list_rem_trail_iff in Hal.
+ destruct Hal as ((n & Hnc), Hlast).
+ destruct Hlast as [Hal| Hlast]; [ now subst al | ].
+ simpl in Hnc.
+ destruct (zerop c) as [Hzc| Hzc].
+  symmetry in Hnc.
+  apply List.app_eq_nil in Hnc.
+  now destruct Hnc; subst al.
+
+  destruct al as [| a1]; [ easy | ].
+  simpl in Hnc.
+  injection Hnc; clear Hnc; intros Hnc Ha1; subst a1.
+  constructor; [ now apply Nat.mod_upper_bound | ].
+  destruct n.
+   rewrite List.app_nil_r in Hnc; subst al.
+   now apply list_carry_end_digits_lt_radix.
+
+   apply move_carry_end_ne_rep_0_succ in Hnc; [ easy | easy | ].
+   now apply Nat.div_lt.
+
+ rewrite list_norm_with_carry_cons; [ | easy ].
+ remember (list_norm_with_carry ((c + a1) / rad) al) as al1 eqn:Hal1.
+ symmetry in Hal1.
+ apply list_rem_trail_iff in Hal1.
+ destruct Hal1 as ((n & Hn), Hlast).
+ destruct Hlast as [Hal1| Hlast].
+  subst al1.
+  destruct (zerop ((c + a1) mod rad)) as [Hzca| Hzca]; [ easy | ].
+  now constructor; [ apply Nat.mod_upper_bound | ].
+
+  destruct al1 as [| a2]; [ easy | ].
+  constructor; [ now apply Nat.mod_upper_bound | ].
+  constructor.
+
+bbb.
+
 Lemma list_norm_digits_lt_radix {r : radix} : 1 < rad →
   ∀ al, List.Forall (λ a, a < rad) (list_norm al).
 Proof.
@@ -926,41 +996,10 @@ remember (list_norm_with_carry (a1 / rad) al) as al1 eqn:Hal1.
 symmetry in Hal1.
 destruct al1 as [| a2].
  destruct (zerop (a1 mod rad)) as [Hzar| Hzar]; [ easy | ].
- constructor; [ | easy ].
- unfold list_norm_with_carry in Hal1.
- apply list_rem_trail_iff in Hal1; simpl in Hal1.
- destruct Hal1 as ((n & Hncn), Hlast).
- destruct Hlast as [H| ]; [ clear H | easy ].
- destruct (zerop (a1 / rad)) as [Hza1r| Hza1r].
-  apply Nat.div_small_iff in Hza1r; [ | easy ].
-  now rewrite Nat.mod_small; [ | easy ].
+ now constructor; [ apply Nat.mod_upper_bound | ].
 
-  now apply move_nz_carry in Hncn; [ | | intros H; rewrite H in Hza1r ].
-
+ constructor; [ now apply Nat.mod_upper_bound | ].
  constructor.
-  destruct (zerop (a1 / rad)) as [Hza1r| Hza1r].
-   apply Nat.div_small_iff in Hza1r; [ | easy ].
-   now rewrite Nat.mod_small; [ | easy ].
-
-bbb.
-   destruct al as [| a3].
-    simpl in Hal1.
-    unfold list_norm_with_carry in Hal1.
-    apply list_rem_trail_iff in Hal1.
-    destruct Hal1 as ((n & Hnc), Hlast); simpl in Hnc.
-    destruct Hlast as [| Hlast]; [ easy | ].
-    destruct (zerop (a1 / rad)) as [| H]; [ easy | clear H ].
-    injection Hnc; clear Hnc; intros Hnc Ha2.
-    destruct n.
-     rewrite List.app_nil_r in Hnc.
-     remember (a1 / rad) as ar eqn:Har.
-     symmetry in Har.
-     destruct ar; [ easy | simpl in Hnc ].
-     destruct (zerop (S ar / rad)) as [Hzsar| Hzsar].
-     apply Nat.div_small_iff in Hzsar; [ | easy ].
-     rewrite Nat.mod_small in Ha2; [ | easy ].
-     subst a2 al1.
-(* putain ça déconne *)
 bbb.
 
 Theorem nat_of_xnat_inv {r : radix} : 2 ≤ rad →
