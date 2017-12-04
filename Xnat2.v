@@ -943,6 +943,55 @@ Proof.
 intros Hr.
 assert (Hrz : rad ≠ 0) by lia.
 intros.
+remember (list_norm_with_carry c al) as al1 eqn:Hal1.
+symmetry in Hal1.
+apply list_rem_trail_iff in Hal1.
+destruct Hal1 as ((n & Hn), Hal1).
+destruct Hal1 as [Hal1| Hlast]; [ now subst al1 | ].
+bbb.
+revert c al1 Hn Hlast.
+induction al as [| a1]; intros.
+ simpl in Hn.
+ destruct (zerop c) as [Hzc| Hzc].
+  symmetry in Hn.
+  apply List.app_eq_nil in Hn.
+  now destruct Hn; subst al1.
+
+  destruct al1 as [| a1]; [ easy | ].
+  simpl in Hn.
+  injection Hn; clear Hn; intros Hn Ha1; subst a1.
+  constructor; [ now apply Nat.mod_upper_bound | ].
+  destruct n.
+   rewrite List.app_nil_r in Hn; subst al1.
+   now apply list_carry_end_digits_lt_radix.
+
+   apply move_carry_end_ne_rep_0_succ in Hn; [ easy | easy | ].
+   now apply Nat.div_lt.
+
+ simpl in Hn.
+ destruct al1 as [| a2]; [ easy | ].
+ injection Hn; clear Hn; intros Hn Ha2.
+ constructor; [ now subst a2; apply Nat.mod_upper_bound | ].
+ destruct (zerop a2) as [Hza2| Hza2].
+  move Hza2 at top; subst a2.
+  simpl in Hlast.
+  destruct al1 as [| a2]; [ easy | ].
+  destruct al as [| a3].
+   simpl in Hn.
+   destruct (zerop ((c + a1) / rad)) as [Hzca| Hzca]; [ easy | ].
+   injection Hn; clear Hn; intros Hn Ha3.
+   destruct n.
+bbb.
+   apply move_carry_end_ne_rep_0_succ in Hn.
+Search move_carry_end.
+
+ eapply IHal; [ apply Hn | ].
+Search (List.last (_ :: _)).
+
+bbb.
+intros Hr.
+assert (Hrz : rad ≠ 0) by lia.
+intros.
 revert c.
 induction al as [| a1]; intros.
  remember (list_norm_with_carry c []) as al eqn:Hal.
