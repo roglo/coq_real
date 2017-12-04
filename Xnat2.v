@@ -948,6 +948,54 @@ symmetry in Hal1.
 apply list_rem_trail_iff in Hal1.
 destruct Hal1 as ((n & Hn), Hal1).
 destruct Hal1 as [Hal1| Hlast]; [ now subst al1 | ].
+revert c al Hn.
+induction al1 as [| a1]; intros; [ easy | ].
+constructor.
+ destruct al as [| a2].
+  simpl in Hn.
+  destruct (zerop c) as [| Hc]; [ easy | ].
+  injection Hn; clear Hn; intros; subst a1.
+  now apply Nat.mod_upper_bound.
+
+  simpl in Hn.
+  injection Hn; clear Hn; intros; subst a1.
+  now apply Nat.mod_upper_bound.
+
+ simpl in Hlast.
+ destruct al1 as [| a2]; [ easy | ].
+ constructor.
+  destruct al as [| a3].
+   simpl in Hn.
+   destruct (zerop c) as [| Hc]; [ easy | ].
+   injection Hn; clear Hn; intros Hn Hca.
+   destruct c; [ easy | ].
+   destruct n.
+    simpl in Hn.
+    destruct (zerop (S c / rad)) as [Hscr| Hscr]; [ easy | ].
+    injection Hn; clear Hn; intros; subst a2.
+    now apply Nat.mod_upper_bound.
+
+    simpl in Hn.
+    destruct (zerop (S c / rad)) as [Hscr| Hscr]; [ easy | ].
+    injection Hn; clear Hn; intros; subst a2.
+    now apply Nat.mod_upper_bound.
+
+   destruct n.
+    simpl in Hn.
+    injection Hn; clear Hn; intros Hn Ha1.
+    destruct al as [| a4].
+     simpl in Hn.
+     destruct (zerop ((c + a3) / rad)) as [Hscr| Hscr]; [ easy | ].
+     injection Hn; clear Hn; intros; subst a2.
+     now apply Nat.mod_upper_bound.
+
+     simpl in Hn.
+     injection Hn; clear Hn; intros; subst a2.
+     now apply Nat.mod_upper_bound.
+
+    remember (S n) as s; simpl in Hn; subst s.
+bbb.
+    apply move_carry_end_ne_rep_0_succ in Hn.
 bbb.
 revert c al1 Hn Hlast.
 induction al as [| a1]; intros.
