@@ -1036,4 +1036,93 @@ Fixpoint xnatv_add a b :=
   end.
 
 Definition xnat_add {r : radix} a b :=
-  xnat_norm (xn (xnatv_add (xnatv a) (xnatv b))).
+  xn (xnatv_add (xnatv a) (xnatv b)).
+
+Definition xnat_0 {r : radix} := xn [].
+
+Delimit Scope xnat_scope with X.
+Notation "a + b" := (xnat_add a b) : xnat_scope.
+Notation "a = b" := (xnat_norm a = xnat_norm b) : xnat_scope.
+Notation "0" := (xnat_0) : xnat_scope.
+
+Lemma list_norm_wc_add_comm {r : radix} : rad ≠ 0 →
+  ∀ al bl c,
+  list_norm_with_carry c (xnatv_add al bl) =
+  list_norm_with_carry c (xnatv_add bl al).
+Proof.
+intros Hr *.
+revert c bl.
+induction al as [| a1]; intros; [ now destruct bl | simpl ].
+destruct bl as [| b1]; [ easy | simpl ].
+rewrite Nat.add_comm.
+rewrite list_norm_with_carry_cons; [ | easy ].
+rewrite list_norm_with_carry_cons; [ | easy ].
+specialize (IHal ((c + (b1 + a1)) / rad) bl).
+now rewrite IHal.
+Qed.
+
+Theorem xnat_add_comm {r : radix} : rad ≠ 0 → ∀ a b, (a + b = b + a)%X.
+Proof.
+intros Hr *.
+unfold xnat_add; simpl.
+destruct a as [al].
+destruct b as [bl].
+unfold xnat_norm; simpl.
+f_equal.
+now apply list_norm_wc_add_comm.
+Qed.
+
+Theorem xnat_add_0_l {r : radix} : ∀ a, (0 + a = a)%X.
+Proof. easy. Qed.
+
+Lemma list_norm_wc_add_assoc {r : radix} : ∀ al bl cl carry, rad ≠ 0 →
+  list_norm_with_carry carry (xnatv_add cl (xnatv_add al bl)) =
+  list_norm_with_carry carry (xnatv_add al (xnatv_add bl cl)).
+Proof.
+intros * Hr.
+apply list_rem_trail_iff.
+split.
+ exists 0; symmetry; rewrite List.app_nil_r.
+ apply list_rem_trail_iff.
+ split.
+  exists 0; symmetry; rewrite List.app_nil_r.
+  revert bl cl carry.
+  induction al as [| a1]; intros.
+   simpl.
+   revert bl carry.
+   induction cl as [| c1]; intros; [ now destruct bl | simpl ].
+   destruct bl as [| b1]; [ easy | simpl ].
+   rewrite IHcl.
+   now replace (c1 + b1) with (b1 + c1) by apply Nat.add_comm.
+
+   revert a1 bl carry.
+   induction cl as [| c1]; intros; [ now destruct bl | simpl ].
+   destruct bl as [| b1]; simpl.
+   replace (c1 + a1) with (a1 + c1) by apply Nat.add_comm.
+   f_equal.
+   specialize (IHcl a1 al ((carry + (a1 + c1)) / rad)).
+   simpl in IHcl.
+(* ouais, bon, faut voir... *)
+bbb.
+
+Lemma list_add_assoc {r : radix} : ∀ al bl cl, rad ≠ 0 →
+  list_norm (xnatv_add cl (xnatv_add al bl)) =
+  list_norm (xnatv_add al (xnatv_add bl cl)).
+Proof.
+intros * Hr.
+unfold list_norm.
+bbb.
+
+Theorem xnat_add_assoc {r : radix} : ∀ a b c, rad ≠ 0 →
+  (a + (b + c) = (a + b) + c)%X.
+Proof.
+intros * Hr.
+symmetry.
+rewrite xnat_add_comm; [ | easy ].
+unfold xnat_add; simpl.
+destruct a as [al].
+destruct b as [bl].
+destruct c as [cl].
+unfold xnat_norm; simpl.
+f_equal.
+bbb.
