@@ -1033,55 +1033,33 @@ revert c.
 induction al as [| a1]; intros.
  unfold list_norm_with_carry; simpl.
  unfold list_of_nat.
- destruct (zerop c) as [Hc| Hc]; [ now subst c | simpl ].
- destruct (zerop (c / rad)) as [Hcr| Hcr].
-  rewrite Hcr.
-  apply Nat.div_small_iff in Hcr; [ | easy ].
-  rewrite Nat.mod_small; [ | easy ].
-  now destruct c.
+ destruct (zerop c) as [Hc| Hc]; [ now subst c | ].
+ symmetry.
+ apply list_rem_trail_iff.
+ split.
+  simpl.
+  destruct (zerop (c / rad)) as [Hcr| Hcr].
+   rewrite Hcr.
+   apply Nat.div_small_iff in Hcr; [ | easy ].
+   rewrite Nat.mod_small; [ | easy ].
+   exists 0.
+   now destruct c.
 
-  remember (c mod rad) as d eqn:Hd.
-  symmetry in Hd.
-  destruct d.
-   apply Nat.mod_divides in Hd; [ | easy ].
-   destruct Hd as (d1, Hd1); rewrite Nat.mul_comm in Hd1.
-   rewrite Hd1, Nat.div_mul; [ | easy ].
-   destruct d1; [ now rewrite Hd1 in Hc | simpl ].
-   destruct (zerop (S d1 / rad)) as [Hdr| Hdr].
-    apply Nat.div_small_iff in Hdr; [ | easy ].
-    rewrite Nat.mod_small; [ | easy ].
-    remember rad as s eqn:Hs.
-    destruct s; [ easy | simpl; rewrite <- Hs ].
-    rewrite Nat.mod_small; [ | easy ].
-    rewrite Nat.div_small; [ | easy ].
-    destruct s; [ lia | easy ].
+   destruct c; [ easy | simpl ].
+   destruct (zerop (S c / rad)) as [H| H]; [ now rewrite H in Hcr | clear H ].
+   exists 0; f_equal; f_equal; rewrite List.app_nil_r.
+   apply move_carry_end_enough_iter; [ easy | | now apply Nat.div_lt ].
+   apply Nat.div_lt_upper_bound; [ easy | ].
+   apply Nat.div_lt_upper_bound; [ easy | ].
+   destruct c; [ now rewrite Nat.div_1_l in Hcr | ].
+   destruct rad as [| s]; [ easy | ].
+   destruct s; [ lia | simpl; lia ].
 
-bbb.
-    remember
-      (list_remove_trailing_0s (move_carry_end (rad + d1 * rad) (S d1)))
-      as x eqn:Hx.
-    symmetry in Hx.
-    destruct x.
-     exfalso.
-     remember rad as s eqn:Hs.
-     destruct s; [ easy | ].
-     destruct s; [ lia | ].
-     simpl in Hx.
-     destruct (zerop (S d1 / rad)) as [Hdr2| Hdr2].
-      apply Nat.div_small_iff in Hdr2; [ | lia ].
-      now rewrite Nat.mod_small in Hx.
-bbb.
-    remember (S d1 / rad) as e1 eqn:He1.
-    remember (S d1 mod rad) as f1 eqn:Hf1.
-    remember (e1 mod rad) as g1 eqn:Hg1.
-    remember (e1 / rad) as h1 eqn:Hh1.
-    remember rad as s eqn:Hs.
-    destruct s; [ easy | ].
-    destruct s; [ lia | ].
-    simpl; rewrite <- Hs, <- He1.
-    destruct e1.
+  right.
+  now apply last_move_carry_single_nz; [ | intros H; rewrite H in Hc ].
 
-simpl.
+ rewrite list_norm_with_carry_cons; [ simpl | easy ].
+ rewrite <- IHal.
 bbb.
 
 Lemma list_of_nat_inv {r : radix} : 2 ≤ rad →
