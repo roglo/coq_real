@@ -909,11 +909,58 @@ Qed.
 Lemma list_of_nat_inv {r : radix} : 2 ≤ rad →
   ∀ al, list_of_nat 0 (nat_of_list 0 al) = list_norm al.
 Proof.
+intros Hr *.
+now specialize (list_of_nat_carry_inv Hr 0 al) as H.
+Qed.
+
+Lemma list_norm_digits_lt_radix {r : radix} : 1 < rad →
+  ∀ al, List.Forall (λ a, a < rad) (list_norm al).
+Proof.
 intros Hr.
 assert (Hrz : rad ≠ 0) by lia.
 intros.
-now specialize (list_of_nat_carry_inv Hr 0 al) as H.
-Qed.
+unfold list_norm.
+induction al as [| a1]; [ constructor | ].
+rewrite list_norm_with_carry_cons; [ simpl | easy ].
+remember (list_norm_with_carry (a1 / rad) al) as al1 eqn:Hal1.
+symmetry in Hal1.
+destruct al1 as [| a2].
+ destruct (zerop (a1 mod rad)) as [Hzar| Hzar]; [ easy | ].
+ constructor; [ | easy ].
+ unfold list_norm_with_carry in Hal1.
+ apply list_rem_trail_iff in Hal1; simpl in Hal1.
+ destruct Hal1 as ((n & Hncn), Hlast).
+ destruct Hlast as [H| ]; [ clear H | easy ].
+ destruct (zerop (a1 / rad)) as [Hza1r| Hza1r].
+  apply Nat.div_small_iff in Hza1r; [ | easy ].
+  now rewrite Nat.mod_small; [ | easy ].
+
+  now apply move_nz_carry in Hncn; [ | | intros H; rewrite H in Hza1r ].
+
+ constructor.
+  destruct (zerop (a1 / rad)) as [Hza1r| Hza1r].
+   apply Nat.div_small_iff in Hza1r; [ | easy ].
+   now rewrite Nat.mod_small; [ | easy ].
+
+   destruct al as [| a3].
+    simpl in Hal1.
+    unfold list_norm_with_carry in Hal1.
+    apply list_rem_trail_iff in Hal1.
+    destruct Hal1 as ((n & Hnc), Hlast); simpl in Hnc.
+    destruct Hlast as [| Hlast]; [ easy | ].
+    destruct (zerop (a1 / rad)) as [| H]; [ easy | clear H ].
+    injection Hnc; clear Hnc; intros Hnc Ha2.
+    destruct n.
+     rewrite List.app_nil_r in Hnc.
+     remember (a1 / rad) as ar eqn:Har.
+     symmetry in Har.
+     destruct ar; [ easy | simpl in Hnc ].
+     destruct (zerop (S ar / rad)) as [Hzsar| Hzsar].
+     apply Nat.div_small_iff in Hzsar; [ | easy ].
+     rewrite Nat.mod_small in Ha2; [ | easy ].
+     subst a2 al1.
+(* putain ça déconne *)
+bbb.
 
 Theorem nat_of_xnat_inv {r : radix} : 2 ≤ rad →
   ∀ a, xnat_of_nat (nat_of_xnat a) = xnat_norm a.
