@@ -2,8 +2,10 @@
 (* Can be regarded as polynomials with natural number coefficients. *)
 (* Implemented using lists of nat. *)
 
-Require Import Utf8 Arith Psatz List.
-Import ListNotations.
+Require Import Utf8 Arith Psatz.
+Require List.
+Import List.ListNotations.
+Open Scope list_scope.
 
 Class radix := { rad : nat }.
 
@@ -151,7 +153,7 @@ now destruct a; [ destruct al' | ].
 Qed.
 
 Lemma move_carry_0_rep_0 {r : radix} : ∀ n,
-  move_carry 0 (repeat 0 n) = repeat 0 n.
+  move_carry 0 (List.repeat 0 n) = List.repeat 0 n.
 Proof.
 intros.
 induction n; [ easy | simpl ].
@@ -173,7 +175,7 @@ now rewrite H.
 Qed.
 
 Lemma eq_list_rem_trail_nil : ∀ al,
-  list_remove_trailing_0s al = [] ↔ al = repeat 0 (length al).
+  list_remove_trailing_0s al = [] ↔ al = List.repeat 0 (length al).
 Proof.
 intros *.
 split; intros Ha.
@@ -188,7 +190,7 @@ split; intros Ha.
 Qed.
 
 Lemma list_rem_trail_repeat_0 : ∀ n,
-  list_remove_trailing_0s (repeat 0 n) = [].
+  list_remove_trailing_0s (List.repeat 0 n) = [].
 Proof.
 intros.
 apply eq_list_rem_trail_nil.
@@ -196,7 +198,7 @@ now rewrite List.repeat_length.
 Qed.
 
 Lemma eq_nat_of_list_0_0 {r : radix} : ∀ al, 0 < rad →
-  nat_of_list 0 al = 0 ↔ al = repeat 0 (length al).
+  nat_of_list 0 al = 0 ↔ al = List.repeat 0 (length al).
 Proof.
 intros * Hr.
 split; intros Hal.
@@ -213,7 +215,7 @@ split; intros Hal.
 Qed.
 
 Lemma eq_nat_of_list_0 {r : radix} : ∀ c al, rad ≠ 0 →
-  nat_of_list c al = 0 → c = 0 ∧ al = repeat 0 (length al).
+  nat_of_list c al = 0 → c = 0 ∧ al = List.repeat 0 (length al).
 Proof.
 intros * Hr Hn.
 revert c Hn.
@@ -248,7 +250,7 @@ Theorem List_cons_comm_app : ∀ A (x : A) l l', l ++ x :: l' = l ++ [x] ++ l'.
 Proof. easy. Qed.
 
 Lemma list_rem_trail_rep_0 : ∀ al n,
-  list_remove_trailing_0s (al ++ repeat 0 n) = list_remove_trailing_0s al.
+  list_remove_trailing_0s (al ++ List.repeat 0 n) = list_remove_trailing_0s al.
 Proof.
 intros.
 revert al.
@@ -259,12 +261,12 @@ induction al as [| a]; [ easy | now simpl; rewrite IHal ].
 Qed.
 
 Lemma last_cons_cons : ∀ A (a b : A) al d,
-  last (a :: b :: al) d = last (b :: al) d.
+  List.last (a :: b :: al) d = List.last (b :: al) d.
 Proof. easy. Qed.
 
 Lemma last_cons_id : ∀ A (a : A) al,
-  last al a ≠ a
-  → last (a :: al) a ≠ a.
+  List.last al a ≠ a
+  → List.last (a :: al) a ≠ a.
 Proof.
 intros * Hal.
 now destruct al.
@@ -272,8 +274,8 @@ Qed.
 
 Lemma last_cons_ne : ∀ A (a d : A) al,
   a ≠ d
-  → last al d ≠ d
-  → last (a :: al) d ≠ d.
+  → List.last al d ≠ d
+  → List.last (a :: al) d ≠ d.
 Proof.
 intros * Had Hal.
 revert a Had.
@@ -286,7 +288,7 @@ Qed.
 
 Lemma list_rem_trail_iff : ∀ al bl,
   list_remove_trailing_0s al = bl
-  ↔ (∃ n, al = bl ++ repeat 0 n) ∧ (bl = [] ∨ List.last bl 0 ≠ 0).
+  ↔ (∃ n, al = bl ++ List.repeat 0 n) ∧ (bl = [] ∨ List.last bl 0 ≠ 0).
 Proof.
 intros *.
 split.
@@ -334,7 +336,7 @@ Qed.
 
 Lemma move_carry_end_succ_ne_rep_0 {r : radix} : ∀ i c n, 1 < rad →
   0 < c < i
-  → move_carry_end i c ≠ repeat 0 n.
+  → move_carry_end i c ≠ List.repeat 0 n.
 Proof.
 intros * Hr (Hc, Hci).
 revert c n Hc Hci.
@@ -360,7 +362,7 @@ rewrite Nat.mul_comm; simpl; lia.
 Qed.
 
 Lemma move_nz_carry {r : radix} : ∀ al n c, 1 < rad → c ≠ 0 →
-  move_carry c al ≠ repeat 0 n.
+  move_carry c al ≠ List.repeat 0 n.
 Proof.
 intros * Hr Hc H.
 destruct c; [ easy | clear Hc ].
@@ -382,7 +384,7 @@ induction al as [| a]; intros.
 Qed.
 
 Lemma move_carry_0_is_rep_0 {r : radix} : ∀ al n, 1 < rad →
-  move_carry 0 al = repeat 0 n → al = repeat 0 n.
+  move_carry 0 al = List.repeat 0 n → al = List.repeat 0 n.
 Proof.
 intros * Hr Han.
 revert al Han.
@@ -401,8 +403,8 @@ now apply move_nz_carry.
 Qed.
 
 Lemma List_app_rep_0_last : ∀ al m n,
-  repeat 0 m = al ++ repeat 0 n
-  → last al 0 = 0.
+  List.repeat 0 m = al ++ List.repeat 0 n
+  → List.last al 0 = 0.
 Proof.
 intros * Hr.
 revert m n Hr.
@@ -432,7 +434,7 @@ apply IHm.
 Qed.
 
 Lemma List_repeat_succ_app : ∀ A (a : A) n,
-  repeat a (S n) = repeat a n ++ [a].
+  List.repeat a (S n) = List.repeat a n ++ [a].
 Proof.
 intros; simpl.
 induction n; [ easy | simpl ].
@@ -440,7 +442,7 @@ now rewrite <- IHn.
 Qed.
 
 Lemma move_carry_rep_0_end {r : radix} : ∀ n a, 1 < rad → ∃ m,
-  move_carry a (repeat 0 n) = move_carry_end (S a) a ++ repeat 0 m.
+  move_carry a (List.repeat 0 n) = move_carry_end (S a) a ++ List.repeat 0 m.
 Proof.
 intros * Hr.
 revert a.
@@ -470,7 +472,7 @@ induction n; intros; simpl.
 Qed.
 
 Lemma move_carry_rep_0 {r : radix} : ∀ n a, 1 < rad → ∃ m,
-  move_carry a (repeat 0 n) = move_carry a [] ++ repeat 0 m.
+  move_carry a (List.repeat 0 n) = move_carry a [] ++ List.repeat 0 m.
 Proof.
 intros * Hr.
 unfold move_carry at 2.
@@ -482,7 +484,7 @@ destruct (zerop a) as [Ha| Ha].
 Qed.
 
 Lemma move_carry_cons_rep_0 {r : radix} : ∀ a c n, 1 < rad → ∃ m,
-  move_carry c (a :: repeat 0 n) = move_carry c [a] ++ repeat 0 m.
+  move_carry c (a :: List.repeat 0 n) = move_carry c [a] ++ List.repeat 0 m.
 Proof.
 intros * Hr; simpl.
 destruct (zerop ((c + a) / rad)) as [Hca| Hca].
@@ -501,7 +503,7 @@ Lemma move_carry_cons {r : radix} : ∀ a al c,
 Proof. easy. Qed.
 
 Lemma last_move_carry_end {r : radix} : ∀ i c, 1 < rad → 0 < c < i →
-  last (move_carry_end i c) 0 ≠ 0.
+  List.last (move_carry_end i c) 0 ≠ 0.
 Proof.
 intros * Hr Hci.
 revert c Hci.
@@ -557,7 +559,7 @@ destruct (zerop (c mod rad)) as [Hcr| Hcr].
 Qed.
 
 Lemma last_move_carry_end' {r : radix} : ∀ i c, 1 < rad → c < i →
-  c = 0 ∨ last (move_carry_end i c) 0 ≠ 0.
+  c = 0 ∨ List.last (move_carry_end i c) 0 ≠ 0.
 Proof.
 intros * Hr Hci.
 destruct c; [ now left | right ].
@@ -566,7 +568,7 @@ split; [ lia | easy ].
 Qed.
 
 Lemma last_move_carry_single_nz {r : radix} : ∀ a c, 1 < rad → a ≠ 0 →
-  last (move_carry c [a]) 0 ≠ 0.
+  List.last (move_carry c [a]) 0 ≠ 0.
 Proof.
 intros * Hr Ha.
 simpl.
@@ -596,21 +598,21 @@ destruct (zerop d) as [Hzd| Hnzd].
 Qed.
 
 Lemma nat_of_list_rep_0 {r : radix} : ∀ c n,
-  nat_of_list c (repeat 0 n) = c * rad ^ n.
+  nat_of_list c (List.repeat 0 n) = c * rad ^ n.
 Proof.
 intros.
 induction n; [ now rewrite Nat.mul_1_r | ].
 simpl; rewrite IHn, Nat.add_0_r; lia.
 Qed.
 
-Lemma nat_of_list_0_rep_0 {r : radix} : ∀ n, nat_of_list 0 (repeat 0 n) = 0.
+Lemma nat_of_list_0_rep_0 {r : radix} : ∀ n, nat_of_list 0 (List.repeat 0 n) = 0.
 Proof.
 intros.
 induction n; [ easy | simpl; now rewrite IHn ].
 Qed.
 
 Lemma nat_of_list_0_cons_rep_0 {r : radix} : ∀ a n,
-  nat_of_list 0 (a :: repeat 0 n) = a.
+  nat_of_list 0 (a :: List.repeat 0 n) = a.
 Proof.
 intros; simpl.
 now rewrite nat_of_list_0_rep_0.
@@ -620,7 +622,7 @@ Lemma last_cons_move_carry_end {r : radix} : ∀ x y n,
   2 ≤ rad
   → y = (n + x) / rad ^ n
   → 0 < y
-  → last (y mod rad :: move_carry_end x (y / rad)) 0 ≠ 0.
+  → List.last (y mod rad :: move_carry_end x (y / rad)) 0 ≠ 0.
 Proof.
 intros * Hr Hy Hyn.
 revert y n Hy Hyn.
@@ -736,7 +738,7 @@ Qed.
 
 Lemma move_carry_end_ne_rep_0_succ {r : radix} : ∀ i c al n, 1 < rad →
   c < i
-  → move_carry_end i c ≠ al ++ repeat 0 (S n).
+  → move_carry_end i c ≠ al ++ List.repeat 0 (S n).
 Proof.
 intros * Hr.
 assert (Hrz : rad ≠ 0) by lia.
