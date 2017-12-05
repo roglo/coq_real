@@ -1120,8 +1120,7 @@ intros * Hr.
 symmetry.
 unfold xnat_add; simpl.
 rewrite xnatv_add_comm.
-replace (xnatv_add (xnatv a) (xnatv b))
-  with (xnatv_add (xnatv b) (xnatv a))
+replace (xnatv_add (xnatv a) (xnatv b)) with (xnatv_add (xnatv b) (xnatv a))
 by apply xnatv_add_comm.
 revert a b c.
 change
