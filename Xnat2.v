@@ -1135,6 +1135,7 @@ destruct Hab as [Hab| Hab].
    rewrite list_norm_with_carry_app_rep_0; [ | easy ].
    specialize (move_carry_app_rep_0 Hr 0 cl (n - length cl)) as (q & Hq).
    rewrite Hq.
+   exists (q - length (list_norm_with_carry 0 cl)).
 bbb.
 
 Theorem xnatv_add_eq_compat {r : radix} : ∀ a b c,
