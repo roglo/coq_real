@@ -1065,20 +1065,14 @@ Qed.
 Theorem xnat_add_0_l {r : radix} : ∀ a, (0 + a = a)%X.
 Proof. easy. Qed.
 
-(*
-Lemma list_norm_wc_add_assoc {r : radix} : ∀ al bl cl carry, rad ≠ 0 →
-  list_norm_with_carry carry (xnatv_add (xnatv_add al bl) cl) =
+Lemma list_norm_wc_add_assoc {r : radix} : rad ≠ 0 → ∀ al bl cl carry,
+  list_norm_with_carry carry (xnatv_add cl (xnatv_add bl al)) =
   list_norm_with_carry carry (xnatv_add al (xnatv_add bl cl)).
 Proof.
-intros * Hr.
-rewrite list_norm_wc_add_comm; [ | easy ].
-replace (xnatv_add al bl) with (xnatv_add bl al).
-Focus 2.
-Search xnatv_add.
-  by now apply list_norm_wc_add_comm.
+intros Hr *.
 bbb.
 
-bbb.
+intros Hr *.
 apply list_rem_trail_iff.
 split.
  exists 0; symmetry; rewrite List.app_nil_r.
@@ -1103,36 +1097,26 @@ split.
    simpl in IHcl.
 (* ouais, bon, faut voir... *)
 bbb.
-
-Lemma list_add_assoc {r : radix} : ∀ al bl cl, rad ≠ 0 →
-  list_norm (xnatv_add (xnatv_add al bl) cl) =
-  list_norm (xnatv_add al (xnatv_add bl cl)).
-Proof.
-intros * Hr.
-unfold list_norm.
-bbb.
 *)
 
-Theorem xnat_add_assoc {r : radix} : ∀ a b c, rad ≠ 0 →
+Lemma list_add_assoc {r : radix} : rad ≠ 0 → ∀ al bl cl,
+  list_norm (xnatv_add cl (xnatv_add bl al)) =
+  list_norm (xnatv_add al (xnatv_add bl cl)).
+Proof.
+intros Hr *.
+unfold list_norm.
+bbb.
+
+Theorem xnat_add_assoc {r : radix} : rad ≠ 0 → ∀ a b c,
   (a + (b + c) = (a + b) + c)%X.
 Proof.
-intros * Hr.
+intros Hr *.
 symmetry.
 unfold xnat_add; simpl.
 rewrite xnatv_add_comm.
 replace (xnatv_add (xnatv a) (xnatv b)) with (xnatv_add (xnatv b) (xnatv a))
 by apply xnatv_add_comm.
-revert a b c.
-change
-  (∀ c b a : xnat,
-  ({| xnatv := xnatv_add (xnatv a) (xnatv_add (xnatv b) (xnatv c)) |} =
-   {| xnatv := xnatv_add (xnatv c) (xnatv_add (xnatv b) (xnatv a)) |})%X).
-intros.
-bbb.
-
-destruct a as [al].
-destruct b as [bl].
-destruct c as [cl].
 unfold xnat_norm; simpl.
 f_equal.
-bbb.
+now apply list_add_assoc.
+Qed.
