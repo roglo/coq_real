@@ -1066,57 +1066,26 @@ Theorem xnat_add_0_l {r : radix} : ∀ a, (0 + a = a)%X.
 Proof. easy. Qed.
 
 Lemma list_norm_wc_add_assoc {r : radix} : rad ≠ 0 → ∀ al bl cl carry,
-  list_norm_with_carry carry (xnatv_add cl (xnatv_add bl al)) =
-  list_norm_with_carry carry (xnatv_add al (xnatv_add bl cl)).
+  list_norm_with_carry carry (xnatv_add al (xnatv_add bl cl)) =
+  list_norm_with_carry carry (xnatv_add (xnatv_add al bl) cl).
 Proof.
 intros Hr *.
-bbb.
+revert al cl carry.
+induction bl as [| b1]; intros; simpl.
+ now replace (xnatv_add al []) with (xnatv_add [] al) by apply xnatv_add_comm.
 
-intros Hr *.
-apply list_rem_trail_iff.
-split.
- exists 0; symmetry; rewrite List.app_nil_r.
- apply list_rem_trail_iff.
- split.
-  exists 0; symmetry; rewrite List.app_nil_r.
-  revert bl cl carry.
-  induction al as [| a1]; intros.
-   simpl.
-   revert bl carry.
-   induction cl as [| c1]; intros; [ now destruct bl | simpl ].
-   destruct bl as [| b1]; [ easy | simpl ].
-   rewrite IHcl.
-   now replace (c1 + b1) with (b1 + c1) by apply Nat.add_comm.
-
-   revert a1 bl carry.
-   induction cl as [| c1]; intros; [ now destruct bl | simpl ].
-   destruct bl as [| b1]; simpl.
-   replace (c1 + a1) with (a1 + c1) by apply Nat.add_comm.
-   f_equal.
-   specialize (IHcl a1 al ((carry + (a1 + c1)) / rad)).
-   simpl in IHcl.
-(* ouais, bon, faut voir... *)
-bbb.
-*)
-
-Lemma list_add_assoc {r : radix} : rad ≠ 0 → ∀ al bl cl,
-  list_norm (xnatv_add cl (xnatv_add bl al)) =
-  list_norm (xnatv_add al (xnatv_add bl cl)).
-Proof.
-intros Hr *.
-unfold list_norm.
-bbb.
+ destruct cl as [| c1]; [ now destruct al | simpl ].
+ destruct al as [| a1]; [ easy | simpl ].
+ rewrite Nat.add_assoc.
+ rewrite list_norm_with_carry_cons; [ | easy ].
+ rewrite list_norm_with_carry_cons; [ | easy ].
+ now rewrite IHbl.
+Qed.
 
 Theorem xnat_add_assoc {r : radix} : rad ≠ 0 → ∀ a b c,
   (a + (b + c) = (a + b) + c)%X.
 Proof.
 intros Hr *.
-symmetry.
-unfold xnat_add; simpl.
-rewrite xnatv_add_comm.
-replace (xnatv_add (xnatv a) (xnatv b)) with (xnatv_add (xnatv b) (xnatv a))
-by apply xnatv_add_comm.
-unfold xnat_norm; simpl.
-f_equal.
-now apply list_add_assoc.
+unfold xnat_add, xnat_norm; simpl; f_equal.
+now apply list_norm_wc_add_assoc.
 Qed.
