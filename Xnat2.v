@@ -1081,21 +1081,63 @@ induction al as [| a]; intros; [ now destruct n | simpl ].
 now destruct n; [ rewrite List.app_nil_r | simpl; rewrite IHal ].
 Qed.
 
-Lemma list_norm_with_carry_app_rep_0 {r : radix} : ∀ al n c,
+Lemma list_norm_with_carry_app_rep_0 {r : radix} : 1 < rad → ∀ al n c,
   list_norm_with_carry c (al ++ List.repeat 0 n) =
   list_norm_with_carry c al.
 Proof.
+intros * Hr.
+assert (Hrz : rad ≠ 0) by lia.
+intros.
+apply list_rem_trail_iff.
+split.
+ exists (n - length al - length (list_norm_with_carry c al)).
+ revert c n.
+ induction al as [| a]; intros.
+  simpl; rewrite Nat.sub_0_r.
+  rewrite list_norm_with_carry_nil.
+  destruct (zerop c) as [Hzc| Hzc].
+   simpl; rewrite Nat.sub_0_r; subst c.
+   apply move_carry_0_rep_0.
+
+   destruct c; [ easy | ].
+    specialize (move_carry_rep_0 n (S c) Hr) as (m & Hm).
+    rewrite Hm; simpl.
+    remember (S c mod rad) as cr eqn:Hcr.
+    symmetry in Hcr.
+    destruct cr; simpl.
+     destruct (zerop (S c / rad)) as [Hzcr| Hzcr].
+      now rewrite Nat.mod_small in Hcr; [ | apply Nat.div_small_iff ].
+      simpl.
+      remember ((S c / rad) mod rad) as scr eqn:Hscr.
+      symmetry in Hscr.
+      destruct scr.
+       simpl.
+       remember (list_remove_trailing_0s (move_carry_end c (S c / rad / rad)))
+         as al eqn:Hal.
+       symmetry in Hal.
+       destruct al as [| a].
+        simpl; rewrite Nat.sub_0_r.
+(* ouais bon, c'est la merde *)
+bbb.
+
+  destruct c.
+   simpl; rewrite Nat.sub_0_r.
+   apply move_carry_0_rep_0.
+
+   rewrite list_norm_with_carry_nil; simpl.
+
+bbb.
 intros.
 destruct c.
  apply list_rem_trail_iff.
  split.
   exists (n - length al).
-  revert n c.
+  revert n.
   induction al as [| a]; intros.
    simpl; rewrite Nat.sub_0_r.
-   rewrite move_carry
+   apply move_carry_0_rep_0.
 
-
+   rewrite list_norm_with_carry_cons; simpl.
 bbb.
 intros.
 revert al.
