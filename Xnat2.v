@@ -1072,6 +1072,42 @@ unfold xnat_add; simpl.
 now rewrite xnatv_add_comm.
 Qed.
 
+Lemma xnatv_add_rep_0_l {r : radix} : ∀ al n,
+  xnatv_add (List.repeat 0 n) al = al ++ List.repeat 0 (n - length al).
+Proof.
+intros.
+revert n.
+induction al as [| a]; intros; [ now destruct n | simpl ].
+now destruct n; [ rewrite List.app_nil_r | simpl; rewrite IHal ].
+Qed.
+
+Lemma list_norm_with_carry_app_rep_0 {r : radix} : ∀ al n c,
+  list_norm_with_carry c (al ++ List.repeat 0 n) =
+  list_norm_with_carry c al.
+Proof.
+intros.
+destruct c.
+ apply list_rem_trail_iff.
+ split.
+  exists (n - length al).
+  revert n c.
+  induction al as [| a]; intros.
+   simpl; rewrite Nat.sub_0_r.
+   rewrite move_carry
+
+
+bbb.
+intros.
+revert al.
+induction n; intros; [ now rewrite List.app_nil_r | simpl ].
+rewrite List_cons_comm_app, List.app_assoc.
+rewrite IHn; clear IHn.
+induction al as [| a].
+ simpl.
+ unfold list_norm_with_carry.
+Search (move_carry _ [_]).
+bbb.
+
 Lemma list_norm_wc_add_eq_compat {r : radix} : 1 < rad → ∀ al bl cl carry,
   list_norm_with_carry carry al = list_norm_with_carry carry bl
   → list_norm_with_carry carry (xnatv_add al cl) =
@@ -1090,10 +1126,17 @@ destruct Hab as [Hab| Hab].
   apply move_carry_0_is_rep_0 in Hm; [ | easy ].
   subst bl.
   unfold list_norm_with_carry in Hn.
-Search (move_carry _ (List.repeat _ _)).
   specialize (move_carry_rep_0 m 0 Hr) as H.
   destruct H as (p, Hp); simpl in Hp.
   rewrite Hp in Hn; clear Hp.
+  rewrite list_rem_trail_repeat_0 in Hn; simpl in Hn.
+  apply move_carry_0_is_rep_0 in Hn; [ rewrite Hn | easy ].
+  split.
+   rewrite xnatv_add_rep_0_l.
+   rewrite xnatv_add_rep_0_l.
+   exists (n - length cl).
+Search list_norm_with_carry.
+Search (move_carry _ (_ ++ _)).
 bbb.
 
 Search (list_remove_trailing_0s _ (List.repeat _ _)).
