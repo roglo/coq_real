@@ -1045,41 +1045,40 @@ Notation "a + b" := (xnat_add a b) : xnat_scope.
 Notation "a = b" := (xnat_norm a = xnat_norm b) : xnat_scope.
 Notation "0" := (xnat_0) : xnat_scope.
 
-Lemma list_norm_wc_add_comm {r : radix} : rad ≠ 0 →
-  ∀ al bl c,
-  list_norm_with_carry c (xnatv_add al bl) =
-  list_norm_with_carry c (xnatv_add bl al).
+Lemma xnatv_add_comm {r : radix} : ∀ al bl,
+  xnatv_add al bl = xnatv_add bl al.
 Proof.
-intros Hr *.
-revert c bl.
+intros *.
+revert bl.
 induction al as [| a1]; intros; [ now destruct bl | simpl ].
 destruct bl as [| b1]; [ easy | simpl ].
-rewrite Nat.add_comm.
-rewrite list_norm_with_carry_cons; [ | easy ].
-rewrite list_norm_with_carry_cons; [ | easy ].
-specialize (IHal ((c + (b1 + a1)) / rad) bl).
-now rewrite IHal.
+now rewrite Nat.add_comm, IHal.
 Qed.
 
-Theorem xnat_add_comm {r : radix} : rad ≠ 0 → ∀ a b, (a + b = b + a)%X.
+Theorem xnat_add_comm {r : radix} : ∀ a b, (a + b = b + a)%X.
 Proof.
-intros Hr *.
+intros.
 unfold xnat_add; simpl.
-destruct a as [al].
-destruct b as [bl].
-unfold xnat_norm; simpl.
-f_equal.
-now apply list_norm_wc_add_comm.
+now rewrite xnatv_add_comm.
 Qed.
 
 Theorem xnat_add_0_l {r : radix} : ∀ a, (0 + a = a)%X.
 Proof. easy. Qed.
 
+(*
 Lemma list_norm_wc_add_assoc {r : radix} : ∀ al bl cl carry, rad ≠ 0 →
-  list_norm_with_carry carry (xnatv_add cl (xnatv_add al bl)) =
+  list_norm_with_carry carry (xnatv_add (xnatv_add al bl) cl) =
   list_norm_with_carry carry (xnatv_add al (xnatv_add bl cl)).
 Proof.
 intros * Hr.
+rewrite list_norm_wc_add_comm; [ | easy ].
+replace (xnatv_add al bl) with (xnatv_add bl al).
+Focus 2.
+Search xnatv_add.
+  by now apply list_norm_wc_add_comm.
+bbb.
+
+bbb.
 apply list_rem_trail_iff.
 split.
  exists 0; symmetry; rewrite List.app_nil_r.
@@ -1106,20 +1105,32 @@ split.
 bbb.
 
 Lemma list_add_assoc {r : radix} : ∀ al bl cl, rad ≠ 0 →
-  list_norm (xnatv_add cl (xnatv_add al bl)) =
+  list_norm (xnatv_add (xnatv_add al bl) cl) =
   list_norm (xnatv_add al (xnatv_add bl cl)).
 Proof.
 intros * Hr.
 unfold list_norm.
 bbb.
+*)
 
 Theorem xnat_add_assoc {r : radix} : ∀ a b c, rad ≠ 0 →
   (a + (b + c) = (a + b) + c)%X.
 Proof.
 intros * Hr.
 symmetry.
-rewrite xnat_add_comm; [ | easy ].
 unfold xnat_add; simpl.
+rewrite xnatv_add_comm.
+replace (xnatv_add (xnatv a) (xnatv b))
+  with (xnatv_add (xnatv b) (xnatv a))
+by apply xnatv_add_comm.
+revert a b c.
+change
+  (∀ c b a : xnat,
+  ({| xnatv := xnatv_add (xnatv a) (xnatv_add (xnatv b) (xnatv c)) |} =
+   {| xnatv := xnatv_add (xnatv c) (xnatv_add (xnatv b) (xnatv a)) |})%X).
+intros.
+bbb.
+
 destruct a as [al].
 destruct b as [bl].
 destruct c as [cl].
