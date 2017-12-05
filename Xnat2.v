@@ -1106,11 +1106,63 @@ specialize (move_carry_app_rep_0 Hr c al n) as (m & Hm).
 now rewrite Hm, list_rem_trail_rep_0.
 Qed.
 
-Lemma list_norm_wc_add_eq_compat {r : radix} : 1 < rad → ∀ al bl cl carry,
-  list_norm_with_carry carry al = list_norm_with_carry carry bl
-  → list_norm_with_carry carry (xnatv_add al cl) =
-     list_norm_with_carry carry (xnatv_add bl cl).
+Lemma list_norm_with_carries {r : radix} : 1 < rad → ∀ ca cb al,
+  list_norm_with_carry ca al = list_norm_with_carry cb al
+  → ca = cb.
 Proof.
+intros Hr.
+assert (Hrz : rad ≠ 0) by lia.
+intros * Hab.
+unfold list_norm_with_carry in Hab; simpl in Hab.
+revert ca cb Hab.
+induction al as [| a]; intros.
+ destruct (lt_dec ca cb) as [Hlt| Hge].
+  destruct ca; simpl in Hab.
+  destruct cb; [ easy | exfalso; clear Hlt ].
+  remember move_carry_end as f.
+  remember list_remove_trailing_0s as g; simpl in Hab; subst f g.
+  simpl in Hab.
+  destruct (zerop (S cb / rad)) as [Hscr| Hscr].
+   now rewrite Nat.mod_small in Hab; [ | apply Nat.div_small_iff in Hscr ].
+
+   remember (S cb mod rad) as cr eqn:Hcr.
+   symmetry in Hcr.
+   destruct cr.
+    apply Nat.mod_divides in Hcr; [ | easy ].
+    destruct Hcr as (c1, Hc1); rewrite Nat.mul_comm in Hc1.
+    rewrite Hc1, Nat.div_mul in Hab; [ simpl in Hab | easy ].
+    remember (c1 mod rad) as c2 eqn:Hc2.
+    symmetry in Hc2.
+    destruct c2.
+     apply Nat.mod_divides in Hc2; [ | easy ].
+     destruct Hc2 as (c2, Hc2); rewrite Nat.mul_comm in Hc2.
+     rewrite Hc2, Nat.div_mul in Hab; [ | easy ].
+     destruct cb.
+
+bbb.
+  rewrite list_remove_trailing_0s_cons.
+
+
+bbb.
+
+Lemma list_norm_wc_add_eq_compat {r : radix} : 1 < rad → ∀ al bl cl ca cb,
+  list_norm_with_carry ca al = list_norm_with_carry cb bl
+  → list_norm_with_carry ca (xnatv_add al cl) =
+     list_norm_with_carry cb (xnatv_add bl cl).
+Proof.
+intros Hr.
+assert (Hrz : rad ≠ 0) by lia.
+intros * Hab.
+revert bl cl ca cb Hab.
+induction al as [| a1]; intros.
+ simpl; revert cl ca cb Hab.
+ induction bl as [| b1]; intros; [ | ].
+ simpl in Hab; simpl.
+
+bbb.
+ rewrite list_norm_with_carry_cons in Hab; [ | easy ].
+bbb.
+
 intros Hr.
 assert (Hrz : rad ≠ 0) by lia.
 intros * Hab.
