@@ -1145,6 +1145,76 @@ induction al as [| a]; intros.
 
       simpl in Hab.
 
+Lemma extra_match : ∀ a,
+  match
+    match a with
+    | [] => []
+    | a1 :: al1 => 0 :: a1 :: al1
+    end
+  with
+  | [] => []
+  | a1 :: al1 => 0 :: a1 :: al1
+  end
+  =
+  match a with
+  | [] => []
+  | al => 0 :: 0 :: al
+  end.
+Proof.
+intros.
+now destruct a.
+Qed.
+Show.
+remember ( match c2 mod rad with
+            | 0 =>
+                match list_remove_trailing_0s (move_carry_end cb (c2 / rad)) with
+                | [] => []
+                | y :: l => 0 :: y :: l
+                end
+            | S _ => c2 mod rad :: list_remove_trailing_0s (move_carry_end cb (c2 / rad)) end) as x eqn:Hx.
+symmetry in Hx.
+      rewrite extra_match in Hab.
+      destruct x; [ clear Hab | easy ].
+remember (list_remove_trailing_0s (move_carry_end cb (c2 / rad)) ) as y eqn:Hy.
+symmetry in Hy.
+destruct y; [ | now destruct (c2 mod rad) ].
+remember (c2 mod rad) as c3 eqn:Hc3.
+symmetry in Hc3.
+destruct c3 as [Hc2r | Hc2r]; [ clear Hx | easy ].
+Search (list_remove_trailing_0s (move_carry_end _ _)).
+Print move_carry_end.
+destruct cb.
+destruct rad as [| s]; [ easy | ].
+destruct s; [ lia | ].
+destruct s; [ lia | ].
+rewrite Nat.div_small in Hscr; [ easy | lia ].
+simpl in Hy.
+destruct (zerop (c2 / rad))as [Hc2r| Hx2r].
+rewrite Nat.mod_small in Hc3; [ | now apply Nat.div_small_iff in Hc2r ].
+now rewrite Hc3 in Hzc2.
+simpl in Hy.
+(* ah pute vierge ! fait chier *)
+bbb.
+
+      remember (c2 mod rad) as c3 eqn:Hc3.
+      symmetry in Hc3.
+      destruct c3.
+       apply Nat.mod_divides in Hc3; [ | easy ].
+       destruct Hc3 as (c3, Hc3); rewrite Nat.mul_comm in Hc3.
+       rewrite Hc3, Nat.div_mul in Hab; [ | easy ].
+       destruct cb.
+        simpl in Hab.
+        destruct rad as [| s] ; [ easy | ].
+        destruct s; [ lia | ].
+        subst c1.
+        rewrite Nat.mul_comm in Hc1; simpl in Hc1.
+        rewrite Nat.mul_comm in Hc1; simpl in Hc1.
+        destruct c2; [ easy | ].
+        simpl in Hc1; lia.
+
+        simpl in Hab.
+        destruct c3; simpl in Hab; [ lia | ].
+
 bbb.
   rewrite list_remove_trailing_0s_cons.
 
