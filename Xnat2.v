@@ -1256,6 +1256,8 @@ induction al as [| a]; intros.
         injection Hab; clear Hab; intros Hab Hra.
         subst rb1 rbl.
         rewrite <- Hrbl in Hral.
+Search (list_remove_trailing_0s _ = list_remove_trailing_0s _).
+Print list_remove_trailing_0s.
 
 bbb.
 
