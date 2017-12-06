@@ -1116,109 +1116,17 @@ intros * Hab.
 unfold list_norm_with_carry in Hab; simpl in Hab.
 revert ca cb Hab.
 induction al as [| a]; intros.
- destruct (lt_dec ca cb) as [Hlt| Hge].
-  destruct ca; simpl in Hab.
-  destruct cb; [ easy | exfalso; clear Hlt ].
-  remember move_carry_end as f.
-  remember list_remove_trailing_0s as g; simpl in Hab; subst f g.
-  simpl in Hab.
-  destruct (zerop (S cb / rad)) as [Hscr| Hscr].
-   now rewrite Nat.mod_small in Hab; [ | apply Nat.div_small_iff in Hscr ].
-
-   remember (S cb mod rad) as cr eqn:Hcr.
-   symmetry in Hcr.
-   destruct cr.
-    apply Nat.mod_divides in Hcr; [ | easy ].
-    destruct Hcr as (c1, Hc1); rewrite Nat.mul_comm in Hc1.
-    rewrite Hc1, Nat.div_mul in Hab; [ simpl in Hab | easy ].
-    remember (c1 mod rad) as c2 eqn:Hc2.
-    symmetry in Hc2.
-    destruct c2.
-     apply Nat.mod_divides in Hc2; [ | easy ].
-     destruct Hc2 as (c2, Hc2); rewrite Nat.mul_comm in Hc2.
-     rewrite Hc2, Nat.div_mul in Hab; [ | easy ].
-     destruct cb; [ now rewrite Nat.div_1_l in Hscr | ].
-     simpl in Hab.
-     destruct (zerop c2) as [Hzc2| Hzc2].
-      subst c2; simpl in Hc2.
-      now subst c1.
-
-      simpl in Hab.
-
-Lemma extra_match : ∀ a,
-  match
-    match a with
-    | [] => []
-    | a1 :: al1 => 0 :: a1 :: al1
-    end
-  with
-  | [] => []
-  | a1 :: al1 => 0 :: a1 :: al1
-  end
-  =
-  match a with
-  | [] => []
-  | al => 0 :: 0 :: al
-  end.
-Proof.
-intros.
-now destruct a.
-Qed.
-Show.
-remember ( match c2 mod rad with
-            | 0 =>
-                match list_remove_trailing_0s (move_carry_end cb (c2 / rad)) with
-                | [] => []
-                | y :: l => 0 :: y :: l
-                end
-            | S _ => c2 mod rad :: list_remove_trailing_0s (move_carry_end cb (c2 / rad)) end) as x eqn:Hx.
-symmetry in Hx.
-      rewrite extra_match in Hab.
-      destruct x; [ clear Hab | easy ].
-remember (list_remove_trailing_0s (move_carry_end cb (c2 / rad)) ) as y eqn:Hy.
-symmetry in Hy.
-destruct y; [ | now destruct (c2 mod rad) ].
-remember (c2 mod rad) as c3 eqn:Hc3.
-symmetry in Hc3.
-destruct c3 as [Hc2r | Hc2r]; [ clear Hx | easy ].
-Search (list_remove_trailing_0s (move_carry_end _ _)).
-Print move_carry_end.
-destruct cb.
-destruct rad as [| s]; [ easy | ].
-destruct s; [ lia | ].
-destruct s; [ lia | ].
-rewrite Nat.div_small in Hscr; [ easy | lia ].
-simpl in Hy.
-destruct (zerop (c2 / rad))as [Hc2r| Hx2r].
-rewrite Nat.mod_small in Hc3; [ | now apply Nat.div_small_iff in Hc2r ].
-now rewrite Hc3 in Hzc2.
-simpl in Hy.
-(* ah pute vierge ! fait chier *)
-bbb.
-
-      remember (c2 mod rad) as c3 eqn:Hc3.
-      symmetry in Hc3.
-      destruct c3.
-       apply Nat.mod_divides in Hc3; [ | easy ].
-       destruct Hc3 as (c3, Hc3); rewrite Nat.mul_comm in Hc3.
-       rewrite Hc3, Nat.div_mul in Hab; [ | easy ].
-       destruct cb.
-        simpl in Hab.
-        destruct rad as [| s] ; [ easy | ].
-        destruct s; [ lia | ].
-        subst c1.
-        rewrite Nat.mul_comm in Hc1; simpl in Hc1.
-        rewrite Nat.mul_comm in Hc1; simpl in Hc1.
-        destruct c2; [ easy | ].
-        simpl in Hc1; lia.
-
-        simpl in Hab.
-        destruct c3; simpl in Hab; [ lia | ].
-
-bbb.
-  rewrite list_remove_trailing_0s_cons.
-
-
+ simpl in Hab.
+ destruct (zerop ca) as [Hca| Hca].
+  subst ca.
+  destruct (zerop cb) as [Hcb| Hcb]; [ easy | exfalso ].
+  simpl in Hab; symmetry in Hab.
+  remember (list_remove_trailing_0s (move_carry_end cb (cb / rad))) as al
+    eqn:Hal.
+  symmetry in Hal.
+  destruct al as [| a]; [ | now destruct (cb mod rad) ].
+  remember (cb mod rad) as c1 eqn:Hc1; symmetry in Hc1.
+  destruct c1; [ clear Hab | easy ].
 bbb.
 
 Lemma list_norm_wc_add_eq_compat {r : radix} : 1 < rad → ∀ al bl cl ca cb,
