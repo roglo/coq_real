@@ -1240,7 +1240,23 @@ induction al as [| a]; intros.
           now apply Nat.div_small_iff in Hal.
 
          apply move_carry_end_succ_ne_rep_0 in Hal; [ easy | easy | ].
-(* ça fait dix fois que je prouve le même genre de trucs, faut un lemme *)
+         split.
+          apply Nat.mod_divides in Hsca; [ | easy ].
+          destruct Hsca as (c, Hc); rewrite Nat.mul_comm in Hc.
+          rewrite Hc, Nat.div_mul; [ | easy ].
+          destruct c; lia.
+
+          apply Nat.div_lt_upper_bound; [ easy | ].
+          apply Nat.div_lt_upper_bound; [ easy | ].
+          destruct ca; [ easy | ].
+          destruct rad as [| s]; [ easy | ].
+          destruct s; [ lia | simpl; lia ].
+
+        destruct rbl as [| rb1]; [ easy | ].
+        injection Hab; clear Hab; intros Hab Hra.
+        subst rb1 rbl.
+        rewrite <- Hrbl in Hral.
+
 bbb.
 
 Lemma list_norm_wc_add_eq_compat {r : radix} : 1 < rad → ∀ al bl cl ca cb,
