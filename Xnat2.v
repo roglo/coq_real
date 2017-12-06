@@ -1255,10 +1255,21 @@ induction al as [| a]; intros.
         destruct rbl as [| rb1]; [ easy | ].
         injection Hab; clear Hab; intros Hab Hra.
         subst rb1 rbl.
-        rewrite <- Hrbl in Hral.
-Search (list_remove_trailing_0s _ = list_remove_trailing_0s _).
-Print list_remove_trailing_0s.
-
+        rewrite <- Hral in Hrbl.
+destruct al as [| a1]; [ easy | ].
+ injection Hal; clear Hal; intros Hal Ha1.
+ simpl in Hral.
+ destruct a1.
+  remember (list_remove_trailing_0s al) as al1 eqn:Hal1.
+  symmetry in Hal1.
+  destruct al1 as [| a1]; [ easy | ].
+  injection Hral; clear Hral; intros Hral H; subst ra1.
+  clear ral Hral.
+  simpl in Hrbl.
+  rewrite Hal1 in Hrbl.
+  apply Nat.mod_divides in Ha1; [ | easy ].
+  destruct Ha1 as (ca1, Hca1); rewrite Nat.mul_comm in Hca1.
+  rewrite Hca1, Nat.div_mul in Hal; [ | easy ].
 bbb.
 
 Lemma list_norm_wc_add_eq_compat {r : radix} : 1 < rad → ∀ al bl cl ca cb,
