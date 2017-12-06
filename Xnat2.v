@@ -1137,7 +1137,13 @@ induction al as [| a]; intros.
      apply Nat.mod_divides in Hc2; [ | easy ].
      destruct Hc2 as (c2, Hc2); rewrite Nat.mul_comm in Hc2.
      rewrite Hc2, Nat.div_mul in Hab; [ | easy ].
-     destruct cb.
+     destruct cb; [ now rewrite Nat.div_1_l in Hscr | ].
+     simpl in Hab.
+     destruct (zerop c2) as [Hzc2| Hzc2].
+      subst c2; simpl in Hc2.
+      now subst c1.
+
+      simpl in Hab.
 
 bbb.
   rewrite list_remove_trailing_0s_cons.
