@@ -1121,12 +1121,21 @@ induction al as [| a]; intros.
   subst ca.
   destruct (zerop cb) as [Hcb| Hcb]; [ easy | exfalso ].
   simpl in Hab; symmetry in Hab.
-  remember (list_remove_trailing_0s (move_carry_end cb (cb / rad))) as al
-    eqn:Hal.
+  remember (move_carry_end cb (cb / rad)) as l eqn:Hl.
+  remember (list_remove_trailing_0s l) as al eqn:Hal; subst l.
   symmetry in Hal.
   destruct al as [| a]; [ | now destruct (cb mod rad) ].
   remember (cb mod rad) as c1 eqn:Hc1; symmetry in Hc1.
   destruct c1; [ clear Hab | easy ].
+  apply eq_list_rem_trail_nil in Hal.
+  apply move_carry_end_succ_ne_rep_0 in Hal; [ easy | easy | ].
+  destruct cb; [ easy | ].
+  split; [ | now apply Nat.div_lt ].
+  apply Nat.mod_divides in Hc1; [ | easy ].
+  destruct Hc1 as (c, Hc); rewrite Nat.mul_comm in Hc.
+  rewrite Hc, Nat.div_mul; [ | easy ].
+  destruct c; lia.
+
 bbb.
 
 Lemma list_norm_wc_add_eq_compat {r : radix} : 1 < rad → ∀ al bl cl ca cb,
