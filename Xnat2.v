@@ -1210,6 +1210,37 @@ induction al as [| a]; intros.
      rewrite Nat.mod_small in Hab; [ | now apply Nat.div_small_iff in Hcb ].
      symmetry in Hab.
      now apply list_rem_trail_cons_cons_ne_single in Hab.
+
+     remember (S ca mod rad) as sa eqn:Hsa; symmetry in Hsa.
+     remember (S cb mod rad) as sb eqn:Hsb; symmetry in Hsb.
+     remember ((S ca / rad) mod rad :: move_carry_end ca (S ca / rad / rad))
+       as al eqn:Hal.
+     remember ((S cb / rad) mod rad :: move_carry_end cb (S cb / rad / rad))
+       as bl eqn:Hbl.
+     simpl in Hab.
+     remember (list_remove_trailing_0s al) as ral eqn:Hral.
+     remember (list_remove_trailing_0s bl) as rbl eqn:Hrbl.
+     symmetry in Hal, Hbl, Hral, Hrbl.
+     destruct sa.
+      destruct sb.
+       destruct ral as [| ra1].
+        apply eq_list_rem_trail_nil in Hral.
+        exfalso.
+        rewrite Hral in Hal.
+        destruct al as [| a1]; [ easy | ].
+        simpl in Hal.
+        injection Hal; clear Hal; intros Hal Hsca.
+        destruct al as [| a2].
+         simpl in Hal.
+         apply eq_move_carry_end_nil in Hal.
+         destruct Hal as [| Hal]; [ subst ca | ].
+          now rewrite Nat.div_1_l in Hca.
+
+          rewrite Nat.mod_small in Hsca; [ now rewrite Hsca in Hca | ].
+          now apply Nat.div_small_iff in Hal.
+
+         apply move_carry_end_succ_ne_rep_0 in Hal; [ easy | easy | ].
+(* ça fait dix fois que je prouve le même genre de trucs, faut un lemme *)
 bbb.
 
 Lemma list_norm_wc_add_eq_compat {r : radix} : 1 < rad → ∀ al bl cl ca cb,
