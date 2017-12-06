@@ -1136,6 +1136,17 @@ induction al as [| a]; intros.
   rewrite Hc, Nat.div_mul; [ | easy ].
   destruct c; lia.
 
+  destruct (zerop cb) as [Hcb| hcb].
+   subst cb; exfalso.
+   unfold list_remove_trailing_0s in Hab at 2.
+   apply eq_list_rem_trail_nil in Hab; simpl in Hab.
+   injection Hab; clear Hab; intros Hab Hc1.
+   apply move_carry_end_succ_ne_rep_0 in Hab; [ easy | easy | ].
+   split; [ | now apply Nat.div_lt ].
+   apply Nat.mod_divides in Hc1; [ | easy ].
+   destruct Hc1 as (c, Hc); rewrite Nat.mul_comm in Hc.
+   rewrite Hc, Nat.div_mul; [ | easy ].
+   destruct c; lia.
 bbb.
 
 Lemma list_norm_wc_add_eq_compat {r : radix} : 1 < rad → ∀ al bl cl ca cb,
