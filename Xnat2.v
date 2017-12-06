@@ -1106,6 +1106,16 @@ specialize (move_carry_app_rep_0 Hr c al n) as (m & Hm).
 now rewrite Hm, list_rem_trail_rep_0.
 Qed.
 
+Lemma eq_move_carry_end_nil {r : radix} : ∀ i c,
+  move_carry_end i c = [] ↔ i = 0 ∨ c = 0.
+Proof.
+intros.
+split; intros H.
+ now destruct i; [ left | right; now destruct c ].
+
+ destruct H; [ now subst i | now subst c; destruct i ].
+Qed.
+
 Lemma list_norm_with_carries {r : radix} : 1 < rad → ∀ ca cb al,
   list_norm_with_carry ca al = list_norm_with_carry cb al
   → ca = cb.
@@ -1136,7 +1146,7 @@ induction al as [| a]; intros.
   rewrite Hc, Nat.div_mul; [ | easy ].
   destruct c; lia.
 
-  destruct (zerop cb) as [Hcb| hcb].
+  destruct (zerop cb) as [Hcb| Hcb].
    subst cb; exfalso.
    unfold list_remove_trailing_0s in Hab at 2.
    apply eq_list_rem_trail_nil in Hab; simpl in Hab.
@@ -1147,6 +1157,48 @@ induction al as [| a]; intros.
    destruct Hc1 as (c, Hc); rewrite Nat.mul_comm in Hc.
    rewrite Hc, Nat.div_mul; [ | easy ].
    destruct c; lia.
+
+   destruct ca; [ easy | clear Hca ].
+   destruct cb; [ easy | clear Hcb ].
+   remember list_remove_trailing_0s as f; simpl in Hab; subst f.
+   destruct (zerop (S ca / rad)) as [Hca| Hca].
+    rewrite Nat.mod_small in Hab; [ | now apply Nat.div_small_iff in Hca ].
+    destruct (zerop (S cb / rad)) as [Hcb| Hcb].
+     simpl in Hab.
+     rewrite Nat.mod_small in Hab; [ | now apply Nat.div_small_iff in Hcb ].
+     now injection Hab; intros; f_equal.
+
+     unfold list_remove_trailing_0s in Hab at 1.
+     symmetry in Hab.
+     apply list_rem_trail_iff in Hab.
+     destruct Hab as ((n, Hn), Ha).
+     simpl in Hn.
+     destruct n; [ easy | simpl in Hn ].
+     injection Hn; clear Hn; intros Hn Hbrr Hbr.
+     destruct n.
+      apply eq_move_carry_end_nil in Hn.
+      destruct Hn as [Hn| Hc]; [ now subst cb; rewrite Nat.div_1_l in Hcb | ].
+      rewrite Nat.mod_small in Hbrr; [ | now apply Nat.div_small_iff in Hc ].
+      now rewrite Hbrr in Hcb.
+
+      apply move_carry_end_succ_ne_rep_0 in Hn; [ easy | easy | ].
+      split.
+       apply Nat.mod_divides in Hbrr; [ | easy ].
+       destruct Hbrr as (c, Hc); rewrite Nat.mul_comm in Hc.
+       rewrite Hc, Nat.div_mul; [ | easy ].
+       destruct c; lia.
+
+       apply Nat.div_lt_upper_bound; [ easy | ].
+       apply Nat.div_lt_upper_bound; [ easy | ].
+       destruct cb; [ easy | ].
+       destruct rad as [| s]; [ easy | ].
+       destruct s; [ lia | simpl; lia ].
+
+    destruct (zerop (S cb / rad)) as [Hcb| Hcb].
+     symmetry in Hab.
+     rewrite Nat.mod_small in Hab; [ | now apply Nat.div_small_iff in Hcb ].
+     unfold list_remove_trailing_0s in Hab at 1.
+     symmetry in Hab.
 bbb.
 
 Lemma list_norm_wc_add_eq_compat {r : radix} : 1 < rad → ∀ al bl cl ca cb,
