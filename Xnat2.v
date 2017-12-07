@@ -1481,6 +1481,30 @@ induction al as [| a1]; intros.
      injection Hab; clear Hab; intros Hab Hcaz.
      rewrite Nat.mod_small in Hzcb; [ | now apply Nat.div_small_iff in Hcbr ].
      apply Nat.eq_add_0 in Hzcb; destruct Hzcb; subst cb b1.
+     destruct ca; [ easy | ].
+     simpl in Hab.
+     destruct (zerop (S ca / rad)) as [Hzcr| Hzcr].
+      apply Nat.div_small_iff in Hzcr; [ | easy ].
+      now rewrite Nat.mod_small in Hcaz.
+
+      injection Hab; clear Hab; intros Hab Hcrr.
+      rewrite Hbl, <- List_repeat_succ.
+      rewrite xnatv_add_rep_0_l.
+      rewrite list_norm_with_carry_app_rep_0; [ | easy ].
+      destruct ca; [ now rewrite Nat.mod_1_l in Hcaz | ].
+      apply move_carry_end_succ_ne_rep_0 in Hab; [ easy | easy | ].
+      split.
+       apply Nat.mod_divides in Hcaz; [ | easy ].
+       destruct Hcaz as (c, Hc); rewrite Nat.mul_comm in Hc.
+       rewrite Hc, Nat.div_mul; [ | easy ].
+       destruct c; [ easy | ].
+bbb.
+
+       apply Nat.div_lt_upper_bound; [ easy | ].
+       apply Nat.div_lt_upper_bound; [ easy | ].
+       destruct rad as [| s]; [ easy | ].
+       destruct s; [ lia | simpl; lia ].
+
 bbb.
      apply move_carry_end_succ_ne_rep_0 in Hab; [ easy | easy | ].
      split.
