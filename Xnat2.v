@@ -1393,6 +1393,11 @@ induction al as [| a]; intros.
    now rewrite H, Hcar, <- Hcbr.
 
   destruct rcb as [| rb]; [ now destruct car, cbr | ].
+  assert (H : ra = rb ∧ rca = rcb).
+   destruct car, cbr; [ | easy | easy | ]; now injection Hab; intros.
+
+   destruct H as (Hrab, Hrcab).
+   subst rb rcb.
 bbb.
 
 Lemma list_norm_wc_add_eq_compat {r : radix} : 1 < rad → ∀ al bl cl ca cb,
