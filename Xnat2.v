@@ -1216,7 +1216,50 @@ induction al as [| a]; intros.
 
    apply list_rem_trail_cons in Hab.
    destruct Hab as (Habr, Hab).
+   destruct ca; [ easy | clear Hca ].
+   destruct cb; [ easy | clear Hcb ].
+   simpl in Hab.
+   destruct (zerop (S ca / rad)) as [Hca| Hca].
+    rewrite Nat.mod_small in Habr; [ | now apply Nat.div_small_iff in Hca ].
+    destruct (zerop (S cb / rad)) as [Hcb| Hcb].
+     now rewrite Nat.mod_small in Habr; [ | apply Nat.div_small_iff in Hcb ].
 
+     symmetry in Hab.
+     apply eq_list_rem_trail_nil in Hab; simpl in Hab.
+     injection Hab; clear Hab; intros Hab Hb.
+     destruct cb; [ now rewrite Nat.div_1_l in Hcb | ].
+     apply move_carry_end_succ_ne_rep_0 in Hab; [ easy | easy | ].
+     split.
+      apply Nat.mod_divides in Hb; [ | easy ].
+      destruct Hb as (c, Hc); rewrite Nat.mul_comm in Hc.
+      rewrite Hc, Nat.div_mul; [ | easy ].
+      destruct c; lia.
+
+      apply Nat.div_lt_upper_bound; [ easy | ].
+      apply Nat.div_lt_upper_bound; [ easy | ].
+      destruct rad as [| s]; [ easy | ].
+      destruct s; [ lia | simpl; lia ].
+
+    destruct (zerop (S cb / rad)) as [Hcb| Hcb].
+     apply eq_list_rem_trail_nil in Hab; simpl in Hab.
+     injection Hab; clear Hab; intros Hab Ha.
+     destruct ca; [ now rewrite Nat.div_1_l in Hca | ].
+     apply move_carry_end_succ_ne_rep_0 in Hab; [ easy | easy | ].
+     split.
+      apply Nat.mod_divides in Ha; [ | easy ].
+      destruct Ha as (c, Hc); rewrite Nat.mul_comm in Hc.
+      rewrite Hc, Nat.div_mul; [ | easy ].
+      destruct c; lia.
+
+      apply Nat.div_lt_upper_bound; [ easy | ].
+      apply Nat.div_lt_upper_bound; [ easy | ].
+      destruct rad as [| s]; [ easy | ].
+      destruct s; [ lia | simpl; lia ].
+
+     apply list_rem_trail_cons in Hab.
+     destruct Hab as (Habrr, Hab).
+Search (list_remove_trailing_0s (move_carry_end _ _)).
+(* censé être identité *)
 bbb.
    destruct ca; [ easy | clear Hca ].
    destruct cb; [ easy | clear Hcb ].
