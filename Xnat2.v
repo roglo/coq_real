@@ -1486,6 +1486,7 @@ destruct al as [| a]; simpl.
 
  destruct n; [ easy | simpl ].
  intros H; injection H; destruct H; intros Hmc Hcr.
+bbb.
  destruct al as [| a2].
   simpl in Hmc.
   destruct (zerop (S (c + a) / rad)) as [Hsr| Hsr].
