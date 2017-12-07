@@ -1324,8 +1324,18 @@ induction al as [| a]; intros.
      rewrite list_rem_trail_move_carry_end in Hab; [ | easy | ].
       rewrite list_rem_trail_move_carry_end in Hab; [ | easy | ].
        simpl in Hab.
-Search (move_carry_end _ _ = move_carry_end _ _).
-Check move_carry_end_inv.
+       apply move_carry_end_inv in Hab; [ | easy | | ].
+       assert (H : S ca / rad = S cb / rad).
+        rewrite Nat.div_mod with (y := rad); [ symmetry | easy ].
+        rewrite Nat.div_mod with (y := rad); [ symmetry | easy ].
+        now rewrite Habrr, Hab.
+
+        apply Nat.succ_inj.
+        rewrite Nat.div_mod with (y := rad); [ symmetry | easy ].
+        rewrite Nat.div_mod with (y := rad); [ symmetry | easy ].
+        now rewrite Habr, H.
+
+       idtac.
 bbb.
    destruct ca; [ easy | clear Hca ].
    destruct cb; [ easy | clear Hcb ].
