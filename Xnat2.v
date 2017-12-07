@@ -1492,15 +1492,15 @@ destruct al as [| a]; simpl.
    now rewrite Nat.mod_small in Hcr; [ | apply Nat.div_small_iff ].
 
    destruct n; [ easy | simpl in Hmc ].
-   injection Hmc; clear Hmc; intros Hmc Hsc.
+   injection Hmc; clear Hmc; intros Hmc Hca.
    apply move_carry_end_succ_ne_rep_0 in Hmc; [ easy | easy | ].
    split.
     apply Nat.mod_divides in Hcr; [ | easy ].
     destruct Hcr as (d, Hd); rewrite Nat.mul_comm in Hd.
-    rewrite Hd, Nat.div_mul in Hsc; [ | easy ].
+    rewrite Hd, Nat.div_mul in Hca; [ | easy ].
     rewrite Hd, Nat.div_mul; [ | easy ].
-    apply Nat.mod_divides in Hsc; [ | easy ].
-    destruct Hsc as (e, He); rewrite Nat.mul_comm in He.
+    apply Nat.mod_divides in Hca; [ | easy ].
+    destruct Hca as (e, He); rewrite Nat.mul_comm in He.
     rewrite He, Nat.div_mul; [ | easy ].
     destruct e; [ now subst d | lia ].
 
@@ -1510,7 +1510,8 @@ destruct al as [| a]; simpl.
     destruct rad as [| s]; [ easy | ].
     destruct s; [ lia | simpl; lia ].
 
-  idtac.
+  destruct n; [ easy | simpl in Hmc ].
+  injection Hmc; clear Hmc; intros Hmc Hca.
 bbb.
 
 Theorem xnatv_add_eq_compat {r : radix} : ∀ a b c,
