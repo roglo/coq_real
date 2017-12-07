@@ -418,6 +418,10 @@ apply IHm.
  now apply Nat.div_lt.
 Qed.
 
+Lemma List_repeat_succ : ∀ A (a : A) n,
+  List.repeat a (S n) = a :: List.repeat a n.
+Proof. easy. Qed.
+
 Lemma List_repeat_succ_app : ∀ A (a : A) n,
   List.repeat a (S n) = List.repeat a n ++ [a].
 Proof.
@@ -1425,6 +1429,17 @@ induction al as [| a]; intros.
     now rewrite H, Hcar, <- Hcbr.
 Qed.
 
+Lemma eq_list_norm_wc_nil {r : radix} : 1 < rad → ∀ c al,
+  list_norm_with_carry c al = []
+  → c = 0 ∧ al = List.repeat 0 (length (move_carry c al)).
+Proof.
+intros Hr * Hca.
+unfold list_norm_with_carry in Hca.
+apply eq_list_rem_trail_nil in Hca.
+destruct c; [ now apply move_carry_0_is_rep_0 in Hca | ].
+now apply move_nz_carry in Hca.
+Qed.
+
 Lemma list_norm_wc_add_eq_compat {r : radix} : 1 < rad → ∀ al bl cl ca cb,
   list_norm_with_carry ca al = list_norm_with_carry cb bl
   → list_norm_with_carry ca (xnatv_add al cl) =
@@ -1440,52 +1455,61 @@ induction al as [| a1]; intros.
   simpl in Hab; simpl.
   now apply list_norm_with_carry_inv in Hab; [ rewrite Hab | ].
 
-  rewrite list_norm_wc_cons in Hab.
+  rewrite list_norm_wc_cons in Hab; [ | easy ].
   rewrite list_norm_wc_nil in Hab.
+  remember (list_norm_with_carry ((cb + b1) / rad) bl) as b'l eqn:Hb'l.
+  symmetry in Hb'l.
   destruct (zerop ca) as [Hca| Hca].
    subst ca.
-   remember (list_norm_with_carry ((cb + b1) / rad) bl) as b'l eqn:Hb'l.
-   symmetry in Hb'l.
+   destruct b'l; [ | easy ].
+   destruct (zerop ((cb + b1) mod rad)) as [Hzcb| Hzcb]; [ | easy ].
+   apply eq_list_norm_wc_nil in Hb'l; [ | easy ].
+   destruct Hb'l as (Hcbr, Hbl).
+   rewrite Nat.mod_small in Hzcb; [ | now apply Nat.div_small_iff in Hcbr ].
+   apply Nat.eq_add_0 in Hzcb.
+   destruct Hzcb; subst cb b1.
+   rewrite Nat.div_0_l in Hbl; [ simpl in Hbl | easy ].
+   rewrite Hbl, <- List_repeat_succ.
+   rewrite xnatv_add_rep_0_l.
+   now rewrite list_norm_with_carry_app_rep_0.
+
    destruct b'l as [| b'1].
+    apply eq_list_norm_wc_nil in Hb'l; [ | easy ].
+    destruct Hb'l as (Hcbr, Hbl).
     destruct (zerop ((cb + b1) mod rad)) as [Hzcb| Hzcb].
+     apply eq_list_rem_trail_nil in Hab.
+     injection Hab; clear Hab; intros Hab Hcaz.
+     rewrite Nat.mod_small in Hzcb; [ | now apply Nat.div_small_iff in Hcbr ].
+     apply Nat.eq_add_0 in Hzcb; destruct Hzcb; subst cb b1.
+bbb.
+     apply move_carry_end_succ_ne_rep_0 in Hab; [ easy | easy | ].
+     split.
+      apply Nat.mod_divides in Hcr; [ | easy ].
+      destruct Hcr as (d, Hd); rewrite Nat.mul_comm in Hd.
+      rewrite Hd, Nat.div_mul in Hca; [ | easy ].
+      rewrite Hd, Nat.div_mul; [ | easy ].
+      apply Nat.mod_divides in Hca; [ | easy ].
+      destruct Hca as (e, He); rewrite Nat.mul_comm in He.
+      rewrite He, Nat.div_mul; [ | easy ].
+      destruct e; [ now subst d | lia ].
 
-Lemma eq_list_norm_wc_nil {r : radix} : 1 < rad → ∀ c al,
-  list_norm_with_carry c al = []
-  → c = 0 ∧ al = List.repeat 0 (length (move_carry c al)).
-Proof.
-intros Hr * Hca.
-unfold list_norm_with_carry in Hca.
-apply eq_list_rem_trail_nil in Hca.
-destruct c; [ apply move_carry_0_is_rep_0 in Hca | ].
-Lemma move_carry_succ_ne_rep_0 {r : radix} : 1 < rad → ∀ c n al,
-  move_carry (S c) al ≠ List.repeat 0 n.
-Proof.
-intros Hr *.
-assert (Hrz : rad ≠ 0) by lia.
-destruct al as [| a]; simpl.
- destruct n; [ easy | simpl ].
- intros H; injection H; clear H; intros H Hc.
- destruct (zerop (S c / rad)) as [Hzc| Hzc].
-  now rewrite Nat.mod_small in Hc; [ | apply Nat.div_small_iff in Hzc ].
+      remember (S (c + a) / rad) as d eqn:Hd.
+      apply Nat.div_lt_upper_bound; [ easy | ].
+      destruct d; [ easy | ].
+      destruct rad as [| s]; [ easy | ].
+      destruct s; [ lia | simpl; lia ].
 
-  destruct n; [ easy | simpl in H ].
-  injection H; clear H; intros Hmc Hcr.
-  destruct c; [ now rewrite Nat.div_1_l in Hzc | ].
-  apply move_carry_end_succ_ne_rep_0 in Hmc; [ easy | easy | ].
-  split.
-   apply Nat.mod_divides in Hcr; [ | easy ].
-   destruct Hcr as (d, Hd); rewrite Nat.mul_comm in Hd.
-   rewrite Hd, Nat.div_mul; [ | easy ].
-   destruct d; [ simpl in Hd | lia ].
-   now rewrite Nat.mod_small in Hc; [ | apply Nat.div_small_iff ].
+bbb.
 
-   apply Nat.div_lt_upper_bound; [ easy | ].
-   apply Nat.div_lt_upper_bound; [ easy | ].
-   destruct rad as [| s]; [ easy | ].
-   destruct s; [ lia | simpl; lia ].
+     rewrite Nat.mod_small in Hzcb; [ | now apply Nat.div_small_iff in Hcbr ].
+     apply Nat.eq_add_0 in Hzcb.
+     destruct Hzcb; subst cb b1.
+     rewrite Nat.div_0_l in Hbl; [ simpl in Hbl | easy ].
+     rewrite Hbl, <- List_repeat_succ.
+     rewrite xnatv_add_rep_0_l.
+     rewrite list_norm_with_carry_app_rep_0.
 
- destruct n; [ easy | simpl ].
- intros H; injection H; destruct H; intros Hmc Hcr.
+
 bbb.
  destruct al as [| a2].
   simpl in Hmc.
