@@ -1256,6 +1256,16 @@ induction al as [| a]; intros.
         injection Hab; clear Hab; intros Hab Hra.
         subst rb1 rbl.
         rewrite <- Hral in Hrbl.
+(**)
+rewrite <- Hal, <- Hbl in Hrbl.
+simpl in Hrbl.
+remember ((S ca / rad) mod rad) as sar eqn:Hsar.
+remember ((S cb / rad) mod rad) as sbr eqn:Hsbr.
+symmetry in Hsar, Hsbr.
+destruct sar.
+ destruct sbr.
+
+bbb.
 destruct al as [| a1]; [ easy | ].
  injection Hal; clear Hal; intros Hal Ha1.
  simpl in Hral.
