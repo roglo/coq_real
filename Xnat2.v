@@ -1368,7 +1368,7 @@ induction al as [| a]; intros.
  remember (list_remove_trailing_0s x) as rcb eqn:Hrcb; subst x.
  symmetry in Hcar, Hcbr, Hrca, Hrcb.
  destruct rca.
-  destruct rcb.
+  destruct rcb as [| rb].
    generalize Hrca; intros H.
    rewrite <- Hrcb in H.
    apply IHal in H.
@@ -1387,137 +1387,12 @@ induction al as [| a]; intros.
     destruct cbr; [ easy | ].
     injection Hab; clear Hab; intros Hab.
     subst car.
-bbb.
+    apply Nat.add_cancel_r with (p := a).
+    rewrite Nat.div_mod with (y := rad); [ symmetry | easy ].
+    rewrite Nat.div_mod with (y := rad); [ symmetry | easy ].
+    now rewrite H, Hcar, <- Hcbr.
 
-   remember ((ca + a) / rad) as ac eqn:Hca; symmetry in Hca.
-   remember ((cb + a) / rad) as bc eqn:Hcb; symmetry in Hcb.
-
-bbb.
- destruct rca.
-  apply eq_list_rem_trail_nil in Hrca.
-  remember ((ca + a) / rad) as c eqn:Hcaa; symmetry in Hcaa.
-  destruct c.
-   destruct car.
-    rewrite Nat.mod_small in Hcar; [ | now apply Nat.div_small_iff in Hcaa ].
-    apply Nat.eq_add_0 in Hcar.
-    destruct Hcar; subst ca a.
-    clear Hcaa; rewrite Nat.add_0_r in Hcbr, Hrcb.
-    destruct cbr; [ | easy ].
-    destruct rcb; [ clear Hab | easy ].
-    apply eq_list_rem_trail_nil in Hrcb.
-
-bbb.
-
-   apply move_carry_0_is_rep_0 in Hrca.
-   destruct rcb.
-    apply eq_list_rem_trail_nil in Hrcb.
-    remember ((cb + a) / rad) as c eqn:Hcba; symmetry in Hcba.
-    destruct c.
-     apply move_carry_0_is_rep_0 in Hrcb.
-     destruct car.
-      destruct cbr; [ clear Hab | easy ].
-
-bbb.
- destruct car.
-  destruct cbr.
-   destruct rca.
-    destruct rcb; [ clear Hab | easy ].
-    apply eq_list_rem_trail_nil in Hrca.
-    apply eq_list_rem_trail_nil in Hrcb.
-
-Search (move_carry _ _ = List.repeat _ _).
-
-bbb.
-  rewrite IHal with (cb := (cb + a) / rad) in Hab.
-bbb.
-   destruct ca; [ easy | clear Hca ].
-   destruct cb; [ easy | clear Hcb ].
-   remember list_remove_trailing_0s as f; simpl in Hab; subst f.
-   destruct (zerop (S ca / rad)) as [Hca| Hca].
-    rewrite Nat.mod_small in Hab; [ | now apply Nat.div_small_iff in Hca ].
-    destruct (zerop (S cb / rad)) as [Hcb| Hcb].
-     simpl in Hab.
-     rewrite Nat.mod_small in Hab; [ | now apply Nat.div_small_iff in Hcb ].
-     now injection Hab; intros; f_equal.
-
-     symmetry in Hab.
-     now apply list_rem_trail_cons_cons_ne_single in Hab.
-
-    destruct (zerop (S cb / rad)) as [Hcb| Hcb].
-     symmetry in Hab.
-     rewrite Nat.mod_small in Hab; [ | now apply Nat.div_small_iff in Hcb ].
-     symmetry in Hab.
-     now apply list_rem_trail_cons_cons_ne_single in Hab.
-
-     remember (S ca mod rad) as sa eqn:Hsa; symmetry in Hsa.
-     remember (S cb mod rad) as sb eqn:Hsb; symmetry in Hsb.
-     remember ((S ca / rad) mod rad :: move_carry_end ca (S ca / rad / rad))
-       as al eqn:Hal.
-     remember ((S cb / rad) mod rad :: move_carry_end cb (S cb / rad / rad))
-       as bl eqn:Hbl.
-     simpl in Hab.
-     remember (list_remove_trailing_0s al) as ral eqn:Hral.
-     remember (list_remove_trailing_0s bl) as rbl eqn:Hrbl.
-     symmetry in Hal, Hbl, Hral, Hrbl.
-     destruct sa.
-      destruct sb.
-       destruct ral as [| ra1].
-        apply eq_list_rem_trail_nil in Hral.
-        exfalso.
-        rewrite Hral in Hal.
-        destruct al as [| a1]; [ easy | ].
-        simpl in Hal.
-        injection Hal; clear Hal; intros Hal Hsca.
-        destruct al as [| a2].
-         simpl in Hal.
-         apply eq_move_carry_end_nil in Hal.
-         destruct Hal as [| Hal]; [ subst ca | ].
-          now rewrite Nat.div_1_l in Hca.
-
-          rewrite Nat.mod_small in Hsca; [ now rewrite Hsca in Hca | ].
-          now apply Nat.div_small_iff in Hal.
-
-         apply move_carry_end_succ_ne_rep_0 in Hal; [ easy | easy | ].
-         split.
-          apply Nat.mod_divides in Hsca; [ | easy ].
-          destruct Hsca as (c, Hc); rewrite Nat.mul_comm in Hc.
-          rewrite Hc, Nat.div_mul; [ | easy ].
-          destruct c; lia.
-
-          apply Nat.div_lt_upper_bound; [ easy | ].
-          apply Nat.div_lt_upper_bound; [ easy | ].
-          destruct ca; [ easy | ].
-          destruct rad as [| s]; [ easy | ].
-          destruct s; [ lia | simpl; lia ].
-
-        destruct rbl as [| rb1]; [ easy | ].
-        injection Hab; clear Hab; intros Hab Hra.
-        subst rb1 rbl.
-        rewrite <- Hral in Hrbl.
-(**)
-rewrite <- Hal, <- Hbl in Hrbl.
-simpl in Hrbl.
-remember ((S ca / rad) mod rad) as sar eqn:Hsar.
-remember ((S cb / rad) mod rad) as sbr eqn:Hsbr.
-symmetry in Hsar, Hsbr.
-destruct sar.
- destruct sbr.
-
-bbb.
-destruct al as [| a1]; [ easy | ].
- injection Hal; clear Hal; intros Hal Ha1.
- simpl in Hral.
- destruct a1.
-  remember (list_remove_trailing_0s al) as al1 eqn:Hal1.
-  symmetry in Hal1.
-  destruct al1 as [| a1]; [ easy | ].
-  injection Hral; clear Hral; intros Hral H; subst ra1.
-  clear ral Hral.
-  simpl in Hrbl.
-  rewrite Hal1 in Hrbl.
-  apply Nat.mod_divides in Ha1; [ | easy ].
-  destruct Ha1 as (ca1, Hca1); rewrite Nat.mul_comm in Hca1.
-  rewrite Hca1, Nat.div_mul in Hal; [ | easy ].
+   idtac.
 bbb.
 
 Lemma list_norm_wc_add_eq_compat {r : radix} : 1 < rad → ∀ al bl cl ca cb,
