@@ -1201,14 +1201,40 @@ destruct (lt_dec (S c / rad) i) as [Hcri| Hcri].
  destruct s; [ lia | simpl; lia ].
 Qed.
 
-Lemma glop {r : radix} : ∀ a b i j,
+Lemma move_carry_end_inv {r : radix} : 1 < rad → ∀ a b i j,
   a < i
   → b < j
   → move_carry_end i a = move_carry_end j b
   → a = b.
-bbb.
+Proof.
+intros Hr.
+assert (Hrz : rad ≠ 0) by lia.
+intros * Hai Hbi Hab.
+revert a b j Hai Hbi Hab.
+induction i; intros; [ easy | simpl in Hab ].
+destruct (zerop a) as [Hza| Hza].
+ symmetry in Hab.
+ apply eq_move_carry_end_nil in Hab.
+ now destruct Hab as [Hj| Hb]; [ rewrite Hj in Hbi | subst a b ].
 
-Lemma list_norm_with_carries {r : radix} : 1 < rad → ∀ ca cb al,
+ destruct j; [ easy | simpl in Hab ].
+ destruct (zerop b) as [Hzb| Hzb]; [ easy | ].
+ injection Hab; clear Hab; intros Hab Habr.
+ apply IHi in Hab.
+  rewrite Nat.div_mod with (y := rad); [ symmetry | easy ].
+  rewrite Nat.div_mod with (y := rad); [ symmetry | easy ].
+  now rewrite Hab, Habr.
+
+  apply Nat.div_lt_upper_bound; [ easy | ].
+  destruct rad as [| s]; [ easy | ].
+  destruct s; [ lia | simpl; lia ].
+
+  apply Nat.div_lt_upper_bound; [ easy | ].
+  destruct rad as [| s]; [ easy | ].
+  destruct s; [ lia | simpl; lia ].
+Qed.
+
+Lemma list_norm_with_carry_inv {r : radix} : 1 < rad → ∀ ca cb al,
   list_norm_with_carry ca al = list_norm_with_carry cb al
   → ca = cb.
 Proof.
@@ -1299,6 +1325,7 @@ induction al as [| a]; intros.
       rewrite list_rem_trail_move_carry_end in Hab; [ | easy | ].
        simpl in Hab.
 Search (move_carry_end _ _ = move_carry_end _ _).
+Check move_carry_end_inv.
 bbb.
    destruct ca; [ easy | clear Hca ].
    destruct cb; [ easy | clear Hcb ].
