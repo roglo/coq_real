@@ -1367,32 +1367,32 @@ induction al as [| a]; intros.
  remember (move_carry ((cb + a) / rad) al) as x eqn:Hx.
  remember (list_remove_trailing_0s x) as rcb eqn:Hrcb; subst x.
  symmetry in Hcar, Hcbr, Hrca, Hrcb.
- destruct rca.
-  destruct rcb as [| rb].
-   generalize Hrca; intros H.
-   rewrite <- Hrcb in H.
-   apply IHal in H.
-   apply eq_list_rem_trail_nil in Hrca.
-   apply eq_list_rem_trail_nil in Hrcb.
-   destruct car.
-    destruct cbr; [ clear Hab | easy ].
-    apply Nat.mod_divides in Hcar; [ | easy ].
-    apply Nat.mod_divides in Hcbr; [ | easy ].
-    destruct Hcar as (car, Hcar); rewrite Nat.mul_comm in Hcar.
-    destruct Hcbr as (cbr, Hcbr); rewrite Nat.mul_comm in Hcbr.
-    rewrite Hcar, Nat.div_mul in Hrca, H; [ | easy | easy ].
-    rewrite Hcbr, Nat.div_mul in Hrcb, H; [ | easy | easy ].
-    subst car; lia.
+ destruct rca as [| ra ].
+  destruct rcb; [ | now destruct car, cbr ].
+  generalize Hrca; intros H.
+  rewrite <- Hrcb in H.
+  apply IHal in H.
+  apply eq_list_rem_trail_nil in Hrca.
+  apply eq_list_rem_trail_nil in Hrcb.
+  destruct car.
+   destruct cbr; [ clear Hab | easy ].
+   apply Nat.mod_divides in Hcar; [ | easy ].
+   apply Nat.mod_divides in Hcbr; [ | easy ].
+   destruct Hcar as (car, Hcar); rewrite Nat.mul_comm in Hcar.
+   destruct Hcbr as (cbr, Hcbr); rewrite Nat.mul_comm in Hcbr.
+   rewrite Hcar, Nat.div_mul in Hrca, H; [ | easy | easy ].
+   rewrite Hcbr, Nat.div_mul in Hrcb, H; [ | easy | easy ].
+   subst car; lia.
 
-    destruct cbr; [ easy | ].
-    injection Hab; clear Hab; intros Hab.
-    subst car.
-    apply Nat.add_cancel_r with (p := a).
-    rewrite Nat.div_mod with (y := rad); [ symmetry | easy ].
-    rewrite Nat.div_mod with (y := rad); [ symmetry | easy ].
-    now rewrite H, Hcar, <- Hcbr.
+   destruct cbr; [ easy | ].
+   injection Hab; clear Hab; intros Hab.
+   subst car.
+   apply Nat.add_cancel_r with (p := a).
+   rewrite Nat.div_mod with (y := rad); [ symmetry | easy ].
+   rewrite Nat.div_mod with (y := rad); [ symmetry | easy ].
+   now rewrite H, Hcar, <- Hcbr.
 
-   idtac.
+  destruct rcb as [| rb]; [ now destruct car, cbr | ].
 bbb.
 
 Lemma list_norm_wc_add_eq_compat {r : radix} : 1 < rad → ∀ al bl cl ca cb,
