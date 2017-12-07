@@ -1359,7 +1359,65 @@ induction al as [| a]; intros.
       destruct rad as [| s]; [ easy | ].
       destruct s; [ lia | simpl; lia ].
 
- idtac.
+ simpl in Hab.
+ remember ((ca + a) mod rad) as car eqn:Hcar.
+ remember ((cb + a) mod rad) as cbr eqn:Hcbr.
+ remember (move_carry ((ca + a) / rad) al) as x eqn:Hx.
+ remember (list_remove_trailing_0s x) as rca eqn:Hrca; subst x.
+ remember (move_carry ((cb + a) / rad) al) as x eqn:Hx.
+ remember (list_remove_trailing_0s x) as rcb eqn:Hrcb; subst x.
+ symmetry in Hcar, Hcbr, Hrca, Hrcb.
+ destruct rca.
+  destruct rcb.
+   generalize Hrca; intros H.
+   rewrite <- Hrcb in H.
+   apply IHal in H.
+   apply eq_list_rem_trail_nil in Hrca.
+   apply eq_list_rem_trail_nil in Hrcb.
+   destruct car.
+    destruct cbr; [ clear Hab | easy ].
+bbb.
+
+   remember ((ca + a) / rad) as ac eqn:Hca; symmetry in Hca.
+   remember ((cb + a) / rad) as bc eqn:Hcb; symmetry in Hcb.
+
+bbb.
+ destruct rca.
+  apply eq_list_rem_trail_nil in Hrca.
+  remember ((ca + a) / rad) as c eqn:Hcaa; symmetry in Hcaa.
+  destruct c.
+   destruct car.
+    rewrite Nat.mod_small in Hcar; [ | now apply Nat.div_small_iff in Hcaa ].
+    apply Nat.eq_add_0 in Hcar.
+    destruct Hcar; subst ca a.
+    clear Hcaa; rewrite Nat.add_0_r in Hcbr, Hrcb.
+    destruct cbr; [ | easy ].
+    destruct rcb; [ clear Hab | easy ].
+    apply eq_list_rem_trail_nil in Hrcb.
+
+bbb.
+
+   apply move_carry_0_is_rep_0 in Hrca.
+   destruct rcb.
+    apply eq_list_rem_trail_nil in Hrcb.
+    remember ((cb + a) / rad) as c eqn:Hcba; symmetry in Hcba.
+    destruct c.
+     apply move_carry_0_is_rep_0 in Hrcb.
+     destruct car.
+      destruct cbr; [ clear Hab | easy ].
+
+bbb.
+ destruct car.
+  destruct cbr.
+   destruct rca.
+    destruct rcb; [ clear Hab | easy ].
+    apply eq_list_rem_trail_nil in Hrca.
+    apply eq_list_rem_trail_nil in Hrcb.
+
+Search (move_carry _ _ = List.repeat _ _).
+
+bbb.
+  rewrite IHal with (cb := (cb + a) / rad) in Hab.
 bbb.
    destruct ca; [ easy | clear Hca ].
    destruct cb; [ easy | clear Hcb ].
