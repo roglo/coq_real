@@ -1188,20 +1188,24 @@ destruct (lt_dec (S c / rad) i) as [Hcri| Hcri].
  rewrite IHi; [ | easy ].
  remember (S c mod rad) as d eqn:Hd.
  symmetry in Hd.
- destruct i; [ easy | simpl ].
  destruct d; [ | easy ].
+ destruct i; [ easy | simpl ].
  destruct (zerop (S c / rad)) as [Hcr| Hcr]; [ | easy ].
  now rewrite Nat.mod_small in Hd; [ | apply Nat.div_small_iff in Hcr ].
 
- apply Nat.nlt_ge in Hcri.
-bbb.
-
+ destruct c; [ now rewrite Nat.div_1_l in Hcri | ].
+ exfalso; apply Hcri; clear Hcri.
  eapply le_lt_trans; [ | eassumption ].
  apply Nat.div_le_upper_bound; [ easy | ].
  destruct rad as [| s]; [ easy | ].
- destruct s; [ lia | simpl ].
- destruct c.
+ destruct s; [ lia | simpl; lia ].
+Qed.
 
+Lemma glop {r : radix} : ∀ a b i j,
+  a < i
+  → b < j
+  → move_carry_end i a = move_carry_end j b
+  → a = b.
 bbb.
 
 Lemma list_norm_with_carries {r : radix} : 1 < rad → ∀ ca cb al,
@@ -1288,9 +1292,13 @@ induction al as [| a]; intros.
       destruct rad as [| s]; [ easy | ].
       destruct s; [ lia | simpl; lia ].
 
+     f_equal.
      apply list_rem_trail_cons in Hab.
      destruct Hab as (Habrr, Hab).
-Search (list_remove_trailing_0s (move_carry_end _ _)).
+     rewrite list_rem_trail_move_carry_end in Hab; [ | easy | ].
+      rewrite list_rem_trail_move_carry_end in Hab; [ | easy | ].
+       simpl in Hab.
+Search (move_carry_end _ _ = move_carry_end _ _).
 bbb.
    destruct ca; [ easy | clear Hca ].
    destruct cb; [ easy | clear Hcb ].
