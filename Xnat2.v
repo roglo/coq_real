@@ -1172,6 +1172,17 @@ destruct n.
   destruct s; [ lia | simpl; lia ].
 Qed.
 
+Lemma list_rem_trail_move_carry_end {r : radix} : ∀ i c,
+  list_remove_trailing_0s (move_carry_end i c) = move_carry_end i c.
+Proof.
+intros.
+revert c.
+induction i; intros; [ easy | simpl ].
+destruct (zerop c) as [Hc| Hc]; [ easy | ].
+Search (list_remove_trailing_0s (_ :: _)).
+
+bbb.
+
 Lemma list_norm_with_carries {r : radix} : 1 < rad → ∀ ca cb al,
   list_norm_with_carry ca al = list_norm_with_carry cb al
   → ca = cb.
@@ -1259,7 +1270,6 @@ induction al as [| a]; intros.
      apply list_rem_trail_cons in Hab.
      destruct Hab as (Habrr, Hab).
 Search (list_remove_trailing_0s (move_carry_end _ _)).
-(* censé être identité *)
 bbb.
    destruct ca; [ easy | clear Hca ].
    destruct cb; [ easy | clear Hcb ].
