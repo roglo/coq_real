@@ -152,6 +152,28 @@ split; intros Ha.
  now rewrite IHal.
 Qed.
 
+Lemma list_rem_trail_cons : ∀ a b al bl,
+  list_remove_trailing_0s (a :: al) = list_remove_trailing_0s (b :: bl)
+  ↔ a = b ∧ list_remove_trailing_0s al = list_remove_trailing_0s bl.
+Proof.
+intros *.
+simpl.
+remember (list_remove_trailing_0s al) as al' eqn:Hal'.
+remember (list_remove_trailing_0s bl) as bl' eqn:Hbl'.
+symmetry in Hal', Hbl'.
+split; intros Hab.
+ destruct a.
+  destruct b; [ | now destruct al' ].
+  destruct al' as [| a1]; [ now destruct bl' | ].
+  destruct bl' as [| b1]; [ easy | ].
+  now injection Hab; intros; subst a1 al'.
+
+  destruct b; [ now destruct bl' | ].
+  now injection Hab; intros; subst a.
+
+ now destruct Hab as (H, Hl); rewrite H, Hl.
+Qed.
+
 Lemma list_rem_trail_repeat_0 : ∀ n,
   list_remove_trailing_0s (List.repeat 0 n) = [].
 Proof.
@@ -1192,6 +1214,10 @@ induction al as [| a]; intros.
    rewrite Hc, Nat.div_mul; [ | easy ].
    destruct c; lia.
 
+   apply list_rem_trail_cons in Hab.
+   destruct Hab as (Habr, Hab).
+
+bbb.
    destruct ca; [ easy | clear Hca ].
    destruct cb; [ easy | clear Hcb ].
    remember list_remove_trailing_0s as f; simpl in Hab; subst f.
