@@ -1497,14 +1497,23 @@ induction al as [| a1]; intros.
        apply Nat.mod_divides in Hcaz; [ | easy ].
        destruct Hcaz as (c, Hc); rewrite Nat.mul_comm in Hc.
        rewrite Hc, Nat.div_mul; [ | easy ].
+       rewrite Hc in Hca.
+       rewrite Hc, Nat.div_mul in Hzcr; [ | easy ].
+       rewrite Hc, Nat.div_mul in Hcrr; [ | easy ].
        destruct c; [ easy | ].
-bbb.
+       apply Nat.mod_divides in Hcrr; [ | easy ].
+       destruct Hcrr as (d, Hd); rewrite Nat.mul_comm in Hd.
+       rewrite Hd, Nat.div_mul; [ | easy ].
+       destruct d; [ easy | lia ].
 
        apply Nat.div_lt_upper_bound; [ easy | ].
        apply Nat.div_lt_upper_bound; [ easy | ].
        destruct rad as [| s]; [ easy | ].
        destruct s; [ lia | simpl; lia ].
 
+     apply Nat.div_small_iff in Hcbr; [ | easy ].
+     rewrite Nat.mod_small in Hzcb; [ | easy ].
+     rewrite Nat.mod_small with (a := cb + b1) in Hab; [ | easy ].
 bbb.
      apply move_carry_end_succ_ne_rep_0 in Hab; [ easy | easy | ].
      split.
