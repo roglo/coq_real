@@ -1325,27 +1325,41 @@ induction al as [| a]; intros.
       rewrite list_rem_trail_move_carry_end in Hab; [ | easy | ].
        simpl in Hab.
        apply move_carry_end_inv in Hab; [ | easy | | ].
-       assert (H : S ca / rad = S cb / rad).
-        rewrite Nat.div_mod with (y := rad); [ symmetry | easy ].
-        rewrite Nat.div_mod with (y := rad); [ symmetry | easy ].
-        now rewrite Habrr, Hab.
+        assert (H : S ca / rad = S cb / rad).
+         rewrite Nat.div_mod with (y := rad); [ symmetry | easy ].
+         rewrite Nat.div_mod with (y := rad); [ symmetry | easy ].
+         now rewrite Habrr, Hab.
 
-        apply Nat.succ_inj.
-        rewrite Nat.div_mod with (y := rad); [ symmetry | easy ].
-        rewrite Nat.div_mod with (y := rad); [ symmetry | easy ].
-        now rewrite Habr, H.
+         apply Nat.succ_inj.
+         rewrite Nat.div_mod with (y := rad); [ symmetry | easy ].
+         rewrite Nat.div_mod with (y := rad); [ symmetry | easy ].
+         now rewrite Habr, H.
 
-       apply Nat.div_lt_upper_bound; [ easy | ].
-       apply Nat.div_lt_upper_bound; [ easy | ].
-       destruct ca; [ now rewrite Nat.div_1_l in Hca | ].
-       destruct rad as [| s]; [ easy | ].
-       destruct s; [ lia | simpl; lia ].
+        apply Nat.div_lt_upper_bound; [ easy | ].
+        apply Nat.div_lt_upper_bound; [ easy | ].
+        destruct ca; [ now rewrite Nat.div_1_l in Hca | ].
+        destruct rad as [| s]; [ easy | ].
+        destruct s; [ lia | simpl; lia ].
+
+        apply Nat.div_lt_upper_bound; [ easy | ].
+        apply Nat.div_lt_upper_bound; [ easy | ].
+        destruct cb; [ now rewrite Nat.div_1_l in Hcb | ].
+        destruct rad as [| s]; [ easy | ].
+        destruct s; [ lia | simpl; lia ].
 
       apply Nat.div_lt_upper_bound; [ easy | ].
       apply Nat.div_lt_upper_bound; [ easy | ].
       destruct cb; [ now rewrite Nat.div_1_l in Hcb | ].
       destruct rad as [| s]; [ easy | ].
       destruct s; [ lia | simpl; lia ].
+
+      apply Nat.div_lt_upper_bound; [ easy | ].
+      apply Nat.div_lt_upper_bound; [ easy | ].
+      destruct ca; [ now rewrite Nat.div_1_l in Hca | ].
+      destruct rad as [| s]; [ easy | ].
+      destruct s; [ lia | simpl; lia ].
+
+ idtac.
 bbb.
    destruct ca; [ easy | clear Hca ].
    destruct cb; [ easy | clear Hcb ].
