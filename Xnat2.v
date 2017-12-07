@@ -1398,7 +1398,27 @@ induction al as [| a]; intros.
 
    destruct H as (Hrab, Hrcab).
    subst rb rcb.
-bbb.
+   generalize Hrca; intros H.
+   rewrite <- Hrcb in H.
+   apply IHal in H.
+   destruct car.
+    destruct cbr; [ clear Hab | easy ].
+    apply Nat.mod_divides in Hcar; [ | easy ].
+    apply Nat.mod_divides in Hcbr; [ | easy ].
+    destruct Hcar as (car, Hcar); rewrite Nat.mul_comm in Hcar.
+    destruct Hcbr as (cbr, Hcbr); rewrite Nat.mul_comm in Hcbr.
+    rewrite Hcar, Nat.div_mul in Hrca, H; [ | easy | easy ].
+    rewrite Hcbr, Nat.div_mul in Hrcb, H; [ | easy | easy ].
+    subst car; lia.
+
+    destruct cbr; [ easy | ].
+    injection Hab; clear Hab; intros Hab.
+    subst car.
+    apply Nat.add_cancel_r with (p := a).
+    rewrite Nat.div_mod with (y := rad); [ symmetry | easy ].
+    rewrite Nat.div_mod with (y := rad); [ symmetry | easy ].
+    now rewrite H, Hcar, <- Hcbr.
+Qed.
 
 Lemma list_norm_wc_add_eq_compat {r : radix} : 1 < rad → ∀ al bl cl ca cb,
   list_norm_with_carry ca al = list_norm_with_carry cb bl
@@ -1411,8 +1431,9 @@ intros * Hab.
 revert bl cl ca cb Hab.
 induction al as [| a1]; intros.
  simpl; revert cl ca cb Hab.
- induction bl as [| b1]; intros; [ | ].
- simpl in Hab; simpl.
+ induction bl as [| b1]; intros.
+  simpl in Hab; simpl.
+  now apply list_norm_with_carry_inv in Hab; [ rewrite Hab | ].
 
 bbb.
  rewrite list_norm_with_carry_cons in Hab; [ | easy ].
