@@ -1172,14 +1172,35 @@ destruct n.
   destruct s; [ lia | simpl; lia ].
 Qed.
 
-Lemma list_rem_trail_move_carry_end {r : radix} : ∀ i c,
-  list_remove_trailing_0s (move_carry_end i c) = move_carry_end i c.
+Lemma list_rem_trail_move_carry_end {r : radix} : 1 < rad → ∀ i c,
+  c < i
+  → list_remove_trailing_0s (move_carry_end i c) = move_carry_end i c.
 Proof.
-intros.
-revert c.
+intros Hr.
+assert (Hrz : rad ≠ 0) by lia.
+intros * Hci.
+revert c Hci.
 induction i; intros; [ easy | simpl ].
-destruct (zerop c) as [Hc| Hc]; [ easy | ].
-Search (list_remove_trailing_0s (_ :: _)).
+destruct (zerop c) as [Hc| Hc]; [ easy | simpl ].
+destruct c; [ easy | ].
+apply <- Nat.succ_lt_mono in Hci.
+destruct (lt_dec (S c / rad) i) as [Hcri| Hcri].
+ rewrite IHi; [ | easy ].
+ remember (S c mod rad) as d eqn:Hd.
+ symmetry in Hd.
+ destruct i; [ easy | simpl ].
+ destruct d; [ | easy ].
+ destruct (zerop (S c / rad)) as [Hcr| Hcr]; [ | easy ].
+ now rewrite Nat.mod_small in Hd; [ | apply Nat.div_small_iff in Hcr ].
+
+ apply Nat.nlt_ge in Hcri.
+bbb.
+
+ eapply le_lt_trans; [ | eassumption ].
+ apply Nat.div_le_upper_bound; [ easy | ].
+ destruct rad as [| s]; [ easy | ].
+ destruct s; [ lia | simpl ].
+ destruct c.
 
 bbb.
 
