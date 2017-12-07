@@ -1376,6 +1376,17 @@ induction al as [| a]; intros.
    apply eq_list_rem_trail_nil in Hrcb.
    destruct car.
     destruct cbr; [ clear Hab | easy ].
+    apply Nat.mod_divides in Hcar; [ | easy ].
+    apply Nat.mod_divides in Hcbr; [ | easy ].
+    destruct Hcar as (car, Hcar); rewrite Nat.mul_comm in Hcar.
+    destruct Hcbr as (cbr, Hcbr); rewrite Nat.mul_comm in Hcbr.
+    rewrite Hcar, Nat.div_mul in Hrca, H; [ | easy | easy ].
+    rewrite Hcbr, Nat.div_mul in Hrcb, H; [ | easy | easy ].
+    subst car; lia.
+
+    destruct cbr; [ easy | ].
+    injection Hab; clear Hab; intros Hab.
+    subst car.
 bbb.
 
    remember ((ca + a) / rad) as ac eqn:Hca; symmetry in Hca.
