@@ -1535,6 +1535,55 @@ induction al as [| a1]; intros.
        remember list_remove_trailing_0s as f; simpl; subst f.
        remember list_remove_trailing_0s as f; simpl in Hab; subst f.
        now rewrite Hab.
+
+       rewrite xnatv_add_rep_0_l.
+       specialize
+         (move_carry_app_rep_0 Hr 0 (S (b1 + c1) :: cl) (n - length cl)) as
+         (p, Hp).
+       rewrite <- List.app_comm_cons in Hp; rewrite Hp.
+       rewrite list_rem_trail_rep_0.
+       remember list_remove_trailing_0s as f; simpl; subst f.
+       remember list_remove_trailing_0s as f; simpl in Hab; subst f.
+       simpl in Hab.
+       remember (S ca mod rad) as cr eqn:Hcr; symmetry in Hcr.
+       destruct (zerop (S ca / rad)) as [Hzcr| Hzcr].
+        destruct cr; [ easy | ].
+        injection Hab; clear Hab; intros H; subst cr.
+        apply Nat.div_small_iff in Hzcr; [ | easy ].
+        rewrite Nat.mod_small in Hcr; [ | easy ].
+        now apply Nat.succ_inj in Hcr; subst ca.
+
+        destruct cr.
+         now destruct
+           (list_remove_trailing_0s
+              ((S ca / rad) mod rad ::
+               move_carry_end ca (S ca / rad / rad))).
+
+         injection Hab; clear Hab; intros Hab H; subst cr.
+         remember ((S ca / rad) mod rad) as car eqn:Hcar.
+         symmetry in Hcar.
+         destruct car; [ | easy ].
+         remember
+           (list_remove_trailing_0s (move_carry_end ca (S ca / rad / rad)))
+           as al eqn:Hal.
+         symmetry in Hal.
+         destruct al; [ clear Hab | easy ].
+         apply eq_list_rem_trail_nil in Hal.
+         destruct ca; [ now rewrite Nat.div_1_l in Hzcr | ].
+         apply move_carry_end_succ_ne_rep_0 in Hal; [ easy | easy | ].
+         split.
+          apply Nat.mod_divides in Hcar; [ | easy ].
+          destruct Hcar as (d, Hd); rewrite Nat.mul_comm in Hd.
+          rewrite Hd, Nat.div_mul; [ | easy ].
+          destruct d; [ simpl in Hd | lia ].
+          now rewrite Hd in Hzcr.
+
+          apply Nat.div_lt_upper_bound; [ easy | ].
+          apply Nat.div_lt_upper_bound; [ easy | ].
+          destruct rad as [| s]; [ easy | ].
+          destruct s; [ lia | simpl; lia ].
+
+      idtac.
 bbb.
      apply move_carry_end_succ_ne_rep_0 in Hab; [ easy | easy | ].
      split.
