@@ -430,14 +430,89 @@ induction n; [ easy | simpl ].
 now rewrite <- IHn.
 Qed.
 
-Fixpoint logn_loop n iter a :=
+Fixpoint logn_loop {r : radix} iter a :=
   match iter with
   | 0 => 0
-  | S i => if zerop a then 0 else S (logn_loop n i (a / n))
+  | S i => if zerop a then 0 else S (logn_loop i (a / rad))
   end.
 
-Definition logn n a := logn_loop n a a - 1.
+Definition logn {r : radix} a := logn_loop a a - 1.
 
+Compute (@logn radix_10 9).
+
+Lemma log_small {r : radix} : ∀ n, n < rad → logn n = 0.
+Proof.
+intros * Hnr.
+unfold logn.
+Lemma logn_loop_div_small {r : radix} : ∀ n i,
+  n ≤ i → n < rad → logn_loop i n - 1 = 0.
+Proof.
+intros * Hni Hnr.
+revert n Hni Hnr.
+induction i; intros; [ easy | simpl ].
+destruct (zerop n) as [Hn| Hn]; [ easy | ].
+assert (n / rad ≤ i).
+ rewrite Nat.div_small; [ lia | easy ].
+
+ assert (n / rad < rad).
+  apply Nat.div_lt_upper_bound; [ now destruct rad | ].
+  destruct rad; [ easy | simpl; lia ].
+
+  specialize (IHi (n / rad) H H0) as HH.
+  destruct (logn_loop i (n / rad)); [ easy | ].
+  simpl in HH.
+Shit.
+bbb.
+rewrite IHi.
+destruct n; [ easy | ].
+
+bbb.
+
+bbb.
+now rewrite logn_loop_div_small.
+bbb.
+
+Lemma logn_div_rad_r {r : radix} : ∀ n, n ≠ 0 → logn (n / rad) = logn n - 1.
+Proof.
+intros * Hn.
+unfold logn.
+Lemma logn_loop_div_rad_r {r : radix} : rad ≠ 0 → ∀ n i j,
+  n / rad ≤ i
+  → n ≤ j
+  → logn_loop i (n / rad) = logn_loop j n - 1.
+Proof.
+intros Hr * Hni Hnj.
+revert j n Hni Hnj.
+induction i; intros.
+ simpl.
+ destruct j; [ easy | simpl ].
+ destruct (zerop n) as [Hn| Hn]; [ easy | ].
+ apply Nat.le_0_r in Hni.
+ now apply Nat.div_small_iff in Hni; [ rewrite logn_loop_div_small | ].
+
+ simpl.
+ destruct (zerop (n / rad)) as [Hznr| Hznr].
+  rewrite logn_loop_div_small.
+
+bbb.
+
+now rewrite logn_loop_div_rad_r with (j := n).
+bbb.
+
+Lemma logn_div_rad_r {r : radix} : ∀ n, n ≠ 0 → logn n = S (logn (n / rad)).
+Proof.
+intros * Hn.
+unfold logn.
+Lemma logn_loop_div_rad_r {r : radix} : ∀ n i j,
+  n ≠ 0 → logn_loop i n - 1 = S (logn_loop j n - 1).
+Proof.
+intros * Hn.
+revert n j Hn.
+induction i; intros.
+ simpl.
+bbb.
+
+(*
 Lemma logn_div : ∀ n a b, b ≠ 0 → logn n (a / b) = logn n a - logn n b.
 Proof.
 intros * Hb.
@@ -457,14 +532,16 @@ destruct (zerop (S a mod n)) as [Han| Han].
   rewrite Hc.
   unfold logn.
   simpl.
-
 bbb.
+*)
 
-Lemma move_carry_rep_0_end {r : radix} : ∀ n a, 1 < rad →
+Lemma move_carry_rep_0_end {r : radix} : 1 < rad → ∀ n a,
   move_carry a (List.repeat 0 n) =
   move_carry_end (S a) a ++ List.repeat 0 (n - logn rad a).
 Proof.
-intros * Hr.
+intros Hr.
+assert (Hrz : rad ≠ 0) by lia.
+intros.
 revert a.
 induction n; intros.
  now simpl; destruct (zerop a); [ | rewrite List.app_nil_r ].
@@ -486,6 +563,17 @@ induction n; intros.
    destruct s; [ lia | now apply Nat.div_lt ].
 
    f_equal.
+   rewrite <- Nat.sub_succ.
+   now rewrite <- logn_div_rad_r.
+bbb.
+   specialize (Nat.div_mod a rad Hrz) as H.
+   rewrite Nat.add_comm, Nat.mul_comm in H.
+   rewrite H at 1.
+   rewrite Nat.div_add; [ | easy ].
+   rewrite Nat.div_small; [ | now apply Nat.mod_upper_bound ].
+   rewrite Nat.add_0_l.
+  n - logn rad (a / rad) = S n - logn rad a
+bbb.
 
 Search (S _ - _).
 
