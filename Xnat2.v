@@ -670,6 +670,17 @@ induction i; intros.
 bbb.
 *)
 
+Lemma logn_0 {r : radix} : logn 0 = 0.
+Proof. easy. Qed.
+
+Lemma length_move_carry_end_logn {r : radix} : ∀ a,
+  length (move_carry_end (S a) a) = logn a.
+Proof.
+intros; simpl.
+destruct (zerop a) as [Ha| Ha]; [ now subst a | ].
+
+bbb.
+
 Lemma move_carry_rep_0_end {r : radix} : 1 < rad → ∀ n a,
   move_carry a (List.repeat 0 n) =
   move_carry_end (S a) a ++ List.repeat 0 (n - logn a).
@@ -708,6 +719,14 @@ induction n; intros.
     apply logn_mul_rad_r; [ easy | ].
     intros H; rewrite H in Hd.
     now rewrite Hd in Ha.
+
+Search (logn (_ * _)).
+destruct (lt_dec a rad) as [Hlt| Hge].
+ rewrite Nat.div_small; [ | easy ].
+ rewrite logn_0.
+bbb.
+
+rewrite <- logn_mul_rad_r; [ | easy | ].
 
 bbb.
    specialize (Nat.div_mod a rad Hrz) as H.
