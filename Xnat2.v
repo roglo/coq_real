@@ -430,60 +430,129 @@ induction n; [ easy | simpl ].
 now rewrite <- IHn.
 Qed.
 
-Lemma move_carry_rep_0_end {r : radix} : ∀ n a, 1 < rad → ∃ m,
-  move_carry a (List.repeat 0 n) = move_carry_end (S a) a ++ List.repeat 0 m.
+Fixpoint logn_loop n iter a :=
+  match iter with
+  | 0 => 0
+  | S i => if zerop a then 0 else S (logn_loop n i (a / n))
+  end.
+
+Definition logn n a := logn_loop n a a - 1.
+
+Lemma logn_div : ∀ n a b, b ≠ 0 → logn n (a / b) = logn n a - logn n b.
+Proof.
+intros * Hb.
+revert b Hb.
+induction a; intros; [ now rewrite Nat.div_0_l | ].
+
+Lemma logn_succ : ∀ n a,
+  logn n (S a) = if zerop (S a mod n) then logn n a else S (logn n a).
+Proof.
+intros.
+destruct (zerop (S a mod n)) as [Han| Han].
+ destruct n.
+  now destruct a; [ | destruct a ].
+
+  apply Nat.mod_divides in Han; [ | easy ].
+  destruct Han as (c, Hc).
+  rewrite Hc.
+  unfold logn.
+  simpl.
+
+bbb.
+
+Lemma move_carry_rep_0_end {r : radix} : ∀ n a, 1 < rad →
+  move_carry a (List.repeat 0 n) =
+  move_carry_end (S a) a ++ List.repeat 0 (n - logn rad a).
+Proof.
+intros * Hr.
+revert a.
+induction n; intros.
+ now simpl; destruct (zerop a); [ | rewrite List.app_nil_r ].
+
+ remember minus as f; simpl; subst f.
+ rewrite Nat.add_0_r.
+ destruct (zerop a) as [Ha| Ha].
+  subst a.
+  rewrite Nat.mod_0_l; [ | lia ].
+  rewrite Nat.div_0_l; [ | lia ].
+  now rewrite move_carry_0_rep_0.
+
+  remember minus as f; simpl; subst f.
+  rewrite IHn; f_equal.
+  f_equal.
+   apply move_carry_end_enough_iter; [ easy | lia | ].
+   destruct a; [ easy | ].
+   destruct rad as [| s]; [ easy | ].
+   destruct s; [ lia | now apply Nat.div_lt ].
+
+   f_equal.
+
+Search (S _ - _).
+
+   f_equal; f_equal; f_equal.
+   apply move_carry_end_enough_iter; [ easy | lia | ].
+   destruct a; [ easy | ].
+   destruct rad as [| s]; [ easy | ].
+   destruct s; [ lia | now apply Nat.div_lt ].
+Qed.
+bbb.
+
+Lemma move_carry_rep_0_end {r : radix} : ∀ n a, 1 < rad →
+  move_carry a (List.repeat 0 n) =
+  move_carry_end (S a) a ++
+    List.repeat 0 (n - length (move_carry_end (S a) a)).
 Proof.
 intros * Hr.
 revert a.
 induction n; intros; simpl.
- destruct (zerop a); [ now exists 0 | ].
- exists 0; simpl.
- now rewrite List.app_nil_r.
+ now destruct (zerop a); [ | rewrite List.app_nil_r ].
 
  rewrite Nat.add_0_r.
  destruct (zerop a) as [Ha| Ha].
   subst a.
   rewrite Nat.mod_0_l; [ | lia ].
   rewrite Nat.div_0_l; [ | lia ].
-  exists (S n).
   now rewrite move_carry_0_rep_0.
 
-  simpl.
-  specialize (IHn (a / rad)) as (m & Hm).
-  exists m.
-  rewrite Hm.
-  f_equal; f_equal.
-  apply move_carry_end_enough_iter; [ easy | lia | ].
-  destruct a; [ easy | ].
-  destruct rad as [| s]; [ easy | ].
-  destruct s; [ lia | ].
-  now apply Nat.div_lt.
+  simpl; rewrite IHn; f_equal.
+  f_equal.
+   apply move_carry_end_enough_iter; [ easy | lia | ].
+   destruct a; [ easy | ].
+   destruct rad as [| s]; [ easy | ].
+   destruct s; [ lia | now apply Nat.div_lt ].
+
+   f_equal; f_equal; f_equal.
+   apply move_carry_end_enough_iter; [ easy | lia | ].
+   destruct a; [ easy | ].
+   destruct rad as [| s]; [ easy | ].
+   destruct s; [ lia | now apply Nat.div_lt ].
 Qed.
 
-Lemma move_carry_rep_0 {r : radix} : ∀ n a, 1 < rad → ∃ m,
-  move_carry a (List.repeat 0 n) = move_carry a [] ++ List.repeat 0 m.
+Lemma move_carry_rep_0 {r : radix} : ∀ n a, 1 < rad →
+  move_carry a (List.repeat 0 n) =
+  move_carry a [] ++ List.repeat 0 (n - length (move_carry a [])).
 Proof.
 intros * Hr.
 unfold move_carry at 2.
 destruct (zerop a) as [Ha| Ha].
- exists n; subst a; simpl.
+ subst a; simpl; rewrite Nat.sub_0_r.
  apply move_carry_0_rep_0.
 
  now apply move_carry_rep_0_end.
 Qed.
 
-Lemma move_carry_cons_rep_0 {r : radix} : ∀ a c n, 1 < rad → ∃ m,
-  move_carry c (a :: List.repeat 0 n) = move_carry c [a] ++ List.repeat 0 m.
+Lemma move_carry_cons_rep_0 {r : radix} : ∀ a c n, 1 < rad →
+  move_carry c (a :: List.repeat 0 n) =
+  move_carry c [a] ++ List.repeat 0 (S n - length (move_carry c [a])).
 Proof.
 intros * Hr; simpl.
 destruct (zerop ((c + a) / rad)) as [Hca| Hca].
- exists n; rewrite Hca; simpl; f_equal.
+ rewrite Hca; simpl; f_equal.
+ rewrite Nat.sub_0_r. 
  apply move_carry_0_rep_0.
 
- specialize (move_carry_rep_0 n ((c + a) / rad) Hr) as (m & Hm).
- exists m; f_equal.
- rewrite Hm; f_equal.
- simpl.
+ f_equal.
+ rewrite move_carry_rep_0; [ simpl | easy ].
  destruct (zerop ((c + a) / rad)) as [H| H]; [ lia | easy ].
 Qed.
 
@@ -648,14 +717,6 @@ subst al.
 now apply last_move_carry_single_nz.
 Qed.
 
-Fixpoint logn_loop n iter a :=
-  match iter with
-  | 0 => 0
-  | S i => if zerop a then 0 else S (logn_loop n i (a / n))
-  end.
-
-Definition logn n a := logn_loop n a a - 1.
-
 Lemma eq_list_norm_nil_cons {r : radix} : 1 < rad → ∀ al,
   list_norm al = [] → ∀ a, list_norm (a :: al) = list_norm [a].
 Proof.
@@ -676,7 +737,8 @@ split.
   now rewrite move_carry_0_rep_0.
 
   rewrite list_rem_trail_move_carry_0_nz; [ subst al | easy ].
-  now apply move_carry_cons_rep_0.
+  rewrite move_carry_cons_rep_0; [ | easy ].
+  now exists (S m - length (move_carry 0 [S a])).
 
  destruct a.
   left; simpl.
@@ -1113,6 +1175,26 @@ now destruct n; [ rewrite List.app_nil_r | simpl; rewrite IHal ].
 Qed.
 
 Lemma move_carry_app_rep_0 {r : radix} : 1 < rad → ∀ c al n,
+  move_carry c (al ++ List.repeat 0 n) =
+  move_carry c al ++ List.repeat 0 (n - length (move_carry_end (S c) c)).
+Proof.
+intros Hr *.
+revert c.
+induction al as [| a1]; intros.
+ rewrite List.app_nil_l.
+ now apply move_carry_rep_0_end.
+
+ remember move_carry_end as f; simpl; subst f.
+ rewrite IHal.
+ f_equal; f_equal.
+bbb.
+
+ 
+ specialize (IHal ((c + a1) / rad)) as (m & Hm).
+ now exists m; simpl; rewrite Hm.
+Qed.
+
+Lemma move_carry_app_rep_0 {r : radix} : 1 < rad → ∀ c al n,
   ∃ m,
   move_carry c (al ++ List.repeat 0 n) =
   move_carry c al ++ List.repeat 0 m.
@@ -1120,8 +1202,9 @@ Proof.
 intros Hr *.
 revert c.
 induction al as [| a1]; intros.
- specialize (move_carry_rep_0_end n c Hr) as (m & Hm).
- now exists m; simpl; rewrite Hm.
+ rewrite List.app_nil_l.
+ rewrite move_carry_rep_0_end; [ | easy ].
+ now exists (n - length (move_carry_end (S c) c)).
 
  specialize (IHal ((c + a1) / rad)) as (m & Hm).
  now exists m; simpl; rewrite Hm.
@@ -1583,7 +1666,41 @@ induction al as [| a1]; intros.
           destruct rad as [| s]; [ easy | ].
           destruct s; [ lia | simpl; lia ].
 
-      idtac.
+      simpl in Hab.
+      remember (S ca mod rad) as car eqn:Hcar; symmetry in Hcar.
+      destruct car.
+       now destruct
+         (list_remove_trailing_0s
+            (if zerop (S ca / rad) then []
+             else
+               (S ca / rad) mod rad ::
+                move_carry_end ca (S ca / rad / rad))).
+
+       injection Hab; clear Hab; intros Hab Hcarb.
+       subst car.
+       destruct (zerop (S ca / rad)) as [Hcdr| Hcdr].
+        apply Nat.div_small_iff in Hcdr; [ | easy ].
+        rewrite Nat.mod_small in Hcar; [ | easy ].
+        destruct cl as [| c1].
+         simpl.
+         rewrite list_norm_wc_nil.
+         remember list_remove_trailing_0s as f; simpl; subst f.
+         rewrite Nat.div_small; [ | easy ].
+         remember list_remove_trailing_0s as f; simpl; subst f.
+         rewrite Nat.mod_small; [ simpl | easy ].
+         rewrite Hcar.
+         unfold list_norm_with_carry.
+Search (move_carry _ (_ :: _)).
+bbb.
+         rewrite Hbl.
+         rewrite move_carry_cons_rep_0.
+
+Search (list_norm_with_carry _ []).
+        
+bbb.
+      rewrite list_norm_wc_cons_list_rem in Hab.
+      simpl in Hab.
+      unfold list_norm_with_carry.
 bbb.
      apply move_carry_end_succ_ne_rep_0 in Hab; [ easy | easy | ].
      split.
