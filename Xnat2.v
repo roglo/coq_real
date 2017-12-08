@@ -579,16 +579,31 @@ Proof.
 intros * Hmrn.
 unfold logn.
 
-Lemma glop {r : radix} : ∀ m n i j,
+Lemma glop {r : radix} : 1 < rad → ∀ m n i j,
   m ≤ i
   → n ≤ j
   → m * rad = S n
   → logn_loop i m = logn_loop j n.
 Proof.
-intros * Hmi Hnj Hmrn.
+intros Hr * Hmi Hnj Hmrn.
+bbb.
+
 revert m n j Hmi Hnj Hmrn.
 induction i; intros; [ now apply Nat.le_0_r in Hmi; subst m | simpl ].
 destruct (zerop m) as [| Hm]; [ now subst m | ].
+revert n Hnj Hmrn.
+induction j; intros.
+ apply Nat.le_0_r in Hnj; subst n.
+ destruct m; [ easy | ].
+ destruct rad as [| s]; [ easy | ].
+ destruct s; [ lia | simpl in Hmrn; lia ].
+
+ simpl.
+ destruct n; simpl.
+  destruct m; [ easy | ].
+  destruct rad as [| s]; [ easy | ].
+  destruct s; [ lia | simpl in Hmrn; lia ].
+
 bbb.
 
 Lemma logn_mul_rad_r {r : radix} : ∀ n, n ≠ 0 →
