@@ -530,15 +530,6 @@ induction i; intros.
     destruct s; [ lia | simpl; lia ].
 Qed.
 
-Lemma logn_succ {r : radix} : ∀ n,
-  logn (S n) = if zerop (S n mod rad) then S (logn n) else logn n.
-Proof.
-intros.
-destruct (zerop (S n mod rad)) as [Hnr| Hnr].
- rewrite Nat.mod_divides in Hnr.
- destruct Hnr as (d, Hd); rewrite Nat.mul_comm in Hd.
- rewrite Hd.
-
 Lemma logn_loop_mul_rad_r {r : radix} : 1 < rad → ∀ n i j, n ≠ 0 →
   n * rad ≤ i → n ≤ j →
   logn_loop i (n * rad) - 1 = logn_loop j n.
@@ -567,6 +558,38 @@ induction i; intros.
   destruct rad as [| s]; [ easy | ].
   destruct s; [ lia | simpl; lia ].
 Qed.
+
+Lemma logn_succ {r : radix} : ∀ n,
+  logn (S n) = if zerop (S n mod rad) then S (logn n) else logn n.
+Proof.
+intros.
+destruct (zerop (S n mod rad)) as [Hnr| Hnr].
+ rewrite Nat.mod_divides in Hnr.
+ destruct Hnr as (d, Hd); rewrite Nat.mul_comm in Hd.
+ rewrite Hd.
+ unfold logn.
+ rewrite logn_loop_mul_rad_r with (j := d).
+ rewrite <- Nat.sub_succ_l.
+ simpl; rewrite Nat.sub_0_r.
+
+Lemma glop {r : radix} : ∀ m n,
+  m * rad = S n
+  → logn m = logn n.
+Proof.
+intros * Hmrn.
+unfold logn.
+
+Lemma glop {r : radix} : ∀ m n i j,
+  m ≤ i
+  → n ≤ j
+  → m * rad = S n
+  → logn_loop i m = logn_loop j n.
+Proof.
+intros * Hmi Hnj Hmrn.
+revert m n j Hmi Hnj Hmrn.
+induction i; intros; [ now apply Nat.le_0_r in Hmi; subst m | simpl ].
+destruct (zerop m) as [| Hm]; [ now subst m | ].
+bbb.
 
 Lemma logn_mul_rad_r {r : radix} : ∀ n, n ≠ 0 →
   logn (n * rad) = S (logn n).
