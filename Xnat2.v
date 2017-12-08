@@ -468,9 +468,40 @@ unfold logn.
 now apply logn_loop_div_small.
 Qed.
 
-Lemma logn_div_rad_r {r : radix} : ∀ n, n ≠ 0 → logn (n / rad) = logn n - 1.
+Lemma logn_succ {r : radix} : ∀ n,
+  logn (S n) = if zerop (S n mod rad) then S (logn n) else logn n.
+Proof.
+intros.
+destruct (zerop (S n mod rad)) as [Hnr| Hnr].
+ rewrite Nat.mod_divides in Hnr.
+ destruct Hnr as (d, Hd); rewrite Nat.mul_comm in Hd.
+ rewrite Hd.
+
+Lemma logn_mul_rad_r {r : radix} : ∀ n, n ≠ 0 →
+  logn (n * rad) = S (logn n).
 Proof.
 intros * Hn.
+unfold logn; simpl.
+bbb.
+
+
+destruct n; [ easy | clear Hn ].
+unfold logn.
+remember (S n) as sn; simpl; subst sn.
+bbb.
+
+Lemma logn_div_rad_r {r : radix} : rad ≠ 0 → ∀ n, logn (n / rad) = logn n - 1.
+Proof.
+intros Hr *.
+destruct n; [ now unfold logn; rewrite Nat.div_0_l | ].
+rewrite logn_succ.
+destruct (zerop (S n mod rad)) as [Hnr| Hnr].
+ rewrite Nat.mod_divides in Hnr.
+ destruct Hnr as (d, Hd); rewrite Nat.mul_comm in Hd.
+ rewrite Hd, Nat.div_mul.
+ rewrite Nat.sub_succ, Nat.sub_0_r.
+ destruct d; [ easy | ].
+
 bbb.
 
 unfold logn.
