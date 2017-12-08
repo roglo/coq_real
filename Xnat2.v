@@ -1514,6 +1514,19 @@ induction al as [| a1]; intros.
      apply Nat.div_small_iff in Hcbr; [ | easy ].
      rewrite Nat.mod_small in Hzcb; [ | easy ].
      rewrite Nat.mod_small with (a := cb + b1) in Hab; [ | easy ].
+     destruct ca; [ easy | ].
+     destruct cb.
+      simpl.
+      destruct cl as [| c1].
+       rewrite Nat.add_0_l in Hcbr, Hbl, Hzcb, Hab.
+       unfold list_norm_with_carry.
+       rewrite Nat.div_small in Hbl; [ | easy ].
+       remember (length (move_carry 0 bl)) as n eqn:Hn.
+       specialize (move_carry_cons_rep_0 b1 0 n Hr) as (m, Hm).
+       rewrite Hbl, Hm.
+       rewrite list_rem_trail_rep_0.
+       destruct b1; [ easy | ].
+       rewrite list_rem_trail_move_carry_0_nz; [ | easy ].
 bbb.
      apply move_carry_end_succ_ne_rep_0 in Hab; [ easy | easy | ].
      split.
