@@ -693,20 +693,24 @@ induction n; intros.
  rewrite <- Hc; simpl.
  destruct (zerop c) as [Hzc| Hzc]; [ now subst c | simpl; f_equal ].
  clear Ha.
- revert c Hc Hzc.
- induction a; intros.
+ remember (a mod rad) as n eqn:Hn.
+ symmetry in Hn.
+ revert a c Hc Hzc Hn.
+ induction n; intros.
   destruct c; [ easy | ].
   destruct rad as [| s]; [ easy | ].
-  destruct s; [ lia | easy ].
+  destruct s; [ lia | ].
+  destruct a; [ easy | ].
+  simpl in Hc.
+  apply Nat.succ_inj in Hc.
+  rewrite Hc in Hn.
+  rewrite <- Nat.add_succ_l in Hn.
+  apply Nat.succ_inj in Hc.
+  rewrite Nat.mod_add in Hn; [ | easy ].
+  apply Nat.mod_divides in Hn; [ | easy ].
+  destruct Hn as (d, Hd); rewrite Nat.mul_comm in Hd.
+  destruct d; [ easy | simpl in Hd; lia ].
 
-  simpl.
-  destruct (zerop (c / rad)) as [Hcr| Hcr].
-   now apply logn_small, Nat.div_small_iff.
-
-   simpl.
-   rewrite <- IHa.
-(* mouais... à voir... *)
-Search (move_carry_end (_ * _)).
 bbb.
 
 Lemma move_carry_rep_0_end {r : radix} : 1 < rad → ∀ n a,
