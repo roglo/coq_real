@@ -438,43 +438,41 @@ Fixpoint logn_loop {r : radix} iter a :=
 
 Definition logn {r : radix} a := logn_loop a a - 1.
 
-Compute (@logn radix_10 9).
-
-Lemma log_small {r : radix} : ∀ n, n < rad → logn n = 0.
+Lemma logn_loop_div_small {r : radix} : ∀ n i,
+  n < rad → logn_loop i n - 1 = 0.
 Proof.
 intros * Hnr.
-unfold logn.
-Lemma logn_loop_div_small {r : radix} : ∀ n i,
-  n ≤ i → n < rad → logn_loop i n - 1 = 0.
-Proof.
-intros * Hni Hnr.
-revert n Hni Hnr.
+revert n Hnr.
 induction i; intros; [ easy | simpl ].
 destruct (zerop n) as [Hn| Hn]; [ easy | ].
-assert (n / rad ≤ i).
- rewrite Nat.div_small; [ lia | easy ].
-
- assert (n / rad < rad).
+ assert (Hnrr : n / rad < rad).
   apply Nat.div_lt_upper_bound; [ now destruct rad | ].
   destruct rad; [ easy | simpl; lia ].
 
-  specialize (IHi (n / rad) H H0) as HH.
-  destruct (logn_loop i (n / rad)); [ easy | ].
-  simpl in HH.
-Shit.
-bbb.
-rewrite IHi.
-destruct n; [ easy | ].
+  specialize (IHi (n / rad) Hnrr ) as H.
+  remember (logn_loop i (n / rad)) as m eqn:Hm; symmetry in Hm.
+  destruct m; [ easy | ].
+  simpl in H; simpl.
+  exfalso; rewrite Nat.sub_0_r in H; subst m.
+  destruct i; [ easy | ].
+  simpl in Hm.
+  destruct (zerop (n / rad)); [ easy | ].
+  apply Nat.div_small in Hnr.
+  now rewrite Hnr in l.
+Qed.
 
-bbb.
-
-bbb.
-now rewrite logn_loop_div_small.
-bbb.
+Lemma logn_small {r : radix} : ∀ n, n < rad → logn n = 0.
+Proof.
+intros * Hnr.
+unfold logn.
+now apply logn_loop_div_small.
+Qed.
 
 Lemma logn_div_rad_r {r : radix} : ∀ n, n ≠ 0 → logn (n / rad) = logn n - 1.
 Proof.
 intros * Hn.
+bbb.
+
 unfold logn.
 Lemma logn_loop_div_rad_r {r : radix} : rad ≠ 0 → ∀ n i j,
   n / rad ≤ i
@@ -488,7 +486,11 @@ induction i; intros.
  destruct j; [ easy | simpl ].
  destruct (zerop n) as [Hn| Hn]; [ easy | ].
  apply Nat.le_0_r in Hni.
- now apply Nat.div_small_iff in Hni; [ rewrite logn_loop_div_small | ].
+ apply Nat.div_small_iff in Hni.
+ simpl.
+bbb.
+
+; [ rewrite logn_loop_div_small | ].
 
  simpl.
  destruct (zerop (n / rad)) as [Hznr| Hznr].
