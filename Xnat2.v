@@ -1514,19 +1514,27 @@ induction al as [| a1]; intros.
      apply Nat.div_small_iff in Hcbr; [ | easy ].
      rewrite Nat.mod_small in Hzcb; [ | easy ].
      rewrite Nat.mod_small with (a := cb + b1) in Hab; [ | easy ].
-     destruct ca; [ easy | ].
+     destruct ca; [ easy | clear Hca ].
      destruct cb.
       simpl.
+      rewrite Nat.add_0_l in Hcbr, Hbl, Hzcb, Hab.
+      unfold list_norm_with_carry.
+      rewrite Nat.div_small in Hbl; [ | easy ].
+      remember (length (move_carry 0 bl)) as n eqn:Hn.
+      specialize (move_carry_cons_rep_0 b1 0 n Hr) as (m, Hm).
+      rewrite Hbl.
+      destruct b1; [ easy | ].
+      remember list_remove_trailing_0s as f; simpl; subst f.
       destruct cl as [| c1].
-       rewrite Nat.add_0_l in Hcbr, Hbl, Hzcb, Hab.
-       unfold list_norm_with_carry.
-       rewrite Nat.div_small in Hbl; [ | easy ].
-       remember (length (move_carry 0 bl)) as n eqn:Hn.
-       specialize (move_carry_cons_rep_0 b1 0 n Hr) as (m, Hm).
-       rewrite Hbl, Hm.
-       rewrite list_rem_trail_rep_0.
-       destruct b1; [ easy | ].
-       rewrite list_rem_trail_move_carry_0_nz; [ | easy ].
+       rewrite Hm, list_rem_trail_rep_0.
+       remember list_remove_trailing_0s as f; simpl; subst f.
+       remember (S b1 / rad) as x eqn:Hx.
+       rewrite Nat.div_small in Hx; [ subst x | easy ].
+       remember (S b1 mod rad) as x eqn:Hx.
+       rewrite Nat.mod_small in Hx; [ subst x | easy ].
+       remember list_remove_trailing_0s as f; simpl; subst f.
+       remember list_remove_trailing_0s as f; simpl in Hab; subst f.
+       now rewrite Hab.
 bbb.
      apply move_carry_end_succ_ne_rep_0 in Hab; [ easy | easy | ].
      split.
