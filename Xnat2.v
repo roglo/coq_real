@@ -482,8 +482,8 @@ induction i; intros.
  now destruct j.
 
  destruct n; [ now destruct j | simpl ].
- symmetry.
  destruct (le_dec (S n) i) as [Hsni| Hsni].
+  symmetry.
   rewrite <- IHi; [ | easy | easy ].
   clear - Hr Hrz Hsni.
   revert n Hsni.
@@ -509,7 +509,26 @@ induction i; intros.
   apply Nat.nle_gt in Hsni.
   unfold lt in Hsni.
   apply Nat.le_antisymm in Hsni; [ | easy ].
-bbb.
+  destruct j; [ easy | simpl ].
+  f_equal.
+  destruct i.
+   apply Nat.succ_le_mono in Hni.
+   apply Nat.succ_inj in Hsni; subst n; simpl.
+   rewrite Nat.div_1_l; [ | easy ].
+   now destruct j.
+
+   apply IHi.
+    apply Nat.div_le_upper_bound; [ easy | ].
+    eapply Nat.le_trans; [ apply Hni | ].
+    destruct rad as [| s]; [ easy | ].
+    destruct s; [ lia | simpl; lia ].
+
+    apply Nat.div_le_upper_bound; [ easy | ].
+    destruct j; [ lia | ].
+    eapply Nat.le_trans; [ apply Hnj | ].
+    destruct rad as [| s]; [ easy | ].
+    destruct s; [ lia | simpl; lia ].
+Qed.
 
 Lemma logn_succ {r : radix} : ∀ n,
   logn (S n) = if zerop (S n mod rad) then S (logn n) else logn n.
@@ -520,11 +539,13 @@ destruct (zerop (S n mod rad)) as [Hnr| Hnr].
  destruct Hnr as (d, Hd); rewrite Nat.mul_comm in Hd.
  rewrite Hd.
 
-Lemma logn_loop_mul_rad_r {r : radix} : rad ≠ 0 → ∀ n i j, n ≠ 0 →
+Lemma logn_loop_mul_rad_r {r : radix} : 1 < rad → ∀ n i j, n ≠ 0 →
   n * rad ≤ i → n ≤ j →
   logn_loop i (n * rad) - 1 = logn_loop j n.
 Proof.
-intros Hr * Hn Hni Hnj.
+intros Hr.
+assert (Hrz : rad ≠ 0) by lia.
+intros * Hn Hni Hnj.
 revert n j Hn Hni Hnj.
 induction i; intros.
  apply Nat.le_0_r in Hni.
@@ -538,28 +559,14 @@ induction i; intros.
 
   rewrite Nat.div_mul; [ | easy ].
   rewrite Nat.sub_succ, Nat.sub_0_r.
-  apply logn_loop_enough_iter.
-bbb.
-
-  destruct (le_dec (n * rad) i) as [Hnri| Hnri].
-   symmetry.
-   rewrite <- IHi; [ | easy | easy | easy ].
-   rewrite Nat.div_mul; [ | easy ].
-   apply IHi; [ easy | easy | ].
-   eapply Nat.le_trans; [ | eassumption ].
-   destruct rad as [| s]; [ easy | ].
-   rewrite Nat.mul_comm; simpl; lia.
-
-   apply Nat.nle_gt in Hnri.
-   rewrite Nat.div_mul; [ | easy ].
-
-   unfold lt in Hnri.
-   apply Nat.le_antisymm in Hnri; [ | easy ].
-   clear - Hr Hn Hnj.
-   revert n Hn Hnj.
-   induction j; intros; [ now apply Nat.le_0_r in Hnj | ].
-
-bbb.
+  apply logn_loop_enough_iter; [ easy | | easy ].
+  apply Nat.succ_le_mono.
+  eapply Nat.le_trans; [ | eassumption ].
+  rewrite Nat.mul_comm.
+  destruct n; [ easy | ].
+  destruct rad as [| s]; [ easy | ].
+  destruct s; [ lia | simpl; lia ].
+Qed.
 
 Lemma logn_mul_rad_r {r : radix} : ∀ n, n ≠ 0 →
   logn (n * rad) = S (logn n).
