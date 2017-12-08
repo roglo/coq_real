@@ -673,12 +673,40 @@ bbb.
 Lemma logn_0 {r : radix} : logn 0 = 0.
 Proof. easy. Qed.
 
-Lemma length_move_carry_end_logn {r : radix} : ∀ a,
-  length (move_carry_end (S a) a) = logn a.
+Lemma eq_logn_length_move_carry_end {r : radix} : 1 < rad → ∀ a,
+  logn a = length (move_carry_end (S a) a) - 1.
 Proof.
-intros; simpl.
-destruct (zerop a) as [Ha| Ha]; [ now subst a | ].
+intros Hr.
+assert (Hrz : rad ≠ 0) by lia.
+intros *; simpl.
+destruct (zerop a) as [Ha| Ha]; [ now subst a | simpl ].
+rewrite Nat.sub_0_r.
+remember (a mod rad) as n eqn:Hn.
+symmetry in Hn.
+revert a Ha Hn.
+induction n; intros.
+ apply Nat.mod_divides in Hn; [ | easy ].
+ destruct Hn as (c, Hc); rewrite Nat.mul_comm in Hc.
+ rewrite Hc, Nat.div_mul; [ | easy ].
+ rewrite logn_mul_rad_r; [ | easy | now intros H; subst a c ].
+ destruct a; [ easy | ].
+ rewrite <- Hc; simpl.
+ destruct (zerop c) as [Hzc| Hzc]; [ now subst c | simpl; f_equal ].
+ clear Ha.
+ revert c Hc Hzc.
+ induction a; intros.
+  destruct c; [ easy | ].
+  destruct rad as [| s]; [ easy | ].
+  destruct s; [ lia | easy ].
 
+  simpl.
+  destruct (zerop (c / rad)) as [Hcr| Hcr].
+   now apply logn_small, Nat.div_small_iff.
+
+   simpl.
+   rewrite <- IHa.
+(* mouais... à voir... *)
+Search (move_carry_end (_ * _)).
 bbb.
 
 Lemma move_carry_rep_0_end {r : radix} : 1 < rad → ∀ n a,
