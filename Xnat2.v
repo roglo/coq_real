@@ -430,6 +430,7 @@ induction n; [ easy | simpl ].
 now rewrite <- IHn.
 Qed.
 
+(*
 Fixpoint logn_loop {r : radix} iter a :=
   match iter with
   | 0 => 0
@@ -437,6 +438,7 @@ Fixpoint logn_loop {r : radix} iter a :=
   end.
 
 Definition logn {r : radix} a := logn_loop a a - 1.
+*)
 
 Lemma logn_loop_div_small {r : radix} : ∀ n i,
   n < rad → logn_loop i n - 1 = 0.
