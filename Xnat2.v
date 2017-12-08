@@ -559,6 +559,7 @@ induction i; intros.
   destruct s; [ lia | simpl; lia ].
 Qed.
 
+(*
 Lemma logn_succ {r : radix} : ∀ n,
   logn (S n) = if zerop (S n mod rad) then S (logn n) else logn n.
 Proof.
@@ -586,38 +587,28 @@ Lemma glop {r : radix} : 1 < rad → ∀ m n i j,
   → logn_loop i m = logn_loop j n.
 Proof.
 intros Hr * Hmi Hnj Hmrn.
+destruct m; [ easy | ].
 bbb.
 
-revert m n j Hmi Hnj Hmrn.
-induction i; intros; [ now apply Nat.le_0_r in Hmi; subst m | simpl ].
-destruct (zerop m) as [| Hm]; [ now subst m | ].
-revert n Hnj Hmrn.
-induction j; intros.
- apply Nat.le_0_r in Hnj; subst n.
- destruct m; [ easy | ].
- destruct rad as [| s]; [ easy | ].
- destruct s; [ lia | simpl in Hmrn; lia ].
-
- simpl.
- destruct n; simpl.
-  destruct m; [ easy | ].
-  destruct rad as [| s]; [ easy | ].
-  destruct s; [ lia | simpl in Hmrn; lia ].
-
+rewrite <- logn_loop_mul_rad_r with (i0 := S j).
+rewrite Hmrn.
+simpl.
 bbb.
+*)
 
-Lemma logn_mul_rad_r {r : radix} : ∀ n, n ≠ 0 →
+Lemma logn_mul_rad_r {r : radix} : 1 < rad → ∀ n, n ≠ 0 →
   logn (n * rad) = S (logn n).
 Proof.
-intros * Hn.
+intros Hr * Hn.
 unfold logn; simpl.
 rewrite <- Nat.sub_succ_l.
- 2: destruct n; [ easy | simpl; lia ].
  rewrite Nat.sub_succ, Nat.sub_0_r.
- apply logn_loop_mul_rad_r.
-bbb.
+ now apply logn_loop_mul_rad_r.
 
+ destruct n; [ easy | simpl; lia ].
+Qed.
 
+(*
 destruct n; [ easy | clear Hn ].
 unfold logn.
 remember (S n) as sn; simpl; subst sn.
@@ -677,33 +668,11 @@ revert n j Hn.
 induction i; intros.
  simpl.
 bbb.
-
-(*
-Lemma logn_div : ∀ n a b, b ≠ 0 → logn n (a / b) = logn n a - logn n b.
-Proof.
-intros * Hb.
-revert b Hb.
-induction a; intros; [ now rewrite Nat.div_0_l | ].
-
-Lemma logn_succ : ∀ n a,
-  logn n (S a) = if zerop (S a mod n) then logn n a else S (logn n a).
-Proof.
-intros.
-destruct (zerop (S a mod n)) as [Han| Han].
- destruct n.
-  now destruct a; [ | destruct a ].
-
-  apply Nat.mod_divides in Han; [ | easy ].
-  destruct Han as (c, Hc).
-  rewrite Hc.
-  unfold logn.
-  simpl.
-bbb.
 *)
 
 Lemma move_carry_rep_0_end {r : radix} : 1 < rad → ∀ n a,
   move_carry a (List.repeat 0 n) =
-  move_carry_end (S a) a ++ List.repeat 0 (n - logn rad a).
+  move_carry_end (S a) a ++ List.repeat 0 (n - logn a).
 Proof.
 intros Hr.
 assert (Hrz : rad ≠ 0) by lia.
@@ -730,7 +699,16 @@ induction n; intros.
 
    f_equal.
    rewrite <- Nat.sub_succ.
-   now rewrite <- logn_div_rad_r.
+   f_equal.
+   symmetry.
+   destruct (zerop (a mod rad)) as [Har| Har].
+    apply Nat.mod_divides in Har; [ | easy ].
+    destruct Har as (d, Hd); rewrite Nat.mul_comm in Hd.
+    rewrite Hd, Nat.div_mul; [ | easy ].
+    apply logn_mul_rad_r; [ easy | ].
+    intros H; rewrite H in Hd.
+    now rewrite Hd in Ha.
+
 bbb.
    specialize (Nat.div_mod a rad Hrz) as H.
    rewrite Nat.add_comm, Nat.mul_comm in H.
