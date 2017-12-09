@@ -672,21 +672,22 @@ assert (Hrz : rad ≠ 0) by lia.
 intros al Hal a.
 unfold list_norm, list_norm_with_carry in Hal |-*.
 apply list_rem_trail_iff in Hal.
-bbb.
-destruct Hal as ((m, Hm) & _); simpl in Hm.
-apply move_carry_0_is_rep_0 in Hm; [ | easy ].
+destruct Hal as (Hal, _); simpl in Hal.
+rewrite Nat.sub_0_r in Hal.
+apply move_carry_0_is_rep_0 in Hal; [ | easy ].
 apply list_rem_trail_iff.
 split.
  destruct a.
-  subst al; simpl.
+  rewrite Hal; clear Hal; simpl.
   rewrite Nat.mod_0_l; [ | easy ].
   rewrite Nat.div_0_l; [ simpl | easy ].
-  exists (S m).
-  now rewrite move_carry_0_rep_0.
+  now rewrite move_carry_0_rep_0, List.repeat_length.
 
-  rewrite list_rem_trail_move_carry_0_nz; [ subst al | easy ].
+  rewrite list_rem_trail_move_carry_0_nz; [ rewrite Hal; clear Hal | easy ].
   rewrite move_carry_cons_rep_0; [ | easy ].
-  now exists (m - logn1 (S a / rad)).
+  rewrite Nat.add_0_l, List.app_length.
+  rewrite Nat.add_comm, Nat.add_sub.
+  now rewrite List.repeat_length.
 
  destruct a.
   left; simpl.
@@ -860,11 +861,11 @@ induction al as [| a1]; intros.
    rewrite Hcr.
    apply Nat.div_small_iff in Hcr; [ | easy ].
    rewrite Nat.mod_small; [ | easy ].
-   exists 0.
    now destruct c.
 
    destruct c; [ easy | simpl ].
    destruct (zerop (S c / rad)) as [H| H]; [ now rewrite H in Hcr | clear H ].
+bbb.
    exists 0; f_equal; f_equal; rewrite List.app_nil_r.
    apply move_carry_end_enough_iter; [ easy | | now apply Nat.div_lt ].
    apply Nat.div_lt_upper_bound; [ easy | ].
