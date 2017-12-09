@@ -865,14 +865,17 @@ induction al as [| a1]; intros.
 
    destruct c; [ easy | simpl ].
    destruct (zerop (S c / rad)) as [H| H]; [ now rewrite H in Hcr | clear H ].
-bbb.
-   exists 0; f_equal; f_equal; rewrite List.app_nil_r.
-   apply move_carry_end_enough_iter; [ easy | | now apply Nat.div_lt ].
-   apply Nat.div_lt_upper_bound; [ easy | ].
-   apply Nat.div_lt_upper_bound; [ easy | ].
-   destruct c; [ now rewrite Nat.div_1_l in Hcr | ].
-   destruct rad as [| s]; [ easy | ].
-   destruct s; [ lia | simpl; lia ].
+   f_equal; f_equal; simpl.
+   rewrite move_carry_end_enough_iter with (n := S c / rad); [ | easy | | ].
+    now rewrite Nat.sub_diag, List.app_nil_r.
+
+    apply Nat.div_lt_upper_bound; [ easy | ].
+    apply Nat.div_lt_upper_bound; [ easy | ].
+    destruct c; [ now rewrite Nat.div_1_l in Hcr | ].
+    destruct rad as [| s]; [ easy | ].
+    destruct s; [ lia | simpl; lia ].
+
+    now apply Nat.div_lt.
 
   right.
   now apply last_move_carry_single_nz; [ | intros H; rewrite H in Hc ].
@@ -948,6 +951,7 @@ intros.
 remember (list_norm_with_carry c al) as al1 eqn:Hal1.
 symmetry in Hal1.
 apply list_rem_trail_iff in Hal1.
+bbb.
 destruct Hal1 as ((n & Hn), Hal1).
 destruct Hal1 as [Hal1| Hlast]; [ now subst al1 | ].
 revert c al Hn.
