@@ -1169,29 +1169,21 @@ intros Hr.
 assert (Hrz : rad ≠ 0) by lia.
 intros * Har Hab.
 apply list_rem_trail_iff in Hab.
-bbb.
-destruct Hab as ((n, Hn), Hb).
-simpl in Hn.
-destruct n; [ easy | simpl in Hn ].
+destruct Hab as (Hn, _).
 injection Hn; clear Hn; intros Hn Hbrr Hbr.
-destruct n.
- apply eq_move_carry_end_nil in Hn.
- destruct Hn as [Hn| Hc]; [ now subst a; rewrite Nat.div_1_l in Har | ].
- rewrite Nat.mod_small in Hbrr; [ | now apply Nat.div_small_iff in Hc ].
- now rewrite Hbrr in Har.
+apply move_carry_end_succ_ne_rep_0 in Hn; [ easy | easy | ].
+apply Nat.mod_divides in Hbrr; [ | easy ].
+destruct Hbrr as (c, Hc); rewrite Nat.mul_comm in Hc.
+split.
+ rewrite Hc in Har.
+ rewrite Hc, Nat.div_mul; [ | easy ].
+ destruct c; [ easy | lia ].
 
- apply move_carry_end_succ_ne_rep_0 in Hn; [ easy | easy | ].
- split.
-  apply Nat.mod_divides in Hbrr; [ | easy ].
-  destruct Hbrr as (c, Hc); rewrite Nat.mul_comm in Hc.
-  rewrite Hc, Nat.div_mul; [ | easy ].
-  destruct c; lia.
-
-  apply Nat.div_lt_upper_bound; [ easy | ].
-  apply Nat.div_lt_upper_bound; [ easy | ].
-  destruct a; [ easy | ].
-  destruct rad as [| s]; [ easy | ].
-  destruct s; [ lia | simpl; lia ].
+ apply Nat.div_lt_upper_bound; [ easy | ].
+ apply Nat.div_lt_upper_bound; [ easy | ].
+ destruct a; [ now rewrite Nat.div_1_l in Har | ].
+ destruct rad as [| s]; [ easy | ].
+ destruct s; [ lia | simpl; lia ].
 Qed.
 
 Lemma list_rem_trail_move_carry_end {r : radix} : 1 < rad → ∀ i c,
@@ -1534,6 +1526,7 @@ induction al as [| a1]; intros.
       unfold list_norm_with_carry.
       rewrite Nat.div_small in Hbl; [ | easy ].
       remember (length (move_carry 0 bl)) as n eqn:Hn.
+bbb.
       specialize (move_carry_cons_rep_0 b1 0 n Hr) as (m, Hm).
       rewrite Hbl.
       destruct b1; [ easy | ].
