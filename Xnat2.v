@@ -1114,17 +1114,33 @@ Qed.
 
 Lemma move_carry_app_rep_0 {r : radix} : 1 < rad → ∀ c al n,
   move_carry c (al ++ List.repeat 0 n) =
-  move_carry c al ++ List.repeat 0 (n - logn1 c).
+  move_carry c al ++
+  List.repeat 0
+    (length (move_carry c (al ++ List.repeat 0 n)) -
+     length (move_carry c al)).
 Proof.
 intros Hr *.
 revert c.
 induction al as [| a1]; intros.
+ simpl.
+ rewrite move_carry_rep_0; [ simpl | easy ].
+ destruct (zerop c) as [Hc| Hc].
+  rewrite Nat.sub_0_r; simpl.
+  now rewrite List.repeat_length.
+
+bbb.
+
  rewrite List.app_nil_l.
+simpl.
  now apply move_carry_rep_0_end.
 
- simpl.
+ remember minus as f; simpl; subst f.
  rewrite IHal.
  f_equal; f_equal.
+Lemma glop :
+  logn1 c = S (logn1 ((c + a1) / rad)).
+bbb.
+
  remember move_carry_end as f; simpl; subst f.
  rewrite IHal.
  f_equal; f_equal.
