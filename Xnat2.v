@@ -1445,6 +1445,28 @@ destruct c; [ now apply move_carry_0_is_rep_0 in Hca | ].
 now apply move_nz_carry in Hca.
 Qed.
 
+Lemma move_carry_add_eq_compat {r : radix} : 1 < rad → ∀ al bl cl ca cb,
+  move_carry ca al = move_carry cb bl
+  → move_carry ca (xnatv_add al cl) = move_carry cb (xnatv_add bl cl).
+Proof.
+intros Hr.
+intros * Hab.
+rewrite xnatv_add_comm; symmetry.
+rewrite xnatv_add_comm; symmetry.
+revert al bl Hab.
+induction cl as [| c1]; intros; [ easy | simpl ].
+destruct al as [| a1]; simpl.
+ destruct bl as [| b1]; simpl.
+  simpl in Hab.
+  destruct (zerop ca) as [Hca| Hca].
+   subst ca.
+   now destruct (zerop cb); [ subst cb | ].
+
+   destruct (zerop cb) as [| Hcb]; [ easy | ].
+   injection Hab; clear Hab; intros Hab Hcab.
+   f_equal.
+bbb.
+
 Lemma list_norm_wc_add_eq_compat {r : radix} : 1 < rad → ∀ al bl cl ca cb,
   list_norm_with_carry ca al = list_norm_with_carry cb bl
   → list_norm_with_carry ca (xnatv_add al cl) =
