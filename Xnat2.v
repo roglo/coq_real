@@ -951,10 +951,11 @@ intros.
 remember (list_norm_with_carry c al) as al1 eqn:Hal1.
 symmetry in Hal1.
 apply list_rem_trail_iff in Hal1.
-bbb.
-destruct Hal1 as ((n & Hn), Hal1).
+destruct Hal1 as (Hn, Hal1).
+remember (length (move_carry c al) - length al1) as n eqn:Hnd.
+symmetry in Hnd.
 destruct Hal1 as [Hal1| Hlast]; [ now subst al1 | ].
-revert c al Hn.
+revert c al Hn Hnd.
 induction al1 as [| a1]; intros; [ easy | ].
 constructor.
  destruct al as [| a2].
@@ -975,16 +976,11 @@ constructor.
    destruct (zerop c) as [| Hc]; [ easy | ].
    injection Hn; clear Hn; intros Hn Hca.
    destruct c; [ easy | ].
-   destruct n.
-    simpl in Hn.
-    destruct (zerop (S c / rad)) as [Hscr| Hscr]; [ easy | ].
-    injection Hn; clear Hn; intros; subst a2.
-    now apply Nat.mod_upper_bound.
-
-    simpl in Hn.
-    destruct (zerop (S c / rad)) as [Hscr| Hscr]; [ easy | ].
-    injection Hn; clear Hn; intros; subst a2.
-    now apply Nat.mod_upper_bound.
+   simpl in Hnd, Hn.
+   destruct (zerop (S c / rad)) as [Hscr| Hscr]; [ easy | ].
+   simpl in Hnd, Hn.
+   injection Hn; clear Hn; intros; subst a2.
+   now apply Nat.mod_upper_bound.
 
    destruct n.
     simpl in Hn.
@@ -1011,13 +1007,14 @@ constructor.
      now apply Nat.mod_upper_bound.
 
   destruct al as [| a3].
-   simpl in Hn.
+   simpl in Hnd, Hn.
    destruct (zerop c) as [Hc| Hc]; [ easy | ].
+   simpl in Hnd.
    injection Hn; clear Hn; intros Hn Hce.
    destruct n.
     rewrite List.app_nil_r in Hn.
     destruct c; [ easy | ].
-    simpl in Hn.
+    simpl in Hnd, Hn.
     destruct (zerop (S c / rad)) as [Hcr| Hcr]; [ easy | ].
     injection Hn; clear Hn; intros Hn Ha2; rewrite <- Hn.
     now apply list_carry_end_digits_lt_radix.
@@ -1029,7 +1026,8 @@ constructor.
    simpl in Hn.
    injection Hn; clear Hn; intros Hn Ha1.
    rewrite List.app_comm_cons in Hn.
-   specialize (IHal1 Hlast ((c + a3) / rad) al Hn).
+   simpl in Hnd.
+   specialize (IHal1 Hlast ((c + a3) / rad) al Hn Hnd).
    now apply list_Forall_inv in IHal1.
 Qed.
 
