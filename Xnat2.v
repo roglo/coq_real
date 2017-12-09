@@ -314,65 +314,12 @@ split.
    specialize (IHbl al Hbl).
    now destruct IHbl; [ subst bl | apply last_cons_ne ].
 
-intros (Hab, Hbl).
-(*
-  intros ((n, Hn), Hbl).
-*)
+   intros (Hab, Hbl).
   destruct Hbl as [| Hbl].
    rewrite Hab; subst bl; simpl.
    apply list_rem_trail_repeat_0.
 
-   rewrite Hab.
-   rewrite list_rem_trail_rep_0.
-   induction bl as [| b1]; [ easy | ].
-   simpl in Hbl; simpl.
-   destruct bl as [| b2]; [ now destruct b1 | ].
-simpl in Hab.
-bbb.
-   specialize (IHbl Hbl); rewrite IHbl.
-   now destruct b1.
-Qed.
-
-Lemma list_rem_trail_iff : ∀ al bl,
-  list_remove_trailing_0s al = bl
-  ↔ (∃ n, al = bl ++ List.repeat 0 n) ∧ (bl = [] ∨ List.last bl 0 ≠ 0).
-Proof.
-intros *.
-split.
- intros Hb.
- split.
-  revert bl Hb.
-  induction al as [| a]; intros; [ now exists 0; subst bl | ].
-  subst bl; simpl.
-  remember (list_remove_trailing_0s al) as cl eqn:Hcl in |-*.
-  symmetry in Hcl.
-  specialize (IHal cl Hcl) as (m, Hm); subst al.
-  destruct a; [ | now exists m ].
-  now destruct cl; [ exists (S m) | exists m ].
-
-  revert al Hb.
-  induction bl as [| b]; intros; [ now left | right ].
-  destruct al as [| a]; [ easy | ].
-  simpl in Hb.
-  destruct a.
-   remember (list_remove_trailing_0s al) as cl eqn:Hcl.
-   symmetry in Hcl.
-   destruct cl as [| c]; [ easy | ].
-   injection Hb; clear Hb; intros Hbl Hb; subst b bl.
-   specialize (IHbl al Hcl).
-   destruct IHbl as [| IHbl]; [ easy | ].
-   now apply last_cons_id.
-
-   injection Hb; clear Hb; intros Hbl Hb; subst b.
-   specialize (IHbl al Hbl).
-   now destruct IHbl; [ subst bl | apply last_cons_ne ].
-
-  intros ((n, Hn), Hbl).
-  destruct Hbl as [| Hbl].
-   subst al bl; simpl.
-   apply list_rem_trail_repeat_0.
-
-   subst al.
+   rewrite Hab; clear Hab.
    rewrite list_rem_trail_rep_0.
    induction bl as [| b1]; [ easy | ].
    simpl in Hbl; simpl.
@@ -711,7 +658,8 @@ intros.
 remember (move_carry 0 [S a]) as al eqn:Hal.
 symmetry in Hal.
 apply list_rem_trail_iff.
-split; [ now exists 0; rewrite List.app_nil_r | right ].
+rewrite Nat.sub_diag, List.app_nil_r.
+split; [ easy | right ].
 subst al.
 now apply last_move_carry_single_nz.
 Qed.
@@ -724,6 +672,7 @@ assert (Hrz : rad ≠ 0) by lia.
 intros al Hal a.
 unfold list_norm, list_norm_with_carry in Hal |-*.
 apply list_rem_trail_iff in Hal.
+bbb.
 destruct Hal as ((m, Hm) & _); simpl in Hm.
 apply move_carry_0_is_rep_0 in Hm; [ | easy ].
 apply list_rem_trail_iff.
