@@ -1128,43 +1128,15 @@ induction al as [| a1]; intros.
   rewrite Nat.sub_0_r; simpl.
   now rewrite List.repeat_length.
 
-bbb.
+  f_equal; simpl.
+  rewrite List.app_length, Nat.add_comm, Nat.add_sub.
+ now  rewrite List.repeat_length.
 
- rewrite List.app_nil_l.
-simpl.
- now apply move_carry_rep_0_end.
-
- remember minus as f; simpl; subst f.
- rewrite IHal.
- f_equal; f_equal.
-Lemma glop :
-  logn1 c = S (logn1 ((c + a1) / rad)).
-bbb.
-
- remember move_carry_end as f; simpl; subst f.
- rewrite IHal.
- f_equal; f_equal.
-simpl.
-bbb.
- 
- specialize (IHal ((c + a1) / rad)) as (m & Hm).
- now exists m; simpl; rewrite Hm.
-Qed.
-
-Lemma move_carry_app_rep_0 {r : radix} : 1 < rad → ∀ c al n,
-  ∃ m,
-  move_carry c (al ++ List.repeat 0 n) =
-  move_carry c al ++ List.repeat 0 m.
-Proof.
-intros Hr *.
-revert c.
-induction al as [| a1]; intros.
- rewrite List.app_nil_l.
- rewrite move_carry_rep_0_end; [ | easy ].
- now exists (n - length (move_carry_end (S c) c)).
-
- specialize (IHal ((c + a1) / rad)) as (m & Hm).
- now exists m; simpl; rewrite Hm.
+ simpl; f_equal.
+ rewrite IHal; f_equal.
+ remember (c + a1) as x eqn:Hx.
+ rewrite List.app_length, Nat.add_comm, Nat.add_sub.
+ now rewrite List.repeat_length.
 Qed.
 
 Lemma list_norm_with_carry_app_rep_0 {r : radix} : 1 < rad → ∀ al n c,
@@ -1173,8 +1145,8 @@ Lemma list_norm_with_carry_app_rep_0 {r : radix} : 1 < rad → ∀ al n c,
 Proof.
 intros Hr *.
 unfold list_norm_with_carry.
-specialize (move_carry_app_rep_0 Hr c al n) as (m & Hm).
-now rewrite Hm, list_rem_trail_rep_0.
+rewrite move_carry_app_rep_0; [ | easy ].
+now rewrite list_rem_trail_rep_0.
 Qed.
 
 Lemma eq_move_carry_end_nil {r : radix} : ∀ i c,
@@ -1197,6 +1169,7 @@ intros Hr.
 assert (Hrz : rad ≠ 0) by lia.
 intros * Har Hab.
 apply list_rem_trail_iff in Hab.
+bbb.
 destruct Hab as ((n, Hn), Hb).
 simpl in Hn.
 destruct n; [ easy | simpl in Hn ].
