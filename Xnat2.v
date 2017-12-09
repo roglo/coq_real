@@ -430,17 +430,15 @@ induction n; [ easy | simpl ].
 now rewrite <- IHn.
 Qed.
 
-Definition logn {r : radix} n := length (move_carry_end (S n) n) - 1.
+(* logn1(n) = integer logarithm plus one = number of digits *)
+Definition logn1 {r : radix} n := length (move_carry_end (S n) n).
 
 Lemma move_carry_rep_0_end {r : radix} : ∀ n a, 1 < rad →
   move_carry a (List.repeat 0 n) =
-  move_carry_end (S a) a ++ List.repeat 0 (n - if zerop a then 0 else S (logn a)).
-(*
-  move_carry_end (S a) a ++
-    List.repeat 0 (n - length (move_carry_end (S a) a)).
-*)
+  move_carry_end (S a) a ++ List.repeat 0 (n - logn1 a).
 Proof.
 intros * Hr.
+unfold logn1.
 revert a.
 induction n; intros; simpl.
  now destruct (zerop a); [ | rewrite List.app_nil_r ].
@@ -459,22 +457,7 @@ induction n; intros; simpl.
    destruct rad as [| s]; [ easy | ].
    destruct s; [ lia | now apply Nat.div_lt ].
 
-   unfold logn.
    f_equal; f_equal; f_equal.
-simpl.
-destruct (zerop (a / rad)) as [Har| Har].
-rewrite Har; simpl.
-destruct (zerop a); [ easy | ].
-now destruct a.
-
-destruct (zerop a); [ now subst a | ].
-simpl.
-do 2 rewrite Nat.sub_0_r.
-destruct a; [ easy | ].
-simpl.
-destruct (zerop (S a / rad)).
-now rewrite e in Har.
-simpl; f_equal; f_equal.
    apply move_carry_end_enough_iter; [ easy | lia | ].
    destruct a; [ easy | ].
    destruct rad as [| s]; [ easy | ].
@@ -483,7 +466,7 @@ Qed.
 
 Lemma move_carry_rep_0 {r : radix} : ∀ n a, 1 < rad →
   move_carry a (List.repeat 0 n) =
-  move_carry a [] ++ List.repeat 0 (n - length (move_carry a [])).
+  move_carry a [] ++ List.repeat 0 (n - logn1 a).
 Proof.
 intros * Hr.
 unfold move_carry at 2.
@@ -499,6 +482,7 @@ Lemma move_carry_cons_rep_0 {r : radix} : ∀ a c n, 1 < rad →
   move_carry c [a] ++ List.repeat 0 (S n - length (move_carry c [a])).
 Proof.
 intros * Hr; simpl.
+bbb.
 destruct (zerop ((c + a) / rad)) as [Hca| Hca].
  rewrite Hca; simpl; f_equal.
  rewrite Nat.sub_0_r. 
