@@ -273,6 +273,68 @@ Qed.
 
 Lemma list_rem_trail_iff : ∀ al bl,
   list_remove_trailing_0s al = bl
+  ↔ (al = bl ++ List.repeat 0 (length al - length bl)) ∧
+     (bl = [] ∨ List.last bl 0 ≠ 0).
+Proof.
+intros *.
+split.
+ intros Hb.
+ split.
+  revert bl Hb.
+  induction al as [| a]; intros; [ now subst bl | ].
+  subst bl; simpl.
+  remember (list_remove_trailing_0s al) as cl eqn:Hcl in |-*.
+  symmetry in Hcl.
+  rewrite (IHal cl); [ | easy ].
+  destruct a; simpl.
+   destruct cl; simpl.
+    rewrite Nat.sub_0_r.
+    now rewrite List.repeat_length.
+
+    rewrite List.app_length, Nat.add_comm, Nat.add_sub.
+    now rewrite List.repeat_length.
+
+   rewrite List.app_length, Nat.add_comm, Nat.add_sub.
+   now rewrite List.repeat_length.
+
+  revert al Hb.
+  induction bl as [| b]; intros; [ now left | right ].
+  destruct al as [| a]; [ easy | ].
+  simpl in Hb.
+  destruct a.
+   remember (list_remove_trailing_0s al) as cl eqn:Hcl.
+   symmetry in Hcl.
+   destruct cl as [| c]; [ easy | ].
+   injection Hb; clear Hb; intros Hbl Hb; subst b bl.
+   specialize (IHbl al Hcl).
+   destruct IHbl as [| IHbl]; [ easy | ].
+   now apply last_cons_id.
+
+   injection Hb; clear Hb; intros Hbl Hb; subst b.
+   specialize (IHbl al Hbl).
+   now destruct IHbl; [ subst bl | apply last_cons_ne ].
+
+intros (Hab, Hbl).
+(*
+  intros ((n, Hn), Hbl).
+*)
+  destruct Hbl as [| Hbl].
+   rewrite Hab; subst bl; simpl.
+   apply list_rem_trail_repeat_0.
+
+   rewrite Hab.
+   rewrite list_rem_trail_rep_0.
+   induction bl as [| b1]; [ easy | ].
+   simpl in Hbl; simpl.
+   destruct bl as [| b2]; [ now destruct b1 | ].
+simpl in Hab.
+bbb.
+   specialize (IHbl Hbl); rewrite IHbl.
+   now destruct b1.
+Qed.
+
+Lemma list_rem_trail_iff : ∀ al bl,
+  list_remove_trailing_0s al = bl
   ↔ (∃ n, al = bl ++ List.repeat 0 n) ∧ (bl = [] ∨ List.last bl 0 ≠ 0).
 Proof.
 intros *.
@@ -479,10 +541,9 @@ Qed.
 
 Lemma move_carry_cons_rep_0 {r : radix} : ∀ a c n, 1 < rad →
   move_carry c (a :: List.repeat 0 n) =
-  move_carry c [a] ++ List.repeat 0 (S n - length (move_carry c [a])).
+  move_carry c [a] ++ List.repeat 0 (n - logn1 ((c + a) / rad)).
 Proof.
 intros * Hr; simpl.
-bbb.
 destruct (zerop ((c + a) / rad)) as [Hca| Hca].
  rewrite Hca; simpl; f_equal.
  rewrite Nat.sub_0_r. 
@@ -600,7 +661,8 @@ induction n; [ now rewrite Nat.mul_1_r | ].
 simpl; rewrite IHn, Nat.add_0_r; lia.
 Qed.
 
-Lemma nat_of_list_0_rep_0 {r : radix} : ∀ n, nat_of_list 0 (List.repeat 0 n) = 0.
+Lemma nat_of_list_0_rep_0 {r : radix} : ∀ n,
+  nat_of_list 0 (List.repeat 0 n) = 0.
 Proof.
 intros.
 induction n; [ easy | simpl; now rewrite IHn ].
@@ -675,7 +737,7 @@ split.
 
   rewrite list_rem_trail_move_carry_0_nz; [ subst al | easy ].
   rewrite move_carry_cons_rep_0; [ | easy ].
-  now exists (S m - length (move_carry 0 [S a])).
+  now exists (m - logn1 (S a / rad)).
 
  destruct a.
   left; simpl.
@@ -915,19 +977,6 @@ Proof.
 intros Hr *.
 now specialize (list_of_nat_carry_inv Hr 0 al) as H.
 Qed.
-
-(*
-Lemma move_carry_digits_lt_radix {r : radix} : ∀ c al,
-  List.Forall (λ a, a < rad) (move_carry c al).
-Proof.
-intros.
-revert c.
-induction al as [| a1]; intros.
- simpl.
- destruct (zerop c) as [Hzc| Hzc]; [ easy | ].
- constructor.
-Abort.
-*)
 
 Lemma list_carry_end_digits_lt_radix {r : radix} : rad ≠ 0 →
   ∀ i c, List.Forall (λ a, a < rad) (move_carry_end i c).
