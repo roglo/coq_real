@@ -1453,14 +1453,25 @@ destruct c; [ now apply move_carry_0_is_rep_0 in Hca | ].
 now apply move_nz_carry in Hca.
 Qed.
 
-Lemma move_carry_add {r : radix} : ∀ c al,
+Lemma move_carry_add {r : radix} : rad ≠ 0 → ∀ c al,
   list_remove_trailing_0s (move_carry c al) =
   list_remove_trailing_0s (xnatv_add [c] al).
 Proof.
-intros.
+intros Hr *.
 revert c.
 induction al as [| a1]; intros.
  destruct c; [ easy | simpl ].
+ remember (S c mod rad) as cr eqn:Hcr.
+ symmetry in Hcr.
+ destruct cr.
+  destruct (zerop (S c / rad)) as [Hzcr| Hzcr].
+   apply Nat.div_small_iff in Hzcr; [ | easy ].
+   now rewrite Nat.mod_small in Hcr.
+
+   simpl.
+   remember ((S c / rad) mod rad) as crr eqn:Hcrr.
+   symmetry in Hcrr.
+   destruct crr.
 bbb.
 
 Lemma move_carry_add_eq_compat {r : radix} : 1 < rad → ∀ al bl cl ca cb,
