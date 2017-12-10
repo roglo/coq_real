@@ -1,4 +1,7 @@
 Require Import Utf8 Arith.
+Require List.
+Import List.ListNotations.
+Open Scope list_scope.
 
 Notation "x < y <= z" := (x < y ∧ y <= z) (at level 70, y at next level).
 Notation "x < y < z" := (x < y ∧ y < z) (at level 70, y at next level).
@@ -20,3 +23,32 @@ Proof.
 intros A P a l H.
 inversion H; split; assumption.
 Qed.
+
+Lemma last_cons_id : ∀ A (a : A) al,
+  List.last al a ≠ a
+  → List.last (a :: al) a ≠ a.
+Proof.
+intros * Hal.
+now destruct al.
+Qed.
+
+Lemma last_cons_cons : ∀ A (a b : A) al d,
+  List.last (a :: b :: al) d = List.last (b :: al) d.
+Proof. easy. Qed.
+
+Lemma last_cons_ne : ∀ A (a d : A) al,
+  a ≠ d
+  → List.last al d ≠ d
+  → List.last (a :: al) d ≠ d.
+Proof.
+intros * Had Hal.
+revert a Had.
+induction al as [| a1]; intros; [ easy | ].
+rewrite last_cons_cons.
+simpl in Hal.
+destruct al as [| a2]; [ easy | ].
+now rewrite last_cons_cons.
+Qed.
+
+Theorem List_cons_comm_app : ∀ A (x : A) l l', l ++ x :: l' = l ++ [x] ++ l'.
+Proof. easy. Qed.

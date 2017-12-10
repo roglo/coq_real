@@ -98,6 +98,7 @@ Definition list_norm {r : radix} := list_norm_with_carry 0.
 
 Definition xnat_norm {r : radix} a := xn (list_norm (xnatv a)).
 
+(*
 Lemma nat_of_list_mul {r : radix} : ∀ al,
   nat_of_list 0 al * rad = nat_of_list 0 (0 :: al).
 Proof.
@@ -136,6 +137,7 @@ specialize (move_carry_0_rep_0 1) as H.
 remember move_carry as f; simpl in H; subst f.
 now rewrite H.
 Qed.
+*)
 
 Lemma eq_list_rem_trail_nil : ∀ al,
   list_remove_trailing_0s al = [] ↔ al = List.repeat 0 (length al).
@@ -152,6 +154,7 @@ split; intros Ha.
  now rewrite IHal.
 Qed.
 
+(*
 Lemma list_rem_trail_cons_eq_cons : ∀ a b al bl,
   list_remove_trailing_0s (a :: al) = list_remove_trailing_0s (b :: bl)
   ↔ a = b ∧ list_remove_trailing_0s al = list_remove_trailing_0s bl.
@@ -173,6 +176,7 @@ split; intros Hab.
 
  now destruct Hab as (H, Hl); rewrite H, Hl.
 Qed.
+*)
 
 Lemma list_rem_trail_repeat_0 : ∀ n,
   list_remove_trailing_0s (List.repeat 0 n) = [].
@@ -182,6 +186,7 @@ apply eq_list_rem_trail_nil.
 now rewrite List.repeat_length.
 Qed.
 
+(*
 Lemma eq_nat_of_list_0_0 {r : radix} : ∀ al, 0 < rad →
   nat_of_list 0 al = 0 ↔ al = List.repeat 0 (length al).
 Proof.
@@ -230,9 +235,7 @@ destruct (zerop rad) as [Hr| Hr].
  rewrite Nat.div_0_l; [ | lia ].
  now f_equal.
 Qed.
-
-Theorem List_cons_comm_app : ∀ A (x : A) l l', l ++ x :: l' = l ++ [x] ++ l'.
-Proof. easy. Qed.
+*)
 
 Lemma list_rem_trail_rep_0 : ∀ al n,
   list_remove_trailing_0s (al ++ List.repeat 0 n) = list_remove_trailing_0s al.
@@ -243,32 +246,6 @@ induction n; intros; [ now rewrite List.app_nil_r | simpl ].
 rewrite List_cons_comm_app, List.app_assoc.
 rewrite IHn; clear.
 induction al as [| a]; [ easy | now simpl; rewrite IHal ].
-Qed.
-
-Lemma last_cons_cons : ∀ A (a b : A) al d,
-  List.last (a :: b :: al) d = List.last (b :: al) d.
-Proof. easy. Qed.
-
-Lemma last_cons_id : ∀ A (a : A) al,
-  List.last al a ≠ a
-  → List.last (a :: al) a ≠ a.
-Proof.
-intros * Hal.
-now destruct al.
-Qed.
-
-Lemma last_cons_ne : ∀ A (a d : A) al,
-  a ≠ d
-  → List.last al d ≠ d
-  → List.last (a :: al) d ≠ d.
-Proof.
-intros * Had Hal.
-revert a Had.
-induction al as [| a1]; intros; [ easy | ].
-rewrite last_cons_cons.
-simpl in Hal.
-destruct al as [| a2]; [ easy | ].
-now rewrite last_cons_cons.
 Qed.
 
 Lemma list_rem_trail_iff : ∀ al bl,
@@ -328,6 +305,7 @@ split.
    now destruct b1.
 Qed.
 
+(*
 Lemma move_carry_end_succ_ne_rep_0 {r : radix} : ∀ i c n, 1 < rad →
   0 < c < i
   → move_carry_end i c ≠ List.repeat 0 n.
@@ -410,6 +388,7 @@ injection Hr; clear Hr; intros Hr; simpl.
 destruct al as [| a]; [ easy | ].
 eapply IHal; eassumption.
 Qed.
+*)
 
 Lemma move_carry_end_enough_iter {r : radix} : ∀ carry m n, rad > 1 →
   carry < m → carry < n → move_carry_end m carry = move_carry_end n carry.
@@ -427,6 +406,7 @@ apply IHm.
  now apply Nat.div_lt.
 Qed.
 
+(*
 Lemma List_repeat_succ : ∀ A (a : A) n,
   List.repeat a (S n) = a :: List.repeat a n.
 Proof. easy. Qed.
@@ -504,6 +484,7 @@ Qed.
 Lemma move_carry_cons {r : radix} : ∀ a al c,
   move_carry c (a :: al) = (c + a) mod rad :: move_carry ((c + a) / rad) al.
 Proof. easy. Qed.
+*)
 
 Lemma last_move_carry_end {r : radix} : ∀ i c, 1 < rad → 0 < c < i →
   List.last (move_carry_end i c) 0 ≠ 0.
@@ -600,6 +581,7 @@ destruct (zerop d) as [Hzd| Hnzd].
   now apply Nat.div_lt.
 Qed.
 
+(*
 Lemma nat_of_list_rep_0 {r : radix} : ∀ c n,
   nat_of_list c (List.repeat 0 n) = c * rad ^ n.
 Proof.
@@ -735,6 +717,7 @@ destruct c2.
 
  now apply move_nz_carry in Hal2.
 Qed.
+*)
 
 Lemma move_carry_end_ne_rep_0_succ {r : radix} : ∀ i c al n, 1 < rad →
   c < i
@@ -809,6 +792,7 @@ Lemma fold_list_norm_with_carry {r : radix} : ∀ c al,
   list_remove_trailing_0s (move_carry c al) = list_norm_with_carry c al.
 Proof. easy. Qed.
 
+(*
 Lemma list_norm_wc_nil {r : radix} : ∀ c,
   list_norm_with_carry c [] =
   if zerop c then []
@@ -823,6 +807,7 @@ Lemma list_norm_wc_cons_list_rem {r : radix} : ∀ c a al,
   list_norm_with_carry c (a :: al) =
   list_remove_trailing_0s ((c + a) mod rad :: move_carry ((c + a) / rad) al).
 Proof. easy. Qed.
+*)
 
 Lemma list_norm_wc_cons {r : radix} : ∀ c a al, rad ≠ 0 →
   list_norm_with_carry c (a :: al) =
@@ -1041,11 +1026,11 @@ Qed.
 (* Conversion from and to nat *)
 
 Theorem nat_of_xnat_inv {r : radix} : 2 ≤ rad →
-  ∀ a, xnat_of_nat (nat_of_xnat a) = xnat_norm a.
+  ∀ a, nat_of_xnat (xnat_of_nat a) = a.
 Proof.
 intros Hr *.
-unfold xnat_of_nat, xnat_norm; f_equal.
-now apply list_of_nat_inv.
+unfold xnat_of_nat, nat_of_xnat; simpl.
+now apply nat_of_list_inv.
 Qed.
 
 Theorem xnat_of_nat_inv {r : radix} : 2 ≤ rad →
@@ -1131,6 +1116,8 @@ unfold xnat_add, xnat_norm; simpl; f_equal.
 now apply list_norm_wc_add_assoc.
 Qed.
 
+(**)
+(*
 Lemma xnatv_add_rep_0_l {r : radix} : ∀ al n,
   xnatv_add (List.repeat 0 n) al = al ++ List.repeat 0 (n - length al).
 Proof.
@@ -1853,3 +1840,4 @@ unfold xnat_norm; f_equal.
 unfold xnat_add; simpl.
 unfold list_norm.
 bbb.
+*)
