@@ -1103,6 +1103,34 @@ unfold xnat_add; simpl.
 now rewrite xnatv_add_comm.
 Qed.
 
+Theorem xnat_add_0_l {r : radix} : ∀ a, (0 + a = a)%X.
+Proof. easy. Qed.
+
+Lemma list_norm_wc_add_assoc {r : radix} : rad ≠ 0 → ∀ al bl cl carry,
+  list_norm_with_carry carry (xnatv_add al (xnatv_add bl cl)) =
+  list_norm_with_carry carry (xnatv_add (xnatv_add al bl) cl).
+Proof.
+intros Hr *.
+revert al cl carry.
+induction bl as [| b1]; intros; simpl.
+ now replace (xnatv_add al []) with (xnatv_add [] al) by apply xnatv_add_comm.
+
+ destruct cl as [| c1]; [ now destruct al | simpl ].
+ destruct al as [| a1]; [ easy | simpl ].
+ rewrite Nat.add_assoc.
+ rewrite list_norm_wc_cons; [ | easy ].
+ rewrite list_norm_wc_cons; [ | easy ].
+ now rewrite IHbl.
+Qed.
+
+Theorem xnat_add_assoc {r : radix} : rad ≠ 0 → ∀ a b c,
+  (a + (b + c) = (a + b) + c)%X.
+Proof.
+intros Hr *.
+unfold xnat_add, xnat_norm; simpl; f_equal.
+now apply list_norm_wc_add_assoc.
+Qed.
+
 Lemma xnatv_add_rep_0_l {r : radix} : ∀ al n,
   xnatv_add (List.repeat 0 n) al = al ++ List.repeat 0 (n - length al).
 Proof.
@@ -1825,31 +1853,3 @@ unfold xnat_norm; f_equal.
 unfold xnat_add; simpl.
 unfold list_norm.
 bbb.
-
-Theorem xnat_add_0_l {r : radix} : ∀ a, (0 + a = a)%X.
-Proof. easy. Qed.
-
-Lemma list_norm_wc_add_assoc {r : radix} : rad ≠ 0 → ∀ al bl cl carry,
-  list_norm_with_carry carry (xnatv_add al (xnatv_add bl cl)) =
-  list_norm_with_carry carry (xnatv_add (xnatv_add al bl) cl).
-Proof.
-intros Hr *.
-revert al cl carry.
-induction bl as [| b1]; intros; simpl.
- now replace (xnatv_add al []) with (xnatv_add [] al) by apply xnatv_add_comm.
-
- destruct cl as [| c1]; [ now destruct al | simpl ].
- destruct al as [| a1]; [ easy | simpl ].
- rewrite Nat.add_assoc.
- rewrite list_norm_with_carry_cons; [ | easy ].
- rewrite list_norm_with_carry_cons; [ | easy ].
- now rewrite IHbl.
-Qed.
-
-Theorem xnat_add_assoc {r : radix} : rad ≠ 0 → ∀ a b c,
-  (a + (b + c) = (a + b) + c)%X.
-Proof.
-intros Hr *.
-unfold xnat_add, xnat_norm; simpl; f_equal.
-now apply list_norm_wc_add_assoc.
-Qed.
