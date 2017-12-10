@@ -1454,7 +1454,7 @@ assert (Hrz : rad ≠ 0) by lia.
 intros * Hab.
 rewrite xnatv_add_comm; symmetry.
 rewrite xnatv_add_comm; symmetry.
-revert al bl Hab.
+revert ca cb al bl Hab.
 induction cl as [| c1]; intros; [ easy | simpl ].
 destruct al as [| a1]; simpl.
  destruct bl as [| b1]; simpl.
@@ -1489,8 +1489,12 @@ destruct al as [| a1]; simpl.
   remember ((cb + (c1 + b1)) mod rad) as x eqn:Hx.
   rewrite Nat.add_comm, Nat.add_shuffle0, <- Nat.add_assoc in Hx.
   rewrite <- Nat.add_mod_idemp_r in Hx; [ subst x | easy ].
-  rewrite <- Hcab, Nat.add_mod_idemp_r.
+  rewrite <- Hcab, Nat.add_mod_idemp_r; [ | easy ].
   rewrite Nat.add_comm; f_equal.
+  destruct ca; [ easy | ].
+  rewrite move_carry_end_enough_iter with (n := S (S ca / rad)) in Hab.
+   specialize (IHcl (S ca / rad) ((cb + b1) / rad) [] bl Hab) as H.
+   rewrite xnatv_add_comm in H; simpl in H.
 bbb.
 
 Lemma list_norm_wc_add_eq_compat {r : radix} : 1 < rad → ∀ al bl cl ca cb,
