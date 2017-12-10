@@ -1159,6 +1159,14 @@ split; intros H.
  destruct H; [ now subst i | now subst c; destruct i ].
 Qed.
 
+Lemma eq_move_carry_nil {r : radix} : ∀ c al,
+  move_carry c al = [] ↔ al = [] ∧ move_carry_end (S c) c = [].
+Proof.
+intros.
+split; intros H; [ now destruct al | ].
+now destruct H as (Hal, Hmc); rewrite Hal.
+Qed.
+
 Lemma list_rem_trail_cons_cons_ne_single {r : radix} : 1 < rad → ∀ a b,
   0 < S a / rad
   → list_remove_trailing_0s
@@ -1495,6 +1503,22 @@ destruct al as [| a1]; simpl.
   rewrite move_carry_end_enough_iter with (n := S (S ca / rad)) in Hab.
    specialize (IHcl (S ca / rad) ((cb + b1) / rad) [] bl Hab) as H.
    rewrite xnatv_add_comm in H; simpl in H.
+   destruct cl as [| c2].
+    simpl in H; simpl.
+    destruct (zerop ((c1 + S ca) / rad)) as [Hccr| Hccr].
+     destruct (zerop (S ca / rad)) as [Hcr| Hcr].
+      rewrite <- H in Hab.
+      apply eq_move_carry_end_nil in Hab.
+      destruct Hab as [Har| Har]; [ easy | ].
+      symmetry in H.
+      apply eq_move_carry_nil in H.
+      destruct H as (Hbl, Hmc).
+      rewrite Hbl; symmetry.
+      apply eq_move_carry_nil.
+      split; [ easy | ].
+      apply eq_move_carry_end_nil in Hmc.
+      destruct Hmc as [Hmc| Hmc]; [ easy | ].
+      apply eq_move_carry_end_nil; right.
 bbb.
 
 Lemma list_norm_wc_add_eq_compat {r : radix} : 1 < rad → ∀ al bl cl ca cb,
