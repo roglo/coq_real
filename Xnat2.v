@@ -1472,6 +1472,25 @@ destruct al as [| a1]; simpl.
     rewrite H, Nat.add_shuffle0.
     rewrite Nat.mod_add; [ | easy ].
     now apply Nat.add_mod_idemp_l.
+
+    apply move_carry_end_inv in Hab; [ | easy | | ].
+     specialize (Nat.div_mod ca rad Hrz) as H.
+     rewrite Hab, Hcab in H.
+     rewrite <- Nat.div_mod in H; [ | easy ].
+     now subst ca.
+
+     now apply Nat.div_lt.
+
+     now apply Nat.div_lt.
+
+  simpl in Hab.
+  destruct (zerop ca) as [| Hca]; [ easy | ].
+  injection Hab; clear Hab; intros Hab Hcab.
+  remember ((cb + (c1 + b1)) mod rad) as x eqn:Hx.
+  rewrite Nat.add_comm, Nat.add_shuffle0, <- Nat.add_assoc in Hx.
+  rewrite <- Nat.add_mod_idemp_r in Hx; [ subst x | easy ].
+  rewrite <- Hcab, Nat.add_mod_idemp_r.
+  rewrite Nat.add_comm; f_equal.
 bbb.
 
 Lemma list_norm_wc_add_eq_compat {r : radix} : 1 < rad → ∀ al bl cl ca cb,
