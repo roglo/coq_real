@@ -1478,7 +1478,6 @@ induction al as [| a1]; intros.
    now rewrite Nat.mod_small.
 
    unfold list_norm_with_carry.
-
 bbb.
 
  destruct c; [ easy | simpl ].
