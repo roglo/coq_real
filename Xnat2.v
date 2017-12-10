@@ -1519,6 +1519,20 @@ destruct al as [| a1]; simpl.
       apply eq_move_carry_end_nil in Hmc.
       destruct Hmc as [Hmc| Hmc]; [ easy | ].
       apply eq_move_carry_end_nil; right.
+      apply Nat.div_small_iff in Har; [ | easy ].
+      rewrite Nat.mod_small in Hcab; [ | easy ].
+      apply Nat.div_small_iff in Hmc; [ | easy ].
+      rewrite Nat.mod_small in Hcab; [ | easy ].
+      rewrite Nat.add_comm, Nat.add_shuffle0, <- Nat.add_assoc.
+      now rewrite <- Hcab.
+
+      destruct bl as [| b2].
+       symmetry.
+       apply eq_move_carry_nil.
+       split; [ easy | ].
+       apply eq_move_carry_end_nil; right.
+       simpl in Hab.
+
 bbb.
 
 Lemma list_norm_wc_add_eq_compat {r : radix} : 1 < rad → ∀ al bl cl ca cb,
