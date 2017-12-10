@@ -116,19 +116,6 @@ symmetry in Hal.
 now destruct a; [ destruct al' | ].
 Qed.
 
-Lemma move_carry_0_rep_0 {r : radix} : ∀ n,
-  move_carry 0 (List.repeat 0 n) = List.repeat 0 n.
-Proof.
-intros.
-induction n; [ easy | simpl ].
-destruct (zerop rad) as [Hr| Hr].
- rewrite Hr; simpl.
- now f_equal.
-
- rewrite Nat.mod_0_l; [ f_equal | lia ].
- rewrite Nat.div_0_l; [ easy | lia ].
-Qed.
-
 Lemma list_norm_0 {r : radix} : list_norm [0] = [].
 Proof.
 intros.
@@ -153,30 +140,6 @@ split; intros Ha.
  injection Ha; clear Ha; intros Hal Ha; subst a.
  now rewrite IHal.
 Qed.
-
-(*
-Lemma list_rem_trail_cons_eq_cons : ∀ a b al bl,
-  list_remove_trailing_0s (a :: al) = list_remove_trailing_0s (b :: bl)
-  ↔ a = b ∧ list_remove_trailing_0s al = list_remove_trailing_0s bl.
-Proof.
-intros *.
-simpl.
-remember (list_remove_trailing_0s al) as al' eqn:Hal'.
-remember (list_remove_trailing_0s bl) as bl' eqn:Hbl'.
-symmetry in Hal', Hbl'.
-split; intros Hab.
- destruct a.
-  destruct b; [ | now destruct al' ].
-  destruct al' as [| a1]; [ now destruct bl' | ].
-  destruct bl' as [| b1]; [ easy | ].
-  now injection Hab; intros; subst a1 al'.
-
-  destruct b; [ now destruct bl' | ].
-  now injection Hab; intros; subst a.
-
- now destruct Hab as (H, Hl); rewrite H, Hl.
-Qed.
-*)
 
 Lemma list_rem_trail_repeat_0 : ∀ n,
   list_remove_trailing_0s (List.repeat 0 n) = [].
@@ -306,74 +269,6 @@ split.
 Qed.
 
 (*
-Lemma move_carry_end_succ_ne_rep_0 {r : radix} : ∀ i c n, 1 < rad →
-  0 < c < i
-  → move_carry_end i c ≠ List.repeat 0 n.
-Proof.
-intros * Hr (Hc, Hci).
-revert c n Hc Hci.
-induction i; intros; [ easy | simpl ].
-destruct (zerop c) as [H| H]; [ lia | clear H ].
-remember (c mod rad) as c1 eqn:Hc1.
-symmetry in Hc1.
-destruct c1; [ | now destruct n ].
-destruct n; [ easy | ].
-simpl; intros H; injection H; clear H; intros H.
-apply Nat.mod_divides in Hc1; [ | lia ].
-destruct Hc1 as (c1, Hc1).
-rewrite Nat.mul_comm in Hc1.
-revert H.
-rewrite Hc1, Nat.div_mul; [ | lia ].
-apply IHi; [ destruct c1; lia | ].
-apply Nat.mul_lt_mono_pos_r with (p := rad); [ lia | ].
-rewrite <- Hc1.
-destruct rad as [| s]; [ easy | ].
-destruct s; [ lia | ].
-destruct i; [ lia | ].
-rewrite Nat.mul_comm; simpl; lia.
-Qed.
-
-Lemma move_nz_carry {r : radix} : ∀ al n c, 1 < rad → c ≠ 0 →
-  move_carry c al ≠ List.repeat 0 n.
-Proof.
-intros * Hr Hc H.
-destruct c; [ easy | clear Hc ].
-revert c n H.
-induction al as [| a]; intros.
- unfold move_carry in H.
- revert H; apply move_carry_end_succ_ne_rep_0; [ easy | ].
- split; lia.
-
- destruct n in H; [ easy | simpl in H ].
- injection H; clear H; intros H Hc.
- apply Nat.mod_divides in Hc; [ | lia ].
- destruct Hc as (c1, Hc1).
- rewrite Nat.mul_comm in Hc1.
- rewrite Hc1 in H.
- rewrite Nat.div_mul in H; [ | lia ].
- destruct c1; [ lia | ].
- revert H; apply IHal.
-Qed.
-
-Lemma move_carry_0_is_rep_0 {r : radix} : ∀ al n, 1 < rad →
-  move_carry 0 al = List.repeat 0 n → al = List.repeat 0 n.
-Proof.
-intros * Hr Han.
-revert al Han.
-induction n; intros; [ now destruct al | ].
-simpl in Han; simpl.
-destruct al as [| a]; [ easy | ].
-simpl in Han.
-injection Han; clear Han; intros Han Ha.
-apply Nat.mod_divides in Ha; [ | lia ].
-destruct Ha as (a1, Ha).
-rewrite Nat.mul_comm in Ha; subst a.
-rewrite Nat.div_mul in Han; [ | lia ].
-destruct a1; [ now f_equal; apply IHn | exfalso ].
-revert Han.
-now apply move_nz_carry.
-Qed.
-
 Lemma List_app_rep_0_last : ∀ al m n,
   List.repeat 0 m = al ++ List.repeat 0 n
   → List.last al 0 = 0.
@@ -417,53 +312,6 @@ Proof.
 intros; simpl.
 induction n; [ easy | simpl ].
 now rewrite <- IHn.
-Qed.
-
-(* logn1(n) = integer logarithm plus one = number of digits *)
-Definition logn1 {r : radix} n := length (move_carry_end (S n) n).
-
-Lemma move_carry_rep_0_end {r : radix} : ∀ n a, 1 < rad →
-  move_carry a (List.repeat 0 n) =
-  move_carry_end (S a) a ++ List.repeat 0 (n - logn1 a).
-Proof.
-intros * Hr.
-unfold logn1.
-revert a.
-induction n; intros; simpl.
- now destruct (zerop a); [ | rewrite List.app_nil_r ].
-
- rewrite Nat.add_0_r.
- destruct (zerop a) as [Ha| Ha].
-  subst a.
-  rewrite Nat.mod_0_l; [ | lia ].
-  rewrite Nat.div_0_l; [ | lia ].
-  now rewrite move_carry_0_rep_0.
-
-  simpl; rewrite IHn; f_equal.
-  f_equal.
-   apply move_carry_end_enough_iter; [ easy | lia | ].
-   destruct a; [ easy | ].
-   destruct rad as [| s]; [ easy | ].
-   destruct s; [ lia | now apply Nat.div_lt ].
-
-   f_equal; f_equal; f_equal.
-   apply move_carry_end_enough_iter; [ easy | lia | ].
-   destruct a; [ easy | ].
-   destruct rad as [| s]; [ easy | ].
-   destruct s; [ lia | now apply Nat.div_lt ].
-Qed.
-
-Lemma move_carry_rep_0 {r : radix} : ∀ n a, 1 < rad →
-  move_carry a (List.repeat 0 n) =
-  move_carry a [] ++ List.repeat 0 (n - logn1 a).
-Proof.
-intros * Hr.
-unfold move_carry at 2.
-destruct (zerop a) as [Ha| Ha].
- subst a; simpl; rewrite Nat.sub_0_r.
- apply move_carry_0_rep_0.
-
- now apply move_carry_rep_0_end.
 Qed.
 
 Lemma move_carry_cons_rep_0 {r : radix} : ∀ a c n, 1 < rad →
@@ -1117,7 +965,7 @@ now apply list_norm_wc_add_assoc.
 Qed.
 
 (**)
-(*
+
 Lemma xnatv_add_rep_0_l {r : radix} : ∀ al n,
   xnatv_add (List.repeat 0 n) al = al ++ List.repeat 0 (n - length al).
 Proof.
@@ -1125,6 +973,66 @@ intros.
 revert n.
 induction al as [| a]; intros; [ now destruct n | simpl ].
 now destruct n; [ rewrite List.app_nil_r | simpl; rewrite IHal ].
+Qed.
+
+(* logn1(n) = integer logarithm plus one = number of digits *)
+Definition logn1 {r : radix} n := length (move_carry_end (S n) n).
+
+Lemma move_carry_0_rep_0 {r : radix} : ∀ n,
+  move_carry 0 (List.repeat 0 n) = List.repeat 0 n.
+Proof.
+intros.
+induction n; [ easy | simpl ].
+destruct (zerop rad) as [Hr| Hr].
+ rewrite Hr; simpl.
+ now f_equal.
+
+ rewrite Nat.mod_0_l; [ f_equal | lia ].
+ rewrite Nat.div_0_l; [ easy | lia ].
+Qed.
+
+Lemma move_carry_rep_0_end {r : radix} : ∀ n a, 1 < rad →
+  move_carry a (List.repeat 0 n) =
+  move_carry_end (S a) a ++ List.repeat 0 (n - logn1 a).
+Proof.
+intros * Hr.
+unfold logn1.
+revert a.
+induction n; intros; simpl.
+ now destruct (zerop a); [ | rewrite List.app_nil_r ].
+
+ rewrite Nat.add_0_r.
+ destruct (zerop a) as [Ha| Ha].
+  subst a.
+  rewrite Nat.mod_0_l; [ | lia ].
+  rewrite Nat.div_0_l; [ | lia ].
+  now rewrite move_carry_0_rep_0.
+
+  simpl; rewrite IHn; f_equal.
+  f_equal.
+   apply move_carry_end_enough_iter; [ easy | lia | ].
+   destruct a; [ easy | ].
+   destruct rad as [| s]; [ easy | ].
+   destruct s; [ lia | now apply Nat.div_lt ].
+
+   f_equal; f_equal; f_equal.
+   apply move_carry_end_enough_iter; [ easy | lia | ].
+   destruct a; [ easy | ].
+   destruct rad as [| s]; [ easy | ].
+   destruct s; [ lia | now apply Nat.div_lt ].
+Qed.
+
+Lemma move_carry_rep_0 {r : radix} : ∀ n a, 1 < rad →
+  move_carry a (List.repeat 0 n) =
+  move_carry a [] ++ List.repeat 0 (n - logn1 a).
+Proof.
+intros * Hr.
+unfold move_carry at 2.
+destruct (zerop a) as [Ha| Ha].
+ subst a; simpl; rewrite Nat.sub_0_r.
+ apply move_carry_0_rep_0.
+
+ now apply move_carry_rep_0_end.
 Qed.
 
 Lemma move_carry_app_rep_0 {r : radix} : 1 < rad → ∀ c al n,
@@ -1180,6 +1088,33 @@ Proof.
 intros.
 split; intros H; [ now destruct al | ].
 now destruct H as (Hal, Hmc); rewrite Hal.
+Qed.
+
+Lemma move_carry_end_succ_ne_rep_0 {r : radix} : ∀ i c n, 1 < rad →
+  0 < c < i
+  → move_carry_end i c ≠ List.repeat 0 n.
+Proof.
+intros * Hr (Hc, Hci).
+revert c n Hc Hci.
+induction i; intros; [ easy | simpl ].
+destruct (zerop c) as [H| H]; [ lia | clear H ].
+remember (c mod rad) as c1 eqn:Hc1.
+symmetry in Hc1.
+destruct c1; [ | now destruct n ].
+destruct n; [ easy | ].
+simpl; intros H; injection H; clear H; intros H.
+apply Nat.mod_divides in Hc1; [ | lia ].
+destruct Hc1 as (c1, Hc1).
+rewrite Nat.mul_comm in Hc1.
+revert H.
+rewrite Hc1, Nat.div_mul; [ | lia ].
+apply IHi; [ destruct c1; lia | ].
+apply Nat.mul_lt_mono_pos_r with (p := rad); [ lia | ].
+rewrite <- Hc1.
+destruct rad as [| s]; [ easy | ].
+destruct s; [ lia | ].
+destruct i; [ lia | ].
+rewrite Nat.mul_comm; simpl; lia.
 Qed.
 
 Lemma list_rem_trail_cons_cons_ne_single {r : radix} : 1 < rad → ∀ a b,
@@ -1269,6 +1204,28 @@ destruct (zerop a) as [Hza| Hza].
   apply Nat.div_lt_upper_bound; [ easy | ].
   destruct rad as [| s]; [ easy | ].
   destruct s; [ lia | simpl; lia ].
+Qed.
+
+Lemma list_rem_trail_cons_eq_cons : ∀ a b al bl,
+  list_remove_trailing_0s (a :: al) = list_remove_trailing_0s (b :: bl)
+  ↔ a = b ∧ list_remove_trailing_0s al = list_remove_trailing_0s bl.
+Proof.
+intros *.
+simpl.
+remember (list_remove_trailing_0s al) as al' eqn:Hal'.
+remember (list_remove_trailing_0s bl) as bl' eqn:Hbl'.
+symmetry in Hal', Hbl'.
+split; intros Hab.
+ destruct a.
+  destruct b; [ | now destruct al' ].
+  destruct al' as [| a1]; [ now destruct bl' | ].
+  destruct bl' as [| b1]; [ easy | ].
+  now injection Hab; intros; subst a1 al'.
+
+  destruct b; [ now destruct bl' | ].
+  now injection Hab; intros; subst a.
+
+ now destruct Hab as (H, Hl); rewrite H, Hl.
 Qed.
 
 Lemma list_norm_with_carry_inv {r : radix} : 1 < rad → ∀ ca cb al,
@@ -1455,6 +1412,47 @@ induction al as [| a]; intros.
     rewrite Nat.div_mod with (y := rad); [ symmetry | easy ].
     rewrite Nat.div_mod with (y := rad); [ symmetry | easy ].
     now rewrite H, Hcar, <- Hcbr.
+Qed.
+
+Lemma move_nz_carry {r : radix} : ∀ al n c, 1 < rad → c ≠ 0 →
+  move_carry c al ≠ List.repeat 0 n.
+Proof.
+intros * Hr Hc H.
+destruct c; [ easy | clear Hc ].
+revert c n H.
+induction al as [| a]; intros.
+ unfold move_carry in H.
+ revert H; apply move_carry_end_succ_ne_rep_0; [ easy | ].
+ split; lia.
+
+ destruct n in H; [ easy | simpl in H ].
+ injection H; clear H; intros H Hc.
+ apply Nat.mod_divides in Hc; [ | lia ].
+ destruct Hc as (c1, Hc1).
+ rewrite Nat.mul_comm in Hc1.
+ rewrite Hc1 in H.
+ rewrite Nat.div_mul in H; [ | lia ].
+ destruct c1; [ lia | ].
+ revert H; apply IHal.
+Qed.
+
+Lemma move_carry_0_is_rep_0 {r : radix} : ∀ al n, 1 < rad →
+  move_carry 0 al = List.repeat 0 n → al = List.repeat 0 n.
+Proof.
+intros * Hr Han.
+revert al Han.
+induction n; intros; [ now destruct al | ].
+simpl in Han; simpl.
+destruct al as [| a]; [ easy | ].
+simpl in Han.
+injection Han; clear Han; intros Han Ha.
+apply Nat.mod_divides in Ha; [ | lia ].
+destruct Ha as (a1, Ha).
+rewrite Nat.mul_comm in Ha; subst a.
+rewrite Nat.div_mul in Han; [ | lia ].
+destruct a1; [ now f_equal; apply IHn | exfalso ].
+revert Han.
+now apply move_nz_carry.
 Qed.
 
 Lemma eq_list_norm_wc_nil {r : radix} : 1 < rad → ∀ c al,
@@ -1840,4 +1838,3 @@ unfold xnat_norm; f_equal.
 unfold xnat_add; simpl.
 unfold list_norm.
 bbb.
-*)
