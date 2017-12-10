@@ -1450,6 +1450,7 @@ Lemma move_carry_add_eq_compat {r : radix} : 1 < rad → ∀ al bl cl ca cb,
   → move_carry ca (xnatv_add al cl) = move_carry cb (xnatv_add bl cl).
 Proof.
 intros Hr.
+assert (Hrz : rad ≠ 0) by lia.
 intros * Hab.
 rewrite xnatv_add_comm; symmetry.
 rewrite xnatv_add_comm; symmetry.
@@ -1465,6 +1466,12 @@ destruct al as [| a1]; simpl.
    destruct (zerop cb) as [| Hcb]; [ easy | ].
    injection Hab; clear Hab; intros Hab Hcab.
    f_equal.
+    specialize (Nat.div_mod ca rad Hrz) as H.
+    rewrite Hcab in H.
+    rewrite Nat.add_comm, Nat.mul_comm in H.
+    rewrite H, Nat.add_shuffle0.
+    rewrite Nat.mod_add; [ | easy ].
+    now apply Nat.add_mod_idemp_l.
 bbb.
 
 Lemma list_norm_wc_add_eq_compat {r : radix} : 1 < rad → ∀ al bl cl ca cb,
