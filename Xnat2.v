@@ -1453,6 +1453,16 @@ destruct c; [ now apply move_carry_0_is_rep_0 in Hca | ].
 now apply move_nz_carry in Hca.
 Qed.
 
+Lemma move_carry_add {r : radix} : ∀ c al,
+  move_carry c al = xnatv_add [c] al.
+Proof.
+intros.
+revert c.
+induction al as [| a1]; intros.
+ simpl.
+ destruct (zerop c) as [Hc| Hc].
+bbb.
+
 Lemma move_carry_add_eq_compat {r : radix} : 1 < rad → ∀ al bl cl ca cb,
   move_carry ca al = move_carry cb bl
   → move_carry ca (xnatv_add al cl) = move_carry cb (xnatv_add bl cl).
