@@ -1578,14 +1578,14 @@ rewrite nat_of_list_move_carry_add in Hab; [ | easy ].
 rewrite nat_of_list_move_carry_add in Hab; [ | easy ].
 simpl in Hab.
 destruct al as [| a1].
- simpl in Hab.
+-simpl in Hab.
  destruct bl as [| b1]; [ now subst ca | ].
  simpl.
  destruct cl as [| c1].
-  simpl.
+ +simpl.
   simpl in Hab; symmetry in Hab.
   destruct ca; simpl.
-   apply Nat.eq_add_0 in Hab.
+  *apply Nat.eq_add_0 in Hab.
    destruct Hab as (Hbr, Hcb); rewrite Hcb.
    rewrite Nat.mod_0_l; [ | easy ].
    rewrite Nat.div_0_l; [ | easy ].
@@ -1596,42 +1596,87 @@ destruct al as [| a1].
    rewrite move_carry_0_rep_0.
    now rewrite nat_of_list_0_rep_0.
 
-   simpl.
+  *simpl.
    destruct (zerop (S ca / rad)) as [Har| Har].
-    simpl.
+  --simpl.
     rewrite nat_of_list_move_carry_add; [ simpl | easy ].
     apply Nat.div_small_iff in Har; [ | easy ].
     rewrite Nat.mod_small; [ | easy ].
     destruct bl as [| b2].
-     simpl in Hab; simpl.
+   ++simpl in Hab; simpl.
      now rewrite Nat.mul_comm, <- Nat.div_mod.
 
-     specialize (Nat.div_mod (cb + b1) rad Hrz) as H.
+   ++specialize (Nat.div_mod (cb + b1) rad Hrz) as H.
      simpl in Hab; simpl; lia.
 
-    simpl.
+  --simpl.
     rewrite nat_of_list_move_carry_add; [ simpl | easy ].
     rewrite nat_of_list_move_end; [ | easy | ].
-     specialize (Nat.div_mod (S ca / rad) rad Hrz) as H.
+   ++specialize (Nat.div_mod (S ca / rad) rad Hrz) as H.
      rewrite Nat.mul_comm in H; rewrite <- H; clear H.
      destruct bl as [| b2].
-      simpl in Hab; simpl.
+    **simpl in Hab; simpl.
       symmetry; rewrite Nat.mul_comm.
       rewrite <- Nat.div_mod; [ | easy ].
       rewrite Hab; rewrite Nat.mul_comm.
       now apply Nat.div_mod.
 
-      simpl in Hab; simpl.
+    **simpl in Hab; simpl.
       rewrite Nat.mul_comm, <- Nat.div_mod; [ | easy ].
       specialize (Nat.div_mod (cb + b1) rad Hrz) as H.
       lia.
 
-     apply Nat.div_lt_upper_bound; [ easy | ].
+   ++apply Nat.div_lt_upper_bound; [ easy | ].
      apply Nat.div_lt_upper_bound; [ easy | ].
      destruct ca; [ now rewrite Nat.div_1_l in Har | ].
      destruct rad as [| s]; [ easy | ].
      destruct s; [ lia | simpl; lia ].
 
+ +simpl in Hab; simpl.
+  rewrite nat_of_list_move_carry_add; [ | easy ].
+  rewrite nat_of_list_move_carry_add; [ simpl | easy ].
+  rewrite xnatv_add_comm.
+  revert b1 bl c1 cl ca cb Hab.
+  induction cl as [| c2]; intros.
+  *simpl; rewrite Nat.mul_comm.
+   rewrite <- Nat.div_mod; [ | easy ].
+   destruct bl as [| b2].
+  --simpl in Hab; simpl.
+    rewrite Nat.mul_comm.
+    rewrite <- Nat.div_mod; [ lia | easy ].
+
+  --simpl in Hab; simpl.
+    specialize (Nat.div_mod (cb + (b1 + c1)) rad Hrz); lia.
+
+  *simpl.
+   specialize (Nat.div_mod (ca + c1) rad Hrz) as H.
+   specialize (Nat.div_mod (cb + (b1 + c1)) rad Hrz) as H'.
+   destruct bl as [| b2].
+  --simpl in Hab; simpl; lia.
+
+  --simpl in Hab; simpl.
+    simpl in IHcl.
+    rewrite xnatv_add_comm in IHcl.
+    simpl in IHcl.
+    specialize (IHcl ca cb Hab) as IH.
+    destruct cl as [| c3].
+   ++simpl in IH; simpl.
+     rewrite Nat.mul_comm in IH.
+     rewrite <- Nat.div_mod in IH; [ lia | easy ].
+
+   ++simpl in IH; simpl.
+     destruct bl as [| b3].
+    **simpl in IH; simpl; lia.
+
+    **simpl in IH; simpl.
+      destruct cl as [| c4].
+    ---simpl in IH; simpl; lia.
+
+    ---simpl in IH; simpl.
+       destruct bl as [| b4].
+     +++simpl in IH; simpl; lia.
+
+     +++simpl in IH; simpl.
 bbb.
 rewrite move_carry_add; [ | easy ].
 rewrite move_carry_add; [ | easy ].
