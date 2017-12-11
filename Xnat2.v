@@ -1612,6 +1612,15 @@ destruct al as [| a2].
   rewrite Nat.add_assoc, Nat.add_shuffle0, Hab.
   f_equal; f_equal; [ f_equal; lia | lia ].
 
+  simpl in Hab; simpl.
+  rewrite <- Nat.mul_comm, <- Nat.div_mod in Hab; [ | easy ].
+  specialize (Nat.div_mod (cb + b1) rad Hrz) as H.
+  replace
+    ((nat_of_list 0 bl * rad + ((cb + b1) / rad + b2)) * rad +
+     (cb + b1) mod rad)
+  with (cb + b1 + nat_of_list 0 bl * rad * rad + b2 * rad)
+  in Hab by lia.
+  clear H.
 bbb.
   rewrite IHcl in Hab.
   rewrite xnatv_add_comm in Hab; symmetry in Hab.
