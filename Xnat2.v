@@ -1535,6 +1535,31 @@ destruct (zerop a) as [Ha| Ha]; [ subst a | ].
    now apply Nat.div_lt.
 Qed.
 
+Lemma eq_nat_of_list_0 {r : radix} : rad ≠ 0 → ∀ c al,
+  nat_of_list c al = 0 → c = 0 ∧ al = List.repeat 0 (length al).
+Proof.
+intros Hr.
+intros * Hca.
+unfold nat_of_list in Hca.
+revert c Hca.
+induction al as [| a1]; intros; [ easy | simpl ].
+simpl in Hca.
+apply Nat.eq_add_0 in Hca.
+destruct Hca as (Har, Ha1); subst a1.
+apply Nat.eq_mul_0 in Har.
+destruct Har as [Har| ]; [ | easy ].
+specialize (IHal c Har).
+destruct IHal as (Hc, Hal).
+now rewrite <- Hal.
+Qed.
+
+Lemma nat_of_list_0_rep_0 {r : radix} : ∀ n,
+  nat_of_list 0 (List.repeat 0 n) = 0.
+Proof.
+intros.
+now induction n; [ | simpl; rewrite IHn ].
+Qed.
+
 Lemma move_carry_add_eq_compat {r : radix} : 1 < rad → ∀ al bl cl ca cb,
   list_norm (move_carry ca al) = list_norm (move_carry cb bl)
   → list_norm (move_carry ca (xnatv_add al cl)) =
@@ -1560,10 +1585,18 @@ destruct al as [| a1].
   simpl.
   simpl in Hab; symmetry in Hab.
   destruct ca; simpl.
-  apply Nat.eq_add_0 in Hab.
-  destruct Hab as (Hbr, Hcb); rewrite Hcb.
-  rewrite Nat.mod_0_l; [ | easy ].
-  rewrite Nat.div_0_l; [ | easy ].
+   apply Nat.eq_add_0 in Hab.
+   destruct Hab as (Hbr, Hcb); rewrite Hcb.
+   rewrite Nat.mod_0_l; [ | easy ].
+   rewrite Nat.div_0_l; [ | easy ].
+   apply Nat.eq_mul_0 in Hbr.
+   destruct Hbr as [Hbr| ]; [ | easy ].
+   apply eq_nat_of_list_0 in Hbr; [ | easy ].
+   destruct Hbr as (_, Hbl); rewrite Hbl.
+   rewrite move_carry_0_rep_0.
+   now rewrite nat_of_list_0_rep_0.
+
+   simpl.
 
 bbb.
 rewrite move_carry_add; [ | easy ].
