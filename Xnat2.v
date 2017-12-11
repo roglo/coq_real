@@ -1600,11 +1600,14 @@ destruct al as [| a1].
    destruct (zerop (S ca / rad)) as [Har| Har].
     simpl.
     rewrite nat_of_list_move_carry_add; [ simpl | easy ].
+    apply Nat.div_small_iff in Har; [ | easy ].
+    rewrite Nat.mod_small; [ | easy ].
     destruct bl as [| b2].
      simpl in Hab; simpl.
-     rewrite Nat.mul_comm, <- Nat.div_mod; [ | easy ].
-     apply Nat.div_small_iff in Har; [ | easy ].
-     now rewrite Nat.mod_small.
+     now rewrite Nat.mul_comm, <- Nat.div_mod.
+
+     specialize (Nat.div_mod (cb + b1) rad Hrz) as H.
+     simpl in Hab; simpl; lia.
 
 bbb.
 rewrite move_carry_add; [ | easy ].
