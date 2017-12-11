@@ -1597,6 +1597,14 @@ destruct al as [| a1].
    now rewrite nat_of_list_0_rep_0.
 
    simpl.
+   destruct (zerop (S ca / rad)) as [Har| Har].
+    simpl.
+    rewrite nat_of_list_move_carry_add; [ simpl | easy ].
+    destruct bl as [| b2].
+     simpl in Hab; simpl.
+     rewrite Nat.mul_comm, <- Nat.div_mod; [ | easy ].
+     apply Nat.div_small_iff in Har; [ | easy ].
+     now rewrite Nat.mod_small.
 
 bbb.
 rewrite move_carry_add; [ | easy ].
