@@ -1487,52 +1487,19 @@ induction al as [| a1]; intros.
   rewrite Nat.mul_comm; symmetry.
   now apply Nat.div_mod.
 
-  simpl.
-
-bbb.
-intros Hr.
-assert (Hrz : rad ≠ 0) by lia.
-intros *.
-unfold list_norm.
-revert c.
-induction al as [| a1]; intros.
- simpl.
- destruct c.
-  simpl.
-  unfold list_norm_with_carry.
-  replace [0] with (List.repeat 0 1) by easy.
-  replace [] with (List.repeat 0 0) by easy.
-  rewrite move_carry_rep_0; [ | easy ].
-  now rewrite move_carry_rep_0.
-
-  simpl.
-  destruct (zerop (S c / rad)) as [Hzcr| Hzcr].
-   apply Nat.div_small_iff in Hzcr; [ | easy ].
-   now rewrite Nat.mod_small.
-
-   unfold list_norm_with_carry.
-bbb.
-
- destruct c; [ easy | simpl ].
- remember (S c mod rad) as cr eqn:Hcr.
- symmetry in Hcr.
- destruct cr.
-bbb.
-
-  destruct (zerop (S c / rad)) as [Hzcr| Hzcr].
-   apply Nat.div_small_iff in Hzcr; [ | easy ].
-   now rewrite Nat.mod_small in Hcr.
-
-   simpl.
-   remember ((S c / rad) mod rad) as crr eqn:Hcrr.
-   symmetry in Hcrr.
-   destruct crr.
-bbb.
+  specialize (Nat.div_mod (c + a1) rad Hrz) as H.
+  simpl; lia.
+Qed.
 
 Lemma move_carry_add_eq_compat {r : radix} : 1 < rad → ∀ al bl cl ca cb,
   move_carry ca al = move_carry cb bl
   → move_carry ca (xnatv_add al cl) = move_carry cb (xnatv_add bl cl).
 Proof.
+intros Hr.
+assert (Hrz : rad ≠ 0) by lia.
+intros * Hab.
+
+bbb.
 intros Hr.
 assert (Hrz : rad ≠ 0) by lia.
 intros * Hab.
