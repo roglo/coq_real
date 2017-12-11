@@ -1576,7 +1576,6 @@ rewrite <- list_of_nat_nat_of_list in Hab; [ | easy ].
 apply list_of_nat_inv in Hab; [ | easy ].
 rewrite xnatv_add_comm; symmetry.
 rewrite xnatv_add_comm; symmetry.
-bbb.
 revert al bl ca cb Hab.
 induction cl as [| c1]; intros; [ easy | ].
 simpl.
@@ -1591,8 +1590,16 @@ destruct al as [| a1].
  destruct bl as [| b1].
  +admit.
  +simpl.
-  simpl in Hab.
   apply IHcl in Hab.
+  rewrite xnatv_add_comm in Hab; symmetry in Hab.
+  rewrite xnatv_add_comm in Hab; symmetry in Hab.
+  simpl in Hab.
+destruct cl as [| c2].
+simpl in Hab.
+simpl.
+simpl in IHcl.
+bbb.
+  rewrite IHcl in Hab.
   rewrite xnatv_add_comm in Hab; symmetry in Hab.
   rewrite xnatv_add_comm in Hab; symmetry in Hab.
   simpl in Hab.
