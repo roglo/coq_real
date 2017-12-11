@@ -1472,10 +1472,18 @@ Proof.
 intros Hr.
 assert (Hrz : rad ≠ 0) by lia.
 intros *.
+rewrite <- list_of_nat_inv; [ | easy ].
+rewrite <- list_of_nat_inv; [ | easy ].
+f_equal.
 revert c.
 induction al as [| a1]; intros.
- rewrite <- list_of_nat_inv; [ | easy ].
- rewrite <- list_of_nat_inv; [ | easy ].
+ destruct (zerop c) as [Hc| Hc]; [ now subst c | ].
+ unfold move_carry.
+ rewrite nat_of_list_move_end; [ easy | easy | lia ].
+
+ simpl.
+ rewrite IHal.
+ simpl.
 
 bbb.
 intros Hr.
