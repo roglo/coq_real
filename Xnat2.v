@@ -1467,9 +1467,17 @@ now apply move_nz_carry in Hca.
 Qed.
 
 Lemma move_carry_add {r : radix} : 1 < rad → ∀ c al,
-  list_norm (move_carry c al) =
-  list_norm (xnatv_add [c] al).
+  list_norm (move_carry c al) = list_norm (xnatv_add [c] al).
 Proof.
+intros Hr.
+assert (Hrz : rad ≠ 0) by lia.
+intros *.
+revert c.
+induction al as [| a1]; intros.
+ rewrite <- list_of_nat_inv; [ | easy ].
+ rewrite <- list_of_nat_inv; [ | easy ].
+
+bbb.
 intros Hr.
 assert (Hrz : rad ≠ 0) by lia.
 intros *.
