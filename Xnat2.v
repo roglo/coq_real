@@ -1466,15 +1466,12 @@ destruct c; [ now apply move_carry_0_is_rep_0 in Hca | ].
 now apply move_nz_carry in Hca.
 Qed.
 
-Lemma move_carry_add {r : radix} : 1 < rad → ∀ c al,
-  list_norm (move_carry c al) = list_norm (xnatv_add [c] al).
+Lemma nat_of_list_move_carry_add {r : radix} : 1 < rad → ∀ c al,
+  nat_of_list 0 (move_carry c al) = nat_of_list 0 (xnatv_add [c] al).
 Proof.
 intros Hr.
 assert (Hrz : rad ≠ 0) by lia.
 intros *.
-rewrite <- list_of_nat_nat_of_list; [ | easy ].
-rewrite <- list_of_nat_nat_of_list; [ | easy ].
-f_equal.
 revert c.
 induction al as [| a1]; intros.
  destruct (zerop c) as [Hc| Hc]; [ now subst c | ].
@@ -1489,6 +1486,18 @@ induction al as [| a1]; intros.
 
   specialize (Nat.div_mod (c + a1) rad Hrz) as H.
   simpl; lia.
+Qed.
+
+Lemma move_carry_add {r : radix} : 1 < rad → ∀ c al,
+  list_norm (move_carry c al) = list_norm (xnatv_add [c] al).
+Proof.
+intros Hr.
+assert (Hrz : rad ≠ 0) by lia.
+intros *.
+rewrite <- list_of_nat_nat_of_list; [ | easy ].
+rewrite <- list_of_nat_nat_of_list; [ | easy ].
+f_equal.
+now apply nat_of_list_move_carry_add.
 Qed.
 
 Lemma list_of_nat_inv {r : radix} : 1 < rad → ∀ c a b,
@@ -1540,9 +1549,23 @@ f_equal.
 rewrite <- list_of_nat_nat_of_list in Hab; [ | easy ].
 rewrite <- list_of_nat_nat_of_list in Hab; [ | easy ].
 apply list_of_nat_inv in Hab; [ | easy ].
+rewrite nat_of_list_move_carry_add in Hab; [ | easy ].
+rewrite nat_of_list_move_carry_add in Hab; [ | easy ].
+simpl in Hab.
+destruct al as [| a1].
+ simpl in Hab.
+ destruct bl as [| b1]; [ now subst ca | ].
+ simpl.
+ destruct cl as [| c1].
+  simpl.
+  simpl in Hab; symmetry in Hab.
+  destruct ca; simpl.
+  apply Nat.eq_add_0 in Hab.
+  destruct Hab as (Hbr, Hcb); rewrite Hcb.
+  rewrite Nat.mod_0_l; [ | easy ].
+  rewrite Nat.div_0_l; [ | easy ].
 
 bbb.
-
 rewrite move_carry_add; [ | easy ].
 rewrite move_carry_add; [ | easy ].
 rewrite move_carry_add in Hab; [ | easy ].
