@@ -1560,6 +1560,7 @@ intros.
 now induction n; [ | simpl; rewrite IHn ].
 Qed.
 
+(*
 Lemma move_carry_add_eq_compat {r : radix} : 1 < rad → ∀ al bl cl ca cb,
   list_norm (move_carry ca al) = list_norm (move_carry cb bl)
   → list_norm (move_carry ca (xnatv_add al cl)) =
@@ -1837,7 +1838,9 @@ destruct al as [| a1]; simpl.
        simpl in Hab.
 
 bbb.
+*)
 
+(*
 Lemma list_norm_wc_add_eq_compat {r : radix} : 1 < rad → ∀ al bl cl ca cb,
   list_norm_with_carry ca al = list_norm_with_carry cb bl
   → list_norm_with_carry ca (xnatv_add al cl) =
@@ -2074,10 +2077,24 @@ bbb.
   destruct n; [ easy | simpl in Hmc ].
   injection Hmc; clear Hmc; intros Hmc Hca.
 bbb.
+*)
 
-Theorem xnatv_add_eq_compat {r : radix} : ∀ a b c,
+Theorem xnatv_add_eq_compat {r : radix} : 1 < rad → ∀ a b c,
   (a = b)%X → (a + c = b + c)%X.
 Proof.
+intros Hr * Hab.
+unfold xnat_norm in Hab.
+injection Hab; clear Hab; intros Hab.
+unfold xnat_norm; f_equal.
+unfold xnat_add; simpl.
+rewrite <- list_of_nat_nat_of_list; [ | easy ].
+rewrite <- list_of_nat_nat_of_list; [ | easy ].
+f_equal.
+rewrite <- list_of_nat_nat_of_list in Hab; [ | easy ].
+rewrite <- list_of_nat_nat_of_list in Hab; [ | easy ].
+apply list_of_nat_inv in Hab; [ | easy ].
+
+bbb.
 intros * Hab.
 unfold xnat_norm in Hab.
 injection Hab; clear Hab; intros Hab.
