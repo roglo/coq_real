@@ -1574,6 +1574,43 @@ f_equal.
 rewrite <- list_of_nat_nat_of_list in Hab; [ | easy ].
 rewrite <- list_of_nat_nat_of_list in Hab; [ | easy ].
 apply list_of_nat_inv in Hab; [ | easy ].
+rewrite xnatv_add_comm; symmetry.
+rewrite xnatv_add_comm; symmetry.
+bbb.
+revert al bl ca cb Hab.
+induction cl as [| c1]; intros; [ easy | ].
+simpl.
+destruct al as [| a1].
+-simpl.
+ destruct bl as [| b1].
+ +simpl.
+  simpl in Hab.
+  admit.
+ +admit.
+-simpl.
+ destruct bl as [| b1].
+ +admit.
+ +simpl.
+  simpl in Hab.
+  apply IHcl in Hab.
+  rewrite xnatv_add_comm in Hab; symmetry in Hab.
+  rewrite xnatv_add_comm in Hab; symmetry in Hab.
+  simpl in Hab.
+  destruct cl as [| c2].
+  *simpl in Hab; simpl.
+   simpl in IHcl.
+  rewrite IHcl with (bl := bl) (cb := cb).
+bbb.
+
+intros Hr.
+assert (Hrz : rad ≠ 0) by lia.
+intros * Hab.
+rewrite <- list_of_nat_nat_of_list; [ | easy ].
+rewrite <- list_of_nat_nat_of_list; [ | easy ].
+f_equal.
+rewrite <- list_of_nat_nat_of_list in Hab; [ | easy ].
+rewrite <- list_of_nat_nat_of_list in Hab; [ | easy ].
+apply list_of_nat_inv in Hab; [ | easy ].
 rewrite nat_of_list_move_carry_add in Hab; [ | easy ].
 rewrite nat_of_list_move_carry_add in Hab; [ | easy ].
 simpl in Hab.
@@ -1633,9 +1670,10 @@ destruct al as [| a1].
      destruct s; [ lia | simpl; lia ].
 
  +simpl in Hab; simpl.
-  rewrite nat_of_list_move_carry_add; [ | easy ].
-  rewrite nat_of_list_move_carry_add; [ simpl | easy ].
   rewrite xnatv_add_comm.
+  rewrite nat_of_list_move_carry_add; [ | easy ].
+  rewrite nat_of_list_move_carry_add; [ | easy ].
+bbb.
   revert b1 bl c1 cl ca cb Hab.
   induction cl as [| c2]; intros.
   *simpl; rewrite Nat.mul_comm.
