@@ -1491,11 +1491,12 @@ induction al as [| a1]; intros.
   simpl; lia.
 Qed.
 
-Lemma list_of_nat_inv {r : radix} : rad ≠ 0 → ∀ c a b,
+Lemma list_of_nat_inv {r : radix} : 1 < rad → ∀ c a b,
   list_of_nat c a = list_of_nat c b
   → a = b.
 Proof.
 intros Hr.
+assert (Hrz : rad ≠ 0) by lia.
 intros * Hab.
 unfold list_of_nat in Hab.
 destruct (zerop a) as [Ha| Ha]; [ subst a | ].
@@ -1512,8 +1513,18 @@ destruct (zerop a) as [Ha| Ha]; [ subst a | ].
 
   destruct (zerop ((c + b) / rad)) as [Hzcb| Hzcb]; [ easy | ].
   injection Hab; clear Hab; intros Hab Hcabr.
+  apply move_carry_end_inv in Hab; [ | easy | | ].
+   specialize (Nat.div_mod ((c + a) / rad) rad Hrz) as Habr.
+   rewrite Hab, Hcabr in Habr.
+   rewrite <- Nat.div_mod in Habr; [ | easy ].
+   specialize (Nat.div_mod (c + a) rad Hrz) as Hapb.
+   rewrite Hcab, Habr in Hapb.
+   rewrite <- Nat.div_mod in Hapb; [ lia | easy ].
 
-bbb.
+   now apply Nat.div_lt.
+
+   now apply Nat.div_lt.
+Qed.
 
 Lemma move_carry_add_eq_compat {r : radix} : 1 < rad → ∀ al bl cl ca cb,
   list_norm (move_carry ca al) = list_norm (move_carry cb bl)
@@ -1528,8 +1539,7 @@ rewrite <- list_of_nat_nat_of_list; [ | easy ].
 f_equal.
 rewrite <- list_of_nat_nat_of_list in Hab; [ | easy ].
 rewrite <- list_of_nat_nat_of_list in Hab; [ | easy ].
-
-Print list_of_nat.
+apply list_of_nat_inv in Hab; [ | easy ].
 
 bbb.
 
