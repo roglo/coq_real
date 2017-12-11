@@ -1481,9 +1481,13 @@ induction al as [| a1]; intros.
  unfold move_carry.
  rewrite nat_of_list_move_end; [ easy | easy | lia ].
 
- simpl.
- rewrite IHal.
- simpl.
+ simpl; rewrite IHal; simpl.
+ destruct al as [| a2].
+  simpl.
+  rewrite Nat.mul_comm; symmetry.
+  now apply Nat.div_mod.
+
+  simpl.
 
 bbb.
 intros Hr.
