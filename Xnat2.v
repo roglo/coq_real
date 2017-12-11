@@ -1609,6 +1609,29 @@ destruct al as [| a1].
      specialize (Nat.div_mod (cb + b1) rad Hrz) as H.
      simpl in Hab; simpl; lia.
 
+    simpl.
+    rewrite nat_of_list_move_carry_add; [ simpl | easy ].
+    rewrite nat_of_list_move_end; [ | easy | ].
+     specialize (Nat.div_mod (S ca / rad) rad Hrz) as H.
+     rewrite Nat.mul_comm in H; rewrite <- H; clear H.
+     destruct bl as [| b2].
+      simpl in Hab; simpl.
+      symmetry; rewrite Nat.mul_comm.
+      rewrite <- Nat.div_mod; [ | easy ].
+      rewrite Hab; rewrite Nat.mul_comm.
+      now apply Nat.div_mod.
+
+      simpl in Hab; simpl.
+      rewrite Nat.mul_comm, <- Nat.div_mod; [ | easy ].
+      specialize (Nat.div_mod (cb + b1) rad Hrz) as H.
+      lia.
+
+     apply Nat.div_lt_upper_bound; [ easy | ].
+     apply Nat.div_lt_upper_bound; [ easy | ].
+     destruct ca; [ now rewrite Nat.div_1_l in Har | ].
+     destruct rad as [| s]; [ easy | ].
+     destruct s; [ lia | simpl; lia ].
+
 bbb.
 rewrite move_carry_add; [ | easy ].
 rewrite move_carry_add; [ | easy ].
