@@ -1598,6 +1598,20 @@ destruct cl as [| c2].
 simpl in Hab.
 simpl.
 simpl in IHcl.
+Search (nat_of_list _ (move_carry _ _)).
+rewrite nat_of_list_move_carry_add in Hab; [ symmetry in Hab | easy ].
+rewrite nat_of_list_move_carry_add in Hab; [ symmetry in Hab | easy ].
+rewrite nat_of_list_move_carry_add; [ symmetry | easy ].
+rewrite nat_of_list_move_carry_add; [ symmetry | easy ].
+simpl in Hab; simpl.
+destruct al as [| a2].
+ destruct bl as [| b2].
+  simpl in Hab; simpl.
+  rewrite Nat.mul_comm, <- Nat.div_mod in Hab; [ | easy ].
+  rewrite Nat.mul_comm, <- Nat.div_mod in Hab; [ | easy ].
+  rewrite Nat.add_assoc, Nat.add_shuffle0, Hab.
+  f_equal; f_equal; [ f_equal; lia | lia ].
+
 bbb.
   rewrite IHcl in Hab.
   rewrite xnatv_add_comm in Hab; symmetry in Hab.
