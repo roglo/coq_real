@@ -137,7 +137,31 @@ Notation "a < b" := (freal_lt a b = true) : freal_scope.
 
 (* Addition, Multiplication *)
 
+Definition nat_ord_ring_def :=
+  {| rng_t := nat;
+     rng_zero := 0;
+     rng_add := Nat.add;
+     rng_sub := Nat.sub;
+     rng_mul := Nat.mul;
+     rng_le := Nat.le |}.
+
+Canonical Structure nat_ord_ring_def.
+
+Definition nat_ord_ring :=
+  {| rng_add_0_l := Nat.add_0_l;
+     rng_add_comm := Nat.add_comm;
+     rng_add_assoc := Nat.add_assoc;
+     rng_sub_diag := Nat.sub_diag;
+     rng_mul_comm := Nat.mul_comm;
+     rng_mul_add_distr_r := Nat.mul_add_distr_r;
+     rng_mul_sub_distr_r := Nat.mul_sub_distr_r;
+     rng_le_refl := Nat.le_refl;
+     rng_add_le_compat := Nat.add_le_mono |}.
+
+Canonical Structure nat_ord_ring.
+
 Definition sequence_add (a b : nat → nat) i := a i + b i.
+bbb.
 Definition sequence_mul (a b : nat → nat) i := Σ (j = 0, i), a j * b (i - j).
 
 Definition freal_add_series {r : radix} a b :=

@@ -5,7 +5,7 @@ Require Import Misc.
 
 Class ord_ring_def :=
    { rng_t : Type;
-     rng_0 : rng_t;
+     rng_zero : rng_t;
      rng_add : rng_t → rng_t → rng_t;
      rng_sub : rng_t → rng_t → rng_t;
      rng_mul : rng_t → rng_t → rng_t;
@@ -13,7 +13,7 @@ Class ord_ring_def :=
 
 Delimit Scope rng_scope with Rg.
 
-Notation "0" := (rng_0) : rng_scope.
+Notation "0" := (rng_zero) : rng_scope.
 Notation "a + b" := (rng_add a b) : rng_scope.
 Notation "a - b" := (rng_sub a b) : rng_scope.
 Notation "a * b" := (rng_mul a b) : rng_scope.
@@ -21,7 +21,6 @@ Notation "a ≤ b" := (rng_le a b) : rng_scope.
 
 Class ord_ring {grd : ord_ring_def} :=
   { rng_add_0_l : ∀ a, (0 + a = a)%Rg;
-    rng_add_0_r : ∀ a, (a + 0 = a)%Rg;
     rng_add_comm : ∀ a b, (a + b = b + a)%Rg;
     rng_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%Rg;
     rng_sub_diag : ∀ a, (a - a = 0)%Rg;
@@ -30,6 +29,13 @@ Class ord_ring {grd : ord_ring_def} :=
     rng_mul_sub_distr_r : ∀ a b c, ((a - b) * c = a * c - b * c)%Rg;
     rng_le_refl : ∀ a, (a ≤ a)%Rg;
     rng_add_le_compat : ∀ n m p q, (n ≤ m → p ≤ q → n + p ≤ m + q)%Rg }.
+
+Theorem rng_add_0_r `{rg : ord_ring} : ∀ a, (a + 0 = a)%Rg.
+Proof.
+intros.
+rewrite rng_add_comm.
+apply rng_add_0_l.
+Qed.
 
 Theorem rng_mul_0_l `{rg : ord_ring} : ∀ a, (0 * a = 0)%Rg.
 Proof.
