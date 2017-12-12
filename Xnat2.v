@@ -1599,29 +1599,6 @@ destruct cl as [| c2].
 simpl in Hab.
 simpl.
 simpl in IHcl.
-Search (nat_of_list _ (move_carry _ _)).
-rewrite nat_of_list_move_carry_add in Hab; [ symmetry in Hab | easy ].
-rewrite nat_of_list_move_carry_add in Hab; [ symmetry in Hab | easy ].
-rewrite nat_of_list_move_carry_add; [ symmetry | easy ].
-rewrite nat_of_list_move_carry_add; [ symmetry | easy ].
-simpl in Hab; simpl.
-destruct al as [| a2].
- destruct bl as [| b2].
-  simpl in Hab; simpl.
-  rewrite Nat.mul_comm, <- Nat.div_mod in Hab; [ | easy ].
-  rewrite Nat.mul_comm, <- Nat.div_mod in Hab; [ | easy ].
-  rewrite Nat.add_assoc, Nat.add_shuffle0, Hab.
-  f_equal; f_equal; [ f_equal; lia | lia ].
-
-  simpl in Hab; simpl.
-  rewrite <- Nat.mul_comm, <- Nat.div_mod in Hab; [ | easy ].
-  specialize (Nat.div_mod (cb + b1) rad Hrz) as H.
-  replace
-    ((nat_of_list 0 bl * rad + ((cb + b1) / rad + b2)) * rad +
-     (cb + b1) mod rad)
-  with (cb + b1 + nat_of_list 0 bl * rad * rad + b2 * rad)
-  in Hab by lia.
-  clear H.
 bbb.
   rewrite IHcl in Hab.
   rewrite xnatv_add_comm in Hab; symmetry in Hab.
@@ -2079,66 +2056,47 @@ bbb.
 bbb.
 *)
 
-Lemma nat_of_list_app_rep_0 {r : radix} : ∀ al n,
-  nat_of_list 0 (al ++ List.repeat 0 n) = nat_of_list 0 al.
-Proof.
-intros.
-induction al as [| a1]; [ apply nat_of_list_0_rep_0 | ].
-now simpl; rewrite IHal.
-Qed.
-
-Lemma nat_of_list_add_eq_compat {r : radix} : rad ≠ 0 → ∀ al bl cl,
+Lemma nat_of_list_add_eq_compat {r : radix} : 1 < rad → ∀ al bl cl,
   nat_of_list 0 al = nat_of_list 0 bl
   → nat_of_list 0 (xnatv_add al cl) = nat_of_list 0 (xnatv_add bl cl).
 Proof.
-intros Hr * Hab.
+intros Hr.
+assert (Hrz : rad ≠ 0) by lia.
+intros * Hab.
 rewrite xnatv_add_comm; symmetry.
 rewrite xnatv_add_comm; symmetry.
 revert al bl Hab.
 induction cl as [| c1]; intros; [ easy | simpl ].
 destruct al as [| a1].
--destruct bl as [| b1]; [ easy | simpl ].
- simpl in Hab; symmetry in Hab.
+-simpl in Hab; simpl.
+ symmetry in Hab.
+ destruct bl as [| b1]; [ easy | ].
+ simpl in Hab.
  apply Nat.eq_add_0 in Hab.
- destruct Hab as (Hbr, Hb1); subst b1.
- rewrite Nat.add_0_r; f_equal; f_equal.
- apply Nat.eq_mul_0 in Hbr.
- destruct Hbr as [Hbl| Hrz]; [ | easy ].
+ destruct Hab as (Hbl, Hb1); subst b1.
+ apply Nat.eq_mul_0 in Hbl.
+ destruct Hbl as [Hbl| ]; [ | easy ].
  apply eq_nat_of_list_0 in Hbl; [ | easy ].
- destruct Hbl as (_, Hbl); rewrite Hbl.
- rewrite xnatv_add_comm, xnatv_add_rep_0_l.
+ destruct Hbl as (_, Hbl).
+ simpl; rewrite Nat.add_0_r.
+ f_equal; f_equal.
+ rewrite xnatv_add_comm, Hbl, xnatv_add_rep_0_l.
  now rewrite nat_of_list_app_rep_0.
 
 -destruct bl as [| b1].
- +simpl in Hab; simpl.
+ +simpl in Hab.
   apply Nat.eq_add_0 in Hab.
-  destruct Hab as (Har, Ha1); subst a1.
-  rewrite Nat.add_0_r; f_equal; f_equal.
-  apply Nat.eq_mul_0 in Har.
-  destruct Har as [Hal| Hrz]; [ | easy ].
+  destruct Hab as (Hal, Ha1); subst a1.
+  apply Nat.eq_mul_0 in Hal.
+  destruct Hal as [Hal| ]; [ | easy ].
   apply eq_nat_of_list_0 in Hal; [ | easy ].
-  destruct Hal as (_, Hal); rewrite Hal.
-  rewrite xnatv_add_comm, xnatv_add_rep_0_l.
+  destruct Hal as (_, Hal).
+  simpl; rewrite Nat.add_0_r.
+  f_equal; f_equal.
+  rewrite xnatv_add_comm, Hal, xnatv_add_rep_0_l.
   now rewrite nat_of_list_app_rep_0.
 
- +apply IHcl in Hab.
-  simpl in Hab; simpl.
-  rewrite Nat.add_assoc, Nat.add_shuffle0; symmetry.
-  rewrite Nat.add_assoc, Nat.add_shuffle0; symmetry.
-  f_equal.
-  rewrite xnatv_add_comm in Hab; symmetry in Hab.
-  rewrite xnatv_add_comm in Hab; symmetry in Hab.
-  simpl in Hab.
-  destruct cl as [| c2]; [ easy | ].
-  simpl in Hab; simpl.
-  destruct al as [| a2].
-  *simpl in Hab; simpl.
-   destruct bl as [| b2]; [ simpl in Hab; simpl; lia | ].
-   simpl in Hab; simpl.
-   destruct cl as [| c3]; [ simpl in Hab; simpl; lia | ].
-   simpl in Hab; simpl.
-   destruct bl as [| b3]; [ simpl in Hab; simpl; lia | ].
-   simpl in Hab; simpl.
+ +
 bbb.
 
 Theorem xnatv_add_eq_compat {r : radix} : 1 < rad → ∀ a b c,
