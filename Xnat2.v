@@ -335,7 +335,7 @@ Definition xnat_0 {r : radix} := xn [].
 
 Delimit Scope xnat_scope with X.
 Notation "a + b" := (xnat_add a b) : xnat_scope.
-Notation "a = b" := (xnat_norm a = xnat_norm b) : xnat_scope.
+Notation "a = b" := (nat_of_xnat a = nat_of_xnat b) : xnat_scope.
 Notation "0" := (xnat_0) : xnat_scope.
 
 Lemma xnatv_add_comm {r : radix} : ∀ al bl,
@@ -376,8 +376,7 @@ Theorem xnat_add_assoc {r : radix} : rad ≠ 0 → ∀ a b c,
   (a + (b + c) = (a + b) + c)%X.
 Proof.
 intros Hr *.
-unfold xnat_add, xnat_norm; simpl; f_equal.
-unfold list_norm; f_equal.
+unfold xnat_add, nat_of_xnat; simpl.
 now apply nat_of_list_add_assoc.
 Qed.
 
@@ -487,12 +486,8 @@ Theorem xnatv_add_eq_compat {r : radix} : 1 < rad → ∀ a b c,
   (a = b)%X → (a + c = b + c)%X.
 Proof.
 intros Hr * Hab.
-unfold xnat_norm in Hab.
-injection Hab; clear Hab; intros Hab.
-unfold xnat_norm; f_equal.
+unfold nat_of_xnat in Hab.
+unfold nat_of_xnat.
 unfold xnat_add; simpl.
-unfold list_norm; f_equal.
-unfold list_norm in Hab.
-apply list_of_nat_inv in Hab; [ | easy ].
 now apply nat_of_list_add_eq_compat.
 Qed.
