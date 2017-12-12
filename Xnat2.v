@@ -2096,7 +2096,10 @@ destruct al as [| a1].
   rewrite xnatv_add_comm, Hal, xnatv_add_rep_0_l.
   now rewrite nat_of_list_app_rep_0.
 
- +
+ +simpl in Hab; simpl.
+  rewrite Nat.add_assoc, Nat.add_shuffle0; symmetry.
+  rewrite Nat.add_assoc, Nat.add_shuffle0; symmetry.
+  f_equal.
 bbb.
 
 Theorem xnatv_add_eq_compat {r : radix} : 1 < rad → ∀ a b c,
