@@ -255,7 +255,9 @@ Definition xnat_mul a b :=
 
 Compute (xnat_mul (xn (@list_of_nat radix_10 0 11)) (xn (@list_of_nat radix_10 0 9))).
 Compute (xnat_mul (xn (@list_of_nat radix_10 0 12)) (xn (@list_of_nat radix_10 0 12))).
+Compute (xnat_mul (xn (@list_of_nat radix_10 0 14)) (xn (@list_of_nat radix_10 0 14))).
 Compute (xnat_mul (xn (@list_of_nat radix_10 0 279)) (xn (@list_of_nat radix_10 0 1))).
+Compute (@xnat_norm radix_10 (xnat_mul (xn (@list_of_nat radix_10 0 37)) (xn (@list_of_nat radix_10 0 18)))).
 
 Notation "a * b" := (xnat_mul a b) : xnat_scope.
 
