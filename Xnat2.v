@@ -2100,6 +2100,9 @@ destruct al as [| a1].
   rewrite Nat.add_assoc, Nat.add_shuffle0; symmetry.
   rewrite Nat.add_assoc, Nat.add_shuffle0; symmetry.
   f_equal.
+(* a1 may be different from b1: *)
+Compute (@nat_of_list radix_10 0 [3; 1]).
+Compute (@nat_of_list radix_10 0 [0; 13]).
 bbb.
 
 Theorem xnatv_add_eq_compat {r : radix} : 1 < rad → ∀ a b c,
