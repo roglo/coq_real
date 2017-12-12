@@ -158,11 +158,8 @@ Definition nat_ord_ring :=
      rng_le_refl := Nat.le_refl;
      rng_add_le_compat := Nat.add_le_mono |}.
 
-Canonical Structure nat_ord_ring.
-
 Definition sequence_add (a b : nat → nat) i := a i + b i.
-bbb.
-Definition sequence_mul (a b : nat → nat) i :=
+Definition sequence_mul (rg := nat_ord_ring) (a b : nat → nat) i :=
   Σ (j = 0, i), a j * b (i - j).
 
 Definition freal_add_series {r : radix} a b :=
@@ -170,13 +167,13 @@ Definition freal_add_series {r : radix} a b :=
 
 Arguments freal_add_series _ a%F b%F.
 
-Definition freal_mul_series {rg : ord_ring} {r : radix} a b i :=
+Definition freal_mul_series {r : radix} a b i :=
   match i with
   | 0 => 0
   | S i' => sequence_mul (λ i, dig (freal a i)) (λ i, dig (freal b i)) i'
   end.
 
-Definition nA {r : radix} i n u :=
+Definition nA {r : radix} (rg := nat_ord_ring) i n u :=
   Σ (j = i + 1, n - 1), u j * rad ^ (n - 1 - j).
 
 Definition test_seq {r : radix} i u k :=
@@ -257,7 +254,8 @@ induction i; intros.
  rewrite summation_split_last; [ symmetry | lia ].
  rewrite summation_split_first; [ symmetry | lia ].
  rewrite Nat.sub_0_r, Nat.sub_diag.
- rewrite Nat.add_comm; f_equal; [ lia | ].
+ rewrite Nat.add_comm.
+ remember minus as x; simpl; subst x; f_equal; [ lia | ].
  rewrite summation_succ_succ.
  rewrite <- IHi.
  apply summation_eq_compat; intros j Hj.
@@ -550,7 +548,7 @@ replace 1 with (1 * 1) by lia.
 apply Nat.mul_le_mono_nonneg; [ lia | easy | lia | easy ].
 Qed.
 
-Theorem power_summation : ∀ a n,
+Theorem power_summation (rg := nat_ord_ring) : ∀ a n,
   0 < a
   → a ^ S n = 1 + (a - 1) * Σ (i = 0, n), a ^ i.
 Proof.
@@ -590,7 +588,7 @@ replace (n - 1 - (i + 1)) with k by lia.
 unfold lt; simpl.
 apply -> Nat.succ_le_mono.
 rewrite summation_mul_distr_l.
-apply summation_le_compat.
+apply (@summation_le_compat nat_ord_ring_def nat_ord_ring).
 intros j Hj.
 replace (n - 1 + (i + 1) - (i + 1 + j)) with (n - 1 - j) by lia.
 replace (n - 1 - (n - 1 - j)) with j by lia.
@@ -853,6 +851,7 @@ assert (Hk : k ≤ n - i - 1).
   apply Nat.mul_le_mono_nonneg_r; lia.
   subst s.
   rewrite <- Nat.sub_add_distr, Nat.add_comm, Nat.sub_add_distr.
+bbb.
   now apply pow_pow_sub_1.
 Qed.
 
