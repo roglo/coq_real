@@ -2056,6 +2056,16 @@ bbb.
 bbb.
 *)
 
+Lemma nat_of_list_xnatv_add_distr {r : radix} : 1 < rad → ∀ al bl,
+  nat_of_list 0 (xnatv_add al bl) = nat_of_list 0 al + nat_of_list 0 bl.
+Proof.
+intros Hr *.
+revert bl.
+induction al as [| a1]; intros; [ easy | simpl ].
+destruct bl as [| b1]; [ now rewrite Nat.add_0_r | ].
+simpl; rewrite IHal; lia.
+Qed.
+
 Lemma nat_of_list_add_eq_compat {r : radix} : 1 < rad → ∀ al bl cl,
   nat_of_list 0 al = nat_of_list 0 bl
   → nat_of_list 0 (xnatv_add al cl) = nat_of_list 0 (xnatv_add bl cl).
@@ -2066,7 +2076,7 @@ intros * Hab.
 rewrite xnatv_add_comm; symmetry.
 rewrite xnatv_add_comm; symmetry.
 revert al bl Hab.
-induction cl as [| c1]; intros; [ easy | simpl ].
+destruct cl as [| c1]; intros; [ easy | simpl ].
 destruct al as [| a1].
 -simpl in Hab; simpl.
  symmetry in Hab.
@@ -2100,6 +2110,25 @@ destruct al as [| a1].
   rewrite Nat.add_assoc, Nat.add_shuffle0; symmetry.
   rewrite Nat.add_assoc, Nat.add_shuffle0; symmetry.
   f_equal.
+  clear c1.
+  revert a1 al b1 bl Hab.
+  induction cl as [| c1]; intros; [ easy | ].
+  *simpl in Hab; simpl.
+   destruct al as [| a2].
+  --simpl in Hab; simpl.
+    destruct bl as [| b2]; [ now subst a1 | ].
+    simpl in Hab; simpl.
+    subst a1; ring_simplify.
+    f_equal; f_equal; f_equal.
+    rewrite Nat.mul_comm, Nat.mul_assoc.
+    rewrite Nat.mul_comm, Nat.mul_assoc.
+    rewrite <- Nat.mul_add_distr_l.
+    f_equal; symmetry.
+    now apply nat_of_list_xnatv_add_distr.
+
+  --
+bbb.
+
 (* a1 may be different from b1: *)
 Compute (@nat_of_list radix_10 0 [3; 1]).
 Compute (@nat_of_list radix_10 0 [0; 13]).
