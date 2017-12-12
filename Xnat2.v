@@ -170,7 +170,14 @@ destruct bl as [| b1]; [ easy | simpl ].
 now rewrite Nat.add_comm, IHal.
 Qed.
 
-Theorem xnat_add_comm {r : radix} : ∀ a b, (a + b = b + a)%X.
+Theorem xnat_add_comm : ∀ a b, (a + b)%X = (b + a)%X.
+Proof.
+intros.
+unfold xnat_add; simpl.
+now rewrite list_add_comm.
+Qed.
+
+Theorem xnat_add_comm' {r : radix} : ∀ a b, (a + b = b + a)%X.
 Proof.
 intros.
 unfold xnat_add; simpl.
@@ -180,26 +187,33 @@ Qed.
 Theorem xnat_add_0_l {r : radix} : ∀ a, (0 + a = a)%X.
 Proof. easy. Qed.
 
-Lemma nat_of_list_add_assoc {r : radix} : rad ≠ 0 → ∀ al bl cl,
-  nat_of_list 0 (list_add al (list_add bl cl)) =
-  nat_of_list 0 (list_add (list_add al bl) cl).
+Lemma list_add_assoc : ∀ al bl cl,
+  list_add al (list_add bl cl) = list_add (list_add al bl) cl.
 Proof.
-intros Hr *.
+intros.
 revert al cl.
 induction bl as [| b1]; intros; simpl.
 -now replace (list_add al []) with (list_add [] al) by apply list_add_comm.
 
 -destruct cl as [| c1]; [ now destruct al | simpl ].
  destruct al as [| a1]; [ easy | simpl ].
- rewrite IHbl; ring.
+ rewrite IHbl; f_equal; apply Nat.add_assoc.
 Qed.
 
-Theorem xnat_add_assoc {r : radix} : rad ≠ 0 → ∀ a b c,
+Theorem xnat_add_assoc : ∀ a b c,
+  (a + (b + c))%X = ((a + b) + c)%X.
+Proof.
+intros Hr *.
+unfold xnat_add; simpl; f_equal.
+apply list_add_assoc.
+Qed.
+
+Theorem xnat_add_assoc' {r : radix} : rad ≠ 0 → ∀ a b c,
   (a + (b + c) = (a + b) + c)%X.
 Proof.
 intros Hr *.
-unfold xnat_add, nat_of_xnat; simpl.
-now apply nat_of_list_add_assoc.
+unfold xnat_add; simpl; f_equal; f_equal.
+apply list_add_assoc.
 Qed.
 
 (* Compatiblity addition with equality *)
@@ -284,7 +298,14 @@ symmetry; rewrite Nat.add_comm; symmetry.
 apply list_mul_loop_comm.
 Qed.
 
-Theorem xnat_mul_comm {r : radix} : ∀ a b, (a * b = b * a)%X.
+Theorem xnat_mul_comm : ∀ a b, (a * b)%X = (b * a)%X.
+Proof.
+intros.
+unfold xnat_mul; simpl.
+now rewrite list_mul_comm.
+Qed.
+
+Theorem xnat_mul_comm' {r : radix} : ∀ a b, (a * b = b * a)%X.
 Proof.
 intros.
 unfold xnat_mul; simpl.
