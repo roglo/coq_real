@@ -19,7 +19,7 @@ Notation "a - b" := (rng_sub a b) : rng_scope.
 Notation "a * b" := (rng_mul a b) : rng_scope.
 Notation "a ≤ b" := (rng_le a b) : rng_scope.
 
-Class ord_ring {grd : ord_ring_def} :=
+Class ord_ring {rnd : ord_ring_def} :=
   { rng_add_0_l : ∀ a, (0 + a = a)%Rg;
     rng_add_comm : ∀ a b, (a + b = b + a)%Rg;
     rng_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%Rg;
