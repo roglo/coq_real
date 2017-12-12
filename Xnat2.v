@@ -680,7 +680,7 @@ unfold xnat_add, xnat_norm; simpl; f_equal.
 now apply list_norm_wc_add_assoc.
 Qed.
 
-(**)
+(* Compatiblity addition with equality *)
 
 Lemma eq_move_carry_end_nil {r : radix} : ∀ i c,
   move_carry_end i c = [] ↔ i = 0 ∨ c = 0.
