@@ -261,7 +261,8 @@ Notation "a * b" := (xnat_mul a b) : xnat_scope.
 
 Lemma glop : ∀ iter al bl b n,
   list_mul_loop iter n al bl = list_mul_loop iter n bl al
-  → list_mul_loop iter (S n) al (b :: bl) = list_mul_loop iter (S n) (b :: bl) al.
+  → list_mul_loop iter (S n) al (b :: bl) =
+     list_mul_loop iter (S n) (b :: bl) al.
 Proof.
 intros * Hab.
 revert al bl b n Hab.
@@ -274,6 +275,9 @@ rewrite summation_split_last; [ symmetry | lia ].
 simpl.
 f_equal; [ | now apply IHiter ].
 rewrite Nat.sub_diag.
+
+(* s'inspirer de la commutativité de la multiplication des polynomes ou
+des séries entières dans Puiseux *)
 bbb.
 
 Lemma list_mul_comm : ∀ al bl, list_mul al bl = list_mul bl al.
