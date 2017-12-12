@@ -2079,6 +2079,18 @@ bbb.
 bbb.
 *)
 
+Lemma nat_of_list_add_eq_compat {r : radix} : ∀ al bl cl,
+  nat_of_list 0 al = nat_of_list 0 bl
+  → nat_of_list 0 (xnatv_add al cl) = nat_of_list 0 (xnatv_add bl cl).
+Proof.
+intros * Hab.
+rewrite xnatv_add_comm; symmetry.
+rewrite xnatv_add_comm; symmetry.
+revert al bl Hab.
+induction cl as [| c1]; intros; [ easy | simpl ].
+
+bbb.
+
 Theorem xnatv_add_eq_compat {r : radix} : 1 < rad → ∀ a b c,
   (a = b)%X → (a + c = b + c)%X.
 Proof.
