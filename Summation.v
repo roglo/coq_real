@@ -3,34 +3,57 @@
 Require Import Utf8 Arith NPeano Psatz.
 Require Import Misc.
 
-Fixpoint summation_aux b len g :=
+Class ord_monoid_def :=
+   { mono_t : Type;
+     mono_0 : mono_t;
+     mono_add : mono_t → mono_t → mono_t;
+     mono_le : mono_t → mono_t → Prop }.
+
+Delimit Scope mono_scope with M.
+
+Notation "0" := (mono_0) : mono_scope.
+Notation "a + b" := (mono_add a b) : mono_scope.
+Notation "a ≤ b" := (mono_le a b) : mono_scope.
+
+Class ord_monoid {d : ord_monoid_def} :=
+  { mono_add_0_l : ∀ a, (0 + a = a)%M;
+    mono_add_0_r : ∀ a, (a + 0 = a)%M;
+    mono_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%M;
+    mono_le_refl : ∀ a, (a ≤ a)%M;
+    mono_add_le_compat : ∀ n m p q, (n ≤ m → p ≤ q → n + p ≤ m + q)%M }.
+
+Fixpoint summation_aux {d : ord_monoid_def} (b len : nat) (g : nat → _) :=
   match len with
-  | O => 0
-  | S len₁ => g b + summation_aux (S b) len₁ g
+  | O => 0%M
+  | S len₁ => (g b + summation_aux (S b) len₁ g)%M
   end.
 
-Definition summation b e g := summation_aux b (S e - b) g.
+Definition summation {d : ord_monoid_def} b e g :=
+  summation_aux b (S e - b) g.
 
 Notation "'Σ' ( i = b , e ) , g" := (summation b e (λ i, g))
   (at level 45, i at level 0, b at level 60, e at level 60).
 
-Lemma summation_aux_succ_last : ∀ g b len,
-  summation_aux b (S len) g =
-  summation_aux b len g + g (b + len).
+Lemma summation_aux_succ_last {d : ord_monoid_def} :
+  ∀ g b len,
+  (summation_aux b (S len) g =
+   summation_aux b len g + g (b + len)%nat)%M.
 Proof.
 intros g b len.
 revert b.
 induction len; intros.
- now simpl; do 2 rewrite Nat.add_0_r.
+ simpl; rewrite Nat.add_0_r.
+bbb.
+ now rewrite mono_add_0_l, mono_add_0_r.
 
  remember (S len) as x; simpl; subst x.
  rewrite IHlen; simpl.
- now rewrite Nat.add_assoc, Nat.add_succ_r.
+ now rewrite mono_add_assoc, Nat.add_succ_r.
 Qed.
 
-Theorem summation_split_last : ∀ g b k,
+Theorem summation_split_last {d : ord_monoid_def} {m : ord_monoid} : ∀ g b k,
   b ≤ S k
-  → Σ (i = b, S k), g i = Σ (i = b, k), g i + g (S k).
+  → (Σ (i = b, S k), g i = Σ (i = b, k), g i + g (S k))%M.
 Proof.
 intros g b k Hbk.
 unfold summation.
@@ -40,7 +63,7 @@ rewrite Nat.add_sub_assoc; [ | easy ].
 now rewrite Nat.add_comm, Nat.add_sub.
 Qed.
 
-Theorem summation_succ_succ : ∀ b k g,
+Theorem summation_succ_succ {d : ord_monoid_def} {m : ord_monoid} : ∀ b k g,
   Σ (i = S b, S k), g i = Σ (i = b, k), g (S i).
 Proof.
 intros b k g.
@@ -52,14 +75,15 @@ induction len; intros; [ reflexivity | simpl ].
 rewrite IHlen; reflexivity.
 Qed.
 
-Theorem summation_empty : ∀ g b k, k < b → Σ (i = b, k), g i = 0.
+Theorem summation_empty {m : ord_monoid} : ∀ g b k,
+  k < b → Σ (i = b, k), g i = 0%M.
 Proof.
 intros * Hkb.
 unfold summation.
 now replace (S k - b)%nat with O by lia.
 Qed.
 
-Lemma summation_aux_eq_compat : ∀ g h b₁ b₂ len,
+Lemma summation_aux_eq_compat {m : ord_monoid} : ∀ g h b₁ b₂ len,
   (∀ i, 0 ≤ i < len → g (b₁ + i) = h (b₂ + i))
   → summation_aux b₁ len g = summation_aux b₂ len h.
 Proof.
@@ -82,7 +106,7 @@ erewrite IHlen.
  now destruct Hi.
 Qed.
 
-Theorem summation_eq_compat : ∀ g h b k,
+Theorem summation_eq_compat {m : ord_monoid} : ∀ g h b k,
   (∀ i, b ≤ i ≤ k → g i = h i)
   → Σ (i = b, k), g i = Σ (i = b, k), h i.
 Proof.
@@ -95,13 +119,14 @@ apply Nat.lt_add_lt_sub_r, le_S_n in Hi.
 now rewrite Nat.add_comm.
 Qed.
 
-Lemma summation_aux_le_compat : ∀ g h b₁ b₂ len,
-  (∀ i, 0 ≤ i < len → g (b₁ + i) ≤ h (b₂ + i))
-  → summation_aux b₁ len g ≤ summation_aux b₂ len h.
+Lemma summation_aux_le_compat {m : ord_monoid} : ∀ g h b₁ b₂ len,
+  (∀ i, 0 ≤ i < len → (g (b₁ + i)%nat ≤ h (b₂ + i)%nat)%M)
+  → (summation_aux b₁ len g ≤ summation_aux b₂ len h)%M.
 Proof.
 intros g h b₁ b₂ len Hgh.
 revert b₁ b₂ Hgh.
-induction len; intros; simpl; [ easy | ].
+induction len; intros; [ apply mono_le_refl | simpl ].
+Check Nat.add_le_mono.
 apply Nat.add_le_mono.
  assert (H : 0 ≤ 0 < S len).
   split; [ easy | apply Nat.lt_0_succ ].
