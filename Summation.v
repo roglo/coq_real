@@ -3,57 +3,73 @@
 Require Import Utf8 Arith NPeano Psatz.
 Require Import Misc.
 
-Class ord_monoid_def :=
-   { mono_t : Type;
-     mono_0 : mono_t;
-     mono_add : mono_t → mono_t → mono_t;
-     mono_le : mono_t → mono_t → Prop }.
+Class ord_ring_def :=
+   { rng_t : Type;
+     rng_0 : rng_t;
+     rng_add : rng_t → rng_t → rng_t;
+     rng_sub : rng_t → rng_t → rng_t;
+     rng_mul : rng_t → rng_t → rng_t;
+     rng_le : rng_t → rng_t → Prop }.
 
-Delimit Scope mono_scope with M.
+Delimit Scope rng_scope with Rg.
 
-Notation "0" := (mono_0) : mono_scope.
-Notation "a + b" := (mono_add a b) : mono_scope.
-Notation "a ≤ b" := (mono_le a b) : mono_scope.
+Notation "0" := (rng_0) : rng_scope.
+Notation "a + b" := (rng_add a b) : rng_scope.
+Notation "a - b" := (rng_sub a b) : rng_scope.
+Notation "a * b" := (rng_mul a b) : rng_scope.
+Notation "a ≤ b" := (rng_le a b) : rng_scope.
 
-Class ord_monoid {d : ord_monoid_def} :=
-  { mono_add_0_l : ∀ a, (0 + a = a)%M;
-    mono_add_0_r : ∀ a, (a + 0 = a)%M;
-    mono_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%M;
-    mono_le_refl : ∀ a, (a ≤ a)%M;
-    mono_add_le_compat : ∀ n m p q, (n ≤ m → p ≤ q → n + p ≤ m + q)%M }.
+Class ord_ring {grd : ord_ring_def} :=
+  { rng_add_0_l : ∀ a, (0 + a = a)%Rg;
+    rng_add_0_r : ∀ a, (a + 0 = a)%Rg;
+    rng_add_comm : ∀ a b, (a + b = b + a)%Rg;
+    rng_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%Rg;
+    rng_sub_diag : ∀ a, (a - a = 0)%Rg;
+    rng_mul_comm : ∀ a b, (a * b = b * a)%Rg;
+    rng_mul_add_distr_r : ∀ a b c, ((a + b) * c = a * c + b * c)%Rg;
+    rng_mul_sub_distr_r : ∀ a b c, ((a - b) * c = a * c - b * c)%Rg;
+    rng_le_refl : ∀ a, (a ≤ a)%Rg;
+    rng_add_le_compat : ∀ n m p q, (n ≤ m → p ≤ q → n + p ≤ m + q)%Rg }.
 
-Fixpoint summation_aux {d : ord_monoid_def} (b len : nat) (g : nat → _) :=
+Theorem rng_mul_0_l `{rg : ord_ring} : ∀ a, (0 * a = 0)%Rg.
+Proof.
+intros.
+replace 0%Rg with (0 - 0)%Rg at 1 by apply rng_sub_diag.
+rewrite rng_mul_sub_distr_r.
+now rewrite rng_sub_diag.
+Qed.
+
+Fixpoint summation_aux `{rg : ord_ring} (b len : nat) (g : nat → _) :=
   match len with
-  | O => 0%M
-  | S len₁ => (g b + summation_aux (S b) len₁ g)%M
+  | O => 0%Rg
+  | S len₁ => (g b + summation_aux (S b) len₁ g)%Rg
   end.
 
-Definition summation {d : ord_monoid_def} b e g :=
+Definition summation `{rg : ord_ring} b e g :=
   summation_aux b (S e - b) g.
 
 Notation "'Σ' ( i = b , e ) , g" := (summation b e (λ i, g))
   (at level 45, i at level 0, b at level 60, e at level 60).
 
-Lemma summation_aux_succ_last {d : ord_monoid_def} :
+Lemma summation_aux_succ_last `{rg : ord_ring} :
   ∀ g b len,
   (summation_aux b (S len) g =
-   summation_aux b len g + g (b + len)%nat)%M.
+   summation_aux b len g + g (b + len)%nat)%Rg.
 Proof.
 intros g b len.
 revert b.
 induction len; intros.
  simpl; rewrite Nat.add_0_r.
-bbb.
- now rewrite mono_add_0_l, mono_add_0_r.
+ now rewrite rng_add_0_l, rng_add_0_r.
 
  remember (S len) as x; simpl; subst x.
  rewrite IHlen; simpl.
- now rewrite mono_add_assoc, Nat.add_succ_r.
+ now rewrite rng_add_assoc, Nat.add_succ_r.
 Qed.
 
-Theorem summation_split_last {d : ord_monoid_def} {m : ord_monoid} : ∀ g b k,
+Theorem summation_split_last `{rg : ord_ring} : ∀ g b k,
   b ≤ S k
-  → (Σ (i = b, S k), g i = Σ (i = b, k), g i + g (S k))%M.
+  → (Σ (i = b, S k), g i = Σ (i = b, k), g i + g (S k))%Rg.
 Proof.
 intros g b k Hbk.
 unfold summation.
@@ -63,7 +79,7 @@ rewrite Nat.add_sub_assoc; [ | easy ].
 now rewrite Nat.add_comm, Nat.add_sub.
 Qed.
 
-Theorem summation_succ_succ {d : ord_monoid_def} {m : ord_monoid} : ∀ b k g,
+Theorem summation_succ_succ `{rg : ord_ring} : ∀ b k g,
   Σ (i = S b, S k), g i = Σ (i = b, k), g (S i).
 Proof.
 intros b k g.
@@ -75,15 +91,15 @@ induction len; intros; [ reflexivity | simpl ].
 rewrite IHlen; reflexivity.
 Qed.
 
-Theorem summation_empty {m : ord_monoid} : ∀ g b k,
-  k < b → Σ (i = b, k), g i = 0%M.
+Theorem summation_empty `{rg : ord_ring} : ∀ g b k,
+  k < b → Σ (i = b, k), g i = 0%Rg.
 Proof.
 intros * Hkb.
 unfold summation.
 now replace (S k - b)%nat with O by lia.
 Qed.
 
-Lemma summation_aux_eq_compat {m : ord_monoid} : ∀ g h b₁ b₂ len,
+Lemma summation_aux_eq_compat `{rg : ord_ring} : ∀ g h b₁ b₂ len,
   (∀ i, 0 ≤ i < len → g (b₁ + i) = h (b₂ + i))
   → summation_aux b₁ len g = summation_aux b₂ len h.
 Proof.
@@ -106,7 +122,7 @@ erewrite IHlen.
  now destruct Hi.
 Qed.
 
-Theorem summation_eq_compat {m : ord_monoid} : ∀ g h b k,
+Theorem summation_eq_compat `{rg : ord_ring} : ∀ g h b k,
   (∀ i, b ≤ i ≤ k → g i = h i)
   → Σ (i = b, k), g i = Σ (i = b, k), h i.
 Proof.
@@ -119,15 +135,14 @@ apply Nat.lt_add_lt_sub_r, le_S_n in Hi.
 now rewrite Nat.add_comm.
 Qed.
 
-Lemma summation_aux_le_compat {m : ord_monoid} : ∀ g h b₁ b₂ len,
-  (∀ i, 0 ≤ i < len → (g (b₁ + i)%nat ≤ h (b₂ + i)%nat)%M)
-  → (summation_aux b₁ len g ≤ summation_aux b₂ len h)%M.
+Lemma summation_aux_le_compat `{rg : ord_ring} : ∀ g h b₁ b₂ len,
+  (∀ i, 0 ≤ i < len → (g (b₁ + i)%nat ≤ h (b₂ + i)%nat)%Rg)
+  → (summation_aux b₁ len g ≤ summation_aux b₂ len h)%Rg.
 Proof.
 intros g h b₁ b₂ len Hgh.
 revert b₁ b₂ Hgh.
-induction len; intros; [ apply mono_le_refl | simpl ].
-Check Nat.add_le_mono.
-apply Nat.add_le_mono.
+induction len; intros; [ apply rng_le_refl | simpl ].
+apply rng_add_le_compat.
  assert (H : 0 ≤ 0 < S len).
   split; [ easy | apply Nat.lt_0_succ ].
 
@@ -141,9 +156,9 @@ apply Nat.add_le_mono.
  now apply -> Nat.succ_lt_mono.
 Qed.
 
-Theorem summation_le_compat : ∀ b k f g,
-  (∀ i, b ≤ i ≤ k → f i ≤ g i)
-  → Σ (i = b, k), f i ≤ Σ (i = b, k), g i.
+Theorem summation_le_compat `{rg : ord_ring} : ∀ b k f g,
+  (∀ i, b ≤ i ≤ k → (f i ≤ g i)%Rg)
+  → (Σ (i = b, k), f i ≤ Σ (i = b, k), g i)%Rg.
 Proof.
 intros * Hfg.
 unfold summation.
@@ -151,40 +166,41 @@ apply summation_aux_le_compat; intros i Hi.
 apply Hfg; lia.
 Qed.
 
-Theorem summation_mul_distr_r : ∀ f b k a,
-  (Σ (i = b, k), (f i)) * a =
-  Σ (i = b, k), f i * a.
+Theorem summation_mul_distr_r `{rg : ord_ring} : ∀ f b k a,
+  ((Σ (i = b, k), (f i)) * a = Σ (i = b, k), f i * a)%Rg.
 Proof.
 intros.
 unfold summation.
 remember (S k - b) as len eqn:Hlen.
 clear; revert b.
-induction len; intros; simpl; [ easy | ].
-rewrite Nat.mul_add_distr_r.
+induction len; intros; simpl; [ apply rng_mul_0_l | ].
+rewrite rng_mul_add_distr_r.
 now rewrite IHlen.
 Qed.
 
-Theorem summation_mul_distr_l : ∀ f b k a,
-  a * (Σ (i = b, k), f i) =
-  Σ (i = b, k), a * f i.
+Theorem summation_mul_distr_l `{rg : ord_ring} : ∀ f b k a,
+  (a * (Σ (i = b, k), f i) = Σ (i = b, k), a * f i)%Rg.
 Proof.
 intros.
-rewrite Nat.mul_comm, summation_mul_distr_r.
+rewrite rng_mul_comm.
+rewrite summation_mul_distr_r.
 apply summation_eq_compat.
-intros; apply Nat.mul_comm.
+intros; apply rng_mul_comm.
 Qed.
 
-Theorem summation_only_one : ∀ g n, (Σ (i = n, n), g i = g n).
+Theorem summation_only_one `{rg : ord_ring} : ∀ g n,
+  (Σ (i = n, n), g i = g n)%Rg.
 Proof.
 intros g n.
 unfold summation.
 rewrite Nat.sub_succ_l; [ idtac | easy ].
-rewrite Nat.sub_diag; simpl; lia.
+rewrite Nat.sub_diag; simpl.
+now rewrite rng_add_0_r.
 Qed.
 
-Theorem summation_add_distr : ∀ g h b k,
+Theorem summation_add_distr `{rg : ord_ring} : ∀ g h b k,
   (Σ (i = b, k), (g i + h i) =
-   Σ (i = b, k), g i + Σ (i = b, k), h i).
+   Σ (i = b, k), g i + Σ (i = b, k), h i)%Rg.
 Proof.
 intros g h b k.
 destruct (le_dec b k) as [Hbk| Hbk].
@@ -193,27 +209,32 @@ destruct (le_dec b k) as [Hbk| Hbk].
   destruct b; [ | easy ].
   now do 3 rewrite summation_only_one.
 
-  rewrite summation_split_last; [ idtac | assumption ].
-  rewrite summation_split_last; [ idtac | assumption ].
-  rewrite summation_split_last; [ idtac | assumption ].
+  rewrite summation_split_last; [ | easy ].
+  rewrite summation_split_last; [ | easy ].
+  rewrite summation_split_last; [ | easy ].
   destruct (eq_nat_dec b (S k)) as [H₂| H₂].
    subst b.
    unfold summation; simpl.
-   now rewrite Nat.sub_diag.
+   rewrite Nat.sub_diag; simpl.
+   now do 3 rewrite rng_add_0_l.
 
    apply Nat_le_neq_lt in Hbk; [ | easy ].
    apply Nat.succ_le_mono in Hbk.
-   rewrite IHk; [ lia | easy ].
+   rewrite IHk; [ | easy ].
+   do 2 rewrite rng_add_assoc; f_equal.
+   do 2 rewrite <- rng_add_assoc; f_equal.
+   apply rng_add_comm.
 
  unfold summation.
  apply Nat.nle_gt in Hbk.
- now replace (S k - b) with O by lia.
+ replace (S k - b) with O by lia; simpl.
+ now rewrite rng_add_0_l.
 Qed.
 
-Theorem summation_shift : ∀ b g k,
+Theorem summation_shift `{rg : ord_ring} : ∀ b g k,
   b ≤ k
   → (Σ (i = b, k), g i =
-     Σ (i = 0, k - b), g (b + i)%nat).
+     Σ (i = 0, k - b), g (b + i)%nat)%Rg.
 Proof.
 intros b g k Hbk.
 unfold summation.
@@ -222,13 +243,13 @@ rewrite Nat.sub_succ_l; [ idtac | assumption ].
 now apply summation_aux_eq_compat.
 Qed.
 
-Theorem summation_aux_rtl : ∀ g b len,
+Theorem summation_aux_rtl `{rg : ord_ring} : ∀ g b len,
   (summation_aux b len g =
    summation_aux b len (λ i, g (b + len - 1 + b - i)%nat)).
 Proof.
 intros g b len.
 revert g b.
-induction len; intros; [ reflexivity | idtac ].
+induction len; intros; [ easy | ].
 remember (S len) as x.
 rewrite Heqx in |- * at 1.
 simpl; subst x.
@@ -237,28 +258,26 @@ rewrite summation_aux_succ_last.
 rewrite Nat.add_succ_l, Nat.sub_succ, Nat.sub_0_r.
 do 2 rewrite Nat.add_succ_r; rewrite Nat.sub_succ, Nat.sub_0_r.
 rewrite Nat.add_sub_swap, Nat.sub_diag; [ | easy ].
-rewrite Nat.add_comm; f_equal.
+rewrite rng_add_comm; f_equal.
 now apply summation_aux_eq_compat.
 Qed.
 
-Theorem summation_rtl : ∀ g b k,
+Theorem summation_rtl `{rg : ord_ring} : ∀ g b k,
   (Σ (i = b, k), g i = Σ (i = b, k), g (k + b - i)%nat).
 Proof.
 intros g b k.
 unfold summation.
 rewrite summation_aux_rtl.
 apply summation_aux_eq_compat; intros i (Hi, Hikb).
-destruct b; simpl.
- rewrite Nat.sub_0_r; reflexivity.
-
- rewrite Nat.sub_0_r.
- simpl in Hikb.
- eapply Nat.le_lt_trans in Hikb; eauto .
- apply lt_O_minus_lt, Nat.lt_le_incl in Hikb.
- remember (b + (k - b))%nat as x eqn:H .
- rewrite Nat.add_sub_assoc in H; auto.
- rewrite Nat.add_sub_swap in H; auto.
- rewrite Nat.sub_diag in H; subst x; reflexivity.
+destruct b; simpl; [ now rewrite Nat.sub_0_r | ].
+rewrite Nat.sub_0_r.
+simpl in Hikb.
+eapply Nat.le_lt_trans in Hikb; eauto .
+apply lt_O_minus_lt, Nat.lt_le_incl in Hikb.
+remember (b + (k - b))%nat as x eqn:H .
+rewrite Nat.add_sub_assoc in H; auto.
+rewrite Nat.add_sub_swap in H; auto.
+rewrite Nat.sub_diag in H; subst x; reflexivity.
 Qed.
 
 (*
@@ -408,19 +427,19 @@ rewrite Nat.add_0_l; reflexivity.
 Qed.
 *)
 
-Theorem summation_aux_succ_first : ∀ g b len,
-  summation_aux b (S len) g = (g b + summation_aux (S b) len g).
-Proof. reflexivity. Qed.
+Theorem summation_aux_succ_first `{rg : ord_ring} : ∀ g b len,
+  summation_aux b (S len) g = (g b + summation_aux (S b) len g)%Rg.
+Proof. easy. Qed.
 
-Theorem summation_split_first : ∀ g b k,
+Theorem summation_split_first `{rg : ord_ring} : ∀ g b k,
   b ≤ k
-  → Σ (i = b, k), g i = (g b + Σ (i = S b, k), g i).
+  → Σ (i = b, k), g i = (g b + Σ (i = S b, k), g i)%Rg.
 Proof.
 intros g b k Hbk.
 unfold summation.
 rewrite Nat.sub_succ.
 rewrite <- summation_aux_succ_first.
-rewrite <- Nat.sub_succ_l; [ reflexivity | assumption ].
+now rewrite <- Nat.sub_succ_l.
 Qed.
 
 (*
