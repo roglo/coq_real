@@ -235,3 +235,23 @@ unfold nat_of_xnat.
 unfold xnat_add; simpl.
 now apply nat_of_list_add_eq_compat.
 Qed.
+
+(* Multiplication *)
+
+(* hou la la: comment je fais, là ? *)
+bbb.
+
+Fixpoint xnatv_mul a b :=
+  match a with
+  | [] => b
+  | a₀ :: al =>
+      match b with
+      | [] => a
+      | b₀ :: bl => a₀ + b₀ :: xnatv_add al bl
+      end
+  end.
+
+bbb.
+
+Definition xnat_mul {r : radix} a b :=
+  xn (xnatv_mul (xnatv a) (xnatv b)).
