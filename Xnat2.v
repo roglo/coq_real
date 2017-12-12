@@ -259,6 +259,7 @@ Compute (xnat_mul (xn (@list_of_nat radix_10 0 279)) (xn (@list_of_nat radix_10 
 
 Notation "a * b" := (xnat_mul a b) : xnat_scope.
 
+(*
 Lemma glop : ∀ iter al bl b n,
   list_mul_loop iter n al bl = list_mul_loop iter n bl al
   → list_mul_loop iter (S n) al (b :: bl) =
@@ -279,27 +280,19 @@ rewrite Nat.sub_diag.
 (* s'inspirer de la commutativité de la multiplication des polynomes ou
 des séries entières dans Puiseux *)
 bbb.
+*)
 
 Lemma list_mul_comm : ∀ al bl, list_mul al bl = list_mul bl al.
 Proof.
 intros *.
 unfold list_mul.
-revert bl.
-induction al as [| a1]; intros.
--simpl; rewrite Nat.add_0_r.
- induction bl as [| b1]; [ easy | ].
- simpl; rewrite Nat.sub_0_r.
- destruct bl as [| b2]; [ easy | ].
- simpl in IHbl; simpl.
- rewrite Nat.sub_0_r in IHbl.
- do 2 rewrite summation_only_one.
- f_equal; [ lia | ].
- now apply glop.
+remember (length al + length bl - 1) as len eqn:Hlen.
+rewrite Nat.add_comm, Hlen.
+symmetry in Hlen.
+revert al bl Hlen.
+induction len; intros; [ now rewrite Hlen | ].
+rewrite Hlen.
 
-bbb.
-
- destruct bl as [| b3]; [ easy | ].
- simpl in IHbl; simpl.
 bbb.
 
 Theorem xnat_mul_comm {r : radix} : ∀ a b, (a * b = b * a)%X.
