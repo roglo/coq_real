@@ -259,45 +259,32 @@ Compute (xnat_mul (xn (@list_of_nat radix_10 0 279)) (xn (@list_of_nat radix_10 
 
 Notation "a * b" := (xnat_mul a b) : xnat_scope.
 
-(*
-Lemma glop : ∀ iter al bl b n,
-  list_mul_loop iter n al bl = list_mul_loop iter n bl al
-  → list_mul_loop iter (S n) al (b :: bl) =
-     list_mul_loop iter (S n) (b :: bl) al.
+Lemma list_mul_loop_comm : ∀ al bl i n,
+  list_mul_loop i n al bl = list_mul_loop i n bl al.
 Proof.
-intros * Hab.
-revert al bl b n Hab.
-induction iter; intros; [ easy | ].
-simpl in Hab.
-injection Hab; clear Hab; intros Habl Hab.
-simpl.
-rewrite summation_split_last; [ symmetry | lia ].
-rewrite summation_split_last; [ symmetry | lia ].
-simpl.
-f_equal; [ | now apply IHiter ].
-rewrite Nat.sub_diag.
-
-(* s'inspirer de la commutativité de la multiplication des polynomes ou
-des séries entières dans Puiseux *)
-bbb.
-*)
+intros.
+revert al bl n.
+induction i; intros; [ easy | simpl ].
+f_equal; [ | apply IHi ].
+rewrite summation_rtl.
+apply summation_eq_compat.
+intros j Hj.
+rewrite Nat.mul_comm.
+rewrite Nat.add_0_r; f_equal.
+f_equal; lia.
+Qed.
 
 Lemma list_mul_comm : ∀ al bl, list_mul al bl = list_mul bl al.
 Proof.
 intros *.
 unfold list_mul.
-remember (length al + length bl - 1) as len eqn:Hlen.
-rewrite Nat.add_comm, Hlen.
-symmetry in Hlen.
-revert al bl Hlen.
-induction len; intros; [ now rewrite Hlen | ].
-rewrite Hlen.
-
-bbb.
+symmetry; rewrite Nat.add_comm; symmetry.
+apply list_mul_loop_comm.
+Qed.
 
 Theorem xnat_mul_comm {r : radix} : ∀ a b, (a * b = b * a)%X.
 Proof.
 intros.
-unfold xnat_add; simpl.
+unfold xnat_mul; simpl.
 now rewrite list_mul_comm.
 Qed.
