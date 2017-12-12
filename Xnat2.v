@@ -6,10 +6,11 @@
    to build a number whose digits are less than radix, use normalization
    by the function xnat_norm *)
 
-Require Import Utf8 Arith Psatz Misc.
+Require Import Utf8 Arith Psatz.
 Require List.
 Import List.ListNotations.
 Open Scope list_scope.
+Require Import Misc Summation.
 
 Class radix := { rad : nat }.
 
@@ -140,28 +141,27 @@ Qed.
 
 (* Addition *)
 
-Fixpoint xnatv_add a b :=
+Fixpoint list_add a b :=
   match a with
   | [] => b
   | a₀ :: al =>
       match b with
       | [] => a
-      | b₀ :: bl => a₀ + b₀ :: xnatv_add al bl
+      | b₀ :: bl => a₀ + b₀ :: list_add al bl
       end
   end.
 
-Definition xnat_add {r : radix} a b :=
-  xn (xnatv_add (xnatv a) (xnatv b)).
+Definition xnat_add a b :=
+  xn (list_add (xnatv a) (xnatv b)).
 
-Definition xnat_0 {r : radix} := xn [].
+Definition xnat_0 := xn [].
 
 Delimit Scope xnat_scope with X.
 Notation "a + b" := (xnat_add a b) : xnat_scope.
 Notation "a = b" := (nat_of_xnat a = nat_of_xnat b) : xnat_scope.
 Notation "0" := (xnat_0) : xnat_scope.
 
-Lemma xnatv_add_comm {r : radix} : ∀ al bl,
-  xnatv_add al bl = xnatv_add bl al.
+Lemma list_add_comm : ∀ al bl, list_add al bl = list_add bl al.
 Proof.
 intros *.
 revert bl.
@@ -174,20 +174,20 @@ Theorem xnat_add_comm {r : radix} : ∀ a b, (a + b = b + a)%X.
 Proof.
 intros.
 unfold xnat_add; simpl.
-now rewrite xnatv_add_comm.
+now rewrite list_add_comm.
 Qed.
 
 Theorem xnat_add_0_l {r : radix} : ∀ a, (0 + a = a)%X.
 Proof. easy. Qed.
 
 Lemma nat_of_list_add_assoc {r : radix} : rad ≠ 0 → ∀ al bl cl,
-  nat_of_list 0 (xnatv_add al (xnatv_add bl cl)) =
-  nat_of_list 0 (xnatv_add (xnatv_add al bl) cl).
+  nat_of_list 0 (list_add al (list_add bl cl)) =
+  nat_of_list 0 (list_add (list_add al bl) cl).
 Proof.
 intros Hr *.
 revert al cl.
 induction bl as [| b1]; intros; simpl.
--now replace (xnatv_add al []) with (xnatv_add [] al) by apply xnatv_add_comm.
+-now replace (list_add al []) with (list_add [] al) by apply list_add_comm.
 
 -destruct cl as [| c1]; [ now destruct al | simpl ].
  destruct al as [| a1]; [ easy | simpl ].
@@ -204,8 +204,8 @@ Qed.
 
 (* Compatiblity addition with equality *)
 
-Lemma nat_of_list_xnatv_add_distr {r : radix} : 1 < rad → ∀ al bl,
-  nat_of_list 0 (xnatv_add al bl) = nat_of_list 0 al + nat_of_list 0 bl.
+Lemma nat_of_list_add_distr {r : radix} : 1 < rad → ∀ al bl,
+  nat_of_list 0 (list_add al bl) = nat_of_list 0 al + nat_of_list 0 bl.
 Proof.
 intros Hr *.
 revert bl.
@@ -216,17 +216,17 @@ Qed.
 
 Lemma nat_of_list_add_eq_compat {r : radix} : 1 < rad → ∀ al bl cl,
   nat_of_list 0 al = nat_of_list 0 bl
-  → nat_of_list 0 (xnatv_add al cl) = nat_of_list 0 (xnatv_add bl cl).
+  → nat_of_list 0 (list_add al cl) = nat_of_list 0 (list_add bl cl).
 Proof.
 intros Hr.
 assert (Hrz : rad ≠ 0) by lia.
 intros * Hab.
-rewrite nat_of_list_xnatv_add_distr; [ | easy ].
-rewrite nat_of_list_xnatv_add_distr; [ | easy ].
+rewrite nat_of_list_add_distr; [ | easy ].
+rewrite nat_of_list_add_distr; [ | easy ].
 now rewrite Hab.
 Qed.
 
-Theorem xnatv_add_eq_compat {r : radix} : 1 < rad → ∀ a b c,
+Theorem list_add_eq_compat {r : radix} : 1 < rad → ∀ a b c,
   (a = b)%X → (a + c = b + c)%X.
 Proof.
 intros Hr * Hab.
@@ -238,20 +238,69 @@ Qed.
 
 (* Multiplication *)
 
-(* hou la la: comment je fais, là ? *)
-bbb.
-
-Fixpoint xnatv_mul a b :=
-  match a with
-  | [] => b
-  | a₀ :: al =>
-      match b with
-      | [] => a
-      | b₀ :: bl => a₀ + b₀ :: xnatv_add al bl
-      end
+Fixpoint list_mul_loop (rg := nat_ord_ring) iter n al bl :=
+  match iter with
+  | 0 => []
+  | S i =>
+      Σ (j = 0, n), (List.nth j al 0 * List.nth (n - j) bl 0) ::
+      list_mul_loop i (S n) al bl
   end.
 
+Definition list_mul al bl :=
+  let iter := length al + length bl - 1 in
+  list_mul_loop iter 0 al bl.
+
+Definition xnat_mul a b :=
+  xn (list_mul (xnatv a) (xnatv b)).
+
+Compute (xnat_mul (xn (@list_of_nat radix_10 0 11)) (xn (@list_of_nat radix_10 0 9))).
+Compute (xnat_mul (xn (@list_of_nat radix_10 0 12)) (xn (@list_of_nat radix_10 0 12))).
+Compute (xnat_mul (xn (@list_of_nat radix_10 0 279)) (xn (@list_of_nat radix_10 0 1))).
+
+Notation "a * b" := (xnat_mul a b) : xnat_scope.
+
+Lemma glop : ∀ iter al bl b n,
+  list_mul_loop iter n al bl = list_mul_loop iter n bl al
+  → list_mul_loop iter (S n) al (b :: bl) = list_mul_loop iter (S n) (b :: bl) al.
+Proof.
+intros * Hab.
+revert al bl b n Hab.
+induction iter; intros; [ easy | ].
+simpl in Hab.
+injection Hab; clear Hab; intros Habl Hab.
+simpl.
+rewrite summation_split_last; [ symmetry | lia ].
+rewrite summation_split_last; [ symmetry | lia ].
+simpl.
+f_equal; [ | now apply IHiter ].
+rewrite Nat.sub_diag.
 bbb.
 
-Definition xnat_mul {r : radix} a b :=
-  xn (xnatv_mul (xnatv a) (xnatv b)).
+Lemma list_mul_comm : ∀ al bl, list_mul al bl = list_mul bl al.
+Proof.
+intros *.
+unfold list_mul.
+revert bl.
+induction al as [| a1]; intros.
+-simpl; rewrite Nat.add_0_r.
+ induction bl as [| b1]; [ easy | ].
+ simpl; rewrite Nat.sub_0_r.
+ destruct bl as [| b2]; [ easy | ].
+ simpl in IHbl; simpl.
+ rewrite Nat.sub_0_r in IHbl.
+ do 2 rewrite summation_only_one.
+ f_equal; [ lia | ].
+ now apply glop.
+
+bbb.
+
+ destruct bl as [| b3]; [ easy | ].
+ simpl in IHbl; simpl.
+bbb.
+
+Theorem xnat_mul_comm {r : radix} : ∀ a b, (a * b = b * a)%X.
+Proof.
+intros.
+unfold xnat_add; simpl.
+now rewrite list_mul_comm.
+Qed.
