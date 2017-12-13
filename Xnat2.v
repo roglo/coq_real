@@ -312,20 +312,46 @@ unfold xnat_mul; simpl.
 now rewrite list_mul_comm.
 Qed.
 
+Lemma length_list_mul_loop : ∀ i n al bl,
+  length (list_mul_loop i n al bl) = i.
+Proof.
+intros.
+revert n.
+now induction i; intros; [ | simpl; rewrite IHi ].
+Qed.
+
 Lemma list_mul_assoc : ∀ al bl cl,
   list_mul al (list_mul bl cl) = list_mul (list_mul al bl) cl.
 Proof.
 intros.
 unfold list_mul.
+do 2 rewrite length_list_mul_loop.
+destruct bl as [| b1].
+-simpl.
+ rewrite Nat.add_0_r.
+ destruct al as [| a1].
+ +simpl.
+  destruct cl as [| c1]; [ easy | simpl ].
+  rewrite Nat.sub_0_r.
+  destruct cl as [| c2]; [ easy | simpl ].
+  rewrite Nat.sub_0_r.
+  rewrite summation_only_one; simpl.
+  destruct cl as [| c3].
+  *simpl.
+Compute (list_mul [] (list_mul [] [3; 4])).
+Compute (list_mul (list_mul [] []) [3; 4]).
+bbb.
+
+intros.
+unfold list_mul.
+do 2 rewrite length_list_mul_loop.
 remember (length bl + length cl - 1) as len_bc eqn:Hlen_bc.
 remember (length al + length bl - 1) as len_ab eqn:Hlen_ab.
-remember (length al + @length nat (list_mul_loop len_bc 0 bl cl) - 1)
-  as len_a_bc eqn:Hlen_a_bc.
-remember (@length nat (list_mul_loop len_ab 0 al bl) + length cl - 1)
-  as len_ab_c eqn:Hlen_ab_c.
+remember (length al + len_bc - 1) as len_a_bc eqn:Hlen_a_bc.
+remember (len_ab + length cl - 1) as len_ab_c eqn:Hlen_ab_c.
 symmetry in Hlen_bc, Hlen_a_bc, Hlen_ab, Hlen_ab_c.
 destruct len_bc.
--simpl in Hlen_a_bc; simpl.
+-simpl.
  rewrite Nat.add_0_r in Hlen_a_bc.
  destruct len_a_bc; simpl.
  +destruct len_ab; simpl.
