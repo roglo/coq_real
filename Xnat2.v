@@ -312,20 +312,12 @@ unfold xnat_mul; simpl.
 now rewrite list_mul_comm.
 Qed.
 
-(* Mmm.... works not: the #iter must be different in each mul *)
-Lemma list_mul_loop_assoc : ∀ al bl cl i n,
-  list_mul_loop i n al (list_mul_loop i n bl cl) =
-  list_mul_loop i n (list_mul_loop i n al bl) cl.
-Proof.
-intros.
-bbb.
-
 Lemma list_mul_assoc : ∀ al bl cl,
   list_mul al (list_mul bl cl) = list_mul (list_mul al bl) cl.
 Proof.
 intros.
 unfold list_mul.
-apply list_mul_loop_assoc.
+(* voir Power_series.v dans Puiseux *)
 bbb.
 
 Theorem xnat_mul_assoc : ∀ a b c, (a * (b * c))%X = ((a * b) * c)%X.
