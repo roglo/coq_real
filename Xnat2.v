@@ -11,6 +11,7 @@ Require List.
 Import List.ListNotations.
 Open Scope list_scope.
 Require Import Misc Summation.
+Arguments minus n m : simpl nomatch.
 
 Class radix := { rad : nat }.
 
@@ -438,6 +439,33 @@ induction bl as [| b1]; intros.
 
   *simpl; rewrite summation_only_one.
    f_equal; [ f_equal | lia ].
+destruct len_a_bc; [ easy | ].
+simpl.
+bbb.
+
+Lemma glop {r : radix} : ∀ a al bl i n,
+list_mul_loop i n (a :: al) bl =
+list_add (list_mul_loop i n [a] bl) (list_mul_loop i n [rad] (list_mul_loop i n al bl)).
+Proof.
+intros.
+revert n.
+induction i; intros; [ easy | ].
+simpl.
+f_equal.
+Focus 2.
+rewrite IHi.
+f_equal.
+destruct i; [ easy | ].
+simpl.
+f_equal.
+Focus 2.
+f_equal.
+
+
+bbb.
+
+rewrite glop.
+
    destruct len_a_bc; [ easy | simpl ].
    unfold summation; simpl.
    do 2 rewrite Nat.add_0_r.
