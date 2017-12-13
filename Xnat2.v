@@ -413,6 +413,12 @@ destruct bl as [| b1].
 -simpl in Hlen_bc, Hlen_ab; rewrite Nat.sub_0_r in Hlen_bc.
  rewrite Nat.add_succ_r in Hlen_ab; simpl in Hlen_ab.
  rewrite Nat.sub_0_r in Hlen_ab.
+ rewrite <- Hlen_bc, Nat.add_assoc in Hlen_a_bc.
+ rewrite <- Hlen_ab in Hlen_ab_c.
+ rewrite <- Hlen_a_bc, Hlen_ab_c.
+ rewrite list_mul_loop_comm.
+ destruct len_ab_c; [ easy | simpl ].
+ do 2 rewrite summation_only_one.
 
 bbb.
 destruct len_a_bc.
