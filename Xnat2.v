@@ -332,11 +332,50 @@ intros j Hjn.
 now destruct j.
 Qed.
 
+Lemma list_mul_loop_nil_r : ∀ i n al,
+  list_mul_loop i n al [] = List.repeat 0 i.
+Proof.
+intros.
+rewrite list_mul_loop_comm.
+apply list_mul_loop_nil_l.
+Qed.
+
 Lemma nat_of_list_0_rep_0 {r : radix} : ∀ n,
   nat_of_list 0 (List.repeat 0 n) = 0.
 Proof.
 intros.
 now induction n; [ | simpl; rewrite IHn ].
+Qed.
+
+Lemma List_nth_repeat_def : ∀ A n (d : A) m,
+  List.nth n (List.repeat d m) d = d.
+Proof.
+intros.
+revert m.
+induction n; intros; [ now destruct m | ].
+destruct m; [ easy | simpl ].
+apply IHn.
+Qed.
+
+Lemma list_mul_loop_rep_0_r : ∀ i n al m,
+  list_mul_loop i n al (List.repeat 0 m) = List.repeat 0 i.
+Proof.
+intros.
+revert n.
+induction i; intros; [ easy | simpl ].
+rewrite all_0_summation_0.
+-now rewrite IHi.
+-intros j Hj.
+ apply Nat.eq_mul_0; right.
+ apply List_nth_repeat_def.
+Qed.
+
+Lemma list_mul_loop_rep_0_l : ∀ i n al m,
+  list_mul_loop i n (List.repeat 0 m) al = List.repeat 0 i.
+Proof.
+intros.
+rewrite list_mul_loop_comm.
+apply list_mul_loop_rep_0_r.
 Qed.
 
 Compute (list_mul [] (list_mul [] [3; 4])).
@@ -354,6 +393,28 @@ remember (length al + length bl - 1) as len_ab eqn:Hlen_ab.
 remember (length al + len_bc - 1) as len_a_bc eqn:Hlen_a_bc.
 remember (len_ab + length cl - 1) as len_ab_c eqn:Hlen_ab_c.
 symmetry in Hlen_bc, Hlen_a_bc, Hlen_ab, Hlen_ab_c.
+destruct bl as [| b1].
+-simpl in Hlen_bc, Hlen_ab; rewrite Nat.add_0_r in Hlen_ab.
+ destruct al as [| a1].
+ +simpl in Hlen_ab, Hlen_a_bc.
+  subst len_ab; simpl in Hlen_ab_c.
+  subst len_ab_c; rewrite Hlen_bc.
+  do 2 rewrite list_mul_loop_nil_l.
+  now do 2 rewrite nat_of_list_0_rep_0.
+
+ +simpl in Hlen_ab, Hlen_a_bc; rewrite Nat.sub_0_r in Hlen_ab, Hlen_a_bc.
+  rewrite Hlen_ab in Hlen_a_bc.
+  rewrite list_mul_loop_nil_l; simpl.
+  rewrite list_mul_loop_nil_r; simpl.
+  rewrite list_mul_loop_rep_0_l.
+  rewrite list_mul_loop_rep_0_r.
+  now do 2 rewrite nat_of_list_0_rep_0.
+
+-simpl in Hlen_bc, Hlen_ab; rewrite Nat.sub_0_r in Hlen_bc.
+ rewrite Nat.add_succ_r in Hlen_ab; simpl in Hlen_ab.
+ rewrite Nat.sub_0_r in Hlen_ab.
+
+bbb.
 destruct len_a_bc.
 -simpl.
  destruct len_ab_c; [ easy | simpl ].
