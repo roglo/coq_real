@@ -379,13 +379,40 @@ rewrite list_mul_loop_comm.
 apply list_mul_loop_rep_0_r.
 Qed.
 
-Compute (list_mul [] (list_mul [] [3; 4])).
-Compute (list_mul (list_mul [] []) [3; 4]).
+Theorem list_nth_mul_eq {r : radix} : ∀ al bl,
+  (∀ i, List.nth i al 0 = List.nth i bl 0)
+  → nat_of_list 0 al = nat_of_list 0 bl.
+Proof.
+intros * Hi.
+bbb.
+
+intros * Hi.
+revert bl Hi.
+induction al as [| a]; intros.
+-simpl; symmetry.
+ induction bl as [| b]; [ easy | simpl ].
+ specialize (Hi 0) as H; simpl in H; subst b.
+ rewrite IHbl; [ easy | intros i ].
+ specialize (Hi (S i)) as H; simpl in H; rewrite <- H.
+ now destruct i.
+
+-induction bl as [| b].
+ +specialize (Hi 0) as H; simpl in H; subst a; simpl.
+  rewrite IHal with (bl := []); [ easy | ].
+  intros i.
+  induction i.
+  *simpl in Hi; simpl.
+   now specialize (Hi 1).
+bbb.
 
 Lemma nat_of_list_mul_assoc {r : radix} : ∀ al bl cl,
   nat_of_list 0 (list_mul al (list_mul bl cl)) =
   nat_of_list 0 (list_mul (list_mul al bl) cl).
 Proof.
+intros.
+apply list_nth_mul_eq; intros i.
+bbb.
+
 intros.
 rewrite list_mul_comm.
 replace (list_mul al bl) with (list_mul bl al) by apply list_mul_comm.
