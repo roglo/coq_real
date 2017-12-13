@@ -317,6 +317,40 @@ Lemma list_mul_assoc : ∀ al bl cl,
 Proof.
 intros.
 unfold list_mul.
+remember (length bl + length cl - 1) as len_bc eqn:Hlen_bc.
+remember (length al + length bl - 1) as len_ab eqn:Hlen_ab.
+remember (length al + @length nat (list_mul_loop len_bc 0 bl cl) - 1)
+  as len_a_bc eqn:Hlen_a_bc.
+remember (@length nat (list_mul_loop len_ab 0 al bl) + length cl - 1)
+  as len_ab_c eqn:Hlen_ab_c.
+symmetry in Hlen_bc, Hlen_a_bc, Hlen_ab, Hlen_ab_c.
+destruct len_bc.
+-simpl in Hlen_a_bc; simpl.
+ rewrite Nat.add_0_r in Hlen_a_bc.
+ destruct len_a_bc; simpl.
+ +destruct len_ab; simpl.
+  *destruct len_ab_c; [ easy | simpl in Hlen_ab_c; lia ].
+
+  *simpl in Hlen_ab_c; rewrite Nat.sub_0_r in Hlen_ab_c.
+   rewrite summation_only_one.
+   destruct al as [| a1]; [ simpl in Hlen_ab; lia | ].
+   simpl in Hlen_a_bc; rewrite Nat.sub_0_r in Hlen_a_bc.
+   simpl in Hlen_ab; rewrite Nat.sub_0_r in Hlen_ab.
+   rewrite Hlen_a_bc in Hlen_ab; simpl in Hlen_ab.
+   apply List.length_zero_iff_nil in Hlen_a_bc; subst al.
+   rewrite Hlen_ab in Hlen_bc; simpl in Hlen_bc.
+   rewrite Nat.sub_0_r in Hlen_bc.
+   apply Nat.eq_add_0 in Hlen_bc.
+   destruct Hlen_bc as (H, Hlen_cl); subst len_ab.
+   apply List.length_zero_iff_nil in Hlen_cl; subst cl.
+   now simpl in Hlen_ab_c; subst len_ab_c.
+
+ +
+bbb.
+
+symmetry.
+rewrite summation_mul_comm.
+rewrite <- summation_summation_mul_swap.
 (* voir Power_series.v dans Puiseux *)
 bbb.
 

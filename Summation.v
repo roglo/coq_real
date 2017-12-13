@@ -286,16 +286,16 @@ rewrite Nat.add_sub_swap in H; auto.
 rewrite Nat.sub_diag in H; subst x; reflexivity.
 Qed.
 
-(*
-Theorem summation_mul_comm : ∀ g h b k,
+Theorem summation_mul_comm `{rg : ord_ring} : ∀ g h b k,
   (Σ (i = b, k), g i * h i
-   = Σ (i = b, k), h i * g i).
+   = Σ (i = b, k), h i * g i)%Rg.
 Proof.
 intros g h b len.
-apply summation_compat; intros i Hi.
+apply summation_eq_compat; intros i Hi.
 apply rng_mul_comm.
 Qed.
 
+(*
 Theorem all_0_summation_aux_0 : ∀ g b len,
   (∀ i, (b ≤ i < b + len) → (g i = 0))
   → (summation_aux r b len (λ i, g i) = 0).
