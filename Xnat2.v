@@ -320,28 +320,32 @@ revert n.
 now induction i; intros; [ | simpl; rewrite IHi ].
 Qed.
 
-Lemma list_mul_assoc : ∀ al bl cl,
-  list_mul al (list_mul bl cl) = list_mul (list_mul al bl) cl.
+Lemma list_mul_loop_nil_l : ∀ i n al,
+  list_mul_loop i n [] al = List.repeat 0 i.
 Proof.
 intros.
-unfold list_mul.
-do 2 rewrite length_list_mul_loop.
-destruct bl as [| b1].
--simpl.
- rewrite Nat.add_0_r.
- destruct al as [| a1].
- +simpl.
-  destruct cl as [| c1]; [ easy | simpl ].
-  rewrite Nat.sub_0_r.
-  destruct cl as [| c2]; [ easy | simpl ].
-  rewrite Nat.sub_0_r.
-  rewrite summation_only_one; simpl.
-  destruct cl as [| c3].
-  *simpl.
+revert n.
+induction i; intros; [ easy | simpl ].
+f_equal; [ | apply IHi ].
+apply all_0_summation_0.
+intros j Hjn.
+now destruct j.
+Qed.
+
+Lemma nat_of_list_0_rep_0 {r : radix} : ∀ n,
+  nat_of_list 0 (List.repeat 0 n) = 0.
+Proof.
+intros.
+now induction n; [ | simpl; rewrite IHn ].
+Qed.
+
 Compute (list_mul [] (list_mul [] [3; 4])).
 Compute (list_mul (list_mul [] []) [3; 4]).
-bbb.
 
+Lemma nat_of_list_mul_assoc {r : radix} : ∀ al bl cl,
+  nat_of_list 0 (list_mul al (list_mul bl cl)) =
+  nat_of_list 0 (list_mul (list_mul al bl) cl).
+Proof.
 intros.
 unfold list_mul.
 do 2 rewrite length_list_mul_loop.
@@ -350,39 +354,27 @@ remember (length al + length bl - 1) as len_ab eqn:Hlen_ab.
 remember (length al + len_bc - 1) as len_a_bc eqn:Hlen_a_bc.
 remember (len_ab + length cl - 1) as len_ab_c eqn:Hlen_ab_c.
 symmetry in Hlen_bc, Hlen_a_bc, Hlen_ab, Hlen_ab_c.
-destruct len_bc.
+destruct len_a_bc.
 -simpl.
- rewrite Nat.add_0_r in Hlen_a_bc.
- destruct len_a_bc; simpl.
- +destruct len_ab; simpl.
-  *destruct len_ab_c; [ easy | simpl in Hlen_ab_c; lia ].
+ destruct len_ab_c; [ easy | simpl ].
+ rewrite summation_only_one.
+ destruct len_ab.
+ +simpl in Hlen_ab_c; simpl.
+  rewrite list_mul_loop_nil_l.
+  now rewrite nat_of_list_0_rep_0.
 
-  *simpl in Hlen_ab_c; rewrite Nat.sub_0_r in Hlen_ab_c.
-   rewrite summation_only_one.
-   destruct al as [| a1]; [ simpl in Hlen_ab; lia | ].
-   simpl in Hlen_a_bc; rewrite Nat.sub_0_r in Hlen_a_bc.
-   simpl in Hlen_ab; rewrite Nat.sub_0_r in Hlen_ab.
-   rewrite Hlen_a_bc in Hlen_ab; simpl in Hlen_ab.
-   apply List.length_zero_iff_nil in Hlen_a_bc; subst al.
-   rewrite Hlen_ab in Hlen_bc; simpl in Hlen_bc.
-   rewrite Nat.sub_0_r in Hlen_bc.
-   apply Nat.eq_add_0 in Hlen_bc.
-   destruct Hlen_bc as (H, Hlen_cl); subst len_ab.
-   apply List.length_zero_iff_nil in Hlen_cl; subst cl.
-   now simpl in Hlen_ab_c; subst len_ab_c.
-
- +
+ +simpl in Hlen_ab_c; simpl.
+  rewrite Nat.sub_0_r in Hlen_ab_c.
+  rewrite summation_only_one.
 bbb.
 
 symmetry.
 rewrite summation_mul_comm.
 rewrite <- summation_summation_mul_swap.
-(* voir Power_series.v dans Puiseux *)
-bbb.
 
-Theorem xnat_mul_assoc : ∀ a b c, (a * (b * c))%X = ((a * b) * c)%X.
+Theorem xnat_mul_assoc {r : radix} : ∀ a b c, (a * (b * c) = (a * b) * c)%X.
 Proof.
 intros.
-unfold xnat_mul; simpl; f_equal.
-apply list_mul_assoc.
+unfold xnat_mul, nat_of_xnat; simpl.
+apply nat_of_list_mul_assoc.
 Qed.
