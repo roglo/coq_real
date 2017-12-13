@@ -407,25 +407,36 @@ destruct bl as [| b1].
  subst len_ab_c.
  destruct len_a_bc; [ easy | simpl ].
  do 2 rewrite summation_only_one.
+ destruct len_bc.
+ +simpl; rewrite list_mul_loop_nil_l, Nat.add_0_r.
+  rewrite nat_of_list_0_rep_0, Nat.mul_0_l.
+  apply Nat.eq_add_0 in Hlen_bc.
+  destruct Hlen_bc as (Hlen_b, Hlen_c).
+  rewrite Hlen_b, Nat.add_0_r in Hlen_ab.
+  rewrite Hlen_b, Hlen_c, Nat.add_0_r, Nat.add_0_r in Hlen_a_bc.
+  destruct len_ab.
+  *simpl; rewrite list_mul_loop_nil_l, Nat.add_0_r.
+   now rewrite nat_of_list_0_rep_0.
 
+  *simpl; rewrite summation_only_one.
+   apply List.length_zero_iff_nil in Hlen_c.
+   subst cl; simpl.
+   rewrite Nat.mul_0_r, Nat.add_0_r.
+   rewrite list_mul_loop_nil_r.
+   now rewrite nat_of_list_0_rep_0.
+
+ +simpl; rewrite summation_only_one.
+  destruct len_ab.
+  *apply Nat.eq_add_0 in Hlen_ab.
+   destruct Hlen_ab as (Hlen_a, Hlen_b).
+   apply List.length_zero_iff_nil in Hlen_a; subst al; simpl.
+   rewrite Nat.mul_0_r, Nat.add_0_r, Nat.add_0_r.
+   rewrite list_mul_loop_nil_l, nat_of_list_0_rep_0; simpl.
+   now rewrite list_mul_loop_nil_r, nat_of_list_0_rep_0.
+
+  *simpl; rewrite summation_only_one.
+   f_equal; [ f_equal | lia ].
 bbb.
-destruct len_a_bc.
--simpl.
- destruct len_ab_c; [ easy | simpl ].
- rewrite summation_only_one.
- destruct len_ab.
- +simpl in Hlen_ab_c; simpl.
-  rewrite list_mul_loop_nil_l.
-  now rewrite nat_of_list_0_rep_0.
-
- +simpl in Hlen_ab_c; simpl.
-  rewrite Nat.sub_0_r in Hlen_ab_c.
-  rewrite summation_only_one.
-bbb.
-
-symmetry.
-rewrite summation_mul_comm.
-rewrite <- summation_summation_mul_swap.
 
 Theorem xnat_mul_assoc {r : radix} : ∀ a b c, (a * (b * c) = (a * b) * c)%X.
 Proof.
