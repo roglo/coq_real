@@ -441,6 +441,8 @@ induction len; intros.
   *now rewrite all_0_summation_0; [ | intros j Hj; destruct j ].
 
   *simpl in Hlen.
+admit.
++
 bbb.
 
 Lemma glop : ∀ al bl i j n,
