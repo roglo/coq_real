@@ -384,6 +384,29 @@ Theorem list_nth_mul_eq {r : radix} : ∀ al bl,
   → nat_of_list 0 al = nat_of_list 0 bl.
 Proof.
 intros * Hi.
+revert bl Hi.
+destruct al as [| a]; intros.
+-simpl; symmetry.
+ induction bl as [| b]; [ easy | simpl ].
+ specialize (Hi 0) as H; simpl in H; subst b.
+ rewrite IHbl; [ easy | intros i ].
+ specialize (Hi (S i)) as H; simpl in H; rewrite <- H.
+ now destruct i.
+
+-simpl.
+ destruct bl as [| b].
+ +simpl in Hi; simpl.
+  specialize (Hi 0) as H; simpl in H; subst a; rewrite Nat.add_0_r.
+  apply Nat.eq_mul_0; left.
+  assert (H : ∀ i, List.nth i al 0 = 0).
+  *now intros i; specialize (Hi (S i)).
+
+  *clear Hi.
+   induction al as [| a]; [ easy | simpl ].
+   simpl in H.
+   specialize (H 0); simpl in H; subst a; rewrite Nat.add_0_r.
+   apply Nat.eq_mul_0; left.
+
 bbb.
 
 intros * Hi.
