@@ -386,38 +386,26 @@ Lemma nat_of_list_mul_assoc {r : radix} : ∀ al bl cl,
   nat_of_list 0 (list_mul (list_mul al bl) cl).
 Proof.
 intros.
+rewrite list_mul_comm.
+replace (list_mul al bl) with (list_mul bl al) by apply list_mul_comm.
 unfold list_mul.
 do 2 rewrite length_list_mul_loop.
 remember (length bl + length cl - 1) as len_bc eqn:Hlen_bc.
-remember (length al + length bl - 1) as len_ab eqn:Hlen_ab.
-remember (length al + len_bc - 1) as len_a_bc eqn:Hlen_a_bc.
+remember (length bl + length al - 1) as len_ab eqn:Hlen_ab.
+remember (len_bc + length al - 1) as len_a_bc eqn:Hlen_a_bc.
 remember (len_ab + length cl - 1) as len_ab_c eqn:Hlen_ab_c.
 symmetry in Hlen_bc, Hlen_a_bc, Hlen_ab, Hlen_ab_c.
 destruct bl as [| b1].
--simpl in Hlen_bc, Hlen_ab; rewrite Nat.add_0_r in Hlen_ab.
- destruct al as [| a1].
- +simpl in Hlen_ab, Hlen_a_bc.
-  subst len_ab; simpl in Hlen_ab_c.
-  subst len_ab_c; rewrite Hlen_bc.
-  do 2 rewrite list_mul_loop_nil_l.
-  now do 2 rewrite nat_of_list_0_rep_0.
+-do 2 rewrite list_mul_loop_nil_l.
+ do 2 rewrite list_mul_loop_rep_0_l.
+ now do 2 rewrite nat_of_list_0_rep_0.
 
- +simpl in Hlen_ab, Hlen_a_bc; rewrite Nat.sub_0_r in Hlen_ab, Hlen_a_bc.
-  rewrite Hlen_ab in Hlen_a_bc.
-  rewrite list_mul_loop_nil_l; simpl.
-  rewrite list_mul_loop_nil_r; simpl.
-  rewrite list_mul_loop_rep_0_l.
-  rewrite list_mul_loop_rep_0_r.
-  now do 2 rewrite nat_of_list_0_rep_0.
-
--simpl in Hlen_bc, Hlen_ab; rewrite Nat.sub_0_r in Hlen_bc.
- rewrite Nat.add_succ_r in Hlen_ab; simpl in Hlen_ab.
- rewrite Nat.sub_0_r in Hlen_ab.
- rewrite <- Hlen_bc, Nat.add_assoc in Hlen_a_bc.
- rewrite <- Hlen_ab in Hlen_ab_c.
- rewrite <- Hlen_a_bc, Hlen_ab_c.
- rewrite list_mul_loop_comm.
- destruct len_ab_c; [ easy | simpl ].
+-simpl in Hlen_bc, Hlen_ab; rewrite Nat.sub_0_r in Hlen_bc, Hlen_ab.
+ rewrite <- Hlen_bc, Nat.add_comm, Nat.add_assoc in Hlen_a_bc.
+ rewrite Nat.add_comm in Hlen_ab.
+ rewrite <- Hlen_ab, Hlen_a_bc in Hlen_ab_c.
+ subst len_ab_c.
+ destruct len_a_bc; [ easy | simpl ].
  do 2 rewrite summation_only_one.
 
 bbb.
