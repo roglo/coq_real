@@ -414,12 +414,60 @@ induction al as [| a]; intros.
   now specialize (Hi (S i)); simpl in Hi.
 Qed.
 
+Lemma list_nth_mul_loop_convol_mul (rg := nat_ord_ring) : ∀ al bl i j n,
+  List.nth i (list_mul_loop j n al bl) 0 =
+  Σ (k = 0, i), List.nth k al 0 * List.nth (i - k) bl 0.
+Proof.
+intros.
+induction j.
+-simpl.
+ destruct i.
+ +rewrite summation_only_one; simpl.
+Abort.
+
+Lemma list_nth_mul_convol_mul (rg := nat_ord_ring) : ∀ al bl i,
+  List.nth i (list_mul al bl) 0 =
+  Σ (j = 0, i), List.nth j al 0 * List.nth (i - j) bl 0.
+Proof.
+intros.
+unfold list_mul.
+remember (length al + length bl - 1) as len eqn:Hlen.
+symmetry in Hlen.
+destruct i.
+-rewrite summation_only_one; simpl.
+ destruct len; [ | now simpl; rewrite summation_only_one ].
+ destruct al as [| a]; [ easy | simpl ].
+ simpl in Hlen; rewrite Nat.sub_0_r in Hlen.
+ rewrite Nat.mul_comm.
+ destruct bl as [| b]; [ easy | ].
+ simpl in Hlen.
+ now rewrite Nat.add_succ_r in Hlen.
+
+-destruct len.
+ +simpl.
+  destruct al as [| a].
+  *now rewrite all_0_summation_0; [ | intros j Hj; destruct j ].
+
+  *simpl in Hlen; rewrite Nat.sub_0_r in Hlen.
+   apply Nat.eq_add_0 in Hlen; destruct Hlen as (Hal, Hbl).
+   apply List.length_zero_iff_nil in Hal.
+   apply List.length_zero_iff_nil in Hbl.
+   subst al bl; simpl.
+   rewrite all_0_summation_0; [ easy | intros j Hj ].
+   now destruct j; [ rewrite Nat.mul_comm | destruct j ].
+
+ +simpl.
+bbb.
+
 Lemma nat_of_list_mul_assoc {r : radix} : ∀ al bl cl,
   nat_of_list 0 (list_mul al (list_mul bl cl)) =
   nat_of_list 0 (list_mul (list_mul al bl) cl).
 Proof.
 intros.
 apply list_nth_mul_eq; intros i.
+rewrite list_nth_mul_convol_mul.
+
+bbb.
 bbb.
 
 intros.
