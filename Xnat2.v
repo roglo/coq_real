@@ -395,7 +395,9 @@ remember (length bl + length al - 1) as len_ab eqn:Hlen_ab.
 remember (len_bc + length al - 1) as len_a_bc eqn:Hlen_a_bc.
 remember (len_ab + length cl - 1) as len_ab_c eqn:Hlen_ab_c.
 symmetry in Hlen_bc, Hlen_a_bc, Hlen_ab, Hlen_ab_c.
-destruct bl as [| b1].
+revert Hlen_bc Hlen_ab Hlen_a_bc Hlen_ab_c.
+revert al cl len_bc len_ab len_a_bc len_ab_c.
+induction bl as [| b1]; intros.
 -do 2 rewrite list_mul_loop_nil_l.
  do 2 rewrite list_mul_loop_rep_0_l.
  now do 2 rewrite nat_of_list_0_rep_0.
@@ -436,6 +438,9 @@ destruct bl as [| b1].
 
   *simpl; rewrite summation_only_one.
    f_equal; [ f_equal | lia ].
+   destruct len_a_bc; [ easy | simpl ].
+   unfold summation; simpl.
+   do 2 rewrite Nat.add_0_r.
 bbb.
 
 Theorem xnat_mul_assoc {r : radix} : ∀ a b c, (a * (b * c) = (a * b) * c)%X.
