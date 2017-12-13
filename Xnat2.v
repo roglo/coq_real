@@ -385,7 +385,7 @@ Theorem list_nth_mul_eq {r : radix} : ∀ al bl,
 Proof.
 intros * Hi.
 revert bl Hi.
-destruct al as [| a]; intros.
+induction al as [| a]; intros.
 -simpl; symmetry.
  induction bl as [| b]; [ easy | simpl ].
  specialize (Hi 0) as H; simpl in H; subst b.
@@ -402,31 +402,17 @@ destruct al as [| a]; intros.
   *now intros i; specialize (Hi (S i)).
 
   *clear Hi.
-   induction al as [| a]; [ easy | simpl ].
-   simpl in H.
-   specialize (H 0); simpl in H; subst a; rewrite Nat.add_0_r.
-   apply Nat.eq_mul_0; left.
+   specialize (IHal []); simpl in IHal.
+   apply IHal.
+   intros i; destruct i; apply H.
 
-bbb.
-
-intros * Hi.
-revert bl Hi.
-induction al as [| a]; intros.
--simpl; symmetry.
- induction bl as [| b]; [ easy | simpl ].
- specialize (Hi 0) as H; simpl in H; subst b.
- rewrite IHbl; [ easy | intros i ].
- specialize (Hi (S i)) as H; simpl in H; rewrite <- H.
- now destruct i.
-
--induction bl as [| b].
- +specialize (Hi 0) as H; simpl in H; subst a; simpl.
-  rewrite IHal with (bl := []); [ easy | ].
+ +simpl in Hi; simpl.
+  specialize (Hi 0) as H; simpl in H; subst a.
+  f_equal; f_equal.
+  apply IHal.
   intros i.
-  induction i.
-  *simpl in Hi; simpl.
-   now specialize (Hi 1).
-bbb.
+  now specialize (Hi (S i)); simpl in Hi.
+Qed.
 
 Lemma nat_of_list_mul_assoc {r : radix} : ∀ al bl cl,
   nat_of_list 0 (list_mul al (list_mul bl cl)) =
