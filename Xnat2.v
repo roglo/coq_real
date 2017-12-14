@@ -465,7 +465,17 @@ destruct (lt_dec k (length al + length bl + length cl - 2)) as [Hk| Hk].
     Σ (j = 0, k - i), List.nth j bl 0 * List.nth (k - i - j) cl 0).
    symmetry.
    rewrite summation_eq_compat with
-   (h := λ i, i).
+   (h := λ i,
+    (Σ (j = 0, i), List.nth j al 0 * List.nth (i - j) bl 0) *
+    List.nth (k - i) cl 0).
+bbb.
+
+Focus 2.
+intros j Hj.
+f_equal.
+apply list_nth_mul_convol_mul.
+bbb.
+
 Focus 2.
 intros j Hj.
 f_equal.
