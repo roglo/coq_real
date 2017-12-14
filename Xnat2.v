@@ -425,6 +425,8 @@ induction it; intros.
 -simpl.
  destruct i.
  +rewrite Nat.add_0_r.
+Print list_mul_loop.
+
 bbb.
  +rewrite summation_only_one; simpl.
   destruct al as [| a]; [ easy | rewrite Nat.mul_comm ].
