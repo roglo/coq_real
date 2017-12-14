@@ -513,8 +513,14 @@ destruct (lt_dec k (length al + length bl + length cl - 2)) as [Hk| Hk].
  +rewrite List.nth_overflow; [ | easy ].
   destruct (le_dec (length (list_mul (list_mul al bl) cl)) k) as [Hmk| Hmk].
   *now rewrite List.nth_overflow.
-  *apply Nat.nle_gt in Hmk.
-   do 2 rewrite length_list_mul in Hlk, Hmk.
+  *do 2 rewrite length_list_mul in Hlk, Hmk.
+enough (length bl > 0).
+lia.
+admit.
++enough (length bl > 0).
+do 2 rewrite length_list_mul in Hlk.
+lia.
+admit.
 bbb.
 
 Theorem xnat_mul_assoc {r : radix} : ∀ a b c, (a * (b * c) = (a * b) * c)%X.
