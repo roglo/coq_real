@@ -321,6 +321,14 @@ revert n.
 now induction i; intros; [ | simpl; rewrite IHi ].
 Qed.
 
+Lemma length_list_mul : ∀ al bl,
+  length (list_mul al bl) = length al + length bl - 1.
+Proof.
+intros.
+unfold list_mul.
+apply length_list_mul_loop.
+Qed.
+
 Lemma list_mul_loop_nil_l : ∀ i n al,
   list_mul_loop i n [] al = List.repeat 0 i.
 Proof.
@@ -444,10 +452,14 @@ Lemma nat_of_list_mul_assoc {r : radix} : ∀ al bl cl,
 Proof.
 intros.
 apply list_nth_mul_eq; intros k.
-destruct (lt_dec k (length al + length (list_mul bl cl) - 1)) as [Hk1| Hk1].
--rewrite list_nth_mul_convol_mul; [ | easy ].
- destruct (lt_dec k (length (list_mul al bl) + length cl - 1)) as [Hk2| Hk2].
- +rewrite list_nth_mul_convol_mul; [ | easy ].
+destruct (lt_dec k (length al + length bl + length cl - 2)) as [Hk| Hk].
+-assert (H : k < length al + length (list_mul bl cl) - 1).
+ +rewrite length_list_mul; lia.
+ +rewrite list_nth_mul_convol_mul; [ clear H | easy ].
+  assert (H : k < length (list_mul al bl) + length cl - 1).
+  *rewrite length_list_mul; lia.
+  *rewrite list_nth_mul_convol_mul; [ clear H | easy ].
+
 bbb.
 
 intros.
