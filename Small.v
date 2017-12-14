@@ -3,7 +3,7 @@ Require Import Misc Summation.
 
 Notation "a ^ b" := (Nat.pow a b).
 
-Lemma Nat_sub_sub_swap : ∀ a b c, a - b - c = a - c - b.
+Theorem Nat_sub_sub_swap : ∀ a b c, a - b - c = a - c - b.
 Proof.
 intros.
 do 2 rewrite <- Nat.sub_add_distr.
@@ -11,7 +11,7 @@ f_equal.
 apply Nat.add_comm.
 Qed.
 
-Lemma Nat_mul_lt_pow : ∀ a b, a ≥ 2 → b ≥ 3 → a * b < a ^ b.
+Theorem Nat_mul_lt_pow : ∀ a b, a ≥ 2 → b ≥ 3 → a * b < a ^ b.
 Proof.
 intros a b Ha2 Hb3.
 induction b; [ easy | ].
@@ -45,7 +45,7 @@ induction b; [ easy | ].
   apply Nat.le_0_l.
 Qed.
 
-Lemma pow_lt_pow_succ : ∀ a b, a ≥ 2 → b ≥ 1 → a ^ b + (a - 1) < a ^ S b.
+Theorem pow_lt_pow_succ : ∀ a b, a ≥ 2 → b ≥ 1 → a ^ b + (a - 1) < a ^ S b.
 Proof.
 intros * Ha Hb.
 induction b; [ easy | clear Hb ].

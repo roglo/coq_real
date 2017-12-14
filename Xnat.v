@@ -89,20 +89,20 @@ Definition list_of_xnat {r : radix} a :=
   | xpos ap => list_of_xpositive ap
   end.
 
-Lemma ten_ge_two : 10 ≥ 2.
+Theorem ten_ge_two : 10 ≥ 2.
 Proof.
 apply -> Nat.succ_le_mono.
 apply -> Nat.succ_le_mono.
 apply Nat.le_0_l.
 Qed.
 
-Lemma two_ge_two : 2 ≥ 2.
+Theorem two_ge_two : 2 ≥ 2.
 Proof. lia. Qed.
 
 Definition radix_2 := {| rad := 2; rad_ge_2 := two_ge_two |}.
 Definition radix_10 := {| rad := 10; rad_ge_2 := ten_ge_two |}.
 
-Lemma nz_add_nz : ∀ a b, a ≠ 0 → a + b ≠ 0.
+Theorem nz_add_nz : ∀ a b, a ≠ 0 → a + b ≠ 0.
 Proof.
 intros.
 destruct a.
@@ -110,7 +110,7 @@ destruct a.
  simpl; apply Nat.neq_succ_0.
 Qed.
 
-Lemma lt_lt_add_lt : ∀ a b c, a < c → b < c → a + b - c < c.
+Theorem lt_lt_add_lt : ∀ a b c, a < c → b < c → a + b - c < c.
 Proof.
 intros * Ha Hb; lia.
 Qed.
@@ -163,11 +163,3 @@ Fixpoint xnat_add {r : radix} a b :=
 
 Delimit Scope xnat_scope with X.
 Notation "a + b" := (xnat_add a b) : xnat_scope.
-
-Compute (@list_of_xnat radix_10 (xnat_of_nat 4649)).
-Compute (@list_of_xnat radix_10 (xnat_of_nat 2 + xnat_of_nat 2)%X).
-Compute (@list_of_xnat radix_10 (xnat_of_nat 6 + xnat_of_nat 7)%X).
-Compute (@list_of_xnat radix_10 (xnat_of_nat 9 + xnat_of_nat 34)%X).
-Compute (@list_of_xnat radix_2 (xnat_of_nat 1 + xnat_of_nat 1)%X).
-Compute (@list_of_xnat radix_2 (xnat_of_nat 1 + xnat_of_nat 2)%X).
-Compute (@list_of_xnat radix_2 (xnat_of_nat 2 + xnat_of_nat 2)%X).

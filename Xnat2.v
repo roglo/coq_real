@@ -48,7 +48,7 @@ Definition xnat_norm {r : radix} a := xn (list_norm (xnatv a)).
 
 (* Conversion from and to nat *)
 
-Lemma nat_of_list_move_end {r : radix} : ∀ iter n, 2 ≤ rad →
+Theorem nat_of_list_move_end {r : radix} : ∀ iter n, 2 ≤ rad →
   n < iter
   → nat_of_list 0 (move_carry_end iter n) = n.
 Proof.
@@ -69,7 +69,7 @@ rewrite IHiter.
  apply Nat.div_lt; lia.
 Qed.
 
-Lemma nat_of_list_list_of_nat {r : radix} : 2 ≤ rad →
+Theorem nat_of_list_list_of_nat {r : radix} : 2 ≤ rad →
   ∀ n, nat_of_list 0 (list_of_nat 0 n) = n.
 Proof.
 intros Hr *.
@@ -102,7 +102,7 @@ Proof. easy. Qed.
 
 (* Normalized xnat have all digits less that radix *)
 
-Lemma list_carry_end_digits_lt_radix {r : radix} : rad ≠ 0 →
+Theorem list_carry_end_digits_lt_radix {r : radix} : rad ≠ 0 →
   ∀ i c, List.Forall (λ a, a < rad) (move_carry_end i c).
 Proof.
 intros Hr *.
@@ -113,7 +113,7 @@ constructor; [ now apply Nat.mod_upper_bound | ].
 apply IHi.
 Qed.
 
-Lemma list_of_nat_all_lt_radix {r : radix} : rad ≠ 0 →
+Theorem list_of_nat_all_lt_radix {r : radix} : rad ≠ 0 →
   ∀ al, List.Forall (λ a, a < rad) (list_of_nat 0 al).
 Proof.
 intros Hr *.
@@ -125,7 +125,7 @@ constructor; [ now apply Nat.mod_upper_bound | ].
 now apply list_carry_end_digits_lt_radix.
 Qed.
 
-Lemma list_norm_digits_lt_radix {r : radix} : rad ≠ 0 →
+Theorem list_norm_digits_lt_radix {r : radix} : rad ≠ 0 →
   ∀ al, List.Forall (λ a, a < rad) (list_norm al).
 Proof.
 intros Hr *.
@@ -162,7 +162,7 @@ Notation "a + b" := (xnat_add a b) : xnat_scope.
 Notation "a = b" := (nat_of_xnat a = nat_of_xnat b) : xnat_scope.
 Notation "0" := (xnat_0) : xnat_scope.
 
-Lemma list_add_comm : ∀ al bl, list_add al bl = list_add bl al.
+Theorem list_add_comm : ∀ al bl, list_add al bl = list_add bl al.
 Proof.
 intros *.
 revert bl.
@@ -188,7 +188,7 @@ Qed.
 Theorem xnat_add_0_l {r : radix} : ∀ a, (0 + a = a)%X.
 Proof. easy. Qed.
 
-Lemma list_add_assoc : ∀ al bl cl,
+Theorem list_add_assoc : ∀ al bl cl,
   list_add al (list_add bl cl) = list_add (list_add al bl) cl.
 Proof.
 intros.
@@ -219,7 +219,7 @@ Qed.
 
 (* Compatiblity addition with equality *)
 
-Lemma nat_of_list_add_distr {r : radix} : 1 < rad → ∀ al bl,
+Theorem nat_of_list_add_distr {r : radix} : 1 < rad → ∀ al bl,
   nat_of_list 0 (list_add al bl) = nat_of_list 0 al + nat_of_list 0 bl.
 Proof.
 intros Hr *.
@@ -229,7 +229,7 @@ destruct bl as [| b1]; [ now rewrite Nat.add_0_r | ].
 simpl; rewrite IHal; lia.
 Qed.
 
-Lemma nat_of_list_add_eq_compat {r : radix} : 1 < rad → ∀ al bl cl,
+Theorem nat_of_list_add_eq_compat {r : radix} : 1 < rad → ∀ al bl cl,
   nat_of_list 0 al = nat_of_list 0 bl
   → nat_of_list 0 (list_add al cl) = nat_of_list 0 (list_add bl cl).
 Proof.
@@ -268,15 +268,9 @@ Definition list_mul al bl :=
 Definition xnat_mul a b :=
   xn (list_mul (xnatv a) (xnatv b)).
 
-Compute (xnat_mul (xn (@list_of_nat radix_10 0 11)) (xn (@list_of_nat radix_10 0 9))).
-Compute (xnat_mul (xn (@list_of_nat radix_10 0 12)) (xn (@list_of_nat radix_10 0 12))).
-Compute (xnat_mul (xn (@list_of_nat radix_10 0 14)) (xn (@list_of_nat radix_10 0 14))).
-Compute (xnat_mul (xn (@list_of_nat radix_10 0 279)) (xn (@list_of_nat radix_10 0 1))).
-Compute (@xnat_norm radix_10 (xnat_mul (xn (@list_of_nat radix_10 0 37)) (xn (@list_of_nat radix_10 0 18)))).
-
 Notation "a * b" := (xnat_mul a b) : xnat_scope.
 
-Lemma list_mul_loop_comm : ∀ al bl i n,
+Theorem list_mul_loop_comm : ∀ al bl i n,
   list_mul_loop i n al bl = list_mul_loop i n bl al.
 Proof.
 intros.
@@ -291,7 +285,7 @@ rewrite Nat.add_0_r; f_equal.
 f_equal; lia.
 Qed.
 
-Lemma list_mul_comm : ∀ al bl, list_mul al bl = list_mul bl al.
+Theorem list_mul_comm : ∀ al bl, list_mul al bl = list_mul bl al.
 Proof.
 intros *.
 unfold list_mul.
@@ -313,7 +307,7 @@ unfold xnat_mul; simpl.
 now rewrite list_mul_comm.
 Qed.
 
-Lemma length_list_mul_loop : ∀ i n al bl,
+Theorem length_list_mul_loop : ∀ i n al bl,
   length (list_mul_loop i n al bl) = i.
 Proof.
 intros.
@@ -321,7 +315,7 @@ revert n.
 now induction i; intros; [ | simpl; rewrite IHi ].
 Qed.
 
-Lemma length_list_mul : ∀ al bl,
+Theorem length_list_mul : ∀ al bl,
   length (list_mul al bl) = length al + length bl - 1.
 Proof.
 intros.
@@ -329,7 +323,7 @@ unfold list_mul.
 apply length_list_mul_loop.
 Qed.
 
-Lemma list_mul_loop_nil_l : ∀ i n al,
+Theorem list_mul_loop_nil_l : ∀ i n al,
   list_mul_loop i n [] al = List.repeat 0 i.
 Proof.
 intros.
@@ -341,7 +335,7 @@ intros j Hjn.
 now destruct j.
 Qed.
 
-Lemma list_mul_loop_nil_r : ∀ i n al,
+Theorem list_mul_loop_nil_r : ∀ i n al,
   list_mul_loop i n al [] = List.repeat 0 i.
 Proof.
 intros.
@@ -366,14 +360,14 @@ rewrite Nat.add_0_r.
 now rewrite list_mul_loop_nil_r.
 Qed.
 
-Lemma nat_of_list_0_rep_0 {r : radix} : ∀ n,
+Theorem nat_of_list_0_rep_0 {r : radix} : ∀ n,
   nat_of_list 0 (List.repeat 0 n) = 0.
 Proof.
 intros.
 now induction n; [ | simpl; rewrite IHn ].
 Qed.
 
-Lemma List_nth_repeat_def : ∀ A n (d : A) m,
+Theorem List_nth_repeat_def : ∀ A n (d : A) m,
   List.nth n (List.repeat d m) d = d.
 Proof.
 intros.
@@ -383,7 +377,7 @@ destruct m; [ easy | simpl ].
 apply IHn.
 Qed.
 
-Lemma list_mul_loop_rep_0_l : ∀ i n al m,
+Theorem list_mul_loop_rep_0_l : ∀ i n al m,
   list_mul_loop i n (List.repeat 0 m) al = List.repeat 0 i.
 Proof.
 intros.
@@ -396,7 +390,7 @@ rewrite all_0_summation_0.
  apply List_nth_repeat_def.
 Qed.
 
-Lemma list_mul_loop_rep_0_r : ∀ i n al m,
+Theorem list_mul_loop_rep_0_r : ∀ i n al m,
   list_mul_loop i n al (List.repeat 0 m) = List.repeat 0 i.
 Proof.
 intros.
@@ -404,7 +398,7 @@ rewrite list_mul_loop_comm.
 apply list_mul_loop_rep_0_l.
 Qed.
 
-Lemma list_mul_rep_0_l : ∀ al n,
+Theorem list_mul_rep_0_l : ∀ al n,
   list_mul (List.repeat 0 n) al = List.repeat 0 (n + length al - 1).
 Proof.
 intros.
@@ -413,7 +407,7 @@ rewrite List.repeat_length.
 apply list_mul_loop_rep_0_l.
 Qed.
 
-Lemma list_mul_rep_0_r : ∀ al n,
+Theorem list_mul_rep_0_r : ∀ al n,
   list_mul al (List.repeat 0 n) = List.repeat 0 (length al + n - 1).
 Proof.
 intros.
@@ -457,7 +451,7 @@ induction al as [| a]; intros.
   now specialize (Hi (S i)); simpl in Hi.
 Qed.
 
-Lemma list_nth_mul_loop_convol_mul (rg := nat_ord_ring) : ∀ al bl i n k,
+Theorem list_nth_mul_loop_convol_mul (rg := nat_ord_ring) : ∀ al bl i n k,
   k < i
   → List.nth k (list_mul_loop i n al bl) 0 =
      Σ (j = 0, n + k), List.nth j al 0 * List.nth (n + k - j) bl 0.
@@ -471,7 +465,7 @@ induction i; intros.
  apply IHi; lia.
 Qed.
 
-Lemma list_nth_mul_convol_mul (rg := nat_ord_ring) : ∀ al bl k,
+Theorem list_nth_mul_convol_mul (rg := nat_ord_ring) : ∀ al bl k,
   k < length al + length bl - 1
   → List.nth k (list_mul al bl) 0 =
      Σ (j = 0, k), List.nth j al 0 * List.nth (k - j) bl 0.
@@ -481,7 +475,7 @@ unfold list_mul.
 now rewrite list_nth_mul_loop_convol_mul.
 Qed.
 
-Lemma nat_of_list_mul_assoc {r : radix} : ∀ al bl cl,
+Theorem nat_of_list_mul_assoc {r : radix} : ∀ al bl cl,
   nat_of_list 0 (list_mul al (list_mul bl cl)) =
   nat_of_list 0 (list_mul (list_mul al bl) cl).
 Proof.

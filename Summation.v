@@ -91,7 +91,7 @@ Definition summation `{rg : ord_ring} b e g :=
 Notation "'Σ' ( i = b , e ) , g" := (summation b e (λ i, g))
   (at level 45, i at level 0, b at level 60, e at level 60).
 
-Lemma summation_aux_succ_last `{rg : ord_ring} :
+Theorem summation_aux_succ_last `{rg : ord_ring} :
   ∀ g b len,
   (summation_aux b (S len) g =
    summation_aux b len g + g (b + len)%nat)%Rg.
@@ -139,7 +139,7 @@ unfold summation.
 now replace (S k - b)%nat with O by lia.
 Qed.
 
-Lemma summation_aux_eq_compat `{rg : ord_ring} : ∀ g h b₁ b₂ len,
+Theorem summation_aux_eq_compat `{rg : ord_ring} : ∀ g h b₁ b₂ len,
   (∀ i, 0 ≤ i < len → g (b₁ + i) = h (b₂ + i))
   → summation_aux b₁ len g = summation_aux b₂ len h.
 Proof.
@@ -175,7 +175,7 @@ apply Nat.lt_add_lt_sub_r, le_S_n in Hi.
 now rewrite Nat.add_comm.
 Qed.
 
-Lemma summation_aux_le_compat `{rg : ord_ring} : ∀ g h b₁ b₂ len,
+Theorem summation_aux_le_compat `{rg : ord_ring} : ∀ g h b₁ b₂ len,
   (∀ i, 0 ≤ i < len → (g (b₁ + i)%nat ≤ h (b₂ + i)%nat)%Rg)
   → (summation_aux b₁ len g ≤ summation_aux b₂ len h)%Rg.
 Proof.

@@ -24,7 +24,7 @@ intros A P a l H.
 inversion H; split; assumption.
 Qed.
 
-Lemma last_cons_id : ∀ A (a : A) al,
+Theorem last_cons_id : ∀ A (a : A) al,
   List.last al a ≠ a
   → List.last (a :: al) a ≠ a.
 Proof.
@@ -32,11 +32,11 @@ intros * Hal.
 now destruct al.
 Qed.
 
-Lemma last_cons_cons : ∀ A (a b : A) al d,
+Theorem last_cons_cons : ∀ A (a b : A) al d,
   List.last (a :: b :: al) d = List.last (b :: al) d.
 Proof. easy. Qed.
 
-Lemma last_cons_ne : ∀ A (a d : A) al,
+Theorem last_cons_ne : ∀ A (a d : A) al,
   a ≠ d
   → List.last al d ≠ d
   → List.last (a :: al) d ≠ d.
