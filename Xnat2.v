@@ -459,6 +459,16 @@ destruct (lt_dec k (length al + length bl + length cl - 2)) as [Hk| Hk].
   assert (H : k < length (list_mul al bl) + length cl - 1).
   *rewrite length_list_mul; lia.
   *rewrite list_nth_mul_convol_mul; [ clear H | easy ].
+   set (rg := nat_ord_ring).
+   rewrite summation_eq_compat with
+   (h := λ i, List.nth i al 0 *
+    Σ (j = 0, k - i), List.nth j bl 0 * List.nth (k - i - j) cl 0).
+bbb.
+
+Focus 2.
+intros j Hj.
+f_equal.
+apply list_nth_mul_convol_mul.
 
 bbb.
 
