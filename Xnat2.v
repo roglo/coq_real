@@ -383,8 +383,8 @@ destruct m; [ easy | simpl ].
 apply IHn.
 Qed.
 
-Lemma list_mul_loop_rep_0_r : ∀ i n al m,
-  list_mul_loop i n al (List.repeat 0 m) = List.repeat 0 i.
+Lemma list_mul_loop_rep_0_l : ∀ i n al m,
+  list_mul_loop i n (List.repeat 0 m) al = List.repeat 0 i.
 Proof.
 intros.
 revert n.
@@ -392,15 +392,33 @@ induction i; intros; [ easy | simpl ].
 rewrite all_0_summation_0.
 -now rewrite IHi.
 -intros j Hj.
- apply Nat.eq_mul_0; right.
+ apply Nat.eq_mul_0; left.
  apply List_nth_repeat_def.
 Qed.
 
-Lemma list_mul_loop_rep_0_l : ∀ i n al m,
-  list_mul_loop i n (List.repeat 0 m) al = List.repeat 0 i.
+Lemma list_mul_loop_rep_0_r : ∀ i n al m,
+  list_mul_loop i n al (List.repeat 0 m) = List.repeat 0 i.
 Proof.
 intros.
 rewrite list_mul_loop_comm.
+apply list_mul_loop_rep_0_l.
+Qed.
+
+Lemma list_mul_rep_0_l : ∀ al n,
+  list_mul (List.repeat 0 n) al = List.repeat 0 (n + length al - 1).
+Proof.
+intros.
+unfold list_mul.
+rewrite List.repeat_length.
+apply list_mul_loop_rep_0_l.
+Qed.
+
+Lemma list_mul_rep_0_r : ∀ al n,
+  list_mul al (List.repeat 0 n) = List.repeat 0 (length al + n - 1).
+Proof.
+intros.
+unfold list_mul.
+rewrite List.repeat_length.
 apply list_mul_loop_rep_0_r.
 Qed.
 
@@ -472,7 +490,6 @@ apply list_nth_mul_eq; intros k.
 destruct (zerop (length bl)) as [Hzb| Hzb].
 -apply List.length_zero_iff_nil in Hzb; subst bl.
  rewrite list_mul_nil_l, list_mul_nil_r.
-Search (list_mul _ (List.repeat _ _)).
 
 bbb.
 destruct (lt_dec k (length al + length bl + length cl - 2)) as [Hk| Hk].
