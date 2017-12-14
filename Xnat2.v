@@ -349,6 +349,23 @@ rewrite list_mul_loop_comm.
 apply list_mul_loop_nil_l.
 Qed.
 
+Theorem list_mul_nil_l {r : radix} : ∀ al,
+  list_mul [] al = List.repeat 0 (length al - 1).
+Proof.
+intros.
+unfold list_mul.
+now rewrite list_mul_loop_nil_l.
+Qed.
+
+Theorem list_mul_nil_r {r : radix} : ∀ al,
+  list_mul al [] = List.repeat 0 (length al - 1).
+Proof.
+intros.
+unfold list_mul.
+rewrite Nat.add_0_r.
+now rewrite list_mul_loop_nil_r.
+Qed.
+
 Lemma nat_of_list_0_rep_0 {r : radix} : ∀ n,
   nat_of_list 0 (List.repeat 0 n) = 0.
 Proof.
@@ -452,6 +469,12 @@ Lemma nat_of_list_mul_assoc {r : radix} : ∀ al bl cl,
 Proof.
 intros.
 apply list_nth_mul_eq; intros k.
+destruct (zerop (length bl)) as [Hzb| Hzb].
+-apply List.length_zero_iff_nil in Hzb; subst bl.
+ rewrite list_mul_nil_l, list_mul_nil_r.
+Search (list_mul _ (List.repeat _ _)).
+
+bbb.
 destruct (lt_dec k (length al + length bl + length cl - 2)) as [Hk| Hk].
 -assert (H : k < length al + length (list_mul bl cl) - 1).
  +rewrite length_list_mul; lia.
