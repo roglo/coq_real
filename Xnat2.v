@@ -490,25 +490,25 @@ apply list_nth_mul_eq; intros k.
 destruct (zerop (length bl)) as [Hzb| Hzb].
 -apply List.length_zero_iff_nil in Hzb; subst bl.
  rewrite list_mul_nil_l, list_mul_nil_r.
-
-bbb.
-destruct (lt_dec k (length al + length bl + length cl - 2)) as [Hk| Hk].
--assert (H : k < length al + length (list_mul bl cl) - 1).
- +rewrite length_list_mul; lia.
- +rewrite list_nth_mul_convol_mul; [ clear H | easy ].
-  assert (H : k < length (list_mul al bl) + length cl - 1).
+ rewrite list_mul_rep_0_l, list_mul_rep_0_r.
+ now do 2 rewrite List_nth_repeat_def.
+-destruct (lt_dec k (length al + length bl + length cl - 2)) as [Hk| Hk].
+ +assert (H : k < length al + length (list_mul bl cl) - 1).
   *rewrite length_list_mul; lia.
   *rewrite list_nth_mul_convol_mul; [ clear H | easy ].
-   set (rg := nat_ord_ring).
-   rewrite summation_eq_compat with
-   (h := λ i, List.nth i al 0 *
-    Σ (j = 0, k - i), List.nth j bl 0 * List.nth (k - i - j) cl 0).
-   --symmetry.
+   assert (H : k < length (list_mul al bl) + length cl - 1).
+  --rewrite length_list_mul; lia.
+  --rewrite list_nth_mul_convol_mul; [ clear H | easy ].
+    set (rg := nat_ord_ring).
+    rewrite summation_eq_compat with
+        (h := λ i, List.nth i al 0 *
+         Σ (j = 0, k - i), List.nth j bl 0 * List.nth (k - i - j) cl 0).
+   ++symmetry.
      rewrite summation_eq_compat with
-     (h := λ j,
-      List.nth (k - j) cl 0 *
-      Σ (i = 0, j), List.nth i al 0 * List.nth (j - i) bl 0).
-    ++symmetry.
+         (h := λ j,
+          List.nth (k - j) cl 0 *
+          Σ (i = 0, j), List.nth i al 0 * List.nth (j - i) bl 0).
+    **symmetry.
       rewrite <- summation_summation_mul_swap.
       rewrite <- summation_summation_mul_swap.
       rewrite summation_summation_exch.
@@ -519,49 +519,44 @@ destruct (lt_dec k (length al + length bl + length cl - 2)) as [Hk| Hk].
       f_equal; f_equal.
       rewrite Nat.add_comm, Nat.add_sub; simpl; f_equal.
       now rewrite Nat.add_comm, Nat.sub_add_distr.
-    ++intros j Hj.
+    **intros j Hj.
       rewrite Nat.mul_comm; f_equal.
       destruct (lt_dec j (length al + length bl - 1)) as [Hjl| Hjl].
-     **now rewrite list_nth_mul_convol_mul.
-     **apply Nat.nlt_ge in Hjl.
+    ---now rewrite list_nth_mul_convol_mul.
+    ---apply Nat.nlt_ge in Hjl.
        rewrite all_0_summation_0.
-     ---rewrite List.nth_overflow; [ easy | ].
+     +++rewrite List.nth_overflow; [ easy | ].
         now rewrite length_list_mul.
-     ---intros i Hi.
+     +++intros i Hi.
         destruct (le_dec (length bl) (j - i)) as [Hbj| Hbj].
-      +++rewrite Nat.mul_comm.
+      ***rewrite Nat.mul_comm.
          now rewrite List.nth_overflow.
-      +++apply Nat.nle_gt in Hbj.
+      ***apply Nat.nle_gt in Hbj.
          rewrite List.nth_overflow; [ easy | lia ].
-   --intros j Hj.
+   ++intros j Hj.
      f_equal.
      destruct (lt_dec (k - j) (length bl + length cl - 1)) as [Hkj| Hkj].
     **now apply list_nth_mul_convol_mul.
     **apply Nat.nlt_ge in Hkj.
       remember (k - j) as kj eqn:Hekj.
       rewrite all_0_summation_0.
-     ---rewrite List.nth_overflow; [ easy | ].
-        now rewrite length_list_mul.
-     ---intros i Hi.
-        destruct (le_dec (length bl) i) as [Hbi| Hbi].
-      +++now rewrite List.nth_overflow.
-      +++apply Nat.nle_gt in Hbi.
-         rewrite Nat.mul_comm.
-         rewrite List.nth_overflow; [ easy | lia ].
--apply Nat.nlt_ge in Hk.
- destruct (le_dec (length (list_mul al (list_mul bl cl))) k) as [Hlk| Hlk].
- +rewrite List.nth_overflow; [ | easy ].
-  destruct (le_dec (length (list_mul (list_mul al bl) cl)) k) as [Hmk| Hmk].
-  *now rewrite List.nth_overflow.
-  *do 2 rewrite length_list_mul in Hlk, Hmk.
-enough (length bl > 0).
-lia.
-admit.
-+enough (length bl > 0).
-do 2 rewrite length_list_mul in Hlk.
-lia.
-admit.
-bbb.
+    ---rewrite List.nth_overflow; [ easy | ].
+       now rewrite length_list_mul.
+    ---intros i Hi.
+       destruct (le_dec (length bl) i) as [Hbi| Hbi].
+     +++now rewrite List.nth_overflow.
+     +++apply Nat.nle_gt in Hbi.
+        rewrite Nat.mul_comm.
+        rewrite List.nth_overflow; [ easy | lia ].
+ +apply Nat.nlt_ge in Hk.
+  destruct (le_dec (length (list_mul al (list_mul bl cl))) k) as [Hlk| Hlk].
+  *rewrite List.nth_overflow; [ | easy ].
+   do 2 rewrite length_list_mul in Hlk.
+   destruct (le_dec (length (list_mul (list_mul al bl) cl)) k) as [Hmk| Hmk].
+  --now rewrite List.nth_overflow.
+  --do 2 rewrite length_list_mul in Hmk; lia.
+  *do 2 rewrite length_list_mul in Hlk; lia.
+Qed.
 
 Theorem xnat_mul_assoc {r : radix} : ∀ a b c, (a * (b * c) = (a * b) * c)%X.
 Proof.
