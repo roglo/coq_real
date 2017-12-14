@@ -414,112 +414,40 @@ induction al as [| a]; intros.
   now specialize (Hi (S i)); simpl in Hi.
 Qed.
 
-Lemma list_nth_mul_loop_convol_mul (rg := nat_ord_ring) : ∀ al bl it i n,
-  length al + length bl - 1 = it
-  → List.nth i (list_mul_loop it n al bl) 0 =
-     Σ (k = 0, n + i), List.nth k al 0 * List.nth (n + i - k) bl 0.
+Lemma list_nth_mul_loop_convol_mul (rg := nat_ord_ring) : ∀ al bl i n k,
+  k < i
+  → List.nth k (list_mul_loop i n al bl) 0 =
+     Σ (j = 0, n + k), List.nth j al 0 * List.nth (n + k - j) bl 0.
 Proof.
-intros * Hit.
-revert al bl i n Hit.
-induction it; intros.
--destruct al as [| a].
- +rewrite all_0_summation_0; [ | now intros j Hj; destruct j ].
-  now rewrite list_mul_loop_nil_l; destruct i.
- +destruct bl as [| b].
-  *rewrite all_0_summation_0; [ now destruct i | intros j Hj ].
-   now rewrite Nat.mul_comm; destruct (n + i - j).
-  *simpl in Hit; lia.
--simpl.
- destruct i; [ now rewrite Nat.add_0_r | ].
- destruct al as [ |a].
- +simpl.
-  rewrite list_mul_loop_nil_l, List_nth_repeat_def.
-  now rewrite all_0_summation_0; [ | intros j Hj; destruct j ].
- +simpl length in Hit.
-  rewrite Nat.add_succ_l in Hit.
-  destruct bl as [| b].
-  *rewrite list_mul_loop_nil_r, List_nth_repeat_def.
-   rewrite all_0_summation_0; [ easy | intros j Hj ].
-   now rewrite Nat.mul_comm; destruct (n + S i - j).
-  *rewrite Nat.sub_succ_l in Hit; [ | simpl; lia ].
-   apply Nat.succ_inj in Hit.
-   rewrite IHit.
-(* ah pute, je me suis gourré *)
-bbb.
+intros * Hki.
+revert al bl n k Hki.
+induction i; intros.
+-rewrite List.nth_overflow; [ easy | simpl; lia ].
+-destruct k; [ now rewrite Nat.add_0_r | simpl ].
+ replace (n + S k) with (S n + k) by lia.
+ apply IHi; lia.
+Qed.
 
-Lemma glop : ∀ al bl i j n,
-  length al + length bl - 1 = len
-  → List.nth i (list_mul_loop len n al bl) 0 =
-    Σ (j = 0, i), List.nth j al 0 * List.nth (i - j) bl 0.
+Lemma list_nth_mul_convol_mul (rg := nat_ord_ring) : ∀ al bl k,
+  k < length al + length bl - 1
+  → List.nth k (list_mul al bl) 0 =
+     Σ (j = 0, k), List.nth j al 0 * List.nth (k - j) bl 0.
 Proof.
-bbb.
-
-Lemma list_nth_mul_convol_mul (rg := nat_ord_ring) : ∀ al bl i,
-  List.nth i (list_mul al bl) 0 =
-  Σ (j = 0, i), List.nth j al 0 * List.nth (i - j) bl 0.
-Proof.
-intros.
+intros * Hk.
 unfold list_mul.
-remember (length al + length bl - 1) as len eqn:Hlen.
-symmetry in Hlen.
-revert al bl i Hlen.
-induction len; intros.
--destruct i; simpl.
- +rewrite summation_only_one.
-  destruct al as [| a]; [ easy | rewrite Nat.mul_comm ].
-  destruct bl as [| b]; [ easy | rewrite Nat.mul_comm ].
-  simpl in Hlen; lia.
-
- +rewrite all_0_summation_0; [ easy | intros j Hj ].
-  destruct al as [| a]; [ now destruct j | rewrite Nat.mul_comm ].
-  destruct bl as [| b]; [ now destruct (S i - j) | ].
-  now simpl in Hlen; rewrite Nat.add_succ_r in Hlen.
-
--simpl.
- destruct i; [ easy | simpl ].
-
-bbb.
-
-intros.
-unfold list_mul.
-remember (length al + length bl - 1) as len eqn:Hlen.
-symmetry in Hlen.
-destruct i.
--rewrite summation_only_one; simpl.
- destruct len; [ | now simpl; rewrite summation_only_one ].
- destruct al as [| a]; [ easy | simpl ].
- simpl in Hlen; rewrite Nat.sub_0_r in Hlen.
- rewrite Nat.mul_comm.
- destruct bl as [| b]; [ easy | ].
- simpl in Hlen.
- now rewrite Nat.add_succ_r in Hlen.
-
--revert al bl i Hlen.
- induction len; intros.
- +simpl.
-  destruct al as [| a].
-  *now rewrite all_0_summation_0; [ | intros j Hj; destruct j ].
-
-  *simpl in Hlen; rewrite Nat.sub_0_r in Hlen.
-   apply Nat.eq_add_0 in Hlen; destruct Hlen as (Hal, Hbl).
-   apply List.length_zero_iff_nil in Hal.
-   apply List.length_zero_iff_nil in Hbl.
-   subst al bl; simpl.
-   rewrite all_0_summation_0; [ easy | intros j Hj ].
-   now destruct j; [ rewrite Nat.mul_comm | destruct j ].
-
- +simpl.
-bbb.
+now rewrite list_nth_mul_loop_convol_mul.
+Qed.
 
 Lemma nat_of_list_mul_assoc {r : radix} : ∀ al bl cl,
   nat_of_list 0 (list_mul al (list_mul bl cl)) =
   nat_of_list 0 (list_mul (list_mul al bl) cl).
 Proof.
 intros.
-apply list_nth_mul_eq; intros i.
-rewrite list_nth_mul_convol_mul.
-
-bbb.
+apply list_nth_mul_eq; intros k.
+destruct (lt_dec k (length al + length (list_mul bl cl) - 1)) as [Hk1| Hk1].
+-rewrite list_nth_mul_convol_mul; [ | easy ].
+ destruct (lt_dec k (length (list_mul al bl) + length cl - 1)) as [Hk2| Hk2].
+ +rewrite list_nth_mul_convol_mul; [ | easy ].
 bbb.
 
 intros.
