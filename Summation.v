@@ -25,9 +25,10 @@ Class ord_ring {rnd : ord_ring_def} :=
     rng_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%Rg;
     rng_sub_diag : ∀ a, (a - a = 0)%Rg;
     rng_mul_comm : ∀ a b, (a * b = b * a)%Rg;
-    rng_mul_add_distr_r : ∀ a b c, ((a + b) * c = a * c + b * c)%Rg;
-    rng_mul_sub_distr_r : ∀ a b c, ((a - b) * c = a * c - b * c)%Rg;
+    rng_mul_add_distr_l : ∀ a b c, (a * (b + c) = a * b + a * c)%Rg;
+    rng_mul_sub_distr_l : ∀ a b c, (a * (b - c) = a * b - a * c)%Rg;
     rng_le_refl : ∀ a, (a ≤ a)%Rg;
+    rng_le_antisymm : ∀ n m, (n ≤ m → m ≤ n → n = m)%Rg;
     rng_add_le_compat : ∀ n m p q, (n ≤ m → p ≤ q → n + p ≤ m + q)%Rg }.
 
 Theorem rng_add_0_r `{rg : ord_ring} : ∀ a, (a + 0 = a)%Rg.
@@ -37,12 +38,44 @@ rewrite rng_add_comm.
 apply rng_add_0_l.
 Qed.
 
+Theorem rng_mul_add_distr_r `{rg : ord_ring} : ∀ a b c,
+   ((a + b) * c = a * c + b * c)%Rg.
+Proof.
+intros.
+rewrite rng_mul_comm, rng_mul_add_distr_l.
+f_equal; apply rng_mul_comm.
+Qed.
+
+Theorem rng_mul_sub_distr_r `{rg : ord_ring} : ∀ a b c,
+   ((a - b) * c = a * c - b * c)%Rg.
+Proof.
+intros.
+rewrite rng_mul_comm, rng_mul_sub_distr_l.
+f_equal; apply rng_mul_comm.
+Qed.
+
 Theorem rng_mul_0_l `{rg : ord_ring} : ∀ a, (0 * a = 0)%Rg.
 Proof.
 intros.
 replace 0%Rg with (0 - 0)%Rg at 1 by apply rng_sub_diag.
 rewrite rng_mul_sub_distr_r.
 now rewrite rng_sub_diag.
+Qed.
+
+Theorem rng_mul_0_r `{rg : ord_ring} : ∀ a, (a * 0 = 0)%Rg.
+Proof.
+intros.
+rewrite rng_mul_comm.
+apply rng_mul_0_l.
+Qed.
+
+Theorem rng_add_eq_compat `{rg : ord_ring} : ∀ n m p q,
+  n = m → p = q → (n + p = m + q)%Rg.
+Proof.
+intros * Hnm Hpq.
+apply rng_le_antisymm.
+-apply rng_add_le_compat; subst; apply rng_le_refl.
+-apply rng_add_le_compat; subst; apply rng_le_refl.
 Qed.
 
 Fixpoint summation_aux `{rg : ord_ring} (b len : nat) (g : nat → _) :=
@@ -326,41 +359,40 @@ destruct (le_dec i₁ (S i₂)) as [H₃| H₃].
  now apply Nat.nle_gt in H₂.
 Qed.
 
-(*
-Theorem summation_aux_mul_swap : ∀ a g b len,
-  (summation_aux r b len (λ i, a * g i) =
-   a * summation_aux r b len g).
+Theorem summation_aux_mul_swap `{rg : ord_ring} : ∀ a g b len,
+  summation_aux b len (λ i, a * g i)%Rg =
+  (a * summation_aux b len g)%Rg.
 Proof.
 intros a g b len; revert b.
-induction len; intros; simpl.
- rewrite rng_mul_0_r; reflexivity.
-
- rewrite IHlen, rng_mul_add_distr_l.
- reflexivity.
+induction len; intros; simpl; [ now rewrite rng_mul_0_r | ].
+rewrite IHlen, rng_mul_add_distr_l.
+reflexivity.
 Qed.
 
-Theorem summation_aux_summation_aux_mul_swap : ∀ g₁ g₂ g₃ b₁ b₂ len,
-  (summation_aux r b₁ len
-     (λ i, summation_aux r b₂ (g₁ i) (λ j, g₂ i * g₃ i j))
-   = summation_aux r b₁ len
-       (λ i, g₂ i * summation_aux r b₂ (g₁ i) (λ j, g₃ i j))).
+Theorem summation_aux_summation_aux_mul_swap `{rg : ord_ring} :
+  ∀ g₁ g₂ g₃ b₁ b₂ len,
+  (summation_aux b₁ len
+     (λ i, summation_aux b₂ (g₁ i) (λ j, g₂ i * g₃ i j)%Rg)
+   = summation_aux b₁ len
+       (λ i, g₂ i * summation_aux b₂ (g₁ i) (λ j, g₃ i j))%Rg).
 Proof.
 intros g₁ g₂ g₃ b₁ b₂ len.
 revert b₁ b₂.
-induction len; intros; [ reflexivity | simpl ].
+induction len; intros; [ easy | simpl ].
 rewrite IHlen.
-apply rng_add_compat_r.
+apply rng_add_eq_compat; [ | easy ].
 apply summation_aux_mul_swap.
 Qed.
 
-Theorem summation_summation_mul_swap : ∀ g₁ g₂ g₃ k,
-  (Σ (i = 0, k), Σ (j = 0, g₁ i), g₂ i * g₃ i j
-   = Σ (i = 0, k), g₂ i * Σ (j = 0, g₁ i), g₃ i j).
+Theorem summation_summation_mul_swap `{rg : ord_ring} : ∀ g₁ g₂ g₃ k,
+  Σ (i = 0, k), (Σ (j = 0, g₁ i), (g₂ i * g₃ i j)%Rg)
+  = Σ (i = 0, k), (g₂ i * Σ (j = 0, g₁ i), g₃ i j)%Rg.
 Proof.
 intros g₁ g₂ g₃ k.
 apply summation_aux_summation_aux_mul_swap.
 Qed.
 
+(*
 Theorem summation_only_one_non_0 : ∀ g b v k,
   (b ≤ v ≤ k)
   → (∀ i, (b ≤ i ≤ k) → (i ≠ v) → (g i = 0))
@@ -638,7 +670,8 @@ Definition nat_ord_ring :=
      rng_add_assoc := Nat.add_assoc;
      rng_sub_diag := Nat.sub_diag;
      rng_mul_comm := Nat.mul_comm;
-     rng_mul_add_distr_r := Nat.mul_add_distr_r;
-     rng_mul_sub_distr_r := Nat.mul_sub_distr_r;
+     rng_mul_add_distr_l := Nat.mul_add_distr_l;
+     rng_mul_sub_distr_l := λ a b c, Nat.mul_sub_distr_l b c a;
      rng_le_refl := Nat.le_refl;
+     rng_le_antisymm := Nat.le_antisymm;
      rng_add_le_compat := Nat.add_le_mono |}.

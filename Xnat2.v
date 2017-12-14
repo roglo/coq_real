@@ -465,9 +465,10 @@ destruct (lt_dec k (length al + length bl + length cl - 2)) as [Hk| Hk].
     Σ (j = 0, k - i), List.nth j bl 0 * List.nth (k - i - j) cl 0).
    symmetry.
    rewrite summation_eq_compat with
-   (h := λ i,
-    (Σ (j = 0, i), List.nth j al 0 * List.nth (i - j) bl 0) *
-    List.nth (k - i) cl 0).
+   (h := λ j,
+    (Σ (i = 0, j), List.nth i al 0 * List.nth (j - i) bl 0) *
+    List.nth (k - j) cl 0).
+   rewrite <- summation_summation_mul_swap.
 bbb.
 
 Focus 2.
