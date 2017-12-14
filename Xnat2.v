@@ -463,98 +463,25 @@ destruct (lt_dec k (length al + length bl + length cl - 2)) as [Hk| Hk].
    rewrite summation_eq_compat with
    (h := λ i, List.nth i al 0 *
     Σ (j = 0, k - i), List.nth j bl 0 * List.nth (k - i - j) cl 0).
-bbb.
-
 Focus 2.
 intros j Hj.
 f_equal.
-apply list_nth_mul_convol_mul.
+destruct (lt_dec (k - j) (length bl + length cl - 1)) as [Hkj| Hkj].
+ now apply list_nth_mul_convol_mul.
 
-bbb.
+ apply Nat.nlt_ge in Hkj.
+ remember (k - j) as kj eqn:Hekj.
+ rewrite all_0_summation_0.
+  rewrite List.nth_overflow; [ easy | ].
+  now rewrite length_list_mul.
 
-intros.
-rewrite list_mul_comm.
-replace (list_mul al bl) with (list_mul bl al) by apply list_mul_comm.
-unfold list_mul.
-do 2 rewrite length_list_mul_loop.
-remember (length bl + length cl - 1) as len_bc eqn:Hlen_bc.
-remember (length bl + length al - 1) as len_ab eqn:Hlen_ab.
-remember (len_bc + length al - 1) as len_a_bc eqn:Hlen_a_bc.
-remember (len_ab + length cl - 1) as len_ab_c eqn:Hlen_ab_c.
-symmetry in Hlen_bc, Hlen_a_bc, Hlen_ab, Hlen_ab_c.
-revert Hlen_bc Hlen_ab Hlen_a_bc Hlen_ab_c.
-revert al cl len_bc len_ab len_a_bc len_ab_c.
-induction bl as [| b1]; intros.
--do 2 rewrite list_mul_loop_nil_l.
- do 2 rewrite list_mul_loop_rep_0_l.
- now do 2 rewrite nat_of_list_0_rep_0.
+  intros i Hi.
+  destruct (le_dec (length bl) i) as [Hbi| Hbi].
+   now rewrite List.nth_overflow.
 
--simpl in Hlen_bc, Hlen_ab; rewrite Nat.sub_0_r in Hlen_bc, Hlen_ab.
- rewrite <- Hlen_bc, Nat.add_comm, Nat.add_assoc in Hlen_a_bc.
- rewrite Nat.add_comm in Hlen_ab.
- rewrite <- Hlen_ab, Hlen_a_bc in Hlen_ab_c.
- subst len_ab_c.
- destruct len_a_bc; [ easy | simpl ].
- do 2 rewrite summation_only_one.
- destruct len_bc.
- +simpl; rewrite list_mul_loop_nil_l, Nat.add_0_r.
-  rewrite nat_of_list_0_rep_0, Nat.mul_0_l.
-  apply Nat.eq_add_0 in Hlen_bc.
-  destruct Hlen_bc as (Hlen_b, Hlen_c).
-  rewrite Hlen_b, Nat.add_0_r in Hlen_ab.
-  rewrite Hlen_b, Hlen_c, Nat.add_0_r, Nat.add_0_r in Hlen_a_bc.
-  destruct len_ab.
-  *simpl; rewrite list_mul_loop_nil_l, Nat.add_0_r.
-   now rewrite nat_of_list_0_rep_0.
-
-  *simpl; rewrite summation_only_one.
-   apply List.length_zero_iff_nil in Hlen_c.
-   subst cl; simpl.
-   rewrite Nat.mul_0_r, Nat.add_0_r.
-   rewrite list_mul_loop_nil_r.
-   now rewrite nat_of_list_0_rep_0.
-
- +simpl; rewrite summation_only_one.
-  destruct len_ab.
-  *apply Nat.eq_add_0 in Hlen_ab.
-   destruct Hlen_ab as (Hlen_a, Hlen_b).
-   apply List.length_zero_iff_nil in Hlen_a; subst al; simpl.
-   rewrite Nat.mul_0_r, Nat.add_0_r, Nat.add_0_r.
-   rewrite list_mul_loop_nil_l, nat_of_list_0_rep_0; simpl.
-   now rewrite list_mul_loop_nil_r, nat_of_list_0_rep_0.
-
-  *simpl; rewrite summation_only_one.
-   f_equal; [ f_equal | lia ].
-destruct len_a_bc; [ easy | ].
-simpl.
-bbb.
-
-Lemma glop {r : radix} : ∀ a al bl i n,
-list_mul_loop i n (a :: al) bl =
-list_add (list_mul_loop i n [a] bl) (list_mul_loop i n [rad] (list_mul_loop i n al bl)).
-Proof.
-intros.
-revert n.
-induction i; intros; [ easy | ].
-simpl.
-f_equal.
-Focus 2.
-rewrite IHi.
-f_equal.
-destruct i; [ easy | ].
-simpl.
-f_equal.
-Focus 2.
-f_equal.
-
-
-bbb.
-
-rewrite glop.
-
-   destruct len_a_bc; [ easy | simpl ].
-   unfold summation; simpl.
-   do 2 rewrite Nat.add_0_r.
+   apply Nat.nle_gt in Hbi.
+   rewrite Nat.mul_comm.
+   rewrite List.nth_overflow; [ easy | lia ].
 bbb.
 
 Theorem xnat_mul_assoc {r : radix} : ∀ a b c, (a * (b * c) = (a * b) * c)%X.
