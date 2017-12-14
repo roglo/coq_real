@@ -483,28 +483,36 @@ destruct (lt_dec k (length al + length bl + length cl - 2)) as [Hk| Hk].
       rewrite Nat.mul_comm; f_equal.
       destruct (lt_dec j (length al + length bl - 1)) as [Hjl| Hjl].
      **now rewrite list_nth_mul_convol_mul.
-     **
-bbb.
-
-Focus 2.
-intros j Hj.
-f_equal.
-destruct (lt_dec (k - j) (length bl + length cl - 1)) as [Hkj| Hkj].
- now apply list_nth_mul_convol_mul.
-
- apply Nat.nlt_ge in Hkj.
- remember (k - j) as kj eqn:Hekj.
- rewrite all_0_summation_0.
-  rewrite List.nth_overflow; [ easy | ].
-  now rewrite length_list_mul.
-
-  intros i Hi.
-  destruct (le_dec (length bl) i) as [Hbi| Hbi].
-   now rewrite List.nth_overflow.
-
-   apply Nat.nle_gt in Hbi.
-   rewrite Nat.mul_comm.
-   rewrite List.nth_overflow; [ easy | lia ].
+     **apply Nat.nlt_ge in Hjl.
+       rewrite all_0_summation_0.
+     ---rewrite List.nth_overflow; [ easy | ].
+        now rewrite length_list_mul.
+     ---intros i Hi.
+        destruct (le_dec (length bl) (j - i)) as [Hbj| Hbj].
+      +++rewrite Nat.mul_comm.
+         now rewrite List.nth_overflow.
+      +++apply Nat.nle_gt in Hbj.
+         rewrite List.nth_overflow; [ easy | lia ].
+   --intros j Hj.
+     f_equal.
+     destruct (lt_dec (k - j) (length bl + length cl - 1)) as [Hkj| Hkj].
+    **now apply list_nth_mul_convol_mul.
+    **apply Nat.nlt_ge in Hkj.
+      remember (k - j) as kj eqn:Hekj.
+      rewrite all_0_summation_0.
+     ---rewrite List.nth_overflow; [ easy | ].
+        now rewrite length_list_mul.
+     ---intros i Hi.
+        destruct (le_dec (length bl) i) as [Hbi| Hbi].
+      +++now rewrite List.nth_overflow.
+      +++apply Nat.nle_gt in Hbi.
+         rewrite Nat.mul_comm.
+         rewrite List.nth_overflow; [ easy | lia ].
+-apply Nat.nlt_ge in Hk.
+ rewrite List.nth_overflow.
+2: do 2 rewrite length_list_mul.
+(* fuck *)
+2: lia.
 bbb.
 
 Theorem xnat_mul_assoc {r : radix} : ∀ a b c, (a * (b * c) = (a * b) * c)%X.
