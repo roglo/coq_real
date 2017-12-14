@@ -415,7 +415,7 @@ induction al as [| a]; intros.
 Qed.
 
 Lemma list_nth_mul_loop_convol_mul (rg := nat_ord_ring) : ∀ al bl len i n,
-  length al + length bl - 1 = len
+  length al + length bl - 1 = len + n
   → List.nth i (list_mul_loop len n al bl) 0 =
      Σ (k = 0, i), List.nth k al 0 * List.nth (i - k) bl 0.
 Proof.
@@ -427,6 +427,8 @@ induction len; intros.
  +rewrite summation_only_one; simpl.
   destruct al as [| a]; [ easy | rewrite Nat.mul_comm ].
   destruct bl as [| b]; [ easy | rewrite Nat.mul_comm ].
+  simpl in Hlen; simpl.
+bbb.
   simpl in Hlen; lia.
 
  +rewrite all_0_summation_0; [ easy | intros j Hj ].
