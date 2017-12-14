@@ -25,6 +25,7 @@ Class ord_ring {rnd : ord_ring_def} :=
     rng_add_assoc : ∀ a b c, (a + (b + c) = (a + b) + c)%Rg;
     rng_sub_diag : ∀ a, (a - a = 0)%Rg;
     rng_mul_comm : ∀ a b, (a * b = b * a)%Rg;
+    rng_mul_assoc : ∀ a b c, (a * (b * c) = (a * b) * c)%Rg;
     rng_mul_add_distr_l : ∀ a b c, (a * (b + c) = a * b + a * c)%Rg;
     rng_mul_sub_distr_l : ∀ a b c, (a * (b - c) = a * b - a * c)%Rg;
     rng_le_refl : ∀ a, (a ≤ a)%Rg;
@@ -445,20 +446,20 @@ replace k with (b + len) in * .
  rewrite Nat.add_comm.
  apply Nat.add_sub.
 Qed.
+*)
 
-Theorem summation_summation_shift : ∀ g k,
-  (Σ (i = 0, k), Σ (j = i, k), g i j =
-   Σ (i = 0, k), Σ (j = 0, k - i), g i (i + j)%nat).
+Theorem summation_summation_shift `{rg : ord_ring} : ∀ g k,
+  Σ (i = 0, k), (Σ (j = i, k), g i j) =
+  Σ (i = 0, k), Σ (j = 0, k - i), g i (i + j).
 Proof.
 intros g k.
-apply summation_compat; intros i Hi.
+apply summation_eq_compat; intros i Hi.
 unfold summation.
 rewrite Nat.sub_0_r.
-rewrite Nat.sub_succ_l; [ idtac | destruct Hi; assumption ].
+rewrite Nat.sub_succ_l; [ | now destruct Hi ].
 apply summation_aux_eq_compat; intros j Hj.
-rewrite Nat.add_0_l; reflexivity.
+now rewrite Nat.add_0_l.
 Qed.
-*)
 
 Theorem summation_aux_succ_first `{rg : ord_ring} : ∀ g b len,
   summation_aux b (S len) g = (g b + summation_aux (S b) len g)%Rg.
@@ -475,26 +476,26 @@ rewrite <- summation_aux_succ_first.
 now rewrite <- Nat.sub_succ_l.
 Qed.
 
-(*
-Theorem summation_summation_exch : ∀ g k,
-  (Σ (j = 0, k), Σ (i = 0, j), g i j =
+Theorem summation_summation_exch `{rg : ord_ring} : ∀ g k,
+  (Σ (j = 0, k), (Σ (i = 0, j), g i j) =
    Σ (i = 0, k), Σ (j = i, k), g i j).
 Proof.
 intros g k.
-induction k; [ reflexivity | idtac ].
-rewrite summation_split_last; [ idtac | apply Nat.le_0_l ].
-rewrite summation_split_last; [ idtac | apply Nat.le_0_l ].
-rewrite summation_split_last; [ idtac | apply Nat.le_0_l ].
+induction k; [ easy | ].
+rewrite summation_split_last; [ | apply Nat.le_0_l ].
+rewrite summation_split_last; [ | apply Nat.le_0_l ].
+rewrite summation_split_last; [ | apply Nat.le_0_l ].
 rewrite IHk.
 rewrite summation_only_one.
 rewrite rng_add_assoc.
-apply rng_add_compat_r.
+apply rng_add_eq_compat; [ | easy ].
 rewrite <- summation_add_distr.
-apply summation_compat; intros i (_, Hi).
-rewrite summation_split_last; [ reflexivity | idtac ].
-apply Nat.le_le_succ_r; assumption.
+apply summation_eq_compat; intros i (_, Hi).
+rewrite summation_split_last; [ easy | ].
+now apply Nat.le_le_succ_r.
 Qed.
 
+(*
 Theorem summation_aux_ub_add : ∀ g b k₁ k₂,
   (summation_aux r b (k₁ + k₂) g =
    summation_aux r b k₁ g + summation_aux r (b + k₁) k₂ g).
@@ -670,6 +671,7 @@ Definition nat_ord_ring :=
      rng_add_assoc := Nat.add_assoc;
      rng_sub_diag := Nat.sub_diag;
      rng_mul_comm := Nat.mul_comm;
+     rng_mul_assoc := Nat.mul_assoc;
      rng_mul_add_distr_l := Nat.mul_add_distr_l;
      rng_mul_sub_distr_l := λ a b c, Nat.mul_sub_distr_l b c a;
      rng_le_refl := Nat.le_refl;

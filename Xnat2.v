@@ -463,18 +463,27 @@ destruct (lt_dec k (length al + length bl + length cl - 2)) as [Hk| Hk].
    rewrite summation_eq_compat with
    (h := λ i, List.nth i al 0 *
     Σ (j = 0, k - i), List.nth j bl 0 * List.nth (k - i - j) cl 0).
-   symmetry.
-   rewrite summation_eq_compat with
-   (h := λ j,
-    (Σ (i = 0, j), List.nth i al 0 * List.nth (j - i) bl 0) *
-    List.nth (k - j) cl 0).
-   rewrite <- summation_summation_mul_swap.
-bbb.
-
-Focus 2.
-intros j Hj.
-f_equal.
-apply list_nth_mul_convol_mul.
+   --symmetry.
+     rewrite summation_eq_compat with
+     (h := λ j,
+      List.nth (k - j) cl 0 *
+      Σ (i = 0, j), List.nth i al 0 * List.nth (j - i) bl 0).
+    ++symmetry.
+      rewrite <- summation_summation_mul_swap.
+      rewrite <- summation_summation_mul_swap.
+      rewrite summation_summation_exch.
+      rewrite summation_summation_shift.
+      apply summation_eq_compat; intros i Hi.
+      apply summation_eq_compat; intros j Hj.
+      symmetry; rewrite rng_mul_comm, <- rng_mul_assoc.
+      f_equal; f_equal.
+      rewrite Nat.add_comm, Nat.add_sub; simpl; f_equal.
+      now rewrite Nat.add_comm, Nat.sub_add_distr.
+    ++intros j Hj.
+      rewrite Nat.mul_comm; f_equal.
+      destruct (lt_dec j (length al + length bl - 1)) as [Hjl| Hjl].
+     **now rewrite list_nth_mul_convol_mul.
+     **
 bbb.
 
 Focus 2.
