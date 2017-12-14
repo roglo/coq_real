@@ -415,40 +415,36 @@ induction al as [| a]; intros.
 Qed.
 
 Lemma list_nth_mul_loop_convol_mul (rg := nat_ord_ring) : ∀ al bl it i n,
-  length al + length bl - 1 = it + n
+  length al + length bl - 1 = it
   → List.nth i (list_mul_loop it n al bl) 0 =
      Σ (k = 0, n + i), List.nth k al 0 * List.nth (n + i - k) bl 0.
 Proof.
 intros * Hit.
 revert al bl i n Hit.
 induction it; intros.
+-destruct al as [| a].
+ +rewrite all_0_summation_0; [ | now intros j Hj; destruct j ].
+  now rewrite list_mul_loop_nil_l; destruct i.
+ +destruct bl as [| b].
+  *rewrite all_0_summation_0; [ now destruct i | intros j Hj ].
+   now rewrite Nat.mul_comm; destruct (n + i - j).
+  *simpl in Hit; lia.
 -simpl.
- destruct i.
- +rewrite Nat.add_0_r.
-Print list_mul_loop.
-
-bbb.
- +rewrite summation_only_one; simpl.
-  destruct al as [| a]; [ easy | rewrite Nat.mul_comm ].
-  destruct bl as [| b]; [ easy | rewrite Nat.mul_comm ].
-  simpl in Hit; simpl.
-bbb.
-  simpl in Hit; lia.
-
- +rewrite all_0_summation_0; [ easy | intros j Hj ].
-  destruct al as [| a]; [ now destruct j | rewrite Nat.mul_comm ].
-  destruct bl as [| b]; [ now destruct (S i - j) | ].
-  now simpl in Hlen; rewrite Nat.add_succ_r in Hlen.
-
--simpl.
- destruct i.
- +rewrite summation_only_one; simpl.
-  destruct al as [| a].
-  *now rewrite all_0_summation_0; [ | intros j Hj; destruct j ].
-
-  *simpl in Hlen.
-admit.
-+
+ destruct i; [ now rewrite Nat.add_0_r | ].
+ destruct al as [ |a].
+ +simpl.
+  rewrite list_mul_loop_nil_l, List_nth_repeat_def.
+  now rewrite all_0_summation_0; [ | intros j Hj; destruct j ].
+ +simpl length in Hit.
+  rewrite Nat.add_succ_l in Hit.
+  destruct bl as [| b].
+  *rewrite list_mul_loop_nil_r, List_nth_repeat_def.
+   rewrite all_0_summation_0; [ easy | intros j Hj ].
+   now rewrite Nat.mul_comm; destruct (n + S i - j).
+  *rewrite Nat.sub_succ_l in Hit; [ | simpl; lia ].
+   apply Nat.succ_inj in Hit.
+   rewrite IHit.
+(* ah pute, je me suis gourré *)
 bbb.
 
 Lemma glop : ∀ al bl i j n,
