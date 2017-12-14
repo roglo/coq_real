@@ -414,22 +414,22 @@ induction al as [| a]; intros.
   now specialize (Hi (S i)); simpl in Hi.
 Qed.
 
-Lemma list_nth_mul_loop_convol_mul (rg := nat_ord_ring) : ∀ al bl len i n,
-  length al + length bl - 1 = len + n
-  → List.nth i (list_mul_loop len n al bl) 0 =
+Lemma list_nth_mul_loop_convol_mul (rg := nat_ord_ring) : ∀ al bl it i n,
+  length al + length bl - 1 = it + n
+  → List.nth i (list_mul_loop it n al bl) 0 =
      Σ (k = 0, i), List.nth k al 0 * List.nth (i - k) bl 0.
 Proof.
-intros * Hlen.
-revert al bl i n Hlen.
-induction len; intros.
+intros * Hit.
+revert al bl i n Hit.
+induction it; intros.
 -simpl.
  destruct i.
  +rewrite summation_only_one; simpl.
   destruct al as [| a]; [ easy | rewrite Nat.mul_comm ].
   destruct bl as [| b]; [ easy | rewrite Nat.mul_comm ].
-  simpl in Hlen; simpl.
+  simpl in Hit; simpl.
 bbb.
-  simpl in Hlen; lia.
+  simpl in Hit; lia.
 
  +rewrite all_0_summation_0; [ easy | intros j Hj ].
   destruct al as [| a]; [ now destruct j | rewrite Nat.mul_comm ].
