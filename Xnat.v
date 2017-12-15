@@ -562,10 +562,23 @@ Qed.
 
 (**)
 
+Theorem nat_of_list_mul {r : radix} : ∀ al bl,
+  nat_of_list 0 (list_mul al bl) = nat_of_list 0 al * nat_of_list 0 bl.
+Proof.
+intros.
+unfold nat_of_list.
+bbb.
+
 Theorem list_of_nat_mul {r : radix} : 1 < rad → ∀ a b,
   nat_of_list 0 (list_of_nat 0 (a * b)) =
   nat_of_list 0 (list_mul (list_of_nat 0 a) (list_of_nat 0 b)).
 Proof.
+intros Hr.
+assert (Hrz : rad ≠ 0) by lia.
+intros.
+rewrite nat_of_list_list_of_nat; [ | easy ].
+rewrite nat_of_list_mul.
+bbb.
 intros Hr.
 assert (Hrz : rad ≠ 0) by lia.
 intros.
@@ -578,9 +591,10 @@ unfold list_of_nat.
   *subst b; rewrite Nat.mul_comm; simpl.
    rewrite list_mul_nil_r.
    now rewrite nat_of_list_0_rep_0.
-  *destruct (zerop (a * b)) as [Hzab| Hzab].
+  *destruct (zerop (a * b)) as [Hzab| Hzab]; [ | clear Hzab ].
   --apply Nat.eq_mul_0 in Hzab; lia.
---
+  --
+
 (* c'est là que ça se corse... *)
 unfold move_carry.
 do 3 rewrite Nat.add_0_l.
