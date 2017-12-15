@@ -530,11 +530,9 @@ simpl; replace 1 with (1 * 1) by lia.
 apply Nat.mul_lt_mono_nonneg; [ lia | easy | lia | easy ].
 Qed.
 
-Theorem rad_expr {r : radix} : ∀ i k, rad * (i + k + 2) - 1 - i ≠ 1.
+Theorem rad_expr {r : radix} : 1 < rad → ∀ i k, rad * (i + k + 2) - 1 - i ≠ 1.
 Proof.
-intros * Hj.
-bbb.
-specialize radix_gt_1 as Hr.
+intros Hr * Hj.
 replace (rad * (i + k + 2) - 1 - i)
 with (rad * S i + rad * (k + 1) - S i) in Hj by lia.
 rewrite Nat.add_sub_swap in Hj.
@@ -547,17 +545,16 @@ rewrite Nat.add_sub_swap in Hj.
  rewrite Nat.mul_comm; simpl; lia.
 Qed.
 
-Theorem test_seq_all_0 {r : radix} : ∀ u i,
-  (∀ k, test_seq i (λ j, dig (u j)) k = 0)
-  → ∀ k, dig (u (i + k + 1)) = rad - 1.
+Theorem test_seq_all_0 {r : radix} : 1 < rad → ∀ u i,
+  (∀ k, test_seq i u k = 0)
+  → ∀ k, u (i + k + 1) = rad - 1.
 Proof.
-intros * Huk *.
+intros Hr * Huk *.
 specialize (Huk (S k)).
 unfold test_seq in Huk.
 set (n := rad * (i + S k + 2)) in Huk.
 set (s := rad ^ (n - 1 - i)) in Huk.
-set (v j := dig (u j)) in Huk.
-destruct (le_dec ((rad ^ S k - 1) * s) (rad ^ S k * (nA i n v mod s)))
+destruct (le_dec ((rad ^ S k - 1) * s) (rad ^ S k * (nA i n u mod s)))
   as [H| H]; [ clear Huk | easy ].
 remember (n - 1 - i) as j eqn:Hj.
 symmetry in Hj.
@@ -571,10 +568,10 @@ rewrite Nat.mod_small in H.
   apply Nat.le_0_r in H.
   apply Nat.sub_0_le in H.
   exfalso; apply Nat.le_ngt in H.
-  apply H; clear H; clear.
-  apply rad_pow_succ_gt_1.
+  apply H; clear H; clear - Hr.
+  now apply rad_pow_succ_gt_1.
 
-  remember (rad ^ S k * nA i n v) as a eqn:Ha.
+  remember (rad ^ S k * nA i n u) as a eqn:Ha.
   rewrite Nat.mul_comm in Ha; subst a.
   unfold nA in H; subst s.
   revert i j n Hj H.
@@ -583,20 +580,21 @@ rewrite Nat.mod_small in H.
    simpl in H.
    rewrite Nat.mul_1_r in H.
    rewrite Nat.mul_assoc, Nat.mul_shuffle0 in H.
-   apply Nat.mul_le_mono_pos_r in H; [ | easy ].
+   apply Nat.mul_le_mono_pos_r in H; [ | lia ].
    rewrite summation_shift in H; [ | lia ].
    replace (n - 1 - (i + 1)) with j in H by lia.
-   rewrite summation_eq_compat with (h := λ k, v (i + 1 + k) * rad ^ (j - k))
+   rewrite summation_eq_compat with (h := λ k, u (i + 1 + k) * rad ^ (j - k))
      in H.
    2: intros k Hk; f_equal; f_equal; lia.
-   remember (λ k, v (i + 1 + k) * rad ^ (j - k)) as a; subst a.
-   clear Hj n; subst v.
+   remember (λ k, u (i + 1 + k) * rad ^ (j - k)) as a; subst a.
+   clear Hj n.
    revert u i H.
    induction j; intros.
     rewrite Nat.pow_0_r in H; simpl in H.
     rewrite summation_only_one in H.
     do 2 rewrite Nat.mul_1_r in H.
     rewrite Nat.add_0_r in H.
+bbb.
     specialize (dig_lt_rad (u (i + 1))); lia.
 
     apply IHj; clear IHj.
