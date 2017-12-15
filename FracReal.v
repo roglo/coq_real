@@ -495,12 +495,14 @@ induction n.
   apply Nat.mul_le_mono_nonneg_r; lia.
 Qed.
 
-Theorem nA_dig_seq_ub {r : radix} : 0 < rad → ∀ u n i,
+Theorem nA_dig_seq_ub {r : radix} : 0 < rad → ∀ u,
+  (∀ i, u i < rad) →
+  ∀ n i,
   let s := rad ^ (n - 1 - i) in
   i + 1 ≤ n - 1
   → nA i n u < s.
 Proof.
-intros Hr * Hin.
+intros Hr u Hu * Hin.
 unfold nA, s.
 rewrite summation_rtl.
 rewrite summation_shift; [ | easy ].
@@ -517,13 +519,12 @@ replace (n - 1 + (i + 1) - (i + 1 + j)) with (n - 1 - j) by lia.
 replace (n - 1 - (n - 1 - j)) with j by lia.
 apply Nat.mul_le_mono_nonneg_r; [ lia | ].
 apply Nat.le_add_le_sub_l.
-bbb.
-apply dig_lt_rad.
+apply Hu.
 Qed.
 
-Theorem rad_pow_succ_gt_1 {r : radix} : ∀ k, 1 < rad ^ S k.
+Theorem rad_pow_succ_gt_1 {r : radix} : 1 < rad → ∀ k, 1 < rad ^ S k.
 Proof.
-intros.
+intros Hr *.
 induction k; [ now rewrite Nat.pow_1_r | ].
 simpl; replace 1 with (1 * 1) by lia.
 apply Nat.mul_lt_mono_nonneg; [ lia | easy | lia | easy ].
@@ -532,6 +533,7 @@ Qed.
 Theorem rad_expr {r : radix} : ∀ i k, rad * (i + k + 2) - 1 - i ≠ 1.
 Proof.
 intros * Hj.
+bbb.
 specialize radix_gt_1 as Hr.
 replace (rad * (i + k + 2) - 1 - i)
 with (rad * S i + rad * (k + 1) - S i) in Hj by lia.
