@@ -562,11 +562,12 @@ Qed.
 
 (**)
 
-Theorem list_of_nat_mul {r : radix} : rad ≠ 0 → ∀ a b,
+Theorem list_of_nat_mul {r : radix} : 1 < rad → ∀ a b,
   nat_of_list 0 (list_of_nat 0 (a * b)) =
   nat_of_list 0 (list_mul (list_of_nat 0 a) (list_of_nat 0 b)).
 Proof.
 intros Hr.
+assert (Hrz : rad ≠ 0) by lia.
 intros.
 unfold list_of_nat.
 -destruct (zerop a) as [Hza| Hza].
@@ -591,8 +592,28 @@ unfold list_of_nat.
     ---apply Nat.div_small_iff in Hzbr; [ | easy ].
        rewrite Nat.mod_small; [ | easy ].
        now simpl; rewrite summation_only_one.
-    ---exfalso; clear - Hr Hzabr Hzbr.
-Search (_ * _ < _).
+    ---exfalso.
+       apply (Nat.div_str_pos_iff b) in Hzbr; [ | easy ].
+       destruct a; [ easy | simpl in Hzabr; lia ].
+    **apply (Nat.div_str_pos_iff a) in Hzar; [ | easy ].
+      rewrite Nat.mul_comm in Hzabr.
+      destruct b; [ easy | simpl in Hzabr; lia ].
+   ++destruct (zerop (a / rad)) as [Hzar| Hzar].
+     apply Nat.div_small_iff in Hzar; [ | easy ].
+    **destruct (zerop (b / rad)) as [Hzbr| Hzbr].
+    ---apply Nat.div_small_iff in Hzbr; [ symmetry | easy ].
+       rewrite Nat.mod_small; [ | easy ].
+       rewrite Nat.mod_small; [ symmetry | easy ].
+       simpl; rewrite summation_only_one.
+       rewrite nat_of_list_move_end; [ | easy | now apply Nat.div_lt ].
+       specialize (Nat.div_mod (a * b / rad) rad Hrz) as H.
+       symmetry in H; rewrite Nat.mul_comm in H.
+       rewrite H, Nat.mul_comm; symmetry.
+       now apply Nat.div_mod.
+    ---simpl; rewrite summation_only_one.
+       unfold summation; simpl.
+       rewrite Nat.add_0_r.
+       (* mouais... c'compliqué... *)
 bbb.
 
 Theorem xnat_of_nat_mul {r : radix} : ∀ a b,
