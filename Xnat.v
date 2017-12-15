@@ -580,6 +580,13 @@ unfold list_of_nat.
    now rewrite nat_of_list_0_rep_0.
   *destruct (zerop (a * b)) as [Hzab| Hzab].
   --apply Nat.eq_mul_0 in Hzab; lia.
+--
+(* c'est là que ça se corse... *)
+unfold move_carry.
+do 3 rewrite Nat.add_0_l.
+Search ((_ * _) mod _).
+bbb.
+
   --simpl.
     destruct (zerop (a * b / rad)) as [Hzabr| Hzabr].
    ++simpl.
