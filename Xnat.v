@@ -587,11 +587,30 @@ now rewrite IHal.
 Qed.
 
 Theorem list_mul_cons {r : radix} : ∀ a al bl,
+  bl ≠ []
+  → list_mul (a :: al) bl =
+     list_add (list_mul [a] bl) (0 :: list_mul al bl).
+Proof.
+intros * Hbl.
+revert a bl Hbl.
+induction al as [| a1]; intros.
+-rewrite list_mul_nil_l; simpl.
+ destruct bl as [| b]; [ easy | clear Hbl; simpl ].
+ rewrite summation_only_one, Nat.sub_0_r, Nat.add_0_r.
+ rewrite list_add_rep_0_r.
+ rewrite length_list_mul_loop, Nat.sub_diag, List.app_nil_r.
+bbb.
+
+ rewrite nat_of_list_app_rep_0.
+-simpl; rewrite summation_only_one.
+bbb.
+
+Theorem list_mul_cons {r : radix} : ∀ a al bl,
   nat_of_list 0 (list_mul (a :: al) bl) =
   nat_of_list 0 (list_add (list_mul [a] bl) (0 :: list_mul al bl)).
 Proof.
 intros.
-revert bl.
+revert a bl.
 induction al as [| a1]; intros.
 -rewrite list_mul_nil_l; simpl.
  destruct bl as [| b]; [ now rewrite list_mul_nil_r | simpl ].
