@@ -562,11 +562,58 @@ Qed.
 
 (**)
 
-Theorem nat_of_list_mul {r : radix} : ∀ al bl,
+Theorem list_add_rep_0_r : ∀ al n,
+  list_add al (List.repeat 0 n) = al ++ List.repeat 0 (n - length al).
+Proof.
+intros.
+revert n.
+induction al as [| a]; intros; [ now simpl; rewrite Nat.sub_0_r | simpl ].
+remember (List.repeat 0 n) as bl eqn:Hbl.
+symmetry in Hbl.
+destruct bl as [| b].
+-destruct n; [ now rewrite List.app_nil_r | easy ].
+-destruct n; [ easy | ].
+ simpl in Hbl; injection Hbl; clear Hbl; intros; subst b bl.
+ rewrite Nat.add_0_r; f_equal; simpl.
+ apply IHal.
+Qed.
+
+Theorem nat_of_list_app_rep_0 {r : radix} : ∀ al n,
+  nat_of_list 0 (al ++ List.repeat 0 n) = nat_of_list 0 al.
+Proof.
+intros.
+induction al as [| a]; [ apply nat_of_list_0_rep_0 | simpl ].
+now rewrite IHal.
+Qed.
+
+Theorem list_mul_cons {r : radix} : ∀ a al bl,
+  nat_of_list 0 (list_mul (a :: al) bl) =
+  nat_of_list 0 (list_add (list_mul [a] bl) (0 :: list_mul al bl)).
+Proof.
+intros.
+revert bl.
+induction al as [| a1]; intros.
+-rewrite list_mul_nil_l; simpl.
+ destruct bl as [| b]; [ now rewrite list_mul_nil_r | simpl ].
+ rewrite summation_only_one, Nat.sub_0_r, Nat.add_0_r.
+ rewrite list_add_rep_0_r.
+ now rewrite nat_of_list_app_rep_0.
+-simpl; rewrite summation_only_one.
+bbb.
+
+Theorem nat_of_list_mul_distr {r : radix} : ∀ al bl,
   nat_of_list 0 (list_mul al bl) = nat_of_list 0 al * nat_of_list 0 bl.
 Proof.
 intros.
-unfold nat_of_list.
+revert bl.
+induction al as [| a]; intros.
+-rewrite list_mul_nil_l; simpl.
+ apply nat_of_list_0_rep_0.
+-destruct bl as [| b].
+ +rewrite list_mul_nil_r, Nat.mul_0_r.
+  apply nat_of_list_0_rep_0.
+ +simpl.
+
 bbb.
 
 Theorem list_of_nat_mul {r : radix} : 1 < rad → ∀ a b,
@@ -577,7 +624,7 @@ intros Hr.
 assert (Hrz : rad ≠ 0) by lia.
 intros.
 rewrite nat_of_list_list_of_nat; [ | easy ].
-rewrite nat_of_list_mul.
+rewrite nat_of_list_mul_distr.
 bbb.
 intros Hr.
 assert (Hrz : rad ≠ 0) by lia.
