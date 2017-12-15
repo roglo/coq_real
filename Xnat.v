@@ -592,6 +592,16 @@ Theorem list_mul_cons {r : radix} : ∀ a al bl,
      list_add (list_mul [a] bl) (0 :: list_mul al bl).
 Proof.
 intros * Hbl.
+rewrite list_add_comm; simpl.
+remember (list_mul [a] bl) as cl eqn:Hcl.
+symmetry in Hcl.
+destruct cl as [| c].
+-unfold list_mul in Hcl; simpl in Hcl.
+ rewrite Nat.sub_0_r in Hcl.
+ now destruct bl.
+-
+bbb.
+intros * Hbl.
 revert a bl Hbl.
 induction al as [| a1]; intros.
 -rewrite list_mul_nil_l; simpl.
@@ -599,6 +609,10 @@ induction al as [| a1]; intros.
  rewrite summation_only_one, Nat.sub_0_r, Nat.add_0_r.
  rewrite list_add_rep_0_r.
  rewrite length_list_mul_loop, Nat.sub_diag, List.app_nil_r.
+ unfold list_mul; simpl.
+ now rewrite summation_only_one.
+-rewrite IHal; [ | easy ].
+Search (list_add _ (_ :: _)).
 bbb.
 
  rewrite nat_of_list_app_rep_0.
