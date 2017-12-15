@@ -1,34 +1,12 @@
-(* Real between 0 and 1, i.e. fractional part of a real. *)
+(* Real between 0 and 1, i.e. fractional part of a real.
+   Implemented as function of type nat → nat.
+   Operations + and * implemented using LPO. *)
 
 Require Import Utf8 Arith Psatz.
 Require Import Misc Summation Xnat.
 
-(* the proof that x≤y is unique; this is proved in Coq library theorem
-   "le_unique" *)
-Theorem digit_eq_eq {r : radix} : ∀ a b, (a = b)%D ↔ a = b.
-Proof.
-intros.
-split; intros H; [ | now subst ].
-destruct a as (adig, adigi).
-destruct b as (bdig, bdigi).
-unfold digit_eq in H; simpl in H.
-subst bdig.
-f_equal.
-apply le_unique.
-Qed.
-
-Theorem digit_eq_dec {r : radix} : ∀ a b, {(a = b)%D} + {(a ≠ b)%D}.
-Proof.
-intros.
-destruct (Nat.eq_dec (dig a) (dig b)) as [Hab| Hab]; [ now left | right ].
-intros H.
-apply digit_eq_eq in H; subst b.
-now apply Hab.
-Qed.
-
 (* Limited Principle of Omniscience *)
 (* Borrowed from my proof of Puiseux's Theorem *)
-
 Axiom LPO : ∀ (u : nat → nat), (∀ i, u i = O) + { i : nat | u i ≠ O }.
 
 Fixpoint first_such_that (P : nat → bool) n i :=
@@ -86,17 +64,12 @@ Qed.
 
 Delimit Scope freal_scope with F.
 
-Record FracReal {r : radix} := { freal : nat → digit }.
+Record FracReal {r : radix} := { freal : nat → nat }.
 Arguments freal r _%F.
 
-Definition digit_sequence_normalize {r : radix} (u : nat → digit) i :=
-  match LPO_fst (λ j : nat, rad - 1 - dig (u (i + j + 1))) with
-  | inl _ =>
-      let s := lt_dec (S (dig (u i))) rad in
-      match s with
-      | left P => {| dig := S (dig (u i)); dig_lt_rad := P |}
-      | right _ => {| dig := 0; dig_lt_rad := radix_gt_0 |}
-      end
+Definition digit_sequence_normalize {r : radix} (u : nat → nat) i :=
+  match LPO_fst (λ j : nat, rad - 1 - u (i + j + 1)) with
+  | inl _ => if lt_dec (S (u i)) rad then S (u i) else 0
   | inr _ => u i
  end.
 
@@ -106,7 +79,7 @@ Definition freal_normalize {r : radix} x :=
 Arguments freal_normalize r x%F.
 
 Definition eq_freal_seq {r : radix} x y i :=
-  if Nat.eq_dec (dig (freal x i)) (dig (freal y i)) then 0 else 1.
+  if Nat.eq_dec (freal x i) (freal y i) then 0 else 1.
 
 Definition freal_normalized_eq {r : radix} x y :=
   match LPO_fst (eq_freal_seq x y) with
@@ -118,8 +91,7 @@ Definition freal_normalized_lt {r : radix} x y :=
   match LPO_fst (eq_freal_seq x y) with
   | inl _ => true
   | inr (exist _ i _) =>
-      if lt_dec (dig (freal x i)) (dig (freal y i)) then true
-      else false
+      if lt_dec (freal x i) (freal y i) then true else false
   end.
 
 Definition freal_eq {r : radix} x y :=
@@ -128,7 +100,7 @@ Definition freal_eq {r : radix} x y :=
 Definition freal_lt {r : radix} x y :=
   freal_normalized_lt (freal_normalize x) (freal_normalize y).
 
-Definition freal_0 {r : radix} := {| freal i := digit_0 |}.
+Definition freal_0 {r : radix} := {| freal i := 0 |}.
 
 Notation "0" := (freal_0) : freal_scope.
 Notation "a = b" := (freal_eq a b = true) : freal_scope.
@@ -142,14 +114,14 @@ Definition sequence_mul (rg := nat_ord_ring) (a b : nat → nat) i :=
   Σ (j = 0, i), a j * b (i - j).
 
 Definition freal_add_series {r : radix} a b :=
-  sequence_add (λ i, dig (freal a i)) (λ i, dig (freal b i)).
+  sequence_add (freal a) (freal b).
 
 Arguments freal_add_series _ a%F b%F.
 
 Definition freal_mul_series {r : radix} a b i :=
   match i with
   | 0 => 0
-  | S i' => sequence_mul (λ i, dig (freal a i)) (λ i, dig (freal b i)) i'
+  | S i' => sequence_mul (freal a) (freal b) i'
   end.
 
 Definition nA {r : radix} (rg := nat_ord_ring) i n u :=
@@ -188,6 +160,7 @@ intros.
 unfold freal_add_to_seq, numbers_to_digits.
 remember (test_seq i (freal_add_series a b)) as v eqn:Hv.
 destruct (LPO_fst v) as [Hvi| (j, Hvj)].
+bbb.
 1, 2: now apply Nat.mod_upper_bound.
 Qed.
 
