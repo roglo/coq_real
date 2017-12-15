@@ -319,14 +319,13 @@ remember (freal (x + y)) as xy.
 remember (freal (y + x)) as yx.
 simpl.
 unfold digit_sequence_normalize.
-bbb.
-destruct (LPO_fst (λ j : nat, rad - 1 - dig (xy (i + j + 1)))) as [Hxy| Hxy].
- destruct (LPO_fst (λ j : nat, rad - 1 - dig (yx (i + j + 1)))) as [Hyx| Hyx].
+destruct (LPO_fst (λ j : nat, rad - 1 - xy (i + j + 1))) as [Hxy| Hxy].
+ destruct (LPO_fst (λ j : nat, rad - 1 - yx (i + j + 1))) as [Hyx| Hyx].
   unfold freal_add in Heqxy; simpl in Heqxy.
   unfold freal_add in Heqyx; simpl in Heqyx.
-  destruct (lt_dec (S (dig (xy i))) rad) as [Hrxy| Hrxy].
+  destruct (lt_dec (S (xy i)) rad) as [Hrxy| Hrxy].
    subst xy; simpl in Hrxy; simpl.
-   destruct (lt_dec (S (dig (yx i))) rad) as [Hryx| Hryx].
+   destruct (lt_dec (S (yx i)) rad) as [Hryx| Hryx].
     unfold freal_add in Heqyx; simpl in Heqyx.
     subst yx; simpl in Hryx; simpl.
     now rewrite freal_add_to_seq_i_comm.
@@ -334,7 +333,7 @@ destruct (LPO_fst (λ j : nat, rad - 1 - dig (xy (i + j + 1)))) as [Hxy| Hxy].
     subst yx; simpl in Hryx.
     now rewrite freal_add_to_seq_i_comm in Hryx.
 
-   destruct (lt_dec (S (dig (yx i))) rad) as [Hryx| Hryx]; [ | easy ].
+   destruct (lt_dec (S (yx i)) rad) as [Hryx| Hryx]; [ | easy ].
    exfalso.
    subst xy yx; simpl in Hrxy, Hryx.
    now rewrite freal_add_to_seq_i_comm in Hryx.
@@ -350,7 +349,7 @@ destruct (LPO_fst (λ j : nat, rad - 1 - dig (xy (i + j + 1)))) as [Hxy| Hxy].
  destruct Hxy as (k & Hjk & Hk).
  unfold freal_add in Heqxy; simpl in Heqxy.
  unfold freal_add in Heqyx; simpl in Heqyx.
- destruct (LPO_fst (λ j : nat, rad - 1 - dig (yx (i + j + 1)))) as [Hyx| Hyx].
+ destruct (LPO_fst (λ j : nat, rad - 1 - yx (i + j + 1))) as [Hyx| Hyx].
   exfalso; clear Hjk.
   subst xy yx; simpl in Hk, Hyx; simpl.
   rewrite freal_add_to_seq_i_comm in Hk.
@@ -361,8 +360,7 @@ destruct (LPO_fst (λ j : nat, rad - 1 - dig (xy (i + j + 1)))) as [Hxy| Hxy].
 Qed.
 
 Theorem dig_norm_mul_comm {r : radix} : ∀ x y i,
-  dig (freal (freal_normalize (x * y)) i) =
-  dig (freal (freal_normalize (y * x)) i).
+  freal (freal_normalize (x * y)) i = freal (freal_normalize (y * x)) i.
 Proof.
 intros.
 unfold freal_normalize.
@@ -370,13 +368,13 @@ remember (freal (x * y)) as xy.
 remember (freal (y * x)) as yx.
 simpl.
 unfold digit_sequence_normalize.
-destruct (LPO_fst (λ j : nat, rad - 1 - dig (xy (i + j + 1)))) as [Hxy| Hxy].
- destruct (LPO_fst (λ j : nat, rad - 1 - dig (yx (i + j + 1)))) as [Hyx| Hyx].
+destruct (LPO_fst (λ j : nat, rad - 1 - xy (i + j + 1))) as [Hxy| Hxy].
+ destruct (LPO_fst (λ j : nat, rad - 1 - yx (i + j + 1))) as [Hyx| Hyx].
   unfold freal_mul in Heqxy; simpl in Heqxy.
   unfold freal_mul in Heqyx; simpl in Heqyx.
-  destruct (lt_dec (S (dig (xy i))) rad) as [Hrxy| Hrxy].
+  destruct (lt_dec (S (xy i)) rad) as [Hrxy| Hrxy].
    subst xy; simpl in Hrxy; simpl.
-   destruct (lt_dec (S (dig (yx i))) rad) as [Hryx| Hryx].
+   destruct (lt_dec (S (yx i)) rad) as [Hryx| Hryx].
     unfold freal_mul in Heqyx; simpl in Heqyx.
     subst yx; simpl in Hryx; simpl.
     now rewrite freal_mul_to_seq_i_comm.
@@ -384,7 +382,7 @@ destruct (LPO_fst (λ j : nat, rad - 1 - dig (xy (i + j + 1)))) as [Hxy| Hxy].
     subst yx; simpl in Hryx.
     now rewrite freal_mul_to_seq_i_comm in Hryx.
 
-   destruct (lt_dec (S (dig (yx i))) rad) as [Hryx| Hryx]; [ | easy ].
+   destruct (lt_dec (S (yx i)) rad) as [Hryx| Hryx]; [ | easy ].
    exfalso.
    subst xy yx; simpl in Hrxy, Hryx.
    now rewrite freal_mul_to_seq_i_comm in Hryx.
@@ -400,7 +398,7 @@ destruct (LPO_fst (λ j : nat, rad - 1 - dig (xy (i + j + 1)))) as [Hxy| Hxy].
  destruct Hxy as (k & Hjk & Hk).
  unfold freal_mul in Heqxy; simpl in Heqxy.
  unfold freal_mul in Heqyx; simpl in Heqyx.
- destruct (LPO_fst (λ j : nat, rad - 1 - dig (yx (i + j + 1)))) as [Hyx| Hyx].
+ destruct (LPO_fst (λ j : nat, rad - 1 - yx (i + j + 1))) as [Hyx| Hyx].
   exfalso; clear Hjk.
   subst xy yx; simpl in Hk, Hyx; simpl.
   rewrite freal_mul_to_seq_i_comm in Hk.
@@ -422,12 +420,10 @@ exfalso.
 destruct H as (i & Hji & Hi).
 apply Hi; clear Hi.
 unfold eq_freal_seq.
-destruct (Nat.eq_dec (dig (freal nxy i)) (dig (freal nyx i))) as [H| H].
- easy.
-
- exfalso; apply H; clear H.
- subst nxy nyx.
- apply dig_norm_add_comm.
+destruct (Nat.eq_dec (freal nxy i) (freal nyx i)) as [H| H]; [ easy | ].
+exfalso; apply H; clear H.
+subst nxy nyx.
+apply dig_norm_add_comm.
 Qed.
 
 Theorem freal_mul_comm {r : radix} : ∀ x y : FracReal, (x * y = y * x)%F.
@@ -442,16 +438,14 @@ exfalso.
 destruct H as (i & Hji & Hi).
 apply Hi; clear Hi.
 unfold eq_freal_seq.
-destruct (Nat.eq_dec (dig (freal nxy i)) (dig (freal nyx i))) as [H| H].
- easy.
-
- exfalso; apply H; clear H.
- subst nxy nyx.
- apply dig_norm_mul_comm.
+destruct (Nat.eq_dec (freal nxy i) (freal nyx i)) as [H| H]; [ easy | ].
+exfalso; apply H; clear H.
+subst nxy nyx.
+apply dig_norm_mul_comm.
 Qed.
 
 Theorem freal_add_series_0_x {r : radix} : ∀ x i,
-  freal_add_series 0 x i = dig (freal x i).
+  freal_add_series 0 x i = freal x i.
 Proof.
 intros.
 unfold freal_add_series; simpl.
@@ -460,7 +454,7 @@ apply Nat.add_0_l.
 Qed.
 
 Theorem nA_freal_add_series_0_l {r : radix} : ∀ x i n,
-  nA i n (freal_add_series 0 x) = nA i n (λ i, dig (freal x i)).
+  nA i n (freal_add_series 0 x) = nA i n (freal x).
 Proof.
 intros.
 unfold nA; simpl.
@@ -501,12 +495,12 @@ induction n.
   apply Nat.mul_le_mono_nonneg_r; lia.
 Qed.
 
-Theorem nA_dig_seq_ub {r : radix} : ∀ u n i,
+Theorem nA_dig_seq_ub {r : radix} : 0 < rad → ∀ u n i,
   let s := rad ^ (n - 1 - i) in
   i + 1 ≤ n - 1
-  → nA i n (λ j, dig (u j)) < s.
+  → nA i n u < s.
 Proof.
-intros * Hin.
+intros Hr * Hin.
 unfold nA, s.
 rewrite summation_rtl.
 rewrite summation_shift; [ | easy ].
@@ -517,12 +511,13 @@ replace (n - 1 - (i + 1)) with k by lia.
 unfold lt; simpl.
 apply -> Nat.succ_le_mono.
 rewrite summation_mul_distr_l.
-apply (@summation_le_compat nat_ord_ring_def nat_ord_ring).
+apply (@summation_le_compat _ nat_ord_ring).
 intros j Hj.
 replace (n - 1 + (i + 1) - (i + 1 + j)) with (n - 1 - j) by lia.
 replace (n - 1 - (n - 1 - j)) with j by lia.
 apply Nat.mul_le_mono_nonneg_r; [ lia | ].
 apply Nat.le_add_le_sub_l.
+bbb.
 apply dig_lt_rad.
 Qed.
 
