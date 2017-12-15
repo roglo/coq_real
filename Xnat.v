@@ -160,6 +160,7 @@ Definition xnat_0 := xn [].
 Delimit Scope xnat_scope with X.
 Notation "a + b" := (xnat_add a b) : xnat_scope.
 Notation "a = b" := (nat_of_xnat a = nat_of_xnat b) : xnat_scope.
+Notation "a ≤ b" := (nat_of_xnat a ≤ nat_of_xnat b) : xnat_scope.
 Notation "0" := (xnat_0) : xnat_scope.
 
 Theorem list_add_comm : ∀ al bl, list_add al bl = list_add bl al.
@@ -558,3 +559,34 @@ intros.
 unfold xnat_mul, nat_of_xnat; simpl.
 apply nat_of_list_mul_assoc.
 Qed.
+
+(**)
+
+Theorem list_of_nat_mul {r : radix} : ∀ a b,
+  nat_of_list 0 (list_of_nat 0 (a * b)) =
+  nat_of_list 0 (list_mul (list_of_nat 0 a) (list_of_nat 0 b)).
+Proof.
+intros.
+unfold list_of_nat.
+-destruct (zerop a) as [Hza| Hza].
+ +subst a; simpl.
+  rewrite list_mul_nil_l.
+  now rewrite nat_of_list_0_rep_0.
+ +destruct (zerop b) as [Hzb| Hzb].
+  *subst b; rewrite Nat.mul_comm; simpl.
+   rewrite list_mul_nil_r.
+   now rewrite nat_of_list_0_rep_0.
+  *destruct (zerop (a * b)) as [Hzab| Hzab].
+  --apply Nat.eq_mul_0 in Hzab; lia.
+  --simpl.
+bbb.
+
+Theorem xnat_of_nat_mul {r : radix} : ∀ a b,
+  (xnat_of_nat (a * b) = xnat_of_nat a * xnat_of_nat b)%X.
+Proof.
+intros.
+unfold xnat_of_nat; simpl.
+unfold xnat_mul; simpl.
+unfold nat_of_xnat; simpl.
+
+bbb.

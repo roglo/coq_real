@@ -757,18 +757,25 @@ intros Hr * Hi.
 replace (nA i n u) with (rad ^ (n - i - 1) - 1).
 2: symmetry; apply nA_all_9; [ lia | easy ].
 assert (Hk : k ≤ n - i - 1).
- subst n; clear -Hr.
+-subst n; clear -Hr.
  replace (rad * (i + k + 2) - i - 1)
  with (rad * (i + 1) + rad * (k + 1) - 1 * (i + 1)) by lia.
  rewrite Nat.add_sub_swap.
-  rewrite <- Nat.mul_sub_distr_r.
+ +rewrite <- Nat.mul_sub_distr_r.
   apply le_trans with (m := rad * (k + 1)); [ | lia ].
   apply le_trans with (m := rad * k); [ | lia ].
   destruct rad as [| n]; [ lia | simpl; lia ].
+ +apply Nat.mul_le_mono_nonneg_r; lia.
 
-  apply Nat.mul_le_mono_nonneg_r; lia.
-  subst s.
-  rewrite <- Nat.sub_add_distr, Nat.add_comm, Nat.sub_add_distr.
+-subst s.
+ rewrite <- Nat.sub_add_distr, Nat.add_comm, Nat.sub_add_distr.
+ remember ((rad ^ k - 1) * rad ^ (n - i - 1)) as x eqn:Hx.
+ remember (rad ^ k * (rad ^ (n - i - 1) - 1)) as y eqn:Hy.
+ assert (H : (xnat_of_nat x ≤ xnat_of_nat y)%X).
+ +subst x y.
+  rewrite xnat_of_nat_mul.
+bbb.
+
 bbb.
   now apply pow_pow_sub_1.
 Qed.
