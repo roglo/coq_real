@@ -562,10 +562,11 @@ Qed.
 
 (**)
 
-Theorem list_of_nat_mul {r : radix} : ∀ a b,
+Theorem list_of_nat_mul {r : radix} : rad ≠ 0 → ∀ a b,
   nat_of_list 0 (list_of_nat 0 (a * b)) =
   nat_of_list 0 (list_mul (list_of_nat 0 a) (list_of_nat 0 b)).
 Proof.
+intros Hr.
 intros.
 unfold list_of_nat.
 -destruct (zerop a) as [Hza| Hza].
@@ -579,6 +580,19 @@ unfold list_of_nat.
   *destruct (zerop (a * b)) as [Hzab| Hzab].
   --apply Nat.eq_mul_0 in Hzab; lia.
   --simpl.
+    destruct (zerop (a * b / rad)) as [Hzabr| Hzabr].
+   ++simpl.
+     apply Nat.div_small_iff in Hzabr; [ | easy ].
+     rewrite Nat.mod_small; [ | easy ].
+     destruct (zerop (a / rad)) as [Hzar| Hzar].
+    **apply Nat.div_small_iff in Hzar; [ | easy ].
+      rewrite Nat.mod_small; [ | easy ].
+      destruct (zerop (b / rad)) as [Hzbr| Hzbr].
+    ---apply Nat.div_small_iff in Hzbr; [ | easy ].
+       rewrite Nat.mod_small; [ | easy ].
+       now simpl; rewrite summation_only_one.
+    ---exfalso; clear - Hr Hzabr Hzbr.
+Search (_ * _ < _).
 bbb.
 
 Theorem xnat_of_nat_mul {r : radix} : ∀ a b,
