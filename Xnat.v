@@ -586,6 +586,13 @@ induction al as [| a]; [ apply nat_of_list_0_rep_0 | simpl ].
 now rewrite IHal.
 Qed.
 
+Theorem alacon : ∀ a al bl i1 i2 i3 n1 n2 n3,
+  list_mul_loop i1 n1 (a :: al) bl =
+  list_add (list_mul_loop i2 n2 [a] bl) (0 :: list_mul_loop i3 n3 al bl).
+Proof.
+intros.
+bbb.
+
 Theorem list_mul_cons {r : radix} : ∀ a al bl,
   bl ≠ []
   → list_mul (a :: al) bl =
@@ -594,6 +601,7 @@ Proof.
 intros * Hbl.
 unfold list_mul; simpl.
 do 2 rewrite Nat.sub_0_r.
+bbb.
 
 bbb.
 intros * Hbl.
