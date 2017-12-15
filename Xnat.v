@@ -1,4 +1,4 @@
-(* Natural numbers in any radix; second version; without proofs *)
+(* Natural numbers in any radix *)
 (* Can be regarded as polynomials with natural number coefficients. *)
 
 (* Implemented using lists of nat. *)
