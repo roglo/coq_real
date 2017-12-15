@@ -153,36 +153,13 @@ Arguments freal_add_to_seq _ a%F b%F.
 Definition freal_mul_to_seq {r : radix} (a b : FracReal) :=
   numbers_to_digits (freal_mul_series a b).
 
-Theorem freal_add_to_seq_lt_rad {r : radix} : ∀ a b i,
-  freal_add_to_seq a b i < rad.
-Proof.
-intros.
-unfold freal_add_to_seq, numbers_to_digits.
-remember (test_seq i (freal_add_series a b)) as v eqn:Hv.
-destruct (LPO_fst v) as [Hvi| (j, Hvj)].
-bbb.
-1, 2: now apply Nat.mod_upper_bound.
-Qed.
-
-Theorem freal_mul_to_seq_lt_rad {r : radix} : ∀ a b i,
-  freal_mul_to_seq a b i < rad.
-Proof.
-intros.
-unfold freal_mul_to_seq, numbers_to_digits.
-remember (test_seq i (freal_mul_series a b)) as v eqn:Hv.
-destruct (LPO_fst v) as [Hvi| (j, Hvj)].
-1, 2: now apply Nat.mod_upper_bound.
-Qed.
-
 Definition freal_add {r : radix} (a b : FracReal) :=
-  let u := freal_add_to_seq a b in
-  {| freal i := mkdig r (u i) (freal_add_to_seq_lt_rad a b i) |}.
+  {| freal := freal_add_to_seq a b |}.
 
 Arguments freal_add _ a%F b%F.
 
 Definition freal_mul {r : radix} (a b : FracReal) :=
-  let u := freal_mul_to_seq a b in
-  {| freal i := mkdig r (u i) (freal_mul_to_seq_lt_rad a b i) |}.
+  {| freal := freal_mul_to_seq a b |}.
 
 Notation "a + b" := (freal_add a b) : freal_scope.
 Notation "a * b" := (freal_mul a b) : freal_scope.
@@ -334,8 +311,7 @@ destruct (LPO_fst (test_seq i xy)) as [Hxy| Hxy].
 Qed.
 
 Theorem dig_norm_add_comm {r : radix} : ∀ x y i,
-  dig (freal (freal_normalize (x + y)) i) =
-  dig (freal (freal_normalize (y + x)) i).
+  freal (freal_normalize (x + y)) i = freal (freal_normalize (y + x)) i.
 Proof.
 intros.
 unfold freal_normalize.
@@ -343,6 +319,7 @@ remember (freal (x + y)) as xy.
 remember (freal (y + x)) as yx.
 simpl.
 unfold digit_sequence_normalize.
+bbb.
 destruct (LPO_fst (λ j : nat, rad - 1 - dig (xy (i + j + 1)))) as [Hxy| Hxy].
  destruct (LPO_fst (λ j : nat, rad - 1 - dig (yx (i + j + 1)))) as [Hyx| Hyx].
   unfold freal_add in Heqxy; simpl in Heqxy.
