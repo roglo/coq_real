@@ -652,6 +652,7 @@ induction al as [| a1]; intros.
 bbb.
 *)
 
+(*
 Theorem nat_of_list_mul_loop_single {r : radix} : ∀ i n a bl,
   i + n = length bl
   → nat_of_list 0 (list_mul_loop i n [a] bl) = a * nat_of_list 0 bl.
@@ -659,17 +660,20 @@ Proof.
 intros * Hin.
 revert n a bl Hin.
 induction i; intros.
--simpl.
-Search list_mul_loop.
+ simpl.
+Focus 2.
+simpl.
 bbb.
+*)
 
 Theorem nat_of_list_mul_single_l {r : radix} : ∀ a bl,
   nat_of_list 0 (list_mul [a] bl) = a * nat_of_list 0 bl.
 Proof.
+(*
 intros.
 unfold list_mul; simpl; rewrite Nat.sub_0_r.
-
 bbb.
+*)
 intros.
 revert a.
 induction bl as [| b]; intros; [ now rewrite Nat.mul_comm | ].
@@ -677,6 +681,17 @@ remember list_mul as f; simpl; subst f.
 rewrite Nat.mul_add_distr_l, Nat.mul_assoc.
 rewrite <- IHbl.
 simpl; rewrite summation_only_one.
+unfold list_mul; simpl.
+rewrite Nat.sub_0_r.
+f_equal; f_equal.
+clear IHbl.
+revert a b.
+induction bl as [| b1]; intros; [ easy | ].
+simpl.
+rewrite summation_only_one.
+unfold summation; simpl.
+rewrite Nat.add_0_r.
+f_equal; f_equal.
 bbb.
 
 Theorem nat_of_list_mul_cons_l {r : radix} : ∀ a al bl,
