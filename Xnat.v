@@ -664,7 +664,7 @@ induction i; intros.
  now rewrite Nat.mul_comm.
 -simpl; rewrite Nat.sub_0_r.
 (* ouais... chais pas... *)
-bbb.
+Abort.
 
 Theorem nat_of_list_mul_cons_app {r : radix} : ∀ a al bl cl,
   nat_of_list 0 (list_mul (a :: al ++ bl) cl) =
@@ -675,6 +675,34 @@ revert a bl cl.
 induction al as [| a1]; intros.
 -simpl; unfold list_mul.
  simpl; rewrite Nat.sub_0_r.
+ remember (length bl + length cl) as i eqn:Hi.
+ destruct i.
+ +simpl; symmetry in Hi.
+  apply Nat.eq_add_0 in Hi.
+  destruct Hi as (Hbl, Hcl).
+  apply List.length_zero_iff_nil in Hcl; subst cl.
+  now rewrite Nat.mul_comm.
+ +simpl; rewrite summation_only_one; rewrite Nat.sub_0_r.
+(*
+  Hi : S i = length bl + length cl
+  ============================
+  nat_of_list 0 (list_mul_loop i 1 (a :: bl) cl) * rad + a * List.nth 0 cl 0 =
+  nat_of_list 0 (list_mul_loop i 0 bl cl) * rad + a * nat_of_list 0 cl
+*)
+  destruct i.
+  *simpl; f_equal; symmetry in Hi.
+   destruct cl; [ easy | simpl in Hi; simpl ].
+   rewrite Nat.add_comm in Hi.
+   now destruct cl.
+  *simpl; unfold summation; simpl.
+   rewrite Nat.add_0_r.
+   ring_simplify.
+   rewrite Nat.add_shuffle0; symmetry.
+   rewrite Nat.add_shuffle0; symmetry.
+   f_equal; symmetry.
+   rewrite Nat.mul_comm, Nat.mul_assoc; symmetry.
+(* chais pas... *)
+bbb.
 Inspect 2.
 now apply nat_of_list_mul_loop_cons_l.
 
