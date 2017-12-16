@@ -630,6 +630,7 @@ destruct bl as [| b1].
  +now simpl; rewrite List.app_length, Nat.add_comm.
 Qed.
 
+
 Theorem nat_of_list_mul_single_l {r : radix} : ∀ a bl,
   nat_of_list 0 (list_mul [a] bl) = a * nat_of_list 0 bl.
 Proof.
@@ -657,7 +658,19 @@ induction al as [| a1]; intros.
 -rewrite list_mul_nil_l; simpl.
  rewrite nat_of_list_0_rep_0; simpl.
  apply nat_of_list_mul_single_l.
--
+-simpl; rewrite summation_only_one.
+ unfold list_mul; simpl.
+ rewrite Nat.sub_0_r.
+
+Theorem glop {r : radix} : ∀ a al bl cl i,
+  nat_of_list 0 (list_mul_loop i (length al + 1) (a :: al ++ bl) cl) * rad +
+    a * List.nth 0 cl 0 =
+  nat_of_list 0 (list_mul_loop i (length al) (al ++ bl) cl) * rad +
+    a * nat_of_list 0 cl.
+Admitted. Show.
+specialize (glop a [a1] al bl (length al + length bl)) as H.
+simpl in H.
+(* non c'est pas ça... *)
 bbb.
 
 Theorem nat_of_list_mul_distr {r : radix} : ∀ al bl,
