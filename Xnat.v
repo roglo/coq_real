@@ -648,6 +648,24 @@ specialize (nat_of_list_mul_loop_single_l a b [] bl (length bl) (eq_refl _)).
 easy.
 Qed.
 
+Theorem nat_of_list_mul_loop_cons_l {r : radix} : ∀ a bl cl i,
+  i = length bl + length cl
+  → nat_of_list 0 (list_mul_loop i 0 (a :: bl) cl) =
+     nat_of_list 0 (list_mul_loop (i - 1) 0 bl cl) * rad +
+     a * nat_of_list 0 cl.
+Proof.
+intros * Hibcl.
+revert a bl cl Hibcl.
+induction i; intros.
+-simpl; symmetry in Hibcl.
+ apply Nat.eq_add_0 in Hibcl.
+ destruct Hibcl as (Hbl, Hcl).
+ apply List.length_zero_iff_nil in Hcl; subst cl.
+ now rewrite Nat.mul_comm.
+-simpl; rewrite summation_only_one.
+ rewrite Nat.sub_0_r.
+bbb.
+
 Theorem nat_of_list_mul_cons_app {r : radix} : ∀ a al bl cl,
   nat_of_list 0 (list_mul (a :: al ++ bl) cl) =
   nat_of_list 0 (list_mul (al ++ bl) cl) * rad + a * nat_of_list 0 cl.
@@ -658,6 +676,8 @@ induction al as [| a1]; intros.
 -simpl; unfold list_mul.
  simpl; rewrite Nat.sub_0_r.
 Inspect 2.
+now apply nat_of_list_mul_loop_cons_l.
+
 bbb.
 
 Theorem nat_of_list_mul_cons_l {r : radix} : ∀ a al bl,
