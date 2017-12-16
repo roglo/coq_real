@@ -678,11 +678,11 @@ destruct cl as [ | c]; [ easy | ].
 simpl in Hicl.
 apply Nat.succ_inj in Hicl.
 destruct bl as [| b1].
--simpl; unfold summation; simpl.
+ simpl; unfold summation; simpl.
  f_equal; f_equal.
  now specialize (IHi [c] cl Hicl).
 
--remember (S i) as x; simpl; subst x.
+ remember (S i) as x; simpl; subst x.
  remember (b1 :: bl) as bl1.
  simpl.
  replace (S (S (length bl + 1))) with (length (b1 :: bl ++ [c]) + 1).
@@ -693,12 +693,27 @@ destruct bl as [| b1].
  rewrite H.
  f_equal.
  clear H.
-bbb.
-
- replace (S (length bl)) with (length (b1 :: bl)) by (simpl; lia).
+ rewrite summation_split_first.
+ rewrite all_0_summation_0.
+ rewrite Nat.add_0_r.
+ rewrite summation_split_first.
+ rewrite all_0_summation_0.
+ rewrite Nat.add_0_r.
+ do 2 rewrite Nat.sub_0_r.
  simpl.
-
-bbb.
+ now rewrite Nat.add_1_r.
+ intros j Hj.
+ now destruct j; [ | now destruct j ].
+ lia.
+ intros j Hj.
+ now destruct j; [ | now destruct j ].
+ lia.
+ now simpl; rewrite <- List.app_assoc.
+ now simpl; rewrite <- List.app_assoc.
+ now simpl; rewrite List.app_length, Nat.add_comm.
+ now simpl; rewrite List.app_length, Nat.add_comm.
+bbb. (* ^^^ nettoyer ! *)
+Qed.
 
 Theorem nat_of_list_mul_single_l {r : radix} : ∀ a bl,
   nat_of_list 0 (list_mul [a] bl) = a * nat_of_list 0 bl.
