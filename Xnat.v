@@ -586,13 +586,7 @@ induction al as [| a]; [ apply nat_of_list_0_rep_0 | simpl ].
 now rewrite IHal.
 Qed.
 
-Theorem alacon : ∀ a al bl i1 i2 i3 n1 n2 n3,
-  list_mul_loop i1 n1 (a :: al) bl =
-  list_add (list_mul_loop i2 n2 [a] bl) (0 :: list_mul_loop i3 n3 al bl).
-Proof.
-intros.
-bbb.
-
+(*
 Theorem list_mul_cons {r : radix} : ∀ a al bl,
   bl ≠ []
   → list_mul (a :: al) bl =
@@ -639,7 +633,9 @@ bbb.
  rewrite nat_of_list_app_rep_0.
 -simpl; rewrite summation_only_one.
 bbb.
+*)
 
+(*
 Theorem list_mul_cons {r : radix} : ∀ a al bl,
   nat_of_list 0 (list_mul (a :: al) bl) =
   nat_of_list 0 (list_add (list_mul [a] bl) (0 :: list_mul al bl)).
@@ -654,6 +650,46 @@ induction al as [| a1]; intros.
  now rewrite nat_of_list_app_rep_0.
 -simpl; rewrite summation_only_one.
 bbb.
+*)
+
+Theorem nat_of_list_mul_loop_single {r : radix} : ∀ i n a bl,
+  i + n = length bl
+  → nat_of_list 0 (list_mul_loop i n [a] bl) = a * nat_of_list 0 bl.
+Proof.
+intros * Hin.
+revert n a bl Hin.
+induction i; intros.
+-simpl.
+Search list_mul_loop.
+bbb.
+
+Theorem nat_of_list_mul_single_l {r : radix} : ∀ a bl,
+  nat_of_list 0 (list_mul [a] bl) = a * nat_of_list 0 bl.
+Proof.
+intros.
+unfold list_mul; simpl; rewrite Nat.sub_0_r.
+
+bbb.
+intros.
+revert a.
+induction bl as [| b]; intros; [ now rewrite Nat.mul_comm | ].
+remember list_mul as f; simpl; subst f.
+rewrite Nat.mul_add_distr_l, Nat.mul_assoc.
+rewrite <- IHbl.
+simpl; rewrite summation_only_one.
+bbb.
+
+Theorem nat_of_list_mul_cons_l {r : radix} : ∀ a al bl,
+  nat_of_list 0 (list_mul (a :: al) bl) =
+  nat_of_list 0 (list_mul al bl) * rad + a * nat_of_list 0 bl.
+Proof.
+intros.
+revert a bl.
+induction al as [| a1]; intros.
+-rewrite list_mul_nil_l; simpl.
+ rewrite nat_of_list_0_rep_0; simpl.
+
+bbb.
 
 Theorem nat_of_list_mul_distr {r : radix} : ∀ al bl,
   nat_of_list 0 (list_mul al bl) = nat_of_list 0 al * nat_of_list 0 bl.
@@ -667,7 +703,14 @@ induction al as [| a]; intros.
  +rewrite list_mul_nil_r, Nat.mul_0_r.
   apply nat_of_list_0_rep_0.
  +simpl.
-
+  ring_simplify.
+  replace (nat_of_list 0 al * rad * rad * nat_of_list 0 bl)
+    with (nat_of_list 0 al * nat_of_list 0 bl * rad * rad) by lia.
+  rewrite <- IHal.
+  rewrite nat_of_list_mul_cons_l; simpl.
+  rewrite list_mul_comm.
+  rewrite nat_of_list_mul_cons_l.
+  rewrite list_mul_comm; lia.
 bbb.
 
 Theorem list_of_nat_mul {r : radix} : 1 < rad → ∀ a b,
