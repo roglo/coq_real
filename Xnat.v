@@ -666,6 +666,40 @@ simpl.
 bbb.
 *)
 
+Lemma glop {r : radix} : ∀ a b bl cl i,
+  i = length cl
+  → nat_of_list 0 (list_mul_loop i (length bl + 1) [a] (b :: bl ++ cl)) =
+     nat_of_list 0 (list_mul_loop i (length bl) [a] (bl ++ cl)).
+Proof.
+intros * Hicl.
+revert bl cl Hicl.
+induction i; intros; [ easy | ].
+destruct cl as [ | c]; [ easy | ].
+simpl in Hicl.
+apply Nat.succ_inj in Hicl.
+destruct bl as [| b1].
+-simpl; unfold summation; simpl.
+ f_equal; f_equal.
+ now specialize (IHi [c] cl Hicl).
+
+-remember (S i) as x; simpl; subst x.
+ remember (b1 :: bl) as bl1.
+ simpl.
+ replace (S (S (length bl + 1))) with (length (b1 :: bl ++ [c]) + 1).
+ replace (S (S (length bl))) with (length (b1 :: bl ++ [c])).
+ specialize (IHi (b1 :: bl ++ [c]) cl Hicl) as H.
+ replace (b :: (b1 :: bl ++ [c]) ++ cl) with (b :: b1 :: bl ++ c :: cl) in H.
+ replace ((b1 :: bl ++ [c]) ++ cl) with (b1 :: bl ++ c :: cl) in H.
+ rewrite H.
+ f_equal.
+ clear H.
+bbb.
+
+ replace (S (length bl)) with (length (b1 :: bl)) by (simpl; lia).
+ simpl.
+
+bbb.
+
 Theorem nat_of_list_mul_single_l {r : radix} : ∀ a bl,
   nat_of_list 0 (list_mul [a] bl) = a * nat_of_list 0 bl.
 Proof.
@@ -684,6 +718,9 @@ simpl; rewrite summation_only_one.
 unfold list_mul; simpl.
 rewrite Nat.sub_0_r.
 f_equal; f_equal.
+specialize (glop a b [] bl (length bl) (eq_refl _)) as H.
+simpl in H.
+bbb.
 clear IHbl.
 revert a b.
 induction bl as [| b1]; intros; [ easy | ].
@@ -692,6 +729,8 @@ rewrite summation_only_one.
 unfold summation; simpl.
 rewrite Nat.add_0_r.
 f_equal; f_equal.
+specialize (glop a b [b1] bl (length bl) (eq_refl _)) as H.
+simpl in H.
 bbb.
 
 Theorem nat_of_list_mul_cons_l {r : radix} : ∀ a al bl,
