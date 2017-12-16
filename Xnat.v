@@ -648,6 +648,18 @@ specialize (nat_of_list_mul_loop_single_l a b [] bl (length bl) (eq_refl _)).
 easy.
 Qed.
 
+Theorem nat_of_list_mul_cons_app {r : radix} : ∀ a al bl cl,
+  nat_of_list 0 (list_mul (a :: al ++ bl) cl) =
+  nat_of_list 0 (list_mul (al ++ bl) cl) * rad + a * nat_of_list 0 cl.
+Proof.
+intros.
+revert a bl cl.
+induction al as [| a1]; intros.
+-simpl; unfold list_mul.
+ simpl; rewrite Nat.sub_0_r.
+Inspect 2.
+bbb.
+
 Theorem nat_of_list_mul_cons_l {r : radix} : ∀ a al bl,
   nat_of_list 0 (list_mul (a :: al) bl) =
   nat_of_list 0 (list_mul al bl) * rad + a * nat_of_list 0 bl.
@@ -658,19 +670,24 @@ induction al as [| a1]; intros.
 -rewrite list_mul_nil_l; simpl.
  rewrite nat_of_list_0_rep_0; simpl.
  apply nat_of_list_mul_single_l.
--simpl; rewrite summation_only_one.
+-specialize (nat_of_list_mul_cons_app a [a1] al bl) as H.
+ apply H.
+bbb.
+
+simpl; rewrite summation_only_one.
  unfold list_mul; simpl.
  rewrite Nat.sub_0_r.
 
-Theorem glop {r : radix} : ∀ a al bl cl i,
-  nat_of_list 0 (list_mul_loop i (length al + 1) (a :: al ++ bl) cl) * rad +
-    a * List.nth 0 cl 0 =
-  nat_of_list 0 (list_mul_loop i (length al) (al ++ bl) cl) * rad +
-    a * nat_of_list 0 cl.
+Theorem nat_of_list_mul_loop_cons_l {r : radix} : ∀ a1 a2 al bl cl i,
+  nat_of_list 0 (list_mul_loop i (length al + 1) (a1 :: a2 :: al ++ bl) cl) *
+    rad + a1 * List.nth 0 cl 0 =
+  nat_of_list 0 (list_mul_loop i (length al) (a2 :: al ++ bl) cl) * rad +
+    a1 * nat_of_list 0 cl.
 Admitted. Show.
-specialize (glop a [a1] al bl (length al + length bl)) as H.
+specialize
+  (nat_of_list_mul_loop_cons_l a a1 [] al bl (length al + length bl)) as H.
 simpl in H.
-(* non c'est pas ça... *)
+apply H.
 bbb.
 
 Theorem nat_of_list_mul_distr {r : radix} : ∀ al bl,
