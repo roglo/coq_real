@@ -586,87 +586,7 @@ induction al as [| a]; [ apply nat_of_list_0_rep_0 | simpl ].
 now rewrite IHal.
 Qed.
 
-(*
-Theorem list_mul_cons {r : radix} : ∀ a al bl,
-  bl ≠ []
-  → list_mul (a :: al) bl =
-     list_add (list_mul [a] bl) (0 :: list_mul al bl).
-Proof.
-intros * Hbl.
-unfold list_mul; simpl.
-do 2 rewrite Nat.sub_0_r.
-bbb.
-
-bbb.
-intros * Hbl.
-rewrite list_add_comm; simpl.
-remember (list_mul [a] bl) as cl eqn:Hcl.
-symmetry in Hcl.
-destruct cl as [| c].
--unfold list_mul in Hcl; simpl in Hcl.
- rewrite Nat.sub_0_r in Hcl.
- now destruct bl.
--destruct bl as [| b]; [ easy | clear Hbl ].
- unfold list_mul in Hcl.
- simpl in Hcl.
- rewrite summation_only_one in Hcl.
- injection Hcl; clear Hcl; intros Hcl H; subst c.
- unfold list_mul; simpl.
- rewrite Nat.add_succ_r; simpl.
- rewrite summation_only_one; simpl.
- f_equal; rewrite Nat.sub_0_r.
-bbb.
-intros * Hbl.
-revert a bl Hbl.
-induction al as [| a1]; intros.
--rewrite list_mul_nil_l; simpl.
- destruct bl as [| b]; [ easy | clear Hbl; simpl ].
- rewrite summation_only_one, Nat.sub_0_r, Nat.add_0_r.
- rewrite list_add_rep_0_r.
- rewrite length_list_mul_loop, Nat.sub_diag, List.app_nil_r.
- unfold list_mul; simpl.
- now rewrite summation_only_one.
--rewrite IHal; [ | easy ].
-Search (list_add _ (_ :: _)).
-bbb.
-
- rewrite nat_of_list_app_rep_0.
--simpl; rewrite summation_only_one.
-bbb.
-*)
-
-(*
-Theorem list_mul_cons {r : radix} : ∀ a al bl,
-  nat_of_list 0 (list_mul (a :: al) bl) =
-  nat_of_list 0 (list_add (list_mul [a] bl) (0 :: list_mul al bl)).
-Proof.
-intros.
-revert a bl.
-induction al as [| a1]; intros.
--rewrite list_mul_nil_l; simpl.
- destruct bl as [| b]; [ now rewrite list_mul_nil_r | simpl ].
- rewrite summation_only_one, Nat.sub_0_r, Nat.add_0_r.
- rewrite list_add_rep_0_r.
- now rewrite nat_of_list_app_rep_0.
--simpl; rewrite summation_only_one.
-bbb.
-*)
-
-(*
-Theorem nat_of_list_mul_loop_single {r : radix} : ∀ i n a bl,
-  i + n = length bl
-  → nat_of_list 0 (list_mul_loop i n [a] bl) = a * nat_of_list 0 bl.
-Proof.
-intros * Hin.
-revert n a bl Hin.
-induction i; intros.
- simpl.
-Focus 2.
-simpl.
-bbb.
-*)
-
-Lemma glop {r : radix} : ∀ a b bl cl i,
+Lemma nat_of_list_mul_loop_single_l {r : radix} : ∀ a b bl cl i,
   i = length cl
   → nat_of_list 0 (list_mul_loop i (length bl + 1) [a] (b :: bl ++ cl)) =
      nat_of_list 0 (list_mul_loop i (length bl) [a] (bl ++ cl)).
@@ -678,51 +598,41 @@ destruct cl as [ | c]; [ easy | ].
 simpl in Hicl.
 apply Nat.succ_inj in Hicl.
 destruct bl as [| b1].
- simpl; unfold summation; simpl.
+-simpl; unfold summation; simpl.
  f_equal; f_equal.
  now specialize (IHi [c] cl Hicl).
-
- remember (S i) as x; simpl; subst x.
+-remember (S i) as x; simpl; subst x.
  remember (b1 :: bl) as bl1.
  simpl.
  replace (S (S (length bl + 1))) with (length (b1 :: bl ++ [c]) + 1).
- replace (S (S (length bl))) with (length (b1 :: bl ++ [c])).
- specialize (IHi (b1 :: bl ++ [c]) cl Hicl) as H.
- replace (b :: (b1 :: bl ++ [c]) ++ cl) with (b :: b1 :: bl ++ c :: cl) in H.
- replace ((b1 :: bl ++ [c]) ++ cl) with (b1 :: bl ++ c :: cl) in H.
- rewrite H.
- f_equal.
- clear H.
- rewrite summation_split_first.
- rewrite all_0_summation_0.
- rewrite Nat.add_0_r.
- rewrite summation_split_first.
- rewrite all_0_summation_0.
- rewrite Nat.add_0_r.
- do 2 rewrite Nat.sub_0_r.
- simpl.
- now rewrite Nat.add_1_r.
- intros j Hj.
- now destruct j; [ | now destruct j ].
- lia.
- intros j Hj.
- now destruct j; [ | now destruct j ].
- lia.
- now simpl; rewrite <- List.app_assoc.
- now simpl; rewrite <- List.app_assoc.
- now simpl; rewrite List.app_length, Nat.add_comm.
- now simpl; rewrite List.app_length, Nat.add_comm.
-bbb. (* ^^^ nettoyer ! *)
+ +replace (S (S (length bl))) with (length (b1 :: bl ++ [c])).
+  specialize (IHi (b1 :: bl ++ [c]) cl Hicl) as H.
+  replace (b :: (b1 :: bl ++ [c]) ++ cl) with (b :: b1 :: bl ++ c :: cl) in H.
+  *replace ((b1 :: bl ++ [c]) ++ cl) with (b1 :: bl ++ c :: cl) in H.
+   rewrite H.
+   f_equal.
+   clear H.
+   rewrite summation_split_first; [ | lia ].
+   rewrite all_0_summation_0.
+  --rewrite Nat.add_0_r.
+    rewrite summation_split_first; [ | lia ].
+    rewrite all_0_summation_0.
+   ++rewrite Nat.add_0_r.
+      do 2 rewrite Nat.sub_0_r; simpl.
+      now rewrite Nat.add_1_r.
+   ++intros j Hj.
+      now destruct j; [ | destruct j ].
+  --intros j Hj.
+    now destruct j; [ | destruct j ].
+  --now simpl; rewrite <- List.app_assoc.
+  *now simpl; rewrite <- List.app_assoc.
+  *now simpl; rewrite List.app_length, Nat.add_comm.
+ +now simpl; rewrite List.app_length, Nat.add_comm.
 Qed.
 
 Theorem nat_of_list_mul_single_l {r : radix} : ∀ a bl,
   nat_of_list 0 (list_mul [a] bl) = a * nat_of_list 0 bl.
 Proof.
-(*
-intros.
-unfold list_mul; simpl; rewrite Nat.sub_0_r.
-bbb.
-*)
 intros.
 revert a.
 induction bl as [| b]; intros; [ now rewrite Nat.mul_comm | ].
@@ -733,20 +643,9 @@ simpl; rewrite summation_only_one.
 unfold list_mul; simpl.
 rewrite Nat.sub_0_r.
 f_equal; f_equal.
-specialize (glop a b [] bl (length bl) (eq_refl _)) as H.
-simpl in H.
-bbb.
-clear IHbl.
-revert a b.
-induction bl as [| b1]; intros; [ easy | ].
-simpl.
-rewrite summation_only_one.
-unfold summation; simpl.
-rewrite Nat.add_0_r.
-f_equal; f_equal.
-specialize (glop a b [b1] bl (length bl) (eq_refl _)) as H.
-simpl in H.
-bbb.
+specialize (nat_of_list_mul_loop_single_l a b [] bl (length bl) (eq_refl _)).
+easy.
+Qed.
 
 Theorem nat_of_list_mul_cons_l {r : radix} : ∀ a al bl,
   nat_of_list 0 (list_mul (a :: al) bl) =
@@ -757,7 +656,8 @@ revert a bl.
 induction al as [| a1]; intros.
 -rewrite list_mul_nil_l; simpl.
  rewrite nat_of_list_0_rep_0; simpl.
-
+ apply nat_of_list_mul_single_l.
+-
 bbb.
 
 Theorem nat_of_list_mul_distr {r : radix} : ∀ al bl,
