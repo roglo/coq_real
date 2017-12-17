@@ -771,13 +771,9 @@ assert (Hk : k ≤ n - i - 1).
  rewrite <- Nat.sub_add_distr, Nat.add_comm, Nat.sub_add_distr.
  remember ((rad ^ k - 1) * rad ^ (n - i - 1)) as x eqn:Hx.
  remember (rad ^ k * (rad ^ (n - i - 1) - 1)) as y eqn:Hy.
-bbb.
  assert (H : (xnat_of_nat x ≤ xnat_of_nat y)%X).
  +subst x y.
   unfold xnat_of_nat, nat_of_xnat; simpl.
-Check list_nth_nat_of_list.
-bbb.
-
 bbb.
   now apply pow_pow_sub_1.
 Qed.
