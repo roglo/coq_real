@@ -719,9 +719,17 @@ induction al as [| a]; intros.
  specialize (Hab (S i)).
  simpl in Hab.
  rewrite List.nth_overflow; [ easy | simpl; lia ].
--simpl in Hab; simpl.
-
-bbb.
+-induction bl as [| b].
+ +specialize (Hab 0) as H; simpl in H; subst a.
+  simpl; rewrite Nat.add_0_r.
+  rewrite (IHal []); [ easy | ].
+  intros i; simpl; simpl in Hab.
+  now rewrite (Hab (S i)); destruct i.
+ +specialize (Hab 0) as H; simpl in H; subst a.
+  simpl; f_equal; f_equal.
+  apply IHal; intros i.
+  now specialize (Hab (S i)); simpl in Hab.
+Qed.
 
 Theorem nat_of_list_mul_cons_l {r : radix} : ∀ a al bl,
   nat_of_list 0 (list_mul (a :: al) bl) =
@@ -730,9 +738,8 @@ Proof.
 (* cf  lap_mul_cons_l in Puiseux/Fpolynomial.v *)
 intros.
 unfold list_mul.
-
-apply list_nth_nat_of_list; intros i.
-simpl.
+apply list_nth_nat_of_list; intros i; simpl.
+do 2 rewrite Nat.sub_0_r.
 bbb.
 
 Theorem nat_of_list_mul_cons_l {r : radix} : ∀ a al bl,
