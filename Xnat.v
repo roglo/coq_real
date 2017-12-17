@@ -778,6 +778,7 @@ intros Hr.
 assert (Hrz : rad ≠ 0) by lia.
 intros.
 rewrite nat_of_list_list_of_nat; [ | easy ].
+Check list_nth_mul_eq.
 bbb.
 rewrite nat_of_list_mul_distr.
 intros Hr.
