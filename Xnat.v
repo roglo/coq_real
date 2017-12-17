@@ -758,6 +758,7 @@ destruct al as [| a]; simpl.
   now rewrite summation_only_one.
 Qed.
 
+(*
 Theorem nat_of_list_mul_cons_l {r : radix} : ∀ a al bl,
   nat_of_list 0 (list_mul (a :: al) bl) =
   nat_of_list 0 (list_add (list_mul [a] bl) (0 :: list_mul al bl)).
@@ -864,6 +865,7 @@ bbb.
   rewrite list_mul_comm; lia.
 *)
 
+(*
 Theorem nat_of_list_mul {r : radix} : 1 < rad → ∀ a b,
   nat_of_list 0 (list_of_nat 0 (a * b)) =
   nat_of_list 0 (list_mul (list_of_nat 0 a) (list_of_nat 0 b)).
@@ -912,3 +914,4 @@ unfold xnat_mul; simpl.
 unfold nat_of_xnat; simpl.
 
 bbb.
+*)
