@@ -774,6 +774,7 @@ assert (Hk : k ≤ n - i - 1).
  assert (H : (xnat_of_nat x ≤ xnat_of_nat y)%X).
  +subst x y.
   unfold xnat_of_nat, nat_of_xnat; simpl.
+Search (list_of_nat _ (_ * _)).
 bbb.
   now apply pow_pow_sub_1.
 Qed.
