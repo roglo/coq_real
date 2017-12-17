@@ -731,15 +731,47 @@ induction al as [| a]; intros.
   now specialize (Hab (S i)); simpl in Hab.
 Qed.
 
+Theorem list_nth_add {r : radix} : ∀ al bl i,
+  List.nth i (list_add al bl) 0 = List.nth i al 0 + List.nth i bl 0.
+Proof.
+intros.
+revert al bl.
+induction i; intros.
+-now destruct al; [ | destruct bl ].
+-destruct al as [| a]; [ easy | ].
+ destruct bl as [| b]; [ now rewrite Nat.add_0_r | simpl ].
+ apply IHi.
+Qed.
+
+Theorem list_nth_0_mul {r : radix} : ∀ al bl,
+  List.nth 0 (list_mul al bl) 0 = List.nth 0 al 0 * List.nth 0 bl 0.
+Proof.
+intros.
+destruct al as [| a]; simpl.
+-rewrite list_mul_nil_l; simpl.
+ now destruct bl; [ | destruct bl ].
+-destruct bl as [| b]; simpl.
+ +rewrite list_mul_nil_r; simpl.
+  now rewrite Nat.mul_0_r; destruct al.
+ +unfold list_mul; simpl.
+  rewrite Nat.add_succ_r; simpl.
+  now rewrite summation_only_one.
+Qed.
+
 Theorem nat_of_list_mul_cons_l {r : radix} : ∀ a al bl,
   nat_of_list 0 (list_mul (a :: al) bl) =
   nat_of_list 0 (list_add (list_mul [a] bl) (0 :: list_mul al bl)).
 Proof.
-(* cf  lap_mul_cons_l in Puiseux/Fpolynomial.v *)
 intros.
-unfold list_mul.
-apply list_nth_nat_of_list; intros i; simpl.
-do 2 rewrite Nat.sub_0_r.
+apply list_nth_nat_of_list; intros i.
+rewrite list_nth_add.
+destruct i.
+-rewrite Nat.add_0_r.
+ rewrite list_nth_0_mul; simpl.
+
+...
+
+(* cf  lap_mul_cons_l in Puiseux/Fpolynomial.v *)
 bbb.
 
 Theorem nat_of_list_mul_cons_l {r : radix} : ∀ a al bl,
@@ -807,7 +839,7 @@ bbb.
   rewrite list_mul_comm; lia.
 *)
 
-Theorem list_of_nat_mul {r : radix} : 1 < rad → ∀ a b,
+Theorem nat_of_list_mul {r : radix} : 1 < rad → ∀ a b,
   nat_of_list 0 (list_of_nat 0 (a * b)) =
   nat_of_list 0 (list_mul (list_of_nat 0 a) (list_of_nat 0 b)).
 Proof.
