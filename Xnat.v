@@ -744,27 +744,7 @@ induction al as [| a1]; intros.
   nat_of_list 0 (list_mul_loop i 1 (a1 :: al) bl) * rad * rad +
   a * nat_of_list 0 bl
 *)
-bbb.
-
--specialize (nat_of_list_mul_cons_app a [a1] al bl) as H.
- apply H.
-bbb.
-
-simpl; rewrite summation_only_one.
- unfold list_mul; simpl.
- rewrite Nat.sub_0_r.
-
-Theorem nat_of_list_mul_loop_cons_l {r : radix} : ∀ a1 a2 al bl cl i,
-  nat_of_list 0 (list_mul_loop i (length al + 1) (a1 :: a2 :: al ++ bl) cl) *
-    rad + a1 * List.nth 0 cl 0 =
-  nat_of_list 0 (list_mul_loop i (length al) (a2 :: al ++ bl) cl) * rad +
-    a1 * nat_of_list 0 cl.
-Admitted. Show.
-specialize
-  (nat_of_list_mul_loop_cons_l a a1 [] al bl (length al + length bl)) as H.
-simpl in H.
-apply H.
-bbb.
+Abort.
 
 Theorem nat_of_list_mul_distr {r : radix} : ∀ al bl,
   nat_of_list 0 (list_mul al bl) = nat_of_list 0 al * nat_of_list 0 bl.
@@ -782,11 +762,13 @@ induction al as [| a]; intros.
   replace (nat_of_list 0 al * rad * rad * nat_of_list 0 bl)
     with (nat_of_list 0 al * nat_of_list 0 bl * rad * rad) by lia.
   rewrite <- IHal.
+Abort.
+(*
   rewrite nat_of_list_mul_cons_l; simpl.
   rewrite list_mul_comm.
   rewrite nat_of_list_mul_cons_l.
   rewrite list_mul_comm; lia.
-bbb.
+*)
 
 Theorem list_of_nat_mul {r : radix} : 1 < rad → ∀ a b,
   nat_of_list 0 (list_of_nat 0 (a * b)) =
@@ -796,8 +778,8 @@ intros Hr.
 assert (Hrz : rad ≠ 0) by lia.
 intros.
 rewrite nat_of_list_list_of_nat; [ | easy ].
-rewrite nat_of_list_mul_distr.
 bbb.
+rewrite nat_of_list_mul_distr.
 intros Hr.
 assert (Hrz : rad ≠ 0) by lia.
 intros.
@@ -813,47 +795,6 @@ unfold list_of_nat.
   *destruct (zerop (a * b)) as [Hzab| Hzab]; [ | clear Hzab ].
   --apply Nat.eq_mul_0 in Hzab; lia.
   --
-
-(* c'est là que ça se corse... *)
-unfold move_carry.
-do 3 rewrite Nat.add_0_l.
-Search ((_ * _) mod _).
-bbb.
-
-  --simpl.
-    destruct (zerop (a * b / rad)) as [Hzabr| Hzabr].
-   ++simpl.
-     apply Nat.div_small_iff in Hzabr; [ | easy ].
-     rewrite Nat.mod_small; [ | easy ].
-     destruct (zerop (a / rad)) as [Hzar| Hzar].
-    **apply Nat.div_small_iff in Hzar; [ | easy ].
-      rewrite Nat.mod_small; [ | easy ].
-      destruct (zerop (b / rad)) as [Hzbr| Hzbr].
-    ---apply Nat.div_small_iff in Hzbr; [ | easy ].
-       rewrite Nat.mod_small; [ | easy ].
-       now simpl; rewrite summation_only_one.
-    ---exfalso.
-       apply (Nat.div_str_pos_iff b) in Hzbr; [ | easy ].
-       destruct a; [ easy | simpl in Hzabr; lia ].
-    **apply (Nat.div_str_pos_iff a) in Hzar; [ | easy ].
-      rewrite Nat.mul_comm in Hzabr.
-      destruct b; [ easy | simpl in Hzabr; lia ].
-   ++destruct (zerop (a / rad)) as [Hzar| Hzar].
-     apply Nat.div_small_iff in Hzar; [ | easy ].
-    **destruct (zerop (b / rad)) as [Hzbr| Hzbr].
-    ---apply Nat.div_small_iff in Hzbr; [ symmetry | easy ].
-       rewrite Nat.mod_small; [ | easy ].
-       rewrite Nat.mod_small; [ symmetry | easy ].
-       simpl; rewrite summation_only_one.
-       rewrite nat_of_list_move_end; [ | easy | now apply Nat.div_lt ].
-       specialize (Nat.div_mod (a * b / rad) rad Hrz) as H.
-       symmetry in H; rewrite Nat.mul_comm in H.
-       rewrite H, Nat.mul_comm; symmetry.
-       now apply Nat.div_mod.
-    ---simpl; rewrite summation_only_one.
-       unfold summation; simpl.
-       rewrite Nat.add_0_r.
-       (* mouais... c'compliqué... *)
 bbb.
 
 Theorem xnat_of_nat_mul {r : radix} : ∀ a b,
