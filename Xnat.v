@@ -417,7 +417,7 @@ rewrite List.repeat_length.
 apply list_mul_loop_rep_0_r.
 Qed.
 
-Theorem list_nth_mul_eq {r : radix} : ∀ al bl,
+Theorem list_nth_nat_of_list_eq {r : radix} : ∀ al bl,
   (∀ i, List.nth i al 0 = List.nth i bl 0)
   → nat_of_list 0 al = nat_of_list 0 bl.
 Proof.
@@ -481,7 +481,7 @@ Theorem nat_of_list_mul_assoc {r : radix} : ∀ al bl cl,
   nat_of_list 0 (list_mul (list_mul al bl) cl).
 Proof.
 intros.
-apply list_nth_mul_eq; intros k.
+apply list_nth_nat_of_list_eq; intros k.
 destruct (zerop (length bl)) as [Hzb| Hzb].
 -apply List.length_zero_iff_nil in Hzb; subst bl.
  rewrite list_mul_nil_l, list_mul_nil_r.
@@ -777,8 +777,16 @@ Proof.
 intros Hr.
 assert (Hrz : rad ≠ 0) by lia.
 intros.
+apply list_nth_nat_of_list_eq.
+intros k.
+Check list_nth_mul_convol_mul.
+bbb.
+
+intros Hr.
+assert (Hrz : rad ≠ 0) by lia.
+intros.
 rewrite nat_of_list_list_of_nat; [ | easy ].
-Check list_nth_mul_eq.
+Check list_nth_nat_of_list_eq.
 bbb.
 rewrite nat_of_list_mul_distr.
 intros Hr.
