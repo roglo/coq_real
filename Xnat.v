@@ -704,6 +704,25 @@ induction al as [| a1]; intros.
 (* chais pas... *)
 Abort.
 
+Theorem list_nth_nat_of_list {r : radix} : ∀ al bl,
+  (∀ i, List.nth i al 0 = List.nth i bl 0)
+  → nat_of_list 0 al = nat_of_list 0 bl.
+Proof.
+intros * Hab.
+revert bl Hab.
+induction al as [| a]; intros.
+-induction bl as [| b]; [ easy | simpl ].
+ specialize (Hab 0) as H; simpl in H; subst b.
+ rewrite Nat.add_0_r.
+ rewrite <- IHbl; [ easy | ].
+ intros i.
+ specialize (Hab (S i)).
+ simpl in Hab.
+ rewrite List.nth_overflow; [ easy | simpl; lia ].
+-simpl in Hab; simpl.
+
+bbb.
+
 Theorem nat_of_list_mul_cons_l {r : radix} : ∀ a al bl,
   nat_of_list 0 (list_mul (a :: al) bl) =
   nat_of_list 0 (list_add (list_mul [a] bl) (0 :: list_mul al bl)).
@@ -711,6 +730,9 @@ Proof.
 (* cf  lap_mul_cons_l in Puiseux/Fpolynomial.v *)
 intros.
 unfold list_mul.
+
+apply list_nth_nat_of_list; intros i.
+simpl.
 bbb.
 
 Theorem nat_of_list_mul_cons_l {r : radix} : ∀ a al bl,
