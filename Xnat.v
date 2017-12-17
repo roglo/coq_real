@@ -764,11 +764,36 @@ Theorem nat_of_list_mul_cons_l {r : radix} : ∀ a al bl,
 Proof.
 intros.
 apply list_nth_nat_of_list; intros i.
+unfold list_mul.
 rewrite list_nth_add.
-destruct i.
--rewrite Nat.add_0_r.
- rewrite list_nth_0_mul; simpl.
+remember (List.nth _ (_ :: _)) as f; simpl; subst f.
+do 2 rewrite Nat.sub_0_r.
+bbb.
 
+simpl.
+revert a al bl.
+induction i; intros.
+-rewrite Nat.add_0_r; simpl.
+ do 2 rewrite Nat.sub_0_r.
+ destruct bl as [| b]; simpl.
+ +destruct al; [ easy | simpl ].
+  now rewrite summation_only_one, Nat.mul_0_r.
+ +rewrite Nat.add_succ_r; simpl.
+  now do 2 rewrite summation_only_one.
+-destruct bl as [| b].
+ +simpl.
+  rewrite Nat.sub_0_r, Nat.add_0_r.
+  do 2 rewrite list_mul_loop_nil_r; simpl.
+  now do 2 rewrite List_nth_repeat_def.
+ +simpl.
+  rewrite Nat.add_succ_r; simpl.
+  rewrite Nat.sub_0_r.
+...
+  do 2 rewrite list_mul_nil_r; simpl; rewrite Nat.sub_0_r.
+  now destruct al; [ destruct i | simpl; rewrite Nat.sub_0_r ].
+ +simpl.
+  unfold list_mul; simpl.
+  rewrite Nat.add_succ_r; simpl; rewrite Nat.sub_0_r.
 ...
 
 (* cf  lap_mul_cons_l in Puiseux/Fpolynomial.v *)
