@@ -779,7 +779,10 @@ assert (Hrz : rad ≠ 0) by lia.
 intros.
 apply list_nth_nat_of_list_eq.
 intros k.
-Check list_nth_mul_convol_mul.
+destruct (lt_dec k (length (list_of_nat 0 a) + length (list_of_nat 0 b) - 1))
+as [Hkab| Hkab].
+-rewrite list_nth_mul_convol_mul; [ | easy ].
+Search list_of_nat.
 bbb.
 
 intros Hr.
