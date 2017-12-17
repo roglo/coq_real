@@ -706,6 +706,15 @@ Abort.
 
 Theorem nat_of_list_mul_cons_l {r : radix} : ∀ a al bl,
   nat_of_list 0 (list_mul (a :: al) bl) =
+  nat_of_list 0 (list_add (list_mul [a] bl) (0 :: list_mul al bl)).
+Proof.
+(* cf  lap_mul_cons_l in Puiseux/Fpolynomial.v *)
+intros.
+unfold list_mul.
+bbb.
+
+Theorem nat_of_list_mul_cons_l {r : radix} : ∀ a al bl,
+  nat_of_list 0 (list_mul (a :: al) bl) =
   nat_of_list 0 (list_mul al bl) * rad + a * nat_of_list 0 bl.
 Proof.
 intros.
@@ -762,9 +771,8 @@ induction al as [| a]; intros.
   replace (nat_of_list 0 al * rad * rad * nat_of_list 0 bl)
     with (nat_of_list 0 al * nat_of_list 0 bl * rad * rad) by lia.
   rewrite <- IHal.
-Abort.
-(*
   rewrite nat_of_list_mul_cons_l; simpl.
+bbb.
   rewrite list_mul_comm.
   rewrite nat_of_list_mul_cons_l.
   rewrite list_mul_comm; lia.
