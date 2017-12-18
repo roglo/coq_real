@@ -755,6 +755,13 @@ Proof.
 intros Hr.
 assert (Hrz : rad ≠ 0) by lia.
 intros * Hi.
+destruct j.
+-simpl; rewrite Nat.mul_1_r.
+...
+
+intros Hr.
+assert (Hrz : rad ≠ 0) by lia.
+intros * Hi.
 unfold list_of_nat.
 destruct (zerop ((rad ^ i - 1) * rad ^ j)) as [Hzij| Hzij].
 -apply Nat.eq_mul_0 in Hzij.
