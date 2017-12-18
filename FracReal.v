@@ -777,8 +777,6 @@ destruct (zerop ((rad ^ i - 1) * rad ^ j)) as [Hzij| Hzij].
   *destruct i; simpl.
   --rewrite Nat.mul_1_r.
     replace (rad * rad - 1) with ((rad + 1) * (rad - 1)).
-bbb.
-
    ++rewrite Nat.mul_mod; [ | easy ].
      rewrite Nat_mod_same_l; [ | easy ].
      rewrite Nat.mod_1_l; [ rewrite Nat.mul_1_l | easy ].
@@ -790,6 +788,7 @@ bbb.
       destruct rad as [| s]; [ easy | ].
       destruct s; [ lia | simpl in Hr1; lia ].
     **
+Search (_ * _ / _).
 bbb.
 
 Focus 2.
