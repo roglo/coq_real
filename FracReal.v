@@ -787,9 +787,10 @@ destruct (zerop ((rad ^ i - 1) * rad ^ j)) as [Hzij| Hzij].
     **apply Nat.div_small_iff in Hr1; [ | easy ].
       destruct rad as [| s]; [ easy | ].
       destruct s; [ lia | simpl in Hr1; lia ].
-    **
-Search (_ * _ / _).
-bbb.
+    **rewrite <- Nat_pow_2_sub_1.
+      replace ((rad ^ 2 - 1) / rad) with rad.
+Focus 2.
+...
 
 Focus 2.
 rewrite Nat.mul_sub_distr_l; lia.
