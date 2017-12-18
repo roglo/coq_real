@@ -752,7 +752,9 @@ Theorem list_of_nat_pred_pow_pow {r : radix} : 1 < rad → ∀ i j,
   → list_of_nat 0 ((rad ^ i - 1) * rad ^ j) =
      List.repeat 0 j ++ List.repeat (rad - 1) i.
 Proof.
-intros Hr * Hi.
+intros Hr.
+assert (Hrz : rad ≠ 0) by lia.
+intros * Hi.
 unfold list_of_nat.
 destruct (zerop ((rad ^ i - 1) * rad ^ j)) as [Hzij| Hzij].
 -apply Nat.eq_mul_0 in Hzij.
@@ -767,7 +769,25 @@ destruct (zerop ((rad ^ i - 1) * rad ^ j)) as [Hzij| Hzij].
  destruct j.
  +simpl.
   rewrite Nat.mul_1_r.
-(* pas l'air simple, c't'histoire... *)
+  destruct i; [ easy | simpl ].
+  destruct i; simpl.
+  *rewrite Nat.mul_1_r.
+   rewrite Nat.mod_small; [ f_equal | lia ].
+   rewrite Nat.div_small; [ easy | lia ].
+  *destruct i; simpl.
+  --rewrite Nat.mul_1_r.
+    replace (rad * rad - 1) with ((rad + 1) * (rad - 1)).
+   ++rewrite Nat.mul_mod; [ | easy ].
+     rewrite Nat_mod_same_l; [ | easy ].
+     rewrite Nat.mod_1_l; [ rewrite Nat.mul_1_l | easy ].
+     rewrite Nat.mod_mod; [ | easy ].
+     rewrite Nat.mod_small; [ | lia ].
+     f_equal.
+bbb.
+
+Focus 2.
+rewrite Nat.mul_sub_distr_l; lia.
+lia.
 bbb.
 intros Hr * Hi.
 revert i Hi.

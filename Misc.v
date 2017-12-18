@@ -52,3 +52,10 @@ Qed.
 
 Theorem List_cons_comm_app : ∀ A (x : A) l l', l ++ x :: l' = l ++ [x] ++ l'.
 Proof. easy. Qed.
+
+Theorem Nat_mod_same_l : ∀ a b, a ≠ 0 → (a + b) mod a = b mod a.
+Proof.
+intros * Ha.
+rewrite <- Nat.add_mod_idemp_l; [ | easy ].
+now rewrite Nat.mod_same.
+Qed.
