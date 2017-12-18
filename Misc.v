@@ -59,3 +59,14 @@ intros * Ha.
 rewrite <- Nat.add_mod_idemp_l; [ | easy ].
 now rewrite Nat.mod_same.
 Qed.
+
+Theorem Nat_pow_2_sub_1 : ∀ a, a ^ 2 - 1 = (a + 1) * (a - 1).
+Proof.
+intros; simpl.
+rewrite Nat.mul_sub_distr_l.
+do 2 rewrite Nat.mul_1_r.
+rewrite Nat.mul_add_distr_r.
+rewrite Nat.mul_1_l.
+rewrite Nat.sub_add_distr.
+now rewrite Nat.add_sub.
+Qed.

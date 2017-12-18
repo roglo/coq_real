@@ -777,12 +777,19 @@ destruct (zerop ((rad ^ i - 1) * rad ^ j)) as [Hzij| Hzij].
   *destruct i; simpl.
   --rewrite Nat.mul_1_r.
     replace (rad * rad - 1) with ((rad + 1) * (rad - 1)).
+bbb.
+
    ++rewrite Nat.mul_mod; [ | easy ].
      rewrite Nat_mod_same_l; [ | easy ].
      rewrite Nat.mod_1_l; [ rewrite Nat.mul_1_l | easy ].
      rewrite Nat.mod_mod; [ | easy ].
      rewrite Nat.mod_small; [ | lia ].
      f_equal.
+     destruct (zerop ((rad + 1) * ( rad - 1) / rad)) as [Hr1| Hr1].
+    **apply Nat.div_small_iff in Hr1; [ | easy ].
+      destruct rad as [| s]; [ easy | ].
+      destruct s; [ lia | simpl in Hr1; lia ].
+    **
 bbb.
 
 Focus 2.
