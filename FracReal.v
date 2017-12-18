@@ -794,7 +794,8 @@ destruct (zerop ((rad ^ i - 1) * rad ^ j)) as [Hzij| Hzij].
       rewrite Nat.sub_succ, Nat.sub_0_r.
       rewrite Nat.div_small; [ | lia ].
       now destruct s.
-   ++
+   ++now rewrite <- Nat_sqr_sub_1, Nat.pow_2_r.
+  --
 bbb.
 
 Focus 2.
