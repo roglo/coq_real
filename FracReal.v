@@ -747,11 +747,23 @@ rewrite power_summation.
 bbb.
 *)
 
-Theorem list_of_nat_pred_pow_pow {r : radix} : ∀ i j,
-list_of_nat 0 ((rad ^ i - 1) * rad ^ j) =
-List.repeat 0 j ++ List.repeat (rad - 1) i.
+Theorem list_of_nat_pred_pow_pow {r : radix} : 1 < rad → ∀ i j,
+  0 < i
+  → list_of_nat 0 ((rad ^ i - 1) * rad ^ j) =
+     List.repeat 0 j ++ List.repeat (rad - 1) i.
 Proof.
-intros.
+intros Hr * Hi.
+revert i Hi.
+induction j; intros.
+-simpl; rewrite Nat.mul_1_r.
+ destruct i; [ easy | clear Hi ].
+ induction i; simpl.
+ +rewrite Nat.mul_1_r.
+  unfold list_of_nat.
+  destruct (zerop (rad - 1)) as [| H]; [ lia | clear H; simpl ].
+  rewrite Nat.div_small; [ simpl | lia ].
+  rewrite Nat.mod_small; [ easy | lia ].
+ +simpl in IHi; rewrite <- IHi.
 ...
 
 Theorem nA_all_9_ge {r : radix} : 1 < rad → ∀ u i k,
