@@ -751,7 +751,9 @@ Theorem list_of_nat_pow_succ_sub_1 {r : radix} : 1 < rad → ∀ i,
   list_of_nat 0 (rad ^ S i - 1) = rad - 1 :: list_of_nat 0 (rad ^ i - 1).
 Proof.
 intros Hr *.
+Abort.
 (* a^(i+1)-1 = (a^i+a^(i-1)+...+a+1)(a-1) *)
+(*
 ...
 induction i.
 -rewrite Nat.pow_1_r, Nat.pow_0_r, Nat.sub_diag.
@@ -772,8 +774,8 @@ induction i.
   unfold move_carry.
   rewrite Nat.add_0_l.
   rewrite Nat.mod_small; [ | lia ].
-
 bbb.
+*)
 
 Theorem list_of_nat_pow_sub_1 {r : radix} : 1 < rad → ∀ i,
   list_of_nat 0 (rad ^ i - 1) = List.repeat (rad - 1) i.
