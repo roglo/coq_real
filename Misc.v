@@ -60,7 +60,7 @@ rewrite <- Nat.add_mod_idemp_l; [ | easy ].
 now rewrite Nat.mod_same.
 Qed.
 
-Theorem Nat_pow_2_sub_1 : ∀ a, a ^ 2 - 1 = (a + 1) * (a - 1).
+Theorem Nat_sqr_sub_1 : ∀ a, a ^ 2 - 1 = (a + 1) * (a - 1).
 Proof.
 intros; simpl.
 rewrite Nat.mul_sub_distr_l.
@@ -69,4 +69,41 @@ rewrite Nat.mul_add_distr_r.
 rewrite Nat.mul_1_l.
 rewrite Nat.sub_add_distr.
 now rewrite Nat.add_sub.
+Qed.
+
+Theorem Nat_sqr_sub_1_mod : ∀ a, (a ^ 2 - 1) mod a = a - 1.
+Proof.
+intros.
+destruct (zerop a) as [Ha| Ha]; [ now subst a | ].
+assert (Haz : a ≠ 0) by (now intros H; subst a).
+rewrite Nat_sqr_sub_1.
+rewrite <- Nat.mul_mod_idemp_l; [ | easy ].
+replace (a + 1) with (1 + 1 * a) by now rewrite Nat.mul_1_l, Nat.add_comm.
+rewrite Nat.mod_add; [ | easy ].
+destruct a; [ easy | ].
+rewrite Nat.sub_succ, Nat.sub_0_r.
+destruct a; [ easy | ].
+rewrite Nat.mod_1_l.
+-rewrite Nat.mul_1_l.
+ rewrite Nat.mod_small; [ easy | apply Nat.lt_succ_diag_r ].
+-apply -> Nat.succ_lt_mono.
+ apply Nat.lt_0_succ.
+Qed.
+
+Theorem Nat_sqr_sub_1_div : ∀ a, (a ^ 2 - 1) / a = a - 1.
+Proof.
+intros.
+destruct (zerop a) as [Ha| Ha]; [ now subst a | ].
+assert (Haz : a ≠ 0) by (now intros H; subst a).
+specialize (Nat.div_mod (a ^ 2 - 1) a Haz) as H.
+apply Nat.mul_cancel_r with (p := a); [ easy | ].
+apply Nat.add_cancel_r with (p := (a ^ 2 - 1) mod a).
+rewrite Nat.mul_comm in H.
+rewrite <- H; simpl; rewrite Nat.mul_1_r.
+rewrite <- Nat.pow_2_r.
+rewrite Nat_sqr_sub_1_mod; simpl.
+rewrite Nat.mul_1_r.
+rewrite <- Nat.pow_2_r.
+rewrite Nat_sqr_sub_1.
+now rewrite Nat.mul_comm, Nat.mul_add_distr_l, Nat.mul_1_r.
 Qed.
