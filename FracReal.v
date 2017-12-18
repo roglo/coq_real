@@ -790,6 +790,17 @@ destruct (zerop ((rad ^ i - 1) * rad ^ j)) as [Hzij| Hzij].
     **rewrite <- Nat_pow_2_sub_1.
       replace ((rad ^ 2 - 1) / rad) with rad.
 Focus 2.
+apply Nat.mul_cancel_r with (p := rad); [ easy | simpl ].
+rewrite Nat.mul_1_r.
+...
+
+specialize (Nat.div_mod (rad ^ 2 - 1) rad Hrz) as H.
+rewrite Nat.mul_comm in H.
+apply Nat.add_cancel_r with (p := (rad ^ 2 - 1) mod rad).
+rewrite <- H.
+
+Search (_ * _ = _ * _).
+
 ...
 
 Focus 2.
