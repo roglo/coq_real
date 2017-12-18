@@ -757,13 +757,14 @@ revert i Hi.
 induction j; intros.
 -simpl; rewrite Nat.mul_1_r.
  destruct i; [ easy | clear Hi ].
- induction i; simpl.
- +rewrite Nat.mul_1_r.
+ remember (rad ^ S i - 1) as x; simpl; subst x.
+ induction i.
+ +simpl; rewrite Nat.mul_1_r.
   unfold list_of_nat.
   destruct (zerop (rad - 1)) as [| H]; [ lia | clear H; simpl ].
   rewrite Nat.div_small; [ simpl | lia ].
   rewrite Nat.mod_small; [ easy | lia ].
- +simpl in IHi; rewrite <- IHi.
+ +
 ...
 
 Theorem nA_all_9_ge {r : radix} : 1 < rad → ∀ u i k,
