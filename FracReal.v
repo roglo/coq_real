@@ -750,11 +750,27 @@ bbb.
 Theorem list_of_nat_pow_succ_sub_1 {r : radix} : 1 < rad → ∀ i,
   list_of_nat 0 (rad ^ S i - 1) = rad - 1 :: list_of_nat 0 (rad ^ i - 1).
 Proof.
-intros Hr *.
+intros Hr.
+assert (Hrz : rad ≠ 0) by lia.
+intros *.
 rewrite power_summation; [ | lia ].
 rewrite Nat.add_comm, Nat.add_sub.
 rewrite summation_mul_distr_l; simpl.
-Search (list_of_nat _ (_ + _)).
+destruct i.
+-rewrite summation_only_one; simpl.
+ rewrite Nat.mul_1_r.
+ unfold list_of_nat.
+ remember move_carry as f; simpl; subst f.
+ destruct (zerop (rad - 1)) as [Hzr1| Hzr1]; [ lia | simpl ].
+ rewrite Nat.mod_small; [ f_equal | lia ].
+ rewrite Nat.div_small; [ easy | lia ].
+-rewrite power_summation; [ | lia ].
+ rewrite summation_mul_distr_l.
+ rewrite summation_split_last; [ simpl | lia ].
+ rewrite Nat.sub_0_r.
+ remember (Σ (i0 = 0, i), ((rad - 1) * rad ^ i0)) as x eqn:Hx.
+ rewrite <- Nat.pow_succ_r; [ | lia ].
+(* mouais... *)
 ...
 
 (* a^(i+1)-1 = (a^i+a^(i-1)+...+a+1)(a-1) *)
