@@ -755,7 +755,6 @@ assert (Hrz : rad ≠ 0) by lia.
 intros *.
 rewrite power_summation; [ | lia ].
 rewrite Nat.add_comm, Nat.add_sub.
-rewrite summation_mul_distr_l; simpl.
 destruct i.
 -rewrite summation_only_one; simpl.
  rewrite Nat.mul_1_r.
@@ -765,12 +764,14 @@ destruct i.
  rewrite Nat.mod_small; [ f_equal | lia ].
  rewrite Nat.div_small; [ easy | lia ].
 -rewrite power_summation; [ | lia ].
- rewrite summation_mul_distr_l.
- rewrite summation_split_last; [ simpl | lia ].
- rewrite Nat.sub_0_r.
- remember (Σ (i0 = 0, i), ((rad - 1) * rad ^ i0)) as x eqn:Hx.
- rewrite <- Nat.pow_succ_r; [ | lia ].
-(* mouais... *)
+ rewrite summation_split_first; [ simpl | lia ].
+ rewrite summation_shift; [ simpl | lia ].
+ do 2 rewrite Nat.sub_0_r.
+ rewrite <- summation_mul_distr_l; simpl.
+ remember (Σ (j = 0, i), rad ^ j) as x eqn:Hx.
+ rewrite Nat.mul_comm; simpl.
+ replace (rad - 1 + rad * x * (rad - 1))
+   with ((rad - 1) * (1 + rad * x)) by lia.
 ...
 
 (* a^(i+1)-1 = (a^i+a^(i-1)+...+a+1)(a-1) *)
