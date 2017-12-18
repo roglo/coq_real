@@ -747,6 +747,13 @@ rewrite power_summation.
 bbb.
 *)
 
+Theorem list_of_nat_pred_pow_pow {r : radix} : ∀ i j,
+list_of_nat 0 ((rad ^ i - 1) * rad ^ j) =
+List.repeat 0 j ++ List.repeat (rad - 1) i.
+Proof.
+intros.
+...
+
 Theorem nA_all_9_ge {r : radix} : 1 < rad → ∀ u i k,
   let n := rad * (i + k + 2) in
   let s := rad ^ (n - 1 - i) in
@@ -774,7 +781,8 @@ assert (Hk : k ≤ n - i - 1).
  assert (H : (xnat_of_nat x ≤ xnat_of_nat y)%X).
  +subst x y.
   unfold xnat_of_nat, nat_of_xnat; simpl.
-Search (list_of_nat _ (_ * _)).
+  rewrite list_of_nat_pred_pow_pow.
+  rewrite Nat.mul_comm, list_of_nat_pred_pow_pow.
 bbb.
   now apply pow_pow_sub_1.
 Qed.
