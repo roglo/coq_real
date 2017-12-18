@@ -747,6 +747,51 @@ rewrite power_summation.
 bbb.
 *)
 
+Theorem list_of_nat_pow_succ_sub_1 {r : radix} : 1 < rad → ∀ i,
+  list_of_nat 0 (rad ^ S i - 1) = rad - 1 :: list_of_nat 0 (rad ^ i - 1).
+Proof.
+intros Hr *.
+induction i.
+-rewrite Nat.pow_1_r, Nat.pow_0_r, Nat.sub_diag.
+ remember rad as s eqn:Hs.
+ destruct s; [ easy | ].
+ simpl; rewrite Nat.sub_0_r.
+ destruct s; [ lia | clear Hr ].
+ unfold list_of_nat; simpl.
+ rewrite Nat.mod_small; [ f_equal | lia ].
+ rewrite Nat.div_small; [ easy | lia ].
+-
+...
+
+-destruct i.
+ +rewrite Nat.pow_1_r.
+  unfold list_of_nat at 2.
+  destruct (zerop (rad - 1)) as [Hr1| Hr1]; [ lia | ].
+  unfold move_carry.
+  rewrite Nat.add_0_l.
+  rewrite Nat.mod_small; [ | lia ].
+
+bbb.
+
+Theorem list_of_nat_pow_sub_1 {r : radix} : 1 < rad → ∀ i,
+  list_of_nat 0 (rad ^ i - 1) = List.repeat (rad - 1) i.
+Proof.
+intros Hr *.
+destruct i; [ easy | ].
+induction i.
+-simpl; rewrite Nat.mul_1_r.
+ remember rad as s eqn:Hs.
+ destruct s; [ easy | ].
+ destruct s; [ lia | clear Hr; simpl ].
+ unfold list_of_nat; simpl.
+ rewrite Nat.mod_small; [ f_equal | lia ].
+ rewrite Nat.div_small; [ easy | lia ].
+-remember (S i) as x; simpl; subst x.
+ rewrite <- IHi; clear IHi.
+ rewrite <- Nat.pow_succ_r; [ | apply Nat.le_0_l ].
+ now apply list_of_nat_pow_succ_sub_1.
+...
+
 Theorem list_of_nat_pred_pow_pow {r : radix} : 1 < rad → ∀ i j,
   0 < i
   → list_of_nat 0 ((rad ^ i - 1) * rad ^ j) =
@@ -757,6 +802,15 @@ assert (Hrz : rad ≠ 0) by lia.
 intros * Hi.
 destruct j.
 -simpl; rewrite Nat.mul_1_r.
+...
+ destruct i; [ easy | clear Hi ].
+ induction i.
+ +simpl; rewrite Nat.mul_1_r.
+  remember rad as s eqn:Hs.
+  destruct s; [ easy | clear Hrz ].
+  destruct s; [ lia | clear Hr; simpl ].
+  unfold list_of_nat; simpl.
+  rewrite Nat.mod_small.
 ...
 
 intros Hr.
