@@ -747,17 +747,16 @@ rewrite power_summation.
 bbb.
 *)
 
-Theorem glop (rg := nat_ord_ring) : ∀ a b,
-  a ^ S b - 1 = (a - 1) * Σ (k = 0, b), a ^ k.
-Proof.
-intros.
-....
-
 Theorem list_of_nat_pow_succ_sub_1 {r : radix} : 1 < rad → ∀ i,
   list_of_nat 0 (rad ^ S i - 1) = rad - 1 :: list_of_nat 0 (rad ^ i - 1).
 Proof.
 intros Hr *.
-bbb.
+rewrite power_summation; [ | lia ].
+rewrite Nat.add_comm, Nat.add_sub.
+rewrite summation_mul_distr_l; simpl.
+Search (list_of_nat _ (_ + _)).
+...
+
 (* a^(i+1)-1 = (a^i+a^(i-1)+...+a+1)(a-1) *)
 (*
 ...
