@@ -767,11 +767,10 @@ destruct (zerop ((rad ^ i - 1) * rad ^ j)) as [Hzij| Hzij].
 -clear Hzij.
  simpl.
  destruct j.
- +simpl.
-  rewrite Nat.mul_1_r.
-  destruct i; [ easy | simpl ].
-  destruct i; simpl.
-  *rewrite Nat.mul_1_r.
+ +rewrite Nat.mul_1_r.
+  destruct i; [ easy | clear Hi ].
+  destruct i.
+  *simpl; rewrite Nat.mul_1_r.
    rewrite Nat.mod_small; [ f_equal | lia ].
    rewrite Nat.div_small; [ easy | lia ].
   *destruct i; simpl.
@@ -795,27 +794,9 @@ destruct (zerop ((rad ^ i - 1) * rad ^ j)) as [Hzij| Hzij].
       rewrite Nat.div_small; [ | lia ].
       now destruct s.
    ++now rewrite <- Nat_sqr_sub_1, Nat.pow_2_r.
-  --
-bbb.
-
-Focus 2.
-symmetry.
-
-specialize (Nat.div_mod (rad ^ 2 - 1) rad Hrz) as H.
-apply Nat.mul_cancel_r with (p := rad); [ easy | ].
-apply Nat.add_cancel_r with (p := (rad ^ 2 - 1) mod rad).
-rewrite Nat.mul_comm in H.
-rewrite <- H; simpl; rewrite Nat.mul_1_r.
-
-
-Search (_ * _ = _ * _).
-
+--
 ...
 
-Focus 2.
-rewrite Nat.mul_sub_distr_l; lia.
-lia.
-bbb.
 intros Hr * Hi.
 revert i Hi.
 induction j; intros.
