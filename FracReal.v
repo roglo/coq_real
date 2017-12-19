@@ -965,9 +965,10 @@ bbb.
 *)
 
 Theorem numbers_to_digits_id {r : radix} : ∀ x i,
-  numbers_to_digits (freal x) i = freal x i.
+  (∀ i, freal x i < rad - 1)
+  → numbers_to_digits (freal x) i = freal x i.
 Proof.
-intros.
+intros * Hur.
 unfold numbers_to_digits.
 destruct (LPO_fst (test_seq i (freal x))) as [H| H].
  remember (rad * (i + 2)) as n eqn:Hn.
