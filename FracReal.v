@@ -827,8 +827,23 @@ induction i.
  now apply list_of_nat_pow_succ_sub_1.
 Qed.
 
-Theorem list_of_nat_mul_rad_l {r : radix} : ∀ n,
-  list_of_nat 0 (rad * n) = 0 :: list_of_nat 0 n.
+Theorem list_of_nat_mul_rad_l {r : radix} : 1 < rad → ∀ n,
+  0 < n → list_of_nat 0 (rad * n) = 0 :: list_of_nat 0 n.
+Proof.
+intros Hr.
+assert (Hrz : rad ≠ 0) by lia.
+intros * Hn.
+unfold list_of_nat.
+destruct (zerop (rad * n)) as [Hrn| Hrn].
+-apply Nat.eq_mul_0 in Hrn.
+ now destruct Hrn; [ | subst n ].
+-destruct (zerop n) as [| H]; [ now subst n | clear H; simpl ].
+ rewrite Nat.mul_comm, Nat.mod_mul; [ f_equal | easy ].
+ rewrite Nat.div_mul; [ | easy ].
+ destruct (zerop n) as [| H]; [ now subst n | clear H; f_equal ].
+ destruct (zerop (n / rad)) as [Hnr| Hnr].
+ +now rewrite Hnr; destruct n.
+ +simpl.
 ...
 
 Theorem list_of_nat_pred_pow_pow {r : radix} : 1 < rad → ∀ i j,
