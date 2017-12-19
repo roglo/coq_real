@@ -973,6 +973,12 @@ unfold numbers_to_digits.
 destruct (LPO_fst (test_seq i (freal x))) as [H| H].
  remember (rad * (i + 2)) as n eqn:Hn.
  remember (rad ^ (n - 1 - i)) as s eqn:Hs.
+ assert (test_seq i (freal x) (n - 1 - i) = 1).
+  unfold test_seq.
+  rewrite <- Hs.
+  replace (i + (n - 1 - i) + 2) with ((n - 1 - i) + (i + 2)) by lia.
+  rewrite Nat.mul_add_distr_l.
+  rewrite <- Hn.
 bbb.
  assert (∀ k : nat, False).
   intros k.
