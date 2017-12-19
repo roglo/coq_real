@@ -908,6 +908,7 @@ assert (Hk : k ≤ n - i - 1).
   unfold xnat_of_nat, nat_of_xnat; simpl.
   destruct k; [ apply Nat.le_0_l | ].
   rewrite list_of_nat_pred_pow_pow; [ | easy | lia ].
+  simpl.
 ...
 
 Theorem numbers_to_digits_is_norm {r : radix} : ∀ u i,
