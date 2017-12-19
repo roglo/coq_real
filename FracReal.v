@@ -843,8 +843,15 @@ destruct (zerop (rad * n)) as [Hrn| Hrn].
  destruct (zerop n) as [| H]; [ now subst n | clear H; f_equal ].
  destruct (zerop (n / rad)) as [Hnr| Hnr].
  +now rewrite Hnr; destruct n.
- +simpl.
-...
+ +destruct n; [ easy | simpl ].
+  destruct (zerop (S n / rad)) as [| H]; [ lia | clear H; f_equal ].
+  apply move_carry_end_enough_iter; [ easy | | now apply Nat.div_lt ].
+  apply Nat.div_lt_upper_bound; [ easy | ].
+  apply Nat.div_lt_upper_bound; [ easy | ].
+  destruct n; [ now rewrite Nat.div_1_l in Hnr | ].
+  destruct rad as [| s]; [ easy | ].
+  destruct s; [ lia | simpl; lia ].
+Qed.
 
 Theorem list_of_nat_pred_pow_pow {r : radix} : 1 < rad → ∀ i j,
   0 < i
@@ -860,78 +867,17 @@ induction j; intros.
  now apply list_of_nat_pow_sub_1.
 -simpl.
  rewrite Nat.mul_comm, <- Nat.mul_assoc.
-Search list_of_nat.
-
-...
- destruct i; [ easy | clear Hi ].
- induction i.
- +simpl; rewrite Nat.mul_1_r.
-  remember rad as s eqn:Hs.
-  destruct s; [ easy | clear Hrz ].
-  destruct s; [ lia | clear Hr; simpl ].
-  unfold list_of_nat; simpl.
-  rewrite Nat.mod_small.
-...
-
-intros Hr.
-assert (Hrz : rad ≠ 0) by lia.
-intros * Hi.
-unfold list_of_nat.
-destruct (zerop ((rad ^ i - 1) * rad ^ j)) as [Hzij| Hzij].
--apply Nat.eq_mul_0 in Hzij.
- destruct Hzij as [Hzi| Hzj].
+ rewrite list_of_nat_mul_rad_l; [ f_equal | easy | ].
+ +now rewrite Nat.mul_comm; apply IHj.
  +destruct i; [ easy | ].
-  apply Nat.sub_0_le in Hzi.
-  exfalso; apply Nat.nlt_ge in Hzi; apply Hzi.
-  now apply Nat.pow_gt_1.
- +apply Nat.pow_eq_0_iff in Hzj; lia.
--clear Hzij.
- simpl.
- destruct j.
- +rewrite Nat.mul_1_r.
-  destruct i; [ easy | clear Hi ].
-  destruct i.
-  *simpl; rewrite Nat.mul_1_r.
-   rewrite Nat.mod_small; [ f_equal | lia ].
-   rewrite Nat.div_small; [ easy | lia ].
-  *destruct i; simpl.
-  --rewrite Nat.mul_1_r.
-    replace (rad * rad - 1) with ((rad + 1) * (rad - 1)).
-   ++rewrite Nat.mul_mod; [ | easy ].
-     rewrite Nat_mod_same_l; [ | easy ].
-     rewrite Nat.mod_1_l; [ rewrite Nat.mul_1_l | easy ].
-     rewrite Nat.mod_mod; [ | easy ].
-     rewrite Nat.mod_small; [ | lia ].
-     f_equal.
-     destruct (zerop ((rad + 1) * ( rad - 1) / rad)) as [Hr1| Hr1].
-    **apply Nat.div_small_iff in Hr1; [ | easy ].
-      destruct rad as [| s]; [ easy | ].
-      destruct s; [ lia | simpl in Hr1; lia ].
-    **rewrite <- Nat_sqr_sub_1.
-      rewrite Nat_sqr_sub_1_div.
-      rewrite Nat.mod_small; [ f_equal | lia ].
-      destruct rad as [| s]; [ easy | ].
-      rewrite Nat.sub_succ, Nat.sub_0_r.
-      rewrite Nat.div_small; [ | lia ].
-      now destruct s.
-   ++now rewrite <- Nat_sqr_sub_1, Nat.pow_2_r.
---
-...
-
-intros Hr * Hi.
-revert i Hi.
-induction j; intros.
--simpl; rewrite Nat.mul_1_r.
- destruct i; [ easy | clear Hi ].
- remember (rad ^ S i - 1) as x; simpl; subst x.
- induction i.
- +simpl; rewrite Nat.mul_1_r.
-  unfold list_of_nat.
-  destruct (zerop (rad - 1)) as [| H]; [ lia | clear H; simpl ].
-  rewrite Nat.div_small; [ simpl | lia ].
-  rewrite Nat.mod_small; [ easy | lia ].
- +
-...
+  apply Nat.mul_pos_pos.
+  *clear -Hr; induction j; simpl; [ lia | ].
+   apply Nat.mul_pos_pos; [ lia | easy ].
+  *apply (Nat.le_lt_add_lt 1 1); [ easy | simpl ].
+   rewrite Nat.sub_add; [ now apply rad_pow_succ_gt_1 | ].
+   apply Nat.lt_le_incl.
+   now apply rad_pow_succ_gt_1.
+Qed.
 
 Theorem nA_all_9_ge {r : radix} : 1 < rad → ∀ u i k,
   let n := rad * (i + k + 2) in
@@ -960,11 +906,9 @@ assert (Hk : k ≤ n - i - 1).
  assert (H : (xnat_of_nat x ≤ xnat_of_nat y)%X).
  +subst x y.
   unfold xnat_of_nat, nat_of_xnat; simpl.
-  rewrite list_of_nat_pred_pow_pow.
-  rewrite Nat.mul_comm, list_of_nat_pred_pow_pow.
-bbb.
-  now apply pow_pow_sub_1.
-Qed.
+  destruct k; [ apply Nat.le_0_l | ].
+  rewrite list_of_nat_pred_pow_pow; [ | easy | lia ].
+...
 
 Theorem numbers_to_digits_is_norm {r : radix} : ∀ u i,
   numbers_to_digits (λ j, dig (u j)) i =
