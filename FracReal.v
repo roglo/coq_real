@@ -827,6 +827,10 @@ induction i.
  now apply list_of_nat_pow_succ_sub_1.
 Qed.
 
+Theorem list_of_nat_mul_rad_l {r : radix} : ∀ n,
+  list_of_nat 0 (rad * n) = 0 :: list_of_nat 0 n.
+...
+
 Theorem list_of_nat_pred_pow_pow {r : radix} : 1 < rad → ∀ i j,
   0 < i
   → list_of_nat 0 ((rad ^ i - 1) * rad ^ j) =
@@ -835,10 +839,14 @@ Proof.
 intros Hr.
 assert (Hrz : rad ≠ 0) by lia.
 intros * Hi.
-destruct j.
+revert i Hi.
+induction j; intros.
 -simpl; rewrite Nat.mul_1_r.
  now apply list_of_nat_pow_sub_1.
--
+-simpl.
+ rewrite Nat.mul_comm, <- Nat.mul_assoc.
+Search list_of_nat.
+
 ...
  destruct i; [ easy | clear Hi ].
  induction i.
