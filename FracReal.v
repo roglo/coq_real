@@ -771,7 +771,31 @@ destruct i.
  remember (Σ (j = 0, i), rad ^ j) as x eqn:Hx.
  rewrite Nat.mul_comm; simpl.
  replace (rad - 1 + rad * x * (rad - 1))
-   with ((rad - 1) * (1 + rad * x)) by lia.
+   with ((rad - 1) * S (rad * x)) by lia.
+ unfold list_of_nat.
+ destruct (zerop ((rad - 1) * S (rad * x))) as [Hrx| Hrx].
+ +exfalso.
+  apply Nat.eq_mul_0 in Hrx.
+  destruct Hrx; [ lia | easy ].
+ +destruct (zerop ((rad - 1) * x)) as [Hzr| Hzr].
+  *apply Nat.eq_mul_0 in Hzr.
+   destruct Hzr as [Hr0| Hx0]; [ lia | ].
+   move Hx0 at top; subst x.
+   rewrite Nat.mul_0_r, Nat.mul_1_r; simpl.
+   rewrite Nat.mod_small; [ f_equal | easy ].
+   now rewrite Nat.div_small.
+  *simpl.
+   replace ((rad - 1) * S (rad * x))
+   with (rad - 1 + (rad - 1) * x * rad) by lia.
+   rewrite Nat.mod_add; [ | easy ].
+   rewrite Nat.mod_small; [ f_equal | lia ].
+   rewrite Nat.div_add; [ | easy ].
+   rewrite Nat.div_small; [ simpl | lia ].
+   destruct (zerop ((rad - 1) * x)) as [H| H]; [ lia | clear H ].
+   f_equal.
+   destruct (zerop ((rad - 1) * x / rad)) as [Hrxr| Hrxr].
+  --now rewrite Hrxr; destruct ((rad - 1) * x).
+  --simpl.
 ...
 
 (* a^(i+1)-1 = (a^i+a^(i-1)+...+a+1)(a-1) *)
