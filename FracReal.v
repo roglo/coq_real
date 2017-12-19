@@ -909,25 +909,28 @@ assert (Hk : k ≤ n - i - 1).
   destruct k; [ apply Nat.le_0_l | ].
   rewrite list_of_nat_pred_pow_pow; [ | easy | lia ].
   rewrite nat_of_list_app.
-...
+Abort.
 
 Theorem numbers_to_digits_is_norm {r : radix} : ∀ u i,
-  numbers_to_digits (λ j, dig (u j)) i =
-  dig (digit_sequence_normalize u i).
+  numbers_to_digits u i = digit_sequence_normalize u i.
 Proof.
 intros.
 unfold numbers_to_digits.
 unfold digit_sequence_normalize.
-destruct (LPO_fst (test_seq i (λ j : nat, dig (u j)))) as [Hi| Hi].
+destruct (LPO_fst (test_seq i u)) as [Hi| Hi].
  rewrite Nat.div_small.
   rewrite Nat.add_0_r, Nat.add_1_r.
-  destruct (LPO_fst (λ j : nat, rad - 1 - dig (u (i + j + 1)))) as [Hj| Hj].
-   destruct (lt_dec (S (dig (u i))) rad) as [Hlt| Hge]; simpl.
+  destruct (LPO_fst (λ j : nat, rad - 1 - u (i + j + 1))) as [Hj| Hj].
+   destruct (lt_dec (S (u i)) rad) as [Hlt| Hge]; simpl.
     now rewrite Nat.mod_small.
 
     apply Nat.nlt_ge in Hge.
+Print test_seq.
+bbb.
+(*
     specialize (dig_lt_rad (u i)) as Hd.
-    assert (H : dig (u i) = rad - 1) by lia.
+*)
+    assert (H : u i = rad - 1) by lia.
     rewrite H.
     rewrite <- Nat.sub_succ_l; [ | lia ].
     rewrite Nat.sub_succ, Nat.sub_0_r.
