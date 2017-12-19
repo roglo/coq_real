@@ -971,22 +971,17 @@ Proof.
 intros * Hur.
 unfold numbers_to_digits.
 destruct (LPO_fst (test_seq i (freal x))) as [H| H].
+(*
  remember (rad * (i + 2)) as n eqn:Hn.
  remember (rad ^ (n - 1 - i)) as s eqn:Hs.
- assert (test_seq i (freal x) (n - 1 - i) = 1).
-  unfold test_seq.
-  rewrite <- Hs.
-  replace (i + (n - 1 - i) + 2) with ((n - 1 - i) + (i + 2)) by lia.
-  rewrite Nat.mul_add_distr_l.
-  rewrite <- Hn.
-bbb.
+*)
  assert (∀ k : nat, False).
   intros k.
   pose proof (H k) as Hk.
   unfold test_seq in Hk.
   remember (rad * (i + k + 2)) as n eqn:Hn.
   remember (rad ^ (n - 1 - i)) as s eqn:Hs.
-  destruct (le_dec ((rad ^ k - 1) * s) (rad ^ k * (nA i n u mod s)))
+  destruct (le_dec ((rad ^ k - 1) * s) (rad ^ k * (nA i n (freal x) mod s)))
    as [Hle| Hgt]; [ clear Hk | easy ].
 bbb.
 rad ^ k - 1 = 99...99
