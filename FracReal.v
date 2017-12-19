@@ -911,6 +911,7 @@ assert (Hk : k ≤ n - i - 1).
   rewrite nat_of_list_app.
 Abort.
 
+(*
 Theorem numbers_to_digits_is_norm {r : radix} : ∀ u i,
   numbers_to_digits u i = digit_sequence_normalize u i.
 Proof.
@@ -961,14 +962,14 @@ bbb.
     rewrite Nat.mod_small.
      apply nA_all_9_ge.
 bbb.
+*)
 
 Theorem numbers_to_digits_id {r : radix} : ∀ x i,
-  numbers_to_digits (λ j, dig (freal x j)) i = dig (freal x i).
+  numbers_to_digits (freal x) i = freal x i.
 Proof.
 intros.
 unfold numbers_to_digits.
-destruct (LPO_fst (test_seq i (λ j, dig (freal x j)))) as [H| H].
- remember (λ j, dig (freal x j)) as u eqn:Hu.
+destruct (LPO_fst (test_seq i (freal x))) as [H| H].
  remember (rad * (i + 2)) as n eqn:Hn.
  remember (rad ^ (n - 1 - i)) as s eqn:Hs.
 bbb.
@@ -1035,9 +1036,10 @@ rad ^ k * (nA i n u mod s) = xx...xx00...00
 (* peut-être que le numbers_to_digits en fait renvoit un nombre normalisé.
    faut voir... *)
 Abort.
+*)
 
 Theorem dig_norm_add_0_l {r : radix} : ∀ x i,
-  dig (freal (freal_normalize (0 + x)) i) = dig (freal (freal_normalize x) i).
+  freal (freal_normalize (0 + x)) i = freal (freal_normalize x) i.
 Proof.
 intros.
 unfold freal_normalize.
@@ -1045,28 +1047,18 @@ remember (freal (0%F + x)) as nx0 eqn:Hnx0.
 remember (freal x) as nx eqn:Hnx.
 simpl.
 unfold digit_sequence_normalize.
-destruct (LPO_fst (λ j : nat, rad - 1 - dig (nx0 (i + j + 1)))) as [Hx0| Hx0].
- destruct (LPO_fst (λ j : nat, rad - 1 - dig (nx (i + j + 1)))) as [Hx| Hx].
+destruct (LPO_fst (λ j : nat, rad - 1 - nx0 (i + j + 1))) as [Hx0| Hx0].
+ destruct (LPO_fst (λ j : nat, rad - 1 - nx (i + j + 1))) as [Hx| Hx].
   unfold freal_add in Hnx0; simpl in Hnx0.
-  destruct (lt_dec (S (dig (nx0 i))) rad) as [ Hrx0 | Hrx0 ].
+  destruct (lt_dec (S (nx0 i)) rad) as [ Hrx0 | Hrx0 ].
    subst nx0; simpl in Hrx0; simpl.
-   destruct (lt_dec (S (dig (nx i))) rad) as [Hrx| Hrx].
+   destruct (lt_dec (S (nx i)) rad) as [Hrx| Hrx].
     subst nx; simpl in Hrx, Hx0; simpl; f_equal.
     unfold freal_add_to_seq.
     unfold freal_add_to_seq in Hx0.
-(*
-    assert
-      (∀ k, rad - 1 - numbers_to_digits (λ j, dig (freal x j)) (i + k + 1)= 0).
-     intros.
-     specialize (Hx0 k).
-     unfold freal_add_series in Hx0.
-     simpl in Hx0.
-     now unfold sequence_add in Hx0.
-
-     clear Hx0; rename H into Hx0; move Hx0 after Hx.
-*)
     unfold freal_add_series; simpl.
     unfold sequence_add; simpl.
+bbb.
     unfold numbers_to_digits.
     simpl.
 bbb.
@@ -1079,6 +1071,7 @@ bbb.
 Print numbers_to_digits.
 Print test_seq.
 bbb.
+*)
 
 Theorem freal_add_0_l {r : radix} : ∀ x, (0 + x = x)%F.
 Proof.
@@ -1091,7 +1084,7 @@ exfalso.
 destruct H as (i & Hji & Hi).
 apply Hi; clear Hi.
 unfold eq_freal_seq.
-destruct (Nat.eq_dec (dig (freal n0x i)) (dig (freal nx i))) as [H| H].
+destruct (Nat.eq_dec (freal n0x i) (freal nx i)) as [H| H].
  easy.
 
  exfalso; apply H; clear H.
