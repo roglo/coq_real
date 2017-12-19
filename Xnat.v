@@ -46,6 +46,22 @@ Definition list_norm {r : radix} al := list_of_nat 0 (nat_of_list 0 al).
 
 Definition xnat_norm {r : radix} a := xn (list_norm (xnatv a)).
 
+Lemma move_carry_end_enough_iter {r : radix} : ∀ carry m n, rad > 1 →
+  carry < m → carry < n → move_carry_end m carry = move_carry_end n carry.
+Proof.
+intros * Hr Hm Hn.
+revert carry n Hm Hn.
+induction m; intros; [ easy | ].
+destruct n; [ easy | simpl ].
+destruct (zerop carry) as [Hc| Hc]; [ easy | f_equal ].
+apply IHm.
+ apply lt_le_trans with (m := carry); [ | lia ].
+ now apply Nat.div_lt.
+
+ apply lt_le_trans with (m := carry); [ | lia ].
+ now apply Nat.div_lt.
+Qed.
+
 (* Conversion from and to nat *)
 
 Theorem nat_of_list_move_end {r : radix} : ∀ iter n, 2 ≤ rad →

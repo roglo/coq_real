@@ -800,33 +800,13 @@ destruct i.
     destruct y; [ easy | simpl ].
     destruct (zerop (S y / rad)) as [| H]; [ lia | clear H ].
     f_equal.
-Search move_carry_end.
-...
-
-(* a^(i+1)-1 = (a^i+a^(i-1)+...+a+1)(a-1) *)
-(*
-...
-induction i.
--rewrite Nat.pow_1_r, Nat.pow_0_r, Nat.sub_diag.
- remember rad as s eqn:Hs.
- destruct s; [ easy | ].
- simpl; rewrite Nat.sub_0_r.
- destruct s; [ lia | clear Hr ].
- unfold list_of_nat; simpl.
- rewrite Nat.mod_small; [ f_equal | lia ].
- rewrite Nat.div_small; [ easy | lia ].
--
-...
-
--destruct i.
- +rewrite Nat.pow_1_r.
-  unfold list_of_nat at 2.
-  destruct (zerop (rad - 1)) as [Hr1| Hr1]; [ lia | ].
-  unfold move_carry.
-  rewrite Nat.add_0_l.
-  rewrite Nat.mod_small; [ | lia ].
-bbb.
-*)
+    apply move_carry_end_enough_iter; [ easy | | now apply Nat.div_lt ].
+    apply Nat.div_lt_upper_bound; [ easy | ].
+    apply Nat.div_lt_upper_bound; [ easy | ].
+    destruct y; [ now rewrite Nat.div_1_l in Hrxr | ].
+    destruct rad as [| s]; [ easy | ].
+    destruct s; [ easy | simpl; lia ].
+Qed.
 
 Theorem list_of_nat_pow_sub_1 {r : radix} : 1 < rad → ∀ i,
   list_of_nat 0 (rad ^ i - 1) = List.repeat (rad - 1) i.
@@ -845,7 +825,7 @@ induction i.
  rewrite <- IHi; clear IHi.
  rewrite <- Nat.pow_succ_r; [ | apply Nat.le_0_l ].
  now apply list_of_nat_pow_succ_sub_1.
-...
+Qed.
 
 Theorem list_of_nat_pred_pow_pow {r : radix} : 1 < rad → ∀ i j,
   0 < i
@@ -857,6 +837,8 @@ assert (Hrz : rad ≠ 0) by lia.
 intros * Hi.
 destruct j.
 -simpl; rewrite Nat.mul_1_r.
+ now apply list_of_nat_pow_sub_1.
+-
 ...
  destruct i; [ easy | clear Hi ].
  induction i.
