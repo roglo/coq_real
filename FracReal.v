@@ -975,6 +975,15 @@ destruct (LPO_fst (test_seq i (freal x))) as [H| H].
  remember (rad * (i + 2)) as n eqn:Hn.
  remember (rad ^ (n - 1 - i)) as s eqn:Hs.
 *)
+ specialize (H 1) as HH.
+ unfold test_seq in HH; simpl in HH.
+ rewrite Nat.mul_1_r in HH.
+ remember (rad * (i + 1 + 2)) as n eqn:Hn.
+ remember (rad ^ (n - 1 - i)) as s eqn:Hs.
+ destruct (le_dec ((rad - 1) * s) (rad * (nA i n (freal x) mod s)))
+  as [Hle| Hgt]; [ clear HH | easy ].
+ exfalso.
+...
  assert (∀ k : nat, False).
   intros k.
   pose proof (H k) as Hk.
