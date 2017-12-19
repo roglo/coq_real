@@ -931,3 +931,12 @@ unfold nat_of_xnat; simpl.
 
 bbb.
 *)
+
+Theorem nat_of_list_app {r : radix} : ∀ al bl,
+  nat_of_list 0 (al ++ bl) = nat_of_list (nat_of_list 0 bl) al.
+Proof.
+intros.
+revert bl.
+induction al as [ | a]; intros; [ easy | simpl ].
+now rewrite IHal.
+Qed.
