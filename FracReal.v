@@ -795,7 +795,12 @@ destruct i.
    f_equal.
    destruct (zerop ((rad - 1) * x / rad)) as [Hrxr| Hrxr].
   --now rewrite Hrxr; destruct ((rad - 1) * x).
-  --simpl.
+  --remember ((rad - 1) * x) as y eqn:Hy.
+    symmetry in Hy.
+    destruct y; [ easy | simpl ].
+    destruct (zerop (S y / rad)) as [| H]; [ lia | clear H ].
+    f_equal.
+Search move_carry_end.
 ...
 
 (* a^(i+1)-1 = (a^i+a^(i-1)+...+a+1)(a-1) *)
