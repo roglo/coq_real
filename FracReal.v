@@ -1037,7 +1037,6 @@ admit.
    (lt_dec (nA i n (freal x) mod s * rad ^ (k + 1) + nB n k (freal x))
      (rad ^ (n + k - i)))
   as [Hlt| Hge]; [ easy | clear Hts ].
-...
  apply Nat.nlt_ge in Hge.
 ...
 
