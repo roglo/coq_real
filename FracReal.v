@@ -541,14 +541,39 @@ induction n.
 Qed.
 
 Theorem nA_dig_seq_ub {r : radix} : 0 < rad → ∀ u,
-  (∀ i, u i < rad) →
-  ∀ n i,
-  let s := rad ^ (n - 1 - i) in
+  (∀ i, u i < rad) → ∀ n i,
   i + 1 ≤ n - 1
-  → nA i n u < s.
+  → nA i n u < rad ^ (n - 1 - i).
 Proof.
 intros Hr u Hu * Hin.
-unfold nA, s.
+unfold nA.
+rewrite summation_rtl.
+rewrite summation_shift; [ | easy ].
+remember (n - 1 - i) as k eqn:Hk.
+destruct k; [ lia | ].
+rewrite power_summation; [ | easy ].
+replace (n - 1 - (i + 1)) with k by lia.
+unfold lt; simpl.
+apply -> Nat.succ_le_mono.
+rewrite summation_mul_distr_l.
+apply (@summation_le_compat _ nat_ord_ring).
+intros j Hj.
+replace (n - 1 + (i + 1) - (i + 1 + j)) with (n - 1 - j) by lia.
+replace (n - 1 - (n - 1 - j)) with j by lia.
+apply Nat.mul_le_mono_nonneg_r; [ lia | ].
+apply Nat.le_add_le_sub_l.
+apply Hu.
+Qed.
+
+Print nB.
+
+Theorem nB_dig_seq_ub {r : radix} : 0 < rad → ∀ u,
+  (∀ i, u i < rad) → ∀ n k, nB n k u < rad ^ k.
+Proof.
+intros Hr u Hu n k.
+unfold nB.
+...
+
 rewrite summation_rtl.
 rewrite summation_shift; [ | easy ].
 remember (n - 1 - i) as k eqn:Hk.
