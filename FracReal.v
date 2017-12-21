@@ -147,11 +147,11 @@ Definition numbers_to_digits {r : radix} u i :=
   | inl _ =>
       let n := rad * (i + 2) in
       let s := rad ^ (n - 1 - i) in
-      (u i + nA i n u / s + 1) mod rad
+      (u i + nA i n u / s) mod rad
   | inr (exist _ k _) =>
       let n := rad * (i + k + 2) in
       let s := rad ^ (n - 1 - i) in
-      (u i + nA i n u / s) mod rad
+      (u i + nA i n u / s + 1) mod rad
   end.
 
 Definition freal_add_to_seq {r : radix} (a b : FracReal) :=
@@ -1016,8 +1016,8 @@ Proof.
 intros * Hur.
 unfold numbers_to_digits.
 destruct (LPO_fst (test_seq2 i (freal x))) as [H| H].
-(*
- specialize (H 0) as HH.
+(**)
+-specialize (H 0) as HH.
  unfold test_seq2 in HH; simpl in HH.
  rewrite Nat.add_0_r, Nat.add_0_r, Nat.mul_1_r in HH.
  remember (rad * (i + 2)) as n eqn:Hn.
@@ -1026,7 +1026,12 @@ destruct (LPO_fst (test_seq2 i (freal x))) as [H| H].
    (lt_dec (nA i n (freal x) mod s * rad + nB n 0 (freal x))
       (rad ^ (n - i)))
   as [Hlt| Hge]; [ clear HH | easy ].
-*)
+ rewrite Nat.div_small.
+ +now rewrite Nat.add_0_r, Nat.mod_small.
+ +idtac.
+...
+(**)
+...
  assert (∀ k : nat, False).
   intros k.
   pose proof (H k) as Hk.
