@@ -127,11 +127,23 @@ Definition freal_mul_series {r : radix} a b i :=
 Definition nA {r : radix} (rg := nat_ord_ring) i n u :=
   Σ (j = i + 1, n - 1), u j * rad ^ (n - 1 - j).
 
+Definition nB {r : radix} (rg := nat_ord_ring) n k u :=
+  Σ (j = n, n + k), u j * rad ^ (n + k - j).
+
 Definition test_seq {r : radix} i u k :=
   let n := rad * (i + k + 2) in
   let s := rad ^ (n - 1 - i) in
   if le_dec ((rad ^ k - 1) * s) (rad ^ k * (nA i n u mod s)) then 0
   else 1.
+
+(*
+Definition test2 {r : radix} i u k :=
+  let n := rad * (i + k + 2) in
+  let s := rad ^ (n - 1 - i) in
+  let t := rad ^ (m + k - i) in
+  if lt_dec (nA i n u mod s * r ^ (t - s) + nB n k u) t then 0 else 1
+  if lt_dec (F(A(u,i)n + B(u, i)n,k) 1 then 0 else 1
+*)
 
 Definition numbers_to_digits {r : radix} u i :=
   match LPO_fst (test_seq i u) with
@@ -984,6 +996,8 @@ destruct (LPO_fst (test_seq i (freal x))) as [H| H].
  destruct (le_dec ((rad - 1) * s) (rad * (nA i n (freal x) mod s)))
   as [Hle| Hgt]; [ clear HH | easy ].
 *)
+Print test_seq.
+Print nA.
  assert (∀ k : nat, False).
   intros k.
   pose proof (H k) as Hk.
