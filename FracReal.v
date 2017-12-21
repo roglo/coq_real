@@ -1016,6 +1016,15 @@ Proof.
 intros * Hur.
 unfold numbers_to_digits.
 destruct (LPO_fst (test_seq2 i (freal x))) as [H| H].
+ specialize (H 0) as HH.
+ unfold test_seq2 in HH; simpl in HH.
+ rewrite Nat.add_0_r, Nat.add_0_r, Nat.mul_1_r in HH.
+ destruct
+   (lt_dec
+      (nA i (rad * (i + 2)) (freal x) mod rad ^ (rad * (i + 2) - 1 - i) *
+       rad + nB (rad * (i + 2)) 0 (freal x))
+      (rad ^ (rad * (i + 2) - i)))
+  as [Hle| Hgt]; [ clear HH | easy ].
 ...
 
 (*
