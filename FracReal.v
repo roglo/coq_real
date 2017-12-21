@@ -1009,11 +1009,11 @@ bbb.
 bbb.
 *)
 
-Theorem numbers_to_digits_id {r : radix} : ∀ x i,
+Theorem numbers_to_digits_id {r : radix} : 0 < rad → ∀ x i,
   (∀ i, freal x i < rad)
   → numbers_to_digits (freal x) i = freal x i.
 Proof.
-intros * Hur.
+intros Hr * Hur.
 unfold numbers_to_digits.
 destruct (LPO_fst (test_seq2 i (freal x))) as [H| H].
 -specialize (H 0) as HH.
@@ -1037,7 +1037,13 @@ admit.
    (lt_dec (nA i n (freal x) mod s * rad ^ (k + 1) + nB n k (freal x))
      (rad ^ (n + k - i)))
   as [Hlt| Hge]; [ easy | clear Hts ].
- apply Nat.nlt_ge in Hge.
+ exfalso; apply Hge; clear Hge.
+ assert (Hin : i + 1 ≤ n - 1).
+  subst n; destruct rad as [| rd]; [ easy | simpl; lia ].
+
+  specialize (nA_dig_seq_ub Hr _ Hur n i Hin) as HnA.
+  rewrite <- Hs in HnA.
+  rewrite Nat.mod_small; [ | easy ].
 ...
 
 Theorem dig_norm_add_0_l {r : radix} : ∀ x i,
