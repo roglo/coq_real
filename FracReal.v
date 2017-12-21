@@ -1016,7 +1016,6 @@ Proof.
 intros * Hur.
 unfold numbers_to_digits.
 destruct (LPO_fst (test_seq2 i (freal x))) as [H| H].
-(**)
 -specialize (H 0) as HH.
  unfold test_seq2 in HH; simpl in HH.
  rewrite Nat.add_0_r, Nat.add_0_r, Nat.mul_1_r in HH.
@@ -1028,76 +1027,18 @@ destruct (LPO_fst (test_seq2 i (freal x))) as [H| H].
   as [Hlt| Hge]; [ clear HH | easy ].
  rewrite Nat.div_small.
  +now rewrite Nat.add_0_r, Nat.mod_small.
- +idtac.
-...
-(**)
-...
- assert (∀ k : nat, False).
-  intros k.
-  pose proof (H k) as Hk.
-  unfold test_seq2 in Hk.
-  remember (rad * (i + k + 2)) as n eqn:Hn.
-  remember (rad ^ (n - 1 - i)) as s eqn:Hs.
-  remember (rad ^ (n + k - i)) as t eqn:Ht.
-  destruct
-    (lt_dec (nA i n (freal x) mod s * rad ^ (k + 1) + nB n k (freal x)) t)
-    as [Hlt| Hge]; [ clear Hk | easy ].
-...
-rad ^ k - 1 = 99...99
-              -------
-                 k
-s = 100...00
-     -------
-    n - 1 - i
-
-(rad ^ k - 1) * s = 99...9900...00
-                    -------=======
-                       k    n-1-i
-
-rad ^ k = 100...00
-           -------
-              k
-nA i n u = xx...xx        ... mod s = itself
-           -------
-            n-1-i
-
-rad ^ k * (nA i n u mod s) = xx...xx00...00
-                             =======-------
-                              n-1-i    k
-
-
- remember (rad * (i + 2)) as n eqn:Hn.
+ +unfold nA; rewrite Hs.
+admit.
+-destruct H as (k & Hjk & Hts).
+ unfold test_seq2 in Hts.
+ remember (rad * (i + k + 2)) as n eqn:Hn.
  remember (rad ^ (n - 1 - i)) as s eqn:Hs.
-
-(* probablement vrai mais inutile
- assert
-   (Hk : ∀ k,
-    let n := rad * (i + k + 2) in
-    let s := rad ^ (n - 1 - i) in
-    (rad ^ k - 1) * s ≤ rad ^ k * nA i n u).
-   clear -H Hu.
-   intros k n s.
-   unfold test_seq in H.
-   specialize (H k).
-   fold n s in H.
-   destruct (le_dec ((rad ^ k - 1) * s) (rad ^ k * (nA i n u mod s)))
-    as [Hk| Hk]; [ clear H | easy ].
-   eapply Nat.le_trans; [ eassumption | ].
-   apply Nat.mul_le_mono_nonneg_l; [ lia | ].
-   enough (nA i n u < s).
-    apply Nat.mod_le; unfold s.
-    apply Nat.pow_nonzero.
-    easy.
-
-    unfold nA.
-    clear Hk.
-*)
-(* ouais mais nA i n u < s (à vérifier, mais je pense que c'est bon).
-   du coup, c'est faux, crotte alors *)
-(* peut-être que le numbers_to_digits en fait renvoit un nombre normalisé.
-   faut voir... *)
-Abort.
-*)
+ destruct
+   (lt_dec (nA i n (freal x) mod s * rad ^ (k + 1) + nB n k (freal x))
+     (rad ^ (n + k - i)))
+  as [Hlt| Hge]; [ easy | clear Hts ].
+ apply Nat.nlt_ge in Hge.
+...
 
 Theorem dig_norm_add_0_l {r : radix} : ∀ x i,
   freal (freal_normalize (0 + x)) i = freal (freal_normalize x) i.
