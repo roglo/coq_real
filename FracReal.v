@@ -130,17 +130,19 @@ Definition nA {r : radix} (rg := nat_ord_ring) i n u :=
 Definition nB {r : radix} (rg := nat_ord_ring) n k u :=
   Σ (j = n, n + k), u j * rad ^ (n + k - j).
 
+(* probably bad *)
 Definition test_seq {r : radix} i u k :=
   let n := rad * (i + k + 2) in
   let s := rad ^ (n - 1 - i) in
   if le_dec ((rad ^ k - 1) * s) (rad ^ k * (nA i n u mod s)) then 0
   else 1.
 
+(* good version *)
 Definition test_seq2 {r : radix} i u k :=
   let n := rad * (i + k + 2) in
   let s := rad ^ (n - 1 - i) in
-  let t := rad ^ (n + k - i) in
-  if lt_dec (nA i n u mod s * rad ^ (k + 1) + nB n k u) t then 0 else 1.
+  let t := rad ^ (n + k + 1) in
+  if lt_dec (nA i n u mod s * n + nB n k u) t then 0 else 1.
 
 Definition numbers_to_digits {r : radix} u i :=
   match LPO_fst (test_seq2 i u) with
@@ -1037,24 +1039,25 @@ unfold numbers_to_digits.
 destruct (LPO_fst (test_seq2 i (freal x))) as [H| H].
 -specialize (H 0) as HH.
  unfold test_seq2 in HH; simpl in HH.
- rewrite Nat.add_0_r, Nat.add_0_r, Nat.mul_1_r in HH.
+ rewrite Nat.add_0_r, Nat.add_0_r in HH.
  remember (rad * (i + 2)) as n eqn:Hn.
  remember (rad ^ (n - 1 - i)) as s eqn:Hs.
  destruct
-   (lt_dec (nA i n (freal x) mod s * rad + nB n 0 (freal x))
-      (rad ^ (n - i)))
+   (lt_dec (nA i n (freal x) mod s * n + nB n 0 (freal x))
+      (rad ^ (n + 1)))
   as [Hlt| Hge]; [ clear HH | easy ].
  rewrite Nat.div_small.
  +now rewrite Nat.add_0_r, Nat.mod_small.
- +unfold nA; rewrite Hs.
-admit.
+ +rewrite Hs.
+  apply nA_dig_seq_ub; [ easy | easy | ].
+  subst n; destruct rad as [| rd]; [ easy | simpl; lia ].
 -destruct H as (k & Hjk & Hts).
  unfold test_seq2 in Hts.
  remember (rad * (i + k + 2)) as n eqn:Hn.
  remember (rad ^ (n - 1 - i)) as s eqn:Hs.
  destruct
-   (lt_dec (nA i n (freal x) mod s * rad ^ (k + 1) + nB n k (freal x))
-     (rad ^ (n + k - i)))
+   (lt_dec (nA i n (freal x) mod s * n + nB n k (freal x))
+     (rad ^ (n + k + 1)))
   as [Hlt| Hge]; [ easy | clear Hts ].
  exfalso; apply Hge; clear Hge.
  assert (Hin : i + 1 ≤ n - 1).
