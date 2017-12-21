@@ -565,28 +565,22 @@ apply Nat.le_add_le_sub_l.
 apply Hu.
 Qed.
 
-Print nB.
-
 Theorem nB_dig_seq_ub {r : radix} : 0 < rad → ∀ u,
-  (∀ i, u i < rad) → ∀ n k, nB n k u < rad ^ k.
+  (∀ i, u i < rad) → ∀ n k, nB n k u < rad ^ S k.
 Proof.
 intros Hr u Hu n k.
 unfold nB.
 rewrite summation_rtl.
 rewrite summation_shift; [ | lia ].
 rewrite Nat.add_comm, Nat.add_sub.
-bbb.
-remember (n - 1 - i) as k eqn:Hk.
-destruct k; [ lia | ].
 rewrite power_summation; [ | easy ].
-replace (n - 1 - (i + 1)) with k by lia.
 unfold lt; simpl.
 apply -> Nat.succ_le_mono.
 rewrite summation_mul_distr_l.
 apply (@summation_le_compat _ nat_ord_ring).
 intros j Hj.
-replace (n - 1 + (i + 1) - (i + 1 + j)) with (n - 1 - j) by lia.
-replace (n - 1 - (n - 1 - j)) with j by lia.
+replace (k + n + n - (n + j)) with (k + n - j) by lia.
+replace (k + n - (k + n - j)) with j by lia.
 apply Nat.mul_le_mono_nonneg_r; [ lia | ].
 apply Nat.le_add_le_sub_l.
 apply Hu.
@@ -1069,6 +1063,8 @@ admit.
   specialize (nA_dig_seq_ub Hr _ Hur n i Hin) as HnA.
   rewrite <- Hs in HnA.
   rewrite Nat.mod_small; [ | easy ].
+  specialize (nB_dig_seq_ub Hr _ Hur n k) as HnB.
+  subst s.
 ...
 
 Theorem dig_norm_add_0_l {r : radix} : ∀ x i,
