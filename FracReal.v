@@ -1016,41 +1016,28 @@ Proof.
 intros * Hur.
 unfold numbers_to_digits.
 destruct (LPO_fst (test_seq2 i (freal x))) as [H| H].
+(*
  specialize (H 0) as HH.
  unfold test_seq2 in HH; simpl in HH.
  rewrite Nat.add_0_r, Nat.add_0_r, Nat.mul_1_r in HH.
- destruct
-   (lt_dec
-      (nA i (rad * (i + 2)) (freal x) mod rad ^ (rad * (i + 2) - 1 - i) *
-       rad + nB (rad * (i + 2)) 0 (freal x))
-      (rad ^ (rad * (i + 2) - i)))
-  as [Hle| Hgt]; [ clear HH | easy ].
-...
-
-(*
  remember (rad * (i + 2)) as n eqn:Hn.
  remember (rad ^ (n - 1 - i)) as s eqn:Hs.
+ destruct
+   (lt_dec (nA i n (freal x) mod s * rad + nB n 0 (freal x))
+      (rad ^ (n - i)))
+  as [Hlt| Hge]; [ clear HH | easy ].
 *)
-(*
- specialize (H 1) as HH.
- unfold test_seq in HH; simpl in HH.
- rewrite Nat.mul_1_r in HH.
- remember (rad * (i + 1 + 2)) as n eqn:Hn.
- remember (rad ^ (n - 1 - i)) as s eqn:Hs.
- destruct (le_dec ((rad - 1) * s) (rad * (nA i n (freal x) mod s)))
-  as [Hle| Hgt]; [ clear HH | easy ].
-*)
-Print test_seq.
-Print nA.
  assert (∀ k : nat, False).
   intros k.
   pose proof (H k) as Hk.
-  unfold test_seq in Hk.
+  unfold test_seq2 in Hk.
   remember (rad * (i + k + 2)) as n eqn:Hn.
   remember (rad ^ (n - 1 - i)) as s eqn:Hs.
-  destruct (le_dec ((rad ^ k - 1) * s) (rad ^ k * (nA i n (freal x) mod s)))
-   as [Hle| Hgt]; [ clear Hk | easy ].
-bbb.
+  remember (rad ^ (n + k - i)) as t eqn:Ht.
+  destruct
+    (lt_dec (nA i n (freal x) mod s * rad ^ (k + 1) + nB n k (freal x)) t)
+    as [Hlt| Hge]; [ clear Hk | easy ].
+...
 rad ^ k - 1 = 99...99
               -------
                  k
