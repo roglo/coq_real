@@ -572,10 +572,10 @@ Theorem nB_dig_seq_ub {r : radix} : 0 < rad → ∀ u,
 Proof.
 intros Hr u Hu n k.
 unfold nB.
-...
-
 rewrite summation_rtl.
-rewrite summation_shift; [ | easy ].
+rewrite summation_shift; [ | lia ].
+rewrite Nat.add_comm, Nat.add_sub.
+bbb.
 remember (n - 1 - i) as k eqn:Hk.
 destruct k; [ lia | ].
 rewrite power_summation; [ | easy ].
