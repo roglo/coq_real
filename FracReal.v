@@ -952,10 +952,21 @@ Search numbers_to_digits.
 Qed.
 *)
 
+Require Import QArith.
+Definition freal_eq_prop {r : radix} x y := freal_eq x y = true.
+
+Add Parametric Morphism {r : radix} : freal_add
+  with signature freal_eq_prop ==> freal_eq_prop ==> freal_eq_prop
+  as freal_add_morph.
+Admitted.
+
 Theorem freal_add_assoc {r : radix} : ∀ x y z,
   (x + (y + z) = (x + y) + z)%F.
 Proof.
 intros.
+Check freal_add_morph.
+rewrite (@freal_add_comm r).
+...
 unfold freal_eq.
 unfold freal_normalized_eq.
 remember (freal_normalize (x + (y + z))) as nx_yz eqn:Hnx_yz.
