@@ -842,11 +842,19 @@ destruct (LPO_fst (λ j : nat, rad - 1 - nx0 (i + j + 1))) as [Hx0| Hx0].
   --exfalso; apply Hrx; clear Hrx.
     unfold freal_add_to_seq in Hrx0.
     rewrite numbers_to_digits_id in Hrx0; [ | easy | ].
-...
-Focus 2.
-intros j.
-rewrite freal_add_series_0_l, <- Hnx.
-apply Hxr.
+   ++rewrite freal_add_series_0_l in Hrx0.
+     now subst nx.
+   ++intros j.
+     now rewrite freal_add_series_0_l; subst nx.
+  *destruct (lt_dec (S (nx i)) rad) as [Hsnr| Hsnr]; [ | easy ].
+   exfalso; apply Hrx0.
+   subst nx nx0.
+   unfold freal_add_to_seq.
+   rewrite numbers_to_digits_id; [ | easy | ].
+  --now rewrite freal_add_series_0_l.
+  --intros j.
+    now rewrite freal_add_series_0_l.
+ +idtac.
 ...
 
 Theorem freal_add_0_l {r : radix} : ∀ x, (0 + x = x)%F.
