@@ -73,8 +73,6 @@ Definition digit_sequence_normalize {r : radix} (u : nat → nat) i :=
   | inr _ => u i
  end.
 
-...
-
 Definition freal_normalize {r : radix} x :=
   {| freal := digit_sequence_normalize (freal x) |}.
 
@@ -467,7 +465,7 @@ subst nxy nyx.
 apply dig_norm_mul_comm.
 Qed.
 
-Theorem freal_add_series_0_x {r : radix} : ∀ x i,
+Theorem freal_add_series_0_l {r : radix} : ∀ x i,
   freal_add_series 0 x i = freal x i.
 Proof.
 intros.
@@ -824,9 +822,10 @@ destruct (LPO_fst (test_seq i (freal x))) as [H| H].
 Qed.
 
 Theorem dig_norm_add_0_l {r : radix} : 0 < rad → ∀ x i,
-  freal (freal_normalize (0 + x)) i = freal (freal_normalize x) i.
+  (∀ j, freal x j < rad)
+  → freal (freal_normalize (0 + x)) i = freal (freal_normalize x) i.
 Proof.
-intros Hr *.
+intros Hr * Hxr.
 unfold freal_normalize.
 remember (freal (0%F + x)) as nx0 eqn:Hnx0.
 remember (freal x) as nx eqn:Hnx.
@@ -843,12 +842,11 @@ destruct (LPO_fst (λ j : nat, rad - 1 - nx0 (i + j + 1))) as [Hx0| Hx0].
     unfold freal_add_to_seq in Hx0.
     unfold freal_add_series; simpl.
     unfold sequence_add; simpl.
-    apply numbers_to_digits_id; [ easy | ].
-    intros j.
-    destruct (lt_dec i j) as [Hij| Hij].
-   ++specialize (Hx (j - i - 1)).
-     replace (i + (j - i - 1) + 1) with j in Hx by lia.
-     apply Nat.sub_0_le in Hx.
+    now apply numbers_to_digits_id.
+  --exfalso; apply Hrx; clear Hrx.
+    unfold freal_add_to_seq in Hrx0.
+...
+    rewrite freal_add_series_0_l in Hrx0.
 ...
 
 Theorem freal_add_0_l {r : radix} : ∀ x, (0 + x = x)%F.
