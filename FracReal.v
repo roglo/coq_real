@@ -142,7 +142,7 @@ Definition test_seq2 {r : radix} i u k :=
   let n := rad * (i + k + 2) in
   let s := rad ^ (n - 1 - i) in
   let t := rad ^ (n + k + 1) in
-  if lt_dec (nA i n u mod s * n + nB n k u) t then 0 else 1.
+  if lt_dec (nA i n u mod s * rad ^ (k + 1) + nB n k u) t then 0 else 1.
 
 Definition numbers_to_digits {r : radix} u i :=
   match LPO_fst (test_seq2 i u) with
@@ -1039,11 +1039,11 @@ unfold numbers_to_digits.
 destruct (LPO_fst (test_seq2 i (freal x))) as [H| H].
 -specialize (H 0) as HH.
  unfold test_seq2 in HH; simpl in HH.
- rewrite Nat.add_0_r, Nat.add_0_r in HH.
+ rewrite Nat.mul_1_r, Nat.add_0_r, Nat.add_0_r in HH.
  remember (rad * (i + 2)) as n eqn:Hn.
  remember (rad ^ (n - 1 - i)) as s eqn:Hs.
  destruct
-   (lt_dec (nA i n (freal x) mod s * n + nB n 0 (freal x))
+   (lt_dec (nA i n (freal x) mod s * rad  + nB n 0 (freal x))
       (rad ^ (n + 1)))
   as [Hlt| Hge]; [ clear HH | easy ].
  rewrite Nat.div_small.
@@ -1056,7 +1056,7 @@ destruct (LPO_fst (test_seq2 i (freal x))) as [H| H].
  remember (rad * (i + k + 2)) as n eqn:Hn.
  remember (rad ^ (n - 1 - i)) as s eqn:Hs.
  destruct
-   (lt_dec (nA i n (freal x) mod s * n + nB n k (freal x))
+   (lt_dec (nA i n (freal x) mod s * rad ^ (k + 1) + nB n k (freal x))
      (rad ^ (n + k + 1)))
   as [Hlt| Hge]; [ easy | clear Hts ].
  exfalso; apply Hge; clear Hge.
@@ -1068,6 +1068,18 @@ destruct (LPO_fst (test_seq2 i (freal x))) as [H| H].
   rewrite Nat.mod_small; [ | easy ].
   specialize (nB_dig_seq_ub Hr _ Hur n k) as HnB.
   subst s.
+  unfold nA, nB.
+  rewrite summation_mul_distr_r; simpl.
+  rewrite summation_eq_compat with (h := λ j, freal x j * rad ^ (n + k - j)).
+Search (Σ (_ = _, _), _ + Σ (_ = _, _), _)%Rg.
+(* cf summation_ub_add in Summation.v to be resurected *)
+bbb.
+
+Focus 2.
+intros j Hj.
+rewrite <- Nat.mul_assoc; f_equal.
+rewrite <- Nat.pow_add_r; f_equal; lia.
+
 ...
 
 Theorem dig_norm_add_0_l {r : radix} : ∀ x i,
