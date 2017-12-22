@@ -521,16 +521,17 @@ induction k₂; intros.
   rewrite Nat.add_succ_r, <- Nat.add_succ_l; reflexivity.
 Qed.
 
-Theorem summation_ub_add `{rg : ord_ring} : ∀ g k₁ k₂,
-  (Σ (i = 0, k₁ + k₂), g i =
-   Σ (i = 0, k₁), g i + Σ (i = S k₁, k₁ + k₂), g i)%Rg.
+Theorem summation_ub_add `{rg : ord_ring} : ∀ g b k₁ k₂,
+  b ≤ S k₁
+  → (Σ (i = b, k₁ + k₂), g i =
+     Σ (i = b, k₁), g i + Σ (i = S k₁, k₁ + k₂), g i)%Rg.
 Proof.
-intros g k₁ k₂.
+intros * Hbk.
 unfold summation.
-do 2 rewrite Nat.sub_0_r.
 rewrite <- Nat.add_succ_l.
-rewrite summation_aux_ub_add; simpl.
-rewrite Nat.add_comm, Nat.add_sub; reflexivity.
+rewrite Nat.add_sub_swap; [ | easy ].
+rewrite summation_aux_ub_add; f_equal.
+f_equal; lia.
 Qed.
 
 (*

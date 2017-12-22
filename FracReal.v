@@ -1037,9 +1037,9 @@ destruct (LPO_fst (test_seq i (freal x))) as [H| H].
   as [Hlt| Hge]; [ easy | clear Hts ].
  exfalso; apply Hge; clear Hge.
  assert (Hin : i + 1 ≤ n - 1).
-  subst n; destruct rad as [| rd]; [ easy | simpl; lia ].
+ +subst n; destruct rad as [| rd]; [ easy | simpl; lia ].
 
-  specialize (nA_dig_seq_ub Hr _ Hur n i Hin) as HnA.
+ +specialize (nA_dig_seq_ub Hr _ Hur n i Hin) as HnA.
   rewrite <- Hs in HnA.
   rewrite Nat.mod_small; [ | easy ].
   specialize (nB_dig_seq_ub Hr _ Hur n k) as HnB.
@@ -1047,16 +1047,11 @@ destruct (LPO_fst (test_seq i (freal x))) as [H| H].
   unfold nA, nB.
   rewrite summation_mul_distr_r; simpl.
   rewrite summation_eq_compat with (h := λ j, freal x j * rad ^ (n + k - j)).
-Search (Σ (_ = _, _), _ + Σ (_ = _, _), _)%Rg.
-(* cf summation_ub_add in Summation.v to be resurected *)
-(* question : la somme finale commence à i+1 et non à 0, est-ce normal ? *)
-bbb.
-
-Focus 2.
-intros j Hj.
-rewrite <- Nat.mul_assoc; f_equal.
-rewrite <- Nat.pow_add_r; f_equal; lia.
-
+  *set (rd := nat_ord_ring_def).
+   set (rg := nat_ord_ring).
+   replace (summation n) with (summation (S (n - 1))).
+  --replace (n + k) with (n - 1 + S k).
+   ++rewrite <- summation_ub_add; [ | lia ].
 ...
 
 Theorem dig_norm_add_0_l {r : radix} : ∀ x i,
