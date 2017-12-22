@@ -885,8 +885,73 @@ subst n0x nx; simpl.
 now apply dig_norm_add_0_l.
 Qed.
 
+Theorem dig_norm_add_assoc {r : radix} : ∀ x y z i,
+  freal (freal_normalize (x + (y + z))) i = freal (freal_normalize (x + y + z)) i.
+Proof.
+intros.
+unfold freal_normalize.
+remember (freal (x + (y + z))) as xy.
+remember (freal ((x + y) + z)) as yx.
+simpl.
+unfold digit_sequence_normalize.
+destruct (LPO_fst (λ j : nat, rad - 1 - xy (i + j + 1))) as [Hxy| Hxy].
+ destruct (LPO_fst (λ j : nat, rad - 1 - yx (i + j + 1))) as [Hyx| Hyx].
+  unfold freal_add in Heqxy; simpl in Heqxy.
+  unfold freal_add in Heqyx; simpl in Heqyx.
+  destruct (lt_dec (S (xy i)) rad) as [Hrxy| Hrxy].
+   subst xy; simpl in Hrxy; simpl.
+   destruct (lt_dec (S (yx i)) rad) as [Hryx| Hryx].
+    unfold freal_add in Heqyx; simpl in Heqyx.
+    subst yx; simpl in Hryx; simpl.
+unfold freal_add_to_seq.
+Search numbers_to_digits.
+...
+    now rewrite freal_add_to_seq_i_comm.
+
+    subst yx; simpl in Hryx.
+    now rewrite freal_add_to_seq_i_comm in Hryx.
+
+   destruct (lt_dec (S (yx i)) rad) as [Hryx| Hryx]; [ | easy ].
+   exfalso.
+   subst xy yx; simpl in Hrxy, Hryx.
+   now rewrite freal_add_to_seq_i_comm in Hryx.
+
+  destruct Hyx as (k & Hjk & Hk); clear Hjk.
+  unfold freal_mul in Heqyx; simpl in Heqyx.
+  subst yx; simpl in Hk; simpl.
+  rewrite freal_add_to_seq_i_comm in Hk.
+  unfold freal_add in Heqxy; simpl in Heqxy.
+  subst xy; simpl in Hxy; simpl.
+  now specialize (Hxy k).
+
+ destruct Hxy as (k & Hjk & Hk).
+ unfold freal_add in Heqxy; simpl in Heqxy.
+ unfold freal_add in Heqyx; simpl in Heqyx.
+ destruct (LPO_fst (λ j : nat, rad - 1 - yx (i + j + 1))) as [Hyx| Hyx].
+  exfalso; clear Hjk.
+  subst xy yx; simpl in Hk, Hyx; simpl.
+  rewrite freal_add_to_seq_i_comm in Hk.
+  now specialize (Hyx k).
+
+  subst xy yx; simpl.
+  apply freal_add_to_seq_i_comm.
+Qed.
+
 Theorem freal_add_assoc {r : radix} : ∀ x y z,
   (x + (y + z) = (x + y) + z)%F.
 Proof.
 intros.
+unfold freal_eq.
+unfold freal_normalized_eq.
+remember (freal_normalize (x + (y + z))) as nx_yz eqn:Hnx_yz.
+remember (freal_normalize ((x + y) + z)) as nxy_z eqn:Hnxy_z.
+destruct (LPO_fst (eq_freal_seq nx_yz nxy_z)) as [H| H]; [ easy | ].
+exfalso.
+destruct H as (i & Hji & Hi).
+apply Hi; clear Hi.
+unfold eq_freal_seq.
+destruct (Nat.eq_dec (freal nx_yz i) (freal nxy_z i)) as [H| H]; [ easy | ].
+exfalso; apply H; clear H.
+subst nx_yz nxy_z.
+rewrite dig_norm_add_assoc.
 ...
