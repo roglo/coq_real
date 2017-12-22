@@ -879,8 +879,7 @@ apply Hi; clear Hi.
 unfold eq_freal_seq.
 destruct (Nat.eq_dec (freal n0x i) (freal nx i)) as [H| H]; [ easy | ].
 exfalso; apply H; clear H.
-subst n0x nx.
-simpl.
+subst n0x nx; simpl.
 apply dig_norm_add_0_l; [ easy | ].
 intros.
 ...
