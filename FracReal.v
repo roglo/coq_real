@@ -895,10 +895,24 @@ remember (freal ((x + y) + z)) as yx.
 simpl.
 unfold digit_sequence_normalize.
 destruct (LPO_fst (λ j : nat, rad - 1 - xy (i + j + 1))) as [Hxy| Hxy].
- destruct (LPO_fst (λ j : nat, rad - 1 - yx (i + j + 1))) as [Hyx| Hyx].
-  unfold freal_add in Heqxy; simpl in Heqxy.
+-destruct (LPO_fst (λ j : nat, rad - 1 - yx (i + j + 1))) as [Hyx| Hyx].
+ +unfold freal_add in Heqxy; simpl in Heqxy.
   unfold freal_add in Heqyx; simpl in Heqyx.
   destruct (lt_dec (S (xy i)) rad) as [Hrxy| Hrxy].
+  *destruct (lt_dec (S (yx i)) rad) as [Hryx| Hryx].
+  --f_equal.
+    subst xy yx; simpl.
+    unfold freal_add_to_seq.
+
+Theorem glop {r : radix} : ∀ x y,
+  numbers_to_digits (freal_add_series {| freal := numbers_to_digits x |} y) =
+  numbers_to_digits (freal_add_series {| freal := x |} y).
+Admitted. Show.
+    rewrite glop.
+Abort. (*
+    rewrite freal_add_series_comm.
+...
+
    subst xy; simpl in Hrxy; simpl.
    destruct (lt_dec (S (yx i)) rad) as [Hryx| Hryx].
     unfold freal_add in Heqyx; simpl in Heqyx.
@@ -936,6 +950,7 @@ Search numbers_to_digits.
   subst xy yx; simpl.
   apply freal_add_to_seq_i_comm.
 Qed.
+*)
 
 Theorem freal_add_assoc {r : radix} : ∀ x y z,
   (x + (y + z) = (x + y) + z)%F.
