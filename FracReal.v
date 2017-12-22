@@ -748,21 +748,19 @@ induction j; intros.
    now apply rad_pow_succ_gt_1.
 Qed.
 
-Theorem numbers_to_digits_id {r : radix} : 0 < rad → ∀ x i,
-  (∀ i, freal x i < rad)
-  → numbers_to_digits (freal x) i = freal x i.
+Theorem numbers_to_digits_id {r : radix} : 0 < rad → ∀ u i,
+  (∀ i, u i < rad)
+  → numbers_to_digits u i = u i.
 Proof.
 intros Hr * Hur.
 unfold numbers_to_digits.
-destruct (LPO_fst (test_seq i (freal x))) as [H| H].
+destruct (LPO_fst (test_seq i u)) as [H| H].
 -specialize (H 0) as HH.
  unfold test_seq in HH; simpl in HH.
  rewrite Nat.mul_1_r, Nat.add_0_r, Nat.add_0_r in HH.
  remember (rad * (i + 2)) as n eqn:Hn.
  remember (rad ^ (n - 1 - i)) as s eqn:Hs.
- destruct
-   (lt_dec (nA i n (freal x) mod s * rad  + nB n 0 (freal x))
-      (rad ^ (n + 1)))
+ destruct (lt_dec (nA i n u mod s * rad  + nB n 0 u) (rad ^ (n + 1)))
   as [Hlt| Hge]; [ clear HH | easy ].
  rewrite Nat.div_small.
  +now rewrite Nat.add_0_r, Nat.mod_small.
@@ -774,8 +772,7 @@ destruct (LPO_fst (test_seq i (freal x))) as [H| H].
  remember (rad * (i + k + 2)) as n eqn:Hn.
  remember (rad ^ (n - 1 - i)) as s eqn:Hs.
  destruct
-   (lt_dec (nA i n (freal x) mod s * rad ^ (k + 1) + nB n k (freal x))
-     (rad ^ (n + k + 1)))
+   (lt_dec (nA i n u mod s * rad ^ (k + 1) + nB n k u) (rad ^ (n + k + 1)))
   as [Hlt| Hge]; [ easy | clear Hts ].
  exfalso; apply Hge; clear Hge.
  assert (Hin : i + 1 ≤ n - 1).
@@ -788,15 +785,14 @@ destruct (LPO_fst (test_seq i (freal x))) as [H| H].
   subst s.
   unfold nA, nB.
   rewrite summation_mul_distr_r; simpl.
-  rewrite summation_eq_compat with (h := λ j, freal x j * rad ^ (n + k - j)).
+  rewrite summation_eq_compat with (h := λ j, u j * rad ^ (n + k - j)).
   *set (rd := nat_ord_ring_def).
    set (rg := nat_ord_ring).
    replace (summation n) with (summation (S (n - 1))) by (f_equal; lia).
    rewrite <- summation_ub_add with (k₂ := k + 1); [ | lia | lia ].
    replace (n + k + 1) with (S (n + k)) by lia.
    rewrite power_summation; [ | easy ].
-   apply le_lt_trans with
-      (m := Σ (j = 0, n + k), freal x j * rad ^ (n + k - j)).
+   apply le_lt_trans with (m := Σ (j = 0, n + k), u j * rad ^ (n + k - j)).
   --remember (summation (i + 1) (n + k)) as f.
     rewrite summation_ub_add with (k₁ := i) (k₂ := n + k - i);
       [ subst f | lia | lia ].
@@ -845,8 +841,12 @@ destruct (LPO_fst (λ j : nat, rad - 1 - nx0 (i + j + 1))) as [Hx0| Hx0].
     now apply numbers_to_digits_id.
   --exfalso; apply Hrx; clear Hrx.
     unfold freal_add_to_seq in Hrx0.
+    rewrite numbers_to_digits_id in Hrx0; [ | easy | ].
 ...
-    rewrite freal_add_series_0_l in Hrx0.
+Focus 2.
+intros j.
+rewrite freal_add_series_0_l, <- Hnx.
+apply Hxr.
 ...
 
 Theorem freal_add_0_l {r : radix} : ∀ x, (0 + x = x)%F.
