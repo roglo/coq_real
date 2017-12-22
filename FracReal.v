@@ -68,10 +68,12 @@ Record FracReal {r : radix} := { freal : nat → nat }.
 Arguments freal r _%F.
 
 Definition digit_sequence_normalize {r : radix} (u : nat → nat) i :=
-  match LPO_fst (λ j : nat, rad - 1 - u (i + j + 1)) with
+  match LPO_fst (λ j, rad - 1 - u (i + j + 1)) with
   | inl _ => if lt_dec (S (u i)) rad then S (u i) else 0
   | inr _ => u i
  end.
+
+...
 
 Definition freal_normalize {r : radix} x :=
   {| freal := digit_sequence_normalize (freal x) |}.
@@ -585,148 +587,6 @@ rewrite Nat.add_sub_swap in Hj.
  rewrite Nat.mul_comm; simpl; lia.
 Qed.
 
-(*
-Theorem test_seq_all_0 {r : radix} : 1 < rad → ∀ u,
-  (∀ i, u i < rad)
-  → ∀ i,
-  (∀ k, test_seq i u k = 0)
-  → ∀ k, u (i + k + 1) = rad - 1.
-Proof.
-intros Hr.
-assert (Hrz : rad ≠ 0) by lia.
-intros * Hur * Huk *.
-specialize (Huk (S k)).
-unfold test_seq in Huk.
-set (n := rad * (i + S k + 2)) in Huk.
-set (s := rad ^ (n - 1 - i)) in Huk.
-destruct (le_dec ((rad ^ S k - 1) * s) (rad ^ S k * (nA i n u mod s)))
-  as [H| H]; [ clear Huk | easy ].
-remember (n - 1 - i) as j eqn:Hj.
-symmetry in Hj.
-rewrite Nat.mod_small in H.
--destruct j.
- +simpl in s; subst s.
-  rewrite Nat.mul_1_r in H.
-  unfold nA in H.
-  rewrite summation_empty in H; [ | lia ].
-  rewrite Nat.mul_0_r in H.
-  apply Nat.le_0_r in H.
-  apply Nat.sub_0_le in H.
-  exfalso; apply Nat.le_ngt in H.
-  apply H; clear H; clear - Hr.
-  now apply rad_pow_succ_gt_1.
-
- +remember (rad ^ S k * nA i n u) as a eqn:Ha.
-  rewrite Nat.mul_comm in Ha; subst a.
-  unfold nA in H; subst s.
-  revert i j n Hj H.
-  induction k; intros.
-  *rewrite Nat.add_0_r.
-   simpl in H.
-   rewrite Nat.mul_1_r in H.
-   rewrite Nat.mul_assoc, Nat.mul_shuffle0 in H.
-   apply Nat.mul_le_mono_pos_r in H; [ | lia ].
-   rewrite summation_shift in H; [ | lia ].
-   replace (n - 1 - (i + 1)) with j in H by lia.
-   rewrite summation_eq_compat with (h := λ k, u (i + 1 + k) * rad ^ (j - k))
-     in H.
-   2: intros k Hk; f_equal; f_equal; lia.
-   remember (λ k, u (i + 1 + k) * rad ^ (j - k)) as a; subst a.
-   clear Hj n.
-   revert u i H Hur.
-   induction j; intros.
-  --rewrite Nat.pow_0_r in H; simpl in H.
-    rewrite summation_only_one in H.
-    do 2 rewrite Nat.mul_1_r in H.
-    rewrite Nat.add_0_r in H.
-    specialize (Hur (i + 1)); lia.
-
-  --apply IHj; clear IHj; [ | easy ].
-    eapply Nat.div_le_mono in H; [ | apply Hrz ].
-    remember minus as f; simpl in H; subst f.
-    rewrite Nat.mul_assoc, Nat.mul_shuffle0 in H.
-    rewrite Nat.div_mul in H; [ | easy ].
-    eapply Nat.le_trans; [ eassumption | ].
-    rewrite summation_split_last; [ | lia ].
-    rewrite summation_eq_compat with
-      (h := λ k, u (i + 1 + k) * rad ^ (j - k) * rad).
-   ++rewrite <- summation_mul_distr_r.
-     rewrite Nat.div_add_l; [ | easy ].
-     rewrite Nat.sub_diag, Nat.pow_0_r, Nat.mul_1_r.
-     rewrite Nat.div_small; [ | apply Hur ].
-     now rewrite Nat.add_0_r.
-
-   ++intros k Hk.
-     rewrite Nat.sub_succ_l; [ simpl; lia | easy ].
-
-  *destruct j.
-    unfold n in Hj; clear -Hr Hj; exfalso.
-    now revert Hj; apply rad_expr.
-
-    replace (i + S k) with (S i + k) by lia.
-    apply IHk with (j := j).
-     replace (S i + S k) with (i + S (S k)) by lia.
-     fold n; lia.
-
-     replace (S i + S k + 2) with (i + S (S k) + 2) by lia; fold n.
-     replace (rad ^ S (S j)) with (rad * rad ^ S j) in H by easy.
-     replace (rad ^ S (S k)) with (rad * rad ^ S k) in H by easy.
-     setoid_rewrite Nat.mul_comm in H.
-     setoid_rewrite Nat.mul_comm.
-     do 2 rewrite <- Nat.mul_assoc in H.
-     apply Nat.mul_le_mono_pos_l in H; [ | lia ].
-     rewrite summation_split_first in H; [ | lia ].
-     rewrite summation_shift in H; [ | lia ].
-     replace (n - 1 - S (i + 1)) with j in H by lia.
-     rewrite summation_shift; [ | lia ].
-     replace (n - 1 - (S i + 1)) with j by lia.
-     replace (rad * rad ^ S k - 1)
-     with (rad ^ S k - 1 + (rad - 1) * rad ^ S k) in H.
-      rewrite Nat.mul_add_distr_l in H.
-      rewrite Nat.mul_add_distr_l in H.
-      replace (n - 1 - (i + 1)) with (S j) in H by lia.
-      rewrite Nat.add_comm in H.
-      setoid_rewrite Nat.add_comm in H.
-      replace (rad ^ S j * ((rad - 1) * rad ^ S k))
-      with (rad ^ S k * ((rad - 1) * rad ^ S j))
-      in H by lia.
-      apply Nat.le_le_add_le in H; [ easy | ].
-      apply Nat.mul_le_mono_nonneg_l; [ lia | ].
-      apply Nat.mul_le_mono_nonneg_r; [ lia | ].
-      rewrite Nat.sub_1_r.
-      apply Nat.lt_le_pred, Hur.
-
-      rewrite Nat.mul_sub_distr_r.
-      rewrite Nat.mul_1_l.
-      rewrite Nat.add_sub_assoc.
-       rewrite <- Nat.add_sub_swap.
-        rewrite <- Nat.add_sub_assoc.
-         now rewrite Nat.add_comm, Nat.add_sub.
-
-         rewrite <- Nat.pow_succ_r; [ | lia ].
-         replace 1 with (1 ^ S (S k)) by apply Nat.pow_1_l.
-         apply Nat.pow_le_mono_l; lia.
-
-        replace 1 with (1 ^ S k) by apply Nat.pow_1_l.
-        apply Nat.pow_le_mono_l; lia.
-
-       rewrite <- Nat.pow_succ_r; [ | lia ].
-       replace (rad ^ S k) with (1 * rad ^ S k) at 1 by lia.
-       apply Nat.mul_le_mono_nonneg_r; lia.
-
--unfold s; rewrite <- Hj.
- apply nA_dig_seq_ub; [ lia | easy | ].
- destruct j; [ | lia ].
- simpl in s; subst s.
- rewrite Nat.mod_1_r, Nat.mul_1_r, Nat.mul_0_r in H.
- apply Nat.le_0_r in H.
- apply Nat.sub_0_le in H.
- exfalso; apply Nat.le_ngt in H.
- apply H; clear H; clear -Hr.
- now apply rad_pow_succ_gt_1.
-Qed.
-*)
-
 Theorem nA_all_9 {r : radix} : 0 < rad → ∀ u i n,
   (∀ j, u (i + j + 1) = rad - 1)
   → nA i n u = rad ^ (n - i - 1) - 1.
@@ -757,37 +617,6 @@ rewrite summation_eq_compat with (h := λ j, (rad - 1) * rad ^ (n - 1 - j)).
   rewrite summation_empty; [ | lia ].
   rewrite Nat.mul_0_r; simpl; lia.
 Qed.
-
-(*
-Theorem glop : ∀ r i j d, i ≤ j →
-  (r ^ (i + d) - 1) * r ^ j ≤ r ^ i * (r ^ (j + d) - 1).
-Proof.
-intros * Hij.
-destruct i.
- simpl; rewrite Nat.add_0_r; clear Hij.
- revert j.
- induction d; intros; [ simpl; lia | ].
-bbb.
-
-Theorem pow_pow_sub_1 : ∀ r i j, i ≤ j →
-  (r ^ i - 1) * r ^ j ≤ r ^ i * (r ^ j - 1).
-Proof.
-intros * Hij.
-destruct i; [ simpl; lia | ].
-destruct j; [ lia | ].
-rewrite Nat.mul_comm; simpl.
-do 2 rewrite <- Nat.mul_assoc.
-apply Nat.mul_le_mono_nonneg_l; [ lia | ].
-rewrite <- Nat.pow_succ_r; [ | lia ].
-rewrite <- Nat.pow_succ_r; [ | lia ].
-bbb.
-
-rewrite Nat.mul_comm.
-rewrite power_summation.
- rewrite Nat.add_sub_swap; [ | easy ].
- rewrite Nat.sub_diag, Nat.add_0_l.
-bbb.
-*)
 
 Theorem list_of_nat_pow_succ_sub_1 {r : radix} : 1 < rad → ∀ i,
   list_of_nat 0 (rad ^ S i - 1) = rad - 1 :: list_of_nat 0 (rad ^ i - 1).
@@ -921,91 +750,6 @@ induction j; intros.
    now apply rad_pow_succ_gt_1.
 Qed.
 
-Theorem nA_all_9_ge {r : radix} : 1 < rad → ∀ u i k,
-  let n := rad * (i + k + 2) in
-  let s := rad ^ (n - 1 - i) in
-  (∀ j, u (i + j + 1) = rad - 1)
-  → (rad ^ k - 1) * s ≤ rad ^ k * nA i n u.
-Proof.
-intros Hr * Hi.
-replace (nA i n u) with (rad ^ (n - i - 1) - 1).
-2: symmetry; apply nA_all_9; [ lia | easy ].
-assert (Hk : k ≤ n - i - 1).
--subst n; clear -Hr.
- replace (rad * (i + k + 2) - i - 1)
- with (rad * (i + 1) + rad * (k + 1) - 1 * (i + 1)) by lia.
- rewrite Nat.add_sub_swap.
- +rewrite <- Nat.mul_sub_distr_r.
-  apply le_trans with (m := rad * (k + 1)); [ | lia ].
-  apply le_trans with (m := rad * k); [ | lia ].
-  destruct rad as [| n]; [ lia | simpl; lia ].
- +apply Nat.mul_le_mono_nonneg_r; lia.
-
--subst s.
- rewrite <- Nat.sub_add_distr, Nat.add_comm, Nat.sub_add_distr.
- remember ((rad ^ k - 1) * rad ^ (n - i - 1)) as x eqn:Hx.
- remember (rad ^ k * (rad ^ (n - i - 1) - 1)) as y eqn:Hy.
- assert (H : (xnat_of_nat x ≤ xnat_of_nat y)%X).
- +subst x y.
-  unfold xnat_of_nat, nat_of_xnat; simpl.
-  destruct k; [ apply Nat.le_0_l | ].
-  rewrite list_of_nat_pred_pow_pow; [ | easy | lia ].
-  rewrite nat_of_list_app.
-Abort.
-
-(*
-Theorem numbers_to_digits_is_norm {r : radix} : ∀ u i,
-  numbers_to_digits u i = digit_sequence_normalize u i.
-Proof.
-intros.
-unfold numbers_to_digits.
-unfold digit_sequence_normalize.
-destruct (LPO_fst (test_seq i u)) as [Hi| Hi].
- rewrite Nat.div_small.
-  rewrite Nat.add_0_r, Nat.add_1_r.
-  destruct (LPO_fst (λ j : nat, rad - 1 - u (i + j + 1))) as [Hj| Hj].
-   destruct (lt_dec (S (u i)) rad) as [Hlt| Hge]; simpl.
-    now rewrite Nat.mod_small.
-
-    apply Nat.nlt_ge in Hge.
-Print test_seq.
-bbb.
-(*
-    specialize (dig_lt_rad (u i)) as Hd.
-*)
-    assert (H : u i = rad - 1) by lia.
-    rewrite H.
-    rewrite <- Nat.sub_succ_l; [ | lia ].
-    rewrite Nat.sub_succ, Nat.sub_0_r.
-    rewrite Nat.mod_same; [ easy | lia ].
-
-   exfalso.
-   destruct Hj as (k & Hk & Hik).
-   specialize (test_seq_all_0 u i Hi) as H.
-   simpl in H.
-   specialize (H k); lia.
-
-  apply nA_dig_seq_ub.
-  specialize rad_ge_2 as Hr.
-  destruct rad as [| n]; [ lia | ].
-  simpl; lia.
-
- destruct Hi as (k & Hk & Hik).
-  destruct (LPO_fst (λ j : nat, rad - 1 - dig (u (i + j + 1)))) as [Hj| Hj].
-   destruct (lt_dec (S (dig (u i))) rad) as [Hlt| Hge]; simpl.
-    exfalso.
-    unfold test_seq in Hik.
-    set (n := rad * (i + k + 2)) in Hik.
-    set (s := rad ^ (n - 1 - i)) in Hik.
-    set (v j := dig (u j)) in Hik.
-    destruct (le_dec ((rad ^ k - 1) * s) (rad ^ k * (nA i n v mod s)))
-     as [H| H]; [ easy | clear Hik ].
-    apply H; clear H.
-    rewrite Nat.mod_small.
-     apply nA_all_9_ge.
-bbb.
-*)
-
 Theorem numbers_to_digits_id {r : radix} : 0 < rad → ∀ x i,
   (∀ i, freal x i < rad)
   → numbers_to_digits (freal x) i = freal x i.
@@ -1075,41 +819,37 @@ destruct (LPO_fst (test_seq i (freal x))) as [H| H].
      apply Hur.
    ++apply Nat.lt_succ_diag_r.
   *intros j Hj.
-...
+   rewrite <- Nat.mul_assoc; f_equal.
+   rewrite <- Nat.pow_add_r; f_equal; lia.
+Qed.
 
-Theorem dig_norm_add_0_l {r : radix} : ∀ x i,
+Theorem dig_norm_add_0_l {r : radix} : 0 < rad → ∀ x i,
   freal (freal_normalize (0 + x)) i = freal (freal_normalize x) i.
 Proof.
-intros.
+intros Hr *.
 unfold freal_normalize.
 remember (freal (0%F + x)) as nx0 eqn:Hnx0.
 remember (freal x) as nx eqn:Hnx.
 simpl.
 unfold digit_sequence_normalize.
 destruct (LPO_fst (λ j : nat, rad - 1 - nx0 (i + j + 1))) as [Hx0| Hx0].
- destruct (LPO_fst (λ j : nat, rad - 1 - nx (i + j + 1))) as [Hx| Hx].
-  unfold freal_add in Hnx0; simpl in Hnx0.
+-destruct (LPO_fst (λ j : nat, rad - 1 - nx (i + j + 1))) as [Hx| Hx].
+ +unfold freal_add in Hnx0; simpl in Hnx0.
   destruct (lt_dec (S (nx0 i)) rad) as [ Hrx0 | Hrx0 ].
-   subst nx0; simpl in Hrx0; simpl.
+  *subst nx0; simpl in Hrx0; simpl.
    destruct (lt_dec (S (nx i)) rad) as [Hrx| Hrx].
-    subst nx; simpl in Hrx, Hx0; simpl; f_equal.
+  --subst nx; simpl in Hrx, Hx0; simpl; f_equal.
     unfold freal_add_to_seq.
     unfold freal_add_to_seq in Hx0.
     unfold freal_add_series; simpl.
     unfold sequence_add; simpl.
-bbb.
-    unfold numbers_to_digits.
-    simpl.
-bbb.
-    simpl in Hx0.
-    assert (∀ j, rad - 1 - numbers_to_digits (λ i, dig (freal x i)) (i + j + 1) = 0).
-     unfold freal_add_to_seq in Hx0.
-     intros j.
-     now specialize (Hx0 j).
-     clear Hx0; rename H into Hx0; move Hx0 after Hx.
-Print numbers_to_digits.
-bbb.
-*)
+    apply numbers_to_digits_id; [ easy | ].
+    intros j.
+    destruct (lt_dec i j) as [Hij| Hij].
+   ++specialize (Hx (j - i - 1)).
+     replace (i + (j - i - 1) + 1) with j in Hx by lia.
+     apply Nat.sub_0_le in Hx.
+...
 
 Theorem freal_add_0_l {r : radix} : ∀ x, (0 + x = x)%F.
 Proof.
