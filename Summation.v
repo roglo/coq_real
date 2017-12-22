@@ -495,10 +495,9 @@ rewrite summation_split_last; [ easy | ].
 now apply Nat.le_le_succ_r.
 Qed.
 
-(*
-Theorem summation_aux_ub_add : ∀ g b k₁ k₂,
-  (summation_aux r b (k₁ + k₂) g =
-   summation_aux r b k₁ g + summation_aux r (b + k₁) k₂ g).
+Theorem summation_aux_ub_add `{rg : ord_ring} : ∀ g b k₁ k₂,
+  (summation_aux b (k₁ + k₂) g =
+   summation_aux b k₁ g + summation_aux (b + k₁) k₂ g)%Rg.
 Proof.
 intros g b k₁ k₂.
 revert b k₁.
@@ -510,7 +509,7 @@ induction k₂; intros.
  rewrite IHk₂; simpl.
  rewrite <- Nat.add_succ_r.
  rewrite rng_add_assoc.
- apply rng_add_compat_r.
+ apply rng_add_eq_compat; [ | easy ].
  clear k₂ IHk₂.
  revert b.
  induction k₁; intros; simpl.
@@ -522,9 +521,9 @@ induction k₂; intros.
   rewrite Nat.add_succ_r, <- Nat.add_succ_l; reflexivity.
 Qed.
 
-Theorem summation_ub_add : ∀ g k₁ k₂,
+Theorem summation_ub_add `{rg : ord_ring} : ∀ g k₁ k₂,
   (Σ (i = 0, k₁ + k₂), g i =
-   Σ (i = 0, k₁), g i + Σ (i = S k₁, k₁ + k₂), g i).
+   Σ (i = 0, k₁), g i + Σ (i = S k₁, k₁ + k₂), g i)%Rg.
 Proof.
 intros g k₁ k₂.
 unfold summation.
@@ -534,6 +533,7 @@ rewrite summation_aux_ub_add; simpl.
 rewrite Nat.add_comm, Nat.add_sub; reflexivity.
 Qed.
 
+(*
 Theorem summation_aux_mul_summation_aux_summation_aux : ∀ g k n,
   (summation_aux r 0 (S k * S n) g =
    summation_aux r 0 (S k)
