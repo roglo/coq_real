@@ -952,18 +952,95 @@ Search numbers_to_digits.
 Qed.
 *)
 
-Require Import QArith.
+Require Import Morphisms Setoid.
 Definition freal_eq_prop {r : radix} x y := freal_eq x y = true.
+
+Theorem freal_eq_refl {r : radix} : reflexive _ freal_eq_prop.
+Proof.
+intros x.
+unfold freal_eq_prop, freal_eq, freal_normalized_eq.
+remember (freal_normalize x) as y eqn:Hy.
+destruct (LPO_fst (eq_freal_seq y y)) as [Hs| Hs]; [ easy | exfalso ].
+destruct Hs as (i & Hji & Hyy).
+apply Hyy.
+unfold eq_freal_seq.
+now destruct (Nat.eq_dec (freal y i) (freal y i)).
+Qed.
+
+Theorem freal_eq_sym {r : radix} : symmetric _ freal_eq_prop.
+Proof.
+intros x y Hxy.
+unfold freal_eq_prop, freal_eq, freal_normalized_eq in Hxy |-*.
+remember (freal_normalize x) as nx eqn:Hnx.
+remember (freal_normalize y) as ny eqn:Hny.
+destruct (LPO_fst (eq_freal_seq ny nx)) as [Hs| Hs]; [ easy | exfalso ].
+destruct (LPO_fst (eq_freal_seq nx ny)) as [Ht| Ht]; [ clear Hxy | easy ].
+destruct Hs as (i & Hji & Hyx).
+specialize (Ht i).
+unfold eq_freal_seq in Ht, Hyx.
+destruct (Nat.eq_dec (freal ny i) (freal nx i)) as [H1| H1]; [ easy | ].
+destruct (Nat.eq_dec (freal nx i) (freal ny i)) as [H2| H2]; [ | easy ].
+now symmetry in H2.
+Qed.
+
+Theorem freal_eq_trans {r : radix} : transitive _ freal_eq_prop.
+Proof.
+intros x y z Hxy Hyz.
+unfold freal_eq_prop, freal_eq, freal_normalized_eq in Hxy, Hyz |-*.
+remember (freal_normalize x) as nx eqn:Hnx.
+remember (freal_normalize y) as ny eqn:Hny.
+remember (freal_normalize z) as nz eqn:Hnz.
+destruct (LPO_fst (eq_freal_seq nx ny)) as [Hx| Hx]; [ clear Hxy | easy ].
+destruct (LPO_fst (eq_freal_seq ny nz)) as [Hy| Hy]; [ clear Hyz | easy ].
+destruct (LPO_fst (eq_freal_seq nx nz)) as [Hz| Hz]; [ easy | exfalso ].
+destruct Hz as (i & Hji & Hz).
+specialize (Hx i).
+specialize (Hy i).
+unfold eq_freal_seq in Hx, Hy, Hz.
+destruct (Nat.eq_dec (freal nx i) (freal ny i)) as [H1| H1]; [ | easy ].
+destruct (Nat.eq_dec (freal ny i) (freal nz i)) as [H2| H2]; [ | easy ].
+destruct (Nat.eq_dec (freal nx i) (freal nz i)) as [H3| H3]; [ easy | ].
+apply H3.
+now transitivity (freal ny i).
+Qed.
+
+Add Parametric Relation {r : radix} : (FracReal) freal_eq_prop
+ reflexivity proved by freal_eq_refl
+ symmetry proved by freal_eq_sym
+ transitivity proved by freal_eq_trans
+ as freal_eq_rel.
+
+Theorem freal_eq_prop_eq {r : radix} : ∀ x y,
+  freal_eq_prop x y ↔ freal_eq x y = true.
+Proof. easy. Qed.
 
 Add Parametric Morphism {r : radix} : freal_add
   with signature freal_eq_prop ==> freal_eq_prop ==> freal_eq_prop
   as freal_add_morph.
-Admitted.
+Proof.
+intros x y Hxy x' y' Hxy'.
+unfold freal_eq_prop in Hxy, Hxy' |-*.
+unfold freal_eq in Hxy, Hxy' |-*.
+remember (freal_normalize x) as nx eqn:Hnx.
+remember (freal_normalize y) as ny eqn:Hny.
+remember (freal_normalize x') as nx' eqn:Hnx'.
+remember (freal_normalize y') as ny' eqn:Hny'.
+unfold freal_normalized_eq in Hxy, Hxy'.
+destruct (LPO_fst (eq_freal_seq nx ny)) as [Hx| Hx]; [ clear Hxy | easy ].
+destruct (LPO_fst (eq_freal_seq nx' ny')) as [Hy| Hy]; [ clear Hxy' | easy ].
+...
 
 Theorem freal_add_assoc {r : radix} : ∀ x y z,
   (x + (y + z) = (x + y) + z)%F.
 Proof.
 intros.
+apply -> freal_eq_prop_eq.
+specialize (freal_add_comm (x + y)%F z) as H.
+apply freal_eq_prop_eq in H.
+rewrite H; clear H.
+apply freal_eq_prop_eq.
+...
+
 Check freal_add_morph.
 rewrite (@freal_add_comm r).
 ...
