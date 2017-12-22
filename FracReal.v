@@ -866,9 +866,15 @@ destruct (LPO_fst (λ j : nat, rad - 1 - nx0 (i + j + 1))) as [Hx0| Hx0].
   now rewrite freal_add_series_0_l.
 Qed.
 
-Theorem freal_add_0_l {r : radix} : 0 < rad → ∀ x, (0 + x = x)%F.
+...
+Question fondamentale : faut-il (∀ i, freal x i < rad) dans les hypothèses ?
+Ça m'emmerde...
+
+Theorem freal_add_0_l {r : radix} : 0 < rad → ∀ x,
+  (∀ i, freal x i < rad)
+  → (0 + x = x)%F.
 Proof.
-intros Hr *.
+intros Hr * Hx.
 unfold freal_eq, freal_normalized_eq.
 remember (freal_normalize (0%F + x)) as n0x eqn:Hn0x.
 remember (freal_normalize x) as nx eqn:Hnx.
@@ -880,6 +886,5 @@ unfold eq_freal_seq.
 destruct (Nat.eq_dec (freal n0x i) (freal nx i)) as [H| H]; [ easy | ].
 exfalso; apply H; clear H.
 subst n0x nx; simpl.
-apply dig_norm_add_0_l; [ easy | ].
-intros.
-...
+now apply dig_norm_add_0_l.
+Qed.
