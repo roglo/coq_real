@@ -1049,9 +1049,32 @@ destruct (LPO_fst (test_seq i (freal x))) as [H| H].
   rewrite summation_eq_compat with (h := λ j, freal x j * rad ^ (n + k - j)).
   *set (rd := nat_ord_ring_def).
    set (rg := nat_ord_ring).
-   replace (summation n) with (summation (S (n - 1))).
-  --replace (n + k) with (n - 1 + S k).
-   ++rewrite <- summation_ub_add; [ | lia ].
+   replace (summation n) with (summation (S (n - 1))) by (f_equal; lia).
+   rewrite <- summation_ub_add with (k₂ := k + 1); [ | lia | lia ].
+   replace (n + k + 1) with (S (n + k)) by lia.
+   rewrite power_summation; [ | easy ].
+   apply le_lt_trans with
+      (m := Σ (j = 0, n + k), freal x j * rad ^ (n + k - j)).
+  --remember (summation (i + 1) (n + k)) as f.
+    rewrite summation_ub_add with (k₁ := i) (k₂ := n + k - i);
+      [ subst f | lia | lia ].
+    rewrite Nat.add_1_r; simpl.
+    remember (n + k) as nk; rewrite Nat.add_comm; subst nk.
+    apply Nat.le_add_r.
+  --rewrite summation_rtl.
+    rewrite summation_mul_distr_l; simpl.
+    apply le_lt_trans with (m := Σ (j = 0, n + k), (rad - 1) * rad ^ j).
+   ++apply (@summation_le_compat rd).
+     intros j Hj; simpl.
+     rewrite Nat.add_0_r.
+     unfold NPeano.Nat.le.
+     replace (n + k - (n + k - j)) with j by lia.
+     apply Nat.mul_le_mono_nonneg_r; [ lia | ].
+     apply Nat.le_add_le_sub_r.
+     rewrite Nat.add_1_r.
+     apply Hur.
+   ++apply Nat.lt_succ_diag_r.
+  *intros j Hj.
 ...
 
 Theorem dig_norm_add_0_l {r : radix} : ∀ x i,
