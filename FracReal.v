@@ -1049,6 +1049,7 @@ destruct (LPO_fst (test_seq i (freal x))) as [H| H].
   rewrite summation_eq_compat with (h := λ j, freal x j * rad ^ (n + k - j)).
 Search (Σ (_ = _, _), _ + Σ (_ = _, _), _)%Rg.
 (* cf summation_ub_add in Summation.v to be resurected *)
+(* question : la somme finale commence à i+1 et non à 0, est-ce normal ? *)
 bbb.
 
 Focus 2.
