@@ -854,12 +854,42 @@ destruct (LPO_fst (λ j : nat, rad - 1 - nx0 (i + j + 1))) as [Hx0| Hx0].
   --now rewrite freal_add_series_0_l.
   --intros j.
     now rewrite freal_add_series_0_l.
- +idtac.
-...
+ +destruct Hx as (k & Hjk & Hrnx).
+  specialize (Hx0 k).
+  rewrite Hnx0 in Hx0.
+  simpl in Hx0.
+  unfold freal_add_to_seq in Hx0.
+  rewrite numbers_to_digits_id in Hx0; [ | easy | ].
+  *rewrite freal_add_series_0_l in Hx0.
+   now rewrite <- Hnx in Hx0.
+  *intros j.
+   rewrite freal_add_series_0_l.
+   now rewrite <- Hnx.
+-destruct Hx0 as (k & Hjk & Hrnx).
+ rewrite Hnx0 in Hrnx.
+ simpl in Hrnx.
+ unfold freal_add_to_seq in Hrnx.
+ rewrite numbers_to_digits_id in Hrnx; [ | easy | ].
+ +rewrite freal_add_series_0_l in Hrnx.
+  destruct (LPO_fst (λ j : nat, rad - 1 - nx (i + j + 1))) as [Hx| Hx].
+  *now rewrite <- Hnx, Hx in Hrnx.
+  *destruct Hx as (l & Hjl & Hrnx').
+   rewrite <- Hnx in Hrnx.
+   rewrite Hnx0, Hnx; simpl.
+   unfold freal_add_to_seq; simpl.
+   rewrite numbers_to_digits_id; [ | easy | ].
+  --now rewrite freal_add_series_0_l.
+  --intros j.
+    rewrite freal_add_series_0_l.
+    now subst nx.
+ +intros l.
+  rewrite freal_add_series_0_l.
+  now subst nx.
+Qed.
 
-Theorem freal_add_0_l {r : radix} : ∀ x, (0 + x = x)%F.
+Theorem freal_add_0_l {r : radix} : 0 < rad → ∀ x, (0 + x = x)%F.
 Proof.
-intros.
+intros Hr *.
 unfold freal_eq, freal_normalized_eq.
 remember (freal_normalize (0%F + x)) as n0x eqn:Hn0x.
 remember (freal_normalize x) as nx eqn:Hnx.
@@ -873,6 +903,6 @@ destruct (Nat.eq_dec (freal n0x i) (freal nx i)) as [H| H].
 
  exfalso; apply H; clear H.
  subst n0x nx.
-bbb.
- apply dig_norm_add_0_l.
-Qed.
+ apply dig_norm_add_0_l; [ easy | ].
+ intros.
+...
