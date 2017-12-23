@@ -1133,9 +1133,9 @@ destruct (LPO_fst (λ j, rad - 1 - sxx' (i + j + 1))) as [Hsx| Hsx].
  --rewrite Hsxx' in Hxr; simpl in Hxr.
    rewrite Hsyy' in Hyr; simpl in Hyr.
    rewrite Hsxx', Hsyy'.
-   unfold freal_add_to_seq.
    f_equal.
-   unfold freal_add_to_seq in Hxr, Hyr.
+   unfold freal_add_to_seq in Hxr, Hyr |-*.
+...
    apply numbers_to_digits_eq_compat.
    intros j.
    unfold freal_add_series, sequence_add.
