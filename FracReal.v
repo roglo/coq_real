@@ -1135,9 +1135,19 @@ destruct (LPO_fst (λ j, rad - 1 - sxx' (i + j + 1))) as [Hsx| Hsx].
    rewrite Hsxx', Hsyy'.
    unfold freal_add_to_seq.
    f_equal.
+   unfold freal_add_to_seq in Hxr, Hyr.
    apply numbers_to_digits_eq_compat.
    intros j.
-Search freal_add_series.
+   unfold freal_add_series, sequence_add.
+(* freal_normalize (x + x') = freal_normalize (nx + nx') ? *)
+...
+   destruct (lt_eq_lt_dec j i) as [[Hij| Hij]| Hij].
+  ++specialize (Hji _ Hij).
+    rewrite Hnxx', Hnyy' in Hji; simpl in Hji.
+    unfold freal_normalize in Hji; simpl in Hji.
+    unfold eq_freal_seq in Hji.
+    simpl in Hji.
+    unfold freal_add_to_seq in Hji.
 ...
 
 Theorem freal_add_assoc {r : radix} : ∀ x y z,
