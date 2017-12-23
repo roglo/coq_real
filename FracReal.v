@@ -1034,12 +1034,21 @@ unfold freal_normalized_eq.
 remember (freal_normalize (x + x')) as nxx' eqn:Hnxx'.
 remember (freal_normalize (y + y')) as nyy' eqn:Hnyy'.
 destruct (LPO_fst (eq_freal_seq nxx' nyy')) as [Hxy| Hxy]; [ easy | ].
-destruct Hxy as (i & Hji & Hxy); exfalso.
-...
-subst.
-unfold freal_normalize in Hxy; simpl in Hxy.
-unfold freal_add_to_seq in Hxy.
-
+destruct Hxy as (i & Hji & Hxy); exfalso; apply Hxy; clear Hxy.
+unfold eq_freal_seq.
+destruct (Nat.eq_dec (freal nxx' i) (freal nyy' i)) as [| Hxy]; [ easy | ].
+exfalso; apply Hxy; clear Hxy.
+rewrite Hnxx', Hnyy'; simpl.
+unfold digit_sequence_normalize.
+remember (freal_add_to_seq x x') as sxx' eqn:Hsxx'.
+remember (freal_add_to_seq y y') as syy' eqn:Hsyy'.
+destruct (LPO_fst (λ j, rad - 1 - sxx' (i + j + 1))) as [Hsx| Hsx].
+-destruct (LPO_fst (λ j, rad - 1 - syy' (i + j + 1))) as [Hsy| Hsy].
+ +destruct (lt_dec (S (sxx' i)) rad) as [Hxr| Hxr].
+  *destruct (lt_dec (S (syy' i)) rad) as [Hyr| Hyr].
+ --rewrite Hsxx' in Hxr; simpl in Hxr.
+   rewrite Hsyy' in Hyr; simpl in Hyr.
+   unfold eq_freal_seq in Hx.
 ...
 
 Theorem freal_add_assoc {r : radix} : ∀ x y z,
