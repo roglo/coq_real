@@ -904,11 +904,13 @@ destruct (LPO_fst (λ j : nat, rad - 1 - xy (i + j + 1))) as [Hxy| Hxy].
     subst xy yx; simpl.
     unfold freal_add_to_seq.
 
+(*
 Theorem glop {r : radix} : ∀ x y,
   numbers_to_digits (freal_add_series {| freal := numbers_to_digits x |} y) =
   numbers_to_digits (freal_add_series {| freal := x |} y).
 Admitted. Show.
     rewrite glop.
+*)
 Abort. (*
     rewrite freal_add_series_comm.
 ...
@@ -1028,7 +1030,16 @@ remember (freal_normalize y') as ny' eqn:Hny'.
 unfold freal_normalized_eq in Hxy, Hxy'.
 destruct (LPO_fst (eq_freal_seq nx ny)) as [Hx| Hx]; [ clear Hxy | easy ].
 destruct (LPO_fst (eq_freal_seq nx' ny')) as [Hy| Hy]; [ clear Hxy' | easy ].
-Abort.
+unfold freal_normalized_eq.
+remember (freal_normalize (x + x')) as nxx' eqn:Hnxx'.
+remember (freal_normalize (y + y')) as nyy' eqn:Hnyy'.
+destruct (LPO_fst (eq_freal_seq nxx' nyy')) as [Hxy| Hxy]; [ easy | ].
+destruct Hxy as (i & Hji & Hxy).
+subst.
+unfold freal_normalize in Hxy; simpl in Hxy.
+unfold freal_add_to_seq in Hxy.
+
+...
 
 Theorem freal_add_assoc {r : radix} : ∀ x y z,
   (x + (y + z) = (x + y) + z)%F.
@@ -1036,6 +1047,9 @@ Proof.
 intros.
 apply -> freal_eq_prop_eq.
 specialize (freal_add_comm (x + y)%F z) as H.
+apply freal_eq_prop_eq in H.
+rewrite H; clear H.
+specialize (freal_add_comm x y) as H.
 apply freal_eq_prop_eq in H.
 rewrite H; clear H.
 apply freal_eq_prop_eq.
