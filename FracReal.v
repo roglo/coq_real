@@ -3,7 +3,7 @@
    Operations + and * implemented using LPO. *)
 
 Require Import Utf8 Arith Psatz.
-Require Import Misc Summation Xnat.
+Require Import Misc Summation(*Xnat*).
 
 (* Limited Principle of Omniscience *)
 (* Borrowed from my proof of Puiseux's Theorem *)
@@ -61,6 +61,8 @@ apply H; [ apply Nat.le_0_l | easy ].
 Qed.
 
 (* Frac Real *)
+
+Class radix := { rad : nat }.
 
 Delimit Scope freal_scope with F.
 
@@ -616,6 +618,7 @@ rewrite summation_eq_compat with (h := λ j, (rad - 1) * rad ^ (n - 1 - j)).
   rewrite Nat.mul_0_r; simpl; lia.
 Qed.
 
+(*
 Theorem list_of_nat_pow_succ_sub_1 {r : radix} : 1 < rad → ∀ i,
   list_of_nat 0 (rad ^ S i - 1) = rad - 1 :: list_of_nat 0 (rad ^ i - 1).
 Proof.
@@ -747,6 +750,7 @@ induction j; intros.
    apply Nat.lt_le_incl.
    now apply rad_pow_succ_gt_1.
 Qed.
+*)
 
 Theorem numbers_to_digits_id {r : radix} : 0 < rad → ∀ u i,
   (∀ j, u j < rad)
@@ -1016,6 +1020,84 @@ Theorem freal_eq_prop_eq {r : radix} : ∀ x y,
   freal_eq_prop x y ↔ freal_eq x y = true.
 Proof. easy. Qed.
 
+Theorem all_eq_seq_all_eq {r : radix} : ∀ x y,
+  (∀ k, eq_freal_seq x y k = 0) → (∀ k, freal x k = freal y k).
+Proof.
+intros * Hk *.
+specialize (Hk k).
+unfold eq_freal_seq in Hk.
+now destruct (Nat.eq_dec (freal x k) (freal y k)).
+Qed.
+
+Theorem nA_eq_compat {r : radix} : ∀ i n u v,
+  (∀ i, u i = v i)
+  → nA i n u = nA i n v.
+Proof.
+intros * Hfg *.
+unfold nA.
+apply summation_eq_compat.
+intros j Hj.
+now rewrite Hfg.
+Qed.
+
+Theorem nB_eq_compat {r : radix} : ∀ n k u v,
+  (∀ i, u i = v i)
+  → nB n k u = nB n k v.
+Proof.
+intros * Hfg *.
+unfold nB.
+apply summation_eq_compat.
+intros j Hj.
+now rewrite Hfg.
+Qed.
+
+Theorem test_seq_eq_compat {r : radix} : ∀ i f g,
+  (∀ i, f i = g i) → ∀ k, test_seq i f k = test_seq i g k.
+Proof.
+intros * Hfg *.
+unfold test_seq.
+erewrite nA_eq_compat; [ | easy ].
+erewrite nB_eq_compat; [ | easy ].
+easy.
+Qed.
+
+Theorem numbers_to_digits_eq_compat {r : radix} : ∀ f g,
+  (∀ i, f i = g i) → ∀ i,
+  numbers_to_digits f i = numbers_to_digits g i.
+Proof.
+intros * Hfg *.
+unfold numbers_to_digits.
+rewrite Hfg.
+destruct (LPO_fst (test_seq i f)) as [Hf| Hf].
+-destruct (LPO_fst (test_seq i g)) as [Hg| Hg].
+ +f_equal; f_equal.
+  unfold nA.
+  erewrite summation_eq_compat; [ reflexivity | simpl ].
+  intros j Hj.
+  now rewrite Hfg.
+ +exfalso.
+  destruct Hg as (k & Hjk & H); apply H; clear H.
+  specialize (Hf k).
+  erewrite test_seq_eq_compat in Hf; [ | easy ]; easy.
+-destruct (LPO_fst (test_seq i g)) as [Hg| Hg].
+ +exfalso.
+  destruct Hf as (k & Hjk & H); apply H; clear H.
+  specialize (Hg k).
+  erewrite test_seq_eq_compat; [ | easy ]; easy.
+ +destruct Hf as (k & Hjk & Hk).
+  destruct Hg as (l & Hjl & Hl).
+  f_equal; f_equal; f_equal.
+  destruct (lt_eq_lt_dec k l) as [[Hkl| Hkl]| Hkl].
+  *specialize (Hjl _ Hkl).
+   exfalso; apply Hk.
+   erewrite test_seq_eq_compat; [ | easy ]; easy.
+  *subst l; f_equal.
+   now apply nA_eq_compat.
+  *specialize (Hjk _ Hkl).
+   exfalso; apply Hl.
+   erewrite test_seq_eq_compat in Hjk; [ | easy ]; easy.
+Qed.
+
 Add Parametric Morphism {r : radix} : freal_add
   with signature freal_eq_prop ==> freal_eq_prop ==> freal_eq_prop
   as freal_add_morph.
@@ -1030,6 +1112,8 @@ remember (freal_normalize y') as ny' eqn:Hny'.
 unfold freal_normalized_eq in Hxy, Hxy'.
 destruct (LPO_fst (eq_freal_seq nx ny)) as [Hx| Hx]; [ clear Hxy | easy ].
 destruct (LPO_fst (eq_freal_seq nx' ny')) as [Hy| Hy]; [ clear Hxy' | easy ].
+specialize (all_eq_seq_all_eq nx ny Hx) as H; clear Hx; rename H into Hx.
+specialize (all_eq_seq_all_eq nx' ny' Hy) as H; clear Hy; rename H into Hy.
 unfold freal_normalized_eq.
 remember (freal_normalize (x + x')) as nxx' eqn:Hnxx'.
 remember (freal_normalize (y + y')) as nyy' eqn:Hnyy'.
@@ -1048,7 +1132,12 @@ destruct (LPO_fst (λ j, rad - 1 - sxx' (i + j + 1))) as [Hsx| Hsx].
   *destruct (lt_dec (S (syy' i)) rad) as [Hyr| Hyr].
  --rewrite Hsxx' in Hxr; simpl in Hxr.
    rewrite Hsyy' in Hyr; simpl in Hyr.
-   unfold eq_freal_seq in Hx.
+   rewrite Hsxx', Hsyy'.
+   unfold freal_add_to_seq.
+   f_equal.
+   apply numbers_to_digits_eq_compat.
+   intros j.
+Search freal_add_series.
 ...
 
 Theorem freal_add_assoc {r : radix} : ∀ x y z,
