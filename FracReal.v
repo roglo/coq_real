@@ -1034,7 +1034,8 @@ unfold freal_normalized_eq.
 remember (freal_normalize (x + x')) as nxx' eqn:Hnxx'.
 remember (freal_normalize (y + y')) as nyy' eqn:Hnyy'.
 destruct (LPO_fst (eq_freal_seq nxx' nyy')) as [Hxy| Hxy]; [ easy | ].
-destruct Hxy as (i & Hji & Hxy).
+destruct Hxy as (i & Hji & Hxy); exfalso.
+...
 subst.
 unfold freal_normalize in Hxy; simpl in Hxy.
 unfold freal_add_to_seq in Hxy.
