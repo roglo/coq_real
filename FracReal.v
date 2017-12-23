@@ -1028,7 +1028,7 @@ remember (freal_normalize y') as ny' eqn:Hny'.
 unfold freal_normalized_eq in Hxy, Hxy'.
 destruct (LPO_fst (eq_freal_seq nx ny)) as [Hx| Hx]; [ clear Hxy | easy ].
 destruct (LPO_fst (eq_freal_seq nx' ny')) as [Hy| Hy]; [ clear Hxy' | easy ].
-...
+Abort.
 
 Theorem freal_add_assoc {r : radix} : ∀ x y z,
   (x + (y + z) = (x + y) + z)%F.
