@@ -1123,6 +1123,27 @@ unfold eq_freal_seq.
 destruct (Nat.eq_dec (freal nxx' i) (freal nyy' i)) as [| Hxy]; [ easy | ].
 exfalso; apply Hxy; clear Hxy.
 rewrite Hnxx', Hnyy'; simpl.
+move Hx at bottom; move Hy at bottom.
+(*
+Theorem freal_norm_norm {r : radix} : ∀ x y,
+  (x + y = freal_normalize x + freal_normalize y)%F.
+Proof.
+intros.
+unfold freal_eq.
+unfold freal_normalized_eq.
+Abort.
+
+Theorem freal_norm_norm {r : radix} : ∀ x y,
+  freal_normalize (x + y) =
+  freal_normalize (freal_normalize x + freal_normalize y).
+Proof.
+intros.
+unfold freal_normalize; simpl; f_equal.
+unfold freal_add_to_seq.
+unfold freal_add_series; simpl.
+unfold numbers_to_digits; simpl.
+...
+*)
 unfold digit_sequence_normalize.
 remember (freal_add_to_seq x x') as sxx' eqn:Hsxx'.
 remember (freal_add_to_seq y y') as syy' eqn:Hsyy'.
@@ -1135,6 +1156,15 @@ destruct (LPO_fst (λ j, rad - 1 - sxx' (i + j + 1))) as [Hsx| Hsx].
    rewrite Hsxx', Hsyy'.
    f_equal.
    unfold freal_add_to_seq in Hxr, Hyr |-*.
+move Hx at bottom; move Hy at bottom.
+...
+unfold numbers_to_digits.
+destruct (LPO_fst (test_seq i (freal_add_series x x'))) as [Htx| Htx].
+destruct (LPO_fst (test_seq i (freal_add_series y y'))) as [Hty| Hty].
+...
+unfold sequence_add at 1 3.
+...
+
 (* numbers_to_digits vs digit_sequence_normalize ? *)
 Check numbers_to_digits.
 Check digit_sequence_normalize.
