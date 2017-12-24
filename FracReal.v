@@ -62,9 +62,11 @@ Qed.
 
 (* Frac Real *)
 
-Class radix := { rad : nat }.
+Class radix := { rad : nat; rad_ge_2 : rad ≥ 2 }.
 
 Delimit Scope freal_scope with F.
+
+Record digit {r : radix} := mkdig { dig : nat; dig_lt_rad : dig < rad }.
 
 Record FracReal {r : radix} := { freal : nat → nat }.
 Arguments freal r _%F.
