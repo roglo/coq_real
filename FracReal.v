@@ -60,30 +60,51 @@ intros k Hkj.
 apply H; [ apply Nat.le_0_l | easy ].
 Qed.
 
-(* Frac Real *)
+(* Radix *)
 
 Class radix := { rad : nat; rad_ge_2 : rad ≥ 2 }.
 
-Delimit Scope freal_scope with F.
+Theorem radix_gt_0 {r : radix} : 0 < rad.
+Proof.
+destruct r as (rad, radi); simpl; lia.
+Qed.
+
+Hint Resolve radix_gt_0.
+
+(* Digit *)
 
 Record digit {r : radix} := mkdig { dig : nat; dig_lt_rad : dig < rad }.
 
-Record FracReal {r : radix} := { freal : nat → nat }.
+Definition digit_0 {r : radix} := mkdig _ 0 radix_gt_0.
+
+Definition d2n {r : radix} u (i : nat) := dig (u i).
+
+(* Frac Real *)
+
+Delimit Scope freal_scope with F.
+
+Record FracReal {r : radix} := { freal : nat → digit }.
 Arguments freal r _%F.
 
-Definition digit_sequence_normalize {r : radix} (u : nat → nat) i :=
-  match LPO_fst (λ j, rad - 1 - u (i + j + 1)) with
-  | inl _ => if lt_dec (S (u i)) rad then S (u i) else 0
+Definition fd2n {r : radix} u (i : nat) := dig (freal u i).
+
+Definition digit_sequence_normalize {r : radix} (u : nat → digit) i :=
+  match LPO_fst (λ j, rad - 1 - d2n u (i + j + 1)) with
+  | inl _ =>
+     match lt_dec (S (d2n u i)) rad with
+     | left P => mkdig _ (S (d2n u i)) P
+     | right _ => digit_0
+     end
   | inr _ => u i
  end.
 
 Definition freal_normalize {r : radix} x :=
-  {| freal := digit_sequence_normalize (freal x) |}.
+  {| freal i := digit_sequence_normalize (freal x) i |}.
 
 Arguments freal_normalize r x%F.
 
 Definition eq_freal_seq {r : radix} x y i :=
-  if Nat.eq_dec (freal x i) (freal y i) then 0 else 1.
+  if Nat.eq_dec (fd2n x i) (fd2n y i) then 0 else 1.
 
 Definition freal_normalized_eq {r : radix} x y :=
   match LPO_fst (eq_freal_seq x y) with
@@ -95,7 +116,7 @@ Definition freal_normalized_lt {r : radix} x y :=
   match LPO_fst (eq_freal_seq x y) with
   | inl _ => true
   | inr (exist _ i _) =>
-      if lt_dec (freal x i) (freal y i) then true else false
+      if lt_dec (fd2n x i) (fd2n y i) then true else false
   end.
 
 Definition freal_eq {r : radix} x y :=
@@ -104,7 +125,7 @@ Definition freal_eq {r : radix} x y :=
 Definition freal_lt {r : radix} x y :=
   freal_normalized_lt (freal_normalize x) (freal_normalize y).
 
-Definition freal_0 {r : radix} := {| freal i := 0 |}.
+Definition freal_0 {r : radix} := {| freal i := digit_0 |}.
 
 Notation "0" := (freal_0) : freal_scope.
 Notation "a = b" := (freal_eq a b = true) : freal_scope.
@@ -116,6 +137,8 @@ Notation "a < b" := (freal_lt a b = true) : freal_scope.
 Definition sequence_add (a b : nat → nat) i := a i + b i.
 Definition sequence_mul (rg := nat_ord_ring) (a b : nat → nat) i :=
   Σ (j = 0, i), a j * b (i - j).
+
+...
 
 Definition freal_add_series {r : radix} a b :=
   sequence_add (freal a) (freal b).
