@@ -82,6 +82,20 @@ Record digit {r : radix} := mkdig { dig : nat; dig_lt_rad : dig < rad }.
 
 Definition digit_0 {r : radix} := mkdig _ 0 radix_gt_0.
 
+(* the proof that x≤y is unique; this is proved in Coq library theorem
+   "le_unique" *)
+Theorem digit_eq_eq {r : radix} : ∀ a b, dig a = dig b ↔ a = b.
+Proof.
+intros.
+split; intros H; [ | now subst ].
+destruct a as (adig, adigi).
+destruct b as (bdig, bdigi).
+simpl in H.
+subst bdig.
+f_equal.
+apply le_unique.
+Qed.
+
 Definition d2n {r : radix} u (i : nat) := dig (u i).
 
 (* Frac Real *)
@@ -372,29 +386,31 @@ remember (freal (x + y)) as xy.
 remember (freal (y + x)) as yx.
 simpl.
 unfold digit_sequence_normalize.
-...
-destruct (LPO_fst (λ j : nat, rad - 1 - xy (i + j + 1))) as [Hxy| Hxy].
- destruct (LPO_fst (λ j : nat, rad - 1 - yx (i + j + 1))) as [Hyx| Hyx].
+destruct (LPO_fst (λ j : nat, rad - 1 - d2n xy (i + j + 1))) as [Hxy| Hxy].
+ destruct (LPO_fst (λ j : nat, rad - 1 - d2n yx (i + j + 1))) as [Hyx| Hyx].
   unfold freal_add in Heqxy; simpl in Heqxy.
   unfold freal_add in Heqyx; simpl in Heqyx.
-  destruct (lt_dec (S (xy i)) rad) as [Hrxy| Hrxy].
+  destruct (lt_dec (S (d2n xy i)) rad) as [Hrxy| Hrxy].
    subst xy; simpl in Hrxy; simpl.
-   destruct (lt_dec (S (yx i)) rad) as [Hryx| Hryx].
+   destruct (lt_dec (S (d2n yx i)) rad) as [Hryx| Hryx].
     unfold freal_add in Heqyx; simpl in Heqyx.
     subst yx; simpl in Hryx; simpl.
+    apply digit_eq_eq; unfold d2n; simpl.
     now rewrite freal_add_to_seq_i_comm.
 
     subst yx; simpl in Hryx.
+    unfold d2n in Hryx.
     now rewrite freal_add_to_seq_i_comm in Hryx.
 
-   destruct (lt_dec (S (yx i)) rad) as [Hryx| Hryx]; [ | easy ].
+   destruct (lt_dec (S (d2n yx i)) rad) as [Hryx| Hryx]; [ | easy ].
    exfalso.
-   subst xy yx; simpl in Hrxy, Hryx.
+   subst xy yx; simpl in Hryx; unfold d2n in Hryx.
    now rewrite freal_add_to_seq_i_comm in Hryx.
 
   destruct Hyx as (k & Hjk & Hk); clear Hjk.
   unfold freal_mul in Heqyx; simpl in Heqyx.
   subst yx; simpl in Hk; simpl.
+...
   rewrite freal_add_to_seq_i_comm in Hk.
   unfold freal_add in Heqxy; simpl in Heqxy.
   subst xy; simpl in Hxy; simpl.
