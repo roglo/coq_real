@@ -69,7 +69,12 @@ Proof.
 destruct r as (rad, radi); simpl; lia.
 Qed.
 
-Hint Resolve radix_gt_0.
+Theorem radix_ne_0 {r : radix} : rad ≠ 0.
+Proof.
+destruct r as (rad, radi); simpl; lia.
+Qed.
+
+Hint Resolve radix_gt_0 radix_ne_0.
 
 (* Digit *)
 
@@ -138,17 +143,15 @@ Definition sequence_add (a b : nat → nat) i := a i + b i.
 Definition sequence_mul (rg := nat_ord_ring) (a b : nat → nat) i :=
   Σ (j = 0, i), a j * b (i - j).
 
-...
-
 Definition freal_add_series {r : radix} a b :=
-  sequence_add (freal a) (freal b).
+  sequence_add (fd2n a) (fd2n b).
 
 Arguments freal_add_series _ a%F b%F.
 
 Definition freal_mul_series {r : radix} a b i :=
   match i with
   | 0 => 0
-  | S i' => sequence_mul (freal a) (freal b) i'
+  | S i' => sequence_mul (fd2n a) (fd2n b) i'
   end.
 
 Definition nA {r : radix} (rg := nat_ord_ring) i n u :=
@@ -168,11 +171,13 @@ Definition numbers_to_digits {r : radix} u i :=
   | inl _ =>
       let n := rad * (i + 2) in
       let s := rad ^ (n - 1 - i) in
-      (u i + nA i n u / s) mod rad
+      let d := u i + nA i n u / s in
+      mkdig _ (d mod rad) (Nat.mod_upper_bound d rad radix_ne_0)
   | inr (exist _ k _) =>
       let n := rad * (i + k + 2) in
       let s := rad ^ (n - 1 - i) in
-      (u i + nA i n u / s + 1) mod rad
+      let d := u i + nA i n u / s + 1 in
+      mkdig _ ((d + 1) mod rad) (Nat.mod_upper_bound (d + 1) rad radix_ne_0)
   end.
 
 Definition freal_add_to_seq {r : radix} (a b : FracReal) :=
@@ -367,6 +372,7 @@ remember (freal (x + y)) as xy.
 remember (freal (y + x)) as yx.
 simpl.
 unfold digit_sequence_normalize.
+...
 destruct (LPO_fst (λ j : nat, rad - 1 - xy (i + j + 1))) as [Hxy| Hxy].
  destruct (LPO_fst (λ j : nat, rad - 1 - yx (i + j + 1))) as [Hyx| Hyx].
   unfold freal_add in Heqxy; simpl in Heqxy.
