@@ -1135,6 +1135,9 @@ destruct (LPO_fst (λ j, rad - 1 - sxx' (i + j + 1))) as [Hsx| Hsx].
    rewrite Hsxx', Hsyy'.
    f_equal.
    unfold freal_add_to_seq in Hxr, Hyr |-*.
+(* numbers_to_digits vs digit_sequence_normalize ? *)
+Check numbers_to_digits.
+Check digit_sequence_normalize.
 ...
    apply numbers_to_digits_eq_compat.
    intros j.
