@@ -515,10 +515,8 @@ subst nxy nyx; unfold fd2n; f_equal.
 apply dig_norm_mul_comm.
 Qed.
 
-...
-
 Theorem freal_add_series_0_l {r : radix} : ∀ x i,
-  freal_add_series 0 x i = freal x i.
+  freal_add_series 0 x i = fd2n x i.
 Proof.
 intros.
 unfold freal_add_series; simpl.
@@ -527,7 +525,7 @@ apply Nat.add_0_l.
 Qed.
 
 Theorem nA_freal_add_series_0_l {r : radix} : ∀ x i n,
-  nA i n (freal_add_series 0 x) = nA i n (freal x).
+  nA i n (freal_add_series 0 x) = nA i n (fd2n x).
 Proof.
 intros.
 unfold nA; simpl.
@@ -802,11 +800,13 @@ induction j; intros.
 Qed.
 *)
 
-Theorem numbers_to_digits_id {r : radix} : 0 < rad → ∀ u i,
+...
+
+Theorem numbers_to_digits_id {r : radix} : ∀ u i,
   (∀ j, u j < rad)
   → numbers_to_digits u i = u i.
 Proof.
-intros Hr * Hur.
+intros * Hur.
 unfold numbers_to_digits.
 destruct (LPO_fst (test_seq i u)) as [H| H].
 -specialize (H 0) as HH.
