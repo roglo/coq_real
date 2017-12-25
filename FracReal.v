@@ -171,6 +171,21 @@ unfold d2n in Hm9 |-*.
 lia.
 Qed.
 
+Definition freal_succ_eq {r : radix} x y :=
+  ∃ k,
+   (∀ i, i < k → freal x i = freal y i) ∧
+   (fd2n x k = S (fd2n y k)) ∧
+   (∀ i, k < i → fd2n x i = 0) ∧
+   (∀ i, k < i → fd2n y i = rad - 1).
+
+Theorem freal_normalized_eq_iff {r : radix} : ∀ x y,
+  (∀ i, freal (freal_normalize x) i = freal (freal_normalize y) i)
+  ↔ (∀ i, freal x i = freal y i) ∨ freal_succ_eq x y ∨ freal_succ_eq y x.
+Proof.
+intros.
+split; intros Hxy.
+...
+
 (* Addition, Multiplication *)
 
 Definition sequence_add (a b : nat → nat) i := a i + b i.
@@ -1272,10 +1287,8 @@ destruct (LPO_fst (mark_9 sxx' i)) as [Hsx| Hsx].
        rewrite Nat.succ_pred_pos in Hyr; [ lia | easy ].
     +++now f_equal.
    **clear Hji; rename H into Hji; move Hji after Hxr.
-     unfold freal_normalize in Hx; simpl in Hx.
-     unfold digit_sequence_normalize in Hx.
+Check freal_normalized_eq_iff.
 ...
-
      exfalso; specialize (H1 (i - j - 1)).
      unfold d2n in H1.
 ...
