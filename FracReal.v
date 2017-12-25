@@ -78,7 +78,9 @@ Hint Resolve radix_gt_0 radix_ne_0 radix_ge_2.
 
 (* Digit *)
 
-Record digit {r : radix} := mkdig { dig : nat; dig_lt_rad : dig < rad }.
+Record digit {r : radix} := mkdig { dig : nat; digit_lt_rad : dig < rad }.
+
+Hint Resolve digit_lt_rad.
 
 Definition digit_0 {r : radix} := mkdig _ 0 radix_gt_0.
 
@@ -800,7 +802,7 @@ induction j; intros.
 Qed.
 *)
 
-Theorem numbers_to_digits_id {r : radix} : ∀ u i (Hur : ∀ j, u j < rad),
+Theorem numbers_to_digits_id {r : radix} : ∀ u (Hur : ∀ j, u j < rad) i,
   numbers_to_digits u i = mkdig _ (u i) (Hur i).
 Proof.
 intros.
@@ -887,45 +889,38 @@ destruct (LPO_fst (λ j : nat, rad - 1 - d2n nx0 (i + j + 1))) as [Hx0| Hx0].
   --subst nx nx0; simpl.
     unfold freal_add_to_seq, d2n.
     apply digit_eq_eq; simpl.
-...
-    rewrite numbers_to_digits_id; [ | easy | easy ].
-    now rewrite freal_add_series_0_l.
+    now rewrite (numbers_to_digits_id _ Hxr).
   --exfalso; apply Hnxr.
     subst nx nx0; simpl in Hnx0r; simpl.
     unfold freal_add_to_seq in Hnx0r.
-    rewrite numbers_to_digits_id in Hnx0r; [ | easy | ].
-   ++now rewrite freal_add_series_0_l in Hnx0r.
-   ++now intros; rewrite freal_add_series_0_l.
-  *destruct (lt_dec (S (nx i)) rad) as [Hnxr| Hnxr]; [ exfalso | easy ].
+    unfold d2n in Hnx0r.
+    now rewrite (numbers_to_digits_id _ Hxr) in Hnx0r.
+  *destruct (lt_dec (S (d2n nx i)) rad) as [Hnxr| Hnxr]; [ exfalso | easy ].
    apply Hnx0r.
    subst nx nx0; simpl.
-   unfold freal_add_to_seq.
-   rewrite numbers_to_digits_id; [ | easy | easy ].
-   now rewrite freal_add_series_0_l.
+   unfold freal_add_to_seq, d2n; simpl.
+   now rewrite (numbers_to_digits_id _ Hxr).
  +destruct Hx as (k & Hjk & Hnk).
   specialize (Hx0 k).
   subst nx nx0; simpl in Hx0.
   unfold freal_add_to_seq in Hx0.
-  rewrite numbers_to_digits_id in Hx0; [ | easy | easy ].
-  now rewrite freal_add_series_0_l in Hx0.
--destruct (LPO_fst (λ j : nat, rad - 1 - nx (i + j + 1))) as [Hx| Hx].
+  unfold d2n in Hx0.
+  now rewrite (numbers_to_digits_id _ Hxr) in Hx0.
+-destruct (LPO_fst (λ j : nat, rad - 1 - d2n nx (i + j + 1))) as [Hx| Hx].
  +destruct Hx0 as (k & Hjk & Hnk).
   specialize (Hx k).
   subst nx nx0; simpl in Hnk.
-  unfold freal_add_to_seq in Hnk.
-  rewrite numbers_to_digits_id in Hnk; [ | easy | easy ].
-  now rewrite freal_add_series_0_l in Hnk.
+  unfold freal_add_to_seq, d2n in Hnk.
+  now rewrite (numbers_to_digits_id _ Hxr) in Hnk.
  +subst nx nx0; simpl.
-  unfold freal_add_to_seq.
-  rewrite numbers_to_digits_id; [ | easy | easy ].
-  now rewrite freal_add_series_0_l.
+  unfold freal_add_to_seq, d2n.
+  rewrite (numbers_to_digits_id _ Hxr).
+  now apply digit_eq_eq.
 Qed.
 
-Theorem freal_add_0_l {r : radix} : 0 < rad → ∀ x,
-  (∀ i, freal x i < rad)
-  → (0 + x = x)%F.
+Theorem freal_add_0_l {r : radix} : ∀ x, (0 + x = x)%F.
 Proof.
-intros Hr * Hx.
+intros.
 unfold freal_eq, freal_normalized_eq.
 remember (freal_normalize (0%F + x)) as n0x eqn:Hn0x.
 remember (freal_normalize x) as nx eqn:Hnx.
@@ -934,10 +929,11 @@ exfalso.
 destruct H as (i & Hji & Hi).
 apply Hi; clear Hi.
 unfold eq_freal_seq.
-destruct (Nat.eq_dec (freal n0x i) (freal nx i)) as [H| H]; [ easy | ].
+destruct (Nat.eq_dec (fd2n n0x i) (fd2n nx i)) as [H| H]; [ easy | ].
 exfalso; apply H; clear H.
 subst n0x nx; simpl.
-now apply dig_norm_add_0_l.
+unfold fd2n; f_equal.
+now apply dig_norm_add_0_l; [ | unfold fd2n ].
 Qed.
 
 Theorem dig_norm_add_assoc {r : radix} : ∀ x y z i,
@@ -949,16 +945,17 @@ remember (freal (x + (y + z))) as xy.
 remember (freal ((x + y) + z)) as yx.
 simpl.
 unfold digit_sequence_normalize.
-destruct (LPO_fst (λ j : nat, rad - 1 - xy (i + j + 1))) as [Hxy| Hxy].
--destruct (LPO_fst (λ j : nat, rad - 1 - yx (i + j + 1))) as [Hyx| Hyx].
+destruct (LPO_fst (λ j : nat, rad - 1 - d2n xy (i + j + 1))) as [Hxy| Hxy].
+-destruct (LPO_fst (λ j : nat, rad - 1 - d2n yx (i + j + 1))) as [Hyx| Hyx].
  +unfold freal_add in Heqxy; simpl in Heqxy.
   unfold freal_add in Heqyx; simpl in Heqyx.
-  destruct (lt_dec (S (xy i)) rad) as [Hrxy| Hrxy].
-  *destruct (lt_dec (S (yx i)) rad) as [Hryx| Hryx].
+  destruct (lt_dec (S (d2n xy i)) rad) as [Hrxy| Hrxy].
+  *destruct (lt_dec (S (d2n yx i)) rad) as [Hryx| Hryx].
   --f_equal.
     subst xy yx; simpl.
     unfold freal_add_to_seq.
-
+    apply digit_eq_eq; simpl; f_equal.
+    unfold d2n.
 (*
 Theorem glop {r : radix} : ∀ x y,
   numbers_to_digits (freal_add_series {| freal := numbers_to_digits x |} y) =
@@ -1021,7 +1018,7 @@ destruct (LPO_fst (eq_freal_seq y y)) as [Hs| Hs]; [ easy | exfalso ].
 destruct Hs as (i & Hji & Hyy).
 apply Hyy.
 unfold eq_freal_seq.
-now destruct (Nat.eq_dec (freal y i) (freal y i)).
+now destruct (Nat.eq_dec (fd2n y i) (fd2n y i)).
 Qed.
 
 Theorem freal_eq_sym {r : radix} : symmetric _ freal_eq_prop.
@@ -1035,8 +1032,8 @@ destruct (LPO_fst (eq_freal_seq nx ny)) as [Ht| Ht]; [ clear Hxy | easy ].
 destruct Hs as (i & Hji & Hyx).
 specialize (Ht i).
 unfold eq_freal_seq in Ht, Hyx.
-destruct (Nat.eq_dec (freal ny i) (freal nx i)) as [H1| H1]; [ easy | ].
-destruct (Nat.eq_dec (freal nx i) (freal ny i)) as [H2| H2]; [ | easy ].
+destruct (Nat.eq_dec (fd2n ny i) (fd2n nx i)) as [H1| H1]; [ easy | ].
+destruct (Nat.eq_dec (fd2n nx i) (fd2n ny i)) as [H2| H2]; [ | easy ].
 now symmetry in H2.
 Qed.
 
@@ -1054,11 +1051,11 @@ destruct Hz as (i & Hji & Hz).
 specialize (Hx i).
 specialize (Hy i).
 unfold eq_freal_seq in Hx, Hy, Hz.
-destruct (Nat.eq_dec (freal nx i) (freal ny i)) as [H1| H1]; [ | easy ].
-destruct (Nat.eq_dec (freal ny i) (freal nz i)) as [H2| H2]; [ | easy ].
-destruct (Nat.eq_dec (freal nx i) (freal nz i)) as [H3| H3]; [ easy | ].
+destruct (Nat.eq_dec (fd2n nx i) (fd2n ny i)) as [H1| H1]; [ | easy ].
+destruct (Nat.eq_dec (fd2n ny i) (fd2n nz i)) as [H2| H2]; [ | easy ].
+destruct (Nat.eq_dec (fd2n nx i) (fd2n nz i)) as [H3| H3]; [ easy | ].
 apply H3.
-now transitivity (freal ny i).
+now transitivity (fd2n ny i).
 Qed.
 
 Add Parametric Relation {r : radix} : (FracReal) freal_eq_prop
@@ -1077,7 +1074,8 @@ Proof.
 intros * Hk *.
 specialize (Hk k).
 unfold eq_freal_seq in Hk.
-now destruct (Nat.eq_dec (freal x k) (freal y k)).
+apply digit_eq_eq.
+now destruct (Nat.eq_dec (fd2n x k) (fd2n y k)).
 Qed.
 
 Theorem nA_eq_compat {r : radix} : ∀ i n u v,
@@ -1142,9 +1140,11 @@ destruct (LPO_fst (test_seq i f)) as [Hf| Hf].
   *specialize (Hjl _ Hkl).
    exfalso; apply Hk.
    erewrite test_seq_eq_compat; [ | easy ]; easy.
-  *subst l; f_equal.
+  *subst l; apply digit_eq_eq; simpl.
+   f_equal; f_equal; f_equal; f_equal; f_equal.
    now apply nA_eq_compat.
   *specialize (Hjk _ Hkl).
+   apply digit_eq_eq; simpl.
    exfalso; apply Hl.
    erewrite test_seq_eq_compat in Hjk; [ | easy ]; easy.
 Qed.
@@ -1171,7 +1171,7 @@ remember (freal_normalize (y + y')) as nyy' eqn:Hnyy'.
 destruct (LPO_fst (eq_freal_seq nxx' nyy')) as [Hxy| Hxy]; [ easy | ].
 destruct Hxy as (i & Hji & Hxy); exfalso; apply Hxy; clear Hxy.
 unfold eq_freal_seq.
-destruct (Nat.eq_dec (freal nxx' i) (freal nyy' i)) as [| Hxy]; [ easy | ].
+destruct (Nat.eq_dec (fd2n nxx' i) (fd2n nyy' i)) as [| Hxy]; [ easy | ].
 exfalso; apply Hxy; clear Hxy.
 rewrite Hnxx', Hnyy'; simpl.
 move Hx at bottom; move Hy at bottom.
