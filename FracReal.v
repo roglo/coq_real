@@ -226,7 +226,11 @@ split; intros Hxy.
        specialize (digit_lt_radix (freal x k)) as Hx.
        specialize (digit_lt_radix (freal y k)) as Hy.
        unfold fd2n in Hlt; lia.
-    **idtac
+    **destruct Hxk as (l & Hjl & Hl).
+    ---destruct (lt_dec (S (d2n (freal y) k)) rad) as [Hylt| Hyge].
+     +++apply digit_eq_eq in Hxy; simpl in Hxy.
+        unfold fd2n in Hlt; unfold d2n in Hxy; lia.
+     +++apply Nat.nlt_ge in Hyge.
 ...
 
 (* Addition, Multiplication *)
