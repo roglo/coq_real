@@ -1272,6 +1272,8 @@ destruct (LPO_fst (mark_9 sxx' i)) as [Hsx| Hsx].
        rewrite Nat.succ_pred_pos in Hyr; [ lia | easy ].
     +++now f_equal.
    **clear Hji; rename H into Hji; move Hji after Hxr.
+     unfold freal_normalize in Hx; simpl in Hx.
+     unfold digit_sequence_normalize in Hx.
 ...
 
      exfalso; specialize (H1 (i - j - 1)).
