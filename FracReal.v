@@ -184,6 +184,31 @@ Theorem freal_normalized_eq_iff {r : radix} : ∀ x y,
 Proof.
 intros.
 split; intros Hxy.
+-destruct (LPO_fst (eq_freal_seq x y)) as [Hxsy| Hxsy].
+ +left.
+  intros k; specialize (Hxsy k).
+  unfold eq_freal_seq in Hxsy.
+  destruct (Nat.eq_dec (fd2n x k) (fd2n y k)) as [H| ]; [ clear Hxsy | easy ].
+  unfold fd2n in H.
+  now apply digit_eq_eq.
+ +right.
+  destruct Hxsy as (k & Hjk & H).
+  unfold eq_freal_seq in H.
+  destruct (Nat.eq_dec (fd2n x k) (fd2n y k)) as [| Hne]; [ easy | clear H ].
+  apply nat_total_order in Hne.
+  destruct Hne as [Hlt| Hgt].
+  *right.
+   unfold freal_succ_eq.
+   exists k.
+   split; [ | split ].
+  --intros i Hik.
+    specialize (Hjk _ Hik).
+    unfold eq_freal_seq in Hjk.
+    destruct (Nat.eq_dec (fd2n x i) (fd2n y i)) as [H| ]; [ | easy ].
+    clear Hjk; unfold fd2n in H.
+    now symmetry; apply digit_eq_eq.
+  --idtac
+
 ...
 
 (* Addition, Multiplication *)
