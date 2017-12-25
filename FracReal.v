@@ -1211,6 +1211,9 @@ destruct (LPO_fst (λ j, rad - 1 - d2n sxx' (i + j + 1))) as [Hsx| Hsx].
    f_equal.
    unfold freal_add_to_seq in Hxr, Hyr |-*.
    move Hx at bottom; move Hy at bottom.
+   unfold d2n.
+subst.
+Print freal_add_to_seq.
 ...
 (*
 unfold freal_add_series.
