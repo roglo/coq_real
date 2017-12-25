@@ -207,20 +207,20 @@ split; intros Hxy.
     destruct (Nat.eq_dec (fd2n x i) (fd2n y i)) as [H| ]; [ | easy ].
     clear Hjk; unfold fd2n in H.
     now symmetry; apply digit_eq_eq.
-  --specialize (Hxy k).
-    unfold freal_normalize in Hxy; simpl in Hxy.
-    unfold digit_sequence_normalize in Hxy.
+  --specialize (Hxy k) as Hk.
+    unfold freal_normalize in Hk; simpl in Hk.
+    unfold digit_sequence_normalize in Hk.
     destruct (LPO_fst (mark_9 (freal y) k)) as [Hyk| Hyk].
    ++exfalso.
      specialize (mark_9_all_9 _ _ Hyk) as H; clear Hyk; rename H into Hyk.
      destruct (LPO_fst (mark_9 (freal x) k)) as [Hxk| Hxk].
     **destruct (lt_dec (S (d2n (freal x) k))) as [Hxlt| Hxge].
     ---destruct (lt_dec (S (d2n (freal y) k))) as [Hylt| Hyge].
-     +++apply digit_eq_eq in Hxy; simpl in Hxy.
-        apply Nat.succ_inj in Hxy.
-        unfold fd2n in Hlt; unfold d2n in Hxy.
-        rewrite Hxy in Hlt; lia.
-     +++now apply digit_eq_eq in Hxy.
+     +++apply digit_eq_eq in Hk; simpl in Hk.
+        apply Nat.succ_inj in Hk.
+        unfold fd2n in Hlt; unfold d2n in Hk.
+        rewrite Hk in Hlt; lia.
+     +++now apply digit_eq_eq in Hk.
     ---apply Nat.nlt_ge in Hxge.
        unfold d2n in Hxge.
        specialize (digit_lt_radix (freal x k)) as Hx.
@@ -228,9 +228,10 @@ split; intros Hxy.
        unfold fd2n in Hlt; lia.
     **destruct Hxk as (l & Hjl & Hl).
     ---destruct (lt_dec (S (d2n (freal y) k)) rad) as [Hylt| Hyge].
-     +++apply digit_eq_eq in Hxy; simpl in Hxy.
-        unfold fd2n in Hlt; unfold d2n in Hxy; lia.
+     +++apply digit_eq_eq in Hk; simpl in Hk.
+        unfold fd2n in Hlt; unfold d2n in Hk; lia.
      +++apply Nat.nlt_ge in Hyge.
+        unfold mark_9 in Hl.
 ...
 
 (* Addition, Multiplication *)
