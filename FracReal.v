@@ -232,6 +232,33 @@ split; intros Hxy.
         unfold fd2n in Hlt; unfold d2n in Hk; lia.
      +++apply Nat.nlt_ge in Hyge.
         unfold mark_9 in Hl.
+...
+
+specialize (Hxy (k + l + 1)).
+unfold freal_normalize in Hxy.
+simpl in Hxy.
+unfold digit_sequence_normalize in Hxy.
+destruct (LPO_fst (mark_9 (freal x) (k + l + 1))) as [H1| H1].
+ destruct (lt_dec (S (d2n (freal x) (k + l + 1))) rad) as [H2| ]; [ | lia ].
+ apply digit_eq_eq in Hxy; simpl in Hxy.
+  destruct (LPO_fst (mark_9 (freal y) (k + l + 1))) as [H3| H3].
+   destruct (lt_dec (S (d2n (freal y) (k + l + 1))) rad) as [H4| H4].
+    simpl in Hxy.
+    specialize (Hyk l); lia.
+
+    easy.
+
+   destruct H3 as (m & Hjm & Hm).
+   unfold mark_9 in Hm.
+   specialize (Hyk (l + m + 1)).
+   replace (k + (l + m + 1) + 1) with (k + l + 1 + m + 1) in Hyk; lia.
+
+ destruct (LPO_fst (mark_9 (freal y) (k + l + 1))) as [H3| H3].
+  destruct (lt_dec (S (d2n (freal y) (k + l + 1))) rad) as [H4| H4].
+   apply digit_eq_eq in Hxy; simpl in Hxy.
+   specialize (Hyk l); lia.
+
+...
 specialize (Hxy (k + l)).
 unfold freal_normalize in Hxy.
 simpl in Hxy.
