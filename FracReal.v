@@ -83,9 +83,9 @@ Hint Resolve radix_gt_0 radix_ge_1 radix_ne_0 radix_ge_2.
 
 (* Digit *)
 
-Record digit {r : radix} := mkdig { dig : nat; digit_lt_rad : dig < rad }.
+Record digit {r : radix} := mkdig { dig : nat; digit_lt_radix : dig < rad }.
 
-Hint Resolve digit_lt_rad.
+Hint Resolve digit_lt_radix.
 
 Definition digit_0 {r : radix} := mkdig _ 0 radix_gt_0.
 
@@ -166,7 +166,7 @@ Proof.
 intros * Hm9 *.
 specialize (Hm9 k); unfold mark_9 in Hm9.
 apply Nat.sub_0_le in Hm9.
-specialize (digit_lt_rad (u (i + k + 1))) as H.
+specialize (digit_lt_radix (u (i + k + 1))) as H.
 unfold d2n in Hm9 |-*.
 lia.
 Qed.
@@ -207,8 +207,26 @@ split; intros Hxy.
     destruct (Nat.eq_dec (fd2n x i) (fd2n y i)) as [H| ]; [ | easy ].
     clear Hjk; unfold fd2n in H.
     now symmetry; apply digit_eq_eq.
-  --idtac
-
+  --specialize (Hxy k).
+    unfold freal_normalize in Hxy; simpl in Hxy.
+    unfold digit_sequence_normalize in Hxy.
+    destruct (LPO_fst (mark_9 (freal y) k)) as [Hyk| Hyk].
+   ++exfalso.
+     specialize (mark_9_all_9 _ _ Hyk) as H; clear Hyk; rename H into Hyk.
+     destruct (LPO_fst (mark_9 (freal x) k)) as [Hxk| Hxk].
+    **destruct (lt_dec (S (d2n (freal x) k))) as [Hxlt| Hxge].
+    ---destruct (lt_dec (S (d2n (freal y) k))) as [Hylt| Hyge].
+     +++apply digit_eq_eq in Hxy; simpl in Hxy.
+        apply Nat.succ_inj in Hxy.
+        unfold fd2n in Hlt; unfold d2n in Hxy.
+        rewrite Hxy in Hlt; lia.
+     +++now apply digit_eq_eq in Hxy.
+    ---apply Nat.nlt_ge in Hxge.
+       unfold d2n in Hxge.
+       specialize (digit_lt_radix (freal x k)) as Hx.
+       specialize (digit_lt_radix (freal y k)) as Hy.
+       unfold fd2n in Hlt; lia.
+    **idtac
 ...
 
 (* Addition, Multiplication *)
