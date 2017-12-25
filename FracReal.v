@@ -1212,8 +1212,24 @@ destruct (LPO_fst (λ j, rad - 1 - d2n sxx' (i + j + 1))) as [Hsx| Hsx].
    unfold freal_add_to_seq in Hxr, Hyr |-*.
    move Hx at bottom; move Hy at bottom.
    unfold d2n.
+   assert (H : ∀ j, j < i → freal nxx' j = freal nyy' j).
+  ++intros j Hj.
+    specialize (Hji _ Hj).
+    unfold eq_freal_seq in Hji.
+    apply digit_eq_eq.
+    now destruct (Nat.eq_dec (fd2n nxx' j) (fd2n nyy' j)).
+  ++clear Hji; rename H into Hji.
 subst.
-Print freal_add_to_seq.
+move Hxr at bottom; move Hyr at bottom.
+move Hsx at bottom; move Hsy at bottom.
+unfold freal_normalize in Hji; simpl in Hji.
+unfold freal_add_to_seq in Hji, Hsx, Hsy.
+unfold d2n in Hxr, Hyr, Hsx, Hsy.
+remember (numbers_to_digits (freal_add_series x x')) as xx' eqn:Hxx'.
+remember (numbers_to_digits (freal_add_series y y')) as yy' eqn:Hyy'.
+Print digit_sequence_normalize.
+(* en fait on devrait même avoir j < i → dig (xx' j) = dig (yy' j) *)
+...
 ...
 (*
 unfold freal_add_series.
