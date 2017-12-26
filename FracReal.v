@@ -200,14 +200,15 @@ split; intros Hxy.
   *right.
    unfold freal_succ_eq.
    exists k.
-   split; [ | split ].
+   split; [ | split; [ | split ] ].
   --intros i Hik.
     specialize (Hjk _ Hik).
     unfold eq_freal_seq in Hjk.
     destruct (Nat.eq_dec (fd2n x i) (fd2n y i)) as [H| ]; [ | easy ].
     clear Hjk; unfold fd2n in H.
     now symmetry; apply digit_eq_eq.
-  --specialize (Hxy k) as Hk.
+  --...
+    specialize (Hxy k) as Hk.
     unfold freal_normalize in Hk; simpl in Hk.
     unfold digit_sequence_normalize in Hk.
     destruct (LPO_fst (mark_9 (freal y) k)) as [Hyk| Hyk].
@@ -232,6 +233,7 @@ split; intros Hxy.
         unfold fd2n in Hlt; unfold d2n in Hk; lia.
      +++apply Nat.nlt_ge in Hyge.
         unfold mark_9 in Hl.
+unfold freal_normalize in Hxy; simpl in Hxy.
 ...
 
 specialize (Hxy (k + l + 1)).
