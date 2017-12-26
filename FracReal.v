@@ -234,6 +234,8 @@ split; intros Hxy.
         specialize (digit_lt_radix (freal y k)); lia.
     ---destruct (lt_dec (S (d2n (freal x) k)) rad) as [H2| H2].
      +++split; [ easy | simpl in Hk ].
+unfold freal_normalize in Hxy.
+unfold digit_sequence_normalize in Hxy; simpl in Hxy.
 
 bbb.
 
