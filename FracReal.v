@@ -220,6 +220,12 @@ split; intros Hxy.
       specialize (digit_lt_radix (freal x i)).
       replace (k + (i - k - 1) + 1) with i in H; lia.
     **rewrite <- and_assoc, and_comm; split; [ easy | clear H ].
+destruct (lt_dec (S (d2n (freal x) k)) rad) as [H1| H1].
+Focus 2.
+unfold fd2n in Hlt; unfold d2n in H1.
+specialize (digit_lt_radix (freal y k)); lia.
+simpl in Hk.
+aaa.
       move Hxk before Hkxy; unfold fd2n in Hxk.
       destruct (LPO_fst (mark_9 (freal y) k)) as [Hyk| Hyk].
     ---specialize (mark_9_all_9 _ _ Hyk) as H.
