@@ -240,6 +240,10 @@ destruct i; [ easy | ].
 specialize (Hxy i) as Hi.
 unfold freal_normalize in Hi.
 unfold digit_sequence_normalize in Hi; simpl in Hi.
+destruct (LPO_fst (mark_9 (freal x) i)).
+destruct (LPO_fst (mark_9 (freal y) i)).
+destruct Hyk.
+destruct a.
 bbb.
 
      +++admit. (* special case here: definitions to be changed *)
