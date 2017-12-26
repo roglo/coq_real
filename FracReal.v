@@ -222,9 +222,20 @@ split; intros Hxy.
     **rewrite <- and_assoc, and_comm; split; [ easy | clear H ].
       move Hxk before Hkxy; unfold fd2n in Hxk.
       destruct (LPO_fst (mark_9 (freal y) k)) as [Hyk| Hyk].
-    ---destruct k.
-     +++clear Hkxy.
-...
+    ---specialize (mark_9_all_9 _ _ Hyk) as H.
+       clear Hyk; rename H into Hyk; move Hyk after Hk.
+       simpl in Hyk.
+       destruct (lt_dec (S (d2n (freal x) k)) rad) as [H1| H1].
+     +++destruct (lt_dec (S (d2n (freal y) k)) rad) as [H2| H2]; [ | easy ].
+        simpl in Hk.
+        apply Nat.succ_inj in Hk.
+        unfold d2n in Hk; unfold fd2n in Hlt; lia.
+     +++unfold d2n in H1; unfold fd2n in Hlt.
+        specialize (digit_lt_radix (freal y k)); lia.
+    ---destruct (lt_dec (S (d2n (freal x) k)) rad) as [H2| H2].
+     +++split; [ easy | simpl in Hk ].
+
+bbb.
 
      +++admit. (* special case here: definitions to be changed *)
      +++specialize (Hxy k) as Hk1.
