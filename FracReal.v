@@ -208,6 +208,19 @@ split; intros Hxy.
     clear Hjk; unfold fd2n in H.
     now symmetry; apply digit_eq_eq.
   --split; [ easy | clear Hjk ].
+    specialize (Hxy k) as Hk.
+    apply digit_eq_eq in Hk.
+    unfold freal_normalize in Hk; simpl in Hk.
+    unfold digit_sequence_normalize in Hk.
+    destruct (LPO_fst (mark_9 (freal x) k)) as [H| Hxk].
+   ++assert (Hxk : ∀ i, k < i → fd2n x i = rad - 1).
+    **intros i Hki; specialize (H (i - k - 1)).
+      apply Nat.sub_0_le in H.
+      unfold mark_9, d2n in H; unfold fd2n.
+      specialize (digit_lt_radix (freal x i)).
+      replace (k + (i - k - 1) + 1) with i in H; lia.
+    **rewrite <- and_assoc, and_comm; split; [ easy | clear H ].
+      move Hxk before Hkxy; unfold fd2n in Hxk.
 ...
 
    split; [ | split; [ | split ] ].
