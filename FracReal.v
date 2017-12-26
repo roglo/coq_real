@@ -223,6 +223,9 @@ split; intros Hxy.
       move Hxk before Hkxy; unfold fd2n in Hxk.
       destruct (LPO_fst (mark_9 (freal y) k)) as [Hyk| Hyk].
     ---destruct k.
+     +++clear Hkxy.
+...
+
      +++admit. (* special case here: definitions to be changed *)
      +++specialize (Hxy k) as Hk1.
         unfold freal_normalize in Hk1; simpl in Hk1.
