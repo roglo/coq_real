@@ -221,7 +221,21 @@ split; intros Hxy.
       replace (k + (i - k - 1) + 1) with i in H; lia.
     **rewrite <- and_assoc, and_comm; split; [ easy | clear H ].
       move Hxk before Hkxy; unfold fd2n in Hxk.
+      destruct (LPO_fst (mark_9 (freal y) k)) as [Hyk| Hyk].
+    ---destruct k.
+     +++admit. (* special case here: definitions to be changed *)
+     +++specialize (Hxy k) as Hk1.
+        unfold freal_normalize in Hk1; simpl in Hk1.
+        unfold digit_sequence_normalize in Hk1.
+        destruct (LPO_fst (mark_9 (freal x) k)) as [H1| H1].
+      ***specialize (H1 0).
+         unfold mark_9, d2n in H1.
+         rewrite Nat.add_0_r, Nat.add_1_r in H1.
+         unfold fd2n in Hlt.
+         specialize (digit_lt_radix (freal y (S k))); lia.
+      ***destruct H1 as (j & Hjj & Hj).
 ...
+
 
    split; [ | split; [ | split ] ].
   --intros i Hik.
