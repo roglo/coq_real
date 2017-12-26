@@ -234,6 +234,35 @@ split; intros Hxy.
          unfold fd2n in Hlt.
          specialize (digit_lt_radix (freal y (S k))); lia.
       ***destruct H1 as (j & Hjj & Hj).
+         destruct (lt_dec (S (d2n (freal x) (S k))) rad) as [H1| H1].
+      ----simpl in Hk.
+          destruct (lt_dec (S (d2n (freal y) (S k))) rad) as [H2| H2].
+       ++++simpl in Hk.
+           unfold d2n in Hk; unfold fd2n in Hlt; lia.
+       ++++easy.
+      ----unfold d2n in H1; unfold fd2n in Hlt.
+          specialize (digit_lt_radix (freal y (S k))); lia.
+    ---destruct (lt_dec (S (d2n (freal x) k)) rad) as [H1| H1].
+     +++simpl in Hk.
+        split; [ unfold fd2n; easy | ].
+        intros i Hki.
+        destruct k; [ admit | ].
+        specialize (Hxy k) as Hk1.
+        unfold freal_normalize in Hk1; simpl in Hk1.
+        unfold digit_sequence_normalize in Hk1.
+        destruct (LPO_fst (mark_9 (freal x) k)) as [H2| H2].
+      ***specialize (H2 0).
+         unfold mark_9, d2n in H2.
+         rewrite Nat.add_0_r, Nat.add_1_r in H2.
+         unfold fd2n in Hlt.
+         specialize (digit_lt_radix (freal y (S k))); lia.
+      ***destruct (LPO_fst (mark_9 (freal y) k)) as [H3| H3].
+      ----destruct Hyk as (j & Hjj & Hj).
+          specialize (H3 (S j)).
+          unfold mark_9, d2n in Hj, H3.
+          now replace (S k + j) with (k + S j) in Hj by lia.
+      ----clear Hk1.
+
 ...
 
 
