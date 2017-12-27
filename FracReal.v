@@ -171,6 +171,16 @@ unfold d2n in Hm9 |-*.
 lia.
 Qed.
 
+Theorem freal_normalized_iff {r : radix} : ∀ x y,
+  (∀ i, freal (freal_normalize x) i = freal y i)
+  ↔ (∀ i, freal x i = freal y i) ∨
+     ∃ k,
+     (∀ i, i < k → freal x i = freal y i) ∧
+     (S (fd2n x k) = fd2n y k) ∧
+     (∀ i, k < i → fd2n x i = rad - 1) ∧
+     (∀ i, k < i → fd2n y i = 0).
+...
+
 Definition freal_succ_eq {r : radix} x y :=
   ∃ k,
    (∀ i, i < k → freal x i = freal y i) ∧
