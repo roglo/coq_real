@@ -220,6 +220,21 @@ split; intros Hxy.
       destruct i; [ easy | ].
       destruct i.
     ---apply Nat.lt_1_r in Hki; subst k.
+       clear Hkxy Hjk.
+       specialize (Hxy 1) as Hxy1.
+       unfold freal_normalize, digit_sequence_normalize in Hxy1.
+       simpl in Hxy1.
+       destruct (LPO_fst (mark_9 (freal x) 1)) as [Hx1| Hx1].
+     +++destruct (lt_dec (S (d2n (freal x) 1)) rad) as [Hsx1| Hsx1].
+      ***specialize (Hxk 1 Nat.lt_0_1); clear Hxy1.
+         unfold fd2n in Hxk; unfold d2n in Hsx1; lia.
+      ***now apply digit_eq_eq in Hxy1.
+     +++destruct Hx1 as (i & Hji & Hi).
+        unfold mark_9 in Hi.
+        specialize (Hxk (S (S i)) (Nat.lt_0_succ (S i))).
+        unfold fd2n in Hxk; unfold d2n in Hi.
+        replace (1 + i + 1) with (S (S i)) in Hi; lia.
+    ---destruct i.
 ...
 
 Definition freal_succ_eq {r : radix} x y :=
