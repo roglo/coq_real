@@ -190,7 +190,7 @@ split; intros Hxy.
   unfold fd2n in H.
   now apply digit_eq_eq.
  +right.
-  destruct Hxsy as (k & Hjk & Hk).
+  destruct Hxsy as (k & Hjk & Hxyk).
   exists k.
   assert (Hkxy : ∀ i, i < k → freal x i = freal y i).
   *intros i Hik.
@@ -200,6 +200,26 @@ split; intros Hxy.
    clear Hjk; unfold fd2n in H.
    now symmetry; apply digit_eq_eq.
   *split; [ easy | ].
+   specialize (Hxy k) as Hk.
+   apply digit_eq_eq in Hk.
+   unfold freal_normalize in Hk; simpl in Hk.
+   unfold digit_sequence_normalize in Hk.
+   destruct (LPO_fst (mark_9 (freal x) k)) as [H| Hxk].
+  --assert (Hxk : ∀ i, k < i → fd2n x i = rad - 1).
+   ++intros i Hki; specialize (H (i - k - 1)).
+     apply Nat.sub_0_le in H.
+     unfold mark_9, d2n in H; unfold fd2n.
+     specialize (digit_lt_radix (freal x i)).
+     replace (k + (i - k - 1) + 1) with i in H; lia.
+   ++rewrite and_comm, and_assoc; split; [ easy | clear H ].
+     destruct (lt_dec (S (d2n (freal x) k))) as [Hsxk| Hsxk].
+    **simpl in Hk.
+      rewrite and_comm.
+      split; [ easy | ].
+      intros i Hki.
+      destruct i; [ easy | ].
+      destruct i.
+    ---apply Nat.lt_1_r in Hki; subst k.
 ...
 
 Definition freal_succ_eq {r : radix} x y :=
