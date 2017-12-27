@@ -217,24 +217,22 @@ split; intros Hxy.
       rewrite and_comm.
       split; [ easy | ].
       intros i Hki.
-      clear - Hxy Hxk Hki.
-      revert k Hxk Hki.
-      induction i; intros; [ easy | ].
-      destruct k.
-    ---specialize (Hxy (S i)) as Hxy1.
-       unfold freal_normalize, digit_sequence_normalize in Hxy1.
-       simpl in Hxy1.
-       destruct (LPO_fst (mark_9 (freal x) (S i))) as [Hx1| Hx1].
-     +++destruct (lt_dec (S (d2n (freal x) (S i))) rad) as [Hsx1| Hsx1].
-      ***specialize (Hxk (S i) (Nat.lt_0_succ i)); clear Hxy1.
+      destruct i; [ easy | ].
+      specialize (Hxy (S i)) as Hxy1.
+      unfold freal_normalize, digit_sequence_normalize in Hxy1.
+      simpl in Hxy1.
+      destruct (LPO_fst (mark_9 (freal x) (S i))) as [Hx1| Hx1].
+    ---destruct (lt_dec (S (d2n (freal x) (S i))) rad) as [Hsx1| Hsx1].
+     +++specialize (Hxk (S i) Hki); clear Hxy1.
          unfold fd2n in Hxk; unfold d2n in Hsx1; lia.
-      ***now apply digit_eq_eq in Hxy1.
-     +++destruct Hx1 as (j & Hjj & Hj).
-        unfold mark_9 in Hj.
-        specialize (Hxk (S (S (i + j))) (Nat.lt_0_succ _)).
-        unfold fd2n in Hxk; unfold d2n in Hj.
-        replace (S i + j + 1) with (S (S (i + j))) in Hj; lia.
-    ---idtac.
+     +++now apply digit_eq_eq in Hxy1.
+    ---destruct Hx1 as (j & Hjj & Hj).
+       unfold mark_9 in Hj.
+       assert (Hksi : k < S (S (i + j))) by lia.
+       specialize (Hxk (S (S (i + j))) Hksi).
+       unfold fd2n in Hxk; unfold d2n in Hj.
+       replace (S i + j + 1) with (S (S (i + j))) in Hj; lia.
+    **idtac.
 ...
 
 Definition freal_succ_eq {r : radix} x y :=
