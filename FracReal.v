@@ -241,7 +241,24 @@ split; intros Hxy.
       rewrite Hsxk.
       split; [ | now apply Nat.mod_same ].
       intros i Hki.
+      destruct k.
+Focus 2.
+exfalso.
+specialize (Hxy k) as Hxy1.
+unfold freal_normalize, digit_sequence_normalize in Hxy1.
+simpl in Hxy1.
+specialize (Hkxy k (Nat.lt_succ_diag_r k)).
+apply digit_eq_eq in Hxy1.
+destruct (LPO_fst (mark_9 (freal x) k)) as [Hx1| Hx1].
+ destruct (lt_dec (S (d2n (freal x) k)) rad) as [Hsx1| Hsx1].
+  unfold d2n in Hxy1; simpl in Hxy1.
+  rewrite Hkxy in Hxy1; lia.
 
+  unfold d2n in Hsx1; simpl in Hxy1.
+  rewrite Hkxy, <- Hxy1 in Hsx1.
+  specialize radix_ge_2 as H; lia.
+
+ idtac.
 ...
 
 Definition freal_succ_eq {r : radix} x y :=
