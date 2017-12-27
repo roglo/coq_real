@@ -242,6 +242,8 @@ split; intros Hxy.
       split; [ | now apply Nat.mod_same ].
       intros i Hki.
       destruct k.
+    ---idtac.
+...
 Focus 2.
 exfalso.
 specialize (Hxy k) as Hxy1.
@@ -258,7 +260,17 @@ destruct (LPO_fst (mark_9 (freal x) k)) as [Hx1| Hx1].
   rewrite Hkxy, <- Hxy1 in Hsx1.
   specialize radix_ge_2 as H; lia.
 
- idtac.
+ destruct Hx1 as (j & Hjj & Hj).
+ unfold mark_9 in Hj.
+ destruct j.
+  rewrite Nat.add_0_r, Nat.add_1_r in Hj.
+  unfold d2n in Hj; lia.
+
+  assert (H : S k < S (S (k + j))) by lia.
+  specialize (Hxk (S (S (k + j))) H).
+  unfold fd2n in Hxk; unfold d2n in Hj.
+  replace (k + S j + 1) with (S (S (k + j))) in Hj; lia.
+
 ...
 
 Definition freal_succ_eq {r : radix} x y :=
