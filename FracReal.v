@@ -179,6 +179,17 @@ Theorem freal_normalized_iff {r : radix} : ∀ x y,
      (S (fd2n x k) = fd2n y k) ∧
      (∀ i, k < i → fd2n x i = rad - 1) ∧
      (∀ i, k < i → fd2n y i = 0).
+Proof.
+intros.
+split; intros Hxy.
+-destruct (LPO_fst (eq_freal_seq x y)) as [Hxsy| Hxsy].
+ +left.
+  intros k; specialize (Hxsy k).
+  unfold eq_freal_seq in Hxsy.
+  destruct (Nat.eq_dec (fd2n x k) (fd2n y k)) as [H| ]; [ clear Hxsy | easy ].
+  unfold fd2n in H.
+  now apply digit_eq_eq.
+ +right.
 ...
 
 Definition freal_succ_eq {r : radix} x y :=
