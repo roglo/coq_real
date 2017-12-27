@@ -174,7 +174,7 @@ Qed.
 Definition freal_succ_eq {r : radix} x y :=
   ∃ k,
    (∀ i, i < k → freal x i = freal y i) ∧
-   (fd2n x k = S (fd2n y k) mod rad) ∧
+   (fd2n x k = S (fd2n y k)) ∧
    (∀ i, k < i → fd2n x i = 0) ∧
    (∀ i, k < i → fd2n y i = rad - 1).
 
@@ -244,7 +244,6 @@ split; intros Hxy.
      destruct (lt_dec (S (d2n (freal x) k))) as [Hsxk| Hsxk].
     **simpl in Hk.
       rewrite and_comm.
-      rewrite Nat.mod_small; [ | easy ].
       split; [ | easy ].
       intros i Hki.
       destruct i; [ easy | ].
@@ -268,6 +267,7 @@ split; intros Hxy.
       unfold d2n in Hsxk.
       apply Nat.le_antisymm in Hsxk; [ clear H | easy ].
       rewrite Hsxk.
+...
       split; [ now rewrite Nat.mod_same | ].
       intros i Hki.
       destruct k.
@@ -334,6 +334,13 @@ split; intros Hxy.
       now unfold fd2n in Hxy; unfold d2n.
     **apply nat_total_order in Hk.
     ---destruct Hk as [Hk| Hk]; [ easy | ].
+       specialize (Hxi (k - i - 1)).
+       unfold mark_9 in Hxi.
+       replace (i + (k - i - 1) + 1) with k in Hxi by lia.
+       unfold d2n in Hxi; unfold fd2n in Hxy.
+...
+       rewrite Nat.mod_small in Hxy; [ | ].
+
 ...
 
    0     i     k
