@@ -242,7 +242,7 @@ split; intros Hxy.
       split; [ | now apply Nat.mod_same ].
       intros i Hki.
       destruct k.
-    ---idtac.
+    ---clear Hjk Hkxy.
 ...
 Focus 2.
 exfalso.
