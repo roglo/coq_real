@@ -173,7 +173,8 @@ Qed.
 
 Theorem freal_normalized_iff {r : radix} : ∀ x y,
   (∀ i, freal (freal_normalize x) i = freal y i)
-  ↔ (∀ i, freal x i = freal y i) ∨
+  ↔ (∀ k, ∃ i, k ≤ i ∧ S (fd2n x i) < rad) ∧
+     (∀ i, freal x i = freal y i) ∨
      ∃ k,
      (∀ i, i < k → freal x i = freal y i) ∧
      (S (fd2n x k) mod rad = fd2n y k) ∧
@@ -184,11 +185,33 @@ intros.
 split; intros Hxy.
 -destruct (LPO_fst (eq_freal_seq x y)) as [Hxsy| Hxsy].
  +left.
-  intros k; specialize (Hxsy k).
-  unfold eq_freal_seq in Hxsy.
-  destruct (Nat.eq_dec (fd2n x k) (fd2n y k)) as [H| ]; [ clear Hxsy | easy ].
-  unfold fd2n in H.
-  now apply digit_eq_eq.
+  split.
+  *intros k.
+   specialize (Hxy k).
+   unfold freal_normalize, digit_sequence_normalize in Hxy.
+   simpl in Hxy.
+   destruct (LPO_fst (mark_9 (freal x) k)) as [Hxk| Hxk].
+  --specialize (Hxsy k).
+    unfold eq_freal_seq in Hxsy.
+    destruct (Nat.eq_dec (fd2n x k) (fd2n y k)) as [H| ]; [ | easy ].
+    clear Hxsy.
+    apply digit_eq_eq in Hxy.
+    unfold fd2n in H.
+    destruct (lt_dec (S (d2n (freal x) k)) rad) as [Hsxk| Hsxk].
+   ++simpl in Hxy; unfold d2n in Hxy; rewrite H in Hxy; lia.
+   ++simpl in Hxy; unfold d2n in Hsxk.
+     rewrite H, <- Hxy in Hsxk.
+     now specialize radix_ge_2.
+  --destruct Hxk as (i & Hij & Hi).
+    exists (k + i + 1).
+    split; [ lia | ].
+    unfold mark_9 in Hi; unfold d2n in Hi.
+    unfold fd2n; lia.
+  *intros k; specialize (Hxsy k).
+   unfold eq_freal_seq in Hxsy.
+   destruct (Nat.eq_dec (fd2n x k) (fd2n y k)) as [H| ]; [ clear Hxsy | easy ].
+   unfold fd2n in H.
+   now apply digit_eq_eq.
  +right.
   destruct Hxsy as (k & Hjk & Hxyk).
   exists k.
@@ -283,8 +306,14 @@ split; intros Hxy.
     now destruct (Nat.eq_dec (fd2n x k) (fd2n y k)).
 -intros i.
  destruct Hxy as [Hxy | Hxy].
- +idtac.
-(* c'est faux *)
+ +destruct Hxy as (Hki, Hxy).
+  unfold freal_normalize, digit_sequence_normalize; simpl.
+  destruct (LPO_fst (mark_9 (freal x) i)) as [Hxi| Hxi].
+  *specialize (Hki (S i)) as (j & H1j & Hj); unfold fd2n in Hj.
+   specialize (Hxi (j - i - 1)); unfold mark_9, d2n in Hxi.
+   replace (i + (j - i - 1) + 1) with j in Hxi; lia.
+  *apply Hxy.
+ +destruct Hxy as (k & Hik & Hxy & Hx & Hy).
 
 ...
 
