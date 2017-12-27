@@ -176,7 +176,7 @@ Theorem freal_normalized_iff {r : radix} : ∀ x y,
   ↔ (∀ i, freal x i = freal y i) ∨
      ∃ k,
      (∀ i, i < k → freal x i = freal y i) ∧
-     (S (fd2n x k) = fd2n y k) ∧
+     (S (fd2n x k) mod rad = fd2n y k) ∧
      (∀ i, k < i → fd2n x i = rad - 1) ∧
      (∀ i, k < i → fd2n y i = 0).
 Proof.
@@ -215,6 +215,7 @@ split; intros Hxy.
      destruct (lt_dec (S (d2n (freal x) k))) as [Hsxk| Hsxk].
     **simpl in Hk.
       rewrite and_comm.
+      rewrite Nat.mod_small; [ | easy ].
       split; [ easy | ].
       intros i Hki.
       destruct i; [ easy | ].
@@ -224,7 +225,7 @@ split; intros Hxy.
       destruct (LPO_fst (mark_9 (freal x) (S i))) as [Hx1| Hx1].
     ---destruct (lt_dec (S (d2n (freal x) (S i))) rad) as [Hsx1| Hsx1].
      +++specialize (Hxk (S i) Hki); clear Hxy1.
-         unfold fd2n in Hxk; unfold d2n in Hsx1; lia.
+        unfold fd2n in Hxk; unfold d2n in Hsx1; lia.
      +++now apply digit_eq_eq in Hxy1.
     ---destruct Hx1 as (j & Hjj & Hj).
        unfold mark_9 in Hj.
@@ -232,7 +233,15 @@ split; intros Hxy.
        specialize (Hxk (S (S (i + j))) Hksi).
        unfold fd2n in Hxk; unfold d2n in Hj.
        replace (S i + j + 1) with (S (S (i + j))) in Hj; lia.
-    **idtac.
+    **simpl in Hk; unfold fd2n; symmetry in Hk; rewrite Hk.
+      apply Nat.nlt_ge in Hsxk.
+      specialize (digit_lt_radix (freal x k)) as H.
+      unfold d2n in Hsxk.
+      apply Nat.le_antisymm in Hsxk; [ clear H | easy ].
+      rewrite Hsxk.
+      split; [ | now apply Nat.mod_same ].
+      intros i Hki.
+
 ...
 
 Definition freal_succ_eq {r : radix} x y :=
