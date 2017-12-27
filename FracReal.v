@@ -282,6 +282,9 @@ split; intros Hxy.
   --unfold eq_freal_seq in Hxyk.
     now destruct (Nat.eq_dec (fd2n x k) (fd2n y k)).
 -intros i.
+ destruct Hxy as [Hxy | Hxy].
+ +idtac.
+(* c'est faux *)
 
 ...
 
