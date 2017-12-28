@@ -436,6 +436,8 @@ split; intros Hxy.
    now right; left.
  +unfold freal_succ_eq in Hxy.
   destruct Hxy as (k & Hyx & Hyx0 & Hy & Hx).
+  destruct Hyx0 as [Hyx0| Hyx0].
+  *subst k; clear Hyx.
 ...
 
 (* Addition, Multiplication *)
