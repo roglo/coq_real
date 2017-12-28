@@ -444,8 +444,20 @@ split; intros Hxy.
   destruct Hy as [Hy| Hy].
   *destruct Hy as (Hy, Hyx').
    now left; intros i; rewrite Hxy', <- Hxy, Hyx'.
-  *idtac.
-
+  *destruct Hy as (k & Hbk & Hk & Hakx' & Haky').
+   right; left; exists k.
+   split; [ now intros; rewrite Hxy', <- Hxy; apply Hbk | ].
+   split; [ now unfold fd2n; rewrite Hxy', <- Hxy | ].
+   now split; [ intros; unfold fd2n; rewrite Hxy', <- Hxy; apply Hakx' | ].
+ +destruct Hx as (kx & Hbkx & Hkx & Hakxy' & Hakxx).
+  destruct Hy as [Hy| Hy].
+  *destruct Hy as (Hy, Hyx').
+   right; right; exists kx.
+   split; [ now intros; rewrite Hyx', Hxy; apply Hbkx | ].
+   split; [ now unfold fd2n; rewrite Hyx', Hxy | ].
+   now split; [ intros; unfold fd2n; rewrite Hyx', Hxy; apply Hakxy' | ].
+  *destruct Hy as (ky & Hbky & Hky & Hakyx' & Hakyy).
+   idtac.
 ...
 
 intros.
