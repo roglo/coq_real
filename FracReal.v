@@ -422,8 +422,32 @@ Qed.
 
 Theorem freal_normalized_eq_iff {r : radix} : ∀ x y,
   (∀ i, freal (freal_normalize x) i = freal (freal_normalize y) i)
-  ↔ (∀ i, freal x i = freal y i) ∨ freal_norm_not_norm_eq x y ∨ freal_norm_not_norm_eq y x.
+  ↔ (∀ i, freal x i = freal y i) ∨
+     freal_norm_not_norm_eq x y ∨ freal_norm_not_norm_eq y x.
 Proof.
+intros.
+split; intros Hxy.
+-remember (freal_normalize x) as x' eqn:Hx'.
+ remember (freal_normalize y) as y' eqn:Hy'.
+ move y' before x'.
+ generalize Hxy; intros Hx; symmetry in Hx.
+ generalize Hxy; intros Hy; symmetry in Hy.
+ rewrite Hx' in Hx.
+ rewrite Hy' in Hy.
+ assert (H : ∀ i, freal (freal_normalize x) i = freal y' i) by
+ now intros; rewrite Hx.
+ clear Hx; rename H into Hx; move Hx after Hy.
+ apply freal_normalized_iff in Hx.
+ apply freal_normalized_iff in Hy.
+ destruct Hx as [Hx| Hx].
+ +destruct Hx as (Hx, Hxy').
+  destruct Hy as [Hy| Hy].
+  *destruct Hy as (Hy, Hyx').
+   now left; intros i; rewrite Hxy', <- Hxy, Hyx'.
+  *idtac.
+
+...
+
 intros.
 split; intros Hxy.
 -apply freal_normalized_iff in Hxy.
