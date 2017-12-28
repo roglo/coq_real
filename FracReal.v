@@ -457,7 +457,10 @@ split; intros Hxy.
    split; [ now unfold fd2n; rewrite Hyx', Hxy | ].
    now split; [ intros; unfold fd2n; rewrite Hyx', Hxy; apply Hakxy' | ].
   *destruct Hy as (ky & Hbky & Hky & Hakyx' & Hakyy).
-   idtac.
+   left; intros i.
+   destruct (lt_eq_lt_dec kx ky) as [[Hkk| Hkk]| Hkk].
+  --a
+
 ...
 
 intros.
