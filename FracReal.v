@@ -219,9 +219,15 @@ split; intros Hxy.
   destruct Hxsy as (k & Hjk & Hxyk).
   unfold freal_succ_eq.
   *destruct (zerop k) as [Hzk| Hzk].
+  --subst k; clear Hjk.
+    unfold eq_freal_seq in Hxyk.
+    destruct (Nat.eq_dec (fd2n x 0) (fd2n y 0)) as [H| H]; [ easy | ].
+    clear Hxyk; rename H into Hxy0; unfold fd2n in Hxy0.
+...
   --exists 0; subst k.
     split; [ now intros | ].
     split; [ now left | ].
+    clear Hjk.
 ...
 
     admit. (* a voir *)
