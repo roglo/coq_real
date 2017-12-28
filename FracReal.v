@@ -464,6 +464,40 @@ split; intros Hxy.
     **destruct H0zy as [H| Hzsy]; [ easy | ].
       rewrite Hy in Hzsy; [ easy | lia ].
   *idtac.
+   remember (freal_normalize y) as z eqn:Hz.
+   assert (∀ i, freal (freal_normalize y) i = freal z i).
+  --now intros i; rewrite Hz.
+  --apply freal_normalized_iff in H.
+    destruct H as [H| H].
+   ++destruct H as (Hky, Hyz).
+     right; right.
+     unfold freal_succ_eq.
+     exists k.
+     split; [ now intros i Hi; rewrite Hyz; apply Hyx | ].
+     split; [ now right; unfold fd2n; rewrite Hyz | ].
+     now split; [ intros i Hki; unfold fd2n; rewrite Hyz; apply Hy | ].
+   ++a.
+...
+   ++right; left.
+     destruct H as (j & Hzy & H0zy & Hkz & Hky).
+     unfold freal_succ_eq.
+
+    **intros i _; apply Hx; lia.
+   ++unfold freal_succ_eq in H.
+     destruct H as (k & Hzy & H0zy & Hkz & Hky).
+     destruct k.
+    **left; intros i.
+      unfold fd2n in Hx, Hky.
+      apply digit_eq_eq.
+      rewrite Hx; [ | lia ].
+      rewrite Hky; [ easy | lia ].
+    **destruct H0zy as [H| Hzsy]; [ easy | ].
+      rewrite Hy in Hzsy; [ easy | lia ].
+  *idtac.
+   remember (freal_normalize y) as z eqn:Hz.
+   assert (∀ i, freal (freal_normalize y) i = freal z i).
+  --now intros i; rewrite Hz.
+  --apply freal_normalized_iff in H.
 ...
 
 (* Addition, Multiplication *)
