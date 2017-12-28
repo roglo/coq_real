@@ -174,7 +174,7 @@ Qed.
 Definition freal_succ_eq {r : radix} x y :=
   ∃ k,
    (∀ i, i < k → freal x i = freal y i) ∧
-   (fd2n x k = S (fd2n y k)) ∧
+   (fd2n x k = S (fd2n y k) mod rad) ∧
    (∀ i, k < i → fd2n x i = 0) ∧
    (∀ i, k < i → fd2n y i = rad - 1).
 
@@ -218,7 +218,6 @@ split; intros Hxy.
  +right.
   destruct Hxsy as (k & Hjk & Hxyk).
   unfold freal_succ_eq.
-  exists k.
   assert (Hkxy : ∀ i, i < k → freal y i = freal x i).
   *intros i Hik.
    destruct k; [ easy | ].
@@ -227,7 +226,8 @@ split; intros Hxy.
    destruct (Nat.eq_dec (fd2n x i) (fd2n y i)) as [H| ]; [ | easy ].
    clear Hjk; unfold fd2n in H.
    now symmetry; apply digit_eq_eq.
-  *split; [ easy | ].
+  *exists k.
+   split; [ easy | ].
    specialize (Hxy k) as Hk.
    apply digit_eq_eq in Hk.
    unfold freal_normalize in Hk; simpl in Hk.
@@ -243,8 +243,8 @@ split; intros Hxy.
      split; [ easy | clear H ].
      destruct (lt_dec (S (d2n (freal x) k))) as [Hsxk| Hsxk].
     **simpl in Hk.
-      rewrite and_comm.
-      split; [ | easy ].
+      rewrite Nat.mod_small; [ | easy ].
+      split; [ easy | ].
       intros i Hki.
       destruct i; [ easy | ].
       specialize (Hxy (S i)) as Hxy1.
@@ -267,7 +267,6 @@ split; intros Hxy.
       unfold d2n in Hsxk.
       apply Nat.le_antisymm in Hsxk; [ clear H | easy ].
       rewrite Hsxk.
-...
       split; [ now rewrite Nat.mod_same | ].
       intros i Hki.
       destruct k.
