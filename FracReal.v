@@ -222,6 +222,8 @@ split; intros Hxy.
   --exists 0; subst k.
     split; [ now intros | ].
     split; [ now left | ].
+...
+
     admit. (* a voir *)
   --exists (S k).
     assert (Hkxy : ∀ i, i < k → freal y i = freal x i).
@@ -336,32 +338,18 @@ split; intros Hxy.
       unfold fd2n in Hxy; unfold d2n in Hsxi.
       specialize (digit_lt_radix (freal y k)) as H1; lia.
    ---now specialize (Hx _ Hki).
-  *destruct k.
-  --destruct Hxi as (j & Hjj & Hj).
-    unfold mark_9, d2n in Hj.
-    specialize (Hy (i + j + 1) (Nat.le_0_l _)).
+  *destruct Hxi as (j & Hjj & Hj).
+   unfold mark_9, d2n in Hj.
+   destruct k.
+  --specialize (Hy (i + j + 1) (Nat.le_0_l _)).
     unfold fd2n in Hy; lia.
   --destruct Hxy as [| Hxy]; [ easy | ].
-    simpl in Hxy; rewrite Nat.sub_0_r in Hxy.
-...
-
-  *destruct (lt_eq_lt_dec i k) as [[Hki| Hki]| Hki].
-...
-        i . . . k . . .
-x . . . . . . . 9 9 9 9
-  = = = = = =
-y . . . . . . . 0 0 0 0
-
-        k . . . i . . .
-x . . . . 9 9 9 9 9 9 9
-  = = = +1. . . . .
-y . . . . 0 0 0 0 0 0 0
-
-    destruct (zerop k) as [Hzk| Hzk]; [ subst k | ].
-   **now specialize (Hx _ (Nat.le_0_l i)).
-   **destruct Hxy as [| Hxy]; [ now subst k | ].
-     destruct k
-
+    simpl in Hik, Hxy; rewrite Nat.sub_0_r in Hik, Hxy.
+    destruct (lt_dec i k) as [Hki| Hki].
+   **now symmetry; apply Hik.
+   **assert (H : S k ≤ i + j + 1) by lia.
+     specialize (Hy _ H).
+     unfold fd2n in Hy; lia.
 ...
 
 Theorem freal_normalized_eq_iff {r : radix} : ∀ x y,
