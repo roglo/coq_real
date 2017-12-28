@@ -486,6 +486,24 @@ split; intros Hxy.
      +++simpl in Hyx0; rewrite Nat.sub_0_r in Hyx0.
         rewrite Hkz in Hyx0; [ easy | lia ].
     ---destruct H0zy as [| H0zy]; [ easy | ].
+       simpl in Hzy, H0zy; rewrite Nat.sub_0_r in Hzy, H0zy.
+       destruct (lt_eq_lt_dec k (S j)) as [[Hkj| Hkj]| Hkj].
+     +++apply Nat.succ_le_mono in Hkj.
+        now rewrite Hy in H0zy.
+     +++subst k.
+        simpl in Hyx0, Hyx; rewrite Nat.sub_0_r in Hyx0, Hyx.
+        left; intros i.
+        apply digit_eq_eq.
+        destruct (lt_eq_lt_dec j i) as [[Hij| Hij]|Hij].
+      ***unfold fd2n in Hx, Hky.
+         rewrite Hx; [ now rewrite Hky | easy ].
+      ***subst i.
+         rewrite Hyx0 in H0zy.
+         unfold fd2n in H0zy.
+         now apply Nat.succ_inj in H0zy.
+      ***rewrite <- Hyx; [ now rewrite <- Hzy | easy ].
+     +++a
+
 ...
    ++right; left.
      destruct H as (j & Hzy & H0zy & Hkz & Hky).
