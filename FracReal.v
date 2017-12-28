@@ -173,10 +173,10 @@ Qed.
 
 Definition freal_succ_eq {r : radix} x y :=
   ∃ k,
-   (∀ i, i < k → freal x i = freal y i) ∧
-   (fd2n x k = S (fd2n y k) mod rad) ∧
-   (∀ i, k < i → fd2n x i = 0) ∧
-   (∀ i, k < i → fd2n y i = rad - 1).
+   (∀ i, i < k - 1 → freal x i = freal y i) ∧
+   (k = 0 ∨ fd2n x (k - 1) = S (fd2n y (k - 1))) ∧
+   (∀ i, k ≤ i → fd2n x i = 0) ∧
+   (∀ i, k ≤ i → fd2n y i = rad - 1).
 
 Theorem freal_normalized_iff {r : radix} : ∀ x y,
   (∀ i, freal (freal_normalize x) i = freal y i)
@@ -218,90 +218,95 @@ split; intros Hxy.
  +right.
   destruct Hxsy as (k & Hjk & Hxyk).
   unfold freal_succ_eq.
-  assert (Hkxy : ∀ i, i < k → freal y i = freal x i).
-  *intros i Hik.
-   destruct k; [ easy | ].
-   specialize (Hjk _ Hik).
-   unfold eq_freal_seq in Hjk.
-   destruct (Nat.eq_dec (fd2n x i) (fd2n y i)) as [H| ]; [ | easy ].
-   clear Hjk; unfold fd2n in H.
-   now symmetry; apply digit_eq_eq.
-  *exists k.
-   split; [ easy | ].
-   specialize (Hxy k) as Hk.
-   apply digit_eq_eq in Hk.
-   unfold freal_normalize in Hk; simpl in Hk.
-   unfold digit_sequence_normalize in Hk.
-   destruct (LPO_fst (mark_9 (freal x) k)) as [H| Hxk].
-  --assert (Hxk : ∀ i, k < i → fd2n x i = rad - 1).
-   ++intros i Hki; specialize (H (i - k - 1)).
-     apply Nat.sub_0_le in H.
-     unfold mark_9, d2n in H; unfold fd2n.
-     specialize (digit_lt_radix (freal x i)).
-     replace (k + (i - k - 1) + 1) with i in H; lia.
-   ++rewrite <- and_assoc, and_comm.
-     split; [ easy | clear H ].
-     destruct (lt_dec (S (d2n (freal x) k))) as [Hsxk| Hsxk].
-    **simpl in Hk.
-      rewrite Nat.mod_small; [ | easy ].
-      split; [ easy | ].
-      intros i Hki.
-      destruct i; [ easy | ].
-      specialize (Hxy (S i)) as Hxy1.
+  *destruct (zerop k) as [Hzk| Hzk].
+  --exists 0; subst k.
+    split; [ now intros | ].
+    split; [ now left | ].
+    admit. (* a voir *)
+  --exists (S k).
+    assert (Hkxy : ∀ i, i < k → freal y i = freal x i).
+   ++intros i Hik.
+     specialize (Hjk _ Hik).
+     unfold eq_freal_seq in Hjk.
+     destruct (Nat.eq_dec (fd2n x i) (fd2n y i)) as [H| ]; [ | easy ].
+     clear Hjk; unfold fd2n in H.
+     now symmetry; apply digit_eq_eq.
+   ++split; [ now simpl; rewrite Nat.sub_0_r | ].
+     specialize (Hxy k) as Hk.
+     apply digit_eq_eq in Hk.
+     unfold freal_normalize in Hk; simpl in Hk.
+     unfold digit_sequence_normalize in Hk.
+     destruct (LPO_fst (mark_9 (freal x) k)) as [H| Hxk].
+    **assert (Hxk : ∀ i, S k ≤ i → fd2n x i = rad - 1).
+    ---intros i Hki; specialize (H (i - k - 1)).
+       apply Nat.sub_0_le in H.
+       unfold mark_9, d2n in H; unfold fd2n.
+       specialize (digit_lt_radix (freal x i)).
+       replace (k + (i - k - 1) + 1) with i in H; lia.
+    ---rewrite <- and_assoc, and_comm.
+       split; [ easy | clear H ].
+       simpl; rewrite Nat.sub_0_r.
+       destruct (lt_dec (S (d2n (freal x) k))) as [Hsxk| Hsxk].
+     +++simpl in Hk.
+        split; [ now right | ].
+        intros i Hki.
+        destruct i; [ easy | ].
+        specialize (Hxy (S i)) as Hxy1.
+        unfold freal_normalize, digit_sequence_normalize in Hxy1.
+        simpl in Hxy1.
+        destruct (LPO_fst (mark_9 (freal x) (S i))) as [Hx1| Hx1].
+      ***destruct (lt_dec (S (d2n (freal x) (S i))) rad) as [Hsx1| Hsx1].
+      ----specialize (Hxk (S i) Hki); clear Hxy1.
+          unfold fd2n in Hxk; unfold d2n in Hsx1; lia.
+      ----now apply digit_eq_eq in Hxy1.
+      ***destruct Hx1 as (j & Hjj & Hj).
+         unfold mark_9 in Hj.
+         assert (Hksi : k < S (S (i + j))) by lia.
+         specialize (Hxk (S (S (i + j))) Hksi).
+         unfold fd2n in Hxk; unfold d2n in Hj.
+         replace (S i + j + 1) with (S (S (i + j))) in Hj; lia.
+     +++simpl in Hk; unfold fd2n; symmetry in Hk; rewrite Hk.
+        apply Nat.nlt_ge in Hsxk.
+        specialize (digit_lt_radix (freal x k)) as H.
+        unfold d2n in Hsxk.
+        apply Nat.le_antisymm in Hsxk; [ clear H | easy ].
+        rewrite Hsxk.
+        destruct k; [ easy | ].
+        specialize (Hxy k) as Hk'.
+        unfold freal_normalize, digit_sequence_normalize in Hk'.
+        simpl in Hk'.
+        destruct (LPO_fst (mark_9 (freal x) k)) as [Hxk'| Hxk'].
+      ***specialize (Hjk _ (Nat.lt_succ_diag_r k)).
+         unfold eq_freal_seq in Hjk.
+         destruct (Nat.eq_dec (fd2n x k) (fd2n y k)) as [H| H]; [ | easy ].
+         apply digit_eq_eq in Hk'; unfold fd2n in H.
+         destruct (lt_dec (S (d2n (freal x) k)) rad) as [Hsxk'| Hsxk'].
+      ----simpl in Hk'; unfold d2n in Hk'; lia.
+      ----simpl in Hk'; unfold d2n in Hsxk'.
+          specialize radix_ge_2 as Hr; lia.
+      ***destruct Hxk' as (i & Hji & Hi).
+         unfold mark_9, d2n in Hi.
+         destruct i.
+      ----rewrite Nat.add_0_r, Nat.add_1_r in Hi; lia.
+      ----assert (H : S (S k) ≤ (k + S i + 1)) by lia.
+          specialize (Hxk _ H); unfold fd2n in Hxk; lia.
+    **exfalso.
+      specialize (Hxy k) as Hxy1.
       unfold freal_normalize, digit_sequence_normalize in Hxy1.
       simpl in Hxy1.
-      destruct (LPO_fst (mark_9 (freal x) (S i))) as [Hx1| Hx1].
-    ---destruct (lt_dec (S (d2n (freal x) (S i))) rad) as [Hsx1| Hsx1].
-     +++specialize (Hxk (S i) Hki); clear Hxy1.
-        unfold fd2n in Hxk; unfold d2n in Hsx1; lia.
-     +++now apply digit_eq_eq in Hxy1.
-    ---destruct Hx1 as (j & Hjj & Hj).
-       unfold mark_9 in Hj.
-       assert (Hksi : k < S (S (i + j))) by lia.
-       specialize (Hxk (S (S (i + j))) Hksi).
-       unfold fd2n in Hxk; unfold d2n in Hj.
-       replace (S i + j + 1) with (S (S (i + j))) in Hj; lia.
-    **simpl in Hk; unfold fd2n; symmetry in Hk; rewrite Hk.
-      apply Nat.nlt_ge in Hsxk.
-      specialize (digit_lt_radix (freal x k)) as H.
-      unfold d2n in Hsxk.
-      apply Nat.le_antisymm in Hsxk; [ clear H | easy ].
-      rewrite Hsxk.
-      split; [ now rewrite Nat.mod_same | ].
-      intros i Hki.
-      destruct k.
-    ---clear Hjk Hkxy.
-       specialize (Hxy i) as Hi.
-       apply digit_eq_eq in Hi.
-       unfold freal_normalize in Hi; simpl in Hi.
-       unfold digit_sequence_normalize in Hi.
-       destruct (LPO_fst (mark_9 (freal x) i)) as [H| Hxi].
-     +++destruct (lt_dec (S (d2n (freal x) i))) as [Hsxi| Hsxi]; [ | easy ].
-        destruct i; [ easy | ].
-        specialize (Hxk (S i) (Nat.lt_0_succ i)).
-        unfold fd2n in Hxk; unfold d2n in Hsxi.
-        clear Hi; rewrite Hxk in Hsxi; lia.
-     +++destruct Hxi as (j & Hjj & Hj).
-        unfold mark_9, d2n in Hj; unfold fd2n in Hxk.
-        specialize (Hxk (S (i + j)) (Nat.lt_0_succ _)).
-        rewrite Nat.add_1_r in Hj; lia.
-    ---exfalso.
-       specialize (Hxy k) as Hxy1.
-       unfold freal_normalize, digit_sequence_normalize in Hxy1.
-       simpl in Hxy1.
-       specialize (Hkxy k (Nat.lt_succ_diag_r k)).
-       apply digit_eq_eq in Hxy1.
-       destruct (LPO_fst (mark_9 (freal x) k)) as [Hx1| Hx1].
-     +++destruct (lt_dec (S (d2n (freal x) k)) rad) as [Hsx1| Hsx1].
-      ***unfold d2n in Hxy1; simpl in Hxy1.
-         rewrite Hkxy in Hxy1; lia.
-      ***unfold d2n in Hsx1; simpl in Hxy1.
-         rewrite <- Hkxy, <- Hxy1 in Hsx1.
+      apply digit_eq_eq in Hxy1.
+      destruct (LPO_fst (mark_9 (freal x) k)) as [Hx1| Hx1].
+     ---destruct (lt_dec (S (d2n (freal x) k)) rad) as [Hsx1| Hsx1].
+      +++unfold d2n in Hxy1; simpl in Hxy1; rewrite Hkxy in Hxy1; lia.
+      +++unfold d2n in Hsx1; simpl in Hxy1.
+         rewrite Hk, <- Hxy1 in Hsx1.
          specialize radix_ge_2 as H; lia.
-     +++destruct Hx1 as (j & Hjj & Hj).
+     ---destruct Hx1 as (j & Hjj & Hj).
         unfold mark_9 in Hj.
+...
+
         destruct j.
-      ***rewrite Nat.add_0_r, Nat.add_1_r in Hj.
+      +++rewrite Nat.add_0_r, Nat.add_1_r in Hj.
          unfold d2n in Hj; lia.
       ***assert (H : S k < S (S (k + j))) by lia.
          specialize (Hxk (S (S (k + j))) H).
