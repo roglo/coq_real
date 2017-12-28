@@ -171,7 +171,7 @@ unfold d2n in Hm9 |-*.
 lia.
 Qed.
 
-Definition freal_succ_eq {r : radix} x y :=
+Definition freal_norm_not_norm_eq {r : radix} x y :=
   ∃ k,
    (∀ i, i < k - 1 → freal x i = freal y i) ∧
    (k = 0 ∨ fd2n x (k - 1) = S (fd2n y (k - 1))) ∧
@@ -182,7 +182,7 @@ Theorem freal_normalized_iff {r : radix} : ∀ x y,
   (∀ i, freal (freal_normalize x) i = freal y i)
   ↔ (∀ k, ∃ i, k ≤ i ∧ S (fd2n x i) < rad) ∧
      (∀ i, freal x i = freal y i) ∨
-     freal_succ_eq y x.
+     freal_norm_not_norm_eq y x.
 Proof.
 intros.
 split; intros Hxy.
@@ -217,7 +217,7 @@ split; intros Hxy.
    now apply digit_eq_eq.
  +right.
   destruct Hxsy as (k & Hjk & Hxyk).
-  unfold freal_succ_eq.
+  unfold freal_norm_not_norm_eq.
   *destruct (zerop k) as [Hzk| Hzk].
   --subst k; clear Hjk.
     unfold eq_freal_seq in Hxyk.
@@ -373,7 +373,7 @@ split; intros Hxy.
    specialize (Hxi (j - i - 1)); unfold mark_9, d2n in Hxi.
    replace (i + (j - i - 1) + 1) with j in Hxi; lia.
   *apply Hxy.
- +unfold freal_succ_eq in Hxy.
+ +unfold freal_norm_not_norm_eq in Hxy.
   destruct Hxy as (k & Hik & Hxy & Hx & Hy).
   unfold freal_normalize, digit_sequence_normalize; simpl.
   destruct (LPO_fst (mark_9 (freal x) i)) as [Hxi| Hxi].
@@ -422,7 +422,7 @@ Qed.
 
 Theorem freal_normalized_eq_iff {r : radix} : ∀ x y,
   (∀ i, freal (freal_normalize x) i = freal (freal_normalize y) i)
-  ↔ (∀ i, freal x i = freal y i) ∨ freal_succ_eq x y ∨ freal_succ_eq y x.
+  ↔ (∀ i, freal x i = freal y i) ∨ freal_norm_not_norm_eq x y ∨ freal_norm_not_norm_eq y x.
 Proof.
 intros.
 split; intros Hxy.
@@ -434,7 +434,7 @@ split; intros Hxy.
   *apply freal_normalized_iff in Hy'.
    destruct Hy' as [Hy'| Hy']; [ now destruct Hy'; left | ].
    now right; left.
- +unfold freal_succ_eq in Hxy.
+ +unfold freal_norm_not_norm_eq in Hxy.
   destruct Hxy as (k & Hyx & Hyx0 & Hy & Hx).
   destruct Hyx0 as [Hyx0| Hyx0].
   *subst k; clear Hyx.
@@ -445,7 +445,7 @@ split; intros Hxy.
     destruct H as [H| H].
    ++destruct H as (Hky, Hyz).
      right; right.
-     unfold freal_succ_eq.
+     unfold freal_norm_not_norm_eq.
      exists 0.
      split; [ now intros | ].
      split; [ now left | ].
@@ -453,7 +453,7 @@ split; intros Hxy.
     **intros i _; unfold fd2n.
       rewrite Hyz; apply Hy; lia.
     **intros i _; apply Hx; lia.
-   ++unfold freal_succ_eq in H.
+   ++unfold freal_norm_not_norm_eq in H.
      destruct H as (k & Hzy & H0zy & Hkz & Hky).
      destruct k.
     **left; intros i.
@@ -471,19 +471,28 @@ split; intros Hxy.
     destruct H as [H| H].
    ++destruct H as (Hky, Hyz).
      right; right.
-     unfold freal_succ_eq.
+     unfold freal_norm_not_norm_eq.
      exists k.
      split; [ now intros i Hi; rewrite Hyz; apply Hyx | ].
      split; [ now right; unfold fd2n; rewrite Hyz | ].
      now split; [ intros i Hki; unfold fd2n; rewrite Hyz; apply Hy | ].
-   ++a.
+   ++destruct H as (j & Hzy & H0zy & Hkz & Hky).
+    **destruct j.
+    ---left; intros i; unfold fd2n in Hx, Hky.
+       apply digit_eq_eq.
+       destruct k.
+     +++rewrite Hx; [ | lia ].
+        rewrite Hky; [ easy | lia ].
+     +++simpl in Hyx0; rewrite Nat.sub_0_r in Hyx0.
+        rewrite Hkz in Hyx0; [ easy | lia ].
+    ---destruct H0zy as [| H0zy]; [ easy | ].
 ...
    ++right; left.
      destruct H as (j & Hzy & H0zy & Hkz & Hky).
-     unfold freal_succ_eq.
+     unfold freal_norm_not_norm_eq.
 
     **intros i _; apply Hx; lia.
-   ++unfold freal_succ_eq in H.
+   ++unfold freal_norm_not_norm_eq in H.
      destruct H as (k & Hzy & H0zy & Hkz & Hky).
      destruct k.
     **left; intros i.
