@@ -567,9 +567,9 @@ split; intros Hxy.
     rewrite Hakyz in Hkx; [ easy | lia ].
 -destruct Hxy as [Hxy| [Hxy| Hxy]].
  +now apply freal_eq_normalize_eq.
- +apply freal_norm_not_norm_eq_normalize_eq.
-
-...
+ +now apply freal_norm_not_norm_eq_normalize_eq.
+ +now intros; symmetry; apply freal_norm_not_norm_eq_normalize_eq.
+Qed.
 
 (* Addition, Multiplication *)
 
