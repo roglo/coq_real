@@ -1570,15 +1570,39 @@ destruct (LPO_fst (test_seq i f)) as [Hf| Hf].
    erewrite test_seq_eq_compat in Hjk; [ | easy ]; easy.
 Qed.
 
+Theorem freal_eq_normalized_eq {r : radix} : ∀ x y,
+  (x = y)%F ↔
+  (∀ i, freal (freal_normalize x) i = freal (freal_normalize y) i).
+Proof.
+intros.
+unfold freal_eq, freal_normalized_eq.
+remember (freal_normalize x) as nx eqn:Hnx.
+remember (freal_normalize y) as ny eqn:Hny.
+split; intros Hxy *.
+-destruct (LPO_fst (eq_freal_seq nx ny)) as [H1| H1]; [ clear Hxy | easy ].
+ specialize (H1 i).
+ unfold eq_freal_seq in H1.
+ destruct (Nat.eq_dec (fd2n nx i) (fd2n ny i)) as [H2| ]; [ clear H1 | easy ].
+ now unfold fd2n in H2; apply digit_eq_eq.
+-destruct (LPO_fst (eq_freal_seq nx ny)) as [H1| H1]; [ easy | ].
+ destruct H1 as (i & Hji & Hi).
+ exfalso; apply Hi; unfold eq_freal_seq.
+ destruct (Nat.eq_dec (fd2n nx i) (fd2n ny i)) as [| H2]; [ easy | ].
+ specialize (Hxy i).
+ now apply digit_eq_eq in Hxy.
+Qed.
+
 Add Parametric Morphism {r : radix} : freal_add
   with signature freal_eq_prop ==> freal_eq_prop ==> freal_eq_prop
   as freal_add_morph.
 Proof.
 intros x y Hxy x' y' Hxy'.
 unfold freal_eq_prop in Hxy, Hxy' |-*.
-unfold freal_eq in Hxy, Hxy' |-*.
-Search freal_normalized_eq.
-Check freal_normalized_eq_iff.
+rewrite freal_eq_normalized_eq in Hxy, Hxy'.
+rewrite freal_eq_normalized_eq.
+apply freal_normalized_eq_iff in Hxy.
+apply freal_normalized_eq_iff in Hxy'.
+apply freal_normalized_eq_iff.
 ...
 
 intros x y Hxy x' y' Hxy'.
@@ -1630,6 +1654,11 @@ remember (freal_add_to_seq y y') as syy' eqn:Hsyy'.
 destruct (LPO_fst (mark_9 sxx' i)) as [Hsx| Hsx].
 -specialize (mark_9_all_9 _ _ Hsx) as H; clear Hsx; rename H into Hsx.
  destruct (LPO_fst (mark_9 syy' i)) as [Hsy| Hsy].
+...
+
+Search freal_eq_prop.
+Check freal_normalized_eq_iff.
+Print freal_eq_prop.
  +specialize (mark_9_all_9 _ _ Hsy) as H; clear Hsy; rename H into Hsy.
   destruct (lt_dec (S (d2n sxx' i)) rad) as [Hxr| Hxr].
   *simpl.
@@ -1726,6 +1755,7 @@ Check digit_sequence_normalize.
     unfold eq_freal_seq in Hji.
     simpl in Hji.
     unfold freal_add_to_seq in Hji.
+...
 ...
 
 Theorem freal_add_assoc {r : radix} : ∀ x y z,
