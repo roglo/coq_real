@@ -488,42 +488,18 @@ destruct (LPO_fst (mark_9 (freal x) i)) as [H1| H1].
     rewrite Hax; [ easy | lia ].
  +destruct (lt_eq_lt_dec i (k - 1)) as [[H4| H4]| H4].
   *now rewrite Hb.
-  *idtac.
-...
- +destruct H2 as (j & Hjj & Hj).
-  unfold mark_9, d2n in Hj.
-...
-
-. . . k . . .
-x . . 0 0 0 0 ...
-. = - . . .
-y . . 9 9 9 9 ...
-
-. . . k . . .
-x . . . 0 0 0 0 ...
-. = = - . . .
-y . . . 9 9 9 9 ...
-
-. . . i . . k . . .
-x . . . 9 . . 0 0 0 0 ...
-. = = = = = - . . .
-y . . . 9 9 9 9 9 9 9 ...
-
-. . . k . . .
-x . . 0 0 0 0 ...
-. = - . . .
-y . . 9 9 9 9 ...
-
-destruct H1 as (j & Hjj & Hj).
--destruct (LPO_fst (mark_9 (freal y) i)) as [H2| H2].
- +destruct H1 as (j & Hjj & Hj).
-...
- +destruct (lt_dec (S (d2n (freal y) i)) rad) as [H3| H3].
-exfalso; clear H3.
-
- +destruct (lt_eq_lt_dec i (k - 1)) as [[H3| H3]| H3].
-  *idtac.
-...
+  *subst i.
+   destruct H2 as (j & Hjj & Hj).
+   unfold mark_9, d2n in Hj; unfold fd2n in Hay.
+   assert (H : k ≤ k - 1 + j + 1) by lia.
+   specialize (Hay _ H).
+   rewrite Hay in Hj; lia.
+  *destruct H2 as (j & Hjj & Hj).
+   unfold mark_9, d2n in Hj; unfold fd2n in Hay.
+   assert (H : k ≤ i + j + 1) by lia.
+   specialize (Hay _ H).
+   rewrite Hay in Hj; lia.
+Qed.
 
 Theorem freal_normalized_eq_iff {r : radix} : ∀ x y,
   (∀ i, freal (freal_normalize x) i = freal (freal_normalize y) i)
