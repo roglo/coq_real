@@ -1603,6 +1603,18 @@ rewrite freal_eq_normalized_eq.
 apply freal_normalized_eq_iff in Hxy.
 apply freal_normalized_eq_iff in Hxy'.
 apply freal_normalized_eq_iff.
+destruct Hxy as [Hxy| [Hxy| Hxy]].
+-destruct Hxy' as [Hxy'| [Hxy'| Hxy']].
+ +left; intros.
+  unfold freal_add, freal_add_to_seq, freal_add_series, sequence_add; simpl.
+  apply numbers_to_digits_eq_compat; clear i.
+  intros; unfold fd2n.
+  specialize (Hxy i).
+  specialize (Hxy' i).
+  apply digit_eq_eq in Hxy.
+  apply digit_eq_eq in Hxy'.
+  now rewrite Hxy, Hxy'.
+ +right; left.
 ...
 
 intros x y Hxy x' y' Hxy'.
