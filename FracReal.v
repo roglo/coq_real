@@ -434,29 +434,31 @@ split; intros Hxy.
  generalize Hxy; intros Hy; symmetry in Hy.
  rewrite Hx' in Hx.
  rewrite Hy' in Hy.
- assert (H : ∀ i, freal (freal_normalize x) i = freal y' i) by
- now intros; rewrite Hx.
+ assert (H : ∀ i, freal (freal_normalize x) i = freal x' i) by
+ now intros; rewrite Hxy, Hx.
  clear Hx; rename H into Hx; move Hx after Hy.
+ clear y' Hy' Hxy.
+ rename x' into z; rename Hx' into Hz.
  apply freal_normalized_iff in Hx.
  apply freal_normalized_iff in Hy.
  destruct Hx as [Hx| Hx].
- +destruct Hx as (Hx, Hxy').
+ +destruct Hx as (Hx, Hxz).
   destruct Hy as [Hy| Hy].
-  *destruct Hy as (Hy, Hyx').
-   now left; intros i; rewrite Hxy', <- Hxy, Hyx'.
-  *destruct Hy as (k & Hbk & Hk & Hakx' & Haky').
+  *destruct Hy as (Hy, Hyz).
+   now left; intros i; rewrite Hxz, Hyz.
+  *destruct Hy as (k & Hbk & Hk & Hakz & Haky).
    right; left; exists k.
-   split; [ now intros; rewrite Hxy', <- Hxy; apply Hbk | ].
-   split; [ now unfold fd2n; rewrite Hxy', <- Hxy | ].
-   now split; [ intros; unfold fd2n; rewrite Hxy', <- Hxy; apply Hakx' | ].
- +destruct Hx as (kx & Hbkx & Hkx & Hakxy' & Hakxx).
+   split; [ now intros; rewrite Hxz; apply Hbk | ].
+   split; [ now unfold fd2n; rewrite Hxz | ].
+   now split; [ intros; unfold fd2n; rewrite Hxz; apply Hakz | ].
+ +destruct Hx as (kx & Hbkx & Hkx & Hakxz & Hakx).
   destruct Hy as [Hy| Hy].
-  *destruct Hy as (Hy, Hyx').
+  *destruct Hy as (Hy, Hyz).
    right; right; exists kx.
-   split; [ now intros; rewrite Hyx', Hxy; apply Hbkx | ].
-   split; [ now unfold fd2n; rewrite Hyx', Hxy | ].
-   now split; [ intros; unfold fd2n; rewrite Hyx', Hxy; apply Hakxy' | ].
-  *destruct Hy as (ky & Hbky & Hky & Hakyx' & Hakyy).
+   split; [ now intros; rewrite Hyz; apply Hbkx | ].
+   split; [ now unfold fd2n; rewrite Hyz | ].
+   now split; [ intros; unfold fd2n; rewrite Hyz; apply Hakxz | ].
+  *destruct Hy as (ky & Hbky & Hky & Hakyz & Haky).
    left; intros i.
    destruct (lt_eq_lt_dec kx ky) as [[Hkk| Hkk]| Hkk].
   --a
