@@ -420,6 +420,82 @@ split; intros Hxy.
      unfold fd2n in Hy; lia.
 Qed.
 
+Theorem freal_eq_normalize_eq {r : radix} : ∀ x y,
+  (∀ i, freal x i = freal y i)
+  → ∀ i : nat, freal (freal_normalize x) i = freal (freal_normalize y) i.
+Proof.
+intros * Hxy *.
+unfold freal_normalize, digit_sequence_normalize; simpl.
+unfold d2n; rewrite Hxy.
+destruct (LPO_fst (mark_9 (freal x) i)) as [H1| H1].
+-destruct (LPO_fst (mark_9 (freal y) i)) as [H2| H2]; [ easy | ].
+ destruct H2 as (j & Hjj & Hj).
+ specialize (H1 j).
+ unfold mark_9, d2n in H1, Hj.
+ now rewrite Hxy in H1.
+-destruct (LPO_fst (mark_9 (freal y) i)) as [H2| H2]; [ | easy ].
+ destruct H1 as (j & Hjj & Hj).
+ specialize (H2 j).
+ unfold mark_9, d2n in H2, Hj.
+ now rewrite Hxy in Hj.
+Qed.
+
+Theorem freal_norm_not_norm_eq_normalize_eq {r : radix} : ∀ x y,
+  freal_norm_not_norm_eq x y
+  → ∀ i : nat, freal (freal_normalize x) i = freal (freal_normalize y) i.
+Proof.
+intros * Hxy *.
+unfold freal_norm_not_norm_eq in Hxy.
+destruct Hxy as (k & Hb & Hw & Hax & Hay).
+unfold freal_normalize, digit_sequence_normalize; simpl.
+unfold d2n.
+destruct (LPO_fst (mark_9 (freal x) i)) as [H1| H1].
+-destruct (LPO_fst (mark_9 (freal y) i)) as [H2| H2].
+ +destruct (lt_eq_lt_dec i (k - 1)) as [[H3| H3]| H3].
+  *now rewrite Hb.
+  *destruct k.
+  --simpl in Hw, H3; subst i.
+    specialize (Hax 1 Nat.le_0_1).
+    specialize (H1 0).
+    unfold mark_9, d2n in H1; unfold fd2n in Hax; simpl in H1.
+    rewrite Hax in H1.
+    specialize radix_ge_2; lia.
+  --destruct Hw as [| Hw]; [ easy | ].
+    simpl in H3; rewrite Nat.sub_0_r in H3; subst i.
+    specialize (Hax _ (Nat.le_refl _)).
+    specialize (H1 0).
+    unfold fd2n in Hax; unfold mark_9, d2n in H1.
+    rewrite Nat.add_0_r, Nat.add_1_r in H1.
+    rewrite Hax, Nat.sub_0_r in H1.
+    specialize radix_ge_2; lia.
+  *destruct k.
+  --specialize (Hax _ (Nat.le_0_l (S i))).
+    specialize (H1 0).
+    unfold fd2n in Hax; unfold mark_9, d2n in H1.
+    rewrite Nat.add_0_r, Nat.add_1_r in H1.
+    rewrite Hax, Nat.sub_0_r in H1.
+    specialize radix_ge_2; lia.
+  --simpl in H3; rewrite Nat.sub_0_r in H3.
+    assert (H : S k ≤ i + 1) by lia.
+    specialize (Hax _ H).
+    specialize (H1 0).
+    unfold fd2n in Hax; unfold mark_9, d2n in H1.
+    rewrite Nat.add_0_r in H1.
+    rewrite Hax, Nat.sub_0_r in H1.
+    specialize radix_ge_2; lia.
+ +destruct H2 as (j & Hjj & Hj).
+...
+
+  specialize (H1 j).
+  unfold mark_9, d2n in H1, Hj.
+  now rewrite Hxy in H1.
+-destruct (LPO_fst (mark_9 (freal y) i)) as [H2| H2]; [ | easy ].
+ destruct H1 as (j & Hjj & Hj).
+ specialize (H2 j).
+ unfold mark_9, d2n in H2, Hj.
+ now rewrite Hxy in Hj.
+Qed.
+
 Theorem freal_normalized_eq_iff {r : radix} : ∀ x y,
   (∀ i, freal (freal_normalize x) i = freal (freal_normalize y) i)
   ↔ (∀ i, freal x i = freal y i) ∨
@@ -461,119 +537,33 @@ split; intros Hxy.
   *destruct Hy as (ky & Hbky & Hky & Hakyz & Haky).
    left; intros i.
    destruct (lt_eq_lt_dec kx ky) as [[Hkk| Hkk]| Hkk].
-  --idtac.
-...
+  --destruct ky; [ easy | ].
+    destruct Hky as [| Hky]; [ easy | ].
+    simpl in Hbky, Hky; rewrite Nat.sub_0_r in Hbky, Hky.
+    rewrite Hakxz in Hky; [ easy | lia ].
+  --subst ky.
+    destruct kx.
+   ++apply digit_eq_eq; unfold fd2n in Hakx, Haky.
+     rewrite Hakx; [ | lia ].
+     rewrite Haky; [ easy | lia ].
+   ++destruct Hkx as [| Hkx]; [ easy | ].
+     destruct Hky as [| Hky]; [ easy | ].
+     simpl in Hbkx, Hkx, Hky, Hbky.
+     rewrite Nat.sub_0_r in Hbkx, Hkx, Hky, Hbky.
+     destruct (lt_eq_lt_dec i kx) as [[Hikx| Hikx]| Hikx].
+    **now rewrite <- Hbkx; [ rewrite <- Hbky | ].
+    **apply digit_eq_eq; unfold fd2n in Hkx, Hky; subst i.
+      now apply Nat.succ_inj; rewrite <- Hkx, <- Hky.
+    **apply digit_eq_eq; unfold fd2n in Hakx, Haky.
+      now rewrite Hakx; [ rewrite Haky | ].
+  --destruct kx; [ easy | ].
+    destruct Hkx as [| Hkx]; [ easy | ].
+    simpl in Hbkx, Hkx; rewrite Nat.sub_0_r in Hbkx, Hkx.
+    rewrite Hakyz in Hkx; [ easy | lia ].
+-destruct Hxy as [Hxy| [Hxy| Hxy]].
+ +now apply freal_eq_normalize_eq.
+ +apply freal_norm_not_norm_eq_normalize_eq.
 
-      kx    ky
-x . . 9 9 9 9 9 9 ...
-  = .
-z . . 0 0 0 0 0 0 ...
-  = = = = .
-y . . . . . 9 9 9 ...
-
-...
-
-intros.
-split; intros Hxy.
--apply freal_normalized_iff in Hxy.
- destruct Hxy as [Hxy| Hxy].
- +destruct Hxy as (Hx, Hy).
-  assert (Hy' : ∀ i, freal (freal_normalize y) i = freal x i).
-  *now intros i.
-  *apply freal_normalized_iff in Hy'.
-   destruct Hy' as [Hy'| Hy']; [ now destruct Hy'; left | ].
-   now right; left.
- +unfold freal_norm_not_norm_eq in Hxy.
-  destruct Hxy as (k & Hyx & Hyx0 & Hy & Hx).
-  destruct Hyx0 as [Hyx0| Hyx0].
-  *subst k; clear Hyx.
-   remember (freal_normalize y) as z eqn:Hz.
-   assert (∀ i, freal (freal_normalize y) i = freal z i).
-  --now intros i; rewrite Hz.
-  --apply freal_normalized_iff in H.
-    destruct H as [H| H].
-   ++destruct H as (Hky, Hyz).
-     right; right.
-     unfold freal_norm_not_norm_eq.
-     exists 0.
-     split; [ now intros | ].
-     split; [ now left | ].
-     split.
-    **intros i _; unfold fd2n.
-      rewrite Hyz; apply Hy; lia.
-    **intros i _; apply Hx; lia.
-   ++unfold freal_norm_not_norm_eq in H.
-     destruct H as (k & Hzy & H0zy & Hkz & Hky).
-     destruct k.
-    **left; intros i.
-      unfold fd2n in Hx, Hky.
-      apply digit_eq_eq.
-      rewrite Hx; [ | lia ].
-      rewrite Hky; [ easy | lia ].
-    **destruct H0zy as [H| Hzsy]; [ easy | ].
-      rewrite Hy in Hzsy; [ easy | lia ].
-  *idtac.
-   remember (freal_normalize y) as z eqn:Hz.
-   assert (∀ i, freal (freal_normalize y) i = freal z i).
-  --now intros i; rewrite Hz.
-  --apply freal_normalized_iff in H.
-    destruct H as [H| H].
-   ++destruct H as (Hky, Hyz).
-     right; right.
-     unfold freal_norm_not_norm_eq.
-     exists k.
-     split; [ now intros i Hi; rewrite Hyz; apply Hyx | ].
-     split; [ now right; unfold fd2n; rewrite Hyz | ].
-     now split; [ intros i Hki; unfold fd2n; rewrite Hyz; apply Hy | ].
-   ++destruct H as (j & Hzy & H0zy & Hkz & Hky).
-    **destruct j.
-    ---left; intros i; unfold fd2n in Hx, Hky.
-       apply digit_eq_eq.
-       destruct k.
-     +++rewrite Hx; [ | lia ].
-        rewrite Hky; [ easy | lia ].
-     +++simpl in Hyx0; rewrite Nat.sub_0_r in Hyx0.
-        rewrite Hkz in Hyx0; [ easy | lia ].
-    ---destruct H0zy as [| H0zy]; [ easy | ].
-       simpl in Hzy, H0zy; rewrite Nat.sub_0_r in Hzy, H0zy.
-       destruct (lt_eq_lt_dec k (S j)) as [[Hkj| Hkj]| Hkj].
-     +++apply Nat.succ_le_mono in Hkj.
-        now rewrite Hy in H0zy.
-     +++subst k.
-        simpl in Hyx0, Hyx; rewrite Nat.sub_0_r in Hyx0, Hyx.
-        left; intros i.
-        apply digit_eq_eq.
-        destruct (lt_eq_lt_dec j i) as [[Hij| Hij]|Hij].
-      ***unfold fd2n in Hx, Hky.
-         rewrite Hx; [ now rewrite Hky | easy ].
-      ***subst i.
-         rewrite Hyx0 in H0zy.
-         unfold fd2n in H0zy.
-         now apply Nat.succ_inj in H0zy.
-      ***rewrite <- Hyx; [ now rewrite <- Hzy | easy ].
-     +++a
-
-...
-   ++right; left.
-     destruct H as (j & Hzy & H0zy & Hkz & Hky).
-     unfold freal_norm_not_norm_eq.
-
-    **intros i _; apply Hx; lia.
-   ++unfold freal_norm_not_norm_eq in H.
-     destruct H as (k & Hzy & H0zy & Hkz & Hky).
-     destruct k.
-    **left; intros i.
-      unfold fd2n in Hx, Hky.
-      apply digit_eq_eq.
-      rewrite Hx; [ | lia ].
-      rewrite Hky; [ easy | lia ].
-    **destruct H0zy as [H| Hzsy]; [ easy | ].
-      rewrite Hy in Hzsy; [ easy | lia ].
-  *idtac.
-   remember (freal_normalize y) as z eqn:Hz.
-   assert (∀ i, freal (freal_normalize y) i = freal z i).
-  --now intros i; rewrite Hz.
-  --apply freal_normalized_iff in H.
 ...
 
 (* Addition, Multiplication *)
