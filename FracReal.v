@@ -1614,6 +1614,7 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
   apply digit_eq_eq in Hxy.
   apply digit_eq_eq in Hxy'.
   now rewrite Hxy, Hxy'.
+(*
  +destruct Hxy' as (k & Hbef & Hwhi & Hxaft & Hyaft).
   destruct k.
   *left; intros.
@@ -1624,11 +1625,33 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
   --simpl.
     destruct (LPO_fst (test_seq i (freal_add_series y y'))) as [H2| H2].
    ++simpl.
-Search nA.
+specialize (H2 0).
+remember (freal_add_series y y') as u.
+unfold test_seq in H2.
+simpl in H2.
+rewrite Nat.mul_1_r in H2.
+rewrite Nat.add_0_r in H2.
+rewrite Nat.add_0_r in H2.
+remember (rad * (i + 2)) as n.
+remember (rad ^ (n - 1 - i)) as s.
+remember (rad ^ (n + 1)) as t.
+destruct (lt_dec (nA i n u mod s * rad + nB n 0 u) t) as [H3| H3]; [ | easy ].
+clear H2.
+assert (nA i n u mod s * rad < t) by lia.
+
+assert (H' : ∀ i n, nA i n (freal_add_series x x') = nA i n (fd2n x)).
+clear n Heqn Heqs Heqt H3 H.
+intros j n.
+unfold freal_add_series; simpl.
+unfold sequence_add.
+apply nA_eq_compat.
+intros k.
+rewrite Hxaft; [ easy | lia ].
+rewrite H'.
 ...
-     unfold freal_add_series, sequence_add.
-...
+*)
  +destruct Hxy' as (k & Hbef & Hwhi & Hxaft & Hyaft).
+...
   right; left.
   unfold freal_norm_not_norm_eq.
   exists k.
