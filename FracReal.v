@@ -483,7 +483,15 @@ destruct (LPO_fst (mark_9 (freal x) i)) as [H1| H1].
     rewrite Nat.add_0_r in H1.
     rewrite Hax, Nat.sub_0_r in H1.
     specialize radix_ge_2; lia.
- +destruct H2 as (j & Hjj & Hj).
+ +specialize (H1 (max i k - i)).
+  assert (H : k ≤ S (max i k)) by lia.
+  specialize (Hax (S (max i k)) H).
+  unfold fd2n in Hax; unfold mark_9, d2n in H1.
+  replace (i + (max i k - i) + 1) with (S (max i k)) in H1 by lia.
+  rewrite Hax in H1.
+  specialize radix_ge_2; lia.
+-destruct H1 as (j & Hjj & Hj).
+(* do with y x with I did with x y *)
 ...
 
   specialize (H1 j).
