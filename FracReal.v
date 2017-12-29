@@ -1598,6 +1598,10 @@ Add Parametric Morphism {r : radix} : freal_add
 Proof.
 intros x y Hxy x' y' Hxy'.
 unfold freal_eq_prop in Hxy, Hxy' |-*.
+(* j'ai peur que ma somme ne soit pas compatible avec mon égalité...
+   aïe aïe aïe... *)
+...
+
 rewrite freal_eq_normalized_eq in Hxy, Hxy'.
 rewrite freal_eq_normalized_eq.
 apply freal_normalized_eq_iff in Hxy.
