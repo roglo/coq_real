@@ -461,7 +461,15 @@ split; intros Hxy.
   *destruct Hy as (ky & Hbky & Hky & Hakyz & Haky).
    left; intros i.
    destruct (lt_eq_lt_dec kx ky) as [[Hkk| Hkk]| Hkk].
-  --a
+  --idtac.
+...
+
+      kx    ky
+x . . 9 9 9 9 9 9 ...
+  = .
+z . . 0 0 0 0 0 0 ...
+  = = = = .
+y . . . . . 9 9 9 ...
 
 ...
 
