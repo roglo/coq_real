@@ -1294,6 +1294,15 @@ destruct (LPO_fst (test_seq i u)) as [H| H].
    rewrite <- Nat.pow_add_r; f_equal; lia.
 Qed.
 
+Theorem dig_numbers_to_digits_id {r : radix} : ∀ u i,
+  (∀ j : nat, u j < rad)
+  → dig (numbers_to_digits u i) = u i.
+Proof.
+intros * Hur.
+specialize (numbers_to_digits_id u Hur i) as H.
+now apply digit_eq_eq in H.
+Qed.
+
 Theorem dig_norm_add_0_l {r : radix} : 0 < rad → ∀ x i,
   (∀ j, fd2n x j < rad)
   → freal (freal_normalize (0 + x)) i = freal (freal_normalize x) i.
@@ -1617,6 +1626,11 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
 (**)
  +destruct Hxy' as (k & Hbef & Hwhi & Hxaft & Hyaft).
   destruct k.
+(***)
+Focus 2.
+destruct Hwhi as [| Hwhi]; [ easy | ].
+(***)
+(*
   *left; intros.
    unfold freal_add, freal_add_to_seq; simpl.
    unfold numbers_to_digits.
@@ -1681,16 +1695,77 @@ unfold nA.
 (**)
  +destruct Hxy' as (k & Hbef & Hwhi & Hxaft & Hyaft).
 ...
+*)
   right; left.
   unfold freal_norm_not_norm_eq.
-  exists k.
+  exists (S k).
   split.
   *intros i Hi.
    unfold freal_add, freal_add_to_seq; simpl.
    apply digit_eq_eq.
-   (* perhaps problems of existential variables here *)
-   erewrite numbers_to_digits_id; simpl.
-   erewrite numbers_to_digits_id; simpl.
+Search numbers_to_digits.
+unfold numbers_to_digits.
+   destruct (LPO_fst (test_seq i (freal_add_series x x'))) as [H1| H1].
+  --simpl.
+    destruct (LPO_fst (test_seq i (freal_add_series y y'))) as [H2| H2].
+   ++simpl.
+specialize (H2 0) as H3.
+remember (freal_add_series x x') as u.
+remember (freal_add_series y y') as v.
+unfold test_seq in H3.
+simpl in H3.
+rewrite Nat.mul_1_r in H3.
+rewrite Nat.add_0_r in H3.
+rewrite Nat.add_0_r in H3.
+remember (rad * (i + 2)) as n.
+remember (rad ^ (n - 1 - i)) as s.
+remember (rad ^ (n + 1)) as t.
+destruct (lt_dec (nA i n v mod s * rad + nB n 0 v) t) as [H4| H4]; [ | easy ].
+clear H3.
+assert (nA i n v mod s * rad < t) by lia.
+...
+assert (H' : ∀ i n, nA i n (freal_add_series x x') = nA i n (fd2n x)).
+clear n Heqn Heqs Heqt H3 H.
+intros j n.
+unfold freal_add_series; simpl.
+unfold sequence_add.
+apply nA_eq_compat.
+intros kk.
+...
+rewrite Hxaft; [ easy | lia ].
+rewrite H'.
+remember (u i) as ui.
+rewrite Hequ in Hequi.
+unfold freal_add_series in Hequi.
+unfold sequence_add in Hequi.
+rewrite Hyaft in Hequi; [ | lia ].
+unfold fd2n in Hequi.
+rewrite <- Hxy in Hequi.
+subst ui.
+unfold freal_add_series, sequence_add.
+rewrite Hxaft; [ | lia ].
+rewrite Nat.add_0_r.
+unfold fd2n at 1.
+rewrite <- Nat.add_assoc.
+rewrite Nat.add_mod; [ symmetry | easy ].
+rewrite Nat.add_mod; [ symmetry | easy ].
+f_equal; f_equal.
+
+assert (nA i n (fd2n x) < s).
+rewrite Heqs.
+apply nA_dig_seq_ub; [ easy | | ].
+intros.
+apply digit_lt_radix.
+rewrite Heqn.
+specialize radix_ge_2 as Hr.
+destruct rad as [| rr]; [ easy | ].
+simpl; lia.
+rewrite Nat.div_small; [ | easy ].
+rewrite Nat.mod_0_l; [ | easy ].
+unfold nA.
+...
+   rewrite dig_numbers_to_digits_id.
+   rewrite numbers_to_digits_id; simpl.
    unfold freal_add_series, sequence_add, fd2n.
    specialize (Hxy i).
    now rewrite Hxy, Hbef.
