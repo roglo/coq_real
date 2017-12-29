@@ -1615,6 +1615,20 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
   apply digit_eq_eq in Hxy'.
   now rewrite Hxy, Hxy'.
  +destruct Hxy' as (k & Hbef & Hwhi & Hxaft & Hyaft).
+  destruct k.
+  *left; intros.
+   unfold freal_add, freal_add_to_seq; simpl.
+   unfold numbers_to_digits.
+   apply digit_eq_eq.
+   destruct (LPO_fst (test_seq i (freal_add_series x x'))) as [H1| H1].
+  --simpl.
+    destruct (LPO_fst (test_seq i (freal_add_series y y'))) as [H2| H2].
+   ++simpl.
+Search nA.
+...
+     unfold freal_add_series, sequence_add.
+...
+ +destruct Hxy' as (k & Hbef & Hwhi & Hxaft & Hyaft).
   right; left.
   unfold freal_norm_not_norm_eq.
   exists k.
