@@ -1614,7 +1614,32 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
   apply digit_eq_eq in Hxy.
   apply digit_eq_eq in Hxy'.
   now rewrite Hxy, Hxy'.
- +right; left.
+ +destruct Hxy' as (k & Hbef & Hwhi & Haft).
+  right; left.
+  unfold freal_norm_not_norm_eq.
+  exists k.
+  split.
+  *intros i Hi.
+   unfold freal_add, freal_add_to_seq; simpl.
+   apply digit_eq_eq.
+   (* perhaps problems of existential variables here *)
+   erewrite numbers_to_digits_id; simpl.
+   erewrite numbers_to_digits_id; simpl.
+   unfold freal_add_series, sequence_add, fd2n.
+   specialize (Hxy i).
+   now rewrite Hxy, Hbef.
+  *split.
+  --destruct Hwhi as [| Hwhi]; [ now left | right ].
+    unfold fd2n, freal_add, freal_add_to_seq; simpl.
+    erewrite numbers_to_digits_id; simpl.
+    erewrite numbers_to_digits_id; simpl.
+    unfold freal_add_series, sequence_add.
+    rewrite Hwhi, Nat.add_succ_r.
+    specialize (Hxy (k - 1)).
+    apply digit_eq_eq in Hxy.
+    now unfold fd2n; rewrite Hxy.
+  --idtac.
+
 ...
 
 intros x y Hxy x' y' Hxy'.
