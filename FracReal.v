@@ -474,8 +474,20 @@ destruct (LPO_fst (mark_9 (freal x) i)) as [H1| H1].
    ++apply digit_eq_eq; simpl.
      now unfold fd2n in Hax; rewrite Hax.
   --destruct Hw as [| Hw]; [ easy | ].
+    simpl in Hw; rewrite Nat.sub_0_r in Hw.
+    simpl; rewrite Nat.sub_0_r.
+    destruct (lt_dec (S (d2n (freal y) k)) rad) as [H3| H3].
+   ++now apply digit_eq_eq; simpl.
+   ++unfold fd2n in Hw; unfold d2n in H3.
+     specialize (digit_lt_radix (freal x k)); lia.
+  *idtac
 
 ...
+
+. . . k . . .
+x . . . 0 0 0 0 ...
+. = = - . . .
+y . . . 9 9 9 9 ...
 
 . . . i . . k . . .
 x . . . 9 . . 0 0 0 0 ...
