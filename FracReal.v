@@ -1577,6 +1577,13 @@ Proof.
 intros x y Hxy x' y' Hxy'.
 unfold freal_eq_prop in Hxy, Hxy' |-*.
 unfold freal_eq in Hxy, Hxy' |-*.
+Search freal_normalized_eq.
+Check freal_normalized_eq_iff.
+...
+
+intros x y Hxy x' y' Hxy'.
+unfold freal_eq_prop in Hxy, Hxy' |-*.
+unfold freal_eq in Hxy, Hxy' |-*.
 remember (freal_normalize x) as nx eqn:Hnx.
 remember (freal_normalize y) as ny eqn:Hny.
 remember (freal_normalize x') as nx' eqn:Hnx'.
@@ -1672,7 +1679,7 @@ destruct (LPO_fst (mark_9 sxx' i)) as [Hsx| Hsx].
        rewrite Nat.succ_pred_pos in Hyr; [ lia | easy ].
     +++now f_equal.
    **clear Hji; rename H into Hji; move Hji after Hxr.
-Check freal_normalized_eq_iff.
+
 ...
      exfalso; specialize (H1 (i - j - 1)).
      unfold d2n in H1.
