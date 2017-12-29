@@ -1614,7 +1614,7 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
   apply digit_eq_eq in Hxy.
   apply digit_eq_eq in Hxy'.
   now rewrite Hxy, Hxy'.
- +destruct Hxy' as (k & Hbef & Hwhi & Haft).
+ +destruct Hxy' as (k & Hbef & Hwhi & Hxaft & Hyaft).
   right; left.
   unfold freal_norm_not_norm_eq.
   exists k.
@@ -1638,8 +1638,8 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
     specialize (Hxy (k - 1)).
     apply digit_eq_eq in Hxy.
     now unfold fd2n; rewrite Hxy.
-  --idtac.
-
+  --split; intros i Hki.
+   ++idtac.
 ...
 
 intros x y Hxy x' y' Hxy'.
