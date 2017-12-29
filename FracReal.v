@@ -486,7 +486,12 @@ destruct (LPO_fst (mark_9 (freal x) i)) as [H1| H1].
   --apply digit_eq_eq; simpl.
     unfold fd2n in Hax.
     rewrite Hax; [ easy | lia ].
- +idtac.
+ +destruct (lt_eq_lt_dec i (k - 1)) as [[H4| H4]| H4].
+  *now rewrite Hb.
+  *idtac.
+...
+ +destruct H2 as (j & Hjj & Hj).
+  unfold mark_9, d2n in Hj.
 ...
 
 . . . k . . .
