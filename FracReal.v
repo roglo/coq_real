@@ -1598,10 +1598,6 @@ Add Parametric Morphism {r : radix} : freal_add
 Proof.
 intros x y Hxy x' y' Hxy'.
 unfold freal_eq_prop in Hxy, Hxy' |-*.
-(* j'ai peur que ma somme ne soit pas compatible avec mon égalité...
-   aïe aïe aïe... *)
-...
-
 rewrite freal_eq_normalized_eq in Hxy, Hxy'.
 rewrite freal_eq_normalized_eq.
 apply freal_normalized_eq_iff in Hxy.
@@ -1618,7 +1614,7 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
   apply digit_eq_eq in Hxy.
   apply digit_eq_eq in Hxy'.
   now rewrite Hxy, Hxy'.
-(*
+(**)
  +destruct Hxy' as (k & Hbef & Hwhi & Hxaft & Hyaft).
   destruct k.
   *left; intros.
@@ -1652,8 +1648,36 @@ apply nA_eq_compat.
 intros k.
 rewrite Hxaft; [ easy | lia ].
 rewrite H'.
+remember (u i) as ui.
+rewrite Hequ in Hequi.
+unfold freal_add_series in Hequi.
+unfold sequence_add in Hequi.
+rewrite Hyaft in Hequi; [ | lia ].
+unfold fd2n in Hequi.
+rewrite <- Hxy in Hequi.
+subst ui.
+unfold freal_add_series, sequence_add.
+rewrite Hxaft; [ | lia ].
+rewrite Nat.add_0_r.
+unfold fd2n at 1.
+rewrite <- Nat.add_assoc.
+rewrite Nat.add_mod; [ symmetry | easy ].
+rewrite Nat.add_mod; [ symmetry | easy ].
+f_equal; f_equal.
+
+assert (nA i n (fd2n x) < s).
+rewrite Heqs.
+apply nA_dig_seq_ub; [ easy | | ].
+intros.
+apply digit_lt_radix.
+rewrite Heqn.
+specialize radix_ge_2 as Hr.
+destruct rad as [| rr]; [ easy | ].
+simpl; lia.
+rewrite Nat.div_small; [ | easy ].
+rewrite Nat.mod_0_l; [ | easy ].
 ...
-*)
+(**)
  +destruct Hxy' as (k & Hbef & Hwhi & Hxaft & Hyaft).
 ...
   right; left.
