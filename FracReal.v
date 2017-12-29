@@ -1676,6 +1676,7 @@ destruct rad as [| rr]; [ easy | ].
 simpl; lia.
 rewrite Nat.div_small; [ | easy ].
 rewrite Nat.mod_0_l; [ | easy ].
+unfold nA.
 ...
 (**)
  +destruct Hxy' as (k & Hbef & Hwhi & Hxaft & Hyaft).
