@@ -1733,6 +1733,36 @@ rewrite <- Heqs in H3.
 rewrite <- Heqt in H3.
 destruct (lt_dec (nA i n u mod s * rad + nB n 0 u) t) as [H5| H5]; [ | easy ].
 clear H3.
+move v before u.
+move Heqv before Hequ.
+move s before n.
+move t before s.
+unfold nB in H4, H5.
+rewrite Nat.add_0_r in H4, H5.
+rewrite summation_only_one in H4, H5.
+rewrite Nat.sub_diag in H4, H5.
+rewrite Nat.pow_0_r in H4, H5.
+rewrite Nat.mul_1_r in H4, H5.
+rewrite Hequ.
+unfold freal_add_series at 1.
+unfold sequence_add.
+rewrite <- Hequ.
+rewrite Heqv.
+unfold freal_add_series at 1.
+unfold sequence_add.
+rewrite <- Heqv.
+unfold fd2n at 1 3.
+rewrite <- Hxy.
+do 2 rewrite <- Nat.add_assoc.
+setoid_rewrite Nat.add_mod; [ | easy | easy ].
+f_equal; f_equal.
+setoid_rewrite Nat.add_mod; [ | easy | easy ].
+remember (fd2n x' i mod rad) as a.
+rewrite Nat.mod_small in Heqa; [ | apply digit_lt_radix ].
+subst a.
+remember (fd2n y' i mod rad) as a.
+rewrite Nat.mod_small in Heqa; [ | apply digit_lt_radix ].
+subst a.
 ...
 assert (H' : ∀ i n, nA i n (freal_add_series x x') = nA i n (fd2n x)).
 clear n Heqn Heqs Heqt H3 H.
