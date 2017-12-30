@@ -1722,7 +1722,17 @@ remember (rad ^ (n - 1 - i)) as s.
 remember (rad ^ (n + 1)) as t.
 destruct (lt_dec (nA i n v mod s * rad + nB n 0 v) t) as [H4| H4]; [ | easy ].
 clear H3.
-assert (nA i n v mod s * rad < t) by lia.
+specialize (H1 0) as H3.
+unfold test_seq in H3.
+simpl in H3.
+rewrite Nat.mul_1_r in H3.
+rewrite Nat.add_0_r in H3.
+rewrite Nat.add_0_r in H3.
+rewrite <- Heqn in H3.
+rewrite <- Heqs in H3.
+rewrite <- Heqt in H3.
+destruct (lt_dec (nA i n u mod s * rad + nB n 0 u) t) as [H5| H5]; [ | easy ].
+clear H3.
 ...
 assert (H' : ∀ i n, nA i n (freal_add_series x x') = nA i n (fd2n x)).
 clear n Heqn Heqs Heqt H3 H.
