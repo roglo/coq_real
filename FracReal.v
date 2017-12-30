@@ -1778,6 +1778,25 @@ subst a.
 rewrite Hequ, Heqv.
 rewrite nA_freal_add_series.
 rewrite nA_freal_add_series.
+assert (nA i n (fd2n y) = nA i n (fd2n x)).
+apply summation_eq_compat.
+intros j Hj.
+unfold fd2n.
+now rewrite Hxy.
+rewrite H; clear H.
+destruct (lt_dec (n - 1) k) as [Hik| Hik].
+simpl in Hbef; rewrite Nat.sub_0_r in Hbef.
+assert (nA i n (fd2n y') = nA i n (fd2n x')).
+apply summation_eq_compat; intros j Hj.
+assert (j < k) by lia.
+specialize (Hbef _ H).
+unfold fd2n.
+now rewrite <- Hbef.
+rewrite H; clear H.
+assert (i < k) by lia.
+specialize (Hbef _ H).
+unfold fd2n; now rewrite Hbef.
+apply Nat.nlt_ge in Hik.
 ...
 
 unfold nA.
