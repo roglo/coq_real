@@ -1797,6 +1797,9 @@ assert (i < k) by lia.
 specialize (Hbef _ H).
 unfold fd2n; now rewrite Hbef.
 apply Nat.nlt_ge in Hik.
+unfold fd2n at 1 4.
+rewrite Hbef; [ | easy ].
+f_equal; f_equal.
 ...
 
 unfold nA.
