@@ -947,6 +947,18 @@ unfold sequence_add.
 apply Nat.add_0_l.
 Qed.
 
+Theorem nA_freal_add_series {r : radix} : ∀ x y i n,
+  nA i n (freal_add_series x y) = nA i n (fd2n x) + nA i n (fd2n y).
+Proof.
+intros.
+unfold nA; simpl.
+unfold freal_add_series, sequence_add.
+rewrite <- summation_add_distr; simpl.
+apply summation_eq_compat.
+intros j Hj.
+apply Nat.mul_add_distr_r.
+Qed.
+
 Theorem nA_freal_add_series_0_l {r : radix} : ∀ x i n,
   nA i n (freal_add_series 0 x) = nA i n (fd2n x).
 Proof.
@@ -1763,6 +1775,14 @@ subst a.
 remember (fd2n y' i mod rad) as a.
 rewrite Nat.mod_small in Heqa; [ | apply digit_lt_radix ].
 subst a.
+rewrite Hequ, Heqv.
+rewrite nA_freal_add_series.
+rewrite nA_freal_add_series.
+...
+
+unfold nA.
+rewrite Hequ.
+unfold freal_add_series, sequence_add.
 ...
 assert (H' : ∀ i n, nA i n (freal_add_series x x') = nA i n (fd2n x)).
 clear n Heqn Heqs Heqt H3 H.
