@@ -1709,46 +1709,40 @@ unfold numbers_to_digits.
   --simpl.
     destruct (LPO_fst (test_seq i (freal_add_series y y'))) as [H2| H2].
    ++simpl.
-specialize (H2 k) as H3.
+specialize (H2 0) as H3.
 remember (freal_add_series x x') as u.
 remember (freal_add_series y y') as v.
 unfold test_seq in H3.
 simpl in H3.
-(*
 rewrite Nat.mul_1_r in H3.
 rewrite Nat.add_0_r in H3.
 rewrite Nat.add_0_r in H3.
-*)
-remember (rad * (i + k + 2)) as n.
+remember (rad * (i + 2)) as n.
 remember (rad ^ (n - 1 - i)) as s.
-remember (rad ^ (n + k + 1)) as t.
-destruct (lt_dec (nA i n v mod s * rad ^ (k + 1) + nB n k v) t) as [H4| H4]; [ | easy ].
+remember (rad ^ (n + 1)) as t.
+destruct (lt_dec (nA i n v mod s * rad + nB n 0 v) t) as [H4| H4]; [ | easy ].
 clear H3.
-specialize (H1 k) as H3.
+specialize (H1 0) as H3.
 unfold test_seq in H3.
 simpl in H3.
-(*
 rewrite Nat.mul_1_r in H3.
 rewrite Nat.add_0_r in H3.
 rewrite Nat.add_0_r in H3.
-*)
 rewrite <- Heqn in H3.
 rewrite <- Heqs in H3.
 rewrite <- Heqt in H3.
-destruct (lt_dec (nA i n u mod s * rad ^ (k + 1) + nB n k u) t) as [H5| H5]; [ | easy ].
+destruct (lt_dec (nA i n u mod s * rad + nB n 0 u) t) as [H5| H5]; [ | easy ].
 clear H3.
 move v before u.
 move Heqv before Hequ.
 move s before n.
 move t before s.
-(*
 unfold nB in H4, H5.
 rewrite Nat.add_0_r in H4, H5.
 rewrite summation_only_one in H4, H5.
 rewrite Nat.sub_diag in H4, H5.
 rewrite Nat.pow_0_r in H4, H5.
 rewrite Nat.mul_1_r in H4, H5.
-*)
 rewrite Hequ.
 unfold freal_add_series at 1.
 unfold sequence_add.
