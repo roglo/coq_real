@@ -1800,6 +1800,14 @@ apply Nat.nlt_ge in Hik.
 unfold fd2n at 1 4.
 rewrite Hbef; [ | easy ].
 f_equal; f_equal.
+(* while decomposing nA i n (fd2n x') and nA i n (fd2n y'),
+   knowing that i < k and k ≤ n - 1, we get
+     na i n (fd2n x') = na i n (fd2n y') + 1
+   must be formally proved
+   so we have to prove:
+     ((nA i n (fd2n x) + nA i n (fd2n y') + 1) / s) mod rad =
+     ((nA i n (fd2n x) + nA i n (fd2n y')) / s) mod rad
+*)
 ...
 
 unfold nA.
