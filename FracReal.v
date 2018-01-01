@@ -1636,10 +1636,52 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
   apply digit_eq_eq in Hxy'.
   now rewrite Hxy, Hxy'.
  +destruct Hxy' as (k & Hbef & Hwhi & Hxaft & Hyaft).
-  destruct k.
-  *clear Hbef Hwhi.
+  left.
+  intros i.
+  unfold freal_add, freal_add_to_seq; simpl.
+  unfold numbers_to_digits.
+  apply digit_eq_eq.
+  destruct (LPO_fst (test_seq i (freal_add_series x x'))) as [Hxx| Hxx].
+  *simpl.
+   destruct (LPO_fst (test_seq i (freal_add_series y y'))) as [Hyy| Hyy].
+  --simpl.
+    remember (freal_add_series x x') as u.
+    remember (freal_add_series y y') as v.
+    move v before u; move Heqv before Hequ.
+    remember (rad * (i + 2)) as n.
+    remember (rad ^ (n - 1 - i)) as s.
+    move s before n.
+    rewrite Hequ.
+    unfold freal_add_series at 1.
+    unfold sequence_add.
+    rewrite <- Hequ.
+    rewrite Heqv.
+    unfold freal_add_series at 1.
+    unfold sequence_add.
+    rewrite <- Heqv.
+    unfold fd2n at 1 3.
+    rewrite <- Hxy.
+    do 2 rewrite <- Nat.add_assoc.
+    setoid_rewrite Nat.add_mod; [ | easy | easy ].
+    f_equal; f_equal.
+    setoid_rewrite Nat.add_mod; [ | easy | easy ].
+    remember (fd2n x' i mod rad) as a.
+    rewrite Nat.mod_small in Heqa; [ | apply digit_lt_radix ].
+    subst a.
+    remember (fd2n y' i mod rad) as a.
+    rewrite Nat.mod_small in Heqa; [ | apply digit_lt_radix ].
+    subst a.
+    rewrite Hequ, Heqv.
+    rewrite nA_freal_add_series.
+    rewrite nA_freal_add_series.
+    assert (nA i n (fd2n y) = nA i n (fd2n x)).
+   ++apply summation_eq_compat.
+     intros j Hj; unfold fd2n; now rewrite Hxy.
+   ++rewrite H; clear H.
 ...
 
+ +destruct Hxy' as (k & Hbef & Hwhi & Hxaft & Hyaft).
+  destruct k.
 (* case k≠0 *)
 Focus 2.
 destruct Hwhi as [| Hwhi]; [ easy | ].
