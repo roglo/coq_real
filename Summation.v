@@ -91,6 +91,14 @@ Definition summation `{rg : ord_ring} b e g :=
 Notation "'Σ' ( i = b , e ) , g" := (summation b e (λ i, g))
   (at level 45, i at level 0, b at level 60, e at level 60).
 
+Theorem summation_empty `{rg : ord_ring} : ∀ g b k,
+  k < b → Σ (i = b, k), g i = 0%Rg.
+Proof.
+intros * Hkb.
+unfold summation.
+now replace (S k - b)%nat with O by lia.
+Qed.
+
 Theorem summation_aux_succ_last `{rg : ord_ring} :
   ∀ g b len,
   (summation_aux b (S len) g =
@@ -178,14 +186,6 @@ remember (S k - b)%nat as len; clear Heqlen.
 revert b.
 induction len; intros; [ reflexivity | simpl ].
 rewrite IHlen; reflexivity.
-Qed.
-
-Theorem summation_empty `{rg : ord_ring} : ∀ g b k,
-  k < b → Σ (i = b, k), g i = 0%Rg.
-Proof.
-intros * Hkb.
-unfold summation.
-now replace (S k - b)%nat with O by lia.
 Qed.
 
 Theorem summation_aux_eq_compat `{rg : ord_ring} : ∀ g h b₁ b₂ len,
