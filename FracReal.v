@@ -1636,8 +1636,16 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
   apply digit_eq_eq in Hxy'.
   now rewrite Hxy, Hxy'.
  +destruct Hxy' as (k & Hbef & Hwhi & Hxaft & Hyaft).
+(*
+right; left.
+unfold freal_norm_not_norm_eq.
+exists k.
+split.
+intros i Hi.
+*)
   left.
   intros i.
+(**)
   unfold freal_add, freal_add_to_seq; simpl.
   unfold numbers_to_digits.
   apply digit_eq_eq.
@@ -1735,7 +1743,7 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
           unfold fd2n; rewrite Hbef; [ easy | lia ].
       ***intros j Hj.
          rewrite Hxaft; [ easy | lia ].
-     +++idtac.
+     +++rewrite H, Nat.add_assoc.
 ...
 
 Theorem freal_add_assoc {r : radix} : ∀ x y z,
