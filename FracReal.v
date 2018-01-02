@@ -1678,12 +1678,6 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
    ++apply summation_eq_compat.
      intros j Hj; unfold fd2n; now rewrite Hxy.
    ++rewrite H; clear H.
-(* après écriture sur papier, j'en ai conclu que:
-si n < k alors nA i n (fd2n x') = nA i n (fd2n y')
-si n ≥ k alors nA i n (fd2n x') + 1 = nA i n (fd2n y')
-À démontrer formellement.
-Du coup, il suffirait de voir si ça marche pour n-1 ≥ k
-*)
      destruct (lt_dec n k) as [Hnk| Hnk].
     **assert (H : nA i n (fd2n x') = nA i n (fd2n y')).
     ---apply summation_eq_compat; intros j Hj; f_equal.
@@ -1695,14 +1689,51 @@ Du coup, il suffirait de voir si ça marche pour n-1 ≥ k
        specialize radix_ge_2 as Hr.
        destruct rad as [| rr]; [ easy | simpl; lia ].
     **apply Nat.nlt_ge in Hnk.
-      assert (H : nA i n (fd2n x') + 1 = nA i n (fd2n y')).
-    ---unfold nA.
-       destruct (le_dec (i + 1) (k - 1)) as [Hik| Hik].
-     +++rewrite summation_split with (e := k - 1); [ | split; lia ].
-admit.
-+++idtac.
-apply Nat.nle_gt in Hik.
+      destruct (le_dec (i + 1) (k - 1)) as [Hik| Hik].
+    ---assert (H : nA i n (fd2n x') + 1 = nA i n (fd2n y')).
+     +++remember (nA i n (fd2n x')) as a eqn:Ha.
+        unfold nA in Ha.
+        erewrite summation_split with (e := k - 1) in Ha; [ | lia ].
+        simpl in Ha.
+        rewrite Nat.add_comm in Ha.
+        rewrite all_0_summation_0 in Ha.
+      ***simpl in Ha.
+destruct k; [ lia | ].
+destruct Hwhi as [| Hwhi]; [ easy | ].
+destruct k; [ lia | ].
+simpl in Ha.
+rewrite summation_split_last in Ha; [ | easy ].
+         rewrite summation_eq_compat with
+           (h := λ i, fd2n y' i * rad ^ (n - 1 - i)) in Ha.
+simpl in Hwhi.
+rewrite Hwhi in Ha.
+rewrite Nat.add_comm in Ha.
+rewrite <- Nat.add_1_r in Ha.
+rewrite Nat.mul_add_distr_r, Nat.mul_1_l in Ha.
+rewrite Nat.add_comm, Nat.add_assoc in Ha.
+rewrite <- summation_split_last in Ha; [ | easy ].
+unfold nA.
+          rewrite summation_split with (e := S k); [ | lia ].
+simpl; subst a.
+rewrite <- Nat.add_assoc; f_equal.
+rewrite summation_eq_compat with (h := λ j, (rad - 1) * rad ^ (n - 1 - j)).
+rewrite <- summation_mul_distr_l; simpl.
+2: now intros j Hj; rewrite Hyaft.
+Focus 2.
+intros j Hj.
+unfold fd2n; rewrite Hbef; [ easy | lia ].
+(* bon, ça merde, j'ai dû me tromper dans les indices *)
+...
 
+          subst a; simpl; f_equal.
+Check power_summation.
+
+Focus 2.
+intros j Hj.
+rewrite Hxaft; [ easy | lia ].
+
+     +++unfold nA.
+        erewrite summation_split with (e := k - 1); [ simpl | split; lia ].
 
 ...
 
