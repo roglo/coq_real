@@ -1697,7 +1697,10 @@ Du coup, il suffirait de voir si ça marche pour n-1 ≥ k
     **apply Nat.nlt_ge in Hnk.
       assert (H : nA i n (fd2n x') + 1 = nA i n (fd2n y')).
     ---unfold nA.
-(* cf summation_split *)
+       rewrite summation_split with (e := k - 1).
+Focus 2.
+split; [ | lia ].
+(* mmm... *)
 ...
 
  +destruct Hxy' as (k & Hbef & Hwhi & Hxaft & Hyaft).

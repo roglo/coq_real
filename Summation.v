@@ -134,12 +134,39 @@ rewrite Nat.add_sub_assoc; [ | easy ].
 now rewrite Nat.add_comm, Nat.add_sub.
 Qed.
 
+Theorem summation_aux_split `{rg : ord_ring} : ∀ g b len1 len2,
+  summation_aux b (len1 + len2) g =
+  (summation_aux b len1 g + summation_aux (b + len1) len2 g)%Rg.
+Proof.
+intros.
+revert b len2.
+induction len1; intros.
+-now simpl; rewrite rng_add_0_l, Nat.add_0_r.
+-replace (S len1 + len2) with (len1 + S len2) by lia.
+ replace (b + S len1) with (S b + len1) by lia.
+ rewrite IHlen1; simpl.
+ rewrite rng_add_assoc; f_equal.
+ rewrite <- summation_aux_succ_first.
+ now rewrite summation_aux_succ_last.
+Qed.
+
 Theorem summation_split `{rg : ord_ring} : ∀ g b e k,
   b ≤ e ≤ k
   → (Σ (i = b, k), g i = Σ (i = b, e), g i + Σ (i = S e, k), g i)%Rg.
 Proof.
-intros * Hbek.
-...
+intros * (Hbe, Hek).
+unfold summation.
+rewrite Nat.sub_succ.
+rewrite Nat.sub_succ_l; [ | lia ].
+rewrite Nat.sub_succ_l; [ | easy ].
+simpl; rewrite <- rng_add_assoc; f_equal.
+remember (e - b) as len1 eqn:Hlen1.
+replace (k - b) with (len1 + k - e) by lia.
+rewrite <- Nat.add_sub_assoc; [ | easy ].
+remember (k - e) as len2 eqn:Hlen2.
+replace (S e) with (S b + len1) by lia.
+apply summation_aux_split.
+Qed.
 
 Theorem summation_succ_succ `{rg : ord_ring} : ∀ b k g,
   Σ (i = S b, S k), g i = Σ (i = b, k), g (S i).
