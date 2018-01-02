@@ -107,6 +107,21 @@ induction len; intros.
  now rewrite rng_add_assoc, Nat.add_succ_r.
 Qed.
 
+Theorem summation_aux_succ_first `{rg : ord_ring} : ∀ g b len,
+  summation_aux b (S len) g = (g b + summation_aux (S b) len g)%Rg.
+Proof. easy. Qed.
+
+Theorem summation_split_first `{rg : ord_ring} : ∀ g b k,
+  b ≤ k
+  → Σ (i = b, k), g i = (g b + Σ (i = S b, k), g i)%Rg.
+Proof.
+intros g b k Hbk.
+unfold summation.
+rewrite Nat.sub_succ.
+rewrite <- summation_aux_succ_first.
+now rewrite <- Nat.sub_succ_l.
+Qed.
+
 Theorem summation_split_last `{rg : ord_ring} : ∀ g b k,
   b ≤ S k
   → (Σ (i = b, S k), g i = Σ (i = b, k), g i + g (S k))%Rg.
@@ -118,6 +133,13 @@ rewrite summation_aux_succ_last; f_equal.
 rewrite Nat.add_sub_assoc; [ | easy ].
 now rewrite Nat.add_comm, Nat.add_sub.
 Qed.
+
+Theorem summation_split `{rg : ord_ring} : ∀ g b e k,
+  b ≤ e ≤ k
+  → (Σ (i = b, k), g i = Σ (i = b, e), g i + Σ (i = S e, k), g i)%Rg.
+Proof.
+intros * Hbek.
+...
 
 Theorem summation_succ_succ `{rg : ord_ring} : ∀ b k g,
   Σ (i = S b, S k), g i = Σ (i = b, k), g (S i).
@@ -459,21 +481,6 @@ rewrite Nat.sub_0_r.
 rewrite Nat.sub_succ_l; [ | now destruct Hi ].
 apply summation_aux_eq_compat; intros j Hj.
 now rewrite Nat.add_0_l.
-Qed.
-
-Theorem summation_aux_succ_first `{rg : ord_ring} : ∀ g b len,
-  summation_aux b (S len) g = (g b + summation_aux (S b) len g)%Rg.
-Proof. easy. Qed.
-
-Theorem summation_split_first `{rg : ord_ring} : ∀ g b k,
-  b ≤ k
-  → Σ (i = b, k), g i = (g b + Σ (i = S b, k), g i)%Rg.
-Proof.
-intros g b k Hbk.
-unfold summation.
-rewrite Nat.sub_succ.
-rewrite <- summation_aux_succ_first.
-now rewrite <- Nat.sub_succ_l.
 Qed.
 
 Theorem summation_summation_exch `{rg : ord_ring} : ∀ g k,

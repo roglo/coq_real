@@ -1696,7 +1696,8 @@ Du coup, il suffirait de voir si ça marche pour n-1 ≥ k
        destruct rad as [| rr]; [ easy | simpl; lia ].
     **apply Nat.nlt_ge in Hnk.
       assert (H : nA i n (fd2n x') + 1 = nA i n (fd2n y')).
-    ---idtac.
+    ---unfold nA.
+(* cf summation_split *)
 ...
 
  +destruct Hxy' as (k & Hbef & Hwhi & Hxaft & Hyaft).
