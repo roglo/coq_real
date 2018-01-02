@@ -1690,7 +1690,7 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
        destruct rad as [| rr]; [ easy | simpl; lia ].
     **apply Nat.nlt_ge in Hnk.
       destruct (le_dec (i + 1) (k - 1)) as [Hik| Hik].
-    ---assert (H : nA i n (fd2n x') + 1 = nA i n (fd2n y')).
+    ---assert (H : nA i n (fd2n x') = nA i n (fd2n y') + 1).
      +++remember (nA i n (fd2n x')) as a eqn:Ha.
         unfold nA in Ha.
         erewrite summation_split with (e := k - 1) in Ha; [ | lia ].
@@ -1722,6 +1722,12 @@ rewrite <- summation_mul_distr_l; simpl.
 Focus 2.
 intros j Hj.
 unfold fd2n; rewrite Hbef; [ easy | lia ].
+rewrite summation_rtl.
+rewrite summation_shift.
+rewrite summation_eq_compat with (h := λ j, rad ^ j).
+2: intros j Hj; f_equal; lia.
+rewrite Nat.add_comm.
+rewrite <- power_summation; [ | easy ].
 (* bon, ça merde, j'ai dû me tromper dans les indices *)
 ...
 
