@@ -1679,11 +1679,24 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
      intros j Hj; unfold fd2n; now rewrite Hxy.
    ++rewrite H; clear H.
 (* après écriture sur papier, j'en ai conclu que:
-si n-1 < k alors nA i n (fd2n x') = nA i n (fd2n y')
-si n-1 ≥ k alors nA i n (fd2n x') + 1 = nA i n (fd2n y')
+si n < k alors nA i n (fd2n x') = nA i n (fd2n y')
+si n ≥ k alors nA i n (fd2n x') + 1 = nA i n (fd2n y')
 À démontrer formellement.
 Du coup, il suffirait de voir si ça marche pour n-1 ≥ k
 *)
+     destruct (lt_dec n k) as [Hnk| Hnk].
+    **assert (H : nA i n (fd2n x') = nA i n (fd2n y')).
+    ---apply summation_eq_compat; intros j Hj; f_equal.
+       unfold fd2n; rewrite Hbef; [ easy | lia ].
+    ---rewrite H.
+       unfold fd2n; rewrite Hbef; [ easy | ].
+       enough (i < n) by lia.
+       rewrite Heqn.
+       specialize radix_ge_2 as Hr.
+       destruct rad as [| rr]; [ easy | simpl; lia ].
+    **apply Nat.nlt_ge in Hnk.
+      assert (H : nA i n (fd2n x') + 1 = nA i n (fd2n y')).
+    ---idtac.
 ...
 
  +destruct Hxy' as (k & Hbef & Hwhi & Hxaft & Hyaft).
