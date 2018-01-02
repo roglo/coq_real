@@ -1697,6 +1697,9 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
         simpl in Ha.
         rewrite Nat.add_comm in Ha.
         rewrite all_0_summation_0 in Ha.
+Focus 2.
+intros j Hj.
+rewrite Hxaft; [ easy | lia ].
       ***simpl in Ha.
 destruct k; [ lia | ].
 destruct Hwhi as [| Hwhi]; [ easy | ].
@@ -1704,7 +1707,10 @@ destruct k; [ lia | ].
 simpl in Ha.
 rewrite summation_split_last in Ha; [ | easy ].
          rewrite summation_eq_compat with
-           (h := λ i, fd2n y' i * rad ^ (n - 1 - i)) in Ha.
+           (h := λ j, fd2n y' j * rad ^ (n - 1 - j)) in Ha.
+Focus 2.
+intros j Hj.
+unfold fd2n; rewrite Hbef; [ easy | lia ].
 simpl in Hwhi.
 rewrite Hwhi in Ha.
 rewrite Nat.add_comm in Ha.
@@ -1719,9 +1725,6 @@ rewrite <- Nat.add_assoc; f_equal.
 rewrite summation_eq_compat with (h := λ j, (rad - 1) * rad ^ (n - 1 - j)).
 rewrite <- summation_mul_distr_l; simpl.
 2: now intros j Hj; rewrite Hyaft.
-Focus 2.
-intros j Hj.
-unfold fd2n; rewrite Hbef; [ easy | lia ].
 rewrite summation_rtl.
 rewrite summation_shift.
 rewrite summation_eq_compat with (h := λ j, rad ^ j).
