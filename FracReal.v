@@ -1678,6 +1678,12 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
    ++apply summation_eq_compat.
      intros j Hj; unfold fd2n; now rewrite Hxy.
    ++rewrite H; clear H.
+(* après écriture sur papier, j'en ai conclu que:
+si n-1 < k alors nA i n (fd2n x') = nA i n (fd2n y')
+si n-1 ≥ k alors nA i n (fd2n x') + 1 = nA i n (fd2n y')
+À démontrer formellement.
+Du coup, il suffirait de voir si ça marche pour n-1 ≥ k
+*)
 ...
 
  +destruct Hxy' as (k & Hbef & Hwhi & Hxaft & Hyaft).
