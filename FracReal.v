@@ -605,11 +605,13 @@ Definition test_seq {r : radix} i u k :=
 Definition numbers_to_digits {r : radix} u i :=
   match LPO_fst (test_seq i u) with
   | inl _ =>
+      (* infinity of zeroes *)
       let n := rad * (i + 2) in
       let s := rad ^ (n - 1 - i) in
       let d := u i + nA i n u / s in
       mkdig _ (d mod rad) (Nat.mod_upper_bound d rad radix_ne_0)
   | inr (exist _ k _) =>
+      (* the first 1 is at k *)
       let n := rad * (i + k + 2) in
       let s := rad ^ (n - 1 - i) in
       let d := u i + nA i n u / s + 1 in
