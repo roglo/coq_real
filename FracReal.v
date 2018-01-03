@@ -611,7 +611,7 @@ Definition numbers_to_digits {r : radix} u i :=
       let n := rad * (i + k + 2) in
       let s := rad ^ (n - 1 - i) in
       let d := u i + nA i n u / s + 1 in
-      mkdig _ ((d + 1) mod rad) (Nat.mod_upper_bound (d + 1) rad radix_ne_0)
+      mkdig _ (d mod rad) (Nat.mod_upper_bound d rad radix_ne_0)
   end.
 
 Definition freal_add_to_seq {r : radix} (a b : FracReal) :=
@@ -952,6 +952,18 @@ Theorem nA_freal_add_series {r : radix} : ∀ x y i n,
 Proof.
 intros.
 unfold nA; simpl.
+unfold freal_add_series, sequence_add.
+rewrite <- summation_add_distr; simpl.
+apply summation_eq_compat.
+intros j Hj.
+apply Nat.mul_add_distr_r.
+Qed.
+
+Theorem nB_freal_add_series {r : radix} : ∀ x y n k,
+  nB n k (freal_add_series x y) = nB n k (fd2n x) + nB n k (fd2n y).
+Proof.
+intros.
+unfold nB; simpl.
 unfold freal_add_series, sequence_add.
 rewrite <- summation_add_distr; simpl.
 apply summation_eq_compat.
@@ -1583,7 +1595,7 @@ destruct (LPO_fst (test_seq i f)) as [Hf| Hf].
    exfalso; apply Hk.
    erewrite test_seq_eq_compat; [ | easy ]; easy.
   *subst l; apply digit_eq_eq; simpl.
-   f_equal; f_equal; f_equal; f_equal; f_equal.
+   f_equal; f_equal; f_equal; f_equal.
    now apply nA_eq_compat.
   *specialize (Hjk _ Hkl).
    apply digit_eq_eq; simpl.
@@ -1636,16 +1648,16 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
   apply digit_eq_eq in Hxy'.
   now rewrite Hxy, Hxy'.
  +destruct Hxy' as (k & Hbef & Hwhi & Hxaft & Hyaft).
-(*
+(**)
 right; left.
 unfold freal_norm_not_norm_eq.
 exists k.
 split.
 intros i Hi.
-*)
+(*
   left.
   intros i.
-(**)
+*)
   unfold freal_add, freal_add_to_seq; simpl.
   unfold numbers_to_digits.
   apply digit_eq_eq.
@@ -1746,6 +1758,7 @@ intros i Hi.
          rewrite Hxaft; [ easy | lia ].
        }
        rewrite H, Nat.add_assoc.
+Print test_seq.
 ...
 
 Theorem freal_add_assoc {r : radix} : ∀ x y z,
