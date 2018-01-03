@@ -597,7 +597,7 @@ Definition nB {r : radix} (rg := nat_ord_ring) n l u :=
 Definition test_seq {r : radix} i u l :=
   let n := rad * (i + 3) in
   let s := rad ^ (n - 1 - i) in
-  if lt_dec (nA i n u mod s * rad ^ (l + 1) + nB n l u) (rad ^ (n + l - i) (*+ 1*))
+  if lt_dec (nA i n u mod s * rad ^ (l + 1) + nB n l u) (rad ^ (n + l - i))
   then 0 else 1.
 
 Definition numbers_to_digits {r : radix} u i :=
