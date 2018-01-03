@@ -1754,15 +1754,19 @@ intros i Hi.
        }
        rewrite H, Nat.add_assoc.
 Print test_seq.
-specialize (Hxx 8) as Hx.
+specialize (Hxx 0) as Hx.
 unfold test_seq in Hx.
-(*
 rewrite Nat.add_0_l, Nat.add_0_r in Hx.
 rewrite Nat.pow_1_r in Hx.
-*)
 rewrite <- Heqn, <- Heqs in Hx.
-destruct (lt_dec (nA i n u mod s * rad ^ (8 + 1) + nB n 8 u) (rad ^ (n + 8 - i)))
+destruct (lt_dec (nA i n u mod s * rad + nB n 0 u) (rad ^ (n - i)))
  as [Hlt| ]; [ clear Hx | easy ].
+unfold nB in Hlt; rewrite Nat.add_0_r in Hlt.
+rewrite summation_only_one in Hlt.
+rewrite Nat.sub_diag, Nat.pow_0_r, Nat.mul_1_r in Hlt.
+rewrite Hequ in Hlt at 1.
+rewrite nA_freal_add_series in Hlt.
+(* mouais, bof, j'y crois pas trop... *)
 ...
 
 Theorem freal_add_assoc {r : radix} : ∀ x y z,
