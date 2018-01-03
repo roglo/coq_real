@@ -597,7 +597,7 @@ Definition nB {r : radix} (rg := nat_ord_ring) n l u :=
 Definition test_seq {r : radix} i u l :=
   let n := rad * (i + 3) in
   let s := rad ^ (n - 1 - i) in
-  if lt_dec (nA i n u mod s * rad ^ (l + 1) + nB n l u) (rad ^ (n + l - i) + 1)
+  if lt_dec (nA i n u mod s * rad ^ (l + 1) + nB n l u) (rad ^ (n + l - i) (*+ 1*))
   then 0 else 1.
 
 Definition numbers_to_digits {r : radix} u i :=
@@ -1255,7 +1255,7 @@ destruct (LPO_fst (test_seq i u)) as [H| H].
  rewrite Nat.mul_1_r, Nat.add_0_r in HH.
  remember (rad * (i + 3)) as n eqn:Hn.
  remember (rad ^ (n - 1 - i)) as s eqn:Hs.
- destruct (lt_dec (nA i n u mod s * rad + nB n 0 u) (rad ^ (n - i) + 1))
+ destruct (lt_dec (nA i n u mod s * rad + nB n 0 u) (rad ^ (n - i)))
    as [Hlt| ]; [ clear HH | easy ].
  rewrite Nat.div_small.
  +apply digit_eq_eq; simpl.
@@ -1272,7 +1272,7 @@ destruct (LPO_fst (test_seq i u)) as [H| H].
  remember (rad ^ (n - 1 - i)) as s eqn:Hs.
  destruct
    (lt_dec (nA i n u mod s * rad ^ (l + 1) + nB n l u)
-      (rad ^ (n + l - i) + 1))
+      (rad ^ (n + l - i)))
    as [| Hge]; [ easy | clear Hts ].
  assert (Hin : i + 1 ≤ n - 1).
  +subst n; specialize radix_ge_2 as Hr.
@@ -1283,49 +1283,37 @@ destruct (LPO_fst (test_seq i u)) as [H| H].
   rewrite <- Hs in HnA.
   rewrite Nat.mod_small in Hge; [ | easy ].
   exfalso; apply Hge; clear Hge.
-...
-
-(*
-  specialize (nB_dig_seq_ub Hr _ Hur n k) as HnB.
-*)
-  subst s.
-  unfold nA(*, nB*).
+  unfold nA, nB.
   rewrite summation_mul_distr_r; simpl.
-  rewrite summation_eq_compat with (h := λ j, u j * rad ^ (n + k - 1 - j)).
+  rewrite summation_eq_compat with (h := λ j, u j * rad ^ (n + l - j)).
   *set (rd := nat_ord_ring_def).
    set (rg := nat_ord_ring).
-Check summation_ub_add.
-(**)
-
-...
    replace (summation n) with (summation (S (n - 1))) by (f_equal; lia).
-   rewrite <- summation_ub_add with (k₂ := k + 1); [ | lia | lia ].
-   replace (n + k + 1) with (S (n + k)) by lia.
-   rewrite power_summation; [ | easy ].
-   apply le_lt_trans with (m := Σ (j = 0, n + k), u j * rad ^ (n + k - j)).
-  --remember (summation (i + 1) (n + k)) as f.
-    rewrite summation_ub_add with (k₁ := i) (k₂ := n + k - i);
-      [ subst f | lia | lia ].
-    rewrite Nat.add_1_r; simpl.
-    remember (n + k) as nk; rewrite Nat.add_comm; subst nk.
-    apply Nat.le_add_r.
+   rewrite <- summation_ub_add with (k₂ := l + 1); [ | lia | lia ].
+   rewrite summation_shift; [ | lia ].
+   apply le_lt_trans with
+     (m :=
+      Σ (j = 0, n + l - (i + 1)), (rad - 1) * rad ^ (n + l - (i + 1 + j))).
+  --apply (@summation_le_compat rd).
+    intros j Hj; simpl.
+    unfold NPeano.Nat.le.
+    apply Nat.mul_le_mono_nonneg_r; [ lia | ].
+    apply Nat.le_add_le_sub_r.
+    rewrite Nat.add_1_r.
+    apply Hur.
   --rewrite summation_rtl.
-    rewrite summation_mul_distr_l; simpl.
-    apply le_lt_trans with (m := Σ (j = 0, n + k), (rad - 1) * rad ^ j).
-   ++apply (@summation_le_compat rd).
-     intros j Hj; simpl.
-     rewrite Nat.add_0_r.
-     unfold NPeano.Nat.le.
-     replace (n + k - (n + k - j)) with j by lia.
-     apply Nat.mul_le_mono_nonneg_r; [ lia | ].
-     apply Nat.le_add_le_sub_r.
-     rewrite Nat.add_1_r.
-     apply Hur.
-   ++apply Nat.lt_succ_diag_r.
+    rewrite <- summation_mul_distr_l; simpl.
+    rewrite summation_eq_compat with (h := λ j, rad ^ j).
+   ++apply Nat.add_lt_mono_l with (p := 1).
+     rewrite <- power_summation; [ | easy ].
+     replace (S (n + l - (i + 1))) with (n + l - i); lia.
+   ++intros j Hj; f_equal; lia.
   *intros j Hj.
    rewrite <- Nat.mul_assoc; f_equal.
    rewrite <- Nat.pow_add_r; f_equal; lia.
 Qed.
+
+...
 
 Theorem dig_numbers_to_digits_id {r : radix} : ∀ u i,
   (∀ j : nat, u j < rad)
