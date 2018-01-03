@@ -1313,8 +1313,6 @@ destruct (LPO_fst (test_seq i u)) as [H| H].
    rewrite <- Nat.pow_add_r; f_equal; lia.
 Qed.
 
-...
-
 Theorem dig_numbers_to_digits_id {r : radix} : ∀ u i,
   (∀ j : nat, u j < rad)
   → dig (numbers_to_digits u i) = u i.
@@ -1665,7 +1663,7 @@ intros i Hi.
     remember (freal_add_series x x') as u.
     remember (freal_add_series y y') as v.
     move v before u; move Heqv before Hequ.
-    remember (rad * (i + 2)) as n.
+    remember (rad * (i + 3)) as n.
     remember (rad ^ (n - 1 - i)) as s.
     move s before n.
     rewrite Hequ.
@@ -1756,6 +1754,15 @@ intros i Hi.
        }
        rewrite H, Nat.add_assoc.
 Print test_seq.
+specialize (Hxx 8) as Hx.
+unfold test_seq in Hx.
+(*
+rewrite Nat.add_0_l, Nat.add_0_r in Hx.
+rewrite Nat.pow_1_r in Hx.
+*)
+rewrite <- Heqn, <- Heqs in Hx.
+destruct (lt_dec (nA i n u mod s * rad ^ (8 + 1) + nB n 8 u) (rad ^ (n + 8 - i)))
+ as [Hlt| ]; [ clear Hx | easy ].
 ...
 
 Theorem freal_add_assoc {r : radix} : ∀ x y z,
