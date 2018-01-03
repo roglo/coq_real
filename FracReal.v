@@ -600,6 +600,8 @@ Definition test_seq {r : radix} i u k :=
   let t := rad ^ (n + k + 1) in
   if lt_dec (nA i n u mod s * rad ^ (k + 1) + nB n k u) t then 0 else 1.
 
+...
+
 Definition numbers_to_digits {r : radix} u i :=
   match LPO_fst (test_seq i u) with
   | inl _ =>
