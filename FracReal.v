@@ -1275,7 +1275,6 @@ destruct (LPO_fst (test_seq i u)) as [H| H].
  remember (rad ^ (n - 1 - i)) as s eqn:Hs.
  destruct (lt_dec (nA i n u mod s * rad ^ (k + 1)) (s * (rad ^ (k + 1) - 1)))
    as [| Hge]; [ easy | clear Hts ].
- exfalso; apply Hge; clear Hge.
  assert (Hin : i + 1 ≤ n - 1).
  +subst n; specialize radix_ge_2 as Hr.
   destruct rad as [| rd]; [ easy | simpl; lia ].
@@ -1283,7 +1282,9 @@ destruct (LPO_fst (test_seq i u)) as [H| H].
   specialize radix_gt_0 as Hr.
   specialize (nA_dig_seq_ub Hr u n H i Hin) as HnA; clear H.
   rewrite <- Hs in HnA.
-  rewrite Nat.mod_small; [ | easy ].
+  rewrite Nat.mod_small in Hge; [ | easy ].
+  exfalso; apply Hge; clear Hge.
+  (* proved wrong in my pen and paper! *)
 ...
 
 (*
