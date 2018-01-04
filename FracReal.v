@@ -1776,6 +1776,9 @@ split; intros Hpq.
  remember (S p / q) as a'.
  rewrite <- Nat.add_1_r in Hs at 1.
  rewrite Hp in Hs at 1.
+assert (p mod q + 1 < q).
+specialize (Nat.mod_upper_bound p q Hq) as H; lia.
+
 ...
 rewrite Nat.add_shuffle0 in Hs.
 apply Nat.add_sub_eq_l in Hs.
