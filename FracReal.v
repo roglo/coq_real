@@ -1601,6 +1601,42 @@ destruct (LPO_fst (test_seq i f)) as [Hf| Hf].
    erewrite test_seq_eq_compat in Hjk; [ | easy ]; easy.
 Qed.
 
+Theorem Nat_div_succ_l_eq_div : ∀ p q, q ≠ 0 →
+  (S p) / q = p / q ↔ p mod q ≠ q - 1.
+Proof.
+intros * Hq.
+specialize (Nat.div_mod p q Hq) as Hp.
+specialize (Nat.div_mod (S p) q Hq) as Hs.
+split; intros Hpq.
+-specialize (Nat.mod_upper_bound (S p) q Hq) as H.
+ rewrite Hpq in Hs; lia.
+-remember (p / q) as a.
+ remember (S p / q) as a'.
+ rewrite <- Nat.add_1_r in Hs at 1.
+ rewrite Hp in Hs at 1.
+ assert (p mod q + 1 < q). {
+  specialize (Nat.mod_upper_bound p q Hq) as H; lia.
+ }
+ rewrite <- Nat.add_assoc in Hs.
+ apply Nat.add_sub_eq_l in Hs.
+ rewrite Nat.add_comm in Hs.
+ rewrite <- Nat.add_sub_assoc in Hs.
+ +rewrite <- Nat.mul_sub_distr_l in Hs.
+  remember (a' - a) as aa eqn:Ha.
+  symmetry in Ha.
+  destruct aa.
+  *apply Nat.sub_0_le in Ha.
+   apply Nat.le_antisymm; [ easy | ].
+   subst a a'.
+   apply Nat.div_le_mono; [ easy | lia ].
+  *exfalso.
+   rewrite <- Hs in H.
+   rewrite Nat.mul_comm in H; simpl in H; lia.
+ +apply Nat.mul_le_mono; [ easy | ].
+  subst a a'.
+  apply Nat.div_le_mono; [ easy | lia ].
+Qed.
+
 Theorem freal_eq_normalized_eq {r : radix} : ∀ x y,
   (x = y)%F ↔
   (∀ i, freal (freal_normalize x) i = freal (freal_normalize y) i).
@@ -1761,65 +1797,11 @@ intros i Hi.
        f_equal; f_equal.
      +++unfold fd2n; rewrite Hbef; [ easy | lia ].
      +++f_equal.
-Theorem Nat_div_succ_l_eq_div : ∀ p q, q ≠ 0 →
-  (S p) / q = p / q ↔ p mod q ≠ q - 1.
-Proof.
-intros * Hq.
-split; intros Hpq.
--specialize (Nat.div_mod p q Hq) as Hp.
- specialize (Nat.div_mod (S p) q Hq) as Hs.
- specialize (Nat.mod_upper_bound (S p) q Hq) as H.
- rewrite Hpq in Hs; lia.
--specialize (Nat.div_mod p q Hq) as Hp.
- specialize (Nat.div_mod (S p) q Hq) as Hs.
- remember (p / q) as a.
- remember (S p / q) as a'.
- rewrite <- Nat.add_1_r in Hs at 1.
- rewrite Hp in Hs at 1.
-assert (p mod q + 1 < q).
-specialize (Nat.mod_upper_bound p q Hq) as H; lia.
-
-...
-rewrite Nat.add_shuffle0 in Hs.
-apply Nat.add_sub_eq_l in Hs.
-rewrite <- Hs in Hpq.
-rewrite Nat.add_comm in Hpq.
-rewrite Nat.sub_add_distr in Hpq.
-rewrite <- Nat.add_sub_assoc in Hpq.
-rewrite <- Nat.mul_sub_distr_l in Hpq.
-  remember (S p / q - p / q) as a eqn:Ha.
-  symmetry in Ha.
-  destruct a.
-  apply Nat.sub_0_le in Ha.
-   rewrite Nat.mul_0_r, Nat.add_0_r in Hpq.
-   apply Nat.le_antisymm; [ easy | ].
-   apply Nat.div_le_mono; [ easy | lia ].
-
-
-exfalso; apply Hpq.
-f_equal.
-rewrite Nat.mul_comm; simpl.
-
- rewrite <- Nat.add_assoc in Hs.
- apply Nat.add_sub_eq_l in Hs.
- rewrite Nat.add_comm in Hs.
- rewrite <- Nat.add_sub_assoc in Hs.
- +rewrite <- Nat.mul_sub_distr_l in Hs.
-  remember (S p / q - p / q) as a eqn:Ha.
-  symmetry in Ha.
-  destruct a.
-  *apply Nat.sub_0_le in Ha.
-   rewrite Nat.mul_0_r, Nat.add_0_r in Hs.
-   apply Nat.le_antisymm; [ easy | ].
-   apply Nat.div_le_mono; [ easy | lia ].
-  *idtac.
-
-  *rewrite Nat.mul_comm in Hs; simpl in Hs.
-
-...
         rewrite Nat.add_1_r.
         apply Nat_div_succ_l_eq_div.
-
+      ***rewrite Heqs.
+         now apply Nat.pow_nonzero.
+      ***idtac.
 ...
 remember 0 as l eqn:Hl in |-*.
 specialize (Hxx l) as Hx.
