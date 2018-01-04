@@ -1661,7 +1661,7 @@ split; intros Hxy *.
 Qed.
 
 Definition test_immediate_999 {r : radix} x i :=
-  match LPO_fst (λ j, rad - 1 - fd2n x (i + j)) with
+  match LPO_fst (mark_9 (freal x) i) with
   | inl _ => 1
   | inr _ => 0
   end.
@@ -1705,21 +1705,19 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
    ++simpl.
      destruct (LPO_fst (test_seq i v)) as [Hiv| Hiv].
     **simpl.
-...
-
-    specialize (Hxx i) as Hxxi.
-    specialize (Hyy i) as Hyyi.
-    unfold test_immediate_999 in Hxxi, Hyyi.
-    destruct (LPO_fst (λ j, rad - 1 - fd2n (x + x') (i + j))) as [| Hxxj].
-   ++easy.
-   ++clear Hxxi.
-     destruct Hxxj as (kx & Hjkx & Hkx).
-     destruct (LPO_fst (λ j, rad - 1 - fd2n (y + y') (i + j))) as [| Hyyj].
-    **easy.
-    **clear Hyyi.
-      destruct Hyyj as (ky & Hjky & Hky).
-      destruct kx.
-    ---rewrite Nat.add_0_r in Hkx.
+      specialize (Hxx i) as Hxxi.
+      specialize (Hyy i) as Hyyi.
+      unfold test_immediate_999 in Hxxi, Hyyi.
+      destruct (LPO_fst (mark_9 (freal (x + x')) i)) as [| Hxxj].
+    ---easy.
+    ---clear Hxxi.
+       destruct Hxxj as (kx & Hjkx & Hkx).
+       destruct (LPO_fst (mark_9 (freal (y + y')) i)) as [| Hyyj].
+     ***easy.
+     ***clear Hyyi.
+        destruct Hyyj as (ky & Hjky & Hky).
+        destruct kx.
+     ----unfold mark_9 in Hkx.
 ...
 (**)
 right; left.
