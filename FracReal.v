@@ -595,20 +595,23 @@ Definition nB {r : radix} (rg := nat_ord_ring) n l u :=
   Σ (j = n, n + l), u j * rad ^ (n + l - j).
 
 Definition test_seq {r : radix} i u l :=
-  let n := rad * (i + 3) in
+  let n := rad * (i + 2) in
   let s := rad ^ (n - 1 - i) in
   if lt_dec (nA i n u mod s * rad ^ (l + 1) + nB n l u) (rad ^ (n + l - i))
-  then 0 else 1.
+  then 1 else 0.
 
 Definition numbers_to_digits {r : radix} u i :=
-  let n := rad * (i + 3) in
-  let s := rad ^ (n - 1 - i) in
-  let d := u i + nA i n u / s in
   match LPO_fst (test_seq i u) with
   | inl _ =>
-      mkdig _ (d mod rad) (Nat.mod_upper_bound d rad radix_ne_0)
-  | inr (exist _ l _) =>
+      let n := rad * (i + 2) in
+      let s := rad ^ (n - 1 - i) in
+      let d := u i + nA i n u / s in
       mkdig _ ((d + 1) mod rad) (Nat.mod_upper_bound (d + 1) rad radix_ne_0)
+  | inr (exist _ l _) =>
+      let n := rad * (i + l + 2) in
+      let s := rad ^ (n - 1 - i) in
+      let d := u i + nA i n u / s in
+      mkdig _ (d mod rad) (Nat.mod_upper_bound d rad radix_ne_0)
   end.
 
 Definition freal_add_to_seq {r : radix} (a b : FracReal) :=
@@ -1253,48 +1256,31 @@ destruct (LPO_fst (test_seq i u)) as [H| H].
 -specialize (H 0) as HH.
  unfold test_seq in HH; simpl in HH.
  rewrite Nat.mul_1_r, Nat.add_0_r in HH.
- remember (rad * (i + 3)) as n eqn:Hn.
+ remember (rad * (i + 2)) as n eqn:Hn.
  remember (rad ^ (n - 1 - i)) as s eqn:Hs.
  destruct (lt_dec (nA i n u mod s * rad + nB n 0 u) (rad ^ (n - i)))
-   as [Hlt| ]; [ clear HH | easy ].
- rewrite Nat.div_small.
- +apply digit_eq_eq; simpl.
-  rewrite Nat.add_0_r, Nat.mod_small; [ easy | ].
-  now apply Hur.
- +rewrite Hs.
-  apply nA_dig_seq_ub; [ easy | easy | ].
-  subst n.
-  destruct rad; [ | simpl; lia ].
-  now specialize (Hur 0).
--destruct H as (l & Hjk & Hts).
- unfold test_seq in Hts.
- remember (rad * (i + 3)) as n eqn:Hn.
- remember (rad ^ (n - 1 - i)) as s eqn:Hs.
- destruct
-   (lt_dec (nA i n u mod s * rad ^ (l + 1) + nB n l u)
-      (rad ^ (n + l - i)))
-   as [| Hge]; [ easy | clear Hts ].
+   as [| Hge]; [ easy | clear HH ].
  assert (Hin : i + 1 ≤ n - 1).
  +subst n; specialize radix_ge_2 as Hr.
   destruct rad as [| rd]; [ easy | simpl; lia ].
- +assert (H: ∀ i, i ≤ n - 1 → u i < rad) by (intros; apply Hur).
+ +assert (Hir : ∀ i, i ≤ n - 1 → u i < rad) by (intros; apply Hur).
   specialize radix_gt_0 as Hr.
-  specialize (nA_dig_seq_ub Hr u n H i Hin) as HnA; clear H.
+  specialize (nA_dig_seq_ub Hr u n Hir i Hin) as HnA; clear Hir.
   rewrite <- Hs in HnA.
   rewrite Nat.mod_small in Hge; [ | easy ].
   exfalso; apply Hge; clear Hge.
   unfold nA, nB.
   rewrite summation_mul_distr_r; simpl.
-  rewrite summation_eq_compat with (h := λ j, u j * rad ^ (n + l - j)).
+  rewrite summation_eq_compat with (h := λ j, u j * rad ^ (n + 0 - j)).
   *set (rd := nat_ord_ring_def).
    set (rg := nat_ord_ring).
    replace (summation n) with (summation (S (n - 1))) by (f_equal; lia).
-   rewrite <- summation_ub_add with (k₂ := l + 1); [ | lia | lia ].
+   rewrite <- summation_ub_add with (k₂ := 1); [ | lia | lia ].
    rewrite summation_shift; [ | lia ].
    apply le_lt_trans with
-     (m :=
-      Σ (j = 0, n + l - (i + 1)), (rad - 1) * rad ^ (n + l - (i + 1 + j))).
-  --apply (@summation_le_compat rd).
+     (m := Σ (j = 0, n - (i + 1)), (rad - 1) * rad ^ (n - (i + 1 + j))).
+  --rewrite Nat.add_0_r.
+    apply (@summation_le_compat rd).
     intros j Hj; simpl.
     unfold NPeano.Nat.le.
     apply Nat.mul_le_mono_nonneg_r; [ lia | ].
@@ -1306,11 +1292,28 @@ destruct (LPO_fst (test_seq i u)) as [H| H].
     rewrite summation_eq_compat with (h := λ j, rad ^ j).
    ++apply Nat.add_lt_mono_l with (p := 1).
      rewrite <- power_summation; [ | easy ].
-     replace (S (n + l - (i + 1))) with (n + l - i); lia.
+     replace (S (n - (i + 1))) with (n - i); lia.
    ++intros j Hj; f_equal; lia.
   *intros j Hj.
    rewrite <- Nat.mul_assoc; f_equal.
-   rewrite <- Nat.pow_add_r; f_equal; lia.
+   remember (rad ^ (n - 1 - j)) as a.
+   replace (a * rad) with (a * rad ^ 1) by now rewrite Nat.pow_1_r.
+   subst a; rewrite <- Nat.pow_add_r; f_equal; lia.
+-destruct H as (l & Hjk & Hts).
+ unfold test_seq in Hts.
+ remember (rad * (i + 2)) as n eqn:Hn.
+ remember (rad ^ (n - 1 - i)) as s eqn:Hs.
+ destruct
+   (lt_dec (nA i n u mod s * rad ^ (l + 1) + nB n l u)
+      (rad ^ (n + l - i)))
+   as [Hlt| ]; [ clear Hts | easy ].
+ apply digit_eq_eq; simpl.
+ rewrite Nat.div_small.
+ +rewrite Nat.mod_small; [ lia | ].
+  rewrite Nat.add_0_r; apply Hur.
+ +apply nA_dig_seq_ub; [ easy | easy | ].
+  destruct rad; [ | simpl; lia ].
+  now specialize (Hur 0).
 Qed.
 
 Theorem dig_numbers_to_digits_id {r : radix} : ∀ u i,
@@ -1590,7 +1593,7 @@ destruct (LPO_fst (test_seq i f)) as [Hf| Hf].
    exfalso; apply Hk.
    erewrite test_seq_eq_compat; [ | easy ]; easy.
   *subst l; apply digit_eq_eq; simpl.
-   f_equal; f_equal; f_equal; f_equal.
+   f_equal; f_equal; f_equal.
    now apply nA_eq_compat.
   *specialize (Hjk _ Hkl).
    apply digit_eq_eq; simpl.
@@ -1663,9 +1666,10 @@ intros i Hi.
     remember (freal_add_series x x') as u.
     remember (freal_add_series y y') as v.
     move v before u; move Heqv before Hequ.
-    remember (rad * (i + 3)) as n.
+    remember (rad * (i + 2)) as n.
     remember (rad ^ (n - 1 - i)) as s.
     move s before n.
+...
     rewrite Hequ.
     unfold freal_add_series at 1.
     unfold sequence_add.
