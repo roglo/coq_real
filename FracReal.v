@@ -1682,6 +1682,8 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
   apply digit_eq_eq in Hxy'.
   now rewrite Hxy, Hxy'.
  +destruct Hxy' as (k & Hbef & Hwhi & Hxaft & Hyaft).
+(* find a test telling if x+x' ends with 999... and at which index;
+   same for y+y' *)
 ...
 (**)
 right; left.
