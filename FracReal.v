@@ -1761,6 +1761,21 @@ intros i Hi.
        f_equal; f_equal.
      +++unfold fd2n; rewrite Hbef; [ easy | lia ].
      +++f_equal.
+Theorem Nat_div_succ_l_eq_div : ∀ p q, q ≠ 0 →
+  (S p) / q = p / q ↔ p mod q ≠ q - 1.
+Proof.
+intros * Hq.
+split; intros Hpq.
+-specialize (Nat.div_mod p q Hq) as Hp.
+ specialize (Nat.div_mod (S p) q Hq) as Hs.
+ specialize (Nat.mod_upper_bound (S p) q Hq) as H.
+ rewrite Hpq in Hs; lia.
+-specialize (Nat.div_mod p q Hq) as Hp.
+ specialize (Nat.div_mod (S p) q Hq) as Hs.
+
+...
+        rewrite Nat.add_1_r.
+        apply Nat_div_succ_l_eq_div.
 
 ...
 remember 0 as l eqn:Hl in |-*.
