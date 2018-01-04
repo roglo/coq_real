@@ -1705,6 +1705,7 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
    ++simpl.
      destruct (LPO_fst (test_seq i v)) as [Hiv| Hiv].
     **simpl.
+...
       specialize (Hxx i) as Hxxi.
       specialize (Hyy i) as Hyyi.
       unfold test_immediate_999 in Hxxi, Hyyi.
