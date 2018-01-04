@@ -1770,9 +1770,7 @@ split; intros Hpq.
  specialize (Nat.div_mod (S p) q Hq) as Hs.
  specialize (Nat.mod_upper_bound (S p) q Hq) as H.
  rewrite Hpq in Hs; lia.
--specialize (Nat.div_mod p q Hq) as Hp.
- specialize (Nat.div_mod (S p) q Hq) as Hs.
-
+-idtac.
 ...
         rewrite Nat.add_1_r.
         apply Nat_div_succ_l_eq_div.
