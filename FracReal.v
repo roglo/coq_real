@@ -1696,6 +1696,17 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
   *destruct (LPO_fst (test_immediate_999 (y + y'))) as [Hyy| Hyy].
   --left.
     intros i.
+    unfold freal_add, freal_add_to_seq; simpl.
+    unfold numbers_to_digits.
+    remember (freal_add_series x x') as u eqn:Hu.
+    remember (freal_add_series y y') as v eqn:Hv.
+    apply digit_eq_eq.
+    destruct (LPO_fst (test_seq i u)) as [Hiu| Hiu].
+   ++simpl.
+     destruct (LPO_fst (test_seq i v)) as [Hiv| Hiv].
+    **simpl.
+...
+
     specialize (Hxx i) as Hxxi.
     specialize (Hyy i) as Hyyi.
     unfold test_immediate_999 in Hxxi, Hyyi.
