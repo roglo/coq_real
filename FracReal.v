@@ -112,7 +112,8 @@ Delimit Scope freal_scope with F.
 Record FracReal {r : radix} := { freal : nat → digit }.
 Arguments freal r _%F.
 
-Definition fd2n {r : radix} u (i : nat) := dig (freal u i).
+Definition fd2n {r : radix} x (i : nat) := dig (freal x i).
+Arguments fd2n _ x%F i%nat.
 
 Definition mark_9 {r : radix} u i j := rad - 1 - d2n u (i + j + 1).
 
@@ -1659,6 +1660,13 @@ split; intros Hxy *.
  now apply digit_eq_eq in Hxy.
 Qed.
 
+Definition test_immediate_999 {r : radix} x i :=
+  match LPO_fst (λ j, rad - 1 - fd2n x (i + j)) with
+  | inl _ => 1
+  | inr _ => 0
+  end.
+Arguments test_immediate_999 _ x%F i%nat.
+
 Add Parametric Morphism {r : radix} : freal_add
   with signature freal_eq_prop ==> freal_eq_prop ==> freal_eq_prop
   as freal_add_morph.
@@ -1684,6 +1692,23 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
  +destruct Hxy' as (k & Hbef & Hwhi & Hxaft & Hyaft).
 (* find a test telling if x+x' ends with 999... and at which index;
    same for y+y' *)
+  destruct (LPO_fst (test_immediate_999 (x + x'))) as [Hxx| Hxx].
+  *destruct (LPO_fst (test_immediate_999 (y + y'))) as [Hyy| Hyy].
+  --left.
+    intros i.
+    specialize (Hxx i) as Hxxi.
+    specialize (Hyy i) as Hyyi.
+    unfold test_immediate_999 in Hxxi, Hyyi.
+    destruct (LPO_fst (λ j, rad - 1 - fd2n (x + x') (i + j))) as [| Hxxj].
+   ++easy.
+   ++clear Hxxi.
+     destruct Hxxj as (kx & Hjkx & Hkx).
+     destruct (LPO_fst (λ j, rad - 1 - fd2n (y + y') (i + j))) as [| Hyyj].
+    **easy.
+    **clear Hyyi.
+      destruct Hyyj as (ky & Hjky & Hky).
+      destruct kx.
+    ---rewrite Nat.add_0_r in Hkx.
 ...
 (**)
 right; left.
