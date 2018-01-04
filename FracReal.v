@@ -1802,7 +1802,6 @@ intros i Hi.
       ***rewrite Heqs.
          now apply Nat.pow_nonzero.
       ***idtac.
-...
 (*
 remember 0 as l eqn:Hl in |-*.
 specialize (Hxx l) as Hx.
@@ -1816,6 +1815,13 @@ rewrite Nat.pow_1_r in Hx.
 rewrite <- Heqn, <- Heqs in Hx.
 destruct (lt_dec (nA i n u mod s * rad + nB n 0 u) (rad ^ (n - i)))
  as [| Hge ]; [ easy | clear Hx ].
+apply Nat.nlt_ge in Hge.
+unfold nB in Hge.
+rewrite Nat.add_0_r in Hge.
+rewrite summation_only_one in Hge.
+rewrite Nat.sub_diag, Nat.pow_0_r, Nat.mul_1_r in Hge.
+...
+
 
 destruct (lt_dec (nA i n u mod s * rad ^ (l + 1) + nB n l u) (rad ^ (n +l - i)))
  as [Hlt| ]; [ clear Hx | easy ].
