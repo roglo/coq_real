@@ -1685,6 +1685,7 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
 (**)
 right; left.
 unfold freal_norm_not_norm_eq.
+unfold freal_add, freal_add_to_seq; simpl.
 ...
 
 exists k.
