@@ -1682,16 +1682,18 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
   apply digit_eq_eq in Hxy'.
   now rewrite Hxy, Hxy'.
  +destruct Hxy' as (k & Hbef & Hwhi & Hxaft & Hyaft).
-(*
+(**)
 right; left.
 unfold freal_norm_not_norm_eq.
+...
+
 exists k.
 split.
 intros i Hi.
-*)
+(*
   left.
   intros i.
-(**)
+*)
   unfold freal_add, freal_add_to_seq; simpl.
   unfold numbers_to_digits.
   apply digit_eq_eq.
@@ -1802,6 +1804,7 @@ intros i Hi.
       ***rewrite Heqs.
          now apply Nat.pow_nonzero.
       ***idtac.
+...
 (*
 remember 0 as l eqn:Hl in |-*.
 specialize (Hxx l) as Hx.
