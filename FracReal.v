@@ -1669,7 +1669,8 @@ intros i Hi.
     remember (rad * (i + 2)) as n.
     remember (rad ^ (n - 1 - i)) as s.
     move s before n.
-...
+    setoid_rewrite Nat.add_mod; [ | easy | easy ].
+    f_equal; f_equal.
     rewrite Hequ.
     unfold freal_add_series at 1.
     unfold sequence_add.
@@ -1757,6 +1758,7 @@ intros i Hi.
          rewrite Hxaft; [ easy | lia ].
        }
        rewrite H, Nat.add_assoc.
+...
 remember 0 as l eqn:Hl in |-*.
 specialize (Hxx l) as Hx.
 unfold test_seq in Hx.
