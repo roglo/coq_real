@@ -1772,6 +1772,46 @@ split; intros Hpq.
  rewrite Hpq in Hs; lia.
 -specialize (Nat.div_mod p q Hq) as Hp.
  specialize (Nat.div_mod (S p) q Hq) as Hs.
+ remember (p / q) as a.
+ remember (S p / q) as a'.
+ rewrite <- Nat.add_1_r in Hs at 1.
+ rewrite Hp in Hs at 1.
+...
+rewrite Nat.add_shuffle0 in Hs.
+apply Nat.add_sub_eq_l in Hs.
+rewrite <- Hs in Hpq.
+rewrite Nat.add_comm in Hpq.
+rewrite Nat.sub_add_distr in Hpq.
+rewrite <- Nat.add_sub_assoc in Hpq.
+rewrite <- Nat.mul_sub_distr_l in Hpq.
+  remember (S p / q - p / q) as a eqn:Ha.
+  symmetry in Ha.
+  destruct a.
+  apply Nat.sub_0_le in Ha.
+   rewrite Nat.mul_0_r, Nat.add_0_r in Hpq.
+   apply Nat.le_antisymm; [ easy | ].
+   apply Nat.div_le_mono; [ easy | lia ].
+
+
+exfalso; apply Hpq.
+f_equal.
+rewrite Nat.mul_comm; simpl.
+
+ rewrite <- Nat.add_assoc in Hs.
+ apply Nat.add_sub_eq_l in Hs.
+ rewrite Nat.add_comm in Hs.
+ rewrite <- Nat.add_sub_assoc in Hs.
+ +rewrite <- Nat.mul_sub_distr_l in Hs.
+  remember (S p / q - p / q) as a eqn:Ha.
+  symmetry in Ha.
+  destruct a.
+  *apply Nat.sub_0_le in Ha.
+   rewrite Nat.mul_0_r, Nat.add_0_r in Hs.
+   apply Nat.le_antisymm; [ easy | ].
+   apply Nat.div_le_mono; [ easy | lia ].
+  *idtac.
+
+  *rewrite Nat.mul_comm in Hs; simpl in Hs.
 
 ...
         rewrite Nat.add_1_r.
