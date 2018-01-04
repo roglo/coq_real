@@ -1682,6 +1682,7 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
   apply digit_eq_eq in Hxy'.
   now rewrite Hxy, Hxy'.
  +destruct Hxy' as (k & Hbef & Hwhi & Hxaft & Hyaft).
+...
 (**)
 right; left.
 unfold freal_norm_not_norm_eq.
