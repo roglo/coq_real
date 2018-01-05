@@ -1698,8 +1698,8 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
     intros i.
     unfold freal_add, freal_add_to_seq; simpl.
     unfold numbers_to_digits.
-    remember (freal_add_series x x') as u eqn:Hu.
-    remember (freal_add_series y y') as v eqn:Hv.
+    remember (freal_add_series x x') as u.
+    remember (freal_add_series y y') as v.
     apply digit_eq_eq.
     destruct (LPO_fst (test_seq i u)) as [Hiu| Hiu].
    ++simpl.
