@@ -1706,27 +1706,27 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
     remember (freal_add_series y y') as v.
     move v before u.
     apply digit_eq_eq.
+    unfold freal_add, freal_add_to_seq in Hxx, Hyy.
+    rewrite <- Hequ in Hxx; rewrite <- Heqv in Hyy.
+    simpl in Hxx, Hyy.
+    move v before u.
+    remember (rad * (i + 2)) as n.
+    remember (rad ^ (n - 1 - i)) as s.
+    move s before n.
     destruct (LPO_fst (all_A_plus_B_ge_1 i u)) as [Hiu| Hiu].
    ++simpl.
+     rewrite Hequ.
+     unfold freal_add_series at 1.
+     unfold sequence_add.
+     rewrite <- Hequ.
      destruct (LPO_fst (all_A_plus_B_ge_1 i v)) as [Hiv| Hiv].
     **simpl.
-      unfold freal_add, freal_add_to_seq in Hxx, Hyy.
-      rewrite <- Hequ in Hxx; rewrite <- Heqv in Hyy.
-      simpl in Hxx, Hyy.
-      move v before u.
-      remember (rad * (i + 2)) as n.
-      remember (rad ^ (n - 1 - i)) as s.
-      move s before n.
-      setoid_rewrite Nat.add_mod; [ | easy | easy ].
-      f_equal; f_equal.
-      rewrite Hequ.
-      unfold freal_add_series at 1.
-      unfold sequence_add.
-      rewrite <- Hequ.
       rewrite Heqv.
       unfold freal_add_series at 1.
       unfold sequence_add.
       rewrite <- Heqv.
+      setoid_rewrite Nat.add_mod; [ | easy | easy ].
+      f_equal; f_equal.
       unfold fd2n at 1 3.
       rewrite <- Hxy.
       do 2 rewrite <- Nat.add_assoc.
@@ -1802,13 +1802,26 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
            simpl; lia.
       ----assert (rad ^ (n - 1 - i) ≠ 0) by now apply Nat.pow_nonzero.
           destruct (rad ^ (n - 1 - i)); [ easy | simpl; lia ].
-    **idtac.
-...
-         rewrite Nat.add_1_r.
-         apply Nat_div_succ_l_eq_div.
-      ----rewrite Heqs.
-          now apply Nat.pow_nonzero.
-      ----idtac.
+    **destruct Hiv as (ky & Hkyj & Hky); simpl.
+      rewrite Heqv.
+      unfold freal_add_series at 1.
+      unfold sequence_add.
+      rewrite <- Heqv.
+      unfold fd2n at 1 3.
+      rewrite <- Hxy.
+      do 4 rewrite <- Nat.add_assoc.
+      setoid_rewrite Nat.add_mod; [ | easy | easy ].
+      f_equal; f_equal.
+      remember (fd2n x' i mod rad) as a.
+      rewrite Nat.mod_small in Heqa; [ | apply digit_lt_radix ].
+      subst a.
+      remember (fd2n y' i mod rad) as a.
+      rewrite Nat.mod_small in Heqa; [ | apply digit_lt_radix ].
+      subst a.
+      do 2 rewrite Nat.add_assoc.
+      remember (rad * (i + ky + 2)) as ny.
+      remember (rad ^ (ny - 1 - i)) as sy.
+      move sy before ny.
 ...
 (*
 remember 0 as l eqn:Hl in |-*.
