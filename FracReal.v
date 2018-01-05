@@ -1667,12 +1667,11 @@ split; intros Hxy *.
  now apply digit_eq_eq in Hxy.
 Qed.
 
-Definition does_not_end_with_999 {r : radix} x i :=
-  match LPO_fst (followed_by_999 (freal x) i) with
+Definition does_not_end_with_999 {r : radix} u i :=
+  match LPO_fst (followed_by_999 u i) with
   | inl _ => 1
   | inr _ => 0
   end.
-Arguments does_not_end_with_999 _ x%F i%nat.
 
 Add Parametric Morphism {r : radix} : freal_add
   with signature freal_eq_prop ==> freal_eq_prop ==> freal_eq_prop
@@ -1699,19 +1698,25 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
  +destruct Hxy' as (k & Hbef & Hwhi & Hxaft & Hyaft).
 (* find a test telling if x+x' ends with 999... and at which index;
    same for y+y' *)
-  destruct (LPO_fst (does_not_end_with_999 (x + x'))) as [Hxx| Hxx].
-  *destruct (LPO_fst (does_not_end_with_999 (y + y'))) as [Hyy| Hyy].
+  destruct (LPO_fst (does_not_end_with_999 (freal (x + x')))) as [Hxx| Hxx].
+  *destruct (LPO_fst (does_not_end_with_999 (freal (y + y')))) as [Hyy| Hyy].
   --left.
     intros i.
     unfold freal_add, freal_add_to_seq; simpl.
     unfold numbers_to_digits.
     remember (freal_add_series x x') as u.
     remember (freal_add_series y y') as v.
+    move v before u.
     apply digit_eq_eq.
     destruct (LPO_fst (all_A_plus_B_ge_1 i u)) as [Hiu| Hiu].
    ++simpl.
      destruct (LPO_fst (all_A_plus_B_ge_1 i v)) as [Hiv| Hiv].
     **simpl.
+      unfold freal_add, freal_add_to_seq in Hxx, Hyy.
+      rewrite <- Hequ in Hxx; rewrite <- Heqv in Hyy.
+      simpl in Hxx, Hyy.
+      move v before u.
+
 ...
       specialize (Hxx i) as Hxxi.
       specialize (Hyy i) as Hyyi.
