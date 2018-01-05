@@ -1847,37 +1847,36 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
        unfold fd2n.
        rewrite Hbef; [ easy | lia ].
     +++apply Nat.nlt_ge in Hkky.
-...
-      rewrite Heqv.
-      unfold freal_add_series at 1.
-      unfold sequence_add.
-      rewrite <- Heqv.
-      unfold fd2n at 1 3.
-      rewrite <- Hxy.
-      do 4 rewrite <- Nat.add_assoc.
-      setoid_rewrite Nat.add_mod; [ | easy | easy ].
-      f_equal; f_equal.
-      assert (Hik : i < k - 1). {
-        specialize radix_ge_2 as Hr.
-        apply Nat.le_lt_trans with (m := n - 1).
-        subst n.
-        destruct rad; [ easy | simpl; lia ].
-        destruct n.
-        -symmetry in Heqn.
-         apply Nat.eq_mul_0 in Heqn.
-         destruct Heqn as [Heqn| Heqn]; [ lia | simpl in Heqn; lia ].
-        -destruct k; [ easy | simpl; lia ].
-      }
-      unfold fd2n.
-      rewrite Hbef; [ | easy ].
-      setoid_rewrite Nat.add_mod; [ | easy | easy ].
-      f_equal; f_equal.
-      rewrite Nat.add_assoc.
-      remember (rad * (i + ky + 2)) as ny.
-      remember (rad ^ (ny - 1 - i)) as sy.
-      move Hik before Hnk; move ky before k.
-      move ny before n; move sy before s.
-      move Heqny before Heqs; move Heqsy before Heqny.
+       rewrite Heqv.
+       unfold freal_add_series at 1.
+       unfold sequence_add.
+       rewrite <- Heqv.
+       unfold fd2n at 1 3.
+       rewrite <- Hxy.
+       do 4 rewrite <- Nat.add_assoc.
+       setoid_rewrite Nat.add_mod; [ | easy | easy ].
+       f_equal; f_equal.
+       assert (Hik : i < k - 1). {
+         specialize radix_ge_2 as Hr.
+         apply Nat.le_lt_trans with (m := n - 1).
+         subst n.
+         destruct rad; [ easy | simpl; lia ].
+         destruct n.
+         -symmetry in Heqn.
+          apply Nat.eq_mul_0 in Heqn.
+          destruct Heqn as [Heqn| Heqn]; [ lia | simpl in Heqn; lia ].
+         -destruct k; [ easy | simpl; lia ].
+       }
+       unfold fd2n.
+       rewrite Hbef; [ | easy ].
+       setoid_rewrite Nat.add_mod; [ | easy | easy ].
+       f_equal; f_equal.
+       rewrite Nat.add_assoc.
+       remember (rad * (i + ky + 2)) as ny.
+       remember (rad ^ (ny - 1 - i)) as sy.
+       move Hik before Hnk; move ky before k.
+       move ny before n; move sy before s.
+       move Heqny before Heqs; move Heqsy before Heqny.
 ...
 (*
 remember 0 as l eqn:Hl in |-*.
