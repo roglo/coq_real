@@ -89,7 +89,7 @@ Hint Resolve digit_lt_radix.
 
 Definition digit_0 {r : radix} := mkdig _ 0 radix_gt_0.
 
-(* the proof that x≤y is unique; this is proved in Coq library theorem
+(* the proof that x≤y is unique; this is proved in Coq library, theorem
    "le_unique" *)
 Theorem digit_eq_eq {r : radix} : ∀ a b, dig a = dig b ↔ a = b.
 Proof.
@@ -115,10 +115,12 @@ Arguments freal r _%F.
 Definition fd2n {r : radix} x (i : nat) := dig (freal x i).
 Arguments fd2n _ x%F i%nat.
 
-Definition mark_9 {r : radix} u i j := rad - 1 - d2n u (i + j + 1).
+(* note: in variable names, "999" means "infinity of 9" *)
+
+Definition followed_by_999 {r : radix} u i j := rad - 1 - d2n u (i + j + 1).
 
 Definition digit_sequence_normalize {r : radix} (u : nat → digit) i :=
-  match LPO_fst (mark_9 u i) with
+  match LPO_fst (followed_by_999 u i) with
   | inl _ =>
      match lt_dec (S (d2n u i)) rad with
      | left P => mkdig _ (S (d2n u i)) P
@@ -161,11 +163,12 @@ Notation "a = b" := (freal_eq a b = true) : freal_scope.
 Notation "a ≠ b" := (freal_eq a b = false) : freal_scope.
 Notation "a < b" := (freal_lt a b = true) : freal_scope.
 
-Theorem mark_9_all_9 {r : radix} : ∀ u i,
-  (∀ j, mark_9 u i j = 0) → (∀ k, d2n u (i + k + 1) = rad - 1).
+Theorem followed_by_999_all_9 {r : radix} : ∀ u i,
+  (∀ j, followed_by_999 u i j = 0)
+  → (∀ k, d2n u (i + k + 1) = rad - 1).
 Proof.
 intros * Hm9 *.
-specialize (Hm9 k); unfold mark_9 in Hm9.
+specialize (Hm9 k); unfold followed_by_999 in Hm9.
 apply Nat.sub_0_le in Hm9.
 specialize (digit_lt_radix (u (i + k + 1))) as H.
 unfold d2n in Hm9 |-*.
@@ -194,7 +197,7 @@ split; intros Hxy.
    specialize (Hxy k).
    unfold freal_normalize, digit_sequence_normalize in Hxy.
    simpl in Hxy.
-   destruct (LPO_fst (mark_9 (freal x) k)) as [Hxk| Hxk].
+   destruct (LPO_fst (followed_by_999 (freal x) k)) as [Hxk| Hxk].
   --specialize (Hxsy k).
     unfold eq_freal_seq in Hxsy.
     destruct (Nat.eq_dec (fd2n x k) (fd2n y k)) as [H| ]; [ | easy ].
@@ -209,11 +212,12 @@ split; intros Hxy.
   --destruct Hxk as (i & Hij & Hi).
     exists (k + i + 1).
     split; [ lia | ].
-    unfold mark_9 in Hi; unfold d2n in Hi.
+    unfold followed_by_999 in Hi; unfold d2n in Hi.
     unfold fd2n; lia.
   *intros k; specialize (Hxsy k).
    unfold eq_freal_seq in Hxsy.
-   destruct (Nat.eq_dec (fd2n x k) (fd2n y k)) as [H| ]; [ clear Hxsy | easy ].
+   destruct (Nat.eq_dec (fd2n x k) (fd2n y k)) as [H| ];
+     [ clear Hxsy | easy ].
    unfold fd2n in H.
    now apply digit_eq_eq.
  +right.
@@ -226,7 +230,7 @@ split; intros Hxy.
     clear Hxyk; rename H into Hxy0; unfold fd2n in Hxy0.
     specialize (Hxy 0) as Hxy1.
    **unfold freal_normalize, digit_sequence_normalize in Hxy1; simpl in Hxy1.
-     destruct (LPO_fst (mark_9 (freal x) 0)) as [Hx0| Hx0].
+     destruct (LPO_fst (followed_by_999 (freal x) 0)) as [Hx0| Hx0].
    ---destruct (lt_dec (S (d2n (freal x) 0)) rad) as [Hsx0| Hsx0].
     +++exists 1.
        apply digit_eq_eq in Hxy1; simpl in Hxy1.
@@ -235,7 +239,7 @@ split; intros Hxy.
        assert (Hxk : ∀ i, 1 ≤ i → fd2n x i = rad - 1).
      ***intros i Hki; specialize (Hx0 (i - 1)) as H.
         apply Nat.sub_0_le in H.
-        unfold mark_9, d2n in H; unfold fd2n.
+        unfold followed_by_999, d2n in H; unfold fd2n.
         specialize (digit_lt_radix (freal x i)).
         replace (0 + (i - 1) + 1) with i in H; lia.
      ***split; [ | easy ].
@@ -244,15 +248,15 @@ split; intros Hxy.
         specialize (Hxy (S i)) as Hxy2.
         unfold freal_normalize, digit_sequence_normalize in Hxy2.
         simpl in Hxy2.
-        destruct (LPO_fst (mark_9 (freal x) (S i))) as [Hx1| Hx1].
+        destruct (LPO_fst (followed_by_999 (freal x) (S i))) as [Hx1| Hx1].
      ----destruct (lt_dec (S (d2n (freal x) (S i))) rad) as [Hsx1| Hsx1].
       ++++specialize (Hx0 i).
-          unfold mark_9, d2n in Hx0; unfold d2n in Hsx1.
+          unfold followed_by_999, d2n in Hx0; unfold d2n in Hsx1.
           rewrite Nat.add_0_l, Nat.add_1_r in Hx0.
           clear Hxy2; lia.
       ++++now apply digit_eq_eq in Hxy2; simpl in Hxy2.
      ----destruct Hx1 as (j & Hjj & Hj).
-         unfold mark_9 in Hj; unfold d2n in Hj.
+         unfold followed_by_999 in Hj; unfold d2n in Hj.
          assert (Hksi : 1 ≤ S i + j + 1) by lia.
          specialize (Hxk _ Hksi).
          unfold fd2n in Hxk; lia.
@@ -267,15 +271,15 @@ split; intros Hxy.
      ----specialize (Hxy i).
          unfold freal_normalize, digit_sequence_normalize in Hxy.
          simpl in Hxy.
-         destruct (LPO_fst (mark_9 (freal x) i)) as [Hx1| Hx1].
+         destruct (LPO_fst (followed_by_999 (freal x) i)) as [Hx1| Hx1].
       ++++specialize (Hx1 0).
-          unfold mark_9, d2n in Hx1.
+          unfold followed_by_999, d2n in Hx1.
           rewrite Nat.add_0_r, Nat.add_1_r in Hx1.
           unfold fd2n.
           specialize (digit_lt_radix (freal x (S i))) as H; lia.
       ++++destruct Hx1 as (j & Hjj & Hj).
           specialize (Hx0 (i + j)).
-          now unfold mark_9, d2n in Hj, Hx0.
+          now unfold followed_by_999, d2n in Hj, Hx0.
      ***split; [ | easy ].
         intros i Hi.
         destruct i.
@@ -283,16 +287,16 @@ split; intros Hxy.
      ----specialize (Hxy (S i)).
          unfold freal_normalize, digit_sequence_normalize in Hxy.
          simpl in Hxy.
-         destruct (LPO_fst (mark_9 (freal x) (S i))) as [Hx1| Hx1].
+         destruct (LPO_fst (followed_by_999 (freal x) (S i))) as [Hx1| Hx1].
       ++++destruct (lt_dec (S (d2n (freal x) (S i))) rad) as [Hsx1| Hsx1].
        ****specialize (Hx0 i).
-           unfold mark_9, d2n in Hx0; unfold d2n in Hsx1.
+           unfold followed_by_999, d2n in Hx0; unfold d2n in Hsx1.
            clear Hxy.
            rewrite Nat.add_0_l, Nat.add_1_r in Hx0; lia.
        ****now apply digit_eq_eq in Hxy.
       ++++destruct Hx1 as (j & Hjj & Hj).
           specialize (Hx0 (S (i + j))).
-          now unfold mark_9, d2n in Hj, Hx0.
+          now unfold followed_by_999, d2n in Hj, Hx0.
    ---now rewrite Hxy1 in Hxy0.
   --exists (S k).
     assert (Hkxy : ∀ i, i < k → freal y i = freal x i).
@@ -307,11 +311,11 @@ split; intros Hxy.
      apply digit_eq_eq in Hk.
      unfold freal_normalize in Hk; simpl in Hk.
      unfold digit_sequence_normalize in Hk.
-     destruct (LPO_fst (mark_9 (freal x) k)) as [H| Hxk].
+     destruct (LPO_fst (followed_by_999 (freal x) k)) as [H| Hxk].
     **assert (Hxk : ∀ i, S k ≤ i → fd2n x i = rad - 1).
     ---intros i Hki; specialize (H (i - k - 1)).
        apply Nat.sub_0_le in H.
-       unfold mark_9, d2n in H; unfold fd2n.
+       unfold followed_by_999, d2n in H; unfold fd2n.
        specialize (digit_lt_radix (freal x i)).
        replace (k + (i - k - 1) + 1) with i in H; lia.
     ---rewrite <- and_assoc, and_comm.
@@ -325,13 +329,13 @@ split; intros Hxy.
         specialize (Hxy (S i)) as Hxy1.
         unfold freal_normalize, digit_sequence_normalize in Hxy1.
         simpl in Hxy1.
-        destruct (LPO_fst (mark_9 (freal x) (S i))) as [Hx1| Hx1].
+        destruct (LPO_fst (followed_by_999 (freal x) (S i))) as [Hx1| Hx1].
       ***destruct (lt_dec (S (d2n (freal x) (S i))) rad) as [Hsx1| Hsx1].
       ----specialize (Hxk (S i) Hki); clear Hxy1.
           unfold fd2n in Hxk; unfold d2n in Hsx1; lia.
       ----now apply digit_eq_eq in Hxy1.
       ***destruct Hx1 as (j & Hjj & Hj).
-         unfold mark_9 in Hj.
+         unfold followed_by_999 in Hj.
          assert (Hksi : k < S (S (i + j))) by lia.
          specialize (Hxk (S (S (i + j))) Hksi).
          unfold fd2n in Hxk; unfold d2n in Hj.
@@ -346,7 +350,7 @@ split; intros Hxy.
         specialize (Hxy k) as Hk'.
         unfold freal_normalize, digit_sequence_normalize in Hk'.
         simpl in Hk'.
-        destruct (LPO_fst (mark_9 (freal x) k)) as [Hxk'| Hxk'].
+        destruct (LPO_fst (followed_by_999 (freal x) k)) as [Hxk'| Hxk'].
       ***specialize (Hjk _ (Nat.lt_succ_diag_r k)).
          unfold eq_freal_seq in Hjk.
          destruct (Nat.eq_dec (fd2n x k) (fd2n y k)) as [H| H]; [ | easy ].
@@ -356,7 +360,7 @@ split; intros Hxy.
       ----simpl in Hk'; unfold d2n in Hsxk'.
           specialize radix_ge_2 as Hr; lia.
       ***destruct Hxk' as (i & Hji & Hi).
-         unfold mark_9, d2n in Hi.
+         unfold followed_by_999, d2n in Hi.
          destruct i.
       ----rewrite Nat.add_0_r, Nat.add_1_r in Hi; lia.
       ----assert (H : S (S k) ≤ (k + S i + 1)) by lia.
@@ -369,15 +373,15 @@ split; intros Hxy.
  destruct Hxy as [Hxy | Hxy].
  +destruct Hxy as (Hki, Hxy).
   unfold freal_normalize, digit_sequence_normalize; simpl.
-  destruct (LPO_fst (mark_9 (freal x) i)) as [Hxi| Hxi].
+  destruct (LPO_fst (followed_by_999 (freal x) i)) as [Hxi| Hxi].
   *specialize (Hki (S i)) as (j & H1j & Hj); unfold fd2n in Hj.
-   specialize (Hxi (j - i - 1)); unfold mark_9, d2n in Hxi.
+   specialize (Hxi (j - i - 1)); unfold followed_by_999, d2n in Hxi.
    replace (i + (j - i - 1) + 1) with j in Hxi; lia.
   *apply Hxy.
  +unfold freal_norm_not_norm_eq in Hxy.
   destruct Hxy as (k & Hik & Hxy & Hx & Hy).
   unfold freal_normalize, digit_sequence_normalize; simpl.
-  destruct (LPO_fst (mark_9 (freal x) i)) as [Hxi| Hxi].
+  destruct (LPO_fst (followed_by_999 (freal x) i)) as [Hxi| Hxi].
   *destruct (lt_dec (S (d2n (freal x) i)) rad) as [Hsxi| Hsxi].
   --apply digit_eq_eq; simpl.
     destruct (le_dec k i) as [Hki| Hki].
@@ -387,7 +391,7 @@ split; intros Hxy.
      destruct Hxy as [Hxy| Hxy]; [ lia | ].
      destruct (Nat.eq_dec i (k - 1)) as [Hik1| Hik1]; [ now subst i | ].
      specialize (Hxi (k - i - 2)).
-     unfold mark_9 in Hxi.
+     unfold followed_by_999 in Hxi.
      replace (i + (k - i - 2) + 1) with (k - 1) in Hxi by lia.
      unfold fd2n in Hxy; unfold d2n in Hxi.
      specialize (digit_lt_radix (freal y (k - 1))) as H; lia.
@@ -399,7 +403,7 @@ split; intros Hxy.
      simpl in Hik, Hxy; rewrite Nat.sub_0_r in Hik, Hxy.
      destruct (lt_eq_lt_dec i k) as [[Hki| Hki]| Hki].
    ---specialize (Hxi (k - i - 1)).
-      unfold mark_9, d2n in Hxi.
+      unfold followed_by_999, d2n in Hxi.
       replace (i + (k - i - 1) + 1) with k in Hxi by lia.
       unfold fd2n in Hxy.
       specialize (digit_lt_radix (freal y k)) as H1; lia.
@@ -408,7 +412,7 @@ split; intros Hxy.
       specialize (digit_lt_radix (freal y k)) as H1; lia.
    ---now specialize (Hx _ Hki).
   *destruct Hxi as (j & Hjj & Hj).
-   unfold mark_9, d2n in Hj.
+   unfold followed_by_999, d2n in Hj.
    destruct k.
   --specialize (Hy (i + j + 1) (Nat.le_0_l _)).
     unfold fd2n in Hy; lia.
@@ -428,16 +432,16 @@ Proof.
 intros * Hxy *.
 unfold freal_normalize, digit_sequence_normalize; simpl.
 unfold d2n; rewrite Hxy.
-destruct (LPO_fst (mark_9 (freal x) i)) as [H1| H1].
--destruct (LPO_fst (mark_9 (freal y) i)) as [H2| H2]; [ easy | ].
+destruct (LPO_fst (followed_by_999 (freal x) i)) as [H1| H1].
+-destruct (LPO_fst (followed_by_999 (freal y) i)) as [H2| H2]; [ easy | ].
  destruct H2 as (j & Hjj & Hj).
  specialize (H1 j).
- unfold mark_9, d2n in H1, Hj.
+ unfold followed_by_999, d2n in H1, Hj.
  now rewrite Hxy in H1.
--destruct (LPO_fst (mark_9 (freal y) i)) as [H2| H2]; [ | easy ].
+-destruct (LPO_fst (followed_by_999 (freal y) i)) as [H2| H2]; [ | easy ].
  destruct H1 as (j & Hjj & Hj).
  specialize (H2 j).
- unfold mark_9, d2n in H2, Hj.
+ unfold followed_by_999, d2n in H2, Hj.
  now rewrite Hxy in Hj.
 Qed.
 
@@ -449,19 +453,19 @@ intros * Hxy *.
 unfold freal_norm_not_norm_eq in Hxy.
 destruct Hxy as (k & Hb & Hw & Hax & Hay).
 unfold freal_normalize, digit_sequence_normalize; simpl.
-destruct (LPO_fst (mark_9 (freal x) i)) as [H1| H1].
+destruct (LPO_fst (followed_by_999 (freal x) i)) as [H1| H1].
 -specialize (H1 (max i k - i)).
  assert (H : k ≤ S (max i k)) by lia.
  specialize (Hax (S (max i k)) H).
- unfold fd2n in Hax; unfold mark_9, d2n in H1.
+ unfold fd2n in Hax; unfold followed_by_999, d2n in H1.
  replace (i + (max i k - i) + 1) with (S (max i k)) in H1 by lia.
  rewrite Hax in H1.
  specialize radix_ge_2; lia.
--destruct (LPO_fst (mark_9 (freal y) i)) as [H2| H2].
+-destruct (LPO_fst (followed_by_999 (freal y) i)) as [H2| H2].
  +destruct (lt_eq_lt_dec i (k - 1)) as [[H4| H4]| H4].
   *destruct k; [ easy | ].
    specialize (H2 (k - i - 1)).
-   unfold mark_9, d2n in H2.
+   unfold followed_by_999, d2n in H2.
    replace (i + (k - i - 1) + 1) with k in H2 by lia.
    simpl in Hw; rewrite Nat.sub_0_r in Hw.
    unfold fd2n in Hw.
@@ -491,12 +495,12 @@ destruct (LPO_fst (mark_9 (freal x) i)) as [H1| H1].
   *now rewrite Hb.
   *subst i.
    destruct H2 as (j & Hjj & Hj).
-   unfold mark_9, d2n in Hj; unfold fd2n in Hay.
+   unfold followed_by_999, d2n in Hj; unfold fd2n in Hay.
    assert (H : k ≤ k - 1 + j + 1) by lia.
    specialize (Hay _ H).
    rewrite Hay in Hj; lia.
   *destruct H2 as (j & Hjj & Hj).
-   unfold mark_9, d2n in Hj; unfold fd2n in Hay.
+   unfold followed_by_999, d2n in Hj; unfold fd2n in Hay.
    assert (H : k ≤ i + j + 1) by lia.
    specialize (Hay _ H).
    rewrite Hay in Hj; lia.
@@ -595,14 +599,14 @@ Definition nA {r : radix} (rg := nat_ord_ring) i n u :=
 Definition nB {r : radix} (rg := nat_ord_ring) n l u :=
   Σ (j = n, n + l), u j * rad ^ (n + l - j).
 
-Definition test_seq {r : radix} i u l :=
+Definition all_A_plus_B_ge_1 {r : radix} i u l :=
   let n := rad * (i + 2) in
   let s := rad ^ (n - 1 - i) in
   if lt_dec (nA i n u mod s * rad ^ (l + 1) + nB n l u) (rad ^ (n + l - i))
   then 1 else 0.
 
 Definition numbers_to_digits {r : radix} u i :=
-  match LPO_fst (test_seq i u) with
+  match LPO_fst (all_A_plus_B_ge_1 i u) with
   | inl _ =>
       let n := rad * (i + 2) in
       let s := rad ^ (n - 1 - i) in
@@ -714,21 +718,21 @@ apply summation_eq_compat; intros j Hj.
 now rewrite freal_mul_series_comm.
 Qed.
 
-Theorem test_seq_freal_add_series_comm {r : radix} : ∀ x y i k,
-  test_seq i (freal_add_series x y) k =
-  test_seq i (freal_add_series y x) k.
+Theorem all_A_plus_B_ge_1_freal_add_series_comm {r : radix} : ∀ x y i k,
+  all_A_plus_B_ge_1 i (freal_add_series x y) k =
+  all_A_plus_B_ge_1 i (freal_add_series y x) k.
 Proof.
 intros.
-unfold test_seq.
+unfold all_A_plus_B_ge_1.
 now rewrite nA_freal_add_series_comm, nB_freal_add_series_comm.
 Qed.
 
-Theorem test_seq_freal_mul_series_comm {r : radix} : ∀ x y i k,
-  test_seq i (freal_mul_series x y) k =
-  test_seq i (freal_mul_series y x) k.
+Theorem all_A_plus_B_ge_1_freal_mul_series_comm {r : radix} : ∀ x y i k,
+  all_A_plus_B_ge_1 i (freal_mul_series x y) k =
+  all_A_plus_B_ge_1 i (freal_mul_series y x) k.
 Proof.
 intros.
-unfold test_seq.
+unfold all_A_plus_B_ge_1.
 now rewrite nA_freal_mul_series_comm, nB_freal_mul_series_comm.
 Qed.
 
@@ -739,18 +743,18 @@ intros.
 unfold freal_add_to_seq, numbers_to_digits.
 remember (freal_add_series x y) as xy.
 remember (freal_add_series y x) as yx.
-destruct (LPO_fst (test_seq i xy)) as [Hxy| Hxy].
+destruct (LPO_fst (all_A_plus_B_ge_1 i xy)) as [Hxy| Hxy].
 -rewrite Heqxy, freal_add_series_comm, <- Heqyx.
- destruct (LPO_fst (test_seq i yx)) as [Hyx| Hyx].
+ destruct (LPO_fst (all_A_plus_B_ge_1 i yx)) as [Hyx| Hyx].
  +now rewrite nA_freal_add_series_comm, <- Heqyx.
 
  +destruct Hyx as (k & Hjk & Hk).
-  rewrite Heqyx, test_seq_freal_add_series_comm, <- Heqxy in Hk.
+  rewrite Heqyx, all_A_plus_B_ge_1_freal_add_series_comm, <- Heqxy in Hk.
   now rewrite Hxy in Hk.
 
 -destruct Hxy as (k & Hjk & Hk).
- rewrite Heqxy, test_seq_freal_add_series_comm, <- Heqyx in Hk.
- destruct (LPO_fst (test_seq i yx)) as [Hyx| Hyx].
+ rewrite Heqxy, all_A_plus_B_ge_1_freal_add_series_comm, <- Heqyx in Hk.
+ destruct (LPO_fst (all_A_plus_B_ge_1 i yx)) as [Hyx| Hyx].
  +now rewrite Hyx in Hk.
 
  +destruct Hyx as (l & Hjl & Hl).
@@ -762,7 +766,8 @@ destruct (LPO_fst (test_seq i xy)) as [Hxy| Hxy].
    now subst k.
 
    apply Hjk in Hkl.
-   now rewrite Heqxy, test_seq_freal_add_series_comm, <- Heqyx in Hkl.
+   rewrite Heqxy, all_A_plus_B_ge_1_freal_add_series_comm in Hkl.
+   now rewrite <- Heqyx in Hkl.
 Qed.
 
 Theorem freal_mul_to_seq_i_comm {r : radix} : ∀ x y i,
@@ -772,18 +777,18 @@ intros.
 unfold freal_mul_to_seq, numbers_to_digits.
 remember (freal_mul_series x y) as xy.
 remember (freal_mul_series y x) as yx.
-destruct (LPO_fst (test_seq i xy)) as [Hxy| Hxy].
+destruct (LPO_fst (all_A_plus_B_ge_1 i xy)) as [Hxy| Hxy].
  rewrite Heqxy, freal_mul_series_comm, <- Heqyx.
- destruct (LPO_fst (test_seq i yx)) as [Hyx| Hyx].
+ destruct (LPO_fst (all_A_plus_B_ge_1 i yx)) as [Hyx| Hyx].
   now rewrite nA_freal_mul_series_comm, <- Heqyx.
 
   destruct Hyx as (k & Hjk & Hk).
-  rewrite Heqyx, test_seq_freal_mul_series_comm, <- Heqxy in Hk.
+  rewrite Heqyx, all_A_plus_B_ge_1_freal_mul_series_comm, <- Heqxy in Hk.
   now rewrite Hxy in Hk.
 
  destruct Hxy as (k & Hjk & Hk).
- rewrite Heqxy, test_seq_freal_mul_series_comm, <- Heqyx in Hk.
- destruct (LPO_fst (test_seq i yx)) as [Hyx| Hyx].
+ rewrite Heqxy, all_A_plus_B_ge_1_freal_mul_series_comm, <- Heqyx in Hk.
+ destruct (LPO_fst (all_A_plus_B_ge_1 i yx)) as [Hyx| Hyx].
   now rewrite Hyx in Hk.
 
   destruct Hyx as (l & Hjl & Hl).
@@ -795,7 +800,8 @@ destruct (LPO_fst (test_seq i xy)) as [Hxy| Hxy].
    now subst k.
 
    apply Hjk in Hkl.
-   now rewrite Heqxy, test_seq_freal_mul_series_comm, <- Heqyx in Hkl.
+   rewrite Heqxy, all_A_plus_B_ge_1_freal_mul_series_comm in Hkl.
+   now rewrite <- Heqyx in Hkl.
 Qed.
 
 Theorem dig_norm_add_comm {r : radix} : ∀ x y i,
@@ -807,8 +813,8 @@ remember (freal (x + y)) as xy.
 remember (freal (y + x)) as yx.
 simpl.
 unfold digit_sequence_normalize.
-destruct (LPO_fst (mark_9 xy i)) as [Hxy| Hxy].
- destruct (LPO_fst (mark_9 yx i)) as [Hyx| Hyx].
+destruct (LPO_fst (followed_by_999 xy i)) as [Hxy| Hxy].
+ destruct (LPO_fst (followed_by_999 yx i)) as [Hyx| Hyx].
   unfold freal_add in Heqxy; simpl in Heqxy.
   unfold freal_add in Heqyx; simpl in Heqyx.
   destruct (lt_dec (S (d2n xy i)) rad) as [Hrxy| Hrxy].
@@ -833,17 +839,17 @@ destruct (LPO_fst (mark_9 xy i)) as [Hxy| Hxy].
   subst yx; simpl in Hk; simpl.
   unfold freal_add in Heqxy; simpl in Heqxy.
   subst xy; simpl in Hxy; simpl.
-  unfold mark_9, d2n in Hk.
+  unfold followed_by_999, d2n in Hk.
   rewrite freal_add_to_seq_i_comm in Hk.
   now specialize (Hxy k).
 
  destruct Hxy as (k & Hjk & Hk).
  unfold freal_add in Heqxy; simpl in Heqxy.
  unfold freal_add in Heqyx; simpl in Heqyx.
- destruct (LPO_fst (mark_9 yx i)) as [Hyx| Hyx].
+ destruct (LPO_fst (followed_by_999 yx i)) as [Hyx| Hyx].
   exfalso; clear Hjk.
   subst xy yx; simpl in Hk, Hyx; unfold d2n in Hk; simpl.
-  unfold mark_9, d2n in Hk.
+  unfold followed_by_999, d2n in Hk.
   rewrite freal_add_to_seq_i_comm in Hk.
   now specialize (Hyx k).
 
@@ -860,8 +866,8 @@ remember (freal (x * y)) as xy.
 remember (freal (y * x)) as yx.
 simpl.
 unfold digit_sequence_normalize.
-destruct (LPO_fst (mark_9 xy i)) as [Hxy| Hxy].
- destruct (LPO_fst (mark_9 yx i)) as [Hyx| Hyx].
+destruct (LPO_fst (followed_by_999 xy i)) as [Hxy| Hxy].
+ destruct (LPO_fst (followed_by_999 yx i)) as [Hyx| Hyx].
   unfold freal_mul in Heqxy; simpl in Heqxy.
   unfold freal_mul in Heqyx; simpl in Heqyx.
   destruct (lt_dec (S (d2n xy i)) rad) as [Hrxy| Hrxy].
@@ -883,7 +889,7 @@ destruct (LPO_fst (mark_9 xy i)) as [Hxy| Hxy].
   destruct Hyx as (k & Hjk & Hk); clear Hjk.
   unfold freal_mul in Heqyx; simpl in Heqyx.
   subst yx; simpl in Hk; simpl; unfold d2n in Hk.
-  unfold mark_9, d2n in Hk.
+  unfold followed_by_999, d2n in Hk.
   rewrite freal_mul_to_seq_i_comm in Hk.
   unfold freal_mul in Heqxy; simpl in Heqxy.
   subst xy; simpl in Hxy; simpl.
@@ -892,10 +898,10 @@ destruct (LPO_fst (mark_9 xy i)) as [Hxy| Hxy].
  destruct Hxy as (k & Hjk & Hk).
  unfold freal_mul in Heqxy; simpl in Heqxy.
  unfold freal_mul in Heqyx; simpl in Heqyx.
- destruct (LPO_fst (mark_9 yx i)) as [Hyx| Hyx].
+ destruct (LPO_fst (followed_by_999 yx i)) as [Hyx| Hyx].
   exfalso; clear Hjk.
   subst xy yx; simpl in Hk, Hyx; simpl; unfold d2n in Hk.
-  unfold mark_9, d2n in Hk.
+  unfold followed_by_999, d2n in Hk.
   rewrite freal_mul_to_seq_i_comm in Hk.
   now specialize (Hyx k).
 
@@ -1253,9 +1259,9 @@ Theorem numbers_to_digits_id {r : radix} : ∀ u (Hur : ∀ j, u j < rad) i,
 Proof.
 intros.
 unfold numbers_to_digits.
-destruct (LPO_fst (test_seq i u)) as [H| H].
+destruct (LPO_fst (all_A_plus_B_ge_1 i u)) as [H| H].
 -specialize (H 0) as HH.
- unfold test_seq in HH; simpl in HH.
+ unfold all_A_plus_B_ge_1 in HH; simpl in HH.
  rewrite Nat.mul_1_r, Nat.add_0_r in HH.
  remember (rad * (i + 2)) as n eqn:Hn.
  remember (rad ^ (n - 1 - i)) as s eqn:Hs.
@@ -1301,7 +1307,7 @@ destruct (LPO_fst (test_seq i u)) as [H| H].
    replace (a * rad) with (a * rad ^ 1) by now rewrite Nat.pow_1_r.
    subst a; rewrite <- Nat.pow_add_r; f_equal; lia.
 -destruct H as (l & Hjk & Hts).
- unfold test_seq in Hts.
+ unfold all_A_plus_B_ge_1 in Hts.
  remember (rad * (i + 2)) as n eqn:Hn.
  remember (rad ^ (n - 1 - i)) as s eqn:Hs.
  destruct
@@ -1335,8 +1341,8 @@ unfold freal_normalize.
 remember (freal (0%F + x)) as nx0 eqn:Hnx0.
 remember (freal x) as nx eqn:Hnx.
 unfold digit_sequence_normalize; simpl.
-destruct (LPO_fst (mark_9 nx0 i)) as [Hx0| Hx0].
--destruct (LPO_fst (mark_9 nx i)) as [Hx| Hx].
+destruct (LPO_fst (followed_by_999 nx0 i)) as [Hx0| Hx0].
+-destruct (LPO_fst (followed_by_999 nx i)) as [Hx| Hx].
  +destruct (lt_dec (S (d2n nx0 i)) rad) as [Hnx0r| Hnx0r].
   *destruct (lt_dec (S (d2n nx i)) rad) as [Hnxr| Hnxr].
   --subst nx nx0; simpl.
@@ -1357,13 +1363,13 @@ destruct (LPO_fst (mark_9 nx0 i)) as [Hx0| Hx0].
   specialize (Hx0 k).
   subst nx nx0; simpl in Hx0.
   unfold freal_add_to_seq in Hx0.
-  unfold mark_9, d2n in Hx0.
+  unfold followed_by_999, d2n in Hx0.
   now rewrite (numbers_to_digits_id _ Hxr) in Hx0.
--destruct (LPO_fst (mark_9 nx i)) as [Hx| Hx].
+-destruct (LPO_fst (followed_by_999 nx i)) as [Hx| Hx].
  +destruct Hx0 as (k & Hjk & Hnk).
   specialize (Hx k).
   subst nx nx0; simpl in Hnk.
-  unfold freal_add_to_seq, mark_9, d2n in Hnk.
+  unfold freal_add_to_seq, followed_by_999, d2n in Hnk.
   now rewrite (numbers_to_digits_id _ Hxr) in Hnk.
  +subst nx nx0; simpl.
   unfold freal_add_to_seq, d2n.
@@ -1390,7 +1396,8 @@ now apply dig_norm_add_0_l; [ | unfold fd2n ].
 Qed.
 
 Theorem dig_norm_add_assoc {r : radix} : ∀ x y z i,
-  freal (freal_normalize (x + (y + z))) i = freal (freal_normalize (x + y + z)) i.
+  freal (freal_normalize (x + (y + z))) i =
+  freal (freal_normalize (x + y + z)) i.
 Proof.
 intros.
 unfold freal_normalize.
@@ -1553,11 +1560,11 @@ intros j Hj.
 now rewrite Hfg.
 Qed.
 
-Theorem test_seq_eq_compat {r : radix} : ∀ i f g,
-  (∀ i, f i = g i) → ∀ k, test_seq i f k = test_seq i g k.
+Theorem all_A_plus_B_ge_1_eq_compat {r : radix} : ∀ i f g,
+  (∀ i, f i = g i) → ∀ k, all_A_plus_B_ge_1 i f k = all_A_plus_B_ge_1 i g k.
 Proof.
 intros * Hfg *.
-unfold test_seq.
+unfold all_A_plus_B_ge_1.
 erewrite nA_eq_compat; [ | easy ].
 erewrite nB_eq_compat; [ | easy ].
 easy.
@@ -1570,8 +1577,8 @@ Proof.
 intros * Hfg *.
 unfold numbers_to_digits.
 rewrite Hfg.
-destruct (LPO_fst (test_seq i f)) as [Hf| Hf].
--destruct (LPO_fst (test_seq i g)) as [Hg| Hg].
+destruct (LPO_fst (all_A_plus_B_ge_1 i f)) as [Hf| Hf].
+-destruct (LPO_fst (all_A_plus_B_ge_1 i g)) as [Hg| Hg].
  +f_equal; f_equal.
   unfold nA.
   erewrite summation_eq_compat; [ reflexivity | simpl ].
@@ -1580,26 +1587,26 @@ destruct (LPO_fst (test_seq i f)) as [Hf| Hf].
  +exfalso.
   destruct Hg as (k & Hjk & H); apply H; clear H.
   specialize (Hf k).
-  erewrite test_seq_eq_compat in Hf; [ | easy ]; easy.
--destruct (LPO_fst (test_seq i g)) as [Hg| Hg].
+  erewrite all_A_plus_B_ge_1_eq_compat in Hf; [ | easy ]; easy.
+-destruct (LPO_fst (all_A_plus_B_ge_1 i g)) as [Hg| Hg].
  +exfalso.
   destruct Hf as (k & Hjk & H); apply H; clear H.
   specialize (Hg k).
-  erewrite test_seq_eq_compat; [ | easy ]; easy.
+  erewrite all_A_plus_B_ge_1_eq_compat; [ | easy ]; easy.
  +destruct Hf as (k & Hjk & Hk).
   destruct Hg as (l & Hjl & Hl).
   f_equal; f_equal; f_equal.
   destruct (lt_eq_lt_dec k l) as [[Hkl| Hkl]| Hkl].
   *specialize (Hjl _ Hkl).
    exfalso; apply Hk.
-   erewrite test_seq_eq_compat; [ | easy ]; easy.
+   erewrite all_A_plus_B_ge_1_eq_compat; [ | easy ]; easy.
   *subst l; apply digit_eq_eq; simpl.
    f_equal; f_equal; f_equal.
    now apply nA_eq_compat.
   *specialize (Hjk _ Hkl).
    apply digit_eq_eq; simpl.
    exfalso; apply Hl.
-   erewrite test_seq_eq_compat in Hjk; [ | easy ]; easy.
+   erewrite all_A_plus_B_ge_1_eq_compat in Hjk; [ | easy ]; easy.
 Qed.
 
 Theorem Nat_div_succ_l_eq_div : ∀ p q, q ≠ 0 →
@@ -1660,12 +1667,12 @@ split; intros Hxy *.
  now apply digit_eq_eq in Hxy.
 Qed.
 
-Definition test_immediate_999 {r : radix} x i :=
-  match LPO_fst (mark_9 (freal x) i) with
+Definition does_not_end_with_999 {r : radix} x i :=
+  match LPO_fst (followed_by_999 (freal x) i) with
   | inl _ => 1
   | inr _ => 0
   end.
-Arguments test_immediate_999 _ x%F i%nat.
+Arguments does_not_end_with_999 _ x%F i%nat.
 
 Add Parametric Morphism {r : radix} : freal_add
   with signature freal_eq_prop ==> freal_eq_prop ==> freal_eq_prop
@@ -1692,8 +1699,8 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
  +destruct Hxy' as (k & Hbef & Hwhi & Hxaft & Hyaft).
 (* find a test telling if x+x' ends with 999... and at which index;
    same for y+y' *)
-  destruct (LPO_fst (test_immediate_999 (x + x'))) as [Hxx| Hxx].
-  *destruct (LPO_fst (test_immediate_999 (y + y'))) as [Hyy| Hyy].
+  destruct (LPO_fst (does_not_end_with_999 (x + x'))) as [Hxx| Hxx].
+  *destruct (LPO_fst (does_not_end_with_999 (y + y'))) as [Hyy| Hyy].
   --left.
     intros i.
     unfold freal_add, freal_add_to_seq; simpl.
@@ -1701,24 +1708,24 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
     remember (freal_add_series x x') as u.
     remember (freal_add_series y y') as v.
     apply digit_eq_eq.
-    destruct (LPO_fst (test_seq i u)) as [Hiu| Hiu].
+    destruct (LPO_fst (all_A_plus_B_ge_1 i u)) as [Hiu| Hiu].
    ++simpl.
-     destruct (LPO_fst (test_seq i v)) as [Hiv| Hiv].
+     destruct (LPO_fst (all_A_plus_B_ge_1 i v)) as [Hiv| Hiv].
     **simpl.
 ...
       specialize (Hxx i) as Hxxi.
       specialize (Hyy i) as Hyyi.
-      unfold test_immediate_999 in Hxxi, Hyyi.
-      destruct (LPO_fst (mark_9 (freal (x + x')) i)) as [| Hxxj].
+      unfold does_not_end_with_999 in Hxxi, Hyyi.
+      destruct (LPO_fst (followed_by_999 (freal (x + x')) i)) as [| Hxxj].
     ---easy.
     ---clear Hxxi.
        destruct Hxxj as (kx & Hjkx & Hkx).
-       destruct (LPO_fst (mark_9 (freal (y + y')) i)) as [| Hyyj].
+       destruct (LPO_fst (followed_by_999 (freal (y + y')) i)) as [| Hyyj].
      ***easy.
      ***clear Hyyi.
         destruct Hyyj as (ky & Hjky & Hky).
         destruct kx.
-     ----unfold mark_9 in Hkx.
+     ----unfold followed_by_999 in Hkx.
 ...
 (**)
 right; left.
@@ -1736,9 +1743,11 @@ intros i Hi.
   unfold freal_add, freal_add_to_seq; simpl.
   unfold numbers_to_digits.
   apply digit_eq_eq.
-  destruct (LPO_fst (test_seq i (freal_add_series x x'))) as [Hxx| Hxx].
+  destruct (LPO_fst (all_A_plus_B_ge_1 i (freal_add_series x x')))
+    as [Hxx| Hxx].
   *simpl.
-   destruct (LPO_fst (test_seq i (freal_add_series y y'))) as [Hyy| Hyy].
+   destruct (LPO_fst (all_A_plus_B_ge_1 i (freal_add_series y y')))
+     as [Hyy| Hyy].
   --simpl.
     remember (freal_add_series x x') as u.
     remember (freal_add_series y y') as v.
@@ -1847,10 +1856,10 @@ intros i Hi.
 (*
 remember 0 as l eqn:Hl in |-*.
 specialize (Hxx l) as Hx.
-unfold test_seq in Hx.
+unfold all_A_plus_B_ge_1 in Hx.
 *)
 specialize (Hxx 0) as Hx.
-unfold test_seq in Hx.
+unfold all_A_plus_B_ge_1 in Hx.
 rewrite Nat.add_0_l, Nat.add_0_r in Hx.
 rewrite Nat.pow_1_r in Hx.
 (**)
@@ -1865,7 +1874,8 @@ rewrite Nat.sub_diag, Nat.pow_0_r, Nat.mul_1_r in Hge.
 ...
 
 
-destruct (lt_dec (nA i n u mod s * rad ^ (l + 1) + nB n l u) (rad ^ (n +l - i)))
+destruct
+  (lt_dec (nA i n u mod s * rad ^ (l + 1) + nB n l u) (rad ^ (n +l - i)))
  as [Hlt| ]; [ clear Hx | easy ].
 (*
 unfold nB in Hlt; rewrite Nat.add_0_r in Hlt.
