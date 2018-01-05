@@ -1812,16 +1812,27 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
       do 4 rewrite <- Nat.add_assoc.
       setoid_rewrite Nat.add_mod; [ | easy | easy ].
       f_equal; f_equal.
-      remember (fd2n x' i mod rad) as a.
-      rewrite Nat.mod_small in Heqa; [ | apply digit_lt_radix ].
-      subst a.
-      remember (fd2n y' i mod rad) as a.
-      rewrite Nat.mod_small in Heqa; [ | apply digit_lt_radix ].
-      subst a.
-      do 2 rewrite Nat.add_assoc.
+      assert (Hik : i < k - 1). {
+        specialize radix_ge_2 as Hr.
+        apply Nat.le_lt_trans with (m := n - 1).
+        subst n.
+        destruct rad; [ easy | simpl; lia ].
+        destruct n.
+        -symmetry in Heqn.
+         apply Nat.eq_mul_0 in Heqn.
+         destruct Heqn as [Heqn| Heqn]; [ lia | simpl in Heqn; lia ].
+        -destruct k; [ easy | simpl; lia ].
+      }
+      unfold fd2n.
+      rewrite Hbef; [ | easy ].
+      setoid_rewrite Nat.add_mod; [ | easy | easy ].
+      f_equal; f_equal.
+      rewrite Nat.add_assoc.
       remember (rad * (i + ky + 2)) as ny.
       remember (rad ^ (ny - 1 - i)) as sy.
-      move sy before ny.
+      move Hik before Hnk; move ky before k.
+      move ny before n; move sy before s.
+      move Heqny before Heqs; move Heqsy before Heqny.
 ...
 (*
 remember 0 as l eqn:Hl in |-*.
