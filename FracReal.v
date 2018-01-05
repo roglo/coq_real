@@ -1714,59 +1714,59 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
     remember (rad ^ (n - 1 - i)) as s.
     move s before n.
     destruct (LPO_fst (all_A_plus_B_ge_1 i u)) as [Hiu| Hiu].
-   ++simpl.
-     rewrite Hequ.
-     unfold freal_add_series at 1.
-     unfold sequence_add.
-     rewrite <- Hequ.
-     destruct (LPO_fst (all_A_plus_B_ge_1 i v)) as [Hiv| Hiv].
-    **simpl.
-      destruct (le_dec k n) as [Hnk| Hnk].
-    ---specialize (Hiu 0).
-       exfalso.
-       unfold all_A_plus_B_ge_1 in Hiu.
-       rewrite <- Heqn, <- Heqs in Hiu; simpl in Hiu.
-       rewrite Nat.mul_1_r, Nat.add_0_r in Hiu.
-       destruct (lt_dec (nA i n u mod s * rad + nB n 0 u) (rad ^ (n - i)))
-         as [| HAB]; [ easy | clear Hiu ].
-       exfalso; apply HAB; clear HAB.
-       unfold nB.
-       rewrite Nat.add_0_r.
-       rewrite summation_only_one.
-       rewrite Nat.sub_diag, Nat.pow_0_r, Nat.mul_1_r.
-       remember (u n) as un.
-       rewrite Hequ in Hequn; subst un.
-       unfold freal_add_series, sequence_add.
-       rewrite Hxaft; [ | easy ].
-       rewrite Nat.add_0_r.
-       apply Nat.lt_le_trans with (m := nA i n u mod s * rad + rad).
-     +++apply Nat.add_le_lt_mono; [ easy | apply digit_lt_radix ].
-     +++apply Nat.le_trans with (m := (s - 1) * rad + rad).
-      ***apply Nat.add_le_mono_r.
-         apply Nat.mul_le_mono_r.
-         assert (s ≠ 0) as Hs by (now subst s; apply Nat.pow_nonzero).
-         specialize (Nat.mod_upper_bound (nA i n u) s Hs) as HH; lia.
-      ***subst s.
-         rewrite Nat.mul_sub_distr_r.
-         rewrite Nat.mul_1_l.
-         rewrite Nat.sub_add.
-      ----destruct n.
-       ++++symmetry in Heqn.
-           apply Nat.mul_eq_0 in Heqn.
-           destruct Heqn as [Heqn| ]; [ now apply radix_ne_0 in Heqn | lia ].
-       ++++rewrite <- Nat.sub_add_distr, Nat.add_comm.
-           rewrite Nat.sub_add_distr.
-           remember (rad ^ (S n - i - 1)) as a.
-           replace rad with (rad ^ 1) at 1 by apply Nat.pow_1_r.
-           subst a.
-           rewrite <- Nat.pow_add_r.
-           rewrite Nat.sub_add; [ easy | ].
-           rewrite Heqn.
-           destruct rad; [ easy | ].
-           simpl; lia.
-      ----assert (rad ^ (n - 1 - i) ≠ 0) by now apply Nat.pow_nonzero.
-          destruct (rad ^ (n - 1 - i)); [ easy | simpl; lia ].
-    ---rewrite Heqv.
+   ++destruct (le_dec k n) as [Hnk| Hnk].
+    **exfalso.
+      specialize (Hiu 0).
+      unfold all_A_plus_B_ge_1 in Hiu.
+      rewrite <- Heqn, <- Heqs in Hiu; simpl in Hiu.
+      rewrite Nat.mul_1_r, Nat.add_0_r in Hiu.
+      destruct (lt_dec (nA i n u mod s * rad + nB n 0 u) (rad ^ (n - i)))
+        as [| HAB]; [ easy | clear Hiu ].
+      exfalso; apply HAB; clear HAB.
+      unfold nB.
+      rewrite Nat.add_0_r.
+      rewrite summation_only_one.
+      rewrite Nat.sub_diag, Nat.pow_0_r, Nat.mul_1_r.
+      remember (u n) as un.
+      rewrite Hequ in Hequn; subst un.
+      unfold freal_add_series, sequence_add.
+      rewrite Hxaft; [ | easy ].
+      rewrite Nat.add_0_r.
+      apply Nat.lt_le_trans with (m := nA i n u mod s * rad + rad).
+    ---apply Nat.add_le_lt_mono; [ easy | apply digit_lt_radix ].
+    ---apply Nat.le_trans with (m := (s - 1) * rad + rad).
+     +++apply Nat.add_le_mono_r.
+        apply Nat.mul_le_mono_r.
+        assert (s ≠ 0) as Hs by (now subst s; apply Nat.pow_nonzero).
+        specialize (Nat.mod_upper_bound (nA i n u) s Hs) as HH; lia.
+     +++subst s.
+        rewrite Nat.mul_sub_distr_r.
+        rewrite Nat.mul_1_l.
+        rewrite Nat.sub_add.
+      ***destruct n.
+      ----symmetry in Heqn.
+          apply Nat.mul_eq_0 in Heqn.
+          destruct Heqn as [Heqn| ]; [ now apply radix_ne_0 in Heqn | lia ].
+      ----rewrite <- Nat.sub_add_distr, Nat.add_comm.
+          rewrite Nat.sub_add_distr.
+          remember (rad ^ (S n - i - 1)) as a.
+          replace rad with (rad ^ 1) at 1 by apply Nat.pow_1_r.
+          subst a.
+          rewrite <- Nat.pow_add_r.
+          rewrite Nat.sub_add; [ easy | ].
+          rewrite Heqn.
+          destruct rad; [ easy | simpl; lia ].
+      ***assert (rad ^ (n - 1 - i) ≠ 0) by now apply Nat.pow_nonzero.
+         destruct (rad ^ (n - 1 - i)); [ easy | simpl; lia ].
+    **apply Nat.nle_gt in Hnk.
+      simpl.
+      rewrite Hequ.
+      unfold freal_add_series at 1.
+      unfold sequence_add.
+      rewrite <- Hequ.
+      destruct (LPO_fst (all_A_plus_B_ge_1 i v)) as [Hiv| Hiv].
+    ---simpl.
+       rewrite Heqv.
        unfold freal_add_series at 1.
        unfold sequence_add.
        rewrite <- Heqv.
@@ -1802,7 +1802,7 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
        rewrite Heqn.
        specialize radix_ge_2 as Hr.
        destruct rad as [| rr]; [ easy | simpl; lia ].
-    **destruct Hiv as (ky & Hkyj & Hky); simpl.
+   ---destruct Hiv as (ky & Hkyj & Hky); simpl.
       rewrite Heqv.
       unfold freal_add_series at 1.
       unfold sequence_add.
