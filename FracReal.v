@@ -1833,6 +1833,10 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
       move Hik before Hnk; move ky before k.
       move ny before n; move sy before s.
       move Heqny before Heqs; move Heqsy before Heqny.
+specialize (Hiu ky).
+move Hiu before Hky.
+unfold all_A_plus_B_ge_1 in Hiu, Hky.
+rewrite <- Heqn, <- Heqs in Hiu, Hky.
 ...
 (*
 remember 0 as l eqn:Hl in |-*.
