@@ -1803,6 +1803,51 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
        specialize radix_ge_2 as Hr.
        destruct rad as [| rr]; [ easy | simpl; lia ].
    ---destruct Hiv as (ky & Hkyj & Hky); simpl.
+      destruct (lt_dec (n + ky + 1) k) as [Hkky| Hkky].
+    +++exfalso.
+       specialize (Hiu ky).
+       move Hiu before Hky.
+       unfold all_A_plus_B_ge_1 in Hiu, Hky.
+       rewrite <- Heqn, <- Heqs in Hiu, Hky.
+       destruct
+         (lt_dec (nA i n u mod s * rad ^ (ky + 1) + nB n ky u)
+                 (rad ^ (n + ky - i))) as [Hu| Hu]; [ easy | ].
+       clear Hiu.
+       destruct
+         (lt_dec (nA i n v mod s * rad ^ (ky + 1) + nB n ky v)
+                 (rad ^ (n + ky - i))) as [Hv| Hv]; [ | easy ].
+       clear Hky.
+       apply Hu; clear Hu.
+       assert (HAA : nA i n u = nA i n v). {
+         unfold nA.
+         apply summation_eq_compat.
+         intros j Hj.
+         rewrite Hequ, Heqv.
+         unfold freal_add_series, sequence_add.
+         unfold fd2n.
+         rewrite Hxy, Hbef; [ easy | lia ].
+       }
+       rewrite HAA.
+       eapply Nat.le_lt_trans; [ | eassumption ].
+       apply Nat.add_le_mono_l.
+       unfold nB.
+
+       set (rd := nat_ord_ring_def).
+       apply (@summation_le_compat rd).
+       intros j Hj; simpl.
+       unfold NPeano.Nat.le.
+       apply Nat.mul_le_mono_r.
+       rewrite Hequ, Heqv.
+       unfold freal_add_series, sequence_add.
+       unfold fd2n at 1 3; rewrite Hxy.
+       apply Nat.add_le_mono_l.
+       destruct k; [ easy | ].
+       destruct Hwhi as [| Hwhi]; [ easy | ].
+       apply Nat.nle_gt in Hkky.
+       unfold fd2n.
+       rewrite Hbef; [ easy | lia ].
+    +++apply Nat.nlt_ge in Hkky.
+...
       rewrite Heqv.
       unfold freal_add_series at 1.
       unfold sequence_add.
@@ -1833,15 +1878,6 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
       move Hik before Hnk; move ky before k.
       move ny before n; move sy before s.
       move Heqny before Heqs; move Heqsy before Heqny.
-specialize (Hiu ky).
-move Hiu before Hky.
-unfold all_A_plus_B_ge_1 in Hiu, Hky.
-rewrite <- Heqn, <- Heqs in Hiu, Hky.
-destruct (lt_dec (nA i n u mod s * rad ^ (ky + 1) + nB n ky u) (rad ^ (n + ky - i))) as [Hu| Hu]; [ easy | ].
-clear Hiu.
-destruct (lt_dec (nA i n v mod s * rad ^ (ky + 1) + nB n ky v) (rad ^ (n + ky - i))) as [Hv| Hv]; [ | easy ].
-clear Hky.
-apply Nat.nlt_ge in Hu.
 ...
 (*
 remember 0 as l eqn:Hl in |-*.
