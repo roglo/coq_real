@@ -1837,6 +1837,11 @@ specialize (Hiu ky).
 move Hiu before Hky.
 unfold all_A_plus_B_ge_1 in Hiu, Hky.
 rewrite <- Heqn, <- Heqs in Hiu, Hky.
+destruct (lt_dec (nA i n u mod s * rad ^ (ky + 1) + nB n ky u) (rad ^ (n + ky - i))) as [Hu| Hu]; [ easy | ].
+clear Hiu.
+destruct (lt_dec (nA i n v mod s * rad ^ (ky + 1) + nB n ky v) (rad ^ (n + ky - i))) as [Hv| Hv]; [ | easy ].
+clear Hky.
+apply Nat.nlt_ge in Hu.
 ...
 (*
 remember 0 as l eqn:Hl in |-*.
