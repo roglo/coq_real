@@ -1696,8 +1696,6 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
   apply digit_eq_eq in Hxy'.
   now rewrite Hxy, Hxy'.
  +destruct Hxy' as (k & Hbef & Hwhi & Hxaft & Hyaft).
-(* find a test telling if x+x' ends with 999... and at which index;
-   same for y+y' *)
   destruct (LPO_fst (does_not_end_with_999 (freal (x + x')))) as [Hxx| Hxx].
   *destruct (LPO_fst (does_not_end_with_999 (freal (y + y')))) as [Hyy| Hyy].
   --left.
@@ -1716,48 +1714,6 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
       rewrite <- Hequ in Hxx; rewrite <- Heqv in Hyy.
       simpl in Hxx, Hyy.
       move v before u.
-(*
-...
-      specialize (Hxx i) as Hxxi.
-      specialize (Hyy i) as Hyyi.
-      unfold does_not_end_with_999 in Hxxi, Hyyi.
-      destruct (LPO_fst (followed_by_999 (freal (x + x')) i)) as [| Hxxj].
-    ---easy.
-    ---clear Hxxi.
-       destruct Hxxj as (kx & Hjkx & Hkx).
-       destruct (LPO_fst (followed_by_999 (freal (y + y')) i)) as [| Hyyj].
-     ***easy.
-     ***clear Hyyi.
-        destruct Hyyj as (ky & Hjky & Hky).
-        destruct kx.
-     ----unfold followed_by_999 in Hkx.
-...
-(**)
-right; left.
-unfold freal_norm_not_norm_eq.
-unfold freal_add, freal_add_to_seq; simpl.
-...
-
-exists k.
-split.
-intros i Hi.
-(*
-  left.
-  intros i.
-*)
-  unfold freal_add, freal_add_to_seq; simpl.
-  unfold numbers_to_digits.
-  apply digit_eq_eq.
-  destruct (LPO_fst (all_A_plus_B_ge_1 i (freal_add_series x x')))
-    as [Hxx| Hxx].
-  *simpl.
-   destruct (LPO_fst (all_A_plus_B_ge_1 i (freal_add_series y y')))
-     as [Hyy| Hyy].
-  --simpl.
-    remember (freal_add_series x x') as u.
-    remember (freal_add_series y y') as v.
-    move v before u; move Heqv before Hequ.
-*)
       remember (rad * (i + 2)) as n.
       remember (rad ^ (n - 1 - i)) as s.
       move s before n.
@@ -1803,57 +1759,51 @@ intros i Hi.
        specialize radix_ge_2 as Hr.
        destruct rad as [| rr]; [ easy | simpl; lia ].
     ---apply Nat.nlt_ge in Hnk.
-       destruct (le_dec (i + 1) (k - 1)) as [Hik| Hik].
-     +++assert (H : nA i n (fd2n x') = nA i n (fd2n y') + 1). {
-          remember (nA i n (fd2n x')) as a eqn:Ha.
-          unfold nA in Ha.
-          erewrite summation_split with (e := k - 1) in Ha; [ | lia ].
-          simpl in Ha.
-          rewrite Nat.add_comm in Ha.
-          rewrite all_0_summation_0 in Ha.
-          -simpl in Ha.
-           destruct k; [ lia | ].
-           destruct Hwhi as [| Hwhi]; [ easy | ].
-           destruct k; [ lia | ].
-           simpl in Ha.
-           simpl in Hwhi.
-           rewrite summation_split_last in Ha; [ | easy ].
-           rewrite summation_eq_compat with
-             (h := λ j, fd2n y' j * rad ^ (n - 1 - j)) in Ha.
-           +rewrite Hwhi in Ha.
-            rewrite Nat.add_comm in Ha.
-            rewrite <- Nat.add_1_r in Ha.
-            rewrite Nat.mul_add_distr_r, Nat.mul_1_l in Ha.
-            rewrite Nat.add_comm, Nat.add_assoc in Ha.
-            rewrite <- summation_split_last in Ha; [ | easy ].
-            unfold nA.
-            rewrite summation_split with (e := S k); [ | lia ].
-            simpl; subst a.
-            rewrite <- Nat.add_assoc; f_equal.
-            rewrite summation_eq_compat with
-              (h := λ j, (rad - 1) * rad ^ (n - 1 - j)).
-            *rewrite <- summation_mul_distr_l; simpl.
-             rewrite summation_rtl.
-             destruct (Nat.eq_dec (S (S k)) n) as [Hkn| Hkn].
-            --move Hkn at top; subst n.
-              rewrite summation_empty; [ | easy ].
-              rewrite Nat.sub_diag; simpl; lia.
-            --rewrite summation_shift; [ | lia ].
-              rewrite summation_eq_compat with (h := λ j, rad ^ j).
-             ++rewrite Nat.add_comm.
-               rewrite <- power_summation; [ | easy ].
-               rewrite <- Nat.sub_succ_l; [ now rewrite Nat.sub_succ | lia ].
-             ++intros j Hj; f_equal; lia.
-            *now intros j Hj; rewrite Hyaft.
-           +intros j Hj.
-            unfold fd2n; rewrite Hbef; [ easy | lia ].
-          -intros j Hj.
-           rewrite Hxaft; [ easy | lia ].
-        }
-        rewrite H, Nat.add_assoc.
-        f_equal; f_equal.
-      ***unfold fd2n; rewrite Hbef; [ easy | lia ].
-      ***f_equal.
+       specialize (Hiu 0).
+       unfold all_A_plus_B_ge_1 in Hiu.
+       rewrite <- Heqn, <- Heqs in Hiu; simpl in Hiu.
+       rewrite Nat.mul_1_r, Nat.add_0_r in Hiu.
+       destruct (lt_dec (nA i n u mod s * rad + nB n 0 u) (rad ^ (n - i)))
+         as [| HAB]; [ easy | clear Hiu ].
+       exfalso; apply HAB; clear HAB.
+       unfold nB.
+       rewrite Nat.add_0_r.
+       rewrite summation_only_one.
+       rewrite Nat.sub_diag, Nat.pow_0_r, Nat.mul_1_r.
+       remember (u n) as un.
+       rewrite Hequ in Hequn; subst un.
+       unfold freal_add_series, sequence_add.
+       rewrite Hxaft; [ | easy ].
+       rewrite Nat.add_0_r.
+       apply Nat.lt_le_trans with (m := nA i n u mod s * rad + rad).
+     +++apply Nat.add_le_lt_mono; [ easy | apply digit_lt_radix ].
+     +++apply Nat.le_trans with (m := (s - 1) * rad + rad).
+      ***apply Nat.add_le_mono_r.
+         apply Nat.mul_le_mono_r.
+         assert (s ≠ 0) as Hs by (now subst s; apply Nat.pow_nonzero).
+         specialize (Nat.mod_upper_bound (nA i n u) s Hs) as HH; lia.
+      ***subst s.
+         rewrite Nat.mul_sub_distr_r.
+         rewrite Nat.mul_1_l.
+         rewrite Nat.sub_add.
+      ----destruct n.
+       ++++symmetry in Heqn.
+           apply Nat.mul_eq_0 in Heqn.
+           destruct Heqn as [Heqn| ]; [ now apply radix_ne_0 in Heqn | lia ].
+       ++++rewrite <- Nat.sub_add_distr, Nat.add_comm.
+           rewrite Nat.sub_add_distr.
+           remember (rad ^ (S n - i - 1)) as a.
+           replace rad with (rad ^ 1) at 1 by apply Nat.pow_1_r.
+           subst a.
+           rewrite <- Nat.pow_add_r.
+           rewrite Nat.sub_add; [ easy | ].
+           rewrite Heqn.
+           destruct rad; [ easy | ].
+           simpl; lia.
+      ----assert (rad ^ (n - 1 - i) ≠ 0) by now apply Nat.pow_nonzero.
+          destruct (rad ^ (n - 1 - i)); [ easy | simpl; lia ].
+    **idtac.
+...
          rewrite Nat.add_1_r.
          apply Nat_div_succ_l_eq_div.
       ----rewrite Heqs.
