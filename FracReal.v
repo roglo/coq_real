@@ -1721,45 +1721,9 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
      rewrite <- Hequ.
      destruct (LPO_fst (all_A_plus_B_ge_1 i v)) as [Hiv| Hiv].
     **simpl.
-      rewrite Heqv.
-      unfold freal_add_series at 1.
-      unfold sequence_add.
-      rewrite <- Heqv.
-      setoid_rewrite Nat.add_mod; [ | easy | easy ].
-      f_equal; f_equal.
-      unfold fd2n at 1 3.
-      rewrite <- Hxy.
-      do 2 rewrite <- Nat.add_assoc.
-      setoid_rewrite Nat.add_mod; [ | easy | easy ].
-      f_equal; f_equal.
-      setoid_rewrite Nat.add_mod; [ | easy | easy ].
-      remember (fd2n x' i mod rad) as a.
-      rewrite Nat.mod_small in Heqa; [ | apply digit_lt_radix ].
-      subst a.
-      remember (fd2n y' i mod rad) as a.
-      rewrite Nat.mod_small in Heqa; [ | apply digit_lt_radix ].
-      subst a.
-      rewrite Hequ, Heqv.
-      rewrite nA_freal_add_series.
-      rewrite nA_freal_add_series.
-      assert (nA i n (fd2n y) = nA i n (fd2n x)). {
-        apply summation_eq_compat.
-        intros j Hj; unfold fd2n; now rewrite Hxy.
-      }
-      rewrite H; clear H.
-      destruct (lt_dec n k) as [Hnk| Hnk].
-    ---assert (H : nA i n (fd2n x') = nA i n (fd2n y')). {
-         apply summation_eq_compat; intros j Hj; f_equal.
-         unfold fd2n; rewrite Hbef; [ easy | lia ].
-       }
-       rewrite H.
-       unfold fd2n; rewrite Hbef; [ easy | ].
-       enough (i < n) by lia.
-       rewrite Heqn.
-       specialize radix_ge_2 as Hr.
-       destruct rad as [| rr]; [ easy | simpl; lia ].
-    ---apply Nat.nlt_ge in Hnk.
-       specialize (Hiu 0).
+      destruct (le_dec k n) as [Hnk| Hnk].
+    ---specialize (Hiu 0).
+       exfalso.
        unfold all_A_plus_B_ge_1 in Hiu.
        rewrite <- Heqn, <- Heqs in Hiu; simpl in Hiu.
        rewrite Nat.mul_1_r, Nat.add_0_r in Hiu.
@@ -1802,6 +1766,42 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
            simpl; lia.
       ----assert (rad ^ (n - 1 - i) ≠ 0) by now apply Nat.pow_nonzero.
           destruct (rad ^ (n - 1 - i)); [ easy | simpl; lia ].
+    ---rewrite Heqv.
+       unfold freal_add_series at 1.
+       unfold sequence_add.
+       rewrite <- Heqv.
+       setoid_rewrite Nat.add_mod; [ | easy | easy ].
+       f_equal; f_equal.
+       unfold fd2n at 1 3.
+       rewrite <- Hxy.
+       do 2 rewrite <- Nat.add_assoc.
+       setoid_rewrite Nat.add_mod; [ | easy | easy ].
+       f_equal; f_equal.
+       setoid_rewrite Nat.add_mod; [ | easy | easy ].
+       remember (fd2n x' i mod rad) as a.
+       rewrite Nat.mod_small in Heqa; [ | apply digit_lt_radix ].
+       subst a.
+       remember (fd2n y' i mod rad) as a.
+       rewrite Nat.mod_small in Heqa; [ | apply digit_lt_radix ].
+       subst a.
+       rewrite Hequ, Heqv.
+       rewrite nA_freal_add_series.
+       rewrite nA_freal_add_series.
+       assert (nA i n (fd2n y) = nA i n (fd2n x)). {
+         apply summation_eq_compat.
+         intros j Hj; unfold fd2n; now rewrite Hxy.
+       }
+       rewrite H; clear H.
+       assert (H : nA i n (fd2n x') = nA i n (fd2n y')). {
+         apply summation_eq_compat; intros j Hj; f_equal.
+         unfold fd2n; rewrite Hbef; [ easy | lia ].
+       }
+       rewrite H.
+       unfold fd2n; rewrite Hbef; [ easy | ].
+       enough (i < n) by lia.
+       rewrite Heqn.
+       specialize radix_ge_2 as Hr.
+       destruct rad as [| rr]; [ easy | simpl; lia ].
     **destruct Hiv as (ky & Hkyj & Hky); simpl.
       rewrite Heqv.
       unfold freal_add_series at 1.
