@@ -1876,7 +1876,6 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
        move ny before n; move sy before s.
        move Heqny before Heqs; move Heqsy before Heqny.
 f_equal.
-unfold nA.
 assert (Hnn : n ≤ ny).
 rewrite Heqn, Heqny.
 apply Nat.mul_le_mono; [ easy | lia ].
