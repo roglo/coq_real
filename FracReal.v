@@ -1884,6 +1884,11 @@ destruct ky.
 assert (k = n + 1) by lia.
 subst k.
 clear Hnk Hkyj Hkky.
+rewrite Nat.add_sub in Hik, Hwhi, Hbef.
+rewrite Nat.add_0_r, <- Heqn in Heqny; subst ny.
+rewrite <- Heqs in Heqsy; subst sy.
+clear Hnn.
+
 ...
 (*
 remember 0 as l eqn:Hl in |-*.
