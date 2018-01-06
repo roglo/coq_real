@@ -115,9 +115,10 @@ Arguments freal r _%F.
 Definition fd2n {r : radix} x (i : nat) := dig (freal x i).
 Arguments fd2n _ x%F i%nat.
 
-(* note: in variable names, "999" means "infinity of 9" *)
+(* note: in variable names, "999" means "infinity of digits rad-1" *)
 
 Definition followed_by_999 {r : radix} u i j := rad - 1 - d2n u (i + j + 1).
+Definition followed_by_000 {r : radix} u i j := d2n u (i + j + 1).
 
 Definition digit_sequence_normalize {r : radix} (u : nat → digit) i :=
   match LPO_fst (followed_by_999 u i) with
@@ -1667,8 +1668,20 @@ split; intros Hxy *.
  now apply digit_eq_eq in Hxy.
 Qed.
 
+Definition ends_with_999 {r : radix} u i :=
+  match LPO_fst (followed_by_999 u i) with
+  | inl _ => 0
+  | inr _ => 1
+  end.
+
 Definition does_not_end_with_999 {r : radix} u i :=
   match LPO_fst (followed_by_999 u i) with
+  | inl _ => 1
+  | inr _ => 0
+  end.
+
+Definition does_not_end_with_000 {r : radix} u i :=
+  match LPO_fst (followed_by_000 u i) with
   | inl _ => 1
   | inr _ => 0
   end.
@@ -1889,9 +1902,43 @@ rewrite <- Heqs in Heqsy; subst sy.
 clear Hnn.
 Print does_not_end_with_999.
 
-Theorem glop :
-  does_not_end_with_999 (freal_add_series x y) i
-  → ends_with_999 x i ↔ does_not_end_with_000 y i.
+Theorem glop {r : radix} : ∀ x y i,
+  does_not_end_with_999 (freal_add_to_seq x y) i = 0
+  → ends_with_999 (freal x) i = 0 ↔ does_not_end_with_000 (freal y) i = 0.
+Proof.
+intros * Hxy.
+split.
+-intros Hx.
+ unfold does_not_end_with_999 in Hxy.
+ unfold ends_with_999 in Hx.
+ unfold does_not_end_with_000.
+ remember (freal_add_to_seq x y) as u.
+ destruct (LPO_fst (followed_by_999 u i)) as [| H]; [ easy | ].
+ destruct H as (k & Hkj & Hk); clear Hxy.
+ destruct (LPO_fst (followed_by_999 (freal x) i)) as [H| ]; [ | easy ].
+ clear Hx; rename H into Hx.
+ destruct (LPO_fst (followed_by_000 (freal y) i)) as [H| ]; [ | easy ].
+ rename H into Hy; exfalso.
+(*
+ specialize (Hx k).
+ specialize (Hy k).
+*)
+ apply Hk; clear Hk.
+ unfold followed_by_999 in Hx |-*.
+ unfold followed_by_000 in Hy.
+ rewrite Hequ; unfold freal_add_to_seq, d2n.
+ unfold numbers_to_digits.
+ remember (freal_add_series x y) as v.
+ destruct (LPO_fst (A_plus_B_ge_1 (i + k + 1) v)) as [H| H].
+ +rewrite Heqv; unfold freal_add_series, sequence_add; simpl.
+  unfold d2n in Hx, Hy; unfold fd2n.
+  rewrite Hy, Nat.add_0_r.
+  assert (Hx' : ∀ k, dig (freal x (i + k + 1)) = rad - 1). {
+    intros j; specialize (Hx j).
+    specialize (digit_lt_radix (freal x (i + j + 1))) as Hr; lia.
+  }
+  clear Hx; rename Hx' into Hx; move Hx after Hy.
+  rewrite Hx.
 
 ...
 specialize (Hiu 0).
