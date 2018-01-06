@@ -1919,10 +1919,7 @@ split.
  clear Hx; rename H into Hx.
  destruct (LPO_fst (followed_by_000 (freal y) i)) as [H| ]; [ | easy ].
  rename H into Hy; exfalso.
-(*
- specialize (Hx k).
- specialize (Hy k).
-*)
+...
  apply Hk; clear Hk.
  unfold followed_by_999 in Hx |-*.
  unfold followed_by_000 in Hy.
@@ -1947,9 +1944,14 @@ split.
   *unfold nA.
    rewrite <- summation_mul_distr_l; simpl.
    rewrite summation_shift.
-  --idtac.
-Check power_summation.
-rewrite Nat.sub_add_distr.
+  --rewrite Nat.sub_add_distr.
+   rewrite summation_rtl.
+rewrite summation_eq_compat with (h := λ l, rad ^ l).
+specialize (power_summation rad (n - 1 - j - 1) radix_gt_0) as HH.
+apply plus_minus in HH.
+rewrite HH.
+rewrite Hs.
+rewrite Nat.div_small.
 ...
 Focus 2.
 intros l Hl.
