@@ -1897,6 +1897,8 @@ destruct (lt_dec (nA i n u mod s * rad + nB n 0 u) (rad ^ (n - i))) as [H| H]; [
 clear Hiu; rename H into Huab.
 destruct (lt_dec (nA i n v mod s * rad + nB n 0 v) (rad ^ (n - i))) as [H| H]; [ | easy ].
 clear Hky; rename H into Hvab.
+exfalso; apply Huab; clear Huab.
+
 ...
 (*
 remember 0 as l eqn:Hl in |-*.
