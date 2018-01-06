@@ -1888,7 +1888,16 @@ rewrite Nat.add_sub in Hik, Hwhi, Hbef.
 rewrite Nat.add_0_r, <- Heqn in Heqny; subst ny.
 rewrite <- Heqs in Heqsy; subst sy.
 clear Hnn.
-
+specialize (Hiu 0).
+move Hiu before Hky.
+unfold A_plus_B_ge_1 in Hiu, Hky.
+rewrite <- Heqn, <- Heqs in Hiu, Hky.
+simpl in Hiu, Hky.
+rewrite Nat.mul_1_r, Nat.add_0_r in Hiu, Hky.
+destruct (lt_dec (nA i n u mod s * rad + nB n 0 u) (rad ^ (n - i))) as [H| H]; [ easy | ].
+clear Hiu; rename H into Huab.
+destruct (lt_dec (nA i n v mod s * rad + nB n 0 v) (rad ^ (n - i))) as [H| H]; [ | easy ].
+clear Hky; rename H into Hvab.
 ...
 (*
 remember 0 as l eqn:Hl in |-*.
