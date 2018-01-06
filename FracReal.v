@@ -1540,7 +1540,7 @@ now destruct (Nat.eq_dec (fd2n x k) (fd2n y k)).
 Qed.
 
 Theorem nA_eq_compat {r : radix} : ∀ i n u v,
-  (∀ i, u i = v i)
+  (∀ j, i + 1 ≤ j ≤ n - 1 → u j = v j)
   → nA i n u = nA i n v.
 Proof.
 intros * Hfg *.
@@ -1939,6 +1939,22 @@ split.
   }
   clear Hx; rename Hx' into Hx; move Hx after Hy.
   rewrite Hx.
+  remember (i + k + 1) as j eqn:Hj.
+  remember (rad * (j + 2)) as n eqn:Hn.
+  remember (rad ^ (n - 1 - j)) as s eqn:Hs.
+  move n before j; move s before n.
+  rewrite nA_eq_compat with (v0 := λ j, rad - 1).
+  *unfold nA.
+   rewrite <- summation_mul_distr_l; simpl.
+   rewrite summation_shift.
+  --idtac.
+Check power_summation.
+rewrite Nat.sub_add_distr.
+...
+Focus 2.
+intros l Hl.
+replace l with (i + (l - i - 1) + 1) by lia.
+rewrite Hx, Hy; lia.
 
 ...
 specialize (Hiu 0).
