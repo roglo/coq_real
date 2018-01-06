@@ -1890,9 +1890,8 @@ clear Hnn.
 Print does_not_end_with_999.
 
 Theorem glop :
-  ends_with_999 x i
-  → does_not_end_with_999 (freal_add_series x y) i
-  → does_not_end_with_000 y i.
+  does_not_end_with_999 (freal_add_series x y) i
+  → ends_with_999 x i ↔ does_not_end_with_000 y i.
 
 ...
 specialize (Hiu 0).
