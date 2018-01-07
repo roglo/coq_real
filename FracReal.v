@@ -261,15 +261,17 @@ split; intros Hxy.
      ----destruct (lt_dec (S (d2n (freal x) (S i))) rad) as [Hsx1| Hsx1].
       ++++specialize (Hx0 i).
           unfold followed_by_999, d2n in Hx0; unfold d2n in Hsx1.
-          rewrite Nat.add_0_l, Nat.add_1_r in Hx0.
-...
+          simpl in Hx0; rewrite Nat.add_1_r in Hx0.
+          destruct (Nat.eq_dec (dig (freal x (S i))) (rad - 1)); [ | easy ].
           clear Hxy2; lia.
       ++++now apply digit_eq_eq in Hxy2; simpl in Hxy2.
      ----destruct Hx1 as (j & Hjj & Hj).
          unfold followed_by_999 in Hj; unfold d2n in Hj.
-         assert (Hksi : 1 ≤ S i + j + 1) by lia.
-         specialize (Hxk _ Hksi).
-         unfold fd2n in Hxk; lia.
+         destruct (Nat.eq_dec (dig (freal x (S i + j + 1))) (rad - 1)).
+      ++++easy.
+      ++++assert (Hksi : 1 ≤ S i + j + 1) by lia.
+          specialize (Hxk _ Hksi).
+          unfold fd2n in Hxk; lia.
     +++exists 0.
        split; [ now intros | ].
        split; [ now left | ].
@@ -285,10 +287,10 @@ split; intros Hxy.
       ++++specialize (Hx1 0).
           unfold followed_by_999, d2n in Hx1.
           rewrite Nat.add_0_r, Nat.add_1_r in Hx1.
-          unfold fd2n.
-          specialize (digit_lt_radix (freal x (S i))) as H; lia.
+          now destruct (Nat.eq_dec (dig (freal x (S i))) (rad - 1)).
       ++++destruct Hx1 as (j & Hjj & Hj).
           specialize (Hx0 (i + j)).
+...
           now unfold followed_by_999, d2n in Hj, Hx0.
      ***split; [ | easy ].
         intros i Hi.
