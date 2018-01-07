@@ -45,19 +45,25 @@ revert i k Hn Hk; induction n; intros.
   now apply lt_not_le in H3.
 Qed.
 
-Theorem LPO_fst : ∀ (u : nat → nat),
-  (∀ k, u k = O) +
-  { i : nat | (∀ j, j < i → u j = 0) ∧ u i ≠ O }.
+Theorem LPO_fst : ∀ (u : nat → bool),
+  (∀ k, u k = true) +
+  { i : nat | (∀ j, j < i → u j = true) ∧ u i = false }.
 Proof.
 intros.
-specialize (LPO u) as [H| (i, Hi)]; [ now left | right ].
-remember (first_such_that (λ i, negb (Nat.eqb (u i) 0)) i 0) as j eqn:Hj.
-exists j.
-assert (Hui : u (i + 0) ≠ 0) by now rewrite Nat.add_0_r.
-specialize (first_such_that_has_prop u i 0 j Hui Hj) as (Huj, H).
-split; [ | easy ].
-intros k Hkj.
-apply H; [ apply Nat.le_0_l | easy ].
+set (v i := if u i then 0 else 1).
+specialize (LPO v) as [H| (i, Hi)]; [ left | right ].
+-intros k; subst v; specialize (H k); simpl in H.
+ now destruct (u k).
+-remember (first_such_that (λ i, negb (Nat.eqb (v i) 0)) i 0) as j eqn:Hj.
+ exists j.
+ assert (Hui : v (i + 0) ≠ 0) by now rewrite Nat.add_0_r.
+ specialize (first_such_that_has_prop v i 0 j Hui Hj) as (Huj, H).
+ subst v; split.
+ +intros k Hkj; simpl in H.
+  specialize (H k (Nat.le_0_l k) Hkj).
+  now destruct (u k).
+ +simpl in Huj.
+  now destruct (u j).
 Qed.
 
 (* Radix *)
@@ -117,8 +123,10 @@ Arguments fd2n _ x%F i%nat.
 
 (* note: in variable names, "999" means "infinity of digits rad-1" *)
 
-Definition followed_by_999 {r : radix} u i j := rad - 1 - d2n u (i + j + 1).
-Definition followed_by_000 {r : radix} u i j := d2n u (i + j + 1).
+Definition followed_by_999 {r : radix} u i j :=
+  if eq_nat_dec (d2n u (i + j + 1)) (rad - 1) then true else false.
+Definition followed_by_000 {r : radix} u i j :=
+  if eq_nat_dec (d2n u (i + j + 1)) 0 then true else false.
 
 Definition digit_sequence_normalize {r : radix} (u : nat → digit) i :=
   match LPO_fst (followed_by_999 u i) with
@@ -136,7 +144,7 @@ Definition freal_normalize {r : radix} x :=
 Arguments freal_normalize r x%F.
 
 Definition eq_freal_seq {r : radix} x y i :=
-  if Nat.eq_dec (fd2n x i) (fd2n y i) then 0 else 1.
+  if Nat.eq_dec (fd2n x i) (fd2n y i) then true else false.
 
 Definition freal_normalized_eq {r : radix} x y :=
   match LPO_fst (eq_freal_seq x y) with
@@ -165,15 +173,12 @@ Notation "a ≠ b" := (freal_eq a b = false) : freal_scope.
 Notation "a < b" := (freal_lt a b = true) : freal_scope.
 
 Theorem followed_by_999_all_9 {r : radix} : ∀ u i,
-  (∀ j, followed_by_999 u i j = 0)
+  (∀ j, followed_by_999 u i j = true)
   → (∀ k, d2n u (i + k + 1) = rad - 1).
 Proof.
 intros * Hm9 *.
 specialize (Hm9 k); unfold followed_by_999 in Hm9.
-apply Nat.sub_0_le in Hm9.
-specialize (digit_lt_radix (u (i + k + 1))) as H.
-unfold d2n in Hm9 |-*.
-lia.
+now destruct (Nat.eq_dec (d2n u (i + k + 1)) (rad - 1)).
 Qed.
 
 Definition freal_norm_not_norm_eq {r : radix} x y :=
@@ -214,6 +219,7 @@ split; intros Hxy.
     exists (k + i + 1).
     split; [ lia | ].
     unfold followed_by_999 in Hi; unfold d2n in Hi.
+...
     unfold fd2n; lia.
   *intros k; specialize (Hxsy k).
    unfold eq_freal_seq in Hxsy.
