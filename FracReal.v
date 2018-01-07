@@ -218,9 +218,12 @@ split; intros Hxy.
   --destruct Hxk as (i & Hij & Hi).
     exists (k + i + 1).
     split; [ lia | ].
-    unfold followed_by_999 in Hi; unfold d2n in Hi.
-...
-    unfold fd2n; lia.
+    unfold followed_by_999 in Hi.
+    destruct (Nat.eq_dec (d2n (freal x) (k + i + 1)) (rad - 1)) as [H| H].
+   ++easy.
+   ++unfold d2n in H; unfold fd2n.
+     specialize (digit_lt_radix (freal x (k + i + 1))) as Hr.
+     lia.
   *intros k; specialize (Hxsy k).
    unfold eq_freal_seq in Hxsy.
    destruct (Nat.eq_dec (fd2n x k) (fd2n y k)) as [H| ];
@@ -245,6 +248,7 @@ split; intros Hxy.
        split; [ now right | ].
        assert (Hxk : ∀ i, 1 ≤ i → fd2n x i = rad - 1).
      ***intros i Hki; specialize (Hx0 (i - 1)) as H.
+...
         apply Nat.sub_0_le in H.
         unfold followed_by_999, d2n in H; unfold fd2n.
         specialize (digit_lt_radix (freal x i)).
