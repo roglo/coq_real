@@ -248,11 +248,9 @@ split; intros Hxy.
        split; [ now right | ].
        assert (Hxk : ∀ i, 1 ≤ i → fd2n x i = rad - 1).
      ***intros i Hki; specialize (Hx0 (i - 1)) as H.
-...
-        apply Nat.sub_0_le in H.
-        unfold followed_by_999, d2n in H; unfold fd2n.
-        specialize (digit_lt_radix (freal x i)).
-        replace (0 + (i - 1) + 1) with i in H; lia.
+        unfold followed_by_999 in H; unfold fd2n.
+        simpl in H; rewrite Nat.sub_add in H; [ | easy ].
+        now destruct (Nat.eq_dec (d2n (freal x) i) (rad - 1)).
      ***split; [ | easy ].
         intros i Hi.
         destruct i; [ easy | ].
@@ -264,6 +262,7 @@ split; intros Hxy.
       ++++specialize (Hx0 i).
           unfold followed_by_999, d2n in Hx0; unfold d2n in Hsx1.
           rewrite Nat.add_0_l, Nat.add_1_r in Hx0.
+...
           clear Hxy2; lia.
       ++++now apply digit_eq_eq in Hxy2; simpl in Hxy2.
      ----destruct Hx1 as (j & Hjj & Hj).
