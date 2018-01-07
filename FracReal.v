@@ -193,6 +193,14 @@ unfold has_9_after.
 now destruct (Nat.eq_dec (d2n u (i + j + 1)) (rad - 1)).
 Qed.
 
+Theorem has_9_after_false_iff {r : radix} : ∀ i j u,
+  has_9_after u i j = false ↔ d2n u (i + j + 1) ≠ rad - 1.
+Proof.
+intros.
+unfold has_9_after.
+now destruct (Nat.eq_dec (d2n u (i + j + 1)) (rad - 1)).
+Qed.
+
 Definition freal_norm_not_norm_eq {r : radix} x y :=
   ∃ k,
    (∀ i, i < k - 1 → freal x i = freal y i) ∧
@@ -320,8 +328,9 @@ split; intros Hxy.
        ****now apply digit_eq_eq in Hxy.
       ++++destruct Hx1 as (j & Hjj & Hj).
           specialize (Hx0 (S (i + j))).
-...
-          now unfold has_9_after, d2n in Hj, Hx0.
+          apply has_9_after_true_iff in Hx0; simpl in Hx0.
+          apply has_9_after_false_iff in Hj; simpl in Hj.
+          easy.
    ---now rewrite Hxy1 in Hxy0.
   --exists (S k).
     assert (Hkxy : ∀ i, i < k → freal y i = freal x i).
@@ -339,6 +348,7 @@ split; intros Hxy.
      destruct (LPO_fst (has_9_after (freal x) k)) as [H| Hxk].
     **assert (Hxk : ∀ i, S k ≤ i → fd2n x i = rad - 1).
     ---intros i Hki; specialize (H (i - k - 1)).
+...
        apply Nat.sub_0_le in H.
        unfold has_9_after, d2n in H; unfold fd2n.
        specialize (digit_lt_radix (freal x i)).
