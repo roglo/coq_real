@@ -1468,9 +1468,8 @@ remember (freal (x + (y + z))) as xy.
 remember (freal ((x + y) + z)) as yx.
 simpl.
 unfold digit_sequence_normalize.
-...
-destruct (LPO_fst (λ j : nat, rad - 1 - d2n xy (i + j + 1))) as [Hxy| Hxy].
--destruct (LPO_fst (λ j : nat, rad - 1 - d2n yx (i + j + 1))) as [Hyx| Hyx].
+destruct (LPO_fst (has_9_after xy i)) as [Hxy| Hxy].
+-destruct (LPO_fst (has_9_after yx i)) as [Hyx| Hyx].
  +unfold freal_add in Heqxy; simpl in Heqxy.
   unfold freal_add in Heqyx; simpl in Heqyx.
   destruct (lt_dec (S (d2n xy i)) rad) as [Hrxy| Hrxy].
@@ -1540,9 +1539,7 @@ unfold freal_eq_prop, freal_eq, freal_normalized_eq.
 remember (freal_normalize x) as y eqn:Hy.
 destruct (LPO_fst (has_same_digits y y)) as [Hs| Hs]; [ easy | exfalso ].
 destruct Hs as (i & Hji & Hyy).
-apply Hyy.
-unfold has_same_digits.
-now destruct (Nat.eq_dec (fd2n y i) (fd2n y i)).
+now apply has_same_digits_false_iff in Hyy.
 Qed.
 
 Theorem freal_eq_sym {r : radix} : symmetric _ freal_eq_prop.
@@ -1593,13 +1590,12 @@ Theorem freal_eq_prop_eq {r : radix} : ∀ x y,
 Proof. easy. Qed.
 
 Theorem all_eq_seq_all_eq {r : radix} : ∀ x y,
-  (∀ k, has_same_digits x y k = 0) → (∀ k, freal x k = freal y k).
+  (∀ k, has_same_digits x y k = true) → (∀ k, freal x k = freal y k).
 Proof.
 intros * Hk *.
 specialize (Hk k).
-unfold has_same_digits in Hk.
-apply digit_eq_eq.
-now destruct (Nat.eq_dec (fd2n x k) (fd2n y k)).
+apply has_same_digits_true_iff in Hk.
+now apply digit_eq_eq.
 Qed.
 
 Theorem nA_eq_compat {r : radix} : ∀ i n u v,
@@ -1649,6 +1645,7 @@ destruct (LPO_fst (A_plus_B_ge_1 i f)) as [Hf| Hf].
   intros j Hj.
   now rewrite Hfg.
  +exfalso.
+...
   destruct Hg as (k & Hjk & H); apply H; clear H.
   specialize (Hf k).
   erewrite A_plus_B_ge_1_eq_compat in Hf; [ | easy ]; easy.
