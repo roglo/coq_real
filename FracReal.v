@@ -2012,6 +2012,51 @@ split.
  unfold has_other_than_9_after.
  destruct (LPO_fst (is_9_after (freal y) i)) as [Hy| ]; [ | easy].
  exfalso.
+ specialize (Hxy (max i k)).
+ unfold has_other_than_9_after in Hxy.
+ set (u := freal_add_to_seq x y) in Hxy.
+ destruct (LPO_fst (is_9_after u (max i k))) as [Hk| Hk]; [ easy | ].
+ clear Hxy.
+ destruct Hk as (j & Hjj & Hj).
+ apply is_9_after_false_iff in Hj.
+ unfold d2n in Hj; simpl in Hj.
+Check numbers_to_digits_id.
+ assert (d2n u (max i k + j + 1) < rad).
+Focus 2.
+ specialize (numbers_to_digits_id (d2n u)) as HH.
+...
+
+subst u.
+ unfold freal_add_to_seq in Hj, H.
+ unfold freal_add_series, sequence_add in Hj, H.
+
+ rewrite numbers_to_digits_id in Hj.
+
+
+Theorem has_other_than_9_after_true_iff {r : radix} : ∀ u i,
+  has_other_than_9_after u i = true ↔ 3 = 3.
+Proof.
+intros.
+unfold has_other_than_9_after.
+destruct (LPO_fst (is_9_after u i)) as [Hi| Hi].
+split; [ easy | ].
+Focus 2.
+...
+
+split.
+-intros Hi.
+...
+
+ apply has_other_than_9_after_true_iff in Hxy.
+...
+
+ unfold has_other_than_9_after in Hxy
+
+
+ specialize (Hx (max i k) (Nat.le_max_r i k)).
+ specialize (Hy (max i k)).
+...
+
  specialize (Hxy k).
  unfold has_other_than_9_after in Hxy.
  destruct (LPO_fst (is_9_after (freal_add_to_seq x y) k)) as [H| H].
