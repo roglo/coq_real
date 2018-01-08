@@ -646,9 +646,7 @@ Definition A_plus_B_ge_1 {r : radix} i u l :=
   let n := rad * (i + 2) in
   let s := rad ^ (n - 1 - i) in
   if lt_dec (nA i n u mod s * rad ^ (l + 1) + nB n l u) (rad ^ (n + l - i))
-  then 1 else 0.
-
-...
+  then false else true.
 
 Definition numbers_to_digits {r : radix} u i :=
   match LPO_fst (A_plus_B_ge_1 i u) with
@@ -804,15 +802,14 @@ destruct (LPO_fst (A_plus_B_ge_1 i xy)) as [Hxy| Hxy].
 
  +destruct Hyx as (l & Hjl & Hl).
   destruct (lt_eq_lt_dec k l) as [ [ Hkl | Hkl ] | Hkl ].
-   now apply Hjl in Hkl; subst xy.
-
-   rewrite Heqxy, freal_add_series_comm, <- Heqyx.
+  *apply Hjl in Hkl.
+   now rewrite Hk in Hkl.
+  *rewrite Heqxy, freal_add_series_comm, <- Heqyx.
    rewrite nA_freal_add_series_comm, <- Heqyx.
    now subst k.
-
-   apply Hjk in Hkl.
+  *apply Hjk in Hkl.
    rewrite Heqxy, A_plus_B_ge_1_freal_add_series_comm in Hkl.
-   now rewrite <- Heqyx in Hkl.
+   now rewrite <- Heqyx, Hl in Hkl.
 Qed.
 
 Theorem freal_mul_to_seq_i_comm {r : radix} : ∀ x y i,
@@ -823,30 +820,27 @@ unfold freal_mul_to_seq, numbers_to_digits.
 remember (freal_mul_series x y) as xy.
 remember (freal_mul_series y x) as yx.
 destruct (LPO_fst (A_plus_B_ge_1 i xy)) as [Hxy| Hxy].
- rewrite Heqxy, freal_mul_series_comm, <- Heqyx.
+-rewrite Heqxy, freal_mul_series_comm, <- Heqyx.
  destruct (LPO_fst (A_plus_B_ge_1 i yx)) as [Hyx| Hyx].
-  now rewrite nA_freal_mul_series_comm, <- Heqyx.
-
-  destruct Hyx as (k & Hjk & Hk).
+ +now rewrite nA_freal_mul_series_comm, <- Heqyx.
+ +destruct Hyx as (k & Hjk & Hk).
   rewrite Heqyx, A_plus_B_ge_1_freal_mul_series_comm, <- Heqxy in Hk.
   now rewrite Hxy in Hk.
-
- destruct Hxy as (k & Hjk & Hk).
+-destruct Hxy as (k & Hjk & Hk).
  rewrite Heqxy, A_plus_B_ge_1_freal_mul_series_comm, <- Heqyx in Hk.
  destruct (LPO_fst (A_plus_B_ge_1 i yx)) as [Hyx| Hyx].
-  now rewrite Hyx in Hk.
-
-  destruct Hyx as (l & Hjl & Hl).
+ +now rewrite Hyx in Hk.
+ +destruct Hyx as (l & Hjl & Hl).
   destruct (lt_eq_lt_dec k l) as [ [ Hkl | Hkl ] | Hkl ].
-   now apply Hjl in Hkl; subst xy.
-
-   rewrite Heqxy, freal_mul_series_comm, <- Heqyx.
+  *apply Hjl in Hkl; subst xy.
+   now rewrite Hk in Hkl.
+  *rewrite Heqxy, freal_mul_series_comm, <- Heqyx.
    rewrite nA_freal_mul_series_comm, <- Heqyx.
    now subst k.
-
-   apply Hjk in Hkl.
+  *apply Hjk in Hkl.
    rewrite Heqxy, A_plus_B_ge_1_freal_mul_series_comm in Hkl.
-   now rewrite <- Heqyx in Hkl.
+   rewrite <- Heqyx in Hkl.
+   now rewrite Hl in Hkl.
 Qed.
 
 Theorem dig_norm_add_comm {r : radix} : ∀ x y i,
@@ -884,9 +878,12 @@ destruct (LPO_fst (has_9_after xy i)) as [Hxy| Hxy].
   subst yx; simpl in Hk; simpl.
   unfold freal_add in Heqxy; simpl in Heqxy.
   subst xy; simpl in Hxy; simpl.
-  unfold has_9_after, d2n in Hk.
+  apply has_9_after_false_iff in Hk.
+  unfold d2n in Hk.
   rewrite freal_add_to_seq_i_comm in Hk.
-  now specialize (Hxy k).
+  specialize (Hxy k).
+  apply has_9_after_true_iff in Hxy.
+  now unfold d2n in Hxy.
 
  destruct Hxy as (k & Hjk & Hk).
  unfold freal_add in Heqxy; simpl in Heqxy.
@@ -894,9 +891,12 @@ destruct (LPO_fst (has_9_after xy i)) as [Hxy| Hxy].
  destruct (LPO_fst (has_9_after yx i)) as [Hyx| Hyx].
   exfalso; clear Hjk.
   subst xy yx; simpl in Hk, Hyx; unfold d2n in Hk; simpl.
-  unfold has_9_after, d2n in Hk.
+  apply has_9_after_false_iff in Hk.
+  unfold d2n in Hk.
   rewrite freal_add_to_seq_i_comm in Hk.
-  now specialize (Hyx k).
+  specialize (Hyx k).
+  apply has_9_after_true_iff in Hyx.
+  now unfold d2n in Hyx.
 
   subst xy yx; simpl.
   apply freal_add_to_seq_i_comm.
@@ -934,11 +934,13 @@ destruct (LPO_fst (has_9_after xy i)) as [Hxy| Hxy].
   destruct Hyx as (k & Hjk & Hk); clear Hjk.
   unfold freal_mul in Heqyx; simpl in Heqyx.
   subst yx; simpl in Hk; simpl; unfold d2n in Hk.
-  unfold has_9_after, d2n in Hk.
+  apply has_9_after_false_iff in Hk.
+  unfold d2n in Hk.
   rewrite freal_mul_to_seq_i_comm in Hk.
   unfold freal_mul in Heqxy; simpl in Heqxy.
   subst xy; simpl in Hxy; simpl.
-  now specialize (Hxy k).
+  specialize (Hxy k).
+  now apply has_9_after_true_iff in Hxy.
 
  destruct Hxy as (k & Hjk & Hk).
  unfold freal_mul in Heqxy; simpl in Heqxy.
@@ -946,9 +948,11 @@ destruct (LPO_fst (has_9_after xy i)) as [Hxy| Hxy].
  destruct (LPO_fst (has_9_after yx i)) as [Hyx| Hyx].
   exfalso; clear Hjk.
   subst xy yx; simpl in Hk, Hyx; simpl; unfold d2n in Hk.
-  unfold has_9_after, d2n in Hk.
+  apply has_9_after_false_iff in Hk.
+  unfold d2n in Hk.
   rewrite freal_mul_to_seq_i_comm in Hk.
-  now specialize (Hyx k).
+  specialize (Hyx k).
+  now apply has_9_after_true_iff in Hyx.
 
   subst xy yx; simpl.
   apply freal_mul_to_seq_i_comm.
@@ -964,6 +968,7 @@ remember (freal_normalize (y + x)) as nyx eqn:Hnyx.
 destruct (LPO_fst (has_same_digits nxy nyx)) as [H| H]; [ easy | ].
 exfalso.
 destruct H as (i & Hji & Hi).
+...
 apply Hi; clear Hi.
 unfold has_same_digits.
 destruct (Nat.eq_dec (fd2n nxy i) (fd2n nyx i)) as [H| H]; [ easy | ].
