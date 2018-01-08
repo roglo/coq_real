@@ -2023,12 +2023,14 @@ split.
    apply is_9_after_true_iff in Hy.
    replace (i + (k + j - i)) with (k + j) in Hy by lia.
    unfold freal_add_to_seq in Hj.
-   unfold freal_add_series in Hj.
-   unfold sequence_add in Hj.
    unfold numbers_to_digits in Hj.
    unfold d2n in Hj; simpl in Hj.
-(* ouais, c'est compliqué... *)
-
+   set (u := freal_add_series x y) in Hj.
+   destruct (LPO_fst (A_plus_B_ge_1 (k + j + 1) u)) as [Hkj| Hkj].
+  --simpl in Hj.
+    set (m := k + j + 1) in Hkj, Hj, Hy.
+    set (n := rad * (m + 2)) in Hj.
+    set (s := rad ^ (n - 1 - m)) in Hj.
 ...
 
  unfold has_other_than_9_after in Hxy.
