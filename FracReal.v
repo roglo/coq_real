@@ -2009,6 +2009,25 @@ Proof.
 intros * Hxy.
 split.
 -intros (k & Hx) i.
+ unfold has_other_than_9_after.
+ destruct (LPO_fst (is_9_after (freal y) i)) as [Hy| ]; [ | easy].
+ exfalso.
+ specialize (Hxy k).
+ unfold has_other_than_9_after in Hxy.
+ destruct (LPO_fst (is_9_after (freal_add_to_seq x y) k)) as [H| H].
+ +easy.
+ +clear Hxy; destruct H as (j & Hjj & Hj).
+  destruct (le_dec i (k + j)) as [Hikj| Hikj].
+  *specialize (Hy (k + j - i)).
+   apply is_9_after_false_iff in Hj.
+   apply is_9_after_true_iff in Hy.
+   replace (i + (k + j - i)) with (k + j) in Hy by lia.
+   unfold freal_add_to_seq in Hj.
+   unfold freal_add_series in Hj.
+   unfold sequence_add in Hj.
+   unfold numbers_to_digits in Hj.
+   unfold d2n in Hj; simpl in Hj.
+(* ouais, c'est compliqué... *)
 
 ...
 
