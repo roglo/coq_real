@@ -1759,7 +1759,7 @@ Definition ends_with_999 {r : radix} u i :=
   | inr _ => 1
   end.
 
-Definition has_no_9_after {r : radix} u i :=
+Definition has_other_than_9_after {r : radix} u i :=
   match LPO_fst (has_9_after u i) with
   | inl _ => false
   | inr _ => true
@@ -1794,8 +1794,8 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
   apply digit_eq_eq in Hxy'.
   now rewrite Hxy, Hxy'.
  +destruct Hxy' as (k & Hbef & Hwhi & Hxaft & Hyaft).
-  destruct (LPO_fst (has_no_9_after (freal (x + x')))) as [Hxx| Hxx].
-  *destruct (LPO_fst (has_no_9_after (freal (y + y')))) as [Hyy| Hyy].
+  destruct (LPO_fst (has_other_than_9_after (freal (x + x')))) as [Hxx| Hxx].
+  *destruct (LPO_fst (has_other_than_9_after (freal (y + y')))) as [Hyy| Hyy].
   --left.
     intros i.
     unfold freal_add, freal_add_to_seq; simpl.
@@ -1988,17 +1988,17 @@ rewrite Nat.add_sub in Hik, Hwhi, Hbef.
 rewrite Nat.add_0_r, <- Heqn in Heqny; subst ny.
 rewrite <- Heqs in Heqsy; subst sy.
 clear Hnn.
-Print has_no_9_after.
+Print has_other_than_9_after.
 ...
 
 Theorem glop {r : radix} : ∀ x y i,
-  has_no_9_after (freal_add_to_seq x y) i = 0
+  has_other_than_9_after (freal_add_to_seq x y) i = 0
   → ends_with_999 (freal x) i = 0 ↔ does_not_end_with_000 (freal y) i = 0.
 Proof.
 intros * Hxy.
 split.
 -intros Hx.
- unfold has_no_9_after in Hxy.
+ unfold has_other_than_9_after in Hxy.
  unfold ends_with_999 in Hx.
  unfold does_not_end_with_000.
  remember (freal_add_to_seq x y) as u.
