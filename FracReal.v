@@ -1997,37 +1997,13 @@ specialize (Nat.mod_upper_bound (nA i n u) s H) as H1.
 apply Nat.lt_le_trans with (m := s * rad + u n).
 apply Nat.add_lt_mono_r.
 now apply Nat.mul_lt_mono_pos_r.
-...
-assert (u n < rad).
-rewrite Hequ.
-unfold freal_add_series.
-unfold sequence_add.
-...
-
-replace rad with (rad ^ 1) at 1 by apply Nat.pow_1_r.
-rewrite Heqs.
-rewrite <- Nat.pow_add_r.
-
 
 ...
-f_equal.
-assert (Hnn : n ≤ ny).
-rewrite Heqn, Heqny.
-apply Nat.mul_le_mono; [ easy | lia ].
-destruct ky.
-assert (k = n + 1) by lia.
-subst k.
-clear Hnk Hkyj Hkky.
-rewrite Nat.add_sub in Hik, Hwhi, Hbef.
-rewrite Nat.add_0_r, <- Heqn in Heqny; subst ny.
-rewrite <- Heqs in Heqsy; subst sy.
-clear Hnn.
-Print has_other_than_9_after.
-...
 
-Theorem glop {r : radix} : ∀ x y i,
-  has_other_than_9_after (freal_add_to_seq x y) i = 0
-  → ends_with_999 (freal x) i = 0 ↔ does_not_end_with_000 (freal y) i = 0.
+Theorem glop {r : radix} : ∀ x y,
+  (∀ i, has_other_than_9_after (freal_add_to_seq x y) i = true)
+  → ∀ i,
+     ends_with_999 (freal x) i = true ↔ ends_with_000 (freal y) i = false.
 Proof.
 intros * Hxy.
 split.
