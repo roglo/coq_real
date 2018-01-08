@@ -1975,6 +1975,14 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
        move Heqny before Heqs; move Heqsy before Heqny.
 apply A_plus_B_ge_1_false_iff in Hky.
 rewrite <- Heqn, <- Heqs in Hky.
+assert
+  (H : ∀ k, ¬ nA i n u mod s * rad ^ (k + 1) + nB n k u < rad ^ (n + k - i)).
+intros j.
+specialize (Hiu j).
+apply A_plus_B_ge_1_true_iff in Hiu.
+now rewrite <- Heqn, <- Heqs in Hiu.
+clear Hiu; rename H into Hiu; move Hiu before Heqsy.
+
 ...
 f_equal.
 assert (Hnn : n ≤ ny).
