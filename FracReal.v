@@ -1451,11 +1451,8 @@ remember (freal_normalize x) as nx eqn:Hnx.
 destruct (LPO_fst (has_same_digits n0x nx)) as [H| H]; [ easy | ].
 exfalso.
 destruct H as (i & Hji & Hi).
-...
+apply has_same_digits_false_iff in Hi.
 apply Hi; clear Hi.
-unfold has_same_digits.
-destruct (Nat.eq_dec (fd2n n0x i) (fd2n nx i)) as [H| H]; [ easy | ].
-exfalso; apply H; clear H.
 subst n0x nx; simpl.
 unfold fd2n; f_equal.
 now apply dig_norm_add_0_l; [ | unfold fd2n ].
@@ -1471,6 +1468,7 @@ remember (freal (x + (y + z))) as xy.
 remember (freal ((x + y) + z)) as yx.
 simpl.
 unfold digit_sequence_normalize.
+...
 destruct (LPO_fst (λ j : nat, rad - 1 - d2n xy (i + j + 1))) as [Hxy| Hxy].
 -destruct (LPO_fst (λ j : nat, rad - 1 - d2n yx (i + j + 1))) as [Hyx| Hyx].
  +unfold freal_add in Heqxy; simpl in Heqxy.
