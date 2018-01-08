@@ -408,8 +408,8 @@ split; intros Hxy.
   unfold freal_normalize, digit_sequence_normalize; simpl.
   destruct (LPO_fst (has_9_after (freal x) i)) as [Hxi| Hxi].
   *specialize (Hki (S i)) as (j & H1j & Hj); unfold fd2n in Hj.
-...
-   specialize (Hxi (j - i - 1)); unfold has_9_after, d2n in Hxi.
+   specialize (Hxi (j - i - 1)).
+   apply has_9_after_true_iff in Hxi; unfold d2n in Hxi.
    replace (i + (j - i - 1) + 1) with j in Hxi; lia.
   *apply Hxy.
  +unfold freal_norm_not_norm_eq in Hxy.
@@ -425,7 +425,7 @@ split; intros Hxy.
      destruct Hxy as [Hxy| Hxy]; [ lia | ].
      destruct (Nat.eq_dec i (k - 1)) as [Hik1| Hik1]; [ now subst i | ].
      specialize (Hxi (k - i - 2)).
-     unfold has_9_after in Hxi.
+     apply has_9_after_true_iff in Hxi.
      replace (i + (k - i - 2) + 1) with (k - 1) in Hxi by lia.
      unfold fd2n in Hxy; unfold d2n in Hxi.
      specialize (digit_lt_radix (freal y (k - 1))) as H; lia.
@@ -437,7 +437,7 @@ split; intros Hxy.
      simpl in Hik, Hxy; rewrite Nat.sub_0_r in Hik, Hxy.
      destruct (lt_eq_lt_dec i k) as [[Hki| Hki]| Hki].
    ---specialize (Hxi (k - i - 1)).
-      unfold has_9_after, d2n in Hxi.
+      apply has_9_after_true_iff in Hxi; unfold d2n in Hxi.
       replace (i + (k - i - 1) + 1) with k in Hxi by lia.
       unfold fd2n in Hxy.
       specialize (digit_lt_radix (freal y k)) as H1; lia.
@@ -446,7 +446,7 @@ split; intros Hxy.
       specialize (digit_lt_radix (freal y k)) as H1; lia.
    ---now specialize (Hx _ Hki).
   *destruct Hxi as (j & Hjj & Hj).
-   unfold has_9_after, d2n in Hj.
+   apply has_9_after_false_iff in Hj; unfold d2n in Hj.
    destruct k.
   --specialize (Hy (i + j + 1) (Nat.le_0_l _)).
     unfold fd2n in Hy; lia.
@@ -470,12 +470,16 @@ destruct (LPO_fst (has_9_after (freal x) i)) as [H1| H1].
 -destruct (LPO_fst (has_9_after (freal y) i)) as [H2| H2]; [ easy | ].
  destruct H2 as (j & Hjj & Hj).
  specialize (H1 j).
- unfold has_9_after, d2n in H1, Hj.
+ apply has_9_after_true_iff in H1.
+ apply has_9_after_false_iff in Hj.
+ unfold d2n in H1, Hj.
  now rewrite Hxy in H1.
 -destruct (LPO_fst (has_9_after (freal y) i)) as [H2| H2]; [ | easy ].
  destruct H1 as (j & Hjj & Hj).
  specialize (H2 j).
- unfold has_9_after, d2n in H2, Hj.
+ apply has_9_after_false_iff in Hj.
+ apply has_9_after_true_iff in H2.
+ unfold d2n in H2, Hj.
  now rewrite Hxy in Hj.
 Qed.
 
@@ -491,7 +495,9 @@ destruct (LPO_fst (has_9_after (freal x) i)) as [H1| H1].
 -specialize (H1 (max i k - i)).
  assert (H : k ≤ S (max i k)) by lia.
  specialize (Hax (S (max i k)) H).
- unfold fd2n in Hax; unfold has_9_after, d2n in H1.
+ unfold fd2n in Hax.
+ apply has_9_after_true_iff in H1.
+ unfold d2n in H1.
  replace (i + (max i k - i) + 1) with (S (max i k)) in H1 by lia.
  rewrite Hax in H1.
  specialize radix_ge_2; lia.
@@ -499,7 +505,8 @@ destruct (LPO_fst (has_9_after (freal x) i)) as [H1| H1].
  +destruct (lt_eq_lt_dec i (k - 1)) as [[H4| H4]| H4].
   *destruct k; [ easy | ].
    specialize (H2 (k - i - 1)).
-   unfold has_9_after, d2n in H2.
+   apply has_9_after_true_iff in H2.
+   unfold d2n in H2.
    replace (i + (k - i - 1) + 1) with k in H2 by lia.
    simpl in Hw; rewrite Nat.sub_0_r in Hw.
    unfold fd2n in Hw.
@@ -529,12 +536,14 @@ destruct (LPO_fst (has_9_after (freal x) i)) as [H1| H1].
   *now rewrite Hb.
   *subst i.
    destruct H2 as (j & Hjj & Hj).
-   unfold has_9_after, d2n in Hj; unfold fd2n in Hay.
+   apply has_9_after_false_iff in Hj.
+   unfold d2n in Hj; unfold fd2n in Hay.
    assert (H : k ≤ k - 1 + j + 1) by lia.
    specialize (Hay _ H).
    rewrite Hay in Hj; lia.
   *destruct H2 as (j & Hjj & Hj).
-   unfold has_9_after, d2n in Hj; unfold fd2n in Hay.
+   apply has_9_after_false_iff in Hj.
+   unfold d2n in Hj; unfold fd2n in Hay.
    assert (H : k ≤ i + j + 1) by lia.
    specialize (Hay _ H).
    rewrite Hay in Hj; lia.
@@ -638,6 +647,8 @@ Definition A_plus_B_ge_1 {r : radix} i u l :=
   let s := rad ^ (n - 1 - i) in
   if lt_dec (nA i n u mod s * rad ^ (l + 1) + nB n l u) (rad ^ (n + l - i))
   then 1 else 0.
+
+...
 
 Definition numbers_to_digits {r : radix} u i :=
   match LPO_fst (A_plus_B_ge_1 i u) with
