@@ -2021,9 +2021,11 @@ split.
  apply is_9_after_false_iff in Hj.
  unfold d2n in Hj; simpl in Hj.
 Check numbers_to_digits_id.
- assert (d2n u (max i k + j + 1) < rad).
+ set (v j := u (max i k + j + 1)).
+ assert (Hur : ∀ j, d2n v j < rad).
 Focus 2.
- specialize (numbers_to_digits_id (d2n u)) as HH.
+ specialize (numbers_to_digits_id (d2n v) Hur) as HH.
+
 ...
 
 subst u.
