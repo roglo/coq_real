@@ -2001,17 +2001,17 @@ apply Nat.add_lt_mono_r.
 now apply Nat.mul_lt_mono_pos_r.
 ...
 *)
-Print has_other_than_9_after.
-...
 Theorem glop {r : radix} : ∀ x y,
   (∀ i, has_other_than_9_after (freal_add_to_seq x y) i = true)
-  → (∃ k, ∀ i, k ≤ i → is_9_after (freal x) i j = true)
-  ↔ (∀ i j, is_0_after (freal x) i j = true).
+  → (∃ k, ∀ i, k ≤ i → fd2n x i = 0)
+  ↔ (∃ k, ∀ i, k ≤ i → fd2n y i = rad - 1).
 Proof.
-...
 intros * Hxy.
 split.
--intros Hx.
+-intros (k & Hx).
+ exists k; intros i Hy.
+...
+
  unfold has_other_than_9_after in Hxy.
  unfold ends_with_999 in Hx.
  unfold does_not_end_with_000.
