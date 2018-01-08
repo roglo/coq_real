@@ -1748,11 +1748,9 @@ split; intros Hxy *.
  now unfold fd2n in H2; apply digit_eq_eq.
 -destruct (LPO_fst (has_same_digits nx ny)) as [H1| H1]; [ easy | ].
  destruct H1 as (i & Hji & Hi).
-...
+ apply has_same_digits_false_iff in Hi.
  exfalso; apply Hi; unfold has_same_digits.
- destruct (Nat.eq_dec (fd2n nx i) (fd2n ny i)) as [| H2]; [ easy | ].
- specialize (Hxy i).
- now apply digit_eq_eq in Hxy.
+ apply digit_eq_eq, Hxy.
 Qed.
 
 Definition ends_with_999 {r : radix} u i :=
@@ -1761,10 +1759,10 @@ Definition ends_with_999 {r : radix} u i :=
   | inr _ => 1
   end.
 
-Definition does_not_end_with_999 {r : radix} u i :=
+Definition has_no_9_after {r : radix} u i :=
   match LPO_fst (has_9_after u i) with
-  | inl _ => 1
-  | inr _ => 0
+  | inl _ => false
+  | inr _ => true
   end.
 
 Definition does_not_end_with_000 {r : radix} u i :=
@@ -1796,8 +1794,8 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
   apply digit_eq_eq in Hxy'.
   now rewrite Hxy, Hxy'.
  +destruct Hxy' as (k & Hbef & Hwhi & Hxaft & Hyaft).
-  destruct (LPO_fst (does_not_end_with_999 (freal (x + x')))) as [Hxx| Hxx].
-  *destruct (LPO_fst (does_not_end_with_999 (freal (y + y')))) as [Hyy| Hyy].
+  destruct (LPO_fst (has_no_9_after (freal (x + x')))) as [Hxx| Hxx].
+  *destruct (LPO_fst (has_no_9_after (freal (y + y')))) as [Hyy| Hyy].
   --left.
     intros i.
     unfold freal_add, freal_add_to_seq; simpl.
@@ -1975,6 +1973,9 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
        move Hik before Hnk; move ky before k.
        move ny before n; move sy before s.
        move Heqny before Heqs; move Heqsy before Heqny.
+apply A_plus_B_ge_1_false_iff in Hky.
+rewrite <- Heqn, <- Heqs in Hky.
+...
 f_equal.
 assert (Hnn : n ≤ ny).
 rewrite Heqn, Heqny.
@@ -1987,16 +1988,17 @@ rewrite Nat.add_sub in Hik, Hwhi, Hbef.
 rewrite Nat.add_0_r, <- Heqn in Heqny; subst ny.
 rewrite <- Heqs in Heqsy; subst sy.
 clear Hnn.
-Print does_not_end_with_999.
+Print has_no_9_after.
+...
 
 Theorem glop {r : radix} : ∀ x y i,
-  does_not_end_with_999 (freal_add_to_seq x y) i = 0
+  has_no_9_after (freal_add_to_seq x y) i = 0
   → ends_with_999 (freal x) i = 0 ↔ does_not_end_with_000 (freal y) i = 0.
 Proof.
 intros * Hxy.
 split.
 -intros Hx.
- unfold does_not_end_with_999 in Hxy.
+ unfold has_no_9_after in Hxy.
  unfold ends_with_999 in Hx.
  unfold does_not_end_with_000.
  remember (freal_add_to_seq x y) as u.
