@@ -2004,12 +2004,12 @@ now apply Nat.mul_lt_mono_pos_r.
 Theorem glop {r : radix} : ∀ x y,
   (∀ i, has_other_than_9_after (freal_add_to_seq x y) i = true)
   → (∃ k, ∀ i, k ≤ i → fd2n x i = 0)
-  ↔ (∃ k, ∀ i, k ≤ i → fd2n y i = rad - 1).
+  ↔ (∀ i, has_other_than_9_after (freal y) i = true).
 Proof.
 intros * Hxy.
 split.
--intros (k & Hx).
- exists k; intros i Hy.
+-intros (k & Hx) i.
+
 ...
 
  unfold has_other_than_9_after in Hxy.
