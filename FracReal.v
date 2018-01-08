@@ -1982,6 +1982,31 @@ specialize (Hiu j).
 apply A_plus_B_ge_1_true_iff in Hiu.
 now rewrite <- Heqn, <- Heqs in Hiu.
 clear Hiu; rename H into Hiu; move Hiu before Heqsy.
+specialize (Hiu 0); simpl in Hiu.
+rewrite Nat.mul_1_r, Nat.add_0_r in Hiu.
+exfalso; apply Hiu.
+unfold nB.
+rewrite Nat.add_0_r.
+rewrite summation_only_one.
+rewrite Nat.sub_diag, Nat.pow_0_r, Nat.mul_1_r.
+assert (s ≠ 0).
+rewrite Heqs.
+now apply Nat.pow_nonzero.
+specialize (Nat.mod_upper_bound (nA i n u) s H) as H1.
+apply Nat.lt_le_trans with (m := s * rad + u n).
+apply Nat.add_lt_mono_r.
+now apply Nat.mul_lt_mono_pos_r.
+assert (u n < rad).
+rewrite Hequ.
+unfold freal_add_series.
+unfold sequence_add.
+rewrite Hxaft.
+...
+
+replace rad with (rad ^ 1) at 1 by apply Nat.pow_1_r.
+rewrite Heqs.
+rewrite <- Nat.pow_add_r.
+
 
 ...
 f_equal.
