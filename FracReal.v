@@ -1630,6 +1630,32 @@ erewrite nB_eq_compat; [ | easy ].
 easy.
 Qed.
 
+Theorem A_plus_B_ge_1_false_iff {r : radix} : ∀ i u k,
+  let n := rad * (i + 2) in
+  let s := rad ^ (n - 1 - i) in
+  A_plus_B_ge_1 i u k = false ↔
+  nA i n u mod s * rad ^ (k + 1) + nB n k u < rad ^ (n + k - i).
+Proof.
+intros.
+unfold A_plus_B_ge_1.
+fold n s.
+now destruct
+  (lt_dec (nA i n u mod s * rad ^ (k + 1) + nB n k u) (rad ^ (n + k - i))).
+Qed.
+
+Theorem A_plus_B_ge_1_true_iff {r : radix} : ∀ i u k,
+  let n := rad * (i + 2) in
+  let s := rad ^ (n - 1 - i) in
+  A_plus_B_ge_1 i u k = true ↔
+  ¬ nA i n u mod s * rad ^ (k + 1) + nB n k u < rad ^ (n + k - i).
+Proof.
+intros.
+unfold A_plus_B_ge_1.
+fold n s.
+now destruct
+  (lt_dec (nA i n u mod s * rad ^ (k + 1) + nB n k u) (rad ^ (n + k - i))).
+Qed.
+
 Theorem numbers_to_digits_eq_compat {r : radix} : ∀ f g,
   (∀ i, f i = g i) → ∀ i,
   numbers_to_digits f i = numbers_to_digits g i.
@@ -1645,29 +1671,29 @@ destruct (LPO_fst (A_plus_B_ge_1 i f)) as [Hf| Hf].
   intros j Hj.
   now rewrite Hfg.
  +exfalso.
-...
-  destruct Hg as (k & Hjk & H); apply H; clear H.
+  destruct Hg as (k & Hjk & H).
   specialize (Hf k).
-  erewrite A_plus_B_ge_1_eq_compat in Hf; [ | easy ]; easy.
+  erewrite A_plus_B_ge_1_eq_compat in Hf; [ | easy ].
+  now rewrite H in Hf.
 -destruct (LPO_fst (A_plus_B_ge_1 i g)) as [Hg| Hg].
  +exfalso.
-  destruct Hf as (k & Hjk & H); apply H; clear H.
+  destruct Hf as (k & Hjk & H).
   specialize (Hg k).
-  erewrite A_plus_B_ge_1_eq_compat; [ | easy ]; easy.
+  erewrite A_plus_B_ge_1_eq_compat in H; [ | easy ].
+  now rewrite H in Hg.
  +destruct Hf as (k & Hjk & Hk).
   destruct Hg as (l & Hjl & Hl).
-  f_equal; f_equal; f_equal.
   destruct (lt_eq_lt_dec k l) as [[Hkl| Hkl]| Hkl].
   *specialize (Hjl _ Hkl).
-   exfalso; apply Hk.
-   erewrite A_plus_B_ge_1_eq_compat; [ | easy ]; easy.
+   erewrite A_plus_B_ge_1_eq_compat in Hk; [ | easy ].
+   now rewrite Hjl in Hk.
   *subst l; apply digit_eq_eq; simpl.
    f_equal; f_equal; f_equal.
    now apply nA_eq_compat.
   *specialize (Hjk _ Hkl).
    apply digit_eq_eq; simpl.
-   exfalso; apply Hl.
-   erewrite A_plus_B_ge_1_eq_compat in Hjk; [ | easy ]; easy.
+   erewrite A_plus_B_ge_1_eq_compat in Hjk; [ | easy ].
+   now rewrite Hl in Hjk.
 Qed.
 
 Theorem Nat_div_succ_l_eq_div : ∀ p q, q ≠ 0 →
@@ -1722,6 +1748,7 @@ split; intros Hxy *.
  now unfold fd2n in H2; apply digit_eq_eq.
 -destruct (LPO_fst (has_same_digits nx ny)) as [H1| H1]; [ easy | ].
  destruct H1 as (i & Hji & Hi).
+...
  exfalso; apply Hi; unfold has_same_digits.
  destruct (Nat.eq_dec (fd2n nx i) (fd2n ny i)) as [| H2]; [ easy | ].
  specialize (Hxy i).
