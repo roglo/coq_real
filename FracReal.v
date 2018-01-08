@@ -2019,20 +2019,30 @@ split.
  clear Hxy.
  destruct Hk as (j & Hjj & Hj).
  apply is_9_after_false_iff in Hj.
- unfold d2n in Hj; simpl in Hj.
-Check numbers_to_digits_id.
- set (v j := u (max i k + j + 1)).
- assert (Hur : ∀ j, d2n v j < rad).
-Focus 2.
- specialize (numbers_to_digits_id (d2n v) Hur) as HH.
+(*
+ specialize (Hy (j + max i k - i)).
+ apply is_9_after_true_iff in Hy.
+ replace (i + (j + max i k - i)) with (max i k + j) in Hy by lia.
+ assert (k ≤ max i k + j + 1) by lia.
+ specialize (Hx (max i k + j + 1) H).
+*)
  unfold u in Hj.
  unfold freal_add_to_seq in Hj.
- unfold freal_add_series in Hj.
- unfold sequence_add in Hj.
- specialize (HH 0).
- unfold v in HH at 1.
-Print numbers_to_digits.
-Print A_plus_B_ge_1.
+ set (v := freal_add_series x y) in Hj.
+ set (l := max i k + j + 1) in Hj.
+ unfold d2n, numbers_to_digits in Hj.
+ destruct (LPO_fst (A_plus_B_ge_1 l v)) as [HAB| HAB].
+ +simpl in Hj.
+  set (n := rad * (l + 2)) in Hj.
+  set (s := rad ^ (n - 1 - l)) in Hj.
+(* v l = rad - 1; nA l n v / s = 0 => rad mod rad => zut *)
+(* faut donc chercher la contradiction dans HAB *)
+...
+ +destruct HAB as (m, mm).
+  simpl in Hj.
+  set (n := rad * (l + m + 2)) in Hj.
+  set (s := rad ^ (n - 1 - l)) in Hj.
+(* v l = rad - 1; nA l n v / s = 0 => (rad - 1) mod rad => ok, contradiction *)
 ...
 
 subst u.
