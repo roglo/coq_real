@@ -2025,7 +2025,14 @@ Check numbers_to_digits_id.
  assert (Hur : ∀ j, d2n v j < rad).
 Focus 2.
  specialize (numbers_to_digits_id (d2n v) Hur) as HH.
-
+ unfold u in Hj.
+ unfold freal_add_to_seq in Hj.
+ unfold freal_add_series in Hj.
+ unfold sequence_add in Hj.
+ specialize (HH 0).
+ unfold v in HH at 1.
+Print numbers_to_digits.
+Print A_plus_B_ge_1.
 ...
 
 subst u.
