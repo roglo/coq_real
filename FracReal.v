@@ -348,11 +348,8 @@ split; intros Hxy.
      destruct (LPO_fst (has_9_after (freal x) k)) as [H| Hxk].
     **assert (Hxk : ∀ i, S k ≤ i → fd2n x i = rad - 1).
     ---intros i Hki; specialize (H (i - k - 1)).
-...
-       apply Nat.sub_0_le in H.
-       unfold has_9_after, d2n in H; unfold fd2n.
-       specialize (digit_lt_radix (freal x i)).
-       replace (k + (i - k - 1) + 1) with i in H; lia.
+       apply has_9_after_true_iff in H.
+       now replace (k + (i - k - 1) + 1) with i in H by lia.
     ---rewrite <- and_assoc, and_comm.
        split; [ easy | clear H ].
        simpl; rewrite Nat.sub_0_r.
@@ -370,7 +367,7 @@ split; intros Hxy.
           unfold fd2n in Hxk; unfold d2n in Hsx1; lia.
       ----now apply digit_eq_eq in Hxy1.
       ***destruct Hx1 as (j & Hjj & Hj).
-         unfold has_9_after in Hj.
+         apply has_9_after_false_iff in Hj.
          assert (Hksi : k < S (S (i + j))) by lia.
          specialize (Hxk (S (S (i + j))) Hksi).
          unfold fd2n in Hxk; unfold d2n in Hj.
@@ -395,7 +392,8 @@ split; intros Hxy.
       ----simpl in Hk'; unfold d2n in Hsxk'.
           specialize radix_ge_2 as Hr; lia.
       ***destruct Hxk' as (i & Hji & Hi).
-         unfold has_9_after, d2n in Hi.
+         apply has_9_after_false_iff in Hi.
+         unfold d2n in Hi.
          destruct i.
       ----rewrite Nat.add_0_r, Nat.add_1_r in Hi; lia.
       ----assert (H : S (S k) ≤ (k + S i + 1)) by lia.
@@ -410,6 +408,7 @@ split; intros Hxy.
   unfold freal_normalize, digit_sequence_normalize; simpl.
   destruct (LPO_fst (has_9_after (freal x) i)) as [Hxi| Hxi].
   *specialize (Hki (S i)) as (j & H1j & Hj); unfold fd2n in Hj.
+...
    specialize (Hxi (j - i - 1)); unfold has_9_after, d2n in Hxi.
    replace (i + (j - i - 1) + 1) with j in Hxi; lia.
   *apply Hxy.
