@@ -1081,12 +1081,12 @@ induction n.
   apply Nat.mul_le_mono_nonneg_r; lia.
 Qed.
 
-Theorem nA_dig_seq_ub {r : radix} : 0 < rad → ∀ u n,
-  (∀ i, i ≤ n - 1 → u i < rad) → ∀ i,
+Theorem nA_dig_seq_ub {r : radix} : 0 < rad → ∀ u n i,
+  (∀ j, i + 1 ≤ j ≤ n - 1 → u j < rad) →
   i + 1 ≤ n - 1
   → nA i n u < rad ^ (n - 1 - i).
 Proof.
-intros Hr * Hu * Hin.
+intros Hr * Hu Hin.
 unfold nA.
 rewrite summation_rtl.
 rewrite summation_shift; [ | easy ].
@@ -1331,9 +1331,9 @@ destruct (LPO_fst (A_plus_B_ge_1 i u)) as [H| H].
  assert (Hin : i + 1 ≤ n - 1).
  +subst n; specialize radix_ge_2 as Hr.
   destruct rad as [| rd]; [ easy | simpl; lia ].
- +assert (Hir : ∀ i, i ≤ n - 1 → u i < rad) by (intros; apply Hur).
+ +assert (Hir : ∀ j, i + 1 ≤ j ≤ n - 1 → u j < rad) by (intros; apply Hur).
   specialize radix_gt_0 as Hr.
-  specialize (nA_dig_seq_ub Hr u n Hir i Hin) as HnA; clear Hir.
+  specialize (nA_dig_seq_ub Hr u n i Hir Hin) as HnA; clear Hir.
   rewrite <- Hs in HnA.
   rewrite Nat.mod_small in Hge; [ | easy ].
   exfalso; apply Hge; clear Hge.
@@ -1789,13 +1789,6 @@ split.
  clear Hxy.
  destruct Hk as (j & Hjj & Hj).
  apply is_9_after_false_iff in Hj.
-(*
- specialize (Hy (j + max i k - i)).
- apply is_9_after_true_iff in Hy.
- replace (i + (j + max i k - i)) with (max i k + j) in Hy by lia.
- assert (k ≤ max i k + j + 1) by lia.
- specialize (Hx (max i k + j + 1) H).
-*)
  unfold u in Hj.
  unfold freal_add_to_seq in Hj.
  set (v := freal_add_series x y) in Hj.
@@ -1805,8 +1798,8 @@ split.
  +simpl in Hj.
   set (n := rad * (l + 2)) in Hj.
   set (s := rad ^ (n - 1 - l)) in Hj.
-  (* v l = rad - 1; nA l n v / s = 0 => rad mod rad => zut *)
-  (* faut donc chercher la contradiction dans HAB *)
+  (* v l = rad - 1; nA l n v / s = 0 => rad mod rad => rats! *)
+  (* therefore search a contradiction in HAB *)
   assert
     (Hab : ∀ k,
      ¬ nA l n v mod s * rad ^ (k + 1) + nB n k v < rad ^ (n + k - l)). {
@@ -1856,14 +1849,52 @@ split.
    eapply Nat.le_trans; [ apply Nat.le_max_r | ].
    do 3 rewrite <- Nat.add_assoc.
    apply Nat.le_add_r.
- +idtac.
-...
  +destruct HAB as (m, mm).
   simpl in Hj.
   set (n := rad * (l + m + 2)) in Hj.
   set (s := rad ^ (n - 1 - l)) in Hj.
-  (* v l = rad - 1; nA l n v / s = 0 => (rad - 1) mod rad
-    => ok, contradiction *)
+  replace (v l) with (rad - 1) in Hj.
+  *rewrite Nat.div_small in Hj.
+  --rewrite Nat.add_0_r, Nat.mod_small in Hj; [ easy | ].
+    destruct rad; [ easy | lia ].
+  --apply nA_dig_seq_ub; [ easy | | ].
+   ++intros p Hp.
+     unfold v.
+     unfold freal_add_series, sequence_add.
+     rewrite Hx; [ apply digit_lt_radix | ].
+     apply Nat.le_trans with (m := l + 1); [ | easy ].
+     unfold l; do 2 rewrite <- Nat.add_assoc.
+     eapply Nat.le_trans; [ apply Nat.le_max_r | ].
+     apply Nat.le_add_r.
+   ++unfold n.
+     destruct rad as [| rr]; [ easy | simpl; lia ].
+  *unfold v, freal_add_series, sequence_add.
+   rewrite Hx.
+  --specialize (Hy (l - i - 1)).
+    apply is_9_after_true_iff in Hy.
+    replace (i + (l - i - 1) + 1) with l in Hy.
+   ++unfold d2n in Hy; unfold fd2n; now rewrite Hy.
+   ++rewrite Nat.add_sub_assoc.
+    **rewrite Nat.sub_add.
+    ---rewrite Nat.add_sub_assoc; [ lia | ].
+       unfold l.
+       eapply Nat.le_trans; [ apply Nat.le_max_l | ].
+       rewrite <- Nat.add_assoc.
+       apply Nat.le_add_r.
+    ---rewrite Nat.add_sub_assoc.
+     +++rewrite Nat.add_comm, Nat.add_sub.
+        unfold l; lia.
+     +++unfold l.
+        eapply Nat.le_trans; [ apply Nat.le_max_l | ].
+        rewrite <- Nat.add_assoc.
+        apply Nat.le_add_r.
+    **unfold l; lia.
+  --unfold l.
+    eapply Nat.le_trans; [ apply Nat.le_max_r | ].
+    rewrite <- Nat.add_assoc.
+    apply Nat.le_add_r.
+-intros Hy.
+
 ...
 
 Add Parametric Morphism {r : radix} : freal_add
