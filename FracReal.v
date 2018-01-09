@@ -1771,6 +1771,62 @@ Definition does_not_end_with_000 {r : radix} u i :=
   | inr _ => 0
   end.
 
+Theorem not_eq_add_999 {r : radix} : ∀ x y,
+  (∀ i, has_other_than_9_after (freal_add_to_seq x y) i = true)
+  → (∃ k, ∀ i, k ≤ i → fd2n x i = 0)
+  ↔ (∀ i, has_other_than_9_after (freal y) i = true).
+Proof.
+intros * Hxy.
+split.
+-intros (k & Hx) i.
+ unfold has_other_than_9_after.
+ destruct (LPO_fst (is_9_after (freal y) i)) as [Hy| ]; [ | easy].
+ exfalso.
+ specialize (Hxy (max i k)).
+ unfold has_other_than_9_after in Hxy.
+ set (u := freal_add_to_seq x y) in Hxy.
+ destruct (LPO_fst (is_9_after u (max i k))) as [Hk| Hk]; [ easy | ].
+ clear Hxy.
+ destruct Hk as (j & Hjj & Hj).
+ apply is_9_after_false_iff in Hj.
+(*
+ specialize (Hy (j + max i k - i)).
+ apply is_9_after_true_iff in Hy.
+ replace (i + (j + max i k - i)) with (max i k + j) in Hy by lia.
+ assert (k ≤ max i k + j + 1) by lia.
+ specialize (Hx (max i k + j + 1) H).
+*)
+ unfold u in Hj.
+ unfold freal_add_to_seq in Hj.
+ set (v := freal_add_series x y) in Hj.
+ set (l := max i k + j + 1) in Hj.
+ unfold d2n, numbers_to_digits in Hj.
+ destruct (LPO_fst (A_plus_B_ge_1 l v)) as [HAB| HAB].
+ +simpl in Hj.
+  set (n := rad * (l + 2)) in Hj.
+  set (s := rad ^ (n - 1 - l)) in Hj.
+  (* v l = rad - 1; nA l n v / s = 0 => rad mod rad => zut *)
+  (* faut donc chercher la contradiction dans HAB *)
+  assert
+    (Hab : ∀ k,
+     ¬ nA l n v mod s * rad ^ (k + 1) + nB n k v < rad ^ (n + k - l)). {
+    intros m.
+    apply A_plus_B_ge_1_true_iff, HAB.
+  }
+  clear HAB; rename Hab into HAB; move HAB before s.
+  specialize (HAB 0); simpl in HAB.
+  rewrite Nat.mul_1_r, Nat.add_0_r in HAB.
+  apply HAB.
+  (* ça devrait le faire... *)
+...
+ +destruct HAB as (m, mm).
+  simpl in Hj.
+  set (n := rad * (l + m + 2)) in Hj.
+  set (s := rad ^ (n - 1 - l)) in Hj.
+  (* v l = rad - 1; nA l n v / s = 0 => (rad - 1) mod rad
+    => ok, contradiction *)
+...
+
 Add Parametric Morphism {r : radix} : freal_add
   with signature freal_eq_prop ==> freal_eq_prop ==> freal_eq_prop
   as freal_add_morph.
@@ -2001,58 +2057,13 @@ apply Nat.add_lt_mono_r.
 now apply Nat.mul_lt_mono_pos_r.
 ...
 *)
-Theorem glop {r : radix} : ∀ x y,
-  (∀ i, has_other_than_9_after (freal_add_to_seq x y) i = true)
-  → (∃ k, ∀ i, k ≤ i → fd2n x i = 0)
-  ↔ (∀ i, has_other_than_9_after (freal y) i = true).
-Proof.
-intros * Hxy.
-split.
--intros (k & Hx) i.
- unfold has_other_than_9_after.
- destruct (LPO_fst (is_9_after (freal y) i)) as [Hy| ]; [ | easy].
- exfalso.
- specialize (Hxy (max i k)).
- unfold has_other_than_9_after in Hxy.
- set (u := freal_add_to_seq x y) in Hxy.
- destruct (LPO_fst (is_9_after u (max i k))) as [Hk| Hk]; [ easy | ].
- clear Hxy.
- destruct Hk as (j & Hjj & Hj).
- apply is_9_after_false_iff in Hj.
-(*
- specialize (Hy (j + max i k - i)).
- apply is_9_after_true_iff in Hy.
- replace (i + (j + max i k - i)) with (max i k + j) in Hy by lia.
- assert (k ≤ max i k + j + 1) by lia.
- specialize (Hx (max i k + j + 1) H).
-*)
- unfold u in Hj.
- unfold freal_add_to_seq in Hj.
- set (v := freal_add_series x y) in Hj.
- set (l := max i k + j + 1) in Hj.
- unfold d2n, numbers_to_digits in Hj.
- destruct (LPO_fst (A_plus_B_ge_1 l v)) as [HAB| HAB].
- +simpl in Hj.
-  set (n := rad * (l + 2)) in Hj.
-  set (s := rad ^ (n - 1 - l)) in Hj.
-(* v l = rad - 1; nA l n v / s = 0 => rad mod rad => zut *)
-(* faut donc chercher la contradiction dans HAB *)
-  assert
-    (Hab : ∀ k,
-     ¬ nA l n v mod s * rad ^ (k + 1) + nB n k v < rad ^ (n + k - l)). {
-    intros m.
-    apply A_plus_B_ge_1_true_iff, HAB.
-  }
-  clear HAB; rename Hab into HAB; move HAB before s.
 
+Check not_eq_add_999.
+specialize (not_eq_add_999 x x') as H.
+unfold freal_add_to_seq in H.
+rewrite <- Hequ in H.
+specialize (H Hxx).
 ...
- +destruct HAB as (m, mm).
-  simpl in Hj.
-  set (n := rad * (l + m + 2)) in Hj.
-  set (s := rad ^ (n - 1 - l)) in Hj.
-(* v l = rad - 1; nA l n v / s = 0 => (rad - 1) mod rad => ok, contradiction *)
-...
-
 subst u.
  unfold freal_add_to_seq in Hj, H.
  unfold freal_add_series, sequence_add in Hj, H.
