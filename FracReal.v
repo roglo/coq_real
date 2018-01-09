@@ -1897,6 +1897,39 @@ destruct (LPO_fst (A_plus_B_ge_1 l v)) as [HAB| HAB]; simpl in Hi.
    apply Nat.le_trans with (m := max j k); [ apply Nat.le_max_r | lia ].
 Qed.
 
+Theorem is_9_after_add_to_seq_comm {r : radix} : ∀ x y i j,
+  is_9_after (freal_add_to_seq x y) i j =
+  is_9_after (freal_add_to_seq y x) i j.
+Proof.
+intros.
+unfold is_9_after.
+Admitted.
+
+Theorem has_other_than_9_after_add_to_seq_comm {r : radix} : ∀ x y i,
+  has_other_than_9_after (freal_add_to_seq x y) i =
+  has_other_than_9_after (freal_add_to_seq y x) i.
+Proof.
+intros.
+unfold has_other_than_9_after.
+destruct (LPO_fst (is_9_after (freal_add_to_seq x y) i)) as [Hxy| Hxy].
+-destruct (LPO_fst (is_9_after (freal_add_to_seq y x) i)) as [Hyx| Hyx].
+ +easy.
+ +destruct Hyx as (j & Hjj & Hj).
+  specialize (Hxy j).
+  apply is_9_after_true_iff in Hxy.
+  apply is_9_after_false_iff in Hj.
+  unfold d2n in Hxy, Hj.
+  now rewrite freal_add_to_seq_i_comm in Hj.
+-destruct (LPO_fst (is_9_after (freal_add_to_seq y x) i)) as [Hyx| Hyx].
+ +destruct Hxy as (j & Hjj & Hj).
+  specialize (Hyx j).
+  apply is_9_after_true_iff in Hyx.
+  apply is_9_after_false_iff in Hj.
+  unfold d2n in Hyx, Hj.
+  now rewrite freal_add_to_seq_i_comm in Hj.
+ +easy.
+Qed.
+
 Add Parametric Morphism {r : radix} : freal_add
   with signature freal_eq_prop ==> freal_eq_prop ==> freal_eq_prop
   as freal_add_morph.
@@ -2099,60 +2132,31 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
        move Hik before Hnk; move ky before k.
        move ny before n; move sy before s.
        move Heqny before Heqs; move Heqsy before Heqny.
+       specialize (not_eq_add_999 y' y) as H.
        assert
-         (H : ∀ k,
-          has_other_than_9_after (numbers_to_digits (freal_add_series x' x))
-            k = true). {
-         intros l.
-         specialize (Hxx l).
-         apply has_other_than_9_after_true_iff in Hxx.
-         apply has_other_than_9_after_true_iff.
-         destruct Hxx as (p & Hjp & Hp).
-         exists p.
-         split.
-         -intros q Hq.
-Search freal_add_series.
-
+         (Hr :
+            ∀ i, has_other_than_9_after (freal_add_to_seq y' y) i = true). {
+         intros p.
+         rewrite has_other_than_9_after_add_to_seq_comm.
+         unfold freal_add_to_seq.
+         rewrite <- Heqv.
+         apply Hyy.
+       }
+       assert (Hy'y : ∃ k, ∀ i, k ≤ i → fd2n y' i = 0). {
+         exists k.
+         intros p Hp.
 ...
-       specialize (not_eq_add_999 x' x) as H.
-       unfold freal_add_to_seq in H.
-       rewrite numbers_to_digits_eq_compat in H.
-Search (numbers_to_digits).
+         now apply Hyaft.
+       }
+       specialize (H Hr Hy'y).
+       destruct Hx'x as (j, Hj).
 
-       rewrite numbers_to_digits_
-       rewrite <- Hequ in H.
-       specialize (H Hxx).
-       assert (∃ k, ∀ i, k ≤ i → fd2n x i = 0). {
 ...
 subst u.
  unfold freal_add_to_seq in Hj, H.
  unfold freal_add_series, sequence_add in Hj, H.
 
  rewrite numbers_to_digits_id in Hj.
-
-
-Theorem has_other_than_9_after_true_iff {r : radix} : ∀ u i,
-  has_other_than_9_after u i = true ↔ 3 = 3.
-Proof.
-intros.
-unfold has_other_than_9_after.
-destruct (LPO_fst (is_9_after u i)) as [Hi| Hi].
-split; [ easy | ].
-Focus 2.
-...
-
-split.
--intros Hi.
-...
-
- apply has_other_than_9_after_true_iff in Hxy.
-...
-
- unfold has_other_than_9_after in Hxy
-
-
- specialize (Hx (max i k) (Nat.le_max_r i k)).
- specialize (Hy (max i k)).
 ...
 
  specialize (Hxy k).
