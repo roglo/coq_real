@@ -1806,8 +1806,15 @@ split.
  unfold has_other_than_9_after.
  destruct (LPO_fst (is_9_after (freal y) i)) as [Hy| ]; [ | easy ].
  exfalso.
+ assert (H1 : ∀ k, i < k → fd2n y k = rad - 1). {
+   intros j Hj.
+   specialize (Hy (j - i - 1)).
+   apply is_9_after_true_iff in Hy.
+   now replace (i + (j - i - 1) + 1) with j in Hy by lia.
+ }
+ clear Hy; rename H1 into Hy.
  destruct H as [(k, Hx)| (k, Hx)].
-  specialize (Hxy (max i k)).
+ +specialize (Hxy (max i k)).
   apply has_other_than_9_after_true_iff in Hxy.
   destruct Hxy as (j & Hjj & Hj).
   unfold freal_add_to_seq in Hj.
@@ -1815,7 +1822,7 @@ split.
   set (l := max i k + j + 1) in Hj.
   unfold d2n, numbers_to_digits in Hj.
   destruct (LPO_fst (A_plus_B_ge_1 l v)) as [HAB| HAB].
-  +simpl in Hj.
+  *simpl in Hj.
    set (n := rad * (l + 2)) in Hj.
    set (s := rad ^ (n - 1 - l)) in Hj.
    (* v l = rad - 1; nA l n v / s = 0 => rad mod rad => rats! *)
@@ -1836,49 +1843,49 @@ split.
    unfold v at 2.
    unfold freal_add_series, sequence_add.
    rewrite Hx.
-   *rewrite Nat.add_0_l.
+  --rewrite Nat.add_0_l.
     apply Nat.le_lt_trans with (m := (s - 1) * rad + (rad - 1)).
-   --apply Nat.add_le_mono.
-    ++apply Nat.mul_le_mono_r.
+   ++apply Nat.add_le_mono.
+    **apply Nat.mul_le_mono_r.
       apply Nat.le_add_le_sub_r.
       rewrite Nat.add_1_r.
       apply Nat.mod_upper_bound.
       now apply Nat.pow_nonzero.
-    ++apply Nat.le_add_le_sub_r.
+    **apply Nat.le_add_le_sub_r.
       rewrite Nat.add_1_r.
       apply digit_lt_radix.
-   --unfold s.
+   ++unfold s.
      rewrite Nat.mul_sub_distr_r.
      rewrite Nat.mul_1_l.
      rewrite Nat.add_sub_assoc; [ | easy ].
      rewrite Nat.sub_add.
-    ++replace rad with (rad ^ 1) at 2 by apply Nat.pow_1_r.
+    **replace rad with (rad ^ 1) at 2 by apply Nat.pow_1_r.
       rewrite <- Nat.pow_add_r.
       replace (n - 1 - l + 1) with (n - l).
-     **apply Nat.sub_lt; [ | lia ].
+    ---apply Nat.sub_lt; [ | lia ].
        now apply Nat_pow_ge_1.
-     **rewrite Nat_sub_sub_swap.
+    ---rewrite Nat_sub_sub_swap.
        rewrite Nat.sub_add; [ easy | ].
        unfold n.
        destruct rad as [| rr]; [ easy | simpl; lia ].
-    ++replace rad with (1 * rad) at 1 by lia.
+    **replace rad with (1 * rad) at 1 by lia.
       apply Nat.mul_le_mono_nonneg_r; [ lia | ].
       now apply Nat_pow_ge_1.
-   *unfold n, l.
+  --unfold n, l.
     destruct rad; [ easy | simpl ].
     eapply Nat.le_trans; [ apply Nat.le_max_r | ].
     do 3 rewrite <- Nat.add_assoc.
     apply Nat.le_add_r.
-  +destruct HAB as (m, mm).
+  *destruct HAB as (m, mm).
    simpl in Hj.
    set (n := rad * (l + m + 2)) in Hj.
    set (s := rad ^ (n - 1 - l)) in Hj.
    replace (v l) with (rad - 1) in Hj.
-   *rewrite Nat.div_small in Hj.
-   --rewrite Nat.add_0_r, Nat.mod_small in Hj; [ easy | ].
+  --rewrite Nat.div_small in Hj.
+   ++rewrite Nat.add_0_r, Nat.mod_small in Hj; [ easy | ].
      destruct rad; [ easy | lia ].
-   --apply nA_dig_seq_ub; [ easy | | ].
-    ++intros p Hp.
+   ++apply nA_dig_seq_ub; [ easy | | ].
+    **intros p Hp.
       unfold v.
       unfold freal_add_series, sequence_add.
       rewrite Hx; [ apply digit_lt_radix | ].
@@ -1886,33 +1893,15 @@ split.
       unfold l; do 2 rewrite <- Nat.add_assoc.
       eapply Nat.le_trans; [ apply Nat.le_max_r | ].
       apply Nat.le_add_r.
-    ++unfold n.
+    **unfold n.
       destruct rad as [| rr]; [ easy | simpl; lia ].
-   *unfold v, freal_add_series, sequence_add.
+  --unfold v, freal_add_series, sequence_add.
     rewrite Hx.
-   --specialize (Hy (l - i - 1)).
-     apply is_9_after_true_iff in Hy.
-     replace (i + (l - i - 1) + 1) with l in Hy.
-    ++unfold d2n in Hy; unfold fd2n; now rewrite Hy.
-    ++rewrite Nat.add_sub_assoc.
-     **rewrite Nat.sub_add.
-     ---rewrite Nat.add_sub_assoc; [ lia | ].
-        unfold l.
-        eapply Nat.le_trans; [ apply Nat.le_max_l | ].
-        rewrite <- Nat.add_assoc.
-        apply Nat.le_add_r.
-     ---rewrite Nat.add_sub_assoc.
-      +++rewrite Nat.add_comm, Nat.add_sub.
-         unfold l; lia.
-      +++unfold l.
-         eapply Nat.le_trans; [ apply Nat.le_max_l | ].
-         rewrite <- Nat.add_assoc.
-         apply Nat.le_add_r.
-     **unfold l; lia.
-   --unfold l.
-     eapply Nat.le_trans; [ apply Nat.le_max_r | ].
-     rewrite <- Nat.add_assoc.
-     apply Nat.le_add_r.
+   ++rewrite Hy; [ lia | ].
+     unfold l.
+     apply Nat.le_lt_trans with (m := max i k); [ apply Nat.le_max_l | lia ].
+   ++unfold l.
+     apply Nat.le_trans with (m := max i k); [ apply Nat.le_max_r | lia ].
   +idtac.
 ...
 -intros Hy.
