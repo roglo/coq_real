@@ -2037,6 +2037,14 @@ split.
   set (s := rad ^ (n - 1 - l)) in Hj.
 (* v l = rad - 1; nA l n v / s = 0 => rad mod rad => zut *)
 (* faut donc chercher la contradiction dans HAB *)
+  assert
+    (Hab : ∀ k,
+     ¬ nA l n v mod s * rad ^ (k + 1) + nB n k v < rad ^ (n + k - l)). {
+    intros m.
+    apply A_plus_B_ge_1_true_iff, HAB.
+  }
+  clear HAB; rename Hab into HAB; move HAB before s.
+
 ...
  +destruct HAB as (m, mm).
   simpl in Hj.
