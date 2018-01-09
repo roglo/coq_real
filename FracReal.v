@@ -1773,19 +1773,25 @@ Definition does_not_end_with_000 {r : radix} u i :=
 
 Theorem has_other_than_9_after_true_iff {r : radix} : ∀ u i,
   has_other_than_9_after u i = true ↔
-  ∃ k, d2n u (i + k + 1) ≠ rad - 1.
+  ∃ k,
+  (∀ j, j < k → d2n u (i + j + 1) = rad - 1) ∧
+  d2n u (i + k + 1) ≠ rad - 1.
 Proof.
 intros.
 unfold has_other_than_9_after.
 destruct (LPO_fst (is_9_after u i)) as [Hu| Hu].
 -split; intros H; [ easy | ].
- destruct H as (k & H).
+ destruct H as (k & Hjk & Hk).
  specialize (Hu k).
  now apply is_9_after_true_iff in Hu.
 -split; intros H; [ clear H | easy ].
  destruct Hu as (k & Hjk & Hk).
  apply is_9_after_false_iff in Hk.
- now exists k.
+ exists k.
+ split; [ | easy ].
+ intros j Hj.
+ specialize (Hjk _ Hj).
+ now apply is_9_after_true_iff in Hjk.
 Qed.
 
 Theorem not_eq_add_999 {r : radix} : ∀ x y,
@@ -1801,7 +1807,7 @@ split.
  exfalso.
  specialize (Hxy (max i k)).
  apply has_other_than_9_after_true_iff in Hxy.
- destruct Hxy as (j, Hj).
+ destruct Hxy as (j & Hjj & Hj).
  unfold freal_add_to_seq in Hj.
  set (v := freal_add_series x y) in Hj.
  set (l := max i k + j + 1) in Hj.
@@ -1911,6 +1917,8 @@ split.
  apply has_other_than_9_after_true_iff in Hxy.
  apply has_other_than_9_after_true_iff in Hy.
  simpl in Hxy, Hy.
+ destruct Hxy as (j & Hjj & Hj).
+ destruct Hy as (k & Hjk & Hk).
 ...
 
 Add Parametric Morphism {r : radix} : freal_add
