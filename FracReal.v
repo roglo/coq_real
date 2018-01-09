@@ -1800,7 +1800,7 @@ Theorem not_eq_add_999_999 {r : radix} : ∀ x y,
   → (∀ i, has_other_than_9_after (freal y) i = false).
 Proof.
 intros * Hxy (k, Hx) j.
-bbb.
+...
 
 Theorem not_eq_add_999_000 {r : radix} : ∀ x y,
   (∀ i, has_other_than_9_after (freal_add_to_seq x y) i = true)
