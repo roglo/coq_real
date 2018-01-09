@@ -2132,24 +2132,22 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
        move Hik before Hnk; move ky before k.
        move ny before n; move sy before s.
        move Heqny before Heqs; move Heqsy before Heqny.
-       specialize (not_eq_add_999 y' y) as H.
+       specialize (not_eq_add_999 x' x) as H.
        assert
          (Hr :
-            ∀ i, has_other_than_9_after (freal_add_to_seq y' y) i = true). {
+            ∀ i, has_other_than_9_after (freal_add_to_seq x' x) i = true). {
          intros p.
          rewrite has_other_than_9_after_add_to_seq_comm.
          unfold freal_add_to_seq.
-         rewrite <- Heqv.
-         apply Hyy.
+         rewrite <- Hequ.
+         apply Hxx.
        }
-       assert (Hy'y : ∃ k, ∀ i, k ≤ i → fd2n y' i = 0). {
+       assert (Hx'x : ∃ k, ∀ i, k ≤ i → fd2n x' i = 0). {
          exists k.
          intros p Hp.
-...
-         now apply Hyaft.
+         now apply Hxaft.
        }
-       specialize (H Hr Hy'y).
-       destruct Hx'x as (j, Hj).
+       specialize (H Hr Hx'x) as Hx.
 
 ...
 subst u.
