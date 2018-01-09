@@ -107,3 +107,11 @@ rewrite <- Nat.pow_2_r.
 rewrite Nat_sqr_sub_1.
 now rewrite Nat.mul_comm, Nat.mul_add_distr_l, Nat.mul_1_r.
 Qed.
+
+Theorem Nat_sub_sub_swap : ∀ a b c, a - b - c = a - c - b.
+Proof.
+intros.
+rewrite <- Nat.sub_add_distr.
+rewrite Nat.add_comm.
+now rewrite Nat.sub_add_distr.
+Qed.

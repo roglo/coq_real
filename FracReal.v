@@ -1835,6 +1835,28 @@ split.
      rewrite Nat.add_1_r.
      apply digit_lt_radix.
   --unfold s.
+    rewrite Nat.mul_sub_distr_r.
+    rewrite Nat.mul_1_l.
+    rewrite Nat.add_sub_assoc; [ | easy ].
+    rewrite Nat.sub_add.
+   ++replace rad with (rad ^ 1) at 2 by apply Nat.pow_1_r.
+     rewrite <- Nat.pow_add_r.
+     replace (n - 1 - l + 1) with (n - l).
+    **apply Nat.sub_lt; [ | lia ].
+      now apply Nat_pow_ge_1.
+    **rewrite Nat_sub_sub_swap.
+      rewrite Nat.sub_add; [ easy | ].
+      unfold n.
+      destruct rad as [| rr]; [ easy | simpl; lia ].
+   ++replace rad with (1 * rad) at 1 by lia.
+     apply Nat.mul_le_mono_nonneg_r; [ lia | ].
+     now apply Nat_pow_ge_1.
+  *unfold n, l.
+   destruct rad; [ easy | simpl ].
+   eapply Nat.le_trans; [ apply Nat.le_max_r | ].
+   do 3 rewrite <- Nat.add_assoc.
+   apply Nat.le_add_r.
+ +idtac.
 ...
  +destruct HAB as (m, mm).
   simpl in Hj.
