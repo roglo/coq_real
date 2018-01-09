@@ -1817,7 +1817,24 @@ split.
   specialize (HAB 0); simpl in HAB.
   rewrite Nat.mul_1_r, Nat.add_0_r in HAB.
   apply HAB.
-  (* ça devrait le faire... *)
+  unfold nB; rewrite Nat.add_0_r.
+  rewrite summation_only_one.
+  rewrite Nat.sub_diag, Nat.pow_0_r, Nat.mul_1_r.
+  unfold v at 2.
+  unfold freal_add_series, sequence_add.
+  rewrite Hx.
+  *rewrite Nat.add_0_l.
+   apply Nat.le_lt_trans with (m := (s - 1) * rad + (rad - 1)).
+  --apply Nat.add_le_mono.
+   ++apply Nat.mul_le_mono_r.
+     apply Nat.le_add_le_sub_r.
+     rewrite Nat.add_1_r.
+     apply Nat.mod_upper_bound.
+     now apply Nat.pow_nonzero.
+   ++apply Nat.le_add_le_sub_r.
+     rewrite Nat.add_1_r.
+     apply digit_lt_radix.
+  --unfold s.
 ...
  +destruct HAB as (m, mm).
   simpl in Hj.
