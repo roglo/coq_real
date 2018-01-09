@@ -1771,6 +1771,23 @@ Definition does_not_end_with_000 {r : radix} u i :=
   | inr _ => 0
   end.
 
+Theorem has_other_than_9_after_true_iff {r : radix} : ∀ u i,
+  has_other_than_9_after u i = true ↔
+  ∃ k, d2n u (i + k + 1) ≠ rad - 1.
+Proof.
+intros.
+unfold has_other_than_9_after.
+destruct (LPO_fst (is_9_after u i)) as [Hu| Hu].
+-split; intros H; [ easy | ].
+ destruct H as (k & H).
+ specialize (Hu k).
+ now apply is_9_after_true_iff in Hu.
+-split; intros H; [ clear H | easy ].
+ destruct Hu as (k & Hjk & Hk).
+ apply is_9_after_false_iff in Hk.
+ now exists k.
+Qed.
+
 Theorem not_eq_add_999 {r : radix} : ∀ x y,
   (∀ i, has_other_than_9_after (freal_add_to_seq x y) i = true)
   → (∃ k, ∀ i, k ≤ i → fd2n x i = 0)
@@ -1780,16 +1797,11 @@ intros * Hxy.
 split.
 -intros (k & Hx) i.
  unfold has_other_than_9_after.
- destruct (LPO_fst (is_9_after (freal y) i)) as [Hy| ]; [ | easy].
+ destruct (LPO_fst (is_9_after (freal y) i)) as [Hy| ]; [ | easy ].
  exfalso.
  specialize (Hxy (max i k)).
- unfold has_other_than_9_after in Hxy.
- set (u := freal_add_to_seq x y) in Hxy.
- destruct (LPO_fst (is_9_after u (max i k))) as [Hk| Hk]; [ easy | ].
- clear Hxy.
- destruct Hk as (j & Hjj & Hj).
- apply is_9_after_false_iff in Hj.
- unfold u in Hj.
+ apply has_other_than_9_after_true_iff in Hxy.
+ destruct Hxy as (j, Hj).
  unfold freal_add_to_seq in Hj.
  set (v := freal_add_series x y) in Hj.
  set (l := max i k + j + 1) in Hj.
@@ -1894,7 +1906,11 @@ split.
     rewrite <- Nat.add_assoc.
     apply Nat.le_add_r.
 -intros Hy.
-
+ specialize (Hxy 0).
+ specialize (Hy 0).
+ apply has_other_than_9_after_true_iff in Hxy.
+ apply has_other_than_9_after_true_iff in Hy.
+ simpl in Hxy, Hy.
 ...
 
 Add Parametric Morphism {r : radix} : freal_add
