@@ -2099,6 +2099,20 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
        move Hik before Hnk; move ky before k.
        move ny before n; move sy before s.
        move Heqny before Heqs; move Heqsy before Heqny.
+       assert
+         (H : ∀ k,
+          has_other_than_9_after (numbers_to_digits (freal_add_series x' x))
+            k = true). {
+         intros l.
+         specialize (Hxx l).
+         apply has_other_than_9_after_true_iff in Hxx.
+         apply has_other_than_9_after_true_iff.
+         destruct Hxx as (p & Hjp & Hp).
+         exists p.
+         split.
+         -intros q Hq.
+Search freal_add_series.
+
 ...
        specialize (not_eq_add_999 x' x) as H.
        unfold freal_add_to_seq in H.
