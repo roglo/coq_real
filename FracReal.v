@@ -2103,6 +2103,49 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
        unfold fd2n.
        rewrite Hbef; [ easy | lia ].
     +++apply Nat.nlt_ge in Hkky.
+specialize (Hiu ky).
+Print A_plus_B_ge_1.
+move Hiu at bottom.
+move Hky at bottom.
+apply A_plus_B_ge_1_true_iff in Hiu.
+apply A_plus_B_ge_1_false_iff in Hky.
+rewrite <- Heqn, <- Heqs in Hiu, Hky.
+destruct ky.
+replace k with (n + 1) in * by lia.
+clear Hnk Hkyj Hkky.
+simpl in Hiu, Hky.
+rewrite Nat.mul_1_r, Nat.add_0_r in Hiu, Hky.
+unfold nB in Hiu, Hky.
+rewrite Nat.add_0_r in Hiu, Hky.
+rewrite summation_only_one in Hiu, Hky.
+rewrite Nat.sub_diag, Nat.pow_0_r, Nat.mul_1_r in Hiu, Hky.
+destruct Hwhi as [| Hwhi]; [ lia | ].
+rewrite Nat.add_sub in Hwhi.
+remember (u n) as z; rewrite Hequ in Heqz; subst z.
+remember (v n) as z; rewrite Heqv in Heqz; subst z.
+unfold freal_add_series, sequence_add in Hiu, Hky.
+rewrite Hwhi in Hiu.
+unfold fd2n in Hiu at 1.
+unfold fd2n in Hky at 1.
+rewrite Hxy in Hiu.
+replace (dig (freal y n)) with (fd2n y n) in Hiu, Hky by easy.
+rewrite Nat.add_assoc in Hiu, Hky.
+clear k.
+exfalso.
+assert (nA i n u = nA i n v).
+unfold nA.
+apply summation_eq_compat; intros p Hp.
+f_equal.
+rewrite Hequ, Heqv.
+unfold freal_add_series, sequence_add.
+unfold fd2n.
+rewrite Hbef; [ | lia ].
+now rewrite Hxy.
+rewrite <- H in Hky.
+assert (nA i n u mod s * rad + fd2n y n + S (fd2n y' n) = rad ^ (n - i)) by lia.
+clear Hiu Hky H; rename H0 into H.
+...
+
        rewrite Heqv.
        unfold freal_add_series at 1.
        unfold sequence_add.
@@ -2112,6 +2155,13 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
        do 4 rewrite <- Nat.add_assoc.
        setoid_rewrite Nat.add_mod; [ | easy | easy ].
        f_equal; f_equal.
+simpl.
+rewrite <- Heqn, <- Heqs.
+unfold fd2n.
+rewrite Hbef.
+setoid_rewrite Nat.add_mod; [ | easy | easy ].
+f_equal; f_equal.
+...
        assert (Hik : i < k - 1). {
          specialize radix_ge_2 as Hr.
          apply Nat.le_lt_trans with (m := n - 1).
