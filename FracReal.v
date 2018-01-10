@@ -1794,13 +1794,14 @@ destruct (LPO_fst (is_9_after u i)) as [Hu| Hu].
  now apply is_9_after_true_iff in Hjk.
 Qed.
 
+(*
 Theorem not_eq_add_999_999 {r : radix} : ∀ x y,
   (∀ i, has_other_than_9_after (freal_add_to_seq x y) i = true)
   → (∃ k, ∀ i, k ≤ i → fd2n x i = rad - 1)
-  → (∀ i, has_other_than_9_after (freal y) i = false).
+  → (∀ i, has_other_than_0_after (freal y) i = true).
 Proof.
 intros * Hxy (k, Hx) j.
-Abort.
+*)
 
 Theorem not_eq_add_999_000 {r : radix} : ∀ x y,
   (∀ i, has_other_than_9_after (freal_add_to_seq x y) i = true)
@@ -2148,6 +2149,7 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
          now apply Hxaft.
        }
        specialize (H Hr Hx'x) as Hx.
+       clear H Hr Hx'x.
 
 ...
 subst u.
