@@ -59,6 +59,58 @@ Definition list_nat_of_nat n := list_nat_of_nat_aux n n.
 
 Require Import Psatz.
 
+Theorem list_nat_of_nat_aux_enough_iter : ∀ n i j,
+  n ≤ i → n ≤ j →
+  list_nat_of_nat_aux i n = list_nat_of_nat_aux j n.
+Proof.
+intros * Hi Hj.
+revert n j Hi Hj.
+induction i; intros.
+-apply Nat.le_0_r in Hi; subst n; simpl.
+ now destruct j.
+-destruct n; [ now destruct j | ].
+ destruct j; [ easy | ].
+ remember (S n) as ss; simpl; subst ss.
+ apply Nat.succ_le_mono in Hi.
+ apply Nat.succ_le_mono in Hj.
+ assert (Hsi : Nat.div2 (S n) ≤ i). {
+   eapply Nat.le_trans; [ | apply Hi ].
+   apply Nat.le_div2.
+ }
+ assert (Hsj : Nat.div2 (S n) ≤ j). {
+   eapply Nat.le_trans; [ | apply Hj ].
+   apply Nat.le_div2.
+ }
+ now rewrite (IHi _ _ Hsi Hsj).
+Qed.
+
+Theorem Odd_list_nat_of_nat_aux : ∀ n i,
+  Nat.Odd n
+  → list_nat_of_nat_aux (S i) n =
+      0 :: list_nat_of_nat_aux i (Nat.div2 n).
+Proof.
+intros * Hn.
+destruct n; [ now apply Nat.odd_spec in Hn | ].
+remember (S n) as x; simpl; subst x.
+remember (Nat.even (S n)) as b eqn:Hb.
+symmetry in Hb.
+destruct b; [ | easy ].
+apply Nat.even_spec in Hb.
+now apply Nat.Even_Odd_False in Hb.
+Qed.
+
+Theorem Odd_list_nat_of_nat : ∀ n,
+  Nat.Odd n
+  → list_nat_of_nat n = 0 :: list_nat_of_nat (Nat.div2 n).
+Proof.
+intros * Hn.
+unfold list_nat_of_nat.
+rewrite list_nat_of_nat_aux_enough_iter with (j := S n); [ | easy | lia ].
+rewrite Odd_list_nat_of_nat_aux; [ f_equal | easy ].
+apply list_nat_of_nat_aux_enough_iter; [ | easy ].
+apply Nat.div2_decr; lia.
+Qed.
+
 Theorem tigidi : ∀ i l,
   nat_of_list_nat l ≤ i
   → list_nat_of_nat_aux i (nat_of_list_nat l) = l.
