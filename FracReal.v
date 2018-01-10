@@ -2138,6 +2138,12 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
        move ny before n; move sy before s.
        move Heqny before Heqs; move Heqsy before Heqny.
        specialize (not_eq_add_999_000 x' x) as H.
+       set (u' := freal_add_to_seq x' x) in H.
+       assert (Hn9 : ∀ i : nat, ∃ j : nat, d2n u' (i + j + 1) ≠ rad - 1). {
+         intros p.
+         specialize (Hxx p).
+         apply has_other_than_9_after_true_iff in Hxx.
+         destruct Hxx as (q & Hjq & Hq).
 ...
        assert
          (Hr :
