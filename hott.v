@@ -54,5 +54,15 @@ intros * Hni.
 revert n Hni.
 induction i; intros; [now apply Nat.le_0_r in Hni | ].
 destruct n; [ easy | ].
-
+Opaque Nat.modulo Nat.div.
+simpl.
+apply Nat.succ_le_mono in Hni.
+specialize (IHi _ Hni).
+remember (S n mod 2) as m eqn:Hm.
+symmetry in Hm.
+destruct m.
+-remember (list_nat_of_nat_aux i (S n / 2)) as l eqn:Hl.
+ symmetry in Hl.
+ destruct l as [| a].
+ +simpl.
 ...
