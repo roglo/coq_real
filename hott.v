@@ -45,17 +45,19 @@ Fixpoint list_nat_of_nat_aux iter n :=
       | _ =>
           match Nat.even n with
           | true =>
-              match list_nat_of_nat_aux i (n / 2) with
+              match list_nat_of_nat_aux i (Nat.div2 n) with
               | [] => [0]
               | a :: l => S a :: l
               end
           | false =>
-              0 :: list_nat_of_nat_aux i (n / 2)
+              0 :: list_nat_of_nat_aux i (Nat.div2 n)
           end
       end
   end.
 
 Definition list_nat_of_nat n := list_nat_of_nat_aux n n.
+
+Require Import Psatz.
 
 Theorem pouet : ∀ n i,
   n ≤ i
@@ -64,15 +66,33 @@ Proof.
 intros * Hni.
 revert n Hni.
 induction i; intros; [now apply Nat.le_0_r in Hni | ].
-Opaque Nat.div.
 simpl.
 destruct n; [ easy | ].
 remember (Nat.even (S n)) as b eqn:Hb.
 symmetry in Hb.
 destruct b.
+Search (Nat.div2 (S _)).
+apply Nat.succ_le_mono in Hni.
+Focus 2.
+specialize (Nat.le_div2 n) as H.
+assert (H1 : Nat.div2 (S n) ≤ i) by lia.
+specialize (IHi _ H1) as H2.
+remember (Nat.div2 (S n)) as x; simpl; subst x.
+rewrite H2.
+do 2 rewrite Nat.add_0_r.
+rewrite Nat.add_1_r.
+f_equal.
+Search (2 * Nat.div2 _).
+simpl.
+destruct n; [ easy | ].
+simpl.
+f_equal.
+...
+
 apply Nat.even_spec in Hb.
 assert (S n / 2 ≤ i).
-
+Search (Nat.Even _ ∨ _).
+Search Nat.div2.
 ...
 
 Nat.even_add_mul_even: ∀ n m p : nat, Nat.Even m → Nat.even (n + m * p) = Nat.even n
