@@ -36,16 +36,6 @@ Fixpoint list_nat_of_nat_aux iter n :=
 
 Definition list_nat_of_nat n := list_nat_of_nat_aux n n.
 
-Theorem glop : (nat : Type) = (list nat : Type).
-Proof.
-specialize (univalence nat (list nat)) as (f, Hf).
-destruct Hf as (g, Hgf, Hfg).
-apply f.
-exists list_nat_of_nat.
-exists nat_of_list_nat.
--intros a.
- unfold list_nat_of_nat.
-
 Theorem pouet : ∀ n i,
   n ≤ i
   → nat_of_list_nat (list_nat_of_nat_aux i n) = n.
@@ -57,12 +47,56 @@ destruct n; [ easy | ].
 Opaque Nat.modulo Nat.div.
 simpl.
 apply Nat.succ_le_mono in Hni.
-specialize (IHi _ Hni).
+...
+
+specialize (IHi _ Hni) as IH.
 remember (S n mod 2) as m eqn:Hm.
 symmetry in Hm.
 destruct m.
 -remember (list_nat_of_nat_aux i (S n / 2)) as l eqn:Hl.
  symmetry in Hl.
  destruct l as [| a].
+ +destruct n; [ easy | exfalso ].
+  destruct i; [ easy | ].
+  simpl in IH, Hl.
+  apply Nat.mod_divides in Hm; [ | easy ].
+  destruct Hm as (c, Hc); rewrite Nat.mul_comm in Hc.
+  rewrite Hc in Hl.
+  rewrite Nat.div_mul in Hl; [ | easy ].
+  destruct c; [ easy | ].
+  destruct (S c mod 2); [ | easy ].
+  now destruct (list_nat_of_nat_aux i (S c / 2)).
  +simpl.
+  do 2 rewrite Nat.add_0_r.
+  destruct i.
+  *apply Nat.le_0_r in Hni; subst n.
+Transparent Nat.modulo.
+   easy.
+Opaque Nat.modulo.
+  *simpl in Hl.
+   apply Nat.mod_divides in Hm; [ | easy ].
+   destruct Hm as (c, Hc); rewrite Nat.mul_comm in Hc.
+   rewrite Hc in Hl.
+   rewrite Nat.div_mul in Hl; [ | easy ].
+   destruct c; [ easy | ].
+   remember (S c mod 2) as x.
+   symmetry in Heqx.
+   destruct x.
+   remember (list_nat_of_nat_aux i (S c / 2)) as y.
+   symmetry in Heqy.
+   destruct y.
+  --injection Hl; clear Hl; intros; subst a l.
+    simpl.
+    destruct n; [ easy | ].
+...
+
+Theorem glop : (nat : Type) = (list nat : Type).
+Proof.
+specialize (univalence nat (list nat)) as (f, Hf).
+destruct Hf as (g, Hgf, Hfg).
+apply f.
+exists list_nat_of_nat.
+exists nat_of_list_nat.
+-intros a.
+ unfold list_nat_of_nat.
 ...
