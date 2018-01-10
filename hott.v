@@ -59,6 +59,50 @@ Definition list_nat_of_nat n := list_nat_of_nat_aux n n.
 
 Require Import Psatz.
 
+Theorem tigidi : ∀ i l,
+  nat_of_list_nat l ≤ i
+  → list_nat_of_nat_aux i (nat_of_list_nat l) = l.
+Proof.
+intros * Hli.
+revert l Hli.
+induction i; intros.
+-apply Nat.le_0_r in Hli; rewrite Hli; simpl.
+ destruct l as [| a]; [ easy | exfalso ].
+ simpl in Hli.
+ apply Nat.eq_mul_0 in Hli.
+ specialize (Nat.pow_nonzero 2 a (Nat.neq_succ_0 1)) as H.
+ destruct Hli; [ easy | lia ].
+-simpl.
+ remember (nat_of_list_nat l) as m eqn:Hm.
+ symmetry in Hm.
+ destruct m.
+ +clear - Hm.
+  destruct l as [| a]; [ easy | exfalso ].
+  simpl in Hm.
+  apply Nat.eq_mul_0 in Hm.
+  specialize (Nat.pow_nonzero 2 a (Nat.neq_succ_0 1)) as H.
+  destruct Hm; [ easy | lia ].
+ +apply Nat.succ_le_mono in Hli.
+
+...
+
+Theorem tagada : ∀ l,
+  list_nat_of_nat (nat_of_list_nat l) = l.
+Proof.
+intros.
+unfold list_nat_of_nat.
+...
+
+induction l as [| a]; [ easy | simpl ].
+rewrite Nat.add_0_r.
+rewrite Nat.add_1_r; simpl.
+destruct a.
+-rewrite Nat.pow_0_r, Nat.mul_1_l.
+ unfold list_nat_of
+
+simpl.
+...
+
 Theorem pouet : ∀ n i,
   n ≤ i
   → nat_of_list_nat (list_nat_of_nat_aux i n) = n.
