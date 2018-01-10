@@ -1794,23 +1794,20 @@ destruct (LPO_fst (is_9_after u i)) as [Hu| Hu].
  now apply is_9_after_true_iff in Hjk.
 Qed.
 
-(*
 Theorem not_eq_add_999_999 {r : radix} : ∀ x y,
   (∀ i, has_other_than_9_after (freal_add_to_seq x y) i = true)
   → (∃ k, ∀ i, k ≤ i → fd2n x i = rad - 1)
   → (∀ i, has_other_than_9_after (freal y) i = false).
 Proof.
 intros * Hxy (k, Hx) j.
-...
-*)
+Abort.
 
 Theorem not_eq_add_999_000 {r : radix} : ∀ x y,
-  (∀ i, ∃ j, d2n (freal_add_to_seq x y) (i + j + 1) ≠ rad - 1)
+  (∀ i, has_other_than_9_after (freal_add_to_seq x y) i = true)
   → (∃ k, ∀ i, k ≤ i → fd2n x i = 0)
-  → (∀ i, ∃ j, d2n (freal y) (i + j + 1) ≠ rad - 1).
+  → (∀ i, has_other_than_9_after (freal y) i = true).
 Proof.
 intros * Hxy (k, Hx) j.
-(*
 unfold has_other_than_9_after.
 destruct (LPO_fst (is_9_after (freal y) j)) as [Hy| ]; [ | easy ].
 exfalso.
@@ -1821,9 +1818,9 @@ assert (H1 : ∀ i, j < i → fd2n y i = rad - 1). {
   now replace (j + (i - j - 1) + 1) with i in Hy by lia.
 }
 clear Hy; rename H1 into Hy.
-*)
 specialize (Hxy (max j k)).
-destruct Hxy as (i & Hi).
+apply has_other_than_9_after_true_iff in Hxy.
+destruct Hxy as (i & Hij & Hi).
 unfold freal_add_to_seq in Hi.
 set (v := freal_add_series x y) in Hi.
 set (l := max j k + i + 1) in Hi.
@@ -1845,7 +1842,7 @@ destruct (LPO_fst (A_plus_B_ge_1 l v)) as [HAB| HAB]; simpl in Hi.
  rewrite Nat.sub_diag, Nat.pow_0_r, Nat.mul_1_r in HAB.
  unfold v at 2 in HAB.
  unfold freal_add_series, sequence_add in HAB.
- exfalso; apply HAB; clear HAB.
+ apply HAB; clear HAB.
  rewrite Hx.
  +rewrite Nat.add_0_l.
   apply Nat.le_lt_trans with (m := (s - 1) * rad + (rad - 1)).
@@ -1884,7 +1881,6 @@ destruct (LPO_fst (A_plus_B_ge_1 l v)) as [HAB| HAB]; simpl in Hi.
  simpl in Hi.
  set (n := rad * (l + m + 2)) in Hi.
  set (s := rad ^ (n - 1 - l)) in Hi.
- exists (l - j - 1); intros Hy.
  replace (v l) with (rad - 1) in Hi.
  +rewrite Nat.div_small in Hi.
   *rewrite Nat.add_0_r, Nat.mod_small in Hi; [ easy | ].
@@ -1901,13 +1897,12 @@ destruct (LPO_fst (A_plus_B_ge_1 l v)) as [HAB| HAB]; simpl in Hi.
   --unfold n.
     destruct rad as [| rr]; [ easy | simpl; lia ].
  +unfold v, freal_add_series, sequence_add.
-  replace (j + (l - j - 1) + 1) with l in Hy.
-  *rewrite Hx.
-  --unfold fd2n; unfold d2n in Hy.
-    now rewrite Hy.
-  --unfold l.
-    apply Nat.le_trans with (m := max j k); [ apply Nat.le_max_r | lia ].
-  *unfold l; lia.
+  rewrite Hx.
+  *rewrite Hy; [ lia | ].
+   unfold l.
+   apply Nat.le_lt_trans with (m := max j k); [ apply Nat.le_max_l | lia ].
+  *unfold l.
+   apply Nat.le_trans with (m := max j k); [ apply Nat.le_max_r | lia ].
 Qed.
 
 Theorem has_other_than_9_after_add_to_seq_comm {r : radix} : ∀ x y i,
@@ -2138,13 +2133,6 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
        move ny before n; move sy before s.
        move Heqny before Heqs; move Heqsy before Heqny.
        specialize (not_eq_add_999_000 x' x) as H.
-       set (u' := freal_add_to_seq x' x) in H.
-       assert (Hn9 : ∀ i : nat, ∃ j : nat, d2n u' (i + j + 1) ≠ rad - 1). {
-         intros p.
-         specialize (Hxx p).
-         apply has_other_than_9_after_true_iff in Hxx.
-         destruct Hxx as (q & Hjq & Hq).
-...
        assert
          (Hr :
             ∀ i, has_other_than_9_after (freal_add_to_seq x' x) i = true). {
