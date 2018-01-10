@@ -2133,6 +2133,26 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
        move Hik before Hnk; move ky before k.
        move ny before n; move sy before s.
        move Heqny before Heqs; move Heqsy before Heqny.
+apply A_plus_B_ge_1_false_iff in Hky.
+rewrite <- Heqn, <- Heqs in Hky.
+destruct ky.
+rewrite Nat.add_0_r, <- Heqn in Heqny.
+subst ny; rewrite <- Heqs in Heqsy.
+subst sy.
+rewrite Nat.add_0_l, Nat.pow_1_r in Hky.
+rewrite Nat.add_0_r in Hkky.
+assert (k = n + 1) by lia.
+move H at top; subst k.
+clear Hnk Hkky Hkyj.
+rewrite Nat.add_sub in Hik, Hwhi.
+destruct Hwhi as [| Hwhi]; [ lia | ].
+rewrite Nat.add_0_r in Hky.
+unfold nB in Hky.
+rewrite Nat.add_0_r in Hky.
+rewrite summation_only_one in Hky.
+rewrite Nat.sub_diag in Hky.
+rewrite Nat.pow_0_r, Nat.mul_1_r in Hky.
+rewrite Nat.add_sub in Hbef.
 ...
        specialize (not_eq_add_999_000 x' x) as H.
        assert
