@@ -2133,6 +2133,7 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
        move Hik before Hnk; move ky before k.
        move ny before n; move sy before s.
        move Heqny before Heqs; move Heqsy before Heqny.
+...
        specialize (not_eq_add_999_000 x' x) as H.
        assert
          (Hr :
