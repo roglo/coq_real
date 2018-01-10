@@ -19,6 +19,7 @@ Fixpoint nat_of_list_nat l :=
   | a :: l => 2 ^ a * (2 * nat_of_list_nat l + 1)
   end.
 
+(*
 Fixpoint list_nat_of_nat_aux iter n :=
   match iter with
   | 0 => []
@@ -33,6 +34,26 @@ Fixpoint list_nat_of_nat_aux iter n :=
           end
       end
   end.
+*)
+
+Fixpoint list_nat_of_nat_aux iter n :=
+  match iter with
+  | 0 => []
+  | S i =>
+      match n with
+      | 0 => []
+      | _ =>
+          match Nat.even n with
+          | true =>
+              match list_nat_of_nat_aux i (n / 2) with
+              | [] => [0]
+              | a :: l => S a :: l
+              end
+          | false =>
+              0 :: list_nat_of_nat_aux i (n / 2)
+          end
+      end
+  end.
 
 Definition list_nat_of_nat n := list_nat_of_nat_aux n n.
 
@@ -43,10 +64,48 @@ Proof.
 intros * Hni.
 revert n Hni.
 induction i; intros; [now apply Nat.le_0_r in Hni | ].
-destruct n; [ easy | ].
-Opaque Nat.modulo Nat.div.
+Opaque Nat.div.
 simpl.
+destruct n; [ easy | ].
+remember (Nat.even (S n)) as b eqn:Hb.
+symmetry in Hb.
+destruct b.
+apply Nat.even_spec in Hb.
+assert (S n / 2 ≤ i).
+
+...
+
+Nat.even_add_mul_even: ∀ n m p : nat, Nat.Even m → Nat.even (n + m * p) = Nat.even n
+Focus 2.
+specialize (IHi _ H) as IH.
+simpl.
+rewrite IH.
+do 2 rewrite Nat.add_0_r.
+rewrite Nat.add_1_r.
+f_equal.
+replace (S n / 2 + S n / 2) with (S n / 2 * 2).
+...
+
+
+
+remember (Nat.odd n) as b eqn:Hb.
+symmetry in Hb.
+destruct b.
+-destruct n; [ easy | ].
+ rewrite Nat.odd_succ in Hb.
+Search (S _ mod _).
+
+-apply Nat.odd_spec in Hb.
+ destruct n; [ easy | ].
+ apply Nat.odd_spec in Hb.
+Search (Nat.odd (S _)).
+simpl in Hb.
+
+Search (Nat.Odd (S _)).
+ apply Nat.Odd_succ in Hb.
+
 apply Nat.succ_le_mono in Hni.
+
 ...
 
 specialize (IHi _ Hni) as IH.
