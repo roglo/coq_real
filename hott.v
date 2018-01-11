@@ -1,6 +1,6 @@
 (* proof that nat=list nat using univalence axiom *)
 
-Require Import Utf8 Arith.
+Require Import Utf8 Arith Psatz.
 Require List.
 Import List.ListNotations.
 Open Scope list_scope.
@@ -20,23 +20,6 @@ Fixpoint nat_of_list_nat l :=
   | [] => 0
   | a :: l => 2 ^ a * (2 * nat_of_list_nat l + 1)
   end.
-
-(*
-Fixpoint list_nat_of_nat_aux iter n :=
-  match iter with
-  | 0 => []
-  | S i =>
-      match n with
-      | 0 => []
-      | _ =>
-          match (n mod 2, list_nat_of_nat_aux i (n / 2)) with
-          | (0, []) => [0]
-          | (0, a :: l) => S a :: l
-          | (_, l) => 0 :: l
-          end
-      end
-  end.
-*)
 
 Fixpoint list_nat_of_nat_aux iter n :=
   match iter with
@@ -59,7 +42,8 @@ Fixpoint list_nat_of_nat_aux iter n :=
 
 Definition list_nat_of_nat n := list_nat_of_nat_aux n n.
 
-Require Import Psatz.
+Compute (List.fold_right (λ n l, (n, list_nat_of_nat n) :: l))
+  [] (List.seq 0 31).
 
 Theorem list_nat_of_nat_aux_enough_iter : ∀ n i j,
   n ≤ i → n ≤ j →
