@@ -116,6 +116,13 @@ Theorem tigidi : ∀ i l,
   → list_nat_of_nat_aux i (nat_of_list_nat l) = l.
 Proof.
 intros * Hli.
+revert i Hli.
+induction l as [| a]; intros; [ now destruct i | ].
+simpl in Hli; simpl.
+rewrite Nat.add_0_r in Hli |-*.
+
+...
+intros * Hli.
 revert l Hli.
 induction i; intros.
 -apply Nat.le_0_r in Hli; rewrite Hli; simpl.
