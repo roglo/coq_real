@@ -25,16 +25,13 @@ Fixpoint list_nat_of_nat_aux iter n :=
   match iter with
   | 0 => []
   | S i =>
-      match n with
-      | 0 => []
-      | _ =>
-          match Nat.divmod n 1 0 1 with
-          | (q, 0) => 0 :: list_nat_of_nat_aux i q
-          | (q, _) =>
-              match list_nat_of_nat_aux i q with
-              | [] => [0]
-              | a :: l => S a :: l
-              end
+      match Nat.divmod n 1 0 1 with
+      | (q, 0) => 0 :: list_nat_of_nat_aux i q
+      | (0, 1) => []
+      | (q, _) =>
+          match list_nat_of_nat_aux i q with
+          | [] => [0]
+          | a :: l => S a :: l
           end
       end
   end.
