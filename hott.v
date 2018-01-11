@@ -27,10 +27,15 @@ Fixpoint list_nat_of_nat_aux iter n :=
   | S i =>
       if zerop n then []
       else if Nat.even n then
+(*
+        let '(npow, rest) := npower_0 n in
+        npow :: list_nat_of_nat_aux i rest
+*)
         match list_nat_of_nat_aux i (Nat.div2 n) with
         | [] => [0]
         | a :: l => S a :: l
         end
+(**)
       else 0 :: list_nat_of_nat_aux i (Nat.div2 n)
   end.
 
