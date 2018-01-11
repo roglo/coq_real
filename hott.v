@@ -28,21 +28,19 @@ Fixpoint list_nat_of_nat_aux iter n :=
       match n with
       | 0 => []
       | _ =>
-          match Nat.even n with
-          | true =>
-              match list_nat_of_nat_aux i (Nat.div2 n) with
-              | [] => [0]
-              | a :: l => S a :: l
-              end
-          | false =>
-              0 :: list_nat_of_nat_aux i (Nat.div2 n)
-          end
+          if Nat.even n then
+            match list_nat_of_nat_aux i (Nat.div2 n) with
+            | [] => [0]
+            | a :: l => S a :: l
+            end
+          else 0 :: list_nat_of_nat_aux i (Nat.div2 n)
       end
   end.
 
 Definition list_nat_of_nat n := list_nat_of_nat_aux n n.
 
-Compute (List.fold_right (λ n l, (n, list_nat_of_nat n) :: l))
+Compute (List.fold_right
+  (λ n l, (n, list_nat_of_nat n) :: l))
   [] (List.seq 0 31).
 
 Theorem list_nat_of_nat_aux_enough_iter : ∀ n i j,
@@ -101,13 +99,6 @@ Theorem tigidi : ∀ i l,
   nat_of_list_nat l ≤ i
   → list_nat_of_nat_aux i (nat_of_list_nat l) = l.
 Proof.
-intros * Hli.
-revert i Hli.
-induction l as [| a]; intros; [ now destruct i | ].
-simpl in Hli; simpl.
-rewrite Nat.add_0_r in Hli |-*.
-
-...
 intros * Hli.
 revert l Hli.
 induction i; intros.
