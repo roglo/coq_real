@@ -15,6 +15,27 @@ Axiom univalence : ∀ A B, (A ≃ B) ≃ (A = B).
 
 Notation "a ^ b" := (Nat.pow a b).
 
+Definition pair_nat_of_nat n :=
+  let s := Nat.div2 (Nat.sqrt (1 + 8 * n) - 1) in
+  (s - (n - Nat.div2 (s * (s + 1))), n - Nat.div2 (s * (s + 1))).
+
+Definition nat_of_pair_nat '(i, j) :=
+  Nat.div2 ((i + j) * (i + j + 1)) + j.
+
+Compute List.fold_right
+  (λ n l, (n, Nat.sqrt n) :: l)
+  [] (List.seq 0 31).
+
+Compute List.fold_right
+  (λ n l, (n, pair_nat_of_nat n) :: l)
+  [] (List.seq 0 31).
+
+Compute List.fold_right
+  (λ n l, (n, nat_of_pair_nat (pair_nat_of_nat n)) :: l)
+  [] (List.seq 0 31).
+
+...
+
 Fixpoint nat_of_list_nat l :=
   match l with
   | [] => 0
@@ -45,6 +66,10 @@ Compute (List.fold_right
 Compute (List.fold_right
   (λ n l, (n, nat_of_list_nat (list_nat_of_nat n)) :: l))
   [] (List.seq 0 31).
+
+Compute (List.fold_right
+  (λ n l, (List.repeat 1 n, nat_of_list_nat (List.repeat 1 n)) :: l))
+  [] (List.seq 0 5).
 
 ...
 
