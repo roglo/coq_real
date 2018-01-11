@@ -44,30 +44,6 @@ Compute (List.fold_right
   (λ n l, (n, nat_of_list_nat (list_nat_of_nat n)) :: l))
   [] (List.seq 0 31).
 
-...
-
-Fixpoint list_nat_of_nat_aux iter n :=
-  match iter with
-  | 0 => []
-  | S i =>
-      match n with
-      | 0 => []
-      | _ =>
-          if Nat.even n then
-            match list_nat_of_nat_aux i (Nat.div2 n) with
-            | [] => [0]
-            | a :: l => S a :: l
-            end
-          else 0 :: list_nat_of_nat_aux i (Nat.div2 n)
-      end
-  end.
-
-Definition list_nat_of_nat n := list_nat_of_nat_aux n n.
-
-Compute (List.fold_right
-  (λ n l, (n, list_nat_of_nat n) :: l))
-  [] (List.seq 0 31).
-
 Theorem list_nat_of_nat_aux_enough_iter : ∀ n i j,
   n ≤ i → n ≤ j →
   list_nat_of_nat_aux i n = list_nat_of_nat_aux j n.
@@ -134,17 +110,17 @@ induction i; intros.
  specialize (Nat.pow_nonzero 2 a (Nat.neq_succ_0 1)) as H.
  destruct Hli; [ easy | lia ].
 -simpl.
- remember (nat_of_list_nat l) as m eqn:Hm.
- symmetry in Hm.
- destruct m.
- +clear - Hm.
+ destruct (zerop (nat_of_list_nat l)) as [Hn| Hn].
+ +clear - Hn.
   destruct l as [| a]; [ easy | exfalso ].
-  simpl in Hm.
-  apply Nat.eq_mul_0 in Hm.
+  simpl in Hn.
+  apply Nat.eq_mul_0 in Hn.
   specialize (Nat.pow_nonzero 2 a (Nat.neq_succ_0 1)) as H.
-  destruct Hm; [ easy | lia ].
- +apply Nat.succ_le_mono in Hli.
-
+  destruct Hn; [ easy | lia ].
+ +remember (nat_of_list_nat l) as m eqn:Hm.
+  symmetry in Hm.
+  destruct m; [ easy | clear Hn ].
+  apply Nat.succ_le_mono in Hli.
 ...
 
 Theorem tagada : ∀ l,
