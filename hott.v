@@ -121,6 +121,11 @@ induction i; intros.
   symmetry in Hm.
   destruct m; [ easy | clear Hn ].
   apply Nat.succ_le_mono in Hli.
+  rewrite Nat.even_succ.
+  remember (Nat.odd m) as no eqn:Hno.
+  symmetry in Hno.
+  destruct no.
+  *idtac.
 ...
 
 Theorem tagada : ∀ l,
