@@ -36,6 +36,31 @@ Compute (List.fold_right
   (λ n l, (n, nat_of_pair_nat (pair_nat_of_nat n)) :: l))
   [] (List.seq 0 31).
 
+Fixpoint nat_of_list_nat l :=
+  match l with
+  | [] => 0
+  | a :: l => 2 ^ a * (2 * nat_of_list_nat l + 1)
+  end.
+
+Definition pair_nat_of_list_nat l :=
+  match l with
+  | [] => (0, 0)
+  | a :: l =>
+      let n := nat_of_list_nat l in
+      match a with
+      | 0 =>
+          let '(a, b) := pair_nat_of_nat n in
+          (S a, b)
+      | S a' =>
+          (0, 2 ^ a' * (2 * n + 1))
+      end
+  end.
+
+Compute (pair_nat_of_list_nat []).
+Compute (pair_nat_of_list_nat [0]).
+Compute (pair_nat_of_list_nat [0; 1]).
+Compute (pair_nat_of_list_nat [1; 0]).
+
 ...
 
 Fixpoint nat_of_list_nat l :=
