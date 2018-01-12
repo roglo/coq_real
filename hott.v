@@ -242,12 +242,48 @@ Fixpoint pow_2_of_nat_aux iter n :=
   end.
 
 Definition pow_2_of_nat n := pow_2_of_nat_aux n n.
-Definition quot_pow_2_of_nat n := Nat.div2 (n / pow_2_of_nat n).
+Definition quot_pow_2_of_nat n := Nat.div2 (n / pow_2_of_nat n - 1).
+
+Theorem glip : ∀ n i a,
+  n ≠ 0
+  → n ≤ i
+  → a = pow_2_of_nat_aux i n
+  → n = 2 ^ a * (2 * Nat.div2 (n / a - 1) + 1).
+Proof.
+intros * Hn Hni Ha.
+revert i a Hni Ha.
+induction n as (n, IHn) using lt_wf_rec; intros.
+destruct n; [ easy | clear Hn ].
+destruct i; [ easy | ].
+remember (S n) as s; simpl in Ha; subst s.
+remember (Nat.even (S n)) as e eqn:He.
+symmetry in He.
+destruct e.
+-destruct i.
+ +now replace n with 0 in * by lia.
+ +remember (S n) as s; simpl in Ha; subst s.
+  rewrite He in Ha.
+  specialize (IHn (Nat.div2 n)) as H.
+...
 
 Theorem glop : ∀ n,
   n ≠ 0
   → n = 2 ^ pow_2_of_nat n * (2 * quot_pow_2_of_nat n + 1).
 Proof.
+intros * Hn.
+unfold pow_2_of_nat.
+unfold quot_pow_2_of_nat.
+
+apply glip.
+...
+
+intros * Hn.
+induction n as (n, IHn) using lt_wf_rec.
+destruct n; [ easy | clear Hn ].
+unfold pow_2_of_nat.
+
+...
+
 intros * Hn.
 remember (Nat.log2 n) as m eqn:Hm.
 symmetry in Hm.
