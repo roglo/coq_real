@@ -21,6 +21,22 @@ Fixpoint nat_of_list_nat l :=
   | a :: l => 2 ^ a * (2 * nat_of_list_nat l + 1)
   end.
 
+(*
+Fixpoint npower_0_aux iter n :=
+  match iter with
+  | 0 => (0, 0)
+  | S i =>
+      if zerop n then (0, 0)
+      else if Nat.even n then
+        let '(npow, rest) := npower_0_aux i (Nat.div2 n) in
+        (S npow, rest)
+      else
+        (0, Nat.div2 n)
+  end.
+
+Definition npower_0 n := npower_0_aux n n.
+*)
+
 Fixpoint list_nat_of_nat_aux iter n :=
   match iter with
   | 0 => []
