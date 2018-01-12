@@ -257,7 +257,7 @@ Fixpoint odd_part_of_nat_aux iter n :=
 
 Definition odd_part_of_nat n := odd_part_of_nat_aux n n.
 
-Theorem glip : ∀ n a b i j,
+Theorem pow2_mul_odd_aux : ∀ n a b i j,
   n ≠ 0
   → n ≤ i
   → n ≤ j
@@ -312,86 +312,23 @@ destruct e.
  replace (Nat.odd (S n)) with true in H.
  +now subst a; rewrite Nat.pow_0_r, Nat.mul_1_l.
  +symmetry.
-...
+  Check Nat.Even_or_Odd.
+  specialize (Nat.Even_or_Odd (S n)) as Heo.
+  destruct Heo as [Heo| Heo].
+  *apply Nat.even_spec in Heo.
+   now rewrite He in Heo.
+  *now apply Nat.odd_spec.
+Qed.
 
-  apply Bool.not_false_iff_true.
-  rewrite <- He.
-  intros Ho.
-  symmetry in Ho.
-  remember (Nat.odd (S n)) as on eqn:Hon.
-  symmetry in Hon.
-  destruct on; [ now rewrite He in Ho | ].
-  *apply Nat.even_spec in Ho.
-
-
-Search (Nat.even _ = Nat.odd _).
-
-  intros Ho.
-
-
-  apply Nat.Even_Odd_False in He.
-
-
-  apply Bool.not_true_iff_false in He.
-
-
- rewrite Nat.div2_odd.
-
-...
-
--destruct i.
- +now replace n with 0 in * by lia.
- +remember (Nat.div2 (S n)) as n2 eqn:Hn2; symmetry in Hn2.
-  simpl in Ha.
-  destruct n2.
-  *move Ha at top; subst a.
-   now destruct n.
-  *remember (Nat.even (S n2)) as e2 eqn:He2.
-   symmetry in He2.
-   destruct e2.
-  --idtac.
-
-
-
-  specialize (IHn n) as H.
-...
-
-Theorem glop : ∀ n,
+Theorem pow2_mul_odd : ∀ n a b,
   n ≠ 0
-  → n = 2 ^ pow_2_of_nat n * (2 * quot_pow_2_of_nat n + 1).
+  → a = pow_2_of_nat n
+  → b = odd_part_of_nat n
+  → n = 2 ^ a * (2 * b + 1).
 Proof.
-intros * Hn.
-unfold pow_2_of_nat.
-unfold quot_pow_2_of_nat.
-
-apply glip.
-...
-
-intros * Hn.
-induction n as (n, IHn) using lt_wf_rec.
-destruct n; [ easy | clear Hn ].
-unfold pow_2_of_nat.
-
-...
-
-intros * Hn.
-remember (Nat.log2 n) as m eqn:Hm.
-symmetry in Hm.
-revert n Hn Hm.
-induction m; intros.
--apply Nat.log2_null in Hm.
- destruct n; [ easy | ].
- destruct n; [ easy | lia ].
--destruct n; [ easy | ].
- specialize (Nat.log2_succ_or n) as Hs.
- destruct Hs as [Hs| Hs].
- +rewrite Hm in Hs.
-  apply Nat.succ_inj in Hs; symmetry in Hs.
-  destruct n; [ easy | ].
-  assert (Hsn : S n ≠ 0) by lia.
-  specialize (IHm _ Hsn Hs) as H.
-
-...
+intros * Hn Ha Hb.
+now eapply pow2_mul_odd_aux.
+Qed.
 
 Theorem list_nat_of_nat_pow2 : ∀ n,
   list_nat_of_nat (2 ^ n) = [n].
@@ -413,10 +350,13 @@ intros * Hln Hni.
 destruct n.
 -apply eq_nat_of_list_nat_0 in Hln; subst l.
  now destruct i.
+-idtac.
+ Check pow2_mul_odd.
+...
+
 -destruct i; [ easy | ].
  remember (S n) as sn; simpl; subst sn.
  destruct (zerop (S n)) as [| H]; [ easy | clear H ].
-
 
 ...
 
