@@ -117,6 +117,33 @@ apply list_nat_of_nat_aux_enough_iter; [ | easy ].
 apply Nat.div2_decr; lia.
 Qed.
 
+Theorem eq_list_nat_of_nat_aux_nil : ∀ iter n,
+  list_nat_of_nat_aux iter n = []
+  ↔ iter = 0 ∨ n = 0.
+Proof.
+intros.
+split.
+-intros Hl.
+ destruct iter; [ now left | right; simpl in Hl ].
+ destruct n; [ easy | exfalso; simpl in Hl ].
+ destruct n; [ easy | ].
+ destruct (Nat.even n); [ | easy ].
+ now destruct (list_nat_of_nat_aux iter (S (Nat.div2 n))).
+-intros [Hi| Hn]; [ now subst iter | ].
+ subst n; now destruct iter.
+Qed.
+
+Theorem eq_nat_of_list_nat_0 : ∀ l,
+  nat_of_list_nat l = 0 → l = [].
+Proof.
+intros.
+destruct l as [| a]; [ easy | ].
+simpl in H.
+assert (2 ^ a ≠ 0) by now apply Nat.pow_nonzero.
+destruct (2 ^ a); [ easy | ].
+simpl in H; lia.
+Qed.
+
 Theorem tigidi : ∀ i l,
   nat_of_list_nat l ≤ i
   → list_nat_of_nat_aux i (nat_of_list_nat l) = l.
@@ -146,7 +173,51 @@ induction i; intros.
   remember (Nat.odd m) as no eqn:Hno.
   symmetry in Hno.
   destruct no.
-  *idtac.
+  *remember (list_nat_of_nat_aux i (Nat.div2 (S m))) as l1 eqn:Hl1.
+   symmetry in Hl1.
+   destruct l1 as [| a].
+  --apply eq_list_nat_of_nat_aux_nil in Hl1.
+    destruct Hl1 as [Hi| Hdm]; [ | now destruct m ].
+    now subst i; apply Nat.le_0_r in Hli; subst m.
+  --simpl in Hl1.
+    destruct m; [ easy | ].
+    destruct i; [ easy | ].
+    simpl in Hl1.
+    remember (Nat.div2 m) as n eqn:Hn.
+    symmetry in Hn.
+    destruct n.
+   ++injection Hl1; clear Hl1; intros; subst a l1.
+     destruct m; [ | now destruct m ].
+     destruct l as [| a]; [ easy | ].
+     simpl in Hm.
+     destruct a.
+    **rewrite Nat.pow_0_r, Nat.mul_1_l in Hm; lia.
+    **simpl in Hm.
+      destruct a.
+    ---f_equal.
+       rewrite Nat.pow_0_r, Nat.add_0_r, Nat.add_0_r in Hm.
+       simpl in Hm.
+       assert (nat_of_list_nat l = 0) by lia.
+       apply eq_nat_of_list_nat_0 in H.
+       subst l.
+       now destruct i.
+    ---simpl in Hm; lia.
+   ++remember (Nat.even n) as b eqn:Hb.
+     symmetry in Hb.
+     destruct b.
+    **destruct i; simpl in Hl1.
+    ---apply Nat.succ_le_mono in Hli.
+       now apply Nat.le_0_r in Hli; subst m.
+    ---remember (Nat.div2 n) as p eqn:Hp.
+       symmetry in Hp.
+       destruct p.
+     +++destruct n.
+      ***destruct m; [ easy | ].
+         destruct m; [ easy | ].
+         simpl in Hn.
+         apply Nat.succ_inj in Hn.
+         destruct m.
+
 ...
 
 Theorem tagada : ∀ l,
