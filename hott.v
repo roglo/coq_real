@@ -352,6 +352,10 @@ destruct n.
  now destruct i.
 -idtac.
  Check pow2_mul_odd.
+ remember (pow_2_of_nat (S n)) as a eqn:Ha.
+ remember (odd_part_of_nat (S n)) as b eqn:Hb.
+ specialize (pow2_mul_odd _ a b (Nat.neq_succ_0 n) Ha Hb) as H.
+ move b before a.
 ...
 
 -destruct i; [ easy | ].
