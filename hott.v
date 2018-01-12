@@ -231,6 +231,27 @@ induction n; intros.
  now rewrite IHn.
 Qed.
 
+Fixpoint pow_2_of_nat_aux iter n :=
+  match iter with
+  | 0 => 0
+  | S i =>
+      match n with
+      | 0 => 0
+      | S m => if Nat.even n then 1 + pow_2_of_nat_aux i n else 0
+      end
+  end.
+
+Definition pow_2_of_nat n := pow_2_of_nat_aux n n.
+Definition quot_pow_2_of_nat n := Nat.div2 (n / pow_2_of_nat n).
+
+Theorem glop : ∀ n,
+  n ≠ 0
+  → n = 2 ^ pow_2_of_nat n * (2 * quot_pow_2_of_nat n + 1).
+Proof.
+intros * Hn.
+
+...
+
 Theorem list_nat_of_nat_pow2 : ∀ n,
   list_nat_of_nat (2 ^ n) = [n].
 Proof.
@@ -242,6 +263,22 @@ Theorem tigidi : ∀ i l,
   nat_of_list_nat l ≤ i
   → list_nat_of_nat_aux i (nat_of_list_nat l) = l.
 Proof.
+intros * Hli.
+remember (nat_of_list_nat l) as n eqn:Hn.
+symmetry in Hn.
+revert i l Hn Hli.
+induction n as (n, IHn) using lt_wf_rec.
+intros * Hln Hni.
+destruct n.
+-apply eq_nat_of_list_nat_0 in Hln; subst l.
+ now destruct i.
+-destruct i; [ easy | ].
+ remember (S n) as sn; simpl; subst sn.
+ destruct (zerop (S n)) as [| H]; [ easy | clear H ].
+
+
+...
+
 intros * Hli.
 remember (nat_of_list_nat l) as n eqn:Hn.
 symmetry in Hn.
@@ -280,6 +317,13 @@ induction ln; intros.
    ++remember (Nat.even n) as b eqn:Hb.
      symmetry in Hb.
      destruct b.
+    **idtac.
+      destruct a.
+    ---rewrite Nat.pow_0_r, Nat.mul_1_l in Hn.
+       rewrite <- Hn in Hb.
+       rewrite Nat.
+...
+
     **destruct l as [| a1 ].
     ---simpl in Hn; rewrite Nat.mul_1_r in Hn.
        subst n.
@@ -291,7 +335,9 @@ induction ln; intros.
      +++simpl in Hli; simpl.
         destruct i; [ lia | now destruct i ].
      +++destruct i.
-      ***admit.
+      ***simpl in Hli.
+         assert (2 ^ ln ≠ 0) by now apply Nat.pow_nonzero.
+         lia.
       ***remember (2 ^ S ln) as s eqn:Hs; simpl; subst s.
          destruct (zerop (2 ^ S ln)) as [Hzz| Hzz].
       ----now apply Nat.pow_nonzero in Hzz.
@@ -315,7 +361,10 @@ induction ln; intros.
          rewrite <- Nat.mul_assoc.
          now rewrite Nat.div2_double.
       ***now apply Nat.div2_decr in Hli.
-    **idtac.
+    **destruct a.
+    ---f_equal.
+       rewrite Nat.pow_0_r, Nat.mul_1_l in Hn.
+       apply IHln.
 
 ...
 
