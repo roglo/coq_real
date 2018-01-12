@@ -392,7 +392,47 @@ induction i; intros.
        rewrite <- Hn; simpl.
        assert (2 ^ a ≠ 0) by now apply Nat.pow_nonzero.
        destruct (2 ^ a); [ easy | simpl; lia ].
-    **idtac.
+    **rewrite <- IHi.
+    ---rewrite Nat.pow_0_r, Nat.mul_1_l.
+       f_equal.
+       specialize (Nat.div2_odd (S b)) as H.
+       rewrite H; f_equal; f_equal.
+     +++f_equal; apply Nat.div2_odd.
+     +++rewrite <- Nat.negb_odd in Hsb.
+        apply Bool.negb_false_iff in Hsb.
+        now rewrite Hsb.
+    ---rewrite Nat.pow_0_r, Nat.mul_1_l.
+       apply Nat.le_trans with (m := 2 * b + 1).
+       apply Nat.add_le_mono_r.
+       apply Nat.mul_le_mono_l.
+       apply Nat.le_div2.
+       assert (2 ^ a ≠ 0) by now apply Nat.pow_nonzero.
+       destruct (2 ^ a); [ easy | simpl in Hn; lia ].
+  *destruct a.
+  --f_equal.
+    destruct b.
+   ++remember (S n) as sn; simpl; subst sn.
+     rewrite <- Hn; simpl.
+     now destruct i.
+   ++destruct (zerop (S b)) as [| H]; [ easy | clear H ].
+
+...
+
+    **destruct i.
+    ---now replace n with 0 in He by lia.
+    ---remember (S b) as x; simpl; subst x.
+       rewrite Hsb.
+       destruct (zerop (S b)) as [| H]; [ easy | clear H ].
+       f_equal.
+
+
+destruct n; [ now apply Nat.odd_spec in Hn | ].
+remember (S n) as x; simpl; subst x.
+remember (Nat.even (S n)) as b eqn:Hb.
+symmetry in Hb.
+destruct b; [ | easy ].
+apply Nat.even_spec in Hb.
+now apply Nat.Even_Odd_False in Hb.
 ...
 
 Theorem tigidi : ∀ i l,
