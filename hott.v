@@ -249,6 +249,21 @@ Theorem glop : ∀ n,
   → n = 2 ^ pow_2_of_nat n * (2 * quot_pow_2_of_nat n + 1).
 Proof.
 intros * Hn.
+remember (Nat.log2 n) as m eqn:Hm.
+symmetry in Hm.
+revert n Hn Hm.
+induction m; intros.
+-apply Nat.log2_null in Hm.
+ destruct n; [ easy | ].
+ destruct n; [ easy | lia ].
+-destruct n; [ easy | ].
+ specialize (Nat.log2_succ_or n) as Hs.
+ destruct Hs as [Hs| Hs].
+ +rewrite Hm in Hs.
+  apply Nat.succ_inj in Hs; symmetry in Hs.
+  destruct n; [ easy | ].
+  assert (Hsn : S n ≠ 0) by lia.
+  specialize (IHm _ Hsn Hs) as H.
 
 ...
 
