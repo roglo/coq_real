@@ -176,6 +176,68 @@ Theorem nat_of_list_nat_cons : ∀ a l,
   nat_of_list_nat (a :: l) = 2 ^ a * (2 * nat_of_list_nat l + 1).
 Proof. easy. Qed.
 
+
+Theorem list_nat_of_nat_aux_mul2 : ∀ n i j,
+  2 * n ≤ i → n ≤ j →
+  list_nat_of_nat_aux i (2 * n) =
+    match list_nat_of_nat_aux j n with
+    | [] => []
+    | a :: l => S a :: l
+    end.
+Proof.
+intros * Hni Hnj.
+revert j Hnj.
+induction i; intros.
+-destruct n; [ now destruct j | easy ].
+-remember (2 * n) as m eqn:Hm; symmetry in Hm.
+ simpl.
+ destruct (zerop m) as [Hzm| Hzm].
+ +destruct j; [ easy | ].
+  subst m.
+  apply Nat.eq_mul_0 in Hzm.
+  destruct Hzm; [ easy | now subst n ].
+ +rewrite <- Hm at 1.
+  rewrite Nat.even_mul; simpl.
+  rewrite <- Hm.
+  rewrite Nat.div2_double.
+  rewrite list_nat_of_nat_aux_enough_iter with (j := j); [ | lia | easy ].
+  remember (list_nat_of_nat_aux j n) as l eqn:Hl.
+  symmetry in Hl.
+  destruct l; [ | easy ].
+  apply eq_list_nat_of_nat_aux_nil in Hl; lia.
+Qed.
+
+Theorem list_nat_of_nat_mul2 : ∀ n,
+  list_nat_of_nat (2 * n) =
+    match list_nat_of_nat n with
+    | [] => []
+    | a :: l => S a :: l
+    end.
+Proof.
+intros.
+now apply list_nat_of_nat_aux_mul2.
+Qed.
+
+Theorem list_nat_of_nat_aux_pow2 : ∀ n i,
+  2 ^ n ≤ i →
+  list_nat_of_nat_aux i (2 ^ n) = [n].
+Proof.
+intros * Hni.
+revert i Hni.
+induction n; intros.
+-destruct i; [ easy | now destruct i ].
+-rewrite Nat.pow_succ_r; [ | lia ].
+ erewrite list_nat_of_nat_aux_mul2; [ | easy | reflexivity ].
+ now rewrite IHn.
+Qed.
+
+Theorem list_nat_of_nat_pow2 : ∀ n,
+  list_nat_of_nat (2 ^ n) = [n].
+Proof.
+intros.
+now apply list_nat_of_nat_aux_pow2.
+Qed.
+
 Theorem tigidi : ∀ i l,
   nat_of_list_nat l ≤ i
   → list_nat_of_nat_aux i (nat_of_list_nat l) = l.
@@ -204,7 +266,57 @@ induction ln; intros.
   assert (H : nat_of_list_nat l = 0) by lia.
   apply eq_nat_of_list_nat_0 in H; subst l.
   now destruct i.
--idtac.
+-enough (H : Nat.log2 (Nat.div2 n) = ln).
+ +destruct l as [| a].
+  *simpl in Hn; subst n.
+   now destruct i.
+  *rewrite nat_of_list_nat_cons in Hn.
+   destruct i.
+  --apply Nat.le_0_r in Hli.
+    now rewrite Hli in Hln.
+  --simpl.
+    destruct (zerop n) as [Hz| Hz].
+   ++now rewrite Hz in Hln.
+   ++remember (Nat.even n) as b eqn:Hb.
+     symmetry in Hb.
+     destruct b.
+    **destruct l as [| a1 ].
+    ---simpl in Hn; rewrite Nat.mul_1_r in Hn.
+       subst n.
+       rewrite Nat.log2_pow2 in Hln; [ | lia ].
+       subst a.
+       rewrite Nat.pow_succ_r; [ | lia ].
+       rewrite Nat.div2_double.
+       destruct ln.
+     +++simpl in Hli; simpl.
+        destruct i; [ lia | now destruct i ].
+     +++destruct i.
+      ***admit.
+      ***remember (2 ^ S ln) as s eqn:Hs; simpl; subst s.
+         destruct (zerop (2 ^ S ln)) as [Hzz| Hzz].
+      ----now apply Nat.pow_nonzero in Hzz.
+      ----clear H Hz Hb Hzz.
+          rewrite Nat.pow_succ_r; [ | lia ].
+          rewrite Nat.div2_double.
+          rewrite Nat.even_mul; simpl.
+          rewrite list_nat_of_nat_aux_pow2; [ easy | ].
+          simpl in Hli; lia.
+    ---destruct a.
+     +++exfalso.
+        rewrite nat_of_list_nat_cons in Hn.
+        rewrite Nat.pow_0_r, Nat.mul_1_l in Hn.
+        rewrite <- Hn in Hb.
+        rewrite Nat.add_comm in Hb.
+        now rewrite Nat.even_add_mul_2 in Hb.
+     +++rewrite IHln with (l := a :: a1 :: l); [ easy | | | easy ].
+      ***rewrite nat_of_list_nat_cons.
+         rewrite <- Hn.
+         rewrite Nat.pow_succ_r; [ | lia ].
+         rewrite <- Nat.mul_assoc.
+         now rewrite Nat.div2_double.
+      ***now apply Nat.div2_decr in Hli.
+    **idtac.
+
 ...
 
 intros * Hli.
