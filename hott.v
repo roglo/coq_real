@@ -350,12 +350,65 @@ intros * Hln Hni.
 destruct n.
 -apply eq_nat_of_list_nat_0 in Hln; subst l.
  now destruct i.
--idtac.
- Check pow2_mul_odd.
- remember (pow_2_of_nat (S n)) as a eqn:Ha.
+-remember (pow_2_of_nat (S n)) as a eqn:Ha.
  remember (odd_part_of_nat (S n)) as b eqn:Hb.
- specialize (pow2_mul_odd _ a b (Nat.neq_succ_0 n) Ha Hb) as H.
  move b before a.
+ specialize (pow2_mul_odd _ a b (Nat.neq_succ_0 n) Ha Hb) as Hsn.
+ rewrite Hsn.
+Search list_nat_of_nat_aux.
+Theorem list_nat_of_nat_aux_mul_pow2 : ∀ a b i,
+  2 ^ a * (2 * b + 1) ≤ i
+  → list_nat_of_nat_aux i (2 ^ a * (2 * b + 1)) =
+    a :: list_nat_of_nat_aux i b.
+Proof.
+intros * Hab.
+revert a b Hab.
+induction i; intros.
+-apply Nat.le_0_r in Hab.
+ apply Nat.eq_mul_0 in Hab.
+ destruct Hab as [Hab| ]; [ | lia ].
+ now apply Nat.pow_nonzero in Hab.
+-remember (2 ^ a * (2 * b + 1)) as n eqn:Hn; simpl.
+ symmetry in Hn.
+ destruct n.
+ +apply Nat.eq_mul_0 in Hn.
+  destruct Hn as [Hn |]; [ | lia ].
+  now apply Nat.pow_nonzero in Hn.
+ +destruct (zerop (S n)) as [| H]; [ easy | clear H ].
+  remember (Nat.even (S n)) as e eqn:He.
+  symmetry in He.
+  destruct e.
+  *destruct b.
+  --remember (S n) as sn; simpl; subst sn.
+    simpl in Hn; rewrite Nat.mul_1_r in Hn.
+    rewrite <- Hn.
+    destruct a; [ now destruct i | ].
+    rewrite Nat.pow_succ_r; [ | lia ].
+    rewrite Nat.div2_double.
+    assert (Hi : 2 ^ a * (2 * 0 + 1) ≤ i). {
+      simpl in Hn; simpl; lia.
+    }
+    specialize (IHi a 0 Hi) as IH.
+    rewrite Nat.mul_0_r, Nat.mul_1_r in IH.
+    rewrite IH.
+    now destruct i.
+  --idtac.
+...
+
+    destruct i.
+   ++replace n with 0 in Hn by lia.
+     simpl in Hn; lia.
+   ++simpl.
+     destruct (zerop (2 ^ a)) as [Ha| Ha].
+    **apply Nat.pow_nonzero in Ha; [ easy | lia ].
+    **remember (Nat.even (2 ^ a)) as a2 eqn:H2a.
+      symmetry in H2a.
+      destruct a2.
+    ---destruct a; [ easy | ].
+       rewrite Nat.pow_succ_r; [ | lia ].
+       rewrite Nat.div2_double.
+       destruct i.
+
 ...
 
 -destruct i; [ easy | ].
