@@ -183,6 +183,33 @@ Proof.
 intros * Hli.
 remember (nat_of_list_nat l) as n eqn:Hn.
 symmetry in Hn.
+remember (Nat.log2 n) as ln eqn:Hln.
+symmetry in Hln.
+revert i l n Hn Hli Hln.
+induction ln; intros.
+-apply Nat.log2_null in Hln.
+ destruct n.
+ +apply eq_nat_of_list_nat_0 in Hn; subst l.
+  now destruct i.
+ +destruct i; [ easy | ].
+  replace n with 0 in Hn |-* by lia.
+  destruct l as [| a]; [ easy | ].
+  rewrite nat_of_list_nat_cons in Hn; simpl.
+  remember (2 ^ a) as b eqn:Hb.
+  symmetry in Hb.
+  destruct b; [ easy | ].
+  destruct b; [ | simpl in Hn; lia ].
+  destruct a; [ | simpl in Hb; lia ].
+  rewrite Nat.mul_1_l in Hn.
+  assert (H : nat_of_list_nat l = 0) by lia.
+  apply eq_nat_of_list_nat_0 in H; subst l.
+  now destruct i.
+-idtac.
+...
+
+intros * Hli.
+remember (nat_of_list_nat l) as n eqn:Hn.
+symmetry in Hn.
 revert l n Hn Hli.
 induction i; intros.
 apply Nat.le_0_r in Hli; subst n.
