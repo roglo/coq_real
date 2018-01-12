@@ -446,6 +446,53 @@ induction i; intros.
     now rewrite Nat.even_mul in He.
 Qed.
 
+Theorem pow_2_of_nat_aux_mul_odd : ∀ a b n i,
+  n = 2 ^ a * (2 * b + 1)
+  → n ≤ i
+  → pow_2_of_nat_aux i n = a.
+Proof.
+intros * Hn Hni.
+symmetry in Hn.
+revert a b n Hn Hni.
+induction i; intros.
+-apply Nat.le_0_r in Hni.
+ move Hni at top; subst n.
+ apply Nat.eq_mul_0 in Hn.
+ destruct Hn as [Hn| Hn]; [ | lia ].
+ apply Nat.pow_nonzero in Hn; [ easy | lia ].
+-simpl.
+ destruct n.
+ +apply Nat.eq_mul_0 in Hn.
+  destruct Hn as [Hn| Hn]; [ | lia ].
+  now apply Nat.pow_nonzero in Hn.
+ +remember (Nat.even (S n)) as e eqn:He.
+  symmetry in He.
+  destruct e.
+  *destruct a.
+  --rewrite Nat.pow_0_r, Nat.mul_1_l in Hn.
+    rewrite <- Hn in He.
+    rewrite Nat.add_comm in He.
+    now rewrite Nat.even_add_mul_2 in He.
+  --f_equal.
+    rewrite Nat.pow_succ_r in Hn; [ | lia ].
+    rewrite <- Nat.mul_assoc in Hn.
+    rewrite <- Hn.
+    rewrite Nat.div2_double.
+    eapply IHi; [ easy | lia ].
+  *destruct a; [ easy | ].
+   rewrite Nat.pow_succ_r in Hn; [ | lia ].
+   rewrite <- Nat.mul_assoc in Hn.
+   rewrite <- Hn in He.
+   now rewrite Nat.even_mul in He.
+Qed.
+
+Theorem pow_2_of_nat_mul_odd : ∀ a b,
+  pow_2_of_nat (2 ^ a * (2 * b + 1)) = a.
+Proof.
+intros.
+now eapply pow_2_of_nat_aux_mul_odd.
+Qed.
+
 Theorem tigidi : ∀ i l,
   nat_of_list_nat l ≤ i
   → list_nat_of_nat_aux i (nat_of_list_nat l) = l.
@@ -465,6 +512,17 @@ destruct n.
  specialize (pow2_mul_odd _ a b (Nat.neq_succ_0 n) Ha Hb) as Hsn.
  rewrite Hsn.
  rewrite list_nat_of_nat_aux_mul_pow2; [ | lia ].
+ destruct l as [| a1]; [ easy | ].
+ rewrite nat_of_list_nat_cons in Hln.
+ rewrite <- Hln in Ha.
+ rewrite pow_2_of_nat_mul_odd in Ha; subst a1.
+ f_equal.
+
+...
+ unfold pow_2_of_nat in Ha.
+ specialize (pow2_mul_odd_aux) as H.
+
+
 ...
 
 Theorem tagada : ∀ l,
