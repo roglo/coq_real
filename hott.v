@@ -295,6 +295,47 @@ destruct e.
    eapply Nat.le_trans; [ apply Nat.le_div2 | lia ].
  }
  specialize (IHn (Nat.div2 (S (S n))) Hldn Hzdn i j a b Hdi Hdj Ha Hb).
+ rewrite Nat.pow_succ_r; [ | lia ].
+ rewrite <- Nat.mul_assoc.
+ rewrite <- IHn.
+ specialize (Nat.div2_odd (S (S n))) as H.
+ replace (Nat.odd (S (S n))) with false in H.
+ +unfold Nat.b2n in H; lia.
+ +symmetry.
+  apply Bool.not_true_iff_false.
+  intros Ho.
+  apply Nat.even_spec in He.
+  apply Nat.odd_spec in Ho.
+  now apply Nat.Even_Odd_False in He.
+-specialize (Nat.div2_odd (S n)) as H.
+ rewrite <- Hb in H.
+ replace (Nat.odd (S n)) with true in H.
+ +now subst a; rewrite Nat.pow_0_r, Nat.mul_1_l.
+ +symmetry.
+...
+
+  apply Bool.not_false_iff_true.
+  rewrite <- He.
+  intros Ho.
+  symmetry in Ho.
+  remember (Nat.odd (S n)) as on eqn:Hon.
+  symmetry in Hon.
+  destruct on; [ now rewrite He in Ho | ].
+  *apply Nat.even_spec in Ho.
+
+
+Search (Nat.even _ = Nat.odd _).
+
+  intros Ho.
+
+
+  apply Nat.Even_Odd_False in He.
+
+
+  apply Bool.not_true_iff_false in He.
+
+
+ rewrite Nat.div2_odd.
 
 ...
 
