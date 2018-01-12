@@ -237,33 +237,82 @@ Fixpoint pow_2_of_nat_aux iter n :=
   | S i =>
       match n with
       | 0 => 0
-      | S m => if Nat.even n then 1 + pow_2_of_nat_aux i n else 0
+      | S m => if Nat.even n then 1 + pow_2_of_nat_aux i (Nat.div2 n) else 0
       end
   end.
 
 Definition pow_2_of_nat n := pow_2_of_nat_aux n n.
-Definition quot_pow_2_of_nat n := Nat.div2 (n / pow_2_of_nat n - 1).
 
-Theorem glip : ∀ n i a,
+Fixpoint odd_part_of_nat_aux iter n :=
+  match iter with
+  | 0 => 0
+  | S i =>
+      match n with
+      | 0 => 0
+      | S m =>
+          if Nat.even n then odd_part_of_nat_aux i (Nat.div2 n)
+          else Nat.div2 n
+      end
+  end.
+
+Definition odd_part_of_nat n := odd_part_of_nat_aux n n.
+
+Theorem glip : ∀ n a b i j,
   n ≠ 0
   → n ≤ i
+  → n ≤ j
   → a = pow_2_of_nat_aux i n
-  → n = 2 ^ a * (2 * Nat.div2 (n / a - 1) + 1).
+  → b = odd_part_of_nat_aux j n
+  → n = 2 ^ a * (2 * b + 1).
 Proof.
-intros * Hn Hni Ha.
-revert i a Hni Ha.
+intros * Hn Hni Hnj Ha Hb.
+revert i j a b Hni Hnj Ha Hb.
 induction n as (n, IHn) using lt_wf_rec; intros.
 destruct n; [ easy | clear Hn ].
 destruct i; [ easy | ].
-remember (S n) as s; simpl in Ha; subst s.
+destruct j; [ easy | ].
+remember (S n) as s; simpl in Ha, Hb; subst s.
 remember (Nat.even (S n)) as e eqn:He.
 symmetry in He.
 destruct e.
+-destruct n; [ easy | ].
+ destruct a; [ easy | ].
+ apply Nat.succ_inj in Ha.
+ specialize (Nat.lt_div2 (S (S n)) (Nat.lt_0_succ (S n))) as Hldn.
+ assert (Hzdn : Nat.div2 (S (S n)) ≠ 0) by easy.
+ assert (Hdi : Nat.div2 (S (S n)) ≤ i). {
+   destruct i; [ lia | simpl ].
+   do 2 apply Nat.succ_le_mono in Hni.
+   apply -> Nat.succ_le_mono.
+   destruct n; [ easy | ].
+   eapply Nat.le_trans; [ apply Nat.le_div2 | lia ].
+ }
+ assert (Hdj : Nat.div2 (S (S n)) ≤ j). {
+   destruct j; [ lia | simpl ].
+   do 2 apply Nat.succ_le_mono in Hnj.
+   apply -> Nat.succ_le_mono.
+   destruct n; [ easy | ].
+   eapply Nat.le_trans; [ apply Nat.le_div2 | lia ].
+ }
+ specialize (IHn (Nat.div2 (S (S n))) Hldn Hzdn i j a b Hdi Hdj Ha Hb).
+
+...
+
 -destruct i.
  +now replace n with 0 in * by lia.
- +remember (S n) as s; simpl in Ha; subst s.
-  rewrite He in Ha.
-  specialize (IHn (Nat.div2 n)) as H.
+ +remember (Nat.div2 (S n)) as n2 eqn:Hn2; symmetry in Hn2.
+  simpl in Ha.
+  destruct n2.
+  *move Ha at top; subst a.
+   now destruct n.
+  *remember (Nat.even (S n2)) as e2 eqn:He2.
+   symmetry in He2.
+   destruct e2.
+  --idtac.
+
+
+
+  specialize (IHn n) as H.
 ...
 
 Theorem glop : ∀ n,
