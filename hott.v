@@ -493,7 +493,12 @@ intros.
 now eapply pow_2_of_nat_aux_mul_odd.
 Qed.
 
-Theorem tigidi : ∀ i l,
+Theorem odd_part_of_nat_mul_odd : ∀ a b,
+  odd_part_of_nat (2 ^ a * (2 * b + 1)) = b.
+Proof.
+...
+
+Theorem ln_of_n_aux_n_of_ln : ∀ i l,
   nat_of_list_nat l ≤ i
   → list_nat_of_nat_aux i (nat_of_list_nat l) = l.
 Proof.
@@ -517,6 +522,14 @@ destruct n.
  rewrite <- Hln in Ha.
  rewrite pow_2_of_nat_mul_odd in Ha; subst a1.
  f_equal.
+ rewrite <- Hln in Hb.
+ rewrite odd_part_of_nat_mul_odd in Hb.
+ symmetry in Hb.
+ assert (Hbn : b < S n). {
+   admit.
+ }
+ apply IHn; [ easy | easy | ].
+ apply Nat.le_trans with (m := S n); [ lia | easy ].
 
 ...
  unfold pow_2_of_nat in Ha.
