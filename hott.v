@@ -493,10 +493,23 @@ intros.
 now eapply pow_2_of_nat_aux_mul_odd.
 Qed.
 
+Theorem odd_part_of_nat_aux_mul_odd : ∀ a b n i,
+  n = 2 ^ a * (2 * b + 1)
+  → n ≤ i
+  → odd_part_of_nat_aux i n = b.
+Proof.
+intros * Hn Hni.
+symmetry in Hn.
+revert a b n Hn Hni.
+induction i; intros.
+...
+
 Theorem odd_part_of_nat_mul_odd : ∀ a b,
   odd_part_of_nat (2 ^ a * (2 * b + 1)) = b.
 Proof.
-...
+intros.
+now eapply odd_part_of_nat_aux_mul_odd.
+Qed.
 
 Theorem ln_of_n_aux_n_of_ln : ∀ i l,
   nat_of_list_nat l ≤ i
