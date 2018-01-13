@@ -390,7 +390,7 @@ specialize (univalence nat (list nat)) as (f, Hf).
 destruct Hf as (g, Hgf, Hfg).
 apply f.
 exists list_nat_of_nat.
-exists nat_of_list_nat; intros.
+exists nat_of_list_nat.
 -apply nat_of_list_nat_to_list_nat_inv.
 -apply list_nat_of_nat_to_nat_inv.
 Qed.
