@@ -513,3 +513,5 @@ exists nat_of_list_nat; intros.
 -apply list_nat_of_nat_to_nat_inv.
 Qed.
 
+Check nat_eq_list_nat.
+
