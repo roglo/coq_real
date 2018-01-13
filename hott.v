@@ -13,95 +13,6 @@ Notation "A ≃ B" := (equivalence A B) (at level 70).
 
 Axiom univalence : ∀ A B, (A ≃ B) ≃ (A = B).
 
-Fixpoint nat_of_list_nat l :=
-  match l with
-  | [] => 0
-  | a :: l => 2 ^ a * (2 * nat_of_list_nat l + 1)
-  end.
-
-Fixpoint list_nat_of_nat_aux iter n :=
-  match iter with
-  | 0 => []
-  | S i =>
-      if zerop n then []
-      else if Nat.even n then
-        match list_nat_of_nat_aux i (Nat.div2 n) with
-        | [] => [0]
-        | a :: l => S a :: l
-        end
-      else 0 :: list_nat_of_nat_aux i (Nat.div2 n)
-  end.
-
-Definition list_nat_of_nat n := list_nat_of_nat_aux n n.
-
-(*
-Compute (List.fold_right
-  (λ n l, (n, list_nat_of_nat n) :: l))
-  [] (List.seq 0 31).
-
-Compute (List.fold_right
-  (λ n l, (n, nat_of_list_nat (list_nat_of_nat n)) :: l))
-  [] (List.seq 0 31).
-*)
-
-Theorem list_nat_of_nat_aux_enough_iter : ∀ n i j,
-  n ≤ i → n ≤ j →
-  list_nat_of_nat_aux i n = list_nat_of_nat_aux j n.
-Proof.
-intros * Hi Hj.
-revert n j Hi Hj.
-induction i; intros.
--apply Nat.le_0_r in Hi; subst n; simpl.
- now destruct j.
--destruct n; [ now destruct j | ].
- destruct j; [ easy | ].
- remember (S n) as ss; simpl; subst ss.
- apply Nat.succ_le_mono in Hi.
- apply Nat.succ_le_mono in Hj.
- assert (Hsi : Nat.div2 (S n) ≤ i). {
-   eapply Nat.le_trans; [ | apply Hi ].
-   apply Nat.le_div2.
- }
- assert (Hsj : Nat.div2 (S n) ≤ j). {
-   eapply Nat.le_trans; [ | apply Hj ].
-   apply Nat.le_div2.
- }
- now rewrite (IHi _ _ Hsi Hsj).
-Qed.
-
-Theorem eq_list_nat_of_nat_aux_nil : ∀ iter n,
-  list_nat_of_nat_aux iter n = []
-  ↔ iter = 0 ∨ n = 0.
-Proof.
-intros.
-split.
--intros Hl.
- destruct iter; [ now left | right; simpl in Hl ].
- destruct n; [ easy | exfalso; simpl in Hl ].
- destruct n; [ easy | ].
- destruct (Nat.even n); [ | easy ].
- now destruct (list_nat_of_nat_aux iter (S (Nat.div2 n))).
--intros [Hi| Hn]; [ now subst iter | ].
- subst n; now destruct iter.
-Qed.
-
-Theorem eq_nat_of_list_nat_0 : ∀ l,
-  nat_of_list_nat l = 0 ↔ l = [].
-Proof.
-intros.
-split; intros H.
--destruct l as [| a]; [ easy | ].
- simpl in H.
- assert (2 ^ a ≠ 0) by now apply Nat.pow_nonzero.
- destruct (2 ^ a); [ easy | ].
- simpl in H; lia.
--now destruct l.
-Qed.
-
-Theorem nat_of_list_nat_cons : ∀ a l,
-  nat_of_list_nat (a :: l) = 2 ^ a * (2 * nat_of_list_nat l + 1).
-Proof. easy. Qed.
-
 Fixpoint pow_2_of_nat_aux iter n :=
   match iter with
   | 0 => 0
@@ -127,6 +38,87 @@ Fixpoint odd_part_of_nat_aux iter n :=
   end.
 
 Definition odd_part_of_nat n := odd_part_of_nat_aux n n.
+
+Fixpoint nat_of_list_nat l :=
+  match l with
+  | [] => 0
+  | a :: l => 2 ^ a * (2 * nat_of_list_nat l + 1)
+  end.
+
+Fixpoint list_nat_of_nat_aux iter n :=
+  match iter with
+  | 0 => []
+  | S i =>
+      if zerop n then []
+      else pow_2_of_nat n :: list_nat_of_nat_aux i (odd_part_of_nat n)
+  end.
+
+Definition list_nat_of_nat n := list_nat_of_nat_aux n n.
+
+(*
+Compute (List.fold_right
+  (λ n l, (n, list_nat_of_nat n) :: l))
+  [] (List.seq 0 31).
+
+Compute (List.fold_right
+  (λ n l, (n, nat_of_list_nat (list_nat_of_nat n)) :: l))
+  [] (List.seq 0 31).
+*)
+
+Theorem odd_part_of_nat_aux_lt : ∀ n i,
+  0 < n
+  → n ≤ i
+  → odd_part_of_nat_aux i n < n.
+Proof.
+intros * Hn Hni.
+destruct n; [ easy | clear Hn ].
+revert n Hni.
+induction i; intros.
+-now apply Nat.le_0_r in Hni; subst; simpl.
+-destruct n; [ simpl; lia | ].
+ apply Nat.succ_le_mono in Hni.
+ remember (S n) as sn; simpl; subst sn.
+ remember (Nat.even n) as b eqn:Hb.
+ symmetry in Hb.
+ destruct b.
+ +eapply Nat.lt_le_trans; [ apply IHi | ].
+  *eapply Nat.le_trans; [ | apply Hni ].
+   apply -> Nat.succ_le_mono.
+   apply Nat.div2_decr; lia.
+  *apply -> Nat.succ_le_mono.
+   apply Nat.div2_decr; lia.
+ +apply -> Nat.succ_lt_mono.
+  destruct n; [ easy | ].
+  apply Nat.lt_le_trans with (m := S n); [ | lia ].
+  apply Nat.lt_div2; lia.
+Qed.
+
+Theorem odd_part_of_nat_le : ∀ n,
+  odd_part_of_nat (S n) ≤ n.
+Proof.
+intros.
+unfold odd_part_of_nat.
+specialize (odd_part_of_nat_aux_lt _ (S n) (Nat.lt_0_succ n) (le_refl _))
+  as H.
+lia.
+Qed.
+
+Theorem eq_nat_of_list_nat_0 : ∀ l,
+  nat_of_list_nat l = 0 ↔ l = [].
+Proof.
+intros.
+split; intros H.
+-destruct l as [| a]; [ easy | ].
+ simpl in H.
+ assert (2 ^ a ≠ 0) by now apply Nat.pow_nonzero.
+ destruct (2 ^ a); [ easy | ].
+ simpl in H; lia.
+-now destruct l.
+Qed.
+
+Theorem nat_of_list_nat_cons : ∀ a l,
+  nat_of_list_nat (a :: l) = 2 ^ a * (2 * nat_of_list_nat l + 1).
+Proof. easy. Qed.
 
 Theorem pow2_mul_odd_aux : ∀ n a b i j,
   n ≠ 0
@@ -190,124 +182,6 @@ Theorem pow2_mul_odd : ∀ n a b,
 Proof.
 intros * Hn Ha Hb.
 now eapply pow2_mul_odd_aux.
-Qed.
-
-Theorem list_nat_of_nat_aux_mul_pow2 : ∀ a b i,
-  2 ^ a * (2 * b + 1) ≤ i
-  → list_nat_of_nat_aux i (2 ^ a * (2 * b + 1)) =
-    a :: list_nat_of_nat_aux i b.
-Proof.
-intros * Hab.
-revert a b Hab.
-induction i; intros.
--apply Nat.le_0_r in Hab.
- apply Nat.eq_mul_0 in Hab.
- destruct Hab as [Hab| ]; [ | lia ].
- now apply Nat.pow_nonzero in Hab.
--remember (2 ^ a * (2 * b + 1)) as n eqn:Hn; simpl.
- symmetry in Hn.
- destruct n.
- +apply Nat.eq_mul_0 in Hn.
-  destruct Hn as [Hn |]; [ | lia ].
-  now apply Nat.pow_nonzero in Hn.
- +destruct (zerop (S n)) as [| H]; [ easy | clear H ].
-  remember (Nat.even (S n)) as e eqn:He.
-  symmetry in He.
-  destruct e.
-  *destruct b.
-  --remember (S n) as sn; simpl; subst sn.
-    simpl in Hn; rewrite Nat.mul_1_r in Hn.
-    rewrite <- Hn.
-    destruct a; [ now destruct i | ].
-    rewrite Nat.pow_succ_r; [ | lia ].
-    rewrite Nat.div2_double.
-    assert (Hi : 2 ^ a * (2 * 0 + 1) ≤ i). {
-      simpl in Hn; simpl; lia.
-    }
-    specialize (IHi a 0 Hi) as IH.
-    rewrite Nat.mul_0_r, Nat.mul_1_r in IH.
-    rewrite IH.
-    now destruct i.
-  --destruct (zerop (S b)) as [| H]; [ easy | clear H ].
-    destruct a.
-   ++rewrite Nat.pow_0_r, Nat.mul_1_l in Hn.
-     rewrite <- Hn in He.
-     rewrite Nat.add_comm in He.
-     now rewrite Nat.even_add_mul_2 in He.
-   ++rewrite Nat.pow_succ_r in Hn; [ | lia ].
-     rewrite <- Nat.mul_assoc in Hn.
-     rewrite <- Hn.
-     rewrite Nat.div2_double.
-     rewrite IHi; [ | lia ].
-     f_equal.
-     remember (Nat.even (S b)) as sb eqn:Hsb.
-     symmetry in Hsb.
-     destruct sb.
-    **destruct i; [ lia | ].
-      remember (S i) as si eqn:Hsi.
-      rewrite Hsi at 1.
-      remember (S b) as sb; simpl; subst sb si.
-      rewrite Hsb.
-      enough (Nat.div2 (S b) ≤ i).
-    ---rewrite list_nat_of_nat_aux_enough_iter with (j := S i); try easy; lia.
-    ---apply Nat.div2_decr.
-       apply Nat.succ_le_mono.
-       eapply Nat.le_trans; [ | apply Hab ].
-       rewrite <- Hn; simpl.
-       assert (2 ^ a ≠ 0) by now apply Nat.pow_nonzero.
-       destruct (2 ^ a); [ easy | simpl; lia ].
-    **rewrite <- IHi.
-    ---rewrite Nat.pow_0_r, Nat.mul_1_l.
-       f_equal.
-       specialize (Nat.div2_odd (S b)) as H.
-       rewrite H; f_equal; f_equal.
-     +++f_equal; apply Nat.div2_odd.
-     +++rewrite <- Nat.negb_odd in Hsb.
-        apply Bool.negb_false_iff in Hsb.
-        now rewrite Hsb.
-    ---rewrite Nat.pow_0_r, Nat.mul_1_l.
-       apply Nat.le_trans with (m := 2 * b + 1).
-       apply Nat.add_le_mono_r.
-       apply Nat.mul_le_mono_l.
-       apply Nat.le_div2.
-       assert (2 ^ a ≠ 0) by now apply Nat.pow_nonzero.
-       destruct (2 ^ a); [ easy | simpl in Hn; lia ].
-  *destruct a.
-  --f_equal.
-    rewrite Nat.pow_0_r, Nat.mul_1_l, Nat.add_1_r in Hn.
-    rewrite <- Hn.
-    rewrite Nat.div2_succ_double.
-    destruct b; [ now destruct i | ].
-    destruct (zerop (S b)) as [| H]; [ easy | clear H ].
-    remember (Nat.even (S b)) as sb eqn:Hsb.
-    symmetry in Hsb.
-    destruct sb.
-   ++destruct i; [ lia | ].
-     remember (S i) as si eqn:Hsi.
-     rewrite Hsi at 1.
-     remember (S b) as x; simpl; subst x.
-     destruct (zerop (S b)) as [| H]; [ easy | clear H ].
-     rewrite Hsb.
-     assert (Nat.div2 (S b) ≤ i) by (apply Nat.div2_decr; lia).
-     rewrite list_nat_of_nat_aux_enough_iter with (j := si); try easy; lia.
-   ++rewrite <- IHi.
-    **rewrite Nat.pow_0_r, Nat.mul_1_l.
-      f_equal.
-      specialize (Nat.div2_odd (S b)) as H.
-      rewrite H; f_equal; f_equal.
-    ---f_equal; apply Nat.div2_odd.
-    ---rewrite <- Nat.negb_odd in Hsb.
-       apply Bool.negb_false_iff in Hsb.
-       now rewrite Hsb.
-    **rewrite Nat.pow_0_r, Nat.mul_1_l.
-      apply Nat.le_trans with (m := 2 * b + 1); [ | lia ].
-      apply Nat.add_le_mono_r.
-      apply Nat.mul_le_mono_l.
-      apply Nat.le_div2.
-  --rewrite <- Hn in He.
-    rewrite Nat.pow_succ_r in He; [ | lia ].
-    rewrite <- Nat.mul_assoc in He.
-    now rewrite Nat.even_mul in He.
 Qed.
 
 Theorem pow_2_of_nat_aux_mul_odd : ∀ a b n i,
@@ -406,6 +280,40 @@ intros.
 now eapply odd_part_of_nat_aux_mul_odd.
 Qed.
 
+Theorem list_nat_of_nat_aux_mul_pow2 : ∀ a b i,
+  2 ^ a * (2 * b + 1) ≤ i
+  → list_nat_of_nat_aux i (2 ^ a * (2 * b + 1)) =
+    a :: list_nat_of_nat_aux i b.
+Proof.
+intros * Hab.
+revert a b Hab.
+induction i; intros.
+-apply Nat.le_0_r in Hab.
+ apply Nat.eq_mul_0 in Hab.
+ destruct Hab as [Hab| ]; [ | lia ].
+ now apply Nat.pow_nonzero in Hab.
+-remember (2 ^ a * (2 * b + 1)) as n eqn:Hn; simpl.
+ rewrite Hn.
+ rewrite pow_2_of_nat_mul_odd.
+ rewrite odd_part_of_nat_mul_odd.
+ rewrite <- Hn.
+ destruct (zerop n) as [Hzn| Hzn].
+ +move Hzn at top; subst n.
+  symmetry in Hn.
+  apply Nat.eq_mul_0 in Hn.
+  destruct Hn as [Hn| ]; [ | lia ].
+  now apply Nat.pow_nonzero in Hn.
+ +f_equal.
+  destruct b; [ now destruct i | simpl ].
+  rewrite <- IHi.
+  *rewrite <- pow2_mul_odd with (n := S b); try easy; lia.
+  *rewrite <- pow2_mul_odd with (n := S b); try easy.
+   destruct n; [ easy | ].
+   apply Nat.succ_le_mono in Hab.
+   assert (H : 2 ^ a ≠ 0) by now apply Nat.pow_nonzero.
+   destruct (2 ^ a); [ easy | simpl in Hn; lia ].
+Qed.
+
 Theorem list_nat_of_nat_aux_to_nat_inv : ∀ i l,
   nat_of_list_nat l ≤ i
   → list_nat_of_nat_aux i (nat_of_list_nat l) = l.
@@ -453,46 +361,21 @@ Theorem nat_of_list_nat_to_list_nat_aux_inv : ∀ n i,
   → nat_of_list_nat (list_nat_of_nat_aux i n) = n.
 Proof.
 intros * Hn.
-remember (list_nat_of_nat_aux i n) as l eqn:Hl.
-symmetry in Hl.
-revert i l Hn Hl.
-induction n as (n, IHn) using lt_wf_rec; intros.
-destruct n; [ now destruct i; simpl in Hl; subst l | ].
-destruct i; [ easy | ].
-remember (S n) as sn; simpl in Hl; subst sn.
-destruct (zerop (S n)) as [| H]; [ easy | clear H ].
-remember (Nat.even (S n)) as e eqn:He.
-symmetry in He.
-remember (list_nat_of_nat_aux i (Nat.div2 (S n))) as l1 eqn:Hl1.
-symmetry in Hl1.
-assert (Hsn : Nat.div2 (S n) < S n) by (apply Nat.lt_div2; lia).
-assert (Hsni : Nat.div2 (S n) ≤ i) by lia.
-destruct e.
--destruct l1 as [| a1].
- +subst l; simpl.
-  apply eq_list_nat_of_nat_aux_nil in Hl1.
-  destruct Hl1; [ subst i; lia | now destruct n ].
- +subst l.
-  rewrite nat_of_list_nat_cons.
-  specialize (IHn (Nat.div2 (S n)) Hsn i (a1 :: l1) Hsni Hl1) as IH.
-  rewrite nat_of_list_nat_cons in IH.
-  rewrite Nat.pow_succ_r; [ | lia ].
-  rewrite <- Nat.mul_assoc, IH.
-  specialize (Nat.div2_odd (S n)) as H.
-  rewrite <- Nat.negb_odd in He.
-  apply Bool.negb_true_iff in He.
-  rewrite He in H.
-  unfold Nat.b2n in H; lia.
--subst l.
- rewrite nat_of_list_nat_cons.
- rewrite Nat.pow_0_r, Nat.mul_1_l.
- specialize (IHn (Nat.div2 (S n)) Hsn i l1 Hsni Hl1) as IH.
- rewrite IH.
- specialize (Nat.div2_odd (S n)) as H.
- rewrite <- Nat.negb_odd in He.
- apply Bool.negb_false_iff in He.
- rewrite He in H.
- unfold Nat.b2n in H; lia.
+remember (pow_2_of_nat n) as a eqn:Ha.
+remember (odd_part_of_nat n) as b eqn:Hb.
+move b before a.
+revert a b n Ha Hb Hn.
+induction i; intros; simpl; [ lia | ].
+destruct (zerop n) as [Hzn| Hzn]; [ now subst n | ].
+rewrite nat_of_list_nat_cons.
+symmetry.
+apply pow2_mul_odd; [ lia | easy | ].
+rewrite <- Hb.
+eapply IHi; [ easy | easy | ].
+rewrite Hb.
+destruct n; [ easy | ].
+apply Nat.succ_le_mono in Hn.
+apply Nat.le_trans with (m := n); [ apply odd_part_of_nat_le | easy ].
 Qed.
 
 Theorem nat_of_list_nat_to_list_nat_inv : ∀ n,
@@ -514,4 +397,3 @@ exists nat_of_list_nat; intros.
 Qed.
 
 Check nat_eq_list_nat.
-
