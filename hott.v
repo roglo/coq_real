@@ -13,8 +13,6 @@ Notation "A ≃ B" := (equivalence A B) (at level 70).
 
 Axiom univalence : ∀ A B, (A ≃ B) ≃ (A = B).
 
-Notation "a ^ b" := (Nat.pow a b).
-
 Fixpoint nat_of_list_nat l :=
   match l with
   | [] => 0
@@ -36,6 +34,7 @@ Fixpoint list_nat_of_nat_aux iter n :=
 
 Definition list_nat_of_nat n := list_nat_of_nat_aux n n.
 
+(*
 Compute (List.fold_right
   (λ n l, (n, list_nat_of_nat n) :: l))
   [] (List.seq 0 31).
@@ -43,6 +42,7 @@ Compute (List.fold_right
 Compute (List.fold_right
   (λ n l, (n, nat_of_list_nat (list_nat_of_nat n)) :: l))
   [] (List.seq 0 31).
+*)
 
 Theorem list_nat_of_nat_aux_enough_iter : ∀ n i j,
   n ≤ i → n ≤ j →
@@ -67,33 +67,6 @@ induction i; intros.
    apply Nat.le_div2.
  }
  now rewrite (IHi _ _ Hsi Hsj).
-Qed.
-
-Theorem Odd_list_nat_of_nat_aux : ∀ n i,
-  Nat.Odd n
-  → list_nat_of_nat_aux (S i) n =
-      0 :: list_nat_of_nat_aux i (Nat.div2 n).
-Proof.
-intros * Hn.
-destruct n; [ now apply Nat.odd_spec in Hn | ].
-remember (S n) as x; simpl; subst x.
-remember (Nat.even (S n)) as b eqn:Hb.
-symmetry in Hb.
-destruct b; [ | easy ].
-apply Nat.even_spec in Hb.
-now apply Nat.Even_Odd_False in Hb.
-Qed.
-
-Theorem Odd_list_nat_of_nat : ∀ n,
-  Nat.Odd n
-  → list_nat_of_nat n = 0 :: list_nat_of_nat (Nat.div2 n).
-Proof.
-intros * Hn.
-unfold list_nat_of_nat.
-rewrite list_nat_of_nat_aux_enough_iter with (j := S n); [ | easy | lia ].
-rewrite Odd_list_nat_of_nat_aux; [ f_equal | easy ].
-apply list_nat_of_nat_aux_enough_iter; [ | easy ].
-apply Nat.div2_decr; lia.
 Qed.
 
 Theorem eq_list_nat_of_nat_aux_nil : ∀ iter n,
@@ -125,90 +98,9 @@ split; intros H.
 -now destruct l.
 Qed.
 
-Print list_nat_of_nat_aux.
-Print nat_of_list_nat.
-
-Theorem nat_of_list_nat_iff : ∀ l n,
-  nat_of_list_nat l = n
-  ↔ match n with
-     | 0 => l = []
-     | S m =>
-         ∃ a1 l1,
-         l = a1 :: l1 ∧
-         n = 2 ^ a1 * (2 * nat_of_list_nat l1 + 1)
-     end.
-Proof.
-intros.
-split.
--intros Hln.
- destruct n; [ now apply eq_nat_of_list_nat_0 | ].
- destruct l as [| a1]; [ easy | ].
- now exists a1, l.
--intros Hn.
- destruct n.
- +now apply eq_nat_of_list_nat_0; destruct l.
- +destruct Hn as (a1 & l1 & Hn & Hl).
-  now subst l.
-Qed.
-
 Theorem nat_of_list_nat_cons : ∀ a l,
   nat_of_list_nat (a :: l) = 2 ^ a * (2 * nat_of_list_nat l + 1).
 Proof. easy. Qed.
-
-
-Theorem list_nat_of_nat_aux_mul2 : ∀ n i j,
-  2 * n ≤ i → n ≤ j →
-  list_nat_of_nat_aux i (2 * n) =
-    match list_nat_of_nat_aux j n with
-    | [] => []
-    | a :: l => S a :: l
-    end.
-Proof.
-intros * Hni Hnj.
-revert j Hnj.
-induction i; intros.
--destruct n; [ now destruct j | easy ].
--remember (2 * n) as m eqn:Hm; symmetry in Hm.
- simpl.
- destruct (zerop m) as [Hzm| Hzm].
- +destruct j; [ easy | ].
-  subst m.
-  apply Nat.eq_mul_0 in Hzm.
-  destruct Hzm; [ easy | now subst n ].
- +rewrite <- Hm at 1.
-  rewrite Nat.even_mul; simpl.
-  rewrite <- Hm.
-  rewrite Nat.div2_double.
-  rewrite list_nat_of_nat_aux_enough_iter with (j := j); [ | lia | easy ].
-  remember (list_nat_of_nat_aux j n) as l eqn:Hl.
-  symmetry in Hl.
-  destruct l; [ | easy ].
-  apply eq_list_nat_of_nat_aux_nil in Hl; lia.
-Qed.
-
-Theorem list_nat_of_nat_mul2 : ∀ n,
-  list_nat_of_nat (2 * n) =
-    match list_nat_of_nat n with
-    | [] => []
-    | a :: l => S a :: l
-    end.
-Proof.
-intros.
-now apply list_nat_of_nat_aux_mul2.
-Qed.
-
-Theorem list_nat_of_nat_aux_pow2 : ∀ n i,
-  2 ^ n ≤ i →
-  list_nat_of_nat_aux i (2 ^ n) = [n].
-Proof.
-intros * Hni.
-revert i Hni.
-induction n; intros.
--destruct i; [ easy | now destruct i ].
--rewrite Nat.pow_succ_r; [ | lia ].
- erewrite list_nat_of_nat_aux_mul2; [ | easy | reflexivity ].
- now rewrite IHn.
-Qed.
 
 Fixpoint pow_2_of_nat_aux iter n :=
   match iter with
@@ -298,13 +190,6 @@ Theorem pow2_mul_odd : ∀ n a b,
 Proof.
 intros * Hn Ha Hb.
 now eapply pow2_mul_odd_aux.
-Qed.
-
-Theorem list_nat_of_nat_pow2 : ∀ n,
-  list_nat_of_nat (2 ^ n) = [n].
-Proof.
-intros.
-now apply list_nat_of_nat_aux_pow2.
 Qed.
 
 Theorem list_nat_of_nat_aux_mul_pow2 : ∀ a b i,
