@@ -98,8 +98,7 @@ Theorem odd_part_of_nat_le : ∀ n,
 Proof.
 intros.
 unfold odd_part_of_nat.
-specialize (odd_part_of_nat_aux_lt _ (S n) (Nat.lt_0_succ n) (le_refl _))
-  as H.
+specialize (odd_part_of_nat_aux_lt _ (S n) (Nat.lt_0_succ n) (le_refl _)).
 lia.
 Qed.
 
