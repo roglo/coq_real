@@ -1393,13 +1393,40 @@ specialize (numbers_to_digits_id u Hur i) as H.
 now apply digit_eq_eq in H.
 Qed.
 
+(*
+Theorem num_to_dig_add_0_l {r : radix} : ∀ x i,
+  numbers_to_digits
+    (freal_add_series (freal_normalize 0) (freal_normalize x)) i =
+  freal x i.
+Proof.
+intros.
+remember (freal_normalize 0) as nx0 eqn:Hnx0.
+remember (freal_normalize x) as nx eqn:Hnx.
+remember (freal_add_series nx0 nx) as u eqn:Hu.
+enough (Hur : ∀ j, u j < rad).
+-rewrite numbers_to_digits_id with (Hur0 := Hur).
+ apply digit_eq_eq; simpl.
+ subst u.
+ unfold freal_add_series, sequence_add.
+ unfold  fd2n.
+ subst nx.
+
+Theorem dig_freal_norm
+
+simpl.
+
+ subst nx0.
+
+ unfold fd2n at 1; simpl.
+ unfold freal_normalize; simpl.
+simpl.
+...
+*)
+
 Theorem dig_norm_add_0_l {r : radix} : 0 < rad → ∀ x i,
   (∀ j, fd2n x j < rad)
   → freal (freal_normalize (0 + x)) i = freal (freal_normalize x) i.
 Proof.
-intros Hr * Hxr.
-unfold freal_add; simpl.
-...
 intros Hr * Hxr.
 unfold freal_normalize.
 remember (freal (0%F + x)) as nx0 eqn:Hnx0.
@@ -1409,9 +1436,15 @@ destruct (LPO_fst (is_9_after nx0 i)) as [Hx0| Hx0].
 -destruct (LPO_fst (is_9_after nx i)) as [Hx| Hx].
  +destruct (lt_dec (S (d2n nx0 i)) rad) as [Hnx0r| Hnx0r].
   *destruct (lt_dec (S (d2n nx i)) rad) as [Hnxr| Hnxr].
+  --apply digit_eq_eq; simpl; f_equal.
+subst nx nx0; simpl.
+unfold d2n; simpl.
+unfold freal_add_to_seq.
+...
   --subst nx nx0; simpl.
     unfold freal_add_to_seq, d2n.
     apply digit_eq_eq; simpl.
+    f_equal.
 (*
 unfold freal_add_series; simpl.
 unfold sequence_add; simpl.
