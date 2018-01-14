@@ -1081,6 +1081,16 @@ induction n.
   apply Nat.mul_le_mono_nonneg_r; lia.
 Qed.
 
+Theorem power_summation_sub_1 (rg := nat_ord_ring) : ∀ a n,
+  0 < a
+  → a ^ S n - 1 = (a - 1) * Σ (i = 0, n), a ^ i.
+Proof.
+intros * Ha.
+rewrite power_summation; [ | easy ].
+rewrite Nat.add_comm.
+now rewrite Nat.add_sub.
+Qed.
+
 Theorem nA_dig_seq_ub {r : radix} : 0 < rad → ∀ u n i,
   (∀ j, i + 1 ≤ j ≤ n - 1 → u j < rad) →
   i + 1 ≤ n - 1
@@ -1489,7 +1499,22 @@ destruct (LPO_fst (is_9_after v i)) as [H9v| H9v].
        rewrite freal_normalize_0, Nat.add_0_l.
        specialize (digit_lt_radix (freal nx p)) as H.
        unfold fd2n; lia.
-     --idtac.
+     --rewrite <- summation_mul_distr_l; simpl.
+       rewrite summation_rtl, summation_shift.
+      ++rewrite summation_eq_compat with (h := λ j, rad ^ j).
+       **rewrite <- power_summation_sub_1; [ | easy ].
+         rewrite Nat.mul_sub_distr_r.
+         replace rad with (rad ^ 1) at 2 by apply Nat.pow_1_r.
+         rewrite <- Nat.pow_add_r.
+         rewrite Nat.mul_1_l.
+         enough (H : k + 1 < n).
+       ---replace (S (n - 1 - (k + 1)) + 1) with (n - k) by lia.
+          rewrite Hu.
+          unfold freal_add_series, sequence_add.
+          unfold fd2n.
+          rewrite Hn0.
+          rewrite freal_normalize_0, Nat.add_0_l.
+
 ...
 intros Hr * Hxr.
 unfold freal_normalize.
