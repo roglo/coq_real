@@ -1430,6 +1430,22 @@ move v before u.
 destruct (LPO_fst (is_9_after v i)) as [H9v| H9v].
 -specialize (is_9_after_all_9 v i H9v) as H.
  clear H9v; rename H into H9v.
+ exfalso.
+ assert (∀ j, fd2n nx (i + j + 1) = rad - 1). {
+   intros.
+   specialize (H9v j).
+   rewrite Hv in H9v.
+   unfold d2n in H9v; unfold fd2n.
+   unfold numbers_to_digits in H9v.
+   remember (i + j + 1) as k eqn:Hk.
+   destruct (LPO_fst (A_plus_B_ge_1 k u)) as [Hku| Hku].
+   -simpl in H9v.
+    set (n := rad * (k + 2)) in H9v.
+    set (s := rad ^ (n - 1 - k)) in H9v.
+    rewrite Hu in H9v.
+    unfold freal_add_series in H9v.
+    unfold sequence_add at 1 in H9v.
+
 ...
 
 -destruct (lt_dec (S (d2n v i)) rad) as [Hsv| Hsv].
@@ -1455,38 +1471,6 @@ destruct (LPO_fst (is_9_after nx0 i)) as [Hx0| Hx0].
  +destruct (lt_dec (S (d2n nx0 i)) rad) as [Hnx0r| Hnx0r].
   *destruct (lt_dec (S (d2n nx i)) rad) as [Hnxr| Hnxr].
   --apply digit_eq_eq; simpl; f_equal.
-subst nx nx0; simpl.
-unfold d2n; simpl.
-unfold freal_add_to_seq.
-...
-  --subst nx nx0; simpl.
-    unfold freal_add_to_seq, d2n.
-    apply digit_eq_eq; simpl.
-    f_equal.
-(*
-unfold freal_add_series; simpl.
-unfold sequence_add; simpl.
-unfold freal_normalize; simpl.
-unfold fd2n; simpl.
-Print freal_0.
-...
-*)
-remember (freal_add_series (freal_normalize 0) (freal_normalize x)) as u.
-enough (∀ j, u j < rad).
-rewrite numbers_to_digits_id with (Hur := H).
-simpl.
-subst u.
-unfold freal_add_series, sequence_add, fd2n; simpl.
-Search digit_sequence_normalize.
-...
-
-f_equal.
-unfold freal_add in Hnx0r.
-simpl in Hnx0r.
-unfold freal_add_to_seq in Hnx0r.
-simpl in Hnx0r.
-
-...
     now rewrite (numbers_to_digits_id _ Hxr).
   --exfalso; apply Hnxr.
     subst nx nx0; simpl in Hnx0r; simpl.
