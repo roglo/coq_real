@@ -1430,7 +1430,12 @@ move v before u.
 destruct (LPO_fst (is_9_after v i)) as [H9v| H9v].
 -destruct (lt_dec (S (d2n v i)) rad) as [Hsv| Hsv].
  +apply digit_eq_eq; simpl.
-  unfold d2n.
+  unfold d2n in Hsv; unfold d2n.
+  rewrite Hv.
+  enough (Hvr : ∀ j, u j < rad).
+  *rewrite numbers_to_digits_id with (Hur := Hvr); simpl.
+   rewrite Hu.
+   unfold freal_add_series, sequence_add, fd2n.
 
 ...
 intros Hr * Hxr.
