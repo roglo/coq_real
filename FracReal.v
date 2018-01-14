@@ -1472,11 +1472,13 @@ destruct (LPO_fst (is_9_after v i)) as [H9v| H9v].
     set (n := rad * (k + 2)) in Hku.
     set (s := rad ^ (n - 1 - k)) in Hku.
     set (t := rad ^ (n - k)) in Hku.
+    assert (Hkn : k + 1 ≤ n - 1). {
+      destruct rad; [ easy | unfold n; simpl; lia ].
+    }
     destruct (lt_dec (nA k n u mod s * rad + nB n 0 u) t) as [H| H].
     +easy.
     +clear Hku.
      apply H; clear H.
-...
      rewrite Nat.mod_small.
      *unfold nB; rewrite Nat.add_0_r.
       rewrite summation_only_one, Nat.sub_diag, Nat.pow_0_r, Nat.mul_1_r.
@@ -1508,20 +1510,18 @@ destruct (LPO_fst (is_9_after v i)) as [H9v| H9v].
          replace rad with (rad ^ 1) at 2 by apply Nat.pow_1_r.
          rewrite <- Nat.pow_add_r.
          rewrite Nat.mul_1_l.
-         enough (H : k + 1 < n).
-       ---replace (S (n - 1 - (k + 1)) + 1) with (n - k) by lia.
-          rewrite Hu.
-          unfold freal_add_series, sequence_add.
-          unfold fd2n.
-          rewrite Hn0.
-          rewrite freal_normalize_0, Nat.add_0_l.
-          apply Nat.lt_le_trans with (m := rad ^ (n - k) - rad + rad).
-        +++apply Nat.add_lt_mono_l.
-           apply digit_lt_radix.
-        +++rewrite Nat.sub_add; [ easy | ].
-           replace rad with (rad ^ 1) at 1 by apply Nat.pow_1_r.
-           apply Nat.pow_le_mono_r; [ easy | lia ].
-       ---destruct rad; [ easy | unfold n; simpl; lia ].
+         replace (S (n - 1 - (k + 1)) + 1) with (n - k) by lia.
+         rewrite Hu.
+         unfold freal_add_series, sequence_add.
+         unfold fd2n.
+         rewrite Hn0.
+         rewrite freal_normalize_0, Nat.add_0_l.
+         apply Nat.lt_le_trans with (m := rad ^ (n - k) - rad + rad).
+       ---apply Nat.add_lt_mono_l.
+          apply digit_lt_radix.
+       ---rewrite Nat.sub_add; [ easy | ].
+          replace rad with (rad ^ 1) at 1 by apply Nat.pow_1_r.
+          apply Nat.pow_le_mono_r; [ easy | lia ].
        **intros p Hp; f_equal; lia.
       ++unfold n.
         destruct rad; [ easy | simpl; lia ].
@@ -1542,6 +1542,16 @@ destruct (LPO_fst (is_9_after v i)) as [H9v| H9v].
        specialize (digit_lt_radix (freal nx p)) as H.
        unfold fd2n; lia.
      --rewrite <- summation_mul_distr_l; simpl.
+       rewrite summation_rtl, summation_shift; [ | easy ].
+       rewrite summation_eq_compat with (h := λ j, rad ^ j).
+      ++rewrite <- power_summation_sub_1; [ | easy ].
+        replace (S (n - 1 - (k + 1))) with (n - 1 - k) by lia.
+        assert (rad ^ (n - 1 - k) ≠ 0) by now apply Nat.pow_nonzero.
+        unfold s; lia.
+      ++intros p Hp; f_equal; lia.
+   -destruct Hku as (p & Hpj & Hp).
+    simpl in H9v.
+
 ...
 intros Hr * Hxr.
 unfold freal_normalize.
