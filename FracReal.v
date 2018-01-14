@@ -1428,7 +1428,14 @@ unfold digit_sequence_normalize.
 remember (numbers_to_digits u) as v eqn:Hv.
 move v before u.
 destruct (LPO_fst (is_9_after v i)) as [H9v| H9v].
+-specialize (is_9_after_all_9 v i H9v) as H.
+ clear H9v; rename H into H9v.
+...
+
 -destruct (lt_dec (S (d2n v i)) rad) as [Hsv| Hsv].
+ +exfalso.
+...
+
  +apply digit_eq_eq; simpl.
   unfold d2n in Hsv; unfold d2n.
   rewrite Hv.
