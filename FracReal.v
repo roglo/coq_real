@@ -1393,6 +1393,22 @@ specialize (numbers_to_digits_id u Hur i) as H.
 now apply digit_eq_eq in H.
 Qed.
 
+Theorem freal_normalize_0 {r : radix} : ∀ i,
+  dig (freal (freal_normalize 0) i) = 0.
+Proof.
+intros.
+unfold fd2n; simpl.
+unfold digit_sequence_normalize; simpl.
+destruct (LPO_fst (is_9_after (λ _ : nat, digit_0) i)) as [H| H].
+-specialize (H 0).
+ specialize radix_ge_2 as Hr2.
+ unfold is_9_after in H.
+ exfalso.
+ destruct rad as [| rr]; [ easy | ].
+ destruct rr; [ lia | easy ].
+-easy.
+Qed.
+
 Theorem num_to_dig_add_0_l {r : radix} : ∀ x i,
   numbers_to_digits
     (freal_add_series (freal_normalize 0) (freal_normalize x)) i =
@@ -1439,27 +1455,41 @@ destruct (LPO_fst (is_9_after v i)) as [H9v| H9v].
    unfold numbers_to_digits in H9v.
    remember (i + j + 1) as k eqn:Hk.
    destruct (LPO_fst (A_plus_B_ge_1 k u)) as [Hku| Hku].
-   -simpl in H9v.
-    set (n := rad * (k + 2)) in H9v.
-    set (s := rad ^ (n - 1 - k)) in H9v.
-    rewrite Hu in H9v.
-    unfold freal_add_series in H9v.
-    unfold sequence_add at 1 in H9v.
-
-...
-
--destruct (lt_dec (S (d2n v i)) rad) as [Hsv| Hsv].
- +exfalso.
-...
-
- +apply digit_eq_eq; simpl.
-  unfold d2n in Hsv; unfold d2n.
-  rewrite Hv.
-  enough (Hvr : ∀ j, u j < rad).
-  *rewrite numbers_to_digits_id with (Hur := Hvr); simpl.
-   rewrite Hu.
-   unfold freal_add_series, sequence_add, fd2n.
-
+   -exfalso; clear H9v.
+    specialize (Hku 0).
+    unfold A_plus_B_ge_1 in Hku; simpl in Hku.
+    rewrite Nat.mul_1_r, Nat.add_0_r in Hku.
+    set (n := rad * (k + 2)) in Hku.
+    set (s := rad ^ (n - 1 - k)) in Hku.
+    set (t := rad ^ (n - k)) in Hku.
+    destruct (lt_dec (nA k n u mod s * rad + nB n 0 u) t) as [H| H].
+    +easy.
+    +clear Hku.
+     apply H; clear H.
+     rewrite Nat.mod_small.
+     *unfold nB; rewrite Nat.add_0_r.
+      rewrite summation_only_one, Nat.sub_diag, Nat.pow_0_r, Nat.mul_1_r.
+      unfold nA.
+      set (rg := nat_ord_ring).
+      apply le_lt_trans with
+        (m :=
+           (Σ (j0 = k + 1, n - 1), (rad - 1) * rad ^ (n - 1 - j0)) * rad +
+           u n).
+     --apply Nat.add_le_mono_r.
+       apply Nat.mul_le_mono_r.
+       set (rd := nat_ord_ring_def).
+       apply (@summation_le_compat rd).
+       intros p Hp; simpl.
+       unfold NPeano.Nat.le.
+       apply Nat.mul_le_mono_r.
+       rewrite Hu.
+       unfold freal_add_series, sequence_add.
+       rewrite Hn0.
+       unfold fd2n at 1.
+       rewrite freal_normalize_0, Nat.add_0_l.
+       specialize (digit_lt_radix (freal nx p)) as H.
+       unfold fd2n; lia.
+     --idtac.
 ...
 intros Hr * Hxr.
 unfold freal_normalize.
