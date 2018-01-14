@@ -1476,6 +1476,7 @@ destruct (LPO_fst (is_9_after v i)) as [H9v| H9v].
     +easy.
     +clear Hku.
      apply H; clear H.
+...
      rewrite Nat.mod_small.
      *unfold nB; rewrite Nat.add_0_r.
       rewrite summation_only_one, Nat.sub_diag, Nat.pow_0_r, Nat.mul_1_r.
@@ -1514,7 +1515,33 @@ destruct (LPO_fst (is_9_after v i)) as [H9v| H9v].
           unfold fd2n.
           rewrite Hn0.
           rewrite freal_normalize_0, Nat.add_0_l.
-
+          apply Nat.lt_le_trans with (m := rad ^ (n - k) - rad + rad).
+        +++apply Nat.add_lt_mono_l.
+           apply digit_lt_radix.
+        +++rewrite Nat.sub_add; [ easy | ].
+           replace rad with (rad ^ 1) at 1 by apply Nat.pow_1_r.
+           apply Nat.pow_le_mono_r; [ easy | lia ].
+       ---destruct rad; [ easy | unfold n; simpl; lia ].
+       **intros p Hp; f_equal; lia.
+      ++unfold n.
+        destruct rad; [ easy | simpl; lia ].
+     *unfold nA.
+      set (rg := nat_ord_ring).
+      apply Nat.le_lt_trans with
+        (m := Σ (i = k + 1, n - 1), (rad - 1) * rad ^ (n - 1 - i)).
+     --set (rd := nat_ord_ring_def).
+       apply (@summation_le_compat rd); simpl.
+       intros p Hp.
+       unfold NPeano.Nat.le.
+       rewrite Hu.
+       apply Nat.mul_le_mono_r.
+       unfold freal_add_series, sequence_add.
+       rewrite Hn0.
+       unfold fd2n at 1.
+       rewrite freal_normalize_0, Nat.add_0_l.
+       specialize (digit_lt_radix (freal nx p)) as H.
+       unfold fd2n; lia.
+     --rewrite <- summation_mul_distr_l; simpl.
 ...
 intros Hr * Hxr.
 unfold freal_normalize.
