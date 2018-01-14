@@ -671,7 +671,7 @@ Definition freal_mul_to_seq {r : radix} (a b : FracReal) :=
   numbers_to_digits (freal_mul_series a b).
 
 Definition freal_add {r : radix} (a b : FracReal) :=
-  {| freal := freal_add_to_seq a b |}.
+  {| freal := freal_add_to_seq (freal_normalize a) (freal_normalize b) |}.
 
 Arguments freal_add _ a%F b%F.
 
@@ -1409,6 +1409,14 @@ destruct (LPO_fst (is_9_after nx0 i)) as [Hx0| Hx0].
   --subst nx nx0; simpl.
     unfold freal_add_to_seq, d2n.
     apply digit_eq_eq; simpl.
+unfold freal_add_series; simpl.
+unfold sequence_add; simpl.
+unfold freal_normalize; simpl.
+unfold fd2n; simpl.
+Print freal_0.
+...
+    erewrite (numbers_to_digits_id).
+...
     now rewrite (numbers_to_digits_id _ Hxr).
   --exfalso; apply Hnxr.
     subst nx nx0; simpl in Hnx0r; simpl.
