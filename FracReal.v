@@ -1417,8 +1417,15 @@ unfold fd2n; simpl.
 Print freal_0.
 ...
 *)
-erewrite (numbers_to_digits_id).
+remember (freal_add_series (freal_normalize 0) (freal_normalize x)) as u.
+enough (∀ j, u j < rad).
+rewrite numbers_to_digits_id with (Hur := H).
 simpl.
+subst u.
+unfold freal_add_series, sequence_add, fd2n; simpl.
+Search digit_sequence_normalize.
+...
+
 f_equal.
 unfold freal_add in Hnx0r.
 simpl in Hnx0r.
