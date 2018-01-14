@@ -1954,6 +1954,7 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
   apply digit_eq_eq in Hxy'.
   now rewrite Hxy, Hxy'.
  +destruct Hxy' as (k & Hbef & Hwhi & Hxaft & Hyaft).
+...
   destruct (LPO_fst (has_other_than_9_after (freal (x + x')))) as [Hxx| Hxx].
   *destruct (LPO_fst (has_other_than_9_after (freal (y + y')))) as [Hyy| Hyy].
   --left.
@@ -2103,6 +2104,7 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
        unfold fd2n.
        rewrite Hbef; [ easy | lia ].
     +++apply Nat.nlt_ge in Hkky.
+...
 specialize (Hiu ky).
 Print A_plus_B_ge_1.
 move Hiu at bottom.
