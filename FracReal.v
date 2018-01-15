@@ -80,12 +80,17 @@ Proof.
 destruct r as (rad, radi); simpl; lia.
 Qed.
 
+Theorem radix_gt_1 {r : radix} : 1 < rad.
+Proof.
+destruct r as (rad, radi); simpl; lia.
+Qed.
+
 Theorem radix_ne_0 {r : radix} : rad ≠ 0.
 Proof.
 destruct r as (rad, radi); simpl; lia.
 Qed.
 
-Hint Resolve radix_gt_0 radix_ge_1 radix_ne_0 radix_ge_2.
+Hint Resolve radix_gt_0 radix_ge_1 radix_gt_1 radix_ne_0 radix_ge_2.
 
 (* Digit *)
 
@@ -1471,6 +1476,22 @@ split.
   unfold numbers_to_digits.
   destruct (LPO_fst (A_plus_B_ge_1 k u)) as [Hku| Hku].
   *simpl.
+   set (n := rad * (k + 2)).
+   set (s := rad ^ (n - 1 - k)).
+   remember (u k) as uk eqn:Huk.
+   rewrite Hu in Huk.
+   rewrite Hn0, Hnx in Huk.
+   unfold freal_add_series, sequence_add, fd2n in Huk.
+   rewrite freal_normalize_0, Nat.add_0_l in Huk.
+   unfold freal_normalize, digit_sequence_normalize in Huk; simpl in Huk.
+   destruct (LPO_fst (is_9_after (freal x) k)) as [Hxk| Hxk].
+  --destruct (lt_dec (S (d2n (freal x) k)) rad) as [Hsr| Hsr].
+   ++clear Huk; rewrite Hk in Hsr; lia.
+   ++simpl in Huk; subst uk; rewrite Nat.add_0_l.
+     rewrite Nat.div_small.
+    **simpl.
+      rewrite Nat.mod_1_l; [ | easy ].
+(* wrong if rad = 2 ! *)
 ...
 
   *exfalso; clear H9.
