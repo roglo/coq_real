@@ -1609,21 +1609,24 @@ split.
  +destruct Hk as (j & Hjj & Hj).
   destruct (Nat.eq_dec (d2n (freal x) j) (rad - 1)) as [H| H]; [ easy | ].
   clear Hj; rename H into Hj.
+  destruct (le_dec k j).
+  exists j; split; [ easy | ].
+  unfold freal_add, fd2n; simpl.
+  unfold freal_add_to_seq.
+  unfold numbers_to_digits.
+admit.
+apply Nat.nle_gt in n.
+
+...
+
   destruct j.
   *clear Hjj.
-...
+admit.
+*idtac.
+specialize (Hjj j (Nat.lt_succ_diag_r j)) as H.
+destruct (Nat.eq_dec (d2n (freal x) j) (rad - 1)) as [Hxj| Hxj]; [ | easy ].
+clear H.
 
-destruct H0x as (j & Hjk & Hk).
-unfold ends_with_999 in Hk.
-destruct (LPO_fst (is_9_strict_after (freal (0 + x)) j)) as [H0x| H0x]; [ easy | ].
-clear Hk.
-destruct H0x as (p & Hjp & Hp).
-apply is_9_strict_after_false_iff in Hp.
-
-...
-  *exists k.
-   split; [ easy | ].
-...
 
 -idtac.
 ...
