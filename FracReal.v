@@ -1445,8 +1445,44 @@ intros Hr * Hxr.
 apply freal_normalized_iff.
 left.
 split.
--intros j.
- destruct (LPO_fst (is_9_after (freal x) 0)) as [Hk| Hk].
+-intros k.
+ destruct
+   (LPO_fst
+      (λ k, if Nat.eq_dec (d2n (freal x) k) (rad - 1) then true else false))
+   as [Hk| Hk].
+ +assert (H : ∀ k, d2n (freal x) k = rad - 1). {
+    intros j.
+    specialize (Hk j).
+    now destruct (Nat.eq_dec (d2n (freal x) j) (rad - 1)).
+  }
+  clear Hk; rename H into Hk.
+  exists k.
+  split; [ easy | ].
+  unfold freal_add.
+  unfold fd2n; simpl.
+  unfold freal_add_to_seq.
+  remember (freal_normalize x) as nx eqn:Hnx.
+  unfold freal_add; simpl.
+  remember (freal_normalize 0) as n0 eqn:Hn0.
+  move n0 before nx.
+  unfold freal_add_to_seq.
+  remember (freal_add_series n0 nx) as u eqn:Hu.
+  move u before n0.
+  unfold numbers_to_digits.
+  destruct (LPO_fst (A_plus_B_ge_1 k u)) as [Hku| Hku].
+  *simpl.
+...
+
+  *exfalso; clear H9.
+    specialize (Hku 0).
+    unfold A_plus_B_ge_1 in Hku; simpl in Hku.
+    rewrite Nat.mul_1_r, Nat.add_0_r in Hku.
+    set (n := rad * (k + 2)) in Hku.
+    set (s := rad ^ (n - 1 - k)) in Hku.
+    set (t := rad ^ (n - k)) in Hku.
+    assert (Hkn : k + 1 ≤ n - 1). {
+      destruct rad; [ easy | unfold n; simpl; lia ].
+    }
 
 ...
 intros Hr * Hxr.
