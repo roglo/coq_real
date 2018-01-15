@@ -1522,6 +1522,23 @@ split.
       destruct rad; [ easy | simpl; lia ].
   *destruct Hku as (p & Hpj & Hp).
    simpl.
+   set (n := rad * (k + p + 2)).
+   set (s := rad ^ (n - 1 - k)).
+   remember (u k) as uk eqn:Huk.
+   rewrite Hu in Huk.
+   unfold freal_add_series, sequence_add in Huk.
+   unfold fd2n in Huk.
+   rewrite Hn0, freal_normalize_0 in Huk.
+   rewrite Hnx in Huk; simpl in Huk.
+   unfold digit_sequence_normalize in Huk.
+   destruct (LPO_fst (is_9_after (freal x) k)) as [Hxk| Hxk].
+  --rewrite Hk in Huk.
+    rewrite <- Nat.sub_succ_l in Huk; [ | easy ].
+    rewrite Nat.sub_succ, Nat.sub_0_r in Huk.
+    destruct (lt_dec rad rad) as [H| H]; [ clear Huk; lia | ].
+    clear H; subst uk; simpl.
+    rewrite Nat.div_small; [ now rewrite Nat.mod_0_l | ].
+
 ...
 intros Hr * Hxr.
 remember (freal_normalize x) as nx eqn:Hnx.
