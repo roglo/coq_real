@@ -5,14 +5,6 @@ Require List.
 Import List.ListNotations.
 Open Scope list_scope.
 
-Definition isequiv {A B : Type} (f : A → B) :=
-  {g : B → A & (∀ a, g (f a) = a) & (∀ b, f (g b) = b)}.
-
-Definition equivalence (A B : Type) := { f : A → B & isequiv f}.
-Notation "A ≃ B" := (equivalence A B) (at level 70).
-
-Axiom univalence : ∀ A B, (A ≃ B) ≃ (A = B).
-
 Fixpoint pow_2_of_nat_aux iter n :=
   match iter with
   | 0 => 0
@@ -348,13 +340,6 @@ destruct n.
  apply Nat.le_trans with (m := S n); [ lia | easy ].
 Qed.
 
-Theorem list_nat_of_nat_to_nat_inv : ∀ l,
-  list_nat_of_nat (nat_of_list_nat l) = l.
-Proof.
-intros.
-now apply list_nat_of_nat_aux_to_nat_inv.
-Qed.
-
 Theorem nat_of_list_nat_to_list_nat_aux_inv : ∀ n i,
   n ≤ i
   → nat_of_list_nat (list_nat_of_nat_aux i n) = n.
@@ -377,6 +362,15 @@ apply Nat.succ_le_mono in Hn.
 apply Nat.le_trans with (m := n); [ apply odd_part_of_nat_le | easy ].
 Qed.
 
+   (* --- *)
+
+Theorem list_nat_of_nat_to_nat_inv : ∀ l,
+  list_nat_of_nat (nat_of_list_nat l) = l.
+Proof.
+intros.
+now apply list_nat_of_nat_aux_to_nat_inv.
+Qed.
+
 Theorem nat_of_list_nat_to_list_nat_inv : ∀ n,
   nat_of_list_nat (list_nat_of_nat n) = n.
 Proof.
@@ -384,15 +378,31 @@ intros.
 now apply nat_of_list_nat_to_list_nat_aux_inv.
 Qed.
 
-Theorem nat_eq_list_nat : (nat : Type) = (list nat : Type).
+   (* --- *)
+
+Definition isequiv {A B : Type} (f : A → B) :=
+  {g : B → A & (∀ a, g (f a) = a) & (∀ b, f (g b) = b)}.
+
+Definition equivalence (A B : Type) := { f : A → B & isequiv f}.
+Notation "A ≃ B" := (equivalence A B) (at level 70).
+
+Theorem nat_equiv_list_nat : nat ≃ list nat.
 Proof.
-specialize (univalence nat (list nat)) as (f, Hf).
-destruct Hf as (g, Hgf, Hfg).
-apply f.
 exists list_nat_of_nat.
 exists nat_of_list_nat.
 -apply nat_of_list_nat_to_list_nat_inv.
 -apply list_nat_of_nat_to_nat_inv.
+Qed.
+
+   (* --- *)
+
+Axiom univalence : ∀ A B, (A ≃ B) ≃ (A = B).
+
+Theorem nat_eq_list_nat : (nat : Type) = (list nat : Type).
+Proof.
+specialize (univalence nat (list nat)) as H.
+apply H.
+apply nat_equiv_list_nat.
 Qed.
 
 Check nat_eq_list_nat.

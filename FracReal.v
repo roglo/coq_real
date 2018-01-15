@@ -1442,6 +1442,14 @@ Theorem dig_norm_add_0_l {r : radix} : 0 < rad → ∀ x i,
   → freal (freal_normalize (0 + x)) i = freal (freal_normalize x) i.
 Proof.
 intros Hr * Hxr.
+apply freal_normalized_iff.
+left.
+split.
+-intros j.
+ destruct (LPO_fst (is_9_after (freal x) 0)) as [Hk| Hk].
+
+...
+intros Hr * Hxr.
 remember (freal_normalize x) as nx eqn:Hnx.
 unfold freal_add; simpl.
 rewrite <- Hnx.
