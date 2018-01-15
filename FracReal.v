@@ -1457,15 +1457,17 @@ destruct (LPO_fst (is_9_after v i)) as [H9v| H9v].
 -specialize (is_9_after_all_9 v i H9v) as H.
  clear H9v; rename H into H9v.
  exfalso.
+...
+ (* le assert ci-dessous semble compliqué à prouver, c'est bizarre *)
  assert (∀ j, fd2n nx (i + j + 1) = rad - 1). {
    intros.
-   specialize (H9v j).
-   rewrite Hv in H9v.
-   unfold d2n in H9v; unfold fd2n.
-   unfold numbers_to_digits in H9v.
+   specialize (H9v j) as H9.
+   rewrite Hv in H9.
+   unfold d2n in H9; unfold fd2n.
+   unfold numbers_to_digits in H9.
    remember (i + j + 1) as k eqn:Hk.
    destruct (LPO_fst (A_plus_B_ge_1 k u)) as [Hku| Hku].
-   -exfalso; clear H9v.
+   -exfalso; clear H9.
     specialize (Hku 0).
     unfold A_plus_B_ge_1 in Hku; simpl in Hku.
     rewrite Nat.mul_1_r, Nat.add_0_r in Hku.
@@ -1550,7 +1552,7 @@ destruct (LPO_fst (is_9_after v i)) as [H9v| H9v].
         unfold s; lia.
       ++intros p Hp; f_equal; lia.
    -destruct Hku as (p & Hpj & Hp).
-    simpl in H9v.
+    simpl in H9.
 
 ...
 intros Hr * Hxr.
