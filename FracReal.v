@@ -195,6 +195,14 @@ unfold is_9_after.
 now destruct (Nat.eq_dec (d2n u (i + j)) (rad - 1)).
 Qed.
 
+Theorem is_9_after_true_iff {r : radix} : ∀ i j u,
+  is_9_after u i j = true ↔ d2n u (i + j) = rad - 1.
+Proof.
+intros.
+unfold is_9_after.
+now destruct (Nat.eq_dec (d2n u (i + j)) (rad - 1)).
+Qed.
+
 Theorem is_9_strict_after_all_9 {r : radix} : ∀ u i,
   (∀ j, is_9_strict_after u i j = true)
   → (∀ k, d2n u (i + k + 1) = rad - 1).
@@ -203,6 +211,10 @@ intros * Hm9 *.
 specialize (Hm9 k); unfold is_9_strict_after in Hm9.
 now destruct (Nat.eq_dec (d2n u (i + k + 1)) (rad - 1)).
 Qed.
+
+Theorem is_9_after_add {r : radix} : ∀ u i j,
+  is_9_after u 0 (i + j) = is_9_after u i j.
+Proof. easy. Qed.
 
 Theorem is_9_strict_after_add {r : radix} : ∀ u i j,
   is_9_strict_after u 0 (i + j) = is_9_strict_after u i j.
@@ -1500,6 +1512,22 @@ Definition does_not_end_with_000 {r : radix} u i :=
   | inr _ => 0
   end.
 
+Theorem ends_with_999_false_iff {r : radix} : ∀ u i,
+  ends_with_999 u i = false ↔
+  ∃ j P, LPO_fst (is_9_after u i) = inr (exist _ j P).
+Proof.
+intros.
+split.
+-intros H9.
+ unfold ends_with_999 in H9.
+ destruct (LPO_fst (is_9_after u i)) as [H1| H1]; [ easy | clear H9 ].
+ destruct H1 as (j & Hjj).
+ now exists j, Hjj.
+-intros (j & (Hj & Hjj) & Hk).
+ unfold ends_with_999.
+ now rewrite Hk.
+Qed.
+
 Theorem dig_norm_add_0_l {r : radix} : 0 < rad → ∀ x i,
   freal (freal_normalize (0 + x)) i = freal (freal_normalize x) i.
 Proof.
@@ -1509,6 +1537,30 @@ destruct (LPO_fst (ends_with_999 (freal (0 + x)))) as [H0x| H0x].
 -right.
  admit.
 -destruct H0x as (j & Hjj & Hj).
+ destruct (lt_dec 0 j) as [Hjz| Hjz].
+ +destruct j; [ easy | clear Hjz ].
+  specialize (Hjj j (Nat.lt_succ_diag_r j)) as Hk.
+  unfold ends_with_999 in Hj, Hk.
+  destruct (LPO_fst (is_9_after (freal (0 + x)) (S j))) as [| H1]; [ easy | ].
+  clear Hj.
+  destruct (LPO_fst (is_9_after (freal (0 + x)) j)) as [H2| ]; [ | easy ].
+  clear Hk.
+  destruct H1 as (k & Hjk & Hk).
+  rewrite <- is_9_after_add in Hk.
+  specialize (H2 (S k)).
+  rewrite <- is_9_after_add in H2.
+  rewrite Nat.add_succ_l in Hk.
+  rewrite Nat.add_succ_r in H2.
+  now rewrite Hk in H2.
+ +replace j with 0 in Hj by lia.
+  clear j Hjj Hjz.
+  apply ends_with_999_false_iff in Hj.
+  destruct Hj as (j & (Hj & Hjj) & _).
+  apply is_9_after_false_iff in Hjj; simpl in Hjj.
+  unfold freal_add_to_seq in Hjj.
+  set (u := freal_add_series (freal_normalize 0) (freal_normalize x)) in Hjj.
+
+...
  destruct j.
  +clear Hjj.
   unfold ends_with_999 in Hj.
