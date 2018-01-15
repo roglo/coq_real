@@ -1538,6 +1538,70 @@ split.
     destruct (lt_dec rad rad) as [H| H]; [ clear Huk; lia | ].
     clear H; subst uk; simpl.
     rewrite Nat.div_small; [ now rewrite Nat.mod_0_l | ].
+    unfold nA.
+...
+    set (rg := nat_ord_ring).
+    apply Nat.le_lt_trans with
+      (m := Σ (j = k + 1, n - 1), (rad - 1) * rad ^ (n - 1 - j)).
+
+     --apply Nat.add_le_mono_r.
+       apply Nat.mul_le_mono_r.
+       set (rd := nat_ord_ring_def).
+       apply (@summation_le_compat rd).
+       intros p Hp; simpl.
+       unfold NPeano.Nat.le.
+       apply Nat.mul_le_mono_r.
+       rewrite Hu.
+       unfold freal_add_series, sequence_add.
+       rewrite Hn0.
+       unfold fd2n at 1.
+       rewrite freal_normalize_0, Nat.add_0_l.
+       specialize (digit_lt_radix (freal nx p)) as H.
+       unfold fd2n; lia.
+     --rewrite <- summation_mul_distr_l; simpl.
+       rewrite summation_rtl, summation_shift.
+      ++rewrite summation_eq_compat with (h := λ j, rad ^ j).
+       **rewrite <- power_summation_sub_1; [ | easy ].
+         rewrite Nat.mul_sub_distr_r.
+         replace rad with (rad ^ 1) at 2 by apply Nat.pow_1_r.
+         rewrite <- Nat.pow_add_r.
+         rewrite Nat.mul_1_l.
+         replace (S (n - 1 - (k + 1)) + 1) with (n - k) by lia.
+         rewrite Hu.
+         unfold freal_add_series, sequence_add.
+         unfold fd2n.
+         rewrite Hn0.
+         rewrite freal_normalize_0, Nat.add_0_l.
+         apply Nat.lt_le_trans with (m := rad ^ (n - k) - rad + rad).
+       ---apply Nat.add_lt_mono_l.
+          apply digit_lt_radix.
+       ---rewrite Nat.sub_add; [ easy | ].
+          replace rad with (rad ^ 1) at 1 by apply Nat.pow_1_r.
+          apply Nat.pow_le_mono_r; [ easy | lia ].
+       **intros p Hp; f_equal; lia.
+      ++unfold n.
+        destruct rad; [ easy | simpl; lia ].
+     *unfold nA.
+      set (rg := nat_ord_ring).
+      apply Nat.le_lt_trans with
+        (m := Σ (i = k + 1, n - 1), (rad - 1) * rad ^ (n - 1 - i)).
+     --set (rd := nat_ord_ring_def).
+       apply (@summation_le_compat rd); simpl.
+       intros p Hp.
+       unfold NPeano.Nat.le.
+       rewrite Hu.
+       apply Nat.mul_le_mono_r.
+       unfold freal_add_series, sequence_add.
+       rewrite Hn0.
+       unfold fd2n at 1.
+       rewrite freal_normalize_0, Nat.add_0_l.
+       specialize (digit_lt_radix (freal nx p)) as H.
+       unfold fd2n; lia.
+     --rewrite <- summation_mul_distr_l; simpl.
+       rewrite summation_rtl, summation_shift; [ | easy ].
+       rewrite summation_eq_compat with (h := λ j, rad ^ j).
+      ++rewrite <- power_summation_sub_1; [ | easy ].
+        replace (S (n - 1 - (k + 1))) with (n - 1 - k) by lia.
 
 ...
 intros Hr * Hxr.
