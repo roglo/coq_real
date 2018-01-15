@@ -1459,6 +1459,8 @@ destruct (LPO_fst (is_9_after v i)) as [H9v| H9v].
  exfalso.
 ...
  (* le assert ci-dessous semble compliqué à prouver, c'est bizarre *)
+ (* mais bon, faut peut-être que j'insiste ? après tout, j'en ai fait
+    la première moitié *)
  assert (∀ j, fd2n nx (i + j + 1) = rad - 1). {
    intros.
    specialize (H9v j) as H9.
