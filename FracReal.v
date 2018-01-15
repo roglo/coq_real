@@ -1554,6 +1554,7 @@ destruct (LPO_fst (ends_with_999 (freal (0 + x)))) as [H0x| H0x].
   now rewrite Hk in H2.
  +replace j with 0 in Hj by lia.
   clear j Hjj Hjz.
+...
   apply ends_with_999_false_iff in Hj.
   destruct Hj as (j & (Hj & Hjj) & _).
   apply is_9_after_false_iff in Hjj; simpl in Hjj.
