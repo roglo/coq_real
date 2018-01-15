@@ -1539,6 +1539,20 @@ split.
     clear H; subst uk; simpl.
     rewrite Nat.div_small; [ now rewrite Nat.mod_0_l | ].
     unfold nA.
+    rewrite all_0_summation_0.
+   ++unfold s; simpl.
+     specialize (Nat.pow_nonzero rad (n - 1 - k) radix_ne_0); lia.
+   ++intros j Hj; simpl.
+     rewrite Hu.
+     unfold freal_add_series, sequence_add, fd2n.
+     rewrite Hn0, freal_normalize_0.
+     rewrite Hnx.
+(* prouver que ∀ k, dig (freal (freal_normalize x)) i = 0 *)
+...
+
+     unfold freal_normalize; simpl.
+     unfold digit_sequence_normalize.
+
 ...
     set (rg := nat_ord_ring).
     apply Nat.le_lt_trans with
