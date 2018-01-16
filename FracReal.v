@@ -1574,7 +1574,7 @@ intros Hr *.
 apply freal_normalized_iff.
 destruct (LPO_fst (ends_with_999 (fd2n (0 + x)))) as [H0x| H0x].
 -right.
- admit.
+...
 -destruct H0x as (j & _ & Hj).
  left.
  apply ends_with_999_false_iff in Hj.
@@ -1644,6 +1644,33 @@ destruct (LPO_fst (ends_with_999 (fd2n (0 + x)))) as [H0x| H0x].
    rewrite Hn0, freal_normalize_0 in Huk.
    simpl in Huk; subst uk.
    rewrite Nat.div_small; [ now rewrite Nat.add_0_r, Nat.mod_small | ].
+unfold nA.
+eapply Nat.le_lt_trans with (m := Σ (j = k + 1, n - 1), (rad - 1) * rad ^ (n - 1 - j)).
+apply (@summation_le_compat nat_ord_ring_def).
+intros p Hp; simpl.
+unfold NPeano.Nat.le.
+apply Nat.mul_le_mono_r.
+unfold u, freal_add_series, sequence_add, fd2n.
+rewrite Hn0.
+rewrite freal_normalize_0; simpl.
+apply digit_le_pred_radix.
+unfold s.
+rewrite <- summation_mul_distr_l; simpl.
+rewrite summation_rtl.
+enough (H : k + 1 ≤ n - 1).
+rewrite summation_shift; [ | easy ].
+rewrite summation_eq_compat with (h := λ i, rad ^ i).
+rewrite <- power_summation_sub_1; [ | easy ].
+replace (S (n - 1 - (k + 1))) with (n - k - 1) by lia.
+rewrite Nat_sub_sub_swap.
+apply Nat.sub_lt; [ | lia ].
+now apply Nat_pow_ge_1.
+intros p Hp; f_equal; lia.
+unfold n.
+destruct rad as [| rr]; [ easy | ].
+simpl; lia.
+
+...
 (*
 unfold A_plus_B_ge_1 in Hm.
 set (n1 := rad * (k + 2)) in Hm.
@@ -1675,13 +1702,25 @@ unfold freal_add_to_seq in Hq.
 rewrite <- Hn0, <- Hnx in Hq.
 fold u in Hq.
 set (t := j + (p + 1) + q) in Hq.
-unfold numbers_to_digits in Hq.
-...
+enough (Hurt : ∀ j, u j < rad).
+rewrite numbers_to_digits_id with (Hur := Hurt) in Hq.
+simpl in Hq.
+unfold u in Hq.
+unfold freal_add_series, sequence_add in Hq.
+rewrite Hn0, Hnx in Hq.
+unfold fd2n in Hq.
+rewrite freal_normalize_0 in Hq.
+simpl in Hq.
+unfold digit_sequence_normalize in Hq.
+destruct (LPO_fst (is_9_strict_after (freal x) t)) as [H3| h3].
 specialize (H2 (j + q)).
 apply is_9_strict_after_true_iff in H2.
-unfold
-
-Search A_plus_B_ge_1.
+unfold d2n in H2.
+unfold t in Hq.
+replace (j + (p + 1) + q) with (p + (j + q) + 1) in Hq by lia.
+unfold d2n in Hq.
+rewrite H2 in Hq.
+(* n'importe quoi... *)
 
 ...
    specialize (normalized_999) as Hx.
