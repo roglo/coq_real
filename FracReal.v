@@ -1558,6 +1558,7 @@ destruct (LPO_fst (ends_with_999 (freal (0 + x)))) as [H0x| H0x].
   left. {
 split.
 -intros k.
+...
  destruct
    (LPO_fst
       (λ k, if Nat.eq_dec (d2n (freal x) k) (rad - 1) then true else false))
@@ -1644,6 +1645,8 @@ split.
  +destruct Hk as (j & Hjj & Hj).
   destruct (Nat.eq_dec (d2n (freal x) j) (rad - 1)) as [H| H]; [ easy | ].
   clear Hj; rename H into Hj.
+  apply ends_with_999_false_iff in H0j.
+  destruct H0j as (p & (Hjp & Hp) & Hlp).
 ...
   destruct (le_dec k j).
   *exists j; split; [ easy | ].
