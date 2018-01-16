@@ -1509,6 +1509,14 @@ Definition ends_with_999 {r : radix} u i :=
   | inr _ => true
   end.
 
+Theorem has_9_after_true_iff {r : radix} : ∀ u i j,
+  has_9_after u i j = true ↔ u (i + j) = rad - 1.
+Proof.
+intros.
+unfold has_9_after.
+now destruct (Nat.eq_dec (u (i + j)) (rad - 1)).
+Qed.
+
 Theorem has_9_after_false_iff {r : radix} : ∀ u i j,
   has_9_after u i j = false ↔ u (i + j) ≠ rad - 1.
 Proof.
@@ -1530,6 +1538,21 @@ destruct (LPO_fst (has_9_after u (i + j))) as [H1| H1].
 -split; [ intros _ | easy ].
  destruct H1 as (k & Hk).
  now exists k, Hk.
+Qed.
+
+Theorem has_not_9_after_false_iff {r : radix} : ∀ u i j,
+  has_not_9_after u i j = false ↔
+  ∃ P, LPO_fst (has_9_after u (i + j)) = inl P.
+Proof.
+intros.
+unfold has_not_9_after.
+destruct (LPO_fst (has_9_after u (i + j))) as [H1| H1].
+-split; [ intros _ | easy ].
+ now exists H1.
+-split; [ easy | ].
+ intros (P & _).
+ destruct H1 as (k & _ & Q).
+ now rewrite P in Q.
 Qed.
 
 Theorem ends_with_999_true_iff {r : radix} : ∀ u i,
@@ -1657,6 +1680,24 @@ intros.
 apply freal_normalized_iff.
 destruct (LPO_fst (ends_with_999 (fd2n (0 + x)))) as [H0x| H0x].
 -right.
+ unfold freal_norm_not_norm_eq.
+ assert (Hjk : ∃ j, ∀ k, j < k → fd2n (0 + x) k = rad - 1). {
+   specialize (H0x 0) as H.
+   apply ends_with_999_true_iff in H.
+   destruct H as (j & (Hjj & Hj) & _).
+   apply has_not_9_after_false_iff in Hj.
+   destruct Hj as (Hj & _); simpl in Hj.
+   assert (H : ∀ k, fd2n (0 + x) (j + k) = rad - 1). {
+     intros k.
+     specialize (Hj k).
+     now apply has_9_after_true_iff in Hj.
+   }
+   exists j; intros k Hk.
+   specialize (H (k - j)).
+   now replace (j + (k - j)) with k in H by lia.
+ }
+ destruct Hjk as (j & Hjk).
+ (* oui, bon, c'est bien mais faut que en j, ça vaille ≠ rad - 1 *)
 ...
 -destruct H0x as (j & _ & Hj).
  left.
