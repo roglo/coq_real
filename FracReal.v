@@ -1687,10 +1687,15 @@ destruct (LPO_fst (is_9_strict_after nx0 i)) as [Hx0| Hx0].
 -destruct (LPO_fst (is_9_strict_after nx i)) as [Hx| Hx].
  +destruct (lt_dec (S (d2n nx0 i)) rad) as [Hnx0r| Hnx0r].
   *destruct (lt_dec (S (d2n nx i)) rad) as [Hnxr| Hnxr].
-  --apply digit_eq_eq; simpl; f_equal.
-    exfalso.
+  --exfalso.
 ...
 
+specialize (Hx 0).
+apply is_9_strict_after_true_iff in Hx.
+...
+
+
+  --apply digit_eq_eq; simpl; f_equal.
     rewrite Hnx, Hnx0.
     unfold freal_add, d2n; simpl.
     rewrite freal_add_normalize_0_l.
