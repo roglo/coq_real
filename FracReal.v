@@ -1587,83 +1587,66 @@ destruct (LPO_fst (ends_with_999 (fd2n (0 + x)))) as [H0x| H0x].
   apply has_9_after_false_iff in Hm.
   exists (j + k + m).
   split; [ lia | ].
-
-...
-
-  destruct (LPO_fst (ends_with_999 (freal x))) as [Hk| Hk].
- +assert (H : ∃ j, ∀ k, j ≤ k → d2n (freal x) k = rad - 1). {
-    specialize (Hk 0).
-    apply ends_with_999_true_iff in Hk.
-    destruct Hk as (Hk & _).
-...
-    specialize (Hk 1).
-    apply is_9_after_true_iff in Hk.
-    intros j.
-    specialize (Hk j).
-    now destruct (Nat.eq_dec (d2n (freal x) j) (rad - 1)).
-  }
-  clear Hk; rename H into Hk.
-  exists k.
-  split; [ easy | ].
+  specialize (digit_lt_radix (freal (0 + x) (j + k + m))) as H.
+  unfold fd2n in Hm |-*; lia.
+ +intros k.
   unfold freal_add.
-  unfold fd2n; simpl.
-  unfold freal_add_to_seq.
   remember (freal_normalize x) as nx eqn:Hnx.
-  unfold freal_add; simpl.
-  remember (freal_normalize 0) as n0 eqn:Hn0.
+  remember (freal_normalize 0) as n0 eqn:Hn0; simpl.
   move n0 before nx.
   unfold freal_add_to_seq.
-  remember (freal_add_series n0 nx) as u eqn:Hu.
-  move u before n0.
+  set (u := freal_add_series n0 nx).
   unfold numbers_to_digits.
-  destruct (LPO_fst (A_plus_B_ge_1 k u)) as [Hku| Hku].
-  *exfalso; specialize (Hku 0).
-   unfold A_plus_B_ge_1 in Hku.
-   set (n := rad * (k + 2)) in Hku.
-   set (s := rad ^ (n - 1 - k)) in Hku.
-   simpl in Hku.
-   rewrite Nat.mul_1_r, Nat.add_0_r in Hku.
-   destruct (lt_dec (nA k n u mod s * rad + nB n 0 u) (rad ^ (n - k)))
-     as [Hnk| Hnk]; [ easy | clear Hku ].
-   apply Hnk; clear Hnk.
-   apply Nat.le_lt_trans with (m := (s - 1) * rad + nB n 0 u).
-  --apply Nat.add_le_mono_r, Nat.mul_le_mono_pos_r; [ easy | ].
-    apply Nat.le_add_le_sub_r.
-    rewrite Nat.add_1_r.
-    apply Nat.mod_upper_bound.
-    now unfold s; apply Nat.pow_nonzero.
-  --unfold nB; rewrite Nat.add_0_r.
-    rewrite summation_only_one, Nat.sub_diag, Nat.pow_0_r, Nat.mul_1_r.
-    rewrite Hu.
-    unfold freal_add_series, sequence_add, fd2n.
-    rewrite Hn0, freal_normalize_0, Nat.add_0_l.
-    apply Nat.le_lt_trans with (m := (s - 1) * rad + (rad - 1)).
-   ++apply Nat.add_le_mono_l.
-     apply digit_le_pred_radix.
-   ++rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
-     replace rad with (rad ^ 1) at 1 by apply Nat.pow_1_r.
-     unfold s.
-     rewrite <- Nat.pow_add_r.
-     enough (1 ≤ n - k).
-    **replace (n - 1 - k + 1) with (n - k) by lia.
-      rewrite Nat.add_sub_assoc; [ | easy ].
-      rewrite Nat.sub_add.
-    ---apply Nat.sub_lt; [ | lia ].
-       now apply Nat_pow_ge_1.
-    ---replace rad with (rad ^ 1) at 1 by apply Nat.pow_1_r.
-       now apply Nat.pow_le_mono_r.
-    **unfold n.
-      destruct rad; [ easy | simpl; lia ].
-  *destruct Hku as (p & Hpj & Hp).
-   simpl.
-   set (n := rad * (k + p + 2)).
+  destruct (LPO_fst (A_plus_B_ge_1 k u)) as [Hku| (m & Hjm & Hm)].
+  *apply digit_eq_eq; simpl.
+  --exfalso; specialize (Hku 0).
+    unfold A_plus_B_ge_1 in Hku.
+    set (n := rad * (k + 2)) in Hku.
+    set (s := rad ^ (n - 1 - k)) in Hku.
+    simpl in Hku.
+    rewrite Nat.mul_1_r, Nat.add_0_r in Hku.
+    destruct (lt_dec (nA k n u mod s * rad + nB n 0 u) (rad ^ (n - k)))
+      as [Hnk| Hnk]; [ easy | clear Hku ].
+    apply Hnk; clear Hnk.
+    apply Nat.le_lt_trans with (m := (s - 1) * rad + nB n 0 u).
+   ++apply Nat.add_le_mono_r, Nat.mul_le_mono_pos_r; [ easy | ].
+     apply Nat.le_add_le_sub_r.
+     rewrite Nat.add_1_r.
+     apply Nat.mod_upper_bound.
+     now unfold s; apply Nat.pow_nonzero.
+   ++unfold nB; rewrite Nat.add_0_r.
+     rewrite summation_only_one, Nat.sub_diag, Nat.pow_0_r, Nat.mul_1_r.
+     unfold u, freal_add_series, sequence_add, fd2n.
+     rewrite Hn0, freal_normalize_0, Nat.add_0_l.
+     apply Nat.le_lt_trans with (m := (s - 1) * rad + (rad - 1)).
+    **apply Nat.add_le_mono_l.
+      apply digit_le_pred_radix.
+    **rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+      replace rad with (rad ^ 1) at 1 by apply Nat.pow_1_r.
+      unfold s.
+      rewrite <- Nat.pow_add_r.
+      enough (1 ≤ n - k).
+    ---replace (n - 1 - k + 1) with (n - k) by lia.
+       rewrite Nat.add_sub_assoc; [ | easy ].
+       rewrite Nat.sub_add.
+     +++apply Nat.sub_lt; [ | lia ].
+        now apply Nat_pow_ge_1.
+     +++replace rad with (rad ^ 1) at 1 by apply Nat.pow_1_r.
+        now apply Nat.pow_le_mono_r.
+    ---unfold n.
+       destruct rad; [ easy | simpl; lia ].
+  *apply digit_eq_eq; simpl.
+   set (n := rad * (k + m + 2)).
    set (s := rad ^ (n - 1 - k)).
    remember (u k) as uk eqn:Huk.
-   rewrite Hu in Huk.
-   unfold freal_add_series, sequence_add in Huk.
+   unfold u, freal_add_series, sequence_add in Huk.
    unfold fd2n in Huk.
    rewrite Hn0, freal_normalize_0 in Huk.
-   specialize (normalized_999 _ Hk) as Hx.
+   simpl in Huk; subst uk.
+   rewrite Nat.div_small; [ now rewrite Nat.add_0_r, Nat.mod_small | ].
+
+...
+   specialize (normalized_999) as Hx.
    rewrite <- Hnx in Hx.
    unfold fd2n in Hx.
    rewrite Huk, Hx; simpl.
