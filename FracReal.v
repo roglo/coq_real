@@ -1494,28 +1494,20 @@ enough (Hur : ∀ j, u j < rad).
 Abort.
 *)
 
-Definition is_not_9 {r : radix} u i j :=
-  if Nat.eq_dec (u (i + j)) (rad - 1) then false else true.
+Definition has_9_after {r : radix} u i j :=
+  if Nat.eq_dec (u (i + j)) (rad - 1) then true else false.
 
 Definition has_not_9_after {r : radix} u i j :=
-  match LPO_fst (is_not_9 u (i + j)) with
-  | inl _ => false
-  | inr _ => true
-  end.
-
-Definition nothing_but_9_after {r : radix} u i j :=
-  match LPO_fst (has_not_9_after u (i + j)) with
+  match LPO_fst (has_9_after u (i + j)) with
   | inl _ => false
   | inr _ => true
   end.
 
 Definition ends_with_999 {r : radix} u i :=
-  match LPO_fst (nothing_but_9_after u i) with
-  | inl _ => true
-  | inr _ => false
+  match LPO_fst (has_not_9_after u i) with
+  | inl _ => false
+  | inr _ => true
   end.
-
-...
 
 Definition has_other_than_9_after {r : radix} u i :=
   match LPO_fst (is_9_strict_after u i) with
@@ -1531,33 +1523,37 @@ Definition does_not_end_with_000 {r : radix} u i :=
 
 Theorem ends_with_999_true_iff {r : radix} : ∀ u i,
   ends_with_999 u i = true ↔
-  ∃ P, LPO_fst (is_9_after u i) = inl P.
+  ∃ j P, LPO_fst (has_not_9_after u i) = inr (exist _ j P).
 Proof.
 intros.
 split.
 -intros H9.
  unfold ends_with_999 in H9.
- destruct (LPO_fst (is_9_after u i)) as [H1| H1]; [ clear H9 | easy ].
- now exists H1.
--intros (P & HP).
+ destruct (LPO_fst (has_not_9_after u i)) as [H1| H1]; [ easy | clear H9 ].
+ destruct H1 as (j & Hjj).
+ now exists j, Hjj.
+-intros (j & ((P & Q) & _)).
  unfold ends_with_999.
- now rewrite HP.
+ destruct (LPO_fst (has_not_9_after u i)) as [H1| H1]; [ | easy ].
+ specialize (H1 j).
+ now rewrite H1 in Q.
 Qed.
 
 Theorem ends_with_999_false_iff {r : radix} : ∀ u i,
   ends_with_999 u i = false ↔
-  ∃ j P, LPO_fst (is_9_after u i) = inr (exist _ j P).
+  ∃ P, LPO_fst (has_not_9_after u i) = inl P.
 Proof.
 intros.
 split.
 -intros H9.
  unfold ends_with_999 in H9.
- destruct (LPO_fst (is_9_after u i)) as [H1| H1]; [ easy | clear H9 ].
- destruct H1 as (j & Hjj).
- now exists j, Hjj.
--intros (j & (Hj & Hjj) & Hk).
+ destruct (LPO_fst (has_not_9_after u i)) as [H1| H1]; [ clear H9 | easy ].
+ now exists H1.
+-intros (P & _).
  unfold ends_with_999.
- now rewrite Hk.
+ destruct (LPO_fst (has_not_9_after u i)) as [H1| H1]; [ easy | ].
+ destruct H1 as (j & (_, Q)).
+ now rewrite P in Q.
 Qed.
 
 Theorem dig_norm_add_0_l {r : radix} : 0 < rad → ∀ x i,
@@ -1565,32 +1561,18 @@ Theorem dig_norm_add_0_l {r : radix} : 0 < rad → ∀ x i,
 Proof.
 intros Hr *.
 apply freal_normalized_iff.
-destruct (LPO_fst (ends_with_999 (freal (0 + x)))) as [H0x| H0x].
+destruct (LPO_fst (ends_with_999 (fd2n (0 + x)))) as [H0x| H0x].
 -right.
  admit.
--destruct H0x as (j & Hjj & Hj).
- destruct (lt_dec 0 j) as [Hjz| Hjz].
- +destruct j; [ easy | clear Hjz ].
-  specialize (Hjj j (Nat.lt_succ_diag_r j)) as Hk.
-  unfold ends_with_999 in Hj, Hk.
-  destruct (LPO_fst (is_9_after (freal (0 + x)) (S j))) as [| H1]; [ easy | ].
-  clear Hj.
-  destruct (LPO_fst (is_9_after (freal (0 + x)) j)) as [H2| ]; [ | easy ].
-  clear Hk.
-  destruct H1 as (k & Hjk & Hk).
-  rewrite <- is_9_after_add in Hk.
-  specialize (H2 (S k)).
-  rewrite <- is_9_after_add in H2.
-  rewrite Nat.add_succ_l in Hk.
-  rewrite Nat.add_succ_r in H2.
-  now rewrite Hk in H2.
- +replace j with 0 in Hj by lia.
-  clear j Hjj Hjz.
-  rename Hj into H0j.
-  left. {
-split.
--intros k.
- destruct (LPO_fst (ends_with_999 (freal x))) as [Hk| Hk].
+-destruct H0x as (j & _ & Hj).
+ left.
+ apply ends_with_999_false_iff in Hj.
+ destruct Hj as (Hj & _).
+ split.
+ +intros k.
+...
+
+  destruct (LPO_fst (ends_with_999 (freal x))) as [Hk| Hk].
  +assert (H : ∃ j, ∀ k, j ≤ k → d2n (freal x) k = rad - 1). {
     specialize (Hk 0).
     apply ends_with_999_true_iff in Hk.
