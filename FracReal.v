@@ -1688,6 +1688,36 @@ destruct (LPO_fst (is_9_strict_after nx0 i)) as [Hx0| Hx0].
  +destruct (lt_dec (S (d2n nx0 i)) rad) as [Hnx0r| Hnx0r].
   *destruct (lt_dec (S (d2n nx i)) rad) as [Hnxr| Hnxr].
   --exfalso.
+Search is_9_strict_after.
+specialize (is_9_strict_after_all_9 _ _ Hx0) as H1.
+specialize (is_9_strict_after_all_9 _ _ Hx) as H2.
+specialize (H1 0).
+specialize (H2 0).
+rewrite Nat.add_0_r in H1, H2.
+rewrite Hnx0 in H1; rewrite Hnx in H2.
+simpl in H1.
+unfold d2n in H1, H2.
+rewrite freal_add_normalize_0_l in H1.
+unfold freal_normalize in H1.
+simpl in H1.
+unfold digit_sequence_normalize in H1.
+destruct (LPO_fst (is_9_strict_after (freal x) (i + 1))) as [H3| H3].
+destruct (lt_dec (S (d2n (freal x) (i + 1))) rad) as [H4| H4].
+simpl in H1.
+unfold d2n in H1.
+lia.
+simpl in H1.
+lia.
+clear H2.
+destruct H3 as (j & Hjj & Hj).
+specialize (Hx (1 + j)).
+rewrite Hnx in Hx.
+rewrite <- is_9_strict_after_add in Hx.
+rewrite <- is_9_strict_after_add in Hj.
+now rewrite Nat.add_assoc, Hj in Hx.
+--
+exfalso; apply Nat.nlt_ge in Hnxr.
+
 ...
 
 specialize (Hx 0).
