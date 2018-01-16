@@ -1644,6 +1644,44 @@ destruct (LPO_fst (ends_with_999 (fd2n (0 + x)))) as [H0x| H0x].
    rewrite Hn0, freal_normalize_0 in Huk.
    simpl in Huk; subst uk.
    rewrite Nat.div_small; [ now rewrite Nat.add_0_r, Nat.mod_small | ].
+(*
+unfold A_plus_B_ge_1 in Hm.
+set (n1 := rad * (k + 2)) in Hm.
+set (s1 := n1 - 1 - k) in Hm.
+destruct (lt_dec (nA k n1 u mod rad ^ s1 * rad ^ (m + 1) + nB n1 m u) (rad ^ (n1 + m - k))) as [H1| ]; [ | easy ].
+clear Hm.
+*)
+   replace (nA k n u) with (nA k n (fd2n x)).
+(*
+apply A_plus_B_ge_1_false_iff in Hm.
+*)
+Focus 2.
+unfold nA.
+apply summation_eq_compat.
+intros p Hp.
+f_equal.
+unfold u, freal_add_series, sequence_add, fd2n.
+rewrite Hn0, freal_normalize_0, Hnx; simpl.
+unfold digit_sequence_normalize.
+destruct (LPO_fst (is_9_strict_after (freal x) p)) as [H2| H2]; [ | easy ].
+exfalso.
+specialize (Hj (p + 1)).
+apply has_not_9_after_true_iff in Hj.
+destruct Hj as (q & (Hjq & Hq) & _).
+apply has_9_after_false_iff in Hq.
+unfold freal_add, fd2n in Hq.
+simpl in Hq.
+unfold freal_add_to_seq in Hq.
+rewrite <- Hn0, <- Hnx in Hq.
+fold u in Hq.
+set (t := j + (p + 1) + q) in Hq.
+unfold numbers_to_digits in Hq.
+...
+specialize (H2 (j + q)).
+apply is_9_strict_after_true_iff in H2.
+unfold
+
+Search A_plus_B_ge_1.
 
 ...
    specialize (normalized_999) as Hx.
