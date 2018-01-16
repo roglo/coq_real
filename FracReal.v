@@ -1494,11 +1494,28 @@ enough (Hur : ∀ j, u j < rad).
 Abort.
 *)
 
+Definition is_not_9 {r : radix} u i j :=
+  if Nat.eq_dec (u (i + j)) (rad - 1) then false else true.
+
+Definition has_not_9_after {r : radix} u i j :=
+  match LPO_fst (is_not_9 u (i + j)) with
+  | inl _ => false
+  | inr _ => true
+  end.
+
+Definition nothing_but_9_after {r : radix} u i j :=
+  match LPO_fst (has_not_9_after u (i + j)) with
+  | inl _ => false
+  | inr _ => true
+  end.
+
 Definition ends_with_999 {r : radix} u i :=
-  match LPO_fst (is_9_after u i) with
+  match LPO_fst (nothing_but_9_after u i) with
   | inl _ => true
   | inr _ => false
   end.
+
+...
 
 Definition has_other_than_9_after {r : radix} u i :=
   match LPO_fst (is_9_strict_after u i) with
@@ -1511,6 +1528,21 @@ Definition does_not_end_with_000 {r : radix} u i :=
   | inl _ => 1
   | inr _ => 0
   end.
+
+Theorem ends_with_999_true_iff {r : radix} : ∀ u i,
+  ends_with_999 u i = true ↔
+  ∃ P, LPO_fst (is_9_after u i) = inl P.
+Proof.
+intros.
+split.
+-intros H9.
+ unfold ends_with_999 in H9.
+ destruct (LPO_fst (is_9_after u i)) as [H1| H1]; [ clear H9 | easy ].
+ now exists H1.
+-intros (P & HP).
+ unfold ends_with_999.
+ now rewrite HP.
+Qed.
 
 Theorem ends_with_999_false_iff {r : radix} : ∀ u i,
   ends_with_999 u i = false ↔
@@ -1558,12 +1590,14 @@ destruct (LPO_fst (ends_with_999 (freal (0 + x)))) as [H0x| H0x].
   left. {
 split.
 -intros k.
+ destruct (LPO_fst (ends_with_999 (freal x))) as [Hk| Hk].
+ +assert (H : ∃ j, ∀ k, j ≤ k → d2n (freal x) k = rad - 1). {
+    specialize (Hk 0).
+    apply ends_with_999_true_iff in Hk.
+    destruct Hk as (Hk & _).
 ...
- destruct
-   (LPO_fst
-      (λ k, if Nat.eq_dec (d2n (freal x) k) (rad - 1) then true else false))
-   as [Hk| Hk].
- +assert (H : ∀ k, d2n (freal x) k = rad - 1). {
+    specialize (Hk 1).
+    apply is_9_after_true_iff in Hk.
     intros j.
     specialize (Hk j).
     now destruct (Nat.eq_dec (d2n (freal x) j) (rad - 1)).
