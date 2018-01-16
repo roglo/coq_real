@@ -1554,26 +1554,8 @@ destruct (LPO_fst (ends_with_999 (freal (0 + x)))) as [H0x| H0x].
   now rewrite Hk in H2.
  +replace j with 0 in Hj by lia.
   clear j Hjj Hjz.
-...
-  apply ends_with_999_false_iff in Hj.
-  destruct Hj as (j & (Hj & Hjj) & _).
-  apply is_9_after_false_iff in Hjj; simpl in Hjj.
-  unfold freal_add_to_seq in Hjj.
-  set (u := freal_add_series (freal_normalize 0) (freal_normalize x)) in Hjj.
-
-...
- destruct j.
- +clear Hjj.
-  unfold ends_with_999 in Hj.
-  destruct (LPO_fst (is_9_after (freal (0 + x)) 0)) as [H0x| H0x]; [ easy | ].
-  clear Hj.
-  destruct H0x as (j & Hjj & Hj).
-  apply is_9_after_false_iff in Hj.
-  rewrite Nat.add_0_l in Hj.
-  destruct j.
-  *clear Hjj.
-   rename Hj into H0x0.
-left. {
+  rename Hj into H0j.
+  left. {
 split.
 -intros k.
  destruct
@@ -1662,11 +1644,15 @@ split.
  +destruct Hk as (j & Hjj & Hj).
   destruct (Nat.eq_dec (d2n (freal x) j) (rad - 1)) as [H| H]; [ easy | ].
   clear Hj; rename H into Hj.
+...
   destruct (le_dec k j).
-  exists j; split; [ easy | ].
-  unfold freal_add, fd2n; simpl.
-  unfold freal_add_to_seq.
-  unfold numbers_to_digits.
+  *exists j; split; [ easy | ].
+   unfold freal_add, fd2n; simpl.
+   unfold freal_add_to_seq.
+   unfold numbers_to_digits.
+
+
+...
 admit.
 apply Nat.nle_gt in n.
 
