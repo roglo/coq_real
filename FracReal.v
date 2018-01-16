@@ -1681,7 +1681,10 @@ apply freal_normalized_iff.
 destruct (LPO_fst (ends_with_999 (fd2n (0 + x)))) as [H0x| H0x].
 -right.
  unfold freal_norm_not_norm_eq.
- assert (Hjk : ∃ j, ∀ k, j < k → fd2n (0 + x) k = rad - 1). {
+ assert
+   (Hjk : ∃ j,
+     (j = 0 ∨ fd2n (0 + x) (j - 1) ≠ rad - 1) ∧
+     ∀ k, j ≤ k → fd2n (0 + x) k = rad - 1). {
    specialize (H0x 0) as H.
    apply ends_with_999_true_iff in H.
    destruct H as (j & (Hjj & Hj) & _).
@@ -1692,12 +1695,26 @@ destruct (LPO_fst (ends_with_999 (fd2n (0 + x)))) as [H0x| H0x].
      specialize (Hj k).
      now apply has_9_after_true_iff in Hj.
    }
-   exists j; intros k Hk.
-   specialize (H (k - j)).
-   now replace (j + (k - j)) with k in H by lia.
+   exists j; split.
+   -destruct j; [ now left | right ].
+    specialize (Hjj _ (Nat.lt_succ_diag_r j)).
+    apply has_not_9_after_true_iff in Hjj.
+    destruct Hjj as (k & (Hjj & Hk) & _).
+    apply has_9_after_false_iff in Hk.
+    destruct k.
+    +rewrite Nat.add_0_l, Nat.add_0_r in Hk.
+     now simpl; rewrite Nat.sub_0_r.
+    +specialize (H k).
+     replace (0 + j + S k) with (S j + k) in Hk by lia.
+     now rewrite H in Hk.
+   -intros k Hk.
+    specialize (H (k - j)).
+    now replace (j + (k - j)) with k in H by lia.
  }
- destruct Hjk as (j & Hjk).
- (* oui, bon, c'est bien mais faut que en j, ça vaille ≠ rad - 1 *)
+ destruct Hjk as (j & Hj & Hjk).
+ exists j.
+ split.
+ +intros k Hk.
 ...
 -destruct H0x as (j & _ & Hj).
  left.
