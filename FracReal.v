@@ -1713,8 +1713,16 @@ destruct (LPO_fst (ends_with_999 (fd2n (0 + x)))) as [H0x| H0x].
  }
  destruct Hjk as (j & Hj & Hjk).
  exists j.
- split.
- +intros k Hk.
+ split. {
+   intros k Hk.
+   unfold "+"%F; simpl.
+   now rewrite freal_add_normalize_0_l.
+ }
+ split. {
+   destruct j; [ now left | right ].
+   destruct Hj as [Hj| Hj]; [ easy | ].
+   exfalso.
+
 ...
 -destruct H0x as (j & _ & Hj).
  left.
