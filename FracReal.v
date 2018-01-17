@@ -1494,11 +1494,8 @@ enough (Hur : ∀ j, u j < rad).
 Abort.
 *)
 
-Definition has_9_after {r : radix} u i j :=
-  if Nat.eq_dec (u (i + j)) (rad - 1) then true else false.
-
 Definition has_not_9_after {r : radix} u i j :=
-  match LPO_fst (has_9_after u (i + j)) with
+  match LPO_fst (is_9_after u (i + j)) with
   | inl _ => false
   | inr _ => true
   end.
@@ -1509,29 +1506,13 @@ Definition ends_with_999 {r : radix} u i :=
   | inr _ => true
   end.
 
-Theorem has_9_after_true_iff {r : radix} : ∀ u i j,
-  has_9_after u i j = true ↔ u (i + j) = rad - 1.
-Proof.
-intros.
-unfold has_9_after.
-now destruct (Nat.eq_dec (u (i + j)) (rad - 1)).
-Qed.
-
-Theorem has_9_after_false_iff {r : radix} : ∀ u i j,
-  has_9_after u i j = false ↔ u (i + j) ≠ rad - 1.
-Proof.
-intros.
-unfold has_9_after.
-now destruct (Nat.eq_dec (u (i + j)) (rad - 1)).
-Qed.
-
 Theorem has_not_9_after_true_iff {r : radix} : ∀ u i j,
   has_not_9_after u i j = true ↔
-  ∃ k P, LPO_fst (has_9_after u (i + j)) = inr (exist _ k P).
+  ∃ k P, LPO_fst (is_9_after u (i + j)) = inr (exist _ k P).
 Proof.
 intros.
 unfold has_not_9_after.
-destruct (LPO_fst (has_9_after u (i + j))) as [H1| H1].
+destruct (LPO_fst (is_9_after u (i + j))) as [H1| H1].
 -split; [ easy | ].
  intros (k & (P & Q) & _).
  now rewrite H1 in Q.
@@ -1542,11 +1523,11 @@ Qed.
 
 Theorem has_not_9_after_false_iff {r : radix} : ∀ u i j,
   has_not_9_after u i j = false ↔
-  ∃ P, LPO_fst (has_9_after u (i + j)) = inl P.
+  ∃ P, LPO_fst (is_9_after u (i + j)) = inl P.
 Proof.
 intros.
 unfold has_not_9_after.
-destruct (LPO_fst (has_9_after u (i + j))) as [H1| H1].
+destruct (LPO_fst (is_9_after u (i + j))) as [H1| H1].
 -split; [ intros _ | easy ].
  now exists H1.
 -split; [ easy | ].
@@ -1678,7 +1659,7 @@ Theorem dig_norm_add_0_l {r : radix} : ∀ x i,
 Proof.
 intros.
 apply freal_normalized_iff.
-destruct (LPO_fst (ends_with_999 (fd2n (0 + x)))) as [H0x| H0x].
+destruct (LPO_fst (ends_with_999 (freal (0 + x)))) as [H0x| H0x].
 -exfalso.
  specialize (H0x 0).
  apply ends_with_999_true_iff in H0x.
@@ -1688,10 +1669,68 @@ destruct (LPO_fst (ends_with_999 (fd2n (0 + x)))) as [H0x| H0x].
  assert (Hnr : ∀ k, dig (freal (freal_normalize x) (j + k)) = rad - 1). {
    intros k.
    specialize (Hj k).
-   apply has_9_after_true_iff in Hj.
+   apply is_9_after_true_iff in Hj.
    unfold "+"%F, fd2n in Hj; simpl in Hj.
+   unfold d2n in Hj.
    now rewrite freal_add_normalize_0_l in Hj.
  }
+ specialize (Hnr 0) as H1.
+ unfold freal_normalize, digit_sequence_normalize in H1; simpl in H1.
+ rewrite Nat.add_0_r in H1.
+ destruct (LPO_fst (is_9_strict_after (freal x) j)) as [H2| H2].
+ +destruct (lt_dec (S (d2n (freal x) j)) rad) as [H3| H3].
+  *simpl in H1; clear H3.
+   specialize (is_9_strict_after_all_9 _ _ H2) as H3.
+   clear H2; rename H3 into H2.
+   specialize (Hnr 1) as H3.
+   unfold freal_normalize, digit_sequence_normalize in H3; simpl in H3.
+   destruct (LPO_fst (is_9_strict_after (freal x) (j + 1))) as [H4| H4].
+  --destruct (lt_dec (S (d2n (freal x) (j + 1))) rad) as [H5| H5]; simpl in H3.
+   ++specialize (H2 0); rewrite Nat.add_0_r in H2; lia.
+   ++lia.
+  --clear H3.
+    destruct H4 as (k & Hjk & H3).
+    apply is_9_strict_after_false_iff in H3.
+    specialize (H2 (k + 1)).
+    now replace (j + (k + 1) + 1) with (j + 1 + k + 1) in H2 by lia.
+  *simpl in H1.
+   specialize radix_ge_2; lia.
+ +destruct H2 as (k & Hjk & H2).
+  apply is_9_strict_after_false_iff in H2.
+  specialize (Hnr k) as H3.
+  unfold freal_normalize, digit_sequence_normalize in H3; simpl in H3.
+  destruct (LPO_fst (is_9_strict_after (freal x) (j + k))) as [H4| H4].
+  *destruct (lt_dec (S (d2n (freal x) (j + k))) rad) as [H5| H5].
+  --simpl in H3; clear H5.
+    specialize (is_9_strict_after_all_9 _ _ H4) as H5.
+    specialize (H5 0).
+    now rewrite Nat.add_0_r in H5.
+  --simpl in H3.
+    specialize radix_ge_2; lia.
+  *destruct H4 as (m & Hjm & H5).
+   apply is_9_strict_after_false_iff in H5.
+   destruct k.
+  --rewrite Nat.add_0_r in H2, H5; clear Hjk H3.
+
+...
+   clear H2; rename H3 into H2.
+   specialize (Hnr 1) as H3.
+   unfold freal_normalize, digit_sequence_normalize in H3; simpl in H3.
+   destruct (LPO_fst (is_9_strict_after (freal x) (j + 1))) as [H4| H4].
+  --destruct (lt_dec (S (d2n (freal x) (j + 1))) rad) as [H5| H5]; simpl in H3.
+   ++specialize (H2 0); rewrite Nat.add_0_r in H2; lia.
+   ++lia.
+  --clear H3.
+    destruct H4 as (k & Hjk & H3).
+    apply is_9_strict_after_false_iff in H3.
+    specialize (H2 (k + 1)).
+    now replace (j + (k + 1) + 1) with (j + 1 + k + 1) in H2 by lia.
+  *simpl in H1.
+   specialize radix_ge_2; lia.
+ +destruct H2 as (k & Hjk & H2).
+  apply is_9_strict_after_false_iff in H2.
+  specialize (Hnr (k + 1)) as H3.
+
 ...
  specialize (Hnr 0) as H1.
  specialize (Hnr 1) as H2.
@@ -1735,14 +1774,14 @@ destruct (LPO_fst (ends_with_999 (fd2n (0 + x)))) as [H0x| H0x].
    assert (H : ∀ k, fd2n (0 + x) (j + k) = rad - 1). {
      intros k.
      specialize (Hj k).
-     now apply has_9_after_true_iff in Hj.
+     now apply is_9_after_true_iff in Hj.
    }
    exists j; split.
    -destruct j; [ now left | right ].
     specialize (Hjj _ (Nat.lt_succ_diag_r j)).
     apply has_not_9_after_true_iff in Hjj.
     destruct Hjj as (k & (Hjj & Hk) & _).
-    apply has_9_after_false_iff in Hk.
+    apply is_9_after_false_iff in Hk.
     destruct k.
     +rewrite Nat.add_0_l, Nat.add_0_r in Hk.
      now simpl; rewrite Nat.sub_0_r.
@@ -1785,7 +1824,7 @@ destruct (LPO_fst (ends_with_999 (fd2n (0 + x)))) as [H0x| H0x].
   specialize (Hj k).
   apply has_not_9_after_true_iff in Hj.
   destruct Hj as (m & (Hjm & Hm) & _).
-  apply has_9_after_false_iff in Hm.
+  apply is_9_after_false_iff in Hm.
   exists (j + k + m).
   split; [ lia | ].
   specialize (digit_lt_radix (freal (0 + x) (j + k + m))) as H.
