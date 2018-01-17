@@ -1895,4 +1895,26 @@ destruct (LPO_fst (is_9_strict_after nxnyz i)) as [H1| H1].
     unfold digit_sequence_normalize.
     remember (numbers_to_digits (freal_add_series ny nz)) as ayz eqn:Hayz.
     remember (numbers_to_digits (freal_add_series ny nx)) as ayx eqn:Hayx.
+    move ayx before ayz.
+    destruct (LPO_fst (is_9_strict_after ayz j)) as [H5| H5].
+   ++specialize (is_9_strict_after_all_9 _ _ H5) as H.
+     clear H5; rename H into H5.
+     destruct (lt_dec (S (d2n ayz j)) rad) as [H6| H6].
+    **simpl.
+      destruct (LPO_fst (is_9_strict_after ayx j)) as [H7| H7].
+    ---specialize (is_9_strict_after_all_9 _ _ H7) as H.
+       clear H7; rename H into H7.
+     +++destruct (lt_dec (S (d2n ayx j)) rad) as [H8| H8].
+      ***simpl.
+         do 2 rewrite Nat.add_succ_r; f_equal.
+         subst ayz ayx.
+         unfold d2n, numbers_to_digits.
+         remember (freal_add_series ny nz) as ayz eqn:Hayz.
+         remember (freal_add_series ny nx) as ayx eqn:Hayx.
+         move ayx before ayz; move Hayx before Hayz.
+         move H8 before H6.
+         destruct (LPO_fst (A_plus_B_ge_1 j ayz)) as [H9| H9].
+      ----destruct (LPO_fst (A_plus_B_ge_1 j ayx)) as [H10| H10].
+       ++++simpl.
+
 ...
