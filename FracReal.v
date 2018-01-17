@@ -1721,7 +1721,10 @@ destruct (LPO_fst (ends_with_999 (fd2n (0 + x)))) as [H0x| H0x].
  split. {
    destruct j; [ now left | right ].
    destruct Hj as [Hj| Hj]; [ easy | ].
-   exfalso.
+   unfold "+"%F; simpl.
+   unfold fd2n; simpl.
+   rewrite freal_add_normalize_0_l.
+   simpl.
 
 ...
 -destruct H0x as (j & _ & Hj).
