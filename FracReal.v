@@ -1852,22 +1852,30 @@ specialize (freal_add_comm x y) as H.
 apply freal_eq_prop_eq in H.
 rewrite H; clear H.
 apply freal_eq_prop_eq.
-...
-
-Check freal_add_morph.
-rewrite (@freal_add_comm r).
-...
-unfold freal_eq.
+unfold freal_eq; simpl.
 unfold freal_normalized_eq.
-remember (freal_normalize (x + (y + z))) as nx_yz eqn:Hnx_yz.
-remember (freal_normalize ((x + y) + z)) as nxy_z eqn:Hnxy_z.
-destruct (LPO_fst (has_same_digits nx_yz nxy_z)) as [H| H]; [ easy | ].
-exfalso.
-destruct H as (i & Hji & Hi).
+remember (freal_normalize (x + (y + z))) as xz eqn:Hxz.
+remember (freal_normalize (z + (y + x))) as zx eqn:Hzx.
+destruct (LPO_fst (has_same_digits xz zx)) as [H1| H1]; [ easy | exfalso ].
+destruct H1 as (i & Hji & Hi).
+apply has_same_digits_false_iff in Hi.
 apply Hi; clear Hi.
-unfold has_same_digits.
-destruct (Nat.eq_dec (freal nx_yz i) (freal nxy_z i)) as [H| H]; [ easy | ].
-exfalso; apply H; clear H.
-subst nx_yz nxy_z.
-rewrite dig_norm_add_assoc.
+rewrite Hxz, Hzx.
+unfold freal_normalize, fd2n; simpl.
+unfold digit_sequence_normalize.
+remember (freal_normalize x) as nx eqn:Hnx.
+remember (freal_normalize z) as nz eqn:Hnz.
+remember (freal_normalize (y + z)) as nyz eqn:Hnyz.
+remember (freal_normalize (y + x)) as nyx eqn:Hnyx.
+remember (freal_add_to_seq nx nyz) as nxnyz eqn:Hnxnyz.
+remember (freal_add_to_seq nz nyx) as nznyx eqn:Hnznyx.
+move nz before nx.
+move nyz before nz.
+move nyx before nyz.
+move nxnyz before nyx.
+move nznyx before nxnyz.
+destruct (LPO_fst (is_9_strict_after nxnyz i)) as [H1| H1].
+-destruct (LPO_fst (is_9_strict_after nznyx i)) as [H2| H2].
+ +idtac.
+
 ...
