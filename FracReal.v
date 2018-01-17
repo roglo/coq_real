@@ -1848,7 +1848,11 @@ Proof.
 intros.
 split.
 -intros Hxj *.
-
+ specialize (Hxj j) as H.
+ apply A_plus_B_ge_1_true_iff in H.
+ apply Nat.nlt_ge in H.
+ set (n := rad * (i + 2)) in H.
+ set (s := rad ^ (n + j - i)) in H.
 ...
 
 Theorem freal_add_assoc {r : radix} : ∀ x y z,
