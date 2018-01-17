@@ -1702,6 +1702,27 @@ destruct (LPO_fst (ends_with_999 (freal (0 + x)))) as [H0x| H0x].
      specialize radix_ge_2; lia.
    -easy.
  }
+ specialize (Hnr 0).
+ rewrite Nat.add_0_r in Hnr.
+ unfold freal_normalize, digit_sequence_normalize in Hnr; simpl in Hnr.
+ destruct (LPO_fst (is_9_strict_after (freal x) j)) as [H1| H1].
+ +destruct (lt_dec (S (d2n (freal x) j)) rad) as [H2| H2].
+  *simpl in Hnr.
+   specialize (Hr 0).
+   rewrite Nat.add_0_r in Hr.
+   unfold d2n in Hnr; lia.
+  *simpl in Hnr.
+   specialize radix_ge_2; lia.
+ +clear Hnr.
+  destruct H1 as (i & Hji & H2).
+  apply is_9_strict_after_false_iff in H2.
+  specialize (Hr (i + 1)).
+...
+      replace (j + k + (m + 1) + 1) with (j + (k + 1) + m + 1) in H2; lia.
+    +simpl in H1.
+     specialize radix_ge_2; lia.
+   -easy.
+
 
 ...
  specialize (Hnr 0) as H1.
