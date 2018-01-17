@@ -1679,6 +1679,22 @@ Proof.
 intros.
 apply freal_normalized_iff.
 destruct (LPO_fst (ends_with_999 (fd2n (0 + x)))) as [H0x| H0x].
+-exfalso.
+ specialize (H0x 0).
+ apply ends_with_999_true_iff in H0x.
+ destruct H0x as (j & (Hjj & Hj) & _).
+ apply has_not_9_after_false_iff in Hj.
+ destruct Hj as (Hj & _).
+ assert (H : ∀ k, dig (freal (freal_normalize x) (j + k)) = rad - 1). {
+   intros k.
+   specialize (Hj k).
+   apply has_9_after_true_iff in Hj.
+   unfold "+"%F, fd2n in Hj; simpl in Hj.
+   now rewrite freal_add_normalize_0_l in Hj.
+ }
+...
+
+(*
 -right.
  unfold freal_norm_not_norm_eq.
  assert
@@ -1719,13 +1735,20 @@ destruct (LPO_fst (ends_with_999 (fd2n (0 + x)))) as [H0x| H0x].
    now rewrite freal_add_normalize_0_l.
  }
  split. {
-   destruct j; [ now left | right ].
-   destruct Hj as [Hj| Hj]; [ easy | ].
-   unfold "+"%F; simpl.
-   unfold fd2n; simpl.
-   rewrite freal_add_normalize_0_l.
-   simpl.
-
+   exfalso.
+   assert (H1 : ∀ k, fd2n (0 + x) (j + k) = rad - 1). {
+     intros k.
+     rewrite Hjk; [ easy | lia ].
+   }
+   unfold "+"%F, fd2n in H1.
+   simpl in H1.
+   assert (H2 : ∀ k, dig (freal (freal_normalize x) (j + k)) = rad - 1). {
+     intros k.
+     specialize (H1 k).
+     now rewrite freal_add_normalize_0_l in H1.
+   }
+   clear H1.
+*)
 ...
 -destruct H0x as (j & _ & Hj).
  left.
