@@ -1867,9 +1867,24 @@ clear Hji; rename H into Hji.
 apply has_same_digits_false_iff in Hi.
 move Hji after Hi.
 apply Hi; clear Hi.
-...
-
 rewrite Hxz, Hzx.
+(**)
+unfold fd2n.
+erewrite freal_eq_normalize_eq; [ easy | ].
+intros j.
+unfold freal_add; simpl.
+remember (freal_normalize x) as nx eqn:Hnx.
+remember (freal_normalize y) as ny eqn:Hny.
+remember (freal_normalize z) as nz eqn:Hnz.
+move ny before nx; move nz before ny.
+unfold freal_add_to_seq.
+apply numbers_to_digits_eq_compat.
+clear j; intros j.
+unfold freal_add_series at 1 3.
+unfold sequence_add.
+unfold fd2n; simpl.
+
+...
 unfold freal_normalize, fd2n; simpl.
 unfold digit_sequence_normalize.
 remember (freal_normalize x) as nx eqn:Hnx.
