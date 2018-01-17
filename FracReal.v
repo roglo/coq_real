@@ -1883,7 +1883,6 @@ clear j; intros j.
 unfold freal_add_series at 1 3.
 unfold sequence_add.
 unfold fd2n; simpl.
-
 ...
 unfold freal_normalize, fd2n; simpl.
 unfold digit_sequence_normalize.
