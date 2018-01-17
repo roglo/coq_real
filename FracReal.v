@@ -1840,6 +1840,17 @@ unfold fd2n.
 now rewrite Hxy, Hxy'.
 Qed.
 
+(* chais pas si c'est vrai mais ça serait cool *)
+Theorem all_A_plus_B_ge_1_true_all_9 {r : radix} : ∀ u i,
+  (∀ j, A_plus_B_ge_1 i u j = true)
+  ↔ (∀ j, u (i + j) = rad - 1).
+Proof.
+intros.
+split.
+-intros Hxj *.
+
+...
+
 Theorem freal_add_assoc {r : radix} : ∀ x y z,
   (x + (y + z) = (x + y) + z)%F.
 Proof.
@@ -1916,5 +1927,7 @@ destruct (LPO_fst (is_9_strict_after nxnyz i)) as [H1| H1].
          destruct (LPO_fst (A_plus_B_ge_1 j ayz)) as [H9| H9].
       ----destruct (LPO_fst (A_plus_B_ge_1 j ayx)) as [H10| H10].
        ++++simpl.
-
+           destruct (LPO_fst (is_9_strict_after (freal x) j)) as [H11| H11].
+        ****specialize (is_9_strict_after_all_9 _ _ H11) as H.
+            clear H11; rename H into H11.
 ...
