@@ -2048,6 +2048,7 @@ split; intros Hxy *.
  apply digit_eq_eq, Hxy.
 Qed.
 
+(*
 Theorem has_other_than_9_after_true_iff {r : radix} : ∀ u i,
   has_other_than_9_after u i = true ↔
   ∃ k,
@@ -2071,14 +2072,12 @@ destruct (LPO_fst (is_9_strict_after u i)) as [Hu| Hu].
  now apply is_9_strict_after_true_iff in Hjk.
 Qed.
 
-(*
 Theorem not_eq_add_999_999 {r : radix} : ∀ x y,
   (∀ i, has_other_than_9_after (freal_add_to_seq x y) i = true)
   → (∃ k, ∀ i, k ≤ i → fd2n x i = rad - 1)
   → (∀ i, has_other_than_0_after (freal y) i = true).
 Proof.
 intros * Hxy (k, Hx) j.
-*)
 
 Theorem not_eq_add_999_000 {r : radix} : ∀ x y,
   (∀ i, has_other_than_9_after (freal_add_to_seq x y) i = true)
@@ -2207,6 +2206,7 @@ destruct (LPO_fst (is_9_strict_after (freal_add_to_seq x y) i)) as [Hxy| Hxy].
   now rewrite freal_add_to_seq_i_comm in Hj.
  +easy.
 Qed.
+*)
 
 Add Parametric Morphism {r : radix} : freal_add
   with signature freal_eq_prop ==> freal_eq_prop ==> freal_eq_prop
@@ -2229,6 +2229,7 @@ destruct Hxy as [Hxy| [Hxy| Hxy]].
   specialize (Hxy' i).
   apply digit_eq_eq in Hxy.
   apply digit_eq_eq in Hxy'.
+...
   now rewrite Hxy, Hxy'.
  +destruct Hxy' as (k & Hbef & Hwhi & Hxaft & Hyaft).
 ...
