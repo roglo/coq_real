@@ -1876,6 +1876,23 @@ move nxnyz before nyx.
 move nznyx before nxnyz.
 destruct (LPO_fst (is_9_strict_after nxnyz i)) as [H1| H1].
 -destruct (LPO_fst (is_9_strict_after nznyx i)) as [H2| H2].
- +idtac.
-
+ +destruct (lt_dec (S (d2n nxnyz i)) rad) as [H3| H3].
+  *destruct (lt_dec (S (d2n nznyx i)) rad) as [H4| H4].
+  --simpl; f_equal.
+    subst nxnyz nznyx.
+    rewrite Hnx, Hnz, Hnyz, Hnyx.
+    unfold d2n.
+    unfold freal_add_to_seq.
+    f_equal.
+    apply numbers_to_digits_eq_compat.
+    intros j.
+    unfold freal_add_series, sequence_add, fd2n.
+    unfold "+"%F; simpl.
+    unfold freal_add_to_seq.
+    rewrite <- Hnx, <- Hnz.
+    remember (freal_normalize y) as ny eqn:Hny.
+    move ny before nx; move Hny before Hnx.
+    unfold digit_sequence_normalize.
+    remember (numbers_to_digits (freal_add_series ny nz)) as ayz eqn:Hayz.
+    remember (numbers_to_digits (freal_add_series ny nx)) as ayx eqn:Hayx.
 ...
