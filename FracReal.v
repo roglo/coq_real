@@ -1674,6 +1674,36 @@ destruct (LPO_fst (ends_with_999 (freal (0 + x)))) as [H0x| H0x].
    unfold d2n in Hj.
    now rewrite freal_add_normalize_0_l in Hj.
  }
+ clear -Hnr.
+ assert (Hr : ∀ k, dig (freal x (j + k)) = rad - 1). {
+   intros k.
+   specialize (Hnr k) as H1.
+   unfold freal_normalize, digit_sequence_normalize in H1; simpl in H1.
+   destruct (LPO_fst (is_9_strict_after (freal x) (j + k))) as [H2| H2].
+   -destruct (lt_dec (S (d2n (freal x) (j + k))) rad) as [H3| H3].
+    +simpl in H1; clear H3; exfalso.
+     specialize (is_9_strict_after_all_9 _ _ H2) as H3.
+     clear H2; rename H3 into H2.
+     specialize (Hnr (k + 1)) as H3.
+     unfold freal_normalize, digit_sequence_normalize in H3; simpl in H3.
+     destruct (LPO_fst (is_9_strict_after (freal x) (j + (k + 1)))) as [H4| H4].
+     *destruct (lt_dec (S (d2n (freal x) (j + (k + 1)))) rad) as [H5| H5].
+     --simpl in H3; clear H5.
+       specialize (H2 0).
+       replace (j + k + 0 + 1) with (j + (k + 1)) in H2; lia.
+     --simpl in H3.
+       specialize radix_ge_2; lia.
+     *clear H3.
+      destruct H4 as (m & Hjm & H3).
+      apply is_9_strict_after_false_iff in H3.
+      specialize (H2 (m + 1)).
+      replace (j + k + (m + 1) + 1) with (j + (k + 1) + m + 1) in H2; lia.
+    +simpl in H1.
+     specialize radix_ge_2; lia.
+   -easy.
+ }
+
+...
  specialize (Hnr 0) as H1.
  unfold freal_normalize, digit_sequence_normalize in H1; simpl in H1.
  rewrite Nat.add_0_r in H1.
