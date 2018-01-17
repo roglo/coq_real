@@ -1840,21 +1840,6 @@ unfold fd2n.
 now rewrite Hxy, Hxy'.
 Qed.
 
-(* chais pas si c'est vrai mais ça serait cool *)
-Theorem all_A_plus_B_ge_1_true_all_9 {r : radix} : ∀ u i,
-  (∀ j, A_plus_B_ge_1 i u j = true)
-  ↔ (∀ j, u (i + j) = rad - 1).
-Proof.
-intros.
-split.
--intros Hxj *.
- specialize (Hxj j) as H.
- apply A_plus_B_ge_1_true_iff in H.
- apply Nat.nlt_ge in H.
- set (n := rad * (i + 2)) in H.
- set (s := rad ^ (n + j - i)) in H.
-...
-
 Theorem freal_add_assoc {r : radix} : ∀ x y z,
   (x + (y + z) = (x + y) + z)%F.
 Proof.
@@ -1873,8 +1858,17 @@ remember (freal_normalize (x + (y + z))) as xz eqn:Hxz.
 remember (freal_normalize (z + (y + x))) as zx eqn:Hzx.
 destruct (LPO_fst (has_same_digits xz zx)) as [H1| H1]; [ easy | exfalso ].
 destruct H1 as (i & Hji & Hi).
+assert (H : ∀ j, j < i → fd2n xz j = fd2n zx j). {
+  intros j Hj.
+  specialize (Hji _ Hj).
+  now apply has_same_digits_true_iff in Hji.
+}
+clear Hji; rename H into Hji.
 apply has_same_digits_false_iff in Hi.
+move Hji after Hi.
 apply Hi; clear Hi.
+...
+
 rewrite Hxz, Hzx.
 unfold freal_normalize, fd2n; simpl.
 unfold digit_sequence_normalize.
