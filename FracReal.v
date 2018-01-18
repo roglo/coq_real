@@ -1877,7 +1877,13 @@ remember (freal_normalize x) as nx eqn:Hnx.
 remember (freal_normalize y) as ny eqn:Hny.
 remember (freal_normalize z) as nz eqn:Hnz.
 move ny before nx; move nz before ny.
-unfold freal_add_to_seq.
+unfold freal_normalize; simpl.
+change
+  (freal_add_to_seq nx
+      {| freal := digit_sequence_normalize (freal_add_to_seq ny nz) |} j =
+   freal_add_to_seq nz
+      {| freal := digit_sequence_normalize (freal_add_to_seq ny nx) |} j).
+
 ...
 apply numbers_to_digits_eq_compat.
 clear j; intros j.
