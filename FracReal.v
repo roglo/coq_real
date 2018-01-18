@@ -1840,6 +1840,23 @@ unfold fd2n.
 now rewrite Hxy, Hxy'.
 Qed.
 
+Theorem all_A_plus_B_ge_1_true_iff {r : radix} : ∀ i u,
+  (∀ k, A_plus_B_ge_1 i u k = true) ↔
+  ∀ k,
+   rad ^ (rad * (i + 2) + k - i) ≤
+   nA i (rad * (i + 2)) u mod rad ^ (rad * (i + 2) - 1 - i) * rad ^ (k + 1) +
+   nB (rad * (i + 2)) k u.
+Proof.
+intros.
+split.
+-intros Hk *.
+ specialize (Hk k).
+ now apply A_plus_B_ge_1_true_iff, Nat.nlt_ge in Hk.
+-intros Hk *.
+ specialize (Hk k).
+ now apply A_plus_B_ge_1_true_iff, Nat.nlt_ge.
+Qed.
+
 Theorem freal_add_assoc {r : radix} : ∀ x y z,
   (x + (y + z) = (x + y) + z)%F.
 Proof.
@@ -1877,7 +1894,26 @@ remember (freal_normalize x) as nx eqn:Hnx.
 remember (freal_normalize y) as ny eqn:Hny.
 remember (freal_normalize z) as nz eqn:Hnz.
 move ny before nx; move nz before ny.
-unfold freal_add_to_seq.
+unfold freal_add_to_seq at 1 3.
+unfold numbers_to_digits.
+remember
+  (freal_add_series nx
+     (freal_normalize {| freal := freal_add_to_seq ny nz |})) as ayz eqn:Hayz.
+remember
+  (freal_add_series nz
+     (freal_normalize {| freal := freal_add_to_seq ny nx |})) as ayx eqn:Hayx.
+move ayx before ayz.
+destruct (LPO_fst (A_plus_B_ge_1 j ayz)) as [H1| H1].
+-specialize (proj1 (all_A_plus_B_ge_1_true_iff j ayz) H1) as H.
+ clear H1; rename H into H1.
+ +destruct (LPO_fst (A_plus_B_ge_1 j ayx)) as [H2| H2].
+  *specialize (proj1 (all_A_plus_B_ge_1_true_iff j ayx) H2) as H.
+   clear H2; rename H into H2.
+   apply digit_eq_eq; simpl.
+   set (n := rad * (j + 2)).
+   set (s := rad ^ (n - 1 - j)).
+   setoid_rewrite Nat.add_mod; [ | easy | easy ].
+   f_equal; f_equal.
 ...
 
 unfold freal_normalize; simpl.
