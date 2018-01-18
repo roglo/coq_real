@@ -683,13 +683,19 @@ Definition A_plus_B_ge_1 {r : radix} i u l :=
   if lt_dec (nA i n u mod s * rad ^ (l + 1) + nB n l u) (rad ^ (n + l - i))
   then false else true.
 
+...
+
 Definition numbers_to_digits {r : radix} u i :=
   match LPO_fst (A_plus_B_ge_1 i u) with
   | inl _ =>
+(* my new hypothesis: should not occur... *)
+digit_0
+(*
       let n := rad * (i + 2) in
       let s := rad ^ (n - 1 - i) in
       let d := u i + nA i n u / s in
       mkdig _ ((d + 1) mod rad) (Nat.mod_upper_bound (d + 1) rad radix_ne_0)
+*)
   | inr (exist _ l _) =>
       let n := rad * (i + l + 2) in
       let s := rad ^ (n - 1 - i) in
