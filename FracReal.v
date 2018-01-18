@@ -1878,6 +1878,7 @@ remember (freal_normalize y) as ny eqn:Hny.
 remember (freal_normalize z) as nz eqn:Hnz.
 move ny before nx; move nz before ny.
 unfold freal_add_to_seq.
+...
 apply numbers_to_digits_eq_compat.
 clear j; intros j.
 unfold freal_add_series at 1 3.
