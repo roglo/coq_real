@@ -1237,9 +1237,28 @@ Proof.
 intros.
 unfold numbers_to_digits.
 destruct (LPO_fst (A_plus_B_ge_1 i u)) as [H| H].
--apply digit_eq_eq; simpl.
+-exfalso.
  specialize (proj1 (all_A_plus_B_ge_1_true_iff i u) H) as HH.
- clear H; rename HH into H.
+ clear H; rename HH into H; simpl in H.
+ specialize (H 0) as H.
+ rewrite Nat.add_0_r in H.
+ remember (rad * (i + 2)) as n eqn:Hn.
+ remember (rad ^ (n - 1 - i)) as s eqn:Hs.
+ simpl in H.
+ assert (Hin : i + 1 ≤ n - 1). {
+   subst n; specialize radix_ge_2 as Hr.
+   destruct rad as [| rd]; [ easy | simpl; lia ].
+ }
+ assert (Hir : ∀ j, i + 1 ≤ j ≤ n - 1 → u j < rad) by (intros; apply Hur).
+ specialize radix_gt_0 as Hr.
+ specialize (nA_dig_seq_ub Hr u n i Hir Hin) as HnA; clear Hir.
+ rewrite <- Hs in HnA.
+ rewrite Nat.mod_small in H; [ | easy ].
+ apply Nat.nlt_ge in H.
+ apply H; clear H.
+...
+
+-apply digit_eq_eq; simpl.
  simpl in H.
  set (n := rad * (i + 2)) in H |-*.
  set (s := rad ^ n - 1 - i) in H |-*.
