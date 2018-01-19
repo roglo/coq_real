@@ -1237,8 +1237,14 @@ Proof.
 intros.
 unfold numbers_to_digits.
 destruct (LPO_fst (A_plus_B_ge_1 i u)) as [H| H].
--specialize (proj1 (all_A_plus_B_ge_1_true_iff i u) H) as HH.
+-apply digit_eq_eq; simpl.
+ specialize (proj1 (all_A_plus_B_ge_1_true_iff i u) H) as HH.
  clear H; rename HH into H.
+ simpl in H.
+ set (n := rad * (i + 2)) in H |-*.
+ set (s := rad ^ n - 1 - i) in H |-*.
+...
+ simpl in H.
  specialize (H 0) as HH.
  rewrite Nat.add_0_r in HH.
  simpl in HH.
@@ -1256,6 +1262,12 @@ destruct (LPO_fst (A_plus_B_ge_1 i u)) as [H| H].
   apply Nat.nlt_ge in HH.
   exfalso; apply HH; clear HH.
   unfold nA.
+  rewrite summation_shift; [ | easy ].
+  replace (n - 1 - (i + 1)) with (n - 2 - i) by lia.
+  set (rg := nat_ord_ring).
+  apply le_lt_trans with
+    (m := Σ (j = 0, n - 2 - i), (rad - 1) * rad ^ (n - 2 - j) + nB n).
+
 ...
   rewrite summation_mul_distr_r; simpl.
   rewrite summation_eq_compat with (h := λ j, u j * rad ^ (n + 0 - j)).
