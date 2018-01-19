@@ -1240,9 +1240,8 @@ destruct (LPO_fst (A_plus_B_ge_1 i u)) as [H| H].
 -exfalso.
  specialize (proj1 (all_A_plus_B_ge_1_true_iff i u) H) as HH.
  clear H; rename HH into H; simpl in H.
- specialize (H 0) as H.
- rewrite Nat.add_0_r in H.
- remember (rad * (i + 2)) as n eqn:Hn.
+ specialize (H 42) as H.
+ remember (rad * (i + 2) + 42) as n eqn:Hn.
  remember (rad ^ (n - 1 - i)) as s eqn:Hs.
  simpl in H.
  assert (Hin : i + 1 ≤ n - 1). {
