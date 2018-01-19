@@ -1214,18 +1214,37 @@ fold n s.
 now destruct (lt_dec (nA i n u mod s + nB n) s).
 Qed.
 
+Theorem all_A_plus_B_ge_1_true_iff {r : radix} : ∀ i u,
+  (∀ k, A_plus_B_ge_1 i u k = true) ↔
+  ∀ k,
+  let n := rad * (i + 2) + k in
+  let s := rad ^ (n - 1 - i) in
+  s ≤ nA i n u mod s + nB n.
+Proof.
+intros.
+split.
+-intros Hk *.
+ specialize (Hk k).
+ now apply A_plus_B_ge_1_true_iff, Nat.nlt_ge in Hk.
+-intros Hk *.
+ specialize (Hk k).
+ now apply A_plus_B_ge_1_true_iff, Nat.nlt_ge.
+Qed.
+
 Theorem numbers_to_digits_id {r : radix} : ∀ u (Hur : ∀ j, u j < rad) i,
   numbers_to_digits u i = mkdig _ (u i) (Hur i).
 Proof.
 intros.
 unfold numbers_to_digits.
 destruct (LPO_fst (A_plus_B_ge_1 i u)) as [H| H].
--specialize (H 0) as HH.
- unfold A_plus_B_ge_1 in HH; simpl in HH.
+-specialize (proj1 (all_A_plus_B_ge_1_true_iff i u) H) as HH.
+ clear H; rename HH into H.
+ specialize (H 0) as HH.
  rewrite Nat.add_0_r in HH.
+ simpl in HH.
  remember (rad * (i + 2)) as n eqn:Hn.
  remember (rad ^ (n - 1 - i)) as s eqn:Hs.
- destruct (lt_dec (nA i n u mod s + nB n) s) as [| Hge]; [ easy | clear HH ].
+ simpl in HH.
  assert (Hin : i + 1 ≤ n - 1).
  +subst n; specialize radix_ge_2 as Hr.
   destruct rad as [| rd]; [ easy | simpl; lia ].
@@ -1233,9 +1252,10 @@ destruct (LPO_fst (A_plus_B_ge_1 i u)) as [H| H].
   specialize radix_gt_0 as Hr.
   specialize (nA_dig_seq_ub Hr u n i Hir Hin) as HnA; clear Hir.
   rewrite <- Hs in HnA.
-  rewrite Nat.mod_small in Hge; [ | easy ].
-  exfalso; apply Hge; clear Hge.
-  unfold nA, nB.
+  rewrite Nat.mod_small in HH; [ | easy ].
+  apply Nat.nlt_ge in HH.
+  exfalso; apply HH; clear HH.
+  unfold nA.
 ...
   rewrite summation_mul_distr_r; simpl.
   rewrite summation_eq_compat with (h := λ j, u j * rad ^ (n + 0 - j)).
@@ -1768,23 +1788,6 @@ apply numbers_to_digits_eq_compat; clear i.
 intros i.
 unfold fd2n.
 now rewrite Hxy, Hxy'.
-Qed.
-
-Theorem all_A_plus_B_ge_1_true_iff {r : radix} : ∀ i u,
-  (∀ k, A_plus_B_ge_1 i u k = true) ↔
-  ∀ k,
-   rad ^ (rad * (i + 2) + k - i) ≤
-   nA i (rad * (i + 2)) u mod rad ^ (rad * (i + 2) - 1 - i) * rad ^ (k + 1) +
-   nB (rad * (i + 2)) k u.
-Proof.
-intros.
-split.
--intros Hk *.
- specialize (Hk k).
- now apply A_plus_B_ge_1_true_iff, Nat.nlt_ge in Hk.
--intros Hk *.
- specialize (Hk k).
- now apply A_plus_B_ge_1_true_iff, Nat.nlt_ge.
 Qed.
 
 Theorem freal_add_assoc {r : radix} : ∀ x y z,
