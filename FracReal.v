@@ -674,28 +674,20 @@ Definition freal_mul_series {r : radix} a b i :=
 Definition nA {r : radix} (rg := nat_ord_ring) i n u :=
   Σ (j = i + 1, n - 1), u j * rad ^ (n - 1 - j).
 
-Definition nB {r : radix} (rg := nat_ord_ring) n l u :=
-  Σ (j = n, n + l), u j * rad ^ (n + l - j).
+Definition nB {r : radix} n := n * (rad - 1) + rad.
 
-Definition A_plus_B_ge_1 {r : radix} i u l :=
-  let n := rad * (i + 2) in
+Definition A_plus_B_ge_1 {r : radix} i u k :=
+  let n := rad * (i + 2) + k in
   let s := rad ^ (n - 1 - i) in
-  if lt_dec (nA i n u mod s * rad ^ (l + 1) + nB n l u) (rad ^ (n + l - i))
-  then false else true.
-
-...
+  if lt_dec (nA i n u mod s + nB n) s then false else true.
 
 Definition numbers_to_digits {r : radix} u i :=
   match LPO_fst (A_plus_B_ge_1 i u) with
   | inl _ =>
-(* my new hypothesis: should not occur... *)
-digit_0
-(*
       let n := rad * (i + 2) in
       let s := rad ^ (n - 1 - i) in
       let d := u i + nA i n u / s in
       mkdig _ ((d + 1) mod rad) (Nat.mod_upper_bound (d + 1) rad radix_ne_0)
-*)
   | inr (exist _ l _) =>
       let n := rad * (i + l + 2) in
       let s := rad ^ (n - 1 - i) in
@@ -775,29 +767,11 @@ apply summation_eq_compat; intros j Hj.
 now rewrite freal_add_series_comm.
 Qed.
 
-Theorem nB_freal_add_series_comm {r : radix} : ∀ x y n k,
-  nB n k (freal_add_series x y) = nB n k (freal_add_series y x).
-Proof.
-intros.
-unfold nB; simpl.
-apply summation_eq_compat; intros j Hj.
-now rewrite freal_add_series_comm.
-Qed.
-
 Theorem nA_freal_mul_series_comm {r : radix} : ∀ x y i n,
   nA i n (freal_mul_series x y) = nA i n (freal_mul_series y x).
 Proof.
 intros.
 unfold nA; simpl.
-apply summation_eq_compat; intros j Hj.
-now rewrite freal_mul_series_comm.
-Qed.
-
-Theorem nB_freal_mul_series_comm {r : radix} : ∀ x y n k,
-  nB n k (freal_mul_series x y) = nB n k (freal_mul_series y x).
-Proof.
-intros.
-unfold nB; simpl.
 apply summation_eq_compat; intros j Hj.
 now rewrite freal_mul_series_comm.
 Qed.
@@ -808,7 +782,7 @@ Theorem A_plus_B_ge_1_freal_add_series_comm {r : radix} : ∀ x y i k,
 Proof.
 intros.
 unfold A_plus_B_ge_1.
-now rewrite nA_freal_add_series_comm, nB_freal_add_series_comm.
+now rewrite nA_freal_add_series_comm.
 Qed.
 
 Theorem A_plus_B_ge_1_freal_mul_series_comm {r : radix} : ∀ x y i k,
@@ -817,7 +791,7 @@ Theorem A_plus_B_ge_1_freal_mul_series_comm {r : radix} : ∀ x y i k,
 Proof.
 intros.
 unfold A_plus_B_ge_1.
-now rewrite nA_freal_mul_series_comm, nB_freal_mul_series_comm.
+now rewrite nA_freal_mul_series_comm.
 Qed.
 
 Theorem freal_add_to_seq_i_comm {r : radix} : ∀ x y i,
@@ -1068,18 +1042,6 @@ intros j Hj.
 apply Nat.mul_add_distr_r.
 Qed.
 
-Theorem nB_freal_add_series {r : radix} : ∀ x y n k,
-  nB n k (freal_add_series x y) = nB n k (fd2n x) + nB n k (fd2n y).
-Proof.
-intros.
-unfold nB; simpl.
-unfold freal_add_series, sequence_add.
-rewrite <- summation_add_distr; simpl.
-apply summation_eq_compat.
-intros j Hj.
-apply Nat.mul_add_distr_r.
-Qed.
-
 Theorem nA_freal_add_series_0_l {r : radix} : ∀ x i n,
   nA i n (freal_add_series 0 x) = nA i n (fd2n x).
 Proof.
@@ -1157,27 +1119,6 @@ apply Nat.le_add_le_sub_l.
 apply Hu; lia.
 Qed.
 
-Theorem nB_dig_seq_ub {r : radix} : 0 < rad → ∀ u,
-  (∀ i, u i < rad) → ∀ n k, nB n k u < rad ^ S k.
-Proof.
-intros Hr u Hu n k.
-unfold nB.
-rewrite summation_rtl.
-rewrite summation_shift; [ | lia ].
-rewrite Nat.add_comm, Nat.add_sub.
-rewrite power_summation; [ | easy ].
-unfold lt; simpl.
-apply -> Nat.succ_le_mono.
-rewrite summation_mul_distr_l.
-apply (@summation_le_compat _ nat_ord_ring).
-intros j Hj.
-replace (k + n + n - (n + j)) with (k + n - j) by lia.
-replace (k + n - (k + n - j)) with j by lia.
-apply Nat.mul_le_mono_nonneg_r; [ lia | ].
-apply Nat.le_add_le_sub_l.
-apply Hu.
-Qed.
-
 Theorem rad_pow_succ_gt_1 {r : radix} : 1 < rad → ∀ k, 1 < rad ^ S k.
 Proof.
 intros Hr *.
@@ -1232,6 +1173,47 @@ rewrite summation_eq_compat with (h := λ j, (rad - 1) * rad ^ (n - 1 - j)).
   rewrite Nat.mul_0_r; simpl; lia.
 Qed.
 
+Theorem nA_eq_compat {r : radix} : ∀ i n u v,
+  (∀ j, i + 1 ≤ j ≤ n - 1 → u j = v j)
+  → nA i n u = nA i n v.
+Proof.
+intros * Hfg *.
+unfold nA.
+apply summation_eq_compat.
+intros j Hj.
+now rewrite Hfg.
+Qed.
+
+Theorem A_plus_B_ge_1_eq_compat {r : radix} : ∀ i f g,
+  (∀ i, f i = g i) → ∀ k, A_plus_B_ge_1 i f k = A_plus_B_ge_1 i g k.
+Proof.
+intros * Hfg *.
+unfold A_plus_B_ge_1.
+now erewrite nA_eq_compat.
+Qed.
+
+Theorem A_plus_B_ge_1_false_iff {r : radix} : ∀ i u k,
+  let n := rad * (i + 2) + k in
+  let s := rad ^ (n - 1 - i) in
+  A_plus_B_ge_1 i u k = false ↔ nA i n u mod s + nB n < s.
+Proof.
+intros.
+unfold A_plus_B_ge_1.
+fold n s.
+now destruct (lt_dec (nA i n u mod s + nB n) s).
+Qed.
+
+Theorem A_plus_B_ge_1_true_iff {r : radix} : ∀ i u k,
+  let n := rad * (i + 2) + k in
+  let s := rad ^ (n - 1 - i) in
+  A_plus_B_ge_1 i u k = true ↔ ¬ nA i n u mod s + nB n < s.
+Proof.
+intros.
+unfold A_plus_B_ge_1.
+fold n s.
+now destruct (lt_dec (nA i n u mod s + nB n) s).
+Qed.
+
 Theorem numbers_to_digits_id {r : radix} : ∀ u (Hur : ∀ j, u j < rad) i,
   numbers_to_digits u i = mkdig _ (u i) (Hur i).
 Proof.
@@ -1240,11 +1222,10 @@ unfold numbers_to_digits.
 destruct (LPO_fst (A_plus_B_ge_1 i u)) as [H| H].
 -specialize (H 0) as HH.
  unfold A_plus_B_ge_1 in HH; simpl in HH.
- rewrite Nat.mul_1_r, Nat.add_0_r in HH.
+ rewrite Nat.add_0_r in HH.
  remember (rad * (i + 2)) as n eqn:Hn.
  remember (rad ^ (n - 1 - i)) as s eqn:Hs.
- destruct (lt_dec (nA i n u mod s * rad + nB n 0 u) (rad ^ (n - i)))
-   as [| Hge]; [ easy | clear HH ].
+ destruct (lt_dec (nA i n u mod s + nB n) s) as [| Hge]; [ easy | clear HH ].
  assert (Hin : i + 1 ≤ n - 1).
  +subst n; specialize radix_ge_2 as Hr.
   destruct rad as [| rd]; [ easy | simpl; lia ].
@@ -1255,6 +1236,7 @@ destruct (LPO_fst (A_plus_B_ge_1 i u)) as [H| H].
   rewrite Nat.mod_small in Hge; [ | easy ].
   exfalso; apply Hge; clear Hge.
   unfold nA, nB.
+...
   rewrite summation_mul_distr_r; simpl.
   rewrite summation_eq_compat with (h := λ j, u j * rad ^ (n + 0 - j)).
   *set (rd := nat_ord_ring_def).
@@ -1672,64 +1654,6 @@ intros * Hk *.
 specialize (Hk k).
 apply has_same_digits_true_iff in Hk.
 now apply digit_eq_eq.
-Qed.
-
-Theorem nA_eq_compat {r : radix} : ∀ i n u v,
-  (∀ j, i + 1 ≤ j ≤ n - 1 → u j = v j)
-  → nA i n u = nA i n v.
-Proof.
-intros * Hfg *.
-unfold nA.
-apply summation_eq_compat.
-intros j Hj.
-now rewrite Hfg.
-Qed.
-
-Theorem nB_eq_compat {r : radix} : ∀ n k u v,
-  (∀ i, u i = v i)
-  → nB n k u = nB n k v.
-Proof.
-intros * Hfg *.
-unfold nB.
-apply summation_eq_compat.
-intros j Hj.
-now rewrite Hfg.
-Qed.
-
-Theorem A_plus_B_ge_1_eq_compat {r : radix} : ∀ i f g,
-  (∀ i, f i = g i) → ∀ k, A_plus_B_ge_1 i f k = A_plus_B_ge_1 i g k.
-Proof.
-intros * Hfg *.
-unfold A_plus_B_ge_1.
-erewrite nA_eq_compat; [ | easy ].
-erewrite nB_eq_compat; [ | easy ].
-easy.
-Qed.
-
-Theorem A_plus_B_ge_1_false_iff {r : radix} : ∀ i u k,
-  let n := rad * (i + 2) in
-  let s := rad ^ (n - 1 - i) in
-  A_plus_B_ge_1 i u k = false ↔
-  nA i n u mod s * rad ^ (k + 1) + nB n k u < rad ^ (n + k - i).
-Proof.
-intros.
-unfold A_plus_B_ge_1.
-fold n s.
-now destruct
-  (lt_dec (nA i n u mod s * rad ^ (k + 1) + nB n k u) (rad ^ (n + k - i))).
-Qed.
-
-Theorem A_plus_B_ge_1_true_iff {r : radix} : ∀ i u k,
-  let n := rad * (i + 2) in
-  let s := rad ^ (n - 1 - i) in
-  A_plus_B_ge_1 i u k = true ↔
-  ¬ nA i n u mod s * rad ^ (k + 1) + nB n k u < rad ^ (n + k - i).
-Proof.
-intros.
-unfold A_plus_B_ge_1.
-fold n s.
-now destruct
-  (lt_dec (nA i n u mod s * rad ^ (k + 1) + nB n k u) (rad ^ (n + k - i))).
 Qed.
 
 Theorem numbers_to_digits_eq_compat {r : radix} : ∀ f g,
