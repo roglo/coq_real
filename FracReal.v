@@ -1857,16 +1857,23 @@ split.
  now apply A_plus_B_ge_1_true_iff, Nat.nlt_ge.
 Qed.
 
-(* I think this is true *)
+(* I think this is true but not sure *)
 Theorem all_A_plus_B_ge_1_all_9 {r : radix} : ∀ u i,
   (∀ k, A_plus_B_ge_1 i u k = true)
-  → ∃ j, ∀ k, j ≤ k → dig (numbers_to_digits u k) = rad - 1.
+  → ∀ k, i ≤ k → dig (numbers_to_digits u k) = rad - 1.
 Proof.
-intros * Hu.
+intros * Hu * Hik.
 specialize (proj1 (all_A_plus_B_ge_1_true_iff i u) Hu) as H.
+clear Hu.
 remember (rad * (i + 2)) as n.
 remember (rad ^ (n - i - 1)) as s.
 move s before n.
+unfold numbers_to_digits.
+destruct (LPO_fst (A_plus_B_ge_1 k u)) as [H1| H1].
+-simpl.
+ admit.
+-destruct H1 as (j & Hjj & Hj); simpl.
+ unfold A_plus_B_ge_1 in Hj.
 ...
 
 Theorem freal_add_assoc {r : radix} : ∀ x y z,
