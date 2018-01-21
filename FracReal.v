@@ -1336,6 +1336,7 @@ split.
  replace (i + (j - i)) with j in H1 by lia.
  set (n := rad * (j + 2)) in H1.
  set (s := rad ^ (n - i - 1)) in H1.
+...
  assert (Hs : s ≠ 0) by now apply Nat.pow_nonzero.
  specialize (Nat.mod_upper_bound (nA i n u) s Hs) as H2.
  apply Nat.nlt_ge in H1.
@@ -1355,7 +1356,15 @@ split.
    unfold nA in H1.
    rewrite summation_shift in H1.
    replace (n - 1 - (i + 1)) with m in H1 by lia.
-...
+(*
+   assert (i + 1 + j ≤ m). {
+     apply Nat.succ_le_mono.
+     rewrite <- Hm; unfold n.
+     specialize radix_ge_2 as Hr.
+     destruct rad as [| rr]; [ lia | ].
+     destruct rr; [ lia | ].
+simpl.
+*)
 
    clear Hm s Hs.
    induction m.
