@@ -1285,11 +1285,12 @@ split.
 Qed.
 
 Theorem freal_add_normalize_0_l {r : radix} : ∀ x i,
-  freal_add_to_seq (freal_normalize 0) x i = freal x i.
+  freal_add_to_seq (freal_normalize 0) (freal_normalize x) i =
+  freal (freal_normalize x) i.
 Proof.
 intros.
 unfold freal_add_to_seq.
-set (u := freal_add_series (freal_normalize 0) x).
+set (u := freal_add_series (freal_normalize 0) (freal_normalize x)).
 unfold numbers_to_digits.
 destruct (LPO_fst (A_ge_1 i u)) as [Hku| (m & Hjm & Hm)].
 -apply digit_eq_eq; simpl.
@@ -1300,6 +1301,11 @@ destruct (LPO_fst (A_ge_1 i u)) as [Hku| (m & Hjm & Hm)].
   set (s := rad ^ (n - i - 1)) in Hku.
   destruct (lt_dec (nA i n u mod s + 1) s) as [| Hnk]; [ easy | clear Hku ].
   apply Hnk; clear Hnk.
+unfold u.
+rewrite nA_freal_add_series.
+unfold nA at 1.
+rewrite all_0_summation_0.
+*simpl.
 ...
   apply Nat.le_lt_trans with (m := (s - 1) * rad + nB n 0 u).
   *apply Nat.add_le_mono_r, Nat.mul_le_mono_pos_r; [ easy | ].
