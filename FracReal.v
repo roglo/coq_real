@@ -1308,16 +1308,6 @@ Qed.
 
 Theorem all_A_ge_1_true_iff {r : radix} : ∀ i u,
   (∀ k, A_ge_1 i u k = true) ↔
-  ∀ j, i < j → u j = rad - 1.
-Proof.
-intros.
-split.
--intros Hge * Hij.
-
-...
-
-Theorem all_A_ge_1_true_iff {r : radix} : ∀ i u,
-  (∀ k, A_ge_1 i u k = true) ↔
   ∀ k,
   let n := rad * (i + k + 2) in
   let s := rad ^ (n - i - 1) in
@@ -1333,6 +1323,25 @@ split.
  now apply A_ge_1_true_iff, Nat.nlt_ge.
 Qed.
 
+Theorem norm_all_A_ge_1_true_iff {r : radix} : ∀ i x,
+  (∀ k, A_ge_1 i (fd2n (freal_normalize x)) k = true) ↔
+  ∀ j, i < j → fd2n (freal_normalize x) j = rad - 1.
+Proof.
+intros.
+split.
+-intros Hge * Hij.
+ set (u := fd2n (freal_normalize x)) in Hge |-*.
+ specialize (Hge (j - i)) as H1.
+ apply A_ge_1_true_iff in H1.
+ replace (i + (j - i)) with j in H1 by lia.
+ set (n := rad * (j + 2)) in H1.
+ set (s := rad ^ (n - i - 1)) in H1.
+ assert (Hs : s ≠ 0) by now apply Nat.pow_nonzero.
+ specialize (Nat.mod_upper_bound (nA i n u) s Hs) as H2.
+ apply Nat.nlt_ge in H1.
+ assert (nA i n u mod s = s - 1) by lia.
+...
+
 Theorem freal_add_normalize_0_l {r : radix} : ∀ x i,
   freal_add_to_seq (freal_normalize 0) (freal_normalize x) i =
   freal (freal_normalize x) i.
@@ -1344,7 +1353,10 @@ unfold numbers_to_digits.
 destruct (LPO_fst (A_ge_1 i u)) as [Hku| (m & Hjm & Hm)].
 (**)
 -apply digit_eq_eq; simpl.
- specialize (proj1 (all_A_ge_1_true_iff i u) Hku) as Hsle.
+ specialize (proj1 (norm_all_A_ge_1_true_iff i x)) as Hsle.
+...
+ assert (H1 : ∀ j, i < j → u j = rad - 1). {
+   intros * Hij.
 ...
 set (n := rad * (i + 2)).
 set (s := rad ^ (n - i - 1)).
