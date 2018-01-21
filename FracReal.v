@@ -1339,7 +1339,28 @@ split.
  assert (Hs : s ≠ 0) by now apply Nat.pow_nonzero.
  specialize (Nat.mod_upper_bound (nA i n u) s Hs) as H2.
  apply Nat.nlt_ge in H1.
- assert (nA i n u mod s = s - 1) by lia.
+ assert (H : nA i n u mod s = s - 1) by lia.
+ clear H1 H2; rename H into H1.
+ unfold s in H1 at 2.
+ remember (n - i - 1) as m eqn:Hm.
+ symmetry in Hm.
+ destruct m.
+ +unfold n in Hm.
+  specialize radix_ge_2 as Hr.
+  destruct rad; [ lia | simpl in Hm; lia ].
+ +rewrite power_summation in H1; [ | easy ].
+  rewrite Nat.add_comm, Nat.add_sub in H1.
+  rewrite Nat.mod_small in H1.
+  *rewrite summation_mul_distr_l in H1; simpl in H1.
+   unfold nA in H1.
+   rewrite summation_shift in H1.
+   replace (n - 1 - (i + 1)) with m in H1 by lia.
+...
+
+   clear Hm s Hs.
+   induction m.
+  --do 2 rewrite summation_only_one in H1.
+
 ...
 
 Theorem freal_add_normalize_0_l {r : radix} : ∀ x i,
