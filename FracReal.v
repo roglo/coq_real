@@ -1284,6 +1284,55 @@ split.
  now rewrite P in Q.
 Qed.
 
+Theorem A_ge_1_false_iff {r : radix} : ∀ i u k,
+  let n := rad * (i + k + 2) in
+  let s := rad ^ (n - i - 1) in
+  A_ge_1 i u k = false ↔ nA i n u mod s + 1 < s.
+Proof.
+intros.
+unfold A_ge_1.
+fold n s.
+now destruct (lt_dec (nA i n u mod s + 1) s).
+Qed.
+
+Theorem A_ge_1_true_iff {r : radix} : ∀ i u k,
+  let n := rad * (i + k + 2) in
+  let s := rad ^ (n - i - 1) in
+  A_ge_1 i u k = true ↔ ¬ nA i n u mod s + 1 < s.
+Proof.
+intros.
+unfold A_ge_1.
+fold n s.
+now destruct (lt_dec (nA i n u mod s + 1) s).
+Qed.
+
+Theorem all_A_ge_1_true_iff {r : radix} : ∀ i u,
+  (∀ k, A_ge_1 i u k = true) ↔
+  ∀ j, i < j → u j = rad - 1.
+Proof.
+intros.
+split.
+-intros Hge * Hij.
+
+...
+
+Theorem all_A_ge_1_true_iff {r : radix} : ∀ i u,
+  (∀ k, A_ge_1 i u k = true) ↔
+  ∀ k,
+  let n := rad * (i + k + 2) in
+  let s := rad ^ (n - i - 1) in
+  s ≤ nA i n u mod s + 1.
+Proof.
+intros.
+split.
+-intros Hk *.
+ specialize (Hk k).
+ now apply A_ge_1_true_iff, Nat.nlt_ge in Hk.
+-intros Hk *.
+ specialize (Hk k).
+ now apply A_ge_1_true_iff, Nat.nlt_ge.
+Qed.
+
 Theorem freal_add_normalize_0_l {r : radix} : ∀ x i,
   freal_add_to_seq (freal_normalize 0) (freal_normalize x) i =
   freal (freal_normalize x) i.
@@ -1293,7 +1342,27 @@ unfold freal_add_to_seq.
 set (u := freal_add_series (freal_normalize 0) (freal_normalize x)).
 unfold numbers_to_digits.
 destruct (LPO_fst (A_ge_1 i u)) as [Hku| (m & Hjm & Hm)].
+(**)
 -apply digit_eq_eq; simpl.
+ specialize (proj1 (all_A_ge_1_true_iff i u) Hku) as Hsle.
+...
+set (n := rad * (i + 2)).
+set (s := rad ^ (n - i - 1)).
+unfold digit_sequence_normalize.
+destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H1| H1].
+*destruct (lt_dec (S (d2n (freal x) i)) rad) as [H2| H2].
+--simpl.
+
+...
++set (n := rad * (i + 2)).
+set (s := rad ^ (n - i - 1)).
+unfold digit_sequence_normalize.
+destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H1| H1].
+*destruct (lt_dec (S (d2n (freal x) i)) rad) as [H2| H2].
+--simpl.
+Search A_ge_1.
+
+...
  +exfalso; specialize (Hku 0).
   unfold A_ge_1 in Hku.
   rewrite Nat.add_0_r in Hku.
@@ -1572,32 +1641,6 @@ erewrite nB_eq_compat; [ | easy ].
 easy.
 Qed.
 
-Theorem A_ge_1_false_iff {r : radix} : ∀ i u k,
-  let n := rad * (i + 2) in
-  let s := rad ^ (n - i - 1) in
-  A_ge_1 i u k = false ↔
-  nA i n u mod s * rad ^ (k + 1) + nB n k u < rad ^ (n - i + k).
-Proof.
-intros.
-unfold A_ge_1.
-fold n s.
-now destruct
-  (lt_dec (nA i n u mod s * rad ^ (k + 1) + nB n k u) (rad ^ (n - i + k))).
-Qed.
-
-Theorem A_ge_1_true_iff {r : radix} : ∀ i u k,
-  let n := rad * (i + 2) in
-  let s := rad ^ (n - i - 1) in
-  A_ge_1 i u k = true ↔
-  ¬ nA i n u mod s * rad ^ (k + 1) + nB n k u < rad ^ (n - i + k).
-Proof.
-intros.
-unfold A_ge_1.
-fold n s.
-now destruct
-  (lt_dec (nA i n u mod s * rad ^ (k + 1) + nB n k u) (rad ^ (n - i + k))).
-Qed.
-
 Theorem numbers_to_digits_eq_compat {r : radix} : ∀ f g,
   (∀ i, f i = g i) → ∀ i,
   numbers_to_digits f i = numbers_to_digits g i.
@@ -1710,23 +1753,6 @@ apply numbers_to_digits_eq_compat; clear i.
 intros i.
 unfold fd2n.
 now rewrite Hxy, Hxy'.
-Qed.
-
-Theorem all_A_ge_1_true_iff {r : radix} : ∀ i u,
-  (∀ k, A_ge_1 i u k = true) ↔
-  ∀ k,
-   rad ^ (rad * (i + 2) - i + k) ≤
-   nA i (rad * (i + 2)) u mod rad ^ (rad * (i + 2) - i - 1) * rad ^ (k + 1) +
-   nB (rad * (i + 2)) k u.
-Proof.
-intros.
-split.
--intros Hk *.
- specialize (Hk k).
- now apply A_ge_1_true_iff, Nat.nlt_ge in Hk.
--intros Hk *.
- specialize (Hk k).
- now apply A_ge_1_true_iff, Nat.nlt_ge.
 Qed.
 
 (* I think this is true but not sure *)
