@@ -674,17 +674,13 @@ Definition freal_mul_series {r : radix} a b i :=
 Definition nA {r : radix} (rg := nat_ord_ring) i n u :=
   Σ (j = i + 1, n - 1), u j * rad ^ (n - 1 - j).
 
-Definition nB {r : radix} (rg := nat_ord_ring) n l u :=
-  Σ (j = n, n + l), u j * rad ^ (n + l - j).
-
-Definition A_plus_B_ge_1 {r : radix} i u l :=
-  let n := rad * (i + 2) in
+Definition A_ge_1 {r : radix} i u k :=
+  let n := rad * (i + k + 2) in
   let s := rad ^ (n - i - 1) in
-  if lt_dec (nA i n u mod s * rad ^ (l + 1) + nB n l u) (rad ^ (n - i + l))
-  then false else true.
+  if lt_dec (nA i n u mod s + 1) s then false else true.
 
 Definition numbers_to_digits {r : radix} u i :=
-  match LPO_fst (A_plus_B_ge_1 i u) with
+  match LPO_fst (A_ge_1 i u) with
   | inl _ =>
       let n := rad * (i + 2) in
       let s := rad ^ (n - i - 1) in
@@ -769,15 +765,6 @@ apply summation_eq_compat; intros j Hj.
 now rewrite freal_add_series_comm.
 Qed.
 
-Theorem nB_freal_add_series_comm {r : radix} : ∀ x y n k,
-  nB n k (freal_add_series x y) = nB n k (freal_add_series y x).
-Proof.
-intros.
-unfold nB; simpl.
-apply summation_eq_compat; intros j Hj.
-now rewrite freal_add_series_comm.
-Qed.
-
 Theorem nA_freal_mul_series_comm {r : radix} : ∀ x y i n,
   nA i n (freal_mul_series x y) = nA i n (freal_mul_series y x).
 Proof.
@@ -787,31 +774,22 @@ apply summation_eq_compat; intros j Hj.
 now rewrite freal_mul_series_comm.
 Qed.
 
-Theorem nB_freal_mul_series_comm {r : radix} : ∀ x y n k,
-  nB n k (freal_mul_series x y) = nB n k (freal_mul_series y x).
+Theorem A_ge_1_freal_add_series_comm {r : radix} : ∀ x y i k,
+  A_ge_1 i (freal_add_series x y) k =
+  A_ge_1 i (freal_add_series y x) k.
 Proof.
 intros.
-unfold nB; simpl.
-apply summation_eq_compat; intros j Hj.
-now rewrite freal_mul_series_comm.
+unfold A_ge_1.
+now rewrite nA_freal_add_series_comm.
 Qed.
 
-Theorem A_plus_B_ge_1_freal_add_series_comm {r : radix} : ∀ x y i k,
-  A_plus_B_ge_1 i (freal_add_series x y) k =
-  A_plus_B_ge_1 i (freal_add_series y x) k.
+Theorem A_ge_1_freal_mul_series_comm {r : radix} : ∀ x y i k,
+  A_ge_1 i (freal_mul_series x y) k =
+  A_ge_1 i (freal_mul_series y x) k.
 Proof.
 intros.
-unfold A_plus_B_ge_1.
-now rewrite nA_freal_add_series_comm, nB_freal_add_series_comm.
-Qed.
-
-Theorem A_plus_B_ge_1_freal_mul_series_comm {r : radix} : ∀ x y i k,
-  A_plus_B_ge_1 i (freal_mul_series x y) k =
-  A_plus_B_ge_1 i (freal_mul_series y x) k.
-Proof.
-intros.
-unfold A_plus_B_ge_1.
-now rewrite nA_freal_mul_series_comm, nB_freal_mul_series_comm.
+unfold A_ge_1.
+now rewrite nA_freal_mul_series_comm.
 Qed.
 
 Theorem freal_add_to_seq_i_comm {r : radix} : ∀ x y i,
@@ -821,18 +799,18 @@ intros.
 unfold freal_add_to_seq, numbers_to_digits.
 remember (freal_add_series x y) as xy.
 remember (freal_add_series y x) as yx.
-destruct (LPO_fst (A_plus_B_ge_1 i xy)) as [Hxy| Hxy].
+destruct (LPO_fst (A_ge_1 i xy)) as [Hxy| Hxy].
 -rewrite Heqxy, freal_add_series_comm, <- Heqyx.
- destruct (LPO_fst (A_plus_B_ge_1 i yx)) as [Hyx| Hyx].
+ destruct (LPO_fst (A_ge_1 i yx)) as [Hyx| Hyx].
  +now rewrite nA_freal_add_series_comm, <- Heqyx.
 
  +destruct Hyx as (k & Hjk & Hk).
-  rewrite Heqyx, A_plus_B_ge_1_freal_add_series_comm, <- Heqxy in Hk.
+  rewrite Heqyx, A_ge_1_freal_add_series_comm, <- Heqxy in Hk.
   now rewrite Hxy in Hk.
 
 -destruct Hxy as (k & Hjk & Hk).
- rewrite Heqxy, A_plus_B_ge_1_freal_add_series_comm, <- Heqyx in Hk.
- destruct (LPO_fst (A_plus_B_ge_1 i yx)) as [Hyx| Hyx].
+ rewrite Heqxy, A_ge_1_freal_add_series_comm, <- Heqyx in Hk.
+ destruct (LPO_fst (A_ge_1 i yx)) as [Hyx| Hyx].
  +now rewrite Hyx in Hk.
 
  +destruct Hyx as (l & Hjl & Hl).
@@ -843,7 +821,7 @@ destruct (LPO_fst (A_plus_B_ge_1 i xy)) as [Hxy| Hxy].
    rewrite nA_freal_add_series_comm, <- Heqyx.
    now subst k.
   *apply Hjk in Hkl.
-   rewrite Heqxy, A_plus_B_ge_1_freal_add_series_comm in Hkl.
+   rewrite Heqxy, A_ge_1_freal_add_series_comm in Hkl.
    now rewrite <- Heqyx, Hl in Hkl.
 Qed.
 
@@ -854,16 +832,16 @@ intros.
 unfold freal_mul_to_seq, numbers_to_digits.
 remember (freal_mul_series x y) as xy.
 remember (freal_mul_series y x) as yx.
-destruct (LPO_fst (A_plus_B_ge_1 i xy)) as [Hxy| Hxy].
+destruct (LPO_fst (A_ge_1 i xy)) as [Hxy| Hxy].
 -rewrite Heqxy, freal_mul_series_comm, <- Heqyx.
- destruct (LPO_fst (A_plus_B_ge_1 i yx)) as [Hyx| Hyx].
+ destruct (LPO_fst (A_ge_1 i yx)) as [Hyx| Hyx].
  +now rewrite nA_freal_mul_series_comm, <- Heqyx.
  +destruct Hyx as (k & Hjk & Hk).
-  rewrite Heqyx, A_plus_B_ge_1_freal_mul_series_comm, <- Heqxy in Hk.
+  rewrite Heqyx, A_ge_1_freal_mul_series_comm, <- Heqxy in Hk.
   now rewrite Hxy in Hk.
 -destruct Hxy as (k & Hjk & Hk).
- rewrite Heqxy, A_plus_B_ge_1_freal_mul_series_comm, <- Heqyx in Hk.
- destruct (LPO_fst (A_plus_B_ge_1 i yx)) as [Hyx| Hyx].
+ rewrite Heqxy, A_ge_1_freal_mul_series_comm, <- Heqyx in Hk.
+ destruct (LPO_fst (A_ge_1 i yx)) as [Hyx| Hyx].
  +now rewrite Hyx in Hk.
  +destruct Hyx as (l & Hjl & Hl).
   destruct (lt_eq_lt_dec k l) as [ [ Hkl | Hkl ] | Hkl ].
@@ -873,7 +851,7 @@ destruct (LPO_fst (A_plus_B_ge_1 i xy)) as [Hxy| Hxy].
    rewrite nA_freal_mul_series_comm, <- Heqyx.
    now subst k.
   *apply Hjk in Hkl.
-   rewrite Heqxy, A_plus_B_ge_1_freal_mul_series_comm in Hkl.
+   rewrite Heqxy, A_ge_1_freal_mul_series_comm in Hkl.
    rewrite <- Heqyx in Hkl.
    now rewrite Hl in Hkl.
 Qed.
@@ -1062,18 +1040,6 @@ intros j Hj.
 apply Nat.mul_add_distr_r.
 Qed.
 
-Theorem nB_freal_add_series {r : radix} : ∀ x y n k,
-  nB n k (freal_add_series x y) = nB n k (fd2n x) + nB n k (fd2n y).
-Proof.
-intros.
-unfold nB; simpl.
-unfold freal_add_series, sequence_add.
-rewrite <- summation_add_distr; simpl.
-apply summation_eq_compat.
-intros j Hj.
-apply Nat.mul_add_distr_r.
-Qed.
-
 Theorem nA_freal_add_series_0_l {r : radix} : ∀ x i n,
   nA i n (freal_add_series 0 x) = nA i n (fd2n x).
 Proof.
@@ -1151,27 +1117,6 @@ apply Nat.le_add_le_sub_l.
 apply Hu; lia.
 Qed.
 
-Theorem nB_dig_seq_ub {r : radix} : 0 < rad → ∀ u,
-  (∀ i, u i < rad) → ∀ n k, nB n k u < rad ^ S k.
-Proof.
-intros Hr u Hu n k.
-unfold nB.
-rewrite summation_rtl.
-rewrite summation_shift; [ | lia ].
-rewrite Nat.add_comm, Nat.add_sub.
-rewrite power_summation; [ | easy ].
-unfold lt; simpl.
-apply -> Nat.succ_le_mono.
-rewrite summation_mul_distr_l.
-apply (@summation_le_compat _ nat_ord_ring).
-intros j Hj.
-replace (k + n + n - (n + j)) with (k + n - j) by lia.
-replace (k + n - (k + n - j)) with j by lia.
-apply Nat.mul_le_mono_nonneg_r; [ lia | ].
-apply Nat.le_add_le_sub_l.
-apply Hu.
-Qed.
-
 Theorem rad_pow_succ_gt_1 {r : radix} : 1 < rad → ∀ k, 1 < rad ^ S k.
 Proof.
 intros Hr *.
@@ -1224,84 +1169,6 @@ rewrite summation_eq_compat with (h := λ j, (rad - 1) * rad ^ (n - 1 - j)).
   replace (n - i - 1) with 0 by lia.
   rewrite summation_empty; [ | lia ].
   rewrite Nat.mul_0_r; simpl; lia.
-Qed.
-
-Theorem numbers_to_digits_id {r : radix} : ∀ u (Hur : ∀ j, u j < rad) i,
-  numbers_to_digits u i = mkdig _ (u i) (Hur i).
-Proof.
-intros.
-unfold numbers_to_digits.
-destruct (LPO_fst (A_plus_B_ge_1 i u)) as [H| H].
--specialize (H 0) as HH.
- unfold A_plus_B_ge_1 in HH; simpl in HH.
- rewrite Nat.mul_1_r, Nat.add_0_r in HH.
- remember (rad * (i + 2)) as n eqn:Hn.
- remember (rad ^ (n - i - 1)) as s eqn:Hs.
- destruct (lt_dec (nA i n u mod s * rad + nB n 0 u) (rad ^ (n - i)))
-   as [| Hge]; [ easy | clear HH ].
- assert (Hin : i + 1 ≤ n - 1).
- +subst n; specialize radix_ge_2 as Hr.
-  destruct rad as [| rd]; [ easy | simpl; lia ].
- +assert (Hir : ∀ j, i + 1 ≤ j ≤ n - 1 → u j < rad) by (intros; apply Hur).
-  specialize radix_gt_0 as Hr.
-  specialize (nA_dig_seq_ub Hr u n i Hir Hin) as HnA; clear Hir.
-  rewrite <- Hs in HnA.
-  rewrite Nat.mod_small in Hge; [ | easy ].
-  exfalso; apply Hge; clear Hge.
-  unfold nA, nB.
-  rewrite summation_mul_distr_r; simpl.
-  rewrite summation_eq_compat with (h := λ j, u j * rad ^ (n + 0 - j)).
-  *set (rd := nat_ord_ring_def).
-   set (rg := nat_ord_ring).
-   replace (summation n) with (summation (S (n - 1))) by (f_equal; lia).
-   rewrite <- summation_ub_add with (k₂ := 1); [ | lia | lia ].
-   rewrite summation_shift; [ | lia ].
-   apply le_lt_trans with
-     (m := Σ (j = 0, n - (i + 1)), (rad - 1) * rad ^ (n - (i + 1 + j))).
-  --rewrite Nat.add_0_r.
-    apply (@summation_le_compat rd).
-    intros j Hj; simpl.
-    unfold NPeano.Nat.le.
-    apply Nat.mul_le_mono_nonneg_r; [ lia | ].
-    apply Nat.le_add_le_sub_r.
-    rewrite Nat.add_1_r.
-    apply Hur.
-  --rewrite summation_rtl.
-    rewrite <- summation_mul_distr_l; simpl.
-    rewrite summation_eq_compat with (h := λ j, rad ^ j).
-   ++apply Nat.add_lt_mono_l with (p := 1).
-     rewrite <- power_summation; [ | easy ].
-     replace (S (n - (i + 1))) with (n - i); lia.
-   ++intros j Hj; f_equal; lia.
-  *intros j Hj.
-   rewrite <- Nat.mul_assoc; f_equal.
-   remember (rad ^ (n - 1 - j)) as a.
-   replace (a * rad) with (a * rad ^ 1) by now rewrite Nat.pow_1_r.
-   subst a; rewrite <- Nat.pow_add_r; f_equal; lia.
--destruct H as (l & Hjk & Hts).
- unfold A_plus_B_ge_1 in Hts.
- remember (rad * (i + 2)) as n eqn:Hn.
- remember (rad ^ (n - i - 1)) as s eqn:Hs.
- destruct
-   (lt_dec (nA i n u mod s * rad ^ (l + 1) + nB n l u)
-      (rad ^ (n - i + l)))
-   as [Hlt| ]; [ clear Hts | easy ].
- apply digit_eq_eq; simpl.
- rewrite Nat.div_small.
- +rewrite Nat.mod_small; [ lia | ].
-  rewrite Nat.add_0_r; apply Hur.
- +apply nA_dig_seq_ub; [ easy | easy | ].
-  destruct rad; [ | simpl; lia ].
-  now specialize (Hur 0).
-Qed.
-
-Theorem dig_numbers_to_digits_id {r : radix} : ∀ u i,
-  (∀ j : nat, u j < rad)
-  → dig (numbers_to_digits u i) = u i.
-Proof.
-intros * Hur.
-specialize (numbers_to_digits_id u Hur i) as H.
-now apply digit_eq_eq in H.
 Qed.
 
 Theorem freal_normalize_0 {r : radix} : ∀ i,
@@ -1424,17 +1291,16 @@ intros.
 unfold freal_add_to_seq.
 set (u := freal_add_series (freal_normalize 0) x).
 unfold numbers_to_digits.
-destruct (LPO_fst (A_plus_B_ge_1 i u)) as [Hku| (m & Hjm & Hm)].
+destruct (LPO_fst (A_ge_1 i u)) as [Hku| (m & Hjm & Hm)].
 -apply digit_eq_eq; simpl.
  +exfalso; specialize (Hku 0).
-  unfold A_plus_B_ge_1 in Hku.
+  unfold A_ge_1 in Hku.
+  rewrite Nat.add_0_r in Hku.
   set (n := rad * (i + 2)) in Hku.
   set (s := rad ^ (n - i - 1)) in Hku.
-  simpl in Hku.
-  rewrite Nat.mul_1_r, Nat.add_0_r in Hku.
-  destruct (lt_dec (nA i n u mod s * rad + nB n 0 u) (rad ^ (n - i)))
-    as [Hnk| Hnk]; [ easy | clear Hku ].
+  destruct (lt_dec (nA i n u mod s + 1) s) as [| Hnk]; [ easy | clear Hku ].
   apply Hnk; clear Hnk.
+...
   apply Nat.le_lt_trans with (m := (s - 1) * rad + nB n 0 u).
   *apply Nat.add_le_mono_r, Nat.mul_le_mono_pos_r; [ easy | ].
    apply Nat.le_add_le_sub_r.
@@ -1690,37 +1556,37 @@ intros j Hj.
 now rewrite Hfg.
 Qed.
 
-Theorem A_plus_B_ge_1_eq_compat {r : radix} : ∀ i f g,
-  (∀ i, f i = g i) → ∀ k, A_plus_B_ge_1 i f k = A_plus_B_ge_1 i g k.
+Theorem A_ge_1_eq_compat {r : radix} : ∀ i f g,
+  (∀ i, f i = g i) → ∀ k, A_ge_1 i f k = A_ge_1 i g k.
 Proof.
 intros * Hfg *.
-unfold A_plus_B_ge_1.
+unfold A_ge_1.
 erewrite nA_eq_compat; [ | easy ].
 erewrite nB_eq_compat; [ | easy ].
 easy.
 Qed.
 
-Theorem A_plus_B_ge_1_false_iff {r : radix} : ∀ i u k,
+Theorem A_ge_1_false_iff {r : radix} : ∀ i u k,
   let n := rad * (i + 2) in
   let s := rad ^ (n - i - 1) in
-  A_plus_B_ge_1 i u k = false ↔
+  A_ge_1 i u k = false ↔
   nA i n u mod s * rad ^ (k + 1) + nB n k u < rad ^ (n - i + k).
 Proof.
 intros.
-unfold A_plus_B_ge_1.
+unfold A_ge_1.
 fold n s.
 now destruct
   (lt_dec (nA i n u mod s * rad ^ (k + 1) + nB n k u) (rad ^ (n - i + k))).
 Qed.
 
-Theorem A_plus_B_ge_1_true_iff {r : radix} : ∀ i u k,
+Theorem A_ge_1_true_iff {r : radix} : ∀ i u k,
   let n := rad * (i + 2) in
   let s := rad ^ (n - i - 1) in
-  A_plus_B_ge_1 i u k = true ↔
+  A_ge_1 i u k = true ↔
   ¬ nA i n u mod s * rad ^ (k + 1) + nB n k u < rad ^ (n - i + k).
 Proof.
 intros.
-unfold A_plus_B_ge_1.
+unfold A_ge_1.
 fold n s.
 now destruct
   (lt_dec (nA i n u mod s * rad ^ (k + 1) + nB n k u) (rad ^ (n - i + k))).
@@ -1733,8 +1599,8 @@ Proof.
 intros * Hfg *.
 unfold numbers_to_digits.
 rewrite Hfg.
-destruct (LPO_fst (A_plus_B_ge_1 i f)) as [Hf| Hf].
--destruct (LPO_fst (A_plus_B_ge_1 i g)) as [Hg| Hg].
+destruct (LPO_fst (A_ge_1 i f)) as [Hf| Hf].
+-destruct (LPO_fst (A_ge_1 i g)) as [Hg| Hg].
  +f_equal; f_equal.
   unfold nA.
   erewrite summation_eq_compat; [ reflexivity | simpl ].
@@ -1743,26 +1609,26 @@ destruct (LPO_fst (A_plus_B_ge_1 i f)) as [Hf| Hf].
  +exfalso.
   destruct Hg as (k & Hjk & H).
   specialize (Hf k).
-  erewrite A_plus_B_ge_1_eq_compat in Hf; [ | easy ].
+  erewrite A_ge_1_eq_compat in Hf; [ | easy ].
   now rewrite H in Hf.
--destruct (LPO_fst (A_plus_B_ge_1 i g)) as [Hg| Hg].
+-destruct (LPO_fst (A_ge_1 i g)) as [Hg| Hg].
  +exfalso.
   destruct Hf as (k & Hjk & H).
   specialize (Hg k).
-  erewrite A_plus_B_ge_1_eq_compat in H; [ | easy ].
+  erewrite A_ge_1_eq_compat in H; [ | easy ].
   now rewrite H in Hg.
  +destruct Hf as (k & Hjk & Hk).
   destruct Hg as (l & Hjl & Hl).
   destruct (lt_eq_lt_dec k l) as [[Hkl| Hkl]| Hkl].
   *specialize (Hjl _ Hkl).
-   erewrite A_plus_B_ge_1_eq_compat in Hk; [ | easy ].
+   erewrite A_ge_1_eq_compat in Hk; [ | easy ].
    now rewrite Hjl in Hk.
   *subst l; apply digit_eq_eq; simpl.
    f_equal; f_equal; f_equal.
    now apply nA_eq_compat.
   *specialize (Hjk _ Hkl).
    apply digit_eq_eq; simpl.
-   erewrite A_plus_B_ge_1_eq_compat in Hjk; [ | easy ].
+   erewrite A_ge_1_eq_compat in Hjk; [ | easy ].
    now rewrite Hl in Hjk.
 Qed.
 
@@ -1840,8 +1706,8 @@ unfold fd2n.
 now rewrite Hxy, Hxy'.
 Qed.
 
-Theorem all_A_plus_B_ge_1_true_iff {r : radix} : ∀ i u,
-  (∀ k, A_plus_B_ge_1 i u k = true) ↔
+Theorem all_A_ge_1_true_iff {r : radix} : ∀ i u,
+  (∀ k, A_ge_1 i u k = true) ↔
   ∀ k,
    rad ^ (rad * (i + 2) - i + k) ≤
    nA i (rad * (i + 2)) u mod rad ^ (rad * (i + 2) - i - 1) * rad ^ (k + 1) +
@@ -1851,29 +1717,34 @@ intros.
 split.
 -intros Hk *.
  specialize (Hk k).
- now apply A_plus_B_ge_1_true_iff, Nat.nlt_ge in Hk.
+ now apply A_ge_1_true_iff, Nat.nlt_ge in Hk.
 -intros Hk *.
  specialize (Hk k).
- now apply A_plus_B_ge_1_true_iff, Nat.nlt_ge.
+ now apply A_ge_1_true_iff, Nat.nlt_ge.
 Qed.
 
 (* I think this is true but not sure *)
-Theorem all_A_plus_B_ge_1_all_9 {r : radix} : ∀ u i,
-  (∀ k, A_plus_B_ge_1 i u k = true)
+Theorem all_A_ge_1_all_9 {r : radix} : ∀ u i,
+  (∀ k, A_ge_1 i u k = true)
   → ∀ k, i ≤ k → dig (numbers_to_digits u k) = rad - 1.
 Proof.
 intros * Hu * Hik.
-specialize (proj1 (all_A_plus_B_ge_1_true_iff i u) Hu) as H.
-clear Hu.
+Print A_ge_1.
+...
+specialize (proj1 (all_A_ge_1_true_iff i u) Hu) as H1.
 remember (rad * (i + 2)) as n.
 remember (rad ^ (n - i - 1)) as s.
 move s before n.
 unfold numbers_to_digits.
-destruct (LPO_fst (A_plus_B_ge_1 k u)) as [H1| H1].
+destruct (LPO_fst (A_ge_1 k u)) as [H2| H2].
 -simpl.
  admit.
--destruct H1 as (j & Hjj & Hj); simpl.
- unfold A_plus_B_ge_1 in Hj.
+-destruct H2 as (j & Hjj & Hj); simpl.
+ destruct (le_dec (k + j) i) as [H2| H2].
+ +specialize (Hu j) as H3.
+  move Hj at bottom.
+  apply A_ge_1_true_iff in H3.
+  apply A_ge_1_false_iff in Hj.
 ...
 
 Theorem freal_add_assoc {r : radix} : ∀ x y z,
@@ -1922,12 +1793,12 @@ remember
   (freal_add_series nz
      (freal_normalize {| freal := freal_add_to_seq ny nx |})) as ayx eqn:Hayx.
 move ayx before ayz.
-destruct (LPO_fst (A_plus_B_ge_1 j ayz)) as [H1| H1].
+destruct (LPO_fst (A_ge_1 j ayz)) as [H1| H1].
 ...
--specialize (proj1 (all_A_plus_B_ge_1_true_iff j ayz) H1) as H.
+-specialize (proj1 (all_A_ge_1_true_iff j ayz) H1) as H.
  clear H1; rename H into H1.
- +destruct (LPO_fst (A_plus_B_ge_1 j ayx)) as [H2| H2].
-  *specialize (proj1 (all_A_plus_B_ge_1_true_iff j ayx) H2) as H.
+ +destruct (LPO_fst (A_ge_1 j ayx)) as [H2| H2].
+  *specialize (proj1 (all_A_ge_1_true_iff j ayx) H2) as H.
    clear H2; rename H into H2.
    apply digit_eq_eq; simpl.
    set (n := rad * (j + 2)).
@@ -2002,8 +1873,8 @@ destruct (LPO_fst (is_9_strict_after nxnyz i)) as [H1| H1].
          remember (freal_add_series ny nx) as ayx eqn:Hayx.
          move ayx before ayz; move Hayx before Hayz.
          move H8 before H6.
-         destruct (LPO_fst (A_plus_B_ge_1 j ayz)) as [H9| H9].
-      ----destruct (LPO_fst (A_plus_B_ge_1 j ayx)) as [H10| H10].
+         destruct (LPO_fst (A_ge_1 j ayz)) as [H9| H9].
+      ----destruct (LPO_fst (A_ge_1 j ayx)) as [H10| H10].
        ++++simpl.
            destruct (LPO_fst (is_9_strict_after (freal x) j)) as [H11| H11].
         ****specialize (is_9_strict_after_all_9 _ _ H11) as H.
