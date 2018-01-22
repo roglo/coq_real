@@ -1367,7 +1367,7 @@ f_equal; f_equal; lia.
     clear n Hn Hm Heqp.
     rename p into n.
     clear - HnA H.
-    revert j n HnA H.
+    revert n HnA j H.
     induction m; intros.
    ++do 2 rewrite summation_only_one in HnA.
      apply Nat.mul_cancel_r in HnA; [ | now apply Nat.pow_nonzero ].
@@ -1381,15 +1381,20 @@ f_equal; f_equal; lia.
       assert (H3 : n - m ≤ j ≤ n) by lia.
       rewrite H1 in HnA.
       apply Nat.add_cancel_r in HnA.
-      now specialize (IHm j n HnA H3) as H4.
-    **idtac.
-...
-    remember (Σ (i = 0, m), fd2n x (n - i) * rad ^ i) as a.
-    remember (Σ (i = 0, m), (rad - 1) * rad ^ i) as b.
-    assert (H1 : a ≤ b ∧ b ≤ a) by lia.
-    clear HnA; subst a b.
-    destruct H1 as (H1, H2).
-    apply Nat.nlt_ge in H2.
+      now specialize (IHm n HnA j H3) as H4.
+    **assert (H2 : fd2n x (n - S m) < rad - 1). {
+        specialize (digit_lt_radix (freal x (n - S m))) as H2.
+        unfold fd2n in H1 |-*; lia.
+      }
+      clear H1; rename H2 into H1.
+      apply Nat.mul_lt_mono_pos_r with (p := rad ^ S m) in H1.
+      2: now apply Nat_pow_ge_1.
+      set (rg := nat_ord_ring).
+      assert
+        (H2 :
+         Σ (i = 0, m), (rad - 1) * rad ^ i <
+         Σ (i = 0, m), fd2n x (n - i) * rad ^ i) by (subst rg; lia).
+      subst rg.
 ...
 
 Theorem norm_all_A_ge_1_true_iff {r : radix} : ∀ i x,
