@@ -1329,7 +1329,7 @@ Theorem freal_eq_sum_pow {r : radix} (rg := nat_ord_ring) : ∀ x k m n,
   → dig (freal x (n - k)) = rad - 1.
 Proof.
 intros * Hkm Hs.
-...
+Abort.
 
 Theorem norm_all_A_ge_1_true_iff {r : radix} : ∀ i x,
   (∀ k, A_ge_1 i (fd2n (freal_normalize x)) k = true) ↔
@@ -1339,6 +1339,8 @@ intros.
 split.
 -intros Hge * Hij.
  set (u := fd2n (freal_normalize x)) in Hge |-*.
+Search A_ge_1.
+...
  specialize (Hge j) as H1.
  apply A_ge_1_true_iff in H1.
  set (n := rad * (i + j + 2)) in H1.
@@ -1383,9 +1385,23 @@ f_equal; f_equal; lia.
       specialize (H2 (n - 1 - j) H3) as H4.
       now replace (n - 1 - (n - 1 - j)) with j in H4 by lia.
     }
-    intros k Hk; subst y n.
+    intros k Hk.
+assert (n - 1 - k ≤ m).
+apply Nat.succ_le_mono.
+rewrite <- Hm.
+unfold n.
+specialize radix_ge_2 as Hr.
+destruct rad as [| rr]; [ easy | ].
+destruct rr; [ lia | ].
+
+...
+
+
+    subst y n.
     remember (rad * (i + j + 2)) as n; clear Heqn.
     remember (freal_normalize x) as y; clear Heqy.
+
+
     clear - Hk H1.
     rename y into x.
     remember (n - 1) as a; clear n Heqa.
