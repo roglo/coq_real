@@ -1477,7 +1477,36 @@ destruct (LPO_fst (A_ge_1 i u)) as [Hku| (m & Hjm & Hm)].
    rewrite freal_normalize_0_all_0, Nat.add_0_l.
    apply digit_lt_radix.
  }
- clear Hku; rename H1 into Hku.
+ specialize (proj1 (all_A_ge_1_true_iff i u H1) Hku) as H2.
+ remember (rad * (i + 2)) as n eqn:Hn.
+ rewrite Nat.div_small.
+Focus 2.
+apply nA_dig_seq_ub; [ easy | intros; apply H1 | subst n ].
+specialize radix_ge_2 as H.
+destruct rad; [ lia | simpl; lia ].
+ +rewrite Nat.add_0_r.
+  destruct (lt_dec (u i + 1) rad) as [H3| H3].
+  *exfalso.
+...
+   unfold u.
+   unfold freal_add_series, sequence_add.
+   rewrite freal_normalize_0_all_0, Nat.add_0_l.
+   unfold freal_normalize, fd2n; simpl.
+   unfold digit_sequence_normalize.
+   destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H4| H4].
+  --destruct (lt_dec (S (d2n (freal x) i)) rad) as [H4| H4].
+   ++exfalso.
+Search is_9_strict_after.
+...
+  --simpl.
+    destruct (lt_dec (u i + 1) rad) as [H3| H3].
+   ++rewrite Nat.mod_small; [ | easy ].
+     rewrite Nat.add_1_r; f_equal.
+     unfold u.
+     unfold freal_add_series, sequence_add.
+     rewrite freal_normalize_0_all_0, Nat.add_0_l.
+     unfold freal_normalize, fd2n; simpl.
+     unfold digit_sequence_normalize.
 
 ...
 set (n := rad * (i + 2)).
