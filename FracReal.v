@@ -1368,20 +1368,21 @@ f_equal; f_equal; lia.
     rename p into n.
     clear - HnA H.
     revert n HnA j H.
-    induction m; intros.
+    induction m as (p, IHm) using lt_wf_rec; intros.
+    destruct p.
    ++do 2 rewrite summation_only_one in HnA.
      apply Nat.mul_cancel_r in HnA; [ | now apply Nat.pow_nonzero ].
      replace j with n by lia.
      now rewrite Nat.sub_0_r in HnA.
    ++rewrite summation_split_last in HnA; [ | lia ].
      rewrite summation_split_last in HnA; [ | lia ].
-     remember (S m) as s; simpl in HnA; subst s.
-     destruct (eq_nat_dec (fd2n x (n - S m)) (rad - 1)) as [H1| H1].
-    **destruct (eq_nat_dec j (n - S m)) as [H2| H2]; [ now rewrite H2 | ].
-      assert (H4 : n - m ≤ j ≤ n) by lia.
+     remember (S p) as s; simpl in HnA; subst s.
+     destruct (eq_nat_dec (fd2n x (n - S p)) (rad - 1)) as [H1| H1].
+    **destruct (eq_nat_dec j (n - S p)) as [H2| H2]; [ now rewrite H2 | ].
+      assert (H4 : n - p ≤ j ≤ n) by lia.
       rewrite H1 in HnA.
       apply Nat.add_cancel_r in HnA.
-      now specialize (IHm n HnA j H4) as H5.
+      apply IHm with (m := p) (n := n); [ lia | easy | easy ].
     **idtac.
 ...
 
