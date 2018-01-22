@@ -1323,10 +1323,11 @@ split.
  now apply A_ge_1_true_iff, Nat.nlt_ge.
 Qed.
 
-Theorem all_A_ge_1_true_iff {r : radix} : ∀ i x,
-  (∀ k, A_ge_1 i (fd2n x) k = true) ↔ ∀ j, i < j → fd2n x j = rad - 1.
+Theorem all_A_ge_1_true_iff {r : radix} : ∀ i u,
+  (∀ k, u k < rad)
+  → (∀ k, A_ge_1 i u k = true) ↔ ∀ j, i < j → u j = rad - 1.
 Proof.
-intros.
+intros * Hu.
 split.
 -intros Hk * Hij.
  specialize (Hk j).
@@ -1335,8 +1336,8 @@ split.
  remember (rad ^ (n - i - 1)) as s eqn:Hs.
  move s before n.
  assert (Hsz : s ≠ 0) by now subst s; apply Nat.pow_nonzero.
- specialize (Nat.mod_upper_bound (nA i n (fd2n x)) s Hsz) as HnA.
- assert (H : nA i n (fd2n x) mod s = s - 1) by lia.
+ specialize (Nat.mod_upper_bound (nA i n u) s Hsz) as HnA.
+ assert (H : nA i n u mod s = s - 1) by lia.
  clear Hk Hsz HnA; rename H into HnA.
  rewrite Nat.mod_small in HnA.
  +remember (n - i - 1) as m eqn:Hm.
@@ -1353,7 +1354,7 @@ split.
    rewrite summation_rtl in HnA.
    rewrite summation_shift in HnA; [ | lia ].
    rewrite summation_eq_compat
-     with (h := λ j, fd2n x (n - 1 - j) * rad ^ j) in HnA.
+     with (h := λ j, u (n - 1 - j) * rad ^ j) in HnA.
   --replace (n - 1 - (i + 1)) with m in HnA by lia.
     assert (n - 1 - m ≤ j ≤ n - 1). {
       split; [ lia | rewrite Hn ].
@@ -1362,18 +1363,19 @@ split.
     remember (n - 1) as p.
     clear n Hn Hm Heqp.
     rename p into n.
-    clear - HnA H.
+    clear - Hu HnA H.
     set (rg := nat_ord_ring).
     assert
       (H1 : ∀ m,
-       Σ (i = 0, m), fd2n x (n - i) * rad ^ i ≤
+       Σ (i = 0, m), u (n - i) * rad ^ i ≤
        Σ (i = 0, m), (rad - 1) * rad ^ i). {
       clear m HnA H; intros .
       subst rg.
       apply (@summation_le_compat nat_ord_ring_def).
       intros i Him; simpl.
       unfold NPeano.Nat.le.
-      apply Nat.mul_le_mono_r, digit_le_pred_radix.
+      apply Nat.mul_le_mono_r.
+      specialize (Hu (n - i)); lia.
     }
     revert n HnA j H H1.
     induction m; intros.
@@ -1384,21 +1386,20 @@ split.
    ++rewrite summation_split_last in HnA; [ | lia ].
      rewrite summation_split_last in HnA; [ | lia ].
      remember (S m) as s; simpl in HnA; subst s.
-     destruct (eq_nat_dec (fd2n x (n - S m)) (rad - 1)) as [H2| H2].
+     destruct (eq_nat_dec (u (n - S m)) (rad - 1)) as [H2| H2].
     **destruct (eq_nat_dec j (n - S m)) as [H3| H3]; [ now rewrite H3 | ].
       assert (H4 : n - m ≤ j ≤ n) by lia.
       rewrite H2 in HnA.
       apply Nat.add_cancel_r in HnA.
       apply IHm with (n := n); [ lia | easy | easy ].
-    **assert (H3 : fd2n x (n - S m) < rad - 1). {
-        specialize (digit_lt_radix (freal x (n - S m))) as H3.
-        unfold fd2n in H2 |-*; lia.
+    **assert (H3 : u (n - S m) < rad - 1). {
+        specialize (Hu (n - S m)) as H3; lia.
       }
       apply Nat.mul_lt_mono_pos_r with (p := rad ^ S m) in H3.
     ---assert
          (H4 :
           Σ (i = 0, m), (rad - 1) * rad ^ i <
-          Σ (i = 0, m), fd2n x (n - i) * rad ^ i) by (subst rg; lia).
+          Σ (i = 0, m), u (n - i) * rad ^ i) by (subst rg; lia).
        subst rg.
        apply Nat.nle_gt in H4.
        exfalso; apply H4.
@@ -1408,7 +1409,7 @@ split.
     replace (n - 1 + (i + 1) - (i + 1 + k)) with (n - 1 - k) by lia.
     f_equal; f_equal; lia.
  +rewrite Hs.
-  apply nA_dig_seq_ub; [ easy | intros; apply digit_lt_radix | ].
+  apply nA_dig_seq_ub; [ easy | intros; apply Hu | ].
   rewrite Hn.
   specialize radix_ge_2 as Hr.
   destruct rad; [ lia | simpl in Hn; lia ].
@@ -1439,66 +1440,25 @@ split.
   *intros j Hj.
    rewrite Hij; [ easy | lia ].
 +rewrite Hs.
-  apply nA_dig_seq_ub; [ easy | intros; apply digit_lt_radix | ].
+  apply nA_dig_seq_ub; [ easy | intros; apply Hu | ].
   rewrite Hn.
   specialize radix_ge_2 as Hr.
   destruct rad; [ lia | simpl in Hn; lia ].
 Qed.
 
-Inspect 1.
-
-...
-
-Theorem norm_all_A_ge_1_true_iff {r : radix} : ∀ i x,
-  (∀ k, A_ge_1 i (fd2n (freal_normalize x)) k = true) ↔
-  ∀ j, i < j → fd2n (freal_normalize x) j = rad - 1.
+Theorem freal_normalize_0_all_0 {r : radix} : ∀ i,
+  fd2n (freal_normalize 0) i = 0.
 Proof.
 intros.
-split.
--intros Hge * Hij.
-(**)
- move j before i.
- set (y := freal_normalize x) in Hge |-*.
- specialize (proj1 (all_A_ge_1_true_iff i (fd2n y)) Hge) as H1.
- clear Hge; rename H1 into Hge; move Hge after Hij.
- specialize (Hge j) as Hj; simpl in Hj.
- remember (rad * (i + j + 2)) as n eqn:Hn.
- remember (rad ^ (n - i - 1)) as s eqn:Hs.
- move s before n.
- assert (Hsz : s ≠ 0) by now subst s; apply Nat.pow_nonzero.
- specialize (Nat.mod_upper_bound (nA i n (fd2n y)) s Hsz) as HnA.
- assert (H : nA i n (fd2n y) mod s = s - 1) by lia.
- clear Hj Hsz HnA; rename H into HnA.
- rewrite Nat.mod_small in HnA.
- +remember (n - i - 1) as m eqn:Hm.
-  symmetry in Hm.
-  destruct m.
-  *rewrite Hn in Hm.
-   specialize radix_ge_2 as Hr.
-   destruct rad; [ lia | simpl in Hm; lia ].
-  *rewrite Hs in HnA.
-   rewrite power_summation in HnA; [ | easy ].
-   rewrite Nat.add_comm, Nat.add_sub in HnA.
-   rewrite summation_mul_distr_l in HnA; simpl in HnA.
-   unfold nA in HnA.
-   rewrite summation_rtl in HnA.
-   rewrite summation_shift in HnA.
-  --rewrite summation_eq_compat
-      with (h := λ j, fd2n y (n - 1 - j) * rad ^ j) in HnA.
-Focus 2.
-intros k Hk.
-replace (n - 1 + (i + 1) - (i + 1 + k)) with (n - 1 - k) by lia.
-f_equal; f_equal; lia.
-    replace (n - 1 - (i + 1)) with m in HnA by lia.
-    assert (n - 1 - m ≤ j ≤ n - 1). {
-      split; [ lia | rewrite Hn ].
-      destruct rad; [ lia | simpl; lia ].
-    }
-    remember (n - 1) as p.
-    clear n Hn Hm Heqp.
-    rename p into n.
-    clear - y HnA H.
-...
+unfold fd2n, freal_normalize; simpl.
+unfold digit_sequence_normalize.
+remember (λ _ : nat, digit_0) as u eqn:Hu.
+destruct (LPO_fst (is_9_strict_after u i)) as [H1| H1]; [ | easy ].
+specialize (H1 0).
+apply is_9_strict_after_true_iff in H1.
+rewrite Hu in H1; unfold d2n in H1; simpl in H1.
+specialize radix_ge_2; lia.
+Qed.
 
 Theorem freal_add_normalize_0_l {r : radix} : ∀ x i,
   freal_add_to_seq (freal_normalize 0) (freal_normalize x) i =
@@ -1509,12 +1469,16 @@ unfold freal_add_to_seq.
 set (u := freal_add_series (freal_normalize 0) (freal_normalize x)).
 unfold numbers_to_digits.
 destruct (LPO_fst (A_ge_1 i u)) as [Hku| (m & Hjm & Hm)].
-(**)
 -apply digit_eq_eq; simpl.
- specialize (proj1 (norm_all_A_ge_1_true_iff i x)) as Hsle.
-...
- assert (H1 : ∀ j, i < j → u j = rad - 1). {
-   intros * Hij.
+ assert (H1 : ∀ k, u k < rad). {
+   intros k.
+   unfold u.
+   unfold freal_add_series, sequence_add.
+   rewrite freal_normalize_0_all_0, Nat.add_0_l.
+   apply digit_lt_radix.
+ }
+ clear Hku; rename H1 into Hku.
+
 ...
 set (n := rad * (i + 2)).
 set (s := rad ^ (n - i - 1)).
