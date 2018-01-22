@@ -1916,6 +1916,9 @@ destruct (LPO_fst (A_ge_1 j ayz)) as [H1| H1].
   assert (H7 : nA j n1 ayz mod s1 = s1 - 1) by lia.
   assert (H8 : nA j n1 ayx mod s1 = s1 - 1) by lia.
   clear H2 H4 H5 H6.
+  rewrite Nat.mod_small in H7.
+Focus 2.
+(* because nA j n1 ayz ≤ 2 s1 - 2, because ayz i ≤ 2(rad-1), because sum  *)
 ...
 
 unfold freal_normalize; simpl.
