@@ -1351,14 +1351,10 @@ split.
    rewrite summation_mul_distr_l in HnA; simpl in HnA.
    unfold nA in HnA.
    rewrite summation_rtl in HnA.
-   rewrite summation_shift in HnA.
-  --rewrite summation_eq_compat
-      with (h := λ j, fd2n x (n - 1 - j) * rad ^ j) in HnA.
-Focus 2.
-intros k Hk.
-replace (n - 1 + (i + 1) - (i + 1 + k)) with (n - 1 - k) by lia.
-f_equal; f_equal; lia.
-    replace (n - 1 - (i + 1)) with m in HnA by lia.
+   rewrite summation_shift in HnA; [ | lia ].
+   rewrite summation_eq_compat
+     with (h := λ j, fd2n x (n - 1 - j) * rad ^ j) in HnA.
+  --replace (n - 1 - (i + 1)) with m in HnA by lia.
     assert (n - 1 - m ≤ j ≤ n - 1). {
       split; [ lia | rewrite Hn ].
       destruct rad; [ lia | simpl; lia ].
@@ -1367,23 +1363,90 @@ f_equal; f_equal; lia.
     clear n Hn Hm Heqp.
     rename p into n.
     clear - HnA H.
-    revert n HnA j H.
-    induction m as (p, IHm) using lt_wf_rec; intros.
-    destruct p.
+    set (rg := nat_ord_ring).
+    assert
+      (H1 : ∀ m,
+       Σ (i = 0, m), fd2n x (n - i) * rad ^ i ≤
+       Σ (i = 0, m), (rad - 1) * rad ^ i). {
+      clear m HnA H; intros .
+      subst rg.
+      apply (@summation_le_compat nat_ord_ring_def).
+      intros i Him; simpl.
+      unfold NPeano.Nat.le.
+      apply Nat.mul_le_mono_r, digit_le_pred_radix.
+    }
+    revert n HnA j H H1.
+    induction m; intros.
    ++do 2 rewrite summation_only_one in HnA.
      apply Nat.mul_cancel_r in HnA; [ | now apply Nat.pow_nonzero ].
      replace j with n by lia.
      now rewrite Nat.sub_0_r in HnA.
    ++rewrite summation_split_last in HnA; [ | lia ].
      rewrite summation_split_last in HnA; [ | lia ].
-     remember (S p) as s; simpl in HnA; subst s.
-     destruct (eq_nat_dec (fd2n x (n - S p)) (rad - 1)) as [H1| H1].
-    **destruct (eq_nat_dec j (n - S p)) as [H2| H2]; [ now rewrite H2 | ].
-      assert (H4 : n - p ≤ j ≤ n) by lia.
-      rewrite H1 in HnA.
+     remember (S m) as s; simpl in HnA; subst s.
+     destruct (eq_nat_dec (fd2n x (n - S m)) (rad - 1)) as [H2| H2].
+    **destruct (eq_nat_dec j (n - S m)) as [H3| H3]; [ now rewrite H3 | ].
+      assert (H4 : n - m ≤ j ≤ n) by lia.
+      rewrite H2 in HnA.
       apply Nat.add_cancel_r in HnA.
-      apply IHm with (m := p) (n := n); [ lia | easy | easy ].
-    **idtac.
+      apply IHm with (n := n); [ lia | easy | easy ].
+    **assert (H3 : fd2n x (n - S m) < rad - 1). {
+        specialize (digit_lt_radix (freal x (n - S m))) as H3.
+        unfold fd2n in H2 |-*; lia.
+      }
+      apply Nat.mul_lt_mono_pos_r with (p := rad ^ S m) in H3.
+    ---assert
+         (H4 :
+          Σ (i = 0, m), (rad - 1) * rad ^ i <
+          Σ (i = 0, m), fd2n x (n - i) * rad ^ i) by (subst rg; lia).
+       subst rg.
+       apply Nat.nle_gt in H4.
+       exfalso; apply H4.
+       apply H1.
+    ---now apply Nat_pow_ge_1.
+  --intros k Hk.
+    replace (n - 1 + (i + 1) - (i + 1 + k)) with (n - 1 - k) by lia.
+    f_equal; f_equal; lia.
+ +rewrite Hs.
+  apply nA_dig_seq_ub; [ easy | intros; apply digit_lt_radix | ].
+  rewrite Hn.
+  specialize radix_ge_2 as Hr.
+  destruct rad; [ lia | simpl in Hn; lia ].
+-intros Hij k.
+ apply A_ge_1_true_iff.
+ apply Nat.nlt_ge.
+ remember (rad * (i + k + 2)) as n eqn:Hn.
+ remember (rad ^ (n - i - 1)) as s eqn:Hs.
+ rewrite Nat.mod_small.
+ +unfold nA.
+  rewrite summation_eq_compat with (h := λ j, (rad - 1) * rad ^ (n - 1 - j)).
+  *rewrite Hs.
+   apply Nat.le_sub_le_add_r.
+   remember (n - i - 1) as m eqn:Hm.
+   symmetry in Hm.
+   destruct m.
+  --rewrite Hn in Hm.
+    specialize radix_ge_2 as Hr.
+    destruct rad; [ lia | simpl in Hm; lia ].
+  --rewrite summation_rtl.
+    rewrite summation_shift; [ | lia ].
+    rewrite summation_eq_compat with (h := λ i, (rad - 1) * (rad ^ i)).
+   ++rewrite power_summation_sub_1; [ | easy ].
+     rewrite <- summation_mul_distr_l; simpl.
+     apply Nat.mul_le_mono_nonneg_l; [ lia | ].
+     now replace (n - 1 - (i + 1)) with m by lia.
+   ++intros; f_equal; f_equal; lia.
+  *intros j Hj.
+   rewrite Hij; [ easy | lia ].
++rewrite Hs.
+  apply nA_dig_seq_ub; [ easy | intros; apply digit_lt_radix | ].
+  rewrite Hn.
+  specialize radix_ge_2 as Hr.
+  destruct rad; [ lia | simpl in Hn; lia ].
+Qed.
+
+Inspect 1.
+
 ...
 
 Theorem norm_all_A_ge_1_true_iff {r : radix} : ∀ i x,
