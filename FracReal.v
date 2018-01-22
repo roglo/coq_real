@@ -1378,23 +1378,11 @@ f_equal; f_equal; lia.
      remember (S m) as s; simpl in HnA; subst s.
      destruct (eq_nat_dec (fd2n x (n - S m)) (rad - 1)) as [H1| H1].
     **destruct (eq_nat_dec j (n - S m)) as [H2| H2]; [ now rewrite H2 | ].
-      assert (H3 : n - m ≤ j ≤ n) by lia.
+      assert (H4 : n - m ≤ j ≤ n) by lia.
       rewrite H1 in HnA.
       apply Nat.add_cancel_r in HnA.
-      now specialize (IHm n HnA j H3) as H4.
-    **assert (H2 : fd2n x (n - S m) < rad - 1). {
-        specialize (digit_lt_radix (freal x (n - S m))) as H2.
-        unfold fd2n in H1 |-*; lia.
-      }
-      clear H1; rename H2 into H1.
-      apply Nat.mul_lt_mono_pos_r with (p := rad ^ S m) in H1.
-      2: now apply Nat_pow_ge_1.
-      set (rg := nat_ord_ring).
-      assert
-        (H2 :
-         Σ (i = 0, m), (rad - 1) * rad ^ i <
-         Σ (i = 0, m), fd2n x (n - i) * rad ^ i) by (subst rg; lia).
-      subst rg.
+      now specialize (IHm n HnA j H4) as H5.
+    **idtac.
 ...
 
 Theorem norm_all_A_ge_1_true_iff {r : radix} : ∀ i x,
