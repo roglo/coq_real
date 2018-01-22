@@ -1307,6 +1307,23 @@ now destruct (lt_dec (nA i n u mod s + 1) s).
 Qed.
 
 Theorem all_A_ge_1_true_iff {r : radix} : ∀ i u,
+  (∀ k, A_ge_1 i u k = true) ↔
+  ∀ k,
+  let n := rad * (i + k + 2) in
+  let s := rad ^ (n - i - 1) in
+  s ≤ nA i n u mod s + 1.
+Proof.
+intros.
+split.
+-intros Hk *.
+ specialize (Hk k).
+ now apply A_ge_1_true_iff, Nat.nlt_ge in Hk.
+-intros Hk *.
+ specialize (Hk k).
+ now apply A_ge_1_true_iff, Nat.nlt_ge.
+Qed.
+
+Theorem all_lt_rad_A_ge_1_true_iff {r : radix} : ∀ i u,
   (∀ k, u k < rad)
   → (∀ k, A_ge_1 i u k = true) ↔ ∀ j, i < j → u j = rad - 1.
 Proof.
@@ -1460,7 +1477,7 @@ destruct (LPO_fst (A_ge_1 i u)) as [Hku| (m & Hjm & Hm)].
    rewrite freal_normalize_0_all_0, Nat.add_0_l.
    apply digit_lt_radix.
  }
- specialize (proj1 (all_A_ge_1_true_iff i u H1) Hku) as H2.
+ specialize (proj1 (all_lt_rad_A_ge_1_true_iff i u H1) Hku) as H2.
  assert (H3 : ∀ j, i < j → fd2n (freal_normalize x) j = rad - 1). {
    intros j Hj.
    specialize (H2 j Hj).
@@ -1877,32 +1894,28 @@ remember
      (freal_normalize {| freal := freal_add_to_seq ny nx |})) as ayx eqn:Hayx.
 move ayx before ayz.
 destruct (LPO_fst (A_ge_1 j ayz)) as [H1| H1].
--assert
-   (H2 : ∀ k,
-    let n := rad * (j + k + 2) in
-    let s := rad ^ (n - j - 1) in
-    s ≤ nA j n ayz mod s + 1). {
-   intros k.
-   specialize (proj1 (A_ge_1_true_iff j ayz k) (H1 k)) as H.
-   now apply Nat.nlt_ge in H.
- }
+-specialize (proj1 (all_A_ge_1_true_iff _ _) H1) as H2.
  clear H1; rename H2 into H1.
  apply digit_eq_eq; simpl.
-...
- specialize (all_A_ge_1_true_iff j ayz) as H.
-(* mmm... not good *)
-...
-
--specialize (proj1 (all_A_ge_1_true_iff j ayz) H1) as H.
- clear H1; rename H into H1.
- +destruct (LPO_fst (A_ge_1 j ayx)) as [H2| H2].
-  *specialize (proj1 (all_A_ge_1_true_iff j ayx) H2) as H.
-   clear H2; rename H into H2.
-   apply digit_eq_eq; simpl.
-   set (n := rad * (j + 2)).
-   set (s := rad ^ (n - j - 1)).
-   setoid_rewrite Nat.add_mod; [ | easy | easy ].
-   f_equal; f_equal.
+ specialize (H1 0) as H2.
+ rewrite Nat.add_0_r in H2; simpl in H2.
+ remember (rad * (j + 2)) as n1 eqn:Hn1.
+ remember (rad ^ (n1 - j - 1)) as s1 eqn:Hs1.
+ move s1 before n1.
+ destruct (LPO_fst (A_ge_1 j ayx)) as [H3| H3].
+ +simpl.
+  specialize (proj1 (all_A_ge_1_true_iff _ _) H3) as H4.
+  clear H3; rename H4 into H3.
+  move H3 before H1.
+  specialize (H3 0) as H4.
+  rewrite Nat.add_0_r in H4.
+  simpl in H4; rewrite <- Hn1, <- Hs1 in H4.
+  assert (Hs : s1 ≠ 0) by (now rewrite Hs1; apply Nat.pow_nonzero).
+  specialize (Nat.mod_upper_bound (nA j n1 ayz) s1 Hs) as H5.
+  specialize (Nat.mod_upper_bound (nA j n1 ayx) s1 Hs) as H6.
+  assert (H7 : nA j n1 ayz mod s1 = s1 - 1) by lia.
+  assert (H8 : nA j n1 ayx mod s1 = s1 - 1) by lia.
+  clear H2 H4 H5 H6.
 ...
 
 unfold freal_normalize; simpl.
