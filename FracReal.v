@@ -1352,14 +1352,22 @@ split.
    rewrite summation_mul_distr_l in H1; simpl in H1.
    rewrite Nat.sub_0_r in H1.
    unfold nA in H1.
+   rewrite summation_rtl in H1.
    rewrite summation_shift in H1.
-  --replace (n - 1 - (i + 1)) with m in H1 by lia.
+  --rewrite summation_eq_compat
+      with (h := λ j, u (n - 1 - j) * rad ^ j) in H1.
+Focus 2.
+intros k Hk.
+replace (n - 1 + (i + 1) - (i + 1 + k)) with (n - 1 - k) by lia.
+f_equal; f_equal; lia.
+    replace (n - 1 - (i + 1)) with m in H1 by lia.
     assert (j ≤ m). {
      apply Nat.succ_le_mono.
      rewrite <- Hm; unfold n.
      specialize radix_ge_2 as Hr.
      destruct rad; [ lia | simpl; lia ].
     }
+...
     destruct m.
    ++now apply Nat.le_0_r in H; subst j.
    ++destruct m.
