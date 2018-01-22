@@ -1877,10 +1877,19 @@ remember
      (freal_normalize {| freal := freal_add_to_seq ny nx |})) as ayx eqn:Hayx.
 move ayx before ayz.
 destruct (LPO_fst (A_ge_1 j ayz)) as [H1| H1].
--idtac.
+-assert
+   (H2 : ∀ k,
+    let n := rad * (j + k + 2) in
+    let s := rad ^ (n - j - 1) in
+    s ≤ nA j n ayz mod s + 1). {
+   intros k.
+   specialize (proj1 (A_ge_1_true_iff j ayz k) (H1 k)) as H.
+   now apply Nat.nlt_ge in H.
+ }
+ clear H1; rename H2 into H1.
+ apply digit_eq_eq; simpl.
+...
  specialize (all_A_ge_1_true_iff j ayz) as H.
-Print freal_add_series.
-Print sequence_add.
 (* mmm... not good *)
 ...
 
