@@ -1367,6 +1367,10 @@ f_equal; f_equal; lia.
      specialize radix_ge_2 as Hr.
      destruct rad; [ lia | simpl; lia ].
     }
+    subst u.
+    set (y := freal_normalize x) in H1 |-*.
+    unfold fd2n in H1 |-*.
+
 ...
     destruct m.
    ++now apply Nat.le_0_r in H; subst j.
