@@ -1360,12 +1360,25 @@ split.
      specialize radix_ge_2 as Hr.
      destruct rad; [ lia | simpl; lia ].
     }
-...
-    clear - Hij H1 H.
-    revert j n Hij H1 H.
-    induction m; intros.
+    destruct m.
    ++now apply Nat.le_0_r in H; subst j.
-   ++idtac.
+   ++destruct m.
+    **destruct j; [ easy | ].
+      subst n.
+      replace j with 0 in * by lia.
+      replace i with 0 in * by lia.
+      specialize radix_ge_2 as HH.
+      destruct rad as [| rr]; [ easy | ].
+      destruct rr; [ lia | easy ].
+    **destruct m.
+    ---subst n.
+       destruct j; [ easy | ].
+       destruct j.
+     +++replace i with 0 in * by lia.
+        specialize radix_ge_2 as HH.
+        destruct rad as [| rr]; [ easy | ].
+        destruct rr; [ lia | easy ].
+     +++destruct j; [ | lia ].
 
 ...
 
