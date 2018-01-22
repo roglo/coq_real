@@ -1306,7 +1306,7 @@ fold n s.
 now destruct (lt_dec (nA i n u mod s + 1) s).
 Qed.
 
-Theorem all_A_ge_1_true_iff {r : radix} : ∀ i u,
+Theorem old_all_A_ge_1_true_iff {r : radix} : ∀ i u,
   (∀ k, A_ge_1 i u k = true) ↔
   ∀ k,
   let n := rad * (i + k + 2) in
@@ -1323,13 +1323,74 @@ split.
  now apply A_ge_1_true_iff, Nat.nlt_ge.
 Qed.
 
-Theorem freal_eq_sum_pow {r : radix} (rg := nat_ord_ring) : ∀ x k m n,
-  0 ≤ k ≤ m
-  → Σ (i = 0, m), dig (freal x (n - i)) * rad ^ i = Σ (i = 0, m), (rad - 1) * rad ^ i
-  → dig (freal x (n - k)) = rad - 1.
+Theorem all_A_ge_1_true_iff {r : radix} : ∀ i x,
+  (∀ k, A_ge_1 i (fd2n x) k = true) ↔ ∀ j, i < j → fd2n x j = rad - 1.
 Proof.
-intros * Hkm Hs.
-Abort.
+intros.
+split.
+-intros Hk * Hij.
+ specialize (Hk j).
+ apply A_ge_1_true_iff, Nat.nlt_ge in Hk.
+ remember (rad * (i + j + 2)) as n eqn:Hn.
+ remember (rad ^ (n - i - 1)) as s eqn:Hs.
+ move s before n.
+ assert (Hsz : s ≠ 0) by now subst s; apply Nat.pow_nonzero.
+ specialize (Nat.mod_upper_bound (nA i n (fd2n x)) s Hsz) as HnA.
+ assert (H : nA i n (fd2n x) mod s = s - 1) by lia.
+ clear Hk Hsz HnA; rename H into HnA.
+ rewrite Nat.mod_small in HnA.
+ +remember (n - i - 1) as m eqn:Hm.
+  symmetry in Hm.
+  destruct m.
+  *rewrite Hn in Hm.
+   specialize radix_ge_2 as Hr.
+   destruct rad; [ lia | simpl in Hm; lia ].
+  *rewrite Hs in HnA.
+   rewrite power_summation in HnA; [ | easy ].
+   rewrite Nat.add_comm, Nat.add_sub in HnA.
+   rewrite summation_mul_distr_l in HnA; simpl in HnA.
+   unfold nA in HnA.
+   rewrite summation_rtl in HnA.
+   rewrite summation_shift in HnA.
+  --rewrite summation_eq_compat
+      with (h := λ j, fd2n x (n - 1 - j) * rad ^ j) in HnA.
+Focus 2.
+intros k Hk.
+replace (n - 1 + (i + 1) - (i + 1 + k)) with (n - 1 - k) by lia.
+f_equal; f_equal; lia.
+    replace (n - 1 - (i + 1)) with m in HnA by lia.
+    assert (n - 1 - m ≤ j ≤ n - 1). {
+      split; [ lia | rewrite Hn ].
+      destruct rad; [ lia | simpl; lia ].
+    }
+    remember (n - 1) as p.
+    clear n Hn Hm Heqp.
+    rename p into n.
+    clear - HnA H.
+    revert j n HnA H.
+    induction m; intros.
+   ++do 2 rewrite summation_only_one in HnA.
+     apply Nat.mul_cancel_r in HnA; [ | now apply Nat.pow_nonzero ].
+     replace j with n by lia.
+     now rewrite Nat.sub_0_r in HnA.
+   ++rewrite summation_split_last in HnA; [ | lia ].
+     rewrite summation_split_last in HnA; [ | lia ].
+     remember (S m) as s; simpl in HnA; subst s.
+     destruct (eq_nat_dec (fd2n x (n - S m)) (rad - 1)) as [H1| H1].
+    **destruct (eq_nat_dec j (n - S m)) as [H2| H2]; [ now rewrite H2 | ].
+      assert (H3 : n - m ≤ j ≤ n) by lia.
+      rewrite H1 in HnA.
+      apply Nat.add_cancel_r in HnA.
+      now specialize (IHm j n HnA H3) as H4.
+    **idtac.
+...
+    remember (Σ (i = 0, m), fd2n x (n - i) * rad ^ i) as a.
+    remember (Σ (i = 0, m), (rad - 1) * rad ^ i) as b.
+    assert (H1 : a ≤ b ∧ b ≤ a) by lia.
+    clear HnA; subst a b.
+    destruct H1 as (H1, H2).
+    apply Nat.nlt_ge in H2.
+...
 
 Theorem norm_all_A_ge_1_true_iff {r : radix} : ∀ i x,
   (∀ k, A_ge_1 i (fd2n (freal_normalize x)) k = true) ↔
