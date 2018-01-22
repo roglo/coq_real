@@ -1323,6 +1323,14 @@ split.
  now apply A_ge_1_true_iff, Nat.nlt_ge.
 Qed.
 
+Theorem freal_eq_sum_pow {r : radix} (rg := nat_ord_ring) : ∀ x k m n,
+  0 ≤ k ≤ m
+  → Σ (i = 0, m), dig (freal x (n - i)) * rad ^ i = Σ (i = 0, m), (rad - 1) * rad ^ i
+  → dig (freal x (n - k)) = rad - 1.
+Proof.
+intros * Hkm Hs.
+...
+
 Theorem norm_all_A_ge_1_true_iff {r : radix} : ∀ i x,
   (∀ k, A_ge_1 i (fd2n (freal_normalize x)) k = true) ↔
   ∀ j, i < j → fd2n (freal_normalize x) j = rad - 1.
@@ -1370,6 +1378,18 @@ f_equal; f_equal; lia.
     subst u.
     set (y := freal_normalize x) in H1 |-*.
     unfold fd2n in H1 |-*.
+    enough (H2 : ∀ k, 0 ≤ k ≤ m → dig (freal y (n - 1 - k)) = rad - 1). {
+      assert (H3 : 0 ≤ n - 1 - j ≤ m) by lia.
+      specialize (H2 (n - 1 - j) H3) as H4.
+      now replace (n - 1 - (n - 1 - j)) with j in H4 by lia.
+    }
+    intros k Hk; subst y n.
+    remember (rad * (i + j + 2)) as n; clear Heqn.
+    remember (freal_normalize x) as y; clear Heqy.
+    clear - Hk H1.
+    rename y into x.
+    remember (n - 1) as a; clear n Heqa.
+    rename a into n.
 
 ...
     destruct m.
