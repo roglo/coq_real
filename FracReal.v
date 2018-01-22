@@ -1390,7 +1390,8 @@ f_equal; f_equal; lia.
     rename y into x.
     remember (n - 1) as a; clear n Heqa.
     rename a into n.
-
+...
+    now eapply freal_eq_sum_pow.
 ...
     destruct m.
    ++now apply Nat.le_0_r in H; subst j.
