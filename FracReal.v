@@ -2018,29 +2018,27 @@ destruct (LPO_fst (A_ge_1 j ayz)) as [H1| H1].
       remember (freal_add_series ny nx) as yx eqn:Hyx.
       move yx before yz.
       unfold numbers_to_digits.
+      unfold freal_add_series in Hyz, Hyx.
+      remember (yz j) as a eqn:Ha; rewrite Hyz in Ha.
+      unfold sequence_add in Ha; subst a.
+      remember (yx j) as a eqn:Ha; rewrite Hyx in Ha.
+      unfold sequence_add in Ha; subst a.
       destruct (LPO_fst (A_ge_1 j yz)) as [H10| H10].
     ---simpl.
+       specialize (proj1 (all_A_ge_1_true_iff _ _) H10) as H12.
+       clear H10.
+       specialize (H12 0) as H14.
+       rewrite Nat.add_0_r in H14; simpl in H14.
+       rewrite <- Hn, <- Hs in H14.
        destruct (LPO_fst (A_ge_1 j yx)) as [H11| H11].
      +++simpl.
         rewrite <- Hn, <-  Hs.
-        specialize (proj1 (all_A_ge_1_true_iff _ _) H10) as H12.
         specialize (proj1 (all_A_ge_1_true_iff _ _) H11) as H13.
-        clear H10 H11.
-        unfold freal_add_series in Hyz, Hyx.
-        remember (yz j) as a eqn:Ha; rewrite Hyz in Ha.
-        unfold sequence_add in Ha; subst a.
-        remember (yx j) as a eqn:Ha; rewrite Hyx in Ha.
-        unfold sequence_add in Ha; subst a.
-        specialize (H12 0) as H14.
+        clear H11.
         specialize (H13 0) as H15.
-        rewrite Nat.add_0_r in H14, H15.
-        simpl in H14, H15.
-        rewrite <- Hn, <- Hs in H14, H15.
-        specialize (Nat.mod_upper_bound (nA j n yz) _ Hsz) as H16.
-        specialize (Nat.mod_upper_bound (nA j n yx) _ Hsz) as H17.
-        assert (H18 : nA j n yz mod s = s - 1) by lia.
-        assert (H19 : nA j n yx mod s = s - 1) by lia.
-        clear H14 H15 H16 H17.
+        rewrite Nat.add_0_r in H15; simpl in H15.
+        rewrite <- Hn, <- Hs in H15.
+        move H13 before H12.
         assert (H10 : ∀ i, yz i ≤ 2 * (rad - 1)). {
           intros.
           rewrite Hyz.
@@ -2050,9 +2048,9 @@ destruct (LPO_fst (A_ge_1 j ayz)) as [H1| H1].
           rewrite Hs.
           apply all_le_nA_le, H10.
         }
-        specialize (Nat_mod_pred_le_twice_pred _ _ Hsz H18 H11) as H.
+        specialize (Nat_mod_pred_le_twice_pred _ _ Hsz H14 H11) as H.
         rewrite Nat.div_small; [ rewrite Nat.add_0_r | lia ].
-        clear H18 H10 H11; rename H into H18.
+        clear H14 H10 H11; rename H into H18.
         assert (H10 : ∀ i, yx i ≤ 2 * (rad - 1)). {
           intros.
           rewrite Hyx.
@@ -2062,9 +2060,9 @@ destruct (LPO_fst (A_ge_1 j ayz)) as [H1| H1].
           rewrite Hs.
           apply all_le_nA_le, H10.
         }
-        specialize (Nat_mod_pred_le_twice_pred _ _ Hsz H19 H11) as H.
+        specialize (Nat_mod_pred_le_twice_pred _ _ Hsz H15 H11) as H.
         rewrite Nat.div_small; [ rewrite Nat.add_0_r | lia ].
-        clear H19 H10 H11; rename H into H19.
+        clear H15 H10 H11; rename H into H19.
         rewrite <- Nat.add_1_r, Nat.add_assoc; symmetry.
         rewrite <- Nat.add_1_r, Nat.add_assoc; symmetry.
         rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
