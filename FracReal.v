@@ -2122,7 +2122,7 @@ rewrite <- Hni, <- Hsi in H10.
  }
 enough (Hsiz : si ≠ 0).
  specialize (Nat_mod_pred_le_twice_pred _ _ Hsiz H10 H13) as H14.
-clear H10 H11 H13.
 rewrite Nat.div_small in H; [ | clear - Hsiz H14; lia ].
+clear H10 H13.
 rewrite Nat.add_0_r in H.
 ...
