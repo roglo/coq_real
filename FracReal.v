@@ -2089,8 +2089,14 @@ destruct (LPO_fst (A_ge_1 j ayz)) as [H1| H1].
         remember (rad * (j + k + 2)) as nk eqn:Hnk.
         remember (rad ^ (nk - j - 1)) as sk eqn:Hsk.
         move sk before nk.
+assert (HHH : ∀ i, j + 1 ≤ i ≤ nk - 1 → yx i = rad - 1). {
+  clear i Hji; intros i Hi.
+...
+}
+
 unfold nA in Hkk.
 rewrite summation_eq_compat with (h := λ j, (rad - 1) * (rad ^ (nk - 1 - j))) in Hkk.
+
 Focus 2.
 clear i Hji; intros i Hjk.
 f_equal.
@@ -2125,4 +2131,9 @@ enough (Hsiz : si ≠ 0).
 rewrite Nat.div_small in H; [ | clear - Hsiz H14; lia ].
 clear H10 H13.
 rewrite Nat.add_0_r in H.
+rewrite HHH in H.
+replace (rad - 1 + 1) with rad in H by (clear; specialize radix_ge_2; lia).
+rewrite Nat.mod_same in H.
+clear - H; specialize radix_ge_2; lia.
+
 ...
