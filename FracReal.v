@@ -2034,4 +2034,61 @@ destruct (LPO_fst (A_ge_1 j ayz)) as [H1| H1].
         unfold sequence_add in Ha; subst a.
         remember (yx j) as a eqn:Ha; rewrite Hyx in Ha.
         unfold sequence_add in Ha; subst a.
+        specialize (H12 0) as H14.
+        specialize (H13 0) as H15.
+        rewrite Nat.add_0_r in H14, H15.
+        simpl in H14, H15.
+        rewrite <- Hn, <- Hs in H14, H15.
+        specialize (Nat.mod_upper_bound (nA j n yz) _ Hsz) as H16.
+        specialize (Nat.mod_upper_bound (nA j n yx) _ Hsz) as H17.
+        assert (H18 : nA j n yz mod s = s - 1) by lia.
+        assert (H19 : nA j n yx mod s = s - 1) by lia.
+        clear H14 H15 H16 H17.
+        assert (H10 : ∀ i, yz i ≤ 2 * (rad - 1)). {
+          intros.
+          rewrite Hyz.
+          apply freal_add_series_le_twice_pred.
+        }
+        assert (H11 : nA j n yz ≤ 2 * (s - 1)). {
+          rewrite Hs.
+          apply all_le_nA_le, H10.
+        }
+        specialize (Nat_mod_pred_le_twice_pred _ _ Hsz H18 H11) as H.
+        rewrite Nat.div_small; [ rewrite Nat.add_0_r | lia ].
+        clear H18 H10 H11; rename H into H18.
+        assert (H10 : ∀ i, yx i ≤ 2 * (rad - 1)). {
+          intros.
+          rewrite Hyx.
+          apply freal_add_series_le_twice_pred.
+        }
+        assert (H11 : nA j n yx ≤ 2 * (s - 1)). {
+          rewrite Hs.
+          apply all_le_nA_le, H10.
+        }
+        specialize (Nat_mod_pred_le_twice_pred _ _ Hsz H19 H11) as H.
+        rewrite Nat.div_small; [ rewrite Nat.add_0_r | lia ].
+        clear H19 H10 H11; rename H into H19.
+        rewrite <- Nat.add_1_r, Nat.add_assoc; symmetry.
+        rewrite <- Nat.add_1_r, Nat.add_assoc; symmetry.
+        rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
+        rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
+        f_equal; f_equal.
+        remember ((fd2n ny j + fd2n nz j + 1) mod rad) as a eqn:Ha.
+        rewrite <- Nat.add_mod_idemp_l in Ha; [ subst a | easy ].
+        rewrite Nat.add_mod_idemp_r; [ | easy ].
+        symmetry.
+        remember ((fd2n ny j + fd2n nx j + 1) mod rad) as a eqn:Ha.
+        rewrite <- Nat.add_mod_idemp_l in Ha; [ subst a | easy ].
+        rewrite Nat.add_mod_idemp_r; [ | easy ].
+        symmetry.
+        rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
+        rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
+        do 2 rewrite Nat.add_assoc.
+        rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
+        rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
+        f_equal; f_equal.
+        rewrite <- Nat.add_mod; [ | easy ].
+        rewrite <- Nat.add_mod; [ | easy ].
+        f_equal; clear; lia.
+     +++idtac.
 ...
