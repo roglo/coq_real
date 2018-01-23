@@ -2089,4 +2089,40 @@ destruct (LPO_fst (A_ge_1 j ayz)) as [H1| H1].
         remember (rad * (j + k + 2)) as nk eqn:Hnk.
         remember (rad ^ (nk - j - 1)) as sk eqn:Hsk.
         move sk before nk.
+unfold nA in Hkk.
+rewrite summation_eq_compat with (h := λ j, (rad - 1) * (rad ^ (nk - 1 - j))) in Hkk.
+Focus 2.
+clear i Hji; intros i Hjk.
+f_equal.
+specialize (H6 (i - j - 1)) as H.
+replace (j + (i - j - 1) + 1) with i in H by lia.
+unfold freal_add_to_seq in H.
+unfold freal_add_series in H.
+rewrite <- Hyx in H.
+unfold numbers_to_digits, d2n in H.
+destruct (LPO_fst (A_ge_1 i yx)) as [H9| H9].
+exfalso.
+simpl in H.
+remember (rad * (i + 2)) as ni eqn:Hni.
+remember (rad ^ (ni - i - 1)) as si eqn:Hsi.
+move si before ni.
+simpl in H.
+specialize (proj1 (all_A_ge_1_true_iff _ _) H9 0) as H10.
+simpl in H10.
+rewrite Nat.add_0_r in H10.
+rewrite <- Hni, <- Hsi in H10.
+ assert (H11 : ∀ i, yx i ≤ 2 * (rad - 1)). {
+   intros.
+   rewrite Hyx.
+   apply freal_add_series_le_twice_pred.
+ }
+ assert (H13 : nA i ni yx ≤ 2 * (si - 1)). {
+   rewrite Hsi.
+   apply all_le_nA_le, H11.
+ }
+enough (Hsiz : si ≠ 0).
+ specialize (Nat_mod_pred_le_twice_pred _ _ Hsiz H10 H13) as H14.
+clear H10 H11 H13.
+rewrite Nat.div_small in H; [ | clear - Hsiz H14; lia ].
+rewrite Nat.add_0_r in H.
 ...
