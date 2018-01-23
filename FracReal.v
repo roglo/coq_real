@@ -1899,9 +1899,13 @@ destruct (LPO_fst (A_ge_1 j ayz)) as [H1| H1].
  apply digit_eq_eq; simpl.
  specialize (H1 0) as H2.
  rewrite Nat.add_0_r in H2; simpl in H2.
- remember (rad * (j + 2)) as n1 eqn:Hn1.
- remember (rad ^ (n1 - j - 1)) as s1 eqn:Hs1.
- move s1 before n1.
+ remember (rad * (j + 2)) as n eqn:Hn.
+ remember (rad ^ (n - j - 1)) as s eqn:Hs.
+ move s before n.
+ assert (Hsz : s ≠ 0) by (now rewrite Hs; apply Nat.pow_nonzero).
+ specialize (Nat.mod_upper_bound (nA j n ayz) s Hsz) as H3.
+ assert (H4 : nA j n ayz mod s = s - 1) by lia.
+ clear H2 H3; rename H4 into H2.
  destruct (LPO_fst (A_ge_1 j ayx)) as [H3| H3].
  +simpl.
   specialize (proj1 (all_A_ge_1_true_iff _ _) H3) as H4.
@@ -1909,16 +1913,13 @@ destruct (LPO_fst (A_ge_1 j ayz)) as [H1| H1].
   move H3 before H1.
   specialize (H3 0) as H4.
   rewrite Nat.add_0_r in H4.
-  simpl in H4; rewrite <- Hn1, <- Hs1 in H4.
-  assert (Hs : s1 ≠ 0) by (now rewrite Hs1; apply Nat.pow_nonzero).
-  specialize (Nat.mod_upper_bound (nA j n1 ayz) s1 Hs) as H5.
-  specialize (Nat.mod_upper_bound (nA j n1 ayx) s1 Hs) as H6.
-  assert (H7 : nA j n1 ayz mod s1 = s1 - 1) by lia.
-  assert (H8 : nA j n1 ayx mod s1 = s1 - 1) by lia.
-  clear H2 H4 H5 H6.
-  rewrite Nat.mod_small in H7.
+  simpl in H4; rewrite <- Hn, <- Hs in H4.
+  specialize (Nat.mod_upper_bound (nA j n ayx) s Hsz) as H5.
+  assert (H6 : nA j n ayx mod s = s - 1) by lia.
+  clear H4 H5.
+  rewrite Nat.mod_small in H2.
 Focus 2.
-(* because nA j n1 ayz ≤ 2 s1 - 2, because ayz i ≤ 2(rad-1), because sum  *)
+(* because nA j n ayz ≤ 2 s - 2, because ayz i ≤ 2(rad-1), because sum  *)
 ...
 
 unfold freal_normalize; simpl.
