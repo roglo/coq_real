@@ -1917,9 +1917,17 @@ destruct (LPO_fst (A_ge_1 j ayz)) as [H1| H1].
   specialize (Nat.mod_upper_bound (nA j n ayx) s Hsz) as H5.
   assert (H6 : nA j n ayx mod s = s - 1) by lia.
   clear H4 H5.
-  rewrite Nat.mod_small in H2.
-Focus 2.
-(* because nA j n ayz ≤ 2 s - 2, because ayz i ≤ 2(rad-1), because sum  *)
+  assert (H4 : ∀ i, ayz i ≤ 2 * (rad - 1)). {
+    clear i Hji; intros i.
+    rewrite Hayz.
+    unfold freal_add_series, sequence_add.
+    replace (2 * (rad - 1)) with ((rad - 1) + (rad - 1)) by lia.
+    apply Nat.add_le_mono.
+    apply digit_le_pred_radix.
+    apply digit_le_pred_radix.
+  }
+  assert (H5 : nA j n ayz ≤ 2 * (s - 1)). {
+
 ...
 
 unfold freal_normalize; simpl.
