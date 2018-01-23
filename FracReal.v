@@ -2029,28 +2029,27 @@ destruct (LPO_fst (A_ge_1 j ayz)) as [H1| H1].
        clear H10.
        specialize (H12 0) as H14.
        rewrite Nat.add_0_r in H14; simpl in H14.
-       rewrite <- Hn, <- Hs in H14.
+       rewrite <- Hn, <- Hs in H14 |-*.
+       assert (H10 : ∀ i, yz i ≤ 2 * (rad - 1)). {
+         intros.
+         rewrite Hyz.
+         apply freal_add_series_le_twice_pred.
+       }
+       assert (H11 : nA j n yz ≤ 2 * (s - 1)). {
+         rewrite Hs.
+         apply all_le_nA_le, H10.
+       }
+       specialize (Nat_mod_pred_le_twice_pred _ _ Hsz H14 H11) as H.
+       rewrite Nat.div_small; [ rewrite Nat.add_0_r | lia ].
+       clear H14 H10 H11; rename H into H18.
        destruct (LPO_fst (A_ge_1 j yx)) as [H11| H11].
      +++simpl.
-        rewrite <- Hn, <-  Hs.
         specialize (proj1 (all_A_ge_1_true_iff _ _) H11) as H13.
         clear H11.
         specialize (H13 0) as H15.
         rewrite Nat.add_0_r in H15; simpl in H15.
         rewrite <- Hn, <- Hs in H15.
         move H13 before H12.
-        assert (H10 : ∀ i, yz i ≤ 2 * (rad - 1)). {
-          intros.
-          rewrite Hyz.
-          apply freal_add_series_le_twice_pred.
-        }
-        assert (H11 : nA j n yz ≤ 2 * (s - 1)). {
-          rewrite Hs.
-          apply all_le_nA_le, H10.
-        }
-        specialize (Nat_mod_pred_le_twice_pred _ _ Hsz H14 H11) as H.
-        rewrite Nat.div_small; [ rewrite Nat.add_0_r | lia ].
-        clear H14 H10 H11; rename H into H18.
         assert (H10 : ∀ i, yx i ≤ 2 * (rad - 1)). {
           intros.
           rewrite Hyx.
@@ -2085,10 +2084,9 @@ destruct (LPO_fst (A_ge_1 j ayz)) as [H1| H1].
         rewrite <- Nat.add_mod; [ | easy ].
         rewrite <- Nat.add_mod; [ | easy ].
         f_equal; clear; lia.
-     +++destruct H11 as (k & Hki & Hkk).
+     +++destruct H11 as (k & Hki & Hkk); simpl.
         apply A_ge_1_false_iff in Hkk.
         remember (rad * (j + k + 2)) as nk eqn:Hnk.
         remember (rad ^ (nk - j - 1)) as sk eqn:Hsk.
         move sk before nk.
-        rewrite <- Hn, <- Hs; simpl.
 ...
