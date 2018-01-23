@@ -1962,6 +1962,17 @@ destruct (LPO_fst (A_ge_1 j ayz)) as [H1| H1].
  specialize (Nat.mod_upper_bound (nA j n ayz) s Hsz) as H3.
  assert (H4 : nA j n ayz mod s = s - 1) by lia.
  clear H2 H3; rename H4 into H2.
+ assert (H3 : ∀ i, ayz i ≤ 2 * (rad - 1)). {
+   intros.
+   rewrite Hayz.
+   apply freal_add_series_le_twice_pred.
+ }
+ assert (H4 : nA j n ayz ≤ 2 * (s - 1)). {
+   rewrite Hs.
+   apply all_le_nA_le, H3.
+ }
+ specialize (Nat_mod_pred_le_twice_pred _ _ Hsz H2 H4) as H.
+ clear H2 H3 H4; rename H into H2.
  destruct (LPO_fst (A_ge_1 j ayx)) as [H3| H3].
  +simpl.
   specialize (proj1 (all_A_ge_1_true_iff _ _) H3) as H4.
@@ -1973,88 +1984,15 @@ destruct (LPO_fst (A_ge_1 j ayz)) as [H1| H1].
   specialize (Nat.mod_upper_bound (nA j n ayx) s Hsz) as H5.
   assert (H6 : nA j n ayx mod s = s - 1) by lia.
   clear H4 H5.
-  assert (H4 : ∀ i, ayz i ≤ 2 * (rad - 1)). {
+  assert (H4 : ∀ i, ayx i ≤ 2 * (rad - 1)). {
     intros.
-    rewrite Hayz.
+    rewrite Hayx.
     apply freal_add_series_le_twice_pred.
   }
-  assert (H5 : nA j n ayz ≤ 2 * (s - 1)). {
+  assert (H5 : nA j n ayx ≤ 2 * (s - 1)). {
     rewrite Hs.
     apply all_le_nA_le, H4.
   }
-  specialize (Nat_mod_pred_le_twice_pred _ _ Hsz H2 H5) as H.
-...
-
-unfold freal_normalize; simpl.
-change
-  (freal_add_to_seq nx
-      {| freal := digit_sequence_normalize (freal_add_to_seq ny nz) |} j =
-   freal_add_to_seq nz
-      {| freal := digit_sequence_normalize (freal_add_to_seq ny nx) |} j).
-unfold freal_add_to_seq.
-...
-apply numbers_to_digits_eq_compat.
-clear j; intros j.
-unfold freal_add_series at 1 3.
-unfold sequence_add.
-unfold fd2n; simpl.
-...
-unfold freal_normalize, fd2n; simpl.
-unfold digit_sequence_normalize.
-remember (freal_normalize x) as nx eqn:Hnx.
-remember (freal_normalize z) as nz eqn:Hnz.
-remember (freal_normalize (y + z)) as nyz eqn:Hnyz.
-remember (freal_normalize (y + x)) as nyx eqn:Hnyx.
-remember (freal_add_to_seq nx nyz) as nxnyz eqn:Hnxnyz.
-remember (freal_add_to_seq nz nyx) as nznyx eqn:Hnznyx.
-move nz before nx.
-move nyz before nz.
-move nyx before nyz.
-move nxnyz before nyx.
-move nznyx before nxnyz.
-destruct (LPO_fst (is_9_strict_after nxnyz i)) as [H1| H1].
--destruct (LPO_fst (is_9_strict_after nznyx i)) as [H2| H2].
- +destruct (lt_dec (S (d2n nxnyz i)) rad) as [H3| H3].
-  *destruct (lt_dec (S (d2n nznyx i)) rad) as [H4| H4].
-  --simpl; f_equal.
-    subst nxnyz nznyx.
-    rewrite Hnx, Hnz, Hnyz, Hnyx.
-    unfold d2n.
-    unfold freal_add_to_seq.
-    f_equal.
-    apply numbers_to_digits_eq_compat.
-    intros j.
-    unfold freal_add_series, sequence_add, fd2n.
-    unfold "+"%F; simpl.
-    unfold freal_add_to_seq.
-    rewrite <- Hnx, <- Hnz.
-    remember (freal_normalize y) as ny eqn:Hny.
-    move ny before nx; move Hny before Hnx.
-    unfold digit_sequence_normalize.
-    remember (numbers_to_digits (freal_add_series ny nz)) as ayz eqn:Hayz.
-    remember (numbers_to_digits (freal_add_series ny nx)) as ayx eqn:Hayx.
-    move ayx before ayz.
-    destruct (LPO_fst (is_9_strict_after ayz j)) as [H5| H5].
-   ++specialize (is_9_strict_after_all_9 _ _ H5) as H.
-     clear H5; rename H into H5.
-     destruct (lt_dec (S (d2n ayz j)) rad) as [H6| H6].
-    **simpl.
-      destruct (LPO_fst (is_9_strict_after ayx j)) as [H7| H7].
-    ---specialize (is_9_strict_after_all_9 _ _ H7) as H.
-       clear H7; rename H into H7.
-     +++destruct (lt_dec (S (d2n ayx j)) rad) as [H8| H8].
-      ***simpl.
-         do 2 rewrite Nat.add_succ_r; f_equal.
-         subst ayz ayx.
-         unfold d2n, numbers_to_digits.
-         remember (freal_add_series ny nz) as ayz eqn:Hayz.
-         remember (freal_add_series ny nx) as ayx eqn:Hayx.
-         move ayx before ayz; move Hayx before Hayz.
-         move H8 before H6.
-         destruct (LPO_fst (A_ge_1 j ayz)) as [H9| H9].
-      ----destruct (LPO_fst (A_ge_1 j ayx)) as [H10| H10].
-       ++++simpl.
-           destruct (LPO_fst (is_9_strict_after (freal x) j)) as [H11| H11].
-        ****specialize (is_9_strict_after_all_9 _ _ H11) as H.
-            clear H11; rename H into H11.
+  specialize (Nat_mod_pred_le_twice_pred _ _ Hsz H6 H5) as H.
+  clear H4 H5 H6; rename H into H4.
 ...
