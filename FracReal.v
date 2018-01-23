@@ -1948,7 +1948,19 @@ destruct (LPO_fst (A_ge_1 j ayz)) as [H1| H1].
      replace (n - 1 - (n - 1 - i)) with i by lia.
      apply Nat.mul_le_mono_r, H4.
   }
-
+  assert (H7 : nA j n ayz / s = 0 ∨ nA j n ayz / s = 1). {
+    apply Nat.div_le_mono with (c := s) in H5; [ | easy ].
+    remember (2 * (s - 1) / s) as a eqn:Ha.
+    symmetry in Ha.
+    destruct a; [ lia | ].
+    destruct a; [ lia | ].
+...
+    destruct s; [ easy | ].
+    rewrite Nat.sub_succ, Nat.sub_0_r in Ha.
+    remember (S s) as b; simpl in Ha; subst b.
+    rewrite Nat.add_0_r in Ha.
+...
+  }
 ...
 
 unfold freal_normalize; simpl.
