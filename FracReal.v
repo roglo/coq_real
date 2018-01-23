@@ -2090,5 +2090,10 @@ destruct (LPO_fst (A_ge_1 j ayz)) as [H1| H1].
         rewrite <- Nat.add_mod; [ | easy ].
         rewrite <- Nat.add_mod; [ | easy ].
         f_equal; clear; lia.
-     +++idtac.
+     +++destruct H11 as (k & Hki & Hkk).
+        apply A_ge_1_false_iff in Hkk.
+        remember (rad * (j + k + 2)) as nk eqn:Hnk.
+        remember (rad ^ (nk - j - 1)) as sk eqn:Hsk.
+        move sk before nk.
+        rewrite <- Hn, <- Hs; simpl.
 ...
