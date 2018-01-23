@@ -1298,12 +1298,20 @@ Qed.
 Theorem A_ge_1_true_iff {r : radix} : ∀ i u k,
   let n := rad * (i + k + 2) in
   let s := rad ^ (n - i - 1) in
-  A_ge_1 i u k = true ↔ ¬ nA i n u mod s + 1 < s.
+  A_ge_1 i u k = true ↔ nA i n u mod s = s - 1.
 Proof.
 intros.
+assert (Hsz : s ≠ 0). {
+  unfold s.
+  now apply Nat.pow_nonzero.
+}
 unfold A_ge_1.
 fold n s.
-now destruct (lt_dec (nA i n u mod s + 1) s).
+destruct (lt_dec (nA i n u mod s + 1) s) as [H1| H1].
+-split; [ easy | lia ].
+-split; [ intros _ | easy ].
+ specialize (Nat.mod_upper_bound (nA i n u) _ Hsz) as H2.
+ lia.
 Qed.
 
 Theorem all_A_ge_1_true_iff {r : radix} : ∀ i u,
@@ -1311,16 +1319,16 @@ Theorem all_A_ge_1_true_iff {r : radix} : ∀ i u,
   ∀ k,
   let n := rad * (i + k + 2) in
   let s := rad ^ (n - i - 1) in
-  s ≤ nA i n u mod s + 1.
+  nA i n u mod s = s - 1.
 Proof.
 intros.
 split.
 -intros Hk *.
  specialize (Hk k).
- now apply A_ge_1_true_iff, Nat.nlt_ge in Hk.
+ now apply A_ge_1_true_iff in Hk.
 -intros Hk *.
  specialize (Hk k).
- now apply A_ge_1_true_iff, Nat.nlt_ge.
+ now apply A_ge_1_true_iff.
 Qed.
 
 Theorem all_lt_rad_A_ge_1_true_iff {r : radix} : ∀ i u,
@@ -1331,14 +1339,12 @@ intros * Hu.
 split.
 -intros Hk * Hij.
  specialize (Hk j).
- apply A_ge_1_true_iff, Nat.nlt_ge in Hk.
+ apply A_ge_1_true_iff in Hk.
  remember (rad * (i + j + 2)) as n eqn:Hn.
  remember (rad ^ (n - i - 1)) as s eqn:Hs.
  move s before n.
  assert (Hsz : s ≠ 0) by now subst s; apply Nat.pow_nonzero.
- specialize (Nat.mod_upper_bound (nA i n u) s Hsz) as HnA.
- assert (H : nA i n u mod s = s - 1) by lia.
- clear Hk Hsz HnA; rename H into HnA.
+ rename Hk into HnA.
  rewrite Nat.mod_small in HnA.
  +remember (n - i - 1) as m eqn:Hm.
   symmetry in Hm.
@@ -1415,14 +1421,12 @@ split.
   destruct rad; [ lia | simpl in Hn; lia ].
 -intros Hij k.
  apply A_ge_1_true_iff.
- apply Nat.nlt_ge.
  remember (rad * (i + k + 2)) as n eqn:Hn.
  remember (rad ^ (n - i - 1)) as s eqn:Hs.
  rewrite Nat.mod_small.
  +unfold nA.
   rewrite summation_eq_compat with (h := λ j, (rad - 1) * rad ^ (n - 1 - j)).
   *rewrite Hs.
-   apply Nat.le_sub_le_add_r.
    remember (n - i - 1) as m eqn:Hm.
    symmetry in Hm.
    destruct m.
@@ -1434,7 +1438,6 @@ split.
     rewrite summation_eq_compat with (h := λ i, (rad - 1) * (rad ^ i)).
    ++rewrite power_summation_sub_1; [ | easy ].
      rewrite <- summation_mul_distr_l; simpl.
-     apply Nat.mul_le_mono_nonneg_l; [ lia | ].
      now replace (n - 1 - (i + 1)) with m by lia.
    ++intros; f_equal; f_equal; lia.
   *intros j Hj.
@@ -1959,9 +1962,6 @@ destruct (LPO_fst (A_ge_1 j ayz)) as [H1| H1].
  remember (rad ^ (n - j - 1)) as s eqn:Hs.
  move s before n.
  assert (Hsz : s ≠ 0) by (now rewrite Hs; apply Nat.pow_nonzero).
- specialize (Nat.mod_upper_bound (nA j n ayz) s Hsz) as H3.
- assert (H4 : nA j n ayz mod s = s - 1) by lia.
- clear H2 H3; rename H4 into H2.
  assert (H3 : ∀ i, ayz i ≤ 2 * (rad - 1)). {
    intros.
    rewrite Hayz.
@@ -1982,19 +1982,16 @@ destruct (LPO_fst (A_ge_1 j ayz)) as [H1| H1].
   specialize (H3 0) as H4.
   rewrite Nat.add_0_r in H4.
   simpl in H4; rewrite <- Hn, <- Hs in H4.
-  specialize (Nat.mod_upper_bound (nA j n ayx) s Hsz) as H5.
-  assert (H6 : nA j n ayx mod s = s - 1) by lia.
-  clear H4 H5.
-  assert (H4 : ∀ i, ayx i ≤ 2 * (rad - 1)). {
+  assert (H5 : ∀ i, ayx i ≤ 2 * (rad - 1)). {
     intros.
     rewrite Hayx.
     apply freal_add_series_le_twice_pred.
   }
-  assert (H5 : nA j n ayx ≤ 2 * (s - 1)). {
+  assert (H6 : nA j n ayx ≤ 2 * (s - 1)). {
     rewrite Hs.
-    apply all_le_nA_le, H4.
+    apply all_le_nA_le, H5.
   }
-  specialize (Nat_mod_pred_le_twice_pred _ _ Hsz H6 H5) as H.
+  specialize (Nat_mod_pred_le_twice_pred _ _ Hsz H4 H6) as H.
   rewrite Nat.div_small; [ rewrite Nat.add_0_r | lia ].
   clear H4 H5 H6; rename H into H4.
   setoid_rewrite Nat.add_mod; [ | easy | easy ].
