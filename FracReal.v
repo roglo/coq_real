@@ -1848,11 +1848,17 @@ now rewrite Hxy, Hxy'.
 Qed.
 
 Theorem Nat_mod_pred_le_twice_pred : ∀ a b,
-  a mod b = b - 1
+  b ≠ 0
+  → a mod b = b - 1
   → a ≤ 2 * (b - 1)
   → a = b - 1.
 Proof.
-intros * Ham Hal.
+intros * Hb Ham Hal.
+rewrite Nat.mod_small in Ham; [ easy | ].
+destruct b; [ easy | clear Hb ].
+apply -> Nat.succ_le_mono.
+rewrite Nat.sub_succ, Nat.sub_0_r in Ham, Hal.
+destruct b; [ easy | ].
 ...
 
 Theorem freal_add_assoc {r : radix} : ∀ x y z,
