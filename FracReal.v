@@ -2128,10 +2128,3 @@ rewrite Nat.div_small in H; [ | flia Hsiz H14 ].
 clear H10 H13.
 rewrite Nat.add_0_r in H.
 ...
-
-rewrite HHH in H.
-replace (rad - 1 + 1) with rad in H by (clear; specialize radix_ge_2; lia).
-rewrite Nat.mod_same in H.
-clear - H; specialize radix_ge_2; lia.
-
-...
