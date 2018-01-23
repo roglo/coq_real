@@ -1927,6 +1927,27 @@ destruct (LPO_fst (A_ge_1 j ayz)) as [H1| H1].
     apply digit_le_pred_radix.
   }
   assert (H5 : nA j n ayz ≤ 2 * (s - 1)). {
+    rewrite Hs.
+    remember (n - j - 1) as m eqn:Hm.
+    symmetry in Hm.
+    destruct m.
+    -specialize radix_ge_2 as Hr.
+     destruct rad as [| rr]; [ lia | simpl in Hn; lia ].
+    -rewrite power_summation_sub_1; [ | easy ].
+     rewrite Nat.mul_assoc.
+     rewrite summation_mul_distr_l.
+     unfold nA.
+     rewrite summation_rtl.
+     rewrite summation_shift; [ | lia ].
+     replace (n - 1 - (j + 1)) with m by lia.
+     apply (@summation_le_compat nat_ord_ring_def).
+     remember 2 as two; simpl; subst two.
+     unfold NPeano.Nat.le.
+     clear i Hji; intros i Hi.
+     replace (n - 1 + (j + 1) - (j + 1 + i)) with (n - 1 - i) by lia.
+     replace (n - 1 - (n - 1 - i)) with i by lia.
+     apply Nat.mul_le_mono_r, H4.
+  }
 
 ...
 
