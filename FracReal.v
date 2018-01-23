@@ -1854,12 +1854,54 @@ Theorem Nat_mod_pred_le_twice_pred : ∀ a b,
   → a = b - 1.
 Proof.
 intros * Hb Ham Hal.
-rewrite Nat.mod_small in Ham; [ easy | ].
-destruct b; [ easy | clear Hb ].
-apply -> Nat.succ_le_mono.
-rewrite Nat.sub_succ, Nat.sub_0_r in Ham, Hal.
-destruct b; [ easy | ].
-...
+specialize (Nat.div_mod a b Hb) as H1.
+rewrite Ham in H1.
+rewrite H1 in Hal; simpl in Hal.
+rewrite Nat.add_0_r in Hal.
+apply Nat.add_le_mono_r in Hal.
+remember (a / b) as c eqn:Hc; symmetry in Hc.
+destruct c; [ lia | ].
+rewrite Nat.mul_comm in Hal; simpl in Hal; lia.
+Qed.
+
+Theorem freal_add_series_le_twice_pred {r : radix} : ∀ x y i,
+  freal_add_series x y i ≤ 2 * (rad - 1).
+Proof.
+intros *.
+unfold freal_add_series, sequence_add.
+replace (2 * (rad - 1)) with ((rad - 1) + (rad - 1)) by lia.
+apply Nat.add_le_mono.
+apply digit_le_pred_radix.
+apply digit_le_pred_radix.
+Qed.
+
+Theorem all_le_nA_le {r : radix} : ∀ u a,
+  (∀ j, u j ≤ a * (rad - 1))
+  → ∀ i n, nA i n u ≤ a * (rad ^ (n - i - 1) - 1).
+Proof.
+intros * Hur *.
+remember (n - i - 1) as m eqn:Hm.
+symmetry in Hm.
+destruct m.
+-unfold nA.
+ rewrite summation_empty; [ simpl; lia | lia ].
+-rewrite power_summation; [ | easy ].
+ rewrite Nat.add_comm, Nat.add_sub.
+ rewrite summation_mul_distr_l.
+ rewrite summation_mul_distr_l; simpl.
+ unfold nA.
+ rewrite summation_rtl.
+ rewrite summation_shift; [ | lia ].
+ replace (n - 1 - (i + 1)) with m by lia.
+ apply (@summation_le_compat nat_ord_ring_def).
+ simpl.
+ unfold Nat.le.
+ intros j Hj.
+ replace (n - 1 + (i + 1) - (i + 1 + j)) with (n - 1 - j) by lia.
+ replace (n - 1 - (n - 1 - j)) with j by lia.
+ rewrite Nat.mul_assoc.
+ apply Nat.mul_le_mono_r, Hur.
+Qed.
 
 Theorem freal_add_assoc {r : radix} : ∀ x y z,
   (x + (y + z) = (x + y) + z)%F.
@@ -1932,56 +1974,15 @@ destruct (LPO_fst (A_ge_1 j ayz)) as [H1| H1].
   assert (H6 : nA j n ayx mod s = s - 1) by lia.
   clear H4 H5.
   assert (H4 : ∀ i, ayz i ≤ 2 * (rad - 1)). {
-    clear i Hji; intros i.
+    intros.
     rewrite Hayz.
-    unfold freal_add_series, sequence_add.
-    replace (2 * (rad - 1)) with ((rad - 1) + (rad - 1)) by lia.
-    apply Nat.add_le_mono.
-    apply digit_le_pred_radix.
-    apply digit_le_pred_radix.
+    apply freal_add_series_le_twice_pred.
   }
   assert (H5 : nA j n ayz ≤ 2 * (s - 1)). {
     rewrite Hs.
-    remember (n - j - 1) as m eqn:Hm.
-    symmetry in Hm.
-    destruct m.
-    -specialize radix_ge_2 as Hr.
-     destruct rad as [| rr]; [ lia | simpl in Hn; lia ].
-    -rewrite power_summation_sub_1; [ | easy ].
-     rewrite Nat.mul_assoc.
-     rewrite summation_mul_distr_l.
-     unfold nA.
-     rewrite summation_rtl.
-     rewrite summation_shift; [ | lia ].
-     replace (n - 1 - (j + 1)) with m by lia.
-     apply (@summation_le_compat nat_ord_ring_def).
-     remember 2 as two; simpl; subst two.
-     unfold NPeano.Nat.le.
-     clear i Hji; intros i Hi.
-     replace (n - 1 + (j + 1) - (j + 1 + i)) with (n - 1 - i) by lia.
-     replace (n - 1 - (n - 1 - i)) with i by lia.
-     apply Nat.mul_le_mono_r, H4.
+    apply all_le_nA_le, H4.
   }
-  assert (H7 : nA j n ayz / s ≤ 1). {
-    apply Nat.div_le_mono with (c := s) in H5; [ | easy ].
-    remember (2 * (s - 1) / s) as a eqn:Ha.
-    destruct a; [ lia | ].
-    destruct a; [ lia | ].
-    destruct s; [ easy | ].
-    rewrite Nat.sub_succ, Nat.sub_0_r in Ha.
-    remember (S s) as b; simpl in Ha; subst b.
-    rewrite Nat.add_0_r in Ha.
-    destruct s; [ easy | ].
-    replace (S s + S s) with (s + 1 * S (S s)) in Ha by lia.
-    rewrite Nat.div_add in Ha; [ | easy ].
-    rewrite Nat.div_small in Ha; [ easy | lia ].
-  }
-  assert (H8 : nA j n ayz = s - 1). {
-    rewrite Nat.mod_small in H2; [ easy | ].
-...
-    specialize (Nat_mod_pred_le_twice_pred _ _ H2 H5) as H8.
-    lia.
-  }
+  specialize (Nat_mod_pred_le_twice_pred _ _ Hsz H2 H5) as H.
 ...
 
 unfold freal_normalize; simpl.
