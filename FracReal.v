@@ -1847,6 +1847,14 @@ unfold fd2n.
 now rewrite Hxy, Hxy'.
 Qed.
 
+Theorem Nat_mod_pred_le_twice_pred : ∀ a b,
+  a mod b = b - 1
+  → a ≤ 2 * (b - 1)
+  → a = b - 1.
+Proof.
+intros * Ham Hal.
+...
+
 Theorem freal_add_assoc {r : radix} : ∀ x y z,
   (x + (y + z) = (x + y) + z)%F.
 Proof.
@@ -1964,7 +1972,10 @@ destruct (LPO_fst (A_ge_1 j ayz)) as [H1| H1].
   }
   assert (H8 : nA j n ayz = s - 1). {
     rewrite Nat.mod_small in H2; [ easy | ].
-
+...
+    specialize (Nat_mod_pred_le_twice_pred _ _ H2 H5) as H8.
+    lia.
+  }
 ...
 
 unfold freal_normalize; simpl.
