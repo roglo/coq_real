@@ -2091,13 +2091,12 @@ destruct (LPO_fst (A_ge_1 j ayz)) as [H1| H1].
         remember (rad * (j + k + 2)) as nk eqn:Hnk.
         remember (rad ^ (nk - j - 1)) as sk eqn:Hsk.
         move sk before nk.
+...
 unfold nA in Hkk.
 rewrite summation_eq_compat with (h := λ j, (rad - 1) * (rad ^ (nk - 1 - j))) in Hkk.
 Focus 2.
 clear i Hji; intros i Hjk.
 f_equal.
-assert (H : ∀ i, j + 1 ≤ i → (yx i + 1) mod rad = rad - 1). {
-clear i Hjk; intros i Hjk.
 specialize (H6 (i - j - 1)) as H.
 replace (j + (i - j - 1) + 1) with i in H by flia Hjk.
 unfold freal_add_to_seq in H.
@@ -2128,13 +2127,5 @@ enough (Hsiz : si ≠ 0).
 rewrite Nat.div_small in H; [ | flia Hsiz H14 ].
 clear H10 H13.
 rewrite Nat.add_0_r in H.
-easy.
-  rewrite Hsi.
-  now apply Nat.pow_nonzero.
-destruct H9 as (l & Hjl & Hl).
-simpl in H.
-remember (rad * (i + l + 2)) as nl eqn:Hnl.
-remember (rad ^ (nl - i - 1)) as sl eqn:Hsl.
-move sl before nl.
-
+specialize (proj1 (all_A_ge_1_true_iff _ _) H9) as H15.
 ...
