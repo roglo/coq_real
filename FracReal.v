@@ -5,6 +5,8 @@
 Require Import Utf8 Arith Psatz NPeano.
 Require Import Misc Summation(*Xnat*).
 
+Tactic Notation "flia" hyp_list(Hs) := clear - Hs; lia.
+
 (* Limited Principle of Omniscience *)
 (* Borrowed from my proof of Puiseux's Theorem *)
 Axiom LPO : ∀ (u : nat → nat), (∀ i, u i = O) + { i : nat | u i ≠ O }.
@@ -2089,19 +2091,13 @@ destruct (LPO_fst (A_ge_1 j ayz)) as [H1| H1].
         remember (rad * (j + k + 2)) as nk eqn:Hnk.
         remember (rad ^ (nk - j - 1)) as sk eqn:Hsk.
         move sk before nk.
-assert (HHH : ∀ i, j + 1 ≤ i ≤ nk - 1 → yx i = rad - 1). {
-  clear i Hji; intros i Hi.
-...
-}
-
 unfold nA in Hkk.
 rewrite summation_eq_compat with (h := λ j, (rad - 1) * (rad ^ (nk - 1 - j))) in Hkk.
-
 Focus 2.
 clear i Hji; intros i Hjk.
 f_equal.
 specialize (H6 (i - j - 1)) as H.
-replace (j + (i - j - 1) + 1) with i in H by lia.
+replace (j + (i - j - 1) + 1) with i in H by flia Hjk.
 unfold freal_add_to_seq in H.
 unfold freal_add_series in H.
 rewrite <- Hyx in H.
@@ -2128,9 +2124,11 @@ rewrite <- Hni, <- Hsi in H10.
  }
 enough (Hsiz : si ≠ 0).
  specialize (Nat_mod_pred_le_twice_pred _ _ Hsiz H10 H13) as H14.
-rewrite Nat.div_small in H; [ | clear - Hsiz H14; lia ].
+rewrite Nat.div_small in H; [ | flia Hsiz H14 ].
 clear H10 H13.
 rewrite Nat.add_0_r in H.
+...
+
 rewrite HHH in H.
 replace (rad - 1 + 1) with rad in H by (clear; specialize radix_ge_2; lia).
 rewrite Nat.mod_same in H.
