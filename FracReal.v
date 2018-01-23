@@ -1972,6 +1972,7 @@ destruct (LPO_fst (A_ge_1 j ayz)) as [H1| H1].
    apply all_le_nA_le, H3.
  }
  specialize (Nat_mod_pred_le_twice_pred _ _ Hsz H2 H4) as H.
+ rewrite Nat.div_small; [ rewrite Nat.add_0_r | lia ].
  clear H2 H3 H4; rename H into H2.
  destruct (LPO_fst (A_ge_1 j ayx)) as [H3| H3].
  +simpl.
@@ -1994,5 +1995,43 @@ destruct (LPO_fst (A_ge_1 j ayz)) as [H1| H1].
     apply all_le_nA_le, H4.
   }
   specialize (Nat_mod_pred_le_twice_pred _ _ Hsz H6 H5) as H.
+  rewrite Nat.div_small; [ rewrite Nat.add_0_r | lia ].
   clear H4 H5 H6; rename H into H4.
+  setoid_rewrite Nat.add_mod; [ | easy | easy ].
+  f_equal; f_equal.
+  rewrite Hayz, Hayx.
+  unfold freal_add_series, sequence_add.
+  unfold freal_normalize; simpl.
+  unfold fd2n at 2 4; simpl.
+  unfold digit_sequence_normalize.
+  destruct (LPO_fst (is_9_strict_after (freal_add_to_seq ny nz) j))
+    as [H5| H5].
+  *specialize (is_9_strict_after_all_9 _ _ H5) as H.
+   clear H5; rename H into H5.
+   destruct (LPO_fst (is_9_strict_after (freal_add_to_seq ny nx) j))
+     as [H6| H6].
+  --specialize (is_9_strict_after_all_9 _ _ H6) as H.
+    clear H6; rename H into H6.
+    destruct (lt_dec (S (d2n (freal_add_to_seq ny nz) j)) rad) as [H7| H7].
+   ++simpl.
+     destruct (lt_dec (S (d2n (freal_add_to_seq ny nx) j)) rad) as [H8| H8].
+    **simpl.
+      unfold freal_add_to_seq, d2n.
+      remember (freal_add_series ny nz) as yz eqn:Hyz.
+      remember (freal_add_series ny nx) as yx eqn:Hyx.
+      move yx before yz.
+      unfold numbers_to_digits.
+      destruct (LPO_fst (A_ge_1 j yz)) as [H10| H10].
+    ---simpl.
+       destruct (LPO_fst (A_ge_1 j yx)) as [H11| H11].
+     +++simpl.
+        rewrite <- Hn, <-  Hs.
+        specialize (proj1 (all_A_ge_1_true_iff _ _) H10) as H12.
+        specialize (proj1 (all_A_ge_1_true_iff _ _) H11) as H13.
+        clear H10 H11.
+        unfold freal_add_series in Hyz, Hyx.
+        remember (yz j) as a eqn:Ha; rewrite Hyz in Ha.
+        unfold sequence_add in Ha; subst a.
+        remember (yx j) as a eqn:Ha; rewrite Hyx in Ha.
+        unfold sequence_add in Ha; subst a.
 ...
