@@ -1371,6 +1371,7 @@ split.
       split; [ flia Hm Hij | rewrite Hn ].
       destruct rad; [ lia | simpl; flia ].
     }
+...
     remember (n - 1) as p.
     clear n Hn Hm Heqp.
     rename p into n.
