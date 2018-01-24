@@ -676,13 +676,10 @@ Definition freal_mul_series {r : radix} a b i :=
 Definition nA {r : radix} (rg := nat_ord_ring) i n u :=
   Σ (j = i + 1, n - 1), u j * rad ^ (n - 1 - j).
 
-...
-
 Definition A_ge_1 {r : radix} i u k :=
   let n := rad * (i + k + 3) in
   let s := rad ^ (n - i - 1) in
   let rk := rad ^ S k in
-  (* chais pas, j'ai l'impression que c'est toujours faux... *)
   if lt_dec (nA i n u mod s * rk) (s * (rk - 1)) then false else true.
 
 Definition numbers_to_digits {r : radix} u i :=
@@ -1302,11 +1299,13 @@ fold n s rk.
 now destruct (lt_dec (nA i n u mod s * rk) (s * (rk - 1))).
 Qed.
 
+...
+(* voir s'il n'y a pas une condition plus simple *)
 Theorem A_ge_1_true_iff {r : radix} : ∀ i u k,
   let n := rad * (i + k + 3) in
   let s := rad ^ (n - i - 1) in
   let rk := rad ^ S k in
-  A_ge_1 i u k = true ↔ nA i n u mod s * rk = s * (rk - 1).
+  A_ge_1 i u k = true ↔ nA i n u mod s * rk ≥ s * (rk - 1).
 Proof.
 intros.
 assert (Hsz : s ≠ 0). {
@@ -1317,9 +1316,7 @@ unfold A_ge_1.
 fold n s rk.
 destruct (lt_dec (nA i n u mod s * rk) (s * (rk - 1))) as [H1| H1].
 -split; [ easy | flia H1 ].
--split; [ intros _ | easy ].
- specialize (Nat.mod_upper_bound (nA i n u) _ Hsz) as H2.
- lia.
+-split; [ flia H1 | easy ].
 Qed.
 
 Theorem all_A_ge_1_true_iff {r : radix} : ∀ i u,
