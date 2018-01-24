@@ -268,19 +268,19 @@ split; intros Hxy.
     apply digit_eq_eq in Hxy.
     unfold fd2n in H.
     destruct (lt_dec (S (d2n (freal x) k)) rad) as [Hsxk| Hsxk].
-   ++simpl in Hxy; unfold d2n in Hxy; rewrite H in Hxy; lia.
+   ++simpl in Hxy; unfold d2n in Hxy; rewrite H in Hxy; flia Hxy.
    ++simpl in Hxy; unfold d2n in Hsxk.
      rewrite H, <- Hxy in Hsxk.
      now specialize radix_ge_2.
   --destruct Hxk as (i & Hij & Hi).
     exists (k + i + 1).
-    split; [ lia | ].
+    split; [ flia | ].
     unfold is_9_strict_after in Hi.
     destruct (Nat.eq_dec (d2n (freal x) (k + i + 1)) (rad - 1)) as [H| H].
    ++easy.
    ++unfold d2n in H; unfold fd2n.
      specialize (digit_lt_radix (freal x (k + i + 1))) as Hr.
-     lia.
+     flia H Hr.
   *intros k; specialize (Hxsy k).
    unfold has_same_digits in Hxsy.
    destruct (Nat.eq_dec (fd2n x k) (fd2n y k)) as [H| ];
@@ -320,15 +320,15 @@ split; intros Hxy.
           unfold is_9_strict_after, d2n in Hx0; unfold d2n in Hsx1.
           simpl in Hx0; rewrite Nat.add_1_r in Hx0.
           destruct (Nat.eq_dec (dig (freal x (S i))) (rad - 1)); [ | easy ].
-          clear Hxy2; lia.
+          flia e Hsx1.
       ++++now apply digit_eq_eq in Hxy2; simpl in Hxy2.
      ----destruct Hx1 as (j & Hjj & Hj).
          unfold is_9_strict_after in Hj; unfold d2n in Hj.
          destruct (Nat.eq_dec (dig (freal x (S i + j + 1))) (rad - 1)).
       ++++easy.
-      ++++assert (Hksi : 1 ≤ S i + j + 1) by lia.
+      ++++assert (Hksi : 1 ≤ S i + j + 1) by flia.
           specialize (Hxk _ Hksi).
-          unfold fd2n in Hxk; lia.
+          unfold fd2n in Hxk; flia Hxk n.
     +++exists 0.
        split; [ now intros | ].
        split; [ now left | ].
@@ -336,7 +336,7 @@ split; intros Hxy.
      ***intros i Hki.
         destruct i.
      ----unfold d2n in Hsx0; unfold fd2n.
-         specialize (digit_lt_radix (freal x 0)) as H; lia.
+         specialize (digit_lt_radix (freal x 0)) as H; flia H Hsx0.
      ----specialize (Hxy i).
          unfold freal_normalize, digit_sequence_normalize in Hxy.
          simpl in Hxy.
@@ -361,7 +361,7 @@ split; intros Hxy.
        ****specialize (Hx0 i).
            apply is_9_strict_after_true_iff in Hx0; simpl in Hx0.
            rewrite Nat.add_1_r in Hx0.
-           clear Hxy; lia.
+           flia Hsx1 Hx0.
        ****now apply digit_eq_eq in Hxy.
       ++++destruct Hx1 as (j & Hjj & Hj).
           specialize (Hx0 (S (i + j))).
@@ -386,7 +386,7 @@ split; intros Hxy.
     **assert (Hxk : ∀ i, S k ≤ i → fd2n x i = rad - 1).
     ---intros i Hki; specialize (H (i - k - 1)).
        apply is_9_strict_after_true_iff in H.
-       now replace (k + (i - k - 1) + 1) with i in H by lia.
+       replace (k + (i - k - 1) + 1) with i in H; [ easy | flia Hki ].
     ---rewrite <- and_assoc, and_comm.
        split; [ easy | clear H ].
        simpl; rewrite Nat.sub_0_r.
@@ -401,14 +401,14 @@ split; intros Hxy.
         destruct (LPO_fst (is_9_strict_after (freal x) (S i))) as [Hx1| Hx1].
       ***destruct (lt_dec (S (d2n (freal x) (S i))) rad) as [Hsx1| Hsx1].
       ----specialize (Hxk (S i) Hki); clear Hxy1.
-          unfold fd2n in Hxk; unfold d2n in Hsx1; lia.
+          unfold fd2n in Hxk; unfold d2n in Hsx1; flia Hxk Hsx1.
       ----now apply digit_eq_eq in Hxy1.
       ***destruct Hx1 as (j & Hjj & Hj).
          apply is_9_strict_after_false_iff in Hj.
-         assert (Hksi : k < S (S (i + j))) by lia.
+         assert (Hksi : k < S (S (i + j))) by flia Hki.
          specialize (Hxk (S (S (i + j))) Hksi).
          unfold fd2n in Hxk; unfold d2n in Hj.
-         replace (S i + j + 1) with (S (S (i + j))) in Hj; lia.
+         replace (S i + j + 1) with (S (S (i + j))) in Hj; flia Hxk Hj.
      +++simpl in Hk; unfold fd2n; symmetry in Hk; rewrite Hk.
         apply Nat.nlt_ge in Hsxk.
         specialize (digit_lt_radix (freal x k)) as H.
@@ -425,16 +425,16 @@ split; intros Hxy.
          destruct (Nat.eq_dec (fd2n x k) (fd2n y k)) as [H| H]; [ | easy ].
          apply digit_eq_eq in Hk'; unfold fd2n in H.
          destruct (lt_dec (S (d2n (freal x) k)) rad) as [Hsxk'| Hsxk'].
-      ----simpl in Hk'; unfold d2n in Hk'; lia.
+      ----simpl in Hk'; unfold d2n in Hk'; flia H Hsxk' Hk'.
       ----simpl in Hk'; unfold d2n in Hsxk'.
-          specialize radix_ge_2 as Hr; lia.
+          specialize radix_ge_2 as Hr; flia H Hsxk' Hk' Hr.
       ***destruct Hxk' as (i & Hji & Hi).
          apply is_9_strict_after_false_iff in Hi.
          unfold d2n in Hi.
          destruct i.
-      ----rewrite Nat.add_0_r, Nat.add_1_r in Hi; lia.
-      ----assert (H : S (S k) ≤ (k + S i + 1)) by lia.
-          specialize (Hxk _ H); unfold fd2n in Hxk; lia.
+      ----rewrite Nat.add_0_r, Nat.add_1_r in Hi; flia Hsxk Hi.
+      ----assert (H : S (S k) ≤ (k + S i + 1)) by flia.
+          specialize (Hxk _ H); unfold fd2n in Hxk; flia Hxk Hi.
     **exfalso.
       unfold has_same_digits in Hxyk.
       destruct (Nat.eq_dec (fd2n x k) (fd2n y k)) as [H| H]; [ easy | ].
@@ -447,7 +447,7 @@ split; intros Hxy.
   *specialize (Hki (S i)) as (j & H1j & Hj); unfold fd2n in Hj.
    specialize (Hxi (j - i - 1)).
    apply is_9_strict_after_true_iff in Hxi; unfold d2n in Hxi.
-   replace (i + (j - i - 1) + 1) with j in Hxi; lia.
+   replace (i + (j - i - 1) + 1) with j in Hxi; flia Hxi Hj H1j.
   *apply Hxy.
  +unfold freal_norm_not_norm_eq in Hxy.
   destruct Hxy as (k & Hik & Hxy & Hx & Hy).
@@ -457,15 +457,15 @@ split; intros Hxy.
   --apply digit_eq_eq; simpl.
     destruct (le_dec k i) as [Hki| Hki].
    ++specialize (Hy _ Hki).
-     unfold fd2n in Hy; unfold d2n in Hsxi; lia.
+     unfold fd2n in Hy; unfold d2n in Hsxi; flia Hy Hsxi.
    ++apply Nat.nle_gt in Hki.
-     destruct Hxy as [Hxy| Hxy]; [ lia | ].
+     destruct Hxy as [Hxy| Hxy]; [ flia Hxy Hki | ].
      destruct (Nat.eq_dec i (k - 1)) as [Hik1| Hik1]; [ now subst i | ].
      specialize (Hxi (k - i - 2)).
      apply is_9_strict_after_true_iff in Hxi.
-     replace (i + (k - i - 2) + 1) with (k - 1) in Hxi by lia.
+     replace (i + (k - i - 2) + 1) with (k - 1) in Hxi by flia Hki Hik1.
      unfold fd2n in Hxy; unfold d2n in Hxi.
-     specialize (digit_lt_radix (freal y (k - 1))) as H; lia.
+     specialize (digit_lt_radix (freal y (k - 1))) as H; flia Hxy Hxi H.
   --apply digit_eq_eq; simpl; symmetry.
     apply Nat.nlt_ge in Hsxi.
     destruct k.
@@ -475,25 +475,25 @@ split; intros Hxy.
      destruct (lt_eq_lt_dec i k) as [[Hki| Hki]| Hki].
    ---specialize (Hxi (k - i - 1)).
       apply is_9_strict_after_true_iff in Hxi; unfold d2n in Hxi.
-      replace (i + (k - i - 1) + 1) with k in Hxi by lia.
+      replace (i + (k - i - 1) + 1) with k in Hxi by flia Hki.
       unfold fd2n in Hxy.
-      specialize (digit_lt_radix (freal y k)) as H1; lia.
+      specialize (digit_lt_radix (freal y k)) as H1; flia Hxy Hxi H1.
    ---subst i.
       unfold fd2n in Hxy; unfold d2n in Hsxi.
-      specialize (digit_lt_radix (freal y k)) as H1; lia.
+      specialize (digit_lt_radix (freal y k)) as H1; flia Hxy Hsxi H1.
    ---now specialize (Hx _ Hki).
   *destruct Hxi as (j & Hjj & Hj).
    apply is_9_strict_after_false_iff in Hj; unfold d2n in Hj.
    destruct k.
   --specialize (Hy (i + j + 1) (Nat.le_0_l _)).
-    unfold fd2n in Hy; lia.
+    unfold fd2n in Hy; exfalso; flia Hy Hj.
   --destruct Hxy as [| Hxy]; [ easy | ].
     simpl in Hik, Hxy; rewrite Nat.sub_0_r in Hik, Hxy.
     destruct (lt_dec i k) as [Hki| Hki].
    **now symmetry; apply Hik.
-   **assert (H : S k ≤ i + j + 1) by lia.
+   **assert (H : S k ≤ i + j + 1) by flia Hki.
      specialize (Hy _ H).
-     unfold fd2n in Hy; lia.
+     unfold fd2n in Hy; exfalso; flia Hy Hj.
 Qed.
 
 Theorem freal_eq_normalize_eq {r : radix} : ∀ x y,
@@ -530,30 +530,30 @@ destruct Hxy as (k & Hb & Hw & Hax & Hay).
 unfold freal_normalize, digit_sequence_normalize; simpl.
 destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H1| H1].
 -specialize (H1 (max i k - i)).
- assert (H : k ≤ S (max i k)) by lia.
+ assert (H : k ≤ S (max i k)) by flia.
  specialize (Hax (S (max i k)) H).
  unfold fd2n in Hax.
  apply is_9_strict_after_true_iff in H1.
  unfold d2n in H1.
- replace (i + (max i k - i) + 1) with (S (max i k)) in H1 by lia.
+ replace (i + (max i k - i) + 1) with (S (max i k)) in H1 by flia.
  rewrite Hax in H1.
- specialize radix_ge_2; lia.
+ specialize radix_ge_2; flia H1.
 -destruct (LPO_fst (is_9_strict_after (freal y) i)) as [H2| H2].
  +destruct (lt_eq_lt_dec i (k - 1)) as [[H4| H4]| H4].
   *destruct k; [ easy | ].
    specialize (H2 (k - i - 1)).
    apply is_9_strict_after_true_iff in H2.
    unfold d2n in H2.
-   replace (i + (k - i - 1) + 1) with k in H2 by lia.
+   replace (i + (k - i - 1) + 1) with k in H2 by flia H4.
    simpl in Hw; rewrite Nat.sub_0_r in Hw.
    unfold fd2n in Hw.
-   specialize (digit_lt_radix (freal x k)) as H6; lia.
+   specialize (digit_lt_radix (freal x k)) as H6; flia Hw H2 H6.
   *subst i.
    destruct k.
   --clear Hb Hw; simpl in H2; simpl.
     destruct (lt_dec (S (d2n (freal y) 0))) as [H3| H3].
    ++exfalso; unfold fd2n in Hay; unfold d2n in H3.
-     rewrite Hay in H3; [ lia | easy ].
+     rewrite Hay in H3; [ flia H3 | easy ].
    ++apply digit_eq_eq; simpl.
      now unfold fd2n in Hax; rewrite Hax.
   --destruct Hw as [| Hw]; [ easy | ].
@@ -562,28 +562,28 @@ destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H1| H1].
     destruct (lt_dec (S (d2n (freal y) k)) rad) as [H3| H3].
    ++now apply digit_eq_eq; simpl.
    ++unfold fd2n in Hw; unfold d2n in H3.
-     specialize (digit_lt_radix (freal x k)); lia.
+     specialize (digit_lt_radix (freal x k)); flia Hw H3.
   *destruct (lt_dec (S (d2n (freal y) i)) rad) as [H3| H3].
   --unfold fd2n in Hay; unfold d2n in H3.
-    exfalso; rewrite Hay in H3; lia.
+    exfalso; rewrite Hay in H3; flia H3 H4.
   --apply digit_eq_eq; simpl.
     unfold fd2n in Hax.
-    rewrite Hax; [ easy | lia ].
+    rewrite Hax; [ easy | flia H4 ].
  +destruct (lt_eq_lt_dec i (k - 1)) as [[H4| H4]| H4].
   *now rewrite Hb.
   *subst i.
    destruct H2 as (j & Hjj & Hj).
    apply is_9_strict_after_false_iff in Hj.
    unfold d2n in Hj; unfold fd2n in Hay.
-   assert (H : k ≤ k - 1 + j + 1) by lia.
+   assert (H : k ≤ k - 1 + j + 1) by flia.
    specialize (Hay _ H).
-   rewrite Hay in Hj; lia.
+   rewrite Hay in Hj; flia Hj.
   *destruct H2 as (j & Hjj & Hj).
    apply is_9_strict_after_false_iff in Hj.
    unfold d2n in Hj; unfold fd2n in Hay.
-   assert (H : k ≤ i + j + 1) by lia.
+   assert (H : k ≤ i + j + 1) by flia H4.
    specialize (Hay _ H).
-   rewrite Hay in Hj; lia.
+   rewrite Hay in Hj; flia Hj.
 Qed.
 
 Theorem freal_normalized_eq_iff {r : radix} : ∀ x y,
@@ -601,7 +601,7 @@ split; intros Hxy.
  rewrite Hx' in Hx.
  rewrite Hy' in Hy.
  assert (H : ∀ i, freal (freal_normalize x) i = freal x' i) by
- now intros; rewrite Hxy, Hx.
+   now intros; rewrite Hxy, Hx.
  clear Hx; rename H into Hx; move Hx after Hy.
  clear y' Hy' Hxy.
  rename x' into z; rename Hx' into Hz.
@@ -630,12 +630,12 @@ split; intros Hxy.
   --destruct ky; [ easy | ].
     destruct Hky as [| Hky]; [ easy | ].
     simpl in Hbky, Hky; rewrite Nat.sub_0_r in Hbky, Hky.
-    rewrite Hakxz in Hky; [ easy | lia ].
+    rewrite Hakxz in Hky; [ easy | flia Hkk ].
   --subst ky.
     destruct kx.
    ++apply digit_eq_eq; unfold fd2n in Hakx, Haky.
-     rewrite Hakx; [ | lia ].
-     rewrite Haky; [ easy | lia ].
+     rewrite Hakx; [ | flia ].
+     rewrite Haky; [ easy | flia ].
    ++destruct Hkx as [| Hkx]; [ easy | ].
      destruct Hky as [| Hky]; [ easy | ].
      simpl in Hbkx, Hkx, Hky, Hbky.
@@ -649,7 +649,7 @@ split; intros Hxy.
   --destruct kx; [ easy | ].
     destruct Hkx as [| Hkx]; [ easy | ].
     simpl in Hbkx, Hkx; rewrite Nat.sub_0_r in Hbkx, Hkx.
-    rewrite Hakyz in Hkx; [ easy | lia ].
+    rewrite Hakyz in Hkx; [ easy | flia Hkk ].
 -destruct Hxy as [Hxy| [Hxy| Hxy]].
  +now apply freal_eq_normalize_eq.
  +now apply freal_norm_not_norm_eq_normalize_eq.
