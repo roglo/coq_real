@@ -673,6 +673,8 @@ Definition freal_mul_series {r : radix} a b i :=
   | S i' => sequence_mul (fd2n a) (fd2n b) i'
   end.
 
+...
+
 Definition nA {r : radix} (rg := nat_ord_ring) i n u :=
   Σ (j = i + 1, n - 1), u j * rad ^ (n - 1 - j).
 
@@ -2091,6 +2093,11 @@ destruct (LPO_fst (A_ge_1 j ayz)) as [H1| H1].
         remember (rad * (j + k + 2)) as nk eqn:Hnk.
         remember (rad ^ (nk - j - 1)) as sk eqn:Hsk.
         move sk before nk.
+unfold freal_add_to_seq in H6.
+unfold freal_add_series in H6.
+rewrite <- Hyx in H6.
+unfold d2n, numbers_to_digits in H6.
+Print A_ge_1.
 ...
 unfold nA in Hkk.
 rewrite summation_eq_compat with (h := λ j, (rad - 1) * (rad ^ (nk - 1 - j))) in Hkk.
