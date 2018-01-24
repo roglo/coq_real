@@ -1299,8 +1299,6 @@ fold n s rk.
 now destruct (lt_dec (nA i n u mod s * rk) (s * (rk - 1))).
 Qed.
 
-...
-(* voir s'il n'y a pas une condition plus simple *)
 Theorem A_ge_1_true_iff {r : radix} : ∀ i u k,
   let n := rad * (i + k + 3) in
   let s := rad ^ (n - i - 1) in
@@ -1322,9 +1320,10 @@ Qed.
 Theorem all_A_ge_1_true_iff {r : radix} : ∀ i u,
   (∀ k, A_ge_1 i u k = true) ↔
   ∀ k,
-  let n := rad * (i + k + 2) in
+  let n := rad * (i + k + 3) in
   let s := rad ^ (n - i - 1) in
-  nA i n u mod s = s - 1.
+  let rk := rad ^ S k in
+  nA i n u mod s * rk ≥ s * (rk - 1).
 Proof.
 intros.
 split.
@@ -1345,8 +1344,9 @@ split.
 -intros Hk * Hij.
  specialize (Hk j).
  apply A_ge_1_true_iff in Hk.
- remember (rad * (i + j + 2)) as n eqn:Hn.
+ remember (rad * (i + j + 3)) as n eqn:Hn.
  remember (rad ^ (n - i - 1)) as s eqn:Hs.
+ remember (S j) as sj eqn:Hsj.
  move s before n.
  assert (Hsz : s ≠ 0) by now subst s; apply Nat.pow_nonzero.
  rename Hk into HnA.
@@ -1359,22 +1359,22 @@ split.
    destruct rad; [ lia | simpl in Hm; lia ].
   *rewrite Hs in HnA.
    rewrite power_summation in HnA; [ | easy ].
-   rewrite Nat.add_comm, Nat.add_sub in HnA.
+   rewrite Nat.add_comm in HnA.
    rewrite summation_mul_distr_l in HnA; simpl in HnA.
    unfold nA in HnA.
    rewrite summation_rtl in HnA.
-   rewrite summation_shift in HnA; [ | lia ].
+   rewrite summation_shift in HnA; [ | flia Hm ].
    rewrite summation_eq_compat
      with (h := λ j, u (n - 1 - j) * rad ^ j) in HnA.
   --replace (n - 1 - (i + 1)) with m in HnA by lia.
     assert (n - 1 - m ≤ j ≤ n - 1). {
-      split; [ lia | rewrite Hn ].
-      destruct rad; [ lia | simpl; lia ].
+      split; [ flia Hm Hij | rewrite Hn ].
+      destruct rad; [ lia | simpl; flia ].
     }
     remember (n - 1) as p.
     clear n Hn Hm Heqp.
     rename p into n.
-    clear - Hu HnA H.
+    clear - Hu Hsj HnA H.
     set (rg := nat_ord_ring).
     assert
       (H1 : ∀ m,
@@ -1386,11 +1386,17 @@ split.
       intros i Him; simpl.
       unfold NPeano.Nat.le.
       apply Nat.mul_le_mono_r.
-      specialize (Hu (n - i)); lia.
+      specialize (Hu (n - i)); flia Hu.
     }
-    revert n HnA j H H1.
+    revert n H1 j Hsj HnA H.
     induction m; intros.
    ++do 2 rewrite summation_only_one in HnA.
+     rewrite Nat.sub_0_r, Nat.pow_0_r in HnA.
+     do 2 rewrite Nat.mul_1_r in HnA.
+     rewrite Nat.sub_add in HnA; [ | easy ].
+     replace j with n in * by flia H.
+     subst sj; clear H.
+...
      apply Nat.mul_cancel_r in HnA; [ | now apply Nat.pow_nonzero ].
      replace j with n by lia.
      now rewrite Nat.sub_0_r in HnA.
