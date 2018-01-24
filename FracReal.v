@@ -1401,12 +1401,7 @@ split.
       rewrite Nat.mul_1_r, Nat.mul_comm in HnA.
       apply Nat.mul_le_mono_pos_l in HnA; [ | easy ].
       specialize (Hu 0); flia Hu HnA.
-    **idtac.
-...
-destruct n.
-simpl in HnA.
-rewrite Nat.mul_1_r in HnA.
-(* exfalso : mais est-ce normal ? *)
+    **exfalso; apply Nat.nlt_ge in HnA; apply HnA; clear HnA.
 ...
      apply Nat.mul_cancel_r in HnA; [ | now apply Nat.pow_nonzero ].
      replace j with n by lia.
