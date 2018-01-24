@@ -1384,7 +1384,6 @@ split.
       apply Nat.mul_le_mono_r.
       specialize (Hu (n - 1 - k)); flia Hu.
     }
-...
     remember (n - 1) as p.
     clear n Hn Hm Heqp.
     rename p into n.
@@ -1397,11 +1396,13 @@ split.
      rewrite Nat.sub_add in HnA; [ | easy ].
      replace j with n in * by flia H.
      subst sj; clear H.
-destruct n.
-simpl in HnA.
-rewrite Nat.mul_1_r in HnA.
-(* ok *)
-Focus 2.
+     destruct n.
+    **simpl in HnA.
+      rewrite Nat.mul_1_r, Nat.mul_comm in HnA.
+      apply Nat.mul_le_mono_pos_l in HnA; [ | easy ].
+      specialize (Hu 0); flia Hu HnA.
+    **idtac.
+...
 destruct n.
 simpl in HnA.
 rewrite Nat.mul_1_r in HnA.
