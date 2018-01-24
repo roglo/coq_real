@@ -1371,24 +1371,24 @@ split.
       split; [ flia Hm Hij | rewrite Hn ].
       destruct rad; [ lia | simpl; flia ].
     }
+    set (rg := nat_ord_ring).
+    assert
+      (H1 : ∀ m,
+       Σ (i = 0, m), u (n - 1 - i) * rad ^ i ≤
+       Σ (i = 0, m), (rad - 1) * rad ^ i). {
+      intros.
+      subst rg.
+      apply (@summation_le_compat nat_ord_ring_def).
+      intros k Him; simpl.
+      unfold NPeano.Nat.le.
+      apply Nat.mul_le_mono_r.
+      specialize (Hu (n - 1 - k)); flia Hu.
+    }
 ...
     remember (n - 1) as p.
     clear n Hn Hm Heqp.
     rename p into n.
-    clear - Hu Hsj HnA H.
-    set (rg := nat_ord_ring).
-    assert
-      (H1 : ∀ m,
-       Σ (i = 0, m), u (n - i) * rad ^ i ≤
-       Σ (i = 0, m), (rad - 1) * rad ^ i). {
-      clear m HnA H; intros .
-      subst rg.
-      apply (@summation_le_compat nat_ord_ring_def).
-      intros i Him; simpl.
-      unfold NPeano.Nat.le.
-      apply Nat.mul_le_mono_r.
-      specialize (Hu (n - i)); flia Hu.
-    }
+    clear - Hu Hsj HnA H H1.
     revert n H1 j Hsj HnA H.
     induction m; intros.
    ++do 2 rewrite summation_only_one in HnA.
@@ -1397,6 +1397,15 @@ split.
      rewrite Nat.sub_add in HnA; [ | easy ].
      replace j with n in * by flia H.
      subst sj; clear H.
+destruct n.
+simpl in HnA.
+rewrite Nat.mul_1_r in HnA.
+(* ok *)
+Focus 2.
+destruct n.
+simpl in HnA.
+rewrite Nat.mul_1_r in HnA.
+(* exfalso : mais est-ce normal ? *)
 ...
      apply Nat.mul_cancel_r in HnA; [ | now apply Nat.pow_nonzero ].
      replace j with n by lia.
