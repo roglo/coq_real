@@ -1360,6 +1360,17 @@ apply Nat.div_le_mono with (c := s) in HnA; [ | easy ].
 rewrite Nat.mul_comm in HnA.
 rewrite Nat.div_mul in HnA; [ | easy ].
 assert (nA i n u * rad ^ sj / s = nA i (i + j + 2) u). {
+rewrite Hs.
+replace (n - i - 1) with (n - i - 1 - sj + sj).
+Focus 2.
+rewrite Hn, Hsj.
+specialize radix_ge_2 as Hr.
+destruct rad; [ easy | simpl; flia ].
+rewrite Nat.pow_add_r.
+rewrite Nat.div_mul_cancel_r.
+...
+PeanoNat.Nat.div_mul_cancel_r: ∀ a b c : nat, b ≠ 0 → c ≠ 0 → a * c / (b * c) = a / b
+PeanoNat.Nat.div_mul_cancel_l: ∀ a b c : nat, b ≠ 0 → c ≠ 0 → c * a / (c * b) = a / b
 ...
 
 unfold nA.
