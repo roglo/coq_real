@@ -1407,6 +1407,13 @@ Focus 2.
  rewrite summation_mul_distr_l in HnA.
  remember (S j) as sj; simpl in HnA; subst sj.
  remember (Σ (i = 0, j), (rad - 1) * rad ^ i) as x.
+(**)
+ rewrite summation_rtl in Heqx.
+ rewrite Nat.add_0_r in Heqx; subst x.
+ clear s Hs Hsz.
+ revert n Hj.
+ induction j; intros; [ flia Hj | ].
+...
  rewrite summation_rtl in HnA.
  rewrite summation_eq_compat with (h := λ k, u (i + j + 1 - k) * rad ^ k)
    in HnA.
@@ -1419,6 +1426,9 @@ Focus 2.
   clear s Hs Hsz.
   revert n Hj.
   induction j; intros; [ flia Hj | ].
+...
+  setoid_rewrite summation_split_first in HnA; [ | flia | flia ].
+  simpl in HnA; do 2 rewrite Nat.mul_1_r in HnA.
 ...
 
 Theorem all_lt_rad_A_ge_1_true_iff {r : radix} : ∀ i u,
