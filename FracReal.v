@@ -1421,6 +1421,8 @@ split.
     **destruct (eq_nat_dec j (n - S m)) as [H3| H3]; [ now rewrite H3 | ].
       assert (H4 : n - m ≤ j ≤ n) by flia H H3.
       rewrite H2 in HnA.
+rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in HnA.
+apply Nat.le_sub_le_add_r in HnA.
 ...
       apply Nat.add_cancel_r in HnA.
       apply IHm with (n := n); [ lia | easy | easy ].
