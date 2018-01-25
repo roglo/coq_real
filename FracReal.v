@@ -1361,39 +1361,37 @@ assert (H : nA i n u * rad ^ S j / s = nA i (i + j + 2) u). {
    rewrite Nat.div_mul_cancel_r; try now apply Nat.pow_nonzero.
    replace (n - i - 1 - S j) with (n - i - j - 2) by flia.
    unfold nA at 1.
-   rewrite summation_split with (e := i + j + 1); simpl.
-   +unfold nA.
-    replace (i + j + 2 - 1) with (i + j + 1) by flia.
-    rewrite summation_eq_compat with
-      (h := λ k, u k * rad ^ (i + j + 1 - k) * rad ^ (n - i - j - 2)).
-    Focus 2.
-    *intros k Hk.
-     rewrite <- Nat.mul_assoc; f_equal.
-     rewrite <- Nat.pow_add_r; f_equal.
-     flia Hj Hk.
-    *rewrite <- summation_mul_distr_r; simpl.
-     rewrite Nat.add_comm.
-     rewrite Nat.div_add; [ | now apply Nat.pow_nonzero ].
-     rewrite Nat.div_small; [ easy | ].
-     remember (n - i - j - 2) as m eqn:Hm.
-     symmetry in Hm.
-     destruct m.
-    --rewrite summation_empty; [ | flia Hj Hm ].
-      now apply Nat_pow_ge_1.
-    --rewrite power_summation; [ | easy ].
-      rewrite summation_mul_distr_l; simpl.
-      rewrite summation_shift; [ | flia Hm ].
-      replace (n - 1 - S (i + j + 1)) with m by flia Hm.
-      apply -> Nat.succ_le_mono.
+   rewrite summation_split with (e := i + j + 1); [ | flia Hj ].
+   simpl; unfold nA.
+   replace (i + j + 2 - 1) with (i + j + 1) by flia.
+   rewrite summation_eq_compat with
+     (h := λ k, u k * rad ^ (i + j + 1 - k) * rad ^ (n - i - j - 2)).
+   Focus 2.
+   +intros k Hk.
+    rewrite <- Nat.mul_assoc; f_equal.
+    rewrite <- Nat.pow_add_r; f_equal.
+    flia Hj Hk.
+   +rewrite <- summation_mul_distr_r; simpl.
+    rewrite Nat.add_comm.
+    rewrite Nat.div_add; [ | now apply Nat.pow_nonzero ].
+    rewrite Nat.div_small; [ easy | ].
+    remember (n - i - j - 2) as m eqn:Hm.
+    symmetry in Hm.
+    destruct m.
+    *rewrite summation_empty; [ | flia Hj Hm ].
+     now apply Nat_pow_ge_1.
+    *rewrite power_summation; [ | easy ].
+     rewrite summation_mul_distr_l; simpl.
+     rewrite summation_shift; [ | flia Hm ].
+     replace (n - 1 - S (i + j + 1)) with m by flia Hm.
+     apply -> Nat.succ_le_mono.
+     apply (@summation_le_compat nat_ord_ring_def).
+     intros k Hk; simpl; unfold Nat.le.
+Check Nat.mul_le_mono_nonneg.
 ...
-      apply (@summation_le_compat nat_ord_ring_def).
-      intros k Hk; simpl; unfold Nat.le.
-      apply Nat.mul_le_mono_nonneg; [ flia | | flia | ].
-     ++specialize (Hu (S (i + j + 1 + k))); flia Hu.
-     ++apply Nat.pow_le_mono; [ easy | easy | ].
-...
-enough (m - k ≤ k) by lia.
-
+     apply Nat.mul_le_mono_nonneg; [ flia | | flia | ].
+    --specialize (Hu (S (i + j + 1 + k))); flia Hu.
+    --apply Nat.pow_le_mono; [ easy | easy | ].
 ...
 }
 rewrite H in HnA.
@@ -1408,6 +1406,7 @@ Focus 2.
 -rewrite power_summation_sub_1 in HnA; [ | easy ].
  rewrite summation_mul_distr_l in HnA; simpl in HnA.
 ...
+*)
 
 Theorem all_lt_rad_A_ge_1_true_iff {r : radix} : ∀ i u,
   (∀ k, u k < rad)
