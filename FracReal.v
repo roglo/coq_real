@@ -1351,6 +1351,29 @@ split.
  assert (Hsz : s ≠ 0) by now subst s; apply Nat.pow_nonzero.
  rename Hk into HnA.
  rewrite Nat.mod_small in HnA.
++
+assert (j ≤ n - 1).
+rewrite Hn.
+specialize radix_ge_2 as Hr.
+destruct rad; [ easy | simpl; flia ].
+...
+
+(*
+HnA : 9...90..........0 ≤ u..........u0...0
+      -----============   ============-----
+       j+1   n-i-1          n-i-1      j+1
+
+indeed implies that uj=9 for j in [i+1..n-1]
+*)
+
+...
+exfalso; apply Nat.nlt_ge in HnA; apply HnA; clear HnA.
+assert (sj < n - i - 1).
+subst sj; rewrite Hn.
+specialize radix_ge_2 as Hr.
+destruct rad; [ easy | simpl; flia ].
+(* seems false *)
+...
  +remember (n - i - 1) as m eqn:Hm.
   symmetry in Hm.
   destruct m.
@@ -1388,6 +1411,7 @@ split.
     clear n Hn Hm Heqp.
     rename p into n.
     clear - Hu Hsj HnA H H1.
+...
     revert n H1 j Hsj HnA H.
     induction m; intros.
    ++do 2 rewrite summation_only_one in HnA.
@@ -1421,6 +1445,48 @@ split.
     **destruct (eq_nat_dec j (n - S m)) as [H3| H3]; [ now rewrite H3 | ].
       assert (H4 : n - m ≤ j ≤ n) by flia H H3.
       rewrite H2 in HnA.
+(*
+remember (Σ (i = 0, m), (rad - 1) * rad ^ i) as x2.
+remember ((rad - 1) * rad ^ S m) as y.
+replace (x2 + y + 1) with (1 + x2 + y) in HnA by flia.
+rewrite <- summation_mul_distr_l in Heqx2; simpl in Heqx2.
+subst x2.
+rewrite <- power_summation in HnA; [ | easy ].
+subst y.
+remember (rad ^ S m) as y.
+replace (y + (rad - 1) * y) with (rad  * y) in HnA.
+subst y.
+*)
+apply IHm with (n := n); [ apply H1 | easy | | easy ].
+rewrite <- summation_mul_distr_l; simpl.
+rewrite Nat.add_comm.
+rewrite <- power_summation; [ | easy ].
+(* faux si u = 0 tout le temps, par exemple *)
+...
+apply IHm with (n := n); [ apply H1 | easy | | easy ].
+clear IHm.
+remember (Σ (i = 0, m), u (n - i) * rad ^ i) as x1.
+remember (Σ (i = 0, m), (rad - 1) * rad ^ i) as x2.
+remember ((rad - 1) * rad ^ S m) as y.
+replace (x2 + y + 1) with (x2 + 1 + y) in HnA by flia.
+setoid_rewrite Nat.mul_add_distr_r in HnA.
+remember (x1 * rad ^ sj) as z1.
+remember ((x2 + 1) * (rad ^ sj - 1)) as z2.
+move x2 before x1; move y before x2.
+move z1 before y; move z2 before z1.
+move HnA at bottom.
+rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in HnA.
+rewrite Nat.add_sub_assoc in HnA.
+rewrite Nat.add_sub_swap in HnA.
+Focus 2.
+rewrite Heqy, Heqz2, Heqx2.
+
+...
+
+apply Nat.add_le_mono_r in HnA.
+unfold ge.
+
+...
 rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in HnA.
 apply Nat.le_sub_le_add_r in HnA.
 ...
