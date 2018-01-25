@@ -1447,12 +1447,7 @@ split.
  assert (Hsz : s ≠ 0) by now subst s; apply Nat.pow_nonzero.
  rename Hk into HnA.
  rewrite Nat.mod_small in HnA.
- +assert (j ≤ n - 1). {
-    rewrite Hn.
-    specialize radix_ge_2 as Hr.
-    destruct rad; [ easy | simpl; flia ].
-  }
-  apply when_99000_le_uuu00 with (i0 := i) (n0 := n); [ easy | | ].
+ +apply when_99000_le_uuu00 with (i0 := i) (n0 := n); [ easy | | ].
   *rewrite Hn.
    specialize radix_ge_2 as Hr.
    destruct rad; [ flia Hr | simpl; flia Hij ].
