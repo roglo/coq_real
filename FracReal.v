@@ -1335,6 +1335,31 @@ split.
  now apply A_ge_1_true_iff.
 Qed.
 
+(*
+HnA : 9...90..........0 ≤ u..........u0...0
+      -----============   ============-----
+       j+1   n-i-1          n-i-1      j+1
+
+implies that uj=9 for j in [i+1..n-1]
+*)
+Theorem when_99000_le_uuu00 {r : radix} : ∀ u i j n,
+  i + 1 ≤ j ≤ n - i - 2
+  → (rad ^ S j - 1) * rad ^ (n - i - 1) ≤ nA i n u * rad ^ S j
+  → u j = rad - 1.
+Proof.
+intros * Hj HnA.
+remember (rad ^ (n - i - 1)) as s eqn:Hs.
+assert (Hsz : s ≠ 0) by now subst s; apply Nat.pow_nonzero.
+apply Nat.div_le_mono with (c := s) in HnA; [ | easy ].
+rewrite Nat.div_mul in HnA; [ | easy ].
+assert (nA i n u * rad ^ S j / s = nA i (i + j + 2) u). {
+  rewrite Hs.
+  replace (n - i - 1) with (n - i - 1 - S j + S j).
+  2: rewrite Nat.sub_add; [ easy | flia Hj ].
+  -rewrite Nat.pow_add_r.
+   rewrite Nat.div_mul_cancel_r; try now apply Nat.pow_nonzero.
+...
+
 Theorem all_lt_rad_A_ge_1_true_iff {r : radix} : ∀ i u,
   (∀ k, u k < rad)
   → (∀ k, A_ge_1 i u k = true) ↔ ∀ j, i < j → u j = rad - 1.
@@ -1351,11 +1376,14 @@ split.
  assert (Hsz : s ≠ 0) by now subst s; apply Nat.pow_nonzero.
  rename Hk into HnA.
  rewrite Nat.mod_small in HnA.
-+
-assert (j ≤ n - 1).
-rewrite Hn.
-specialize radix_ge_2 as Hr.
-destruct rad; [ easy | simpl; flia ].
++assert (j ≤ n - 1). {
+   rewrite Hn.
+   specialize radix_ge_2 as Hr.
+   destruct rad; [ easy | simpl; flia ].
+ }
+ Inspect 1.
+...
+
 apply Nat.div_le_mono with (c := s) in HnA; [ | easy ].
 rewrite Nat.mul_comm in HnA.
 rewrite Nat.div_mul in HnA; [ | easy ].
@@ -1368,16 +1396,6 @@ specialize radix_ge_2 as Hr.
 destruct rad; [ easy | simpl; flia ].
 rewrite Nat.pow_add_r.
 rewrite Nat.div_mul_cancel_r.
-...
-
-(*
-HnA : 9...90..........0 ≤ u..........u0...0
-      -----============   ============-----
-       j+1   n-i-1          n-i-1      j+1
-
-indeed implies that uj=9 for j in [i+1..n-1]
-*)
-
 ...
 exfalso; apply Nat.nlt_ge in HnA; apply HnA; clear HnA.
 assert (sj < n - i - 1).
