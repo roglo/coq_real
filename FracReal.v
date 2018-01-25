@@ -1375,6 +1375,25 @@ assert (H : nA i n u * rad ^ S j / s = nA i (i + j + 2) u). {
      rewrite Nat.add_comm.
      rewrite Nat.div_add; [ | now apply Nat.pow_nonzero ].
      rewrite Nat.div_small; [ easy | ].
+     remember (n - i - j - 2) as m eqn:Hm.
+     symmetry in Hm.
+     destruct m.
+    --rewrite summation_empty; [ | flia Hj Hm ].
+      now apply Nat_pow_ge_1.
+    --rewrite power_summation; [ | easy ].
+      rewrite summation_mul_distr_l; simpl.
+      rewrite summation_shift; [ | flia Hm ].
+      replace (n - 1 - S (i + j + 1)) with m by flia Hm.
+      apply -> Nat.succ_le_mono.
+...
+      apply (@summation_le_compat nat_ord_ring_def).
+      intros k Hk; simpl; unfold Nat.le.
+      apply Nat.mul_le_mono_nonneg; [ flia | | flia | ].
+     ++specialize (Hu (S (i + j + 1 + k))); flia Hu.
+     ++apply Nat.pow_le_mono; [ easy | easy | ].
+...
+enough (m - k ≤ k) by lia.
+
 ...
 }
 rewrite H in HnA.
