@@ -1343,11 +1343,12 @@ HnA : 9...90..........0 ≤ u..........u0...0
 implies that uj=9 for j in [i+1..n-1]
 *)
 Theorem when_99000_le_uuu00 {r : radix} : ∀ u i j n,
-  i + 1 ≤ j ≤ n - i - 2
+  (∀ k, u k < rad)
+  → i + 1 ≤ j ≤ n - i - 2
   → (rad ^ S j - 1) * rad ^ (n - i - 1) ≤ nA i n u * rad ^ S j
   → u j = rad - 1.
 Proof.
-intros * Hj HnA.
+intros * Hu Hj HnA.
 remember (rad ^ (n - i - 1)) as s eqn:Hs.
 assert (Hsz : s ≠ 0) by now subst s; apply Nat.pow_nonzero.
 apply Nat.div_le_mono with (c := s) in HnA; [ | easy ].
@@ -1358,6 +1359,22 @@ assert (H : nA i n u * rad ^ S j / s = nA i (i + j + 2) u). {
   2: rewrite Nat.sub_add; [ easy | flia Hj ].
   -rewrite Nat.pow_add_r.
    rewrite Nat.div_mul_cancel_r; try now apply Nat.pow_nonzero.
+   replace (n - i - 1 - S j) with (n - i - j - 2) by flia.
+   unfold nA at 1.
+   rewrite summation_split with (e := i + j + 1); simpl.
+   +unfold nA.
+    replace (i + j + 2 - 1) with (i + j + 1) by flia.
+    rewrite summation_eq_compat with
+      (h := λ k, u k * rad ^ (i + j + 1 - k) * rad ^ (n - i - j - 2)).
+    Focus 2.
+    *intros k Hk.
+     rewrite <- Nat.mul_assoc; f_equal.
+     rewrite <- Nat.pow_add_r; f_equal.
+     flia Hj Hk.
+    *rewrite <- summation_mul_distr_r; simpl.
+     rewrite Nat.add_comm.
+     rewrite Nat.div_add; [ | now apply Nat.pow_nonzero ].
+     rewrite Nat.div_small; [ easy | ].
 ...
 }
 rewrite H in HnA.
