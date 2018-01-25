@@ -1416,6 +1416,9 @@ Focus 2.
   replace (j - (j - k)) with k by flia Hk.
   f_equal; f_equal; flia Hk.
  +subst x.
+  clear s Hs Hsz.
+  revert n Hj.
+  induction j; intros; [ flia Hj | ].
 ...
 
 Theorem all_lt_rad_A_ge_1_true_iff {r : radix} : ∀ i u,
