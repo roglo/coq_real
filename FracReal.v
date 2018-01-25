@@ -1414,12 +1414,12 @@ split.
      +++enough (H3 : rad ^ S n < rad ^ S (S n)) by flia H2 H3.
         apply Nat.pow_lt_mono_r; [ easy | flia ].
      +++now apply Nat.lt_1_mul_pos; [ | apply Nat_pow_ge_1 ].
-   ++rewrite summation_split_last in HnA; [ | lia ].
-     rewrite summation_split_last in HnA; [ | lia ].
+   ++rewrite summation_split_last in HnA; [ | flia ].
+     rewrite summation_split_last in HnA; [ | flia ].
      remember (S m) as s; simpl in HnA; subst s.
      destruct (eq_nat_dec (u (n - S m)) (rad - 1)) as [H2| H2].
     **destruct (eq_nat_dec j (n - S m)) as [H3| H3]; [ now rewrite H3 | ].
-      assert (H4 : n - m ≤ j ≤ n) by lia.
+      assert (H4 : n - m ≤ j ≤ n) by flia H H3.
       rewrite H2 in HnA.
 ...
       apply Nat.add_cancel_r in HnA.
