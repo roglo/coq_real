@@ -1356,6 +1356,13 @@ assert (j ≤ n - 1).
 rewrite Hn.
 specialize radix_ge_2 as Hr.
 destruct rad; [ easy | simpl; flia ].
+apply Nat.div_le_mono with (c := s) in HnA; [ | easy ].
+rewrite Nat.mul_comm in HnA.
+rewrite Nat.div_mul in HnA; [ | easy ].
+assert (nA i n u * rad ^ sj / s = nA i (i + j + 2) u). {
+unfold nA.
+replace (i + j + 2 - 1) with (i + 1 + j) by flia.
+
 ...
 
 (*
