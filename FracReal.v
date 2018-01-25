@@ -1369,14 +1369,6 @@ destruct rad; [ easy | simpl; flia ].
 rewrite Nat.pow_add_r.
 rewrite Nat.div_mul_cancel_r.
 ...
-PeanoNat.Nat.div_mul_cancel_r: ∀ a b c : nat, b ≠ 0 → c ≠ 0 → a * c / (b * c) = a / b
-PeanoNat.Nat.div_mul_cancel_l: ∀ a b c : nat, b ≠ 0 → c ≠ 0 → c * a / (c * b) = a / b
-...
-
-unfold nA.
-replace (i + j + 2 - 1) with (i + 1 + j) by flia.
-
-...
 
 (*
 HnA : 9...90..........0 ≤ u..........u0...0
