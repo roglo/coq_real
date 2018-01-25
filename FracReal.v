@@ -1352,12 +1352,25 @@ remember (rad ^ (n - i - 1)) as s eqn:Hs.
 assert (Hsz : s ≠ 0) by now subst s; apply Nat.pow_nonzero.
 apply Nat.div_le_mono with (c := s) in HnA; [ | easy ].
 rewrite Nat.div_mul in HnA; [ | easy ].
-assert (nA i n u * rad ^ S j / s = nA i (i + j + 2) u). {
+assert (H : nA i n u * rad ^ S j / s = nA i (i + j + 2) u). {
   rewrite Hs.
   replace (n - i - 1) with (n - i - 1 - S j + S j).
   2: rewrite Nat.sub_add; [ easy | flia Hj ].
   -rewrite Nat.pow_add_r.
    rewrite Nat.div_mul_cancel_r; try now apply Nat.pow_nonzero.
+...
+}
+rewrite H in HnA.
+unfold nA in HnA.
+rewrite summation_shift in HnA; [ | flia Hj ].
+replace (i + j + 2 - 1 - (i + 1)) with j in HnA by flia Hj.
+rewrite summation_eq_compat with (h := λ k, u (i + 1 + k) * rad ^ (j - k))
+  in HnA.
+Focus 2.
+-intros k Hk.
+ f_equal; f_equal; flia.
+-rewrite power_summation_sub_1 in HnA; [ | easy ].
+ rewrite summation_mul_distr_l in HnA; simpl in HnA.
 ...
 
 Theorem all_lt_rad_A_ge_1_true_iff {r : radix} : ∀ i u,
