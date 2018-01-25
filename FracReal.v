@@ -1353,7 +1353,11 @@ remember (rad ^ (n - i - 1)) as s eqn:Hs.
 assert (Hsz : s ≠ 0) by now subst s; apply Nat.pow_nonzero.
 apply Nat.div_le_mono with (c := s) in HnA; [ | easy ].
 rewrite Nat.div_mul in HnA; [ | easy ].
-assert (H : nA i n u * rad ^ S j / s = nA i (i + j + 2) u). {
+assert
+  (H :
+   nA i n u * rad ^ S j / s =
+   nA i (i + j + 2) u + nA (i + j + 2) n u * rad ^ S j / s). {
+...
   rewrite Hs.
   replace (n - i - 1) with (n - i - 1 - S j + S j).
   2: rewrite Nat.sub_add; [ easy | flia Hj ].
@@ -1387,7 +1391,6 @@ assert (H : nA i n u * rad ^ S j / s = nA i (i + j + 2) u). {
      apply -> Nat.succ_le_mono.
      apply (@summation_le_compat nat_ord_ring_def).
      intros k Hk; simpl; unfold Nat.le.
-Check Nat.mul_le_mono_nonneg.
 ...
      apply Nat.mul_le_mono_nonneg; [ flia | | flia | ].
     --specialize (Hu (S (i + j + 1 + k))); flia Hu.
@@ -1395,7 +1398,7 @@ Check Nat.mul_le_mono_nonneg.
 ...
 }
 rewrite H in HnA.
-unfold nA in HnA.
+unfold nA at 1 in HnA.
 rewrite summation_shift in HnA; [ | flia Hj ].
 replace (i + j + 2 - 1 - (i + 1)) with j in HnA by flia Hj.
 rewrite summation_eq_compat with (h := λ k, u (i + 1 + k) * rad ^ (j - k))
@@ -1404,7 +1407,8 @@ Focus 2.
 -intros k Hk.
  f_equal; f_equal; flia.
 -rewrite power_summation_sub_1 in HnA; [ | easy ].
- rewrite summation_mul_distr_l in HnA; simpl in HnA.
+ rewrite summation_mul_distr_l in HnA.
+ remember (S j) as sj; simpl in HnA; subst sj.
 ...
 *)
 
