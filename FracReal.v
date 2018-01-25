@@ -1402,10 +1402,18 @@ split.
       apply Nat.mul_le_mono_pos_l in HnA; [ | easy ].
       specialize (Hu 0); flia Hu HnA.
     **exfalso; apply Nat.nlt_ge in HnA; apply HnA; clear HnA.
-...
-     apply Nat.mul_cancel_r in HnA; [ | now apply Nat.pow_nonzero ].
-     replace j with n by lia.
-     now rewrite Nat.sub_0_r in HnA.
+      eapply le_lt_trans with (m := (rad - 1) * rad ^ S (S n)).
+    ---apply Nat.mul_le_mono_nonneg_r; [ flia | ].
+       specialize (Hu (S n)); flia Hu.
+    ---rewrite Nat.pow_succ_r at 1; [ | flia ].
+       rewrite Nat.mul_comm, <- Nat.mul_assoc.
+       apply Nat.mul_lt_mono_pos_l; [ easy | ].
+       rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+       rewrite Nat.mul_comm, <- Nat.pow_succ_r; [ | flia ].
+       enough (H2 : 1 < rad ^ S n).
+     +++enough (H3 : rad ^ S n < rad ^ S (S n)) by flia H2 H3.
+        apply Nat.pow_lt_mono_r; [ easy | flia ].
+     +++now apply Nat.lt_1_mul_pos; [ | apply Nat_pow_ge_1 ].
    ++rewrite summation_split_last in HnA; [ | lia ].
      rewrite summation_split_last in HnA; [ | lia ].
      remember (S m) as s; simpl in HnA; subst s.
@@ -1413,6 +1421,7 @@ split.
     **destruct (eq_nat_dec j (n - S m)) as [H3| H3]; [ now rewrite H3 | ].
       assert (H4 : n - m ≤ j ≤ n) by lia.
       rewrite H2 in HnA.
+...
       apply Nat.add_cancel_r in HnA.
       apply IHm with (n := n); [ lia | easy | easy ].
     **assert (H3 : u (n - S m) < rad - 1). {
