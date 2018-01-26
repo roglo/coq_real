@@ -1340,15 +1340,16 @@ HnA : 9...90..........0 ≤ u..........u0...0
       -----============   ============-----
        j+1   n-i-1          n-i-1      j+1
 
-implies that uj=9 for j in [i+1..n-1]
+implies that uk=9 for k in [i+1..j-1]
 *)
-Theorem when_99000_le_uuu00 {r : radix} : ∀ u i j n,
+Theorem when_99000_le_uuu00 {r : radix} : ∀ u i j k n,
   (∀ k, u k < rad)
-  → i + 1 ≤ j ≤ n - i - 2
   → (rad ^ S j - 1) * rad ^ (n - i - 1) ≤ nA i n u * rad ^ S j
-  → u j = rad - 1.
+  → S j ≤ n - i - 1
+  → i + 1 ≤ k ≤ i + j + 1
+  → u k = rad - 1.
 Proof.
-intros * Hu Hj HnA.
+intros * Hu HnA Hj Hk.
 remember (rad ^ (n - i - 1)) as s eqn:Hs.
 assert (Hsz : s ≠ 0) by now subst s; apply Nat.pow_nonzero.
 apply Nat.div_le_mono with (c := s) in HnA; [ | easy ].
@@ -1356,7 +1357,8 @@ rewrite Nat.div_mul in HnA; [ | easy ].
 assert (H : nA i n u * rad ^ S j / s = nA i (i + j + 2) u). {
   rewrite Hs.
   replace (n - i - 1) with (n - i - 1 - S j + S j).
-  2: rewrite Nat.sub_add; [ easy | flia Hj ].
+  Focus 2.
+  -now apply Nat.sub_add.
   -rewrite Nat.pow_add_r.
    rewrite Nat.div_mul_cancel_r; try now apply Nat.pow_nonzero.
    replace (n - i - 1 - S j) with (n - i - j - 2) by flia.
@@ -1384,15 +1386,15 @@ assert (H : nA i n u * rad ^ S j / s = nA i (i + j + 2) u). {
      rewrite summation_eq_compat with
        (h := λ k, u (S (i + j + 1 + m - k)) * rad ^ k).
      --apply (@summation_le_compat nat_ord_ring_def).
-       intros k Hk; simpl; unfold Nat.le.
+       intros p Hp; simpl; unfold Nat.le.
        apply Nat.mul_le_mono_r.
-       specialize (Hu (S (i + j + 1 + m - k))); flia Hu.
-     --intros k Hk.
-       f_equal; f_equal; [ flia Hk | flia Hm Hk ].
-   +intros k Hk.
+       specialize (Hu (S (i + j + 1 + m - p))); flia Hu.
+     --intros p Hp.
+       f_equal; f_equal; [ flia Hp | flia Hm Hp ].
+   +intros p Hp.
     rewrite <- Nat.mul_assoc; f_equal.
     rewrite <- Nat.pow_add_r; f_equal.
-    flia Hj Hk.
+    flia Hj Hp.
 }
 rewrite H in HnA; clear H.
 unfold nA at 1 in HnA.
@@ -1401,7 +1403,7 @@ replace (i + j + 2 - 1 - (i + 1)) with j in HnA by flia Hj.
 rewrite summation_eq_compat with (h := λ k, u (i + 1 + k) * rad ^ (j - k))
   in HnA.
 Focus 2.
--intros k Hk.
+-intros p Hp.
  f_equal; f_equal; flia.
 -rewrite power_summation_sub_1 in HnA; [ | easy ].
  rewrite summation_mul_distr_l in HnA.
@@ -1410,8 +1412,8 @@ Focus 2.
  rewrite summation_rtl in Heqx.
  rewrite Nat.add_0_r in Heqx; subst x.
  clear s Hs Hsz.
- revert n Hj.
- induction j; intros; [ flia Hj | ].
+ revert n i j HnA Hj Hk.
+ induction k; intros; [ flia Hk | ].
 ...
 
  rewrite summation_rtl in HnA.
@@ -1432,6 +1434,7 @@ Focus 2.
   setoid_rewrite summation_split_first in HnA; [ | flia | flia ].
   simpl in HnA; do 2 rewrite Nat.mul_1_r in HnA.
 ...
+*)
 
 Theorem all_lt_rad_A_ge_1_true_iff {r : radix} : ∀ i u,
   (∀ k, u k < rad)
@@ -1449,11 +1452,13 @@ split.
  assert (Hsz : s ≠ 0) by now subst s; apply Nat.pow_nonzero.
  rename Hk into HnA.
  rewrite Nat.mod_small in HnA.
- +apply when_99000_le_uuu00 with (i0 := i) (n0 := n); [ easy | | ].
+ +apply when_99000_le_uuu00 with (i0 := i) (j0 := j) (n0 := n).
+  *easy.
+  *now rewrite <- Hsj, <- Hs, Nat.mul_comm.
   *rewrite Hn.
    specialize radix_ge_2 as Hr.
-   destruct rad; [ flia Hr | simpl; flia Hij ].
-  *now rewrite <- Hsj, <- Hs, Nat.mul_comm.
+   destruct rad; [ easy | simpl; flia ].
+  *flia Hij.
  +rewrite Hs.
   apply nA_dig_seq_ub; [ easy | intros; apply Hu | ].
   rewrite Hn.
