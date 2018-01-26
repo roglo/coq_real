@@ -99,8 +99,6 @@ Hint Resolve radix_gt_0 radix_ge_1 radix_gt_1 radix_ne_0 radix_ge_2.
 
 Record digit {r : radix} := mkdig { dig : nat; digit_lt_radix : dig < rad }.
 
-Hint Resolve digit_lt_radix.
-
 Definition digit_0 {r : radix} := mkdig _ 0 radix_gt_0.
 
 (* the proof that x≤y is unique; this is proved in Coq library, theorem
@@ -117,8 +115,6 @@ f_equal.
 apply le_unique.
 Qed.
 
-Check digit_lt_radix.
-
 Theorem digit_le_pred_radix {r : radix} : ∀ d, dig d ≤ rad - 1.
 Proof.
 intros.
@@ -126,6 +122,8 @@ specialize (digit_lt_radix d); lia.
 Qed.
 
 Definition d2n {r : radix} u (i : nat) := dig (u i).
+
+Hint Resolve digit_lt_radix digit_le_pred_radix.
 
 (* Frac Real *)
 
@@ -1318,6 +1316,35 @@ destruct (lt_dec (nA i n u mod s * rk) (s * (rk - 1))) as [H1| H1].
 -split; [ flia H1 | easy ].
 Qed.
 
+Theorem new_all_A_ge_1_true_iff {r : radix} : ∀ i u,
+  (∀ k, A_ge_1 i u k = true) ↔
+  ∀ k,
+  let n := rad * (i + k + 3) in
+  let s := rad ^ (n - i - 1) in
+  nA i n u mod s = rad ^ S k - 1.
+Proof.
+intros.
+split.
+-intros Hk *.
+ specialize (Hk k) as H1.
+ apply A_ge_1_true_iff in H1.
+ fold n s in H1.
+ specialize (Hk (n - i - 2)) as H2.
+ apply A_ge_1_true_iff in H2.
+ assert (Hin : i + 1 < n). {
+   unfold n.
+   specialize radix_ge_2 as Hr.
+   destruct rad; [ easy | simpl; flia ].
+ }
+ move Hin before s.
+ replace (S (n - i - 2)) with (n - i - 1) in H2 by flia Hin.
+ fold s in H2.
+ replace (i + (n - i - 2) + 3) with (n + 1) in H2 by flia Hin.
+ set (n1 := rad * (n + 1)) in H2.
+ set (s1 := rad ^ (n1 - i - 1)) in H2.
+ move n1 before s; move s1 before n1.
+...
+
 Theorem all_A_ge_1_true_iff {r : radix} : ∀ i u,
   (∀ k, A_ge_1 i u k = true) ↔
   ∀ k,
@@ -2000,16 +2027,43 @@ remember
   (freal_add_series nz
      (freal_normalize {| freal := freal_add_to_seq ny nx |})) as ayx eqn:Hayx.
 move ayx before ayz.
+apply digit_eq_eq.
 destruct (LPO_fst (A_ge_1 j ayz)) as [H1| H1].
--specialize (proj1 (all_A_ge_1_true_iff _ _) H1) as H2.
+-simpl.
+ specialize (proj1 (all_A_ge_1_true_iff _ _) H1) as H2.
  clear H1; rename H2 into H1.
- apply digit_eq_eq; simpl.
  specialize (H1 0) as H2.
  rewrite Nat.add_0_r in H2; simpl in H2.
+ rewrite Nat.mul_1_r in H2.
  remember (rad * (j + 3)) as n eqn:Hn.
  remember (rad ^ (n - j - 1)) as s eqn:Hs.
- rewrite Nat.mul_1_r in H2.
  move s before n.
+ destruct (LPO_fst (A_ge_1 j ayx)) as [H3| H3].
+ +simpl.
+  specialize (proj1 (all_A_ge_1_true_iff _ _) H3) as H4.
+  clear H3; rename H4 into H3.
+  move H3 before H1.
+  specialize (H3 0) as H4.
+  rewrite Nat.add_0_r in H4.
+  simpl in H4; rewrite <- Hn, <- Hs in H4.
+  rewrite Nat.mul_1_r in H4.
+(**)
+specialize (H3 (n - j - 2)) as H5.
+assert (Hjn : j + 1 < n). {
+  rewrite Hn.
+  specialize radix_ge_2 as Hr.
+  destruct rad as [| rr]; [ easy | simpl; flia ].
+}
+replace (S (n - j - 2)) with (n - j - 1) in H5 by flia Hjn.
+rewrite <- Hs in H5.
+replace (j + (n - j - 2) + 3) with (n + 1) in H5 by flia Hjn.
+remember (rad * (n + 1)) as n1 eqn:Hn1; simpl in H5.
+remember (rad ^ (n1 - j -  1)) as s1 eqn:Hs1; simpl in H5.
+move n1 before s; move s1 before n1.
+move H5 before H4.
+move Hn1 before Hs; move Hs1 before Hn1.
+
+...
  assert (Hsz : s ≠ 0) by (now rewrite Hs; apply Nat.pow_nonzero).
  assert (H3 : ∀ i, ayz i ≤ 2 * (rad - 1)). {
    intros.
