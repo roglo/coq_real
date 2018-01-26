@@ -1435,6 +1435,10 @@ Focus 2.
    rewrite summation_eq_compat with (h := λ k, (rad - 1) * rad ^ k) in HnA.
    Focus 2.
    *intros p Hp; f_equal; f_equal; flia Hp.
+clear n Hj.
+(* induction on k, perhaps? *)
+...
+
    *revert n i HnA Hj k Hk.
     induction j; intros.
    --do 2 rewrite summation_only_one in HnA.
