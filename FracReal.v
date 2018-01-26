@@ -686,12 +686,12 @@ Definition A_ge_1 {r : radix} i u k :=
 Definition numbers_to_digits {r : radix} u i :=
   match LPO_fst (A_ge_1 i u) with
   | inl _ =>
-      let n := rad * (i + 2) in
+      let n := rad * (i + 3) in
       let s := rad ^ (n - i - 1) in
       let d := u i + nA i n u / s in
       mkdig _ ((d + 1) mod rad) (Nat.mod_upper_bound (d + 1) rad radix_ne_0)
   | inr (exist _ l _) =>
-      let n := rad * (i + l + 2) in
+      let n := rad * (i + l + 3) in
       let s := rad ^ (n - i - 1) in
       let d := u i + nA i n u / s in
       mkdig _ (d mod rad) (Nat.mod_upper_bound d rad radix_ne_0)
@@ -1468,40 +1468,34 @@ rewrite summation_eq_compat with (h := λ k, u (i + 1 + k) * rad ^ (j - k))
  f_equal; f_equal; flia.
 Qed.
 
-Theorem all_lt_rad_A_ge_1_true_iff {r : radix} : ∀ i u,
+Theorem all_lt_rad_A_ge_1_true_if {r : radix} : ∀ i u,
   (∀ k, u k < rad)
-  → (∀ k, A_ge_1 i u k = true) ↔ ∀ j, i < j → u j = rad - 1.
+  → (∀ k, A_ge_1 i u k = true) → ∀ j, i < j → u j = rad - 1.
 Proof.
 intros * Hu.
-split.
--intros Hk * Hij.
- specialize (Hk j).
- apply A_ge_1_true_iff in Hk.
- remember (rad * (i + j + 3)) as n eqn:Hn.
- remember (rad ^ (n - i - 1)) as s eqn:Hs.
- remember (S j) as sj eqn:Hsj.
- move s before n.
- assert (Hsz : s ≠ 0) by now subst s; apply Nat.pow_nonzero.
- rename Hk into HnA.
- rewrite Nat.mod_small in HnA.
- +apply when_99000_le_uuu00 with (i0 := i) (j0 := j) (n0 := n).
-  *easy.
-  *now rewrite <- Hsj, <- Hs, Nat.mul_comm.
-  *rewrite Hn.
-   specialize radix_ge_2 as Hr.
-   destruct rad; [ easy | simpl; flia ].
-  *flia Hij.
- +rewrite Hs.
-  apply nA_dig_seq_ub; [ easy | intros; apply Hu | ].
-  rewrite Hn.
+intros Hk * Hij.
+specialize (Hk j).
+apply A_ge_1_true_iff in Hk.
+remember (rad * (i + j + 3)) as n eqn:Hn.
+remember (rad ^ (n - i - 1)) as s eqn:Hs.
+remember (S j) as sj eqn:Hsj.
+move s before n.
+assert (Hsz : s ≠ 0) by now subst s; apply Nat.pow_nonzero.
+rename Hk into HnA.
+rewrite Nat.mod_small in HnA.
++apply when_99000_le_uuu00 with (i0 := i) (j0 := j) (n0 := n).
+ *easy.
+ *now rewrite <- Hsj, <- Hs, Nat.mul_comm.
+ *rewrite Hn.
   specialize radix_ge_2 as Hr.
-  destruct rad; [ lia | simpl in Hn; lia ].
--intros Hij *.
- apply A_ge_1_true_iff.
- remember (rad * (i + k + 3)) as n eqn:Hn.
- remember (rad ^ (n - i - 1)) as s eqn:Hs.
- remember (S k) as sk eqn:Hsk.
-...
+  destruct rad; [ easy | simpl; flia ].
+ *flia Hij.
++rewrite Hs.
+ apply nA_dig_seq_ub; [ easy | intros; apply Hu | ].
+ rewrite Hn.
+ specialize radix_ge_2 as Hr.
+ destruct rad; [ lia | simpl in Hn; lia ].
+Qed.
 
 Theorem freal_normalize_0_all_0 {r : radix} : ∀ i,
   fd2n (freal_normalize 0) i = 0.
@@ -1534,7 +1528,7 @@ destruct (LPO_fst (A_ge_1 i u)) as [Hku| (m & Hjm & Hm)].
    rewrite freal_normalize_0_all_0, Nat.add_0_l.
    apply digit_lt_radix.
  }
- specialize (proj1 (all_lt_rad_A_ge_1_true_iff i u H1) Hku) as H2.
+ specialize (all_lt_rad_A_ge_1_true_if i u H1 Hku) as H2.
  assert (H3 : ∀ j, i < j → fd2n (freal_normalize x) j = rad - 1). {
    intros j Hj.
    specialize (H2 j Hj).
@@ -1568,7 +1562,7 @@ destruct (LPO_fst (A_ge_1 i u)) as [Hku| (m & Hjm & Hm)].
   rewrite H6 in H8.
   specialize radix_ge_2; lia.
 -apply digit_eq_eq; simpl.
- set (n := rad * (i + m + 2)).
+ set (n := rad * (i + m + 3)).
  set (s := rad ^ (n - 1 - i)).
  remember (u i) as uk eqn:Huk.
  unfold u, freal_add_series, sequence_add in Huk.
@@ -2012,8 +2006,9 @@ destruct (LPO_fst (A_ge_1 j ayz)) as [H1| H1].
  apply digit_eq_eq; simpl.
  specialize (H1 0) as H2.
  rewrite Nat.add_0_r in H2; simpl in H2.
- remember (rad * (j + 2)) as n eqn:Hn.
+ remember (rad * (j + 3)) as n eqn:Hn.
  remember (rad ^ (n - j - 1)) as s eqn:Hs.
+ rewrite Nat.mul_1_r in H2.
  move s before n.
  assert (Hsz : s ≠ 0) by (now rewrite Hs; apply Nat.pow_nonzero).
  assert (H3 : ∀ i, ayz i ≤ 2 * (rad - 1)). {
@@ -2025,6 +2020,8 @@ destruct (LPO_fst (A_ge_1 j ayz)) as [H1| H1].
    rewrite Hs.
    apply all_le_nA_le, H3.
  }
+ specialize (Nat_mod_pred_le_twice_pred (nA j n ayz) s Hsz) as H.
+...
  specialize (Nat_mod_pred_le_twice_pred _ _ Hsz H2 H4) as H.
  rewrite Nat.div_small; [ rewrite Nat.add_0_r | lia ].
  clear H2 H3 H4; rename H into H2.
