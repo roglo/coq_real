@@ -1326,23 +1326,32 @@ Proof.
 intros.
 split.
 -intros Hk *.
- specialize (Hk k) as H1.
+ subst n s.
+ remember (rad * (i + k + 3)) as n.
+ remember (rad ^ (n - i - 1)) as s.
+ specialize (Hk (n - i - 2)) as H1.
  apply A_ge_1_true_iff in H1.
- fold n s in H1.
- specialize (Hk (n - i - 2)) as H2.
- apply A_ge_1_true_iff in H2.
  assert (Hin : i + 1 < n). {
-   unfold n.
+   rewrite Heqn.
    specialize radix_ge_2 as Hr.
    destruct rad; [ easy | simpl; flia ].
  }
- move Hin before s.
- replace (S (n - i - 2)) with (n - i - 1) in H2 by flia Hin.
- fold s in H2.
- replace (i + (n - i - 2) + 3) with (n + 1) in H2 by flia Hin.
- set (n1 := rad * (n + 1)) in H2.
- set (s1 := rad ^ (n1 - i - 1)) in H2.
- move n1 before s; move s1 before n1.
+ replace (S (n - i - 2)) with (n - i - 1) in H1 by flia Hin.
+ rewrite <- Heqs in H1.
+ replace (i + (n - i - 2) + 3) with (n + 1) in H1 by flia Hin.
+ remember (rad * (n + 1)) as n1.
+ remember (rad ^ (n1 - i - 1)) as s1.
+ unfold ge in H1.
+ rewrite Nat.mul_comm in H1.
+ rewrite Heqs1 in H1.
+ rewrite Heqs in H1.
+ replace (n - i - 1) with (S (n - i - 2)) in H1 by flia Hin.
+ remember (n - i - 2) as j.
+ assert (Hj : S j ≤ n - i - 1) by flia Heqj Hin.
+ move Hj before H1.
+ subst s.
+ clear - Hj H1.
+(* oui, non, c'est pas ça... *)
 ...
 
 Theorem all_A_ge_1_true_iff {r : radix} : ∀ i u,
