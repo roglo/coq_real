@@ -1344,9 +1344,10 @@ split.
  unfold ge in H1.
  rewrite Nat.mul_comm in H1.
  rewrite Heqs1 in H1.
+ replace (n - i - 1) with (S (n - i - 2)) in Heqs by flia Hin.
  rewrite Heqs in H1.
- replace (n - i - 1) with (S (n - i - 2)) in H1 by flia Hin.
  remember (n - i - 2) as j.
+ rewrite Heqs.
  assert (Hj : S j ≤ n - i - 1) by flia Heqj Hin.
  move Hj before H1.
  subst s.
