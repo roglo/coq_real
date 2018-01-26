@@ -1497,8 +1497,11 @@ split.
   specialize radix_ge_2 as Hr.
   destruct rad; [ lia | simpl in Hn; lia ].
 -intros Hij *.
+ apply A_ge_1_true_iff.
+ remember (rad * (i + k + 3)) as n eqn:Hn.
+ remember (rad ^ (n - i - 1)) as s eqn:Hs.
+ remember (S k) as sk eqn:Hsk.
 ...
-Qed.
 
 Theorem freal_normalize_0_all_0 {r : radix} : ∀ i,
   fd2n (freal_normalize 0) i = 0.
