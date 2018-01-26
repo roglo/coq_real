@@ -5,6 +5,7 @@
 Require Import Utf8 Arith Psatz NPeano.
 Require Import Misc Summation(*Xnat*).
 
+(* "fast" lia, to improve compilation speed *)
 Tactic Notation "flia" hyp_list(Hs) := clear - Hs; lia.
 
 (* Limited Principle of Omniscience *)
@@ -1357,8 +1358,6 @@ rewrite Nat.div_mul in HnA; [ | easy ].
 assert (H : nA i n u * rad ^ S j / s = nA i (i + j + 2) u). {
   rewrite Hs.
   replace (n - i - 1) with (n - i - 1 - S j + S j).
-  Focus 2.
-  -now apply Nat.sub_add.
   -rewrite Nat.pow_add_r.
    rewrite Nat.div_mul_cancel_r; try now apply Nat.pow_nonzero.
    replace (n - i - 1 - S j) with (n - i - j - 2) by flia.
@@ -1395,6 +1394,7 @@ assert (H : nA i n u * rad ^ S j / s = nA i (i + j + 2) u). {
     rewrite <- Nat.mul_assoc; f_equal.
     rewrite <- Nat.pow_add_r; f_equal.
     flia Hj Hp.
+  -now apply Nat.sub_add.
 }
 rewrite H in HnA; clear H.
 unfold nA at 1 in HnA.
@@ -1402,9 +1402,6 @@ rewrite summation_shift in HnA; [ | flia Hj ].
 replace (i + j + 2 - 1 - (i + 1)) with j in HnA by flia Hj.
 rewrite summation_eq_compat with (h := λ k, u (i + 1 + k) * rad ^ (j - k))
   in HnA.
-Focus 2.
--intros p Hp.
- f_equal; f_equal; flia.
 -rewrite power_summation_sub_1 in HnA; [ | easy ].
  rewrite summation_mul_distr_l in HnA.
  remember (S j) as sj; simpl in HnA; subst sj.
@@ -1427,87 +1424,49 @@ Focus 2.
  setoid_rewrite summation_rtl in HnA.
  rewrite summation_eq_compat with (h := λ k, u (i + j + 1 - k) * rad ^ k)
    in HnA.
+ +symmetry in HnA.
+  rewrite summation_eq_compat with (h := λ k, (rad - 1) * rad ^ k) in HnA.
   Focus 2.
-  +intros p Hp.
-   replace (j - (j + 0 - p)) with p by flia Hp; f_equal.
-   f_equal; flia Hp.
-  +symmetry in HnA.
-   rewrite summation_eq_compat with (h := λ k, (rad - 1) * rad ^ k) in HnA.
-   Focus 2.
-   *intros p Hp; f_equal; f_equal; flia Hp.
-clear n Hj.
-(* induction on k, perhaps? *)
-...
-
-   *revert n i HnA Hj k Hk.
-    induction j; intros.
-   --do 2 rewrite summation_only_one in HnA.
-     rewrite Nat.sub_0_r, Nat.add_0_r, Nat.pow_0_r in HnA.
-     do 2 rewrite Nat.mul_1_r in HnA.
-     now replace (i + 1) with k in HnA by flia Hk.
-   --destruct (eq_nat_dec k (i + S j + 1)) as [H1| H1].
-    ++setoid_rewrite summation_split_first in HnA; [ | flia | flia ].
-      simpl in HnA.
-      rewrite Nat.sub_0_r in HnA.
-      do 2 rewrite Nat.mul_1_r in HnA.
-      rewrite <- H1 in HnA.
-      destruct (eq_nat_dec (u k) (rad - 1)) as [H2| H2]; [ easy | ].
-      exfalso.
-      assert
-        (H : Σ (i = 1, S j), (rad - 1) * rad ^ i <
-             Σ (i = 1, S j), u (k - i) * rad ^ i). {
-        specialize (Hu k).
-        flia Hu HnA H2.
-      }
-      apply Nat.nle_gt in H; apply H; clear H.
-      apply (@summation_le_compat nat_ord_ring_def); simpl; unfold Nat.le.
-      intros p Hp.
-      apply Nat.mul_le_mono_r.
-      specialize (Hu (k - p)); flia Hu.
-    ++setoid_rewrite summation_split_last in HnA; [ | flia | flia ].
-      remember (S j) as sj; simpl in HnA; subst sj.
-      replace (i + S j + 1 - S j) with (i + 1) in HnA by flia.
-      destruct n; [ flia Hj | ].
-      rewrite Nat.sub_succ_l in Hj; [ | flia Hj ].
-      rewrite Nat.sub_succ_l in Hj; [ | flia Hj ].
-      apply Nat.succ_le_mono in Hj.
-      assert (H : i + 1 ≤ k ≤ i + j + 1) by flia H1 Hk.
-      clear H1 Hk; rename H into Hk.
-...
-
- +destruct (eq_nat_dec k (i + S j + 1)) as [H1| H1].
-  Focus 2.
-  *setoid_rewrite summation_split_last in HnA; [ | flia | flia ].
-   remember (S j) as sj; simpl in HnA; subst sj.
-   rewrite Nat.sub_diag, Nat.pow_0_r in HnA.
-   do 2 rewrite Nat.mul_1_r in HnA.
-   assert
-     (H : Σ (k = 0, j), u (i + 1 + k) * rad ^ (S j - k) ≥
-          Σ (k = 0, j), (rad - 1) * rad ^ (S j - k)). {
-     specialize (Hu (i + 1 + S j)).
-     flia Hu HnA.
-   }
-...
-
- rewrite summation_rtl in HnA.
- rewrite summation_eq_compat with (h := λ k, u (i + j + 1 - k) * rad ^ k)
-   in HnA.
- Focus 2.
- +intros k Hk.
-  rewrite Nat.add_0_r.
-  replace (S j - (S j - k)) with k by flia Hk.
-  f_equal; f_equal.
-
-; flia Hk.
- +subst x.
-  clear s Hs Hsz.
-  revert n Hj.
-  induction j; intros; [ flia Hj | ].
-...
-  setoid_rewrite summation_split_first in HnA; [ | flia | flia ].
-  simpl in HnA; do 2 rewrite Nat.mul_1_r in HnA.
-...
-*)
+  *intros p Hp; f_equal; f_equal; flia Hp.
+   clear n Hj.
+  *revert i HnA k Hk.
+   induction j; intros.
+  --do 2 rewrite summation_only_one in HnA.
+    rewrite Nat.sub_0_r, Nat.add_0_r, Nat.pow_0_r in HnA.
+    do 2 rewrite Nat.mul_1_r in HnA.
+    now replace (i + 1) with k in HnA by flia Hk.
+  --setoid_rewrite summation_split_last in HnA; [ | flia | flia ].
+    remember (S j) as sj; simpl in HnA; subst sj.
+    replace (i + S j + 1 - S j) with (S i) in HnA by flia.
+    destruct (eq_nat_dec (u (S i)) (rad - 1)) as [H1| H1].
+   ++rewrite H1 in HnA.
+     apply Nat.add_cancel_r in HnA.
+     destruct (eq_nat_dec k (S i)) as [H2| H2]; [ now subst k | ].
+     apply IHj with (i := S i); [ | flia Hk H2 ].
+     rewrite HnA.
+     apply summation_eq_compat.
+     intros p Hp; f_equal; f_equal; flia.
+   ++assert
+       (H2 : Σ (i = 0, j), (rad - 1) * rad ^ i <
+             Σ (i0 = 0, j), u (i + S j + 1 - i0) * rad ^ i0). {
+       specialize (Hu (S i)) as Hui.
+       assert (Hus : u (S i) < rad - 1) by lia.
+       apply Nat.mul_lt_mono_pos_r with (p := rad ^ S j) in Hus.
+       -flia HnA Hus.
+       -now apply Nat_pow_ge_1.
+     }
+     apply Nat.nle_gt in H2.
+     exfalso; apply H2.
+     apply (@summation_le_compat nat_ord_ring_def); simpl; unfold Nat.le.
+     intros p Hp.
+     apply Nat.mul_le_mono_r.
+     specialize (Hu (i + S j + 1 - p)); flia Hu.
+ +intros p Hp.
+  replace (j - (j + 0 - p)) with p by flia Hp; f_equal.
+  f_equal; flia Hp.
+-intros p Hp.
+ f_equal; f_equal; flia.
+Qed.
 
 Theorem all_lt_rad_A_ge_1_true_iff {r : radix} : ∀ i u,
   (∀ k, u k < rad)
