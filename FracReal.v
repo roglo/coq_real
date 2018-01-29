@@ -2064,7 +2064,6 @@ move ayx before ayz.
 apply digit_eq_eq.
 destruct (LPO_fst (A_ge_1 j ayz)) as [H1| H1].
 -simpl.
-...
  specialize (proj1 (all_A_ge_1_true_iff _ _) H1) as H2.
  clear H1; rename H2 into H1.
  specialize (H1 0) as H2.
@@ -2082,6 +2081,8 @@ destruct (LPO_fst (A_ge_1 j ayz)) as [H1| H1].
   rewrite Nat.add_0_r in H4.
   simpl in H4; rewrite <- Hn, <- Hs in H4.
   rewrite Nat.mul_1_r in H4.
+...
+
 (**)
 specialize (H3 (n - j - 2)) as H5.
 assert (Hjn : j + 1 < n). {
