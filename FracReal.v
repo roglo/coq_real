@@ -1316,16 +1316,46 @@ destruct (lt_dec (nA i n u mod s * rk) (s * (rk - 1))) as [H1| H1].
 -split; [ flia H1 | easy ].
 Qed.
 
-Theorem glop {r : radix} : ∀ a b x,
-  a ≤ b
-  → x < rad ^ a
-  → x * rad ^ b ≥ (rad ^ b - 1) * rad ^ a
-  → x = rad ^ b - 1.
+Search (_ ^ S _).
+
+Theorem Nat_pow_succ_pow : ∀ a b, a ^ S b = (a ^ b - 1) * a + a.
 Proof.
-intros * Hab Hxa Hxb.
-revert a Hab x Hxa Hxb.
-induction b; intros.
--apply Nat.le_0_r in Hab; subst a.
+intros; simpl.
+destruct a; [ now rewrite Nat.mul_0_r; simpl | ].
+rewrite Nat.mul_sub_distr_r.
+rewrite Nat.mul_1_l.
+rewrite Nat.sub_add; [ flia | ].
+induction b; [ simpl; flia | ].
+simpl.
+eapply le_trans; [ apply IHb | ].
+apply Nat.mul_le_mono_r; flia.
+Qed.
+
+Theorem glop {r : radix} : ∀ a b c d x,
+  a ≤ c
+  → a + b = c + d
+  → x < rad ^ a
+  → x * rad ^ b ≥ (rad ^ c - 1) * rad ^ d
+  → x = rad ^ a - 1.
+Proof.
+intros * Hac Habcd Hxa Hxb.
+revert b c d x Hac Habcd Hxa Hxb.
+induction a; intros.
+-simpl in Hxa; simpl; flia Hxa.
+-destruct c; [ easy | ].
+ rewrite Nat_pow_succ_pow in Hxb.
+ rewrite Nat.mul_sub_distr_r in Hxb.
+ rewrite Nat.mul_1_l in Hxb.
+ rewrite Nat.mul_add_distr_r in Hxb.
+
+...
+
+rewrite glip in Hxb.
+
+
+idtac.
+
+apply Nat.le_0_r in Hxa; subst x.
  simpl in Hxa; simpl; flia Hxa.
 -destruct a.
  +rewrite Nat.pow_0_r in Hxa, Hxb.
