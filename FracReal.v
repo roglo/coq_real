@@ -1316,6 +1316,20 @@ destruct (lt_dec (nA i n u mod s * rk) (s * (rk - 1))) as [H1| H1].
 -split; [ flia H1 | easy ].
 Qed.
 
+Theorem glop {r : radix} : ∀ a b x,
+  a ≤ b
+  → x < rad ^ a
+  → x * rad ^ b ≥ (rad ^ b - 1) * rad ^ a
+  → x = rad ^ b - 1.
+Proof.
+intros * Hab Hxa Hxb.
+revert a Hab x Hxa Hxb.
+induction b; intros.
+-apply Nat.le_0_r in Hab; subst a.
+ simpl in Hxa; simpl; flia Hxa.
+-idtac.
+...
+
 Theorem all_A_ge_1_true_if {r : radix} : ∀ i u,
   (∀ k, A_ge_1 i u k = true) →
   ∀ k,
@@ -1323,6 +1337,34 @@ Theorem all_A_ge_1_true_if {r : radix} : ∀ i u,
   let s := rad ^ (n - i - 1) in
   nA i n u mod s = s - 1.
 Proof.
+intros * Hk *.
+(* faux; I must find the good goal... *)
+...
+
+subst n s.
+remember (rad * (i + k + 3)) as n eqn:Hn.
+remember (rad ^ (n - i - 1)) as s eqn:Hs.
+specialize (Hk k).
+apply A_ge_1_true_iff in Hk.
+rewrite <- Hn, <- Hs in Hk.
+replace (s * (rad ^ S k - 1)) with ((rad ^ S k - 1) * s) in Hk by flia.
+rewrite Hs in Hk.
+specialize (glop (n - i - 1) (S k) (nA i n u mod rad)) as H.
+
+
+rewrite Hs.
+apply (glop (n - i - 1)); [ easy | | ].
+now apply Nat.mod_upper_bound, Nat.pow_nonzero.
+rewrite <- Hs.
+apply Nat.mul_le_mono_r.
+...
+
+
+specialize (Hk k).
+apply A_ge_1_true_iff in Hk.
+rewrite <- Hn, <- Hs in Hk.
+...
+
 intros * Hk *.
 subst n s.
 assert
@@ -1346,6 +1388,10 @@ simpl in H1; subst rk.
 remember (rad * (i + s + 3)) as n1 eqn:Hn1.
 remember (rad ^ (n1 - i - 1)) as s1 eqn:Hs1.
 move s1 before n1.
+...
+
+
+
 assert (Hss : S s ≤ s1). {
   rewrite Hs1, Hn1.
   apply Nat.le_trans with (m := rad * (i + s + 3) - i - 1).
