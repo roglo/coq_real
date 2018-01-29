@@ -75,22 +75,22 @@ Class radix := { rad : nat; radix_ge_2 : rad ≥ 2 }.
 
 Theorem radix_gt_0 {r : radix} : 0 < rad.
 Proof.
-destruct r as (rad, radi); simpl; lia.
+destruct r as (rad, radi); simpl; flia radi.
 Qed.
 
 Theorem radix_ge_1 {r : radix} : 1 ≤ rad.
 Proof.
-destruct r as (rad, radi); simpl; lia.
+destruct r as (rad, radi); simpl; flia radi.
 Qed.
 
 Theorem radix_gt_1 {r : radix} : 1 < rad.
 Proof.
-destruct r as (rad, radi); simpl; lia.
+destruct r as (rad, radi); simpl; flia radi.
 Qed.
 
 Theorem radix_ne_0 {r : radix} : rad ≠ 0.
 Proof.
-destruct r as (rad, radi); simpl; lia.
+destruct r as (rad, radi); simpl; flia radi.
 Qed.
 
 Hint Resolve radix_gt_0 radix_ge_1 radix_gt_1 radix_ne_0 radix_ge_2.
@@ -118,7 +118,7 @@ Qed.
 Theorem digit_le_pred_radix {r : radix} : ∀ d, dig d ≤ rad - 1.
 Proof.
 intros.
-specialize (digit_lt_radix d); lia.
+specialize (digit_lt_radix d); flia.
 Qed.
 
 Definition d2n {r : radix} u (i : nat) := dig (u i).
@@ -1151,7 +1151,7 @@ unfold nA.
 rewrite summation_eq_compat with (h := λ j, (rad - 1) * rad ^ (n - 1 - j)).
  Focus 2.
  intros j Hij.
- replace j with (i + (j - i - 1) + 1) at 1 by lia.
+ replace j with (i + (j - i - 1) + 1) at 1 by flia Hij.
  now rewrite Hj.
 
  rewrite <- summation_mul_distr_l.
@@ -1164,13 +1164,13 @@ rewrite summation_eq_compat with (h := λ j, (rad - 1) * rad ^ (n - 1 - j)).
    rewrite <- power_summation; [ symmetry | easy ].
    rewrite <- Nat.sub_succ_l; [ | now apply Nat_pow_ge_1 ].
    rewrite Nat.sub_succ, Nat.sub_0_r.
-   f_equal; lia.
+   f_equal; flia Hin.
 
-   intros; f_equal; lia.
+   intros k Hk; f_equal; flia Hk.
 
-  replace (n - i - 1) with 0 by lia.
-  rewrite summation_empty; [ | lia ].
-  rewrite Nat.mul_0_r; simpl; lia.
+  replace (n - i - 1) with 0 by flia Hin.
+  rewrite summation_empty; [ | flia Hin ].
+  rewrite Nat.mul_0_r; simpl; flia.
 Qed.
 
 Theorem freal_normalize_0 {r : radix} : ∀ i,
@@ -1185,7 +1185,7 @@ destruct (LPO_fst (is_9_strict_after (λ _ : nat, digit_0) i)) as [H| H].
  unfold is_9_strict_after in H.
  exfalso.
  destruct rad as [| rr]; [ easy | ].
- destruct rr; [ lia | easy ].
+ destruct rr; [ flia Hr2 | easy ].
 -easy.
 Qed.
 
@@ -1202,7 +1202,7 @@ destruct (LPO_fst (is_9_strict_after (freal x) i)) as [Hxi| Hxi].
  unfold fd2n in Hx; unfold d2n in Hsx.
  rewrite Hx in Hsx.
  rewrite <- Nat.sub_succ_l in Hsx; [ | easy ].
- rewrite Nat.sub_succ, Nat.sub_0_r in Hsx; lia.
+ rewrite Nat.sub_succ, Nat.sub_0_r in Hsx; flia Hsx.
 -destruct Hxi as (j & Hjj & Hj).
  apply is_9_strict_after_false_iff in Hj.
  unfold fd2n in Hx; unfold d2n in Hj.
@@ -1340,10 +1340,37 @@ clear Hk; rename H into Hk; move Hk after k.
 remember (rad * (i + k + 3)) as n eqn:Hn.
 remember (rad ^ (n - i - 1)) as s eqn:Hs.
 move s before n.
+specialize (Hk s) as H1.
+remember (rad ^ S s) as rk eqn:Hrk.
+simpl in H1; subst rk.
+remember (rad * (i + s + 3)) as n1 eqn:Hn1.
+remember (rad ^ (n1 - i - 1)) as s1 eqn:Hs1.
+move s1 before n1.
+assert (Hss : S s ≤ s1). {
+  rewrite Hs1, Hn1.
+  apply Nat.le_trans with (m := rad * (i + s + 3) - i - 1).
+  2: apply Nat.lt_le_incl.
+  2: now apply Nat.pow_gt_lin_r.
+  specialize radix_ge_2 as Hr.
+  destruct rad; [ easy | simpl; flia ].
+}
+assert (Hnn : n ≤ n1). {
+  rewrite Hn1, Hs.
+  apply Nat.le_trans with (m := rad * (i + (n - i - 1) + 3)).
+  2: apply Nat.mul_le_mono_l.
+  2: apply Nat.add_le_mono_r.
+  2: apply Nat.add_le_mono_l.
+  2: apply Nat.lt_le_incl.
+  2: now apply Nat.pow_gt_lin_r.
+  specialize radix_ge_2 as Hr.
+  destruct rad; [ easy | simpl; flia ].
+}
+clear -H1 Hss Hnn.
+revert i s n1 s1 H1 Hss Hnn.
+induction n; intros.
+-unfold nA; simpl.
 ...
 
-specialize (Hk k) as H1.
-remember (rad ^ S k) as rk eqn:Hrk.
 simpl in H1; rewrite <- Hn, <- Hs in H1; subst rk.
 assert (Hni : S k ≤ n - i - 1). {
   rewrite Hn.
