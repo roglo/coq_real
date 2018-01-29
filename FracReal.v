@@ -1325,7 +1325,6 @@ Theorem all_A_ge_1_true_if {r : radix} : ∀ i u,
 Proof.
 intros * Hk *.
 subst n s.
-(*
 assert
   (H :
    ∀ k,
@@ -1338,12 +1337,31 @@ assert
   flia Hk.
 }
 clear Hk; rename H into Hk; move Hk after k.
-remember (rad * (i + k + 3)) as n.
+remember (rad * (i + k + 3)) as n eqn:Hn.
+remember (rad ^ (n - i - 1)) as s eqn:Hs.
+move s before n.
+...
+
+specialize (Hk k) as H1.
+remember (rad ^ S k) as rk eqn:Hrk.
+simpl in H1; rewrite <- Hn, <- Hs in H1; subst rk.
+assert (Hni : S k ≤ n - i - 1). {
+  rewrite Hn.
+  specialize radix_ge_2 as Hr.
+  destruct rad as [| rr]; [ easy | simpl; flia ].
+}
+clear - H1 Hni.
+revert i n s H1 Hni.
+induction k; intros.
+-rewrite Nat.pow_1_r in H1.
+...
+
 assert (Hin : i + 1 < n). {
-  rewrite Heqn.
+  rewrite Hn.
   specialize radix_ge_2 as Hr.
   destruct rad; [ easy | simpl; flia ].
 }
+
 *)
 revert i Hk.
 induction k; intros.
