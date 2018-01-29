@@ -1316,42 +1316,42 @@ destruct (lt_dec (nA i n u mod s * rk) (s * (rk - 1))) as [H1| H1].
 -split; [ flia H1 | easy ].
 Qed.
 
-Theorem new_all_A_ge_1_true_iff {r : radix} : ∀ i u,
-  (∀ k, A_ge_1 i u k = true) ↔
+Theorem all_A_ge_1_true_if {r : radix} : ∀ i u,
+  (∀ k, A_ge_1 i u k = true) →
   ∀ k,
   let n := rad * (i + k + 3) in
   let s := rad ^ (n - i - 1) in
   nA i n u mod s = rad ^ S k - 1.
 Proof.
-intros.
-split.
--intros Hk *.
- subst n s.
- remember (rad * (i + k + 3)) as n.
- remember (rad ^ (n - i - 1)) as s.
- specialize (Hk (n - i - 2)) as H1.
- apply A_ge_1_true_iff in H1.
- assert (Hin : i + 1 < n). {
-   rewrite Heqn.
-   specialize radix_ge_2 as Hr.
-   destruct rad; [ easy | simpl; flia ].
- }
- replace (S (n - i - 2)) with (n - i - 1) in H1 by flia Hin.
- rewrite <- Heqs in H1.
- replace (i + (n - i - 2) + 3) with (n + 1) in H1 by flia Hin.
- remember (rad * (n + 1)) as n1.
- remember (rad ^ (n1 - i - 1)) as s1.
- unfold ge in H1.
- rewrite Nat.mul_comm in H1.
- rewrite Heqs1 in H1.
- replace (n - i - 1) with (S (n - i - 2)) in Heqs by flia Hin.
- rewrite Heqs in H1.
- remember (n - i - 2) as j.
- rewrite Heqs.
- assert (Hj : S j ≤ n - i - 1) by flia Heqj Hin.
- move Hj before H1.
- subst s.
- clear - Hj H1.
+intros * Hk *.
+subst n s.
+remember (rad * (i + k + 3)) as n.
+remember (rad ^ (n - i - 1)) as s.
+move s before n.
+assert (Hin : i + 1 < n). {
+  rewrite Heqn.
+  specialize radix_ge_2 as Hr.
+  destruct rad; [ easy | simpl; flia ].
+}
+...
+specialize (Hk (n - i - 2)) as H1.
+apply A_ge_1_true_iff in H1.
+replace (S (n - i - 2)) with (n - i - 1) in H1 by flia Hin.
+rewrite <- Heqs in H1.
+replace (i + (n - i - 2) + 3) with (n + 1) in H1 by flia Hin.
+remember (rad * (n + 1)) as n1.
+remember (rad ^ (n1 - i - 1)) as s1.
+unfold ge in H1.
+rewrite Nat.mul_comm in H1.
+rewrite Heqs1 in H1.
+replace (n - i - 1) with (S (n - i - 2)) in Heqs by flia Hin.
+rewrite Heqs in H1.
+remember (n - i - 2) as j.
+rewrite Heqs.
+assert (Hj : S j ≤ n - i - 1) by flia Heqj Hin.
+move Hj before H1.
+subst s.
+clear - Hj H1.
 (* oui, non, c'est pas ça... *)
 ...
 
