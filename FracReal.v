@@ -1316,15 +1316,16 @@ destruct (lt_dec (nA i n u mod s * rk) (s * (rk - 1))) as [H1| H1].
 -split; [ flia H1 | easy ].
 Qed.
 
-(*
 Theorem all_A_ge_1_true_if {r : radix} : ∀ i u,
   (∀ k, A_ge_1 i u k = true) →
   ∀ k,
-  let n := i + k + 2 in
-  nA i n u mod rad ^ S k = rad ^ S k - 1.
+  let n := rad * (i + k + 3) in
+  let s := rad ^ (n - i - 1) in
+  nA i n u mod s = s - 1.
 Proof.
 intros * Hk *.
-subst n.
+subst n s.
+(*
 assert
   (H :
    ∀ k,
@@ -1343,9 +1344,33 @@ assert (Hin : i + 1 < n). {
   specialize radix_ge_2 as Hr.
   destruct rad; [ easy | simpl; flia ].
 }
-revert i Hk n Heqn Hin.
+*)
+revert i Hk.
 induction k; intros.
--specialize (Hk 0).
+-rewrite Nat.add_0_r.
+ remember (rad * (i + 3)) as n eqn:Hn.
+ remember (rad ^ (n - i - 1)) as s eqn:Hs.
+ move s before n.
+ revert i Hk Hn s Hs.
+ induction n; intros.
+ +symmetry in Hn.
+  apply Nat.eq_mul_0 in Hn.
+  destruct Hn as [Hn| Hn]; [ | flia Hn ].
+  now apply radix_ne_0 in Hn.
+ +idtac.
+...
+
+  specialize (IHn (i + rad)) as IH.
+  assert (Hk1 : ∀ k, A_ge_1 (i + rad) u k = true). {
+    intros k.
+    unfold A_ge_1.
+    specialize (Hk (k + rad)) as H.
+    unfold A_ge_1 in H.
+    replace (i + (k + rad) + 3) with (i + rad + k + 3) in H by flia.
+    remember (rad * (i + rad + k + 3)) as n1 eqn:Hn1.
+
+
+...
  rewrite Nat.add_0_r in Hk, Heqn |-*.
  simpl in Hk |-*.
  rewrite Nat.mul_1_r in Hk |-*.
@@ -2081,6 +2106,14 @@ destruct (LPO_fst (A_ge_1 j ayz)) as [H1| H1].
   rewrite Nat.add_0_r in H4.
   simpl in H4; rewrite <- Hn, <- Hs in H4.
   rewrite Nat.mul_1_r in H4.
+specialize (H3 1) as H5.
+replace (j + 1 + 3) with (j + 4) in H5 by flia.
+remember (rad ^ 2) as rk eqn:Hrk.
+simpl in H5.
+remember (rad * (j + 4)) as n1 eqn:Hn1.
+remember (n1 - j - 1) as s1 eqn:Hs1.
+subst rk.
+move s1 before n1.
 ...
 
 (**)
