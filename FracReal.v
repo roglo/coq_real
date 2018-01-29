@@ -1316,10 +1316,11 @@ destruct (lt_dec (nA i n u mod s * rk) (s * (rk - 1))) as [H1| H1].
 -split; [ flia H1 | easy ].
 Qed.
 
+(*
 Theorem all_A_ge_1_true_if {r : radix} : ∀ i u,
   (∀ k, A_ge_1 i u k = true) →
   ∀ k,
-  let n := rad * (i + k + 3) in
+  let n := i + k + 2 in
   nA i n u mod rad ^ S k = rad ^ S k - 1.
 Proof.
 intros * Hk *.
@@ -1329,7 +1330,7 @@ assert
    ∀ k,
    let n := rad * (i + k + 3) in
    let s := rad ^ (n - i - 1) in
-   nA i (n) u mod s * rad ^ S k ≥ (rad ^ S k - 1) * s). {
+   nA i n u mod s * rad ^ S k ≥ (rad ^ S k - 1) * s). {
   intros j.
   specialize (Hk j).
   apply A_ge_1_true_iff in Hk.
@@ -1345,12 +1346,16 @@ assert (Hin : i + 1 < n). {
 revert i Hk n Heqn Hin.
 induction k; intros.
 -specialize (Hk 0).
- rewrite Nat.add_0_r in Hk, Heqn.
+ rewrite Nat.add_0_r in Hk, Heqn |-*.
  simpl in Hk |-*.
  rewrite Nat.mul_1_r in Hk |-*.
  rewrite <- Heqn in Hk.
  remember (rad ^ (n - i - 1)) as s.
  move Heqn after Heqs.
+ unfold nA.
+ replace (i + 2 - 1) with (i + 1) by flia.
+ rewrite summation_only_one.
+ rewrite Nat.sub_diag, Nat.pow_0_r, Nat.mul_1_r.
 ...
 specialize (Hk (n - i - 2)) as H1.
 apply A_ge_1_true_iff in H1.
@@ -1372,6 +1377,7 @@ subst s.
 clear - Hj H1.
 (* oui, non, c'est pas ça... *)
 ...
+*)
 
 Theorem all_A_ge_1_true_iff {r : radix} : ∀ i u,
   (∀ k, A_ge_1 i u k = true) ↔
