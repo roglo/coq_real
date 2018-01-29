@@ -1357,10 +1357,10 @@ induction k; intros.
   apply Nat.eq_mul_0 in Hn.
   destruct Hn as [Hn| Hn]; [ | flia Hn ].
   now apply radix_ne_0 in Hn.
- +idtac.
+ +specialize (IHn (i + rad)) as IH.
+Search A_ge_1.
 ...
 
-  specialize (IHn (i + rad)) as IH.
   assert (Hk1 : ∀ k, A_ge_1 (i + rad) u k = true). {
     intros k.
     unfold A_ge_1.
