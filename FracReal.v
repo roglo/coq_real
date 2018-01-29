@@ -1342,6 +1342,15 @@ assert (Hin : i + 1 < n). {
   specialize radix_ge_2 as Hr.
   destruct rad; [ easy | simpl; flia ].
 }
+revert i Hk n Heqn Hin.
+induction k; intros.
+-specialize (Hk 0).
+ rewrite Nat.add_0_r in Hk, Heqn.
+ simpl in Hk |-*.
+ rewrite Nat.mul_1_r in Hk |-*.
+ rewrite <- Heqn in Hk.
+ remember (rad ^ (n - i - 1)) as s.
+ move Heqn after Heqs.
 ...
 specialize (Hk (n - i - 2)) as H1.
 apply A_ge_1_true_iff in H1.
