@@ -1320,14 +1320,23 @@ Theorem all_A_ge_1_true_if {r : radix} : ∀ i u,
   (∀ k, A_ge_1 i u k = true) →
   ∀ k,
   let n := rad * (i + k + 3) in
-  let s := rad ^ (n - i - 1) in
-  nA i n u mod s = rad ^ S k - 1.
+  nA i n u mod rad ^ S k = rad ^ S k - 1.
 Proof.
 intros * Hk *.
-subst n s.
+subst n.
+assert
+  (H :
+   ∀ k,
+   let n := rad * (i + k + 3) in
+   let s := rad ^ (n - i - 1) in
+   nA i (n) u mod s * rad ^ S k ≥ (rad ^ S k - 1) * s). {
+  intros j.
+  specialize (Hk j).
+  apply A_ge_1_true_iff in Hk.
+  flia Hk.
+}
+clear Hk; rename H into Hk; move Hk after k.
 remember (rad * (i + k + 3)) as n.
-remember (rad ^ (n - i - 1)) as s.
-move s before n.
 assert (Hin : i + 1 < n). {
   rewrite Heqn.
   specialize radix_ge_2 as Hr.
@@ -2040,6 +2049,7 @@ move ayx before ayz.
 apply digit_eq_eq.
 destruct (LPO_fst (A_ge_1 j ayz)) as [H1| H1].
 -simpl.
+...
  specialize (proj1 (all_A_ge_1_true_iff _ _) H1) as H2.
  clear H1; rename H2 into H1.
  specialize (H1 0) as H2.
