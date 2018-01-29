@@ -1327,7 +1327,16 @@ revert a Hab x Hxa Hxb.
 induction b; intros.
 -apply Nat.le_0_r in Hab; subst a.
  simpl in Hxa; simpl; flia Hxa.
--idtac.
+-destruct a.
+ +rewrite Nat.pow_0_r in Hxa, Hxb.
+  rewrite Nat.mul_1_r in Hxb.
+  replace x with 0  in Hxb |-* by flia Hxa.
+  rewrite Nat.mul_0_l in Hxb.
+  now apply Nat.le_0_r in Hxb.
+ +replace (rad ^ S b) with (rad ^ b * rad) in Hxb at 1 by (simpl; flia).
+  replace (rad ^ S a) with (rad ^ a * rad) in Hxb by (simpl; flia).
+  do 2 rewrite Nat.mul_assoc in Hxb.
+  apply Nat.mul_le_mono_pos_r in Hxb; [ | easy ].
 ...
 
 Theorem all_A_ge_1_true_if {r : radix} : ∀ i u,
