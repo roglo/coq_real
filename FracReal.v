@@ -1316,8 +1316,6 @@ destruct (lt_dec (nA i n u mod s * rk) (s * (rk - 1))) as [H1| H1].
 -split; [ flia H1 | easy ].
 Qed.
 
-Search (_ ^ S _).
-
 Theorem Nat_pow_succ_pow : ∀ a b, a ^ S b = (a ^ b - 1) * a + a.
 Proof.
 intros; simpl.
