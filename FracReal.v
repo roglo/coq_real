@@ -2167,6 +2167,7 @@ unfold freal_eq; simpl.
 unfold freal_normalized_eq.
 remember (freal_normalize (x + (y + z))) as xz eqn:Hxz.
 remember (freal_normalize (z + (y + x))) as zx eqn:Hzx.
+move zx before xz.
 destruct (LPO_fst (has_same_digits xz zx)) as [H1| H1]; [ easy | exfalso ].
 destruct H1 as (i & Hji & Hi).
 assert (H : ∀ j, j < i → fd2n xz j = fd2n zx j). {
