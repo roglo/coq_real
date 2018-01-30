@@ -406,3 +406,43 @@ apply nat_equiv_list_nat.
 Qed.
 
 Check nat_eq_list_nat.
+
+   (* --- *)
+
+(* for sport: proof that univalence implies extentionality *)
+
+Definition isContr A := ∃ a : A, ∀ x : A, a = x.
+
+Definition weak_funext A (P : A → Type) :=
+  (∀ x, isContr (P x)) → isContr (∀ x, P x).
+
+Definition hott_4_9_4 A (P : A → Type) : weak_funext A P.
+...
+
+Theorem glop : ∀ A (P : A → Type),
+  (∀ x, ∃ a : P x, ∀ y, a = y)
+  → ∀ x y, P x = P y.
+Proof.
+intros * HP x z.
+specialize (HP x) as H.
+destruct H as (ax, Hx).
+specialize (HP z) as H.
+destruct H as (az, Hz).
+move az before ax.
+
+
+...
+
+Theorem weak_funext : ∀ A (P : A → Type),
+  (∀ x, ∃ a : P x, ∀ y, a = y)
+  → ∃ a : ∀ x, P x, ∀ y, a = y.
+Proof.
+intros * HP.
+
+...
+
+Theorem funext : ∀ A B (f g : A → B),
+  (∀ x, f x = g x) → f = g.
+Proof.
+intros * Hfg.
+...
