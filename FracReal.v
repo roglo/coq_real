@@ -2217,6 +2217,9 @@ destruct (LPO_fst (A_ge_1 j ayz)) as [H1| H1].
   rewrite Nat.add_0_r in H4.
   simpl in H4; rewrite <- Hn, <- Hs in H4.
   rewrite Nat.mul_1_r in H4.
+  rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
+  rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
+  f_equal; f_equal.
 ...
 
 (**)
