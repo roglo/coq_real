@@ -411,31 +411,91 @@ Check nat_eq_list_nat.
 
 (* for sport: proof that univalence implies extentionality *)
 
-Definition isContr A := ∃ a : A, ∀ x : A, a = x.
+Definition compose {A} {x y z : A} : x = y → y = z → x = z :=
+  λ p,
+  match p with
+  | eq_refl _ => id
+  end.
+Notation "p • q" := (compose p q) (at level 40, left associativity).
+
+Definition composite {A B C} (f : A → B) (g : B → C) x := g (f x).
+Notation "g '◦' f" := (composite f g) (at level 40, left associativity).
+
+Definition homotopy {A B} (f g : A → B) := ∀ x : A, f x = g x.
+Notation "f '∼' g" := (homotopy f g) (at level 70).
+
+Definition invert {A} {x y : A} (p : x = y) : y = x :=
+  match p with
+  | eq_refl _ => eq_refl x
+  end.
+Notation "p '⁻¹'" := (invert p)
+  (at level 8, left associativity, format "'[v' p ']' ⁻¹").
+
+Definition Σ_pr₁ {A B} (x : { y : A & B y }) : A :=
+  match x with existT _ a _ => a end.
+Definition fib {A B} (f : A → B) (y : B) := {x : A & f x = y}.
+Definition isContr A := {a : A & ∀ x : A, a = x}.
+
+Definition qinv {A B} (f : A → B) :=
+  {g : B → A & ((f ◦ g ∼ id) * (g ◦ f ∼ id))%type}.
+
+Definition qinv_isequiv {A B} (f : A → B) : qinv f → isequiv f.
+Proof.
+intros p.
+destruct p as (g, (α, β)).
+now exists g.
+Defined.
+
+...
+
+Definition isequiv_qinv {A B} (f : A → B) : isequiv f → qinv f :=
+  λ p,
+  match p with
+  | (existT _ g Hg, existT _ h Hh) =>
+      existT _ g (Hg, λ x, ((ap h (Hg (f x)))⁻¹ • Hh (g (f x)))⁻¹ • Hh x)
+  end.
+
+Definition eqv_refl A : A ≃ A :=
+  existT isequiv id
+    (qinv_isequiv id (existT _ id ((λ _, eq_refl _), (λ _, eq_refl _)))).
+
+Definition ua {A B} : A ≃ B → A = B :=
+  match isequiv_qinv idtoeqv (univalence A B) with
+  | existT _ f _ => f
+  end.
+
+Definition hott_4_9_2 A B X (e : A ≃ B) : (X → A) ≃ (X → B) :=
+  match ua e with
+  | eq_refl _ => eqv_refl (X → A)
+  end.
+
+Definition hott_4_9_3 A (P : A → Type) (p : ∀ x : A, isContr (P x)) :
+  (A → {x : A & P x}) ≃ (A → A).
+Proof.
+apply hott_4_9_2.
+apply pre_hott_4_9_3, p.
+Defined.
+
+Definition isContr_fib_4_9_3 A (P : A → Type) (p : ∀ x : A, isContr (P x)) :
+  isContr (fib (Σ_pr₁ (hott_4_9_3 A P p)) id).
+Proof.
+apply hott_4_2_6.
+apply hott_4_2_3.
+set (q := hott_4_9_3 A P p).
+destruct q as (f, q).
+apply isequiv_qinv, q.
+Defined.
+
+Definition hott_4_9_4 A (P : A → Type) : weak_funext A P.
+Proof.
+specialize (isContr_fib_4_9_3 A P p) as s.
+...
 
 Definition weak_funext A (P : A → Type) :=
   (∀ x, isContr (P x)) → isContr (∀ x, P x).
-
-Definition hott_4_9_4 A (P : A → Type) : weak_funext A P.
-...
-
-Theorem glop : ∀ A (P : A → Type),
-  (∀ x, ∃ a : P x, ∀ y, a = y)
-  → ∀ x y, P x = P y.
-Proof.
-intros * HP x z.
-specialize (HP x) as H.
-destruct H as (ax, Hx).
-specialize (HP z) as H.
-destruct H as (az, Hz).
-move az before ax.
-
-
-...
-
 Theorem weak_funext : ∀ A (P : A → Type),
   (∀ x, ∃ a : P x, ∀ y, a = y)
-  → ∃ a : ∀ x, P x, ∀ y, a = y.
+  → {a : (∀ x, P x) & (∀ y, a = y)).
 Proof.
 intros * HP.
 
