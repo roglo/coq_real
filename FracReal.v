@@ -1329,6 +1329,7 @@ eapply le_trans; [ apply IHb | ].
 apply Nat.mul_le_mono_r; flia.
 Qed.
 
+(*
 Theorem glop {r : radix} : ∀ a b c d x,
   a ≤ c
   → a + b = c + d
@@ -1345,28 +1346,10 @@ induction a; intros.
  rewrite Nat.mul_sub_distr_r in Hxb.
  rewrite Nat.mul_1_l in Hxb.
  rewrite Nat.mul_add_distr_r in Hxb.
-
 ...
+*)
 
-rewrite glip in Hxb.
-
-
-idtac.
-
-apply Nat.le_0_r in Hxa; subst x.
- simpl in Hxa; simpl; flia Hxa.
--destruct a.
- +rewrite Nat.pow_0_r in Hxa, Hxb.
-  rewrite Nat.mul_1_r in Hxb.
-  replace x with 0  in Hxb |-* by flia Hxa.
-  rewrite Nat.mul_0_l in Hxb.
-  now apply Nat.le_0_r in Hxb.
- +replace (rad ^ S b) with (rad ^ b * rad) in Hxb at 1 by (simpl; flia).
-  replace (rad ^ S a) with (rad ^ a * rad) in Hxb by (simpl; flia).
-  do 2 rewrite Nat.mul_assoc in Hxb.
-  apply Nat.mul_le_mono_pos_r in Hxb; [ | easy ].
-...
-
+(*
 Theorem all_A_ge_1_true_if {r : radix} : ∀ i u,
   (∀ k, A_ge_1 i u k = true) →
   ∀ k,
@@ -1473,6 +1456,7 @@ assert (Hin : i + 1 < n). {
 }
 
 *)
+(*
 revert i Hk.
 induction k; intros.
 -rewrite Nat.add_0_r.
@@ -1537,8 +1521,7 @@ Theorem all_A_ge_1_true_iff {r : radix} : ∀ i u,
   ∀ k,
   let n := rad * (i + k + 3) in
   let s := rad ^ (n - i - 1) in
-  let rk := rad ^ S k in
-  nA i n u mod s * rk ≥ s * (rk - 1).
+  nA i n u mod s * rad ^ S k ≥ s * (rad ^ S k - 1).
 Proof.
 intros.
 split.
