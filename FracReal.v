@@ -2217,14 +2217,6 @@ destruct (LPO_fst (A_ge_1 j ayz)) as [H1| H1].
   rewrite Nat.add_0_r in H4.
   simpl in H4; rewrite <- Hn, <- Hs in H4.
   rewrite Nat.mul_1_r in H4.
-specialize (H3 1) as H5.
-replace (j + 1 + 3) with (j + 4) in H5 by flia.
-remember (rad ^ 2) as rk eqn:Hrk.
-simpl in H5.
-remember (rad * (j + 4)) as n1 eqn:Hn1.
-remember (n1 - j - 1) as s1 eqn:Hs1.
-subst rk.
-move s1 before n1.
 ...
 
 (**)
