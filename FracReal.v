@@ -2269,6 +2269,7 @@ destruct (LPO_fst (A_ge_1 j ayz)) as [H1| H1].
   rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
   rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
   f_equal; f_equal.
+...
 rewrite Hayz, Hayx.
 unfold freal_add_series at 1 3.
 unfold sequence_add, fd2n; simpl.
