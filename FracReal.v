@@ -1349,6 +1349,34 @@ induction a; intros.
 ...
 *)
 
+Theorem all_A_ge_1_true_if {r : radix} : ∀ i u,
+  (∀ k, A_ge_1 i u k = true) →
+  let n := rad * (i + 3) in
+  let s := rad ^ (n - i - 1) in
+  nA i n u mod s = s - 1.
+Proof.
+intros * Hk.
+simpl.
+set (n := rad * (i + 3)).
+set (s := rad ^ (n - i - 1)).
+specialize (Hk 0) as H1.
+apply A_ge_1_true_iff in H1.
+rewrite Nat.add_0_r, Nat.pow_1_r in H1.
+fold n s in H1.
+specialize (Hk (n - i - 2)) as H2.
+apply A_ge_1_true_iff in H2.
+assert (Hin : i + 2 ≤ n). {
+  unfold n.
+  specialize radix_ge_2 as Hr.
+  destruct rad; [ easy | simpl; flia ].
+}
+replace (i + (n - i - 2) + 3) with (n + 1) in H2 by flia Hin.
+replace (S (n - i - 2)) with (n - i - 1) in H2 by flia Hin.
+fold s in H2.
+set (n1 := rad * (n + 1)) in H2.
+set (s1 := rad ^ (n1 - i - 1)) in H2.
+...
+
 (*
 Theorem all_A_ge_1_true_if {r : radix} : ∀ i u,
   (∀ k, A_ge_1 i u k = true) →
