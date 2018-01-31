@@ -2199,6 +2199,29 @@ destruct m.
  apply Nat.mul_le_mono_r, Hur.
 Qed.
 
+Theorem freal_eq_prop_add_norm {r : radix} : ∀ x y,
+  freal_eq_prop {| freal := freal_add_to_seq (freal_normalize x) (freal_normalize y) |}
+    {| freal := freal_add_to_seq x y |}.
+Proof.
+intros.
+unfold freal_eq_prop.
+unfold freal_eq.
+unfold freal_normalized_eq.
+remember (freal_normalize x) as nx eqn:Hnx.
+remember (freal_normalize y) as ny eqn:Hny.
+move ny before nx.
+remember {| freal := freal_add_to_seq nx ny |} as nxy eqn:Hnxy.
+remember {| freal := freal_add_to_seq x y |} as xy eqn:Hxy.
+move xy before nxy.
+remember (freal_normalize nxy) as nnxy eqn:Hnnxy.
+remember (freal_normalize xy) as n1xy eqn:Hn1xy.
+move n1xy before nnxy.
+destruct (LPO_fst (has_same_digits nnxy n1xy)) as [H1| H1]; [ easy | ].
+exfalso; destruct H1 as (i & Hji & Hi).
+apply has_same_digits_false_iff in Hi.
+apply Hi; clear Hi.
+...
+
 Theorem freal_add_assoc {r : radix} : ∀ x y z,
   (x + (y + z) = (x + y) + z)%F.
 Proof.
@@ -2210,6 +2233,10 @@ rewrite H; clear H.
 specialize (freal_add_comm x y) as H.
 apply freal_eq_prop_eq in H.
 rewrite H; clear H.
+(**)
+unfold freal_add.
+
+...
 apply freal_eq_prop_eq.
 unfold freal_eq; simpl.
 unfold freal_normalized_eq.
@@ -2228,11 +2255,13 @@ apply has_same_digits_false_iff in Hi.
 move Hji after Hi.
 apply Hi; clear Hi.
 rewrite Hxz, Hzx.
-(**)
 unfold fd2n.
 erewrite freal_eq_normalize_eq; [ easy | ].
 intros j.
 unfold freal_add; simpl.
+rewrite glop.
+...
+
 remember (freal_normalize x) as nx eqn:Hnx.
 remember (freal_normalize y) as ny eqn:Hny.
 remember (freal_normalize z) as nz eqn:Hnz.
