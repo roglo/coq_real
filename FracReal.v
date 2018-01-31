@@ -2311,7 +2311,9 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
   and if nA i n (fd2n y) is not 0 => ok, because the above 999 overflows
   but if nA i n (fd2n y) = 0.... problem
 
-  See for a possible counter-example *)
+  By H1, since freal_normalize x = 0, perhaps I could prove that
+  nA i n (fd2n y) = s-1 *)
+*)
 
 ...
  specialize (nA_all_9 radix_gt_0 (d2n (numbers_to_digits u)) i n H1) as H2.
