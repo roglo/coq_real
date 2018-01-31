@@ -2269,6 +2269,27 @@ destruct (LPO_fst (A_ge_1 j ayz)) as [H1| H1].
   rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
   rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
   f_equal; f_equal.
+rewrite Hayz, Hayx.
+unfold freal_add_series at 1 3.
+unfold sequence_add, fd2n; simpl.
+unfold digit_sequence_normalize.
+remember (freal_add_to_seq ny nz) as nyz eqn:Hnyz.
+remember (freal_add_to_seq ny nx) as nyx eqn:Hnyx.
+destruct (LPO_fst (is_9_strict_after nyz j)) as [H5| H5].
+specialize (is_9_strict_after_all_9 nyz j H5) as H6.
+clear H5; rename H6 into H5.
+destruct (LPO_fst (is_9_strict_after nyx j)) as [H6| H6].
+specialize (is_9_strict_after_all_9 nyx j H6) as H7.
+clear H6; rename H7 into H6.
+destruct (lt_dec (S (d2n nyz j)) rad) as [H7| H7].
+simpl.
+destruct (lt_dec (S (d2n nyx j)) rad) as [H8| H8].
+simpl.
+rewrite Hnyz at 1.
+unfold freal_add_to_seq.
+unfold numbers_to_digits.
+unfold d2n; simpl.
+
 ...
   assert (H5 : ∀ i, ayz i ≤ 2 * (rad - 1)). {
     intros.
