@@ -2278,7 +2278,6 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
       move H4 before H3.
       specialize (proj1 (all_A_ge_1_true_iff _ _) Hkv) as H5.
       clear Hkv; rename H5 into Hkv.
-...
       rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
       rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
       f_equal; f_equal.
