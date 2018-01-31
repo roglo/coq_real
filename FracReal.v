@@ -1357,24 +1357,35 @@ Theorem all_A_ge_1_true_if {r : radix} : ∀ i u,
 Proof.
 intros * Hk.
 simpl.
-set (n := rad * (i + 3)).
-set (s := rad ^ (n - i - 1)).
+remember (rad * (i + 3)) as n eqn:Hn.
+remember (rad ^ (n - i - 1)) as s eqn:Hs.
+move s before n.
 specialize (Hk 0) as H1.
 apply A_ge_1_true_iff in H1.
 rewrite Nat.add_0_r, Nat.pow_1_r in H1.
-fold n s in H1.
+rewrite <- Hn, <- Hs in H1.
 specialize (Hk (n - i - 2)) as H2.
 apply A_ge_1_true_iff in H2.
 assert (Hin : i + 2 ≤ n). {
-  unfold n.
+  rewrite Hn.
   specialize radix_ge_2 as Hr.
   destruct rad; [ easy | simpl; flia ].
 }
 replace (i + (n - i - 2) + 3) with (n + 1) in H2 by flia Hin.
 replace (S (n - i - 2)) with (n - i - 1) in H2 by flia Hin.
-fold s in H2.
-set (n1 := rad * (n + 1)) in H2.
-set (s1 := rad ^ (n1 - i - 1)) in H2.
+rewrite <- Hs in H2.
+remember (rad * (n + 1)) as n1 eqn:Hn1.
+remember (rad ^ (n1 - i - 1)) as s2 eqn:Hs2.
+move s2 before n1.
+assert ((n1 - i - 1) = (n - i - 1) + rad * ((rad - 1) * (i + 3) + 1)). {
+  rewrite Hn1, Hn.
+  do 6 rewrite Nat.mul_add_distr_l.
+  rewrite Nat.mul_1_r.
+  do 2 rewrite Nat.mul_sub_distr_r.
+  do 2 rewrite Nat.mul_1_l.
+  do 2 rewrite Nat.mul_sub_distr_l.
+  do 2 rewrite Nat.mul_assoc.
+
 ...
 
 (*
