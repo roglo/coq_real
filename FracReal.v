@@ -2220,6 +2220,71 @@ destruct (LPO_fst (has_same_digits nnxy n1xy)) as [H1| H1]; [ easy | ].
 exfalso; destruct H1 as (i & Hji & Hi).
 apply has_same_digits_false_iff in Hi.
 apply Hi; clear Hi.
+subst nnxy n1xy.
+subst nxy xy.
+unfold fd2n.
+f_equal.
+(**)
+simpl.
+unfold digit_sequence_normalize.
+remember (freal_add_to_seq nx ny) as nxy eqn:Hnxy.
+remember (freal_add_to_seq x y) as xy eqn:Hxy.
+move xy before nxy.
+apply digit_eq_eq.
+destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
+-specialize (is_9_strict_after_all_9 _ _ H1) as H2.
+ clear H1; rename H2 into H1.
+ destruct (LPO_fst (is_9_strict_after xy i)) as [H2| H2].
+ +specialize (is_9_strict_after_all_9 _ _ H2) as H3.
+  clear H2; rename H3 into H2.
+  destruct (lt_dec (S (d2n nxy i)) rad) as [H3| H3].
+  *simpl.
+   destruct (lt_dec (S (d2n xy i)) rad) as [H4| H4].
+  --simpl.
+    f_equal.
+    unfold d2n.
+    rewrite Hnxy, Hxy.
+    rewrite Hnx, Hny.
+    unfold freal_add_to_seq.
+    set (u := freal_add_series (freal_normalize x) (freal_normalize y)).
+    set (v := freal_add_series x y).
+    unfold numbers_to_digits.
+    remember (rad * (i + 3)) as n eqn:Hn.
+    remember (rad ^ (n - i - 1)) as s eqn:Hs.
+    move s before n.
+    destruct (LPO_fst (A_ge_1 i u)) as [Hku| (m & Hjm & Hm)].
+   ++simpl.
+     specialize (proj1 (all_A_ge_1_true_iff _ _) Hku) as H5.
+     clear Hku; rename H5 into Hku.
+     destruct (LPO_fst (A_ge_1 i v)) as [Hkv| (p & Hjp & Hp)].
+    **simpl.
+      specialize (proj1 (all_A_ge_1_true_iff _ _) Hkv) as H5.
+      clear Hkv; rename H5 into Hkv.
+      rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
+      rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
+      f_equal; f_equal.
+...
+apply freal_normalized_eq_iff.
+simpl.
+left.
+intros j.
+apply digit_eq_eq.
+unfold freal_add_to_seq.
+unfold numbers_to_digits.
+destruct (LPO_fst (A_ge_1 j (freal_add_series nx ny))) as [H1| H1].
+-simpl.
+ specialize (proj1 (all_A_ge_1_true_iff _ _) H1) as H2.
+ clear H1; rename H2 into H1.
+ destruct (LPO_fst (A_ge_1 j (freal_add_series x y))) as [H2| H2].
+ +simpl.
+  specialize (proj1 (all_A_ge_1_true_iff _ _) H2) as H3.
+  clear H2; rename H3 into H2.
+  remember (rad * (j + 3)) as n eqn:Hn.
+  remember (rad ^ (n - j - 1)) as s eqn:Hs.
+  move s before n.
+  unfold freal_add_series at 1 3.
+  unfold sequence_add; simpl.
+Search A_ge_1.
 ...
 
 Theorem freal_add_assoc {r : radix} : ∀ x y z,
