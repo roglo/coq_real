@@ -2281,6 +2281,14 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
       rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
       rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
       f_equal; f_equal.
+      unfold v at 1.
+      unfold u at 1.
+      unfold freal_add_series, sequence_add.
+      rewrite Nat.add_shuffle0; symmetry.
+      rewrite Nat.add_shuffle0; symmetry.
+      rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
+      rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
+      f_equal; f_equal.
 ...
  specialize (nA_all_9 radix_gt_0 (d2n (numbers_to_digits u)) i n H1) as H2.
 nA_all_9:
