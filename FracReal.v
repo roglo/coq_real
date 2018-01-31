@@ -2289,6 +2289,19 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
       rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
       rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
       f_equal; f_equal.
+      unfold freal_normalize.
+      unfold fd2n; simpl.
+      unfold digit_sequence_normalize.
+      destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H5| H5].
+    ---destruct (lt_dec (S (d2n (freal x) i)) rad) as [H6| H6].
+     +++simpl.
+        setoid_rewrite Nat.add_comm.
+        rewrite <- Nat.add_1_l, Nat.add_assoc.
+        rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
+        rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
+        f_equal; f_equal.
+        specialize (is_9_strict_after_all_9 (freal x) i H5) as H7.
+        clear H5; rename H7 into H5; move H5 after H6.
 ...
  specialize (nA_all_9 radix_gt_0 (d2n (numbers_to_digits u)) i n H1) as H2.
 nA_all_9:
