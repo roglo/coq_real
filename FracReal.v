@@ -1383,15 +1383,17 @@ assert (Hnn : (n1 - i - 1) = (n - i - 1) + (n1 - n)). {
   specialize radix_ge_2 as Hr.
   destruct rad as [| rr]; [ easy | simpl; flia ].
 }
-rewrite Hs2 in H2 at 2.
 rewrite Hnn in Hs2.
 rewrite Nat.pow_add_r, <- Hs in Hs2.
+rewrite Hs2 in H2.
 remember (rad ^ (n1 - n)) as s' eqn:Hs'.
-subst s2.
+replace (s * s' * (s - 1)) with (s' * (s - 1) * s) in H2 by flia.
 assert (Hsz : s ≠ 0) by now subst s; apply Nat.pow_nonzero.
 assert (Hs'z : s' ≠ 0) by now subst s'; apply Nat.pow_nonzero.
-rewrite Nat.mod_mul_r in H2; [ | easy | easy ].
+apply Nat.mul_le_mono_pos_r in H2; [ | flia Hsz ].
 move H2 at bottom.
+rewrite Nat.mod_mul_r in H2; [ | easy | easy ].
+rewrite Nat.mul_comm, Nat.add_comm in H2.
 ...
 
 (*
