@@ -2222,6 +2222,18 @@ destruct (LPO_fst (A_ge_1 j ayz)) as [H1| H1].
   rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
   f_equal; f_equal.
 ...
+  assert (H5 : ∀ i, ayz i ≤ 2 * (rad - 1)). {
+    intros.
+    rewrite Hayz.
+    apply freal_add_series_le_twice_pred.
+  }
+  assert (H6 : nA j n ayz ≤ 2 * (s - 1)). {
+    rewrite Hs.
+    apply all_le_nA_le, H5.
+  }
+  assert (Hsz : s ≠ 0) by (now rewrite Hs; apply Nat.pow_nonzero).
+  specialize (Nat_mod_pred_le_twice_pred (nA j n ayz) s Hsz) as H.
+...
 
 (**)
 specialize (H3 (n - j - 2)) as H5.
