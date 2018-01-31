@@ -2304,6 +2304,13 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
         clear H5; rename H7 into H5; move H5 after H6.
         unfold u, v.
         do 2 rewrite nA_freal_add_series.
+(* mmm...
+  I think that
+    nA i n (fd2n (freal_normalize x)) = 0   (because of H5)
+    nA i n (fd2n x) is 99999                (because of H5 too)
+  and if nA i n (fd2n y) is not 0 => ok
+  but if nA i n (fd2n y) = 0.... problem *)
+
 ...
  specialize (nA_all_9 radix_gt_0 (d2n (numbers_to_digits u)) i n H1) as H2.
 nA_all_9:
