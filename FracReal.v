@@ -2334,6 +2334,25 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
            easy.
         }
         rewrite HnAnx; rewrite Nat.add_0_l.
+        assert (HnAx : nA i n (fd2n x) = s - 1). {
+          unfold nA.
+          rewrite Hs.
+          remember (n - i - 1) as m eqn:Hm.
+          destruct m; [ flia Hm His | ].
+          rewrite power_summation; [ | easy ]; symmetry.
+          rewrite Nat.add_comm, Nat.add_sub; symmetry.
+          rewrite summation_mul_distr_l; simpl.
+          rewrite summation_rtl.
+          rewrite summation_shift; [ | easy ].
+          replace (n - 1 - (i + 1)) with m by flia Hm.
+          apply summation_eq_compat.
+          intros j Hj.
+          replace (n - 1 + (i + 1) - (i + 1 + j)) with (n - 1 - j) by flia.
+          f_equal; [ | f_equal; flia Hm Hj ].
+          specialize (H5 (n - 2 - j - i)).
+          now replace (i + (n - 2 - j - i) + 1) with (n - 1 - j) in H5
+            by flia Hm Hj.
+        }
         assert (HnAy : nA i n (fd2n y) = s - 1). {
           unfold nA.
           rewrite Hs.
@@ -2349,12 +2368,18 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
           intros j Hj.
           replace (n - 1 + (i + 1) - (i + 1 + j)) with (n - 1 - j) by flia.
           f_equal; [ | f_equal; flia Hm Hj ].
+          move H1 at bottom.
           specialize (H1 (n - 2 - j - i)).
           replace (i + (n - 2 - j - i) + 1) with (n - 1 - j) in H1
             by flia Hm Hj.
           unfold numbers_to_digits, d2n in H1.
           destruct (LPO_fst (A_ge_1 (n - 1 - j) u)) as [H7| H7].
           -simpl in H1.
+           remember (n - 1 - j) as n1 eqn:Hn1.
+           remember (rad * (n1 + 3)) as n2 eqn:Hn2.
+           remember (rad ^ (n2 - n1 - 1)) as s1 eqn:Hs1.
+           unfold u in H1.
+           rewrite nA_freal_add_series in H1.
 ...
         }
         rewrite HnAy.
@@ -2369,25 +2394,6 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
 *)
       ***rewrite Nat.add_0_r.
          rewrite Nat.mod_1_l; [ | easy ].
-         assert (HnAx : nA i n (fd2n x) = s - 1). {
-           unfold nA.
-           rewrite Hs.
-           remember (n - i - 1) as m eqn:Hm.
-           destruct m; [ flia Hm His | ].
-           rewrite power_summation; [ | easy ]; symmetry.
-           rewrite Nat.add_comm, Nat.add_sub; symmetry.
-           rewrite summation_mul_distr_l; simpl.
-           rewrite summation_rtl.
-           rewrite summation_shift; [ | easy ].
-           replace (n - 1 - (i + 1)) with m by flia Hm.
-           apply summation_eq_compat.
-           intros j Hj.
-           replace (n - 1 + (i + 1) - (i + 1 + j)) with (n - 1 - j) by flia.
-           f_equal; [ | f_equal; flia Hm Hj ].
-           specialize (H5 (n - 2 - j - i)).
-           now replace (i + (n - 2 - j - i) + 1) with (n - 1 - j) in H5
-             by flia Hm Hj.
-         }
          rewrite HnAx.
 
 ...
