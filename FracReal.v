@@ -2253,24 +2253,32 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
   fold v in H2.
   destruct (lt_dec (S (d2n nxy i)) rad) as [H3| H3].
   *simpl.
+   rewrite Hnxy, Hnx in H3.
+   unfold freal_add_to_seq, d2n in H3.
+   fold u in H3.
    destruct (lt_dec (S (d2n xy i)) rad) as [H4| H4].
   --simpl.
+    rewrite Hxy in H4.
+    unfold freal_add_to_seq, d2n in H4.
+    fold v in H4.
     f_equal.
     unfold d2n.
     rewrite Hnxy, Hxy.
     rewrite Hnx.
     unfold freal_add_to_seq.
     fold u v.
-    unfold numbers_to_digits.
-    rewrite <- Hn, <- Hs.
+    unfold numbers_to_digits in H3, H4 |-*.
+    rewrite <- Hn, <- Hs in H3, H4 |-*.
     destruct (LPO_fst (A_ge_1 i u)) as [Hku| (m & Hjm & Hm)].
-   ++simpl.
+   ++simpl in H3 |-*.
      specialize (proj1 (all_A_ge_1_true_iff _ _) Hku) as H5.
      clear Hku; rename H5 into Hku.
      destruct (LPO_fst (A_ge_1 i v)) as [Hkv| (p & Hjp & Hp)].
-    **simpl.
+    **simpl in H4 |-*.
+      move H4 before H3.
       specialize (proj1 (all_A_ge_1_true_iff _ _) Hkv) as H5.
       clear Hkv; rename H5 into Hkv.
+...
       rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
       rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
       f_equal; f_equal.
