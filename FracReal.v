@@ -2199,8 +2199,8 @@ destruct m.
  apply Nat.mul_le_mono_r, Hur.
 Qed.
 
-Theorem freal_eq_prop_add_norm {r : radix} : ∀ x y,
-  freal_eq_prop {| freal := freal_add_to_seq (freal_normalize x) (freal_normalize y) |}
+Theorem freal_eq_prop_add_norm_l {r : radix} : ∀ x y,
+  freal_eq_prop {| freal := freal_add_to_seq (freal_normalize x) y |}
     {| freal := freal_add_to_seq x y |}.
 Proof.
 intros.
@@ -2208,9 +2208,7 @@ unfold freal_eq_prop.
 unfold freal_eq.
 unfold freal_normalized_eq.
 remember (freal_normalize x) as nx eqn:Hnx.
-remember (freal_normalize y) as ny eqn:Hny.
-move ny before nx.
-remember {| freal := freal_add_to_seq nx ny |} as nxy eqn:Hnxy.
+remember {| freal := freal_add_to_seq nx y |} as nxy eqn:Hnxy.
 remember {| freal := freal_add_to_seq x y |} as xy eqn:Hxy.
 move xy before nxy.
 remember (freal_normalize nxy) as nnxy eqn:Hnnxy.
@@ -2224,19 +2222,35 @@ subst nnxy n1xy.
 subst nxy xy.
 unfold fd2n.
 f_equal.
-(**)
 simpl.
 unfold digit_sequence_normalize.
-remember (freal_add_to_seq nx ny) as nxy eqn:Hnxy.
+remember (freal_add_to_seq nx y) as nxy eqn:Hnxy.
 remember (freal_add_to_seq x y) as xy eqn:Hxy.
 move xy before nxy.
 apply digit_eq_eq.
+remember (rad * (i + 3)) as n eqn:Hn.
+remember (rad ^ (n - i - 1)) as s eqn:Hs.
+move s before n.
+assert (His : i + 1 ≤ n - 1). {
+  rewrite Hn.
+  specialize radix_ne_0 as H.
+  destruct rad; [ easy | simpl; flia ].
+}
+set (u := freal_add_series (freal_normalize x) y).
+set (v := freal_add_series x y).
 destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
 -specialize (is_9_strict_after_all_9 _ _ H1) as H2.
  clear H1; rename H2 into H1.
+ rewrite Hnxy in H1.
+ unfold freal_add_to_seq in H1.
+ rewrite Hnx in H1.
+ fold u in H1.
  destruct (LPO_fst (is_9_strict_after xy i)) as [H2| H2].
  +specialize (is_9_strict_after_all_9 _ _ H2) as H3.
   clear H2; rename H3 into H2.
+  rewrite Hxy in H2.
+  unfold freal_add_to_seq in H2.
+  fold v in H2.
   destruct (lt_dec (S (d2n nxy i)) rad) as [H3| H3].
   *simpl.
    destruct (lt_dec (S (d2n xy i)) rad) as [H4| H4].
@@ -2244,14 +2258,11 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
     f_equal.
     unfold d2n.
     rewrite Hnxy, Hxy.
-    rewrite Hnx, Hny.
+    rewrite Hnx.
     unfold freal_add_to_seq.
-    set (u := freal_add_series (freal_normalize x) (freal_normalize y)).
-    set (v := freal_add_series x y).
+    fold u v.
     unfold numbers_to_digits.
-    remember (rad * (i + 3)) as n eqn:Hn.
-    remember (rad ^ (n - i - 1)) as s eqn:Hs.
-    move s before n.
+    rewrite <- Hn, <- Hs.
     destruct (LPO_fst (A_ge_1 i u)) as [Hku| (m & Hjm & Hm)].
    ++simpl.
      specialize (proj1 (all_A_ge_1_true_iff _ _) Hku) as H5.
@@ -2263,6 +2274,39 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
       rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
       rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
       f_equal; f_equal.
+...
+ specialize (nA_all_9 radix_gt_0 (d2n (numbers_to_digits u)) i n H1) as H2.
+nA_all_9:
+  ∀ r : radix,
+  0 < rad → ∀ (u : nat → nat) (i n : nat), (∀ j : nat, u (i + j + 1) = rad - 1) → nA i n u = rad ^ (n - i - 1) - 1
+...
+ assert (H5 : nA i n u < s). {
+   rewrite Hs.
+   remember (n - i - 1) as m eqn:Hm.
+   symmetry in Hm.
+   destruct m; [ flia Hm His | ].
+   rewrite power_summation; [ | easy ].
+   unfold lt; simpl.
+   apply -> Nat.succ_le_mono.
+   rewrite summation_mul_distr_l; simpl.
+   unfold nA.
+   rewrite summation_rtl.
+   rewrite summation_shift; [ | easy ].
+   replace (n - 1 - (i + 1)) with m by flia Hm.
+   apply (@summation_le_compat nat_ord_ring_def).
+   intros j Hj; simpl; unfold Nat.le.
+   apply Nat.mul_le_mono.
+   -rewrite Hnxy in H1.
+    unfold freal_add_to_seq in H1.
+    rewrite Hnx in H1.
+    fold u in H1.
+
+   replace (n - 1 - (i + 1 + j)) with (
+
+   apply Nat.mul_le_mono; [ | apply Nat.pow
+
+   ...
+ }
 ...
 apply freal_normalized_eq_iff.
 simpl.
