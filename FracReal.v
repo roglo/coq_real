@@ -2380,6 +2380,7 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
            remember (rad ^ (n2 - n1 - 1)) as s1 eqn:Hs1.
            unfold u in H1.
            rewrite nA_freal_add_series in H1.
+(* perhaps H7 is not possible... *)
 ...
         }
         rewrite HnAy.
