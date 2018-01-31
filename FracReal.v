@@ -1377,15 +1377,21 @@ rewrite <- Hs in H2.
 remember (rad * (n + 1)) as n1 eqn:Hn1.
 remember (rad ^ (n1 - i - 1)) as s2 eqn:Hs2.
 move s2 before n1.
-assert ((n1 - i - 1) = (n - i - 1) + rad * ((rad - 1) * (i + 3) + 1)). {
-  rewrite Hn1, Hn.
-  do 6 rewrite Nat.mul_add_distr_l.
-  rewrite Nat.mul_1_r.
-  do 2 rewrite Nat.mul_sub_distr_r.
-  do 2 rewrite Nat.mul_1_l.
-  do 2 rewrite Nat.mul_sub_distr_l.
-  do 2 rewrite Nat.mul_assoc.
-
+assert (Hnn : (n1 - i - 1) = (n - i - 1) + (n1 - n)). {
+  enough (n < n1) by flia Hin H.
+  rewrite Hn1.
+  specialize radix_ge_2 as Hr.
+  destruct rad as [| rr]; [ easy | simpl; flia ].
+}
+rewrite Hs2 in H2 at 2.
+rewrite Hnn in Hs2.
+rewrite Nat.pow_add_r, <- Hs in Hs2.
+remember (rad ^ (n1 - n)) as s' eqn:Hs'.
+subst s2.
+assert (Hsz : s ≠ 0) by now subst s; apply Nat.pow_nonzero.
+assert (Hs'z : s' ≠ 0) by now subst s'; apply Nat.pow_nonzero.
+rewrite Nat.mod_mul_r in H2; [ | easy | easy ].
+move H2 at bottom.
 ...
 
 (*
