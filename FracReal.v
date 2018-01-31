@@ -2301,11 +2301,10 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
         rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
         f_equal; f_equal.
         specialize (is_9_strict_after_all_9 (freal x) i H5) as H7.
-        clear H5; rename H7 into H5; move H5 after H6.
+        rename H5 into H55; rename H7 into H5; move H5 after H6.
         unfold u, v.
         do 2 rewrite nA_freal_add_series.
-(* mmm...
-  I think that
+(* I think that
     nA i n (fd2n (freal_normalize x)) = 0   (because of H5)
     nA i n (fd2n x) is s-1                  (because of H5 too)
   and if nA i n (fd2n y) is not 0 => ok, because the above 999 overflows
@@ -2313,6 +2312,104 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
 
   By H1, since freal_normalize x = 0, perhaps I could prove that
   nA i n (fd2n y) = s-1 *)
+        assert (HnAnx : nA i n (fd2n (freal_normalize x)) = 0). {
+          unfold nA.
+          rewrite all_0_summation_0; [ easy | ].
+          intros j Hj; simpl.
+          apply Nat.eq_mul_0; left.
+          unfold freal_normalize, fd2n; simpl.
+          unfold digit_sequence_normalize.
+          destruct (LPO_fst (is_9_strict_after (freal x) j)) as [H| H].
+          -destruct (lt_dec (S (d2n (freal x) j)) rad) as [H7| H7].
+           +simpl.
+            exfalso.
+            specialize (H5 (j - i - 1)).
+            replace (i + (j - i - 1) + 1) with j in H5 by flia Hj.
+            flia H5 H7.
+           +easy.
+          -destruct H as (k & Hkj & Hk).
+           apply is_9_strict_after_false_iff in Hk.
+           specialize (H5 (j - i + k)).
+           replace (i + (j - i + k) + 1) with (j + k + 1) in H5 by flia Hj.
+           easy.
+        }
+        rewrite HnAnx; rewrite Nat.add_0_l.
+        assert (HnAy : nA i n (fd2n y) = s - 1). {
+          unfold nA.
+          rewrite Hs.
+          remember (n - i - 1) as m eqn:Hm.
+          destruct m; [ flia Hm His | ].
+          rewrite power_summation; [ | easy ]; symmetry.
+          rewrite Nat.add_comm, Nat.add_sub; symmetry.
+          rewrite summation_mul_distr_l; simpl.
+          rewrite summation_rtl.
+          rewrite summation_shift; [ | easy ].
+          replace (n - 1 - (i + 1)) with m by flia Hm.
+          apply summation_eq_compat.
+          intros j Hj.
+          replace (n - 1 + (i + 1) - (i + 1 + j)) with (n - 1 - j) by flia.
+          f_equal; [ | f_equal; flia Hm Hj ].
+          specialize (H1 (n - 2 - j - i)).
+          replace (i + (n - 2 - j - i) + 1) with (n - 1 - j) in H1
+            by flia Hm Hj.
+          unfold numbers_to_digits, d2n in H1.
+          destruct (LPO_fst (A_ge_1 (n - 1 - j) u)) as [H7| H7].
+          -simpl in H1.
+...
+        }
+        rewrite HnAy.
+...
+(*
+        rewrite Nat.div_small.
+        Focus 2.
+      ***rewrite Hs.
+         apply nA_dig_seq_ub; [ easy | | easy ].
+         intros k Hk.
+         apply digit_lt_radix.
+*)
+      ***rewrite Nat.add_0_r.
+         rewrite Nat.mod_1_l; [ | easy ].
+         assert (HnAx : nA i n (fd2n x) = s - 1). {
+           unfold nA.
+           rewrite Hs.
+           remember (n - i - 1) as m eqn:Hm.
+           destruct m; [ flia Hm His | ].
+           rewrite power_summation; [ | easy ]; symmetry.
+           rewrite Nat.add_comm, Nat.add_sub; symmetry.
+           rewrite summation_mul_distr_l; simpl.
+           rewrite summation_rtl.
+           rewrite summation_shift; [ | easy ].
+           replace (n - 1 - (i + 1)) with m by flia Hm.
+           apply summation_eq_compat.
+           intros j Hj.
+           replace (n - 1 + (i + 1) - (i + 1 + j)) with (n - 1 - j) by flia.
+           f_equal; [ | f_equal; flia Hm Hj ].
+           specialize (H5 (n - 2 - j - i)).
+           now replace (i + (n - 2 - j - i) + 1) with (n - 1 - j) in H5
+             by flia Hm Hj.
+         }
+         rewrite HnAx.
+
+...
+          rewrite all_0_summation_0; [ easy | ].
+
+          intros j Hj; simpl.
+          apply Nat.eq_mul_0; left.
+          unfold freal_normalize, fd2n; simpl.
+          unfold digit_sequence_normalize.
+          destruct (LPO_fst (is_9_strict_after (freal x) j)) as [H| H].
+          -destruct (lt_dec (S (d2n (freal x) j)) rad) as [H7| H7].
+           +simpl.
+            exfalso.
+            specialize (H5 (j - i - 1)).
+            replace (i + (j - i - 1) + 1) with j in H5 by flia Hj.
+            flia H5 H7.
+           +easy.
+          -destruct H as (k & Hkj & Hk).
+           apply is_9_strict_after_false_iff in Hk.
+           specialize (H5 (j - i + k)).
+           replace (i + (j - i + k) + 1) with (j + k + 1) in H5 by flia Hj.
+           easy.
 
 ...
  specialize (nA_all_9 radix_gt_0 (d2n (numbers_to_digits u)) i n H1) as H2.
