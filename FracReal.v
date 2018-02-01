@@ -2417,6 +2417,20 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
        rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
        f_equal; f_equal.
        apply is_9_strict_after_false_iff in Hj.
+       destruct (le_dec n (j + 1)) as [Hjn| Hjn].
+     +++f_equal; f_equal; f_equal.
+        apply nA_eq_compat.
+        intros k Hk.
+        unfold freal_normalize, fd2n; simpl.
+        unfold digit_sequence_normalize.
+        destruct (LPO_fst (is_9_strict_after (freal x) k)) as [H5| H5].
+      ***specialize (is_9_strict_after_all_9 (freal x) k H5) as H6.
+         clear H5; rename H6 into H5.
+         specialize (H5 (i + j - k)).
+         replace (k + (i + j - k) + 1) with (i + j + 1) in H5 by flia Hjn Hk.
+         easy.
+      ***easy.
+     +++apply Nat.nle_gt in Hjn.
 ...
 
 Theorem freal_add_assoc {r : radix} : ∀ x y z,
