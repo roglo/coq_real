@@ -2432,6 +2432,8 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
       ***easy.
      +++apply Nat.nle_gt in Hjn.
         f_equal.
+(* I wonder if there it not something in H1 and H2 that would directly
+   conclude this case and some of (perhaps all) the cases before? *)
 ...
 
 Theorem freal_add_assoc {r : radix} : ∀ x y z,
