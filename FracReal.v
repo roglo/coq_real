@@ -2431,6 +2431,18 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
          easy.
       ***easy.
      +++apply Nat.nle_gt in Hjn.
+        f_equal.
+...
+        f_equal; f_equal; f_equal.
+        apply nA_eq_compat.
+        intros k Hk.
+        unfold freal_normalize, fd2n; simpl.
+        unfold digit_sequence_normalize.
+        destruct (LPO_fst (is_9_strict_after (freal x) k)) as [H5| H5].
+      ***destruct (lt_dec (S (d2n (freal x) k)) rad) as [H6| H6].
+      ----exfalso.
+
+
 ...
 
 Theorem freal_add_assoc {r : radix} : ∀ x y z,
