@@ -2382,6 +2382,13 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
       ***simpl.
          rewrite Nat.mod_0_l; [ | easy ].
          apply Nat.nlt_ge in H6.
+         unfold d2n in H6.
+         assert (H7 : dig (freal x i) = rad - 1). {
+           specialize (digit_lt_radix (freal x i)).
+           flia H6.
+         }
+         clear H6; rename H7 into H6.
+         rewrite H6.
 ...
 
 Theorem freal_add_assoc {r : radix} : ∀ x y z,
