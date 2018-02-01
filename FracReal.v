@@ -2434,6 +2434,25 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
         f_equal.
 (* I wonder if there it not something in H1 and H2 that would directly
    conclude this case and some of (perhaps all) the cases before? *)
+assert (∀ k,
+      let i1 := i + k + 1 in
+      match LPO_fst (A_ge_1 i1 v) with
+      | inl _ =>
+          let n1 := rad * (i1 + 3) in
+          let s1 := rad ^ (n1 - i1 - 1) in
+          (fd2n x i1 + fd2n y i1 + nA i1 n1 (freal_add_series x y) / s1 + 1) mod rad = rad - 1
+      | inr (exist _ l _) =>
+          let n1 := rad * (i1 + l + 3) in
+          let s1 := rad ^ (n1 - i1 - 1) in
+          (fd2n x i1 + fd2n y i1 + nA i1 n1 (freal_add_series x y) / s1) mod rad = rad - 1
+      end). {
+  intros k.
+  unfold numbers_to_digits, d2n in H2.
+  specialize (H2 k); simpl.
+  remember (i + k + 1) as i1 eqn:Hi1.
+  now destruct (LPO_fst (A_ge_1 i1 v)) as [| (l, _)].
+}
+
 ...
 
 Theorem freal_add_assoc {r : radix} : ∀ x y z,
