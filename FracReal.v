@@ -2335,6 +2335,22 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
            by flia Hm Hj.
        }
        rewrite HnAx.
+       assert (Hsz : s ≠ 0) by (now rewrite Hs; apply Nat.pow_nonzero).
+       assert (HnAy : nA i n (fd2n y) ≠ 0). {
+         specialize (Hku 0) as H7.
+         simpl in H7.
+         rewrite Nat.add_0_r, <- Hn, <- Hs, Nat.mul_1_r in H7.
+         unfold u in H7.
+         rewrite nA_freal_add_series in H7.
+         rewrite HnAnx, Nat.add_0_l in H7.
+         intros H; rewrite H in H7.
+         rewrite Nat.mod_0_l in H7; [ | flia Hsz ].
+         simpl in H7.
+         apply Nat.le_0_r in H7.
+         apply Nat.eq_mul_0 in H7.
+         destruct H7 as [| H7]; [ easy | ].
+         specialize radix_ge_2 as Hr; flia H7 Hr.
+       }
        rewrite Nat.div_small.
      +++rewrite Nat.add_0_r.
         destruct (lt_dec (S (d2n (freal x) i)) rad) as [H6| H6].
@@ -2345,23 +2361,6 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
          rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
          f_equal; f_equal.
          rewrite Nat.mod_1_l; [ | easy ].
-         assert (Hsz : s ≠ 0) by (now rewrite Hs; apply Nat.pow_nonzero).
-         assert (HnAy : nA i n (fd2n y) ≠ 0). {
-           specialize (Hku 0) as H7.
-           simpl in H7.
-           rewrite Nat.add_0_r, <- Hn, <- Hs, Nat.mul_1_r in H7.
-           unfold u in H7.
-           rewrite nA_freal_add_series in H7.
-           rewrite HnAnx, Nat.add_0_l in H7.
-           intros H; rewrite H in H7.
-           rewrite Nat.mod_0_l in H7; [ | flia Hsz ].
-           simpl in H7.
-           apply Nat.le_0_r in H7.
-           apply Nat.eq_mul_0 in H7.
-           destruct H7 as [| H7]; [ easy | ].
-           specialize radix_ge_2 as Hr; flia H7 Hr.
-         }
-         (* proof that nA i n (fd2n y) ≠ 0 *)
          remember (nA i n (fd2n y)) as z eqn:Hz.
          destruct z; [ easy | ].
          rewrite Nat.add_succ_r.
@@ -2389,6 +2388,35 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
          }
          clear H6; rename H7 into H6.
          rewrite H6.
+         remember (nA i n (fd2n y)) as z eqn:Hz.
+         destruct z; [ easy | ].
+         rewrite Nat.add_succ_r.
+         rewrite <- Nat.add_succ_l.
+         rewrite <- Nat.sub_succ_l; [ | flia Hsz ].
+         simpl; rewrite Nat.sub_0_r.
+         replace (s + z) with (z + 1 * s) by flia.
+         rewrite Nat.div_add; [ | easy ].
+         rewrite Nat.div_small.
+      ----simpl.
+          rewrite Nat.sub_add; [ | easy ].
+          now rewrite Nat.mod_same.
+      ----apply Nat.succ_lt_mono.
+          rewrite Hz.
+          apply -> Nat.succ_le_mono.
+          apply Nat.lt_le_incl.
+          rewrite Hs.
+          apply nA_dig_seq_ub; [ easy | | easy ].
+          intros k Hk.
+          apply digit_lt_radix.
+     +++rewrite Hs.
+        apply nA_dig_seq_ub; [ easy | | easy ].
+        intros k Hk.
+        apply digit_lt_radix.
+    ---destruct H5 as (j & Hjj & Hj).
+       rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+       rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+       f_equal; f_equal.
+       apply is_9_strict_after_false_iff in Hj.
 ...
 
 Theorem freal_add_assoc {r : radix} : ∀ x y z,
