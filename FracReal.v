@@ -1393,8 +1393,8 @@ apply Nat.mul_le_mono_pos_r in H2; [ | flia Hsz ].
 move H2 at bottom.
 rewrite Nat.mod_mul_r in H2; [ | easy | easy ].
 rewrite Nat.mul_comm, Nat.add_comm in H2.
+clear s2 Hs2.
 Abort.
-(* could be completed, with hard work, but not sure this theorem is useful *)
 
 (*
 Theorem all_A_ge_1_true_if {r : radix} : ∀ i u,
