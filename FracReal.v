@@ -1149,11 +1149,6 @@ Proof.
 intros Hr * Hj.
 unfold nA.
 rewrite summation_eq_compat with (h := λ j, (rad - 1) * rad ^ (n - 1 - j)).
- Focus 2.
- intros j Hij.
- replace j with (i + (j - i - 1) + 1) at 1 by flia Hij.
- now rewrite Hj.
-
  rewrite <- summation_mul_distr_l.
  destruct (le_dec (i + 1) (n - 1)) as [Hin| Hin].
   rewrite summation_shift; [ | easy ].
@@ -1171,6 +1166,10 @@ rewrite summation_eq_compat with (h := λ j, (rad - 1) * rad ^ (n - 1 - j)).
   replace (n - i - 1) with 0 by flia Hin.
   rewrite summation_empty; [ | flia Hin ].
   rewrite Nat.mul_0_r; simpl; flia.
+
+ intros j Hij.
+ replace j with (i + (j - i - 1) + 1) at 1 by flia Hij.
+ now rewrite Hj.
 Qed.
 
 Theorem freal_normalize_0 {r : radix} : ∀ i,
@@ -1671,10 +1670,8 @@ rewrite summation_eq_compat with (h := λ k, u (i + 1 + k) * rad ^ (j - k))
    in HnA.
  +symmetry in HnA.
   rewrite summation_eq_compat with (h := λ k, (rad - 1) * rad ^ k) in HnA.
-  Focus 2.
-  *intros p Hp; f_equal; f_equal; flia Hp.
-   clear n Hj.
-  *revert i HnA k Hk.
+  *clear n Hj.
+   revert i HnA k Hk.
    induction j; intros.
   --do 2 rewrite summation_only_one in HnA.
     rewrite Nat.sub_0_r, Nat.add_0_r, Nat.pow_0_r in HnA.
@@ -1706,6 +1703,7 @@ rewrite summation_eq_compat with (h := λ k, u (i + 1 + k) * rad ^ (j - k))
      intros p Hp.
      apply Nat.mul_le_mono_r.
      specialize (Hu (i + S j + 1 - p)); flia Hu.
+  *intros p Hp; f_equal; f_equal; flia Hp.
  +intros p Hp.
   replace (j - (j + 0 - p)) with p by flia Hp; f_equal.
   f_equal; flia Hp.
@@ -2352,11 +2350,6 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
             by flia Hm Hj.
         }
         rewrite Nat.div_small.
-        Focus 2.
-      ***rewrite Hs.
-         apply nA_dig_seq_ub; [ easy | | easy ].
-         intros k Hk.
-         apply digit_lt_radix.
       ***rewrite Nat.add_0_r.
          rewrite Nat.mod_1_l; [ | easy ].
          rewrite HnAx.
@@ -2394,6 +2387,10 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
          apply -> Nat.succ_le_mono.
          apply Nat.lt_le_incl.
          rewrite Hs.
+         apply nA_dig_seq_ub; [ easy | | easy ].
+         intros k Hk.
+         apply digit_lt_radix.
+      ***rewrite Hs.
          apply nA_dig_seq_ub; [ easy | | easy ].
          intros k Hk.
          apply digit_lt_radix.
