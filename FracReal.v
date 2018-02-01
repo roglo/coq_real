@@ -2309,9 +2309,7 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
     nA i n (fd2n x) is s-1                  (because of H5 too)
   and if nA i n (fd2n y) is not 0 => ok, because the above 999 overflows
   but if nA i n (fd2n y) = 0.... problem
-
-  By H1, since freal_normalize x = 0, perhaps I could prove that
-  nA i n (fd2n y) = s-1 *)
+*)
         assert (HnAnx : nA i n (fd2n (freal_normalize x)) = 0). {
           unfold nA.
           rewrite all_0_summation_0; [ easy | ].
@@ -2353,126 +2351,56 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
           now replace (i + (n - 2 - j - i) + 1) with (n - 1 - j) in H5
             by flia Hm Hj.
         }
-        assert (HnAy : nA i n (fd2n y) = s - 1). {
-          unfold nA.
-          rewrite Hs.
-          remember (n - i - 1) as m eqn:Hm.
-          destruct m; [ flia Hm His | ].
-          rewrite power_summation; [ | easy ]; symmetry.
-          rewrite Nat.add_comm, Nat.add_sub; symmetry.
-          rewrite summation_mul_distr_l; simpl.
-          rewrite summation_rtl.
-          rewrite summation_shift; [ | easy ].
-          replace (n - 1 - (i + 1)) with m by flia Hm.
-          apply summation_eq_compat.
-          intros j Hj.
-          replace (n - 1 + (i + 1) - (i + 1 + j)) with (n - 1 - j) by flia.
-          f_equal; [ | f_equal; flia Hm Hj ].
-          move H1 at bottom.
-          specialize (H1 (n - 2 - j - i)).
-          replace (i + (n - 2 - j - i) + 1) with (n - 1 - j) in H1
-            by flia Hm Hj.
-          unfold numbers_to_digits, d2n in H1.
-          destruct (LPO_fst (A_ge_1 (n - 1 - j) u)) as [H7| H7].
-          -simpl in H1.
-           remember (n - 1 - j) as n1 eqn:Hn1.
-           remember (rad * (n1 + 3)) as n2 eqn:Hn2.
-           remember (rad ^ (n2 - n1 - 1)) as s1 eqn:Hs1.
-           unfold u in H1.
-           rewrite nA_freal_add_series in H1.
-(* perhaps H7 is not possible... *)
-...
-        }
-        rewrite HnAy.
-...
-(*
         rewrite Nat.div_small.
         Focus 2.
       ***rewrite Hs.
          apply nA_dig_seq_ub; [ easy | | easy ].
          intros k Hk.
          apply digit_lt_radix.
-*)
       ***rewrite Nat.add_0_r.
          rewrite Nat.mod_1_l; [ | easy ].
          rewrite HnAx.
-
-...
-          rewrite all_0_summation_0; [ easy | ].
-
-          intros j Hj; simpl.
-          apply Nat.eq_mul_0; left.
-          unfold freal_normalize, fd2n; simpl.
-          unfold digit_sequence_normalize.
-          destruct (LPO_fst (is_9_strict_after (freal x) j)) as [H| H].
-          -destruct (lt_dec (S (d2n (freal x) j)) rad) as [H7| H7].
-           +simpl.
-            exfalso.
-            specialize (H5 (j - i - 1)).
-            replace (i + (j - i - 1) + 1) with j in H5 by flia Hj.
-            flia H5 H7.
-           +easy.
-          -destruct H as (k & Hkj & Hk).
-           apply is_9_strict_after_false_iff in Hk.
-           specialize (H5 (j - i + k)).
-           replace (i + (j - i + k) + 1) with (j + k + 1) in H5 by flia Hj.
-           easy.
-
-...
- specialize (nA_all_9 radix_gt_0 (d2n (numbers_to_digits u)) i n H1) as H2.
-nA_all_9:
-  ∀ r : radix,
-  0 < rad → ∀ (u : nat → nat) (i n : nat), (∀ j : nat, u (i + j + 1) = rad - 1) → nA i n u = rad ^ (n - i - 1) - 1
-...
- assert (H5 : nA i n u < s). {
-   rewrite Hs.
-   remember (n - i - 1) as m eqn:Hm.
-   symmetry in Hm.
-   destruct m; [ flia Hm His | ].
-   rewrite power_summation; [ | easy ].
-   unfold lt; simpl.
-   apply -> Nat.succ_le_mono.
-   rewrite summation_mul_distr_l; simpl.
-   unfold nA.
-   rewrite summation_rtl.
-   rewrite summation_shift; [ | easy ].
-   replace (n - 1 - (i + 1)) with m by flia Hm.
-   apply (@summation_le_compat nat_ord_ring_def).
-   intros j Hj; simpl; unfold Nat.le.
-   apply Nat.mul_le_mono.
-   -rewrite Hnxy in H1.
-    unfold freal_add_to_seq in H1.
-    rewrite Hnx in H1.
-    fold u in H1.
-
-   replace (n - 1 - (i + 1 + j)) with (
-
-   apply Nat.mul_le_mono; [ | apply Nat.pow
-
-   ...
- }
-...
-apply freal_normalized_eq_iff.
-simpl.
-left.
-intros j.
-apply digit_eq_eq.
-unfold freal_add_to_seq.
-unfold numbers_to_digits.
-destruct (LPO_fst (A_ge_1 j (freal_add_series nx ny))) as [H1| H1].
--simpl.
- specialize (proj1 (all_A_ge_1_true_iff _ _) H1) as H2.
- clear H1; rename H2 into H1.
- destruct (LPO_fst (A_ge_1 j (freal_add_series x y))) as [H2| H2].
- +simpl.
-  specialize (proj1 (all_A_ge_1_true_iff _ _) H2) as H3.
-  clear H2; rename H3 into H2.
-  remember (rad * (j + 3)) as n eqn:Hn.
-  remember (rad ^ (n - j - 1)) as s eqn:Hs.
-  move s before n.
-  unfold freal_add_series at 1 3.
-  unfold sequence_add; simpl.
-Search A_ge_1.
+(* if I can prove that nA i n (fd2n y) ≠ 0, I win *)
+         assert (Hsz : s ≠ 0) by (now rewrite Hs; apply Nat.pow_nonzero).
+         assert (HnAy : nA i n (fd2n y) ≠ 0). {
+           specialize (Hku 0) as H7.
+           simpl in H7.
+           rewrite Nat.add_0_r, <- Hn, <- Hs, Nat.mul_1_r in H7.
+           unfold u in H7.
+           rewrite nA_freal_add_series in H7.
+           rewrite HnAnx, Nat.add_0_l in H7.
+           intros H; rewrite H in H7.
+           rewrite Nat.mod_0_l in H7; [ | flia Hsz ].
+           simpl in H7.
+           apply Nat.le_0_r in H7.
+           apply Nat.eq_mul_0 in H7.
+           destruct H7 as [| H7]; [ easy | ].
+           specialize radix_ge_2 as Hr; flia H7 Hr.
+         }
+         (* proof that if nA i n (fd2n y) ≠ 0, I win *)
+         remember (nA i n (fd2n y)) as z eqn:Hz.
+         destruct z; [ easy | ].
+         rewrite Nat.add_succ_r.
+         rewrite <- Nat.add_succ_l.
+         rewrite <- Nat.sub_succ_l; [ | flia Hsz ].
+         simpl; rewrite Nat.sub_0_r.
+         replace (s + z) with (z + 1 * s) by flia.
+         rewrite Nat.div_add; [ | easy ].
+         rewrite Nat.div_small.
+         simpl.
+         now rewrite Nat.mod_1_l.
+         apply Nat.succ_lt_mono.
+         rewrite Hz.
+         apply -> Nat.succ_le_mono.
+         apply Nat.lt_le_incl.
+         rewrite Hs.
+         apply nA_dig_seq_ub; [ easy | | easy ].
+         intros k Hk.
+         apply digit_lt_radix.
+     +++simpl.
+        apply Nat.nlt_ge in H6.
+(* voir si on peut pas récupérer les trucs fabriqués par le +++
+   précédent *)
 ...
 
 Theorem freal_add_assoc {r : radix} : ∀ x y z,
