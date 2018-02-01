@@ -2417,7 +2417,7 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
        rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
        f_equal; f_equal.
        apply is_9_strict_after_false_iff in Hj.
-       destruct (le_dec n (j + 1)) as [Hjn| Hjn].
+       destruct (le_dec n (i + j + 1)) as [Hjn| Hjn].
      +++f_equal; f_equal; f_equal.
         apply nA_eq_compat.
         intros k Hk.
