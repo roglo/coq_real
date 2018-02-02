@@ -2474,15 +2474,64 @@ assert
        destruct rad; [ easy | simpl; flia ].
    }
    rewrite H2 in H1; clear H2.
+   assert (Hsz : s ≠ 0) by (now unfold s1; apply Nat.pow_nonzero).
    assert (Hs1z : s1 ≠ 0) by (now unfold s1; apply Nat.pow_nonzero).
    remember (Σ (k = i + 1, j), u k * rad ^ (n - 1 - k)) as x eqn:Hx.
-(* démontrer que x = s * Σ ... *)
-(* démontrer que s1 = s * s2 *)
-Check Nat.mod_mul_r.
-(* (nA ... + s * Σ) mod (s * s2)
-   = (nA ... + s * Σ) mod s + (... / s) mod s2
-   = nA ... mod s + (... / s) mod s2 *)
-(* peut-être que ça peut le faire... *)
+   (* démontrer que x = s * Σ ... *)
+   assert (Hjn : j + 1 ≤ n). {
+     unfold n.
+     specialize radix_ge_2 as Hr.
+     destruct rad; [ easy | simpl; flia ].
+   }
+   rewrite summation_eq_compat with (h := λ k, u k * rad ^ (j - k) * s) in Hx.
+   Focus 2.
+    +intros p Hp.
+     rewrite <- Nat.mul_assoc; f_equal; unfold s.
+     rewrite <- Nat.pow_add_r; f_equal.
+     flia Hp Hjn.
+    +rewrite <- summation_mul_distr_r in Hx.
+     simpl in Hx.
+     (* démontrer que s1 = s * s2 *)
+     assert (H2 : s1 = s * rad ^ (j - i)). {
+       unfold s, s1.
+       rewrite <- Nat.pow_add_r; f_equal.
+       flia Hij Hjn.
+     }
+     remember (rad ^ (j - i)) as s2 eqn:Hs2.
+     rewrite H2 in H1; clear H2.
+     (* (nA ... + s * Σ) mod (s * s2)
+        = (nA ... + s * Σ) mod s + (... / s) mod s2
+       = nA ... mod s + (... / s) mod s2 *)
+     assert (Hs2z : s2 ≠ 0) by (now rewrite Hs2; apply Nat.pow_nonzero).
+     rewrite Nat.mod_mul_r in H1; [ | easy | easy ].
+     subst x.
+     rewrite Nat.mod_add in H1; [ | easy ].
+     remember (Σ (i = i + 1, j), u i * rad ^ (j - i)) as x eqn:Hx.
+     rewrite Nat.div_add in H1; [ | easy ].
+     remember ((nA j n u / s + x) mod s2) as y eqn:Hy.
+     assert (H2 : S k1 = S k + (j - i)) by (unfold k1; flia).
+     rewrite H2 in H1 at 1.
+     rewrite Nat.pow_add_r, Nat.mul_assoc in H1.
+     rewrite Nat.mul_add_distr_r in H1.
+     rewrite <- Hs2 in H1.
+     replace (s * s2 * (rad ^ S k1 - 1)) with (s * (rad ^ S k1 - 1) * s2)
+       in H1 by flia.
+     apply Nat.mul_le_mono_pos_r in H1; [ | flia Hs2z ].
+     unfold ge.
+     (* peut-être que ça peut le faire... *)
+     rewrite H2 in H1.
+     rewrite Nat.pow_add_r in H1.
+     rewrite <- Hs2 in H1.
+     assert (H3 : rad ^ S k * s2 - 1 = (rad ^ S k - 1) * s2 + (s2 - 1)). {
+       rewrite Nat.mul_sub_distr_r.
+       rewrite Nat.mul_1_l.
+       assert (rad ^ S k ≠ 0) by now apply Nat.pow_nonzero.
+       destruct (rad ^ S k); [ easy | ].
+       simpl; flia Hs2z.
+     }
+     rewrite H3 in H1.
+     rewrite Nat.mul_add_distr_l in H1.
+     rewrite Nat.mul_assoc in H1.
 ...
 }
 (* make a lemma with it *)
