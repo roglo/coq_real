@@ -2250,12 +2250,13 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
     destruct (LPO_fst (A_ge_1 i u)) as [Hku| (m & Hjm & Hm)].
    ++simpl in H3 |-*.
      specialize (proj1 (all_A_ge_1_true_iff _ _) Hku) as H5.
-     clear Hku; rename H5 into Hku.
+     rename Hku into vHku; rename H5 into Hku.
      destruct (LPO_fst (A_ge_1 i v)) as [Hkv| (p & Hjp & Hp)].
     **simpl in H4 |-*.
       move H4 before H3.
       specialize (proj1 (all_A_ge_1_true_iff _ _) Hkv) as H5.
-      clear Hkv; rename H5 into Hkv.
+      rename Hkv into vHkv; rename H5 into Hkv.
+      move vHkv before vHku.
       rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
       rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
       f_equal; f_equal.
@@ -2434,6 +2435,25 @@ assert (∀ k,
   remember (i + k + 1) as i1 eqn:Hi1.
   now destruct (LPO_fst (A_ge_1 i1 v)) as [| (l, _)].
 }
+
+Print A_ge_1.
+
+(* does ∀ k, A_ge_1 i u k implies ∀ k, A_ge_1 i1 u k for i1 > i ? *)
+assert
+  (∀ u i j, i ≤ j → (∀ k, A_ge_1 i u k = true) → (∀ k, A_ge_1 j u k = true)). {
+  clear.
+  intros * Hij Hi.
+  specialize (proj1 (all_A_ge_1_true_iff i u) Hi) as H.
+  clear Hi; rename H into Hi.
+  apply all_A_ge_1_true_iff.
+  intros k n s.
+  specialize (Hi (j - i + k)) as H.
+  replace (i + (j - i + k) + 3) with (j + k + 3) in H by flia Hij.
+  set (k1 := j - i + k) in H.
+  remember (S k1) as x; simpl in H; subst x.
+  fold n in H.
+  set (s1 := rad ^ (n - i - 1)) in H.
+  move s1 before s.
 
 ...
 
