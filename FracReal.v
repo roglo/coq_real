@@ -2440,21 +2440,42 @@ Print A_ge_1.
 
 (* does ∀ k, A_ge_1 i u k implies ∀ k, A_ge_1 i1 u k for i1 > i ? *)
 assert
-  (∀ u i j, i ≤ j → (∀ k, A_ge_1 i u k = true) → (∀ k, A_ge_1 j u k = true)). {
+  (∀ u i j, i ≤ j →
+   (∀ k, A_ge_1 i u k = true) → (∀ k, A_ge_1 j u k = true)). {
   clear.
   intros * Hij Hi.
-  specialize (proj1 (all_A_ge_1_true_iff i u) Hi) as H.
-  clear Hi; rename H into Hi.
+  specialize (proj1 (all_A_ge_1_true_iff i u) Hi) as H1.
+  clear Hi; rename H1 into Hi.
   apply all_A_ge_1_true_iff.
   intros k n s.
-  specialize (Hi (j - i + k)) as H.
-  replace (i + (j - i + k) + 3) with (j + k + 3) in H by flia Hij.
-  set (k1 := j - i + k) in H.
-  remember (S k1) as x; simpl in H; subst x.
-  fold n in H.
-  set (s1 := rad ^ (n - i - 1)) in H.
+  specialize (Hi (j - i + k)) as H1.
+  replace (i + (j - i + k) + 3) with (j + k + 3) in H1 by flia Hij.
+  set (k1 := j - i + k) in H1.
+  remember (S k1) as x; simpl in H1; subst x.
+  fold n in H1.
+  set (s1 := rad ^ (n - i - 1)) in H1.
   move s1 before s.
-
+  destruct (eq_nat_dec i j) as [H2| H2].
+  -subst j k1 s1.
+   rewrite Nat.sub_diag, Nat.add_0_l in H1.
+   now fold s in H1.
+  -assert (H3 : i < j) by flia Hij H2.
+   clear Hij H2; rename H3 into Hij; move Hij before j.
+   set (rg := nat_ord_ring).
+   assert
+     (H2 : nA i n u = nA j n u + Σ (k = i + 1, j), u k * rad ^ (n - 1 - k)). {
+     unfold nA.
+     -rewrite summation_split with (e := j).
+      +rewrite Nat.add_comm.
+       now rewrite <- Nat.add_1_r.
+      +split; [ flia Hij | ].
+       unfold n.
+       specialize radix_ge_2 as Hr.
+       destruct rad; [ easy | simpl; flia ].
+   }
+   rewrite H2 in H1; clear H2.
+   assert (Hs1z : s1 ≠ 0) by (now unfold s1; apply Nat.pow_nonzero).
+   remember (Σ (k = i + 1, j), u k * rad ^ (n - 1 - k)) as x eqn:Hx.
 ...
 
 Theorem freal_add_assoc {r : radix} : ∀ x y z,
