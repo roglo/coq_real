@@ -2476,6 +2476,13 @@ assert
    rewrite H2 in H1; clear H2.
    assert (Hs1z : s1 ≠ 0) by (now unfold s1; apply Nat.pow_nonzero).
    remember (Σ (k = i + 1, j), u k * rad ^ (n - 1 - k)) as x eqn:Hx.
+(* démontrer que x = s * Σ ... *)
+(* démontrer que s1 = s * s2 *)
+Check Nat.mod_mul_r.
+(* (nA ... + s * Σ) mod (s * s2)
+   = (nA ... + s * Σ) mod s + (... / s) mod s2
+   = nA ... mod s + (... / s) mod s2 *)
+(* peut-être que ça peut le faire... *)
 ...
 
 Theorem freal_add_assoc {r : radix} : ∀ x y z,
