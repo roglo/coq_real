@@ -2532,11 +2532,9 @@ assert
      rewrite H3 in H1.
      rewrite Nat.mul_add_distr_l in H1.
      rewrite Nat.mul_assoc in H1.
-(*
-enough (s * (s2 - 1) ≥ s * y * rad ^ S k).
-assert (s * (rad ^ S k - 1) * s2 ≤ nA j n u mod s * rad ^ S k) by lia.
-apply Nat.le_trans with (m := s * (rad ^ S k - 1) * s2); [ | easy ].
-*)
+     apply Nat.mul_le_mono_pos_r with (p := s2); [ flia Hs2z | ].
+     apply Nat.add_le_mono_r with (p := s * (s2 - 1)).
+     eapply Nat.le_trans; [ apply H1 | ].
 ...
 }
 (* make a lemma with it *)
