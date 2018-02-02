@@ -2484,6 +2484,9 @@ Check Nat.mod_mul_r.
    = nA ... mod s + (... / s) mod s2 *)
 (* peut-être que ça peut le faire... *)
 ...
+}
+(* make a lemma with it *)
+...
 
 Theorem freal_add_assoc {r : radix} : ∀ x y z,
   (x + (y + z) = (x + y) + z)%F.
