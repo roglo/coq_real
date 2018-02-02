@@ -1328,26 +1328,6 @@ eapply le_trans; [ apply IHb | ].
 apply Nat.mul_le_mono_r; flia.
 Qed.
 
-(*
-Theorem glop {r : radix} : ∀ a b c d x,
-  a ≤ c
-  → a + b = c + d
-  → x < rad ^ a
-  → x * rad ^ b ≥ (rad ^ c - 1) * rad ^ d
-  → x = rad ^ a - 1.
-Proof.
-intros * Hac Habcd Hxa Hxb.
-revert b c d x Hac Habcd Hxa Hxb.
-induction a; intros.
--simpl in Hxa; simpl; flia Hxa.
--destruct c; [ easy | ].
- rewrite Nat_pow_succ_pow in Hxb.
- rewrite Nat.mul_sub_distr_r in Hxb.
- rewrite Nat.mul_1_l in Hxb.
- rewrite Nat.mul_add_distr_r in Hxb.
-...
-*)
-
 Theorem all_A_ge_1_true_if {r : radix} : ∀ i u,
   (∀ k, A_ge_1 i u k = true) →
   let n := rad * (i + 3) in
