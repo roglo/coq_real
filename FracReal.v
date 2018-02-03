@@ -679,7 +679,7 @@ Definition A_ge_1 {r : radix} i u k :=
   let n := rad * (i + k + 3) in
   let s := rad ^ (n - i - 1) in
   let rk := rad ^ S k in
-  if lt_dec (nA i n u mod s * rk) (s * (rk - 1)) then false else true.
+  if lt_dec (nA i n u mod s * rk) ((rk - 1) * s) then false else true.
 
 Definition numbers_to_digits {r : radix} u i :=
   match LPO_fst (A_ge_1 i u) with
@@ -1289,19 +1289,19 @@ Theorem A_ge_1_false_iff {r : radix} : ∀ i u k,
   let n := rad * (i + k + 3) in
   let s := rad ^ (n - i - 1) in
   let rk := rad ^ S k in
-  A_ge_1 i u k = false ↔ nA i n u mod s * rk < s * (rk - 1).
+  A_ge_1 i u k = false ↔ nA i n u mod s * rk < (rk - 1) * s.
 Proof.
 intros.
 unfold A_ge_1.
 fold n s rk.
-now destruct (lt_dec (nA i n u mod s * rk) (s * (rk - 1))).
+now destruct (lt_dec (nA i n u mod s * rk) ((rk - 1) * s)).
 Qed.
 
 Theorem A_ge_1_true_iff {r : radix} : ∀ i u k,
   let n := rad * (i + k + 3) in
   let s := rad ^ (n - i - 1) in
   let rk := rad ^ S k in
-  A_ge_1 i u k = true ↔ nA i n u mod s * rk ≥ s * (rk - 1).
+  A_ge_1 i u k = true ↔ nA i n u mod s * rk ≥ (rk - 1) * s.
 Proof.
 intros.
 assert (Hsz : s ≠ 0). {
@@ -1310,7 +1310,7 @@ assert (Hsz : s ≠ 0). {
 }
 unfold A_ge_1.
 fold n s rk.
-destruct (lt_dec (nA i n u mod s * rk) (s * (rk - 1))) as [H1| H1].
+destruct (lt_dec (nA i n u mod s * rk) ((rk - 1) * s)) as [H1| H1].
 -split; [ easy | flia H1 ].
 -split; [ flia H1 | easy ].
 Qed.
@@ -1366,7 +1366,7 @@ rewrite Hnn in Hs2.
 rewrite Nat.pow_add_r, <- Hs in Hs2.
 rewrite Hs2 in H2.
 remember (rad ^ (n1 - n)) as s' eqn:Hs'.
-replace (s * s' * (s - 1)) with (s' * (s - 1) * s) in H2 by flia.
+replace ((s - 1) * (s * s')) with (s' * (s - 1) * s) in H2 by flia.
 assert (Hsz : s ≠ 0) by now subst s; apply Nat.pow_nonzero.
 assert (Hs'z : s' ≠ 0) by now subst s'; apply Nat.pow_nonzero.
 apply Nat.mul_le_mono_pos_r in H2; [ | flia Hsz ].
@@ -1548,7 +1548,7 @@ Theorem all_A_ge_1_true_iff {r : radix} : ∀ i u,
   ∀ k,
   let n := rad * (i + k + 3) in
   let s := rad ^ (n - i - 1) in
-  nA i n u mod s * rad ^ S k ≥ s * (rad ^ S k - 1).
+  nA i n u mod s * rad ^ S k ≥ (rad ^ S k - 1) * s.
 Proof.
 intros.
 split.
@@ -1708,7 +1708,7 @@ rename Hk into HnA.
 rewrite Nat.mod_small in HnA.
 +apply when_99000_le_uuu00 with (i0 := i) (j0 := j) (n0 := n).
  *easy.
- *now rewrite <- Hsj, <- Hs, Nat.mul_comm.
+ *now rewrite <- Hsj, <- Hs.
  *rewrite Hn.
   specialize radix_ge_2 as Hr.
   destruct rad; [ easy | simpl; flia ].
@@ -2329,7 +2329,7 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
          simpl in H7.
          apply Nat.le_0_r in H7.
          apply Nat.eq_mul_0 in H7.
-         destruct H7 as [| H7]; [ easy | ].
+         destruct H7 as [H7| ]; [ | easy ].
          specialize radix_ge_2 as Hr; flia H7 Hr.
        }
        rewrite Nat.div_small.
@@ -2416,8 +2416,8 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
 
 assert (∀ u i k m n,
   m ≤ n
-  → nA i m u mod s * rad ^ S k ≥ s * (rad ^ S k - 1)
-  → nA i n u mod s * rad ^ S k ≥ s * (rad ^ S k - 1)). {
+  → nA i m u mod s * rad ^ S k ≥ (rad ^ S k - 1) * s
+  → nA i n u mod s * rad ^ S k ≥ (rad ^ S k - 1) * s). {
   clear.
   intros * Hmn Hm.
 ...
