@@ -1631,7 +1631,6 @@ assert (Hsz : s ≠ 0) by now subst s; apply Nat.pow_nonzero.
 (*
 replace (n - i - j - 2) with (n - i - 1 - S j) in HnA by flia.
 rewrite Nat.pow_sub_r in HnA.
-Search (_ ^ (_ - _)).
 apply Nat.div_le_mono with (c := s) in HnA; [ | easy ].
 rewrite Nat.div_mul in HnA; [ | easy ].
 assert (H : nA i n u * rad ^ S j / s = nA i (i + j + 2) u). {
@@ -1677,6 +1676,9 @@ assert (H : nA i n u * rad ^ S j / s = nA i (i + j + 2) u). {
 }
 rewrite H in HnA; clear H.
 *)
+unfold nA in HnA.
+...
+
 unfold nA at 1 in HnA.
 rewrite summation_shift in HnA; [ | flia Hj ].
 replace (i + j + 2 - 1 - (i + 1)) with j in HnA by flia Hj.
