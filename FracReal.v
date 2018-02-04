@@ -2470,6 +2470,14 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
       ***easy.
      +++apply Nat.nle_gt in Hjn.
         f_equal.
+specialize (Hku 0) as H5; simpl in H5.
+rewrite Nat.add_0_r, Nat.sub_0_r in H5.
+rewrite Nat.mul_1_r in H5.
+rewrite <- Hn in H5.
+replace (n - i - 1) with (n - i - 2 + 1) in H5 by flia His.
+rewrite Nat.pow_add_r in H5.
+rewrite Nat.pow_1_r in H5.
+
 ...
 
 (* I wonder if there it not something in H1 and H2 that would directly
