@@ -1631,24 +1631,6 @@ apply Nat.mul_le_mono_pos_r with (p := rad ^ S j) in HnA.
 rewrite <- Nat.mul_assoc in HnA.
 rewrite <- Nat.pow_add_r in HnA.
 replace (n - i - j - 2 + S j) with (n - i - 1) in HnA by flia Hj.
-(*
-
-(*
-HnA : 9...90..........0 ≤ u..........u0...0
-      -----============   ============-----
-       j+1   n-i-1          n-i-1      j+1
-
-implies that uk=9 for k in [i+1..j-1]
-*)
-Theorem when_99000_le_uuu00 {r : radix} : ∀ u i j k n,
-  (∀ k, u k < rad)
-  → (rad ^ S j - 1) * rad ^ (n - i - 1) ≤ nA i n u * rad ^ S j
-  → S j ≤ n - i - 1
-  → i + 1 ≤ k ≤ i + j + 1
-  → u k = rad - 1.
-Proof.
-intros * Hu HnA Hj Hk.
-*)
 remember (rad ^ (n - i - 1)) as s eqn:Hs.
 assert (Hsz : s ≠ 0) by now subst s; apply Nat.pow_nonzero.
 apply Nat.div_le_mono with (c := s) in HnA; [ | easy ].
