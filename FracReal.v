@@ -1850,7 +1850,8 @@ destruct (LPO_fst (A_ge_1 i u)) as [Hku| (m & Hjm & Hm)].
  simpl in Huk; subst uk.
  rewrite Nat.div_small; [ now rewrite Nat.add_0_r, Nat.mod_small | ].
  unfold nA.
- eapply Nat.le_lt_trans with (m := Σ (j = i + 1, n - 1), (rad - 1) * rad ^ (n - 1 - j)).
+ eapply Nat.le_lt_trans
+ with (m := Σ (j = i + 1, n - 1), (rad - 1) * rad ^ (n - 1 - j)).
  +apply (@summation_le_compat nat_ord_ring_def).
   intros p Hp; simpl.
   unfold NPeano.Nat.le.
@@ -1908,7 +1909,8 @@ destruct (LPO_fst (ends_with_999 (freal (0 + x)))) as [H0x| H0x].
      clear H2; rename H3 into H2.
      specialize (Hnr (k + 1)) as H3.
      unfold freal_normalize, digit_sequence_normalize in H3; simpl in H3.
-     destruct (LPO_fst (is_9_strict_after (freal x) (j + (k + 1)))) as [H4| H4].
+     destruct (LPO_fst (is_9_strict_after (freal x) (j + (k + 1)))) as
+         [H4| H4].
      *destruct (lt_dec (S (d2n (freal x) (j + (k + 1)))) rad) as [H5| H5].
      --simpl in H3; clear H5.
        specialize (H2 0).
@@ -1919,7 +1921,9 @@ destruct (LPO_fst (ends_with_999 (freal (0 + x)))) as [H0x| H0x].
       destruct H4 as (m & Hjm & H3).
       apply is_9_strict_after_false_iff in H3.
       specialize (H2 (m + 1)).
-      replace (j + k + (m + 1) + 1) with (j + (k + 1) + m + 1) in H2; flia H2 H3.
+      replace (j + k + (m + 1) + 1) with (j + (k + 1) + m + 1) in H2.
+     --easy.
+     --flia H2.
     +simpl in H1.
      specialize radix_ge_2; flia H1.
    -easy.
@@ -2876,7 +2880,8 @@ unfold d2n, numbers_to_digits in H6.
 Print A_ge_1.
 ...
 unfold nA in Hkk.
-rewrite summation_eq_compat with (h := λ j, (rad - 1) * (rad ^ (nk - 1 - j))) in Hkk.
+rewrite summation_eq_compat with (h := λ j, (rad - 1) * (rad ^ (nk - 1 - j)))
+  in Hkk.
 Focus 2.
 clear i Hji; intros i Hjk.
 f_equal.
