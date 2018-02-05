@@ -678,8 +678,10 @@ Definition nA {r : radix} (rg := nat_ord_ring) i n u :=
 Definition A_ge_1 {r : radix} i u k :=
   let n := rad * (i + k + 3) in
   let s := rad ^ (n - i - 1) in
-  let rk := rad ^ S k in
-  if lt_dec (nA i n u mod s * rk) ((rk - 1) * s) then false else true.
+  if lt_dec (nA i n u mod s) ((rad ^ S k - 1) * rad ^ (n - i - k - 2)) then
+    false
+  else
+    true.
 
 Definition numbers_to_digits {r : radix} u i :=
   match LPO_fst (A_ge_1 i u) with
@@ -1288,13 +1290,14 @@ Qed.
 Theorem A_ge_1_false_iff {r : radix} : ∀ i u k,
   let n := rad * (i + k + 3) in
   let s := rad ^ (n - i - 1) in
-  let rk := rad ^ S k in
-  A_ge_1 i u k = false ↔ nA i n u mod s * rk < (rk - 1) * s.
+  A_ge_1 i u k = false ↔
+  nA i n u mod s < (rad ^ S k - 1) * rad ^ (n - i - k - 2).
 Proof.
 intros.
 unfold A_ge_1.
-fold n s rk.
-now destruct (lt_dec (nA i n u mod s * rk) ((rk - 1) * s)).
+fold n s.
+set (t := rad ^ (n - i - k - 2)).
+now destruct (lt_dec (nA i n u mod s) ((rad ^ S k - 1) * t)).
 Qed.
 
 Theorem A_ge_1_true_iff {r : radix} : ∀ i u k,
@@ -1304,60 +1307,12 @@ Theorem A_ge_1_true_iff {r : radix} : ∀ i u k,
   nA i n u mod s ≥ (rad ^ S k - 1) * rad ^ (n - i - k - 2).
 Proof.
 intros.
-assert (Hsz : s ≠ 0). {
-  unfold s.
-  now apply Nat.pow_nonzero.
-}
 unfold A_ge_1.
 fold n s.
 set (t := rad ^ (n - i - k - 2)).
-set (rk := rad ^ S k).
-destruct (lt_dec (nA i n u mod s * rk) ((rk - 1) * s)) as [H1| H1].
--split; [ easy | ].
- intros H2.
- subst rk.
- apply Nat.nle_gt in H1.
- exfalso; apply H1; clear H1.
- unfold ge in H2.
- apply Nat.mul_le_mono_pos_r with (p := rad ^ S k) in H2.
- +rewrite <- Nat.mul_assoc in H2.
-  unfold t in H2.
-  rewrite <- Nat.pow_add_r in H2.
-  replace (n - i - k - 2 + S k) with (n - i - 1) in H2; [ easy | ].
-  unfold n.
-  specialize radix_ge_2 as Hr.
-  destruct rad; [ easy | simpl; flia ].
- +now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
--split; [ | easy ].
- intros _.
- apply Nat.nlt_ge in H1; unfold ge.
- apply Nat.mul_le_mono_pos_r with (p := rad ^ S k).
- +now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
- +rewrite <- Nat.mul_assoc.
-  unfold t.
-  rewrite <- Nat.pow_add_r.
-  replace (n - i - k - 2 + S k) with (n - i - 1); [ easy | ].
-  unfold n.
-  specialize radix_ge_2 as Hr.
-  destruct rad; [ easy | simpl; flia ].
-Qed.
-
-Theorem old_A_ge_1_true_iff {r : radix} : ∀ i u k,
-  let n := rad * (i + k + 3) in
-  let s := rad ^ (n - i - 1) in
-  let rk := rad ^ S k in
-  A_ge_1 i u k = true ↔ nA i n u mod s * rk ≥ (rk - 1) * s.
-Proof.
-intros.
-assert (Hsz : s ≠ 0). {
-  unfold s.
-  now apply Nat.pow_nonzero.
-}
-unfold A_ge_1.
-fold n s rk.
-destruct (lt_dec (nA i n u mod s * rk) ((rk - 1) * s)) as [H1| H1].
--split; [ easy | flia H1 ].
--split; [ flia H1 | easy ].
+destruct (lt_dec (nA i n u mod s) ((rad ^ S k - 1) * t)) as [H1| H1].
+-now split; [ | apply Nat.nle_gt in H1 ].
+-now split; [ apply Nat.nlt_ge in H1 | ].
 Qed.
 
 Theorem Nat_pow_succ_pow : ∀ a b, a ^ S b = (a ^ b - 1) * a + a.
@@ -1599,23 +1554,6 @@ split.
 -intros Hk *.
  specialize (Hk k).
  now apply A_ge_1_true_iff.
-Qed.
-
-Theorem old_all_A_ge_1_true_iff {r : radix} : ∀ i u,
-  (∀ k, A_ge_1 i u k = true) ↔
-  ∀ k,
-  let n := rad * (i + k + 3) in
-  let s := rad ^ (n - i - 1) in
-  nA i n u mod s * rad ^ S k ≥ (rad ^ S k - 1) * s.
-Proof.
-intros.
-split.
--intros Hk *.
- specialize (Hk k).
- now apply old_A_ge_1_true_iff in Hk.
--intros Hk *.
- specialize (Hk k).
- now apply old_A_ge_1_true_iff.
 Qed.
 
 Theorem when_99000_le_uuu00 {r : radix} : ∀ u i j k n,
@@ -2481,6 +2419,8 @@ rewrite <- Hn in H5.
 replace (n - i - 1) with (n - i - 2 + 1) in H5 by flia His.
 rewrite Nat.pow_add_r in H5.
 rewrite Nat.pow_1_r in H5.
+
+Print A_ge_1.
 
 ...
 
