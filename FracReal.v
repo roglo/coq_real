@@ -2424,7 +2424,7 @@ Print A_ge_1.
 
 ...
 
-(* I wonder if there it not something in H1 and H2 that would directly
+(* I wonder if there is not something in H1 and H2 that would directly
    conclude this case and some of (perhaps all) the cases before? *)
 assert (∀ k,
   let i1 := i + k + 1 in
