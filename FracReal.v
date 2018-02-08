@@ -2211,7 +2211,8 @@ destruct (le_dec r1 r3) as [L1| L1].
   assert (Hr31 : r3 - r1 < d) by lia.
   assert (Hr42 : r4 - r2 < d) by lia.
   now specialize (Nat.div_mod_unique _ _ _ _ _ Hr31 Hr42 M2) as (Hq31, Hq42).
- +idtac.
+ +apply Nat.nle_gt in L2.
+  assert (M2 : c + d * q + (r2 - r4) = d * q4) by flia H2 H4 L2.
 
 ...
 
