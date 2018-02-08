@@ -2175,6 +2175,40 @@ destruct m.
  apply Nat.mul_le_mono_r, Hur.
 Qed.
 
+Theorem div_div_add_add : ∀ a b c d, d ≠ 0 →
+  a / d = b / d → (a + c) / d = (b + c) / d.
+Proof.
+intros * Hd Hab.
+specialize (Nat.div_mod a d Hd) as H1.
+specialize (Nat.div_mod b d Hd) as H2.
+specialize (Nat.div_mod (a + c) d Hd) as H3.
+specialize (Nat.div_mod (b + c) d Hd) as H4.
+rewrite <- Hab in H2.
+remember (a / d) as q eqn:Hq.
+remember ((a + c) / d) as q3 eqn:Hq3.
+remember ((b + c) / d) as q4 eqn:Hq4.
+move q3 before q; move q4 before q3.
+move Hq3 before Hab; move Hq4 before Hq3.
+remember (a mod d) as r1 eqn:Hr1.
+remember (b mod d) as r2 eqn:Hr2.
+remember ((a + c) mod d) as r3 eqn:Hr3.
+remember ((b + c) mod d) as r4 eqn:Hr4.
+move r1 before q4; move r2 before r1.
+move r3 before r2; move r4 before r3.
+move Hr2 before Hr1.
+move Hr3 before Hr2.
+move Hr4 before Hr3.
+specialize (Nat.mod_upper_bound a d Hd) as H5; rewrite <- Hr1 in H5.
+specialize (Nat.mod_upper_bound b d Hd) as H6; rewrite <- Hr2 in H6.
+specialize (Nat.mod_upper_bound (a + c) d Hd) as H7; rewrite <- Hr3 in H7.
+specialize (Nat.mod_upper_bound (b + c) d Hd) as H8; rewrite <- Hr4 in H8.
+destruct (le_dec r1 r3) as [L1| L1].
+-destruct (le_dec r2 r4) as [L2| L2].
+ +assert (H : r2 + r3 = r1 + r4) by lia.
+
+
+...
+
 Theorem freal_eq_prop_add_norm_l {r : radix} : ∀ x y,
   freal_eq_prop {| freal := freal_add_to_seq (freal_normalize x) y |}
     {| freal := freal_add_to_seq x y |}.
