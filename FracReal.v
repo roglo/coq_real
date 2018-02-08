@@ -2175,6 +2175,7 @@ destruct m.
  apply Nat.mul_le_mono_r, Hur.
 Qed.
 
+(*
 Theorem div_div_add_add : ∀ a b c d, d ≠ 0 →
   a / d = b / d → (a + c) / d = (b + c) / d.
 Proof.
@@ -2216,14 +2217,10 @@ destruct (le_dec r1 r3) as [L1| L1].
 ...
   assert (r3 - r1 = r2 - r4).
 ...
-
-
   rewrite M1 in M2.
-
-
   assert (a + b = d * q3 + d * q4 + r3 + r4) by lia.
-
 ...
+*)
 
 Theorem freal_eq_prop_add_norm_l {r : radix} : ∀ x y,
   freal_eq_prop {| freal := freal_add_to_seq (freal_normalize x) y |}
@@ -2462,6 +2459,15 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
       ***easy.
      +++apply Nat.nle_gt in Hjn.
         f_equal.
+
+assert (∀ k, fd2n (freal_normalize x) (i + k + 1) + fd2n y (i + k + 1) = rad - 1). {
+  intros k.
+  specialize (H1 k) as H5.
+  unfold d2n, numbers_to_digits in H5.
+  remember (i + k + 1) as m eqn:Hm.
+  destruct (LPO_fst (A_ge_1 m u)) as [H6| H6].
+  -simpl in H5.
+
 
 ...
 
