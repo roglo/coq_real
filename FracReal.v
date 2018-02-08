@@ -2467,8 +2467,14 @@ assert (∀ k, fd2n (freal_normalize x) (i + k + 1) + fd2n y (i + k + 1) = rad -
   remember (i + k + 1) as m eqn:Hm.
   destruct (LPO_fst (A_ge_1 m u)) as [H6| H6].
   -simpl in H5.
-
-
+   specialize (proj1 (all_A_ge_1_true_iff m u) H6) as H7.
+   specialize (H7 0) as H8.
+   simpl in H8.
+   rewrite Nat.add_0_r, Nat.sub_0_r, Nat.mul_1_r in H8.
+   move H5 before H8.
+   remember (rad * (m + 3)) as n1 eqn:Hn1.
+   remember (rad ^ (n1 - m - 1)) as s1 eqn:Hs1.
+   move s1 before n1.
 ...
 
 (* I wonder if there is not something in H1 and H2 that would directly
