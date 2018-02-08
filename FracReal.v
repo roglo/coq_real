@@ -2222,8 +2222,9 @@ destruct (le_dec r1 r3) as [L1| L1].
 ...
 *)
 
-(* faux, ça : à mon avis, la conclusion devrait être "False". *)
-...
+(* au fait, nA i n u mod s = nA i n v mod s, où v i = u i mod s *)
+
+(* ci-dessous faux, ça : à mon avis, la conclusion devrait être "False". *)
 Theorem glop {r : radix} : ∀ u i,
   (∀ k, d2n (numbers_to_digits u) (i + k + 1) = rad - 1)
   → (∀ k, u (i + k + 1) = rad - 1).
