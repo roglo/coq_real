@@ -2213,6 +2213,15 @@ destruct (le_dec r1 r3) as [L1| L1].
   now specialize (Nat.div_mod_unique _ _ _ _ _ Hr31 Hr42 M2) as (Hq31, Hq42).
  +apply Nat.nle_gt in L2.
   assert (M2 : c + d * q + (r2 - r4) = d * q4) by flia H2 H4 L2.
+...
+  assert (r3 - r1 = r2 - r4).
+...
+
+
+  rewrite M1 in M2.
+
+
+  assert (a + b = d * q3 + d * q4 + r3 + r4) by lia.
 
 ...
 
