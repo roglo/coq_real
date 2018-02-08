@@ -2203,9 +2203,15 @@ specialize (Nat.mod_upper_bound b d Hd) as H6; rewrite <- Hr2 in H6.
 specialize (Nat.mod_upper_bound (a + c) d Hd) as H7; rewrite <- Hr3 in H7.
 specialize (Nat.mod_upper_bound (b + c) d Hd) as H8; rewrite <- Hr4 in H8.
 destruct (le_dec r1 r3) as [L1| L1].
--destruct (le_dec r2 r4) as [L2| L2].
- +assert (H : r2 + r3 = r1 + r4) by lia.
-
+-assert (M1 : c + d * q = d * q3 + (r3 - r1)) by lia.
+ destruct (le_dec r2 r4) as [L2| L2].
+ +assert (M2 : c + d * q = d * q4 + (r4 - r2)) by lia.
+  move L2 before L1.
+  rewrite M1 in M2.
+  assert (Hr31 : r3 - r1 < d) by lia.
+  assert (Hr42 : r4 - r2 < d) by lia.
+  now specialize (Nat.div_mod_unique _ _ _ _ _ Hr31 Hr42 M2) as (Hq31, Hq42).
+ +idtac.
 
 ...
 
