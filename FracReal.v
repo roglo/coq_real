@@ -2259,6 +2259,7 @@ destruct (LPO_fst (A_ge_1 (i + k + 1) u)) as [H1| H1].
  move Hk before H3.
  rewrite Nat.mod_mul_r in H3; [ | easy | ].
  +idtac.
+(* putain, numbers_to_digits, ça déconne, cette définition de merde ! *)
 
 ...
 
