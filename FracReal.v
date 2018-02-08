@@ -2222,6 +2222,46 @@ destruct (le_dec r1 r3) as [L1| L1].
 ...
 *)
 
+Theorem glop {r : radix} : ∀ u i,
+  (∀ k, d2n (numbers_to_digits u) (i + k + 1) = rad - 1)
+  → (∀ k, u (i + k + 1) = rad - 1).
+Proof.
+intros * Hkn *.
+specialize (Hkn k) as Hk.
+unfold d2n, numbers_to_digits in Hk.
+destruct (LPO_fst (A_ge_1 (i + k + 1) u)) as [H1| H1].
+-simpl in Hk.
+ remember (i + k + 1) as j eqn:Hj.
+ remember (rad * (j + 3)) as n eqn:Hn.
+ remember (rad ^ (n - j - 1)) as s eqn:Hs.
+ move j before i; move k before j.
+ move n before k; move s before n.
+ move Hn before Hj; move Hs before Hn.
+ specialize (proj1 (all_A_ge_1_true_iff j u) H1) as H2.
+ specialize (H2 0) as H3; simpl in H3.
+ rewrite Nat.add_0_r, Nat.sub_0_r, Nat.mul_1_r in H3.
+ rewrite <- Hn, <- Hs in H3.
+ remember (rad ^ (n - j - 2)) as t eqn:Ht.
+ move t before s.
+ move Ht before Hs.
+ assert (Hst : s = rad * t). {
+   replace rad with (rad ^ 1) by apply Nat.pow_1_r.
+   subst s t.
+   rewrite <- Nat.pow_add_r.
+   f_equal.
+   enough (H : j + 1 < n) by flia H.
+   rewrite Hn.
+   specialize radix_ge_2 as Hr.
+   destruct rad; [ easy | simpl; flia ].
+ }
+ move Hst at top; subst s.
+ clear Hs.
+ move Hk before H3.
+ rewrite Nat.mod_mul_r in H3; [ | easy | ].
+ +idtac.
+
+...
+
 Theorem freal_eq_prop_add_norm_l {r : radix} : ∀ x y,
   freal_eq_prop {| freal := freal_add_to_seq (freal_normalize x) y |}
     {| freal := freal_add_to_seq x y |}.
@@ -2460,8 +2500,11 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
      +++apply Nat.nle_gt in Hjn.
         f_equal.
 
-assert (∀ k, fd2n (freal_normalize x) (i + k + 1) + fd2n y (i + k + 1) = rad - 1). {
+assert (∀ k, u (i + k + 1) = rad - 1). {
   intros k.
+  unfold u.
+  unfold freal_add_series.
+  unfold sequence_add.
   specialize (H1 k) as H5.
   unfold d2n, numbers_to_digits in H5.
   remember (i + k + 1) as m eqn:Hm.
