@@ -2222,23 +2222,21 @@ destruct (le_dec r1 r3) as [L1| L1].
 ...
 *)
 
-(* au fait, nA i n u mod s = nA i n v mod s, où v i = u i mod s *)
-
-(* ci-dessous faux, ça : à mon avis, la conclusion devrait être "False". *)
 Theorem glop {r : radix} : ∀ u i,
   (∀ k, d2n (numbers_to_digits u) (i + k + 1) = rad - 1)
-  → (∀ k, u (i + k + 1) = rad - 1).
+  → False.
 Proof.
-intros * Hkn *.
-specialize (Hkn k) as Hk.
+intros * Hkn.
+specialize (Hkn 0) as Hk.
+rewrite Nat.add_0_r in Hk.
 unfold d2n, numbers_to_digits in Hk.
-destruct (LPO_fst (A_ge_1 (i + k + 1) u)) as [H1| H1].
+destruct (LPO_fst (A_ge_1 (i + 1) u)) as [H1| H1].
 -simpl in Hk.
- remember (i + k + 1) as j eqn:Hj.
+ remember (i + 1) as j eqn:Hj.
  remember (rad * (j + 3)) as n eqn:Hn.
  remember (rad ^ (n - j - 1)) as s eqn:Hs.
- move j before i; move k before j.
- move n before k; move s before n.
+ move j before i.
+ move n before j; move s before n.
  move Hn before Hj; move Hs before Hn.
  specialize (proj1 (all_A_ge_1_true_iff j u) H1) as H2.
  specialize (H2 0) as H3; simpl in H3.
@@ -2262,7 +2260,6 @@ destruct (LPO_fst (A_ge_1 (i + k + 1) u)) as [H1| H1].
  move Hk before H3.
  rewrite Nat.mod_mul_r in H3; [ | easy | ].
  +idtac.
-(* putain, numbers_to_digits, ça déconne, cette définition de merde ! *)
 
 ...
 
