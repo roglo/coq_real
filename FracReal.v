@@ -2314,6 +2314,21 @@ destruct (LPO_fst (A_ge_1 (i + 1) u)) as [H1| H1].
  rewrite Nat.add_0_r, Nat.sub_0_r, Nat.mul_1_r in H3.
  rewrite <- Hn, <- Hs in H3.
  remember (rad ^ (n - j - 2)) as t eqn:Ht.
+ assert (Hsz : s ≠ 0) by (now rewrite Hs; apply Nat.pow_nonzero).
+ assert (HnA : nA j n u mod s < rad ^ (1 + (n - j - 2))). {
+   replace (1 + (n - j - 2)) with (n - j - 1).
+   -rewrite <- Hs.
+    now apply Nat.mod_upper_bound.
+   -rewrite Hn.
+    specialize radix_ge_2 as H.
+    destruct rad; [ easy | simpl; flia ].
+ }
+ specialize (Nat_ge_mul_pred_pow_pow rad (nA j n u mod s) 1 (n - j - 2)) as H.
+ rewrite Nat.pow_1_r, <- Ht in H.
+ specialize (H HnA H3).
+ (* yeah! *)
+...
+
  move t before s.
  move Ht before Hs.
  assert (Hst : s = rad * t). {
