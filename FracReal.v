@@ -2222,6 +2222,51 @@ destruct (le_dec r1 r3) as [L1| L1].
 ...
 *)
 
+Theorem glop : ∀ r a b c,
+  a < r ^ (b + c)
+  → a ≥ (r ^ b - 1) * r ^ c
+  → a / r ^ c = r ^ b - 1.
+Proof.
+intros * Halt Hage.
+destruct b. {
+  simpl in Halt, Hage |-*.
+  now rewrite Nat.div_small.
+}
+destruct r. {
+  rewrite Nat.pow_0_l in Halt; [ easy | flia ].
+}
+remember (S b) as b' eqn:Hb'.
+assert (Hb : b' ≠ 0) by flia Hb'.
+clear b Hb'; rename b' into b.
+remember (S r) as r' eqn:Hr'.
+assert (Hr : r' ≠ 0) by flia Hr'.
+clear r Hr'; rename r' into r.
+revert r a b Hr Hb Halt Hage.
+induction c; intros.
+-rewrite Nat.pow_0_r, Nat.div_1_r.
+ rewrite Nat.add_0_r in Halt.
+ rewrite Nat.pow_0_r, Nat.mul_1_r in Hage.
+ flia Halt Hage.
+-simpl.
+ rewrite Nat.mul_comm.
+ rewrite <- Nat.div_div; [ | now apply Nat.pow_nonzero | easy ].
+ replace (b + S c) with (S b + c) in Halt by flia.
+ assert (Hsb : S b ≠ 0) by flia.
+ assert (H1 : a ≥ (r ^ S b - 1) * r ^ c). {
+   eapply le_trans; [ | apply Hage ].
+   replace (r ^ S c) with (r * r ^ c) by (simpl; flia).
+   rewrite Nat.mul_assoc.
+   apply Nat.mul_le_mono_pos_r.
+   -apply Nat_pow_ge_1; flia Hr.
+   -rewrite Nat.mul_sub_distr_r.
+    rewrite Nat.mul_1_l.
+    replace (r ^ b * r) with (r ^ S b) by (simpl; flia).
+    ...
+ }
+ specialize (IHc r a (S b) Hr Hsb Halt H1) as H2.
+ rewrite H2.
+...
+
 Theorem glop {r : radix} : ∀ u i,
   (∀ k, d2n (numbers_to_digits u) (i + k + 1) = rad - 1)
   → False.
@@ -2272,6 +2317,9 @@ destruct (LPO_fst (A_ge_1 (i + 1) u)) as [H1| H1].
  remember (rad ^ (n2 - j - 1)) as s2 eqn:Hs2.
  move n2 before s1; move s2 before s1.
  move Hn2 before Hs1; move Hs2 before Hn2.
+  apply glop in H4.
+
+
 ...
  rewrite Nat.mod_mul_r in H3; [ | easy | ].
  +idtac.
