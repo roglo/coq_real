@@ -2258,6 +2258,20 @@ destruct (LPO_fst (A_ge_1 (i + 1) u)) as [H1| H1].
  move Hst at top; subst s.
  clear Hs.
  move Hk before H3.
+ specialize (H2 1) as H4.
+ remember (rad ^ 2) as x; simpl in H4; subst x.
+ replace (j + 1 + 3) with (j + 4) in H4 by flia.
+ remember (rad * (j + 4)) as n1 eqn:Hn1.
+ remember (rad ^ (n1 - j - 1)) as s1 eqn:Hs1.
+ move n1 before n; move s1 before n1.
+ move Hn1 before Ht; move Hs1 before Hn1.
+ specialize (H2 2) as H5.
+ remember (rad ^ 3) as x; simpl in H5; subst x.
+ replace (j + 2 + 3) with (j + 5) in H5 by flia.
+ remember (rad * (j + 5)) as n2 eqn:Hn2.
+ remember (rad ^ (n2 - j - 1)) as s2 eqn:Hs2.
+ move n2 before s1; move s2 before s1.
+ move Hn2 before Hs1; move Hs2 before Hn2.
  rewrite Nat.mod_mul_r in H3; [ | easy | ].
  +idtac.
 
