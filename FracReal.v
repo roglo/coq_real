@@ -2272,6 +2272,7 @@ destruct (LPO_fst (A_ge_1 (i + 1) u)) as [H1| H1].
  remember (rad ^ (n2 - j - 1)) as s2 eqn:Hs2.
  move n2 before s1; move s2 before s1.
  move Hn2 before Hs1; move Hs2 before Hn2.
+...
  rewrite Nat.mod_mul_r in H3; [ | easy | ].
  +idtac.
 
