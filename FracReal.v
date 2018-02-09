@@ -2222,6 +2222,39 @@ destruct (le_dec r1 r3) as [L1| L1].
 ...
 *)
 
+Theorem Nat_mul_succ_le_div : ∀ a b c,
+  b * c ≤ a < b * (c + 1)
+  → a / b = c.
+Proof.
+intros * Habc.
+destruct b; [ easy | ].
+assert (Hb : S b ≠ 0) by flia.
+remember (S b) as b' eqn:Hb'.
+clear b Hb'; rename b' into b.
+move Hb after Habc.
+specialize (Nat.div_mod a b Hb) as Ha.
+destruct Habc as (H1, H2).
+rewrite Ha in H1.
+apply Nat.div_le_mono with (c := b) in H1; [ | easy ].
+rewrite Nat.mul_comm, Nat.div_mul in H1; [ | easy ].
+rewrite Nat.add_comm, Nat.mul_comm in H1.
+rewrite Nat.div_add in H1; [ | easy ].
+rewrite Nat.div_small in H1; [ | now apply Nat.mod_upper_bound ].
+simpl in H1.
+apply Nat.le_antisymm; [ | easy ].
+unfold lt in H2.
+rewrite <- Nat.add_1_r in H2.
+apply Nat.le_add_le_sub_r in H2.
+apply Nat.div_le_mono with (c := b) in H2; [ | easy ].
+eapply Nat.le_trans; [ apply H2 | ].
+rewrite Nat.mul_add_distr_l.
+rewrite Nat.mul_1_r.
+rewrite <- Nat.add_sub_assoc; [ | flia Hb ].
+rewrite Nat.add_comm, Nat.mul_comm, Nat.div_add; [ | easy ].
+rewrite Nat.div_small; [ easy | ].
+flia Hb.
+Qed.
+
 Theorem glop : ∀ r a b c,
   a < r ^ (b + c)
   → a ≥ (r ^ b - 1) * r ^ c
@@ -2241,6 +2274,40 @@ clear b Hb'; rename b' into b.
 remember (S r) as r' eqn:Hr'.
 assert (Hr : r' ≠ 0) by flia Hr'.
 clear r Hr'; rename r' into r.
+revert r a c Hr Halt Hage.
+induction b; intros; [ easy | clear Hb ].
+destruct b.
+-rewrite Nat.pow_1_r in Hage |-*.
+ simpl in Halt.
+ specialize (Nat_mul_succ_le_div a (r ^ c) (r - 1)) as H.
+ apply H.
+ split; [ flia Hage | ].
+ replace (r - 1 + 1) with r by flia Hr.
+ flia Halt.
+-specialize (IHb (Nat.neq_succ_0 b)).
+Check Nat_mul_succ_le_div.
+
+...
+
+  *now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+  *apply Nat.mul_le_mono_nonneg_l; [ flia | ].
+  Halt : a < r * r ^ c
+  Hage : a ≥ (r - 1) * r ^ c
+  ============================
+  a / r ^ c ≤ r - 1
+
+
+ apply Nat.mul_cancel_r with (p := r ^ c).
+ +now apply Nat.pow_nonzero.
+ +apply Nat.le_antisymm.
+
+
+ apply Nat.mul_
+
+ rewrite Nat.mul_sub_distr_r in Hage.
+ rewrite Nat.mul_1_l in Hage.
+
+...
 revert r a b Hr Hb Halt Hage.
 induction c; intros.
 -rewrite Nat.pow_0_r, Nat.div_1_r.
