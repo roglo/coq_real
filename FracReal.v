@@ -2255,7 +2255,7 @@ rewrite Nat.div_small; [ easy | ].
 flia Hb.
 Qed.
 
-Theorem glop : ∀ r a b c,
+Theorem Nat_ge_mul_pred_pow_pow : ∀ r a b c,
   a < r ^ (b + c)
   → a ≥ (r ^ b - 1) * r ^ c
   → a / r ^ c = r ^ b - 1.
@@ -2285,54 +2285,13 @@ destruct b.
  replace (r - 1 + 1) with r by flia Hr.
  flia Halt.
 -specialize (IHb (Nat.neq_succ_0 b)).
-Check Nat_mul_succ_le_div.
-
-...
-
-  *now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-  *apply Nat.mul_le_mono_nonneg_l; [ flia | ].
-  Halt : a < r * r ^ c
-  Hage : a ≥ (r - 1) * r ^ c
-  ============================
-  a / r ^ c ≤ r - 1
-
-
- apply Nat.mul_cancel_r with (p := r ^ c).
- +now apply Nat.pow_nonzero.
- +apply Nat.le_antisymm.
-
-
- apply Nat.mul_
-
- rewrite Nat.mul_sub_distr_r in Hage.
- rewrite Nat.mul_1_l in Hage.
-
-...
-revert r a b Hr Hb Halt Hage.
-induction c; intros.
--rewrite Nat.pow_0_r, Nat.div_1_r.
- rewrite Nat.add_0_r in Halt.
- rewrite Nat.pow_0_r, Nat.mul_1_r in Hage.
- flia Halt Hage.
--simpl.
- rewrite Nat.mul_comm.
- rewrite <- Nat.div_div; [ | now apply Nat.pow_nonzero | easy ].
- replace (b + S c) with (S b + c) in Halt by flia.
- assert (Hsb : S b ≠ 0) by flia.
- assert (H1 : a ≥ (r ^ S b - 1) * r ^ c). {
-   eapply le_trans; [ | apply Hage ].
-   replace (r ^ S c) with (r * r ^ c) by (simpl; flia).
-   rewrite Nat.mul_assoc.
-   apply Nat.mul_le_mono_pos_r.
-   -apply Nat_pow_ge_1; flia Hr.
-   -rewrite Nat.mul_sub_distr_r.
-    rewrite Nat.mul_1_l.
-    replace (r ^ b * r) with (r ^ S b) by (simpl; flia).
-    ...
- }
- specialize (IHc r a (S b) Hr Hsb Halt H1) as H2.
- rewrite H2.
-...
+ apply Nat_mul_succ_le_div.
+ split; [ flia Hage | ].
+ rewrite Nat.sub_add.
+ +rewrite Nat.pow_add_r in Halt.
+  flia Halt.
+ +apply Nat_pow_ge_1; flia Hr.
+Qed.
 
 Theorem glop {r : radix} : ∀ u i,
   (∀ k, d2n (numbers_to_digits u) (i + k + 1) = rad - 1)
@@ -2384,8 +2343,7 @@ destruct (LPO_fst (A_ge_1 (i + 1) u)) as [H1| H1].
  remember (rad ^ (n2 - j - 1)) as s2 eqn:Hs2.
  move n2 before s1; move s2 before s1.
  move Hn2 before Hs1; move Hs2 before Hn2.
-  apply glop in H4.
-
+ apply Nat_ge_mul_pred_pow_pow in H4.
 
 ...
  rewrite Nat.mod_mul_r in H3; [ | easy | ].
