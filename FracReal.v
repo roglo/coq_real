@@ -2293,99 +2293,53 @@ destruct b.
  +apply Nat_pow_ge_1; flia Hr.
 Qed.
 
+Theorem A_ge_1_all_true_if {r : radix} : ∀ u i,
+  (∀ k, A_ge_1 i u k = true)
+  → ∀ k,
+     let n := rad * (i + k + 3) in
+     let s := rad ^ (n - i- 1) in
+     let t := rad ^ (n - i - k - 2) in
+     nA i n u mod s / t = rad ^ S k - 1.
+Proof.
+intros * H1 *.
+specialize (proj1 (all_A_ge_1_true_iff i u) H1 k) as H2.
+remember (S k) as x; simpl in H2; subst x.
+fold n s t in H2.
+assert (HnA : nA i n u mod s < rad ^ (S k + (n - i - k - 2))). {
+  assert (Hsz : s ≠ 0) by now apply Nat.pow_nonzero.
+  replace (S k + (n - i - k - 2)) with (n - i - 1).
+  -now apply Nat.mod_upper_bound.
+  -unfold n.
+   specialize radix_ge_2 as Hr.
+   destruct rad; [ easy | simpl; flia ].
+}
+specialize (Nat_ge_mul_pred_pow_pow rad (nA i n u mod s) (S k)) as H.
+specialize (H (n - i - k - 2) HnA H2).
+easy.
+Qed.
+
 Theorem glop {r : radix} : ∀ u i,
   (∀ k, d2n (numbers_to_digits u) (i + k + 1) = rad - 1)
   → False.
 Proof.
 intros * Hkn.
-specialize (Hkn 0) as Hk.
-rewrite Nat.add_0_r in Hk.
+remember 42 as k; clear Heqk.
+specialize (Hkn k) as Hk.
 unfold d2n, numbers_to_digits in Hk.
-destruct (LPO_fst (A_ge_1 (i + 1) u)) as [H1| H1].
+destruct (LPO_fst (A_ge_1 (i + k + 1) u)) as [H1| H1].
 -simpl in Hk.
- remember (i + 1) as j eqn:Hj.
+ remember (i + k + 1) as j eqn:Hj.
  move j before i.
- specialize (proj1 (all_A_ge_1_true_iff j u) H1) as H2.
- remember (rad * (j + 3)) as n eqn:Hn.
- remember (rad ^ (n - j - 1)) as s eqn:Hs.
- move n before j; move s before n.
- move Hn before Hj; move Hs before Hn.
-(*
- specialize (H2 0) as H3; simpl in H3.
- rewrite Nat.add_0_r, Nat.sub_0_r, Nat.mul_1_r in H3.
- rewrite <- Hn, <- Hs in H3.
- remember (rad ^ (n - j - 2)) as t eqn:Ht.
- assert (Hsz : s ≠ 0) by (now rewrite Hs; apply Nat.pow_nonzero).
- assert (HnA : nA j n u mod s < rad ^ (1 + (n - j - 2))). {
-   replace (1 + (n - j - 2)) with (n - j - 1).
-   -rewrite <- Hs.
-    now apply Nat.mod_upper_bound.
-   -rewrite Hn.
-    specialize radix_ge_2 as H.
-    destruct rad; [ easy | simpl; flia ].
- }
- specialize (Nat_ge_mul_pred_pow_pow rad (nA j n u mod s) 1 (n - j - 2)) as H.
- rewrite Nat.pow_1_r, <- Ht in H.
- specialize (H HnA H3).
-*)
- (* yeah! *)
- assert
-   (∀ k,
-    let n := rad * (j + k + 3) in
-    let s := rad ^ (n - j - 1) in
-    let t := rad ^ (n - j - k - 2) in
-    nA j n u mod s / t = rad - 1). {
-   subst n s.
-   intros.
-   specialize (H2 k) as H3.
-   remember (S k) as x; simpl in H3; subst x.
-   fold n s t in H3.
-   specialize (Nat_ge_mul_pred_pow_pow rad (nA j n u mod s) (S k)) as H.
-   specialize (H (n - j - k - 2)).
-   fold t in H.
-   assert (Hna : nA j n u mod s < rad ^ (S k + (n - j - k - 2))). {
+ specialize (A_ge_1_all_true_if u j H1) as H2.
 
 ...
-
-
-
-...
-
- move t before s.
- move Ht before Hs.
- assert (Hst : s = rad * t). {
-   replace rad with (rad ^ 1) by apply Nat.pow_1_r.
-   subst s t.
-   rewrite <- Nat.pow_add_r.
-   f_equal.
-   enough (H : j + 1 < n) by flia H.
-   rewrite Hn.
-   specialize radix_ge_2 as Hr.
-   destruct rad; [ easy | simpl; flia ].
- }
- move Hst at top; subst s.
- clear Hs.
- move Hk before H3.
- specialize (H2 1) as H4.
- remember (rad ^ 2) as x; simpl in H4; subst x.
- replace (j + 1 + 3) with (j + 4) in H4 by flia.
- remember (rad * (j + 4)) as n1 eqn:Hn1.
- remember (rad ^ (n1 - j - 1)) as s1 eqn:Hs1.
- move n1 before n; move s1 before n1.
- move Hn1 before Ht; move Hs1 before Hn1.
- specialize (H2 2) as H5.
- remember (rad ^ 3) as x; simpl in H5; subst x.
- replace (j + 2 + 3) with (j + 5) in H5 by flia.
- remember (rad * (j + 5)) as n2 eqn:Hn2.
- remember (rad ^ (n2 - j - 1)) as s2 eqn:Hs2.
- move n2 before s1; move s2 before s1.
- move Hn2 before Hs1; move Hs2 before Hn2.
- apply Nat_ge_mul_pred_pow_pow in H4.
-
-...
- rewrite Nat.mod_mul_r in H3; [ | easy | ].
- +idtac.
-
+-destruct H1 as (k & Hjk & Hkk).
+ simpl in Hk.
+ remember (i + 1) as j eqn:Hj.
+ apply A_ge_1_false_iff in Hkk.
+ set (n := rad * (j + k + 3)) in Hkk, Hk.
+ set (s := rad ^ (n - j - 1)) in Hkk, Hk.
+ set (t := rad ^ (n - j - k - 2)) in Hkk.
 ...
 
 Theorem freal_eq_prop_add_norm_l {r : radix} : ∀ x y,
