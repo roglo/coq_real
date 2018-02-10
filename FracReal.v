@@ -2248,15 +2248,16 @@ rewrite Nat.div_add; [ | easy ].
 now rewrite Nat.div_small.
 Qed.
 
-Theorem Nat_ge_mul_pred_pow_pow : ∀ r a b c,
+Theorem Nat_ge_mul_pred_pow_pow : ∀ r a b c t,
   a < r ^ (b + c)
   → a ≥ (r ^ b - 1) * r ^ c
-  → ∃ t, t < r ^ c ∧ a = (r ^ b - 1) * r ^ c + t.
+  → t = a - (r ^ b - 1) * r ^ c
+  → t < r ^ c ∧ a = (r ^ b - 1) * r ^ c + t.
 Proof.
-intros * Halt Hage.
+intros * Halt Hage Ht.
 destruct b. {
-  simpl in Halt, Hage |-*.
-  now exists a.
+  simpl in Halt, Hage, Ht |-*.
+  flia Halt Ht.
 }
 destruct r. {
   rewrite Nat.pow_0_l in Halt; [ easy | flia ].
@@ -2267,47 +2268,31 @@ clear b Hb'; rename b' into b.
 remember (S r) as r' eqn:Hr'.
 assert (Hr : r' ≠ 0) by flia Hr'.
 clear r Hr'; rename r' into r.
-revert r a c Hr Halt Hage.
+revert r a c t Hr Halt Hage Ht.
 induction b; intros; [ easy | clear Hb ].
 destruct b.
 -rewrite Nat.pow_1_r in Hage |-*.
  simpl in Halt.
- remember (a - r ^ c * (r - 1)) as t eqn:Ht.
  specialize (Nat_mul_succ_le_eucl_div a (r ^ c) (r - 1)) as H.
  specialize (H t).
  rewrite Nat.sub_add in H; [ | flia Hr ].
  assert (H1 : r ^ c * (r - 1) ≤ a < r ^ c * r) by flia Halt Hage.
+ rewrite Nat.mul_comm, Nat.pow_1_r in Ht.
  specialize (H H1 Ht); clear H1.
- exists t.
  split; [ easy | flia H ].
 -specialize (IHb (Nat.neq_succ_0 b) r).
-...
-
- remember (a - r ^ c * (r ^ (S (S b) - 1))) as t eqn:Ht.
  specialize (Nat_mul_succ_le_eucl_div a (r ^ c)) as H.
- specialize (H (r ^ (S (S b) - 1))).
-(*
+ specialize (H (r ^ S (S b) - 1)).
  rewrite Nat.sub_add in H; [ | apply Nat_pow_ge_1; flia Hr ].
-*)
- exists t.
  rewrite Nat.mul_comm.
  rewrite Nat.pow_add_r in Halt.
  specialize (H t).
-...
  apply H.
  +split; [ flia Hage | flia Halt ].
- +idtac.
+ +flia Ht.
+Qed.
 
-...
- apply Nat_mul_succ_le_div.
- split; [ flia Hage | ].
- rewrite Nat.sub_add.
- +rewrite Nat.pow_add_r in Halt.
-  flia Halt.
- +apply Nat_pow_ge_1; flia Hr.
-...
-
-Theorem Nat_ge_mul_pred_pow_pow : ∀ r a b c,
+Theorem old_Nat_ge_mul_pred_pow_pow : ∀ r a b c,
   a < r ^ (b + c)
   → a ≥ (r ^ b - 1) * r ^ c
   → a / r ^ c = r ^ b - 1.
@@ -2345,6 +2330,8 @@ destruct b.
  +apply Nat_pow_ge_1; flia Hr.
 Qed.
 
+...
+
 Theorem A_ge_1_all_true_if {r : radix} : ∀ u i,
   (∀ k, A_ge_1 i u k = true)
   → ∀ k,
@@ -2365,7 +2352,7 @@ assert (HnA : nA i n u mod s < rad ^ (S k + (n - i - k - 2))). {
    specialize radix_ge_2 as Hr.
    destruct rad; [ easy | simpl; flia ].
 }
-specialize (Nat_ge_mul_pred_pow_pow rad (nA i n u mod s) (S k)) as H.
+specialize (old_Nat_ge_mul_pred_pow_pow rad (nA i n u mod s) (S k)) as H.
 specialize (H (n - i - k - 2) HnA H2).
 easy.
 Qed.
