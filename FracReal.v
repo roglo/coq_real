@@ -2222,6 +2222,14 @@ destruct (le_dec r1 r3) as [L1| L1].
 ...
 *)
 
+Theorem Nat_mul_succ_le_eucl_div : ∀ a b c,
+  b * c ≤ a < b * (c + 1)
+  → ∃ r, r < b ∧ a = b * c + r.
+Proof.
+intros * Habc.
+exists (a - b * c).
+...
+
 Theorem Nat_mul_succ_le_div : ∀ a b c,
   b * c ≤ a < b * (c + 1)
   → a / b = c.
@@ -2254,6 +2262,45 @@ rewrite Nat.add_comm, Nat.mul_comm, Nat.div_add; [ | easy ].
 rewrite Nat.div_small; [ easy | ].
 flia Hb.
 Qed.
+
+Theorem Nat_ge_mul_pred_pow_pow : ∀ r a b c,
+  a < r ^ (b + c)
+  → a ≥ (r ^ b - 1) * r ^ c
+  → ∃ t, t < r ^ c ∧ a = (r ^ b - 1) * r ^ c + t.
+Proof.
+intros * Halt Hage.
+destruct b. {
+  simpl in Halt, Hage |-*.
+  now exists a.
+}
+destruct r. {
+  rewrite Nat.pow_0_l in Halt; [ easy | flia ].
+}
+remember (S b) as b' eqn:Hb'.
+assert (Hb : b' ≠ 0) by flia Hb'.
+clear b Hb'; rename b' into b.
+remember (S r) as r' eqn:Hr'.
+assert (Hr : r' ≠ 0) by flia Hr'.
+clear r Hr'; rename r' into r.
+revert r a c Hr Halt Hage.
+induction b; intros; [ easy | clear Hb ].
+destruct b.
+-rewrite Nat.pow_1_r in Hage |-*.
+ simpl in Halt.
+ specialize (Nat_mul_succ_le_div a (r ^ c) (r - 1)) as H.
+...
+ apply H.
+ split; [ flia Hage | ].
+ replace (r - 1 + 1) with r by flia Hr.
+ flia Halt.
+-specialize (IHb (Nat.neq_succ_0 b)).
+ apply Nat_mul_succ_le_div.
+ split; [ flia Hage | ].
+ rewrite Nat.sub_add.
+ +rewrite Nat.pow_add_r in Halt.
+  flia Halt.
+ +apply Nat_pow_ge_1; flia Hr.
+...
 
 Theorem Nat_ge_mul_pred_pow_pow : ∀ r a b c,
   a < r ^ (b + c)
