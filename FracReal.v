@@ -2304,12 +2304,13 @@ unfold d2n, numbers_to_digits in Hk.
 destruct (LPO_fst (A_ge_1 (i + 1) u)) as [H1| H1].
 -simpl in Hk.
  remember (i + 1) as j eqn:Hj.
+ move j before i.
+ specialize (proj1 (all_A_ge_1_true_iff j u) H1) as H2.
  remember (rad * (j + 3)) as n eqn:Hn.
  remember (rad ^ (n - j - 1)) as s eqn:Hs.
- move j before i.
  move n before j; move s before n.
  move Hn before Hj; move Hs before Hn.
- specialize (proj1 (all_A_ge_1_true_iff j u) H1) as H2.
+(*
  specialize (H2 0) as H3; simpl in H3.
  rewrite Nat.add_0_r, Nat.sub_0_r, Nat.mul_1_r in H3.
  rewrite <- Hn, <- Hs in H3.
@@ -2326,7 +2327,28 @@ destruct (LPO_fst (A_ge_1 (i + 1) u)) as [H1| H1].
  specialize (Nat_ge_mul_pred_pow_pow rad (nA j n u mod s) 1 (n - j - 2)) as H.
  rewrite Nat.pow_1_r, <- Ht in H.
  specialize (H HnA H3).
+*)
  (* yeah! *)
+ assert
+   (∀ k,
+    let n := rad * (j + k + 3) in
+    let s := rad ^ (n - j - 1) in
+    let t := rad ^ (n - j - k - 2) in
+    nA j n u mod s / t = rad - 1). {
+   subst n s.
+   intros.
+   specialize (H2 k) as H3.
+   remember (S k) as x; simpl in H3; subst x.
+   fold n s t in H3.
+   specialize (Nat_ge_mul_pred_pow_pow rad (nA j n u mod s) (S k)) as H.
+   specialize (H (n - j - k - 2)).
+   fold t in H.
+   assert (Hna : nA j n u mod s < rad ^ (S k + (n - j - k - 2))). {
+
+...
+
+
+
 ...
 
  move t before s.
