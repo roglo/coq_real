@@ -2331,7 +2331,7 @@ destruct (LPO_fst (A_ge_1 (i + k + 1) u)) as [H1| H1].
  remember (i + k + 1) as j eqn:Hj.
  move j before i.
  specialize (A_ge_1_all_true_if u j H1) as H2.
-
+ clear H1; rename H2 into H1; move H1 before Hj.
 ...
 -destruct H1 as (k & Hjk & Hkk).
  simpl in Hk.
