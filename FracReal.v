@@ -2275,13 +2275,13 @@ destruct b.
  remember (a - r ^ c * (r - 1)) as t eqn:Ht.
  specialize (Nat_mul_succ_le_eucl_div a (r ^ c) (r - 1)) as H.
  specialize (H t).
-
-...
- apply H.
- split; [ flia Hage | ].
- replace (r - 1 + 1) with r by flia Hr.
- flia Halt.
+ rewrite Nat.sub_add in H; [ | flia Hr ].
+ assert (H1 : r ^ c * (r - 1) ≤ a < r ^ c * r) by flia Halt Hage.
+ specialize (H H1 Ht); clear H1.
+ exists t.
+ split; [ easy | flia H ].
 -specialize (IHb (Nat.neq_succ_0 b)).
+...
  apply Nat_mul_succ_le_div.
  split; [ flia Hage | ].
  rewrite Nat.sub_add.
