@@ -2280,7 +2280,24 @@ destruct b.
  specialize (H H1 Ht); clear H1.
  exists t.
  split; [ easy | flia H ].
--specialize (IHb (Nat.neq_succ_0 b)).
+-specialize (IHb (Nat.neq_succ_0 b) r).
+...
+
+ remember (a - r ^ c * (r ^ (S (S b) - 1))) as t eqn:Ht.
+ specialize (Nat_mul_succ_le_eucl_div a (r ^ c)) as H.
+ specialize (H (r ^ (S (S b) - 1))).
+(*
+ rewrite Nat.sub_add in H; [ | apply Nat_pow_ge_1; flia Hr ].
+*)
+ exists t.
+ rewrite Nat.mul_comm.
+ rewrite Nat.pow_add_r in Halt.
+ specialize (H t).
+...
+ apply H.
+ +split; [ flia Hage | flia Halt ].
+ +idtac.
+
 ...
  apply Nat_mul_succ_le_div.
  split; [ flia Hage | ].
