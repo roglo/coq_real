@@ -2222,13 +2222,14 @@ destruct (le_dec r1 r3) as [L1| L1].
 ...
 *)
 
-Theorem Nat_mul_succ_le_eucl_div : ∀ a b c,
+Theorem Nat_mul_succ_le_eucl_div : ∀ a b c r,
   b * c ≤ a < b * (c + 1)
-  → ∃ r, r < b ∧ a = b * c + r.
+  → r = a - b * c
+  → r < b ∧ a = b * c + r.
 Proof.
-intros * Habc.
-exists (a - b * c).
-...
+intros * Habc Hr.
+flia Habc Hr.
+Qed.
 
 Theorem Nat_mul_succ_le_div : ∀ a b c,
   b * c ≤ a < b * (c + 1)
@@ -2240,27 +2241,11 @@ assert (Hb : S b ≠ 0) by flia.
 remember (S b) as b' eqn:Hb'.
 clear b Hb'; rename b' into b.
 move Hb after Habc.
-specialize (Nat.div_mod a b Hb) as Ha.
-destruct Habc as (H1, H2).
-rewrite Ha in H1.
-apply Nat.div_le_mono with (c := b) in H1; [ | easy ].
-rewrite Nat.mul_comm, Nat.div_mul in H1; [ | easy ].
-rewrite Nat.add_comm, Nat.mul_comm in H1.
-rewrite Nat.div_add in H1; [ | easy ].
-rewrite Nat.div_small in H1; [ | now apply Nat.mod_upper_bound ].
-simpl in H1.
-apply Nat.le_antisymm; [ | easy ].
-unfold lt in H2.
-rewrite <- Nat.add_1_r in H2.
-apply Nat.le_add_le_sub_r in H2.
-apply Nat.div_le_mono with (c := b) in H2; [ | easy ].
-eapply Nat.le_trans; [ apply H2 | ].
-rewrite Nat.mul_add_distr_l.
-rewrite Nat.mul_1_r.
-rewrite <- Nat.add_sub_assoc; [ | flia Hb ].
-rewrite Nat.add_comm, Nat.mul_comm, Nat.div_add; [ | easy ].
-rewrite Nat.div_small; [ easy | ].
-flia Hb.
+remember (a - b * c) as r eqn:Hr.
+specialize (Nat_mul_succ_le_eucl_div a b c r Habc Hr) as (H1, H2).
+rewrite H2, Nat.add_comm, Nat.mul_comm.
+rewrite Nat.div_add; [ | easy ].
+now rewrite Nat.div_small.
 Qed.
 
 Theorem Nat_ge_mul_pred_pow_pow : ∀ r a b c,
@@ -2287,7 +2272,10 @@ induction b; intros; [ easy | clear Hb ].
 destruct b.
 -rewrite Nat.pow_1_r in Hage |-*.
  simpl in Halt.
- specialize (Nat_mul_succ_le_div a (r ^ c) (r - 1)) as H.
+ remember (a - r ^ c * (r - 1)) as t eqn:Ht.
+ specialize (Nat_mul_succ_le_eucl_div a (r ^ c) (r - 1)) as H.
+ specialize (H t).
+
 ...
  apply H.
  split; [ flia Hage | ].
