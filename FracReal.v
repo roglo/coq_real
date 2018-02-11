@@ -2330,9 +2330,30 @@ destruct b.
  +apply Nat_pow_ge_1; flia Hr.
 Qed.
 
-...
-
 Theorem A_ge_1_all_true_if {r : radix} : ∀ u i,
+  (∀ k, A_ge_1 i u k = true)
+  → ∀ k,
+     let n := rad * (i + k + 3) in
+     let s := rad ^ (n - i- 1) in
+     let t := rad ^ (n - i - k - 2) in
+     let m := nA i n u mod s - (rad ^ S k - 1) * t in
+     m < t ∧
+     nA i n u mod s = (rad ^ S k - 1) * t + m.
+Proof.
+intros * H1 *.
+specialize (proj1 (all_A_ge_1_true_iff i u) H1 k) as H2.
+remember (S k) as x; simpl in H2; subst x.
+fold n s t in H2.
+apply Nat_ge_mul_pred_pow_pow; [ | easy | easy ].
+replace (S k + (n - i - k - 2)) with (n - i - 1).
+-apply Nat.mod_upper_bound.
+ now apply Nat.pow_nonzero.
+-unfold n.
+ specialize radix_ge_2 as Hr.
+ destruct rad; [ easy | simpl; flia ].
+Qed.
+
+Theorem old_A_ge_1_all_true_if {r : radix} : ∀ u i,
   (∀ k, A_ge_1 i u k = true)
   → ∀ k,
      let n := rad * (i + k + 3) in
@@ -2371,6 +2392,7 @@ destruct (LPO_fst (A_ge_1 (i + k + 1) u)) as [H1| H1].
  move j before i.
  specialize (A_ge_1_all_true_if u j H1) as H2.
  clear H1; rename H2 into H1; move H1 before Hj.
+
 ...
 -destruct H1 as (k & Hjk & Hkk).
  simpl in Hk.
