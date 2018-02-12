@@ -2654,6 +2654,10 @@ remember (nA i n u mod s - (rad - 1) * s1) as r1 eqn:Hr1.
 move r1 before s1.
 unfold u in H6.
 rewrite nA_freal_add_series in H6.
+remember (nA i n (fd2n (freal_normalize x)) + nA i n (fd2n y)) as z eqn:Hz.
+assert (Hsz : s ≠ 0) by (now rewrite Hs; apply Nat.pow_nonzero).
+specialize (Nat.div_mod z s Hsz) as H.
+rewrite H6, Nat.add_assoc in H.
 ...
 
 assert (∀ k, u (i + k + 1) = rad - 1). {
