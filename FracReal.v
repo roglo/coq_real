@@ -2644,8 +2644,17 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
         f_equal.
 Check A_ge_1_all_true_if.
 specialize (A_ge_1_all_true_if u i vHku) as H.
+specialize (H 0).
+simpl in H.
+rewrite Nat.add_0_r, Nat.sub_0_r, Nat.mul_1_r in H.
+rewrite <- Hn, <- Hs in H.
+remember (rad ^ (n - i - 2)) as s1 eqn:Hs1.
+destruct H as (H5, H6).
+remember (nA i n u mod s - (rad - 1) * s1) as r1 eqn:Hr1.
+move r1 before s1.
+unfold u in H6.
+rewrite nA_freal_add_series in H6.
 ...
-
 
 assert (∀ k, u (i + k + 1) = rad - 1). {
   intros k.
