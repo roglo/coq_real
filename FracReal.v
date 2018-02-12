@@ -2378,6 +2378,7 @@ specialize (H (n - i - k - 2) HnA H2).
 easy.
 Qed.
 
+(*
 Theorem glop {r : radix} : ∀ u i,
   (∀ k, d2n (numbers_to_digits u) (i + k + 1) = rad - 1)
   → False.
@@ -2402,6 +2403,7 @@ destruct (LPO_fst (A_ge_1 (i + k + 1) u)) as [H1| H1].
  set (s := rad ^ (n - j - 1)) in Hkk, Hk.
  set (t := rad ^ (n - j - k - 2)) in Hkk.
 ...
+*)
 
 Theorem freal_eq_prop_add_norm_l {r : radix} : ∀ x y,
   freal_eq_prop {| freal := freal_add_to_seq (freal_normalize x) y |}
@@ -2640,6 +2642,10 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
       ***easy.
      +++apply Nat.nle_gt in Hjn.
         f_equal.
+Check A_ge_1_all_true_if.
+specialize (A_ge_1_all_true_if u i vHku) as H.
+...
+
 
 assert (∀ k, u (i + k + 1) = rad - 1). {
   intros k.
