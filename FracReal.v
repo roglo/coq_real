@@ -2654,32 +2654,6 @@ remember (nA i n u mod s - (rad - 1) * s1) as r1 eqn:Hr1.
 move r1 before s1.
 unfold u in H6.
 rewrite nA_freal_add_series in H6.
-...
-remember (nA i n (fd2n (freal_normalize x)) + nA i n (fd2n y)) as z eqn:Hz.
-assert (Hsz : s ≠ 0) by (now rewrite Hs; apply Nat.pow_nonzero).
-specialize (Nat.div_mod z s Hsz) as H.
-rewrite H6, Nat.add_assoc in H.
-...
-
-assert (∀ k, u (i + k + 1) = rad - 1). {
-  intros k.
-  unfold u.
-  unfold freal_add_series.
-  unfold sequence_add.
-  specialize (H1 k) as H5.
-  unfold d2n, numbers_to_digits in H5.
-  remember (i + k + 1) as m eqn:Hm.
-  destruct (LPO_fst (A_ge_1 m u)) as [H6| H6].
-  -simpl in H5.
-   specialize (proj1 (all_A_ge_1_true_iff m u) H6) as H7.
-   specialize (H7 0) as H8.
-   simpl in H8.
-   rewrite Nat.add_0_r, Nat.sub_0_r, Nat.mul_1_r in H8.
-   move H5 before H8.
-   remember (rad * (m + 3)) as n1 eqn:Hn1.
-   remember (rad ^ (n1 - m - 1)) as s1 eqn:Hs1.
-   move s1 before n1.
-...
 
 (* I wonder if there is not something in H1 and H2 that would directly
    conclude this case and some of (perhaps all) the cases before? *)
@@ -2705,6 +2679,7 @@ assert (∀ k,
 }
 
 Print A_ge_1.
+...
 
 (* does ∀ k, A_ge_1 i u k implies ∀ k, A_ge_1 i1 u k for i1 > i ? *)
 assert
