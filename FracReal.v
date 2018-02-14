@@ -2425,6 +2425,65 @@ destruct (le_dec (fd2n x (S i + 1)) (fd2n (freal_normalize x) (S i + 1)))
  +replace (S (i + 1)) with (S i + 1) by flia.
   now apply IHm.
 -apply Nat.nle_gt in H1.
+ assert (H2 : fd2n x (i + 1) < fd2n (freal_normalize x) (i + 1)). {
+   apply Nat.nle_gt; intros H2.
+   assert (H3 : fd2n x (i + 1) = fd2n (freal_normalize x) (i + 1)). {
+     flia Hin H2.
+   }
+   clear Hin H2.
+   unfold freal_normalize, fd2n in H3; simpl in H3.
+   unfold digit_sequence_normalize in H3.
+   destruct (LPO_fst (is_9_strict_after (freal x) (i + 1))) as [H4| H4].
+   -destruct (lt_dec (S (d2n (freal x) (i + 1))) rad) as [H5| H5].
+    +unfold d2n in H3; simpl in H3; flia H3.
+    +apply Nat.nlt_ge in H5.
+     unfold d2n in H5; simpl in H3.
+     rewrite H3 in H5.
+     specialize radix_ge_2; flia H5.
+   -destruct H4 as (j & Hjj & Hj).
+    apply is_9_strict_after_false_iff in Hj.
+    clear H3.
+    unfold freal_normalize, fd2n in H1; simpl in H1.
+    unfold digit_sequence_normalize in H1.
+    destruct (LPO_fst (is_9_strict_after (freal x) (S (i + 1)))) as [H2| H2].
+    +destruct (lt_dec (S (d2n (freal x) (S (i + 1)))) rad) as [H4| H4].
+     *unfold d2n in H1; simpl in H1; flia H1.
+     *apply Nat.nlt_ge in H4.
+      destruct j.
+     --replace (i + 1 + 0 + 1) with (S (i + 1)) in Hj by flia.
+       unfold d2n in H4, Hj.
+       specialize (digit_lt_radix (freal x (S (i + 1)))) as H.
+       flia H4 Hj H.
+     --specialize (H2 j).
+       apply is_9_strict_after_true_iff in H2.
+       replace (i + 1 + S j + 1) with (S (i + 1) + j + 1) in Hj by flia.
+       easy.
+    +flia H1.
+ }
+ clear Hin.
+...
+(*
+  Nx(i+1)=x(i+1)+1
+  x(j)=9 et Nx(j)=0 pour j>i+1
+*)
+...
+
+intros * Hin.
+unfold nA, summation.
+replace (S (n - 1) - (i + 1)) with (n - i - 1) by lia.
+remember (n - i - 1) as m eqn:Hm.
+clear Hm.
+revert i n Hin.
+induction m; intros; [ easy | ].
+destruct (le_dec (fd2n x (S i + 1)) (fd2n (freal_normalize x) (S i + 1)))
+  as [H1| H1].
+-simpl.
+ apply Nat.add_le_mono.
+ +apply Nat.mul_le_mono_pos_r; [ | easy ].
+  now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+ +replace (S (i + 1)) with (S i + 1) by flia.
+  now apply IHm.
+-apply Nat.nle_gt in H1.
  unfold freal_normalize, fd2n in H1; simpl in H1.
  unfold digit_sequence_normalize in H1.
  destruct (LPO_fst (is_9_strict_after (freal x) (S (i + 1)))) as [H2| H2].
@@ -2435,7 +2494,7 @@ destruct (le_dec (fd2n x (S i + 1)) (fd2n (freal_normalize x) (S i + 1)))
    apply Nat.le_trans with
      (m := fd2n (freal_normalize x) (i + 1) * rad ^ (n - 1 - (i + 1))); [ | flia ].
 (*
-  x(i+1)=Nx(i+1)-1
+  Nx(i+1)=x(i+1)+1
   x(j)=9 et Nx(j)=0 pour j>i+1
 *)
 ...
