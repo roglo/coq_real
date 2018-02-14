@@ -2386,8 +2386,7 @@ intros * Hin.
 unfold nA, summation.
 replace (S (n - 1) - (i + 1)) with (n - i - 1) by lia.
 remember (n - i - 1) as m eqn:Hm.
-clear Hm.
-revert i n Hin.
+revert i n Hin Hm.
 induction m; intros; [ easy | ].
 destruct (le_dec (fd2n x (S i + 1)) (fd2n (freal_normalize x) (S i + 1)))
   as [H1| H1].
@@ -2396,7 +2395,7 @@ destruct (le_dec (fd2n x (S i + 1)) (fd2n (freal_normalize x) (S i + 1)))
  +apply Nat.mul_le_mono_pos_r; [ | easy ].
   now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
  +replace (S (i + 1)) with (S i + 1) by flia.
-  now apply IHm.
+  apply IHm; [ easy | flia Hm ].
 -apply Nat.nle_gt in H1.
  assert (H2 : fd2n x (i + 1) < fd2n (freal_normalize x) (i + 1)). {
    apply Nat.nle_gt; intros H2.
@@ -2437,6 +2436,17 @@ destruct (le_dec (fd2n x (S i + 1)) (fd2n (freal_normalize x) (S i + 1)))
  simpl.
  apply Nat.le_trans with
    (m := fd2n (freal_normalize x) (i + 1) * rad ^ (n - 1 - (i + 1))); [ | flia ].
+ replace (n - 1 - (i + 1)) with (n - i - 2) by flia.
+ remember (n - i - 2) as k eqn:Hk.
+ symmetry in Hk.
+ destruct k.
+ +rewrite Nat.pow_0_r.
+  do 2 rewrite Nat.mul_1_r.
+  destruct m; [ | flia Hm Hk ].
+  simpl; flia H2.
+ +rewrite power_summation; [ | easy ].
+  do 2 rewrite Nat.mul_add_distr_l, Nat.mul_1_r.
+
 ...
 (*
   Nx(i+1)=x(i+1)+1
