@@ -2416,19 +2416,16 @@ remember (n - i - 1) as m eqn:Hm.
 clear Hm.
 revert i n Hin.
 induction m; intros; [ easy | ].
-simpl.
-Admitted. (*
+destruct (le_dec (fd2n x (S i + 1)) (fd2n (freal_normalize x) (S i + 1)))
+  as [H1| H1].
+-simpl.
+ apply Nat.add_le_mono.
+ +apply Nat.mul_le_mono_pos_r; [ | easy ].
+  now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+ +replace (S (i + 1)) with (S i + 1) by flia.
+  now apply IHm.
+-apply Nat.nle_gt in H1.
 ...
-apply Nat.add_le_mono.
--apply Nat.mul_le_mono_pos_r; [ | easy ].
- apply Nat.neq_0_lt_0.
- now apply Nat.pow_nonzero.
--idtac.
-...
--replace (S (i + 1)) with (S i + 1) by flia.
- apply IHm.
-...
-*)
 
 Theorem freal_eq_prop_add_norm_l {r : radix} : ∀ x y,
   freal_eq_prop {| freal := freal_add_to_seq (freal_normalize x) y |}
@@ -2687,7 +2684,25 @@ now rewrite Nat.div_small.
 assert (H9 : nA i n (fd2n (freal_normalize x)) < nA i n (fd2n x)) by flia H7 H8.
 apply Nat.nle_gt in H9; exfalso; apply H9; clear H9.
 apply nA_le_norm.
-(* pute vierge *)
+unfold freal_normalize, fd2n; simpl.
+unfold digit_sequence_normalize.
+destruct (LPO_fst (is_9_strict_after (freal x) (i + 1))) as [H9| ]; [ | easy ].
+destruct (lt_dec (S (d2n (freal x) (i + 1))) rad) as [H10| H10].
+simpl; unfold d2n; flia.
+apply Nat.nlt_ge in H10.
+unfold d2n in H10.
+specialize (digit_lt_radix (freal x (i + 1))) as H.
+assert (H11 : dig (freal x (i + 1)) = rad - 1) by flia H10 H.
+clear H10 H.
+destruct j.
+unfold d2n in Hj.
+rewrite Nat.add_0_r in Hj; flia Hj H11.
+specialize (H9 j).
+apply is_9_strict_after_true_iff in H9.
+now replace (i + 1 + j + 1) with (i + S j + 1) in H9 by flia.
+destruct (lt_dec (nA i n (fd2n x) + nA i n (fd2n y)) s) as [H8| H8].
+exfalso.
+
 ...
 
 unfold freal_normalize, fd2n; simpl.
