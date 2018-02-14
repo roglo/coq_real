@@ -2417,6 +2417,7 @@ clear Hm.
 revert i n Hin.
 induction m; intros; [ easy | ].
 simpl.
+Admitted. (*
 ...
 apply Nat.add_le_mono.
 -apply Nat.mul_le_mono_pos_r; [ | easy ].
@@ -2427,6 +2428,7 @@ apply Nat.add_le_mono.
 -replace (S (i + 1)) with (S i + 1) by flia.
  apply IHm.
 ...
+*)
 
 Theorem freal_eq_prop_add_norm_l {r : radix} : ∀ x y,
   freal_eq_prop {| freal := freal_add_to_seq (freal_normalize x) y |}
@@ -2684,8 +2686,8 @@ destruct (lt_dec (nA i n (fd2n x) + nA i n (fd2n y)) s) as [H8| H8].
 now rewrite Nat.div_small.
 assert (H9 : nA i n (fd2n (freal_normalize x)) < nA i n (fd2n x)) by flia H7 H8.
 apply Nat.nle_gt in H9; exfalso; apply H9; clear H9.
-Search nA.
-
+apply nA_le_norm.
+(* pute vierge *)
 ...
 
 unfold freal_normalize, fd2n; simpl.
