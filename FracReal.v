@@ -2425,6 +2425,19 @@ destruct (le_dec (fd2n x (S i + 1)) (fd2n (freal_normalize x) (S i + 1)))
  +replace (S (i + 1)) with (S i + 1) by flia.
   now apply IHm.
 -apply Nat.nle_gt in H1.
+ unfold freal_normalize, fd2n in H1; simpl in H1.
+ unfold digit_sequence_normalize in H1.
+ destruct (LPO_fst (is_9_strict_after (freal x) (S (i + 1)))) as [H2| H2].
+ +destruct (lt_dec (S (d2n (freal x) (S (i + 1)))) rad) as [H3| H3].
+  *unfold d2n in H1; simpl in H1; flia H1.
+  *apply Nat.nlt_ge in H3.
+   simpl.
+   apply Nat.le_trans with
+     (m := fd2n (freal_normalize x) (i + 1) * rad ^ (n - 1 - (i + 1))); [ | flia ].
+(*
+  x(i+1)=Nx(i+1)-1
+  x(j)=9 et Nx(j)=0 pour j>i+1
+*)
 ...
 
 Theorem freal_eq_prop_add_norm_l {r : radix} : ∀ x y,
