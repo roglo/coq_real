@@ -2406,27 +2406,26 @@ destruct (LPO_fst (A_ge_1 (i + k + 1) u)) as [H1| H1].
 *)
 
 Theorem nA_le_norm {r : radix} : ∀ x i n,
-  nA i n (fd2n x) ≤ nA i n (fd2n (freal_normalize x)).
+ fd2n x (i + 1) ≤ fd2n (freal_normalize x) (i + 1)
+ → nA i n (fd2n x) ≤ nA i n (fd2n (freal_normalize x)).
 Proof.
-intros.
+intros * Hin.
 unfold nA, summation.
 replace (S (n - 1) - (i + 1)) with (n - i - 1) by lia.
 remember (n - i - 1) as m eqn:Hm.
 clear Hm.
-revert i n.
+revert i n Hin.
 induction m; intros; [ easy | ].
-destruct (le_dec (fd2n x (i + 1)) (fd2n (freal_normalize x) (i + 1)))
-  as [H1| H1].
--simpl.
- apply Nat.add_le_mono.
- +apply Nat.mul_le_mono_pos_r; [ | easy ].
-  apply Nat.neq_0_lt_0.
-  now apply Nat.pow_nonzero.
- +replace (S (i + 1)) with (S i + 1) by flia.
-  apply IHm.
--apply Nat.nle_gt in H1.
-(* missing an hypothesis that the possible 999 ending x does
-   not start before i+1 *)
+simpl.
+...
+apply Nat.add_le_mono.
+-apply Nat.mul_le_mono_pos_r; [ | easy ].
+ apply Nat.neq_0_lt_0.
+ now apply Nat.pow_nonzero.
+-idtac.
+...
+-replace (S (i + 1)) with (S i + 1) by flia.
+ apply IHm.
 ...
 
 Theorem freal_eq_prop_add_norm_l {r : radix} : ∀ x y,
