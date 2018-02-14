@@ -2657,11 +2657,10 @@ rewrite nA_freal_add_series in H6.
 destruct (lt_dec (nA i n (fd2n (freal_normalize x)) + nA i n (fd2n y)) s) as [H7| H7].
 rewrite Nat.div_small; [ | easy ].
 rewrite Nat.mod_small in H6; [ | easy ].
-rewrite H6 in H7.
 destruct (lt_dec (nA i n (fd2n x) + nA i n (fd2n y)) s) as [H8| H8].
 now rewrite Nat.div_small.
 apply Nat.nlt_ge in H8; exfalso.
-assert (H9 : nA i n (fd2n (freal_normalize x)) < nA i n (fd2n x)) by flia H6 H7 H8.
+assert (H9 : nA i n (fd2n (freal_normalize x)) < nA i n (fd2n x)) by flia H7 H8.
 
 ...
 f_equal; f_equal.
