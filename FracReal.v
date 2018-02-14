@@ -2405,6 +2405,30 @@ destruct (LPO_fst (A_ge_1 (i + k + 1) u)) as [H1| H1].
 ...
 *)
 
+Theorem nA_le_norm {r : radix} : ∀ x i n,
+  nA i n (fd2n x) ≤ nA i n (fd2n (freal_normalize x)).
+Proof.
+intros.
+unfold nA, summation.
+replace (S (n - 1) - (i + 1)) with (n - i - 1) by lia.
+remember (n - i - 1) as m eqn:Hm.
+clear Hm.
+revert i n.
+induction m; intros; [ easy | ].
+destruct (le_dec (fd2n x (i + 1)) (fd2n (freal_normalize x) (i + 1)))
+  as [H1| H1].
+-simpl.
+ apply Nat.add_le_mono.
+ +apply Nat.mul_le_mono_pos_r; [ | easy ].
+  apply Nat.neq_0_lt_0.
+  now apply Nat.pow_nonzero.
+ +replace (S (i + 1)) with (S i + 1) by flia.
+  apply IHm.
+-apply Nat.nle_gt in H1.
+(* missing an hypothesis that the possible 999 ending x does
+   not start before i+1 *)
+...
+
 Theorem freal_eq_prop_add_norm_l {r : radix} : ∀ x y,
   freal_eq_prop {| freal := freal_add_to_seq (freal_normalize x) y |}
     {| freal := freal_add_to_seq x y |}.
@@ -2659,8 +2683,20 @@ rewrite Nat.div_small; [ | easy ].
 rewrite Nat.mod_small in H6; [ | easy ].
 destruct (lt_dec (nA i n (fd2n x) + nA i n (fd2n y)) s) as [H8| H8].
 now rewrite Nat.div_small.
-apply Nat.nlt_ge in H8; exfalso.
 assert (H9 : nA i n (fd2n (freal_normalize x)) < nA i n (fd2n x)) by flia H7 H8.
+apply Nat.nle_gt in H9; exfalso; apply H9; clear H9.
+Search nA.
+
+...
+
+unfold freal_normalize, fd2n; simpl.
+unfold nA; simpl.
+
+...
+
+apply (@summation_le_compat nat_ord_ring_def).
+intros k Hk; simpl; unfold Nat.le.
+apply Nat.mul_le_mono_r.
 
 ...
 f_equal; f_equal.
