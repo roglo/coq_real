@@ -2655,6 +2655,18 @@ move r1 before s1.
 unfold u in H6.
 rewrite nA_freal_add_series in H6.
 
+f_equal; f_equal.
+apply summation_eq_compat.
+intros k Hk.
+f_equal.
+unfold fd2n, freal_normalize; simpl.
+unfold digit_sequence_normalize; simpl.
+destruct (LPO_fst (is_9_strict_after (freal x) k)) as [H7| H7].
+destruct (lt_dec (S (d2n (freal x) k)) rad) as [H8| H8].
+simpl; exfalso.
+
+...
+
 (* I wonder if there is not something in H1 and H2 that would directly
    conclude this case and some of (perhaps all) the cases before? *)
 assert (∀ k,
