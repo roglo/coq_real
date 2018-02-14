@@ -2378,33 +2378,6 @@ specialize (H (n - i - k - 2) HnA H2).
 easy.
 Qed.
 
-(*
-Theorem glop {r : radix} : ∀ u i,
-  (∀ k, d2n (numbers_to_digits u) (i + k + 1) = rad - 1)
-  → False.
-Proof.
-intros * Hkn.
-remember 42 as k; clear Heqk.
-specialize (Hkn k) as Hk.
-unfold d2n, numbers_to_digits in Hk.
-destruct (LPO_fst (A_ge_1 (i + k + 1) u)) as [H1| H1].
--simpl in Hk.
- remember (i + k + 1) as j eqn:Hj.
- move j before i.
- specialize (A_ge_1_all_true_if u j H1) as H2.
- clear H1; rename H2 into H1; move H1 before Hj.
-
-...
--destruct H1 as (k & Hjk & Hkk).
- simpl in Hk.
- remember (i + 1) as j eqn:Hj.
- apply A_ge_1_false_iff in Hkk.
- set (n := rad * (j + k + 3)) in Hkk, Hk.
- set (s := rad ^ (n - j - 1)) in Hkk, Hk.
- set (t := rad ^ (n - j - k - 2)) in Hkk.
-...
-*)
-
 Theorem nA_le_norm {r : radix} : ∀ x i n,
  fd2n x (i + 1) ≤ fd2n (freal_normalize x) (i + 1)
  → nA i n (fd2n x) ≤ nA i n (fd2n (freal_normalize x)).
@@ -2461,6 +2434,9 @@ destruct (le_dec (fd2n x (S i + 1)) (fd2n (freal_normalize x) (S i + 1)))
     +flia H1.
  }
  clear Hin.
+ simpl.
+ apply Nat.le_trans with
+   (m := fd2n (freal_normalize x) (i + 1) * rad ^ (n - 1 - (i + 1))); [ | flia ].
 ...
 (*
   Nx(i+1)=x(i+1)+1
