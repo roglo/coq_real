@@ -2642,7 +2642,6 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
       ***easy.
      +++apply Nat.nle_gt in Hjn.
         f_equal.
-Check A_ge_1_all_true_if.
 specialize (A_ge_1_all_true_if u i vHku) as H.
 specialize (H 0).
 simpl in H.
@@ -2655,10 +2654,21 @@ move r1 before s1.
 unfold u in H6.
 rewrite nA_freal_add_series in H6.
 
+destruct (lt_dec (nA i n (fd2n (freal_normalize x)) + nA i n (fd2n y)) s) as [H7| H7].
+rewrite Nat.div_small; [ | easy ].
+rewrite Nat.mod_small in H6; [ | easy ].
+rewrite H6 in H7.
+destruct (lt_dec (nA i n (fd2n x) + nA i n (fd2n y)) s) as [H8| H8].
+now rewrite Nat.div_small.
+apply Nat.nlt_ge in H8; exfalso.
+assert (H9 : nA i n (fd2n (freal_normalize x)) < nA i n (fd2n x)) by flia H6 H7 H8.
+
+...
 f_equal; f_equal.
 apply summation_eq_compat.
 intros k Hk.
 f_equal.
+...
 unfold fd2n, freal_normalize; simpl.
 unfold digit_sequence_normalize; simpl.
 destruct (LPO_fst (is_9_strict_after (freal x) k)) as [H7| H7]; [ | easy ].
