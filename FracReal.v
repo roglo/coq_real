@@ -2437,6 +2437,8 @@ destruct (le_dec (fd2n x (S i + 1)) (fd2n (freal_normalize x) (S i + 1)))
  apply Nat.le_trans with
    (m := fd2n (freal_normalize x) (i + 1) * rad ^ (n - 1 - (i + 1))); [ | flia ].
  replace (n - 1 - (i + 1)) with (n - i - 2) by flia.
+...
+
  remember (n - i - 2) as k eqn:Hk.
  symmetry in Hk.
  destruct k.
