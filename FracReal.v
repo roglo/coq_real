@@ -2661,9 +2661,28 @@ intros k Hk.
 f_equal.
 unfold fd2n, freal_normalize; simpl.
 unfold digit_sequence_normalize; simpl.
-destruct (LPO_fst (is_9_strict_after (freal x) k)) as [H7| H7].
+destruct (LPO_fst (is_9_strict_after (freal x) k)) as [H7| H7]; [ | easy ].
 destruct (lt_dec (S (d2n (freal x) k)) rad) as [H8| H8].
 simpl; exfalso.
+
+destruct (lt_dec k (i + j + 1)) as [H9| H9].
+assert (H10 : k - i - 1 < j) by flia Hk H9.
+specialize (Hjj _ H10) as H11.
+apply is_9_strict_after_true_iff in H11.
+replace (i + (k - i - 1) + 1) with k in H11 by flia Hk.
+rewrite H11 in H8.
+rewrite <- Nat.sub_succ_l in H8; [ | easy ].
+simpl in H8.
+flia H8.
+apply Nat.nlt_ge in H9.
+
+(*
+                i+j         k
+                 v          v
+   x = 0.999...9992999...9995999...
+   y = 0.000...0007000...0003999...
+N(x) = 0.999...9992999...9996000...
+*)
 
 ...
 
