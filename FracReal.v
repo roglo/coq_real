@@ -2731,6 +2731,9 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
       ----assert (H9 : nA i n (fd2n x) < nA i n (fd2n nx)) by flia H7 H8.
           exfalso.
           apply Nat.nlt_ge in H7.
+(* forcément x se termine par 999... et nx par 000...
+   ça ne devrait pas être compatible avec H1 et H2
+   ou même peut-être Hkv *)
 ...
 
 (* I wonder if there is not something in H1 and H2 that would directly
