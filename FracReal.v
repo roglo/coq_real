@@ -2476,6 +2476,17 @@ Fixpoint compare_digit_interval {r : radix} i len x y :=
       end
   end.
 
+Theorem glop {r : radix} (rg := nat_ord_ring) : ∀ i m n x y,
+  summation_aux i m (λ j, fd2n x j * rad ^ (n - 1 - j)) <
+  summation_aux i m (λ j, fd2n y j * rad ^ (n - 1 - j))
+  → fd2n x i ≤ fd2n y i.
+Proof.
+intros * Hs.
+revert i n Hs.
+induction m; intros; [ easy | ].
+simpl in Hs.
+...
+
 Theorem nA_lt_iff {r : radix} : ∀ x y i n,
   nA i n (fd2n x) < nA i n (fd2n y)
   ↔ compare_digit_interval (i + 1) (n - i - 1) x y = Lt.
@@ -2487,12 +2498,12 @@ split.
  replace (S (n - 1) - (i + 1)) with (n - i - 1) in HnA by flia.
  remember (n - i - 1) as m eqn:Hm.
  revert x y i n Hm HnA.
- induction m; intros; [ easy | ].
- simpl in HnA; simpl.
+ induction m; intros; [ easy | simpl ].
  remember (fd2n x (i + 1) ?= fd2n y (i + 1)) as c eqn:Hc.
  symmetry in Hc.
  destruct c.
  +apply Nat.compare_eq_iff in Hc.
+  simpl in HnA.
   rewrite Hc in HnA.
   setoid_rewrite Nat.add_comm in HnA.
   apply Nat.le_lt_add_lt in HnA; [ | easy ].
@@ -2501,25 +2512,7 @@ split.
   flia Hm.
  +easy.
  +apply Nat.compare_gt_iff in Hc; exfalso.
-  apply Nat.add_lt_cases in HnA.
-  destruct HnA as [H1| H1].
-  *apply Nat.mul_lt_mono_pos_r in H1; [ flia H1 Hc | ].
-   now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-  *idtac.
-...
-
-  *replace (S (i + 1)) with (S i + 1) in H1 by flia.
-   assert (Hsi : m = n - S i - 1) by flia Hm.
-   specialize (IHm x y (S i) n Hsi H1) as H.
-   simpl in H.
-   destruct m; [ easy | ].
-   simpl in H.
-   remember (fd2n x (S (i + 1)) ?= fd2n y (S (i + 1))) as b eqn:Hb.
-   symmetry in Hb.
-   destruct b.
-  --apply Nat.compare_eq_iff in Hb.
-    flia Hc Hb.
-
+  apply Nat.nle_gt in Hc; apply Hc; clear Hc.
 
 ...
 
