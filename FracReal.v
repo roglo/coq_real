@@ -2476,15 +2476,15 @@ Fixpoint compare_digit_interval {r : radix} i len x y :=
       end
   end.
 
-Theorem glop {r : radix} (rg := nat_ord_ring) : ∀ i m n x y,
-  summation_aux i m (λ j, fd2n x j * rad ^ (n - 1 - j)) <
-  summation_aux i m (λ j, fd2n y j * rad ^ (n - 1 - j))
+Theorem glop {r : radix} (rg := nat_ord_ring) : ∀ i m x y,
+  summation_aux i m (λ j, fd2n x j * rad ^ (m - j)) <
+  summation_aux i m (λ j, fd2n y j * rad ^ (m - j))
   → fd2n x i ≤ fd2n y i.
 Proof.
 intros * Hs.
-revert i n Hs.
+revert i Hs.
 induction m; intros; [ easy | ].
-simpl in Hs.
+remember minus as f; simpl in Hs; subst f.
 ...
 
 Theorem nA_lt_iff {r : radix} : ∀ x y i n,
