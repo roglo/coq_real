@@ -2465,11 +2465,81 @@ destruct (le_dec (fd2n x (S i + 1)) (fd2n (freal_normalize x) (S i + 1)))
    apply digit_le_pred_radix.
 Qed.
 
+Theorem glip {r : radix} (rg := nat_ord_ring) : ∀ x i m,
+  (summation_aux (i + 1) m (λ j, fd2n x j * rad ^ (m + i - j)) <
+   summation_aux (i + 1) m (λ j, fd2n (freal_normalize x) j * rad ^ (m + i - j)))%Rg
+  → ∃ j : nat, j ≤ m ∧ (∀ k : nat, fd2n x (i + j + k + 1) = rad - 1).
+Proof.
+intros * Hs; simpl in Hs.
+subst rg.
+revert i Hs.
+induction m; intros; [ easy | ].
+
+...
+
 Theorem glop {r : radix} : ∀ x i n,
   nA i n (fd2n x) < nA i n (fd2n (freal_normalize x))
   → ∃ j, i + 1 ≤ j ≤ n - 1 ∧ ∀ k, fd2n x (j + k) = rad - 1.
 Proof.
 intros * HnA.
+unfold nA in HnA.
+unfold summation in HnA.
+replace (S (n - 1) - (i + 1)) with (n - i - 1) in HnA by flia.
+...
+specialize (glip x i (n - i - 1)) as H.
+simpl in H.
+remember (freal_normalize x) as nx.
+rewrite summation_aux_eq_compat with (h := λ j, fd2n x j * rad ^ (n - 1 - j)) (b₂ := i + 1) in H.
+2 : now intros j Hj; replace (n - i - 1 + i - (i + 1 + j)) with (n - 1 - (i + 1 + j)) by flia.
+set (f := summation_aux) in H.
+unfold f at 2 in H.
+rewrite summation_aux_eq_compat with (h := λ j, fd2n nx j * rad ^ (n - 1 - j)) (b₂ := i + 1) in H.
+2 : now intros j Hj; replace (n - i - 1 + i - (i + 1 + j)) with (n - 1 - (i + 1 + j)) by flia.
+subst f.
+specialize (H HnA).
+destruct H as (j & Hjn & Hj).
+exists (i + j + 1).
+split.
+-split; [ flia | ].
+
+
+...
+
+
+intros * HnA.
+unfold nA in HnA.
+(*
+unfold summation in HnA.
+replace (S (n - 1) - (i + 1)) with (n - i - 1) in HnA by flia.
+*)
+remember (n - i - 1) as m eqn:Hm.
+revert i n HnA Hm.
+induction m; intros.
+-rewrite summation_empty in HnA; [ | flia Hm ].
+ rewrite summation_empty in HnA; [ | flia Hm ].
+ flia HnA.
+-idtac.
+ replace (n - 1) with (S (i + m)) in HnA by flia Hm.
+ rewrite summation_split_last in HnA; [ | flia ].
+ rewrite summation_split_last in HnA; [ | flia ].
+ remember minus as f; simpl in HnA; subst f.
+...
+
+ destruct n; [ flia Hm | ].
+ replace (i + m) with (n - 1) in HnA by flia Hm.
+..
+
+
+ destruct i.
+ +rewrite Nat.sub_0_r in Hm.
+  unfold nA in HnA.
+  simpl in HnA.
+  rewrite Nat.sub_0_r in HnA.
+...
+
+Search (nA _ (S _)).
+
+
 ...
 
 Theorem freal_eq_prop_add_norm_l {r : radix} : ∀ x y,
