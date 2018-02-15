@@ -2437,55 +2437,33 @@ destruct (le_dec (fd2n x (S i + 1)) (fd2n (freal_normalize x) (S i + 1)))
  apply Nat.le_trans with
    (m := fd2n (freal_normalize x) (i + 1) * rad ^ (n - 1 - (i + 1))); [ | flia ].
  replace (n - 1 - (i + 1)) with (n - i - 2) by flia.
-...
-
- remember (n - i - 2) as k eqn:Hk.
- symmetry in Hk.
- destruct k.
- +rewrite Nat.pow_0_r.
-  do 2 rewrite Nat.mul_1_r.
-  destruct m; [ | flia Hm Hk ].
-  simpl; flia H2.
- +rewrite power_summation; [ | easy ].
-  do 2 rewrite Nat.mul_add_distr_l, Nat.mul_1_r.
-
-...
-(*
-  Nx(i+1)=x(i+1)+1
-  x(j)=9 et Nx(j)=0 pour j>i+1
-*)
-...
-
-intros * Hin.
-unfold nA, summation.
-replace (S (n - 1) - (i + 1)) with (n - i - 1) by lia.
-remember (n - i - 1) as m eqn:Hm.
-clear Hm.
-revert i n Hin.
-induction m; intros; [ easy | ].
-destruct (le_dec (fd2n x (S i + 1)) (fd2n (freal_normalize x) (S i + 1)))
-  as [H1| H1].
--simpl.
+ remember (fd2n x (i + 1)) as a eqn:Ha.
+ remember (fd2n (freal_normalize x) (i + 1)) as b eqn:Hb.
+ move b before a.
+ destruct b; [ easy | ].
+ rewrite Nat.mul_succ_l.
  apply Nat.add_le_mono.
- +apply Nat.mul_le_mono_pos_r; [ | easy ].
+ +apply Nat.mul_le_mono_pos_r; [ | flia H2 ].
   now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
- +replace (S (i + 1)) with (S i + 1) by flia.
-  now apply IHm.
--apply Nat.nle_gt in H1.
- unfold freal_normalize, fd2n in H1; simpl in H1.
- unfold digit_sequence_normalize in H1.
- destruct (LPO_fst (is_9_strict_after (freal x) (S (i + 1)))) as [H2| H2].
- +destruct (lt_dec (S (d2n (freal x) (S (i + 1)))) rad) as [H3| H3].
-  *unfold d2n in H1; simpl in H1; flia H1.
-  *apply Nat.nlt_ge in H3.
-   simpl.
-   apply Nat.le_trans with
-     (m := fd2n (freal_normalize x) (i + 1) * rad ^ (n - 1 - (i + 1))); [ | flia ].
-(*
-  Nx(i+1)=x(i+1)+1
-  x(j)=9 et Nx(j)=0 pour j>i+1
-*)
-...
+ +remember (n - i - 2) as k eqn:Hk.
+  symmetry in Hk.
+  destruct k.
+  *rewrite Nat.pow_0_r.
+   destruct m; [ simpl; flia H2 | flia Hm Hk ].
+  *rewrite power_summation; [ | easy ].
+   rewrite summation_mul_distr_l.
+   rewrite summation_aux_shift.
+   rewrite summation_aux_rtl.
+   unfold summation.
+   replace (S k - 0) with m by flia Hm Hk; simpl.
+   apply Nat.le_le_succ_r.
+   apply (@summation_aux_le_compat nat_ord_ring_def).
+   intros j Hj; simpl; unfold Nat.le.
+   rewrite Nat.add_0_r.
+   replace (n - 1 - S (i + 1 + (m - 1 - j))) with j by flia Hm Hj.
+   apply Nat.mul_le_mono_r.
+   apply digit_le_pred_radix.
+Qed.
 
 Theorem freal_eq_prop_add_norm_l {r : radix} : ∀ x y,
   freal_eq_prop {| freal := freal_add_to_seq (freal_normalize x) y |}
@@ -2724,55 +2702,34 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
       ***easy.
      +++apply Nat.nle_gt in Hjn.
         f_equal.
-specialize (A_ge_1_all_true_if u i vHku) as H.
-specialize (H 0).
-simpl in H.
-rewrite Nat.add_0_r, Nat.sub_0_r, Nat.mul_1_r in H.
-rewrite <- Hn, <- Hs in H.
-remember (rad ^ (n - i - 2)) as s1 eqn:Hs1.
-destruct H as (H5, H6).
-remember (nA i n u mod s - (rad - 1) * s1) as r1 eqn:Hr1.
-move r1 before s1.
-unfold u in H6.
-rewrite nA_freal_add_series in H6.
-
-destruct (lt_dec (nA i n (fd2n (freal_normalize x)) + nA i n (fd2n y)) s) as [H7| H7].
-rewrite Nat.div_small; [ | easy ].
-rewrite Nat.mod_small in H6; [ | easy ].
-destruct (lt_dec (nA i n (fd2n x) + nA i n (fd2n y)) s) as [H8| H8].
-now rewrite Nat.div_small.
-assert (H9 : nA i n (fd2n (freal_normalize x)) < nA i n (fd2n x)) by flia H7 H8.
-apply Nat.nle_gt in H9; exfalso; apply H9; clear H9.
-apply nA_le_norm.
-unfold freal_normalize, fd2n; simpl.
-unfold digit_sequence_normalize.
-destruct (LPO_fst (is_9_strict_after (freal x) (i + 1))) as [H9| ]; [ | easy ].
-destruct (lt_dec (S (d2n (freal x) (i + 1))) rad) as [H10| H10].
-simpl; unfold d2n; flia.
-apply Nat.nlt_ge in H10.
-unfold d2n in H10.
-specialize (digit_lt_radix (freal x (i + 1))) as H.
-assert (H11 : dig (freal x (i + 1)) = rad - 1) by flia H10 H.
-clear H10 H.
-destruct j.
-unfold d2n in Hj.
-rewrite Nat.add_0_r in Hj; flia Hj H11.
-specialize (H9 j).
-apply is_9_strict_after_true_iff in H9.
-now replace (i + 1 + j + 1) with (i + S j + 1) in H9 by flia.
-destruct (lt_dec (nA i n (fd2n x) + nA i n (fd2n y)) s) as [H8| H8].
-exfalso.
-
-...
-
-unfold freal_normalize, fd2n; simpl.
-unfold nA; simpl.
-
-...
-
-apply (@summation_le_compat nat_ord_ring_def).
-intros k Hk; simpl; unfold Nat.le.
-apply Nat.mul_le_mono_r.
+        rewrite <- Hnx.
+        destruct (lt_dec (nA i n (fd2n nx) + nA i n (fd2n y)) s) as [H7| H7].
+      ***rewrite Nat.div_small; [ | easy ].
+         destruct (lt_dec (nA i n (fd2n x) + nA i n (fd2n y)) s) as [H8| H8].
+      ----now rewrite Nat.div_small.
+      ----assert (H9 : nA i n (fd2n nx) < nA i n (fd2n x)) by flia H7 H8.
+          apply Nat.nle_gt in H9; exfalso; apply H9; clear H9.
+          rewrite Hnx; apply nA_le_norm.
+          unfold freal_normalize, fd2n; simpl.
+          unfold digit_sequence_normalize.
+          destruct (LPO_fst (is_9_strict_after (freal x) (i + 1))) as [H9| ].
+       ++++destruct (lt_dec (S (d2n (freal x) (i + 1))) rad) as [H10| H10].
+        ****simpl; unfold d2n; flia.
+        ****apply Nat.nlt_ge in H10.
+            unfold d2n in H10.
+            specialize (digit_lt_radix (freal x (i + 1))) as H.
+            assert (H11 : dig (freal x (i + 1)) = rad - 1) by flia H10 H.
+            clear H10 H.
+            destruct j.
+        -----unfold d2n in Hj.
+             rewrite Nat.add_0_r in Hj; flia Hj H11.
+        -----specialize (H9 j).
+             apply is_9_strict_after_true_iff in H9.
+             now replace (i + 1 + j + 1) with (i + S j + 1) in H9 by flia.
+       ++++easy.
+      ***destruct (lt_dec (nA i n (fd2n x) + nA i n (fd2n y)) s) as [H8| H8].
+      ----assert (H9 : nA i n (fd2n x) < nA i n (fd2n nx)) by flia H7 H8.
+          exfalso.
 
 ...
 f_equal; f_equal.

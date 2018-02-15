@@ -320,6 +320,13 @@ destruct (le_dec b k) as [Hbk| Hbk].
  now rewrite rng_add_0_l.
 Qed.
 
+Theorem summation_aux_shift `{rg : ord_ring} : ∀ b len g,
+  summation_aux b len g = summation_aux 0 len (λ i, g (b + i)).
+Proof.
+intros.
+now apply summation_aux_eq_compat.
+Qed.
+
 Theorem summation_shift `{rg : ord_ring} : ∀ b g k,
   b ≤ k
   → (Σ (i = b, k), g i =
@@ -329,7 +336,7 @@ intros b g k Hbk.
 unfold summation.
 rewrite Nat.sub_0_r.
 rewrite Nat.sub_succ_l; [ idtac | assumption ].
-now apply summation_aux_eq_compat.
+apply summation_aux_shift.
 Qed.
 
 Theorem summation_aux_rtl `{rg : ord_ring} : ∀ g b len,
