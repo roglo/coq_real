@@ -2465,6 +2465,13 @@ destruct (le_dec (fd2n x (S i + 1)) (fd2n (freal_normalize x) (S i + 1)))
    apply digit_le_pred_radix.
 Qed.
 
+Theorem glop {r : radix} : ∀ x i n,
+  nA i n (fd2n x) < nA i n (fd2n (freal_normalize x))
+  → ∃ j, i + 1 ≤ j ≤ n - 1 ∧ ∀ k, fd2n x (j + k) = rad - 1.
+Proof.
+intros * HnA.
+...
+
 Theorem freal_eq_prop_add_norm_l {r : radix} : ∀ x y,
   freal_eq_prop {| freal := freal_add_to_seq (freal_normalize x) y |}
     {| freal := freal_add_to_seq x y |}.
@@ -2734,6 +2741,30 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
 (* forcément x se termine par 999... et nx par 000...
    ça ne devrait pas être compatible avec H1 et H2
    ou même peut-être Hkv *)
+rewrite Hnx in H9.
+Check glop.
+specialize (glop _ _ _ H9) as (k & Hikn & Hk).
+...
+
+unfold freal_normalize, fd2n in H9; simpl in H9.
+
+...
+
+specialize (Hku 0) as H.
+simpl in H.
+rewrite Nat.add_0_r, Nat.sub_0_r in H.
+rewrite Nat.mul_1_r in H.
+rewrite <- Hn, <- Hs in H.
+replace rad with (rad ^ 1) in H at 1.
+rewrite Nat.mul_sub_distr_r in H.
+rewrite <- Nat.pow_add_r in H.
+replace (1 + (n - i - 2)) with (n - i - 1) in H by flia His.
+rewrite <- Hs in H.
+rewrite Nat.mul_1_l in H.
+unfold u in H.
+rewrite nA_freal_add_series in H.
+rewrite <- Hnx in H.
+
 ...
 
 (* I wonder if there is not something in H1 and H2 that would directly
