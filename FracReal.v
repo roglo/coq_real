@@ -2465,6 +2465,7 @@ destruct (le_dec (fd2n x (S i + 1)) (fd2n (freal_normalize x) (S i + 1)))
    apply digit_le_pred_radix.
 Qed.
 
+(*
 Theorem glop {r : radix} (rg := nat_ord_ring) : ∀ i j k l x y,
   summation_aux i j (λ m, fd2n x (m + k) * rad ^ (l - m - 1)) <
   summation_aux i j (λ m, fd2n y (m + k) * rad ^ (l - m - 1))
@@ -2480,12 +2481,7 @@ destruct Hs as [Hs| Hs].
  +now apply Nat.lt_le_incl in Hs.
  +now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
 -idtac.
-
 ...
-
--specialize (IHm (S i)).
-...
-
 
 Theorem glop1 {r : radix} (rg := nat_ord_ring) : ∀ i m x y,
   summation_aux 0 m (λ j, fd2n x (i + j) * rad ^ (m - j - 1)) <
@@ -2532,6 +2528,7 @@ destruct Hs as [Hs| Hs].
 ...
 *)
 
+(*
 Theorem glop {r : radix} (rg := nat_ord_ring) : ∀ i m x y,
   summation_aux i m (λ j, fd2n x j * rad ^ (m + i - j - 1)) <
   summation_aux i m (λ j, fd2n y j * rad ^ (m + i - j - 1))
@@ -2552,6 +2549,7 @@ Focus 2.
  +intros j Hj; f_equal; f_equal; flia.
  +subst f.
 ...
+*)
 
 Theorem glop {r : radix} (rg := nat_ord_ring) : ∀ i m x y,
   summation_aux i m (λ j, fd2n x j * rad ^ (m + i - j - 1)) <
@@ -2570,6 +2568,8 @@ destruct Hs as [Hs| Hs].
  +now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
 -idtac.
  apply IHm.
+Abort. (*
+
 ...
 
 destruct (eq_nat_dec (fd2n x i) (fd2n y i)) as [H1| H1].
@@ -2640,10 +2640,9 @@ split.
  +easy.
  +apply Nat.compare_gt_iff in Hc; exfalso.
   apply Nat.nle_gt in Hc; apply Hc; clear Hc.
-
 ...
 
-Theorem glop {r : radix} : ∀ x i n,
+Theorem glop2 {r : radix} : ∀ x i n,
   nA i n (fd2n x) < nA i n (fd2n (freal_normalize x))
   → ∃ j, i + 1 ≤ j ≤ n - 1 ∧ ∀ k, fd2n x (j + k) = rad - 1.
 Proof.
@@ -2656,8 +2655,8 @@ revert i n HnA Hm.
 induction m; intros; [ easy | ].
 do 2 rewrite summation_aux_succ_last in HnA.
 simpl in HnA.
-
 ...
+*)
 
 Theorem freal_eq_prop_add_norm_l {r : radix} : ∀ x y,
   freal_eq_prop {| freal := freal_add_to_seq (freal_normalize x) y |}
@@ -2929,6 +2928,8 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
    ça ne devrait pas être compatible avec H1 et H2
    ou même peut-être Hkv *)
 rewrite Hnx in H9.
+
+...
 Check glop.
 specialize (glop _ _ _ H9) as (k & Hikn & Hk).
 ...
