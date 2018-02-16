@@ -2465,16 +2465,93 @@ destruct (le_dec (fd2n x (S i + 1)) (fd2n (freal_normalize x) (S i + 1)))
    apply digit_le_pred_radix.
 Qed.
 
-Fixpoint compare_digit_interval {r : radix} i len x y :=
-  match len with
-  | 0 => Eq
-  | S len' =>
-      match fd2n x i ?= fd2n y i with
-      | Eq => compare_digit_interval (S i) len' x y
-      | Lt => Lt
-      | Gt => Gt
-      end
-  end.
+Theorem glop {r : radix} (rg := nat_ord_ring) : ∀ i j m x y,
+  summation_aux i m (λ k, fd2n x (j + k) * rad ^ (m - k - 1)) <
+  summation_aux i m (λ k, fd2n y (j + k) * rad ^ (m - k - 1))
+  → fd2n x (i + j) ≤ fd2n y (i + j).
+Proof.
+intros * Hs.
+revert i j Hs.
+induction m; intros; [ easy | ].
+remember minus as f; simpl in Hs; subst f.
+apply Nat.add_lt_cases in Hs.
+destruct Hs as [Hs| Hs].
+-apply Nat.mul_lt_mono_pos_r in Hs.
+ +now apply Nat.lt_le_incl in Hs; setoid_rewrite Nat.add_comm in Hs.
+ +now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+-destruct j.
+(* chiasse *)
+...
+
+-specialize (IHm (S i)).
+...
+
+
+Theorem glop1 {r : radix} (rg := nat_ord_ring) : ∀ i m x y,
+  summation_aux 0 m (λ j, fd2n x (i + j) * rad ^ (m - j - 1)) <
+  summation_aux 0 m (λ j, fd2n y (i + j) * rad ^ (m - j - 1))
+  → fd2n x i ≤ fd2n y i.
+Proof.
+intros * Hs.
+now specialize (glop 0 i  m x y Hs) as H.
+Qed.
+
+...
+intros * Hs.
+revert x y i Hs.
+induction m; intros; [ easy | ].
+remember minus as f; simpl in Hs; subst f.
+rewrite Nat.add_0_r, Nat.sub_0_r in Hs.
+apply Nat.add_lt_cases in Hs.
+destruct Hs as [Hs| Hs].
+-apply Nat.mul_lt_mono_pos_r in Hs.
+ +now apply Nat.lt_le_incl in Hs.
+ +now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+-idtac.
+...
+-specialize (IHm {| freal := λ i, freal x (i + 1) |}).
+ specialize (IHm {| freal := λ i, freal y (i + 1) |} i).
+ unfold fd2n in IHm; simpl in IHm.
+ unfold fd2n in Hs.
+ rewrite summation_aux_shift in Hs.
+ rewrite summation_aux_eq_compat with
+   (h := λ j, dig (freal x (i + j + 1)) * rad ^ (m - j - 1)) (b₂ := 0)
+   in Hs.
+ Focus 2.
+ +intros j Hj; f_equal; f_equal; f_equal; flia.
+ +set (f := summation_aux) in Hs.
+  unfold f at 2 in Hs.
+  rewrite summation_aux_shift in Hs.
+  rewrite summation_aux_eq_compat with
+    (h := λ j, dig (freal y (i + j + 1)) * rad ^ (m - j - 1)) (b₂ := 0)
+    in Hs.
+  Focus 2.
+  *intros j Hj; f_equal; f_equal; f_equal; flia.
+  *subst f.
+   specialize (IHm Hs).
+...
+*)
+
+Theorem glop {r : radix} (rg := nat_ord_ring) : ∀ i m x y,
+  summation_aux i m (λ j, fd2n x j * rad ^ (m + i - j - 1)) <
+  summation_aux i m (λ j, fd2n y j * rad ^ (m + i - j - 1))
+  → fd2n x i ≤ fd2n y i.
+Proof.
+intros * Hs.
+rewrite summation_aux_shift in Hs.
+rewrite summation_aux_eq_compat with
+  (h := λ j, fd2n x (i + j) * rad ^ (m - j - 1)) (b₂ := 0) in Hs.
+Focus 2.
+-intros j Hj; f_equal; f_equal; flia.
+-set (f := summation_aux) in Hs.
+ unfold f in Hs at 2.
+ rewrite summation_aux_shift in Hs.
+ rewrite summation_aux_eq_compat with
+   (h := λ j, fd2n y (i + j) * rad ^ (m - j - 1)) (b₂ := 0) in Hs.
+  Focus 2.
+ +intros j Hj; f_equal; f_equal; flia.
+ +subst f.
+...
 
 Theorem glop {r : radix} (rg := nat_ord_ring) : ∀ i m x y,
   summation_aux i m (λ j, fd2n x j * rad ^ (m + i - j - 1)) <
@@ -2486,6 +2563,26 @@ revert x y i Hs.
 induction m; intros; [ easy | ].
 remember minus as f; simpl in Hs; subst f.
 replace (S (m + i) - i - 1) with m in Hs by flia.
+apply Nat.add_lt_cases in Hs.
+destruct Hs as [Hs| Hs].
+-apply Nat.mul_lt_mono_pos_r in Hs.
+ +now apply Nat.lt_le_incl in Hs.
+ +now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+-idtac.
+ apply IHm.
+...
+
+destruct (eq_nat_dec (fd2n x i) (fd2n y i)) as [H1| H1].
+-flia H1.
+-enough (fd2n x i < fd2n y i) by lia.
+Search (_ + _ < _ + _).
+ apply Nat.add_lt_cases in Hs.
+ destruct Hs as [Hs| Hs].
+ +apply Nat.mul_lt_mono_pos_r in Hs; [ easy | ].
+  now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+ +idtac.
+
+...
 destruct (le_dec (fd2n x i) (fd2n y i)) as [| H1]; [ easy | ].
 exfalso; apply Nat.nle_gt in H1.
 ...
@@ -2505,6 +2602,17 @@ assert (H2 : fd2n y i * rad ^ m < fd2n x i * rad ^ m). {
 apply Nat.lt_le_incl in H2.
 specialize (Nat.le_lt_add_lt _ _ _ _ H2 Hs) as H.
 ...
+
+Fixpoint compare_digit_interval {r : radix} i len x y :=
+  match len with
+  | 0 => Eq
+  | S len' =>
+      match fd2n x i ?= fd2n y i with
+      | Eq => compare_digit_interval (S i) len' x y
+      | Lt => Lt
+      | Gt => Gt
+      end
+  end.
 
 Theorem nA_lt_iff {r : radix} : ∀ x y i n,
   nA i n (fd2n x) < nA i n (fd2n y)
