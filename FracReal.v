@@ -2921,21 +2921,12 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
              now replace (i + 1 + j + 1) with (i + S j + 1) in H9 by flia.
        ++++easy.
       ***destruct (lt_dec (nA i n (fd2n x) + nA i n (fd2n y)) s) as [H8| H8].
-      ----assert (H9 : nA i n (fd2n x) < nA i n (fd2n nx)) by flia H7 H8.
+      ----remember (s - nA i n (fd2n y)) as z.
+          assert (H9 : nA i n (fd2n x) < z ≤ nA i n (fd2n nx)) by flia H7 H8 Heqz.
           exfalso.
-          apply Nat.nlt_ge in H7.
-(* forcément x se termine par 999... et nx par 000...
-   ça ne devrait pas être compatible avec H1 et H2
-   ou même peut-être Hkv *)
-rewrite Hnx in H9.
-
-...
-Check glop.
-specialize (glop _ _ _ H9) as (k & Hikn & Hk).
-...
-
-unfold freal_normalize, fd2n in H9; simpl in H9.
-
+(* H9 should imply z = nA n (fd2n nx) *)
+(* therefore nA i n (fd2n nx) + nA i n (fd2n y) = s *)
+(* and then? ... *)
 ...
 
 specialize (Hku 0) as H.
