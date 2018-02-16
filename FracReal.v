@@ -2465,22 +2465,22 @@ destruct (le_dec (fd2n x (S i + 1)) (fd2n (freal_normalize x) (S i + 1)))
    apply digit_le_pred_radix.
 Qed.
 
-Theorem glop {r : radix} (rg := nat_ord_ring) : ∀ i j m x y,
-  summation_aux i m (λ k, fd2n x (j + k) * rad ^ (m - k - 1)) <
-  summation_aux i m (λ k, fd2n y (j + k) * rad ^ (m - k - 1))
-  → fd2n x (i + j) ≤ fd2n y (i + j).
+Theorem glop {r : radix} (rg := nat_ord_ring) : ∀ i j k l x y,
+  summation_aux i j (λ m, fd2n x (m + k) * rad ^ (l - m - 1)) <
+  summation_aux i j (λ m, fd2n y (m + k) * rad ^ (l - m - 1))
+  → fd2n x (i + k) ≤ fd2n y (i + k).
 Proof.
 intros * Hs.
-revert i j Hs.
-induction m; intros; [ easy | ].
+revert i k l Hs.
+induction j; intros; [ easy | ].
 remember minus as f; simpl in Hs; subst f.
 apply Nat.add_lt_cases in Hs.
 destruct Hs as [Hs| Hs].
 -apply Nat.mul_lt_mono_pos_r in Hs.
- +now apply Nat.lt_le_incl in Hs; setoid_rewrite Nat.add_comm in Hs.
+ +now apply Nat.lt_le_incl in Hs.
  +now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
--destruct j.
-(* chiasse *)
+-idtac.
+
 ...
 
 -specialize (IHm (S i)).
