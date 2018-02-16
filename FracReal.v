@@ -2488,6 +2488,15 @@ remember minus as f; simpl in Hs; subst f.
 replace (S (m + i) - i - 1) with m in Hs by flia.
 destruct (le_dec (fd2n x i) (fd2n y i)) as [| H1]; [ easy | ].
 exfalso; apply Nat.nle_gt in H1.
+...
+
+intros * Hs.
+revert x y i Hs.
+induction m; intros; [ easy | ].
+remember minus as f; simpl in Hs; subst f.
+replace (S (m + i) - i - 1) with m in Hs by flia.
+destruct (le_dec (fd2n x i) (fd2n y i)) as [| H1]; [ easy | ].
+exfalso; apply Nat.nle_gt in H1.
 setoid_rewrite Nat.add_comm in Hs.
 assert (H2 : fd2n y i * rad ^ m < fd2n x i * rad ^ m). {
   apply Nat.mul_lt_mono_pos_r; [ | easy ].
