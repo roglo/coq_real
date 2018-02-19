@@ -2929,6 +2929,12 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
 (* and nA i n (fd2n x) + nA i n (fd2n y) = s-1 *)
 (* perhaps it contradicts Hku, because it would mean that
    nA i n u mod s = 0 *)
+assert (nA i n u = s). {
+  unfold u.
+  rewrite nA_freal_add_series.
+  rewrite <- Hnx.
+  apply Nat.le_antisymm; [ | flia H7 ].
+
 ...
 
 specialize (Hku 0) as H.
