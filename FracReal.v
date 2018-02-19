@@ -2663,6 +2663,9 @@ Theorem toto {r : radix} : ∀ x i n,
   → nA i n (fd2n (freal_normalize x)) = nA i n (fd2n x) + 1.
 Proof.
 intros * Hn.
+unfold nA.
+unfold fd2n, freal_normalize; simpl.
+unfold digit_sequence_normalize.
 ...
 
 Theorem freal_eq_prop_add_norm_l {r : radix} : ∀ x y,
