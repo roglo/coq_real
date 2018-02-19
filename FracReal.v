@@ -2659,6 +2659,13 @@ simpl in HnA.
 *)
 
 Theorem toto {r : radix} : ∀ x i n,
+  nA i n (fd2n (freal_normalize x)) = nA i n (fd2n x)
+  ∨ nA i n (fd2n (freal_normalize x)) = nA i n (fd2n x) + 1.
+Proof.
+intros.
+...
+
+Theorem toto {r : radix} : ∀ x i n,
   nA i n (fd2n (freal_normalize x)) ≠ nA i n (fd2n x)
   → nA i n (fd2n (freal_normalize x)) = nA i n (fd2n x) + 1.
 Proof.
