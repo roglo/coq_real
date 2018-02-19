@@ -2658,6 +2658,13 @@ simpl in HnA.
 ...
 *)
 
+Theorem toto {r : radix} : ∀ x i n,
+  nA i n (fd2n (freal_normalize x)) ≠ nA i n (fd2n x)
+  → nA i n (fd2n (freal_normalize x)) = nA i n (fd2n x) + 1.
+Proof.
+intros * Hn.
+...
+
 Theorem freal_eq_prop_add_norm_l {r : radix} : ∀ x y,
   freal_eq_prop {| freal := freal_add_to_seq (freal_normalize x) y |}
     {| freal := freal_add_to_seq x y |}.
@@ -2934,6 +2941,7 @@ assert (nA i n u = s). {
   rewrite nA_freal_add_series.
   rewrite <- Hnx.
   apply Nat.le_antisymm; [ | flia H7 ].
+  rewrite Hnx.
 
 ...
 
