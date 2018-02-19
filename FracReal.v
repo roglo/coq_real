@@ -2927,7 +2927,8 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
 (* H9 should imply z = nA n (fd2n nx) *)
 (* therefore nA i n (fd2n nx) + nA i n (fd2n y) = s *)
 (* and nA i n (fd2n x) + nA i n (fd2n y) = s-1 *)
-(* and then? ... *)
+(* perhaps it contradicts Hku, because it would mean that
+   nA i n u mod s = 0 *)
 ...
 
 specialize (Hku 0) as H.
