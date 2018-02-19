@@ -2926,6 +2926,7 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
           exfalso.
 (* H9 should imply z = nA n (fd2n nx) *)
 (* therefore nA i n (fd2n nx) + nA i n (fd2n y) = s *)
+(* and nA i n (fd2n x) + nA i n (fd2n y) = s-1 *)
 (* and then? ... *)
 ...
 
