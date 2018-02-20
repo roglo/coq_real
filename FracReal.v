@@ -2551,6 +2551,7 @@ Focus 2.
 ...
 *)
 
+(*
 Theorem glop {r : radix} (rg := nat_ord_ring) : ∀ i m x y,
   summation_aux i m (λ j, fd2n x j * rad ^ (m + i - j - 1)) <
   summation_aux i m (λ j, fd2n y j * rad ^ (m + i - j - 1))
@@ -2568,8 +2569,6 @@ destruct Hs as [Hs| Hs].
  +now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
 -idtac.
  apply IHm.
-Abort. (*
-
 ...
 
 destruct (eq_nat_dec (fd2n x i) (fd2n y i)) as [H1| H1].
