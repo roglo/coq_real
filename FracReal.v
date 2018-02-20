@@ -3203,6 +3203,11 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
        rewrite Nat.div_small.
      +++rewrite Nat.add_0_r.
         destruct (lt_dec (S (d2n (freal x) i)) rad) as [H6| H6].
+      ***exfalso.
+(* according to HnAnX, nA i n nx = 0;
+   according to it and Hku, nA i n y must start with 999 *)
+...
+(**)
       ***simpl.
          setoid_rewrite Nat.add_comm.
          rewrite <- Nat.add_1_l, Nat.add_assoc.
