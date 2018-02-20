@@ -2667,7 +2667,29 @@ intros.
 destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H1| H1].
 -right; right.
  specialize (is_9_strict_after_all_9 (freal x) i H1) as H2.
-
+ unfold nA.
+ rewrite all_0_summation_0; [ easy | ].
+ intros j Hj; simpl.
+ apply Nat.eq_mul_0; left.
+ unfold fd2n, freal_normalize; simpl.
+ unfold digit_sequence_normalize.
+ destruct (LPO_fst (is_9_strict_after (freal x) j)) as [H3| H3].
+ +destruct (lt_dec (S (d2n (freal x) j)) rad) as [H4| H4]; [ | easy ].
+  specialize (H2 (j - i - 1)).
+  replace (i + (j - i - 1) + 1) with j in H2 by flia Hj.
+  exfalso; flia H2 H4.
+ +destruct H3 as (k & Hjk & Hk).
+  specialize (H1 (j + k - i)).
+  apply is_9_strict_after_true_iff in H1.
+  apply is_9_strict_after_false_iff in Hk.
+  now replace (i + (j + k - i) + 1) with (j + k + 1) in H1 by flia Hj.
+-destruct H1 as (k & Hjk & Hk).
+ apply is_9_strict_after_false_iff in Hk.
+ destruct (LPO_fst (is_9_strict_after (freal x) (n - 1))) as [H1| H1].
+ +right; left.
+  specialize (is_9_strict_after_all_9 (freal x) (n - 1) H1) as H2.
+  destruct n; [ now specialize (H2 (i + k)) | ].
+  replace (S n - 1) with n in H1, H2 by flia.
 ...
 
 Theorem toto {r : radix} : ∀ x i n,
