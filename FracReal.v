@@ -2832,6 +2832,16 @@ destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H1| H1].
   apply is_9_strict_after_false_iff in Hj.
   replace (n - 1 + j + 1) with (n + j) in Hj by flia Hin.
   left.
+  apply nA_eq_compat.
+  intros m Hm.
+  unfold fd2n, freal_normalize; simpl.
+  unfold digit_sequence_normalize.
+  destruct (LPO_fst (is_9_strict_after (freal x) m)) as [H1| H1]; [ | easy ].
+  specialize (H1 (n - m + j - 1)).
+  apply is_9_strict_after_true_iff in H1.
+  now replace (m + (n - m + j - 1) + 1) with (n + j) in H1 by flia Hm.
+Qed.
+
 ...
 
 Theorem toto {r : radix} : ∀ x i n,
