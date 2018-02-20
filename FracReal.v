@@ -2800,7 +2800,38 @@ destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H1| H1].
      apply is_9_strict_after_false_iff in Hj.
      specialize (H6 (j + 1)).
      now rewrite Nat.add_assoc in H6.
-  --idtac.
+  --destruct n; [ easy | ].
+    replace (S n - 1) with n in Hin, Hik, H4 by flia.
+    rewrite nA_succ_r; [ | flia Hm ].
+    rewrite nA_succ_r; [ | flia Hm ].
+    rewrite <- Nat.add_assoc.
+    f_equal.
+   ++f_equal.
+     apply nA_eq_compat.
+     intros j Hj.
+     unfold fd2n, freal_normalize; simpl.
+     unfold digit_sequence_normalize.
+     destruct (LPO_fst (is_9_strict_after (freal x) j)) as [H1| H1].
+    **specialize (H1 (n - j - 1)).
+      apply is_9_strict_after_true_iff in H1.
+      now replace (j + (n - j - 1) + 1) with n in H1 by flia Hj.
+    **easy.
+   ++unfold fd2n, freal_normalize; simpl.
+     unfold digit_sequence_normalize.
+     destruct (LPO_fst (is_9_strict_after (freal x) n)) as [H1| H1].
+    **destruct (lt_dec (S (d2n (freal x) n)) rad) as [H3| H3].
+    ---simpl; unfold d2n; flia.
+    ---specialize (digit_lt_radix (freal x n)) as H.
+       unfold fd2n in H4; unfold d2n in H3.
+       flia H H3 H4.
+    **destruct H1 as (j & Hjj & Hj).
+      apply is_9_strict_after_false_iff in Hj.
+      specialize (H2 j).
+      now replace (n + j + 1) with (S n + j) in Hj by flia.
+ +destruct H1 as (j & Hjj & Hj).
+  apply is_9_strict_after_false_iff in Hj.
+  replace (n - 1 + j + 1) with (n + j) in Hj by flia Hin.
+  left.
 ...
 
 Theorem toto {r : radix} : ∀ x i n,
