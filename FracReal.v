@@ -2657,6 +2657,29 @@ simpl in HnA.
 ...
 *)
 
+Theorem nA_succ_r {r : radix} : ∀ i n u,
+  i + 1 ≤ n - 1
+  → nA i (S n) u = rad * nA i n u + u n.
+Proof.
+intros * Hin.
+destruct n; [ flia Hin | ].
+unfold nA.
+replace (S (S n) - 1) with (S n) by flia.
+rewrite summation_split_last; [ | flia Hin ].
+replace (S n - 1) with n by flia.
+rewrite Nat.sub_diag, Nat.pow_0_r, Nat.mul_1_r.
+remember minus as f; simpl; subst f.
+f_equal.
+rewrite summation_mul_distr_l.
+apply summation_eq_compat.
+intros j Hj.
+remember minus as f; simpl; subst f.
+symmetry; rewrite Nat.mul_comm, <- Nat.mul_assoc.
+f_equal.
+replace (S n - j) with (n - j + 1) by flia Hj.
+now rewrite Nat.pow_add_r, Nat.pow_1_r.
+Qed.
+
 Theorem nA_freal_normalize {r : radix} : ∀ x i n,
   nA i n (fd2n (freal_normalize x)) = nA i n (fd2n x)
   ∨ nA i n (fd2n (freal_normalize x)) = nA i n (fd2n x) + 1
@@ -2743,7 +2766,27 @@ destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H1| H1].
      apply is_9_strict_after_false_iff in Hj.
      specialize (H2 j).
      now replace (S n + j + 1) with (S (S n) + j) in Hj by flia.
-  *idtac.
+  *destruct (eq_nat_dec (fd2n x (n - 1)) (rad - 1)) as [H3| H3].
+  --destruct n; [ easy | ].
+    rewrite nA_succ_r; [ | flia Hm ].
+    rewrite nA_succ_r; [ | flia Hm ].
+    assert (H1 : i + 1 ≤ n - 1) by flia Hm.
+    assert (H4 : i + k + 1 ≤ n - 1) by flia Hm.
+    replace (S n - 1) with n in H3 by flia.
+    assert (H5 : ∀ k, d2n (freal x) (n + k) = rad - 1). {
+      intros j.
+      destruct j; [ now rewrite Nat.add_0_r | ].
+      specialize (H2 j).
+      now replace (n + S j) with (S n + j) by flia.
+    }
+    clear H2.
+    assert (H6 : m = n - i - k - 2) by flia Hm.
+    specialize (IHm i k n H1 H4 Hk H5 H6).
+    rewrite IHm.
+    rewrite Nat.mul_add_distr_l, Nat.mul_1_r.
+    do 2 rewrite <- Nat.add_assoc.
+    f_equal.
+    rewrite H3.
 ...
 
 Theorem toto {r : radix} : ∀ x i n,
