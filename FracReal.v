@@ -2842,31 +2842,6 @@ destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H1| H1].
   now replace (m + (n - m + j - 1) + 1) with (n + j) in H1 by flia Hm.
 Qed.
 
-...
-
-Theorem toto {r : radix} : ∀ x i n,
-  nA i n (fd2n (freal_normalize x)) ≠ nA i n (fd2n x)
-  → nA i n (fd2n (freal_normalize x)) = nA i n (fd2n x) + 1.
-Proof.
-intros * Hn.
-unfold nA, summation in Hn |-*.
-replace (S (n - 1) - (i + 1)) with (n - i - 1) in Hn |-* by flia.
-remember (n - i - 1) as m eqn:Hm.
-clear Hm.
-revert i n Hn.
-induction m; intros; [ easy | ].
-simpl in Hn; simpl.
-destruct (eq_nat_dec (fd2n (freal_normalize x) (i + 1)) (fd2n x (i + 1)))
-  as [H1| H1].
--rewrite H1, <- Nat.add_assoc; f_equal.
- replace (S (i + 1)) with (S i + 1) by flia.
- apply IHm.
- intros H; apply Hn.
- replace (S (i + 1)) with (S i + 1) by flia.
- now rewrite H1, H.
--idtac.
-...
-
 Theorem freal_eq_prop_add_norm_l {r : radix} : ∀ x y,
   freal_eq_prop {| freal := freal_add_to_seq (freal_normalize x) y |}
     {| freal := freal_add_to_seq x y |}.
@@ -2963,6 +2938,7 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
       unfold digit_sequence_normalize.
       unfold u, v.
       do 2 rewrite nA_freal_add_series.
+      assert (Hsz : s ≠ 0) by (now rewrite Hs; apply Nat.pow_nonzero).
       destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H5| H5].
     ---specialize (is_9_strict_after_all_9 (freal x) i H5) as H7.
        clear H5; rename H7 into H5.
@@ -3006,7 +2982,6 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
            by flia Hm Hj.
        }
        rewrite HnAx.
-       assert (Hsz : s ≠ 0) by (now rewrite Hs; apply Nat.pow_nonzero).
        assert (HnAy : nA i n (fd2n y) ≠ 0). {
          specialize (Hku 0) as H7.
          simpl in H7.
@@ -3133,18 +3108,35 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
       ----remember (s - nA i n (fd2n y)) as z.
           assert (H9 : nA i n (fd2n x) < z ≤ nA i n (fd2n nx)) by flia H7 H8 Heqz.
           exfalso.
-(* H9 should imply z = nA n (fd2n nx) *)
-(* therefore nA i n (fd2n nx) + nA i n (fd2n y) = s *)
-(* and nA i n (fd2n x) + nA i n (fd2n y) = s-1 *)
-(* perhaps it contradicts Hku, because it would mean that
-   nA i n u mod s = 0 *)
-assert (nA i n u = s). {
-  unfold u.
-  rewrite nA_freal_add_series.
-  rewrite <- Hnx.
-  apply Nat.le_antisymm; [ | flia H7 ].
-  rewrite Hnx.
-
+          (* H9 implies z = nA n (fd2n nx) *)
+          (* therefore nA i n (fd2n nx) + nA i n (fd2n y) = s *)
+          (* and nA i n (fd2n x) + nA i n (fd2n y) = s-1 *)
+          (* it contradicts Hku, because it would mean that
+             nA i n u mod s = 0 *)
+          assert (H5 : nA i n u = s). {
+            unfold u.
+            rewrite nA_freal_add_series.
+            rewrite <- Hnx.
+            apply Nat.le_antisymm; [ | flia H7 ].
+            rewrite Hnx.
+            specialize (nA_freal_normalize x i n) as [H| [H| H]].
+            -rewrite Hnx, H in H9; flia H9.
+            -rewrite H; flia H8.
+            -rewrite H; flia H8.
+          }
+          move Hku at bottom.
+          specialize (Hku 0).
+          simpl in Hku.
+          rewrite Nat.add_0_r, Nat.mul_1_r, Nat.sub_0_r in Hku.
+          rewrite <- Hn, <- Hs in Hku.
+          rewrite H5, Nat.mod_same in Hku; [ | easy ].
+          apply Nat.le_0_r in Hku.
+          apply Nat.eq_mul_0 in Hku.
+          destruct Hku as [Hku| Hku].
+       ++++specialize radix_ge_2; flia Hku.
+       ++++now apply Nat.pow_nonzero in Hku.
+      ----apply Nat.nlt_ge in H7.
+          apply Nat.nlt_ge in H8.
 ...
 
 specialize (Hku 0) as H.
