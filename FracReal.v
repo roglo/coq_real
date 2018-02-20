@@ -3209,6 +3209,9 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
          rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
          rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
          f_equal; f_equal; simpl.
+(* ouais, mais le terme de droite peut pas être égal à 2;
+   c'est donc une contradiction; faut en trouver une dans les
+   hypothèses *)
 ...
 
          remember (nA i n (fd2n y)) as z eqn:Hz.
