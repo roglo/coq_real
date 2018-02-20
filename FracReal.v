@@ -1096,12 +1096,12 @@ rewrite Nat.add_comm.
 now rewrite Nat.add_sub.
 Qed.
 
-Theorem nA_dig_seq_ub {r : radix} : 0 < rad → ∀ u n i,
+Theorem nA_dig_seq_ub {r : radix} : ∀ u n i,
   (∀ j, i + 1 ≤ j ≤ n - 1 → u j < rad) →
   i + 1 ≤ n - 1
   → nA i n u < rad ^ (n - i - 1).
 Proof.
-intros Hr * Hu Hin.
+intros * Hu Hin.
 unfold nA.
 rewrite summation_rtl.
 rewrite summation_shift; [ | easy ].
@@ -1119,6 +1119,18 @@ replace (n - 1 - (n - 1 - j)) with j by flia Hk Hj.
 apply Nat.mul_le_mono_nonneg_r; [ flia | ].
 apply Nat.le_add_le_sub_l.
 apply Hu; flia Hk Hj.
+Qed.
+
+Theorem nA_upper_bound {r : radix} : ∀ x n i,
+  nA i n (fd2n x) < rad ^ (n - i - 1).
+Proof.
+intros.
+destruct (le_dec (i + 1) (n - 1)) as [H1| H1].
+-apply nA_dig_seq_ub; [ | easy ].
+ intros j Hj.
+ now apply digit_lt_radix.
+-unfold nA; rewrite summation_empty; [ | flia H1 ].
+ now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
 Qed.
 
 Theorem rad_pow_succ_gt_1 {r : radix} : 1 < rad → ∀ k, 1 < rad ^ S k.
@@ -1708,7 +1720,7 @@ rewrite Nat.mod_small in HnA.
   destruct rad; [ easy | simpl; flia ].
  *flia Hij.
 +rewrite Hs.
- apply nA_dig_seq_ub; [ easy | intros; apply Hu | ].
+ apply nA_dig_seq_ub; [ intros; apply Hu | ].
  rewrite Hn.
  specialize radix_ge_2 as Hr.
  destruct rad; [ flia Hr | simpl in Hn; flia Hn ].
@@ -3022,9 +3034,7 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
          apply -> Nat.succ_le_mono.
          apply Nat.lt_le_incl.
          rewrite Hs.
-         apply nA_dig_seq_ub; [ easy | | easy ].
-         intros k Hk.
-         apply digit_lt_radix.
+         apply nA_upper_bound.
       ***simpl.
          rewrite Nat.mod_0_l; [ | easy ].
          apply Nat.nlt_ge in H6.
@@ -3052,13 +3062,9 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
           apply -> Nat.succ_le_mono.
           apply Nat.lt_le_incl.
           rewrite Hs.
-          apply nA_dig_seq_ub; [ easy | | easy ].
-          intros k Hk.
-          apply digit_lt_radix.
+          apply nA_upper_bound.
      +++rewrite Hs.
-        apply nA_dig_seq_ub; [ easy | | easy ].
-        intros k Hk.
-        apply digit_lt_radix.
+        apply nA_upper_bound.
     ---destruct H5 as (j & Hjj & Hj).
        rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
        rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
@@ -3137,49 +3143,22 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
        ++++now apply Nat.pow_nonzero in Hku.
       ----apply Nat.nlt_ge in H7.
           apply Nat.nlt_ge in H8.
-...
-
-specialize (Hku 0) as H.
-simpl in H.
-rewrite Nat.add_0_r, Nat.sub_0_r in H.
-rewrite Nat.mul_1_r in H.
-rewrite <- Hn, <- Hs in H.
-replace rad with (rad ^ 1) in H at 1.
-rewrite Nat.mul_sub_distr_r in H.
-rewrite <- Nat.pow_add_r in H.
-replace (1 + (n - i - 2)) with (n - i - 1) in H by flia His.
-rewrite <- Hs in H.
-rewrite Nat.mul_1_l in H.
-unfold u in H.
-rewrite nA_freal_add_series in H.
-rewrite <- Hnx in H.
-
-...
-
-(* I wonder if there is not something in H1 and H2 that would directly
-   conclude this case and some of (perhaps all) the cases before? *)
-assert (∀ k,
-  let i1 := i + k + 1 in
-  match LPO_fst (A_ge_1 i1 v) with
-  | inl _ =>
-      let n1 := rad * (i1 + 3) in
-      let s1 := rad ^ (n1 - i1 - 1) in
-      (fd2n x i1 + fd2n y i1 + nA i1 n1 (freal_add_series x y) / s1 + 1)
-          mod rad = rad - 1
-  | inr (exist _ l _) =>
-      let n1 := rad * (i1 + l + 3) in
-      let s1 := rad ^ (n1 - i1 - 1) in
-      (fd2n x i1 + fd2n y i1 + nA i1 n1 (freal_add_series x y) / s1)
-          mod rad = rad - 1
-  end). {
-  intros k.
-  unfold numbers_to_digits, d2n in H2.
-  specialize (H2 k); simpl.
-  remember (i + k + 1) as i1 eqn:Hi1.
-  now destruct (LPO_fst (A_ge_1 i1 v)) as [| (l, _)].
-}
-
-Print A_ge_1.
+          specialize (nA_upper_bound nx n i) as H9.
+          specialize (nA_upper_bound x n i) as H10.
+          specialize (nA_upper_bound y n i) as H11.
+          rewrite <- Hs in H9, H10, H11.
+          assert (H12 : (nA i n (fd2n x) + nA i n (fd2n y)) / s = 1). {
+            apply Nat_mul_succ_le_div.
+            flia H8 H10 H11.
+          }
+          rewrite H12.
+          apply Nat_mul_succ_le_div.
+          flia H7 H9 H11.
+    **simpl in H4; simpl.
+      apply A_ge_1_false_iff in Hp.
+      remember (rad * (i + p + 3)) as n1 eqn:Hn1.
+      remember (rad ^ (n1 - i - 1)) as s1 eqn:Hs1.
+      move s1 before n1.
 ...
 
 Theorem freal_add_assoc {r : radix} : ∀ x y z,
