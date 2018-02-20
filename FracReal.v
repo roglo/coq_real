@@ -2779,9 +2779,9 @@ destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H1| H1].
       specialize (H2 j).
       now replace (n + S j) with (S n + j) by flia.
     }
-    clear H2.
+    clear H2; rename H5 into H2.
     assert (H6 : m = n - i - k - 2) by flia Hm.
-    specialize (IHm i k n H1 H4 Hk H5 H6).
+    specialize (IHm i k n H1 H4 Hk H2 H6).
     rewrite IHm.
     rewrite Nat.mul_add_distr_l, Nat.mul_1_r.
     do 2 rewrite <- Nat.add_assoc.
