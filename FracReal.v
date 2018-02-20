@@ -2705,13 +2705,13 @@ destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H1| H1].
     now replace (n + (i + k + 1 - n)) with (i + k + 1) in H2 by lia.
   }
   move Hik before Hin.
-  remember (n - 1 - (i + k + 1)) as m eqn:Hm.
+  remember (n - i - k - 2) as m eqn:Hm.
   clear Hjk H1.
   revert i k n Hin Hik Hk H2 Hm.
   induction m; intros.
   *unfold nA.
    destruct n; [ flia Hin | ].
-   replace (S n - 1) with n in Hin, Hik, Hm |-* by flia.
+   replace (S n - 1) with n in Hin, Hik |-* by flia.
    destruct n; [ flia Hin | ].
    rewrite summation_split_last; [ | easy ].
    rewrite summation_split_last; [ | easy ].
@@ -2740,6 +2740,10 @@ destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H1| H1].
       unfold d2n in Hk, H3, H.
       flia Hk H3 H.
    ++destruct H1 as (j & Hjj & Hj).
+     apply is_9_strict_after_false_iff in Hj.
+     specialize (H2 j).
+     now replace (S n + j + 1) with (S (S n) + j) in Hj by flia.
+  *idtac.
 ...
 
 Theorem toto {r : radix} : ∀ x i n,
