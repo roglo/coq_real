@@ -2930,21 +2930,21 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
      rename Hku into vHku; rename H5 into Hku.
      destruct (LPO_fst (A_ge_1 i v)) as [Hkv| (p & Hjp & Hp)].
     **simpl in H4 |-*.
-      move H4 before H3.
-      specialize (proj1 (all_A_ge_1_true_iff _ _) Hkv) as H5.
-      rename Hkv into vHkv; rename H5 into Hkv.
-      move vHkv before vHku.
       rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
       rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
       f_equal; f_equal.
-      unfold v at 1.
       unfold u at 1.
+      unfold v at 1.
       unfold freal_add_series, sequence_add.
       rewrite Nat.add_shuffle0; symmetry.
       rewrite Nat.add_shuffle0; symmetry.
       rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
       rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
       f_equal; f_equal.
+      move H4 before H3.
+      specialize (proj1 (all_A_ge_1_true_iff _ _) Hkv) as H5.
+      rename Hkv into vHkv; rename H5 into Hkv.
+      move vHkv before vHku.
       unfold freal_normalize.
       unfold fd2n; simpl.
       unfold digit_sequence_normalize.
@@ -3159,6 +3159,16 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
       remember (rad * (i + p + 3)) as n1 eqn:Hn1.
       remember (rad ^ (n1 - i - 1)) as s1 eqn:Hs1.
       move s1 before n1.
+      rewrite <- Nat.add_assoc.
+      unfold u at 1.
+      unfold v at 1.
+      unfold freal_add_series, sequence_add.
+      rewrite Nat.add_shuffle0; symmetry.
+      rewrite Nat.add_shuffle0; symmetry.
+      rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
+      rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
+      f_equal; f_equal.
+      rewrite Nat.add_assoc.
 ...
 
 Theorem freal_add_assoc {r : radix} : ∀ x y z,
