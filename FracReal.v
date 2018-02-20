@@ -2660,9 +2660,14 @@ simpl in HnA.
 
 Theorem toto {r : radix} : ∀ x i n,
   nA i n (fd2n (freal_normalize x)) = nA i n (fd2n x)
-  ∨ nA i n (fd2n (freal_normalize x)) = nA i n (fd2n x) + 1.
+  ∨ nA i n (fd2n (freal_normalize x)) = nA i n (fd2n x) + 1
+  ∨ nA i n (fd2n (freal_normalize x)) = 0.
 Proof.
 intros.
+destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H1| H1].
+-right; right.
+ specialize (is_9_strict_after_all_9 (freal x) i H1) as H2.
+
 ...
 
 Theorem toto {r : radix} : ∀ x i n,
