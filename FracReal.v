@@ -2663,6 +2663,12 @@ Theorem toto {r : radix} : ∀ x i n,
   ∨ nA i n (fd2n (freal_normalize x)) = 0.
 Proof.
 intros.
+destruct (lt_dec (n - 1) (i + 1)) as [Hin| Hin]. {
+  left.
+  unfold nA.
+  now rewrite summation_empty; [ rewrite summation_empty | ].
+}
+apply Nat.nlt_ge in Hin.
 destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H1| H1].
 -right; right.
  specialize (is_9_strict_after_all_9 (freal x) i H1) as H2.
@@ -2683,12 +2689,25 @@ destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H1| H1].
   apply is_9_strict_after_false_iff in Hk.
   now replace (i + (j + k - i) + 1) with (j + k + 1) in H1 by flia Hj.
 -destruct H1 as (k & Hjk & Hk).
+ move k before i.
  apply is_9_strict_after_false_iff in Hk.
  destruct (LPO_fst (is_9_strict_after (freal x) (n - 1))) as [H1| H1].
  +right; left.
   specialize (is_9_strict_after_all_9 (freal x) (n - 1) H1) as H2.
   destruct n; [ now specialize (H2 (i + k)) | ].
   replace (S n - 1) with n in H1, H2 by flia.
+...
+
+  destruct (eq_nat_dec (fd2n x n) (rad - 1)) as [H3| H3].
+  *unfold nA; simpl.
+   rewrite Nat.sub_0_r.
+   destruct n; [ now specialize (H2 (i + k)) | ].
+   rewrite summation_split_last; [ | flia Hin ].
+   rewrite summation_split_last; [ | flia Hin ].
+   rewrite Nat.sub_diag, Nat.pow_0_r.
+   do 2 rewrite Nat.mul_1_r.
+   remember minus as f; simpl; subst f.
+   rewrite H3.
 ...
 
 Theorem toto {r : radix} : ∀ x i n,
