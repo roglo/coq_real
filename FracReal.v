@@ -2717,19 +2717,19 @@ destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H1| H1].
  destruct (LPO_fst (is_9_strict_after (freal x) (n - 1))) as [H1| H1].
  +right; left.
   specialize (is_9_strict_after_all_9 (freal x) (n - 1) H1) as H2.
+  clear H1 Hjk.
   assert (H3 : ∀ k, d2n (freal x) (n + k) = rad - 1). {
     intros j; specialize (H2 j).
     now replace (n - 1 + j + 1) with (n + j) in H2 by flia Hin.
   }
   clear H2; rename H3 into H2.
   assert (Hik : i + k + 1 ≤ n - 1). {
-    destruct (lt_dec (n - 1) (i + k + 1)) as [H3| H3]; [ | flia H3 ].
+    destruct (lt_dec (n - 1) (i + k + 1)) as [H4| H4]; [ | flia H4 ].
     specialize (H2 (i + k + 1 - n)).
     now replace (n + (i + k + 1 - n)) with (i + k + 1) in H2 by lia.
   }
   move Hik before Hin.
   remember (n - i - k - 2) as m eqn:Hm.
-  clear Hjk H1.
   revert i k n Hin Hik Hk H2 Hm.
   induction m; intros.
   *unfold nA.
@@ -2755,38 +2755,52 @@ destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H1| H1].
   --unfold fd2n; simpl.
     unfold digit_sequence_normalize.
     destruct (LPO_fst (is_9_strict_after (freal x) (S n))) as [H1| H1].
-   ++destruct (lt_dec (S (d2n (freal x) (S n))) rad) as [H3| H3].
+   ++destruct (lt_dec (S (d2n (freal x) (S n))) rad) as [H4| H4].
     **unfold d2n; simpl; flia.
-    **apply Nat.nlt_ge in H3.
+    **apply Nat.nlt_ge in H4.
       replace (i + k + 1) with (S n) in Hk by flia Hik Hm.
       specialize (digit_lt_radix (freal x (S n))) as H.
-      unfold d2n in Hk, H3, H.
-      flia Hk H3 H.
+      unfold d2n in Hk, H4, H.
+      flia Hk H4 H.
    ++destruct H1 as (j & Hjj & Hj).
      apply is_9_strict_after_false_iff in Hj.
      specialize (H2 j).
      now replace (S n + j + 1) with (S (S n) + j) in Hj by flia.
-  *destruct (eq_nat_dec (fd2n x (n - 1)) (rad - 1)) as [H3| H3].
+  *destruct (eq_nat_dec (fd2n x (n - 1)) (rad - 1)) as [H4| H4].
   --destruct n; [ easy | ].
     rewrite nA_succ_r; [ | flia Hm ].
     rewrite nA_succ_r; [ | flia Hm ].
     assert (H1 : i + 1 ≤ n - 1) by flia Hm.
-    assert (H4 : i + k + 1 ≤ n - 1) by flia Hm.
-    replace (S n - 1) with n in H3 by flia.
-    assert (H5 : ∀ k, d2n (freal x) (n + k) = rad - 1). {
+    assert (H5 : i + k + 1 ≤ n - 1) by flia Hm.
+    replace (S n - 1) with n in H4 by flia.
+    assert (H6 : ∀ k, d2n (freal x) (n + k) = rad - 1). {
       intros j.
       destruct j; [ now rewrite Nat.add_0_r | ].
       specialize (H2 j).
       now replace (n + S j) with (S n + j) by flia.
     }
     clear H2; rename H5 into H2.
-    assert (H6 : m = n - i - k - 2) by flia Hm.
-    specialize (IHm i k n H1 H4 Hk H2 H6).
+    assert (H7 : m = n - i - k - 2) by flia Hm.
+    specialize (IHm i k n H1 H2 Hk H6 H7).
     rewrite IHm.
     rewrite Nat.mul_add_distr_l, Nat.mul_1_r.
     do 2 rewrite <- Nat.add_assoc.
     f_equal.
-    rewrite H3.
+    specialize (H6 0) as H; rewrite Nat.add_0_r in H.
+    unfold d2n in H; unfold fd2n; rewrite H; clear H.
+    unfold freal_normalize; simpl.
+    unfold digit_sequence_normalize.
+    destruct (LPO_fst (is_9_strict_after (freal x) n)) as [H3| H3].
+   ++destruct (lt_dec (S (d2n (freal x) n)) rad) as [H5| H5].
+    **specialize (H6 0); rewrite Nat.add_0_r in H6.
+      exfalso; flia H6 H5.
+    **simpl; specialize radix_ge_2; flia.
+   ++idtac.
+     destruct H3 as (j & Hjj & Hj).
+     apply is_9_strict_after_false_iff in Hj.
+     specialize (H6 (j + 1)).
+     now rewrite Nat.add_assoc in H6.
+  --idtac.
 ...
 
 Theorem toto {r : radix} : ∀ x i n,
