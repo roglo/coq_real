@@ -2705,6 +2705,41 @@ destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H1| H1].
     now replace (n + (i + k + 1 - n)) with (i + k + 1) in H2 by lia.
   }
   move Hik before Hin.
+  remember (n - 1 - (i + k + 1)) as m eqn:Hm.
+  clear Hjk H1.
+  revert i k n Hin Hik Hk H2 Hm.
+  induction m; intros.
+  *unfold nA.
+   destruct n; [ flia Hin | ].
+   replace (S n - 1) with n in Hin, Hik, Hm |-* by flia.
+   destruct n; [ flia Hin | ].
+   rewrite summation_split_last; [ | easy ].
+   rewrite summation_split_last; [ | easy ].
+   rewrite Nat.sub_diag, Nat.pow_0_r.
+   do 2 rewrite Nat.mul_1_r.
+   rewrite <- Nat.add_assoc.
+   remember minus as f; simpl; subst f.
+   f_equal.
+  --apply summation_eq_compat.
+    intros j Hj; f_equal.
+    move j before i.
+    unfold fd2n; simpl.
+    unfold digit_sequence_normalize.
+    destruct (LPO_fst (is_9_strict_after (freal x) j)) as [H1| ]; [ | easy ].
+    specialize (H1 (i + k - j)).
+    apply is_9_strict_after_true_iff in H1.
+    now replace (j + (i + k - j)) with (i + k) in H1 by flia Hm Hj.
+  --unfold fd2n; simpl.
+    unfold digit_sequence_normalize.
+    destruct (LPO_fst (is_9_strict_after (freal x) (S n))) as [H1| H1].
+   ++destruct (lt_dec (S (d2n (freal x) (S n))) rad) as [H3| H3].
+    **unfold d2n; simpl; flia.
+    **apply Nat.nlt_ge in H3.
+      replace (i + k + 1) with (S n) in Hk by flia Hik Hm.
+      specialize (digit_lt_radix (freal x (S n))) as H.
+      unfold d2n in Hk, H3, H.
+      flia Hk H3 H.
+   ++destruct H1 as (j & Hjj & Hj).
 ...
 
 Theorem toto {r : radix} : ∀ x i n,
