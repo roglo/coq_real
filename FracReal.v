@@ -2657,7 +2657,7 @@ simpl in HnA.
 ...
 *)
 
-Theorem toto {r : radix} : ∀ x i n,
+Theorem nA_freal_normalize {r : radix} : ∀ x i n,
   nA i n (fd2n (freal_normalize x)) = nA i n (fd2n x)
   ∨ nA i n (fd2n (freal_normalize x)) = nA i n (fd2n x) + 1
   ∨ nA i n (fd2n (freal_normalize x)) = 0.
@@ -2694,20 +2694,17 @@ destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H1| H1].
  destruct (LPO_fst (is_9_strict_after (freal x) (n - 1))) as [H1| H1].
  +right; left.
   specialize (is_9_strict_after_all_9 (freal x) (n - 1) H1) as H2.
-  destruct n; [ now specialize (H2 (i + k)) | ].
-  replace (S n - 1) with n in H1, H2 by flia.
-...
-
-  destruct (eq_nat_dec (fd2n x n) (rad - 1)) as [H3| H3].
-  *unfold nA; simpl.
-   rewrite Nat.sub_0_r.
-   destruct n; [ now specialize (H2 (i + k)) | ].
-   rewrite summation_split_last; [ | flia Hin ].
-   rewrite summation_split_last; [ | flia Hin ].
-   rewrite Nat.sub_diag, Nat.pow_0_r.
-   do 2 rewrite Nat.mul_1_r.
-   remember minus as f; simpl; subst f.
-   rewrite H3.
+  assert (H3 : ∀ k, d2n (freal x) (n + k) = rad - 1). {
+    intros j; specialize (H2 j).
+    now replace (n - 1 + j + 1) with (n + j) in H2 by flia Hin.
+  }
+  clear H2; rename H3 into H2.
+  assert (Hik : i + k + 1 ≤ n - 1). {
+    destruct (lt_dec (n - 1) (i + k + 1)) as [H3| H3]; [ | flia H3 ].
+    specialize (H2 (i + k + 1 - n)).
+    now replace (n + (i + k + 1 - n)) with (i + k + 1) in H2 by lia.
+  }
+  move Hik before Hin.
 ...
 
 Theorem toto {r : radix} : ∀ x i n,
