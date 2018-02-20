@@ -2854,6 +2854,29 @@ destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H1| H1].
   now replace (m + (n - m + j - 1) + 1) with (n + j) in H1 by flia Hm.
 Qed.
 
+Theorem nA_freal_normalize_0 {r : radix} : ∀ i n x,
+  (∀ k, d2n (freal x) (i + k + 1) = rad - 1)
+  → nA i n (fd2n (freal_normalize x)) = 0.
+Proof.
+intros * Hx.
+unfold nA.
+rewrite all_0_summation_0; [ easy | ].
+intros j Hj; simpl.
+apply Nat.eq_mul_0; left.
+unfold freal_normalize, fd2n; simpl.
+unfold digit_sequence_normalize.
+destruct (LPO_fst (is_9_strict_after (freal x) j)) as [H| H].
+-destruct (lt_dec (S (d2n (freal x) j)) rad) as [H7| H7]; [ | easy ].
+ exfalso.
+ specialize (Hx (j - i - 1)).
+ replace (i + (j - i - 1) + 1) with j in Hx by flia Hj.
+ flia Hx H7.
+-destruct H as (k & Hkj & Hk).
+ apply is_9_strict_after_false_iff in Hk.
+ specialize (Hx (j - i + k)).
+ now replace (i + (j - i + k) + 1) with (j + k + 1) in Hx by flia Hj.
+Qed.
+
 Theorem freal_eq_prop_add_norm_l {r : radix} : ∀ x y,
   freal_eq_prop {| freal := freal_add_to_seq (freal_normalize x) y |}
     {| freal := freal_add_to_seq x y |}.
@@ -2954,25 +2977,7 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
       destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H5| H5].
     ---specialize (is_9_strict_after_all_9 (freal x) i H5) as H7.
        clear H5; rename H7 into H5.
-       assert (HnAnx : nA i n (fd2n (freal_normalize x)) = 0). {
-         unfold nA.
-         rewrite all_0_summation_0; [ easy | ].
-         intros j Hj; simpl.
-         apply Nat.eq_mul_0; left.
-         unfold freal_normalize, fd2n; simpl.
-         unfold digit_sequence_normalize.
-         destruct (LPO_fst (is_9_strict_after (freal x) j)) as [H| H].
-         -destruct (lt_dec (S (d2n (freal x) j)) rad) as [H7| H7]; [ | easy ].
-          exfalso.
-          specialize (H5 (j - i - 1)).
-          replace (i + (j - i - 1) + 1) with j in H5 by flia Hj.
-          flia H5 H7.
-         -destruct H as (k & Hkj & Hk).
-          apply is_9_strict_after_false_iff in Hk.
-          specialize (H5 (j - i + k)).
-          replace (i + (j - i + k) + 1) with (j + k + 1) in H5 by flia Hj.
-          easy.
-       }
+       specialize (nA_freal_normalize_0 _ n _ H5) as HnAnx.
        rewrite HnAnx, Nat.add_0_l.
        assert (HnAx : nA i n (fd2n x) = s - 1). {
          unfold nA.
@@ -3177,25 +3182,7 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
       destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H5| H5].
     ---specialize (is_9_strict_after_all_9 (freal x) i H5) as H7.
        clear H5; rename H7 into H5.
-       assert (HnAnx : nA i n (fd2n (freal_normalize x)) = 0). {
-         unfold nA.
-         rewrite all_0_summation_0; [ easy | ].
-         intros j Hj; simpl.
-         apply Nat.eq_mul_0; left.
-         unfold freal_normalize, fd2n; simpl.
-         unfold digit_sequence_normalize.
-         destruct (LPO_fst (is_9_strict_after (freal x) j)) as [H| H].
-         -destruct (lt_dec (S (d2n (freal x) j)) rad) as [H7| H7]; [ | easy ].
-          exfalso.
-          specialize (H5 (j - i - 1)).
-          replace (i + (j - i - 1) + 1) with j in H5 by flia Hj.
-          flia H5 H7.
-         -destruct H as (k & Hkj & Hk).
-          apply is_9_strict_after_false_iff in Hk.
-          specialize (H5 (j - i + k)).
-          replace (i + (j - i + k) + 1) with (j + k + 1) in H5 by flia Hj.
-          easy.
-       }
+       specialize (nA_freal_normalize_0 _ n _ H5) as HnAnx.
        rewrite HnAnx, Nat.add_0_l.
        assert (HnAy : nA i n (fd2n y) ≠ 0). {
          specialize (Hku 0) as H7.
