@@ -1202,24 +1202,27 @@ destruct (LPO_fst (is_9_strict_after (λ _ : nat, digit_0) i)) as [H| H].
 -easy.
 Qed.
 
-Theorem normalized_999 {r : radix} : ∀ x,
-  (∀ i, fd2n x i = rad - 1) → (∀ i, fd2n (freal_normalize x) i = 0).
+Theorem normalized_999 {r : radix} : ∀ x i,
+  (∀ j, fd2n x (i + j) = rad - 1)
+  → (∀ j, fd2n (freal_normalize x) (i + j) = 0).
 Proof.
 intros * Hx *.
 unfold freal_normalize; simpl.
 unfold digit_sequence_normalize.
 unfold fd2n; simpl.
-destruct (LPO_fst (is_9_strict_after (freal x) i)) as [Hxi| Hxi].
--destruct (lt_dec (S (d2n (freal x) i)) rad) as [Hsx| Hsx]; [ | easy ].
+destruct (LPO_fst (is_9_strict_after (freal x) (i + j))) as [Hxi| Hxi].
+-destruct (lt_dec (S (d2n (freal x) (i + j))) rad) as [Hsx| Hsx]; [ | easy ].
  exfalso.
  unfold fd2n in Hx; unfold d2n in Hsx.
  rewrite Hx in Hsx.
  rewrite <- Nat.sub_succ_l in Hsx; [ | easy ].
  rewrite Nat.sub_succ, Nat.sub_0_r in Hsx; flia Hsx.
--destruct Hxi as (j & Hjj & Hj).
+-destruct Hxi as (k & Hjj & Hj).
  apply is_9_strict_after_false_iff in Hj.
  unfold fd2n in Hx; unfold d2n in Hj.
- now rewrite Hx in Hj.
+ specialize (Hx (j + k + 1)).
+ replace (i + (j + k + 1)) with (i + j + k + 1) in Hx by flia.
+ easy.
 Qed.
 
 Definition has_not_9_after {r : radix} u i j :=
@@ -3204,6 +3207,20 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
      +++rewrite Nat.add_0_r.
         destruct (lt_dec (S (d2n (freal x) i)) rad) as [H6| H6].
       ***exfalso.
+         assert (H7 : ∀ k, fd2n (freal_normalize x) (i + k + 1) = 0). {
+           intros j.
+           assert (H : ∀ k, fd2n x (i + 1 + k) = rad - 1). {
+             intros k.
+             specialize (H5 k).
+             unfold d2n in H5; unfold fd2n.
+             now replace (i + 1 + k) with (i + k + 1) by flia.
+           }
+           specialize (normalized_999 x (i + 1) H) as H7.
+           replace (i + j + 1) with (i + 1 + j) by flia.
+           apply H7.
+         }
+         move H7 before H5.
+
 (* according to HnAnX, nA i n nx = 0;
    according to it and Hku, nA i n y starts with 9;
    according to H5, nA i n x = 999..999 = s-1
