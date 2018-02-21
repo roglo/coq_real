@@ -3241,6 +3241,10 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
            destruct rad; [ easy | simpl; flia ].
          }
          move H7 before H8; move H5 before H7.
+         (* contradiction with Hp *)
+         move Hp at bottom.
+         unfold v in Hp.
+         rewrite nA_freal_add_series in Hp.
 ...
 
 (* according to HnAnX, nA i n nx = 0;
