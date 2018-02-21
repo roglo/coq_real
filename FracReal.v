@@ -3220,6 +3220,25 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
            apply H7.
          }
          move H7 before H5.
+         assert (H8 : ∀ k, fd2n y (i + k + 1) = rad - 1). {
+           intros k.
+(*
+           specialize (Hku 0); simpl in Hku.
+           rewrite Nat.add_0_r, <- Hn, <- Hs in Hku.
+           rewrite Nat.mul_1_r, Nat.sub_0_r in Hku.
+*)
+           specialize (Hku k).
+           move Hku at bottom.
+           remember (S k) as sk; simpl in Hku; subst sk.
+           remember (rad * (i + k + 3)) as n2 eqn:Hn2.
+           remember (rad ^ (n2 - i - 1)) as s2 eqn:Hs2.
+           move s2 before n2.
+           unfold u in Hku.
+           rewrite nA_freal_add_series in Hku.
+           specialize (nA_freal_normalize_0 i n2 x H5) as H8.
+           rewrite H8, Nat.add_0_l in Hku; clear H8.
+
+...
 
 (* according to HnAnX, nA i n nx = 0;
    according to it and Hku, nA i n y starts with 9;
