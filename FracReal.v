@@ -3284,6 +3284,18 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
          rewrite H9, H10 in Hp; clear H9 H10.
          assert (H11 : s1 ≠ 0) by now rewrite Hs1; apply Nat.pow_nonzero.
          replace (s1 - 1 + (s1 - 1)) with (s1 - 2 + 1*s1) in Hp.
+         Focus 2.
+      ----rewrite Nat.mul_1_l.
+          destruct s1; [ easy | ].
+          destruct s1; simpl; [ | flia ].
+...
+          specialize radix_ge_2 as Hr.
+          destruct rad as [| rr]; [ easy | ].
+          destruct rr; [ flia Hr | ].
+          rewrite Hn1 in Hs1; simpl in Hs1.
+
+
+
       ----rewrite Nat.mod_add in Hp; [ | easy ].
           rewrite Nat.mod_small in Hp; [ | flia H11 ].
           rewrite Hs1 in Hp.
