@@ -3275,23 +3275,41 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
          }
          move H7 before H8; move H5 before H7.
          (* contradiction with Hp *)
-replace (n1 - i - p - 2) with (n1 - i - 1 - (S p)) in Hp by flia.
-rewrite Nat.pow_sub_r in Hp; [ | easy | ].
-rewrite <- Hs1 in Hp.
-         move Hp at bottom.
-         unfold v in Hp.
-         rewrite nA_freal_add_series in Hp.
+         assert (H11 : s1 ≠ 0) by now rewrite Hs1; apply Nat.pow_nonzero.
          specialize (all_9_nA x i p H5) as H9.
          specialize (all_9_nA y i p H8) as H10.
          rewrite <- Hn1, <- Hs1 in H9, H10.
+         move Hp at bottom.
+         unfold v in Hp.
+         rewrite nA_freal_add_series in Hp.
          rewrite H9, H10 in Hp; clear H9 H10.
-         assert (H11 : s1 ≠ 0) by now rewrite Hs1; apply Nat.pow_nonzero.
          replace (s1 - 1 + (s1 - 1)) with (s1 - 2 + 1 * s1) in Hp.
      ----rewrite Nat.mod_add in Hp; [ | easy ].
          rewrite Nat.mod_small in Hp; [ | flia H11 ].
+         apply Nat.nle_gt in Hp; apply Hp; clear Hp.
+         rewrite Hs1.
+         replace (n1 - i - p - 2) with ((n1 - i - 1) - (S p)) by flia.
+...
+
+(*
+replace (n1 - i - p - 2) with (n1 - i - 1 - (S p)) in Hp by flia.
+rewrite Nat.pow_sub_r in Hp; [ | easy | ].
+rewrite <- Hs1 in Hp.
+*)
          rewrite Nat.mul_sub_distr_r, Nat.mul_1_l in Hp.
+rewrite <- Nat.pow_add_r in Hp.
+replace (S p + (n1 - i - p - 2)) with (S (n1 - i - p)) in Hp.
          exfalso; apply Nat.nle_gt in Hp; apply Hp; clear Hp.
-specialize (Nat.div_mod s1 (rad ^ S p)) as H12.
+rewrite power_summation; [ | easy ].
+rewrite Nat.add_comm.
+replace (s1 - 2) with (s1 - 1 - 1) by flia.
+rewrite Hs1.
+replace (n1 - i - 1) with (S (n1 - i - 2)).
+rewrite power_summation; [ | easy ].
+
+
+         specialize (Nat.div_mod s1 (rad ^ S p)) as H12.
+         specialize (H12 (Nat.pow_nonzero rad (S p) radix_ne_0)).
 ...
 
          Focus 2.
