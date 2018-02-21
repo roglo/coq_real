@@ -3283,7 +3283,7 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
          rewrite <- Hn1, <- Hs1 in H9, H10.
          rewrite H9, H10 in Hp; clear H9 H10.
          assert (H11 : s1 ≠ 0) by now rewrite Hs1; apply Nat.pow_nonzero.
-         replace (s1 - 1 + (s1 - 1)) with (s1 - 2 + 1*s1) in Hp.
+         replace (s1 - 1 + (s1 - 1)) with (s1 - 2 + 1 * s1) in Hp.
          Focus 2.
       ----rewrite Nat.mul_1_l.
           destruct s1; [ easy | ].
