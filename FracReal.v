@@ -3205,7 +3205,7 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
         destruct (lt_dec (S (d2n (freal x) i)) rad) as [H6| H6].
       ***exfalso.
 (* according to HnAnX, nA i n nx = 0;
-   according to it and Hku, nA i n y must start with 999;
+   according to it and Hku, nA i n y starts with 9;
    according to H5, nA i n x = 999..999 = s-1
    perhaps a contradiction with Hp? *)
 ...
