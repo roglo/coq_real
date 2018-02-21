@@ -3275,6 +3275,9 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
          }
          move H7 before H8; move H5 before H7.
          (* contradiction with Hp *)
+replace (n1 - i - p - 2) with (n1 - i - 1 - (S p)) in Hp by flia.
+rewrite Nat.pow_sub_r in Hp; [ | easy | ].
+rewrite <- Hs1 in Hp.
          move Hp at bottom.
          unfold v in Hp.
          rewrite nA_freal_add_series in Hp.
@@ -3284,6 +3287,13 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
          rewrite H9, H10 in Hp; clear H9 H10.
          assert (H11 : s1 ≠ 0) by now rewrite Hs1; apply Nat.pow_nonzero.
          replace (s1 - 1 + (s1 - 1)) with (s1 - 2 + 1 * s1) in Hp.
+     ----rewrite Nat.mod_add in Hp; [ | easy ].
+         rewrite Nat.mod_small in Hp; [ | flia H11 ].
+         rewrite Nat.mul_sub_distr_r, Nat.mul_1_l in Hp.
+         exfalso; apply Nat.nle_gt in Hp; apply Hp; clear Hp.
+specialize (Nat.div_mod s1 (rad ^ S p)) as H12.
+...
+
          Focus 2.
       ----rewrite Nat.mul_1_l.
           destruct s1; [ easy | simpl ].
