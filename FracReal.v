@@ -2913,6 +2913,14 @@ destruct m.
   destruct rad; [ easy | simpl; flia ].
 Qed.
 
+Theorem Nat_pow_sub_1_mul_pow : ∀ n a b,
+  (n ^ a - 1) * n ^ b = n ^ (a + b) - n ^ b.
+Proof.
+intros.
+rewrite Nat.mul_sub_distr_r.
+now rewrite Nat.pow_add_r, Nat.mul_1_l.
+Qed.
+
 Theorem freal_eq_prop_add_norm_l {r : radix} : ∀ x y,
   freal_eq_prop {| freal := freal_add_to_seq (freal_normalize x) y |}
     {| freal := freal_add_to_seq x y |}.
@@ -3289,36 +3297,20 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
          apply Nat.nle_gt in Hp; apply Hp; clear Hp.
          rewrite Hs1.
          replace (n1 - i - p - 2) with ((n1 - i - 1) - (S p)) by flia.
-...
-
-(*
-replace (n1 - i - p - 2) with (n1 - i - 1 - (S p)) in Hp by flia.
-rewrite Nat.pow_sub_r in Hp; [ | easy | ].
-rewrite <- Hs1 in Hp.
-*)
-         rewrite Nat.mul_sub_distr_r, Nat.mul_1_l in Hp.
-rewrite <- Nat.pow_add_r in Hp.
-replace (S p + (n1 - i - p - 2)) with (S (n1 - i - p)) in Hp.
-         exfalso; apply Nat.nle_gt in Hp; apply Hp; clear Hp.
-rewrite power_summation; [ | easy ].
-rewrite Nat.add_comm.
-replace (s1 - 2) with (s1 - 1 - 1) by flia.
-rewrite Hs1.
-replace (n1 - i - 1) with (S (n1 - i - 2)).
-rewrite power_summation; [ | easy ].
-
-
-         specialize (Nat.div_mod s1 (rad ^ S p)) as H12.
-         specialize (H12 (Nat.pow_nonzero rad (S p) radix_ne_0)).
-...
-
-         Focus 2.
-      ----rewrite Nat.mul_1_l.
-          destruct s1; [ easy | simpl ].
-          rewrite Nat.sub_0_r.
-          replace (s1 - 1 + S s1) with (S (s1 - 1) + s1) by flia.
-          f_equal.
-          rewrite <- Nat.sub_succ_l; [ flia | ].
+         rewrite Nat_pow_sub_1_mul_pow.
+         rewrite Nat.add_comm.
+         rewrite Nat.sub_add.
+      ++++apply Nat.sub_le_mono_l.
+          remember (n1 - i - 1 - S p) as a eqn:Ha.
+          destruct a.
+       ****rewrite Hn1 in Ha.
+           destruct rad; [ easy | simpl in Ha; flia Ha ].
+       ****simpl; replace 2 with (2 * 1) by flia.
+           apply Nat.mul_le_mono; [ apply radix_ge_2 | ].
+           now apply Nat_pow_ge_1.
+      ++++rewrite Hn1.
+          destruct rad; [ easy | simpl; flia ].
+     ----rewrite Nat.mul_1_l.
 ...
 
          remember (nA i n (fd2n y)) as z eqn:Hz.
