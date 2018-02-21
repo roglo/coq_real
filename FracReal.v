@@ -3234,21 +3234,13 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
            rewrite H8, Nat.add_0_l in Hku; clear H8.
            rewrite Hs2 in Hku.
            rewrite Nat.mod_small in Hku; [ | apply nA_upper_bound ].
-           assert (H8 : nA i n2 (fd2n y) < rad ^ (S k + (n2 - i - k - 2))). {
-             replace (S k + (n2 - i - k - 2)) with (n2 - i - 1).
-             -apply nA_upper_bound.
-             -ring_simplify.
-              rewrite Hn2.
-              destruct rad; [ easy | simpl; flia ].
-           }
-           specialize (Nat_ge_mul_pred_pow_pow rad (nA i n2 (fd2n y))) as H.
-           remember
-             (nA i n2 (fd2n y) - (rad ^ S k - 1) * rad ^ (n2 - i - k - 2))
-             as t eqn:Ht.
-           specialize (H (S k) (n2 - i - k - 2) t H8 Hku Ht); clear Ht.
-           destruct H as (H9, H10).
-           clear Hku H8.
-
+           specialize (when_99000_le_uuu00 (fd2n y) i k (i + k + 1)) as H.
+           specialize (H n2).
+           apply H; [ intros; apply digit_lt_radix | easy | | flia ].
+           rewrite Hn2.
+           destruct rad; [ easy | simpl; flia ].
+         }
+         move H7 before H8; move H5 before H7.
 ...
 
 (* according to HnAnX, nA i n nx = 0;
