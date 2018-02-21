@@ -3307,6 +3307,12 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
        f_equal; f_equal.
        destruct H5 as (j & Hjj & Hj); move j before i.
        apply is_9_strict_after_false_iff in Hj.
+       rewrite <- Hnx.
+       destruct (lt_dec (nA i n (fd2n nx) + nA i n (fd2n y)) s) as [H8| H8].
+     +++rewrite Nat.div_small; [ | easy ].
+        simpl; rewrite Nat.mod_1_l; [ | easy ].
+        destruct (lt_dec (nA i n1 (fd2n x) + nA i n1 (fd2n y)) s1) as [H9| H9].
+      ***exfalso.
 ...
 
 Theorem freal_add_assoc {r : radix} : ∀ x y z,
