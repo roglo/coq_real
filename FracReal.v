@@ -3301,7 +3301,12 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
      ****simpl; replace 2 with (2 * 1) by flia.
          apply Nat.mul_le_mono; [ apply radix_ge_2 | ].
          now apply Nat_pow_ge_1.
-    ---idtac.
+    ---rewrite <- Nat.add_assoc.
+       rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+       rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+       f_equal; f_equal.
+       destruct H5 as (j & Hjj & Hj); move j before i.
+       apply is_9_strict_after_false_iff in Hj.
 ...
 
 Theorem freal_add_assoc {r : radix} : ∀ x y z,
