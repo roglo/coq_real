@@ -2880,6 +2880,39 @@ destruct (LPO_fst (is_9_strict_after (freal x) j)) as [H| H].
  now replace (i + (j - i + k) + 1) with (j + k + 1) in Hx by flia Hj.
 Qed.
 
+Theorem all_9_nA {r : radix} : ∀ x i j
+  (n := (rad * (i + j + 3))%nat) (s := rad ^ (n - i - 1)),
+  (∀ k, fd2n x (i + k + 1) = rad - 1)
+  → nA i n (fd2n x) = s - 1.
+Proof.
+intros * Hx.
+specialize radix_ge_2 as Hr.
+unfold s.
+remember (n - i - 1) as m eqn:Hm.
+destruct m.
+-unfold n in Hm.
+ destruct rad; [ easy | simpl in Hm; flia Hm ].
+-rewrite power_summation; [ | easy ].
+ rewrite Nat.add_comm, Nat.add_sub.
+ rewrite summation_mul_distr_l; simpl.
+ unfold nA.
+ rewrite summation_rtl.
+ rewrite summation_shift.
+ +replace (n - 1 - (i + 1)) with m.
+  *apply summation_eq_compat.
+   intros k Hk.
+   replace (n - 1 + (i + 1) - (i + 1 + k)) with (n - k - 1) by flia.
+   f_equal; [ | f_equal; flia Hm Hk ].
+   specialize (Hx (n - k - 1 - i - 1)).
+   replace (i + (n - k - 1 - i - 1) + 1) with (n - k - 1) in Hx; [ easy | ].
+   flia Hm Hk.
+  *apply Nat.succ_inj.
+   rewrite Hm; unfold n.
+   destruct rad; [ easy | simpl; flia ].
+ +unfold n.
+  destruct rad; [ easy | simpl; flia ].
+Qed.
+
 Theorem freal_eq_prop_add_norm_l {r : radix} : ∀ x y,
   freal_eq_prop {| freal := freal_add_to_seq (freal_normalize x) y |}
     {| freal := freal_add_to_seq x y |}.
@@ -3245,38 +3278,26 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
          move Hp at bottom.
          unfold v in Hp.
          rewrite nA_freal_add_series in Hp.
-         assert (H9 : nA i n1 (fd2n x) = s1 - 1). {
-           clear - Hn1 Hs1 H5.
-... (* do the same for y *)
-           specialize radix_ge_2 as Hr.
-           rewrite Hs1.
-           remember (n1 - i - 1) as m eqn:Hm.
-           destruct m.
-           -rewrite Hn1 in Hm.
-            destruct rad; [ easy | simpl in Hm; flia Hm ].
-           -rewrite power_summation; [ | easy ].
-            rewrite Nat.add_comm, Nat.add_sub.
-            rewrite summation_mul_distr_l; simpl.
-            unfold nA.
-            rewrite summation_rtl.
-            rewrite summation_shift.
-            +replace (n1 - 1 - (i + 1)) with m.
-             *apply summation_eq_compat.
-              intros j Hj.
-              replace (n1 - 1 + (i + 1) - (i + 1 + j)) with (n1 - j - 1) by flia.
-              f_equal; [ | f_equal; flia Hm Hj ].
-              move H5 at bottom.
-              specialize (H5 (n1 - j - 1 - i - 1)).
-              replace (i + (n1 - j - 1 - i - 1) + 1) with (n1 - j - 1) in H5.
-             --easy.
-             --flia Hm Hj.
-             *apply Nat.succ_inj.
-              rewrite Hm, Hn1.
-              destruct rad; [ easy | simpl; flia ].
-            +rewrite Hn1.
-             destruct rad; [ easy | simpl; flia ].
-         }
-         rewrite H9 in Hp.
+         specialize (all_9_nA x i p H5) as H9.
+         specialize (all_9_nA y i p H8) as H10.
+         rewrite <- Hn1, <- Hs1 in H9, H10.
+         rewrite H9, H10 in Hp; clear H9 H10.
+         assert (H11 : s1 ≠ 0) by now rewrite Hs1; apply Nat.pow_nonzero.
+         replace (s1 - 1 + (s1 - 1)) with (s1 - 2 + 1*s1) in Hp.
+      ----rewrite Nat.mod_add in Hp; [ | easy ].
+          rewrite Nat.mod_small in Hp; [ | flia H11 ].
+          rewrite Hs1 in Hp.
+          apply Nat.nle_gt in Hp; apply Hp; clear Hp.
+          remember (n1 - i - 1) as m eqn:Hm.
+          destruct m.
+       ++++rewrite Hn1 in Hm.
+           destruct rad; [ easy | ].
+           simpl in Hm; flia Hm.
+       ++++rewrite power_summation_sub_1; [ | easy ].
+           replace (rad ^ S m - 2) with (rad ^ S m - 1 - 1) by flia.
+           rewrite power_summation_sub_1; [ | easy ].
+           do 2 rewrite summation_mul_distr_l; simpl.
+Check @summation_ub_add.
 
 ...
 
