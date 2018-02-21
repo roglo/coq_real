@@ -3245,6 +3245,39 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
          move Hp at bottom.
          unfold v in Hp.
          rewrite nA_freal_add_series in Hp.
+         assert (H9 : nA i n1 (fd2n x) = s1 - 1). {
+           clear - Hn1 Hs1 H5.
+... (* do the same for y *)
+           specialize radix_ge_2 as Hr.
+           rewrite Hs1.
+           remember (n1 - i - 1) as m eqn:Hm.
+           destruct m.
+           -rewrite Hn1 in Hm.
+            destruct rad; [ easy | simpl in Hm; flia Hm ].
+           -rewrite power_summation; [ | easy ].
+            rewrite Nat.add_comm, Nat.add_sub.
+            rewrite summation_mul_distr_l; simpl.
+            unfold nA.
+            rewrite summation_rtl.
+            rewrite summation_shift.
+            +replace (n1 - 1 - (i + 1)) with m.
+             *apply summation_eq_compat.
+              intros j Hj.
+              replace (n1 - 1 + (i + 1) - (i + 1 + j)) with (n1 - j - 1) by flia.
+              f_equal; [ | f_equal; flia Hm Hj ].
+              move H5 at bottom.
+              specialize (H5 (n1 - j - 1 - i - 1)).
+              replace (i + (n1 - j - 1 - i - 1) + 1) with (n1 - j - 1) in H5.
+             --easy.
+             --flia Hm Hj.
+             *apply Nat.succ_inj.
+              rewrite Hm, Hn1.
+              destruct rad; [ easy | simpl; flia ].
+            +rewrite Hn1.
+             destruct rad; [ easy | simpl; flia ].
+         }
+         rewrite H9 in Hp.
+
 ...
 
 (* according to HnAnX, nA i n nx = 0;
