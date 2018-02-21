@@ -3286,48 +3286,11 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
          replace (s1 - 1 + (s1 - 1)) with (s1 - 2 + 1 * s1) in Hp.
          Focus 2.
       ----rewrite Nat.mul_1_l.
-          destruct s1; [ easy | ].
-          destruct s1; simpl; [ | flia ].
-...
-          specialize radix_ge_2 as Hr.
-          destruct rad as [| rr]; [ easy | ].
-          destruct rr; [ flia Hr | ].
-          rewrite Hn1 in Hs1; simpl in Hs1.
-
-
-
-      ----rewrite Nat.mod_add in Hp; [ | easy ].
-          rewrite Nat.mod_small in Hp; [ | flia H11 ].
-          rewrite Hs1 in Hp.
-          apply Nat.nle_gt in Hp; apply Hp; clear Hp.
-          remember (n1 - i - 1) as m eqn:Hm.
-          destruct m.
-       ++++rewrite Hn1 in Hm.
-           destruct rad; [ easy | ].
-           simpl in Hm; flia Hm.
-       ++++rewrite power_summation_sub_1; [ | easy ].
-           replace (rad ^ S m - 2) with (rad ^ S m - 1 - 1) by flia.
-           rewrite power_summation_sub_1; [ | easy ].
-           do 2 rewrite summation_mul_distr_l; simpl.
-Check @summation_ub_add.
-
-...
-
-(* according to HnAnX, nA i n nx = 0;
-   according to it and Hku, nA i n y starts with 9;
-   according to H5, nA i n x = 999..999 = s-1
-   perhaps a contradiction with Hp? *)
-...
-(**)
-      ***simpl.
-         setoid_rewrite Nat.add_comm.
-         rewrite <- Nat.add_1_l, Nat.add_assoc.
-         rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
-         rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
-         f_equal; f_equal; simpl.
-(* ouais, mais le terme de droite peut pas être égal à 2;
-   c'est donc une contradiction; faut en trouver une dans les
-   hypothèses *)
+          destruct s1; [ easy | simpl ].
+          rewrite Nat.sub_0_r.
+          replace (s1 - 1 + S s1) with (S (s1 - 1) + s1) by flia.
+          f_equal.
+          rewrite <- Nat.sub_succ_l; [ flia | ].
 ...
 
          remember (nA i n (fd2n y)) as z eqn:Hz.
