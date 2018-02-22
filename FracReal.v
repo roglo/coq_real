@@ -2672,6 +2672,16 @@ simpl in HnA.
 ...
 *)
 
+Theorem nA_succ_l {r : radix} : ∀ i n u,
+  i + 1 ≤ n - 1
+  → nA i n u = u (i + 1) * rad ^ (n - i - 2) + nA (S i) n u.
+Proof.
+intros * Hin.
+unfold nA.
+rewrite summation_split_first; [ | easy ].
+simpl; f_equal; f_equal; f_equal; flia.
+Qed.
+
 Theorem nA_succ_r {r : radix} : ∀ i n u,
   i + 1 ≤ n - 1
   → nA i (S n) u = rad * nA i n u + u n.
@@ -3330,25 +3340,22 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
            rewrite <- nA_freal_add_series, Hnx in H8.
            fold u in H8.
            rewrite Nat.mod_small in H13; [ | easy ].
-           assert (H14 : nA i n u / rad ^ (n - i - 2) = rad ^ 1 - 1). {
-             rewrite H13, Nat.add_comm.
+           assert (H14 : nA i n u / rad ^ (n - i - 2) = rad - 1). {
+             rewrite H13, Nat.add_comm, Nat.pow_1_r.
              rewrite Nat.div_add; [ | now apply Nat.pow_nonzero ].
              now rewrite Nat.div_small.
            }
-           unfold nA in H14.
-           replace (i + 1) with (S i) in H14 by flia.
-           rewrite summation_split_first in H14; [ | flia His ].
-           simpl in H14.
-           replace (n - 1 - S i) with (n - i - 2) in H14 by flia His.
+           rewrite nA_succ_l in H14; [ | easy ].
            rewrite Nat.add_comm in H14.
            rewrite Nat.div_add in H14; [ | now apply Nat.pow_nonzero ].
            rewrite Nat.div_small in H14.
            -rewrite Nat.add_0_l in H14; unfold u in H14.
             unfold freal_add_series, sequence_add in H14.
-            rewrite Nat.mul_1_r in H14.
-            replace (S i) with (i + 1) in H14 by flia.
             now rewrite <- Hnx in H14.
-           -idtac.
+           -replace (n - i - 2) with (n - S i - 1) by flia.
+Check nA_upper_bound.
+...
+            apply nA_upper_bound.
 ...
 (*
          unfold v in H4 at 2.
