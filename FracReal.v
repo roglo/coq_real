@@ -3339,6 +3339,13 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
            unfold u in H13.
            rewrite nA_freal_add_series, <- Hnx in H13.
            rewrite Nat.mod_small in H13; [ | easy ].
+           assert
+             (H14 : (nA i n (fd2n nx) + nA i n (fd2n y)) / rad ^ (n - i - 2) =
+                rad ^ 1 - 1). {
+             rewrite H13, Nat.add_comm.
+             rewrite Nat.div_add; [ | now apply Nat.pow_nonzero ].
+             now rewrite Nat.div_small.
+           }
 ...
          unfold v in Hp.
          rewrite nA_freal_add_series in Hp.
