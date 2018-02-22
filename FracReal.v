@@ -3317,11 +3317,12 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
        f_equal; f_equal.
        destruct H5 as (j & Hjj & Hj); move j before i.
        apply is_9_strict_after_false_iff in Hj.
-       rewrite <- Hnx.
-       destruct (lt_dec (nA i n (fd2n nx) + nA i n (fd2n y)) s) as [H8| H8].
+       do 2 rewrite <- nA_freal_add_series.
+       fold u v.
+       destruct (lt_dec (nA i n u) s) as [H8| H8].
      +++rewrite Nat.div_small; [ | easy ].
         simpl; rewrite Nat.mod_1_l; [ | easy ].
-        destruct (lt_dec (nA i n1 (fd2n x) + nA i n1 (fd2n y)) s1) as [H9| H9].
+        destruct (lt_dec (nA i n1 u) s1) as [H9| H9].
       ***exfalso.
          (* Hku(0) implies that nx(i+1)+y(i+1) = 9 *)
          assert (H5 : fd2n nx (i + 1) + fd2n y (i + 1) = rad - 1). {
@@ -3337,8 +3338,6 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
            rewrite <- Hs in H.
            specialize (Nat.mod_upper_bound (nA i n u) s Hsz) as H11.
            specialize (H H11 H10 (eq_refl _)) as (H12, H13).
-           rewrite <- nA_freal_add_series, Hnx in H8.
-           fold u in H8.
            rewrite Nat.mod_small in H13; [ | easy ].
            assert (H14 : nA i n u / rad ^ (n - i - 2) = rad - 1). {
              rewrite H13, Nat.add_comm, Nat.pow_1_r.
@@ -3348,6 +3347,7 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
            rewrite nA_succ_l in H14; [ | easy ].
            rewrite Nat.add_comm in H14.
            rewrite Nat.div_add in H14; [ | now apply Nat.pow_nonzero ].
+...
            rewrite Nat.div_small in H14.
            -rewrite Nat.add_0_l in H14; unfold u in H14.
             unfold freal_add_series, sequence_add in H14.
