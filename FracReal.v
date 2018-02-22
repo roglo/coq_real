@@ -3225,9 +3225,9 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
       do 2 rewrite nA_freal_add_series.
       destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H5| H5].
     ---specialize (is_9_strict_after_all_9 (freal x) i H5) as H7.
+       exfalso.
        clear H5; rename H7 into H5.
        specialize (nA_freal_normalize_0 _ n _ H5) as HnAnx.
-       rewrite HnAnx, Nat.add_0_l.
        assert (H7 : ∀ k, fd2n (freal_normalize x) (i + k + 1) = 0). {
          intros j.
          assert (H : ∀ k, fd2n x (i + 1 + k) = rad - 1). {
@@ -3319,17 +3319,23 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
          unfold u in H10.
          rewrite nA_freal_add_series, <- Hnx in H10.
          rewrite Nat.mod_small in H10; [ | easy ].
+         unfold v in H4 at 2.
+         rewrite nA_freal_add_series in H4.
+         rewrite Nat.div_small in H4; [ | easy ].
+         rewrite Nat.add_0_r in H4.
+         (* H10 implies that nx(i)+y(i) = 9
+            H4 implies that x(i)+y(i) ≠ 9
+            therefore nx(i) ≠ x(i)
+            therefore x after i is 999... → contradicted by Hj *)
+...
+         unfold v in Hp.
+         rewrite nA_freal_add_series in Hp.
+         rewrite Nat.mod_small in Hp; [ | easy ].
+         move Hp at bottom.
          replace (rad - 1) with (rad ^ 1 - 1) in H10 by (simpl; flia).
          rewrite Nat_pow_sub_1_mul_pow in H10.
          replace (1 + (n - i - 2)) with (n - i - 1) in H10 by flia His.
          rewrite <- Hs in H10.
-         unfold v in Hp.
-         unfold v in H4 at 2.
-         rewrite nA_freal_add_series in Hp, H4.
-         rewrite Nat.mod_small in Hp; [ | easy ].
-         rewrite Nat.div_small in H4; [ | easy ].
-         rewrite Nat.add_0_r in H4.
-         move Hp at bottom.
          rewrite Nat_pow_sub_1_mul_pow in Hp.
          replace (S p + (n1 - i - p - 2)) with (n1 - i - 1) in Hp.
          Focus 2.
