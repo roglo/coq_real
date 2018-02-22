@@ -3313,20 +3313,32 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
         simpl; rewrite Nat.mod_1_l; [ | easy ].
         destruct (lt_dec (nA i n1 (fd2n x) + nA i n1 (fd2n y)) s1) as [H9| H9].
       ***exfalso.
-         specialize (Hku 0) as H10; simpl in H10.
-         rewrite Nat.add_0_r, Nat.mul_1_r, Nat.sub_0_r in H10.
-         rewrite <- Hn, <- Hs in H10.
-         unfold u in H10.
-         rewrite nA_freal_add_series, <- Hnx in H10.
-         rewrite Nat.mod_small in H10; [ | easy ].
+(*
          unfold v in H4 at 2.
          rewrite nA_freal_add_series in H4.
          rewrite Nat.div_small in H4; [ | easy ].
          rewrite Nat.add_0_r in H4.
-         (* H10 implies that nx(i)+y(i) = 9
+*)
+         (* Hku(0) implies that nx(i)+y(i) = 9
             H4 implies that x(i)+y(i) ≠ 9
             therefore nx(i) ≠ x(i)
             therefore x after i is 999... → contradicted by Hj *)
+         assert (H5 : fd2n nx i + fd2n y i = rad - 1). {
+           specialize (Hku 0) as H10; simpl in H10.
+           rewrite Nat.add_0_r, Nat.sub_0_r in H10.
+           rewrite <- Hn, <- Hs in H10.
+           specialize (Nat_ge_mul_pred_pow_pow rad) as H.
+           specialize (H (nA i n u mod s)).
+           specialize (H 1 (n - i - 2)).
+           remember (nA i n u mod s - (rad ^ 1 - 1) * rad ^ (n - i - 2)) as t.
+           specialize (H t).
+           replace (1 + (n - i - 2)) with (n - i - 1) in H by flia His.
+           rewrite <- Hs in H.
+           specialize (Nat.mod_upper_bound (nA i n u) s Hsz) as H11.
+           specialize (H H11 H10 (eq_refl _)) as (H12, H13).
+           unfold u in H13.
+           rewrite nA_freal_add_series, <- Hnx in H13.
+           rewrite Nat.mod_small in H13; [ | easy ].
 ...
          unfold v in Hp.
          rewrite nA_freal_add_series in Hp.
