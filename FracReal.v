@@ -3313,6 +3313,29 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
         simpl; rewrite Nat.mod_1_l; [ | easy ].
         destruct (lt_dec (nA i n1 (fd2n x) + nA i n1 (fd2n y)) s1) as [H9| H9].
       ***exfalso.
+         specialize (Hku 0) as H10; simpl in H10.
+         rewrite Nat.add_0_r, Nat.mul_1_r, Nat.sub_0_r in H10.
+         rewrite <- Hn, <- Hs in H10.
+         unfold u in H10.
+         rewrite nA_freal_add_series, <- Hnx in H10.
+         rewrite Nat.mod_small in H10; [ | easy ].
+         replace (rad - 1) with (rad ^ 1 - 1) in H10 by (simpl; flia).
+         rewrite Nat_pow_sub_1_mul_pow in H10.
+         replace (1 + (n - i - 2)) with (n - i - 1) in H10 by flia His.
+         rewrite <- Hs in H10.
+         unfold v in Hp.
+         unfold v in H4 at 2.
+         rewrite nA_freal_add_series in Hp, H4.
+         rewrite Nat.mod_small in Hp; [ | easy ].
+         rewrite Nat.div_small in H4; [ | easy ].
+         rewrite Nat.add_0_r in H4.
+         move Hp at bottom.
+         rewrite Nat_pow_sub_1_mul_pow in Hp.
+         replace (S p + (n1 - i - p - 2)) with (n1 - i - 1) in Hp.
+         Focus 2.
+      ----rewrite Hn1.
+          destruct rad; [ easy | simpl; flia ].
+      ----rewrite <- Hs1 in Hp.
 ...
 
 Theorem freal_add_assoc {r : radix} : ∀ x y z,
