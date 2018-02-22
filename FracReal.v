@@ -3319,11 +3319,13 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
          rewrite Nat.div_small in H4; [ | easy ].
          rewrite Nat.add_0_r in H4.
 *)
-         (* Hku(0) implies that nx(i)+y(i) = 9
-            H4 implies that x(i)+y(i) ≠ 9
+         (* Hku(0) implies that nx(i+1)+y(i+1) = 9 *)
+         (* shit, the reasoning below does not work *)
+...
+         (* H4 implies that x(i)+y(i) ≠ 9
             therefore nx(i) ≠ x(i)
             therefore x after i is 999... → contradicted by Hj *)
-         assert (H5 : fd2n nx i + fd2n y i = rad - 1). {
+         assert (H5 : fd2n nx (i + 1) + fd2n y (i + 1) = rad - 1). {
            specialize (Hku 0) as H10; simpl in H10.
            rewrite Nat.add_0_r, Nat.sub_0_r in H10.
            rewrite <- Hn, <- Hs in H10.
@@ -3336,16 +3338,21 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
            rewrite <- Hs in H.
            specialize (Nat.mod_upper_bound (nA i n u) s Hsz) as H11.
            specialize (H H11 H10 (eq_refl _)) as (H12, H13).
-           unfold u in H13.
-           rewrite nA_freal_add_series, <- Hnx in H13.
+           rewrite <- nA_freal_add_series, Hnx in H8.
+           fold u in H8.
            rewrite Nat.mod_small in H13; [ | easy ].
-           assert
-             (H14 : (nA i n (fd2n nx) + nA i n (fd2n y)) / rad ^ (n - i - 2) =
-                rad ^ 1 - 1). {
+           assert (H14 : nA i n u / rad ^ (n - i - 2) = rad ^ 1 - 1). {
              rewrite H13, Nat.add_comm.
              rewrite Nat.div_add; [ | now apply Nat.pow_nonzero ].
              now rewrite Nat.div_small.
            }
+           unfold nA in H14.
+           replace (i + 1) with (S i) in H14 by flia.
+           rewrite summation_split_first in H14; [ | flia His ].
+           simpl in H14.
+           replace (n - 1 - S i) with (n - i - 2) in H14 by flia His.
+           rewrite Nat.add_comm in H14.
+           rewrite Nat.div_add in H14; [ | now apply Nat.pow_nonzero ].
 ...
          unfold v in Hp.
          rewrite nA_freal_add_series in Hp.
