@@ -2968,6 +2968,18 @@ destruct (LPO_fst g) as [H1| H1].
    apply Nat.nlt_ge in H3.
    destruct (lt_dec (nA i n u) s) as [H2| H2].
   --rewrite Nat.mod_small in H3; [ | easy ].
+    specialize (Nat_ge_mul_pred_pow_pow rad (nA i n u) (S j)) as H4.
+    specialize (H4 (n - i - j - 2)).
+    remember (nA i n u - (rad ^ S j - 1) * rad ^ (n - i - j - 2)) as t.
+    specialize (H4 t).
+    replace (S j + (n - i - j - 2)) with (n - i - 1) in H4.
+    Focus 2.
+   ++enough (H : j < n - i - 2) by flia H.
+     unfold n.
+     specialize radix_ge_2 as Hr.
+     destruct rad; [ easy | simpl; flia ].
+   ++fold s in H4.
+     specialize (H4 H2 H3 (eq_refl _)) as (H4, H5).
 
 ...
 
