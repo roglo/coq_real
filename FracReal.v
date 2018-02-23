@@ -2992,7 +2992,7 @@ destruct (LPO_fst g) as [H1| H1].
                 n-i-j-2
 
        x=u(i+j+1)
-       conjecture: x=8 and y=18
+       claim: x=8 and y=18
        we know that x≠9 (H1)
      *)
 ...
