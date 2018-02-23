@@ -2931,6 +2931,43 @@ rewrite Nat.mul_sub_distr_r.
 now rewrite Nat.pow_add_r, Nat.mul_1_l.
 Qed.
 
+Theorem A_ge_1_add_all_true_iff {r : radix} : ∀ x y i
+  (u := freal_add_series x y),
+  (∀ k, A_ge_1 i u k = true)
+  → { ∀ k, u (i + k + 1) = rad - 1 } +
+     { ∃ j,
+       (∀ k, k < j → u (i + k + 1) = rad - 1) ∧
+       u (i + j + 1) = rad - 2 ∧
+       (∀ k, j < k → u (i + k + 1) = 2 * (rad - 1)) }.
+Proof.
+intros * Hu.
+set (g j := if eq_nat_dec (u (i + j + 1)) (rad - 1) then true else false).
+destruct (LPO_fst g) as [H1| H1].
+-left.
+ intros k.
+ specialize (H1 k); unfold g in H1.
+ now destruct (eq_nat_dec (u (i + k + 1)) (rad - 1)).
+-right.
+ destruct H1 as (j & Hjj & Hj).
+ +exists j.
+  unfold g in Hjj, Hj.
+  destruct (eq_nat_dec (u (i + j + 1)) (rad - 1)) as [| H1]; [ easy | ].
+  clear Hj.
+  split.
+  *intros k Hkj.
+   specialize (Hjj _ Hkj).
+   now destruct (eq_nat_dec (u (i + k + 1)) (rad - 1)).
+  *specialize (Hu j) as H2.
+   unfold A_ge_1 in H2.
+   set (n := rad * (i + j + 3)) in H2.
+   set (s := rad ^ (n - i - 1)) in H2.
+   destruct
+     (lt_dec (nA i n u mod s) ((rad ^ S j - 1) * rad ^ (n - i - j - 2)))
+     as [| H3]; [ easy | ].
+   clear H2.
+   apply Nat.nlt_ge in H3.
+...
+
 Theorem freal_eq_prop_add_norm_l {r : radix} : ∀ x y,
   freal_eq_prop {| freal := freal_add_to_seq (freal_normalize x) y |}
     {| freal := freal_add_to_seq x y |}.
@@ -3004,6 +3041,7 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
     destruct (LPO_fst (A_ge_1 i u)) as [Hku| (m & Hjm & Hm)].
    ++simpl in H3 |-*.
      specialize (proj1 (all_A_ge_1_true_iff _ _) Hku) as H5.
+...
      rename Hku into vHku; rename H5 into Hku.
      assert (Hsz : s ≠ 0) by (now rewrite Hs; apply Nat.pow_nonzero).
      destruct (LPO_fst (A_ge_1 i v)) as [Hkv| (p & Hjp & Hp)].
