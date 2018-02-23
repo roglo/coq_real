@@ -2966,6 +2966,9 @@ destruct (LPO_fst g) as [H1| H1].
      as [| H3]; [ easy | ].
    clear H2.
    apply Nat.nlt_ge in H3.
+   destruct (lt_dec (nA i n u) s) as [H2| H2].
+  --rewrite Nat.mod_small in H3; [ | easy ].
+
 ...
 
 Theorem freal_eq_prop_add_norm_l {r : radix} : ∀ x y,
