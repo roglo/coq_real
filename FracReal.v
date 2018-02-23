@@ -2980,7 +2980,22 @@ destruct (LPO_fst g) as [H1| H1].
      destruct rad; [ easy | simpl; flia ].
    ++fold s in H4.
      specialize (H4 H2 H3 (eq_refl _)) as (H4, H5).
+(*
+  i+1  i+j+1
+   v     v
+   999999xyyyyyy = 9999990000000 + rest
+   ------=======   ------=======
+    j+1  n-i-j-2    j+1  n-i-j-2
 
+   rest < 10000000
+           -------
+           n-i-j-2
+
+  x=u(i+j+1)
+  conjecture: x=8 and y=18
+  we know that x≠9 (H1)
+  warning: n-i-j-2 must be ≥ 1
+*)
 ...
 
 Theorem freal_eq_prop_add_norm_l {r : radix} : ∀ x y,
