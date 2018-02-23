@@ -2931,7 +2931,7 @@ rewrite Nat.mul_sub_distr_r.
 now rewrite Nat.pow_add_r, Nat.mul_1_l.
 Qed.
 
-Theorem A_ge_1_add_all_true_iff {r : radix} : ∀ x y i
+Theorem A_ge_1_add_all_true_if {r : radix} : ∀ x y i
   (u := freal_add_series x y),
   (∀ k, A_ge_1 i u k = true)
   → { ∀ k, u (i + k + 1) = rad - 1 } +
@@ -2995,6 +2995,14 @@ destruct (LPO_fst g) as [H1| H1].
        claim: x=8 and y=18
        we know that x≠9 (H1)
      *)
+     destruct j.
+    **subst n s.
+      rewrite Nat.pow_1_r, Nat.sub_0_r in H3, H5, Heqt.
+      rewrite Nat.add_0_r in H1, H3, H2, H4, H5, Heqt |-*.
+      rewrite Nat.sub_0_r in H4.
+      set (n := rad * (i + 3)) in *.
+      set (s := rad ^ (n - i - 1)) in *.
+      move s before n.
 ...
 
 Theorem freal_eq_prop_add_norm_l {r : radix} : ∀ x y,
