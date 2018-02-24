@@ -2931,6 +2931,7 @@ rewrite Nat.mul_sub_distr_r.
 now rewrite Nat.pow_add_r, Nat.mul_1_l.
 Qed.
 
+(*
 Theorem A_ge_1_add_all_true_if {r : radix} : ∀ x y i
   (u := freal_add_series x y),
   (∀ k, A_ge_1 i u k = true)
@@ -3004,6 +3005,7 @@ destruct (LPO_fst g) as [H1| H1].
       set (s := rad ^ (n - i - 1)) in *.
       move s before n.
 ...
+*)
 
 Theorem freal_eq_prop_add_norm_l {r : radix} : ∀ x y,
   freal_eq_prop {| freal := freal_add_to_seq (freal_normalize x) y |}
@@ -3078,7 +3080,6 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
     destruct (LPO_fst (A_ge_1 i u)) as [Hku| (m & Hjm & Hm)].
    ++simpl in H3 |-*.
      specialize (proj1 (all_A_ge_1_true_iff _ _) Hku) as H5.
-...
      rename Hku into vHku; rename H5 into Hku.
      assert (Hsz : s ≠ 0) by (now rewrite Hs; apply Nat.pow_nonzero).
      destruct (LPO_fst (A_ge_1 i v)) as [Hkv| (p & Hjp & Hp)].
