@@ -2931,6 +2931,13 @@ rewrite Nat.mul_sub_distr_r.
 now rewrite Nat.pow_add_r, Nat.mul_1_l.
 Qed.
 
+Definition carry_add_fun {r : radix} u i :=
+  match u (i + 1) ?= rad - 1 with
+  | Lt => false
+  | Gt => true
+  | Eq => je sais pas
+  end.
+
 Theorem nA_num2dig {r : radix} : ∀ u i (n := (rad * (i + 3))%nat),
   (∀ k, u k ≤ 2 * (rad - 1))
   → ∃ c,
