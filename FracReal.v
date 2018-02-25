@@ -2931,17 +2931,24 @@ rewrite Nat.mul_sub_distr_r.
 now rewrite Nat.pow_add_r, Nat.mul_1_l.
 Qed.
 
-(*
-Theorem A_ge_1_add_all_true_if {r : radix} : ∀ x y i
-  (u := freal_add_series x y),
-  (∀ k, A_ge_1 i u k = true)
+Theorem nA_num2dig {r : radix} : ∀ u i (n := (rad * (i + 3))%nat),
+  (∀ k, u k ≤ 2 * (rad - 1))
+  → ∃ c,
+     nA i n u = Nat.b2n (c i) + nA i n (λ k, (u k + Nat.b2n (c k)) mod rad).
+Proof.
+intros * Hur.
+...
+
+Theorem A_ge_1_add_all_true_if {r : radix} : ∀ u i,
+  (∀ k, u k ≤ 2 * (rad - 1))
+  → (∀ k, A_ge_1 i u k = true)
   → { ∀ k, u (i + k + 1) = rad - 1 } +
      { ∃ j,
        (∀ k, k < j → u (i + k + 1) = rad - 1) ∧
        u (i + j + 1) = rad - 2 ∧
        (∀ k, j < k → u (i + k + 1) = 2 * (rad - 1)) }.
 Proof.
-intros * Hu.
+intros * Hur Hu.
 set (g j := if eq_nat_dec (u (i + j + 1)) (rad - 1) then true else false).
 destruct (LPO_fst g) as [H1| H1].
 -left.
@@ -3005,7 +3012,6 @@ destruct (LPO_fst g) as [H1| H1].
       set (s := rad ^ (n - i - 1)) in *.
       move s before n.
 ...
-*)
 
 Theorem freal_eq_prop_add_norm_l {r : radix} : ∀ x y,
   freal_eq_prop {| freal := freal_add_to_seq (freal_normalize x) y |}
