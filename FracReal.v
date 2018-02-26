@@ -2977,7 +2977,7 @@ induction len; intros.
   f_equal.
   (* ouais bon, c'est pas bon, faut que je réfléchisse à l'énoncé de ce
      théorème *)
-...
+Abort.
 
 Theorem A_ge_1_add_all_true_if {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
@@ -3043,14 +3043,20 @@ destruct (LPO_fst g) as [H1| H1].
        claim: x=8 and y=18
        we know that x≠9 (H1)
      *)
-     destruct j.
-    **subst n s.
-      rewrite Nat.pow_1_r, Nat.sub_0_r in H3, H5, Heqt.
-      rewrite Nat.add_0_r in H1, H3, H2, H4, H5, Heqt |-*.
-      rewrite Nat.sub_0_r in H4.
-      set (n := rad * (i + 3)) in *.
-      set (s := rad ^ (n - i - 1)) in *.
-      move s before n.
+     remember (n - i - j - 2) as m eqn:Hm.
+     symmetry in Hm.
+     destruct m.
+    **unfold n in Hm.
+      specialize radix_ge_2 as Hr.
+      destruct rad; [ easy | ].
+      simpl in Hm; flia Hm.
+    **remember (rad ^ S j - 1) as x eqn:Hx.
+      rewrite power_summation in H5; [ subst x | easy ].
+      rewrite Nat.mul_add_distr_l, Nat.mul_1_r in H5.
+      rewrite Nat.mul_assoc in H5.
+      rewrite summation_mul_distr_l in H5.
+      remember (S j) as x; simpl in H5; subst x.
+      rewrite <- Nat.add_assoc, Nat.add_comm in H5.
 ...
 
 Theorem freal_eq_prop_add_norm_l {r : radix} : ∀ x y,
