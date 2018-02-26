@@ -2961,8 +2961,22 @@ remember (rad * (i + 3)) as n eqn:Hn; clear Hn.
 revert i n c Hni Hlen Hc.
 induction len; intros.
 -flia Hni Hlen.
--simpl.
-
+-destruct (eq_nat_dec (i + 1) (n - 1)) as [H1| H1].
+ Focus 2.
+ +specialize (IHlen (S i) n) as H.
+  remember (carry_add_fun u len) as c1 eqn:Hc1.
+  specialize (H c1).
+  assert (Hni1 : S i + 1 ≤ n - 1) by flia Hni H1.
+  specialize (H Hni1).
+  assert (Hlen1 : len = n - S i - 1) by flia Hlen.
+  specialize (H Hlen1 (eq_refl _)).
+  simpl.
+  replace (S i + 1) with (S (i + 1)) in H by easy.
+  rewrite H.
+  do 2 rewrite Nat.add_assoc.
+  f_equal.
+  (* ouais bon, c'est pas bon, faut que je réfléchisse à l'énoncé de ce
+     théorème *)
 ...
 
 Theorem A_ge_1_add_all_true_if {r : radix} : ∀ u i,
