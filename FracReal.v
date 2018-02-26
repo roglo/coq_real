@@ -3050,7 +3050,9 @@ destruct (LPO_fst g) as [H1| H1].
       specialize radix_ge_2 as Hr.
       destruct rad; [ easy | ].
       simpl in Hm; flia Hm.
-    **remember (rad ^ S j - 1) as x eqn:Hx.
+    **idtac.
+...
+      remember (rad ^ S j - 1) as x eqn:Hx.
       rewrite power_summation in H3; [ | easy ].
       rewrite Nat.mul_add_distr_l, Nat.mul_1_r in H3.
       rewrite Nat.mul_assoc in H3.
@@ -3062,6 +3064,11 @@ destruct (LPO_fst g) as [H1| H1].
         apply Nat.le_sub_le_add_r.
         rewrite Nat.sub_diag; flia.
       }
+      subst x.
+      remember (nA i n u) as x eqn:Hx.
+      unfold nA in Hx.
+      rewrite summation_shift in Hx; [ | flia Hm ].
+      replace (n - 1 - (i + 1)) with m in Hx.
 ...
 
 Theorem freal_eq_prop_add_norm_l {r : radix} : ∀ x y,
