@@ -3051,12 +3051,17 @@ destruct (LPO_fst g) as [H1| H1].
       destruct rad; [ easy | ].
       simpl in Hm; flia Hm.
     **remember (rad ^ S j - 1) as x eqn:Hx.
-      rewrite power_summation in H5; [ subst x | easy ].
-      rewrite Nat.mul_add_distr_l, Nat.mul_1_r in H5.
-      rewrite Nat.mul_assoc in H5.
-      rewrite summation_mul_distr_l in H5.
-      remember (S j) as x; simpl in H5; subst x.
-      rewrite <- Nat.add_assoc, Nat.add_comm in H5.
+      rewrite power_summation in H3; [ | easy ].
+      rewrite Nat.mul_add_distr_l, Nat.mul_1_r in H3.
+      rewrite Nat.mul_assoc in H3.
+      rewrite summation_mul_distr_l in H3.
+      simpl in H3.
+      set (rg := nat_ord_ring).
+      assert (H6 : Σ (i = 0, m), x * (rad - 1) * rad ^ i ≤ nA i n u). {
+        eapply le_trans; [ | apply H3 ].
+        apply Nat.le_sub_le_add_r.
+        rewrite Nat.sub_diag; flia.
+      }
 ...
 
 Theorem freal_eq_prop_add_norm_l {r : radix} : ∀ x y,
