@@ -2945,6 +2945,29 @@ apply A_ge_1_true_iff in H1.
 remember (rad * (i + k + 3)) as n eqn:Hn.
 remember (rad ^ (n - i - 1)) as s eqn:Hs.
 move s before n.
+destruct (lt_dec (nA i n u) s) as [H2| H2].
+-rewrite Nat.mod_small in H1; [ | easy ].
+ specialize (Nat_ge_mul_pred_pow_pow rad (nA i n u) (S k)) as H3.
+ specialize (H3 (n - i - k - 2)).
+ remember (nA i n u - (rad ^ S k - 1) * rad ^ (n - i - k - 2)) as t.
+ specialize (H3 t).
+ replace (S k + (n - i - k - 2)) with (n - i - 1) in H3.
+ Focus 2.
+ +enough (H : k < n - i - 2) by flia H.
+  rewrite Hn.
+  specialize radix_ge_2 as Hr.
+  destruct rad; [ easy | simpl; flia ].
+ +rewrite <- Hs in H3.
+  specialize (H3 H2 H1 (eq_refl _)) as (H3, H4).
+  remember (n - i - k - 2) as m eqn:Hm.
+  symmetry in Hm.
+  destruct m.
+  *rewrite Hn in Hm.
+   specialize radix_ge_2 as Hr.
+   destruct rad; [ easy | ].
+   simpl in Hm; flia Hm.
+  *idtac.
+
 ...
 
 Theorem A_ge_1_add_all_true_if {r : radix} : ∀ u i,
