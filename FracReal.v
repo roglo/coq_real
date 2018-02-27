@@ -3028,6 +3028,8 @@ assert (H7 : u (i + 1) ≥ rad - 2). {
   destruct (ge_dec (u (i + 1)) (rad - 2)) as [| H7]; [ easy | ].
   exfalso; apply Nat.nle_gt in H7.
   apply Nat.nlt_ge in H3; apply H3.
+...
+
   rewrite nA_succ_l; [ | flia Hm ].
   rewrite Hm.
   apply lt_le_trans with (m := (rad - 2) * rad ^ S m + nA (S i) n u).
@@ -3035,6 +3037,7 @@ assert (H7 : u (i + 1) ≥ rad - 2). {
    apply Nat.mul_lt_mono_pos_r; [ | easy ].
    now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
   -set (rg := nat_ord_ring).
+...
    apply le_trans with (m := (rad - 2) * rad ^ S m + Σ (j = i + 2, n - 1), 2 * (rad - 1) * rad ^ (n - j - 1)).
    +apply Nat.add_le_mono_l.
     unfold nA.
@@ -3056,6 +3059,7 @@ assert (H7 : u (i + 1) ≥ rad - 2). {
     *intros k Hk; f_equal; flia Hm Hk.
     *rewrite <- power_summation_sub_1; [ | easy ].
      replace (S (n - 1 - (i + 2))) with (S m) by flia Hm.
+...
      replace (rad - 2) with (rad ^ 1 - 2) by now rewrite Nat.pow_1_r.
      rewrite Nat.mul_sub_distr_r.
      rewrite <- Nat.pow_add_r.
