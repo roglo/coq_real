@@ -3014,9 +3014,7 @@ destruct (LPO_fst g) as [H1| H1].
          destruct (lt_dec (u (i + 1)) rad) as [| H6]; [ easy | ].
          exfalso; apply Nat.nlt_ge in H6.
          apply Nat.nle_gt in H2; apply H2.
-         unfold nA.
-         rewrite summation_split_first; [ simpl | flia Hm ].
-         replace (n - 1 - (i + 1)) with (n - i - 2) by flia.
+         rewrite nA_succ_l; [ | flia Hm ].
          apply le_trans with (m := u (i + 1) * rad ^ (n - i - 2)); [ | flia ].
          unfold s.
          replace (n - i - 1) with (1 + (n - i - 2)) by flia Hm.
