@@ -2934,6 +2934,22 @@ Qed.
 Theorem A_ge_1_add_all_true_if {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
   → (∀ k, A_ge_1 i u k = true)
+  → ∀ k,
+     u (i + k + 1) = rad - 2 ∨
+     u (i + k + 1) = rad - 1 ∨
+     u (i + k + 1) = 2 * (rad - 2).
+Proof.
+intros * Hur Hu *.
+specialize (Hu k) as H1.
+apply A_ge_1_true_iff in H1.
+remember (rad * (i + k + 3)) as n eqn:Hn.
+remember (rad ^ (n - i - 1)) as s eqn:Hs.
+move s before n.
+...
+
+Theorem A_ge_1_add_all_true_if {r : radix} : ∀ u i,
+  (∀ k, u k ≤ 2 * (rad - 1))
+  → (∀ k, A_ge_1 i u k = true)
   → { ∀ k, u (i + k + 1) = rad - 1 } +
      { ∃ j,
        (∀ k, k < j → u (i + k + 1) = rad - 1) ∧
