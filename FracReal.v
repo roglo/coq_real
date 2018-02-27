@@ -3028,6 +3028,7 @@ assert (H7 : u (i + 1) > rad - 3). {
   destruct (gt_dec (u (i + 1)) (rad - 3)) as [| H7]; [ easy | ].
   exfalso; apply Nat.nlt_ge in H7.
   apply Nat.nlt_ge in H3; apply H3.
+...
   replace (rad - 1) with (rad ^ 1 - 1) by now rewrite Nat.pow_1_r.
   rewrite Nat.mul_sub_distr_r.
   rewrite <- Nat.pow_add_r, Nat.mul_1_l.
