@@ -3051,6 +3051,15 @@ destruct (LPO_fst g) as [H1| H1].
       destruct rad; [ easy | ].
       simpl in Hm; flia Hm.
     **idtac.
+destruct j.
+subst n s.
+rewrite Nat.add_0_r in *.
+rewrite Nat.sub_0_r in Hm.
+rewrite Nat.pow_1_r in *.
+set (n := rad * (i + 3)) in *.
+set (s := rad ^ (n - i - 1)) in *.
+move s before n.
+
 ...
       remember (rad ^ S j - 1) as x eqn:Hx.
       rewrite power_summation in H3; [ | easy ].
