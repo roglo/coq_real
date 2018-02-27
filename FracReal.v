@@ -3028,12 +3028,38 @@ assert (H7 : u (i + 1) > rad - 3). {
   destruct (gt_dec (u (i + 1)) (rad - 3)) as [| H7]; [ easy | ].
   exfalso; apply Nat.nlt_ge in H7.
   apply Nat.nlt_ge in H3; apply H3.
-...
-  replace (rad - 1) with (rad ^ 1 - 1) by now rewrite Nat.pow_1_r.
-  rewrite Nat.mul_sub_distr_r.
-  rewrite <- Nat.pow_add_r, Nat.mul_1_l.
-  replace (1 + S m) with (n - i - 1) by flia Hm.
-
+  rewrite nA_succ_l; [ | flia Hm ].
+  rewrite Hm.
+  apply le_lt_trans with (m := (rad - 3) * rad ^ S m + nA (S i) n u).
+  -apply Nat.add_le_mono_r.
+   now apply Nat.mul_le_mono_r.
+  -set (rg := nat_ord_ring).
+   apply le_lt_trans with (m := (rad - 3) * rad ^ S m + Σ (j = i + 2, n - 1), 2 * (rad - 1) * rad ^ (n - j - 1)).
+   +apply Nat.add_le_mono_l.
+    unfold nA.
+    replace (S i + 1) with (i + 2) by flia.
+    apply (@summation_le_compat nat_ord_ring_def).
+    intros k Hk; simpl; unfold Nat.le.
+    rewrite Nat.add_0_r.
+    replace (n - 1 - k) with (n - k - 1) by flia.
+    apply Nat.mul_le_mono_r.
+    ring_simplify; apply Hur.
+   +rewrite <- summation_mul_distr_l.
+    remember (S m) as x; simpl; subst x.
+    replace (rad - 1 + (rad - 1 + 0)) with (2 * (rad - 1)) by flia.
+    rewrite <- Nat.mul_assoc.
+    rewrite summation_rtl.
+    rewrite summation_shift; [ | flia Hm ].
+    rewrite summation_eq_compat with (h := λ j, rad ^ j).
+    Focus 2.
+    *intros k Hk; f_equal; flia Hm Hk.
+    *rewrite <- power_summation_sub_1; [ | easy ].
+     replace (S (n - 1 - (i + 2))) with (S m) by flia Hm.
+     replace (rad - 3) with (rad ^ 1 - 3) by now rewrite Nat.pow_1_r.
+     rewrite Nat.mul_sub_distr_r.
+     rewrite <- Nat.pow_add_r.
+     rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+     replace (1 + S m) with (S (S m)) by flia.
 ...
 split; [ flia H1 H6 H7 | ].
 ...
