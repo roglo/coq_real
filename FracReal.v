@@ -3011,9 +3011,31 @@ rewrite Nat.pow_1_r in *.
 set (n := rad * (i + 3)) in *.
 set (s := rad ^ (n - i - 1)) in *.
 move s before n.
-(* ouais, chais pas ; en plus il y a le cas j > 0 et puis après le cas
-   où nA i n u ≥ s ; c'est pas gagné *)
-Abort.
+assert (H6 : u (i + 1) < rad). {
+  destruct (lt_dec (u (i + 1)) rad) as [| H6]; [ easy | ].
+  exfalso; apply Nat.nlt_ge in H6.
+  apply Nat.nle_gt in H2; apply H2.
+  unfold nA.
+  rewrite summation_split_first; [ simpl | flia Hm ].
+  replace (n - 1 - (i + 1)) with (n - i - 2) by flia.
+  apply le_trans with (m := u (i + 1) * rad ^ (n - i - 2)); [ | flia ].
+  unfold s.
+  replace (n - i - 1) with (1 + (n - i - 2)) by flia Hm.
+  rewrite Nat.pow_add_r, Nat.pow_1_r.
+  now apply Nat.mul_le_mono_r.
+}
+assert (H7 : u (i + 1) > rad - 3). {
+  destruct (gt_dec (u (i + 1)) (rad - 3)) as [| H7]; [ easy | ].
+  exfalso; apply Nat.nlt_ge in H7.
+  apply Nat.nlt_ge in H3; apply H3.
+  replace (rad - 1) with (rad ^ 1 - 1) by now rewrite Nat.pow_1_r.
+  rewrite Nat.mul_sub_distr_r.
+  rewrite <- Nat.pow_add_r, Nat.mul_1_l.
+  replace (1 + S m) with (n - i - 1) by flia Hm.
+
+...
+split; [ flia H1 H6 H7 | ].
+...
 
 Theorem freal_eq_prop_add_norm_l {r : radix} : ∀ x y,
   freal_eq_prop {| freal := freal_add_to_seq (freal_normalize x) y |}
