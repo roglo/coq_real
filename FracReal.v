@@ -3024,17 +3024,18 @@ assert (H6 : u (i + 1) < rad). {
   rewrite Nat.pow_add_r, Nat.pow_1_r.
   now apply Nat.mul_le_mono_r.
 }
-assert (H7 : u (i + 1) > rad - 3). {
-  destruct (gt_dec (u (i + 1)) (rad - 3)) as [| H7]; [ easy | ].
-  exfalso; apply Nat.nlt_ge in H7.
+assert (H7 : u (i + 1) ≥ rad - 2). {
+  destruct (ge_dec (u (i + 1)) (rad - 2)) as [| H7]; [ easy | ].
+  exfalso; apply Nat.nle_gt in H7.
   apply Nat.nlt_ge in H3; apply H3.
   rewrite nA_succ_l; [ | flia Hm ].
   rewrite Hm.
-  apply le_lt_trans with (m := (rad - 3) * rad ^ S m + nA (S i) n u).
-  -apply Nat.add_le_mono_r.
-   now apply Nat.mul_le_mono_r.
+  apply lt_le_trans with (m := (rad - 2) * rad ^ S m + nA (S i) n u).
+  -apply Nat.add_lt_mono_r.
+   apply Nat.mul_lt_mono_pos_r; [ | easy ].
+   now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
   -set (rg := nat_ord_ring).
-   apply le_lt_trans with (m := (rad - 3) * rad ^ S m + Σ (j = i + 2, n - 1), 2 * (rad - 1) * rad ^ (n - j - 1)).
+   apply le_trans with (m := (rad - 2) * rad ^ S m + Σ (j = i + 2, n - 1), 2 * (rad - 1) * rad ^ (n - j - 1)).
    +apply Nat.add_le_mono_l.
     unfold nA.
     replace (S i + 1) with (i + 2) by flia.
@@ -3055,11 +3056,31 @@ assert (H7 : u (i + 1) > rad - 3). {
     *intros k Hk; f_equal; flia Hm Hk.
     *rewrite <- power_summation_sub_1; [ | easy ].
      replace (S (n - 1 - (i + 2))) with (S m) by flia Hm.
-     replace (rad - 3) with (rad ^ 1 - 3) by now rewrite Nat.pow_1_r.
+     replace (rad - 2) with (rad ^ 1 - 2) by now rewrite Nat.pow_1_r.
      rewrite Nat.mul_sub_distr_r.
      rewrite <- Nat.pow_add_r.
      rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
      replace (1 + S m) with (S (S m)) by flia.
+     remember (rad ^ S m) as x eqn:Hx.
+     replace (rad ^ S (S m) - 2 * x + (2 * x - 2)) with (rad ^ S (S m) - 2).
+     Focus 2.
+    --rewrite Nat.add_sub_assoc.
+      Focus 2.
+     ++replace 2 with (2 * 1) at 1 by flia.
+       apply Nat.mul_le_mono_pos_l; [ flia | ].
+       now subst x; apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+     ++f_equal.
+       rewrite <- Nat.add_sub_swap; [ flia | ].
+       subst x; remember (S m) as x eqn:Hx.
+       rewrite Nat.pow_succ_r; subst x; [ | flia ].
+       apply Nat.mul_le_mono_r, radix_ge_2.
+    --subst x.
+      replace (rad - 1) with (rad ^ 1 - 1) by now rewrite Nat.pow_1_r.
+      rewrite Nat.mul_sub_distr_r.
+      rewrite <- Nat.pow_add_r, Nat.mul_1_l.
+      replace (1 + S m) with (S (S m)) by easy.
+(* chiasse de pute *)
+
 ...
 split; [ flia H1 H6 H7 | ].
 ...
