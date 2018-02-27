@@ -2931,54 +2931,6 @@ rewrite Nat.mul_sub_distr_r.
 now rewrite Nat.pow_add_r, Nat.mul_1_l.
 Qed.
 
-Fixpoint carry_add_fun {r : radix} u len i :=
-  match u (i + 1) ?= rad - 1 with
-  | Eq =>
-      match len with
-      | 0 => false
-      | S l => carry_add_fun u l (i + 1)
-      end
-  | Lt => false
-  | Gt => true
-  end.
-
-Theorem nA_num2dig {r : radix} : ∀ u i c (n := (rad * (i + 3))%nat),
-  (∀ k, u k ≤ 2 * (rad - 1))
-  → c = carry_add_fun u (n - i - 1)
-  → nA i n u = Nat.b2n (c i) + nA i n (λ k, (u k + Nat.b2n (c k)) mod rad).
-Proof.
-intros * Hur Hc.
-unfold nA, summation.
-replace (S (n - 1) - (i + 1)) with (n - i - 1) by flia.
-remember (n - i - 1) as len eqn:Hlen.
-assert (Hni : i + 1 ≤ n - 1). {
-  unfold n.
-  specialize radix_ge_2 as Hr.
-  destruct rad; [ easy | simpl; flia ].
-}
-subst n.
-remember (rad * (i + 3)) as n eqn:Hn; clear Hn.
-revert i n c Hni Hlen Hc.
-induction len; intros.
--flia Hni Hlen.
--destruct (eq_nat_dec (i + 1) (n - 1)) as [H1| H1].
- Focus 2.
- +specialize (IHlen (S i) n) as H.
-  remember (carry_add_fun u len) as c1 eqn:Hc1.
-  specialize (H c1).
-  assert (Hni1 : S i + 1 ≤ n - 1) by flia Hni H1.
-  specialize (H Hni1).
-  assert (Hlen1 : len = n - S i - 1) by flia Hlen.
-  specialize (H Hlen1 (eq_refl _)).
-  simpl.
-  replace (S i + 1) with (S (i + 1)) in H by easy.
-  rewrite H.
-  do 2 rewrite Nat.add_assoc.
-  f_equal.
-  (* ouais bon, c'est pas bon, faut que je réfléchisse à l'énoncé de ce
-     théorème *)
-Abort.
-
 Theorem A_ge_1_add_all_true_if {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
   → (∀ k, A_ge_1 i u k = true)
@@ -3059,7 +3011,6 @@ rewrite Nat.pow_1_r in *.
 set (n := rad * (i + 3)) in *.
 set (s := rad ^ (n - i - 1)) in *.
 move s before n.
-
 ...
       remember (rad ^ S j - 1) as x eqn:Hx.
       rewrite power_summation in H3; [ | easy ].
