@@ -3011,25 +3011,9 @@ rewrite Nat.pow_1_r in *.
 set (n := rad * (i + 3)) in *.
 set (s := rad ^ (n - i - 1)) in *.
 move s before n.
-...
-      remember (rad ^ S j - 1) as x eqn:Hx.
-      rewrite power_summation in H3; [ | easy ].
-      rewrite Nat.mul_add_distr_l, Nat.mul_1_r in H3.
-      rewrite Nat.mul_assoc in H3.
-      rewrite summation_mul_distr_l in H3.
-      simpl in H3.
-      set (rg := nat_ord_ring).
-      assert (H6 : Σ (i = 0, m), x * (rad - 1) * rad ^ i ≤ nA i n u). {
-        eapply le_trans; [ | apply H3 ].
-        apply Nat.le_sub_le_add_r.
-        rewrite Nat.sub_diag; flia.
-      }
-      subst x.
-      remember (nA i n u) as x eqn:Hx.
-      unfold nA in Hx.
-      rewrite summation_shift in Hx; [ | flia Hm ].
-      replace (n - 1 - (i + 1)) with m in Hx.
-...
+(* ouais, chais pas ; en plus il y a le cas j > 0 et puis après le cas
+   où nA i n u ≥ s ; c'est pas gagné *)
+Abort.
 
 Theorem freal_eq_prop_add_norm_l {r : radix} : ∀ x y,
   freal_eq_prop {| freal := freal_add_to_seq (freal_normalize x) y |}
