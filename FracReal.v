@@ -2978,6 +2978,10 @@ destruct (lt_dec (nA i n u) s) as [H2| H2].
  move t before s; move Ht before Hs.
  rewrite Nat.add_1_r.
  apply Nat.le_add_le_sub_l.
+ assert (∀ x k, x ^ S k - 1 = x ^ k - 1 + (x - 1) * x ^ S k). {
+   intros x j.
+   simpl.
+   ring_simplify.
 ...
 
 Theorem A_ge_1_add_all_true_if {r : radix} : ∀ u i,
