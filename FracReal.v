@@ -3035,7 +3035,8 @@ destruct (lt_dec (nA i n u) s) as [H2| H2].
  }
  destruct (eq_nat_dec (u (i + 1)) (rad - 2)) as [| H3]; [ now left | right ].
  left; flia H6 H7 H3.
--idtac.
+-right; right.
+ apply Nat.nlt_ge in H2.
 ...
 
 Theorem A_ge_1_add_all_true_if {r : radix} : ∀ u i,
