@@ -2959,6 +2959,25 @@ move s before n; move Hs before Hn.
 assert (Hsz : s ≠ 0) by (now rewrite Hs; apply Nat.pow_nonzero).
 move Hsz before Hin.
 rewrite Nat.mod_mul_r in H1; [ | easy | easy ].
+destruct (lt_dec (nA i n u) s) as [H2| H2].
+-rewrite Nat.mod_small in H1; [ | easy ].
+ rewrite Nat.div_small in H1; [ | easy ].
+ rewrite Nat.mod_0_l in H1; [ | easy ].
+ rewrite Nat.mul_0_r, Nat.add_0_r in H1.
+ assert (H3 : nA (i + 1) n u < s). {
+   rewrite nA_succ_l in H2; [ | flia Hin ].
+   rewrite Nat.add_1_r.
+   eapply le_lt_trans; [ | apply H2 ]; flia.
+ }
+ rewrite Nat.mod_small; [ | easy ].
+ rewrite nA_succ_l in H1; [ | flia Hin ].
+ rewrite Nat.add_1_r.
+ apply Nat.le_sub_le_add_l in H1.
+ eapply le_trans; [ | apply H1 ].
+ remember (rad ^ (n - i - 2 - (k + 1))) as t eqn:Ht.
+ move t before s; move Ht before Hs.
+ rewrite Nat.add_1_r.
+ apply Nat.le_add_le_sub_l.
 ...
 
 Theorem A_ge_1_add_all_true_if {r : radix} : ∀ u i,
