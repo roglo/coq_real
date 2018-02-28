@@ -2931,6 +2931,36 @@ rewrite Nat.mul_sub_distr_r.
 now rewrite Nat.pow_add_r, Nat.mul_1_l.
 Qed.
 
+Theorem glop {r : radix} : ∀ u i,
+  (∀ k, A_ge_1 i u k = true)
+  → ∀ k, A_ge_1 (i + 1) u k = true.
+Proof.
+intros * Hu *.
+apply A_ge_1_true_iff.
+specialize (Hu (k + 1)) as H1.
+apply A_ge_1_true_iff in H1.
+replace (i + (k + 1) + 3) with (i + k + 4) in H1 by flia.
+replace (i + 1 + k + 3) with (i + k + 4) by flia.
+remember (rad * (i + k + 4)) as n eqn:Hn.
+assert (Hin : i + 2 ≤ n - 1). {
+  subst n.
+  specialize radix_ge_2 as Hr.
+  destruct rad; [ easy | simpl; flia ].
+}
+move Hin after Hn.
+replace (n - (i + 1) - 1) with (n - i - 2) by flia.
+replace (n - i - 1) with (n - i - 2 + 1) in H1 by flia Hin.
+replace (n - i - (k + 1) - 2) with (n - i - 2 - (k + 1)) in H1 by flia.
+replace (n - (i + 1) - k - 2) with (n - i - 2 - (k + 1)) by flia.
+rewrite Nat.pow_add_r in H1.
+rewrite Nat.pow_1_r in H1.
+remember (rad ^ (n - i - 2)) as s eqn:Hs.
+move s before n; move Hs before Hn.
+assert (Hsz : s ≠ 0) by (now rewrite Hs; apply Nat.pow_nonzero).
+move Hsz before Hin.
+rewrite Nat.mod_mul_r in H1; [ | easy | easy ].
+...
+
 Theorem A_ge_1_add_all_true_if {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
   → (∀ k, A_ge_1 i u k = true)
