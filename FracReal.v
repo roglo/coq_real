@@ -2931,13 +2931,12 @@ rewrite Nat.mul_sub_distr_r.
 now rewrite Nat.pow_add_r, Nat.mul_1_l.
 Qed.
 
-Theorem glop {r : radix} : ∀ u i,
-  (∀ k, A_ge_1 i u k = true)
-  → ∀ k, A_ge_1 (i + 1) u k = true.
+Theorem glop {r : radix} : ∀ u i k,
+  A_ge_1 i u (k + 1) = true
+  → A_ge_1 (i + 1) u k = true.
 Proof.
-intros * Hu *.
+intros * H1.
 apply A_ge_1_true_iff.
-specialize (Hu (k + 1)) as H1.
 apply A_ge_1_true_iff in H1.
 replace (i + (k + 1) + 3) with (i + k + 4) in H1 by flia.
 replace (i + 1 + k + 3) with (i + k + 4) by flia.
@@ -2996,31 +2995,32 @@ destruct (lt_dec (nA i n u) s) as [H2| H2].
  rewrite Ht.
  rewrite <- Nat.pow_add_r.
  replace (S k + (n - i - 2 - (k + 1))) with (n - i - 2).
- Focus 2.
- +rewrite Hn.
-  specialize radix_ge_2 as Hr.
-  destruct rad; [ easy | simpl; flia ].
  +apply Nat.mul_le_mono_r.
-  unfold nA in H2.
-  rewrite summation_rtl in H2.
-  rewrite summation_shift in H2; [ | flia Hin ].
   revert H2.
   apply Decidable.contrapositive; [ apply Nat.le_decidable | ].
   intros H2; apply Nat.nle_gt in H2; apply Nat.nlt_ge.
-  rewrite Hs.
+  unfold nA.
+  rewrite summation_rtl.
+  rewrite summation_shift; [ | flia Hin ].
   replace (n - 1 - (i + 1)) with (n - i - 2) by flia.
   remember (n - i - 2) as m eqn:Hm.
   rewrite summation_eq_compat with (h := λ j, u (n - j - 1) * rad ^ j).
-  Focus 2.
-  *intros j Hj.
-   f_equal; f_equal; [ flia | flia Hm Hj ].
   *destruct m; [ flia Hin Hm | ].
-   rewrite power_summation; [ | easy ].
    rewrite summation_split_last; [ | flia ].
    remember (S m) as x; simpl; subst x.
    replace (n - S m - 1) with (i + 1) by flia Hm.
-   rewrite summation_mul_distr_l.
-   remember (S m) as x; simpl; subst x.
+   rewrite Hs.
+   rewrite Nat.add_comm.
+   apply le_plus_trans.
+   assert (H : 0 < u (i + 1)) by flia H2.
+   destruct (u (i + 1)); [ easy | simpl; flia ].
+  *intros j Hj.
+   f_equal; f_equal; [ flia | flia Hm Hj ].
+ +rewrite Hn.
+  specialize radix_ge_2 as Hr.
+  destruct rad; [ easy | simpl; flia ].
+-apply Nat.nlt_ge in H2.
+
 ...
 
 Theorem A_ge_1_add_all_true_if {r : radix} : ∀ u i,
