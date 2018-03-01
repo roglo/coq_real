@@ -2566,113 +2566,7 @@ Focus 2.
 ...
 *)
 
-(*
-Theorem glop {r : radix} (rg := nat_ord_ring) : ∀ i m x y,
-  summation_aux i m (λ j, fd2n x j * rad ^ (m + i - j - 1)) <
-  summation_aux i m (λ j, fd2n y j * rad ^ (m + i - j - 1))
-  → fd2n x i ≤ fd2n y i.
-Proof.
-intros * Hs.
-revert x y i Hs.
-induction m; intros; [ easy | ].
-remember minus as f; simpl in Hs; subst f.
-replace (S (m + i) - i - 1) with m in Hs by flia.
-apply Nat.add_lt_cases in Hs.
-destruct Hs as [Hs| Hs].
--apply Nat.mul_lt_mono_pos_r in Hs.
- +now apply Nat.lt_le_incl in Hs.
- +now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
--idtac.
- apply IHm.
-...
-
-destruct (eq_nat_dec (fd2n x i) (fd2n y i)) as [H1| H1].
--flia H1.
--enough (fd2n x i < fd2n y i) by lia.
-Search (_ + _ < _ + _).
- apply Nat.add_lt_cases in Hs.
- destruct Hs as [Hs| Hs].
- +apply Nat.mul_lt_mono_pos_r in Hs; [ easy | ].
-  now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
- +idtac.
-
-...
-destruct (le_dec (fd2n x i) (fd2n y i)) as [| H1]; [ easy | ].
-exfalso; apply Nat.nle_gt in H1.
-...
-
-intros * Hs.
-revert x y i Hs.
-induction m; intros; [ easy | ].
-remember minus as f; simpl in Hs; subst f.
-replace (S (m + i) - i - 1) with m in Hs by flia.
-destruct (le_dec (fd2n x i) (fd2n y i)) as [| H1]; [ easy | ].
-exfalso; apply Nat.nle_gt in H1.
-setoid_rewrite Nat.add_comm in Hs.
-assert (H2 : fd2n y i * rad ^ m < fd2n x i * rad ^ m). {
-  apply Nat.mul_lt_mono_pos_r; [ | easy ].
-  now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-}
-apply Nat.lt_le_incl in H2.
-specialize (Nat.le_lt_add_lt _ _ _ _ H2 Hs) as H.
-...
-
-Fixpoint compare_digit_interval {r : radix} i len x y :=
-  match len with
-  | 0 => Eq
-  | S len' =>
-      match fd2n x i ?= fd2n y i with
-      | Eq => compare_digit_interval (S i) len' x y
-      | Lt => Lt
-      | Gt => Gt
-      end
-  end.
-
-Theorem nA_lt_iff {r : radix} : ∀ x y i n,
-  nA i n (fd2n x) < nA i n (fd2n y)
-  ↔ compare_digit_interval (i + 1) (n - i - 1) x y = Lt.
-Proof.
-intros.
-split.
--intros HnA.
- unfold nA, summation in HnA.
- replace (S (n - 1) - (i + 1)) with (n - i - 1) in HnA by flia.
- remember (n - i - 1) as m eqn:Hm.
- revert x y i n Hm HnA.
- induction m; intros; [ easy | simpl ].
- remember (fd2n x (i + 1) ?= fd2n y (i + 1)) as c eqn:Hc.
- symmetry in Hc.
- destruct c.
- +apply Nat.compare_eq_iff in Hc.
-  simpl in HnA.
-  rewrite Hc in HnA.
-  setoid_rewrite Nat.add_comm in HnA.
-  apply Nat.le_lt_add_lt in HnA; [ | easy ].
-  replace (S (i + 1)) with (S i + 1) in HnA |-* by flia.
-  eapply IHm; [ | apply HnA ].
-  flia Hm.
- +easy.
- +apply Nat.compare_gt_iff in Hc; exfalso.
-  apply Nat.nle_gt in Hc; apply Hc; clear Hc.
-...
-
-Theorem glop2 {r : radix} : ∀ x i n,
-  nA i n (fd2n x) < nA i n (fd2n (freal_normalize x))
-  → ∃ j, i + 1 ≤ j ≤ n - 1 ∧ ∀ k, fd2n x (j + k) = rad - 1.
-Proof.
-intros * HnA.
-unfold nA in HnA.
-unfold summation in HnA.
-replace (S (n - 1) - (i + 1)) with (n - i - 1) in HnA by flia.
-remember (n - i - 1) as m eqn:Hm.
-revert i n HnA Hm.
-induction m; intros; [ easy | ].
-do 2 rewrite summation_aux_succ_last in HnA.
-simpl in HnA.
-...
-*)
-
-Theorem nA_succ_l {r : radix} : ∀ i n u,
+Theorem nA_split_first {r : radix} : ∀ i n u,
   i + 1 ≤ n - 1
   → nA i n u = u (i + 1) * rad ^ (n - i - 2) + nA (S i) n u.
 Proof.
@@ -2931,11 +2825,13 @@ rewrite Nat.mul_sub_distr_r.
 now rewrite Nat.pow_add_r, Nat.mul_1_l.
 Qed.
 
+Check nA_split_first.
+
 Theorem glop {r : radix} : ∀ u,
   (∀ i, u i ≤ (i + 1) * (rad - 1) ^ 2)
   → ∀ i k,
-  A_ge_1 i u k = true
 ...
+  A_ge_1 i u k = true.
 Proof.
 intros * Hur.
 ...
@@ -2959,14 +2855,14 @@ assert (Hin : i + 2 ≤ n - 1). {
 }
 move Hin before Hr.
 ...
-rewrite nA_succ_l; [ | flia Hin ].
+rewrite nA_split_first; [ | flia Hin ].
 rewrite <- Nat.add_mod_idemp_l; [ | easy ].
 ...
 unfold ge.
 apply le_plus_trans.
 ...
 assert (H1 : s ≤ nA i n u). {
-  rewrite nA_succ_l; [ | flia Hin ].
+  rewrite nA_split_first; [ | flia Hin ].
   apply le_plus_trans.
   rewrite Hs.
   replace (n - i - 1) with (1 + (n - i - 2)) by flia Hin.
@@ -3010,12 +2906,12 @@ destruct (lt_dec (nA i n u) s) as [H2| H2].
  rewrite Nat.mod_0_l in H1; [ | easy ].
  rewrite Nat.mul_0_r, Nat.add_0_r in H1.
  assert (H4 : nA (i + 1) n u < s). {
-   rewrite nA_succ_l in H2; [ | flia Hin ].
+   rewrite nA_split_first in H2; [ | flia Hin ].
    rewrite Nat.add_1_r.
    eapply le_lt_trans; [ | apply H2 ]; flia.
  }
  rewrite Nat.mod_small; [ | easy ].
- rewrite nA_succ_l in H1; [ | flia Hin ].
+ rewrite nA_split_first in H1; [ | flia Hin ].
  rewrite Nat.add_1_r.
  apply Nat.le_sub_le_add_l in H1.
  eapply le_trans; [ | apply H1 ].
@@ -3120,7 +3016,7 @@ destruct (lt_dec (nA i n u) s) as [H2| H2].
    destruct (lt_dec (u (i + 1)) rad) as [| H6]; [ easy | ].
    exfalso; apply Nat.nlt_ge in H6.
    apply Nat.nle_gt in H2; apply H2.
-   rewrite nA_succ_l; [ | flia Hin ].
+   rewrite nA_split_first; [ | flia Hin ].
    apply le_trans with (m := u (i + 1) * rad ^ (n - i - 2)); [ | flia ].
    rewrite Hs.
    replace (n - i - 1) with (1 + (n - i - 2)) by flia Hin.
@@ -3132,7 +3028,7 @@ destruct (lt_dec (nA i n u) s) as [H2| H2].
    exfalso; apply Nat.nle_gt in H7.
    rename H1 into H3.
    apply Nat.nlt_ge in H3; apply H3.
-   rewrite nA_succ_l; [ | flia Hin ].
+   rewrite nA_split_first; [ | flia Hin ].
    apply le_lt_trans with (m := (rad - 3) * rad ^ (n - i - 2) + nA (S i) n u).
    -apply Nat.add_le_mono_r.
     apply Nat.mul_le_mono_r; flia H7.
@@ -3282,7 +3178,7 @@ destruct (LPO_fst g) as [H1| H1].
          destruct (lt_dec (u (i + 1)) rad) as [| H6]; [ easy | ].
          exfalso; apply Nat.nlt_ge in H6.
          apply Nat.nle_gt in H2; apply H2.
-         rewrite nA_succ_l; [ | flia Hm ].
+         rewrite nA_split_first; [ | flia Hm ].
          apply le_trans with (m := u (i + 1) * rad ^ (n - i - 2)); [ | flia ].
          unfold s.
          replace (n - i - 1) with (1 + (n - i - 2)) by flia Hm.
@@ -3293,7 +3189,7 @@ destruct (LPO_fst g) as [H1| H1].
          destruct (ge_dec (u (i + 1)) (rad - 2)) as [| H7]; [ easy | ].
          exfalso; apply Nat.nle_gt in H7.
          apply Nat.nlt_ge in H3; apply H3.
-         rewrite nA_succ_l; [ | flia Hm ].
+         rewrite nA_split_first; [ | flia Hm ].
          rewrite Hm.
          apply le_lt_trans with (m := (rad - 3) * rad ^ S m + nA (S i) n u).
          -apply Nat.add_le_mono_r.
@@ -3773,7 +3669,7 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
              rewrite Nat.div_add; [ | now apply Nat.pow_nonzero ].
              now rewrite Nat.div_small.
            }
-           rewrite nA_succ_l in H14; [ | easy ].
+           rewrite nA_split_first in H14; [ | easy ].
            rewrite Nat.add_comm in H14.
            rewrite Nat.div_add in H14; [ | now apply Nat.pow_nonzero ].
 ...
