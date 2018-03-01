@@ -2978,10 +2978,38 @@ destruct (lt_dec (nA i n u) s) as [H2| H2].
  move t before s; move Ht before Hs.
  rewrite Nat.add_1_r.
  apply Nat.le_add_le_sub_l.
- assert (∀ x k, x ^ S k - 1 = x ^ k - 1 + (x - 1) * x ^ S k). {
-   intros x j.
-   simpl.
-   ring_simplify.
+ assert (H4 : ∀ x k, x ≠ 0 → x ^ S k - 1 = x ^ k - 1 + (x - 1) * x ^ k). {
+   intros x j Hx.
+   rewrite Nat.mul_sub_distr_r, Nat.mul_1_l; simpl.
+   enough (H4 : x * x ^ j ≥ x ^ j).
+   -enough (H5 : x ^ j ≥ 1) by flia H4 H5.
+    now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+   -rewrite <- Nat.pow_succ_r; [ | flia ].
+    apply Nat.pow_le_mono_r; [ easy | flia ].
+ }
+ remember (S k) as sk.
+ rewrite H4; [ subst sk | easy ].
+ rewrite Nat.add_comm.
+ rewrite Nat.mul_add_distr_r.
+ apply Nat.add_le_mono_l.
+ rewrite <- Nat.mul_assoc.
+ rewrite Ht.
+ rewrite <- Nat.pow_add_r.
+ replace (S k + (n - i - 2 - (k + 1))) with (n - i - 2).
+ Focus 2.
+ +rewrite Hn.
+  specialize radix_ge_2 as Hr.
+  destruct rad; [ easy | simpl; flia ].
+ +apply Nat.mul_le_mono_r.
+  move H2 at bottom.
+  rewrite Hs in H2.
+  remember (n - i - 2) as m eqn:Hm.
+  destruct m; [ flia Hin Hm | ].
+  rewrite power_summation in H2; [ | easy ].
+  rewrite nA_succ_l in H2; [ | flia Hin ].
+  unfold nA in H2.
+  rewrite summation_rtl in H2.
+  rewrite summation_shift in H2; [ | flia Hin ].
 ...
 
 Theorem A_ge_1_add_all_true_if {r : radix} : ∀ u i,
