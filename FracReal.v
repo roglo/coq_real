@@ -2931,11 +2931,13 @@ rewrite Nat.mul_sub_distr_r.
 now rewrite Nat.pow_add_r, Nat.mul_1_l.
 Qed.
 
-Theorem glop {r : radix} : ∀ u i k,
+Theorem glop {r : radix} : ∀ u,
+  (∀ k, u k ≤ 2 * (rad - 1))
+  → ∀ i k,
   A_ge_1 i u (k + 1) = true
   → A_ge_1 (i + 1) u k = true.
 Proof.
-intros * H1.
+intros * Huk * H1.
 apply A_ge_1_true_iff.
 apply A_ge_1_true_iff in H1.
 replace (i + (k + 1) + 3) with (i + k + 4) in H1 by flia.
@@ -2957,27 +2959,31 @@ remember (rad ^ (n - i - 2)) as s eqn:Hs.
 move s before n; move Hs before Hn.
 assert (Hsz : s ≠ 0) by (now rewrite Hs; apply Nat.pow_nonzero).
 move Hsz before Hin.
-(**)
-   assert (H3 : nA i n u ≤ 2 * s - 1). {
-     rewrite Hs.
-     remember (n - i - 2) as m eqn:Hm.
-     destruct m; [ flia Hin Hm | ].
-     rewrite power_summation; [ | easy ].
-     rewrite Nat.mul_add_distr_l, Nat.mul_1_r.
-     rewrite Nat.add_sub_swap; [ | flia ].
-     replace (2 - 1) with 1 by flia.
-     rewrite Nat.mul_assoc.
-     rewrite summation_mul_distr_l.
-     remember 2 as x; remember 1 as y; simpl; subst x y.
-     unfold nA.
-     rewrite summation_rtl.
-     rewrite summation_shift; [ | flia Hm ].
-     replace (n - 1 - (i + 1)) with (S m) by flia Hm.
-     rewrite summation_eq_compat with (h := λ j, u (n - j - 1) * rad ^ j).
-     Focus 2.
-     -intros j Hj.
-      f_equal; f_equal; [ flia | flia Hm Hj ].
-     -idtac.
+assert (H3 : nA i n u ≤ 2 * s * rad - 2). {
+  replace rad with (rad ^ 1) by apply Nat.pow_1_r.
+  rewrite <- Nat.mul_assoc, Hs, <- Nat.pow_add_r.
+  remember (n - i - 1) as m eqn:Hm.
+  replace (n - i - 2 + 1) with m by flia Hin Hm.
+  destruct m; [ flia Hin Hm | ].
+  rewrite power_summation; [ | easy ].
+  rewrite Nat.mul_add_distr_l, Nat.mul_1_r.
+  rewrite Nat.add_sub_swap; [ | flia ].
+  rewrite Nat.sub_diag, Nat.add_0_l.
+  rewrite Nat.mul_assoc.
+  rewrite summation_mul_distr_l.
+  remember 2 as x; remember 1 as y; simpl; subst x y.
+  unfold nA.
+  rewrite summation_rtl.
+  rewrite summation_shift; [ | flia Hm ].
+  replace (n - 1 - (i + 1)) with m by flia Hm.
+  rewrite summation_eq_compat with (h := λ j, u (n - j - 1) * rad ^ j).
+  -apply (@summation_le_compat nat_ord_ring_def).
+   remember 2 as x; simpl; subst x.
+   intros j Hj; unfold Nat.le.
+   apply Nat.mul_le_mono_r, Huk.
+  -intros j Hj.
+   f_equal; f_equal; [ flia | flia Hm Hj ].
+}
 ...
 
 assert (H2 : nA i n u mod (s * rad) = nA i n u). {
