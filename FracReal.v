@@ -3001,15 +3001,17 @@ destruct (lt_dec (nA i n u) s) as [H2| H2].
   specialize radix_ge_2 as Hr.
   destruct rad; [ easy | simpl; flia ].
  +apply Nat.mul_le_mono_r.
-  move H2 at bottom.
-  rewrite Hs in H2.
-  remember (n - i - 2) as m eqn:Hm.
-  destruct m; [ flia Hin Hm | ].
-  rewrite power_summation in H2; [ | easy ].
-  rewrite nA_succ_l in H2; [ | flia Hin ].
   unfold nA in H2.
   rewrite summation_rtl in H2.
   rewrite summation_shift in H2; [ | flia Hin ].
+  revert H2.
+  apply Decidable.contrapositive; [ apply Nat.le_decidable | ].
+  intros H2; apply Nat.nle_gt in H2; apply Nat.nlt_ge.
+  rewrite Hs.
+  replace (n - 1 - (i + 1)) with (n - i - 2) by flia.
+  remember (n - i - 2) as m eqn:Hm.
+  destruct m; [ flia Hin Hm | ].
+  rewrite power_summation; [ | easy ].
 ...
 
 Theorem A_ge_1_add_all_true_if {r : radix} : ∀ u i,
