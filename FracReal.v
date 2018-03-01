@@ -2931,6 +2931,32 @@ rewrite Nat.mul_sub_distr_r.
 now rewrite Nat.pow_add_r, Nat.mul_1_l.
 Qed.
 
+Theorem glop {r : radix} : ∀ u i k,
+  u (i + 1) ≥ rad
+  → A_ge_1 i u k = true.
+Proof.
+intros * Hur.
+specialize radix_ge_2 as Hr.
+move Hr before k.
+apply A_ge_1_true_iff.
+remember (rad * (i + k + 3)) as n eqn:Hn.
+remember (rad ^ (n - i - 1)) as s eqn:Hs.
+move n before k; move s before n.
+assert (Hin : i + 2 ≤ n - 1). {
+  subst n.
+  destruct rad; [ easy | simpl; flia ].
+}
+move Hin before Hr.
+assert (H1 : s ≤ nA i n u). {
+  rewrite nA_succ_l; [ | flia Hin ].
+  apply le_plus_trans.
+  rewrite Hs.
+  replace (n - i - 1) with (1 + (n - i - 2)) by flia Hin.
+  rewrite Nat.pow_add_r, Nat.pow_1_r.
+  now apply Nat.mul_le_mono_r.
+}
+...
+
 Theorem glop {r : radix} : ∀ u,
   (∀ k, u k ≤ 2 * (rad - 1))
   → ∀ i k,
