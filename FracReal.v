@@ -2941,12 +2941,21 @@ move Hr before k.
 apply A_ge_1_true_iff.
 remember (rad * (i + k + 3)) as n eqn:Hn.
 remember (rad ^ (n - i - 1)) as s eqn:Hs.
+assert (Hsz : s ≠ 0) by (now rewrite Hs; apply Nat.pow_nonzero).
 move n before k; move s before n.
 assert (Hin : i + 2 ≤ n - 1). {
   subst n.
   destruct rad; [ easy | simpl; flia ].
 }
 move Hin before Hr.
+eapply le_trans.
+...
+rewrite nA_succ_l; [ | flia Hin ].
+rewrite <- Nat.add_mod_idemp_l; [ | easy ].
+...
+unfold ge.
+apply le_plus_trans.
+...
 assert (H1 : s ≤ nA i n u). {
   rewrite nA_succ_l; [ | flia Hin ].
   apply le_plus_trans.
