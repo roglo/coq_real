@@ -2957,6 +2957,17 @@ remember (rad ^ (n - i - 2)) as s eqn:Hs.
 move s before n; move Hs before Hn.
 assert (Hsz : s ≠ 0) by (now rewrite Hs; apply Nat.pow_nonzero).
 move Hsz before Hin.
+(**)
+assert (H2 : nA i n u mod (s * rad) = nA i n u). {
+  rewrite Nat.mod_mul_r; [ | easy | easy ].
+  destruct (lt_dec (nA i n u) s) as [H2| H2].
+  -rewrite Nat.mod_small; [ | easy ].
+   rewrite Nat.div_small; [ | easy ].
+   rewrite Nat.mod_0_l; [ | easy ].
+   now rewrite Nat.mul_0_r, Nat.add_0_r.
+  -apply Nat.nlt_ge in H2.
+
+....
 rewrite Nat.mod_mul_r in H1; [ | easy | easy ].
 destruct (lt_dec (nA i n u) s) as [H2| H2].
 -rewrite Nat.mod_small in H1; [ | easy ].
