@@ -3010,8 +3010,17 @@ destruct (lt_dec (nA i n u) s) as [H2| H2].
   rewrite Hs.
   replace (n - 1 - (i + 1)) with (n - i - 2) by flia.
   remember (n - i - 2) as m eqn:Hm.
-  destruct m; [ flia Hin Hm | ].
-  rewrite power_summation; [ | easy ].
+  rewrite summation_eq_compat with (h := λ j, u (n - j - 1) * rad ^ j).
+  Focus 2.
+  *intros j Hj.
+   f_equal; f_equal; [ flia | flia Hm Hj ].
+  *destruct m; [ flia Hin Hm | ].
+   rewrite power_summation; [ | easy ].
+   rewrite summation_split_last; [ | flia ].
+   remember (S m) as x; simpl; subst x.
+   replace (n - S m - 1) with (i + 1) by flia Hm.
+   rewrite summation_mul_distr_l.
+   remember (S m) as x; simpl; subst x.
 ...
 
 Theorem A_ge_1_add_all_true_if {r : radix} : ∀ u i,
