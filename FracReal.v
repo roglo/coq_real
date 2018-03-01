@@ -2958,6 +2958,28 @@ move s before n; move Hs before Hn.
 assert (Hsz : s ≠ 0) by (now rewrite Hs; apply Nat.pow_nonzero).
 move Hsz before Hin.
 (**)
+   assert (H3 : nA i n u ≤ 2 * s - 1). {
+     rewrite Hs.
+     remember (n - i - 2) as m eqn:Hm.
+     destruct m; [ flia Hin Hm | ].
+     rewrite power_summation; [ | easy ].
+     rewrite Nat.mul_add_distr_l, Nat.mul_1_r.
+     rewrite Nat.add_sub_swap; [ | flia ].
+     replace (2 - 1) with 1 by flia.
+     rewrite Nat.mul_assoc.
+     rewrite summation_mul_distr_l.
+     remember 2 as x; remember 1 as y; simpl; subst x y.
+     unfold nA.
+     rewrite summation_rtl.
+     rewrite summation_shift; [ | flia Hm ].
+     replace (n - 1 - (i + 1)) with (S m) by flia Hm.
+     rewrite summation_eq_compat with (h := λ j, u (n - j - 1) * rad ^ j).
+     Focus 2.
+     -intros j Hj.
+      f_equal; f_equal; [ flia | flia Hm Hj ].
+     -idtac.
+...
+
 assert (H2 : nA i n u mod (s * rad) = nA i n u). {
   rewrite Nat.mod_mul_r; [ | easy | easy ].
   destruct (lt_dec (nA i n u) s) as [H2| H2].
@@ -2966,6 +2988,28 @@ assert (H2 : nA i n u mod (s * rad) = nA i n u). {
    rewrite Nat.mod_0_l; [ | easy ].
    now rewrite Nat.mul_0_r, Nat.add_0_r.
   -apply Nat.nlt_ge in H2.
+   rewrite Nat.add_comm.
+   rewrite Nat.mod_small; [ symmetry; apply Nat.div_mod, Hsz | ].
+   assert (H3 : nA i n u ≤ 2 * s - 1). {
+     rewrite Hs.
+     remember (n - i - 2) as m eqn:Hm.
+     destruct m; [ flia Hin Hm | ].
+     rewrite power_summation; [ | easy ].
+     rewrite Nat.mul_add_distr_l, Nat.mul_1_r.
+     rewrite Nat.add_sub_swap; [ | flia ].
+     replace (2 - 1) with 1 by flia.
+     rewrite Nat.mul_assoc.
+     rewrite summation_mul_distr_l.
+     remember 2 as x; remember 1 as y; simpl; subst x y.
+     unfold nA.
+     rewrite summation_rtl.
+     rewrite summation_shift; [ | flia Hm ].
+     replace (n - 1 - (i + 1)) with (S m) by flia Hm.
+     rewrite summation_eq_compat with (h := λ j, u (n - j - 1) * rad ^ j).
+     Focus 2.
+     -intros j Hj.
+      f_equal; f_equal; [ flia | flia Hm Hj ].
+     -idtac.
 
 ....
 rewrite Nat.mod_mul_r in H1; [ | easy | easy ].
