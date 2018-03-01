@@ -2825,15 +2825,14 @@ rewrite Nat.mul_sub_distr_r.
 now rewrite Nat.pow_add_r, Nat.mul_1_l.
 Qed.
 
-Check nA_split_first.
-
-Theorem glop {r : radix} : ∀ u,
+Theorem glop {r : radix} (rg := nat_ord_ring) : ∀ u,
   (∀ i, u i ≤ (i + 1) * (rad - 1) ^ 2)
-  → ∀ i k,
-...
-  A_ge_1 i u k = true.
+  → ∀ i k, A_ge_1 i u k = true
+  → let n := rad * (i + k + 3) in
+     nA i n u ≤ Σ (j = 0, n - i - 2), (n - j) * rad ^ j.
 Proof.
-intros * Hur.
+intros * Hur * Hu; simpl.
+remember (rad * (i + k + 3)) as n eqn:Hn.
 ...
 
 (* caca: c'est faux *)
