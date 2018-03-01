@@ -2825,14 +2825,43 @@ rewrite Nat.mul_sub_distr_r.
 now rewrite Nat.pow_add_r, Nat.mul_1_l.
 Qed.
 
-Theorem glop {r : radix} (rg := nat_ord_ring) : ∀ u,
+Theorem nA_upper_bound_for_op {r : radix} (rg := nat_ord_ring) : ∀ u,
   (∀ i, u i ≤ (i + 1) * (rad - 1) ^ 2)
   → ∀ i k, A_ge_1 i u k = true
   → let n := rad * (i + k + 3) in
-     nA i n u ≤ Σ (j = 0, n - i - 2), (n - j) * rad ^ j.
+     nA i n u ≤ (rad - 1) ^ 2 * Σ (j = 0, n - i - 2), (n - j) * rad ^ j.
 Proof.
-intros * Hur * Hu; simpl.
+intros * Hur * Hu.
+remember 2 as x; simpl; subst x.
 remember (rad * (i + k + 3)) as n eqn:Hn.
+apply le_trans with
+    (m := (rad - 1) ^ 2 * Σ (j = i + 1, n - 1), (j + 1) * rad ^ (n - 1 - j)).
+-unfold nA.
+ rewrite summation_mul_distr_l.
+ apply (@summation_le_compat nat_ord_ring_def).
+ intros j Hj.
+ remember 2 as x; simpl; subst x.
+ unfold Nat.le.
+ rewrite Nat.mul_assoc.
+ apply Nat.mul_le_mono_r.
+ rewrite Nat.mul_comm.
+ apply Hur.
+-apply Nat.mul_le_mono_l.
+ specialize radix_ge_2 as Hr.
+ assert (Hin : i + 2 ≤ n - 1). {
+   subst n.
+   destruct rad; [ easy | simpl; flia ].
+ }
+ rewrite summation_rtl.
+ rewrite summation_shift; [ | flia Hin ].
+ replace (n - 1 - (i + 1)) with (n - i - 2) by flia.
+ apply (@summation_le_compat nat_ord_ring_def).
+ intros j Hj; simpl; unfold Nat.le.
+ replace (n - 1 + (i + 1) - (i + 1 + j) + 1) with (n - j) by flia Hin Hj.
+ replace (n - 1 - (n - 1 + (i + 1) - (i + 1 + j))) with j by flia Hj.
+ easy.
+Qed.
+
 ...
 
 (* caca: c'est faux *)
