@@ -2898,6 +2898,53 @@ apply Nat.mul_le_mono_r.
 apply Hur.
 Qed.
 
+Theorem glop {r : radix} : ∀ u,
+  (∀ k, u k ≤ 2 * (rad - 1))
+  → ∀ i, u (i + 1) ≥ rad
+  → ∀ k, A_ge_1 i u k = true.
+Proof.
+intros * Huk * Hur *.
+apply A_ge_1_true_iff.
+remember (rad * (i + k + 3)) as n eqn:Hn.
+remember (rad ^ (n - i - 1)) as s eqn:Hs.
+move s before n.
+specialize radix_ge_2 as Hr.
+assert (Hin : i + 2 ≤ n - 1). {
+  subst n.
+  destruct rad; [ easy | simpl; flia ].
+}
+destruct (lt_dec (nA i n u) s) as [H1| H1].
+-exfalso.
+ apply Nat.nle_gt in H1; apply H1; clear H1.
+...
+ rewrite Hs.
+ remember (n - i - 1) as m eqn:Hm; symmetry in Hm.
+ destruct m; [ flia Hin Hm | ].
+ rewrite nA_split_first; [ | flia Hin ].
+ unfold nA.
+ rewrite summation_rtl.
+ rewrite summation_shift; [ | flia Hin ].
+ rewrite power_summation; [ | easy ].
+ rewrite summation_mul_distr_l; simpl.
+ rewrite summation_rtl.
+ rewrite summation_split_first; [ | flia ].
+ simpl.
+ rewrite <- Nat.add_succ_l.
+ rewrite Nat.add_0_r, Nat.sub_0_r.
+ apply Nat.add_le_mono.
+ +rewrite Nat.add_0_r, Nat.sub_0_r.
+  replace (n - i - 2) with m by flia Hm.
+  apply Nat.mul_lt_mono_pos_r.
+  *now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+  *unfold lt.
+   now replace (S (rad - 1)) with rad by flia Hr.
+ +destruct m; [ flia Hin Hm | ].
+  replace (n - 1 - (S (i + 1))) with m by flia Hm.
+  rewrite summation_shift; [ | flia ].
+  replace (S m - 1) with m by flia.
+  apply (@summation_le_compat nat_ord_ring_def).
+  intros j Hj; simpl; unfold Nat.le.
+  rewrite Nat.add_0_r.
 ...
 
 (*
