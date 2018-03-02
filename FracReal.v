@@ -2916,35 +2916,19 @@ assert (Hin : i + 2 ≤ n - 1). {
 destruct (lt_dec (nA i n u) s) as [H1| H1].
 -exfalso.
  apply Nat.nle_gt in H1; apply H1; clear H1.
-...
- rewrite Hs.
- remember (n - i - 1) as m eqn:Hm; symmetry in Hm.
- destruct m; [ flia Hin Hm | ].
  rewrite nA_split_first; [ | flia Hin ].
- unfold nA.
- rewrite summation_rtl.
- rewrite summation_shift; [ | flia Hin ].
- rewrite power_summation; [ | easy ].
- rewrite summation_mul_distr_l; simpl.
- rewrite summation_rtl.
- rewrite summation_split_first; [ | flia ].
- simpl.
- rewrite <- Nat.add_succ_l.
- rewrite Nat.add_0_r, Nat.sub_0_r.
- apply Nat.add_le_mono.
- +rewrite Nat.add_0_r, Nat.sub_0_r.
-  replace (n - i - 2) with m by flia Hm.
-  apply Nat.mul_lt_mono_pos_r.
-  *now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-  *unfold lt.
-   now replace (S (rad - 1)) with rad by flia Hr.
- +destruct m; [ flia Hin Hm | ].
-  replace (n - 1 - (S (i + 1))) with m by flia Hm.
-  rewrite summation_shift; [ | flia ].
-  replace (S m - 1) with m by flia.
-  apply (@summation_le_compat nat_ord_ring_def).
-  intros j Hj; simpl; unfold Nat.le.
-  rewrite Nat.add_0_r.
+ apply le_plus_trans.
+ rewrite Hs.
+ replace (n - i - 1) with (1 + (n - i - 2)) by flia Hin.
+ rewrite Nat.pow_add_r.
+ apply Nat.mul_le_mono_r.
+ now rewrite Nat.pow_1_r.
+-apply Nat.nlt_ge in H1.
+ specialize (nA_upper_bound_for_add u Huk i k) as H2.
+ remember 2 as x; simpl in H2; subst x.
+ rewrite <- Hn, <- Hs in H2.
+ replace (nA i n u mod s) with (nA i n u - s).
+ +apply Nat.le_add_le_sub_r.
 ...
 
 (*
