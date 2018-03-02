@@ -2861,6 +2861,45 @@ apply le_trans with
  easy.
 Qed.
 
+Theorem nA_upper_bound_for_add {r : radix} (rg := nat_ord_ring) : ∀ u,
+  (∀ i, u i ≤ 2 * (rad - 1))
+  → ∀ i k,
+     let n := rad * (i + k + 3) in
+     let s := rad ^ (n - i - 1) in
+     nA i n u ≤ 2 * (s - 1).
+Proof.
+intros * Hur *; subst n s.
+remember (rad * (i + k + 3)) as n eqn:Hn.
+remember (rad ^ (n - i - 1)) as s eqn:Hs.
+move s before n.
+specialize radix_ge_2 as Hr.
+assert (Hin : i + 2 ≤ n - 1). {
+  subst n.
+  destruct rad; [ easy | simpl; flia ].
+}
+rewrite Hs.
+remember (n - i - 1) as m eqn:Hm.
+symmetry in Hm.
+destruct m; [ flia Hin Hm | ].
+rewrite power_summation_sub_1; [ | easy ].
+rewrite Nat.mul_assoc.
+rewrite summation_mul_distr_l.
+unfold nA.
+remember 2 as two; simpl; subst two.
+rewrite summation_rtl.
+rewrite summation_shift; [ | flia Hin ].
+replace (n - 1 - (i + 1)) with m by flia Hm.
+apply (@summation_le_compat nat_ord_ring_def).
+intros j Hj.
+remember 2 as two; simpl; subst two; unfold Nat.le.
+replace (n - 1 + (i + 1) - (i + 1 + j)) with (n - j - 1) by flia.
+replace (n - 1 - (n - j - 1)) with j by flia Hm Hj.
+apply Nat.mul_le_mono_r.
+apply Hur.
+Qed.
+
+...
+
 (*
 Theorem glop {r : radix} : ∀ u,
   (∀ k, u k ≤ 2 * (rad - 1))
