@@ -3165,12 +3165,26 @@ Theorem A_ge_1_add_all_true_if {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
   → (∀ k, A_ge_1 i u k = true)
   → { ∀ k, u (i + k + 1) = rad - 1 } +
+     { ∀ k, u (i + k + 1) = 2 * (rad - 1) } +
      { ∃ j,
        (∀ k, k < j → u (i + k + 1) = rad - 1) ∧
        u (i + j + 1) = rad - 2 ∧
        (∀ k, j < k → u (i + k + 1) = 2 * (rad - 1)) }.
 Proof.
 intros * Hur Hu.
+(* test if exists j such that u(i+j+1)=8 *)
+set (g j := if eq_nat_dec (u (i + j + 1)) (rad - 2) then false else true).
+destruct (LPO_fst g) as [H1| H1].
+Focus 2.
+-destruct H1 as (j & Hjj & Hj).
+ right; exists j.
+ unfold g in Hj.
+ destruct (eq_nat_dec (u (i + j + 1)) (rad - 2)) as [H1| H1]; [ | easy ].
+ clear Hj.
+ split.
+ Focus 2.
+ +split; [ easy | ].
+  intros k Hk.
 ...
 
 intros * Hur Hu.
