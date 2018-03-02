@@ -2827,12 +2827,11 @@ Qed.
 
 Theorem nA_upper_bound_for_op {r : radix} (rg := nat_ord_ring) : ∀ u,
   (∀ i, u i ≤ (i + 1) * (rad - 1) ^ 2)
-  → ∀ i k, A_ge_1 i u k = true
-  → let n := rad * (i + k + 3) in
+  → ∀ i k,
+     let n := rad * (i + k + 3) in
      nA i n u ≤ (rad - 1) ^ 2 * Σ (j = 0, n - i - 2), (n - j) * rad ^ j.
 Proof.
-intros * Hur * Hu.
-remember 2 as x; simpl; subst x.
+intros * Hur *; subst n.
 remember (rad * (i + k + 3)) as n eqn:Hn.
 apply le_trans with
     (m := (rad - 1) ^ 2 * Σ (j = i + 1, n - 1), (j + 1) * rad ^ (n - 1 - j)).
