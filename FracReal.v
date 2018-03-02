@@ -2861,43 +2861,7 @@ apply le_trans with
  easy.
 Qed.
 
-...
-
-(* caca: c'est faux *)
-Theorem glop {r : radix} : ∀ u i k,
-  u (i + 1) ≥ rad
-  → A_ge_1 i u k = true.
-Proof.
-intros * Hur.
-specialize radix_ge_2 as Hr.
-move Hr before k.
-apply A_ge_1_true_iff.
-remember (rad * (i + k + 3)) as n eqn:Hn.
-remember (rad ^ (n - i - 1)) as s eqn:Hs.
-assert (Hsz : s ≠ 0) by (now rewrite Hs; apply Nat.pow_nonzero).
-move n before k; move s before n.
-assert (Hin : i + 2 ≤ n - 1). {
-  subst n.
-  destruct rad; [ easy | simpl; flia ].
-}
-move Hin before Hr.
-...
-rewrite nA_split_first; [ | flia Hin ].
-rewrite <- Nat.add_mod_idemp_l; [ | easy ].
-...
-unfold ge.
-apply le_plus_trans.
-...
-assert (H1 : s ≤ nA i n u). {
-  rewrite nA_split_first; [ | flia Hin ].
-  apply le_plus_trans.
-  rewrite Hs.
-  replace (n - i - 1) with (1 + (n - i - 2)) by flia Hin.
-  rewrite Nat.pow_add_r, Nat.pow_1_r.
-  now apply Nat.mul_le_mono_r.
-}
-...
-
+(*
 Theorem glop {r : radix} : ∀ u,
   (∀ k, u k ≤ 2 * (rad - 1))
   → ∀ i k,
@@ -3013,6 +2977,7 @@ destruct (lt_dec (nA i n u) s) as [H2| H2].
     f_equal; f_equal; [ flia | flia Hm Hj ].
  }
 ...
+*)
 
 Theorem A_ge_1_add_all_true_if {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
