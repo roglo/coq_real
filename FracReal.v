@@ -2898,6 +2898,7 @@ apply Nat.mul_le_mono_r.
 apply Hur.
 Qed.
 
+(* chais pas
 Theorem glop {r : radix} : ∀ u,
   (∀ k, u k ≤ 2 * (rad - 1))
   → ∀ i, u (i + 1) ≥ rad
@@ -2930,6 +2931,7 @@ destruct (lt_dec (nA i n u) s) as [H1| H1].
  replace (nA i n u mod s) with (nA i n u - s).
  +apply Nat.le_add_le_sub_r.
 ...
+*)
 
 (*
 Theorem glop {r : radix} : ∀ u,
@@ -3049,6 +3051,7 @@ destruct (lt_dec (nA i n u) s) as [H2| H2].
 ...
 *)
 
+(* mouais... possible que ce soit intéressant...
 Theorem A_ge_1_add_all_true_if {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
   → (∀ k, A_ge_1 i u k = true)
@@ -3156,6 +3159,7 @@ destruct (lt_dec (nA i n u) s) as [H2| H2].
 -right; right.
  apply Nat.nlt_ge in H2.
 ...
+*)
 
 Theorem A_ge_1_add_all_true_if {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
@@ -3166,6 +3170,9 @@ Theorem A_ge_1_add_all_true_if {r : radix} : ∀ u i,
        u (i + j + 1) = rad - 2 ∧
        (∀ k, j < k → u (i + k + 1) = 2 * (rad - 1)) }.
 Proof.
+intros * Hur Hu.
+...
+
 intros * Hur Hu.
 set (g j := if eq_nat_dec (u (i + j + 1)) (rad - 1) then true else false).
 destruct (LPO_fst g) as [H1| H1].
