@@ -3169,7 +3169,7 @@ Theorem A_ge_1_add_all_true_if {r : radix} : ∀ u i,
      { ∃ j,
        (∀ k, k < j → u (i + k + 1) = rad - 1) ∧
        u (i + j + 1) = rad - 2 ∧
-       (∀ k, j < k → u (i + k + 1) = 2 * (rad - 1)) }.
+       (∀ k, u (i + j + k + 2) = 2 * (rad - 1)) }.
 Proof.
 intros * Hur Hu.
 (* test if exists j such that u(i+j+1)=8 *)
@@ -3184,7 +3184,17 @@ Focus 2.
  split.
  Focus 2.
  +split; [ easy | ].
-  intros k Hk.
+  intros k.
+  specialize (Hu (j + k + 1)) as H2.
+  apply A_ge_1_true_iff in H2.
+  induction k.
+  *rewrite Nat.add_0_r in H2 |-*.
+   replace (i + (j + 1) + 3) with (i + j + 4) in H2 by flia.
+   remember (rad * (i + j + 4)) as n eqn:Hn.
+   remember (rad ^ (n - i - 1)) as s eqn:Hs.
+   replace (n - i - (j + 1) - 2) with (n - i - j - 3) in H2 by flia.
+   move s before n.
+   replace (S (j + 1)) with (j + 2) in H2 by flia.
 ...
 
 intros * Hur Hu.
