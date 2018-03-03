@@ -3188,9 +3188,20 @@ destruct (LPO_fst g) as [H1| H1].
  (* u(i+1)=9: then only 9s after u(i+1) *)
  +left; intros j.
   induction j as (j, IHj) using lt_wf_rec.
-...
   destruct j; [ now rewrite Nat.add_0_r | ].
-
+  (* all "numbers digits" between i+1 and i+j+1 are 9;
+     taking k=j+1, we have A_ge_1 i u (j+1) = true, i.e.
+     nA i n u mod 10^s ≥ 999..0000.. (with (j+2) 9s)
+     therefore u(i+Sj+1) must be ≥ 8 (possible carry of 0 or 1),
+     but since H2, ≥ 9; it cannot be ≥ 10 because it would add
+     a carry to these 9s, transforming them into 0s. *)
+  specialize (Hu (j + 1)) as H3.
+  apply A_ge_1_true_iff in H3.
+  replace (i + (j + 1) + 3) with (i + j + 4) in H3 by flia.
+  remember (rad * (i + j + 4)) as n eqn:Hn.
+  replace (n - i - (j + 1) - 2) with (n - i - j - 3) in H3 by flia.
+  remember (n - i - 1) as s eqn:Hs.
+  move s before n.
 ...
 (* there exists j such that u(i+j+1)=8 *)
 -destruct H1 as (j & Hjj & Hj).
