@@ -3175,7 +3175,22 @@ intros * Hur Hu.
 (* test if exists j such that u(i+j+1)=8 *)
 set (g j := if eq_nat_dec (u (i + j + 1)) (rad - 2) then false else true).
 destruct (LPO_fst g) as [H1| H1].
-Focus 2.
+(* no 8 after u(i) *)
+-left.
+ assert (H2 : ∀ j, u (i + j + 1) ≠ rad - 2). {
+   intros j.
+   specialize (H1 j).
+   unfold g in H1.
+   now destruct (eq_nat_dec (u (i + j + 1)) (rad - 2)).
+ }
+ clear H1 g.
+ destruct (eq_nat_dec (u (i + 1)) (rad - 1)) as [H1| H1].
+ (* u(i+1)=9: then only 9s after u(i+1) *)
+ +left; intros j.
+  induction j; [ now rewrite Nat.add_0_r | ].
+
+...
+(* there exists j such that u(i+j+1)=8 *)
 -destruct H1 as (j & Hjj & Hj).
  right; exists j.
  unfold g in Hj.
