@@ -3202,6 +3202,10 @@ destruct (LPO_fst g) as [H1| H1].
   replace (n - i - (j + 1) - 2) with (n - i - j - 3) in H3 by flia.
   remember (n - i - 1) as s eqn:Hs.
   move s before n.
+  assert (H4 : u (i + S j + 1) ≥ rad - 2). {
+    revert H3.
+    apply Decidable.contrapositive; [ apply Nat.le_decidable | ].
+    intros H3; apply Nat.nle_gt in H3; apply Nat.nle_gt.
 ...
 (* there exists j such that u(i+j+1)=8 *)
 -destruct H1 as (j & Hjj & Hj).
