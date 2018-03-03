@@ -3187,7 +3187,9 @@ destruct (LPO_fst g) as [H1| H1].
  destruct (eq_nat_dec (u (i + 1)) (rad - 1)) as [H1| H1].
  (* u(i+1)=9: then only 9s after u(i+1) *)
  +left; intros j.
-  induction j; [ now rewrite Nat.add_0_r | ].
+  induction j as (j, IHj) using lt_wf_rec.
+...
+  destruct j; [ now rewrite Nat.add_0_r | ].
 
 ...
 (* there exists j such that u(i+j+1)=8 *)
