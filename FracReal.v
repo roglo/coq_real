@@ -3196,7 +3196,26 @@ assert (H1 : u (i + 1) ≥ rad - 2). {
    +replace (rad - 1) with (rad - 2 + 1) by flia H1.
     rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
     apply Nat.add_le_mono_l.
-(* c'est vrai, ça ??? *)
+    destruct s; [ flia Hs His | ].
+    simpl; rewrite Nat.sub_0_r.
+    destruct s; [ flia Hs His | ].
+    rewrite power_summation; [ | easy ].
+    unfold nA.
+    rewrite summation_rtl.
+    rewrite summation_shift; [ | flia His ].
+    replace (n - 1 - (S i + 1)) with s by flia Hs.
+    rewrite summation_mul_distr_l.
+    simpl.
+    set (rg := nat_ord_ring).
+    apply le_trans with (m := Σ (j = 0, s), (rad - 1) * rad ^ j).
+    *apply (@summation_le_compat nat_ord_ring_def).
+     intros j Hj; simpl; unfold Nat.le.
+     replace (n - 1 + S (i + 1) - S (i + 1 + j)) with (n - j - 1) by flia.
+     replace (n - 1 - (n - j - 1)) with j by flia Hj Hs.
+     apply Nat.mul_le_mono_pos_r.
+    --now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+    --idtac.
+(* marche pas *)
 ...
 
   Focus 2.
