@@ -3169,6 +3169,24 @@ Theorem A_ge_1_add_all_first {r : radix} : ∀ u i,
      { u (i + 1) = 2 * (rad - 1) }.
 Proof.
 intros * Hur Hu.
+assert (H1 : u (i + 1) ≥ rad - 2). {
+  specialize (Hu 0) as H1.
+  revert H1.
+  apply Decidable.contrapositive; [ apply Nat.le_decidable | ].
+  intros H1; apply Nat.nle_gt in H1.
+  apply Bool.not_true_iff_false.
+  apply A_ge_1_false_iff.
+  rewrite Nat.add_0_r, Nat.sub_0_r, Nat.pow_1_r.
+  remember (rad * (i + 3)) as n eqn:Hn.
+  remember (n - i - 1) as s eqn:Hs.
+  move s before n.
+  assert (His : i + 2 ≤ n - 1). {
+    rewrite Hn.
+    specialize radix_ne_0 as H.
+    destruct rad; [ easy | simpl; flia ].
+  }
+  replace (n - i - 2) with (n - i - 1 - 1) by flia Hs.
+  rewrite <- Hs.
 ...
 
 Theorem A_ge_1_add_all_true_if {r : radix} : ∀ u i,
