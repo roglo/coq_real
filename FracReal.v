@@ -3161,6 +3161,16 @@ destruct (lt_dec (nA i n u) s) as [H2| H2].
 ...
 *)
 
+Theorem A_ge_1_add_all_first {r : radix} : ∀ u i,
+  (∀ k, u k ≤ 2 * (rad - 1))
+  → (∀ k, A_ge_1 i u k = true)
+  → { u (i + 1) = rad - 2 } +
+     { u (i + 1) = rad - 1 } +
+     { u (i + 1) = 2 * (rad - 1) }.
+Proof.
+intros * Hur Hu.
+...
+
 Theorem A_ge_1_add_all_true_if {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
   → (∀ k, A_ge_1 i u k = true)
