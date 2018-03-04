@@ -3185,8 +3185,39 @@ assert (H1 : u (i + 1) ≥ rad - 2). {
     specialize radix_ne_0 as H.
     destruct rad; [ easy | simpl; flia ].
   }
+  rewrite Nat.mod_small.
+  -rewrite nA_split_first; [ | flia His ].
+   replace (n - i - 2) with (n - i - 1 - 1) by flia Hs.
+   rewrite <- Hs.
+   apply lt_le_trans with (m := (rad - 2) * rad ^ (s - 1) + nA (S i) n u).
+   +apply Nat.add_lt_mono_r.
+    apply Nat.mul_lt_mono_pos_r; [ | easy ].
+    now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+   +replace (rad - 1) with (rad - 2 + 1) by flia H1.
+    rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
+    apply Nat.add_le_mono_l.
+(* c'est vrai, ça ??? *)
+...
+
+  Focus 2.
+  -rewrite nA_split_first; [ | flia His ].
+   replace (n - i - 2) with (n - i - 1 - 1) by flia Hs.
+   rewrite <- Hs.
+   apply lt_trans with (m := (rad - 2) * rad ^ (s - 1) + nA (S i) n u).
+   +apply Nat.add_lt_mono_r.
+    apply Nat.mul_lt_mono_pos_r; [ | easy ].
+    now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+    Focus 2.
+   +idtac.
+
+...
+  rewrite nA_split_first; [ | flia His ].
   replace (n - i - 2) with (n - i - 1 - 1) by flia Hs.
   rewrite <- Hs.
+...
+
+  apply lt_trans with
+      (m := ((rad - 2) * rad ^ (s - 1) + nA (S i) n u) mod rad ^ s).
 ...
 
 Theorem A_ge_1_add_all_true_if {r : radix} : ∀ u i,
