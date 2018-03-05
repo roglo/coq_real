@@ -3091,6 +3091,7 @@ specialize (A_ge_1_add_all_first u i Hur (Hu 0)) as [[H1| H1]| H1].
     specialize radix_ne_0 as H.
     destruct rad; [ easy | simpl; flia ].
   }
+  replace (n - i - 2) with (s - 1) in H2 by flia Hs.
   rewrite Nat.mod_small in H2.
   specialize A_ge_1_add_all_first_ge_rad as H3.
 
