@@ -3258,16 +3258,29 @@ assert (His : i + 2 ≤ n - 1). {
   specialize radix_ne_0 as H.
   destruct rad; [ easy | simpl; flia ].
 }
+assert (H2 : nA i n u mod rad ^ s = nA i n u - rad ^ s). {
+  rewrite nA_split_first; [ | flia His ].
+  replace (n - i - 2) with (s - 1) by flia Hs.
+
+...
 set (v j := if eq_nat_dec j (i + 1) then u j - rad else u j).
 assert (nA i n u mod rad ^ s = nA i n v). {
   rewrite nA_split_first; [ | flia His ].
   replace (n - i - 2) with (s - 1) by flia Hs.
+...
+
   rewrite <- Nat.add_mod_idemp_l; [ | now apply Nat.pow_nonzero ].
   replace (rad ^ s) with (rad ^ (s - 1 + 1)) at 1.
   -rewrite Nat.pow_add_r.
    rewrite Nat.mod_mul_r.
    2, 3: now apply Nat.pow_nonzero.
    rewrite Nat.mod_mul; [ | now apply Nat.pow_nonzero ].
+   rewrite Nat.div_mul; [ | now apply Nat.pow_nonzero ].
+   rewrite Nat.add_0_l, Nat.pow_1_r.
+   replace (u (i + 1) mod rad) with (u (i + 1) - rad).
+   +rewrite Nat.mul_sub_distr_l.
+...
+  (rad ^ (s - 1) * u (i + 1) - rad ^ (s - 1) * rad + nA (S i) n u) mod rad ^ s = nA i n v
 ...
 
    +idtac.
