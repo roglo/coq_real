@@ -3086,21 +3086,38 @@ specialize (A_ge_1_add_all_first u i Hur (Hu 0)) as [[H1| H1]| H1].
   remember (rad * (i + 3)) as n eqn:Hn.
   remember (n - i - 1) as s eqn:Hs.
   move s before n.
-  assert (His : i + 2 ≤ n - 1). {
+  assert (His : i + 3 ≤ n - 1). {
     rewrite Hn.
-    specialize radix_ne_0 as H.
-    destruct rad; [ easy | simpl; flia ].
+    specialize radix_ge_2 as Hr.
+    destruct rad as [| rr]; [ easy | ].
+    destruct rr; [ flia Hr | simpl; flia ].
   }
-  replace (n - i - 2) with (s - 1) in H2 by flia Hs.
   rewrite Nat.mod_small in H2.
-  specialize A_ge_1_add_all_first_ge_rad as H3.
-
-...
-Search (nA _ _ _  ≤ _).
-  rewrite nA_split_first in Hu; [ | flia His ].
-  rewrite H1 in Hu.
-  replace (n - i - 2) with (s - 1) in Hu by flia Hs.
-
+  *rewrite nA_split_first in H2; [ | flia His ].
+   rewrite H1 in H2.
+   replace (n - i - 2) with (s - 1) in H2 by flia Hs.
+   specialize radix_ge_2 as Hr.
+   replace (rad - 1) with (rad - 2 + 1) in H2 by flia Hr.
+   rewrite Nat.mul_add_distr_r, Nat.mul_1_l in H2.
+   apply Nat.add_le_mono_l in H2.
+   rewrite nA_split_first in H2; [ | flia His ].
+   unfold nA in H2.
+   rewrite summation_rtl in H2.
+   rewrite summation_shift in H2; [ | flia His ].
+   replace (n - 1 - (S (S i) + 1)) with (s - 3) in H2 by flia Hs His.
+   replace (S i + 1) with (i + 2) in H2 by flia.
+   destruct s; [ flia Hs His | ].
+   destruct s; [ flia Hs His | ].
+   replace (S (S s) - 1) with (S s) in H2 by flia.
+   replace (S (S s) - 3) with (s - 1) in H2 by flia.
+   rewrite power_summation in H2; [ | easy ].
+   replace s with (S (s - 1)) in H2 at 1 by flia Hs His.
+   rewrite summation_split_last in H2; [ | flia ].
+   rewrite Nat.add_comm in H2.
+   remember summation as f; simpl in H2; subst f.
+   rewrite Nat.mul_add_distr_l in H2.
+   rewrite <- Nat.add_assoc in H2.
+   rewrite Nat.add_comm in H2.
 ...
 
 Theorem A_ge_1_add_all_true_if {r : radix} : ∀ u i,
