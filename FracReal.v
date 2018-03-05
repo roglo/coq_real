@@ -3189,6 +3189,8 @@ assert (H1 : u (i + 1) ≥ rad - 2). {
   -rewrite nA_split_first; [ | flia His ].
    replace (n - i - 2) with (n - i - 1 - 1) by flia Hs.
    rewrite <- Hs.
+(* this lt_le_trans below is wrong becase a carry can come
+   from nA (S i) n u; I must prove that this carry is 0 or 1 *)
 ...
    apply lt_le_trans with (m := (rad - 2) * rad ^ (s - 1) + nA (S i) n u).
    +apply Nat.add_lt_mono_r.
