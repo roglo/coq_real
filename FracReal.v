@@ -3280,12 +3280,6 @@ assert (nA i n u mod rad ^ s = nA i n v). {
    replace (u (i + 1) mod rad) with (u (i + 1) - rad).
    +rewrite Nat.mul_sub_distr_l.
 ...
-  (rad ^ (s - 1) * u (i + 1) - rad ^ (s - 1) * rad + nA (S i) n u) mod rad ^ s = nA i n v
-...
-
-   +idtac.
-
-...
 assert (H2 : nA i n u - rad ^ s ≥ (rad - 1) * rad ^ (n - i - 2)). {
   rewrite nA_split_first; [ | flia His ].
   replace (n - i - 2) with (s - 1) by flia Hs.
