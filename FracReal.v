@@ -3189,8 +3189,6 @@ assert (H1 : u (i + 1) ≥ rad - 2). {
   -rewrite nA_split_first; [ | flia His ].
    replace (n - i - 2) with (n - i - 1 - 1) by flia Hs.
    rewrite <- Hs.
-...
-(* problem if rad=2 below... *)
    apply le_lt_trans with
      (m := (rad - 3) * rad ^ (s - 1) + 2 * (rad ^ (s - 1) - 1)).
    +apply Nat.add_le_mono.
@@ -3217,21 +3215,7 @@ assert (H1 : u (i + 1) ≥ rad - 2). {
     rewrite Nat.mul_sub_distr_r.
     rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
     remember (2 * rad ^ (s - 1)) as x eqn:Hx.
-...
-destruct (eq_nat_dec rad 2) as [H2| H2].
-rewrite H2.
-replace (2 - 1) with 1 by flia.
-rewrite Nat.mul_1_l.
-...
-enough (H2 : (rad - 1) * rad ^ (s - 1) ≥ x).
-rewrite Nat.sub_add; [ | easy ].
-...
-specialize radix_ge_2 as Hr.
-destruct rad as [| rr]; [ easy | ].
-replace (S rr - 1) with rr by flia.
-destruct rr; [ easy | ].
-
-
+    rewrite Nat.add_sub_assoc.
     *rewrite Nat.sub_add.
     --apply Nat.sub_lt; [ | flia ].
       destruct s; [ flia Hs His | ].
@@ -3242,41 +3226,13 @@ destruct rr; [ easy | ].
       replace 2 with (2 ^ 1) by apply Nat.pow_1_r.
       apply Nat.pow_le_mono; [ easy | apply radix_ge_2 | flia ].
     --subst x.
-...
-
-(* this lt_le_trans below is wrong becase a carry can come
-   from nA (S i) n u; I must prove that this carry is 0 or 1 *)
-...
-   apply lt_le_trans with (m := (rad - 2) * rad ^ (s - 1) + nA (S i) n u).
-   +apply Nat.add_lt_mono_r.
-    apply Nat.mul_lt_mono_pos_r; [ | easy ].
-    now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-   +replace (rad - 1) with (rad - 2 + 1) by flia H1.
-    rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
-    apply Nat.add_le_mono_l.
-    destruct s; [ flia Hs His | ].
-    simpl; rewrite Nat.sub_0_r.
-    destruct s; [ flia Hs His | ].
-    rewrite power_summation; [ | easy ].
-    unfold nA.
-    rewrite summation_rtl.
-    rewrite summation_shift; [ | flia His ].
-    replace (n - 1 - (S i + 1)) with s by flia Hs.
-    rewrite summation_mul_distr_l.
-    simpl.
-    set (rg := nat_ord_ring).
-    apply le_trans with (m := Σ (j = 0, s), (rad - 1) * rad ^ j).
-    *apply (@summation_le_compat nat_ord_ring_def).
-     intros j Hj; simpl; unfold Nat.le.
-     replace (n - 1 + S (i + 1) - S (i + 1 + j)) with (n - j - 1) by flia.
-     replace (n - 1 - (n - j - 1)) with j by flia Hj Hs.
-     apply Nat.mul_le_mono_pos_r.
-    --now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-    --idtac.
-(* marche pas *)
-...
-
-  Focus 2.
+      destruct rad as [| rr]; [ easy | ].
+      destruct rr; [ easy | ].
+      destruct rr; [ easy | simpl; flia ].
+    *replace 2 with (2 * 1) by flia.
+     rewrite Hx.
+     apply Nat.mul_le_mono_l.
+     now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
   -rewrite nA_split_first; [ | flia His ].
    replace (n - i - 2) with (n - i - 1 - 1) by flia Hs.
    rewrite <- Hs.
@@ -3284,7 +3240,6 @@ destruct rr; [ easy | ].
    +apply Nat.add_lt_mono_r.
     apply Nat.mul_lt_mono_pos_r; [ | easy ].
     now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-    Focus 2.
    +idtac.
 
 ...
