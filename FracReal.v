@@ -3242,14 +3242,13 @@ Qed.
 
 Theorem A_ge_1_add_all_first_ge_rad {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
-  → (∀ k, A_ge_1 i u k = true)
+  → A_ge_1 i u 0 = true
   → u (i + 1) ≥ rad
   → u (i + 1) = 2 * (rad - 1).
 Proof.
 intros * Hur Hu Hui.
-specialize (Hu 0) as H1.
-apply A_ge_1_true_iff in H1.
-rewrite Nat.add_0_r, Nat.sub_0_r, Nat.pow_1_r in H1.
+apply A_ge_1_true_iff in Hu.
+rewrite Nat.add_0_r, Nat.sub_0_r, Nat.pow_1_r in Hu.
 remember (rad * (i + 3)) as n eqn:Hn.
 remember (n - i - 1) as s eqn:Hs.
 move s before n.
@@ -3258,46 +3257,72 @@ assert (His : i + 2 ≤ n - 1). {
   specialize radix_ne_0 as H.
   destruct rad; [ easy | simpl; flia ].
 }
-assert (H2 : nA i n u mod rad ^ s = nA i n u - rad ^ s). {
-  rewrite nA_split_first; [ | flia His ].
-  replace (n - i - 2) with (s - 1) by flia Hs.
-
-...
 set (v j := if eq_nat_dec j (i + 1) then u j - rad else u j).
-assert (nA i n u mod rad ^ s = nA i n v). {
-  rewrite nA_split_first; [ | flia His ].
-  replace (n - i - 2) with (s - 1) by flia Hs.
-...
-
-  rewrite <- Nat.add_mod_idemp_l; [ | now apply Nat.pow_nonzero ].
-  replace (rad ^ s) with (rad ^ (s - 1 + 1)) at 1.
-  -rewrite Nat.pow_add_r.
-   rewrite Nat.mod_mul_r.
-   2, 3: now apply Nat.pow_nonzero.
-   rewrite Nat.mod_mul; [ | now apply Nat.pow_nonzero ].
-   rewrite Nat.div_mul; [ | now apply Nat.pow_nonzero ].
-   rewrite Nat.add_0_l, Nat.pow_1_r.
-   replace (u (i + 1) mod rad) with (u (i + 1) - rad).
-   +rewrite Nat.mul_sub_distr_l.
-...
-assert (H2 : nA i n u - rad ^ s ≥ (rad - 1) * rad ^ (n - i - 2)). {
-  rewrite nA_split_first; [ | flia His ].
-  replace (n - i - 2) with (s - 1) by flia Hs.
-  rewrite Nat.add_sub_swap.
-  -replace (rad ^ s) with (rad ^ (1 + (s - 1))).
-   +rewrite Nat.pow_add_r.
-    rewrite <- Nat.mul_sub_distr_r, Nat.pow_1_r.
-...
+assert (H2 : nA i n u mod rad ^ s = nA i n v mod rad ^ s). {
+  rewrite nA_split_first; [ symmetry | flia His ].
+  rewrite nA_split_first; [ symmetry | flia His ].
+  rewrite Nat.add_mod; [ symmetry | now apply Nat.pow_nonzero ].
+  rewrite Nat.add_mod; [ symmetry | now apply Nat.pow_nonzero ].
+  f_equal; f_equal.
+  -replace (n - i - 2) with (s - 1) by flia Hs.
+   replace (rad ^ s) with (rad ^ ((s - 1) + 1)).
+   +rewrite Nat.pow_add_r, Nat.pow_1_r.
+   rewrite Nat.mod_mul_r; [ symmetry | now apply Nat.pow_nonzero | easy ].
+    rewrite Nat.mod_mul_r; [ symmetry | now apply Nat.pow_nonzero | easy ].
+    rewrite Nat.mod_mul; [ | now apply Nat.pow_nonzero ].
+    rewrite Nat.mod_mul; [ | now apply Nat.pow_nonzero ].
+    rewrite Nat.div_mul; [ | now apply Nat.pow_nonzero ].
+    rewrite Nat.div_mul; [ | now apply Nat.pow_nonzero ].
+    do 2 rewrite Nat.add_0_l.
+    f_equal; unfold v.
+    destruct (Nat.eq_dec (i + 1) (i + 1)) as [H2| ]; [ | easy ].
+    replace (u (i + 1)) with ((u (i + 1) - rad) + 1 * rad) at 1 by flia Hui.
+    now apply Nat.mod_add.
+   +f_equal; flia Hs His.
+  -f_equal.
+   apply nA_eq_compat.
+   intros j Hj.
+   unfold v.
+   destruct (Nat.eq_dec j (i + 1)) as [H2| ]; [ | easy ].
+   flia Hj H2.
+}
+rewrite H2 in Hu.
+assert (H3 : ∀ k, v k ≤ 2 * (rad - 1)). {
+  intros *; unfold v.
+  destruct (Nat.eq_dec k (i + 1)) as [H4| H4]; [ | apply Hur ].
+  subst k; specialize (Hur (i + 1)); flia Hur Hui.
+}
+assert (H4 : A_ge_1 i v 0 = true). {
+  apply A_ge_1_true_iff.
+  rewrite Nat.add_0_r, Nat.pow_1_r, Nat.sub_0_r.
+  now rewrite <- Hn, <- Hs.
+}
+specialize (A_ge_1_add_all_first_ge v i H3 H4) as H5.
+unfold v in H5.
+destruct (Nat.eq_dec (i + 1) (i + 1)) as [H6| ]; [ | easy ].
+specialize (Hur (i + 1)).
+flia Hur Hui H5.
+Qed.
 
 Theorem A_ge_1_add_all_first {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
-  → (∀ k, A_ge_1 i u k = true)
+  → A_ge_1 i u 0 = true
   → { u (i + 1) = rad - 2 } +
      { u (i + 1) = rad - 1 } +
      { u (i + 1) = 2 * (rad - 1) }.
 Proof.
 intros * Hur Hu.
 specialize (A_ge_1_add_all_first_ge u i Hur Hu) as H1.
+destruct (lt_dec (u (i + 1)) rad) as [H2| H2].
+-left.
+ destruct (lt_dec (u (i + 1)) (rad - 1)) as [H3| H3].
+ +left; flia H1 H3.
+ +right; flia H2 H3.
+-right.
+ apply Nat.nlt_ge in H2.
+ now specialize (A_ge_1_add_all_first_ge_rad u i Hur Hu H2) as H3.
+Qed.
+
 ...
 
 Theorem A_ge_1_add_all_true_if {r : radix} : ∀ u i,
