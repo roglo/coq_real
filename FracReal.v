@@ -3189,12 +3189,10 @@ assert (H1 : u (i + 1) ≥ rad - 2). {
   -rewrite nA_split_first; [ | flia His ].
    replace (n - i - 2) with (n - i - 1 - 1) by flia Hs.
    rewrite <- Hs.
-   apply lt_le_trans with
-     (m := (rad - 2) * rad ^ (s - 1) + 2 * (rad ^ (s - 1) - 1)).
-   +unfold lt.
-    rewrite <- Nat.add_succ_l.
-    apply Nat.add_le_mono.
-    *apply Nat.mul_lt_mono_pos_r; [ | easy ].
+   apply le_lt_trans with
+     (m := (rad - 3) * rad ^ (s - 1) + 2 * (rad ^ (s - 1) - 1)).
+   +apply Nat.add_le_mono.
+    *apply Nat.mul_le_mono_pos_r; [ | flia H1 ].
      now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
     *destruct s; [ flia Hs His | ].
      destruct s; [ flia Hs His | ].
@@ -3213,9 +3211,35 @@ assert (H1 : u (i + 1) ≥ rad - 2). {
      replace (n - 1 - (n - j - 1)) with j by flia Hs Hj.
      apply Nat.mul_le_mono_pos_r; [ | apply Hur ].
      now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-   +replace (rad - 2) with (rad - 1 - 1) by flia.
+   +replace (rad - 3) with (rad - 1 - 2) by flia.
     rewrite Nat.mul_sub_distr_r.
-(* works not *)
+    rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+    remember (2 * rad ^ (s - 1)) as x eqn:Hx.
+...
+destruct (eq_nat_dec rad 2) as [H2| H2].
+rewrite H2.
+replace (2 - 1) with 1 by flia.
+rewrite Nat.mul_1_l.
+...
+enough (H2 : (rad - 1) * rad ^ (s - 1) ≥ x).
+rewrite Nat.sub_add; [ | easy ].
+...
+specialize radix_ge_2 as Hr.
+destruct rad as [| rr]; [ easy | ].
+replace (S rr - 1) with rr by flia.
+destruct rr; [ easy | ].
+
+
+    *rewrite Nat.sub_add.
+    --apply Nat.sub_lt; [ | flia ].
+      destruct s; [ flia Hs His | ].
+      destruct s; [ flia Hs His | ].
+      replace (S (S s) - 1) with (S s) by flia.
+      replace 2 with (1 * 2) by flia.
+      apply Nat.mul_le_mono; [ flia H1 | ].
+      replace 2 with (2 ^ 1) by apply Nat.pow_1_r.
+      apply Nat.pow_le_mono; [ easy | apply radix_ge_2 | flia ].
+    --subst x.
 ...
 
 (* this lt_le_trans below is wrong becase a carry can come
