@@ -3189,6 +3189,8 @@ assert (H1 : u (i + 1) ≥ rad - 2). {
   -rewrite nA_split_first; [ | flia His ].
    replace (n - i - 2) with (n - i - 1 - 1) by flia Hs.
    rewrite <- Hs.
+...
+(* problem if rad=2 below... *)
    apply le_lt_trans with
      (m := (rad - 3) * rad ^ (s - 1) + 2 * (rad ^ (s - 1) - 1)).
    +apply Nat.add_le_mono.
