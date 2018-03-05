@@ -3189,6 +3189,35 @@ assert (H1 : u (i + 1) ≥ rad - 2). {
   -rewrite nA_split_first; [ | flia His ].
    replace (n - i - 2) with (n - i - 1 - 1) by flia Hs.
    rewrite <- Hs.
+   apply lt_le_trans with
+     (m := (rad - 2) * rad ^ (s - 1) + 2 * (rad ^ (s - 1) - 1)).
+   +unfold lt.
+    rewrite <- Nat.add_succ_l.
+    apply Nat.add_le_mono.
+    *apply Nat.mul_lt_mono_pos_r; [ | easy ].
+     now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+    *destruct s; [ flia Hs His | ].
+     destruct s; [ flia Hs His | ].
+     replace (S (S s) - 1) with (S s) by flia.
+     rewrite power_summation_sub_1; [ | easy ].
+     rewrite Nat.mul_assoc, summation_mul_distr_l.
+     remember 2 as x; simpl; subst x.
+     unfold nA.
+     rewrite summation_rtl.
+     rewrite summation_shift; [ | flia His ].
+     replace (n - 1 - (S i + 1)) with s by flia Hs.
+     apply (@summation_le_compat nat_ord_ring_def).
+     intros j Hj.
+     remember 2 as x; simpl; subst x; unfold Nat.le.
+     replace (n - 1 + S (i + 1) - S (i + 1 + j)) with (n - j - 1) by flia.
+     replace (n - 1 - (n - j - 1)) with j by flia Hs Hj.
+     apply Nat.mul_le_mono_pos_r; [ | apply Hur ].
+     now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+   +replace (rad - 2) with (rad - 1 - 1) by flia.
+    rewrite Nat.mul_sub_distr_r.
+(* works not *)
+...
+
 (* this lt_le_trans below is wrong becase a carry can come
    from nA (S i) n u; I must prove that this carry is 0 or 1 *)
 ...
