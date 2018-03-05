@@ -3241,6 +3241,15 @@ replace (1 + (s - 1)) with s by flia Hs His.
 flia.
 Qed.
 
+Theorem A_ge_1_add_all_first_ge_rad {r : radix} : ∀ u i,
+  (∀ k, u k ≤ 2 * (rad - 1))
+  → (∀ k, A_ge_1 i u k = true)
+  → u (i + 1) ≥ rad
+  → u (i + 1) = 2 * (rad - 1).
+Proof.
+intros * Hur Hu Hui.
+...
+
 Theorem A_ge_1_add_all_first {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
   → (∀ k, A_ge_1 i u k = true)
