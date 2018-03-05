@@ -3163,12 +3163,11 @@ destruct (lt_dec (nA i n u) s) as [H2| H2].
 
 Theorem A_ge_1_add_all_first_ge {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
-  → (∀ k, A_ge_1 i u k = true)
+  → A_ge_1 i u 0 = true
   → u (i + 1) ≥ rad - 2.
 Proof.
 intros * Hur Hu.
-specialize (Hu 0) as H1.
-revert H1.
+revert Hu.
 apply Decidable.contrapositive; [ apply Nat.le_decidable | ].
 intros H1; apply Nat.nle_gt in H1.
 apply Bool.not_true_iff_false.
@@ -3248,6 +3247,24 @@ Theorem A_ge_1_add_all_first_ge_rad {r : radix} : ∀ u i,
   → u (i + 1) = 2 * (rad - 1).
 Proof.
 intros * Hur Hu Hui.
+specialize (Hu 0) as H1.
+apply A_ge_1_true_iff in H1.
+rewrite Nat.add_0_r, Nat.sub_0_r, Nat.pow_1_r in H1.
+remember (rad * (i + 3)) as n eqn:Hn.
+remember (n - i - 1) as s eqn:Hs.
+move s before n.
+assert (His : i + 2 ≤ n - 1). {
+  rewrite Hn.
+  specialize radix_ne_0 as H.
+  destruct rad; [ easy | simpl; flia ].
+}
+assert (H2 : nA i n u - rad ^ s ≥ (rad - 1) * rad ^ (n - i - 2)). {
+  rewrite nA_split_first; [ | flia His ].
+  replace (n - i - 2) with (s - 1) by flia Hs.
+  rewrite Nat.add_sub_swap.
+  -replace (rad ^ s) with (rad ^ (1 + (s - 1))).
+   +rewrite Nat.pow_add_r.
+    rewrite <- Nat.mul_sub_distr_r, Nat.pow_1_r.
 ...
 
 Theorem A_ge_1_add_all_first {r : radix} : ∀ u i,
