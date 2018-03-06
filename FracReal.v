@@ -3138,7 +3138,11 @@ specialize (A_ge_1_add_all_first u i Hur (Hu 0)) as [[H1| H1]| H1].
        rewrite summation_rtl.
        rewrite summation_shift; [ | flia His ].
        replace (n - 1 - (S (S i) + 1)) with (s - 1) by flia Hs.
-
+...
+nA_upper_bound_for_add :
+∀ (r : radix) (rg : ord_ring := nat_ord_ring) (u : nat → nat),
+(∀ i : nat, u i ≤ 2 * (rad - 1))
+→ ∀ (i k : nat) (n := rad * (i + k + 3)) (s := rad ^ (n - i - 1)), nA i n u ≤ 2 * (s - 1)
 ...
    remember (2 * rad ^ (s - 1)) as x eqn:Hx.
    rewrite Nat.add_sub_assoc.
