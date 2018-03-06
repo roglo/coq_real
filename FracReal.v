@@ -3254,6 +3254,7 @@ destruct k; [ rewrite Nat.add_0_r | ].
    replace (n - i - 2) with (s - 1) by flia Hs Hin.
    rewrite Nat.add_assoc.
    rewrite Hui.
+...
    replace (rad ^ 2 - 1) with (rad ^ 2 - 2 + 1).
    -rewrite Nat.mul_add_distr_r.
     rewrite Nat.mul_1_l.
