@@ -3254,9 +3254,38 @@ destruct k; [ rewrite Nat.add_0_r | ].
    replace (n - i - 2) with (s - 1) by flia Hs Hin.
    rewrite Nat.add_assoc.
    rewrite Hui.
-...
-   replace (rad ^ 2 - 1) with (rad ^ 2 - rad - 1 + rad ^ 1).
+   replace (rad ^ 2 - 1) with (rad ^ 2 - 2 + 1).
    -rewrite Nat.mul_add_distr_r.
+    rewrite Nat.mul_1_l.
+    apply Nat.add_le_lt_mono.
+    +replace (rad ^ 2 - 2) with (rad ^ 2 - 2 * rad + 2 * (rad - 1)).
+     *rewrite Nat.mul_add_distr_r.
+      apply Nat.add_le_mono.
+     --rewrite Nat.pow_2_r.
+       rewrite <- Nat.mul_sub_distr_r.
+       rewrite <- Nat.mul_assoc.
+       apply Nat.mul_le_mono_l.
+       replace rad with (rad ^ 1) at 2 by apply Nat.pow_1_r.
+       rewrite <- Nat.pow_add_r.
+       now replace (1 + (s - 2)) with (s - 1) by flia Hs Hin.
+     --apply Nat.mul_le_mono_r, Hur.
+     *rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+      rewrite Nat.add_sub_assoc; [ | flia Hr ].
+      f_equal; rewrite Nat.sub_add ; [ easy | ].
+      rewrite Nat.pow_2_r.
+      now apply Nat.mul_le_mono_r.
+    +rewrite nA_split_first; [ | flia Hin ].
+     replace (S (S i) + 1) with (i + 3) by flia.
+     replace (n - S (S i) - 2) with (s - 3) by flia Hs.
+(* non *)
+...
+nA_upper_bound_for_add_2
+     : ∀ (u : nat → nat) (i n : nat),
+       (∀ k : nat, u k ≤ 2 * (rad - 1))
+       → u (i + 1) = rad - 2
+         → u (i + 2) < rad
+           → i + 3 ≤ n - 1 → nA i n u < (rad ^ 2 - 1) * rad ^ (n - i - 1 - 2)
+...
     rewrite <- Nat.pow_add_r.
     replace (1 + (s - 2)) with (s - 1) by flia Hs Hin.
     apply Nat.add_le_lt_mono.
