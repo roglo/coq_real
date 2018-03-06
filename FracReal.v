@@ -3254,12 +3254,11 @@ destruct k; [ rewrite Nat.add_0_r | ].
    replace (n - i - 2) with (s - 1) by flia Hs Hin.
    rewrite Nat.add_assoc.
    rewrite Hui.
-...
-   replace (rad ^ 2 - 1) with (rad ^ 2 - 2 + 1).
+   replace (rad ^ 2 - 1) with (rad ^ 2 - 3 + 2).
    -rewrite Nat.mul_add_distr_r.
-    rewrite Nat.mul_1_l.
     apply Nat.add_le_lt_mono.
-    +replace (rad ^ 2 - 2) with (rad ^ 2 - 2 * rad + 2 * (rad - 1)).
+...
+    +replace (rad ^ 2 - 3) with (rad ^ 2 - 3 * rad + 2 * (rad - 1)).
      *rewrite Nat.mul_add_distr_r.
       apply Nat.add_le_mono.
      --rewrite Nat.pow_2_r.
