@@ -3053,6 +3053,18 @@ destruct (lt_dec (u (i + 1)) rad) as [H2| H2].
  now specialize (A_ge_1_add_first_ge_rad u i Hur Hu H2) as H3.
 Qed.
 
+Theorem A_ge_1_add_any {r : radix} : ∀ u i k,
+  (∀ k, u k ≤ 2 * (rad - 1))
+  → (∀ k, A_ge_1 i u k = true)
+  → { u (i + k + 1) = rad - 2 } +
+     { u (i + k + 1) = rad - 1 } +
+     { u (i + k + 1) = 2 * (rad - 1) }.
+Proof.
+intros * Hur Hu.
+specialize (A_ge_1_add_first u i Hur (Hu 0)) as H1.
+destruct H1 as [[H1| H1]| H1].
+...
+
 Theorem A_ge_1_add_second {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
   → u (i + 1) = rad - 2
