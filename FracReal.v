@@ -3283,10 +3283,10 @@ destruct k; [ rewrite Nat.add_0_r | ].
      rewrite Nat.pow_add_r, Nat.mul_assoc.
      replace (rad ^ 1) with (rad - 1 + 1).
      *rewrite Nat.mul_add_distr_l.
-
-      apply Nat.add_lt_mono.
-      rewrite Nat.mul_shuffle0.
-      apply Nat.mul_lt_mono_pos_r.
+      apply Nat.add_le_lt_mono.
+     --rewrite Nat.mul_shuffle0.
+       apply Nat.mul_le_mono_r.
+       apply Hur.
 ...
     rewrite <- Nat.pow_add_r.
     replace (1 + (s - 2)) with (s - 1) by flia Hs Hin.
