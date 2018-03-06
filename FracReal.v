@@ -3161,12 +3161,7 @@ destruct k; [ rewrite Nat.add_0_r | ].
  specialize (Hu 1) as H2.
  revert H2.
  apply Decidable.contrapositive; [ apply Nat.eq_decidable | ].
- intros H.
- assert (H2 : u (i + 2) < 2 * (rad - 1)). {
-   specialize (Hur (i + 2)).
-   flia Hur H.
- }
- clear H.
+ intros H; clear H.
  apply Bool.not_true_iff_false.
  apply A_ge_1_false_iff.
  remember (rad * (i + 1 + 3)) as n eqn:Hn.
@@ -3178,7 +3173,6 @@ destruct k; [ rewrite Nat.add_0_r | ].
    destruct rr; [ flia Hr | simpl; flia ].
  }
  assert (H3 : nA i n u < (rad ^ 2 - 1) * rad ^ (s - 2)). {
-
 ...
  }
  rewrite Nat.mod_small; [ easy | ].
@@ -3187,8 +3181,7 @@ destruct k; [ rewrite Nat.add_0_r | ].
  rewrite Nat.mul_1_l, <- Nat.pow_add_r.
  replace (2 + (s - 2)) with s by flia Hs Hin.
  apply Nat.le_sub_l.
-Qed.
-
+-idtac.
 ...
 
 Theorem A_ge_1_add_all_true_if {r : radix} : ∀ u i,
