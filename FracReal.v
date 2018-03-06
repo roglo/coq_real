@@ -3080,7 +3080,7 @@ specialize (A_ge_1_add_all_first u i Hur (Hu 0)) as [[H1| H1]| H1].
  intros j.
  induction j.
  +rewrite Nat.add_0_r.
-  assert (H2 : u (i + 2) ≥ rad - 1). {
+  assert (H2 : u (i + 2) ≥ rad). {
     specialize (Hu 1) as H2.
     revert H2.
     apply Decidable.contrapositive; [ apply Nat.le_decidable | ].
@@ -3105,7 +3105,63 @@ specialize (A_ge_1_add_all_first u i Hur (Hu 0)) as [[H1| H1]| H1].
      replace (S i + 1) with (i + 2) by flia.
      replace (n - S i - 2) with (s - 2) by flia Hs.
      rewrite Nat.add_assoc.
+     replace (rad ^ 2 - 1) with (rad ^ 2 - rad - 1 + rad ^ 1).
+     +rewrite Nat.mul_add_distr_r.
+      rewrite <- Nat.pow_add_r.
+      replace (1 + (s - 2)) with (s - 1) by flia Hs His.
+      apply Nat.add_le_lt_mono.
+      *replace (rad ^ 2 - rad - 1) with (rad ^ 2 - 2 * rad + (rad - 1)).
+      --rewrite Nat.mul_add_distr_r.
+        rewrite Nat.pow_2_r, <- Nat.mul_sub_distr_r.
+        rewrite <- Nat.mul_assoc.
+        replace (rad * rad ^ (s - 2)) with (rad ^ (s - 1)).
+       ++apply Nat.add_le_mono_l.
+         apply Nat.mul_le_mono_r.
+         flia H2.
+       ++replace rad with (rad ^ 1) at 2 by apply Nat.pow_1_r.
+         rewrite <- Nat.pow_add_r.
+         now replace (1 + (s - 2)) with (s - 1) by flia Hs His.
+      --rewrite Nat.add_sub_assoc; [ f_equal | flia H2 ].
+        replace (2 * rad) with (rad + rad) by flia.
+        rewrite Nat.sub_add_distr.
+        rewrite Nat.sub_add; [ easy | ].
+        rewrite Nat.pow_2_r.
+        specialize radix_ge_2 as Hr.
+        destruct rad as [| rr]; [ easy | ].
+        destruct rr; [ flia Hr | simpl; flia ].
+      *destruct s; [ flia Hs His | ].
+       destruct s; [ flia Hs His | ].
+       replace (S (S s) - 1) with (S s) by flia.
+       rewrite power_summation; [ | easy ].
+       apply -> Nat.succ_le_mono.
+       unfold nA.
+       rewrite summation_rtl.
+       rewrite summation_shift; [ | flia His ].
+       replace (n - 1 - (S (S i) + 1)) with (s - 1) by flia Hs.
 
+...
+   remember (2 * rad ^ (s - 1)) as x eqn:Hx.
+   rewrite Nat.add_sub_assoc.
+   +rewrite Nat.sub_add.
+    *apply Nat.sub_lt; [ | flia ].
+     destruct s; [ flia Hs His | ].
+     destruct s; [ flia Hs His | ].
+     replace (S (S s) - 1) with (S s) by flia.
+     replace 2 with (1 * 2) by flia.
+     apply Nat.mul_le_mono; [ flia H1 | ].
+     replace 2 with (2 ^ 1) by apply Nat.pow_1_r.
+     apply Nat.pow_le_mono; [ easy | apply radix_ge_2 | flia ].
+    *subst x.
+     destruct rad as [| rr]; [ easy | ].
+     destruct rr; [ easy | ].
+     destruct rr; [ easy | simpl; flia ].
+   +replace 2 with (2 * 1) by flia.
+    rewrite Hx.
+    apply Nat.mul_le_mono_l.
+    now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+...
+  ============================
+  rad ^ 2 - 2 * rad + (rad - 1) = rad ^ 2 - rad - 1
 ...
    specialize radix_ge_2 as Hr.
    replace (rad - 1) with (rad - 2 + 1) in H2 by flia Hr.
