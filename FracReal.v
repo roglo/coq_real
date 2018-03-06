@@ -3279,12 +3279,14 @@ destruct k; [ rewrite Nat.add_0_r | ].
     +rewrite nA_split_first; [ | flia Hin ].
      replace (S (S i) + 1) with (i + 3) by flia.
      replace (n - S (S i) - 2) with (s - 3) by flia Hs.
-...
      replace (s - 2) with (s - 3 + 1) by flia Hs Hin.
      rewrite Nat.pow_add_r, Nat.mul_assoc.
-     replace (rad ^ 1) with (1 + (rad - 1)).
-     *rewrite Nat.mul_add_distr_l, Nat.mul_1_r.
+     replace (rad ^ 1) with (rad - 1 + 1).
+     *rewrite Nat.mul_add_distr_l.
+
       apply Nat.add_lt_mono.
+      rewrite Nat.mul_shuffle0.
+      apply Nat.mul_lt_mono_pos_r.
 ...
     rewrite <- Nat.pow_add_r.
     replace (1 + (s - 2)) with (s - 1) by flia Hs Hin.
