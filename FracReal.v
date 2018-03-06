@@ -3329,6 +3329,7 @@ induction k as (k, IHk) using lt_wf_rec.
 destruct k.
 -specialize (A_ge_1_add_second_eq u i Hur (Hu _) Hui) as H1.
  now rewrite Nat.add_0_r.
+-idtac.
 ...
 
 Theorem A_ge_1_add_all_true_if {r : radix} : ∀ u i,
