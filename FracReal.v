@@ -3080,22 +3080,33 @@ specialize (A_ge_1_add_all_first u i Hur (Hu 0)) as [[H1| H1]| H1].
  intros j.
  induction j.
  +rewrite Nat.add_0_r.
-  specialize (Hu 0) as H2.
-  apply A_ge_1_true_iff in H2.
-  rewrite Nat.add_0_r, Nat.sub_0_r, Nat.pow_1_r in H2.
-  remember (rad * (i + 3)) as n eqn:Hn.
-  remember (n - i - 1) as s eqn:Hs.
-  move s before n.
-  assert (His : i + 3 ≤ n - 1). {
-    rewrite Hn.
-    specialize radix_ge_2 as Hr.
-    destruct rad as [| rr]; [ easy | ].
-    destruct rr; [ flia Hr | simpl; flia ].
-  }
-  rewrite Nat.mod_small in H2.
-  *rewrite nA_split_first in H2; [ | flia His ].
-   rewrite H1 in H2.
-   replace (n - i - 2) with (s - 1) in H2 by flia Hs.
+  assert (H2 : u (i + 2) ≥ rad - 1). {
+    specialize (Hu 1) as H2.
+    revert H2.
+    apply Decidable.contrapositive; [ apply Nat.le_decidable | ].
+    intros H2; apply Nat.nle_gt in H2.
+    apply Bool.not_true_iff_false.
+    apply A_ge_1_false_iff.
+    replace (i + 1 + 3) with (i + 4) by flia.
+    remember (rad * (i + 4)) as n eqn:Hn.
+    remember (n - i - 1) as s eqn:Hs.
+    move s before n.
+    assert (His : i + 3 ≤ n - 1). {
+      rewrite Hn.
+      specialize radix_ge_2 as Hr.
+      destruct rad as [| rr]; [ easy | ].
+      destruct rr; [ flia Hr | simpl; flia ].
+    }
+    rewrite Nat.mod_small.
+    -rewrite nA_split_first; [ | flia His ].
+     rewrite H1.
+     replace (n - i - 2) with (s - 1) by flia Hs.
+     rewrite nA_split_first; [ | flia His ].
+     replace (S i + 1) with (i + 2) by flia.
+     replace (n - S i - 2) with (s - 2) by flia Hs.
+     rewrite Nat.add_assoc.
+
+...
    specialize radix_ge_2 as Hr.
    replace (rad - 1) with (rad - 2 + 1) in H2 by flia Hr.
    rewrite Nat.mul_add_distr_r, Nat.mul_1_l in H2.
