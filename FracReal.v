@@ -3241,6 +3241,7 @@ destruct k; [ rewrite Nat.add_0_r | ].
  }
  assert (H3 : nA i n u < (rad ^ 2 - 1) * rad ^ (s - 2)). {
    subst s.
+(* wrong! 8/18/18 < 990 is false *)
 ...
  }
  rewrite Nat.mod_small; [ easy | ].
