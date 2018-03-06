@@ -3114,6 +3114,73 @@ replace (rad ^ 2 - 1) with (rad ^ 2 - rad - 1 + rad ^ 1).
  destruct rr; [ flia Hr | simpl; flia ].
 Qed.
 
+(*
+Theorem nA_upper_bound_for_add_3 {r : radix} : ∀ u i n,
+  (∀ k, u k ≤ 2 * (rad - 1))
+  → u (i + 1) = rad - 2
+  → i + 3 ≤ n - 1
+  → nA i n u < (rad ^ 2 - 1) * rad ^ (n - i - 1 - 2).
+Proof.
+intros * Hur H1 Hin.
+specialize radix_ge_2 as Hr; move Hr before i.
+remember (n - i - 1) as s eqn:Hs; move s before n.
+rewrite nA_split_first; [ | flia Hin ].
+rewrite H1.
+replace (n - i - 2) with (s - 1) by flia Hs.
+rewrite nA_split_first; [ | flia Hin ].
+replace (S i + 1) with (i + 2) by flia.
+replace (n - S i - 2) with (s - 2) by flia Hs.
+rewrite Nat.add_assoc.
+replace (rad ^ 2 - 1) with (rad ^ 2 - rad - 1 + rad ^ 1).
+-rewrite Nat.mul_add_distr_r.
+ rewrite <- Nat.pow_add_r.
+ replace (1 + (s - 2)) with (s - 1) by flia Hs Hin.
+ apply Nat.add_le_lt_mono.
+ +replace (rad ^ 2 - rad - 1) with (rad ^ 2 - 2 * rad + (rad - 1)).
+  *rewrite Nat.mul_add_distr_r.
+   rewrite Nat.pow_2_r, <- Nat.mul_sub_distr_r.
+   rewrite <- Nat.mul_assoc.
+   destruct (lt_dec (u (i + 2)) rad) as [H2| H2].
+  --replace (rad * rad ^ (s - 2)) with (rad ^ (s - 1)).
+   ++apply Nat.add_le_mono_l.
+     apply Nat.mul_le_mono_r.
+     flia H2.
+   ++replace rad with (rad ^ 1) at 2 by apply Nat.pow_1_r.
+     rewrite <- Nat.pow_add_r.
+     now replace (1 + (s - 2)) with (s - 1) by flia Hs Hin.
+  --apply Nat.nlt_ge in H2.
+...
+  *rewrite Nat.add_sub_assoc; [ f_equal | flia H2 ].
+   replace (2 * rad) with (rad + rad) by flia.
+   rewrite Nat.sub_add_distr.
+   rewrite Nat.sub_add; [ easy | ].
+   rewrite Nat.pow_2_r.
+   destruct rad as [| rr]; [ easy | ].
+   destruct rr; [ flia Hr | simpl; flia ].
+ +assert (H3 : S (S i) + 1 ≤ n - 1) by flia Hin.
+  specialize (nA_upper_bound_for_add u Hur (S (S i)) n H3) as H4.
+  remember 2 as x; simpl in H4; subst x.
+  replace (n - S (S i) - 1) with (s - 2) in H4 by flia Hs.
+  eapply le_lt_trans; [ apply H4 | ].
+  destruct s; [ flia Hs Hin | ].
+  destruct s; [ flia Hs Hin | ].
+  replace (S (S s) - 2) with s by flia.
+  replace (S (S s) - 1) with (S s) by flia.
+  apply lt_le_trans with (m := 2 * rad ^ s).
+  *rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+   apply Nat.sub_lt; [ | flia ].
+   replace 2 with (2 * 1) at 1 by flia.
+   apply Nat.mul_le_mono_l.
+   now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+  *rewrite Nat.pow_succ_r; [ | flia ].
+   apply Nat.mul_le_mono_r, radix_ge_2.
+-rewrite Nat.pow_1_r, Nat_sub_sub_swap.
+ rewrite Nat.sub_add; [ easy | ].
+ destruct rad as [| rr]; [ easy | ].
+ destruct rr; [ flia Hr | simpl; flia ].
+Qed.
+*)
+
 Theorem A_ge_1_add_8_aft_ge_rad {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
   → A_ge_1 i u 1 = true
@@ -3173,6 +3240,7 @@ destruct k; [ rewrite Nat.add_0_r | ].
    destruct rr; [ flia Hr | simpl; flia ].
  }
  assert (H3 : nA i n u < (rad ^ 2 - 1) * rad ^ (s - 2)). {
+   subst s.
 ...
  }
  rewrite Nat.mod_small; [ easy | ].
