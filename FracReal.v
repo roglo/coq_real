@@ -3223,12 +3223,19 @@ intros * Hur Hu Hui *.
 specialize radix_ge_2 as Hr; move Hr before i.
 induction k as (k, IHk) using lt_wf_rec.
 destruct k; [ rewrite Nat.add_0_r | ].
--specialize (A_ge_1_add_8_aft_ge_rad u i Hur (Hu 1) Hui) as H1.
- clear IHk.
+-clear IHk.
+(*
+ specialize (A_ge_1_add_8_aft_ge_rad u i Hur (Hu 1) Hui) as H1.
+*)
  specialize (Hu 1) as H2.
  revert H2.
  apply Decidable.contrapositive; [ apply Nat.eq_decidable | ].
- intros H; clear H.
+ intros H.
+ assert (H2 : u (i + 2) < 2 * (rad - 1)). {
+   specialize (Hur (i + 2)).
+   flia Hur H.
+ }
+ clear H.
  apply Bool.not_true_iff_false.
  apply A_ge_1_false_iff.
  remember (rad * (i + 1 + 3)) as n eqn:Hn.
@@ -3239,11 +3246,27 @@ destruct k; [ rewrite Nat.add_0_r | ].
    destruct rad as [| rr]; [ easy | ].
    destruct rr; [ flia Hr | simpl; flia ].
  }
-...
-
  assert (H3 : nA i n u < (rad ^ 2 - 1) * rad ^ (s - 2)). {
-   subst s.
-(* wrong! 8/18/18 < 990 is false *)
+   rewrite nA_split_first; [ | flia Hin ].
+   rewrite nA_split_first; [ | flia Hin ].
+   replace (S i + 1) with (i + 2) by flia.
+   replace (n - S i - 2) with (s - 2) by flia Hs.
+   replace (n - i - 2) with (s - 1) by flia Hs Hin.
+   rewrite Nat.add_assoc.
+   rewrite Hui.
+...
+   replace (rad ^ 2 - 1) with (rad ^ 2 - rad - 1 + rad ^ 1).
+   -rewrite Nat.mul_add_distr_r.
+    rewrite <- Nat.pow_add_r.
+    replace (1 + (s - 2)) with (s - 1) by flia Hs Hin.
+    apply Nat.add_le_lt_mono.
+    +replace (rad ^ 2 - rad - 1) with (rad ^ 2 - 2 * rad + (rad - 1)).
+     *rewrite Nat.mul_add_distr_r.
+      rewrite Nat.pow_2_r, <- Nat.mul_sub_distr_r.
+      rewrite <- Nat.mul_assoc.
+      replace (rad * rad ^ (s - 2)) with (rad ^ (s - 1)).
+    --apply Nat.add_le_mono_l.
+      apply Nat.mul_le_mono_r.
 ...
  }
  rewrite Nat.mod_small; [ easy | ].
