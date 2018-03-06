@@ -3317,6 +3317,23 @@ replace (2 + (s - 2)) with s by flia Hs Hin.
 apply Nat.le_sub_l.
 Qed.
 
+Theorem nA_split {r : radix} : ∀ u i n e,
+  i + 1 ≤ e - 1 ≤ n - 1
+  → nA i n u = nA i e u * rad ^ (n - e) + nA (e - 1) n u.
+Proof.
+intros * Hin.
+unfold nA.
+rewrite summation_split with (e0 := e - 1); [ | easy ].
+simpl; f_equal.
++rewrite summation_mul_distr_r.
+ apply summation_eq_compat.
+ intros j Hj; simpl.
+ rewrite <- Nat.mul_assoc; f_equal.
+ rewrite <- Nat.pow_add_r.
+ now replace (e - 1 - j + (n - e)) with (n - 1 - j) by flia Hin Hj.
++now rewrite Nat.add_1_r.
+Qed.
+
 Theorem A_ge_1_add_8_eq {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
   → (∀ k, A_ge_1 i u k = true)
@@ -3329,7 +3346,31 @@ induction k as (k, IHk) using lt_wf_rec.
 destruct k.
 -specialize (A_ge_1_add_second_eq u i Hur (Hu _) Hui) as H1.
  now rewrite Nat.add_0_r.
--idtac.
+-move k before i.
+ specialize (Hu k) as H2.
+ replace (i + S k + 2) with (i + k + 3) by flia.
+ revert H2.
+ apply Decidable.contrapositive; [ apply Nat.eq_decidable | ].
+ intros H.
+ assert (H2 : u (i + k + 3) < 2 * (rad - 1)). {
+   specialize (Hur (i + k + 3)).
+   flia Hur H.
+ }
+ clear H.
+ apply Bool.not_true_iff_false.
+ apply A_ge_1_false_iff.
+ remember (rad * (i + k + 3)) as n eqn:Hn.
+ replace (n - i - k - 2) with (n - i - 1 - S k) by flia.
+ remember (n - i - 1) as s eqn:Hs.
+ move s before n.
+ assert (Hin : i + k + 1 ≤ n - 1). {
+   rewrite Hn.
+   destruct rad; [ easy | simpl; flia ].
+ }
+ assert (H3 : nA i n u < (rad ^ S k - 1) * rad ^ (s - S k)). {
+   rewrite nA_split with (e := i + k + 2); [ | flia Hin ].
+   remember (i + k + 2) as j eqn:Hj.
+   move j before i.
 ...
 
 Theorem A_ge_1_add_all_true_if {r : radix} : ∀ u i,
@@ -3608,7 +3649,7 @@ apply digit_eq_eq.
 remember (rad * (i + 3)) as n eqn:Hn.
 remember (rad ^ (n - i - 1)) as s eqn:Hs.
 move s before n.
-assert (His : i + 1 ≤ n - 1). {
+assert (Hin : i + 1 ≤ n - 1). {
   rewrite Hn.
   specialize radix_ne_0 as H.
   destruct rad; [ easy | simpl; flia ].
