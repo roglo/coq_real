@@ -2891,7 +2891,7 @@ apply Nat.mul_le_mono_r.
 apply Hur.
 Qed.
 
-Theorem A_ge_1_add_all_first_ge {r : radix} : ∀ u i,
+Theorem A_ge_1_add_first_ge {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
   → A_ge_1 i u 0 = true
   → u (i + 1) ≥ rad - 2.
@@ -2970,7 +2970,7 @@ replace (1 + (s - 1)) with s by flia Hs His.
 flia.
 Qed.
 
-Theorem A_ge_1_add_all_first_ge_rad {r : radix} : ∀ u i,
+Theorem A_ge_1_add_first_ge_rad {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
   → A_ge_1 i u 0 = true
   → u (i + 1) ≥ rad
@@ -3027,14 +3027,14 @@ assert (H4 : A_ge_1 i v 0 = true). {
   rewrite Nat.add_0_r, Nat.pow_1_r, Nat.sub_0_r.
   now rewrite <- Hn, <- Hs.
 }
-specialize (A_ge_1_add_all_first_ge v i H3 H4) as H5.
+specialize (A_ge_1_add_first_ge v i H3 H4) as H5.
 unfold v in H5.
 destruct (Nat.eq_dec (i + 1) (i + 1)) as [H6| ]; [ | easy ].
 specialize (Hur (i + 1)).
 flia Hur Hui H5.
 Qed.
 
-Theorem A_ge_1_add_all_first {r : radix} : ∀ u i,
+Theorem A_ge_1_add_first {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
   → A_ge_1 i u 0 = true
   → { u (i + 1) = rad - 2 } +
@@ -3042,7 +3042,7 @@ Theorem A_ge_1_add_all_first {r : radix} : ∀ u i,
      { u (i + 1) = 2 * (rad - 1) }.
 Proof.
 intros * Hur Hu.
-specialize (A_ge_1_add_all_first_ge u i Hur Hu) as H1.
+specialize (A_ge_1_add_first_ge u i Hur Hu) as H1.
 destruct (lt_dec (u (i + 1)) rad) as [H2| H2].
 -left.
  destruct (lt_dec (u (i + 1)) (rad - 1)) as [H3| H3].
@@ -3050,7 +3050,90 @@ destruct (lt_dec (u (i + 1)) rad) as [H2| H2].
  +right; flia H2 H3.
 -right.
  apply Nat.nlt_ge in H2.
- now specialize (A_ge_1_add_all_first_ge_rad u i Hur Hu H2) as H3.
+ now specialize (A_ge_1_add_first_ge_rad u i Hur Hu H2) as H3.
+Qed.
+
+Theorem A_ge_1_add_second {r : radix} : ∀ u i,
+  (∀ k, u k ≤ 2 * (rad - 1))
+  → u (i + 1) = rad - 2
+  → A_ge_1 i u 1 = true
+  → u (i + 2) ≥ rad.
+Proof.
+intros * Hur H1 H2.
+specialize radix_ge_2 as Hr; move Hr before i.
+revert H2.
+apply Decidable.contrapositive; [ apply Nat.le_decidable | ].
+intros H2; apply Nat.nle_gt in H2.
+apply Bool.not_true_iff_false.
+apply A_ge_1_false_iff.
+replace (i + 1 + 3) with (i + 4) by flia.
+remember (rad * (i + 4)) as n eqn:Hn.
+remember (n - i - 1) as s eqn:Hs.
+move s before n.
+assert (Hin : i + 3 ≤ n - 1). {
+  rewrite Hn.
+  destruct rad as [| rr]; [ easy | ].
+  destruct rr; [ flia Hr | simpl; flia ].
+}
+assert (H3 : nA i n u < (rad ^ 2 - 1) * rad ^ (s - 2)). {
+  rewrite nA_split_first; [ | flia Hin ].
+  rewrite H1.
+  replace (n - i - 2) with (s - 1) by flia Hs.
+  rewrite nA_split_first; [ | flia Hin ].
+  replace (S i + 1) with (i + 2) by flia.
+  replace (n - S i - 2) with (s - 2) by flia Hs.
+  rewrite Nat.add_assoc.
+  replace (rad ^ 2 - 1) with (rad ^ 2 - rad - 1 + rad ^ 1).
+  -rewrite Nat.mul_add_distr_r.
+   rewrite <- Nat.pow_add_r.
+   replace (1 + (s - 2)) with (s - 1) by flia Hs Hin.
+   apply Nat.add_le_lt_mono.
+   +replace (rad ^ 2 - rad - 1) with (rad ^ 2 - 2 * rad + (rad - 1)).
+    *rewrite Nat.mul_add_distr_r.
+     rewrite Nat.pow_2_r, <- Nat.mul_sub_distr_r.
+     rewrite <- Nat.mul_assoc.
+     replace (rad * rad ^ (s - 2)) with (rad ^ (s - 1)).
+    --apply Nat.add_le_mono_l.
+      apply Nat.mul_le_mono_r.
+      flia H2.
+    --replace rad with (rad ^ 1) at 2 by apply Nat.pow_1_r.
+      rewrite <- Nat.pow_add_r.
+      now replace (1 + (s - 2)) with (s - 1) by flia Hs Hin.
+    *rewrite Nat.add_sub_assoc; [ f_equal | flia H2 ].
+     replace (2 * rad) with (rad + rad) by flia.
+     rewrite Nat.sub_add_distr.
+     rewrite Nat.sub_add; [ easy | ].
+     rewrite Nat.pow_2_r.
+     destruct rad as [| rr]; [ easy | ].
+     destruct rr; [ flia Hr | simpl; flia ].
+   +assert (H3 : S (S i) + 1 ≤ n - 1) by flia Hin.
+    specialize (nA_upper_bound_for_add u Hur (S (S i)) n H3) as H4.
+    remember 2 as x; simpl in H4; subst x.
+    replace (n - S (S i) - 1) with (s - 2) in H4 by flia Hs.
+    eapply le_lt_trans; [ apply H4 | ].
+    destruct s; [ flia Hs Hin | ].
+    destruct s; [ flia Hs Hin | ].
+    replace (S (S s) - 2) with s by flia.
+    replace (S (S s) - 1) with (S s) by flia.
+    apply lt_le_trans with (m := 2 * rad ^ s).
+    *rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+     apply Nat.sub_lt; [ | flia ].
+     replace 2 with (2 * 1) at 1 by flia.
+     apply Nat.mul_le_mono_l.
+     now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+    *rewrite Nat.pow_succ_r; [ | flia ].
+     apply Nat.mul_le_mono_r, radix_ge_2.
+  -rewrite Nat.pow_1_r, Nat_sub_sub_swap.
+   rewrite Nat.sub_add; [ easy | ].
+   destruct rad as [| rr]; [ easy | ].
+   destruct rr; [ flia Hr | simpl; flia ].
+}
+rewrite Nat.mod_small; [ easy | ].
+eapply lt_le_trans; [ apply H3 | ].
+rewrite Nat.mul_sub_distr_r.
+rewrite Nat.mul_1_l, <- Nat.pow_add_r.
+replace (2 + (s - 2)) with s by flia Hs Hin.
+apply Nat.le_sub_l.
 Qed.
 
 Theorem A_ge_1_add_all_true_if {r : radix} : ∀ u i,
@@ -3065,7 +3148,7 @@ Theorem A_ge_1_add_all_true_if {r : radix} : ∀ u i,
 Proof.
 intros * Hur Hu.
 specialize radix_ge_2 as Hr; move Hr before i.
-specialize (A_ge_1_add_all_first u i Hur (Hu 0)) as [[H1| H1]| H1].
+specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
 -right.
  exists 0.
  rewrite Nat.add_0_r.
@@ -3074,102 +3157,10 @@ specialize (A_ge_1_add_all_first u i Hur (Hu 0)) as [[H1| H1]| H1].
  intros j.
  induction j.
  +rewrite Nat.add_0_r.
-  assert (H2 : u (i + 2) ≥ rad). {
-    specialize (Hu 1) as H2.
-    revert H2.
-    apply Decidable.contrapositive; [ apply Nat.le_decidable | ].
-    intros H2; apply Nat.nle_gt in H2.
-    apply Bool.not_true_iff_false.
-    apply A_ge_1_false_iff.
-    replace (i + 1 + 3) with (i + 4) by flia.
-    remember (rad * (i + 4)) as n eqn:Hn.
-    remember (n - i - 1) as s eqn:Hs.
-    move s before n.
-    assert (Hin : i + 3 ≤ n - 1). {
-      rewrite Hn.
-      destruct rad as [| rr]; [ easy | ].
-      destruct rr; [ flia Hr | simpl; flia ].
-    }
-    assert (H3 : nA i n u < (rad ^ 2 - 1) * rad ^ (s - 2)). {
-      rewrite nA_split_first; [ | flia Hin ].
-      rewrite H1.
-      replace (n - i - 2) with (s - 1) by flia Hs.
-      rewrite nA_split_first; [ | flia Hin ].
-      replace (S i + 1) with (i + 2) by flia.
-      replace (n - S i - 2) with (s - 2) by flia Hs.
-      rewrite Nat.add_assoc.
-      replace (rad ^ 2 - 1) with (rad ^ 2 - rad - 1 + rad ^ 1).
-      -rewrite Nat.mul_add_distr_r.
-       rewrite <- Nat.pow_add_r.
-       replace (1 + (s - 2)) with (s - 1) by flia Hs Hin.
-       apply Nat.add_le_lt_mono.
-       +replace (rad ^ 2 - rad - 1) with (rad ^ 2 - 2 * rad + (rad - 1)).
-        *rewrite Nat.mul_add_distr_r.
-         rewrite Nat.pow_2_r, <- Nat.mul_sub_distr_r.
-         rewrite <- Nat.mul_assoc.
-         replace (rad * rad ^ (s - 2)) with (rad ^ (s - 1)).
-        --apply Nat.add_le_mono_l.
-          apply Nat.mul_le_mono_r.
-          flia H2.
-        --replace rad with (rad ^ 1) at 2 by apply Nat.pow_1_r.
-          rewrite <- Nat.pow_add_r.
-          now replace (1 + (s - 2)) with (s - 1) by flia Hs Hin.
-        *rewrite Nat.add_sub_assoc; [ f_equal | flia H2 ].
-         replace (2 * rad) with (rad + rad) by flia.
-         rewrite Nat.sub_add_distr.
-         rewrite Nat.sub_add; [ easy | ].
-         rewrite Nat.pow_2_r.
-         destruct rad as [| rr]; [ easy | ].
-         destruct rr; [ flia Hr | simpl; flia ].
-       +assert (H3 : S (S i) + 1 ≤ n - 1) by flia Hin.
-        specialize (nA_upper_bound_for_add u Hur (S (S i)) n H3) as H4.
-        remember 2 as x; simpl in H4; subst x.
-        replace (n - S (S i) - 1) with (s - 2) in H4 by flia Hs.
-        eapply le_lt_trans; [ apply H4 | ].
-        destruct s; [ flia Hs Hin | ].
-        destruct s; [ flia Hs Hin | ].
-        replace (S (S s) - 2) with s by flia.
-        replace (S (S s) - 1) with (S s) by flia.
-        apply lt_le_trans with (m := 2 * rad ^ s).
-        *rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
-         apply Nat.sub_lt; [ | flia ].
-         replace 2 with (2 * 1) at 1 by flia.
-         apply Nat.mul_le_mono_l.
-         now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-        *rewrite Nat.pow_succ_r; [ | flia ].
-         apply Nat.mul_le_mono_r, radix_ge_2.
-      -rewrite Nat.pow_1_r, Nat_sub_sub_swap.
-       rewrite Nat.sub_add; [ easy | ].
-       destruct rad as [| rr]; [ easy | ].
-       destruct rr; [ flia Hr | simpl; flia ].
-    }
-    rewrite Nat.mod_small; [ easy | ].
-...
-   specialize radix_ge_2 as Hr.
-   replace (rad - 1) with (rad - 2 + 1) in H2 by flia Hr.
-   rewrite Nat.mul_add_distr_r, Nat.mul_1_l in H2.
-   apply Nat.add_le_mono_l in H2.
-   rewrite nA_split_first in H2; [ | flia His ].
-   unfold nA in H2.
-   rewrite summation_rtl in H2.
-   rewrite summation_shift in H2; [ | flia His ].
-   replace (n - 1 - (S (S i) + 1)) with (s - 3) in H2 by flia Hs His.
-   replace (S i + 1) with (i + 2) in H2 by flia.
-   destruct s; [ flia Hs His | ].
-   destruct s; [ flia Hs His | ].
-   replace (S (S s) - 1) with (S s) in H2 by flia.
-   replace (S (S s) - 3) with (s - 1) in H2 by flia.
-   rewrite power_summation in H2; [ | easy ].
-   replace s with (S (s - 1)) in H2 at 1 by flia Hs His.
-   rewrite summation_split_last in H2; [ | flia ].
-   rewrite Nat.add_comm in H2.
-   remember summation as f; simpl in H2; subst f.
-   rewrite Nat.mul_add_distr_l in H2.
-   rewrite <- Nat.add_assoc in H2.
-   rewrite Nat.add_comm in H2.
+  specialize (A_ge_1_add_second u i Hur H1 (Hu 1)) as H2.
 ...
 
-Theorem A_ge_1_add_all_true_if {r : radix} : ∀ u i,
+Theorem old_A_ge_1_add_all_true_if {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
   → (∀ k, A_ge_1 i u k = true)
   → { ∀ k, u (i + k + 1) = rad - 1 } +
