@@ -2863,20 +2863,13 @@ Qed.
 
 Theorem nA_upper_bound_for_add {r : radix} (rg := nat_ord_ring) : ∀ u,
   (∀ i, u i ≤ 2 * (rad - 1))
-  → ∀ i k,
-     let n := rad * (i + k + 3) in
-     let s := rad ^ (n - i - 1) in
+  → ∀ i n,
+     i + 1 ≤ n - 1
+  → let s := rad ^ (n - i - 1) in
      nA i n u ≤ 2 * (s - 1).
 Proof.
-intros * Hur *; subst n s.
-remember (rad * (i + k + 3)) as n eqn:Hn.
+intros * Hur * Hin *; subst s.
 remember (rad ^ (n - i - 1)) as s eqn:Hs.
-move s before n.
-specialize radix_ge_2 as Hr.
-assert (Hin : i + 2 ≤ n - 1). {
-  subst n.
-  destruct rad; [ easy | simpl; flia ].
-}
 rewrite Hs.
 remember (n - i - 1) as m eqn:Hm.
 symmetry in Hm.
@@ -3129,6 +3122,11 @@ specialize (A_ge_1_add_all_first u i Hur (Hu 0)) as [[H1| H1]| H1].
         specialize radix_ge_2 as Hr.
         destruct rad as [| rr]; [ easy | ].
         destruct rr; [ flia Hr | simpl; flia ].
+      *assert (H3 : S (S i) + 1 ≤ n - 1) by flia His.
+       specialize (nA_upper_bound_for_add u Hur (S (S i)) n H3) as H4.
+       remember 2 as x; simpl in H4; subst x.
+       replace (n - S (S i) - 1) with (s - 2) in H4 by flia Hs.
+...
       *destruct s; [ flia Hs His | ].
        destruct s; [ flia Hs His | ].
        replace (S (S s) - 1) with (S s) by flia.
@@ -3138,11 +3136,6 @@ specialize (A_ge_1_add_all_first u i Hur (Hu 0)) as [[H1| H1]| H1].
        rewrite summation_rtl.
        rewrite summation_shift; [ | flia His ].
        replace (n - 1 - (S (S i) + 1)) with (s - 1) by flia Hs.
-...
-nA_upper_bound_for_add :
-∀ (r : radix) (rg : ord_ring := nat_ord_ring) (u : nat → nat),
-(∀ i : nat, u i ≤ 2 * (rad - 1))
-→ ∀ (i k : nat) (n := rad * (i + k + 3)) (s := rad ^ (n - i - 1)), nA i n u ≤ 2 * (s - 1)
 ...
    remember (2 * rad ^ (s - 1)) as x eqn:Hx.
    rewrite Nat.add_sub_assoc.
