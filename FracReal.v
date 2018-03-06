@@ -3241,7 +3241,7 @@ destruct k; [ rewrite Nat.add_0_r | ].
  remember (rad * (i + 1 + 3)) as n eqn:Hn.
  remember (n - i - 1) as s eqn:Hs.
  move s before n.
- assert (Hin : i + 3 ≤ n - 1). {
+ assert (Hin : i + 4 ≤ n - 1). {
    rewrite Hn.
    destruct rad as [| rr]; [ easy | ].
    destruct rr; [ flia Hr | simpl; flia ].
@@ -3285,20 +3285,36 @@ destruct k; [ rewrite Nat.add_0_r | ].
      *rewrite Nat.mul_add_distr_l.
       apply Nat.add_le_lt_mono.
      --rewrite Nat.mul_shuffle0.
-       apply Nat.mul_le_mono_r.
-       apply Hur.
-...
-    rewrite <- Nat.pow_add_r.
-    replace (1 + (s - 2)) with (s - 1) by flia Hs Hin.
-    apply Nat.add_le_lt_mono.
-    +replace (rad ^ 2 - rad - 1) with (rad ^ 2 - 2 * rad + (rad - 1)).
-     *rewrite Nat.mul_add_distr_r.
-      rewrite Nat.pow_2_r, <- Nat.mul_sub_distr_r.
-      rewrite <- Nat.mul_assoc.
-      replace (rad * rad ^ (s - 2)) with (rad ^ (s - 1)).
-    --apply Nat.add_le_mono_l.
-      apply Nat.mul_le_mono_r.
-...
+       apply Nat.mul_le_mono_r, Hur.
+     --rewrite Nat.mul_1_r.
+       destruct s; [ flia Hs Hin | ].
+       destruct s; [ flia Hs Hin | ].
+       destruct s; [ flia Hs Hin | ].
+       destruct s; [ flia Hs Hin | ].
+       replace (S (S (S (S s))) - 3) with (S s) by flia.
+       rewrite power_summation; [ | easy ].
+       rewrite Nat.mul_add_distr_l.
+       rewrite Nat.mul_1_r.
+       do 2 rewrite Nat.add_succ_l.
+       rewrite Nat.add_0_l.
+       apply Nat.le_le_succ_r.
+       apply -> Nat.succ_le_mono.
+       rewrite Nat.mul_assoc.
+       rewrite summation_mul_distr_l.
+       unfold nA.
+       rewrite summation_rtl.
+       rewrite summation_shift; [ | flia Hin ].
+       replace (n - 1 - (S (S (S i)) + 1)) with s by flia Hs Hin.
+       apply (@summation_le_compat nat_ord_ring_def).
+       intros j Hj.
+       remember 2 as x; simpl; subst x; unfold Nat.le.
+       replace (n - 1 + S (S (S (i + 1))) - S (S (S (i + 1 + j))))
+         with (n - j - 1) by flia.
+       replace (n - 1 - (n - j - 1)) with j by flia Hs Hj.
+       apply Nat.mul_le_mono_r, Hur.
+     *rewrite Nat.pow_1_r; flia Hr.
+   -destruct rad as [| rr]; [ easy | ].
+    destruct rr; [ easy | simpl; flia ].
  }
  rewrite Nat.mod_small; [ easy | ].
  eapply lt_le_trans; [ apply H3 | ].
