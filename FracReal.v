@@ -3363,23 +3363,28 @@ destruct k.
  replace (n - i - (k + 2) - 2) with (n - i - 1 - (k + 3)) by flia.
  remember (n - i - 1) as s eqn:Hs.
  move s before n.
- assert (Hin : i + k + 1 ≤ n - 1). {
+ assert (Hin : i + k + 3 ≤ n - 1). {
    rewrite Hn.
    destruct rad; [ easy | simpl; flia ].
  }
  replace (S (k + 2)) with (k + 3) by flia.
  assert (H3 : nA i n u < (rad ^ (k + 3) - 1) * rad ^ (s - (k + 3))). {
-...
-   rewrite nA_split with (e := i + k + 2); [ | flia Hin ].
-   remember (i + k + 2) as j eqn:Hj.
+   (* proving that 8/18/18/.../18/17/?... < 9990000
+      with u(i+1)=8, u(i+2)=18.., u(i+k+2)=18, u(i+k+3)<18 on the left
+      and "k+3" 9s and "s-(k+3)" 0s on the right *)
+   (* left hand side: cutting the sum nA between i+k+2 and i+k+3 *)
+   rewrite nA_split with (e := i + k + 3); [ | flia Hin ].
+   remember (i + k + 3) as j eqn:Hj.
    move j before i.
-   replace ((rad ^ (k + 2) - 1) * rad ^ (s - (k + 2))) with
-      ((rad ^ (k + 1) - 2) * rad ^ (s - (k + 1)) +
-       (2 * rad - 1) * rad ^ (s - (k + 2))).
+   (* right hand side: cutting the 9990000 = 9980000 + 000/19/000 *)
+   replace ((rad ^ (k + 3) - 1) * rad ^ (s - (k + 3))) with
+      ((rad ^ (k + 2) - 2) * rad ^ (s - (k + 2)) +
+       (2 * rad - 1) * rad ^ (s - (k + 3))).
    -apply Nat.add_le_lt_mono.
-    +replace (n - j) with (s - (k + 1)) by flia Hs Hj.
+    +replace (n - j) with (s - (k + 2)) by flia Hs Hj.
      apply Nat.mul_le_mono_r.
      rewrite nA_split_first; [ | flia Hj Hin ].
+...
      replace (rad ^ (k + 1) - 2) with
        ((rad - 2) * rad ^ k + 2 * (rad ^ k - 1)).
      *replace (j - i - 2) with k by flia Hj.
@@ -3402,10 +3407,10 @@ lia. (* fail *)
        apply Nat.mul_le_mono_l.
        now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
 ...
-   -replace (s - (k + 1)) with (s - (k + 2) + 1) by flia Hs Hj Hin.
-    remember (s - (k + 2)) as t eqn:Ht.
-    replace (k + 2) with (k + 1 + 1) by flia.
-    remember (k + 1) as m eqn:Hm.
+   -replace (s - (k + 2)) with (s - (k + 3) + 1) by flia Hs Hj Hin.
+    remember (s - (k + 3)) as t eqn:Ht.
+    replace (k + 3) with (k + 2 + 1) by flia.
+    remember (k + 2) as m eqn:Hm.
     do 2 rewrite Nat.pow_add_r.
     rewrite Nat.pow_1_r.
     rewrite Nat.mul_assoc, Nat.mul_shuffle0.
@@ -3415,9 +3420,11 @@ lia. (* fail *)
     rewrite Nat.sub_add; [ easy | ].
     apply Nat.mul_le_mono_r.
     subst m.
-    rewrite Nat.add_1_r; simpl.
-    replace 2 with (2 * 1) by flia.
-    apply Nat.mul_le_mono; [ easy | ].
+    replace (k + 2) with (k + 1 + 1) by flia.
+    do 2 rewrite Nat.pow_add_r, Nat.pow_1_r.
+    replace 2 with (1 * 1 * 2) at 1 by flia.
+    apply Nat.mul_le_mono; [ | easy ].
+    apply Nat.mul_le_mono; [ | easy ].
     now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
 ...
 
