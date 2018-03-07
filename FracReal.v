@@ -3406,7 +3406,25 @@ destruct k.
      --replace 2 with (2 * 1) at 1 by flia.
        apply Nat.mul_le_mono_l.
        now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-    +idtac.
+    +replace (s - (k + 3)) with (n - j - 1) by flia Hs Hj.
+     remember (n - j) as m eqn:Hm.
+     destruct m; [ flia Hj Hin Hm | ].
+     replace (S m - 1) with m by flia.
+     destruct m.
+     *rewrite Nat.pow_0_r, Nat.mul_1_r.
+      unfold nA.
+      replace (j - 1 + 1) with j by flia Hj.
+      replace (n - 1) with j by flia Hm.
+      rewrite summation_only_one, Nat.sub_diag, Nat.pow_0_r, Nat.mul_1_r.
+      flia H2.
+     *rewrite power_summation; [ | easy ].
+      unfold nA.
+      rewrite summation_rtl.
+      rewrite summation_shift; [ | flia Hm ].
+      replace (j - 1 + 1) with j by flia Hj.
+      replace (n - 1 - j) with (S m) by flia Hm.
+      rewrite Nat.mul_add_distr_l, Nat.mul_1_r.
+(* c'est pas carré, tout ça ; y a sûrement un truc qui déconne *)
 ...
    -replace (s - (k + 2)) with (s - (k + 3) + 1) by flia Hs Hj Hin.
     remember (s - (k + 3)) as t eqn:Ht.
