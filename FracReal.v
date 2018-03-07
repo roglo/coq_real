@@ -3347,7 +3347,7 @@ destruct k.
 -specialize (A_ge_1_add_second_eq u i Hur (Hu _) Hui) as H1.
  now rewrite Nat.add_0_r.
 -move k before i.
- specialize (Hu k) as H2.
+ specialize (Hu (k + 1)) as H2.
  replace (i + S k + 2) with (i + k + 3) by flia.
  revert H2.
  apply Decidable.contrapositive; [ apply Nat.eq_decidable | ].
@@ -3359,18 +3359,38 @@ destruct k.
  clear H.
  apply Bool.not_true_iff_false.
  apply A_ge_1_false_iff.
- remember (rad * (i + k + 3)) as n eqn:Hn.
- replace (n - i - k - 2) with (n - i - 1 - S k) by flia.
+ remember (rad * (i + (k + 1) + 3)) as n eqn:Hn.
+ replace (n - i - (k + 1) - 2) with (n - i - 1 - (k + 2)) by flia.
  remember (n - i - 1) as s eqn:Hs.
  move s before n.
- assert (Hin : i + k + 1 ≤ n - 1). {
+ assert (Hin : i + k + 2 ≤ n - 1). {
    rewrite Hn.
    destruct rad; [ easy | simpl; flia ].
  }
- assert (H3 : nA i n u < (rad ^ S k - 1) * rad ^ (s - S k)). {
+ replace (S (k + 1)) with (k + 2) by flia.
+ assert (H3 : nA i n u < (rad ^ (k + 2) - 1) * rad ^ (s - (k + 2))). {
    rewrite nA_split with (e := i + k + 2); [ | flia Hin ].
    remember (i + k + 2) as j eqn:Hj.
    move j before i.
+   replace ((rad ^ (k + 2) - 1) * rad ^ (s - (k + 2))) with
+      ((rad ^ (k + 1) - 1) * rad ^ (s - (k + 1)) +
+       (rad - 1) * rad ^ (s - (k + 2))).
+   Focus 2.
+   -idtac.
+    replace (s - (k + 1)) with (s - (k + 2) + 1) by flia Hs Hj Hin.
+    remember (s - (k + 2)) as t eqn:Ht.
+    replace (k + 2) with (k + 1 + 1) by flia.
+    remember (k + 1) as m eqn:Hm.
+    do 2 rewrite Nat.pow_add_r.
+    rewrite Nat.pow_1_r.
+    rewrite Nat.mul_assoc, Nat.mul_shuffle0.
+    rewrite <- Nat.mul_add_distr_r; f_equal.
+    rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+    rewrite Nat.add_sub_assoc; [ f_equal | easy ].
+    rewrite Nat.sub_add; [ easy | ].
+    replace rad with (1 * rad) at 1 by flia.
+    apply Nat.mul_le_mono_r.
+    now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
 ...
 
 Theorem A_ge_1_add_all_true_if {r : radix} : ∀ u i,
