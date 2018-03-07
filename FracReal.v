@@ -3384,28 +3384,29 @@ destruct k.
     +replace (n - j) with (s - (k + 2)) by flia Hs Hj.
      apply Nat.mul_le_mono_r.
      rewrite nA_split_first; [ | flia Hj Hin ].
-...
-     replace (rad ^ (k + 1) - 2) with
-       ((rad - 2) * rad ^ k + 2 * (rad ^ k - 1)).
-     *replace (j - i - 2) with k by flia Hj.
+     (* 99998 = 80000 + 19998 *)
+     replace (rad ^ (k + 2) - 2) with
+       ((rad - 2) * rad ^ (k + 1) + 2 * (rad ^ (k + 1) - 1)).
+     *replace (j - i - 2) with (k + 1) by flia Hj.
       apply Nat.add_le_mono.
      --now apply Nat.mul_le_mono_r; rewrite Hui.
-     --replace k with (j - S i - 1) by flia Hj.
-       apply nA_upper_bound_for_add; [ easy | ].
-lia. (* fail *)
-...
+     --replace (k + 1) with (j - S i - 1) by flia Hj.
+       apply nA_upper_bound_for_add; [ easy | flia Hj  ].
      *rewrite Nat.mul_sub_distr_r.
       replace rad with (rad ^ 1) at 1 by apply Nat.pow_1_r.
-      rewrite <- Nat.pow_add_r, Nat.add_1_r.
+      rewrite <- Nat.pow_add_r.
+      replace (1 + (k + 1)) with (k + 2) by flia.
       rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
       rewrite Nat.add_sub_assoc.
      --f_equal.
        rewrite Nat.sub_add; [ easy | ].
+       replace (k + 2) with (1 + (k + 1)) by flia.
        remember 2 as x; simpl; subst x.
        now apply Nat.mul_le_mono_r.
      --replace 2 with (2 * 1) at 1 by flia.
        apply Nat.mul_le_mono_l.
        now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+    +idtac.
 ...
    -replace (s - (k + 2)) with (s - (k + 3) + 1) by flia Hs Hj Hin.
     remember (s - (k + 3)) as t eqn:Ht.
