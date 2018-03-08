@@ -3413,22 +3413,31 @@ destruct k.
      replace (S (j - 1)) with j by flia Hj.
      remember (rad ^ (n - j - 1)) as m eqn:Hm.
 replace (u j * m) with (u j * m + m - m) by flia.
-apply lt_le_trans with (m := 2 * (rad - 1) * m + (m - 2)).
+apply le_lt_trans with (m := 2 * (rad - 1) * m + (m - 2)).
 rewrite <- Nat.add_sub_swap; [ | flia ].
 rewrite <- Nat.add_sub_assoc.
-unfold lt.
-rewrite <- Nat.add_succ_r.
 apply Nat.add_le_mono.
 replace m with (1 * m) at 2 by flia.
 rewrite <- Nat.mul_add_distr_r.
 apply Nat.mul_le_mono_r.
 flia H2.
-rewrite <- Nat.sub_succ_l.
 apply Nat.le_sub_le_add_l.
 replace (m + (m - 2)) with (2 * (m - 1)).
-Check nA_upper_bound_for_add.
+rewrite Hm.
+apply nA_upper_bound_for_add; [ easy | flia Hj Hin ].
+enough (H : m ≥ 2) by flia H.
+rewrite Hm.
+remember (n - j - 1) as p eqn:Hp.
+destruct p; [ flia Hj Hin Hp | ].
+simpl.
+replace 2 with (2 * 1) by flia.
+apply Nat.mul_le_mono; [ easy | ].
+now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+rewrite nA_split_first.
 ...
-
+specialize (IHk k (Nat.lt_succ_diag_r k)).
+replace (i + k + 2) with (j - 1) in IHk by flia Hj.
+...
 
 rewrite <- Nat.add_succ_l.
 
