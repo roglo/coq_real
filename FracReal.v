@@ -3427,41 +3427,44 @@ destruct k.
        apply Nat.mul_le_mono_l.
        now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
     +replace (s - (k + 3)) with (n - j - 1) by flia Hs Hj.
-rewrite nA_split_first; [ | flia Hj Hin ].
-replace (j - 1 + 1) with j by flia Hj.
-replace (n - (j - 1) - 2) with (n - j - 1) by flia Hj.
-replace (S (j - 1)) with j by flia Hj.
-(* 17/18/18.../18 < 18/0/0.../0 *)
-apply le_lt_trans with (m := (2 * rad - 2) * rad ^ (n - j - 1) + 2 * (rad - 1) * (rad ^ (n - j - 1) - 1)).
-apply Nat.add_le_mono.
-apply Nat.mul_le_mono_r; flia H2.
-remember (n - j) as m eqn:Hm.
-destruct m; [ flia Hj Hin Hm | ].
-replace (S m - 1) with m by flia.
-unfold nA.
-destruct m.
-rewrite summation_empty; [ simpl; flia | flia Hm ].
-rewrite summation_rtl.
-rewrite summation_shift; [ | flia Hm ].
-replace (n - 1 - (j + 1)) with m by flia Hm.
-rewrite power_summation_sub_1; [ | easy ].
-rewrite Nat.mul_assoc.
-rewrite summation_mul_distr_l.
-apply (@summation_le_compat nat_ord_ring_def).
-intros p Hp.
-replace (n - 1 + (j + 1) - (j + 1 + p)) with (n - p - 1) by flia Hp.
-replace (n - 1 - (n - p - 1)) with p by flia Hm Hp.
-apply Nat.mul_le_mono_r.
-eapply le_trans; [ apply Hur | ].
-remember (2 * (rad - 1)) as q.
-replace q with (q * 1) at 1 by flia.
-apply Nat.mul_le_mono_l.
-flia Hr.
-remember (rad ^ (n - j - 1)) as m eqn:Hm.
-replace 2 with (2 * 1) at 2 by flia.
-rewrite <- Nat.mul_sub_distr_l.
-rewrite <- Nat.mul_add_distr_l.
-replace (m + (m - 1)) with (2 * m - 1) by flia.
+     rewrite nA_split_first; [ | flia Hj Hin ].
+     replace (j - 1 + 1) with j by flia Hj.
+     replace (n - (j - 1) - 2) with (n - j - 1) by flia Hj.
+     replace (S (j - 1)) with j by flia Hj.
+     (* 17/18/18.../18 < 18/0/0.../0 *)
+     apply le_lt_trans with
+         (m :=
+            (2 * rad - 2) * rad ^ (n - j - 1) +
+            2 * (rad - 1) * (rad ^ (n - j - 1) - 1)).
+     *apply Nat.add_le_mono.
+      apply Nat.mul_le_mono_r; flia H2.
+      remember (n - j) as m eqn:Hm.
+      destruct m; [ flia Hj Hin Hm | ].
+      replace (S m - 1) with m by flia.
+      unfold nA.
+      destruct m.
+     --rewrite summation_empty; [ simpl; flia | flia Hm ].
+     --rewrite summation_rtl.
+       rewrite summation_shift; [ | flia Hm ].
+       replace (n - 1 - (j + 1)) with m by flia Hm.
+       rewrite power_summation_sub_1; [ | easy ].
+       rewrite Nat.mul_assoc.
+       rewrite summation_mul_distr_l.
+       apply (@summation_le_compat nat_ord_ring_def).
+       intros p Hp.
+       replace (n - 1 + (j + 1) - (j + 1 + p)) with (n - p - 1) by flia Hp.
+       replace (n - 1 - (n - p - 1)) with p by flia Hm Hp.
+       apply Nat.mul_le_mono_r.
+       eapply le_trans; [ apply Hur | ].
+       remember (2 * (rad - 1)) as q.
+       replace q with (q * 1) at 1 by flia.
+       apply Nat.mul_le_mono_l.
+       flia Hr.
+     *remember (rad ^ (n - j - 1)) as m eqn:Hm.
+      replace 2 with (2 * 1) at 2 by flia.
+      rewrite <- Nat.mul_sub_distr_l.
+      rewrite <- Nat.mul_add_distr_l.
+      replace (m + (m - 1)) with (2 * m - 1) by flia.
 ...
 
 apply le_lt_trans with (m := (2 * rad - 2) * rad ^ (n - j - 1) + 2 * (rad - 1) * (rad ^ (n - j - 1) - 1)).
