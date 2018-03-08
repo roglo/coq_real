@@ -3407,6 +3407,27 @@ destruct k.
        apply Nat.mul_le_mono_l.
        now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
     +replace (s - (k + 3)) with (n - j - 1) by flia Hs Hj.
+...
+rewrite nA_split_first; [ | flia Hj Hin ].
+replace (j - 1 + 1) with j by flia Hj.
+replace (n - (j - 1) - 2) with (n - j - 1) by flia Hj.
+replace (S (j - 1)) with j by flia Hj.
+...
+
+apply le_lt_trans with (m := 2 * (rad ^ (n - (j - 1) - 1) - 1)).
+apply nA_upper_bound_for_add; [ easy | flia Hj Hin ].
+replace (n - (j - 1) - 1) with (n - j) by flia Hj.
+rewrite Nat.mul_sub_distr_r.
+replace (2 * rad) with (2 * rad ^ 1).
+rewrite <- Nat.mul_assoc, <- Nat.pow_add_r.
+rewrite (1 + (n - j - 1)) with (n - j) by flia Hj Hs Hin.
+
+Search (nA _ _ _ ≤ _).
+nA_upper_bound_for_add:
+  ∀ (r : radix) (rg:ord_ring:=nat_ord_ring) (u : nat → nat),
+  (∀ i : nat, u i ≤ 2 * (rad - 1))
+  → ∀ i n : nat, i + 1 ≤ n - 1 → nA i n u ≤ 2 * (rad ^ (n - i - 1) - 1)
+...
      remember (n - j) as m eqn:Hm.
      destruct m; [ flia Hj Hin Hm | ].
      replace (S m - 1) with m by flia.
@@ -3417,6 +3438,8 @@ destruct k.
       replace (n - 1) with j by flia Hm.
       rewrite summation_only_one, Nat.sub_diag, Nat.pow_0_r, Nat.mul_1_r.
       flia H2.
+     *idtac.
+...
      *rewrite power_summation; [ | easy ].
       unfold nA.
       rewrite summation_rtl.
