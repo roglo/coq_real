@@ -3458,15 +3458,10 @@ replace q with (q * 1) at 1 by flia.
 apply Nat.mul_le_mono_l.
 flia Hr.
 remember (rad ^ (n - j - 1)) as m eqn:Hm.
-do 2 rewrite Nat.mul_sub_distr_r.
-rewrite Nat.mul_1_l.
-rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
-rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
-rewrite Nat.mul_sub_distr_r.
-rewrite Nat_sub_sub_assoc.
-...
-Check Nat.
-rewrite <- Nat.sub_add_distr.
+replace 2 with (2 * 1) at 2 by flia.
+rewrite <- Nat.mul_sub_distr_l.
+rewrite <- Nat.mul_add_distr_l.
+replace (m + (m - 1)) with (2 * m - 1) by flia.
 ...
 
 apply le_lt_trans with (m := (2 * rad - 2) * rad ^ (n - j - 1) + 2 * (rad - 1) * (rad ^ (n - j - 1) - 1)).
