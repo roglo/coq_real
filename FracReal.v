@@ -3334,26 +3334,6 @@ simpl; f_equal.
 +now rewrite Nat.add_1_r.
 Qed.
 
-Theorem Nat_sub_sub_assoc : ∀ a b c,
-  c ≤ b ≤ a
-  → a - (b - c) = a - b + c.
-Proof.
-intros * (Hcb, Hba).
-revert a c Hcb Hba.
-induction b; intros.
--now apply Nat.le_0_r in Hcb; subst c.
--destruct c; [ easy | ].
- destruct a; [ easy | ].
- apply Nat.succ_le_mono in Hcb.
- apply Nat.succ_le_mono in Hba.
- do 2 rewrite Nat.sub_succ.
- specialize (IHb a c Hcb Hba) as H.
- rewrite Nat.add_succ_r, <- H.
- rewrite <- Nat.sub_succ_l; [ easy | ].
- apply le_trans with (m := b); [ | easy ].
- apply Nat.le_sub_l.
-Qed.
-
 Theorem A_ge_1_add_8_eq {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
   → (∀ k, A_ge_1 i u k = true)
@@ -3383,7 +3363,7 @@ destruct k.
  replace (n - i - (k + 2) - 2) with (n - i - 1 - (k + 3)) by flia.
  remember (n - i - 1) as s eqn:Hs.
  move s before n.
- assert (Hin : i + k + 3 ≤ n - 1). {
+ assert (Hin : i + k + 4 ≤ n - 1). {
    rewrite Hn.
    destruct rad; [ easy | simpl; flia ].
  }
@@ -3438,9 +3418,8 @@ destruct k.
      --subst p.
        apply Nat.mul_lt_mono_pos_r; [ | easy ].
        now subst m; apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-     --idtac.
-
-
+     --eapply le_trans.
+      ++apply nA_upper_bound_for_add; [ easy | flia Hj Hin ].
 ...
      (* 17/18/18.../18 < 18/0/0.../0 *)
      apply le_lt_trans with
