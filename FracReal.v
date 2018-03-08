@@ -3412,8 +3412,7 @@ replace (j - 1 + 1) with j by flia Hj.
 replace (n - (j - 1) - 2) with (n - j - 1) by flia Hj.
 replace (S (j - 1)) with j by flia Hj.
 (* 17/18/18.../18 < 18/0/0.../0 *)
-...
-apply le_lt_trans with (m := (2 * rad - 2) * rad ^ (n - j - 1) + 2 * (rad ^ (n - j - 1) - 1)).
+apply le_lt_trans with (m := (2 * rad - 2) * rad ^ (n - j - 1) + 2 * (rad - 1) * (rad ^ (n - j - 1) - 1)).
 apply Nat.add_le_mono.
 apply Nat.mul_le_mono_r; flia H2.
 remember (n - j) as m eqn:Hm.
@@ -3433,6 +3432,37 @@ intros p Hp.
 replace (n - 1 + (j + 1) - (j + 1 + p)) with (n - p - 1) by flia Hp.
 replace (n - 1 - (n - p - 1)) with p by flia Hm Hp.
 apply Nat.mul_le_mono_r.
+eapply le_trans; [ apply Hur | ].
+remember (2 * (rad - 1)) as q.
+replace q with (q * 1) at 1 by flia.
+apply Nat.mul_le_mono_l.
+flia Hr.
+remember (rad ^ (n - j - 1)) as m eqn:Hm.
+remember 2 as two.
+do 2 rewrite Nat.mul_sub_distr_r.
+rewrite Nat.mul_1_l.
+rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+rewrite Nat.mul_sub_distr_r.
+Search (_ - _ + _).
+Search (_ - (_ - _)).
+Search (_ - _ + _).
+
+Theorem Nat_sub_sub_assoc : ∀ a b c,
+  a - (b - c) = a - b + c.
+Proof.
+intros.
+...
+
+Check Nat.
+
+rewrite <- Nat.sub_add_distr.
+
+
+
+
+
+
 apply Hur.
 remember (rad ^ (n - j - 1)) as m eqn:Hm.
 rewrite Nat.mul_sub_distr_r, Nat.mul_sub_distr_l.
