@@ -3431,6 +3431,17 @@ destruct k.
      replace (j - 1 + 1) with j by flia Hj.
      replace (n - (j - 1) - 2) with (n - j - 1) by flia Hj.
      replace (S (j - 1)) with j by flia Hj.
+     remember (rad ^ (n - j - 1)) as m eqn:Hm.
+     remember (2 * (rad - 1) * m) as p eqn:Hp.
+     apply lt_le_trans with (m := p + ((2 * rad - 1) * m - p)).
+     *apply Nat.add_lt_le_mono.
+     --subst p.
+       apply Nat.mul_lt_mono_pos_r; [ | easy ].
+       now subst m; apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+     --idtac.
+
+
+...
      (* 17/18/18.../18 < 18/0/0.../0 *)
      apply le_lt_trans with
          (m :=
