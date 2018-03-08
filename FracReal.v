@@ -3412,14 +3412,93 @@ destruct k.
      replace (n - (j - 1) - 2) with (n - j - 1) by flia Hj.
      replace (S (j - 1)) with j by flia Hj.
      remember (rad ^ (n - j - 1)) as m eqn:Hm.
-     remember (2 * (rad - 1) * m) as p eqn:Hp.
+replace (u j * m) with (u j * m + m - m) by flia.
+apply lt_le_trans with (m := 2 * (rad - 1) * m + (m - 2)).
+rewrite <- Nat.add_sub_swap; [ | flia ].
+rewrite <- Nat.add_sub_assoc.
+unfold lt.
+rewrite <- Nat.add_succ_r.
+apply Nat.add_le_mono.
+replace m with (1 * m) at 2 by flia.
+rewrite <- Nat.mul_add_distr_r.
+apply Nat.mul_le_mono_r.
+flia H2.
+rewrite <- Nat.sub_succ_l.
+apply Nat.le_sub_le_add_l.
+replace (m + (m - 2)) with (2 * (m - 1)).
+Check nA_upper_bound_for_add.
+...
+
+
+rewrite <- Nat.add_succ_l.
+
+
+replace (S (m - 1)) with (1 * m).
+rewrite <- Nat.mul_add_distr_r.
+apply Nat.mul_le_mono_r.
+flia H2.
+rewrite Nat.mul_1_l.
+rewrite <- Nat.sub_succ_l; [ flia | ].
+now subst m; apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+apply Nat.le_sub_le_add_l.
+replace (m - 1 + (m - 2)) with (2 * (m - 1) - 1).
+subst m.
+...
+
+...
+replace (u j * m) with (u j * m + m - m).
+apply lt_le_trans with (m := 2 * (rad - 1) * m + (m - 2)).
+unfold lt.
+rewrite <- Nat.add_succ_l.
+replace (S (u j * m + m - m)) with (S (u j * m + m)
+
+rewrite <- Nat.add_assoc.
+rewrite <- Nat.add_succ_l.
+apply Nat.add_le_mono.
+
+
+
+...
+     apply lt_le_trans with (m := 2 * (rad - 1) * m + (m - 2)).
+     *apply Nat.add_le_mono.
+     --apply Nat.mul_le_mono_r.
+       now apply Nat.lt_le_incl.
+     --subst m.
+...
+     --eapply le_trans.
+      ++apply nA_upper_bound_for_add; [ easy | flia Hj Hin ].
+      ++subst m.
+
+...
+     --apply Nat.mul_lt_mono_pos_r; [ | easy ].
+       now subst m; apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+     --subst p.
+       rewrite <- Nat.mul_sub_distr_r.
+       replace (2 * rad - 1 - 2 * (rad - 1)) with 1 by flia Hr.
+       rewrite Nat.mul_1_l.
+       subst m.
+
+...
      apply lt_le_trans with (m := p + ((2 * rad - 1) * m - p)).
      *apply Nat.add_lt_le_mono.
      --subst p.
        apply Nat.mul_lt_mono_pos_r; [ | easy ].
        now subst m; apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+     --subst p.
+       rewrite <- Nat.mul_sub_distr_r.
+       replace (2 * rad - 1 - 2 * (rad - 1)) with 1 by flia Hr.
+       rewrite Nat.mul_1_l.
+       subst m.
+Check nA_upper_bound_for_add.
+
+...
      --eapply le_trans.
       ++apply nA_upper_bound_for_add; [ easy | flia Hj Hin ].
+      ++rewrite <- Hm, Hp.
+        rewrite <- Nat.mul_sub_distr_r.
+        replace (2 * rad - 1 - 2 * (rad - 1)) with 1 by flia Hr.
+        rewrite Nat.mul_1_l.
+(* fuck *)
 ...
      (* 17/18/18.../18 < 18/0/0.../0 *)
      apply le_lt_trans with
