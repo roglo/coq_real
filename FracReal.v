@@ -3334,6 +3334,26 @@ simpl; f_equal.
 +now rewrite Nat.add_1_r.
 Qed.
 
+Theorem Nat_sub_sub_assoc : ∀ a b c,
+  c ≤ b ≤ a
+  → a - (b - c) = a - b + c.
+Proof.
+intros * (Hcb, Hba).
+revert a c Hcb Hba.
+induction b; intros.
+-now apply Nat.le_0_r in Hcb; subst c.
+-destruct c; [ easy | ].
+ destruct a; [ easy | ].
+ apply Nat.succ_le_mono in Hcb.
+ apply Nat.succ_le_mono in Hba.
+ do 2 rewrite Nat.sub_succ.
+ specialize (IHb a c Hcb Hba) as H.
+ rewrite Nat.add_succ_r, <- H.
+ rewrite <- Nat.sub_succ_l; [ easy | ].
+ apply le_trans with (m := b); [ | easy ].
+ apply Nat.le_sub_l.
+Qed.
+
 Theorem A_ge_1_add_8_eq {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
   → (∀ k, A_ge_1 i u k = true)
@@ -3438,36 +3458,15 @@ replace q with (q * 1) at 1 by flia.
 apply Nat.mul_le_mono_l.
 flia Hr.
 remember (rad ^ (n - j - 1)) as m eqn:Hm.
-remember 2 as two.
 do 2 rewrite Nat.mul_sub_distr_r.
 rewrite Nat.mul_1_l.
 rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
 rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
 rewrite Nat.mul_sub_distr_r.
-Search (_ - _ + _).
-Search (_ - (_ - _)).
-Search (_ - _ + _).
-
-Theorem Nat_sub_sub_assoc : ∀ a b c,
-  a - (b - c) = a - b + c.
-Proof.
-intros.
+rewrite Nat_sub_sub_assoc.
 ...
-
 Check Nat.
-
 rewrite <- Nat.sub_add_distr.
-
-
-
-
-
-
-apply Hur.
-remember (rad ^ (n - j - 1)) as m eqn:Hm.
-rewrite Nat.mul_sub_distr_r, Nat.mul_sub_distr_l.
-rewrite Nat.mul_1_r.
-
 ...
 
 apply le_lt_trans with (m := (2 * rad - 2) * rad ^ (n - j - 1) + 2 * (rad - 1) * (rad ^ (n - j - 1) - 1)).
