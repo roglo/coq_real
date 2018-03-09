@@ -3377,6 +3377,8 @@ destruct k.
    remember (i + k + 3) as j eqn:Hj.
    move j before i.
    (* right hand side: cutting the 9990000 = 9980000 + 000/19/000 *)
+...
+(* this "replace" is false *)
    replace ((rad ^ (k + 3) - 1) * rad ^ (s - (k + 3))) with
       ((rad ^ (k + 2) - 2) * rad ^ (s - (k + 2)) +
        (2 * rad - 1) * rad ^ (s - (k + 2))).
@@ -3455,6 +3457,7 @@ destruct k.
      --replace 2 with (2 * 1) at 1 by flia.
        apply Nat.mul_le_mono_l.
        now subst m; apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+   -idtac.
    -replace (s - (k + 2)) with (s - (k + 3) + 1) by flia Hs Hj Hin.
     remember (s - (k + 3)) as t eqn:Ht.
     replace (k + 3) with (k + 2 + 1) by flia.
