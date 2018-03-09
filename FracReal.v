@@ -3416,30 +3416,14 @@ apply le_lt_trans with (m := u j * m + 2 * (m - 1)).
 apply Nat.add_le_mono_l.
 rewrite Hm.
 apply nA_upper_bound_for_add; [ easy | flia Hj Hin ].
-
 ...
-replace (u j * m) with (u j * m + m - m) by flia.
-apply le_lt_trans with (m := 2 * (rad - 1) * m + (m - 2)).
-rewrite <- Nat.add_sub_swap; [ | flia ].
-rewrite <- Nat.add_sub_assoc.
-apply Nat.add_le_mono.
-replace m with (1 * m) at 2 by flia.
-rewrite <- Nat.mul_add_distr_r.
-apply Nat.mul_le_mono_r.
-flia H2.
-apply Nat.le_sub_le_add_l.
-replace (m + (m - 2)) with (2 * (m - 1)).
-rewrite Hm.
-apply nA_upper_bound_for_add; [ easy | flia Hj Hin ].
-enough (H : m ≥ 2) by flia H.
-rewrite Hm.
-remember (n - j - 1) as p eqn:Hp.
-destruct p; [ flia Hj Hin Hp | ].
-simpl.
-replace 2 with (2 * 1) by flia.
-apply Nat.mul_le_mono; [ easy | ].
-now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-rewrite nA_split_first.
+apply lt_le_trans with (m := 2 * (rad - 1) * m + 2 * (m - 1)).
+apply Nat.add_lt_le_mono; [ | easy ].
+apply Nat.mul_lt_mono_pos_r; [ | easy ].
+now subst m; apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+rewrite Nat.mul_shuffle0.
+do 2 rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
 ...
    -replace (s - (k + 2)) with (s - (k + 3) + 1) by flia Hs Hj Hin.
     remember (s - (k + 3)) as t eqn:Ht.
