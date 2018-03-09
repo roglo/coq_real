@@ -3336,13 +3336,12 @@ Qed.
 
 Theorem A_ge_1_add_8_eq {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
-  → (∀ k, A_ge_1 i u k = true)
   → u (i + 1) = rad - 2
-  → ∀ k, u (i + k + 2) = 2 * (rad - 1).
+  → ∀ k, A_ge_1 i u (k + 1) = true
+  → u (i + k + 2) = 2 * (rad - 1).
 Proof.
-intros * Hur Hu Hui *.
+intros * Hur Hui * H2.
 specialize radix_ge_2 as Hr; move Hr before i.
-specialize (Hu (k + 1)) as H2.
 revert H2.
 apply Decidable.contrapositive; [ apply Nat.eq_decidable | ].
 intros H.
@@ -3457,7 +3456,7 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
  rewrite Nat.add_0_r.
  split; [ easy | ].
  split; [ easy | ].
- intros j; apply (A_ge_1_add_8_eq u i Hur Hu H1).
+ now intros j; apply A_ge_1_add_8_eq.
 -idtac.
 ...
 
