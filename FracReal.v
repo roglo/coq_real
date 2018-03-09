@@ -3412,52 +3412,17 @@ destruct k.
      replace (j - 1 + 1) with j by flia Hj.
      replace (n - (j - 1) - 2) with (n - j - 1) by flia Hj.
      replace (S (j - 1)) with j by flia Hj.
-...
-     replace (n - j) with (n - j - 1 + 1) at 2 by flia Hj Hin.
-     rewrite Nat.pow_add_r, Nat.pow_1_r.
-     remember (rad ^ (n - j - 1)) as m eqn:Hm.
-     apply le_lt_trans with (m := u j * m + 2 * (m - 1)).
-     apply Nat.add_le_mono_l.
-     *rewrite Hm.
-      apply nA_upper_bound_for_add; [ easy | flia Hj Hin ].
-     *rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
-      rewrite Nat.add_sub_assoc.
-     --rewrite <- Nat.mul_add_distr_r.
-       rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
-       assert (H1 : (u j + 2) * m + m * rad < 2 * rad * (m * rad) + 2). {
-         rewrite Nat.mul_comm.
-         rewrite <- Nat.mul_add_distr_l.
-         rewrite Nat.add_shuffle0.
-         apply lt_le_trans with (m := m * (2 * (rad - 1) + rad + 2)).
-         -apply Nat.mul_lt_mono_pos_l.
-          +now subst m; apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-          +now do 2 apply Nat.add_lt_mono_r.
-         -rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
-          replace (2 * rad - 2 + rad + 2) with (3 * rad); [ | flia Hr ].
-          apply Nat.le_trans with (m := 2 * m * rad * rad); [ | flia ].
-          rewrite Nat.mul_assoc.
-          apply Nat.mul_le_mono_r.
-          rewrite Nat.mul_shuffle0, Nat.mul_comm.
-          apply Nat.mul_le_mono_r; flia Hr.
-       }
-       apply Nat.add_lt_mono_r with (p := 2).
-       rewrite Nat.sub_add.
-      ++apply Nat.add_lt_mono_r with (p := m * rad).
-        rewrite Nat.add_shuffle0.
-        rewrite Nat.sub_add; [ easy | ].
-        rewrite Nat.mul_comm, Nat.mul_assoc.
-        apply Nat.mul_le_mono_r.
-        replace rad with (1 * rad) at 1 by flia.
-        apply Nat.mul_le_mono_r; flia Hr.
-      ++rewrite Nat.mul_add_distr_r.
-        replace 2 with (0 + 2 * 1) at 1 by flia.
-        apply Nat.add_le_mono; [ flia | ].
-        apply Nat.mul_le_mono_l.
-        now subst m; apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-     --replace 2 with (2 * 1) at 1 by flia.
+     replace (2 * rad - 1) with (2 * rad - 3 + 2) by flia Hr.
+     rewrite Nat.mul_add_distr_r.
+     apply Nat.add_le_lt_mono.
+     *apply Nat.mul_le_mono_r; flia H2.
+     *eapply Nat.le_lt_trans.
+     --apply nA_upper_bound_for_add; [ easy | flia Hj Hin ].
+     --rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+       apply Nat.sub_lt; [ | flia ].
+       replace 2 with (2 * 1) at 1 by flia.
        apply Nat.mul_le_mono_l.
-       now subst m; apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-...
+       now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
    -replace (s - (k + 2)) with (s - (k + 3) + 1) by flia Hs Hj Hin.
     remember (s - (k + 3)) as t eqn:Ht.
     replace (k + 3) with (k + 2 + 1) by flia.
@@ -3476,6 +3441,8 @@ destruct k.
     apply Nat.mul_le_mono; [ easy | ].
     apply Nat.mul_le_mono; [ flia Hr | ].
     now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+ }
+ rewrite Nat.mod_small; [ easy | ].
 ...
 
 Theorem A_ge_1_add_all_true_if {r : radix} : ∀ u i,
