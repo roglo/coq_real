@@ -3412,10 +3412,29 @@ destruct k.
      replace (n - (j - 1) - 2) with (n - j - 1) by flia Hj.
      replace (S (j - 1)) with j by flia Hj.
      remember (rad ^ (n - j - 1)) as m eqn:Hm.
+(* probably false *)
+...
 apply le_lt_trans with (m := u j * m + 2 * (m - 1)).
 apply Nat.add_le_mono_l.
 rewrite Hm.
 apply nA_upper_bound_for_add; [ easy | flia Hj Hin ].
+rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+rewrite Nat.add_sub_assoc.
+rewrite <- Nat.mul_add_distr_r.
+rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+assert (H1 : (u j + 2) * m + m < 2 * (rad * m) + 2). {
+rewrite Nat.mul_add_distr_r, <- Nat.add_assoc.
+replace (2 * m + m) with (3 * m) by flia.
+rewrite <- Nat.mul_add_distr_r.
+replace (2 * (rad * m) + 2) with (2 * (rad * m + 1)) by flia.
+...
+apply lt_le_trans with (m := (2 * (rad - 1) + 3) * m).
+apply Nat.mul_lt_mono_pos_r.
+now subst m; apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+now apply Nat.add_lt_mono_r.
+rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+replace (2 * rad - 2 + 3) with (2 * rad + 1).
+...
 ...
 apply lt_le_trans with (m := 2 * (rad - 1) * m + 2 * (m - 1)).
 apply Nat.add_lt_le_mono; [ | easy ].
