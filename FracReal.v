@@ -3347,6 +3347,9 @@ destruct k.
 -specialize (A_ge_1_add_second_eq u i Hur (Hu 1) Hui) as H1.
  now rewrite Nat.add_0_r.
 -move k before i.
+(* perhaps, this induction is not necessary *)
+clear IHk.
+(**)
  specialize (Hu (k + 2)) as H2.
  replace (i + S k + 2) with (i + k + 3) by flia.
  revert H2.
@@ -3443,6 +3446,14 @@ destruct k.
     now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
  }
  rewrite Nat.mod_small; [ easy | ].
+ eapply Nat.lt_le_trans; [ apply H3 | ].
+ rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+ rewrite <- Nat.pow_add_r.
+ rewrite Nat.add_sub_assoc; [ | flia Hs Hin ].
+ rewrite Nat.add_comm, Nat.add_sub.
+ apply Nat.le_sub_l.
+Qed.
+
 ...
 
 Theorem A_ge_1_add_all_true_if {r : radix} : ∀ u i,
