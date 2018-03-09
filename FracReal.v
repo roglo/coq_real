@@ -3376,6 +3376,7 @@ destruct k.
    rewrite nA_split with (e := i + k + 3); [ | flia Hin ].
    remember (i + k + 3) as j eqn:Hj.
    move j before i.
+...
    (* right hand side: cutting the 9990000 = 9980000 + 000/19/000 *)
    replace ((rad ^ (k + 3) - 1) * rad ^ (s - (k + 3))) with
       ((rad ^ (k + 2) - 2) * rad ^ (s - (k + 2)) +
