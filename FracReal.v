@@ -3376,11 +3376,10 @@ destruct k.
    rewrite nA_split with (e := i + k + 3); [ | flia Hin ].
    remember (i + k + 3) as j eqn:Hj.
    move j before i.
-...
    (* right hand side: cutting the 9990000 = 9980000 + 000/19/000 *)
    replace ((rad ^ (k + 3) - 1) * rad ^ (s - (k + 3))) with
       ((rad ^ (k + 2) - 2) * rad ^ (s - (k + 2)) +
-       (2 * rad - 1) * rad ^ (s - (k + 3))).
+       (2 * rad - 1) * rad ^ (s - (k + 2))).
    -apply Nat.add_le_lt_mono.
     +replace (n - j) with (s - (k + 2)) by flia Hs Hj.
      apply Nat.mul_le_mono_r.
@@ -3407,13 +3406,14 @@ destruct k.
      --replace 2 with (2 * 1) at 1 by flia.
        apply Nat.mul_le_mono_l.
        now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-    +replace (s - (k + 3)) with (n - j - 1) by flia Hs Hj.
+    +replace (s - (k + 2)) with (n - j) by flia Hs Hj.
      rewrite nA_split_first; [ | flia Hj Hin ].
      replace (j - 1 + 1) with j by flia Hj.
      replace (n - (j - 1) - 2) with (n - j - 1) by flia Hj.
      replace (S (j - 1)) with j by flia Hj.
+     replace (n - j) with (n - j - 1 + 1) at 2 by flia Hj Hin.
+     rewrite Nat.pow_add_r, Nat.pow_1_r.
      remember (rad ^ (n - j - 1)) as m eqn:Hm.
-(* probably false *)
 ...
 apply le_lt_trans with (m := u j * m + 2 * (m - 1)).
 apply Nat.add_le_mono_l.
