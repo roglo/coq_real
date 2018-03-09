@@ -3456,8 +3456,13 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
  rewrite Nat.add_0_r.
  split; [ easy | ].
  split; [ easy | ].
- now intros j; apply A_ge_1_add_8_eq.
+ intros j.
+ specialize (A_ge_1_add_8_eq u i Hur H1 j (Hu (j + 1))) as H2.
+ easy.
 -idtac.
+...
+-left; right.
+ intros k.
 ...
 
 Theorem old_A_ge_1_add_all_true_if {r : radix} : ∀ u i,
