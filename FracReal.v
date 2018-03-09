@@ -3377,11 +3377,10 @@ destruct k.
    remember (i + k + 3) as j eqn:Hj.
    move j before i.
    (* right hand side: cutting the 9990000 = 9980000 + 000/19/000 *)
-...
 (* this "replace" is false *)
    replace ((rad ^ (k + 3) - 1) * rad ^ (s - (k + 3))) with
       ((rad ^ (k + 2) - 2) * rad ^ (s - (k + 2)) +
-       (2 * rad - 1) * rad ^ (s - (k + 2))).
+       (2 * rad - 1) * rad ^ (s - (k + 3))).
    -apply Nat.add_le_lt_mono.
     +replace (n - j) with (s - (k + 2)) by flia Hs Hj.
      apply Nat.mul_le_mono_r.
@@ -3408,11 +3407,12 @@ destruct k.
      --replace 2 with (2 * 1) at 1 by flia.
        apply Nat.mul_le_mono_l.
        now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-    +replace (s - (k + 2)) with (n - j) by flia Hs Hj.
+    +replace (s - (k + 3)) with (n - j - 1) by flia Hs Hj.
      rewrite nA_split_first; [ | flia Hj Hin ].
      replace (j - 1 + 1) with j by flia Hj.
      replace (n - (j - 1) - 2) with (n - j - 1) by flia Hj.
      replace (S (j - 1)) with j by flia Hj.
+...
      replace (n - j) with (n - j - 1 + 1) at 2 by flia Hj Hin.
      rewrite Nat.pow_add_r, Nat.pow_1_r.
      remember (rad ^ (n - j - 1)) as m eqn:Hm.
@@ -3457,32 +3457,24 @@ destruct k.
      --replace 2 with (2 * 1) at 1 by flia.
        apply Nat.mul_le_mono_l.
        now subst m; apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-   -idtac.
+...
    -replace (s - (k + 2)) with (s - (k + 3) + 1) by flia Hs Hj Hin.
     remember (s - (k + 3)) as t eqn:Ht.
     replace (k + 3) with (k + 2 + 1) by flia.
     remember (k + 2) as m eqn:Hm.
     do 2 rewrite Nat.pow_add_r.
     rewrite Nat.pow_1_r.
-    rewrite <- Nat.mul_add_distr_r.
-    rewrite Nat.mul_assoc, Nat.mul_shuffle0; f_equal.
-    rewrite Nat.mul_add_distr_r.
-    do 2 rewrite Nat.mul_sub_distr_r.
-    rewrite Nat.mul_1_l.
-(* fail! *)
-...
-    rewrite Nat.add_sub_assoc.
+    rewrite Nat.mul_assoc, Nat.mul_shuffle0.
     rewrite <- Nat.mul_add_distr_r; f_equal.
     rewrite Nat.mul_sub_distr_r.
-    rewrite Nat.add_sub_assoc; [ | flia Hr ].
+    rewrite Nat.add_sub_assoc; [ f_equal | flia Hr ].
     rewrite Nat.sub_add; [ easy | ].
     apply Nat.mul_le_mono_r.
     subst m.
-    replace (k + 2) with (k + 1 + 1) by flia.
-    do 2 rewrite Nat.pow_add_r, Nat.pow_1_r.
-    replace 2 with (1 * 1 * 2) at 1 by flia.
-    apply Nat.mul_le_mono; [ | easy ].
-    apply Nat.mul_le_mono; [ | easy ].
+    rewrite Nat.add_comm; simpl.
+    replace 2 with (2 * (1 * 1)) by flia.
+    apply Nat.mul_le_mono; [ easy | ].
+    apply Nat.mul_le_mono; [ flia Hr | ].
     now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
 ...
 
