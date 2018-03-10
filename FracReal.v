@@ -2916,10 +2916,10 @@ Theorem nA_upper_bound_for_add_4 {r : radix} : ∀ u i j n,
 Proof.
 intros * Hur H1 H2 H3 His.
 rewrite nA_split with (e := i + j + 2); [ | flia His ].
+replace (n - i - j - 2) with (n - (i + j + 2)) by flia.
+remember (i + j + 2) as k eqn:Hk.
 ...
 
-rewrite nA_split_first; [ | flia His ].
-remember (n - i - 2) as s eqn:Hs.
 apply le_lt_trans with (m := (rad - 3) * rad ^ s + 2 * (rad ^ s - 1)).
 -apply Nat.add_le_mono.
  +apply Nat.mul_le_mono_pos_r; [ | ].
