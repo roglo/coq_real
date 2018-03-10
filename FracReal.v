@@ -3459,25 +3459,20 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
  intros j.
  specialize (A_ge_1_add_8_eq u i Hur H1 j (Hu (j + 1))) as H2.
  easy.
--set (g j := if eq_nat_dec (u (i + j + 1)) (rad - 2) then false else true).
+-set (g j := if eq_nat_dec (u (i + j + 1)) (rad - 1) then true else false).
  destruct (LPO_fst g) as [H2| H2]; subst g; simpl in H2.
- +assert (H : ∀ k, u (i + k + 1) ≠ rad - 2). {
-    intros k; specialize (H2 k).
-    now destruct (Nat.eq_dec (u (i + k + 1)) (rad - 2)).
-  }
-  clear H2; rename H into H2.
-  left; left; intros k.
-  (* perhaps LPO_fst above should rather find if only 9s after i+1 *)
-...
+ +left; left; intros k; specialize (H2 k).
+  now destruct (Nat.eq_dec (u (i + k + 1)) (rad - 1)).
  +destruct H2 as (j & Hjj & H2).
-  destruct (Nat.eq_dec (u (i + j + 1)) (rad - 2)) as [H| ]; [ | easy ].
+  destruct (Nat.eq_dec (u (i + j + 1)) (rad - 1)) as [ | H]; [ easy | ].
   clear H2; rename H into H2.
-  assert (H : ∀ k, k < j → u (i + k + 1) ≠ rad - 2). {
+  assert (H : ∀ k, k < j → u (i + k + 1) = rad - 1). {
     intros k Hk; specialize (Hjj k Hk).
-    now destruct (Nat.eq_dec (u (i + k + 1)) (rad - 2)).
+    now destruct (Nat.eq_dec (u (i + k + 1)) (rad - 1)).
   }
   clear Hjj; rename H into H3.
   right; exists j.
+  split; [ easy | ].
 ...
 -left; right.
  intros k.
