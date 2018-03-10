@@ -2889,13 +2889,35 @@ apply Nat.mul_le_mono_r.
 apply Hur.
 Qed.
 
+Theorem nA_split {r : radix} : ∀ u i n e,
+  i + 1 ≤ e - 1 ≤ n - 1
+  → nA i n u = nA i e u * rad ^ (n - e) + nA (e - 1) n u.
+Proof.
+intros * Hin.
+unfold nA.
+rewrite summation_split with (e0 := e - 1); [ | easy ].
+simpl; f_equal.
++rewrite summation_mul_distr_r.
+ apply summation_eq_compat.
+ intros j Hj; simpl.
+ rewrite <- Nat.mul_assoc; f_equal.
+ rewrite <- Nat.pow_add_r.
+ now replace (e - 1 - j + (n - e)) with (n - 1 - j) by flia Hin Hj.
++now rewrite Nat.add_1_r.
+Qed.
+
 Theorem nA_upper_bound_for_add_4 {r : radix} : ∀ u i j n,
   (∀ k : nat, u k ≤ 2 * (rad - 1))
+  → u (i + 1) = rad - 1
+  → (∀ k : nat, k < j → u (i + k + 1) = rad - 1)
   → u (i + j + 1) < rad - 2
-  → i + 2 ≤ n - 1
+  → i + j + 1 ≤ n - 1
   → nA i n u < (rad ^ S j - 1) * rad ^ (n - i - j - 2).
 Proof.
-intros * Hur H1 His.
+intros * Hur H1 H2 H3 His.
+rewrite nA_split with (e := i + j + 2); [ | flia His ].
+...
+
 rewrite nA_split_first; [ | flia His ].
 remember (n - i - 2) as s eqn:Hs.
 apply le_lt_trans with (m := (rad - 3) * rad ^ s + 2 * (rad ^ s - 1)).
@@ -3043,6 +3065,11 @@ remember (rad * (i + j + 3)) as n eqn:Hn.
 replace (n - i - 2) with (n - i - 1 - 1) by flia.
 remember (n - i - 1) as s eqn:Hs.
 move s before n.
+assert (His : i + j + 1 ≤ n - 1). {
+  rewrite Hn.
+  specialize radix_ne_0 as H.
+  destruct rad; [ easy | simpl; flia ].
+}
 specialize (nA_upper_bound_for_add_4 u i j n Hur H4) as H5.
 ...
 
@@ -3326,23 +3353,6 @@ rewrite Nat.mul_sub_distr_r.
 rewrite Nat.mul_1_l, <- Nat.pow_add_r.
 replace (2 + (s - 2)) with s by flia Hs Hin.
 apply Nat.le_sub_l.
-Qed.
-
-Theorem nA_split {r : radix} : ∀ u i n e,
-  i + 1 ≤ e - 1 ≤ n - 1
-  → nA i n u = nA i e u * rad ^ (n - e) + nA (e - 1) n u.
-Proof.
-intros * Hin.
-unfold nA.
-rewrite summation_split with (e0 := e - 1); [ | easy ].
-simpl; f_equal.
-+rewrite summation_mul_distr_r.
- apply summation_eq_compat.
- intros j Hj; simpl.
- rewrite <- Nat.mul_assoc; f_equal.
- rewrite <- Nat.pow_add_r.
- now replace (e - 1 - j + (n - e)) with (n - 1 - j) by flia Hin Hj.
-+now rewrite Nat.add_1_r.
 Qed.
 
 Theorem A_ge_1_add_8_eq {r : radix} : ∀ u i,
