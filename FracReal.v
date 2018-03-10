@@ -2912,14 +2912,14 @@ Theorem nA_upper_bound_for_add_4 {r : radix} : ∀ u i j n,
   → (∀ k : nat, k < j → u (i + k + 1) = rad - 1)
   → u (i + j + 1) < rad - 2
   → i + j + 1 ≤ n - 1
-  → nA i n u < (rad ^ S j - 1) * rad ^ (n - i - j - 2).
+  → nA i n u < (rad ^ (j + 2) - 1) * rad ^ (n - i - 1 - (j + 2)).
 Proof.
 intros * Hur H1 H2 H3 His.
 rewrite nA_split with (e := i + j + 2); [ | flia His ].
-replace (n - i - j - 2) with (n - (i + j + 2)) by flia.
+replace (n - i - 1 - (j + 2)) with (n - (i + j + 2) - 1) by flia.
 remember (i + j + 2) as k eqn:Hk.
-...
-
+move k before j.
+Abort. (*
 apply le_lt_trans with (m := (rad - 3) * rad ^ s + 2 * (rad ^ s - 1)).
 -apply Nat.add_le_mono.
  +apply Nat.mul_le_mono_pos_r; [ | ].
@@ -3055,23 +3055,27 @@ Theorem A_ge_1_add_ge {r : radix} : ∀ u i j,
   → u (i + j + 1) ≥ rad - 2.
 Proof.
 intros * Hur Hu H1 H2 H3.
-specialize (Hu j) as H4.
+specialize (Hu (j + 1)) as H4.
 revert H4.
 apply Decidable.contrapositive; [ apply Nat.le_decidable | ].
 intros H4; apply Nat.nle_gt in H4.
 apply Bool.not_true_iff_false.
 apply A_ge_1_false_iff.
-remember (rad * (i + j + 3)) as n eqn:Hn.
-replace (n - i - 2) with (n - i - 1 - 1) by flia.
-remember (n - i - 1) as s eqn:Hs.
-move s before n.
+replace (i + (j + 1) + 3) with (i + j + 4) by flia.
+replace (S (j + 1)) with (j + 2) by flia.
+remember (rad * (i + j + 4)) as n eqn:Hn.
 assert (His : i + j + 1 ≤ n - 1). {
   rewrite Hn.
   specialize radix_ne_0 as H.
   destruct rad; [ easy | simpl; flia ].
 }
+replace (n - i - (j + 1) - 2) with (n - i - 1 - (j + 2)) by flia.
+remember (n - i - 1) as s eqn:Hs.
+move s before n.
+(*
 specialize (nA_upper_bound_for_add_4 u i j n Hur H4) as H5.
-...
+*)
+Abort.
 
 Theorem A_ge_1_add_first_ge_rad {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
@@ -3383,6 +3387,8 @@ assert (Hin : i + k + 3 ≤ n - 1). {
 }
 replace (S (k + 1)) with (k + 2) by flia.
 assert (H3 : nA i n u < (rad ^ (k + 2) - 1) * rad ^ (s - (k + 2))). {
+(* make a lemma before the theorem with nA_split above *)
+...
   rewrite nA_split with (e := i + k + 2); [ | flia Hin ].
   remember (i + k + 2) as j eqn:Hj.
   move j before i.
