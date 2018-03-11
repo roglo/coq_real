@@ -2833,6 +2833,10 @@ move k before j.
                                9 9 9 9 9 7 0 0 0 0 1
                              +           1 9 9 9 9 9
 *)
+replace ((rad ^ (j + 1) - 1) * rad ^ (n - k)) with
+  ((rad ^ (j + 1) - 3) * (rad ^ (n - k) + 1) + (rad ^ (n - k) - 1)).
+Focus 2.
+-idtac.
 ...
 
 Theorem old_nA_upper_bound_for_add_4 {r : radix} : ∀ u i j n,
