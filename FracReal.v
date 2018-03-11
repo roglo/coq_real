@@ -2822,6 +2822,16 @@ replace (n - i - 1 - (j + 2)) with (n - (i + j + 2) - 1) by flia.
 remember (i + j + 2) as k eqn:Hk.
 move k before j.
 ...
+(*
+           k-1
+ i+1      i+j+1
+  9 9 9 9 9 7 0 0 0 0 0            j+2      n-k-1
+  <---------> <------->        <---------> <----->
+      j+1        n-k       <?  9 9 9 9 9 9 0 0 0 0
+
++            1818181818
+*)
+...
 apply le_lt_trans with (m := (rad - 3) * rad ^ s + 2 * (rad ^ s - 1)).
 -apply Nat.add_le_mono.
  +apply Nat.mul_le_mono_pos_r; [ | ].
