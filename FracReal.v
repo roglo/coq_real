@@ -2836,7 +2836,9 @@ move k before j.
 replace ((rad ^ (j + 1) - 1) * rad ^ (n - k)) with
   ((rad ^ (j + 1) - 3) * rad ^ (n - k) + 1 + (2 * rad ^ (n - k) - 1)).
 -apply Nat.add_lt_le_mono.
-+idtac.
++rewrite Nat.add_1_r.
+ apply -> Nat.succ_le_mono.
+ apply Nat.mul_le_mono_r.
 ...
 (* this is ok for - *)
 -remember (rad ^ (j + 1)) as x eqn:Hx.
