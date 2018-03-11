@@ -2834,9 +2834,29 @@ move k before j.
                              +           1 9 9 9 9 9
 *)
 replace ((rad ^ (j + 1) - 1) * rad ^ (n - k)) with
-  ((rad ^ (j + 1) - 3) * (rad ^ (n - k) + 1) + (rad ^ (n - k) - 1)).
-Focus 2.
--idtac.
+  ((rad ^ (j + 1) - 3) * rad ^ (n - k) + 1 + (2 * rad ^ (n - k) - 1)).
+-apply Nat.add_lt_le_mono.
++idtac.
+...
+(* this is ok for - *)
+-remember (rad ^ (j + 1)) as x eqn:Hx.
+ replace (x - 3) with (x - 1 - 2) by flia.
+ rewrite Nat.mul_sub_distr_r.
+ rewrite Nat.add_sub_assoc.
+ +rewrite Nat.add_sub_swap; [ | flia ].
+  rewrite Nat.add_sub.
+  rewrite <- Nat.add_sub_swap; [ now rewrite Nat.add_sub | ].
+  apply Nat.mul_le_mono_r.
+  apply Nat.le_add_le_sub_r; simpl.
+  subst x; rewrite Nat.add_1_r.
+  destruct rad as [| rr]; [ easy | ].
+  destruct rr; [ easy | ].
+  destruct rr; [ easy | ].
+  replace 3 with (3 ^ 1) by apply Nat.pow_1_r.
+  apply Nat.pow_le_mono; [ easy | flia | flia ].
+ +replace 1 with (1 * 1) at 1 by flia.
+  apply Nat.mul_le_mono; [ flia | ].
+  now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
 ...
 
 Theorem old_nA_upper_bound_for_add_4 {r : radix} : ∀ u i j n,
