@@ -2814,6 +2814,33 @@ Theorem nA_upper_bound_for_add_4 {r : radix} : ∀ u i j n,
   → (∀ k : nat, k < j → u (i + k + 1) = rad - 1)
   → u (i + j + 1) < rad - 2
   → i + j + 1 ≤ n - 1
+  → nA i n u < (rad ^ (j + 1) - 1) * rad ^ (n - i - 1 - (j + 1)).
+Proof.
+intros * Hur H1 H2 H3 His.
+rewrite nA_split with (e := i + j + 2); [ | flia His ].
+replace (n - i - 1 - (j + 1)) with (n - (i + j + 2)) by flia.
+remember (i + j + 2) as k eqn:Hk.
+move k before j.
+(*
+           k-1
+ i+1      i+j+1
+  9 9 9 9 9≤7 0 0 0 0 0            j+1        n-k
+  <---------> <------->        <---------> <------->
+      j+1        n-k       <?  9 9 9 9 9 9 0 0 0 0 0
+
++            1818181818                  ||
+
+                               9 9 9 9 9 7 0 0 0 0 1
+                             +           1 9 9 9 9 9
+*)
+...
+
+Theorem old_nA_upper_bound_for_add_4 {r : radix} : ∀ u i j n,
+  (∀ k : nat, u k ≤ 2 * (rad - 1))
+  → u (i + 1) = rad - 1
+  → (∀ k : nat, k < j → u (i + k + 1) = rad - 1)
+  → u (i + j + 1) < rad - 2
+  → i + j + 1 ≤ n - 1
   → nA i n u < (rad ^ (j + 2) - 1) * rad ^ (n - i - 1 - (j + 2)).
 Proof.
 intros * Hur H1 H2 H3 His.
@@ -2825,11 +2852,16 @@ move k before j.
 (*
            k-1
  i+1      i+j+1
-  9 9 9 9 9 7 0 0 0 0 0            j+2      n-k-1
-  <---------> <------->        <---------> <----->
-      j+1        n-k       <?  9 9 9 9 9 9 0 0 0 0
+  9 9 9 9 9≤7 0 0 0 0 0            j+2      n-k-1
+  <---------> <------->        <-----------> <----->
+      j+1        n-k       <?  9 9 9 9 9 9 9 0 0 0 0
 
 +            1818181818
+
+I think that it is not necessary to go to j+2: j+1 should be enough
+
+                               9 9 9 9 9 7 0 0 0 0 1
+                             +           1 9 9 9 9 9
 *)
 ...
 apply le_lt_trans with (m := (rad - 3) * rad ^ s + 2 * (rad ^ s - 1)).
