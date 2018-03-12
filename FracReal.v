@@ -2838,6 +2838,7 @@ replace ((rad ^ (j + 2) - 1) * rad ^ (n - k - 1)) with
  +apply Nat.mul_le_mono_r.
   rewrite nA_split_last; [ | flia Hk His ].
   replace (k - 1) with (i + j + 1) by flia Hk.
+(* does not work, I must have done something wrong *)
 
 ...
 (* this is ok for - *)
