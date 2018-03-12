@@ -2839,6 +2839,14 @@ replace ((rad ^ (j + 1) - 1) * rad ^ (n - k)) with
 +rewrite Nat.add_1_r.
  apply -> Nat.succ_le_mono.
  apply Nat.mul_le_mono_r.
+ replace (j + 1) with (k - i - 1) by flia Hk.
+...
+nA_dig_seq_ub:
+  ∀ (r : radix) (u : nat → nat) (n i : nat),
+  (∀ j : nat, i + 1 ≤ j ≤ n - 1 → u j < rad) → i + 1 ≤ n - 1 → nA i n u < rad ^ (n - i - 1)
+all_le_nA_le:
+  ∀ (r : radix) (u : nat → nat) (a : nat),
+  (∀ j : nat, u j ≤ a * (rad - 1)) → ∀ i n : nat, nA i n u ≤ a * (rad ^ (n - i - 1) - 1)
 ...
 (* this is ok for - *)
 -remember (rad ^ (j + 1)) as x eqn:Hx.
