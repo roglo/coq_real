@@ -3051,7 +3051,7 @@ apply A_ge_1_false_iff.
 replace (i + (j + 1) + 3) with (i + j + 4) by flia.
 replace (S (j + 1)) with (j + 2) by flia.
 remember (rad * (i + j + 4)) as n eqn:Hn.
-assert (His : i + j + 1 ≤ n - 1). {
+assert (His : i + j + 2 ≤ n - 1). {
   rewrite Hn.
   specialize radix_ne_0 as H.
   destruct rad; [ easy | simpl; flia ].
@@ -3059,9 +3059,9 @@ assert (His : i + j + 1 ≤ n - 1). {
 replace (n - i - (j + 1) - 2) with (n - i - 1 - (j + 2)) by flia.
 remember (n - i - 1) as s eqn:Hs.
 move s before n.
-(*
-specialize (nA_upper_bound_for_add_4 u i j n Hur H4) as H5.
-*)
+specialize (nA_upper_bound_for_add_4 u i j n Hur H1 H3 H4 His) as H5.
+rewrite <- Hs in H5.
+rewrite Nat.mod_small; [ easy | ].
 ...
 
 Theorem A_ge_1_add_first_ge_rad {r : radix} : ∀ u i,
