@@ -2838,8 +2838,45 @@ replace ((rad ^ (j + 2) - 1) * rad ^ (n - k - 1)) with
  +apply Nat.mul_le_mono_r.
   rewrite nA_split_last; [ | flia Hk His ].
   replace (k - 1) with (i + j + 1) by flia Hk.
-(* does not work, I must have done something wrong *)
-
+  rewrite Nat.pow_add_r, Nat.pow_1_r.
+  replace (rad ^ j) with (rad ^ j - 1 + 1).
+  *rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
+   rewrite <- Nat.add_sub_assoc; [ | flia H3 ].
+   apply Nat.add_le_mono; [ | flia H3 ].
+   rewrite Nat.mul_comm.
+   apply Nat.mul_le_mono_r.
+   replace j with (i + j + 1 - i - 1) at 2 by flia.
+   specialize (nA_dig_seq_ub u (i + j + 1) i) as H4.
+   assert (H5 : ∀ p, i + 1 ≤ p ≤ i + j + 1 - 1 → u p < rad). {
+     intros p Hp.
+     specialize (H2 (p - i - 1)).
+     assert (H5 : p - i - 1 < j) by flia Hp.
+     specialize (H2 H5).
+     replace (i + (p - i - 1) + 1) with p in H2 by flia Hp.
+     specialize radix_ge_2 as Hr.
+     flia Hr H2.
+   }
+   specialize (H4 H5); clear H5.
+   destruct j.
+  --rewrite Nat.add_0_r in H3; flia H1 H3.
+  --assert (H5 : i + 1 ≤ i + S j + 1 - 1) by lia.
+    specialize (H4 H5).
+    apply Nat.le_add_le_sub_r.
+    now rewrite Nat.add_1_r.
+  *rewrite Nat.sub_add; [ easy | ].
+   now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+ +eapply Nat.le_lt_trans.
+  *apply nA_upper_bound_for_add; [ | flia Hk His ].
+   apply Hur.
+  *replace (n - (k - 1) - 1) with (n - k) by flia Hk His.
+   rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+   replace rad with (rad ^ 1) at 2 by apply Nat.pow_1_r.
+   rewrite <- Nat.mul_assoc.
+   rewrite <- Nat.pow_add_r.
+   replace (1 + (n - k - 1)) with (n - k) by flia Hk His.
+   (* 2*9 < 3*10-1 : 18 < 29 *)
+   (* 2*99 < 3*100-10 : 198 < 290 *)
+   (* 2*999 < 3*1000-100 : 1998 < 2900 *)
 ...
 (* this is ok for - *)
 -replace (j + 2) with (j + 1 + 1) by flia.
