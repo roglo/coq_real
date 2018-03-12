@@ -3378,7 +3378,7 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
       destruct rad; [ easy | simpl; flia ].
     }
     assert (H7 : rad ^ s ≤ nA i n u). {
-      (* 1/0/0/0 = 9/9/9/10, therefore 1/0/0/0/x/x/x ≤ 9/9/9/10/y/y/y *)
+      (* 1/0/0/0 = 9/9/10, therefore 1/0/0/0/x/x/x ≤ 9/9/10/y/y/y *)
 ...
 -left; right.
  intros k.
