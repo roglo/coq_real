@@ -3373,6 +3373,12 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
     remember (rad * (i + j + 3)) as n eqn:Hn.
     replace (n - i - j - 2) with (n - i - 1 - S j) by flia.
     remember (n - i - 1) as s eqn:Hs.
+    assert (H6 : i + j + 1 ≤ n - 1). {
+      rewrite Hn.
+      destruct rad; [ easy | simpl; flia ].
+    }
+    assert (H7 : rad ^ s ≤ nA i n u). {
+
 ...
 -left; right.
  intros k.
