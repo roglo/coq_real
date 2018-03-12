@@ -2744,6 +2744,7 @@ apply le_lt_trans with (m := (rad - 3) * rad ^ s + 2 * (rad ^ s - 1)).
   now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
 Qed.
 
+(*
 Theorem new_nA_upper_bound_for_add_4 {r : radix} : ∀ u i j n,
   (∀ k : nat, u k ≤ 2 * (rad - 1))
   → u (i + 1) = rad - 1
@@ -2776,7 +2777,6 @@ replace ((rad ^ (j + 1) - 1) * rad ^ (n - k)) with
  apply -> Nat.succ_le_mono.
  apply Nat.mul_le_mono_r.
  replace (j + 1) with (k - i - 1) by flia Hk.
-Abort. (*
 ...
 nA_dig_seq_ub:
   ∀ (r : radix) (u : nat → nat) (n i : nat),
@@ -3355,14 +3355,24 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
  +destruct H2 as (j & Hjj & H2).
   destruct (Nat.eq_dec (u (i + j + 1)) (rad - 1)) as [ | H]; [ easy | ].
   clear H2; rename H into H2.
-  assert (H : ∀ k, k < j → u (i + k + 1) = rad - 1). {
+  assert (H3 : ∀ k, k < j → u (i + k + 1) = rad - 1). {
     intros k Hk; specialize (Hjj k Hk).
     now destruct (Nat.eq_dec (u (i + k + 1)) (rad - 1)).
   }
-  clear Hjj; rename H into H3.
+  clear Hjj.
   right; exists j.
   split; [ easy | ].
   specialize (A_ge_1_add_ge u i j Hur Hu H1 H2 H3) as H4.
+  assert (H5 : u (i + j + 1) < rad). {
+    specialize (Hu j) as H5.
+    revert H5.
+    apply Decidable.contrapositive; [ apply Nat.le_decidable | ].
+    intros H5; apply Nat.nlt_ge in H5.
+    apply Bool.not_true_iff_false.
+    apply A_ge_1_false_iff.
+    remember (rad * (i + j + 3)) as n eqn:Hn.
+    replace (n - i - j - 2) with (n - i - 1 - S j) by flia.
+    remember (n - i - 1) as s eqn:Hs.
 ...
 -left; right.
  intros k.
