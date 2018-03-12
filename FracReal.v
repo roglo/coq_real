@@ -3062,7 +3062,13 @@ move s before n.
 specialize (nA_upper_bound_for_add_4 u i j n Hur H1 H3 H4 His) as H5.
 rewrite <- Hs in H5.
 rewrite Nat.mod_small; [ easy | ].
-...
+eapply Nat.lt_le_trans; [ apply H5 | ].
+rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+rewrite <- Nat.pow_add_r.
+rewrite Nat.add_sub_assoc.
+-rewrite Nat.add_comm, Nat.add_sub; flia.
+-flia His Hs.
+Qed.
 
 Theorem A_ge_1_add_first_ge_rad {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
@@ -3356,18 +3362,7 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
   clear Hjj; rename H into H3.
   right; exists j.
   split; [ easy | ].
-  assert (H4 : u (i + j + 1) ≥ rad - 2). {
-...
-    specialize (Hu j) as H4.
-    revert H4.
-    apply Decidable.contrapositive; [ apply Nat.le_decidable | ].
-    intros H4; apply Nat.nle_gt in H4.
-    apply Bool.not_true_iff_false.
-    apply A_ge_1_false_iff.
-    remember (rad * (i + j + 3)) as n eqn:Hn.
-    replace (n - i - 2) with (n - i - 1 - 1) by flia.
-    remember (n - i - 1) as s eqn:Hs.
-    move s before n.
+  specialize (A_ge_1_add_ge u i j Hur Hu H1 H2 H3) as H4.
 ...
 -left; right.
  intros k.
