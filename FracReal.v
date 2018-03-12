@@ -2874,11 +2874,28 @@ replace ((rad ^ (j + 2) - 1) * rad ^ (n - k - 1)) with
    rewrite <- Nat.mul_assoc.
    rewrite <- Nat.pow_add_r.
    replace (1 + (n - k - 1)) with (n - k) by flia Hk His.
-   (* 2*9 < 3*10-1 : 18 < 29 *)
-   (* 2*99 < 3*100-10 : 198 < 290 *)
    (* 2*999 < 3*1000-100 : 1998 < 2900 *)
-...
-(* this is ok for - *)
+   replace (n - k) with (n - k - 1 + 1) at 1 2 by flia Hk His.
+   rewrite Nat.pow_add_r, Nat.pow_1_r.
+   remember (rad ^ (n - k - 1)) as x eqn:Hx.
+   rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+   replace 3 with (2 + 1) by easy.
+   rewrite Nat.mul_add_distr_r, Nat.mul_1_l.
+   specialize radix_ge_2 as Hr.
+   rewrite <- Nat.add_sub_assoc.
+  --apply Nat.lt_sub_lt_add_l.
+    rewrite Nat_sub_sub_swap.
+    rewrite Nat.sub_diag; simpl.
+    replace x with (x * 1) at 2 by apply Nat.pow_1_r.
+    rewrite <- Nat.mul_sub_distr_l.
+    apply Nat.neq_0_lt_0.
+    intros H.
+    apply Nat.eq_mul_0 in H.
+    destruct H as [H| H]; [ | flia H Hr ].
+    revert H; subst x.
+    now apply Nat.pow_nonzero.
+  --destruct rad; [ easy | ].
+    rewrite Nat.mul_comm; simpl; flia.
 -replace (j + 2) with (j + 1 + 1) by flia.
  remember (j + 1) as jj; rewrite Nat.pow_add_r; subst jj.
  rewrite Nat.pow_1_r.
@@ -2905,54 +2922,7 @@ replace ((rad ^ (j + 2) - 1) * rad ^ (n - k - 1)) with
   replace y with (1 * y) by flia.
   apply Nat.mul_le_mono; [ | flia ].
   flia H3.
-...
-
-
-...
-apply le_lt_trans with (m := (rad - 3) * rad ^ s + 2 * (rad ^ s - 1)).
--apply Nat.add_le_mono.
- +apply Nat.mul_le_mono_pos_r; [ | ].
-...
-
- +apply Nat.mul_le_mono_pos_r; [ | flia H1 ].
-  now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
- +destruct s; [ flia Hs His | ].
-  rewrite power_summation_sub_1; [ | easy ].
-  rewrite Nat.mul_assoc, summation_mul_distr_l.
-  remember 2 as x; simpl; subst x.
-  unfold nA.
-  rewrite summation_rtl.
-  rewrite summation_shift; [ | flia His ].
-  replace (n - 1 - (S i + 1)) with s by flia Hs.
-  apply (@summation_le_compat nat_ord_ring_def).
-  intros j Hj.
-  remember 2 as x; simpl; subst x; unfold Nat.le.
-  replace (n - 1 + S (i + 1) - S (i + 1 + j)) with (n - j - 1) by flia.
-  replace (n - 1 - (n - j - 1)) with j by flia Hs Hj.
-  apply Nat.mul_le_mono_pos_r; [ | apply Hur ].
-  now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
--replace (rad - 3) with (rad - 1 - 2) by flia.
- rewrite Nat.mul_sub_distr_r.
- rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
- remember (2 * rad ^ s) as x eqn:Hx.
- rewrite Nat.add_sub_assoc.
- +rewrite Nat.sub_add.
-  *apply Nat.sub_lt; [ | flia ].
-   destruct s; [ flia Hs His | ].
-   replace 2 with (1 * 2) by flia.
-   apply Nat.mul_le_mono; [ flia H1 | ].
-   replace 2 with (2 ^ 1) by apply Nat.pow_1_r.
-   apply Nat.pow_le_mono; [ easy | apply radix_ge_2 | flia ].
-  *subst x.
-   destruct rad as [| rr]; [ easy | ].
-   destruct rr; [ easy | ].
-   destruct rr; [ easy | simpl; flia ].
- +replace 2 with (2 * 1) by flia.
-  rewrite Hx.
-  apply Nat.mul_le_mono_l.
-  now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
 Qed.
-*)
 
 Theorem nA_upper_bound_for_add_5 {r : radix} : ∀ u i k n,
   (∀ k : nat, u k ≤ 2 * (rad - 1))
