@@ -3425,11 +3425,13 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
     rewrite Nat.mod_small; [ | flia H8 H9 ].
     apply Nat.add_lt_mono_r with (p := rad ^ s).
     rewrite Nat.sub_add; [ | easy ].
+    rewrite nA_split with (e := i + j + 2); [ | flia H6 ].
+...
     replace ((rad ^ S j - 1) * rad ^ (s - S j) + rad ^ s) with
       ((2 * rad ^ (j + 1) - 3) * rad ^ (s - j - 1) + 2 * rad ^ (s - j - 1)).
     -rewrite nA_split with (e := i + j + 2); [ | flia H6 ].
      apply Nat.add_le_lt_mono.
-     *replace (n - (i + j + 2)) with (s - j - 1) by flia Hs.
+     +replace (n - (i + j + 2)) with (s - j - 1) by flia Hs.
       apply Nat.mul_le_mono_pos_r; [ now apply Nat.neq_0_lt_0, Nat.pow_nonzero | ].
       rewrite Nat.add_1_r.
       rewrite nA_split_last; [ | flia ].
