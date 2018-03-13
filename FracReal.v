@@ -3383,6 +3383,24 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
       remember (i + j + 1) as t eqn:Ht.
       rewrite nA_split with (e := t + 1); [ | flia H6 Ht ].
       replace (t + 1 - 1) with t by flia.
+      apply le_plus_trans.
+      replace (rad ^ s) with
+        (((rad ^ j - 1) * rad + rad) * rad ^ (n - (t + 1))).
+      -apply Nat.mul_le_mono_r.
+       rewrite nA_split_last; [ | flia Ht ].
+       rewrite Nat.mul_comm, Nat.add_sub.
+       apply Nat.add_le_mono; [ | easy ].
+       apply Nat.mul_le_mono_l.
+...
+      -rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+       rewrite Nat.sub_add.
+       +replace rad with (rad ^ 1) at 2 by apply Nat.pow_1_r.
+        do 2 rewrite <- Nat.pow_add_r; f_equal.
+        flia Ht Hs H6.
+       +replace rad with (1 * rad) at 1 by flia.
+        apply Nat.mul_le_mono_r.
+        now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+    }
 ...
 -left; right.
  intros k.
