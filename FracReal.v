@@ -3423,7 +3423,6 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
     rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H8.
     specialize (Nat.pow_nonzero rad s radix_ne_0) as H9.
     rewrite Nat.mod_small; [ | flia H8 H9 ].
-
 ...
 -left; right.
  intros k.
