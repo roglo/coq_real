@@ -3418,6 +3418,12 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
     assert (i + 1 ≤ n - 1) as H9 by flia H6.
     specialize (H8 H9); clear H9.
     rewrite <- Hs in H8.
+    replace (nA i n u) with (nA i n u - rad ^ s + 1 * rad ^ s) by flia H7.
+    rewrite Nat.mod_add; [ | now apply Nat.pow_nonzero ].
+    rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H8.
+    specialize (Nat.pow_nonzero rad s radix_ne_0) as H9.
+    rewrite Nat.mod_small; [ | flia H8 H9 ].
+
 ...
 -left; right.
  intros k.
