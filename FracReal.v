@@ -3467,8 +3467,6 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
      +rewrite Nat.add_sub_swap; [ easy | ].
       subst x; apply Nat.pow_le_mono_r; [ easy | flia ].
      +apply Nat.add_le_mono_r with (p := x).
-rewrite Nat.sub_add.
-...
       rewrite Nat.sub_add; subst x.
       *rewrite <- Nat.add_assoc.
        apply Nat.add_le_mono.
