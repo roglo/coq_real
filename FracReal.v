@@ -3432,6 +3432,12 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
      *replace (n - (i + j + 2)) with (s - j - 1) by flia Hs.
       apply Nat.mul_le_mono_pos_r; [ now apply Nat.neq_0_lt_0, Nat.pow_nonzero | ].
       rewrite Nat.add_1_r.
+      rewrite nA_split_last; [ | flia ].
+      replace (i + j + 2 - 1) with (i + j + 1) by flia.
+...
+nA_upper_bound_for_add:
+  ∀ (r : radix) (rg : ord_ring := nat_ord_ring) (u : nat → nat),
+  (∀ i : nat, u i ≤ 2 * (rad - 1)) → ∀ i n : nat, i + 1 ≤ n - 1 → nA i n u ≤ 2 * (rad ^ (n - i - 1) - 1)
 ...
       rewrite power_summation_sub_1; [ | easy ].
       unfold nA.
