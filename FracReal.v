@@ -3426,7 +3426,9 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
     apply Nat.add_lt_mono_r with (p := rad ^ s).
     rewrite Nat.sub_add; [ | easy ].
     replace ((rad ^ S j - 1) * rad ^ (s - S j) + rad ^ s) with
-      (2 * (rad ^ (j + 1) - 1) * rad ^ (s - j - 1) + rad ^ (s - j - 1)).
+      ((2 * rad ^ (j + 1) - 3) * rad ^ (s - j - 1) + 2 * rad ^ (s - j - 1)).
+-admit.
+(*
     -rewrite nA_split with (e := i + j + 2); [ | flia H6 ].
      apply Nat.add_le_lt_mono.
      *replace (n - (i + j + 2)) with (s - j - 1) by flia Hs.
@@ -3448,10 +3450,8 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
       apply Hur.
      *replace (i + j + 2 - 1) with (i + j + 1) by flia.
       replace (s - j - 1) with (n - (i + j + 1) - 1) by flia Hs.
-(* hou yaïe yaïe... *)
-...
+*)
     -rewrite Nat.add_1_r.
-     rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
      rewrite Nat.mul_sub_distr_r.
      rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
      rewrite <- Nat.pow_add_r.
@@ -3467,8 +3467,14 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
      +rewrite Nat.add_sub_swap; [ easy | ].
       subst x; apply Nat.pow_le_mono_r; [ easy | flia ].
      +apply Nat.add_le_mono_r with (p := x).
+rewrite Nat.sub_add.
+...
       rewrite Nat.sub_add; subst x.
-      *apply Nat.add_le_mono.
+      *rewrite <- Nat.add_assoc.
+       apply Nat.add_le_mono.
+      --apply Nat.pow_le_mono_r; [ easy | flia ].
+      --idtac.
+...
        1, 2: apply Nat.pow_le_mono_r; [ easy | flia ].
       *apply le_plus_trans.
        apply Nat.pow_le_mono_r; [ easy | flia ].
