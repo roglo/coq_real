@@ -3423,6 +3423,28 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
     rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H8.
     specialize (Nat.pow_nonzero rad s radix_ne_0) as H9.
     rewrite Nat.mod_small; [ | flia H8 H9 ].
+    apply Nat.add_lt_mono_r with (p := rad ^ s).
+    rewrite Nat.sub_add; [ | easy ].
+    replace ((rad ^ S j - 1) * rad ^ (s - S j) + rad ^ s) with
+      (2 * (rad ^ (j + 1) - 1) * rad ^ (s - j - 1) + rad ^ (s - j - 1)).
+    -admit.
+    -rewrite Nat.add_1_r.
+     rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+     rewrite Nat.mul_sub_distr_r.
+     rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+     rewrite <- Nat.pow_add_r.
+     replace (S j + (s - S j)) with s by flia Hs H6.
+     rewrite <- Nat.mul_assoc.
+     rewrite <- Nat.pow_add_r.
+     replace (S j + (s - j - 1)) with s by flia Hs H6.
+     simpl; do 2 rewrite Nat.add_0_r.
+     replace (s - S j) with (s - j - 1) by flia.
+     remember (rad ^ (s - j - 1)) as x eqn:Hx.
+     rewrite Nat.sub_add_distr.
+     rewrite Nat.sub_add.
+     +rewrite Nat.add_sub_swap; [ easy | ].
+      subst x; apply Nat.pow_le_mono_r; [ easy | flia ].
+     +idtac.
 ...
 -left; right.
  intros k.
