@@ -3367,21 +3367,24 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
     specialize (Hu j) as H5.
     revert H5.
     apply Decidable.contrapositive; [ apply Nat.le_decidable | ].
-    intros H5; apply Nat.nlt_ge in H5.
+    intros H5; apply Nat.nlt_ge in H5; clear H4.
     apply Bool.not_true_iff_false.
     apply A_ge_1_false_iff.
     remember (rad * (i + j + 3)) as n eqn:Hn.
     replace (n - i - j - 2) with (n - i - 1 - S j) by flia.
     remember (n - i - 1) as s eqn:Hs.
+    move n before j; move s before n.
     assert (H6 : i + j + 1 ≤ n - 1). {
       rewrite Hn.
       destruct rad; [ easy | simpl; flia ].
     }
     assert (H7 : rad ^ s ≤ nA i n u). {
-      (* 1/0/0/0 = 9/9/10, therefore 1/0/0/0/x/x/x ≤ 9/9/10/y/y/y *)
-      replace (rad ^ s) with
-        ((rad ^ (s - 1) - 1) * rad + rad).
-      (* oui, bon, sauf que c'est un peu plus compliqué que ça *)
+      (* 1/0/0/0 = 9/9/10, therefore 1/0/0/0/0/0/0 ≤ 9/9/10/x/x/x *)
+      rewrite nA_split with (e := i + j + 2); [ | flia H6 ].
+      replace (i + j + 2 - 1) with (i + j + 1) by flia.
+      replace (i + j + 2) with (i + j + 1 + 1) by flia.
+      remember (i + j + 1) as t eqn:Ht.
+      move t before s.
 ...
 -left; right.
  intros k.
