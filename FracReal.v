@@ -3427,13 +3427,12 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
     rewrite Nat.sub_add; [ | easy ].
     replace ((rad ^ S j - 1) * rad ^ (s - S j) + rad ^ s) with
       ((2 * rad ^ (j + 1) - 3) * rad ^ (s - j - 1) + 2 * rad ^ (s - j - 1)).
--admit.
-(*
     -rewrite nA_split with (e := i + j + 2); [ | flia H6 ].
      apply Nat.add_le_lt_mono.
      *replace (n - (i + j + 2)) with (s - j - 1) by flia Hs.
       apply Nat.mul_le_mono_pos_r; [ now apply Nat.neq_0_lt_0, Nat.pow_nonzero | ].
       rewrite Nat.add_1_r.
+...
       rewrite power_summation_sub_1; [ | easy ].
       unfold nA.
       rewrite summation_rtl.
@@ -3471,9 +3470,23 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
       *rewrite <- Nat.add_assoc.
        apply Nat.add_le_mono.
       --apply Nat.pow_le_mono_r; [ easy | flia ].
-      --idtac.
-...
-       1, 2: apply Nat.pow_le_mono_r; [ easy | flia ].
+      --replace (rad ^ s) with (rad ^ (s - 1) + (rad - 1) * rad ^ (s - 1)).
+       ++apply Nat.add_le_mono.
+        **apply Nat.pow_le_mono_r; [ easy | flia ].
+        **replace (rad ^ (s - j - 1)) with (1 * rad ^ (s - j - 1)) by flia.
+          apply Nat.mul_le_mono; [ flia Hr | ].
+          apply Nat.pow_le_mono_r; [ easy | flia ].
+       ++rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+         replace rad with (rad ^ 1) at 2 by apply Nat.pow_1_r.
+         rewrite <- Nat.pow_add_r.
+         replace (1 + (s - 1)) with s by flia Hs H6.
+         rewrite Nat.add_sub_assoc.
+        **now rewrite Nat.add_comm, Nat.add_sub.
+        **replace s with ((s - 1) + 1) at 2 by flia Hs H6.
+          rewrite Nat.pow_add_r.
+          replace (rad ^ (s - 1)) with (rad ^ (s - 1) * 1) at 1 by flia.
+          apply Nat.mul_le_mono_l.
+          now rewrite Nat.pow_1_r.
       *apply le_plus_trans.
        apply Nat.pow_le_mono_r; [ easy | flia ].
   }
