@@ -3428,9 +3428,27 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
     replace ((rad ^ S j - 1) * rad ^ (s - S j) + rad ^ s) with
       (2 * (rad ^ (j + 1) - 1) * rad ^ (s - j - 1) + rad ^ (s - j - 1)).
     -rewrite nA_split with (e := i + j + 2); [ | flia H6 ].
-     apply Nat.add_lt_mono.
+     apply Nat.add_le_lt_mono.
      *replace (n - (i + j + 2)) with (s - j - 1) by flia Hs.
-      apply Nat.mul_lt_mono_pos_r; [ now apply Nat.neq_0_lt_0, Nat.pow_nonzero | ].
+      apply Nat.mul_le_mono_pos_r; [ now apply Nat.neq_0_lt_0, Nat.pow_nonzero | ].
+      rewrite Nat.add_1_r.
+      rewrite power_summation_sub_1; [ | easy ].
+      unfold nA.
+      rewrite summation_rtl.
+      rewrite summation_shift; [ | flia ].
+      replace (i + j + 2 - 1 - (i + 1)) with j by flia.
+      rewrite Nat.mul_assoc, summation_mul_distr_l.
+      apply (@summation_le_compat nat_ord_ring_def).
+      intros k Hk.
+      remember 2 as x; simpl; subst x; unfold Nat.le.
+      replace (i + j + 2 - 1 + (i + 1) - (i + 1 + k)) with (i + j - k + 1)
+        by flia Hk.
+      replace (i + j + 2 - 1 - (i + j - k + 1)) with k by flia Hk.
+      apply Nat.mul_le_mono_r.
+      apply Hur.
+     *replace (i + j + 2 - 1) with (i + j + 1) by flia.
+      replace (s - j - 1) with (n - (i + j + 1) - 1) by flia Hs.
+(* hou yaïe yaïe... *)
 ...
     -rewrite Nat.add_1_r.
      rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
