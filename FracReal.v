@@ -3380,11 +3380,9 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
     }
     assert (H7 : rad ^ s ≤ nA i n u). {
       (* 1/0/0/0 = 9/9/10, therefore 1/0/0/0/0/0/0 ≤ 9/9/10/x/x/x *)
-      rewrite nA_split with (e := i + j + 2); [ | flia H6 ].
-      replace (i + j + 2 - 1) with (i + j + 1) by flia.
-      replace (i + j + 2) with (i + j + 1 + 1) by flia.
       remember (i + j + 1) as t eqn:Ht.
-      move t before s.
+      rewrite nA_split with (e := t + 1); [ | flia H6 Ht ].
+      replace (t + 1 - 1) with t by flia.
 ...
 -left; right.
  intros k.
