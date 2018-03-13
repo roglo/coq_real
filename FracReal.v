@@ -3391,7 +3391,20 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
        rewrite Nat.mul_comm, Nat.add_sub.
        apply Nat.add_le_mono; [ | easy ].
        apply Nat.mul_le_mono_l.
-...
+       destruct j; [ simpl; flia | ].
+       unfold nA.
+       rewrite summation_rtl.
+       rewrite summation_shift; [ | flia Ht H6 ].
+       replace (t - 1 - (i + 1)) with j by flia Ht.
+       rewrite power_summation_sub_1; [ | easy ].
+       rewrite summation_mul_distr_l.
+       apply (@summation_le_compat nat_ord_ring_def).
+       intros k Hk; simpl; unfold Nat.le.
+       replace (t - 1 + (i + 1) - (i + 1 + k)) with (i + (j - k) + 1)
+         by flia Ht Hk.
+       replace (t - 1 - (i + (j - k) + 1)) with k by flia Ht Hk.
+       apply Nat.mul_le_mono_r.
+       rewrite H3; [ easy | flia ].
       -rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
        rewrite Nat.sub_add.
        +replace rad with (rad ^ 1) at 2 by apply Nat.pow_1_r.
@@ -3401,6 +3414,10 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
         apply Nat.mul_le_mono_r.
         now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
     }
+    specialize (nA_upper_bound_for_add u Hur i n) as H8.
+    assert (i + 1 ≤ n - 1) as H9 by flia H6.
+    specialize (H8 H9); clear H9.
+    rewrite <- Hs in H8.
 ...
 -left; right.
  intros k.
