@@ -3426,6 +3426,8 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
     apply Nat.add_lt_mono_r with (p := rad ^ s).
     rewrite Nat.sub_add; [ | easy ].
     rewrite nA_split with (e := i + j + 2); [ | flia H6 ].
+    remember (i + j + 2) as t eqn:Ht.
+    move t before s.
 ...
     replace ((rad ^ S j - 1) * rad ^ (s - S j) + rad ^ s) with
       ((2 * rad ^ (j + 1) - 3) * rad ^ (s - j - 1) + 2 * rad ^ (s - j - 1)).
