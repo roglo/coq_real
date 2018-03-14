@@ -3428,6 +3428,29 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
     rewrite nA_split with (e := i + j + 2); [ | flia H6 ].
     remember (i + j + 2) as t eqn:Ht.
     move t before s.
+apply le_lt_trans with
+  (m := (rad ^ (S j) + 2 * rad - 2) * rad ^ (s - S j) + 2 * rad ^ (s - S j)).
+-admit.
+-idtac.
+do 2 rewrite Nat.mul_sub_distr_r.
+rewrite Nat.mul_add_distr_r.
+rewrite <- Nat.pow_add_r.
+replace (S j + (s - S j)) with s by flia Hs H6.
+rewrite Nat.sub_add.
+...
+rewrite <- Nat_sub_sub_assoc.
+...
+
+remember (rad ^ (s - S j)) as a eqn:Ha.
+rewrite Nat.mul_sub_distr_r.
+rewrite Nat.add_sub_assoc.
+rewrite Nat.sub_add.
+rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+rewrite Ha.
+rewrite <- Nat.pow_add_r.
+replace (S j + (s - S j)) with s by flia Hs H6.
+
+
 ...
     replace ((rad ^ S j - 1) * rad ^ (s - S j) + rad ^ s) with
       ((2 * rad ^ (j + 1) - 3) * rad ^ (s - j - 1) + 2 * rad ^ (s - j - 1)).
