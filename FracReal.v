@@ -3428,6 +3428,7 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
     rewrite nA_split with (e := i + j + 2); [ | flia H6 ].
     remember (i + j + 2) as t eqn:Ht.
     move t before s.
+    replace (i + j + 1) with (t - 1) in H2, H5, H6 by flia Ht.
 ...
 apply le_lt_trans with
   (m := (rad ^ (S j) + 2 * rad - 2) * rad ^ (s - S j) + 2 * rad ^ (s - S j)).
