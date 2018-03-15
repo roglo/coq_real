@@ -3432,24 +3432,25 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
     replace (i + j + 1) with (t - 1) in H2, H5, H6 by flia Ht.
     replace (s - S j) with (n - t) by flia Hs Ht.
     remember ((rad - 1) * rad ^ (s - 1)) as d eqn:Hd.
-...
-(* to be verified again... *)
     replace ((rad ^ S j - 1) * rad ^ (n - t) + rad ^ s) with
        ((rad ^ S j - 1) * rad ^ (n - t) - d + (rad ^ s + d)).
     -admit.
     -rewrite Nat.add_assoc.
-     rewrite <- Nat.add_sub_swap.
-     +rewrite Nat.sub_add; [ easy | ].
-      rewrite Nat.add_comm.
-      apply le_plus_trans.
-      rewrite Hd.
-      replace s with (1 + (s - 1)) at 2 by flia Hs H6.
-      rewrite Nat.pow_add_r, Nat.pow_1_r.
-      apply Nat.mul_le_mono_r; flia Hr.
-     +rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
-      rewrite <- Nat.pow_add_r.
-      replace (S j + (n - t)) with s by flia Hs H6 Ht.
-(* mmm... *)
+     rewrite Nat.add_shuffle0.
+     rewrite Nat.sub_add; [ easy | ].
+     rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+     rewrite <- Nat.pow_add_r.
+     replace (S j + (n - t)) with s by flia Hs H6 Ht.
+     rewrite Hd.
+     apply Nat.le_add_le_sub_r.
+     replace (rad ^ (n - t)) with (1 * rad ^ (n - t)) by flia.
+     replace (n - t) with (s - 1 - j) by flia Hs Ht.
+     replace (s - 1) with (s - 1 - j + j) at 1 by flia Hs H6 Ht.
+     rewrite Nat.pow_add_r, Nat.mul_assoc, Nat.mul_shuffle0.
+     rewrite <- Nat.mul_add_distr_r.
+     replace s with (S j + (s - 1 - j)) at 2 by flia Hs H6.
+     rewrite Nat.pow_add_r.
+     apply Nat.mul_le_mono_r.
 
 ...
 apply le_lt_trans with
