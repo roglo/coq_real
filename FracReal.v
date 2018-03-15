@@ -3436,7 +3436,18 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
        ((rad ^ S j - 1) * rad ^ (n - t) - d + (rad ^ s + d)).
     -rewrite Nat.mul_comm.
      apply Nat.add_lt_le_mono.
-     +idtac.
+     +rewrite Hd.
+      replace (s - 1) with (j + (n - t)) by flia Hs H6 Ht.
+      rewrite Nat.pow_add_r, Nat.mul_assoc.
+      rewrite <- Nat.mul_sub_distr_r.
+      rewrite Nat.mul_comm.
+      apply Nat.mul_lt_mono_pos_r.
+      *now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+      *rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+       replace (rad * rad ^ j) with (rad ^ S j) by easy.
+       rewrite <- Nat.sub_add_distr.
+       rewrite Nat.add_sub_assoc.
+(* mmm... à voir... *)
 ...
 (* below ok *)
     -rewrite Nat.add_assoc.
