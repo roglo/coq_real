@@ -3432,6 +3432,8 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
     replace (i + j + 1) with (t - 1) in H2, H5, H6 by flia Ht.
     replace (s - S j) with (n - t) by flia Hs Ht.
     remember ((rad - 1) * rad ^ (s - 1)) as d eqn:Hd.
+...
+(* to be verified again... *)
     replace ((rad ^ S j - 1) * rad ^ (n - t) + rad ^ s) with
        ((rad ^ S j - 1) * rad ^ (n - t) - d + (rad ^ s + d)).
     -admit.
@@ -3447,14 +3449,7 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
      +rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
       rewrite <- Nat.pow_add_r.
       replace (S j + (n - t)) with s by flia Hs H6 Ht.
-(* mmmm... à voir... *)
-...
-    rewrite Nat.add_comm.
-    apply Nat.add_lt_le_mono.
-    -admit.
-    -replace s with (t - i - 1 + (n - t)) by flia Hs H6 Ht.
-     rewrite Nat.pow_add_r.
-     apply Nat.mul_le_mono_r.
+(* mmm... *)
 
 ...
 apply le_lt_trans with
