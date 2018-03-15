@@ -3374,9 +3374,10 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
     replace (n - i - j - 2) with (n - i - 1 - S j) by flia.
     remember (n - i - 1) as s eqn:Hs.
     move n before j; move s before n.
-    assert (H6 : i + j + 1 ≤ n - 1). {
+    assert (H6 : i + j + 3 ≤ n - 1). {
       rewrite Hn.
-      destruct rad; [ easy | simpl; flia ].
+      destruct rad as [| rr]; [ easy | ].
+      destruct rr; [ flia Hr | simpl; flia ].
     }
     assert (H7 : rad ^ s ≤ nA i n u). {
       (* 1/0/0/0 = 9/9/10, therefore 1/0/0/0/0/0/0 ≤ 9/9/10/x/x/x *)
@@ -3429,6 +3430,32 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
     remember (i + j + 2) as t eqn:Ht.
     move t before s.
     replace (i + j + 1) with (t - 1) in H2, H5, H6 by flia Ht.
+    replace (s - S j) with (n - t) by flia Hs Ht.
+    remember ((rad - 1) * rad ^ (s - 1)) as d eqn:Hd.
+    replace ((rad ^ S j - 1) * rad ^ (n - t) + rad ^ s) with
+       ((rad ^ S j - 1) * rad ^ (n - t) - d + (rad ^ s + d)).
+    -admit.
+    -rewrite Nat.add_assoc.
+     rewrite <- Nat.add_sub_swap.
+     +rewrite Nat.sub_add; [ easy | ].
+      rewrite Nat.add_comm.
+      apply le_plus_trans.
+      rewrite Hd.
+      replace s with (1 + (s - 1)) at 2 by flia Hs H6.
+      rewrite Nat.pow_add_r, Nat.pow_1_r.
+      apply Nat.mul_le_mono_r; flia Hr.
+     +rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+      rewrite <- Nat.pow_add_r.
+      replace (S j + (n - t)) with s by flia Hs H6 Ht.
+(* mmmm... à voir... *)
+...
+    rewrite Nat.add_comm.
+    apply Nat.add_lt_le_mono.
+    -admit.
+    -replace s with (t - i - 1 + (n - t)) by flia Hs H6 Ht.
+     rewrite Nat.pow_add_r.
+     apply Nat.mul_le_mono_r.
+
 ...
 apply le_lt_trans with
   (m := (rad ^ (S j) + 2 * rad - 2) * rad ^ (s - S j) + 2 * rad ^ (s - S j)).
