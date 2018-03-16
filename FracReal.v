@@ -3433,6 +3433,10 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
     rewrite <- Ht in Hn, H6.
     replace (i + j + 1) with (t - 1) in H2, H5 by flia Ht.
     replace (s - S j) with (n - t) by flia Hs Ht.
+    assert (H4 : nA i t u ≤ rad ^ S j + (rad - 2)). {
+      rewrite nA_split_last; [ | flia H6 Ht ].
+...
+    }
 ...
     remember ((rad - 1) * rad ^ (n - t)) as d eqn:Hd.
     replace ((rad ^ S j - 1) * rad ^ (n - t) + rad ^ s) with
