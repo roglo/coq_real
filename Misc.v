@@ -117,6 +117,26 @@ now rewrite Nat.sub_add_distr.
 Qed.
 
 Theorem Nat_sub_sub_assoc : ∀ a b c,
+  c ≤ b ≤ a + c
+  → a - (b - c) = a + c - b.
+Proof.
+intros * (Hcb, Hba).
+revert a c Hcb Hba.
+induction b; intros.
+-apply Nat.le_0_r in Hcb; subst c.
+ now rewrite Nat.add_0_r.
+-destruct c; [ now rewrite Nat.add_0_r | ].
+ apply Nat.succ_le_mono in Hcb.
+ rewrite Nat.add_succ_r in Hba.
+ apply Nat.succ_le_mono in Hba.
+ specialize (IHb a c Hcb Hba) as H1.
+ rewrite Nat.sub_succ, H1.
+ rewrite Nat.add_succ_r.
+ now rewrite Nat.sub_succ.
+Qed.
+
+(*
+Theorem Nat_sub_sub_assoc : ∀ a b c,
   c ≤ b ≤ a
   → a - (b - c) = a - b + c.
 Proof.
@@ -135,3 +155,4 @@ induction b; intros.
  apply le_trans with (m := b); [ | easy ].
  apply Nat.le_sub_l.
 Qed.
+*)

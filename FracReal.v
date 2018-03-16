@@ -3447,8 +3447,18 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
        replace (rad * rad ^ j) with (rad ^ S j) by easy.
        rewrite <- Nat.sub_add_distr.
        rewrite Nat.add_sub_assoc.
-(* mmm... à voir... *)
+      --rewrite Nat_sub_sub_assoc.
+       ++rewrite Nat.sub_add_distr.
+         rewrite Nat_sub_sub_swap, Nat.add_comm.
+         rewrite Nat.add_sub.
+         subst t.
+(* should be < rad^(j + 1), not rad^j-1 *)
 ...
+nA_dig_seq_ub
+     : ∀ (u : nat → nat) (n i : nat),
+       (∀ j : nat, i + 1 ≤ j ≤ n - 1 → u j < rad)
+       → i + 1 ≤ n - 1 → nA i n u < rad ^ (n - i - 1)
+
 (* below ok *)
     -rewrite Nat.add_assoc.
      rewrite Nat.add_shuffle0.
