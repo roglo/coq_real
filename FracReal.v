@@ -3434,8 +3434,36 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
     replace (i + j + 1) with (t - 1) in H2, H5 by flia Ht.
     replace (s - S j) with (n - t) by flia Hs Ht.
     assert (H4 : nA i t u ≤ rad ^ S j + (rad - 2)). {
-      rewrite nA_split_last; [ | flia H6 Ht ].
+      destruct (Nat.eq_dec (i + 1) (t - 1)) as [H4| H4].
+      -unfold nA.
+       rewrite H4, summation_only_one.
+       rewrite Nat.sub_diag, Nat.pow_0_r, Nat.mul_1_r.
+       admit.
+      -rewrite nA_split_last; [ | flia H6 Ht ].
+       specialize (nA_dig_seq_ub u (t - 1) i) as H10.
+       assert (H : ∀ j, i + 1 ≤ j ≤ t - 1 - 1 → u j < rad). {
+         intros k Hk.
+         specialize (H3 (k - i - 1)).
+         assert (H : k - i - 1 < j) by flia H6 Ht Hk.
+         specialize (H3 H); clear H.
+         replace (i + (k - i - 1) + 1) with k in H3 by flia Hk.
+         flia Hr H3.
+       }
+       specialize (H10 H); clear H.
+       assert (H : i + 1 ≤ t - 1 - 1) by flia Hs H6 Ht H4.
+       specialize (H10 H); clear H.
+       replace (t - 1 - i - 1) with j in H10 by flia Ht.
+       apply Nat.le_trans with (m := rad * rad ^ j + u (t - 1)).
+       +apply Nat.add_le_mono_r.
+        apply Nat.mul_le_mono_l.
+        now apply Nat.lt_le_incl in H10.
+       +rewrite Nat.pow_succ_r; [ | flia ].
+        apply Nat.add_le_mono_l.
+(* shit *)
 ...
+        specialize (Hur (t - 1)).
+        rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in Hur.
+        eapply Nat.le_trans; [ apply Hur | ].
     }
 ...
     remember ((rad - 1) * rad ^ (n - t)) as d eqn:Hd.
