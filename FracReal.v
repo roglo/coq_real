@@ -3429,8 +3429,11 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
     rewrite nA_split with (e := i + j + 2); [ | flia H6 ].
     remember (i + j + 2) as t eqn:Ht.
     move t before s.
-    replace (i + j + 1) with (t - 1) in H2, H5, H6 by flia Ht.
+    replace (i + j + 3) with (i + j + 2 + 1) in Hn, H6 by flia.
+    rewrite <- Ht in Hn, H6.
+    replace (i + j + 1) with (t - 1) in H2, H5 by flia Ht.
     replace (s - S j) with (n - t) by flia Hs Ht.
+...
     remember ((rad - 1) * rad ^ (n - t)) as d eqn:Hd.
     replace ((rad ^ S j - 1) * rad ^ (n - t) + rad ^ s) with
        ((rad ^ S j - 1) * rad ^ (n - t) + d + (rad ^ s - d)).
