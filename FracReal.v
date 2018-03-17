@@ -3438,6 +3438,8 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
       -unfold nA.
        rewrite H4, summation_only_one.
        rewrite Nat.sub_diag, Nat.pow_0_r, Nat.mul_1_r.
+       eapply Nat.le_trans; [ apply Hur | ].
+       rewrite Nat.mul_sub_distr_l.
 ...
       -rewrite nA_split_last; [ | flia H6 Ht ].
        specialize (nA_dig_seq_ub u (t - 1) i) as H10.
