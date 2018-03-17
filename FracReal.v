@@ -3470,6 +3470,11 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
          apply Nat.mul_le_mono_l.
          now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
     }
+    apply Nat.le_lt_trans with
+      (m := (rad ^ S j + (rad - 2)) * rad ^ (n - t) + nA (t - 1) n u).
+    -apply Nat.add_le_mono_r.
+     now apply Nat.mul_le_mono.
+    -idtac.
 
 ...
     remember ((rad - 1) * rad ^ (n - t)) as d eqn:Hd.
