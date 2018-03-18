@@ -3500,12 +3500,25 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
        eapply Nat.le_lt_trans.
       --apply nA_upper_bound_for_add; [ easy | flia H6 ].
       --replace (n - (t - 1) - 1) with (n - t) by flia Ht.
-...
         apply -> Nat.lt_add_lt_sub_l.
         rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
         rewrite Nat.add_sub_assoc.
        ++rewrite <- Nat.mul_add_distr_r.
          replace (rad - 1 + 2) with (rad + 1) by flia Hr.
+         replace s with (j + 1 + (n - t)) by flia Hs H6 Ht.
+         rewrite Nat.pow_add_r.
+destruct j.
+...
+simpl.
+...
+         apply Nat.lt_le_trans with (m := (rad + 1) * rad ^ (n - t)).
+        **apply Nat.sub_lt; [ | flia ].
+          specialize (Nat.pow_nonzero rad (n - t) radix_ne_0) as H10.
+          destruct (rad ^ (n - t)); [ easy | ].
+          destruct rad as [| rr]; [ easy | ].
+          destruct rr; [ flia Hr | ].
+          simpl; flia.
+        **apply Nat.mul_le_mono_r.
 ...
       *apply Nat.pow_le_mono_r; [ easy | flia Hs Ht ].
      +replace (rad ^ (n - t)) with (1 * rad ^ (n - t)) at 1 by flia.
