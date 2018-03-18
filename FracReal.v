@@ -3507,10 +3507,6 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
          replace (rad - 1 + 2) with (rad + 1) by flia Hr.
          replace s with (j + 1 + (n - t)) by flia Hs H6 Ht.
          rewrite Nat.pow_add_r.
-destruct j.
-...
-simpl.
-...
          apply Nat.lt_le_trans with (m := (rad + 1) * rad ^ (n - t)).
         **apply Nat.sub_lt; [ | flia ].
           specialize (Nat.pow_nonzero rad (n - t) radix_ne_0) as H10.
@@ -3519,14 +3515,28 @@ simpl.
           destruct rr; [ flia Hr | ].
           simpl; flia.
         **apply Nat.mul_le_mono_r.
-...
+          destruct j.
+        ---rewrite Nat.add_0_r in Ht.
+           rewrite Ht in H2.
+           now replace (i + 2 - 1) with (i + 1) in H2 by flia.
+        ---do 2 rewrite Nat.add_1_r; simpl.
+           specialize (Nat.pow_nonzero rad j radix_ne_0) as H10.
+           destruct (rad ^ j); [ easy | ].
+           destruct rad as [| rr]; [ easy | ].
+           rewrite Nat.mul_comm, <- Nat.mul_assoc.
+           destruct rr; [ flia Hr | simpl; flia ].
+       ++specialize (Nat.pow_nonzero rad (n - t) radix_ne_0) as H10.
+         destruct (rad ^ (n - t)); [ easy | flia ].
       *apply Nat.pow_le_mono_r; [ easy | flia Hs Ht ].
      +replace (rad ^ (n - t)) with (1 * rad ^ (n - t)) at 1 by flia.
       apply Nat.mul_le_mono_r.
       now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
   }
-  split; [ flia H2 H4 H5 | ].
-  intros k.
+  assert (H : u (i + j + 1) = rad - 2) by flia H2 H4 H5.
+  clear H2 H4 H5; rename H into H4.
+  move j before i.
+  split; [ easy | ].
+  intros k; move k before j.
 ...
 -left; right.
  intros k.
