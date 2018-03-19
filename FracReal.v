@@ -3537,15 +3537,12 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
   move j before i.
   split; [ easy | ].
   intros k; move k before j.
-  induction k.
-  *rewrite Nat.add_0_r.
-   specialize (Hu j) as H2.
-   apply A_ge_1_true_iff in H2.
-   remember (rad * (i + j + 3)) as n eqn:Hn.
-   remember (n - i - 1) as s eqn:Hs.
-   move n before j; move s before n.
-   replace (n - i - j - 2) with (s - S j) in H2 by flia Hs.
-   assert (H5 : u (i + j + 2) ≥ rad - 1). {
+  specialize (Hu (j + k)) as H2.
+  apply A_ge_1_true_iff in H2.
+  remember (rad * (i + (j + k) + 3)) as n eqn:Hn.
+  remember (n - i - 1) as s eqn:Hs.
+  move n before j; move s before n.
+  replace (n - i - (j + k) - 2) with (s - S (j + k)) in H2 by flia Hs.
 ...
 -left; right.
  intros k.
