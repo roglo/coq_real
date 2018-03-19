@@ -3653,8 +3653,18 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
      rewrite H9 in H5.
      eapply Nat.le_trans; [ | apply H5 ].
      replace (S (k + 1)) with (t - j) by flia Ht.
-     (* they are even equal; I must prove it *)
-...
+     replace (s - S j) with ((t - j) + (s - S t)) by flia Hs Ht Hin.
+     rewrite Nat.pow_add_r, Nat.mul_assoc.
+     rewrite <- Nat.mul_add_distr_r.
+     apply Nat.mul_le_mono_r.
+     rewrite Nat.add_sub_assoc.
+     +replace (rad ^ (t - j)) with (1 * rad ^ (t - j)) at 2 by flia.
+      rewrite <- Nat.mul_add_distr_r.
+      rewrite Nat.sub_add.
+      *rewrite <- Nat.pow_add_r.
+       now replace (S j + (t - j)) with (S t) by flia Ht.
+      *now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+     +now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
   }
   now specialize (H2 H5); clear H5.
 -left; right.
