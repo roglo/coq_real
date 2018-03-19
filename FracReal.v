@@ -3628,6 +3628,32 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
     specialize (H7 H8).
     apply H7.
     replace (j + (s - j)) with s by flia Hs Hin.
+    destruct j.
+    -rewrite Nat.add_0_r in H4.
+     rewrite H4 in H1.
+     flia Hr H1.
+    -rewrite nA_split with (e := i + j + 2) in H5; [ | flia Hin ].
+     replace (n - (i + j + 2)) with (s - S j) in H5 by flia Hs.
+     replace (i + j + 2 - 1) with (i + S j) in H5 by flia.
+     assert (H9 : nA i (i + j + 2) u = rad ^ S j - 1). {
+       rewrite power_summation_sub_1; [ | easy ].
+       rewrite summation_mul_distr_l.
+       unfold nA.
+       rewrite summation_rtl.
+       rewrite summation_shift; [ | flia ].
+       replace (i + j + 2 - 1 - (i + 1)) with j by flia.
+       apply summation_eq_compat.
+       intros p Hp.
+       replace (i + j + 2 - 1 + (i + 1) - (i + 1 + p)) with (i + (j - p) + 1)
+         by flia Hp.
+       rewrite H3; [ | flia Hp ].
+       simpl; f_equal; f_equal.
+       flia Hp.
+     }
+     rewrite H9 in H5.
+     eapply Nat.le_trans; [ | apply H5 ].
+     replace (S (k + 1)) with (t - j) by flia Ht.
+     (* they are even equal; I must prove it *)
 ...
   }
   now specialize (H2 H5); clear H5.
