@@ -3669,6 +3669,27 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
   now specialize (H2 H5); clear H5.
 -left; right.
  intros k.
+(*
+ destruct k; [ now rewrite Nat.add_0_r | ].
+*)
+ specialize (Hu k) as H2.
+ revert H2.
+ apply Decidable.contrapositive; [ apply Nat.eq_decidable | ].
+ intros H.
+ assert (H2 : u (i + k + 1) < 2 * (rad - 1)). {
+   specialize (Hur (i + k + 1)).
+(*
+   replace (i + S k + 1) with (i + k + 2) in H by flia.
+*)
+   flia Hur H.
+ }
+ clear H.
+ apply Bool.not_true_iff_false.
+ apply A_ge_1_false_iff.
+ remember (rad * (i + k + 3)) as n eqn:Hn.
+ replace (n - i - k - 2) with (n - i - 1 - S k) by flia.
+ remember (n - i - 1) as s eqn:Hs.
+ move s before n.
 ...
 
 Theorem old_A_ge_1_add_all_true_if {r : radix} : ∀ u i,
