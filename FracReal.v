@@ -3537,13 +3537,25 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
   move j before i.
   split; [ easy | ].
   intros k; move k before j.
-  specialize (Hu (j + k)) as H2.
-  apply A_ge_1_true_iff in H2.
-  remember (rad * (i + (j + k) + 3)) as n eqn:Hn.
-  remember (n - i - 1) as s eqn:Hs.
-  move n before j; move s before n.
-  replace (n - i - (j + k) - 2) with (s - S (j + k)) in H2 by flia Hs.
+  specialize (A_ge_1_add_8_eq u (i + j) Hur H4 k) as H2.
+  assert (H5 : A_ge_1 (i + j) u (k + 1) = true). {
+    specialize (Hu (j + k + 1)) as H5.
+    apply A_ge_1_true_iff in H5.
+    apply A_ge_1_true_iff.
+    replace (i + (j + k + 1) + 3) with (i + j + k + 4) in H5 by flia.
+    replace (i + j + (k + 1) + 3) with (i + j + k + 4) by flia.
+    remember (rad * (i + j + k + 4)) as n eqn:Hn.
+    replace (n - i - (j + k + 1) - 2) with (n - i - 1 - S (j + k + 1)) in H5
+      by flia.
+    replace (n - (i + j) - 1) with (n - i - 1 - j) by flia.
+    replace (n - (i + j) - (k + 1) - 2) with (n - i - 1 - S (j + k + 1))
+      by flia.
+    remember (n - i - 1) as s eqn:Hs.
+    remember (j + k + 1) as t eqn:Ht.
+    move s before n; move t before s.
 ...
+  }
+  now specialize (H2 H5); clear H5.
 -left; right.
  intros k.
 ...
