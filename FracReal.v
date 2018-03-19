@@ -3329,23 +3329,25 @@ Qed.
 
 Theorem add_pow_rad_mod : ∀ r a b c a₁ b₁,
   r ≠ 0
+  → a < r ^ a₁
+  → b < r ^ b₁
   → (a * r ^ b₁ + b) mod r ^ (a₁ + b₁) ≥ a * r ^ b₁ + c
-  → b mod r ^ b₁ ≥ c.
+  → b ≥ c.
 Proof.
-intros * Hr H1.
+intros * Hr Ha Hb H1.
 replace (a₁ + b₁) with (b₁ + a₁) in H1 by apply Nat.add_comm.
 rewrite Nat.pow_add_r in H1.
 rewrite Nat.mod_mul_r in H1; try now apply Nat.pow_nonzero.
 replace (a * r ^ b₁ + b) with (b + a * r ^ b₁) in H1 by apply Nat.add_comm.
 rewrite Nat.mod_add in H1; [ | now apply Nat.pow_nonzero ].
+rewrite Nat.mod_small in H1; [ | easy ].
 rewrite Nat.div_add in H1; [ | now apply Nat.pow_nonzero ].
-assert (H2 : (b / r ^ b₁ + a) mod r ^ a₁ = a). {
-  ...
-}
-rewrite H2 in H1.
+rewrite Nat.div_small in H1; [ | easy ].
+rewrite Nat.add_0_l in H1.
+rewrite Nat.mod_small in H1; [ | easy ].
 rewrite Nat.add_comm, Nat.mul_comm in H1.
 now apply Nat.add_le_mono_l in H1.
-...
+Qed.
 
 Theorem A_ge_1_add_all_true_if {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
@@ -3565,6 +3567,10 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
     replace (i + (j + k + 1) + 3) with (i + j + k + 4) in H5 by flia.
     replace (i + j + (k + 1) + 3) with (i + j + k + 4) by flia.
     remember (rad * (i + j + k + 4)) as n eqn:Hn.
+    assert (Hin : i + j + k + 1 ≤ n - 1). {
+      rewrite Hn.
+      destruct rad; [ easy | simpl; flia ].
+    }
     replace (n - i - (j + k + 1) - 2) with (n - i - 1 - S (j + k + 1)) in H5
       by flia.
     replace (n - (i + j) - 1) with (n - i - 1 - j) by flia.
@@ -3575,8 +3581,21 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
     move s before n; move t before s.
     specialize (add_pow_rad_mod rad (rad ^ j - 1) (nA (i + j) n u)) as H7.
     specialize (H7 ((rad ^ S (k + 1) - 1) * rad ^ (s - S t))).
-    specialize (H7 j (s - j)).
-    apply H7.
+    specialize (H7 j (s - j) radix_ne_0).
+    assert (H : rad ^ j - 1 < rad ^ j). {
+      apply Nat.sub_lt; [ | flia ].
+      now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+    }
+    specialize (H7 H); clear H.
+    assert (H : nA (i + j) n u < rad ^ (s - j)). {
+      rewrite Hs.
+      replace (n - i - 1 - j) with (n - (i + j) - 1) by flia.
+      (* 8/18/18/18 < 1/0/0/0/0 *)
+...
+      apply nA_dig_seq_ub; [ | flia Hin ].
+      intros p (Hip, Hpn).
+      specialize (H3 (p - i - 1)).
+      assert (H : p - i - 1 < j) by flia Hin Hip Hpn.
 ...
   }
   now specialize (H2 H5); clear H5.
