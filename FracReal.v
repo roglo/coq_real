@@ -3567,7 +3567,7 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
     replace (i + (j + k + 1) + 3) with (i + j + k + 4) in H5 by flia.
     replace (i + j + (k + 1) + 3) with (i + j + k + 4) by flia.
     remember (rad * (i + j + k + 4)) as n eqn:Hn.
-    assert (Hin : i + j + k + 1 ≤ n - 1). {
+    assert (Hin : i + j + k + 2 ≤ n - 1). {
       rewrite Hn.
       destruct rad; [ easy | simpl; flia ].
     }
@@ -3591,6 +3591,40 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
       rewrite Hs.
       replace (n - i - 1 - j) with (n - (i + j) - 1) by flia.
       (* 8/18/18/18 < 1/0/0/0/0 *)
+...
+
+      remember (n - (i + j) - 1) as p eqn:Hp.
+      destruct p; [ flia Hin Hp | ].
+      destruct p; [ flia Hin Hp | ].
+      rewrite power_summation; [ | easy ].
+      rewrite summation_mul_distr_l.
+      rewrite <- Nat.add_1_r; simpl.
+      rewrite summation_split_last; [ | flia ].
+      rewrite nA_split_first; [ | flia Hin ].
+      rewrite Nat.add_comm.
+      do 2 rewrite <- Nat.add_assoc.
+      apply Nat.add_lt_mono.
+
+
+      2: replace (n - (i + j) - 2) with (S p) by flia Hp.
+
+
+      replace (n - 1 - (i + 1)) with k by flia Hk.
+...
+
+      unfold nA.
+      rewrite summation_shift; [ | easy ].
+rewrite power_summation; [ | easy ].
+replace (n - 1 - (i + 1)) with k by flia Hk.
+unfold lt; simpl.
+apply -> Nat.succ_le_mono.
+apply (@summation_le_compat _ nat_ord_ring).
+intros j Hj.
+replace (n - 1 + (i + 1) - (i + 1 + j)) with (n - 1 - j) by flia.
+replace (n - 1 - (n - 1 - j)) with j by flia Hk Hj.
+apply Nat.mul_le_mono_nonneg_r; [ flia | ].
+apply Nat.le_add_le_sub_l.
+apply Hu; flia Hk Hj.
 ...
       apply nA_dig_seq_ub; [ | flia Hin ].
       intros p (Hip, Hpn).
