@@ -3328,10 +3328,23 @@ apply Nat.le_sub_l.
 Qed.
 
 Theorem add_pow_rad_mod : ∀ r a b c a₁ b₁,
-  (a * r ^ b₁ + b) mod r ^ (a₁ + b₁) ≥ a * r ^ b₁ + c
+  r ≠ 0
+  → (a * r ^ b₁ + b) mod r ^ (a₁ + b₁) ≥ a * r ^ b₁ + c
   → b mod r ^ b₁ ≥ c.
 Proof.
-intros * H1.
+intros * Hr H1.
+replace (a₁ + b₁) with (b₁ + a₁) in H1 by apply Nat.add_comm.
+rewrite Nat.pow_add_r in H1.
+rewrite Nat.mod_mul_r in H1; try now apply Nat.pow_nonzero.
+replace (a * r ^ b₁ + b) with (b + a * r ^ b₁) in H1 by apply Nat.add_comm.
+rewrite Nat.mod_add in H1; [ | now apply Nat.pow_nonzero ].
+rewrite Nat.div_add in H1; [ | now apply Nat.pow_nonzero ].
+assert (H2 : (b / r ^ b₁ + a) mod r ^ a₁ = a). {
+  ...
+}
+rewrite H2 in H1.
+rewrite Nat.add_comm, Nat.mul_comm in H1.
+now apply Nat.add_le_mono_l in H1.
 ...
 
 Theorem A_ge_1_add_all_true_if {r : radix} : ∀ u i,
