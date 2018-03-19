@@ -3587,49 +3587,47 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
       now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
     }
     specialize (H7 H); clear H.
-    assert (H : nA (i + j) n u < rad ^ (s - j)). {
+    assert (H8 : nA (i + j) n u < rad ^ (s - j)). {
       rewrite Hs.
       replace (n - i - 1 - j) with (n - (i + j) - 1) by flia.
       (* 8/18/18/18 < 1/0/0/0/0 *)
-...
-
       remember (n - (i + j) - 1) as p eqn:Hp.
       destruct p; [ flia Hin Hp | ].
-      destruct p; [ flia Hin Hp | ].
-      rewrite power_summation; [ | easy ].
-      rewrite summation_mul_distr_l.
-      rewrite <- Nat.add_1_r; simpl.
-      rewrite summation_split_last; [ | flia ].
-      rewrite nA_split_first; [ | flia Hin ].
-      rewrite Nat.add_comm.
-      do 2 rewrite <- Nat.add_assoc.
-      apply Nat.add_lt_mono.
-
-
-      2: replace (n - (i + j) - 2) with (S p) by flia Hp.
-
-
-      replace (n - 1 - (i + 1)) with k by flia Hk.
-...
-
-      unfold nA.
-      rewrite summation_shift; [ | easy ].
-rewrite power_summation; [ | easy ].
-replace (n - 1 - (i + 1)) with k by flia Hk.
-unfold lt; simpl.
-apply -> Nat.succ_le_mono.
-apply (@summation_le_compat _ nat_ord_ring).
-intros j Hj.
-replace (n - 1 + (i + 1) - (i + 1 + j)) with (n - 1 - j) by flia.
-replace (n - 1 - (n - 1 - j)) with j by flia Hk Hj.
-apply Nat.mul_le_mono_nonneg_r; [ flia | ].
-apply Nat.le_add_le_sub_l.
-apply Hu; flia Hk Hj.
-...
-      apply nA_dig_seq_ub; [ | flia Hin ].
-      intros p (Hip, Hpn).
-      specialize (H3 (p - i - 1)).
-      assert (H : p - i - 1 < j) by flia Hin Hip Hpn.
+      replace (rad ^ S p) with
+        ((rad - 2) * rad ^ p + (rad ^ S p - (rad - 2) * rad ^ p)).
+      -rewrite nA_split_first; [ | flia Hin ].
+       apply Nat.add_le_lt_mono.
+       +replace (n - (i + j) - 2) with p by flia Hp.
+        apply Nat.mul_le_mono_r.
+        now rewrite H4.
+       +rewrite Nat.mul_sub_distr_r.
+        replace (rad * rad ^ p) with (rad ^ S p) by easy.
+        rewrite Nat_sub_sub_assoc.
+        *remember (rad ^ S p + 2 * rad ^ p) as x eqn:Hx.
+         rewrite Nat.add_comm in Hx; subst x.
+         rewrite Nat.add_sub.
+         specialize (nA_upper_bound_for_add u Hur (S (i + j)) n) as H8.
+         replace (n - S (i + j) - 1) with p in H8 by flia Hp.
+         assert (H : S (i + j) + 1 ≤ n - 1) by flia Hin.
+         specialize (H8 H); clear H.
+         rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H8.
+         eapply Nat.le_lt_trans; [ apply H8 | ].
+         apply Nat.sub_lt; [ | flia ].
+         replace 2 with (2 * 1) at 1 by flia.
+         apply Nat.mul_le_mono_l.
+         now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+        *split; [ | flia ].
+         rewrite Nat.pow_succ_r; [ | flia ].
+         now apply Nat.mul_le_mono_r.
+      -rewrite Nat.add_sub_assoc.
+       +now rewrite Nat.add_comm, Nat.add_sub.
+       +rewrite Nat.pow_succ_r; [ | flia ].
+        apply Nat.mul_le_mono_r; flia.
+    }
+    rewrite Nat.mod_small; [ | easy ].
+    specialize (H7 H8).
+    apply H7.
+    replace (j + (s - j)) with s by flia Hs Hin.
 ...
   }
   now specialize (H2 H5); clear H5.
