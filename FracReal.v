@@ -3327,6 +3327,13 @@ rewrite Nat.add_comm, Nat.add_sub.
 apply Nat.le_sub_l.
 Qed.
 
+Theorem add_pow_rad_mod : ∀ r a b c a₁ b₁,
+  (a * r ^ b₁ + b) mod r ^ (a₁ + b₁) ≥ a * r ^ b₁ + c
+  → b mod r ^ b₁ ≥ c.
+Proof.
+intros * H1.
+...
+
 Theorem A_ge_1_add_all_true_if {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
   → (∀ k, A_ge_1 i u k = true)
@@ -3553,6 +3560,10 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
     remember (n - i - 1) as s eqn:Hs.
     remember (j + k + 1) as t eqn:Ht.
     move s before n; move t before s.
+    specialize (add_pow_rad_mod rad (rad ^ j - 1) (nA (i + j) n u)) as H7.
+    specialize (H7 ((rad ^ S (k + 1) - 1) * rad ^ (s - S t))).
+    specialize (H7 j (s - j)).
+    apply H7.
 ...
   }
   now specialize (H2 H5); clear H5.
