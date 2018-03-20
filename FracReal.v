@@ -3728,6 +3728,31 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
  now replace (i + k + 2) with (i + S k + 1) in H2 by flia.
 Qed.
 
+Theorem A_ge_1_add_series_all_true_if {r : radix} : ∀ x y i,
+  (∀ k, A_ge_1 i (freal_add_series x y) k = true)
+  → { ∀ k, fd2n x (i + k + 1) + fd2n y (i + k + 1) = rad - 1 } +
+     { (∀ k, fd2n x (i + k + 1) = rad - 1) ∧
+       (∀ k, fd2n y (i + k + 1) = rad - 1) } +
+     { ∃ j,
+       (∀ k, k < j → fd2n x (i + k + 1) + fd2n y (i + k + 1) = rad - 1) ∧
+       fd2n x (i + j + 1) + fd2n y (i + j + 1) = rad - 2 ∧
+       (∀ k, fd2n x (i + j + k + 2) = rad - 1) ∧
+       (∀ k, fd2n y (i + j + k + 2) = rad - 1) }.
+Proof.
+intros * Hxy.
+specialize (freal_add_series_le_twice_pred x y) as H1.
+specialize (A_ge_1_add_all_true_if _ i H1 Hxy) as H2.
+destruct H2 as [[H2| H2]| H2].
+-left; left; apply H2.
+-left; right.
+ unfold freal_add_series, sequence_add in H2.
+ assert
+   (H3 : ∀ k, fd2n x (i + k + 1) = rad - 1 ∧ fd2n y (i + k + 1) = rad - 1). {
+   intros k.
+   specialize (H2 k).
+...
+
+
 Theorem freal_eq_prop_add_norm_l {r : radix} : ∀ x y,
   freal_eq_prop {| freal := freal_add_to_seq (freal_normalize x) y |}
     {| freal := freal_add_to_seq x y |}.
