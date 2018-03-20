@@ -4091,7 +4091,7 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
            *subst k; clear H.
             specialize (Hafty 0).
             rewrite H7 in Hwhi.
-ξ...
+...
           +specialize (Hafty (k - j - 1)).
 replace (i + j + (k - j - 1) + 2) with (i + k + 1) in Hafty.
 2: flia H.
