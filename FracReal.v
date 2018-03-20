@@ -3760,6 +3760,7 @@ apply digit_eq_eq.
 remember (rad * (i + 3)) as n eqn:Hn.
 remember (rad ^ (n - i - 1)) as s eqn:Hs.
 move s before n.
+assert (Hsz : s ≠ 0) by (now rewrite Hs; apply Nat.pow_nonzero).
 assert (Hin : i + 1 ≤ n - 1). {
   rewrite Hn.
   specialize radix_ne_0 as H.
@@ -3856,14 +3857,9 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
            by flia Hm Hj.
        }
        rewrite HnAx.
-...
        assert (HnAy : nA i n (fd2n y) ≠ 0). {
-         destruct Hu as [[Hu| Hu]| Hu].
-         -specialize (Hu 0) as H7.
-          rewrite Nat.add_0_r in H7.
-          unfold u in H7.
-...
-          simpl in H7.
+         specialize (proj1 (all_A_ge_1_true_iff i u) Hku 0) as H7.
+         simpl in H7.
          rewrite Nat.add_0_r, <- Hn, <- Hs, Nat.mul_1_r in H7.
          rewrite Nat.sub_0_r in H7.
          unfold u in H7.
@@ -3997,17 +3993,16 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
             -rewrite H; flia H8.
             -rewrite H; flia H8.
           }
-          move Hku at bottom.
-          specialize (Hku 0).
-          simpl in Hku.
-          rewrite Nat.add_0_r, Nat.mul_1_r, Nat.sub_0_r in Hku.
-          rewrite <- Hn, <- Hs in Hku.
-          rewrite H5, Nat.mod_same in Hku; [ | easy ].
-          apply Nat.le_0_r in Hku.
-          apply Nat.eq_mul_0 in Hku.
-          destruct Hku as [Hku| Hku].
-       ++++specialize radix_ge_2; flia Hku.
-       ++++now apply Nat.pow_nonzero in Hku.
+          specialize (proj1 (all_A_ge_1_true_iff i u) Hku 0) as H10.
+          simpl in H10.
+          rewrite Nat.add_0_r, Nat.mul_1_r, Nat.sub_0_r in H10.
+          rewrite <- Hn, <- Hs in H10.
+          rewrite H5, Nat.mod_same in H10; [ | easy ].
+          apply Nat.le_0_r in H10.
+          apply Nat.eq_mul_0 in H10.
+          destruct H10 as [H10| H10].
+       ++++specialize radix_ge_2; flia H10.
+       ++++now apply Nat.pow_nonzero in H10.
       ----apply Nat.nlt_ge in H7.
           apply Nat.nlt_ge in H8.
           specialize (nA_upper_bound nx n i) as H9.
@@ -4061,6 +4056,7 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
        move H7 before H5.
        assert (H8 : ∀ k, fd2n y (i + k + 1) = rad - 1). {
          intros k.
+...
          specialize (Hku k).
          move Hku at bottom.
          remember (S k) as sk; simpl in Hku; subst sk.
