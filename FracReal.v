@@ -3352,17 +3352,17 @@ Qed.
 Theorem A_ge_1_add_all_true_if {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
   → (∀ k, A_ge_1 i u k = true)
-  → { ∀ k, u (i + k + 1) = rad - 1 } +
-     { ∀ k, u (i + k + 1) = 2 * (rad - 1) } +
-     { ∃ j,
+  → (∀ k, u (i + k + 1) = rad - 1) ∨
+     (∀ k, u (i + k + 1) = 2 * (rad - 1)) ∨
+     (∃ j,
        (∀ k, k < j → u (i + k + 1) = rad - 1) ∧
        u (i + j + 1) = rad - 2 ∧
-       (∀ k, u (i + j + k + 2) = 2 * (rad - 1)) }.
+       (∀ k, u (i + j + k + 2) = 2 * (rad - 1))).
 Proof.
 intros * Hur Hu.
 specialize radix_ge_2 as Hr; move Hr before i.
 specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
--right.
+-right; right.
  exists 0.
  rewrite Nat.add_0_r.
  split; [ easy | ].
@@ -3372,7 +3372,7 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
  easy.
 -set (g j := if eq_nat_dec (u (i + j + 1)) (rad - 1) then true else false).
  destruct (LPO_fst g) as [H2| H2]; subst g; simpl in H2.
- +left; left; intros k; specialize (H2 k).
+ +left; intros k; specialize (H2 k).
   now destruct (Nat.eq_dec (u (i + k + 1)) (rad - 1)).
  +destruct H2 as (j & Hjj & H2).
   destruct (Nat.eq_dec (u (i + j + 1)) (rad - 1)) as [ | H]; [ easy | ].
@@ -3382,7 +3382,7 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
     now destruct (Nat.eq_dec (u (i + k + 1)) (rad - 1)).
   }
   clear Hjj.
-  right; exists j.
+  right; right; exists j.
   split; [ easy | ].
   specialize (A_ge_1_add_ge u i j Hur Hu H1 H2 H3) as H4.
   assert (H5 : u (i + j + 1) < rad). {
@@ -3667,7 +3667,7 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
      +now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
   }
   now specialize (H2 H5); clear H5.
--left; right.
+-right; left.
  intros k.
  set (v := λ k, if Nat.eq_dec k (i + 1) then rad - 2 else u k).
  destruct k; [ now rewrite Nat.add_0_r | ].
@@ -3730,27 +3730,27 @@ Qed.
 
 Theorem A_ge_1_add_series_all_true_if {r : radix} : ∀ x y i,
   (∀ k, A_ge_1 i (freal_add_series x y) k = true)
-  → { ∀ k, fd2n x (i + k + 1) + fd2n y (i + k + 1) = rad - 1 } +
-     { (∀ k, fd2n x (i + k + 1) = rad - 1) ∧
-       (∀ k, fd2n y (i + k + 1) = rad - 1) } +
-     { ∃ j,
+  → (∀ k, fd2n x (i + k + 1) + fd2n y (i + k + 1) = rad - 1) ∨
+     ((∀ k, fd2n x (i + k + 1) = rad - 1) ∧
+       (∀ k, fd2n y (i + k + 1) = rad - 1)) ∨
+     (∃ j,
        (∀ k, k < j → fd2n x (i + k + 1) + fd2n y (i + k + 1) = rad - 1) ∧
        fd2n x (i + j + 1) + fd2n y (i + j + 1) = rad - 2 ∧
        (∀ k, fd2n x (i + j + k + 2) = rad - 1) ∧
-       (∀ k, fd2n y (i + j + k + 2) = rad - 1) }.
+       (∀ k, fd2n y (i + j + k + 2) = rad - 1)).
 Proof.
 intros * Hxy.
 specialize (freal_add_series_le_twice_pred x y) as H1.
 specialize (A_ge_1_add_all_true_if _ i H1 Hxy) as H2.
-destruct H2 as [[H2| H2]| H2].
--left; left; apply H2.
--left; right.
+destruct H2 as [H2| [H2| H2]].
+-left; apply H2.
+-right; left.
  unfold freal_add_series, sequence_add in H2.
  split; intros k; specialize (H2 k).
  1,2: specialize (digit_lt_radix (freal x (i + k + 1))) as H3.
  1,2: specialize (digit_lt_radix (freal y (i + k + 1))) as H4.
  1,2: unfold fd2n in H2 |-*; flia H2 H3 H4.
--right.
+-right; right.
  unfold freal_add_series, sequence_add in H2.
  destruct H2 as (j & Hbef & Hwhi & Haft).
  exists j.
@@ -4080,7 +4080,7 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
        move H7 before H5.
        assert (H8 : ∀ k, fd2n y (i + k + 1) = rad - 1). {
          intros k.
-         destruct Hu as [[Hu| Hu]| Hu]; [ | easy | ].
+         destruct Hu as [Hu| [Hu| Hu]]; [ | easy | ].
          -specialize (Hu k).
           now rewrite H7 in Hu.
          -destruct Hu as (j & Hbef & Hwhi & Haftx & Hafty).
