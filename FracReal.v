@@ -2696,15 +2696,13 @@ Qed.
 
 Theorem nA_upper_bound_for_add_3 {r : radix} : ∀ u i n,
   (∀ k : nat, u k ≤ 2 * (rad - 1))
-  → u (i + 1) < rad - 2(*1*)
+  → u (i + 1) < rad - 2
   → i + 2 ≤ n - 1
   → nA i n u < (rad - 1) * rad ^ (n - i - 2).
 Proof.
 intros * Hur H1 His.
 rewrite nA_split_first; [ | flia His ].
 remember (n - i - 2) as s eqn:Hs.
-(* perhaps it works when u(i+1)=rad-2 *)
-...
 apply le_lt_trans with (m := (rad - 3) * rad ^ s + 2 * (rad ^ s - 1)).
 -apply Nat.add_le_mono.
  +apply Nat.mul_le_mono_pos_r; [ | flia H1 ].
@@ -3007,7 +3005,7 @@ Qed.
 Theorem A_ge_1_add_first_ge {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
   → A_ge_1 i u 0 = true
-  → u (i + 1) ≥ rad - (*2*)1.
+  → u (i + 1) ≥ rad - 2.
 Proof.
 intros * Hur Hu.
 revert Hu.
@@ -3024,19 +3022,15 @@ assert (His : i + 2 ≤ n - 1). {
   specialize radix_ne_0 as H.
   destruct rad; [ easy | simpl; flia ].
 }
-destruct (lt_dec (u (i + 1)) (rad - 2)) as [H3| H3].
--specialize (nA_upper_bound_for_add_3 u i n Hur H3 His) as H2.
- rewrite Nat.mod_small; [ easy | ].
- eapply lt_le_trans; [ apply H2 | ].
- replace (n - i - 2) with (s - 1) by flia Hs.
- rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
- replace rad with (rad ^ 1) at 1 by apply Nat.pow_1_r.
- rewrite <- Nat.pow_add_r.
- replace (1 + (s - 1)) with s by flia Hs His.
- flia.
--assert (H2 : u (i + 1) = rad - 2) by flia H1 H3.
- clear H1 H3.
-...
+specialize (nA_upper_bound_for_add_3 u i n Hur H1 His) as H2.
+rewrite Nat.mod_small; [ easy | ].
+eapply lt_le_trans; [ apply H2 | ].
+replace (n - i - 2) with (s - 1) by flia Hs.
+rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+replace rad with (rad ^ 1) at 1 by apply Nat.pow_1_r.
+rewrite <- Nat.pow_add_r.
+replace (1 + (s - 1)) with s by flia Hs His.
+flia.
 Qed.
 
 Theorem A_ge_1_add_ge {r : radix} : ∀ u i j,
