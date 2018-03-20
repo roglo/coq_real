@@ -3669,248 +3669,64 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
   now specialize (H2 H5); clear H5.
 -left; right.
  intros k.
-(*
+ set (v := λ k, if Nat.eq_dec k (i + 1) then rad - 2 else u k).
  destruct k; [ now rewrite Nat.add_0_r | ].
-*)
- specialize (Hu k) as H2.
- revert H2.
- apply Decidable.contrapositive; [ apply Nat.eq_decidable | ].
- intros H.
- assert (H2 : u (i + k + 1) < 2 * (rad - 1)). {
-   specialize (Hur (i + k + 1)).
-(*
-   replace (i + S k + 1) with (i + k + 2) in H by flia.
-*)
-   flia Hur H.
+ specialize (A_ge_1_add_8_eq v i) as H2.
+ assert (H : ∀ k, v k ≤ 2 * (rad - 1)). {
+   intros j; unfold v.
+   destruct (Nat.eq_dec j (i + 1)); [ flia | apply Hur ].
  }
- clear H.
- apply Bool.not_true_iff_false.
- apply A_ge_1_false_iff.
- remember (rad * (i + k + 3)) as n eqn:Hn.
- replace (n - i - k - 2) with (n - i - 1 - S k) by flia.
- remember (n - i - 1) as s eqn:Hs.
- move s before n.
-...
-
-Theorem old_A_ge_1_add_all_true_if {r : radix} : ∀ u i,
-  (∀ k, u k ≤ 2 * (rad - 1))
-  → (∀ k, A_ge_1 i u k = true)
-  → { ∀ k, u (i + k + 1) = rad - 1 } +
-     { ∀ k, u (i + k + 1) = 2 * (rad - 1) } +
-     { ∃ j,
-       (∀ k, k < j → u (i + k + 1) = rad - 1) ∧
-       u (i + j + 1) = rad - 2 ∧
-       (∀ k, u (i + j + k + 2) = 2 * (rad - 1)) }.
-Proof.
-intros * Hur Hu.
-(* test if exists j such that u(i+j+1)=8 *)
-set (g j := if eq_nat_dec (u (i + j + 1)) (rad - 2) then false else true).
-destruct (LPO_fst g) as [H1| H1].
-(* no 8 after u(i) *)
--left.
- assert (H2 : ∀ j, u (i + j + 1) ≠ rad - 2). {
-   intros j.
-   specialize (H1 j).
-   unfold g in H1.
-   now destruct (eq_nat_dec (u (i + j + 1)) (rad - 2)).
+ specialize (H2 H); clear H.
+ assert (H : v (i + 1) = rad - 2). {
+   unfold v.
+   now destruct (Nat.eq_dec (i + 1) (i + 1)).
  }
- clear H1 g.
- destruct (eq_nat_dec (u (i + 1)) (rad - 1)) as [H1| H1].
- (* u(i+1)=9: then only 9s after u(i+1) *)
- +left; intros j.
-  induction j as (j, IHj) using lt_wf_rec.
-  destruct j; [ now rewrite Nat.add_0_r | ].
-  (* all "numbers digits" between i+1 and i+j+1 are 9;
-     taking k=j+1, we have A_ge_1 i u (j+1) = true, i.e.
-     nA i n u mod 10^s ≥ 999..0000.. (with (j+2) 9s)
-     therefore u(i+Sj+1) must be ≥ 8 (possible carry of 0 or 1),
-     but since H2, ≥ 9; it cannot be ≥ 10 because it would add
-     a carry to these 9s, transforming them into 0s. *)
-  specialize (Hu (j + 1)) as H3.
-  apply A_ge_1_true_iff in H3.
-  replace (i + (j + 1) + 3) with (i + j + 4) in H3 by flia.
-  remember (rad * (i + j + 4)) as n eqn:Hn.
-  replace (n - i - (j + 1) - 2) with (n - i - j - 3) in H3 by flia.
-  remember (n - i - 1) as s eqn:Hs.
-  move s before n.
-  assert (H4 : u (i + S j + 1) ≥ rad - 2). {
-    revert H3.
-    apply Decidable.contrapositive; [ apply Nat.le_decidable | ].
-    intros H3; apply Nat.nle_gt in H3; apply Nat.nle_gt.
-...
-(* there exists j such that u(i+j+1)=8 *)
--destruct H1 as (j & Hjj & Hj).
- right; exists j.
- unfold g in Hj.
- destruct (eq_nat_dec (u (i + j + 1)) (rad - 2)) as [H1| H1]; [ | easy ].
- clear Hj.
- split.
- Focus 2.
- +split; [ easy | ].
-  intros k.
-  specialize (Hu (j + k + 1)) as H2.
-  apply A_ge_1_true_iff in H2.
-  induction k.
-  *rewrite Nat.add_0_r in H2 |-*.
-   replace (i + (j + 1) + 3) with (i + j + 4) in H2 by flia.
-   remember (rad * (i + j + 4)) as n eqn:Hn.
-   remember (rad ^ (n - i - 1)) as s eqn:Hs.
-   replace (n - i - (j + 1) - 2) with (n - i - j - 3) in H2 by flia.
+ specialize (H2 H k); clear H.
+ assert (H : A_ge_1 i v (k + 1) = true). {
+   specialize (Hu (k + 1)) as H3.
+   apply A_ge_1_true_iff in H3.
+   apply A_ge_1_true_iff.
+   replace (i + (k + 1) + 3) with (i + k + 4) in H3 |-* by flia.
+   remember (rad * (i + k + 4)) as n eqn:Hn.
+   replace (n - i - (k + 1) - 2) with (n - i - 1 - (k + 2)) in H3 |-* by flia.
+   remember (n - i - 1) as s eqn:Hs.
    move s before n.
-   replace (S (j + 1)) with (j + 2) in H2 by flia.
-...
-
-intros * Hur Hu.
-set (g j := if eq_nat_dec (u (i + j + 1)) (rad - 1) then true else false).
-destruct (LPO_fst g) as [H1| H1].
--left.
- intros k.
- specialize (H1 k); unfold g in H1.
- now destruct (eq_nat_dec (u (i + k + 1)) (rad - 1)).
--right.
- destruct H1 as (j & Hjj & Hj).
- +exists j.
-  unfold g in Hjj, Hj.
-  destruct (eq_nat_dec (u (i + j + 1)) (rad - 1)) as [| H1]; [ easy | ].
-  clear Hj.
-  split.
-  *intros k Hkj.
-   specialize (Hjj _ Hkj).
-   now destruct (eq_nat_dec (u (i + k + 1)) (rad - 1)).
-  *specialize (Hu j) as H2.
-   unfold A_ge_1 in H2.
-   set (n := rad * (i + j + 3)) in H2.
-   set (s := rad ^ (n - i - 1)) in H2.
-   destruct
-     (lt_dec (nA i n u mod s) ((rad ^ S j - 1) * rad ^ (n - i - j - 2)))
-     as [| H3]; [ easy | ].
-   clear H2.
-   apply Nat.nlt_ge in H3.
-   destruct (lt_dec (nA i n u) s) as [H2| H2].
-  --rewrite Nat.mod_small in H3; [ | easy ].
-    specialize (Nat_ge_mul_pred_pow_pow rad (nA i n u) (S j)) as H4.
-    specialize (H4 (n - i - j - 2)).
-    remember (nA i n u - (rad ^ S j - 1) * rad ^ (n - i - j - 2)) as t.
-    specialize (H4 t).
-    replace (S j + (n - i - j - 2)) with (n - i - 1) in H4.
-    Focus 2.
-   ++enough (H : j < n - i - 2) by flia H.
-     unfold n.
-     specialize radix_ge_2 as Hr.
+   eapply Nat.le_trans; [ apply H3 | ].
+   assert (Hin : i + 1 ≤ n - 1). {
+     rewrite Hn.
      destruct rad; [ easy | simpl; flia ].
-   ++fold s in H4.
-     specialize (H4 H2 H3 (eq_refl _)) as (H4, H5).
-     (*
-       i+1 i+j+1
-        v    v
-        99999xyyyyyyy = 9999990000000 + rest
-        ------=======   ------=======
-         j+1  n-i-j-2    j+1  n-i-j-2
-
-        rest < 10000000
-                -------
-                n-i-j-2
-
-       x=u(i+j+1)
-       claim: x=8 and y=18
-       we know that x≠9 (H1)
-     *)
-     remember (n - i - j - 2) as m eqn:Hm.
-     symmetry in Hm.
-     destruct m.
-    **unfold n in Hm.
-      specialize radix_ge_2 as Hr.
-      destruct rad; [ easy | ].
-      simpl in Hm; flia Hm.
-    **destruct j.
-    ---subst n s.
-       rewrite Nat.add_0_r in *.
-       rewrite Nat.sub_0_r in Hm.
-       rewrite Nat.pow_1_r in *.
-       set (n := rad * (i + 3)) in *.
-       set (s := rad ^ (n - i - 1)) in *.
-       move s before n.
-       assert (H6 : u (i + 1) < rad). {
-         destruct (lt_dec (u (i + 1)) rad) as [| H6]; [ easy | ].
-         exfalso; apply Nat.nlt_ge in H6.
-         apply Nat.nle_gt in H2; apply H2.
-         rewrite nA_split_first; [ | flia Hm ].
-         apply le_trans with (m := u (i + 1) * rad ^ (n - i - 2)); [ | flia ].
-         unfold s.
-         replace (n - i - 1) with (1 + (n - i - 2)) by flia Hm.
-         rewrite Nat.pow_add_r, Nat.pow_1_r.
-         now apply Nat.mul_le_mono_r.
-       }
-       assert (H7 : u (i + 1) ≥ rad - 2). {
-         destruct (ge_dec (u (i + 1)) (rad - 2)) as [| H7]; [ easy | ].
-         exfalso; apply Nat.nle_gt in H7.
-         apply Nat.nlt_ge in H3; apply H3.
-         rewrite nA_split_first; [ | flia Hm ].
-         rewrite Hm.
-         apply le_lt_trans with (m := (rad - 3) * rad ^ S m + nA (S i) n u).
-         -apply Nat.add_le_mono_r.
-          apply Nat.mul_le_mono_r; flia H7.
-         -set (rg := nat_ord_ring).
-          apply le_lt_trans with
-              (m :=
-               (rad - 3) * rad ^ S m +
-               Σ (j = i + 2, n - 1), 2 * (rad - 1) * rad ^ (n - j - 1)).
-          +apply Nat.add_le_mono_l.
-           unfold nA.
-           replace (S i + 1) with (i + 2) by flia.
-           apply (@summation_le_compat nat_ord_ring_def).
-           intros k Hk; simpl; unfold Nat.le.
-           rewrite Nat.add_0_r.
-           replace (n - 1 - k) with (n - k - 1) by flia.
-           apply Nat.mul_le_mono_r.
-           ring_simplify; apply Hur.
-          +rewrite <- summation_mul_distr_l.
-           remember (S m) as x; simpl; subst x.
-           replace (rad - 1 + (rad - 1 + 0)) with (2 * (rad - 1)) by flia.
-           rewrite <- Nat.mul_assoc.
-           rewrite summation_rtl.
-           rewrite summation_shift; [ | flia Hm ].
-           rewrite summation_eq_compat with (h := λ j, rad ^ j).
-           *rewrite <- power_summation_sub_1; [ | easy ].
-            replace (S (n - 1 - (i + 2))) with (S m) by flia Hm.
-            replace (rad - 3) with (rad ^ 1 - 3) by now rewrite Nat.pow_1_r.
-            rewrite Nat.mul_sub_distr_r.
-            rewrite <- Nat.pow_add_r.
-            rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
-            replace (1 + S m) with (S (S m)) by flia.
-            remember (rad ^ S m) as x eqn:Hx.
-            destruct (eq_nat_dec rad 2) as [Hr2| Hr2].
-           --now rewrite Hr2 in H7.
-           --replace (rad ^ S (S m) - 3 * x + (2 * x - 2))
-               with (rad ^ S (S m) - x - 2).
-            ++subst x.
-              replace (rad ^ S m) with (1 * rad ^ S m) at 1 by flia.
-              rewrite Nat.pow_succ_r; [ | flia ].
-              rewrite <- Nat.mul_sub_distr_r.
-              apply Nat.sub_lt; [ | flia ].
-              replace 2 with (2 * 1) by flia.
-              apply Nat.mul_le_mono.
-             **specialize radix_ge_2 as Hr.
-               flia Hr2 Hr.
-             **now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-            ++rewrite Nat.add_sub_assoc.
-             **f_equal.
-               rewrite <- Nat.add_sub_swap; [ flia | ].
-               subst x; remember (S m) as x eqn:Hx.
-               rewrite Nat.pow_succ_r; subst x; [ | flia ].
-               apply Nat.mul_le_mono_r.
-               specialize radix_ge_2 as Hr.
-               flia Hr2 Hr.
-             **replace 2 with (2 * 1) at 1 by flia.
-               apply Nat.mul_le_mono_pos_l; [ flia | ].
-               now subst x; apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-           *intros k Hk; f_equal; flia Hm Hk.
-       }
-       assert (H8 : u (i + 1) = rad - 2) by flia H1 H6 H7.
-       clear H1 H6 H7.
-       split; [ easy | ].
-       intros k Hk.
-...
+   }
+   setoid_rewrite nA_split_first; [ | easy | easy ].
+   setoid_rewrite <- Nat.add_mod_idemp_l.
+   2,3 : now apply Nat.pow_nonzero.
+   rewrite H1.
+   unfold v at 1.
+   destruct (Nat.eq_dec (i + 1) (i + 1)) as [H| ]; [ clear H | easy ].
+   replace (n - i - 2) with (s - 1) by flia Hs.
+   rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+   do 2 rewrite Nat.mul_sub_distr_r.
+   replace rad with (rad ^ 1) at 1 6 by apply Nat.pow_1_r.
+   rewrite <- Nat.mul_assoc.
+   rewrite <- Nat.pow_add_r.
+   replace (1 + (s - 1)) with s by flia Hs Hin.
+   replace (2 * rad ^ s) with (rad ^ s + 1 * rad ^ s) by flia.
+   rewrite Nat.add_sub_swap.
+   -rewrite Nat.mod_add; [ | now apply Nat.pow_nonzero ].
+    replace (nA (S i) n u) with (nA (S i) n v); [ easy | ].
+    unfold nA.
+    apply summation_eq_compat.
+    intros j Hj; f_equal.
+    unfold v.
+    destruct (Nat.eq_dec j (i + 1)) as [H | ]; [ flia Hj H | easy ].
+   -replace s with (1 + (s - 1)) at 2 by flia Hs Hin.
+    rewrite Nat.pow_add_r, Nat.pow_1_r.
+    now apply Nat.mul_le_mono_r.
+ }
+ specialize (H2 H); clear H.
+ unfold v in H2.
+ destruct (Nat.eq_dec (i + k + 2) (i + 1)) as [H3| H3]; [ flia H3 | ].
+ now replace (i + k + 2) with (i + S k + 1) in H2 by flia.
+Qed.
 
 Theorem freal_eq_prop_add_norm_l {r : radix} : ∀ x y,
   freal_eq_prop {| freal := freal_add_to_seq (freal_normalize x) y |}
@@ -3984,6 +3800,14 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
     rewrite <- Hn, <- Hs in H3, H4 |-*.
     destruct (LPO_fst (A_ge_1 i u)) as [Hku| (m & Hjm & Hm)].
    ++simpl in H3 |-*.
+specialize (A_ge_1_add_all_true_if u i) as H5.
+assert (H : ∀ k, u k ≤ 2 * (rad - 1)). {
+  intros k; unfold u.
+  apply freal_add_series_le_twice_pred.
+}
+specialize (H5 H Hku); clear H.
+destruct H5 as [[H5| H5]| H5].
+...
      specialize (proj1 (all_A_ge_1_true_iff _ _) Hku) as H5.
      rename Hku into vHku; rename H5 into Hku.
      assert (Hsz : s ≠ 0) by (now rewrite Hs; apply Nat.pow_nonzero).
