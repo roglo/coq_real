@@ -3750,6 +3750,18 @@ destruct H2 as [[H2| H2]| H2].
    (H3 : ∀ k, fd2n x (i + k + 1) = rad - 1 ∧ fd2n y (i + k + 1) = rad - 1). {
    intros k.
    specialize (H2 k).
+   specialize (digit_lt_radix (freal x (i + k + 1))) as H3.
+   specialize (digit_lt_radix (freal y (i + k + 1))) as H4.
+   unfold fd2n in H2 |-*.
+   split; lia.
+ }
+ now split; intros k; specialize (H3 k).
+-right.
+ unfold freal_add_series, sequence_add in H2.
+ destruct H2 as (j & Hbef & Hwhi & Haft).
+ exists j.
+ split; [ easy | ].
+ split; [ easy | ].
 ...
 
 
