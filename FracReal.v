@@ -4091,6 +4091,26 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
            *subst k; clear H.
             specialize (Hafty 0).
             rewrite H7 in Hwhi.
+(* strange that I have to use all_A_ge_1_true_iff which I considered as an old
+   version of my stuff *)
+...
+specialize (proj1 (all_A_ge_1_true_iff i u) Hku j) as H.
+simpl in H.
+         remember (rad * (i + j + 3)) as n2 eqn:Hn2.
+         remember (rad ^ (n2 - i - 1)) as s2 eqn:Hs2.
+         move s2 before n2.
+         unfold u in H.
+         rewrite nA_freal_add_series in H.
+         specialize (nA_freal_normalize_0 i n2 x H5) as H8.
+         rewrite H8, Nat.add_0_l in H; clear H8.
+         rewrite Hs2 in H.
+         rewrite Nat.mod_small in H; [ | apply nA_upper_bound ].
+         specialize (when_99000_le_uuu00 (fd2n y) i j (i + j + 1)) as HH.
+         specialize (HH n2).
+         apply HH; [ intros; apply digit_lt_radix | easy | | flia ].
+         rewrite Hn2.
+         destruct rad; [ easy | simpl; flia ].
+*idtac.
 ...
           +specialize (Hafty (k - j - 1)).
 replace (i + j + (k - j - 1) + 2) with (i + k + 1) in Hafty.
