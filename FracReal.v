@@ -3746,24 +3746,21 @@ destruct H2 as [[H2| H2]| H2].
 -left; left; apply H2.
 -left; right.
  unfold freal_add_series, sequence_add in H2.
- assert
-   (H3 : ∀ k, fd2n x (i + k + 1) = rad - 1 ∧ fd2n y (i + k + 1) = rad - 1). {
-   intros k.
-   specialize (H2 k).
-   specialize (digit_lt_radix (freal x (i + k + 1))) as H3.
-   specialize (digit_lt_radix (freal y (i + k + 1))) as H4.
-   unfold fd2n in H2 |-*.
-   split; lia.
- }
- now split; intros k; specialize (H3 k).
+ split; intros k; specialize (H2 k).
+ 1,2: specialize (digit_lt_radix (freal x (i + k + 1))) as H3.
+ 1,2: specialize (digit_lt_radix (freal y (i + k + 1))) as H4.
+ 1,2: unfold fd2n in H2 |-*; flia H2 H3 H4.
 -right.
  unfold freal_add_series, sequence_add in H2.
  destruct H2 as (j & Hbef & Hwhi & Haft).
  exists j.
  split; [ easy | ].
  split; [ easy | ].
-...
-
+ split; intros k; specialize (Haft k).
+ 1,2: specialize (digit_lt_radix (freal x (i + j + k + 2))) as H3.
+ 1,2: specialize (digit_lt_radix (freal y (i + j + k + 2))) as H4.
+ 1,2: unfold fd2n in Haft |-*; flia Haft H3 H4.
+Qed.
 
 Theorem freal_eq_prop_add_norm_l {r : radix} : ∀ x y,
   freal_eq_prop {| freal := freal_add_to_seq (freal_normalize x) y |}
@@ -3838,20 +3835,10 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
     rewrite <- Hn, <- Hs in H3, H4 |-*.
     destruct (LPO_fst (A_ge_1 i u)) as [Hku| (m & Hjm & Hm)].
    ++simpl in H3 |-*.
-     specialize (A_ge_1_add_all_true_if u i) as Hu.
-     assert (H : ∀ k, u k ≤ 2 * (rad - 1)). {
-       intros k; unfold u.
-       apply freal_add_series_le_twice_pred.
-     }
-     specialize (Hu H Hku); clear H.
+     specialize (A_ge_1_add_series_all_true_if _ _ i Hku) as Hu.
      destruct (LPO_fst (A_ge_1 i v)) as [Hkv| (p & Hjp & Hp)].
     **simpl in H4 |-*.
-      specialize (A_ge_1_add_all_true_if v i) as Hv.
-      assert (H : ∀ k, v k ≤ 2 * (rad - 1)). {
-        intros k; unfold v.
-        apply freal_add_series_le_twice_pred.
-      }
-      specialize (Hv H Hkv); clear H.
+      specialize (A_ge_1_add_series_all_true_if _ _ i Hkv) as Hv.
       move Hkv before Hku.
       rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
       rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
@@ -4093,6 +4080,22 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
        move H7 before H5.
        assert (H8 : ∀ k, fd2n y (i + k + 1) = rad - 1). {
          intros k.
+         destruct Hu as [[Hu| Hu]| Hu]; [ | easy | ].
+         -specialize (Hu k).
+          now rewrite H7 in Hu.
+         -destruct Hu as (j & Hbef & Hwhi & Haftx & Hafty).
+          destruct (lt_dec k j) as [H| H].
+          +specialize (Hbef _ H).
+           now rewrite H7 in Hbef.
+          +destruct (Nat.eq_dec j k) as [H10| H10].
+           *subst k; clear H.
+            specialize (Hafty 0).
+            rewrite H7 in Hwhi.
+ξ...
+          +specialize (Hafty (k - j - 1)).
+replace (i + j + (k - j - 1) + 2) with (i + k + 1) in Hafty.
+2: flia H.
+
 ...
          specialize (Hku k).
          move Hku at bottom.
