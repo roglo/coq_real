@@ -3800,19 +3800,21 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
     rewrite <- Hn, <- Hs in H3, H4 |-*.
     destruct (LPO_fst (A_ge_1 i u)) as [Hku| (m & Hjm & Hm)].
    ++simpl in H3 |-*.
-specialize (A_ge_1_add_all_true_if u i) as H5.
-assert (H : ∀ k, u k ≤ 2 * (rad - 1)). {
-  intros k; unfold u.
-  apply freal_add_series_le_twice_pred.
-}
-specialize (H5 H Hku); clear H.
-destruct H5 as [[H5| H5]| H5].
-...
-     specialize (proj1 (all_A_ge_1_true_iff _ _) Hku) as H5.
-     rename Hku into vHku; rename H5 into Hku.
-     assert (Hsz : s ≠ 0) by (now rewrite Hs; apply Nat.pow_nonzero).
+     specialize (A_ge_1_add_all_true_if u i) as Hu.
+     assert (H : ∀ k, u k ≤ 2 * (rad - 1)). {
+       intros k; unfold u.
+       apply freal_add_series_le_twice_pred.
+     }
+     specialize (Hu H Hku); clear H.
      destruct (LPO_fst (A_ge_1 i v)) as [Hkv| (p & Hjp & Hp)].
     **simpl in H4 |-*.
+      specialize (A_ge_1_add_all_true_if v i) as Hv.
+      assert (H : ∀ k, v k ≤ 2 * (rad - 1)). {
+        intros k; unfold v.
+        apply freal_add_series_le_twice_pred.
+      }
+      specialize (Hv H Hkv); clear H.
+      move Hkv before Hku.
       rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
       rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
       f_equal; f_equal.
@@ -3824,10 +3826,6 @@ destruct H5 as [[H5| H5]| H5].
       rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
       rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
       f_equal; f_equal.
-      move H4 before H3.
-      specialize (proj1 (all_A_ge_1_true_iff _ _) Hkv) as H5.
-      rename Hkv into vHkv; rename H5 into Hkv.
-      move vHkv before vHku.
       unfold freal_normalize.
       unfold fd2n; simpl.
       unfold digit_sequence_normalize.
@@ -3842,7 +3840,7 @@ destruct H5 as [[H5| H5]| H5].
          unfold nA.
          rewrite Hs.
          remember (n - i - 1) as m eqn:Hm.
-         destruct m; [ flia Hm His | ].
+         destruct m; [ flia Hm Hin | ].
          rewrite power_summation; [ | easy ]; symmetry.
          rewrite Nat.add_comm, Nat.add_sub; symmetry.
          rewrite summation_mul_distr_l; simpl.
@@ -3858,9 +3856,14 @@ destruct H5 as [[H5| H5]| H5].
            by flia Hm Hj.
        }
        rewrite HnAx.
+...
        assert (HnAy : nA i n (fd2n y) ≠ 0). {
-         specialize (Hku 0) as H7.
-         simpl in H7.
+         destruct Hu as [[Hu| Hu]| Hu].
+         -specialize (Hu 0) as H7.
+          rewrite Nat.add_0_r in H7.
+          unfold u in H7.
+...
+          simpl in H7.
          rewrite Nat.add_0_r, <- Hn, <- Hs, Nat.mul_1_r in H7.
          rewrite Nat.sub_0_r in H7.
          unfold u in H7.
