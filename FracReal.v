@@ -655,6 +655,46 @@ split; intros Hxy.
  +now intros; symmetry; apply freal_norm_not_norm_eq_normalize_eq.
 Qed.
 
+Definition normalized {r : radix} x :=
+  ∀ i, fd2n (freal_normalize x) i = fd2n x i.
+
+Theorem normalized_dec {r : radix} :
+  ∀ x, { normalized x } + { ¬ normalized x }.
+Proof.
+intros.
+set (y := freal_normalize x).
+destruct (LPO_fst (has_same_digits x y)) as [H1| H1].
+-left; unfold normalized; intros i.
+ unfold fd2n, freal_normalize, digit_sequence_normalize; simpl.
+ destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H2| H2].
+ +destruct (lt_dec (S (d2n (freal x) i)) rad) as [H3| H3].
+  *exfalso.
+...
+
+Theorem eq_not_normalized_normalized {r : radix} : ∀ x nx,
+  nx = freal_normalize x
+  → (∀ i, fd2n x i = fd2n nx i) ∨ freal_norm_not_norm_eq nx x.
+Proof.
+intros * Hnx.
+Search freal_normalize.
+
+destruct (LPO_fst (is_9_strict_after_all_9
+
+...
+intros * Hnx.
+assert (H1 : ∀ i, freal (freal_normalize x) i = freal (freal_normalize nx) i). {
+  intros; rewrite <- Hnx.
+  unfold freal_normalize, digit_sequence_normalize; simpl.
+  destruct (LPO_fst (is_9_strict_after (freal nx) i)) as [H1| H1].
+  -specialize (is_9_strict_after_all_9 _ _ H1) as H2.
+   destruct (lt_dec (S (d2n (freal nx) i)) rad) as [H3| H3].
+   +
+...
+specialize (proj1 (freal_normalized_eq_iff x nx)) as H1.
+Search freal_normalize.
+
+...
+
 (* Addition, Multiplication *)
 
 Definition sequence_add (a b : nat → nat) i := a i + b i.
@@ -3765,6 +3805,14 @@ Qed.
 Theorem normalized_not_999 {r : radix} : ∀ x,
   ¬ (∃ i, ∀ j, fd2n (freal_normalize x) (i + j) = rad - 1).
 Proof.
+intros x.
+...
+freal_normalized_eq_iff:
+  ∀ (r : radix) (x y : FracReal),
+  (∀ i : nat, freal (freal_normalize x) i = freal (freal_normalize y) i)
+  ↔ (∀ i : nat, freal x i = freal y i) ∨ freal_norm_not_norm_eq x y ∨ freal_norm_not_norm_eq y x
+...
+
 intros x.
 specialize radix_ge_2 as Hr.
 intros (i, Hx).
