@@ -3767,6 +3767,7 @@ Theorem freal_eq_prop_add_norm_l {r : radix} : ∀ x y,
     {| freal := freal_add_to_seq x y |}.
 Proof.
 intros.
+specialize radix_ge_2 as Hr.
 unfold freal_eq_prop.
 unfold freal_eq.
 unfold freal_normalized_eq.
@@ -3893,9 +3894,8 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
          rewrite Nat.mod_0_l in H7; [ | flia Hsz ].
          apply Nat.le_0_r in H7.
          apply Nat.eq_mul_0 in H7.
-         destruct H7 as [H7| H7].
-         -specialize radix_ge_2 as Hr; flia H7 Hr.
-         -now apply Nat.pow_nonzero in H7.
+         destruct H7 as [H7| H7]; [ flia H7 Hr | ].
+         now apply Nat.pow_nonzero in H7.
        }
        rewrite Nat.div_small.
      +++rewrite Nat.add_0_r.
@@ -4084,56 +4084,10 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
          -specialize (Hu k).
           now rewrite H7 in Hu.
          -destruct Hu as (j & Hbef & Hwhi & Haftx & Hafty).
-          destruct (lt_dec k j) as [H| H].
-          +specialize (Hbef _ H).
-           now rewrite H7 in Hbef.
-          +destruct (Nat.eq_dec j k) as [H10| H10].
-           *subst k; clear H.
-            specialize (Hafty 0).
-            rewrite H7 in Hwhi.
-(* strange that I have to use all_A_ge_1_true_iff which I considered as an old
-   version of my stuff *)
-...
-specialize (proj1 (all_A_ge_1_true_iff i u) Hku j) as H.
-simpl in H.
-         remember (rad * (i + j + 3)) as n2 eqn:Hn2.
-         remember (rad ^ (n2 - i - 1)) as s2 eqn:Hs2.
-         move s2 before n2.
-         unfold u in H.
-         rewrite nA_freal_add_series in H.
-         specialize (nA_freal_normalize_0 i n2 x H5) as H8.
-         rewrite H8, Nat.add_0_l in H; clear H8.
-         rewrite Hs2 in H.
-         rewrite Nat.mod_small in H; [ | apply nA_upper_bound ].
-         specialize (when_99000_le_uuu00 (fd2n y) i j (i + j + 1)) as HH.
-         specialize (HH n2).
-         apply HH; [ intros; apply digit_lt_radix | easy | | flia ].
-         rewrite Hn2.
-         destruct rad; [ easy | simpl; flia ].
-*idtac.
-...
-          +specialize (Hafty (k - j - 1)).
-replace (i + j + (k - j - 1) + 2) with (i + k + 1) in Hafty.
-2: flia H.
-
-...
-         specialize (Hku k).
-         move Hku at bottom.
-         remember (S k) as sk; simpl in Hku; subst sk.
-         remember (rad * (i + k + 3)) as n2 eqn:Hn2.
-         remember (rad ^ (n2 - i - 1)) as s2 eqn:Hs2.
-         move s2 before n2.
-         unfold u in Hku.
-         rewrite nA_freal_add_series in Hku.
-         specialize (nA_freal_normalize_0 i n2 x H5) as H8.
-         rewrite H8, Nat.add_0_l in Hku; clear H8.
-         rewrite Hs2 in Hku.
-         rewrite Nat.mod_small in Hku; [ | apply nA_upper_bound ].
-         specialize (when_99000_le_uuu00 (fd2n y) i k (i + k + 1)) as H.
-         specialize (H n2).
-         apply H; [ intros; apply digit_lt_radix | easy | | flia ].
-         rewrite Hn2.
-         destruct rad; [ easy | simpl; flia ].
+          specialize (Haftx 0).
+          specialize (H7 (j + 1)).
+          replace (i + j + 0 + 2) with (i + (j + 1) + 1) in Haftx by flia.
+          rewrite Haftx in H7; flia Hr H7.
        }
        move H7 before H8; move H5 before H7.
        exfalso.
@@ -4191,6 +4145,7 @@ replace (i + j + (k - j - 1) + 2) with (i + k + 1) in Hafty.
          (* Hku(0) implies that nx(i+1)+y(i+1) = 9 *)
          assert (H5 : fd2n nx (i + 1) + fd2n y (i + 1) = rad - 1). {
            specialize (Hku 0) as H10; simpl in H10.
+...
            rewrite Nat.add_0_r, Nat.sub_0_r in H10.
            rewrite <- Hn, <- Hs in H10.
            specialize (Nat_ge_mul_pred_pow_pow rad) as H.
