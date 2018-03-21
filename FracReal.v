@@ -3768,6 +3768,31 @@ Proof.
 intros x.
 specialize radix_ge_2 as Hr.
 intros (i, Hx).
+assert (∀ j, fd2n x (i + j + 1) = rad - 1). {
+  intros j.
+  induction j as (j, IHj) using lt_wf_rec.
+  destruct j.
+  -rewrite Nat.add_0_r; clear IHj.
+   specialize (Hx 0) as H1.
+   rewrite Nat.add_0_r in H1.
+   unfold fd2n, freal_normalize, digit_sequence_normalize in H1.
+   simpl in H1.
+   destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H2| H2].
+   +specialize (H2 0) as H3.
+    apply is_9_strict_after_true_iff in H3.
+    now rewrite Nat.add_0_r in H3.
+   +destruct H2 as (k & Hjk & Hk).
+    apply is_9_strict_after_false_iff in Hk.
+    destruct k.
+    *rewrite Nat.add_0_r in Hk.
+     clear Hk Hjk.
+(* mouais, chais pas, faut peut-être que je retourne à la version
+   ci-dessous *)
+...
+
+intros x.
+specialize radix_ge_2 as Hr.
+intros (i, Hx).
 specialize (Hx 0) as H1.
 rewrite Nat.add_0_r in H1.
 unfold fd2n, freal_normalize in H1.
@@ -3791,29 +3816,15 @@ destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H2| H2].
  +simpl in H1; flia H1 Hr.
 -destruct H2 as (j & Hjj & Hj).
  apply is_9_strict_after_false_iff in Hj.
-...
-
-(*beg*)
- induction j.
- +clear Hjj; rewrite Nat.add_0_r in Hj.
-  specialize (Hx 1) as H2.
-  unfold fd2n, freal_normalize, digit_sequence_normalize in H2.
-  simpl in H2.
-  destruct (LPO_fst (is_9_strict_after (freal x) (i + 1))) as [H3| H3].
-  *destruct (lt_dec (S (d2n (freal x) (i + 1))) rad) as [H4| H4].
-  --simpl in H2; clear H4.
-    specialize (is_9_strict_after_all_9 (freal x) (i + 1) H3) as H4.
-...
-(*end*)
-...
  specialize (Hx j) as H2.
+ unfold fd2n, freal_normalize, digit_sequence_normalize in H2.
+ simpl in H2.
  destruct (LPO_fst (is_9_strict_after (freal x) (i + j))) as [H3| H3].
  +specialize (H3 0).
   apply is_9_strict_after_true_iff in H3.
   now rewrite Nat.add_0_r in H3.
  +destruct H3 as (k & Hjk & Hk).
   apply is_9_strict_after_false_iff in Hk.
-Search is_9_strict_after.
 ...
 
 Theorem freal_eq_prop_add_norm_l {r : radix} : ∀ x y,
