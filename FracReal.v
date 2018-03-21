@@ -3837,6 +3837,7 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
     destruct (LPO_fst (A_ge_1 i u)) as [Hku| (m & Hjm & Hm)].
    ++simpl in H3 |-*.
      specialize (A_ge_1_add_series_all_true_if _ _ i Hku) as Hu.
+     rewrite <- Hnx in Hu.
      destruct (LPO_fst (A_ge_1 i v)) as [Hkv| (p & Hjp & Hp)].
     **simpl in H4 |-*.
       specialize (A_ge_1_add_series_all_true_if _ _ i Hkv) as Hv.
@@ -4065,7 +4066,8 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
        exfalso.
        clear H5; rename H7 into H5.
        specialize (nA_freal_normalize_0 _ n _ H5) as HnAnx.
-       assert (H7 : ∀ k, fd2n (freal_normalize x) (i + k + 1) = 0). {
+       rewrite <- Hnx in HnAnx.
+       assert (H7 : ∀ k, fd2n nx (i + k + 1) = 0). {
          intros j.
          assert (H : ∀ k, fd2n x (i + 1 + k) = rad - 1). {
            intros k.
@@ -4074,6 +4076,7 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
            now replace (i + 1 + k) with (i + k + 1) by flia.
          }
          specialize (normalized_999 x (i + 1) H) as H7.
+         rewrite <- Hnx in H7.
          replace (i + j + 1) with (i + 1 + j) by flia.
          apply H7.
        }
@@ -4144,8 +4147,12 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
       ***exfalso.
          (* Hku(0) implies that nx(i+1)+y(i+1) = 9 *)
          assert (H5 : fd2n nx (i + 1) + fd2n y (i + 1) = rad - 1). {
-           specialize (Hku 0) as H10; simpl in H10.
+           destruct Hu as [Hu| [(Hux, Huy)| Hu]].
+           -specialize (Hu 0).
+            now rewrite Nat.add_0_r in Hu.
+           -idtac.
 ...
+           specialize (Hku 0) as H10; simpl in H10.
            rewrite Nat.add_0_r, Nat.sub_0_r in H10.
            rewrite <- Hn, <- Hs in H10.
            specialize (Nat_ge_mul_pred_pow_pow rad) as H.
