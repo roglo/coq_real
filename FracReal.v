@@ -655,6 +655,7 @@ split; intros Hxy.
  +now intros; symmetry; apply freal_norm_not_norm_eq_normalize_eq.
 Qed.
 
+(*
 Definition normalized {r : radix} x :=
   ∀ i, fd2n (freal_normalize x) i = fd2n x i.
 
@@ -673,16 +674,109 @@ destruct (LPO_fst (has_same_digits x y)) as [H1| H1].
    unfold has_same_digits in H4.
    destruct (Nat.eq_dec (fd2n x i) (fd2n y i)) as [H5| ]; [ | easy ].
    clear H4.
-...
+*)
+
+Definition has_not_9_after {r : radix} u i j :=
+  match LPO_fst (is_9_after u (i + j)) with
+  | inl _ => false
+  | inr _ => true
+  end.
+
+Definition ends_with_999 {r : radix} u i :=
+  match LPO_fst (has_not_9_after u i) with
+  | inl _ => false
+  | inr _ => true
+  end.
+
+Theorem ends_with_999_true_iff {r : radix} : ∀ u i,
+  ends_with_999 u i = true ↔
+  ∃ j P, LPO_fst (has_not_9_after u i) = inr (exist _ j P).
+Proof.
+intros.
+split.
+-intros H9.
+ unfold ends_with_999 in H9.
+ destruct (LPO_fst (has_not_9_after u i)) as [H1| H1]; [ easy | clear H9 ].
+ destruct H1 as (j & Hjj).
+ now exists j, Hjj.
+-intros (j & ((P & Q) & _)).
+ unfold ends_with_999.
+ destruct (LPO_fst (has_not_9_after u i)) as [H1| H1]; [ | easy ].
+ specialize (H1 j).
+ now rewrite H1 in Q.
+Qed.
+
+Theorem ends_with_999_false_iff {r : radix} : ∀ u i,
+  ends_with_999 u i = false ↔
+  ∃ P, LPO_fst (has_not_9_after u i) = inl P.
+Proof.
+intros.
+split.
+-intros H9.
+ unfold ends_with_999 in H9.
+ destruct (LPO_fst (has_not_9_after u i)) as [H1| H1]; [ clear H9 | easy ].
+ now exists H1.
+-intros (P & _).
+ unfold ends_with_999.
+ destruct (LPO_fst (has_not_9_after u i)) as [H1| H1]; [ easy | ].
+ destruct H1 as (j & (_, Q)).
+ now rewrite P in Q.
+Qed.
+
+Theorem has_not_9_after_true_iff {r : radix} : ∀ u i j,
+  has_not_9_after u i j = true ↔
+  ∃ k P, LPO_fst (is_9_after u (i + j)) = inr (exist _ k P).
+Proof.
+intros.
+unfold has_not_9_after.
+destruct (LPO_fst (is_9_after u (i + j))) as [H1| H1].
+-split; [ easy | ].
+ intros (k & (P & Q) & _).
+ now rewrite H1 in Q.
+-split; [ intros _ | easy ].
+ destruct H1 as (k & Hk).
+ now exists k, Hk.
+Qed.
+
+Theorem has_not_9_after_false_iff {r : radix} : ∀ u i j,
+  has_not_9_after u i j = false ↔
+  ∃ P, LPO_fst (is_9_after u (i + j)) = inl P.
+Proof.
+intros.
+unfold has_not_9_after.
+destruct (LPO_fst (is_9_after u (i + j))) as [H1| H1].
+-split; [ intros _ | easy ].
+ now exists H1.
+-split; [ easy | ].
+ intros (P & _).
+ destruct H1 as (k & _ & Q).
+ now rewrite P in Q.
+Qed.
 
 Theorem eq_not_normalized_normalized {r : radix} : ∀ x nx,
   nx = freal_normalize x
   → (∀ i, fd2n x i = fd2n nx i) ∨ freal_norm_not_norm_eq nx x.
 Proof.
 intros * Hnx.
-Search freal_normalize.
-
-destruct (LPO_fst (is_9_strict_after_all_9
+destruct (LPO_fst (ends_with_999 (freal x))) as [H1| H1].
+-right.
+ unfold freal_norm_not_norm_eq.
+ assert
+   (H2 : ∀ i, ∃ j,
+      (∀ k, k < j → has_not_9_after (freal x) i k = true) ∧
+      (∀ k, d2n (freal x) (i + j + k) = rad - 1)). {
+   intros.
+   specialize (H1 i).
+   apply ends_with_999_true_iff in H1.
+   destruct H1 as (j & (H1 & H2) & H3).
+   clear H3.
+   apply has_not_9_after_false_iff in H2.
+   destruct H2 as (H2 & _).
+   exists j.
+   split; [ easy | intros k ].
+   specialize (H2 k).
+   now apply is_9_after_true_iff in H2.
+ }
 
 ...
 intros * Hnx.
@@ -1267,83 +1361,6 @@ destruct (LPO_fst (is_9_strict_after (freal x) (i + j))) as [Hxi| Hxi].
  specialize (Hx (j + k + 1)).
  replace (i + (j + k + 1)) with (i + j + k + 1) in Hx by flia.
  easy.
-Qed.
-
-Definition has_not_9_after {r : radix} u i j :=
-  match LPO_fst (is_9_after u (i + j)) with
-  | inl _ => false
-  | inr _ => true
-  end.
-
-Definition ends_with_999 {r : radix} u i :=
-  match LPO_fst (has_not_9_after u i) with
-  | inl _ => false
-  | inr _ => true
-  end.
-
-Theorem has_not_9_after_true_iff {r : radix} : ∀ u i j,
-  has_not_9_after u i j = true ↔
-  ∃ k P, LPO_fst (is_9_after u (i + j)) = inr (exist _ k P).
-Proof.
-intros.
-unfold has_not_9_after.
-destruct (LPO_fst (is_9_after u (i + j))) as [H1| H1].
--split; [ easy | ].
- intros (k & (P & Q) & _).
- now rewrite H1 in Q.
--split; [ intros _ | easy ].
- destruct H1 as (k & Hk).
- now exists k, Hk.
-Qed.
-
-Theorem has_not_9_after_false_iff {r : radix} : ∀ u i j,
-  has_not_9_after u i j = false ↔
-  ∃ P, LPO_fst (is_9_after u (i + j)) = inl P.
-Proof.
-intros.
-unfold has_not_9_after.
-destruct (LPO_fst (is_9_after u (i + j))) as [H1| H1].
--split; [ intros _ | easy ].
- now exists H1.
--split; [ easy | ].
- intros (P & _).
- destruct H1 as (k & _ & Q).
- now rewrite P in Q.
-Qed.
-
-Theorem ends_with_999_true_iff {r : radix} : ∀ u i,
-  ends_with_999 u i = true ↔
-  ∃ j P, LPO_fst (has_not_9_after u i) = inr (exist _ j P).
-Proof.
-intros.
-split.
--intros H9.
- unfold ends_with_999 in H9.
- destruct (LPO_fst (has_not_9_after u i)) as [H1| H1]; [ easy | clear H9 ].
- destruct H1 as (j & Hjj).
- now exists j, Hjj.
--intros (j & ((P & Q) & _)).
- unfold ends_with_999.
- destruct (LPO_fst (has_not_9_after u i)) as [H1| H1]; [ | easy ].
- specialize (H1 j).
- now rewrite H1 in Q.
-Qed.
-
-Theorem ends_with_999_false_iff {r : radix} : ∀ u i,
-  ends_with_999 u i = false ↔
-  ∃ P, LPO_fst (has_not_9_after u i) = inl P.
-Proof.
-intros.
-split.
--intros H9.
- unfold ends_with_999 in H9.
- destruct (LPO_fst (has_not_9_after u i)) as [H1| H1]; [ clear H9 | easy ].
- now exists H1.
--intros (P & _).
- unfold ends_with_999.
- destruct (LPO_fst (has_not_9_after u i)) as [H1| H1]; [ easy | ].
- destruct H1 as (j & (_, Q)).
- now rewrite P in Q.
 Qed.
 
 Theorem A_ge_1_false_iff {r : radix} : ∀ i u k,
