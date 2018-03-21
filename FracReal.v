@@ -777,6 +777,9 @@ destruct (LPO_fst (ends_with_999 (freal x))) as [H1| H1].
    specialize (H2 k).
    now apply is_9_after_true_iff in H2.
  }
+ specialize (H2 0).
+ destruct H2 as (k & H2 & H3).
+ exists k.
 
 ...
 intros * Hnx.
