@@ -3762,6 +3762,15 @@ destruct H2 as [H2| [H2| H2]].
  1,2: unfold fd2n in Haft |-*; flia Haft H3 H4.
 Qed.
 
+Theorem normalized_not_999 {r : radix} : ∀ x,
+  ¬ (∃ i, ∀ j, fd2n (freal_normalize x) (i + j) = rad - 1).
+Proof.
+intros x (i, Hx).
+unfold fd2n, freal_normalize in Hx.
+unfold digit_sequence_normalize in Hx.
+simpl in Hx.
+...
+
 Theorem freal_eq_prop_add_norm_l {r : radix} : ∀ x y,
   freal_eq_prop {| freal := freal_add_to_seq (freal_normalize x) y |}
     {| freal := freal_add_to_seq x y |}.
