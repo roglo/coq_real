@@ -3720,12 +3720,30 @@ Theorem normalized_not_999 {r : radix} : ∀ x,
   ¬ (∃ i, ∀ j, fd2n (freal_normalize x) (i + j) = rad - 1).
 Proof.
 intros x.
+specialize radix_ge_2 as Hr.
 intros (i & Hi).
-...
-freal_normalized_eq_iff:
-  ∀ (r : radix) (x y : FracReal),
-  (∀ i : nat, freal (freal_normalize x) i = freal (freal_normalize y) i)
-  ↔ (∀ i : nat, freal x i = freal y i) ∨ freal_norm_not_norm_eq x y ∨ freal_norm_not_norm_eq y x
+specialize (Hi 0) as H1.
+rewrite Nat.add_0_r in H1.
+unfold fd2n, freal_normalize in H1; simpl in H1.
+unfold digit_sequence_normalize in H1.
+destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H2| H2].
+-specialize (is_9_strict_after_all_9 (freal x) i H2) as H3.
+ clear H2.
+ destruct (lt_dec (S (d2n (freal x) i)) rad) as [H2| H2].
+ +simpl in H1; clear H2.
+  assert (H2 : ∀ j, d2n (freal x) (i + 1 + j) = rad - 1). {
+    intros j; specialize (H3 j).
+    now replace (i + j + 1) with (i + 1 + j) in H3 by flia.
+  }
+  clear H3.
+  specialize (normalized_999 x (i + 1) H2 0) as H3.
+  rewrite Nat.add_0_r in H3.
+  specialize (Hi 1).
+  rewrite Hi in H3.
+  flia Hr H3.
+ +simpl in H1; flia Hr H1.
+-destruct H2 as (j & Hjj & Hj).
+ apply is_9_strict_after_false_iff in Hj.
 ...
 
 intros x.
