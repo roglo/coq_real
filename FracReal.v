@@ -763,7 +763,9 @@ destruct (LPO_fst (ends_with_999 (freal x))) as [H1| H1].
  unfold freal_norm_not_norm_eq.
  assert
    (H2 : ∀ i, ∃ j,
-      (∀ k, k < j → has_not_9_after (freal x) i k = true) ∧
+      (∀ k, k < j → ∃ l,
+       (∀ j, j < l → d2n (freal x) (i + k + j) = rad - 1) ∧
+       d2n (freal x) (i + k + l) ≠ rad - 1) ∧
       (∀ k, d2n (freal x) (i + j + k) = rad - 1)). {
    intros.
    specialize (H1 i).
@@ -773,14 +775,30 @@ destruct (LPO_fst (ends_with_999 (freal x))) as [H1| H1].
    apply has_not_9_after_false_iff in H2.
    destruct H2 as (H2 & _).
    exists j.
-   split; [ easy | intros k ].
-   specialize (H2 k).
-   now apply is_9_after_true_iff in H2.
+   split.
+   -intros k Hk.
+    specialize (H1 _ Hk) as H4.
+    apply has_not_9_after_true_iff in H4.
+    destruct H4 as (l & (H4 & H5) & H6).
+    clear H6.
+    apply is_9_after_false_iff in H5.
+    exists l.
+    split; [ | easy ].
+    intros m Hm.
+    specialize (H4 _ Hm).
+    now apply is_9_after_true_iff in H4.
+   -intros k.
+    specialize (H2 k).
+    now apply is_9_after_true_iff in H2.
  }
- specialize (H2 0).
- destruct H2 as (k & H2 & H3).
+ specialize (H2 0) as (k & H2 & H3).
  exists k.
-
+...
+  ============================
+  (∀ i : nat, i < k - 1 → freal nx i = freal x i)
+  ∧ (k = 0 ∨ fd2n nx (k - 1) = S (fd2n x (k - 1)))
+    ∧ (∀ i : nat, k ≤ i → fd2n nx i = 0)
+      ∧ (∀ i : nat, k ≤ i → fd2n x i = rad - 1)
 ...
 intros * Hnx.
 assert (H1 : ∀ i, freal (freal_normalize x) i = freal (freal_normalize nx) i). {
