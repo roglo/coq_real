@@ -753,48 +753,90 @@ destruct (LPO_fst (is_9_after u (i + j))) as [H1| H1].
  now rewrite P in Q.
 Qed.
 
-(*
-Theorem eq_not_normalized_normalized {r : radix} : ∀ x nx,
-  nx = freal_normalize x
-  → (∀ i, fd2n x i = fd2n nx i) ∨ freal_norm_not_norm_eq nx x.
+Theorem normalized_999 {r : radix} : ∀ x i,
+  (∀ j, fd2n x (i + j) = rad - 1)
+  → (∀ j, fd2n (freal_normalize x) (i + j) = 0).
 Proof.
-intros * Hnx.
-destruct (LPO_fst (ends_with_999 (freal x))) as [H1| H1].
--right.
- unfold freal_norm_not_norm_eq.
- assert
-   (H2 : ∀ i, ∃ j,
-      (∀ k, k < j → ∃ l,
-       (∀ j, j < l → d2n (freal x) (i + k + j) = rad - 1) ∧
-       d2n (freal x) (i + k + l) ≠ rad - 1) ∧
-      (∀ k, d2n (freal x) (i + j + k) = rad - 1)). {
-   intros.
-   specialize (H1 i).
-   apply ends_with_999_true_iff in H1.
-   destruct H1 as (j & (H1 & H2) & H3).
-   clear H3.
-   apply has_not_9_after_false_iff in H2.
-   destruct H2 as (H2 & _).
-   exists j.
-   split.
-   -intros k Hk.
-    specialize (H1 _ Hk) as H4.
-    apply has_not_9_after_true_iff in H4.
-    destruct H4 as (l & (H4 & H5) & H6).
-    clear H6.
-    apply is_9_after_false_iff in H5.
-    exists l.
-    split; [ | easy ].
-    intros m Hm.
-    specialize (H4 _ Hm).
-    now apply is_9_after_true_iff in H4.
-   -intros k.
-    specialize (H2 k).
-    now apply is_9_after_true_iff in H2.
- }
-admit.
--destruct H1 as (i & Hji & Hi).
-*)
+intros * Hx *.
+unfold freal_normalize; simpl.
+unfold digit_sequence_normalize.
+unfold fd2n; simpl.
+destruct (LPO_fst (is_9_strict_after (freal x) (i + j))) as [Hxi| Hxi].
+-destruct (lt_dec (S (d2n (freal x) (i + j))) rad) as [Hsx| Hsx]; [ | easy ].
+ exfalso.
+ unfold fd2n in Hx; unfold d2n in Hsx.
+ rewrite Hx in Hsx.
+ rewrite <- Nat.sub_succ_l in Hsx; [ | easy ].
+ rewrite Nat.sub_succ, Nat.sub_0_r in Hsx; flia Hsx.
+-destruct Hxi as (k & Hjj & Hj).
+ apply is_9_strict_after_false_iff in Hj.
+ unfold fd2n in Hx; unfold d2n in Hj.
+ specialize (Hx (j + k + 1)).
+ replace (i + (j + k + 1)) with (i + j + k + 1) in Hx by flia.
+ easy.
+Qed.
+
+Theorem normalized_not_999 {r : radix} : ∀ x,
+  ¬ (∃ i, ∀ j, fd2n (freal_normalize x) (i + j) = rad - 1).
+Proof.
+intros x.
+specialize radix_ge_2 as Hr.
+intros (i & Hi).
+assert (H1 : ∀ k, fd2n x (i + k) = rad - 1). {
+  destruct k.
+  -rewrite Nat.add_0_r.
+   specialize (Hi 0) as H1.
+   rewrite Nat.add_0_r in H1.
+   unfold fd2n, freal_normalize in H1; simpl in H1.
+   unfold digit_sequence_normalize in H1.
+   destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H2| H2]; [ | easy ].
+   specialize (is_9_strict_after_all_9 (freal x) i H2) as H3.
+   clear H2.
+   destruct (lt_dec (S (d2n (freal x) i)) rad) as [H2| H2].
+   +simpl in H1; clear H2.
+    assert (H2 : ∀ j, d2n (freal x) (i + 1 + j) = rad - 1). {
+      intros j; specialize (H3 j).
+      now replace (i + j + 1) with (i + 1 + j) in H3 by flia.
+    }
+    clear H3.
+    specialize (normalized_999 x (i + 1) H2 0) as H3.
+    rewrite Nat.add_0_r in H3.
+    specialize (Hi 1).
+    rewrite Hi in H3.
+    flia Hr H3.
+   +simpl in H1; flia Hr H1.
+  -specialize (Hi (k + 1)) as H1.
+   unfold fd2n, freal_normalize in H1; simpl in H1.
+   unfold digit_sequence_normalize in H1.
+   replace (i + (k + 1)) with (i + k + 1) in H1 by flia.
+   destruct (LPO_fst (is_9_strict_after (freal x) (i + k + 1))) as [H2| H2].
+   +specialize (is_9_strict_after_all_9 (freal x) (i + k + 1) H2) as H3.
+    clear H2.
+    destruct (lt_dec (S (d2n (freal x) (i + k + 1))) rad) as [H2| H2].
+    *simpl in H1.
+     clear H2.
+     assert (H2 : ∀ j, d2n (freal x) (i + k + 2 + j) = rad - 1). {
+       intros j; specialize (H3 j).
+       now replace (i + k + 1 + j + 1) with (i + k + 2 + j) in H3 by flia.
+     }
+     clear H3.
+     specialize (normalized_999 x (i + k + 2) H2 0) as H3.
+     rewrite Nat.add_0_r in H3.
+     specialize (Hi (k + 2)).
+     replace (i + (k + 2)) with (i + k + 2) in Hi by flia.
+     rewrite Hi in H3.
+     flia Hr H3.
+    *simpl in H1; flia Hr H1.
+   +now replace (i + k + 1) with (i + S k) in H1 by flia.
+}
+specialize (normalized_999 x i H1) as H2.
+specialize (Hi 0).
+specialize (H2 0).
+rewrite Hi in H2.
+flia Hr H2.
+Qed.
+
+...
 
 (* Addition, Multiplication *)
 
@@ -1341,29 +1383,6 @@ destruct (LPO_fst (is_9_strict_after (λ _ : nat, digit_0) i)) as [H| H].
  destruct rad as [| rr]; [ easy | ].
  destruct rr; [ flia Hr2 | easy ].
 -easy.
-Qed.
-
-Theorem normalized_999 {r : radix} : ∀ x i,
-  (∀ j, fd2n x (i + j) = rad - 1)
-  → (∀ j, fd2n (freal_normalize x) (i + j) = 0).
-Proof.
-intros * Hx *.
-unfold freal_normalize; simpl.
-unfold digit_sequence_normalize.
-unfold fd2n; simpl.
-destruct (LPO_fst (is_9_strict_after (freal x) (i + j))) as [Hxi| Hxi].
--destruct (lt_dec (S (d2n (freal x) (i + j))) rad) as [Hsx| Hsx]; [ | easy ].
- exfalso.
- unfold fd2n in Hx; unfold d2n in Hsx.
- rewrite Hx in Hsx.
- rewrite <- Nat.sub_succ_l in Hsx; [ | easy ].
- rewrite Nat.sub_succ, Nat.sub_0_r in Hsx; flia Hsx.
--destruct Hxi as (k & Hjj & Hj).
- apply is_9_strict_after_false_iff in Hj.
- unfold fd2n in Hx; unfold d2n in Hj.
- specialize (Hx (j + k + 1)).
- replace (i + (j + k + 1)) with (i + j + k + 1) in Hx by flia.
- easy.
 Qed.
 
 Theorem A_ge_1_false_iff {r : radix} : ∀ i u k,
@@ -3715,123 +3734,6 @@ destruct H2 as [H2| [H2| H2]].
  1,2: specialize (digit_lt_radix (freal y (i + j + k + 2))) as H4.
  1,2: unfold fd2n in Haft |-*; flia Haft H3 H4.
 Qed.
-
-Theorem normalized_not_999 {r : radix} : ∀ x,
-  ¬ (∃ i, ∀ j, fd2n (freal_normalize x) (i + j) = rad - 1).
-Proof.
-intros x.
-specialize radix_ge_2 as Hr.
-intros (i & Hi).
-specialize (Hi 0) as H1.
-rewrite Nat.add_0_r in H1.
-unfold fd2n, freal_normalize in H1; simpl in H1.
-unfold digit_sequence_normalize in H1.
-destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H2| H2].
--specialize (is_9_strict_after_all_9 (freal x) i H2) as H3.
- clear H2.
- destruct (lt_dec (S (d2n (freal x) i)) rad) as [H2| H2].
- +simpl in H1; clear H2.
-  assert (H2 : ∀ j, d2n (freal x) (i + 1 + j) = rad - 1). {
-    intros j; specialize (H3 j).
-    now replace (i + j + 1) with (i + 1 + j) in H3 by flia.
-  }
-  clear H3.
-  specialize (normalized_999 x (i + 1) H2 0) as H3.
-  rewrite Nat.add_0_r in H3.
-  specialize (Hi 1).
-  rewrite Hi in H3.
-  flia Hr H3.
- +simpl in H1; flia Hr H1.
--destruct H2 as (j & Hjj & Hj).
- apply is_9_strict_after_false_iff in Hj.
-(**)
- specialize (Hi j) as H2.
- unfold fd2n, freal_normalize in H2; simpl in H2.
- unfold digit_sequence_normalize in H2.
- destruct (LPO_fst (is_9_strict_after (freal x) (i + j))) as [H3| H3].
- +specialize (is_9_strict_after_all_9 (freal x) (i + j) H3) as H4.
-  clear H3.
-  destruct (lt_dec (S (d2n (freal x) (i + j))) rad) as [H3| H3].
-  *simpl in H2; clear H3.
-   assert (H3 : ∀ k, d2n (freal x) (i + j + 1 + k) = rad - 1). {
-     intros k; specialize (H4 k).
-     now replace (i + j + k + 1) with (i + j + 1 + k) in H4 by flia.
-   }
-   clear H4.
-   specialize (normalized_999 x (i + j + 1) H3 0) as H4.
-   rewrite Nat.add_0_r in H4.
-   specialize (Hi (j + 1)).
-   replace (i + (j + 1)) with (i + j + 1) in Hi by flia.
-   rewrite Hi in H4.
-   flia Hr H4.
-  *simpl in H2; flia Hr H2.
- +destruct H3 as (k & Hjk & Hk).
-  apply is_9_strict_after_false_iff in Hk.
-(**)
-  specialize (Hi (j + k)) as H3.
-...
-
-intros x.
-specialize radix_ge_2 as Hr.
-intros (i, Hx).
-assert (∀ j, fd2n x (i + j + 1) = rad - 1). {
-  intros j.
-  induction j as (j, IHj) using lt_wf_rec.
-  destruct j.
-  -rewrite Nat.add_0_r; clear IHj.
-   specialize (Hx 0) as H1.
-   rewrite Nat.add_0_r in H1.
-   unfold fd2n, freal_normalize, digit_sequence_normalize in H1.
-   simpl in H1.
-   destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H2| H2].
-   +specialize (H2 0) as H3.
-    apply is_9_strict_after_true_iff in H3.
-    now rewrite Nat.add_0_r in H3.
-   +destruct H2 as (k & Hjk & Hk).
-    apply is_9_strict_after_false_iff in Hk.
-    destruct k.
-    *rewrite Nat.add_0_r in Hk.
-     clear Hk Hjk.
-(* mouais, chais pas, faut peut-être que je retourne à la version
-   ci-dessous *)
-...
-
-intros x.
-specialize radix_ge_2 as Hr.
-intros (i, Hx).
-specialize (Hx 0) as H1.
-rewrite Nat.add_0_r in H1.
-unfold fd2n, freal_normalize in H1.
-unfold digit_sequence_normalize in H1.
-simpl in H1.
-destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H2| H2].
--destruct (lt_dec (S (d2n (freal x) i)) rad) as [H3| H3].
- +simpl in H1; clear H3.
-  specialize (is_9_strict_after_all_9 (freal x) i H2) as H3.
-  specialize (normalized_999 x (i + 1)) as H4.
-  assert (H : ∀ j, fd2n x (i + 1 + j) = rad - 1). {
-    intros j.
-    specialize (H3 j).
-    now rewrite Nat.add_shuffle0 in H3.
-  }
-  specialize (H4 H 0); clear H.
-  specialize (Hx 1).
-  rewrite Nat.add_0_r in H4.
-  rewrite Hx in H4.
-  flia Hr H4.
- +simpl in H1; flia H1 Hr.
--destruct H2 as (j & Hjj & Hj).
- apply is_9_strict_after_false_iff in Hj.
- specialize (Hx j) as H2.
- unfold fd2n, freal_normalize, digit_sequence_normalize in H2.
- simpl in H2.
- destruct (LPO_fst (is_9_strict_after (freal x) (i + j))) as [H3| H3].
- +specialize (H3 0).
-  apply is_9_strict_after_true_iff in H3.
-  now rewrite Nat.add_0_r in H3.
- +destruct H3 as (k & Hjk & Hk).
-  apply is_9_strict_after_false_iff in Hk.
-...
 
 Theorem freal_eq_prop_add_norm_l {r : radix} : ∀ x y,
   freal_eq_prop {| freal := freal_add_to_seq (freal_normalize x) y |}
