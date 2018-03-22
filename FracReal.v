@@ -783,51 +783,29 @@ intros x.
 specialize radix_ge_2 as Hr.
 intros (i & Hi).
 assert (H1 : ∀ k, fd2n x (i + k) = rad - 1). {
-  destruct k.
-  -rewrite Nat.add_0_r.
-   specialize (Hi 0) as H1.
-   rewrite Nat.add_0_r in H1.
-   unfold fd2n, freal_normalize in H1; simpl in H1.
-   unfold digit_sequence_normalize in H1.
-   destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H2| H2]; [ | easy ].
-   specialize (is_9_strict_after_all_9 (freal x) i H2) as H3.
+  intros.
+  specialize (Hi k) as H1.
+  unfold fd2n, freal_normalize in H1; simpl in H1.
+  unfold digit_sequence_normalize in H1.
+  destruct (LPO_fst (is_9_strict_after (freal x) (i + k))) as [H2| H2].
+  -specialize (is_9_strict_after_all_9 (freal x) (i + k) H2) as H3.
    clear H2.
-   destruct (lt_dec (S (d2n (freal x) i)) rad) as [H2| H2].
-   +simpl in H1; clear H2.
-    assert (H2 : ∀ j, d2n (freal x) (i + 1 + j) = rad - 1). {
+   destruct (lt_dec (S (d2n (freal x) (i + k))) rad) as [H2| H2].
+   +simpl in H1.
+    clear H2.
+    assert (H2 : ∀ j, d2n (freal x) (i + k + 1 + j) = rad - 1). {
       intros j; specialize (H3 j).
-      now replace (i + j + 1) with (i + 1 + j) in H3 by flia.
+      now replace (i + k + j + 1) with (i + k + 1 + j) in H3 by flia.
     }
     clear H3.
-    specialize (normalized_999 x (i + 1) H2 0) as H3.
+    specialize (normalized_999 x (i + k + 1) H2 0) as H3.
     rewrite Nat.add_0_r in H3.
-    specialize (Hi 1).
+    specialize (Hi (k + 1)).
+    replace (i + (k + 1)) with (i + k + 1) in Hi by flia.
     rewrite Hi in H3.
     flia Hr H3.
    +simpl in H1; flia Hr H1.
-  -specialize (Hi (k + 1)) as H1.
-   unfold fd2n, freal_normalize in H1; simpl in H1.
-   unfold digit_sequence_normalize in H1.
-   replace (i + (k + 1)) with (i + k + 1) in H1 by flia.
-   destruct (LPO_fst (is_9_strict_after (freal x) (i + k + 1))) as [H2| H2].
-   +specialize (is_9_strict_after_all_9 (freal x) (i + k + 1) H2) as H3.
-    clear H2.
-    destruct (lt_dec (S (d2n (freal x) (i + k + 1))) rad) as [H2| H2].
-    *simpl in H1.
-     clear H2.
-     assert (H2 : ∀ j, d2n (freal x) (i + k + 2 + j) = rad - 1). {
-       intros j; specialize (H3 j).
-       now replace (i + k + 1 + j + 1) with (i + k + 2 + j) in H3 by flia.
-     }
-     clear H3.
-     specialize (normalized_999 x (i + k + 2) H2 0) as H3.
-     rewrite Nat.add_0_r in H3.
-     specialize (Hi (k + 2)).
-     replace (i + (k + 2)) with (i + k + 2) in Hi by flia.
-     rewrite Hi in H3.
-     flia Hr H3.
-    *simpl in H1; flia Hr H1.
-   +now replace (i + k + 1) with (i + S k) in H1 by flia.
+  -easy.
 }
 specialize (normalized_999 x i H1) as H2.
 specialize (Hi 0).
@@ -835,8 +813,6 @@ specialize (H2 0).
 rewrite Hi in H2.
 flia Hr H2.
 Qed.
-
-...
 
 (* Addition, Multiplication *)
 
@@ -4123,50 +4099,18 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
            destruct Hu as [Hu| [(Hux, Huy)| Hu]].
            -specialize (Hu 0).
             now rewrite Nat.add_0_r in Hu.
-           -idtac.
-...
-           specialize (Hku 0) as H10; simpl in H10.
-           rewrite Nat.add_0_r, Nat.sub_0_r in H10.
-           rewrite <- Hn, <- Hs in H10.
-           specialize (Nat_ge_mul_pred_pow_pow rad) as H.
-           specialize (H (nA i n u mod s)).
-           specialize (H 1 (n - i - 2)).
-           remember (nA i n u mod s - (rad ^ 1 - 1) * rad ^ (n - i - 2)) as t.
-           specialize (H t).
-           replace (1 + (n - i - 2)) with (n - i - 1) in H by flia His.
-           rewrite <- Hs in H.
-           specialize (Nat.mod_upper_bound (nA i n u) s Hsz) as H11.
-           specialize (H H11 H10 (eq_refl _)) as (H12, H13).
-           rewrite Nat.mod_small in H13; [ | easy ].
-           assert (H14 : nA i n u / rad ^ (n - i - 2) = rad - 1). {
-             rewrite H13, Nat.add_comm, Nat.pow_1_r.
-             rewrite Nat.div_add; [ | now apply Nat.pow_nonzero ].
-             now rewrite Nat.div_small.
-           }
-           rewrite nA_split_first in H14; [ | easy ].
-           rewrite Nat.add_comm in H14.
-           rewrite Nat.div_add in H14; [ | now apply Nat.pow_nonzero ].
-...
-           rewrite Nat.div_small in H14.
-           -rewrite Nat.add_0_l in H14; unfold u in H14.
-            unfold freal_add_series, sequence_add in H14.
-            now rewrite <- Hnx in H14.
-           -replace (n - i - 2) with (n - S i - 1) by flia.
-Check nA_upper_bound.
-...
-            apply nA_upper_bound.
-...
-(*
-         unfold v in H4 at 2.
-         rewrite nA_freal_add_series in H4.
-         rewrite Nat.div_small in H4; [ | easy ].
-         rewrite Nat.add_0_r in H4.
-*)
-         (* shit, the reasoning below does not work *)
-...
-         (* H4 implies that x(i)+y(i) ≠ 9
-            therefore nx(i) ≠ x(i)
-            therefore x after i is 999... → contradicted by Hj *)
+           -specialize (normalized_not_999 x) as H.
+            exfalso; apply H; clear H; rewrite <- Hnx.
+            exists (i + 1); intros k.
+            replace (i + 1 + k) with (i + k + 1) by flia.
+            apply Hux.
+           -destruct Hu as (k & H10 & H11 & Hux & Huy).
+            specialize (normalized_not_999 x) as H.
+            exfalso; apply H; clear H; rewrite <- Hnx.
+            exists (i + k + 2); intros l.
+            replace (i + k + 2 + l) with (i + k + l + 2) by flia.
+            apply Hux.
+         }
 ...
          unfold v in Hp.
          rewrite nA_freal_add_series in Hp.
