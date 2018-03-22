@@ -753,6 +753,7 @@ destruct (LPO_fst (is_9_after u (i + j))) as [H1| H1].
  now rewrite P in Q.
 Qed.
 
+(*
 Theorem eq_not_normalized_normalized {r : radix} : ∀ x nx,
   nx = freal_normalize x
   → (∀ i, fd2n x i = fd2n nx i) ∨ freal_norm_not_norm_eq nx x.
@@ -791,27 +792,9 @@ destruct (LPO_fst (ends_with_999 (freal x))) as [H1| H1].
     specialize (H2 k).
     now apply is_9_after_true_iff in H2.
  }
-
-...
-  ============================
-  (∀ i : nat, i < k - 1 → freal nx i = freal x i)
-  ∧ (k = 0 ∨ fd2n nx (k - 1) = S (fd2n x (k - 1)))
-    ∧ (∀ i : nat, k ≤ i → fd2n nx i = 0)
-      ∧ (∀ i : nat, k ≤ i → fd2n x i = rad - 1)
-...
-intros * Hnx.
-assert (H1 : ∀ i, freal (freal_normalize x) i = freal (freal_normalize nx) i). {
-  intros; rewrite <- Hnx.
-  unfold freal_normalize, digit_sequence_normalize; simpl.
-  destruct (LPO_fst (is_9_strict_after (freal nx) i)) as [H1| H1].
-  -specialize (is_9_strict_after_all_9 _ _ H1) as H2.
-   destruct (lt_dec (S (d2n (freal nx) i)) rad) as [H3| H3].
-   +
-...
-specialize (proj1 (freal_normalized_eq_iff x nx)) as H1.
-Search freal_normalize.
-
-...
+admit.
+-destruct H1 as (i & Hji & Hi).
+*)
 
 (* Addition, Multiplication *)
 
@@ -3847,6 +3830,7 @@ Theorem normalized_not_999 {r : radix} : ∀ x,
   ¬ (∃ i, ∀ j, fd2n (freal_normalize x) (i + j) = rad - 1).
 Proof.
 intros x.
+intros (i & Hi).
 ...
 freal_normalized_eq_iff:
   ∀ (r : radix) (x y : FracReal),
