@@ -764,10 +764,12 @@ destruct (LPO_fst (ends_with_999 (freal x))) as [H1| H1].
  assert
    (H2 : ∀ i, ∃ j,
       (∀ k, k < j → ∃ l,
+       (l < k) ∧ (* à voir *)
        (∀ j, j < l → d2n (freal x) (i + k + j) = rad - 1) ∧
        d2n (freal x) (i + k + l) ≠ rad - 1) ∧
       (∀ k, d2n (freal x) (i + j + k) = rad - 1)). {
    intros.
+...
    specialize (H1 i).
    apply ends_with_999_true_iff in H1.
    destruct H1 as (j & (H1 & H2) & H3).
