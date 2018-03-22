@@ -793,6 +793,16 @@ destruct (LPO_fst (ends_with_999 (freal x))) as [H1| H1].
  }
  specialize (H2 0) as (k & H2 & H3).
  exists k.
+destruct k.
+clear H2.
+Focus 2.
+specialize (H2 0 (Nat.lt_0_succ k)) as (l & H2 & H4).
+assert (H5 : l ≤ k). {
+  apply Nat.nlt_ge; intros H.
+  specialize (H3 (l - S k)).
+  replace (0 + S k + (l - S k)) with l in H3 by flia H.
+  easy.
+}
 ...
   ============================
   (∀ i : nat, i < k - 1 → freal nx i = freal x i)
