@@ -3744,6 +3744,31 @@ destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H2| H2].
  +simpl in H1; flia Hr H1.
 -destruct H2 as (j & Hjj & Hj).
  apply is_9_strict_after_false_iff in Hj.
+(**)
+ specialize (Hi j) as H2.
+ unfold fd2n, freal_normalize in H2; simpl in H2.
+ unfold digit_sequence_normalize in H2.
+ destruct (LPO_fst (is_9_strict_after (freal x) (i + j))) as [H3| H3].
+ +specialize (is_9_strict_after_all_9 (freal x) (i + j) H3) as H4.
+  clear H3.
+  destruct (lt_dec (S (d2n (freal x) (i + j))) rad) as [H3| H3].
+  *simpl in H2; clear H3.
+   assert (H3 : ∀ k, d2n (freal x) (i + j + 1 + k) = rad - 1). {
+     intros k; specialize (H4 k).
+     now replace (i + j + k + 1) with (i + j + 1 + k) in H4 by flia.
+   }
+   clear H4.
+   specialize (normalized_999 x (i + j + 1) H3 0) as H4.
+   rewrite Nat.add_0_r in H4.
+   specialize (Hi (j + 1)).
+   replace (i + (j + 1)) with (i + j + 1) in Hi by flia.
+   rewrite Hi in H4.
+   flia Hr H4.
+  *simpl in H2; flia Hr H2.
+ +destruct H3 as (k & Hjk & Hk).
+  apply is_9_strict_after_false_iff in Hk.
+(**)
+  specialize (Hi (j + k)) as H3.
 ...
 
 intros x.
