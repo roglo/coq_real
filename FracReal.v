@@ -4094,6 +4094,10 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
         simpl; rewrite Nat.mod_1_l; [ | easy ].
         destruct (lt_dec (nA i n1 u) s1) as [H9| H9].
       ***exfalso.
+         destruct Hu as [Hu| [(Hux, Huy)| Hu]].
+      ----idtac.
+...
+
          (* Hku(0) implies that nx(i+1)+y(i+1) = 9 *)
          assert (H5 : fd2n nx (i + 1) + fd2n y (i + 1) = rad - 1). {
            destruct Hu as [Hu| [(Hux, Huy)| Hu]].
