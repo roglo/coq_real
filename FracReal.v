@@ -764,12 +764,10 @@ destruct (LPO_fst (ends_with_999 (freal x))) as [H1| H1].
  assert
    (H2 : ∀ i, ∃ j,
       (∀ k, k < j → ∃ l,
-       (l < k) ∧ (* à voir *)
        (∀ j, j < l → d2n (freal x) (i + k + j) = rad - 1) ∧
        d2n (freal x) (i + k + l) ≠ rad - 1) ∧
       (∀ k, d2n (freal x) (i + j + k) = rad - 1)). {
    intros.
-...
    specialize (H1 i).
    apply ends_with_999_true_iff in H1.
    destruct H1 as (j & (H1 & H2) & H3).
@@ -793,18 +791,7 @@ destruct (LPO_fst (ends_with_999 (freal x))) as [H1| H1].
     specialize (H2 k).
     now apply is_9_after_true_iff in H2.
  }
- specialize (H2 0) as (k & H2 & H3).
- exists k.
-destruct k.
-clear H2.
-Focus 2.
-specialize (H2 0 (Nat.lt_0_succ k)) as (l & H2 & H4).
-assert (H5 : l ≤ k). {
-  apply Nat.nlt_ge; intros H.
-  specialize (H3 (l - S k)).
-  replace (0 + S k + (l - S k)) with l in H3 by flia H.
-  easy.
-}
+
 ...
   ============================
   (∀ i : nat, i < k - 1 → freal nx i = freal x i)
