@@ -2043,53 +2043,6 @@ destruct m.
  apply Nat.mul_le_mono_r, Hur.
 Qed.
 
-(*
-Theorem div_div_add_add : ∀ a b c d, d ≠ 0 →
-  a / d = b / d → (a + c) / d = (b + c) / d.
-Proof.
-intros * Hd Hab.
-specialize (Nat.div_mod a d Hd) as H1.
-specialize (Nat.div_mod b d Hd) as H2.
-specialize (Nat.div_mod (a + c) d Hd) as H3.
-specialize (Nat.div_mod (b + c) d Hd) as H4.
-rewrite <- Hab in H2.
-remember (a / d) as q eqn:Hq.
-remember ((a + c) / d) as q3 eqn:Hq3.
-remember ((b + c) / d) as q4 eqn:Hq4.
-move q3 before q; move q4 before q3.
-move Hq3 before Hab; move Hq4 before Hq3.
-remember (a mod d) as r1 eqn:Hr1.
-remember (b mod d) as r2 eqn:Hr2.
-remember ((a + c) mod d) as r3 eqn:Hr3.
-remember ((b + c) mod d) as r4 eqn:Hr4.
-move r1 before q4; move r2 before r1.
-move r3 before r2; move r4 before r3.
-move Hr2 before Hr1.
-move Hr3 before Hr2.
-move Hr4 before Hr3.
-specialize (Nat.mod_upper_bound a d Hd) as H5; rewrite <- Hr1 in H5.
-specialize (Nat.mod_upper_bound b d Hd) as H6; rewrite <- Hr2 in H6.
-specialize (Nat.mod_upper_bound (a + c) d Hd) as H7; rewrite <- Hr3 in H7.
-specialize (Nat.mod_upper_bound (b + c) d Hd) as H8; rewrite <- Hr4 in H8.
-destruct (le_dec r1 r3) as [L1| L1].
--assert (M1 : c + d * q = d * q3 + (r3 - r1)) by lia.
- destruct (le_dec r2 r4) as [L2| L2].
- +assert (M2 : c + d * q = d * q4 + (r4 - r2)) by lia.
-  move L2 before L1.
-  rewrite M1 in M2.
-  assert (Hr31 : r3 - r1 < d) by lia.
-  assert (Hr42 : r4 - r2 < d) by lia.
-  now specialize (Nat.div_mod_unique _ _ _ _ _ Hr31 Hr42 M2) as (Hq31, Hq42).
- +apply Nat.nle_gt in L2.
-  assert (M2 : c + d * q + (r2 - r4) = d * q4) by flia H2 H4 L2.
-...
-  assert (r3 - r1 = r2 - r4).
-...
-  rewrite M1 in M2.
-  assert (a + b = d * q3 + d * q4 + r3 + r4) by lia.
-...
-*)
-
 Theorem Nat_mul_succ_le_eucl_div : ∀ a b c r,
   b * c ≤ a < b * (c + 1)
   → r = a - b * c
@@ -2807,69 +2760,6 @@ apply le_lt_trans with (m := (rad - 3) * rad ^ s + 2 * (rad ^ s - 1)).
   apply Nat.mul_le_mono_l.
   now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
 Qed.
-
-(*
-Theorem new_nA_upper_bound_for_add_4 {r : radix} : ∀ u i j n,
-  (∀ k : nat, u k ≤ 2 * (rad - 1))
-  → u (i + 1) = rad - 1
-  → (∀ k : nat, k < j → u (i + k + 1) = rad - 1)
-  → u (i + j + 1) < rad - 2
-  → i + j + 1 ≤ n - 1
-  → nA i n u < (rad ^ (j + 1) - 1) * rad ^ (n - i - 1 - (j + 1)).
-Proof.
-intros * Hur H1 H2 H3 His.
-rewrite nA_split with (e := i + j + 2); [ | flia His ].
-replace (n - i - 1 - (j + 1)) with (n - (i + j + 2)) by flia.
-remember (i + j + 2) as k eqn:Hk.
-move k before j.
-(*
-           k-1
- i+1      i+j+1
-  9 9 9 9 9≤7 0 0 0 0 0            j+1        n-k
-  <---------> <------->        <---------> <------->
-      j+1        n-k       <?  9 9 9 9 9 9 0 0 0 0 0
-
-+            1818181818                  ||
-
-                               9 9 9 9 9 7 0 0 0 0 1
-                             +           1 9 9 9 9 9
-*)
-replace ((rad ^ (j + 1) - 1) * rad ^ (n - k)) with
-  ((rad ^ (j + 1) - 3) * rad ^ (n - k) + 1 + (2 * rad ^ (n - k) - 1)).
--apply Nat.add_lt_le_mono.
-+rewrite Nat.add_1_r.
- apply -> Nat.succ_le_mono.
- apply Nat.mul_le_mono_r.
- replace (j + 1) with (k - i - 1) by flia Hk.
-...
-nA_dig_seq_ub:
-  ∀ (r : radix) (u : nat → nat) (n i : nat),
-  (∀ j : nat, i + 1 ≤ j ≤ n - 1 → u j < rad) → i + 1 ≤ n - 1 → nA i n u < rad ^ (n - i - 1)
-all_le_nA_le:
-  ∀ (r : radix) (u : nat → nat) (a : nat),
-  (∀ j : nat, u j ≤ a * (rad - 1)) → ∀ i n : nat, nA i n u ≤ a * (rad ^ (n - i - 1) - 1)
-...
-(* this is ok for - *)
--remember (rad ^ (j + 1)) as x eqn:Hx.
- replace (x - 3) with (x - 1 - 2) by flia.
- rewrite Nat.mul_sub_distr_r.
- rewrite Nat.add_sub_assoc.
- +rewrite Nat.add_sub_swap; [ | flia ].
-  rewrite Nat.add_sub.
-  rewrite <- Nat.add_sub_swap; [ now rewrite Nat.add_sub | ].
-  apply Nat.mul_le_mono_r.
-  apply Nat.le_add_le_sub_r; simpl.
-  subst x; rewrite Nat.add_1_r.
-  destruct rad as [| rr]; [ easy | ].
-  destruct rr; [ easy | ].
-  destruct rr; [ easy | ].
-  replace 3 with (3 ^ 1) by apply Nat.pow_1_r.
-  apply Nat.pow_le_mono; [ easy | flia | flia ].
- +replace 1 with (1 * 1) at 1 by flia.
-  apply Nat.mul_le_mono; [ flia | ].
-  now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-...
-*)
 
 Theorem nA_upper_bound_for_add_4 {r : radix} : ∀ u i j n,
   (∀ k : nat, u k ≤ 2 * (rad - 1))
