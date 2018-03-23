@@ -845,6 +845,8 @@ i.e. u(i) is followed by
 - or a finite number of 9, an 8, and an infinity of 18
 If x is normalized, we have only the first case:
   ∀ k, fd2n x (i + k + 1) + fd2n y (i + k + 1) = rad - 1
+i.e.
+  ∀ k, u (i + k + 1) = rad - 1
 *)
 
 Definition numbers_to_digits {r : radix} u i :=
