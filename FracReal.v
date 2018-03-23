@@ -821,34 +821,6 @@ Definition A_ge_1 {r : radix} i u k :=
   else
     true.
 
-...
-
-(* question: is it "d" or "d+1" in the first case below? *)
-(* in this first case, I guess that u is ending with an infinity of 9 *)
-(* with "d+1", I assume that I convert it into the infinity of 0, like for
-   a normalization *)
-(* with "d" I don't normalizate *)
-(* if u is the result of an addition, we proved below:
-Theorem A_ge_1_add_series_all_true_if {r : radix} : ∀ x y i,
-  (∀ k, A_ge_1 i (freal_add_series x y) k = true)
-  → (∀ k, fd2n x (i + k + 1) + fd2n y (i + k + 1) = rad - 1) ∨
-     ((∀ k, fd2n x (i + k + 1) = rad - 1) ∧
-       (∀ k, fd2n y (i + k + 1) = rad - 1)) ∨
-     (∃ j,
-       (∀ k, k < j → fd2n x (i + k + 1) + fd2n y (i + k + 1) = rad - 1) ∧
-       fd2n x (i + j + 1) + fd2n y (i + j + 1) = rad - 2 ∧
-       (∀ k, fd2n x (i + j + k + 2) = rad - 1) ∧
-       (∀ k, fd2n y (i + j + k + 2) = rad - 1)).
-i.e. u(i) is followed by
-- either an infinity of 9
-- or by an infinity of 18
-- or a finite number of 9, an 8, and an infinity of 18
-If x is normalized, we have only the first case:
-  ∀ k, fd2n x (i + k + 1) + fd2n y (i + k + 1) = rad - 1
-i.e.
-  ∀ k, u (i + k + 1) = rad - 1
-*)
-
 Definition numbers_to_digits {r : radix} u i :=
   match LPO_fst (A_ge_1 i u) with
   | inl _ =>
@@ -4112,6 +4084,7 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
           replace (i + k + l + 2 + q) with (i + l + (k + q) + 2) by flia.
           apply Hux.
        }
+       clear Hu; rename H5 into Hu.
        destruct (lt_dec (nA i n u) s) as [H8| H8].
      +++rewrite Nat.div_small; [ | easy ].
         simpl; rewrite Nat.mod_1_l; [ | easy ].
