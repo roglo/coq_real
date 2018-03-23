@@ -4068,27 +4068,29 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
        apply is_9_strict_after_false_iff in Hj.
        do 2 rewrite <- nA_freal_add_series.
        fold u v.
+       assert (H5 : ∀ k, fd2n nx (i + k + 1) + fd2n y (i + k + 1) = rad - 1). {
+         intros k.
+         destruct Hu as [Hu| [(Hux, Huy)| Hu]].
+         -now specialize (Hu k).
+         -specialize (normalized_not_999 x) as H.
+          exfalso; apply H; clear H; rewrite <- Hnx.
+          exists (i + 1); intros l.
+          replace (i + 1 + l) with (i + l + 1) by flia.
+          apply Hux.
+         -destruct Hu as (l & H10 & H11 & Hux & Huy).
+          specialize (normalized_not_999 x) as H.
+          exfalso; apply H; clear H; rewrite <- Hnx.
+          exists (i + k + l + 2); intros q.
+          replace (i + k + l + 2 + q) with (i + l + (k + q) + 2) by flia.
+          apply Hux.
+       }
        destruct (lt_dec (nA i n u) s) as [H8| H8].
      +++rewrite Nat.div_small; [ | easy ].
         simpl; rewrite Nat.mod_1_l; [ | easy ].
+        rewrite Nat.div_small in H3; [ | easy ].
+        rewrite Nat.add_0_r in H3.
         destruct (lt_dec (nA i n1 u) s1) as [H9| H9].
       ***exfalso.
-         assert (H5 : ∀ k, fd2n nx (i + k + 1) + fd2n y (i + k + 1) = rad - 1). {
-           intros k.
-           destruct Hu as [Hu| [(Hux, Huy)| Hu]].
-           -now specialize (Hu k).
-           -specialize (normalized_not_999 x) as H.
-            exfalso; apply H; clear H; rewrite <- Hnx.
-            exists (i + 1); intros l.
-            replace (i + 1 + l) with (i + l + 1) by flia.
-            apply Hux.
-           -destruct Hu as (l & H10 & H11 & Hux & Huy).
-            specialize (normalized_not_999 x) as H.
-            exfalso; apply H; clear H; rewrite <- Hnx.
-            exists (i + k + l + 2); intros q.
-            replace (i + k + l + 2 + q) with (i + l + (k + q) + 2) by flia.
-            apply Hux.
-         }
 ...
          unfold v in Hp.
          rewrite nA_freal_add_series in Hp.
