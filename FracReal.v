@@ -3277,6 +3277,14 @@ rewrite Nat.add_comm, Nat.mul_comm in H1.
 now apply Nat.add_le_mono_l in H1.
 Qed.
 
+Theorem toto {r : radix} : ∀ u i,
+  (∀ k, A_ge_1 i u k = true)
+  → (∀ n k, A_ge_1 (i + n) u k = true).
+Proof.
+intros * Hu *.
+apply A_ge_1_true_iff in Hu.
+...
+
 Theorem A_ge_1_add_all_true_if {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
   → (∀ k, A_ge_1 i u k = true)
@@ -3489,6 +3497,7 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
   intros k; move k before j.
   specialize (A_ge_1_add_8_eq u (i + j) Hur H4 k) as H2.
   assert (H5 : A_ge_1 (i + j) u (k + 1) = true). {
+    clear - Hr Hur Hu H1 H3 H4.
     specialize (Hu (j + k + 1)) as H5.
     apply A_ge_1_true_iff in H5.
     apply A_ge_1_true_iff.
@@ -3611,6 +3620,7 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
  }
  specialize (H2 H k); clear H.
  assert (H : A_ge_1 i v (k + 1) = true). {
+   clear - Hr Hu H1.
    specialize (Hu (k + 1)) as H3.
    apply A_ge_1_true_iff in H3.
    apply A_ge_1_true_iff.
@@ -3689,6 +3699,32 @@ destruct H2 as [H2| [H2| H2]].
  1,2: specialize (digit_lt_radix (freal y (i + j + k + 2))) as H4.
  1,2: unfold fd2n in Haft |-*; flia Haft H3 H4.
 Qed.
+
+Theorem glop {r : radix} : ∀ x y i,
+  (∀ k, d2n (numbers_to_digits (freal_add_series x y)) (i + k + 1) = rad - 1)
+  → (∀ k : nat, fd2n x (i + k + 1) + fd2n y (i + k + 1) = rad - 1) ∨
+     (∀ k : nat, fd2n x (i + k + 1) = rad - 1) ∧ (∀ k : nat, fd2n y (i + k + 1) = rad - 1) ∨
+     (∃ j : nat,
+       (∀ k, k < j → fd2n x (i + k + 1) + fd2n y (i + k + 1) = rad - 1) ∧
+       fd2n x (i + j + 1) + fd2n y (i + j + 1) = rad - 2 ∧
+       (∀ k, fd2n x (i + j + k + 2) = rad - 1) ∧
+       (∀ k : nat, fd2n y (i + j + k + 2) = rad - 1)).
+Proof.
+intros * Hxy.
+assert (H1 : ∀ k, A_ge_1 i (freal_add_series x y) k = true). {
+  intros k.
+  move k before i.
+  set (u := freal_add_series x y) in Hxy |-*.
+  specialize (Hxy k) as H1.
+  unfold d2n, numbers_to_digits in H1.
+  destruct (LPO_fst (A_ge_1 (i + k + 1) u)) as [H2| H2].
+  -simpl in H1.
+Search (_ → A_ge_1 _ _ _ = true).
+...
+
+}
+specialize (A_ge_1_add_series_all_true_if x y i H1) as H2.
+...
 
 Theorem freal_eq_prop_add_norm_l {r : radix} : ∀ x y,
   freal_eq_prop {| freal := freal_add_to_seq (freal_normalize x) y |}
