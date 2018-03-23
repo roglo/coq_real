@@ -3279,6 +3279,20 @@ Qed.
 
 Theorem toto {r : radix} : ∀ u i,
   (∀ k, A_ge_1 i u k = true)
+  → (∀ k, u (i + k + 1) = rad - 1) ∨
+     (∀ k, u (i + k + 1) = 2 * (rad - 1)) ∨
+     (∃ j,
+       (∀ k, k < j → u (i + k + 1) = rad - 1) ∧
+       u (i + j + 1) = rad - 2 ∧
+       (∀ k, u (i + j + k + 2) = 2 * (rad - 1))).
+Proof.
+intros * Hu.
+specialize radix_ge_2 as Hr; move Hr before i.
+specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
+...
+
+Theorem toto {r : radix} : ∀ u i,
+  (∀ k, A_ge_1 i u k = true)
   → (∀ n k, A_ge_1 (i + n) u k = true).
 Proof.
 intros * Hu *.
