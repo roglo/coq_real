@@ -4092,6 +4092,16 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
         rewrite Nat.add_0_r in H3.
         destruct (lt_dec (nA i n1 u) s1) as [H9| H9].
       ***exfalso.
+         destruct (lt_dec (nA i n1 v) s1) as [H10| H10].
+      ----rewrite Nat.mod_small in Hp; [ | easy ].
+          rewrite Nat.div_small in H4; [ | easy ].
+          rewrite Nat.add_0_r in H4.
+(*
+  Hp : nA i n1 v < (rad ^ S p - 1) * rad ^ (n1 - i - p - 2)
+i.e
+  nA i n1 v < 999...999000...000
+     with (p+1) 9s and (n1 - i - p - 2) 0s
+*)
 ...
          unfold v in Hp.
          rewrite nA_freal_add_series in Hp.
