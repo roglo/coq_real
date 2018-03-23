@@ -655,27 +655,6 @@ split; intros Hxy.
  +now intros; symmetry; apply freal_norm_not_norm_eq_normalize_eq.
 Qed.
 
-(*
-Definition normalized {r : radix} x :=
-  ∀ i, fd2n (freal_normalize x) i = fd2n x i.
-
-Theorem normalized_dec {r : radix} :
-  ∀ x, { normalized x } + { ¬ normalized x }.
-Proof.
-intros.
-set (y := freal_normalize x).
-destruct (LPO_fst (has_same_digits x y)) as [H1| H1].
--left; unfold normalized; intros i.
- unfold fd2n, freal_normalize, digit_sequence_normalize; simpl.
- destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H2| H2].
- +destruct (lt_dec (S (d2n (freal x) i)) rad) as [H3| H3].
-  *exfalso.
-   specialize (H1 i) as H4.
-   unfold has_same_digits in H4.
-   destruct (Nat.eq_dec (fd2n x i) (fd2n y i)) as [H5| ]; [ | easy ].
-   clear H4.
-*)
-
 Definition has_not_9_after {r : radix} u i j :=
   match LPO_fst (is_9_after u (i + j)) with
   | inl _ => false
