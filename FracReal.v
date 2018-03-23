@@ -4073,36 +4073,20 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
         simpl; rewrite Nat.mod_1_l; [ | easy ].
         destruct (lt_dec (nA i n1 u) s1) as [H9| H9].
       ***exfalso.
-specialize (H2 0) as H10.
-rewrite Nat.add_0_r in H10.
-unfold d2n, numbers_to_digits in H10.
-destruct (LPO_fst (A_ge_1 (i + 1) v)) as [H11| H11].
-simpl in H10.
-     specialize (A_ge_1_add_series_all_true_if _ _ _ H11) as Hv.
-...
-
-         destruct Hu as [Hu| [(Hux, Huy)| Hu]].
-      ----idtac.
-
-...
-  H2 : ∀ k : nat, d2n (numbers_to_digits v) (i + k + 1) = rad - 1
-...
-
-         (* Hku(0) implies that nx(i+1)+y(i+1) = 9 *)
-         assert (H5 : fd2n nx (i + 1) + fd2n y (i + 1) = rad - 1). {
+         assert (H5 : ∀ k, fd2n nx (i + k + 1) + fd2n y (i + k + 1) = rad - 1). {
+           intros k.
            destruct Hu as [Hu| [(Hux, Huy)| Hu]].
-           -specialize (Hu 0).
-            now rewrite Nat.add_0_r in Hu.
+           -now specialize (Hu k).
            -specialize (normalized_not_999 x) as H.
             exfalso; apply H; clear H; rewrite <- Hnx.
-            exists (i + 1); intros k.
-            replace (i + 1 + k) with (i + k + 1) by flia.
+            exists (i + 1); intros l.
+            replace (i + 1 + l) with (i + l + 1) by flia.
             apply Hux.
-           -destruct Hu as (k & H10 & H11 & Hux & Huy).
+           -destruct Hu as (l & H10 & H11 & Hux & Huy).
             specialize (normalized_not_999 x) as H.
             exfalso; apply H; clear H; rewrite <- Hnx.
-            exists (i + k + 2); intros l.
-            replace (i + k + 2 + l) with (i + k + l + 2) by flia.
+            exists (i + k + l + 2); intros q.
+            replace (i + k + l + 2 + q) with (i + l + (k + q) + 2) by flia.
             apply Hux.
          }
 ...
