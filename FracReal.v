@@ -3230,8 +3230,6 @@ replace (2 + (s - 2)) with s by flia Hs Hin.
 apply Nat.le_sub_l.
 Qed.
 
-(* ... *)
-
 Theorem A_ge_1_add_8_eq {r : radix} : ∀ u i,
   (∀ k, u (i + k + 2) ≤ 2 * (rad - 1))
   → u (i + 1) = rad - 2
