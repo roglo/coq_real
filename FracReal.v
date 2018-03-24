@@ -4187,31 +4187,6 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
       ----rewrite Nat.mod_small in Hp; [ | easy ].
           rewrite Nat.div_small in H4; [ | easy ].
           rewrite Nat.add_0_r in H4.
-
-Theorem toto {r : radix} : ∀ u i,
-  (∀ k, d2n (numbers_to_digits u) (i + k + 1) = rad - 1)
-  → ∀ k : nat, A_ge_1 (i + k + 1) u 0 = true.
-Proof.
-intros * Hnd *.
-specialize (Hnd k) as H1.
-unfold d2n, numbers_to_digits in H1.
-destruct (LPO_fst (A_ge_1 (i + k + 1) u)) as [H2| H2].
--apply H2.
--destruct H2 as (j & Hjj & Hj).
- simpl in H1.
- destruct j.
- +clear Hjj; exfalso.
-  apply A_ge_1_false_iff in Hj.
-  rewrite Nat.add_0_r in Hj, H1.
-  rewrite Nat.sub_0_r in Hj.
-  rewrite Nat.pow_1_r in Hj.
-  remember (rad * (i + k + 1 + 3)) as n eqn:Hn.
-  remember (i + k + 1) as m eqn:Hm.
-  replace (n - m - 2) with (n - m - 1 - 1) in Hj by flia.
-  remember (n - m - 1) as s eqn:Hs.
-...
- +now specialize (Hjj 0 (Nat.lt_0_succ j)).
-...
 (*
   Hp : nA i n1 v < (rad ^ S p - 1) * rad ^ (n1 - i - p - 2)
 i.e
