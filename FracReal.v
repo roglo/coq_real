@@ -2858,7 +2858,7 @@ Theorem nA_upper_bound_for_add_5 {r : radix} : ∀ u i k n,
   → u (i + 1) = rad - 2
   → u (i + k + 2) < 2 * (rad - 1)
   → i + k + 3 ≤ n - 1
-  →nA i n u < (rad ^ (k + 2) - 1) * rad ^ (n - i - 1 - (k + 2)).
+  → nA i n u < (rad ^ (k + 2) - 1) * rad ^ (n - i - 1 - (k + 2)).
 Proof.
 intros * Hur Hui H2 Hin.
 remember (n - i - 1) as s eqn:Hs.
@@ -2934,6 +2934,68 @@ replace ((rad ^ (k + 2) - 1) * rad ^ (s - (k + 2))) with
  apply Nat.mul_le_mono; [ easy | ].
  now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
 Qed.
+
+Theorem A_ge_1_add_first_ge {r : radix} : ∀ u i,
+  (∀ k, i + 1 < k < rad * (i + 3) → u k ≤ 2 * (rad - 1))
+  → (∀ k, d2n (numbers_to_digits u) (i + k) = rad - 1)
+  → u (i + 1) ≥ rad - 2.
+Proof.
+intros * Hur Hu.
+specialize (Hu 0) as H1.
+rewrite Nat.add_0_r in H1.
+unfold d2n, numbers_to_digits in H1.
+destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
+-simpl in H1.
+ specialize (H2 0).
+ revert H2.
+ apply Decidable.contrapositive; [ apply Nat.le_decidable | ].
+ intros H2; apply Nat.nle_gt in H2.
+ apply Bool.not_true_iff_false.
+ apply A_ge_1_false_iff.
+ rewrite Nat.add_0_r, Nat.sub_0_r, Nat.pow_1_r.
+ remember (rad * (i + 3)) as n eqn:Hn.
+ remember (n - i - 1) as s eqn:Hs.
+ move s before n.
+ assert (Hin : i + 2 ≤ n - 1). {
+   rewrite Hn.
+   specialize radix_ne_0 as H.
+   destruct rad; [ easy | simpl; flia ].
+ }
+ specialize (nA_upper_bound_for_add_3 u i n Hur H2 Hin) as H3.
+ rewrite Nat.mod_small; [ easy | ].
+ eapply lt_le_trans; [ apply H3 | ].
+ replace (n - i - 2) with (s - 1) by flia Hs.
+ rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+ replace rad with (rad ^ 1) at 1 by apply Nat.pow_1_r.
+ rewrite <- Nat.pow_add_r.
+ replace (1 + (s - 1)) with s by flia Hs Hin.
+ flia.
+-destruct H2 as (j & Hjj & Hj).
+ move j before i.
+ simpl in H1.
+ apply A_ge_1_false_iff in Hj.
+ remember (rad * (i + j + 3)) as n eqn:Hn.
+ replace (n - i - j - 2) with (n - i - 1 - S j) in Hj by flia.
+ remember (n - i - 1) as s eqn:Hs.
+ move s before n.
+ specialize (Hu 1) as H2.
+ unfold d2n, numbers_to_digits in H2.
+ destruct (LPO_fst (A_ge_1 (i + 1) u)) as [H3| H3].
+ +simpl in H2.
+  remember (rad * (i + 1 + 3)) as n1 eqn:Hn1.
+  remember (n1 - (i + 1) - 1) as s1 eqn:Hs1.
+  move s1 before n1.
+(* H2 would imply that u(i+1) is rad-3 or rad-2
+   what is not what we would expect... *)
+...
+ +destruct H3 as (k & Hjk & Hk).
+  simpl in H2.
+  apply A_ge_1_false_iff in Hk.
+  remember (rad * (i + 1 + k + 3)) as n1 eqn:Hn1.
+  replace (n1 - (i + 1) - k - 2) with (n1 - (i + 1) - 1 - S k) in Hk by flia.
+  remember (n1 - (i + 1) - 1) as s1 eqn:Hs1.
+  (* ce cas-là devrait le faire *)
+...
 
 Theorem A_ge_1_add_first_ge {r : radix} : ∀ u i,
   (∀ k, i + 1 < k < rad * (i + 3) → u k ≤ 2 * (rad - 1))
@@ -3297,31 +3359,6 @@ rewrite Nat.mod_small in H1; [ | easy ].
 rewrite Nat.add_comm, Nat.mul_comm in H1.
 now apply Nat.add_le_mono_l in H1.
 Qed.
-
-(*
-Theorem toto {r : radix} : ∀ u i,
-  (∀ k, A_ge_1 i u k = true)
-  → (∀ k, u (i + k + 1) = rad - 1) ∨
-     (∀ k, u (i + k + 1) = 2 * (rad - 1)) ∨
-     (∃ j,
-       (∀ k, k < j → u (i + k + 1) = rad - 1) ∧
-       u (i + j + 1) = rad - 2 ∧
-       (∀ k, u (i + j + k + 2) = 2 * (rad - 1))).
-Proof.
-intros * Hu.
-specialize radix_ge_2 as Hr; move Hr before i.
-...
-*)
-
-(*
-Theorem toto {r : radix} : ∀ u i,
-  (∀ k, A_ge_1 i u k = true)
-  → (∀ n k, A_ge_1 (i + n) u k = true).
-Proof.
-intros * Hu *.
-apply A_ge_1_true_iff in Hu.
-...
-*)
 
 Theorem A_ge_1_add_all_true_if {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
