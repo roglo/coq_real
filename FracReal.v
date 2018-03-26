@@ -2985,6 +2985,13 @@ destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
   remember (rad * (i + 1 + 3)) as n1 eqn:Hn1.
   remember (n1 - (i + 1) - 1) as s1 eqn:Hs1.
   move s1 before n1.
+specialize (A_ge_1_all_true_if _ _ H3 0) as H4.
+simpl in H4.
+rewrite Nat.add_0_r, Nat.sub_0_r, Nat.mul_1_r in H4.
+rewrite <- Hn1 in H4.
+replace (n1 - (i + 1) - 2) with (n1 - (i + 1) - 1 - 1) in H4 by flia.
+rewrite <- Hs1 in H4.
+destruct H4 as (H4, H5).
 (* H2 would imply that u(i+1) is rad-3 or rad-2
    what is not what we would expect... *)
 ...
