@@ -3011,7 +3011,6 @@ destruct (lt_dec (nA i n u) (rad ^ s)) as [H2| H2].
    what is proved later, actually *)
 *)
 
-(*
 Theorem A_ge_1_add_first_ge {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
   → (∀ k, d2n (numbers_to_digits u) (i + k) = rad - 1)
@@ -3055,6 +3054,7 @@ destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
  replace (n - i - j - 2) with (n - i - 1 - S j) in Hj by flia.
  remember (n - i - 1) as s eqn:Hs.
  move s before n.
+...
  specialize (Hu 1) as H2.
  unfold d2n, numbers_to_digits in H2.
  destruct (LPO_fst (A_ge_1 (i + 1) u)) as [H3| H3].
@@ -3106,7 +3106,6 @@ destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
   remember (n1 - (i + 1) - 1) as s1 eqn:Hs1.
   (* ce cas-là devrait le faire *)
 ...
-*)
 
 Theorem A_ge_1_add_first_ge {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
