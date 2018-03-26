@@ -3019,11 +3019,12 @@ destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
    assert (H7 : u (i + 1) = rad - 3) by flia H2; clear H2.
    exfalso.
    apply Nat.nlt_ge in H4.
-...
    specialize (H3 0) as H2.
    apply A_ge_1_true_iff in H2.
    rewrite Nat.add_0_r, Nat.sub_0_r, Nat.pow_1_r in H2.
-   rewrite <- Hn1, <- Hs1 in H2.
+   rewrite <- Hn1 in H2.
+   replace (n1 - (i + 1) - 2) with (n1 - (i + 1) - 1 - 1) in H2 by flia.
+   rewrite <- Hs1 in H2.
 ...
  +destruct H3 as (k & Hjk & Hk).
   simpl in H2.
