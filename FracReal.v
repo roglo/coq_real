@@ -2936,7 +2936,7 @@ replace ((rad ^ (k + 2) - 1) * rad ^ (s - (k + 2))) with
 Qed.
 
 Theorem A_ge_1_add_first_ge {r : radix} : ∀ u i,
-  (∀ k, i + 1 < k < rad * (i + 3) → u k ≤ 2 * (rad - 1))
+  (∀ k, u (i + k + 1) ≤ 2 * (rad - 1))
   → (∀ k, d2n (numbers_to_digits u) (i + k) = rad - 1)
   → u (i + 1) ≥ rad - 2.
 Proof.
@@ -2961,7 +2961,12 @@ destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
    specialize radix_ne_0 as H.
    destruct rad; [ easy | simpl; flia ].
  }
- specialize (nA_upper_bound_for_add_3 u i n Hur H2 Hin) as H3.
+ assert (Hur2 : ∀ k, i + 1 < k < n → u k ≤ 2 * (rad - 1)). {
+   intros k Hk.
+   specialize (Hur (k - (i + 1))).
+   now replace (i + (k - (i + 1)) + 1) with k in Hur by flia Hk.
+ }
+ specialize (nA_upper_bound_for_add_3 u i n Hur2 H2 Hin) as H3.
  rewrite Nat.mod_small; [ easy | ].
  eapply lt_le_trans; [ apply H3 | ].
  replace (n - i - 2) with (s - 1) by flia Hs.
@@ -2991,7 +2996,14 @@ destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
    destruct (lt_dec (u (i + 1) + 1) rad) as [H5| H5].
   --rewrite Nat.mod_small in H2; [ flia H2 | easy ].
   --flia H5.
-  *idtac.
+  *assert (Hur2 : ∀ k, i + 1 < k < n1 → u k ≤ 2 * (rad - 1)). {
+     intros k Hk.
+     specialize (Hur (k - (i + 1))).
+     now replace (i + (k - (i + 1)) + 1) with k in Hur by flia Hk.
+   }
+   specialize (nA_upper_bound_for_add u (i + 1) n1 Hur2) as H5.
+   rewrite <- Hs1 in H5.
+
 ...
  +destruct H3 as (k & Hjk & Hk).
   simpl in H2.
