@@ -3003,6 +3003,20 @@ destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
    }
    specialize (nA_upper_bound_for_add u (i + 1) n1 Hur2) as H5.
    rewrite <- Hs1 in H5.
+   assert (H6 : nA (i + 1) n1 u / rad ^ s1 = 1). {
+     remember (nA (i + 1) n1 u) as x eqn:Hx.
+     replace x with (x - rad ^ s1 + 1 * rad ^ s1).
+     -rewrite Nat.div_add; [ | now apply Nat.pow_nonzero ].
+      rewrite Nat.div_small; [ easy | ].
+      assert (H : 0 < rad ^ s1) by now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+      flia H5 H.
+     -rewrite Nat.mul_1_l.
+      apply Nat.sub_add; flia H4.
+   }
+   rewrite H6 in H2.
+   destruct (lt_dec (u (i + 1) + 1 + 1) rad) as [H7| H7]; [ | flia H7 ].
+   rewrite Nat.mod_small in H2; [ clear H7 | easy ].
+   assert (H7 : u (i + 1) = rad - 3) by flia H2; clear H2.
 
 ...
  +destruct H3 as (k & Hjk & Hk).
