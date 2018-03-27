@@ -3081,8 +3081,6 @@ destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
    flia H2.
 Qed.
 
-...
-
 Theorem A_ge_1_add_first_ge {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
   → A_ge_1 i u 0 = true
@@ -3812,6 +3810,39 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
  destruct (Nat.eq_dec (i + k + 2) (i + 1)) as [H3| H3]; [ flia H3 | ].
  now replace (i + k + 2) with (i + S k + 1) in H2 by flia.
 Qed.
+
+Theorem num_to_dig_9 {r : radix} : ∀ u i,
+  (∀ k, u k ≤ 2 * (rad - 1))
+  → (∀ k, d2n (numbers_to_digits u) (i + k) = rad - 1)
+  → ∀ k, u (i + k) = rad - 1.
+Proof.
+intros * Hur Hu k.
+specialize (Hu k) as H1.
+unfold d2n, numbers_to_digits in H1.
+destruct (LPO_fst (A_ge_1 (i + k) u)) as [H2| H2].
+-simpl in H1.
+ remember (rad * (i + k + 3)) as n eqn:Hn.
+ remember (n - (i + k) - 1) as s eqn:Hs.
+ move s before n.
+ destruct k.
+ +rewrite Nat.add_0_r in H2.
+  specialize (A_ge_1_add_first u i Hur (H2 0)) as H3.
+...
+
+ specialize (A_ge_1_add_all_true_if u (i + k) Hur H2) as H3.
+...
+
+ destruct (lt_dec (nA (i + k) n u) (rad ^ s)) as [H4| H4].
+ +rewrite Nat.div_small in H1; [ | easy ].
+  rewrite Nat.add_0_r in H1.
+  destruct (lt_dec (u (i + k) + 1) rad) as [H5| H5].
+  *rewrite Nat.mod_small in H1; [ | easy ].
+   assert (H3 : u (i + k) = rad - 2) by flia H1.
+   clear H1 H5.
+   exfalso.
+   specialize (H2 0) as H1.
+   apply A_ge_1_true_iff in H1.
+...
 
 Theorem A_ge_1_add_series_all_true_if {r : radix} : ∀ x y i,
   (∀ k, A_ge_1 i (freal_add_series x y) k = true)
