@@ -3890,7 +3890,6 @@ destruct (LPO_fst (A_ge_1 (i + k) u)) as [H2| H2].
    remember (rad * (i + k + 1 + j + 3)) as n1 eqn:Hn1.
    remember (n1 - (i + k + 1) - 1) as s1 eqn:Hs1.
    move s1 before n1.
-(* to do: search for a possible contradiction between H2 and Hj *)
 ...
    destruct (lt_dec (nA (i + k + 1) n1 u) (rad ^ s1)) as [H5| H5].
   --rewrite Nat.div_small in H4; [ | easy ].
