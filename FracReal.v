@@ -3824,15 +3824,76 @@ destruct (LPO_fst (A_ge_1 (i + k) u)) as [H2| H2].
  remember (rad * (i + k + 3)) as n eqn:Hn.
  remember (n - (i + k) - 1) as s eqn:Hs.
  move s before n.
+ specialize (A_ge_1_add_all_true_if u (i + k) Hur H2) as H3.
+ destruct H3 as [H3| [H3| H3]].
+ +specialize (H3 0).
+  now rewrite Nat.add_0_r in H3.
+ +exfalso.
+  destruct (lt_dec (nA (i + k) n u) (rad ^ s)) as [H4| H4].
+  *rewrite Nat.div_small in H1; [ | easy ].
+   apply Nat.nle_gt in H4; apply H4; clear H4.
+   specialize radix_ge_2 as Hr.
+   assert (Hin : i + k + 1 ≤ n - 1). {
+     rewrite Hn.
+     destruct rad; [ easy | simpl; flia ].
+   }
+   rewrite nA_split_first; [ | easy ].
+   specialize (H3 0).
+   rewrite Nat.add_0_r in H3.
+   rewrite H3.
+   replace (n - (i + k) - 2) with (s - 1) by flia Hs.
+   rewrite <- Nat.mul_assoc.
+   rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+   replace rad with (rad ^ 1) at 2 by apply Nat.pow_1_r.
+   rewrite <- Nat.pow_add_r.
+   replace (1 + (s - 1)) with s by flia Hs Hin.
+   rewrite Nat.mul_sub_distr_l.
+   replace (2 * rad ^ s) with (rad ^ s + rad ^ s) by flia.
+   rewrite <- Nat.add_sub_assoc; [ flia | ].
+   destruct s; [ flia Hs Hin | ].
+   replace (S s - 1) with s by flia.
+   rewrite Nat.pow_succ_r; [ | flia ].
+   now apply Nat.mul_le_mono_r.
+  *idtac.
+...
+
+  *remember (nA (i + k) n u) as x eqn:Hx.
+   replace x with (x - rad ^ s + 1 * rad ^ s) in H1.
+  --rewrite Nat.div_add in H1; [ | now apply Nat.pow_nonzero ].
+    assert (H6 : x - rad ^ s < rad ^ s). {
+      specialize (nA_upper_bound_for_add u (i + k) n Hur) as H5.
+      rewrite <- Hx, <- Hs in H5.
+      specialize (Nat.pow_nonzero rad s radix_ne_0) as H.
+      flia H2 H5 H.
+    }
+    rewrite Nat.div_small in H1; [ | easy ].
+    rewrite <- Nat.add_assoc in H1; simpl in H1.
+(* chiasse de pute : j'ai merdé *)
+...
+
+    simpl in H1.
+
+   destruct (lt_dec (u i + 1) rad) as [H7| H7]; [ | flia H7 ].
+   rewrite Nat.mod_small in H1; [ | easy ].
+   flia H1.
+  *rewrite Nat.mul_1_l.
+   apply Nat.sub_add.
+   flia H2.
+Qed.
+  *ddd.
+
+...
  destruct k.
  +rewrite Nat.add_0_r in H2.
   specialize (A_ge_1_add_first u i Hur (H2 0)) as H3.
   rewrite Nat.add_0_r.
   destruct H3 as [[H3| H3]| H3]; [ | easy | ].
   *rewrite Nat.add_0_r in H1.
+
+
+
 ...
 
- specialize (A_ge_1_add_all_true_if u (i + k) Hur H2) as H3.
 ...
 
  destruct (lt_dec (nA (i + k) n u) (rad ^ s)) as [H4| H4].
