@@ -3814,7 +3814,7 @@ Qed.
 Theorem num_to_dig_9 {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
   → (∀ k, d2n (numbers_to_digits u) (i + k) = rad - 1)
-  → ∀ k, u (i + k) = rad - 1.
+  → ∀ k, u (i + k + 1) = rad - 1.
 Proof.
 intros * Hur Hu k.
 specialize (Hu k) as H1.
@@ -3827,6 +3827,9 @@ destruct (LPO_fst (A_ge_1 (i + k) u)) as [H2| H2].
  destruct k.
  +rewrite Nat.add_0_r in H2.
   specialize (A_ge_1_add_first u i Hur (H2 0)) as H3.
+  rewrite Nat.add_0_r.
+  destruct H3 as [[H3| H3]| H3]; [ | easy | ].
+  *rewrite Nat.add_0_r in H1.
 ...
 
  specialize (A_ge_1_add_all_true_if u (i + k) Hur H2) as H3.
