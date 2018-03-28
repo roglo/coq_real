@@ -3922,11 +3922,14 @@ destruct (LPO_fst (A_ge_1 (i + k) u)) as [H2| H2].
  unfold d2n, numbers_to_digits in H2.
  replace (i + (k + 1)) with (i + k + 1) in H2 by flia.
  destruct (LPO_fst (A_ge_1 (i + k + 1) u)) as [H3| H3].
- *simpl in H2.
+ +simpl in H2.
   replace (i + k + 1 + 3) with (i + k + 4) in H2 by flia.
   remember (rad * (i + k + 4)) as n1 eqn:Hn1.
   remember (n1 - (i + k + 1) - 1) as s1 eqn:Hs1.
   move s1 before n1.
+  specialize (A_ge_1_add_all_true_if u (i + k + 1) Hur H3) as H4.
+  destruct H4 as [H4| H4].
+  *idtac.
 ...
 
 Theorem A_ge_1_add_series_all_true_if {r : radix} : ∀ x y i,
