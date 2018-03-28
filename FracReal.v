@@ -3902,8 +3902,20 @@ destruct (LPO_fst (A_ge_1 (i + k) u)) as [H2| H2].
     move s2 before n2.
     apply Nat.nle_gt in Hj; apply Hj; clear Hj.
     (* 9990000 ≤ 9999998 *)
-    ...
+    admit.
  +destruct H3 as (j & Hbef & Hwhi & Haft).
+  *destruct j.
+  --exfalso; clear Hbef.
+    rewrite Nat.add_0_r in Hwhi, Haft.
+    specialize (A_ge_1_all_true_if u (i + k) H2) as H3.
+    admit.
+  --specialize (Hbef 0 (Nat.lt_0_succ j)) as H3.
+    now rewrite Nat.add_0_r in H3.
+-destruct H2 as (j & Hjj & Hj).
+ simpl in H1.
+ remember (rad * (i + k + j + 3)) as n eqn:Hn.
+ remember (n - (i + k) - 1) as s eqn:Hs.
+ move s before n.
 ...
 
 Theorem A_ge_1_add_series_all_true_if {r : radix} : ∀ x y i,
