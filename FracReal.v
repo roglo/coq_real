@@ -3913,9 +3913,20 @@ destruct (LPO_fst (A_ge_1 (i + k) u)) as [H2| H2].
     now rewrite Nat.add_0_r in H3.
 -destruct H2 as (j & Hjj & Hj).
  simpl in H1.
+ apply A_ge_1_false_iff in Hj.
  remember (rad * (i + k + j + 3)) as n eqn:Hn.
  remember (n - (i + k) - 1) as s eqn:Hs.
  move s before n.
+ replace (n - (i + k) - j - 2) with (s - S j) in Hj by flia Hs.
+ specialize (Hu (k + 1)) as H2.
+ unfold d2n, numbers_to_digits in H2.
+ replace (i + (k + 1)) with (i + k + 1) in H2 by flia.
+ destruct (LPO_fst (A_ge_1 (i + k + 1) u)) as [H3| H3].
+ *simpl in H2.
+  replace (i + k + 1 + 3) with (i + k + 4) in H2 by flia.
+  remember (rad * (i + k + 4)) as n1 eqn:Hn1.
+  remember (n1 - (i + k + 1) - 1) as s1 eqn:Hs1.
+  move s1 before n1.
 ...
 
 Theorem A_ge_1_add_series_all_true_if {r : radix} : ∀ x y i,
