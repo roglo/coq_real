@@ -3955,15 +3955,17 @@ destruct (LPO_fst (A_ge_1 (i + k) u)) as [H2| H2].
    ++rewrite Nat.div_small in H5; [ | easy ].
      rewrite Nat.add_0_r, Nat.sub_add in H5; [ | easy ].
      rewrite Nat.mod_same in H5; [ flia Hr H5 | easy ].
-   ++idtac.
-     apply Nat.nlt_ge in H8; rewrite Hs2 in H8.
-     specialize (eq_nA_div_1 _ _ _ Hur H8) as H9.
-     rewrite <- Hs2 in H8, H9.
-     rewrite H9 in H5.
-...
-    specialize (A_ge_1_add_all_true_if u _ Hur H6) as H7.
-    destruct H7 as [H7| H7].
-   ++idtac.
+   ++exfalso; apply H8; clear H8.
+     rewrite Hs2.
+     apply nA_dig_seq_ub.
+    **intros p Hp.
+      specialize (H4 (p - i - k - 2)).
+      replace (i + k + 1 + (p - i - k - 2) + 1) with p in H4 by flia Hp.
+      rewrite H4; flia Hr.
+    **rewrite Hn2.
+      destruct rad; [ easy | simpl; flia ].
+  --destruct H6 as (p & Hjp & Hp).
+    simpl in H5.
 ...
 
 Theorem A_ge_1_add_series_all_true_if {r : radix} : ∀ x y i,
