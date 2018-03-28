@@ -3928,6 +3928,7 @@ destruct (LPO_fst (A_ge_1 (i + k) u)) as [H2| H2].
  remember (n - (i + k) - 1) as s eqn:Hs.
  move s before n.
  replace (n - (i + k) - j - 2) with (s - S j) in Hj by flia Hs.
+...
  specialize (Hu (k + 1)) as H2.
  unfold d2n, numbers_to_digits in H2.
  replace (i + (k + 1)) with (i + k + 1) in H2 by flia.
