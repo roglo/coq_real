@@ -3868,29 +3868,26 @@ destruct (LPO_fst (A_ge_1 (i + k) u)) as [H2| H2].
          rewrite Nat.mod_small in H1.
         **right; flia Hx H1.
         **subst x.
+          apply Nat.add_lt_mono_r with (p := rad).
+          rewrite Nat.sub_add; [ | flia H5 ].
+          apply Nat.lt_add_lt_sub_r.
           specialize (Hur (i + k)).
-...
-
-       specialize (H3 0).
-       rewrite Nat.add_0_r in H3.
-       rewrite H3 in H4.
-       replace (2 * (rad - 1) + 2) with (0 + 2 * rad) in H4.
-
-      assert (H7 : x - rad ^ s1 < rad ^ s1). {
-        specialize (nA_upper_bound_for_add u (i + k + 1) n1 Hur) as H7.
-        rewrite <- Hx, <- Hs1 in H7.
-        specialize (Nat.pow_nonzero rad s1 radix_ne_0) as H.
-        flia H4 H7 H.
-      }
-     rewrite <- Nat.add_assoc in H4; simpl in H4.
-     specialize (H3 0).
-     rewrite Nat.add_0_r in H3.
-     rewrite H3 in H4.
-     replace (2 * (rad - 1) + 2) with (0 + 2 * rad) in H4.
-    **rewrite Nat.mod_add in H4; [ | easy ].
-      rewrite Nat.mod_0_l in H4; [ | easy ].
-      flia Hr H4.
-    **rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+          rewrite Nat.mul_sub_distr_l in Hur.
+          apply Nat_le_neq_lt; [ flia Hur | ].
+          intros H; rewrite H in H1.
+          rewrite Nat.sub_add in H1; [ | flia Hr ].
+          rewrite Nat.add_sub in H1.
+          rewrite Nat.mod_same in H1; [ flia Hr H1 | easy ].
+       ++rewrite Nat.mul_1_l.
+         apply Nat.sub_add; flia H5.
+      *subst x.
+       specialize (nA_upper_bound_for_add u (i + k) n Hur) as H5.
+       rewrite <- Hs in H5.
+       specialize (Nat.pow_nonzero rad s radix_ne_0) as H.
+       flia H5 H.
+     +rewrite Nat.mul_1_l.
+      apply Nat.sub_add; flia H4.
+  }
 (*end*)
 ...
   specialize (Hu (k + 1)) as H4.
