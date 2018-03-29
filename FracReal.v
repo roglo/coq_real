@@ -3937,6 +3937,26 @@ destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
  remember (rad * (i + j + 3)) as n eqn:Hn.
  remember (n - i - 1) as s eqn:Hs.
  move s before n.
+ assert (Hin : i + 2 ≤ n - 1). {
+   rewrite Hn.
+   destruct rad; [ easy | simpl; flia ].
+ }
+ specialize (Hu 1) as H2.
+ unfold d2n, numbers_to_digits in H2.
+ exfalso.
+ destruct (LPO_fst (A_ge_1 (i + 1) u)) as [H3| H3].
+ +simpl in H2.
+  remember (rad * (i + 1 + 3)) as n1 eqn:Hn1.
+  remember (n1 - (i + 1) - 1) as s1 eqn:Hs1.
+  move s1 before n1.
+  assert (Hin1 : i + 1 ≤ n1 - 1). {
+    rewrite Hn1.
+    destruct rad; [ easy | simpl; flia ].
+  }
+  specialize (A_ge_1_add_all_true_if u _ Hur H3) as H4.
+  destruct H4 as [H4| [H4| H4]].
+  *rewrite nA_split_first in Hj; [ | flia Hin ].
+   rewrite nA_split_first in Hj; [ | flia Hin ].
 ...
  replace (n - i - j - 2) with (s - S j) in Hj by flia Hs.
  assert (Hin : i + 2 ≤ n - 1). {
