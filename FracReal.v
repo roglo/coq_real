@@ -3859,6 +3859,33 @@ destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
  remember (n - i - 1) as s eqn:Hs.
  move s before n.
  replace (n - i - j - 2) with (s - S j) in Hj by flia Hs.
+ assert (Hin : i + 2 ≤ n - 1). {
+   rewrite Hn.
+   destruct rad; [ easy | simpl; flia ].
+ }
+ assert (Hjn : i + j + 2 ≤ n - 1). {
+   rewrite Hn.
+   destruct rad; [ easy | simpl; flia ].
+ }
+ destruct (lt_dec (nA i n u) (rad ^ s)) as [H2| H2].
+ +assert (H3 : u (i + 1) < rad). {
+    revert Hj.
+    apply Decidable.contrapositive; [ apply Nat.lt_decidable | ].
+    intros H3; apply Nat.nlt_ge in H3.
+    apply le_not_lt.
+    rewrite Nat.mod_small; [ | easy ].
+    rewrite nA_split_first; [ | flia Hin ].
+    replace (n - i - 2) with (s - 1) by flia Hs.
+    rewrite Nat.mul_sub_distr_r.
+    apply Nat.le_sub_le_add_r.
+    rewrite <- Nat.pow_add_r.
+    replace (S j + (s - S j)) with (1 + (s - 1)) by flia Hs Hjn.
+    eapply Nat.le_trans; [ | apply Nat.le_add_r ].
+    eapply Nat.le_trans; [ | apply Nat.le_add_r ].
+    rewrite Nat.pow_add_r, Nat.pow_1_r.
+    now apply Nat.mul_le_mono_r.
+  }
+(* mon cul *)
 ...
 
 Theorem num_to_dig_9 {r : radix} : ∀ u i,
