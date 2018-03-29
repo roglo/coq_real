@@ -3833,8 +3833,8 @@ Qed.
 Theorem num_to_dig_if {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
   → (∀ k, d2n (numbers_to_digits u) (i + k) = rad - 1)
-  → (∀ k, u (i + k + 1) = rad - 1) ∨
-     (∀ k, u (i + k + 1) = 2 * (rad - 1)) ∨
+  → u i mod rad = rad - 2 ∧ (∀ k, u (i + k + 1) = rad - 1) ∨
+     u i mod rad = rad - 3 ∧ (∀ k, u (i + k + 1) = 2 * (rad - 1)) ∨
      (∃ j,
        (∀ k, k < j → u (i + k + 1) = rad - 1) ∧
        u (i + j + 1) = rad - 2 ∧
@@ -3847,9 +3847,34 @@ specialize (Hu 0) as H1.
 rewrite Nat.add_0_r in H1.
 unfold d2n, numbers_to_digits in H1.
 destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
--specialize (A_ge_1_add_all_true_if u i Hur H2) as H3.
+-specialize (A_ge_1_add_all_true_if u _ Hur H2) as H3.
+ simpl in H1.
  destruct H3 as [H3| [H3| H3]].
- +left; intros k; apply H3.
+ +left.
+  rewrite Nat.div_small in H1.
+  *rewrite Nat.add_0_r in H1.
+   split; [ | easy ].
+   destruct (lt_dec (u i + 1) rad) as [H4| H4].
+  --rewrite Nat.mod_small in H1; [ | easy ].
+    rewrite Nat.mod_small; [ flia H1 | flia H4 ].
+  --rewrite Nat_mod_less_small in H1.
+   ++replace (u i) with (2 * rad - 2) by flia H1.
+     rewrite Nat_mod_less_small; [ flia | flia Hr ].
+   ++split; [ flia H4 | ].
+     specialize (Hur i); flia Hr Hur.
+  *apply nA_dig_seq_ub.
+  --intros j Hj.
+    specialize (H3 (j - i - 1)).
+    replace (i + (j - i - 1) + 1) with j in H3 by flia Hj.
+    rewrite H3; flia Hr.
+  --destruct rad; [ easy | simpl; flia ].
+ +right; left.
+  rewrite Nat_div_less_small in H1.
+...
+
+; intros k; apply H3.
+..
+
  +right; left; intros k; apply H3.
  +right; right; apply H3.
 -destruct H2 as (j & Hjj & Hj).
@@ -3858,6 +3883,7 @@ destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
  remember (rad * (i + j + 3)) as n eqn:Hn.
  remember (n - i - 1) as s eqn:Hs.
  move s before n.
+...
  replace (n - i - j - 2) with (s - S j) in Hj by flia Hs.
  assert (Hin : i + 2 ≤ n - 1). {
    rewrite Hn.
@@ -3885,6 +3911,10 @@ destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
     rewrite Nat.pow_add_r, Nat.pow_1_r.
     now apply Nat.mul_le_mono_r.
   }
+  admit.
+ +replace (nA i n u mod rad ^ s) with (nA i n u - rad ^ s) in Hj.
+  *idtac.
+
 (* mon cul *)
 ...
 

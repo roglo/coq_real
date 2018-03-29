@@ -135,24 +135,34 @@ induction b; intros.
  now rewrite Nat.sub_succ.
 Qed.
 
-(*
-Theorem Nat_sub_sub_assoc : ∀ a b c,
-  c ≤ b ≤ a
-  → a - (b - c) = a - b + c.
+Theorem Nat_mod_less_small : ∀ a b,
+  b ≤ a < 2 * b
+  → a mod b = a - b.
 Proof.
-intros * (Hcb, Hba).
-revert a c Hcb Hba.
-induction b; intros.
--now apply Nat.le_0_r in Hcb; subst c.
--destruct c; [ easy | ].
- destruct a; [ easy | ].
- apply Nat.succ_le_mono in Hcb.
- apply Nat.succ_le_mono in Hba.
- do 2 rewrite Nat.sub_succ.
- specialize (IHb a c Hcb Hba) as H.
- rewrite Nat.add_succ_r, <- H.
- rewrite <- Nat.sub_succ_l; [ easy | ].
- apply le_trans with (m := b); [ | easy ].
- apply Nat.le_sub_l.
+intros * Hab.
+assert (Hb : b ≠ 0) by now intros Hb; rewrite Hb in Hab.
+replace a with (a - b + 1 * b) at 1.
+-rewrite Nat.mod_add; [ | easy ].
+ apply Nat.mod_small.
+ apply Nat.add_lt_mono_r with (p := b).
+ simpl in Hab; rewrite Nat.add_0_r in Hab.
+ now rewrite Nat.sub_add.
+-rewrite Nat.mul_1_l.
+ now apply Nat.sub_add.
 Qed.
-*)
+
+Theorem Nat_div_less_small : ∀ a b,
+  b ≤ a < 2 * b
+  → a / b = 1.
+Proof.
+intros * Hab.
+assert (Hb : b ≠ 0) by now intros Hb; rewrite Hb in Hab.
+replace a with (a - b + 1 * b) at 1.
+-rewrite Nat.div_add; [ | easy ].
+ rewrite Nat.div_small; [ easy | ].
+ apply Nat.add_lt_mono_r with (p := b).
+ simpl in Hab; rewrite Nat.add_0_r in Hab.
+ now rewrite Nat.sub_add.
+-rewrite Nat.mul_1_l.
+ now apply Nat.sub_add.
+Qed.
