@@ -3833,8 +3833,10 @@ Qed.
 Theorem num_to_dig_if {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
   → (∀ k, d2n (numbers_to_digits u) (i + k) = rad - 1)
-  → u i mod rad = rad - 2 ∧ (∀ k, u (i + k + 1) = rad - 1) ∨
-     u i mod rad = rad - 3 ∧ (∀ k, u (i + k + 1) = 2 * (rad - 1)) ∨
+  → u i mod rad = rad - 2 ∧
+       (∀ k, u (i + k + 1) = rad - 1) ∨
+     u i mod rad = (2 * rad - 3) mod rad ∧
+       (∀ k, u (i + k + 1) = 2 * (rad - 1)) ∨
      (∃ j,
        (∀ k, k < j → u (i + k + 1) = rad - 1) ∧
        u (i + j + 1) = rad - 2 ∧
@@ -3851,9 +3853,9 @@ destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
  simpl in H1.
  destruct H3 as [H3| [H3| H3]].
  +left.
+  split; [ | easy ].
   rewrite Nat.div_small in H1.
   *rewrite Nat.add_0_r in H1.
-   split; [ | easy ].
    destruct (lt_dec (u i + 1) rad) as [H4| H4].
   --rewrite Nat.mod_small in H1; [ | easy ].
     rewrite Nat.mod_small; [ flia H1 | flia H4 ].
@@ -3869,11 +3871,46 @@ destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
     rewrite H3; flia Hr.
   --destruct rad; [ easy | simpl; flia ].
  +right; left.
+  split; [ | easy ].
   rewrite Nat_div_less_small in H1.
+  *destruct (lt_dec (u i + 1 + 1) rad) as [H4| H4].
+  --rewrite Nat.mod_small in H1; [ | easy ].
+    rewrite Nat.mod_small; [ | flia H4 ].
+    destruct (Nat.eq_dec rad 2) as [Hr2| Hr2].
+   ++rewrite Hr2 in H1; simpl in H1.
+     rewrite Hr2; simpl; flia H1.
+   ++rewrite Nat_mod_less_small; [ flia H1 | flia Hr Hr2 ].
+  --rewrite Nat_mod_less_small in H1.
+destruct (Nat.eq_dec rad 2) as [Hr2| Hr2].
+rewrite Hr2 in H1; simpl in H1.
+rewrite Hr2.
+remember Nat.modulo as f; simpl; subst f.
+now replace (u i) with 1 by flia H1.
+admit.
+(* bon, chais pas, faut que je réfléchisse *)
+...
+   ++f_equal; flia H1.
+   ++split; [ flia H4 | ].
+     specialize (Hur i).
 ...
 
-; intros k; apply H3.
-..
+     rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in Hur.
+     simpl in Hur; simpl.
+     rewrite Nat.add_0_r in Hur |-*.
+     apply Nat.nlt_ge in H4.
+     destruct rad as [| rr]; [ easy | ].
+     simpl in Hur, H4 |-*.
+     destruct rr; [ flia Hr | ].
+     simpl in Hur.
+     flia Hur H4.
+
+     rewrite Nat_mod_less_small; [ flia | ].
+     split; [ | flia Hr ].
+     destruct rad as [| rr]; [ easy | ].
+     destruct rr; [ flia Hr | simpl ].
+     destruct rr; simpl.
+(* chiasse *)
+...
 
  +right; left; intros k; apply H3.
  +right; right; apply H3.
