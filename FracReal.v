@@ -3830,6 +3830,35 @@ replace x with (x - rad ^ s + 1 * rad ^ s).
  now apply Nat.sub_add.
 Qed.
 
+Theorem num_to_dig_if {r : radix} : ∀ u i,
+  (∀ k, u k ≤ 2 * (rad - 1))
+  → d2n (numbers_to_digits u) i = rad - 1
+  → u (i + 1) = rad - 1 ∨
+     u (i + 1) = 2 * (rad - 1) ∨
+     (∃ j,
+       (∀ k, k < j → u (i + k + 1) = rad - 1) ∧
+       u (i + j + 1) = rad - 2 ∧
+       (∀ k, u (i + j + k + 2) = 2 * (rad - 1))).
+Proof.
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hur Hu.
+unfold d2n, numbers_to_digits in Hu.
+destruct (LPO_fst (A_ge_1 i u)) as [H1| H1].
+-specialize (A_ge_1_add_all_true_if u i Hur H1) as H2.
+ destruct H2 as [H2| [H2| H2]].
+ +now left; specialize (H2 0); rewrite Nat.add_0_r in H2.
+ +now right; left; specialize (H2 0); rewrite Nat.add_0_r in H2.
+ +now right; right.
+-destruct H1 as (j & Hjj & Hj).
+ simpl in Hu.
+ apply A_ge_1_false_iff in Hj.
+ remember (rad * (i + j + 3)) as n eqn:Hn.
+ remember (n - i - 1) as s eqn:Hs.
+ move s before n.
+ replace (n - i - j - 2) with (s - S j) in Hj by flia Hs.
+...
+
 Theorem num_to_dig_9 {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
   → (∀ k, d2n (numbers_to_digits u) (i + k) = rad - 1)
