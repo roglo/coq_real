@@ -3893,15 +3893,43 @@ destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
      rewrite Nat.sub_add in H1; [ | flia Hr ].
      rewrite Nat.mod_mul in H1; [ flia Hr H1 | easy ].
   *split.
-  --admit.
-  --idtac.
-Search (nA _ _ _ ≤ _).
-    specialize (all_le_nA_le u 2 i (rad * (i + 3))) as H.
-...
-  --apply nA_dig_seq_ub.
-...
-
- +right; left; intros k; apply H3.
+  --rewrite nA_split_first.
+   ++eapply Nat.le_trans; [ | apply Nat.le_add_r ].
+     specialize (H3 0); rewrite Nat.add_0_r in H3; rewrite H3.
+     remember (rad * (i + 3)) as n eqn:Hn.
+     remember (n - i - 1) as s eqn:Hs.
+     move s before n.
+     replace (n - i - 2) with (s - 1) by flia Hs.
+     rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+     rewrite Nat.mul_sub_distr_r.
+     replace rad with (rad ^ 1) at 2 by apply Nat.pow_1_r.
+     rewrite <- Nat.mul_assoc.
+     rewrite <- Nat.pow_add_r.
+     assert (Hin : i + 1 ≤ n - 1). {
+       rewrite Hn.
+       destruct rad; [ easy | simpl; flia ].
+     }
+     replace (1 + (s - 1)) with s by flia Hin Hs.
+     replace (2 * rad ^ s) with (rad ^ s + rad ^ s) by flia.
+     rewrite <- Nat.add_sub_assoc; [ flia | ].
+     replace s with (1 + (s - 1)) at 2 by flia Hin Hs.
+     rewrite Nat.pow_add_r, Nat.pow_1_r.
+     now apply Nat.mul_le_mono_r.
+   ++destruct rad; [ easy | simpl; flia ].
+  --specialize (all_le_nA_le u 2 i (rad * (i + 3))) as H4.
+    assert (H : ∀ j, i < j < rad * (i + 3) → u j ≤ 2 * (rad - 1)). {
+      intros j Hj.
+      specialize (H3 (j - i - 1)).
+      replace (i + (j - i - 1) + 1) with j in H3 by flia Hj.
+      now rewrite H3.
+    }
+    specialize (H4 H); clear H.
+    rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H4.
+    eapply Nat.le_lt_trans; [ apply H4 | ].
+    apply Nat.sub_lt; [ | flia ].
+    replace 2 with (2 * 1) at 1 by flia.
+    apply Nat.mul_le_mono_l.
+    now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
  +right; right; apply H3.
 -destruct H2 as (j & Hjj & Hj).
  simpl in H1.
@@ -3937,7 +3965,7 @@ Search (nA _ _ _ ≤ _).
     rewrite Nat.pow_add_r, Nat.pow_1_r.
     now apply Nat.mul_le_mono_r.
   }
-  admit.
+  ...admit.
  +replace (nA i n u mod rad ^ s) with (nA i n u - rad ^ s) in Hj.
   *idtac.
 
@@ -4026,13 +4054,13 @@ destruct (LPO_fst (A_ge_1 (i + k) u)) as [H2| H2].
     move s2 before n2.
     apply Nat.nle_gt in Hj; apply Hj; clear Hj.
     (* 9990000 ≤ 9999998 *)
-    admit.
+    ...admit.
  +destruct H3 as (j & Hbef & Hwhi & Haft).
   *destruct j.
   --exfalso; clear Hbef.
     rewrite Nat.add_0_r in Hwhi, Haft.
     specialize (A_ge_1_all_true_if u (i + k) H2) as H3.
-    admit.
+    ...admit.
   --specialize (Hbef 0 (Nat.lt_0_succ j)) as H3.
     now rewrite Nat.add_0_r in H3.
 -destruct H2 as (j & Hjj & Hj).
