@@ -3833,8 +3833,8 @@ Qed.
 Theorem num_to_dig_if {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
   → d2n (numbers_to_digits u) i = rad - 1
-  → u (i + 1) = rad - 1 ∨
-     u (i + 1) = 2 * (rad - 1) ∨
+  → (∀ k, u (i + k + 1) = rad - 1) ∨
+     (∀ k, u (i + k + 1) = 2 * (rad - 1)) ∨
      (∃ j,
        (∀ k, k < j → u (i + k + 1) = rad - 1) ∧
        u (i + j + 1) = rad - 2 ∧
@@ -3847,9 +3847,9 @@ unfold d2n, numbers_to_digits in Hu.
 destruct (LPO_fst (A_ge_1 i u)) as [H1| H1].
 -specialize (A_ge_1_add_all_true_if u i Hur H1) as H2.
  destruct H2 as [H2| [H2| H2]].
- +now left; specialize (H2 0); rewrite Nat.add_0_r in H2.
- +now right; left; specialize (H2 0); rewrite Nat.add_0_r in H2.
- +now right; right.
+ +left; intros k; apply H2.
+ +right; left; intros k; apply H2.
+ +right; right; apply H2.
 -destruct H1 as (j & Hjj & Hj).
  simpl in Hu.
  apply A_ge_1_false_iff in Hj.
