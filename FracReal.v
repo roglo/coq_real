@@ -3832,7 +3832,7 @@ Qed.
 
 Theorem num_to_dig_if {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
-  → d2n (numbers_to_digits u) i = rad - 1
+  → (∀ k, d2n (numbers_to_digits u) (i + k) = rad - 1)
   → (∀ k, u (i + k + 1) = rad - 1) ∨
      (∀ k, u (i + k + 1) = 2 * (rad - 1)) ∨
      (∃ j,
@@ -3843,15 +3843,17 @@ Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hur Hu.
-unfold d2n, numbers_to_digits in Hu.
-destruct (LPO_fst (A_ge_1 i u)) as [H1| H1].
--specialize (A_ge_1_add_all_true_if u i Hur H1) as H2.
- destruct H2 as [H2| [H2| H2]].
- +left; intros k; apply H2.
- +right; left; intros k; apply H2.
- +right; right; apply H2.
--destruct H1 as (j & Hjj & Hj).
- simpl in Hu.
+specialize (Hu 0) as H1.
+rewrite Nat.add_0_r in H1.
+unfold d2n, numbers_to_digits in H1.
+destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
+-specialize (A_ge_1_add_all_true_if u i Hur H2) as H3.
+ destruct H3 as [H3| [H3| H3]].
+ +left; intros k; apply H3.
+ +right; left; intros k; apply H3.
+ +right; right; apply H3.
+-destruct H2 as (j & Hjj & Hj).
+ simpl in H1.
  apply A_ge_1_false_iff in Hj.
  remember (rad * (i + j + 3)) as n eqn:Hn.
  remember (n - i - 1) as s eqn:Hs.
