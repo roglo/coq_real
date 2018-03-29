@@ -3849,8 +3849,15 @@ specialize (Hu 0) as H1.
 rewrite Nat.add_0_r in H1.
 unfold d2n, numbers_to_digits in H1.
 destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
--specialize (A_ge_1_add_all_true_if u _ Hur H2) as H3.
- simpl in H1.
+-simpl in H1.
+ remember (rad * (i + 3)) as n eqn:Hn.
+ remember (n - i - 1) as s eqn:Hs.
+ move s before n.
+ assert (Hin : i + 1 ≤ n - 1). {
+   rewrite Hn.
+   destruct rad; [ easy | simpl; flia ].
+ }
+ specialize (A_ge_1_add_all_true_if u _ Hur H2) as H3.
  destruct H3 as [H3| [H3| H3]].
  +left.
   split; [ | easy ].
@@ -3864,12 +3871,12 @@ destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
      rewrite Nat_mod_less_small; [ flia | flia Hr ].
    ++split; [ flia H4 | ].
      specialize (Hur i); flia Hr Hur.
-  *apply nA_dig_seq_ub.
-  --intros j Hj.
-    specialize (H3 (j - i - 1)).
-    replace (i + (j - i - 1) + 1) with j in H3 by flia Hj.
-    rewrite H3; flia Hr.
-  --destruct rad; [ easy | simpl; flia ].
+  *rewrite Hs.
+   apply nA_dig_seq_ub; [ | easy ].
+   intros j Hj.
+   specialize (H3 (j - i - 1)).
+   replace (i + (j - i - 1) + 1) with j in H3 by flia Hj.
+   rewrite H3; flia Hr.
  +right; left.
   split; [ | easy ].
   rewrite Nat_div_less_small in H1.
@@ -3893,29 +3900,21 @@ destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
      rewrite Nat.sub_add in H1; [ | flia Hr ].
      rewrite Nat.mod_mul in H1; [ flia Hr H1 | easy ].
   *split.
-  --rewrite nA_split_first.
-   ++eapply Nat.le_trans; [ | apply Nat.le_add_r ].
-     specialize (H3 0); rewrite Nat.add_0_r in H3; rewrite H3.
-     remember (rad * (i + 3)) as n eqn:Hn.
-     remember (n - i - 1) as s eqn:Hs.
-     move s before n.
-     replace (n - i - 2) with (s - 1) by flia Hs.
-     rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
-     rewrite Nat.mul_sub_distr_r.
-     replace rad with (rad ^ 1) at 2 by apply Nat.pow_1_r.
-     rewrite <- Nat.mul_assoc.
-     rewrite <- Nat.pow_add_r.
-     assert (Hin : i + 1 ≤ n - 1). {
-       rewrite Hn.
-       destruct rad; [ easy | simpl; flia ].
-     }
-     replace (1 + (s - 1)) with s by flia Hin Hs.
-     replace (2 * rad ^ s) with (rad ^ s + rad ^ s) by flia.
-     rewrite <- Nat.add_sub_assoc; [ flia | ].
-     replace s with (1 + (s - 1)) at 2 by flia Hin Hs.
-     rewrite Nat.pow_add_r, Nat.pow_1_r.
-     now apply Nat.mul_le_mono_r.
-   ++destruct rad; [ easy | simpl; flia ].
+  --rewrite nA_split_first; [ | easy ].
+    eapply Nat.le_trans; [ | apply Nat.le_add_r ].
+    specialize (H3 0); rewrite Nat.add_0_r in H3; rewrite H3.
+    replace (n - i - 2) with (s - 1) by flia Hs.
+    rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+    rewrite Nat.mul_sub_distr_r.
+    replace rad with (rad ^ 1) at 2 by apply Nat.pow_1_r.
+    rewrite <- Nat.mul_assoc.
+    rewrite <- Nat.pow_add_r.
+    replace (1 + (s - 1)) with s by flia Hin Hs.
+    replace (2 * rad ^ s) with (rad ^ s + rad ^ s) by flia.
+    rewrite <- Nat.add_sub_assoc; [ flia | ].
+    replace s with (1 + (s - 1)) at 2 by flia Hin Hs.
+    rewrite Nat.pow_add_r, Nat.pow_1_r.
+    now apply Nat.mul_le_mono_r.
   --specialize (all_le_nA_le u 2 i (rad * (i + 3))) as H4.
     assert (H : ∀ j, i < j < rad * (i + 3) → u j ≤ 2 * (rad - 1)). {
       intros j Hj.
@@ -3925,6 +3924,7 @@ destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
     }
     specialize (H4 H); clear H.
     rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H4.
+    rewrite <- Hn, <- Hs in H4.
     eapply Nat.le_lt_trans; [ apply H4 | ].
     apply Nat.sub_lt; [ | flia ].
     replace 2 with (2 * 1) at 1 by flia.
