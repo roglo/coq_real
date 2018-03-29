@@ -3881,35 +3881,24 @@ destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
      rewrite Hr2; simpl; flia H1.
    ++rewrite Nat_mod_less_small; [ flia H1 | flia Hr Hr2 ].
   --rewrite Nat_mod_less_small in H1.
-destruct (Nat.eq_dec rad 2) as [Hr2| Hr2].
-rewrite Hr2 in H1; simpl in H1.
-rewrite Hr2.
-remember Nat.modulo as f; simpl; subst f.
-now replace (u i) with 1 by flia H1.
-admit.
-(* bon, chais pas, faut que je réfléchisse *)
-...
    ++f_equal; flia H1.
    ++split; [ flia H4 | ].
      specialize (Hur i).
+     rewrite <- Nat.add_assoc.
+     apply Nat.lt_add_lt_sub_r.
+     remember mult as f; simpl; subst f.
+     apply Nat_le_neq_lt; [ flia Hur | ].
+     intros H; rewrite H in H1.
+     rewrite <- Nat.add_assoc in H1.
+     rewrite Nat.sub_add in H1; [ | flia Hr ].
+     rewrite Nat.mod_mul in H1; [ flia Hr H1 | easy ].
+  *split.
+  --admit.
+  --idtac.
+Search (nA _ _ _ ≤ _).
+    specialize (all_le_nA_le u 2 i (rad * (i + 3))) as H.
 ...
-
-     rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in Hur.
-     simpl in Hur; simpl.
-     rewrite Nat.add_0_r in Hur |-*.
-     apply Nat.nlt_ge in H4.
-     destruct rad as [| rr]; [ easy | ].
-     simpl in Hur, H4 |-*.
-     destruct rr; [ flia Hr | ].
-     simpl in Hur.
-     flia Hur H4.
-
-     rewrite Nat_mod_less_small; [ flia | ].
-     split; [ | flia Hr ].
-     destruct rad as [| rr]; [ easy | ].
-     destruct rr; [ flia Hr | simpl ].
-     destruct rr; simpl.
-(* chiasse *)
+  --apply nA_dig_seq_ub.
 ...
 
  +right; left; intros k; apply H3.
