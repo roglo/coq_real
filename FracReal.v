@@ -4056,14 +4056,14 @@ destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
   move s1 before n1.
   rewrite Hs1 in H3.
   specialize (eq_mod_rad_add_succ_pred_rad u (i + 1) n1 Hur H3) as H5.
+  specialize (A_ge_1_add_all_true_if u _ Hur H4) as H6.
 ...
 
   assert (Hin1 : i + 1 ≤ n1 - 1). {
     rewrite Hn1.
     destruct rad; [ easy | simpl; flia ].
   }
-  specialize (A_ge_1_add_all_true_if u _ Hur H3) as H4.
-admit.
+...
  +destruct H3 as (k & Hjk & Hk).
   simpl in H2.
 ...
