@@ -3929,6 +3929,7 @@ destruct (lt_dec (nA i n u) (rad ^ s)) as [H1| H1].
   flia H2 H.
 Qed.
 
+(*
 Theorem num_to_dig_if {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
   → (∀ k, d2n (numbers_to_digits u) (i + k) = rad - 1)
@@ -4057,60 +4058,10 @@ destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
   rewrite Hs1 in H3.
   specialize (eq_mod_rad_add_succ_pred_rad u (i + 1) n1 Hur H3) as H5.
   specialize (A_ge_1_add_all_true_if u _ Hur H4) as H6.
-...
+(* bon, c'est interminable, plein le cul *)
+*)
 
-  assert (Hin1 : i + 1 ≤ n1 - 1). {
-    rewrite Hn1.
-    destruct rad; [ easy | simpl; flia ].
-  }
-...
- +destruct H3 as (k & Hjk & Hk).
-  simpl in H2.
-...
-+idtac.
-  destruct H4 as [H4| [H4| H4]].
-  *rewrite nA_split_first in Hj; [ | flia Hin ].
-   rewrite nA_split_first in Hj; [ | flia Hin ].
-...
-  *admit.
-  *admit.
- +destruct H3 as (k & Hjk & Hk).
-  simpl in H2.
-...
- replace (n - i - j - 2) with (s - S j) in Hj by flia Hs.
- assert (Hin : i + 2 ≤ n - 1). {
-   rewrite Hn.
-   destruct rad; [ easy | simpl; flia ].
- }
- assert (Hjn : i + j + 2 ≤ n - 1). {
-   rewrite Hn.
-   destruct rad; [ easy | simpl; flia ].
- }
- destruct (lt_dec (nA i n u) (rad ^ s)) as [H2| H2].
- +assert (H3 : u (i + 1) < rad). {
-    revert Hj.
-    apply Decidable.contrapositive; [ apply Nat.lt_decidable | ].
-    intros H3; apply Nat.nlt_ge in H3.
-    apply le_not_lt.
-    rewrite Nat.mod_small; [ | easy ].
-    rewrite nA_split_first; [ | flia Hin ].
-    replace (n - i - 2) with (s - 1) by flia Hs.
-    rewrite Nat.mul_sub_distr_r.
-    apply Nat.le_sub_le_add_r.
-    rewrite <- Nat.pow_add_r.
-    replace (S j + (s - S j)) with (1 + (s - 1)) by flia Hs Hjn.
-    eapply Nat.le_trans; [ | apply Nat.le_add_r ].
-    eapply Nat.le_trans; [ | apply Nat.le_add_r ].
-    rewrite Nat.pow_add_r, Nat.pow_1_r.
-    now apply Nat.mul_le_mono_r.
-  }
-  ...admit.
- +replace (nA i n u mod rad ^ s) with (nA i n u - rad ^ s) in Hj.
-  *idtac.
-
-(* mon cul *)
-...
-
+(*
 Theorem num_to_dig_9 {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
   → (∀ k, d2n (numbers_to_digits u) (i + k) = rad - 1)
@@ -4193,13 +4144,13 @@ destruct (LPO_fst (A_ge_1 (i + k) u)) as [H2| H2].
     move s2 before n2.
     apply Nat.nle_gt in Hj; apply Hj; clear Hj.
     (* 9990000 ≤ 9999998 *)
-    ...admit.
+admit.
  +destruct H3 as (j & Hbef & Hwhi & Haft).
   *destruct j.
   --exfalso; clear Hbef.
     rewrite Nat.add_0_r in Hwhi, Haft.
     specialize (A_ge_1_all_true_if u (i + k) H2) as H3.
-    ...admit.
+    admit.
   --specialize (Hbef 0 (Nat.lt_0_succ j)) as H3.
     now rewrite Nat.add_0_r in H3.
 -destruct H2 as (j & Hjj & Hj).
@@ -4249,6 +4200,7 @@ destruct (LPO_fst (A_ge_1 (i + k) u)) as [H2| H2].
   --destruct H6 as (p & Hjp & Hp).
     simpl in H5.
 ...
+*)
 
 Theorem A_ge_1_add_series_all_true_if {r : radix} : ∀ x y i,
   (∀ k, A_ge_1 i (freal_add_series x y) k = true)
@@ -4283,34 +4235,6 @@ destruct H2 as [H2| [H2| H2]].
  1,2: specialize (digit_lt_radix (freal y (i + j + k + 2))) as H4.
  1,2: unfold fd2n in Haft |-*; flia Haft H3 H4.
 Qed.
-
-(*
-Theorem glop {r : radix} : ∀ x y i,
-  (∀ k, d2n (numbers_to_digits (freal_add_series x y)) (i + k + 1) = rad - 1)
-  → (∀ k : nat, fd2n x (i + k + 1) + fd2n y (i + k + 1) = rad - 1) ∨
-     (∀ k : nat, fd2n x (i + k + 1) = rad - 1) ∧ (∀ k : nat, fd2n y (i + k + 1) = rad - 1) ∨
-     (∃ j : nat,
-       (∀ k, k < j → fd2n x (i + k + 1) + fd2n y (i + k + 1) = rad - 1) ∧
-       fd2n x (i + j + 1) + fd2n y (i + j + 1) = rad - 2 ∧
-       (∀ k, fd2n x (i + j + k + 2) = rad - 1) ∧
-       (∀ k : nat, fd2n y (i + j + k + 2) = rad - 1)).
-Proof.
-intros * Hxy.
-assert (H1 : ∀ k, A_ge_1 i (freal_add_series x y) k = true). {
-  intros k.
-  move k before i.
-  set (u := freal_add_series x y) in Hxy |-*.
-  specialize (Hxy k) as H1.
-  unfold d2n, numbers_to_digits in H1.
-  destruct (LPO_fst (A_ge_1 (i + k + 1) u)) as [H2| H2].
-  -simpl in H1.
-Search (_ → A_ge_1 _ _ _ = true).
-...
-
-}
-specialize (A_ge_1_add_series_all_true_if x y i H1) as H2.
-...
-*)
 
 Theorem freal_eq_prop_add_norm_l {r : radix} : ∀ x y,
   freal_eq_prop {| freal := freal_add_to_seq (freal_normalize x) y |}
