@@ -3929,8 +3929,6 @@ destruct (lt_dec (nA i n u) (rad ^ s)) as [H1| H1].
   flia H2 H.
 Qed.
 
-...
-
 Theorem num_to_dig_if {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
   → (∀ k, d2n (numbers_to_digits u) (i + k) = rad - 1)
@@ -4056,7 +4054,8 @@ destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
   remember (rad * (i + 1 + 3)) as n1 eqn:Hn1.
   remember (n1 - (i + 1) - 1) as s1 eqn:Hs1.
   move s1 before n1.
-  specialize (eq_mod_rad_add_succ_pred_rad u i n Hur H3) as H5.
+  rewrite Hs1 in H3.
+  specialize (eq_mod_rad_add_succ_pred_rad u (i + 1) n1 Hur H3) as H5.
 ...
 
   assert (Hin1 : i + 1 ≤ n1 - 1). {
