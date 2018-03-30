@@ -3883,8 +3883,8 @@ Qed.
 Theorem eq_mod_rad_add_succ_pred_rad {r : radix} : ∀ u i n,
   (∀ k, u k ≤ 2 * (rad - 1))
   → (u i + nA i n u / rad ^ (n - i -  1) + 1) mod rad = rad - 1
-  → u i = (2 * rad - 3) mod rad ∨ u i = rad - 2 ∨
-     u i = 2 * rad - 3 ∨ u i = 2 * rad - 2.
+  → u i mod rad = (2 * rad - 3) mod rad ∨
+     u i = rad - 2 ∨ u i = 2 * rad - 2.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
@@ -3897,55 +3897,39 @@ destruct (lt_dec (nA i n u) (rad ^ s)) as [H1| H1].
  +rewrite Nat.mod_small in Hu; [ | easy ].
   right; left; flia Hu.
  +rewrite Nat_mod_less_small in Hu.
-  *right; right; right; flia Hu.
+  *right; right; flia Hu.
   *split; [ flia H2 | ].
    specialize (Hur i); flia Hur Hr.
 -rewrite Nat_div_less_small in Hu.
  replace (u i + 1 + 1) with (u i + 2) in Hu by flia.
  +destruct (Nat.eq_dec rad 2) as [H2| H2].
-  *rewrite H2; simpl.
+  *rewrite H2.
    rewrite H2 in Hu.
    rewrite Nat_mod_add_once in Hu; [ | easy ].
-   replace (2 - 1) with 1 in Hu by flia.
-   destruct (lt_dec (u i) 2) as [H3| H3].
-  --now left; rewrite Nat.mod_small in Hu.
-  --rewrite Nat_mod_less_small in Hu.
-   ++right; right; left.
-(* non, c'est pas ça *)
-...
-   ++split; [ flia H3 | ].
-     specialize (Hur i); flia Hur H2.
+   now left; rewrite Hu.
   *destruct (lt_dec (u i + 2) rad) as [H3| H3].
   --rewrite Nat.mod_small in Hu; [ | easy ].
     left.
+    replace (u i) with (rad - 3) by flia Hu.
+    rewrite Nat.mod_small; [ | flia Hr ].
     rewrite Nat_mod_less_small; [ flia Hu | ].
     split; [ flia H2 Hr | flia Hr ].
   --rewrite Nat_mod_less_small in Hu.
-   ++right; right; left; flia Hu.
+   ++left.
+     now replace (u i) with (2 * rad - 3) by flia Hu.
    ++split; [ flia H3 | ].
      specialize (Hur i).
      apply Nat_le_neq_lt; [ flia Hr Hur | ].
      intros H; rewrite H in Hu.
      rewrite Nat.mod_mul in Hu; [ flia Hr Hu | easy ].
- +idtac.
-
-...
- +destruct (lt_dec (u i + 1 + 1) rad) as [H2| H2].
-  *rewrite Nat.mod_small in Hu; [ | easy ].
-...
-
-
-; [ flia Hu | easy ].
-  *right; right.
-   rewrite Nat_mod_less_small in Hu; [ flia Hu | ].
-   split; [ flia H2 | ].
-   specialize (Hur i); flia Hr Hur.
  +split; [ flia H1 | ].
   specialize (nA_upper_bound_for_add u i n Hur) as H2.
   specialize (Nat.pow_nonzero rad s radix_ne_0) as H.
   rewrite <- Hs in H2.
   flia H2 H.
 Qed.
+
+...
 
 Theorem num_to_dig_if {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
