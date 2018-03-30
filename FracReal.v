@@ -3908,9 +3908,27 @@ destruct (lt_dec (nA i n u) (rad ^ s)) as [H1| H1].
    rewrite Nat_mod_add_once in Hu; [ | easy ].
    replace (2 - 1) with 1 in Hu by flia.
    destruct (lt_dec (u i) 2) as [H3| H3].
-  --rewrite Nat.mod_small in Hu; [ now left | easy ].
+  --now left; rewrite Nat.mod_small in Hu.
   --rewrite Nat_mod_less_small in Hu.
+   ++right; right; left.
 (* non, c'est pas ça *)
+...
+   ++split; [ flia H3 | ].
+     specialize (Hur i); flia Hur H2.
+  *destruct (lt_dec (u i + 2) rad) as [H3| H3].
+  --rewrite Nat.mod_small in Hu; [ | easy ].
+    left.
+    rewrite Nat_mod_less_small; [ flia Hu | ].
+    split; [ flia H2 Hr | flia Hr ].
+  --rewrite Nat_mod_less_small in Hu.
+   ++right; right; left; flia Hu.
+   ++split; [ flia H3 | ].
+     specialize (Hur i).
+     apply Nat_le_neq_lt; [ flia Hr Hur | ].
+     intros H; rewrite H in Hu.
+     rewrite Nat.mod_mul in Hu; [ flia Hr Hu | easy ].
+ +idtac.
+
 ...
  +destruct (lt_dec (u i + 1 + 1) rad) as [H2| H2].
   *rewrite Nat.mod_small in Hu; [ | easy ].
