@@ -3851,14 +3851,19 @@ Qed.
 Theorem num_to_dig_if {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
   → (∀ k, d2n (numbers_to_digits u) (i + k) = rad - 1)
-  → u i mod rad = rad - 2 ∧
-       (∀ k, u (i + k + 1) = rad - 1) ∨
-     u i mod rad = (2 * rad - 3) mod rad ∧
-       (∀ k, u (i + k + 1) = 2 * (rad - 1)) ∨
-     (∃ j,
-       (∀ k, k < j → u (i + k + 1) = rad - 1) ∧
-       u (i + j + 1) = rad - 2 ∧
-       (∀ k, u (i + j + k + 2) = 2 * (rad - 1))).
+  → if LPO_fst (A_ge_1 i u) then
+       u i mod rad = rad - 2 ∧
+         (∀ k, u (i + k + 1) = rad - 1) ∨
+       u i mod rad = (2 * rad - 3) mod rad ∧
+         (∀ k, u (i + k + 1) = 2 * (rad - 1)) ∨
+       (∃ j,
+         (∀ k, k < j → u (i + k + 1) = rad - 1) ∧
+         u (i + j + 1) = rad - 2 ∧
+         (∀ k, u (i + j + k + 2) = 2 * (rad - 1)))
+     else
+       u i mod rad = rad - 2 ∧
+         (∀ k, u (i + k + 1) = 2 * (rad - 1)) ∨
+       False (* not yet impl *).
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
@@ -3955,6 +3960,8 @@ destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
  remember (rad * (i + j + 3)) as n eqn:Hn.
  remember (n - i - 1) as s eqn:Hs.
  move s before n.
+Inspect 4.
+...
  assert (Hin : i + 2 ≤ n - 1). {
    rewrite Hn.
    destruct rad; [ easy | simpl; flia ].
