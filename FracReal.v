@@ -3443,7 +3443,8 @@ Theorem A_ge_1_add_all_true_if {r : radix} : ∀ u i,
        u (i + j + 1) = rad - 2 ∧
        (∀ k, u (i + j + k + 2) = 2 * (rad - 1))).
 Proof.
-intros * Hur Hu.
+intros * Hur.
+intros Hu.
 specialize radix_ge_2 as Hr; move Hr before i.
 specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
 -right; right.
@@ -3809,6 +3810,23 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
  unfold v in H2.
  destruct (Nat.eq_dec (i + k + 2) (i + 1)) as [H3| H3]; [ flia H3 | ].
  now replace (i + k + 2) with (i + S k + 1) in H2 by flia.
+(*
+-intros H1 k.
+ apply A_ge_1_true_iff.
+ remember (rad * (i + k + 3)) as n eqn:Hn.
+ remember (n - i - 1) as s eqn:Hs.
+ move s before n.
+ replace (n - i - k - 2) with (s - S k) by flia Hs.
+ destruct H1 as [H1| [H1| H1]].
+ +idtac.
+  (* ouais *)
+  admit.
+ +idtac.
+  (* faut voir *)
+  admit.
+ +destruct H1 as (j & Hbef & Hwhi & Haft).
+  (* à vérifier *)
+*)
 Qed.
 
 Theorem eq_nA_div_1 {r : radix} : ∀ i n u,
@@ -3957,6 +3975,11 @@ destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
   destruct H4 as [H4| [H4| H4]].
   *rewrite nA_split_first in Hj; [ | flia Hin ].
    rewrite nA_split_first in Hj; [ | flia Hin ].
+...
+  *admit.
+  *admit.
+ +destruct H3 as (k & Hjk & Hk).
+  simpl in H2.
 ...
  replace (n - i - j - 2) with (s - S j) in Hj by flia Hs.
  assert (Hin : i + 2 ≤ n - 1). {
