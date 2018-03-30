@@ -3929,7 +3929,6 @@ destruct (lt_dec (nA i n u) (rad ^ s)) as [H1| H1].
   flia H2 H.
 Qed.
 
-(*
 Theorem num_to_dig_if {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
   → (∀ k, d2n (numbers_to_digits u) (i + k) = rad - 1)
@@ -4041,6 +4040,9 @@ destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
  remember (rad * (i + j + 3)) as n eqn:Hn.
  remember (n - i - 1) as s eqn:Hs.
  move s before n.
+(* tout de même... je me demande si ce cas n'est pas une contradiction
+   entre Hu et Hj *)
+...
  assert (Hin : i + 2 ≤ n - 1). {
    rewrite Hn.
    destruct rad; [ easy | simpl; flia ].
@@ -4059,7 +4061,7 @@ destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
   specialize (eq_mod_rad_add_succ_pred_rad u (i + 1) n1 Hur H3) as H5.
   specialize (A_ge_1_add_all_true_if u _ Hur H4) as H6.
 (* bon, c'est interminable, plein le cul *)
-*)
+...
 
 (*
 Theorem num_to_dig_9 {r : radix} : ∀ u i,
