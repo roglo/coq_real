@@ -9,7 +9,6 @@ Require Import Misc Summation(*Xnat*).
 Tactic Notation "flia" hyp_list(Hs) := clear - Hs; lia.
 
 (* Limited Principle of Omniscience *)
-(* Borrowed from my proof of Puiseux's Theorem *)
 Axiom LPO : ∀ (u : nat → nat), (∀ i, u i = O) + { i : nat | u i ≠ O }.
 
 Fixpoint first_such_that (P : nat → bool) n i :=
@@ -3848,6 +3847,83 @@ replace x with (x - rad ^ s + 1 * rad ^ s).
  now apply Nat.sub_add.
 Qed.
 
+Theorem eq_mod_rad_add_pred_rad {r : radix} : ∀ u i n,
+  (∀ k, u k ≤ 2 * (rad - 1))
+  → (u i + nA i n u / rad ^ (n - i -  1)) mod rad = rad - 1
+  → u i = rad - 2 ∨ u i = rad - 1 ∨ u i = 2 * (rad - 1).
+Proof.
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hur Hu.
+remember (n - i - 1) as s eqn:Hs.
+destruct (lt_dec (nA i n u) (rad ^ s)) as [H1| H1].
+-right; left.
+ rewrite Nat.div_small in Hu; [ | easy ].
+ rewrite Nat.add_0_r in Hu.
+ destruct (lt_dec (u i) rad) as [H2| H2].
+ +now rewrite Nat.mod_small in Hu.
+ +specialize (Hur i).
+  rewrite Nat_mod_less_small in Hu; [ flia Hur Hu | ].
+  split; [ flia H2 | flia Hur Hr ].
+-rewrite Nat_div_less_small in Hu.
+ +destruct (lt_dec (u i + 1) rad) as [H2| H2].
+  *left.
+   rewrite Nat.mod_small in Hu; [ flia Hu | easy ].
+  *right; right.
+   rewrite Nat_mod_less_small in Hu; [ flia Hu | ].
+   split; [ flia H2 | ].
+   specialize (Hur i); flia Hr Hur.
+ +split; [ flia H1 | ].
+  specialize (nA_upper_bound_for_add u i n Hur) as H2.
+  specialize (Nat.pow_nonzero rad s radix_ne_0) as H.
+  rewrite <- Hs in H2.
+  flia H2 H.
+Qed.
+
+Theorem eq_mod_rad_add_succ_pred_rad {r : radix} : ∀ u i n,
+  (∀ k, u k ≤ 2 * (rad - 1))
+  → (u i + nA i n u / rad ^ (n - i -  1) + 1) mod rad = rad - 1
+  → u i = (2 * rad - 3) mod rad ∨ u i = rad - 2 ∨
+     u i = 2 * rad - 3 ∨ u i = 2 * rad - 2.
+Proof.
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hur Hu.
+remember (n - i - 1) as s eqn:Hs.
+destruct (lt_dec (nA i n u) (rad ^ s)) as [H1| H1].
+-rewrite Nat.div_small in Hu; [ | easy ].
+ rewrite Nat.add_0_r in Hu.
+ destruct (lt_dec (u i + 1) rad) as [H2| H2].
+ +rewrite Nat.mod_small in Hu; [ | easy ].
+  right; left; flia Hu.
+ +rewrite Nat_mod_less_small in Hu.
+  *right; right; right; flia Hu.
+  *split; [ flia H2 | ].
+   specialize (Hur i); flia Hur Hr.
+-rewrite Nat_div_less_small in Hu.
+ replace (u i + 1 + 1) with (u i + 2) in Hu by flia.
+ *destruct (Nat.eq_dec rad 2) as [H2| H2].
+ --rewrite H2 in Hu.
+   rewrite Nat_mod_add_once in Hu; [ | easy ].
+
+...
+ +destruct (lt_dec (u i + 1 + 1) rad) as [H2| H2].
+  *rewrite Nat.mod_small in Hu; [ | easy ].
+...
+
+
+; [ flia Hu | easy ].
+  *right; right.
+   rewrite Nat_mod_less_small in Hu; [ flia Hu | ].
+   split; [ flia H2 | ].
+   specialize (Hur i); flia Hr Hur.
+ +split; [ flia H1 | ].
+  specialize (nA_upper_bound_for_add u i n Hur) as H2.
+  specialize (Nat.pow_nonzero rad s radix_ne_0) as H.
+  rewrite <- Hs in H2.
+  flia H2 H.
+Qed.
+
 Theorem num_to_dig_if {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
   → (∀ k, d2n (numbers_to_digits u) (i + k) = rad - 1)
@@ -3862,8 +3938,7 @@ Theorem num_to_dig_if {r : radix} : ∀ u i,
          (∀ k, u (i + j + k + 2) = 2 * (rad - 1)))
      else
        u i mod rad = rad - 2 ∧
-         (∀ k, u (i + k + 1) = 2 * (rad - 1)) ∨
-       False (* not yet impl *).
+         (∀ k, u (i + k + 1) = 2 * (rad - 1)).
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
@@ -3960,25 +4035,33 @@ destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
  remember (rad * (i + j + 3)) as n eqn:Hn.
  remember (n - i - 1) as s eqn:Hs.
  move s before n.
-Inspect 4.
-...
  assert (Hin : i + 2 ≤ n - 1). {
    rewrite Hn.
    destruct rad; [ easy | simpl; flia ].
  }
- specialize (Hu 1) as H2.
- unfold d2n, numbers_to_digits in H2.
- exfalso.
- destruct (LPO_fst (A_ge_1 (i + 1) u)) as [H3| H3].
- +simpl in H2.
+ rewrite Hs in H1.
+ specialize (eq_mod_rad_add_pred_rad u i n Hur H1) as H2.
+ rewrite <- Hs in H1.
+ specialize (Hu 1) as H3.
+ unfold d2n, numbers_to_digits in H3.
+ destruct (LPO_fst (A_ge_1 (i + 1) u)) as [H4| H4].
+ +simpl in H3.
   remember (rad * (i + 1 + 3)) as n1 eqn:Hn1.
   remember (n1 - (i + 1) - 1) as s1 eqn:Hs1.
   move s1 before n1.
+  specialize (eq_mod_rad_add_succ_pred_rad u i n Hur H3) as H5.
+...
+
   assert (Hin1 : i + 1 ≤ n1 - 1). {
     rewrite Hn1.
     destruct rad; [ easy | simpl; flia ].
   }
   specialize (A_ge_1_add_all_true_if u _ Hur H3) as H4.
+admit.
+ +destruct H3 as (k & Hjk & Hk).
+  simpl in H2.
+...
++idtac.
   destruct H4 as [H4| [H4| H4]].
   *rewrite nA_split_first in Hj; [ | flia Hin ].
    rewrite nA_split_first in Hj; [ | flia Hin ].

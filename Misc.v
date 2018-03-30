@@ -166,3 +166,10 @@ replace a with (a - b + 1 * b) at 1.
 -rewrite Nat.mul_1_l.
  now apply Nat.sub_add.
 Qed.
+
+Theorem Nat_mod_add_once : ∀ a b, b ≠ 0 → (a + b) mod b = a mod b.
+Proof.
+intros * Hb.
+replace b with (1 * b) at 1 by apply Nat.mul_1_l.
+now apply Nat.mod_add.
+Qed.
