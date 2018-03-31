@@ -3929,6 +3929,35 @@ destruct (lt_dec (nA i n u) (rad ^ s)) as [H1| H1].
   flia H2 H.
 Qed.
 
+Theorem all_num_to_dig_eq_pred_rad {r : radix} : ∀ u i,
+  (∀ k, u k ≤ 2 * (rad - 1))
+  → (∀ k, d2n (numbers_to_digits u) (i + k) = rad - 1)
+  → ∀ k,
+     if LPO_fst (A_ge_1 (i + k) u) then
+        u (i + k) mod rad = (2 * rad - 3) mod rad ∨
+        u (i + k) = rad - 2 ∨
+        u (i + k) = 2 * rad - 2
+     else
+       u (i + k) = rad - 2 ∨
+       u (i + k) = rad - 1 ∨
+       u (i + k) = 2 * (rad - 1).
+Proof.
+intros *.
+intros Hur Hu *.
+specialize (Hu k) as H1.
+unfold d2n, numbers_to_digits in H1.
+destruct (LPO_fst (A_ge_1 (i + k) u)) as [H2| H2].
+-simpl in H1.
+ remember (rad * (i + k + 3)) as n eqn:Hn.
+ specialize (eq_mod_rad_add_succ_pred_rad u (i + k) n Hur H1) as H3.
+ easy.
+-destruct H2 as (j & Hjj & Hj).
+ simpl in H1.
+ remember (rad * (i + k + j + 3)) as n eqn:Hn.
+ specialize (eq_mod_rad_add_pred_rad u (i + k) n Hur H1) as H3.
+ easy.
+Qed.
+
 Theorem num_to_dig_if {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
   → (∀ k, d2n (numbers_to_digits u) (i + k) = rad - 1)
@@ -3961,6 +3990,12 @@ destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
    destruct rad; [ easy | simpl; flia ].
  }
  specialize (A_ge_1_add_all_true_if u _ Hur H2) as H3.
+(**)
+ rewrite Hs in H1.
+ specialize (eq_mod_rad_add_succ_pred_rad u i n Hur H1) as H4.
+ rewrite <- Hs in H1.
+...
+(**)
  destruct H3 as [H3| [H3| H3]].
  +left.
   split; [ | easy ].
