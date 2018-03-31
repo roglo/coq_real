@@ -3850,7 +3850,7 @@ Qed.
 Theorem eq_mod_rad_add_pred_rad {r : radix} : ∀ u i n,
   (∀ k, u k ≤ 2 * (rad - 1))
   → (u i + nA i n u / rad ^ (n - i -  1)) mod rad = rad - 1
-  → u i = rad - 2 ∨ u i = rad - 1 ∨ u i = 2 * (rad - 1).
+  → u i = rad - 2 ∨ u i = rad - 1 ∨ u i = 2 * rad - 2.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
@@ -3883,7 +3883,8 @@ Qed.
 Theorem eq_mod_rad_add_succ_pred_rad {r : radix} : ∀ u i n,
   (∀ k, u k ≤ 2 * (rad - 1))
   → (u i + nA i n u / rad ^ (n - i -  1) + 1) mod rad = rad - 1
-  → u i mod rad = (2 * rad - 3) mod rad ∨
+  → rad ≠ 2 ∧ u i = rad - 3 ∨
+     u i = 2 * rad - 3 ∨
      u i = rad - 2 ∨ u i = 2 * rad - 2.
 Proof.
 intros *.
@@ -3895,28 +3896,27 @@ destruct (lt_dec (nA i n u) (rad ^ s)) as [H1| H1].
  rewrite Nat.add_0_r in Hu.
  destruct (lt_dec (u i + 1) rad) as [H2| H2].
  +rewrite Nat.mod_small in Hu; [ | easy ].
-  right; left; flia Hu.
+  right; right; left; flia Hu.
  +rewrite Nat_mod_less_small in Hu.
-  *right; right; flia Hu.
+  *right; right; right; flia Hu.
   *split; [ flia H2 | ].
    specialize (Hur i); flia Hur Hr.
 -rewrite Nat_div_less_small in Hu.
  replace (u i + 1 + 1) with (u i + 2) in Hu by flia.
  +destruct (Nat.eq_dec rad 2) as [H2| H2].
-  *rewrite H2.
-   rewrite H2 in Hu.
+  *rewrite H2; simpl.
+   rewrite H2 in Hur, Hu.
    rewrite Nat_mod_add_same_r in Hu; [ | easy ].
-   now left; rewrite Hu.
+   specialize (Hur i); simpl in Hur.
+   destruct (Nat.eq_dec (u i) 2) as [H3| H3].
+  --now rewrite H3 in Hu; simpl in Hu.
+  --rewrite Nat.mod_small in Hu; [ | flia Hur H3 ].
+    now right; left.
   *destruct (lt_dec (u i + 2) rad) as [H3| H3].
   --rewrite Nat.mod_small in Hu; [ | easy ].
-    left.
-    replace (u i) with (rad - 3) by flia Hu.
-    rewrite Nat.mod_small; [ | flia Hr ].
-    rewrite Nat_mod_less_small; [ flia Hu | ].
-    split; [ flia H2 Hr | flia Hr ].
+    left; split; [ easy | flia Hu ].
   --rewrite Nat_mod_less_small in Hu.
-   ++left.
-     now replace (u i) with (2 * rad - 3) by flia Hu.
+   ++right; left; flia Hu.
    ++split; [ flia H3 | ].
      specialize (Hur i).
      apply Nat_le_neq_lt; [ flia Hr Hur | ].
@@ -3934,11 +3934,12 @@ Theorem all_num_to_dig_eq_pred_rad {r : radix} : ∀ u i,
   → (∀ k, d2n (numbers_to_digits u) (i + k) = rad - 1)
   → ∀ k,
      u (i + k) = rad - 2 ∨
-     u (i + k) = 2 * (rad - 1) ∨
+     u (i + k) = 2 * rad - 2 ∨
      if LPO_fst (A_ge_1 (i + k) u) then
-        u (i + k) mod rad = (2 * rad - 3) mod rad
+       rad ≠ 2 ∧ u (i + k) = rad - 3 ∨
+       u (i + k) = 2 * rad - 3
      else
-        u (i + k) = rad - 1.
+       u (i + k) = rad - 1.
 Proof.
 intros *.
 intros Hur Hu *.
@@ -3948,8 +3949,9 @@ destruct (LPO_fst (A_ge_1 (i + k) u)) as [H2| H2].
 -simpl in H1.
  remember (rad * (i + k + 3)) as n eqn:Hn.
  specialize (eq_mod_rad_add_succ_pred_rad u (i + k) n Hur H1) as H3.
- destruct H3 as [H3| H3]; [ now right; right | ].
- destruct H3 as [H3| H3]; [ now left | right; left; flia H3 ].
+ destruct H3 as [H3| H3]; [ now right; right; left | ].
+ destruct H3 as [H3| H3]; [ now right; right; right | ].
+ destruct H3 as [H3| H3]; [ now left | now right; left ].
 -destruct H2 as (j & Hjj & Hj).
  simpl in H1.
  remember (rad * (i + k + j + 3)) as n eqn:Hn.
@@ -3957,6 +3959,8 @@ destruct (LPO_fst (A_ge_1 (i + k) u)) as [H2| H2].
  destruct H3 as [H3| H3]; [ now left | ].
  destruct H3 as [H3| H3]; [ now right; right | now right; left ].
 Qed.
+
+...
 
 Theorem num_to_dig_if {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
