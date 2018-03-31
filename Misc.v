@@ -53,11 +53,18 @@ Qed.
 Theorem List_cons_comm_app : ∀ A (x : A) l l', l ++ x :: l' = l ++ [x] ++ l'.
 Proof. easy. Qed.
 
-Theorem Nat_mod_same_l : ∀ a b, a ≠ 0 → (a + b) mod a = b mod a.
+Theorem Nat_mod_add_same_l : ∀ a b, a ≠ 0 → (a + b) mod a = b mod a.
 Proof.
 intros * Ha.
 rewrite <- Nat.add_mod_idemp_l; [ | easy ].
 now rewrite Nat.mod_same.
+Qed.
+
+Theorem Nat_mod_add_same_r : ∀ a b, b ≠ 0 → (a + b) mod b = a mod b.
+Proof.
+intros * Ha.
+rewrite <- Nat.add_mod_idemp_r; [ | easy ].
+now rewrite Nat.mod_same, Nat.add_0_r.
 Qed.
 
 Theorem Nat_sqr_sub_1 : ∀ a, a ^ 2 - 1 = (a + 1) * (a - 1).
@@ -167,9 +174,11 @@ replace a with (a - b + 1 * b) at 1.
  now apply Nat.sub_add.
 Qed.
 
+(*
 Theorem Nat_mod_add_once : ∀ a b, b ≠ 0 → (a + b) mod b = a mod b.
 Proof.
 intros * Hb.
 replace b with (1 * b) at 1 by apply Nat.mul_1_l.
 now apply Nat.mod_add.
 Qed.
+*)

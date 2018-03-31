@@ -3905,7 +3905,7 @@ destruct (lt_dec (nA i n u) (rad ^ s)) as [H1| H1].
  +destruct (Nat.eq_dec rad 2) as [H2| H2].
   *rewrite H2.
    rewrite H2 in Hu.
-   rewrite Nat_mod_add_once in Hu; [ | easy ].
+   rewrite Nat_mod_add_same_r in Hu; [ | easy ].
    now left; rewrite Hu.
   *destruct (lt_dec (u i + 2) rad) as [H3| H3].
   --rewrite Nat.mod_small in Hu; [ | easy ].
@@ -4040,8 +4040,11 @@ destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
  remember (rad * (i + j + 3)) as n eqn:Hn.
  remember (n - i - 1) as s eqn:Hs.
  move s before n.
+ replace (n - i - j - 2) with (s - S j) in Hj by flia Hs.
 (* tout de même... je me demande si ce cas n'est pas une contradiction
    entre Hu et Hj *)
+ exfalso.
+Search ((_ + _) mod _).
 ...
  assert (Hin : i + 2 ≤ n - 1). {
    rewrite Hn.
