@@ -3883,9 +3883,10 @@ Qed.
 Theorem eq_mod_rad_add_succ_pred_rad {r : radix} : ∀ u i n,
   (∀ k, u k ≤ 2 * (rad - 1))
   → (u i + nA i n u / rad ^ (n - i -  1) + 1) mod rad = rad - 1
-  → rad ≠ 2 ∧ u i = rad - 3 ∨
+  → u i = rad - 3 ∨
      u i = 2 * rad - 3 ∨
-     u i = rad - 2 ∨ u i = 2 * rad - 2.
+     u i = rad - 2 ∨
+     u i = 2 * rad - 2.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
@@ -3914,7 +3915,7 @@ destruct (lt_dec (nA i n u) (rad ^ s)) as [H1| H1].
     now right; left.
   *destruct (lt_dec (u i + 2) rad) as [H3| H3].
   --rewrite Nat.mod_small in Hu; [ | easy ].
-    left; split; [ easy | flia Hu ].
+    left; flia Hu.
   --rewrite Nat_mod_less_small in Hu.
    ++right; left; flia Hu.
    ++split; [ flia H3 | ].
@@ -3936,7 +3937,7 @@ Theorem all_num_to_dig_eq_pred_rad {r : radix} : ∀ u i,
      u (i + k) = rad - 2 ∨
      u (i + k) = 2 * rad - 2 ∨
      if LPO_fst (A_ge_1 (i + k) u) then
-       rad ≠ 2 ∧ u (i + k) = rad - 3 ∨
+       u (i + k) = rad - 3 ∨
        u (i + k) = 2 * rad - 3
      else
        u (i + k) = rad - 1.
