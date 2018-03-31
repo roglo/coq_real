@@ -4041,10 +4041,12 @@ destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
  remember (n - i - 1) as s eqn:Hs.
  move s before n.
  replace (n - i - j - 2) with (s - S j) in Hj by flia Hs.
-(* tout de même... je me demande si ce cas n'est pas une contradiction
-   entre Hu et Hj *)
+ (* tout de même... je me demande si ce cas n'est pas une contradiction
+    entre Hu et Hj *)
  exfalso.
-Search ((_ + _) mod _).
+ rewrite Hs in H1.
+ specialize (eq_mod_rad_add_pred_rad u i n Hur H1) as H2.
+ rewrite <- Hs in H1.
 ...
  assert (Hin : i + 2 ≤ n - 1). {
    rewrite Hn.
