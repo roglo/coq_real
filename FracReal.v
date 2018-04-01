@@ -3953,6 +3953,9 @@ replace (n - (i + j) - k - 2) with (s - S k) by flia Hs.
 replace (n - i - (j + k) - 2) with (s - S k) in Hu by flia Hs.
 move Hu at bottom.
 ...
+rewrite Nat.pow_add_r in Hu.
+rewrite Nat.mod_mul_r in Hu; try now apply Nat.pow_nonzero.
+...
 
 Theorem all_num_to_dig_eq_pred_rad {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
