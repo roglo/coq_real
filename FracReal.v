@@ -3995,11 +3995,14 @@ replace (rad ^ S (j + k) - 1) with
  +now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
 Qed.
 
-(* yeah!!! *)
-
-Inspect 1.
-
-...
+Theorem A_ge_1_add_r_all_true_if {r : radix} : ∀ u i,
+  (∀ k, A_ge_1 i u k = true)
+  → ∀ j, (∀ k, A_ge_1 (i + j) u k = true).
+Proof.
+intros * Hu *.
+specialize (A_ge_1_add_r_true_if u i j) as H1.
+apply H1, Hu.
+Qed.
 
 Theorem all_num_to_dig_eq_pred_rad {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
@@ -4031,8 +4034,6 @@ destruct (LPO_fst (A_ge_1 (i + k) u)) as [H2| H2].
  destruct H3 as [H3| H3]; [ now left | ].
  destruct H3 as [H3| H3]; [ now right; right | now right; left ].
 Qed.
-
-...
 
 Theorem num_to_dig_if {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
