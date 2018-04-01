@@ -4000,9 +4000,10 @@ Theorem A_ge_1_add_r_all_true_if {r : radix} : ∀ u i,
   → ∀ j, (∀ k, A_ge_1 (i + j) u k = true).
 Proof.
 intros * Hu *.
-specialize (A_ge_1_add_r_true_if u i j) as H1.
-apply H1, Hu.
+apply A_ge_1_add_r_true_if, Hu.
 Qed.
+
+...
 
 Theorem all_num_to_dig_eq_pred_rad {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
