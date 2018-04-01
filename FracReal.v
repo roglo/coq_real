@@ -3930,7 +3930,7 @@ destruct (lt_dec (nA i n u) (rad ^ s)) as [H1| H1].
   flia H2 H.
 Qed.
 
-Theorem glop {r : radix} : ∀ u i j k,
+Theorem A_ge_1_add_r_true_if {r : radix} : ∀ u i j k,
    A_ge_1 i u (j + k) = true
    → A_ge_1 (i + j) u k = true.
 Proof.
@@ -3941,7 +3941,6 @@ apply A_ge_1_true_iff in Hu.
 apply A_ge_1_true_iff.
 replace (i + (j + k) + 3) with (i + j + k + 3) in Hu by flia.
 remember (rad * (i + j + k + 3)) as n eqn:Hn.
-(**)
 remember (n - (i + j) - 1) as s eqn:Hs.
 move s before n.
 assert (Hijn : i + j + 2 ≤ n - 1). {
@@ -3969,6 +3968,34 @@ assert (H1 : nA (i + j) n u mod rad ^ s = nA i n u mod rad ^ s). {
   now rewrite Nat.mod_mul; [ | apply Nat.pow_nonzero ].
 }
 rewrite H1 in Hu.
+replace (rad ^ S (j + k) - 1) with
+  (rad ^ S k - 1 + (rad ^ j - 1) * rad ^ S k).
+-rewrite Nat.mul_add_distr_r.
+ apply Nat.add_lt_le_mono; [ easy | ].
+ rewrite <- Nat.mul_assoc, Nat.mul_comm.
+ rewrite <- Nat.pow_add_r.
+ replace (S k + (s - S k)) with s.
+ +apply Nat.mul_le_mono_pos_r.
+  *now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+  *rewrite Nat.sub_1_r.
+   apply Nat.lt_le_pred.
+   apply Nat.mod_upper_bound.
+   now apply Nat.pow_nonzero.
+ +rewrite Nat.add_sub_assoc; [ flia | ].
+  rewrite Hs, Hn.
+  destruct rad; [ easy | simpl; flia ].
+-rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+ rewrite Nat.add_comm.
+ rewrite Nat.add_sub_assoc.
+ +rewrite Nat.sub_add.
+  *rewrite <- Nat.pow_add_r.
+   now replace (j + S k) with (S (j + k)).
+  *apply Nat_mul_le_pos_l.
+   now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+ +now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+Qed.
+
+(* yeah!!! *)
 
 ...
 
