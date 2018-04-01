@@ -3952,9 +3952,14 @@ replace (n - i - 1) with (s + j) in Hu by flia Hs Hijn.
 replace (n - (i + j) - k - 2) with (s - S k) by flia Hs.
 replace (n - i - (j + k) - 2) with (s - S k) in Hu by flia Hs.
 move Hu at bottom.
-...
-rewrite Nat.pow_add_r in Hu.
-rewrite Nat.mod_mul_r in Hu; try now apply Nat.pow_nonzero.
+revert Hu.
+apply Decidable.contrapositive; [ apply Nat.le_decidable | ].
+intros Hu.
+apply Nat.nle_gt in Hu.
+apply Nat.nle_gt.
+rewrite Nat.pow_add_r.
+rewrite Nat.mod_mul_r; try now apply Nat.pow_nonzero.
+
 ...
 
 Theorem all_num_to_dig_eq_pred_rad {r : radix} : ∀ u i,
