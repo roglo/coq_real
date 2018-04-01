@@ -3997,6 +3997,8 @@ Qed.
 
 (* yeah!!! *)
 
+Inspect 1.
+
 ...
 
 Theorem all_num_to_dig_eq_pred_rad {r : radix} : ∀ u i,
