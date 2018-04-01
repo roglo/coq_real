@@ -3930,6 +3930,31 @@ destruct (lt_dec (nA i n u) (rad ^ s)) as [H1| H1].
   flia H2 H.
 Qed.
 
+Theorem glop {r : radix} : ∀ u i j k,
+   A_ge_1 i u (j + k) = true
+   → A_ge_1 (i + j) u k = true.
+Proof.
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hu.
+apply A_ge_1_true_iff in Hu.
+apply A_ge_1_true_iff.
+replace (i + (j + k) + 3) with (i + j + k + 3) in Hu by flia.
+remember (rad * (i + j + k + 3)) as n eqn:Hn.
+(**)
+remember (n - (i + j) - 1) as s eqn:Hs.
+move s before n.
+assert (Hijn : i + j + 2 ≤ n - 1). {
+  rewrite Hn.
+  destruct rad; [ easy | simpl; flia ].
+}
+replace (n - i - 1) with (s + j) in Hu by flia Hs Hijn.
+replace (n - (i + j) - k - 2) with (s - S k) by flia Hs.
+replace (n - i - (j + k) - 2) with (s - S k) in Hu by flia Hs.
+move Hu at bottom.
+rewrite Nat.pow_add_r in Hu.
+...
+
 Theorem all_num_to_dig_eq_pred_rad {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
   → (∀ k, d2n (numbers_to_digits u) (i + k) = rad - 1)
