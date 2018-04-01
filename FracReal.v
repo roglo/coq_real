@@ -4003,6 +4003,8 @@ intros * Hu *.
 apply A_ge_1_add_r_true_if, Hu.
 Qed.
 
+...
+
 Theorem glop {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
   → (∀ k, d2n (numbers_to_digits u) (i + k) = rad - 1)
