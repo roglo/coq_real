@@ -4108,12 +4108,11 @@ destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
    destruct rad; [ easy | simpl; flia ].
  }
  specialize (A_ge_1_add_all_true_if u _ Hur H2) as H3.
-(**)
+(*
  rewrite Hs in H1.
  specialize (eq_mod_rad_add_succ_pred_rad u i n Hur H1) as H4.
  rewrite <- Hs in H1.
-...
-(**)
+*)
  destruct H3 as [H3| [H3| H3]].
  +left.
   split; [ | easy ].
