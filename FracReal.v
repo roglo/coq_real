@@ -3851,8 +3851,8 @@ Theorem eq_mod_rad_add_pred_rad {r : radix} : ∀ u i n s,
   (∀ k, u k ≤ 2 * (rad - 1))
   → s = n - i - 1
   → (u i + nA i n u / rad ^ s) mod rad = rad - 1
-  → u i = rad - 2 ∧ rad ^ s ≤ nA i n u ≤ 2 * rad ^ s ∨
-     u i = 2 * rad - 2 ∧ rad ^ s ≤ nA i n u ≤ 2 * rad ^ s ∨
+  → u i = rad - 2 ∧ rad ^ s ≤ nA i n u < 2 * rad ^ s ∨
+     u i = 2 * rad - 2 ∧ rad ^ s ≤ nA i n u < 2 * rad ^ s ∨
      u i = rad - 1 ∧ nA i n u < rad ^ s.
 Proof.
 intros *.
@@ -4219,6 +4219,7 @@ destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
  specialize (eq_mod_rad_add_pred_rad u i n s Hur Hs H1) as H2.
  destruct H2 as [H2| [H2| H2]].
  +destruct H2 as (H2, H3).
+  rewrite Nat_mod_less_small in Hj; [ | easy ].
 ...
 (**)
 destruct j.
