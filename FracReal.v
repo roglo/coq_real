@@ -4068,8 +4068,9 @@ destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
  destruct (LPO_fst (A_ge_1 (i + k) u)) as [H4| H4].
  +simpl in H3.
   remember (rad * (i + k + 3)) as n eqn:Hn.
-...
-  specialize (eq_mod_rad_add_succ_pred_rad u (i + k) n Hur H3) as H5.
+  remember (n - (i + k) - 1) as s eqn:Hs.
+  move s before n.
+  specialize (eq_mod_rad_add_succ_pred_rad u (i + k) n s Hur Hs H3) as H5.
   destruct H5 as [H5| H5]; [ now right; right; left | ].
   destruct H5 as [H5| H5]; [ now right; right; right | ].
   destruct H5 as [H5| H5]; [ now left | now right; left ].
@@ -4092,8 +4093,8 @@ Theorem all_num_to_dig_eq_pred_rad {r : radix} : ∀ u i,
   → ∀ k,
      let n := rad * (i + k + 3) in
      let s := n - (i + k) - 1 in
-     u (i + k) = rad - 2 ∧ rad ^ s ≤ nA (i + k) n u < 2 * rad ^ s ∨
-     u (i + k) = 2 * rad - 2 ∧ rad ^ s ≤ nA (i + k) n u < 2 * rad ^ s ∨
+     u (i + k) = rad - 2 ∧ nA (i + k) n u < rad ^ s ∨
+     u (i + k) = 2 * rad - 2 ∧ nA (i + k) n u < rad ^ s ∨
      if LPO_fst (A_ge_1 (i + k) u) then
        u (i + k) = rad - 3 ∨
        u (i + k) = 2 * rad - 3
@@ -4107,22 +4108,21 @@ unfold d2n, numbers_to_digits in H1.
 destruct (LPO_fst (A_ge_1 (i + k) u)) as [H2| H2].
 -simpl in H1.
  fold n in H1.
- specialize (eq_mod_rad_add_succ_pred_rad u (i + k) n Hur H1) as H3.
-...
+ subst s.
+ remember (n - (i + k) - 1) as s eqn:Hs.
+ specialize (eq_mod_rad_add_succ_pred_rad u (i + k) n s Hur Hs H1) as H3.
  destruct H3 as [H3| H3]; [ now right; right; left | ].
  destruct H3 as [H3| H3]; [ now right; right; right | ].
- destruct H3 as [H3| H3].
-left.
-...
-; [ now left | now right; left ].
  destruct H3 as [H3| H3]; [ now left | now right; left ].
 -destruct H2 as (j & Hjj & Hj).
  simpl in H1.
+ subst s n.
  remember (rad * (i + k + j + 3)) as n eqn:Hn.
  remember (n - (i + k) - 1) as s eqn:Hs.
  move s before n.
- specialize (eq_mod_rad_add_pred_rad u (i + k) n _ Hur Hs H1) as H3.
- destruct H3 as [H3| H3]; [ now left | ].
+ specialize (eq_mod_rad_add_pred_rad u (i + k) n s Hur Hs H1) as H3.
+...
+ destruct H3 as [H3| H3].
  destruct H3 as [H3| H3]; [ now right; left | now right; right ].
 Qed.
 
