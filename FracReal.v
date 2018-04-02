@@ -4004,9 +4004,7 @@ intros * Hu *.
 apply A_ge_1_add_r_true_if, Hu.
 Qed.
 
-...
-
-Theorem glop {r : radix} : ∀ u i,
+Theorem all_num_to_dig_eq_pred_rad_2 {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
   → (∀ k, d2n (numbers_to_digits u) (i + k) = rad - 1)
   → if LPO_fst (A_ge_1 i u) then
@@ -4016,18 +4014,17 @@ Theorem glop {r : radix} : ∀ u i,
        u (i + k) = rad - 3 ∨
        u (i + k) = 2 * rad - 3
      else
-       ∀ k,
-       u (i + k) = rad - 2 ∨
-       u (i + k) = 2 * rad - 2 ∨
-       u (i + k) = rad - 1.
+       u i = rad - 2 ∨
+       u i = 2 * rad - 2 ∨
+       u i = rad - 1.
 Proof.
 intros *.
 intros Hur Hu.
 specialize (Hu 0) as H1.
 rewrite Nat.add_0_r in H1.
 unfold d2n, numbers_to_digits in H1.
-destruct (LPO_fst (A_ge_1 i u)) as [H2| H2]; intros k.
--simpl in H1.
+destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
+-intros k; simpl in H1.
  specialize (Hu k) as H3.
  unfold d2n, numbers_to_digits in H3.
  destruct (LPO_fst (A_ge_1 (i + k) u)) as [H4| H4].
@@ -4042,16 +4039,8 @@ destruct (LPO_fst (A_ge_1 i u)) as [H2| H2]; intros k.
   now rewrite H5 in Hj.
 -destruct H2 as (j & Hjj & Hj).
  simpl in H1.
- specialize (Hu k) as H3.
- unfold d2n, numbers_to_digits in H3.
- destruct (LPO_fst (A_ge_1 (i + k) u)) as [H4| H4].
- +simpl in H3.
-...
-  specialize (A_ge_1_add_r_all_true_if u (i + k) H4) as H5.
-...
- remember (rad * (i + k + j + 3)) as n eqn:Hn.
- specialize (eq_mod_rad_add_pred_rad u (i + k) n Hur) as H3.
- specialize (eq_mod_rad_add_pred_rad u (i + k) n Hur H1) as H3.
+ remember (rad * (i + j + 3)) as n eqn:Hn.
+ specialize (eq_mod_rad_add_pred_rad u i n Hur H1) as H3.
  destruct H3 as [H3| H3]; [ now left | ].
  destruct H3 as [H3| H3]; [ now right; right | now right; left ].
 Qed.
