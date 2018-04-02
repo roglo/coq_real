@@ -3959,8 +3959,9 @@ apply Nat.nle_gt.
 rewrite Nat.pow_add_r.
 rewrite Nat.mod_mul_r; try now apply Nat.pow_nonzero.
 assert (H1 : nA (i + j) n u mod rad ^ s = nA i n u mod rad ^ s). {
-  symmetry.
+  clear - Hs Hijn.
   destruct j; [ now rewrite Nat.add_0_r | ].
+  symmetry.
   rewrite nA_split with (e := i + j + 2); [ | flia Hijn ].
   replace (i + j + 2 - 1) with (i + S j) by flia.
   replace (n - (i + j + 2)) with s by flia Hs.
