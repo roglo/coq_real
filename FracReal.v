@@ -4268,13 +4268,11 @@ destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
    move s1 before n1.
    specialize (eq_mod_rad_add_succ_pred_rad u (i + 1) n1 s1 Hur Hs1 H4) as H6.
    specialize (A_ge_1_add_all_true_if u _ Hur H5) as H7.
-   destruct H6 as [(H6, H8)| [H6| [H6| H6]]].
-  --move H2 before H6.
-    move H3 before H8.
-    move H1 before H4.
-    destruct H7 as [H7| [H7| H7]].
-   ++admit. (* contradiction between H7 and H8 *)
-   ++idtac.
+   destruct H6 as [(H6, H8)| [(H6, H8)| [H6| H6]]].
+  --move H2 before H6; move H3 before H8; move H1 before H4.
+    admit. (* contradiction between H6 and H3 *)
+  --move H2 before H6; move H3 before H8; move H1 before H4.
+
 ...
 
 (*
