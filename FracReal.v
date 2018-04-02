@@ -3847,19 +3847,22 @@ replace x with (x - rad ^ s + 1 * rad ^ s).
  now apply Nat.sub_add.
 Qed.
 
-Theorem eq_mod_rad_add_pred_rad {r : radix} : ∀ u i n,
+Theorem eq_mod_rad_add_pred_rad {r : radix} : ∀ u i n s,
   (∀ k, u k ≤ 2 * (rad - 1))
-  → (u i + nA i n u / rad ^ (n - i -  1)) mod rad = rad - 1
-  → u i = rad - 2 ∨ u i = rad - 1 ∨ u i = 2 * rad - 2.
+  → s = n - i - 1
+  → (u i + nA i n u / rad ^ s) mod rad = rad - 1
+  → u i = rad - 2 ∧ rad ^ s ≤ nA i n u ≤ 2 * rad ^ s ∨
+     u i = 2 * rad - 2 ∧ rad ^ s ≤ nA i n u ≤ 2 * rad ^ s ∨
+     u i = rad - 1 ∧ nA i n u < rad ^ s.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
-intros Hur Hu.
-remember (n - i - 1) as s eqn:Hs.
+intros Hur Hs Hu.
 destruct (lt_dec (nA i n u) (rad ^ s)) as [H1| H1].
--right; left.
+-right; right.
  rewrite Nat.div_small in Hu; [ | easy ].
  rewrite Nat.add_0_r in Hu.
+ split; [ | easy ].
  destruct (lt_dec (u i) rad) as [H2| H2].
  +now rewrite Nat.mod_small in Hu.
  +specialize (Hur i).
@@ -3868,11 +3871,25 @@ destruct (lt_dec (nA i n u) (rad ^ s)) as [H1| H1].
 -rewrite Nat_div_less_small in Hu.
  +destruct (lt_dec (u i + 1) rad) as [H2| H2].
   *left.
-   rewrite Nat.mod_small in Hu; [ flia Hu | easy ].
-  *right; right.
-   rewrite Nat_mod_less_small in Hu; [ flia Hu | ].
-   split; [ flia H2 | ].
-   specialize (Hur i); flia Hr Hur.
+   rewrite Nat.mod_small in Hu; [ | easy ].
+   split; [ flia Hu | ].
+   split; [ flia H1 | ].
+   specialize (nA_upper_bound_for_add u i n Hur) as H3.
+   rewrite <- Hs in H3.
+   rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H3.
+   specialize (Nat.pow_nonzero rad s radix_ne_0) as H4.
+   flia H3 H4.
+  *right; left.
+   rewrite Nat_mod_less_small in Hu.
+  --split; [ flia Hu | ].
+    split; [ flia H1 | ].
+    specialize (nA_upper_bound_for_add u i n Hur) as H3.
+    rewrite <- Hs in H3.
+    rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H3.
+    specialize (Nat.pow_nonzero rad s radix_ne_0) as H4.
+    flia H3 H4.
+  --split; [ flia H2 | ].
+    specialize (Hur i); flia Hr Hur.
  +split; [ flia H1 | ].
   specialize (nA_upper_bound_for_add u i n Hur) as H2.
   specialize (Nat.pow_nonzero rad s radix_ne_0) as H.
@@ -4040,9 +4057,11 @@ destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
 -destruct H2 as (j & Hjj & Hj).
  simpl in H1.
  remember (rad * (i + j + 3)) as n eqn:Hn.
- specialize (eq_mod_rad_add_pred_rad u i n Hur H1) as H3.
+ remember (n - i - 1) as s eqn:Hs.
+ move s before n.
+ specialize (eq_mod_rad_add_pred_rad u i n s Hur Hs H1) as H3.
  destruct H3 as [H3| H3]; [ now left | ].
- destruct H3 as [H3| H3]; [ now right; right | now right; left ].
+ destruct H3 as [H3| H3]; [ now right; left | now right; right ].
 Qed.
 
 Theorem all_num_to_dig_eq_pred_rad {r : radix} : ∀ u i,
@@ -4071,9 +4090,11 @@ destruct (LPO_fst (A_ge_1 (i + k) u)) as [H2| H2].
 -destruct H2 as (j & Hjj & Hj).
  simpl in H1.
  remember (rad * (i + k + j + 3)) as n eqn:Hn.
- specialize (eq_mod_rad_add_pred_rad u (i + k) n Hur H1) as H3.
+ remember (n - (i + k) - 1) as s eqn:Hs.
+ move s before n.
+ specialize (eq_mod_rad_add_pred_rad u (i + k) n _ Hur Hs H1) as H3.
  destruct H3 as [H3| H3]; [ now left | ].
- destruct H3 as [H3| H3]; [ now right; right | now right; left ].
+ destruct H3 as [H3| H3]; [ now right; left | now right; right ].
 Qed.
 
 Theorem num_to_dig_if {r : radix} : ∀ u i,
@@ -4089,8 +4110,7 @@ Theorem num_to_dig_if {r : radix} : ∀ u i,
          u (i + j + 1) = rad - 2 ∧
          (∀ k, u (i + j + k + 2) = 2 * (rad - 1)))
      else
-       u i mod rad = rad - 2 ∧
-         (∀ k, u (i + k + 1) = 2 * (rad - 1)).
+       False.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
@@ -4196,17 +4216,21 @@ destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
  (* tout de même... je me demande si ce cas n'est pas une contradiction
     entre Hu et Hj *)
  exfalso.
- rewrite Hs in H1.
- specialize (eq_mod_rad_add_pred_rad u i n Hur H1) as H2.
- rewrite <- Hs in H1.
+ specialize (eq_mod_rad_add_pred_rad u i n s Hur Hs H1) as H2.
+ destruct H2 as [H2| [H2| H2]].
+ +destruct H2 as (H2, H3).
 ...
+(**)
+destruct j.
+rewrite Nat.add_0_r in Hn; clear Hjj.
+rewrite Nat.pow_1_r in Hj.
+(* je ne peux même pas avoir 9 en i+1 *)
+(* mais je peux avoir entre 10 et 18, à cause de ce mod rad^s *)
+(**)
  assert (Hin : i + 2 ≤ n - 1). {
    rewrite Hn.
    destruct rad; [ easy | simpl; flia ].
  }
- rewrite Hs in H1.
- specialize (eq_mod_rad_add_pred_rad u i n Hur H1) as H2.
- rewrite <- Hs in H1.
  specialize (Hu 1) as H3.
  unfold d2n, numbers_to_digits in H3.
  destruct (LPO_fst (A_ge_1 (i + 1) u)) as [H4| H4].
@@ -4217,7 +4241,6 @@ destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
   rewrite Hs1 in H3.
   specialize (eq_mod_rad_add_succ_pred_rad u (i + 1) n1 Hur H3) as H5.
   specialize (A_ge_1_add_all_true_if u _ Hur H4) as H6.
-(* bon, c'est interminable, plein le cul *)
 ...
 
 (*
