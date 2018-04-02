@@ -4091,15 +4091,21 @@ Theorem all_num_to_dig_eq_pred_rad {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
   → (∀ k, d2n (numbers_to_digits u) (i + k) = rad - 1)
   → ∀ k,
-     let n := rad * (i + k + 3) in
-     let s := n - (i + k) - 1 in
-     u (i + k) = rad - 2 ∧ nA (i + k) n u < rad ^ s ∨
-     u (i + k) = 2 * rad - 2 ∧ nA (i + k) n u < rad ^ s ∨
-     if LPO_fst (A_ge_1 (i + k) u) then
-       u (i + k) = rad - 3 ∨
-       u (i + k) = 2 * rad - 3
-     else
-       u (i + k) = rad - 1.
+     match LPO_fst (A_ge_1 (i + k) u) with
+     | inl _ =>
+         let n := rad * (i + k + 3) in
+         let s := n - (i + k) - 1 in
+         u (i + k) = rad - 2 ∧ nA (i + k) n u < rad ^ s ∨
+         u (i + k) = 2 * rad - 2 ∧ nA (i + k) n u < rad ^ s ∨
+         u (i + k) = rad - 3 ∧ rad ^ s ≤ nA (i + k) n u < 2 * rad ^ s ∨
+         u (i + k) = 2 * rad - 3 ∧ rad ^ s ≤ nA (i + k) n u < 2 * rad ^ s
+     | inr (exist _ j _) =>
+         let n := rad * (i + k + j + 3) in
+         let s := n - (i + k) - 1 in
+         u (i + k) = rad - 1 ∧ nA (i + k) n u < rad ^ s ∨
+         u (i + k) = rad - 2 ∧ rad ^ s ≤ nA (i + k) n u < 2 * rad ^ s ∨
+         u (i + k) = 2 * rad - 2 ∧ rad ^ s ≤ nA (i + k) n u < 2 * rad ^ s
+     end.
 Proof.
 intros *.
 intros Hur Hu *.
@@ -4107,23 +4113,23 @@ specialize (Hu k) as H1.
 unfold d2n, numbers_to_digits in H1.
 destruct (LPO_fst (A_ge_1 (i + k) u)) as [H2| H2].
 -simpl in H1.
- fold n in H1.
- subst s.
+ remember Nat.mul as f; simpl; subst f.
+ remember (rad * (i + k + 3)) as n eqn:Hn.
  remember (n - (i + k) - 1) as s eqn:Hs.
+ move s before n.
  specialize (eq_mod_rad_add_succ_pred_rad u (i + k) n s Hur Hs H1) as H3.
  destruct H3 as [H3| H3]; [ now right; right; left | ].
  destruct H3 as [H3| H3]; [ now right; right; right | ].
  destruct H3 as [H3| H3]; [ now left | now right; left ].
 -destruct H2 as (j & Hjj & Hj).
  simpl in H1.
- subst s n.
+ remember Nat.mul as f; simpl; subst f.
  remember (rad * (i + k + j + 3)) as n eqn:Hn.
  remember (n - (i + k) - 1) as s eqn:Hs.
  move s before n.
  specialize (eq_mod_rad_add_pred_rad u (i + k) n s Hur Hs H1) as H3.
-...
- destruct H3 as [H3| H3].
- destruct H3 as [H3| H3]; [ now right; left | now right; right ].
+ destruct H3 as [H3| H3]; [ now right; left | ].
+ destruct H3 as [H3| H3]; [ now right; right | now left ].
 Qed.
 
 Theorem num_to_dig_if {r : radix} : ∀ u i,
@@ -4249,28 +4255,26 @@ destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
  destruct H2 as [H2| [H2| H2]].
  +destruct H2 as (H2, H3).
   rewrite Nat_mod_less_small in Hj; [ | easy ].
-...
-(**)
-destruct j.
-rewrite Nat.add_0_r in Hn; clear Hjj.
-rewrite Nat.pow_1_r in Hj.
-(* je ne peux même pas avoir 9 en i+1 *)
-(* mais je peux avoir entre 10 et 18, à cause de ce mod rad^s *)
-(**)
- assert (Hin : i + 2 ≤ n - 1). {
-   rewrite Hn.
-   destruct rad; [ easy | simpl; flia ].
- }
- specialize (Hu 1) as H3.
- unfold d2n, numbers_to_digits in H3.
- destruct (LPO_fst (A_ge_1 (i + 1) u)) as [H4| H4].
- +simpl in H3.
-  remember (rad * (i + 1 + 3)) as n1 eqn:Hn1.
-  remember (n1 - (i + 1) - 1) as s1 eqn:Hs1.
-  move s1 before n1.
-  rewrite Hs1 in H3.
-  specialize (eq_mod_rad_add_succ_pred_rad u (i + 1) n1 Hur H3) as H5.
-  specialize (A_ge_1_add_all_true_if u _ Hur H4) as H6.
+  assert (Hin : i + 2 ≤ n - 1). {
+    rewrite Hn.
+    destruct rad; [ easy | simpl; flia ].
+  }
+  specialize (Hu 1) as H4.
+  unfold d2n, numbers_to_digits in H4.
+  destruct (LPO_fst (A_ge_1 (i + 1) u)) as [H5| H5].
+  *simpl in H4.
+   remember (rad * (i + 1 + 3)) as n1 eqn:Hn1.
+   remember (n1 - (i + 1) - 1) as s1 eqn:Hs1.
+   move s1 before n1.
+   specialize (eq_mod_rad_add_succ_pred_rad u (i + 1) n1 s1 Hur Hs1 H4) as H6.
+   specialize (A_ge_1_add_all_true_if u _ Hur H5) as H7.
+   destruct H6 as [(H6, H8)| [H6| [H6| H6]]].
+  --move H2 before H6.
+    move H3 before H8.
+    move H1 before H4.
+    destruct H7 as [H7| [H7| H7]].
+   ++admit. (* contradiction between H7 and H8 *)
+   ++idtac.
 ...
 
 (*
