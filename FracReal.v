@@ -4103,6 +4103,7 @@ remember (n - (i + k) - 1) as s eqn:Hs.
 now specialize (eq_mod_rad_add_pred_rad u (i + k) n s Hur Hs H1) as H3.
 Qed.
 
+(*
 Theorem num_to_dig_if {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
   → (∀ k, d2n (numbers_to_digits u) (i + k) = rad - 1)
@@ -4124,8 +4125,10 @@ intros Hur Hu.
 specialize (Hu 0) as H1.
 rewrite Nat.add_0_r in H1.
 unfold d2n, numbers_to_digits in H1.
+unfold index_A_not_ge in H1.
 destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
 -simpl in H1.
+ rewrite Nat.add_0_r in H1.
  remember (rad * (i + 3)) as n eqn:Hn.
  remember (n - i - 1) as s eqn:Hs.
  move s before n.
@@ -4134,25 +4137,21 @@ destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
    destruct rad; [ easy | simpl; flia ].
  }
  specialize (A_ge_1_add_all_true_if u _ Hur H2) as H3.
-(*
- rewrite Hs in H1.
- specialize (eq_mod_rad_add_succ_pred_rad u i n Hur H1) as H4.
- rewrite <- Hs in H1.
-*)
+ specialize (eq_mod_rad_add_pred_rad u i n s Hur Hs H1) as H4.
  destruct H3 as [H3| [H3| H3]].
  +left.
   split; [ | easy ].
-  rewrite Nat.div_small in H1.
-  *rewrite Nat.add_0_r in H1.
-   destruct (lt_dec (u i + 1) rad) as [H4| H4].
+  destruct H4 as [(H4, H5)| [(H4, H5)| H4]].
+  *rewrite H4.
+   rewrite Nat.mod_small; [ easy | flia Hr ].
+  *rewrite H4.
+   rewrite Nat_mod_less_small; [ flia | flia Hr ].
+  *idtac.
 ...
-  --rewrite Nat.mod_small in H1; [ | easy ].
-    rewrite Nat.mod_small; [ flia H1 | flia H4 ].
-  --rewrite Nat_mod_less_small in H1.
-   ++replace (u i) with (2 * rad - 2) by flia H1.
-     rewrite Nat_mod_less_small; [ flia | flia Hr ].
-   ++split; [ flia H4 | ].
-     specialize (Hur i); flia Hr Hur.
+  split; [ | easy ].
+  rewrite Nat.div_small in H1.
+...
+  *now rewrite Nat.add_0_r in H1.
   *rewrite Hs.
    apply nA_dig_seq_ub; [ | easy ].
    intros j Hj.
@@ -4162,9 +4161,11 @@ destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
  +right; left.
   split; [ | easy ].
   rewrite Nat_div_less_small in H1.
-  *destruct (lt_dec (u i + 1 + 1) rad) as [H4| H4].
+  *destruct (lt_dec (u i + 1) rad) as [H4| H4].
   --rewrite Nat.mod_small in H1; [ | easy ].
     rewrite Nat.mod_small; [ | flia H4 ].
+...
+
     destruct (Nat.eq_dec rad 2) as [Hr2| Hr2].
    ++rewrite Hr2 in H1; simpl in H1.
      rewrite Hr2; simpl; flia H1.
@@ -4258,6 +4259,7 @@ destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
  +destruct H2 as (H2, H3).
   admit.
 ...
+*)
 
 (*
 Theorem num_to_dig_9 {r : radix} : ∀ u i,
@@ -4505,21 +4507,34 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
     unfold freal_add_to_seq.
     fold u v.
     unfold numbers_to_digits in H3, H4 |-*.
-    rewrite <- Hn, <- Hs in H3, H4 |-*.
+    unfold index_A_not_ge in H3, H4 |-*.
     destruct (LPO_fst (A_ge_1 i u)) as [Hku| (m & Hjm & Hm)].
    ++simpl in H3 |-*.
+     rewrite Nat.add_0_r in H3 |-*.
+     rewrite <- Hn, <- Hs in H3 |-*.
      specialize (A_ge_1_add_series_all_true_if _ _ i Hku) as Hu.
      rewrite <- Hnx in Hu.
      destruct (LPO_fst (A_ge_1 i v)) as [Hkv| (p & Hjp & Hp)].
     **simpl in H4 |-*.
+      rewrite Nat.add_0_r in H4 |-*.
+      rewrite <- Hn, <- Hs in H4 |-*.
       specialize (A_ge_1_add_series_all_true_if _ _ i Hkv) as Hv.
       move Hkv before Hku.
-      rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
-      rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
-      f_equal; f_equal.
+...
+
       unfold u at 1.
       unfold v at 1.
       unfold freal_add_series, sequence_add.
+      unfold freal_normalize, fd2n; simpl.
+      unfold digit_sequence_normalize.
+      unfold u, v.
+      do 2 rewrite nA_freal_add_series.
+...
+      rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
+      rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
+      f_equal; f_equal.
+      rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
+...
       rewrite Nat.add_shuffle0; symmetry.
       rewrite Nat.add_shuffle0; symmetry.
       rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
