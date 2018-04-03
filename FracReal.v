@@ -820,13 +820,14 @@ Definition A_ge_1 {r : radix} i u k :=
   else
     true.
 
+Definition index_A_not_ge {r : radix} u i :=
+  match LPO_fst (A_ge_1 i u) with
+  | inl _ => 0
+  | inr (exist _ l _) => l
+  end.
+
 Definition numbers_to_digits {r : radix} u i :=
-  let l :=
-    match LPO_fst (A_ge_1 i u) with
-    | inl _ => 0
-    | inr (exist _ l _) => l
-    end
-  in
+  let l := index_A_not_ge u i in
   let n := rad * (i + l + 3) in
   let s := rad ^ (n - i - 1) in
   let d := u i + nA i n u / s in
@@ -938,20 +939,19 @@ intros.
 unfold freal_add_to_seq, numbers_to_digits.
 remember (freal_add_series x y) as xy.
 remember (freal_add_series y x) as yx.
+apply digit_eq_eq; simpl.
+unfold index_A_not_ge.
 destruct (LPO_fst (A_ge_1 i xy)) as [Hxy| Hxy].
 -rewrite Heqxy, freal_add_series_comm, <- Heqyx.
  destruct (LPO_fst (A_ge_1 i yx)) as [Hyx| Hyx].
  +now rewrite nA_freal_add_series_comm, <- Heqyx.
-
  +destruct Hyx as (k & Hjk & Hk).
   rewrite Heqyx, A_ge_1_freal_add_series_comm, <- Heqxy in Hk.
   now rewrite Hxy in Hk.
-
 -destruct Hxy as (k & Hjk & Hk).
  rewrite Heqxy, A_ge_1_freal_add_series_comm, <- Heqyx in Hk.
  destruct (LPO_fst (A_ge_1 i yx)) as [Hyx| Hyx].
  +now rewrite Hyx in Hk.
-
  +destruct Hyx as (l & Hjl & Hl).
   destruct (lt_eq_lt_dec k l) as [ [ Hkl | Hkl ] | Hkl ].
   *apply Hjl in Hkl.
@@ -971,6 +971,7 @@ intros.
 unfold freal_mul_to_seq, numbers_to_digits.
 remember (freal_mul_series x y) as xy.
 remember (freal_mul_series y x) as yx.
+unfold index_A_not_ge.
 destruct (LPO_fst (A_ge_1 i xy)) as [Hxy| Hxy].
 -rewrite Heqxy, freal_mul_series_comm, <- Heqyx.
  destruct (LPO_fst (A_ge_1 i yx)) as [Hyx| Hyx].
@@ -1566,7 +1567,7 @@ Proof.
 intros.
 unfold freal_add_to_seq.
 set (u := freal_add_series (freal_normalize 0) (freal_normalize x)).
-unfold numbers_to_digits.
+unfold numbers_to_digits, index_A_not_ge.
 destruct (LPO_fst (A_ge_1 i u)) as [Hku| (m & Hjm & Hm)].
 -exfalso.
  assert (H1 : ∀ k, u k < rad). {
@@ -1841,7 +1842,7 @@ Theorem numbers_to_digits_eq_compat {r : radix} : ∀ f g,
   numbers_to_digits f i = numbers_to_digits g i.
 Proof.
 intros * Hfg *.
-unfold numbers_to_digits.
+unfold numbers_to_digits, index_A_not_ge.
 rewrite Hfg.
 destruct (LPO_fst (A_ge_1 i f)) as [Hf| Hf].
 -destruct (LPO_fst (A_ge_1 i g)) as [Hg| Hg].
@@ -3009,6 +3010,7 @@ intros * Hur Hu.
 specialize (Hu 0) as H1.
 rewrite Nat.add_0_r in H1.
 unfold d2n, numbers_to_digits in H1.
+unfold index_A_not_ge in H1.
 destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
 -simpl in H1.
  rewrite Nat.add_0_r in H1.
@@ -4051,10 +4053,12 @@ intros Hur Hu.
 specialize (Hu 0) as H1.
 rewrite Nat.add_0_r in H1.
 unfold d2n, numbers_to_digits in H1.
+unfold index_A_not_ge in H1.
 destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
 -intros k; simpl in H1.
  specialize (Hu k) as H3.
  unfold d2n, numbers_to_digits in H3.
+ unfold index_A_not_ge in H3.
  destruct (LPO_fst (A_ge_1 (i + k) u)) as [H4| H4].
  +simpl in H3.
   rewrite Nat.add_0_r in H3.
@@ -4101,6 +4105,8 @@ intros *.
 intros Hur Hu *.
 specialize (Hu k) as H1.
 unfold d2n, numbers_to_digits in H1.
+simpl in H1.
+...
 destruct (LPO_fst (A_ge_1 (i + k) u)) as [H2| H2].
 -simpl in H1.
  remember Nat.mul as f; simpl; subst f.
