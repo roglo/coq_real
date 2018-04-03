@@ -4520,6 +4520,7 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
       rewrite <- Hn, <- Hs in H4 |-*.
       specialize (A_ge_1_add_series_all_true_if _ _ i Hkv) as Hv.
       move Hkv before Hku.
+...
       unfold u at 1.
       unfold v at 1.
       unfold freal_add_series, sequence_add.
