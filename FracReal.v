@@ -4520,6 +4520,14 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
       rewrite <- Hn, <- Hs in H4 |-*.
       specialize (A_ge_1_add_series_all_true_if _ _ i Hkv) as Hv.
       move Hkv before Hku.
+      unfold u at 1.
+      unfold v at 1.
+      unfold freal_add_series, sequence_add.
+      unfold freal_normalize, fd2n; simpl.
+      unfold digit_sequence_normalize.
+      unfold u, v.
+      do 2 rewrite nA_freal_add_series.
+(*
 ...
 
       unfold u at 1.
@@ -4545,6 +4553,7 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
       unfold digit_sequence_normalize.
       unfold u, v.
       do 2 rewrite nA_freal_add_series.
+*)
       destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H5| H5].
     ---specialize (is_9_strict_after_all_9 (freal x) i H5) as H7.
        clear H5; rename H7 into H5.
@@ -4589,6 +4598,7 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
      +++rewrite Nat.add_0_r.
         destruct (lt_dec (S (d2n (freal x) i)) rad) as [H6| H6].
       ***simpl.
+...
          setoid_rewrite Nat.add_comm.
          rewrite <- Nat.add_1_l.
          rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
