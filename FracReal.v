@@ -821,18 +821,16 @@ Definition A_ge_1 {r : radix} i u k :=
     true.
 
 Definition numbers_to_digits {r : radix} u i :=
-  match LPO_fst (A_ge_1 i u) with
-  | inl _ =>
-      let n := rad * (i + 3) in
-      let s := rad ^ (n - i - 1) in
-      let d := u i + nA i n u / s in
-      mkdig _ ((d + 1) mod rad) (Nat.mod_upper_bound (d + 1) rad radix_ne_0)
-  | inr (exist _ l _) =>
-      let n := rad * (i + l + 3) in
-      let s := rad ^ (n - i - 1) in
-      let d := u i + nA i n u / s in
-      mkdig _ (d mod rad) (Nat.mod_upper_bound d rad radix_ne_0)
-  end.
+  let l :=
+    match LPO_fst (A_ge_1 i u) with
+    | inl _ => 0
+    | inr (exist _ l _) => l
+    end
+  in
+  let n := rad * (i + l + 3) in
+  let s := rad ^ (n - i - 1) in
+  let d := u i + nA i n u / s in
+  mkdig _ (d mod rad) (Nat.mod_upper_bound d rad radix_ne_0).
 
 Definition freal_add_to_seq {r : radix} (a b : FracReal) :=
   numbers_to_digits (freal_add_series a b).
@@ -1007,27 +1005,25 @@ remember (freal (y + x)) as yx.
 simpl.
 unfold digit_sequence_normalize.
 destruct (LPO_fst (is_9_strict_after xy i)) as [Hxy| Hxy].
- destruct (LPO_fst (is_9_strict_after yx i)) as [Hyx| Hyx].
-  unfold freal_add in Heqxy; simpl in Heqxy.
+-destruct (LPO_fst (is_9_strict_after yx i)) as [Hyx| Hyx].
+ +unfold freal_add in Heqxy; simpl in Heqxy.
   unfold freal_add in Heqyx; simpl in Heqyx.
   destruct (lt_dec (S (d2n xy i)) rad) as [Hrxy| Hrxy].
-   subst xy; simpl in Hrxy; simpl.
+  *subst xy; simpl in Hrxy; simpl.
    destruct (lt_dec (S (d2n yx i)) rad) as [Hryx| Hryx].
-    unfold freal_add in Heqyx; simpl in Heqyx.
+  --unfold freal_add in Heqyx; simpl in Heqyx.
     subst yx; simpl in Hryx; simpl.
-    apply digit_eq_eq; unfold d2n; simpl.
+    apply digit_eq_eq; unfold d2n.
+    remember freal_add_to_seq as f; simpl; subst f.
     now rewrite freal_add_to_seq_i_comm.
-
-    subst yx; simpl in Hryx.
+  --subst yx; simpl in Hryx.
     unfold d2n in Hryx.
     now rewrite freal_add_to_seq_i_comm in Hryx.
-
-   destruct (lt_dec (S (d2n yx i)) rad) as [Hryx| Hryx]; [ | easy ].
+  *destruct (lt_dec (S (d2n yx i)) rad) as [Hryx| Hryx]; [ | easy ].
    exfalso.
    subst xy yx; simpl in Hryx; unfold d2n in Hryx.
    now rewrite freal_add_to_seq_i_comm in Hryx.
-
-  destruct Hyx as (k & Hjk & Hk); clear Hjk.
+ +destruct Hyx as (k & Hjk & Hk); clear Hjk.
   unfold freal_mul in Heqyx; simpl in Heqyx.
   subst yx; simpl in Hk; simpl.
   unfold freal_add in Heqxy; simpl in Heqxy.
@@ -1038,12 +1034,11 @@ destruct (LPO_fst (is_9_strict_after xy i)) as [Hxy| Hxy].
   specialize (Hxy k).
   apply is_9_strict_after_true_iff in Hxy.
   now unfold d2n in Hxy.
-
- destruct Hxy as (k & Hjk & Hk).
+-destruct Hxy as (k & Hjk & Hk).
  unfold freal_add in Heqxy; simpl in Heqxy.
  unfold freal_add in Heqyx; simpl in Heqyx.
  destruct (LPO_fst (is_9_strict_after yx i)) as [Hyx| Hyx].
-  exfalso; clear Hjk.
+ +exfalso; clear Hjk.
   subst xy yx; simpl in Hk, Hyx; unfold d2n in Hk; simpl.
   apply is_9_strict_after_false_iff in Hk.
   unfold d2n in Hk.
@@ -1051,8 +1046,7 @@ destruct (LPO_fst (is_9_strict_after xy i)) as [Hxy| Hxy].
   specialize (Hyx k).
   apply is_9_strict_after_true_iff in Hyx.
   now unfold d2n in Hyx.
-
-  subst xy yx; simpl.
+ +subst xy yx; simpl.
   apply freal_add_to_seq_i_comm.
 Qed.
 
@@ -1066,26 +1060,24 @@ remember (freal (y * x)) as yx.
 simpl.
 unfold digit_sequence_normalize.
 destruct (LPO_fst (is_9_strict_after xy i)) as [Hxy| Hxy].
- destruct (LPO_fst (is_9_strict_after yx i)) as [Hyx| Hyx].
-  unfold freal_mul in Heqxy; simpl in Heqxy.
+-destruct (LPO_fst (is_9_strict_after yx i)) as [Hyx| Hyx].
+ +unfold freal_mul in Heqxy; simpl in Heqxy.
   unfold freal_mul in Heqyx; simpl in Heqyx.
   destruct (lt_dec (S (d2n xy i)) rad) as [Hrxy| Hrxy].
-   subst xy; simpl in Hrxy; simpl.
+  *subst xy; simpl in Hrxy; simpl.
    destruct (lt_dec (S (d2n yx i)) rad) as [Hryx| Hryx].
-    unfold freal_mul in Heqyx; simpl in Heqyx.
-    subst yx; simpl in Hryx; unfold d2n; simpl.
-    apply digit_eq_eq; simpl.
+  --unfold freal_mul in Heqyx; simpl in Heqyx.
+    subst yx; simpl in Hryx; unfold d2n.
+    apply digit_eq_eq.
+    remember freal_mul_to_seq as f; simpl; subst f.
     now rewrite freal_mul_to_seq_i_comm.
-
-    subst yx; simpl in Hryx; unfold d2n in Hryx.
+  --subst yx; simpl in Hryx; unfold d2n in Hryx.
     now rewrite freal_mul_to_seq_i_comm in Hryx.
-
-   destruct (lt_dec (S (d2n yx i)) rad) as [Hryx| Hryx]; [ | easy ].
+  *destruct (lt_dec (S (d2n yx i)) rad) as [Hryx| Hryx]; [ | easy ].
    exfalso.
    subst xy yx; simpl in Hryx; unfold d2n in Hryx.
    now rewrite freal_mul_to_seq_i_comm in Hryx.
-
-  destruct Hyx as (k & Hjk & Hk); clear Hjk.
+ +destruct Hyx as (k & Hjk & Hk); clear Hjk.
   unfold freal_mul in Heqyx; simpl in Heqyx.
   subst yx; simpl in Hk; simpl; unfold d2n in Hk.
   apply is_9_strict_after_false_iff in Hk.
@@ -1095,20 +1087,18 @@ destruct (LPO_fst (is_9_strict_after xy i)) as [Hxy| Hxy].
   subst xy; simpl in Hxy; simpl.
   specialize (Hxy k).
   now apply is_9_strict_after_true_iff in Hxy.
-
- destruct Hxy as (k & Hjk & Hk).
+-destruct Hxy as (k & Hjk & Hk).
  unfold freal_mul in Heqxy; simpl in Heqxy.
  unfold freal_mul in Heqyx; simpl in Heqyx.
  destruct (LPO_fst (is_9_strict_after yx i)) as [Hyx| Hyx].
-  exfalso; clear Hjk.
+ +exfalso; clear Hjk.
   subst xy yx; simpl in Hk, Hyx; simpl; unfold d2n in Hk.
   apply is_9_strict_after_false_iff in Hk.
   unfold d2n in Hk.
   rewrite freal_mul_to_seq_i_comm in Hk.
   specialize (Hyx k).
   now apply is_9_strict_after_true_iff in Hyx.
-
-  subst xy yx; simpl.
+ +subst xy yx; simpl.
   apply freal_mul_to_seq_i_comm.
 Qed.
 
@@ -3025,10 +3015,11 @@ destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
  remember (n - i - 1) as s eqn:Hs.
  move s before n.
  destruct (lt_dec (nA i n u) (rad ^ s)) as [H4| H4].
+...
  +rewrite Nat.div_small in H1; [ | easy ].
   rewrite Nat.add_0_r in H1.
   destruct (lt_dec (u i + 1) rad) as [H5| H5]; [ | flia H5 ].
-  rewrite Nat.mod_small in H1; [ flia H1 | easy ].
+  rewrite Nat.mod_small in H1; [ flia H1 | flia H5 ].
  +specialize (nA_upper_bound_for_add u i n Hur) as H5.
   rewrite <- Hs in H5.
   remember (nA i n u) as x eqn:Hx.
@@ -3039,8 +3030,8 @@ destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
      flia H5 H.
    }
    rewrite Nat.div_small in H1; [ | easy ].
-   rewrite <- Nat.add_assoc in H1; simpl in H1.
-   destruct (lt_dec (u i + 2) rad) as [H7| H7]; [ | flia H7 ].
+   rewrite Nat.add_0_l in H1.
+   destruct (lt_dec (u i + 1) rad) as [H7| H7]; [ | flia H7 ].
    rewrite Nat.mod_small in H1; [ | easy ].
    flia H1.
   *rewrite Nat.mul_1_l.
@@ -4070,6 +4061,7 @@ destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
   remember (rad * (i + k + 3)) as n eqn:Hn.
   remember (n - (i + k) - 1) as s eqn:Hs.
   move s before n.
+...
   specialize (eq_mod_rad_add_succ_pred_rad u (i + k) n s Hur Hs H3) as H5.
   destruct H5 as [H5| H5]; [ now right; right; left | ].
   destruct H5 as [H5| H5]; [ now right; right; right | ].
