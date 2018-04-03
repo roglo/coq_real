@@ -3011,11 +3011,11 @@ rewrite Nat.add_0_r in H1.
 unfold d2n, numbers_to_digits in H1.
 destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
 -simpl in H1.
+ rewrite Nat.add_0_r in H1.
  remember (rad * (i + 3)) as n eqn:Hn.
  remember (n - i - 1) as s eqn:Hs.
  move s before n.
  destruct (lt_dec (nA i n u) (rad ^ s)) as [H4| H4].
-...
  +rewrite Nat.div_small in H1; [ | easy ].
   rewrite Nat.add_0_r in H1.
   destruct (lt_dec (u i + 1) rad) as [H5| H5]; [ | flia H5 ].
@@ -4040,8 +4040,7 @@ Theorem all_num_to_dig_eq_pred_rad_2 {r : radix} : ∀ u i,
        ∀ k,
        u (i + k) = rad - 2 ∨
        u (i + k) = 2 * rad - 2 ∨
-       u (i + k) = rad - 3 ∨
-       u (i + k) = 2 * rad - 3
+       u (i + k) = rad - 1
      else
        u i = rad - 2 ∨
        u i = 2 * rad - 2 ∨
@@ -4058,14 +4057,13 @@ destruct (LPO_fst (A_ge_1 i u)) as [H2| H2].
  unfold d2n, numbers_to_digits in H3.
  destruct (LPO_fst (A_ge_1 (i + k) u)) as [H4| H4].
  +simpl in H3.
+  rewrite Nat.add_0_r in H3.
   remember (rad * (i + k + 3)) as n eqn:Hn.
   remember (n - (i + k) - 1) as s eqn:Hs.
   move s before n.
-...
-  specialize (eq_mod_rad_add_succ_pred_rad u (i + k) n s Hur Hs H3) as H5.
-  destruct H5 as [H5| H5]; [ now right; right; left | ].
-  destruct H5 as [H5| H5]; [ now right; right; right | ].
-  destruct H5 as [H5| H5]; [ now left | now right; left ].
+  specialize (eq_mod_rad_add_pred_rad u (i + k) n s Hur Hs H3) as H5.
+  destruct H5 as [H5| H5]; [ now left | ].
+  destruct H5 as [H5| H5]; [ now right; left | now right; right ].
  +destruct H4 as (j & Hjj & Hj).
   specialize (A_ge_1_add_r_all_true_if u i H2 k) as H5.
   now rewrite H5 in Hj.
@@ -4109,6 +4107,7 @@ destruct (LPO_fst (A_ge_1 (i + k) u)) as [H2| H2].
  remember (rad * (i + k + 3)) as n eqn:Hn.
  remember (n - (i + k) - 1) as s eqn:Hs.
  move s before n.
+...
  specialize (eq_mod_rad_add_succ_pred_rad u (i + k) n s Hur Hs H1) as H3.
  destruct H3 as [H3| H3]; [ now right; right; left | ].
  destruct H3 as [H3| H3]; [ now right; right; right | ].
