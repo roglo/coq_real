@@ -4089,16 +4089,15 @@ Theorem all_num_to_dig_eq_pred_rad {r : radix} : ∀ u i,
      | inl _ =>
          let n := rad * (i + k + 3) in
          let s := n - (i + k) - 1 in
-         u (i + k) = rad - 2 ∧ nA (i + k) n u < rad ^ s ∨
-         u (i + k) = 2 * rad - 2 ∧ nA (i + k) n u < rad ^ s ∨
-         u (i + k) = rad - 3 ∧ rad ^ s ≤ nA (i + k) n u < 2 * rad ^ s ∨
-         u (i + k) = 2 * rad - 3 ∧ rad ^ s ≤ nA (i + k) n u < 2 * rad ^ s
+         u (i + k) = rad - 2 ∧ rad ^ s ≤ nA (i + k) n u < 2 * rad ^ s ∨
+         u (i + k) = 2 * rad - 2 ∧ rad ^ s ≤ nA (i + k) n u < 2 * rad ^ s ∨
+         u (i + k) = rad - 1 ∧ nA (i + k) n u < rad ^ s
      | inr (exist _ j _) =>
          let n := rad * (i + k + j + 3) in
          let s := n - (i + k) - 1 in
-         u (i + k) = rad - 1 ∧ nA (i + k) n u < rad ^ s ∨
          u (i + k) = rad - 2 ∧ rad ^ s ≤ nA (i + k) n u < 2 * rad ^ s ∨
-         u (i + k) = 2 * rad - 2 ∧ rad ^ s ≤ nA (i + k) n u < 2 * rad ^ s
+         u (i + k) = 2 * rad - 2 ∧ rad ^ s ≤ nA (i + k) n u < 2 * rad ^ s ∨
+         u (i + k) = rad - 1 ∧ nA (i + k) n u < rad ^ s
      end.
 Proof.
 intros *.
@@ -4106,29 +4105,24 @@ intros Hur Hu *.
 specialize (Hu k) as H1.
 unfold d2n, numbers_to_digits in H1.
 simpl in H1.
-...
+unfold index_A_not_ge in H1.
 destruct (LPO_fst (A_ge_1 (i + k) u)) as [H2| H2].
--simpl in H1.
- remember Nat.mul as f; simpl; subst f.
+-remember Nat.mul as f; simpl; subst f.
  rewrite Nat.add_0_r in H1.
  remember (rad * (i + k + 3)) as n eqn:Hn.
  remember (n - (i + k) - 1) as s eqn:Hs.
  move s before n.
- specialize (eq_mod_rad_add_pred_rad u (i + k) n s Hur Hs H1) as H3.
-...
- destruct H3 as [H3| H3]; [ now right; right; left | ].
- destruct H3 as [H3| H3]; [ now right; right; right | ].
- destruct H3 as [H3| H3]; [ now left | now right; left ].
+ now specialize (eq_mod_rad_add_pred_rad u (i + k) n s Hur Hs H1) as H3.
 -destruct H2 as (j & Hjj & Hj).
  simpl in H1.
  remember Nat.mul as f; simpl; subst f.
  remember (rad * (i + k + j + 3)) as n eqn:Hn.
  remember (n - (i + k) - 1) as s eqn:Hs.
  move s before n.
- specialize (eq_mod_rad_add_pred_rad u (i + k) n s Hur Hs H1) as H3.
- destruct H3 as [H3| H3]; [ now right; left | ].
- destruct H3 as [H3| H3]; [ now right; right | now left ].
+ now specialize (eq_mod_rad_add_pred_rad u (i + k) n s Hur Hs H1) as H3.
 Qed.
+
+...
 
 Theorem num_to_dig_if {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
