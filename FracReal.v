@@ -4718,8 +4718,6 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
       remember (rad * (i + p + 3)) as n1 eqn:Hn1.
       remember (rad ^ (n1 - i - 1)) as s1 eqn:Hs1.
       move s1 before n1.
-...
-      rewrite <- Nat.add_assoc.
       unfold u at 1.
       unfold v at 1.
       unfold freal_add_series, sequence_add.
@@ -4728,7 +4726,6 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
       rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
       rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
       f_equal; f_equal.
-      rewrite Nat.add_assoc.
       unfold freal_normalize.
       unfold fd2n; simpl.
       unfold digit_sequence_normalize.
@@ -4766,7 +4763,6 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
           rewrite Haftx in H7; flia Hr H7.
        }
        move H7 before H8; move H5 before H7.
-       exfalso.
        (* contradiction with Hp *)
        assert (H11 : s1 ≠ 0) by now rewrite Hs1; apply Nat.pow_nonzero.
        specialize (all_9_nA x i p H5) as H9.
@@ -4805,8 +4801,7 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
      ****simpl; replace 2 with (2 * 1) by flia.
          apply Nat.mul_le_mono; [ apply radix_ge_2 | ].
          now apply Nat_pow_ge_1.
-    ---rewrite <- Nat.add_assoc.
-       rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+    ---rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
        rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
        f_equal; f_equal.
        destruct H5 as (j & Hjj & Hj); move j before i.
@@ -4832,24 +4827,21 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
        clear Hu; rename H5 into Hu.
        destruct (lt_dec (nA i n u) s) as [H8| H8].
      +++rewrite Nat.div_small; [ | easy ].
-        simpl; rewrite Nat.mod_1_l; [ | easy ].
         rewrite Nat.div_small in H3; [ | easy ].
         rewrite Nat.add_0_r in H3.
         destruct (lt_dec (nA i n1 u) s1) as [H9| H9].
-      ***exfalso.
-         destruct (lt_dec (nA i n1 v) s1) as [H10| H10].
-      ----rewrite Nat.mod_small in Hp; [ | easy ].
-          rewrite Nat.div_small in H4; [ | easy ].
-          rewrite Nat.add_0_r in H4.
+      ***destruct (lt_dec (nA i n1 v) s1) as [H10| H10].
+      ----now rewrite Nat.div_small.
+      ----exfalso.
 (*
   Hp : nA i n1 v < (rad ^ S p - 1) * rad ^ (n1 - i - p - 2)
 i.e
   nA i n1 v < 999...999000...000
      with (p+1) 9s and (n1 - i - p - 2) 0s
 *)
-...
          unfold v in Hp.
          rewrite nA_freal_add_series in Hp.
+...
          rewrite Nat.mod_small in Hp; [ | easy ].
          move Hp at bottom.
          replace (rad - 1) with (rad ^ 1 - 1) in H10 by (simpl; flia).
