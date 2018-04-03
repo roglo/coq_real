@@ -4104,11 +4104,12 @@ unfold d2n, numbers_to_digits in H1.
 destruct (LPO_fst (A_ge_1 (i + k) u)) as [H2| H2].
 -simpl in H1.
  remember Nat.mul as f; simpl; subst f.
+ rewrite Nat.add_0_r in H1.
  remember (rad * (i + k + 3)) as n eqn:Hn.
  remember (n - (i + k) - 1) as s eqn:Hs.
  move s before n.
+ specialize (eq_mod_rad_add_pred_rad u (i + k) n s Hur Hs H1) as H3.
 ...
- specialize (eq_mod_rad_add_succ_pred_rad u (i + k) n s Hur Hs H1) as H3.
  destruct H3 as [H3| H3]; [ now right; right; left | ].
  destruct H3 as [H3| H3]; [ now right; right; right | ].
  destruct H3 as [H3| H3]; [ now left | now right; left ].
