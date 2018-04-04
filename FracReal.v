@@ -4739,13 +4739,12 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
     unfold freal_add_to_seq.
     fold u v.
     unfold numbers_to_digits in H3, H4 |-*.
-    unfold index_A_not_ge in H3, H4 |-*.
+    unfold index_A_not_ge in H3, H4.
+    unfold index_A_not_ge.
     destruct (LPO_fst (A_ge_1 i u)) as [Hku| (m & Hjm & Hm)].
    ++simpl in H3 |-*.
      rewrite Nat.add_0_r in H3 |-*.
      rewrite <- Hn, <- Hs in H3 |-*.
-     specialize (A_ge_1_add_series_all_true_if _ _ i Hku) as Hu.
-     rewrite <- Hnx in Hu.
      destruct (LPO_fst (A_ge_1 i v)) as [Hkv| (p & Hjp & Hp)].
     **simpl in H4 |-*.
       rewrite Nat.add_0_r, <- Hn, <- Hs.
@@ -4870,7 +4869,7 @@ move H3 at bottom.
           replace (i + k + l + 2 + q) with (i + l + (k + q) + 2) by flia.
           apply Hux.
        }
-       (*clear Hu; *)rename H5 into Hu.
+       rename H5 into Hu.
        destruct (lt_dec (nA i n u) (rad ^ s)) as [H8| H8].
      +++rewrite Nat.div_small; [ | easy ].
         rewrite Nat.div_small in H3; [ | easy ].
