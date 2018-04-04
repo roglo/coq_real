@@ -4502,6 +4502,18 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
   rewrite Hxy in H2.
   unfold freal_add_to_seq in H2.
   fold v in H2.
+  specialize (all_num_to_dig_eq_pred_rad v (i + 1)) as H3.
+  specialize (freal_add_series_le_twice_pred x y) as H.
+  fold v in H.
+  specialize (H3 H); clear H.
+  assert (H : ∀ k, d2n (numbers_to_digits v) (i + 1 + k) = rad - 1). {
+    intros k; specialize (H2 k).
+    now rewrite Nat.add_shuffle0 in H2.
+  }
+  specialize (H3 H); clear H.
+  rename H3 into Hi3.
+...
+
   destruct (lt_dec (S (d2n nxy i)) rad) as [H3| H3].
   *simpl.
    rewrite Hnxy, Hnx in H3.
@@ -4855,6 +4867,17 @@ i.e
          rewrite nA_freal_add_series in Hp.
          rewrite Nat_mod_less_small in Hp.
       ++++idtac.
+... admit.
+++++split.
+ ****unfold v in H10.
+     rewrite nA_freal_add_series in H10.
+     flia H10.
+ ****rewrite <- nA_freal_add_series.
+     fold v.
+     specialize (nA_upper_bound_for_add v i n1) as H11.
+     rewrite <- Hs1 in H11.
+...  admit.
+***idtac.
 ...
          rewrite Nat.mod_small in Hp; [ | easy ].
          move Hp at bottom.
