@@ -4512,8 +4512,6 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
   }
   specialize (H3 H); clear H.
   rename H3 into Hi3.
-...
-
   destruct (lt_dec (S (d2n nxy i)) rad) as [H3| H3].
   *simpl.
    rewrite Hnxy, Hnx in H3.
@@ -4540,10 +4538,14 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
      rewrite <- Hnx in Hu.
      destruct (LPO_fst (A_ge_1 i v)) as [Hkv| (p & Hjp & Hp)].
     **simpl in H4 |-*.
-      rewrite Nat.add_0_r in H4 |-*.
-      rewrite <- Hn, <- Hs in H4 |-*.
+      rewrite Nat.add_0_r.
+      rewrite <- Hn, <- Hs.
+clear - Hr Hsz Hn Hnx Hs Hin Hku Hkv.
+(* make a lemma, perhaps *)
+(*
       specialize (A_ge_1_add_series_all_true_if _ _ i Hkv) as Hv.
       move Hkv before Hku.
+*)
       unfold u at 1.
       unfold v at 1.
       unfold freal_add_series, sequence_add.
@@ -4737,7 +4739,10 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
           rewrite H12.
           apply Nat_mul_succ_le_div.
           flia H7 H9 H11.
-    **simpl in H4; simpl.
+...
+    **idtac.
+(* case not finished *)
+      simpl in H4; simpl.
       apply A_ge_1_false_iff in Hp.
       remember (rad * (i + p + 3)) as n1 eqn:Hn1.
       remember (rad ^ (n1 - i - 1)) as s1 eqn:Hs1.
