@@ -4758,6 +4758,20 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
 clear - H3 Hr Hsz Hn Hn1 Hnx Hs Hs1 Hin Hku Hjp Hp.
 move p before n.
 move H3 at bottom.
+assert (H : nA i n1 v / rad ^ s1 = nA i n v / rad ^ s). {
+  rewrite nA_split with (e := n).
+...
+
+  destruct (lt_dec (nA i n1 v) (rad ^ s1)) as [H4| H4].
+  -rewrite Nat.div_small; [ | easy ].
+   destruct (lt_dec (nA i n v) (rad ^ s)) as [H5| H5].
+   +now rewrite Nat.div_small.
+   +exfalso.
+...
+
+rewrite H.
+clear n1 s1 Hn1 Hs1 H.
+...
       apply A_ge_1_false_iff in Hp.
       rewrite <- Hn1, <- Hs1 in Hp.
       replace (n1 - i - p - 2) with (s1 - S p) in Hp by flia Hs1.
