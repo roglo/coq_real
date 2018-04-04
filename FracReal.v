@@ -4759,14 +4759,16 @@ clear - H3 Hr Hsz Hn Hn1 Hnx Hs Hs1 Hin Hku Hjp Hp.
 move p before n.
 move H3 at bottom.
 assert (H : nA i n1 v / rad ^ s1 = nA i n v / rad ^ s). {
-  rewrite nA_split with (e := n).
-...
-
-  destruct (lt_dec (nA i n1 v) (rad ^ s1)) as [H4| H4].
-  -rewrite Nat.div_small; [ | easy ].
-   destruct (lt_dec (nA i n v) (rad ^ s)) as [H5| H5].
-   +now rewrite Nat.div_small.
-   +exfalso.
+  assert (H : n1 - n = rad * p) by flia Hn Hn1.
+  assert (Hnn : n ≤ n1). {
+    destruct p; [ now rewrite Hn, Hn1, Nat.add_0_r | ].
+    destruct rad; [ easy | simpl in H; flia H ].
+  }
+  rewrite nA_split with (e := n); [ | flia Hin Hnn ].
+  destruct (lt_dec (nA i n v) (rad ^ s)) as [H4| H4].
+  -symmetry.
+   rewrite Nat.div_small; [ | easy ].
+   rewrite Nat.div_small; [ easy | ].
 ...
 
 rewrite H.
