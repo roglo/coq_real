@@ -4739,10 +4739,13 @@ clear - Hr Hsz Hn Hnx Hs Hin Hku Hkv.
           rewrite H12.
           apply Nat_mul_succ_le_div.
           flia H7 H9 H11.
-...
     **idtac.
 (* case not finished *)
       simpl in H4; simpl.
+clear - H3 Hr Hsz Hn Hnx Hs Hin Hku Hjp Hp.
+move p before n.
+move H3 at bottom.
+...
       apply A_ge_1_false_iff in Hp.
       remember (rad * (i + p + 3)) as n1 eqn:Hn1.
       remember (rad ^ (n1 - i - 1)) as s1 eqn:Hs1.
@@ -4782,6 +4785,8 @@ clear - Hr Hsz Hn Hnx Hs Hin Hku Hkv.
        move H7 before H5.
        assert (H8 : ∀ k, fd2n y (i + k + 1) = rad - 1). {
          intros k.
+         specialize (A_ge_1_add_series_all_true_if _ _ i Hku) as Hu.
+         rewrite <- Hnx in Hu.
          destruct Hu as [Hu| [Hu| Hu]]; [ | easy | ].
          -specialize (Hu k).
           now rewrite H7 in Hu.
@@ -4839,6 +4844,8 @@ clear - Hr Hsz Hn Hnx Hs Hin Hku Hkv.
        fold u v.
        assert (H5 : ∀ k, fd2n nx (i + k + 1) + fd2n y (i + k + 1) = rad - 1). {
          intros k.
+         specialize (A_ge_1_add_series_all_true_if _ _ i Hku) as Hu.
+         rewrite <- Hnx in Hu.
          destruct Hu as [Hu| [(Hux, Huy)| Hu]].
          -now specialize (Hu k).
          -specialize (normalized_not_999 x) as H.
@@ -4853,7 +4860,7 @@ clear - Hr Hsz Hn Hnx Hs Hin Hku Hkv.
           replace (i + k + l + 2 + q) with (i + l + (k + q) + 2) by flia.
           apply Hux.
        }
-       clear Hu; rename H5 into Hu.
+       (*clear Hu; *)rename H5 into Hu.
        destruct (lt_dec (nA i n u) s) as [H8| H8].
      +++rewrite Nat.div_small; [ | easy ].
         rewrite Nat.div_small in H3; [ | easy ].
