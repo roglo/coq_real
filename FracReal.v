@@ -4749,26 +4749,45 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
     **simpl in H4 |-*.
       rewrite Nat.add_0_r, <- Hn, <- Hs.
       now apply A_ge_1_all_true_for_sum_and_sum_norm_l.
-    **idtac.
-(* case not finished *)
-      simpl in H4; simpl.
+    **simpl in H4; simpl.
       remember (rad * (i + p + 3)) as n1 eqn:Hn1.
       remember (n1 - i - 1) as s1 eqn:Hs1.
       move s1 before n1.
-clear - H3 Hr Hsz Hn Hn1 Hnx Hs Hs1 Hin Hku Hjp Hp.
-move p before n.
-move H3 at bottom.
-assert (H : nA i n1 v / rad ^ s1 = nA i n v / rad ^ s). {
-  assert (H : n1 - n = rad * p) by flia Hn Hn1.
-  assert (Hnn : n ≤ n1). {
-    destruct p; [ now rewrite Hn, Hn1, Nat.add_0_r | ].
-    destruct rad; [ easy | simpl in H; flia H ].
-  }
-  rewrite nA_split with (e := n); [ | flia Hin Hnn ].
-  destruct (lt_dec (nA i n v) (rad ^ s)) as [H4| H4].
-  -symmetry.
-   rewrite Nat.div_small; [ | easy ].
-   rewrite Nat.div_small; [ easy | ].
+      clear - H3 Hr Hsz Hn Hn1 Hnx Hs Hs1 Hin Hku Hjp Hp.
+      move p before n.
+      move H3 at bottom.
+      assert (H : nA i n1 v / rad ^ s1 = nA i n v / rad ^ s). {
+        assert (H : n1 - n = rad * p) by flia Hn Hn1.
+        assert (Hnn : n ≤ n1). {
+          destruct p; [ now rewrite Hn, Hn1, Nat.add_0_r | ].
+          destruct rad; [ easy | simpl in H; flia H ].
+        }
+        replace s1 with (n1 - n + s) by flia Hs Hs1 Hin Hnn.
+        rewrite Nat.pow_add_r.
+        rewrite <- Nat.div_div; try now apply Nat.pow_nonzero.
+        rewrite nA_split with (e := n); [ | flia Hin Hnn ].
+        rewrite Nat.add_comm.
+        rewrite Nat.div_add; [ | now apply Nat.pow_nonzero ].
+        destruct (lt_dec (nA (n - 1) n1 v) (rad ^ (n1 - n))) as [H4| H4].
+        -now rewrite Nat.div_small with (b := rad ^ (n1 - n)).
+        -exfalso; apply H4; clear H4.
+         specialize (nA_upper_bound_for_add v (n - 1) n1) as H4.
+         assert (Hv : ∀ k, v k ≤ 2 * (rad - 1)). {
+           intros j; unfold v.
+           unfold freal_add_series, sequence_add.
+           replace (2 * (rad - 1)) with ((rad - 1) + (rad - 1)) by flia.
+           apply Nat.add_le_mono; apply digit_le_pred_radix.
+         }
+         specialize (H4 Hv); clear Hv.
+         replace (n1 - (n - 1) - 1) with (n1 - n) in H4 by flia Hs Hs1 Hin Hnn.
+apply A_ge_1_false_iff in Hp.
+rewrite <- Hn1, <- Hs1 in Hp.
+...
+
+     destruct (Nat.eq_dec j (i + 1)); [ flia | ].
+     apply Hur.
+   }
+   specialize (H2 H); clear H.
 ...
 
 rewrite H.
