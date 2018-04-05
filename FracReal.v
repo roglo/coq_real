@@ -4757,22 +4757,61 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
       move p before n.
       move H3 at bottom.
       assert (H : nA i n1 v / rad ^ s1 = nA i n v / rad ^ s). {
-apply A_ge_1_false_iff in Hp.
-rewrite <- Hn1, <- Hs1 in Hp.
-replace (n1 - i - p - 2) with (s1 - S p) in Hp by flia Hs1.
-destruct (lt_dec (nA i n1 v) (rad ^ s1)) as [H4| H4].
--rewrite Nat.div_small; [ | easy ].
- rewrite Nat.mod_small in Hp; [ | easy ].
- destruct (lt_dec (nA i n v) (rad ^ s)) as [H5| H5].
- +now rewrite Nat.div_small.
- +exfalso.
-  apply H5; clear H5.
-...
         assert (H : n1 - n = rad * p) by flia Hn Hn1.
         assert (Hnn : n ≤ n1). {
           destruct p; [ now rewrite Hn, Hn1, Nat.add_0_r | ].
           destruct rad; [ easy | simpl in H; flia H ].
         }
+        apply A_ge_1_false_iff in Hp.
+        rewrite <- Hn1, <- Hs1 in Hp.
+        replace (n1 - i - p - 2) with (s1 - S p) in Hp by flia Hs1.
+        destruct (lt_dec (nA i n1 v) (rad ^ s1)) as [H4| H4].
+        -rewrite Nat.div_small; [ | easy ].
+         rewrite Nat.mod_small in Hp; [ | easy ].
+         destruct (lt_dec (nA i n v) (rad ^ s)) as [H5| H5].
+         +now rewrite Nat.div_small.
+         +exfalso.
+          apply H5; clear H5.
+          replace s1 with (n1 - n + s) in H4 by flia Hs Hs1 Hin Hnn.
+          rewrite Nat.pow_add_r in H4.
+          rewrite nA_split with (e := n) in H4; [ | flia Hin Hnn ].
+          apply Nat.le_lt_trans with (n := nA i n v * rad ^ (n1 - n)) in H4.
+          *rewrite Nat.mul_comm in H4.
+           apply Nat.mul_lt_mono_pos_l in H4; [ easy | ].
+           now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+          *flia.
+        -destruct (lt_dec (nA i n v) (rad ^ s)) as [H5| H5].
+         +exfalso.
+          rewrite Nat_mod_less_small in Hp.
+          *apply H4; clear H4.
+           replace s1 with (n1 - n + s) by flia Hs Hs1 Hin Hnn.
+           rewrite Nat.pow_add_r.
+           rewrite nA_split with (e := n); [ | flia Hin Hnn ].
+...
+
+           apply Nat.le_lt_trans with (n := nA i n v * rad ^ (n1 - n)).
+          *rewrite Nat.mul_comm in H4.
+           apply Nat.mul_lt_mono_pos_l in H4; [ easy | ].
+           now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+          *flia.
+
+...
+
+        rewrite <- Nat.div_div in H4; try now apply Nat.pow_nonzero.
+        rewrite nA_split with (e := n); [ | flia Hin Hnn ].
+        rewrite Nat.add_comm.
+        rewrite Nat.div_add; [ | now apply Nat.pow_nonzero ].
+        destruct (lt_dec (nA (n - 1) n1 v) (rad ^ (n1 - n))) as [H4| H4].
+        -now rewrite Nat.div_small with (b := rad ^ (n1 - n)).
+        -rewrite Nat_div_less_small with (b := rad ^ (n1 - n)).
+
+...
+}
+rewrite H.
+...
+  ============================
+  (u i + nA i n u / rad ^ s) mod rad = (v i + nA i n v / rad ^ s) mod rad
+...
         replace s1 with (n1 - n + s) by flia Hs Hs1 Hin Hnn.
         rewrite Nat.pow_add_r.
         rewrite <- Nat.div_div; try now apply Nat.pow_nonzero.
