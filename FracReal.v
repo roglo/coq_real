@@ -4770,7 +4770,10 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
         rewrite Nat.div_add; [ | now apply Nat.pow_nonzero ].
         destruct (lt_dec (nA (n - 1) n1 v) (rad ^ (n1 - n))) as [H4| H4].
         -now rewrite Nat.div_small with (b := rad ^ (n1 - n)).
-        -exfalso; apply H4; clear H4.
+        -rewrite Nat_div_less_small with (b := rad ^ (n1 - n)).
+...
+
+         exfalso; apply H4; clear H4.
          specialize (nA_upper_bound_for_add v (n - 1) n1) as H4.
          assert (Hv : ∀ k, v k ≤ 2 * (rad - 1)). {
            intros j; unfold v.
