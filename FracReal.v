@@ -4787,6 +4787,23 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
            replace s1 with (n1 - n + s) by flia Hs Hs1 Hin Hnn.
            rewrite Nat.pow_add_r.
            rewrite nA_split with (e := n); [ | flia Hin Hnn ].
+assert (H6 : nA (n - 1) n1 v < rad ^ (n1 - n)).
+admit.
+assert (H7 : nA (n - 1) n1 v / rad ^ (n1 - n) = 0).
+now rewrite Nat.div_small.
+assert (H8 : nA i n v + nA (n - 1) n1 v / rad ^ (n1 - n) < rad ^ s).
+now rewrite H7, Nat.add_0_r.
+apply Nat.mul_lt_mono_pos_l with (p := rad ^ (n1 - n)) in H8.
+eapply le_lt_trans; [ | apply H8 ].
+rewrite Nat.mul_add_distr_l.
+rewrite Nat.mul_comm.
+apply Nat.add_le_mono_l.
+Search (_ * (_ / _)).
+
+...
+           apply Nat.mul_lt_mono_pos_l with (p := rad ^ (n1 - n)) in H5.
+          --rewrite Nat.mul_comm in H5.
+Search (_ / _ ≤ _ / _).
 ...
 
            apply Nat.le_lt_trans with (n := nA i n v * rad ^ (n1 - n)).
