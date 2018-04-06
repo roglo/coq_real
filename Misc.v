@@ -196,11 +196,20 @@ replace a with (a - b + 1 * b) at 1.
  now apply Nat.sub_add.
 Qed.
 
-(*
-Theorem Nat_mod_add_once : ∀ a b, b ≠ 0 → (a + b) mod b = a mod b.
+Theorem Nat_div_add_div : ∀ a b c,
+  b mod c < c - a
+  → (a + b) / c = b / c.
 Proof.
 intros * Hb.
-replace b with (1 * b) at 1 by apply Nat.mul_1_l.
-now apply Nat.mod_add.
+destruct c; [ easy | ].
+specialize (Nat.div_mod b (S c) (Nat.neq_succ_0 c)) as H1.
+rewrite H1.
+rewrite Nat.add_comm, Nat.mul_comm, <- Nat.add_assoc.
+rewrite Nat.div_add_l; [ | easy ].
+rewrite Nat.div_add_l; [ | easy ].
+f_equal.
+rewrite Nat.div_small.
+rewrite Nat.div_small; [ easy | ].
+-now apply Nat.mod_upper_bound.
+-now apply Nat.lt_add_lt_sub_r.
 Qed.
-*)
