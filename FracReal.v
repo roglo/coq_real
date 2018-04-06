@@ -4699,24 +4699,35 @@ Theorem freal_normalized_cases {r : radix} : ∀ x,
 Proof.
 intros x.
 unfold freal_eq.
-...
-
-...
-freal_eq_normalized_eq:
-  ∀ (r : radix) (x y : FracReal),
-  (x = y)%F ↔ (∀ i : nat, freal (freal_normalize x) i = freal (freal_normalize y) i)
-freal_normalized_iff:
-  ∀ (r : radix) (x y : FracReal),
-  (∀ i : nat, freal (freal_normalize x) i = freal y i)
-  ↔ (∀ k : nat, ∃ i : nat, k ≤ i ∧ S (fd2n x i) < rad) ∧ (∀ i : nat, freal x i = freal y i)
-    ∨ freal_norm_not_norm_eq y x
+remember (freal_normalize x) as nx eqn:Hnx.
+remember (freal_normalized_eq x nx) as b eqn:Hb.
+symmetry in Hb.
+destruct b; [ now left | right ].
+unfold freal_normalized_eq in Hb.
+destruct (LPO_fst (has_same_digits x nx)) as [H1| H1]; [ easy | clear Hb ].
+destruct H1 as (i & Hji & Hj).
+apply has_same_digits_false_iff in Hj.
+exists (i + 1).
+intros j.
+rewrite Hnx in Hj.
+unfold freal_normalize, fd2n in Hj.
+simpl in Hj.
+unfold digit_sequence_normalize in Hj.
+destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H1| H1]; [ | easy ].
+specialize (H1 j).
+apply is_9_strict_after_true_iff in H1.
+now rewrite Nat.add_shuffle0 in H1.
+Qed.
 
 Theorem freal_eq_prop_add_norm_l {r : radix} : ∀ x y,
   freal_eq_prop {| freal := freal_add_to_seq (freal_normalize x) y |}
     {| freal := freal_add_to_seq x y |}.
 Proof.
 intros.
-Search freal_normalize.
+specialize (freal_normalized_cases x) as H1.
+destruct H1 as [H1| H1].
+-Search freal_normalized_eq.
+Print freal_eq.
 ...
 
 intros.
