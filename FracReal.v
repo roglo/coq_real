@@ -1960,7 +1960,6 @@ unfold freal_normalize, fd2n; simpl.
 rewrite <- Hnx, <- Hny, <- Hnx', <- Hny'.
 unfold freal_add_to_seq.
 Search numbers_to_digits.
-Check numbers_to_digits_eq_compat.
 ...
 
 unfold digit_sequence_normalize.
