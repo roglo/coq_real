@@ -4693,8 +4693,57 @@ destruct (LPO_fst (has_same_digits nx (freal_normalize nx))) as [H1| H1].
  +easy.
 Qed.
 
+Definition freal_norm_eq_prop {r : radix} x y := freal_normalized_eq x y = true.
+
+Theorem freal_norm_eq_refl {r : radix} : reflexive _ freal_norm_eq_prop.
+Proof.
+intros x.
+unfold freal_norm_eq_prop, freal_normalized_eq.
+destruct (LPO_fst (has_same_digits x x)) as [Hs| Hs]; [ easy | exfalso ].
+destruct Hs as (i & Hji & Hyy).
+now apply has_same_digits_false_iff in Hyy.
+Qed.
+
+Theorem freal_norm_eq_sym {r : radix} : symmetric _ freal_norm_eq_prop.
+Proof.
+intros x y Hxy.
+unfold freal_norm_eq_prop, freal_normalized_eq in Hxy |-*.
+destruct (LPO_fst (has_same_digits y x)) as [Hs| Hs]; [ easy | exfalso ].
+destruct (LPO_fst (has_same_digits x y)) as [Ht| Ht]; [ clear Hxy | easy ].
+destruct Hs as (i & Hji & Hyx).
+specialize (Ht i).
+unfold has_same_digits in Ht, Hyx.
+destruct (Nat.eq_dec (fd2n y i) (fd2n x i)) as [H1| H1]; [ easy | ].
+destruct (Nat.eq_dec (fd2n x i) (fd2n y i)) as [H2| H2]; [ | easy ].
+now symmetry in H2.
+Qed.
+
+Theorem freal_norm_eq_trans {r : radix} : transitive _ freal_norm_eq_prop.
+Proof.
+intros x y z Hxy Hyz.
+unfold freal_norm_eq_prop, freal_normalized_eq in Hxy, Hyz |-*.
+destruct (LPO_fst (has_same_digits x y)) as [Hx| Hx]; [ clear Hxy | easy ].
+destruct (LPO_fst (has_same_digits y z)) as [Hy| Hy]; [ clear Hyz | easy ].
+destruct (LPO_fst (has_same_digits x z)) as [Hz| Hz]; [ easy | exfalso ].
+destruct Hz as (i & Hji & Hz).
+specialize (Hx i).
+specialize (Hy i).
+unfold has_same_digits in Hx, Hy, Hz.
+destruct (Nat.eq_dec (fd2n x i) (fd2n y i)) as [H1| H1]; [ | easy ].
+destruct (Nat.eq_dec (fd2n y i) (fd2n z i)) as [H2| H2]; [ | easy ].
+destruct (Nat.eq_dec (fd2n x i) (fd2n z i)) as [H3| H3]; [ easy | ].
+apply H3.
+now transitivity (fd2n y i).
+Qed.
+
+Add Parametric Relation {r : radix} : (FracReal) freal_norm_eq_prop
+ reflexivity proved by freal_norm_eq_refl
+ symmetry proved by freal_norm_eq_sym
+ transitivity proved by freal_norm_eq_trans
+ as freal_norm_eq_rel.
+
 Theorem freal_normalized_cases {r : radix} : ∀ x,
-  freal_normalized_eq x (freal_normalize x) = true ∨
+  freal_norm_eq_prop x (freal_normalize x) ∨
   (∃ n, ∀ i, fd2n x (n + i) = rad - 1).
 Proof.
 intros x.
@@ -4719,15 +4768,50 @@ apply is_9_strict_after_true_iff in H1.
 now rewrite Nat.add_shuffle0 in H1.
 Qed.
 
+Theorem eq_freal_normalized_eq_true_iff {r : radix} : ∀ x y,
+  freal_norm_eq_prop x y
+  ↔ ∀ i, fd2n x i = fd2n y i.
+Proof.
+intros.
+split; intros Hxy.
+-intros i.
+ unfold freal_norm_eq_prop in Hxy.
+ unfold freal_normalized_eq in Hxy.
+ destruct (LPO_fst (has_same_digits x y)) as [H1| H1]; [ | easy ].
+ specialize (H1 i).
+ unfold has_same_digits in H1.
+ now destruct (Nat.eq_dec (fd2n x i) (fd2n y i)).
+-unfold freal_norm_eq_prop.
+ unfold freal_normalized_eq.
+ destruct (LPO_fst (has_same_digits x y)) as [H1| H1]; [ easy | ].
+ destruct H1 as (i & Hji & Hi).
+ unfold has_same_digits in Hi.
+ destruct (Nat.eq_dec (fd2n x i) (fd2n y i)); [ easy | ].
+ now specialize (Hxy i).
+Qed.
+
+Definition freal_unorm_add {r : radix} x y := {| freal := freal_add_to_seq x y |}.
+
+Add Parametric Morphism {r : radix} : freal_unorm_add
+  with signature
+    freal_norm_eq_prop ==> freal_norm_eq_prop ==> freal_norm_eq_prop
+  as freal_unorm_add_morph.
+Admitted.
+
 Theorem freal_eq_prop_add_norm_l {r : radix} : ∀ x y,
-  freal_eq_prop {| freal := freal_add_to_seq (freal_normalize x) y |}
-    {| freal := freal_add_to_seq x y |}.
+  freal_eq_prop (freal_unorm_add (freal_normalize x) y) (freal_unorm_add x y).
 Proof.
 intros.
 specialize (freal_normalized_cases x) as H1.
 destruct H1 as [H1| H1].
--Search freal_normalized_eq.
-Print freal_eq.
+-specialize (freal_unorm_add_morph _ _ _ H1 y y (freal_norm_eq_refl _)) as H2.
+ rewrite <- H2.
+...
+
+-remember (freal_normalize x) as nx eqn:Hnx.
+ specialize (proj1 (eq_freal_normalized_eq_true_iff x nx) H1) as H2.
+Print freal_eq_prop.
+
 ...
 
 intros.
