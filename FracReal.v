@@ -4756,6 +4756,7 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
       clear - H3 Hr Hsz Hn Hn1 Hnx Hs Hs1 Hin Hku Hjp Hp.
       move p before n.
       move H3 at bottom.
+...
       assert (H : nA i n1 v / rad ^ s1 = nA i n v / rad ^ s). {
         destruct (lt_dec p (n - 1)) as [H1| H1].
         -assert (H : n1 - n = rad * p) by flia Hn Hn1.
@@ -4776,6 +4777,10 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
          +now rewrite Nat.div_small with (b := rad ^ (n1 - n)).
          +rewrite Nat_div_less_small with (b := rad ^ (n1 - n)).
           *apply Nat_div_add_div.
+admit.
+*admit.
+        -apply Nat.nlt_ge in H1.
+
 ...
 
          exfalso; apply H4; clear H4.
