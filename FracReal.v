@@ -1958,11 +1958,22 @@ apply Hi; clear Hi.
 rewrite Hxx', Hyy'.
 unfold freal_normalize, fd2n; simpl.
 rewrite <- Hnx, <- Hny, <- Hnx', <- Hny'.
-unfold freal_add_to_seq.
-Search numbers_to_digits.
-...
-
 unfold digit_sequence_normalize.
+remember (freal_add_to_seq nx nx') as axx' eqn:Haxx'.
+remember (freal_add_to_seq ny ny') as ayy' eqn:Hayy'.
+destruct (LPO_fst (is_9_strict_after axx' i)) as [H5| H5].
+-specialize (is_9_strict_after_all_9 _ _ H5) as H6.
+ clear H5.
+ destruct (LPO_fst (is_9_strict_after ayy' i)) as [H5| H5].
+ +specialize (is_9_strict_after_all_9 _ _ H5) as H7.
+  clear H5.
+  destruct (lt_dec (S (d2n axx' i)) rad) as [H5| H5].
+  *destruct (lt_dec (S (d2n ayy' i)) rad) as [H8| H8].
+  --simpl; f_equal.
+    rewrite Haxx', Hayy'.
+    unfold d2n, freal_add_to_seq.
+    unfold numbers_to_digits; simpl.
+(* ah la la la la, quelle catastrophe ! *)
 ...
 
 
