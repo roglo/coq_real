@@ -4646,10 +4646,79 @@ destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H5| H5].
     flia H7 H9 H11.
 Qed.
 
+Theorem freal_normalize_normalize {r : radix} : ∀ x i,
+  fd2n (freal_normalize (freal_normalize x)) i =
+  fd2n (freal_normalize x) i.
+Proof.
+intros.
+remember (freal_normalize x) as nx eqn:Hnx.
+unfold fd2n, freal_normalize; simpl.
+unfold digit_sequence_normalize.
+destruct (LPO_fst (is_9_strict_after (freal nx) i)) as [H1| H1].
+-specialize (is_9_strict_after_all_9 _ _ H1) as H2.
+ specialize (normalized_not_999 x) as H3.
+ rewrite <- Hnx in H3.
+ exfalso; apply H3; clear H3.
+ exists (i + 1).
+ intros j.
+ specialize (H2 j).
+ now rewrite Nat.add_shuffle0 in H2.
+-easy.
+Qed.
+
+Theorem freal_normalize_idemp {r : radix} : ∀ x,
+  freal_normalized_eq
+    (freal_normalize x)
+    (freal_normalize (freal_normalize x)) = true.
+Proof.
+intros.
+unfold freal_normalized_eq.
+remember (freal_normalize x) as nx eqn:Hnx.
+destruct (LPO_fst (has_same_digits nx (freal_normalize nx))) as [H1| H1].
+-easy.
+-exfalso.
+ destruct H1 as (n & Hjn & Hn).
+ apply has_same_digits_false_iff in Hn; apply Hn; clear Hn.
+ unfold freal_normalize, fd2n; simpl.
+ unfold digit_sequence_normalize; simpl.
+ destruct (LPO_fst (is_9_strict_after (freal nx) n)) as [H1| H1].
+ +specialize (is_9_strict_after_all_9 _ _ H1) as H2.
+  specialize (normalized_not_999 x) as H3.
+  rewrite <- Hnx in H3.
+  exfalso; apply H3; clear H3.
+  exists (n + 1).
+  intros j.
+  specialize (H2 j).
+  now rewrite Nat.add_shuffle0 in H2.
+ +easy.
+Qed.
+
+Theorem freal_normalized_cases {r : radix} : ∀ x,
+  freal_normalized_eq x (freal_normalize x) = true ∨
+  (∃ n, ∀ i, fd2n x (n + i) = rad - 1).
+Proof.
+intros x.
+unfold freal_eq.
+...
+
+...
+freal_eq_normalized_eq:
+  ∀ (r : radix) (x y : FracReal),
+  (x = y)%F ↔ (∀ i : nat, freal (freal_normalize x) i = freal (freal_normalize y) i)
+freal_normalized_iff:
+  ∀ (r : radix) (x y : FracReal),
+  (∀ i : nat, freal (freal_normalize x) i = freal y i)
+  ↔ (∀ k : nat, ∃ i : nat, k ≤ i ∧ S (fd2n x i) < rad) ∧ (∀ i : nat, freal x i = freal y i)
+    ∨ freal_norm_not_norm_eq y x
+
 Theorem freal_eq_prop_add_norm_l {r : radix} : ∀ x y,
   freal_eq_prop {| freal := freal_add_to_seq (freal_normalize x) y |}
     {| freal := freal_add_to_seq x y |}.
 Proof.
+intros.
+Search freal_normalize.
+...
+
 intros.
 specialize radix_ge_2 as Hr.
 unfold freal_eq_prop.
