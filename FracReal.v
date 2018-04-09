@@ -4781,12 +4781,46 @@ split; intros Hxy.
  now specialize (Hxy i).
 Qed.
 
+Add Parametric Morphism {r : radix} : freal_normalize
+  with signature freal_norm_eq ==> freal_norm_eq
+  as freal_norm_morph.
+Proof.
+intros x y Hxy.
+unfold freal_norm_eq in Hxy |-*.
+destruct (LPO_fst (has_same_digits x y)) as [H| ]; [ clear Hxy | easy ].
+specialize (all_eq_seq_all_eq x y H) as H1; clear H.
+remember (freal_normalize x) as nx eqn:Hnx.
+remember (freal_normalize y) as ny eqn:Hny.
+move ny before nx.
+destruct (LPO_fst (has_same_digits nx ny)) as [| H2]; [ easy | ].
+destruct H2 as (i & Hij & Hi).
+apply has_same_digits_false_iff in Hi.
+apply Hi; clear Hi.
+subst nx ny.
+unfold fd2n, freal_normalize; simpl.
+unfold digit_sequence_normalize.
+destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H2| H2].
+-destruct (LPO_fst (is_9_strict_after (freal y) i)) as [H3| H3].
+ +destruct (lt_dec (S (d2n (freal x) i)) rad) as [H4| H4].
+  *simpl.
+   destruct (lt_dec (S (d2n (freal y) i)) rad) as [H5| H5].
+  --simpl; unfold d2n.
+    now rewrite H1.
+  --unfold d2n in H4, H5.
+    now rewrite H1 in H4.
+  *destruct (lt_dec (S (d2n (freal y) i)) rad) as [H5| ]; [ | easy ].
+   unfold d2n in H4, H5.
+   now rewrite H1 in H4.
+ +exfalso.
+  destruct H3 as (j & Hjj & Hj).
+...
+
 Add Parametric Morphism {r : radix} : freal_unorm_add
-  with signature
-    freal_norm_eq ==> freal_norm_eq ==> freal_norm_eq
+  with signature freal_norm_eq ==> freal_norm_eq ==> freal_norm_eq
   as freal_unorm_add_morph.
 Proof.
 intros x y Hxy x' y' Hxy'.
+...
 unfold freal_norm_eq in Hxy, Hxy'.
 destruct (LPO_fst (has_same_digits x y)) as [H1| ]; [ clear Hxy | easy ].
 destruct (LPO_fst (has_same_digits x' y')) as [H2| ]; [ clear Hxy' | easy ].
@@ -4812,34 +4846,35 @@ Theorem freal_eq_add_norm_l {r : radix} : ∀ x y,
   (freal_unorm_add (freal_normalize x) y = freal_unorm_add x y)%F.
 Proof.
 intros.
+specialize (freal_normalized_cases x) as [H1| H1].
+unfold freal_eq.
+...
+rewrite <- H1.
 ...
 
 intros.
-specialize radix_ge_2 as Hr.
-unfold freal_eq_prop.
 unfold freal_eq.
-unfold freal_normalized_eq.
+unfold freal_norm_eq.
 remember (freal_normalize x) as nx eqn:Hnx.
-remember {| freal := freal_add_to_seq nx y |} as nxy eqn:Hnxy.
-remember {| freal := freal_add_to_seq x y |} as xy eqn:Hxy.
+remember (freal_unorm_add nx y) as nxy eqn:Hnxy.
+remember (freal_unorm_add x y) as xy eqn:Hxy.
 move xy before nxy.
 remember (freal_normalize nxy) as nnxy eqn:Hnnxy.
 remember (freal_normalize xy) as n1xy eqn:Hn1xy.
 move n1xy before nnxy.
 destruct (LPO_fst (has_same_digits nnxy n1xy)) as [H1| H1]; [ easy | ].
-exfalso; destruct H1 as (i & Hji & Hi).
+destruct H1 as (i & Hji & Hi).
 apply has_same_digits_false_iff in Hi.
 apply Hi; clear Hi.
 subst nnxy n1xy.
 subst nxy xy.
 unfold fd2n.
-f_equal.
 simpl.
 unfold digit_sequence_normalize.
 remember (freal_add_to_seq nx y) as nxy eqn:Hnxy.
 remember (freal_add_to_seq x y) as xy eqn:Hxy.
 move xy before nxy.
-apply digit_eq_eq.
+(*
 remember (rad * (i + 3)) as n eqn:Hn.
 remember (n - i - 1) as s eqn:Hs.
 move s before n.
@@ -4849,6 +4884,7 @@ assert (Hin : i + 1 ≤ n - 1). {
   specialize radix_ne_0 as H.
   destruct rad; [ easy | simpl; flia ].
 }
+*)
 set (u := freal_add_series (freal_normalize x) y).
 set (v := freal_add_series x y).
 destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
@@ -4858,7 +4894,7 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
  unfold freal_add_to_seq in H1.
  rewrite Hnx in H1.
  fold u in H1.
-(**)
+(*
  specialize (all_num_to_dig_eq_pred_rad u (i + 1)) as H2.
  specialize (freal_add_series_le_twice_pred nx y) as H.
  rewrite Hnx in H; fold u in H.
@@ -4869,13 +4905,14 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
  }
  specialize (H2 H); clear H.
  rename H2 into Hi2.
-(**)
+*)
  destruct (LPO_fst (is_9_strict_after xy i)) as [H2| H2].
  +specialize (is_9_strict_after_all_9 _ _ H2) as H3.
   clear H2; rename H3 into H2.
   rewrite Hxy in H2.
   unfold freal_add_to_seq in H2.
   fold v in H2.
+(*
   specialize (all_num_to_dig_eq_pred_rad v (i + 1)) as H3.
   specialize (freal_add_series_le_twice_pred x y) as H.
   fold v in H.
@@ -4886,6 +4923,7 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
   }
   specialize (H3 H); clear H.
   rename H3 into Hi3.
+*)
   destruct (lt_dec (S (d2n nxy i)) rad) as [H3| H3].
   *simpl.
    rewrite Hnxy, Hnx in H3.
@@ -4900,6 +4938,7 @@ destruct (LPO_fst (is_9_strict_after nxy i)) as [H1| H1].
     unfold d2n.
     rewrite Hnxy, Hxy.
     rewrite Hnx.
+...
     unfold freal_add_to_seq.
     fold u v.
     unfold numbers_to_digits in H3, H4 |-*.
