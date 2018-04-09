@@ -4902,8 +4902,32 @@ specialize (freal_normalized_cases x) as [H1| H1].
 -unfold freal_eq.
  now rewrite H1.
 -destruct H1 as (n & Hbef & Hwhi & Hnaft & Haft).
+ unfold "="%F.
+ remember (freal_normalize x) as nx eqn:Hnx.
+ unfold freal_norm_eq.
+ remember (freal_normalize (freal_unorm_add nx y)) as nxy eqn:Hnxy.
+ remember (freal_normalize (freal_unorm_add x y)) as xy eqn:Hxy.
+ move xy before nxy.
+ destruct (LPO_fst (has_same_digits nxy xy)) as [| H1]; [ easy | ].
+ destruct H1 as (i & Hji & Hi).
+ apply has_same_digits_false_iff in Hi.
+ apply Hi; clear Hi.
+ subst nxy xy.
+ remember (freal_unorm_add nx y) as nxy eqn:Hnxy.
+ remember (freal_unorm_add x y) as xy eqn:Hxy.
+ move xy before nxy.
 ...
 
+ rewrite Hnxy, Hxy.
+ unfold freal_unorm_add.
+ unfold freal_normalize, fd2n; simpl.
+ unfold digit_sequence_normalize.
+ destruct (LPO_fst (is_9_strict_after (freal_add_to_seq nx y) i)) as [H1| H1].
+ +specialize (is_9_strict_after_all_9 _ _ H1) as H2.
+  unfold freal_add_to_seq in H2.
+  unfold d2n, numbers_to_digits in H2.
+  simpl in H2.
+...
 intros.
 unfold freal_eq.
 unfold freal_norm_eq.
