@@ -4813,14 +4813,26 @@ destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H2| H2].
    now rewrite H1 in H4.
  +exfalso.
   destruct H3 as (j & Hjj & Hj).
-...
+  specialize (H2 j).
+  apply is_9_strict_after_true_iff in H2.
+  apply is_9_strict_after_false_iff in Hj.
+  unfold d2n in H2, Hj.
+  now rewrite H1 in H2.
+-destruct H2 as (j & Hjj & Hj).
+ destruct (LPO_fst (is_9_strict_after (freal y) i)) as [H2| H2].
+ +specialize (H2 j).
+  apply is_9_strict_after_true_iff in H2.
+  apply is_9_strict_after_false_iff in Hj.
+  unfold d2n in H2, Hj.
+  now rewrite H1 in Hj.
+ +now rewrite H1.
+Qed.
 
 Add Parametric Morphism {r : radix} : freal_unorm_add
   with signature freal_norm_eq ==> freal_norm_eq ==> freal_norm_eq
   as freal_unorm_add_morph.
 Proof.
 intros x y Hxy x' y' Hxy'.
-...
 unfold freal_norm_eq in Hxy, Hxy'.
 destruct (LPO_fst (has_same_digits x y)) as [H1| ]; [ clear Hxy | easy ].
 destruct (LPO_fst (has_same_digits x' y')) as [H2| ]; [ clear Hxy' | easy ].
@@ -4847,9 +4859,9 @@ Theorem freal_eq_add_norm_l {r : radix} : ∀ x y,
 Proof.
 intros.
 specialize (freal_normalized_cases x) as [H1| H1].
-unfold freal_eq.
-...
-rewrite <- H1.
+-unfold freal_eq.
+ now rewrite <- H1.
+-destruct H1 as (n & Hx).
 ...
 
 intros.
