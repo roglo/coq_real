@@ -4784,11 +4784,9 @@ destruct H2 as [H2| [H2| H2]]; [ | | now right ].
  specialize (normalized_not_999 x) as H2.
  exfalso; apply H2; exists (k + 1).
  intros j.
- specialize (Hnxaft (k + 1 + j)).
- assert (H3 : k ≤ k + 1 + j) by flia.
-...
- specialize (Hnxaft H3).
- now rewrite Hnx in Hnxaft.
+ specialize (Hnxaft (1 + j)).
+ rewrite Nat.add_assoc in Hnxaft.
+ now rewrite <- Hnx.
 Qed.
 
 Theorem old_freal_normalized_cases {r : radix} : ∀ x,
@@ -4797,26 +4795,10 @@ Theorem old_freal_normalized_cases {r : radix} : ∀ x,
 Proof.
 intros x.
 specialize (freal_normalized_cases x) as [H1| H1]; [ now left | right ].
-destruct H1 as (k & Hbef & Hwhi & Hxaft & Hnxaft).
+destruct H1 as (k & Hbef & Hwhi & Hnxaft & Hxaft).
 exists (k + 1); intros i.
-...
-
-unfold freal_eq.
-remember (freal_normalize x) as nx eqn:Hnx.
-unfold freal_norm_eq.
-destruct (LPO_fst (has_same_digits x nx)) as [H1| H1]; [ now left | right ].
-destruct H1 as (i & Hji & Hj).
-apply has_same_digits_false_iff in Hj.
-exists (i + 1).
-intros j.
-rewrite Hnx in Hj.
-unfold freal_normalize, fd2n in Hj.
-simpl in Hj.
-unfold digit_sequence_normalize in Hj.
-destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H1| H1]; [ | easy ].
-specialize (H1 j).
-apply is_9_strict_after_true_iff in H1.
-now rewrite Nat.add_shuffle0 in H1.
+specialize (Hxaft (1 + i)).
+now rewrite Nat.add_assoc in Hxaft.
 Qed.
 
 Theorem eq_freal_norm_eq_true_iff {r : radix} : ∀ x y,
@@ -4918,8 +4900,8 @@ Proof.
 intros.
 specialize (freal_normalized_cases x) as [H1| H1].
 -unfold freal_eq.
- now rewrite <- H1.
--destruct H1 as (n & Hx).
+ now rewrite H1.
+-destruct H1 as (n & Hbef & Hwhi & Hnaft & Haft).
 ...
 
 intros.
