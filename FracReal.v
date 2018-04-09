@@ -4740,6 +4740,54 @@ Add Parametric Relation {r : radix} : (FracReal) freal_norm_eq
 
 Theorem freal_normalized_cases {r : radix} : ∀ x,
   freal_norm_eq x (freal_normalize x) ∨
+  freal_norm_not_norm_eq (freal_normalize x) x.
+Proof.
+intros x.
+remember (freal_normalize x) as nx eqn:Hnx.
+unfold freal_norm_eq.
+destruct (LPO_fst (has_same_digits x nx)) as [H1| H1]; [ now left | right ].
+destruct H1 as (i & Hji & Hj).
+apply has_same_digits_false_iff in Hj.
+exists (i + 1).
+split.
+-intros j H1.
+ rewrite Nat.add_sub in H1.
+ specialize (Hji _ H1).
+ apply has_same_digits_true_iff in Hji.
+ unfold fd2n in Hji.
+ now apply digit_eq_eq.
+-split.
+ +right.
+  rewrite Nat.add_sub.
+  rewrite Hnx.
+  unfold freal_normalize, fd2n; simpl.
+  unfold digit_sequence_normalize.
+  destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H1| H1].
+  *destruct (lt_dec (S (d2n (freal x) i)) rad) as [| H2]; [ easy | ].
+   apply Nat.nlt_ge in H2.
+Print freal_norm_not_norm_eq.
+...
+
+
+split; [ easy | ].
+split.
+-right.
+Print freal_norm_not_norm_eq.
+...
+
+ rewrite Hnx in Hj.
+unfold freal_normalize, fd2n in Hj.
+simpl in Hj.
+unfold digit_sequence_normalize in Hj.
+destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H1| H1]; [ | easy ].
+specialize (H1 j).
+apply is_9_strict_after_true_iff in H1.
+now rewrite Nat.add_shuffle0 in H1.
+Qed.
+...
+
+Theorem freal_normalized_cases {r : radix} : ∀ x,
+  freal_norm_eq x (freal_normalize x) ∨
   (∃ n, ∀ i, fd2n x (n + i) = rad - 1).
 Proof.
 intros x.
