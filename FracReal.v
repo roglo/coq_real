@@ -631,13 +631,14 @@ split; intros Hxy.
   --destruct ky; [ easy | ].
     destruct Hky as [| Hky]; [ easy | ].
     simpl in Hbky, Hky; rewrite Nat.sub_0_r in Hbky, Hky.
-...
-    rewrite Hakxz in Hky; [ easy | flia Hkk ].
+    specialize (Hakxz (ky - kx)).
+    replace (kx + (ky - kx)) with ky in Hakxz by flia Hkk.
+    now rewrite Hakxz in Hky.
   --subst ky.
     destruct kx.
    ++apply digit_eq_eq; unfold fd2n in Hakx, Haky.
-     rewrite Hakx; [ | flia ].
-     rewrite Haky; [ easy | flia ].
+     simpl in Hakx, Haky.
+     now rewrite Hakx, Haky.
    ++destruct Hkx as [| Hkx]; [ easy | ].
      destruct Hky as [| Hky]; [ easy | ].
      simpl in Hbkx, Hkx, Hky, Hbky.
@@ -647,11 +648,16 @@ split; intros Hxy.
     **apply digit_eq_eq; unfold fd2n in Hkx, Hky; subst i.
       now apply Nat.succ_inj; rewrite <- Hkx, <- Hky.
     **apply digit_eq_eq; unfold fd2n in Hakx, Haky.
-      now rewrite Hakx; [ rewrite Haky | ].
+      specialize (Hakx (i - S kx)).
+      specialize (Haky (i - S kx)).
+      replace (S kx + (i - S kx)) with i in Hakx, Haky by flia Hikx.
+      now rewrite Haky.
   --destruct kx; [ easy | ].
     destruct Hkx as [| Hkx]; [ easy | ].
     simpl in Hbkx, Hkx; rewrite Nat.sub_0_r in Hbkx, Hkx.
-    rewrite Hakyz in Hkx; [ easy | flia Hkk ].
+    specialize (Hakyz (kx - ky)).
+    replace (ky + (kx - ky)) with kx in Hakyz by flia Hkk.
+    now rewrite Hakyz in Hkx.
 -destruct Hxy as [Hxy| [Hxy| Hxy]].
  +now apply freal_eq_normalize_eq.
  +now apply freal_norm_not_norm_eq_normalize_eq.
@@ -1613,7 +1619,8 @@ destruct (LPO_fst (A_ge_1 u i)) as [Hku| (m & Hjm & Hm)].
   assert (H7 : j ≤ max i j + 1). {
     eapply Nat.le_trans; [ apply Nat.le_max_l with (m := i) | flia ].
   }
-  specialize (Hyaft (max i j + 1) H7) as H8.
+  specialize (Hyaft (max i j + 1 - j)) as H8.
+  replace (j + (max i j + 1 - j)) with (max i j + 1) in H8 by flia.
   rewrite H6 in H8.
   specialize radix_ge_2; flia H8.
 -apply digit_eq_eq; simpl.
@@ -4779,6 +4786,7 @@ destruct H2 as [H2| [H2| H2]]; [ | | now right ].
  intros j.
  specialize (Hnxaft (k + 1 + j)).
  assert (H3 : k ≤ k + 1 + j) by flia.
+...
  specialize (Hnxaft H3).
  now rewrite Hnx in Hnxaft.
 Qed.
