@@ -530,9 +530,8 @@ destruct Hxy as (k & Hb & Hw & Hax & Hay).
 unfold freal_normalize, digit_sequence_normalize; simpl.
 destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H1| H1].
 -specialize (H1 (max i k - i)).
- assert (H : k ≤ S (max i k)) by flia.
-...
- specialize (Hax (S (max i k)) H).
+ specialize (Hax (S (max i k) - k)).
+ replace (k + (S (max i k) - k)) with (S (max i k)) in Hax by flia.
  unfold fd2n in Hax.
  apply is_9_strict_after_true_iff in H1.
  unfold d2n in H1.
@@ -554,9 +553,9 @@ destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H1| H1].
   --clear Hb Hw; simpl in H2; simpl.
     destruct (lt_dec (S (d2n (freal y) 0))) as [H3| H3].
    ++exfalso; unfold fd2n in Hay; unfold d2n in H3.
-     rewrite Hay in H3; [ flia H3 | easy ].
+     simpl in Hay; rewrite Hay in H3; flia H3.
    ++apply digit_eq_eq; simpl.
-     now unfold fd2n in Hax; rewrite Hax.
+     now simpl in Hax; unfold fd2n in Hax; rewrite Hax.
   --destruct Hw as [| Hw]; [ easy | ].
     simpl in Hw; rewrite Nat.sub_0_r in Hw.
     simpl; rewrite Nat.sub_0_r.
@@ -566,25 +565,26 @@ destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H1| H1].
      specialize (digit_lt_radix (freal x k)); flia Hw H3.
   *destruct (lt_dec (S (d2n (freal y) i)) rad) as [H3| H3].
   --unfold fd2n in Hay; unfold d2n in H3.
-    exfalso; rewrite Hay in H3; flia H3 H4.
+    specialize (Hay (i - k)).
+    replace (k + (i - k)) with i in Hay by flia H4.
+    exfalso; rewrite Hay in H3; flia H3.
   --apply digit_eq_eq; simpl.
     unfold fd2n in Hax.
-    rewrite Hax; [ easy | flia H4 ].
+    specialize (Hax (i - k)).
+    now replace (k + (i - k)) with i in Hax by flia H4.
  +destruct (lt_eq_lt_dec i (k - 1)) as [[H4| H4]| H4].
   *now rewrite Hb.
   *subst i.
    destruct H2 as (j & Hjj & Hj).
    apply is_9_strict_after_false_iff in Hj.
    unfold d2n in Hj; unfold fd2n in Hay.
-   assert (H : k ≤ k - 1 + j + 1) by flia.
-   specialize (Hay _ H).
-   rewrite Hay in Hj; flia Hj.
+   specialize (Hay (k - 1 + j + 1 - k)).
+   now replace (k + (k - 1 + j + 1 - k)) with (k - 1 + j + 1) in Hay by flia.
   *destruct H2 as (j & Hjj & Hj).
    apply is_9_strict_after_false_iff in Hj.
    unfold d2n in Hj; unfold fd2n in Hay.
-   assert (H : k ≤ i + j + 1) by flia H4.
-   specialize (Hay _ H).
-   rewrite Hay in Hj; flia Hj.
+   specialize (Hay (i + j + 1 - k)).
+   now replace (k + (i + j + 1 - k)) with (i + j + 1) in Hay by flia H4.
 Qed.
 
 Theorem freal_normalized_eq_iff {r : radix} : ∀ x y,
@@ -631,6 +631,7 @@ split; intros Hxy.
   --destruct ky; [ easy | ].
     destruct Hky as [| Hky]; [ easy | ].
     simpl in Hbky, Hky; rewrite Nat.sub_0_r in Hbky, Hky.
+...
     rewrite Hakxz in Hky; [ easy | flia Hkk ].
   --subst ky.
     destruct kx.
