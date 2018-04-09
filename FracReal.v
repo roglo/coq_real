@@ -4748,17 +4748,26 @@ unfold freal_norm_eq.
 destruct (LPO_fst (has_same_digits x nx)) as [H1| H1]; [ now left | right ].
 destruct H1 as (i & Hji & Hj).
 apply has_same_digits_false_iff in Hj.
-exists (i + 1).
+unfold freal_norm_not_norm_eq.
+exists i.
+assert (H1 : ∀ j, j < i → freal nx j = freal x j). {
+  intros j H1.
+  specialize (Hji _ H1).
+  apply has_same_digits_true_iff in Hji.
+  unfold fd2n in Hji.
+  now apply digit_eq_eq.
+}
 split.
--intros j H1.
- rewrite Nat.add_sub in H1.
- specialize (Hji _ H1).
- apply has_same_digits_true_iff in Hji.
- unfold fd2n in Hji.
- now apply digit_eq_eq.
+-intros j H2.
+ apply H1; flia H2.
 -split.
- +right.
-  rewrite Nat.add_sub.
+ +destruct i; [ now left | right ].
+  replace (S i - 1) with i by flia.
+...
+  specialize (H1 _ (Nat.lt_succ_diag_r i)) as H2.
+
+...
+
   rewrite Hnx.
   unfold freal_normalize, fd2n; simpl.
   unfold digit_sequence_normalize.
