@@ -1934,51 +1934,11 @@ Add Parametric Morphism {r : radix} : freal_add
   as freal_add_morph.
 Proof.
 intros x y Hxy x' y' Hxy'.
-unfold freal_eq in Hxy, Hxy' |-*.
-unfold freal_normalized_eq in Hxy, Hxy' |-*.
-remember (freal_normalize x) as nx eqn:Hnx.
-remember (freal_normalize y) as ny eqn:Hny.
-remember (freal_normalize x') as nx' eqn:Hnx'.
-remember (freal_normalize y') as ny' eqn:Hny'.
-move x' before y; move y' before x'.
-move ny before nx; move nx' before ny.
-move ny' before nx'.
-destruct (LPO_fst (has_same_digits nx ny)) as [H1| H1]; [ | easy ].
-clear Hxy.
-destruct (LPO_fst (has_same_digits nx' ny')) as [H2| H2]; [ | easy ].
-clear Hxy'.
-specialize (all_eq_seq_all_eq _ _ H1) as H3.
-specialize (all_eq_seq_all_eq _ _ H2) as H4.
-remember (freal_normalize (x + x')) as xx' eqn:Hxx'.
-remember (freal_normalize (y + y')) as yy' eqn:Hyy'.
-destruct (LPO_fst (has_same_digits xx' yy')) as [H5| H5]; [ easy | ].
-destruct H5 as (i & Hji & Hi).
-apply has_same_digits_false_iff in Hi.
-apply Hi; clear Hi.
-rewrite Hxx', Hyy'.
-unfold freal_normalize, fd2n; simpl.
-rewrite <- Hnx, <- Hny, <- Hnx', <- Hny'.
-unfold digit_sequence_normalize.
-remember (freal_add_to_seq nx nx') as axx' eqn:Haxx'.
-remember (freal_add_to_seq ny ny') as ayy' eqn:Hayy'.
-destruct (LPO_fst (is_9_strict_after axx' i)) as [H5| H5].
--specialize (is_9_strict_after_all_9 _ _ H5) as H6.
- clear H5.
- destruct (LPO_fst (is_9_strict_after ayy' i)) as [H5| H5].
- +specialize (is_9_strict_after_all_9 _ _ H5) as H7.
-  clear H5.
-  destruct (lt_dec (S (d2n axx' i)) rad) as [H5| H5].
-  *destruct (lt_dec (S (d2n ayy' i)) rad) as [H8| H8].
-  --simpl; f_equal.
-    rewrite Haxx', Hayy'.
-    unfold d2n, freal_add_to_seq.
-    unfold numbers_to_digits; simpl.
-(* ah la la la la, quelle catastrophe ! *)
-...
-
-
+rewrite freal_eq_normalized_eq in Hxy, Hxy'.
+rewrite freal_eq_normalized_eq.
+apply freal_normalized_eq_iff; left.
+intros i.
 unfold freal_add, freal_add_to_seq, freal_add_series, sequence_add; simpl.
-
 apply numbers_to_digits_eq_compat; clear i.
 intros i.
 unfold fd2n.
@@ -4699,6 +4659,8 @@ destruct (LPO_fst (is_9_strict_after (freal nx) i)) as [H1| H1].
  now rewrite Nat.add_shuffle0 in H2.
 -easy.
 Qed.
+
+...
 
 Theorem freal_normalize_idemp {r : radix} : ∀ x,
   freal_normalized_eq
