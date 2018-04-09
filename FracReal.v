@@ -4916,17 +4916,10 @@ specialize (freal_normalized_cases x) as [H1| H1].
  remember (freal_unorm_add nx y) as nxy eqn:Hnxy.
  remember (freal_unorm_add x y) as xy eqn:Hxy.
  move xy before nxy.
-...
-
- rewrite Hnxy, Hxy.
- unfold freal_unorm_add.
  unfold freal_normalize, fd2n; simpl.
  unfold digit_sequence_normalize.
- destruct (LPO_fst (is_9_strict_after (freal_add_to_seq nx y) i)) as [H1| H1].
- +specialize (is_9_strict_after_all_9 _ _ H1) as H2.
-  unfold freal_add_to_seq in H2.
-  unfold d2n, numbers_to_digits in H2.
-  simpl in H2.
+ destruct (LPO_fst (is_9_strict_after (freal nxy) i)) as [H1| H1].
+ +specialize (is_9_strict_after_all_9 _ _ H1) as H2; clear H1.
 ...
 intros.
 unfold freal_eq.
