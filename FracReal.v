@@ -5014,12 +5014,16 @@ rewrite Nat.div_small in H7 |-*.
  +++apply Nat.nlt_ge in H9.
     rewrite Nat.max_r in Hm; [ | easy ].
     destruct (lt_dec (n - 1) i) as [H10| H10].
-  ***clear H9; exfalso.
+  ***clear H9.
      specialize (Haft (i - n)) as H11.
      replace (n + (i - n)) with i in H11 by flia H10.
      rewrite H11 in H8.
      rewrite Nat.max_r in H1; [ | flia H10 ].
-
+     specialize (Hnaft (i - n)) as H12.
+     replace (n + (i - n)) with i in H12 by flia H10.
+     rewrite H12, Nat.add_0_l in H7.
+(* claim: y(i)≠0 and y(i)≠9 by H8 and H7 *)
+(* perhaps a problem in my model, the goal should be true, and it is false *)
 ...
 unfold freal_unorm_add in H7, H8.
 simpl in H7, H8.
