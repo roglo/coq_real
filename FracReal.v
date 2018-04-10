@@ -4983,6 +4983,7 @@ specialize (freal_normalized_cases x) as [H1| H1].
    remember (rad * (m + index_A_not_ge v m + 3)) as p eqn:Hp.
    move v before u; move Hv before Hu.
    move p before np; move Hp before Hnp.
+   move H4 before H2.
    destruct (lt_dec (S (d2n (freal nxy) i)) rad) as [H7| H7].
   --simpl.
     destruct (lt_dec (S (d2n (freal xy) i)) rad) as [H8| H8].
