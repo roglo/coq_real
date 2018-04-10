@@ -4988,6 +4988,15 @@ specialize (freal_normalized_cases x) as [H1| H1].
   --simpl.
     destruct (lt_dec (S (d2n (freal xy) i)) rad) as [H8| H8].
    ++simpl; f_equal.
+rewrite Hnxy in H7; rewrite Hxy in H8.
+unfold freal_unorm_add in H7, H8.
+simpl in H7, H8.
+unfold freal_add_to_seq in H7, H8.
+rewrite <- Hu in H7; rewrite <- Hv in H8.
+unfold d2n, numbers_to_digits in H7, H8; simpl in H7, H8.
+remember (rad * (i + index_A_not_ge u i + 3)) as nq eqn:Hnq.
+remember (rad * (i + index_A_not_ge v i + 3)) as q eqn:Hq.
+move q before nq; move Hq before Hnq.
 ...
    ++exfalso.
      ...
