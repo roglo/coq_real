@@ -4920,6 +4920,9 @@ specialize (freal_normalized_cases x) as [H1| H1].
  unfold digit_sequence_normalize.
  destruct (LPO_fst (is_9_strict_after (freal nxy) i)) as [H1| H1].
  +specialize (is_9_strict_after_all_9 _ _ H1) as H2; clear H1.
+  destruct (LPO_fst (is_9_strict_after (freal xy) i)) as
+    [H1| H1].
+  *specialize (is_9_strict_after_all_9 _ _ H1) as H3; clear H1.
 ...
 intros.
 unfold freal_eq.
