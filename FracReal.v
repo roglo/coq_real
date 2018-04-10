@@ -4967,31 +4967,25 @@ specialize (freal_normalized_cases x) as [H1| H1].
   destruct (LPO_fst (is_9_strict_after (freal xy) i)) as
     [H3| H3].
   *specialize (is_9_strict_after_all_9 _ _ H3) as H4; clear H3.
-specialize (H2 (max (n - 1) i - i)) as H5.
-specialize (H4 (max (n - 1) i - i)) as H6.
-replace (i + (max (n - 1) i - i)) with (max (n - 1) i) in H5, H6 by flia.
-rewrite Hnxy in H5; rewrite Hxy in H6.
-unfold freal_unorm_add in H5, H6.
-simpl in H5, H6.
-unfold freal_add_to_seq in H5, H6.
-unfold d2n, numbers_to_digits in H5, H6.
-simpl in H5, H6.
-remember (max (n - 1) i + 1) as m eqn:Hm.
-remember (freal_add_series nx y) as u eqn:Hu.
-remember (rad * (m + index_A_not_ge u m + 3)) as np eqn:Hnp.
-remember (freal_add_series x y) as v eqn:Hv.
-remember (rad * (m + index_A_not_ge v m + 3)) as p eqn:Hp.
-move v before u; move Hv before Hu.
-move p before np; move Hp before Hnp.
-(* claim: u m = xn m + y m = rad-1
-   claim: v m = x m + y m = rad-1+rad-1
-   I see no contradiction :-(
-   Ah oui, mais non, je ne sais pas si y m = rad-1
-   Que se passe-t-il si, en effet, y se termine par 999... ? *)
-...
-   destruct (lt_dec (S (d2n (freal nxy) i)) rad) as [H5| H5].
+   specialize (H2 (max (n - 1) i - i)) as H5.
+   specialize (H4 (max (n - 1) i - i)) as H6.
+   replace (i + (max (n - 1) i - i)) with (max (n - 1) i) in H5, H6 by flia.
+   rewrite Hnxy in H5; rewrite Hxy in H6.
+   unfold freal_unorm_add in H5, H6.
+   simpl in H5, H6.
+   unfold freal_add_to_seq in H5, H6.
+   unfold d2n, numbers_to_digits in H5, H6.
+   simpl in H5, H6.
+   remember (max (n - 1) i + 1) as m eqn:Hm.
+   remember (freal_add_series nx y) as u eqn:Hu.
+   remember (rad * (m + index_A_not_ge u m + 3)) as np eqn:Hnp.
+   remember (freal_add_series x y) as v eqn:Hv.
+   remember (rad * (m + index_A_not_ge v m + 3)) as p eqn:Hp.
+   move v before u; move Hv before Hu.
+   move p before np; move Hp before Hnp.
+   destruct (lt_dec (S (d2n (freal nxy) i)) rad) as [H7| H7].
   --simpl.
-    destruct (lt_dec (S (d2n (freal xy) i)) rad) as [H6| H6].
+    destruct (lt_dec (S (d2n (freal xy) i)) rad) as [H8| H8].
    ++simpl; f_equal.
 ...
 intros.
