@@ -4989,6 +4989,38 @@ specialize (freal_normalized_cases x) as [H1| H1].
     destruct (lt_dec (S (d2n (freal xy) i)) rad) as [H8| H8].
    ++simpl; f_equal.
 rewrite Hnxy in H7; rewrite Hxy in H8.
+rewrite Hnxy, Hxy.
+unfold freal_unorm_add in H7, H8 |-*; simpl in H7, H8 |-*.
+unfold freal_add_to_seq in H7, H8 |-*.
+rewrite <- Hu in H7; rewrite <- Hv in H8.
+rewrite <- Hu, <- Hv.
+unfold d2n, numbers_to_digits in H7, H8 |-*; simpl in H7, H8 |-*.
+remember (rad * (i + index_A_not_ge u i + 3)) as nq eqn:Hnq.
+remember (rad * (i + index_A_not_ge v i + 3)) as q eqn:Hq.
+move q before nq; move Hq before Hnq.
+rewrite Nat.div_small in H7 |-*.
+**rewrite Nat.add_0_r in H7 |-*.
+  rewrite Nat.div_small in H8 |-*.
+---rewrite Nat.add_0_r in H8 |-*.
+   rewrite Hu in H7; rewrite Hv in H8.
+   rewrite Hu, Hv.
+   unfold freal_add_series, sequence_add in H7, H8 |-*.
+   rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
+   rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
+   f_equal; f_equal.
+   destruct (lt_dec i (n - 1)) as [H9| H9].
+ +++f_equal; unfold fd2n.
+    now apply digit_eq_eq, Hbef.
+ +++apply Nat.nlt_ge in H9.
+    rewrite Nat.max_r in Hm; [ | easy ].
+    destruct (lt_dec (n - 1) i) as [H10| H10].
+  ***clear H9; exfalso.
+     specialize (Haft (i - n)) as H11.
+     replace (n + (i - n)) with i in H11 by flia H10.
+     rewrite H11 in H8.
+     rewrite Nat.max_r in H1; [ | flia H10 ].
+
+...
 unfold freal_unorm_add in H7, H8.
 simpl in H7, H8.
 unfold freal_add_to_seq in H7, H8.
