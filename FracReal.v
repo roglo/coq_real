@@ -4967,7 +4967,6 @@ specialize (freal_normalized_cases x) as [H1| H1].
   destruct (LPO_fst (is_9_strict_after (freal xy) i)) as
     [H3| H3].
   *specialize (is_9_strict_after_all_9 _ _ H3) as H4; clear H3.
-exfalso.
 specialize (H2 (max (n - 1) i - i)) as H5.
 specialize (H4 (max (n - 1) i - i)) as H6.
 replace (i + (max (n - 1) i - i)) with (max (n - 1) i) in H5, H6 by flia.
@@ -4986,7 +4985,9 @@ move v before u; move Hv before Hu.
 move p before np; move Hp before Hnp.
 (* claim: u m = xn m + y m = rad-1
    claim: v m = x m + y m = rad-1+rad-1
-   I see no contradiction :-( *)
+   I see no contradiction :-(
+   Ah oui, mais non, je ne sais pas si y m = rad-1
+   Que se passe-t-il si, en effet, y se termine par 999... ? *)
 ...
    destruct (lt_dec (S (d2n (freal nxy) i)) rad) as [H5| H5].
   --simpl.
