@@ -4998,6 +4998,7 @@ unfold d2n, numbers_to_digits in H7, H8 |-*; simpl in H7, H8 |-*.
 remember (rad * (i + index_A_not_ge u i + 3)) as nq eqn:Hnq.
 remember (rad * (i + index_A_not_ge v i + 3)) as q eqn:Hq.
 move q before nq; move Hq before Hnq.
+...
 rewrite Nat.div_small in H7 |-*.
 **rewrite Nat.add_0_r in H7 |-*.
   rewrite Nat.div_small in H8 |-*.
