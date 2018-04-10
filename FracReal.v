@@ -4920,9 +4920,33 @@ specialize (freal_normalized_cases x) as [H1| H1].
  unfold digit_sequence_normalize.
  destruct (LPO_fst (is_9_strict_after (freal nxy) i)) as [H1| H1].
  +specialize (is_9_strict_after_all_9 _ _ H1) as H2; clear H1.
+  assert (H1 : ∀ k, fd2n y (i + k + 1) = rad - 1). {
+    intros k.
+    specialize (H2 k) as H1.
+    rewrite Hnxy in H1.
+    unfold freal_unorm_add in H1; simpl in H1.
+    unfold freal_add_to_seq in H1.
+    unfold d2n, numbers_to_digits in H1; simpl in H1.
+    remember (freal_add_series nx y) as z eqn:Hz.
+    remember (i + k + 1) as j eqn:Hj.
+    remember (rad * (j + index_A_not_ge z j + 3)) as m eqn:Hm.
+    remember (m - j - 1) as s eqn:Hs.
+    move s before m.
+...
+    unfold index_A_not_ge in H1.
+    destruct (LPO_fst (A_ge_1 z j)) as [H3| H3].
+    -rewrite Nat.add_0_r in H1.
+     remember (rad * (j + 3)) as m eqn:Hm.
+     remember (m - j - 1) as s eqn:Hs.
+     move s before m.
+     rewrite Hz in H3.
+     specialize (A_ge_1_add_series_all_true_if _ _ _ H3) as H4.
+     destruct H4 as [H4| H4].
+..
   destruct (LPO_fst (is_9_strict_after (freal xy) i)) as
     [H1| H1].
   *specialize (is_9_strict_after_all_9 _ _ H1) as H3; clear H1.
+
 ...
 intros.
 unfold freal_eq.
