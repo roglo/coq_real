@@ -4988,17 +4988,26 @@ specialize (freal_normalized_cases x) as [H1| H1].
   --simpl.
     destruct (lt_dec (S (d2n (freal xy) i)) rad) as [H8| H8].
    ++simpl; f_equal.
-rewrite Hnxy in H7; rewrite Hxy in H8.
-rewrite Hnxy, Hxy.
-unfold freal_unorm_add in H7, H8 |-*; simpl in H7, H8 |-*.
-unfold freal_add_to_seq in H7, H8 |-*.
-rewrite <- Hu in H7; rewrite <- Hv in H8.
-rewrite <- Hu, <- Hv.
-unfold d2n, numbers_to_digits in H7, H8 |-*; simpl in H7, H8 |-*.
-remember (rad * (i + index_A_not_ge u i + 3)) as nq eqn:Hnq.
-remember (rad * (i + index_A_not_ge v i + 3)) as q eqn:Hq.
-move q before nq; move Hq before Hnq.
+     rewrite Hnxy in H7; rewrite Hxy in H8.
+     rewrite Hnxy, Hxy.
+     unfold freal_unorm_add in H7, H8 |-*; simpl in H7, H8 |-*.
+     unfold freal_add_to_seq in H7, H8 |-*.
+     rewrite <- Hu in H7; rewrite <- Hv in H8.
+     rewrite <- Hu, <- Hv.
+     unfold d2n, numbers_to_digits in H7, H8 |-*; simpl in H7, H8 |-*.
+     remember (rad * (i + index_A_not_ge u i + 3)) as nq eqn:Hnq.
+     remember (rad * (i + index_A_not_ge v i + 3)) as q eqn:Hq.
+     move q before nq; move Hq before Hnq.
+(* put here case i < n-1
+   therefore nA i nq u < rad ^ (nq - i - 1)
+   therefore it works... well, I must verify...
+   else, we see... *)
 ...
+(*
+     destruct (lt_dec (nA i nq u) (rad ^ (nq - i - 1))) as [H9| H9].
+    **idtac.
+...
+*)
 rewrite Nat.div_small in H7 |-*.
 **rewrite Nat.add_0_r in H7 |-*.
   rewrite Nat.div_small in H8 |-*.
