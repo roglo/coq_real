@@ -5023,7 +5023,7 @@ rewrite Nat.div_small in H7 |-*.
      replace (n + (i - n)) with i in H12 by flia H10.
      rewrite H12, Nat.add_0_l in H7.
 (* claim: y(i)≠0 and y(i)≠9 by H8 and H7 *)
-(* perhaps a problem in my model, the goal should be true, and it is false *)
+(* perhaps a problem in my model, the goal should be true, but it is false *)
 ...
 unfold freal_unorm_add in H7, H8.
 simpl in H7, H8.
