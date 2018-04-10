@@ -3,7 +3,8 @@
    Operations + and * implemented using LPO. *)
 
 Require Import Utf8 Arith Psatz NPeano.
-Require Import Misc Summation(*Xnat*).
+Require Import Misc Summation.
+Import Init.Nat.
 
 (* "fast" lia, to improve compilation speed *)
 Tactic Notation "flia" hyp_list(Hs) := clear - Hs; lia.
@@ -4920,9 +4921,54 @@ specialize (freal_normalized_cases x) as [H1| H1].
  unfold digit_sequence_normalize.
  destruct (LPO_fst (is_9_strict_after (freal nxy) i)) as [H1| H1].
  +specialize (is_9_strict_after_all_9 _ _ H1) as H2; clear H1.
+  assert (H1 : ∀ k, fd2n y (max (n - 1) i + k + 1) = rad - 1). {
+    intros k.
+    specialize (H2 (k + max (n - 1) i - i)) as H1.
+    replace (i + (k + max (n - 1) i - i)) with (max (n - 1) i + k) in H1
+      by flia.
+    rewrite Hnxy in H1.
+    unfold freal_unorm_add in H1; simpl in H1.
+    unfold freal_add_to_seq in H1.
+    unfold d2n, numbers_to_digits in H1; simpl in H1.
+    remember (freal_add_series nx y) as z eqn:Hz.
+    remember (max (n - 1) i + k + 1) as j eqn:Hj.
+    remember (rad * (j + index_A_not_ge z j + 3)) as m eqn:Hm.
+    remember (m - j - 1) as s eqn:Hs.
+    move s before m.
+    assert (H : z j = fd2n y j). {
+      rewrite Hz.
+      unfold freal_add_series.
+      unfold sequence_add.
+      specialize (Hnaft (j - n)) as H3.
+      replace (n + (j - n)) with j in H3 by flia Hj.
+      now rewrite H3.
+    }
+    rewrite H in H1; clear H.
+    assert (H : nA j m z < rad ^ s). {
+      rewrite Hz.
+      rewrite nA_freal_add_series.
+      assert (H : nA j m (fd2n nx) = 0). {
+        unfold nA.
+        apply all_0_summation_0.
+        intros p Hp.
+        specialize (Hnaft (p - n)) as H3.
+        replace (n + (p - n)) with p in H3 by flia Hp Hj.
+        now rewrite H3.
+      }
+      rewrite H, Nat.add_0_l; clear H.
+      rewrite Hs.
+      apply nA_upper_bound.
+    }
+    rewrite Nat.div_small in H1; [ | easy ].
+    rewrite Nat.add_0_r in H1.
+    rewrite Nat.mod_small in H1; [ easy | ].
+    apply digit_lt_radix.
+  }
+...
   destruct (LPO_fst (is_9_strict_after (freal xy) i)) as
     [H1| H1].
   *specialize (is_9_strict_after_all_9 _ _ H1) as H3; clear H1.
+
 ...
 intros.
 unfold freal_eq.
