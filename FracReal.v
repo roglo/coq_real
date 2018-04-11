@@ -5126,7 +5126,6 @@ specialize (freal_normalized_cases x) as [H1| H1].
          replace (S n - 1) with n in Hbef, Hwhi, H1, H14 by flia.
          subst m.
          exfalso.
-...
          destruct (lt_dec (i + 1) n) as [H12| H12].
       ----rewrite nA_split_first in H9, H10; [ | flia Hiq | flia Hinq ].
           assert (H13 : u (i + 1) = v (i + 1)). {
@@ -5135,6 +5134,8 @@ specialize (freal_normalized_cases x) as [H1| H1].
             now unfold fd2n; rewrite Hbef.
           }
           rewrite <- H13 in H10.
+          destruct (le_dec rad (u (i + 1))) as [H15| H15].
+       ++++apply Nat.nle_gt in H9; apply H9.
 ...
     **idtac.
       ...
