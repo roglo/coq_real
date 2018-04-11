@@ -5018,11 +5018,31 @@ specialize (freal_normalized_cases x) as [H1| H1].
         replace (n + (i + 1 - n)) with (i + 1) in H12 by flia H11.
         specialize (H1 0) as H13; rewrite Nat.add_0_r in H13.
         exfalso; apply Nat.nle_gt in H10; apply H10; clear H10.
-        rewrite nA_split_first.
-      ***remember (v (i + 1)) as w eqn:Hw.
-         rewrite Hv in Hw; subst w.
-         unfold freal_add_series, sequence_add.
-         rewrite H12, H13.
+        assert (Hiq : i + 2 ≤ q - 1). {
+          rewrite Hq.
+          destruct rad; [ easy | simpl; flia ].
+        }
+        rewrite nA_split_first; [ | flia Hiq ].
+        remember (v (i + 1)) as w eqn:Hw.
+        rewrite Hv in Hw; subst w.
+        unfold freal_add_series, sequence_add.
+        rewrite H12, H13.
+        replace (rad - 1 + (rad - 1)) with (2 * rad - 2) by flia.
+        rewrite Nat.mul_sub_distr_r.
+        rewrite <- Nat.mul_assoc, <- Nat.pow_succ_r; [ | flia ].
+        replace (S (q - i - 2)) with (q - i - 1) by flia Hiq.
+        simpl.
+        do 2 rewrite Nat.add_0_r.
+        rewrite <- Nat.add_sub_swap.
+      ***rewrite <- Nat.add_assoc.
+         rewrite <- Nat.add_sub_assoc; [ flia | ].
+         apply Nat.add_le_mono.
+      ----replace (q - i - 1) with (S (q - i - 2)) by flia Hiq.
+          now simpl; apply Nat_mul_le_pos_l.
+      ----rewrite nA_split_first; [ | flia Hiq ].
+          rewrite Hv.
+          unfold freal_add_series, sequence_add.
+          (* fait chier, mais je devrais y arriver *)
 ...
 
 rewrite Nat.div_small in H7 |-*.
