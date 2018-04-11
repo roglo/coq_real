@@ -5137,6 +5137,7 @@ specialize (freal_normalized_cases x) as [H1| H1].
           destruct (le_dec rad (u (i + 1))) as [H15| H15].
        ++++apply Nat.nle_gt in H9; apply H9.
            replace (nq - i - 1) with (S (nq - i - 2)) by flia Hinq.
+           eapply le_trans; [ | apply Nat_add_le_pos_r ].
 Search (_ ≤ _ + _).
 Check Nat_mul_le_pos_l.
 Check Nat_add_le_pos_l.
