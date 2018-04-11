@@ -5140,6 +5140,9 @@ specialize (freal_normalized_cases x) as [H1| H1].
            eapply le_trans; [ | apply Nat_add_le_pos_r ].
            now simpl; apply Nat.mul_le_mono_r.
        ++++apply Nat.nle_gt in H15.
+           rewrite H13, Hv in H15.
+           unfold freal_add_series, sequence_add in H15.
+
 ...
     **idtac.
       ...
