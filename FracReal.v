@@ -4899,6 +4899,7 @@ Theorem freal_eq_add_norm_l {r : radix} : ∀ x y,
   (freal_unorm_add (freal_normalize x) y = freal_unorm_add x y)%F.
 Proof.
 intros.
+specialize radix_ge_2 as Hr.
 specialize (freal_normalized_cases x) as [H1| H1].
 -unfold freal_eq.
  now rewrite H1.
@@ -5042,55 +5043,39 @@ specialize (freal_normalized_cases x) as [H1| H1].
       ----rewrite nA_split_first; [ | flia Hiq ].
           rewrite Hv.
           unfold freal_add_series, sequence_add.
-          (* fait chier, mais je devrais y arriver *)
+          specialize (Haft (i + 2 - n)) as H14.
+          replace (n + (i + 2 - n)) with (S i + 1) in H14 by flia H11.
+          specialize (H1 1) as H15.
+          replace (i + 1 + 1) with (S i + 1) in H15 by flia.
+          rewrite H14, H15.
+          replace (rad - 1 + (rad - 1)) with (2 * rad - 2) by flia.
+          rewrite Nat.mul_sub_distr_r.
+          rewrite <- Nat.mul_assoc, <- Nat.pow_succ_r; [ | flia ].
+          replace (S (q - S i - 2)) with (q - i - 2) by flia Hiq.
+          simpl.
+          do 2 rewrite Nat.add_0_r.
+          rewrite <- Nat.add_sub_swap.
+       ++++rewrite <- Nat.add_assoc.
+           rewrite <- Nat.add_sub_assoc; [ flia | ].
+           replace (q - i - 2) with (S (q - S i - 2)) by flia Hiq.
+           simpl.
+           remember (rad ^ (q - S i - 2)) as z eqn:Hz.
+           replace (z + z) with (2 * z) by flia.
+           apply le_trans with (m := rad * z); [ | flia ].
+           now apply Nat.mul_le_mono_r.
+       ++++assert (H : rad ^ (q - S i - 2) ≤ rad ^ (q - i - 2)). {
+             replace (q - i - 2) with (S (q - S i - 2)) by flia Hiq; simpl.
+             now apply Nat_mul_le_pos_l.
+           }
+           apply Nat.add_le_mono; apply H.
+      ***assert (H : rad ^ (q - i - 2) ≤ rad ^ (q - i - 1)). {
+             replace (q - i - 1) with (S (q - i - 2)) by flia Hiq; simpl.
+             now apply Nat_mul_le_pos_l.
+           }
+           apply Nat.add_le_mono; apply H.
+    ---idtac.
 ...
-
-rewrite Nat.div_small in H7 |-*.
-**rewrite Nat.add_0_r in H7 |-*.
-  rewrite Nat.div_small in H8 |-*.
----rewrite Nat.add_0_r in H8 |-*.
-   rewrite Hu in H7; rewrite Hv in H8.
-   rewrite Hu, Hv.
-   unfold freal_add_series, sequence_add in H7, H8 |-*.
-   rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
-   rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
-   f_equal; f_equal.
-   destruct (lt_dec i (n - 1)) as [H9| H9].
- +++f_equal; unfold fd2n.
-    now apply digit_eq_eq, Hbef.
- +++apply Nat.nlt_ge in H9.
-    rewrite Nat.max_r in Hm; [ | easy ].
-    destruct (lt_dec (n - 1) i) as [H10| H10].
-  ***clear H9.
-     specialize (Haft (i - n)) as H11.
-     replace (n + (i - n)) with i in H11 by flia H10.
-     rewrite H11 in H8.
-     rewrite Nat.max_r in H1; [ | flia H10 ].
-     specialize (Hnaft (i - n)) as H12.
-     replace (n + (i - n)) with i in H12 by flia H10.
-     rewrite H12, Nat.add_0_l in H7.
-(* claim: y(i)≠0 and y(i)≠9 by H8 and H7 *)
-(* perhaps a problem in my model, the goal should be true, but it is false *)
-(* example, with n=0:
-     x=0.9999999...
-    nx=0.0000000...
-     y=0.0003999...
-
-    xy=0.0003999...
-   nxy=0.0003999...
-
-   should work.
- *)
-...
-unfold freal_unorm_add in H7, H8.
-simpl in H7, H8.
-unfold freal_add_to_seq in H7, H8.
-rewrite <- Hu in H7; rewrite <- Hv in H8.
-unfold d2n, numbers_to_digits in H7, H8; simpl in H7, H8.
-remember (rad * (i + index_A_not_ge u i + 3)) as nq eqn:Hnq.
-remember (rad * (i + index_A_not_ge v i + 3)) as q eqn:Hq.
-move q before nq; move Hq before Hnq.
-...
+    **...
    ++exfalso.
      ...
   --destruct (lt_dec (S (d2n (freal xy) i)) rad) as [H8| ]; [ | easy ].
