@@ -5000,14 +5000,8 @@ specialize (freal_normalized_cases x) as [H1| H1].
    unfold freal_unorm_add in H5, H6.
    simpl in H5, H6.
    unfold freal_add_to_seq in H5, H6.
-   unfold d2n, numbers_to_digits in H5, H6.
-   simpl in H5, H6.
-   remember (max (n - 1) i + 1) as m eqn:Hm.
    rewrite <- Hu in H5; rewrite <- Hv in H6.
-   remember (rad * (m + index_A_not_ge u m + 3)) as np eqn:Hnp.
-   remember (rad * (m + index_A_not_ge v m + 3)) as p eqn:Hp.
-   move p before np; move Hp before Hnp.
-   move H4 before H2.
+   remember (max (n - 1) i + 1) as m eqn:Hm.
    assert (H : ∀ k, fd2n y (m + k) = rad - 1). {
      intros k.
      specialize (H1 k).
@@ -5015,6 +5009,13 @@ specialize (freal_normalized_cases x) as [H1| H1].
    }
    clear H1; rename H into H1; move H1 before H4.
    move m before i.
+...
+   unfold d2n, numbers_to_digits in H5, H6.
+   simpl in H5, H6.
+   remember (rad * (m + index_A_not_ge u m + 3)) as np eqn:Hnp.
+   remember (rad * (m + index_A_not_ge v m + 3)) as p eqn:Hp.
+   move p before np; move Hp before Hnp.
+   move H4 before H2.
    destruct (lt_dec (S (d2n (freal nxy) i)) rad) as [H7| H7].
   --simpl.
     destruct (lt_dec (S (d2n (freal xy) i)) rad) as [H8| H8].
