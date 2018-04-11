@@ -4965,6 +4965,31 @@ specialize (freal_normalized_cases x) as [H1| H1].
     rewrite Nat.mod_small in H1; [ easy | ].
     apply digit_lt_radix.
   }
+  remember (freal_add_series nx y) as u eqn:Hu.
+  remember (freal_add_series x y) as v eqn:Hv.
+  move v before u.
+  assert (Hum : ∀ k, u (max (n - 1) i + 1 + k) = rad - 1). {
+    intros k.
+    rewrite Hu.
+    unfold freal_add_series, sequence_add.
+    specialize (Hnaft (k + max (n - 1) i + 1 - n)) as H16.
+    specialize (H1 k) as H17.
+    remember (max (n - 1) i) as m eqn:Hm.
+    replace (n + (k + m + 1 - n)) with (m + 1 + k) in H16 by flia Hm.
+    replace (m + k + 1) with (m + 1 + k) in H17 by flia.
+    now rewrite H16, H17.
+  }
+  assert (Hvm : ∀ k, v (max (n - 1) i + 1 + k) = 2 * rad - 2). {
+    intros k.
+    rewrite Hv.
+    unfold freal_add_series, sequence_add.
+    specialize (Haft (k + max (n - 1) i + 1 - n)) as H17.
+    specialize (H1 k) as H18.
+    remember (max (n - 1) i) as m eqn:Hm.
+    replace (n + (k + m + 1 - n)) with (m + 1 + k) in H17 by flia Hm.
+    replace (m + k + 1) with (m + 1 + k) in H18 by flia.
+    rewrite H17, H18; flia.
+  }
   destruct (LPO_fst (is_9_strict_after (freal xy) i)) as
     [H3| H3].
   *specialize (is_9_strict_after_all_9 _ _ H3) as H4; clear H3.
@@ -4978,11 +5003,9 @@ specialize (freal_normalized_cases x) as [H1| H1].
    unfold d2n, numbers_to_digits in H5, H6.
    simpl in H5, H6.
    remember (max (n - 1) i + 1) as m eqn:Hm.
-   remember (freal_add_series nx y) as u eqn:Hu.
+   rewrite <- Hu in H5; rewrite <- Hv in H6.
    remember (rad * (m + index_A_not_ge u m + 3)) as np eqn:Hnp.
-   remember (freal_add_series x y) as v eqn:Hv.
    remember (rad * (m + index_A_not_ge v m + 3)) as p eqn:Hp.
-   move v before u; move Hv before Hu.
    move p before np; move Hp before Hnp.
    move H4 before H2.
    assert (H : ∀ k, fd2n y (m + k) = rad - 1). {
