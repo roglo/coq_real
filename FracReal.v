@@ -5138,6 +5138,8 @@ specialize (freal_normalized_cases x) as [H1| H1].
        ++++apply Nat.nle_gt in H9; apply H9.
            replace (nq - i - 1) with (S (nq - i - 2)) by flia Hinq.
            eapply le_trans; [ | apply Nat_add_le_pos_r ].
+           now simpl; apply Nat.mul_le_mono_r.
+       ++++apply Nat.nle_gt in H15.
 ...
     **idtac.
       ...
