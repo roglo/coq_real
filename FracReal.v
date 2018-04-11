@@ -4999,6 +4999,14 @@ specialize (freal_normalized_cases x) as [H1| H1].
      remember (rad * (i + index_A_not_ge u i + 3)) as nq eqn:Hnq.
      remember (rad * (i + index_A_not_ge v i + 3)) as q eqn:Hq.
      move q before nq; move Hq before Hnq.
+     assert (Hiq : i + 2 ≤ q - 1). {
+          rewrite Hq.
+          destruct rad; [ easy | simpl; flia ].
+     }
+     assert (Hinq : i + 2 ≤ nq - 1). {
+          rewrite Hnq.
+          destruct rad; [ easy | simpl; flia ].
+     }
      destruct (lt_dec (nA i nq u) (rad ^ (nq - i - 1))) as [H9| H9].
     **rewrite Nat.div_small in H7 |-*; [ | easy | easy ].
       rewrite Nat.add_0_r in H7 |-*.
@@ -5019,10 +5027,6 @@ specialize (freal_normalized_cases x) as [H1| H1].
         replace (n + (i + 1 - n)) with (i + 1) in H12 by flia H11.
         specialize (H1 0) as H13; rewrite Nat.add_0_r in H13.
         exfalso; apply Nat.nle_gt in H10; apply H10; clear H10.
-        assert (Hiq : i + 2 ≤ q - 1). {
-          rewrite Hq.
-          destruct rad; [ easy | simpl; flia ].
-        }
         rewrite nA_split_first; [ | flia Hiq ].
         remember (v (i + 1)) as w eqn:Hw.
         rewrite Hv in Hw; subst w.
@@ -5102,6 +5106,35 @@ specialize (freal_normalized_cases x) as [H1| H1].
         rewrite Nat.mod_same; [ | easy ].
         now apply Nat.mod_0_l.
      +++apply Nat.nlt_ge in H12.
+        destruct (Nat.eq_dec i (n - 1)) as [H13| H13].
+      ***destruct Hwhi as [Hwhi| Hwhi].
+      ----subst n; simpl in H13; subst i.
+          simpl in Hm; subst m.
+          simpl in Haft, Hnaft.
+          rewrite Haft, Hnaft.
+          rewrite Nat.sub_add; [ | easy ].
+          rewrite Nat.mod_same; [ | easy ].
+          now apply Nat.mod_0_l.
+      ----rewrite <- H13 in Hwhi.
+          rewrite Hwhi.
+          now rewrite Nat.add_1_r.
+      ***assert (H14 : i < n - 1) by flia H12 H13; clear H12 H13.
+         rewrite Nat.max_l in H1, Hm; [ | flia H14 | flia H14 ].
+         destruct Hwhi as [Hwhi| Hwhi]; [ flia Hwhi H14 | ].
+         destruct n; [ flia H14 | ].
+         rewrite Nat.sub_add in Hm; [ | flia ].
+         replace (S n - 1) with n in Hbef, Hwhi, H1, H14 by flia.
+         subst m.
+         exfalso.
+...
+         destruct (lt_dec (i + 1) n) as [H12| H12].
+      ----rewrite nA_split_first in H9, H10; [ | flia Hiq | flia Hinq ].
+          assert (H13 : u (i + 1) = v (i + 1)). {
+            rewrite Hu, Hv.
+            unfold freal_add_series, sequence_add.
+            now unfold fd2n; rewrite Hbef.
+          }
+          rewrite <- H13 in H10.
 ...
     **idtac.
       ...
