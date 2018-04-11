@@ -4998,16 +4998,33 @@ specialize (freal_normalized_cases x) as [H1| H1].
      remember (rad * (i + index_A_not_ge u i + 3)) as nq eqn:Hnq.
      remember (rad * (i + index_A_not_ge v i + 3)) as q eqn:Hq.
      move q before nq; move Hq before Hnq.
-(* put here case i < n-1
-   therefore nA i nq u < rad ^ (nq - i - 1)
-   therefore it works... well, I must verify...
-   else, we see... *)
-...
-(*
      destruct (lt_dec (nA i nq u) (rad ^ (nq - i - 1))) as [H9| H9].
-    **idtac.
+    **rewrite Nat.div_small in H7 |-*; [ | easy | easy ].
+      rewrite Nat.add_0_r in H7 |-*.
+      destruct (lt_dec (nA i q v) (rad ^ (q - i - 1))) as [H10| H10].
+    ---rewrite Nat.div_small in H8 |-*; [ | easy | easy ].
+       rewrite Nat.add_0_r in H8 |-*.
+       rewrite Hu, Hv.
+       unfold freal_add_series, sequence_add in H7, H8 |-*.
+       rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
+       rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
+       f_equal; f_equal.
+       destruct (lt_dec i (n - 1)) as [H11| H11].
+     +++f_equal; unfold fd2n.
+        now apply digit_eq_eq, Hbef.
+     +++apply Nat.nlt_ge in H11.
+        rewrite Nat.max_r in Hm, H1; [ | easy | easy ].
+        specialize (Haft (i + 1 - n)) as H12.
+        replace (n + (i + 1 - n)) with (i + 1) in H12 by flia H11.
+        specialize (H1 0) as H13; rewrite Nat.add_0_r in H13.
+        exfalso; apply Nat.nle_gt in H10; apply H10; clear H10.
+        rewrite nA_split_first.
+      ***remember (v (i + 1)) as w eqn:Hw.
+         rewrite Hv in Hw; subst w.
+         unfold freal_add_series, sequence_add.
+         rewrite H12, H13.
 ...
-*)
+
 rewrite Nat.div_small in H7 |-*.
 **rewrite Nat.add_0_r in H7 |-*.
   rewrite Nat.div_small in H8 |-*.
