@@ -5135,11 +5135,12 @@ specialize (freal_normalized_cases x) as [H1| H1].
           }
           rewrite <- H13 in H10.
           destruct (le_dec rad (u (i + 1))) as [H15| H15].
-       ++++apply Nat.nle_gt in H9; apply H9.
+       ++++apply Nat.nle_gt in H9; apply H9; clear H9.
            replace (nq - i - 1) with (S (nq - i - 2)) by flia Hinq.
            eapply le_trans; [ | apply Nat_add_le_pos_r ].
            now simpl; apply Nat.mul_le_mono_r.
        ++++apply Nat.nle_gt in H15.
+...
            rewrite H13, Hv in H15.
            unfold freal_add_series, sequence_add in H15.
            apply H10; clear H10.
