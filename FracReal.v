@@ -5142,6 +5142,7 @@ specialize (freal_normalized_cases x) as [H1| H1].
        ++++apply Nat.nle_gt in H15.
            rewrite H13, Hv in H15.
            unfold freal_add_series, sequence_add in H15.
+           apply H10; clear H10.
 
 ...
     **idtac.
