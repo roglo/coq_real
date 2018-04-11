@@ -4985,6 +4985,13 @@ specialize (freal_normalized_cases x) as [H1| H1].
    move v before u; move Hv before Hu.
    move p before np; move Hp before Hnp.
    move H4 before H2.
+   assert (H : ∀ k, fd2n y (m + k) = rad - 1). {
+     intros k.
+     specialize (H1 k).
+     now replace (max (n - 1) i + k + 1) with (m + k) in H1 by flia Hm.
+   }
+   clear H1; rename H into H1; move H1 before H4.
+   move m before i.
    destruct (lt_dec (S (d2n (freal nxy) i)) rad) as [H7| H7].
   --simpl.
     destruct (lt_dec (S (d2n (freal xy) i)) rad) as [H8| H8].
@@ -5022,10 +5029,10 @@ specialize (freal_normalized_cases x) as [H1| H1].
      +++f_equal; unfold fd2n.
         now apply digit_eq_eq, Hbef.
      +++apply Nat.nlt_ge in H11.
-        rewrite Nat.max_r in Hm, H1; [ | easy | easy ].
+        rewrite Nat.max_r in Hm; [ | easy ].
         specialize (Haft (i + 1 - n)) as H12.
         replace (n + (i + 1 - n)) with (i + 1) in H12 by flia H11.
-        specialize (H1 0) as H13; rewrite Nat.add_0_r in H13.
+        specialize (H1 0) as H13; rewrite Hm, Nat.add_0_r in H13.
         exfalso; apply Nat.nle_gt in H10; apply H10; clear H10.
         rewrite nA_split_first; [ | flia Hiq ].
         remember (v (i + 1)) as w eqn:Hw.
@@ -5049,7 +5056,7 @@ specialize (freal_normalized_cases x) as [H1| H1].
           unfold freal_add_series, sequence_add.
           specialize (Haft (i + 2 - n)) as H14.
           replace (n + (i + 2 - n)) with (S i + 1) in H14 by flia H11.
-          specialize (H1 1) as H15.
+          specialize (H1 1) as H15; rewrite Hm in H15.
           replace (i + 1 + 1) with (S i + 1) in H15 by flia.
           rewrite H14, H15.
           replace (rad - 1 + (rad - 1)) with (2 * rad - 2) by flia.
@@ -5119,11 +5126,11 @@ specialize (freal_normalized_cases x) as [H1| H1].
           rewrite Hwhi.
           now rewrite Nat.add_1_r.
       ***assert (H14 : i < n - 1) by flia H12 H13; clear H12 H13.
-         rewrite Nat.max_l in H1, Hm; [ | flia H14 | flia H14 ].
+         rewrite Nat.max_l in Hm; [ | flia H14 ].
          destruct Hwhi as [Hwhi| Hwhi]; [ flia Hwhi H14 | ].
          destruct n; [ flia H14 | ].
          rewrite Nat.sub_add in Hm; [ | flia ].
-         replace (S n - 1) with n in Hbef, Hwhi, H1, H14 by flia.
+         replace (S n - 1) with n in Hbef, Hwhi, H14 by flia.
          subst m.
          exfalso.
          destruct (lt_dec (i + 1) n) as [H12| H12].
