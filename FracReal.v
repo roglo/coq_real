@@ -5073,9 +5073,38 @@ specialize (freal_normalized_cases x) as [H1| H1].
              now apply Nat_mul_le_pos_l.
            }
            apply Nat.add_le_mono; apply H.
-    ---idtac.
+    ---assert (H11 : nA i q v < 2 * rad ^ (q - i - 1)). {
+         assert (H : ∀ k, v k ≤ 2 * (rad - 1)). {
+           intros k.
+           rewrite Hv.
+           unfold freal_add_series, sequence_add.
+           simpl; rewrite Nat.add_0_r.
+           apply Nat.add_le_mono; apply digit_le_pred_radix.
+         }
+         specialize (nA_upper_bound_for_add v i q H) as H11.
+         rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H11.
+         specialize (Nat.pow_nonzero rad (q - i - 1) radix_ne_0) as H12.
+         flia H11 H12.
+       }
+       rewrite Nat_div_less_small in H8 |-*; [ | flia H10 H11 | flia H10 H11 ].
+       rewrite Hu, Hv.
+       unfold freal_add_series, sequence_add in H7, H8 |-*.
+       rewrite Nat.add_shuffle0.
+       rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
+       rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
+       f_equal; f_equal.
+       destruct (lt_dec (n - 1) i) as [H12| H12].
+     +++specialize (Hnaft (i - n)) as H13.
+        specialize (Haft (i - n)) as H14.
+        replace (n + (i - n)) with i in H13, H14 by flia H12.
+        rewrite H13, H14.
+        rewrite Nat.sub_add; [ | easy ].
+        rewrite Nat.mod_same; [ | easy ].
+        now apply Nat.mod_0_l.
+     +++apply Nat.nlt_ge in H12.
 ...
-    **...
+    **idtac.
+      ...
    ++exfalso.
      ...
   --destruct (lt_dec (S (d2n (freal xy) i)) rad) as [H8| ]; [ | easy ].
