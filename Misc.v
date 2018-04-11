@@ -90,6 +90,14 @@ apply Nat.add_le_mono_r.
 apply Nat.le_0_l.
 Qed.
 
+Theorem Nat_add_le_pos_r : ∀ a b, a ≤ a + b.
+Proof.
+intros.
+replace a with (a + 0) at 1 by easy.
+apply Nat.add_le_mono_l.
+apply Nat.le_0_l.
+Qed.
+
 Theorem Nat_mul_le_pos_l : ∀ a b, 1 ≤ a → b ≤ a * b.
 Proof.
 intros * Ha.
