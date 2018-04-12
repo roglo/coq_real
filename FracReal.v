@@ -5010,7 +5010,6 @@ specialize (freal_normalized_cases x) as [H1| H1].
    clear H1; rename H into H1; move H1 before H4.
    move m before i.
    move H4 before H2.
-...
    unfold d2n, numbers_to_digits in H5, H6.
    simpl in H5, H6.
    remember (rad * (m + index_A_not_ge u m + 3)) as np eqn:Hnp.
@@ -5104,10 +5103,10 @@ specialize (freal_normalized_cases x) as [H1| H1].
            }
            apply Nat.add_le_mono; apply H.
       ***assert (H : rad ^ (q - i - 2) ≤ rad ^ (q - i - 1)). {
-             replace (q - i - 1) with (S (q - i - 2)) by flia Hiq; simpl.
-             now apply Nat_mul_le_pos_l.
-           }
-           apply Nat.add_le_mono; apply H.
+           replace (q - i - 1) with (S (q - i - 2)) by flia Hiq; simpl.
+           now apply Nat_mul_le_pos_l.
+         }
+         apply Nat.add_le_mono; apply H.
     ---assert (H11 : nA i q v < 2 * rad ^ (q - i - 1)). {
          assert (H : ∀ k, v k ≤ 2 * (rad - 1)). {
            intros k.
@@ -5157,6 +5156,7 @@ specialize (freal_normalized_cases x) as [H1| H1].
          replace (S n - 1) with n in Hbef, Hwhi, H14 by flia.
          subst m.
          exfalso.
+...
          destruct (lt_dec (i + 1) n) as [H12| H12].
       ----rewrite nA_split_first in H9, H10; [ | flia Hiq | flia Hinq ].
           assert (H13 : u (i + 1) = v (i + 1)). {
