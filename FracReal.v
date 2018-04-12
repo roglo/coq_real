@@ -5176,22 +5176,22 @@ specialize (freal_normalized_cases x) as [H1| H1].
            rewrite H13.
            rewrite <- nA_split_first; [ | flia Hiq ].
            rewrite <- nA_split_first in H9; [ | flia Hinq ].
-           ...
-      ----...
-    **...
+           admit.
+      ----admit.
+    **admit.
    ++exfalso.
-     ...
+     admit.
   --destruct (lt_dec (S (d2n (freal xy) i)) rad) as [H8| ]; [ | easy ].
     exfalso.
-    ...
+    admit.
   *destruct H3 as (j & Hjj & Hj).
    apply is_9_strict_after_false_iff in Hj.
-   ...
+   admit.
  +destruct H1 as (j & Hjj & Hj).
   apply is_9_strict_after_false_iff in Hj.
   destruct (LPO_fst (is_9_strict_after (freal xy) i)) as [H1| H1].
   *specialize (is_9_strict_after_all_9 _ _ H1) as H2; clear H1.
-   ...
+   admit.
   *destruct H1 as (k & Hjk & Hk).
    move k before j; move Hjk before Hjj.
    apply is_9_strict_after_false_iff in Hk.
@@ -5206,6 +5206,7 @@ specialize (freal_normalized_cases x) as [H1| H1].
    remember (rad * (i + index_A_not_ge nxy i + 3)) as n1 eqn:Hn1.
    remember (rad * (i + index_A_not_ge xy i + 3)) as n2 eqn:Hn2.
    move n2 before n1.
+Print index_A_not_ge.
    ...
 ...
 intros.
