@@ -5175,6 +5175,7 @@ specialize (freal_normalized_cases x) as [H1| H1].
            apply H10; clear H10.
            rewrite H13.
            rewrite <- nA_split_first; [ | flia Hiq ].
+           rewrite <- nA_split_first in H9; [ | flia Hinq ].
 
 ...
     **idtac.
