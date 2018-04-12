@@ -5156,7 +5156,6 @@ specialize (freal_normalized_cases x) as [H1| H1].
          replace (S n - 1) with n in Hbef, Hwhi, H14 by flia.
          subst m.
          exfalso.
-...
          destruct (lt_dec (i + 1) n) as [H12| H12].
       ----rewrite nA_split_first in H9, H10; [ | flia Hiq | flia Hinq ].
           assert (H13 : u (i + 1) = v (i + 1)). {
@@ -5171,7 +5170,6 @@ specialize (freal_normalized_cases x) as [H1| H1].
            eapply le_trans; [ | apply Nat_add_le_pos_r ].
            now simpl; apply Nat.mul_le_mono_r.
        ++++apply Nat.nle_gt in H15.
-...
            rewrite H13, Hv in H15.
            unfold freal_add_series, sequence_add in H15.
            apply H10; clear H10.
