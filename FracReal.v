@@ -2939,6 +2939,7 @@ Theorem num_to_dig_9_ge_7 {r : radix} : ∀ u i,
   → u i ≥ rad - 3.
 Proof.
 intros * Hur Hu.
+specialize radix_ge_2 as Hr.
 specialize (Hu 0) as H1.
 rewrite Nat.add_0_r in H1.
 unfold d2n, numbers_to_digits in H1.
@@ -2947,34 +2948,19 @@ destruct (LPO_fst (A_ge_1 u i)) as [H2| H2].
  destruct (lt_dec (u (i + 1)) rad) as [H3| H3].
  +rewrite Nat.div_small in H1; [ | easy ].
   rewrite Nat.add_0_r in H1.
-
-...
- rewrite Nat.add_0_r in H1.
- remember (rad * (i + 3)) as n eqn:Hn.
- remember (n - i - 1) as s eqn:Hs.
- move s before n.
- destruct (lt_dec (nA i n u) (rad ^ s)) as [H4| H4].
- +rewrite Nat.div_small in H1; [ | easy ].
-  rewrite Nat.add_0_r in H1.
-  destruct (lt_dec (u i + 1) rad) as [H5| H5]; [ | flia H5 ].
-  rewrite Nat.mod_small in H1; [ flia H1 | flia H5 ].
- +specialize (nA_upper_bound_for_add u i n Hur) as H5.
-  rewrite <- Hs in H5.
-  remember (nA i n u) as x eqn:Hx.
-  replace x with (x - rad ^ s + 1 * rad ^ s) in H1(*, H3*).
-  *rewrite Nat.div_add in H1; [ | now apply Nat.pow_nonzero ].
-   assert (H6 : x - rad ^ s < rad ^ s). {
-     specialize (Nat.pow_nonzero rad s radix_ne_0) as H.
-     flia H5 H.
-   }
-   rewrite Nat.div_small in H1; [ | easy ].
-   rewrite Nat.add_0_l in H1.
-   destruct (lt_dec (u i + 1) rad) as [H7| H7]; [ | flia H7 ].
-   rewrite Nat.mod_small in H1; [ | easy ].
-   flia H1.
-  *rewrite Nat.mul_1_l.
-   apply Nat.sub_add.
-   flia H4.
+  destruct (lt_dec (u i + 1) rad) as [H4| H4].
+  *rewrite Nat.mod_small in H1; [ flia H1 | easy ].
+  *rewrite Nat_mod_less_small in H1; [ flia H1 | ].
+   split; [ flia H4 | ].
+   specialize (Hur i); rewrite Nat.mul_sub_distr_l in Hur.
+   destruct rad; [ easy | flia Hur ].
+ +rewrite Nat_div_less_small in H1.
+  *rewrite <- Nat.add_assoc in H1; simpl in H1.
+   destruct (lt_dec (u i + 2) rad) as [H4| H4]; [ | flia H4 ].
+   rewrite Nat.mod_small in H1; [ flia H1 | easy ].
+  *split; [ flia H3 | ].
+   specialize (Hur (i + 1)); rewrite Nat.mul_sub_distr_l in Hur.
+   destruct rad; [ easy | flia Hur ].
 -destruct H2 as (k & Hjk & Hk).
  simpl in H1.
  apply A_ge_1_false_iff in Hk.
@@ -3989,7 +3975,7 @@ intros Hur Hu.
 specialize (Hu 0) as H1.
 rewrite Nat.add_0_r in H1.
 unfold d2n, numbers_to_digits in H1.
-unfold index_A_not_ge in H1.
+...
 destruct (LPO_fst (A_ge_1 u i)) as [H2| H2].
 -intros k; simpl in H1.
  specialize (Hu k) as H3.
