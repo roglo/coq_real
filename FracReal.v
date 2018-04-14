@@ -1862,12 +1862,7 @@ unfold numbers_to_digits.
 rewrite Hfg.
 destruct (LPO_fst (A_ge_1 f i)) as [Hf| Hf].
 -destruct (LPO_fst (A_ge_1 g i)) as [Hg| Hg].
- +f_equal; f_equal.
-  unfold nA.
-...
-  erewrite summation_eq_compat; [ reflexivity | simpl ].
-  intros j Hj.
-  now rewrite Hfg.
+ +now rewrite Hfg.
  +exfalso.
   destruct Hg as (k & Hjk & H).
   specialize (Hf k).
@@ -3028,9 +3023,9 @@ intros * Hur Hu.
 specialize (Hu 0) as H1.
 rewrite Nat.add_0_r in H1.
 unfold d2n, numbers_to_digits in H1.
-unfold index_A_not_ge in H1.
 destruct (LPO_fst (A_ge_1 u i)) as [H2| H2].
 -simpl in H1.
+...
  rewrite Nat.add_0_r in H1.
  remember (rad * (i + 3)) as n eqn:Hn.
  remember (n - i - 1) as s eqn:Hs.
