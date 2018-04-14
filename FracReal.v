@@ -3985,6 +3985,8 @@ destruct (LPO_fst (A_ge_1 u i)) as [H2| H2].
   destruct (lt_dec (u (i + k + 1)) rad) as [H5| H5].
   *rewrite Nat.div_small in H3; [ | easy ].
    rewrite Nat.add_0_r in H3.
+Check eq_mod_rad_add_pred_rad.
+...
    destruct (lt_dec (u (i + k) + 1) rad) as [H6| H6].
   --rewrite Nat.mod_small in H3; [ left; flia H3 | easy ].
   --rewrite Nat_mod_less_small in H3.
