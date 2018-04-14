@@ -3971,6 +3971,7 @@ Theorem all_num_to_dig_eq_pred_rad_2 {r : radix} : ∀ u i,
        u i = rad - 1.
 Proof.
 intros *.
+specialize radix_ge_2 as Hr.
 intros Hur Hu.
 specialize (Hu 0) as H1.
 rewrite Nat.add_0_r in H1.
@@ -3981,6 +3982,19 @@ destruct (LPO_fst (A_ge_1 u i)) as [H2| H2].
  unfold d2n, numbers_to_digits in H3.
  destruct (LPO_fst (A_ge_1 u (i + k))) as [H4| H4].
  +simpl in H3.
+  destruct (lt_dec (u (i + k + 1)) rad) as [H5| H5].
+  *rewrite Nat.div_small in H3; [ | easy ].
+   rewrite Nat.add_0_r in H3.
+   destruct (lt_dec (u (i + k) + 1) rad) as [H6| H6].
+  --rewrite Nat.mod_small in H3; [ left; flia H3 | easy ].
+  --rewrite Nat_mod_less_small in H3.
+   ++right; left; flia H3.
+   ++split; [ flia H6 | ].
+     specialize (Hur (i + k)).
+     flia Hr Hur.
+  *rewrite Nat_div_less_small in H3.
+  --destruct (lt_dec (u (i + k) + 1 + 1) rad) as [H6| H6].
+   ++rewrite Nat.mod_small in H3; [ | easy ].
 ...
   remember (rad * (i + k + 3)) as n eqn:Hn.
   remember (n - (i + k) - 1) as s eqn:Hs.
