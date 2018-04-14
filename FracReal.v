@@ -837,13 +837,11 @@ Definition A_ge_1 {r : radix} u i k :=
    - 9/9/9...9/8/18/18/18...
    for multiplication, to be determined...
  *)
-Definition carry_when_all_A_ge_1 {r : radix} u i :=
-  if Nat.eq_dec (u (i + 1)) (2 * (rad - 1)) then 2 else 1.
 
 Definition numbers_to_digits {r : radix} u i :=
   match LPO_fst (A_ge_1 u i) with
   | inl _ =>
-      let d := u i + carry_when_all_A_ge_1 u i in
+      let d := u i + 1 + u (i + 1) / rad in
       mkdig _ (d mod rad) (Nat.mod_upper_bound d rad radix_ne_0)
   | inr (exist _ l _) =>
       let n := rad * (i + l + 3) in
@@ -851,21 +849,6 @@ Definition numbers_to_digits {r : radix} u i :=
       let d := u i + nA i n u / s in
       mkdig _ (d mod rad) (Nat.mod_upper_bound d rad radix_ne_0)
   end.
-
-...
-
-Definition index_A_not_ge {r : radix} u i :=
-  match LPO_fst (A_ge_1 u i) with
-  | inl _ => 0
-  | inr (exist _ l _) => l
-  end.
-
-Definition old_numbers_to_digits {r : radix} u i :=
-  let l := index_A_not_ge u i in
-  let n := rad * (i + l + 3) in
-  let s := rad ^ (n - i - 1) in
-  let d := u i + nA i n u / s in
-  mkdig _ (d mod rad) (Nat.mod_upper_bound d rad radix_ne_0).
 
 Definition freal_add_to_seq {r : radix} (a b : FracReal) :=
   numbers_to_digits (freal_add_series a b).
@@ -976,14 +959,14 @@ unfold freal_add_to_seq, numbers_to_digits.
 remember (freal_add_series x y) as xy.
 remember (freal_add_series y x) as yx.
 apply digit_eq_eq; simpl.
-unfold index_A_not_ge.
 destruct (LPO_fst (A_ge_1 xy i)) as [Hxy| Hxy].
--rewrite Heqxy, freal_add_series_comm, <- Heqyx.
- destruct (LPO_fst (A_ge_1 yx i)) as [Hyx| Hyx].
- +now rewrite nA_freal_add_series_comm, <- Heqyx.
- +destruct Hyx as (k & Hjk & Hk).
-  rewrite Heqyx, A_ge_1_freal_add_series_comm, <- Heqxy in Hk.
-  now rewrite Hxy in Hk.
+-rewrite Heqxy; simpl.
+ setoid_rewrite freal_add_series_comm.
+ rewrite <- Heqyx.
+ destruct (LPO_fst (A_ge_1 yx i)) as [Hyx| Hyx]; [ easy | ].
+ destruct Hyx as (k & Hjk & Hk).
+ rewrite Heqyx, A_ge_1_freal_add_series_comm, <- Heqxy in Hk.
+ now rewrite Hxy in Hk.
 -destruct Hxy as (k & Hjk & Hk).
  rewrite Heqxy, A_ge_1_freal_add_series_comm, <- Heqyx in Hk.
  destruct (LPO_fst (A_ge_1 yx i)) as [Hyx| Hyx].
@@ -1007,7 +990,7 @@ intros.
 unfold freal_mul_to_seq, numbers_to_digits.
 remember (freal_mul_series x y) as xy.
 remember (freal_mul_series y x) as yx.
-unfold index_A_not_ge.
+...
 destruct (LPO_fst (A_ge_1 xy i)) as [Hxy| Hxy].
 -rewrite Heqxy, freal_mul_series_comm, <- Heqyx.
  destruct (LPO_fst (A_ge_1 yx i)) as [Hyx| Hyx].
