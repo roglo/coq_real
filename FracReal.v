@@ -990,14 +990,15 @@ intros.
 unfold freal_mul_to_seq, numbers_to_digits.
 remember (freal_mul_series x y) as xy.
 remember (freal_mul_series y x) as yx.
-...
+apply digit_eq_eq.
 destruct (LPO_fst (A_ge_1 xy i)) as [Hxy| Hxy].
--rewrite Heqxy, freal_mul_series_comm, <- Heqyx.
- destruct (LPO_fst (A_ge_1 yx i)) as [Hyx| Hyx].
- +now rewrite nA_freal_mul_series_comm, <- Heqyx.
- +destruct Hyx as (k & Hjk & Hk).
-  rewrite Heqyx, A_ge_1_freal_mul_series_comm, <- Heqxy in Hk.
-  now rewrite Hxy in Hk.
+-rewrite Heqxy; simpl.
+ setoid_rewrite freal_mul_series_comm.
+ rewrite <- Heqyx.
+ destruct (LPO_fst (A_ge_1 yx i)) as [Hyx| Hyx]; [ easy | ].
+ destruct Hyx as (k & Hjk & Hk).
+ rewrite Heqyx, A_ge_1_freal_mul_series_comm, <- Heqxy in Hk.
+ now rewrite Hxy in Hk.
 -destruct Hxy as (k & Hjk & Hk).
  rewrite Heqxy, A_ge_1_freal_mul_series_comm, <- Heqyx in Hk.
  destruct (LPO_fst (A_ge_1 yx i)) as [Hyx| Hyx].
@@ -1586,7 +1587,7 @@ Proof.
 intros.
 unfold freal_add_to_seq.
 set (u := freal_add_series (freal_normalize 0) (freal_normalize x)).
-unfold numbers_to_digits, index_A_not_ge.
+unfold numbers_to_digits.
 destruct (LPO_fst (A_ge_1 u i)) as [Hku| (m & Hjm & Hm)].
 -exfalso.
  assert (H1 : ∀ k, u k < rad). {
@@ -1857,12 +1858,13 @@ Theorem numbers_to_digits_eq_compat {r : radix} : ∀ f g,
   numbers_to_digits f i = numbers_to_digits g i.
 Proof.
 intros * Hfg *.
-unfold numbers_to_digits, index_A_not_ge.
+unfold numbers_to_digits.
 rewrite Hfg.
 destruct (LPO_fst (A_ge_1 f i)) as [Hf| Hf].
 -destruct (LPO_fst (A_ge_1 g i)) as [Hg| Hg].
  +f_equal; f_equal.
   unfold nA.
+...
   erewrite summation_eq_compat; [ reflexivity | simpl ].
   intros j Hj.
   now rewrite Hfg.
