@@ -2944,6 +2944,10 @@ rewrite Nat.add_0_r in H1.
 unfold d2n, numbers_to_digits in H1.
 destruct (LPO_fst (A_ge_1 u i)) as [H2| H2].
 -simpl in H1.
+ destruct (lt_dec (u (i + 1)) rad) as [H3| H3].
+ +rewrite Nat.div_small in H1; [ | easy ].
+  rewrite Nat.add_0_r in H1.
+
 ...
  rewrite Nat.add_0_r in H1.
  remember (rad * (i + 3)) as n eqn:Hn.
