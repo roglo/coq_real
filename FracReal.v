@@ -3975,15 +3975,13 @@ intros Hur Hu.
 specialize (Hu 0) as H1.
 rewrite Nat.add_0_r in H1.
 unfold d2n, numbers_to_digits in H1.
-...
 destruct (LPO_fst (A_ge_1 u i)) as [H2| H2].
 -intros k; simpl in H1.
  specialize (Hu k) as H3.
  unfold d2n, numbers_to_digits in H3.
- unfold index_A_not_ge in H3.
  destruct (LPO_fst (A_ge_1 u (i + k))) as [H4| H4].
  +simpl in H3.
-  rewrite Nat.add_0_r in H3.
+...
   remember (rad * (i + k + 3)) as n eqn:Hn.
   remember (n - (i + k) - 1) as s eqn:Hs.
   move s before n.
