@@ -4930,23 +4930,6 @@ unfold freal_add_series, sequence_add, fd2n.
 now rewrite H3, H4.
 Qed.
 
-Theorem glop_freal_eq_add_norm_l {r : radix} : ∀ x y i,
-  fd2n (freal_unorm_add (freal_normalize x) y) i =
-  fd2n (freal_unorm_add x y) i.
-Proof.
-intros.
-specialize radix_ge_2 as Hr.
-unfold fd2n, freal_unorm_add; simpl.
-unfold freal_add_to_seq.
-remember (freal_normalize x) as nx eqn:Hnx.
-unfold numbers_to_digits.
-destruct (LPO_fst (A_ge_1 (freal_add_series nx y) i)) as [H1| H1].
--simpl.
- destruct (LPO_fst (A_ge_1 (freal_add_series x y) i)) as [H2| H2].
- +simpl.
-
-...
-
 Theorem freal_eq_add_norm_l {r : radix} : ∀ x y,
   (freal_unorm_add (freal_normalize x) y = freal_unorm_add x y)%F.
 Proof.
