@@ -4968,10 +4968,6 @@ specialize (freal_normalized_cases x) as [H1| H1].
     unfold d2n, numbers_to_digits in H1; simpl in H1.
     remember (freal_add_series nx y) as z eqn:Hz.
     remember (max (n - 1) i + k + 1) as j eqn:Hj.
-...
-    remember (rad * (j + index_A_not_ge z j + 3)) as m eqn:Hm.
-    remember (m - j - 1) as s eqn:Hs.
-    move s before m.
     assert (H : z j = fd2n y j). {
       rewrite Hz.
       unfold freal_add_series.
@@ -4981,6 +4977,9 @@ specialize (freal_normalized_cases x) as [H1| H1].
       now rewrite H3.
     }
     rewrite H in H1; clear H.
+    destruct (LPO_fst (A_ge_1 z j)) as [H3| H3].
+    -simpl in H1.
+...
     assert (H : nA j m z < rad ^ s). {
       rewrite Hz.
       rewrite nA_freal_add_series.
