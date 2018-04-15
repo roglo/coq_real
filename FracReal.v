@@ -3812,6 +3812,38 @@ destruct (lt_dec (nA i n u) (rad ^ s)) as [H1| H1].
   flia H2 H.
 Qed.
 
+Theorem eq_add_mod_rad_add_pred_rad {r : radix} : ∀ u i,
+  (∀ k, u k ≤ 2 * (rad - 1))
+  → (u i + u (i + 1) / rad) mod rad = rad - 1
+  → u i = rad - 2 ∨
+     u i = 2 * rad - 2 ∨
+     u i = rad - 1.
+Proof.
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hur Hu.
+destruct (lt_dec (u (i + 1)) rad) as [H1| H1].
+-right; right.
+ rewrite Nat.div_small in Hu; [ | easy ].
+ rewrite Nat.add_0_r in Hu.
+  destruct (lt_dec (u i) rad) as [H2| H2].
+ +now rewrite Nat.mod_small in Hu.
+ +specialize (Hur i).
+  rewrite Nat_mod_less_small in Hu; [ flia Hur Hu | ].
+  split; [ flia H2 | flia Hur Hr ].
+-rewrite Nat_div_less_small in Hu.
+ +destruct (lt_dec (u i + 1) rad) as [H2| H2].
+  *left.
+   rewrite Nat.mod_small in Hu; [ flia Hu | easy ].
+  *right; left.
+   rewrite Nat_mod_less_small in Hu; [ flia Hu | ].
+   split; [ flia H2 | ].
+   specialize (Hur i); flia Hr Hur.
+ +split; [ flia H1 | ].
+  specialize (Hur (i + 1)).
+  flia Hr Hur.
+Qed.
+
 Theorem eq_mod_rad_add_succ_pred_rad {r : radix} : ∀ u i n s,
   (∀ k, u k ≤ 2 * (rad - 1))
   → s = n - i - 1
@@ -3982,6 +4014,8 @@ destruct (LPO_fst (A_ge_1 u i)) as [H2| H2].
  unfold d2n, numbers_to_digits in H3.
  destruct (LPO_fst (A_ge_1 u (i + k))) as [H4| H4].
  +simpl in H3.
+  specialize (eq_add_mod_rad_add_pred_rad u (i + k) Hur) as H5.
+...
   destruct (lt_dec (u (i + k + 1)) rad) as [H5| H5].
   *rewrite Nat.div_small in H3; [ | easy ].
    rewrite Nat.add_0_r in H3.
