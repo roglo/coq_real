@@ -4959,6 +4959,7 @@ specialize (freal_normalized_cases x) as [H1| H1].
  +specialize (is_9_strict_after_all_9 _ _ H1) as H2; clear H1.
   destruct (LPO_fst (is_9_strict_after (freal xy) i)) as [H1| H1].
   *specialize (is_9_strict_after_all_9 _ _ H1) as H3; clear H1.
+...
    remember (max (n - 1) i) as m eqn:Hm.
    specialize (H2 (m - i)) as H4.
    specialize (H3 (m - i)) as H5.
@@ -4969,9 +4970,11 @@ specialize (freal_normalized_cases x) as [H1| H1].
    unfold numbers_to_digits in H4, H5.
    destruct (LPO_fst (A_ge_1 (freal_add_series nx y) (m + 1))) as [H6| H6].
   --simpl in H4.
-    unfold freal_add_series, sequence_add in H4.
     destruct (LPO_fst (A_ge_1 (freal_add_series x y) (m + 1))) as [H7| H7].
    ++simpl in H5.
+     move H4 before H5.
+...
+     unfold freal_add_series, sequence_add in H4.
      unfold freal_add_series, sequence_add in H5.
      replace (m + 1 + 1) with (m + 2) in H4, H5 by flia.
      specialize (Hnaft (m + 1 - n)) as H8.
@@ -4982,7 +4985,6 @@ specialize (freal_normalized_cases x) as [H1| H1].
      replace (n + (m + 2 - n)) with (m + 2) in H10, H11 by flia Hm.
      rewrite H8, H10 in H4; rewrite H9, H11 in H5.
      do 2 rewrite Nat.add_0_l in H4.
-     move H4 before H5.
      unfold fd2n in H4 at 2.
      rewrite Nat.div_small in H4; [ | easy ].
      rewrite Nat.add_0_r in H4.
