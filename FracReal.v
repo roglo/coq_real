@@ -4983,7 +4983,22 @@ specialize (freal_normalized_cases x) as [H1| H1].
      rewrite H8, H10 in H4; rewrite H9, H11 in H5.
      do 2 rewrite Nat.add_0_l in H4.
      move H4 before H5.
-(* H4 and H5 should contradict themselves *)
+     unfold fd2n in H4 at 2.
+     rewrite Nat.div_small in H4; [ | easy ].
+     rewrite Nat.add_0_r in H4.
+     assert (H12 : fd2n y (m + 1) = rad - 2). {
+       destruct (lt_dec (fd2n y (m + 1) + 1) rad) as [H12| H12].
+       -rewrite Nat.mod_small in H4; [ flia H4 | easy ].
+       -apply Nat.nlt_ge in H12.
+        specialize (digit_lt_radix (freal y (m + 1))) as H.
+        unfold fd2n in H12.
+        unfold fd2n in H4 at 1.
+        replace (dig (freal y (m + 1))) with (rad - 1) in H4 by flia H12 H.
+        replace (rad - 1 + 1) with rad in H4 by flia Hr.
+        rewrite Nat.mod_same in H4; [ | easy ].
+        flia Hr H4.
+     }
+     rewrite H12 in H5.
 ...
      ...
    ++destruct H7 as (k & Hkj & Hk).
