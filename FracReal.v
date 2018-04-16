@@ -3855,6 +3855,7 @@ Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hur Hu.
+...
 destruct (lt_dec (u (i + 1)) rad) as [H1| H1].
 -rewrite Nat.div_small in Hu; [ | easy ].
  rewrite Nat.add_0_r in Hu.
