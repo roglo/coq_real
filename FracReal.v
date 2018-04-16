@@ -3855,7 +3855,6 @@ Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hur Hu.
-...
 destruct (lt_dec (u (i + 1)) rad) as [H1| H1].
 -rewrite Nat.div_small in Hu; [ | easy ].
  rewrite Nat.add_0_r in Hu.
@@ -4958,6 +4957,28 @@ specialize (freal_normalized_cases x) as [H1| H1].
  unfold digit_sequence_normalize.
  destruct (LPO_fst (is_9_strict_after (freal nxy) i)) as [H1| H1].
  +specialize (is_9_strict_after_all_9 _ _ H1) as H2; clear H1.
+rewrite Hnxy.
+unfold d2n, freal_unorm_add; simpl.
+unfold freal_add_to_seq.
+remember (freal_add_series nx y) as snxy eqn:Hsnxy.
+unfold numbers_to_digits.
+destruct (LPO_fst (A_ge_1 snxy i)) as [H3| H3].
+*simpl.
+ rewrite Hsnxy in H3.
+ specialize (A_ge_1_add_series_all_true_if _ _ _ H3) as H4.
+ destruct H4 as [H4| H4].
+--idtac.
+Print freal_add_series.
+
+...
+
+rewrite Hnxy in H2.
+unfold d2n, freal_unorm_add in H2; simpl in H2.
+unfold freal_add_to_seq in H2.
+unfold numbers_to_digits in H2.
+remember (freal_add_series nx y) as snxy eqn:Hsnxy.
+assert (∀ k, ...
+
 ...
   assert (H1 : ∀ k, fd2n y (max (n - 1) i + k + 1) = rad - 1). {
     intros k.
