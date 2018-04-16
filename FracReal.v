@@ -4980,6 +4980,18 @@ specialize (freal_normalized_cases x) as [H1| H1].
     destruct (LPO_fst (A_ge_1 z j)) as [H3| H3].
     -simpl in H1.
 ...
+destruct (lt_dec i (n - 1)) as [H4| H4].
+rewrite Nat.max_l in Hj; [ | flia H4 ].
+destruct n; [ easy | ].
+destruct Hwhi as [Hwhi| Hwhi]; [ easy | ].
+replace (S n - 1) with n in Hwhi, Hj, H4 by flia.
+
+...
+     rewrite Hz in H3.
+     specialize (A_ge_1_add_series_all_true_if _ _ _ H3) as H4.
+     destruct H4 as [H4| H4].
+     +idtac.
+...
     assert (H : nA j m z < rad ^ s). {
       rewrite Hz.
       rewrite nA_freal_add_series.
