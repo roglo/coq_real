@@ -4957,6 +4957,59 @@ specialize (freal_normalized_cases x) as [H1| H1].
  unfold digit_sequence_normalize.
  destruct (LPO_fst (is_9_strict_after (freal nxy) i)) as [H1| H1].
  +specialize (is_9_strict_after_all_9 _ _ H1) as H2; clear H1.
+  destruct (LPO_fst (is_9_strict_after (freal xy) i)) as [H1| H1].
+  *specialize (is_9_strict_after_all_9 _ _ H1) as H3; clear H1.
+   remember (max (n - 1) i) as m eqn:Hm.
+   specialize (H2 (m - i)) as H4.
+   specialize (H3 (m - i)) as H5.
+   replace (i + (m - i)) with m in H4, H5 by flia Hm.
+   rewrite Hnxy in H4; rewrite Hxy in H5.
+   unfold d2n, freal_unorm_add in H4, H5; simpl in H4, H5.
+   unfold freal_add_to_seq in H4, H5.
+   unfold numbers_to_digits in H4, H5.
+   destruct (LPO_fst (A_ge_1 (freal_add_series nx y) (m + 1))) as [H6| H6].
+  --simpl in H4.
+    unfold freal_add_series, sequence_add in H4.
+    destruct (LPO_fst (A_ge_1 (freal_add_series x y) (m + 1))) as [H7| H7].
+   ++simpl in H5.
+     unfold freal_add_series, sequence_add in H5.
+     replace (m + 1 + 1) with (m + 2) in H4, H5 by flia.
+     specialize (Hnaft (m + 1 - n)) as H8.
+     specialize (Haft (m + 1 - n)) as H9.
+     specialize (Hnaft (m + 2 - n)) as H10.
+     specialize (Haft (m + 2 - n)) as H11.
+     replace (n + (m + 1 - n)) with (m + 1) in H8, H9 by flia Hm.
+     replace (n + (m + 2 - n)) with (m + 2) in H10, H11 by flia Hm.
+     rewrite H8, H10 in H4; rewrite H9, H11 in H5.
+     do 2 rewrite Nat.add_0_l in H4.
+     move H4 before H5.
+(* H4 and H5 should contradict themselves *)
+...
+     ...
+   ++destruct H7 as (k & Hkj & Hk).
+     simpl in H5.
+
+...
+
+  *destruct (lt_dec (S (d2n (freal nxy) i)) rad) as [H3| H3].
+  --simpl.
+    rewrite Hnxy in H3 |-*.
+    unfold d2n, freal_unorm_add in H3 |-*; simpl in H3 |-*.
+    unfold freal_add_to_seq in H3 |-*.
+    remember (freal_add_series nx y) as snxy eqn:Hsnxy.
+    unfold numbers_to_digits in H3 |-*.
+    destruct (LPO_fst (A_ge_1 snxy i)) as [H4| H4].
+   ++simpl in H3 |-*.
+     rewrite Hsnxy in H4.
+     specialize (A_ge_1_add_series_all_true_if _ _ _ H4) as H5.
+     rewrite Hsnxy in H3 |-*.
+     unfold freal_add_series in H3 |-*.
+     unfold sequence_add in H3 |-*.
+
+Check A_ge_1_add_all_true_if.
+
+...
+
 rewrite Hnxy.
 unfold d2n, freal_unorm_add; simpl.
 unfold freal_add_to_seq.
