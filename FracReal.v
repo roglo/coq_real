@@ -4990,7 +4990,7 @@ specialize (freal_normalized_cases x) as [H1| H1].
        rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
        rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
        f_equal; f_equal.
-       specialize (A_ge_1_add_series_all_true_if _ _ _ H7) as H8.
+       specialize (A_ge_1_add_series_all_true_if _ _ _ H6) as H8.
 ...
    remember (max (n - 1) i) as m eqn:Hm.
    specialize (H2 (m - i)) as H4.
