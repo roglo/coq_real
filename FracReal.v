@@ -4493,6 +4493,12 @@ Theorem A_gt_1_add_series_false_if {r : radix} : ∀ x y i j,
        (∃ k, fd2n y (i + j + k + 2) ≠ rad - 1)).
 Proof.
 intros * Hxy.
+split.
+-apply A_ge_1_false_iff in Hxy.
+ remember (rad * (i + j + 3)) as n eqn:Hn.
+ remember (n - i - 1) as s eqn:Hs.
+ move s before n.
+ replace (n - i - j - 2) with (s - S j) in Hxy by flia Hs.
 ...
 
 Theorem A_ge_1_all_true_for_sum_and_sum_norm_l {r : radix} : ∀ x y i n s,
