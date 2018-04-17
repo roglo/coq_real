@@ -5008,7 +5008,32 @@ specialize (freal_normalized_cases x) as [H1| H1].
           replace (n + (i + j + 2)) with (i + j + n + 2) in Hnaft by flia.
           rewrite Hnaft in Haftjn.
           flia Hr Haftjn.
-     +++idtac.
+     +++apply Nat.nlt_ge in H8.
+        destruct Hwhi as [Hwhi| Hwhi].
+      ***subst n; simpl in Hnaft, Haft; clear H8.
+         do 2 rewrite Haft, Hnaft; simpl.
+         rewrite Nat.div_small; [ | apply digit_lt_radix ].
+         rewrite Nat.mod_0_l; [ | easy ].
+         specialize (A_ge_1_add_series_all_true_if _ _ _ H6) as H8.
+         destruct H8 as [H8| [H8| H8]].
+      ----specialize (H8 0) as H9.
+          rewrite Nat.add_0_r in H9.
+          rewrite Hnaft in H9; simpl in H9; rewrite H9.
+          rewrite Nat_div_less_small; [ | flia Hr ].
+          rewrite Nat.sub_add; [ | easy ].
+          now rewrite Nat.mod_same.
+      ----destruct H8 as (H8x, H8y).
+          specialize (H8y 0); rewrite Nat.add_0_r in H8y.
+          rewrite H8y.
+          rewrite Nat_div_less_small; [ | flia Hr ].
+          rewrite Nat.sub_add; [ | easy ].
+          now rewrite Nat.mod_same.
+      ----destruct H8 as (j & Hbefj & Hwhij & Haftjn & Haftj).
+          specialize (Haftjn 0); rewrite Nat.add_0_r in Haftjn.
+          specialize (Hnaft (i + j + 2)).
+          rewrite Hnaft in Haftjn.
+          flia Hr Haftjn.
+      ***idtac.
 ...
    remember (max (n - 1) i) as m eqn:Hm.
    specialize (H2 (m - i)) as H4.
