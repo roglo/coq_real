@@ -4503,6 +4503,28 @@ split.
  replace (n - i - j - 2) with (s - S j) in Hxy by flia Hs.
  destruct (lt_dec (nA i n (freal_add_series x y)) (rad ^ s)) as [H1| H1].
  +rewrite Nat.mod_small in Hxy; [ | easy ].
+  clear H1.
+  assert (Hin : i + 1 ≤ n - 1). {
+    rewrite Hn.
+    destruct rad; [ easy | simpl; flia ].
+  }
+  induction j.
+  *exists 0.
+   rewrite Nat.add_0_r.
+   intros H1.
+   apply Nat.nle_gt in Hxy; apply Hxy; clear Hxy.
+   rewrite nA_split_first; [ | easy ].
+   unfold freal_add_series at 1, sequence_add.
+   rewrite H1.
+   replace (n - i - 2) with (s - 1) by flia Hs.
+   rewrite Nat.pow_1_r.
+   flia.
+  *idtac.
+...
+
+   rewrite nA_split with (e := i + 2) in Hxy.
+   unfold nA at 1 in Hxy.
+   rewrite summation_only_one in Hxy.
 ...
 
 Theorem A_ge_1_all_true_for_sum_and_sum_norm_l {r : radix} : ∀ x y i n s,
