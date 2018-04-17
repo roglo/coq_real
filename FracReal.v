@@ -5033,7 +5033,45 @@ specialize (freal_normalized_cases x) as [H1| H1].
           specialize (Hnaft (i + j + 2)).
           rewrite Hnaft in Haftjn.
           flia Hr Haftjn.
-      ***idtac.
+      ***destruct (Nat.eq_dec i (n - 1)) as [H9| H9].
+      ----clear H8.
+          rewrite <- H9 in Hwhi; rewrite Hwhi; simpl.
+          rewrite <- Nat.add_1_r, <- Nat.add_assoc.
+          rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+          rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+          f_equal; f_equal.
+          destruct n.
+       ++++simpl in Hnaft, Haft, H9; subst i; simpl.
+           now rewrite Hnaft, Haft in Hwhi.
+       ++++replace (S n - 1) with n in H9 by flia; subst i.
+           specialize (Hnaft 0) as H8; rewrite Nat.add_0_r in H8.
+           specialize (Haft 0) as H9; rewrite Nat.add_0_r in H9.
+           replace (n + 1) with (S n) by flia.
+           rewrite H8, H9; simpl.
+           rewrite Nat.div_small; [ simpl | apply digit_lt_radix ].
+           rewrite Nat.mod_small; [ | easy ].
+           clear H8 H9.
+           specialize (A_ge_1_add_series_all_true_if _ _ _ H6) as H8.
+           destruct H8 as [H8| [H8| H8]].
+        ****specialize (H8 0) as H9.
+            rewrite Nat.add_0_r, Nat.add_1_r in H9.
+            specialize (Hnaft 0) as H10; rewrite Nat.add_0_r in H10.
+            rewrite H10 in H9; simpl in H9; rewrite H9.
+            rewrite Nat_div_less_small; [ | flia Hr ].
+            now rewrite Nat.mod_1_l.
+        ****destruct H8 as (H8x, H8y).
+            specialize (H8y 0); rewrite Nat.add_0_r, Nat.add_1_r in H8y.
+            rewrite H8y.
+            rewrite Nat_div_less_small; [ | flia Hr ].
+            now rewrite Nat.mod_1_l.
+        ****destruct H8 as (j & Hbefj & Hwhij & Haftjn & Haftj).
+            specialize (Haftjn 0); rewrite Nat.add_0_r in Haftjn.
+            specialize (Hnaft (j + 1)).
+            replace (S n + (j + 1)) with (n + j + 2) in Hnaft by flia.
+            rewrite Hnaft in Haftjn.
+            flia Hr Haftjn.
+      ----idtac.
+
 ...
    remember (max (n - 1) i) as m eqn:Hm.
    specialize (H2 (m - i)) as H4.
