@@ -5144,7 +5144,8 @@ specialize (freal_normalized_cases x) as [H1| H1].
         rewrite Nat.add_comm.
         destruct (lt_dec (nA i n1 (fd2n x) + nA i n1 (fd2n y)) (rad ^ s1))
           as [H8| H8].
-     ****exfalso.
+     ****(*exfalso*)
+symmetry; rewrite Nat.div_small; [ symmetry | easy ].
          rewrite Nat.mod_small in Hj; [ | easy ].
          replace (n1 - i - j - 2) with (s1 - S j) in Hj by flia Hs1.
          specialize (A_ge_1_add_series_all_true_if _ _ _ H6) as H9.
