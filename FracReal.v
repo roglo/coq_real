@@ -5070,7 +5070,41 @@ specialize (freal_normalized_cases x) as [H1| H1].
             replace (S n + (j + 1)) with (n + j + 2) in Hnaft by flia.
             rewrite Hnaft in Haftjn.
             flia Hr Haftjn.
-      ----idtac.
+      ----assert (H10 : n ≤ i) by flia H8 H9; clear H8 H9.
+          specialize (Hnaft (i - n)) as H8.
+          specialize (Haft (i - n)) as H9.
+          replace (n + (i - n)) with i in H8, H9 by flia H10.
+          rewrite H8, H9; clear H8 H9; simpl.
+          specialize (Hnaft (i + 1 - n)) as H8.
+          specialize (Haft (i + 1 - n)) as H9.
+          replace (n + (i + 1 - n)) with (i + 1) in H8, H9 by flia H10.
+          rewrite H8, H9; clear H8 H9; simpl.
+          rewrite Nat.div_small; [ | apply digit_lt_radix ].
+          rewrite Nat.mod_0_l; [ | easy ].
+          specialize (A_ge_1_add_series_all_true_if _ _ _ H6) as H8.
+          rewrite Nat.add_1_r.
+          destruct H8 as [H8| [H8| H8]].
+       ++++specialize (H8 0) as H9.
+           rewrite Nat.add_0_r, Nat.add_1_r in H9.
+           specialize (Hnaft (S i - n)) as H11.
+           replace (n + (S i - n)) with (S i) in H11 by flia H10.
+           rewrite H11 in H9; simpl in H9; rewrite H9.
+           rewrite Nat_div_less_small; [ | flia Hr ].
+           rewrite Nat.sub_add; [ | easy ].
+           now rewrite Nat.mod_same.
+       ++++destruct H8 as (H8x, H8y).
+           specialize (H8y 0); rewrite Nat.add_0_r, Nat.add_1_r in H8y.
+           rewrite H8y.
+           rewrite Nat_div_less_small; [ | flia Hr ].
+           rewrite Nat.sub_add; [ | easy ].
+           now rewrite Nat.mod_same.
+       ++++destruct H8 as (j & Hbefj & Hwhij & Haftjn & Haftj).
+           specialize (Haftjn n).
+           specialize (Hnaft (i + j + 2)).
+           replace (n + (i + j + 2)) with (i + j + n + 2) in Hnaft by flia.
+           rewrite Hnaft in Haftjn.
+           flia Hr Haftjn.
+    ---destruct H7 as (j & Hjj & Hj); simpl.
 
 ...
    remember (max (n - 1) i) as m eqn:Hm.
