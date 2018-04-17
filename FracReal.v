@@ -4990,7 +4990,23 @@ specialize (freal_normalized_cases x) as [H1| H1].
        rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
        rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
        f_equal; f_equal.
-       specialize (A_ge_1_add_series_all_true_if _ _ _ H6) as H8.
+       destruct (lt_dec i (n - 1)) as [H8| H8].
+     +++specialize (Hbef _ H8) as H9.
+        unfold fd2n at 1 4; rewrite H9; clear H9.
+        rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+        rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+        f_equal; f_equal.
+        destruct (lt_dec (i + 1) (n - 1)) as [H9| H9].
+      ***specialize (Hbef _ H9) as H10.
+         now unfold fd2n at 1 3; rewrite H10.
+      ***assert (Hin : i + 1 = n - 1) by flia H8 H9.
+         clear H8 H9.
+         destruct Hwhi as [Hwhi| Hwhi]; [ flia Hwhi Hin | ].
+         rewrite <- Hin in Hwhi.
+         rewrite Hwhi; simpl; rewrite <- Nat.add_1_r.
+
+...
+        specialize (A_ge_1_add_series_all_true_if _ _ _ H6) as H9.
 ...
    remember (max (n - 1) i) as m eqn:Hm.
    specialize (H2 (m - i)) as H4.
