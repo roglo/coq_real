@@ -5004,9 +5004,7 @@ specialize (freal_normalized_cases x) as [H1| H1].
          destruct Hwhi as [Hwhi| Hwhi]; [ flia Hwhi Hin | ].
          rewrite <- Hin in Hwhi.
          rewrite Hwhi; simpl; rewrite <- Nat.add_1_r.
-
-...
-        specialize (A_ge_1_add_series_all_true_if _ _ _ H6) as H9.
+         specialize (A_ge_1_add_series_all_true_if _ _ _ H7) as H8.
 ...
    remember (max (n - 1) i) as m eqn:Hm.
    specialize (H2 (m - i)) as H4.
