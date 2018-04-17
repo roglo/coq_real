@@ -5142,7 +5142,13 @@ specialize (freal_normalized_cases x) as [H1| H1].
         rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
         f_equal; f_equal.
         rewrite Nat.add_comm.
-
+        destruct (lt_dec (nA i n1 (fd2n x) + nA i n1 (fd2n y)) (rad ^ s1))
+          as [H8| H8].
+     ****symmetry; rewrite Nat.div_small; [ symmetry | easy ].
+         rewrite Nat.mod_0_l; [ | easy ].
+         rewrite Nat.mod_small in Hj; [ | easy ].
+         replace (n1 - i - j - 2) with (s1 - S j) in Hj by flia Hs1.
+         exfalso.
 ...
    remember (max (n - 1) i) as m eqn:Hm.
    specialize (H2 (m - i)) as H4.
