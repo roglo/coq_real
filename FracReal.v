@@ -4968,6 +4968,29 @@ specialize (freal_normalized_cases x) as [H1| H1].
  +specialize (is_9_strict_after_all_9 _ _ H1) as H2; clear H1.
   destruct (LPO_fst (is_9_strict_after (freal xy) i)) as [H1| H1].
   *specialize (is_9_strict_after_all_9 _ _ H1) as H3; clear H1.
+   destruct (lt_dec (S (d2n (freal nxy) i)) rad) as [H4| H4].
+  --simpl.
+    destruct (lt_dec (S (d2n (freal xy) i)) rad) as [H5| H5].
+   ++simpl; f_equal.
+     rewrite Hnxy, Hxy.
+     unfold d2n, freal_unorm_add; simpl.
+     unfold freal_add_to_seq, numbers_to_digits.
+     destruct (LPO_fst (A_ge_1 (freal_add_series nx y) i)) as [H6| H6].
+    **simpl.
+      destruct (LPO_fst (A_ge_1 (freal_add_series x y) i)) as [H7| H7].
+    ---simpl.
+       unfold freal_add_series, sequence_add.
+       rewrite Nat.add_shuffle0; symmetry.
+       rewrite Nat.add_shuffle0; symmetry.
+       rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
+       rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
+       f_equal; f_equal.
+       rewrite Nat.add_shuffle0; symmetry.
+       rewrite Nat.add_shuffle0; symmetry.
+       rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
+       rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
+       f_equal; f_equal.
+       specialize (A_ge_1_add_series_all_true_if _ _ _ H7) as H8.
 ...
    remember (max (n - 1) i) as m eqn:Hm.
    specialize (H2 (m - i)) as H4.
