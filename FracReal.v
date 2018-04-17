@@ -4988,7 +4988,27 @@ specialize (freal_normalized_cases x) as [H1| H1].
          destruct Hwhi as [Hwhi| Hwhi]; [ flia Hwhi Hin | ].
          rewrite <- Hin in Hwhi.
          rewrite Hwhi; simpl; rewrite <- Nat.add_1_r.
-         specialize (A_ge_1_add_series_all_true_if _ _ _ H7) as H8.
+         specialize (A_ge_1_add_series_all_true_if _ _ _ H6) as H8.
+         destruct H8 as [H8| [H8| H8]].
+      ----specialize (H8 0) as H9.
+          rewrite Nat.add_0_r in H9.
+          rewrite Hwhi in H9; simpl in H9; rewrite <- Nat.add_1_r in H9.
+          rewrite H9.
+          rewrite Nat.div_small; [ | flia Hr ].
+          rewrite Nat.div_small; [ easy | flia H9 ].
+      ----destruct H8 as (H8x, H8y).
+          specialize (H8x n).
+          specialize (Hnaft (i + 1)).
+          replace (n + (i + 1)) with (i + n + 1) in Hnaft by flia.
+          rewrite Hnaft in H8x.
+          flia Hr H8x.
+      ----destruct H8 as (j & Hbefj & Hwhij & Haftjn & Haftj).
+          specialize (Haftjn n).
+          specialize (Hnaft (i + j + 2)).
+          replace (n + (i + j + 2)) with (i + j + n + 2) in Hnaft by flia.
+          rewrite Hnaft in Haftjn.
+          flia Hr Haftjn.
+     +++idtac.
 ...
    remember (max (n - 1) i) as m eqn:Hm.
    specialize (H2 (m - i)) as H4.
