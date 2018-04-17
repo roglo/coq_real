@@ -4492,15 +4492,16 @@ Theorem A_gt_1_add_series_false_if {r : radix} : ∀ x y i j,
        (∃ k, fd2n x (i + j + k + 2) ≠ rad - 1) ∨
        (∃ k, fd2n y (i + j + k + 2) ≠ rad - 1)).
 Proof.
-intros * Hxy.
-specialize (freal_add_series_le_twice_pred x y) as H1.
+intros *.
+specialize (freal_add_series_le_twice_pred x y) as Hur.
+intros Hxy.
 split.
 -apply A_ge_1_false_iff in Hxy.
  remember (rad * (i + j + 3)) as n eqn:Hn.
  remember (n - i - 1) as s eqn:Hs.
  move s before n.
  replace (n - i - j - 2) with (s - S j) in Hxy by flia Hs.
- destruct (lt_dec (nA i n (freal_add_series x y)) (rad ^ s)) as [H2| H2].
+ destruct (lt_dec (nA i n (freal_add_series x y)) (rad ^ s)) as [H1| H1].
  +rewrite Nat.mod_small in Hxy; [ | easy ].
 ...
 
