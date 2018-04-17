@@ -5105,6 +5105,10 @@ specialize (freal_normalized_cases x) as [H1| H1].
            rewrite Hnaft in Haftjn.
            flia Hr Haftjn.
     ---destruct H7 as (j & Hjj & Hj); simpl.
+       apply A_ge_1_false_iff in Hj.
+       remember (rad * (i + j + 3)) as n1 eqn:Hn1.
+       remember (n1 - i - 1) as s1 eqn:Hs1.
+       move s1 before n1.
 
 ...
    remember (max (n - 1) i) as m eqn:Hm.
