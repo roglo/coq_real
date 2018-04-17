@@ -4481,6 +4481,20 @@ destruct H2 as [H2| [H2| H2]].
  1,2: unfold fd2n in Haft |-*; flia Haft H3 H4.
 Qed.
 
+Theorem A_gt_1_add_series_false_if {r : radix} : ∀ x y i j,
+  A_ge_1 (freal_add_series x y) i j = false
+  → (∃ k, fd2n x (i + k + 1) + fd2n y (i + k + 1) ≠ rad - 1) ∧
+     ((∃ k, fd2n x (i + k + 1) ≠ rad - 1) ∨
+      (∃ k, fd2n y (i + k + 1) ≠ rad - 1)) ∧
+     (∀ j,
+       (∃ k, k < j ∨ fd2n x (i + k + 1) + fd2n y (i + k + 1) ≠ rad - 1) ∨
+       fd2n x (i + j + 1) + fd2n y (i + j + 1) ≠ rad - 2 ∨
+       (∃ k, fd2n x (i + j + k + 2) ≠ rad - 1) ∨
+       (∃ k, fd2n y (i + j + k + 2) ≠ rad - 1)).
+Proof.
+intros * Hxy.
+...
+
 Theorem A_ge_1_all_true_for_sum_and_sum_norm_l {r : radix} : ∀ x y i n s,
   let u := freal_add_series (freal_normalize x) y in
   let v := freal_add_series x y in
@@ -5119,6 +5133,8 @@ specialize (freal_normalized_cases x) as [H1| H1].
        f_equal; f_equal.
        now apply add_series_plus_carry_norm_not_norm with (n0 := n).
     ---destruct H7 as (j & Hjj & Hj); simpl.
+Check A_ge_1_add_series_all_true_if.
+...
        remember (rad * (i + j + 3)) as n1 eqn:Hn1.
        remember (n1 - i - 1) as s1 eqn:Hs1.
        move s1 before n1.
