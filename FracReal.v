@@ -5123,7 +5123,17 @@ specialize (freal_normalized_cases x) as [H1| H1].
        remember (rad * (i + j + 3)) as n1 eqn:Hn1.
        remember (n1 - i - 1) as s1 eqn:Hs1.
        move s1 before n1.
-
+       rewrite nA_freal_add_series in Hj |-*.
+       unfold freal_add_series, sequence_add.
+       do 3 rewrite <- Nat.add_assoc.
+       rewrite Nat.add_comm; symmetry.
+       rewrite Nat.add_comm; symmetry.
+       do 3 rewrite <- Nat.add_assoc.
+       rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+       rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+       f_equal; f_equal.
+       rewrite Nat.add_assoc, Nat.add_comm, Nat.add_assoc; symmetry.
+       rewrite Nat.add_comm; symmetry.
 ...
    remember (max (n - 1) i) as m eqn:Hm.
    specialize (H2 (m - i)) as H4.
