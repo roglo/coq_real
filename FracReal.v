@@ -4508,7 +4508,9 @@ split.
     rewrite Hn.
     destruct rad; [ easy | simpl; flia ].
   }
-  induction j.
+  clear Hn.
+  revert i n s Hs Hin Hxy.
+  induction j; intros.
   *exists 0.
    rewrite Nat.add_0_r.
    intros H1.
@@ -4517,8 +4519,7 @@ split.
    unfold freal_add_series at 1, sequence_add.
    rewrite H1.
    replace (n - i - 2) with (s - 1) by flia Hs.
-   rewrite Nat.pow_1_r.
-   flia.
+   rewrite Nat.pow_1_r; flia.
   *idtac.
 ...
 
