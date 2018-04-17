@@ -5119,10 +5119,13 @@ specialize (freal_normalized_cases x) as [H1| H1].
        f_equal; f_equal.
        now apply add_series_plus_carry_norm_not_norm with (n0 := n).
     ---destruct H7 as (j & Hjj & Hj); simpl.
-       apply A_ge_1_false_iff in Hj.
        remember (rad * (i + j + 3)) as n1 eqn:Hn1.
        remember (n1 - i - 1) as s1 eqn:Hs1.
        move s1 before n1.
+       apply A_ge_1_false_iff in Hj.
+       rewrite <- Hn1, <- Hs1 in Hj.
+       replace (n1 - i - j - 2) with (s1 - S j) in Hj by flia Hs1.
+...
        assert (Hijn1 : i + j + 1 < n1 - 1). {
          rewrite Hn1.
          destruct rad; [ easy | simpl; flia ].
@@ -5150,7 +5153,6 @@ specialize (freal_normalized_cases x) as [H1| H1].
           as [H8| H8].
      ****exfalso.
          rewrite Nat.mod_small in Hj; [ | easy ].
-         replace (n1 - i - j - 2) with (s1 - S j) in Hj by flia Hs1.
          destruct Hwhi as [Hwhi| Hwhi]; [ now rewrite Hwhi in H7 | ].
          specialize (A_ge_1_add_series_all_true_if _ _ _ H6) as H9.
          destruct H9 as [H9| H9].
