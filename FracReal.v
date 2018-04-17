@@ -5123,6 +5123,10 @@ specialize (freal_normalized_cases x) as [H1| H1].
        remember (rad * (i + j + 3)) as n1 eqn:Hn1.
        remember (n1 - i - 1) as s1 eqn:Hs1.
        move s1 before n1.
+       assert (Hijn1 : i + j + 1 < n1 - 1). {
+         rewrite Hn1.
+         destruct rad; [ easy | simpl; flia ].
+       }
        rewrite nA_freal_add_series in Hj |-*.
        unfold freal_add_series, sequence_add.
        do 3 rewrite <- Nat.add_assoc.
@@ -5154,6 +5158,37 @@ specialize (freal_normalized_cases x) as [H1| H1].
           unfold freal_add_series, sequence_add in Hj.
           destruct n; [ flia H7 | ].
           replace (S n - 1) with n in Hbef, Hwhi, H7 by flia.
+          destruct (lt_dec (n1 - 1) n) as [H10| H10].
+      +++++apply Nat.nle_gt in Hj; apply Hj; clear Hj.
+           rewrite nA_split with (e := i + j + 2).
+       *****unfold nA at 1.
+            replace (i + j + 2 - 1) with (i + 1 + j) by flia.
+            rewrite summation_rtl.
+            rewrite summation_shift; [ | flia ].
+            replace (i + 1 + j - (i + 1)) with j by flia.
+            rewrite power_summation_sub_1; [ | easy ].
+            rewrite summation_mul_distr_l.
+            replace (n1 - (i + j + 2)) with (s1 - S j) by flia Hs1.
+            eapply le_trans; [ | apply le_plus_l ].
+            apply Nat.mul_le_mono_r.
+            apply (@summation_le_compat _ nat_ord_ring).
+            intros k Hk; simpl; unfold Nat.le.
+            replace (i + 1 + j + (i + 1) - (i + 1 + k)) with (i + 1 + j - k)
+              by flia.
+            replace (i + 1 + j - (i + 1 + j - k)) with k by flia Hk.
+            apply Nat.mul_le_mono_r.
+            specialize (H9 (j - k)) as H11.
+            replace (i + (j - k) + 1) with (i + 1 + j - k) in H11 by flia Hk.
+            assert (H : i + 1 + j - k < n). {
+              eapply lt_trans; [ | apply H10 ].
+              rewrite Hn1.
+              destruct rad; [ easy | simpl; flia ].
+            }
+            specialize (Hbef _ H) as H12; clear H.
+            unfold fd2n in H11 |-*.
+            now rewrite <- H12, H11.
+       *****split; [ flia | flia Hijn1 ].
+      +++++apply Nat.nlt_ge in H10.
 ...
 
 Theorem freal_add_assoc {r : radix} : ∀ x y z,
