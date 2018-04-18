@@ -4494,6 +4494,12 @@ Theorem nA_add_no_pred_rad {r : radix} : ∀ x y i j k n s it a,
   → freal_add_series x y (i + 1 + k) ≠ rad - 1.
 Proof.
 intros *.
+(*
+ suggestion:
+  → (∀ l, l < a → freal_add_series x y (i + l) = rad - 1)
+  → k = first_such_that (is_not_9_seq_from_add x y (i + 1)) it (a + 1)
+*)
+...
 specialize radix_ge_2 as Hr.
 intros Hn Hs Hxy Hit Hbef Hk.
 revert i j k n s a Hn Hs Hxy Hbef Hit Hk.
