@@ -4507,7 +4507,9 @@ split.
     rewrite Hn.
     destruct rad; [ easy | simpl; flia ].
   }
-  clear H1 Hn.
+  clear H1.
+...
+  clear Hn.
   revert i n s Hs Hin Hxy.
   induction j; intros.
   *exists 0.
