@@ -4481,7 +4481,6 @@ destruct H2 as [H2| [H2| H2]].
  1,2: unfold fd2n in Haft |-*; flia Haft H3 H4.
 Qed.
 
-(*
 Definition is_not_9_seq_from_add {r : radix} x y i k :=
    if Nat.eq_dec (freal_add_series x y (i + k)) (rad - 1) then false else true.
 
@@ -4489,7 +4488,7 @@ Theorem glop {r : radix} : ∀ x y i j k n s it a,
   n = rad * (i + j + 3)
   → s = n - i - 1
   → nA i n (freal_add_series x y) < (rad ^ S j - 1) * rad ^ (s - S j)
-  → j + 1 - a ≤ it
+  → j < it + a
   → (∀ l, l ≤ a → freal_add_series x y (i + l) = rad - 1)
   → k = first_such_that (is_not_9_seq_from_add x y (i + 1)) it a
   → freal_add_series x y (i + k) ≠ rad - 1.
@@ -4497,12 +4496,13 @@ Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hn Hs Hxy Hit Hbef Hk.
-...
 revert i j k n s a Hn Hs Hxy Hbef Hit Hk.
 induction it; intros.
-apply Nat.le_0_r in Hit.
-apply Nat.sub_0_le in Hit.
-simpl in Hk; subst k.
+-simpl in Hit.
+ destruct a; [ flia Hit | ].
+ simpl in Hk; subst k.
+(* faux *)
+...
 
 ; [ flia Hit | ].
 simpl in Hk.
@@ -4541,11 +4541,23 @@ Theorem glop {r : radix} : ∀ x y i j,
   → ∃ k : nat, freal_add_series x y (i + k + 1) ≠ rad - 1.
 Proof.
 intros * Hur Hxy.
-...
+exists (first_such_that (is_not_9_seq_from_add x y i) j 0).
+destruct j.
+-apply A_ge_1_false_iff in Hxy.
+ rewrite Nat.add_0_r, Nat.sub_0_r, Nat.pow_1_r in Hxy.
+ remember (rad * (i + 3)) as n eqn:Hn.
+ remember (n - i - 1) as s eqn:Hs.
+ move s before n.
+ simpl; rewrite Nat.add_0_r.
+ intros H1.
+ apply Nat.nle_gt in Hxy; apply Hxy; clear Hxy.
+ rewrite nA_split_first.
+ +rewrite H1.
+Abort.
 
 Theorem A_gt_1_add_series_false_if {r : radix} : ∀ x y i j,
   A_ge_1 (freal_add_series x y) i j = false
-  → (∃ k, fd2n x (i + k + 1) + fd2n y (i + k + 1) ≠ rad - 1) ∧
+  → (∃ k, freal_add_series x y (i + k + 1) ≠ rad - 1) ∧
      ((∃ k, fd2n x (i + k + 1) ≠ rad - 1) ∨
       (∃ k, fd2n y (i + k + 1) ≠ rad - 1)) ∧
      (∀ j,
@@ -4558,9 +4570,7 @@ intros *.
 specialize (freal_add_series_le_twice_pred x y) as Hur.
 intros Hxy.
 split.
--idtac.
-...
- apply A_ge_1_false_iff in Hxy.
+-apply A_ge_1_false_iff in Hxy.
  remember (rad * (i + j + 3)) as n eqn:Hn.
  remember (n - i - 1) as s eqn:Hs.
  move s before n.
