@@ -4484,7 +4484,7 @@ Qed.
 Definition is_not_9_seq_from_add {r : radix} x y i k :=
    if Nat.eq_dec (freal_add_series x y (i + k)) (rad - 1) then false else true.
 
-Theorem glop {r : radix} : ∀ x y i j k n s it a,
+Theorem nA_add_no_pred_rad {r : radix} : ∀ x y i j k n s it a,
   n = rad * (i + j + 3)
   → s = n - i - 1
   → nA i n (freal_add_series x y) < (rad ^ S j - 1) * rad ^ (s - S j)
@@ -4508,7 +4508,6 @@ induction it; intros.
    destruct rad; [ easy | simpl; flia ].
  }
  unfold nA.
-...
  rewrite summation_split with (e := i + j + 1); [ | flia Hin ].
  apply le_plus_trans.
  rewrite summation_rtl.
@@ -4524,10 +4523,11 @@ induction it; intros.
  replace (n - 1 - (i + j - k + 1)) with (k + (s - S j)) by flia Hk Hin Hs.
  rewrite <- Nat.mul_assoc, <- Nat.pow_add_r.
  apply Nat.mul_le_mono_r.
- replace (i + j - k + 1) with (i + S (j - k)) by flia Hk.
- destruct (Nat.eq_dec a (j - k)) as [H2| H2].
+ replace (i + j - k + 1) with (i + 1 + (j - k)) by flia Hk.
+ destruct (Nat.eq_dec (S a) (j - k)) as [H2| H2].
  +now rewrite <- H2, H1.
- +rewrite Hbef; [ easy | flia Hit H2 ].
+ +rewrite <- Nat.add_assoc.
+  rewrite Hbef; [ easy | flia Hit H2 ].
 -simpl in Hk.
  unfold is_not_9_seq_from_add in Hk at 1.
  destruct (Nat.eq_dec (freal_add_series x y (i + 1 + a)) (rad - 1))
@@ -4542,29 +4542,8 @@ induction it; intros.
   }
   replace (S it + a) with (it + S a) in Hit by flia.
   now specialize (H2 H Hit Hk); clear H.
- +subst k.
-(* faux *)
-...
-
-Theorem glop {r : radix} : ∀ x y i j,
-  (∀ i, freal_add_series x y i ≤ 2 * (rad - 1))
-  → A_ge_1 (freal_add_series x y) i j = false
-  → ∃ k : nat, freal_add_series x y (i + k + 1) ≠ rad - 1.
-Proof.
-intros * Hur Hxy.
-exists (first_such_that (is_not_9_seq_from_add x y i) j 0).
-destruct j.
--apply A_ge_1_false_iff in Hxy.
- rewrite Nat.add_0_r, Nat.sub_0_r, Nat.pow_1_r in Hxy.
- remember (rad * (i + 3)) as n eqn:Hn.
- remember (n - i - 1) as s eqn:Hs.
- move s before n.
- simpl; rewrite Nat.add_0_r.
- intros H1.
- apply Nat.nle_gt in Hxy; apply Hxy; clear Hxy.
- rewrite nA_split_first.
- +rewrite H1.
-Abort.
+ +now subst k.
+Qed.
 
 Theorem A_gt_1_add_series_false_if {r : radix} : ∀ x y i j,
   A_ge_1 (freal_add_series x y) i j = false
@@ -4586,6 +4565,21 @@ split.
  remember (n - i - 1) as s eqn:Hs.
  move s before n.
  replace (n - i - j - 2) with (s - S j) in Hxy by flia Hs.
+ destruct (lt_dec (nA i n (freal_add_series x y)) (rad ^ s)) as [H1| H1].
+ +rewrite Nat.mod_small in Hxy; [ | easy ].
+  remember (first_such_that (is_not_9_seq_from_add x y (i + 1)) j 1) as k eqn:Hk.
+  specialize (nA_add_no_pred_rad x y i j k n s j 1 Hn Hs Hxy) as H2.
+  assert (H : j < j + 1) by flia.
+  specialize (H2 H); clear H.
+  assert (H : ∀ l, l ≤ 1 → freal_add_series x y (i + l) = rad - 1). {
+    intros l Hl.
+(* pute vierge *)
+(* mmm... est-ce que je gourre pas avec le j de l'hypothèse Hxy ? *)
+
+...
+-apply A_ge_1_false_iff in Hxy.
+
+
  destruct (lt_dec (nA i n (freal_add_series x y)) (rad ^ s)) as [H1| H1].
  +rewrite Nat.mod_small in Hxy; [ | easy ].
   assert (Hin : i + j + 1 ≤ n - 1). {
