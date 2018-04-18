@@ -4481,6 +4481,37 @@ destruct H2 as [H2| [H2| H2]].
  1,2: unfold fd2n in Haft |-*; flia Haft H3 H4.
 Qed.
 
+Definition is_not_9_seq_from_add {r : radix} x y i k :=
+   if Nat.eq_dec (freal_add_series x y (i + k)) (rad - 1) then false else true.
+
+Theorem glop {r : radix} : ∀ x y i j k n s it a,
+  n = rad * (i + j + 3)
+  → s = n - i - 1
+  → nA i n (freal_add_series x y) < (rad ^ S j - 1) * rad ^ (s - S j)
+  → (∀ l, l < a → freal_add_series x y (i + l) = rad - 1)
+  → j ≤ it
+  → k = first_such_that (is_not_9_seq_from_add x y (i + 1)) it a
+  → freal_add_series x y (i + k + 1) ≠ rad - 1.
+Proof.
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hn Hs Hxy Hbef Hit Hk.
+revert i j k n s a Hn Hs Hxy Hbef Hit Hk.
+induction it; intros.
+-intros H1.
+ apply Nat.le_0_r in Hit; subst j.
+ simpl in Hk; subst a.
+ apply Nat.nle_gt in Hxy; apply Hxy; clear Hxy.
+ rewrite Nat.pow_1_r.
+ assert (Hin : i + 1 ≤ n - 1). {
+   rewrite Hn.
+   destruct rad; [ easy | simpl; flia ].
+ }
+ rewrite nA_split_first; [ | flia Hin ].
+ replace (n - i - 2) with (s - 1) by flia Hs.
+ unfold freal_add_series at 1, sequence_add.
+...
+
 Theorem A_gt_1_add_series_false_if {r : radix} : ∀ x y i j,
   A_ge_1 (freal_add_series x y) i j = false
   → (∃ k, fd2n x (i + k + 1) + fd2n y (i + k + 1) ≠ rad - 1) ∧
@@ -4508,47 +4539,20 @@ split.
     destruct rad; [ easy | simpl; flia ].
   }
   clear H1.
-  destruct j.
-  *exists 0.
+  remember (first_such_that (is_not_9_seq_from_add x y (i + 1)) j 0) as k eqn:Hk.
+  exists k.
+...
+  induction j.
+  *simpl.
    rewrite Nat.add_0_r.
    intros H1.
    apply Nat.nle_gt in Hxy; apply Hxy; clear Hxy.
+   rewrite Nat.pow_1_r.
    rewrite nA_split_first; [ | flia Hin ].
    replace (n - i - 2) with (s - 1) by flia Hs.
    unfold freal_add_series at 1, sequence_add.
-   rewrite H1, Nat.pow_1_r; flia.
-  *destruct j.
-  --destruct (Nat.eq_dec (freal_add_series x y (i + 1)) (rad - 1))
-      as [H1| H1].
-   ++exists 1.
-     intros H2.
-     apply Nat.nle_gt in Hxy; apply Hxy; clear Hxy.
-     rewrite nA_split_first; [ | flia Hin ].
-     replace (n - i - 2) with (s - 1) by flia Hs.
-     rewrite H1.
-     rewrite nA_split_first; [ | flia Hin ].
-     unfold freal_add_series at 1, sequence_add.
-     replace (n - S i - 2) with (s - 2) by flia Hs.
-     replace (i + 1 + 1) with (S i + 1) in H2 by flia.
-     rewrite H2.
-     replace (s - 1) with (1 + (s - 2)) by flia Hs Hin.
-     rewrite Nat.pow_add_r, Nat.mul_assoc.
-     rewrite Nat.add_assoc, <- Nat.mul_add_distr_r.
-     apply le_plus_trans.
-     apply Nat.mul_le_mono_r.
-     rewrite Nat.mul_sub_distr_r.
-     rewrite <- Nat.pow_succ_r; [ | flia ].
-     rewrite Nat.pow_1_r, Nat.mul_1_l.
-     flia.
-   ++exists 0.
-     now rewrite Nat.add_0_r.
-  --destruct j.
-   ++idtac.
-...
-
-   rewrite nA_split with (e := i + 2) in Hxy.
-   unfold nA at 1 in Hxy.
-   rewrite summation_only_one in Hxy.
+   rewrite H1; flia.
+  *simpl.
 ...
 
 Theorem A_ge_1_all_true_for_sum_and_sum_norm_l {r : radix} : ∀ x y i n s,
