@@ -4508,39 +4508,40 @@ induction it; intros.
    destruct rad; [ easy | simpl; flia ].
  }
  unfold nA.
+ rewrite summation_split with (e := i + j + 1); [ | flia Hin ].
+ apply le_plus_trans.
  rewrite summation_rtl.
  rewrite summation_shift; [ | flia Hin ].
- replace (n - 1 - (i + 1)) with (s - 1) by flia Hs.
- rewrite summation_split with (e := j).
- +rewrite power_summation_sub_1; [ | easy ].
-  rewrite summation_mul_distr_l.
-  rewrite summation_mul_distr_r.
+ replace (i + j + 1 - (i + 1)) with j by flia.
+ rewrite power_summation_sub_1; [ | easy ].
+ rewrite summation_mul_distr_l.
+ rewrite summation_mul_distr_r.
+ apply (@summation_le_compat _ nat_ord_ring).
+ intros k Hk.
+ simpl; unfold Nat.le.
+ replace (i + j + 1 + (i + 1) - (i + 1 + k)) with (i + j - k + 1) by flia Hk.
+ replace (n - 1 - (i + j - k + 1)) with (k + (s - S j)) by flia Hk Hin Hs.
+ rewrite <- Nat.mul_assoc, <- Nat.pow_add_r.
+ apply Nat.mul_le_mono_r.
+ replace (i + j - k + 1) with (i + S (j - k)) by flia Hk.
+ destruct (Nat.eq_dec a (j - k)) as [H2| H2].
+ +now rewrite <- H2, H1.
+ +rewrite Hbef; [ easy | flia Hit H2 ].
+-simpl in Hk.
+ unfold is_not_9_seq_from_add in Hk at 1.
+ destruct (Nat.eq_dec (freal_add_series x y (i + 1 + a)) (rad - 1))
+   as [H1| H1].
+ +specialize (IHit i j k n s (S a) Hn Hs Hxy) as H2.
+  assert (H : ∀ l, l < S a → freal_add_series x y (i + l) = rad - 1). {
+    intros l Hl.
 ...
-  apply le_plus_trans.
-  apply (@summation_le_compat _ nat_ord_ring).
-  intros k Hk.
-  simpl; unfold Nat.le.
-  replace (n - 1 + (i + 1) - (i + 1 + k)) with (n - k - 1) by flia.
-  replace (n - 1 - (n - k - 1)) with k by flia Hin Hk.
-  rewrite Nat.mul_shuffle0.
-  apply Nat.mul_le_mono_r.
 
-...
-
-; [ flia Hit | ].
-simpl in Hk.
-unfold is_not_9_seq_from_add in Hk at 1.
-destruct (Nat.eq_dec (freal_add_series x y (i + 1 + a)) (rad - 1))
-  as [H1| H1].
- assert (Hbef' : ∀ l, l ≤ S a → freal_add_series x y (i + l) = rad - 1). {
-   intros l Hl.
-   destruct (Nat.eq_dec l (S a)) as [H2| H2].
-   -subst l.
-    now replace (i + 1 + a) with (i + S a) in H1 by flia.
-   -assert (H : l ≤ a) by flia Hl H2.
-    now specialize (Hbef _ H).
- }
- specialize (IHit i j k n s (S a) Hn Hs Hxy Hbef') as H2.
+    destruct (Nat.eq_dec l (S a)) as [H3| H3].
+    -subst l.
+     now replace (i + 1 + a) with (i + S a) in H1 by flia.
+    -assert (H : l ≤ a) by flia Hl H2.
+     now specialize (Hbef _ H).
+  }
 ...
 -intros H1.
  apply Nat.le_0_r in Hit; subst j.
