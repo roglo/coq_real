@@ -4489,7 +4489,7 @@ Theorem glop {r : radix} : ∀ x y i j k n s it a,
   → s = n - i - 1
   → nA i n (freal_add_series x y) < (rad ^ S j - 1) * rad ^ (s - S j)
   → j < it + a
-  → (∀ l, l ≤ a → freal_add_series x y (i + l) = rad - 1)
+  → (∀ l, l < a → freal_add_series x y (i + l) = rad - 1)
   → k = first_such_that (is_not_9_seq_from_add x y (i + 1)) it a
   → freal_add_series x y (i + k) ≠ rad - 1.
 Proof.
@@ -4501,7 +4501,8 @@ induction it; intros.
 -simpl in Hit.
  destruct a; [ flia Hit | ].
  simpl in Hk; subst k.
-(* faux *)
+ intros H1.
+ apply Nat.nle_gt in Hxy; apply Hxy; clear Hxy.
 ...
 
 ; [ flia Hit | ].
