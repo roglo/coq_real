@@ -4508,20 +4508,42 @@ split.
     destruct rad; [ easy | simpl; flia ].
   }
   clear H1.
-...
-  clear Hn.
-  revert i n s Hs Hin Hxy.
-  induction j; intros.
+  destruct j.
   *exists 0.
    rewrite Nat.add_0_r.
    intros H1.
    apply Nat.nle_gt in Hxy; apply Hxy; clear Hxy.
    rewrite nA_split_first; [ | flia Hin ].
-   unfold freal_add_series at 1, sequence_add.
-   rewrite H1.
    replace (n - i - 2) with (s - 1) by flia Hs.
-   rewrite Nat.pow_1_r; flia.
-  *idtac.
+   unfold freal_add_series at 1, sequence_add.
+   rewrite H1, Nat.pow_1_r; flia.
+  *destruct j.
+  --destruct (Nat.eq_dec (freal_add_series x y (i + 1)) (rad - 1))
+      as [H1| H1].
+   ++exists 1.
+     intros H2.
+     apply Nat.nle_gt in Hxy; apply Hxy; clear Hxy.
+     rewrite nA_split_first; [ | flia Hin ].
+     replace (n - i - 2) with (s - 1) by flia Hs.
+     rewrite H1.
+     rewrite nA_split_first; [ | flia Hin ].
+     unfold freal_add_series at 1, sequence_add.
+     replace (n - S i - 2) with (s - 2) by flia Hs.
+     replace (i + 1 + 1) with (S i + 1) in H2 by flia.
+     rewrite H2.
+     replace (s - 1) with (1 + (s - 2)) by flia Hs Hin.
+     rewrite Nat.pow_add_r, Nat.mul_assoc.
+     rewrite Nat.add_assoc, <- Nat.mul_add_distr_r.
+     apply le_plus_trans.
+     apply Nat.mul_le_mono_r.
+     rewrite Nat.mul_sub_distr_r.
+     rewrite <- Nat.pow_succ_r; [ | flia ].
+     rewrite Nat.pow_1_r, Nat.mul_1_l.
+     flia.
+   ++exists 0.
+     now rewrite Nat.add_0_r.
+  --destruct j.
+   ++idtac.
 ...
 
    rewrite nA_split with (e := i + 2) in Hxy.
