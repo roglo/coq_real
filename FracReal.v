@@ -4481,6 +4481,7 @@ destruct H2 as [H2| [H2| H2]].
  1,2: unfold fd2n in Haft |-*; flia Haft H3 H4.
 Qed.
 
+(*
 Definition is_not_9_seq_from_add {r : radix} x y i k :=
    if Nat.eq_dec (freal_add_series x y (i + k)) (rad - 1) then false else true.
 
@@ -4488,16 +4489,36 @@ Theorem glop {r : radix} : ∀ x y i j k n s it a,
   n = rad * (i + j + 3)
   → s = n - i - 1
   → nA i n (freal_add_series x y) < (rad ^ S j - 1) * rad ^ (s - S j)
-  → (∀ l, l < a → freal_add_series x y (i + l) = rad - 1)
-  → j ≤ it
+  → j + 1 - a ≤ it
+  → (∀ l, l ≤ a → freal_add_series x y (i + l) = rad - 1)
   → k = first_such_that (is_not_9_seq_from_add x y (i + 1)) it a
-  → freal_add_series x y (i + k + 1) ≠ rad - 1.
+  → freal_add_series x y (i + k) ≠ rad - 1.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
-intros Hn Hs Hxy Hbef Hit Hk.
+intros Hn Hs Hxy Hit Hbef Hk.
+...
 revert i j k n s a Hn Hs Hxy Hbef Hit Hk.
 induction it; intros.
+apply Nat.le_0_r in Hit.
+apply Nat.sub_0_le in Hit.
+simpl in Hk; subst k.
+
+; [ flia Hit | ].
+simpl in Hk.
+unfold is_not_9_seq_from_add in Hk at 1.
+destruct (Nat.eq_dec (freal_add_series x y (i + 1 + a)) (rad - 1))
+  as [H1| H1].
+ assert (Hbef' : ∀ l, l ≤ S a → freal_add_series x y (i + l) = rad - 1). {
+   intros l Hl.
+   destruct (Nat.eq_dec l (S a)) as [H2| H2].
+   -subst l.
+    now replace (i + 1 + a) with (i + S a) in H1 by flia.
+   -assert (H : l ≤ a) by flia Hl H2.
+    now specialize (Hbef _ H).
+ }
+ specialize (IHit i j k n s (S a) Hn Hs Hxy Hbef') as H2.
+...
 -intros H1.
  apply Nat.le_0_r in Hit; subst j.
  simpl in Hk; subst a.
@@ -4509,7 +4530,17 @@ induction it; intros.
  }
  rewrite nA_split_first; [ | flia Hin ].
  replace (n - i - 2) with (s - 1) by flia Hs.
+...
  unfold freal_add_series at 1, sequence_add.
+...
+*)
+
+Theorem glop {r : radix} : ∀ x y i j,
+  (∀ i, freal_add_series x y i ≤ 2 * (rad - 1))
+  → A_ge_1 (freal_add_series x y) i j = false
+  → ∃ k : nat, freal_add_series x y (i + k + 1) ≠ rad - 1.
+Proof.
+intros * Hur Hxy.
 ...
 
 Theorem A_gt_1_add_series_false_if {r : radix} : ∀ x y i j,
@@ -4527,7 +4558,9 @@ intros *.
 specialize (freal_add_series_le_twice_pred x y) as Hur.
 intros Hxy.
 split.
--apply A_ge_1_false_iff in Hxy.
+-idtac.
+...
+ apply A_ge_1_false_iff in Hxy.
  remember (rad * (i + j + 3)) as n eqn:Hn.
  remember (n - i - 1) as s eqn:Hs.
  move s before n.
