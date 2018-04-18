@@ -4487,15 +4487,15 @@ Definition is_not_9_seq_from_add {r : radix} x y i k :=
 Theorem nA_add_no_pred_rad {r : radix} : ∀ x y i j k n s it a,
   n = rad * (i + j + 3)
   → s = n - i - 1
-  → nA i n (freal_add_series x y) < (rad ^ S j - 1) * rad ^ (s - S j)
   → j < it + a
+  → nA i n (freal_add_series x y) < (rad ^ S j - 1) * rad ^ (s - S j)
   → (∀ l, l < a → freal_add_series x y (i + 1 + l) = rad - 1)
   → k = first_such_that (is_not_9_seq_from_add x y (i + 1)) it a
   → freal_add_series x y (i + 1 + k) ≠ rad - 1.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
-intros Hn Hs Hxy Hit Hbef Hk.
+intros Hn Hs Hit Hxy Hbef Hk.
 revert i j k n s a Hn Hs Hxy Hbef Hit Hk.
 induction it; intros.
 -simpl in Hit.
@@ -4567,15 +4567,17 @@ split.
  +rewrite Nat.mod_small in Hxy; [ | easy ].
   remember (first_such_that (is_not_9_seq_from_add x y (i + 1)) (j + 1) 0)
     as k eqn:Hk.
-  specialize (nA_add_no_pred_rad x y i j k n s (j + 1) 0 Hn Hs Hxy) as H2.
-  assert (H : j < j + 1 + 0) by flia.
-  specialize (H2 H); clear H.
+  assert (Hj : j < j + 1 + 0) by flia.
+  specialize (nA_add_no_pred_rad x y i j k n s (j + 1) 0 Hn Hs Hj Hxy) as H2.
   assert (H : ∀ l, l < 0 → freal_add_series x y (i + 1 + l) = rad - 1) by easy.
   specialize (H2 H Hk); clear H.
   exists k.
   now rewrite Nat.add_shuffle0 in H2.
  +rewrite Nat_mod_less_small in Hxy.
-  *idtac.
+  *remember (first_such_that (is_not_9_seq_from_add x y (i + 1)) (j + 1) 0)
+     as k eqn:Hk.
+   assert (Hj : j < j + 1 + 0) by flia.
+   specialize (nA_add_no_pred_rad x y i j k n s (j + 1) 0 Hn Hs Hj) as H2.
 ...
 
 Theorem A_ge_1_all_true_for_sum_and_sum_norm_l {r : radix} : ∀ x y i n s,
