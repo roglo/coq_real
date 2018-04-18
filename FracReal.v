@@ -4489,9 +4489,9 @@ Theorem glop {r : radix} : ∀ x y i j k n s it a,
   → s = n - i - 1
   → nA i n (freal_add_series x y) < (rad ^ S j - 1) * rad ^ (s - S j)
   → j < it + a
-  → (∀ l, l < a → freal_add_series x y (i + l) = rad - 1)
+  → (∀ l, l ≤ a → freal_add_series x y (i + l) = rad - 1)
   → k = first_such_that (is_not_9_seq_from_add x y (i + 1)) it a
-  → freal_add_series x y (i + k) ≠ rad - 1.
+  → freal_add_series x y (i + 1 + k) ≠ rad - 1.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
@@ -4508,6 +4508,7 @@ induction it; intros.
    destruct rad; [ easy | simpl; flia ].
  }
  unfold nA.
+...
  rewrite summation_split with (e := i + j + 1); [ | flia Hin ].
  apply le_plus_trans.
  rewrite summation_rtl.
@@ -4532,32 +4533,18 @@ induction it; intros.
  destruct (Nat.eq_dec (freal_add_series x y (i + 1 + a)) (rad - 1))
    as [H1| H1].
  +specialize (IHit i j k n s (S a) Hn Hs Hxy) as H2.
-  assert (H : ∀ l, l < S a → freal_add_series x y (i + l) = rad - 1). {
+  assert (H : ∀ l, l ≤ S a → freal_add_series x y (i + l) = rad - 1). {
     intros l Hl.
-...
-
-    destruct (Nat.eq_dec l (S a)) as [H3| H3].
-    -subst l.
-     now replace (i + 1 + a) with (i + S a) in H1 by flia.
-    -assert (H : l ≤ a) by flia Hl H2.
-     now specialize (Hbef _ H).
+    replace (i + 1 + a) with (i + S a) in H1 by flia.
+    destruct (Nat.eq_dec l (S a)) as [H3| H3]; [ now subst l | ].
+    assert (H : l ≤ a) by flia Hl H3.
+    now specialize (Hbef _ H).
   }
+  replace (S it + a) with (it + S a) in Hit by flia.
+  now specialize (H2 H Hit Hk); clear H.
+ +subst k.
+(* faux *)
 ...
--intros H1.
- apply Nat.le_0_r in Hit; subst j.
- simpl in Hk; subst a.
- apply Nat.nle_gt in Hxy; apply Hxy; clear Hxy.
- rewrite Nat.pow_1_r.
- assert (Hin : i + 1 ≤ n - 1). {
-   rewrite Hn.
-   destruct rad; [ easy | simpl; flia ].
- }
- rewrite nA_split_first; [ | flia Hin ].
- replace (n - i - 2) with (s - 1) by flia Hs.
-...
- unfold freal_add_series at 1, sequence_add.
-...
-*)
 
 Theorem glop {r : radix} : ∀ x y i j,
   (∀ i, freal_add_series x y i ≤ 2 * (rad - 1))
