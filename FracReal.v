@@ -4503,6 +4503,28 @@ induction it; intros.
  simpl in Hk; subst k.
  intros H1.
  apply Nat.nle_gt in Hxy; apply Hxy; clear Hxy.
+ assert (Hin : i + j + 1 ≤ n - 1). {
+   rewrite Hn.
+   destruct rad; [ easy | simpl; flia ].
+ }
+ unfold nA.
+ rewrite summation_rtl.
+ rewrite summation_shift; [ | flia Hin ].
+ replace (n - 1 - (i + 1)) with (s - 1) by flia Hs.
+ rewrite summation_split with (e := j).
+ +rewrite power_summation_sub_1; [ | easy ].
+  rewrite summation_mul_distr_l.
+  rewrite summation_mul_distr_r.
+...
+  apply le_plus_trans.
+  apply (@summation_le_compat _ nat_ord_ring).
+  intros k Hk.
+  simpl; unfold Nat.le.
+  replace (n - 1 + (i + 1) - (i + 1 + k)) with (n - k - 1) by flia.
+  replace (n - 1 - (n - k - 1)) with k by flia Hin Hk.
+  rewrite Nat.mul_shuffle0.
+  apply Nat.mul_le_mono_r.
+
 ...
 
 ; [ flia Hit | ].
