@@ -4604,20 +4604,23 @@ split; [ | split ].
   now rewrite Nat.add_shuffle0 in H2.
  +rewrite Nat_mod_less_small in Hxy.
   *apply Nat.nlt_ge in H1.
-   destruct (Nat.eq_dec (u (i + 1)) (rad - 1)) as [H2| H2].
-   2: now exists 0; rewrite Nat.add_0_r.
-...
-
    assert (Hin : i + j + 1 ≤ n - 1). {
      rewrite Hn.
      destruct rad; [ easy | simpl; flia ].
    }
-   rewrite Nat.mul_sub_distr_r, Nat.mul_1_l in Hxy.
-   rewrite <- Nat.pow_add_r in Hxy.
-   replace (S j + (s - S j)) with s in Hxy by flia Hin Hs.
-   apply Nat.lt_sub_lt_add_l in Hxy.
-   rewrite Nat.add_sub_assoc in Hxy.
-  --idtac.
+   destruct (Nat.eq_dec (u (i + 1)) (rad - 1)) as [H2| H2].
+   2: now exists 0; rewrite Nat.add_0_r.
+   rewrite nA_split_first in H1; [ | flia Hin ].
+   rewrite H2 in H1.
+   replace (n - i - 2) with (s - 1) in H1 by flia Hs.
+   rewrite Nat.mul_sub_distr_r, Nat.mul_1_l in H1.
+   rewrite <- Nat.pow_succ_r in H1; [ | flia ].
+   replace (S (s - 1)) with s in H1 by flia Hin Hs.
+   rewrite <- Nat.add_sub_swap in H1.
+  --apply Nat.add_le_mono_r with (p := rad ^ (s - 1)) in H1.
+    rewrite Nat.sub_add in H1.
+   ++apply Nat.add_le_mono_l in H1.
+...
 ...
   *idtac.
 ...
