@@ -4507,23 +4507,6 @@ induction it; intros.
    rewrite Hn.
    destruct rad; [ easy | simpl; flia ].
  }
- assert (H : nA i n u < rad ^ s). {
-   rewrite nA_split_first; [ | flia Hin ].
-   replace (n - i - 2) with (s - 1) by flia Hs.
-   replace (i + 1) with (i + 1 + 0) by flia.
-   rewrite Hbef; [ | flia ].
-   rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
-   rewrite <- Nat.pow_succ_r; [ | flia ].
-   replace (S (s - 1)) with s by flia Hs Hin.
-   apply Nat.add_lt_mono_r with (p := rad ^ (s - 1)).
-   rewrite <- Nat.add_sub_swap.
-   -rewrite Nat.sub_add.
-    +apply Nat.add_lt_mono_l.
-...
-
-   rewrite Nat_sub_sub_assoc.
-
-Search (_ - _ < _).
 
 ...
  unfold nA.
