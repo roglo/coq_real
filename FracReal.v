@@ -4615,7 +4615,13 @@ Proof.
 intros *.
 intros H1.
 remember (n - i - 1) as s eqn:Hs.
-remember (first_such_that (is_not_seq_same u (i + 1) (rad - 1)) 1 0)
+symmetry in Hs.
+revert n i Hs H1.
+induction s; intros.
+-rewrite Nat.pow_0_r in H1.
+...
+
+remember (first_such_that (is_not_seq_same u (i + 1) (rad - 1)) s 0)
    as k eqn:Hk.
 simpl in Hk.
 unfold is_not_seq_same in Hk.
