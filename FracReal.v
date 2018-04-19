@@ -4612,6 +4612,9 @@ split; [ | split ].
  replace (n - i - j - 2) with (s - S j) in Hxy by flia Hs.
  destruct (lt_dec (nA i n u) (rad ^ s)) as [H1| H1].
  +rewrite Nat.mod_small in Hxy; [ | easy ].
+(* I think it is useless, below, (even if proved) because in the case
+   when u(i+1)=18, nA i n u is bigger than rad^s *)
+...
   remember (first_such_that (is_not_seq_same u (i + 1) (2 * rad - 2)) (j + 1) 0)
     as k eqn:Hk.
   assert (Hj : j < j + 1 + 0) by flia.
