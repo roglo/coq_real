@@ -4608,6 +4608,17 @@ split; [ | split ].
      rewrite Hn.
      destruct rad; [ easy | simpl; flia ].
    }
+Theorem glop {r : radix} : ∀ u i n,
+   rad ^ (n - i - 1) ≤ nA i n u
+  → ∃ k : nat, u (i + k + 1) ≠ rad - 1.
+Proof.
+intros *.
+intros H1.
+remember (n - i - 1) as s eqn:Hs.
+...
+Qed.
+...
+
    destruct (Nat.eq_dec (u (i + 1)) (rad - 1)) as [H2| H2].
    2: now exists 0; rewrite Nat.add_0_r.
    rewrite nA_split_first in H1; [ | flia Hin ].
