@@ -4604,6 +4604,10 @@ split; [ | split ].
   now rewrite Nat.add_shuffle0 in H2.
  +rewrite Nat_mod_less_small in Hxy.
   *apply Nat.nlt_ge in H1.
+   destruct (Nat.eq_dec (u (i + 1)) (rad - 1)) as [H2| H2].
+   2: now exists 0; rewrite Nat.add_0_r.
+...
+
    assert (Hin : i + j + 1 ≤ n - 1). {
      rewrite Hn.
      destruct rad; [ easy | simpl; flia ].
