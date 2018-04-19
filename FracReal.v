@@ -4481,21 +4481,22 @@ destruct H2 as [H2| [H2| H2]].
  1,2: unfold fd2n in Haft |-*; flia Haft H3 H4.
 Qed.
 
-Definition is_not_9_seq_from_add {r : radix} u i k :=
-   if Nat.eq_dec (u (i + k)) (rad - 1) then false else true.
+Definition is_not_seq_same {r : radix} u i rr k :=
+   if Nat.eq_dec (u (i + k)) rr then false else true.
 
-Theorem nA_add_no_pred_rad {r : radix} : ∀ u i j k n s it a,
-  n = rad * (i + j + 3)
+Theorem nA_add_no_same {r : radix} : ∀ u i j k n s it a rr,
+  rad - 1 ≤ rr
+  → n = rad * (i + j + 3)
   → s = n - i - 1
   → j < it + a
   → nA i n u < (rad ^ S j - 1) * rad ^ (s - S j)
-  → (∀ l, l < a → u (i + 1 + l) = rad - 1)
-  → k = first_such_that (is_not_9_seq_from_add u (i + 1)) it a
-  → u (i + 1 + k) ≠ rad - 1.
+  → (∀ l, l < a → u (i + 1 + l) = rr)
+  → k = first_such_that (is_not_seq_same u (i + 1) rr) it a
+  → u (i + 1 + k) ≠ rr.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
-intros Hn Hs Hit Hxy Hbef Hk.
+intros Hrr Hn Hs Hit Hxy Hbef Hk.
 revert i j k n s a Hn Hs Hxy Hbef Hit Hk.
 induction it; intros.
 -simpl in Hit.
@@ -4528,10 +4529,10 @@ induction it; intros.
  +now rewrite <- H2, H1.
  +rewrite Hbef; [ easy | flia Hit H2 ].
 -simpl in Hk.
- unfold is_not_9_seq_from_add in Hk at 1.
- destruct (Nat.eq_dec (u (i + 1 + a)) (rad - 1)) as [H1| H1].
+ unfold is_not_seq_same in Hk at 1.
+ destruct (Nat.eq_dec (u (i + 1 + a)) rr) as [H1| H1].
  +specialize (IHit i j k n s (S a) Hn Hs Hxy) as H2.
-  assert (H : ∀ l, l < S a → u (i + 1 + l) = rad - 1). {
+  assert (H : ∀ l, l < S a → u (i + 1 + l) = rr). {
     intros l Hl.
     destruct (Nat.eq_dec l a) as [H3| H3]; [ now subst l | ].
     assert (H : l < a) by flia Hl H3.
@@ -4542,8 +4543,19 @@ induction it; intros.
  +now subst k.
 Qed.
 
-Definition is_not_18_seq_from_add {r : radix} u i k :=
-   if Nat.eq_dec (u (i + k)) (2 * rad - 2) then false else true.
+Theorem nA_add_no_pred_rad {r : radix} : ∀ u i j k n s it a,
+  n = rad * (i + j + 3)
+  → s = n - i - 1
+  → j < it + a
+  → nA i n u < (rad ^ S j - 1) * rad ^ (s - S j)
+  → (∀ l, l < a → u (i + 1 + l) = rad - 1)
+  → k = first_such_that (is_not_seq_same u (i + 1) (rad - 1)) it a
+  → u (i + 1 + k) ≠ rad - 1.
+Proof.
+intros *.
+intros Hn Hs Hit Hxy Hbef Hk.
+now eapply nA_add_no_same; try eassumption.
+Qed.
 
 Theorem nA_add_no_twice_pred_rad {r : radix} : ∀ u i j k n s it a,
   n = rad * (i + j + 3)
@@ -4551,56 +4563,12 @@ Theorem nA_add_no_twice_pred_rad {r : radix} : ∀ u i j k n s it a,
   → j < it + a
   → nA i n u < (rad ^ S j - 1) * rad ^ (s - S j)
   → (∀ l, l < a → u (i + 1 + l) = 2 * rad - 2)
-  → k = first_such_that (is_not_18_seq_from_add u (i + 1)) it a
+  → k = first_such_that (is_not_seq_same u (i + 1) (2 * rad - 2)) it a
   → u (i + 1 + k) ≠ 2 * rad - 2.
 Proof.
 intros *.
-specialize radix_ge_2 as Hr.
 intros Hn Hs Hit Hxy Hbef Hk.
-revert i j k n s a Hn Hs Hxy Hbef Hit Hk.
-induction it; intros.
--simpl in Hit.
- destruct a; [ flia Hit | ].
- simpl in Hk; subst k.
- intros H1.
- apply Nat.nle_gt in Hxy; apply Hxy; clear Hxy.
- assert (Hin : i + j + 1 ≤ n - 1). {
-   rewrite Hn.
-   destruct rad; [ easy | simpl; flia ].
- }
- unfold nA.
- rewrite summation_split with (e := i + j + 1); [ | flia Hin ].
- apply le_plus_trans.
- rewrite summation_rtl.
- rewrite summation_shift; [ | flia Hin ].
- replace (i + j + 1 - (i + 1)) with j by flia.
- rewrite power_summation_sub_1; [ | easy ].
- rewrite summation_mul_distr_l.
- rewrite summation_mul_distr_r.
- apply (@summation_le_compat _ nat_ord_ring).
- intros k Hk.
- simpl; unfold Nat.le.
- replace (i + j + 1 + (i + 1) - (i + 1 + k)) with (i + j - k + 1) by flia Hk.
- replace (n - 1 - (i + j - k + 1)) with (k + (s - S j)) by flia Hk Hin Hs.
- rewrite <- Nat.mul_assoc, <- Nat.pow_add_r.
- apply Nat.mul_le_mono_r.
- replace (i + j - k + 1) with (i + 1 + (j - k)) by flia Hk.
- destruct (Nat.eq_dec (S a) (j - k)) as [H2| H2].
- +rewrite <- H2, H1; flia Hr.
- +rewrite Hbef; [ flia Hr | flia Hit H2 ].
--simpl in Hk.
- unfold is_not_18_seq_from_add in Hk at 1.
- destruct (Nat.eq_dec (u (i + 1 + a)) (2 * rad - 2)) as [H1| H1].
- +specialize (IHit i j k n s (S a) Hn Hs Hxy) as H2.
-  assert (H : ∀ l, l < S a → u (i + 1 + l) = 2 * rad - 2). {
-    intros l Hl.
-    destruct (Nat.eq_dec l a) as [H3| H3]; [ now subst l | ].
-    assert (H : l < a) by flia Hl H3.
-    now specialize (Hbef _ H).
-  }
-  replace (S it + a) with (it + S a) in Hit by flia.
-  now specialize (H2 H Hit Hk); clear H.
- +now subst k.
+eapply nA_add_no_same; try eassumption; flia.
 Qed.
 
 Theorem A_ge_1_add_series_false_if {r : radix} : ∀ x y i j,
@@ -4626,7 +4594,7 @@ split; [ | split ].
  replace (n - i - j - 2) with (s - S j) in Hxy by flia Hs.
  destruct (lt_dec (nA i n u) (rad ^ s)) as [H1| H1].
  +rewrite Nat.mod_small in Hxy; [ | easy ].
-  remember (first_such_that (is_not_9_seq_from_add u (i + 1)) (j + 1) 0)
+  remember (first_such_that (is_not_seq_same u (i + 1) (rad - 1)) (j + 1) 0)
     as k eqn:Hk.
   assert (Hj : j < j + 1 + 0) by flia.
   specialize (nA_add_no_pred_rad u i j k n s (j + 1) 0 Hn Hs Hj Hxy) as H2.
@@ -4644,7 +4612,7 @@ split; [ | split ].
  replace (n - i - j - 2) with (s - S j) in Hxy by flia Hs.
  destruct (lt_dec (nA i n u) (rad ^ s)) as [H1| H1].
  +rewrite Nat.mod_small in Hxy; [ | easy ].
-  remember (first_such_that (is_not_18_seq_from_add u (i + 1)) (j + 1) 0)
+  remember (first_such_that (is_not_seq_same u (i + 1) (2 * rad - 2)) (j + 1) 0)
     as k eqn:Hk.
   assert (Hj : j < j + 1 + 0) by flia.
   specialize (nA_add_no_twice_pred_rad u i j k n s (j + 1) 0 Hn Hs Hj Hxy) as H2.
