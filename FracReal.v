@@ -4615,7 +4615,15 @@ Proof.
 intros *.
 intros H1.
 remember (n - i - 1) as s eqn:Hs.
+remember (first_such_that (is_not_seq_same u (i + 1) (rad - 1)) 1 0)
+   as k eqn:Hk.
+simpl in Hk.
+unfold is_not_seq_same in Hk.
+rewrite Nat.add_0_r in Hk.
+destruct (Nat.eq_dec (u (i + 1)) (rad - 1)) as [H2| H2].
+-idtac.
 ...
+-now exists 0; rewrite Nat.add_0_r.
 Qed.
 ...
 
