@@ -4603,8 +4603,20 @@ split; [ | split ].
   exists k.
   now rewrite Nat.add_shuffle0 in H2.
  +rewrite Nat_mod_less_small in Hxy.
-  *admit.
-  *admit.
+  *apply Nat.nlt_ge in H1.
+   assert (Hin : i + j + 1 ≤ n - 1). {
+     rewrite Hn.
+     destruct rad; [ easy | simpl; flia ].
+   }
+   rewrite Nat.mul_sub_distr_r, Nat.mul_1_l in Hxy.
+   rewrite <- Nat.pow_add_r in Hxy.
+   replace (S j + (s - S j)) with s in Hxy by flia Hin Hs.
+   apply Nat.lt_sub_lt_add_l in Hxy.
+   rewrite Nat.add_sub_assoc in Hxy.
+  --idtac.
+...
+  *idtac.
+...
 -apply A_ge_1_false_iff in Hxy.
  remember (rad * (i + j + 3)) as n eqn:Hn.
  remember (n - i - 1) as s eqn:Hs.
