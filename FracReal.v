@@ -4613,11 +4613,63 @@ Theorem glop {r : radix} : ∀ u i n,
   → ∃ k : nat, u (i + k + 1) ≠ rad - 1.
 Proof.
 intros *.
+specialize radix_ge_2 as Hr.
 intros H1.
 remember (n - i - 1) as s eqn:Hs.
 symmetry in Hs.
+destruct s.
+-rewrite Nat.pow_0_r in H1.
+ unfold nA in H1.
+ rewrite summation_empty in H1; [ | flia Hs ].
+ simpl in H1; flia H1.
+(*
+-unfold nA in H1.
+ replace (n - 1) with (i + 1 + s) in H1 by flia Hs.
+ rewrite summation_shift in H1; [ | flia ].
+ replace (i + 1 + s - (i + 1)) with s in H1 by flia.
+ rewrite power_summation in H1; [ | easy ].
+...
+*)
+-destruct s.
+ +rewrite Nat.pow_1_r in H1.
+  unfold nA in H1.
+  replace (n - 1) with (i + 1) in H1 by flia Hs.
+  rewrite summation_only_one in H1.
+  rewrite Nat.sub_diag, Nat.pow_0_r, Nat.mul_1_r in H1.
+  exists 0; rewrite Nat.add_0_r.
+  intros H2; rewrite H2 in H1.
+  flia Hr H1.
+ +unfold nA in H1.
+  replace (n - 1) with (i + 1 + S s) in H1 by flia Hs.
+  rewrite summation_shift in H1; [ | flia ].
+  replace (i + 1 + S s - (i + 1)) with (S s) in H1 by flia.
+  destruct s.
+  *unfold summation in H1.
+   simpl in H1.
+   rewrite Nat.mul_1_r, Nat.add_0_r in H1.
+   replace (i + 1 + 1 - (i + 1)) with 1 in H1 by flia.
+   rewrite Nat.sub_diag, Nat.pow_0_r, Nat.mul_1_r, Nat.add_0_r in H1.
+   rewrite Nat.pow_1_r in H1.
+   destruct (Nat.eq_dec (u (i + 1)) (rad - 1)) as [H2| H2].
+  --rewrite H2 in H1.
+    destruct (Nat.eq_dec (u (i + 1 + 1)) (rad - 1)) as [H3| H3].
+   ++rewrite H3 in H1.
+     assert (H : 4 ≤ rad * rad). {
+       destruct rad as [| rr]; [ easy | ].
+       destruct rr; [ easy | simpl; flia ].
+     }
+     rewrite Nat.mul_sub_distr_r, Nat.mul_1_l in H1.
+     rewrite Nat.add_sub_assoc in H1; [ | easy ].
+     rewrite Nat.sub_add in H1; [ flia Hr H1 H | ].
+     destruct rad; [ easy | simpl; flia ].
+   ++now exists 1.
+  --exists 0; now rewrite Nat.add_0_r.
+  *idtac.
+
+...
 revert n i Hs H1.
-induction s; intros.
+induction s as (s, IHs) using lt_wf_rec; intros.
+destruct s.
 -rewrite Nat.pow_0_r in H1.
  unfold nA in H1.
  rewrite summation_empty in H1; [ | flia Hs ].
