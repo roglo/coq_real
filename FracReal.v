@@ -4654,11 +4654,10 @@ Qed.
 Theorem A_ge_1_add_series_false_if {r : radix} : ∀ x y i j,
   A_ge_1 (freal_add_series x y) i j = false
   → (∃ k, freal_add_series x y (i + k + 1) ≠ rad - 1) ∧
-     ((∃ k, fd2n x (i + k + 1) ≠ rad - 1) ∨
-      (∃ k, fd2n y (i + k + 1) ≠ rad - 1)) ∧
+     (∃ k, freal_add_series x y (i + k + 1) ≠ 2 * rad - 2) ∧
      (∀ j,
-       (∃ k, k < j ∨ fd2n x (i + k + 1) + fd2n y (i + k + 1) ≠ rad - 1) ∨
-       fd2n x (i + j + 1) + fd2n y (i + j + 1) ≠ rad - 2 ∨
+       (∃ k, k < j ∨ freal_add_series x y (i + k + 1) ≠ rad - 1) ∨
+       freal_add_series x y (i + j + 1) ≠ rad - 2 ∨
        (∃ k, fd2n x (i + j + k + 2) ≠ rad - 1) ∨
        (∃ k, fd2n y (i + j + k + 2) ≠ rad - 1)).
 Proof.
@@ -4698,23 +4697,30 @@ split; [ | split ].
  replace (n - i - j - 2) with (s - S j) in Hxy by flia Hs.
  destruct (lt_dec (nA i n u) (rad ^ s)) as [H1| H1].
  +rewrite Nat.mod_small in Hxy; [ | easy ].
-  specialize (nA_lt_rad_pow_exist_not_twice_pred_rad u i n) as H2.
   assert (Hin : i + 1 ≤ n - 1). {
     rewrite Hn.
     destruct rad; [ easy | simpl; flia ].
   }
-  specialize (H2 Hin).
-  rewrite <- Hs in H2.
-  specialize (H2 H1) as (k, Hk).
-  destruct (Nat.eq_dec (fd2n x (i + 1 + k)) (rad - 1)) as [H3| H3].
-  *right; exists k.
-   intros H4; apply Hk.
-   rewrite Hu; unfold freal_add_series, sequence_add.
-   rewrite Nat.add_shuffle0 in H3.
-   rewrite H3, H4; flia.
-  *left; exists k.
-   now rewrite Nat.add_shuffle0 in H3.
+  rewrite Hs in H1.
+  now apply (nA_lt_rad_pow_exist_not_twice_pred_rad u i n).
  +idtac.
+...
+  remember
+    (first_such_that (is_not_seq_same u (i + 1) (2 * rad - 2)) (j + 1) 0)
+    as k eqn:Hk.
+  specialize (nA_add_no_same u i j k n s (j + 1) 0 (2 * rad - 2)) as H2.
+  assert (H : rad - 1 ≤ 2 * rad - 2) by flia.
+  specialize (H2 H); clear H.
+  specialize (H2 Hn Hs).
+  assert (H : j < j + 1 + 0) by flia.
+  specialize (H2 H); clear H.
+
+...
+  specialize (nA_add_no_pred_rad u i j k n s (j + 1) 0 Hn Hs Hj Hxy) as H2.
+  assert (H : ∀ l, l < 0 → u (i + 1 + l) = rad - 1) by easy.
+  specialize (H2 H Hk); clear H.
+  exists k.
+  now rewrite Nat.add_shuffle0 in H2.
 ...
 
 Theorem A_ge_1_all_true_for_sum_and_sum_norm_l {r : radix} : ∀ x y i n s,
