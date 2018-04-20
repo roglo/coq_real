@@ -4619,17 +4619,23 @@ symmetry in Hs.
 revert n i Hs H1.
 induction s; intros.
 -rewrite Nat.pow_0_r in H1.
+ unfold nA in H1.
+ rewrite summation_empty in H1; [ | flia Hs ].
+ simpl in H1; flia H1.
+-destruct n; [ flia Hs | ].
+ assert (H : n - i - 1 = s) by flia Hs.
+ specialize (IHs n i H) as H2.
+ rewrite nA_split_last in H1.
+ +replace (S n - 1) with n in H1 by flia.
+  destruct (le_dec (rad ^ s) (nA i n u)) as [H3| H3].
+  *now apply H2.
+  *apply Nat.nle_gt in H3.
+   simpl in H1.
+   exists s.
+(* chais pas *)
 ...
-
-remember (first_such_that (is_not_seq_same u (i + 1) (rad - 1)) s 0)
-   as k eqn:Hk.
-simpl in Hk.
-unfold is_not_seq_same in Hk.
-rewrite Nat.add_0_r in Hk.
-destruct (Nat.eq_dec (u (i + 1)) (rad - 1)) as [H2| H2].
--idtac.
+   replace (i + s + 1) with n by flia H.
 ...
--now exists 0; rewrite Nat.add_0_r.
 Qed.
 ...
 
