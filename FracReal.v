@@ -4608,6 +4608,49 @@ destruct s.
  +flia Hs.
 Qed.
 
+Theorem nA_lt_rad_pow_exist_not_twice_pred_rad {r : radix} : ∀ u i n,
+  i + 1 ≤ n - 1
+  → nA i n u < rad ^ (n - i - 1)
+  → ∃ k : nat, u (i + k + 1) ≠ 2 * rad - 2.
+Proof.
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hin H1.
+remember (n - i - 1) as s eqn:Hs.
+symmetry in Hs.
+revert n i Hs Hin H1.
+induction s as (s, IHs) using lt_wf_rec; intros.
+destruct s; [ flia Hs Hin | ].
+rewrite nA_split_first in H1.
+-destruct (Nat.eq_dec (u (i + 1)) (2 * rad - 2)) as [H2| H2].
+ +rewrite H2 in H1.
+  replace (n - i - 2) with s in H1 by flia Hs.
+  rewrite Nat.mul_sub_distr_r in H1.
+  apply Nat.add_lt_mono_r with (p := 2 * rad ^ s) in H1.
+  rewrite <- Nat.add_sub_swap in H1.
+  *rewrite Nat.sub_add in H1.
+  --rewrite <- Nat.mul_assoc in H1.
+    rewrite <- Nat.pow_succ_r in H1; [ | flia ].
+    replace (2 * rad ^ S s) with (rad ^ S s + rad ^ S s) in H1 by flia.
+    rewrite <- Nat.add_assoc in H1.
+    apply Nat.add_lt_mono_l in H1.
+    exfalso; apply Nat.nle_gt in H1; apply H1.
+    apply le_trans with (m := rad ^ S s); [ | flia ].
+    specialize (Nat.pow_nonzero rad s radix_ne_0) as H3.
+    rewrite Nat.pow_succ_r; [ | flia ].
+    now apply Nat.mul_le_mono_r.
+  --apply le_trans with (m := 2 * rad * rad ^ s); [ | flia ].
+    specialize (Nat.pow_nonzero rad s radix_ne_0) as H3.
+    rewrite Nat.mul_shuffle0.
+    now apply Nat_mul_le_pos_r.
+  *apply le_trans with (m := 2 * rad * rad ^ s); [ | flia ].
+   specialize (Nat.pow_nonzero rad s radix_ne_0) as H3.
+   rewrite Nat.mul_shuffle0.
+   now apply Nat_mul_le_pos_r.
+  +exists 0; now rewrite Nat.add_0_r.
+-flia Hs.
+Qed.
+
 Theorem A_ge_1_add_series_false_if {r : radix} : ∀ x y i j,
   A_ge_1 (freal_add_series x y) i j = false
   → (∃ k, freal_add_series x y (i + k + 1) ≠ rad - 1) ∧
@@ -4653,29 +4696,24 @@ split; [ | split ].
  remember (n - i - 1) as s eqn:Hs.
  move s before n.
  replace (n - i - j - 2) with (s - S j) in Hxy by flia Hs.
-...
  destruct (lt_dec (nA i n u) (rad ^ s)) as [H1| H1].
  +rewrite Nat.mod_small in Hxy; [ | easy ].
-(* I think it is useless, below, (even if proved) because in the case
-   when u(i+1)=18, nA i n u is bigger than rad^s *)
-...
-  remember (first_such_that (is_not_seq_same u (i + 1) (2 * rad - 2)) (j + 1) 0)
-    as k eqn:Hk.
-  assert (Hj : j < j + 1 + 0) by flia.
-  specialize (nA_add_no_twice_pred_rad u i j k n s (j + 1) 0 Hn Hs Hj Hxy) as H2.
-  assert (H : ∀ l, l < 0 → u (i + 1 + l) = 2 * rad - 2) by easy.
-  specialize (H2 H Hk); clear H.
+  specialize (nA_lt_rad_pow_exist_not_twice_pred_rad u i n) as H2.
+  assert (Hin : i + 1 ≤ n - 1). {
+    rewrite Hn.
+    destruct rad; [ easy | simpl; flia ].
+  }
+  specialize (H2 Hin).
+  rewrite <- Hs in H2.
+  specialize (H2 H1) as (k, Hk).
   destruct (Nat.eq_dec (fd2n x (i + 1 + k)) (rad - 1)) as [H3| H3].
   *right; exists k.
-   rewrite Nat.add_shuffle0.
-   intros H4; apply H2.
+   intros H4; apply Hk.
    rewrite Hu; unfold freal_add_series, sequence_add.
-   flia H3 H4.
+   rewrite Nat.add_shuffle0 in H3.
+   rewrite H3, H4; flia.
   *left; exists k.
-   rewrite Nat.add_shuffle0.
-   intros H4; apply H2.
-   rewrite Hu; unfold freal_add_series, sequence_add.
-   flia H3 H4.
+   now rewrite Nat.add_shuffle0 in H3.
  +idtac.
 ...
 

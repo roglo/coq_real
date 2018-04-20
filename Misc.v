@@ -105,6 +105,13 @@ replace b with (1 * b) at 1 by apply Nat.mul_1_l.
 apply Nat.mul_le_mono_nonneg_r; [ apply Nat.le_0_l | easy ].
 Qed.
 
+Theorem Nat_mul_le_pos_r : ∀ a b, 1 ≤ b → a ≤ a * b.
+Proof.
+intros * Ha.
+replace a with (a * 1) at 1 by apply Nat.mul_1_r.
+apply Nat.mul_le_mono_nonneg_l; [ apply Nat.le_0_l | easy ].
+Qed.
+
 Theorem Nat_sqr_sub_1 : ∀ a, a ^ 2 - 1 = (a + 1) * (a - 1).
 Proof.
 intros; simpl.
