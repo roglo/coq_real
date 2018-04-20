@@ -4617,6 +4617,7 @@ specialize radix_ge_2 as Hr.
 intros H1.
 remember (n - i - 1) as s eqn:Hs.
 symmetry in Hs.
+...
 destruct s.
 -rewrite Nat.pow_0_r in H1.
  unfold nA in H1.
