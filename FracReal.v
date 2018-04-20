@@ -4571,6 +4571,43 @@ intros Hn Hs Hit Hxy Hbef Hk.
 eapply nA_add_no_same; try eassumption; flia.
 Qed.
 
+Theorem rad_pow_le_nA_exist_not_pred_rad {r : radix} : ∀ u i n,
+   rad ^ (n - i - 1) ≤ nA i n u
+  → ∃ k : nat, u (i + k + 1) ≠ rad - 1.
+Proof.
+intros *.
+specialize radix_ge_2 as Hr.
+intros H1.
+remember (n - i - 1) as s eqn:Hs.
+symmetry in Hs.
+revert n i Hs H1.
+induction s as (s, IHs) using lt_wf_rec; intros.
+destruct s.
+-rewrite Nat.pow_0_r in H1.
+ unfold nA in H1.
+ rewrite summation_empty in H1; [ | flia Hs ].
+ simpl in H1; flia H1.
+-rewrite nA_split_first in H1.
+ +destruct (Nat.eq_dec (u (i + 1)) (rad - 1)) as [H2| H2].
+  *rewrite H2 in H1.
+   replace (n - i - 2) with s in H1 by flia Hs.
+   rewrite Nat.mul_sub_distr_r, Nat.mul_1_l in H1.
+   apply Nat.add_le_mono_r with (p := rad ^ s) in H1.
+   rewrite <- Nat.add_sub_swap in H1.
+  --rewrite Nat.sub_add in H1.
+   ++apply Nat.add_le_mono_l in H1.
+     specialize (IHs s (Nat.lt_succ_diag_r s) n (S i)) as H3.
+     assert (H : n - S i - 1 = s) by flia Hs.
+     specialize (H3 H H1) as (k, Hk); clear H.
+     replace (S i + k) with (i + S k) in Hk by flia.
+     exists (S k).
+     easy.
+   ++destruct rad; [ easy | simpl; lia ].
+  --destruct rad; [ easy | simpl; lia ].
+  *exists 0; now rewrite Nat.add_0_r.
+ +flia Hs.
+Qed.
+
 Theorem A_ge_1_add_series_false_if {r : radix} : ∀ x y i j,
   A_ge_1 (freal_add_series x y) i j = false
   → (∃ k, freal_add_series x y (i + k + 1) ≠ rad - 1) ∧
@@ -4604,114 +4641,19 @@ split; [ | split ].
   now rewrite Nat.add_shuffle0 in H2.
  +rewrite Nat_mod_less_small in Hxy.
   *apply Nat.nlt_ge in H1.
-   assert (Hin : i + j + 1 ≤ n - 1). {
-     rewrite Hn.
-     destruct rad; [ easy | simpl; flia ].
-   }
-Theorem glop {r : radix} : ∀ u i n,
-   rad ^ (n - i - 1) ≤ nA i n u
-  → ∃ k : nat, u (i + k + 1) ≠ rad - 1.
-Proof.
-intros *.
-specialize radix_ge_2 as Hr.
-intros H1.
-remember (n - i - 1) as s eqn:Hs.
-symmetry in Hs.
-...
-destruct s.
--rewrite Nat.pow_0_r in H1.
- unfold nA in H1.
- rewrite summation_empty in H1; [ | flia Hs ].
- simpl in H1; flia H1.
-(*
--unfold nA in H1.
- replace (n - 1) with (i + 1 + s) in H1 by flia Hs.
- rewrite summation_shift in H1; [ | flia ].
- replace (i + 1 + s - (i + 1)) with s in H1 by flia.
- rewrite power_summation in H1; [ | easy ].
-...
-*)
--destruct s.
- +rewrite Nat.pow_1_r in H1.
-  unfold nA in H1.
-  replace (n - 1) with (i + 1) in H1 by flia Hs.
-  rewrite summation_only_one in H1.
-  rewrite Nat.sub_diag, Nat.pow_0_r, Nat.mul_1_r in H1.
-  exists 0; rewrite Nat.add_0_r.
-  intros H2; rewrite H2 in H1.
-  flia Hr H1.
- +unfold nA in H1.
-  replace (n - 1) with (i + 1 + S s) in H1 by flia Hs.
-  rewrite summation_shift in H1; [ | flia ].
-  replace (i + 1 + S s - (i + 1)) with (S s) in H1 by flia.
-  destruct s.
-  *unfold summation in H1.
-   simpl in H1.
-   rewrite Nat.mul_1_r, Nat.add_0_r in H1.
-   replace (i + 1 + 1 - (i + 1)) with 1 in H1 by flia.
-   rewrite Nat.sub_diag, Nat.pow_0_r, Nat.mul_1_r, Nat.add_0_r in H1.
-   rewrite Nat.pow_1_r in H1.
-   destruct (Nat.eq_dec (u (i + 1)) (rad - 1)) as [H2| H2].
-  --rewrite H2 in H1.
-    destruct (Nat.eq_dec (u (i + 1 + 1)) (rad - 1)) as [H3| H3].
-   ++rewrite H3 in H1.
-     assert (H : 4 ≤ rad * rad). {
-       destruct rad as [| rr]; [ easy | ].
-       destruct rr; [ easy | simpl; flia ].
-     }
-     rewrite Nat.mul_sub_distr_r, Nat.mul_1_l in H1.
-     rewrite Nat.add_sub_assoc in H1; [ | easy ].
-     rewrite Nat.sub_add in H1; [ flia Hr H1 H | ].
-     destruct rad; [ easy | simpl; flia ].
-   ++now exists 1.
-  --exists 0; now rewrite Nat.add_0_r.
-  *idtac.
-
-...
-revert n i Hs H1.
-induction s as (s, IHs) using lt_wf_rec; intros.
-destruct s.
--rewrite Nat.pow_0_r in H1.
- unfold nA in H1.
- rewrite summation_empty in H1; [ | flia Hs ].
- simpl in H1; flia H1.
--destruct n; [ flia Hs | ].
- assert (H : n - i - 1 = s) by flia Hs.
- specialize (IHs n i H) as H2.
- rewrite nA_split_last in H1.
- +replace (S n - 1) with n in H1 by flia.
-  destruct (le_dec (rad ^ s) (nA i n u)) as [H3| H3].
-  *now apply H2.
-  *apply Nat.nle_gt in H3.
-   simpl in H1.
-   exists s.
-(* chais pas *)
-...
-   replace (i + s + 1) with n by flia H.
-...
-Qed.
-...
-
-   destruct (Nat.eq_dec (u (i + 1)) (rad - 1)) as [H2| H2].
-   2: now exists 0; rewrite Nat.add_0_r.
-   rewrite nA_split_first in H1; [ | flia Hin ].
-   rewrite H2 in H1.
-   replace (n - i - 2) with (s - 1) in H1 by flia Hs.
-   rewrite Nat.mul_sub_distr_r, Nat.mul_1_l in H1.
-   rewrite <- Nat.pow_succ_r in H1; [ | flia ].
-   replace (S (s - 1)) with s in H1 by flia Hin Hs.
-   rewrite <- Nat.add_sub_swap in H1.
-  --apply Nat.add_le_mono_r with (p := rad ^ (s - 1)) in H1.
-    rewrite Nat.sub_add in H1.
-   ++apply Nat.add_le_mono_l in H1.
-...
-  *idtac.
-...
+   rewrite Hs in H1.
+   eapply rad_pow_le_nA_exist_not_pred_rad; eassumption.
+  *split; [ flia H1 | ].
+   specialize (nA_upper_bound_for_add u i n Hur) as H2.
+   rewrite <- Hs in H2.
+   specialize (Nat.pow_nonzero rad s radix_ne_0) as H3.
+   flia H2 H3.
 -apply A_ge_1_false_iff in Hxy.
  remember (rad * (i + j + 3)) as n eqn:Hn.
  remember (n - i - 1) as s eqn:Hs.
  move s before n.
  replace (n - i - j - 2) with (s - S j) in Hxy by flia Hs.
+...
  destruct (lt_dec (nA i n u) (rad ^ s)) as [H1| H1].
  +rewrite Nat.mod_small in Hxy; [ | easy ].
 (* I think it is useless, below, (even if proved) because in the case
