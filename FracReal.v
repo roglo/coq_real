@@ -4548,6 +4548,7 @@ Theorem nA_add_no_same2 {r : radix} : ∀ u i j k n s it a rr,
   → n = rad * (i + j + 3)
   → s = n - i - 1
   → j < it + a
+  → rad ^ s ≤ nA i n u
   → nA i n u - rad ^ s < (rad ^ S j - 1) * rad ^ (s - S j)
   → (∀ l, l < a → u (i + 1 + l) = rr)
   → k = first_such_that (is_not_seq_same u (i + 1) rr) it a
@@ -4555,14 +4556,14 @@ Theorem nA_add_no_same2 {r : radix} : ∀ u i j k n s it a rr,
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
-intros Hrr Hn Hs Hit Hxy Hbef Hk.
-revert i j k n s a Hn Hs Hxy Hbef Hit Hk.
+intros Hrr Hn Hs Hit Hra Har Hbef Hk.
+revert i j k n s a Hn Hs Hra Har Hbef Hit Hk.
 induction it; intros.
 -simpl in Hit.
  destruct a; [ flia Hit | ].
  simpl in Hk; subst k.
  intros H1.
- apply Nat.nle_gt in Hxy; apply Hxy; clear Hxy.
+ apply Nat.nle_gt in Har; apply Har; clear Har.
  assert (Hin : i + j + 1 ≤ n - 1). {
    rewrite Hn.
    destruct rad; [ easy | simpl; flia ].
