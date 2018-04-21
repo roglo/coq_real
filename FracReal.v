@@ -4481,16 +4481,13 @@ destruct H2 as [H2| [H2| H2]].
  1,2: unfold fd2n in Haft |-*; flia Haft H3 H4.
 Qed.
 
-Theorem glop : ∀ (P : nat → Prop) m,
-  (∀ i, Decidable.decidable (P i))
-  → ¬ (∀ i, i < m → P i)
-  → ∃ i, ¬ P i.
+Theorem glop : ∀ (f : _ → nat) a m,
+  ¬ (∀ i, i < m → f i = a)
+  → ∃ i, f i ≠ a.
 Proof.
-intros * HD HP.
-Search Decidable.decidable.
+intros * HP.
+exists (first_such_that (λ i, f i =? a) m 0).
 ...
-exists (first_such_that (λ i, P i) m 0).
-
 induction m.
 -exfalso; apply HP; now intros.
 -idtac.
