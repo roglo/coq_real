@@ -4481,6 +4481,21 @@ destruct H2 as [H2| [H2| H2]].
  1,2: unfold fd2n in Haft |-*; flia Haft H3 H4.
 Qed.
 
+Theorem glop : ∀ (P : nat → Prop) m,
+  (∀ i, Decidable.decidable (P i))
+  → ¬ (∀ i, i < m → P i)
+  → ∃ i, ¬ P i.
+Proof.
+intros * HD HP.
+Search Decidable.decidable.
+...
+exists (first_such_that (λ i, P i) m 0).
+
+induction m.
+-exfalso; apply HP; now intros.
+-idtac.
+...
+
 Definition is_not_seq_same {r : radix} u i rr k :=
    if Nat.eq_dec (u (i + k)) rr then false else true.
 
