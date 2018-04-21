@@ -4481,16 +4481,36 @@ destruct H2 as [H2| [H2| H2]].
  1,2: unfold fd2n in Haft |-*; flia Haft H3 H4.
 Qed.
 
-Theorem glop : ∀ (f : _ → nat) a m,
+Theorem not_forall_eq_exists_not_neq : ∀ m (f : _ → nat) a,
   ¬ (∀ i, i < m → f i = a)
   → ∃ i, f i ≠ a.
 Proof.
-intros * HP.
-exists (first_such_that (λ i, f i =? a) m 0).
-...
+intros * Hf.
 induction m.
--exfalso; apply HP; now intros.
--idtac.
+-exfalso; apply Hf; now intros.
+-destruct (Nat.eq_dec (f m) a) as [H1| H1].
+ +apply IHm.
+  intros H2; apply Hf.
+  intros i Hi.
+  destruct (Nat.eq_dec i m) as [H3| H3].
+  *now subst i.
+  *apply H2; flia Hi H3.
+ +now exists m.
+Qed.
+
+Theorem glop {r : radix} : ∀ u i j n s it a rr,
+  rad - 1 ≤ rr
+  → n = rad * (i + j + 3)
+  → s = n - i - 1
+  → j < it + a
+  → nA i n u < (rad ^ S j - 1) * rad ^ (s - S j)
+  → ∃ k, u (i + 1 + k) ≠ rr.
+Proof.
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hrr Hn Hs Hit Hbef.
+apply (not_forall_eq_exists_not_neq a).
+intros Hxy.
 ...
 
 Definition is_not_seq_same {r : radix} u i rr k :=
