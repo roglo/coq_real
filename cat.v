@@ -31,7 +31,6 @@ Theorem is_epimorphism_is_surjection :
   is_epimorphism f → is_surjection f.
 Proof.
 intros A B u EqB NNE He.
-unfold has_decidable_equality in EqB.
 unfold is_epimorphism in He.
 intros y.
 set (v (b : B) := if EqB b y then 1 else 0).
