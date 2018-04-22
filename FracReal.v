@@ -4509,8 +4509,10 @@ Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hrr Hn Hs Hit Hbef.
-apply (not_forall_eq_exists_not_neq a).
+apply (not_forall_eq_exists_not_neq s).
 intros Hxy.
+apply Nat.nle_gt in Hbef; apply Hbef; clear Hbef.
+
 ...
 
 Definition is_not_seq_same {r : radix} u i rr k :=
