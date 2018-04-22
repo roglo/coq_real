@@ -4498,13 +4498,13 @@ induction m.
  +now exists m.
 Qed.
 
-Theorem glop {r : radix} : ∀ u i j n s it a rr,
+Theorem new_nA_add_no_same {r : radix} : ∀ u i j n s it a rr,
   rad - 1 ≤ rr
   → n = rad * (i + j + 3)
   → s = n - i - 1
   → j < it + a
   → nA i n u < (rad ^ S j - 1) * rad ^ (s - S j)
-  → ∃ k, u (i + 1 + k) ≠ rr.
+  → ∃ k, u (i + k + 1) ≠ rr.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
@@ -4537,17 +4537,15 @@ apply le_trans with (m := rad ^ s - 1).
  specialize (Hxy (n - k - 1 - (i + 1))).
  assert (H : n - k - 1 - (i + 1) < S s) by flia Hs.
  specialize (Hxy H).
- replace (i + 1 + (n - k - 1 - (i + 1))) with (n - k - 1) in Hxy
+ replace (i + (n - k - 1 - (i + 1)) + 1) with (n - k - 1) in Hxy
    by flia Hs Hk.
  now rewrite Hxy.
 Qed.
 
-...
-
 Definition is_not_seq_same {r : radix} u i rr k :=
    if Nat.eq_dec (u (i + k)) rr then false else true.
 
-Theorem nA_add_no_same {r : radix} : ∀ u i j k n s it a rr,
+Theorem old_nA_add_no_same {r : radix} : ∀ u i j k n s it a rr,
   rad - 1 ≤ rr
   → n = rad * (i + j + 3)
   → s = n - i - 1
@@ -4606,6 +4604,7 @@ induction it; intros.
  +now subst k.
 Qed.
 
+(*
 Theorem nA_add_no_same2 {r : radix} : ∀ u i j k n s it a rr,
   rad - 1 ≤ rr
   → n = rad * (i + j + 3)
@@ -4674,8 +4673,9 @@ induction it; intros.
   now specialize (H2 H Hit Hk); clear H.
  +now subst k.
 Qed.
+*)
 
-Theorem nA_add_no_pred_rad {r : radix} : ∀ u i j k n s it a,
+Theorem old_nA_add_no_pred_rad {r : radix} : ∀ u i j k n s it a,
   n = rad * (i + j + 3)
   → s = n - i - 1
   → j < it + a
@@ -4686,10 +4686,23 @@ Theorem nA_add_no_pred_rad {r : radix} : ∀ u i j k n s it a,
 Proof.
 intros *.
 intros Hn Hs Hit Hxy Hbef Hk.
-now eapply nA_add_no_same; try eassumption.
+now eapply old_nA_add_no_same; try eassumption.
 Qed.
 
-Theorem nA_add_no_twice_pred_rad {r : radix} : ∀ u i j k n s it a,
+Theorem new_nA_add_no_pred_rad {r : radix} : ∀ u i j n s it a,
+  n = rad * (i + j + 3)
+  → s = n - i - 1
+  → j < it + a
+  → nA i n u < (rad ^ S j - 1) * rad ^ (s - S j)
+  → ∃ k, u (i + k + 1) ≠ rad - 1.
+Proof.
+intros *.
+intros Hn Hs Hit Hxy.
+specialize (new_nA_add_no_same u i j n s it a (rad - 1) (le_refl _)) as H1.
+now specialize (H1 Hn Hs Hit Hxy).
+Qed.
+
+Theorem old_nA_add_no_twice_pred_rad {r : radix} : ∀ u i j k n s it a,
   n = rad * (i + j + 3)
   → s = n - i - 1
   → j < it + a
@@ -4700,7 +4713,19 @@ Theorem nA_add_no_twice_pred_rad {r : radix} : ∀ u i j k n s it a,
 Proof.
 intros *.
 intros Hn Hs Hit Hxy Hbef Hk.
-eapply nA_add_no_same; try eassumption; flia.
+eapply old_nA_add_no_same; try eassumption; flia.
+Qed.
+
+Theorem new_nA_add_no_twice_pred_rad {r : radix} : ∀ u i j n s it a,
+  n = rad * (i + j + 3)
+  → s = n - i - 1
+  → j < it + a
+  → nA i n u < (rad ^ S j - 1) * rad ^ (s - S j)
+  → ∃ k, u (i + k + 1) ≠ 2 * rad - 2.
+Proof.
+intros *.
+intros Hn Hs Hit Hxy.
+eapply new_nA_add_no_same; try eassumption; flia.
 Qed.
 
 Theorem rad_pow_le_nA_exist_not_pred_rad {r : radix} : ∀ u i n,
@@ -4808,11 +4833,7 @@ split; [ | split ].
   remember (first_such_that (is_not_seq_same u (i + 1) (rad - 1)) (j + 1) 0)
     as k eqn:Hk.
   assert (Hj : j < j + 1 + 0) by flia.
-  specialize (nA_add_no_pred_rad u i j k n s (j + 1) 0 Hn Hs Hj Hxy) as H2.
-  assert (H : ∀ l, l < 0 → u (i + 1 + l) = rad - 1) by easy.
-  specialize (H2 H Hk); clear H.
-  exists k.
-  now rewrite Nat.add_shuffle0 in H2.
+  eapply new_nA_add_no_pred_rad; eassumption.
  +rewrite Nat_mod_less_small in Hxy.
   *apply Nat.nlt_ge in H1.
    rewrite Hs in H1.
@@ -4840,7 +4861,10 @@ split; [ | split ].
   *remember
      (first_such_that (is_not_seq_same u (i + 1) (2 * rad - 2)) (j + 1) 0)
       as k eqn:Hk.
-   specialize (nA_add_no_same u i j k n s (j + 1) 0 (2 * rad - 2)) as H2.
+   specialize (new_nA_add_no_same u i j n s (j + 1) 0 (2 * rad - 2)) as H2.
+...
+
+   specialize (old_nA_add_no_same u i j k n s (j + 1) 0 (2 * rad - 2)) as H2.
    assert (H : rad - 1 ≤ 2 * rad - 2) by flia.
    specialize (H2 H); clear H.
    specialize (H2 Hn Hs).
