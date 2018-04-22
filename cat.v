@@ -4,7 +4,9 @@ Require Import Utf8.
 
 Definition compose {A B C} (f : A → B) (g : B → C) := λ x, g (f x).
 Notation "g 'o' f" := (compose f g) (at level 40).
-Notation "f == g" := (∀ x, f x = g x) (at level 70).
+Notation "f '==' g" := (∀ x, f x = g x) (at level 70).
+
+(* surjection vs epimorphism *)
 
 Definition is_surjection {A B} (f : A → B) := ∀ y, ∃ x, f x = y.
 Definition is_epimorphism {A B} (u : A → B) :=
@@ -54,3 +56,26 @@ apply Hn; intros x H3.
 apply H2.
 now exists x.
 Qed.
+
+(* injection vs monomorphism *)
+
+Definition is_injection {A B} (f : A → B) := ∀ x y, f x = f y → x = y.
+Definition is_monomorphism {A B} (u : A → B) :=
+  ∀ C (v w : C → A), u o v == u o w → v == w.
+
+Theorem is_injection_is_monomorphism :
+  ∀ A B (f : A → B), is_injection f → is_monomorphism f.
+Proof.
+intros A B u Hi C v w Hu c.
+unfold is_injection in Hi.
+specialize (Hi (v c) (w c)) as H1.
+assert (H : u (v c) = u (w c)) by apply Hu.
+now specialize (H1 H); clear H.
+Qed.
+
+Theorem is_monomorphism_is_injection :
+  ∀ A B (f : A → B), is_monomorphism f → is_injection f.
+Proof.
+intros.
+
+...
