@@ -51,8 +51,7 @@ assert (Hn : ¬ (∀ x, u x ≠ y)). {
 }
 apply NNE.
 intros H2.
-apply Hn; intros x.
-intros H3.
+apply Hn; intros x H3.
 apply H2.
 now exists x.
 Qed.
