@@ -77,14 +77,10 @@ Theorem is_monomorphism_is_injection :
 Proof.
 intros A B u Hm x y Hu.
 unfold is_monomorphism in Hm.
-set (v i := match i with 0 => x | _ => y end).
-set (w (_ : nat) := y).
+set (v (_ : True) := x).
+set (w (_ : True) := y).
 specialize (Hm _ v w) as H1.
-assert (H : u o v == u o w). {
-  unfold v, w, "o".
-  intros i; simpl.
-  now destruct i.
-}
-specialize (H1 H 0); clear H.
-now unfold v, w in H1.
+assert (H : u o v == u o w) by easy.
+specialize (H1 H); clear H.
+now unfold v, w in H1; apply H1.
 Qed.
