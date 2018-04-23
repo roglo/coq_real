@@ -4483,19 +4483,23 @@ Qed.
 
 Theorem not_forall_eq_exists_not_neq : ∀ m (f : _ → nat) a,
   ¬ (∀ i, i < m → f i = a)
-  → ∃ i, f i ≠ a.
+  → ∃ i, i < m ∧ f i ≠ a.
 Proof.
 intros * Hf.
 induction m.
 -exfalso; apply Hf; now intros.
 -destruct (Nat.eq_dec (f m) a) as [H1| H1].
- +apply IHm.
-  intros H2; apply Hf.
-  intros i Hi.
-  destruct (Nat.eq_dec i m) as [H3| H3].
-  *now subst i.
-  *apply H2; flia Hi H3.
- +now exists m.
+ +assert (H2 : ¬ (∀ i, i < m → f i = a)). {
+    intros H2.
+    apply Hf; intros i Hi.
+    destruct (Nat.eq_dec i m) as [H3| H3].
+    *now subst i.
+    *apply H2; flia Hi H3.
+  }
+  specialize (IHm H2) as (i & Him & Hia).
+  exists i; flia Him Hia.
+ +exists m.
+  split; [ flia | easy ].
 Qed.
 
 Theorem nA_add_no_same {r : radix} : ∀ u i j n s it a rr,
@@ -4509,48 +4513,7 @@ Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hrr Hn Hs Hit Hbef.
-specialize (not_forall_eq_exists_not_neq s u rr) as H1.
-assert (H2 : ¬ (∀ i, i < s → u i = rr)). {
-  intros H2.
-  apply Nat.nle_gt in Hbef; apply Hbef; clear Hbef.
-rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
-rewrite <- Nat.pow_add_r.
-assert (Hin : i + j + 1 ≤ n - 1). {
-  rewrite Hn.
-  destruct rad; [ easy | simpl; flia ].
-}
-replace (S j + (s - S j)) with s by flia Hs Hin.
-apply le_trans with (m := rad ^ s - 1).
--apply Nat.sub_le_mono_l.
- now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
--destruct s; [ flia Hs Hin | ].
- unfold nA.
- rewrite summation_rtl.
- rewrite summation_shift; [ | flia Hin ].
- replace (n - 1 - (i + 1)) with s by flia Hs.
- rewrite power_summation_sub_1; [ | easy ].
- rewrite summation_mul_distr_l.
- apply (@summation_le_compat _ nat_ord_ring).
- intros k Hk; simpl; unfold Nat.le.
- replace (n - 1 + (i + 1) - (i + 1 + k)) with (n - k - 1) by flia Hs.
- replace (n - 1 - (n - k - 1)) with k by flia Hs Hk.
- apply Nat.mul_le_mono_r.
- specialize (H2 (n - k - 1)).
-...
- assert (H : n - k - 1 < S s) by lia. flia Hs.
- specialize (H2 H).
- replace (n - k - 1 - (i + 1)) with (n - k - 1) in Hxy
-   by flia Hs Hk.
-
- replace (i + (n - k - 1 - (i + 1)) + 1) with (n - k - 1) in Hxy
-   by flia Hs Hk.
- now rewrite Hxy.
-...
-
-intros *.
-specialize radix_ge_2 as Hr.
-intros Hrr Hn Hs Hit Hbef.
-apply (not_forall_eq_exists_not_neq s).
+apply not_forall_eq_exists_not_neq.
 intros Hxy.
 apply Nat.nle_gt in Hbef; apply Hbef; clear Hbef.
 rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
@@ -4588,7 +4551,7 @@ Theorem nA_add_no_pred_rad {r : radix} : ∀ u i j n s it a,
   → s = n - i - 1
   → j < it + a
   → nA i n u < (rad ^ S j - 1) * rad ^ (s - S j)
-  → ∃ k, u (i + k + 1) ≠ rad - 1.
+  → ∃ k, k < s ∧ u (i + k + 1) ≠ rad - 1.
 Proof.
 intros *.
 intros Hn Hs Hit Hxy.
@@ -4602,13 +4565,13 @@ Theorem nA_add_no_twice_pred_rad {r : radix} : ∀ u i j n s,
   → i + j + 2 ≤ n - 1
   → nA i n u mod rad ^ s < (rad ^ S j - 1) * rad ^ (s - S j)
   → rad ^ s ≤ nA i n u
-  → ∃ k : nat, u (i + k + 1) ≠ 2 * rad - 2.
+  → ∃ k, k < s ∧ u (i + k + 1) ≠ 2 * rad - 2.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hur Hs Hin Hxy H1.
 rewrite Nat_mod_less_small in Hxy.
--apply (not_forall_eq_exists_not_neq s).
+-apply not_forall_eq_exists_not_neq.
  intros H2.
  apply Nat.nle_gt in Hxy; apply Hxy; clear Hxy.
  apply Nat.add_le_mono_r with (p := rad ^ s).
@@ -4759,6 +4722,8 @@ split; [ | split ].
 -destruct (lt_dec (nA i n u) (rad ^ s)) as [H1| H1].
  +rewrite Nat.mod_small in Hxy; [ | easy ].
   assert (Hj : j < j + 1 + 0) by flia.
+...
+
   eapply nA_add_no_pred_rad; eassumption.
  +rewrite Nat_mod_less_small in Hxy.
   *apply Nat.nlt_ge in H1.
