@@ -4682,7 +4682,9 @@ split; [ | split ].
   rewrite Hs in H1.
   now apply (nA_lt_rad_pow_exist_not_twice_pred_rad u i n).
  +rewrite Nat_mod_less_small in Hxy.
-  *idtac.
+  *apply (not_forall_eq_exists_not_neq s).
+   intros H2.
+   apply Nat.nle_gt in Hxy; apply Hxy; clear Hxy.
 ...
 
 Theorem A_ge_1_all_true_for_sum_and_sum_norm_l {r : radix} : ∀ x y i n s,
