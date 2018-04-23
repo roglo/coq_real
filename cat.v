@@ -69,8 +69,7 @@ Proof.
 intros A B u Hi C v w Hu c.
 unfold is_injection in Hi.
 specialize (Hi (v c) (w c)) as H1.
-assert (H : u (v c) = u (w c)) by apply Hu.
-now specialize (H1 H); clear H.
+now specialize (H1 (Hu c)).
 Qed.
 
 Theorem is_monomorphism_is_injection :
