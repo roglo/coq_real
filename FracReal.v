@@ -4696,21 +4696,19 @@ rewrite nA_split_first in H1.
 -flia Hs.
 Qed.
 
-Theorem A_ge_1_add_series_false_if {r : radix} : ∀ x y i j,
-  A_ge_1 (freal_add_series x y) i j = false
-  → (∃ k, freal_add_series x y (i + k + 1) ≠ rad - 1) ∧
-     (∃ k, freal_add_series x y (i + k + 1) ≠ 2 * rad - 2) ∧
+Theorem A_ge_1_add_series_false_if {r : radix} : ∀ u i j,
+  (∀ i, u i ≤ 2 * (rad - 1))
+  → A_ge_1 u i j = false
+  → (∃ k, u (i + k + 1) ≠ rad - 1) ∧
+     (∃ k, u (i + k + 1) ≠ 2 * rad - 2) ∧
      (∀ j,
-       (∃ k, k < j ∨ freal_add_series x y (i + k + 1) ≠ rad - 1) ∨
-       freal_add_series x y (i + j + 1) ≠ rad - 2 ∨
-       (∃ k, fd2n x (i + j + k + 2) ≠ rad - 1) ∨
-       (∃ k, fd2n y (i + j + k + 2) ≠ rad - 1)).
+       (∃ k, k < j ∨ u (i + k + 1) ≠ rad - 1) ∨
+       u (i + j + 1) ≠ rad - 2 ∨
+       (∃ k, u (i + j + k + 2) ≠ 2 * rad - 2)).
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
-specialize (freal_add_series_le_twice_pred x y) as Hur.
-intros Hxy.
-remember (freal_add_series x y) as u eqn:Hu.
+intros Hur Hxy.
 split; [ | split ].
 -apply A_ge_1_false_iff in Hxy.
  remember (rad * (i + j + 3)) as n eqn:Hn.
@@ -4745,7 +4743,7 @@ split; [ | split ].
   now apply (nA_lt_rad_pow_exist_not_twice_pred_rad u i n); [ flia Hin | ].
  +apply Nat.nlt_ge in H1.
   eapply nA_add_no_twice_pred_rad; eassumption.
--idtac.
+-intros l.
 ...
 
 Theorem A_ge_1_all_true_for_sum_and_sum_norm_l {r : radix} : ∀ x y i n s,
