@@ -12,6 +12,10 @@ Definition is_surjection {A B} (f : A → B) := ∀ y, ∃ x, f x = y.
 Definition is_epimorphism {A B} (u : A → B) :=
   ∀ C (v w : B → C), v o u == w o u → v == w.
 
+Definition has_decidable_equality A := ∀ x y : A, {x = y} + {x ≠ y}.
+Definition not_not_exist_imp_exist A :=
+  ∀ (P : A → Prop), (¬ ¬ ∃ x, P x) → ∃ x, P x.
+
 Theorem is_surjection_is_epimorphism :
   ∀ A B (f : A → B), is_surjection f → is_epimorphism f.
 Proof.
@@ -21,10 +25,6 @@ intros C v w He y.
 specialize (Hs y) as (x, Hx).
 subst y; apply He.
 Qed.
-
-Definition has_decidable_equality A := ∀ x y : A, {x = y} + {x ≠ y}.
-Definition not_not_exist_imp_exist A :=
-  ∀ (P : A → Prop), (¬ ¬ ∃ x, P x) → ∃ x, P x.
 
 Theorem is_epimorphism_is_surjection :
   ∀ A B (f : A → B),
@@ -76,6 +76,16 @@ Qed.
 Theorem is_monomorphism_is_injection :
   ∀ A B (f : A → B), is_monomorphism f → is_injection f.
 Proof.
-intros.
-
-...
+intros A B u Hm x y Hu.
+unfold is_monomorphism in Hm.
+set (v i := match i with 0 => x | _ => y end).
+set (w (_ : nat) := y).
+specialize (Hm _ v w) as H1.
+assert (H : u o v == u o w). {
+  unfold v, w, "o".
+  intros i; simpl.
+  now destruct i.
+}
+specialize (H1 H 0); clear H.
+now unfold v, w in H1.
+Qed.
