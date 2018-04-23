@@ -4646,6 +4646,7 @@ Theorem A_ge_1_add_series_false_if {r : radix} : ∀ x y i j,
        (∃ k, fd2n y (i + j + k + 2) ≠ rad - 1)).
 Proof.
 intros *.
+specialize radix_ge_2 as Hr.
 specialize (freal_add_series_le_twice_pred x y) as Hur.
 intros Hxy.
 remember (freal_add_series x y) as u eqn:Hu.
@@ -4673,18 +4674,56 @@ split; [ | split ].
  remember (n - i - 1) as s eqn:Hs.
  move s before n.
  replace (n - i - j - 2) with (s - S j) in Hxy by flia Hs.
+ assert (Hin : i + j + 2 ≤ n - 1). {
+   rewrite Hn.
+   destruct rad; [ easy | simpl; flia ].
+ }
  destruct (lt_dec (nA i n u) (rad ^ s)) as [H1| H1].
  +rewrite Nat.mod_small in Hxy; [ | easy ].
-  assert (Hin : i + 1 ≤ n - 1). {
-    rewrite Hn.
-    destruct rad; [ easy | simpl; flia ].
-  }
   rewrite Hs in H1.
-  now apply (nA_lt_rad_pow_exist_not_twice_pred_rad u i n).
+  now apply (nA_lt_rad_pow_exist_not_twice_pred_rad u i n); [ flia Hin | ].
  +rewrite Nat_mod_less_small in Hxy.
-  *apply (not_forall_eq_exists_not_neq s).
+  *apply Nat.nlt_ge in H1.
+   apply (not_forall_eq_exists_not_neq s).
    intros H2.
    apply Nat.nle_gt in Hxy; apply Hxy; clear Hxy.
+   apply Nat.add_le_mono_r with (p := rad ^ s).
+   rewrite Nat.sub_add; [ | easy ].
+   rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+   rewrite <- Nat.pow_add_r.
+   replace (S j + (s - S j)) with s by flia Hs Hin.
+   rewrite <- Nat.add_sub_swap.
+  --apply le_trans with (m := rad ^ s + rad ^ s - 2).
+   ++apply Nat.sub_le_mono_l.
+     remember (s - S j) as m eqn:Hm.
+     destruct m; [ flia Hs Hin Hm | ].
+     destruct rad as [| rr]; [ easy | simpl ].
+     destruct rr; [ flia Hr | simpl ].
+     enough (H3 : S (S rr) ^ m ≠ 0) by flia H3.
+     now apply Nat.pow_nonzero.
+   ++replace (rad ^ s + rad ^ s) with (2 * rad ^ s) by flia.
+     destruct s; [ flia Hs Hin | ].
+     unfold nA.
+     rewrite summation_rtl.
+     rewrite summation_shift; [ | flia Hin ].
+     replace (n - 1 - (i + 1)) with s by flia Hs.
+     rewrite power_summation; [ | easy ].
+     rewrite Nat.mul_add_distr_l, Nat.mul_1_r.
+     rewrite Nat.add_comm, Nat.add_sub.
+     rewrite Nat.mul_assoc, summation_mul_distr_l.
+     apply (@summation_le_compat _ nat_ord_ring).
+     intros k Hj; remember 2 as two; simpl; unfold Nat.le; subst two.
+     replace (n - 1 + (i + 1) - (i + 1 + k)) with (n - k - 1) by flia.
+     replace (n - 1 - (n - k - 1)) with k by flia Hj Hs.
+     apply Nat.mul_le_mono_r.
+     specialize (H2 (n - k - 1 - (i + 1))) as H3.
+     assert (H : n - k - 1 - (i + 1) < S s) by flia Hs.
+     specialize (H3 H); clear H.
+     replace (i + (n - k - 1 - (i + 1)) + 1) with (n - k - 1) in H3
+       by flia Hs Hj.
+     rewrite H3; flia.
+  --idtac.
+
 ...
 
 Theorem A_ge_1_all_true_for_sum_and_sum_norm_l {r : radix} : ∀ x y i n s,
