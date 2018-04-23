@@ -4702,7 +4702,7 @@ Theorem A_ge_1_add_series_false_if {r : radix} : ∀ u i j,
   → (∃ k, u (i + k + 1) ≠ rad - 1) ∧
      (∃ k, u (i + k + 1) ≠ 2 * rad - 2) ∧
      (∀ j,
-       (∃ k, k < j ∨ u (i + k + 1) ≠ rad - 1) ∨
+       (∃ k, k < j ∧ u (i + k + 1) ≠ rad - 1) ∨
        u (i + j + 1) ≠ rad - 2 ∨
        (∃ k, u (i + j + k + 2) ≠ 2 * rad - 2)).
 Proof.
@@ -4739,6 +4739,10 @@ split; [ | split ].
  +apply Nat.nlt_ge in H1.
   eapply nA_add_no_twice_pred_rad; eassumption.
 -intros l.
+ destruct (lt_dec (nA i n u) (rad ^ s)) as [H1| H2].
+ +rewrite Nat.mod_small in Hxy; [ | easy ].
+  destruct (lt_dec j l) as [H2| H2].
+  *specialize (nA_add_no_pred_rad u i j n s) as H3.
 ...
 
 Theorem A_ge_1_all_true_for_sum_and_sum_norm_l {r : radix} : ∀ x y i n s,
