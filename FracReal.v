@@ -4709,13 +4709,13 @@ Proof.
 intros *.
 specialize radix_ge_2 as Hr.
 intros Hur Hxy.
+apply A_ge_1_false_iff in Hxy.
+remember (rad * (i + j + 3)) as n eqn:Hn.
+remember (n - i - 1) as s eqn:Hs.
+move s before n.
+replace (n - i - j - 2) with (s - S j) in Hxy by flia Hs.
 split; [ | split ].
--apply A_ge_1_false_iff in Hxy.
- remember (rad * (i + j + 3)) as n eqn:Hn.
- remember (n - i - 1) as s eqn:Hs.
- move s before n.
- replace (n - i - j - 2) with (s - S j) in Hxy by flia Hs.
- destruct (lt_dec (nA i n u) (rad ^ s)) as [H1| H1].
+-destruct (lt_dec (nA i n u) (rad ^ s)) as [H1| H1].
  +rewrite Nat.mod_small in Hxy; [ | easy ].
   assert (Hj : j < j + 1 + 0) by flia.
   eapply nA_add_no_pred_rad; eassumption.
@@ -4728,12 +4728,7 @@ split; [ | split ].
    rewrite <- Hs in H2.
    specialize (Nat.pow_nonzero rad s radix_ne_0) as H3.
    flia H2 H3.
--apply A_ge_1_false_iff in Hxy.
- remember (rad * (i + j + 3)) as n eqn:Hn.
- remember (n - i - 1) as s eqn:Hs.
- move s before n.
- replace (n - i - j - 2) with (s - S j) in Hxy by flia Hs.
- assert (Hin : i + j + 2 ≤ n - 1). {
+-assert (Hin : i + j + 2 ≤ n - 1). {
    rewrite Hn.
    destruct rad; [ easy | simpl; flia ].
  }
