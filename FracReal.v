@@ -4722,8 +4722,16 @@ split; [ | split ].
      replace (i + (n - k - 1 - (i + 1)) + 1) with (n - k - 1) in H3
        by flia Hs Hj.
      rewrite H3; flia.
-  --idtac.
-
+  --replace s with ((s - S j) + S j) at 2 by flia Hs Hin.
+    rewrite Nat.pow_add_r.
+    apply Nat_mul_le_pos_r.
+    now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+  *split; [ flia H1 | ].
+   specialize (nA_upper_bound_for_add u i n Hur) as H2.
+   rewrite <- Hs in H2.
+   assert (H : rad ^ s ≠ 0) by now apply Nat.pow_nonzero.
+   flia H H2.
+-idtac.
 ...
 
 Theorem A_ge_1_all_true_for_sum_and_sum_norm_l {r : radix} : ∀ x y i n s,
