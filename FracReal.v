@@ -4447,38 +4447,24 @@ admit.
 ...
 *)
 
-Theorem A_ge_1_add_series_all_true_if {r : radix} : ∀ x y i,
-  (∀ k, A_ge_1 (freal_add_series x y) i k = true)
-  → (∀ k, freal_add_series x y (i + k + 1) = rad - 1) ∨
-     (∀ k, freal_add_series x y (i + k + 1) = 2 * rad - 2) ∨
+Theorem A_ge_1_add_series_all_true_if {r : radix} : ∀ u i,
+  (∀ k, u k ≤ 2 * (rad - 1))
+  → (∀ k, A_ge_1 u i k = true)
+  → (∀ k, u (i + k + 1) = rad - 1) ∨
+     (∀ k, u (i + k + 1) = 2 * (rad - 1)) ∨
      (∃ j,
-       (∀ k, k < j → freal_add_series x y (i + k + 1) = rad - 1) ∧
-       freal_add_series x y (i + j + 1) = rad - 2 ∧
-       (∀ k, freal_add_series x y (i + j + k + 2) = 2 * rad - 2)).
+       (∀ k, k < j → u (i + k + 1) = rad - 1) ∧
+       u (i + j + 1) = rad - 2 ∧
+       (∀ k, u (i + j + k + 2) = 2 * (rad - 1))).
 Proof.
-intros * Hxy.
-specialize (freal_add_series_le_twice_pred x y) as H1.
-specialize (A_ge_1_add_all_true_if _ i H1 Hxy) as H2.
+intros * Hur Hxy.
+specialize (A_ge_1_add_all_true_if _ i Hur Hxy) as H2.
 destruct H2 as [H2| [H2| H2]].
 -left; apply H2.
--right; left.
- unfold freal_add_series, sequence_add in H2.
- intros k; specialize (H2 k).
- specialize (digit_lt_radix (freal x (i + k + 1))) as H3.
- specialize (digit_lt_radix (freal y (i + k + 1))) as H4.
- unfold freal_add_series, sequence_add.
- unfold fd2n in H2 |-*; flia H2 H3 H4.
+-now right; left.
 -right; right.
- unfold freal_add_series, sequence_add in H2.
  destruct H2 as (j & Hbef & Hwhi & Haft).
- exists j.
- split; [ easy | ].
- split; [ easy | ].
- intros k; specialize (Haft k).
- specialize (digit_lt_radix (freal x (i + j + k + 2))) as H3.
- specialize (digit_lt_radix (freal y (i + j + k + 2))) as H4.
- unfold freal_add_series, sequence_add.
- unfold fd2n in Haft |-*; flia Haft H3 H4.
+ now exists j.
 Qed.
 
 Theorem not_forall_eq_exists_not_neq : ∀ m (f : _ → nat) a,
