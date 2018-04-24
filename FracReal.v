@@ -4546,17 +4546,17 @@ apply le_trans with (m := rad ^ s - 1).
  now rewrite Hxy.
 Qed.
 
-Theorem nA_add_no_pred_rad {r : radix} : ∀ u i j n s it a,
+Theorem nA_add_no_pred_rad {r : radix} : ∀ u i j n s,
   n = rad * (i + j + 3)
   → s = n - i - 1
-  → j < it + a
   → nA i n u < (rad ^ S j - 1) * rad ^ (s - S j)
   → ∃ k, k < s ∧ u (i + k + 1) ≠ rad - 1.
 Proof.
 intros *.
-intros Hn Hs Hit Hxy.
-specialize (nA_add_no_same u i j n s it a (rad - 1) (le_refl _)) as H1.
-now specialize (H1 Hn Hs Hit Hxy).
+intros Hn Hs Hxy.
+specialize (nA_add_no_same u i j n s (S j) 0 (rad - 1) (le_refl _)) as H1.
+assert (H2 : j < S j + 0) by flia.
+now specialize (H1 Hn Hs H2 Hxy).
 Qed.
 
 Theorem nA_add_no_twice_pred_rad {r : radix} : ∀ u i j n s,
@@ -4622,7 +4622,7 @@ Qed.
 
 Theorem rad_pow_le_nA_exist_not_pred_rad {r : radix} : ∀ u i n,
    rad ^ (n - i - 1) ≤ nA i n u
-  → ∃ k : nat, u (i + k + 1) ≠ rad - 1.
+  → ∃ k, k < n - i - 1 ∧ u (i + k + 1) ≠ rad - 1.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
@@ -4650,17 +4650,19 @@ destruct s.
      specialize (H3 H H1) as (k, Hk); clear H.
      replace (S i + k) with (i + S k) in Hk by flia.
      exists (S k).
-     easy.
+     split; [ | easy ].
+     now apply -> Nat.succ_lt_mono.
    ++destruct rad; [ easy | simpl; lia ].
   --destruct rad; [ easy | simpl; lia ].
-  *exists 0; now rewrite Nat.add_0_r.
+  *exists 0.
+   split; [ flia | now rewrite Nat.add_0_r ].
  +flia Hs.
 Qed.
 
 Theorem nA_lt_rad_pow_exist_not_twice_pred_rad {r : radix} : ∀ u i n,
   i + 1 ≤ n - 1
   → nA i n u < rad ^ (n - i - 1)
-  → ∃ k : nat, u (i + k + 1) ≠ 2 * rad - 2.
+  → ∃ k, k < n - i - 1 ∧ u (i + k + 1) ≠ 2 * rad - 2.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
@@ -4696,15 +4698,17 @@ rewrite nA_split_first in H1.
    specialize (Nat.pow_nonzero rad s radix_ne_0) as H3.
    rewrite Nat.mul_shuffle0.
    now apply Nat_mul_le_pos_r.
-  +exists 0; now rewrite Nat.add_0_r.
+  +exists 0; split; [ flia | now rewrite Nat.add_0_r ].
 -flia Hs.
 Qed.
 
-Theorem A_ge_1_add_series_false_if {r : radix} : ∀ u i j,
+Theorem A_ge_1_add_series_false_if {r : radix} : ∀ u i j n s,
   (∀ i, u i ≤ 2 * (rad - 1))
   → A_ge_1 u i j = false
-  → (∃ k, u (i + k + 1) ≠ rad - 1) ∧
-     (∃ k, u (i + k + 1) ≠ 2 * rad - 2) ∧
+  → n = rad * (i + j + 3)
+  → s = n - i - 1
+  → (∃ k, k < s ∧ u (i + k + 1) ≠ rad - 1) ∧
+     (∃ k, k < s ∧ u (i + k + 1) ≠ 2 * rad - 2) ∧
      (∀ j,
        (∃ k, k < j ∧ u (i + k + 1) ≠ rad - 1) ∨
        u (i + j + 1) ≠ rad - 2 ∨
@@ -4712,23 +4716,19 @@ Theorem A_ge_1_add_series_false_if {r : radix} : ∀ u i j,
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
-intros Hur Hxy.
+intros Hur Hxy Hn Hs.
 apply A_ge_1_false_iff in Hxy.
-remember (rad * (i + j + 3)) as n eqn:Hn.
-remember (n - i - 1) as s eqn:Hs.
-move s before n.
+rewrite <- Hn, <- Hs in Hxy.
 replace (n - i - j - 2) with (s - S j) in Hxy by flia Hs.
 split; [ | split ].
 -destruct (lt_dec (nA i n u) (rad ^ s)) as [H1| H1].
  +rewrite Nat.mod_small in Hxy; [ | easy ].
   assert (Hj : j < j + 1 + 0) by flia.
-...
-
-  eapply nA_add_no_pred_rad; eassumption.
+  now apply (nA_add_no_pred_rad _ _ j n).
  +rewrite Nat_mod_less_small in Hxy.
   *apply Nat.nlt_ge in H1.
-   rewrite Hs in H1.
-   eapply rad_pow_le_nA_exist_not_pred_rad; eassumption.
+   rewrite Hs in H1 |-*.
+   now apply rad_pow_le_nA_exist_not_pred_rad.
   *split; [ flia H1 | ].
    specialize (nA_upper_bound_for_add u i n Hur) as H2.
    rewrite <- Hs in H2.
@@ -4740,10 +4740,10 @@ split; [ | split ].
  }
  destruct (lt_dec (nA i n u) (rad ^ s)) as [H1| H1].
  +rewrite Nat.mod_small in Hxy; [ | easy ].
-  rewrite Hs in H1.
+  rewrite Hs in H1 |-*.
   now apply (nA_lt_rad_pow_exist_not_twice_pred_rad u i n); [ flia Hin | ].
  +apply Nat.nlt_ge in H1.
-  eapply nA_add_no_twice_pred_rad; eassumption.
+  now apply (nA_add_no_twice_pred_rad _ _ j n).
 -intros l.
  destruct (lt_dec (nA i n u) (rad ^ s)) as [H1| H2].
  +rewrite Nat.mod_small in Hxy; [ | easy ].
