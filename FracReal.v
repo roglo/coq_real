@@ -4449,14 +4449,12 @@ admit.
 
 Theorem A_ge_1_add_series_all_true_if {r : radix} : ∀ x y i,
   (∀ k, A_ge_1 (freal_add_series x y) i k = true)
-  → (∀ k, fd2n x (i + k + 1) + fd2n y (i + k + 1) = rad - 1) ∨
-     ((∀ k, fd2n x (i + k + 1) = rad - 1) ∧
-       (∀ k, fd2n y (i + k + 1) = rad - 1)) ∨
+  → (∀ k, freal_add_series x y (i + k + 1) = rad - 1) ∨
+     (∀ k, freal_add_series x y (i + k + 1) = 2 * rad - 2) ∨
      (∃ j,
-       (∀ k, k < j → fd2n x (i + k + 1) + fd2n y (i + k + 1) = rad - 1) ∧
-       fd2n x (i + j + 1) + fd2n y (i + j + 1) = rad - 2 ∧
-       (∀ k, fd2n x (i + j + k + 2) = rad - 1) ∧
-       (∀ k, fd2n y (i + j + k + 2) = rad - 1)).
+       (∀ k, k < j → freal_add_series x y (i + k + 1) = rad - 1) ∧
+       freal_add_series x y (i + j + 1) = rad - 2 ∧
+       (∀ k, freal_add_series x y (i + j + k + 2) = 2 * rad - 2)).
 Proof.
 intros * Hxy.
 specialize (freal_add_series_le_twice_pred x y) as H1.
@@ -4465,20 +4463,22 @@ destruct H2 as [H2| [H2| H2]].
 -left; apply H2.
 -right; left.
  unfold freal_add_series, sequence_add in H2.
- split; intros k; specialize (H2 k).
- 1,2: specialize (digit_lt_radix (freal x (i + k + 1))) as H3.
- 1,2: specialize (digit_lt_radix (freal y (i + k + 1))) as H4.
- 1,2: unfold fd2n in H2 |-*; flia H2 H3 H4.
+ intros k; specialize (H2 k).
+ specialize (digit_lt_radix (freal x (i + k + 1))) as H3.
+ specialize (digit_lt_radix (freal y (i + k + 1))) as H4.
+ unfold freal_add_series, sequence_add.
+ unfold fd2n in H2 |-*; flia H2 H3 H4.
 -right; right.
  unfold freal_add_series, sequence_add in H2.
  destruct H2 as (j & Hbef & Hwhi & Haft).
  exists j.
  split; [ easy | ].
  split; [ easy | ].
- split; intros k; specialize (Haft k).
- 1,2: specialize (digit_lt_radix (freal x (i + j + k + 2))) as H3.
- 1,2: specialize (digit_lt_radix (freal y (i + j + k + 2))) as H4.
- 1,2: unfold fd2n in Haft |-*; flia Haft H3 H4.
+ intros k; specialize (Haft k).
+ specialize (digit_lt_radix (freal x (i + j + k + 2))) as H3.
+ specialize (digit_lt_radix (freal y (i + j + k + 2))) as H4.
+ unfold freal_add_series, sequence_add.
+ unfold fd2n in Haft |-*; flia Haft H3 H4.
 Qed.
 
 Theorem not_forall_eq_exists_not_neq : ∀ m (f : _ → nat) a,
