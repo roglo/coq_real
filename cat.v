@@ -84,3 +84,16 @@ assert (H : u o v == u o w) by easy.
 specialize (H1 H); clear H.
 now unfold v, w in H1; apply H1.
 Qed.
+
+(* *)
+
+Lemma Yoneda : ∀ A : Prop, (∀ C : Prop, (A → C) → C) ↔ A.
+Proof.
+intros.
+split.
+-intros HC.
+ specialize (HC A).
+ now apply HC.
+-intros * HC C HA.
+ now apply HA.
+Qed.
