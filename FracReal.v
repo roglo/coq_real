@@ -4747,6 +4747,13 @@ split; [ | split ].
 -intros l.
  destruct (lt_dec (nA i n u) (rad ^ s)) as [H1| H2].
  +rewrite Nat.mod_small in Hxy; [ | easy ].
+(**)
+  destruct (le_dec s l) as [H2| H2].
+  *specialize (nA_add_no_pred_rad u i j n s Hn Hs Hxy) as (k & Hks & Hu).
+   left; exists k.
+   split; [ flia H2 Hks | easy ].
+  *apply Nat.nle_gt in H2.
+...
   specialize (nA_add_no_pred_rad u i j n s Hn Hs Hxy) as (k & Hks & Hu).
   destruct (lt_dec k l) as [H2| H2].
   *now left; exists k.
