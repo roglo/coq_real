@@ -4706,6 +4706,10 @@ intros Hur Hxy Hn Hs.
 apply A_ge_1_false_iff in Hxy.
 rewrite <- Hn, <- Hs in Hxy.
 replace (n - i - j - 2) with (s - S j) in Hxy by flia Hs.
+assert (Hin : i + j + 2 ≤ n - 1). {
+  rewrite Hn.
+  destruct rad; [ easy | simpl; flia ].
+}
 split; [ | split ].
 -destruct (lt_dec (nA i n u) (rad ^ s)) as [H1| H1].
  +rewrite Nat.mod_small in Hxy; [ | easy ].
@@ -4720,11 +4724,7 @@ split; [ | split ].
    rewrite <- Hs in H2.
    specialize (Nat.pow_nonzero rad s radix_ne_0) as H3.
    flia H2 H3.
--assert (Hin : i + j + 2 ≤ n - 1). {
-   rewrite Hn.
-   destruct rad; [ easy | simpl; flia ].
- }
- destruct (lt_dec (nA i n u) (rad ^ s)) as [H1| H1].
+-destruct (lt_dec (nA i n u) (rad ^ s)) as [H1| H1].
  +rewrite Nat.mod_small in Hxy; [ | easy ].
   rewrite Hs in H1 |-*.
   now apply (nA_lt_rad_pow_exist_not_twice_pred_rad u i n); [ flia Hin | ].
@@ -4739,6 +4739,16 @@ split; [ | split ].
    left; exists k.
    split; [ flia H2 Hks | easy ].
   *apply Nat.nle_gt in H2.
+   induction l.
+  --right; rewrite Nat.add_0_r.
+    destruct (Nat.eq_dec (u (i + 1)) (rad - 2)) as [H3| H3].
+   ++right.
+     specialize (nA_lt_rad_pow_exist_not_twice_pred_rad u i n) as H4.
+     assert (H : i + 1 ≤ n - 1) by flia Hin.
+     rewrite Hs in H1.
+     specialize (H4 H H1) as (k & Hk & Huk).
+     destruct k.
+(* chiasse de pute *)
 ...
   specialize (nA_add_no_pred_rad u i j n s Hn Hs Hxy) as (k & Hks & Hu).
   destruct (lt_dec k l) as [H2| H2].
