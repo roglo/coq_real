@@ -4743,7 +4743,18 @@ split; [ | split ].
   --right; rewrite Nat.add_0_r.
     destruct (Nat.eq_dec (u (i + 1)) (rad - 2)) as [H3| H3].
    ++right.
-     specialize (nA_lt_rad_pow_exist_not_twice_pred_rad u i n) as H4.
+     destruct s; [ easy | ].
+     destruct (lt_dec (nA (i + 1) n u) (rad ^ s)) as [H5| H5].
+    **specialize (nA_lt_rad_pow_exist_not_twice_pred_rad u (i + 1) n) as H6.
+      replace (n - (i + 1) - 1) with s in H6 by flia Hs.
+      assert (H : i + 1 + 1 ≤ n - 1) by flia Hin.
+      specialize (H6 H); clear H.
+      specialize (H6 H5) as (k & Hk & Huk).
+      exists k.
+      now replace (i + 1 + k + 1) with (i + k + 2) in Huk by flia.
+    **apply Nat.nlt_ge in H5.
+
+...
      assert (H : i + 1 ≤ n - 1) by flia Hin.
      rewrite Hs in H1.
      specialize (H4 H H1) as (k & Hk & Huk).
