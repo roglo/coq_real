@@ -5298,18 +5298,21 @@ destruct (lt_dec i (n - 1)) as [H8| H8].
    rewrite Nat_div_less_small; [ | flia Hr ].
    rewrite Nat.sub_add; [ | easy ].
    now rewrite Nat.mod_same.
-...
-  *destruct H8 as (H8x, H8y).
-   specialize (H8y 0); rewrite Nat.add_0_r in H8y.
-   rewrite H8y.
-   rewrite Nat_div_less_small; [ | flia Hr ].
-   rewrite Nat.sub_add; [ | easy ].
-   now rewrite Nat.mod_same.
-  *destruct H8 as (j & Hbefj & Hwhij & Haftjn & Haftj).
-   specialize (Haftjn 0); rewrite Nat.add_0_r in Haftjn.
+  *specialize (H8 0) as H9.
+   rewrite Nat.add_0_r in H9.
+   unfold freal_add_series, sequence_add in H9.
+   rewrite Hnaft, Nat.add_0_l in H9.
+   specialize (digit_lt_radix (freal y (i + 1))) as H10.
+   unfold fd2n in H9.
+   flia Hr H9 H10.
+  *destruct H8 as (j & Hbefj & Hwhij & Haftj).
+   specialize (Haftj 0); rewrite Nat.add_0_r in Haftj.
    specialize (Hnaft (i + j + 2)).
-   rewrite Hnaft in Haftjn.
-   flia Hr Haftjn.
+   unfold freal_add_series, sequence_add in Haftj.
+   rewrite Hnaft, Nat.add_0_l in Haftj.
+   specialize (digit_lt_radix (freal y (i + j + 2))) as H10.
+   unfold fd2n in Haftj.
+   flia Hr Haftj H10.
  +destruct (Nat.eq_dec i (n - 1)) as [H9| H9].
   *clear H8.
    rewrite <- H9 in Hwhi; rewrite Hwhi; simpl.
@@ -5328,25 +5331,31 @@ destruct (lt_dec i (n - 1)) as [H8| H8].
     rewrite Nat.div_small; [ simpl | apply digit_lt_radix ].
     rewrite Nat.mod_small; [ | easy ].
     clear H8 H9.
-    specialize (A_ge_1_add_series_all_true_if _ _ _ H6) as H8.
+    specialize (A_ge_1_add_series_all_true_if _ _ Hnxyr H6) as H8.
     destruct H8 as [H8| [H8| H8]].
    ++specialize (H8 0) as H9.
      rewrite Nat.add_0_r, Nat.add_1_r in H9.
      specialize (Hnaft 0) as H10; rewrite Nat.add_0_r in H10.
+     unfold freal_add_series, sequence_add in H9.
      rewrite H10 in H9; simpl in H9; rewrite H9.
      rewrite Nat_div_less_small; [ | flia Hr ].
      now rewrite Nat.mod_1_l.
-   ++destruct H8 as (H8x, H8y).
-     specialize (H8y 0); rewrite Nat.add_0_r, Nat.add_1_r in H8y.
-     rewrite H8y.
-     rewrite Nat_div_less_small; [ | flia Hr ].
-     now rewrite Nat.mod_1_l.
-   ++destruct H8 as (j & Hbefj & Hwhij & Haftjn & Haftj).
-     specialize (Haftjn 0); rewrite Nat.add_0_r in Haftjn.
+   ++specialize (H8 0); rewrite Nat.add_0_r, Nat.add_1_r in H8.
+     unfold freal_add_series, sequence_add in H8.
+     specialize (Hnaft 0); rewrite Nat.add_0_r in Hnaft.
+     rewrite Hnaft, Nat.add_0_l in H8.
+     specialize (digit_lt_radix (freal y (S n))) as H10.
+     unfold fd2n in H8.
+     flia Hr H8 H10.
+   ++destruct H8 as (j & Hbefj & Hwhij & Haftj).
+     specialize (Haftj 0); rewrite Nat.add_0_r in Haftj.
+     unfold freal_add_series, sequence_add in Haftj.
      specialize (Hnaft (j + 1)).
      replace (S n + (j + 1)) with (n + j + 2) in Hnaft by flia.
-     rewrite Hnaft in Haftjn.
-     flia Hr Haftjn.
+     rewrite Hnaft, Nat.add_0_l in Haftj.
+     specialize (digit_lt_radix (freal y (n + j + 2))) as H10.
+     unfold fd2n in Haftj.
+     flia Hr Haftj H10.
   *assert (H10 : n ≤ i) by flia H8 H9; clear H8 H9.
    specialize (Hnaft (i - n)) as H8.
    specialize (Haft (i - n)) as H9.
@@ -5358,29 +5367,35 @@ destruct (lt_dec i (n - 1)) as [H8| H8].
    rewrite H8, H9; clear H8 H9; simpl.
    rewrite Nat.div_small; [ | apply digit_lt_radix ].
    rewrite Nat.mod_0_l; [ | easy ].
-   specialize (A_ge_1_add_series_all_true_if _ _ _ H6) as H8.
+   specialize (A_ge_1_add_series_all_true_if _ _ Hnxyr H6) as H8.
    rewrite Nat.add_1_r.
    destruct H8 as [H8| [H8| H8]].
   --specialize (H8 0) as H9.
     rewrite Nat.add_0_r, Nat.add_1_r in H9.
     specialize (Hnaft (S i - n)) as H11.
     replace (n + (S i - n)) with (S i) in H11 by flia H10.
+    unfold freal_add_series, sequence_add in H9.
     rewrite H11 in H9; simpl in H9; rewrite H9.
     rewrite Nat_div_less_small; [ | flia Hr ].
     rewrite Nat.sub_add; [ | easy ].
     now rewrite Nat.mod_same.
-  --destruct H8 as (H8x, H8y).
-    specialize (H8y 0); rewrite Nat.add_0_r, Nat.add_1_r in H8y.
-    rewrite H8y.
-    rewrite Nat_div_less_small; [ | flia Hr ].
-    rewrite Nat.sub_add; [ | easy ].
-    now rewrite Nat.mod_same.
-  --destruct H8 as (j & Hbefj & Hwhij & Haftjn & Haftj).
-    specialize (Haftjn n).
+  --specialize (H8 0); rewrite Nat.add_0_r, Nat.add_1_r in H8.
+    unfold freal_add_series, sequence_add in H8.
+    specialize (Hnaft (S i - n)) as H9.
+    replace (n + (S i - n)) with (S i) in H9 by flia H10.
+    rewrite H9, Nat.add_0_l in H8.
+    specialize (digit_lt_radix (freal y (S i))) as H7.
+    unfold fd2n in H8.
+    flia Hr H8 H7.
+  --destruct H8 as (j & Hbefj & Hwhij & Haftj).
+    specialize (Haftj n).
     specialize (Hnaft (i + j + 2)).
     replace (n + (i + j + 2)) with (i + j + n + 2) in Hnaft by flia.
-    rewrite Hnaft in Haftjn.
-    flia Hr Haftjn.
+    unfold freal_add_series, sequence_add in Haftj.
+    rewrite Hnaft, Nat.add_0_l in Haftj.
+    specialize (digit_lt_radix (freal y (i + j + n + 2))) as H7.
+    unfold fd2n in Haftj.
+    flia Hr Haftj H7.
 Qed.
 
 Theorem freal_eq_add_norm_l {r : radix} : ∀ x y,
