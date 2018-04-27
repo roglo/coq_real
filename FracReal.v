@@ -5403,6 +5403,29 @@ Theorem ends_with_999_or_not {r : radix} : ∀ x,
   ∨ (∃ i, ∀ j, fd2n x (i + j) = rad - 1).
 Proof.
 intros.
+destruct (LPO_fst (ends_with_999 (freal x))) as [H1| H1].
+-right.
+ specialize (H1 0) as H2.
+ apply ends_with_999_true_iff in H2.
+ destruct H2 as (j & (Hjj & Hj) & _).
+ apply has_not_9_after_false_iff in Hj.
+ simpl in Hj.
+ destruct Hj as (Hj & _).
+ exists j.
+ intros k.
+ specialize (Hj k) as H2.
+ now apply is_9_after_true_iff in H2.
+-left; intros i.
+ destruct H1 as (j & Hjj & Hj).
+ apply ends_with_999_false_iff in Hj.
+ destruct Hj as (H1 & _).
+ specialize (H1 0) as H2.
+ apply has_not_9_after_true_iff in H2.
+ destruct H2 as (k & (Hjk & Hk) & _).
+ apply is_9_after_false_iff in Hk.
+ rewrite Nat.add_0_r in Hk.
+ exists (j + k - i).
+(* ah oui mais non faut voir... *)
 ...
 
 Theorem freal_eq_add_norm_l {r : radix} : ∀ x y,
