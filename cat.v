@@ -106,13 +106,13 @@ Definition isequiv {A B : Type} (f : A → B) :=
 Definition equivalence (A B : Type) := { f : A → B & isequiv f}.
 Notation "A ≃ B" := (equivalence A B) (at level 70).
 
-Definition happly {A B} (f g : ∀ (x : A), B x)
-  : f = g → ∀ (x : A), f x = g x
-  := λ p,
-     match p with
-     | eq_refl _ => λ y, eq_refl (f y)
-     end.
-Definition extensionality := ∀ {A B} f g, isequiv (@happly A B f g).
+Theorem happly : ∀ A B (f g : ∀ (x : A), B x), f = g → ∀ (x : A), f x = g x.
+Proof.
+intros * p.
+now destruct p.
+Defined.
+
+Definition extensionality := ∀ A B f g, isequiv (happly A B f g).
 
 Theorem are_equiv_inj_mono : ∀ A B (f : A → B),
   extensionality
@@ -140,6 +140,7 @@ destruct H2 as (H3, H4, H5).
 clear H4 H5.
 specialize (H3 H1).
 subst g.
+
 (* ouais, chais pas *)
 
 ...
