@@ -106,21 +106,42 @@ Definition isequiv {A B : Type} (f : A → B) :=
 Definition equivalence (A B : Type) := { f : A → B & isequiv f}.
 Notation "A ≃ B" := (equivalence A B) (at level 70).
 
-Definition funext := ∀ (A B : Type) (f g : A → B), (∀ x, f x = g x) → f = g.
+Definition happly {A B} (f g : ∀ (x : A), B x)
+  : f = g → ∀ (x : A), f x = g x
+  := λ p,
+     match p with
+     | eq_refl _ => λ y, eq_refl (f y)
+     end.
+Definition extensionality := ∀ {A B} f g, isequiv (@happly A B f g).
 
 Theorem are_equiv_inj_mono : ∀ A B (f : A → B),
-  funext
+  extensionality
   → is_injection f ≃ is_monomorphism f.
 Proof.
 intros * HF.
 exists (is_injection_is_monomorphism A B f).
 unfold isequiv.
-exists (is_monomorphism_is_injection A B f).
--intros HI.
- unfold is_monomorphism_is_injection.
- unfold is_injection in HI.
- unfold is_injection_is_monomorphism.
- unfold funext in HF.
+exists (is_monomorphism_is_injection A B f); [ easy | ].
+intros HM.
+unfold is_monomorphism_is_injection.
+unfold is_injection_is_monomorphism.
+unfold is_monomorphism in HM.
+apply HF; intros C.
+apply HF; intros g.
+apply HF; intros h.
+apply HF; intros HU.
+apply HF; intros c.
+specialize (HM _ _ _ HU) as H1.
+specialize (HF _ _ g h) as H2.
+unfold happly in H2.
+unfold isequiv in H2.
+simpl in H2.
+destruct H2 as (H3, H4, H5).
+clear H4 H5.
+specialize (H3 H1).
+subst g.
+(* ouais, chais pas *)
+
 ...
 
 Theorem are_equiv_surj_epi : ∀ A B (f : A → B),
