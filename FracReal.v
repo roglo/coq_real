@@ -5419,14 +5419,13 @@ destruct (LPO_fst (ends_with_999 (freal x))) as [H1| H1].
  destruct H1 as (j & Hjj & Hj).
  apply ends_with_999_false_iff in Hj.
  destruct Hj as (H1 & _).
- specialize (H1 0) as H2.
+ specialize (H1 i) as H2.
  apply has_not_9_after_true_iff in H2.
  destruct H2 as (k & (Hjk & Hk) & _).
  apply is_9_after_false_iff in Hk.
- rewrite Nat.add_0_r in Hk.
- exists (j + k - i).
-(* ah oui mais non faut voir... *)
-...
+ exists (j + k).
+ now replace (j + i + k) with (i + (j + k)) in Hk by flia.
+Qed.
 
 Theorem freal_eq_add_norm_l {r : radix} : ∀ x y,
   (freal_unorm_add (freal_normalize x) y = freal_unorm_add x y)%F.
@@ -5436,15 +5435,39 @@ specialize radix_ge_2 as Hr.
 specialize (freal_normalized_cases x) as [H1| H1].
 -unfold freal_eq.
  now rewrite H1.
--specialize (ends_with_999_or_not y) as [H2| H2].
-...
--specialize (freal_normalized_cases y) as [H2| H2].
- +unfold freal_norm_eq in H2.
-  remember (freal_normalize y) as ny eqn:Hny.
-  destruct (LPO_fst (has_same_digits ny y)) as [H3| H3]; [ | easy ].
-  clear H2; subst ny.
-  specialize (all_eq_seq_all_eq _ _ H3) as H2.
-  clear H3.
+-specialize (ends_with_999_or_not y) as [Hy| Hy].
+ +destruct H1 as (n & Hbef & Hwhi & Hnaft & Haft).
+  unfold "="%F.
+  apply eq_freal_norm_eq_true_iff.
+  intros i.
+  remember (freal_normalize x) as nx eqn:Hnx.
+  remember (freal_unorm_add nx y) as nxy eqn:Hnxy.
+  remember (freal_unorm_add x y) as xy eqn:Hxy.
+  move xy before nxy.
+  unfold freal_normalize, fd2n; simpl.
+  unfold digit_sequence_normalize.
+  destruct (LPO_fst (is_9_strict_after (freal nxy) i)) as [H1| H1].
+  *specialize (is_9_strict_after_all_9 _ _ H1) as H2; clear H1.
+   destruct (LPO_fst (is_9_strict_after (freal xy) i)) as [H1| H1].
+  --specialize (is_9_strict_after_all_9 _ _ H1) as H3; clear H1.
+    destruct (lt_dec (S (d2n (freal nxy) i)) rad) as [H4| H4].
+   ++simpl.
+     destruct (lt_dec (S (d2n (freal xy) i)) rad) as [H5| H5].
+    **simpl; f_equal.
+      rewrite Hnxy, Hxy.
+      unfold d2n, freal_unorm_add; simpl.
+      unfold freal_add_to_seq, numbers_to_digits.
+      destruct (LPO_fst (A_ge_1 (freal_add_series nx y) i)) as [H6| H6].
+    ---simpl.
+       destruct (LPO_fst (A_ge_1 (freal_add_series x y) i)) as [H7| H7].
+     +++simpl.
+        rewrite Nat.add_shuffle0; symmetry.
+        rewrite Nat.add_shuffle0; symmetry.
+        rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
+        rewrite <- Nat.add_mod_idemp_l; [ symmetry | easy ].
+        f_equal; f_equal.
+        now apply add_series_plus_carry_norm_not_norm with (n0 := n).
+     +++destruct H7 as (j & Hjj & Hj); simpl.
 ...
 intros.
 specialize radix_ge_2 as Hr.
