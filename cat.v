@@ -94,6 +94,38 @@ Definition is_monomorphism_is_injection2 :
     ∀ A B (f : A → B), is_monomorphism f → is_injection f :=
   λ A B f Hm x y Hu, Hm _ (λ _, x) (λ _, y) (λ _, Hu) I.
 
+(* sections and retractions *)
+
+Definition has_section {A B} (f : A → B) := ∃ s, f o s == λ y, y.
+Definition has_retraction {A B} (f : A → B) := ∃ r, r o f == λ x, x.
+
+Theorem has_section_is_epimorphism : ∀ A B (f : A → B),
+  has_section f → is_epimorphism f.
+Proof.
+intros A B u HS.
+destruct HS as (s, HS).
+unfold is_epimorphism.
+intros C v w Hu y.
+specialize (HS y) as H1.
+rewrite <- H1.
+unfold compose.
+apply Hu.
+Qed.
+
+Theorem has_retraction_is_monomorphism : ∀ A B (f : A → B),
+  has_retraction f → is_monomorphism f.
+Proof.
+intros A B u HR.
+destruct HR as (r, HR).
+unfold is_monomorphism.
+intros C v w Hu c.
+rewrite <- HR; symmetry.
+rewrite <- HR; symmetry.
+unfold "o" in Hu.
+unfold "o".
+now rewrite Hu.
+Qed.
+
 (* digression sur Yoneda *)
 
 Lemma Yoneda : ∀ A : Prop, (∀ C : Prop, (A → C) → C) ↔ A.
