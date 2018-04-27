@@ -5398,9 +5398,31 @@ destruct (lt_dec i (n - 1)) as [H8| H8].
     flia Hr Haftj H7.
 Qed.
 
+Theorem ends_with_999_or_not {r : radix} : ∀ x,
+  (∀ i, ∃ j, fd2n x (i + j) ≠ rad - 1)
+  ∨ (∃ i, ∀ j, fd2n x (i + j) = rad - 1).
+Proof.
+intros.
+...
+
 Theorem freal_eq_add_norm_l {r : radix} : ∀ x y,
   (freal_unorm_add (freal_normalize x) y = freal_unorm_add x y)%F.
 Proof.
+intros.
+specialize radix_ge_2 as Hr.
+specialize (freal_normalized_cases x) as [H1| H1].
+-unfold freal_eq.
+ now rewrite H1.
+-specialize (ends_with_999_or_not y) as [H2| H2].
+...
+-specialize (freal_normalized_cases y) as [H2| H2].
+ +unfold freal_norm_eq in H2.
+  remember (freal_normalize y) as ny eqn:Hny.
+  destruct (LPO_fst (has_same_digits ny y)) as [H3| H3]; [ | easy ].
+  clear H2; subst ny.
+  specialize (all_eq_seq_all_eq _ _ H3) as H2.
+  clear H3.
+...
 intros.
 specialize radix_ge_2 as Hr.
 specialize (freal_normalized_cases x) as [H1| H1].
