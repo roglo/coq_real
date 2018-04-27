@@ -24,7 +24,7 @@ unfold is_surjection in Hs.
 intros C v w He y.
 specialize (Hs y) as (x, Hx).
 subst y; apply He.
-Qed.
+Defined.
 
 Theorem is_epimorphism_is_surjection :
   ∀ A B (f : A → B),
@@ -55,7 +55,7 @@ intros H2.
 apply Hn; intros x H3.
 apply H2.
 now exists x.
-Qed.
+Defined.
 
 (* injection vs monomorphism *)
 
@@ -85,7 +85,7 @@ specialize (H1 H); clear H.
 now unfold v, w in H1; apply H1.
 Qed.
 
-(* *)
+(* digression sur Yoneda *)
 
 Lemma Yoneda : ∀ A : Prop, (∀ C : Prop, (A → C) → C) ↔ A.
 Proof.
@@ -97,3 +97,24 @@ split.
 -intros * HC C HA.
  now apply HA.
 Qed.
+
+(* tiens, au fait, qu'est-ce que l'univalence en pense ? *)
+
+Definition isequiv {A B : Type} (f : A → B) :=
+  {g : B → A & (∀ a, g (f a) = a) & (∀ b, f (g b) = b)}.
+
+Definition equivalence (A B : Type) := { f : A → B & isequiv f}.
+Notation "A ≃ B" := (equivalence A B) (at level 70).
+
+Theorem are_equiv_surj_epi : ∀ A B (f : A → B),
+  has_decidable_equality B
+  → not_not_exist_imp_exist A
+  → is_surjection f ≃ is_epimorphism f.
+Proof.
+intros * EqB NNE.
+exists (is_surjection_is_epimorphism A B f).
+unfold isequiv.
+exists (is_epimorphism_is_surjection A B f EqB NNE).
+-intros HS.
+ unfold is_epimorphism_is_surjection.
+...
