@@ -121,7 +121,6 @@ exists (is_monomorphism_is_injection A B f).
  unfold is_injection in HI.
  unfold is_injection_is_monomorphism.
  unfold funext in HF.
- specialize (HF A A) as H1.
 ...
 
 Theorem are_equiv_surj_epi : ∀ A B (f : A → B),
