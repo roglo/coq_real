@@ -70,7 +70,7 @@ intros A B u Hi C v w Hu c.
 unfold is_injection in Hi.
 specialize (Hi (v c) (w c)) as H1.
 now specialize (H1 (Hu c)).
-Qed.
+Defined.
 
 Theorem is_monomorphism_is_injection :
   ∀ A B (f : A → B), is_monomorphism f → is_injection f.
@@ -83,7 +83,7 @@ specialize (Hm _ v w) as H1.
 assert (H : u o v == u o w) by easy.
 specialize (H1 H); clear H.
 now unfold v, w in H1; apply H1.
-Qed.
+Defined.
 
 (* digression sur Yoneda *)
 
@@ -105,6 +105,24 @@ Definition isequiv {A B : Type} (f : A → B) :=
 
 Definition equivalence (A B : Type) := { f : A → B & isequiv f}.
 Notation "A ≃ B" := (equivalence A B) (at level 70).
+
+Definition funext := ∀ (A B : Type) (f g : A → B), (∀ x, f x = g x) → f = g.
+
+Theorem are_equiv_inj_mono : ∀ A B (f : A → B),
+  funext
+  → is_injection f ≃ is_monomorphism f.
+Proof.
+intros * HF.
+exists (is_injection_is_monomorphism A B f).
+unfold isequiv.
+exists (is_monomorphism_is_injection A B f).
+-intros HI.
+ unfold is_monomorphism_is_injection.
+ unfold is_injection in HI.
+ unfold is_injection_is_monomorphism.
+ unfold funext in HF.
+ specialize (HF A A) as H1.
+...
 
 Theorem are_equiv_surj_epi : ∀ A B (f : A → B),
   has_decidable_equality B
