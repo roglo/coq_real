@@ -1,16 +1,19 @@
 (* jeu avec les catégories *)
 
 Require Import Utf8.
+(*
+Set Universe Polymorphism.
+*)
 
 Definition compose {A B C} (f : A → B) (g : B → C) := λ x, g (f x).
-Notation "g 'o' f" := (compose f g) (at level 40).
+Notation "g '◦' f" := (compose f g) (at level 40).
 Notation "f '==' g" := (∀ x, f x = g x) (at level 70).
 
 (* surjection vs epimorphism *)
 
 Definition is_surjection {A B} (f : A → B) := ∀ y, ∃ x, f x = y.
 Definition is_epimorphism {A B} (u : A → B) :=
-  ∀ C (v w : B → C), v o u == w o u → v == w.
+  ∀ C (v w : B → C), v ◦ u == w ◦ u → v == w.
 
 Definition has_decidable_equality A := ∀ x y : A, {x = y} + {x ≠ y}.
 Definition not_not_exist_imp_exist A :=
@@ -40,9 +43,9 @@ set (w (b : B) := 0).
 specialize (He _ v w) as H1.
 assert (Hn : ¬ (∀ x, u x ≠ y)). {
   intros H2.
-  assert (Hx : v o u == w o u). {
+  assert (Hx : v ◦ u == w ◦ u). {
     intros x.
-    unfold v, w, "o"; simpl.
+    unfold v, w, "◦"; simpl.
     destruct (EqB (u x) y) as [H3| H3]; [ | easy ].
     now specialize (H2 x).
   }
@@ -61,7 +64,7 @@ Defined.
 
 Definition is_injection {A B} (f : A → B) := ∀ x y, f x = f y → x = y.
 Definition is_monomorphism {A B} (u : A → B) :=
-  ∀ C (v w : C → A), u o v == u o w → v == w.
+  ∀ C (v w : C → A), u ◦ v == u ◦ w → v == w.
 
 Theorem is_injection_is_monomorphism :
   ∀ A B (f : A → B), is_injection f → is_monomorphism f.
@@ -84,7 +87,7 @@ unfold is_monomorphism in Hm.
 set (v (_ : True) := x).
 set (w (_ : True) := y).
 specialize (Hm _ v w) as H1.
-assert (H : u o v == u o w) by easy.
+assert (H : u ◦ v == u ◦ w) by easy.
 specialize (H1 H); clear H.
 now unfold v, w in H1; apply H1.
 Show Proof.
@@ -96,8 +99,8 @@ Definition is_monomorphism_is_injection2 :
 
 (* sections and retractions *)
 
-Definition has_section {A B} (f : A → B) := ∃ s, f o s == λ y, y.
-Definition has_retraction {A B} (f : A → B) := ∃ r, r o f == λ x, x.
+Definition has_section {A B} (f : A → B) := ∃ s, f ◦ s == λ y, y.
+Definition has_retraction {A B} (f : A → B) := ∃ r, r ◦ f == λ x, x.
 
 Theorem has_section_is_epimorphism : ∀ A B (f : A → B),
   has_section f → is_epimorphism f.
@@ -121,10 +124,12 @@ unfold is_monomorphism.
 intros C v w Hu c.
 rewrite <- HR; symmetry.
 rewrite <- HR; symmetry.
-unfold "o" in Hu.
-unfold "o".
+unfold "◦" in Hu.
+unfold "◦".
 now rewrite Hu.
 Qed.
+
+...
 
 (* digression sur Yoneda *)
 
