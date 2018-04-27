@@ -72,6 +72,10 @@ specialize (Hi (v c) (w c)) as H1.
 now specialize (H1 (Hu c)).
 Defined.
 
+Definition is_injection_is_monomorphism2 :
+    ∀ A B (f : A → B), is_injection f → is_monomorphism f :=
+  λ A B u Hi C v w Hu c, Hi (v c) (w c) (Hu c).
+
 Theorem is_monomorphism_is_injection :
   ∀ A B (f : A → B), is_monomorphism f → is_injection f.
 Proof.
@@ -83,7 +87,12 @@ specialize (Hm _ v w) as H1.
 assert (H : u o v == u o w) by easy.
 specialize (H1 H); clear H.
 now unfold v, w in H1; apply H1.
+Show Proof.
 Defined.
+
+Definition is_monomorphism_is_injection2 :
+    ∀ A B (f : A → B), is_monomorphism f → is_injection f :=
+  λ A B f Hm x y Hu, Hm _ (λ _, x) (λ _, y) (λ _, Hu) I.
 
 (* digression sur Yoneda *)
 
@@ -119,12 +128,12 @@ Theorem are_equiv_inj_mono : ∀ A B (f : A → B),
   → is_injection f ≃ is_monomorphism f.
 Proof.
 intros * HF.
-exists (is_injection_is_monomorphism A B f).
+exists (is_injection_is_monomorphism2 A B f).
 unfold isequiv.
-exists (is_monomorphism_is_injection A B f); [ easy | ].
+exists (is_monomorphism_is_injection2 A B f); [ easy | ].
 intros HM.
-unfold is_monomorphism_is_injection.
-unfold is_injection_is_monomorphism.
+unfold is_monomorphism_is_injection2.
+unfold is_injection_is_monomorphism2.
 unfold is_monomorphism in HM.
 apply HF; intros C.
 apply HF; intros g.
