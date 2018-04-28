@@ -129,6 +129,18 @@ unfold "◦".
 now rewrite Hu.
 Qed.
 
+(* snake lemma *)
+
+Definition is_initial_object I := ∀ C, ∃! f, ...
+
+Definition is_zero_object A := is_initial_object A ∧ is_terminal_object A.
+
+Lemma snake :
+  ∀ A B C A' B' C' Z (f : A → B) (g : B → C) (f' : A' → B') (g' : B' → C')
+     (a : A → A') (b : B → B') (c : C → C')
+     (cz : C → Z) (za' : Z → A'), is_zero_object Z → False.
+Proof.
+
 ...
 
 (* digression sur Yoneda *)
