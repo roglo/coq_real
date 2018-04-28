@@ -138,16 +138,20 @@ Arguments setp [A] _ _.
 Notation "x ∈ S" := (setp S x) (at level 60).
 
 Record element {A} (S : set A) :=
-  { el_val : A; el_in : el_val ∈ S }.
+  { el_val : A; in_set : el_val ∈ S }.
 
 Record group {A} := mkgr
   { gr_set : set A;
     gr_zero : element gr_set }.
 
-Definition Im {T} (A : set T) (B : set T) (f : T → T) :=
-  { b : T | b ∈ B ∧ ∃ a : T, a ∈ A ∧ f a = b }.
+Definition zero {T} (A : @group T) := el_val (gr_set A) (gr_zero _).
+
+Definition Im {T} (A : group) (B : group) (f : T → T) :=
+  mkset (λ b, b ∈ gr_set B ∧ ∃ a, a ∈ gr_set A ∧ f a = b).
 Definition Ker {T} (A : group) (B : group) (f : T → T) :=
-  { a : T | a ∈ gr_set A ∧ f a = el_val (gr_set B) (gr_zero _) }.
+  mkset (λ a, a ∈ gr_set A ∧ f a = zero B).
+
+...
 
 Inductive sequence A :=
   | Seq1 : sequence A
