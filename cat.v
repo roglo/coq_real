@@ -135,6 +135,13 @@ Require List.
 Import List.ListNotations.
 Open Scope list_scope.
 
+Record ZF := mkZF
+  { zfset : Type;
+    zfelm : Type;
+    zfmem : zfelm → zfset → Prop }.
+
+Definition set T := mkZF T T (λ e s, ...
+
 Record set T := mkset { setp : T → Prop }.
 Arguments mkset [T] _.
 Arguments setp [T] _ _.
