@@ -131,22 +131,19 @@ Qed.
 
 (* snake lemma *)
 
-Require List.
-Import List.ListNotations.
-Open Scope list_scope.
+Inductive sequence {A} :=
+  | Seq1 : sequence
+  | Seq2 : ∀ {B} (f : A → B), @sequence B → sequence.
 
-Fixpoint exact_sequence (L : list Type) :=
-  match L with
-  | [] => True
-  | A :: L₁ => ...
+Definition exact_sequence {A} (S : @sequence A) := True.
 
 Lemma snake :
   ∀ A B C A' B' C' (f : A → B) (g : B → C) (f' : A' → B') (g' : B' → C')
      (a : A → A') (b : B → B') (c : C → C')
-     (cz : C → False) (za' : False → A'),
-  exact_sequence [A; B; C; False]
-  → exact_sequence [False; A'; B'; C']
-  → False.
+     (cz : C → False) (za' : False → A')
+  (s : exact_sequence (Seq2 f (Seq2 g (Seq2 cz Seq1))))
+  (s' : exact_sequence (Seq2 za' (Seq2 f' (Seq2 g' Seq1)))),
+  False.
 Proof.
 intros.
 
