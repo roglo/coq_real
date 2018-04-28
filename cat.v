@@ -131,15 +131,24 @@ Qed.
 
 (* snake lemma *)
 
-Definition is_initial_object I := ∀ C, ∃! f, ...
+Require List.
+Import List.ListNotations.
+Open Scope list_scope.
 
-Definition is_zero_object A := is_initial_object A ∧ is_terminal_object A.
+Fixpoint exact_sequence (L : list Type) :=
+  match L with
+  | [] => True
+  | A :: L₁ => ...
 
 Lemma snake :
-  ∀ A B C A' B' C' Z (f : A → B) (g : B → C) (f' : A' → B') (g' : B' → C')
+  ∀ A B C A' B' C' (f : A → B) (g : B → C) (f' : A' → B') (g' : B' → C')
      (a : A → A') (b : B → B') (c : C → C')
-     (cz : C → Z) (za' : Z → A'), is_zero_object Z → False.
+     (cz : C → False) (za' : False → A'),
+  exact_sequence [A; B; C; False]
+  → exact_sequence [False; A'; B'; C']
+  → False.
 Proof.
+intros.
 
 ...
 
