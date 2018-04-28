@@ -137,12 +137,14 @@ Open Scope list_scope.
 
 Record ZF := mkZF
   { zfset : Type;
-    zfelm : Type;
-    zfmem : zfelm → zfset → Prop;
+    zfmem : zfset → zfset → Prop;
     zfext : ∀ A B, (∀ x, zfmem x A ↔ zfmem x B) → A = B;
-    zfpai : ∀ a b, ∃ c, ∀ x, zfmem x c ↔ x = a ∨ x = b }.
+    zfpai : ∀ a b, ∃ c, ∀ x, zfmem x c ↔ x = a ∨ x = b;
+    zfuni : ∀ a, ∃ c, ∀ x, zfmem x c ↔ ∃ y, zfmem y a ∧ zfmem x y }.
 
 Notation "x '∈' S" := (zfmem _ x S) (at level 60).
+
+...
 
 Record set1 T := mkset { setp : T → Prop }.
 Arguments mkset [T] _.
