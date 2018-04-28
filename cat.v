@@ -139,7 +139,8 @@ Record ZF := mkZF
   { zfset : Type;
     zfelm : Type;
     zfmem : zfelm → zfset → Prop;
-    zfext : ∀ A B, (∀ x, zfmem x A ↔ zfmem x B) → A = B }.
+    zfext : ∀ A B, (∀ x, zfmem x A ↔ zfmem x B) → A = B;
+    zfpai : ∀ a b, ∃ c, ∀ x, zfmem x c ↔ x = a ∨ x = b }.
 
 Notation "x '∈' S" := (zfmem _ x S) (at level 60).
 
@@ -147,7 +148,14 @@ Record set1 T := mkset { setp : T → Prop }.
 Arguments mkset [T] _.
 Arguments setp [T] _ _.
 Axiom ext1 : ∀ T (A B : set1 T), (∀ x, setp A x ↔ setp B x) → A = B.
-Definition set T := mkZF (set1 T) T (λ e s, setp s e) (ext1 T).
+Theorem pair1 {T} : ∀ (a b : T), ∃ c, ∀ x,
+  setp c x ↔ x = a ∨ x = b.
+Proof.
+intros.
+exists (mkset (λ d, d = (a, b))).
+...
+
+Definition set T := mkZF (set1 T) T (λ e s, setp s e) (ext1 T) (pair1).
 
 ...
 
