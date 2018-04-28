@@ -147,7 +147,7 @@ Record group {A} := mkgr
 Definition Im {T} (A : set T) (B : set T) (f : T → T) :=
   { b : T | b ∈ B ∧ ∃ a : T, a ∈ A ∧ f a = b }.
 Definition Ker {T} (A : group) (B : group) (f : T → T) :=
-  { a : T | a ∈ gr_set A ∧ f a = el_val (gr_set B) (gr_zero B) }.
+  { a : T | a ∈ gr_set A ∧ f a = el_val (gr_set B) (gr_zero _) }.
 
 Inductive sequence A :=
   | Seq1 : sequence A
