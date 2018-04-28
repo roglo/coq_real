@@ -135,7 +135,11 @@ Inductive sequence {A} :=
   | Seq1 : sequence
   | Seq2 : ∀ {B} (f : A → B), @sequence B → sequence.
 
-Definition exact_sequence {A} (S : @sequence A) := True.
+Definition exact_sequence {A} (S : @sequence A) :=
+  match S with
+  | Seq1 => True
+  | Seq2 f S' => True
+  end.
 
 Lemma snake :
   ∀ A B C A' B' C' (f : A → B) (g : B → C) (f' : A' → B') (g' : B' → C')
