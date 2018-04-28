@@ -138,18 +138,17 @@ Open Scope list_scope.
 Record ZF := mkZF
   { zfset : Type;
     zfelm : Type;
-    zfmem : zfset → zfelm → Prop;
-    zfext : ∀ A B, (∀ x, zfmem A x ↔ zfmem B x) → A = B }.
+    zfmem : zfelm → zfset → Prop;
+    zfext : ∀ A B, (∀ x, zfmem x A ↔ zfmem x B) → A = B }.
+
+Notation "x '∈' S" := (zfmem _ x S) (at level 60).
 
 Record set1 T := mkset { setp : T → Prop }.
-Definition set T := mkZF (set1 T) T (setp _).
 Arguments mkset [T] _.
 Arguments setp [T] _ _.
-Notation "x '∈' S" := (setp S x) (at level 60).
-Theorem ext1 {T} : ∀ A B : set1 T, (∀ x, x ∈ A ↔ x ∈ B) → A = B.
-Proof.
-intros * H.
-(* ah bin non, je n'ai pas l'axiome d'extensionnalité ; ça commence bien ! *)
+Axiom ext1 : ∀ T (A B : set1 T), (∀ x, setp A x ↔ setp B x) → A = B.
+Definition set T := mkZF (set1 T) T (λ e s, setp s e) (ext1 T).
+
 ...
 
 Record set T := mkset { setp : T → Prop }.
