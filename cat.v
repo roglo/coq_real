@@ -131,17 +131,25 @@ Qed.
 
 (* snake lemma *)
 
-Record set A := mkset { setp : A → Prop }.
-Arguments mkset [A] _.
-Arguments setp [A] _ _.
+Require List.
+Import List.ListNotations.
+Open Scope list_scope.
 
-Notation "x ∈ S" := (setp S x) (at level 60).
+Record set T := mkset { setp : T → Prop }.
+Arguments mkset [T] _.
+Arguments setp [T] _ _.
 
-Record element {A} (S : set A) :=
-  { el_val : A; in_set : el_val ∈ S }.
+Notation "x '∈' S" := (setp S x) (at level 60).
+Definition set_incl {T} (A B : set T) := ∀ x, x ∈ A → x ∈ B.
+Notation "A '⊆' B" := (set_incl A B) (at level 70).
+Definition set_eq {T} (A B : set T) := A ⊆ B ∧ B ⊆ A.
+Notation "A '≡' B" := (set_eq A B) (at level 70).
 
-Record group {A} := mkgr
-  { gr_set : set A;
+Record element {T} (S : set T) :=
+  { el_val : T; in_set : el_val ∈ S }.
+
+Record group {T} := mkgr
+  { gr_set : set T;
     gr_zero : element gr_set }.
 
 Definition zero {T} (A : @group T) := el_val (gr_set A) (gr_zero _).
@@ -151,24 +159,32 @@ Definition Im {T} (A : group) (B : group) (f : T → T) :=
 Definition Ker {T} (A : group) (B : group) (f : T → T) :=
   mkset (λ a, a ∈ gr_set A ∧ f a = zero B).
 
-...
+Inductive sequence {T} (G : @group T) :=
+  | Seq1 : sequence G
+  | Seq2 : ∀ (f : T → T) H, sequence H → sequence G.
 
-Inductive sequence A :=
-  | Seq1 : sequence A
-  | Seq2 : ∀ B (f : A → B), sequence B → sequence A.
-
-Fixpoint exact_sequence {A} (S : sequence A) :=
+Fixpoint exact_sequence {T} (A : @group T) (S : sequence A) :=
   match S with
   | Seq1 _ => True
-  | Seq2 _ B f S' =>
+  | Seq2 _ f B S' =>
       match S' with
       | Seq1 _ => True
-      | Seq2 _ C g S'' => Im f = Ker g ∧ exact_sequence S'
+      | Seq2 _ g C S'' => Im A B f ≡ Ker A B g ∧ exact_sequence B S'
       end
   end.
 
-Arguments Seq1 {A}.
-Arguments Seq2 {A} {B} f s.
+Arguments Seq1 {T} G.
+Arguments Seq2 {T} G f H.
+
+Lemma snake {T} :
+  ∀ A B C A' B' C' (f : A → B) (g : B → C) (f' : A' → B') (g' : B' → C')
+     (a : A → A') (b : B → B') (c : C → C')
+     (cz : C → False) (za' : False → A')
+  (s : exact_sequence (Seq2 f (Seq2 g (Seq2 cz Seq1))))
+  (s' : exact_sequence (Seq2 za' (Seq2 f' (Seq2 g' Seq1)))),
+  False.
+Proof.
+intros.
 
 Lemma snake :
   ∀ A B C A' B' C' (f : A → B) (g : B → C) (f' : A' → B') (g' : B' → C')
