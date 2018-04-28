@@ -145,6 +145,14 @@ Notation "A '⊆' B" := (set_incl A B) (at level 70).
 Definition set_eq {T} (A B : set T) := A ⊆ B ∧ B ⊆ A.
 Notation "A '≡' B" := (set_eq A B) (at level 70).
 
+Record category {U} := mkcat
+  { ob : set U;
+    mor : set (U * U);
+    src : ∀ f, f ∈ mor → ∃ A, A ∈ ob ∧ fst f = A;
+    dst : ∀ f, f ∈ mor → ∃ B, B ∈ ob ∧ snd f = B }.
+
+...
+
 Record element {T} (S : set T) :=
   { el_val : T; in_set : el_val ∈ S }.
 
