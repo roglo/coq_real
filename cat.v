@@ -131,15 +131,25 @@ Qed.
 
 (* snake lemma *)
 
-Inductive sequence {A} :=
-  | Seq1 : sequence
-  | Seq2 : ∀ {B} (f : A → B), @sequence B → sequence.
+Inductive sequence A :=
+  | Seq1 : sequence A
+  | Seq2 : ∀ B (f : A → B), sequence B → sequence A.
 
-Definition exact_sequence {A} (S : @sequence A) :=
+Definition Im {A B} (f : A → B) := { y : B | ∃ x : A, f x = y }.
+Definition Ker {A B} (z : B) (f : A → B) := { x : A | f x = z }.
+
+Fixpoint exact_sequence {A} (S : sequence A) :=
   match S with
-  | Seq1 => True
-  | Seq2 f S' => True
+  | Seq1 _ => True
+  | Seq2 _ B f S' =>
+      match S' with
+      | Seq1 _ => True
+      | Seq2 _ C g S'' => Im f = Ker g ∧ exact_sequence S'
+      end
   end.
+
+Arguments Seq1 {A}.
+Arguments Seq2 {A} {B} f s.
 
 Lemma snake :
   ∀ A B C A' B' C' (f : A → B) (g : B → C) (f' : A' → B') (g' : B' → C')
