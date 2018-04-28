@@ -154,14 +154,18 @@ Record group {T} := mkgr
 
 Definition zero {T} (A : @group T) := el_val (gr_set A) (gr_zero _).
 
+Record gmorph {T} A B := mkgm
+  { gm_fun : T → T;
+    gr_prop : ∀ x, x ∈ gr_set A → gm_fun x ∈ gr_set B }.
+
 Definition Im {T} (A : group) (B : group) (f : T → T) :=
   mkset (λ b, b ∈ gr_set B ∧ ∃ a, a ∈ gr_set A ∧ f a = b).
 Definition Ker {T} (A : group) (B : group) (f : T → T) :=
   mkset (λ a, a ∈ gr_set A ∧ f a = zero B).
 
-Inductive sequence {T} (G : @group T) :=
-  | Seq1 : sequence G
-  | Seq2 : ∀ (f : T → T) H, sequence H → sequence G.
+Inductive sequence {T} (A : @group T) :=
+  | Seq1 : sequence A
+  | Seq2 : ∀ B (f : gmorph A B), sequence B → sequence A.
 
 Fixpoint exact_sequence {T} (A : @group T) (S : sequence A) :=
   match S with
