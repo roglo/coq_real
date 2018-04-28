@@ -131,12 +131,27 @@ Qed.
 
 (* snake lemma *)
 
+Record set A := mkset { setp : A → Prop }.
+Arguments mkset [A] _.
+Arguments setp [A] _ _.
+
+Notation "x ∈ S" := (setp S x) (at level 60).
+
+Record element {A} (S : set A) :=
+  { el_val : A; el_in : el_val ∈ S }.
+
+Record group {A} := mkgr
+  { gr_set : set A;
+    gr_zero : element gr_set }.
+
+Definition Im {T} (A : set T) (B : set T) (f : T → T) :=
+  { b : T | b ∈ B ∧ ∃ a : T, a ∈ A ∧ f a = b }.
+Definition Ker {T} (A : group) (B : group) (f : T → T) :=
+  { a : T | a ∈ gr_set A ∧ f a = el_val (gr_set B) (gr_zero B) }.
+
 Inductive sequence A :=
   | Seq1 : sequence A
   | Seq2 : ∀ B (f : A → B), sequence B → sequence A.
-
-Definition Im {A B} (f : A → B) := { y : B | ∃ x : A, f x = y }.
-Definition Ker {A B} (z : B) (f : A → B) := { x : A | f x = z }.
 
 Fixpoint exact_sequence {A} (S : sequence A) :=
   match S with
