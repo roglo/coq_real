@@ -46,6 +46,21 @@ Qed.
 Theorem empty_union_any {zf : ZF} : ∀ A, ∅ ⋃ A = A.
 Proof.
 intros.
+apply zfextens; intros x H.
+-apply zfunion_prop in H.
+ destruct H as [H| ]; [ | easy ].
+ now apply zfempty_prop in H.
+-now apply zfunion_prop; right.
+Qed.
+
+Theorem empty_inter_any {zf : ZF} : ∀ A, ∅ ∩ A = ∅.
+Proof.
+intros.
+apply zfextens; intros x H.
+-now apply zfinter_prop in H.
+-now apply zfempty_prop in H.
+Qed.
+
 ...
 
 Theorem not_elem_itself {zf : ZF} : ∀ A : zfset, A ∉ A.
