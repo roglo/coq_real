@@ -19,6 +19,9 @@ Definition zfincl {zfb : ZF_base} A B := ∀ x, x ∈ A → x ∈ B.
 
 Notation "A '⊂' B" := (zfincl A B) (at level 60).
 
+Definition extensionality {zfb : ZF_base} := ∀ A B,
+  A ⊂ B → B ⊂ A → A = B.
+
 Definition zfunion_def {zfb : ZF_base} zfunion := ∀ A B x,
   x ∈ (zfunion A B) ↔ x ∈ A ∨ x ∈ B.
 
@@ -27,11 +30,11 @@ Definition zfinter_def {zfb : ZF_base} zfinter := ∀ A B x,
 
 Class ZF := mkZF
   { zfb : ZF_base;
+    zfextens : extensionality;
     zfunion : zfset → zfset → zfset;
     zfinter : zfset → zfset → zfset;
     zfunion_prop : zfunion_def zfunion;
-    zfinter_prop : zfinter_def zfinter;
-    zfextens : ∀ A B, (∀ x, x ∈ A ↔ x ∈ B) → A = B }.
+    zfinter_prop : zfinter_def zfinter }.
 
 Notation "A '⋃' B" := (zfunion A B) (at level 50).
 Notation "A '∩' B" := (zfinter A B) (at level 40).
@@ -39,8 +42,7 @@ Notation "A '∩' B" := (zfinter A B) (at level 40).
 Theorem union_comm {zf : ZF} : ∀ A B, A ⋃ B = B ⋃ A.
 Proof.
 intros.
-apply zfextens; intros x.
-split; intros H.
+apply zfextens; intros x H.
 -apply zfunion_prop in H.
  apply zfunion_prop.
  now apply or_comm.
@@ -67,15 +69,13 @@ Proof.
 intros.
 rewrite union_comm.
 replace (B ⋃ C) with (C ⋃ B) by apply union_comm.
-apply zfextens; intros x.
-now split; intros H; apply union_half_assoc.
+now apply zfextens; intros x H; apply union_half_assoc.
 Qed.
 
 Theorem inter_comm {zf : ZF} : ∀ A B, A ∩ B = B ∩ A.
 Proof.
 intros.
-apply zfextens; intros x.
-split; intros H.
+apply zfextens; intros x H.
 -apply zfinter_prop in H.
  apply zfinter_prop.
  now apply and_comm.
@@ -102,16 +102,14 @@ Proof.
 intros.
 rewrite inter_comm.
 replace (B ∩ C) with (C ∩ B) by apply inter_comm.
-apply zfextens; intros x.
-now split; intros H; apply inter_half_assoc.
+now apply zfextens; intros x H; apply inter_half_assoc.
 Qed.
 
 Theorem inter_union_distr {zf : ZF} : ∀ A B C,
   A ∩ (B ⋃ C) = (A ∩ B) ⋃ (A ∩ C).
 Proof.
 intros.
-apply zfextens; intros x.
-split; intros H.
+apply zfextens; intros x H.
 -apply zfinter_prop in H.
  destruct H as (H1, H2).
  apply zfunion_prop in H2.
@@ -132,8 +130,7 @@ Theorem union_inter_distr {zf : ZF} : ∀ A B C,
   A ⋃ (B ∩ C) = (A ⋃ B) ∩ (A ⋃ C).
 Proof.
 intros.
-apply zfextens; intros x.
-split; intros H.
+apply zfextens; intros x H.
 -apply zfunion_prop in H.
  apply zfinter_prop.
  destruct H as [H| H].
