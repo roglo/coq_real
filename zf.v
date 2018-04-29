@@ -25,7 +25,7 @@ Class ZF := mkZF
     zfextens : ∀ A B, A ⊂ B → B ⊂ A → A = B;
     zffound : ∀ A, A ≠ ∅ → ∃ B, B ∈ A ∧ B ∩ A = ∅;
     zfempty_prop : ∀ x, x ∉ ∅;
-    zfsingle_prop : ∀ x y, y ∈ zfsingle x → y = x;
+    zfsingle_prop : ∀ x y, y ∈ zfsingle x ↔ y = x;
     zfunion_prop : ∀ A B x, x ∈ (A ⋃ B) ↔ x ∈ A ∨ x ∈ B;
     zfinter_prop : ∀ A B x, x ∈ (A ∩ B) ↔ x ∈ A ∧ x ∈ B (*;
     zfdecid : ∀ A B : zfset, { A = B } + { A ≠ B }*) }.
@@ -69,25 +69,25 @@ apply zfextens; intros x H.
 -now apply zfempty_prop in H.
 Qed.
 
-...
-
 Theorem not_elem_itself {zf : ZF} : ∀ A : zfset, A ∉ A.
 Proof.
-intros; intros H1.
-specialize (zffound (A ⋃ zfsingle A)) as H2.
-assert (H3 : A ⋃ zfsingle A ≠ ∅). {
-...
-  intros H3.
-  specialize (proj1 (zfunion_prop A (zfsingle A) A)) as H4.
-
-...
-assert (H2 : A ≠ ∅). {
-  -intros H2; subst A; revert H1.
-   apply zfempty_prop.
+intros A H1.
+assert (H2 : zfsingle A ≠ ∅). {
+  intros H2.
+  assert (H3 : A ∈ zfsingle A) by now apply zfsingle_prop.
+  rewrite H2 in H3.
+  now apply zfempty_prop in H3.
 }
-specialize (zffound A H2) as (B & H3 & H4).
-move B before A.
-...
+specialize (zffound (zfsingle A) H2) as (B & H3 & H4).
+apply zfsingle_prop in H3; subst B.
+rewrite <- H4 in H2; apply H2.
+apply zfextens; intros x H.
+-apply zfinter_prop.
+ split; [ | easy ].
+ apply zfsingle_prop in H.
+ now subst x.
+-now apply zfinter_prop in H.
+Qed.
 
 Theorem union_comm {zf : ZF} : ∀ A B, A ⋃ B = B ⋃ A.
 Proof.
