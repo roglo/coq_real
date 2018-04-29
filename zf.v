@@ -5,42 +5,40 @@ Require List.
 Import List.ListNotations.
 Open Scope list_scope.
 
-Class ZF_base := mkZF_base
-  { zfset : Type;
-    zfvoid : zfset;
-    zfmem : zfset → zfset → Prop;
-    zfvoid_prop : ∀ x, ¬ (zfmem x zfvoid) }.
-
-Notation "∅" := (zfvoid).
-Notation "x '∈' S" := (zfmem x S) (at level 60).
-Notation "x '∉' S" := (¬ zfmem x S) (at level 60).
-
-Definition zfincl {zfb : ZF_base} A B := ∀ x, x ∈ A → x ∈ B.
-
-Notation "A '⊂' B" := (zfincl A B) (at level 60).
-
+Reserved Notation "x '∈' S" (at level 60).
+Reserved Notation "x '∉' S" (at level 60).
+Reserved Notation "A '⊂' B" (at level 60).
 Reserved Notation "A '⋃' B" (at level 50).
+Reserved Notation "A '∩' B" (at level 40).
+Reserved Notation "'∅'" (at level 0).
 
 Class ZF := mkZF
-  { zfb : ZF_base;
-    zfunion : zfset → zfset → zfset
-    where "A '⋃' B" := (zfunion A B);
-    zfinter : zfset → zfset → zfset;
+  { zfset : Type;
+    zfvoid : zfset where "'∅'" := (zfvoid);
+    zfmem : zfset → zfset → Prop
+      where "x '∈' S" := (zfmem x S)
+      and "x '∉' S" := (¬ zfmem x S);
+    zfvoid_prop : ∀ x, ¬ (zfmem x zfvoid);
+    zfincl A B := ∀ x, x ∈ A → x ∈ B where "A '⊂' B" := (zfincl A B);
+    zfunion : zfset → zfset → zfset where "A '⋃' B" := (zfunion A B);
+    zfinter : zfset → zfset → zfset where "A '∩' B" := (zfinter A  B);
     zfextens : ∀ A B, A ⊂ B → B ⊂ A → A = B;
-    zffound : ∀ A, A ≠ ∅ → ∃ B, B ∈ A ∧ zfinter B A = ∅;
+    zffound : ∀ A, A ≠ ∅ → ∃ B, B ∈ A ∧ B ∩ A = ∅;
     zfunion_prop : ∀ A B x, x ∈ (A ⋃ B) ↔ x ∈ A ∨ x ∈ B;
-    zfinter_prop : ∀ A B x, x ∈ (zfinter A B) ↔ x ∈ A ∧ x ∈ B }.
+    zfinter_prop : ∀ A B x, x ∈ (A ∩ B) ↔ x ∈ A ∧ x ∈ B }.
 
-Notation "A '⋃' B" := (zfunion A B) (at level 50).
-Notation "A '∩' B" := (zfinter A B) (at level 40).
+Notation "'∅'" := (zfvoid).
+Notation "x '∈' S" := (zfmem x S).
+Notation "x '∉' S" := (¬ zfmem x S).
+Notation "A '⊂' B" := (zfincl A B).
+Notation "A '⋃' B" := (zfunion A B).
+Notation "A '∩' B" := (zfinter A B).
 
-Theorem not_elem_itself {zfb : ZF_base} {zf : ZF} : ∀ A : zfset, A ∉ A.
+Theorem not_elem_itself {zf : ZF} : ∀ A : zfset, A ∉ A.
 Proof.
 intros; intros H.
-specialize (zfvoid_prop A) as H1.
-apply H1; clear H1.
-
-...
+(* requires decidability of ∈ *)
+Abort.
 
 Theorem union_comm {zf : ZF} : ∀ A B, A ⋃ B = B ⋃ A.
 Proof.
