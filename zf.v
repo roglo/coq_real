@@ -14,16 +14,16 @@ Reserved Notation "'∅'" (at level 0).
 
 Class ZF := mkZF
   { zfset : Type;
-    zfvoid : zfset where "'∅'" := (zfvoid);
     zfmem : zfset → zfset → Prop
       where "x '∈' S" := (zfmem x S)
       and "x '∉' S" := (¬ zfmem x S);
-    zfvoid_prop : ∀ x, ¬ (zfmem x zfvoid);
+    zfvoid : zfset where "'∅'" := (zfvoid);
     zfincl A B := ∀ x, x ∈ A → x ∈ B where "A '⊂' B" := (zfincl A B);
     zfunion : zfset → zfset → zfset where "A '⋃' B" := (zfunion A B);
     zfinter : zfset → zfset → zfset where "A '∩' B" := (zfinter A  B);
     zfextens : ∀ A B, A ⊂ B → B ⊂ A → A = B;
     zffound : ∀ A, A ≠ ∅ → ∃ B, B ∈ A ∧ B ∩ A = ∅;
+    zfvoid_prop : ∀ x, x ∉ ∅;
     zfunion_prop : ∀ A B x, x ∈ (A ⋃ B) ↔ x ∈ A ∨ x ∈ B;
     zfinter_prop : ∀ A B x, x ∈ (A ∩ B) ↔ x ∈ A ∧ x ∈ B }.
 
