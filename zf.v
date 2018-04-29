@@ -25,7 +25,8 @@ Class ZF := mkZF
     zffound : ∀ A, A ≠ ∅ → ∃ B, B ∈ A ∧ B ∩ A = ∅;
     zfvoid_prop : ∀ x, x ∉ ∅;
     zfunion_prop : ∀ A B x, x ∈ (A ⋃ B) ↔ x ∈ A ∨ x ∈ B;
-    zfinter_prop : ∀ A B x, x ∈ (A ∩ B) ↔ x ∈ A ∧ x ∈ B }.
+    zfinter_prop : ∀ A B x, x ∈ (A ∩ B) ↔ x ∈ A ∧ x ∈ B;
+    zfdecid : ∀ A B : zfset, { A = B } + { A ≠ B } }.
 
 Notation "'∅'" := (zfvoid).
 Notation "x '∈' S" := (zfmem x S).
@@ -36,9 +37,12 @@ Notation "A '∩' B" := (zfinter A B).
 
 Theorem not_elem_itself {zf : ZF} : ∀ A : zfset, A ∉ A.
 Proof.
-intros; intros H.
-(* requires decidability of ∈ *)
-Abort.
+intros.
+destruct (zfdecid A ∅) as [H| H].
+-subst A; apply zfvoid_prop.
+-specialize (zffound A H) as (B & H1 & H2).
+ move B before A.
+...
 
 Theorem union_comm {zf : ZF} : ∀ A B, A ⋃ B = B ⋃ A.
 Proof.
