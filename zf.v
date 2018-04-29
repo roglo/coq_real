@@ -27,8 +27,7 @@ Class ZF := mkZF
     zfempty_prop : ∀ x, x ∉ ∅;
     zfsingle_prop : ∀ x y, y ∈ zfsingle x ↔ y = x;
     zfunion_prop : ∀ A B x, x ∈ (A ⋃ B) ↔ x ∈ A ∨ x ∈ B;
-    zfinter_prop : ∀ A B x, x ∈ (A ∩ B) ↔ x ∈ A ∧ x ∈ B (*;
-    zfdecid : ∀ A B : zfset, { A = B } + { A ≠ B }*) }.
+    zfinter_prop : ∀ A B x, x ∈ (A ∩ B) ↔ x ∈ A ∧ x ∈ B }.
 
 Notation "'∅'" := (zfempty).
 Notation "x '∈' S" := (zfmem x S).
