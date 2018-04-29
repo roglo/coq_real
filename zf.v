@@ -61,6 +61,14 @@ apply zfextens; intros x H.
 -now apply zfempty_prop in H.
 Qed.
 
+Theorem subset_of_empty {zf : ZF} : ∀ A, A ⊂ ∅ → A = ∅.
+Proof.
+intros * HA.
+apply zfextens; intros x H.
+-now apply HA.
+-now apply zfempty_prop in H.
+Qed.
+
 ...
 
 Theorem not_elem_itself {zf : ZF} : ∀ A : zfset, A ∉ A.
