@@ -199,61 +199,6 @@ Qed.
 
 ...
 
-Notation "A '⋃' B" := (zfunion A B) (at level 50).
-...
-
-Record ZF := mkZF
-  { zfb : ZF_base;
-    zfvem : ∀ x, x ∉ ∅;
-    zfext : ∀ A B, (∀ x, x ∈ A ↔ x ∈ B) → A = B;
-    zfpai : ∀ a b, ∃ c, ∀ x, x ∈ c ↔ x = a ∨ x = b;
-    zfreu : ∀ a, ∃ c, ∀ x, x ∈ c ↔ (∃ y, y ∈ a ∧ x ∈ y);
-    zfpar : ∀ a, ∃ c, ∀ x, x ∈ c ↔ x ⊂ a;
-    zfinf : ∃ Y, ∅ ∈ Y ∧ ∀ y, y ∈ Y → y ⋃ {y} ∈ Y }.
-
-Record ZF := mkZF
-  { zfset : Type;
-    zfvoi : zfset;
-    zfmem : zfset → zfset → Prop;
-    zfvem : ∀ x, ¬ zfmem x zfvoi;
-    zfext : ∀ A B, (∀ x, zfmem x A ↔ zfmem x B) → A = B;
-    zfpai : ∀ a b, ∃ c, ∀ x, zfmem x c ↔ x = a ∨ x = b;
-    zfreu : ∀ a, ∃ c, ∀ x, zfmem x c ↔ (∃ y, zfmem y a ∧ zfmem x y);
-    zfpar : ∀ a, ∃ c, ∀ x, zfmem x c ↔ (∀ y, zfmem y x → zfmem y a);
-    zfinf : ∃ Y,
-      zfmem zfvoi Y ∧
-      ∀ y, zfmem y Y → zfmem (y ∪ {y}) Y }.
-
-Print ZF.
-
-Notation "x '∈' S" := (zfmem _ x S) (at level 60).
-
-Record set1 T := mkset { setp : T → Prop }.
-Arguments mkset [T] _.
-Arguments setp [T] _ _.
-Axiom ext1 : ∀ T (A B : set1 T), (∀ x, setp A x ↔ setp B x) → A = B.
-Theorem pair1 {T} : ∀ (a b : T), ∃ c, ∀ x,
-  setp c x ↔ x = a ∨ x = b.
-Proof.
-intros.
-(* exists (mkset (λ d, d = (a, b))) *)
-Abort.
-
-Definition set T := mkZF (set1 T) (λ e s, setp s e) (ext1 T).
-
-...
-
-
-Record set T := mkset { setp : T → Prop }.
-Arguments mkset [T] _.
-Arguments setp [T] _ _.
-
-Notation "x '∈' S" := (setp S x) (at level 60).
-Definition set_incl {T} (A B : set T) := ∀ x, x ∈ A → x ∈ B.
-Notation "A '⊆' B" := (set_incl A B) (at level 70).
-Definition set_eq {T} (A B : set T) := A ⊆ B ∧ B ⊆ A.
-Notation "A '≡' B" := (set_eq A B) (at level 70).
-
 Record category {U} := mkcat
   { ob : set U;
     mor : set (U * U);
