@@ -19,16 +19,28 @@ Definition zfincl {zfb : ZF_base} A B := ∀ x, x ∈ A → x ∈ B.
 
 Notation "A '⊂' B" := (zfincl A B) (at level 60).
 
+Reserved Notation "A '⋃' B" (at level 50).
+
 Class ZF := mkZF
   { zfb : ZF_base;
-    zfunion : zfset → zfset → zfset;
+    zfunion : zfset → zfset → zfset
+    where "A '⋃' B" := (zfunion A B);
     zfinter : zfset → zfset → zfset;
     zfextens : ∀ A B, A ⊂ B → B ⊂ A → A = B;
-    zfunion_prop : ∀ A B x, x ∈ (zfunion A B) ↔ x ∈ A ∨ x ∈ B;
+    zffound : ∀ A, A ≠ ∅ → ∃ B, B ∈ A ∧ zfinter B A = ∅;
+    zfunion_prop : ∀ A B x, x ∈ (A ⋃ B) ↔ x ∈ A ∨ x ∈ B;
     zfinter_prop : ∀ A B x, x ∈ (zfinter A B) ↔ x ∈ A ∧ x ∈ B }.
 
 Notation "A '⋃' B" := (zfunion A B) (at level 50).
 Notation "A '∩' B" := (zfinter A B) (at level 40).
+
+Theorem not_elem_itself {zfb : ZF_base} {zf : ZF} : ∀ A : zfset, A ∉ A.
+Proof.
+intros; intros H.
+specialize (zfvoid_prop A) as H1.
+apply H1; clear H1.
+
+...
 
 Theorem union_comm {zf : ZF} : ∀ A B, A ⋃ B = B ⋃ A.
 Proof.
