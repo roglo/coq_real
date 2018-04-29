@@ -11,6 +11,7 @@ Reserved Notation "A '⊂' B" (at level 60).
 Reserved Notation "A '⋃' B" (at level 50).
 Reserved Notation "A '∩' B" (at level 40).
 Reserved Notation "'∅'" (at level 0).
+Reserved Notation "'〈' x '〉'" (at level 0).
 
 Class ZF := mkZF
   { zfset : Type;
@@ -18,11 +19,12 @@ Class ZF := mkZF
       where "x '∈' S" := (zfmem x S)
       and "x '∉' S" := (¬ zfmem x S);
     zfempty : zfset where "'∅'" := (zfempty);
-    zfsingle : zfset → zfset;
+    zfsingle : zfset → zfset where "'〈' x '〉'" := (zfsingle x);
     zfincl A B := ∀ x, x ∈ A → x ∈ B where "A '⊂' B" := (zfincl A B);
     zfunion : zfset → zfset → zfset where "A '⋃' B" := (zfunion A B);
     zfinter : zfset → zfset → zfset where "A '∩' B" := (zfinter A  B);
     zfextens : ∀ A B, A ⊂ B → B ⊂ A → A = B;
+    zfpart : ∀ E, ∃ P, ∀ A, (A ∈ P ↔ A ⊂ E);
     zffound : ∀ A, A ≠ ∅ → ∃ B, B ∈ A ∧ B ∩ A = ∅;
     zfempty_prop : ∀ x, x ∉ ∅;
     zfsingle_prop : ∀ x y, y ∈ zfsingle x ↔ y = x;
@@ -30,6 +32,7 @@ Class ZF := mkZF
     zfinter_prop : ∀ A B x, x ∈ (A ∩ B) ↔ x ∈ A ∧ x ∈ B }.
 
 Notation "'∅'" := (zfempty).
+Notation "'〈' x '〉'" := (zfsingle x).
 Notation "x '∈' S" := (zfmem x S).
 Notation "x '∉' S" := (¬ zfmem x S).
 Notation "A '⊂' B" := (zfincl A B).
@@ -68,7 +71,7 @@ apply zfextens; intros x H.
 -now apply zfempty_prop in H.
 Qed.
 
-Theorem not_elem_itself {zf : ZF} : ∀ A : zfset, A ∉ A.
+Theorem not_elem_itself {zf : ZF} : ∀ A, A ∉ A.
 Proof.
 intros A H1.
 assert (H2 : zfsingle A ≠ ∅). {
