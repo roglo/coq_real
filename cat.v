@@ -135,16 +135,46 @@ Require List.
 Import List.ListNotations.
 Open Scope list_scope.
 
+Class ZF_base := mkZF_base
+  { zfset : Type;
+    zfvoi : zfset;
+    zfmem : zfset → zfset → Prop }.
+
+Notation "∅" := (zfvoi).
+Notation "x '∈' S" := (zfmem x S) (at level 60).
+Notation "x '∉' S" := (¬ zfmem x S) (at level 60).
+
+Definition zfunion {zfb : ZF_base} A B := ∀ x, x ∈ A ∨ x ∈ B.
+Definition zfincl {zfb : ZF_base} A B := ∀ x, x ∈ A → x ∈ B.
+
+Notation "A '⋃' B" := (zfunion A B) (at level 50).
+Notation "A '⊂' B" := (zfincl A B) (at level 60).
+
+Record ZF := mkZF
+  { zfb : ZF_base;
+    zfvem : ∀ x, x ∉ ∅;
+    zfext : ∀ A B, (∀ x, x ∈ A ↔ x ∈ B) → A = B;
+    zfpai : ∀ a b, ∃ c, ∀ x, x ∈ c ↔ x = a ∨ x = b;
+    zfreu : ∀ a, ∃ c, ∀ x, x ∈ c ↔ (∃ y, y ∈ a ∧ x ∈ y);
+    zfpar : ∀ a, ∃ c, ∀ x, x ∈ c ↔ x ⊂ a;
+    zfinf : ∃ Y, ∅ ∈ Y ∧ ∀ y, y ∈ Y → y ⋃ {y} ∈ Y }.
+
 Record ZF := mkZF
   { zfset : Type;
+    zfvoi : zfset;
     zfmem : zfset → zfset → Prop;
+    zfvem : ∀ x, ¬ zfmem x zfvoi;
     zfext : ∀ A B, (∀ x, zfmem x A ↔ zfmem x B) → A = B;
     zfpai : ∀ a b, ∃ c, ∀ x, zfmem x c ↔ x = a ∨ x = b;
-    zfuni : ∀ a, ∃ c, ∀ x, zfmem x c ↔ ∃ y, zfmem y a ∧ zfmem x y }.
+    zfreu : ∀ a, ∃ c, ∀ x, zfmem x c ↔ (∃ y, zfmem y a ∧ zfmem x y);
+    zfpar : ∀ a, ∃ c, ∀ x, zfmem x c ↔ (∀ y, zfmem y x → zfmem y a);
+    zfinf : ∃ Y,
+      zfmem zfvoi Y ∧
+      ∀ y, zfmem y Y → zfmem (y ∪ {y}) Y }.
+
+Print ZF.
 
 Notation "x '∈' S" := (zfmem _ x S) (at level 60).
-
-...
 
 Record set1 T := mkset { setp : T → Prop }.
 Arguments mkset [T] _.
@@ -154,10 +184,10 @@ Theorem pair1 {T} : ∀ (a b : T), ∃ c, ∀ x,
   setp c x ↔ x = a ∨ x = b.
 Proof.
 intros.
-exists (mkset (λ d, d = (a, b))).
-...
+(* exists (mkset (λ d, d = (a, b))) *)
+Abort.
 
-Definition set T := mkZF (set1 T) T (λ e s, setp s e) (ext1 T) (pair1).
+Definition set T := mkZF (set1 T) (λ e s, setp s e) (ext1 T).
 
 ...
 
