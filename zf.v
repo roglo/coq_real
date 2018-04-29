@@ -19,22 +19,13 @@ Definition zfincl {zfb : ZF_base} A B := ∀ x, x ∈ A → x ∈ B.
 
 Notation "A '⊂' B" := (zfincl A B) (at level 60).
 
-Definition extensionality {zfb : ZF_base} := ∀ A B,
-  A ⊂ B → B ⊂ A → A = B.
-
-Definition zfunion_def {zfb : ZF_base} zfunion := ∀ A B x,
-  x ∈ (zfunion A B) ↔ x ∈ A ∨ x ∈ B.
-
-Definition zfinter_def {zfb : ZF_base} zfinter := ∀ A B x,
-  x ∈ (zfinter A B) ↔ x ∈ A ∧ x ∈ B.
-
 Class ZF := mkZF
   { zfb : ZF_base;
-    zfextens : extensionality;
     zfunion : zfset → zfset → zfset;
     zfinter : zfset → zfset → zfset;
-    zfunion_prop : zfunion_def zfunion;
-    zfinter_prop : zfinter_def zfinter }.
+    zfextens : ∀ A B, A ⊂ B → B ⊂ A → A = B;
+    zfunion_prop : ∀ A B x, x ∈ (zfunion A B) ↔ x ∈ A ∨ x ∈ B;
+    zfinter_prop : ∀ A B x, x ∈ (zfinter A B) ↔ x ∈ A ∧ x ∈ B }.
 
 Notation "A '⋃' B" := (zfunion A B) (at level 50).
 Notation "A '∩' B" := (zfinter A B) (at level 40).
