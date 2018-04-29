@@ -137,18 +137,153 @@ Open Scope list_scope.
 
 Class ZF_base := mkZF_base
   { zfset : Type;
-    zfvoi : zfset;
-    zfmem : zfset → zfset → Prop }.
+    zfvoid : zfset;
+    zfmem : zfset → zfset → Prop;
+    zfvoid_prop : ∀ x, ¬ (zfmem x zfvoid) }.
 
-Notation "∅" := (zfvoi).
+Notation "∅" := (zfvoid).
 Notation "x '∈' S" := (zfmem x S) (at level 60).
 Notation "x '∉' S" := (¬ zfmem x S) (at level 60).
 
-Definition zfunion {zfb : ZF_base} A B := ∀ x, x ∈ A ∨ x ∈ B.
 Definition zfincl {zfb : ZF_base} A B := ∀ x, x ∈ A → x ∈ B.
 
-Notation "A '⋃' B" := (zfunion A B) (at level 50).
 Notation "A '⊂' B" := (zfincl A B) (at level 60).
+
+Definition zfunion_def {zfb : ZF_base} zfunion := ∀ A B x,
+  x ∈ (zfunion A B) ↔ x ∈ A ∨ x ∈ B.
+
+Definition zfinter_def {zfb : ZF_base} zfinter := ∀ A B x,
+  x ∈ (zfinter A B) ↔ x ∈ A ∧ x ∈ B.
+
+Class ZF := mkZF
+  { zfb : ZF_base;
+    zfunion : zfset → zfset → zfset;
+    zfinter : zfset → zfset → zfset;
+    zfunion_prop : zfunion_def zfunion;
+    zfinter_prop : zfinter_def zfinter;
+    zfextens : ∀ A B, (∀ x, x ∈ A ↔ x ∈ B) → A = B }.
+
+Notation "A '⋃' B" := (zfunion A B) (at level 50).
+Notation "A '∩' B" := (zfinter A B) (at level 40).
+
+Theorem union_comm {zf : ZF} : ∀ A B, A ⋃ B = B ⋃ A.
+Proof.
+intros.
+apply zfextens; intros x.
+split; intros H.
+-apply zfunion_prop in H.
+ apply zfunion_prop.
+ now apply or_comm.
+-apply zfunion_prop in H.
+ apply zfunion_prop.
+ now apply or_comm.
+Qed.
+
+Theorem union_half_assoc {zf : ZF} : ∀ A B C x,
+  x ∈ (C ⋃ B) ⋃ A → x ∈ (A ⋃ B) ⋃ C.
+Proof.
+intros * H.
+apply zfunion_prop in H.
+apply zfunion_prop.
+destruct H as [H| H].
+-apply zfunion_prop in H.
+ destruct H as [H| H]; [ now right | ].
+ now left; apply zfunion_prop; right.
+-now left; apply zfunion_prop; left.
+Qed.
+
+Theorem union_assoc {zf : ZF} : ∀ A B C, A ⋃ (B ⋃ C) = (A ⋃ B) ⋃ C.
+Proof.
+intros.
+rewrite union_comm.
+replace (B ⋃ C) with (C ⋃ B) by apply union_comm.
+apply zfextens; intros x.
+now split; intros H; apply union_half_assoc.
+Qed.
+
+Theorem inter_comm {zf : ZF} : ∀ A B, A ∩ B = B ∩ A.
+Proof.
+intros.
+apply zfextens; intros x.
+split; intros H.
+-apply zfinter_prop in H.
+ apply zfinter_prop.
+ now apply and_comm.
+-apply zfinter_prop in H.
+ apply zfinter_prop.
+ now apply and_comm.
+Qed.
+
+Theorem inter_half_assoc {zf : ZF} : ∀ A B C x,
+  x ∈ (C ∩ B) ∩ A → x ∈ (A ∩ B) ∩ C.
+Proof.
+intros * H.
+apply zfinter_prop in H.
+apply zfinter_prop.
+destruct H as (H1, H2).
+apply zfinter_prop in H1.
+destruct H1 as (H1, H3).
+split; [ | easy ].
+now apply zfinter_prop.
+Qed.
+
+Theorem inter_assoc {zf : ZF} : ∀ A B C, A ∩ (B ∩ C) = (A ∩ B) ∩ C.
+Proof.
+intros.
+rewrite inter_comm.
+replace (B ∩ C) with (C ∩ B) by apply inter_comm.
+apply zfextens; intros x.
+now split; intros H; apply inter_half_assoc.
+Qed.
+
+Theorem inter_union_distr {zf : ZF} : ∀ A B C,
+  A ∩ (B ⋃ C) = (A ∩ B) ⋃ (A ∩ C).
+Proof.
+intros.
+apply zfextens; intros x.
+split; intros H.
+-apply zfinter_prop in H.
+ destruct H as (H1, H2).
+ apply zfunion_prop in H2.
+ apply zfunion_prop.
+ destruct H2 as [H2| H2].
+ +now left; apply zfinter_prop.
+ +now right; apply zfinter_prop.
+-apply zfunion_prop in H.
+ apply zfinter_prop.
+ destruct H as [H| H]; apply zfinter_prop in H.
+ +split; [ easy | ].
+  now apply zfunion_prop; left.
+ +split; [ easy | ].
+  now apply zfunion_prop; right.
+Qed.
+
+Theorem union_inter_distr {zf : ZF} : ∀ A B C,
+  A ⋃ (B ∩ C) = (A ⋃ B) ∩ (A ⋃ C).
+Proof.
+intros.
+apply zfeq_prop.
+split; intros x H.
+-apply zfunion_prop in H.
+ apply zfinter_prop.
+ destruct H as [H| H].
+ +now split; apply zfunion_prop; left.
+ +apply zfinter_prop in H.
+  now split; apply zfunion_prop; right.
+-apply zfinter_prop in H.
+ destruct H as (H1, H2).
+ apply zfunion_prop in H1.
+ apply zfunion_prop in H2.
+ apply zfunion_prop.
+ destruct H1 as [H1| H1]; [ now left | ].
+ destruct H2 as [H2| H2]; [ now left | ].
+ now right; apply zfinter_prop.
+Qed.
+
+...
+
+Notation "A '⋃' B" := (zfunion A B) (at level 50).
+...
 
 Record ZF := mkZF
   { zfb : ZF_base;
