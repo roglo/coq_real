@@ -18,18 +18,23 @@ Class ZF := mkZF
     zfmem : zfset → zfset → Prop
       where "x '∈' S" := (zfmem x S)
       and "x '∉' S" := (¬ zfmem x S);
+    zfincl A B := ∀ x, x ∈ A → x ∈ B where "A '⊂' B" := (zfincl A B);
+    zfextens : ∀ A B, A ⊂ B → B ⊂ A → A = B;
+    zfpair : ∀ a b, ∃ c, ∀ x, x ∈ c ↔ x = a ∨ x = b;
     zfempty : zfset where "'∅'" := (zfempty);
     zfsingle : zfset → zfset where "'〈' x '〉'" := (zfsingle x);
-    zfincl A B := ∀ x, x ∈ A → x ∈ B where "A '⊂' B" := (zfincl A B);
+
     zfunion : zfset → zfset → zfset where "A '⋃' B" := (zfunion A B);
     zfinter : zfset → zfset → zfset where "A '∩' B" := (zfinter A  B);
-    zfextens : ∀ A B, A ⊂ B → B ⊂ A → A = B;
     zfpart : ∀ E, ∃ P, ∀ A, (A ∈ P ↔ A ⊂ E);
+    zfinf : zfset;
     zffound : ∀ A, A ≠ ∅ → ∃ B, B ∈ A ∧ B ∩ A = ∅;
+
     zfempty_prop : ∀ x, x ∉ ∅;
     zfsingle_prop : ∀ x y, y ∈ zfsingle x ↔ y = x;
     zfunion_prop : ∀ A B x, x ∈ (A ⋃ B) ↔ x ∈ A ∨ x ∈ B;
-    zfinter_prop : ∀ A B x, x ∈ (A ∩ B) ↔ x ∈ A ∧ x ∈ B }.
+    zfinter_prop : ∀ A B x, x ∈ (A ∩ B) ↔ x ∈ A ∧ x ∈ B;
+    zfinf_prop : ∅ ∈ zfinf ∧ ∀ y, (y ∈ zfinf → y ⋃ zfsingle y ∈ zfinf) }.
 
 Notation "'∅'" := (zfempty).
 Notation "'〈' x '〉'" := (zfsingle x).
