@@ -212,30 +212,11 @@ apply zfextens; intros x H.
  now right; apply zfinter_prop.
 Qed.
 
-...
-
-Record category {U} := mkcat
-  { ob : set U;
-    mor : set (U * U);
-    src : ∀ f, f ∈ mor → ∃ A, A ∈ ob ∧ fst f = A;
-    dst : ∀ f, f ∈ mor → ∃ B, B ∈ ob ∧ snd f = B }.
+(* lemme du serpent sur ℤ *)
 
 ...
 
-Record element {T} (S : set T) :=
-  { el_val : T; in_set : el_val ∈ S }.
-
-Record group {T} := mkgr
-  { gr_set : set T;
-    gr_zero : element gr_set }.
-
-Definition zero {T} (A : @group T) := el_val (gr_set A) (gr_zero _).
-
-Record gmorph {T} A B := mkgm
-  { gm_fun : T → T;
-    gr_prop : ∀ x, x ∈ gr_set A → gm_fun x ∈ gr_set B }.
-
-Definition Im {T} (A : group) (B : group) (f : T → T) :=
+Definition Im (f : Z → Z) :=
   mkset (λ b, b ∈ gr_set B ∧ ∃ a, a ∈ gr_set A ∧ f a = b).
 Definition Ker {T} (A : group) (B : group) (f : T → T) :=
   mkset (λ a, a ∈ gr_set A ∧ f a = zero B).
