@@ -101,6 +101,18 @@ apply zfextens; intros x H.
 -now apply zfinter_prop in H.
 Qed.
 
+Theorem pair_same {zf : ZF} : ∀ x, zfpair x x = zfsingle x.
+Proof.
+intros.
+apply zfextens; intros y H.
+-apply zfsingle_prop.
+ apply zfpair_prop in H.
+ now destruct H.
+-apply zfpair_prop.
+ apply zfsingle_prop in H.
+ now left.
+Qed.
+
 Theorem union_comm {zf : ZF} : ∀ A B, A ⋃ B = B ⋃ A.
 Proof.
 intros.
