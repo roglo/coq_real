@@ -29,15 +29,16 @@ Class ZF := mkZF
     zfinter : zfset → zfset → zfset where "A '∩' B" := (zfinter A  B);
     zfpart : zfset → zfset;
     zfinf : zfset;
-    zffound : ∀ A, A ≠ ∅ → ∃ B, B ∈ A ∧ B ∩ A = ∅;
+    zffnd : ∀ A, A ≠ ∅ → zfset;
 
     zfpair_prop : ∀ a b x, x ∈ 〈 a, b 〉 ↔ x = a ∨ x = b;
+    zfsingle_prop : ∀ x y, y ∈ 〈 x 〉 ↔ y = x;
     zfempty_prop : ∀ x, x ∉ ∅;
-    zfsingle_prop : ∀ x y, y ∈ zfsingle x ↔ y = x;
-    zfunion_prop : ∀ A B x, x ∈ (A ⋃ B) ↔ x ∈ A ∨ x ∈ B;
-    zfinter_prop : ∀ A B x, x ∈ (A ∩ B) ↔ x ∈ A ∧ x ∈ B;
-    zfpart_prop : ∀ E A, (A ∈ zfpart E ↔ A ⊂ E);
-    zfinf_prop : ∅ ∈ zfinf ∧ ∀ y, (y ∈ zfinf → y ⋃ zfsingle y ∈ zfinf) }.
+    zfunion_prop : ∀ A B x, x ∈ A ⋃ B ↔ x ∈ A ∨ x ∈ B;
+    zfinter_prop : ∀ A B x, x ∈ A ∩ B ↔ x ∈ A ∧ x ∈ B;
+    zfpart_prop : ∀ E A, A ∈ zfpart E ↔ A ⊂ E;
+    zfinf_prop : ∅ ∈ zfinf ∧ ∀ y, y ∈ zfinf → y ⋃ zfsingle y ∈ zfinf;
+    zffnd_prop : ∀ A (p : A ≠ ∅), zffnd A p ∈ A ∧ zffnd A p ∩ A = ∅ }.
 
 Notation "'∅'" := (zfempty).
 Notation "'〈' x '〉'" := (zfsingle x).
@@ -89,9 +90,12 @@ assert (H2 : zfsingle A ≠ ∅). {
   rewrite H2 in H3.
   now apply zfempty_prop in H3.
 }
-specialize (zffound (zfsingle A) H2) as (B & H3 & H4).
-apply zfsingle_prop in H3; subst B.
-rewrite <- H4 in H2; apply H2.
+specialize (zffnd_prop (zfsingle A) H2) as (H3 & H4).
+apply zfsingle_prop in H3.
+rewrite H3 in H4.
+clear H3.
+rewrite <- H4 in H2.
+apply H2.
 apply zfextens; intros x H.
 -apply zfinter_prop.
  split; [ | easy ].
