@@ -12,6 +12,7 @@ Reserved Notation "A '⋃' B" (at level 50).
 Reserved Notation "A '∩' B" (at level 40).
 Reserved Notation "'∅'" (at level 0).
 Reserved Notation "'〈' x '〉'" (at level 0).
+Reserved Notation "'〈' x , y '〉'" (at level 0).
 
 Class ZF := mkZF
   { zfset : Type;
@@ -20,24 +21,27 @@ Class ZF := mkZF
       and "x '∉' S" := (¬ zfmem x S);
     zfincl A B := ∀ x, x ∈ A → x ∈ B where "A '⊂' B" := (zfincl A B);
     zfextens : ∀ A B, A ⊂ B → B ⊂ A → A = B;
-    zfpair : ∀ a b, ∃ c, ∀ x, x ∈ c ↔ x = a ∨ x = b;
-    zfempty : zfset where "'∅'" := (zfempty);
+    zfpair : zfset → zfset → zfset where "'〈' x , y '〉'" := (zfpair x y);
     zfsingle : zfset → zfset where "'〈' x '〉'" := (zfsingle x);
+    zfempty : zfset where "'∅'" := (zfempty);
 
     zfunion : zfset → zfset → zfset where "A '⋃' B" := (zfunion A B);
     zfinter : zfset → zfset → zfset where "A '∩' B" := (zfinter A  B);
-    zfpart : ∀ E, ∃ P, ∀ A, (A ∈ P ↔ A ⊂ E);
+    zfpart : zfset → zfset;
     zfinf : zfset;
     zffound : ∀ A, A ≠ ∅ → ∃ B, B ∈ A ∧ B ∩ A = ∅;
 
+    zfpair_prop : ∀ a b x, x ∈ 〈 a, b 〉 ↔ x = a ∨ x = b;
     zfempty_prop : ∀ x, x ∉ ∅;
     zfsingle_prop : ∀ x y, y ∈ zfsingle x ↔ y = x;
     zfunion_prop : ∀ A B x, x ∈ (A ⋃ B) ↔ x ∈ A ∨ x ∈ B;
     zfinter_prop : ∀ A B x, x ∈ (A ∩ B) ↔ x ∈ A ∧ x ∈ B;
+    zfpart_prop : ∀ E A, (A ∈ zfpart E ↔ A ⊂ E);
     zfinf_prop : ∅ ∈ zfinf ∧ ∀ y, (y ∈ zfinf → y ⋃ zfsingle y ∈ zfinf) }.
 
 Notation "'∅'" := (zfempty).
 Notation "'〈' x '〉'" := (zfsingle x).
+Notation "'〈' x , y '〉'" := (zfpair x y).
 Notation "x '∈' S" := (zfmem x S).
 Notation "x '∉' S" := (¬ zfmem x S).
 Notation "A '⊂' B" := (zfincl A B).
