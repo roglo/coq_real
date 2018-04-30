@@ -27,18 +27,15 @@ Class ZF := mkZF
 
     zfunion : zfset → zfset → zfset where "A '⋃' B" := (zfunion A B);
     zfinter : zfset → zfset → zfset where "A '∩' B" := (zfinter A  B);
-    zfpart : zfset → zfset;
-    zfinf : zfset;
-    zffnd : ∀ A, A ≠ ∅ → zfset;
+    zfpart : ∀ a, ∃ c, ∀ x, x ∈ c → x ⊂ a;
+    zfinf : ∃ Y, ∅ ∈ Y ∧∀ y, y ∈ Y → y ⋃ 〈 y 〉 ∈ Y;
+    zffound : ∀ x, x ≠ ∅ → ∃ y, y ∈ x ∧ y ∩ x = ∅;
 
     zfpair_prop : ∀ a b x, x ∈ 〈 a, b 〉 ↔ x = a ∨ x = b;
     zfsingle_prop : ∀ x y, y ∈ 〈 x 〉 ↔ y = x;
     zfempty_prop : ∀ x, x ∉ ∅;
     zfunion_prop : ∀ A B x, x ∈ A ⋃ B ↔ x ∈ A ∨ x ∈ B;
-    zfinter_prop : ∀ A B x, x ∈ A ∩ B ↔ x ∈ A ∧ x ∈ B;
-    zfpart_prop : ∀ E A, A ∈ zfpart E ↔ A ⊂ E;
-    zfinf_prop : ∅ ∈ zfinf ∧ ∀ y, y ∈ zfinf → y ⋃ zfsingle y ∈ zfinf;
-    zffnd_prop : ∀ A (p : A ≠ ∅), zffnd A p ∈ A ∧ zffnd A p ∩ A = ∅ }.
+    zfinter_prop : ∀ A B x, x ∈ A ∩ B ↔ x ∈ A ∧ x ∈ B }.
 
 Notation "'∅'" := (zfempty).
 Notation "'〈' x '〉'" := (zfsingle x).
@@ -90,7 +87,7 @@ assert (H2 : zfsingle A ≠ ∅). {
   rewrite H2 in H3.
   now apply zfempty_prop in H3.
 }
-specialize (zffnd_prop (zfsingle A) H2) as (H3 & H4).
+specialize (zffound (zfsingle A) H2) as (B & H3 & H4).
 apply zfsingle_prop in H3.
 rewrite H3 in H4.
 clear H3.
@@ -214,6 +211,24 @@ Qed.
 
 (* lemme du serpent sur ℤ *)
 
+(* mmm... chais pas ; faudrait que je regarde si ça s'applique bien à ℤ ;
+   c'est quoi "0", par exemple, comme ensemble ? *)
+
+...
+
+Lemma snake :
+  ∀ (f g f' g' a b c : Z → Z) (g : B → C) (f' : A' → B') (g' : B' → C')
+     (a : A → A') (b : B → B') (c : C → C')
+     (cz : C → False) (za' : False → A')
+  (s : exact_sequence (Seq2 f (Seq2 g (Seq2 cz Seq1))))
+  (s' : exact_sequence (Seq2 za' (Seq2 f' (Seq2 g' Seq1)))),
+  False.
+Proof.
+intros.
+
+...
+
+(* *)
 ...
 
 Definition Im (f : Z → Z) :=
