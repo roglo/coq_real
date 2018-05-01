@@ -236,29 +236,58 @@ Record category {zf : ZF} := mkcat
       a₁ = zf_ord_pair o₁ o₂ ∧ a₂ = zf_ord_pair o₂ o₃ ∧
       ca_comp a₁ a₂ = zf_ord_pair o₁ o₃ }.
 
+(*
 Definition cat_Set :=
   {| ca_obj := ... ???
 
 Definition cat_Mat := ...
+...
+*)
 
+Record Group :=
+  { gr_typ : Type;
+    gr_zero : gr_typ }.
+
+Record HomGr (A B : Group) :=
+  { H_app : gr_typ A → gr_typ B;
+    H_prop : H_app (gr_zero A) = gr_zero B }.
+
+Inductive Gr0_set := G0 : Gr0_set.
+Definition Gr0 := {| gr_typ := Gr0_set; gr_zero := G0 |}.
+
+Definition is_initial (G : Group) :=
+  ∀ H (f g : HomGr G H) (x : gr_typ G), H_app G H f x = H_app G H g x.
+Definition is_final (G : Group) :=
+  ∀ H (f g : HomGr H G) (x : gr_typ H), H_app H G f x = H_app H G g x.
+Definition is_null (G : Group) := is_initial G ∧ is_final G.
+
+Theorem is_null_Gr0 : is_null Gr0.
+Proof.
+split; intros H f g x.
+-destruct f as (fa, fp); simpl in fp.
+ destruct g as (ga, gp); simpl in gp.
+ simpl.
+ destruct x.
+ now rewrite fp, gp.
+-destruct f as (fa, fp); simpl in fp.
+ destruct g as (ga, gp); simpl in gp.
+ simpl.
+ now destruct (fa x), (ga x).
+Qed.
+
+Definition Im G H (f : G → H) := { b : H | ∃ a : G, f a = b }.
 ...
 
-(* question fondamentale : qu'est-ce qu'un morphisme, finalement ? *)
-
-(* ci-dessous, c'est une application, mais c'est pas le cas le plus général
-   (par exemple "Mat" où le morphisme est une matrice) *)
-
-Record Hom {zf : ZF} (A B : zf_set) :=
-  { H_app : zf_set → zf_set;
-    H_prop : ∀ x, x ∈ A → H_app x ∈ B }.
-
-...
+Definition Im (f : Group → Group) :=
+  mkset (λ b, b ∈ gr_set B ∧ ∃ a, a ∈ gr_set A ∧ f a = b).
+Definition Ker {T} (A : group) (B : group) (f : T → T) :=
+  mkset (λ a, a ∈ gr_set A ∧ f a = zero B).
 
 Lemma snake {zf : ZF} :
-  ∀ (A B C A' B' C' : zf_set) (f : Hom A B) (g : Hom B C)
-     (f' : Hom A' B') (g' : Hom B' C')
-     (a : Hom A A') (b : Hom B B') (c : Hom C C')
-     (cz : Hom C False) (za' : False → A')
+  ∀ (A B C A' B' C' : Group) (f : HomGr A B) (g : HomGr B C)
+     (f' : HomGr A' B') (g' : HomGr B' C')
+     (a : HomGr A A') (b : HomGr B B') (c : HomGr C C')
+     (cz : HomGr C Gr0) (za' : HomGr Gr0 A')
 (*
   (s : exact_sequence (Seq2 f (Seq2 g (Seq2 cz Seq1))))
   (s' : exact_sequence (Seq2 za' (Seq2 f' (Seq2 g' Seq1))))*),
