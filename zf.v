@@ -275,13 +275,12 @@ split; intros H f g x.
  now destruct (fa x), (ga x).
 Qed.
 
-Definition Im G H (f : G → H) := { b : H | ∃ a : G, f a = b }.
-...
+Definition Im (G H : Group) (f : HomGr G H) :=
+  { b : gr_typ H | ∃ a : gr_typ G, H_app G H f a = b }.
+Definition Ker (G H : Group) (f : HomGr G H) :=
+  { a : gr_typ G | H_app G H f a = gr_zero H }.
 
-Definition Im (f : Group → Group) :=
-  mkset (λ b, b ∈ gr_set B ∧ ∃ a, a ∈ gr_set A ∧ f a = b).
-Definition Ker {T} (A : group) (B : group) (f : T → T) :=
-  mkset (λ a, a ∈ gr_set A ∧ f a = zero B).
+...
 
 Lemma snake {zf : ZF} :
   ∀ (A B C A' B' C' : Group) (f : HomGr A B) (g : HomGr B C)
