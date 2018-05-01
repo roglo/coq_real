@@ -225,16 +225,20 @@ Qed.
 
 Definition zf_ord_pair {zf : ZF} a b := zf_pair (zf_single a) (zf_pair a b).
 
-Theorem zf_pair_elim {zf : ZF} p : ∃ a b, p = zf_pair a b.
-Proof.
-Check zf_pair_prop.
-...
-
-Record category {zf : ZF} :=
+Record category {zf : ZF} := mkcat
   { ca_obj : zf_set;
     ca_arr : zf_set;
+    ca_comp : zf_set → zf_set → zf_set;
     ca_arr_prop : ∀ a, a ∈ ca_arr →
-      ∃ o₁ o₂, o₁ ∈ ca_obj ∧ o₂ = ca_obj ∧ a = zf_ord_pair o₁ o₂ }.
+      ∃ o₁ o₂, o₁ ∈ ca_obj ∧ o₂ = ca_obj ∧ a = zf_ord_pair o₁ o₂;
+    ca_comp_prop : ∀ a₁ a₂, a₁ ∈ ca_arr → a₂ ∈ ca_arr →
+      ∃ o₁ o₂ o₃, o₁ ∈ ca_obj ∧ o₂ ∈ ca_obj ∧ o₃ ∈ ca_obj ∧
+      a₁ = zf_ord_pair o₁ o₂ ∧ a₂ = zf_ord_pair o₂ o₃ ∧
+      ca_comp a₁ a₂ = zf_ord_pair o₁ o₃ }.
+
+Definition cat_Set := ...
+
+Definition cat_Mat := ...
 
 ...
 
