@@ -236,7 +236,8 @@ Record category {zf : ZF} := mkcat
       a₁ = zf_ord_pair o₁ o₂ ∧ a₂ = zf_ord_pair o₂ o₃ ∧
       ca_comp a₁ a₂ = zf_ord_pair o₁ o₃ }.
 
-Definition cat_Set := ...
+Definition cat_Set :=
+  {| ca_obj := ... ???
 
 Definition cat_Mat := ...
 
