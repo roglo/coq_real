@@ -275,73 +275,41 @@ split; intros H f g x.
  now destruct (fa x), (ga x).
 Qed.
 
-Record Sub A :=
-  { S_prop : A → Prop }.
+Record Sub A := { S_prop : A → Prop }.
 
-Definition Im (G H : Group) (f : HomGr G H) :=
+Definition Im {G H : Group} (f : HomGr G H) :=
   {| S_prop := λ b : gr_typ H, ∃ a : gr_typ G, H_app G H f a = b |}.
-Definition Ker (G H : Group) (f : HomGr G H) :=
+Definition Ker {G H : Group} (f : HomGr G H) :=
   {| S_prop := λ a : gr_typ G, H_app G H f a = gr_zero H |}.
 
-Inductive sequence (A : Group) :=
-  | Seq1 : sequence A
-  | Seq2 : ∀ B (f : HomGr A B), sequence B → sequence A.
+Definition eq_sub {A} (S T : Sub A) := ∀ a, S_prop _ S a ↔ S_prop _ T a.
 
-...
+Notation "S ≡ T" := (eq_sub S T) (at level 70).
 
-Fixpoint exact_sequence (A : Group) (S : sequence A) :=
+Inductive sequence {A : Group} :=
+  | Seq1 : sequence
+  | Seq2 : ∀ {B} (f : HomGr A B), @sequence B → sequence.
+
+Fixpoint exact_sequence {A : Group} (S : sequence) :=
   match S with
-  | Seq1 _ => True
-  | Seq2 _ B f S' =>
+  | Seq1 => True
+  | Seq2 f S' =>
       match S' with
-      | Seq1 _ => True
-      | Seq2 _ C g S'' => Im A B f = Ker A B g ∧ exact_sequence B S'
+      | Seq1 => True
+      | Seq2 g S'' => Im f ≡ Ker g ∧ exact_sequence S'
       end
   end.
-
-Arguments Seq1 {T} G.
-Arguments Seq2 {T} G f H.
-
-...
-
-Definition glop G H f := {| gr_typ := Im G H f; gr_zero := gr_zero H |}.
-
-...
 
 Lemma snake {zf : ZF} :
   ∀ (A B C A' B' C' : Group) (f : HomGr A B) (g : HomGr B C)
      (f' : HomGr A' B') (g' : HomGr B' C')
      (a : HomGr A A') (b : HomGr B B') (c : HomGr C C')
      (cz : HomGr C Gr0) (za' : HomGr Gr0 A')
-(*
-  (s : exact_sequence (Seq2 f (Seq2 g (Seq2 cz Seq1))))
-  (s' : exact_sequence (Seq2 za' (Seq2 f' (Seq2 g' Seq1))))*),
-  False.
+     (s : exact_sequence (Seq2 f (Seq2 g (Seq2 cz Seq1))))
+     (s' : exact_sequence (Seq2 za' (Seq2 f' (Seq2 g' Seq1)))),
+  exact_sequence (Seq2 a (Seq2 b Seq1)).
 Proof.
 intros.
-
-...
-
-(* lemme du serpent sur ℤ *)
-
-(* mmm... chais pas ; faudrait que je regarde si ça s'applique bien à ℤ ;
-   c'est quoi "0", par exemple, comme ensemble ? *)
-
-...
-
-Lemma snake :
-  ∀ (f g f' g' a b c : Z → Z) (g : B → C) (f' : A' → B') (g' : B' → C')
-     (a : A → A') (b : B → B') (c : C → C')
-     (cz : C → False) (za' : False → A')
-  (s : exact_sequence (Seq2 f (Seq2 g (Seq2 cz Seq1))))
-  (s' : exact_sequence (Seq2 za' (Seq2 f' (Seq2 g' Seq1)))),
-  False.
-Proof.
-intros.
-
-...
-
-(* *)
 ...
 
 Definition Im (f : Z → Z) :=
