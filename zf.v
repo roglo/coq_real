@@ -283,6 +283,25 @@ Definition Im (G H : Group) (f : HomGr G H) :=
 Definition Ker (G H : Group) (f : HomGr G H) :=
   {| S_prop := λ a : gr_typ G, H_app G H f a = gr_zero H |}.
 
+Inductive sequence (A : Group) :=
+  | Seq1 : sequence A
+  | Seq2 : ∀ B (f : HomGr A B), sequence B → sequence A.
+
+...
+
+Fixpoint exact_sequence (A : Group) (S : sequence A) :=
+  match S with
+  | Seq1 _ => True
+  | Seq2 _ B f S' =>
+      match S' with
+      | Seq1 _ => True
+      | Seq2 _ C g S'' => Im A B f = Ker A B g ∧ exact_sequence B S'
+      end
+  end.
+
+Arguments Seq1 {T} G.
+Arguments Seq2 {T} G f H.
+
 ...
 
 Definition glop G H f := {| gr_typ := Im G H f; gr_zero := gr_zero H |}.
