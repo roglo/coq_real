@@ -225,9 +225,14 @@ Qed.
 
 (* question fondamentale : qu'est-ce qu'un morphisme, finalement ? *)
 
+(* ci-dessous, c'est une application, mais c'est pas le cas le plus général
+   (par exemple "Mat" où le morphisme est une matrice) *)
+
 Record Hom {zf : ZF} (A B : zf_set) :=
   { H_app : zf_set → zf_set;
     H_prop : ∀ x, x ∈ A → H_app x ∈ B }.
+
+...
 
 Lemma snake {zf : ZF} :
   ∀ (A B C A' B' C' : zf_set) (f : Hom A B) (g : Hom B C)
