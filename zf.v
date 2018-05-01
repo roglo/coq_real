@@ -223,6 +223,21 @@ Qed.
 
 (* *)
 
+Definition zf_ord_pair {zf : ZF} a b := zf_pair (zf_single a) (zf_pair a b).
+
+Theorem zf_pair_elim {zf : ZF} p : ∃ a b, p = zf_pair a b.
+Proof.
+Check zf_pair_prop.
+...
+
+Record category {zf : ZF} :=
+  { ca_obj : zf_set;
+    ca_arr : zf_set;
+    ca_arr_prop : ∀ a, a ∈ ca_arr →
+      ∃ o₁ o₂, o₁ ∈ ca_obj ∧ o₂ = ca_obj ∧ a = zf_ord_pair o₁ o₂ }.
+
+...
+
 (* question fondamentale : qu'est-ce qu'un morphisme, finalement ? *)
 
 (* ci-dessous, c'est une application, mais c'est pas le cas le plus général
