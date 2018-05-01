@@ -15,113 +15,113 @@ Reserved Notation "'〈' x '〉'" (at level 0).
 Reserved Notation "'〈' x , y '〉'" (at level 0).
 
 Class ZF := mkZF
-  { zfset : Type;
-    zfmem : zfset → zfset → Prop
-      where "x '∈' S" := (zfmem x S)
-      and "x '∉' S" := (¬ zfmem x S);
-    zfincl A B := ∀ x, x ∈ A → x ∈ B where "A '⊂' B" := (zfincl A B);
-    zfextens : ∀ A B, A ⊂ B → B ⊂ A → A = B;
-    zfpair : zfset → zfset → zfset where "'〈' x , y '〉'" := (zfpair x y);
-    zfsingle : zfset → zfset where "'〈' x '〉'" := (zfsingle x);
-    zfempty : zfset where "'∅'" := (zfempty);
+  { zf_set : Type;
+    zf_mem : zf_set → zf_set → Prop
+      where "x '∈' S" := (zf_mem x S)
+      and "x '∉' S" := (¬ zf_mem x S);
+    zf_incl A B := ∀ x, x ∈ A → x ∈ B where "A '⊂' B" := (zf_incl A B);
+    zf_extens : ∀ A B, A ⊂ B → B ⊂ A → A = B;
+    zf_pair : zf_set → zf_set → zf_set where "'〈' x , y '〉'" := (zf_pair x y);
+    zf_single : zf_set → zf_set where "'〈' x '〉'" := (zf_single x);
+    zf_empty : zf_set where "'∅'" := (zf_empty);
 
-    zfunion : zfset → zfset → zfset where "A '⋃' B" := (zfunion A B);
-    zfinter : zfset → zfset → zfset where "A '∩' B" := (zfinter A  B);
-    zfpart : ∀ a, ∃ c, ∀ x, x ∈ c → x ⊂ a;
-    zfinf : ∃ Y, ∅ ∈ Y ∧∀ y, y ∈ Y → y ⋃ 〈 y 〉 ∈ Y;
-    zffound : ∀ x, x ≠ ∅ → ∃ y, y ∈ x ∧ y ∩ x = ∅;
+    zf_union : zf_set → zf_set → zf_set where "A '⋃' B" := (zf_union A B);
+    zf_inter : zf_set → zf_set → zf_set where "A '∩' B" := (zf_inter A  B);
+    zf_part : ∀ a, ∃ c, ∀ x, x ∈ c → x ⊂ a;
+    zf_inf : ∃ Y, ∅ ∈ Y ∧∀ y, y ∈ Y → y ⋃ 〈 y 〉 ∈ Y;
+    zf_found : ∀ x, x ≠ ∅ → ∃ y, y ∈ x ∧ y ∩ x = ∅;
 
-    zfpair_prop : ∀ a b x, x ∈ 〈 a, b 〉 ↔ x = a ∨ x = b;
-    zfsingle_prop : ∀ x y, y ∈ 〈 x 〉 ↔ y = x;
-    zfempty_prop : ∀ x, x ∉ ∅;
-    zfunion_prop : ∀ A B x, x ∈ A ⋃ B ↔ x ∈ A ∨ x ∈ B;
-    zfinter_prop : ∀ A B x, x ∈ A ∩ B ↔ x ∈ A ∧ x ∈ B }.
+    zf_pair_prop : ∀ a b x, x ∈ 〈 a, b 〉 ↔ x = a ∨ x = b;
+    zf_single_prop : ∀ x y, y ∈ 〈 x 〉 ↔ y = x;
+    zf_empty_prop : ∀ x, x ∉ ∅;
+    zf_union_prop : ∀ A B x, x ∈ A ⋃ B ↔ x ∈ A ∨ x ∈ B;
+    zf_inter_prop : ∀ A B x, x ∈ A ∩ B ↔ x ∈ A ∧ x ∈ B }.
 
-Notation "'∅'" := (zfempty).
-Notation "'〈' x '〉'" := (zfsingle x).
-Notation "'〈' x , y '〉'" := (zfpair x y).
-Notation "x '∈' S" := (zfmem x S).
-Notation "x '∉' S" := (¬ zfmem x S).
-Notation "A '⊂' B" := (zfincl A B).
-Notation "A '⋃' B" := (zfunion A B).
-Notation "A '∩' B" := (zfinter A B).
+Notation "'∅'" := (zf_empty).
+Notation "'〈' x '〉'" := (zf_single x).
+Notation "'〈' x , y '〉'" := (zf_pair x y).
+Notation "x '∈' S" := (zf_mem x S).
+Notation "x '∉' S" := (¬ zf_mem x S).
+Notation "A '⊂' B" := (zf_incl A B).
+Notation "A '⋃' B" := (zf_union A B).
+Notation "A '∩' B" := (zf_inter A B).
 
 Theorem empty_is_subset {zf : ZF} : ∀ A, ∅ ⊂ A.
 Proof.
 intros A x Hx.
-now apply zfempty_prop in Hx.
+now apply zf_empty_prop in Hx.
 Qed.
 
 Theorem empty_union_any {zf : ZF} : ∀ A, ∅ ⋃ A = A.
 Proof.
 intros.
-apply zfextens; intros x H.
--apply zfunion_prop in H.
+apply zf_extens; intros x H.
+-apply zf_union_prop in H.
  destruct H as [H| ]; [ | easy ].
- now apply zfempty_prop in H.
--now apply zfunion_prop; right.
+ now apply zf_empty_prop in H.
+-now apply zf_union_prop; right.
 Qed.
 
 Theorem empty_inter_any {zf : ZF} : ∀ A, ∅ ∩ A = ∅.
 Proof.
 intros.
-apply zfextens; intros x H.
--now apply zfinter_prop in H.
--now apply zfempty_prop in H.
+apply zf_extens; intros x H.
+-now apply zf_inter_prop in H.
+-now apply zf_empty_prop in H.
 Qed.
 
 Theorem subset_of_empty {zf : ZF} : ∀ A, A ⊂ ∅ → A = ∅.
 Proof.
 intros * HA.
-apply zfextens; intros x H.
+apply zf_extens; intros x H.
 -now apply HA.
--now apply zfempty_prop in H.
+-now apply zf_empty_prop in H.
 Qed.
 
 Theorem not_elem_itself {zf : ZF} : ∀ A, A ∉ A.
 Proof.
 intros A H1.
-assert (H2 : zfsingle A ≠ ∅). {
+assert (H2 : zf_single A ≠ ∅). {
   intros H2.
-  assert (H3 : A ∈ zfsingle A) by now apply zfsingle_prop.
+  assert (H3 : A ∈ zf_single A) by now apply zf_single_prop.
   rewrite H2 in H3.
-  now apply zfempty_prop in H3.
+  now apply zf_empty_prop in H3.
 }
-specialize (zffound (zfsingle A) H2) as (B & H3 & H4).
-apply zfsingle_prop in H3.
+specialize (zf_found (zf_single A) H2) as (B & H3 & H4).
+apply zf_single_prop in H3.
 rewrite H3 in H4.
 clear H3.
 rewrite <- H4 in H2.
 apply H2.
-apply zfextens; intros x H.
--apply zfinter_prop.
+apply zf_extens; intros x H.
+-apply zf_inter_prop.
  split; [ | easy ].
- apply zfsingle_prop in H.
+ apply zf_single_prop in H.
  now subst x.
--now apply zfinter_prop in H.
+-now apply zf_inter_prop in H.
 Qed.
 
-Theorem pair_same {zf : ZF} : ∀ x, zfpair x x = zfsingle x.
+Theorem pair_same {zf : ZF} : ∀ x, zf_pair x x = zf_single x.
 Proof.
 intros.
-apply zfextens; intros y H.
--apply zfsingle_prop.
- apply zfpair_prop in H.
+apply zf_extens; intros y H.
+-apply zf_single_prop.
+ apply zf_pair_prop in H.
  now destruct H.
--apply zfpair_prop.
- apply zfsingle_prop in H.
+-apply zf_pair_prop.
+ apply zf_single_prop in H.
  now left.
 Qed.
 
 Theorem union_comm {zf : ZF} : ∀ A B, A ⋃ B = B ⋃ A.
 Proof.
 intros.
-apply zfextens; intros x H.
--apply zfunion_prop in H.
- apply zfunion_prop.
+apply zf_extens; intros x H.
+-apply zf_union_prop in H.
+ apply zf_union_prop.
  now apply or_comm.
--apply zfunion_prop in H.
- apply zfunion_prop.
+-apply zf_union_prop in H.
+ apply zf_union_prop.
  now apply or_comm.
 Qed.
 
@@ -129,13 +129,13 @@ Theorem union_half_assoc {zf : ZF} : ∀ A B C x,
   x ∈ (C ⋃ B) ⋃ A → x ∈ (A ⋃ B) ⋃ C.
 Proof.
 intros * H.
-apply zfunion_prop in H.
-apply zfunion_prop.
+apply zf_union_prop in H.
+apply zf_union_prop.
 destruct H as [H| H].
--apply zfunion_prop in H.
+-apply zf_union_prop in H.
  destruct H as [H| H]; [ now right | ].
- now left; apply zfunion_prop; right.
--now left; apply zfunion_prop; left.
+ now left; apply zf_union_prop; right.
+-now left; apply zf_union_prop; left.
 Qed.
 
 Theorem union_assoc {zf : ZF} : ∀ A B C, A ⋃ (B ⋃ C) = (A ⋃ B) ⋃ C.
@@ -143,18 +143,18 @@ Proof.
 intros.
 rewrite union_comm.
 replace (B ⋃ C) with (C ⋃ B) by apply union_comm.
-now apply zfextens; intros x H; apply union_half_assoc.
+now apply zf_extens; intros x H; apply union_half_assoc.
 Qed.
 
 Theorem inter_comm {zf : ZF} : ∀ A B, A ∩ B = B ∩ A.
 Proof.
 intros.
-apply zfextens; intros x H.
--apply zfinter_prop in H.
- apply zfinter_prop.
+apply zf_extens; intros x H.
+-apply zf_inter_prop in H.
+ apply zf_inter_prop.
  now apply and_comm.
--apply zfinter_prop in H.
- apply zfinter_prop.
+-apply zf_inter_prop in H.
+ apply zf_inter_prop.
  now apply and_comm.
 Qed.
 
@@ -162,13 +162,13 @@ Theorem inter_half_assoc {zf : ZF} : ∀ A B C x,
   x ∈ (C ∩ B) ∩ A → x ∈ (A ∩ B) ∩ C.
 Proof.
 intros * H.
-apply zfinter_prop in H.
-apply zfinter_prop.
+apply zf_inter_prop in H.
+apply zf_inter_prop.
 destruct H as (H1, H2).
-apply zfinter_prop in H1.
+apply zf_inter_prop in H1.
 destruct H1 as (H1, H3).
 split; [ | easy ].
-now apply zfinter_prop.
+now apply zf_inter_prop.
 Qed.
 
 Theorem inter_assoc {zf : ZF} : ∀ A B C, A ∩ (B ∩ C) = (A ∩ B) ∩ C.
@@ -176,50 +176,72 @@ Proof.
 intros.
 rewrite inter_comm.
 replace (B ∩ C) with (C ∩ B) by apply inter_comm.
-now apply zfextens; intros x H; apply inter_half_assoc.
+now apply zf_extens; intros x H; apply inter_half_assoc.
 Qed.
 
 Theorem inter_union_distr {zf : ZF} : ∀ A B C,
   A ∩ (B ⋃ C) = (A ∩ B) ⋃ (A ∩ C).
 Proof.
 intros.
-apply zfextens; intros x H.
--apply zfinter_prop in H.
+apply zf_extens; intros x H.
+-apply zf_inter_prop in H.
  destruct H as (H1, H2).
- apply zfunion_prop in H2.
- apply zfunion_prop.
+ apply zf_union_prop in H2.
+ apply zf_union_prop.
  destruct H2 as [H2| H2].
- +now left; apply zfinter_prop.
- +now right; apply zfinter_prop.
--apply zfunion_prop in H.
- apply zfinter_prop.
- destruct H as [H| H]; apply zfinter_prop in H.
+ +now left; apply zf_inter_prop.
+ +now right; apply zf_inter_prop.
+-apply zf_union_prop in H.
+ apply zf_inter_prop.
+ destruct H as [H| H]; apply zf_inter_prop in H.
  +split; [ easy | ].
-  now apply zfunion_prop; left.
+  now apply zf_union_prop; left.
  +split; [ easy | ].
-  now apply zfunion_prop; right.
+  now apply zf_union_prop; right.
 Qed.
 
 Theorem union_inter_distr {zf : ZF} : ∀ A B C,
   A ⋃ (B ∩ C) = (A ⋃ B) ∩ (A ⋃ C).
 Proof.
 intros.
-apply zfextens; intros x H.
--apply zfunion_prop in H.
- apply zfinter_prop.
+apply zf_extens; intros x H.
+-apply zf_union_prop in H.
+ apply zf_inter_prop.
  destruct H as [H| H].
- +now split; apply zfunion_prop; left.
- +apply zfinter_prop in H.
-  now split; apply zfunion_prop; right.
--apply zfinter_prop in H.
+ +now split; apply zf_union_prop; left.
+ +apply zf_inter_prop in H.
+  now split; apply zf_union_prop; right.
+-apply zf_inter_prop in H.
  destruct H as (H1, H2).
- apply zfunion_prop in H1.
- apply zfunion_prop in H2.
- apply zfunion_prop.
+ apply zf_union_prop in H1.
+ apply zf_union_prop in H2.
+ apply zf_union_prop.
  destruct H1 as [H1| H1]; [ now left | ].
  destruct H2 as [H2| H2]; [ now left | ].
- now right; apply zfinter_prop.
+ now right; apply zf_inter_prop.
 Qed.
+
+(* *)
+
+(* question fondamentale : qu'est-ce qu'un morphisme, finalement ? *)
+
+Record Hom {zf : ZF} (A B : zf_set) :=
+  { H_app : zf_set → zf_set;
+    H_prop : ∀ x, x ∈ A → H_app x ∈ B }.
+
+Lemma snake {zf : ZF} :
+  ∀ (A B C A' B' C' : zf_set) (f : Hom A B) (g : Hom B C)
+     (f' : Hom A' B') (g' : Hom B' C')
+     (a : Hom A A') (b : Hom B B') (c : Hom C C')
+     (cz : Hom C False) (za' : False → A')
+(*
+  (s : exact_sequence (Seq2 f (Seq2 g (Seq2 cz Seq1))))
+  (s' : exact_sequence (Seq2 za' (Seq2 f' (Seq2 g' Seq1))))*),
+  False.
+Proof.
+intros.
+
+...
 
 (* lemme du serpent sur ℤ *)
 
