@@ -275,10 +275,17 @@ split; intros H f g x.
  now destruct (fa x), (ga x).
 Qed.
 
+Record Sub A :=
+  { S_prop : A → Prop }.
+
 Definition Im (G H : Group) (f : HomGr G H) :=
-  { b : gr_typ H | ∃ a : gr_typ G, H_app G H f a = b }.
+  {| S_prop := λ b : gr_typ H, ∃ a : gr_typ G, H_app G H f a = b |}.
 Definition Ker (G H : Group) (f : HomGr G H) :=
-  { a : gr_typ G | H_app G H f a = gr_zero H }.
+  {| S_prop := λ a : gr_typ G, H_app G H f a = gr_zero H |}.
+
+...
+
+Definition glop G H f := {| gr_typ := Im G H f; gr_zero := gr_zero H |}.
 
 ...
 
