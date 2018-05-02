@@ -244,22 +244,25 @@ Definition cat_Mat := ...
 ...
 *)
 
-Record Group :=
+Record SubGroup :=
   { gr_typ : Type;
-    gr_zero : gr_typ }.
+    gr_zero : gr_typ;
+    gr_prop : gr_typ → Prop }.
 
-Record HomGr (A B : Group) :=
+Record HomGr (A B : SubGroup) :=
   { H_app : gr_typ A → gr_typ B;
     H_prop : H_app (gr_zero A) = gr_zero B }.
 
 Inductive Gr0_set := G0 : Gr0_set.
-Definition Gr0 := {| gr_typ := Gr0_set; gr_zero := G0 |}.
+Definition Gr0 :=
+   {| gr_typ := Gr0_set; gr_zero := G0;
+      gr_prop := λ _, True |}.
 
-Definition is_initial (G : Group) :=
+Definition is_initial (G : SubGroup) :=
   ∀ H (f g : HomGr G H) (x : gr_typ G), H_app G H f x = H_app G H g x.
-Definition is_final (G : Group) :=
+Definition is_final (G : SubGroup) :=
   ∀ H (f g : HomGr H G) (x : gr_typ H), H_app H G f x = H_app H G g x.
-Definition is_null (G : Group) := is_initial G ∧ is_final G.
+Definition is_null (G : SubGroup) := is_initial G ∧ is_final G.
 
 Theorem is_null_Gr0 : is_null Gr0.
 Proof.
@@ -275,14 +278,23 @@ split; intros H f g x.
  now destruct (fa x), (ga x).
 Qed.
 
+(*
 Record Sub A := { S_prop : A → Prop }.
+*)
 
-Definition Im {G H : Group} (f : HomGr G H) :=
-  {| S_prop := λ b : gr_typ H, ∃ a : gr_typ G, H_app G H f a = b |}.
-Definition Ker {G H : Group} (f : HomGr G H) :=
-  {| S_prop := λ a : gr_typ G, H_app G H f a = gr_zero H |}.
+Definition Im {G H : SubGroup} (f : HomGr G H) :=
+  {| gr_typ := gr_typ H;
+     gr_zero := gr_zero H;
+     gr_prop := λ b : gr_typ H, ∃ a : gr_typ G, H_app G H f a = b |}.
+Definition Ker {G H : SubGroup} (f : HomGr G H) :=
+  {| gr_typ := gr_typ G;
+     gr_zero := gr_zero G;
+     gr_prop := λ a : gr_typ G, H_app G H f a = gr_zero H |}.
 
-Definition eq_sub {A} (S T : Sub A) := ∀ a, S_prop _ S a ↔ S_prop _ T a.
+...
+
+Definition eq_sub (S T : SubGroup) :=
+  ∀ a, gr_prop S a ↔ gr_prop T a.
 
 Notation "S ≡ T" := (eq_sub S T) (at level 70).
 
