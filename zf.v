@@ -278,10 +278,6 @@ split; intros H f g x.
  now destruct (fa x), (ga x).
 Qed.
 
-(*
-Record Sub A := { S_prop : A → Prop }.
-*)
-
 Definition Im {G H : SubGroup} (f : HomGr G H) :=
   {| gr_typ := gr_typ H;
      gr_zero := gr_zero H;
@@ -291,29 +287,31 @@ Definition Ker {G H : SubGroup} (f : HomGr G H) :=
      gr_zero := gr_zero G;
      gr_prop := λ a : gr_typ G, H_app G H f a = gr_zero H |}.
 
-...
-
-Definition eq_sub (S T : SubGroup) :=
+(*
+Definition eq_sub (S T : SubGroup) (P : gr_typ S = gr_typ T) :=
   ∀ a, gr_prop S a ↔ gr_prop T a.
 
 Notation "S ≡ T" := (eq_sub S T) (at level 70).
+*)
 
-Inductive sequence {A : Group} :=
+Inductive sequence {A : SubGroup} :=
   | Seq1 : sequence
   | Seq2 : ∀ {B} (f : HomGr A B), @sequence B → sequence.
 
-Fixpoint exact_sequence {A : Group} (S : sequence) :=
+Fixpoint exact_sequence {A : SubGroup} (S : sequence) :=
   match S with
   | Seq1 => True
   | Seq2 f S' =>
       match S' with
       | Seq1 => True
-      | Seq2 g S'' => Im f ≡ Ker g ∧ exact_sequence S'
+      | Seq2 g S'' =>
+          (∀ a, gr_prop (Im f) a ↔ gr_prop (Ker g) a) ∧
+          exact_sequence S'
       end
   end.
 
 Lemma snake {zf : ZF} :
-  ∀ (A B C A' B' C' : Group) (f : HomGr A B) (g : HomGr B C)
+  ∀ (A B C A' B' C' : SubGroup) (f : HomGr A B) (g : HomGr B C)
      (f' : HomGr A' B') (g' : HomGr B' C')
      (a : HomGr A A') (b : HomGr B B') (c : HomGr C C')
      (cz : HomGr C Gr0) (za' : HomGr Gr0 A')
