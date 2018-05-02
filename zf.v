@@ -305,7 +305,25 @@ Fixpoint exact_sequence {A : Group} (S : sequence) :=
       end
   end.
 
-Definition KerMorph {G H : Group} (f : HomGr G H) : HomGr (Ker f) H.
+(* gr_typ (Ker a) = gr_typ G mais ça ne veut pas dire que si x est
+   de type gr_typ (Ker a), il est de type gr_typ G ! *)
+(* il faut que je "transporte" ! *)
+
+Definition KerMorph {G H A B : Group} (f : HomGr G H)
+    (a : HomGr G A) (b : HomGr H B) :=
+  λ (x : gr_typ (Ker a)), @H_app G H f a.
+
+...
+
+Definition KerMorph {G H A B : Group} (f : HomGr G H)
+    (a : HomGr G A) (b : HomGr H B) : HomGr (Ker a) (Ker b) :=
+gr_typ (Ker a) → gr_typ (Ker b).
+  {| H_app := λ (x : gr_typ (Ker a)), @H_app G H f a;
+     H_prop :=
+...
+
+Definition KerMorph {G H A B : Group} (f : HomGr G H)
+  (a : HomGr G A) (b : HomGr H B) : HomGr (Ker a) (Ker b).
 Proof.
 destruct f.
 unfold Ker.
@@ -316,14 +334,13 @@ destruct G; simpl.
 simpl in H_app0.
 destruct H; simpl.
 simpl in H_app0.
-Admitted.
-
-(*
-Definition KerMorph {G H : Group} (f : HomGr G H) :=
-  {| H_app := λ a : gr_typ (Ker f), H_app f a;
-     H_prop :=
+destruct a, b; simpl.
+simpl in *.
+rewrite <- H_prop0, <- H_prop1.
+destruct A, B; simpl in *.
 ...
 
+(*
 Record HomGr (A B : Group) :=
   { H_app : gr_typ A → gr_typ B;
     H_prop : H_app (gr_zero A) = gr_zero B }.
@@ -338,7 +355,7 @@ Lemma snake {zf : ZF} :
      (cz : HomGr C Gr0) (za' : HomGr Gr0 A')
      (s : exact_sequence (Seq2 f (Seq2 g (Seq2 cz Seq1))))
      (s' : exact_sequence (Seq2 za' (Seq2 f' (Seq2 g' Seq1)))),
-  exact_sequence (Seq2 (KerMorph a) (Seq2 (KerMorph b) Seq1)).
+  exact_sequence (Seq2 (KerMorph f a b) (Seq2 (KerMorph g b c) Seq1)).
 Proof.
 intros.
 ...
