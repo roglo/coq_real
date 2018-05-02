@@ -253,15 +253,17 @@ Record HomGr (A B : SubGroup) :=
   { H_app : gr_typ A → gr_typ B;
     H_prop : H_app (gr_zero A) = gr_zero B }.
 
+Arguments H_app [A] [B].
+
 Inductive Gr0_set := G0 : Gr0_set.
 Definition Gr0 :=
    {| gr_typ := Gr0_set; gr_zero := G0;
       gr_prop := λ _, True |}.
 
 Definition is_initial (G : SubGroup) :=
-  ∀ H (f g : HomGr G H) (x : gr_typ G), H_app G H f x = H_app G H g x.
+  ∀ H (f g : HomGr G H) (x : gr_typ G), H_app f x = H_app g x.
 Definition is_final (G : SubGroup) :=
-  ∀ H (f g : HomGr H G) (x : gr_typ H), H_app H G f x = H_app H G g x.
+  ∀ H (f g : HomGr H G) (x : gr_typ H), H_app f x = H_app g x.
 Definition is_null (G : SubGroup) := is_initial G ∧ is_final G.
 
 Theorem is_null_Gr0 : is_null Gr0.
@@ -281,11 +283,11 @@ Qed.
 Definition Im {G H : SubGroup} (f : HomGr G H) :=
   {| gr_typ := gr_typ H;
      gr_zero := gr_zero H;
-     gr_prop := λ b : gr_typ H, ∃ a : gr_typ G, H_app G H f a = b |}.
+     gr_prop := λ b : gr_typ H, ∃ a : gr_typ G, H_app f a = b |}.
 Definition Ker {G H : SubGroup} (f : HomGr G H) :=
   {| gr_typ := gr_typ G;
      gr_zero := gr_zero G;
-     gr_prop := λ a : gr_typ G, H_app G H f a = gr_zero H |}.
+     gr_prop := λ a : gr_typ G, H_app f a = gr_zero H |}.
 
 (*
 Definition eq_sub (S T : SubGroup) (P : gr_typ S = gr_typ T) :=
