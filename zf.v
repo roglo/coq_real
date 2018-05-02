@@ -225,22 +225,6 @@ Qed.
 
 ...
 
-Definition zf_pair2 {zf : ZF} (a b : zf_set) := (zf_pair a b, (a, b)).
-
-Check zf_pair2.
-
-Definition is_pair {zf : ZF} (c : zf_set) := ∃ a b, c = 〈 a, b 〉.
-
-Print is_pair.
-
-Definition zf_pair_fst {zf : ZF} (c : zf_set) :=
-  match zf_pair_elim c with
-  | Some (a, b) => Some a
-  | None => None
-  end.
-
-...
-
 Definition zf_ord_pair {zf : ZF} a b := zf_pair (zf_single a) (zf_pair a b).
 
 (*
