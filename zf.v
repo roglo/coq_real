@@ -244,12 +244,12 @@ Definition cat_Mat := ...
 ...
 *)
 
-Record SubGroup :=
+Record Group :=
   { gr_typ : Type;
     gr_zero : gr_typ;
     gr_prop : gr_typ → Prop }.
 
-Record HomGr (A B : SubGroup) :=
+Record HomGr (A B : Group) :=
   { H_app : gr_typ A → gr_typ B;
     H_prop : H_app (gr_zero A) = gr_zero B }.
 
@@ -260,11 +260,11 @@ Definition Gr0 :=
    {| gr_typ := Gr0_set; gr_zero := G0;
       gr_prop := λ _, True |}.
 
-Definition is_initial (G : SubGroup) :=
+Definition is_initial (G : Group) :=
   ∀ H (f g : HomGr G H) (x : gr_typ G), H_app f x = H_app g x.
-Definition is_final (G : SubGroup) :=
+Definition is_final (G : Group) :=
   ∀ H (f g : HomGr H G) (x : gr_typ H), H_app f x = H_app g x.
-Definition is_null (G : SubGroup) := is_initial G ∧ is_final G.
+Definition is_null (G : Group) := is_initial G ∧ is_final G.
 
 Theorem is_null_Gr0 : is_null Gr0.
 Proof.
@@ -280,27 +280,20 @@ split; intros H f g x.
  now destruct (fa x), (ga x).
 Qed.
 
-Definition Im {G H : SubGroup} (f : HomGr G H) :=
+Definition Im {G H : Group} (f : HomGr G H) :=
   {| gr_typ := gr_typ H;
      gr_zero := gr_zero H;
      gr_prop := λ b : gr_typ H, ∃ a : gr_typ G, H_app f a = b |}.
-Definition Ker {G H : SubGroup} (f : HomGr G H) :=
+Definition Ker {G H : Group} (f : HomGr G H) :=
   {| gr_typ := gr_typ G;
      gr_zero := gr_zero G;
      gr_prop := λ a : gr_typ G, H_app f a = gr_zero H |}.
 
-(*
-Definition eq_sub (S T : SubGroup) (P : gr_typ S = gr_typ T) :=
-  ∀ a, gr_prop S a ↔ gr_prop T a.
-
-Notation "S ≡ T" := (eq_sub S T) (at level 70).
-*)
-
-Inductive sequence {A : SubGroup} :=
+Inductive sequence {A : Group} :=
   | Seq1 : sequence
   | Seq2 : ∀ {B} (f : HomGr A B), @sequence B → sequence.
 
-Fixpoint exact_sequence {A : SubGroup} (S : sequence) :=
+Fixpoint exact_sequence {A : Group} (S : sequence) :=
   match S with
   | Seq1 => True
   | Seq2 f S' =>
@@ -313,13 +306,13 @@ Fixpoint exact_sequence {A : SubGroup} (S : sequence) :=
   end.
 
 Lemma snake {zf : ZF} :
-  ∀ (A B C A' B' C' : SubGroup) (f : HomGr A B) (g : HomGr B C)
+  ∀ (A B C A' B' C' : Group) (f : HomGr A B) (g : HomGr B C)
      (f' : HomGr A' B') (g' : HomGr B' C')
      (a : HomGr A A') (b : HomGr B B') (c : HomGr C C')
      (cz : HomGr C Gr0) (za' : HomGr Gr0 A')
      (s : exact_sequence (Seq2 f (Seq2 g (Seq2 cz Seq1))))
      (s' : exact_sequence (Seq2 za' (Seq2 f' (Seq2 g' Seq1)))),
-  exact_sequence (Seq2 a (Seq2 b Seq1)).
+  exact_sequence (Seq2 (Ker a) (Seq2 (Ker b) Seq1)).
 Proof.
 intros.
 ...
