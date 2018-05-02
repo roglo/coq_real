@@ -305,9 +305,18 @@ Fixpoint exact_sequence {A : Group} (S : sequence) :=
       end
   end.
 
-(* gr_typ (Ker a) = gr_typ G mais ça ne veut pas dire que si x est
-   de type gr_typ (Ker a), il est de type gr_typ G ! *)
-(* il faut que je "transporte" ! *)
+Definition transport {A} P {x y : A} (p : x = y) : P x → P y :=
+  match p with
+  | eq_refl _ => id
+  end.
+
+Check transport.
+
+Example glop : ∀ A B (a : A) (b : B) (p : A = B), a = b.
+...
+
+(* "gr_typ (Ker a) = gr_typ G" mais ça ne veut pas dire que si x est
+   de type "gr_typ (Ker a)", il est de type "gr_typ G" ! *)
 
 Definition KerMorph {G H A B : Group} (f : HomGr G H)
     (a : HomGr G A) (b : HomGr H B) :=
