@@ -22,7 +22,6 @@ Class ZF := mkZF
     zf_incl A B := ∀ x, x ∈ A → x ∈ B where "A '⊂' B" := (zf_incl A B);
     zf_extens : ∀ A B, A ⊂ B → B ⊂ A → A = B;
     zf_pair : zf_set → zf_set → zf_set where "'〈' x , y '〉'" := (zf_pair x y);
-    zf_pair_elim : zf_set → option (zf_set * zf_set);
     zf_single : zf_set → zf_set where "'〈' x '〉'" := (zf_single x);
     zf_empty : zf_set where "'∅'" := (zf_empty);
 
@@ -33,7 +32,6 @@ Class ZF := mkZF
     zf_found : ∀ x, x ≠ ∅ → ∃ y, y ∈ x ∧ y ∩ x = ∅;
 
     zf_pair_prop : ∀ a b x, x ∈ 〈 a, b 〉 ↔ x = a ∨ x = b;
-    zf_pair_elim_prop : ∀ a b x, x = zf_pair a b ↔ zf_pair_elim x = Some (a, b);
     zf_single_prop : ∀ x y, y ∈ 〈 x 〉 ↔ y = x;
     zf_empty_prop : ∀ x, x ∉ ∅;
     zf_union_prop : ∀ A B x, x ∈ A ⋃ B ↔ x ∈ A ∨ x ∈ B;
@@ -224,6 +222,12 @@ apply zf_extens; intros x H.
 Qed.
 
 (* *)
+
+...
+
+Definition zf_pair2 {zf : ZF} (a b : zf_set) := (zf_pair a b, (a, b)).
+
+Check zf_pair2.
 
 Definition is_pair {zf : ZF} (c : zf_set) := ∃ a b, c = 〈 a, b 〉.
 
