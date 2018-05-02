@@ -305,57 +305,12 @@ Fixpoint exact_sequence {A : Group} (S : sequence) :=
       end
   end.
 
-Definition transport {A} P {x y : A} (p : x = y) : P x → P y :=
-  match p with
-  | eq_refl _ => id
-  end.
+Definition KerMorph {A B A' B' : Group} (f : HomGr A B)
+    (a : HomGr A A') (b : HomGr B B') :=
+  {| H_app := λ (x : gr_typ (Ker a)), @H_app A B f x;
+     H_prop := H_prop A B f |}.
 
-Check transport.
-
-Example glop : ∀ A B (a : A) (b : B) (p : A = B), a = b.
-...
-
-(* "gr_typ (Ker a) = gr_typ G" mais ça ne veut pas dire que si x est
-   de type "gr_typ (Ker a)", il est de type "gr_typ G" ! *)
-
-Definition KerMorph {G H A B : Group} (f : HomGr G H)
-    (a : HomGr G A) (b : HomGr H B) :=
-  λ (x : gr_typ (Ker a)), @H_app G H f a.
-
-...
-
-Definition KerMorph {G H A B : Group} (f : HomGr G H)
-    (a : HomGr G A) (b : HomGr H B) : HomGr (Ker a) (Ker b) :=
-gr_typ (Ker a) → gr_typ (Ker b).
-  {| H_app := λ (x : gr_typ (Ker a)), @H_app G H f a;
-     H_prop :=
-...
-
-Definition KerMorph {G H A B : Group} (f : HomGr G H)
-  (a : HomGr G A) (b : HomGr H B) : HomGr (Ker a) (Ker b).
-Proof.
-destruct f.
-unfold Ker.
-simpl.
-destruct H_prop0.
-simpl.
-destruct G; simpl.
-simpl in H_app0.
-destruct H; simpl.
-simpl in H_app0.
-destruct a, b; simpl.
-simpl in *.
-rewrite <- H_prop0, <- H_prop1.
-destruct A, B; simpl in *.
-...
-
-(*
-Record HomGr (A B : Group) :=
-  { H_app : gr_typ A → gr_typ B;
-    H_prop : H_app (gr_zero A) = gr_zero B }.
-
-...
-*)
+Check KerMorph.
 
 Lemma snake {zf : ZF} :
   ∀ (A B C A' B' C' : Group) (f : HomGr A B) (g : HomGr B C)
