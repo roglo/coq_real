@@ -305,12 +305,17 @@ Fixpoint exact_sequence {A : Group} (S : sequence) :=
       end
   end.
 
-Definition KerMorph {A B A' B' : Group} (f : HomGr A B)
-    (a : HomGr A A') (b : HomGr B B') :=
+Definition KerMorph {A B A' B' : Group} (f : HomGr A B) (a : HomGr A A') :=
   {| H_app := λ (x : gr_typ (Ker a)), @H_app A B f x;
      H_prop := H_prop A B f |}.
 
 Check KerMorph.
+
+(*
+Record HomGr (A B : Group) :=
+  { H_app : gr_typ A → gr_typ B;
+    H_prop : H_app (gr_zero A) = gr_zero B }.
+*)
 
 Lemma snake {zf : ZF} :
   ∀ (A B C A' B' C' : Group) (f : HomGr A B) (g : HomGr B C)
@@ -319,7 +324,7 @@ Lemma snake {zf : ZF} :
      (cz : HomGr C Gr0) (za' : HomGr Gr0 A')
      (s : exact_sequence (Seq2 f (Seq2 g (Seq2 cz Seq1))))
      (s' : exact_sequence (Seq2 za' (Seq2 f' (Seq2 g' Seq1)))),
-  exact_sequence (Seq2 (KerMorph f a b) (Seq2 (KerMorph g b c) Seq1)).
+  exact_sequence (Seq2 (KerMorph f a) (Seq2 (KerMorph g b) Seq1)).
 Proof.
 intros.
 ...
