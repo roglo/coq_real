@@ -22,6 +22,7 @@ Class ZF := mkZF
     zf_incl A B := ∀ x, x ∈ A → x ∈ B where "A '⊂' B" := (zf_incl A B);
     zf_extens : ∀ A B, A ⊂ B → B ⊂ A → A = B;
     zf_pair : zf_set → zf_set → zf_set where "'〈' x , y '〉'" := (zf_pair x y);
+    zf_pair_elim : zf_set → option (zf_set * zf_set);
     zf_single : zf_set → zf_set where "'〈' x '〉'" := (zf_single x);
     zf_empty : zf_set where "'∅'" := (zf_empty);
 
@@ -32,6 +33,7 @@ Class ZF := mkZF
     zf_found : ∀ x, x ≠ ∅ → ∃ y, y ∈ x ∧ y ∩ x = ∅;
 
     zf_pair_prop : ∀ a b x, x ∈ 〈 a, b 〉 ↔ x = a ∨ x = b;
+    zf_pair_elim_prop : ∀ a b x, x = zf_pair a b ↔ zf_pair_elim x = Some (a, b);
     zf_single_prop : ∀ x y, y ∈ 〈 x 〉 ↔ y = x;
     zf_empty_prop : ∀ x, x ∉ ∅;
     zf_union_prop : ∀ A B x, x ∈ A ⋃ B ↔ x ∈ A ∨ x ∈ B;
@@ -223,8 +225,21 @@ Qed.
 
 (* *)
 
+Definition is_pair {zf : ZF} (c : zf_set) := ∃ a b, c = 〈 a, b 〉.
+
+Print is_pair.
+
+Definition zf_pair_fst {zf : ZF} (c : zf_set) :=
+  match zf_pair_elim c with
+  | Some (a, b) => Some a
+  | None => None
+  end.
+
+...
+
 Definition zf_ord_pair {zf : ZF} a b := zf_pair (zf_single a) (zf_pair a b).
 
+(*
 Record category {zf : ZF} := mkcat
   { ca_obj : zf_set;
     ca_arr : zf_set;
@@ -236,7 +251,6 @@ Record category {zf : ZF} := mkcat
       a₁ = zf_ord_pair o₁ o₂ ∧ a₂ = zf_ord_pair o₂ o₃ ∧
       ca_comp a₁ a₂ = zf_ord_pair o₁ o₃ }.
 
-(*
 Definition cat_Set :=
   {| ca_obj := ... ???
 
