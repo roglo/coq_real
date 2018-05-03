@@ -230,7 +230,25 @@ Definition zf_ord_pair {zf : ZF} a b := zf_pair (zf_single a) (zf_pair a b).
 
 (* mouais, chais pas si c'est ça *)
 Definition zf_function {zf : ZF} A B F P :=
+(*
+  let '(F, P) := FP in
+*)
   zf_ord_pair (zf_ord_pair A B) (zf_sch_repl F P A).
+
+Check zf_function.
+
+...
+
+Lemma snake {zf : ZF} :
+  ∀ (A B C A' B' C' : Group) (f : HomGr A B) (g : HomGr B C)
+     (f' : HomGr A' B') (g' : HomGr B' C')
+     (a : HomGr A A') (b : HomGr B B') (c : HomGr C C')
+     (cz : HomGr C Gr0) (za' : HomGr Gr0 A')
+     (s : exact_sequence (Seq2 f (Seq2 g (Seq2 cz Seq1))))
+     (s' : exact_sequence (Seq2 za' (Seq2 f' (Seq2 g' Seq1)))),
+  exact_sequence (Seq2 (KerMorph f a) (Seq2 (KerMorph g b) Seq1)).
+Proof.
+intros.
 
 ...
 
