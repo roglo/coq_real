@@ -30,12 +30,15 @@ Class ZF := mkZF
     zf_part : ∀ a, ∃ c, ∀ x, x ∈ c → x ⊂ a;
     zf_inf : ∃ Y, ∅ ∈ Y ∧∀ y, y ∈ Y → y ⋃ 〈 y 〉 ∈ Y;
     zf_found : ∀ x, x ≠ ∅ → ∃ y, y ∈ x ∧ y ∩ x = ∅;
+    zf_sch_repl : ∀ F, (∀ x y z, F x y ∧ F x z → y = z) → zf_set → zf_set;
 
     zf_pair_prop : ∀ a b x, x ∈ 〈 a, b 〉 ↔ x = a ∨ x = b;
     zf_single_prop : ∀ x y, y ∈ 〈 x 〉 ↔ y = x;
     zf_empty_prop : ∀ x, x ∉ ∅;
     zf_union_prop : ∀ A B x, x ∈ A ⋃ B ↔ x ∈ A ∨ x ∈ B;
-    zf_inter_prop : ∀ A B x, x ∈ A ∩ B ↔ x ∈ A ∧ x ∈ B }.
+    zf_inter_prop : ∀ A B x, x ∈ A ∩ B ↔ x ∈ A ∧ x ∈ B;
+    zf_sch_repl_prop : ∀ F P A B,
+      B = zf_sch_repl F P A ↔ (∀ y, y ∈ B ↔ ∃ x, x ∈ A ∧ F x y) }.
 
 Notation "'∅'" := (zf_empty).
 Notation "'〈' x '〉'" := (zf_single x).
@@ -223,9 +226,12 @@ Qed.
 
 (* *)
 
-...
-
 Definition zf_ord_pair {zf : ZF} a b := zf_pair (zf_single a) (zf_pair a b).
+
+Check zf_sch_repl.
+
+Definition zf_function {zf : ZF} A B :=
+  zf_ord_pair (zf_ord_pair A B) ...
 
 (*
 Record category {zf : ZF} := mkcat
