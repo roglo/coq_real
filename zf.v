@@ -317,7 +317,8 @@ split.
 -intros y y' (x & Hx) (x' & Hx').
  subst y y'.
  destruct G, H; simpl in *.
-
+ destruct f; simpl in *.
+ unfold is_group in *.
 ...
 
 Definition Im {G H : Group} (f : HomGr G H) :=
