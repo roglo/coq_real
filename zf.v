@@ -270,7 +270,9 @@ Record Group :=
 
 Record HomGr (A B : Group) :=
   { H_app : gr_typ A → gr_typ B;
-    H_prop : H_app (gr_zero A) = gr_zero B }.
+    H_prop :
+      H_app (gr_zero A) = gr_zero B ∧
+      (∀ x y, H_app (gr_op A x y) = gr_op B (H_app x) (H_app y)) }.
 
 Arguments H_app [A] [B].
 
@@ -298,11 +300,11 @@ Definition is_null (G : Group) := is_initial G ∧ is_final G.
 Theorem is_null_Gr0 : is_null Gr0.
 Proof.
 split; intros H f g x.
--destruct f as (fa, fp); simpl in fp.
- destruct g as (ga, gp); simpl in gp.
+-destruct f as (fa & fp1 & fp2); simpl in fp1, fp2.
+ destruct g as (ga & gp1 & gp2); simpl in gp1, gp2.
  simpl.
  destruct x.
- now rewrite fp, gp.
+ now rewrite fp1, gp1.
 -destruct f as (fa, fp); simpl in fp.
  destruct g as (ga, gp); simpl in gp.
  simpl.
@@ -313,12 +315,15 @@ Theorem Im_is_group {G H} (f : HomGr G H) :
   is_group (gr_typ H) (gr_zero H) (gr_op H) (λ b, ∃ a, H_app f a = b).
 Proof.
 intros.
-split.
+split; [ | split ].
 -intros y y' (x & Hx) (x' & Hx').
  subst y y'.
  destruct G, H; simpl in *.
  destruct f; simpl in *.
  unfold is_group in *.
+ exists (gr_op0 x x').
+ apply H_prop0.
+-idtac.
 ...
 
 Definition Im {G H : Group} (f : HomGr G H) :=
