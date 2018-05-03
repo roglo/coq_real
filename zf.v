@@ -228,10 +228,11 @@ Qed.
 
 Definition zf_ord_pair {zf : ZF} a b := zf_pair (zf_single a) (zf_pair a b).
 
-Check zf_sch_repl.
+(* mouais, chais pas si c'est ça *)
+Definition zf_function {zf : ZF} A B F P :=
+  zf_ord_pair (zf_ord_pair A B) (zf_sch_repl F P A).
 
-Definition zf_function {zf : ZF} A B :=
-  zf_ord_pair (zf_ord_pair A B) ...
+...
 
 (*
 Record category {zf : ZF} := mkcat
