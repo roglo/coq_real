@@ -256,10 +256,17 @@ Definition cat_Mat := ...
 ...
 *)
 
+Definition is_group T (gr_zero : T) (gr_op : T → T → T)  (gr_in : T → Prop) :=
+  (∀ x y, gr_in x → gr_in y → gr_in (gr_op x y)) ∧
+  (∀ x, gr_in x → gr_op x gr_zero = x) ∧
+  (∀ x, gr_in x → gr_op gr_zero x = x).
+
 Record Group :=
   { gr_typ : Type;
     gr_zero : gr_typ;
-    gr_prop : gr_typ → Prop }.
+    gr_op : gr_typ → gr_typ → gr_typ;
+    gr_in : gr_typ → Prop;
+    gr_prop : is_group gr_typ gr_zero gr_op gr_in }.
 
 Record HomGr (A B : Group) :=
   { H_app : gr_typ A → gr_typ B;
@@ -268,9 +275,19 @@ Record HomGr (A B : Group) :=
 Arguments H_app [A] [B].
 
 Inductive Gr0_set := G0 : Gr0_set.
+Theorem Gr0_is_group : is_group Gr0_set G0 (λ _ _, G0) (λ _, True).
+Proof.
+unfold is_group; simpl.
+split; [ easy | ].
+now split; intros x H; destruct x.
+Qed.
+
 Definition Gr0 :=
-   {| gr_typ := Gr0_set; gr_zero := G0;
-      gr_prop := λ _, True |}.
+   {| gr_typ := Gr0_set;
+      gr_zero := G0;
+      gr_op := λ _ _, G0;
+      gr_in := λ _, True;
+      gr_prop := Gr0_is_group |}.
 
 Definition is_initial (G : Group) :=
   ∀ H (f g : HomGr G H) (x : gr_typ G), H_app f x = H_app g x.
@@ -292,14 +309,32 @@ split; intros H f g x.
  now destruct (fa x), (ga x).
 Qed.
 
+Theorem Im_is_group {G H} (f : HomGr G H) :
+  is_group (gr_typ H) (gr_zero H) (gr_op H) (λ b, ∃ a, H_app f a = b).
+Proof.
+intros.
+split.
+-intros y y' (x & Hx) (x' & Hx').
+ subst y y'.
+ destruct G, H; simpl in *.
+
+...
+
 Definition Im {G H : Group} (f : HomGr G H) :=
   {| gr_typ := gr_typ H;
      gr_zero := gr_zero H;
-     gr_prop := λ b : gr_typ H, ∃ a : gr_typ G, H_app f a = b |}.
+     gr_op := gr_op H;
+     gr_in := λ b, ∃ a, H_app f a = b;
+     gr_prop := Im_is_group f |}.
+
 Definition Ker {G H : Group} (f : HomGr G H) :=
   {| gr_typ := gr_typ G;
      gr_zero := gr_zero G;
-     gr_prop := λ a : gr_typ G, H_app f a = gr_zero H |}.
+     gr_in := λ a : gr_typ G, H_app f a = gr_zero H |}.
+Definition coKer {G H : Group} (f : HomGr G H) :=
+  {| gr_typ := gr_typ H;
+     gr_zero := gr_zero H;
+     gr_in := λ a : gr_typ H, ∃ a' : gr_typ H, gr_in (Im f) (gr_op x y) |}.
 
 Inductive sequence {A : Group} :=
   | Seq1 : sequence
@@ -312,7 +347,7 @@ Fixpoint exact_sequence {A : Group} (S : sequence) :=
       match S' with
       | Seq1 => True
       | Seq2 g S'' =>
-          (∀ a, gr_prop (Im f) a ↔ gr_prop (Ker g) a) ∧
+          (∀ a, gr_in (Im f) a ↔ gr_in (Ker g) a) ∧
           exact_sequence S'
       end
   end.
@@ -337,10 +372,11 @@ Lemma snake {zf : ZF} :
      (a : HomGr A A') (b : HomGr B B') (c : HomGr C C')
      (cz : HomGr C Gr0) (za' : HomGr Gr0 A')
      (fk : HomGr (Ker a) (Ker b)) (gk : HomGr (Ker b) (Ker c))
-     (fk_prop : ∀ x, gr_prop (Ker a) x → H_app fk x = H_app f x)
-     (gk_prop : ∀ x, gr_prop (Ker b) x → H_app gk x = H_app g x)
+     (d : HomGr (Ker c) (coKer a))
      (s : exact_sequence (Seq2 f (Seq2 g (Seq2 cz Seq1))))
-     (s' : exact_sequence (Seq2 za' (Seq2 f' (Seq2 g' Seq1)))),
+     (s' : exact_sequence (Seq2 za' (Seq2 f' (Seq2 g' Seq1))))
+     (fk_prop : ∀ x, gr_in (Ker a) x → H_app fk x = H_app f x)
+     (gk_prop : ∀ x, gr_in (Ker b) x → H_app gk x = H_app g x),
   exact_sequence (Seq2 fk (Seq2 gk Seq1)).
 Proof.
 intros.
