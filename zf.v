@@ -237,21 +237,6 @@ Definition zf_function {zf : ZF} A B F P :=
 
 Check zf_function.
 
-...
-
-Lemma snake {zf : ZF} :
-  ∀ (A B C A' B' C' : Group) (f : HomGr A B) (g : HomGr B C)
-     (f' : HomGr A' B') (g' : HomGr B' C')
-     (a : HomGr A A') (b : HomGr B B') (c : HomGr C C')
-     (cz : HomGr C Gr0) (za' : HomGr Gr0 A')
-     (s : exact_sequence (Seq2 f (Seq2 g (Seq2 cz Seq1))))
-     (s' : exact_sequence (Seq2 za' (Seq2 f' (Seq2 g' Seq1)))),
-  exact_sequence (Seq2 (KerMorph f a) (Seq2 (KerMorph g b) Seq1)).
-Proof.
-intros.
-
-...
-
 (*
 Record category {zf : ZF} := mkcat
   { ca_obj : zf_set;
@@ -332,11 +317,13 @@ Fixpoint exact_sequence {A : Group} (S : sequence) :=
       end
   end.
 
+(*
 Definition KerMorph {A B A' B' : Group} (f : HomGr A B) (a : HomGr A A') :=
   {| H_app := λ (x : gr_typ (Ker a)), @H_app A B f x;
      H_prop := H_prop A B f |}.
 
 Check KerMorph.
+*)
 
 (*
 Record HomGr (A B : Group) :=
@@ -349,9 +336,12 @@ Lemma snake {zf : ZF} :
      (f' : HomGr A' B') (g' : HomGr B' C')
      (a : HomGr A A') (b : HomGr B B') (c : HomGr C C')
      (cz : HomGr C Gr0) (za' : HomGr Gr0 A')
+     (fk : HomGr (Ker a) (Ker b)) (gk : HomGr (Ker b) (Ker c))
+     (fk_prop : ∀ x, gr_prop (Ker a) x → H_app fk x = H_app f x)
+     (gk_prop : ∀ x, gr_prop (Ker b) x → H_app gk x = H_app g x)
      (s : exact_sequence (Seq2 f (Seq2 g (Seq2 cz Seq1))))
      (s' : exact_sequence (Seq2 za' (Seq2 f' (Seq2 g' Seq1)))),
-  exact_sequence (Seq2 (KerMorph f a) (Seq2 (KerMorph g b) Seq1)).
+  exact_sequence (Seq2 fk (Seq2 gk Seq1)).
 Proof.
 intros.
 ...
