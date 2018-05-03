@@ -256,25 +256,28 @@ Definition cat_Mat := ...
 ...
 *)
 
-Definition is_group T (gr_zero : T) (gr_op : T → T → T)  (gr_in : T → Prop) :=
-  (∀ x y, gr_in x → gr_in y → gr_in (gr_op x y)) ∧
-  (∀ x, gr_in x → gr_op x gr_zero = x) ∧
-  (∀ x, gr_in x → gr_op gr_zero x = x).
+Record Group_prop {T} (gr_zero : T) (gr_op : T → T → T)  (gr_in : T → Prop) :=
+  { gp_clos : ∀ x y, gr_in x → gr_in y → gr_in (gr_op x y);
+    gp_lid : ∀ x, gr_in x → gr_op gr_zero x = x;
+    gp_rid : ∀ x, gr_in x → gr_op x gr_zero = x }.
 
 Record Group :=
   { gr_typ : Type;
     gr_zero : gr_typ;
     gr_op : gr_typ → gr_typ → gr_typ;
     gr_in : gr_typ → Prop;
-    gr_prop : is_group gr_typ gr_zero gr_op gr_in }.
+    gr_prop : Group_prop gr_zero gr_op gr_in }.
 
 Record HomGr (A B : Group) :=
   { H_app : gr_typ A → gr_typ B;
     H_prop :
       H_app (gr_zero A) = gr_zero B ∧
+      (∀ x, gr_in B (H_app x)) ∧
       (∀ x y, H_app (gr_op A x y) = gr_op B (H_app x) (H_app y)) }.
 
 Arguments H_app [A] [B].
+
+...
 
 Inductive Gr0_set := G0 : Gr0_set.
 Theorem Gr0_is_group : is_group Gr0_set G0 (λ _ _, G0) (λ _, True).
@@ -323,8 +326,54 @@ split; [ | split ].
  unfold is_group in *.
  exists (gr_op0 x x').
  apply H_prop0.
--idtac.
+-intros y (x & Hx); subst y.
+ destruct G, H, f; simpl in *.
+ unfold is_group in *.
+ apply gr_prop1.
+ apply H_prop0.
+-intros y (x & Hx); subst y.
+ destruct G, H, f; simpl in *.
+ unfold is_group in *.
+ apply gr_prop1.
+ apply H_prop0.
+Qed.
+
+Theorem Ker_is_group {G H} (f : HomGr G H) :
+  is_group (gr_typ G) (gr_zero G) (gr_op G) (λ a, H_app f a = gr_zero H).
+Proof.
+intros.
+split; [ | split ].
+-intros x x' Hx Hx'.
+ destruct G, H, f; simpl in *.
+ unfold is_group in *.
+ rewrite H_prop0.
 ...
+ replace gr_zero1 with (gr_op1 gr_zero1 gr_zero1).
+ +idtac.
+...
+
+ +apply gr_prop1.
+  replace gr_zero1 with (H_app0 gr_zero0) by apply H_prop0.
+  apply H_prop0.
+...
+
+ subst y y'.
+ destruct G, H; simpl in *.
+ destruct f; simpl in *.
+ unfold is_group in *.
+ exists (gr_op0 x x').
+ apply H_prop0.
+-intros y (x & Hx); subst y.
+ destruct G, H, f; simpl in *.
+ unfold is_group in *.
+ apply gr_prop1.
+ apply H_prop0.
+-intros y (x & Hx); subst y.
+ destruct G, H, f; simpl in *.
+ unfold is_group in *.
+ apply gr_prop1.
+ apply H_prop0.
+Qed.
 
 Definition Im {G H : Group} (f : HomGr G H) :=
   {| gr_typ := gr_typ H;
@@ -336,7 +385,10 @@ Definition Im {G H : Group} (f : HomGr G H) :=
 Definition Ker {G H : Group} (f : HomGr G H) :=
   {| gr_typ := gr_typ G;
      gr_zero := gr_zero G;
-     gr_in := λ a : gr_typ G, H_app f a = gr_zero H |}.
+     gr_op := gr_op G;
+     gr_in := λ a : gr_typ G, H_app f a = gr_zero H;
+     gr_prop := Ker_is_group f |}.
+
 Definition coKer {G H : Group} (f : HomGr G H) :=
   {| gr_typ := gr_typ H;
      gr_zero := gr_zero H;
