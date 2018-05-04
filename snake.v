@@ -88,8 +88,6 @@ split.
  apply H_prop0.
 Qed.
 
-Check gr_prop.
-
 Theorem Ker_is_group {G H} : ∀ (f : HomGr G H),
   is_group (gr_zero G) (gr_op (g:=G)) (λ a, gr_in G a ∧ H_app f a = gr_zero H).
 Proof.
@@ -122,12 +120,38 @@ Definition Ker {G H : Group} (f : HomGr G H) :=
      gr_in := λ a, gr_in G a ∧ H_app f a = gr_zero H;
      gr_prop := Ker_is_group f |}.
 
+Theorem coKer_is_group {G H} : ∀ (f : HomGr G H),
+  is_group (gr_zero H) (gr_op (g:=H))
+    (λ x, gr_in H x ∧ ∃ y, gr_in (Im f) (gr_op x y)).
+Proof.
+intros.
+split.
+-split; [ apply H | ].
+...
+
+
+exists (gr_zero H).
+ exists (gr_zero G).
+ destruct f as (appf, fp); simpl in *.
+ destruct fp as (fz, fin, flin); simpl in *.
+ rewrite fz.
+ symmetry; apply H, H.
+-intros y y' (z, Hyz) (z', Hyz').
+...
+
+ destruct G as (Gs, inG, zG, Gop, Gp); simpl in *.
+ destruct H as (Hs, inH, zH, Hop, Hp); simpl in *.
+ destruct f as (appf, fp); simpl in *.
+ destruct fp as (fz, fin, flin); simpl in *.
+ destruct Gp as (gzi, gclos, gul, gur).
 ...
 
 Definition coKer {G H : Group} (f : HomGr G H) :=
   {| gr_set := gr_set H;
      gr_zero := gr_zero H;
-     gr_in := λ a : gr_set H, ∃ a' : gr_set H, gr_in (Im f) (gr_op x y) |}.
+     gr_op := @gr_op H;
+     gr_in := λ x, ∃ y, gr_in (Im f) (gr_op x y);
+     gr_prop := coKer_is_group f |}.
 
 Inductive sequence {A : Group} :=
   | Seq1 : sequence
