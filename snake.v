@@ -227,6 +227,32 @@ split.
  +subst y; split; [ apply fk | simpl ].
   destruct gk as (app_gk, gk_p); simpl in gk_prop; simpl.
   specialize (gk_prop (H_app fk x)) as H1.
-simpl in s.
-(* mouais bon faut voir... *)
+  assert (H2 : H_app fk x ∈ B ∧ H_app b (H_app fk x) = gr_zero B'). {
+    apply fk.
+  }
+  specialize (H1 H2); clear H2; rewrite H1; clear H1.
+  destruct s as (s1, s).
+  simpl in s1.
+  specialize (s1 (H_app fk x)) as (s1, s'1).
+destruct fk as (app_fk, fk_p); simpl in fk_prop; simpl.
+simpl in s1, s'1.
+...
+  assert (H1 : ∃ x', H_app f x' = H_app fk x). {
+    exists x.
+    destruct fk as (app_fk, fk_p); simpl in fk_prop; simpl.
+    symmetry; apply fk_prop.
+    split.
+Search x.
+...
+
+apply fk.
+{
+
+  assert (H1 : H_app fk x = gr_zero B). {
+    destruct fk as (app_fk, fk_p); simpl in fk_prop; simpl.
+    destruct fk_p as (fz, fin, flin).
+simpl in fz.
+simpl in flin.
+simpl in fin.
+simpl in fk_prop.
 ...
