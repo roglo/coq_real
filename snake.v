@@ -102,9 +102,15 @@ split.
  destruct H as (Hset, inH, zH, Hop, Hp); simpl in *.
  destruct f as (appf, fp); simpl in *.
  destruct fp as (fz, fin, flin); simpl in *.
+ destruct Gp as (zgi, gclos, gul, gur).
+ destruct Hp as (zhi, hclos, hul, hur).
+ rewrite flin.
+..
+
  rewrite flin, Hx, Hx'.
  +apply Hp; apply Hp.
- +idtac.
+ +destruct Gp as (zgi, gclos, gul, gur).
+
 ...
  rewrite ih_lin0, Hx, Hx'.
  +intros Hxx'.
@@ -119,7 +125,6 @@ split.
  destruct Gp as (gzi, gclos, gul, gur).
  apply gul.
 ...
-*)
 
 Definition Im {G H : Group} (f : HomGr G H) :=
   {| gr_set := gr_set H;
