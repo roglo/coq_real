@@ -21,6 +21,8 @@ Record Group :=
 
 Arguments gr_op [_].
 
+Notation "x '∈' S" := (gr_in S x) (at level 60).
+
 Record is_homgr A B H_app :=
   { ih_zero : H_app (gr_zero A) = gr_zero B;
     ih_inco : ∀ x, gr_in B (H_app x);
