@@ -221,4 +221,7 @@ Lemma snake :
   exact_sequence (Seq2 fk (Seq2 gk (Seq2 d (Seq2 fk' (Seq2 gk' Seq1))))).
 Proof.
 intros.
+split.
+-intros x.
+ split; intros Hx.
 ...
