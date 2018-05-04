@@ -91,40 +91,22 @@ Qed.
 Check gr_prop.
 
 Theorem Ker_is_group {G H} : ∀ (f : HomGr G H),
- is_group (gr_zero G) (gr_op (g:=G)) (λ a, gr_in G a → H_app f a = gr_zero H).
+  is_group (gr_zero G) (gr_op (g:=G)) (λ a, gr_in G a ∧ H_app f a = gr_zero H).
 Proof.
 intros.
 split.
--intros inG.
- apply f.
--intros x x' Hx Hx' Hxx'.
- destruct G as (Gset, inG, zG, Gop, Gp); simpl in *.
- destruct H as (Hset, inH, zH, Hop, Hp); simpl in *.
+-split; [ apply G | apply f ].
+-intros x x' (Hx, Hfx) (Hx', Hfx').
+ split; [ now apply G | ].
  destruct f as (appf, fp); simpl in *.
  destruct fp as (fz, fin, flin); simpl in *.
- destruct Gp as (zgi, gclos, gul, gur).
- destruct Hp as (zhi, hclos, hul, hur).
- rewrite flin.
-..
-
- rewrite flin, Hx, Hx'.
- +apply Hp; apply Hp.
- +destruct Gp as (zgi, gclos, gul, gur).
-
-...
- rewrite ih_lin0, Hx, Hx'.
- +intros Hxx'.
-
- apply gr_prop1.
- apply gr_prop1.
--intros x Hx.
- destruct G as (Gs, inG, zG, Gop, Gp); simpl in *.
- destruct H as (Hs, inH, zH, Hop, Hp); simpl in *.
- destruct f as (appf, fp); simpl in *.
- destruct fp as (fz, fin, flin); simpl in *.
- destruct Gp as (gzi, gclos, gul, gur).
- apply gul.
-...
+ rewrite flin, Hfx, Hfx'.
+ apply H, H.
+-intros x (Hx, Hfx).
+ now apply G.
+-intros x (Hx, Hfx).
+ now apply G.
+Qed.
 
 Definition Im {G H : Group} (f : HomGr G H) :=
   {| gr_set := gr_set H;
@@ -137,8 +119,10 @@ Definition Ker {G H : Group} (f : HomGr G H) :=
   {| gr_set := gr_set G;
      gr_zero := gr_zero G;
      gr_op := @gr_op G;
-     gr_in := λ a, gr_in G a → H_app f a = gr_zero H;
+     gr_in := λ a, gr_in G a ∧ H_app f a = gr_zero H;
      gr_prop := Ker_is_group f |}.
+
+...
 
 Definition coKer {G H : Group} (f : HomGr G H) :=
   {| gr_set := gr_set H;
