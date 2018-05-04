@@ -2,18 +2,22 @@
 
 Require Import Utf8.
 
-Record is_group {T} (gr_zero : T) (gr_op : T → T → T)  (gr_in : T → Prop) :=
+Record is_abelian_group {T} (gr_zero : T) gr_op gr_in :=
   { ig_zero : gr_in gr_zero;
     ig_clos : ∀ x y, gr_in x → gr_in y → gr_in (gr_op x y);
     ig_lid : ∀ x, gr_in x → gr_op gr_zero x = x;
-    ig_rid : ∀ x, gr_in x → gr_op x gr_zero = x }.
+    ig_rid : ∀ x, gr_in x → gr_op x gr_zero = x;
+    ig_assoc : ∀ x y z, gr_in x → gr_in y → gr_in z →
+      gr_op (gr_op x y) z = gr_op x (gr_op y z);
+    ig_comm : ∀ x y, gr_in x → gr_in y →
+      gr_op x y = gr_op y x }.
 
 Record Group :=
   { gr_set : Type;
     gr_in : gr_set → Prop;
     gr_zero : gr_set;
     gr_op : gr_set → gr_set → gr_set;
-    gr_prop : is_group gr_zero gr_op gr_in }.
+    gr_prop : is_abelian_group gr_zero gr_op gr_in }.
 
 Arguments gr_op [_].
 
@@ -30,9 +34,9 @@ Arguments H_app [A] [B].
 
 Inductive Gr0_set := G0 : Gr0_set.
 
-Theorem Gr0_prop : is_group G0 (λ _ _ : Gr0_set, G0) (λ _ : Gr0_set, True).
+Theorem Gr0_prop : is_abelian_group G0 (λ _ _, G0) (λ _, True).
 Proof.
-split; [ easy | easy | | ].
+split; [ easy | easy | | | easy | easy ].
 -now intros x; destruct x.
 -now intros x; destruct x.
 Qed.
@@ -65,8 +69,8 @@ split; intros H f g x.
  now destruct (fa x), (ga x).
 Qed.
 
-Theorem Im_is_group {G H} (f : HomGr G H) :
-  is_group (gr_zero H) (@gr_op H) (λ b, ∃ a, H_app f a = b).
+Theorem Im_is_abelian_group {G H} (f : HomGr G H) :
+  is_abelian_group (gr_zero H) (@gr_op H) (λ b, ∃ a, H_app f a = b).
 Proof.
 intros.
 split.
@@ -86,10 +90,18 @@ split.
  destruct G, H, f; simpl in *.
  apply gr_prop1.
  apply H_prop0.
+-intros y y' y'' (x & Hx) (x' & Hx') (x'' & Hx'').
+ rewrite <- Hx, <- Hx', <- Hx''.
+ apply H; apply f.
+-intros y y' (x & Hx) (x' & Hx').
+ apply H.
+ +rewrite <- Hx; apply f.
+ +rewrite <- Hx'; apply f.
 Qed.
 
-Theorem Ker_is_group {G H} : ∀ (f : HomGr G H),
-  is_group (gr_zero G) (gr_op (g:=G)) (λ a, gr_in G a ∧ H_app f a = gr_zero H).
+Theorem Ker_is_abelian_group {G H} : ∀ (f : HomGr G H),
+  is_abelian_group (gr_zero G) (gr_op (g:=G))
+    (λ a, gr_in G a ∧ H_app f a = gr_zero H).
 Proof.
 intros.
 split.
@@ -104,6 +116,10 @@ split.
  now apply G.
 -intros x (Hx, Hfx).
  now apply G.
+-intros x x' x'' (Hx & Hfx) (Hx' & Hfx') (Hx'' & Hfx'').
+ now apply G.
+-intros x x' (Hx, Hfx) (Hx', Hfx').
+ now apply G.
 Qed.
 
 Definition Im {G H : Group} (f : HomGr G H) :=
@@ -111,34 +127,53 @@ Definition Im {G H : Group} (f : HomGr G H) :=
      gr_zero := gr_zero H;
      gr_op := @gr_op H;
      gr_in := λ b, ∃ a, H_app f a = b;
-     gr_prop := Im_is_group f |}.
+     gr_prop := Im_is_abelian_group f |}.
 
 Definition Ker {G H : Group} (f : HomGr G H) :=
   {| gr_set := gr_set G;
      gr_zero := gr_zero G;
      gr_op := @gr_op G;
      gr_in := λ a, gr_in G a ∧ H_app f a = gr_zero H;
-     gr_prop := Ker_is_group f |}.
+     gr_prop := Ker_is_abelian_group f |}.
 
-Theorem coKer_is_group {G H} : ∀ (f : HomGr G H),
-  is_group (gr_zero H) (gr_op (g:=H))
-    (λ x, gr_in H x ∧ ∃ y, gr_in (Im f) (gr_op x y)).
+Theorem coKer_is_abelian_group {G H} : ∀ (f : HomGr G H),
+  is_abelian_group (gr_zero H) (gr_op (g:=H))
+    (λ x, gr_in H x ∧ ∃ y, gr_in H y ∧ gr_in (Im f) (gr_op x y)).
 Proof.
 intros.
 split.
 -split; [ apply H | ].
  exists (gr_zero H).
+ split; [ apply H | ].
  exists (gr_zero G).
  destruct f as (appf, fp); simpl in *.
  destruct fp as (fz, fin, flin); simpl in *.
  rewrite fz.
  symmetry; apply H, H.
--intros y y' (Hy & z & Hfy) (Hy' & z' & Hfy').
+-intros y y' (Hy & z & Hz & x & Hx) (Hy' & z' & Hz' & x' & Hx').
  split; [ now apply H | ].
  exists (gr_op z z').
- (* commutativity and associativity required *)
+ split; [ now apply H | ].
+ exists (gr_op x x').
+ destruct f as (appf, fp); simpl in *.
+ destruct fp as (fz, fin, flin); simpl in *.
+ rewrite flin, Hx, Hx'.
+ destruct H as (Hs, inH, zH, Hop, Hp); simpl in *.
+ replace (Hop y z) with (Hop z y) by now apply Hp.
+ remember (Hop y' z') as t eqn:Ht.
+ replace (Hop (Hop z y) t) with (Hop z (Hop y t)).
+ 2: now subst t; symmetry; apply Hp; [ | | apply Hp ].
+ subst t.
+ replace (Hop y (Hop y' z')) with (Hop (Hop y y') z') by now apply Hp.
+ remember (Hop y y') as t eqn:Ht.
+ replace (Hop z (Hop t z')) with (Hop (Hop t z') z).
+ 2: subst t; symmetry; apply Hp; [ easy | ].
+ 2: now apply Hp; [ apply Hp | ].
+ replace (Hop (Hop t z') z) with (Hop t (Hop z' z)).
+ 2: now subst t; symmetry; apply Hp; [ apply Hp | | ].
+ now replace (Hop z' z) with (Hop z z'); [ | apply Hp ].
+-idtac.
 ...
-
  destruct G as (Gs, inG, zG, Gop, Gp); simpl in *.
  destruct H as (Hs, inH, zH, Hop, Hp); simpl in *.
  destruct f as (appf, fp); simpl in *.
@@ -152,7 +187,7 @@ Definition coKer {G H : Group} (f : HomGr G H) :=
      gr_zero := gr_zero H;
      gr_op := @gr_op H;
      gr_in := λ x, ∃ y, gr_in (Im f) (gr_op x y);
-     gr_prop := coKer_is_group f |}.
+     gr_prop := coKer_is_abelian_group f |}.
 
 Inductive sequence {A : Group} :=
   | Seq1 : sequence
