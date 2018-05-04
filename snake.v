@@ -3,19 +3,23 @@
 Require Import Utf8.
 
 Record is_group {T} (gr_zero : T) (gr_op : T → T → T)  (gr_in : T → Prop) :=
-  { gp_clos : ∀ x y, gr_in x → gr_in y → gr_in (gr_op x y);
-    gp_lid : ∀ x, gr_in x → gr_op gr_zero x = x;
-    gp_rid : ∀ x, gr_in x → gr_op x gr_zero = x }.
+  { ig_zero : gr_in gr_zero;
+    ig_clos : ∀ x y, gr_in x → gr_in y → gr_in (gr_op x y);
+    ig_lid : ∀ x, gr_in x → gr_op gr_zero x = x;
+    ig_rid : ∀ x, gr_in x → gr_op x gr_zero = x }.
 
 Record Group :=
-  { gr_typ : Type;
-    gr_zero : gr_typ;
-    gr_op : gr_typ → gr_typ → gr_typ;
-    gr_in : gr_typ → Prop;
+  { gr_set : Type;
+    gr_in : gr_set → Prop;
+    gr_zero : gr_set;
+    gr_op : gr_set → gr_set → gr_set;
     gr_prop : is_group gr_zero gr_op gr_in }.
 
+Notation "x '∈' G" := (gr_in G x) (at level 60).
+Notation "x '∉' G" := (¬ gr_in G x) (at level 60).
+
 Record HomGr (A B : Group) :=
-  { H_app : gr_typ A → gr_typ B;
+  { H_app : gr_set A → gr_set B;
     H_prop :
       H_app (gr_zero A) = gr_zero B ∧
       (∀ x, gr_in B (H_app x)) ∧
@@ -27,22 +31,22 @@ Inductive Gr0_set := G0 : Gr0_set.
 
 Theorem Gr0_prop : is_group G0 (λ _ _ : Gr0_set, G0) (λ _ : Gr0_set, True).
 Proof.
-split; [ easy | | ].
+split; [ easy | easy | | ].
 -now intros x; destruct x.
 -now intros x; destruct x.
 Qed.
 
 Definition Gr0 :=
-   {| gr_typ := Gr0_set;
+   {| gr_set := Gr0_set;
       gr_zero := G0;
       gr_op := λ _ _, G0;
       gr_in := λ _, True;
       gr_prop := Gr0_prop |}.
 
 Definition is_initial (G : Group) :=
-  ∀ H (f g : HomGr G H) (x : gr_typ G), H_app f x = H_app g x.
+  ∀ H (f g : HomGr G H) (x : gr_set G), H_app f x = H_app g x.
 Definition is_final (G : Group) :=
-  ∀ H (f g : HomGr H G) (x : gr_typ H), H_app f x = H_app g x.
+  ∀ H (f g : HomGr H G) (x : gr_set H), H_app f x = H_app g x.
 Definition is_null (G : Group) := is_initial G ∧ is_final G.
 
 Theorem is_null_Gr0 : is_null Gr0.
@@ -64,6 +68,8 @@ Theorem Im_is_group {G H} (f : HomGr G H) :
 Proof.
 intros.
 split.
+-exists (gr_zero G).
+ apply f.
 -intros y y' (x & Hx) (x' & Hx').
  subst y y'.
  destruct G, H; simpl in *.
@@ -85,7 +91,7 @@ split.
 Qed.
 
 Theorem Ker_is_group {G H} (f : HomGr G H) :
-  is_group (gr_typ G) (gr_zero G) (gr_op G) (λ a, H_app f a = gr_zero H).
+  is_group (gr_set G) (gr_zero G) (gr_op G) (λ a, H_app f a = gr_zero H).
 Proof.
 intros.
 split; [ | split ].
@@ -122,23 +128,23 @@ split; [ | split ].
 Qed.
 
 Definition Im {G H : Group} (f : HomGr G H) :=
-  {| gr_typ := gr_typ H;
+  {| gr_set := gr_set H;
      gr_zero := gr_zero H;
      gr_op := gr_op H;
      gr_in := λ b, ∃ a, H_app f a = b;
      gr_prop := Im_is_group f |}.
 
 Definition Ker {G H : Group} (f : HomGr G H) :=
-  {| gr_typ := gr_typ G;
+  {| gr_set := gr_set G;
      gr_zero := gr_zero G;
      gr_op := gr_op G;
-     gr_in := λ a : gr_typ G, H_app f a = gr_zero H;
+     gr_in := λ a : gr_set G, H_app f a = gr_zero H;
      gr_prop := Ker_is_group f |}.
 
 Definition coKer {G H : Group} (f : HomGr G H) :=
-  {| gr_typ := gr_typ H;
+  {| gr_set := gr_set H;
      gr_zero := gr_zero H;
-     gr_in := λ a : gr_typ H, ∃ a' : gr_typ H, gr_in (Im f) (gr_op x y) |}.
+     gr_in := λ a : gr_set H, ∃ a' : gr_set H, gr_in (Im f) (gr_op x y) |}.
 
 Inductive sequence {A : Group} :=
   | Seq1 : sequence
