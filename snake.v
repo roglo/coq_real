@@ -15,15 +15,14 @@ Record Group :=
     gr_op : gr_set → gr_set → gr_set;
     gr_prop : is_group gr_zero gr_op gr_in }.
 
-Notation "x '∈' G" := (gr_in G x) (at level 60).
-Notation "x '∉' G" := (¬ gr_in G x) (at level 60).
+Record is_homgr A B H_app :=
+  { ih_zero : H_app (gr_zero A) = gr_zero B;
+    ih_inco : ∀ x, gr_in B (H_app x);
+    ih_lin : ∀ x y, H_app (gr_op A x y) = gr_op B (H_app x) (H_app y) }.
 
 Record HomGr (A B : Group) :=
   { H_app : gr_set A → gr_set B;
-    H_prop :
-      H_app (gr_zero A) = gr_zero B ∧
-      (∀ x, gr_in B (H_app x)) ∧
-      (∀ x y, H_app (gr_op A x y) = gr_op B (H_app x) (H_app y)) }.
+    H_prop : is_homgr A B H_app }.
 
 Arguments H_app [A] [B].
 
@@ -52,13 +51,14 @@ Definition is_null (G : Group) := is_initial G ∧ is_final G.
 Theorem is_null_Gr0 : is_null Gr0.
 Proof.
 split; intros H f g x.
--destruct f as (fa & fp1 & fp2); simpl in fp1, fp2.
- destruct g as (ga & gp1 & gp2); simpl in gp1, gp2.
+-destruct f as (fa & fih); simpl in fih.
+ destruct g as (ga & gih); simpl in gih.
  simpl.
  destruct x.
- now rewrite fp1, gp1.
--destruct f as (fa, fp); simpl in fp.
- destruct g as (ga, gp); simpl in gp.
+ destruct fih, gih; simpl in *.
+ now rewrite ih_zero0, ih_zero1.
+-destruct f as (fa & fih); simpl in fih.
+ destruct g as (ga & gih); simpl in gih.
  simpl.
  now destruct (fa x), (ga x).
 Qed.
@@ -74,58 +74,32 @@ split.
  subst y y'.
  destruct G, H; simpl in *.
  destruct f; simpl in *.
-...
- unfold is_group in *.
  exists (gr_op0 x x').
  apply H_prop0.
 -intros y (x & Hx); subst y.
  destruct G, H, f; simpl in *.
- unfold is_group in *.
  apply gr_prop1.
  apply H_prop0.
 -intros y (x & Hx); subst y.
  destruct G, H, f; simpl in *.
- unfold is_group in *.
  apply gr_prop1.
  apply H_prop0.
 Qed.
 
 Theorem Ker_is_group {G H} (f : HomGr G H) :
-  is_group (gr_set G) (gr_zero G) (gr_op G) (λ a, H_app f a = gr_zero H).
+  is_group (gr_zero G) (gr_op G) (λ a, H_app f a = gr_zero H).
 Proof.
 intros.
-split; [ | split ].
+split.
+-apply f.
 -intros x x' Hx Hx'.
  destruct G, H, f; simpl in *.
- unfold is_group in *.
- rewrite H_prop0.
-...
- replace gr_zero1 with (gr_op1 gr_zero1 gr_zero1).
- +idtac.
-...
-
- +apply gr_prop1.
-  replace gr_zero1 with (H_app0 gr_zero0) by apply H_prop0.
-  apply H_prop0.
-...
-
- subst y y'.
- destruct G, H; simpl in *.
- destruct f; simpl in *.
- unfold is_group in *.
- exists (gr_op0 x x').
- apply H_prop0.
--intros y (x & Hx); subst y.
- destruct G, H, f; simpl in *.
- unfold is_group in *.
+ destruct H_prop0; simpl in *.
+ rewrite ih_lin0, Hx, Hx'.
  apply gr_prop1.
- apply H_prop0.
--intros y (x & Hx); subst y.
- destruct G, H, f; simpl in *.
- unfold is_group in *.
  apply gr_prop1.
- apply H_prop0.
-Qed.
+-idtac.
+...
 
 Definition Im {G H : Group} (f : HomGr G H) :=
   {| gr_set := gr_set H;
