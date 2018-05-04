@@ -210,11 +210,14 @@ Lemma snake :
      (cz : HomGr C Gr0) (za' : HomGr Gr0 A')
      (fk : HomGr (Ker a) (Ker b)) (gk : HomGr (Ker b) (Ker c))
      (d : HomGr (Ker c) (coKer a))
+     (fk' : HomGr (coKer a) (coKer b)) (gk' : HomGr (coKer b) (coKer c))
      (s : exact_sequence (Seq2 f (Seq2 g (Seq2 cz Seq1))))
      (s' : exact_sequence (Seq2 za' (Seq2 f' (Seq2 g' Seq1))))
      (fk_prop : ∀ x, gr_in (Ker a) x → H_app fk x = H_app f x)
-     (gk_prop : ∀ x, gr_in (Ker b) x → H_app gk x = H_app g x),
-  exact_sequence (Seq2 fk (Seq2 gk Seq1)).
+     (gk_prop : ∀ x, gr_in (Ker b) x → H_app gk x = H_app g x)
+     (fk'_prop : ∀ x, gr_in (coKer a) x → H_app fk' x = H_app f' x)
+     (gk'_prop : ∀ x, gr_in (coKer b) x → H_app gk' x = H_app g' x),
+  exact_sequence (Seq2 fk (Seq2 gk (Seq2 d (Seq2 fk' (Seq2 gk' Seq1))))).
 Proof.
 intros.
 ...
