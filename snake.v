@@ -172,21 +172,17 @@ split.
  replace (Hop (Hop t z') z) with (Hop t (Hop z' z)).
  2: now subst t; symmetry; apply Hp; [ apply Hp | | ].
  now replace (Hop z' z) with (Hop z z'); [ | apply Hp ].
--idtac.
-...
- destruct G as (Gs, inG, zG, Gop, Gp); simpl in *.
- destruct H as (Hs, inH, zH, Hop, Hp); simpl in *.
- destruct f as (appf, fp); simpl in *.
- destruct fp as (fz, fin, flin); simpl in *.
- destruct Gp as (gzi, gclos, gul, gur).
- destruct Hp as (hzi, hclos, hul, hur).
-...
+-now intros; apply H.
+-now intros; apply H.
+-now intros; apply H.
+-now intros; apply H.
+Qed.
 
 Definition coKer {G H : Group} (f : HomGr G H) :=
   {| gr_set := gr_set H;
      gr_zero := gr_zero H;
      gr_op := @gr_op H;
-     gr_in := λ x, ∃ y, gr_in (Im f) (gr_op x y);
+     gr_in := λ x, gr_in H x ∧ ∃ y, gr_in H y ∧ gr_in (Im f) (gr_op x y);
      gr_prop := coKer_is_abelian_group f |}.
 
 Inductive sequence {A : Group} :=
