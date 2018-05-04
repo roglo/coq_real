@@ -88,16 +88,28 @@ split.
  apply H_prop0.
 Qed.
 
-Theorem Ker_is_group {G H} (f : HomGr G H) :
-  is_group (gr_zero G) (@gr_op G) (λ a, H_app f a = gr_zero H).
+Theorem Ker_is_group {G H} : ∀ (f : HomGr G H),
+  is_group (gr_zero G) (@gr_op G) (λ a, gr_in G a → H_app f a = gr_zero H).
 Proof.
 intros.
 split.
--apply f.
--intros x x' Hx Hx'.
- destruct G, H, f; simpl in *.
- destruct H_prop0; simpl in *.
+-intros inG.
+ apply f.
+-intros x x' Hx Hx' Hxx'.
+ destruct G as (Gs, inG, zG, Gop, Gp); simpl in *.
+ destruct H as (Hs, inH, zH, Hop, Hp); simpl in *.
+ destruct f as (appf, fp); simpl in *.
+ destruct fp as (fz, fin, flin); simpl in *.
+ rewrite flin, Hx, Hx'.
+ +apply Hp; apply Hp.
+ +idtac.
+...
+
+
+
  rewrite ih_lin0, Hx, Hx'.
+ +intros Hxx'.
+
  apply gr_prop1.
  apply gr_prop1.
 -intros x Hx.
@@ -120,8 +132,8 @@ Definition Ker {G H : Group} (f : HomGr G H) :=
   {| gr_set := gr_set G;
      gr_zero := gr_zero G;
      gr_op := gr_op G;
-     gr_in := λ a : gr_set G, H_app f a = gr_zero H;
-     gr_prop := Ker_is_group f |}.
+     gr_in := λ a, gr_in G a → H_app f a = gr_zero H;
+     gr_prop := Ker_is_group f (gr_in G) |}.
 
 Definition coKer {G H : Group} (f : HomGr G H) :=
   {| gr_set := gr_set H;
