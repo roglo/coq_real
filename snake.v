@@ -101,9 +101,9 @@ split.
  apply gr_prop1.
  apply gr_prop1.
 -intros x Hx.
- destruct G as (Gs, Gin, Gz, Gop, Gp); simpl in *.
- destruct H as (Hs, Hin, Hz, Hop, Hp); simpl in *.
- destruct f as (fapp, fp); simpl in *.
+ destruct G as (Gs, inG, zG, Gop, Gp); simpl in *.
+ destruct H as (Hs, inH, zH, Hop, Hp); simpl in *.
+ destruct f as (appf, fp); simpl in *.
  destruct fp as (fz, fin, flin); simpl in *.
  destruct Gp as (gzi, gclos, gul, gur).
  apply gul.
