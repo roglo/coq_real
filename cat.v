@@ -1,9 +1,6 @@
 (* jeu avec les catégories *)
 
 Require Import Utf8.
-(*
-Set Universe Polymorphism.
-*)
 
 Definition compose {A B C} (f : A → B) (g : B → C) := λ x, g (f x).
 Notation "g '◦' f" := (compose f g) (at level 40).
@@ -38,10 +35,10 @@ Proof.
 intros A B u EqB NNE He.
 unfold is_epimorphism in He.
 intros y.
-set (v (b : B) := if EqB b y then 1 else 0).
-set (w (b : B) := 0).
-specialize (He _ v w) as H1.
 assert (Hn : ¬ (∀ x, u x ≠ y)). {
+  set (v (b : B) := if EqB b y then 1 else 0).
+  set (w (b : B) := 0).
+  specialize (He _ v w) as H1.
   intros H2.
   assert (Hx : v ◦ u == w ◦ u). {
     intros x.
