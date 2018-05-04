@@ -127,16 +127,16 @@ Proof.
 intros.
 split.
 -split; [ apply H | ].
-...
-
-
-exists (gr_zero H).
+ exists (gr_zero H).
  exists (gr_zero G).
  destruct f as (appf, fp); simpl in *.
  destruct fp as (fz, fin, flin); simpl in *.
  rewrite fz.
  symmetry; apply H, H.
--intros y y' (z, Hyz) (z', Hyz').
+-intros y y' (Hy & z & Hfy) (Hy' & z' & Hfy').
+ split; [ now apply H | ].
+ exists (gr_op z z').
+ (* commutativity and associativity required *)
 ...
 
  destruct G as (Gs, inG, zG, Gop, Gp); simpl in *.
@@ -144,6 +144,7 @@ exists (gr_zero H).
  destruct f as (appf, fp); simpl in *.
  destruct fp as (fz, fin, flin); simpl in *.
  destruct Gp as (gzi, gclos, gul, gur).
+ destruct Hp as (hzi, hclos, hul, hur).
 ...
 
 Definition coKer {G H : Group} (f : HomGr G H) :=
