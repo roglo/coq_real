@@ -15,10 +15,12 @@ Record Group :=
     gr_op : gr_set → gr_set → gr_set;
     gr_prop : is_group gr_zero gr_op gr_in }.
 
+Arguments gr_op [_].
+
 Record is_homgr A B H_app :=
   { ih_zero : H_app (gr_zero A) = gr_zero B;
     ih_inco : ∀ x, gr_in B (H_app x);
-    ih_lin : ∀ x y, H_app (gr_op A x y) = gr_op B (H_app x) (H_app y) }.
+    ih_lin : ∀ x y, H_app (gr_op x y) = gr_op (H_app x) (H_app y) }.
 
 Record HomGr (A B : Group) :=
   { H_app : gr_set A → gr_set B;
@@ -64,7 +66,7 @@ split; intros H f g x.
 Qed.
 
 Theorem Im_is_group {G H} (f : HomGr G H) :
-  is_group (gr_zero H) (gr_op H) (λ b, ∃ a, H_app f a = b).
+  is_group (gr_zero H) (@gr_op H) (λ b, ∃ a, H_app f a = b).
 Proof.
 intros.
 split.
@@ -87,7 +89,7 @@ split.
 Qed.
 
 Theorem Ker_is_group {G H} (f : HomGr G H) :
-  is_group (gr_zero G) (gr_op G) (λ a, H_app f a = gr_zero H).
+  is_group (gr_zero G) (@gr_op G) (λ a, H_app f a = gr_zero H).
 Proof.
 intros.
 split.
@@ -98,7 +100,13 @@ split.
  rewrite ih_lin0, Hx, Hx'.
  apply gr_prop1.
  apply gr_prop1.
--idtac.
+-intros x Hx.
+ destruct G as (Gs, Gin, Gz, Gop, Gp); simpl in *.
+ destruct H as (Hs, Hin, Hz, Hop, Hp); simpl in *.
+ destruct f as (fapp, fp); simpl in *.
+ destruct fp as (fz, fin, flin); simpl in *.
+ destruct Gp as (gzi, gclos, gul, gur).
+ apply gul.
 ...
 
 Definition Im {G H : Group} (f : HomGr G H) :=
