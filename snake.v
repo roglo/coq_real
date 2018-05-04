@@ -204,7 +204,8 @@ Fixpoint exact_sequence {A : Group} (S : sequence) :=
   end.
 
 Lemma snake :
-  ∀ (A B C A' B' C' : Group) (f : HomGr A B) (g : HomGr B C)
+  ∀ (A B C A' B' C' : Group)
+     (f : HomGr A B) (g : HomGr B C)
      (f' : HomGr A' B') (g' : HomGr B' C')
      (a : HomGr A A') (b : HomGr B B') (c : HomGr C C')
      (cz : HomGr C Gr0) (za' : HomGr Gr0 A')
