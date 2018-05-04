@@ -222,6 +222,11 @@ Lemma snake :
 Proof.
 intros.
 split.
--intros x.
- split; intros Hx.
+-intros y.
+ split; intros (x & Hx); simpl in x.
+ +subst y; split; [ apply fk | simpl ].
+  destruct gk as (app_gk, gk_p); simpl in gk_prop; simpl.
+  specialize (gk_prop (H_app fk x)) as H1.
+simpl in s.
+(* mouais bon faut voir... *)
 ...
