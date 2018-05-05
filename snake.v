@@ -203,6 +203,20 @@ Fixpoint exact_sequence {A : Group} (S : sequence) :=
       end
   end.
 
+(*      f
+    A------>B
+    |       |
+   g|       |h
+    |       |
+    v       v
+    C------>D
+        k
+*)
+
+Definition diagram_commutes {A B C D}
+     (f : HomGr A B) (g : HomGr A C) (h : HomGr B D) (k : HomGr C D) :=
+  ∀ x, H_app h (H_app f x) = H_app k (H_app g x).
+
 Lemma snake :
   ∀ (A B C A' B' C' : Group)
      (f : HomGr A B) (g : HomGr B C)
@@ -212,21 +226,23 @@ Lemma snake :
      (fk : HomGr (Ker a) (Ker b)) (gk : HomGr (Ker b) (Ker c))
      (d : HomGr (Ker c) (coKer a))
      (fk' : HomGr (coKer a) (coKer b)) (gk' : HomGr (coKer b) (coKer c))
-     (s : exact_sequence (Seq2 f (Seq2 g (Seq2 cz Seq1))))
-     (s' : exact_sequence (Seq2 za' (Seq2 f' (Seq2 g' Seq1))))
      (fk_prop : ∀ x, gr_in (Ker a) x → H_app fk x = H_app f x)
      (gk_prop : ∀ x, gr_in (Ker b) x → H_app gk x = H_app g x)
      (fk'_prop : ∀ x, gr_in (coKer a) x → H_app fk' x = H_app f' x)
      (gk'_prop : ∀ x, gr_in (coKer b) x → H_app gk' x = H_app g' x),
-  exact_sequence (Seq2 fk (Seq2 gk (Seq2 d (Seq2 fk' (Seq2 gk' Seq1))))).
+  diagram_commutes f a b f'
+  → diagram_commutes g b c g'
+  → exact_sequence (Seq2 f (Seq2 g (Seq2 cz Seq1)))
+  → exact_sequence (Seq2 za' (Seq2 f' (Seq2 g' Seq1)))
+  → exact_sequence (Seq2 fk (Seq2 gk (Seq2 d (Seq2 fk' (Seq2 gk' Seq1))))).
 Proof.
-intros.
+intros * fk_prop gk_prop fk'_prop gk'_prop.
+intros Hcff' Hcgg' s s'.
 split.
 -intros y.
  split; intros (x & Hx); simpl in x.
  +subst y.
-  assert (H1 : H_app fk x ∈ Ker b) by apply fk.
-  split; [ easy | simpl ].
+  split; [ apply fk | simpl ].
 ...
   destruct fk as (app_fk, fk_p); simpl in fk_prop; simpl.
   destruct fk_p as (fk_z, fk_in, fk_lin).
