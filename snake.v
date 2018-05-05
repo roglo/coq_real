@@ -224,13 +224,20 @@ intros.
 split.
 -intros y.
  split; intros (x & Hx); simpl in x.
- +subst y; split; [ apply fk | simpl ].
+ +subst y.
+  assert (H1 : H_app fk x ∈ Ker b) by apply fk.
+  split; [ easy | simpl ].
   destruct gk as (app_gk, gk_p); simpl in gk_prop; simpl.
-  specialize (gk_prop (H_app fk x)) as H1.
-  assert (H2 : H_app fk x ∈ B ∧ H_app b (H_app fk x) = gr_zero B'). {
+  destruct gk_p as (gk_z, gk_in, gk_lin).
+  simpl in gk_in.
+simpl in gk_lin.
+...
+  specialize (gk_prop (H_app fk x)) as H2.
+  assert (H3 : H_app fk x ∈ B ∧ H_app b (H_app fk x) = gr_zero B'). {
     apply fk.
   }
-  specialize (H1 H2); clear H2; rewrite H1; clear H1.
+  specialize (H2 H3); rewrite H2.
+...
   destruct s as (s1, s).
   simpl in s1.
   assert (H1 : x ∈ Ker a). {
