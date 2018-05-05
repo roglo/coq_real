@@ -227,6 +227,12 @@ split.
  +subst y.
   assert (H1 : H_app fk x ∈ Ker b) by apply fk.
   split; [ easy | simpl ].
+...
+  destruct fk as (app_fk, fk_p); simpl in fk_prop; simpl.
+  destruct fk_p as (fk_z, fk_in, fk_lin).
+  simpl in H1.
+  simpl in fk_in.
+
   destruct gk as (app_gk, gk_p); simpl in gk_prop; simpl.
   destruct gk_p as (gk_z, gk_in, gk_lin).
   simpl in gk_in.
