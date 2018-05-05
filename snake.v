@@ -233,6 +233,12 @@ split.
   specialize (H1 H2); clear H2; rewrite H1; clear H1.
   destruct s as (s1, s).
   simpl in s1.
+  assert (H1 : x ∈ Ker a). {
+    simpl.
+...
+  }
+  rewrite fk_prop.
+...
   specialize (s1 (H_app fk x)) as (s1, s'1).
 destruct fk as (app_fk, fk_p); simpl in fk_prop; simpl.
 simpl in s1, s'1.
