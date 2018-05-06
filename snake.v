@@ -242,6 +242,7 @@ split.
  split; intros (x & Hx); simpl in x.
  +subst y.
   split; [ apply fk | simpl ].
+  unfold diagram_commutes in Hcff', Hcgg'.
 ...
   destruct fk as (app_fk, fk_p); simpl in fk_prop; simpl.
   destruct fk_p as (fk_z, fk_in, fk_lin).
