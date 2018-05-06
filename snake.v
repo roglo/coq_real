@@ -232,15 +232,39 @@ Lemma snake :
   → diagram_commutes g b c g'
   → exact_sequence (Seq2 f (Seq2 g (Seq2 cz Seq1)))
   → exact_sequence (Seq2 za' (Seq2 f' (Seq2 g' Seq1)))
-  → (∀ x, x ∈ Ker a → H_app fk x ∈ Ker b) ∧
+  → ∃ (d : HomGr (Ker c) (coKer a)),
+     (∀ x, x ∈ Ker a → H_app fk x ∈ Ker b) ∧
      (∀ x, x ∈ Ker b → H_app gk x ∈ Ker c) ∧
      (∀ x, x ∈ coKer a → H_app fk' x ∈ coKer b) ∧
      (∀ x, x ∈ coKer b → H_app gk' x ∈ coKer c) ∧
-    ∃ d,
      exact_sequence (Seq2 fk (Seq2 gk (Seq2 d (Seq2 fk' (Seq2 gk' Seq1))))).
 Proof.
 intros * fk_prop gk_prop fk'_prop gk'_prop.
 intros Hcff' Hcgg' s s'.
+assert (glop : is_homgr (Ker a) (Ker b) (H_app f)). {
+  split; [ apply f | | ].
+  -intros x; simpl in x.
+   split; [ apply f | ].
+   unfold diagram_commutes in Hcff', Hcgg'.
+   rewrite Hcff'.
+
+...
+
+
+assert (fk₁ : HomGr (Ker a) (Ker b)). {
+...
+
+Print is_homgr.
+...
+assert (H_app _ _ (gr_zero (Ker a)) = gr_zero (Ker b)).
+...
+remember (λ app, {| ih_zero := app (gr_zero (Ker a)) = gr_zero (Ker b) |}).
+remember
+  {| H_app x := H_app f x;
+     H_prop := glop H_app |} as fk₁.
+
+exists fk.
+...
 split.
 -intros x Hx.
  destruct Hx as (Hx, Hax).
