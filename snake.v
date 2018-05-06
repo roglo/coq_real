@@ -243,6 +243,28 @@ intros * fk_prop gk_prop fk'_prop gk'_prop.
 intros Hcff' Hcgg' s s'.
 split.
 -intros x Hx.
+ destruct Hx as (Hx, Hax).
+ rewrite fk_prop; [ | easy ].
+ split; [ apply f | ].
+ destruct f as (appf, fp); simpl.
+ destruct fp as (fz, fin, flin); simpl.
+ destruct b as (appb, bp); simpl.
+ destruct bp as (bz, bin, blin); simpl.
+...
+  ============================
+  appb (appf x) = gr_zero B'
+
+...
+
+  destruct b.
+  simpl.
+  destruct H_prop0.
+  simpl in *.
+simpl in fk.
+Check ih_zero0.
+ +rewrite fk_prop; [ simpl | easy ].
+
+
 ...
 -exists ...
  intros y.
