@@ -247,6 +247,11 @@ assert (glop : is_homgr (Ker a) (Ker b) (H_app f)). {
    split; [ apply f | ].
    unfold diagram_commutes in Hcff', Hcgg'.
    rewrite Hcff'.
+   destruct s' as (s'1, s'2).
+   simpl in s'1.
+   specialize (s'1 (H_app a x)) as (H1, H2).
+   assert (H3 : H_app a x ∈ A' ∧ H_app f' (H_app a x) = gr_zero B'). {
+     split; [ apply a | ].
 
 ...
 
