@@ -248,4 +248,6 @@ split.
     apply fk.
   }
   specialize (H2 H3); rewrite H2.
+  rewrite fk_prop in H3.
+  rewrite Hcff' in H3.
 ...
