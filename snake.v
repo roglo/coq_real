@@ -223,7 +223,6 @@ Lemma snake :
      (a : HomGr A A') (b : HomGr B B') (c : HomGr C C')
      (cz : HomGr C Gr0) (za' : HomGr Gr0 A')
      (fk : HomGr (Ker a) (Ker b)) (gk : HomGr (Ker b) (Ker c))
-     (d : HomGr (Ker c) (coKer a))
      (fk' : HomGr (coKer a) (coKer b)) (gk' : HomGr (coKer b) (coKer c))
      (fk_prop : ∀ x, gr_in (Ker a) x → H_app fk x = H_app f x)
      (gk_prop : ∀ x, gr_in (Ker b) x → H_app gk x = H_app g x)
@@ -233,12 +232,20 @@ Lemma snake :
   → diagram_commutes g b c g'
   → exact_sequence (Seq2 f (Seq2 g (Seq2 cz Seq1)))
   → exact_sequence (Seq2 za' (Seq2 f' (Seq2 g' Seq1)))
-  → exact_sequence (Seq2 fk (Seq2 gk (Seq2 d (Seq2 fk' (Seq2 gk' Seq1))))).
+  → (∀ x, x ∈ Ker a → H_app fk x ∈ Ker b) ∧
+     (∀ x, x ∈ Ker b → H_app gk x ∈ Ker c) ∧
+     (∀ x, x ∈ coKer a → H_app fk' x ∈ coKer b) ∧
+     (∀ x, x ∈ coKer b → H_app gk' x ∈ coKer c) ∧
+    ∃ d,
+     exact_sequence (Seq2 fk (Seq2 gk (Seq2 d (Seq2 fk' (Seq2 gk' Seq1))))).
 Proof.
 intros * fk_prop gk_prop fk'_prop gk'_prop.
 intros Hcff' Hcgg' s s'.
 split.
--intros y.
+-intros x Hx.
+...
+-exists ...
+ intros y.
  split; intros (x & Hx); simpl in x.
  +subst y.
   split; [ apply fk | simpl ].
