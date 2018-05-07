@@ -27,7 +27,7 @@ Notation "x '∈' S" := (gr_in S x) (at level 60).
 
 Record is_homgr A B H_app :=
   { ih_zero : H_app (gr_zero A) = gr_zero B;
-    ih_inco : ∀ x, gr_in B (H_app x);
+    ih_inco : ∀ x, x ∈ A → H_app x ∈ B;
     ih_lin : ∀ x y, H_app (gr_op x y) = gr_op (H_app x) (H_app y) }.
 
 Record HomGr (A B : Group) :=
@@ -74,38 +74,37 @@ split; intros H f g x.
 Qed.
 
 Theorem Im_is_abelian_group {G H} (f : HomGr G H) :
-  is_abelian_group (gr_zero H) (@gr_op H) (λ b, ∃ a, H_app f a = b).
+  is_abelian_group (gr_zero H) (@gr_op H) (λ b, ∃ a, a ∈ G ∧ H_app f a = b).
 Proof.
 intros.
 split.
 -exists (gr_zero G).
- apply f.
--intros y y' (x & Hx) (x' & Hx').
+ split; [ apply G | apply f ].
+-intros y y' (x & Hxg & Hx) (x' & Hx'g & Hx').
  subst y y'.
- destruct G, H; simpl in *.
- destruct f; simpl in *.
- exists (gr_op0 x x').
- apply H_prop0.
--intros y (x & Hx); subst y.
- destruct G, H, f; simpl in *.
- apply gr_prop1.
- apply H_prop0.
--intros y (x & Hx); subst y.
- destruct G, H, f; simpl in *.
- apply gr_prop1.
- apply H_prop0.
--intros y y' y'' (x & Hx) (x' & Hx') (x'' & Hx'').
+ destruct G as (gs, gi, gz, go, gp).
+ destruct gp as (gzi, gc, gl, gr, ga, gco).
+ destruct H as (hs, hi, hz, ho, hp).
+ destruct f as (appf, fp).
+ destruct fp as (fz, fin, flin); simpl in *.
+ exists (go x x').
+ split; [ now apply gc | apply flin ].
+-intros y (x & Hxg & Hx); subst y.
+ now apply H, f.
+-intros y (x & Hxg & Hx); subst y.
+ now apply H, f.
+-intros y y' y'' (x & Hgx & Hx) (x' & Hgx' & Hx') (x'' & Hgx'' & Hx'').
  rewrite <- Hx, <- Hx', <- Hx''.
- apply H; apply f.
--intros y y' (x & Hx) (x' & Hx').
+ now apply H; apply f.
+-intros y y' (x & Hgx & Hx) (x' & Hgx' & Hx').
  apply H.
- +rewrite <- Hx; apply f.
- +rewrite <- Hx'; apply f.
+ +now rewrite <- Hx; apply f.
+ +now rewrite <- Hx'; apply f.
 Qed.
 
 Theorem Ker_is_abelian_group {G H} : ∀ (f : HomGr G H),
   is_abelian_group (gr_zero G) (gr_op (g:=G))
-    (λ a, gr_in G a ∧ H_app f a = gr_zero H).
+    (λ a, a ∈ G ∧ H_app f a = gr_zero H).
 Proof.
 intros.
 split.
@@ -130,19 +129,19 @@ Definition Im {G H : Group} (f : HomGr G H) :=
   {| gr_set := gr_set H;
      gr_zero := gr_zero H;
      gr_op := @gr_op H;
-     gr_in := λ b, ∃ a, H_app f a = b;
+     gr_in := λ b, ∃ a, a ∈ G ∧ H_app f a = b;
      gr_prop := Im_is_abelian_group f |}.
 
 Definition Ker {G H : Group} (f : HomGr G H) :=
   {| gr_set := gr_set G;
      gr_zero := gr_zero G;
      gr_op := @gr_op G;
-     gr_in := λ a, gr_in G a ∧ H_app f a = gr_zero H;
+     gr_in := λ a, a ∈ G ∧ H_app f a = gr_zero H;
      gr_prop := Ker_is_abelian_group f |}.
 
 Theorem coKer_is_abelian_group {G H} : ∀ (f : HomGr G H),
   is_abelian_group (gr_zero H) (gr_op (g:=H))
-    (λ x, gr_in H x ∧ ∃ y, gr_in H y ∧ gr_in (Im f) (gr_op x y)).
+    (λ x, x ∈ H ∧ ∃ y, y ∈ H ∧ gr_in (Im f) (gr_op x y)).
 Proof.
 intros.
 split.
@@ -153,8 +152,9 @@ split.
  destruct f as (appf, fp); simpl in *.
  destruct fp as (fz, fin, flin); simpl in *.
  rewrite fz.
+ split; [ apply G | ].
  symmetry; apply H, H.
--intros y y' (Hy & z & Hz & x & Hx) (Hy' & z' & Hz' & x' & Hx').
+-intros y y' (Hy & z & Hz & x & Hgx & Hx) (Hy' & z' & Hz' & x' & Hgx' & Hx').
  split; [ now apply H | ].
  exists (gr_op z z').
  split; [ now apply H | ].
@@ -175,6 +175,7 @@ split.
  2: now apply Hp; [ apply Hp | ].
  replace (Hop (Hop t z') z) with (Hop t (Hop z' z)).
  2: now subst t; symmetry; apply Hp; [ apply Hp | | ].
+ split; [ now apply G | ].
  now replace (Hop z' z) with (Hop z z'); [ | apply Hp ].
 -now intros; apply H.
 -now intros; apply H.
@@ -249,15 +250,13 @@ assert (H1 : ∀ x, x ∈ Ker a → H_app f x ∈ Ker b). {
   assert (H1 : H_app a x = gr_zero A') by apply Hx.
   apply (f_equal (H_app f')) in H1.
   rewrite <- Hcff' in H1.
-  split; [ apply f | rewrite H1; apply f' ].
+  split; [ now apply f; simpl in Hx | rewrite H1; apply f' ].
 }
 assert (pp : is_homgr _ _ ff). {
   split; [ apply f | | ].
-  -intros x.
-   apply H1.
-   split.
+  -now intros x Hx; apply H1.
+  -intros x x'; apply f.
 }
-Print HomGr.
-remember {| H_app := ff |} as HH.
+remember {| H_app := ff; H_prop := pp |} as HH.
 
 ...
