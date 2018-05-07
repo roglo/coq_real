@@ -236,6 +236,13 @@ split; [ apply f | | ].
 -intros x x'; apply f.
 Qed.
 
+Definition HomGr_Ker_ker {A B A' B'}
+    (f : HomGr A B) (f' : HomGr A' B') (a : HomGr A A') (b : HomGr B B')
+    (Hc : diagram_commutes f a b f') :=
+  {| H_app (x : gr_set (Ker a)) := H_app f x : gr_set (Ker b);
+     H_prop := is_homgr_Ker_Ker f f' a b Hc |}.
+
+(*
 Theorem is_homgr_coKer_coKer {A B A' B'} :
   ∀ (f : HomGr A B) (f' : HomGr A' B') (a : HomGr A A') (b : HomGr B B'),
   diagram_commutes f a b f'
@@ -254,6 +261,7 @@ Proof.
    apply f'.
   -intros x y; apply f'.
 ...
+*)
 
 Lemma snake :
   ∀ (A B C A' B' C' : Group)
@@ -277,16 +285,8 @@ Lemma snake :
 Proof.
 intros * gk'_prop.
 intros Hcff' Hcgg' s s'.
-set (fk_app := λ (x : gr_set (Ker a)), H_app f x : gr_set (Ker b)).
-specialize (is_homgr_Ker_Ker _ _ _ _ Hcff') as fk_prop.
-set (fk := {| H_app := fk_app; H_prop := fk_prop |}).
-exists fk.
-set (gk_app := λ (x : gr_set (Ker b)), H_app g x : gr_set (Ker c)).
-specialize (is_homgr_Ker_Ker _ _ _ _ Hcgg') as gk_prop.
-set (gk := {| H_app := gk_app; H_prop := gk_prop |}).
-exists gk.
-move gk_app before fk_app.
-move gk_prop before fk_prop.
+exists (HomGr_Ker_ker f f' a b Hcff').
+exists (HomGr_Ker_ker g g' b c Hcgg').
 set (fk'_app := λ (x : gr_set (coKer a)), H_app f' x : gr_set (coKer b)).
 assert (fk'_prop : is_homgr _ _ fk'_app). {
   subst fk'_app.
