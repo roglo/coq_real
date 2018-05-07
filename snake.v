@@ -255,7 +255,7 @@ assert (pp : is_homgr _ _ ff). {
   split; [ apply f | | ].
   -intros x.
    apply H1.
-   simpl.
+   split.
 }
 Print HomGr.
 remember {| H_app := ff |} as HH.
