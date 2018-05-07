@@ -243,6 +243,7 @@ Lemma snake :
 Proof.
 intros * fk_prop gk_prop fk'_prop gk'_prop.
 intros Hcff' Hcgg' s s'.
+set (ff (x : gr_set (Ker a)) := H_app f x : gr_set (Ker b)).
 assert (H1 : ∀ x, x ∈ Ker a → H_app f x ∈ Ker b). {
   intros x Hx.
   assert (H1 : H_app a x = gr_zero A') by apply Hx.
@@ -250,11 +251,13 @@ assert (H1 : ∀ x, x ∈ Ker a → H_app f x ∈ Ker b). {
   rewrite <- Hcff' in H1.
   split; [ apply f | rewrite H1; apply f' ].
 }
-assert (fk'₁ : gr_set (Ker a) → gr_set (Ker b)). {
-  intros x.
-  specialize (H1 x) as H2.
-  assert (H3 : x ∈ Ker a). {
-    split.
-    simpl in x.
-Check H_app.
+assert (pp : is_homgr _ _ ff). {
+  split; [ apply f | | ].
+  -intros x.
+   apply H1.
+   simpl.
+}
+Print HomGr.
+remember {| H_app := ff |} as HH.
+
 ...
