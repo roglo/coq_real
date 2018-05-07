@@ -288,5 +288,6 @@ exists (HomGr_Ker_ker f f' a b Hcff').
 exists (HomGr_Ker_ker g g' b c Hcgg').
 exists (HomGr_coKer_coker f f' a b Hcff').
 exists (HomGr_coKer_coker g g' b c Hcgg').
-simpl.
+destruct s as (sf & sg & _).
+destruct s' as (sf' & sg' & _).
 ...
