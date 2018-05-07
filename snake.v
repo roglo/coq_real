@@ -318,9 +318,21 @@ split; [ | split ].
   split; [ split | ].
   *now rewrite <- Hxy; apply g.
   *rewrite <- Hxy, Hcgg', Hax; apply g'.
-  *rewrite <- Hxy.
-   destruct d as (appd, dp); simpl in *.
-   destruct dp as (dz, din, dlin); simpl in *.
+  *assert (Hy : y ∈ Ker c). {
+     split; [ now rewrite <- Hxy; apply g | ].
+     apply (f_equal (H_app g')) in Hax.
+     rewrite <- Hcgg', Hxy in Hax.
+     rewrite Hax.
+     apply g'.
+   }
+   destruct d as (appd, dp).
+   destruct dp as (dz, din, dlin); simpl.
+   specialize (din _ Hy) as H1.
+   simpl in dz.
+...
+   apply appd.
+...
+-idtac.
 ...
    apply sg'; rewrite <- Hxy.
    exists x; easy.
