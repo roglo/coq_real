@@ -1,15 +1,15 @@
-(* snake lemma & co *)
+(* Snake lemma *)
 
 Require Import Utf8.
 
-Record is_abelian_group {T} gr_in (gr_zero : T) gr_add :=
-  { ig_zero : gr_in gr_zero;
-    ig_clos : ∀ x y, gr_in x → gr_in y → gr_in (gr_add x y);
-    ig_lid : ∀ x, gr_in x → gr_add gr_zero x = x;
-    ig_rid : ∀ x, gr_in x → gr_add x gr_zero = x;
-    ig_assoc : ∀ x y z, gr_in x → gr_in y → gr_in z →
+Record is_abelian_group {T} (in_gr : T → Prop) gr_zero gr_add :=
+  { ig_zero : in_gr gr_zero;
+    ig_clos : ∀ x y, in_gr x → in_gr y → in_gr (gr_add x y);
+    ig_lid : ∀ x, in_gr x → gr_add gr_zero x = x;
+    ig_rid : ∀ x, in_gr x → gr_add x gr_zero = x;
+    ig_assoc : ∀ x y z, in_gr x → in_gr y → in_gr z →
       gr_add (gr_add x y) z = gr_add x (gr_add y z);
-    ig_comm : ∀ x y, gr_in x → gr_in y →
+    ig_comm : ∀ x y, in_gr x → in_gr y →
       gr_add x y = gr_add y x }.
 
 Record Group :=
@@ -141,7 +141,7 @@ Definition Ker {G H : Group} (f : HomGr G H) :=
      gr_prop := Ker_is_abelian_group f |}.
 
 Theorem coKer_is_abelian_group {G H} : ∀ (f : HomGr G H),
-  is_abelian_group (λ x, x ∈ H ∧ ∃ y, y ∈ H ∧ gr_in (Im f) (gr_add x y))
+  is_abelian_group (λ x, x ∈ H ∧ ∃ y, y ∈ H ∧ gr_add x y ∈ Im f)
     (gr_zero H) (gr_add (g:=H)).
 Proof.
 intros.
@@ -188,7 +188,7 @@ Definition coKer {G H : Group} (f : HomGr G H) :=
   {| gr_set := gr_set H;
      gr_zero := gr_zero H;
      gr_add := @gr_add H;
-     gr_in := λ x, gr_in H x ∧ ∃ y, gr_in H y ∧ gr_in (Im f) (gr_add x y);
+     gr_in := λ x, x ∈ H ∧ ∃ y, y ∈ H ∧ gr_add x y ∈ Im f;
      gr_prop := coKer_is_abelian_group f |}.
 
 Inductive sequence {A : Group} :=
@@ -201,9 +201,7 @@ Fixpoint exact_sequence {A : Group} (S : sequence) :=
   | Seq2 f S' =>
       match S' with
       | Seq1 => True
-      | Seq2 g S'' =>
-          (∀ a, gr_in (Im f) a ↔ gr_in (Ker g) a) ∧
-          exact_sequence S'
+      | Seq2 g S'' => (∀ a, a ∈ Im f ↔ a ∈ Ker g) ∧ exact_sequence S'
       end
   end.
 
