@@ -276,17 +276,14 @@ assert (fk'_prop : is_homgr _ _ fk'_app). {
   split; [ apply f' | | ].
   -intros x Hx.
    split; [ apply f', Hx | ].
-destruct Hx as (Hxa & y & Hy & Hxy).
-...
-
-apply f', Hx.
-...
-   assert (H : H_app a x = gr_zero A') by apply Hx.
-   apply (f_equal (H_app f')) in H.
-   rewrite <- Hc in H.
-   split; [ now apply f; simpl in Hx | ].
-   rewrite H; apply f'.
-  -intros x x'; apply f.
+   destruct Hx as (Hxa & y & Hy & z & Hz & Hxy).
+   exists (H_app f' y).
+   split; [ now apply f' | ].
+   exists (H_app f z).
+   split; [ now apply f | ].
+   rewrite Hcff', Hxy.
+   apply f'.
+  -idtac.
 ...
 }
 set (fk' := {| H_app := fk'_app; H_prop := fk'_prop |}).
