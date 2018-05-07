@@ -219,44 +219,55 @@ Definition diagram_commutes {A B C D}
      (f : HomGr A B) (g : HomGr A C) (h : HomGr B D) (k : HomGr C D) :=
   ∀ x, H_app h (H_app f x) = H_app k (H_app g x).
 
+Theorem is_homgr_Ker_Ker {A B A' B'} :
+  ∀ (f : HomGr A B) (f' : HomGr A' B') (a : HomGr A A') (b : HomGr B B'),
+  diagram_commutes f a b f'
+  → is_homgr (Ker a) (Ker b) (λ x : gr_set (Ker a), H_app f x).
+Proof.
+intros * Hc.
+split; [ apply f | | ].
+-intros x Hx.
+ assert (H : H_app a x = gr_zero A') by apply Hx.
+ apply (f_equal (H_app f')) in H.
+ rewrite <- Hc in H.
+ split; [ now apply f; simpl in Hx | ].
+ rewrite H; apply f'.
+-intros x x'; apply f.
+Qed.
+
 Lemma snake :
   ∀ (A B C A' B' C' : Group)
      (f : HomGr A B) (g : HomGr B C)
      (f' : HomGr A' B') (g' : HomGr B' C')
      (a : HomGr A A') (b : HomGr B B') (c : HomGr C C')
      (cz : HomGr C Gr0) (za' : HomGr Gr0 A')
-     (fk : HomGr (Ker a) (Ker b)) (gk : HomGr (Ker b) (Ker c))
      (fk' : HomGr (coKer a) (coKer b)) (gk' : HomGr (coKer b) (coKer c))
-     (fk_prop : ∀ x, gr_in (Ker a) x → H_app fk x = H_app f x)
-     (gk_prop : ∀ x, gr_in (Ker b) x → H_app gk x = H_app g x)
      (fk'_prop : ∀ x, gr_in (coKer a) x → H_app fk' x = H_app f' x)
      (gk'_prop : ∀ x, gr_in (coKer b) x → H_app gk' x = H_app g' x),
   diagram_commutes f a b f'
   → diagram_commutes g b c g'
   → exact_sequence (Seq2 f (Seq2 g (Seq2 cz Seq1)))
   → exact_sequence (Seq2 za' (Seq2 f' (Seq2 g' Seq1)))
-  → ∃ (d : HomGr (Ker c) (coKer a)),
+  → ∃ (fk : HomGr (Ker a) (Ker b)) (gk : HomGr (Ker b) (Ker c))
+        (d : HomGr (Ker c) (coKer a)),
      (∀ x, x ∈ Ker a → H_app fk x ∈ Ker b) ∧
      (∀ x, x ∈ Ker b → H_app gk x ∈ Ker c) ∧
      (∀ x, x ∈ coKer a → H_app fk' x ∈ coKer b) ∧
      (∀ x, x ∈ coKer b → H_app gk' x ∈ coKer c) ∧
      exact_sequence (Seq2 fk (Seq2 gk (Seq2 d (Seq2 fk' (Seq2 gk' Seq1))))).
 Proof.
-intros * fk_prop gk_prop fk'_prop gk'_prop.
+intros * fk'_prop gk'_prop.
 intros Hcff' Hcgg' s s'.
-set (ff (x : gr_set (Ker a)) := H_app f x : gr_set (Ker b)).
-assert (H1 : ∀ x, x ∈ Ker a → H_app f x ∈ Ker b). {
-  intros x Hx.
-  assert (H1 : H_app a x = gr_zero A') by apply Hx.
-  apply (f_equal (H_app f')) in H1.
-  rewrite <- Hcff' in H1.
-  split; [ now apply f; simpl in Hx | rewrite H1; apply f' ].
-}
-assert (pp : is_homgr _ _ ff). {
-  split; [ apply f | | ].
-  -now intros x Hx; apply H1.
-  -intros x x'; apply f.
-}
-remember {| H_app := ff; H_prop := pp |} as HH.
-
+set (fk_app := λ (x : gr_set (Ker a)), H_app f x : gr_set (Ker b)).
+specialize (is_homgr_Ker_Ker _ _ _ _ Hcff') as fk_prop.
+fold fk_app in fk_prop.
+set (fk := {| H_app := fk_app; H_prop := fk_prop |}).
+exists fk.
+set (gk_app := λ (x : gr_set (Ker b)), H_app g x : gr_set (Ker c)).
+specialize (is_homgr_Ker_Ker _ _ _ _ Hcgg') as gk_prop.
+fold gk_app in gk_prop.
+set (gk := {| H_app := gk_app; H_prop := gk_prop |}).
+exists gk.
+move gk_app before fk_app.
+move gk_prop before fk_prop.
 ...
