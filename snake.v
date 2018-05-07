@@ -241,6 +241,14 @@ Lemma snake :
 Proof.
 intros * fk_prop gk_prop fk'_prop gk'_prop.
 intros Hcff' Hcgg' s s'.
+assert (fk_app : gr_set (Ker a) → gr_set (Ker b)). {
+  intros x.
+  destruct s' as (s'1, s'2).
+  simpl in s'1.
+  simpl in x; simpl.
+
+...
+
 assert (glop : is_homgr (Ker a) (Ker b) (H_app f)). {
   split; [ apply f | | ].
   -intros x; simpl in x.
