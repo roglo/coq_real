@@ -1,6 +1,8 @@
 (* snake lemma & co *)
 
 Require Import Utf8.
+Tactic Notation "transparent" "assert" "(" ident(H) ":" lconstr(type) ")" :=
+ unshelve (refine (let H := (_ : type) in _)).
 
 Record is_abelian_group {T} (gr_zero : T) gr_op gr_in :=
   { ig_zero : gr_in gr_zero;
@@ -248,88 +250,11 @@ assert (H1 : ∀ x, x ∈ Ker a → H_app f x ∈ Ker b). {
   rewrite <- Hcff' in H1.
   split; [ apply f | rewrite H1; apply f' ].
 }
-...
-assert (∀ x, x ∈ Ker f' ↔ x = gr_zero A'). {
-  simpl; intros x.
-  split.
-  -intros (H1, H2).
-   destruct s' as (s'1, s'2).
-   simpl in s'1.
-   specialize (s'1 (gr_zero A')) as (H3, H4).
-   assert (H5 : gr_zero A' ∈ A' ∧ H_app f' (gr_zero A') = gr_zero B'). {
-     split; [ apply A' | apply f' ].
-   }
-   specialize (H4 H5).
-   destruct H4 as (z, Hz).
-   destruct z.
-...
-assert (fk_app : gr_set (Ker a) → gr_set (Ker b)). {
+assert (fk'₁ : gr_set (Ker a) → gr_set (Ker b)). {
   intros x.
-Print Ker.
-  assert (H1 : ∀ x, x ∈ Ker f' ↔ x = 42).
-x: gr_set (Ker f')
-...
-  simpl in x; simpl.
-...
-
-assert (glop : is_homgr (Ker a) (Ker b) (H_app f)). {
-  split; [ apply f | | ].
-  -intros x; simpl in x.
-   split; [ apply f | ].
-   unfold diagram_commutes in Hcff', Hcgg'.
-   rewrite Hcff'.
-   destruct s' as (s'1, s'2).
-   simpl in s'1.
-   specialize (s'1 (H_app a x)) as (H1, H2).
-   assert (H3 : H_app a x ∈ A' ∧ H_app f' (H_app a x) = gr_zero B'). {
-     split; [ apply a | ].
-...
-
-assert (fk₁ : HomGr (Ker a) (Ker b)). {
-...
-Print is_homgr.
-...
-assert (H_app _ _ (gr_zero (Ker a)) = gr_zero (Ker b)).
-...
-remember (λ app, {| ih_zero := app (gr_zero (Ker a)) = gr_zero (Ker b) |}).
-remember
-  {| H_app x := H_app f x;
-     H_prop := glop H_app |} as fk₁.
-
-exists fk.
-...
-split.
--intros x Hx.
- destruct Hx as (Hx, Hax).
- rewrite fk_prop; [ | easy ].
- split; [ apply f | ].
- destruct f as (appf, fp); simpl.
- destruct fp as (fz, fin, flin); simpl.
- destruct b as (appb, bp); simpl.
- destruct bp as (bz, bin, blin); simpl.
-...
-  ============================
-  appb (appf x) = gr_zero B'
-...
-  destruct b.
-  simpl.
-  destruct H_prop0.
-  simpl in *.
-simpl in fk.
-Check ih_zero0.
- +rewrite fk_prop; [ simpl | easy ].
-...
--exists ...
- intros y.
- split; intros (x & Hx); simpl in x.
- +subst y.
-  split; [ apply fk | simpl ].
-  unfold diagram_commutes in Hcff', Hcgg'.
-  specialize (gk_prop (H_app fk x)) as H2.
-  assert (H3 : H_app fk x ∈ B ∧ H_app b (H_app fk x) = gr_zero B'). {
-    apply fk.
-  }
-  specialize (H2 H3); rewrite H2.
-  rewrite fk_prop in H3.
-  rewrite Hcff' in H3.
+  specialize (H1 x) as H2.
+  assert (H3 : x ∈ Ker a). {
+    split.
+    simpl in x.
+Check H_app.
 ...
