@@ -291,7 +291,7 @@ destruct s' as (sf' & sg' & _).
 enough (d : HomGr (Ker c) (coKer a)).
 exists d.
 simpl.
-split.
+split; [ | split ].
 -intros y.
  split.
  +intros (x & (Hx & Hax) & Hxy).
@@ -305,4 +305,35 @@ split.
   destruct H as (x & Hx & Hxy).
   exists x; split; [ | easy ].
   split; [ easy | ].
+  rewrite <- Hxy, Hcff' in Hby.
+  specialize (sf' (H_app a x)) as (H1, H2).
+  assert (H3 : H_app a x ∈ Ker f') by now split; [ apply a | ].
+  specialize (H2 H3).
+  destruct H2 as (z & _ & Hzz).
+  destruct z; rewrite <- Hzz.
+  apply za'.
+-intros y.
+ split.
+ +intros (x & (Hx & Hax) & Hxy).
+  split; [ split | ].
+  *now rewrite <- Hxy; apply g.
+  *rewrite <- Hxy, Hcgg', Hax; apply g'.
+  *rewrite <- Hxy.
+   destruct d as (appd, dp); simpl in *.
+   destruct dp as (dz, din, dlin); simpl in *.
+...
+   apply sg'; rewrite <- Hxy.
+   exists x; easy.
+ +intros ((Hy & Hby) & Hgy).
+  assert (H : y ∈ Im f) by now apply sf; split.
+  destruct H as (x & Hx & Hxy).
+  exists x; split; [ | easy ].
+  split; [ easy | ].
+  rewrite <- Hxy, Hcff' in Hby.
+  specialize (sf' (H_app a x)) as (H1, H2).
+  assert (H3 : H_app a x ∈ Ker f') by now split; [ apply a | ].
+  specialize (H2 H3).
+  destruct H2 as (z & _ & Hzz).
+  destruct z; rewrite <- Hzz.
+  apply za'.
 ...
