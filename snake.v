@@ -2,34 +2,34 @@
 
 Require Import Utf8.
 
-Record is_abelian_group {T} (gr_zero : T) gr_op gr_in :=
+Record is_abelian_group {T} gr_in (gr_zero : T) gr_add :=
   { ig_zero : gr_in gr_zero;
-    ig_clos : ∀ x y, gr_in x → gr_in y → gr_in (gr_op x y);
-    ig_lid : ∀ x, gr_in x → gr_op gr_zero x = x;
-    ig_rid : ∀ x, gr_in x → gr_op x gr_zero = x;
+    ig_clos : ∀ x y, gr_in x → gr_in y → gr_in (gr_add x y);
+    ig_lid : ∀ x, gr_in x → gr_add gr_zero x = x;
+    ig_rid : ∀ x, gr_in x → gr_add x gr_zero = x;
     ig_assoc : ∀ x y z, gr_in x → gr_in y → gr_in z →
-      gr_op (gr_op x y) z = gr_op x (gr_op y z);
+      gr_add (gr_add x y) z = gr_add x (gr_add y z);
     ig_comm : ∀ x y, gr_in x → gr_in y →
-      gr_op x y = gr_op y x }.
+      gr_add x y = gr_add y x }.
 
 Record Group :=
   { gr_set : Type;
     gr_in : gr_set → Prop;
     gr_zero : gr_set;
-    gr_op : gr_set → gr_set → gr_set;
-    gr_prop : is_abelian_group gr_zero gr_op gr_in }.
+    gr_add : gr_set → gr_set → gr_set;
+    gr_prop : is_abelian_group gr_in gr_zero gr_add }.
 
-Arguments gr_op [_].
+Arguments gr_add [_].
 
 Notation "x '∈' S" := (gr_in S x) (at level 60).
 (*
-Notation "x '⊕' y" := (gr_op x y) (at level 50).
+Notation "x '⊕' y" := (gr_add x y) (at level 50).
 *)
 
 Record is_homgr A B H_app :=
   { ih_zero : H_app (gr_zero A) = gr_zero B;
     ih_inco : ∀ x, x ∈ A → H_app x ∈ B;
-    ih_lin : ∀ x y, H_app (gr_op x y) = gr_op (H_app x) (H_app y) }.
+    ih_lin : ∀ x y, H_app (gr_add x y) = gr_add (H_app x) (H_app y) }.
 
 Record HomGr (A B : Group) :=
   { H_app : gr_set A → gr_set B;
@@ -39,7 +39,7 @@ Arguments H_app [A] [B].
 
 Inductive Gr0_set := G0 : Gr0_set.
 
-Theorem Gr0_prop : is_abelian_group G0 (λ _ _, G0) (λ _, True).
+Theorem Gr0_prop : is_abelian_group (λ _, True) G0 (λ _ _, G0).
 Proof.
 split; [ easy | easy | | | easy | easy ].
 -now intros x; destruct x.
@@ -49,7 +49,7 @@ Qed.
 Definition Gr0 :=
    {| gr_set := Gr0_set;
       gr_zero := G0;
-      gr_op := λ _ _, G0;
+      gr_add := λ _ _, G0;
       gr_in := λ _, True;
       gr_prop := Gr0_prop |}.
 
@@ -75,7 +75,7 @@ split; intros H f g x.
 Qed.
 
 Theorem Im_is_abelian_group {G H} (f : HomGr G H) :
-  is_abelian_group (gr_zero H) (@gr_op H) (λ b, ∃ a, a ∈ G ∧ H_app f a = b).
+  is_abelian_group (λ b, ∃ a, a ∈ G ∧ H_app f a = b) (gr_zero H) (@gr_add H).
 Proof.
 intros.
 split.
@@ -104,8 +104,8 @@ split.
 Qed.
 
 Theorem Ker_is_abelian_group {G H} : ∀ (f : HomGr G H),
-  is_abelian_group (gr_zero G) (gr_op (g:=G))
-    (λ x, x ∈ G ∧ H_app f x = gr_zero H).
+  is_abelian_group (λ x, x ∈ G ∧ H_app f x = gr_zero H)
+    (gr_zero G) (gr_add (g:=G)).
 Proof.
 intros.
 split.
@@ -129,20 +129,20 @@ Qed.
 Definition Im {G H : Group} (f : HomGr G H) :=
   {| gr_set := gr_set H;
      gr_zero := gr_zero H;
-     gr_op := @gr_op H;
+     gr_add := @gr_add H;
      gr_in := λ b, ∃ a, a ∈ G ∧ H_app f a = b;
      gr_prop := Im_is_abelian_group f |}.
 
 Definition Ker {G H : Group} (f : HomGr G H) :=
   {| gr_set := gr_set G;
      gr_zero := gr_zero G;
-     gr_op := @gr_op G;
+     gr_add := @gr_add G;
      gr_in := λ a, a ∈ G ∧ H_app f a = gr_zero H;
      gr_prop := Ker_is_abelian_group f |}.
 
 Theorem coKer_is_abelian_group {G H} : ∀ (f : HomGr G H),
-  is_abelian_group (gr_zero H) (gr_op (g:=H))
-    (λ x, x ∈ H ∧ ∃ y, y ∈ H ∧ gr_in (Im f) (gr_op x y)).
+  is_abelian_group (λ x, x ∈ H ∧ ∃ y, y ∈ H ∧ gr_in (Im f) (gr_add x y))
+    (gr_zero H) (gr_add (g:=H)).
 Proof.
 intros.
 split.
@@ -157,9 +157,9 @@ split.
  symmetry; apply H, H.
 -intros y y' (Hy & z & Hz & x & Hgx & Hx) (Hy' & z' & Hz' & x' & Hgx' & Hx').
  split; [ now apply H | ].
- exists (gr_op z z').
+ exists (gr_add z z').
  split; [ now apply H | ].
- exists (gr_op x x').
+ exists (gr_add x x').
  destruct f as (appf, fp); simpl in *.
  destruct fp as (fz, fin, flin); simpl in *.
  rewrite flin, Hx, Hx'.
@@ -187,8 +187,8 @@ Qed.
 Definition coKer {G H : Group} (f : HomGr G H) :=
   {| gr_set := gr_set H;
      gr_zero := gr_zero H;
-     gr_op := @gr_op H;
-     gr_in := λ x, gr_in H x ∧ ∃ y, gr_in H y ∧ gr_in (Im f) (gr_op x y);
+     gr_add := @gr_add H;
+     gr_in := λ x, gr_in H x ∧ ∃ y, gr_in H y ∧ gr_in (Im f) (gr_add x y);
      gr_prop := coKer_is_abelian_group f |}.
 
 Inductive sequence {A : Group} :=
