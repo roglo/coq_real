@@ -288,4 +288,21 @@ exists (HomGr_coKer_coker f f' a b Hcff').
 exists (HomGr_coKer_coker g g' b c Hcgg').
 destruct s as (sf & sg & _).
 destruct s' as (sf' & sg' & _).
+enough (d : HomGr (Ker c) (coKer a)).
+exists d.
+simpl.
+split.
+-intros y.
+ split.
+ +intros (x & (Hx & Hax) & Hxy).
+  split; [ split | ].
+  *now rewrite <- Hxy; apply f.
+  *rewrite <- Hxy, Hcff', Hax; apply f'.
+  *apply sf; rewrite <- Hxy.
+   exists x; easy.
+ +intros ((Hy & Hby) & Hgy).
+  assert (H : y ∈ Im f) by now apply sf; split.
+  destruct H as (x & Hx & Hxy).
+  exists x; split; [ | easy ].
+  split; [ easy | ].
 ...
