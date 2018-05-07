@@ -242,70 +242,53 @@ Definition HomGr_Ker_ker {A B A' B'}
   {| H_app (x : gr_set (Ker a)) := H_app f x : gr_set (Ker b);
      H_prop := is_homgr_Ker_Ker f f' a b Hc |}.
 
-(*
 Theorem is_homgr_coKer_coKer {A B A' B'} :
   ∀ (f : HomGr A B) (f' : HomGr A' B') (a : HomGr A A') (b : HomGr B B'),
   diagram_commutes f a b f'
   → is_homgr (coKer a) (coKer b) (H_app f').
 Proof.
-...
-  split; [ apply f' | | ].
-  -intros x Hx.
-   split; [ apply f', Hx | ].
-   destruct Hx as (Hxa & y & Hy & z & Hz & Hxy).
-   exists (H_app f' y).
-   split; [ now apply f' | ].
-   exists (H_app f z).
-   split; [ now apply f | ].
-   rewrite Hcff', Hxy.
-   apply f'.
-  -intros x y; apply f'.
-...
-*)
+intros * Hc.
+split; [ apply f' | | ].
+-intros x Hx.
+ split; [ apply f', Hx | ].
+ destruct Hx as (Hxa & y & Hy & z & Hz & Hxy).
+ exists (H_app f' y).
+ split; [ now apply f' | ].
+ exists (H_app f z).
+ split; [ now apply f | ].
+ rewrite Hc, Hxy.
+ apply f'.
+-intros x y; apply f'.
+Qed.
 
 Lemma snake :
   ∀ (A B C A' B' C' : Group)
      (f : HomGr A B) (g : HomGr B C)
      (f' : HomGr A' B') (g' : HomGr B' C')
      (a : HomGr A A') (b : HomGr B B') (c : HomGr C C')
-     (cz : HomGr C Gr0) (za' : HomGr Gr0 A')
-     (gk' : HomGr (coKer b) (coKer c))
-     (gk'_prop : ∀ x, gr_in (coKer b) x → H_app gk' x = H_app g' x),
+     (cz : HomGr C Gr0) (za' : HomGr Gr0 A'),
   diagram_commutes f a b f'
   → diagram_commutes g b c g'
   → exact_sequence (Seq2 f (Seq2 g (Seq2 cz Seq1)))
   → exact_sequence (Seq2 za' (Seq2 f' (Seq2 g' Seq1)))
   → ∃ (fk : HomGr (Ker a) (Ker b)) (gk : HomGr (Ker b) (Ker c))
-        (fk' : HomGr (coKer a) (coKer b))
+        (fk' : HomGr (coKer a) (coKer b)) (gk' : HomGr (coKer b) (coKer c))
         (d : HomGr (Ker c) (coKer a)),
      (∀ x, x ∈ Ker a → H_app fk x ∈ Ker b) ∧
      (∀ x, x ∈ Ker b → H_app gk x ∈ Ker c) ∧
      (∀ x, x ∈ coKer b → H_app gk' x ∈ coKer c) ∧
      exact_sequence (Seq2 fk (Seq2 gk (Seq2 d (Seq2 fk' (Seq2 gk' Seq1))))).
 Proof.
-intros * gk'_prop.
+intros *.
 intros Hcff' Hcgg' s s'.
 exists (HomGr_Ker_ker f f' a b Hcff').
 exists (HomGr_Ker_ker g g' b c Hcgg').
 set (fk'_app := λ (x : gr_set (coKer a)), H_app f' x : gr_set (coKer b)).
-assert (fk'_prop : is_homgr _ _ fk'_app). {
-  subst fk'_app.
-clear - f Hcff'.
-...
-  split; [ apply f' | | ].
-  -intros x Hx.
-   split; [ apply f', Hx | ].
-   destruct Hx as (Hxa & y & Hy & z & Hz & Hxy).
-   exists (H_app f' y).
-   split; [ now apply f' | ].
-   exists (H_app f z).
-   split; [ now apply f | ].
-   rewrite Hcff', Hxy.
-   apply f'.
-  -intros x y; apply f'.
-}
+specialize (is_homgr_coKer_coKer f f' a b Hcff') as fk'_prop.
 set (fk' := {| H_app := fk'_app; H_prop := fk'_prop |}).
 exists fk'.
-move fk'_app before gk_app.
-move fk'_prop before gk_prop.
+set (gk'_app := λ (x : gr_set (coKer b)), H_app g' x : gr_set (coKer c)).
+specialize (is_homgr_coKer_coKer g g' b c Hcgg') as gk'_prop.
+set (gk' := {| H_app := gk'_app; H_prop := gk'_prop |}).
+exists gk'.
 ...
