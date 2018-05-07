@@ -241,22 +241,21 @@ Lemma snake :
      (f' : HomGr A' B') (g' : HomGr B' C')
      (a : HomGr A A') (b : HomGr B B') (c : HomGr C C')
      (cz : HomGr C Gr0) (za' : HomGr Gr0 A')
-     (fk' : HomGr (coKer a) (coKer b)) (gk' : HomGr (coKer b) (coKer c))
-     (fk'_prop : ∀ x, gr_in (coKer a) x → H_app fk' x = H_app f' x)
+     (gk' : HomGr (coKer b) (coKer c))
      (gk'_prop : ∀ x, gr_in (coKer b) x → H_app gk' x = H_app g' x),
   diagram_commutes f a b f'
   → diagram_commutes g b c g'
   → exact_sequence (Seq2 f (Seq2 g (Seq2 cz Seq1)))
   → exact_sequence (Seq2 za' (Seq2 f' (Seq2 g' Seq1)))
   → ∃ (fk : HomGr (Ker a) (Ker b)) (gk : HomGr (Ker b) (Ker c))
-        (d : HomGr (Ker c) (coKer a)),
+        (d : HomGr (Ker c) (coKer a))
+        (fk' : HomGr (coKer a) (coKer b)),
      (∀ x, x ∈ Ker a → H_app fk x ∈ Ker b) ∧
      (∀ x, x ∈ Ker b → H_app gk x ∈ Ker c) ∧
-     (∀ x, x ∈ coKer a → H_app fk' x ∈ coKer b) ∧
      (∀ x, x ∈ coKer b → H_app gk' x ∈ coKer c) ∧
      exact_sequence (Seq2 fk (Seq2 gk (Seq2 d (Seq2 fk' (Seq2 gk' Seq1))))).
 Proof.
-intros * fk'_prop gk'_prop.
+intros * gk'_prop.
 intros Hcff' Hcgg' s s'.
 set (fk_app := λ (x : gr_set (Ker a)), H_app f x : gr_set (Ker b)).
 specialize (is_homgr_Ker_Ker _ _ _ _ Hcff') as fk_prop.
@@ -270,4 +269,10 @@ set (gk := {| H_app := gk_app; H_prop := gk_prop |}).
 exists gk.
 move gk_app before fk_app.
 move gk_prop before fk_prop.
+set (fk'_app := λ (x : gr_set (coKer a)), H_app f' x : gr_set (coKer b)).
+assert (fk'_prop : is_homgr _ _ fk'_app). {
+...
+}
+set (fk' := {| H_app := fk'_app; H_prop := fk'_prop |}).
+exists fk'.
 ...
