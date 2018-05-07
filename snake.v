@@ -223,7 +223,7 @@ Definition diagram_commutes {A B C D}
 Theorem is_homgr_Ker_Ker {A B A' B'} :
   ∀ (f : HomGr A B) (f' : HomGr A' B') (a : HomGr A A') (b : HomGr B B'),
   diagram_commutes f a b f'
-  → is_homgr (Ker a) (Ker b) (λ x : gr_set (Ker a), H_app f x).
+  → is_homgr (Ker a) (Ker b) (H_app f).
 Proof.
 intros * Hc.
 split; [ apply f | | ].
@@ -235,6 +235,25 @@ split; [ apply f | | ].
  rewrite H; apply f'.
 -intros x x'; apply f.
 Qed.
+
+Theorem is_homgr_coKer_coKer {A B A' B'} :
+  ∀ (f : HomGr A B) (f' : HomGr A' B') (a : HomGr A A') (b : HomGr B B'),
+  diagram_commutes f a b f'
+  → is_homgr (coKer a) (coKer b) (H_app f').
+Proof.
+...
+  split; [ apply f' | | ].
+  -intros x Hx.
+   split; [ apply f', Hx | ].
+   destruct Hx as (Hxa & y & Hy & z & Hz & Hxy).
+   exists (H_app f' y).
+   split; [ now apply f' | ].
+   exists (H_app f z).
+   split; [ now apply f | ].
+   rewrite Hcff', Hxy.
+   apply f'.
+  -intros x y; apply f'.
+...
 
 Lemma snake :
   ∀ (A B C A' B' C' : Group)
@@ -249,8 +268,8 @@ Lemma snake :
   → exact_sequence (Seq2 f (Seq2 g (Seq2 cz Seq1)))
   → exact_sequence (Seq2 za' (Seq2 f' (Seq2 g' Seq1)))
   → ∃ (fk : HomGr (Ker a) (Ker b)) (gk : HomGr (Ker b) (Ker c))
-        (d : HomGr (Ker c) (coKer a))
-        (fk' : HomGr (coKer a) (coKer b)),
+        (fk' : HomGr (coKer a) (coKer b))
+        (d : HomGr (Ker c) (coKer a)),
      (∀ x, x ∈ Ker a → H_app fk x ∈ Ker b) ∧
      (∀ x, x ∈ Ker b → H_app gk x ∈ Ker c) ∧
      (∀ x, x ∈ coKer b → H_app gk' x ∈ coKer c) ∧
@@ -260,12 +279,10 @@ intros * gk'_prop.
 intros Hcff' Hcgg' s s'.
 set (fk_app := λ (x : gr_set (Ker a)), H_app f x : gr_set (Ker b)).
 specialize (is_homgr_Ker_Ker _ _ _ _ Hcff') as fk_prop.
-fold fk_app in fk_prop.
 set (fk := {| H_app := fk_app; H_prop := fk_prop |}).
 exists fk.
 set (gk_app := λ (x : gr_set (Ker b)), H_app g x : gr_set (Ker c)).
 specialize (is_homgr_Ker_Ker _ _ _ _ Hcgg') as gk_prop.
-fold gk_app in gk_prop.
 set (gk := {| H_app := gk_app; H_prop := gk_prop |}).
 exists gk.
 move gk_app before fk_app.
@@ -273,6 +290,8 @@ move gk_prop before fk_prop.
 set (fk'_app := λ (x : gr_set (coKer a)), H_app f' x : gr_set (coKer b)).
 assert (fk'_prop : is_homgr _ _ fk'_app). {
   subst fk'_app.
+clear - f Hcff'.
+...
   split; [ apply f' | | ].
   -intros x Hx.
    split; [ apply f', Hx | ].
@@ -283,9 +302,10 @@ assert (fk'_prop : is_homgr _ _ fk'_app). {
    split; [ now apply f | ].
    rewrite Hcff', Hxy.
    apply f'.
-  -idtac.
-...
+  -intros x y; apply f'.
 }
 set (fk' := {| H_app := fk'_app; H_prop := fk'_prop |}).
 exists fk'.
+move fk'_app before gk_app.
+move fk'_prop before gk_prop.
 ...
