@@ -241,10 +241,30 @@ Lemma snake :
 Proof.
 intros * fk_prop gk_prop fk'_prop gk'_prop.
 intros Hcff' Hcgg' s s'.
+assert (∀ x, x ∈ Ker a ↔ x = gr_zero A').
+...
+
+destruct s' as (s'1, s'2).
+simpl in s'1.
+specialize (s'1 (gr_zero A')) as (H1, H2).
+assert (H3 : gr_zero A' ∈ A' ∧ H_app f' (gr_zero A') = gr_zero B'). {
+  split; [ apply A' | apply f' ].
+}
+specialize (H2 H3).
+destruct H2 as (z, Hz).
+destruct z.
+
+...
+
+
 assert (fk_app : gr_set (Ker a) → gr_set (Ker b)). {
   intros x.
-  destruct s' as (s'1, s'2).
-  simpl in s'1.
+
+
+Print Ker.
+  assert (H1 : ∀ x, x ∈ Ker f' ↔ x = 42).
+x: gr_set (Ker f')
+...
   simpl in x; simpl.
 
 ...
