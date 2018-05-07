@@ -241,6 +241,14 @@ Lemma snake :
 Proof.
 intros * fk_prop gk_prop fk'_prop gk'_prop.
 intros Hcff' Hcgg' s s'.
+assert (H1 : ∀ x, x ∈ Ker a → H_app f x ∈ Ker b). {
+  intros x Hx.
+  assert (H1 : H_app a x = gr_zero A') by apply Hx.
+  apply (f_equal (H_app f')) in H1.
+  rewrite <- Hcff' in H1.
+  split; [ apply f | rewrite H1; apply f' ].
+}
+...
 assert (∀ x, x ∈ Ker f' ↔ x = gr_zero A'). {
   simpl; intros x.
   split.
@@ -254,20 +262,14 @@ assert (∀ x, x ∈ Ker f' ↔ x = gr_zero A'). {
    specialize (H4 H5).
    destruct H4 as (z, Hz).
    destruct z.
-
 ...
-
-
 assert (fk_app : gr_set (Ker a) → gr_set (Ker b)). {
   intros x.
-
-
 Print Ker.
   assert (H1 : ∀ x, x ∈ Ker f' ↔ x = 42).
 x: gr_set (Ker f')
 ...
   simpl in x; simpl.
-
 ...
 
 assert (glop : is_homgr (Ker a) (Ker b) (H_app f)). {
@@ -281,13 +283,10 @@ assert (glop : is_homgr (Ker a) (Ker b) (H_app f)). {
    specialize (s'1 (H_app a x)) as (H1, H2).
    assert (H3 : H_app a x ∈ A' ∧ H_app f' (H_app a x) = gr_zero B'). {
      split; [ apply a | ].
-
 ...
-
 
 assert (fk₁ : HomGr (Ker a) (Ker b)). {
 ...
-
 Print is_homgr.
 ...
 assert (H_app _ _ (gr_zero (Ker a)) = gr_zero (Ker b)).
@@ -311,9 +310,7 @@ split.
 ...
   ============================
   appb (appf x) = gr_zero B'
-
 ...
-
   destruct b.
   simpl.
   destruct H_prop0.
@@ -321,8 +318,6 @@ split.
 simpl in fk.
 Check ih_zero0.
  +rewrite fk_prop; [ simpl | easy ].
-
-
 ...
 -exists ...
  intros y.
