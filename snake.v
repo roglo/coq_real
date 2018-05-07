@@ -1,8 +1,6 @@
 (* snake lemma & co *)
 
 Require Import Utf8.
-Tactic Notation "transparent" "assert" "(" ident(H) ":" lconstr(type) ")" :=
- unshelve (refine (let H := (_ : type) in _)).
 
 Record is_abelian_group {T} (gr_zero : T) gr_op gr_in :=
   { ig_zero : gr_in gr_zero;
@@ -24,6 +22,9 @@ Record Group :=
 Arguments gr_op [_].
 
 Notation "x '∈' S" := (gr_in S x) (at level 60).
+(*
+Notation "x '⊕' y" := (gr_op x y) (at level 50).
+*)
 
 Record is_homgr A B H_app :=
   { ih_zero : H_app (gr_zero A) = gr_zero B;
@@ -104,7 +105,7 @@ Qed.
 
 Theorem Ker_is_abelian_group {G H} : ∀ (f : HomGr G H),
   is_abelian_group (gr_zero G) (gr_op (g:=G))
-    (λ a, a ∈ G ∧ H_app f a = gr_zero H).
+    (λ x, x ∈ G ∧ H_app f x = gr_zero H).
 Proof.
 intros.
 split.
@@ -271,6 +272,21 @@ move gk_app before fk_app.
 move gk_prop before fk_prop.
 set (fk'_app := λ (x : gr_set (coKer a)), H_app f' x : gr_set (coKer b)).
 assert (fk'_prop : is_homgr _ _ fk'_app). {
+  subst fk'_app.
+  split; [ apply f' | | ].
+  -intros x Hx.
+   split; [ apply f', Hx | ].
+destruct Hx as (Hxa & y & Hy & Hxy).
+...
+
+apply f', Hx.
+...
+   assert (H : H_app a x = gr_zero A') by apply Hx.
+   apply (f_equal (H_app f')) in H.
+   rewrite <- Hc in H.
+   split; [ now apply f; simpl in Hx | ].
+   rewrite H; apply f'.
+  -intros x x'; apply f.
 ...
 }
 set (fk' := {| H_app := fk'_app; H_prop := fk'_prop |}).
