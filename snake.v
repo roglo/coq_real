@@ -327,8 +327,11 @@ split; [ | split ].
    }
    destruct d as (appd, dp).
    destruct dp as (dz, din, dlin); simpl.
-   specialize (din _ Hy) as H1.
    simpl in dz.
+   specialize (din _ Hy) as H1.
+   simpl in H1.
+   destruct H1 as (Hay & z & Haz & t & Hat & Ht).
+(* il faut peut-être savoir ce que c'est que appd, pas seulement son type *)
 ...
    apply appd.
 ...
