@@ -187,6 +187,22 @@ split.
 -now intros; apply H.
 Qed.
 
+(*
+Theorem subGroup_is_abelian_group G P :
+  is_abelian_group (λ x, x ∈ G ∧ P x) (gr_zero G) (gr_add (g:=G)).
+Proof.
+...
+
+Definition subGroup (G : Group) (P : gr_set G → Prop) :=
+  {| gr_set := gr_set G;
+     gr_zero := gr_zero G;
+     gr_add := @gr_add G;
+     gr_in x := x ∈ G ∧ P x;
+     gr_prop := subGroup_is_abelian_group G P |}.
+*)
+
+...
+
 Definition coKer {G H : Group} (f : HomGr G H) :=
   {| gr_set := gr_set H;
      gr_zero := gr_zero H;
