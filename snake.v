@@ -191,6 +191,7 @@ Qed.
 Theorem subGroup_is_abelian_group G P :
   is_abelian_group (λ x, x ∈ G ∧ P x) (gr_zero G) (gr_add (g:=G)).
 Proof.
+split.
 ...
 
 Definition subGroup (G : Group) (P : gr_set G → Prop) :=
@@ -199,9 +200,14 @@ Definition subGroup (G : Group) (P : gr_set G → Prop) :=
      gr_add := @gr_add G;
      gr_in x := x ∈ G ∧ P x;
      gr_prop := subGroup_is_abelian_group G P |}.
+
+...
 *)
 
 ...
+
+(* well, coKer being H/Im f, it is *not* a subgroup of H; therefore
+   my definition is wrong *)
 
 Definition coKer {G H : Group} (f : HomGr G H) :=
   {| gr_set := gr_set H;
@@ -352,8 +358,8 @@ split; [ | split ].
    specialize (din _ Hy) as H1.
    simpl in H1.
    destruct H1 as (Hay & z & Haz & t & Hat & Ht).
-   rewrite <- Hxy.
 ...
+   rewrite <- Hxy.
    apply appd.
 ...
 -idtac.
