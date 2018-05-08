@@ -29,7 +29,8 @@ Notation "x '⊕' y" := (gr_add x y) (at level 50).
 Record is_homgr A B H_app :=
   { ih_zero : H_app (gr_zero A) = gr_zero B;
     ih_inco : ∀ x, x ∈ A → H_app x ∈ B;
-    ih_lin : ∀ x y, H_app (gr_add x y) = gr_add (H_app x) (H_app y) }.
+    ih_lin : ∀ x y, x ∈ A → y ∈ A →
+      H_app (gr_add x y) = gr_add (H_app x) (H_app y) }.
 
 Record HomGr (A B : Group) :=
   { H_app : gr_set A → gr_set B;
@@ -89,7 +90,7 @@ split.
  destruct f as (appf, fp).
  destruct fp as (fz, fin, flin); simpl in *.
  exists (go x x').
- split; [ now apply gc | apply flin ].
+ split; [ now apply gc | now apply flin ].
 -intros y (x & Hxg & Hx); subst y.
  now apply H, f.
 -intros y (x & Hxg & Hx); subst y.
@@ -114,7 +115,8 @@ split.
  split; [ now apply G | ].
  destruct f as (appf, fp); simpl in *.
  destruct fp as (fz, fin, flin); simpl in *.
- rewrite flin, Hfx, Hfx'.
+ rewrite flin; [ | easy | easy ].
+ rewrite Hfx, Hfx'.
  apply H, H.
 -intros x (Hx, Hfx).
  now apply G.
@@ -162,7 +164,8 @@ split.
  exists (gr_add x x').
  destruct f as (appf, fp); simpl in *.
  destruct fp as (fz, fin, flin); simpl in *.
- rewrite flin, Hx, Hx'.
+ rewrite flin; [ | easy | easy ].
+ rewrite Hx, Hx'.
  destruct H as (Hs, inH, zH, Hop, Hp); simpl in *.
  replace (Hop y z) with (Hop z y) by now apply Hp.
  remember (Hop y' z') as t eqn:Ht.
@@ -231,7 +234,8 @@ split; [ apply f | | ].
  rewrite <- Hc in H.
  split; [ now apply f; simpl in Hx | ].
  rewrite H; apply f'.
--intros x x'; apply f.
+-intros x x' Hx Hx'; simpl in Hx, Hx'.
+ now apply f.
 Qed.
 
 Theorem is_homgr_coKer_coKer {A B A' B'} :
@@ -249,8 +253,9 @@ split; [ apply f' | | ].
  exists (H_app f z).
  split; [ now apply f | ].
  rewrite Hc, Hxy.
- apply f'.
--intros x y; apply f'.
+ now apply f'.
+-intros x y Hx Hy; simpl in Hx, Hy.
+ now apply f'.
 Qed.
 
 Definition HomGr_Ker_ker {A B A' B'}
@@ -331,7 +336,7 @@ split; [ | split ].
    specialize (din _ Hy) as H1.
    simpl in H1.
    destruct H1 as (Hay & z & Haz & t & Hat & Ht).
-(* il faut peut-être savoir ce que c'est que appd, pas seulement son type *)
+   rewrite <- Hxy.
 ...
    apply appd.
 ...
