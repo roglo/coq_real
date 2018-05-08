@@ -5,8 +5,7 @@ Require Import Utf8.
 Record is_abelian_group {T} (in_gr : T → Prop) gr_zero gr_add :=
   { ig_zero : in_gr gr_zero;
     ig_clos : ∀ x y, in_gr x → in_gr y → in_gr (gr_add x y);
-    ig_lid : ∀ x, in_gr x → gr_add gr_zero x = x;
-    ig_rid : ∀ x, in_gr x → gr_add x gr_zero = x;
+    ig_id : ∀ x, in_gr x → gr_add gr_zero x = x;
     ig_assoc : ∀ x y z, in_gr x → in_gr y → in_gr z →
       gr_add (gr_add x y) z = gr_add x (gr_add y z);
     ig_comm : ∀ x y, in_gr x → in_gr y →
@@ -42,9 +41,8 @@ Inductive Gr0_set := G0 : Gr0_set.
 
 Theorem Gr0_prop : is_abelian_group (λ _, True) G0 (λ _ _, G0).
 Proof.
-split; [ easy | easy | | | easy | easy ].
--now intros x; destruct x.
--now intros x; destruct x.
+split; [ easy | easy | | easy | easy ].
+now intros x; destruct x.
 Qed.
 
 Definition Gr0 :=
@@ -85,14 +83,12 @@ split.
 -intros y y' (x & Hxg & Hx) (x' & Hx'g & Hx').
  subst y y'.
  destruct G as (gs, gi, gz, go, gp).
- destruct gp as (gzi, gc, gl, gr, ga, gco).
+ destruct gp as (gzi, gc, gid, ga, gco).
  destruct H as (hs, hi, hz, ho, hp).
  destruct f as (appf, fp).
  destruct fp as (fz, fin, flin); simpl in *.
  exists (go x x').
  split; [ now apply gc | now apply flin ].
--intros y (x & Hxg & Hx); subst y.
- now apply H, f.
 -intros y (x & Hxg & Hx); subst y.
  now apply H, f.
 -intros y y' y'' (x & Hgx & Hx) (x' & Hgx' & Hx') (x'' & Hgx'' & Hx'').
@@ -118,8 +114,6 @@ split.
  rewrite flin; [ | easy | easy ].
  rewrite Hfx, Hfx'.
  apply H, H.
--intros x (Hx, Hfx).
- now apply G.
 -intros x (Hx, Hfx).
  now apply G.
 -intros x x' x'' (Hx & Hfx) (Hx' & Hfx') (Hx'' & Hfx'').
@@ -184,27 +178,7 @@ split.
 -now intros; apply H.
 -now intros; apply H.
 -now intros; apply H.
--now intros; apply H.
 Qed.
-
-(*
-Theorem subGroup_is_abelian_group G P :
-  is_abelian_group (λ x, x ∈ G ∧ P x) (gr_zero G) (gr_add (g:=G)).
-Proof.
-split.
-...
-
-Definition subGroup (G : Group) (P : gr_set G → Prop) :=
-  {| gr_set := gr_set G;
-     gr_zero := gr_zero G;
-     gr_add := @gr_add G;
-     gr_in x := x ∈ G ∧ P x;
-     gr_prop := subGroup_is_abelian_group G P |}.
-
-...
-*)
-
-...
 
 (* well, coKer being H/Im f, it is *not* a subgroup of H; therefore
    my definition is wrong *)
