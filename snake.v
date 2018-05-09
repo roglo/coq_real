@@ -317,7 +317,9 @@ split; [ apply f | | | ].
  +apply f'.
 -intros x x' Hx Hx'; simpl in Hx, Hx'.
  now apply f.
--idtac.
+-intros x y Hx Hy Hxy.
+ simpl in Hx, Hy.
+ now apply f.
 Qed.
 
 Theorem is_homgr_coKer_coKer {A B A' B'} :
@@ -326,7 +328,7 @@ Theorem is_homgr_coKer_coKer {A B A' B'} :
   → is_homgr (coKer a) (coKer b) (H_app f').
 Proof.
 intros * Hc.
-split; [ apply f' | | ].
+split; [ apply f' | | | ].
 -intros x Hx.
  split; [ apply f', Hx | ].
  destruct Hx as (Hxa & y & Hy & z & Hz & Hxy).
@@ -334,9 +336,22 @@ split; [ apply f' | | ].
  split; [ now apply f' | ].
  exists (H_app f z).
  split; [ now apply f | ].
- rewrite Hc, Hxy.
- now apply f'.
+ destruct B' as (bs, bi, beq, bz, bo, bp).
+ destruct bp as (bzi, bc, bid, ba, bco, beqv, bimo, bamo).
+ simpl in *.
+ etransitivity; [ apply Hc | ].
+ symmetry.
+ etransitivity; [ now symmetry; apply f' | ].
+ destruct A' as (ass, ai, aeq, az, ao, ap).
+ destruct ap as (azi, ac, aid, aa, aco, aeqv, aimo, aamo).
+ simpl in *.
+ apply f'; simpl; [ now apply ac | | ].
+ +eapply aimo; [ symmetry; apply Hxy | now apply ac ].
+ +now symmetry.
 -intros x y Hx Hy; simpl in Hx, Hy.
+ now apply f'.
+-intros x y Hx Hy Hxy.
+ simpl in Hx, Hy.
  now apply f'.
 Qed.
 
@@ -383,7 +398,9 @@ split; [ | split ].
  split.
  +intros (x & (Hx & Hax) & Hxy).
   split; [ split | ].
-  *now rewrite <- Hxy; apply f.
+  *eapply B; [ apply Hxy | now apply f ].
+  *idtac.
+...
   *rewrite <- Hxy, Hcff', Hax; apply f'.
   *apply sf; rewrite <- Hxy.
    exists x; easy.
