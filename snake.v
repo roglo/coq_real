@@ -137,6 +137,7 @@ Proof.
 intros.
 split.
 -idtac.
+
 ...
 -split; [ apply G | apply f ].
 -intros x x' (Hx, Hfx) (Hx', Hfx').
