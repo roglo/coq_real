@@ -145,17 +145,47 @@ split.
  destruct hp as (hzi, hc, hid, ha, hco, heqv, himo, hamo).
  simpl in *.
  etransitivity; [ now apply flin | ].
- etransitivity; [ | apply Hfx ].
- etransitivity.
-
+ assert (H : heq (ho hz hz) hz) by now apply hid.
+ etransitivity; [ | apply H ].
+ now apply hamo.
+-intros x (Hx, Hfx).
+ now apply G.
+-intros * (ax, Hx) (ay, Hy) (az, Hz).
+ now apply G.
+-intros * (ax, Hx) (ay, Hy).
+ now apply G.
+-apply G.
+-intros * Hxy (ax, Hx).
+ split.
+ +destruct G as (gs, gi, geq, gz, go, gp).
+  destruct gp as (gzi, gc, gid, ga, gco, geqv, gimo, gamo).
+  simpl in *.
+  eapply gimo; [ apply Hxy | easy ].
+ +destruct G as (gs, gi, geq, gz, go, gp).
+  destruct gp as (gzi, gc, gid, ga, gco, geqv, gimo, gamo).
+  destruct H as (hs, hi, heq, hz, ho, hp).
+  destruct hp as (hzi, hc, hid, ha, hco, heqv, himo, hamo).
+  destruct f as (appf, fp).
+  destruct fp as (fz, fin, flin).
+  simpl in *.
 ...
- rewrite flin; [ | easy | easy ].
- rewrite Hfx, Hfx'.
- apply H, H.
--intros x (Hx, Hfx).
- now apply G.
--intros x (Hx, Hfx).
- now apply G.
+  symmetry.
+  transitivity (appf gz); [ now symmetry | ].
+...
+  transitivity (ho hz (appf y)).
+  *symmetry; apply hid, fin.
+   eapply gimo; [ apply Hxy | apply ax ].
+  *transitivity (appf x); [ | easy ].
+   transitivity (ho hz (appf x)).
+  --apply hamo; [ easy | ].
+    symmetry.
+...
+-intros * Hxy Hxy'.
+ destruct H as (hs, hi, heq, hz, ho, hp).
+ destruct hp as (hzi, hc, hid, ha, hco, heqv, himo, hamo).
+ simpl in *.
+ now apply hamo.
+...
 -intros x x' x'' (Hx & Hfx) (Hx' & Hfx') (Hx'' & Hfx'').
  now apply G.
 -intros x x' (Hx, Hfx) (Hx', Hfx').
