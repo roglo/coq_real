@@ -399,7 +399,28 @@ split; [ | split ].
  +intros (x & (Hx & Hax) & Hxy).
   split; [ split | ].
   *eapply B; [ apply Hxy | now apply f ].
-  *idtac.
+  *destruct B' as (bs, bi, beq, bz, bo, bp).
+   destruct bp as (bzi, bc, bid, ba, bco, beqv, bimo, bamo).
+   simpl.
+...
+   transitivity (H_app b (H_app f x)).
+  --symmetry.
+    etransitivity; [ apply Hcff' | ].
+    transitivity (H_app f' (gr_zero A')).
+   ++apply f'; [ | apply A' | easy ].
+     eapply A'; [ | apply A' ].
+     destruct A' as (ass, ai, aeq, az, ao, ap).
+     destruct ap as (azi, ac, aid, aa, aco, aeqv, aimo, aamo).
+     simpl in Hax; simpl.
+     now symmetry.
+   ++transitivity bz; [ apply f' | ].
+     symmetry.
+  Hx : x ∈ A
+  Hax : H_app a x ≡ gr_zero A'
+  Hxy : H_app f x ≡ y
+  ============================
+  beq (H_app b y) bz
+
 ...
   *rewrite <- Hxy, Hcff', Hax; apply f'.
   *apply sf; rewrite <- Hxy.
