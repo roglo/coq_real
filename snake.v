@@ -169,9 +169,7 @@ split.
   destruct fp as (fz, fin, flin).
   simpl in *.
 ...
-  symmetry.
-  transitivity (appf gz); [ now symmetry | ].
-...
+
   transitivity (ho hz (appf y)).
   *symmetry; apply hid, fin.
    eapply gimo; [ apply Hxy | apply ax ].
@@ -179,6 +177,10 @@ split.
    transitivity (ho hz (appf x)).
   --apply hamo; [ easy | ].
     symmetry.
+    transitivity hz; [ easy | ].
+    symmetry.
+  ============================
+  heq (appf y) hz
 ...
 -intros * Hxy Hxy'.
  destruct H as (hs, hi, heq, hz, ho, hp).
