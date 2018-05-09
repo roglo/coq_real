@@ -13,8 +13,8 @@ Record is_abelian_group {T} (gr_eq : T → T → Prop) in_gr gr_zero gr_add :=
     ig_comm : ∀ x y, in_gr x → in_gr y →
       gr_eq (gr_add x y) (gr_add y x);
     ig_equiv : Equivalence gr_eq;
-    ig_in_morph : ∀ x y, gr_eq x y → in_gr x → in_gr y;
-    ig_add_morph : ∀ x y x' y',
+    ig_in_compat : ∀ x y, gr_eq x y → in_gr x → in_gr y;
+    ig_add_compat : ∀ x y x' y',
       gr_eq x y → gr_eq x' y' → gr_eq (gr_add x x') (gr_add y y') }.
 
 Record Group :=
@@ -31,11 +31,11 @@ Arguments gr_add [_].
 Notation "x '∈' S" := (gr_in S x) (at level 60).
 Notation "x '≡' y" := (gr_eq x y) (at level 70).
 
-Record is_homgr A B H_app :=
-  { ih_zero : H_app (gr_zero A) ≡ gr_zero B;
-    ih_inco : ∀ x, x ∈ A → H_app x ∈ B;
-    ih_lin : ∀ x y, x ∈ A → y ∈ A →
-      H_app (gr_add x y) ≡ gr_add (H_app x) (H_app y) }.
+Record is_homgr A B f :=
+  { ih_zero : f (gr_zero A) ≡ gr_zero B;
+    ih_inco : ∀ x, x ∈ A → f x ∈ B;
+    ih_lin : ∀ x y, x ∈ A → y ∈ A → f (gr_add x y) ≡ gr_add (f x) (f y);
+    ih_compat : ∀ x y, x ∈ A → y ∈ A → x ≡ y → f x ≡ f y }.
 
 Record HomGr (A B : Group) :=
   { H_app : gr_set A → gr_set B;
@@ -98,7 +98,7 @@ split.
  destruct H as (hs, hi, heq, hz, ho, hp).
  destruct hp as (hzi, hc, hid, ha, hco, heqv, himo, hamo).
  destruct f as (appf, fp).
- destruct fp as (fz, fin, flin); simpl in *.
+ destruct fp as (fz, fin, flin, fcomp); simpl in *.
  exists (go x x').
  split; [ now apply gc | ].
  rewrite flin; [ | easy | easy ].
@@ -140,7 +140,7 @@ split.
 -intros x x' (Hx, Hfx) (Hx', Hfx').
  split; [ now apply G | ].
  destruct f as (appf, fp).
- destruct fp as (fz, fin, flin).
+ destruct fp as (fz, fin, flin, fcomp).
  destruct H as (hs, hi, heq, hz, ho, hp).
  destruct hp as (hzi, hc, hid, ha, hco, heqv, himo, hamo).
  simpl in *.
@@ -157,59 +157,38 @@ split.
 -apply G.
 -intros * Hxy (ax, Hx).
  split.
- +destruct G as (gs, gi, geq, gz, go, gp).
-  destruct gp as (gzi, gc, gid, ga, gco, geqv, gimo, gamo).
-  simpl in *.
-  eapply gimo; [ apply Hxy | easy ].
- +destruct G as (gs, gi, geq, gz, go, gp).
-  destruct gp as (gzi, gc, gid, ga, gco, geqv, gimo, gamo).
-  destruct H as (hs, hi, heq, hz, ho, hp).
+ +eapply ig_in_compat; [ apply G | apply Hxy | easy ].
+ +destruct H as (hs, hi, heq, hz, ho, hp).
   destruct hp as (hzi, hc, hid, ha, hco, heqv, himo, hamo).
   destruct f as (appf, fp).
-  destruct fp as (fz, fin, flin).
+  destruct fp as (fz, fin, flin, fcomp).
   simpl in *.
-...
-
-  transitivity (ho hz (appf y)).
-  *symmetry; apply hid, fin.
-   eapply gimo; [ apply Hxy | apply ax ].
-  *transitivity (appf x); [ | easy ].
-   transitivity (ho hz (appf x)).
-  --apply hamo; [ easy | ].
-    symmetry.
-    transitivity hz; [ easy | ].
-    symmetry.
-  ============================
-  heq (appf y) hz
-...
--intros * Hxy Hxy'.
- destruct H as (hs, hi, heq, hz, ho, hp).
- destruct hp as (hzi, hc, hid, ha, hco, heqv, himo, hamo).
- simpl in *.
- now apply hamo.
-...
--intros x x' x'' (Hx & Hfx) (Hx' & Hfx') (Hx'' & Hfx'').
- now apply G.
--intros x x' (Hx, Hfx) (Hx', Hfx').
- now apply G.
+  transitivity (appf x); [ | easy ].
+  symmetry.
+  apply fcomp; [ easy | | easy ].
+  eapply G; [ apply Hxy | easy ].
+-intros x y x' y' Hxy Hxy'.
+ eapply ig_add_compat; [ apply G | easy | easy ].
 Qed.
 
 Definition Im {G H : Group} (f : HomGr G H) :=
   {| gr_set := gr_set H;
      gr_zero := gr_zero H;
+     gr_eq := @gr_eq H;
+     gr_in := λ b, ∃ a, a ∈ G ∧ H_app f a ≡ b;
      gr_add := @gr_add H;
-     gr_in := λ b, ∃ a, a ∈ G ∧ H_app f a = b;
      gr_prop := Im_is_abelian_group f |}.
 
 Definition Ker {G H : Group} (f : HomGr G H) :=
   {| gr_set := gr_set G;
      gr_zero := gr_zero G;
+     gr_eq := @gr_eq G;
+     gr_in := λ a, a ∈ G ∧ H_app f a ≡ gr_zero H;
      gr_add := @gr_add G;
-     gr_in := λ a, a ∈ G ∧ H_app f a = gr_zero H;
      gr_prop := Ker_is_abelian_group f |}.
 
 Theorem coKer_is_abelian_group {G H} : ∀ (f : HomGr G H),
-  is_abelian_group (λ x, x ∈ H ∧ ∃ y, y ∈ H ∧ gr_add x y ∈ Im f)
+  is_abelian_group (gr_eq (g:=H)) (λ x, x ∈ H ∧ ∃ y, y ∈ H ∧ gr_add x y ∈ Im f)
     (gr_zero H) (gr_add (g:=H)).
 Proof.
 intros.
@@ -218,18 +197,22 @@ split.
  exists (gr_zero H).
  split; [ apply H | ].
  exists (gr_zero G).
- destruct f as (appf, fp); simpl in *.
- destruct fp as (fz, fin, flin); simpl in *.
- rewrite fz.
- split; [ apply G | ].
- symmetry; apply H, H.
+ split; [ eapply ig_zero; apply G | ].
+ destruct H as (hs, hi, heq, hz, ho, hp).
+ destruct hp as (hzi, hc, hid, ha, hco, heqv, himo, hamo).
+ destruct f as (appf, fp).
+ destruct fp as (fz, fin, flin, fcomp).
+ simpl in *.
+ transitivity hz; [ easy | ].
+ now symmetry; apply hid.
 -intros y y' (Hy & z & Hz & x & Hgx & Hx) (Hy' & z' & Hz' & x' & Hgx' & Hx').
  split; [ now apply H | ].
  exists (gr_add z z').
  split; [ now apply H | ].
  exists (gr_add x x').
  destruct f as (appf, fp); simpl in *.
- destruct fp as (fz, fin, flin); simpl in *.
+ destruct fp as (fz, fin, flin, fcomp); simpl in *.
+...
  rewrite flin; [ | easy | easy ].
  rewrite Hx, Hx'.
  destruct H as (Hs, inH, zH, Hop, Hp); simpl in *.
