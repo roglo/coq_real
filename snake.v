@@ -212,57 +212,64 @@ split.
  exists (gr_add x x').
  destruct f as (appf, fp); simpl in *.
  destruct fp as (fz, fin, flin, fcomp); simpl in *.
-...
- rewrite flin; [ | easy | easy ].
- rewrite Hx, Hx'.
- destruct H as (Hs, inH, zH, Hop, Hp); simpl in *.
- replace (Hop y z) with (Hop z y) by now apply Hp.
- remember (Hop y' z') as t eqn:Ht.
- replace (Hop (Hop z y) t) with (Hop z (Hop y t)).
- 2: now subst t; symmetry; apply Hp; [ | | apply Hp ].
- subst t.
- replace (Hop y (Hop y' z')) with (Hop (Hop y y') z') by now apply Hp.
- remember (Hop y y') as t eqn:Ht.
- replace (Hop z (Hop t z')) with (Hop (Hop t z') z).
- 2: subst t; symmetry; apply Hp; [ easy | ].
- 2: now apply Hp; [ apply Hp | ].
- replace (Hop (Hop t z') z) with (Hop t (Hop z' z)).
- 2: now subst t; symmetry; apply Hp; [ apply Hp | | ].
- split; [ now apply G | ].
- now replace (Hop z' z) with (Hop z z'); [ | apply Hp ].
--now intros; apply H.
--now intros; apply H.
--now intros; apply H.
--now intros; apply H.
+ split.
+ +eapply ig_clos; [ apply gr_prop | easy | easy ].
+ +destruct H as (hs, hi, heq, hz, ho, hp).
+  destruct hp as (hzi, hc, hid, ha, hco, heqv, himo, hamo).
+  simpl in *.
+  transitivity (ho (ho y z) (ho y' z')).
+  *now etransitivity; [ apply flin | apply hamo ].
+  *etransitivity.
+  --apply ha; [ easy | easy | now apply hc ].
+  --etransitivity.
+   ++apply hco; [ easy | ].
+     apply hc; [ easy | now apply hc ].
+   ++symmetry.
+     etransitivity; [ now apply hco; apply hc | ].
+     symmetry.
+     etransitivity.
+    **apply ha; [ easy | now apply hc | easy ].
+    **symmetry.
+      etransitivity.
+    ---apply ha; [ easy | easy | now apply hc ].
+    ---apply hamo; [ easy | ].
+       etransitivity.
+     +++apply hco; [ easy | now apply hc ].
+     +++etransitivity; [ now apply ha | ].
+        symmetry.
+        apply hco; [ now apply hc | easy ].
+-intros x (Hx & y & Hy).
+ now apply H.
+-intros x y z.
+ intros (Hx & x' & Hx' & Hxx) (Hy & y' & Hy' & Hyy) (Hz & z' & Hz' & Hzz).
+ eapply ig_assoc; [ apply H | easy | easy | easy ].
+-intros x y (Hx & x' & Hx' & Hxx) (Hy & y' & Hy' & Hyy).
+ destruct H as (hs, hi, heq, hz, ho, hp).
+ destruct hp as (hzi, hc, hid, ha, hco, heqv, himo, hamo).
+ simpl in *.
+ now apply hco.
+-apply H.
+-intros y y' Hyy' (Hy & y'' & Hy'' & x & Hx & Hxy).
+ split.
+ +eapply ig_in_compat; [ apply H | apply Hyy' | easy ].
+ +exists y''.
+  split; [ easy | ].
+  exists x.
+  split; [ easy | ].
+  destruct H as (hs, hi, heq, hz, ho, hp).
+  destruct hp as (hzi, hc, hid, ha, hco, heqv, himo, hamo).
+  simpl in *.
+  etransitivity; [ apply Hxy | now apply hamo ].
+-intros x y x' y' Hxy Hxy'.
+ eapply ig_add_compat; [ apply H | easy | easy ].
 Qed.
-
-(*
-Theorem subGroup_is_abelian_group G P :
-  is_abelian_group (λ x, x ∈ G ∧ P x) (gr_zero G) (gr_add (g:=G)).
-Proof.
-split.
-...
-
-Definition subGroup (G : Group) (P : gr_set G → Prop) :=
-  {| gr_set := gr_set G;
-     gr_zero := gr_zero G;
-     gr_add := @gr_add G;
-     gr_in x := x ∈ G ∧ P x;
-     gr_prop := subGroup_is_abelian_group G P |}.
-
-...
-*)
-
-...
-
-(* well, coKer being H/Im f, it is *not* a subgroup of H; therefore
-   my definition is wrong *)
 
 Definition coKer {G H : Group} (f : HomGr G H) :=
   {| gr_set := gr_set H;
+     gr_in := λ x, x ∈ H ∧ ∃ y, y ∈ H ∧ gr_add x y ∈ Im f;
+     gr_eq := @gr_eq H;
      gr_zero := gr_zero H;
      gr_add := @gr_add H;
-     gr_in := λ x, x ∈ H ∧ ∃ y, y ∈ H ∧ gr_add x y ∈ Im f;
      gr_prop := coKer_is_abelian_group f |}.
 
 Inductive sequence {A : Group} :=
@@ -298,6 +305,7 @@ Theorem is_homgr_Ker_Ker {A B A' B'} :
   → is_homgr (Ker a) (Ker b) (H_app f).
 Proof.
 intros * Hc.
+...
 split; [ apply f | | ].
 -intros x Hx.
  assert (H : H_app a x = gr_zero A') by apply Hx.
