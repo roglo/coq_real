@@ -1,35 +1,41 @@
 (* Snake lemma *)
 
 Require Import Utf8.
+Require Import Classes.RelationClasses.
+Require Import Setoid.
 
-Record is_abelian_group {T} (in_gr : T → Prop) gr_zero gr_add :=
+Record is_abelian_group {T} (gr_eq : T → T → Prop) in_gr gr_zero gr_add :=
   { ig_zero : in_gr gr_zero;
     ig_clos : ∀ x y, in_gr x → in_gr y → in_gr (gr_add x y);
-    ig_id : ∀ x, in_gr x → gr_add gr_zero x = x;
+    ig_id : ∀ x, in_gr x → gr_eq (gr_add gr_zero x) x;
     ig_assoc : ∀ x y z, in_gr x → in_gr y → in_gr z →
-      gr_add (gr_add x y) z = gr_add x (gr_add y z);
+      gr_eq (gr_add (gr_add x y) z) (gr_add x (gr_add y z));
     ig_comm : ∀ x y, in_gr x → in_gr y →
-      gr_add x y = gr_add y x }.
+      gr_eq (gr_add x y) (gr_add y x);
+    ig_equiv : Equivalence gr_eq;
+    ig_in_morph : ∀ x y, gr_eq x y → in_gr x → in_gr y;
+    ig_add_morph : ∀ x y x' y',
+      gr_eq x y → gr_eq x' y' → gr_eq (gr_add x x') (gr_add y y') }.
 
 Record Group :=
   { gr_set : Type;
     gr_in : gr_set → Prop;
+    gr_eq : gr_set → gr_set → Prop;
     gr_zero : gr_set;
     gr_add : gr_set → gr_set → gr_set;
-    gr_prop : is_abelian_group gr_in gr_zero gr_add }.
+    gr_prop : is_abelian_group gr_eq gr_in gr_zero gr_add }.
 
+Arguments gr_eq [_].
 Arguments gr_add [_].
 
 Notation "x '∈' S" := (gr_in S x) (at level 60).
-(*
-Notation "x '⊕' y" := (gr_add x y) (at level 50).
-*)
+Notation "x '≡' y" := (gr_eq x y) (at level 70).
 
 Record is_homgr A B H_app :=
-  { ih_zero : H_app (gr_zero A) = gr_zero B;
+  { ih_zero : H_app (gr_zero A) ≡ gr_zero B;
     ih_inco : ∀ x, x ∈ A → H_app x ∈ B;
     ih_lin : ∀ x y, x ∈ A → y ∈ A →
-      H_app (gr_add x y) = gr_add (H_app x) (H_app y) }.
+      H_app (gr_add x y) ≡ gr_add (H_app x) (H_app y) }.
 
 Record HomGr (A B : Group) :=
   { H_app : gr_set A → gr_set B;
@@ -39,10 +45,12 @@ Arguments H_app [A] [B].
 
 Inductive Gr0_set := G0 : Gr0_set.
 
-Theorem Gr0_prop : is_abelian_group (λ _, True) G0 (λ _ _, G0).
+Theorem Gr0_prop : is_abelian_group eq (λ _, True) G0 (λ _ _, G0).
 Proof.
-split; [ easy | easy | | easy | easy ].
-now intros x; destruct x.
+split; [ easy | easy | | | easy | | easy | easy ].
+-now intros x; destruct x.
+-now intros x; destruct x.
+-split; [ easy | easy | apply eq_Transitive ].
 Qed.
 
 Definition Gr0 :=
@@ -50,12 +58,13 @@ Definition Gr0 :=
       gr_zero := G0;
       gr_add := λ _ _, G0;
       gr_in := λ _, True;
+      gr_eq := eq;
       gr_prop := Gr0_prop |}.
 
 Definition is_initial (G : Group) :=
-  ∀ H (f g : HomGr G H) (x : gr_set G), H_app f x = H_app g x.
+  ∀ H (f g : HomGr G H) (x : gr_set G), H_app f x ≡ H_app g x.
 Definition is_final (G : Group) :=
-  ∀ H (f g : HomGr H G) (x : gr_set H), H_app f x = H_app g x.
+  ∀ H (f g : HomGr H G) (x : gr_set H), H_app f x ≡ H_app g x.
 Definition is_null (G : Group) := is_initial G ∧ is_final G.
 
 Theorem is_null_Gr0 : is_null Gr0.
@@ -66,7 +75,9 @@ split; intros H f g x.
  simpl.
  destruct x.
  destruct fih, gih; simpl in *.
- now rewrite ih_zero0, ih_zero1.
+ destruct H; simpl in *.
+ destruct gr_prop0; simpl in *.
+ etransitivity; [ apply ih_zero0 | easy ].
 -destruct f as (fa & fih); simpl in fih.
  destruct g as (ga & gih); simpl in gih.
  simpl.
@@ -74,38 +85,59 @@ split; intros H f g x.
 Qed.
 
 Theorem Im_is_abelian_group {G H} (f : HomGr G H) :
-  is_abelian_group (λ b, ∃ a, a ∈ G ∧ H_app f a = b) (gr_zero H) (@gr_add H).
+  is_abelian_group (@gr_eq H) (λ b, ∃ a, a ∈ G ∧ H_app f a ≡ b)
+    (gr_zero H) (@gr_add H).
 Proof.
 intros.
 split.
 -exists (gr_zero G).
  split; [ apply G | apply f ].
 -intros y y' (x & Hxg & Hx) (x' & Hx'g & Hx').
- subst y y'.
- destruct G as (gs, gi, gz, go, gp).
- destruct gp as (gzi, gc, gid, ga, gco).
- destruct H as (hs, hi, hz, ho, hp).
+ destruct G as (gs, gi, geq, gz, go, gp).
+ destruct gp as (gzi, gc, gid, ga, gco, geqv, gimo, gamo).
+ destruct H as (hs, hi, heq, hz, ho, hp).
+ destruct hp as (hzi, hc, hid, ha, hco, heqv, himo, hamo).
  destruct f as (appf, fp).
  destruct fp as (fz, fin, flin); simpl in *.
  exists (go x x').
- split; [ now apply gc | now apply flin ].
--intros y (x & Hxg & Hx); subst y.
- now apply H, f.
--intros y y' y'' (x & Hgx & Hx) (x' & Hgx' & Hx') (x'' & Hgx'' & Hx'').
- rewrite <- Hx, <- Hx', <- Hx''.
- now apply H; apply f.
--intros y y' (x & Hgx & Hx) (x' & Hgx' & Hx').
+ split; [ now apply gc | ].
+ rewrite flin; [ | easy | easy ].
+ now apply hamo; [ transitivity y | ].
+-intros y (x & Hxg & Hx).
  apply H.
- +now rewrite <- Hx; apply f.
- +now rewrite <- Hx'; apply f.
+ eapply H; [ apply Hx | now apply f ].
+-intros * (ax, Hx) (ay, Hy) (az, Hz).
+ apply H.
+ +eapply H; [ apply Hx | apply f, Hx ].
+ +eapply H; [ apply Hy | apply f, Hy ].
+ +eapply H; [ apply Hz | apply f, Hz ].
+-intros * (ax, Hx) (ay, Hy).
+ apply H.
+ +eapply H; [ apply Hx | apply f, Hx ].
+ +eapply H; [ apply Hy | apply f, Hy ].
+-apply H.
+-intros * Hxy (ax, Hx).
+ exists ax.
+ split; [ easy | ].
+ destruct H as (hs, hi, heq, hz, ho, hp).
+ destruct hp as (hzi, hc, hid, ha, hco, heqv, himo, hamo).
+ simpl in *.
+ transitivity x; [ apply Hx | easy ].
+-intros * Hxy Hxy'.
+ destruct H as (hs, hi, heq, hz, ho, hp).
+ destruct hp as (hzi, hc, hid, ha, hco, heqv, himo, hamo).
+ simpl in *.
+ now apply hamo.
 Qed.
 
 Theorem Ker_is_abelian_group {G H} : ∀ (f : HomGr G H),
-  is_abelian_group (λ x, x ∈ G ∧ H_app f x = gr_zero H)
+  is_abelian_group (@gr_eq G) (λ x, x ∈ G ∧ H_app f x = gr_zero H)
     (gr_zero G) (gr_add (g:=G)).
 Proof.
 intros.
 split.
+-idtac.
+...
 -split; [ apply G | apply f ].
 -intros x x' (Hx, Hfx) (Hx', Hfx').
  split; [ now apply G | ].
@@ -114,6 +146,8 @@ split.
  rewrite flin; [ | easy | easy ].
  rewrite Hfx, Hfx'.
  apply H, H.
+-intros x (Hx, Hfx).
+ now apply G.
 -intros x (Hx, Hfx).
  now apply G.
 -intros x x' x'' (Hx & Hfx) (Hx' & Hfx') (Hx'' & Hfx'').
@@ -178,7 +212,27 @@ split.
 -now intros; apply H.
 -now intros; apply H.
 -now intros; apply H.
+-now intros; apply H.
 Qed.
+
+(*
+Theorem subGroup_is_abelian_group G P :
+  is_abelian_group (λ x, x ∈ G ∧ P x) (gr_zero G) (gr_add (g:=G)).
+Proof.
+split.
+...
+
+Definition subGroup (G : Group) (P : gr_set G → Prop) :=
+  {| gr_set := gr_set G;
+     gr_zero := gr_zero G;
+     gr_add := @gr_add G;
+     gr_in x := x ∈ G ∧ P x;
+     gr_prop := subGroup_is_abelian_group G P |}.
+
+...
+*)
+
+...
 
 (* well, coKer being H/Im f, it is *not* a subgroup of H; therefore
    my definition is wrong *)
