@@ -131,19 +131,24 @@ split.
 Qed.
 
 Theorem Ker_is_abelian_group {G H} : ∀ (f : HomGr G H),
-  is_abelian_group (@gr_eq G) (λ x, x ∈ G ∧ H_app f x = gr_zero H)
+  is_abelian_group (@gr_eq G) (λ x, x ∈ G ∧ H_app f x ≡ gr_zero H)
     (gr_zero G) (gr_add (g:=G)).
 Proof.
 intros.
 split.
--idtac.
-
-...
 -split; [ apply G | apply f ].
 -intros x x' (Hx, Hfx) (Hx', Hfx').
  split; [ now apply G | ].
- destruct f as (appf, fp); simpl in *.
- destruct fp as (fz, fin, flin); simpl in *.
+ destruct f as (appf, fp).
+ destruct fp as (fz, fin, flin).
+ destruct H as (hs, hi, heq, hz, ho, hp).
+ destruct hp as (hzi, hc, hid, ha, hco, heqv, himo, hamo).
+ simpl in *.
+ etransitivity; [ now apply flin | ].
+ etransitivity; [ | apply Hfx ].
+ etransitivity.
+
+...
  rewrite flin; [ | easy | easy ].
  rewrite Hfx, Hfx'.
  apply H, H.
