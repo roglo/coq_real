@@ -297,7 +297,7 @@ Fixpoint exact_sequence {A : Group} (S : sequence) :=
 *)
 Definition diagram_commutes {A B C D}
      (f : HomGr A B) (g : HomGr A C) (h : HomGr B D) (k : HomGr C D) :=
-  ∀ x, H_app h (H_app f x) = H_app k (H_app g x).
+  ∀ x, H_app h (H_app f x) ≡ H_app k (H_app g x).
 
 Theorem is_homgr_Ker_Ker {A B A' B'} :
   ∀ (f : HomGr A B) (f' : HomGr A' B') (a : HomGr A A') (b : HomGr B B'),
@@ -305,16 +305,19 @@ Theorem is_homgr_Ker_Ker {A B A' B'} :
   → is_homgr (Ker a) (Ker b) (H_app f).
 Proof.
 intros * Hc.
-...
-split; [ apply f | | ].
+split; [ apply f | | | ].
 -intros x Hx.
- assert (H : H_app a x = gr_zero A') by apply Hx.
- apply (f_equal (H_app f')) in H.
- rewrite <- Hc in H.
  split; [ now apply f; simpl in Hx | ].
- rewrite H; apply f'.
+ destruct B' as (bs, bi, beq, bz, bo, bp).
+ destruct bp as (bzi, bc, bid, ba, bco, beqv, bimo, bamo).
+ simpl in *.
+ etransitivity; [ apply Hc | ].
+ transitivity (H_app f' (gr_zero A')).
+ +apply f'; [ apply a, Hx | apply A' | apply Hx ].
+ +apply f'.
 -intros x x' Hx Hx'; simpl in Hx, Hx'.
  now apply f.
+-idtac.
 Qed.
 
 Theorem is_homgr_coKer_coKer {A B A' B'} :
