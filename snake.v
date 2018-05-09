@@ -399,37 +399,27 @@ split; [ | split ].
  +intros (x & (Hx & Hax) & Hxy).
   split; [ split | ].
   *eapply B; [ apply Hxy | now apply f ].
-  *destruct B' as (bs, bi, beq, bz, bo, bp).
+  *destruct B' as (b's, b'i, b'eq, b'z, b'o, b'p).
+   destruct b'p as (b'zi, b'c, b'id, b'a, b'co, b'eqv, b'imo, b'amo).
+   destruct B as (bs, bi, beq, bz, bo, bp).
    destruct bp as (bzi, bc, bid, ba, bco, beqv, bimo, bamo).
-   simpl.
-...
+   simpl in *.
    transitivity (H_app b (H_app f x)).
-  --symmetry.
-    etransitivity; [ apply Hcff' | ].
-    transitivity (H_app f' (gr_zero A')).
-   ++apply f'; [ | apply A' | easy ].
-     eapply A'; [ | apply A' ].
-     destruct A' as (ass, ai, aeq, az, ao, ap).
-     destruct ap as (azi, ac, aid, aa, aco, aeqv, aimo, aamo).
-     simpl in Hax; simpl.
-     now symmetry.
-   ++transitivity bz; [ apply f' | ].
-     symmetry.
-  Hx : x ∈ A
-  Hax : H_app a x ≡ gr_zero A'
-  Hxy : H_app f x ≡ y
-  ============================
-  beq (H_app b y) bz
-
-...
-  *rewrite <- Hxy, Hcff', Hax; apply f'.
-  *apply sf; rewrite <- Hxy.
+  --apply b.
+   ++eapply bimo; [ apply Hxy | now apply f ].
+   ++now apply f.
+   ++now symmetry.
+  --etransitivity; [ apply Hcff' | ].
+    transitivity (H_app f' (gr_zero A')); [ | apply f' ].
+    apply f'; [ now apply a | apply A' | easy ].
+  *apply sf.
    exists x; easy.
  +intros ((Hy & Hby) & Hgy).
   assert (H : y ∈ Im f) by now apply sf; split.
   destruct H as (x & Hx & Hxy).
   exists x; split; [ | easy ].
   split; [ easy | ].
+...
   rewrite <- Hxy, Hcff' in Hby.
   specialize (sf' (H_app a x)) as (H1, H2).
   assert (H3 : H_app a x ∈ Ker f') by now split; [ apply a | ].
