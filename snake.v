@@ -446,9 +446,9 @@ split; [ | split ].
  split.
  +intros (x & (Hx & Hax) & Hxy).
   split; [ split | ].
-  *idtac.
+  *eapply C; [ apply Hxy | now apply g ].
+  *specialize (Hcgg' x) as H1.
 ...
-  *now rewrite <- Hxy; apply g.
   *rewrite <- Hxy, Hcgg', Hax; apply g'.
   *assert (Hy : y ∈ Ker c). {
      split; [ now rewrite <- Hxy; apply g | ].
