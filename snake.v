@@ -391,6 +391,26 @@ exists (HomGr_coKer_coker g g' b c Hcgg').
 destruct s as (sf & sg & _).
 destruct s' as (sf' & sg' & _).
 assert (d : HomGr (Ker c) (coKer a)). {
+  assert (∀ x, x ∈ C → ∃ y, y ∈ B ∧ H_app g y ≡ x). {
+    intros x Hx.
+    enough (H : x ∈ Im g) by easy.
+    apply sg.
+    split; [ easy | ].
+    destruct cz as (appcz, czp).
+    destruct czp as (czz, czin, czlin, czcomp); simpl in *.
+    rewrite <- czlin with (x := x) (y := gr_zero C).
+    -apply czcomp; [ easy | | ].
+     +apply C; [ easy | apply C ].
+     +destruct C as (cs, ci, ceq, cz, co, cp).
+      destruct cp as (czi, cc, cid, ca, cco, ceqv, cimo, camo).
+      simpl in *.
+      transitivity (co cz x).
+      *now symmetry; apply cid.
+      *now apply cco.
+    -easy.
+    -apply C.
+  }
+...
   assert (appd : gr_set (Ker c) → gr_set (coKer a)). {
     intros x.
     assert (H : ∃ y, H_app g y ≡ x). {
