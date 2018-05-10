@@ -473,9 +473,14 @@ split; [ | split ].
     **etransitivity; [ apply Hcgg' | ].
       transitivity (H_app g' (gr_zero B')); [ | apply g' ].
       apply g'; [ now apply b | apply B' | easy ].
-   ++idtac.
-...
    ++split; [ now apply g | ].
+     destruct C' as (c's, c'i, c'eq, c'z, c'o, c'p).
+     destruct c'p as (c'zi, c'c, c'id, c'a, c'co, c'eqv, c'imo, c'amo).
+     simpl in *.
+     etransitivity; [ apply Hcgg' | ].
+     transitivity (H_app g' (gr_zero B')); [ | apply g' ].
+     apply g'; [ now apply b | apply B' | easy ].
+  --idtac.
 ...
    destruct d as (appd, dp).
    destruct dp as (dz, din, dlin, dcomp); simpl in *.
