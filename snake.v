@@ -451,6 +451,23 @@ split; [ | split ].
    destruct C' as (c's, c'i, c'eq, c'z, c'o, c'p).
    destruct c'p as (c'zi, c'c, c'id, c'a, c'co, c'eqv, c'imo, c'amo).
    simpl in *.
+   transitivity (H_app c (H_app g x)).
+  --eapply c; [ | now apply g | now apply C ].
+    eapply C; [ apply Hxy | now apply g ].
+  --etransitivity; [ apply H1 | ].
+    transitivity (H_app g' (gr_zero B')).
+   ++apply g'; [ now apply b | apply B' | easy ].
+   ++idtac.
+
+...
+
+simpl in *.
+   destruct B' as (b's, b'i, b'eq, b'z, b'o, b'p).
+   destruct b'p as (b'zi, b'c, b'id, b'a, b'co, b'eqv, b'imo, b'amo).
+   simpl in *.
+   specialize (b'amo (H_app b x) b'z) as H2.
+Check b'imo.
+  Hax : b'eq (H_app b x) b'z
 ...
    transitivity (H_app c (H_app g x)).
   --symmetry; etransitivity; [ apply H1 | ].
