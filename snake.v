@@ -480,11 +480,8 @@ split; [ | split ].
      etransitivity; [ apply Hcgg' | ].
      transitivity (H_app g' (gr_zero B')); [ | apply g' ].
      apply g'; [ now apply b | apply B' | easy ].
-  --idtac.
-...
-   destruct d as (appd, dp).
-   destruct dp as (dz, din, dlin, dcomp); simpl in *.
-   etransitivity.
+  --destruct d as (appd, dp).
+    destruct dp as (dz, din, dlin, dcomp); simpl in *.
 ...
    apply sg'; rewrite <- Hxy.
    exists x; easy.
