@@ -390,7 +390,14 @@ exists (HomGr_coKer_coker f f' a b Hcff').
 exists (HomGr_coKer_coker g g' b c Hcgg').
 destruct s as (sf & sg & _).
 destruct s' as (sf' & sg' & _).
-enough (d : HomGr (Ker c) (coKer a)).
+assert (d : HomGr (Ker c) (coKer a)). {
+  assert (appd : gr_set (Ker c) → gr_set (coKer a)). {
+    intros x.
+    simpl in x; simpl.
+    ...
+  }
+  ...
+}
 exists d.
 simpl.
 split; [ | split ].
