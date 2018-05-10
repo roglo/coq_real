@@ -419,18 +419,35 @@ split; [ | split ].
   destruct H as (x & Hx & Hxy).
   exists x; split; [ | easy ].
   split; [ easy | ].
-...
-  rewrite <- Hxy, Hcff' in Hby.
   specialize (sf' (H_app a x)) as (H1, H2).
-  assert (H3 : H_app a x ∈ Ker f') by now split; [ apply a | ].
+  assert (H3 : H_app a x ∈ Ker f'). {
+    split; [ now apply a | ].
+    specialize (Hcff' x) as H3.
+    destruct B' as (b's, b'i, b'eq, b'z, b'o, b'p).
+    destruct b'p as (b'zi, b'c, b'id, b'a, b'co, b'eqv, b'imo, b'amo).
+    simpl in *.
+    etransitivity; [ symmetry; apply H3 | ].
+    transitivity (H_app b y); [ | easy ].
+    apply b; [ | easy | easy ].
+    destruct B as (bs, bi, beq, bz, bo, bp).
+    destruct bp as (bzi, bc, bid, ba, bco, beqv, bimo, bamo).
+    simpl in *.
+    eapply bimo; [ symmetry; apply Hxy | easy ].
+  }
   specialize (H2 H3).
   destruct H2 as (z & _ & Hzz).
-  destruct z; rewrite <- Hzz.
+  destruct z.
+  destruct A' as (a's, a'i, a'eq, a'z, a'o, a'p).
+  destruct a'p as (a'zi, a'c, a'id, a'a, a'co, a'eqv, a'imo, a'amo).
+  simpl in *.
+  etransitivity; [ symmetry; apply Hzz | ].
   apply za'.
 -intros y.
  split.
  +intros (x & (Hx & Hax) & Hxy).
   split; [ split | ].
+  *idtac.
+...
   *now rewrite <- Hxy; apply g.
   *rewrite <- Hxy, Hcgg', Hax; apply g'.
   *assert (Hy : y ∈ Ker c). {
