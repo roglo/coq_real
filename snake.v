@@ -393,6 +393,9 @@ destruct s' as (sf' & sg' & _).
 assert (d : HomGr (Ker c) (coKer a)). {
   assert (appd : gr_set (Ker c) → gr_set (coKer a)). {
     intros x.
+    assert (H : ∃ y, H_app g y ≡ x). {
+      ...
+    }
     simpl in x; simpl.
     ...
   }
