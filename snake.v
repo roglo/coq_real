@@ -455,43 +455,31 @@ split; [ | split ].
   --eapply c; [ | now apply g | now apply C ].
     eapply C; [ apply Hxy | now apply g ].
   --etransitivity; [ apply H1 | ].
-    transitivity (H_app g' (gr_zero B')).
-   ++apply g'; [ now apply b | apply B' | easy ].
-   ++idtac.
-
-...
-
-simpl in *.
-   destruct B' as (b's, b'i, b'eq, b'z, b'o, b'p).
-   destruct b'p as (b'zi, b'c, b'id, b'a, b'co, b'eqv, b'imo, b'amo).
+    transitivity (H_app g' (gr_zero B')); [ | apply g' ].
+    apply g'; [ now apply b | apply B' | easy ].
+  *destruct A' as (a's, a'i, a'eq, a'z, a'o, a'p).
+   destruct a'p as (a'zi, a'c, a'id, a'a, a'co, a'eqv, a'imo, a'amo).
    simpl in *.
-   specialize (b'amo (H_app b x) b'z) as H2.
-Check b'imo.
-  Hax : b'eq (H_app b x) b'z
+   transitivity (H_app d (H_app g x)).
+  --eapply d; [ | | now apply C ].
+    split.
+   ++eapply C; [ apply Hxy | now apply g ].
+   ++destruct C' as (c's, c'i, c'eq, c'z, c'o, c'p).
+     destruct c'p as (c'zi, c'c, c'id, c'a, c'co, c'eqv, c'imo, c'amo).
+     simpl in *.
+     transitivity (H_app c (H_app g x)).
+    **eapply c; [ | now apply g | now apply C ].
+      eapply C; [ apply Hxy | now apply g ].
+    **etransitivity; [ apply Hcgg' | ].
+      transitivity (H_app g' (gr_zero B')); [ | apply g' ].
+      apply g'; [ now apply b | apply B' | easy ].
+   ++idtac.
 ...
-   transitivity (H_app c (H_app g x)).
-  --symmetry; etransitivity; [ apply H1 | ].
-
+   ++split; [ now apply g | ].
 ...
-  *rewrite <- Hxy, Hcgg', Hax; apply g'.
-  *assert (Hy : y ∈ Ker c). {
-     split; [ now rewrite <- Hxy; apply g | ].
-     apply (f_equal (H_app g')) in Hax.
-     rewrite <- Hcgg', Hxy in Hax.
-     rewrite Hax.
-     apply g'.
-   }
    destruct d as (appd, dp).
-   destruct dp as (dz, din, dlin); simpl.
-   simpl in dz.
-   specialize (din _ Hy) as H1.
-   simpl in H1.
-   destruct H1 as (Hay & z & Haz & t & Hat & Ht).
-...
-   rewrite <- Hxy.
-   apply appd.
-...
--idtac.
+   destruct dp as (dz, din, dlin, dcomp); simpl in *.
+   etransitivity.
 ...
    apply sg'; rewrite <- Hxy.
    exists x; easy.
