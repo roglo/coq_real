@@ -448,6 +448,13 @@ split; [ | split ].
   split; [ split | ].
   *eapply C; [ apply Hxy | now apply g ].
   *specialize (Hcgg' x) as H1.
+   destruct C' as (c's, c'i, c'eq, c'z, c'o, c'p).
+   destruct c'p as (c'zi, c'c, c'id, c'a, c'co, c'eqv, c'imo, c'amo).
+   simpl in *.
+...
+   transitivity (H_app c (H_app g x)).
+  --symmetry; etransitivity; [ apply H1 | ].
+
 ...
   *rewrite <- Hxy, Hcgg', Hax; apply g'.
   *assert (Hy : y ∈ Ker c). {
