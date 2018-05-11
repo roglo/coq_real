@@ -2,7 +2,7 @@
 
 Require Import Utf8.
 Require Import Classes.RelationClasses.
-Require Import Setoid.
+Require Import Setoid Decidable.
 
 Record is_abelian_group {T} (gr_eq : T → T → Prop) in_gr gr_zero gr_add :=
   { ig_zero : in_gr gr_zero;
@@ -10,8 +10,7 @@ Record is_abelian_group {T} (gr_eq : T → T → Prop) in_gr gr_zero gr_add :=
     ig_id : ∀ x, in_gr x → gr_eq (gr_add gr_zero x) x;
     ig_assoc : ∀ x y z, in_gr x → in_gr y → in_gr z →
       gr_eq (gr_add (gr_add x y) z) (gr_add x (gr_add y z));
-    ig_comm : ∀ x y, in_gr x → in_gr y →
-      gr_eq (gr_add x y) (gr_add y x);
+    ig_comm : ∀ x y, in_gr x → in_gr y → gr_eq (gr_add x y) (gr_add y x);
     ig_equiv : Equivalence gr_eq;
     ig_in_compat : ∀ x y, gr_eq x y → in_gr x → in_gr y;
     ig_add_compat : ∀ x y x' y',
@@ -29,7 +28,10 @@ Arguments gr_eq [_].
 Arguments gr_add [_].
 
 Notation "x '∈' S" := (gr_in S x) (at level 60).
+Notation "x '∉' S" := (¬ gr_in S x) (at level 60).
 Notation "x '≡' y" := (gr_eq x y) (at level 70).
+
+Axiom InDec : ∀ G x, {x ∈ G} + {x ∉ G}.
 
 Record is_homgr A B f :=
   { ih_zero : f (gr_zero A) ≡ gr_zero B;
@@ -391,9 +393,13 @@ exists (HomGr_coKer_coker g g' b c Hcgg').
 destruct s as (sf & sg & _).
 destruct s' as (sf' & sg' & _).
 assert (d : HomGr (Ker c) (coKer a)). {
-  assert (H1 : ∀ x, x ∈ C → ∃ y, y ∈ B ∧ H_app g y ≡ x). {
+  assert (H1 : ∀ x, x ∈ C → ∃ y, y ∈ B ∧ H_app g y ≡ x ). {
     intros x Hx.
-    enough (H : x ∈ Im g) by easy.
+    enough (H : x ∈ Im g). {
+      simpl in H.
+      destruct H as (y & Hy & Hyx).
+      exists y; easy.
+    }
     apply sg.
     split; [ easy | ].
     destruct cz as (appcz, czp).
@@ -412,9 +418,13 @@ assert (d : HomGr (Ker c) (coKer a)). {
   }
   assert (appd : gr_set (Ker c) → gr_set (coKer a)). {
     intros x.
+    destruct (InDec C x) as [H2| H2]; [ | apply gr_zero ].
     assert (H : ∃ y, H_app g y ≡ x). {
-      ...
+      specialize (H1 _ H2) as (y & Hy & Hyx).
+      exists y; easy.
     }
+...
+    specialize (H1 _ H2) as (y & Hy & Hyx).
     simpl in x; simpl.
     ...
   }
