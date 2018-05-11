@@ -2,7 +2,7 @@
 
 Require Import Utf8.
 Require Import Classes.RelationClasses.
-Require Import Setoid Decidable.
+Require Import Setoid.
 
 Record is_abelian_group {T} (gr_eq : T → T → Prop) in_gr gr_zero gr_add :=
   { ig_zero : in_gr gr_zero;
