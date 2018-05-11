@@ -4,10 +4,11 @@ Require Import Utf8.
 Require Import Classes.RelationClasses.
 Require Import Setoid.
 
-Record is_abelian_group {T} (gr_eq : T → T → Prop) in_gr gr_zero gr_add :=
+Record is_abelian_group {T} (gr_eq : T → T → Prop) (in_gr : T → Prop)
+       gr_zero gr_add :=
   { ig_zero : in_gr gr_zero;
     ig_clos : ∀ x y, in_gr x → in_gr y → in_gr (gr_add x y);
-    ig_id : ∀ x, in_gr x → gr_eq (gr_add gr_zero x) x;
+    ig_ident : ∀ x, in_gr x → gr_eq (gr_add gr_zero x) x;
     ig_assoc : ∀ x y z, in_gr x → in_gr y → in_gr z →
       gr_eq (gr_add (gr_add x y) z) (gr_add x (gr_add y z));
     ig_comm : ∀ x y, in_gr x → in_gr y → gr_eq (gr_add x y) (gr_add y x);
@@ -118,13 +119,13 @@ split.
  +eapply H; [ apply Hx | apply f, Hx ].
  +eapply H; [ apply Hy | apply f, Hy ].
 -apply H.
--intros * Hxy (ax, Hx).
- exists ax.
+-intros * Hxy (z, Hz).
+ exists z.
  split; [ easy | ].
  destruct H as (hs, hi, heq, hz, ho, hp).
  destruct hp as (hzi, hc, hid, ha, hco, heqv, himo, hamo).
  simpl in *.
- transitivity x; [ apply Hx | easy ].
+ transitivity x; [ apply Hz | easy ].
 -intros * Hxy Hxy'.
  destruct H as (hs, hi, heq, hz, ho, hp).
  destruct hp as (hzi, hc, hid, ha, hco, heqv, himo, hamo).
