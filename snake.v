@@ -391,7 +391,7 @@ exists (HomGr_coKer_coker g g' b c Hcgg').
 destruct s as (sf & sg & _).
 destruct s' as (sf' & sg' & _).
 assert (d : HomGr (Ker c) (coKer a)). {
-  assert (∀ x, x ∈ C → ∃ y, y ∈ B ∧ H_app g y ≡ x). {
+  assert (H1 : ∀ x, x ∈ C → ∃ y, y ∈ B ∧ H_app g y ≡ x). {
     intros x Hx.
     enough (H : x ∈ Im g) by easy.
     apply sg.
@@ -410,7 +410,6 @@ assert (d : HomGr (Ker c) (coKer a)). {
     -easy.
     -apply C.
   }
-...
   assert (appd : gr_set (Ker c) → gr_set (coKer a)). {
     intros x.
     assert (H : ∃ y, H_app g y ≡ x). {
