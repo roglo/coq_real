@@ -8,7 +8,7 @@ Require ClassicalChoice.
 Record is_abelian_group {T} (gr_eq : T → T → Prop) (gr_mem : T → Prop)
        gr_zero gr_add gr_opp :=
   { ig_zero : gr_mem gr_zero;
-    ig_clos : ∀ x y, gr_mem x → gr_mem y → gr_mem (gr_add x y);
+    ig_add_clos : ∀ x y, gr_mem x → gr_mem y → gr_mem (gr_add x y);
     ig_add_0_l : ∀ x, gr_mem x → gr_eq (gr_add gr_zero x) x;
     ig_add_assoc : ∀ x y z, gr_mem x → gr_mem y → gr_mem z →
       gr_eq (gr_add (gr_add x y) z) (gr_add x (gr_add y z));
@@ -82,6 +82,12 @@ apply Hxy.
 apply Hyz.
 Qed.
 
+Theorem gr_add_clos : ∀ G x y, x ∈ G → y ∈ G → gr_add x y ∈ G.
+Proof.
+intros.
+now apply (ig_add_clos _ _ _ _ _ (gr_prop G)).
+Qed.
+
 Theorem gr_add_0_l : ∀ G x, x ∈ G → gr_add gr_zero x ≡ x.
 Proof.
 intros.
@@ -152,6 +158,13 @@ Theorem H_mem_compat : ∀ A B (f : HomGr A B) x, x ∈ A → H_app f x ∈ B.
 Proof.
 intros.
 now apply (@ih_mem_compat _ _ _ (H_prop _ _ f)).
+Qed.
+
+Theorem H_compat : ∀ A B (f : HomGr A B) x y, x ∈ A → y ∈ A →
+  x ≡ y → H_app f x ≡ H_app f y.
+Proof.
+intros.
+now apply (@ih_compat _ _ _ (H_prop _ _ f)).
 Qed.
 
 Inductive Gr0_set := G0 : Gr0_set.
@@ -244,35 +257,44 @@ intros.
 split.
 -split; [ apply gr_zero_mem | apply H_zero ].
 -intros x x' (Hx, Hfx) (Hx', Hfx').
-...
- split; [ now apply G | ].
- destruct f as (appf, fp).
- destruct fp as (fz, fin, flin, fopp, fcomp); simpl in *.
- destruct H as (hs, hi, heq, hz, hadd, hopp, hp).
- destruct hp as (hzi, hc, hid, ha, hao, hco, heqv, himo, hamo, homo).
- simpl in *.
- etransitivity; [ now apply flin | ].
- assert (H : heq (hadd hz hz) hz) by now apply hid.
- etransitivity; [ | apply H ].
- now apply hamo.
+ split; [ now apply gr_add_clos | ].
+ eapply gr_eq_trans; [ now apply H_lin | ].
+ assert (H1 : gr_add gr_zero gr_zero ≡ @gr_zero H). {
+   apply gr_add_0_l, gr_zero_mem.
+ }
+ eapply gr_eq_trans; [ | apply H1 ].
+ now apply gr_add_compat.
 -intros x (Hx, Hfx).
- now apply G.
+ now apply gr_add_0_l.
 -intros * (ax, Hx) (ay, Hy) (az, Hz).
- now apply G.
+ now apply gr_add_assoc.
 -intros x (Hx & Hfx).
  split; [ split | ].
- +now apply G.
- +eapply gr_eq_trans; [ now apply f | ].
-  apply gr_eq_trans with (y := gr_opp gr_zero).
+ +now apply gr_add_opp_r.
+ +eapply gr_eq_trans; [ | apply Hfx ].
+  apply H_compat; [ | easy | ].
+  *now apply gr_add_opp_r.
+  *idtac.
+Search gr_opp.
 ...
-  transitivity (hopp hz); [ now apply homo | ].
-Search hopp.
-...
-  destruct G as (gs, gi, geq, gz, gadd, gopp, gp).
-  destruct gp as (gzi, gc, gid, ga, gao, gco, geqv, gimo, gamo, gomo).
-  destruct H as (hs, hi, heq, hz, hadd, hopp, hp).
+
+ +destruct H as (hs, hi, heq, hz, ho, hhh, hp).
   destruct hp as (hzi, hc, hid, ha, hao, hco, heqv, himo, hamo, homo).
+  destruct f as (appf, fp).
+  destruct fp as (fz, fin, flin, fopp, fcomp).
   simpl in *.
+  transitivity (appf x); [ | easy ].
+  symmetry.
+  apply fcomp; [ easy | | ].
+
+  eapply G; [ apply Hxy | easy ].
+
+ split; [ split | ].
+ +now apply gr_add_opp_r.
+ +eapply gr_eq_trans; [ now apply H_opp | ].
+  apply gr_eq_trans with (y := gr_opp gr_zero).
+  *now apply gr_opp_compat.
+  *idtac.
 ...
  +exists (gr_opp y).
   split; [ now apply G | ].
