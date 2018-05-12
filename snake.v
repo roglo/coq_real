@@ -32,6 +32,7 @@ Record Group :=
     gr_prop : is_abelian_group gr_eq gr_mem gr_zero gr_add gr_opp }.
 
 Arguments gr_eq [_].
+Arguments gr_zero [_].
 Arguments gr_add [_].
 Arguments gr_opp [_].
 
@@ -42,7 +43,7 @@ Notation "x '≡' y" := (gr_eq x y) (at level 70).
 Axiom InDec : ∀ G x, {x ∈ G} + {x ∉ G}.
 
 Record is_homgr A B f :=
-  { ih_zero : f (gr_zero A) ≡ gr_zero B;
+  { ih_zero : f gr_zero ≡ gr_zero;
     ih_inco : ∀ x, x ∈ A → f x ∈ B;
     ih_lin : ∀ x y, x ∈ A → y ∈ A → f (gr_add x y) ≡ gr_add (f x) (f y);
     ih_opp : ∀ x, x ∈ A → f (gr_opp x) ≡ gr_opp (f x);
@@ -53,6 +54,30 @@ Record HomGr (A B : Group) :=
     H_prop : is_homgr A B H_app }.
 
 Arguments H_app [A] [B].
+
+Theorem gr_eq_refl : ∀ G (x : gr_set G), x ≡ x.
+Proof.
+intros.
+apply (@Equivalence_Reflexive _ _ (ig_equiv _ _ _ _ _ (gr_prop G))).
+Qed.
+
+...
+
+Definition gr_eq_symm G : Symmetric (@gr_eq G) :=
+  @Equivalence_Symmetric _ _ (ig_equiv _ _ _ _ _ (gr_prop G)).
+Definition gr_eq_trans G : Transitive (@gr_eq G) :=
+  @Equivalence_Transitive _ _ (ig_equiv _ _ _ _ _ (gr_prop G)).
+Theorem gr_add_compat : ∀ G (x y x' y' : gr_set G),
+  x ≡ y → x' ≡ y' → gr_add x x' ≡ gr_add y y'.
+Proof.
+intros.
+now apply (ig_add_compat _ _ _ _ _ (gr_prop G)).
+Qed.
+
+Definition H_zero {A B} (f : HomGr A B) :=
+  @ih_zero _ _ (H_app f) (H_prop _ _ f).
+Definition H_lin {A B} (f : HomGr A B) :=
+   @ih_lin _ _ _ (H_prop _ _ f).
 
 Inductive Gr0_set := G0 : Gr0_set.
 
@@ -82,39 +107,27 @@ Definition is_null (G : Group) := is_initial G ∧ is_final G.
 Theorem is_null_Gr0 : is_null Gr0.
 Proof.
 split; intros H f g x.
--destruct f as (fa & fih); simpl in fih.
- destruct g as (ga & gih); simpl in gih.
- simpl.
- destruct x.
- destruct fih, gih; simpl in *.
- destruct H; simpl in *.
- destruct gr_prop0; simpl in *.
- etransitivity; [ apply ih_zero0 | easy ].
--destruct f as (fa & fih); simpl in fih.
- destruct g as (ga & gih); simpl in gih.
- simpl.
- now destruct (fa x), (ga x).
+-destruct x.
+ apply gr_eq_trans with (y := gr_zero); [ apply f | apply gr_eq_symm, g ].
+-now destruct (H_app f x), (H_app g x).
 Qed.
 
 Theorem Im_is_abelian_group {G H} (f : HomGr G H) :
   is_abelian_group (@gr_eq H) (λ b, ∃ a, a ∈ G ∧ H_app f a ≡ b)
-    (gr_zero H) (@gr_add H) (@gr_opp H).
+    gr_zero (@gr_add H) (@gr_opp H).
 Proof.
 intros.
 split.
--exists (gr_zero G).
+-exists gr_zero.
  split; [ apply G | apply f ].
 -intros y y' (x & Hxg & Hx) (x' & Hx'g & Hx').
- destruct G as (gs, gi, geq, gz, gadd, gopp, gp).
- destruct gp as (gzi, gc, gid, ga, gao, gco, geqv, gimo, gamo, gomo).
- destruct H as (hs, hi, heq, hz, hadd, hopp, hp).
- destruct hp as (hzi, hc, hid, ha, hao, hco, heqv, himo, hamo, homo).
- destruct f as (appf, fp).
- destruct fp as (fz, fin, flin, fopp, fcomp); simpl in *.
- exists (gadd x x').
- split; [ now apply gc | ].
- rewrite flin; [ | easy | easy ].
- now apply hamo; [ transitivity y | ].
+ exists (gr_add x x').
+ split; [ now apply G | ].
+ eapply gr_eq_trans; [ now apply H_lin | ].
+ apply gr_eq_trans with (y := gr_add y y').
+ +now apply gr_add_compat.
+ +apply gr_eq_refl.
+(* ... *)
 -intros y (x & Hxg & Hx).
  apply H.
  eapply H; [ apply Hx | now apply f ].
@@ -161,8 +174,8 @@ split.
 Qed.
 
 Theorem Ker_is_abelian_group {G H} : ∀ (f : HomGr G H),
-  is_abelian_group (@gr_eq G) (λ x, x ∈ G ∧ H_app f x ≡ gr_zero H)
-    (gr_zero G) (@gr_add G) (@gr_opp G).
+  is_abelian_group (@gr_eq G) (λ x, x ∈ G ∧ H_app f x ≡ gr_zero)
+    gr_zero (@gr_add G) (@gr_opp G).
 Proof.
 intros.
 split.
@@ -185,12 +198,9 @@ split.
 -intros x (Hx & Hfx).
  split; [ split | ].
  +now apply G.
- +destruct f as (appf, fp).
-  destruct fp as (fz, fin, flin, fopp, fcomp).
-  destruct H as (hs, hi, heq, hz, hadd, hopp, hp).
-  destruct hp as (hzi, hc, hid, ha, hao, hco, heqv, himo, hamo, homo).
-  simpl in *.
-  etransitivity; [ now apply fopp | ].
+ +eapply gr_eq_trans; [ now apply f | ].
+  apply gr_eq_trans with (y := gr_opp gr_zero).
+...
   transitivity (hopp hz); [ now apply homo | ].
 Search hopp.
 ...
