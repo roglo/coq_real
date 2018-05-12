@@ -425,7 +425,7 @@ destruct s' as (sf' & sg' & _).
 specialize (exists_ker_C_to_B B C C' g c cz sg) as H1.
 specialize (ClassicalChoice.choice _ H1) as (f1, Hf1).
 clear H1.
-remember (λ x, H_app b (f1 x)) as f2 eqn:Hf2.
+remember (H_app b) as f2 eqn:Hf2.
 move f2 before f1.
 ...
 assert (d : HomGr (Ker c) (coKer a)). {
