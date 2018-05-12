@@ -5,32 +5,34 @@ Require Import Classes.RelationClasses.
 Require Import Setoid.
 Require ClassicalChoice.
 
-Record is_abelian_group {T} (gr_eq : T → T → Prop) (in_gr : T → Prop)
-       gr_zero gr_add :=
-  { ig_zero : in_gr gr_zero;
-    ig_clos : ∀ x y, in_gr x → in_gr y → in_gr (gr_add x y);
-    ig_ident : ∀ x, in_gr x → gr_eq (gr_add gr_zero x) x;
-    ig_assoc : ∀ x y z, in_gr x → in_gr y → in_gr z →
+Record is_abelian_group {T} (gr_eq : T → T → Prop) (gr_mem : T → Prop)
+       gr_zero gr_add gr_opp :=
+  { ig_zero : gr_mem gr_zero;
+    ig_clos : ∀ x y, gr_mem x → gr_mem y → gr_mem (gr_add x y);
+    ig_ident : ∀ x, gr_mem x → gr_eq (gr_add gr_zero x) x;
+    ig_assoc : ∀ x y z, gr_mem x → gr_mem y → gr_mem z →
       gr_eq (gr_add (gr_add x y) z) (gr_add x (gr_add y z));
-    ig_comm : ∀ x y, in_gr x → in_gr y → gr_eq (gr_add x y) (gr_add y x);
+    ig_add_opp : ∀ x, gr_eq (gr_add x (gr_opp x)) gr_zero;
+    ig_comm : ∀ x y, gr_mem x → gr_mem y → gr_eq (gr_add x y) (gr_add y x);
     ig_equiv : Equivalence gr_eq;
-    ig_in_compat : ∀ x y, gr_eq x y → in_gr x → in_gr y;
+    ig_in_compat : ∀ x y, gr_eq x y → gr_mem x → gr_mem y;
     ig_add_compat : ∀ x y x' y',
       gr_eq x y → gr_eq x' y' → gr_eq (gr_add x x') (gr_add y y') }.
 
 Record Group :=
   { gr_set : Type;
-    gr_in : gr_set → Prop;
+    gr_mem : gr_set → Prop;
     gr_eq : gr_set → gr_set → Prop;
     gr_zero : gr_set;
     gr_add : gr_set → gr_set → gr_set;
-    gr_prop : is_abelian_group gr_eq gr_in gr_zero gr_add }.
+    gr_opp : gr_set → gr_set;
+    gr_prop : is_abelian_group gr_eq gr_mem gr_zero gr_add gr_opp }.
 
 Arguments gr_eq [_].
 Arguments gr_add [_].
 
-Notation "x '∈' S" := (gr_in S x) (at level 60).
-Notation "x '∉' S" := (¬ gr_in S x) (at level 60).
+Notation "x '∈' S" := (gr_mem S x) (at level 60).
+Notation "x '∉' S" := (¬ gr_mem S x) (at level 60).
 Notation "x '≡' y" := (gr_eq x y) (at level 70).
 
 Axiom InDec : ∀ G x, {x ∈ G} + {x ∉ G}.
@@ -49,9 +51,9 @@ Arguments H_app [A] [B].
 
 Inductive Gr0_set := G0 : Gr0_set.
 
-Theorem Gr0_prop : is_abelian_group eq (λ _, True) G0 (λ _ _, G0).
+Theorem Gr0_prop : is_abelian_group eq (λ _, True) G0 (λ _ _, G0) (λ x, x).
 Proof.
-split; [ easy | easy | | | easy | | easy | easy ].
+split; [ easy | easy | | | easy | easy | | easy | easy ].
 -now intros x; destruct x.
 -now intros x; destruct x.
 -split; [ easy | easy | apply eq_Transitive ].
@@ -59,10 +61,11 @@ Qed.
 
 Definition Gr0 :=
    {| gr_set := Gr0_set;
-      gr_zero := G0;
-      gr_add := λ _ _, G0;
-      gr_in := λ _, True;
+      gr_mem _ := True;
       gr_eq := eq;
+      gr_zero := G0;
+      gr_add _ _ := G0;
+      gr_opp x := x;
       gr_prop := Gr0_prop |}.
 
 Definition is_initial (G : Group) :=
@@ -90,20 +93,20 @@ Qed.
 
 Theorem Im_is_abelian_group {G H} (f : HomGr G H) :
   is_abelian_group (@gr_eq H) (λ b, ∃ a, a ∈ G ∧ H_app f a ≡ b)
-    (gr_zero H) (@gr_add H).
+    (gr_zero H) (@gr_add H) (gr_opp H).
 Proof.
 intros.
 split.
 -exists (gr_zero G).
  split; [ apply G | apply f ].
 -intros y y' (x & Hxg & Hx) (x' & Hx'g & Hx').
- destruct G as (gs, gi, geq, gz, go, gp).
- destruct gp as (gzi, gc, gid, ga, gco, geqv, gimo, gamo).
- destruct H as (hs, hi, heq, hz, ho, hp).
- destruct hp as (hzi, hc, hid, ha, hco, heqv, himo, hamo).
+ destruct G as (gs, gi, geq, gz, gadd, gopp, gp).
+ destruct gp as (gzi, gc, gid, ga, gao, gco, geqv, gimo, gamo).
+ destruct H as (hs, hi, heq, hz, hadd, hopp, hp).
+ destruct hp as (hzi, hc, hid, ha, hao, hco, heqv, himo, hamo).
  destruct f as (appf, fp).
  destruct fp as (fz, fin, flin, fcomp); simpl in *.
- exists (go x x').
+ exists (gadd x x').
  split; [ now apply gc | ].
  rewrite flin; [ | easy | easy ].
  now apply hamo; [ transitivity y | ].
@@ -115,6 +118,8 @@ split.
  +eapply H; [ apply Hx | apply f, Hx ].
  +eapply H; [ apply Hy | apply f, Hy ].
  +eapply H; [ apply Hz | apply f, Hz ].
+-idtac.
+...
 -intros * (ax, Hx) (ay, Hy).
  apply H.
  +eapply H; [ apply Hx | apply f, Hx ].
@@ -179,7 +184,7 @@ Definition Im {G H : Group} (f : HomGr G H) :=
   {| gr_set := gr_set H;
      gr_zero := gr_zero H;
      gr_eq := @gr_eq H;
-     gr_in := λ b, ∃ a, a ∈ G ∧ H_app f a ≡ b;
+     gr_mem := λ b, ∃ a, a ∈ G ∧ H_app f a ≡ b;
      gr_add := @gr_add H;
      gr_prop := Im_is_abelian_group f |}.
 
@@ -187,15 +192,20 @@ Definition Ker {G H : Group} (f : HomGr G H) :=
   {| gr_set := gr_set G;
      gr_zero := gr_zero G;
      gr_eq := @gr_eq G;
-     gr_in := λ a, a ∈ G ∧ H_app f a ≡ gr_zero H;
+     gr_mem := λ a, a ∈ G ∧ H_app f a ≡ gr_zero H;
      gr_add := @gr_add G;
      gr_prop := Ker_is_abelian_group f |}.
 
+...
+Definition coKer_eq f x y := ∃ k z, z ∈ Im f ∧ gr_sub x y = k * z.
+
 Theorem coKer_is_abelian_group {G H} : ∀ (f : HomGr G H),
-  is_abelian_group (gr_eq (g:=H)) (λ x, x ∈ H ∧ ∃ y, y ∈ H ∧ gr_add x y ∈ Im f)
+  is_abelian_group (coKer_eq f)
+    (λ x, x ∈ H ∧ ∃ y, y ∈ H ∧ gr_add x y ∈ Im f)
     (gr_zero H) (gr_add (g:=H)).
 Proof.
 intros.
+...
 split.
 -split; [ apply H | ].
  exists (gr_zero H).
@@ -270,7 +280,7 @@ Qed.
 
 Definition coKer {G H : Group} (f : HomGr G H) :=
   {| gr_set := gr_set H;
-     gr_in := λ x, x ∈ H ∧ ∃ y, y ∈ H ∧ gr_add x y ∈ Im f;
+     gr_mem := λ x, x ∈ H ∧ ∃ y, y ∈ H ∧ gr_add x y ∈ Im f;
      gr_eq := @gr_eq H;
      gr_zero := gr_zero H;
      gr_add := @gr_add H;
