@@ -420,6 +420,8 @@ assert (H1 : ∀ x : gr_set (Ker c), ∃ y, x ∉ C ∨ y ∈ B ∧ H_app g y �
   -apply C.
 }
 specialize (AC _ H1) as (f1, Hf1).
+Check (H_app b).
+remember (λ x, H_app b (f1 x)) as f2 eqn:Hf2.
 ...
 assert (d : HomGr (Ker c) (coKer a)). {
   ...
