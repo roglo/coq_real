@@ -9,12 +9,13 @@ Record is_abelian_group {T} (gr_eq : T → T → Prop) (gr_mem : T → Prop)
        gr_zero gr_add gr_opp :=
   { ig_zero : gr_mem gr_zero;
     ig_clos : ∀ x y, gr_mem x → gr_mem y → gr_mem (gr_add x y);
-    ig_ident : ∀ x, gr_mem x → gr_eq (gr_add gr_zero x) x;
-    ig_assoc : ∀ x y z, gr_mem x → gr_mem y → gr_mem z →
+    ig_add_0_l : ∀ x, gr_mem x → gr_eq (gr_add gr_zero x) x;
+    ig_add_assoc : ∀ x y z, gr_mem x → gr_mem y → gr_mem z →
       gr_eq (gr_add (gr_add x y) z) (gr_add x (gr_add y z));
     ig_add_opp : ∀ x, gr_mem x →
       gr_mem (gr_opp x) ∧ gr_eq (gr_add x (gr_opp x)) gr_zero;
-    ig_comm : ∀ x y, gr_mem x → gr_mem y → gr_eq (gr_add x y) (gr_add y x);
+    ig_add_comm : ∀ x y, gr_mem x → gr_mem y →
+      gr_eq (gr_add x y) (gr_add y x);
     ig_equiv : Equivalence gr_eq;
     ig_mem_compat : ∀ x y, gr_eq x y → gr_mem x → gr_mem y;
     ig_add_compat : ∀ x y x' y',
@@ -44,7 +45,7 @@ Axiom InDec : ∀ G x, {x ∈ G} + {x ∉ G}.
 
 Record is_homgr A B f :=
   { ih_zero : f gr_zero ≡ gr_zero;
-    ih_inco : ∀ x, x ∈ A → f x ∈ B;
+    ih_mem_compat : ∀ x, x ∈ A → f x ∈ B;
     ih_lin : ∀ x y, x ∈ A → y ∈ A → f (gr_add x y) ≡ gr_add (f x) (f y);
     ih_opp : ∀ x, x ∈ A → f (gr_opp x) ≡ gr_opp (f x);
     ih_compat : ∀ x y, x ∈ A → y ∈ A → x ≡ y → f x ≡ f y }.
@@ -61,12 +62,33 @@ intros.
 apply (@Equivalence_Reflexive _ _ (ig_equiv _ _ _ _ _ (gr_prop G))).
 Qed.
 
-...
+Theorem gr_eq_symm : ∀ G (x y : gr_set G), x ≡ y → y ≡ x.
+Proof.
+intros.
+now apply (@Equivalence_Symmetric _ _ (ig_equiv _ _ _ _ _ (gr_prop G))).
+Qed.
 
-Definition gr_eq_symm G : Symmetric (@gr_eq G) :=
-  @Equivalence_Symmetric _ _ (ig_equiv _ _ _ _ _ (gr_prop G)).
-Definition gr_eq_trans G : Transitive (@gr_eq G) :=
-  @Equivalence_Transitive _ _ (ig_equiv _ _ _ _ _ (gr_prop G)).
+Theorem gr_eq_trans : ∀ G (x y z : gr_set G), x ≡ y → y ≡ z → x ≡ z.
+Proof.
+intros * Hxy Hyz.
+eapply (@Equivalence_Transitive _ _ (ig_equiv _ _ _ _ _ (gr_prop G))).
+apply Hxy.
+apply Hyz.
+Qed.
+
+Theorem gr_add_0_l : ∀ G x, x ∈ G → gr_add gr_zero x ≡ x.
+Proof.
+intros.
+now apply (ig_add_0_l _ _ _ _ _ (gr_prop G)).
+Qed.
+
+Theorem gr_add_assoc : ∀ G x y z, x ∈ G → y ∈ G → z ∈ G →
+  gr_add (gr_add x y) z ≡ gr_add x (gr_add y z).
+Proof.
+intros.
+now apply (ig_add_assoc _ _ _ _ _ (gr_prop G)).
+Qed.
+
 Theorem gr_add_compat : ∀ G (x y x' y' : gr_set G),
   x ≡ y → x' ≡ y' → gr_add x x' ≡ gr_add y y'.
 Proof.
@@ -74,10 +96,30 @@ intros.
 now apply (ig_add_compat _ _ _ _ _ (gr_prop G)).
 Qed.
 
-Definition H_zero {A B} (f : HomGr A B) :=
-  @ih_zero _ _ (H_app f) (H_prop _ _ f).
-Definition H_lin {A B} (f : HomGr A B) :=
-   @ih_lin _ _ _ (H_prop _ _ f).
+Theorem gr_mem_compat : ∀ G x y, x ≡ y → x ∈ G → y ∈ G.
+Proof.
+intros * Hxy Hx.
+eapply (ig_mem_compat _ _ _ _ _ (gr_prop G)); [ apply Hxy | apply Hx ].
+Qed.
+
+Theorem H_zero : ∀ A B (f : HomGr A B), H_app f gr_zero ≡ gr_zero.
+Proof.
+intros.
+apply (@ih_zero _ _ (H_app f) (H_prop _ _ f)).
+Qed.
+
+Theorem H_lin : ∀ A B (f : HomGr A B) x y, x ∈ A → y ∈ A →
+  H_app f (gr_add x y) ≡ gr_add (H_app f x) (H_app f y).
+Proof.
+intros.
+now apply (@ih_lin _ _ _ (H_prop _ _ f)).
+Qed.
+
+Theorem H_mem_compat : ∀ A B (f : HomGr A B) x, x ∈ A → H_app f x ∈ B.
+Proof.
+intros.
+now apply (@ih_mem_compat _ _ _ (H_prop _ _ f)).
+Qed.
 
 Inductive Gr0_set := G0 : Gr0_set.
 
@@ -127,18 +169,19 @@ split.
  apply gr_eq_trans with (y := gr_add y y').
  +now apply gr_add_compat.
  +apply gr_eq_refl.
-(* ... *)
 -intros y (x & Hxg & Hx).
- apply H.
- eapply H; [ apply Hx | now apply f ].
+ apply gr_add_0_l.
+ eapply gr_mem_compat; [ apply Hx | ].
+ now apply H_mem_compat.
 -intros * (ax, Hx) (ay, Hy) (az, Hz).
- apply H.
- +eapply H; [ apply Hx | apply f, Hx ].
- +eapply H; [ apply Hy | apply f, Hy ].
- +eapply H; [ apply Hz | apply f, Hz ].
+ apply gr_add_assoc.
+ +eapply gr_mem_compat; [ apply Hx | now apply H_mem_compat ].
+ +eapply gr_mem_compat; [ apply Hy | now apply H_mem_compat ].
+ +eapply gr_mem_compat; [ apply Hz | now apply H_mem_compat ].
 -intros x (y & Hy & Hyx).
  split.
  +exists (gr_opp y).
+...
   split; [ now apply G | ].
   destruct H as (hs, hi, heq, hz, hadd, hopp, hp).
   destruct hp as (hzi, hc, hid, ha, hao, hco, heqv, himo, hamo, homo).
