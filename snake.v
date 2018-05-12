@@ -171,18 +171,51 @@ split.
  split; [ now apply G | ].
  destruct f as (appf, fp).
  destruct fp as (fz, fin, flin, fopp, fcomp); simpl in *.
-...
- destruct H as (hs, hi, heq, hz, ho, hp).
- destruct hp as (hzi, hc, hid, ha, hco, heqv, himo, hamo).
+ destruct H as (hs, hi, heq, hz, hadd, hopp, hp).
+ destruct hp as (hzi, hc, hid, ha, hao, hco, heqv, himo, hamo, homo).
  simpl in *.
  etransitivity; [ now apply flin | ].
- assert (H : heq (ho hz hz) hz) by now apply hid.
+ assert (H : heq (hadd hz hz) hz) by now apply hid.
  etransitivity; [ | apply H ].
  now apply hamo.
 -intros x (Hx, Hfx).
  now apply G.
 -intros * (ax, Hx) (ay, Hy) (az, Hz).
  now apply G.
+-intros x (Hx & Hfx).
+ split; [ split | ].
+ +now apply G.
+ +destruct f as (appf, fp).
+  destruct fp as (fz, fin, flin, fopp, fcomp).
+  destruct H as (hs, hi, heq, hz, hadd, hopp, hp).
+  destruct hp as (hzi, hc, hid, ha, hao, hco, heqv, himo, hamo, homo).
+  simpl in *.
+  etransitivity; [ now apply fopp | ].
+  transitivity (hopp hz); [ now apply homo | ].
+Search hopp.
+...
+  destruct G as (gs, gi, geq, gz, gadd, gopp, gp).
+  destruct gp as (gzi, gc, gid, ga, gao, gco, geqv, gimo, gamo, gomo).
+  destruct H as (hs, hi, heq, hz, hadd, hopp, hp).
+  destruct hp as (hzi, hc, hid, ha, hao, hco, heqv, himo, hamo, homo).
+  simpl in *.
+...
+ +exists (gr_opp y).
+  split; [ now apply G | ].
+  destruct H as (hs, hi, heq, hz, hadd, hopp, hp).
+  destruct hp as (hzi, hc, hid, ha, hao, hco, heqv, himo, hamo, homo).
+  destruct G as (gs, gi, geq, gz, gadd, gopp, gp).
+  destruct gp as (gzi, gc, gid, ga, gao, gco, geqv, gimo, gamo, gomo).
+  simpl in *.
+  transitivity (hopp (H_app f y)).
+  *now apply f.
+  *now apply homo.
+ +apply H.
+  destruct H as (hs, hi, heq, hz, hadd, hopp, hp).
+  destruct hp as (hzi, hc, hid, ha, hao, hco, heqv, himo, hamo, homo).
+  simpl in *.
+  eapply himo; [ apply Hyx | now apply f ].
+...
 -intros * (ax, Hx) (ay, Hy).
  now apply G.
 -apply G.
