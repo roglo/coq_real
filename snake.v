@@ -12,12 +12,15 @@ Record is_abelian_group {T} (gr_eq : T → T → Prop) (gr_mem : T → Prop)
     ig_ident : ∀ x, gr_mem x → gr_eq (gr_add gr_zero x) x;
     ig_assoc : ∀ x y z, gr_mem x → gr_mem y → gr_mem z →
       gr_eq (gr_add (gr_add x y) z) (gr_add x (gr_add y z));
-    ig_add_opp : ∀ x, gr_eq (gr_add x (gr_opp x)) gr_zero;
+    ig_add_opp : ∀ x, gr_mem x →
+      gr_mem (gr_opp x) ∧ gr_eq (gr_add x (gr_opp x)) gr_zero;
     ig_comm : ∀ x y, gr_mem x → gr_mem y → gr_eq (gr_add x y) (gr_add y x);
     ig_equiv : Equivalence gr_eq;
-    ig_in_compat : ∀ x y, gr_eq x y → gr_mem x → gr_mem y;
+    ig_mem_compat : ∀ x y, gr_eq x y → gr_mem x → gr_mem y;
     ig_add_compat : ∀ x y x' y',
-      gr_eq x y → gr_eq x' y' → gr_eq (gr_add x x') (gr_add y y') }.
+      gr_eq x y → gr_eq x' y' → gr_eq (gr_add x x') (gr_add y y');
+    ig_opp_compat : ∀ x y,
+      gr_eq x y → gr_eq (gr_opp x) (gr_opp y) }.
 
 Record Group :=
   { gr_set : Type;
@@ -30,6 +33,7 @@ Record Group :=
 
 Arguments gr_eq [_].
 Arguments gr_add [_].
+Arguments gr_opp [_].
 
 Notation "x '∈' S" := (gr_mem S x) (at level 60).
 Notation "x '∉' S" := (¬ gr_mem S x) (at level 60).
@@ -41,6 +45,7 @@ Record is_homgr A B f :=
   { ih_zero : f (gr_zero A) ≡ gr_zero B;
     ih_inco : ∀ x, x ∈ A → f x ∈ B;
     ih_lin : ∀ x y, x ∈ A → y ∈ A → f (gr_add x y) ≡ gr_add (f x) (f y);
+    ih_opp : ∀ x, x ∈ A → f (gr_opp x) ≡ gr_opp (f x);
     ih_compat : ∀ x y, x ∈ A → y ∈ A → x ≡ y → f x ≡ f y }.
 
 Record HomGr (A B : Group) :=
@@ -53,7 +58,7 @@ Inductive Gr0_set := G0 : Gr0_set.
 
 Theorem Gr0_prop : is_abelian_group eq (λ _, True) G0 (λ _ _, G0) (λ x, x).
 Proof.
-split; [ easy | easy | | | easy | easy | | easy | easy ].
+split; [ easy | easy | | | easy | easy | | easy | easy | easy ].
 -now intros x; destruct x.
 -now intros x; destruct x.
 -split; [ easy | easy | apply eq_Transitive ].
@@ -93,7 +98,7 @@ Qed.
 
 Theorem Im_is_abelian_group {G H} (f : HomGr G H) :
   is_abelian_group (@gr_eq H) (λ b, ∃ a, a ∈ G ∧ H_app f a ≡ b)
-    (gr_zero H) (@gr_add H) (gr_opp H).
+    (gr_zero H) (@gr_add H) (@gr_opp H).
 Proof.
 intros.
 split.
@@ -101,11 +106,11 @@ split.
  split; [ apply G | apply f ].
 -intros y y' (x & Hxg & Hx) (x' & Hx'g & Hx').
  destruct G as (gs, gi, geq, gz, gadd, gopp, gp).
- destruct gp as (gzi, gc, gid, ga, gao, gco, geqv, gimo, gamo).
+ destruct gp as (gzi, gc, gid, ga, gao, gco, geqv, gimo, gamo, gomo).
  destruct H as (hs, hi, heq, hz, hadd, hopp, hp).
- destruct hp as (hzi, hc, hid, ha, hao, hco, heqv, himo, hamo).
+ destruct hp as (hzi, hc, hid, ha, hao, hco, heqv, himo, hamo, homo).
  destruct f as (appf, fp).
- destruct fp as (fz, fin, flin, fcomp); simpl in *.
+ destruct fp as (fz, fin, flin, fopp, fcomp); simpl in *.
  exists (gadd x x').
  split; [ now apply gc | ].
  rewrite flin; [ | easy | easy ].
@@ -118,8 +123,23 @@ split.
  +eapply H; [ apply Hx | apply f, Hx ].
  +eapply H; [ apply Hy | apply f, Hy ].
  +eapply H; [ apply Hz | apply f, Hz ].
--idtac.
-...
+-intros x (y & Hy & Hyx).
+ split.
+ +exists (gr_opp y).
+  split; [ now apply G | ].
+  destruct H as (hs, hi, heq, hz, hadd, hopp, hp).
+  destruct hp as (hzi, hc, hid, ha, hao, hco, heqv, himo, hamo, homo).
+  destruct G as (gs, gi, geq, gz, gadd, gopp, gp).
+  destruct gp as (gzi, gc, gid, ga, gao, gco, geqv, gimo, gamo, gomo).
+  simpl in *.
+  transitivity (hopp (H_app f y)).
+  *now apply f.
+  *now apply homo.
+ +apply H.
+  destruct H as (hs, hi, heq, hz, hadd, hopp, hp).
+  destruct hp as (hzi, hc, hid, ha, hao, hco, heqv, himo, hamo, homo).
+  simpl in *.
+  eapply himo; [ apply Hyx | now apply f ].
 -intros * (ax, Hx) (ay, Hy).
  apply H.
  +eapply H; [ apply Hx | apply f, Hx ].
@@ -128,20 +148,21 @@ split.
 -intros * Hxy (z, Hz).
  exists z.
  split; [ easy | ].
- destruct H as (hs, hi, heq, hz, ho, hp).
- destruct hp as (hzi, hc, hid, ha, hco, heqv, himo, hamo).
+ destruct H as (hs, hi, heq, hz, hadd, Hopp, hp).
+ destruct hp as (hzi, hc, hid, ha, hao, hco, heqv, himo, hamo, homo).
  simpl in *.
  transitivity x; [ apply Hz | easy ].
 -intros * Hxy Hxy'.
- destruct H as (hs, hi, heq, hz, ho, hp).
- destruct hp as (hzi, hc, hid, ha, hco, heqv, himo, hamo).
+ destruct H as (hs, hi, heq, hz, hadd, hopp, hp).
+ destruct hp as (hzi, hc, hid, ha, hao, hco, heqv, himo, hamo, homo).
  simpl in *.
  now apply hamo.
+-apply H.
 Qed.
 
 Theorem Ker_is_abelian_group {G H} : ∀ (f : HomGr G H),
   is_abelian_group (@gr_eq G) (λ x, x ∈ G ∧ H_app f x ≡ gr_zero H)
-    (gr_zero G) (gr_add (g:=G)).
+    (gr_zero G) (@gr_add G) (@gr_opp G).
 Proof.
 intros.
 split.
@@ -149,7 +170,8 @@ split.
 -intros x x' (Hx, Hfx) (Hx', Hfx').
  split; [ now apply G | ].
  destruct f as (appf, fp).
- destruct fp as (fz, fin, flin, fcomp).
+ destruct fp as (fz, fin, flin, fopp, fcomp); simpl in *.
+...
  destruct H as (hs, hi, heq, hz, ho, hp).
  destruct hp as (hzi, hc, hid, ha, hco, heqv, himo, hamo).
  simpl in *.
