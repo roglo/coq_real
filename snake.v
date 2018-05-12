@@ -33,6 +33,8 @@ Notation "x '∉' S" := (¬ gr_in S x) (at level 60).
 Notation "x '≡' y" := (gr_eq x y) (at level 70).
 
 Axiom InDec : ∀ G x, {x ∈ G} + {x ∉ G}.
+Axiom AC : ∀ {A B} (P : A → B → Prop),
+  (∀ x, ∃ y, P x y) → ∃ f, ∀ x, P x (f x).
 
 Record is_homgr A B f :=
   { ih_zero : f (gr_zero A) ≡ gr_zero B;
@@ -393,42 +395,33 @@ exists (HomGr_coKer_coker f f' a b Hcff').
 exists (HomGr_coKer_coker g g' b c Hcgg').
 destruct s as (sf & sg & _).
 destruct s' as (sf' & sg' & _).
-assert (d : HomGr (Ker c) (coKer a)). {
-  assert (H1 : ∀ x, x ∈ C → ∃ y, y ∈ B ∧ H_app g y ≡ x ). {
-    intros x Hx.
-    enough (H : x ∈ Im g). {
-      simpl in H.
-      destruct H as (y & Hy & Hyx).
-      exists y; easy.
-    }
-    apply sg.
-    split; [ easy | ].
-    destruct cz as (appcz, czp).
-    destruct czp as (czz, czin, czlin, czcomp); simpl in *.
-    rewrite <- czlin with (x := x) (y := gr_zero C).
-    -apply czcomp; [ easy | | ].
-     +apply C; [ easy | apply C ].
-     +destruct C as (cs, ci, ceq, cz, co, cp).
-      destruct cp as (czi, cc, cid, ca, cco, ceqv, cimo, camo).
-      simpl in *.
-      transitivity (co cz x).
-      *now symmetry; apply cid.
-      *now apply cco.
-    -easy.
-    -apply C.
+assert (H1 : ∀ x : gr_set (Ker c), ∃ y, x ∉ C ∨ y ∈ B ∧ H_app g y ≡ x ). {
+  intros x.
+  destruct (InDec C x) as [H2| H2]; [ | now exists (gr_zero B); left ].
+  enough (H : x ∈ Im g). {
+    simpl in H.
+    destruct H as (y & Hy & Hyx).
+    exists y; right; easy.
   }
-  assert (appd : gr_set (Ker c) → gr_set (coKer a)). {
-    intros x.
-    destruct (InDec C x) as [H2| H2]; [ | apply gr_zero ].
-    assert (H : ∃ y, H_app g y ≡ x). {
-      specialize (H1 _ H2) as (y & Hy & Hyx).
-      exists y; easy.
-    }
+  apply sg.
+  split; [ easy | ].
+  destruct cz as (appcz, czp).
+  destruct czp as (czz, czin, czlin, czcomp); simpl in *.
+  rewrite <- czlin with (x := x) (y := gr_zero C).
+  -apply czcomp; [ easy | | ].
+   +apply C; [ easy | apply C ].
+   +destruct C as (cs, ci, ceq, cz, co, cp).
+    destruct cp as (czi, cc, cid, ca, cco, ceqv, cimo, camo).
+    simpl in *.
+    transitivity (co cz x).
+    *now symmetry; apply cid.
+    *now apply cco.
+  -easy.
+  -apply C.
+}
+specialize (AC _ H1) as (f1, Hf1).
 ...
-    specialize (H1 _ H2) as (y & Hy & Hyx).
-    simpl in x; simpl.
-    ...
-  }
+assert (d : HomGr (Ker c) (coKer a)). {
   ...
 }
 exists d.
