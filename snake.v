@@ -3,6 +3,7 @@
 Require Import Utf8.
 Require Import Classes.RelationClasses.
 Require Import Setoid.
+Require ClassicalChoice.
 
 Record is_abelian_group {T} (gr_eq : T → T → Prop) (in_gr : T → Prop)
        gr_zero gr_add :=
@@ -33,8 +34,6 @@ Notation "x '∉' S" := (¬ gr_in S x) (at level 60).
 Notation "x '≡' y" := (gr_eq x y) (at level 70).
 
 Axiom InDec : ∀ G x, {x ∈ G} + {x ∉ G}.
-Axiom AC : ∀ {A B} (P : A → B → Prop),
-  (∀ x, ∃ y, P x y) → ∃ f, ∀ x, P x (f x).
 
 Record is_homgr A B f :=
   { ih_zero : f (gr_zero A) ≡ gr_zero B;
@@ -419,8 +418,7 @@ assert (H1 : ∀ x : gr_set (Ker c), ∃ y, x ∉ C ∨ y ∈ B ∧ H_app g y �
   -easy.
   -apply C.
 }
-specialize (AC _ H1) as (f1, Hf1).
-Check (H_app b).
+specialize (ClassicalChoice.choice _ H1) as (f1, Hf1).
 remember (λ x, H_app b (f1 x)) as f2 eqn:Hf2.
 ...
 assert (d : HomGr (Ker c) (coKer a)). {
