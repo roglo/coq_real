@@ -56,6 +56,12 @@ Record HomGr (A B : Group) :=
 
 Arguments H_app [A] [B].
 
+Theorem gr_zero_mem : ∀ G, gr_zero ∈ G.
+Proof.
+intros.
+apply (ig_zero _ _ _ _ _ (gr_prop G)).
+Qed.
+
 Theorem gr_eq_refl : ∀ G (x : gr_set G), x ≡ x.
 Proof.
 intros.
@@ -94,6 +100,12 @@ Theorem gr_add_assoc : ∀ G x y z, x ∈ G → y ∈ G → z ∈ G →
 Proof.
 intros.
 now apply (ig_add_assoc _ _ _ _ _ (gr_prop G)).
+Qed.
+
+Theorem gr_add_comm : ∀ G x y, x ∈ G → y ∈ G → gr_add x y ≡ gr_add y x.
+Proof.
+intros.
+now apply (ig_add_comm _ _ _ _ _ (gr_prop G)).
 Qed.
 
 Theorem gr_add_compat : ∀ G (x y x' y' : gr_set G),
@@ -209,24 +221,19 @@ split.
  +apply gr_add_opp_r.
   eapply gr_mem_compat; [ apply Hyx | now apply H_mem_compat ].
 -intros * (ax, Hx) (ay, Hy).
-...
- apply H.
- +eapply H; [ apply Hx | apply f, Hx ].
- +eapply H; [ apply Hy | apply f, Hy ].
--apply H.
+ apply gr_add_comm.
+ +eapply gr_mem_compat; [ apply Hx | now apply H_mem_compat ].
+ +eapply gr_mem_compat; [ apply Hy | now apply H_mem_compat ].
+-split.
+ +intros x; apply gr_eq_refl.
+ +intros x y; apply gr_eq_symm.
+ +intros x y z; apply gr_eq_trans.
 -intros * Hxy (z, Hz).
  exists z.
  split; [ easy | ].
- destruct H as (hs, hi, heq, hz, hadd, Hopp, hp).
- destruct hp as (hzi, hc, hid, ha, hao, hco, heqv, himo, hamo, homo).
- simpl in *.
- transitivity x; [ apply Hz | easy ].
--intros * Hxy Hxy'.
- destruct H as (hs, hi, heq, hz, hadd, hopp, hp).
- destruct hp as (hzi, hc, hid, ha, hao, hco, heqv, himo, hamo, homo).
- simpl in *.
- now apply hamo.
--apply H.
+ eapply gr_eq_trans; [ apply Hz | easy ].
+-apply gr_add_compat.
+-apply gr_opp_compat.
 Qed.
 
 Theorem Ker_is_abelian_group {G H} : ∀ (f : HomGr G H),
@@ -235,8 +242,9 @@ Theorem Ker_is_abelian_group {G H} : ∀ (f : HomGr G H),
 Proof.
 intros.
 split.
--split; [ apply G | apply f ].
+-split; [ apply gr_zero_mem | apply H_zero ].
 -intros x x' (Hx, Hfx) (Hx', Hfx').
+...
  split; [ now apply G | ].
  destruct f as (appf, fp).
  destruct fp as (fz, fin, flin, fopp, fcomp); simpl in *.
