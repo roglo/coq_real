@@ -12,7 +12,7 @@ Record is_abelian_group {T} (gr_eq : T → T → Prop) (gr_mem : T → Prop)
     ig_add_0_l : ∀ x, gr_mem x → gr_eq (gr_add gr_zero x) x;
     ig_add_assoc : ∀ x y z, gr_mem x → gr_mem y → gr_mem z →
       gr_eq (gr_add (gr_add x y) z) (gr_add x (gr_add y z));
-    ig_add_opp : ∀ x, gr_mem x →
+    ig_add_opp_r : ∀ x, gr_mem x →
       gr_mem (gr_opp x) ∧ gr_eq (gr_add x (gr_opp x)) gr_zero;
     ig_add_comm : ∀ x y, gr_mem x → gr_mem y →
       gr_eq (gr_add x y) (gr_add y x);
@@ -82,6 +82,13 @@ intros.
 now apply (ig_add_0_l _ _ _ _ _ (gr_prop G)).
 Qed.
 
+Theorem gr_add_opp_r : ∀ G x, x ∈ G →
+  gr_opp x ∈ G ∧ gr_add x (gr_opp x) ≡ gr_zero.
+Proof.
+intros.
+now apply (ig_add_opp_r _ _ _ _ _ (gr_prop G)).
+Qed.
+
 Theorem gr_add_assoc : ∀ G x y z, x ∈ G → y ∈ G → z ∈ G →
   gr_add (gr_add x y) z ≡ gr_add x (gr_add y z).
 Proof.
@@ -94,6 +101,13 @@ Theorem gr_add_compat : ∀ G (x y x' y' : gr_set G),
 Proof.
 intros.
 now apply (ig_add_compat _ _ _ _ _ (gr_prop G)).
+Qed.
+
+Theorem gr_opp_compat : ∀ G (x y : gr_set G),
+  x ≡ y → gr_opp x ≡ gr_opp y.
+Proof.
+intros * Hxy.
+now apply (ig_opp_compat _ _ _ _ _ (gr_prop G)).
 Qed.
 
 Theorem gr_mem_compat : ∀ G x y, x ≡ y → x ∈ G → y ∈ G.
@@ -113,6 +127,13 @@ Theorem H_lin : ∀ A B (f : HomGr A B) x y, x ∈ A → y ∈ A →
 Proof.
 intros.
 now apply (@ih_lin _ _ _ (H_prop _ _ f)).
+Qed.
+
+Theorem H_opp : ∀ A B (f : HomGr A B) x, x ∈ A →
+  H_app f (gr_opp x) ≡ gr_opp (H_app f x).
+Proof.
+intros.
+now apply (@ih_opp _ _ _ (H_prop _ _ f)).
 Qed.
 
 Theorem H_mem_compat : ∀ A B (f : HomGr A B) x, x ∈ A → H_app f x ∈ B.
@@ -181,22 +202,14 @@ split.
 -intros x (y & Hy & Hyx).
  split.
  +exists (gr_opp y).
-...
-  split; [ now apply G | ].
-  destruct H as (hs, hi, heq, hz, hadd, hopp, hp).
-  destruct hp as (hzi, hc, hid, ha, hao, hco, heqv, himo, hamo, homo).
-  destruct G as (gs, gi, geq, gz, gadd, gopp, gp).
-  destruct gp as (gzi, gc, gid, ga, gao, gco, geqv, gimo, gamo, gomo).
-  simpl in *.
-  transitivity (hopp (H_app f y)).
-  *now apply f.
-  *now apply homo.
- +apply H.
-  destruct H as (hs, hi, heq, hz, hadd, hopp, hp).
-  destruct hp as (hzi, hc, hid, ha, hao, hco, heqv, himo, hamo, homo).
-  simpl in *.
-  eapply himo; [ apply Hyx | now apply f ].
+  split; [ now apply gr_add_opp_r | ].
+  apply gr_eq_trans with (y := gr_opp (H_app f y)).
+  *now apply H_opp.
+  *now apply gr_opp_compat.
+ +apply gr_add_opp_r.
+  eapply gr_mem_compat; [ apply Hyx | now apply H_mem_compat ].
 -intros * (ax, Hx) (ay, Hy).
+...
  apply H.
  +eapply H; [ apply Hx | apply f, Hx ].
  +eapply H; [ apply Hy | apply f, Hy ].
