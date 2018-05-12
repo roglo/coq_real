@@ -371,6 +371,34 @@ Definition HomGr_coKer_coker {A B A' B'}
   {| H_app (x : gr_set (coKer a)) := H_app f' x : gr_set (coKer b);
      H_prop := is_homgr_coKer_coKer f f' a b Hc |}.
 
+Theorem exists_ker_C_to_B : ∀ B C C' g (c : HomGr C C') (cz : HomGr C Gr0),
+  (∀ a : gr_set (Im g), a ∈ Im g ↔ a ∈ Ker cz)
+  → ∀ x : gr_set (Ker c), ∃ y, x ∉ C ∨ y ∈ B ∧ H_app g y ≡ x.
+Proof.
+intros * sg x.
+destruct (InDec C x) as [H2| H2]; [ | now exists (gr_zero B); left ].
+enough (H : x ∈ Im g). {
+  simpl in H.
+  destruct H as (y & Hy & Hyx).
+  exists y; right; easy.
+}
+apply sg.
+split; [ easy | ].
+destruct cz as (appcz, czp).
+destruct czp as (czz, czin, czlin, czcomp); simpl in *.
+rewrite <- czlin with (x := x) (y := gr_zero C).
+-apply czcomp; [ easy | | ].
+ +apply C; [ easy | apply C ].
+ +destruct C as (cs, ci, ceq, cz, co, cp).
+  destruct cp as (czi, cc, cid, ca, cco, ceqv, cimo, camo).
+  simpl in *.
+  transitivity (co cz x).
+  *now symmetry; apply cid.
+  *now apply cco.
+-easy.
+-apply C.
+Qed.
+
 Lemma snake :
   ∀ (A B C A' B' C' : Group)
      (f : HomGr A B) (g : HomGr B C)
@@ -394,32 +422,11 @@ exists (HomGr_coKer_coker f f' a b Hcff').
 exists (HomGr_coKer_coker g g' b c Hcgg').
 destruct s as (sf & sg & _).
 destruct s' as (sf' & sg' & _).
-assert (H1 : ∀ x : gr_set (Ker c), ∃ y, x ∉ C ∨ y ∈ B ∧ H_app g y ≡ x ). {
-  intros x.
-  destruct (InDec C x) as [H2| H2]; [ | now exists (gr_zero B); left ].
-  enough (H : x ∈ Im g). {
-    simpl in H.
-    destruct H as (y & Hy & Hyx).
-    exists y; right; easy.
-  }
-  apply sg.
-  split; [ easy | ].
-  destruct cz as (appcz, czp).
-  destruct czp as (czz, czin, czlin, czcomp); simpl in *.
-  rewrite <- czlin with (x := x) (y := gr_zero C).
-  -apply czcomp; [ easy | | ].
-   +apply C; [ easy | apply C ].
-   +destruct C as (cs, ci, ceq, cz, co, cp).
-    destruct cp as (czi, cc, cid, ca, cco, ceqv, cimo, camo).
-    simpl in *.
-    transitivity (co cz x).
-    *now symmetry; apply cid.
-    *now apply cco.
-  -easy.
-  -apply C.
-}
+specialize (exists_ker_C_to_B B C C' g c cz sg) as H1.
 specialize (ClassicalChoice.choice _ H1) as (f1, Hf1).
+clear H1.
 remember (λ x, H_app b (f1 x)) as f2 eqn:Hf2.
+move f2 before f1.
 ...
 assert (d : HomGr (Ker c) (coKer a)). {
   ...
