@@ -41,7 +41,7 @@ Notation "x '∈' S" := (gr_mem S x) (at level 60).
 Notation "x '∉' S" := (¬ gr_mem S x) (at level 60).
 Notation "x '≡' y" := (gr_eq x y) (at level 70).
 
-Axiom InDec : ∀ G x, {x ∈ G} + {x ∉ G}.
+Axiom MemDec : ∀ G x, {x ∈ G} + {x ∉ G}.
 
 Record is_homgr A B f :=
   { ih_zero : f gr_zero ≡ gr_zero;
@@ -336,7 +336,7 @@ Definition gr_sub {G} (x y : gr_set G) := gr_add x (gr_opp y).
    quotient group is H with setoid, i.e. set with its own equality *)
 
 Definition coKer_eq {G H} (f : HomGr G H) x y :=
-  ∃ z, z ∈ Im f ∧ gr_sub x y ≡ z.
+  ∃ z, x ∉ H ∨ y ∉ H ∨ z ∈ Im f ∧ gr_sub x y ≡ z.
 
 Theorem coKer_is_abelian_group {G H} : ∀ (f : HomGr G H),
   is_abelian_group (coKer_eq f) (gr_mem H)
@@ -349,6 +349,7 @@ split.
  now apply gr_add_mem.
 -intros * Hx.
  exists gr_zero.
+ right; right.
  split; [ apply gr_zero_mem | simpl ].
  eapply gr_eq_trans.
  +apply gr_add_assoc; [ apply gr_zero_mem | easy | ].
@@ -359,6 +360,7 @@ split.
   *apply gr_add_0_l, gr_zero_mem.
 -intros x y z Hx Hy Hz.
  exists gr_zero.
+ right; right.
  split; [ apply gr_zero_mem | simpl ].
  set (t := gr_add (@gr_add H x y) z).
  apply gr_eq_trans with (y := gr_add t (gr_opp t)); subst t.
@@ -370,26 +372,51 @@ split.
  now apply gr_opp_mem.
 -intros x Hx.
  exists gr_zero.
+ right; right.
  split; [ apply gr_zero_mem | simpl ].
  apply gr_eq_trans with (y := gr_add gr_zero gr_zero).
  +apply gr_add_compat; [ now apply gr_add_opp_r | ].
   apply gr_opp_zero.
  +apply gr_add_0_l, gr_zero_mem.
 -intros x y Hx Hy.
-
+ exists gr_zero.
+ right; right.
+ split; [ apply gr_zero_mem | ].
+ apply gr_eq_trans with (y := gr_sub (gr_add x y) (gr_add x y)).
+ *simpl; apply gr_add_compat; [ apply gr_eq_refl | ].
+  now apply gr_opp_compat, gr_add_comm.
+ *simpl; apply gr_add_opp_r.
+  now apply gr_add_mem.
+-unfold coKer_eq; split.
+ +intros x; exists gr_zero.
+  destruct (MemDec H x) as [Hx| Hx]; [ right; right | now left ].
+  split; [ apply gr_zero_mem | ].
+  now simpl; apply gr_add_opp_r.
+ +intros x y (z & Hz).
+  exists (gr_opp z).
+  destruct Hz as [Hx| [Hy| Hz]]; [ now right; left | now left | ].
+  right; right.
+  split; [ now apply gr_opp_mem | ].
+  apply gr_eq_trans with (y := gr_opp (gr_sub x y)).
+  *apply gr_eq_symm.
+   apply gr_opp_add_distr.
 ...
--split; [ apply H | ].
- exists (gr_zero H).
- split; [ apply H | ].
- exists (gr_zero G).
- split; [ eapply ig_zero; apply G | ].
- destruct H as (hs, hi, heq, hz, ho, hp).
- destruct hp as (hzi, hc, hid, ha, hco, heqv, himo, hamo).
- destruct f as (appf, fp).
- destruct fp as (fz, fin, flin, fcomp).
- simpl in *.
- transitivity hz; [ easy | ].
- now symmetry; apply hid.
+
+ +intros x; apply gr_eq_refl.
+ +intros x y; apply gr_eq_symm.
+ +intros x y z; apply gr_eq_trans.
+-intros * Hxy (ax, Hx).
+ split.
+ +eapply gr_mem_compat; [ apply Hxy | easy ].
+ +eapply gr_eq_trans; [ | apply Hx ].
+  apply gr_eq_symm.
+  apply H_compat; [ easy | | easy ].
+  eapply gr_mem_compat; [ apply Hxy | easy ].
+-intros x y x' y' Hxy Hxy'.
+ now apply gr_add_compat.
+-intros x y Hxy.
+ now apply gr_opp_compat.
+...
 -intros y y' (Hy & z & Hz & x & Hgx & Hx) (Hy' & z' & Hz' & x' & Hgx' & Hx').
  split; [ now apply H | ].
  exists (gr_add z z').
