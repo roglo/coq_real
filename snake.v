@@ -9,12 +9,12 @@ Require ClassicalChoice.
 Record is_abelian_group {T} (gr_eq : T → T → Prop) (gr_mem : T → Prop)
        gr_zero gr_add gr_opp :=
   { ig_zero : gr_mem gr_zero;
-    ig_add_clos : ∀ x y, gr_mem x → gr_mem y → gr_mem (gr_add x y);
+    ig_add_mem : ∀ x y, gr_mem x → gr_mem y → gr_mem (gr_add x y);
     ig_add_0_l : ∀ x, gr_mem x → gr_eq (gr_add gr_zero x) x;
     ig_add_assoc : ∀ x y z, gr_mem x → gr_mem y → gr_mem z →
       gr_eq (gr_add (gr_add x y) z) (gr_add x (gr_add y z));
-    ig_add_opp_r : ∀ x, gr_mem x →
-      gr_mem (gr_opp x) ∧ gr_eq (gr_add x (gr_opp x)) gr_zero;
+    ig_opp_mem : ∀ x, gr_mem x → gr_mem (gr_opp x);
+    ig_add_opp_r : ∀ x, gr_mem x → gr_eq (gr_add x (gr_opp x)) gr_zero;
     ig_add_comm : ∀ x y, gr_mem x → gr_mem y →
       gr_eq (gr_add x y) (gr_add y x);
     ig_equiv : Equivalence gr_eq;
@@ -83,10 +83,10 @@ apply Hxy.
 apply Hyz.
 Qed.
 
-Theorem gr_add_clos : ∀ G x y, x ∈ G → y ∈ G → gr_add x y ∈ G.
+Theorem gr_add_mem : ∀ G x y, x ∈ G → y ∈ G → gr_add x y ∈ G.
 Proof.
 intros.
-now apply (ig_add_clos _ _ _ _ _ (gr_prop G)).
+now apply (ig_add_mem _ _ _ _ _ (gr_prop G)).
 Qed.
 
 Theorem gr_add_0_l : ∀ G x, x ∈ G → gr_add gr_zero x ≡ x.
@@ -95,11 +95,16 @@ intros.
 now apply (ig_add_0_l _ _ _ _ _ (gr_prop G)).
 Qed.
 
-Theorem gr_add_opp_r : ∀ G x, x ∈ G →
-  gr_opp x ∈ G ∧ gr_add x (gr_opp x) ≡ gr_zero.
+Theorem gr_add_opp_r : ∀ G x, x ∈ G → gr_add x (gr_opp x) ≡ gr_zero.
 Proof.
 intros.
 now apply (ig_add_opp_r _ _ _ _ _ (gr_prop G)).
+Qed.
+
+Theorem gr_opp_mem : ∀ G x, x ∈ G → gr_opp x ∈ G.
+Proof.
+intros.
+now apply (ig_opp_mem _ _ _ _ _ (gr_prop G)).
 Qed.
 
 Theorem gr_add_assoc : ∀ G x y z, x ∈ G → y ∈ G → z ∈ G →
@@ -140,9 +145,11 @@ Proof.
 intros.
 specialize (@gr_add_opp_r G gr_zero) as H1.
 assert (H2 : gr_zero ∈ G) by apply gr_zero_mem.
-specialize (H1 H2) as (H1, H3).
-specialize (gr_add_0_l _ _ H1) as H4.
-eapply gr_eq_trans; [ | apply H3 ].
+specialize (H1 H2).
+specialize (@gr_add_0_l G (gr_opp gr_zero)) as H3.
+assert (H4 : gr_opp gr_zero ∈ G) by apply gr_opp_mem, gr_zero_mem.
+specialize (H3 H4).
+eapply gr_eq_trans; [ | apply H1 ].
 now apply gr_eq_symm.
 Qed.
 
@@ -183,8 +190,7 @@ Inductive Gr0_set := G0 : Gr0_set.
 
 Theorem Gr0_prop : is_abelian_group eq (λ _, True) G0 (λ _ _, G0) (λ x, x).
 Proof.
-split; [ easy | easy | | | easy | easy | | easy | easy | easy ].
--now intros x; destruct x.
+split; try easy.
 -now intros x; destruct x.
 -split; [ easy | easy | apply eq_Transitive ].
 Qed.
@@ -237,14 +243,14 @@ split.
  +eapply gr_mem_compat; [ apply Hy | now apply H_mem_compat ].
  +eapply gr_mem_compat; [ apply Hz | now apply H_mem_compat ].
 -intros x (y & Hy & Hyx).
- split.
- +exists (gr_opp y).
-  split; [ now apply gr_add_opp_r | ].
-  apply gr_eq_trans with (y := gr_opp (H_app f y)).
-  *now apply H_opp.
-  *now apply gr_opp_compat.
- +apply gr_add_opp_r.
-  eapply gr_mem_compat; [ apply Hyx | now apply H_mem_compat ].
+ exists (gr_opp y).
+ split; [ now apply gr_opp_mem | ].
+ apply gr_eq_trans with (y := gr_opp (H_app f y)).
+ +now apply H_opp.
+ +now apply gr_opp_compat.
+-intros x (y & Hy & Hyx).
+ apply gr_add_opp_r.
+ eapply gr_mem_compat; [ apply Hyx | now apply H_mem_compat ].
 -intros * (ax, Hx) (ay, Hy).
  apply gr_add_comm.
  +eapply gr_mem_compat; [ apply Hx | now apply H_mem_compat ].
@@ -269,7 +275,7 @@ intros.
 split.
 -split; [ apply gr_zero_mem | apply H_zero ].
 -intros x x' (Hx, Hfx) (Hx', Hfx').
- split; [ now apply gr_add_clos | ].
+ split; [ now apply gr_add_mem | ].
  eapply gr_eq_trans; [ now apply H_lin | ].
  assert (H1 : gr_add gr_zero gr_zero ≡ @gr_zero H). {
    apply gr_add_0_l, gr_zero_mem.
@@ -281,12 +287,13 @@ split.
 -intros * (ax, Hx) (ay, Hy) (az, Hz).
  now apply gr_add_assoc.
 -intros x (Hx & Hfx).
- split; [ split | ].
- +now apply gr_add_opp_r.
+ split.
+ +now apply gr_opp_mem.
  +eapply gr_eq_trans; [ now apply H_opp | ].
   eapply gr_eq_trans; [ apply gr_opp_compat, Hfx | ].
   apply gr_opp_zero.
- +now apply gr_add_opp_r.
+-intros x (Hx & Hfx).
+ now apply gr_add_opp_r.
 -intros * (ax, Hx) (ay, Hy).
  now apply gr_add_comm.
 -split.
@@ -343,15 +350,26 @@ Definition gr_mul_int_l {G} k (x : gr_set G) :=
    quotient group is H with setoid, i.e. set with its own equality *)
 
 Definition coKer_eq {G H} (f : HomGr G H) x y :=
-  ∃ k z, z ∈ Im f ∧ gr_sub x y = gr_mul_int_l k z.
+  ∃ k z, z ∈ Im f ∧ gr_sub x y ≡ gr_mul_int_l k z.
 
 Theorem coKer_is_abelian_group {G H} : ∀ (f : HomGr G H),
   is_abelian_group (coKer_eq f) (gr_mem H)
     gr_zero (@gr_add H) (@gr_opp H).
 Proof.
 intros.
-...
 split.
+-simpl; apply gr_zero_mem.
+-intros * Hx Hy.
+ now apply gr_add_mem.
+-intros * Hx.
+ exists 0%Z, gr_zero.
+ split; [ apply gr_zero_mem | ].
+ simpl.
+ eapply gr_eq_trans.
+ +apply gr_add_assoc; [ apply gr_zero_mem | easy | ].
+  now apply gr_opp_mem.
+ +idtac.
+...
 -split; [ apply H | ].
  exists (gr_zero H).
  split; [ apply H | ].
