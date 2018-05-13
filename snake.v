@@ -1,6 +1,7 @@
 (* Snake lemma *)
 
 Require Import Utf8.
+Require Import ZArith.
 Require Import Classes.RelationClasses.
 Require Import Setoid.
 Require ClassicalChoice.
@@ -132,6 +133,17 @@ Theorem gr_mem_compat : ∀ G x y, x ≡ y → x ∈ G → y ∈ G.
 Proof.
 intros * Hxy Hx.
 eapply (ig_mem_compat _ _ _ _ _ (gr_prop G)); [ apply Hxy | apply Hx ].
+Qed.
+
+Theorem gr_opp_zero : ∀ G, gr_opp gr_zero ≡ @gr_zero G.
+Proof.
+intros.
+specialize (@gr_add_opp_r G gr_zero) as H1.
+assert (H2 : gr_zero ∈ G) by apply gr_zero_mem.
+specialize (H1 H2) as (H1, H3).
+specialize (gr_add_0_l _ _ H1) as H4.
+eapply gr_eq_trans; [ | apply H3 ].
+now apply gr_eq_symm.
 Qed.
 
 Theorem H_zero : ∀ A B (f : HomGr A B), H_app f gr_zero ≡ gr_zero.
@@ -273,93 +285,76 @@ split.
  +now apply gr_add_opp_r.
  +eapply gr_eq_trans; [ now apply H_opp | ].
   eapply gr_eq_trans; [ apply gr_opp_compat, Hfx | ].
-  specialize (@gr_add_opp_r G (gr_opp gr_zero)) as H1.
-  assert (H2 : gr_opp gr_zero ∈ G) by apply gr_add_opp_r, gr_zero_mem.
-  specialize (H1 H2) as (H1, H3); clear H2.
-
-...
-  apply gr_eq_trans with (y := gr_opp (gr_add gr_zero (gr_opp gr_zero))).
-  *apply gr_eq_symm, gr_opp_compat, gr_add_opp_r, gr_zero_mem.
-  *idtac.
-...
-
- +destruct H as (hs, hi, heq, hz, ho, hhh, hp).
-  destruct hp as (hzi, hc, hid, ha, hao, hco, heqv, himo, hamo, homo).
-  destruct f as (appf, fp).
-  destruct fp as (fz, fin, flin, fopp, fcomp).
-  simpl in *.
-  transitivity (appf x); [ | easy ].
-  symmetry.
-  apply fcomp; [ easy | | ].
-  eapply G; [ apply Hxy | easy ].
-
- split; [ split | ].
+  apply gr_opp_zero.
  +now apply gr_add_opp_r.
- +eapply gr_eq_trans; [ now apply H_opp | ].
-  apply gr_eq_trans with (y := gr_opp gr_zero).
-  *now apply gr_opp_compat.
-  *idtac.
-...
- +exists (gr_opp y).
-  split; [ now apply G | ].
-  destruct H as (hs, hi, heq, hz, hadd, hopp, hp).
-  destruct hp as (hzi, hc, hid, ha, hao, hco, heqv, himo, hamo, homo).
-  destruct G as (gs, gi, geq, gz, gadd, gopp, gp).
-  destruct gp as (gzi, gc, gid, ga, gao, gco, geqv, gimo, gamo, gomo).
-  simpl in *.
-  transitivity (hopp (H_app f y)).
-  *now apply f.
-  *now apply homo.
- +apply H.
-  destruct H as (hs, hi, heq, hz, hadd, hopp, hp).
-  destruct hp as (hzi, hc, hid, ha, hao, hco, heqv, himo, hamo, homo).
-  simpl in *.
-  eapply himo; [ apply Hyx | now apply f ].
-...
 -intros * (ax, Hx) (ay, Hy).
- now apply G.
--apply G.
+ now apply gr_add_comm.
+-split.
+ +intros x; apply gr_eq_refl.
+ +intros x y; apply gr_eq_symm.
+ +intros x y z; apply gr_eq_trans.
 -intros * Hxy (ax, Hx).
  split.
- +eapply ig_in_compat; [ apply G | apply Hxy | easy ].
- +destruct H as (hs, hi, heq, hz, ho, hp).
-  destruct hp as (hzi, hc, hid, ha, hco, heqv, himo, hamo).
-  destruct f as (appf, fp).
-  destruct fp as (fz, fin, flin, fcomp).
-  simpl in *.
-  transitivity (appf x); [ | easy ].
-  symmetry.
-  apply fcomp; [ easy | | easy ].
-  eapply G; [ apply Hxy | easy ].
+ +eapply gr_mem_compat; [ apply Hxy | easy ].
+ +eapply gr_eq_trans; [ | apply Hx ].
+  apply gr_eq_symm.
+  apply H_compat; [ easy | | easy ].
+  eapply gr_mem_compat; [ apply Hxy | easy ].
 -intros x y x' y' Hxy Hxy'.
- eapply ig_add_compat; [ apply G | easy | easy ].
+ now apply gr_add_compat.
+-intros x y Hxy.
+ now apply gr_opp_compat.
 Qed.
 
 Definition Im {G H : Group} (f : HomGr G H) :=
   {| gr_set := gr_set H;
-     gr_zero := gr_zero H;
+     gr_zero := gr_zero;
      gr_eq := @gr_eq H;
      gr_mem := λ b, ∃ a, a ∈ G ∧ H_app f a ≡ b;
      gr_add := @gr_add H;
+     gr_opp := @gr_opp H;
      gr_prop := Im_is_abelian_group f |}.
 
 Definition Ker {G H : Group} (f : HomGr G H) :=
   {| gr_set := gr_set G;
-     gr_zero := gr_zero G;
+     gr_zero := gr_zero;
      gr_eq := @gr_eq G;
-     gr_mem := λ a, a ∈ G ∧ H_app f a ≡ gr_zero H;
+     gr_mem := λ a, a ∈ G ∧ H_app f a ≡ gr_zero;
      gr_add := @gr_add G;
+     gr_opp := @gr_opp G;
      gr_prop := Ker_is_abelian_group f |}.
 
+Definition gr_sub {G} (x y : gr_set G) := gr_add x (gr_opp y).
+
+Fixpoint gr_mul_nat_l {G} n (x : gr_set G) :=
+  match n with
+  | 0 => gr_zero
+  | S n' => gr_add x (gr_mul_nat_l n' x)
+  end.
+
+Definition gr_mul_int_l {G} k (x : gr_set G) :=
+  match k with
+  | 0%Z => gr_zero
+  | Z.pos p => gr_mul_nat_l (Pos.to_nat p) x
+  | Z.neg p => gr_opp (gr_mul_nat_l (Pos.to_nat p) x)
+  end.
+
+Definition coKer_eq {G H} (f : HomGr G H) x y :=
+  ∃ k z, z ∈ Im f ∧ gr_sub x y = gr_mul_int_l k z.
+
+(* x ∈ coKer f ↔ x ∈ H/Im f *)
+
 ...
-Definition coKer_eq f x y := ∃ k z, z ∈ Im f ∧ gr_sub x y = k * z.
 
 Theorem coKer_is_abelian_group {G H} : ∀ (f : HomGr G H),
   is_abelian_group (coKer_eq f)
+(*
     (λ x, x ∈ H ∧ ∃ y, y ∈ H ∧ gr_add x y ∈ Im f)
-    (gr_zero H) (gr_add (g:=H)).
+*)...
+    gr_zero (@gr_add H) (@gr_opp H).
 Proof.
 intros.
+Print is_abelian_group.
 ...
 split.
 -split; [ apply H | ].
