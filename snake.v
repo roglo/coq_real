@@ -24,7 +24,7 @@ Record is_abelian_group {T} (gr_eq : T → T → Prop) (gr_mem : T → Prop)
     ig_opp_compat : ∀ x y,
       gr_eq x y → gr_eq (gr_opp x) (gr_opp y) }.
 
-Record Group :=
+Record AbGroup :=
   { gr_set : Type;
     gr_mem : gr_set → Prop;
     gr_eq : gr_set → gr_set → Prop;
@@ -51,7 +51,7 @@ Record is_homgr A B f :=
     ih_opp : ∀ x, x ∈ A → f (gr_opp x) ≡ gr_opp (f x);
     ih_compat : ∀ x y, x ∈ A → y ∈ A → x ≡ y → f x ≡ f y }.
 
-Record HomGr (A B : Group) :=
+Record HomGr (A B : AbGroup) :=
   { H_app : gr_set A → gr_set B;
     H_prop : is_homgr A B H_app }.
 
@@ -198,11 +198,11 @@ Definition Gr0 :=
       gr_opp x := x;
       gr_prop := Gr0_prop |}.
 
-Definition is_initial (G : Group) :=
+Definition is_initial (G : AbGroup) :=
   ∀ H (f g : HomGr G H) (x : gr_set G), H_app f x ≡ H_app g x.
-Definition is_final (G : Group) :=
+Definition is_final (G : AbGroup) :=
   ∀ H (f g : HomGr H G) (x : gr_set H), H_app f x ≡ H_app g x.
-Definition is_null (G : Group) := is_initial G ∧ is_final G.
+Definition is_null (G : AbGroup) := is_initial G ∧ is_final G.
 
 Theorem is_null_Gr0 : is_null Gr0.
 Proof.
@@ -306,7 +306,7 @@ split.
  now apply gr_opp_compat.
 Qed.
 
-Definition Im {G H : Group} (f : HomGr G H) :=
+Definition Im {G H : AbGroup} (f : HomGr G H) :=
   {| gr_set := gr_set H;
      gr_zero := gr_zero;
      gr_eq := @gr_eq H;
@@ -315,7 +315,7 @@ Definition Im {G H : Group} (f : HomGr G H) :=
      gr_opp := @gr_opp H;
      gr_prop := Im_is_abelian_group f |}.
 
-Definition Ker {G H : Group} (f : HomGr G H) :=
+Definition Ker {G H : AbGroup} (f : HomGr G H) :=
   {| gr_set := gr_set G;
      gr_zero := gr_zero;
      gr_eq := @gr_eq G;
@@ -339,22 +339,17 @@ Definition gr_mul_int_l {G} k (x : gr_set G) :=
   | Z.neg p => gr_opp (gr_mul_nat_l (Pos.to_nat p) x)
   end.
 
+(* x ∈ coKer f ↔ x ∈ H/Im f
+   quotient group is H with setoid, i.e. set with its own equality *)
+
 Definition coKer_eq {G H} (f : HomGr G H) x y :=
   ∃ k z, z ∈ Im f ∧ gr_sub x y = gr_mul_int_l k z.
 
-(* x ∈ coKer f ↔ x ∈ H/Im f *)
-
-...
-
 Theorem coKer_is_abelian_group {G H} : ∀ (f : HomGr G H),
-  is_abelian_group (coKer_eq f)
-(*
-    (λ x, x ∈ H ∧ ∃ y, y ∈ H ∧ gr_add x y ∈ Im f)
-*)...
+  is_abelian_group (coKer_eq f) (gr_mem H)
     gr_zero (@gr_add H) (@gr_opp H).
 Proof.
 intros.
-Print is_abelian_group.
 ...
 split.
 -split; [ apply H | ].
@@ -428,7 +423,7 @@ split.
  eapply ig_add_compat; [ apply H | easy | easy ].
 Qed.
 
-Definition coKer {G H : Group} (f : HomGr G H) :=
+Definition coKer {G H : AbGroup} (f : HomGr G H) :=
   {| gr_set := gr_set H;
      gr_mem := λ x, x ∈ H ∧ ∃ y, y ∈ H ∧ gr_add x y ∈ Im f;
      gr_eq := @gr_eq H;
@@ -436,11 +431,11 @@ Definition coKer {G H : Group} (f : HomGr G H) :=
      gr_add := @gr_add H;
      gr_prop := coKer_is_abelian_group f |}.
 
-Inductive sequence {A : Group} :=
+Inductive sequence {A : AbGroup} :=
   | Seq1 : sequence
   | Seq2 : ∀ {B} (f : HomGr A B), @sequence B → sequence.
 
-Fixpoint exact_sequence {A : Group} (S : sequence) :=
+Fixpoint exact_sequence {A : AbGroup} (S : sequence) :=
   match S with
   | Seq1 => True
   | Seq2 f S' =>
@@ -560,7 +555,7 @@ rewrite <- czlin with (x := x) (y := gr_zero C).
 Qed.
 
 Lemma snake :
-  ∀ (A B C A' B' C' : Group)
+  ∀ (A B C A' B' C' : AbGroup)
      (f : HomGr A B) (g : HomGr B C)
      (f' : HomGr A' B') (g' : HomGr B' C')
      (a : HomGr A A') (b : HomGr B B') (c : HomGr C C')
