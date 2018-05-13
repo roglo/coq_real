@@ -273,6 +273,14 @@ split.
  +now apply gr_add_opp_r.
  +eapply gr_eq_trans; [ now apply H_opp | ].
   eapply gr_eq_trans; [ apply gr_opp_compat, Hfx | ].
+  specialize (@gr_add_opp_r G (gr_opp gr_zero)) as H1.
+  assert (H2 : gr_opp gr_zero ∈ G) by apply gr_add_opp_r, gr_zero_mem.
+  specialize (H1 H2) as (H1, H3); clear H2.
+
+...
+  apply gr_eq_trans with (y := gr_opp (gr_add gr_zero (gr_opp gr_zero))).
+  *apply gr_eq_symm, gr_opp_compat, gr_add_opp_r, gr_zero_mem.
+  *idtac.
 ...
 
  +destruct H as (hs, hi, heq, hz, ho, hhh, hp).
