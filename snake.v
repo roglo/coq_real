@@ -1,7 +1,6 @@
 (* Snake lemma *)
 
 Require Import Utf8.
-Require Import ZArith.
 Require Import Classes.RelationClasses.
 Require Import Setoid.
 Require ClassicalChoice.
@@ -333,24 +332,11 @@ Definition Ker {G H : AbGroup} (f : HomGr G H) :=
 
 Definition gr_sub {G} (x y : gr_set G) := gr_add x (gr_opp y).
 
-Fixpoint gr_mul_nat_l {G} n (x : gr_set G) :=
-  match n with
-  | 0 => gr_zero
-  | S n' => gr_add x (gr_mul_nat_l n' x)
-  end.
-
-Definition gr_mul_int_l {G} k (x : gr_set G) :=
-  match k with
-  | 0%Z => gr_zero
-  | Z.pos p => gr_mul_nat_l (Pos.to_nat p) x
-  | Z.neg p => gr_opp (gr_mul_nat_l (Pos.to_nat p) x)
-  end.
-
 (* x ∈ coKer f ↔ x ∈ H/Im f
    quotient group is H with setoid, i.e. set with its own equality *)
 
 Definition coKer_eq {G H} (f : HomGr G H) x y :=
-  ∃ k z, z ∈ Im f ∧ gr_sub x y ≡ gr_mul_int_l k z.
+  ∃ z, z ∈ Im f ∧ gr_sub x y ≡ z.
 
 Theorem coKer_is_abelian_group {G H} : ∀ (f : HomGr G H),
   is_abelian_group (coKer_eq f) (gr_mem H)
@@ -362,9 +348,8 @@ split.
 -intros * Hx Hy.
  now apply gr_add_mem.
 -intros * Hx.
- exists 0%Z, gr_zero.
- split; [ apply gr_zero_mem | ].
- simpl.
+ exists gr_zero.
+ split; [ apply gr_zero_mem | simpl ].
  eapply gr_eq_trans.
  +apply gr_add_assoc; [ apply gr_zero_mem | easy | ].
   now apply gr_opp_mem.
@@ -373,7 +358,7 @@ split.
    now apply gr_add_opp_r.
   *apply gr_add_0_l, gr_zero_mem.
 -intros x y z Hx Hy Hz.
- exists 0%Z, gr_zero.
+ exists gr_zero.
  split; [ apply gr_zero_mem | simpl ].
  set (t := gr_add (@gr_add H x y) z).
  apply gr_eq_trans with (y := gr_add t (gr_opp t)); subst t.
@@ -384,7 +369,7 @@ split.
 -intros x Hx.
  now apply gr_opp_mem.
 -intros x Hx.
- exists 0%Z, gr_zero.
+ exists gr_zero.
  split; [ apply gr_zero_mem | simpl ].
  apply gr_eq_trans with (y := gr_add gr_zero gr_zero).
  +apply gr_add_compat; [ now apply gr_add_opp_r | ].
