@@ -271,11 +271,8 @@ split.
 -intros x (Hx & Hfx).
  split; [ split | ].
  +now apply gr_add_opp_r.
- +eapply gr_eq_trans; [ | apply Hfx ].
-  apply H_compat; [ | easy | ].
-  *now apply gr_add_opp_r.
-  *idtac.
-Search gr_opp.
+ +eapply gr_eq_trans; [ now apply H_opp | ].
+  eapply gr_eq_trans; [ apply gr_opp_compat, Hfx | ].
 ...
 
  +destruct H as (hs, hi, heq, hz, ho, hhh, hp).
@@ -286,7 +283,6 @@ Search gr_opp.
   transitivity (appf x); [ | easy ].
   symmetry.
   apply fcomp; [ easy | | ].
-
   eapply G; [ apply Hxy | easy ].
 
  split; [ split | ].
