@@ -97,7 +97,7 @@ intros.
 now apply (ig_add_mem _ _ _ _ _ (gr_prop G)).
 Qed.
 
-Theorem gr_add_0_l : ∀ G x, x ∈ G → gr_add gr_zero x ≡ x.
+Theorem gr_add_0_l : ∀ G x, x ∈ G → (0 + x = x)%G.
 Proof.
 intros.
 now apply (ig_add_0_l _ _ _ _ _ (gr_prop G)).
@@ -126,6 +126,14 @@ Theorem gr_add_comm : ∀ G x y, x ∈ G → y ∈ G → gr_add x y ≡ gr_add y
 Proof.
 intros.
 now apply (ig_add_comm _ _ _ _ _ (gr_prop G)).
+Qed.
+
+Theorem gr_add_0_r : ∀ G x, x ∈ G → (x + 0 = x)%G.
+Proof.
+intros.
+eapply gr_eq_trans.
+-apply gr_add_comm; [ easy | apply gr_zero_mem ].
+-now apply (ig_add_0_l _ _ _ _ _ (gr_prop G)).
 Qed.
 
 Theorem gr_add_compat : ∀ G (x y x' y' : gr_set G),
@@ -171,7 +179,11 @@ apply gr_eq_trans with (y := (- (x + y) + y - y)%G).
  +apply gr_add_assoc; [ | easy | ].
   *now apply gr_opp_mem, gr_add_mem.
   *now apply gr_opp_mem.
- +idtac.
+ +apply gr_eq_trans with (y := (- (x + y) + 0)%G).
+  *apply gr_add_compat; [ apply gr_eq_refl | ].
+   now apply gr_add_opp_r.
+  *now apply gr_add_0_r, gr_opp_mem, gr_add_mem.
+-apply gr_add_compat; [ | apply gr_eq_refl ].
 ...
 
 Theorem H_zero : ∀ A B (f : HomGr A B), H_app f gr_zero ≡ gr_zero.
