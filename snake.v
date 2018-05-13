@@ -41,6 +41,15 @@ Notation "x '∈' S" := (gr_mem S x) (at level 60).
 Notation "x '∉' S" := (¬ gr_mem S x) (at level 60).
 Notation "x '≡' y" := (gr_eq x y) (at level 70).
 
+Delimit Scope group_scope with G.
+
+Notation "0" := (gr_zero) : group_scope.
+Notation "a = b" := (gr_eq a b) : group_scope.
+Notation "a ≠ b" := (¬ gr_eq a b) : group_scope.
+Notation "a + b" := (gr_add a b) : group_scope.
+Notation "a - b" := (gr_add a (gr_opp b)) : group_scope.
+Notation "- a" := (gr_opp a) : group_scope.
+
 Axiom MemDec : ∀ G x, {x ∈ G} + {x ∉ G}.
 
 Record is_homgr A B f :=
@@ -151,6 +160,19 @@ specialize (H3 H4).
 eapply gr_eq_trans; [ | apply H1 ].
 now apply gr_eq_symm.
 Qed.
+
+Theorem gr_opp_add_distr : ∀ G (x y : gr_set G),
+  x ∈ G → y ∈ G → (- (x + y) = - x - y)%G.
+Proof.
+intros * Hx Hy.
+apply gr_eq_trans with (y := (- (x + y) + y - y)%G).
+-apply gr_eq_symm.
+ eapply gr_eq_trans.
+ +apply gr_add_assoc; [ | easy | ].
+  *now apply gr_opp_mem, gr_add_mem.
+  *now apply gr_opp_mem.
+ +idtac.
+...
 
 Theorem H_zero : ∀ A B (f : HomGr A B), H_app f gr_zero ≡ gr_zero.
 Proof.
@@ -400,6 +422,7 @@ split.
   apply gr_eq_trans with (y := gr_opp (gr_sub x y)).
   *apply gr_eq_symm.
    apply gr_opp_add_distr.
+Theorem gr_opp_add
 ...
 
  +intros x; apply gr_eq_refl.
