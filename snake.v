@@ -7,8 +7,7 @@ Require ClassicalChoice.
 
 Record is_abelian_group {T} (gr_eq : T → T → Prop) (gr_mem : T → Prop)
        gr_zero gr_add gr_opp :=
-   { ig_add_0_l : ∀ x, gr_eq (gr_add gr_zero x) x;
-    ig_add_assoc : ∀ x y z,
+  { ig_add_assoc : ∀ x y z,
       gr_eq (gr_add (gr_add x y) z) (gr_add x (gr_add y z));
     ig_opp_mem : ∀ x, gr_mem x → gr_mem (gr_opp x);
     ig_add_opp_r : ∀ x, gr_eq (gr_add x (gr_opp x)) gr_zero;
@@ -29,6 +28,7 @@ Record AbGroup :=
     gr_opp : gr_set → gr_set;
     gr_zero_mem : gr_mem gr_zero;
     gr_add_mem : ∀ x y, gr_mem x → gr_mem y → gr_mem (gr_add x y);
+    gr_add_0_l : ∀ x, gr_eq (gr_add gr_zero x) x;
     gr_prop : is_abelian_group gr_eq gr_mem gr_zero gr_add gr_opp }.
 
 Arguments gr_eq [_].
@@ -36,6 +36,7 @@ Arguments gr_zero [_].
 Arguments gr_add [_].
 Arguments gr_opp [_].
 Arguments gr_add_mem G : rename.
+Arguments gr_add_0_l G : rename.
 
 Notation "x '∈' S" := (gr_mem S x) (at level 60).
 Notation "x '∉' S" := (¬ gr_mem S x) (at level 60).
@@ -85,12 +86,6 @@ apply Hxy.
 apply Hyz.
 Qed.
 
-Theorem gr_add_0_l : ∀ G (x : gr_set G), (0 + x = x)%G.
-Proof.
-intros.
-apply (ig_add_0_l _ _ _ _ _ (gr_prop G)).
-Qed.
-
 Theorem gr_add_opp_r : ∀ G (x : gr_set G), (x - x = 0)%G.
 Proof.
 intros.
@@ -119,7 +114,7 @@ Theorem gr_add_0_r : ∀ G (x : gr_set G), (x + 0 = x)%G.
 Proof.
 intros.
 eapply gr_eq_trans; [ apply gr_add_comm | ].
-apply (ig_add_0_l _ _ _ _ _ (gr_prop G)).
+apply gr_add_0_l.
 Qed.
 
 Theorem gr_add_compat : ∀ G (x y x' y' : gr_set G),
@@ -210,8 +205,14 @@ Inductive Gr0_set := G0 : Gr0_set.
 Theorem Gr0_prop : is_abelian_group eq (λ _, True) G0 (λ _ _, G0) (λ x, x).
 Proof.
 split; try easy.
--now intros x; destruct x.
 -split; [ easy | easy | apply eq_Transitive ].
+Qed.
+
+Check gr_add_0_l.
+
+Theorem Gr0_add_0_l : ∀ x, (λ _ _ : Gr0_set, G0) G0 x = x.
+Proof.
+now intros x; destruct x.
 Qed.
 
 Definition Gr0 :=
@@ -223,9 +224,8 @@ Definition Gr0 :=
       gr_opp x := x;
       gr_zero_mem := I;
       gr_add_mem _ _ _ _ := I;
+      gr_add_0_l := Gr0_add_0_l;
       gr_prop := Gr0_prop |}.
-
-Check (gr_zero_mem Gr0).
 
 Definition is_initial (G : AbGroup) :=
   ∀ H (f g : HomGr G H) (x : gr_set G), H_app f x ≡ H_app g x.
@@ -247,7 +247,6 @@ Theorem Im_is_abelian_group {G H} (f : HomGr G H) :
 Proof.
 intros.
 split.
--intros; apply gr_add_0_l.
 -intros; apply gr_add_assoc.
 -intros x (y & Hy & Hyx).
  exists (gr_opp y).
@@ -300,6 +299,7 @@ Definition Im {G H : AbGroup} (f : HomGr G H) :=
      gr_opp := @gr_opp H;
      gr_zero_mem := Im_zero_mem f;
      gr_add_mem := Im_add_mem f;
+     gr_add_0_l := gr_add_0_l H;
      gr_prop := Im_is_abelian_group f |}.
 
 Theorem Ker_is_abelian_group {G H} : ∀ (f : HomGr G H),
@@ -308,7 +308,6 @@ Theorem Ker_is_abelian_group {G H} : ∀ (f : HomGr G H),
 Proof.
 intros.
 split.
--intros x; apply gr_add_0_l.
 -intros; apply gr_add_assoc.
 -intros x (Hx & Hfx).
  split.
@@ -361,6 +360,7 @@ Definition Ker {G H : AbGroup} (f : HomGr G H) :=
      gr_opp := @gr_opp G;
      gr_zero_mem := Ker_zero_mem f;
      gr_add_mem := Ker_add_mem f;
+     gr_add_0_l := gr_add_0_l G;
      gr_prop := Ker_is_abelian_group f |}.
 
 Definition gr_sub {G} (x y : gr_set G) := gr_add x (gr_opp y).
@@ -377,14 +377,6 @@ Theorem coKer_is_abelian_group {G H} : ∀ (f : HomGr G H),
 Proof.
 intros.
 split.
--intros.
- exists gr_zero.
- right; right.
- split; [ apply gr_zero_mem | simpl ].
- eapply gr_eq_trans; [ apply gr_add_assoc | ].
- apply gr_eq_trans with (y := gr_add gr_zero gr_zero).
- +apply gr_add_compat; [ apply gr_eq_refl | apply gr_add_opp_r ].
- +apply gr_add_0_l.
 -intros x y z.
  exists gr_zero.
  right; right.
@@ -512,6 +504,18 @@ Qed.
 coKer_add_mem :
 -intros * Hx Hy.
  now apply gr_add_mem.
+*)
+
+(*
+coKer_add_0_l
+-intros.
+ exists gr_zero.
+ right; right.
+ split; [ apply gr_zero_mem | simpl ].
+ eapply gr_eq_trans; [ apply gr_add_assoc | ].
+ apply gr_eq_trans with (y := gr_add gr_zero gr_zero).
+ +apply gr_add_compat; [ apply gr_eq_refl | apply gr_add_opp_r ].
+ +apply gr_add_0_l.
 *)
 
 Definition coKer {G H : AbGroup} (f : HomGr G H) :=
