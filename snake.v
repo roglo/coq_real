@@ -8,40 +8,44 @@ Require ClassicalChoice.
 Reserved Notation "x '∈' S" (at level 60).
 Reserved Notation "x '≡' y" (at level 70).
 
+(* Group sets are setoid, i.e. there is a redefinition of equality (gr_eq) with
+   its compatibility with membership (gr_mem_compat), addition (gr_add_compat),
+   and inverse (gr_inv_compat) *)
+
 Record AbGroup :=
   { gr_set : Type;
     gr_mem : gr_set → Prop where "x ∈ G" := (gr_mem x);
     gr_eq : gr_set → gr_set → Prop where "x ≡ y" := (gr_eq x y);
     gr_zero : gr_set where "0" := (gr_zero);
     gr_add : gr_set → gr_set → gr_set where "x + y" := (gr_add x y);
-    gr_opp : gr_set → gr_set where "- x" := (gr_opp x);
+    gr_inv : gr_set → gr_set where "- x" := (gr_inv x);
     gr_zero_mem : 0 ∈ G;
     gr_add_mem : ∀ x y, x ∈ G → y ∈ G → x + y ∈ G;
     gr_add_0_l : ∀ x, 0 + x ≡ x;
     gr_add_assoc : ∀ x y z, (x + y) + z ≡ x + (y + z);
-    gr_opp_mem : ∀ x, x ∈ G → - x ∈ G;
-    gr_add_opp_r : ∀ x, x + (- x) ≡ 0;
+    gr_inv_mem : ∀ x, x ∈ G → - x ∈ G;
+    gr_add_inv_r : ∀ x, x + (- x) ≡ 0;
     gr_add_comm : ∀ x y, x + y ≡ y + x;
     gr_equiv : Equivalence gr_eq;
     gr_mem_compat : ∀ x y, x ≡ y → x ∈ G → y ∈ G;
     gr_add_compat : ∀ x y x' y', x ≡ y → x' ≡ y' → x + x' ≡ y + y';
-    gr_opp_compat : ∀ x y, x ≡ y → - x ≡ - y }.
+    gr_inv_compat : ∀ x y, x ≡ y → - x ≡ - y }.
 
 Arguments gr_eq [_].
 Arguments gr_zero [_].
 Arguments gr_add [_].
-Arguments gr_opp [_].
+Arguments gr_inv [_].
 Arguments gr_zero_mem G : rename.
 Arguments gr_add_mem G : rename.
 Arguments gr_add_0_l G : rename.
 Arguments gr_add_assoc G : rename.
-Arguments gr_opp_mem G : rename.
-Arguments gr_add_opp_r G : rename.
+Arguments gr_inv_mem G : rename.
+Arguments gr_add_inv_r G : rename.
 Arguments gr_add_comm G : rename.
 Arguments gr_equiv G : rename.
 Arguments gr_mem_compat G : rename.
 Arguments gr_add_compat G : rename.
-Arguments gr_opp_compat G : rename.
+Arguments gr_inv_compat G : rename.
 
 Notation "x '∈' S" := (gr_mem S x) (at level 60).
 Notation "x '∉' S" := (¬ gr_mem S x) (at level 60).
@@ -53,8 +57,8 @@ Notation "0" := (gr_zero) : group_scope.
 Notation "a = b" := (gr_eq a b) : group_scope.
 Notation "a ≠ b" := (¬ gr_eq a b) : group_scope.
 Notation "a + b" := (gr_add a b) : group_scope.
-Notation "a - b" := (gr_add a (gr_opp b)) : group_scope.
-Notation "- a" := (gr_opp a) : group_scope.
+Notation "a - b" := (gr_add a (gr_inv b)) : group_scope.
+Notation "- a" := (gr_inv a) : group_scope.
 
 Axiom MemDec : ∀ G x, {x ∈ G} + {x ∉ G}.
 
@@ -62,7 +66,7 @@ Record is_homgr A B f :=
   { ih_zero : f gr_zero ≡ gr_zero;
     ih_mem_compat : ∀ x, x ∈ A → f x ∈ B;
     ih_lin : ∀ x y, x ∈ A → y ∈ A → f (gr_add x y) ≡ gr_add (f x) (f y);
-    ih_opp : ∀ x, x ∈ A → f (gr_opp x) ≡ gr_opp (f x);
+    ih_inv : ∀ x, x ∈ A → f (gr_inv x) ≡ gr_inv (f x);
     ih_compat : ∀ x y, x ∈ A → y ∈ A → x ≡ y → f x ≡ f y }.
 
 Record HomGr (A B : AbGroup) :=
@@ -94,16 +98,16 @@ Check gr_add_0_l.
 apply gr_add_0_l.
 Qed.
 
-Theorem gr_opp_zero : ∀ G, gr_opp gr_zero ≡ @gr_zero G.
+Theorem gr_inv_zero : ∀ G, gr_inv gr_zero ≡ @gr_zero G.
 Proof.
 intros.
-specialize (@gr_add_opp_r G gr_zero) as H1.
-specialize (@gr_add_0_l G (gr_opp gr_zero)) as H3.
+specialize (@gr_add_inv_r G gr_zero) as H1.
+specialize (@gr_add_0_l G (gr_inv gr_zero)) as H3.
 eapply gr_eq_trans; [ | apply H1 ].
 now apply gr_eq_symm.
 Qed.
 
-Theorem gr_opp_add_distr : ∀ G (x y : gr_set G), (- (x + y) = - x - y)%G.
+Theorem gr_inv_add_distr : ∀ G (x y : gr_set G), (- (x + y) = - x - y)%G.
 Proof.
 intros *.
 apply gr_eq_trans with (y := (- (x + y) + y - y)%G).
@@ -111,7 +115,7 @@ apply gr_eq_trans with (y := (- (x + y) + y - y)%G).
  eapply gr_eq_trans; [ apply gr_add_assoc | ].
  apply gr_eq_trans with (y := (- (x + y) + 0)%G).
  +apply gr_add_compat; [ apply gr_eq_refl | ].
-  apply gr_add_opp_r.
+  apply gr_add_inv_r.
  +apply gr_add_0_r.
 -apply gr_add_compat; [ | apply gr_eq_refl ].
  (* déplacer x de droite (-x) à gauche (+x),
@@ -137,11 +141,11 @@ intros.
 now apply (@ih_lin _ _ _ (H_prop _ _ f)).
 Qed.
 
-Theorem H_opp : ∀ A B (f : HomGr A B) x, x ∈ A →
-  H_app f (gr_opp x) ≡ gr_opp (H_app f x).
+Theorem H_inv : ∀ A B (f : HomGr A B) x, x ∈ A →
+  H_app f (gr_inv x) ≡ gr_inv (H_app f x).
 Proof.
 intros.
-now apply (@ih_opp _ _ _ (H_prop _ _ f)).
+now apply (@ih_inv _ _ _ (H_prop _ _ f)).
 Qed.
 
 Theorem H_mem_compat : ∀ A B (f : HomGr A B) x, x ∈ A → H_app f x ∈ B.
@@ -170,18 +174,18 @@ Definition Gr0 :=
       gr_eq := eq;
       gr_zero := G0;
       gr_add _ _ := G0;
-      gr_opp x := x;
+      gr_inv x := x;
       gr_zero_mem := I;
       gr_add_mem _ _ _ _ := I;
       gr_add_0_l := Gr0_add_0_l;
       gr_add_assoc _ _ _ := eq_refl G0;
-      gr_opp_mem _ H := H;
-      gr_add_opp_r _ := eq_refl;
+      gr_inv_mem _ H := H;
+      gr_add_inv_r _ := eq_refl;
       gr_add_comm _ _ := eq_refl G0;
       gr_equiv := eq_equivalence;
       gr_mem_compat _ _ _ _ := I;
       gr_add_compat _ _ _ _ _ _ := eq_refl;
-      gr_opp_compat _ _ H := H |}.
+      gr_inv_compat _ _ H := H |}.
 
 Definition is_initial (G : AbGroup) :=
   ∀ H (f g : HomGr G H) (x : gr_set G), H_app f x ≡ H_app g x.
@@ -219,16 +223,16 @@ apply gr_eq_trans with (y := gr_add y y').
 +apply gr_eq_refl.
 Qed.
 
-Theorem Im_opp_mem {G H} : ∀ (f : HomGr G H) (x : gr_set H),
+Theorem Im_inv_mem {G H} : ∀ (f : HomGr G H) (x : gr_set H),
   (∃ a : gr_set G, a ∈ G ∧ (H_app f a = x)%G)
   → ∃ a : gr_set G, a ∈ G ∧ (H_app f a = - x)%G.
 Proof.
 intros f x (y & Hy & Hyx).
-exists (gr_opp y).
-split; [ now apply gr_opp_mem | ].
-apply gr_eq_trans with (y := gr_opp (H_app f y)).
-+now apply H_opp.
-+now apply gr_opp_compat.
+exists (gr_inv y).
+split; [ now apply gr_inv_mem | ].
+apply gr_eq_trans with (y := gr_inv (H_app f y)).
++now apply H_inv.
++now apply gr_inv_compat.
 Qed.
 
 Theorem Im_equiv {G} : Equivalence (@gr_eq G).
@@ -253,18 +257,18 @@ Definition Im {G H : AbGroup} (f : HomGr G H) :=
      gr_eq := @gr_eq H;
      gr_mem := λ b, ∃ a, a ∈ G ∧ H_app f a ≡ b;
      gr_add := @gr_add H;
-     gr_opp := @gr_opp H;
+     gr_inv := @gr_inv H;
      gr_zero_mem := Im_zero_mem f;
      gr_add_mem := Im_add_mem f;
      gr_add_0_l := gr_add_0_l H;
      gr_add_assoc := gr_add_assoc H;
-     gr_opp_mem := Im_opp_mem f;
-     gr_add_opp_r := gr_add_opp_r H;
+     gr_inv_mem := Im_inv_mem f;
+     gr_add_inv_r := gr_add_inv_r H;
      gr_add_comm := gr_add_comm H;
      gr_equiv := gr_equiv H;
      gr_mem_compat := Im_mem_compat f;
      gr_add_compat := gr_add_compat H;
-     gr_opp_compat := gr_opp_compat H |}.
+     gr_inv_compat := gr_inv_compat H |}.
 
 Theorem Ker_zero_mem {G H} : ∀ (f : HomGr G H), 0%G ∈ G ∧ (H_app f 0 = 0)%G.
 Proof.
@@ -283,15 +287,15 @@ eapply gr_eq_trans; [ | apply gr_add_0_l ].
 now apply gr_add_compat.
 Qed.
 
-Theorem Ker_opp_mem {G H} : ∀ (f : HomGr G H) (x : gr_set G),
+Theorem Ker_inv_mem {G H} : ∀ (f : HomGr G H) (x : gr_set G),
   x ∈ G ∧ (H_app f x = 0)%G → (- x)%G ∈ G ∧ (H_app f (- x) = 0)%G.
 Proof.
 intros f x (Hx & Hfx).
 split.
-+now apply gr_opp_mem.
-+eapply gr_eq_trans; [ now apply H_opp | ].
- eapply gr_eq_trans; [ apply gr_opp_compat, Hfx | ].
- apply gr_opp_zero.
++now apply gr_inv_mem.
++eapply gr_eq_trans; [ now apply H_inv | ].
+ eapply gr_eq_trans; [ apply gr_inv_compat, Hfx | ].
+ apply gr_inv_zero.
 Qed.
 
 Theorem Ker_mem_compat {G H} : ∀ (f : HomGr G H) x y,
@@ -312,20 +316,20 @@ Definition Ker {G H : AbGroup} (f : HomGr G H) :=
      gr_eq := @gr_eq G;
      gr_mem := λ a, a ∈ G ∧ H_app f a ≡ gr_zero;
      gr_add := @gr_add G;
-     gr_opp := @gr_opp G;
+     gr_inv := @gr_inv G;
      gr_zero_mem := Ker_zero_mem f;
      gr_add_mem := Ker_add_mem f;
      gr_add_0_l := gr_add_0_l G;
      gr_add_assoc := gr_add_assoc G;
-     gr_opp_mem := Ker_opp_mem f;
-     gr_add_opp_r := gr_add_opp_r G;
+     gr_inv_mem := Ker_inv_mem f;
+     gr_add_inv_r := gr_add_inv_r G;
      gr_add_comm := gr_add_comm G;
      gr_equiv := gr_equiv G;
      gr_mem_compat := Ker_mem_compat f;
      gr_add_compat := gr_add_compat G;
-     gr_opp_compat := gr_opp_compat G |}.
+     gr_inv_compat := gr_inv_compat G |}.
 
-Definition gr_sub {G} (x y : gr_set G) := gr_add x (gr_opp y).
+Definition gr_sub {G} (x y : gr_set G) := gr_add x (gr_inv y).
 
 (* x ∈ coKer f ↔ x ∈ H/Im f
    quotient group is H with setoid, i.e. set with its own equality *)
@@ -334,13 +338,13 @@ Definition coKer_eq {G H} (f : HomGr G H) x y := x ∉ H ∨ y ∉ H ∨ (x - y)
 
 (*
 Theorem coKer_is_abelian_group {G H} : ∀ (f : HomGr G H),
-  is_abelian_group (coKer_eq f) (@gr_opp H).
+  is_abelian_group (coKer_eq f) (@gr_inv H).
 Proof.
 intros.
 split.
 ...
 -intros x y Hxy.
- now apply gr_opp_compat.
+ now apply gr_inv_compat.
 ...
 (*
 -intros * Hxy (ax, Hx).
@@ -422,7 +426,7 @@ eapply gr_eq_trans; [ apply H_zero | ].
 apply gr_eq_symm.
 eapply gr_eq_trans; [ apply gr_add_assoc | ].
 eapply gr_eq_trans; [ apply gr_add_0_l | ].
-apply gr_add_opp_r.
+apply gr_add_inv_r.
 Qed.
 
 Theorem coKer_add_assoc {G H} : ∀ (f : HomGr G H) x y z,
@@ -438,17 +442,17 @@ apply gr_eq_symm.
 ...
 eapply gr_eq_trans; [ apply gr_add_assoc | ].
 eapply gr_eq_trans; [ apply gr_add_0_l | ].
-apply gr_add_opp_r.
+apply gr_add_inv_r.
 
 
 exists gr_zero.
  right; right.
  split; [ apply gr_zero_mem | simpl ].
  set (t := gr_add (@gr_add H x y) z).
- apply gr_eq_trans with (y := gr_add t (gr_opp t)); subst t.
+ apply gr_eq_trans with (y := gr_add t (gr_inv t)); subst t.
  +apply gr_add_compat; [ apply gr_eq_refl | ].
-  now apply gr_opp_compat, gr_eq_symm, gr_add_assoc.
- +apply gr_add_opp_r.
+  now apply gr_inv_compat, gr_eq_symm, gr_add_assoc.
+ +apply gr_add_inv_r.
 *)
 
 (*
@@ -458,8 +462,8 @@ coKer_?
  right; right.
  split; [ apply gr_zero_mem | simpl ].
  apply gr_eq_trans with (y := gr_add gr_zero gr_zero).
- +apply gr_add_compat; [ now apply gr_add_opp_r | ].
-  apply gr_opp_zero.
+ +apply gr_add_compat; [ now apply gr_add_inv_r | ].
+  apply gr_inv_zero.
  +apply gr_add_0_l.
 *)
 
@@ -471,8 +475,8 @@ coKer_add_comm
  split; [ apply gr_zero_mem | ].
  apply gr_eq_trans with (y := gr_sub (gr_add x y) (gr_add x y)).
  *simpl; apply gr_add_compat; [ apply gr_eq_refl | ].
-  now apply gr_opp_compat, gr_add_comm.
- *simpl; apply gr_add_opp_r.
+  now apply gr_inv_compat, gr_add_comm.
+ *simpl; apply gr_add_inv_r.
 *)
 
 (*
@@ -481,19 +485,19 @@ coKer_equiv
  +intros x; exists gr_zero.
   destruct (MemDec H x) as [Hx| Hx]; [ right; right | now left ].
   split; [ apply gr_zero_mem | ].
-  now simpl; apply gr_add_opp_r.
+  now simpl; apply gr_add_inv_r.
  +intros x y (z & Hz).
-  exists (gr_opp z).
+  exists (gr_inv z).
   destruct (MemDec H x) as [Hx| Hx]; [ | now right; left ].
   destruct (MemDec H y) as [Hy| Hy]; [ | now left ].
   destruct Hz as [Hz| [Hz| Hz]]; [ easy | easy | ].
   right; right.
-  split; [ now apply gr_opp_mem | ].
-  apply gr_eq_trans with (y := gr_opp (gr_sub x y)).
+  split; [ now apply gr_inv_mem | ].
+  apply gr_eq_trans with (y := gr_inv (gr_sub x y)).
   *apply gr_eq_symm.
    unfold gr_sub.
    eapply gr_eq_trans.
-  --simpl in z; apply gr_opp_add_distr.
+  --simpl in z; apply gr_inv_add_distr.
   --idtac.
 *)
 
@@ -503,7 +507,7 @@ coKer_add_compat.
  split; [ | split ]; [ now apply gr_add_mem | now apply gr_add_mem | ].
  exists (z - z')%G.
  split.
- +apply gr_add_mem; [ easy | now apply gr_opp_mem ].
+ +apply gr_add_mem; [ easy | now apply gr_inv_mem ].
  +idtac.
 *)
 
@@ -513,18 +517,18 @@ Definition coKer {G H : AbGroup} (f : HomGr G H) :=
      gr_eq := coKer_eq f;
      gr_mem := gr_mem H;
      gr_add := @gr_add H;
-     gr_opp := @gr_opp H;
+     gr_inv := @gr_inv H;
      gr_zero_mem := @gr_zero_mem H;
      gr_add_mem := @gr_add_mem H;
      gr_add_0_l := coKer_add_0_l f;
      gr_add_assoc := coKer_add_assoc f;
-     gr_opp_mem := Ker_opp_mem f;
-     gr_add_opp_r := gr_add_opp_r G;
+     gr_inv_mem := Ker_inv_mem f;
+     gr_add_inv_r := gr_add_inv_r G;
      gr_add_comm := gr_add_comm G;
      gr_equiv := gr_equiv G;
      gr_mem_compat := Ker_mem_compat f;
      gr_add_compat := gr_add_compat G;
-     gr_opp_compat := gr_opp_compat G |}.
+     gr_inv_compat := gr_inv_compat G |}.
 
 Inductive sequence {A : AbGroup} :=
   | Seq1 : sequence
