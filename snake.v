@@ -470,17 +470,18 @@ apply gr_eq_symm.
 apply gr_add_assoc.
 Qed.
 
-(*
-coKer_?
--intros x.
- exists gr_zero.
- right; right.
- split; [ apply gr_zero_mem | simpl ].
- apply gr_eq_trans with (y := gr_add gr_zero gr_zero).
- +apply gr_add_compat; [ now apply gr_add_inv_r | ].
-  apply gr_inv_zero.
- +apply gr_add_0_l.
-*)
+Theorem coKer_add_inv_r {G H} : ∀ (f : HomGr G H) x, coKer_eq f (x - x)%G 0%G.
+Proof.
+intros.
+right; right.
+exists 0%G.
+split; [ apply gr_zero_mem | ].
+eapply gr_eq_trans; [ apply f | ].
+apply gr_eq_symm.
+apply gr_eq_trans with (y := (0 - 0)%G).
+-apply gr_add_compat; [ apply gr_add_inv_r | apply gr_eq_refl ].
+-apply gr_add_inv_r.
+Qed.
 
 (*
 coKer_add_comm
@@ -537,8 +538,8 @@ Definition coKer {G H : AbGroup} (f : HomGr G H) :=
      gr_add_mem := @gr_add_mem H;
      gr_add_0_l := coKer_add_0_l f;
      gr_add_assoc := coKer_add_assoc f;
-     gr_inv_mem := Ker_inv_mem f;
-     gr_add_inv_r := gr_add_inv_r G;
+     gr_inv_mem := gr_inv_mem H;
+     gr_add_inv_r := coKer_add_inv_r f;
      gr_add_comm := gr_add_comm G;
      gr_equiv := gr_equiv G;
      gr_mem_compat := Ker_mem_compat f;
