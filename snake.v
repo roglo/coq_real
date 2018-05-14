@@ -8,17 +8,21 @@ Require ClassicalChoice.
 Reserved Notation "x '∈' S" (at level 60).
 Reserved Notation "x '≡' y" (at level 70).
 
-(* Group sets are setoid, i.e. there is a redefinition of equality (gr_eq) with
+(* Abelian Groups.
+
+   Group sets are setoid, i.e. there is a redefinition of equality (gr_eq) with
    its compatibility with membership (gr_mem_compat), addition (gr_add_compat),
    and inverse (gr_inv_compat) *)
 
 Record AbGroup :=
-  { gr_set : Type;
+  { (* data *)
+    gr_set : Type;
     gr_mem : gr_set → Prop where "x ∈ G" := (gr_mem x);
     gr_eq : gr_set → gr_set → Prop where "x ≡ y" := (gr_eq x y);
     gr_zero : gr_set where "0" := (gr_zero);
     gr_add : gr_set → gr_set → gr_set where "x + y" := (gr_add x y);
     gr_inv : gr_set → gr_set where "- x" := (gr_inv x);
+    (* properties *)
     gr_zero_mem : 0 ∈ G;
     gr_add_mem : ∀ x y, x ∈ G → y ∈ G → x + y ∈ G;
     gr_add_0_l : ∀ x, 0 + x ≡ x;
