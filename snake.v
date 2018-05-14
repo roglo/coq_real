@@ -156,7 +156,15 @@ Qed.
 Theorem gr_inv_inv : ∀ G (x : gr_set G), (- - x = x)%G.
 Proof.
 intros.
-...
+apply gr_eq_trans with (y := (- - x + (- x + x))%G).
+-apply gr_eq_symm.
+ apply gr_eq_trans with (y := (- - x + 0)%G).
+ +apply gr_add_compat; [ apply gr_eq_refl | apply gr_add_inv_l ].
+ +apply gr_add_0_r.
+-eapply gr_eq_trans; [ apply gr_eq_symm, gr_add_assoc | ].
+ eapply gr_eq_trans; [ | apply gr_add_0_l ].
+ apply gr_add_compat; [ apply gr_add_inv_l | apply gr_eq_refl ].
+Qed.
 
 Theorem H_zero : ∀ A B (f : HomGr A B), H_app f gr_zero ≡ gr_zero.
 Proof.
@@ -527,6 +535,14 @@ unfold coKer_eq; split.
  +eapply gr_eq_trans; [ apply gr_inv_add_distr | ].
   eapply gr_eq_trans; [ apply gr_add_comm | ].
   apply gr_add_compat; [ | apply gr_eq_refl ].
+  apply gr_inv_inv.
+-intros x y z Hxy Hyz.
+ destruct (MemDec H x) as [Hx| Hx]; [ | now left ].
+ destruct (MemDec H z) as [Hz| Hz]; [ | now right; left ].
+ right; right.
+ destruct Hxy as [Hxy| [Hxy| Hxy]]; [ easy | | ].
+ +destruct Hyz as [Hyz| [Hyz| Hyz]].
+  *simpl.
 ...
 
 (*
