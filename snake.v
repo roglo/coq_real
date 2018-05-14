@@ -102,7 +102,14 @@ Check gr_add_0_l.
 apply gr_add_0_l.
 Qed.
 
-Theorem gr_inv_zero : ∀ G, gr_inv gr_zero ≡ @gr_zero G.
+Theorem gr_add_inv_l : ∀ G (x : gr_set G), (- x + x = 0)%G.
+Proof.
+intros.
+eapply gr_eq_trans; [ apply gr_add_comm | ].
+apply gr_add_inv_r.
+Qed.
+
+Theorem gr_inv_zero : ∀ G, (- 0 = @gr_zero G)%G.
 Proof.
 intros.
 specialize (@gr_add_inv_r G gr_zero) as H1.
@@ -111,26 +118,40 @@ eapply gr_eq_trans; [ | apply H1 ].
 now apply gr_eq_symm.
 Qed.
 
+Theorem gr_sub_move_r : ∀ G (x y z : gr_set G),
+  (x - y = z)%G ↔ (x = z + y)%G.
+Proof.
+intros.
+split; intros Hxyz.
+-apply gr_eq_trans with (y := ((x - y) + y)%G).
+ +apply gr_eq_symm.
+  eapply gr_eq_trans; [ apply gr_add_assoc | ].
+  apply gr_eq_trans with (y := (x + 0)%G).
+  *apply gr_add_compat; [ apply gr_eq_refl | apply gr_add_inv_l ].
+  *apply gr_add_0_r.
+ +apply gr_add_compat; [ easy | apply gr_eq_refl ].
+-apply gr_eq_trans with (y := (z + y - y)%G).
+ +apply gr_add_compat; [ easy | apply gr_eq_refl ].
+ +eapply gr_eq_trans; [ apply gr_add_assoc | ].
+  apply gr_eq_trans with (y := (z + 0)%G).
+  *apply gr_add_compat; [ apply gr_eq_refl | apply gr_add_inv_r ].
+  *apply gr_add_0_r.
+Qed.
+
 Theorem gr_inv_add_distr : ∀ G (x y : gr_set G), (- (x + y) = - x - y)%G.
 Proof.
 intros *.
-apply gr_eq_trans with (y := (- (x + y) + y - y)%G).
--apply gr_eq_symm.
+apply gr_eq_symm.
+apply gr_sub_move_r.
+eapply gr_eq_trans.
+-apply gr_eq_symm, gr_add_0_l.
+-apply gr_sub_move_r.
+ apply gr_eq_symm.
  eapply gr_eq_trans; [ apply gr_add_assoc | ].
- apply gr_eq_trans with (y := (- (x + y) + 0)%G).
- +apply gr_add_compat; [ apply gr_eq_refl | ].
-  apply gr_add_inv_r.
- +apply gr_add_0_r.
--apply gr_add_compat; [ | apply gr_eq_refl ].
- (* déplacer x de droite (-x) à gauche (+x),
-    associer (x+y) ; utiliser le fait que -(x+y)+(x+y)=0 *)
-Abort. (* à reprendre plus tard...
-...
-
-Theorem gr_sub_move_r : ∀ G (x y z : gr_set G),
-  (x - y = z ↔ x = z + y)%G.
-...
-*)
+ apply gr_eq_trans with (y := (- (x + y) + (x + y))%G).
+ +apply gr_add_compat; [ apply gr_eq_refl | apply gr_add_comm ].
+ +apply gr_add_inv_l.
+Qed.
 
 Theorem H_zero : ∀ A B (f : HomGr A B), H_app f gr_zero ≡ gr_zero.
 Proof.
@@ -443,21 +464,11 @@ exists 0%G.
 split; [ apply gr_zero_mem | ].
 eapply gr_eq_trans; [ apply H_zero | ].
 apply gr_eq_symm.
-...
-eapply gr_eq_trans; [ apply gr_add_assoc | ].
+apply gr_sub_move_r, gr_eq_symm.
 eapply gr_eq_trans; [ apply gr_add_0_l | ].
-apply gr_add_inv_r.
-
-
-exists gr_zero.
- right; right.
- split; [ apply gr_zero_mem | simpl ].
- set (t := gr_add (@gr_add H x y) z).
- apply gr_eq_trans with (y := gr_add t (gr_inv t)); subst t.
- +apply gr_add_compat; [ apply gr_eq_refl | ].
-  now apply gr_inv_compat, gr_eq_symm, gr_add_assoc.
- +apply gr_add_inv_r.
-*)
+apply gr_eq_symm.
+apply gr_add_assoc.
+Qed.
 
 (*
 coKer_?
