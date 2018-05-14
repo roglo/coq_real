@@ -373,7 +373,7 @@ Definition gr_sub {G} (x y : gr_set G) := gr_add x (gr_inv y).
    quotient group is H with setoid, i.e. set with its own equality *)
 
 Definition coKer_eq {G H} (f : HomGr G H) x y :=
-  x ∉ H ∨ y ∉ H ∨ (x - y)%G ∈ Im f.
+  ¬ (x ∈ H ∧ y ∈ H) ∨ (x - y)%G ∈ Im f.
 
 (*
 Theorem coKer_is_abelian_group {G H} : ∀ (f : HomGr G H),
@@ -458,7 +458,7 @@ Theorem coKer_add_0_l {G H} : ∀ (f : HomGr G H) x, coKer_eq f (0 + x)%G x.
 Proof.
 intros.
 unfold coKer_eq.
-right; right.
+right.
 exists 0%G.
 split; [ apply gr_zero_mem | ].
 eapply gr_eq_trans; [ apply H_zero | ].
@@ -473,7 +473,7 @@ Theorem coKer_add_assoc {G H} : ∀ (f : HomGr G H) x y z,
 Proof.
 intros.
 unfold coKer_eq.
-right; right.
+right.
 exists 0%G.
 split; [ apply gr_zero_mem | ].
 eapply gr_eq_trans; [ apply H_zero | ].
@@ -487,7 +487,7 @@ Qed.
 Theorem coKer_add_inv_r {G H} : ∀ (f : HomGr G H) x, coKer_eq f (x - x)%G 0%G.
 Proof.
 intros.
-right; right.
+right.
 exists 0%G.
 split; [ apply gr_zero_mem | ].
 eapply gr_eq_trans; [ apply f | ].
@@ -501,7 +501,7 @@ Theorem coKer_add_comm {G H} : ∀ (f : HomGr G H) x y,
   coKer_eq f (x + y)%G (y + x)%G.
 Proof.
 intros.
-right; right.
+right.
 exists 0%G.
 split; [ apply gr_zero_mem | ].
 eapply gr_eq_trans; [ apply f | ].
@@ -517,16 +517,16 @@ Proof.
 intros.
 unfold coKer_eq; split.
 -intros x.
- destruct (MemDec H x) as [Hx| Hx]; [ right; right | now left ].
+ destruct (MemDec H x) as [Hx| Hx]; [ right | now left ].
  exists 0%G.
  split; [ apply gr_zero_mem | ].
  eapply gr_eq_trans; [ apply f | ].
  apply gr_eq_symm, gr_add_inv_r.
 -intros x y Hxy.
- destruct (MemDec H x) as [Hx| Hx]; [ | now right; left ].
+ destruct (MemDec H x) as [Hx| Hx]; [ | now left ].
  destruct (MemDec H y) as [Hy| Hy]; [ | now left ].
- right; right.
- destruct Hxy as [Hz| [Hz| Hz]]; [ easy | easy | ].
+ right.
+ destruct Hxy as [Hz| Hz]; [ now exfalso; apply Hz | ].
  destruct Hz as (z & Hz).
  exists (- z)%G.
  split; [ now apply gr_inv_mem | ].
@@ -539,11 +539,11 @@ unfold coKer_eq; split.
   apply gr_inv_inv.
 -intros x y z Hxy Hyz.
  destruct (MemDec H x) as [Hx| Hx]; [ | now left ].
- destruct (MemDec H z) as [Hz| Hz]; [ | now right; left ].
+ destruct (MemDec H z) as [Hz| Hz]; [ | now left ].
  destruct (MemDec H y) as [Hy| Hy].
- +right; right.
-  destruct Hxy as [Hxy| [Hxy| Hxy]]; [ easy | easy | ].
-  destruct Hyz as [Hyz| [Hyz| Hyz]]; [ easy | easy | ].
+ +right.
+  destruct Hxy as [Hxy| Hxy]; [ now exfalso; apply Hxy |  ].
+  destruct Hyz as [Hyz| Hyz]; [ now exfalso; apply Hyz | ].
   simpl in Hxy, Hyz.
   destruct Hxy as (t, Ht).
   destruct Hyz as (u, Hu).
@@ -558,10 +558,8 @@ unfold coKer_eq; split.
    apply gr_eq_trans with (y := (0 - z)%G).
   --apply gr_add_compat; [ apply gr_add_inv_l | apply gr_eq_refl ].
   --apply gr_add_0_l.
- +destruct Hxy as [Hxy| [Hxy| Hxy]]; [ easy | | ].
-  *destruct Hyz as [Hyz| [Hyz| Hyz]]; [ | easy | ].
-  --right; right.
-    simpl.
+ +destruct Hxy as [Hxy| Hxy].
+  *destruct Hyz as [Hyz| Hyz].
 ...
 
 (*
