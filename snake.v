@@ -372,7 +372,8 @@ Definition gr_sub {G} (x y : gr_set G) := gr_add x (gr_inv y).
 (* x ∈ coKer f ↔ x ∈ H/Im f
    quotient group is H with setoid, i.e. set with its own equality *)
 
-Definition coKer_eq {G H} (f : HomGr G H) x y := x ∉ H ∨ y ∉ H ∨ (x - y)%G ∈ Im f.
+Definition coKer_eq {G H} (f : HomGr G H) x y :=
+  x ∉ H ∨ y ∉ H ∨ (x - y)%G ∈ Im f.
 
 (*
 Theorem coKer_is_abelian_group {G H} : ∀ (f : HomGr G H),
