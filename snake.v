@@ -173,13 +173,11 @@ apply gr_eq_trans with (y := (- (x + y) + y - y)%G).
   apply gr_add_opp_r.
  +apply gr_add_0_r.
 -apply gr_add_compat; [ | apply gr_eq_refl ].
-Admitted.
-(*
+...
 
 Theorem gr_sub_move_r : ∀ G (x y z : gr_set G),
   x ∈ G → y ∈ G → (x - y = z ↔ x = z + y)%G.
 ...
-*)
 
 Theorem H_zero : ∀ A B (f : HomGr A B), H_app f gr_zero ≡ gr_zero.
 Proof.
@@ -293,26 +291,18 @@ split.
 -intros x x' (Hx, Hfx) (Hx', Hfx').
  split; [ now apply gr_add_mem | ].
  eapply gr_eq_trans; [ now apply H_lin | ].
- assert (H1 : gr_add gr_zero gr_zero ≡ @gr_zero H). {
-...
-   apply gr_add_0_l, gr_zero_mem.
- }
- eapply gr_eq_trans; [ | apply H1 ].
+ eapply gr_eq_trans; [ | apply gr_add_0_l ].
  now apply gr_add_compat.
--intros x (Hx, Hfx).
- now apply gr_add_0_l.
--intros * (ax, Hx) (ay, Hy) (az, Hz).
- now apply gr_add_assoc.
+-intros x; apply gr_add_0_l.
+-intros; apply gr_add_assoc.
 -intros x (Hx & Hfx).
  split.
  +now apply gr_opp_mem.
  +eapply gr_eq_trans; [ now apply H_opp | ].
   eapply gr_eq_trans; [ apply gr_opp_compat, Hfx | ].
   apply gr_opp_zero.
--intros x (Hx & Hfx).
- now apply gr_add_opp_r.
--intros * (ax, Hx) (ay, Hy).
- now apply gr_add_comm.
+-intros; apply gr_add_opp_r.
+-intros; apply gr_add_comm.
 -split.
  +intros x; apply gr_eq_refl.
  +intros x y; apply gr_eq_symm.
@@ -365,18 +355,15 @@ split.
 -simpl; apply gr_zero_mem.
 -intros * Hx Hy.
  now apply gr_add_mem.
--intros * Hx.
+-intros.
  exists gr_zero.
  right; right.
  split; [ apply gr_zero_mem | simpl ].
- eapply gr_eq_trans.
- +apply gr_add_assoc; [ apply gr_zero_mem | easy | ].
-  now apply gr_opp_mem.
- +apply gr_eq_trans with (y := gr_add gr_zero gr_zero).
-  *apply gr_add_compat; [ apply gr_eq_refl | ].
-   now apply gr_add_opp_r.
-  *apply gr_add_0_l, gr_zero_mem.
--intros x y z Hx Hy Hz.
+ eapply gr_eq_trans; [ apply gr_add_assoc | ].
+ apply gr_eq_trans with (y := gr_add gr_zero gr_zero).
+ +apply gr_add_compat; [ apply gr_eq_refl | apply gr_add_opp_r ].
+ +apply gr_add_0_l.
+-intros x y z.
  exists gr_zero.
  right; right.
  split; [ apply gr_zero_mem | simpl ].
@@ -385,18 +372,17 @@ split.
  +apply gr_add_compat; [ apply gr_eq_refl | ].
   now apply gr_opp_compat, gr_eq_symm, gr_add_assoc.
  +apply gr_add_opp_r.
-  apply gr_add_mem; [ now apply gr_add_mem | easy ].
 -intros x Hx.
  now apply gr_opp_mem.
--intros x Hx.
+-intros x.
  exists gr_zero.
  right; right.
  split; [ apply gr_zero_mem | simpl ].
  apply gr_eq_trans with (y := gr_add gr_zero gr_zero).
  +apply gr_add_compat; [ now apply gr_add_opp_r | ].
   apply gr_opp_zero.
- +apply gr_add_0_l, gr_zero_mem.
--intros x y Hx Hy.
+ +apply gr_add_0_l.
+-intros x y.
  exists gr_zero.
  right; right.
  split; [ apply gr_zero_mem | ].
@@ -404,7 +390,6 @@ split.
  *simpl; apply gr_add_compat; [ apply gr_eq_refl | ].
   now apply gr_opp_compat, gr_add_comm.
  *simpl; apply gr_add_opp_r.
-  now apply gr_add_mem.
 -unfold coKer_eq; split.
  +intros x; exists gr_zero.
   destruct (MemDec H x) as [Hx| Hx]; [ right; right | now left ].
@@ -421,8 +406,8 @@ split.
   *apply gr_eq_symm.
    unfold gr_sub.
    eapply gr_eq_trans.
-  --simpl in z; apply gr_opp_add_distr; [ easy | ].
-    now apply gr_opp_mem.
+  --simpl in z; apply gr_opp_add_distr.
+  --idtac.
 ...
   *now simpl; apply gr_opp_compat.
  +idtac.
