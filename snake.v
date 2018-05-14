@@ -176,7 +176,7 @@ apply gr_eq_trans with (y := (- (x + y) + y - y)%G).
 ...
 
 Theorem gr_sub_move_r : ∀ G (x y z : gr_set G),
-  x ∈ G → y ∈ G → (x - y = z ↔ x = z + y)%G.
+  (x - y = z ↔ x = z + y)%G.
 ...
 
 Theorem H_zero : ∀ A B (f : HomGr A B), H_app f gr_zero ≡ gr_zero.
