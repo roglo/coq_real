@@ -7,8 +7,7 @@ Require ClassicalChoice.
 
 Record is_abelian_group {T} (gr_eq : T → T → Prop) (gr_mem : T → Prop)
        gr_add gr_opp :=
-  { ig_mem_compat : ∀ x y, gr_eq x y → gr_mem x → gr_mem y;
-    ig_add_compat : ∀ x y x' y',
+  { ig_add_compat : ∀ x y x' y',
       gr_eq x y → gr_eq x' y' → gr_eq (gr_add x x') (gr_add y y');
     ig_opp_compat : ∀ x y,
       gr_eq x y → gr_eq (gr_opp x) (gr_opp y) }.
@@ -30,6 +29,7 @@ Record AbGroup :=
     gr_add_opp_r : ∀ x, x + (- x) ≡ 0;
     gr_add_comm : ∀ x y, x + y ≡ y + x;
     gr_equiv : Equivalence gr_eq;
+    gr_mem_compat : ∀ x y, x ≡ y → gr_mem x → gr_mem y;
     gr_prop : is_abelian_group gr_eq gr_mem gr_add gr_opp }.
 
 Arguments gr_eq [_].
@@ -43,6 +43,7 @@ Arguments gr_opp_mem G : rename.
 Arguments gr_add_opp_r G : rename.
 Arguments gr_add_comm G : rename.
 Arguments gr_equiv G : rename.
+Arguments gr_mem_compat G : rename.
 
 Notation "x '∈' S" := (gr_mem S x) (at level 60).
 Notation "x '∉' S" := (¬ gr_mem S x) (at level 60).
@@ -107,12 +108,6 @@ Theorem gr_opp_compat : ∀ G (x y : gr_set G),
 Proof.
 intros * Hxy.
 now apply (ig_opp_compat _ _ _ _ (gr_prop G)).
-Qed.
-
-Theorem gr_mem_compat : ∀ G x y, x ≡ y → x ∈ G → y ∈ G.
-Proof.
-intros * Hxy Hx.
-eapply (ig_mem_compat _ _ _ _ (gr_prop G)); [ apply Hxy | apply Hx ].
 Qed.
 
 Theorem gr_opp_zero : ∀ G, gr_opp gr_zero ≡ @gr_zero G.
@@ -205,6 +200,7 @@ Definition Gr0 :=
       gr_add_opp_r _ := eq_refl;
       gr_add_comm _ _ := eq_refl G0;
       gr_equiv := eq_equivalence;
+      gr_mem_compat _ _ _ _ := I;
       gr_prop := Gr0_prop |}.
 
 Definition is_initial (G : AbGroup) :=
@@ -227,10 +223,6 @@ Theorem Im_is_abelian_group {G H} (f : HomGr G H) :
 Proof.
 intros.
 split.
--intros * Hxy (z, Hz).
- exists z.
- split; [ easy | ].
- eapply gr_eq_trans; [ apply Hz | easy ].
 -apply gr_add_compat.
 -apply gr_opp_compat.
 Qed.
@@ -275,6 +267,16 @@ apply gr_equiv.
 Show Proof.
 Qed.
 
+Theorem Im_mem_compat {G H} : ∀ f (x y : gr_set H),
+  (x = y)%G
+  → (∃ a, a ∈ G ∧ (H_app f a = x)%G)
+  → ∃ a, a ∈ G ∧ (H_app f a = y)%G.
+intros * Hxy (z, Hz).
+exists z.
+split; [ easy | ].
+eapply gr_eq_trans; [ apply Hz | easy ].
+Qed.
+
 Definition Im {G H : AbGroup} (f : HomGr G H) :=
   {| gr_set := gr_set H;
      gr_zero := gr_zero;
@@ -290,6 +292,7 @@ Definition Im {G H : AbGroup} (f : HomGr G H) :=
      gr_add_opp_r := gr_add_opp_r H;
      gr_add_comm := gr_add_comm H;
      gr_equiv := gr_equiv H;
+     gr_mem_compat := Im_mem_compat f;
      gr_prop := Im_is_abelian_group f |}.
 
 Theorem Ker_is_abelian_group {G H} : ∀ (f : HomGr G H),
@@ -298,13 +301,6 @@ Theorem Ker_is_abelian_group {G H} : ∀ (f : HomGr G H),
 Proof.
 intros.
 split.
--intros * Hxy (ax, Hx).
- split.
- +eapply gr_mem_compat; [ apply Hxy | easy ].
- +eapply gr_eq_trans; [ | apply Hx ].
-  apply gr_eq_symm.
-  apply H_compat; [ easy | | easy ].
-  eapply gr_mem_compat; [ apply Hxy | easy ].
 -intros x y x' y' Hxy Hxy'.
  now apply gr_add_compat.
 -intros x y Hxy.
@@ -339,6 +335,18 @@ split.
  apply gr_opp_zero.
 Qed.
 
+Theorem Ker_mem_compat {G H} : ∀ (f : HomGr G H) x y,
+  (x = y)%G → x ∈ G ∧ (H_app f x = 0)%G → y ∈ G ∧ (H_app f y = 0)%G.
+Proof.
+intros * Hxy (ax, Hx).
+split.
+-eapply gr_mem_compat; [ apply Hxy | easy ].
+-eapply gr_eq_trans; [ | apply Hx ].
+ apply gr_eq_symm.
+ apply H_compat; [ easy | | easy ].
+ eapply gr_mem_compat; [ apply Hxy | easy ].
+Qed.
+
 Definition Ker {G H : AbGroup} (f : HomGr G H) :=
   {| gr_set := gr_set G;
      gr_zero := gr_zero;
@@ -354,6 +362,7 @@ Definition Ker {G H : AbGroup} (f : HomGr G H) :=
      gr_add_opp_r := gr_add_opp_r G;
      gr_add_comm := gr_add_comm G;
      gr_equiv := gr_equiv G;
+     gr_mem_compat := Ker_mem_compat f;
      gr_prop := Ker_is_abelian_group f |}.
 
 Definition gr_sub {G} (x y : gr_set G) := gr_add x (gr_opp y).
@@ -368,7 +377,6 @@ Theorem coKer_is_abelian_group {G H} : ∀ (f : HomGr G H),
 Proof.
 intros.
 split.
--now intros * (ax, Hxy) Hx.
 -intros x y x' y' (Hx & Hy & z & Hz & Hxy) (Hx' & Hy' & z' & Hz' & Hxy').
  split; [ | split ]; [ now apply gr_add_mem | now apply gr_add_mem | ].
  exists (z - z')%G.
