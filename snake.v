@@ -307,13 +307,6 @@ Theorem Ker_is_abelian_group {G H} : ∀ (f : HomGr G H),
 Proof.
 intros.
 split.
-...
--intros x (Hx & Hfx).
- split.
- +now apply gr_opp_mem.
- +eapply gr_eq_trans; [ now apply H_opp | ].
-  eapply gr_eq_trans; [ apply gr_opp_compat, Hfx | ].
-  apply gr_opp_zero.
 -intros; apply gr_add_opp_r.
 -intros; apply gr_add_comm.
 -split.
@@ -350,6 +343,16 @@ eapply gr_eq_trans; [ | apply gr_add_0_l ].
 now apply gr_add_compat.
 Qed.
 
+Theorem Ker_opp_mem {G} : ∀ x : gr_set G,
+  x ∈ G ∧ (H_app f x = 0)%G → (- x)%G ∈ G ∧ (H_app f (- x) = 0)%G.
+-intros x (Hx & Hfx).
+ split.
+ +now apply gr_opp_mem.
+ +eapply gr_eq_trans; [ now apply H_opp | ].
+  eapply gr_eq_trans; [ apply gr_opp_compat, Hfx | ].
+  apply gr_opp_zero.
+*)
+
 Definition Ker {G H : AbGroup} (f : HomGr G H) :=
   {| gr_set := gr_set G;
      gr_zero := gr_zero;
@@ -361,6 +364,7 @@ Definition Ker {G H : AbGroup} (f : HomGr G H) :=
      gr_add_mem := Ker_add_mem f;
      gr_add_0_l := gr_add_0_l G;
      gr_add_assoc := gr_add_assoc G;
+     gr_opp_mem := I;
      gr_prop := Ker_is_abelian_group f |}.
 
 Definition gr_sub {G} (x y : gr_set G) := gr_add x (gr_opp y).
