@@ -9,13 +9,12 @@ Record is_abelian_group {T} (gr_eq : T → T → Prop) (gr_mem : T → Prop)
        gr_zero gr_add gr_opp :=
   { ig_zero : gr_mem gr_zero;
     ig_add_mem : ∀ x y, gr_mem x → gr_mem y → gr_mem (gr_add x y);
-    ig_add_0_l : ∀ x, gr_mem x → gr_eq (gr_add gr_zero x) x;
-    ig_add_assoc : ∀ x y z, gr_mem x → gr_mem y → gr_mem z →
+    ig_add_0_l : ∀ x, gr_eq (gr_add gr_zero x) x;
+    ig_add_assoc : ∀ x y z,
       gr_eq (gr_add (gr_add x y) z) (gr_add x (gr_add y z));
     ig_opp_mem : ∀ x, gr_mem x → gr_mem (gr_opp x);
-    ig_add_opp_r : ∀ x, gr_mem x → gr_eq (gr_add x (gr_opp x)) gr_zero;
-    ig_add_comm : ∀ x y, gr_mem x → gr_mem y →
-      gr_eq (gr_add x y) (gr_add y x);
+    ig_add_opp_r : ∀ x, gr_eq (gr_add x (gr_opp x)) gr_zero;
+    ig_add_comm : ∀ x y, gr_eq (gr_add x y) (gr_add y x);
     ig_equiv : Equivalence gr_eq;
     ig_mem_compat : ∀ x y, gr_eq x y → gr_mem x → gr_mem y;
     ig_add_compat : ∀ x y x' y',
@@ -97,16 +96,16 @@ intros.
 now apply (ig_add_mem _ _ _ _ _ (gr_prop G)).
 Qed.
 
-Theorem gr_add_0_l : ∀ G x, x ∈ G → (0 + x = x)%G.
+Theorem gr_add_0_l : ∀ G (x : gr_set G), (0 + x = x)%G.
 Proof.
 intros.
-now apply (ig_add_0_l _ _ _ _ _ (gr_prop G)).
+apply (ig_add_0_l _ _ _ _ _ (gr_prop G)).
 Qed.
 
-Theorem gr_add_opp_r : ∀ G x, x ∈ G → gr_add x (gr_opp x) ≡ gr_zero.
+Theorem gr_add_opp_r : ∀ G (x : gr_set G), (x - x = 0)%G.
 Proof.
 intros.
-now apply (ig_add_opp_r _ _ _ _ _ (gr_prop G)).
+apply (ig_add_opp_r _ _ _ _ _ (gr_prop G)).
 Qed.
 
 Theorem gr_opp_mem : ∀ G x, x ∈ G → gr_opp x ∈ G.
@@ -115,25 +114,23 @@ intros.
 now apply (ig_opp_mem _ _ _ _ _ (gr_prop G)).
 Qed.
 
-Theorem gr_add_assoc : ∀ G x y z, x ∈ G → y ∈ G → z ∈ G →
-  gr_add (gr_add x y) z ≡ gr_add x (gr_add y z).
+Theorem gr_add_assoc : ∀ G (x y z : gr_set G), ((x + y) + z = x + (y + z))%G.
 Proof.
 intros.
-now apply (ig_add_assoc _ _ _ _ _ (gr_prop G)).
+apply (ig_add_assoc _ _ _ _ _ (gr_prop G)).
 Qed.
 
-Theorem gr_add_comm : ∀ G x y, x ∈ G → y ∈ G → gr_add x y ≡ gr_add y x.
+Theorem gr_add_comm : ∀ G (x y : gr_set G), (x + y = y + x)%G.
 Proof.
 intros.
-now apply (ig_add_comm _ _ _ _ _ (gr_prop G)).
+apply (ig_add_comm _ _ _ _ _ (gr_prop G)).
 Qed.
 
-Theorem gr_add_0_r : ∀ G x, x ∈ G → (x + 0 = x)%G.
+Theorem gr_add_0_r : ∀ G (x : gr_set G), (x + 0 = x)%G.
 Proof.
 intros.
-eapply gr_eq_trans.
--apply gr_add_comm; [ easy | apply gr_zero_mem ].
--now apply (ig_add_0_l _ _ _ _ _ (gr_prop G)).
+eapply gr_eq_trans; [ apply gr_add_comm | ].
+apply (ig_add_0_l _ _ _ _ _ (gr_prop G)).
 Qed.
 
 Theorem gr_add_compat : ∀ G (x y x' y' : gr_set G),
@@ -160,35 +157,29 @@ Theorem gr_opp_zero : ∀ G, gr_opp gr_zero ≡ @gr_zero G.
 Proof.
 intros.
 specialize (@gr_add_opp_r G gr_zero) as H1.
-assert (H2 : gr_zero ∈ G) by apply gr_zero_mem.
-specialize (H1 H2).
 specialize (@gr_add_0_l G (gr_opp gr_zero)) as H3.
-assert (H4 : gr_opp gr_zero ∈ G) by apply gr_opp_mem, gr_zero_mem.
-specialize (H3 H4).
 eapply gr_eq_trans; [ | apply H1 ].
 now apply gr_eq_symm.
 Qed.
 
-Theorem gr_opp_add_distr : ∀ G (x y : gr_set G),
-  x ∈ G → y ∈ G → (- (x + y) = - x - y)%G.
+Theorem gr_opp_add_distr : ∀ G (x y : gr_set G), (- (x + y) = - x - y)%G.
 Proof.
-intros * Hx Hy.
+intros *.
 apply gr_eq_trans with (y := (- (x + y) + y - y)%G).
 -apply gr_eq_symm.
- eapply gr_eq_trans.
- +apply gr_add_assoc; [ | easy | ].
-  *now apply gr_opp_mem, gr_add_mem.
-  *now apply gr_opp_mem.
- +apply gr_eq_trans with (y := (- (x + y) + 0)%G).
-  *apply gr_add_compat; [ apply gr_eq_refl | ].
-   now apply gr_add_opp_r.
-  *now apply gr_add_0_r, gr_opp_mem, gr_add_mem.
+ eapply gr_eq_trans; [ apply gr_add_assoc | ].
+ apply gr_eq_trans with (y := (- (x + y) + 0)%G).
+ +apply gr_add_compat; [ apply gr_eq_refl | ].
+  apply gr_add_opp_r.
+ +apply gr_add_0_r.
 -apply gr_add_compat; [ | apply gr_eq_refl ].
-...
+Admitted.
+(*
 
 Theorem gr_sub_move_r : ∀ G (x y z : gr_set G),
   x ∈ G → y ∈ G → (x - y = z ↔ x = z + y)%G.
 ...
+*)
 
 Theorem H_zero : ∀ A B (f : HomGr A B), H_app f gr_zero ≡ gr_zero.
 Proof.
@@ -270,28 +261,16 @@ split.
  apply gr_eq_trans with (y := gr_add y y').
  +now apply gr_add_compat.
  +apply gr_eq_refl.
--intros y (x & Hxg & Hx).
- apply gr_add_0_l.
- eapply gr_mem_compat; [ apply Hx | ].
- now apply H_mem_compat.
--intros * (ax, Hx) (ay, Hy) (az, Hz).
- apply gr_add_assoc.
- +eapply gr_mem_compat; [ apply Hx | now apply H_mem_compat ].
- +eapply gr_mem_compat; [ apply Hy | now apply H_mem_compat ].
- +eapply gr_mem_compat; [ apply Hz | now apply H_mem_compat ].
+-intros; apply gr_add_0_l.
+-intros; apply gr_add_assoc.
 -intros x (y & Hy & Hyx).
  exists (gr_opp y).
  split; [ now apply gr_opp_mem | ].
  apply gr_eq_trans with (y := gr_opp (H_app f y)).
  +now apply H_opp.
  +now apply gr_opp_compat.
--intros x (y & Hy & Hyx).
- apply gr_add_opp_r.
- eapply gr_mem_compat; [ apply Hyx | now apply H_mem_compat ].
--intros * (ax, Hx) (ay, Hy).
- apply gr_add_comm.
- +eapply gr_mem_compat; [ apply Hx | now apply H_mem_compat ].
- +eapply gr_mem_compat; [ apply Hy | now apply H_mem_compat ].
+-intros; apply gr_add_opp_r.
+-intros; apply gr_add_comm.
 -split.
  +intros x; apply gr_eq_refl.
  +intros x y; apply gr_eq_symm.
@@ -315,6 +294,7 @@ split.
  split; [ now apply gr_add_mem | ].
  eapply gr_eq_trans; [ now apply H_lin | ].
  assert (H1 : gr_add gr_zero gr_zero ≡ @gr_zero H). {
+...
    apply gr_add_0_l, gr_zero_mem.
  }
  eapply gr_eq_trans; [ | apply H1 ].
