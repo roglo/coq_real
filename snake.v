@@ -250,7 +250,7 @@ Qed.
 Theorem Im_add_mem {G H} : ∀ f (x y : gr_set H),
   (∃ a : gr_set G, a ∈ G ∧ (H_app f a = x)%G)
   → (∃ a : gr_set G, a ∈ G ∧ (H_app f a = y)%G)
-    → ∃ a : gr_set G, a ∈ G ∧ (H_app f a = x + y)%G.
+  → ∃ a : gr_set G, a ∈ G ∧ (H_app f a = x + y)%G.
 Proof.
 intros f y y' (x & Hxg & Hx) (x' & Hx'g & Hx').
 exists (gr_add x x').
@@ -374,85 +374,6 @@ Definition gr_sub {G} (x y : gr_set G) := gr_add x (gr_inv y).
 
 Definition coKer_eq {G H} (f : HomGr G H) x y := (x - y)%G ∈ Im f.
 
-(*
-Theorem coKer_is_abelian_group {G H} : ∀ (f : HomGr G H),
-  is_abelian_group (coKer_eq f) (@gr_inv H).
-Proof.
-intros.
-split.
-...
--intros x y Hxy.
- now apply gr_inv_compat.
-...
-(*
--intros * Hxy (ax, Hx).
- split.
- +eapply gr_mem_compat; [ apply Hxy | easy ].
- +eapply gr_eq_trans; [ | apply Hx ].
-  apply gr_eq_symm.
-  apply H_compat; [ easy | | easy ].
-  eapply gr_mem_compat; [ apply Hxy | easy ].
-*)
--intros y y' (Hy & z & Hz & x & Hgx & Hx) (Hy' & z' & Hz' & x' & Hgx' & Hx').
- split; [ now apply H | ].
- exists (gr_add z z').
- split; [ now apply H | ].
- exists (gr_add x x').
- destruct f as (appf, fp); simpl in *.
- destruct fp as (fz, fin, flin, fcomp); simpl in *.
- split.
- +eapply ig_clos; [ apply gr_prop | easy | easy ].
- +destruct H as (hs, hi, heq, hz, ho, hp).
-  destruct hp as (hzi, hc, hid, ha, hco, heqv, himo, hamo).
-  simpl in *.
-  transitivity (ho (ho y z) (ho y' z')).
-  *now etransitivity; [ apply flin | apply hamo ].
-  *etransitivity.
-  --apply ha; [ easy | easy | now apply hc ].
-  --etransitivity.
-   ++apply hco; [ easy | ].
-     apply hc; [ easy | now apply hc ].
-   ++symmetry.
-     etransitivity; [ now apply hco; apply hc | ].
-     symmetry.
-     etransitivity.
-    **apply ha; [ easy | now apply hc | easy ].
-    **symmetry.
-      etransitivity.
-    ---apply ha; [ easy | easy | now apply hc ].
-    ---apply hamo; [ easy | ].
-       etransitivity.
-     +++apply hco; [ easy | now apply hc ].
-     +++etransitivity; [ now apply ha | ].
-        symmetry.
-        apply hco; [ now apply hc | easy ].
--intros x (Hx & y & Hy).
- now apply H.
--intros x y z.
- intros (Hx & x' & Hx' & Hxx) (Hy & y' & Hy' & Hyy) (Hz & z' & Hz' & Hzz).
- eapply ig_assoc; [ apply H | easy | easy | easy ].
--intros x y (Hx & x' & Hx' & Hxx) (Hy & y' & Hy' & Hyy).
- destruct H as (hs, hi, heq, hz, ho, hp).
- destruct hp as (hzi, hc, hid, ha, hco, heqv, himo, hamo).
- simpl in *.
- now apply hco.
--apply H.
--intros y y' Hyy' (Hy & y'' & Hy'' & x & Hx & Hxy).
- split.
- +eapply ig_in_compat; [ apply H | apply Hyy' | easy ].
- +exists y''.
-  split; [ easy | ].
-  exists x.
-  split; [ easy | ].
-  destruct H as (hs, hi, heq, hz, ho, hp).
-  destruct hp as (hzi, hc, hid, ha, hco, heqv, himo, hamo).
-  simpl in *.
-  etransitivity; [ apply Hxy | now apply hamo ].
--intros x y x' y' Hxy Hxy'.
- eapply ig_add_compat; [ apply H | easy | easy ].
-Qed.
-*)
-
 Theorem coKer_add_0_l {G H} : ∀ (f : HomGr G H) x, coKer_eq f (0 + x)%G x.
 Proof.
 intros.
@@ -568,15 +489,38 @@ apply gr_mem_compat with (x := (x - H_app f z)%G).
  now apply f.
 Qed.
 
-(*
-coKer_add_compat.
--intros x y x' y' (Hx & Hy & z & Hz & Hxy) (Hx' & Hy' & z' & Hz' & Hxy').
- split; [ | split ]; [ now apply gr_add_mem | now apply gr_add_mem | ].
- exists (z - z')%G.
- split.
- +apply gr_add_mem; [ easy | now apply gr_inv_mem ].
- +idtac.
-*)
+Theorem coKer_add_compat {G H} : ∀ (f : HomGr G H) x y x' y',
+  coKer_eq f x y → coKer_eq f x' y' → coKer_eq f (x + x')%G (y + y')%G.
+Proof.
+intros f x y x' y' (z & Hz & Hfz) (z' & Hz' & Hfz').
+exists (z + z')%G.
+split.
+-now apply gr_add_mem.
+-eapply gr_eq_trans; [ now apply f | ].
+ apply gr_eq_trans with (y := ((x - y) + (x' - y'))%G); simpl.
+ +now apply gr_add_compat.
+ +eapply gr_eq_trans; [ apply gr_add_assoc | apply gr_eq_symm ].
+  eapply gr_eq_trans; [ apply gr_add_assoc | apply gr_eq_symm ].
+  apply gr_add_compat; [ apply gr_eq_refl | ].
+  eapply gr_eq_trans; [ apply gr_add_comm | ].
+  eapply gr_eq_trans; [ apply gr_add_assoc | ].
+  apply gr_add_compat; [ apply gr_eq_refl | ].
+  eapply gr_eq_trans; [ apply gr_add_comm | ].
+  apply gr_eq_symm, gr_inv_add_distr.
+Qed.
+
+Theorem coKer_inv_compat {G H} :∀ (f : HomGr G H) x y,
+  coKer_eq f x y → coKer_eq f (- x)%G (- y)%G.
+Proof.
+intros * (z & Hz & Hfz).
+unfold coKer_eq; simpl.
+exists (- z)%G.
+split; [ now apply gr_inv_mem | ].
+eapply gr_eq_trans; [ now apply f | ].
+apply gr_eq_trans with (y := (- (x - y))%G); simpl.
+-now apply gr_inv_compat.
+-apply gr_inv_add_distr.
+Qed.
 
 Definition coKer {G H : AbGroup} (f : HomGr G H) :=
   {| gr_set := gr_set H;
@@ -594,8 +538,8 @@ Definition coKer {G H : AbGroup} (f : HomGr G H) :=
      gr_add_comm := coKer_add_comm f;
      gr_equiv := coKer_equiv f;
      gr_mem_compat := coKer_mem_compat f;
-     gr_add_compat := gr_add_compat G;
-     gr_inv_compat := gr_inv_compat G |}.
+     gr_add_compat := coKer_add_compat f;
+     gr_inv_compat := coKer_inv_compat f |}.
 
 Inductive sequence {A : AbGroup} :=
   | Seq1 : sequence
@@ -630,6 +574,7 @@ Theorem is_homgr_Ker_Ker {A B A' B'} :
   → is_homgr (Ker a) (Ker b) (H_app f).
 Proof.
 intros * Hc.
+...
 split; [ apply f | | | ].
 -intros x Hx.
  split; [ now apply f; simpl in Hx | ].
