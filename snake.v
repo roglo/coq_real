@@ -5,24 +5,25 @@ Require Import Classes.RelationClasses.
 Require Import Setoid.
 Require ClassicalChoice.
 
+Reserved Notation "x '∈' S" (at level 60).
 Reserved Notation "x '≡' y" (at level 70).
 
 Record AbGroup :=
   { gr_set : Type;
-    gr_mem : gr_set → Prop;
+    gr_mem : gr_set → Prop where "x ∈ G" := (gr_mem x);
     gr_eq : gr_set → gr_set → Prop where "x ≡ y" := (gr_eq x y);
     gr_zero : gr_set where "0" := (gr_zero);
     gr_add : gr_set → gr_set → gr_set where "x + y" := (gr_add x y);
     gr_opp : gr_set → gr_set where "- x" := (gr_opp x);
-    gr_zero_mem : gr_mem 0;
-    gr_add_mem : ∀ x y, gr_mem x → gr_mem y → gr_mem (x + y);
+    gr_zero_mem : 0 ∈ G;
+    gr_add_mem : ∀ x y, x ∈ G → y ∈ G → x + y ∈ G;
     gr_add_0_l : ∀ x, 0 + x ≡ x;
     gr_add_assoc : ∀ x y z, (x + y) + z ≡ x + (y + z);
-    gr_opp_mem : ∀ x, gr_mem x → gr_mem (- x);
+    gr_opp_mem : ∀ x, x ∈ G → - x ∈ G;
     gr_add_opp_r : ∀ x, x + (- x) ≡ 0;
     gr_add_comm : ∀ x y, x + y ≡ y + x;
     gr_equiv : Equivalence gr_eq;
-    gr_mem_compat : ∀ x y, x ≡ y → gr_mem x → gr_mem y;
+    gr_mem_compat : ∀ x y, x ≡ y → x ∈ G → y ∈ G;
     gr_add_compat : ∀ x y x' y', x ≡ y → x' ≡ y' → x + x' ≡ y + y';
     gr_opp_compat : ∀ x y, x ≡ y → - x ≡ - y }.
 
@@ -30,6 +31,7 @@ Arguments gr_eq [_].
 Arguments gr_zero [_].
 Arguments gr_add [_].
 Arguments gr_opp [_].
+Arguments gr_zero_mem G : rename.
 Arguments gr_add_mem G : rename.
 Arguments gr_add_0_l G : rename.
 Arguments gr_add_assoc G : rename.
