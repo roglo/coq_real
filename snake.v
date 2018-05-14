@@ -539,10 +539,28 @@ unfold coKer_eq; split.
 -intros x y z Hxy Hyz.
  destruct (MemDec H x) as [Hx| Hx]; [ | now left ].
  destruct (MemDec H z) as [Hz| Hz]; [ | now right; left ].
- right; right.
- destruct Hxy as [Hxy| [Hxy| Hxy]]; [ easy | | ].
- +destruct Hyz as [Hyz| [Hyz| Hyz]].
-  *simpl.
+ destruct (MemDec H y) as [Hy| Hy].
+ +right; right.
+  destruct Hxy as [Hxy| [Hxy| Hxy]]; [ easy | easy | ].
+  destruct Hyz as [Hyz| [Hyz| Hyz]]; [ easy | easy | ].
+  simpl in Hxy, Hyz.
+  destruct Hxy as (t, Ht).
+  destruct Hyz as (u, Hu).
+  exists (t + u)%G.
+  split; [ now apply gr_add_mem | ].
+  eapply gr_eq_trans; [ now apply H_lin | ].
+  apply gr_eq_trans with (y := (x - y + (y - z))%G).
+  *now apply gr_add_compat.
+  *eapply gr_eq_trans; [ apply gr_add_assoc | ].
+   apply gr_add_compat; [ apply gr_eq_refl | ].
+   eapply gr_eq_trans; [ apply gr_eq_symm, gr_add_assoc | ].
+   apply gr_eq_trans with (y := (0 - z)%G).
+  --apply gr_add_compat; [ apply gr_add_inv_l | apply gr_eq_refl ].
+  --apply gr_add_0_l.
+ +destruct Hxy as [Hxy| [Hxy| Hxy]]; [ easy | | ].
+  *destruct Hyz as [Hyz| [Hyz| Hyz]]; [ | easy | ].
+  --right; right.
+    simpl.
 ...
 
 (*
