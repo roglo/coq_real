@@ -6,9 +6,8 @@ Require Import Setoid.
 Require ClassicalChoice.
 
 Record is_abelian_group {T} (gr_eq : T → T → Prop) (gr_mem : T → Prop)
-       gr_zero gr_add gr_opp :=
-  { ig_add_opp_r : ∀ x, gr_eq (gr_add x (gr_opp x)) gr_zero;
-    ig_add_comm : ∀ x y, gr_eq (gr_add x y) (gr_add y x);
+       gr_add gr_opp :=
+  { ig_add_comm : ∀ x y, gr_eq (gr_add x y) (gr_add y x);
     ig_equiv : Equivalence gr_eq;
     ig_mem_compat : ∀ x y, gr_eq x y → gr_mem x → gr_mem y;
     ig_add_compat : ∀ x y x' y',
@@ -30,7 +29,8 @@ Record AbGroup :=
     gr_add_0_l : ∀ x, 0 + x ≡ x;
     gr_add_assoc : ∀ x y z, (x + y) + z ≡ x + (y + z);
     gr_opp_mem : ∀ x, gr_mem x → gr_mem (- x);
-    gr_prop : is_abelian_group gr_eq gr_mem gr_zero gr_add gr_opp }.
+    gr_add_opp_r : ∀ x, x + (- x) ≡ 0;
+    gr_prop : is_abelian_group gr_eq gr_mem gr_add gr_opp }.
 
 Arguments gr_eq [_].
 Arguments gr_zero [_].
@@ -40,6 +40,7 @@ Arguments gr_add_mem G : rename.
 Arguments gr_add_0_l G : rename.
 Arguments gr_add_assoc G : rename.
 Arguments gr_opp_mem G : rename.
+Arguments gr_add_opp_r G : rename.
 
 Notation "x '∈' S" := (gr_mem S x) (at level 60).
 Notation "x '∉' S" := (¬ gr_mem S x) (at level 60).
@@ -72,33 +73,27 @@ Arguments H_app [A] [B].
 Theorem gr_eq_refl : ∀ G (x : gr_set G), x ≡ x.
 Proof.
 intros.
-apply (@Equivalence_Reflexive _ _ (ig_equiv _ _ _ _ _ (gr_prop G))).
+apply (@Equivalence_Reflexive _ _ (ig_equiv _ _ _ _ (gr_prop G))).
 Qed.
 
 Theorem gr_eq_symm : ∀ G (x y : gr_set G), x ≡ y → y ≡ x.
 Proof.
 intros.
-now apply (@Equivalence_Symmetric _ _ (ig_equiv _ _ _ _ _ (gr_prop G))).
+now apply (@Equivalence_Symmetric _ _ (ig_equiv _ _ _ _ (gr_prop G))).
 Qed.
 
 Theorem gr_eq_trans : ∀ G (x y z : gr_set G), x ≡ y → y ≡ z → x ≡ z.
 Proof.
 intros * Hxy Hyz.
-eapply (@Equivalence_Transitive _ _ (ig_equiv _ _ _ _ _ (gr_prop G))).
+eapply (@Equivalence_Transitive _ _ (ig_equiv _ _ _ _ (gr_prop G))).
 apply Hxy.
 apply Hyz.
-Qed.
-
-Theorem gr_add_opp_r : ∀ G (x : gr_set G), (x - x = 0)%G.
-Proof.
-intros.
-apply (ig_add_opp_r _ _ _ _ _ (gr_prop G)).
 Qed.
 
 Theorem gr_add_comm : ∀ G (x y : gr_set G), (x + y = y + x)%G.
 Proof.
 intros.
-apply (ig_add_comm _ _ _ _ _ (gr_prop G)).
+apply (ig_add_comm _ _ _ _ (gr_prop G)).
 Qed.
 
 Theorem gr_add_0_r : ∀ G (x : gr_set G), (x + 0 = x)%G.
@@ -113,20 +108,20 @@ Theorem gr_add_compat : ∀ G (x y x' y' : gr_set G),
   x ≡ y → x' ≡ y' → gr_add x x' ≡ gr_add y y'.
 Proof.
 intros.
-now apply (ig_add_compat _ _ _ _ _ (gr_prop G)).
+now apply (ig_add_compat _ _ _ _ (gr_prop G)).
 Qed.
 
 Theorem gr_opp_compat : ∀ G (x y : gr_set G),
   x ≡ y → gr_opp x ≡ gr_opp y.
 Proof.
 intros * Hxy.
-now apply (ig_opp_compat _ _ _ _ _ (gr_prop G)).
+now apply (ig_opp_compat _ _ _ _ (gr_prop G)).
 Qed.
 
 Theorem gr_mem_compat : ∀ G x y, x ≡ y → x ∈ G → y ∈ G.
 Proof.
 intros * Hxy Hx.
-eapply (ig_mem_compat _ _ _ _ _ (gr_prop G)); [ apply Hxy | apply Hx ].
+eapply (ig_mem_compat _ _ _ _ (gr_prop G)); [ apply Hxy | apply Hx ].
 Qed.
 
 Theorem gr_opp_zero : ∀ G, gr_opp gr_zero ≡ @gr_zero G.
@@ -194,7 +189,7 @@ Qed.
 
 Inductive Gr0_set := G0 : Gr0_set.
 
-Theorem Gr0_prop : is_abelian_group eq (λ _, True) G0 (λ _ _, G0) (λ x, x).
+Theorem Gr0_prop : is_abelian_group eq (λ _, True) (λ _ _, G0) (λ x, x).
 Proof.
 split; try easy.
 -split; [ easy | easy | apply eq_Transitive ].
@@ -217,6 +212,7 @@ Definition Gr0 :=
       gr_add_0_l := Gr0_add_0_l;
       gr_add_assoc _ _ _ := eq_refl G0;
       gr_opp_mem _ H := H;
+      gr_add_opp_r _ := eq_refl;
       gr_prop := Gr0_prop |}.
 
 Definition is_initial (G : AbGroup) :=
@@ -235,11 +231,10 @@ Qed.
 
 Theorem Im_is_abelian_group {G H} (f : HomGr G H) :
   is_abelian_group (@gr_eq H) (λ b, ∃ a, a ∈ G ∧ H_app f a ≡ b)
-    gr_zero (@gr_add H) (@gr_opp H).
+    (@gr_add H) (@gr_opp H).
 Proof.
 intros.
 split.
--intros; apply gr_add_opp_r.
 -intros; apply gr_add_comm.
 -split.
  +intros x; apply gr_eq_refl.
@@ -299,15 +294,15 @@ Definition Im {G H : AbGroup} (f : HomGr G H) :=
      gr_add_0_l := gr_add_0_l H;
      gr_add_assoc := gr_add_assoc H;
      gr_opp_mem := Im_opp_mem f;
+     gr_add_opp_r := gr_add_opp_r H;
      gr_prop := Im_is_abelian_group f |}.
 
 Theorem Ker_is_abelian_group {G H} : ∀ (f : HomGr G H),
   is_abelian_group (@gr_eq G) (λ x, x ∈ G ∧ H_app f x ≡ gr_zero)
-    gr_zero (@gr_add G) (@gr_opp G).
+    (@gr_add G) (@gr_opp G).
 Proof.
 intros.
 split.
--intros; apply gr_add_opp_r.
 -intros; apply gr_add_comm.
 -split.
  +intros x; apply gr_eq_refl.
@@ -366,6 +361,7 @@ Definition Ker {G H : AbGroup} (f : HomGr G H) :=
      gr_add_0_l := gr_add_0_l G;
      gr_add_assoc := gr_add_assoc G;
      gr_opp_mem := Ker_opp_mem f;
+     gr_add_opp_r := gr_add_opp_r G;
      gr_prop := Ker_is_abelian_group f |}.
 
 Definition gr_sub {G} (x y : gr_set G) := gr_add x (gr_opp y).
@@ -378,20 +374,10 @@ Definition coKer_eq {G H} (f : HomGr G H) x y :=
 
 Theorem coKer_is_abelian_group {G H} : ∀ (f : HomGr G H),
   is_abelian_group (coKer_eq f) (gr_mem H)
-    gr_zero (@gr_add H) (@gr_opp H).
+    (@gr_add H) (@gr_opp H).
 Proof.
 intros.
 split.
--intros x Hx.
- now apply gr_opp_mem.
--intros x.
- exists gr_zero.
- right; right.
- split; [ apply gr_zero_mem | simpl ].
- apply gr_eq_trans with (y := gr_add gr_zero gr_zero).
- +apply gr_add_compat; [ now apply gr_add_opp_r | ].
-  apply gr_opp_zero.
- +apply gr_add_0_l.
 -intros x y.
  exists gr_zero.
  right; right.
@@ -525,6 +511,17 @@ coKer_add_assoc
  +apply gr_add_compat; [ apply gr_eq_refl | ].
   now apply gr_opp_compat, gr_eq_symm, gr_add_assoc.
  +apply gr_add_opp_r.
+*)
+
+(*
+-intros x.
+ exists gr_zero.
+ right; right.
+ split; [ apply gr_zero_mem | simpl ].
+ apply gr_eq_trans with (y := gr_add gr_zero gr_zero).
+ +apply gr_add_compat; [ now apply gr_add_opp_r | ].
+  apply gr_opp_zero.
+ +apply gr_add_0_l.
 *)
 
 Definition coKer {G H : AbGroup} (f : HomGr G H) :=
