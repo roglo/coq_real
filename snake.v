@@ -5,10 +5,6 @@ Require Import Classes.RelationClasses.
 Require Import Setoid.
 Require ClassicalChoice.
 
-Record is_abelian_group {T} (gr_eq : T → T → Prop) gr_opp :=
-  { ig_opp_compat : ∀ x y,
-      gr_eq x y → gr_eq (gr_opp x) (gr_opp y) }.
-
 Reserved Notation "x '≡' y" (at level 70).
 
 Record AbGroup :=
@@ -28,7 +24,7 @@ Record AbGroup :=
     gr_equiv : Equivalence gr_eq;
     gr_mem_compat : ∀ x y, x ≡ y → gr_mem x → gr_mem y;
     gr_add_compat : ∀ x y x' y', x ≡ y → x' ≡ y' → x + x' ≡ y + y';
-    gr_prop : is_abelian_group gr_eq gr_opp }.
+    gr_opp_compat : ∀ x y, x ≡ y → - x ≡ - y }.
 
 Arguments gr_eq [_].
 Arguments gr_zero [_].
@@ -43,6 +39,7 @@ Arguments gr_add_comm G : rename.
 Arguments gr_equiv G : rename.
 Arguments gr_mem_compat G : rename.
 Arguments gr_add_compat G : rename.
+Arguments gr_opp_compat G : rename.
 
 Notation "x '∈' S" := (gr_mem S x) (at level 60).
 Notation "x '∉' S" := (¬ gr_mem S x) (at level 60).
@@ -93,13 +90,6 @@ intros.
 eapply gr_eq_trans; [ apply gr_add_comm | ].
 Check gr_add_0_l.
 apply gr_add_0_l.
-Qed.
-
-Theorem gr_opp_compat : ∀ G (x y : gr_set G),
-  x ≡ y → gr_opp x ≡ gr_opp y.
-Proof.
-intros * Hxy.
-now apply (ig_opp_compat _ _ (gr_prop G)).
 Qed.
 
 Theorem gr_opp_zero : ∀ G, gr_opp gr_zero ≡ @gr_zero G.
@@ -172,11 +162,6 @@ Proof.
 now intros x; destruct x.
 Qed.
 
-Theorem Gr0_prop : is_abelian_group eq (λ x : Gr0_set, x).
-Proof.
-easy.
-Qed.
-
 Definition Gr0 :=
    {| gr_set := Gr0_set;
       gr_mem _ := True;
@@ -194,7 +179,7 @@ Definition Gr0 :=
       gr_equiv := eq_equivalence;
       gr_mem_compat _ _ _ _ := I;
       gr_add_compat _ _ _ _ _ _ := eq_refl;
-      gr_prop := Gr0_prop |}.
+      gr_opp_compat _ _ H := H |}.
 
 Definition is_initial (G : AbGroup) :=
   ∀ H (f g : HomGr G H) (x : gr_set G), H_app f x ≡ H_app g x.
@@ -208,13 +193,6 @@ split; intros H f g x.
 -destruct x.
  apply gr_eq_trans with (y := gr_zero); [ apply f | apply gr_eq_symm, g ].
 -now destruct (H_app f x), (H_app g x).
-Qed.
-
-Theorem Im_is_abelian_group {G H} (f : HomGr G H) :
-  is_abelian_group (@gr_eq H) (@gr_opp H).
-Proof.
-intros.
-split; apply gr_opp_compat.
 Qed.
 
 Theorem Im_zero_mem {G H} : ∀ (f : HomGr G H),
@@ -284,16 +262,7 @@ Definition Im {G H : AbGroup} (f : HomGr G H) :=
      gr_equiv := gr_equiv H;
      gr_mem_compat := Im_mem_compat f;
      gr_add_compat := gr_add_compat H;
-     gr_prop := Im_is_abelian_group f |}.
-
-Theorem Ker_is_abelian_group {G H} : ∀ (f : HomGr G H),
-  is_abelian_group (@gr_eq G) (@gr_opp G).
-Proof.
-intros.
-split.
--intros x y Hxy.
- now apply gr_opp_compat.
-Qed.
+     gr_opp_compat := gr_opp_compat H |}.
 
 Theorem Ker_zero_mem {G H} : ∀ (f : HomGr G H), 0%G ∈ G ∧ (H_app f 0 = 0)%G.
 Proof.
@@ -352,15 +321,16 @@ Definition Ker {G H : AbGroup} (f : HomGr G H) :=
      gr_equiv := gr_equiv G;
      gr_mem_compat := Ker_mem_compat f;
      gr_add_compat := gr_add_compat G;
-     gr_prop := Ker_is_abelian_group f |}.
+     gr_opp_compat := gr_opp_compat G |}.
 
 Definition gr_sub {G} (x y : gr_set G) := gr_add x (gr_opp y).
 
 (* x ∈ coKer f ↔ x ∈ H/Im f
    quotient group is H with setoid, i.e. set with its own equality *)
 
-Definition coKer_eq {G H} (f : HomGr G H) x y := x ∈ H ∧ y ∈ H ∧ (x - y)%G ∈ Im f.
+Definition coKer_eq {G H} (f : HomGr G H) x y := x ∉ H ∨ y ∉ H ∨ (x - y)%G ∈ Im f.
 
+(*
 Theorem coKer_is_abelian_group {G H} : ∀ (f : HomGr G H),
   is_abelian_group (coKer_eq f) (@gr_opp H).
 Proof.
@@ -439,28 +409,37 @@ split.
 Qed.
 *)
 
-(*
-coKer_add_mem :
--intros * Hx Hy.
- now apply gr_add_mem.
-*)
+Theorem coKer_add_0_l {G H} : ∀ (f : HomGr G H) x, coKer_eq f (0 + x)%G x.
+Proof.
+intros.
+unfold coKer_eq.
+right; right.
+exists 0%G.
+split; [ apply gr_zero_mem | ].
+eapply gr_eq_trans; [ apply H_zero | ].
+apply gr_eq_symm.
+eapply gr_eq_trans; [ apply gr_add_assoc | ].
+eapply gr_eq_trans; [ apply gr_add_0_l | ].
+apply gr_add_opp_r.
+Qed.
 
-(*
-coKer_add_0_l
--intros.
- exists gr_zero.
- right; right.
- split; [ apply gr_zero_mem | simpl ].
- eapply gr_eq_trans; [ apply gr_add_assoc | ].
- apply gr_eq_trans with (y := gr_add gr_zero gr_zero).
- +apply gr_add_compat; [ apply gr_eq_refl | apply gr_add_opp_r ].
- +apply gr_add_0_l.
-*)
+Theorem coKer_add_assoc {G H} : ∀ (f : HomGr G H) x y z,
+  coKer_eq f (x + y + z)%G (x + (y + z))%G.
+Proof.
+intros.
+unfold coKer_eq.
+right; right.
+exists 0%G.
+split; [ apply gr_zero_mem | ].
+eapply gr_eq_trans; [ apply H_zero | ].
+apply gr_eq_symm.
+...
+eapply gr_eq_trans; [ apply gr_add_assoc | ].
+eapply gr_eq_trans; [ apply gr_add_0_l | ].
+apply gr_add_opp_r.
 
-(*
-coKer_add_assoc
--intros x y z.
- exists gr_zero.
+
+exists gr_zero.
  right; right.
  split; [ apply gr_zero_mem | simpl ].
  set (t := gr_add (@gr_add H x y) z).
@@ -528,11 +507,22 @@ coKer_add_compat.
 
 Definition coKer {G H : AbGroup} (f : HomGr G H) :=
   {| gr_set := gr_set H;
-     gr_mem := λ x, x ∈ H ∧ ∃ y, y ∈ H ∧ gr_add x y ∈ Im f;
-     gr_eq := @gr_eq H;
-     gr_zero := gr_zero H;
+     gr_zero := gr_zero;
+     gr_eq := coKer_eq f;
+     gr_mem := gr_mem H;
      gr_add := @gr_add H;
-     gr_prop := coKer_is_abelian_group f |}.
+     gr_opp := @gr_opp H;
+     gr_zero_mem := @gr_zero_mem H;
+     gr_add_mem := @gr_add_mem H;
+     gr_add_0_l := coKer_add_0_l f;
+     gr_add_assoc := coKer_add_assoc f;
+     gr_opp_mem := Ker_opp_mem f;
+     gr_add_opp_r := gr_add_opp_r G;
+     gr_add_comm := gr_add_comm G;
+     gr_equiv := gr_equiv G;
+     gr_mem_compat := Ker_mem_compat f;
+     gr_add_compat := gr_add_compat G;
+     gr_opp_compat := gr_opp_compat G |}.
 
 Inductive sequence {A : AbGroup} :=
   | Seq1 : sequence
