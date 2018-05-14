@@ -372,8 +372,7 @@ Definition gr_sub {G} (x y : gr_set G) := gr_add x (gr_inv y).
 (* x ∈ coKer f ↔ x ∈ H/Im f
    quotient group is H with setoid, i.e. set with its own equality *)
 
-Definition coKer_eq {G H} (f : HomGr G H) x y :=
-  ¬ (x ∈ H ∧ y ∈ H) ∨ (x - y)%G ∈ Im f.
+Definition coKer_eq {G H} (f : HomGr G H) x y := (x - y)%G ∈ Im f.
 
 (*
 Theorem coKer_is_abelian_group {G H} : ∀ (f : HomGr G H),
@@ -458,11 +457,11 @@ Theorem coKer_add_0_l {G H} : ∀ (f : HomGr G H) x, coKer_eq f (0 + x)%G x.
 Proof.
 intros.
 unfold coKer_eq.
-right.
 exists 0%G.
 split; [ apply gr_zero_mem | ].
 eapply gr_eq_trans; [ apply H_zero | ].
 apply gr_eq_symm.
+simpl in x; simpl.
 eapply gr_eq_trans; [ apply gr_add_assoc | ].
 eapply gr_eq_trans; [ apply gr_add_0_l | ].
 apply gr_add_inv_r.
@@ -473,25 +472,24 @@ Theorem coKer_add_assoc {G H} : ∀ (f : HomGr G H) x y z,
 Proof.
 intros.
 unfold coKer_eq.
-right.
 exists 0%G.
 split; [ apply gr_zero_mem | ].
 eapply gr_eq_trans; [ apply H_zero | ].
 apply gr_eq_symm.
+simpl in x, y, z; simpl.
 apply gr_sub_move_r, gr_eq_symm.
 eapply gr_eq_trans; [ apply gr_add_0_l | ].
-apply gr_eq_symm.
-apply gr_add_assoc.
+apply gr_eq_symm, gr_add_assoc.
 Qed.
 
 Theorem coKer_add_inv_r {G H} : ∀ (f : HomGr G H) x, coKer_eq f (x - x)%G 0%G.
 Proof.
 intros.
-right.
 exists 0%G.
 split; [ apply gr_zero_mem | ].
 eapply gr_eq_trans; [ apply f | ].
 apply gr_eq_symm.
+simpl.
 apply gr_eq_trans with (y := (0 - 0)%G).
 -apply gr_add_compat; [ apply gr_add_inv_r | apply gr_eq_refl ].
 -apply gr_add_inv_r.
@@ -501,11 +499,11 @@ Theorem coKer_add_comm {G H} : ∀ (f : HomGr G H) x y,
   coKer_eq f (x + y)%G (y + x)%G.
 Proof.
 intros.
-right.
 exists 0%G.
 split; [ apply gr_zero_mem | ].
 eapply gr_eq_trans; [ apply f | ].
 apply gr_eq_symm.
+simpl.
 apply gr_sub_move_r.
 eapply gr_eq_trans; [ apply gr_add_comm | ].
 apply gr_eq_symm.
@@ -517,50 +515,38 @@ Proof.
 intros.
 unfold coKer_eq; split.
 -intros x.
- destruct (MemDec H x) as [Hx| Hx]; [ right | now left ].
  exists 0%G.
  split; [ apply gr_zero_mem | ].
  eapply gr_eq_trans; [ apply f | ].
+ simpl.
  apply gr_eq_symm, gr_add_inv_r.
 -intros x y Hxy.
- destruct (MemDec H x) as [Hx| Hx]; [ | now left ].
- destruct (MemDec H y) as [Hy| Hy]; [ | now left ].
- right.
- destruct Hxy as [Hz| Hz]; [ now exfalso; apply Hz | ].
- destruct Hz as (z & Hz).
+ destruct Hxy as (z & Hz).
  exists (- z)%G.
  split; [ now apply gr_inv_mem | ].
  eapply gr_eq_trans; [ now apply f | ].
  apply gr_eq_trans with (y := (- (x - y))%G).
- +now apply gr_inv_compat.
- +eapply gr_eq_trans; [ apply gr_inv_add_distr | ].
+ +now simpl; apply gr_inv_compat.
+ +simpl; eapply gr_eq_trans; [ apply gr_inv_add_distr | ].
   eapply gr_eq_trans; [ apply gr_add_comm | ].
   apply gr_add_compat; [ | apply gr_eq_refl ].
   apply gr_inv_inv.
 -intros x y z Hxy Hyz.
- destruct (MemDec H x) as [Hx| Hx]; [ | now left ].
- destruct (MemDec H z) as [Hz| Hz]; [ | now left ].
- destruct (MemDec H y) as [Hy| Hy].
- +right.
-  destruct Hxy as [Hxy| Hxy]; [ now exfalso; apply Hxy |  ].
-  destruct Hyz as [Hyz| Hyz]; [ now exfalso; apply Hyz | ].
-  simpl in Hxy, Hyz.
-  destruct Hxy as (t, Ht).
-  destruct Hyz as (u, Hu).
-  exists (t + u)%G.
-  split; [ now apply gr_add_mem | ].
-  eapply gr_eq_trans; [ now apply H_lin | ].
-  apply gr_eq_trans with (y := (x - y + (y - z))%G).
-  *now apply gr_add_compat.
-  *eapply gr_eq_trans; [ apply gr_add_assoc | ].
-   apply gr_add_compat; [ apply gr_eq_refl | ].
-   eapply gr_eq_trans; [ apply gr_eq_symm, gr_add_assoc | ].
-   apply gr_eq_trans with (y := (0 - z)%G).
-  --apply gr_add_compat; [ apply gr_add_inv_l | apply gr_eq_refl ].
-  --apply gr_add_0_l.
- +destruct Hxy as [Hxy| Hxy].
-  *destruct Hyz as [Hyz| Hyz].
-...
+ simpl in Hxy, Hyz.
+ destruct Hxy as (t, Ht).
+ destruct Hyz as (u, Hu).
+ exists (t + u)%G.
+ split; [ now apply gr_add_mem | ].
+ eapply gr_eq_trans; [ now apply H_lin | ].
+ apply gr_eq_trans with (y := (x - y + (y - z))%G).
+ +now simpl; apply gr_add_compat.
+ +simpl; eapply gr_eq_trans; [ apply gr_add_assoc | ].
+  apply gr_add_compat; [ apply gr_eq_refl | ].
+  eapply gr_eq_trans; [ apply gr_eq_symm, gr_add_assoc | ].
+  apply gr_eq_trans with (y := (0 - z)%G).
+  *simpl; apply gr_add_compat; [ apply gr_add_inv_l | apply gr_eq_refl ].
+  *simpl; apply gr_add_0_l.
+Qed.
 
 (*
 coKer_add_compat.
@@ -586,8 +572,8 @@ Definition coKer {G H : AbGroup} (f : HomGr G H) :=
      gr_inv_mem := gr_inv_mem H;
      gr_add_inv_r := coKer_add_inv_r f;
      gr_add_comm := coKer_add_comm f;
-     gr_equiv := I;
-     gr_mem_compat := Ker_mem_compat f;
+     gr_equiv := coKer_equiv f;
+     gr_mem_compat := I;
      gr_add_compat := gr_add_compat G;
      gr_inv_compat := gr_inv_compat G |}.
 
