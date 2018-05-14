@@ -549,7 +549,7 @@ unfold coKer_eq; split.
 Qed.
 
 Theorem coKer_mem_compat {G H} : ∀ (f : HomGr G H) x y,
- coKer_eq f x y → x ∈ H → y ∈ H.
+  coKer_eq f x y → x ∈ H → y ∈ H.
 Proof.
 intros * Heq Hx.
 destruct Heq as (z, Hz).
@@ -563,9 +563,10 @@ apply gr_mem_compat with (x := (x - H_app f z)%G).
   apply gr_eq_trans with (y := (x + 0)%G); simpl.
   *apply gr_add_compat; [ apply gr_eq_refl | apply gr_add_inv_l ].
   *apply gr_add_0_r.
--idtac.
-Check gr_mem_compat.
-...
+-simpl; apply gr_add_mem; [ easy | ].
+ apply gr_inv_mem.
+ now apply f.
+Qed.
 
 (*
 coKer_add_compat.
@@ -592,7 +593,7 @@ Definition coKer {G H : AbGroup} (f : HomGr G H) :=
      gr_add_inv_r := coKer_add_inv_r f;
      gr_add_comm := coKer_add_comm f;
      gr_equiv := coKer_equiv f;
-     gr_mem_compat := I;
+     gr_mem_compat := coKer_mem_compat f;
      gr_add_compat := gr_add_compat G;
      gr_inv_compat := gr_inv_compat G |}.
 
