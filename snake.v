@@ -173,6 +173,8 @@ apply gr_eq_trans with (y := (- (x + y) + y - y)%G).
   apply gr_add_opp_r.
  +apply gr_add_0_r.
 -apply gr_add_compat; [ | apply gr_eq_refl ].
+ (* déplacer x de droite (-x) à gauche (+x),
+    associer (x+y) ; utiliser le fait que -(x+y)+(x+y)=0 *)
 ...
 
 Theorem gr_sub_move_r : ∀ G (x y z : gr_set G),
