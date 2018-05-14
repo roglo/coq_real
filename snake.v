@@ -186,6 +186,10 @@ apply gr_eq_trans with (y := (- (x + y) + y - y)%G).
 -apply gr_add_compat; [ | apply gr_eq_refl ].
 ...
 
+Theorem gr_sub_move_r : ∀ G (x y z : gr_set G),
+  x ∈ G → y ∈ G → (x - y = z ↔ x = z + y)%G.
+...
+
 Theorem H_zero : ∀ A B (f : HomGr A B), H_app f gr_zero ≡ gr_zero.
 Proof.
 intros.
@@ -428,15 +432,21 @@ split.
   now simpl; apply gr_add_opp_r.
  +intros x y (z & Hz).
   exists (gr_opp z).
-  destruct Hz as [Hx| [Hy| Hz]]; [ now right; left | now left | ].
+  destruct (MemDec H x) as [Hx| Hx]; [ | now right; left ].
+  destruct (MemDec H y) as [Hy| Hy]; [ | now left ].
+  destruct Hz as [Hz| [Hz| Hz]]; [ easy | easy | ].
   right; right.
   split; [ now apply gr_opp_mem | ].
   apply gr_eq_trans with (y := gr_opp (gr_sub x y)).
   *apply gr_eq_symm.
-   apply gr_opp_add_distr.
-Theorem gr_opp_add
+   unfold gr_sub.
+   eapply gr_eq_trans.
+  --simpl in z; apply gr_opp_add_distr; [ easy | ].
+    now apply gr_opp_mem.
 ...
-
+  *now simpl; apply gr_opp_compat.
+ +idtac.
+...
  +intros x; apply gr_eq_refl.
  +intros x y; apply gr_eq_symm.
  +intros x y z; apply gr_eq_trans.
