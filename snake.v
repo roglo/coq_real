@@ -153,6 +153,11 @@ eapply gr_eq_trans.
  +apply gr_add_inv_l.
 Qed.
 
+Theorem gr_inv_inv : ∀ G (x : gr_set G), (- - x = x)%G.
+Proof.
+intros.
+...
+
 Theorem H_zero : ∀ A B (f : HomGr A B), H_app f gr_zero ≡ gr_zero.
 Proof.
 intros.
@@ -498,27 +503,31 @@ apply gr_eq_symm.
 eapply gr_eq_trans; [ apply gr_add_0_l | apply gr_eq_refl ].
 Qed.
 
-(*
-coKer_equiv
--unfold coKer_eq; split.
- +intros x; exists gr_zero.
-  destruct (MemDec H x) as [Hx| Hx]; [ right; right | now left ].
-  split; [ apply gr_zero_mem | ].
-  now simpl; apply gr_add_inv_r.
- +intros x y (z & Hz).
-  exists (gr_inv z).
-  destruct (MemDec H x) as [Hx| Hx]; [ | now right; left ].
-  destruct (MemDec H y) as [Hy| Hy]; [ | now left ].
-  destruct Hz as [Hz| [Hz| Hz]]; [ easy | easy | ].
-  right; right.
-  split; [ now apply gr_inv_mem | ].
-  apply gr_eq_trans with (y := gr_inv (gr_sub x y)).
-  *apply gr_eq_symm.
-   unfold gr_sub.
-   eapply gr_eq_trans.
-  --simpl in z; apply gr_inv_add_distr.
-  --idtac.
-*)
+Theorem coKer_equiv {G H} : ∀ (f : HomGr G H), Equivalence (coKer_eq f).
+Proof.
+intros.
+unfold coKer_eq; split.
+-intros x.
+ destruct (MemDec H x) as [Hx| Hx]; [ right; right | now left ].
+ exists 0%G.
+ split; [ apply gr_zero_mem | ].
+ eapply gr_eq_trans; [ apply f | ].
+ apply gr_eq_symm, gr_add_inv_r.
+-intros x y Hxy.
+ destruct (MemDec H x) as [Hx| Hx]; [ | now right; left ].
+ destruct (MemDec H y) as [Hy| Hy]; [ | now left ].
+ right; right.
+ destruct Hxy as [Hz| [Hz| Hz]]; [ easy | easy | ].
+ destruct Hz as (z & Hz).
+ exists (- z)%G.
+ split; [ now apply gr_inv_mem | ].
+ eapply gr_eq_trans; [ now apply f | ].
+ apply gr_eq_trans with (y := (- (x - y))%G).
+ +now apply gr_inv_compat.
+ +eapply gr_eq_trans; [ apply gr_inv_add_distr | ].
+  eapply gr_eq_trans; [ apply gr_add_comm | ].
+  apply gr_add_compat; [ | apply gr_eq_refl ].
+...
 
 (*
 coKer_add_compat.
@@ -544,7 +553,7 @@ Definition coKer {G H : AbGroup} (f : HomGr G H) :=
      gr_inv_mem := gr_inv_mem H;
      gr_add_inv_r := coKer_add_inv_r f;
      gr_add_comm := coKer_add_comm f;
-     gr_equiv := gr_equiv G;
+     gr_equiv := I;
      gr_mem_compat := Ker_mem_compat f;
      gr_add_compat := gr_add_compat G;
      gr_inv_compat := gr_inv_compat G |}.
