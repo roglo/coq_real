@@ -723,26 +723,20 @@ assert
   -specialize (H1 z) as (y & Hy).
    destruct Hy as [Hy| Hy].
    +exists 0%G; left; simpl; easy.
-   +assert (H2 : (H_app c z = 0)%G) by now simpl in Hz.
-    assert (H3 : (H_app c (H_app g (g1 z)) = 0)%G). {
-      specialize (Hg1 z) as H3.
-      destruct H3 as [H3| H3]; [ now simpl in Hz | ].
-      destruct H3 as (Hfz & Hgfz).
-      apply gr_eq_trans with (y := H_app c z); [ | easy ].
-      apply c; [ | now simpl in Hz | easy ].
-      now apply g.
+   +assert (H2 : H_app b (g1 z) ∈ Im f'). {
+      apply sg'; simpl.
+      split.
+      -apply b.
+       specialize (Hg1 z) as H2.
+       destruct H2 as [H2| H2]; [ now simpl in Hz | easy ].
+      -eapply gr_eq_trans; [ apply gr_eq_symm, Hcgg' | ].
+       specialize (Hg1 z) as H2.
+       destruct H2 as [H2| H2]; [ now simpl in Hz | ].
+       destruct H2 as (Hfz & Hgfz).
+       apply gr_eq_trans with (y := H_app c z); [ | now simpl in Hz ].
+       apply c; [ now apply g | now simpl in Hz | easy ].
     }
-    assert (H4 : (H_app g' (H_app b (g1 z)) = 0)%G). {
-      eapply gr_eq_trans; [ apply gr_eq_symm, Hcgg' | apply H3 ].
-    }
-    assert (H5 : H_app b (g1 z) ∈ Ker g'). {
-      split; [ | apply H4 ].
-      apply b.
-      specialize (Hg1 z) as H5.
-      destruct H5 as [H5| H5]; [ now simpl in Hz | easy ].
-    }
-    assert (H6 : H_app b (g1 z) ∈ Im f') by now apply sg'.
-    destruct H6 as (x' & Hx').
+    destruct H2 as (x' & Hx').
     exists x'; right.
     split; [ easy | ].
     eapply gr_eq_trans; [ apply Hx' | ].
