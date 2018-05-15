@@ -707,20 +707,41 @@ assert (H1 : ∀ z, z ∈ Ker c → ∃ x', x' ∈ coKer a ∧ (H_app f' x' = f2
   simpl.
   assert (H1 : (H_app c z = 0)%G) by now simpl in Hz.
   assert (H2 : (H_app c (H_app g (f1 z)) = 0)%G). {
-    eapply gr_eq_trans; [ apply Hcgg' | ].
-...
-
-  subst f2.
-  specialize (Hf1 z) as Hy.
-  destruct Hy as [Hy| Hy].
-  -exfalso; apply Hy; simpl in Hz; easy.
-  -destruct Hy as (Hfz, Hgfz).
-   assert (H1 : (H_app c z = 0)%G) by now simpl in Hz.
-
-...
-assert (d : HomGr (Ker c) (coKer a)). {
-  ...
+    specialize (Hf1 z) as H2.
+    destruct H2 as [H2| H2]; [ now simpl in Hz | ].
+    destruct H2 as (Hfz & Hgfz).
+    apply gr_eq_trans with (y := H_app c z); [ | easy ].
+    apply c; [ | now simpl in Hz | easy ].
+    now apply g.
+  }
+  assert (H3 : (H_app g' (H_app b (f1 z)) = 0)%G). {
+    eapply gr_eq_trans; [ apply gr_eq_symm, Hcgg' | easy ].
+  }
+  assert (H4 : H_app b (f1 z) ∈ Ker g'). {
+    split; [ | easy ].
+    apply b.
+    specialize (Hf1 z) as H4.
+    destruct H4 as [H4| H4]; [ now simpl in Hz | easy ].
+  }
+  assert (H5 : H_app b (f1 z) ∈ Im f') by now apply sg'.
+  destruct H5 as (x' & Hx').
+  exists x'.
+  split; [ easy | ].
+  eapply gr_eq_trans; [ apply Hx' | ].
+  subst f2; apply gr_eq_refl.
 }
+assert (H2 : ∀ z, ∃ x', z ∉ Ker c ∨ x' ∈ coKer a ∧ (H_app f' x' = f2 z)%G). {
+  intros.
+  specialize (H1 z).
+  destruct (MemDec (Ker c) z) as [H2| H2].
+  -specialize (H1 H2) as (x' & Hx').
+   exists x'.
+   now right.
+  -exists 0%G.
+   now left.
+}
+specialize (ClassicalChoice.choice _ H2) as (f3, Hf3).
+...
 exists d.
 simpl.
 split; [ | split ].
