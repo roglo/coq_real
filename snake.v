@@ -705,6 +705,11 @@ move f2 before f1.
 assert (H1 : ∀ z, z ∈ Ker c → ∃ x', x' ∈ coKer a ∧ (H_app f' x' = f2 z)%G). {
   intros z Hz.
   simpl.
+  assert (H1 : (H_app c z = 0)%G) by now simpl in Hz.
+  assert (H2 : (H_app c (H_app g (f1 z)) = 0)%G). {
+    eapply gr_eq_trans; [ apply Hcgg' | ].
+...
+
   subst f2.
   specialize (Hf1 z) as Hy.
   destruct Hy as [Hy| Hy].
