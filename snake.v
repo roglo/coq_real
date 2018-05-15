@@ -639,29 +639,27 @@ apply gr_eq_trans with (y := (H_app f' (- x) + H_app f' x)%G).
  +apply B'.
 Qed.
 
-(*
-Theorem is_homgr_coKer_coKer {A B A' B'} :
+Theorem cc_compat {A B A' B'} :
   ∀ (f : HomGr A B) (f' : HomGr A' B') (a : HomGr A A') (b : HomGr B B'),
   diagram_commutes f a b f'
-  → is_homgr (coKer a) (coKer b) (H_app f').
+  → ∀ x y : gr_set (coKer a),
+  x ∈ coKer a → y ∈ coKer a → (x = y)%G
+  → @gr_eq (coKer b) (H_app f' x) (H_app f' y)%G.
 Proof.
-intros * Hc.
-split.
--intros x y Hx Hy Hxy.
- simpl in Hx, Hy, x, y, Hxy; simpl.
- destruct Hxy as (z & Hz & Haz).
- simpl; unfold coKer_eq; simpl.
- exists (H_app f z).
- split; [ now apply f | ].
- eapply gr_eq_trans; [ apply Hc | ].
- apply gr_eq_trans with (y := H_app f' (x - y)%G).
- +apply H_compat; [ now apply a | | easy ].
-  apply A'; [ easy | now apply A' ].
- +eapply gr_eq_trans.
-  *apply f'; [ easy | now apply A' ].
-  *apply gr_add_compat; [ apply gr_eq_refl | now apply f' ].
+intros * Hc * Hx Hy Hxy.
+simpl in Hx, Hy, x, y, Hxy; simpl.
+destruct Hxy as (z & Hz & Haz).
+simpl; unfold coKer_eq; simpl.
+exists (H_app f z).
+split; [ now apply f | ].
+eapply gr_eq_trans; [ apply Hc | ].
+apply gr_eq_trans with (y := H_app f' (x - y)%G).
+-apply H_compat; [ now apply a | | easy ].
+ apply A'; [ easy | now apply A' ].
+-eapply gr_eq_trans.
+ +apply f'; [ easy | now apply A' ].
+ +apply gr_add_compat; [ apply gr_eq_refl | now apply f' ].
 Qed.
-*)
 
 Definition HomGr_coKer_coKer {A B A' B'}
     (f : HomGr A B) (f' : HomGr A' B') (a : HomGr A A') (b : HomGr B B')
@@ -671,7 +669,7 @@ Definition HomGr_coKer_coKer {A B A' B'}
      H_mem_compat := cc_mem_compat f' a b;
      H_lin := cc_lin f' a b;
      H_inv := cc_inv f' a b;
-     H_compat := I |}.
+     H_compat := cc_compat f f' a b Hc |}.
 
 Theorem exists_ker_C_to_B : ∀ B C C' g (c : HomGr C C') (cz : HomGr C Gr0),
   (∀ a : gr_set (Im g), a ∈ Im g ↔ a ∈ Ker cz)
@@ -687,8 +685,8 @@ enough (H : x ∈ Im g). {
 apply sg.
 split; [ easy | ].
 simpl in x; simpl.
-destruct cz as (appcz, czz, czin, czlin, czi, czp).
-destruct czp as (czcomp); simpl in *.
+destruct cz as (appcz, czz, czin, czlin, czi, czcomp).
+simpl.
 now destruct (appcz x).
 Qed.
 
@@ -753,6 +751,7 @@ assert
 }
 specialize (ClassicalChoice.choice _ H2) as (fd, Hfd).
 move fd before g1.
+...
 assert (H3 : is_homgr _ _ fd). {
   split.
   -specialize (Hfd 0%G) as H3.
