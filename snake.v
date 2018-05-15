@@ -632,7 +632,16 @@ split.
  simpl in Hx, Hy, x, y, Hxy; simpl.
  destruct Hxy as (z & Hz & Haz).
  simpl; unfold coKer_eq; simpl.
-...
+ exists (H_app f z).
+ split; [ now apply f | ].
+ eapply gr_eq_trans; [ apply Hc | ].
+ apply gr_eq_trans with (y := H_app f' (x - y)%G).
+ +apply H_compat; [ now apply a | | easy ].
+  apply A'; [ easy | now apply A' ].
+ +eapply gr_eq_trans.
+  *apply f'; [ easy | now apply A' ].
+  *apply gr_add_compat; [ apply gr_eq_refl | now apply f' ].
+Qed.
 
 Definition HomGr_Ker_Ker {A B A' B'}
     (f : HomGr A B) (f' : HomGr A' B') (a : HomGr A A') (b : HomGr B B')
@@ -651,7 +660,7 @@ Theorem exists_ker_C_to_B : ∀ B C C' g (c : HomGr C C') (cz : HomGr C Gr0),
   → ∀ x : gr_set (Ker c), ∃ y, x ∉ C ∨ y ∈ B ∧ H_app g y ≡ x.
 Proof.
 intros * sg x.
-destruct (InDec C x) as [H2| H2]; [ | now exists (gr_zero B); left ].
+destruct (MemDec C x) as [H2| H2]; [ | now exists 0%G; left ].
 enough (H : x ∈ Im g). {
   simpl in H.
   destruct H as (y & Hy & Hyx).
@@ -659,19 +668,18 @@ enough (H : x ∈ Im g). {
 }
 apply sg.
 split; [ easy | ].
+simpl in x; simpl.
 destruct cz as (appcz, czp).
-destruct czp as (czz, czin, czlin, czcomp); simpl in *.
-rewrite <- czlin with (x := x) (y := gr_zero C).
--apply czcomp; [ easy | | ].
- +apply C; [ easy | apply C ].
- +destruct C as (cs, ci, ceq, cz, co, cp).
-  destruct cp as (czi, cc, cid, ca, cco, ceqv, cimo, camo).
-  simpl in *.
-  transitivity (co cz x).
-  *now symmetry; apply cid.
-  *now apply cco.
--easy.
--apply C.
+destruct czp as (czz, czin, czlin, czi, czcomp); simpl in *.
+rewrite <- czz.
+apply czcomp; [ easy | apply C | ].
+...
+destruct C as (cs, ci, ceq, cz, co, cp).
+destruct cp as (czi, cc, cid, ca, cco, ceqv, cimo, camo).
+simpl in *.
+transitivity (co cz x).
+*now symmetry; apply cid.
+*now apply cco.
 Qed.
 
 Lemma snake :
@@ -691,10 +699,10 @@ Lemma snake :
 Proof.
 intros *.
 intros Hcff' Hcgg' s s'.
-exists (HomGr_Ker_ker f f' a b Hcff').
-exists (HomGr_Ker_ker g g' b c Hcgg').
-exists (HomGr_coKer_coker f f' a b Hcff').
-exists (HomGr_coKer_coker g g' b c Hcgg').
+exists (HomGr_Ker_Ker f f' a b Hcff').
+exists (HomGr_Ker_Ker g g' b c Hcgg').
+exists (HomGr_coKer_coKer f f' a b Hcff').
+exists (HomGr_coKer_coKer g g' b c Hcgg').
 destruct s as (sf & sg & _).
 destruct s' as (sf' & sg' & _).
 specialize (exists_ker_C_to_B B C C' g c cz sg) as H1.
