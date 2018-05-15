@@ -751,17 +751,20 @@ assert
 }
 specialize (ClassicalChoice.choice _ H2) as (fd, Hfd).
 move fd before g1.
+assert (Hzero : (fd 0 = 0)%G). {
+  specialize (Hfd 0%G) as H3.
+  destruct H3 as [H3| H3].
+  +exfalso; apply H3.
+   split; [ apply C | apply c ].
+  +destruct H3 as (H3 & Hff3).
+   simpl in Hff3; simpl.
+   unfold coKer_eq; simpl.
 ...
-assert (H3 : is_homgr _ _ fd). {
-  split.
-  -specialize (Hfd 0%G) as H3.
-   destruct H3 as [H3| H3].
-   +exfalso; apply H3.
-    split; [ apply C | apply c ].
-   +destruct H3 as (H3 & Hff3).
-    simpl in Hff3; simpl.
-    unfold coKer_eq; simpl.
-...
+    H_zero : (H_app 0 = 0)%G;
+    H_mem_compat : ∀ x, x ∈ A → H_app x ∈ B;
+    H_lin : ∀ x y, x ∈ A → y ∈ A → (H_app (x + y) = H_app x + H_app y)%G;
+    H_inv : ∀ x, x ∈ A → (H_app (- x) = - H_app x)%G;
+    H_compat : ∀ x y, x ∈ A → y ∈ A → (x = y)%G → (H_app x = H_app y)%G }.
 exists 0%G.
 split; [ apply A | ].
 apply gr_eq_trans with (y := fd 0%G).
