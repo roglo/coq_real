@@ -743,6 +743,8 @@ assert (H2 : ∀ z, ∃ x', z ∉ Ker c ∨ x' ∈ coKer a ∧ (H_app f' x' = f2
 specialize (ClassicalChoice.choice _ H2) as (f3, Hf3).
 assert (H3 : is_homgr _ _ f3). {
   split.
+  -idtac.
+...
   -specialize (Hf3 0%G) as H3.
    destruct H3 as [H3| H3].
    +exfalso; apply H3.
@@ -751,6 +753,9 @@ assert (H3 : is_homgr _ _ f3). {
     rewrite Hf2 in Hff3.
     simpl in Hff3; simpl.
     unfold coKer_eq; simpl.
+exists 0%G.
+split; [ apply A | ].
+apply gr_eq_trans with (y := f3 0%G).
 
 ...
 }
