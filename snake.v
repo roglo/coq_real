@@ -574,18 +574,17 @@ Theorem is_homgr_Ker_Ker {A B A' B'} :
   → is_homgr (Ker a) (Ker b) (H_app f).
 Proof.
 intros * Hc.
-...
-split; [ apply f | | | ].
+split; [ apply f | | | | ].
 -intros x Hx.
  split; [ now apply f; simpl in Hx | ].
- destruct B' as (bs, bi, beq, bz, bo, bp).
- destruct bp as (bzi, bc, bid, ba, bco, beqv, bimo, bamo).
- simpl in *.
- etransitivity; [ apply Hc | ].
- transitivity (H_app f' (gr_zero A')).
+ eapply gr_eq_trans; [ apply Hc | ].
+ apply gr_eq_trans with (y := H_app f' 0%G).
  +apply f'; [ apply a, Hx | apply A' | apply Hx ].
  +apply f'.
 -intros x x' Hx Hx'; simpl in Hx, Hx'.
+ now apply f.
+-intros * Hx.
+ simpl in Hx.
  now apply f.
 -intros x y Hx Hy Hxy.
  simpl in Hx, Hy.
@@ -598,40 +597,50 @@ Theorem is_homgr_coKer_coKer {A B A' B'} :
   → is_homgr (coKer a) (coKer b) (H_app f').
 Proof.
 intros * Hc.
-split; [ apply f' | | | ].
+split.
+-exists 0%G.
+ split; [ apply B | ].
+ eapply gr_eq_trans; [ apply b | ].
+ apply B'.
+ apply gr_eq_trans with (y := (0 - 0)%G); [ | apply B' ].
+ simpl; apply gr_add_compat; [ apply f' | apply gr_eq_refl ].
 -intros x Hx.
- split; [ apply f', Hx | ].
- destruct Hx as (Hxa & y & Hy & z & Hz & Hxy).
- exists (H_app f' y).
- split; [ now apply f' | ].
- exists (H_app f z).
- split; [ now apply f | ].
- destruct B' as (bs, bi, beq, bz, bo, bp).
- destruct bp as (bzi, bc, bid, ba, bco, beqv, bimo, bamo).
- simpl in *.
- etransitivity; [ apply Hc | ].
- symmetry.
- etransitivity; [ now symmetry; apply f' | ].
- destruct A' as (ass, ai, aeq, az, ao, ap).
- destruct ap as (azi, ac, aid, aa, aco, aeqv, aimo, aamo).
- simpl in *.
- apply f'; simpl; [ now apply ac | | ].
- +eapply aimo; [ symmetry; apply Hxy | now apply ac ].
- +now symmetry.
+ now apply f'.
 -intros x y Hx Hy; simpl in Hx, Hy.
- now apply f'.
+ exists 0%G.
+ split; [ apply B | ].
+ eapply gr_eq_trans; [ apply b | apply B' ].
+ simpl; apply gr_sub_move_r.
+ apply B'.
+ eapply gr_eq_trans; [ apply gr_add_0_l | ].
+ now apply B', f'.
+-intros x Hx.
+ exists 0%G.
+ split; [ apply B | ].
+ eapply gr_eq_trans; [ apply b | ].
+ apply B'.
+ apply gr_eq_trans with (y := (H_app f' (- x) + H_app f' x)%G).
+ +simpl; apply gr_add_compat.
+  *now apply f'; apply A'.
+  *apply gr_inv_inv.
+ +apply gr_eq_symm, gr_sub_move_r.
+  eapply gr_eq_trans with (y := (0 + H_app f' (- x))%G).
+  *apply gr_add_compat; [ apply gr_eq_refl | ].
+   now apply B', f'.
+  *apply B'.
 -intros x y Hx Hy Hxy.
- simpl in Hx, Hy.
- now apply f'.
-Qed.
+ simpl in Hx, Hy, x, y, Hxy; simpl.
+ destruct Hxy as (z & Hz & Haz).
+ simpl; unfold coKer_eq; simpl.
+...
 
-Definition HomGr_Ker_ker {A B A' B'}
+Definition HomGr_Ker_Ker {A B A' B'}
     (f : HomGr A B) (f' : HomGr A' B') (a : HomGr A A') (b : HomGr B B')
     (Hc : diagram_commutes f a b f') :=
   {| H_app (x : gr_set (Ker a)) := H_app f x : gr_set (Ker b);
      H_prop := is_homgr_Ker_Ker f f' a b Hc |}.
 
-Definition HomGr_coKer_coker {A B A' B'}
+Definition HomGr_coKer_coKer {A B A' B'}
     (f : HomGr A B) (f' : HomGr A' B') (a : HomGr A A') (b : HomGr B B')
     (Hc : diagram_commutes f a b f') :=
   {| H_app (x : gr_set (coKer a)) := H_app f' x : gr_set (coKer b);
