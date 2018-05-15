@@ -751,6 +751,7 @@ assert
 }
 specialize (ClassicalChoice.choice _ H2) as (fd, Hfd).
 move fd before g1.
+clear H1 H2.
 assert (Hzero : (fd 0 = 0)%G). {
   specialize (Hfd 0%G) as H3.
   destruct H3 as [H3| H3].
