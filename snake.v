@@ -734,6 +734,7 @@ assert
   -exists 0%G; now left.
 }
 specialize (ClassicalChoice.choice _ H2) as (fd, Hfd).
+move fd before g1.
 assert (H3 : is_homgr _ _ fd). {
   split.
   -specialize (Hfd 0%G) as H3.
