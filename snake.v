@@ -671,15 +671,7 @@ split; [ easy | ].
 simpl in x; simpl.
 destruct cz as (appcz, czp).
 destruct czp as (czz, czin, czlin, czi, czcomp); simpl in *.
-rewrite <- czz.
-apply czcomp; [ easy | apply C | ].
-...
-destruct C as (cs, ci, ceq, cz, co, cp).
-destruct cp as (czi, cc, cid, ca, cco, ceqv, cimo, camo).
-simpl in *.
-transitivity (co cz x).
-*now symmetry; apply cid.
-*now apply cco.
+now destruct (appcz x).
 Qed.
 
 Lemma snake :
