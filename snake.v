@@ -706,6 +706,12 @@ assert (H1 : ∀ z, z ∈ Ker c → ∃ x', x' ∈ coKer a ∧ (H_app f' x' = f2
   intros z Hz.
   simpl.
   subst f2.
+  specialize (Hf1 z) as Hy.
+  destruct Hy as [Hy| Hy].
+  -exfalso; apply Hy; simpl in Hz; easy.
+  -destruct Hy as (Hfz, Hgfz).
+   assert (H1 : (H_app c z = 0)%G) by now simpl in Hz.
+
 ...
 assert (d : HomGr (Ker c) (coKer a)). {
   ...
