@@ -741,6 +741,12 @@ assert (H2 : ∀ z, ∃ x', z ∉ Ker c ∨ x' ∈ coKer a ∧ (H_app f' x' = f2
    now left.
 }
 specialize (ClassicalChoice.choice _ H2) as (f3, Hf3).
+assert (H3 : is_homgr _ _ f3). {
+  split.
+  -idtac.
+...
+}
+exists {| H_app := f3; H_prop := H3 |}.
 ...
 exists d.
 simpl.
