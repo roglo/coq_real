@@ -67,19 +67,20 @@ Notation "- a" := (gr_inv a) : group_scope.
 Axiom MemDec : ∀ G x, {x ∈ G} + {x ∉ G}.
 
 Record is_homgr A B (f : gr_set A → gr_set B) :=
-  { ih_inv : ∀ x, x ∈ A → f (gr_inv x) ≡ gr_inv (f x);
-    ih_compat : ∀ x y, x ∈ A → y ∈ A → x ≡ y → f x ≡ f y }.
+  { ih_compat : ∀ x y, x ∈ A → y ∈ A → x ≡ y → f x ≡ f y }.
 
 Record HomGr (A B : AbGroup) :=
   { H_app : gr_set A → gr_set B;
     H_zero : (H_app 0 = 0)%G;
     H_mem_compat : ∀ x, x ∈ A → H_app x ∈ B;
-    H_lin : ∀ x y, x ∈ A → y ∈ A → (H_app (x + y) ≡ H_app x + H_app y)%G;
+    H_lin : ∀ x y, x ∈ A → y ∈ A → (H_app (x + y) = H_app x + H_app y)%G;
+    H_inv : ∀ x, x ∈ A → (H_app (- x) = - H_app x)%G;
     H_prop : is_homgr A B H_app }.
 
 Arguments H_app [A] [B].
 Arguments H_mem_compat _ _ f : rename.
 Arguments H_lin _ _ f : rename.
+Arguments H_inv _ _ f : rename.
 
 Theorem gr_eq_refl : ∀ G (x : gr_set G), x ≡ x.
 Proof.
@@ -166,13 +167,6 @@ apply gr_eq_trans with (y := (- - x + (- x + x))%G).
 -eapply gr_eq_trans; [ apply gr_eq_symm, gr_add_assoc | ].
  eapply gr_eq_trans; [ | apply gr_add_0_l ].
  apply gr_add_compat; [ apply gr_add_inv_l | apply gr_eq_refl ].
-Qed.
-
-Theorem H_inv : ∀ A B (f : HomGr A B) x, x ∈ A →
-  H_app f (gr_inv x) ≡ gr_inv (H_app f x).
-Proof.
-intros.
-now apply (@ih_inv _ _ _ (H_prop _ _ f)).
 Qed.
 
 Theorem H_compat : ∀ A B (f : HomGr A B) x y, x ∈ A → y ∈ A →
@@ -558,9 +552,6 @@ Theorem is_homgr_Ker_Ker {A B A' B'} :
 Proof.
 intros * Hc.
 split.
--intros * Hx.
- simpl in Hx.
- now apply f.
 -intros x y Hx Hy Hxy.
  simpl in Hx, Hy.
  now apply f.
@@ -585,6 +576,14 @@ intros * Hx Hx'; simpl in Hx, Hx'.
 now apply f.
 Qed.
 
+Theorem KK_inv {A B A'} : ∀ (f : HomGr A B) (a : HomGr A A'),
+  ∀ x : gr_set (Ker a), x ∈ Ker a → (H_app f (- x) = - H_app f x)%G.
+Proof.
+intros * Hx.
+simpl in Hx.
+now apply f.
+Qed.
+
 Definition HomGr_Ker_Ker {A B A' B'}
     (f : HomGr A B) (f' : HomGr A' B') (a : HomGr A A') (b : HomGr B B')
     (Hc : diagram_commutes f a b f') :=
@@ -592,6 +591,7 @@ Definition HomGr_Ker_Ker {A B A' B'}
      H_zero := H_zero A B f;
      H_mem_compat := KK_mem_compat a b f f' Hc;
      H_lin := KK_lin f a;
+     H_inv := KK_inv f a;
      H_prop := is_homgr_Ker_Ker f f' a b Hc |}.
 
 Theorem is_homgr_coKer_coKer {A B A' B'} :
@@ -601,20 +601,6 @@ Theorem is_homgr_coKer_coKer {A B A' B'} :
 Proof.
 intros * Hc.
 split.
--intros x Hx.
- exists 0%G.
- split; [ apply B | ].
- eapply gr_eq_trans; [ apply b | ].
- apply B'.
- apply gr_eq_trans with (y := (H_app f' (- x) + H_app f' x)%G).
- +simpl; apply gr_add_compat.
-  *now apply f'; apply A'.
-  *apply gr_inv_inv.
- +apply gr_eq_symm, gr_sub_move_r.
-  eapply gr_eq_trans with (y := (0 + H_app f' (- x))%G).
-  *apply gr_add_compat; [ apply gr_eq_refl | ].
-   now apply B', f'.
-  *apply B'.
 -intros x y Hx Hy Hxy.
  simpl in Hx, Hy, x, y, Hxy; simpl.
  destruct Hxy as (z & Hz & Haz).
@@ -666,6 +652,27 @@ eapply gr_eq_trans; [ apply gr_add_0_l | ].
 now apply B', f'.
 Qed.
 
+Theorem cc_inv {A B A' B'} :
+  ∀ (f' : HomGr A' B') (a : HomGr A A') (b : HomGr B B'),
+  ∀ x : gr_set (coKer a), x ∈ coKer a
+  → @gr_eq (coKer b) (H_app f' (- x)%G) (- H_app f' x)%G.
+Proof.
+intros * Hx.
+exists 0%G.
+split; [ apply B | ].
+eapply gr_eq_trans; [ apply b | ].
+apply B'.
+apply gr_eq_trans with (y := (H_app f' (- x) + H_app f' x)%G).
+-simpl; apply gr_add_compat.
+ +now apply f'; apply A'.
+ +apply gr_inv_inv.
+-apply gr_eq_symm, gr_sub_move_r.
+ eapply gr_eq_trans with (y := (0 + H_app f' (- x))%G).
+ +apply gr_add_compat; [ apply gr_eq_refl | ].
+  now apply B', f'.
+ +apply B'.
+Qed.
+
 Definition HomGr_coKer_coKer {A B A' B'}
     (f : HomGr A B) (f' : HomGr A' B') (a : HomGr A A') (b : HomGr B B')
     (Hc : diagram_commutes f a b f') :=
@@ -673,6 +680,7 @@ Definition HomGr_coKer_coKer {A B A' B'}
      H_zero := cc_zero f' a b;
      H_mem_compat := cc_mem_compat f' a b;
      H_lin := cc_lin f' a b;
+     H_inv := cc_inv f' a b;
      H_prop := is_homgr_coKer_coKer f f' a b Hc |}.
 
 Theorem exists_ker_C_to_B : ∀ B C C' g (c : HomGr C C') (cz : HomGr C Gr0),
@@ -689,8 +697,8 @@ enough (H : x ∈ Im g). {
 apply sg.
 split; [ easy | ].
 simpl in x; simpl.
-destruct cz as (appcz, czz, czin, czlin, czp).
-destruct czp as (czi, czcomp); simpl in *.
+destruct cz as (appcz, czz, czin, czlin, czi, czp).
+destruct czp as (czcomp); simpl in *.
 now destruct (appcz x).
 Qed.
 
