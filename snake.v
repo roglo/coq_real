@@ -67,14 +67,14 @@ Notation "- a" := (gr_inv a) : group_scope.
 Axiom MemDec : ∀ G x, {x ∈ G} + {x ∉ G}.
 
 Record is_homgr A B f :=
-  { ih_zero : f gr_zero ≡ gr_zero;
-    ih_mem_compat : ∀ x, x ∈ A → f x ∈ B;
+  { ih_mem_compat : ∀ x, x ∈ A → f x ∈ B;
     ih_lin : ∀ x y, x ∈ A → y ∈ A → f (gr_add x y) ≡ gr_add (f x) (f y);
     ih_inv : ∀ x, x ∈ A → f (gr_inv x) ≡ gr_inv (f x);
     ih_compat : ∀ x y, x ∈ A → y ∈ A → x ≡ y → f x ≡ f y }.
 
 Record HomGr (A B : AbGroup) :=
   { H_app : gr_set A → gr_set B;
+    H_zero : (H_app 0 = 0)%G;
     H_prop : is_homgr A B H_app }.
 
 Arguments H_app [A] [B].
@@ -164,12 +164,6 @@ apply gr_eq_trans with (y := (- - x + (- x + x))%G).
 -eapply gr_eq_trans; [ apply gr_eq_symm, gr_add_assoc | ].
  eapply gr_eq_trans; [ | apply gr_add_0_l ].
  apply gr_add_compat; [ apply gr_add_inv_l | apply gr_eq_refl ].
-Qed.
-
-Theorem H_zero : ∀ A B (f : HomGr A B), H_app f gr_zero ≡ gr_zero.
-Proof.
-intros.
-apply (@ih_zero _ _ (H_app f) (H_prop _ _ f)).
 Qed.
 
 Theorem H_lin : ∀ A B (f : HomGr A B) x y, x ∈ A → y ∈ A →
@@ -574,7 +568,7 @@ Theorem is_homgr_Ker_Ker {A B A' B'} :
   → is_homgr (Ker a) (Ker b) (H_app f).
 Proof.
 intros * Hc.
-split; [ apply f | | | | ].
+split.
 -intros x Hx.
  split; [ now apply f; simpl in Hx | ].
  eapply gr_eq_trans; [ apply Hc | ].
@@ -591,6 +585,13 @@ split; [ apply f | | | | ].
  now apply f.
 Qed.
 
+Definition HomGr_Ker_Ker {A B A' B'}
+    (f : HomGr A B) (f' : HomGr A' B') (a : HomGr A A') (b : HomGr B B')
+    (Hc : diagram_commutes f a b f') :=
+  {| H_app (x : gr_set (Ker a)) := H_app f x : gr_set (Ker b);
+     H_zero := H_zero A B f;
+     H_prop := is_homgr_Ker_Ker f f' a b Hc |}.
+
 Theorem is_homgr_coKer_coKer {A B A' B'} :
   ∀ (f : HomGr A B) (f' : HomGr A' B') (a : HomGr A A') (b : HomGr B B'),
   diagram_commutes f a b f'
@@ -598,12 +599,6 @@ Theorem is_homgr_coKer_coKer {A B A' B'} :
 Proof.
 intros * Hc.
 split.
--exists 0%G.
- split; [ apply B | ].
- eapply gr_eq_trans; [ apply b | ].
- apply B'.
- apply gr_eq_trans with (y := (0 - 0)%G); [ | apply B' ].
- simpl; apply gr_add_compat; [ apply f' | apply gr_eq_refl ].
 -intros x Hx.
  now apply f'.
 -intros x y Hx Hy; simpl in Hx, Hy.
@@ -643,16 +638,24 @@ split.
   *apply gr_add_compat; [ apply gr_eq_refl | now apply f' ].
 Qed.
 
-Definition HomGr_Ker_Ker {A B A' B'}
-    (f : HomGr A B) (f' : HomGr A' B') (a : HomGr A A') (b : HomGr B B')
-    (Hc : diagram_commutes f a b f') :=
-  {| H_app (x : gr_set (Ker a)) := H_app f x : gr_set (Ker b);
-     H_prop := is_homgr_Ker_Ker f f' a b Hc |}.
+Theorem cc_zero {A B A' B'} :
+  ∀ (f' : HomGr A' B') (a : HomGr A A') (b : HomGr B B'),
+  @gr_eq (coKer b) (H_app f' 0%G) 0%G.
+Proof.
+intros.
+exists 0%G.
+split; [ apply B | ].
+eapply gr_eq_trans; [ apply b | ].
+apply B'.
+apply gr_eq_trans with (y := (0 - 0)%G); [ | apply B' ].
+simpl; apply gr_add_compat; [ apply f' | apply gr_eq_refl ].
+Qed.
 
 Definition HomGr_coKer_coKer {A B A' B'}
     (f : HomGr A B) (f' : HomGr A' B') (a : HomGr A A') (b : HomGr B B')
     (Hc : diagram_commutes f a b f') :=
   {| H_app (x : gr_set (coKer a)) := H_app f' x : gr_set (coKer b);
+     H_zero := cc_zero f' a b;
      H_prop := is_homgr_coKer_coKer f f' a b Hc |}.
 
 Theorem exists_ker_C_to_B : ∀ B C C' g (c : HomGr C C') (cz : HomGr C Gr0),
@@ -669,8 +672,8 @@ enough (H : x ∈ Im g). {
 apply sg.
 split; [ easy | ].
 simpl in x; simpl.
-destruct cz as (appcz, czp).
-destruct czp as (czz, czin, czlin, czi, czcomp); simpl in *.
+destruct cz as (appcz, czz, czp).
+destruct czp as (czin, czlin, czi, czcomp); simpl in *.
 now destruct (appcz x).
 Qed.
 
