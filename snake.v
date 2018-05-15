@@ -733,10 +733,10 @@ assert
       now apply g.
     }
     assert (H4 : (H_app g' (H_app b (g1 z)) = 0)%G). {
-      eapply gr_eq_trans; [ apply gr_eq_symm, Hcgg' | easy ].
+      eapply gr_eq_trans; [ apply gr_eq_symm, Hcgg' | apply H3 ].
     }
     assert (H5 : H_app b (g1 z) ∈ Ker g'). {
-      split; [ | easy ].
+      split; [ | apply H4 ].
       apply b.
       specialize (Hg1 z) as H5.
       destruct H5 as [H5| H5]; [ now simpl in Hz | easy ].
