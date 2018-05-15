@@ -698,31 +698,31 @@ exists (HomGr_coKer_coKer g g' b c Hcgg').
 destruct s as (sf & sg & _).
 destruct s' as (sf' & sg' & _).
 specialize (exists_ker_C_to_B B C C' g c cz sg) as H1.
-specialize (ClassicalChoice.choice _ H1) as (f1, Hf1).
+specialize (ClassicalChoice.choice _ H1) as (g1, Hg1).
 assert
   (H2 : ∀ z, z ∈ Ker c →
-   ∃ x', x' ∈ coKer a ∧ (H_app f' x' = H_app b (f1 z))%G). {
+   ∃ x', x' ∈ coKer a ∧ (H_app f' x' = H_app b (g1 z))%G). {
   intros z Hz.
   simpl.
   assert (H2 : (H_app c z = 0)%G) by now simpl in Hz.
-  assert (H3 : (H_app c (H_app g (f1 z)) = 0)%G). {
-    specialize (Hf1 z) as H3.
+  assert (H3 : (H_app c (H_app g (g1 z)) = 0)%G). {
+    specialize (Hg1 z) as H3.
     destruct H3 as [H3| H3]; [ now simpl in Hz | ].
     destruct H3 as (Hfz & Hgfz).
     apply gr_eq_trans with (y := H_app c z); [ | easy ].
     apply c; [ | now simpl in Hz | easy ].
     now apply g.
   }
-  assert (H4 : (H_app g' (H_app b (f1 z)) = 0)%G). {
+  assert (H4 : (H_app g' (H_app b (g1 z)) = 0)%G). {
     eapply gr_eq_trans; [ apply gr_eq_symm, Hcgg' | easy ].
   }
-  assert (H5 : H_app b (f1 z) ∈ Ker g'). {
+  assert (H5 : H_app b (g1 z) ∈ Ker g'). {
     split; [ | easy ].
     apply b.
-    specialize (Hf1 z) as H5.
+    specialize (Hg1 z) as H5.
     destruct H5 as [H5| H5]; [ now simpl in Hz | easy ].
   }
-  assert (H6 : H_app b (f1 z) ∈ Im f') by now apply sg'.
+  assert (H6 : H_app b (g1 z) ∈ Im f') by now apply sg'.
   destruct H6 as (x' & Hx').
   exists x'.
   split; [ easy | ].
@@ -731,15 +731,12 @@ assert
 }
 assert
   (H3 : ∀ z, ∃ x',
-   z ∉ Ker c ∨ x' ∈ coKer a ∧ (H_app f' x' = H_app b (f1 z))%G). {
+   z ∉ Ker c ∨ x' ∈ coKer a ∧ (H_app f' x' = H_app b (g1 z))%G). {
   intros.
   specialize (H2 z).
   destruct (MemDec (Ker c) z) as [H3| H3].
-  -specialize (H2 H3) as (x' & Hx').
-   exists x'.
-   now right.
-  -exists 0%G.
-   now left.
+  -specialize (H2 H3) as (x' & Hx'); exists x'; now right.
+  -exists 0%G; now left.
 }
 specialize (ClassicalChoice.choice _ H3) as (fd, Hfd).
 assert (H4 : is_homgr _ _ fd). {
