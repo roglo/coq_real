@@ -743,17 +743,38 @@ assert
     apply gr_eq_refl.
   -exists 0%G; now left.
 }
-specialize (ClassicalChoice.choice _ H2) as (fd, Hfd).
-move fd before g1.
+specialize (ClassicalChoice.choice _ H2) as (d, Hd).
+move d before g1.
 clear H1 H2.
-assert (Hzero : (fd 0 = 0)%G). {
-  specialize (Hfd 0%G) as H3.
+assert (Hzero : (d 0 = 0)%G). {
+  specialize (Hd 0%G) as H3.
   destruct H3 as [H3| H3].
   +exfalso; apply H3.
    split; [ apply C | apply c ].
   +destruct H3 as (H3 & Hff3).
    simpl in Hff3; simpl.
    unfold coKer_eq; simpl.
+   assert (H1 : (H_app g' (H_app f' (d 0)) = H_app g' (H_app b (g1 0)))%G). {
+     simpl in H3.
+     apply g'; [ now apply f' | | easy ].
+     apply b.
+     specialize (Hg1 0%G) as H1.
+     destruct H1 as [H1| H1]; [ exfalso; apply H1, C | easy ].
+   }
+   assert (H2 : (H_app g' (H_app f' (d 0)) = H_app c (H_app g (g1 0)))%G). {
+     eapply gr_eq_trans; [ apply H1 | ].
+     apply gr_eq_symm, Hcgg'.
+   }
+   specialize (Hg1 0%G) as H4.
+   destruct H4 as [H4| H4]; [ exfalso; apply H4, C | ].
+   assert (H5 : (H_app g' (H_app f' (d 0)) = H_app c 0)%G). {
+     eapply gr_eq_trans; [ apply H2 | ].
+     apply c; [ now apply g | apply C | easy ].
+   }
+   assert (H6 : (H_app g' (H_app f' (d 0)) = 0)%G). {
+     eapply gr_eq_trans; [ apply H5 | apply c ].
+   }
+   clear H1 H2 H5 H5.
 ...
 }
 assert (Hmem_compat : ∀ x, x ∈ Ker c → fd x ∈ coKer a). {
