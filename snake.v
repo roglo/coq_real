@@ -755,6 +755,25 @@ assert (Hzero : (fd 0 = 0)%G). {
    simpl in Hff3; simpl.
    unfold coKer_eq; simpl.
 ...
+}
+assert (Hmem_compat : ∀ x, x ∈ Ker c → fd x ∈ coKer a). {
+  intros x Hx.
+  specialize (Hfd x) as H1.
+  now destruct H1.
+}
+assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (fd (x + y) = fd x + fd y)%G). {
+  intros * Hx Hy.
+  specialize (Hfd x) as H1.
+  destruct H1 as [H1| (Hfx, Hf'x)]; [ easy | ].
+  specialize (Hfd y) as H2.
+  destruct H2 as [H2| (Hfy, Hf'y)]; [ easy | ].
+  move Hfy before Hfx.
+  simpl; unfold coKer_eq; simpl.
+  exists 0%G.
+  split; [ apply A | ].
+  eapply gr_eq_trans; [ apply a | apply gr_eq_symm ].
+  assert ((H_app f' (fd (x + y)) = H_app b (g1 (x + y)))%G). {
+...
     H_zero : (H_app 0 = 0)%G;
     H_mem_compat : ∀ x, x ∈ A → H_app x ∈ B;
     H_lin : ∀ x y, x ∈ A → y ∈ A → (H_app (x + y) = H_app x + H_app y)%G;
