@@ -843,9 +843,31 @@ apply gr_eq_symm, Hcgg'.
     destruct H3 as [H3| H3]; [ exfalso; now apply H3 | ].
     specialize (Hg1 y) as H4.
     destruct H4 as [H4| H4]; [ exfalso; now apply H4 | ].
-...
 (**)
-assert ((H_app g' (H_app b (g1 x + g1 y)) = H_app g' (H_app b (g1 x) + H_app b (g1 y)))%G). {
+assert ((H_app g' (H_app b (g1 x + g1 y)) = 0)%G). {
+eapply gr_eq_trans.
+apply gr_eq_symm, Hcgg'.
+apply gr_eq_trans with (y := H_app c (x + y)%G).
+apply H_compat.
+apply g.
+now apply B.
+now apply C.
+eapply gr_eq_trans.
+apply H_linear; easy.
+apply gr_eq_trans with (y := (x + H_app g (g1 y))%G); simpl.
+apply gr_add_compat; [ easy | apply gr_eq_refl ].
+apply gr_add_compat; [ apply gr_eq_refl | easy ].
+eapply gr_eq_trans; simpl.
+now apply H_linear.
+apply gr_eq_trans with (y := (H_app c x + 0)%G).
+apply gr_add_compat; [ apply gr_eq_refl | easy ].
+eapply gr_eq_trans; [ apply gr_add_0_r | easy ].
+}
+...
+
+assert ((H_app g' (H_app b (g1 x) + H_app b (g1 y)) = 0)%G). {
+eapply gr_eq_trans; [ | apply H ].
+apply gr_eq_symm.
 eapply gr_eq_trans.
 apply gr_eq_symm, Hcgg'.
 apply gr_eq_trans with (y := H_app c (x + y)%G).
@@ -861,6 +883,7 @@ apply gr_add_compat; [ apply gr_eq_refl | easy ].
 eapply gr_eq_trans; simpl.
 now apply H_linear.
 ...
+assert ((H_app g' (H_app b (g1 x + g1 y)) = H_app g' (H_app b (g1 x) + H_app b (g1 y)))%G). {
   ============================
   (H_app c (x + y) = H_app g' (H_app b (g1 x) + H_app b (g1 y)))%G
 }
