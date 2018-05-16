@@ -723,6 +723,42 @@ destruct s' as (sf' & sg' & _).
 specialize (exists_ker_C_to_B B C C' g c cz sg) as H1.
 specialize (ClassicalChoice.choice _ H1) as (g1, Hg1).
 assert
+  (Hf'inj :
+  ∀ x y, x ∈ A' → y ∈ A' → (H_app f' x = H_app f' y)%G → (x = y)%G). {
+  intros * Hx Hy Hxy.
+  (* it is because Im(cza')={0}=Ker(f') *)
+  assert (H2 : (H_app f' x - H_app f' y = 0)%G). {
+    apply gr_sub_move_r.
+    eapply gr_eq_trans; [ apply Hxy | ].
+    apply gr_eq_symm, gr_add_0_l.
+  }
+  assert (H3 : (H_app f' (x - y) = 0)%G). {
+    eapply gr_eq_trans; [ | apply H2 ].
+    eapply gr_eq_trans.
+    -apply H_linear; [ easy | now apply A' ].
+    -apply gr_add_compat; [ apply gr_eq_refl | now apply H_inv ].
+  }
+  assert (H4 : (x - y)%G ∈ Ker f'). {
+    split; [ | apply H3 ].
+    apply A'; [ easy | now apply A' ].
+  }
+  apply sf' in H4.
+  simpl in H4.
+  destruct H4 as (z & _ & H4).
+  destruct z.
+  assert (H5 : (x - y = 0)%G). {
+    eapply gr_eq_trans; [ apply gr_eq_symm, H4 | ].
+    apply H_zero.
+  }
+  apply gr_sub_move_r in H5.
+  eapply gr_eq_trans; [ apply H5 | ].
+  apply gr_add_0_l.
+}
+(* f' étant injective (Hf'inj), il est possible qu'on puisse avoir un f'⁻¹
+   de B' dans Coker(a) et alors donc b o f'⁻¹ sans avoir à passer par l'axiome
+   du choix. À réfléchir... *)
+...
+assert
   (H2 : ∀ z, ∃ x', z ∉ Ker c ∨
         x' ∈ Coker a ∧ (H_app f' x' = H_app b (g1 z))%G). {
   intros z.
@@ -753,38 +789,6 @@ assert
 specialize (ClassicalChoice.choice _ H2) as (d, Hd).
 move d before g1.
 clear H1 H2.
-assert
-  (Hf'inj :
-  ∀ x y, x ∈ A' → y ∈ A' → (H_app f' x = H_app f' y)%G → (x = y)%G). {
-  intros * Hx Hy Hxy.
-  (* it is because Im(cza')={0}=Ker(f') *)
-  assert (H1 : (H_app f' x - H_app f' y = 0)%G). {
-    apply gr_sub_move_r.
-    eapply gr_eq_trans; [ apply Hxy | ].
-    apply gr_eq_symm, gr_add_0_l.
-  }
-  assert (H2 : (H_app f' (x - y) = 0)%G). {
-    eapply gr_eq_trans; [ | apply H1 ].
-    eapply gr_eq_trans.
-    -apply H_linear; [ easy | now apply A' ].
-    -apply gr_add_compat; [ apply gr_eq_refl | now apply H_inv ].
-  }
-  assert (H3 : (x - y)%G ∈ Ker f'). {
-    split; [ | apply H2 ].
-    apply A'; [ easy | now apply A' ].
-  }
-  apply sf' in H3.
-  simpl in H3.
-  destruct H3 as (z & _ & H3).
-  destruct z.
-  assert (H4 : (x - y = 0)%G). {
-    eapply gr_eq_trans; [ apply gr_eq_symm, H3 | ].
-    apply H_zero.
-  }
-  apply gr_sub_move_r in H4.
-  eapply gr_eq_trans; [ apply H4 | ].
-  apply gr_add_0_l.
-}
 assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%G). {
   intros * Hx Hy.
   specialize (Hd x) as H1.
