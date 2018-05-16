@@ -719,7 +719,7 @@ assert
   (H2 : ∀ z, ∃ x', z ∉ Ker c ∨
         x' ∈ coKer a ∧ (H_app f' x' = H_app b (g1 z))%G). {
   intros z.
-  destruct (MemDec (Ker c) z) as [Hz| H2].
+  destruct (MemDec (Ker c) z) as [Hz| Hz].
   -specialize (H1 z) as (y & Hy).
    destruct Hy as [Hy| Hy].
    +exists 0%G; left; simpl; easy.
