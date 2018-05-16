@@ -759,6 +759,7 @@ assert (Hmem_compat : ∀ x, x ∈ Ker c → d x ∈ coKer a). {
 }
 assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%G). {
   intros * Hx Hy.
+  (* equality in coKer a (implicit) *)
   specialize (Hd x) as H1.
   destruct H1 as [H1| (Hfx, Hf'x)]; [ easy | ].
   specialize (Hd y) as H2.
@@ -767,7 +768,9 @@ assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%
   simpl; unfold coKer_eq; simpl.
   exists 0%G.
   split; [ apply A | ].
-  eapply gr_eq_trans; [ apply a | apply gr_eq_symm ].
+  (* equality in A' (implicit) *)
+  eapply gr_eq_trans; [ apply H_zero | apply gr_eq_symm ].
+...
   assert ((H_app f' (d (x + y)) = H_app b (g1 (x + y)))%G). {
 ...
     H_mem_compat : ∀ x, x ∈ A → H_app x ∈ B;
