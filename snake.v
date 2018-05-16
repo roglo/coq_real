@@ -756,8 +756,7 @@ assert
 }
 (* f' étant injective (Hf'inj), il est possible qu'on puisse avoir un f'⁻¹
    de B' dans Coker(a) et alors donc b o f'⁻¹ sans avoir à passer par l'axiome
-   du choix. À réfléchir... *)
-...
+   du choix ci-dessous. À réfléchir... *)
 assert
   (H2 : ∀ z, ∃ x', z ∉ Ker c ∨
         x' ∈ Coker a ∧ (H_app f' x' = H_app b (g1 z))%G). {
