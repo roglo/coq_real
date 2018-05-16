@@ -178,11 +178,8 @@ assert (H1 : (H_app f (0 + 0) = H_app f 0)%G). {
 eapply gr_eq_trans; [ apply gr_eq_symm, H1 | ].
 eapply gr_eq_trans; [ apply f; apply A | ].
 assert (H2 : (H_app f 0 - H_app f 0 = 0)%G) by apply B.
-...
-
 apply gr_eq_symm, gr_sub_move_r.
 eapply gr_eq_trans; [ apply gr_add_0_l | ].
-
 ...
 
 Inductive Gr0_set := G0 : Gr0_set.
