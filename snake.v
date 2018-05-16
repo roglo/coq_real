@@ -68,9 +68,6 @@ Axiom MemDec : ∀ G x, {x ∈ G} + {x ∉ G}.
 
 Record HomGr (A B : AbGroup) :=
   { H_app : gr_set A → gr_set B;
-(*
-    H_zero : (H_app 0 = 0)%G;
-*)
     H_mem_compat : ∀ x, x ∈ A → H_app x ∈ B;
     H_lin : ∀ x y, x ∈ A → y ∈ A → (H_app (x + y) = H_app x + H_app y)%G;
     H_inv : ∀ x, x ∈ A → (H_app (- x) = - H_app x)%G;
@@ -169,18 +166,26 @@ apply gr_eq_trans with (y := (- - x + (- x + x))%G).
  apply gr_add_compat; [ apply gr_add_inv_l | apply gr_eq_refl ].
 Qed.
 
-Theorem H_zero : ∀ {A B} (f : HomGr A B), (H_app f 0 = 0)%G.
+Theorem H_zero : ∀ A B (f : HomGr A B), (H_app f 0 = 0)%G.
 Proof.
 intros.
-assert (H1 : (H_app f (0 + 0) = H_app f 0)%G). {
+assert (H1 : (@gr_zero A + 0 = 0)%G) by apply A.
+assert (H2 : (H_app f 0 + H_app f 0 = H_app f 0)%G). {
+  eapply gr_eq_trans; [ apply gr_eq_symm, f; apply A | ].
   apply f; [ apply A; apply A | apply A | apply A ].
 }
-eapply gr_eq_trans; [ apply gr_eq_symm, H1 | ].
-eapply gr_eq_trans; [ apply f; apply A | ].
-assert (H2 : (H_app f 0 - H_app f 0 = 0)%G) by apply B.
-apply gr_eq_symm, gr_sub_move_r.
-eapply gr_eq_trans; [ apply gr_add_0_l | ].
-...
+assert (H3 : (H_app f 0 + H_app f 0 - H_app f 0 = H_app f 0 - H_app f 0)%G). {
+  apply gr_add_compat; [ apply H2 | apply gr_eq_refl ].
+}
+assert (H4 : (H_app f 0 + H_app f 0 - H_app f 0 = 0)%G). {
+  eapply gr_eq_trans; [ apply H3 | apply B ].
+}
+eapply gr_eq_trans; [ | apply H4 ].
+apply gr_eq_symm.
+eapply gr_eq_trans; [ apply gr_add_assoc | ].
+eapply gr_eq_trans; [ | apply gr_add_0_r ].
+apply gr_add_compat; [ apply gr_eq_refl | apply B ].
+Qed.
 
 Inductive Gr0_set := G0 : Gr0_set.
 
@@ -218,7 +223,8 @@ Theorem is_null_Gr0 : is_null Gr0.
 Proof.
 split; intros H f g x.
 -destruct x.
- apply gr_eq_trans with (y := gr_zero); [ apply H_zero | apply gr_eq_symm, g ].
+ apply gr_eq_trans with (y := gr_zero); [ apply H_zero | ].
+ apply gr_eq_symm, H_zero.
 -now destruct (H_app f x), (H_app g x).
 Qed.
 
@@ -391,7 +397,7 @@ Proof.
 intros.
 exists 0%G.
 split; [ apply gr_zero_mem | ].
-eapply gr_eq_trans; [ apply f | ].
+eapply gr_eq_trans; [ apply H_zero | ].
 apply gr_eq_symm.
 simpl.
 apply gr_eq_trans with (y := (0 - 0)%G).
@@ -405,7 +411,7 @@ Proof.
 intros.
 exists 0%G.
 split; [ apply gr_zero_mem | ].
-eapply gr_eq_trans; [ apply f | ].
+eapply gr_eq_trans; [ apply H_zero | ].
 apply gr_eq_symm.
 simpl.
 apply gr_sub_move_r.
@@ -421,7 +427,7 @@ unfold coKer_eq; split.
 -intros x.
  exists 0%G.
  split; [ apply gr_zero_mem | ].
- eapply gr_eq_trans; [ apply f | ].
+ eapply gr_eq_trans; [ apply H_zero | ].
  simpl.
  apply gr_eq_symm, gr_add_inv_r.
 -intros x y Hxy.
@@ -559,7 +565,7 @@ split; [ now apply f; simpl in Hx | ].
 eapply gr_eq_trans; [ apply Hc | ].
 apply gr_eq_trans with (y := H_app f' 0%G).
 -apply f'; [ apply a, Hx | apply A' | apply Hx ].
--apply f'.
+-apply H_zero.
 Qed.
 
 Theorem KK_lin {A B A'} : ∀ (f : HomGr A B) (a : HomGr A A'),
@@ -591,24 +597,10 @@ Definition HomGr_Ker_Ker {A B A' B'}
     (f : HomGr A B) (f' : HomGr A' B') (a : HomGr A A') (b : HomGr B B')
     (Hc : diagram_commutes f a b f') :=
   {| H_app (x : gr_set (Ker a)) := H_app f x : gr_set (Ker b);
-     H_zero := H_zero A B f;
      H_mem_compat := KK_mem_compat a b f f' Hc;
      H_lin := KK_lin f a;
      H_inv := KK_inv f a;
      H_compat := KK_compat f a |}.
-
-Theorem cc_zero {A B A' B'} :
-  ∀ (f' : HomGr A' B') (a : HomGr A A') (b : HomGr B B'),
-  @gr_eq (coKer b) (H_app f' 0%G) 0%G.
-Proof.
-intros.
-exists 0%G.
-split; [ apply B | ].
-eapply gr_eq_trans; [ apply b | ].
-apply B'.
-apply gr_eq_trans with (y := (0 - 0)%G); [ | apply B' ].
-simpl; apply gr_add_compat; [ apply f' | apply gr_eq_refl ].
-Qed.
 
 Theorem cc_mem_compat {A B A' B'} :
   ∀ (f' : HomGr A' B') (a : HomGr A A') (b : HomGr B B'),
@@ -626,7 +618,7 @@ Proof.
 intros * Hx Hy; simpl in Hx, Hy.
 exists 0%G.
 split; [ apply B | ].
-eapply gr_eq_trans; [ apply b | apply B' ].
+eapply gr_eq_trans; [ apply H_zero | apply B' ].
 simpl; apply gr_sub_move_r.
 apply B'.
 eapply gr_eq_trans; [ apply gr_add_0_l | ].
@@ -641,7 +633,7 @@ Proof.
 intros * Hx.
 exists 0%G.
 split; [ apply B | ].
-eapply gr_eq_trans; [ apply b | ].
+eapply gr_eq_trans; [ apply H_zero | ].
 apply B'.
 apply gr_eq_trans with (y := (H_app f' (- x) + H_app f' x)%G).
 -simpl; apply gr_add_compat.
@@ -680,7 +672,6 @@ Definition HomGr_coKer_coKer {A B A' B'}
     (f : HomGr A B) (f' : HomGr A' B') (a : HomGr A A') (b : HomGr B B')
     (Hc : diagram_commutes f a b f') :=
   {| H_app (x : gr_set (coKer a)) := H_app f' x : gr_set (coKer b);
-     H_zero := cc_zero f' a b;
      H_mem_compat := cc_mem_compat f' a b;
      H_lin := cc_lin f' a b;
      H_inv := cc_inv f' a b;
@@ -700,7 +691,7 @@ enough (H : x ∈ Im g). {
 apply sg.
 split; [ easy | ].
 simpl in x; simpl.
-destruct cz as (appcz, czz, czin, czlin, czi, czcomp).
+destruct cz as (appcz, czin, czlin, czi, czcomp).
 simpl.
 now destruct (appcz x).
 Qed.
@@ -731,7 +722,7 @@ destruct s' as (sf' & sg' & _).
 specialize (exists_ker_C_to_B B C C' g c cz sg) as H1.
 specialize (ClassicalChoice.choice _ H1) as (g1, Hg1).
 assert
-  (H2 : ∀ z, ∃! x', z ∉ Ker c ∨
+  (H2 : ∀ z, ∃ x', z ∉ Ker c ∨
         x' ∈ coKer a ∧ (H_app f' x' = H_app b (g1 z))%G). {
   intros z.
   destruct (MemDec (Ker c) z) as [Hz| Hz].
@@ -761,56 +752,24 @@ assert
 specialize (ClassicalChoice.choice _ H2) as (d, Hd).
 move d before g1.
 clear H1 H2.
-assert (Hzero : (d 0 = 0)%G). {
-  specialize (Hd 0%G) as H3.
-  destruct H3 as [H3| H3].
-  +exfalso; apply H3.
-   split; [ apply C | apply c ].
-  +destruct H3 as (H3 & Hff3).
-   simpl in Hff3; simpl.
-   unfold coKer_eq; simpl.
-   assert (H1 : (H_app g' (H_app f' (d 0)) = H_app g' (H_app b (g1 0)))%G). {
-     simpl in H3.
-     apply g'; [ now apply f' | | easy ].
-     apply b.
-     specialize (Hg1 0%G) as H1.
-     destruct H1 as [H1| H1]; [ exfalso; apply H1, C | easy ].
-   }
-   assert (H2 : (H_app g' (H_app f' (d 0)) = H_app c (H_app g (g1 0)))%G). {
-     eapply gr_eq_trans; [ apply H1 | ].
-     apply gr_eq_symm, Hcgg'.
-   }
-   specialize (Hg1 0%G) as H4.
-   destruct H4 as [H4| H4]; [ exfalso; apply H4, C | ].
-   assert (H5 : (H_app g' (H_app f' (d 0)) = H_app c 0)%G). {
-     eapply gr_eq_trans; [ apply H2 | ].
-     apply c; [ now apply g | apply C | easy ].
-   }
-   assert (H6 : (H_app g' (H_app f' (d 0)) = 0)%G). {
-     eapply gr_eq_trans; [ apply H5 | apply c ].
-   }
-   clear H1 H2 H5 H5.
-...
-}
-assert (Hmem_compat : ∀ x, x ∈ Ker c → fd x ∈ coKer a). {
+assert (Hmem_compat : ∀ x, x ∈ Ker c → d x ∈ coKer a). {
   intros x Hx.
-  specialize (Hfd x) as H1.
+  specialize (Hd x) as H1.
   now destruct H1.
 }
-assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (fd (x + y) = fd x + fd y)%G). {
+assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%G). {
   intros * Hx Hy.
-  specialize (Hfd x) as H1.
+  specialize (Hd x) as H1.
   destruct H1 as [H1| (Hfx, Hf'x)]; [ easy | ].
-  specialize (Hfd y) as H2.
+  specialize (Hd y) as H2.
   destruct H2 as [H2| (Hfy, Hf'y)]; [ easy | ].
   move Hfy before Hfx.
   simpl; unfold coKer_eq; simpl.
   exists 0%G.
   split; [ apply A | ].
   eapply gr_eq_trans; [ apply a | apply gr_eq_symm ].
-  assert ((H_app f' (fd (x + y)) = H_app b (g1 (x + y)))%G). {
+  assert ((H_app f' (d (x + y)) = H_app b (g1 (x + y)))%G). {
 ...
-    H_zero : (H_app 0 = 0)%G;
     H_mem_compat : ∀ x, x ∈ A → H_app x ∈ B;
     H_lin : ∀ x y, x ∈ A → y ∈ A → (H_app (x + y) = H_app x + H_app y)%G;
     H_inv : ∀ x, x ∈ A → (H_app (- x) = - H_app x)%G;
