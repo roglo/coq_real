@@ -784,12 +784,6 @@ assert
   eapply gr_eq_trans; [ apply H4 | ].
   apply gr_add_0_l.
 }
-(*
-assert (Hdmem_compat : ∀ x y, d x ∈ A' → d y ∈ A' → d (x + y)%G ∈ A'). {
-  intros * Hx Hy.
-...
-}
-*)
 assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%G). {
   intros * Hx Hy.
   specialize (Hd x) as H1.
