@@ -70,13 +70,14 @@ Record HomGr (A B : AbGroup) :=
   { H_app : gr_set A → gr_set B;
     H_mem_compat : ∀ x, x ∈ A → H_app x ∈ B;
     H_lin : ∀ x y, x ∈ A → y ∈ A → (H_app (x + y) = H_app x + H_app y)%G;
+(*
     H_inv : ∀ x, x ∈ A → (H_app (- x) = - H_app x)%G;
+*)
     H_compat : ∀ x y, x ∈ A → y ∈ A → (x = y)%G → (H_app x = H_app y)%G }.
 
 Arguments H_app [A] [B].
 Arguments H_mem_compat _ _ f : rename.
 Arguments H_lin _ _ f : rename.
-Arguments H_inv _ _ f : rename.
 Arguments H_compat _ _ f : rename.
 
 Theorem gr_eq_refl : ∀ G (x : gr_set G), x ≡ x.
@@ -186,6 +187,11 @@ eapply gr_eq_trans; [ apply gr_add_assoc | ].
 eapply gr_eq_trans; [ | apply gr_add_0_r ].
 apply gr_add_compat; [ apply gr_eq_refl | apply B ].
 Qed.
+
+Theorem H_inv : ∀ A B (f : HomGr A B) x, (H_app f (- x) = - H_app f x)%G.
+Proof.
+intros.
+...
 
 Inductive Gr0_set := G0 : Gr0_set.
 
