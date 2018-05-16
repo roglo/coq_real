@@ -68,7 +68,9 @@ Axiom MemDec : ∀ G x, {x ∈ G} + {x ∉ G}.
 
 Record HomGr (A B : AbGroup) :=
   { H_app : gr_set A → gr_set B;
+(*
     H_zero : (H_app 0 = 0)%G;
+*)
     H_mem_compat : ∀ x, x ∈ A → H_app x ∈ B;
     H_lin : ∀ x y, x ∈ A → y ∈ A → (H_app (x + y) = H_app x + H_app y)%G;
     H_inv : ∀ x, x ∈ A → (H_app (- x) = - H_app x)%G;
@@ -167,6 +169,22 @@ apply gr_eq_trans with (y := (- - x + (- x + x))%G).
  apply gr_add_compat; [ apply gr_add_inv_l | apply gr_eq_refl ].
 Qed.
 
+Theorem H_zero : ∀ {A B} (f : HomGr A B), (H_app f 0 = 0)%G.
+Proof.
+intros.
+assert (H1 : (H_app f (0 + 0) = H_app f 0)%G). {
+  apply f; [ apply A; apply A | apply A | apply A ].
+}
+eapply gr_eq_trans; [ apply gr_eq_symm, H1 | ].
+eapply gr_eq_trans; [ apply f; apply A | ].
+assert (H2 : (H_app f 0 - H_app f 0 = 0)%G) by apply B.
+...
+
+apply gr_eq_symm, gr_sub_move_r.
+eapply gr_eq_trans; [ apply gr_add_0_l | ].
+
+...
+
 Inductive Gr0_set := G0 : Gr0_set.
 
 Theorem Gr0_add_0_l : ∀ x, (λ _ _ : Gr0_set, G0) G0 x = x.
@@ -203,7 +221,7 @@ Theorem is_null_Gr0 : is_null Gr0.
 Proof.
 split; intros H f g x.
 -destruct x.
- apply gr_eq_trans with (y := gr_zero); [ apply f | apply gr_eq_symm, g ].
+ apply gr_eq_trans with (y := gr_zero); [ apply H_zero | apply gr_eq_symm, g ].
 -now destruct (H_app f x), (H_app g x).
 Qed.
 
@@ -716,7 +734,7 @@ destruct s' as (sf' & sg' & _).
 specialize (exists_ker_C_to_B B C C' g c cz sg) as H1.
 specialize (ClassicalChoice.choice _ H1) as (g1, Hg1).
 assert
-  (H2 : ∀ z, ∃ x', z ∉ Ker c ∨
+  (H2 : ∀ z, ∃! x', z ∉ Ker c ∨
         x' ∈ coKer a ∧ (H_app f' x' = H_app b (g1 z))%G). {
   intros z.
   destruct (MemDec (Ker c) z) as [Hz| Hz].
