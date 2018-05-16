@@ -784,10 +784,12 @@ assert
   eapply gr_eq_trans; [ apply H4 | ].
   apply gr_add_0_l.
 }
+(*
 assert (Hdmem_compat : ∀ x y, d x ∈ A' → d y ∈ A' → d (x + y)%G ∈ A'). {
   intros * Hx Hy.
 ...
 }
+*)
 assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%G). {
   intros * Hx Hy.
   specialize (Hd x) as H1.
@@ -796,30 +798,50 @@ assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%
   destruct H2 as [H2| (Hfy, Hf'y)]; [ easy | ].
   move Hfy before Hfx.
   enough (H1 : (H_app f' (d (x + y)) = H_app f' (d x + d y))%G). {
-    apply Hf'inj in H1.
-    -simpl; unfold coKer_eq; simpl.
-     exists 0%G.
-     split; [ apply A | ].
-     eapply gr_eq_trans; [ apply H_zero | apply gr_eq_symm ].
-     apply gr_sub_move_r.
-     eapply gr_eq_trans; [ apply H1 | ].
-     apply gr_eq_symm, gr_add_0_l.
-    -simpl in Hfx, Hfy.
-...
-    -apply A'; [ apply Hfx | apply Hfy ].
+    destruct (MemDec A' (d (x + y)%G)) as [H2| H2].
+     -apply Hf'inj in H1; [ | easy | ].
+      +simpl; unfold coKer_eq; simpl.
+       exists 0%G.
+       split; [ apply A | ].
+       eapply gr_eq_trans; [ apply H_zero | apply gr_eq_symm ].
+       apply gr_sub_move_r.
+       eapply gr_eq_trans; [ apply H1 | ].
+       apply gr_eq_symm, gr_add_0_l.
+      +simpl in Hfx, Hfy.
+       now apply A'.
+     -specialize (Hd (x + y)%G) as H3.
+      destruct H3 as [H3| H3]; [ | easy ].
+      exfalso; apply H3.
+      now apply (Ker c).
   }
-...
-  assert ((H_app f' (d (x + y)) = H_app b (g1 (x + y)))%G). {
-...
-    H_mem_compat : ∀ x, x ∈ A → H_app x ∈ B;
-    H_lin : ∀ x y, x ∈ A → y ∈ A → (H_app (x + y) = H_app x + H_app y)%G;
-    H_compat : ∀ x y, x ∈ A → y ∈ A → (x = y)%G → (H_app x = H_app y)%G }.
-exists 0%G.
-split; [ apply A | ].
-apply gr_eq_trans with (y := fd 0%G).
+  specialize (Hd (x + y)%G) as H1.
+  destruct H1 as [H1| H1]; [ exfalso; now apply H1, (Ker c) | ].
+  destruct H1 as (Hdxy, Hfd).
+  eapply gr_eq_trans; [ apply Hfd | ].
+  apply gr_eq_symm.
+  assert (H2 : (H_app f' (d x + d y) = H_app f' (d x) + H_app f' (d y))%G). {
+    now simpl; apply H_lin.
+  }
+  eapply gr_eq_trans; [ apply H2 | ].
+  eapply gr_eq_trans.
+  -apply gr_add_compat; [ apply Hf'x | apply Hf'y ].
+  -eapply gr_eq_trans.
+   +apply gr_eq_symm, H_lin.
+    *specialize (Hg1 x) as H1.
+     destruct H1 as [H1| H1]; [ now simpl in Hx | easy ].
+    *specialize (Hg1 y) as H1.
+     destruct H1 as [H1| H1]; [ now simpl in Hy | easy ].
+   +specialize (Hg1 (x + y)%G) as H1.
+    simpl in Hx, Hy.
+    destruct H1 as [H1| H1]; [ exfalso; now apply H1, C | ].
+    specialize (Hg1 x) as H3.
+    destruct H3 as [H3| H3]; [ exfalso; now apply H3 | ].
+    specialize (Hg1 y) as H4.
+    destruct H4 as [H4| H4]; [ exfalso; now apply H4 | ].
+    apply H_compat; [ now apply B | easy | ].
+    apply gr_eq_symm.
 ...
 }
-exists {| H_app := f3; H_prop := H3 |}.
 ...
 exists d.
 simpl.
