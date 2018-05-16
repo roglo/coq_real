@@ -752,24 +752,62 @@ assert
 specialize (ClassicalChoice.choice _ H2) as (d, Hd).
 move d before g1.
 clear H1 H2.
-assert (Hmem_compat : ∀ x, x ∈ Ker c → d x ∈ coKer a). {
-  intros x Hx.
-  specialize (Hd x) as H1.
-  now destruct H1.
+assert
+  (Hf'inj :
+  ∀ x y, x ∈ A' → y ∈ A' → (H_app f' x = H_app f' y)%G → (x = y)%G). {
+  intros * Hx Hy Hxy.
+  (* it is because Im(cza')={0}=Ker(f') *)
+  assert (H1 : (H_app f' x - H_app f' y = 0)%G). {
+    apply gr_sub_move_r.
+    eapply gr_eq_trans; [ apply Hxy | ].
+    apply gr_eq_symm, gr_add_0_l.
+  }
+  assert (H2 : (H_app f' (x - y) = 0)%G). {
+    eapply gr_eq_trans; [ | apply H1 ].
+    eapply gr_eq_trans.
+    -apply H_lin; [ easy | now apply A' ].
+    -apply gr_add_compat; [ apply gr_eq_refl | now apply H_inv ].
+  }
+  assert (H3 : (x - y)%G ∈ Ker f'). {
+    split; [ | apply H2 ].
+    apply A'; [ easy | now apply A' ].
+  }
+  apply sf' in H3.
+  simpl in H3.
+  destruct H3 as (z & _ & H3).
+  destruct z.
+  assert (H4 : (x - y = 0)%G). {
+    eapply gr_eq_trans; [ apply gr_eq_symm, H3 | ].
+    apply H_zero.
+  }
+  apply gr_sub_move_r in H4.
+  eapply gr_eq_trans; [ apply H4 | ].
+  apply gr_add_0_l.
+}
+assert (Hdmem_compat : ∀ x y, d x ∈ A' → d y ∈ A' → d (x + y)%G ∈ A'). {
+  intros * Hx Hy.
+...
 }
 assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%G). {
   intros * Hx Hy.
-  (* equality in coKer a (implicit) *)
   specialize (Hd x) as H1.
   destruct H1 as [H1| (Hfx, Hf'x)]; [ easy | ].
   specialize (Hd y) as H2.
   destruct H2 as [H2| (Hfy, Hf'y)]; [ easy | ].
   move Hfy before Hfx.
-  simpl; unfold coKer_eq; simpl.
-  exists 0%G.
-  split; [ apply A | ].
-  (* equality in A' (implicit) *)
-  eapply gr_eq_trans; [ apply H_zero | apply gr_eq_symm ].
+  enough (H1 : (H_app f' (d (x + y)) = H_app f' (d x + d y))%G). {
+    apply Hf'inj in H1.
+    -simpl; unfold coKer_eq; simpl.
+     exists 0%G.
+     split; [ apply A | ].
+     eapply gr_eq_trans; [ apply H_zero | apply gr_eq_symm ].
+     apply gr_sub_move_r.
+     eapply gr_eq_trans; [ apply H1 | ].
+     apply gr_eq_symm, gr_add_0_l.
+    -simpl in Hfx, Hfy.
+...
+    -apply A'; [ apply Hfx | apply Hfy ].
+  }
 ...
   assert ((H_app f' (d (x + y)) = H_app b (g1 (x + y)))%G). {
 ...
