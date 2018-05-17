@@ -754,9 +754,37 @@ assert
   eapply gr_eq_trans; [ apply H5 | ].
   apply gr_add_0_l.
 }
-(* f' étant injective (Hf'inj), il est possible qu'on puisse avoir un f'⁻¹
-   de B' dans Coker(a) et alors donc b o f'⁻¹ sans avoir à passer par l'axiome
-   du choix ci-dessous. À réfléchir... *)
+assert (H7 : ∀ x, x ∈ C → g₁ x ∈ B). {
+  intros z Hz; specialize (Hg₁ z) as H; now destruct H.
+}
+remember (HomGr_Coker_Coker f f' a b Hcff') as cf' eqn:Hcf'.
+assert
+  (H2' : ∀ z, ∃ x', z ∉ Ker c ∨
+        x' ∈ Coker a ∧ (H_app cf' x' = H_app b (g₁ z))%G). {
+  intros z.
+  subst cf'.
+  simpl.
+  destruct (MemDec (Ker c) z) as [Hz| Hz].
+  -specialize (H1 z) as (y & Hy).
+   destruct Hy as [Hy| Hy].
+   +exists 0%G; left; simpl; easy.
+   +exists (H_app a 0%G); right.
+    split; [ apply a, A | ].
+    unfold Coker_eq; simpl.
+    exists (H_app f 0 - g₁ z)%G.
+    split; [ apply B | ].
+    *apply f, A.
+    *apply B, H7, Hz.
+    *apply gr_eq_symm.
+     apply gr_eq_trans with (y := (H_app b (H_app f 0) + H_app b (- g₁ z))%G).
+    --apply gr_add_compat.
+     ++apply gr_eq_symm, Hcff'.
+     ++ apply gr_eq_symm, H_inv, H7, Hz.
+    --eapply gr_eq_trans; [ | apply gr_eq_refl ].
+      apply gr_eq_symm.
+      apply H_linear; [ apply f, A | apply B, H7, Hz ].
+  -exists 0%G; left; easy.
+}
 assert
   (H2 : ∀ z, ∃ x', z ∉ Ker c ∨
         x' ∈ Coker a ∧ (H_app f' x' = H_app b (g₁ z))%G). {
@@ -787,7 +815,7 @@ assert
 }
 specialize (ClassicalChoice.choice _ H2) as (d, Hd).
 move d before g₁.
-clear H1 H2.
+clear H1 H2 H2'.
 assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%G). {
   intros * Hx Hy.
   specialize (Hd x) as H1.
@@ -863,9 +891,6 @@ assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%
         --eapply gr_eq_trans; [ apply gr_add_0_r | easy ].
     }
     eapply gr_eq_trans; [ now apply H_linear | ].
-    assert (H7 : ∀ x, x ∈ C → g₁ x ∈ B). {
-      intros z Hz; specialize (Hg₁ z) as H; now destruct H.
-    }
     assert (H8 : ∀ y, y ∈ B → (H_app b (g₁ (H_app g y)) = H_app b y)%G). {
       clear x y Hy Hfy Hf'y Hdxy Hfd H2 H1 H4 H6 Hx Hfx Hf'x H3.
       intros y Hy.
