@@ -871,10 +871,16 @@ assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%
     assert
       (H8 :
        ∀ y, y ∈ B
-       → (∃ x, (g₁ x = y)%G)
+       → (∃ x, x ∈ C ∧ (g₁ x = y)%G)
        → (H_app b (g₁ (H_app g y)) = H_app b y)%G). {
       clear x y Hy Hfy Hf'y Hdxy Hfd H2 H1 H4 H6 Hx Hfx Hf'x H3.
-      intros y Hy (x & Hxy).
+      intros y Hy (x & Hx & Hxy).
+(**)
+      apply gr_eq_symm.
+      apply gr_eq_trans with (y := H_app b (g₁ x)).
+      -apply b; [ easy | now apply H7 | now apply gr_eq_symm ].
+      -apply gr_eq_symm.
+...
       apply gr_eq_trans with (y := H_app b (g₁ (H_app g (g₁ x)))).
       -apply b.
        +now apply H7, g.
