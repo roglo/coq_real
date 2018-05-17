@@ -836,7 +836,17 @@ assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%
     destruct H3 as [H3| H3]; [ exfalso; now apply H3 | ].
     specialize (Hg1 y) as H4.
     destruct H4 as [H4| H4]; [ exfalso; now apply H4 | ].
-    assert ((H_app g' (H_app b (g1 x + g1 y)) = 0)%G). {
+    assert (H5 : ∀ x, x ∈ Ker c → (H_app g' (H_app b (g1 x)) = 0)%G). {
+      intros z Hz.
+      specialize (Hg1 z) as H5.
+      destruct H5 as [H5| H5]; [ now simpl in Hz | ].
+      eapply gr_eq_trans.
+      -apply gr_eq_symm, Hcgg'.
+      -apply gr_eq_trans with (y := H_app c z).
+       +apply H_compat; [ now apply g | now simpl in Hz | easy ].
+       +now simpl in Hz.
+    }
+    assert (H6 : (H_app g' (H_app b (g1 x + g1 y)) = 0)%G). {
       eapply gr_eq_trans.
       -apply gr_eq_symm, Hcgg'.
       -apply gr_eq_trans with (y := H_app c (x + y)%G).
