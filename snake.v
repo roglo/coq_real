@@ -864,9 +864,7 @@ assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%
     }
     eapply gr_eq_trans; [ now apply H_linear | ].
     assert (H7 : ∀ x, x ∈ C → g₁ x ∈ B). {
-      intros z Hz.
-      specialize (Hg₁ z) as H.
-      now destruct H.
+      intros z Hz; specialize (Hg₁ z) as H; now destruct H.
     }
     assert
       (H8 :
