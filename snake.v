@@ -757,10 +757,6 @@ assert
 assert (H7 : ∀ x, x ∈ C → g₁ x ∈ B). {
   intros z Hz; specialize (Hg₁ z) as H; now destruct H.
 }
-(* voir si on peut pas faire un HomGr_Coker_a_B', plutôt...
-   peut-être que ça me permettra de prouver qu'il est injectif
-   et aussi pour la suite *)
-...
 remember (HomGr_Coker_Coker f f' a b Hcff') as cf' eqn:Hcf'.
 assert
   (H2' : ∀ z, ∃ x', z ∉ Ker c ∨
