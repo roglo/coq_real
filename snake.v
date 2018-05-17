@@ -852,6 +852,7 @@ assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%
         --apply gr_add_compat; [ apply gr_eq_refl | easy ].
         --eapply gr_eq_trans; [ apply gr_add_0_r | easy ].
     }
+    eapply gr_eq_trans; [ now apply H_linear | ].
 ...
 
 assert ((H_app g' (H_app b (g1 x) + H_app b (g1 y)) = 0)%G). {
