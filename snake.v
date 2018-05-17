@@ -757,6 +757,7 @@ assert
 assert (H7 : ∀ x, x ∈ C → g₁ x ∈ B). {
   intros z Hz; specialize (Hg₁ z) as H; now destruct H.
 }
+(*
 remember (HomGr_Coker_Coker f f' a b Hcff') as cf' eqn:Hcf'.
 assert
   (H2' : ∀ z, ∃ x', z ∉ Ker c ∨
@@ -785,6 +786,7 @@ assert
       apply H_linear; [ apply f, A | apply B, H7, Hz ].
   -exists 0%G; left; easy.
 }
+*)
 assert
   (H2 : ∀ z, ∃ x', z ∉ Ker c ∨
         x' ∈ Coker a ∧ (H_app f' x' = H_app b (g₁ z))%G). {
@@ -815,7 +817,7 @@ assert
 }
 specialize (ClassicalChoice.choice _ H2) as (d, Hd).
 move d before g₁.
-clear H1 H2 H2'.
+clear H1 H2 (*H2'*).
 assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%G). {
   intros * Hx Hy.
   specialize (Hd x) as H1.
