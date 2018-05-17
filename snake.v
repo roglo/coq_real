@@ -863,11 +863,26 @@ assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%
         --eapply gr_eq_trans; [ apply gr_add_0_r | easy ].
     }
     eapply gr_eq_trans; [ now apply H_linear | ].
+    assert (H7 : ∀ x, x ∈ C → g₁ x ∈ B). {
+      intros z Hz.
+      specialize (Hg₁ z) as H.
+      now destruct H.
+    }
     assert
-      (H7 :
-       ∀ y, (∃ x, (g₁ x = y)%G) → (H_app b (g₁ (H_app g y)) = H_app b y)%G). {
+      (H8 :
+       ∀ y, y ∈ B
+       → (∃ x, (g₁ x = y)%G)
+       → (H_app b (g₁ (H_app g y)) = H_app b y)%G). {
       clear x y Hy Hfy Hf'y Hdxy Hfd H2 H1 H4 H6 Hx Hfx Hf'x H3.
-      intros y (x, Hxy).
+      intros y Hy (x & Hxy).
+      apply gr_eq_trans with (y := H_app b (g₁ (H_app g (g₁ x)))).
+      -apply b.
+       +now apply H7, g.
+       +apply H7, g.
+        eapply gr_mem_compat; [ now apply gr_eq_symm, Hxy | easy ].
+       +idtac.
+(* shit, g₁ has to be a morphism, and it is exactly what I want
+   to prove! *)
 ...
 
 assert ((H_app g' (H_app b (g₁ x) + H_app b (g₁ y)) = 0)%G). {
