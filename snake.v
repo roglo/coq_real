@@ -758,12 +758,30 @@ assert (H7 : ∀ x, x ∈ C → g₁ x ∈ B). {
   intros z Hz; specialize (Hg₁ z) as H; now destruct H.
 }
 (**)
-assert (H2 : ∀ y', ∃ z', y' ∉ B' ∨ z' ∈ Coker a ∧ (H_app f' z' = y')%G). {
+assert (H2 : ∀ y', ∃ z', y' ∉ Im b ∨ z' ∈ Coker a ∧ (H_app f' z' = y')%G). {
   intros y'.
-  destruct (MemDec B' y') as [Hy'| Hy'].
+  destruct (MemDec (Im b) y') as [Hy'| Hy'].
   -assert (H2 : y' ∈ Im f'). {
      apply sg'; simpl.
+     destruct Hy' as (y & Hy & Hyy').
+     assert (H2 : y' ∈ B'). {
+       eapply B'; [ apply Hyy' | now apply b ].
+     }
      split; [ easy | ].
+     apply gr_eq_trans with (y := H_app g' (H_app b y)).
+     -apply g'; [ easy | now apply b | now apply gr_eq_symm ].
+     -eapply gr_eq_trans; [ apply gr_eq_symm, Hcgg' | ].
+      assert (H3 : (H_app g y = H_app g (g₁ (H_app g y)))%G). {
+        apply gr_eq_symm.
+        specialize (Hg₁ (H_app g y)) as H3.
+        destruct H3 as [H3| H3]; [ | easy ].
+        exfalso; apply H3; now apply g.
+      }
+      eapply gr_eq_trans.
+      +apply H_compat; [ | | apply H3 ].
+       *now apply g.
+       *now apply g, H7, g.
+      +idtac.
 ...
 assert
   (H2 : ∀ z, ∃ x', z ∉ Ker c ∨
