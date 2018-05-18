@@ -893,6 +893,45 @@ assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%
         --eapply gr_eq_trans; [ apply gr_add_0_r | easy ].
     }
     eapply gr_eq_trans; [ now apply H_linear | ].
+    assert
+      (H8 : ∀ y₁ y₂, y₁ ∈ B → y₂ ∈ B →
+         (H_app g y₁ = H_app g y₂)%G
+         → (H_app b (g₁ (H_app g y₁)) = H_app b (g₁ (H_app g y₂)))%G). {
+      clear x y Hy Hfy Hf'y Hdxy Hfd H2 H1 H4 H6 Hx Hfx Hf'x H3.
+      intros * Hy₁ Hy₂ Hyy.
+      assert (H1 : (y₁ - y₂)%G ∈ Ker g). {
+        split.
+        -apply B; [ easy | now apply B ].
+        -eapply gr_eq_trans.
+         +apply g; [ easy | now apply B ].
+         +apply gr_eq_symm, gr_sub_move_r.
+          eapply gr_eq_trans; [ apply gr_add_0_l | ].
+          eapply gr_eq_trans; [ now apply gr_eq_symm, H_inv, B | ].
+          apply gr_eq_trans with (y := H_app g y₂).
+          *apply g; [ now apply B, B | easy | apply gr_inv_inv ].
+          *now apply gr_eq_symm.
+      }
+      apply sf in H1; simpl in H1.
+      destruct H1 as (z & Hz & Hfz).
+      assert (H1 : (H_app b (H_app f z) = H_app b (y₁ - y₂))%G). {
+        apply b; [ now apply f | | easy ].
+        apply B; [ easy | now apply B ].
+      }
+      assert (H2 : (H_app f' (H_app a z) = H_app b (y₁ - y₂))%G). {
+        eapply gr_eq_trans; [ apply gr_eq_symm, Hcff' | easy ].
+      }
+      assert (H3 : H_app b (y₁ - y₂)%G ∈ Im f'). {
+        exists (H_app a z).
+        split; [ now apply a | easy ].
+      }
+      apply sg' in H3.
+      simpl in H3.
+      destruct H3 as (Hby, Hgby).
+      assert (H4 : (H_app c (H_app g (y₁ - y₂)) = 0)%G). {
+        eapply gr_eq_trans; [ apply Hcgg' | easy ].
+      }
+(* ouais, non, c'est pas ça... *)
+...
     assert (H8 : ∀ y, y ∈ B → (H_app b (g₁ (H_app g y)) = H_app b y)%G). {
       clear x y Hy Hfy Hf'y Hdxy Hfd H2 H1 H4 H6 Hx Hfx Hf'x H3.
       intros y Hy.
