@@ -680,14 +680,14 @@ Definition HomGr_Coker_Coker {A B A' B'}
 
 Theorem exists_ker_C_to_B : ∀ B C C' g (c : HomGr C C') (cz : HomGr C Gr0),
   (∀ a : gr_set (Im g), a ∈ Im g ↔ a ∈ Ker cz)
-  → ∀ x : gr_set (Ker c), ∃ y, x ∉ C ∨ y ∈ B ∧ H_app g y ≡ x.
+  → ∀ x : gr_set (Ker c), ∃ y, x ∈ C → y ∈ B ∧ H_app g y ≡ x.
 Proof.
 intros * sg x.
-destruct (MemDec C x) as [H2| H2]; [ | now exists 0%G; left ].
+destruct (MemDec C x) as [H2| H2]; [ | now exists 0%G ].
 enough (H : x ∈ Im g). {
   simpl in H.
   destruct H as (y & Hy & Hyx).
-  exists y; right; easy.
+  now exists y.
 }
 apply sg.
 split; [ easy | ].
@@ -758,14 +758,12 @@ assert (H7 : ∀ x, x ∈ C → g₁ x ∈ B). {
   intros z Hz; specialize (Hg₁ z) as H; now destruct H.
 }
 assert (H5 : ∀ x, x ∈ Ker c → (H_app g' (H_app b (g₁ x)) = 0)%G). {
-  intros z Hz.
-  specialize (Hg₁ z) as H5.
-  destruct H5 as [H5| H5]; [ now simpl in Hz | ].
+  intros z (Hz, Hcz).
+  specialize (Hg₁ z Hz) as H5.
   eapply gr_eq_trans.
   -apply gr_eq_symm, Hcgg'.
-  -apply gr_eq_trans with (y := H_app c z).
-   +apply H_compat; [ now apply g | now simpl in Hz | easy ].
-   +now simpl in Hz.
+  -apply gr_eq_trans with (y := H_app c z); [ | easy ].
+   apply H_compat; [ now apply g | easy | easy ].
 }
 (*
 assert (H2 : ∀ y', ∃ z', y' ∉ Im b ∨ z' ∈ Coker a ∧ (H_app f' z' = y')%G). {
@@ -800,43 +798,37 @@ simpl.
 ...
 *)
 assert
-  (H2 : ∀ z, ∃ x', z ∉ Ker c ∨
-        x' ∈ Coker a ∧ (H_app f' x' = H_app b (g₁ z))%G). {
+  (H2 :
+   ∀ z, ∃ x', z ∈ Ker c → x' ∈ Coker a ∧ (H_app f' x' = H_app b (g₁ z))%G). {
   intros z.
-  destruct (MemDec (Ker c) z) as [Hz| Hz].
+  destruct (MemDec (Ker c) z) as [(Hz, Hzc)| Hz].
   -specialize (H1 z) as (y & Hy).
-   destruct Hy as [Hy| Hy].
-   +exists 0%G; left; simpl; easy.
-   +assert (H2 : H_app b (g₁ z) ∈ Im f'). {
-      apply sg'; simpl.
-      split.
-      -apply b.
-       specialize (Hg₁ z) as H2.
-       destruct H2 as [H2| H2]; [ now simpl in Hz | easy ].
-      -eapply gr_eq_trans; [ apply gr_eq_symm, Hcgg' | ].
-       specialize (Hg₁ z) as H2.
-       destruct H2 as [H2| H2]; [ now simpl in Hz | ].
-       destruct H2 as (Hfz & Hgfz).
-       apply gr_eq_trans with (y := H_app c z); [ | now simpl in Hz ].
-       apply c; [ now apply g | now simpl in Hz | easy ].
+   specialize (Hy Hz) as (Hy & Hgy).
+   assert (H2 : H_app b (g₁ z) ∈ Im f'). {
+     apply sg'; simpl.
+     split.
+     -apply b; now specialize (Hg₁ z Hz).
+     -eapply gr_eq_trans; [ apply gr_eq_symm, Hcgg' | ].
+      specialize (Hg₁ z Hz) as H2.
+      apply gr_eq_trans with (y := H_app c z); [ | now simpl in Hz ].
+      apply c; [ now apply g | now simpl in Hz | easy ].
     }
     destruct H2 as (x' & Hx').
-    exists x'; right.
+    exists x'; intros Hzk.
     split; [ easy | ].
     eapply gr_eq_trans; [ apply Hx' | ].
     apply gr_eq_refl.
-  -exists 0%G; now left.
+  -now exists 0%G.
 }
 specialize (ClassicalChoice.choice _ H2) as (d, Hd).
 move d before g₁.
 clear H1 H2 (*H2'*).
 assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%G). {
   intros * Hx Hy.
-  specialize (Hd x) as H1.
-  destruct H1 as [H1| (Hfx, Hf'x)]; [ easy | ].
-  specialize (Hd y) as H2.
-  destruct H2 as [H2| (Hfy, Hf'y)]; [ easy | ].
-  move Hfy before Hfx.
+  specialize (Hd x Hx) as H1.
+  destruct H1 as (Hfx, Hf'x).
+  specialize (Hd y Hy) as H1.
+  destruct H1 as (Hfy, Hf'y).
   enough (H1 : (H_app f' (d (x + y)) = H_app f' (d x + d y))%G). {
     destruct (MemDec A' (d (x + y)%G)) as [H2| H2].
      -apply Hf'inj in H1; [ | easy | ].
@@ -847,15 +839,14 @@ assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%
        apply gr_sub_move_r.
        eapply gr_eq_trans; [ apply H1 | ].
        apply gr_eq_symm, gr_add_0_l.
-      +simpl in Hfx, Hfy.
+      +simpl in Hfx.
        now apply A'.
-     -specialize (Hd (x + y)%G) as H3.
-      destruct H3 as [H3| H3]; [ | easy ].
-      exfalso; apply H3.
-      now apply (Ker c).
+     -assert (H : (x + y)%G ∈ Ker c) by now apply (Ker c).
+      specialize (Hd (x + y)%G H) as H3; clear H.
+      now simpl in H3.
   }
-  specialize (Hd (x + y)%G) as H1.
-  destruct H1 as [H1| H1]; [ exfalso; now apply H1, (Ker c) | ].
+  assert (H : (x + y)%G ∈ Ker c) by now apply (Ker c).
+  specialize (Hd (x + y)%G H) as H1; clear H.
   destruct H1 as (Hdxy, Hfd).
   eapply gr_eq_trans; [ apply Hfd | ].
   apply gr_eq_symm.
@@ -865,19 +856,15 @@ assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%
   eapply gr_eq_trans; [ apply H2 | ].
   eapply gr_eq_trans.
   -apply gr_add_compat; [ apply Hf'x | apply Hf'y ].
-  -eapply gr_eq_trans.
+  -destruct Hx as (Hx, Hcx).
+   destruct Hy as (Hy, Hcy).
+   eapply gr_eq_trans.
    +apply gr_eq_symm, H_linear.
-    *specialize (Hg₁ x) as H1.
-     destruct H1 as [H1| H1]; [ now simpl in Hx | easy ].
-    *specialize (Hg₁ y) as H1.
-     destruct H1 as [H1| H1]; [ now simpl in Hy | easy ].
+    *now specialize (Hg₁ x Hx).
+    *now specialize (Hg₁ y Hy).
    +specialize (Hg₁ (x + y)%G) as H1.
-    simpl in Hx, Hy.
-    destruct H1 as [H1| H1]; [ exfalso; now apply H1, C | ].
-    specialize (Hg₁ x) as H3.
-    destruct H3 as [H3| H3]; [ exfalso; now apply H3 | ].
-    specialize (Hg₁ y) as H4.
-    destruct H4 as [H4| H4]; [ exfalso; now apply H4 | ].
+    specialize (Hg₁ x Hx) as H3.
+    specialize (Hg₁ y Hy) as H4.
     assert (H6 : (H_app g' (H_app b (g₁ x + g₁ y)) = 0)%G). {
       eapply gr_eq_trans.
       -apply gr_eq_symm, Hcgg'.
@@ -899,7 +886,7 @@ assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%
       (H8 : ∀ y₁ y₂, y₁ ∈ B → y₂ ∈ B →
          (H_app g y₁ = H_app g y₂)%G
          → (H_app b (g₁ (H_app g y₁)) = H_app b (g₁ (H_app g y₂)))%G). {
-      clear x y Hy Hfy Hf'y Hdxy Hfd H2 H1 H4 H6 Hx Hfx Hf'x H3.
+      clear x y Hy Hfy Hf'y Hdxy Hfd H2 H1 H4 H6 Hx Hfx Hf'x H3 Hcx Hcy.
       intros * Hy₁ Hy₂ Hyy.
 exfalso.
       assert (H1 : (y₁ - y₂)%G ∈ Ker g). {
@@ -933,7 +920,7 @@ exfalso.
           apply H_linear; [ easy | now apply B ].
          +now apply gr_eq_symm.
       }
-      assert (H4 : ∃ z₁, z₁ ∈ Coker a ∧ (H_app f' z₁ = H_app b y₁)%G). {
+     assert (H4 : ∃ z₁, z₁ ∈ Coker a ∧ (H_app f' z₁ = H_app b y₁)%G). {
 
 ...
       assert (H3 : H_app b (y₁ - y₂)%G ∈ Im f'). {
