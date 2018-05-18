@@ -899,6 +899,7 @@ assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%
          → (H_app b (g₁ (H_app g y₁)) = H_app b (g₁ (H_app g y₂)))%G). {
       clear x y Hy Hfy Hf'y Hdxy Hfd H2 H1 H4 H6 Hx Hfx Hf'x H3.
       intros * Hy₁ Hy₂ Hyy.
+exfalso.
       assert (H1 : (y₁ - y₂)%G ∈ Ker g). {
         split.
         -apply B; [ easy | now apply B ].
@@ -930,6 +931,8 @@ assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%
           apply H_linear; [ easy | now apply B ].
          +now apply gr_eq_symm.
       }
+      assert (H4 : ∃ z₁, z₁ ∈ Coker a ∧ (H_app f' z₁ = H_app b y₁)%G). {
+
 ...
       assert (H3 : H_app b (y₁ - y₂)%G ∈ Im f'). {
         exists (H_app a z).
