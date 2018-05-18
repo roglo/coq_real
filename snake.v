@@ -767,6 +767,7 @@ assert (H5 : ∀ x, x ∈ Ker c → (H_app g' (H_app b (g₁ x)) = 0)%G). {
    +apply H_compat; [ now apply g | now simpl in Hz | easy ].
    +now simpl in Hz.
 }
+(*
 assert (H2 : ∀ y', ∃ z', y' ∉ Im b ∨ z' ∈ Coker a ∧ (H_app f' z' = y')%G). {
   intros y'.
   destruct (MemDec (Im b) y') as [Hy'| Hy'].
@@ -797,6 +798,7 @@ assert (H2 : ∀ y', ∃ z', y' ∉ Im b ∨ z' ∈ Coker a ∧ (H_app f' z' = y
        apply H5.
 simpl.
 ...
+*)
 assert
   (H2 : ∀ z, ∃ x', z ∉ Ker c ∨
         x' ∈ Coker a ∧ (H_app f' x' = H_app b (g₁ z))%G). {
@@ -876,17 +878,6 @@ assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%
     destruct H3 as [H3| H3]; [ exfalso; now apply H3 | ].
     specialize (Hg₁ y) as H4.
     destruct H4 as [H4| H4]; [ exfalso; now apply H4 | ].
-    assert (H5 : ∀ x, x ∈ Ker c → (H_app g' (H_app b (g₁ x)) = 0)%G). {
-... (* already done above *)
-      intros z Hz.
-      specialize (Hg₁ z) as H5.
-      destruct H5 as [H5| H5]; [ now simpl in Hz | ].
-      eapply gr_eq_trans.
-      -apply gr_eq_symm, Hcgg'.
-      -apply gr_eq_trans with (y := H_app c z).
-       +apply H_compat; [ now apply g | now simpl in Hz | easy ].
-       +now simpl in Hz.
-    }
     assert (H6 : (H_app g' (H_app b (g₁ x + g₁ y)) = 0)%G). {
       eapply gr_eq_trans.
       -apply gr_eq_symm, Hcgg'.
