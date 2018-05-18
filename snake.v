@@ -757,7 +757,16 @@ assert
 assert (H7 : ∀ x, x ∈ C → g₁ x ∈ B). {
   intros z Hz; specialize (Hg₁ z) as H; now destruct H.
 }
-(**)
+assert (H5 : ∀ x, x ∈ Ker c → (H_app g' (H_app b (g₁ x)) = 0)%G). {
+  intros z Hz.
+  specialize (Hg₁ z) as H5.
+  destruct H5 as [H5| H5]; [ now simpl in Hz | ].
+  eapply gr_eq_trans.
+  -apply gr_eq_symm, Hcgg'.
+  -apply gr_eq_trans with (y := H_app c z).
+   +apply H_compat; [ now apply g | now simpl in Hz | easy ].
+   +now simpl in Hz.
+}
 assert (H2 : ∀ y', ∃ z', y' ∉ Im b ∨ z' ∈ Coker a ∧ (H_app f' z' = y')%G). {
   intros y'.
   destruct (MemDec (Im b) y') as [Hy'| Hy'].
@@ -782,6 +791,11 @@ assert (H2 : ∀ y', ∃ z', y' ∉ Im b ∨ z' ∈ Coker a ∧ (H_app f' z' = y
        *now apply g.
        *now apply g, H7, g.
       +idtac.
+(* ah bin non, H5 ne marche que pour Ker c, pas pour C *)
+...
+      +eapply gr_eq_trans; [ apply Hcgg' | ].
+       apply H5.
+simpl.
 ...
 assert
   (H2 : ∀ z, ∃ x', z ∉ Ker c ∨
@@ -863,6 +877,7 @@ assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%
     specialize (Hg₁ y) as H4.
     destruct H4 as [H4| H4]; [ exfalso; now apply H4 | ].
     assert (H5 : ∀ x, x ∈ Ker c → (H_app g' (H_app b (g₁ x)) = 0)%G). {
+... (* already done above *)
       intros z Hz.
       specialize (Hg₁ z) as H5.
       destruct H5 as [H5| H5]; [ now simpl in Hz | ].
