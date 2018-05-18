@@ -798,7 +798,7 @@ assert
 }
 specialize (ClassicalChoice.choice _ H2) as (f'₁, Hf'₁).
 move f'₁ before g₁.
-...
+(*
 assert
   (H2 :
    ∀ z, ∃ x', z ∈ Ker c → x' ∈ Coker a ∧ (H_app f' x' = H_app b (g₁ z))%G). {
@@ -824,10 +824,38 @@ assert
 }
 specialize (ClassicalChoice.choice _ H2) as (d, Hd).
 move d before g₁.
-clear H1 H2 (*H2'*).
+*)
+clear H1 H2.
+remember (λ x, f'₁ (H_app b (g₁ x))) as d eqn:Hd.
 assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%G). {
   intros * Hx Hy.
-  specialize (Hd x Hx) as H1.
+  specialize (Hf'₁ (H_app b (g₁ x))) as H1.
+  assert (H : ∃ x₀, x₀ ∈ Ker c ∧ (H_app b (g₁ x) = H_app b (g₁ x₀))%G). {
+    exists x; split; [ easy | apply gr_eq_refl ].
+  }
+  specialize (H1 H) as (Hfx, Hf'x); clear H.
+  assert (H : (H_app f' (d x) = H_app b (g₁ x))%G) by now subst d.
+  clear Hf'x; rename H into Hf'x.
+  specialize (Hf'₁ (H_app b (g₁ y))) as H1.
+  assert (H : ∃ x₀, x₀ ∈ Ker c ∧ (H_app b (g₁ y) = H_app b (g₁ x₀))%G). {
+    exists y; split; [ easy | apply gr_eq_refl ].
+  }
+  specialize (H1 H) as (Hfy, Hf'y); clear H.
+  assert (H : (H_app f' (d y) = H_app b (g₁ y))%G) by now subst d.
+  clear Hf'y; rename H into Hf'y.
+  move Hfy before Hfx.
+  specialize (Hf'₁ (H_app b (g₁ (x + y)%G))) as H1.
+  assert (H : ∃ z, z ∈ Ker c ∧ (H_app b (g₁ (x + y)) = H_app b (g₁ z))%G). {
+    exists (x + y)%G; split; [ | apply gr_eq_refl ].
+    now apply (Ker c).
+  }
+  specialize (H1 H) as (Hfxy, Hf'xy); clear H.
+  assert (H : (H_app f' (d (x + y)) = H_app b (g₁ (x + y)))%G) by now subst d.
+  clear Hf'xy; rename H into Hf'xy.
+  move Hfxy before Hfy.
+...
+  intros * Hx Hy.
+  specialize (Hf'₁ x Hx) as H1.
   destruct H1 as (Hfx, Hf'x).
   specialize (Hd y Hy) as H1.
   destruct H1 as (Hfy, Hf'y).
