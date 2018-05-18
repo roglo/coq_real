@@ -765,15 +765,39 @@ assert (H5 : ∀ x, x ∈ Ker c → (H_app g' (H_app b (g₁ x)) = 0)%G). {
   -apply gr_eq_trans with (y := H_app c z); [ | easy ].
    apply H_compat; [ now apply g | easy | easy ].
 }
-assert (H2 : ∀ y', ∃ z', y' ∈ Im f' → z' ∈ Coker a ∧ (H_app f' z' = y')%G). {
+assert
+  (H2 :
+   ∀ y', ∃ z',
+   (∃ x, x ∈ Ker c ∧ (y' = H_app b (g₁ x))%G)
+   → z' ∈ Coker a ∧ (H_app f' z' = y')%G). {
   intros y'.
-  destruct (MemDec (Im f') y') as [Hy'| Hy']; [ | now exists 0%G ].
-  destruct Hy' as (z' & Hz' & Hfz').
-  now exists z'; intros Hy'.
+  destruct (MemDec (Im b) y') as [Hy'| Hy'].
+  -destruct (MemDec (Im f') y') as [(z' & Hz' & Hfz')| Hfy'].
+   +exists z'; now intros (x' & Hx' & Hyx').
+   +exists 0%G; intros (x' & Hx' & Hyx').
+    exfalso; apply Hfy', sg'; simpl.
+    split.
+    *destruct Hy' as (y & Hy & Hby).
+     eapply B'; [ apply Hby | now apply b ].
+    *apply gr_eq_trans with (y := H_app g' (H_app b (g₁ x'))).
+    --apply g'; [ | | easy ].
+     ++destruct Hy' as (y & Hy & Hby).
+       eapply B'; [ apply Hby | now apply b ].
+     ++apply b, H7, Hx'.
+    --eapply gr_eq_trans; [ apply gr_eq_symm, Hcgg' | ].
+      destruct Hx' as (Hx', Hcx').
+      specialize (Hg₁ x' Hx') as H2.
+      destruct H2 as (Hgx', Hggx').
+      apply gr_eq_trans with (y := H_app c x'); [ | easy ].
+      apply c; [ now apply g, H7| easy | easy ].
+  -exists 0%G; intros (x' & Hx' & Hyx').
+   exfalso; apply Hy'.
+   exists (g₁ x').
+   split; [ apply H7; now simpl in Hx' | ].
+   now apply gr_eq_symm.
 }
-...
-(* à démontrer: *)
-assert (y' ∈ Im f' ↔ ∃ x, x ∈ Ker c → y' = b (g₁ x))
+specialize (ClassicalChoice.choice _ H2) as (f'₁, Hf'₁).
+move f'₁ before g₁.
 ...
 assert
   (H2 :
