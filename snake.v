@@ -920,6 +920,17 @@ assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%
       assert (H2 : (H_app f' (H_app a z) = H_app b (y₁ - y₂))%G). {
         eapply gr_eq_trans; [ apply gr_eq_symm, Hcff' | easy ].
       }
+      assert (H3 : (H_app f' (H_app a z) = H_app b y₁ - H_app b y₂)%G). {
+        eapply gr_eq_symm.
+        apply gr_eq_trans with (y := (H_app b y₁ + H_app b (- y₂))%G).
+        -apply gr_add_compat; [ apply gr_eq_refl | ].
+         now apply gr_eq_symm, H_inv.
+        -eapply gr_eq_trans.
+         +apply gr_eq_symm.
+          apply H_linear; [ easy | now apply B ].
+         +now apply gr_eq_symm.
+      }
+...
       assert (H3 : H_app b (y₁ - y₂)%G ∈ Im f'). {
         exists (H_app a z).
         split; [ now apply a | easy ].
