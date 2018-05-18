@@ -765,38 +765,16 @@ assert (H5 : ∀ x, x ∈ Ker c → (H_app g' (H_app b (g₁ x)) = 0)%G). {
   -apply gr_eq_trans with (y := H_app c z); [ | easy ].
    apply H_compat; [ now apply g | easy | easy ].
 }
-(*
-assert (H2 : ∀ y', ∃ z', y' ∉ Im b ∨ z' ∈ Coker a ∧ (H_app f' z' = y')%G). {
+assert (H2 : ∀ y', ∃ z', y' ∈ Im f' → z' ∈ Coker a ∧ (H_app f' z' = y')%G). {
   intros y'.
-  destruct (MemDec (Im b) y') as [Hy'| Hy'].
-  -assert (H2 : y' ∈ Im f'). {
-     apply sg'; simpl.
-     destruct Hy' as (y & Hy & Hyy').
-     assert (H2 : y' ∈ B'). {
-       eapply B'; [ apply Hyy' | now apply b ].
-     }
-     split; [ easy | ].
-     apply gr_eq_trans with (y := H_app g' (H_app b y)).
-     -apply g'; [ easy | now apply b | now apply gr_eq_symm ].
-     -eapply gr_eq_trans; [ apply gr_eq_symm, Hcgg' | ].
-      assert (H3 : (H_app g y = H_app g (g₁ (H_app g y)))%G). {
-        apply gr_eq_symm.
-        specialize (Hg₁ (H_app g y)) as H3.
-        destruct H3 as [H3| H3]; [ | easy ].
-        exfalso; apply H3; now apply g.
-      }
-      eapply gr_eq_trans.
-      +apply H_compat; [ | | apply H3 ].
-       *now apply g.
-       *now apply g, H7, g.
-      +idtac.
-(* ah bin non, H5 ne marche que pour Ker c, pas pour C *)
+  destruct (MemDec (Im f') y') as [Hy'| Hy']; [ | now exists 0%G ].
+  destruct Hy' as (z' & Hz' & Hfz').
+  now exists z'; intros Hy'.
+}
 ...
-      +eapply gr_eq_trans; [ apply Hcgg' | ].
-       apply H5.
-simpl.
+(* à démontrer: *)
+assert (y' ∈ Im f' ↔ ∃ x, x ∈ Ker c → y' = b (g₁ x))
 ...
-*)
 assert
   (H2 :
    ∀ z, ∃ x', z ∈ Ker c → x' ∈ Coker a ∧ (H_app f' x' = H_app b (g₁ z))%G). {
