@@ -853,6 +853,33 @@ assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%
   assert (H : (H_app f' (d (x + y)) = H_app b (g₁ (x + y)))%G) by now subst d.
   clear Hf'xy; rename H into Hf'xy.
   move Hfxy before Hfy.
+  simpl; unfold Coker_eq; simpl.
+  exists 0%G.
+  split; [ apply A | ].
+  eapply gr_eq_trans; [ apply H_zero | ].
+  apply gr_eq_symm, gr_sub_move_l, gr_eq_symm.
+  eapply gr_eq_trans; [ apply gr_add_0_r | ].
+  apply gr_eq_symm, Hf'inj.
+  -rewrite Hd; apply Hfxy.
+  -apply A'; rewrite Hd; [ apply Hfx | apply Hfy ].
+  -idtac.
+...
+  -eapply gr_eq_trans; [ apply Hf'xy | ].
+   eapply gr_eq_symm.
+   eapply gr_eq_trans.
+   +apply f'; rewrite Hd; [ apply Hfx | apply Hfy ].
+   +eapply gr_eq_trans.
+    *apply gr_add_compat; [ apply Hf'x | apply Hf'y ].
+    *idtac.
+...
+    *eapply gr_eq_trans.
+    --apply gr_eq_symm, b; apply H7; [ apply Hx | apply Hy ].
+    --apply b.
+     ++apply B; apply H7; [ apply Hx | apply Hy ].
+     ++apply H7, C; [ apply Hx | apply Hy ].
+...
+    *eapply gr_eq_symm, f'; rewrite Hd; [ apply Hfx | apply Hfy ].
+    *idtac.
 ...
   intros * Hx Hy.
   specialize (Hf'₁ x Hx) as H1.
