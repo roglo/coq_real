@@ -757,36 +757,14 @@ assert
 assert (H7 : ∀ x, x ∈ C → g₁ x ∈ B). {
   intros z Hz; specialize (Hg₁ z) as H; now destruct H.
 }
-(*
-remember (HomGr_Coker_Coker f f' a b Hcff') as cf' eqn:Hcf'.
-assert
-  (H2' : ∀ z, ∃ x', z ∉ Ker c ∨
-        x' ∈ Coker a ∧ (H_app cf' x' = H_app b (g₁ z))%G). {
-  intros z.
-  subst cf'.
-  simpl.
-  destruct (MemDec (Ker c) z) as [Hz| Hz].
-  -specialize (H1 z) as (y & Hy).
-   destruct Hy as [Hy| Hy].
-   +exists 0%G; left; simpl; easy.
-   +exists (H_app a 0%G); right.
-    split; [ apply a, A | ].
-    unfold Coker_eq; simpl.
-    exists (H_app f 0 - g₁ z)%G.
-    split; [ apply B | ].
-    *apply f, A.
-    *apply B, H7, Hz.
-    *apply gr_eq_symm.
-     apply gr_eq_trans with (y := (H_app b (H_app f 0) + H_app b (- g₁ z))%G).
-    --apply gr_add_compat.
-     ++apply gr_eq_symm, Hcff'.
-     ++ apply gr_eq_symm, H_inv, H7, Hz.
-    --eapply gr_eq_trans; [ | apply gr_eq_refl ].
-      apply gr_eq_symm.
-      apply H_linear; [ apply f, A | apply B, H7, Hz ].
-  -exists 0%G; left; easy.
-}
-*)
+(**)
+assert (H2 : ∀ y', ∃ z', y' ∉ B' ∨ z' ∈ Coker a ∧ (H_app f' z' = y')%G). {
+  intros y'.
+  destruct (MemDec B' y') as [Hy'| Hy'].
+  -assert (H2 : y' ∈ Im f'). {
+     apply sg'; simpl.
+     split; [ easy | ].
+...
 assert
   (H2 : ∀ z, ∃ x', z ∉ Ker c ∨
         x' ∈ Coker a ∧ (H_app f' x' = H_app b (g₁ z))%G). {
