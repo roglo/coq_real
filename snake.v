@@ -840,8 +840,25 @@ assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%
     -apply gr_eq_symm, gr_add_inv_r.
     -split; [ apply B | apply H_zero ].
   }
-  assert (H2 : (H_app f' (d x1) = H_app b y1)%G). {
+  assert (Hfx1 : (H_app f' (d x1) = H_app b y1)%G). {
+    subst d y1; simpl; apply Hf'₁.
+    exists x1.
+    split; [ easy | apply gr_eq_refl ].
+  }
+  assert (Hfx2 : (H_app f' (d x2) = H_app b y2)%G). {
+    subst d y2; simpl; apply Hf'₁.
+    exists x2.
+    split; [ easy | apply gr_eq_refl ].
+  }
+  assert (Hfx3 : (H_app f' (d x1 + d x2) = H_app b y3)%G). {
+    subst d y3; simpl.
+...
 
+; apply Hf'₁.
+    subst d y3; simpl; apply Hf'₁.
+    exists x2.
+    split; [ easy | apply gr_eq_refl ].
+  }
 ...
   assert (H1 : (y1 + y2 - y3)%G ∈ Ker g). {
     simpl in Hx1, Hx2.
