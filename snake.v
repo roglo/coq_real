@@ -861,7 +861,6 @@ assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%
     eapply gr_eq_trans.
     -apply f'.
      +subst d; apply Hf'₁.
-      exists x1; split; [ easy | ].
       exists x1; split; [ easy | apply gr_eq_refl ].
      +subst d; apply Hf'₁.
       exists x2; split; [ easy | apply gr_eq_refl ].
