@@ -890,6 +890,9 @@ assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%
      +eapply gr_eq_trans; [ now apply H_inv | ].
       now apply gr_inv_compat.
   }
+  apply sf in H1.
+  destruct H1 as (z & Hz & Hzf).
+  assert (Hfz : (H_app f' (z1 + z2 - z3) = H_app b (H_app f z))%G). {
 
 ...
   intros x1 x2 Hx1 Hx2.
