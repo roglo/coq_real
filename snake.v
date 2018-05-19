@@ -829,41 +829,39 @@ clear H1 H2.
 remember (λ x, f'₁ (H_app b (g₁ x))) as d eqn:Hd.
 assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%G). {
   intros x1 x2 Hx1 Hx2.
-  remember (g₁ x1) as y1 eqn:Hy1.
-  remember (g₁ x2) as y2 eqn:Hy2.
-  remember (y1 + y2)%G as y3 eqn:Hy3.
-  move y2 before y1; move y3 before y2.
+  set (y1 := g₁ x1).
+  set (y2 := g₁ x2).
+  set (y3 := (y1 + y2)%G).
   remember (d x1) as z1 eqn:Hz1.
   remember (d x2) as z2 eqn:Hz2.
-(*
-  remember (z1 + z2)%G as z3 eqn:Hz3.
-*)
-  remember (d (x1 + x2)%G) as z3 eqn:Hz3.
 (**)
+  remember (z1 + z2)%G as z3 eqn:Hz3.
+(*
+  remember (d (x1 + x2)%G) as z3 eqn:Hz3.
+*)
   move z2 before z1; move z3 before z2.
   assert (H1 : (y1 + y2 - y3)%G ∈ Ker g). {
-    subst y3.
     eapply gr_mem_compat; simpl.
     -apply gr_eq_symm, gr_add_inv_r.
     -split; [ apply B | apply H_zero ].
   }
   assert (Hfx1 : (H_app f' z1 = H_app b y1)%G). {
-    subst d y1 z1; simpl; apply Hf'₁.
+    subst d z1; simpl; apply Hf'₁.
     exists x1.
     split; [ easy | apply gr_eq_refl ].
   }
   assert (Hfx2 : (H_app f' z2 = H_app b y2)%G). {
-    subst d y2 z2; simpl; apply Hf'₁.
+    subst d z2; simpl; apply Hf'₁.
     exists x2.
     split; [ easy | apply gr_eq_refl ].
   }
   assert (Hfx3 : (H_app f' z3 = H_app b y3)%G). {
     subst z3 z2 z1.
-(**)
+(*
 rewrite Hy3, Hy1, Hy2.
 rewrite Hd.
 ...
-(**)
+*)
     eapply gr_eq_trans.
     -apply f'.
      +subst d; apply Hf'₁.
@@ -872,9 +870,9 @@ rewrite Hd.
       exists x2; split; [ easy | apply gr_eq_refl ].
     -eapply gr_eq_trans.
      +apply gr_add_compat; [ apply Hfx1 | apply Hfx2 ].
-     +subst y3; apply gr_eq_symm.
+     +apply gr_eq_symm.
       simpl in Hx1, Hx2.
-      apply b; [ now subst y1; apply H7 | now subst y2; apply H7 ].
+      apply b; [ now apply H7 | now apply H7 ].
   }
   assert
     (Hfzzz :
@@ -904,22 +902,22 @@ rewrite Hd.
   assert (Hfz : (H_app f' (z1 + z2 - z3) = H_app f' (H_app a z))%G). {
     assert (HyB : y1 ∈ B ∧ y2 ∈ B). {
       split.
-      -now subst y1; simpl in Hx1; apply H7.
-      -now subst y2; simpl in Hx2; apply H7.
+      -now simpl in Hx1; apply H7.
+      -now simpl in Hx2; apply H7.
     }
     eapply gr_eq_trans; [ apply Hfzzz | ].
     eapply gr_eq_trans.
     -apply gr_add_compat; [ now apply gr_eq_symm, b | ].
      +apply gr_eq_symm, H_inv.
-      now subst y3; apply B.
+      now apply B.
     -eapply gr_eq_trans.
      +apply gr_eq_symm, H_linear.
-      *now subst y3; apply B.
-      *now apply B; subst y3; apply B.
+      *now apply B.
+      *now apply B; apply B.
      +eapply gr_eq_trans.
       *apply H_compat; [ | | eapply gr_eq_symm, Hzf ].
       --apply B; [ now apply B | ].
-        now apply B; subst y3; apply B.
+        now apply B; apply B.
       --now apply f.
       *apply Hcff'.
   }
