@@ -843,8 +843,15 @@ assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%
   assert (H1 : (H_app g y1 = x1)%G) by now apply Hg₁; simpl in Hx1.
   assert (H2 : (H_app g y2 = x2)%G) by now apply Hg₁; simpl in Hx2.
   assert (H3 : (H_app g (y1 + y2)%G = x3)%G). {
-...
-  assert (H3 : (y1 + y2 - y3)%G ∈ Ker g). {
+    eapply gr_eq_trans.
+    -apply g.
+     +now apply H7; simpl in Hx1.
+     +now apply H7; simpl in Hx2.
+    -eapply gr_eq_trans.
+     +apply gr_add_compat; [ apply H1 | apply H2 ].
+     +apply gr_eq_refl.
+  }
+  assert (H4 : (y1 + y2 - y3)%G ∈ Ker g). {
 (*
     eapply gr_mem_compat; simpl.
     -apply gr_eq_symm, gr_add_inv_r.
@@ -918,8 +925,8 @@ assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%
      +eapply gr_eq_trans; [ now apply H_inv | ].
       now apply gr_inv_compat.
   }
-  apply sf in H1.
-  destruct H1 as (z & Hz & Hzf).
+  apply sf in H4.
+  destruct H4 as (z & Hz & Hzf).
   assert (Hfz : (H_app f' (z1 + z2 - z3) = H_app f' (H_app a z))%G). {
     assert (HyB : y1 ∈ B ∧ y2 ∈ B). {
       split.
