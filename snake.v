@@ -892,8 +892,31 @@ assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%
   }
   apply sf in H1.
   destruct H1 as (z & Hz & Hzf).
-  assert (Hfz : (H_app f' (z1 + z2 - z3) = H_app b (H_app f z))%G). {
+  assert (Hfz : (H_app f' (z1 + z2 - z3) = H_app f' (H_app a z))%G). {
+    assert (HyB : y1 ∈ B ∧ y2 ∈ B). {
+      split.
+      -now subst y1; simpl in Hx1; apply H7.
+      -now subst y2; simpl in Hx2; apply H7.
+    }
     eapply gr_eq_trans; [ apply Hfzzz | ].
+    eapply gr_eq_trans.
+    -apply gr_add_compat; [ now apply gr_eq_symm, b | ].
+     +apply gr_eq_symm, H_inv.
+      now subst y3; apply B.
+    -eapply gr_eq_trans.
+     +apply gr_eq_symm, H_linear.
+      *now subst y3; apply B.
+      *now apply B; subst y3; apply B.
+     +eapply gr_eq_trans.
+      *apply H_compat; [ | | eapply gr_eq_symm, Hzf ].
+      --apply B; [ now apply B | ].
+        now apply B; subst y3; apply B.
+      --now apply f.
+      *apply Hcff'.
+  }
+  apply Hf'inj in Hfz.
+  simpl; unfold Coker_eq; simpl.
+  rewrite Hd.
 ...
   intros x1 x2 Hx1 Hx2.
   specialize (Hf'₁ (H_app b (g₁ x1))) as H1.
