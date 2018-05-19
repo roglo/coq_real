@@ -835,7 +835,11 @@ assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%
   move y2 before y1; move y3 before y2.
   remember (d x1) as z1 eqn:Hz1.
   remember (d x2) as z2 eqn:Hz2.
+(*
   remember (z1 + z2)%G as z3 eqn:Hz3.
+*)
+  remember (d (x1 + x2)%G) as z3 eqn:Hz3.
+(**)
   move z2 before z1; move z3 before z2.
   assert (H1 : (y1 + y2 - y3)%G ∈ Ker g). {
     subst y3.
@@ -855,6 +859,11 @@ assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%
   }
   assert (Hfx3 : (H_app f' z3 = H_app b y3)%G). {
     subst z3 z2 z1.
+(**)
+rewrite Hy3, Hy1, Hy2.
+rewrite Hd.
+...
+(**)
     eapply gr_eq_trans.
     -apply f'.
      +subst d; apply Hf'₁.
@@ -916,7 +925,6 @@ assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%
   }
   apply Hf'inj in Hfz.
   simpl; unfold Coker_eq; simpl.
-  rewrite Hd.
 ...
   intros x1 x2 Hx1 Hx2.
   specialize (Hf'₁ (H_app b (g₁ x1))) as H1.
