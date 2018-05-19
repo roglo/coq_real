@@ -828,40 +828,80 @@ move d before g₁.
 clear H1 H2.
 remember (λ x, f'₁ (H_app b (g₁ x))) as d eqn:Hd.
 assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%G). {
-  intros x₁ x₂ Hx₁ Hx₂.
-  specialize (Hf'₁ (H_app b (g₁ x₁))) as H1.
-  assert (H : ∃ x, x ∈ Ker c ∧ (H_app b (g₁ x₁) = H_app b (g₁ x))%G). {
-    exists x₁; split; [ easy | apply gr_eq_refl ].
+  intros x1 x2 Hx1 Hx2.
+  remember (g₁ x1) as y1 eqn:Hy1.
+  remember (g₁ x2) as y2 eqn:Hy2.
+  remember (y1 + y2)%G as y3 eqn:Hy3.
+  move y2 before y1; move y3 before y2.
+  move Hy2 before Hy1; move Hy3 before Hy2.
+  assert (H1 : (y1 + y2 - y3)%G ∈ Ker g). {
+    subst y3.
+    eapply gr_mem_compat; simpl.
+    -apply gr_eq_symm, gr_add_inv_r.
+    -split; [ apply B | apply H_zero ].
   }
-  specialize (H1 H) as (Hfx₁, Hf'x₁); clear H.
-  assert (H : (H_app f' (d x₁) = H_app b (g₁ x₁))%G) by now subst d.
-  clear Hf'x₁; rename H into Hf'x₁.
-  specialize (Hf'₁ (H_app b (g₁ x₂))) as H1.
-  assert (H : ∃ x, x ∈ Ker c ∧ (H_app b (g₁ x₂) = H_app b (g₁ x))%G). {
-    exists x₂; split; [ easy | apply gr_eq_refl ].
+  assert (H2 : (H_app f' (d x1) = H_app b y1)%G). {
+
+...
+  assert (H1 : (y1 + y2 - y3)%G ∈ Ker g). {
+    simpl in Hx1, Hx2.
+    split.
+    -subst y1 y2 y3; apply B; [ now apply B; apply H7 | ].
+     apply B.
+
+
+    -apply B; [ now apply B; apply H7 | now apply B, H7, C ].
+    -eapply gr_eq_trans.
+     +apply g; [ now apply B; apply H7 | now apply B, H7, C ].
+     +assert (H1 : (H_app g (y1 + y2) = H_app g y1 + H_app g y2)%G). {
+        apply g; subst y1 y2; now apply H7.
+      }
+      eapply gr_eq_trans.
+      *apply gr_add_compat; [ apply H1 | now apply H_inv, Hg₁, C ].
+      *subst y1 y2.
+       apply gr_eq_trans with (y := (x1 + x2 - (x1 + x2))%G); simpl.
+      --apply gr_add_compat.
+       **apply gr_add_compat; now apply Hg₁.
+       **apply gr_inv_compat, Hg₁; now apply C.
+      --apply gr_add_inv_r.
   }
-  specialize (H1 H) as (Hfx₂, Hf'x₂); clear H.
-  assert (H : (H_app f' (d x₂) = H_app b (g₁ x₂))%G) by now subst d.
-  clear Hf'x₂; rename H into Hf'x₂.
-  move Hfx₂ before Hfx₁.
-  specialize (Hf'₁ (H_app b (g₁ (x₁ + x₂)%G))) as H1.
-  assert (H : ∃ x, x ∈ Ker c ∧ (H_app b (g₁ (x₁ + x₂)) = H_app b (g₁ x))%G). {
-    exists (x₁ + x₂)%G; split; [ | apply gr_eq_refl ].
+
+
+...
+  intros x1 x2 Hx1 Hx2.
+  specialize (Hf'₁ (H_app b (g₁ x1))) as H1.
+  assert (H : ∃ x, x ∈ Ker c ∧ (H_app b (g₁ x1) = H_app b (g₁ x))%G). {
+    exists x1; split; [ easy | apply gr_eq_refl ].
+  }
+  specialize (H1 H) as (Hfx1, Hf'x1); clear H.
+  assert (H : (H_app f' (d x1) = H_app b (g₁ x1))%G) by now subst d.
+  clear Hf'x1; rename H into Hf'x1.
+  specialize (Hf'₁ (H_app b (g₁ x2))) as H1.
+  assert (H : ∃ x, x ∈ Ker c ∧ (H_app b (g₁ x2) = H_app b (g₁ x))%G). {
+    exists x2; split; [ easy | apply gr_eq_refl ].
+  }
+  specialize (H1 H) as (Hfx2, Hf'x2); clear H.
+  assert (H : (H_app f' (d x2) = H_app b (g₁ x2))%G) by now subst d.
+  clear Hf'x2; rename H into Hf'x2.
+  move Hfx2 before Hfx1.
+  specialize (Hf'₁ (H_app b (g₁ (x1 + x2)%G))) as H1.
+  assert (H : ∃ x, x ∈ Ker c ∧ (H_app b (g₁ (x1 + x2)) = H_app b (g₁ x))%G). {
+    exists (x1 + x2)%G; split; [ | apply gr_eq_refl ].
     now apply (Ker c).
   }
   specialize (H1 H) as (Hfxy, Hf'xy); clear H.
-  assert (H : (H_app f' (d (x₁ + x₂)) = H_app b (g₁ (x₁ + x₂)))%G). {
+  assert (H : (H_app f' (d (x1 + x2)) = H_app b (g₁ (x1 + x2)))%G). {
     now subst d.
   }
   clear Hf'xy; rename H into Hf'xy.
-  move Hfxy before Hfx₂.
+  move Hfxy before Hfx2.
   simpl; unfold Coker_eq; simpl.
   exists 0%G.
   split; [ apply A | ].
   eapply gr_eq_trans; [ apply H_zero | ].
   apply gr_eq_symm, gr_sub_move_l, gr_eq_symm.
   eapply gr_eq_trans; [ apply gr_add_0_r | ].
-  simpl in Hx₁, Hx₂.
+  simpl in Hx1, Hx2.
   apply gr_eq_symm, Hf'inj.
   -rewrite Hd; apply Hfxy.
   -now apply A'; rewrite Hd.
@@ -872,7 +912,7 @@ assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%
    eapply gr_eq_trans.
    +now apply f'; rewrite Hd.
    +eapply gr_eq_trans.
-    *apply gr_add_compat; [ apply Hf'x₁ | apply Hf'x₂ ].
+    *apply gr_add_compat; [ apply Hf'x1 | apply Hf'x2 ].
     *eapply gr_eq_trans.
     --now apply gr_eq_symm, b; apply H7.
     --apply b; [ now apply B; apply H7 | now apply H7, C | ].
