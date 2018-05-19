@@ -893,7 +893,7 @@ assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%
   apply sf in H1.
   destruct H1 as (z & Hz & Hzf).
   assert (Hfz : (H_app f' (z1 + z2 - z3) = H_app b (H_app f z))%G). {
-
+    eapply gr_eq_trans; [ apply Hfzzz | ].
 ...
   intros x1 x2 Hx1 Hx2.
   specialize (Hf'₁ (H_app b (g₁ x1))) as H1.
