@@ -829,6 +829,7 @@ clear H1 H2.
 remember (λ x, f'₁ (H_app b (g₁ x))) as d eqn:Hd.
 assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%G). {
   intros x1 x2 Hx1 Hx2.
+  set (x3 := (x1 + x2)%G).
   set (y1 := g₁ x1).
   set (y2 := g₁ x2).
   set (y3 := (y1 + y2)%G).
@@ -837,7 +838,7 @@ assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%
 (*
   set (z3 := (z1 + z2)%G).
 *)
-  set (z3 := d (x1 + x2)%G).
+  set (z3 := d x3).
 (**)
   assert (H1 : (y1 + y2 - y3)%G ∈ Ker g). {
     eapply gr_mem_compat; simpl.
