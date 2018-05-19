@@ -867,30 +867,29 @@ assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%
       simpl in Hx1, Hx2.
       apply b; [ now subst y1; apply H7 | now subst y2; apply H7 ].
   }
-...
-  assert (H1 : (y1 + y2 - y3)%G ∈ Ker g). {
-    simpl in Hx1, Hx2.
-    split.
-    -subst y1 y2 y3; apply B; [ now apply B; apply H7 | ].
-     apply B.
-
-
-    -apply B; [ now apply B; apply H7 | now apply B, H7, C ].
-    -eapply gr_eq_trans.
-     +apply g; [ now apply B; apply H7 | now apply B, H7, C ].
-     +assert (H1 : (H_app g (y1 + y2) = H_app g y1 + H_app g y2)%G). {
-        apply g; subst y1 y2; now apply H7.
+  assert
+    (Hfzzz :
+       (H_app f' (z1 + z2 - z3) = H_app b y1 + H_app b y2 - H_app b y3)%G). {
+    assert (Hz1A' : z1 ∈ A' ∧ z2 ∈ A' ∧ z3 ∈ A'). {
+      assert (H : z1 ∈ A' ∧ z2 ∈ A'). {
+        split.
+        -subst z1 d; apply Hf'₁.
+         exists x1; split; [ easy | apply gr_eq_refl ].
+        -subst z2 d; apply Hf'₁.
+         exists x2; split; [ easy | apply gr_eq_refl ].
       }
-      eapply gr_eq_trans.
-      *apply gr_add_compat; [ apply H1 | now apply H_inv, Hg₁, C ].
-      *subst y1 y2.
-       apply gr_eq_trans with (y := (x1 + x2 - (x1 + x2))%G); simpl.
-      --apply gr_add_compat.
-       **apply gr_add_compat; now apply Hg₁.
-       **apply gr_inv_compat, Hg₁; now apply C.
-      --apply gr_add_inv_r.
+      split; [ easy | ].
+      split; [ easy | ].
+      now subst z3; apply A'.
+    }
+    eapply gr_eq_trans; simpl.
+    -now apply H_linear; apply A'.
+    -apply gr_add_compat.
+     +eapply gr_eq_trans; [ now apply H_linear | ].
+      now apply gr_add_compat.
+     +eapply gr_eq_trans; [ now apply H_inv | ].
+      now apply gr_inv_compat.
   }
-
 
 ...
   intros x1 x2 Hx1 Hx2.
