@@ -828,55 +828,54 @@ move d before g₁.
 clear H1 H2.
 remember (λ x, f'₁ (H_app b (g₁ x))) as d eqn:Hd.
 assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%G). {
-  intros * Hx Hy.
-  specialize (Hf'₁ (H_app b (g₁ x))) as H1.
-  assert (H : ∃ x₀, x₀ ∈ Ker c ∧ (H_app b (g₁ x) = H_app b (g₁ x₀))%G). {
-    exists x; split; [ easy | apply gr_eq_refl ].
+  intros x₁ x₂ Hx₁ Hx₂.
+  specialize (Hf'₁ (H_app b (g₁ x₁))) as H1.
+  assert (H : ∃ x, x ∈ Ker c ∧ (H_app b (g₁ x₁) = H_app b (g₁ x))%G). {
+    exists x₁; split; [ easy | apply gr_eq_refl ].
   }
-  specialize (H1 H) as (Hfx, Hf'x); clear H.
-  assert (H : (H_app f' (d x) = H_app b (g₁ x))%G) by now subst d.
-  clear Hf'x; rename H into Hf'x.
-  specialize (Hf'₁ (H_app b (g₁ y))) as H1.
-  assert (H : ∃ x₀, x₀ ∈ Ker c ∧ (H_app b (g₁ y) = H_app b (g₁ x₀))%G). {
-    exists y; split; [ easy | apply gr_eq_refl ].
+  specialize (H1 H) as (Hfx₁, Hf'x₁); clear H.
+  assert (H : (H_app f' (d x₁) = H_app b (g₁ x₁))%G) by now subst d.
+  clear Hf'x₁; rename H into Hf'x₁.
+  specialize (Hf'₁ (H_app b (g₁ x₂))) as H1.
+  assert (H : ∃ x, x ∈ Ker c ∧ (H_app b (g₁ x₂) = H_app b (g₁ x))%G). {
+    exists x₂; split; [ easy | apply gr_eq_refl ].
   }
-  specialize (H1 H) as (Hfy, Hf'y); clear H.
-  assert (H : (H_app f' (d y) = H_app b (g₁ y))%G) by now subst d.
-  clear Hf'y; rename H into Hf'y.
-  move Hfy before Hfx.
-  specialize (Hf'₁ (H_app b (g₁ (x + y)%G))) as H1.
-  assert (H : ∃ z, z ∈ Ker c ∧ (H_app b (g₁ (x + y)) = H_app b (g₁ z))%G). {
-    exists (x + y)%G; split; [ | apply gr_eq_refl ].
+  specialize (H1 H) as (Hfx₂, Hf'x₂); clear H.
+  assert (H : (H_app f' (d x₂) = H_app b (g₁ x₂))%G) by now subst d.
+  clear Hf'x₂; rename H into Hf'x₂.
+  move Hfx₂ before Hfx₁.
+  specialize (Hf'₁ (H_app b (g₁ (x₁ + x₂)%G))) as H1.
+  assert (H : ∃ x, x ∈ Ker c ∧ (H_app b (g₁ (x₁ + x₂)) = H_app b (g₁ x))%G). {
+    exists (x₁ + x₂)%G; split; [ | apply gr_eq_refl ].
     now apply (Ker c).
   }
   specialize (H1 H) as (Hfxy, Hf'xy); clear H.
-  assert (H : (H_app f' (d (x + y)) = H_app b (g₁ (x + y)))%G) by now subst d.
+  assert (H : (H_app f' (d (x₁ + x₂)) = H_app b (g₁ (x₁ + x₂)))%G). {
+    now subst d.
+  }
   clear Hf'xy; rename H into Hf'xy.
-  move Hfxy before Hfy.
+  move Hfxy before Hfx₂.
   simpl; unfold Coker_eq; simpl.
   exists 0%G.
   split; [ apply A | ].
   eapply gr_eq_trans; [ apply H_zero | ].
   apply gr_eq_symm, gr_sub_move_l, gr_eq_symm.
   eapply gr_eq_trans; [ apply gr_add_0_r | ].
+  simpl in Hx₁, Hx₂.
   apply gr_eq_symm, Hf'inj.
   -rewrite Hd; apply Hfxy.
-  -apply A'; rewrite Hd; [ apply Hfx | apply Hfy ].
+  -now apply A'; rewrite Hd.
   -idtac.
 ...
   -eapply gr_eq_trans; [ apply Hf'xy | ].
    eapply gr_eq_symm.
    eapply gr_eq_trans.
-   +apply f'; rewrite Hd; [ apply Hfx | apply Hfy ].
+   +now apply f'; rewrite Hd.
    +eapply gr_eq_trans.
-    *apply gr_add_compat; [ apply Hf'x | apply Hf'y ].
-    *idtac.
-...
+    *apply gr_add_compat; [ apply Hf'x₁ | apply Hf'x₂ ].
     *eapply gr_eq_trans.
-    --apply gr_eq_symm, b; apply H7; [ apply Hx | apply Hy ].
-    --apply b.
-     ++apply B; apply H7; [ apply Hx | apply Hy ].
-     ++apply H7, C; [ apply Hx | apply Hy ].
+    --now apply gr_eq_symm, b; apply H7.
+    --apply b; [ now apply B; apply H7 | now apply H7, C | ].
 ...
     *eapply gr_eq_symm, f'; rewrite Hd; [ apply Hfx | apply Hfy ].
     *idtac.
