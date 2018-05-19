@@ -833,31 +833,39 @@ assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%
   remember (g₁ x2) as y2 eqn:Hy2.
   remember (y1 + y2)%G as y3 eqn:Hy3.
   move y2 before y1; move y3 before y2.
-  move Hy2 before Hy1; move Hy3 before Hy2.
+  remember (d x1) as z1 eqn:Hz1.
+  remember (d x2) as z2 eqn:Hz2.
+  remember (z1 + z2)%G as z3 eqn:Hz3.
+  move z2 before z1; move z3 before z2.
   assert (H1 : (y1 + y2 - y3)%G ∈ Ker g). {
     subst y3.
     eapply gr_mem_compat; simpl.
     -apply gr_eq_symm, gr_add_inv_r.
     -split; [ apply B | apply H_zero ].
   }
-  assert (Hfx1 : (H_app f' (d x1) = H_app b y1)%G). {
-    subst d y1; simpl; apply Hf'₁.
+  assert (Hfx1 : (H_app f' z1 = H_app b y1)%G). {
+    subst d y1 z1; simpl; apply Hf'₁.
     exists x1.
     split; [ easy | apply gr_eq_refl ].
   }
-  assert (Hfx2 : (H_app f' (d x2) = H_app b y2)%G). {
-    subst d y2; simpl; apply Hf'₁.
+  assert (Hfx2 : (H_app f' z2 = H_app b y2)%G). {
+    subst d y2 z2; simpl; apply Hf'₁.
     exists x2.
     split; [ easy | apply gr_eq_refl ].
   }
-  assert (Hfx3 : (H_app f' (d x1 + d x2) = H_app b y3)%G). {
-    subst d y3; simpl.
-...
-
-; apply Hf'₁.
-    subst d y3; simpl; apply Hf'₁.
-    exists x2.
-    split; [ easy | apply gr_eq_refl ].
+  assert (Hfx3 : (H_app f' z3 = H_app b y3)%G). {
+    subst z3 z2 z1.
+    eapply gr_eq_trans.
+    -apply f'.
+     +subst d; apply Hf'₁.
+      exists x1; split; [ easy | apply gr_eq_refl ].
+     +subst d; apply Hf'₁.
+      exists x2; split; [ easy | apply gr_eq_refl ].
+    -eapply gr_eq_trans.
+     +apply gr_add_compat; [ apply Hfx1 | apply Hfx2 ].
+     +subst y3; apply gr_eq_symm.
+      simpl in Hx1, Hx2.
+      apply b; [ now subst y1; apply H7 | now subst y2; apply H7 ].
   }
 ...
   assert (H1 : (y1 + y2 - y3)%G ∈ Ker g). {
