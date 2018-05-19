@@ -858,8 +858,9 @@ assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%
     -split; [ apply B | apply H_zero ].
 *)
     unfold y3.
-(* bizarre... c'est évident... *)
-...
+    eapply gr_mem_compat; simpl.
+    -apply gr_eq_symm, gr_add_inv_r.
+    -split; [ apply B | apply H_zero ].
 (**)
   }
   assert (Hfx1 : (H_app f' z1 = H_app b y1)%G). {
