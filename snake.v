@@ -841,9 +841,15 @@ assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%
   set (z3 := d x3).
 (**)
   assert (H1 : (y1 + y2 - y3)%G ∈ Ker g). {
+(*
     eapply gr_mem_compat; simpl.
     -apply gr_eq_symm, gr_add_inv_r.
     -split; [ apply B | apply H_zero ].
+*)
+    unfold y3.
+(* bizarre... *)
+...
+(**)
   }
   assert (Hfx1 : (H_app f' z1 = H_app b y1)%G). {
     subst d; simpl; apply Hf'₁.
