@@ -829,12 +829,27 @@ move d before g₁.
 *)
 clear H1 H2.
 remember (λ x, f'₁ (H_app b (g₁ x))) as d eqn:Hd.
-assert (Hzz : ∀ y, (H_app b y = H_app b (g₁ (H_app g y)))%G). {
-  intros y.
-  enough (H1 : (y - g₁ (H_app g y)) ∈ Im f). {
-    destruct H1 as (z & Hz & Hfz).
-    apply H_compat with (f := b) in Hfz.
-    -eapply gr_eq_trans in Hfz; [ | apply gr_eq_symm, Hcff' ].
+assert (Hzz : ∀ y, y ∈ B → (H_app b y = H_app b (g₁ (H_app g y)))%G). {
+  intros y Hy.
+  assert (H1 : (y - g₁ (H_app g y)) ∈ Im f). {
+    apply sf.
+    split.
+    -apply B; [ apply Hy | now apply B, H7, g ].
+    -eapply gr_eq_trans.
+     +apply H_linear; [ apply Hy | now apply B, H7, g ].
+     +apply gr_eq_symm, gr_sub_move_r.
+      eapply gr_eq_trans; [ apply gr_add_0_l | ].
+      eapply gr_eq_trans.
+      *eapply gr_inv_compat, H_inv.
+       now apply H7, g.
+      *eapply gr_eq_trans; [ apply gr_inv_inv | ].
+       eapply gr_eq_trans; [ now apply Hg₁, g | ].
+       apply gr_eq_refl.
+  }
+  destruct H1 as (z & Hz & Hfz).
+  apply H_compat with (f := b) in Hfz.
+  -eapply gr_eq_trans in Hfz; [ | apply gr_eq_symm, Hcff' ].
+...
 assert (H1 : H_app a z ∈ Im a). {
   exists z.
   split; [ easy | apply gr_eq_refl ].
@@ -852,11 +867,6 @@ assert (H2 : H_app a z ∈ Coker a). {
     simpl in H1.
 ...
   }
-  apply sf in H1.
-    destruct H1 as (H1, H2).
-    eapply gr_eq_trans in H2; [ | apply gr_eq_symm, H_linear ].
-    apply gr_eq_symm, gr_sub_move_r in H2.
-    eapply gr_eq_trans in H2; [ | apply gr_eq_symm, gr_add_0_l ].
 
 ...
 assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%G). {
