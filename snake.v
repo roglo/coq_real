@@ -853,7 +853,6 @@ assert (Hzz : ∀ y, y ∈ B → (H_app b y = H_app b (g₁ (H_app g y)))%G). {
    eapply gr_eq_trans in Hfz.
    2: apply gr_eq_symm, H_linear; [ easy | now apply B, H7, g ].
    apply gr_eq_symm in Hfz.
-...
    assert (H1 : H_app a z ∈ Im a). {
      exists z.
      split; [ easy | apply gr_eq_refl ].
@@ -862,6 +861,10 @@ assert (Hzz : ∀ y, y ∈ B → (H_app b y = H_app b (g₁ (H_app g y)))%G). {
      destruct H1 as (z' & Hz' & Haz').
      simpl; eapply gr_mem_compat; [ apply Haz' | now apply a ].
    }
+...
+  -now apply f.
+  -apply B; [ easy | now apply B, H7, g ].
+}
 ...
     assert (H1 : H_app b (y - g₁ (H_app g y))%G ∈ Im a). {
       exists (H_app a z).
