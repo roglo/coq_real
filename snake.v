@@ -861,6 +861,14 @@ assert (Hzz : ∀ y, y ∈ B → (H_app b y = H_app b (g₁ (H_app g y)))%G). {
      destruct H1 as (z' & Hz' & Haz').
      simpl; eapply gr_mem_compat; [ apply Haz' | now apply a ].
    }
+   set (z' := H_app a z).
+   set (z'1 := f'₁ (H_app b y)).
+   set (z'2 := f'₁ (H_app b (g₁ (H_app g y)))).
+   fold z' in Hfz.
+   specialize (Hf'₁ (H_app f' (z' - (z'1 - z'2)))) as H3.
+   assert
+     (H4 :
+     ∃ x, x ∈ Ker c ∧ (H_app f' (z' - (z'1 - z'2)) = H_app b (g₁ x))%G). {
 ...
   -now apply f.
   -apply B; [ easy | now apply B, H7, g ].
