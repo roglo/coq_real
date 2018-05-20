@@ -875,6 +875,9 @@ assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%
   }
   assert (Hfx3 : (H_app f' z3 = H_app b y3)%G). {
 (**)
+unfold z3, x3, y3, y1, y2.
+...
+(**)
     apply gr_eq_symm.
     eapply gr_eq_trans.
     -apply b.
