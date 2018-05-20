@@ -67,6 +67,8 @@ Notation "- a" := (gr_inv a) : group_scope.
 
 Axiom MemDec : ∀ G x, {x ∈ G} + {x ∉ G}.
 
+Open Scope group_scope.
+
 Record HomGr (A B : AbGroup) :=
   { H_app : gr_set A → gr_set B;
     H_mem_compat : ∀ x, x ∈ A → H_app x ∈ B;
@@ -827,6 +829,36 @@ move d before g₁.
 *)
 clear H1 H2.
 remember (λ x, f'₁ (H_app b (g₁ x))) as d eqn:Hd.
+assert (Hzz : ∀ y, (H_app b y = H_app b (g₁ (H_app g y)))%G). {
+  intros y.
+  enough (H1 : (y - g₁ (H_app g y)) ∈ Im f). {
+    destruct H1 as (z & Hz & Hfz).
+    apply H_compat with (f := b) in Hfz.
+    -eapply gr_eq_trans in Hfz; [ | apply gr_eq_symm, Hcff' ].
+assert (H1 : H_app a z ∈ Im a). {
+  exists z.
+  split; [ easy | apply gr_eq_refl ].
+}
+assert (H2 : H_app a z ∈ Coker a). {
+  destruct H1 as (z' & Hz' & Haz').
+  simpl; eapply gr_mem_compat; [ apply Haz' | now apply a ].
+}
+...
+    assert (H1 : H_app b (y - g₁ (H_app g y))%G ∈ Im a). {
+      exists (H_app a z).
+      split; [ now apply a | apply Hfz ].
+    }
+    apply sg' in H1.
+    simpl in H1.
+...
+  }
+  apply sf in H1.
+    destruct H1 as (H1, H2).
+    eapply gr_eq_trans in H2; [ | apply gr_eq_symm, H_linear ].
+    apply gr_eq_symm, gr_sub_move_r in H2.
+    eapply gr_eq_trans in H2; [ | apply gr_eq_symm, gr_add_0_l ].
+
+...
 assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%G). {
   intros x1 x2 Hx1 Hx2.
   set (x3 := (x1 + x2)%G).
@@ -874,10 +906,10 @@ assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%
     split; [ easy | apply gr_eq_refl ].
   }
   assert (Hfx3 : (H_app f' z3 = H_app b y3)%G). {
-(**)
+(*
 unfold z3, x3, y3, y1, y2.
 ...
-(**)
+*)
     apply gr_eq_symm.
     eapply gr_eq_trans.
     -apply b.
