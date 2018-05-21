@@ -831,10 +831,27 @@ clear H1 H2.
 remember (λ x, f'₁ (H_app b (g₁ x))) as d eqn:Hd.
 assert
   (Hzz :
-   ∀ y1 y2, (H_app g y1 = H_app g y2)%G → (H_app b y1 = H_app b y2)%G). {
-  intros * Hyy.
+   ∀ x y1 y2,
+    x ∈ Ker c
+    → y1 ∈ B
+    → y2 ∈ B
+    → (H_app g y1 = x)%G
+    → (H_app g y2 = x)%G
+    → (H_app b y1 = H_app b y2)%G). {
+  intros * Hx Hy1 Hy2 Hgy1 Hgy2.
+  assert (Hgb1 : (H_app g' (H_app b y1) = 0)%G). {
+    eapply gr_eq_trans; [ apply gr_eq_symm, Hcgg' | ].
+    eapply gr_eq_trans.
+    -apply c; [ now apply g | simpl in Hx; apply Hx | apply Hgy1 ].
+    -now simpl in Hx.
+  }
+  assert (Hgb2 : (H_app g' (H_app b y2) = 0)%G). {
+    eapply gr_eq_trans; [ apply gr_eq_symm, Hcgg' | ].
+    eapply gr_eq_trans.
+    -apply c; [ now apply g | simpl in Hx; apply Hx | apply Hgy2 ].
+    -now simpl in Hx.
+  }
 ...
-
 assert (Hzz : ∀ y, y ∈ B → (H_app b y = H_app b (g₁ (H_app g y)))%G). {
   intros y Hy.
   assert (H1 : (y - g₁ (H_app g y)) ∈ Im f). {
