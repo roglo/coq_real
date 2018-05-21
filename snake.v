@@ -829,6 +829,12 @@ move d before g₁.
 *)
 clear H1 H2.
 remember (λ x, f'₁ (H_app b (g₁ x))) as d eqn:Hd.
+assert
+  (Hzz :
+   ∀ y1 y2, (H_app g y1 = H_app g y2)%G → (H_app b y1 = H_app b y2)%G). {
+  intros * Hyy.
+...
+
 assert (Hzz : ∀ y, y ∈ B → (H_app b y = H_app b (g₁ (H_app g y)))%G). {
   intros y Hy.
   assert (H1 : (y - g₁ (H_app g y)) ∈ Im f). {
@@ -846,6 +852,7 @@ assert (Hzz : ∀ y, y ∈ B → (H_app b y = H_app b (g₁ (H_app g y)))%G). {
        eapply gr_eq_trans; [ now apply Hg₁, g | ].
        apply gr_eq_refl.
   }
+...
   destruct H1 as (z & Hz & Hfz).
   apply H_compat with (f := b) in Hfz.
   -eapply gr_eq_trans in Hfz; [ | apply gr_eq_symm, Hcff' ].
@@ -862,18 +869,40 @@ assert (Hzz : ∀ y, y ∈ B → (H_app b y = H_app b (g₁ (H_app g y)))%G). {
      simpl; eapply gr_mem_compat; [ apply Haz' | now apply a ].
    }
    set (z' := H_app a z).
+   fold z' in Hfz.
+Check @Coker_eq.
+Print Coker_eq.
+Check (@Coker_eq A A' _ z' 0%G).
+assert (@Coker_eq A A' a z' 0%G). {
+unfold Coker_eq.
+simpl.
+unfold z'.
+exists z.
+split; [ easy | ].
+apply gr_sub_move_l.
+eapply gr_eq_trans; [ apply gr_add_inv_r | ].
+apply gr_eq_symm, gr_inv_zero.
+}
+Search Coker_eq.
+...
    set (z'1 := f'₁ (H_app b y)).
    set (z'2 := f'₁ (H_app b (g₁ (H_app g y)))).
    fold z' in Hfz.
 ...
-   specialize (Hf'₁ (H_app b y)) as H3.
-   specialize (Hf'₁ (H_app b (g₁ (H_app g y)))) as H3.
-   assert
-     (H4 : ∃ x,
-        x ∈ Ker c ∧ (H_app b (g₁ (H_app g y)) = H_app b (g₁ x))%G). {
-     exists (H_app g y).
-     split; [ | apply gr_eq_refl ].
-     split; [ now apply g | ].
+   assert (H_app f' z'2 = H_app b y). {
+     unfold z'2.
+     specialize (Hf'₁ (H_app b (g₁ (H_app g y)))) as H3.
+     assert
+       (H4 : (∃ x : gr_set (Ker c),
+        x ∈ Ker c ∧ (H_app b (g₁ (H_app g y)) = H_app b (g₁ x))%G)). {
+       exists (H_app g y).
+       split; [ | apply gr_eq_refl ].
+       split; [ now apply g | ].
+       eapply gr_eq_trans; [ apply Hcgg' | ].
+assert (H_app b y ∈ Im f'). {
+  simpl.
+  exists z'1.
+  unfold z'1.
 ...
    }
    specialize (H3 H4); clear H4.
