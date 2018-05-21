@@ -837,7 +837,7 @@ assert
     → y2 ∈ B
     → (H_app g y1 = x)%G
     → (H_app g y2 = x)%G
-    → (H_app b y1 = H_app b y2)%G). {
+    → (f'₁ (H_app b y1) = f'₁ (H_app b y2))%G). {
   intros * Hx Hy1 Hy2 Hgy1 Hgy2.
   assert (Hgb1 : (H_app g' (H_app b y1) = 0)%G). {
     eapply gr_eq_trans; [ apply gr_eq_symm, Hcgg' | ].
@@ -890,7 +890,6 @@ assert
    apply gr_eq_symm in Hfz.
    eapply gr_eq_trans in Hfz; [ | apply H3 ].
    apply Hf'inj in Hfz.
-
 ...
 assert (Hzz : ∀ y, y ∈ B → (H_app b y = H_app b (g₁ (H_app g y)))%G). {
   intros y Hy.
