@@ -860,6 +860,19 @@ assert
   destruct H1 as (z1 & Hz1 & Hfz1).
   destruct H2 as (z2 & Hz2 & Hfz2).
   move z2 before z1; move Hz2 before Hz1.
+  assert (H3 : (H_app f' (z1 - z2) = H_app b (y1 - y2))%G). {
+    eapply gr_eq_trans.
+    -apply f'; [ easy | now apply A' ].
+    -apply gr_eq_symm.
+     eapply gr_eq_trans.
+     +apply b; [ easy | now apply B ].
+     +apply gr_eq_symm, gr_add_compat; [ easy | ].
+      eapply gr_eq_trans; [ now apply H_inv | ].
+      apply gr_eq_symm.
+      eapply gr_eq_trans; [ now apply H_inv | ].
+      now apply gr_inv_compat, gr_eq_symm.
+  }
+
 ...
 assert (Hzz : ∀ y, y ∈ B → (H_app b y = H_app b (g₁ (H_app g y)))%G). {
   intros y Hy.
