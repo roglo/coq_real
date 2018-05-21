@@ -874,7 +874,7 @@ assert (Hzz : ∀ y, y ∈ B → (H_app b y = H_app b (g₁ (H_app g y)))%G). {
      exists (H_app g y).
      split; [ | apply gr_eq_refl ].
      split; [ now apply g | ].
-     admit.
+...
    }
    specialize (H3 H4); clear H4.
    fold z'1 in H2.
