@@ -866,7 +866,19 @@ assert (Hzz : ∀ y, y ∈ B → (H_app b y = H_app b (g₁ (H_app g y)))%G). {
    set (z'2 := f'₁ (H_app b (g₁ (H_app g y)))).
    fold z' in Hfz.
 ...
-
+   specialize (Hf'₁ (H_app b y)) as H3.
+   specialize (Hf'₁ (H_app b (g₁ (H_app g y)))) as H3.
+   assert
+     (H4 : ∃ x,
+        x ∈ Ker c ∧ (H_app b (g₁ (H_app g y)) = H_app b (g₁ x))%G). {
+     exists (H_app g y).
+     split; [ | apply gr_eq_refl ].
+     split; [ now apply g | ].
+     admit.
+   }
+   specialize (H3 H4); clear H4.
+   fold z'1 in H2.
+...
    specialize (Hf'₁ (H_app f' (z'1 - z'))) as H3.
    assert
      (H4 : ∃ x, x ∈ Ker c ∧ (H_app f' (z'1 - z') = H_app b (g₁ x))%G). {
