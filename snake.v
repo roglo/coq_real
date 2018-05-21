@@ -872,6 +872,24 @@ assert
       eapply gr_eq_trans; [ now apply H_inv | ].
       now apply gr_inv_compat, gr_eq_symm.
   }
+  assert (H4 : y1 - y2 ∈ Im f). {
+    apply sf.
+    split.
+    -apply B; [ easy | now apply B ].
+    -eapply gr_eq_trans.
+     +apply g; [ easy | now apply B ].
+     +apply gr_eq_trans with (y := x - x); simpl.
+      *apply gr_add_compat; [ easy | ].
+       eapply gr_eq_trans; [ now apply H_inv | ].
+       now apply gr_inv_compat.
+      *apply gr_add_inv_r.
+  }
+  destruct H4 as (z & Hz & Hfz).
+  apply H_compat with (f := b) in Hfz.
+  -eapply gr_eq_trans in Hfz; [ | apply gr_eq_symm, Hcff' ].
+   apply gr_eq_symm in Hfz.
+   eapply gr_eq_trans in Hfz; [ | apply H3 ].
+   apply Hf'inj in Hfz.
 
 ...
 assert (Hzz : ∀ y, y ∈ B → (H_app b y = H_app b (g₁ (H_app g y)))%G). {
