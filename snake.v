@@ -851,6 +851,15 @@ assert
     -apply c; [ now apply g | simpl in Hx; apply Hx | apply Hgy2 ].
     -now simpl in Hx.
   }
+  assert (H1 : H_app b y1 ∈ Im f'). {
+    apply sg'; split; [ now apply b | easy ].
+  }
+  assert (H2 : H_app b y2 ∈ Im f'). {
+    apply sg'; split; [ now apply b | easy ].
+  }
+  destruct H1 as (z1 & Hz1 & Hfz1).
+  destruct H2 as (z2 & Hz2 & Hfz2).
+  move z2 before z1; move Hz2 before Hz1.
 ...
 assert (Hzz : ∀ y, y ∈ B → (H_app b y = H_app b (g₁ (H_app g y)))%G). {
   intros y Hy.
