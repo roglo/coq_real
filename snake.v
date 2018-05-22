@@ -961,13 +961,6 @@ assert
   assert (HHH : @gr_eq (@Coker A A' a) z1 z2). {
     eapply gr_eq_trans; [ apply gr_eq_symm, Hdx1 | apply Hdx2 ].
   }
-  destruct HHH as (zz & Hzz & Hazz).
-  simpl; unfold Coker_eq; simpl.
-  exists zz.
-  split; [ easy | ].
-...
-
-  apply H_compat with (f := f') in HHH.
 ...
 assert (Hzz : ∀ y, y ∈ B → (H_app b y = H_app b (g₁ (H_app g y)))%G). {
   intros y Hy.
