@@ -958,10 +958,10 @@ assert
        ++apply gr_inv_compat.
          apply gr_eq_symm, gr_sub_move_l, H4.
   }
-  assert (Hzz : @gr_eq (@Coker A A' a) z'1 z'2). {
+  assert (Hzz' : @gr_eq (@Coker A A' a) z'1 z'2). {
     eapply gr_eq_trans; [ apply gr_eq_symm, Hdx1 | apply Hdx2 ].
   }
-  destruct Hzz as (zz & Hzz & Hazz).
+  generalize Hzz'; intros (zz & Hzz & Hazz).
   assert (H8 : (H_app b (H_app f zz) = H_app b (y1 - y2))%G). {
     eapply gr_eq_symm, gr_eq_trans; [ apply gr_eq_symm, H3 | ].
     apply gr_eq_symm.
@@ -1082,11 +1082,7 @@ assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%
   set (y3 := (y1 + y2)%G).
   set (z1 := d x1).
   set (z2 := d x2).
-(*
-  set (z3 := (z1 + z2)%G).
-*)
   set (z3 := d x3).
-(**)
   assert (H1 : (H_app g y1 = x1)%G) by now apply Hg₁; simpl in Hx1.
   assert (H2 : (H_app g y2 = x2)%G) by now apply Hg₁; simpl in Hx2.
   assert (H3 : (H_app g (y1 + y2)%G = x3)%G). {
@@ -1099,16 +1095,10 @@ assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%
      +apply gr_eq_refl.
   }
   assert (H4 : (y1 + y2 - y3)%G ∈ Ker g). {
-(*
-    eapply gr_mem_compat; simpl.
-    -apply gr_eq_symm, gr_add_inv_r.
-    -split; [ apply B | apply H_zero ].
-*)
     unfold y3.
     eapply gr_mem_compat; simpl.
     -apply gr_eq_symm, gr_add_inv_r.
     -split; [ apply B | apply H_zero ].
-(**)
   }
   assert (Hfx1 : (H_app f' z1 = H_app b y1)%G). {
     subst d; simpl; apply Hf'₁.
