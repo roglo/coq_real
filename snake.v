@@ -854,10 +854,15 @@ assert
     x ∈ Ker c
     → y1 ∈ B
     → y2 ∈ B
-    → (H_app g y1 = x)%G
+    → (y1 = g₁ x)%G
     → (H_app g y2 = x)%G
     → (f'₁ (H_app b y1) = f'₁ (H_app b y2))%G). {
-  intros * Hx Hy1 Hy2 Hgy1 Hgy2.
+  intros * Hx Hy1 Hy2 Hg₁y1 Hgy2.
+  assert (Hgy1 : (H_app g y1 = x)%G). {
+    apply gr_eq_trans with (y := H_app g (g₁ x)).
+    -apply g; [ easy | apply H7, Hx | apply Hg₁y1 ].
+    -apply Hg₁, Hx.
+  }
   assert (Hgb1 : (H_app g' (H_app b y1) = 0)%G). {
     eapply gr_eq_trans; [ apply gr_eq_symm, Hcgg' | ].
     eapply gr_eq_trans.
@@ -917,9 +922,7 @@ assert
   assert (H6 : z1 - z2 ∈ Im a). {
     exists z; split; [ easy | now apply gr_eq_symm ].
   }
-(* essayer en partant de l'hypothèse que y1 = g₁ x et essayer de
-   prouver d x = z1 (ou z2 ?) *)
-  assert ((d x = z2)%G). {
+  assert (Hdx : (d x = z2)%G). {
     simpl; unfold Coker_eq; simpl.
     exists z.
     split; [ easy | ].
@@ -933,38 +936,9 @@ assert
      apply gr_eq_symm.
      eapply gr_eq_trans.
      +apply Hf'₁; exists x; split; [ easy | apply gr_eq_refl ].
-     +idtac.
-      (* ouais, si y1 = g₁ x, ça marche *)
-...
-  assert ((d x = z1 - z2)%G). {
-    apply Hcf'inj.
-    -rewrite Hd; apply Hf'₁; exists x; split; [ easy | apply gr_eq_refl ].
-    -simpl; apply A'; [ easy | now apply A' ].
-    -eapply gr_eq_symm, gr_eq_trans; [ apply H3 | ].
-     apply gr_eq_symm; rewrite Hd.
-     eapply gr_eq_trans.
-     +apply Hf'₁; exists x; split; [ easy | apply gr_eq_refl].
-     +idtac.
-...
-
-  (* so what? *)
-simpl; unfold Coker_eq; simpl.
-exists z.
-split; [ easy | ].
-eapply gr_eq_trans; [ apply gr_eq_symm, H4 | ].
-apply gr_add_compat.
-apply Hf'inj; [ easy | | ].
-Focus 2.
-eapply gr_eq_trans; [ apply Hfz1 | ].
-apply gr_eq_symm.
-apply Hf'₁.
-(* mon cul *)
-...
-  apply H_compat with (f := b) in Hfz.
-  -eapply gr_eq_trans in Hfz; [ | apply gr_eq_symm, Hcff' ].
-   apply gr_eq_symm in Hfz.
-   eapply gr_eq_trans in Hfz; [ | apply H3 ].
-   apply Hf'inj in Hfz.
+     +apply b; [ | apply Hy1 | apply gr_eq_symm, Hg₁y1 ].
+      apply H7, Hx.
+  }
 ...
 assert (Hzz : ∀ y, y ∈ B → (H_app b y = H_app b (g₁ (H_app g y)))%G). {
   intros y Hy.
