@@ -922,7 +922,7 @@ assert
   assert (H6 : z1 - z2 ∈ Im a). {
     exists z; split; [ easy | now apply gr_eq_symm ].
   }
-  assert (Hdx : (d x = z2)%G). {
+  assert (Hdx2 : (d x = z2)%G). {
     simpl; unfold Coker_eq; simpl.
     exists z.
     split; [ easy | ].
@@ -939,30 +939,36 @@ assert
      +apply b; [ | apply Hy1 | apply gr_eq_symm, Hg₁y1 ].
       apply H7, Hx.
   }
-(**)
-  apply Hcf'inj.
-  -apply Hf'₁.
-   admit.
-(*
-  -apply Hf'₁.
-*)
-  -apply Hf'₁; exists x; split; [ easy | ].
-(**)
-...
-(*
+  assert (Hdx1 : (d x = z1)%G). {
+    destruct Hdx2 as (zz & Hzz & Hazz).
+    simpl; unfold Coker_eq; simpl.
+    exists (zz - z).
+    split.
+    -apply A; [ easy | now apply A ].
+    -eapply gr_eq_trans.
+     +apply H_linear; [ easy | now apply A ].
+     +eapply gr_eq_trans.
+      *apply gr_add_compat; [ apply Hazz | ].
+       now apply H_inv.
+      *eapply gr_eq_trans.
+      --simpl; apply gr_add_assoc.
+      --apply gr_add_compat; [ apply gr_eq_refl | ].
+        eapply gr_eq_trans.
+       ++apply gr_eq_symm, gr_inv_add_distr.
+       ++apply gr_inv_compat.
+         apply gr_eq_symm, gr_sub_move_l, H4.
+  }
+  assert (HHH : @gr_eq (@Coker A A' a) z1 z2). {
+    eapply gr_eq_trans; [ apply gr_eq_symm, Hdx1 | apply Hdx2 ].
+  }
+  destruct HHH as (zz & Hzz & Hazz).
   simpl; unfold Coker_eq; simpl.
-  exists 0; split; [ apply A | ].
-  eapply gr_eq_trans; [ apply H_zero | ].
-  apply gr_eq_symm, gr_sub_move_l.
-  eapply gr_eq_symm, gr_eq_trans; [ apply gr_add_0_r | ].
-  apply Hf'inj.
-  -idtac.
-*)
+  exists zz.
+  split; [ easy | ].
 ...
 
-  apply gr_eq_trans with (y := f'₁ (H_app f' z1)).
-
-..
+  apply H_compat with (f := f') in HHH.
+...
 assert (Hzz : ∀ y, y ∈ B → (H_app b y = H_app b (g₁ (H_app g y)))%G). {
   intros y Hy.
   assert (H1 : (y - g₁ (H_app g y)) ∈ Im f). {
