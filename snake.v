@@ -885,6 +885,21 @@ assert
       *apply gr_add_inv_r.
   }
   destruct H4 as (z & Hz & Hfz).
+  assert (H4 : (z1 - z2 = H_app a z)%G). {
+    apply Hf'inj; [ | now apply a | ].
+    -apply A'; [ easy | now apply A' ].
+    -eapply gr_eq_symm, gr_eq_trans.
+     +apply gr_eq_symm, Hcff'.
+     +eapply gr_eq_trans.
+      *apply H_compat with (y := y1 - y2); [ now apply f | | easy ].
+       apply B; [ easy | now apply B ].
+      *now apply gr_eq_symm.
+  }
+  assert (H6 : z1 - z2 ∈ Im a). {
+    exists z; split; [ easy | now apply gr_eq_symm ].
+  }
+  (* so what? *)
+...
   apply H_compat with (f := b) in Hfz.
   -eapply gr_eq_trans in Hfz; [ | apply gr_eq_symm, Hcff' ].
    apply gr_eq_symm in Hfz.
