@@ -756,6 +756,25 @@ assert
   eapply gr_eq_trans; [ apply H5 | ].
   apply gr_add_0_l.
 }
+assert (Hcf'inj : ∀ x y, x ∈ Coker a → y ∈ Coker a → (H_app f' x = H_app f' y)%G → (x = y)%G). {
+  intros * Hx Hy Hxy.
+  simpl; unfold Coker_eq; simpl.
+  exists 0; split; [ apply A | ].
+  apply Hf'inj; [ apply a, A | | ].
+  -apply A'; [ easy | now apply A' ].
+  -apply gr_eq_trans with (y := H_app f' 0).
+   +apply f'; [ apply a, A | apply A' | apply H_zero ].
+   +eapply gr_eq_trans; [ apply H_zero | ].
+    apply gr_eq_symm.
+    eapply gr_eq_trans.
+    *apply H_linear; [ easy | now apply A' ].
+    *eapply gr_eq_trans.
+    --apply gr_add_compat; [ apply gr_eq_refl | ].
+      now apply H_inv.
+    --apply gr_sub_move_r.
+      eapply gr_eq_trans; [ apply Hxy | ].
+      apply gr_eq_symm, gr_add_0_l.
+}
 assert (H7 : ∀ x, x ∈ C → g₁ x ∈ B). {
   intros z Hz; specialize (Hg₁ z) as H; now destruct H.
 }
@@ -898,6 +917,36 @@ assert
   assert (H6 : z1 - z2 ∈ Im a). {
     exists z; split; [ easy | now apply gr_eq_symm ].
   }
+(* essayer en partant de l'hypothèse que y1 = g₁ x et essayer de
+   prouver d x = z1 (ou z2 ?) *)
+  assert ((d x = z2)%G). {
+    simpl; unfold Coker_eq; simpl.
+    exists z.
+    split; [ easy | ].
+    eapply gr_eq_trans; [ apply gr_eq_symm, H4 | ].
+    apply gr_add_compat; [ | apply gr_eq_refl ].
+    apply Hf'inj; [ easy | | ].
+    -rewrite Hd.
+     apply Hf'₁; exists x; split; [ easy | apply gr_eq_refl ].
+    -eapply gr_eq_trans; [ apply Hfz1 | ].
+     rewrite Hd.
+     apply gr_eq_symm.
+     eapply gr_eq_trans.
+     +apply Hf'₁; exists x; split; [ easy | apply gr_eq_refl ].
+     +idtac.
+      (* ouais, si y1 = g₁ x, ça marche *)
+...
+  assert ((d x = z1 - z2)%G). {
+    apply Hcf'inj.
+    -rewrite Hd; apply Hf'₁; exists x; split; [ easy | apply gr_eq_refl ].
+    -simpl; apply A'; [ easy | now apply A' ].
+    -eapply gr_eq_symm, gr_eq_trans; [ apply H3 | ].
+     apply gr_eq_symm; rewrite Hd.
+     eapply gr_eq_trans.
+     +apply Hf'₁; exists x; split; [ easy | apply gr_eq_refl].
+     +idtac.
+...
+
   (* so what? *)
 simpl; unfold Coker_eq; simpl.
 exists z.
