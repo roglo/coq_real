@@ -1130,7 +1130,7 @@ unfold z3, x3, y3, y1, y2.
         split; [ easy | apply gr_eq_refl ].
       *unfold z1, z2, z3.
 ...
-(**)
+(*
     eapply gr_eq_trans.
     -apply f'.
      +subst d; apply Hf'₁.
@@ -1142,6 +1142,7 @@ unfold z3, x3, y3, y1, y2.
      +apply gr_eq_symm.
       simpl in Hx1, Hx2.
       apply b; [ now apply H7 | now apply H7 ].
+*)
   }
   assert
     (Hfzzz :
@@ -1156,7 +1157,11 @@ unfold z3, x3, y3, y1, y2.
       }
       split; [ easy | ].
       split; [ easy | ].
-      now apply A'.
+      unfold z3.
+      rewrite Hd; apply Hf'₁.
+      exists x3; split; [ | apply gr_eq_refl ].
+      unfold x3.
+      now apply (Ker c).
     }
     eapply gr_eq_trans; simpl.
     -now apply H_linear; apply A'.
@@ -1191,7 +1196,33 @@ unfold z3, x3, y3, y1, y2.
       *apply Hcff'.
   }
   apply Hf'inj in Hfz.
-  simpl; unfold Coker_eq; simpl.
+  -simpl; unfold Coker_eq; simpl.
+   exists (- z).
+   split; [ now apply A | ].
+   eapply gr_eq_trans; [ now apply H_inv | ].
+   eapply gr_eq_trans; [ apply gr_inv_compat, gr_eq_symm, Hfz | ].
+   eapply gr_eq_symm.
+   eapply gr_eq_trans; [ apply gr_add_comm | ].
+   eapply gr_eq_trans.
+   +apply gr_add_compat; [ apply gr_inv_add_distr | apply gr_eq_refl ].
+   +apply gr_eq_symm.
+    eapply gr_eq_trans.
+    *simpl; apply gr_inv_add_distr.
+    *apply gr_add_compat; [ apply gr_inv_add_distr | ].
+     apply gr_inv_inv.
+  -apply A'.
+   +apply A'.
+    *unfold z1; rewrite Hd; apply Hf'₁; exists x1.
+     split; [ easy | apply gr_eq_refl ].
+    *unfold z2; rewrite Hd; apply Hf'₁; exists x2.
+     split; [ easy | apply gr_eq_refl ].
+   +apply A'.
+    unfold z3; rewrite Hd; apply Hf'₁; exists x3.
+    split; [ | apply gr_eq_refl ].
+    unfold x3.
+    now apply (Ker c).
+  -now apply a.
+}
 ...
   intros x1 x2 Hx1 Hx2.
   specialize (Hf'₁ (H_app b (g₁ x1))) as H1.
