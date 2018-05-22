@@ -856,7 +856,7 @@ assert
     → y2 ∈ B
     → (y1 = g₁ x)%G
     → (H_app g y2 = x)%G
-    → (f'₁ (H_app b y1) = f'₁ (H_app b y2))%G). {
+    → ∃ z, z ∈ A ∧ (H_app b (H_app f z) = H_app b (y1 - y2))%G). {
   intros * Hx Hy1 Hy2 Hg₁y1 Hgy2.
   assert (Hgy1 : (H_app g y1 = x)%G). {
     apply gr_eq_trans with (y := H_app g (g₁ x)).
@@ -881,10 +881,10 @@ assert
   assert (H2 : H_app b y2 ∈ Im f'). {
     apply sg'; split; [ now apply b | easy ].
   }
-  destruct H1 as (z1 & Hz1 & Hfz1).
-  destruct H2 as (z2 & Hz2 & Hfz2).
-  move z2 before z1; move Hz2 before Hz1.
-  assert (H3 : (H_app f' (z1 - z2) = H_app b (y1 - y2))%G). {
+  destruct H1 as (z'1 & Hz'1 & Hfz'1).
+  destruct H2 as (z'2 & Hz'2 & Hfz'2).
+  move z'2 before z'1; move Hz'2 before Hz'1.
+  assert (H3 : (H_app f' (z'1 - z'2) = H_app b (y1 - y2))%G). {
     eapply gr_eq_trans.
     -apply f'; [ easy | now apply A' ].
     -apply gr_eq_symm.
@@ -909,7 +909,7 @@ assert
       *apply gr_add_inv_r.
   }
   destruct H4 as (z & Hz & Hfz).
-  assert (H4 : (z1 - z2 = H_app a z)%G). {
+  assert (H4 : (z'1 - z'2 = H_app a z)%G). {
     apply Hf'inj; [ | now apply a | ].
     -apply A'; [ easy | now apply A' ].
     -eapply gr_eq_symm, gr_eq_trans.
@@ -919,10 +919,10 @@ assert
        apply B; [ easy | now apply B ].
       *now apply gr_eq_symm.
   }
-  assert (H6 : z1 - z2 ∈ Im a). {
+  assert (H6 : z'1 - z'2 ∈ Im a). {
     exists z; split; [ easy | now apply gr_eq_symm ].
   }
-  assert (Hdx2 : (d x = z2)%G). {
+  assert (Hdx2 : (d x = z'2)%G). {
     simpl; unfold Coker_eq; simpl.
     exists z.
     split; [ easy | ].
@@ -931,7 +931,7 @@ assert
     apply Hf'inj; [ easy | | ].
     -rewrite Hd.
      apply Hf'₁; exists x; split; [ easy | apply gr_eq_refl ].
-    -eapply gr_eq_trans; [ apply Hfz1 | ].
+    -eapply gr_eq_trans; [ apply Hfz'1 | ].
      rewrite Hd.
      apply gr_eq_symm.
      eapply gr_eq_trans.
@@ -939,7 +939,7 @@ assert
      +apply b; [ | apply Hy1 | apply gr_eq_symm, Hg₁y1 ].
       apply H7, Hx.
   }
-  assert (Hdx1 : (d x = z1)%G). {
+  assert (Hdx1 : (d x = z'1)%G). {
     destruct Hdx2 as (zz & Hzz & Hazz).
     simpl; unfold Coker_eq; simpl.
     exists (zz - z).
@@ -958,9 +958,22 @@ assert
        ++apply gr_inv_compat.
          apply gr_eq_symm, gr_sub_move_l, H4.
   }
-  assert (HHH : @gr_eq (@Coker A A' a) z1 z2). {
+  assert (Hzz : @gr_eq (@Coker A A' a) z'1 z'2). {
     eapply gr_eq_trans; [ apply gr_eq_symm, Hdx1 | apply Hdx2 ].
   }
+  destruct Hzz as (zz & Hzz & Hazz).
+  assert (H8 : (H_app b (H_app f zz) = H_app b (y1 - y2))%G). {
+    eapply gr_eq_symm, gr_eq_trans; [ apply gr_eq_symm, H3 | ].
+    apply gr_eq_symm.
+    eapply gr_eq_trans; [ apply Hcff' | ].
+    apply f'; [ now apply a | | easy ].
+    apply A'; [ easy | now apply A' ].
+  }
+  exists zz.
+  split; [ easy | ].
+  apply H8.
+}
+(*
 ...
 assert (Hzz : ∀ y, y ∈ B → (H_app b y = H_app b (g₁ (H_app g y)))%G). {
   intros y Hy.
@@ -1060,6 +1073,7 @@ assert (H_app b y ∈ Im f'). {
   }
 
 ...
+*)
 assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%G). {
   intros x1 x2 Hx1 Hx2.
   set (x3 := (x1 + x2)%G).
