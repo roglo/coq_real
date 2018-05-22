@@ -899,6 +899,17 @@ assert
     exists z; split; [ easy | now apply gr_eq_symm ].
   }
   (* so what? *)
+simpl; unfold Coker_eq; simpl.
+exists z.
+split; [ easy | ].
+eapply gr_eq_trans; [ apply gr_eq_symm, H4 | ].
+apply gr_add_compat.
+apply Hf'inj; [ easy | | ].
+Focus 2.
+eapply gr_eq_trans; [ apply Hfz1 | ].
+apply gr_eq_symm.
+apply Hf'₁.
+(* mon cul *)
 ...
   apply H_compat with (f := b) in Hfz.
   -eapply gr_eq_trans in Hfz; [ | apply gr_eq_symm, Hcff' ].
