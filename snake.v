@@ -939,7 +939,30 @@ assert
      +apply b; [ | apply Hy1 | apply gr_eq_symm, Hg₁y1 ].
       apply H7, Hx.
   }
+(**)
+  apply Hcf'inj.
+  -apply Hf'₁.
+   admit.
+(*
+  -apply Hf'₁.
+*)
+  -apply Hf'₁; exists x; split; [ easy | ].
+(**)
 ...
+(*
+  simpl; unfold Coker_eq; simpl.
+  exists 0; split; [ apply A | ].
+  eapply gr_eq_trans; [ apply H_zero | ].
+  apply gr_eq_symm, gr_sub_move_l.
+  eapply gr_eq_symm, gr_eq_trans; [ apply gr_add_0_r | ].
+  apply Hf'inj.
+  -idtac.
+*)
+...
+
+  apply gr_eq_trans with (y := f'₁ (H_app f' z1)).
+
+..
 assert (Hzz : ∀ y, y ∈ B → (H_app b y = H_app b (g₁ (H_app g y)))%G). {
   intros y Hy.
   assert (H1 : (y - g₁ (H_app g y)) ∈ Im f). {
