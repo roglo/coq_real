@@ -1029,19 +1029,6 @@ unfold z3, x3, y3, y1, y2.
         split; [ easy | apply gr_eq_refl ].
       *unfold z1, z2, z3.
 ...
-(*
-    eapply gr_eq_trans.
-    -apply f'.
-     +subst d; apply Hf'₁.
-      exists x1; split; [ easy | apply gr_eq_refl ].
-     +subst d; apply Hf'₁.
-      exists x2; split; [ easy | apply gr_eq_refl ].
-    -eapply gr_eq_trans.
-     +apply gr_add_compat; [ apply Hfx1 | apply Hfx2 ].
-     +apply gr_eq_symm.
-      simpl in Hx1, Hx2.
-      apply b; [ now apply H7 | now apply H7 ].
-*)
   }
   assert
     (Hfzzz :
