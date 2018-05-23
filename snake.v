@@ -979,7 +979,7 @@ assert
   set (x3 := (x1 + x2)%G).
   set (y1 := g₁ x1).
   set (y2 := g₁ x2).
-  set (y3 := (y1 + y2)%G).
+  set (y3 := g₁ (x1 + x2)%G).
   set (z1 := d x1).
   set (z2 := d x2).
   set (z3 := d x3).
@@ -994,11 +994,23 @@ assert
      +apply gr_add_compat; [ apply H1 | apply H2 ].
      +apply gr_eq_refl.
   }
+  assert (Hy1 : y1 ∈ B) by apply H7, Hx1.
+  assert (Hy2 : y2 ∈ B) by apply H7, Hx2.
+  assert (Hy3 : y3 ∈ B) by (apply H7, C; [ apply Hx1 | apply Hx2 ]).
   assert (H4 : (y1 + y2 - y3)%G ∈ Ker g). {
-    unfold y3.
-    eapply gr_mem_compat; simpl.
-    -apply gr_eq_symm, gr_add_inv_r.
-    -split; [ apply B | apply H_zero ].
+    split.
+    -now apply B; apply B.
+    -eapply gr_eq_trans; [ now apply g; apply B | ].
+     apply gr_eq_symm, gr_sub_move_r.
+     eapply gr_eq_trans; [ apply gr_add_0_l | ].
+     eapply gr_eq_trans; [ now apply gr_inv_compat, H_inv | ].
+     eapply gr_eq_trans; [ apply gr_inv_inv | ].
+     eapply gr_eq_trans.
+     +apply Hg₁, C; [ apply Hx1 | apply Hx2 ].
+     +eapply gr_eq_symm, gr_eq_trans; [ now apply g | ].
+      eapply gr_eq_trans.
+      *apply gr_add_compat; [ apply H1 | apply H2 ].
+      *apply gr_eq_refl.
   }
   assert (Hfx1 : (H_app f' z1 = H_app b y1)%G). {
     subst d; simpl; apply Hf'₁.
@@ -1011,6 +1023,7 @@ assert
     split; [ easy | apply gr_eq_refl ].
   }
   assert (Hfx3 : (H_app f' z3 = H_app b y3)%G). {
+...
 (*
 unfold z3, x3, y3, y1, y2.
 ...
