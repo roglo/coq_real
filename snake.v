@@ -821,6 +821,7 @@ specialize (ClassicalChoice.choice _ H2) as (f'₁, Hf'₁).
 move f'₁ before g₁.
 clear H1 H2.
 remember (λ x, f'₁ (H_app b (g₁ x))) as d eqn:Hd.
+(* Hzz below perhaps useless *)
 assert
   (Hzz :
    ∀ x y1 y2,
