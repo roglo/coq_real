@@ -1075,7 +1075,9 @@ assert (Hmemc : ∀ x, x ∈ Ker c → d x ∈ Coker a). {
   apply Hf'₁.
   exists x; split; [ easy | apply gr_eq_refl ].
 }
-assert (Hcomp : ∀ x1 x2, x1 ∈ Ker c → x2 ∈ Ker c → (x1 = x2)%G → (d x1 = d x2)%G). {
+assert
+  (Hcomp :
+     ∀ x1 x2, x1 ∈ Ker c → x2 ∈ Ker c → (x1 = x2)%G → (d x1 = d x2)%G). {
   intros x1 x2 Hx1 Hx2 Hxx.
   unfold d.
   apply Hcf'inj.
@@ -1096,7 +1098,9 @@ assert (Hcomp : ∀ x1 x2, x1 ∈ Ker c → x2 ∈ Ker c → (x1 = x2)%G → (d 
   eapply gr_eq_symm, gr_eq_trans; [ apply gr_add_0_r | ].
 ...
 }
-remember {| H_app := d; H_mem_compat := Hmemc; H_linear := Hlin; H_compat := Hcomp |} as dm.
+remember
+  {| H_app := d; H_mem_compat := Hmemc; H_linear := Hlin; H_compat := Hcomp |}
+    as dm.
 exists dm.
 
 ...
