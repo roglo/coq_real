@@ -1075,14 +1075,25 @@ assert (Hmemc : ∀ x, x ∈ Ker c → d x ∈ Coker a). {
   apply Hf'₁.
   exists x; split; [ easy | apply gr_eq_refl ].
 }
-assert (Hcomp : ∀ x y, x ∈ Ker c → y ∈ Ker c → (x = y)%G → (d x = d y)%G). {
+assert (Hcomp : ∀ x1 x2, x1 ∈ Ker c → x2 ∈ Ker c → (x1 = x2)%G → (d x1 = d x2)%G). {
+  intros x1 x2 Hx1 Hx2 Hxx.
+  unfold d.
+  apply Hcf'inj.
+  -apply Hf'₁; exists x1; split; [ easy | apply gr_eq_refl ].
+  -apply Hf'₁; exists x2; split; [ easy | apply gr_eq_refl ].
+  -eapply gr_eq_trans.
+   +apply Hf'₁; exists x1; split; [ easy | apply gr_eq_refl ].
+   +eapply gr_eq_symm, gr_eq_trans.
+    *apply Hf'₁; exists x2; split; [ easy | apply gr_eq_refl ].
+    *apply b; [ apply H7, Hx2 | apply H7, Hx1 | ].
+...
+
   intros x y Hx Hy Hxy.
   simpl; unfold Coker_eq; simpl.
   exists 0; split; [ apply A | ].
   eapply gr_eq_trans; [ apply H_zero | ].
   apply gr_eq_symm, gr_sub_move_l.
   eapply gr_eq_symm, gr_eq_trans; [ apply gr_add_0_r | ].
-  specialize (Hlin (x - y) y) as H1.
 ...
 }
 remember {| H_app := d; H_mem_compat := Hmemc; H_linear := Hlin; H_compat := Hcomp |} as dm.
