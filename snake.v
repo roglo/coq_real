@@ -973,7 +973,8 @@ assert
   split; [ easy | ].
   apply H8.
 }
-assert (Hlin : ∀ x y, x ∈ Ker c → y ∈ Ker c → (d (x + y) = d x + d y)%G). {
+assert
+  (Hlin : ∀ x1 x2, x1 ∈ Ker c → x2 ∈ Ker c → (d (x1 + x2) = d x1 + d x2)%G). {
   intros x1 x2 Hx1 Hx2.
   set (x3 := (x1 + x2)%G).
   set (y1 := g₁ x1).
