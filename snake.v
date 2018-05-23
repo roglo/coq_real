@@ -979,7 +979,7 @@ assert
   set (x3 := (x1 + x2)%G).
   set (y1 := g₁ x1).
   set (y2 := g₁ x2).
-  set (y3 := g₁ (x1 + x2)%G).
+  set (y3 := g₁ x3).
   set (z1 := d x1).
   set (z2 := d x2).
   set (z3 := d x3).
@@ -1023,26 +1023,13 @@ assert
     split; [ easy | apply gr_eq_refl ].
   }
   assert (Hfx3 : (H_app f' z3 = H_app b y3)%G). {
-...
-(*
-unfold z3, x3, y3, y1, y2.
-...
-*)
-    apply gr_eq_symm.
-    eapply gr_eq_trans.
-    -apply b.
-     +now apply H7; simpl in Hx1.
-     +now apply H7; simpl in Hx2.
-    -eapply gr_eq_trans.
-     +apply gr_eq_symm, gr_add_compat; [ apply Hfx1 | apply Hfx2 ].
-     +eapply gr_eq_trans.
-      *apply gr_eq_symm, f'.
-      --unfold z1; rewrite Hd; apply Hf'₁; exists x1.
-        split; [ easy | apply gr_eq_refl ].
-      --unfold z2; rewrite Hd; apply Hf'₁; exists x2.
-        split; [ easy | apply gr_eq_refl ].
-      *unfold z1, z2, z3.
-...
+    unfold z3, y3.
+    rewrite Hd.
+    apply Hf'₁.
+    exists x3.
+    split; [ | apply gr_eq_refl ].
+    unfold x3.
+    now apply (Ker c).
   }
   assert
     (Hfzzz :
@@ -1074,24 +1061,15 @@ unfold z3, x3, y3, y1, y2.
   apply sf in H4.
   destruct H4 as (z & Hz & Hzf).
   assert (Hfz : (H_app f' (z1 + z2 - z3) = H_app f' (H_app a z))%G). {
-    assert (HyB : y1 ∈ B ∧ y2 ∈ B). {
-      split.
-      -now simpl in Hx1; apply H7.
-      -now simpl in Hx2; apply H7.
-    }
     eapply gr_eq_trans; [ apply Hfzzz | ].
     eapply gr_eq_trans.
     -apply gr_add_compat; [ now apply gr_eq_symm, b | ].
-     +apply gr_eq_symm, H_inv.
-      now apply B.
+     +now apply gr_eq_symm, H_inv.
     -eapply gr_eq_trans.
-     +apply gr_eq_symm, H_linear.
-      *now apply B.
-      *now apply B; apply B.
+     +now apply gr_eq_symm, H_linear; apply B.
      +eapply gr_eq_trans.
       *apply H_compat; [ | | eapply gr_eq_symm, Hzf ].
-      --apply B; [ now apply B | ].
-        now apply B; apply B.
+      --now apply B; apply B.
       --now apply f.
       *apply Hcff'.
   }
