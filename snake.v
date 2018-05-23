@@ -1079,7 +1079,6 @@ assert
   (Hcomp :
      ∀ x1 x2, x1 ∈ Ker c → x2 ∈ Ker c → (x1 = x2)%G → (d x1 = d x2)%G). {
   intros x1 x2 Hx1 Hx2 Hxx.
-  unfold d.
   apply Hcf'inj.
   -apply Hf'₁; exists x1; split; [ easy | apply gr_eq_refl ].
   -apply Hf'₁; exists x2; split; [ easy | apply gr_eq_refl ].
@@ -1089,8 +1088,7 @@ assert
     *apply Hf'₁; exists x2; split; [ easy | apply gr_eq_refl ].
     *apply b; [ apply H7, Hx2 | apply H7, Hx1 | ].
 ...
-
-  intros x y Hx Hy Hxy.
+  intros x1 x2 Hx1 Hx2 Hxx.
   simpl; unfold Coker_eq; simpl.
   exists 0; split; [ apply A | ].
   eapply gr_eq_trans; [ apply H_zero | ].
