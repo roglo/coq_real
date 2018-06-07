@@ -5456,6 +5456,8 @@ specialize (freal_normalized_cases x) as [H1| H1].
      -destruct H1 as (j & Hjj & Hj).
       destruct (LPO_fst (is_9_strict_after (freal nxy) i)) as [H1| H1].
       +specialize (is_9_strict_after_all_9 _ _ H1) as H2; clear H1.
+       rewrite Hnxy in H2; simpl in H2.
+...
        assert (H1 : ∀ k, d2n (freal nxy) (n + k) = d2n (freal y) (n + k)). {
          intros k; rewrite Hnxy; simpl.
          unfold freal_add_to_seq, d2n; simpl.
