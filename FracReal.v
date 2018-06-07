@@ -5438,6 +5438,8 @@ specialize (freal_normalized_cases x) as [H1| H1].
 -unfold freal_norm_not_norm_eq in H1.
  destruct H1 as (k & Hbef & Hwhi & Haft).
  specialize (ends_with_999_or_not y) as [Hy| Hy].
+ +apply eq_freal_norm_eq_true_iff.
+  intros i.
 ...
 
 intros.
