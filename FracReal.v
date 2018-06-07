@@ -5456,6 +5456,15 @@ specialize (freal_normalized_cases x) as [H1| H1].
      -destruct H1 as (j & Hjj & Hj).
       destruct (LPO_fst (is_9_strict_after (freal nxy) i)) as [H1| H1].
       +specialize (is_9_strict_after_all_9 _ _ H1) as H2; clear H1.
+       assert (H1 : ∀ k, d2n (freal nxy) (n + k) = d2n (freal y) (n + k)). {
+         intros k; rewrite Hnxy; simpl.
+         unfold freal_add_to_seq, d2n; simpl.
+         unfold numbers_to_digits; simpl.
+         destruct (LPO_fst (A_ge_1 (freal_add_series nx y) (n + k))) as [H1| H1].
+         -simpl.
+          unfold freal_add_to_seq, freal_add_series, sequence_add.
+(* pfff.... trop compliqué mon truc... *)
+...
        destruct (lt_dec (S (d2n (freal nxy) i)) rad) as [H4| H4].
        *simpl.
         rewrite Hnxy; simpl.
