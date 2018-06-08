@@ -5484,7 +5484,15 @@ specialize (freal_normalized_cases x) as [H1| H1].
        specialize (digit_lt_radix (freal y (j + k + 1))) as H.
        flia Hr H H2.
       +destruct H2 as (m & Hmbef & Hmwhi & Hmaft).
-...
+       specialize (Hmaft i) as H2.
+       unfold u in H2.
+       unfold freal_add_series, sequence_add in H2.
+       specialize (Hnaft (j + m + i + 2 - n)) as H3.
+       rewrite Nat.add_comm, Nat.sub_add in H3; [ | flia Hni ].
+       rewrite H3, Nat.add_0_l in H2.
+       unfold fd2n in H2.
+       specialize (digit_lt_radix (freal y (j + m + i + 2))) as H.
+       flia Hr H H2.
      -destruct H1 as (k & Hjk & Hk).
       apply digit_eq_eq; simpl.
 ...
