@@ -497,13 +497,13 @@ split; intros Hxy.
      now replace (S k + (i + j - k)) with (i + j + 1) in Hy by flia Hki.
 Qed.
 
-Theorem freal_eq_normalize_eq {r : radix} : ∀ x y,
-  (∀ i, freal x i = freal y i)
-  → ∀ i : nat, freal (freal_normalize x) i = freal (freal_normalize y) i.
+Theorem freal_eq_normalize_eq {r : radix} : ∀ n x y,
+  (∀ i, n ≤ i → freal x i = freal y i)
+  → ∀ i, n ≤ i → freal (freal_normalize x) i = freal (freal_normalize y) i.
 Proof.
-intros * Hxy *.
+intros * Hxy * Hni.
 unfold freal_normalize, digit_sequence_normalize; simpl.
-unfold d2n; rewrite Hxy.
+unfold d2n; rewrite Hxy; [ | easy ].
 destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H1| H1].
 -destruct (LPO_fst (is_9_strict_after (freal y) i)) as [H2| H2]; [ easy | ].
  destruct H2 as (j & Hjj & Hj).
@@ -511,14 +511,14 @@ destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H1| H1].
  apply is_9_strict_after_true_iff in H1.
  apply is_9_strict_after_false_iff in Hj.
  unfold d2n in H1, Hj.
- now rewrite Hxy in H1.
+ rewrite Hxy in H1; [ easy | flia Hni ].
 -destruct (LPO_fst (is_9_strict_after (freal y) i)) as [H2| H2]; [ | easy ].
  destruct H1 as (j & Hjj & Hj).
  specialize (H2 j).
  apply is_9_strict_after_false_iff in Hj.
  apply is_9_strict_after_true_iff in H2.
  unfold d2n in H2, Hj.
- now rewrite Hxy in Hj.
+ rewrite Hxy in Hj; [ easy | flia Hni ].
 Qed.
 
 Theorem freal_norm_not_norm_eq_normalize_eq {r : radix} : ∀ x y,
@@ -660,7 +660,9 @@ split; intros Hxy.
     replace (ky + (kx - ky)) with kx in Hakyz by flia Hkk.
     now rewrite Hakyz in Hkx.
 -destruct Hxy as [Hxy| [Hxy| Hxy]].
- +now apply freal_eq_normalize_eq.
+ +intros i.
+  apply (freal_eq_normalize_eq 0); [ | flia ].
+  intros j Hj; apply Hxy.
  +now apply freal_norm_not_norm_eq_normalize_eq.
  +now intros; symmetry; apply freal_norm_not_norm_eq_normalize_eq.
 Qed.
@@ -5446,6 +5448,19 @@ specialize (freal_normalized_cases x) as [H1| H1].
   move xy before nxy.
   destruct (le_dec n i) as [Hni| Hni].
   *assert (H : fd2n (freal_normalize nxy) i = fd2n (freal_normalize y) i). {
+     unfold fd2n; f_equal.
+     apply (freal_eq_normalize_eq n); [ | easy ].
+     intros j Hj.
+     rewrite Hnxy.
+     unfold freal_unorm_add; simpl.
+     unfold freal_add_to_seq.
+     unfold numbers_to_digits.
+     destruct (LPO_fst (A_ge_1 (freal_add_series nx y) j)) as [H1| H1].
+     -exfalso.
+...
+     -apply digit_eq_eq; simpl.
+      unfold freal_add_series, sequence_add.
+...
      unfold freal_normalize, fd2n; simpl.
      unfold digit_sequence_normalize.
      destruct (LPO_fst (is_9_strict_after (freal y) i)) as [H1| H1].
