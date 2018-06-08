@@ -5463,32 +5463,30 @@ specialize (freal_normalized_cases x) as [H1| H1].
         intros k; apply freal_add_series_le_twice_pred.
       }
       specialize (H2 H H1); clear H.
-      destruct H2 as [H2| H2].
-      +idtac.
+      destruct H2 as [H2| [H2| H2]].
+      +specialize (Hy (j + 1)) as H3; destruct H3 as (k & Hk).
+       specialize (H2 k).
+       unfold u in H2.
+       unfold freal_add_series, sequence_add in H2.
+       specialize (Hnaft (j + k + 1 - n)) as H3.
+       rewrite Nat.add_comm, Nat.sub_add in H3; [ | flia Hj ].
+       rewrite Nat.add_shuffle0 in Hk.
+       now rewrite H3, Nat.add_0_l in H2.
+      +specialize (Hy (j + 1)) as H3; destruct H3 as (k & Hk).
+       specialize (H2 k).
+       unfold u in H2.
+       unfold freal_add_series, sequence_add in H2.
+       specialize (Hnaft (j + k + 1 - n)) as H3.
+       rewrite Nat.add_comm, Nat.sub_add in H3; [ | flia Hj ].
+       rewrite Nat.add_shuffle0 in Hk.
+       rewrite H3, Nat.add_0_l in H2.
+       unfold fd2n in H2.
+       specialize (digit_lt_radix (freal y (j + k + 1))) as H.
+       flia Hr H H2.
+      +destruct H2 as (m & Hmbef & Hmwhi & Hmaft).
 ...
-     -apply digit_eq_eq; simpl.
-      unfold freal_add_series, sequence_add.
-...
-     unfold freal_normalize, fd2n; simpl.
-     unfold digit_sequence_normalize.
-     destruct (LPO_fst (is_9_strict_after (freal y) i)) as [H1| H1].
-     -specialize (is_9_strict_after_all_9 _ _ H1) as H2.
-      specialize (Hy (i + 1)) as H3; destruct H3 as (j & H3).
-      specialize (H2 j).
-      now replace (i + 1 + j) with (i + j + 1) in H3 by flia.
-     -destruct H1 as (j & Hjj & Hj).
-      destruct (LPO_fst (is_9_strict_after (freal nxy) i)) as [H1| H1].
-      +specialize (is_9_strict_after_all_9 _ _ H1) as H2; clear H1.
-       rewrite Hnxy in H2; simpl in H2.
-...
-       assert (H1 : ∀ k, d2n (freal nxy) (n + k) = d2n (freal y) (n + k)). {
-         intros k; rewrite Hnxy; simpl.
-         unfold freal_add_to_seq, d2n; simpl.
-         unfold numbers_to_digits; simpl.
-         destruct (LPO_fst (A_ge_1 (freal_add_series nx y) (n + k))) as [H1| H1].
-         -simpl.
-          unfold freal_add_to_seq, freal_add_series, sequence_add.
-(* pfff.... trop compliqué mon truc... *)
+     -destruct H1 as (k & Hjk & Hk).
+      apply digit_eq_eq; simpl.
 ...
        destruct (lt_dec (S (d2n (freal nxy) i)) rad) as [H4| H4].
        *simpl.
