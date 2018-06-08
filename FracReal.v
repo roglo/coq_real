@@ -5526,9 +5526,15 @@ specialize (freal_normalized_cases x) as [H1| H1].
   remember (freal_unorm_add x y) as xy eqn:Hxy.
   move xy before nxy.
   destruct (le_dec n i) as [Hni| Hni].
-  *assert (H : fd2n (freal_normalize nxy) i = fd2n (freal_normalize y) i). {
+  *assert (H1 : fd2n (freal_normalize nxy) i = fd2n (freal_normalize y) i). {
      now eapply add_norm_0_l.
    }
+   assert (H2 : fd2n (freal_normalize xy) i = fd2n (freal_normalize y) i). {
+...
+   }
+   now rewrite H1, H2.
+...
+  *apply Nat.nle_gt in Hni.
 ...
 intros.
 specialize radix_ge_2 as Hr.
