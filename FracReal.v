@@ -5495,6 +5495,7 @@ specialize (freal_normalized_cases x) as [H1| H1].
        flia Hr H H2.
      -destruct H1 as (k & Hjk & Hk).
       apply digit_eq_eq; simpl.
+      unfold freal_add_series at 1, sequence_add.
 ...
        destruct (lt_dec (S (d2n (freal nxy) i)) rad) as [H4| H4].
        *simpl.
