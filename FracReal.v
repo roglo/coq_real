@@ -5457,6 +5457,14 @@ specialize (freal_normalized_cases x) as [H1| H1].
      unfold numbers_to_digits.
      destruct (LPO_fst (A_ge_1 (freal_add_series nx y) j)) as [H1| H1].
      -exfalso.
+      set (u := freal_add_series nx y).
+      specialize (A_ge_1_add_series_all_true_if u j) as H2.
+      assert (H : ∀ k : nat, u k ≤ 2 * (rad - 1)). {
+        intros k; apply freal_add_series_le_twice_pred.
+      }
+      specialize (H2 H H1); clear H.
+      destruct H2 as [H2| H2].
+      +idtac.
 ...
      -apply digit_eq_eq; simpl.
       unfold freal_add_series, sequence_add.
