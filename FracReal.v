@@ -5530,6 +5530,7 @@ specialize (freal_normalized_cases x) as [H1| H1].
      now eapply add_norm_0_l.
    }
    assert (H2 : fd2n (freal_normalize xy) i = fd2n (freal_normalize y) i). {
+(* est-ce vrai ? problèmes ci-dessous *)
 unfold fd2n; f_equal.
 apply (freal_eq_normalize_eq n); [ | easy ].
 intros j Hj.
@@ -5570,9 +5571,14 @@ admit.
  set (u := freal_add_series x y) in Hk |-*.
  remember (rad * (j + k + 3)) as n1 eqn:Hn1.
  remember (n1 - j - 1) as s1 eqn:Hs1.
+ move s1 before n1.
  apply digit_eq_eq; simpl.
  replace (n1 - j - k - 2) with (s1 - S k) in Hk by flia Hs1.
- (* mouais... pas sûr... *)
+ destruct (lt_dec (nA j n1 u) (rad ^ s1)) as [H2| H2].
+ +exfalso.
+  rewrite Nat.mod_small in Hk; [ | easy ].
+  (* pas sûr que ce soit vrai ; faut peut-être remettre en question
+     cet assert... *)
 ...
 -destruct H2 as (k & Hjk & Hk).
  apply digit_eq_eq; simpl.
