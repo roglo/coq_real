@@ -5530,6 +5530,72 @@ specialize (freal_normalized_cases x) as [H1| H1].
      now eapply add_norm_0_l.
    }
    assert (H2 : fd2n (freal_normalize xy) i = fd2n (freal_normalize y) i). {
+unfold fd2n; f_equal.
+apply (freal_eq_normalize_eq n); [ | easy ].
+intros j Hj.
+rewrite Hxy.
+unfold freal_unorm_add; simpl.
+unfold freal_add_to_seq.
+unfold numbers_to_digits.
+destruct (LPO_fst (A_ge_1 (freal_add_series x y) j)) as [H2| H2].
+-apply digit_eq_eq; simpl.
+ set (u := freal_add_series x y).
+ specialize (A_ge_1_add_series_all_true_if u j) as H3.
+ assert (H : ∀ k : nat, u k ≤ 2 * (rad - 1)). {
+   intros k; apply freal_add_series_le_twice_pred.
+ }
+ specialize (H3 H H2); clear H.
+ destruct H3 as [H3| [H3| H3]].
+ +rewrite Nat.div_small.
+  *rewrite Nat.add_0_r.
+   unfold u, freal_add_series, sequence_add.
+   rewrite Nat.add_comm, Nat.add_assoc.
+   specialize (Haft (j - n)) as H4.
+   replace (n + (j - n)) with j in H4 by flia Hj.
+   rewrite H4.
+   replace (1 + (rad - 1)) with rad by flia Hr.
+   rewrite Nat_mod_add_same_l; [ | easy ].
+   rewrite Nat.mod_small; [ easy | ].
+   apply digit_lt_radix.
+  *specialize (H3 0); rewrite Nat.add_0_r in H3.
+   rewrite H3; flia Hr.
+ +exfalso.
+  (* contradiction betwen Hy and H3; H3 implies y ends with 999... *)
+admit.
+ +destruct H3 as (m & Hmbef & Hmwhi & Hmaft).
+  (* contradiction betwen Hy and H3; H3 implies y ends with 999... *)
+admit.
+-destruct H2 as (k & Hjk & Hk).
+ apply A_ge_1_false_iff in Hk.
+ set (u := freal_add_series x y) in Hk |-*.
+ remember (rad * (j + k + 3)) as n1 eqn:Hn1.
+ remember (n1 - j - 1) as s1 eqn:Hs1.
+ apply digit_eq_eq; simpl.
+ replace (n1 - j - k - 2) with (s1 - S k) in Hk by flia Hs1.
+ (* mouais... pas sûr... *)
+...
+-destruct H2 as (k & Hjk & Hk).
+ apply digit_eq_eq; simpl.
+ unfold freal_add_series at 1, sequence_add.
+ specialize (Hnaft (j - n)) as H1.
+ replace (n + (j - n)) with j in H1 by flia Hj.
+ rewrite H1, Nat.add_0_l; clear H1.
+ remember (rad * (j + k + 3)) as n1 eqn:Hn1.
+ remember (n1 - j - 1) as s1 eqn:Hs1.
+ rewrite Nat.div_small.
+ +rewrite Nat.add_0_r.
+  rewrite Nat.mod_small; [ easy | ].
+  apply digit_lt_radix.
+ +subst s1.
+  apply nA_dig_seq_ub.
+  *intros m Hm.
+   unfold freal_add_series, sequence_add.
+   specialize (Hnaft (m - n)) as H1.
+   replace (n + (m - n)) with m in H1 by flia Hm Hj.
+   rewrite H1, Nat.add_0_l.
+   apply digit_lt_radix.
+  *rewrite Hn1.
+   destruct rad; [ easy | simpl; flia ].
 ...
    }
    now rewrite H1, H2.
