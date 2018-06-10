@@ -5539,7 +5539,26 @@ unfold numbers_to_digits.
 destruct (LPO_fst (A_ge_1 (freal_add_series x y) i)) as [H2| H2].
 -simpl.
  unfold freal_add_series, sequence_add.
-admit.
+ specialize (Haft (i - n)) as H3.
+ replace (n + (i - n)) with i in H3 by flia Hni.
+ rewrite H3; clear H3.
+ specialize (Haft (i - n + 1)) as H3.
+ replace (n + (i - n + 1)) with (i + 1) in H3 by flia Hni.
+ rewrite H3; clear H3.
+ replace (rad - 1 + fd2n y i + 1) with (rad + fd2n y i) by flia Hr.
+ rewrite <- Nat.add_assoc.
+ rewrite Nat_mod_add_same_l; [ | easy ].
+ destruct (zerop (fd2n y (i + 1))) as [H3| H3].
+ +rewrite H3, Nat.div_small; [ | flia Hr ].
+  rewrite Nat.add_0_r, Nat.mod_small; [ easy | ].
+  apply digit_lt_radix.
+ +exfalso.
+  (* mmm... j'ai l'impression que l'assert est faux, faut que je
+     réfléchisse... *)
+...
+  specialize (all_A_ge_1_true_iff i (freal_add_series x y)) as H4.
+  specialize (proj1 H4 H2) as H5; clear H4.
+...
 -destruct H2 as (m & Hjm & Hm); simpl.
  remember (rad * (i + m + 3)) as n1 eqn:Hn1.
  remember (n1 - i - 1) as s1 eqn:Hs1.
