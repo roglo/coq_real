@@ -5536,9 +5536,10 @@ unfold freal_unorm_add, fd2n.
 simpl.
 unfold freal_add_to_seq.
 unfold numbers_to_digits.
-destruct (LPO_fst (A_ge_1 (freal_add_series x y) i)) as [H2| H2].
+set (u := freal_add_series x y).
+destruct (LPO_fst (A_ge_1 u i)) as [H2| H2].
 -simpl.
- unfold freal_add_series, sequence_add.
+ unfold u, freal_add_series, sequence_add.
  specialize (Haft (i - n)) as H3.
  replace (n + (i - n)) with i in H3 by flia Hni.
  rewrite H3; clear H3.
