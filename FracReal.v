@@ -5529,8 +5529,30 @@ specialize (freal_normalized_cases x) as [H1| H1].
   *assert (H1 : fd2n (freal_normalize nxy) i = fd2n (freal_normalize y) i). {
      now eapply add_norm_0_l.
    }
+   assert (H2 : fd2n xy i = fd2n y i). {
+     (* c'est osé, ça... est-ce vrai ? *)
+rewrite Hxy.
+unfold freal_unorm_add, fd2n.
+simpl.
+unfold freal_add_to_seq.
+unfold numbers_to_digits.
+destruct (LPO_fst (A_ge_1 (freal_add_series x y) i)) as [H2| H2].
+-simpl.
+ unfold freal_add_series, sequence_add.
+admit.
+-destruct H2 as (m & Hjm & Hm); simpl.
+ remember (rad * (i + m + 3)) as n1 eqn:Hn1.
+ remember (n1 - i - 1) as s1 eqn:Hs1.
+ move s1 before n1.
+ unfold freal_add_series at 1, sequence_add.
+...
    assert (H2 : fd2n (freal_normalize xy) i = fd2n (freal_normalize y) i). {
 (* est-ce vrai ? problèmes ci-dessous *)
+unfold freal_unorm_add in Hxy.
+unfold freal_add_to_seq in Hxy.
+unfold numbers_to_digits in Hxy.
+Print freal_normalize.
+Print digit_sequence_normalize.
 unfold fd2n; f_equal.
 apply (freal_eq_normalize_eq n); [ | easy ].
 intros j Hj.
