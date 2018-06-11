@@ -5530,37 +5530,43 @@ specialize (freal_normalized_cases x) as [H1| H1].
      now eapply add_norm_0_l.
    }
    assert (H2 : fd2n xy i = fd2n y i). {
-     (* c'est osé, ça... est-ce vrai ? *)
-rewrite Hxy.
-unfold freal_unorm_add, fd2n.
-simpl.
-unfold freal_add_to_seq.
-unfold numbers_to_digits.
-set (u := freal_add_series x y).
-destruct (LPO_fst (A_ge_1 u i)) as [H2| H2].
--simpl.
- specialize (A_ge_1_add_all_true_if u i) as H3.
- assert (H : ∀ k : nat, u k ≤ 2 * (rad - 1)). {
-   intros k; unfold u.
-   apply freal_add_series_le_twice_pred.
- }
- specialize (H3 H H2); clear H H2.
- destruct H3 as [H3| [H3| H3]].
- +specialize (H3 0) as H4.
-  rewrite Nat.add_0_r in H4; rewrite H4; clear H4.
-  rewrite Nat.div_small; [ | flia Hr ].
-  rewrite Nat.add_0_r.
-  unfold u, freal_add_series, sequence_add.
-  specialize (Haft (i - n)) as H4.
-  replace (n + (i - n)) with i in H4 by flia Hni.
-  rewrite H4; clear H4.
-  replace (rad - 1 + fd2n y i + 1) with (rad + fd2n y i) by flia Hr.
-  rewrite Nat_mod_add_same_l; [ | easy ].
-  rewrite Nat.mod_small; [ easy | ].
-  apply digit_lt_radix.
- +specialize (H3 0) as H4.
-  rewrite Nat.add_0_r in H4; rewrite H4; clear H4.
-  rewrite Nat_div_less_small; [ | flia Hr ].
+     rewrite Hxy.
+     unfold freal_unorm_add, fd2n.
+     simpl.
+     unfold freal_add_to_seq.
+     unfold numbers_to_digits.
+     set (u := freal_add_series x y).
+     destruct (LPO_fst (A_ge_1 u i)) as [H2| H2].
+     -simpl.
+      specialize (A_ge_1_add_all_true_if u i) as H3.
+      assert (H : ∀ k : nat, u k ≤ 2 * (rad - 1)). {
+        intros k; unfold u.
+        apply freal_add_series_le_twice_pred.
+      }
+      specialize (H3 H H2); clear H H2.
+      destruct H3 as [H3| [H3| H3]].
+      +specialize (H3 0) as H4.
+       rewrite Nat.add_0_r in H4; rewrite H4; clear H4.
+       rewrite Nat.div_small; [ | flia Hr ].
+       rewrite Nat.add_0_r.
+       unfold u, freal_add_series, sequence_add.
+       specialize (Haft (i - n)) as H4.
+       replace (n + (i - n)) with i in H4 by flia Hni.
+       rewrite H4; clear H4.
+       replace (rad - 1 + fd2n y i + 1) with (rad + fd2n y i) by flia Hr.
+       rewrite Nat_mod_add_same_l; [ | easy ].
+       rewrite Nat.mod_small; [ easy | ].
+       apply digit_lt_radix.
+      +specialize (Hy (i + 1)) as H4.
+       destruct H4 as (k & Hk).
+       rewrite Nat.add_shuffle0 in Hk.
+       specialize (H3 k).
+       unfold u, freal_add_series, sequence_add in H3.
+       specialize (Haft (i - n + k + 1)) as H4.
+       replace (n + (i - n + k + 1)) with (i + k + 1) in H4 by flia Hni.
+       flia H3 Hk H4.
+      +destruct H3 as (j & Hjbef & Hjwhi & Hjaft).
+
 ...
   specialize (all_A_ge_1_true_iff i (freal_add_series x y)) as H4.
   specialize (proj1 H4 H2) as H5; clear H4.
