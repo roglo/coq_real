@@ -5566,16 +5566,12 @@ specialize (freal_normalized_cases x) as [H1| H1].
        replace (n + (i - n + k + 1)) with (i + k + 1) in H4 by flia Hni.
        flia H3 Hk H4.
       +destruct H3 as (j & Hjbef & Hjwhi & Hjaft).
-
 ...
-  specialize (all_A_ge_1_true_iff i (freal_add_series x y)) as H4.
-  specialize (proj1 H4 H2) as H5; clear H4.
-...
--destruct H2 as (m & Hjm & Hm); simpl.
- remember (rad * (i + m + 3)) as n1 eqn:Hn1.
- remember (n1 - i - 1) as s1 eqn:Hs1.
- move s1 before n1.
- unfold freal_add_series at 1, sequence_add.
+     -destruct H2 as (m & Hjm & Hm); simpl.
+      remember (rad * (i + m + 3)) as n1 eqn:Hn1.
+      remember (n1 - i - 1) as s1 eqn:Hs1.
+      move s1 before n1.
+      unfold u, freal_add_series at 1, sequence_add.
 ...
    assert (H2 : fd2n (freal_normalize xy) i = fd2n (freal_normalize y) i). {
 (* est-ce vrai ? problèmes ci-dessous *)
