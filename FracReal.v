@@ -5183,8 +5183,25 @@ specialize (freal_normalized_cases x) as [H1| H1].
        unfold u, freal_add_series, sequence_add.
        rewrite H3.
        flia.
-      +idtac.
-       ...
+      +apply Nat.nlt_ge in H2.
+       rewrite Nat_div_less_small.
+       *replace (rad - 1 + fd2n y i + 1) with (rad + fd2n y i) by flia Hr.
+        rewrite Nat_mod_add_same_l; [ | easy ].
+        rewrite Nat.mod_small; [ easy | ].
+        apply digit_lt_radix.
+       *split; [ easy | ].
+        specialize (nA_upper_bound_for_add u i n1) as H3.
+        rewrite <- Hs1 in H3.
+        assert (H : ∀ k, u k ≤ 2 * (rad - 1)). {
+          unfold u; intros k.
+          unfold freal_add_series, sequence_add.
+          replace (2 * (rad - 1)) with ((rad - 1) + (rad - 1)) by flia.
+          apply Nat.add_le_mono; apply digit_le_pred_radix.
+        }
+        specialize (H3 H); clear H.
+        eapply Nat.le_lt_trans; [ apply H3 | ].
+        enough (H : 1 ≤ rad ^ s1) by flia H.
+        now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
    }
    assert (H3 : fd2n (freal_normalize xy) i = fd2n (freal_normalize y) i). {
      unfold freal_normalize, fd2n; simpl.
@@ -5195,7 +5212,8 @@ specialize (freal_normalized_cases x) as [H1| H1].
      destruct (LPO_fst (is_9_strict_after (freal xy) i)) as [H3| H3].
      -destruct (LPO_fst (is_9_strict_after (freal y) i)) as [H4| H4].
       +easy.
-      +...
+      +idtac.
+...
      -destruct (LPO_fst (is_9_strict_after (freal y) i)) as [H4| H4].
       +...
       +easy.
