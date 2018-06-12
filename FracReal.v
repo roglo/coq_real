@@ -5099,10 +5099,10 @@ specialize (freal_normalized_cases x) as [H1| H1].
      unfold freal_unorm_add, fd2n.
      simpl.
      unfold freal_add_to_seq.
+     set (u := freal_add_series x y).
      unfold numbers_to_digits.
      specialize (Haft (i - n)) as H4.
      replace (n + (i - n)) with i in H4 by flia Hni.
-     set (u := freal_add_series x y).
      destruct (LPO_fst (A_ge_1 u i)) as [H2| H2].
      -simpl.
       unfold u at 1, freal_add_series, sequence_add.
