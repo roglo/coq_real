@@ -5161,32 +5161,30 @@ specialize (freal_normalized_cases x) as [H1| H1].
          subst n1.
          destruct rad; [ easy | simpl; flia ].
        }
-rewrite nA_split with (e := m + i + 2).
-apply le_plus_trans.
+       rewrite nA_split with (e := m + i + 2); [ | flia Hni Hin1 ].
+       apply le_plus_trans.
        unfold nA.
        rewrite summation_rtl.
-       rewrite summation_shift; [ | ].
+       rewrite summation_shift; [ | flia Hni ].
        rewrite power_summation_sub_1; [ | easy ].
        rewrite summation_mul_distr_l.
-replace (n1 - (m + i + 2)) with (s1 - S m) by flia Hs1 Hin1.
-apply Nat.mul_le_mono_r.
+       replace (n1 - (m + i + 2)) with (s1 - S m) by flia Hs1 Hin1.
+       apply Nat.mul_le_mono_r.
        replace (m + i + 2 - 1 - (i + 1)) with m by flia.
-        apply (@summation_le_compat nat_ord_ring_def).
-        intros j Hj; simpl; unfold Nat.le.
-        replace (m + i + 2 - 1 + (i + 1) - (i + 1 + j)) with (m + i + 1 - j) by flia.
-        replace (m + i + 2 - 1 - (m + i + 1 - j)) with j by flia Hj.
-        apply Nat.mul_le_mono_r.
-specialize (Haft (m + i + 1 - j - n)) as H3.
-replace (n + (m + i + 1 - j - n)) with (m + i + 1 - j) in H3 by flia Hs1 Hin1 Hj.
-...
-
-replace (n + (m + 1 - j)) with (m + n + 1 - j) in H3 by flia Hj.
-unfold u, freal_add_series, sequence_add.
-rewrite H3.
-
-...
-power_summation:
-  let rg : ord_ring := nat_ord_ring in ∀ a n : nat, 0 < a → a ^ S n = 1 + (a - 1) * (Σ (i = 0, n), a ^ i)
+       apply (@summation_le_compat nat_ord_ring_def).
+       intros j Hj; simpl; unfold Nat.le.
+       replace (m + i + 2 - 1 + (i + 1) - (i + 1 + j))
+         with (m + i + 1 - j) by flia.
+       replace (m + i + 2 - 1 - (m + i + 1 - j)) with j by flia Hj.
+       apply Nat.mul_le_mono_r.
+       specialize (Haft (m + i + 1 - j - n)) as H3.
+       replace (n + (m + i + 1 - j - n)) with (m + i + 1 - j) in H3
+         by flia Hni Hj.
+       unfold u, freal_add_series, sequence_add.
+       rewrite H3.
+       flia.
+      +idtac.
+       ...
    }
    assert (H3 : fd2n (freal_normalize xy) i = fd2n (freal_normalize y) i). {
      unfold freal_normalize, fd2n; simpl.
