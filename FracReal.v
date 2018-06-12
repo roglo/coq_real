@@ -5100,9 +5100,16 @@ specialize (freal_normalized_cases x) as [H1| H1].
      simpl.
      unfold freal_add_to_seq.
      unfold numbers_to_digits.
+     specialize (Haft (i - n)) as H4.
+     replace (n + (i - n)) with i in H4 by flia Hni.
      set (u := freal_add_series x y).
      destruct (LPO_fst (A_ge_1 u i)) as [H2| H2].
      -simpl.
+      unfold u at 1, freal_add_series, sequence_add.
+      rewrite H4; clear H4.
+      replace (rad - 1 + fd2n y i + 1) with (rad + fd2n y i) by flia Hr.
+      rewrite <- Nat.add_assoc.
+      rewrite Nat_mod_add_same_l; [ | easy ].
       specialize (A_ge_1_add_all_true_if u i) as H3.
       assert (H : ∀ k : nat, u k ≤ 2 * (rad - 1)). {
         intros k; unfold u.
@@ -5114,12 +5121,6 @@ specialize (freal_normalized_cases x) as [H1| H1].
        rewrite Nat.add_0_r in H4; rewrite H4; clear H4.
        rewrite Nat.div_small; [ | flia Hr ].
        rewrite Nat.add_0_r.
-       unfold u, freal_add_series, sequence_add.
-       specialize (Haft (i - n)) as H4.
-       replace (n + (i - n)) with i in H4 by flia Hni.
-       rewrite H4; clear H4.
-       replace (rad - 1 + fd2n y i + 1) with (rad + fd2n y i) by flia Hr.
-       rewrite Nat_mod_add_same_l; [ | easy ].
        rewrite Nat.mod_small; [ easy | ].
        apply digit_lt_radix.
       +specialize (Hy (i + 1)) as H4.
@@ -5131,12 +5132,24 @@ specialize (freal_normalized_cases x) as [H1| H1].
        replace (n + (i - n + k + 1)) with (i + k + 1) in H4 by flia Hni.
        flia H3 Hk H4.
       +destruct H3 as (j & Hjbef & Hjwhi & Hjaft).
-       ...
+       destruct j.
+       *rewrite Nat.add_0_r in Hjwhi; rewrite Hjwhi.
+        rewrite Nat.div_small; [ | flia Hr ].
+        rewrite Nat.add_0_r.
+        rewrite Nat.mod_small; [ easy | ].
+        apply digit_lt_radix.
+       *specialize (Hjbef 0 (Nat.lt_0_succ j)) as H2.
+        rewrite Nat.add_0_r in H2; rewrite H2.
+        rewrite Nat.div_small; [ | flia Hr ].
+        rewrite Nat.add_0_r.
+        rewrite Nat.mod_small; [ easy | ].
+        apply digit_lt_radix.
      -destruct H2 as (m & Hjm & Hm); simpl.
       remember (rad * (i + m + 3)) as n1 eqn:Hn1.
       remember (n1 - i - 1) as s1 eqn:Hs1.
       move s1 before n1.
       unfold u, freal_add_series at 1, sequence_add.
+      rewrite H4.
       ...
    }
    assert (H3 : fd2n (freal_normalize xy) i = fd2n (freal_normalize y) i). {
