@@ -5210,10 +5210,16 @@ specialize (freal_normalized_cases x) as [H1| H1].
      apply digit_eq_eq in H2.
      rewrite H2.
      destruct (LPO_fst (is_9_strict_after (freal xy) i)) as [H3| H3].
-     -destruct (LPO_fst (is_9_strict_after (freal y) i)) as [H4| H4].
+     -specialize (is_9_strict_after_all_9 _ i H3) as H4; clear H3.
+      destruct (LPO_fst (is_9_strict_after (freal y) i)) as [H3| H3].
       +easy.
-      +idtac.
-...
+      +destruct H3 as (k & Hjk & Hk).
+       apply is_9_strict_after_false_iff in Hk.
+       destruct (lt_dec (S (dig (freal y i))) rad) as [H3| H3].
+       *exfalso.
+        ...
+       *apply Nat.nlt_ge in H3.
+        ...
      -destruct (LPO_fst (is_9_strict_after (freal y) i)) as [H4| H4].
       +...
       +easy.
