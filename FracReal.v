@@ -5145,12 +5145,18 @@ specialize (freal_normalized_cases x) as [H1| H1].
         rewrite Nat.mod_small; [ easy | ].
         apply digit_lt_radix.
      -destruct H2 as (m & Hjm & Hm); simpl.
+      apply A_ge_1_false_iff in Hm.
       remember (rad * (i + m + 3)) as n1 eqn:Hn1.
       remember (n1 - i - 1) as s1 eqn:Hs1.
+      replace (n1 - i - m - 2) with (s1 - S m) in Hm by flia Hs1.
       move s1 before n1.
       unfold u, freal_add_series at 1, sequence_add.
       rewrite H4.
-      ...
+      fold u.
+      destruct (lt_dec (nA i n1 u) (rad ^ s1)) as [H2| H2].
+      +exfalso.
+       rewrite Nat.mod_small in Hm; [ | easy ].
+       ...
    }
    assert (H3 : fd2n (freal_normalize xy) i = fd2n (freal_normalize y) i). {
      unfold freal_normalize, fd2n; simpl.
