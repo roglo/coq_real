@@ -5168,24 +5168,25 @@ specialize (freal_normalized_cases x) as [H1| H1].
            apply Nat.add_le_mono; apply digit_le_pred_radix.
          }
          specialize (H6 H H5); clear H5 H.
-         destruct H6 as [H5| H5].
-      ----idtac.
-...
-
-
-         destruct (LPO_fst (A_ge_1 axy i)) as [H6| H6].
+         unfold freal_add_series, sequence_add in Hanxy; subst anxy.
+         destruct (LPO_fst (A_ge_1 axy i)) as [H5| H5].
       ----simpl.
-Search (∀ _, A_ge_1 _ _ _ = true).
-A_ge_1_add_all_true_if:
-  ∀ (r : radix) (u : nat → nat) (i : nat),
-  (∀ k : nat, u k ≤ 2 * (rad - 1))
-  → (∀ k : nat, A_ge_1 u i k = true)
-    → (∀ k : nat, u (i + k + 1) = rad - 1)
-      ∨ (∀ k : nat, u (i + k + 1) = 2 * (rad - 1))
-        ∨ (∃ j : nat,
-           (∀ k : nat, k < j → u (i + k + 1) = rad - 1)
-           ∧ u (i + j + 1) = rad - 2 ∧ (∀ k : nat, u (i + j + k + 2) = 2 * (rad - 1)))
-    ...
+          specialize (A_ge_1_add_all_true_if axy i) as H7.
+          assert (H : ∀ k, axy k ≤ 2 * (rad - 1)). {
+            rewrite Haxy; intros k.
+            unfold freal_add_series, sequence_add.
+            replace (2 * (rad - 1)) with ((rad - 1) + (rad - 1)) by flia.
+            apply Nat.add_le_mono; apply digit_le_pred_radix.
+          }
+          specialize (H7 H H5); clear H5 H.
+          unfold freal_add_series, sequence_add in Haxy; subst axy.
+...
+      ---- ...
+      *** ...
+     +++ ...
+    --- ...
+   ++ ...
+  -- ...
  +destruct Hy as (k & Hk).
   ...
 
