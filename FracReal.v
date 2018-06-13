@@ -4255,92 +4255,6 @@ rewrite nA_split_first in H1.
 -flia Hs.
 Qed.
 
-Theorem A_ge_1_add_series_false_if {r : radix} : ∀ u i j n s,
-  (∀ i, u i ≤ 2 * (rad - 1))
-  → A_ge_1 u i j = false
-  → n = rad * (i + j + 3)
-  → s = n - i - 1
-  → (∃ k, k < s ∧ u (i + k + 1) ≠ rad - 1) ∧
-     (∃ k, k < s ∧ u (i + k + 1) ≠ 2 * rad - 2) ∧
-     (∀ j,
-       (∃ k, k < j ∧ u (i + k + 1) ≠ rad - 1) ∨
-       u (i + j + 1) ≠ rad - 2 ∨
-       (∃ k, u (i + j + k + 2) ≠ 2 * rad - 2)).
-Proof.
-intros *.
-specialize radix_ge_2 as Hr.
-intros Hur Hxy Hn Hs.
-apply A_ge_1_false_iff in Hxy.
-rewrite <- Hn, <- Hs in Hxy.
-replace (n - i - j - 2) with (s - S j) in Hxy by flia Hs.
-assert (Hin : i + j + 2 ≤ n - 1). {
-  rewrite Hn.
-  destruct rad; [ easy | simpl; flia ].
-}
-split; [ | split ].
--destruct (lt_dec (nA i n u) (rad ^ s)) as [H1| H1].
- +rewrite Nat.mod_small in Hxy; [ | easy ].
-  assert (Hj : j < j + 1 + 0) by flia.
-  now apply (nA_add_no_pred_rad _ _ j n).
- +rewrite Nat_mod_less_small in Hxy.
-  *apply Nat.nlt_ge in H1.
-   rewrite Hs in H1 |-*.
-   now apply rad_pow_le_nA_exist_not_pred_rad.
-  *split; [ flia H1 | ].
-   specialize (nA_upper_bound_for_add u i n Hur) as H2.
-   rewrite <- Hs in H2.
-   specialize (Nat.pow_nonzero rad s radix_ne_0) as H3.
-   flia H2 H3.
--destruct (lt_dec (nA i n u) (rad ^ s)) as [H1| H1].
- +rewrite Nat.mod_small in Hxy; [ | easy ].
-  rewrite Hs in H1 |-*.
-  now apply (nA_lt_rad_pow_exist_not_twice_pred_rad u i n); [ flia Hin | ].
- +apply Nat.nlt_ge in H1.
-  now apply (nA_add_no_twice_pred_rad _ _ j n).
--intros l.
- destruct (lt_dec (nA i n u) (rad ^ s)) as [H1| H2].
- +rewrite Nat.mod_small in Hxy; [ | easy ].
-(**)
-  destruct (le_dec s l) as [H2| H2].
-  *specialize (nA_add_no_pred_rad u i j n s Hn Hs Hxy) as (k & Hks & Hu).
-   left; exists k.
-   split; [ flia H2 Hks | easy ].
-  *apply Nat.nle_gt in H2.
-   induction l.
-  --right; rewrite Nat.add_0_r.
-    destruct (Nat.eq_dec (u (i + 1)) (rad - 2)) as [H3| H3].
-   ++right.
-     destruct s; [ easy | ].
-     destruct (lt_dec (nA (i + 1) n u) (rad ^ s)) as [H5| H5].
-    **specialize (nA_lt_rad_pow_exist_not_twice_pred_rad u (i + 1) n) as H6.
-      replace (n - (i + 1) - 1) with s in H6 by flia Hs.
-      assert (H : i + 1 + 1 ≤ n - 1) by flia Hin.
-      specialize (H6 H); clear H.
-      specialize (H6 H5) as (k & Hk & Huk).
-      exists k.
-      now replace (i + 1 + k + 1) with (i + k + 2) in Huk by flia.
-    **apply Nat.nlt_ge in H5.
-Abort. (*
-...
-     assert (H : i + 1 ≤ n - 1) by flia Hin.
-     rewrite Hs in H1.
-     specialize (H4 H H1) as (k & Hk & Huk).
-     destruct k.
-(* chiasse de pute *)
-...
-  specialize (nA_add_no_pred_rad u i j n s Hn Hs Hxy) as (k & Hks & Hu).
-  destruct (lt_dec k l) as [H2| H2].
-  *now left; exists k.
-  *apply Nat.nlt_ge in H2.
-...
-   assert (H : j < l + 0) by flia H2.
-   specialize (H3 H Hxy); clear H.
-   destruct H3 as (k & Hk).
-   destruct (lt_dec k l) as [H3| H3]; [ now left; exists k | ].
-   apply Nat.nlt_ge in H3.
-...
-*)
-
 Theorem A_ge_1_all_true_for_sum_and_sum_norm_l {r : radix} : ∀ x y i n s,
   let u := freal_add_series (freal_normalize x) y in
   let v := freal_add_series x y in
@@ -5094,7 +5008,10 @@ specialize (freal_normalized_cases x) as [H1| H1].
   *assert (H1 : fd2n (freal_normalize nxy) i = fd2n (freal_normalize y) i). {
      now eapply add_norm_0_l.
    }
-   assert (H2 : fd2n xy i = fd2n y i). {
+   assert (H2 : ∀ i, n ≤ i → fd2n xy i = fd2n y i). {
+clear - Hxy Haft Hr Hy.
+(* faire un lemme *)
+     intros i Hni.
      rewrite Hxy.
      unfold freal_unorm_add, fd2n.
      simpl.
@@ -5207,21 +5124,31 @@ specialize (freal_normalized_cases x) as [H1| H1].
      unfold freal_normalize, fd2n; simpl.
      unfold digit_sequence_normalize.
      unfold fd2n in H2; unfold d2n.
-     apply digit_eq_eq in H2.
-     rewrite H2.
+     specialize (H2 i Hni) as H2i.
+     apply digit_eq_eq in H2i.
+     rewrite H2i.
      destruct (LPO_fst (is_9_strict_after (freal xy) i)) as [H3| H3].
      -specialize (is_9_strict_after_all_9 _ i H3) as H4; clear H3.
       destruct (LPO_fst (is_9_strict_after (freal y) i)) as [H3| H3].
       +easy.
       +destruct H3 as (k & Hjk & Hk).
        apply is_9_strict_after_false_iff in Hk.
-       destruct (lt_dec (S (dig (freal y i))) rad) as [H3| H3].
-       *exfalso.
-        ...
-       *apply Nat.nlt_ge in H3.
-        ...
+       exfalso.
+       specialize (H2 (i + k + 1)) as H3.
+       assert (H : n ≤ i + k + 1) by flia Hni.
+       specialize (H3 H); clear H.
+       unfold d2n in H4.
+       rewrite H4 in H3.
+       now symmetry in H3.
      -destruct (LPO_fst (is_9_strict_after (freal y) i)) as [H4| H4].
-      +...
+      +destruct H3 as (k & Hjk & Hk).
+       apply is_9_strict_after_false_iff in Hk.
+       specialize (is_9_strict_after_all_9 _ i H4) as H5; clear H4.
+       specialize (H2 (i + k + 1)) as H3.
+       assert (H : n ≤ i + k + 1) by flia Hni.
+       specialize (H3 H); clear H.
+       unfold d2n in H5.
+       now rewrite H5 in H3.
       +easy.
    }
    now rewrite H1, H3.
