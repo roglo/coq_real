@@ -4014,26 +4014,6 @@ intros * Hu *.
 apply A_ge_1_add_r_true_if, Hu.
 Qed.
 
-Theorem A_ge_1_add_series_all_true_if {r : radix} : ∀ u i,
-  (∀ k, u k ≤ 2 * (rad - 1))
-  → (∀ k, A_ge_1 u i k = true)
-  → (∀ k, u (i + k + 1) = rad - 1) ∨
-     (∀ k, u (i + k + 1) = 2 * (rad - 1)) ∨
-     (∃ j,
-       (∀ k, k < j → u (i + k + 1) = rad - 1) ∧
-       u (i + j + 1) = rad - 2 ∧
-       (∀ k, u (i + j + k + 2) = 2 * (rad - 1))).
-Proof.
-intros * Hur Hxy.
-specialize (A_ge_1_add_all_true_if _ i Hur Hxy) as H2.
-destruct H2 as [H2| [H2| H2]].
--left; apply H2.
--now right; left.
--right; right.
- destruct H2 as (j & Hbef & Hwhi & Haft).
- now exists j.
-Qed.
-
 Theorem not_forall_eq_exists_not_neq : ∀ m (f : _ → nat) a,
   ¬ (∀ i, i < m → f i = a)
   → ∃ i, i < m ∧ f i ≠ a.
@@ -4738,7 +4718,7 @@ destruct (lt_dec i (n - 1)) as [H8| H8].
   destruct Hwhi as [Hwhi| Hwhi]; [ flia Hwhi Hin | ].
   rewrite <- Hin in Hwhi.
   rewrite Hwhi; simpl; rewrite <- Nat.add_1_r.
-  specialize (A_ge_1_add_series_all_true_if _ _ Hnxyr H6) as H8.
+  specialize (A_ge_1_add_all_true_if _ _ Hnxyr H6) as H8.
   destruct H8 as [H8| [H8| H8]].
   *specialize (H8 0) as H9.
    rewrite Nat.add_0_r in H9.
@@ -4770,7 +4750,7 @@ destruct (lt_dec i (n - 1)) as [H8| H8].
   do 2 rewrite Haft, Hnaft; simpl.
   rewrite Nat.div_small; [ | apply digit_lt_radix ].
   rewrite Nat.mod_0_l; [ | easy ].
-  specialize (A_ge_1_add_series_all_true_if _ _ Hnxyr H6) as H8.
+  specialize (A_ge_1_add_all_true_if _ _ Hnxyr H6) as H8.
   destruct H8 as [H8| [H8| H8]].
   *specialize (H8 0) as H9.
    rewrite Nat.add_0_r in H9.
@@ -4812,7 +4792,7 @@ destruct (lt_dec i (n - 1)) as [H8| H8].
     rewrite Nat.div_small; [ simpl | apply digit_lt_radix ].
     rewrite Nat.mod_small; [ | easy ].
     clear H8 H9.
-    specialize (A_ge_1_add_series_all_true_if _ _ Hnxyr H6) as H8.
+    specialize (A_ge_1_add_all_true_if _ _ Hnxyr H6) as H8.
     destruct H8 as [H8| [H8| H8]].
    ++specialize (H8 0) as H9.
      rewrite Nat.add_0_r, Nat.add_1_r in H9.
@@ -4848,7 +4828,7 @@ destruct (lt_dec i (n - 1)) as [H8| H8].
    rewrite H8, H9; clear H8 H9; simpl.
    rewrite Nat.div_small; [ | apply digit_lt_radix ].
    rewrite Nat.mod_0_l; [ | easy ].
-   specialize (A_ge_1_add_series_all_true_if _ _ Hnxyr H6) as H8.
+   specialize (A_ge_1_add_all_true_if _ _ Hnxyr H6) as H8.
    rewrite Nat.add_1_r.
    destruct H8 as [H8| [H8| H8]].
   --specialize (H8 0) as H9.
@@ -4928,7 +4908,7 @@ unfold numbers_to_digits.
 destruct (LPO_fst (A_ge_1 (freal_add_series nx y) j)) as [H1| H1].
 -exfalso.
  set (u := freal_add_series nx y).
- specialize (A_ge_1_add_series_all_true_if u j) as H2.
+ specialize (A_ge_1_add_all_true_if u j) as H2.
  assert (H : ∀ k : nat, u k ≤ 2 * (rad - 1)). {
    intros k; apply freal_add_series_le_twice_pred.
  }
@@ -5165,6 +5145,24 @@ specialize (freal_normalized_cases x) as [H1| H1].
    unfold digit_sequence_normalize.
    destruct (LPO_fst (is_9_strict_after (freal nxy) i)) as [H1| H1].
   --specialize (is_9_strict_after_all_9 _ _ H1) as H2; clear H1.
+    destruct (LPO_fst (is_9_strict_after (freal xy) i)) as [H1| H1].
+   ++specialize (is_9_strict_after_all_9 _ _ H1) as H3; clear H1.
+    **destruct (lt_dec (S (d2n (freal nxy) i)) rad) as [H1| H1].
+    ---simpl.
+       destruct (lt_dec (S (d2n (freal xy) i)) rad) as [H4| H4].
+     +++simpl; f_equal.
+        rewrite Hnxy, Hxy.
+        unfold freal_unorm_add; simpl.
+        unfold freal_add_to_seq.
+        unfold numbers_to_digits, d2n.
+        remember (freal_add_series nx y) as anxy eqn:Hanxy.
+        remember (freal_add_series x y) as axy eqn:Haxy.
+        move axy before anxy.
+        destruct (LPO_fst (A_ge_1 anxy i)) as [H5| H5].
+      ***simpl.
+         destruct (LPO_fst (A_ge_1 axy i)) as [H6| H6].
+      ----simpl.
+Search (∀ _, A_ge_1 _ _ _ = true).
     ...
  +destruct Hy as (k & Hk).
   ...
