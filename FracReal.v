@@ -5201,6 +5201,19 @@ specialize (freal_normalized_cases x) as [H1| H1].
           unfold fd2n in Hjaft.
           flia Hr Hjaft H1.
       ***destruct H5 as (k & Hjk & Hk); simpl.
+         destruct (LPO_fst (A_ge_1 axy i)) as [H5| H5].
+      ----simpl.
+          specialize (A_ge_1_add_all_true_if axy i) as H6.
+          assert (H : ∀ k, axy k ≤ 2 * (rad - 1)). {
+            rewrite Haxy; intros j.
+            unfold freal_add_series, sequence_add.
+            replace (2 * (rad - 1)) with ((rad - 1) + (rad - 1)) by flia.
+            apply Nat.add_le_mono; apply digit_le_pred_radix.
+          }
+          specialize (H6 H H5); clear H5 H.
+          unfold freal_add_series, sequence_add in Haxy; subst axy.
+          destruct H6 as [H6| [H6| H6]].
+       ++++idtac.
 ...
      +++ ...
     --- ...
