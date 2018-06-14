@@ -5168,21 +5168,40 @@ specialize (freal_normalized_cases x) as [H1| H1].
            apply Nat.add_le_mono; apply digit_le_pred_radix.
          }
          specialize (H6 H H5); clear H5 H.
+         exfalso.
          unfold freal_add_series, sequence_add in Hanxy; subst anxy.
-         destruct (LPO_fst (A_ge_1 axy i)) as [H5| H5].
-      ----simpl.
-          specialize (A_ge_1_add_all_true_if axy i) as H7.
-          assert (H : ∀ k, axy k ≤ 2 * (rad - 1)). {
-            rewrite Haxy; intros k.
-            unfold freal_add_series, sequence_add.
-            replace (2 * (rad - 1)) with ((rad - 1) + (rad - 1)) by flia.
-            apply Nat.add_le_mono; apply digit_le_pred_radix.
+         destruct H6 as [H6| [H6| H6]].
+      ----clear - Hr Hnaft Hy H6.
+          assert (H : ∀ k, fd2n y (n + i + k + 1) = rad - 1). {
+            intros k.
+            specialize (H6 (n + k)).
+            specialize (Hnaft (i + k)).
+            replace (S n + (i + k)) with (n + i + k + 1) in Hnaft by flia.
+            replace (i + (n + k) + 1) with (n + i + k + 1) in H6 by flia.
+            lia.
           }
-          specialize (H7 H H5); clear H5 H.
-          unfold freal_add_series, sequence_add in Haxy; subst axy.
+          specialize (Hy (n + i + 1)) as (j & Hj).
+          specialize (H j).
+          now rewrite Nat.add_shuffle0 in H.
+      ----clear - Hr Hnaft H6.
+          specialize (Hnaft i).
+          specialize (H6 n).
+          replace (S n + i) with (i + n + 1) in Hnaft by flia.
+          rewrite Hnaft, Nat.add_0_l in H6.
+          specialize (digit_lt_radix (freal y (i + n + 1))) as H1.
+          unfold fd2n in H6.
+          flia Hr H6 H1.
+      ----destruct H6 as (j & Hjbef & Hjwhi & Hjaft).
+          clear - Hr Hnaft Hy Hjaft.
+          specialize (Hnaft (i + j + 1)).
+          specialize (Hjaft n).
+          replace (S n + (i + j + 1)) with (i + j + n + 2) in Hnaft by flia.
+          rewrite Hnaft, Nat.add_0_l in Hjaft.
+          specialize (digit_lt_radix (freal y (i + j + n + 2))) as H1.
+          unfold fd2n in Hjaft.
+          flia Hr Hjaft H1.
+      ***destruct H5 as (k & Hjk & Hk); simpl.
 ...
-      ---- ...
-      *** ...
      +++ ...
     --- ...
    ++ ...
