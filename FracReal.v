@@ -5212,8 +5212,29 @@ specialize (freal_normalized_cases x) as [H1| H1].
           }
           specialize (H6 H H5); clear H5 H.
           unfold freal_add_series, sequence_add in Haxy; subst axy.
+          subst anxy.
+          unfold freal_add_series at 1, sequence_add.
+          rewrite <- Nat.add_assoc, Nat.add_comm; symmetry.
+          rewrite <- Nat.add_assoc.
+          rewrite <- Nat.add_assoc, Nat.add_comm; symmetry.
+          do 4 rewrite <- Nat.add_assoc.
+          rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+          rewrite <- Nat.add_mod_idemp_r; [ symmetry | easy ].
+          f_equal; f_equal.
+          rewrite Nat.add_comm; symmetry.
+          rewrite Nat.add_assoc, Nat.add_comm, Nat.add_assoc; symmetry.
           destruct H6 as [H6| [H6| H6]].
-       ++++idtac.
+       ++++specialize (H6 0) as H5; rewrite Nat.add_0_r in H5.
+           rewrite H5; clear H5.
+           symmetry; rewrite Nat.div_small; [ | flia Hr ].
+           rewrite Nat.add_0_r.
+           rewrite Nat.div_small.
+        ****rewrite Nat.add_0_r.
+            destruct (Nat.eq_dec i n) as [H5| H5].
+        -----subst i.
+             now rewrite Nat.add_1_r, <- Hwhi.
+        -----assert (H : i < n) by flia Hni H5; clear Hni H5.
+             rename H into Hni; exfalso.
 ...
      +++ ...
     --- ...
