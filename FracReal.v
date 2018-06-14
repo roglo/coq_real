@@ -135,6 +135,23 @@ Arguments freal r _%F.
 Definition fd2n {r : radix} x (i : nat) := dig (freal x i).
 Arguments fd2n _ x%F i%nat.
 
+(* Relation with Cauchy sequences *)
+
+Require Import QArith.
+Definition Qabs x := if Qlt_le_dec x 0 then Qopp x else x.
+Definition is_cauchy_seq u :=
+  ∀ ε, ε > 0 → ∃ N, ∀ p q, p ≥ N ∧ q ≥ N → Qabs (u p - u q) < ε.
+Close Scope Q.
+
+Definition freal_seq {r : radix} (rg := nat_ord_ring) x n :=
+  Qmake (Z.of_nat (Σ (i = 0, n), fd2n x n * rad ^ (n - i)))
+    (Pos.of_nat (rad ^ S n)).
+
+Theorem freal_is_cauchy_seq {r : radix} : ∀ x, is_cauchy_seq (freal_seq x).
+Proof.
+intros x ε Hε.
+...
+
 (* In names, "9" actually means "rad-1" *)
 
 Definition is_9_after {r : radix} u i j :=
