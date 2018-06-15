@@ -35,12 +35,19 @@ Definition MQadd_den x y := MQden x * MQden y.
 
 Definition MQadd x y :=
   MQmake (MQadd_sign x y) (MQadd_num x y) (MQadd_den x y).
-Arguments MQadd x%MQ y%MQ.
 
 Definition MQopp x := MQmake (negb (MQsign x)) (MQnum x) (MQden x).
-Definition MQsub x y := MQadd x (MQopp y).
+
+Arguments MQadd x%MQ y%MQ.
 Arguments MQopp x%MQ.
 
+(* MQeq syntax is "==".
+   ∀ x y
+   * 0/x == 0/y == -0/x == -0/y
+   * x/0 == y/0, -x/0 == -y/0
+   * x/0 ≠≠ -y/0, -x/0 ≠≠ y/0
+   otherwise ∀ xn xd yn yd, xn*yd = xd*yn
+ *)
 Definition MQeq x y :=
   if zerop (MQnum x) then
     if zerop (MQnum y) then True else False
@@ -69,7 +76,7 @@ Notation "0" := (MQmake true 0 1) : MQ_scope.
 Notation "- x" := (MQopp x) : MQ_scope.
 Notation "x == y" := (MQeq x y) (at level 70) : MQ_scope.
 Notation "x + y" := (MQadd x y) : MQ_scope.
-Notation "x - y" := (MQsub x y) : MQ_scope.
+Notation "x - y" := (MQadd x (MQopp y)) : MQ_scope.
 Notation "x < y" := (MQlt x y) : MQ_scope.
 Notation "x ≤ y" := (MQle x y) : MQ_scope.
 Notation "x > y" := (¬ MQle x y) : MQ_scope.
@@ -147,6 +154,3 @@ destruct xs, ys.
 -destruct (lt_dec (yn * xd) (xn * yd)) as [H1| H1]; [ now left | ].
  now right; apply Nat.nlt_ge.
 Qed.
-
-Theorem fold_MQminus : ∀ x y, (x + - y == x - y)%MQ.
-Proof. easy. Qed.
