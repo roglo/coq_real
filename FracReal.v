@@ -147,9 +147,29 @@ Definition freal_seq {r : radix} (rg := nat_ord_ring) x n :=
   Qmake (Z.of_nat (Σ (i = 0, n), fd2n x n * rad ^ (n - i)))
     (Pos.of_nat (rad ^ S n)).
 
+Theorem fold_Qminus : ∀ x y, (x + - y == x - y)%Q.
+Proof. easy. Qed.
+
+Theorem Qplus_opp_l : ∀ x, (- x + x == 0)%Q.
+Proof. intros; rewrite Qplus_comm; apply Qplus_opp_r. Qed.
+
 Theorem freal_is_cauchy_seq {r : radix} : ∀ x, is_cauchy_seq (freal_seq x).
 Proof.
 intros x ε Hε.
+exists (Pos.to_nat (Qden ε)).
+intros p q (Hp, Hq).
+unfold Qabs.
+destruct (Qlt_le_dec (freal_seq x p - freal_seq x q) 0) as [Hpq| Hpq].
+-unfold Qminus.
+ rewrite Qopp_plus, Qopp_involutive, Qplus_comm, fold_Qminus.
+ apply (Qplus_lt_l _ _ (freal_seq x q)) in Hpq.
+ unfold Qminus in Hpq.
+ rewrite <- Qplus_assoc, Qplus_opp_l in Hpq.
+ rewrite Qplus_0_l, Qplus_0_r in Hpq.
+ unfold freal_seq, Qlt in Hpq.
+ remember S as f; simpl in Hpq; subst f.
+ unfold freal_seq, Qlt.
+ remember S as f; simpl; subst f.
 ...
 
 (* In names, "9" actually means "rad-1" *)
