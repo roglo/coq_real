@@ -166,6 +166,19 @@ Theorem Qden_of_inv_Q_of_nat : ∀ n, Qden (/ Q_of_nat n) = Pos.of_nat n.
 Proof.
 intros n.
 unfold Q_of_nat.
+unfold Qinv; simpl.
+remember (Z.of_nat n) as z eqn:Hz.
+symmetry in Hz.
+destruct z as [| p| p].
+-rewrite <- Nat2Z.inj_0 in Hz.
+ apply Nat2Z.inj in Hz.
+ now subst n.
+-simpl.
+ rewrite <- positive_nat_Z in Hz.
+ apply Nat2Z.inj in Hz.
+ subst n; symmetry.
+ apply Pos2Nat.id.
+-exfalso.
 ...
 
 Theorem uq_minus_up {r : radix} (rg := nat_ord_ring) : ∀ x p q,
