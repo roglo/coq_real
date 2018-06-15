@@ -153,11 +153,24 @@ Proof. easy. Qed.
 Theorem Qplus_opp_l : ∀ x, (- x + x == 0)%Q.
 Proof. intros; rewrite Qplus_comm; apply Qplus_opp_r. Qed.
 
+Theorem uq_minus_up {r : radix} (rg := nat_ord_ring) : ∀ x p q,
+  p < q
+  → (freal_seq x q - freal_seq x p ==
+      Z.of_nat (Σ (i = 0, q - p - 1), (fd2n x (q - i) * rad ^ i)%nat) #
+      Pos.of_nat (rad ^ S q))%Q.
+Proof.
+intros * Hpq.
+...
+
 Theorem freal_is_cauchy_seq {r : radix} : ∀ x, is_cauchy_seq (freal_seq x).
 Proof.
 intros x ε Hε.
 exists (Pos.to_nat (Qden ε)).
 intros p q (Hp, Hq).
+destruct (lt_dec p q) as [Hpq| Hpq].
+-specialize (uq_minus_up x p q Hpq) as H.
+...
+
 unfold Qabs.
 destruct (Qlt_le_dec (freal_seq x p - freal_seq x q) 0) as [Hpq| Hpq].
 -unfold Qminus.
