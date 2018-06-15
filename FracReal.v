@@ -144,7 +144,7 @@ Definition is_cauchy_seq u :=
 Close Scope Q.
 
 Definition freal_seq {r : radix} (rg := nat_ord_ring) x n :=
-  Qmake (Z.of_nat (Σ (i = 0, n), fd2n x n * rad ^ (n - i)))
+  Qmake (Z.of_nat (Σ (i = 0, n), fd2n x i * rad ^ (n - i)))
     (Pos.of_nat (rad ^ S n)).
 
 Theorem fold_Qminus : ∀ x y, (x + - y == x - y)%Q.
@@ -170,6 +170,7 @@ destruct (Qlt_le_dec (freal_seq x p - freal_seq x q) 0) as [Hpq| Hpq].
  remember S as f; simpl in Hpq; subst f.
  unfold freal_seq, Qlt.
  remember S as f; simpl; subst f.
+ rewrite Z.mul_opp_l, Z.add_opp_r.
 ...
 
 (* In names, "9" actually means "rad-1" *)
