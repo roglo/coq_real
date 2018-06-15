@@ -54,6 +54,13 @@ Definition MQopp x := MQmake (negb (MQsign x)) (MQnum x) (MQden x).
 Definition MQsub x y := MQadd x (MQopp y).
 Arguments MQopp x%MQ.
 
+Definition MQeq x y :=
+  if zerop (MQnum x) then MQnum y = 0
+  else if Bool.bool_dec (MQsign x) (MQsign y) then
+    MQnum x * MQden y = MQnum y * MQden x
+  else False.
+
+(*
 Definition MQzerop x := zerop (MQnum x).
 Definition MQnorm x := if zerop (MQnum x) then MQmake true 0 1 else x.
 Definition MQnorm_sign x := if zerop (MQnum x) then true else MQsign x.
@@ -64,6 +71,7 @@ Definition MQeq x y :=
     if MQnorm_sign y then MQnum x * MQden y = MQnum y * MQden x else False
   else
     if MQnorm_sign y then False else MQnum x * MQden y = MQnum y * MQden x.
+*)
 
 Definition MQabs x := MQmake true (MQnum x) (MQden x).
 Definition MQabs_lt x y := MQnum x * MQden y < MQnum y * MQden x.
@@ -101,3 +109,39 @@ destruct xs, ys.
 -destruct (lt_dec (yn * xd) (xn * yd)) as [H1| H1]; [ now left | ].
  now right; apply Nat.nlt_ge.
 Qed.
+
+Theorem MQeq_refl : ∀ x : MQ, (x == x)%MQ.
+Proof.
+intros.
+unfold "==".
+destruct (zerop (MQnum x)) as [| H1]; [ easy | ].
+now destruct (Bool.bool_dec (MQsign x) (MQsign x)).
+Qed.
+
+Theorem MQeq_symm : ∀ x y : MQ, (x == y)%MQ → (y == x)%MQ.
+Proof.
+intros x y Hxy.
+unfold "==" in Hxy |-*.
+destruct (zerop (MQnum x)) as [H1| H1].
+-destruct (zerop (MQnum y)) as [| H2]; [ easy | ].
+ rewrite Hxy in H2.
+ now apply Nat.lt_irrefl in H2.
+-destruct (zerop (MQnum y)) as [H2| H2].
+ +destruct (Bool.bool_dec (MQsign x) (MQsign y)) as [H3| H3].
+  *rewrite H2 in Hxy; simpl in Hxy.
+   apply Nat.eq_mul_0 in Hxy.
+   destruct Hxy as [Hxy| Hxy]; [ easy | ].
+(* ah tiens, c'est pas symétrique ! *)
+...
+
+Theorem MQeq_trans : ∀ x y z : MQ, (x == y)%MQ → (y == z)%MQ → (x == z)%MQ.
+...
+
+Add Parametric Relation : _ MQeq
+ reflexivity proved by MQeq_refl
+ symmetry proved by MQeq_symm
+ transitivity proved by MQeq_trans
+ as MQeq_equiv_rel.
+
+Theorem fold_MQminus : ∀ x y, (x + - y == x - y)%MQ.
+Proof. easy. Qed.
