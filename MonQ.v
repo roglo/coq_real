@@ -154,3 +154,12 @@ destruct xs, ys.
 -destruct (lt_dec (yn * xd) (xn * yd)) as [H1| H1]; [ now left | ].
  now right; apply Nat.nlt_ge.
 Qed.
+
+Theorem MQadd_comm : ∀ x y, (x + y == y + x)%MQ.
+Proof.
+intros.
+unfold "==".
+destruct (zerop (MQnum (x + y))) as [H1| H1].
+-destruct (zerop (MQnum (y + x))) as [H2| H2]; [ easy | ].
+ unfold "+"%MQ, MQadd_num in H1, H2; simpl in H1, H2.
+...
