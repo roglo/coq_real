@@ -154,10 +154,19 @@ Definition freal_seq {r : radix} x n :=
 Theorem fold_Qminus : ∀ x y, (x + - y == x - y)%Q.
 Proof. easy. Qed.
 
+Theorem fold_Qdiv : ∀ x y, (x * / y == x / y)%Q.
+Proof. easy. Qed.
+
 Theorem Qplus_opp_l : ∀ x, (- x + x == 0)%Q.
 Proof. intros; rewrite Qplus_comm; apply Qplus_opp_r. Qed.
 
 Definition Q_of_nat n := Qmake (Z.of_nat n) 1.
+
+Theorem Qden_of_inv_Q_of_nat : ∀ n, Qden (/ Q_of_nat n) = Pos.of_nat n.
+Proof.
+intros n.
+unfold Q_of_nat.
+...
 
 Theorem uq_minus_up {r : radix} (rg := nat_ord_ring) : ∀ x p q,
   p < q
@@ -180,6 +189,16 @@ assert
   apply Nat2Z.inj in H.
   now apply Nat.pow_nonzero in H.
 }
+unfold Qmult in H; simpl in H.
+rewrite Pos.mul_1_r in H.
+rewrite <- Nat2Z.inj_mul in H.
+unfold freal_seq_num in H.
+rewrite summation_mul_distr_r in H; simpl in H.
+unfold Qdiv in H; simpl in H.
+unfold Qmult in H; simpl in H.
+rewrite Qden_of_inv_Q_of_nat in H.
+rewrite <- Nat2Pos.inj_mul in H.
+-idtac.
 ...
 
 Theorem freal_is_cauchy_seq {r : radix} : ∀ x, is_cauchy_seq (freal_seq x).
