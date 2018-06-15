@@ -157,6 +157,8 @@ Proof. easy. Qed.
 Theorem Qplus_opp_l : ∀ x, (- x + x == 0)%Q.
 Proof. intros; rewrite Qplus_comm; apply Qplus_opp_r. Qed.
 
+Definition Q_of_nat n := Qmake (Z.of_nat n) 1.
+
 Theorem uq_minus_up {r : radix} (rg := nat_ord_ring) : ∀ x p q,
   p < q
   → (freal_seq x q - freal_seq x p ==
@@ -168,7 +170,16 @@ remember (q - p) as s eqn:Hs.
 move s before q.
 assert
   (H : (freal_seq x p ==
-        freal_seq x p * (Z.of_nat (rad ^ s) # Pos.of_nat (rad ^ s)))%Q). {
+        freal_seq x p * Q_of_nat (rad ^ s) / Q_of_nat (rad ^ s))%Q). {
+  rewrite Qdiv_mult_l; [ easy | ].
+  intros H; unfold "==" in H.
+  simpl in H.
+  apply Z.eq_mul_0 in H.
+  destruct H as [H| H]; [ | easy ].
+  rewrite <- Nat2Z.inj_0 in H.
+  apply Nat2Z.inj in H.
+  now apply Nat.pow_nonzero in H.
+}
 ...
 
 Theorem freal_is_cauchy_seq {r : radix} : ∀ x, is_cauchy_seq (freal_seq x).
