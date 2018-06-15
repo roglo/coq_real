@@ -8,19 +8,6 @@ Arguments MQsign x%MQ : rename.
 Arguments MQnum x%MQ : rename.
 Arguments MQden x%MQ : rename.
 
-(*
-Require Import QArith.
-Set Printing All.
-Check 0%Q.
-About 0.
-
-Close Scope Q.
-About 0%Q.
-
-About "<="%Q.
-Print Qle.
-*)
-
 Definition MQadd_sign x y :=
   if MQsign x then
     if MQsign y then true
@@ -54,29 +41,19 @@ Definition MQopp x := MQmake (negb (MQsign x)) (MQnum x) (MQden x).
 Definition MQsub x y := MQadd x (MQopp y).
 Arguments MQopp x%MQ.
 
-(*
 Definition MQeq x y :=
-  if zerop (MQnum x) then MQnum y = 0
-  else if Bool.bool_dec (MQsign x) (MQsign y) then
-    MQnum x * MQden y = MQnum y * MQden x
-  else False.
-
-*)
-Definition MQzerop x := zerop (MQnum x).
-Definition MQnorm x := if zerop (MQnum x) then MQmake true 0 1 else x.
-Definition MQnorm_sign x := if zerop (MQnum x) then true else MQsign x.
-Arguments MQnorm_sign x%MQ.
-
-Definition MQeq x y :=
-  if MQnorm_sign x then
-    if MQnorm_sign y then MQnum x * MQden y = MQnum y * MQden x else False
+  if zerop (MQnum x) then
+    if zerop (MQnum y) then True else False
+  else if zerop (MQnum y) then False
+  else if MQsign x then
+    if MQsign y then MQnum x * MQden y = MQnum y * MQden x else False
   else
-    if MQnorm_sign y then False else MQnum x * MQden y = MQnum y * MQden x.
-(**)
+    if MQsign y then False else MQnum x * MQden y = MQnum y * MQden x.
 
 Definition MQabs x := MQmake true (MQnum x) (MQden x).
 Definition MQabs_lt x y := MQnum x * MQden y < MQnum y * MQden x.
 Definition MQabs_le x y := MQnum x * MQden y ≤ MQnum y * MQden x.
+
 Definition MQlt x y :=
   if MQsign x then
     if MQsign y then MQabs_lt x y else False
@@ -98,6 +75,66 @@ Notation "x ≤ y" := (MQle x y) : MQ_scope.
 Notation "x > y" := (¬ MQle x y) : MQ_scope.
 Notation "x ≥ y" := (¬ MQlt x y) : MQ_scope.
 
+Theorem MQeq_refl : ∀ x : MQ, (x == x)%MQ.
+Proof.
+intros.
+unfold "==".
+destruct (zerop (MQnum x)) as [H1| H1]; [ easy | ].
+now destruct (MQsign x).
+Qed.
+
+Theorem MQeq_symm : ∀ x y : MQ, (x == y)%MQ → (y == x)%MQ.
+Proof.
+intros x y Hxy.
+unfold "==" in Hxy |-*.
+destruct (zerop (MQnum x)) as [H1| H1].
+-now destruct (zerop (MQnum y)).
+-destruct (zerop (MQnum y)) as [H2| H2]; [ easy | ].
+ remember (MQsign x) as sx eqn:Hsx; symmetry in Hsx.
+ remember (MQsign y) as sy eqn:Hsy; symmetry in Hsy.
+ move sy before sx.
+ now destruct sx, sy.
+Qed.
+
+Theorem MQeq_trans : ∀ x y z : MQ, (x == y)%MQ → (y == z)%MQ → (x == z)%MQ.
+Proof.
+unfold "==".
+intros * Hxy Hyz.
+destruct (zerop (MQnum x)) as [H1| H1].
+-now destruct (zerop (MQnum y)).
+-destruct (zerop (MQnum y)) as [H2| H2]; [ easy | ].
+ +destruct (zerop (MQnum z)) as [H3| H3]; [ easy | ].
+  remember (MQsign x) as sx eqn:Hsx; symmetry in Hsx.
+  remember (MQsign y) as sy eqn:Hsy; symmetry in Hsy.
+  remember (MQsign z) as sz eqn:Hsz; symmetry in Hsz.
+  move sy before sx; move sz before sy.
+  move Hsz before Hsy.
+  move H3 before H2.
+  destruct sx.
+  *destruct sy; [ | easy ].
+   destruct sz; [ | easy ].
+   apply (Nat.mul_cancel_l _ _ (MQnum y)).
+  --now intros H; rewrite H in H2.
+  --rewrite Nat.mul_assoc, Nat.mul_shuffle0, Hyz.
+    rewrite Nat.mul_shuffle0, <- Nat.mul_assoc, Hxy.
+    rewrite Nat.mul_comm, Nat.mul_shuffle0.
+    symmetry; apply Nat.mul_assoc.
+  *destruct sy; [ easy | ].
+   destruct sz; [ easy | ].
+   apply (Nat.mul_cancel_l _ _ (MQnum y)).
+  --now intros H; rewrite H in H2.
+  --rewrite Nat.mul_assoc, Nat.mul_shuffle0, Hyz.
+    rewrite Nat.mul_shuffle0, <- Nat.mul_assoc, Hxy.
+    rewrite Nat.mul_comm, Nat.mul_shuffle0.
+    symmetry; apply Nat.mul_assoc.
+Qed.
+
+Add Parametric Relation : _ MQeq
+ reflexivity proved by MQeq_refl
+ symmetry proved by MQeq_symm
+ transitivity proved by MQeq_trans
+ as MQeq_equiv_rel.
+
 Theorem MQlt_le_dec : ∀ x y : MQ, {(x < y)%MQ} + {(y ≤ x)%MQ}.
 Proof.
 intros (xs, xn, xd) (ys, yn, yd).
@@ -110,62 +147,6 @@ destruct xs, ys.
 -destruct (lt_dec (yn * xd) (xn * yd)) as [H1| H1]; [ now left | ].
  now right; apply Nat.nlt_ge.
 Qed.
-
-Theorem MQeq_refl : ∀ x : MQ, (x == x)%MQ.
-Proof.
-intros.
-unfold "==".
-now destruct (MQnorm_sign x).
-(*
-intros.
-unfold "==".
-destruct (zerop (MQnum x)) as [| H1]; [ easy | ].
-now destruct (Bool.bool_dec (MQsign x) (MQsign x)).
-*)
-Qed.
-
-Theorem MQeq_symm : ∀ x y : MQ, (x == y)%MQ → (y == x)%MQ.
-Proof.
-intros x y Hxy.
-unfold "==" in Hxy |-*.
-now destruct (MQnorm_sign x), (MQnorm_sign y).
-(*
-intros x y Hxy.
-unfold "==" in Hxy |-*.
-destruct (zerop (MQnum x)) as [H1| H1].
--destruct (zerop (MQnum y)) as [| H2]; [ easy | ].
- rewrite Hxy in H2.
- now apply Nat.lt_irrefl in H2.
--destruct (zerop (MQnum y)) as [H2| H2].
- +destruct (Bool.bool_dec (MQsign x) (MQsign y)) as [H3| H3].
-  *rewrite H2 in Hxy; simpl in Hxy.
-   apply Nat.eq_mul_0 in Hxy.
-   destruct Hxy as [Hxy| Hxy]; [ easy | ].
-ah tiens, c'est pas symétrique ! *)
-Qed.
-
-Theorem MQeq_trans : ∀ x y z : MQ, (x == y)%MQ → (y == z)%MQ → (x == z)%MQ.
-Proof.
-unfold "==".
-intros * Hxy Hyz.
-unfold MQnorm_sign in Hxy, Hyz |-*.
-destruct (zerop (MQnum x)) as [H1| H1].
--destruct (zerop (MQnum y)) as [H2| H2].
- +destruct (zerop (MQnum z)) as [H3| H3]; [ now rewrite H1, H3 | ].
-  rewrite H1, H2 in *; simpl in *.
-  remember (MQsign z) as sz eqn:Hsz; symmetry in Hsz.
-  destruct sz; [ | easy ].
-  symmetry in Hyz.
-  apply Nat.eq_mul_0 in Hyz.
-  destruct Hyz as [Hyz| Hyz]; [ now rewrite Hyz | ].
-(* c'est pas transitif *)
-...
-
-Add Parametric Relation : _ MQeq
- reflexivity proved by MQeq_refl
- symmetry proved by MQeq_symm
- transitivity proved by MQeq_trans
- as MQeq_equiv_rel.
 
 Theorem fold_MQminus : ∀ x y, (x + - y == x - y)%MQ.
 Proof. easy. Qed.
