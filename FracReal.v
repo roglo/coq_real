@@ -143,9 +143,13 @@ Definition is_cauchy_seq u :=
   ∀ ε, ε > 0 → ∃ N, ∀ p q, p ≥ N ∧ q ≥ N → Qabs (u p - u q) < ε.
 Close Scope Q.
 
-Definition freal_seq {r : radix} (rg := nat_ord_ring) x n :=
-  Qmake (Z.of_nat (Σ (i = 0, n), fd2n x i * rad ^ (n - i)))
-    (Pos.of_nat (rad ^ S n)).
+Definition freal_seq_num {r : radix} (rg := nat_ord_ring) x n :=
+  Σ (i = 0, n), fd2n x i * rad ^ (n - i).
+
+Definition freal_seq_den {r : radix} n := rad ^ S n.
+
+Definition freal_seq {r : radix} x n :=
+  Qmake (Z.of_nat (freal_seq_num x n)) (Pos.of_nat (freal_seq_den n)).
 
 Theorem fold_Qminus : ∀ x y, (x + - y == x - y)%Q.
 Proof. easy. Qed.
@@ -160,6 +164,11 @@ Theorem uq_minus_up {r : radix} (rg := nat_ord_ring) : ∀ x p q,
       Pos.of_nat (rad ^ S q))%Q.
 Proof.
 intros * Hpq.
+remember (q - p) as s eqn:Hs.
+move s before q.
+assert
+  (H : (freal_seq x p ==
+        freal_seq x p * (Z.of_nat (rad ^ s) # Pos.of_nat (rad ^ s)))%Q). {
 ...
 
 Theorem freal_is_cauchy_seq {r : radix} : ∀ x, is_cauchy_seq (freal_seq x).
