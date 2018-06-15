@@ -54,13 +54,14 @@ Definition MQopp x := MQmake (negb (MQsign x)) (MQnum x) (MQden x).
 Definition MQsub x y := MQadd x (MQopp y).
 Arguments MQopp x%MQ.
 
+(*
 Definition MQeq x y :=
   if zerop (MQnum x) then MQnum y = 0
   else if Bool.bool_dec (MQsign x) (MQsign y) then
     MQnum x * MQden y = MQnum y * MQden x
   else False.
 
-(*
+*)
 Definition MQzerop x := zerop (MQnum x).
 Definition MQnorm x := if zerop (MQnum x) then MQmake true 0 1 else x.
 Definition MQnorm_sign x := if zerop (MQnum x) then true else MQsign x.
@@ -71,7 +72,7 @@ Definition MQeq x y :=
     if MQnorm_sign y then MQnum x * MQden y = MQnum y * MQden x else False
   else
     if MQnorm_sign y then False else MQnum x * MQden y = MQnum y * MQden x.
-*)
+(**)
 
 Definition MQabs x := MQmake true (MQnum x) (MQden x).
 Definition MQabs_lt x y := MQnum x * MQden y < MQnum y * MQden x.
@@ -114,12 +115,21 @@ Theorem MQeq_refl : ∀ x : MQ, (x == x)%MQ.
 Proof.
 intros.
 unfold "==".
+now destruct (MQnorm_sign x).
+(*
+intros.
+unfold "==".
 destruct (zerop (MQnum x)) as [| H1]; [ easy | ].
 now destruct (Bool.bool_dec (MQsign x) (MQsign x)).
+*)
 Qed.
 
 Theorem MQeq_symm : ∀ x y : MQ, (x == y)%MQ → (y == x)%MQ.
 Proof.
+intros x y Hxy.
+unfold "==" in Hxy |-*.
+now destruct (MQnorm_sign x), (MQnorm_sign y).
+(*
 intros x y Hxy.
 unfold "==" in Hxy |-*.
 destruct (zerop (MQnum x)) as [H1| H1].
@@ -131,10 +141,24 @@ destruct (zerop (MQnum x)) as [H1| H1].
   *rewrite H2 in Hxy; simpl in Hxy.
    apply Nat.eq_mul_0 in Hxy.
    destruct Hxy as [Hxy| Hxy]; [ easy | ].
-(* ah tiens, c'est pas symétrique ! *)
-...
+ah tiens, c'est pas symétrique ! *)
+Qed.
 
 Theorem MQeq_trans : ∀ x y z : MQ, (x == y)%MQ → (y == z)%MQ → (x == z)%MQ.
+Proof.
+unfold "==".
+intros * Hxy Hyz.
+unfold MQnorm_sign in Hxy, Hyz |-*.
+destruct (zerop (MQnum x)) as [H1| H1].
+-destruct (zerop (MQnum y)) as [H2| H2].
+ +destruct (zerop (MQnum z)) as [H3| H3]; [ now rewrite H1, H3 | ].
+  rewrite H1, H2 in *; simpl in *.
+  remember (MQsign z) as sz eqn:Hsz; symmetry in Hsz.
+  destruct sz; [ | easy ].
+  symmetry in Hyz.
+  apply Nat.eq_mul_0 in Hyz.
+  destruct Hyz as [Hyz| Hyz]; [ now rewrite Hyz | ].
+(* c'est pas transitif *)
 ...
 
 Add Parametric Relation : _ MQeq
