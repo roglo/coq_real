@@ -105,3 +105,29 @@ unfold nd; simpl.
 do 4 rewrite Nat.sub_0_r.
 ring.
 Qed.
+
+      (* --------- *)
+
+Delimit Scope MQ_scope with MQ.
+
+Record MQ := MQmake { MQsign : bool; MQpos : PQ }.
+Arguments MQsign x%MQ : rename.
+Arguments MQpos x%MQ : rename.
+
+Definition MQadd x y :=
+  if Bool.eqb (MQsign x) (MQsign y) then
+    MQmake (MQsign x) (PQadd (MQpos x) (MQpos y))
+  else if MQsign x then
+...
+
+    MQmake (MQsign x) (PQadd (MQpos x) (MQpos y)).
+
+...
+
+  else if MQsign x then Nat.leb (nd y x) (nd x y)
+  else Nat.leb (nd x y) (nd y x).
+
+Definition diff x y := max x y - min x y.
+Definition MQadd_num x y :=
+  if Bool.eqb (MQsign x) (MQsign y) then nd x y + nd y x
+  else diff (nd y x) (nd x y).
