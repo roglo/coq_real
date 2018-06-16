@@ -179,7 +179,11 @@ destruct z as [| p| p].
  subst n; symmetry.
  apply Pos2Nat.id.
 -exfalso.
-...
+ specialize (Pos2Z.neg_is_neg p) as H1.
+ rewrite <- Hz in H1.
+ apply Z.nle_gt in H1; apply H1; clear H1.
+ apply Nat2Z.is_nonneg.
+Qed.
 
 Theorem uq_minus_up {r : radix} (rg := nat_ord_ring) : ∀ x p q,
   p < q
