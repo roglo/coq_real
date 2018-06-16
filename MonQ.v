@@ -1,4 +1,6 @@
 (* Implementation of rationals using only nat *)
+(* Not convincing... e.g. addition associativity is complicated to prove,
+   although it was simple in QArith. *)
 
 Require Import Utf8 Arith.
 
