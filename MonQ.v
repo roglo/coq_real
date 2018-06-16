@@ -229,6 +229,14 @@ rewrite Nat.min_l; [ | easy ].
 easy.
 Qed.
 
+Theorem diff_id : ∀ x, diff x x = 0.
+Proof.
+intros.
+unfold diff.
+rewrite Nat.max_id, Nat.min_id.
+apply Nat.sub_diag.
+Qed.
+
 Theorem MQadd_assoc : ∀ x y z, ((x + y) + z == x + (y + z))%MQ.
 Proof.
 intros.
@@ -290,19 +298,22 @@ destruct sx, sy, sz; simpl.
  do 4 rewrite fold_nd.
  do 6 rewrite Nat.mul_assoc.
  do 2 rewrite fold_nd.
- remember (nd z y <=? nd y z) as b eqn:Hb; symmetry in Hb.
- +destruct b.
-  *apply Nat.leb_le in Hb.
-   destruct (zerop
-     (diff (nd z x * MQden y) ((nd x y + nd y x) * MQden z) +
-      (nd x y * MQden z + diff (nd z y) (nd y z) * MQden x)))
-     as [H1| H1]; [ easy | ].
-   specialize (diff_max_r _ _ Hb) as H.
-   rewrite H in H1; clear H.
-   destruct (zerop (diff (nd z x * MQden y) ((nd x y + nd y x) * MQden z)))
-     as [H2| H2].
-  --rewrite H2 in H1; simpl in H1.
-    apply eq_diff_0 in H2.
+ destruct (zerop
+   (diff (nd z x * MQden y) ((nd x y + nd y x) * MQden z) +
+    (if if nd z y <=? nd y z then true else false
+     then nd x y * MQden z + diff (nd z y) (nd y z) * MQden x
+     else diff (diff (nd z y) (nd y z) * MQden x) (nd x y * MQden z))))
+   as [H1| H1]; [ easy | ].
+ destruct (zerop (diff (nd z x * MQden y) ((nd x y + nd y x) * MQden z)))
+   as [H2| H2].
+ +apply eq_diff_0 in H2.
+  rewrite <- H2 in H1.
+  rewrite diff_id, Nat.add_0_l in H1.
+  remember (nd z y <=? nd y z) as b eqn:Hb; symmetry in Hb.
+  *destruct b.
+  --apply Nat.leb_le in Hb.
+    specialize (diff_max_r _ _ Hb) as H.
+    rewrite H in H1; clear H.
     rewrite Nat.mul_sub_distr_r in H1.
     remember (nd z y * MQden x) as t eqn:Ht.
     rewrite <- fold_nd, Nat.mul_shuffle0, fold_nd in Ht; subst t.
@@ -317,4 +328,7 @@ destruct sx, sy, sz; simpl.
     rewrite <- fold_nd, Nat.mul_shuffle0, fold_nd in Ht; subst t.
     remember (nd y x * MQden z) as t eqn:Ht.
     rewrite <- fold_nd, Nat.mul_shuffle0, fold_nd in Ht; subst t.
+    rewrite Nat.add_comm in H2.
+    apply plus_minus in H2.
+    rewrite <- Nat.mul_sub_distr_r in H2.
 ...
