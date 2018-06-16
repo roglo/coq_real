@@ -8,19 +8,16 @@ Arguments MQsign x%MQ : rename.
 Arguments MQnum x%MQ : rename.
 Arguments MQden x%MQ : rename.
 
+Definition nd x y := MQnum x * MQden y.
+
 Definition MQadd_sign x y :=
   if Bool.eqb (MQsign x) (MQsign y) then MQsign x
-  else if MQsign x then
-    Nat.leb (MQnum y * MQden x) (MQnum x * MQden y)
-  else
-    Nat.leb (MQnum x * MQden y) (MQnum y * MQden x).
+  else if MQsign x then Nat.leb (nd y x) (nd x y)
+  else Nat.leb (nd x y) (nd y x).
 
 Definition MQadd_num x y :=
-  if Bool.eqb (MQsign x) (MQsign y) then
-    MQnum x * MQden y + MQnum y * MQden x
-  else
-    max (MQnum y * MQden x) (MQnum x * MQden y) -
-    min (MQnum y * MQden x) (MQnum x * MQden y).
+  if Bool.eqb (MQsign x) (MQsign y) then nd x y + nd y x
+  else max (nd y x) (nd x y) - min (nd y x) (nd x y).
 
 Definition MQadd_den x y := MQden x * MQden y.
 
@@ -43,13 +40,12 @@ Definition MQeq x y :=
   if zerop (MQnum x + MQnum y) then True
   else if zerop (MQnum x) then False
   else if zerop (MQnum y) then False
-  else if Bool.eqb (MQsign x) (MQsign y) then
-    MQnum x * MQden y = MQnum y * MQden x
+  else if Bool.eqb (MQsign x) (MQsign y) then nd x y = nd y x
   else False.
 
 Definition MQabs x := MQmake true (MQnum x) (MQden x).
-Definition MQabs_lt x y := MQnum x * MQden y < MQnum y * MQden x.
-Definition MQabs_le x y := MQnum x * MQden y ≤ MQnum y * MQden x.
+Definition MQabs_lt x y := nd x y < nd y x.
+Definition MQabs_le x y := nd x y ≤ nd y x.
 
 Definition MQlt x y :=
   if MQsign x then
@@ -135,7 +131,8 @@ destruct (zerop (MQnum x)) as [Hx| Hx].
     move Hxy at bottom; move Hyz at bottom.
     apply (Nat.mul_cancel_l _ _ (MQnum y)).
    ++now intros H; rewrite H in Hy.
-   ++rewrite Nat.mul_assoc, Nat.mul_shuffle0, Hyz.
+   ++unfold nd in Hxy, Hyz |-*.
+     rewrite Nat.mul_assoc, Nat.mul_shuffle0, Hyz.
      rewrite Nat.mul_shuffle0, <- Nat.mul_assoc, Hxy.
      rewrite Nat.mul_comm, Nat.mul_shuffle0.
      symmetry; apply Nat.mul_assoc.
@@ -193,12 +190,15 @@ Proof.
 intros.
 unfold "==".
 destruct (zerop (MQnum (x + y) + MQnum (y + x))) as [| H1]; [ easy | ].
-rewrite MQnum_add_comm in H1 |-*.
+unfold nd; rewrite MQnum_add_comm in H1 |-*.
 rewrite MQden_add_comm.
 destruct (zerop (MQnum (y + x))) as [H2| H2]; [ now rewrite H2 in H1 | ].
 rewrite MQsign_add_comm.
 now rewrite Bool.eqb_reflx.
 Qed.
+
+Theorem fold_nd x y : MQnum x * MQden y = nd x y.
+Proof. easy. Qed.
 
 Theorem MQadd_assoc : ∀ x y z, ((x + y) + z == x + (y + z))%MQ.
 Proof.
@@ -213,4 +213,19 @@ remember (MQsign y) as sy eqn:Hsy; symmetry in Hsy.
 remember (MQsign z) as sz eqn:Hsz; symmetry in Hsz.
 move sy before sx; move sz before sy.
 destruct sx, sy, sz; simpl.
+-unfold nd; simpl.
+ do 4 rewrite fold_nd.
+ do 6 rewrite Nat.mul_assoc.
+ do 2 rewrite fold_nd.
+ destruct (zerop
+   ((nd x y + nd y x) * MQden z + nd z x * MQden y +
+    (nd x y * MQden z + (nd y z + nd z y) * MQden x))) as [| H1]; [ easy | ].
+ destruct (zerop ((nd x y + nd y x) * MQden z + nd z x * MQden y)) as [H2| H2].
+ +rewrite H2 in H1; simpl in H1.
+  apply Nat.eq_add_0 in H2.
+  destruct H2 as (H2, H4).
+  rewrite Nat.mul_add_distr_r in H2.
+  apply Nat.eq_add_0 in H2.
+  destruct H2 as (H2, H3).
+  rewrite H2 in H1; simpl in H1.
 ...
