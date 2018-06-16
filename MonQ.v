@@ -1,6 +1,4 @@
-(* Implementation of rationals using only nat *)
-(* Not convincing... e.g. addition associativity is complicated to prove,
-   although it was simple in QArith. *)
+(* Implementation of positive rationals using only nat *)
 
 Require Import Utf8 Arith.
 
@@ -95,96 +93,15 @@ unfold nd; rewrite PQnum_add_comm.
 now rewrite PQden1_add_comm.
 Qed.
 
-Theorem fold_nd x y : PQnum x * S (PQden1 y) = nd x y.
-Proof. easy. Qed.
-
 Theorem PQadd_assoc : ∀ x y z, ((x + y) + z == x + (y + z))%PQ.
 Proof.
 intros.
 unfold "==".
-...
-
 unfold nd; simpl.
+unfold PQadd_num, PQadd_den1.
 unfold nd; simpl.
-unfold PQadd_num; simpl.
-do 4 rewrite fold_nd.
- do 6 rewrite Nat.mul_assoc.
- do 2 rewrite fold_nd.
- destruct (zerop
-   ((nd x y + nd y x) * PQden z + nd z x * PQden y +
-    (nd x y * PQden z + (nd y z + nd z y) * PQden x))) as [| H1]; [ easy | ].
- destruct (zerop ((nd x y + nd y x) * PQden z + nd z x * PQden y)) as [H2| H2].
- +rewrite H2 in H1; simpl in H1.
-  apply Nat.eq_add_0 in H2.
-  destruct H2 as (H2, H4).
-  rewrite Nat.mul_add_distr_r in H2.
-  apply Nat.eq_add_0 in H2.
-  destruct H2 as (H2, H3).
-  rewrite H2 in H1; simpl in H1.
-  apply Nat.eq_mul_0 in H2.
-  apply Nat.eq_mul_0 in H3.
-  apply Nat.eq_mul_0 in H4.
-  rewrite Nat.mul_add_distr_r in H1.
-  unfold nd in H1.
-  destruct H3 as [H3| H3].
-  *rewrite Nat.mul_shuffle0, fold_nd, H3 in H1; simpl in H1.
-   destruct H4 as [H4| H4].
-  --now rewrite Nat.mul_shuffle0, fold_nd, H4 in H1.
-  --now rewrite H4, Nat.mul_0_r in H1.
-  *rewrite H3, Nat.mul_0_r in H1; simpl in H1.
-   destruct H4 as [H4| H4].
-  --now rewrite Nat.mul_shuffle0, fold_nd, H4 in H1.
-  --now rewrite H4, Nat.mul_0_r in H1.
- +destruct (zerop (nd x y * PQden z + (nd y z + nd z y) * PQden x))
-     as [H3| H3].
-  *apply Nat.eq_add_0 in H3.
-   destruct H3 as (H3, H4).
-   rewrite Nat.mul_add_distr_r in H2.
-   rewrite H3 in H2; simpl in H2.
-   unfold nd in H4.
-   rewrite Nat.mul_add_distr_r, Nat.mul_shuffle0, fold_nd in H4.
-   rewrite Nat.mul_shuffle0, fold_nd in H4.
-   now rewrite H4 in H2.
-  *f_equal; f_equal; f_equal.
-   do 2 rewrite Nat.mul_add_distr_r.
-   rewrite <- Nat.add_assoc; f_equal; f_equal.
-  --now rewrite <- fold_nd, Nat.mul_shuffle0, fold_nd.
-  --now rewrite <- fold_nd, Nat.mul_shuffle0, fold_nd.
--unfold nd; simpl.
- do 4 rewrite fold_nd.
- do 6 rewrite Nat.mul_assoc.
- do 2 rewrite fold_nd.
- destruct (zerop
-   (diff (nd z x * PQden y) ((nd x y + nd y x) * PQden z) +
-    (if if nd z y <=? nd y z then true else false
-     then nd x y * PQden z + diff (nd z y) (nd y z) * PQden x
-     else diff (diff (nd z y) (nd y z) * PQden x) (nd x y * PQden z))))
-   as [H1| H1]; [ easy | ].
- destruct (zerop (diff (nd z x * PQden y) ((nd x y + nd y x) * PQden z)))
-   as [H2| H2].
- +apply eq_diff_0 in H2.
-  rewrite <- H2 in H1.
-  rewrite diff_id, Nat.add_0_l in H1.
-  remember (nd z y <=? nd y z) as b eqn:Hb; symmetry in Hb.
-  *destruct b.
-  --apply Nat.leb_le in Hb.
-    specialize (diff_max_r _ _ Hb) as H.
-    rewrite H in H1; clear H.
-    rewrite Nat.mul_sub_distr_r in H1.
-    remember (nd z y * PQden x) as t eqn:Ht.
-    rewrite <- fold_nd, Nat.mul_shuffle0, fold_nd in Ht; subst t.
-    rewrite H2, Nat.mul_add_distr_r in H1.
-    rewrite Nat.sub_add_distr in H1.
-    rewrite Nat_sub_sub_swap in H1.
-    remember (nd y z * PQden x) as t eqn:Ht.
-    rewrite <- fold_nd, Nat.mul_shuffle0, fold_nd in Ht; subst t.
-    rewrite Nat.sub_diag, Nat.sub_0_l, Nat.add_0_r in H1.
-    rewrite Nat.mul_add_distr_r in H2.
-    remember (nd z x * PQden y) as t eqn:Ht.
-    rewrite <- fold_nd, Nat.mul_shuffle0, fold_nd in Ht; subst t.
-    remember (nd y x * PQden z) as t eqn:Ht.
-    rewrite <- fold_nd, Nat.mul_shuffle0, fold_nd in Ht; subst t.
-    rewrite Nat.add_comm in H2.
-    apply plus_minus in H2.
-    rewrite <- Nat.mul_sub_distr_r in H2.
-...
+unfold PQadd_num, PQadd_den1.
+unfold nd; simpl.
+do 4 rewrite Nat.sub_0_r.
+ring.
+Qed.
