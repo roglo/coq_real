@@ -1,5 +1,8 @@
-Require Import Utf8.
-Require Import Arith.
+(* Implementation of rationals using only nat *)
+
+Require Import Utf8 Arith.
+
+Require Import Misc.
 
 Delimit Scope MQ_scope with MQ.
 
@@ -15,9 +18,10 @@ Definition MQadd_sign x y :=
   else if MQsign x then Nat.leb (nd y x) (nd x y)
   else Nat.leb (nd x y) (nd y x).
 
+Definition diff x y := max x y - min x y.
 Definition MQadd_num x y :=
   if Bool.eqb (MQsign x) (MQsign y) then nd x y + nd y x
-  else max (nd y x) (nd x y) - min (nd y x) (nd x y).
+  else diff (nd y x) (nd x y).
 
 Definition MQadd_den x y := MQden x * MQden y.
 
@@ -175,6 +179,7 @@ intros.
 unfold MQadd, MQadd_num; simpl.
 rewrite Bool_eqb_comm.
 rewrite Nat.add_comm.
+unfold diff.
 now rewrite Nat.max_comm, Nat.min_comm.
 Qed.
 
@@ -199,6 +204,30 @@ Qed.
 
 Theorem fold_nd x y : MQnum x * MQden y = nd x y.
 Proof. easy. Qed.
+
+Theorem eq_diff_0 : ∀ x y, diff x y = 0 → x = y.
+Proof.
+intros * H.
+unfold diff in H.
+apply Nat.sub_0_le in H.
+destruct (le_dec y x) as [H1| H1].
+-rewrite Nat.max_l in H; [ | easy ].
+ rewrite Nat.min_r in H; [ | easy ].
+ now apply le_antisym.
+-apply Nat.nle_gt in H1.
+ rewrite Nat.max_r in H; [ | now apply Nat.lt_le_incl ].
+ rewrite Nat.min_l in H; [ | now apply Nat.lt_le_incl ].
+ now apply Nat.nle_gt in H1.
+Qed.
+
+Theorem diff_max_r : ∀ x y, x ≤ y → diff x y = y - x.
+Proof.
+intros * H.
+unfold diff.
+rewrite Nat.max_r; [ | easy ].
+rewrite Nat.min_l; [ | easy ].
+easy.
+Qed.
 
 Theorem MQadd_assoc : ∀ x y z, ((x + y) + z == x + (y + z))%MQ.
 Proof.
@@ -228,4 +257,64 @@ destruct sx, sy, sz; simpl.
   apply Nat.eq_add_0 in H2.
   destruct H2 as (H2, H3).
   rewrite H2 in H1; simpl in H1.
+  apply Nat.eq_mul_0 in H2.
+  apply Nat.eq_mul_0 in H3.
+  apply Nat.eq_mul_0 in H4.
+  rewrite Nat.mul_add_distr_r in H1.
+  unfold nd in H1.
+  destruct H3 as [H3| H3].
+  *rewrite Nat.mul_shuffle0, fold_nd, H3 in H1; simpl in H1.
+   destruct H4 as [H4| H4].
+  --now rewrite Nat.mul_shuffle0, fold_nd, H4 in H1.
+  --now rewrite H4, Nat.mul_0_r in H1.
+  *rewrite H3, Nat.mul_0_r in H1; simpl in H1.
+   destruct H4 as [H4| H4].
+  --now rewrite Nat.mul_shuffle0, fold_nd, H4 in H1.
+  --now rewrite H4, Nat.mul_0_r in H1.
+ +destruct (zerop (nd x y * MQden z + (nd y z + nd z y) * MQden x))
+     as [H3| H3].
+  *apply Nat.eq_add_0 in H3.
+   destruct H3 as (H3, H4).
+   rewrite Nat.mul_add_distr_r in H2.
+   rewrite H3 in H2; simpl in H2.
+   unfold nd in H4.
+   rewrite Nat.mul_add_distr_r, Nat.mul_shuffle0, fold_nd in H4.
+   rewrite Nat.mul_shuffle0, fold_nd in H4.
+   now rewrite H4 in H2.
+  *f_equal; f_equal; f_equal.
+   do 2 rewrite Nat.mul_add_distr_r.
+   rewrite <- Nat.add_assoc; f_equal; f_equal.
+  --now rewrite <- fold_nd, Nat.mul_shuffle0, fold_nd.
+  --now rewrite <- fold_nd, Nat.mul_shuffle0, fold_nd.
+-unfold nd; simpl.
+ do 4 rewrite fold_nd.
+ do 6 rewrite Nat.mul_assoc.
+ do 2 rewrite fold_nd.
+ remember (nd z y <=? nd y z) as b eqn:Hb; symmetry in Hb.
+ +destruct b.
+  *apply Nat.leb_le in Hb.
+   destruct (zerop
+     (diff (nd z x * MQden y) ((nd x y + nd y x) * MQden z) +
+      (nd x y * MQden z + diff (nd z y) (nd y z) * MQden x)))
+     as [H1| H1]; [ easy | ].
+   specialize (diff_max_r _ _ Hb) as H.
+   rewrite H in H1; clear H.
+   destruct (zerop (diff (nd z x * MQden y) ((nd x y + nd y x) * MQden z)))
+     as [H2| H2].
+  --rewrite H2 in H1; simpl in H1.
+    apply eq_diff_0 in H2.
+    rewrite Nat.mul_sub_distr_r in H1.
+    remember (nd z y * MQden x) as t eqn:Ht.
+    rewrite <- fold_nd, Nat.mul_shuffle0, fold_nd in Ht; subst t.
+    rewrite H2, Nat.mul_add_distr_r in H1.
+    rewrite Nat.sub_add_distr in H1.
+    rewrite Nat_sub_sub_swap in H1.
+    remember (nd y z * MQden x) as t eqn:Ht.
+    rewrite <- fold_nd, Nat.mul_shuffle0, fold_nd in Ht; subst t.
+    rewrite Nat.sub_diag, Nat.sub_0_l, Nat.add_0_r in H1.
+    rewrite Nat.mul_add_distr_r in H2.
+    remember (nd z x * MQden y) as t eqn:Ht.
+    rewrite <- fold_nd, Nat.mul_shuffle0, fold_nd in Ht; subst t.
+    remember (nd y x * MQden z) as t eqn:Ht.
+    rewrite <- fold_nd, Nat.mul_shuffle0, fold_nd in Ht; subst t.
 ...
