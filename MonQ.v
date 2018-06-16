@@ -9,28 +9,19 @@ Arguments MQnum x%MQ : rename.
 Arguments MQden x%MQ : rename.
 
 Definition MQadd_sign x y :=
-  if MQsign x then
-    if MQsign y then true
-    else if lt_dec (MQnum x * MQden y) (MQnum y * MQden x) then false
-    else true
-  else if MQsign y then
-    if lt_dec (MQnum x * MQden y) (MQnum y * MQden x) then true
-    else false
-   else false.
+  if Bool.eqb (MQsign x) (MQsign y) then MQsign x
+  else if MQsign x then
+    Nat.leb (MQnum y * MQden x) (MQnum x * MQden y)
+  else
+    Nat.leb (MQnum x * MQden y) (MQnum y * MQden x).
 
 Definition MQadd_num x y :=
-  if MQsign x then
-    if MQsign y then MQnum x * MQden y + MQnum y * MQden x
-    else if lt_dec (MQnum x * MQden y) (MQnum y * MQden x) then
-      MQnum y * MQden x - MQnum x * MQden y
-    else
-      MQnum x * MQden y - MQnum y * MQden x
-  else if MQsign y then
-    if lt_dec (MQnum x * MQden y) (MQnum y * MQden x) then
-      MQnum y * MQden x - MQnum x * MQden y
-    else
-      MQnum x * MQden y - MQnum y * MQden x
-  else MQnum x * MQden y + MQnum y * MQden x.
+  if Bool.eqb (MQsign x) (MQsign y) then
+    MQnum x * MQden y + MQnum y * MQden x
+  else
+    max (MQnum y * MQden x) (MQnum x * MQden y) -
+    min (MQnum y * MQden x) (MQnum x * MQden y).
+
 Definition MQadd_den x y := MQden x * MQden y.
 
 Definition MQadd x y :=
@@ -49,13 +40,12 @@ Arguments MQopp x%MQ.
    otherwise ∀ xn xd yn yd, xn*yd = xd*yn
  *)
 Definition MQeq x y :=
-  if zerop (MQnum x) then
-    if zerop (MQnum y) then True else False
+  if zerop (MQnum x + MQnum y) then True
+  else if zerop (MQnum x) then False
   else if zerop (MQnum y) then False
-  else if MQsign x then
-    if MQsign y then MQnum x * MQden y = MQnum y * MQden x else False
-  else
-    if MQsign y then False else MQnum x * MQden y = MQnum y * MQden x.
+  else if Bool.eqb (MQsign x) (MQsign y) then
+    MQnum x * MQden y = MQnum y * MQden x
+  else False.
 
 Definition MQabs x := MQmake true (MQnum x) (MQden x).
 Definition MQabs_lt x y := MQnum x * MQden y < MQnum y * MQden x.
@@ -86,54 +76,69 @@ Theorem MQeq_refl : ∀ x : MQ, (x == x)%MQ.
 Proof.
 intros.
 unfold "==".
-destruct (zerop (MQnum x)) as [H1| H1]; [ easy | ].
-now destruct (MQsign x).
+destruct (zerop (MQnum x + MQnum x)) as [| H1]; [ easy | ].
+destruct (zerop (MQnum x)) as [H2| H2].
+-now rewrite H2 in H1.
+-now rewrite Bool.eqb_reflx.
+Qed.
+
+Theorem Bool_eqb_comm : ∀ b1 b2, Bool.eqb b1 b2 = Bool.eqb b2 b1.
+Proof.
+intros.
+unfold Bool.eqb.
+now destruct b1, b2.
 Qed.
 
 Theorem MQeq_symm : ∀ x y : MQ, (x == y)%MQ → (y == x)%MQ.
 Proof.
 intros x y Hxy.
 unfold "==" in Hxy |-*.
-destruct (zerop (MQnum x)) as [H1| H1].
--now destruct (zerop (MQnum y)).
--destruct (zerop (MQnum y)) as [H2| H2]; [ easy | ].
- remember (MQsign x) as sx eqn:Hsx; symmetry in Hsx.
- remember (MQsign y) as sy eqn:Hsy; symmetry in Hsy.
- move sy before sx.
- now destruct sx, sy.
+rewrite Nat.add_comm.
+destruct (zerop (MQnum x + MQnum y)) as [| H1]; [ easy | ].
+destruct (zerop (MQnum x)) as [| H2]; [ easy | ].
+destruct (zerop (MQnum y)) as [H3| H3]; [ easy | ].
+rewrite Bool_eqb_comm.
+now destruct (Bool.eqb (MQsign x) (MQsign y)).
 Qed.
 
 Theorem MQeq_trans : ∀ x y z : MQ, (x == y)%MQ → (y == z)%MQ → (x == z)%MQ.
 Proof.
 unfold "==".
 intros * Hxy Hyz.
-destruct (zerop (MQnum x)) as [H1| H1].
--now destruct (zerop (MQnum y)).
--destruct (zerop (MQnum y)) as [H2| H2]; [ easy | ].
- +destruct (zerop (MQnum z)) as [H3| H3]; [ easy | ].
-  remember (MQsign x) as sx eqn:Hsx; symmetry in Hsx.
-  remember (MQsign y) as sy eqn:Hsy; symmetry in Hsy.
-  remember (MQsign z) as sz eqn:Hsz; symmetry in Hsz.
-  move sy before sx; move sz before sy.
-  move Hsz before Hsy.
-  move H3 before H2.
-  destruct sx.
-  *destruct sy; [ | easy ].
-   destruct sz; [ | easy ].
-   apply (Nat.mul_cancel_l _ _ (MQnum y)).
-  --now intros H; rewrite H in H2.
-  --rewrite Nat.mul_assoc, Nat.mul_shuffle0, Hyz.
-    rewrite Nat.mul_shuffle0, <- Nat.mul_assoc, Hxy.
-    rewrite Nat.mul_comm, Nat.mul_shuffle0.
-    symmetry; apply Nat.mul_assoc.
-  *destruct sy; [ easy | ].
-   destruct sz; [ easy | ].
-   apply (Nat.mul_cancel_l _ _ (MQnum y)).
-  --now intros H; rewrite H in H2.
-  --rewrite Nat.mul_assoc, Nat.mul_shuffle0, Hyz.
-    rewrite Nat.mul_shuffle0, <- Nat.mul_assoc, Hxy.
-    rewrite Nat.mul_comm, Nat.mul_shuffle0.
-    symmetry; apply Nat.mul_assoc.
+destruct (zerop (MQnum x + MQnum z)) as [| Hxz]; [ easy | ].
+destruct (zerop (MQnum x)) as [Hx| Hx].
+-rewrite Hx in Hxy, Hxz; simpl in Hxy, Hxz.
+ destruct (zerop (MQnum y)) as [Hy |]; [ | easy ].
+ destruct (zerop (MQnum y + MQnum z)) as [Hz| ]; [ | easy ].
+ rewrite Hy in Hz; simpl in Hz.
+ now rewrite Hz in Hxz.
+-destruct (zerop (MQnum z)) as [Hz| Hz].
+ +rewrite Hz, Nat.add_0_r in Hyz, Hxz.
+  destruct (zerop (MQnum y)) as [Hy| ]; [ | easy ].
+  rewrite Hy, Nat.add_0_r in Hxy.
+  destruct (zerop (MQnum x)) as [H| ]; [ | easy ].
+  now rewrite H in Hx.
+ +destruct (zerop (MQnum x + MQnum y)) as [Hzxy| Hzxy].
+  *now destruct (MQnum x).
+  *destruct (zerop (MQnum y)) as [| Hy]; [ easy | ].
+   destruct (zerop (MQnum y + MQnum z)) as [Hzyz| Hzyz].
+  --apply Nat.eq_add_0 in Hzyz.
+    destruct Hzyz as (H1, H2).
+    now rewrite H1 in Hy.
+  --remember (Bool.eqb (MQsign x) (MQsign y)) as b eqn:Hb.
+    symmetry in Hb.
+    destruct b; [ | easy ].
+    apply -> Bool.eqb_true_iff in Hb; rewrite Hb; clear Hb.
+    remember (Bool.eqb (MQsign y) (MQsign z)) as b eqn:Hb.
+    symmetry in Hb.
+    destruct b; [ clear Hb | easy ].
+    move Hxy at bottom; move Hyz at bottom.
+    apply (Nat.mul_cancel_l _ _ (MQnum y)).
+   ++now intros H; rewrite H in Hy.
+   ++rewrite Nat.mul_assoc, Nat.mul_shuffle0, Hyz.
+     rewrite Nat.mul_shuffle0, <- Nat.mul_assoc, Hxy.
+     rewrite Nat.mul_comm, Nat.mul_shuffle0.
+     symmetry; apply Nat.mul_assoc.
 Qed.
 
 Add Parametric Relation : _ MQeq
@@ -155,11 +160,57 @@ destruct xs, ys.
  now right; apply Nat.nlt_ge.
 Qed.
 
+Theorem MQsign_add_comm : ∀ x y, MQsign (x + y) = MQsign (y + x).
+Proof.
+intros.
+unfold MQadd, MQadd_sign; simpl.
+rewrite Bool_eqb_comm.
+remember (Bool.eqb (MQsign y) (MQsign x)) as b eqn:Hb.
+symmetry in Hb.
+destruct b; [ now apply -> Bool.eqb_true_iff in Hb | ].
+apply Bool.eqb_false_iff in Hb.
+now destruct (MQsign x); destruct (MQsign y).
+Qed.
+
+Theorem MQnum_add_comm : ∀ x y, MQnum (x + y) = MQnum (y + x).
+Proof.
+intros.
+unfold MQadd, MQadd_num; simpl.
+rewrite Bool_eqb_comm.
+rewrite Nat.add_comm.
+now rewrite Nat.max_comm, Nat.min_comm.
+Qed.
+
+Theorem MQden_add_comm : ∀ x y, MQden (x + y) = MQden (y + x).
+Proof.
+intros.
+unfold MQadd, MQadd_den; simpl.
+apply Nat.mul_comm.
+Qed.
+
 Theorem MQadd_comm : ∀ x y, (x + y == y + x)%MQ.
 Proof.
 intros.
 unfold "==".
-destruct (zerop (MQnum (x + y))) as [H1| H1].
--destruct (zerop (MQnum (y + x))) as [H2| H2]; [ easy | ].
- unfold "+"%MQ, MQadd_num in H1, H2; simpl in H1, H2.
+destruct (zerop (MQnum (x + y) + MQnum (y + x))) as [| H1]; [ easy | ].
+rewrite MQnum_add_comm in H1 |-*.
+rewrite MQden_add_comm.
+destruct (zerop (MQnum (y + x))) as [H2| H2]; [ now rewrite H2 in H1 | ].
+rewrite MQsign_add_comm.
+now rewrite Bool.eqb_reflx.
+Qed.
+
+Theorem MQadd_assoc : ∀ x y z, ((x + y) + z == x + (y + z))%MQ.
+Proof.
+intros.
+unfold "==".
+unfold MQadd; simpl.
+unfold MQadd_sign; simpl.
+unfold MQadd_num; simpl.
+unfold MQadd_den; simpl.
+remember (MQsign x) as sx eqn:Hsx; symmetry in Hsx.
+remember (MQsign y) as sy eqn:Hsy; symmetry in Hsy.
+remember (MQsign z) as sz eqn:Hsz; symmetry in Hsz.
+move sy before sx; move sz before sy.
+destruct sx, sy, sz; simpl.
 ...
