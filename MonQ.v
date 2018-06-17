@@ -171,21 +171,47 @@ Theorem MQeq_trans : ∀ x y z : MQ, (x == y)%MQ → (y == z)%MQ → (x == z)%MQ
 Proof.
 unfold "=="%MQ.
 intros * Hxy Hyz.
-...
-
-unfold nd in *.
-destruct (zerop (MQnum y)) as [Hy| Hy].
--rewrite Hy in Hxy, Hyz; simpl in Hxy, Hyz.
- symmetry in Hyz.
+remember (Bool.eqb (MQsign x) (MQsign y)) as b1 eqn:Hb1.
+symmetry in Hb1.
+destruct b1.
+-apply -> Bool.eqb_true_iff in Hb1.
+ rewrite Hb1.
+ remember (Bool.eqb (MQsign y) (MQsign z)) as b2 eqn:Hb2.
+ symmetry in Hb2.
+ destruct b2; [ now rewrite Hxy | ].
+ destruct (zerop (PQnum (MQpos y) + PQnum (MQpos z))) as [H1| H1]; [ | easy ].
+ apply Nat.eq_add_0 in H1.
+ destruct H1 as (H1, H2).
+ rewrite H2, Nat.add_0_r.
+ unfold "=="%PQ in Hxy.
+ unfold nd in Hxy.
+ rewrite H1, Nat.mul_0_l in Hxy.
  apply Nat.eq_mul_0_l in Hxy; [ | easy ].
- apply Nat.eq_mul_0_l in Hyz; [ | easy ].
- now rewrite Hxy, Hyz.
--apply (Nat.mul_cancel_l _ _ (MQnum y)).
- +now intros H; rewrite H in Hy.
- +rewrite Nat.mul_assoc, Nat.mul_shuffle0, Hyz.
-  rewrite Nat.mul_shuffle0, <- Nat.mul_assoc, Hxy.
-  rewrite Nat.mul_comm, Nat.mul_shuffle0.
-  symmetry; apply Nat.mul_assoc.
+ now rewrite Hxy.
+-destruct (zerop (PQnum (MQpos x) + PQnum (MQpos y))) as [H1| H1]; [ | easy ].
+ apply Nat.eq_add_0 in H1.
+ destruct H1 as (H1, H2).
+ rewrite H1, Nat.add_0_l.
+ rewrite H2, Nat.add_0_l in Hyz.
+ apply -> Bool.eqb_false_iff in Hb1.
+ remember (Bool.eqb (MQsign y) (MQsign z)) as b2 eqn:Hb2.
+ remember (Bool.eqb (MQsign x) (MQsign z)) as b3 eqn:Hb3.
+ symmetry in Hb2, Hb3.
+ destruct b2.
+ +apply -> Bool.eqb_true_iff in Hb2.
+  destruct b3.
+  *apply -> Bool.eqb_true_iff in Hb3.
+   now rewrite Hb2 in Hb1.
+  *destruct (zerop (PQnum (MQpos z))) as [| H3]; [ easy | ].
+   unfold "=="%PQ, nd in Hyz.
+   rewrite H2, Nat.mul_0_l in Hyz.
+   symmetry in Hyz.
+   apply Nat.eq_mul_0_l in Hyz; [ | easy ].
+   now rewrite Hyz in H3.
+ +destruct (zerop (PQnum (MQpos z))) as [H3| ]; [ | easy ].
+  destruct b3; [ | easy ].
+  unfold "=="%PQ, nd.
+  now rewrite H1, H3.
 Qed.
 
 Add Parametric Relation : _ MQeq
