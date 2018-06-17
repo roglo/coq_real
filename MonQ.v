@@ -115,12 +115,6 @@ Proof.
 intros.
 unfold "==", nd; simpl.
 f_equal.
-Focus 2.
--f_equal.
- unfold PQadd_den1; simpl.
- unfold PQadd_den1; simpl.
- do 4 rewrite Nat.sub_0_r.
- ring.
 -unfold PQsub_num, nd; simpl.
  unfold PQsub_num, PQadd_num, nd; simpl.
  unfold PQadd_den1; simpl.
@@ -133,6 +127,11 @@ Focus 2.
  rewrite Nat.mul_add_distr_r.
  rewrite Nat.mul_sub_distr_r.
  lia.
+-f_equal.
+ unfold PQadd_den1; simpl.
+ unfold PQadd_den1; simpl.
+ do 4 rewrite Nat.sub_0_r.
+ ring.
 Qed.
 
       (* --------- *)
