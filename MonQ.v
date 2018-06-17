@@ -1,6 +1,6 @@
 (* Implementation of positive rationals using only nat *)
 
-Require Import Utf8 Arith.
+Require Import Utf8 Arith Morphisms.
 
 Require Import Misc.
 
@@ -73,6 +73,7 @@ unfold PQlt, PQle, nd; simpl.
 destruct (lt_dec (xn * S yd) (yn * S xd)) as [H1| H1]; [ now left | ].
 now right; apply Nat.nlt_ge.
 Qed.
+Arguments PQlt_le_dec x%PQ y%PQ.
 
 Theorem PQnum_add_comm : ∀ x y, PQnum (x + y) = PQnum (y + x).
 Proof.
@@ -108,6 +109,21 @@ unfold nd; simpl.
 do 4 rewrite Nat.sub_0_r.
 ring.
 Qed.
+
+Theorem PQsub_add_distr : ∀ x y z, (x - (y + z) == x - y - z)%PQ.
+Proof.
+intros.
+unfold "==", nd; simpl.
+unfold PQsub_num, PQadd_den1, nd.
+unfold PQadd; simpl.
+unfold PQadd_num, PQadd_den1; simpl.
+unfold PQsub_num, nd; simpl.
+do 4 rewrite Nat.sub_0_r.
+destruct x as (xn, xd).
+destruct y as (yn, yd).
+destruct z as (zn, zd).
+simpl.
+...
 
       (* --------- *)
 
@@ -230,4 +246,26 @@ remember (Bool.eqb (MQsign (x + y + z)) (MQsign (x + (y + z)))) as b1 eqn:Hb1.
 symmetry in Hb1.
 destruct b1.
 -apply -> Bool.eqb_true_iff in Hb1.
- unfold "=="%PQ, nd.
+ unfold "+"%MQ.
+ remember (Bool.eqb (MQsign x) (MQsign y)) as b2 eqn:Hb2.
+ remember (Bool.eqb (MQsign y) (MQsign z)) as b3 eqn:Hb3.
+ remember (Bool.eqb (MQsign x) (MQsign z)) as b4 eqn:Hb4.
+ symmetry in Hb2, Hb3, Hb4.
+ move b3 before b2; move b4 before b3.
+ destruct b2; simpl.
+ +apply -> Bool.eqb_true_iff in Hb2.
+  rewrite Hb2, Hb3.
+  destruct b3.
+  *rewrite Bool.eqb_reflx; simpl; apply PQadd_assoc.
+  *destruct (PQlt_le_dec (MQpos x + MQpos y) (MQpos z)) as [H1| H1].
+  --simpl.
+    destruct (PQlt_le_dec (MQpos y) (MQpos z)) as [H2| H2].
+   ++simpl; rewrite Hb3.
+     destruct (PQlt_le_dec (MQpos x) (MQpos z - MQpos y)) as [H3| H3].
+    **simpl.
+Search (_ + _)%PQ.
+rewrite PQsub_add_distr.
+...
+
+ destruct b2, b3, b4; simpl.
+ rewrite <- Hb4.
