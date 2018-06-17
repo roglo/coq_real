@@ -130,14 +130,12 @@ Definition MQopp x := MQmake (negb (MQsign x)) (MQpos x).
 
 Definition MQeq x y :=
   if Bool.eqb (MQsign x) (MQsign y) then (MQpos x == MQpos y)%PQ
-  else if ...
+  else if zerop (PQnum (MQpos x) + PQnum (MQpos y)) then True
   else False.
 
 Notation "0" := (MQmake true 0) : MQ_scope.
 Notation "- x" := (MQopp x) : MQ_scope.
-(*
 Notation "x == y" := (MQeq x y) (at level 70) : MQ_scope.
-*)
 Notation "x + y" := (MQadd x y) : MQ_scope.
 Notation "x - y" := (MQadd x (MQopp y)) : MQ_scope.
 (*
@@ -146,3 +144,52 @@ Notation "x ≤ y" := (MQle x y) : MQ_scope.
 Notation "x > y" := (¬ MQle x y) : MQ_scope.
 Notation "x ≥ y" := (¬ MQlt x y) : MQ_scope.
 *)
+
+Theorem MQeq_refl : ∀ x : MQ, (x == x)%MQ.
+Proof.
+intros.
+unfold "=="%MQ.
+now rewrite Bool.eqb_reflx.
+Qed.
+
+Theorem Bool_eqb_comm : ∀ b1 b2, Bool.eqb b1 b2 = Bool.eqb b2 b1.
+Proof.
+intros.
+unfold Bool.eqb.
+now destruct b1, b2.
+Qed.
+
+Theorem MQeq_symm : ∀ x y : MQ, (x == y)%MQ → (y == x)%MQ.
+Proof.
+unfold "=="%MQ.
+intros * Hxy.
+rewrite Bool_eqb_comm, Nat.add_comm.
+now destruct (Bool.eqb (MQsign x) (MQsign y)).
+Qed.
+
+Theorem MQeq_trans : ∀ x y z : MQ, (x == y)%MQ → (y == z)%MQ → (x == z)%MQ.
+Proof.
+unfold "=="%MQ.
+intros * Hxy Hyz.
+...
+
+unfold nd in *.
+destruct (zerop (MQnum y)) as [Hy| Hy].
+-rewrite Hy in Hxy, Hyz; simpl in Hxy, Hyz.
+ symmetry in Hyz.
+ apply Nat.eq_mul_0_l in Hxy; [ | easy ].
+ apply Nat.eq_mul_0_l in Hyz; [ | easy ].
+ now rewrite Hxy, Hyz.
+-apply (Nat.mul_cancel_l _ _ (MQnum y)).
+ +now intros H; rewrite H in Hy.
+ +rewrite Nat.mul_assoc, Nat.mul_shuffle0, Hyz.
+  rewrite Nat.mul_shuffle0, <- Nat.mul_assoc, Hxy.
+  rewrite Nat.mul_comm, Nat.mul_shuffle0.
+  symmetry; apply Nat.mul_assoc.
+Qed.
+
+Add Parametric Relation : _ MQeq
+ reflexivity proved by MQeq_refl
+ symmetry proved by MQeq_symm
+ transitivity proved by MQeq_trans
+ as MQeq_equiv_rel.
