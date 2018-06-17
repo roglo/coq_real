@@ -13,20 +13,23 @@ Arguments PQden1 x%PQ : rename.
 Definition nd x y := PQnum x * S (PQden1 y).
 
 Definition PQadd_num x y := nd x y + nd y x.
+Definition PQsub_num x y := nd x y - nd y x.
 Definition PQadd_den1 x y := S (PQden1 x) * S (PQden1 y) - 1.
 
 Definition PQadd x y := PQmake (PQadd_num x y) (PQadd_den1 x y).
+Definition PQsub x y := PQmake (PQsub_num x y) (PQadd_den1 x y).
 
 Arguments PQadd x%PQ y%PQ.
+Arguments PQsub x%PQ y%PQ.
 
 Definition PQeq x y := nd x y = nd y x.
-
 Definition PQlt x y := nd x y < nd y x.
 Definition PQle x y := nd x y ≤ nd y x.
 
 Notation "0" := (PQmake 0 1) : PQ_scope.
 Notation "x == y" := (PQeq x y) (at level 70) : PQ_scope.
 Notation "x + y" := (PQadd x y) : PQ_scope.
+Notation "x - y" := (PQsub x y) : PQ_scope.
 Notation "x < y" := (PQlt x y) : PQ_scope.
 Notation "x ≤ y" := (PQle x y) : PQ_scope.
 Notation "x > y" := (¬ PQle x y) : PQ_scope.
@@ -111,23 +114,35 @@ Qed.
 Delimit Scope MQ_scope with MQ.
 
 Record MQ := MQmake { MQsign : bool; MQpos : PQ }.
+Arguments MQmake _ _%PQ.
 Arguments MQsign x%MQ : rename.
 Arguments MQpos x%MQ : rename.
 
 Definition MQadd x y :=
   if Bool.eqb (MQsign x) (MQsign y) then
-    MQmake (MQsign x) (PQadd (MQpos x) (MQpos y))
-  else if MQsign x then
-...
+    MQmake (MQsign x) (MQpos x + MQpos y)
+  else if PQlt_le_dec (MQpos x) (MQpos y) then
+    MQmake (MQsign y) (MQpos y - MQpos x)
+  else
+    MQmake (MQsign x) (MQpos x - MQpos y).
 
-    MQmake (MQsign x) (PQadd (MQpos x) (MQpos y)).
+Definition MQopp x := MQmake (negb (MQsign x)) (MQpos x).
 
-...
+Definition MQeq x y :=
+  if Bool.eqb (MQsign x) (MQsign y) then (MQpos x == MQpos y)%PQ
+  else if ...
+  else False.
 
-  else if MQsign x then Nat.leb (nd y x) (nd x y)
-  else Nat.leb (nd x y) (nd y x).
-
-Definition diff x y := max x y - min x y.
-Definition MQadd_num x y :=
-  if Bool.eqb (MQsign x) (MQsign y) then nd x y + nd y x
-  else diff (nd y x) (nd x y).
+Notation "0" := (MQmake true 0) : MQ_scope.
+Notation "- x" := (MQopp x) : MQ_scope.
+(*
+Notation "x == y" := (MQeq x y) (at level 70) : MQ_scope.
+*)
+Notation "x + y" := (MQadd x y) : MQ_scope.
+Notation "x - y" := (MQadd x (MQopp y)) : MQ_scope.
+(*
+Notation "x < y" := (MQlt x y) : MQ_scope.
+Notation "x ≤ y" := (MQle x y) : MQ_scope.
+Notation "x > y" := (¬ MQle x y) : MQ_scope.
+Notation "x ≥ y" := (¬ MQlt x y) : MQ_scope.
+*)
