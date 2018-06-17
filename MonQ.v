@@ -1,6 +1,6 @@
 (* Implementation of positive rationals using only nat *)
 
-Require Import Utf8 Arith Morphisms.
+Require Import Utf8 Arith Morphisms Psatz.
 
 Require Import Misc.
 
@@ -121,8 +121,25 @@ unfold PQsub_num, nd; simpl.
 do 4 rewrite Nat.sub_0_r.
 destruct x as (xn, xd).
 destruct y as (yn, yd).
-destruct z as (zn, zd).
-simpl.
+destruct z as (zn, zd); simpl.
+ring_simplify; simpl.
+do 2 rewrite <- Nat.add_succ_l.
+remember (S xd) as xd1 eqn:Hxd1.
+remember (S yd) as yd1 eqn:Hyd1.
+remember (S zd) as zd1 eqn:Hzd1.
+repeat rewrite Nat.mul_add_distr_l.
+repeat rewrite Nat.mul_assoc.
+repeat rewrite Nat.mul_add_distr_r.
+repeat rewrite Nat.sub_add_distr.
+repeat rewrite Nat.mul_sub_distr_r.
+repeat rewrite Nat.mul_add_distr_r.
+rewrite Nat.add_sub_assoc.
+Focus 2.
+(* this goal is false:
+  ============================
+  zn * yd1 * xd1 ≤ xn * zd1 + xn * yd * zd1 - yn * zd1 * xd1
+Indeed, e.g. if none of the variables is 0 and yn is very big the
+right hand side can be 0 *)
 ...
 
       (* --------- *)
