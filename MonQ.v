@@ -1,8 +1,9 @@
 (* Implementation of positive rationals using only nat *)
 
 Require Import Utf8 Arith Morphisms Psatz.
-
 Require Import Misc.
+
+Tactic Notation "flia" hyp_list(Hs) := clear - Hs; lia.
 
 Delimit Scope PQ_scope with PQ.
 
@@ -11,10 +12,6 @@ Arguments PQnum x%PQ : rename.
 Arguments PQden1 x%PQ : rename.
 
 Definition nd x y := PQnum x * S (PQden1 y).
-
-Definition PQadd_num x y := nd x y + nd y x.
-Definition PQsub_num x y := nd x y - nd y x.
-Definition PQadd_den1 x y := S (PQden1 x) * S (PQden1 y) - 1.
 
 Definition PQeq x y := nd x y = nd y x.
 Definition PQlt x y := nd x y < nd y x.
@@ -53,6 +50,10 @@ Add Parametric Relation : _ PQeq
  transitivity proved by PQeq_trans
  as PQeq_equiv_rel.
 
+Definition PQadd_num x y := nd x y + nd y x.
+Definition PQsub_num x y := nd x y - nd y x.
+Definition PQadd_den1 x y := S (PQden1 x) * S (PQden1 y) - 1.
+
 Definition PQadd x y := PQmake (PQadd_num x y) (PQadd_den1 x y).
 Definition PQsub x y := PQmake (PQsub_num x y) (PQadd_den1 x y).
 Arguments PQadd x%PQ y%PQ.
@@ -67,23 +68,36 @@ intros x1 x2 Hx y1 y2 Hy.
 move Hx before Hy.
 unfold "+"%PQ.
 unfold "==", nd in Hx, Hy |-*; simpl.
-unfold PQadd_num, PQadd_den1, nd; simpl.
-do 2 rewrite Nat.sub_0_r.
+unfold PQadd_num, PQadd_den1, nd.
 destruct x1 as (x1n, x1d).
 destruct x2 as (x2n, x2d).
 destruct y1 as (y1n, y1d).
 destruct y2 as (y2n, y2d).
-simpl in *.
-do 2 rewrite <- Nat.add_succ_l.
-do 2 rewrite Nat.mul_add_distr_l.
-do 4 rewrite Nat.mul_add_distr_r.
-do 2 rewrite Nat.add_assoc.
-do 4 rewrite Nat.mul_assoc.
+remember S as f; simpl in *; subst f.
+rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
+remember (S x1d) as u.
+assert (Hx1 : 0 < u) by flia Hequ.
+clear x1d Hequ; rename u into x1d.
+remember (S x2d) as u.
+assert (Hx2 : 0 < u) by flia Hequ.
+clear x2d Hequ; rename u into x2d.
+remember (S y1d) as u.
+assert (Hy1 : 0 < u) by flia Hequ.
+clear y1d Hequ; rename u into y1d.
+remember (S y2d) as u.
+assert (Hy2 : 0 < u) by flia Hequ.
+clear y2d Hequ; rename u into y2d.
+move x1d before y2n; move x2d before x1d.
+move Hx at bottom; move Hy at bottom.
 ring_simplify.
-ring_simplify in Hx.
-ring_simplify in Hy.
-(*lia.*)
-...
+replace (x1n * y1d * x2d) with (x1n * x2d * y1d) by flia.
+rewrite Hx.
+replace (y1n * x1d * x2d * y2d) with (y1n * y2d * x1d * x2d) by flia.
+rewrite Hy.
+ring.
+Qed.
 
 Instance PQsub_morph : Proper (PQeq ==> PQeq ==> PQeq) PQsub.
 Proof.
@@ -91,37 +105,50 @@ intros x1 x2 Hx y1 y2 Hy.
 move Hx before Hy.
 unfold "-"%PQ.
 unfold "==", nd in Hx, Hy |-*; simpl.
-unfold PQsub_num, PQadd_den1, nd; simpl.
-do 2 rewrite Nat.sub_0_r.
+unfold PQsub_num, PQadd_den1, nd.
 destruct x1 as (x1n, x1d).
 destruct x2 as (x2n, x2d).
 destruct y1 as (y1n, y1d).
 destruct y2 as (y2n, y2d).
-simpl in *.
-do 2 rewrite <- Nat.add_succ_l.
-do 2 rewrite Nat.mul_sub_distr_r.
-do 4 rewrite Nat.mul_add_distr_l.
-do 2 rewrite Nat.sub_add_distr.
-do 4 rewrite Nat.mul_assoc.
-do 3 rewrite <- Nat.mul_assoc.
-do 2 rewrite <- Nat.mul_add_distr_l.
-replace (S y2d + x2d * S y2d) with (x2d * S y2d + S y2d) by lia.
-rewrite <- Nat.mul_succ_l.
-do 2 rewrite Nat.mul_assoc.
-replace (x1n * S y1d * S x2d) with (x1n * S x2d * S y1d) by lia.
-rewrite Hx.
+remember S as f; simpl in *; subst f.
+rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
+remember (S x1d) as u.
+assert (Hx1 : 0 < u) by flia Hequ.
+clear x1d Hequ; rename u into x1d.
+remember (S x2d) as u.
+assert (Hx2 : 0 < u) by flia Hequ.
+clear x2d Hequ; rename u into x2d.
+remember (S y1d) as u.
+assert (Hy1 : 0 < u) by flia Hequ.
+clear y1d Hequ; rename u into y1d.
+remember (S y2d) as u.
+assert (Hy2 : 0 < u) by flia Hequ.
+clear y2d Hequ; rename u into y2d.
+move x1d before y2n; move x2d before x1d.
+move Hx at bottom; move Hy at bottom.
 ring_simplify.
-ring_simplify in Hx.
-ring_simplify in Hy.
-repeat rewrite Nat.mul_add_distr_l.
-repeat rewrite Nat.mul_1_r.
-...
+do 4 rewrite Nat.mul_sub_distr_r.
+replace (x1n * y1d * x2d) with (x1n * x2d * y1d) by flia.
+rewrite Hx.
+replace (y1n * x1d * x2d * y2d) with (y1n * y2d * x1d * x2d) by flia.
+rewrite Hy.
+f_equal; ring.
+Qed.
 
 Notation "0" := (PQmake 0 1) : PQ_scope.
 Notation "x < y" := (PQlt x y) : PQ_scope.
 Notation "x ≤ y" := (PQle x y) : PQ_scope.
 Notation "x > y" := (¬ PQle x y) : PQ_scope.
 Notation "x ≥ y" := (¬ PQlt x y) : PQ_scope.
+
+Theorem PQnlt_ge : ∀ x y, ¬ (x < y)%PQ ↔ (y ≤ x)%PQ.
+Proof.
+intros.
+split; intros H; [ now apply Nat.nlt_ge in H | ].
+now apply Nat.nlt_ge.
+Qed.
 
 Theorem PQlt_le_dec : ∀ x y : PQ, {(x < y)%PQ} + {(y ≤ x)%PQ}.
 Proof.
@@ -190,6 +217,17 @@ f_equal.
  do 4 rewrite Nat.sub_0_r.
  ring.
 Qed.
+
+Theorem PQlt_add_lt_sub_r : ∀ x y z, (x + z < y)%PQ ↔ (x < y - z)%PQ.
+Proof.
+intros.
+split; intros H.
+-idtac.
+Search (_ + _ < _ + _)%nat.
+Check Nat.add_lt_mono_r.
+Check Nat.add_lt_compat.
+(* est-ce que le th est vrai, d'abord ? *)
+...
 
       (* --------- *)
 
@@ -331,5 +369,7 @@ destruct b1.
     **simpl.
       rewrite PQadd_comm.
       apply PQsub_add_distr.
-    **idtac.
+    **exfalso.
+      apply PQnlt_ge in H3; apply H3; clear H3.
 ...
+      now apply PQlt_add_lt_sub_r.
