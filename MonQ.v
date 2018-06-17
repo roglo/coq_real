@@ -219,3 +219,15 @@ Add Parametric Relation : _ MQeq
  symmetry proved by MQeq_symm
  transitivity proved by MQeq_trans
  as MQeq_equiv_rel.
+
+Open Scope MQ_scope.
+
+Theorem MQadd_assoc : ∀ x y z, ((x + y) + z == x + (y + z))%MQ.
+Proof.
+intros.
+unfold "=="%MQ.
+remember (Bool.eqb (MQsign (x + y + z)) (MQsign (x + (y + z)))) as b1 eqn:Hb1.
+symmetry in Hb1.
+destruct b1.
+-apply -> Bool.eqb_true_iff in Hb1.
+ unfold "=="%PQ, nd.
