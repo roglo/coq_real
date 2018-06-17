@@ -16,24 +16,11 @@ Definition PQadd_num x y := nd x y + nd y x.
 Definition PQsub_num x y := nd x y - nd y x.
 Definition PQadd_den1 x y := S (PQden1 x) * S (PQden1 y) - 1.
 
-Definition PQadd x y := PQmake (PQadd_num x y) (PQadd_den1 x y).
-Definition PQsub x y := PQmake (PQsub_num x y) (PQadd_den1 x y).
-
-Arguments PQadd x%PQ y%PQ.
-Arguments PQsub x%PQ y%PQ.
-
 Definition PQeq x y := nd x y = nd y x.
 Definition PQlt x y := nd x y < nd y x.
 Definition PQle x y := nd x y ≤ nd y x.
 
-Notation "0" := (PQmake 0 1) : PQ_scope.
 Notation "x == y" := (PQeq x y) (at level 70) : PQ_scope.
-Notation "x + y" := (PQadd x y) : PQ_scope.
-Notation "x - y" := (PQsub x y) : PQ_scope.
-Notation "x < y" := (PQlt x y) : PQ_scope.
-Notation "x ≤ y" := (PQle x y) : PQ_scope.
-Notation "x > y" := (¬ PQle x y) : PQ_scope.
-Notation "x ≥ y" := (¬ PQlt x y) : PQ_scope.
 
 Theorem PQeq_refl : ∀ x : PQ, (x == x)%PQ.
 Proof. easy. Qed.
@@ -65,6 +52,76 @@ Add Parametric Relation : _ PQeq
  symmetry proved by PQeq_symm
  transitivity proved by PQeq_trans
  as PQeq_equiv_rel.
+
+Definition PQadd x y := PQmake (PQadd_num x y) (PQadd_den1 x y).
+Definition PQsub x y := PQmake (PQsub_num x y) (PQadd_den1 x y).
+Arguments PQadd x%PQ y%PQ.
+Arguments PQsub x%PQ y%PQ.
+
+Notation "x + y" := (PQadd x y) : PQ_scope.
+Notation "x - y" := (PQsub x y) : PQ_scope.
+
+Instance PQadd_morph : Proper (PQeq ==> PQeq ==> PQeq) PQadd.
+Proof.
+intros x1 x2 Hx y1 y2 Hy.
+move Hx before Hy.
+unfold "+"%PQ.
+unfold "==", nd in Hx, Hy |-*; simpl.
+unfold PQadd_num, PQadd_den1, nd; simpl.
+do 2 rewrite Nat.sub_0_r.
+destruct x1 as (x1n, x1d).
+destruct x2 as (x2n, x2d).
+destruct y1 as (y1n, y1d).
+destruct y2 as (y2n, y2d).
+simpl in *.
+do 2 rewrite <- Nat.add_succ_l.
+do 2 rewrite Nat.mul_add_distr_l.
+do 4 rewrite Nat.mul_add_distr_r.
+do 2 rewrite Nat.add_assoc.
+do 4 rewrite Nat.mul_assoc.
+ring_simplify.
+ring_simplify in Hx.
+ring_simplify in Hy.
+(*lia.*)
+...
+
+Instance PQsub_morph : Proper (PQeq ==> PQeq ==> PQeq) PQsub.
+Proof.
+intros x1 x2 Hx y1 y2 Hy.
+move Hx before Hy.
+unfold "-"%PQ.
+unfold "==", nd in Hx, Hy |-*; simpl.
+unfold PQsub_num, PQadd_den1, nd; simpl.
+do 2 rewrite Nat.sub_0_r.
+destruct x1 as (x1n, x1d).
+destruct x2 as (x2n, x2d).
+destruct y1 as (y1n, y1d).
+destruct y2 as (y2n, y2d).
+simpl in *.
+do 2 rewrite <- Nat.add_succ_l.
+do 2 rewrite Nat.mul_sub_distr_r.
+do 4 rewrite Nat.mul_add_distr_l.
+do 2 rewrite Nat.sub_add_distr.
+do 4 rewrite Nat.mul_assoc.
+do 3 rewrite <- Nat.mul_assoc.
+do 2 rewrite <- Nat.mul_add_distr_l.
+replace (S y2d + x2d * S y2d) with (x2d * S y2d + S y2d) by lia.
+rewrite <- Nat.mul_succ_l.
+do 2 rewrite Nat.mul_assoc.
+replace (x1n * S y1d * S x2d) with (x1n * S x2d * S y1d) by lia.
+rewrite Hx.
+ring_simplify.
+ring_simplify in Hx.
+ring_simplify in Hy.
+repeat rewrite Nat.mul_add_distr_l.
+repeat rewrite Nat.mul_1_r.
+...
+
+Notation "0" := (PQmake 0 1) : PQ_scope.
+Notation "x < y" := (PQlt x y) : PQ_scope.
+Notation "x ≤ y" := (PQle x y) : PQ_scope.
+Notation "x > y" := (¬ PQle x y) : PQ_scope.
+Notation "x ≥ y" := (¬ PQlt x y) : PQ_scope.
 
 Theorem PQlt_le_dec : ∀ x y : PQ, {(x < y)%PQ} + {(y ≤ x)%PQ}.
 Proof.
@@ -271,5 +328,8 @@ destruct b1.
     destruct (PQlt_le_dec (MQpos y) (MQpos z)) as [H2| H2].
    ++simpl; rewrite Hb3.
      destruct (PQlt_le_dec (MQpos x) (MQpos z - MQpos y)) as [H3| H3].
-    **rewrite PQsub_add_distr.
+    **simpl.
+      rewrite PQadd_comm.
+      apply PQsub_add_distr.
+    **idtac.
 ...
