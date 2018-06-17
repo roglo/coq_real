@@ -114,33 +114,26 @@ Theorem PQsub_add_distr : ∀ x y z, (x - (y + z) == x - y - z)%PQ.
 Proof.
 intros.
 unfold "==", nd; simpl.
-unfold PQsub_num, PQadd_den1, nd.
-unfold PQadd; simpl.
-unfold PQadd_num, PQadd_den1; simpl.
-unfold PQsub_num, nd; simpl.
-do 4 rewrite Nat.sub_0_r.
-destruct x as (xn, xd).
-destruct y as (yn, yd).
-destruct z as (zn, zd); simpl.
-ring_simplify; simpl.
-do 2 rewrite <- Nat.add_succ_l.
-remember (S xd) as xd1 eqn:Hxd1.
-remember (S yd) as yd1 eqn:Hyd1.
-remember (S zd) as zd1 eqn:Hzd1.
-repeat rewrite Nat.mul_add_distr_l.
-repeat rewrite Nat.mul_assoc.
-repeat rewrite Nat.mul_add_distr_r.
-repeat rewrite Nat.sub_add_distr.
-repeat rewrite Nat.mul_sub_distr_r.
-repeat rewrite Nat.mul_add_distr_r.
-rewrite Nat.add_sub_assoc.
+f_equal.
 Focus 2.
-(* this goal is false:
-  ============================
-  zn * yd1 * xd1 ≤ xn * zd1 + xn * yd * zd1 - yn * zd1 * xd1
-Indeed, e.g. if none of the variables is 0 and yn is very big the
-right hand side can be 0 *)
-...
+-f_equal.
+ unfold PQadd_den1; simpl.
+ unfold PQadd_den1; simpl.
+ do 4 rewrite Nat.sub_0_r.
+ ring.
+-unfold PQsub_num, nd; simpl.
+ unfold PQsub_num, PQadd_num, nd; simpl.
+ unfold PQadd_den1; simpl.
+ do 2 rewrite Nat.sub_0_r.
+ destruct x as (xn, xd).
+ destruct y as (yn, yd).
+ destruct z as (zn, zd); simpl.
+ do 2 rewrite <- Nat.add_succ_l.
+ do 2 rewrite Nat.mul_add_distr_l.
+ rewrite Nat.mul_add_distr_r.
+ rewrite Nat.mul_sub_distr_r.
+ lia.
+Qed.
 
       (* --------- *)
 
@@ -279,10 +272,5 @@ destruct b1.
     destruct (PQlt_le_dec (MQpos y) (MQpos z)) as [H2| H2].
    ++simpl; rewrite Hb3.
      destruct (PQlt_le_dec (MQpos x) (MQpos z - MQpos y)) as [H3| H3].
-    **simpl.
-Search (_ + _)%PQ.
-rewrite PQsub_add_distr.
+    **rewrite PQsub_add_distr.
 ...
-
- destruct b2, b3, b4; simpl.
- rewrite <- Hb4.
