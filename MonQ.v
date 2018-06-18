@@ -378,8 +378,31 @@ apply (Nat.le_lt_trans _ (PQnum y * S (PQden1 x) * S (PQden1 z))).
  apply Nat.mul_lt_mono_pos_r; [ flia | easy ].
 Qed.
 
-Theorem PQadd_lt_mono_r : ∀ n m p, (n < m)%PQ ↔ (n + p < m + p)%PQ.
-...
+Theorem PQadd_lt_mono_r : ∀ x y z, (x < y)%PQ ↔ (x + z < y + z)%PQ.
+Proof.
+unfold "<"%PQ, "+"%PQ, PQadd_num, PQadd_den1, nd.
+remember S as f; simpl; subst f.
+intros *.
+rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
+do 2 rewrite Nat.mul_assoc.
+split; intros H.
+-apply Nat.mul_lt_mono_pos_r; [ flia | ].
+ do 2 rewrite Nat.mul_add_distr_r.
+ remember (PQnum x * S (PQden1 z)) as u.
+ rewrite Nat.mul_shuffle0; subst u.
+ apply Nat.add_lt_mono_r.
+ setoid_rewrite Nat.mul_shuffle0.
+ apply Nat.mul_lt_mono_pos_r; [ flia | easy ].
+-apply Nat.mul_lt_mono_pos_r in H; [ | flia ].
+ do 2 rewrite Nat.mul_add_distr_r in H.
+ remember (PQnum x * S (PQden1 z)) as u.
+ rewrite Nat.mul_shuffle0 in H; subst u.
+ apply Nat.add_lt_mono_r in H.
+ setoid_rewrite Nat.mul_shuffle0 in H.
+ apply Nat.mul_lt_mono_pos_r in H; [ easy | flia ].
+Qed.
 
 Theorem PQadd_le_mono : ∀ n m p q,
   (n ≤ m)%PQ → (p ≤ q)%PQ → (n + p ≤ m + q)%PQ.
