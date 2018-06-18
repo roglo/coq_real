@@ -800,4 +800,30 @@ destruct b1.
        now destruct (MQsign x), (MQsign y), (MQsign z).
     **simpl; rewrite Hb2.
       destruct (PQlt_le_dec (MQpos x) (MQpos y - MQpos z)) as [H4| H4].
+    ---exfalso.
+       apply PQnlt_ge in H4; [ easy | ].
+       apply PQle_sub_le_add_r.
+       rewrite PQadd_comm.
+       now apply PQle_sub_le_add_r, PQlt_le_incl.
     ---simpl.
+       rewrite PQsub_sub_assoc.
+     +++rewrite PQsub_sub_assoc; [ now rewrite PQadd_comm | ].
+        split; [ easy | now apply PQle_sub_le_add_r ].
+     +++split; [ now apply PQlt_le_incl | ].
+        now apply PQle_sub_le_add_r, PQlt_le_incl.
+   ++simpl.
+     destruct (PQlt_le_dec (MQpos y) (MQpos z)) as [H3| H3].
+    **simpl; rewrite Hb4.
+      destruct b4.
+    ---exfalso.
+       apply PQnlt_ge in H2; apply H2; clear H2.
+       eapply PQle_lt_trans; [ | apply H3 ].
+       apply PQle_sub_le_add_r.
+       rewrite <- PQadd_0_r at 1.
+       apply PQadd_le_mono; [ | apply PQle_0_l ].
+       now unfold "≤"%PQ.
+    ---apply Bool.eqb_false_iff in Hb2.
+       apply Bool.eqb_false_iff in Hb3.
+       apply Bool.eqb_false_iff in Hb4.
+       now destruct (MQsign x), (MQsign y), (MQsign z).
+    **simpl; rewrite Hb2.
