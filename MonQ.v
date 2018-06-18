@@ -404,11 +404,35 @@ split; intros H.
  apply Nat.mul_lt_mono_pos_r in H; [ easy | flia ].
 Qed.
 
-Theorem PQadd_le_mono : ∀ n m p q,
-  (n ≤ m)%PQ → (p ≤ q)%PQ → (n + p ≤ m + q)%PQ.
-...
+Theorem PQadd_le_mono : ∀ x y z t,
+  (x ≤ y)%PQ → (z ≤ t)%PQ → (x + z ≤ y + t)%PQ.
+Proof.
+unfold "≤"%PQ, "+"%PQ, PQadd_num, PQadd_den1, nd.
+remember S as f; simpl; subst f.
+intros * Hxy Hzt.
+rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
+do 2 rewrite Nat.mul_add_distr_r.
+apply Nat.add_le_mono.
+-rewrite Nat.mul_shuffle0.
+ do 2 rewrite Nat.mul_assoc.
+ apply Nat.mul_le_mono_r.
+ remember (PQnum x * S (PQden1 y)) as u.
+ rewrite Nat.mul_shuffle0; subst u.
+ now apply Nat.mul_le_mono_r.
+-rewrite Nat.mul_assoc.
+ rewrite Nat.mul_shuffle0.
+ do 2 rewrite <- Nat.mul_assoc.
+ rewrite Nat.mul_shuffle0.
+ do 3 rewrite Nat.mul_assoc.
+ apply Nat.mul_le_mono_r.
+ setoid_rewrite Nat.mul_shuffle0.
+ now apply Nat.mul_le_mono_r.
+Qed.
 
-Theorem PQsub_0_le : ∀ n m, (n - m == 0)%PQ ↔ (n ≤ m)%PQ.
+Theorem PQsub_0_le : ∀ x y, (x - y == 0)%PQ ↔ (x ≤ y)%PQ.
+Proof.
 ...
 
 Theorem PQlt_add_lt_sub_r : ∀ x y z, (x + z < y)%PQ ↔ (x < y - z)%PQ.
