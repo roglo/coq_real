@@ -644,6 +644,17 @@ rewrite PQadd_comm.
 apply PQle_add_le_sub_r.
 Qed.
 
+Theorem PQadd_sub_swap: ∀ x y z, (z ≤ x)%PQ → (x + y - z == x - z + y)%PQ.
+Proof.
+intros * Hzx.
+unfold "=="%PQ, nd.
+f_equal.
+-simpl; unfold PQsub_num, PQadd_num, nd; simpl.
+ unfold PQadd_num, PQadd_den1, nd.
+ unfold PQsub_num, nd.
+
+...
+
       (* --------- *)
 
 Delimit Scope MQ_scope with MQ.
@@ -886,4 +897,24 @@ destruct b1.
    ++simpl.
      destruct (PQlt_le_dec (MQpos y) (MQpos z)) as [H2| H2].
     **simpl; rewrite Hb4; simpl.
+      rewrite PQadd_sub_assoc; [ | now apply PQlt_le_incl ].
+      rewrite PQadd_comm.
+      rewrite PQadd_sub_assoc; [ | easy ].
+      now rewrite PQadd_comm.
+    **simpl; rewrite Hb2.
+      destruct (PQlt_le_dec (MQpos x) (MQpos y - MQpos z)) as [H3| H3].
+    ---exfalso.
+       apply PQnlt_ge in H3; [ easy | ].
+       apply (PQle_trans _ (MQpos y)); [ | easy ].
+       apply PQle_sub_le_add_r.
+       rewrite <- PQadd_0_r at 1.
+       apply PQadd_le_mono; [ | apply PQle_0_l ].
+       now unfold "≤"%PQ.
+    ---simpl; symmetry.
+       rewrite PQsub_sub_assoc.
+...
+now apply PQadd_sub_swap.
+Search (_ + _ - _)%nat.
+Nat.add_sub_swap: ∀ n m p : nat, p ≤ n → (n + m - p)%nat = (n - p + m)%nat
+Search (_ + _ - _)%PQ.
 ...
