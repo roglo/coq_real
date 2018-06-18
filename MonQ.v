@@ -497,8 +497,17 @@ destruct (PQlt_le_dec z y) as [LE| GE].
  +now elim (PQnlt_0_r x).
 Qed.
 
-Theorem PQsub_add_le : ∀ n m, (n ≤ n - m + m)%PQ.
-...
+Theorem PQsub_add_le : ∀ x y, (x ≤ x - y + y)%PQ.
+Proof.
+intros.
+destruct (PQlt_le_dec x y) as [H1| H1].
+-apply PQlt_le_incl in H1.
+ apply PQsub_0_le in H1.
+ rewrite H1, PQadd_0_l.
+ now apply PQsub_0_le.
+-rewrite PQsub_add; [ | easy ].
+ unfold "≤"%PQ; easy.
+Qed.
 
 Theorem PQle_sub_le_add_r : ∀ x y z, (x - z ≤ y ↔ x ≤ y + z)%PQ.
 Proof.
@@ -506,79 +515,14 @@ intros.
 split; intros LE.
 -rewrite (PQadd_le_mono_r _ _ z) in LE.
  apply PQle_trans with (x - z + z)%PQ; [ | easy ].
-Check Nat.sub_add_le.
-Check PQsub_add_le.
-...
-; auto using sub_add_le.
-...
-
-Theorem le_sub_le_add_r : forall n m p,
- n - p <= m <-> n <= m + p.
-Proof.
-intros n m p.
-split; intros LE.
-rewrite (add_le_mono_r _ _ p) in LE.
-apply le_trans with (n-p+p); auto using sub_add_le.
-destruct (le_ge_cases n p) as [LE'|GE].
-rewrite <- sub_0_le in LE'. rewrite LE'. apply le_0_l.
-rewrite (add_le_mono_r _ _ p). now rewrite sub_add.
-Qed.
-
-intros.
-split; intros LE.
--rewrite (PQadd_le_mono_r _ _ z) in LE.
- apply PQle_trans with (x - z + z)%PQ; [ | easy ].
- destruct (PQlt_le_dec x z) as [LE'|GE].
+ apply PQsub_add_le.
+-destruct (PQlt_le_dec x z) as [LE'|GE].
  +apply PQlt_le_incl in LE'.
-  rewrite <- PQsub_0_le in LE'.
-  rewrite LE'.
-Check PQle_0_l.
-...
+  rewrite <- PQsub_0_le in LE'; rewrite LE'.
   apply PQle_0_l.
-  ...
- rewrite LE'. apply le_0_l.
-...
-
-rewrite <- sub_0_le in LE'. rewrite LE'. apply le_0_l.
-rewrite (add_le_mono_r _ _ p). now rewrite sub_add.
-...
-
-destruct (le_ge_cases n p) as [LE'|GE].
-rewrite <- sub_0_le in LE'. rewrite LE'. apply le_0_l.
-rewrite (add_le_mono_r _ _ p). now rewrite sub_add.
+ +rewrite (PQadd_le_mono_r _ _ z).
+  now rewrite PQsub_add.
 Qed.
-...
-
-intros.
-rewrite (PQadd_le_mono_r _ _ z).
-split.
--intros.
- rewrite PQsub_add in H.
-
-Check PQsub_add.
-
-Theorem sub_simpl_r : forall n m, n - m + m == n.
-Proof.
-intros; now rewrite <- sub_sub_distr, sub_diag, sub_0_r.
-Qed.
-
-Focus 2.
-...
-Check Nat.sub_add.
-...
-
-rewrite PQsub_add.
-easy.
-
-
-     : ∀ n m p : nat, n ≤ m ↔ n + p ≤ m + p
-Nat.add_le_mono
-     : ∀ n m p q : nat, n ≤ m → p ≤ q → n + p ≤ m + q
-rewrite (PQadd_le_mono _ _ z).
-rewrite (PQadd_le_mono_r _ _ z).
-intros n m p. now rewrite (add_le_mono_r _ _ p), sub_simpl_r.
-About Nat.le_sub_le_add_r.
-...
 
       (* --------- *)
 
@@ -733,6 +677,5 @@ destruct b1.
      destruct (PQlt_le_dec (MQpos x) (MQpos z - MQpos y)) as [H3| H3].
     **exfalso.
       apply PQnlt_ge in H3; [ easy | ].
-...
       now apply PQle_sub_le_add_r.
-    **idtac.
+    **simpl.
