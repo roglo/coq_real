@@ -360,20 +360,32 @@ assert (Hy : 0 < u) by flia Hequ.
 clear yd Hequ; rename u into yd.
 move Hxy at bottom.
 do 3 rewrite Nat.mul_assoc.
-rewrite Nat.mul_add_distr_r.
-...
+rewrite <- Nat.mul_add_distr_r.
+replace (yn * yd * xd * xd) with (yn * xd * xd * yd) by flia.
+f_equal; f_equal; lia.
+Qed.
+
+Theorem PQle_lt_trans : ∀ x y z, (x ≤ y)%PQ → (y < z)%PQ → (x < z)%PQ.
+Proof.
+intros * Hxy Hyz.
+unfold "<"%PQ, nd in Hyz |-*.
+unfold "≤"%PQ, nd in Hxy.
+apply (Nat.mul_lt_mono_pos_r (S (PQden1 y))); [ flia | ].
+rewrite Nat.mul_shuffle0.
+apply (Nat.le_lt_trans _ (PQnum y * S (PQden1 x) * S (PQden1 z))).
+-apply Nat.mul_le_mono_pos_r; [ flia | easy ].
+-setoid_rewrite Nat.mul_shuffle0.
+ apply Nat.mul_lt_mono_pos_r; [ flia | easy ].
+Qed.
 
 Theorem PQadd_lt_mono_r : ∀ n m p, (n < m)%PQ ↔ (n + p < m + p)%PQ.
 ...
 
-Theorem PQsub_0_le : ∀ n m, (n - m == 0)%PQ ↔ (n ≤ m)%PQ.
-...
-
-Theorem PQle_lt_trans : ∀ n m p, (n ≤ m)%PQ → (m < p)%PQ → (n < p)%PQ.
-...
-
 Theorem PQadd_le_mono : ∀ n m p q,
   (n ≤ m)%PQ → (p ≤ q)%PQ → (n + p ≤ m + q)%PQ.
+...
+
+Theorem PQsub_0_le : ∀ n m, (n - m == 0)%PQ ↔ (n ≤ m)%PQ.
 ...
 
 Theorem PQlt_add_lt_sub_r : ∀ x y z, (x + z < y)%PQ ↔ (x < y - z)%PQ.
