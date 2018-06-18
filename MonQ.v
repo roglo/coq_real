@@ -604,5 +604,8 @@ destruct b1.
       now apply PQlt_add_lt_sub_r.
    ++exfalso.
      apply PQnlt_ge in H1; [ easy | ].
-Search (_ ≤ _ + _)%nat.
-Check Nat_add_le_l.
+     rewrite <- PQadd_0_l.
+     apply PQadd_le_mono; [ apply PQle_0_l | easy ].
+  --simpl.
+    destruct (PQlt_le_dec (MQpos y) (MQpos z)) as [H2| H2].
+   ++idtac.
