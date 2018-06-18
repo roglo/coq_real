@@ -287,6 +287,9 @@ Admitted.
 Theorem PQsub_0_le : ∀ n m, (n - m == 0)%PQ ↔ (n ≤ m)%PQ.
 Admitted.
 
+Theorem PQle_lt_trans : ∀ n m p, (n ≤ m)%PQ → (m < p)%PQ → (n < p)%PQ.
+Admitted.
+
 Theorem PQlt_add_lt_sub_r : ∀ x y z, (x + z < y)%PQ ↔ (x < y - z)%PQ.
 Proof.
 intros.
@@ -297,6 +300,7 @@ destruct (PQlt_le_dec z y) as [LE| GE].
  rewrite <- PQsub_0_le in GE'; rewrite GE'.
  split; intros Lt.
  +elim (PQlt_irrefl y).
+  apply PQle_lt_trans with (x + z)%PQ; [ | easy ].
 ...
 elim (lt_irrefl m). apply le_lt_trans with (n+p); trivial.
  rewrite <- (add_0_l m). apply add_le_mono. apply le_0_l. assumption.
