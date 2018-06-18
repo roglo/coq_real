@@ -433,7 +433,14 @@ Qed.
 
 Theorem PQsub_0_le : ∀ x y, (x - y == 0)%PQ ↔ (x ≤ y)%PQ.
 Proof.
-...
+unfold "=="%PQ, "-"%PQ, "≤"%PQ, PQsub_num, PQadd_den1, nd; simpl.
+intros.
+split; intros Hxy.
+-apply Nat.eq_mul_0_l in Hxy; [ | easy ].
+ now apply Nat.sub_0_le.
+-apply Nat.eq_mul_0; left.
+ now apply Nat.sub_0_le.
+Qed.
 
 Theorem PQlt_add_lt_sub_r : ∀ x y z, (x + z < y)%PQ ↔ (x < y - z)%PQ.
 Proof.
@@ -451,8 +458,6 @@ destruct (PQlt_le_dec z y) as [LE| GE].
   apply PQle_0_l.
  +now elim (PQnlt_0_r x).
 Qed.
-
-...
 
       (* --------- *)
 
@@ -596,5 +601,5 @@ destruct b1.
       apply PQsub_add_distr.
     **exfalso.
       apply PQnlt_ge in H3; apply H3; clear H3.
-...
       now apply PQlt_add_lt_sub_r.
+   ++idtac.
