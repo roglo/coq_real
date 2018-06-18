@@ -61,6 +61,8 @@ Notation "x < y" := (PQlt x y) : PQ_scope.
 Notation "x ≤ y" := (PQle x y) : PQ_scope.
 Notation "x > y" := (¬ PQle x y) : PQ_scope.
 Notation "x ≥ y" := (¬ PQlt x y) : PQ_scope.
+Notation "x ≤ y ≤ z" := (x ≤ y ∧ y ≤ z)%PQ (at level 70, y at next level) :
+  PQ_scope.
 
 Theorem PQnlt_ge : ∀ x y, ¬ (x < y)%PQ ↔ (y ≤ x)%PQ.
 Proof.
@@ -317,6 +319,43 @@ f_equal.
  do 4 rewrite Nat.sub_0_r.
  ring.
 Qed.
+
+Theorem PQsub_sub_assoc : ∀ x y z,
+  (z ≤ y ≤ x + z)%PQ → (x - (y - z) == x + z - y)%PQ.
+Proof.
+intros * (Hzy, Hyx).
+unfold "==", nd; simpl.
+f_equal.
+-idtac.
+ unfold PQsub_num, nd; simpl.
+ unfold PQsub_num, PQadd_num, nd; simpl.
+ unfold PQadd_den1.
+ unfold "≤"%PQ, nd in Hzy, Hyx; simpl in Hzy, Hyx.
+ unfold PQadd_num, PQadd_den1, nd in Hzy, Hyx.
+ rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+ rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+ rewrite <- Nat.sub_succ_l in Hyx; [ | simpl; flia ].
+ do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
+ rewrite Nat.sub_succ, Nat.sub_0_r in Hyx.
+ destruct x as (xn, xd).
+ destruct y as (yn, yd).
+ destruct z as (zn, zd).
+ remember S as f; simpl in *; subst f.
+ rewrite Nat.mul_add_distr_r.
+ rewrite Nat.mul_sub_distr_r.
+ do 2 rewrite Nat.mul_assoc.
+ rewrite Nat_sub_sub_assoc; [ lia | ].
+ split; [ now apply Nat.mul_le_mono_r | ].
+ rewrite Nat.mul_assoc, Nat.mul_shuffle0 in Hyx.
+
+
+...
+-f_equal.
+ unfold PQadd_den1; simpl.
+ unfold PQadd_den1; simpl.
+ do 4 rewrite Nat.sub_0_r.
+ ring.
+...
 
 Theorem PQlt_irrefl : ∀ x, (¬ x < x)%PQ.
 Proof. intros x; apply Nat.lt_irrefl. Qed.
@@ -679,3 +718,4 @@ destruct b1.
       apply PQnlt_ge in H3; [ easy | ].
       now apply PQle_sub_le_add_r.
     **simpl.
+Search (_ - (_ - _))%nat.
