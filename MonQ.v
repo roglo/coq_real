@@ -780,4 +780,24 @@ destruct b1.
      rewrite <- PQadd_0_r at 1.
      apply PQadd_le_mono; [ | apply PQle_0_l ].
      now unfold "≤"%PQ.
-  --idtac.
+  --destruct (PQlt_le_dec (MQpos y - MQpos x) (MQpos z)) as [H2| H2].
+   ++simpl.
+     destruct (PQlt_le_dec (MQpos y) (MQpos z)) as [H3| H3].
+    **simpl; rewrite Hb4.
+      destruct b4.
+    ---simpl.
+       rewrite PQadd_sub_assoc; [ | now apply PQlt_le_incl ].
+       rewrite PQadd_comm.
+       apply PQsub_sub_assoc.
+       split; [ now apply PQlt_le_incl | ].
+       eapply PQle_trans; [ apply PQlt_le_incl, H3 | ].
+       rewrite <- PQadd_0_r at 1.
+       apply PQadd_le_mono; [ | apply PQle_0_l ].
+       now unfold "≤"%PQ.
+    ---apply Bool.eqb_false_iff in Hb2.
+       apply Bool.eqb_false_iff in Hb3.
+       apply Bool.eqb_false_iff in Hb4.
+       now destruct (MQsign x), (MQsign y), (MQsign z).
+    **simpl; rewrite Hb2.
+      destruct (PQlt_le_dec (MQpos x) (MQpos y - MQpos z)) as [H4| H4].
+    ---simpl.
