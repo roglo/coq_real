@@ -608,4 +608,6 @@ destruct b1.
      apply PQadd_le_mono; [ apply PQle_0_l | easy ].
   --simpl.
     destruct (PQlt_le_dec (MQpos y) (MQpos z)) as [H2| H2].
-   ++idtac.
+   ++simpl; rewrite Hb3.
+     destruct (PQlt_le_dec (MQpos x) (MQpos z - MQpos y)) as [H3| H3].
+    **exfalso.
