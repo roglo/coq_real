@@ -82,7 +82,7 @@ replace b with (1 * b) at 1 by apply Nat.mul_1_l.
 now rewrite Nat.div_add.
 Qed.
 
-Theorem Nat_add_le_pos_l : ∀ a b, b ≤ a + b.
+Theorem Nat_add_le_l : ∀ a b, b ≤ a + b.
 Proof.
 intros.
 replace b with (0 + b) at 1 by easy.
@@ -90,7 +90,7 @@ apply Nat.add_le_mono_r.
 apply Nat.le_0_l.
 Qed.
 
-Theorem Nat_add_le_pos_r : ∀ a b, a ≤ a + b.
+Theorem Nat_add_le_r : ∀ a b, a ≤ a + b.
 Proof.
 intros.
 replace a with (a + 0) at 1 by easy.

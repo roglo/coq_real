@@ -602,4 +602,7 @@ destruct b1.
     **exfalso.
       apply PQnlt_ge in H3; apply H3; clear H3.
       now apply PQlt_add_lt_sub_r.
-   ++idtac.
+   ++exfalso.
+     apply PQnlt_ge in H1; [ easy | ].
+Search (_ ≤ _ + _)%nat.
+Check Nat_add_le_l.
