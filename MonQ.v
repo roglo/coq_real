@@ -847,8 +847,25 @@ destruct b1.
     **simpl; rewrite Hb2.
       destruct (PQlt_le_dec (MQpos x) (MQpos y - MQpos z)) as [H4| H4].
     ---apply PQsub_sub_swap.
-    ---exfalso.
-       apply PQnlt_ge in H4; apply H4; clear H4.
-       apply PQlt_add_lt_sub_r.
-(* ??? *)
-(* ah bin merdalor *)
+    ---simpl.
+       transitivity 0%PQ; [ | symmetry ].
+     +++rewrite PQsub_sub_swap.
+        now apply PQsub_0_le.
+     +++apply PQsub_0_le.
+...
+Theorem PQle_add_le_sub_l: ∀ n m p, (n + p ≤ m → p ≤ m - n)%PQ.
+Admitted.
+apply PQle_add_le_sub_l.
+rewrite PQadd_comm.
+
+Search (_ ≤ _ - _)%nat.
+...
+apply PQsub_add in H2.
+Nat.le_add_le_sub_l: ∀ n m p : nat, n + p ≤ m → p ≤ m - n
+Nat.le_add_le_sub_r: ∀ n m p : nat, n + p ≤ m → n ≤ m - p
+...
+
+     +++rewrite PQsub_sub_assoc.
+rewrite PQadd_comm.
+apply PQsub_0_le.
+Search (_ + _ ≤ _)%PQ.
