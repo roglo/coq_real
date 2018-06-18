@@ -382,24 +382,6 @@ f_equal.
  ring.
 Qed.
 
-Theorem PQsub_sub_swap : ∀ x y z, (x - y - z == x - z - y)%PQ.
-Proof.
-intros.
-unfold "=="%PQ, "-"%PQ, PQsub_num, PQadd_den1, nd.
-remember S as f; simpl; subst f.
-rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
-rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
-rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
-rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
-do 4 rewrite Nat.sub_succ, Nat.sub_0_r.
-f_equal; [ | apply Nat.mul_shuffle0 ].
-do 2 rewrite Nat.mul_sub_distr_r.
-do 2 rewrite Nat.mul_assoc.
-rewrite Nat_sub_sub_swap.
-f_equal; f_equal.
-apply Nat.mul_shuffle0.
-Qed.
-
 Theorem PQlt_irrefl : ∀ x, (¬ x < x)%PQ.
 Proof. intros x; apply Nat.lt_irrefl. Qed.
 
@@ -644,16 +626,48 @@ rewrite PQadd_comm.
 apply PQle_add_le_sub_r.
 Qed.
 
+Theorem PQsub_sub_swap : ∀ x y z, (x - y - z == x - z - y)%PQ.
+Proof.
+intros.
+unfold "=="%PQ, "-"%PQ, PQsub_num, PQadd_den1, nd.
+remember S as f; simpl; subst f.
+rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+do 4 rewrite Nat.sub_succ, Nat.sub_0_r.
+f_equal; [ | apply Nat.mul_shuffle0 ].
+do 2 rewrite Nat.mul_sub_distr_r.
+do 2 rewrite Nat.mul_assoc.
+rewrite Nat_sub_sub_swap.
+f_equal; f_equal.
+apply Nat.mul_shuffle0.
+Qed.
+
 Theorem PQadd_sub_swap: ∀ x y z, (z ≤ x)%PQ → (x + y - z == x - z + y)%PQ.
 Proof.
 intros * Hzx.
-unfold "=="%PQ, nd.
-f_equal.
--simpl; unfold PQsub_num, PQadd_num, nd; simpl.
- unfold PQadd_num, PQadd_den1, nd.
- unfold PQsub_num, nd.
-
-...
+unfold "≤"%PQ, nd in Hzx.
+unfold "=="%PQ, "-"%PQ, PQsub_num, PQadd_den1, nd.
+remember S as f; simpl; subst f.
+unfold PQadd_den1, PQadd_num, nd.
+remember S as f; simpl; subst f.
+rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+do 4 rewrite Nat.sub_succ, Nat.sub_0_r.
+f_equal; [ | apply Nat.mul_shuffle0 ].
+rewrite Nat.mul_sub_distr_r.
+rewrite Nat.mul_add_distr_r.
+do 2 rewrite Nat.mul_assoc.
+rewrite Nat.add_sub_swap.
+-f_equal; f_equal.
+ apply Nat.mul_shuffle0.
+-remember (PQnum z * S (PQden1 x)) as u.
+ rewrite Nat.mul_shuffle0; subst u.
+ now apply Nat.mul_le_mono_r.
+Qed.
 
       (* --------- *)
 
@@ -912,9 +926,6 @@ destruct b1.
        now unfold "≤"%PQ.
     ---simpl; symmetry.
        rewrite PQsub_sub_assoc.
-...
-now apply PQadd_sub_swap.
-Search (_ + _ - _)%nat.
-Nat.add_sub_swap: ∀ n m p : nat, p ≤ n → (n + m - p)%nat = (n - p + m)%nat
-Search (_ + _ - _)%PQ.
+     +++now apply PQadd_sub_swap.
+     +++split; [ easy | ].
 ...
