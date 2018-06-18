@@ -848,3 +848,7 @@ destruct b1.
       destruct (PQlt_le_dec (MQpos x) (MQpos y - MQpos z)) as [H4| H4].
     ---apply PQsub_sub_swap.
     ---exfalso.
+       apply PQnlt_ge in H4; apply H4; clear H4.
+       apply PQlt_add_lt_sub_r.
+(* ??? *)
+(* ah bin merdalor *)
