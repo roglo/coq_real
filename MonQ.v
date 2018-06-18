@@ -11,11 +11,13 @@ Record PQ := PQmake { PQnum : nat; PQden1 : nat }.
 Arguments PQnum x%PQ : rename.
 Arguments PQden1 x%PQ : rename.
 
+Notation "0" := (PQmake 0 1) : PQ_scope.
+
 Definition nd x y := PQnum x * S (PQden1 y).
 
+(* equality *)
+
 Definition PQeq x y := nd x y = nd y x.
-Definition PQlt x y := nd x y < nd y x.
-Definition PQle x y := nd x y ≤ nd y x.
 
 Notation "x == y" := (PQeq x y) (at level 70) : PQ_scope.
 
@@ -49,6 +51,80 @@ Add Parametric Relation : _ PQeq
  symmetry proved by PQeq_symm
  transitivity proved by PQeq_trans
  as PQeq_equiv_rel.
+
+(* lt le *)
+
+Definition PQlt x y := nd x y < nd y x.
+Definition PQle x y := nd x y ≤ nd y x.
+
+Notation "x < y" := (PQlt x y) : PQ_scope.
+Notation "x ≤ y" := (PQle x y) : PQ_scope.
+Notation "x > y" := (¬ PQle x y) : PQ_scope.
+Notation "x ≥ y" := (¬ PQlt x y) : PQ_scope.
+
+Theorem PQnlt_ge : ∀ x y, ¬ (x < y)%PQ ↔ (y ≤ x)%PQ.
+Proof.
+intros.
+split; intros H; [ now apply Nat.nlt_ge in H | ].
+now apply Nat.nlt_ge.
+Qed.
+
+Theorem PQlt_le_dec : ∀ x y : PQ, {(x < y)%PQ} + {(y ≤ x)%PQ}.
+Proof.
+intros (xn, xd) (yn, yd).
+unfold PQlt, PQle, nd; simpl.
+destruct (lt_dec (xn * S yd) (yn * S xd)) as [H1| H1]; [ now left | ].
+now right; apply Nat.nlt_ge.
+Qed.
+Arguments PQlt_le_dec x%PQ y%PQ.
+
+Instance PQlt_morph : Proper (PQeq ==> PQeq ==> iff) PQlt.
+Proof.
+assert (H : ∀ x1 x2 y1 y2,
+  (x1 == x2)%PQ → (y1 == y2)%PQ → (x1 < y1)%PQ → (x2 < y2)%PQ). {
+  intros * Hx Hy Hxy.
+  unfold "<"%PQ, nd in Hxy |-*.
+  unfold "=="%PQ, nd in Hx, Hy.
+  destruct x1 as (x1n, x1d).
+  destruct x2 as (x2n, x2d).
+  destruct y1 as (y1n, y1d).
+  destruct y2 as (y2n, y2d).
+  remember S as f; simpl in *; subst f.
+  remember (S x1d) as u.
+  assert (Hx1 : 0 < u) by flia Hequ.
+  clear x1d Hequ; rename u into x1d.
+  remember (S x2d) as u.
+  assert (Hx2 : 0 < u) by flia Hequ.
+  clear x2d Hequ; rename u into x2d.
+  remember (S y1d) as u.
+  assert (Hy1 : 0 < u) by flia Hequ.
+  clear y1d Hequ; rename u into y1d.
+  remember (S y2d) as u.
+  assert (Hy2 : 0 < u) by flia Hequ.
+  clear y2d Hequ; rename u into y2d.
+  move x1d before y2n; move x2d before x1d.
+  move Hx at bottom; move Hy at bottom.
+  move Hxy at bottom.
+  apply (Nat.mul_lt_mono_pos_r x1d); [ easy | ].
+  rewrite Nat.mul_shuffle0, <- Hx.
+  setoid_rewrite Nat.mul_shuffle0.
+  apply Nat.mul_lt_mono_pos_r; [ easy | ].
+  apply (Nat.mul_lt_mono_pos_r y1d); [ easy | ].
+  remember (x1n * y2d) as u.
+  rewrite Nat.mul_shuffle0; subst u.
+  rewrite <- Hy.
+  setoid_rewrite Nat.mul_shuffle0.
+  now apply Nat.mul_lt_mono_pos_r.
+}
+intros x1 x2 Hx y1 y2 Hy.
+move y1 before x2; move y2 before y1.
+split; intros Hxy.
+-now apply (H x1 x2 y1 y2).
+-symmetry in Hx, Hy.
+ now apply (H x2 x1 y2 y1).
+Qed.
+
+(* addition, subtraction *)
 
 Definition PQadd_num x y := nd x y + nd y x.
 Definition PQsub_num x y := nd x y - nd y x.
@@ -137,28 +213,6 @@ rewrite Hy.
 f_equal; ring.
 Qed.
 
-Notation "0" := (PQmake 0 1) : PQ_scope.
-Notation "x < y" := (PQlt x y) : PQ_scope.
-Notation "x ≤ y" := (PQle x y) : PQ_scope.
-Notation "x > y" := (¬ PQle x y) : PQ_scope.
-Notation "x ≥ y" := (¬ PQlt x y) : PQ_scope.
-
-Theorem PQnlt_ge : ∀ x y, ¬ (x < y)%PQ ↔ (y ≤ x)%PQ.
-Proof.
-intros.
-split; intros H; [ now apply Nat.nlt_ge in H | ].
-now apply Nat.nlt_ge.
-Qed.
-
-Theorem PQlt_le_dec : ∀ x y : PQ, {(x < y)%PQ} + {(y ≤ x)%PQ}.
-Proof.
-intros (xn, xd) (yn, yd).
-unfold PQlt, PQle, nd; simpl.
-destruct (lt_dec (xn * S yd) (yn * S xd)) as [H1| H1]; [ now left | ].
-now right; apply Nat.nlt_ge.
-Qed.
-Arguments PQlt_le_dec x%PQ y%PQ.
-
 Theorem PQnum_add_comm : ∀ x y, PQnum (x + y) = PQnum (y + x).
 Proof.
 intros.
@@ -218,15 +272,35 @@ f_equal.
  ring.
 Qed.
 
+Theorem PQlt_irrefl : ∀ x, (¬ x < x)%PQ.
+Proof. intros x; apply Nat.lt_irrefl. Qed.
+
+Theorem PQlt_le_incl : ∀ x y, (x < y)%PQ → (x ≤ y)%PQ.
+Proof. intros * Hxy; now apply Nat.lt_le_incl. Qed.
+
+Theorem PQsub_add : ∀ n m, (n ≤ m)%PQ → (m - n + n == m)%PQ.
+Admitted.
+
+Theorem PQadd_lt_mono_r : ∀ n m p, (n < m)%PQ ↔ (n + p < m + p)%PQ.
+Admitted.
+
+Theorem PQsub_0_le : ∀ n m, (n - m == 0)%PQ ↔ (n ≤ m)%PQ.
+Admitted.
+
 Theorem PQlt_add_lt_sub_r : ∀ x y z, (x + z < y)%PQ ↔ (x < y - z)%PQ.
 Proof.
 intros.
-split; intros H.
--idtac.
-Search (_ + _ < _ + _)%nat.
-Check Nat.add_lt_mono_r.
-Check Nat.add_lt_compat.
-(* est-ce que le th est vrai, d'abord ? *)
+destruct (PQlt_le_dec z y) as [LE| GE].
+-rewrite <- (PQsub_add z y) at 1 by now apply PQlt_le_incl.
+ now rewrite <- PQadd_lt_mono_r.
+-assert (GE' := GE).
+ rewrite <- PQsub_0_le in GE'; rewrite GE'.
+ split; intros Lt.
+ +elim (PQlt_irrefl y).
+...
+elim (lt_irrefl m). apply le_lt_trans with (n+p); trivial.
+ rewrite <- (add_0_l m). apply add_le_mono. apply le_0_l. assumption.
+now elim (nlt_0_r n).
 ...
 
       (* --------- *)
