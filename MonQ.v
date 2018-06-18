@@ -382,6 +382,24 @@ f_equal.
  ring.
 Qed.
 
+Theorem PQsub_sub_swap : ∀ x y z, (x - y - z == x - z - y)%PQ.
+Proof.
+intros.
+unfold "=="%PQ, "-"%PQ, PQsub_num, PQadd_den1, nd.
+remember S as f; simpl; subst f.
+rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+do 4 rewrite Nat.sub_succ, Nat.sub_0_r.
+f_equal; [ | apply Nat.mul_shuffle0 ].
+do 2 rewrite Nat.mul_sub_distr_r.
+do 2 rewrite Nat.mul_assoc.
+rewrite Nat_sub_sub_swap.
+f_equal; f_equal.
+apply Nat.mul_shuffle0.
+Qed.
+
 Theorem PQlt_irrefl : ∀ x, (¬ x < x)%PQ.
 Proof. intros x; apply Nat.lt_irrefl. Qed.
 
@@ -827,3 +845,6 @@ destruct b1.
        apply Bool.eqb_false_iff in Hb4.
        now destruct (MQsign x), (MQsign y), (MQsign z).
     **simpl; rewrite Hb2.
+      destruct (PQlt_le_dec (MQpos x) (MQpos y - MQpos z)) as [H4| H4].
+    ---apply PQsub_sub_swap.
+    ---exfalso.
