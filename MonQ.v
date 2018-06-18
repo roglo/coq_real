@@ -365,6 +365,18 @@ replace (yn * yd * xd * xd) with (yn * xd * xd * yd) by flia.
 f_equal; f_equal; lia.
 Qed.
 
+Theorem PQle_trans : ∀ x y z, (x ≤ y)%PQ → (y ≤ z)%PQ → (x ≤ z)%PQ.
+Proof.
+intros * Hxy Hyz.
+unfold "≤"%PQ, nd in Hxy, Hyz |-*.
+apply (Nat.mul_le_mono_pos_r _ _ (S (PQden1 y))); [ flia | ].
+rewrite Nat.mul_shuffle0.
+apply (Nat.le_trans _ (PQnum y * S (PQden1 x) * S (PQden1 z))).
+-apply Nat.mul_le_mono_pos_r; [ flia | easy ].
+-setoid_rewrite Nat.mul_shuffle0.
+ apply Nat.mul_le_mono_pos_r; [ flia | easy ].
+Qed.
+
 Theorem PQle_lt_trans : ∀ x y z, (x ≤ y)%PQ → (y < z)%PQ → (x < z)%PQ.
 Proof.
 intros * Hxy Hyz.
@@ -402,6 +414,32 @@ split; intros H.
  apply Nat.add_lt_mono_r in H.
  setoid_rewrite Nat.mul_shuffle0 in H.
  apply Nat.mul_lt_mono_pos_r in H; [ easy | flia ].
+Qed.
+
+Theorem PQadd_le_mono_r : ∀ x y z, (x ≤ y ↔ x + z ≤ y + z)%PQ.
+Proof.
+unfold "≤"%PQ, "+"%PQ, PQadd_num, PQadd_den1, nd.
+remember S as f; simpl; subst f.
+intros *.
+rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
+do 2 rewrite Nat.mul_assoc.
+split; intros H.
+-apply Nat.mul_le_mono_pos_r; [ flia | ].
+ do 2 rewrite Nat.mul_add_distr_r.
+ remember (PQnum x * S (PQden1 z)) as u.
+ rewrite Nat.mul_shuffle0; subst u.
+ apply Nat.add_le_mono_r.
+ setoid_rewrite Nat.mul_shuffle0.
+ apply Nat.mul_le_mono_pos_r; [ flia | easy ].
+-apply Nat.mul_le_mono_pos_r in H; [ | flia ].
+ do 2 rewrite Nat.mul_add_distr_r in H.
+ remember (PQnum x * S (PQden1 z)) as u.
+ rewrite Nat.mul_shuffle0 in H; subst u.
+ apply Nat.add_le_mono_r in H.
+ setoid_rewrite Nat.mul_shuffle0 in H.
+ apply Nat.mul_le_mono_pos_r in H; [ easy | flia ].
 Qed.
 
 Theorem PQadd_le_mono : ∀ x y z t,
@@ -458,6 +496,89 @@ destruct (PQlt_le_dec z y) as [LE| GE].
   apply PQle_0_l.
  +now elim (PQnlt_0_r x).
 Qed.
+
+Theorem PQsub_add_le : ∀ n m, (n ≤ n - m + m)%PQ.
+...
+
+Theorem PQle_sub_le_add_r : ∀ x y z, (x - z ≤ y ↔ x ≤ y + z)%PQ.
+Proof.
+intros.
+split; intros LE.
+-rewrite (PQadd_le_mono_r _ _ z) in LE.
+ apply PQle_trans with (x - z + z)%PQ; [ | easy ].
+Check Nat.sub_add_le.
+Check PQsub_add_le.
+...
+; auto using sub_add_le.
+...
+
+Theorem le_sub_le_add_r : forall n m p,
+ n - p <= m <-> n <= m + p.
+Proof.
+intros n m p.
+split; intros LE.
+rewrite (add_le_mono_r _ _ p) in LE.
+apply le_trans with (n-p+p); auto using sub_add_le.
+destruct (le_ge_cases n p) as [LE'|GE].
+rewrite <- sub_0_le in LE'. rewrite LE'. apply le_0_l.
+rewrite (add_le_mono_r _ _ p). now rewrite sub_add.
+Qed.
+
+intros.
+split; intros LE.
+-rewrite (PQadd_le_mono_r _ _ z) in LE.
+ apply PQle_trans with (x - z + z)%PQ; [ | easy ].
+ destruct (PQlt_le_dec x z) as [LE'|GE].
+ +apply PQlt_le_incl in LE'.
+  rewrite <- PQsub_0_le in LE'.
+  rewrite LE'.
+Check PQle_0_l.
+...
+  apply PQle_0_l.
+  ...
+ rewrite LE'. apply le_0_l.
+...
+
+rewrite <- sub_0_le in LE'. rewrite LE'. apply le_0_l.
+rewrite (add_le_mono_r _ _ p). now rewrite sub_add.
+...
+
+destruct (le_ge_cases n p) as [LE'|GE].
+rewrite <- sub_0_le in LE'. rewrite LE'. apply le_0_l.
+rewrite (add_le_mono_r _ _ p). now rewrite sub_add.
+Qed.
+...
+
+intros.
+rewrite (PQadd_le_mono_r _ _ z).
+split.
+-intros.
+ rewrite PQsub_add in H.
+
+Check PQsub_add.
+
+Theorem sub_simpl_r : forall n m, n - m + m == n.
+Proof.
+intros; now rewrite <- sub_sub_distr, sub_diag, sub_0_r.
+Qed.
+
+Focus 2.
+...
+Check Nat.sub_add.
+...
+
+rewrite PQsub_add.
+easy.
+
+
+     : ∀ n m p : nat, n ≤ m ↔ n + p ≤ m + p
+Nat.add_le_mono
+     : ∀ n m p q : nat, n ≤ m → p ≤ q → n + p ≤ m + q
+rewrite (PQadd_le_mono _ _ z).
+rewrite (PQadd_le_mono_r _ _ z).
+intros n m p. now rewrite (add_le_mono_r _ _ p), sub_simpl_r.
+About Nat.le_sub_le_add_r.
+...
 
       (* --------- *)
 
@@ -611,3 +732,7 @@ destruct b1.
    ++simpl; rewrite Hb3.
      destruct (PQlt_le_dec (MQpos x) (MQpos z - MQpos y)) as [H3| H3].
     **exfalso.
+      apply PQnlt_ge in H3; [ easy | ].
+...
+      now apply PQle_sub_le_add_r.
+    **idtac.
