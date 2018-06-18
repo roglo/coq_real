@@ -626,6 +626,24 @@ split; intros LE.
   now rewrite PQsub_add.
 Qed.
 
+Theorem PQle_add_le_sub_r : ∀ x y z, (x + z ≤ y → x ≤ y - z)%PQ.
+Proof.
+intros * LE.
+apply (PQadd_le_mono_r _ _ z).
+rewrite PQsub_add; [ easy | ].
+apply PQle_trans with (x + z)%PQ; [ | easy ].
+rewrite <- (PQadd_0_l z) at 1.
+rewrite <- PQadd_le_mono_r.
+apply PQle_0_l.
+Qed.
+
+Theorem PQle_add_le_sub_l: ∀ x y z, (x + z ≤ y → z ≤ y - x)%PQ.
+Proof.
+intros *.
+rewrite PQadd_comm.
+apply PQle_add_le_sub_r.
+Qed.
+
       (* --------- *)
 
 Delimit Scope MQ_scope with MQ.
@@ -852,20 +870,20 @@ destruct b1.
      +++rewrite PQsub_sub_swap.
         now apply PQsub_0_le.
      +++apply PQsub_0_le.
+        apply PQle_add_le_sub_l.
+        apply (PQadd_le_mono_r _ _ (MQpos x)) in H2.
+        rewrite PQsub_add in H2; [ easy | ].
+        now apply PQlt_le_incl.
+  *simpl; rewrite Hb4.
+   destruct b4.
+  --simpl.
+    destruct b3.
+   ++exfalso.
+     apply Bool.eqb_false_iff in Hb2.
+     apply -> Bool.eqb_true_iff in Hb3.
+     apply -> Bool.eqb_true_iff in Hb4.
+     now rewrite Hb3, <- Hb4 in Hb2.
+   ++simpl.
+     destruct (PQlt_le_dec (MQpos y) (MQpos z)) as [H2| H2].
+    **simpl; rewrite Hb4; simpl.
 ...
-Theorem PQle_add_le_sub_l: ∀ n m p, (n + p ≤ m → p ≤ m - n)%PQ.
-Admitted.
-apply PQle_add_le_sub_l.
-rewrite PQadd_comm.
-
-Search (_ ≤ _ - _)%nat.
-...
-apply PQsub_add in H2.
-Nat.le_add_le_sub_l: ∀ n m p : nat, n + p ≤ m → p ≤ m - n
-Nat.le_add_le_sub_r: ∀ n m p : nat, n + p ≤ m → n ≤ m - p
-...
-
-     +++rewrite PQsub_sub_assoc.
-rewrite PQadd_comm.
-apply PQsub_0_le.
-Search (_ + _ ≤ _)%PQ.
