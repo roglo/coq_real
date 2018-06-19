@@ -928,4 +928,15 @@ destruct b1.
        rewrite PQsub_sub_assoc.
      +++now apply PQadd_sub_swap.
      +++split; [ easy | ].
+        now apply PQle_sub_le_add_r.
+  --destruct (PQlt_le_dec (MQpos x - MQpos y) (MQpos z)) as [H2| H2].
+   **simpl.
+     destruct b3.
+   ---simpl; rewrite Hb2.
+      destruct (PQlt_le_dec (MQpos x) (MQpos y + MQpos z)) as [H3| H3].
+    +++simpl.
+       rewrite PQadd_comm.
+       apply PQsub_sub_assoc.
+       split; [ easy | now rewrite PQadd_comm; apply PQlt_le_incl ].
+    +++exfalso.
 ...
