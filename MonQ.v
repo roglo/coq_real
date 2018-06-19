@@ -949,4 +949,14 @@ destruct b1.
    **simpl.
      destruct b3.
    ---simpl; rewrite Hb2.
+      destruct (PQlt_le_dec (MQpos x) (MQpos y + MQpos z)) as [H3| H3].
+    +++exfalso.
+       apply PQnlt_ge in H2; apply H2; clear H2.
+       apply (PQadd_lt_mono_r _ _ (MQpos y)).
+       rewrite PQsub_add; [ | easy ].
+       now rewrite PQadd_comm.
+    +++simpl; symmetry.
+       apply PQsub_add_distr.
+   ---destruct (PQlt_le_dec (MQpos y) (MQpos z)) as [H3| H3].
+    +++simpl; rewrite Hb4.
 ...
