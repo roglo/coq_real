@@ -1082,4 +1082,44 @@ destruct b1.
        unfold "=="%PQ in H6.
        unfold PQsub_num in H1.
        rewrite H6, Nat.sub_diag, Nat.add_0_l in H1.
+       apply (PQadd_le_mono_r _ _ (MQpos x)) in H3.
+       apply (PQadd_le_mono_r _ _ (MQpos x)) in H5.
+       rewrite PQsub_add in H3; [ | now apply PQlt_le_incl ].
+       rewrite PQsub_add in H5; [ | now apply PQlt_le_incl ].
+       rewrite PQadd_comm in H3, H5.
+       apply PQle_add_le_sub_r in H3.
+       apply PQle_sub_le_add_r in H5.
+       specialize (PQle_antisymm _ _ H3 H5) as H7.
+       unfold "=="%PQ in H7.
+       now rewrite H7, Nat.sub_diag in H1.
+  *simpl in Hb1, H1.
+   rewrite Hbxz in Hb1, H1.
+   destruct bxz; simpl in Hb1, H1.
+  --destruct byz; simpl in Hb1, H1.
+   ++apply Bool.eqb_false_iff in Hbxy.
+     apply -> Bool.eqb_true_iff in Hbxz.
+     apply -> Bool.eqb_true_iff in Hbyz.
+     now rewrite Hbxz, Hbyz in Hbxy.
+   ++destruct (PQlt_le_dec (MQpos y) (MQpos z)) as [H3| H3]; simpl in Hb1, H1.
+    **now rewrite Hbxz in Hb1.
+    **rewrite Hbxy in Hb1, H1; simpl in Hb1, H1.
+      destruct (PQlt_le_dec (MQpos x) (MQpos y - MQpos z)) as [H4| H4].
+    ---clear Hb1 H1.
+       apply PQnlt_ge in H2; apply H2.
+       eapply PQlt_le_trans; [ apply H4 | ].
+       apply PQle_sub_le_add_r.
+       rewrite PQadd_comm.
+       apply PQle_sub_le_add_r.
+       rewrite PQsub_diag.
+       apply PQle_0_l.
+    ---easy.
+  --destruct byz; simpl in Hb1, H1.
+   ++rewrite Hbxy in Hb1, H1.
+     destruct (PQlt_le_dec (MQpos x - MQpos y) (MQpos z)) as [H3| H3].
+    **simpl in Hb1, H1.
+      destruct (PQlt_le_dec (MQpos x) (MQpos y + MQpos z)) as [H4| H4].
+    ---simpl in Hb1, H1.
+       apply -> Bool.eqb_true_iff in Hbyz.
+       now rewrite Hbyz in Hb1.
+    ---simpl in Hb1, H1.
 ...
