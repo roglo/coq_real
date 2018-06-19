@@ -1057,9 +1057,35 @@ destruct b1.
         apply Bool.eqb_false_iff in Hbyz.
         now destruct (MQsign x), (MQsign y), (MQsign z).
    ++simpl in Hb1, H1.
-     destruct (PQlt_le_dec (MQpos y) (MQpos z)) as [H4| H4].
-    **simpl in Hb1, H1.
-      rewrite Hbxz in Hb1, H1.
-      destruct bxz; simpl in Hb1, H1.
-    ---idtac.
+     destruct (PQlt_le_dec (MQpos y) (MQpos z)) as [H4| H4]; simpl in Hb1, H1.
+    **clear Hb1 H1.
+      apply PQnlt_ge in H3; apply H3.
+      eapply PQle_lt_trans; [ | apply H4 ].
+      apply PQle_sub_le_add_r.
+      rewrite <- PQadd_0_r at 1.
+      apply PQadd_le_mono; [ | apply PQle_0_l ].
+      now unfold "≤"%PQ.
+    **rewrite Hbxy in Hb1, H1.
+      destruct (PQlt_le_dec (MQpos x) (MQpos y - MQpos z)) as [H5| H5].
+    ---easy.
+    ---simpl in Hb1, H1.
+       apply PQle_sub_le_add_r in H5.
+       rewrite PQadd_comm in H5.
+       apply PQle_sub_le_add_r in H5.
+...
+       unfold PQsub_num, nd in H1; simpl in H1.
+       unfold PQsub_num, nd in H1; simpl in H1.
+...
+Theorem PQle_antisymm : ∀ n m, (n ≤ m)%PQ → (m ≤ n)%PQ → (n == m)%PQ.
+Admitted.
+       specialize (PQle_antisymm _ _ H3 H5) as H6.
+       rewrite <- H6 in H1.
+...
+simpl in H1.
+
+Search (_ ≤ _ → _ ≤ _ → _ = _)%nat.
+Set Printing All.
+Search PQsub_num.
+       rewrite <- H6 in H1.
+
 ...
