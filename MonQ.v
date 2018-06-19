@@ -1028,5 +1028,38 @@ destruct b1.
      apply PQle_sub_le_add_r.
      rewrite PQsub_diag.
      apply PQle_0_l.
-  --idtac.
+  --destruct (PQlt_le_dec (MQpos y - MQpos x) (MQpos z)) as [H3| H3].
+   ++simpl in Hb1, H1.
+     destruct (PQlt_le_dec (MQpos y) (MQpos z)) as [H4| H4].
+    **simpl in Hb1, H1.
+      rewrite Hbxz in Hb1, H1.
+      destruct bxz.
+    ---simpl in Hb1, H1.
+       apply -> Bool.eqb_true_iff in Hbxz.
+       now symmetry in Hbxz.
+    ---apply Bool.eqb_false_iff in Hbxy.
+       apply Bool.eqb_false_iff in Hbxz.
+       apply Bool.eqb_false_iff in Hbyz.
+       now destruct (MQsign x), (MQsign y), (MQsign z).
+    **simpl in Hb1, H1.
+      rewrite Hbxy in Hb1, H1.
+      destruct (PQlt_le_dec (MQpos x) (MQpos y - MQpos z)) as [H5| H5].
+    ---apply PQnlt_ge in H5; [ easy | ].
+       apply PQle_sub_le_add_r.
+       rewrite PQadd_comm.
+       now apply PQle_sub_le_add_r, PQlt_le_incl.
+    ---simpl in Hb1, H1.
+       destruct bxz.
+     +++apply -> Bool.eqb_true_iff in Hbxz.
+        now symmetry in Hbxz.
+     +++apply Bool.eqb_false_iff in Hbxy.
+        apply Bool.eqb_false_iff in Hbxz.
+        apply Bool.eqb_false_iff in Hbyz.
+        now destruct (MQsign x), (MQsign y), (MQsign z).
+   ++simpl in Hb1, H1.
+     destruct (PQlt_le_dec (MQpos y) (MQpos z)) as [H4| H4].
+    **simpl in Hb1, H1.
+      rewrite Hbxz in Hb1, H1.
+      destruct bxz; simpl in Hb1, H1.
+    ---idtac.
 ...
