@@ -669,6 +669,14 @@ rewrite Nat.add_sub_swap.
  now apply Nat.mul_le_mono_r.
 Qed.
 
+Theorem PQsub_diag : ∀ x, (x - x == 0)%PQ.
+Proof.
+intros.
+unfold "=="%PQ, nd; simpl.
+unfold PQsub_num.
+now rewrite Nat.sub_diag.
+Qed.
+
       (* --------- *)
 
 Delimit Scope MQ_scope with MQ.
@@ -964,4 +972,44 @@ destruct b1.
       now destruct (MQsign x), (MQsign y), (MQsign z).
 -destruct (zerop (PQnum (MQpos (x + y + z)) + PQnum (MQpos (x + (y + z)))))
     as [H1| H1]; [ easy | ].
+ apply Bool.eqb_false_iff in Hb1.
+ unfold "+"%MQ in Hb1, H1.
+ remember (Bool.eqb (MQsign x) (MQsign y)) as bxy eqn:Hbxy.
+ remember (Bool.eqb (MQsign x) (MQsign z)) as bxz eqn:Hbxz.
+ symmetry in Hbxy, Hbxz.
+ move bxz before bxy; move Hbxz before Hbxy.
+ destruct bxy.
+ +simpl in Hb1, H1.
+  apply -> Bool.eqb_true_iff in Hbxy.
+  rewrite <- Hbxy, Hbxz in Hb1, H1.
+  destruct bxz.
+  *simpl in Hb1, H1.
+   rewrite Bool.eqb_reflx in Hb1, H1.
+   now simpl in Hb1, H1.
+  *destruct (PQlt_le_dec (MQpos x + MQpos y) (MQpos z)) as [H2| H2].
+  --simpl in Hb1, H1.
+    destruct (PQlt_le_dec (MQpos y) (MQpos z)) as [H3| H3].
+   ++simpl in Hb1, H1.
+     rewrite Hbxz in Hb1, H1.
+     destruct (PQlt_le_dec (MQpos x) (MQpos z - MQpos y)) as [H4| H4].
+    **now simpl in Hb1.
+    **simpl in Hb1, H1.
+      apply PQle_sub_le_add_r in H4.
+      now apply PQnlt_ge in H4; apply H4.
+   ++apply PQnlt_ge in H3; apply H3.
+     eapply PQle_lt_trans; [ | apply H2 ].
+     apply PQle_sub_le_add_r.
+     rewrite PQsub_diag.
+     apply PQle_0_l.
+  --simpl in Hb1, H1.
+    destruct (PQlt_le_dec (MQpos y) (MQpos z)) as [H3| H3].
+   ++simpl in Hb1, H1.
+     rewrite Hbxz in Hb1, H1.
+     destruct (PQlt_le_dec (MQpos x) (MQpos z - MQpos y)) as [H4| H4].
+    **simpl in Hb1, H1.
+      apply PQlt_add_lt_sub_r in H4.
+      now apply PQnlt_ge in H2.
+    **easy.
+   ++now rewrite Bool.eqb_reflx in Hb1.
+ +idtac.
 ...
