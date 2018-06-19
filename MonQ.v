@@ -976,11 +976,14 @@ destruct b1.
  unfold "+"%MQ in Hb1, H1.
  remember (Bool.eqb (MQsign x) (MQsign y)) as bxy eqn:Hbxy.
  remember (Bool.eqb (MQsign x) (MQsign z)) as bxz eqn:Hbxz.
- symmetry in Hbxy, Hbxz.
- move bxz before bxy; move Hbxz before Hbxy.
+ remember (Bool.eqb (MQsign y) (MQsign z)) as byz eqn:Hbyz.
+ symmetry in Hbxy, Hbxz, Hbyz.
+ move bxz before bxy; move byz before bxz.
+ move Hbxz before Hbxy; move Hbyz before Hbxz.
  destruct bxy.
  +simpl in Hb1, H1.
   apply -> Bool.eqb_true_iff in Hbxy.
+  rewrite <- Hbxy, Hbxz in Hbyz; subst byz.
   rewrite <- Hbxy, Hbxz in Hb1, H1.
   destruct bxz.
   *simpl in Hb1, H1.
@@ -1011,5 +1014,19 @@ destruct b1.
       now apply PQnlt_ge in H2.
     **easy.
    ++now rewrite Bool.eqb_reflx in Hb1.
- +idtac.
+ +destruct (PQlt_le_dec (MQpos x) (MQpos y)) as [H2| H2].
+  *simpl in Hb1, H1.
+   rewrite Hbyz in Hb1, H1.
+   destruct byz.
+  --simpl in Hb1, H1.
+    rewrite Hbxy in Hb1, H1.
+    destruct (PQlt_le_dec (MQpos x) (MQpos y + MQpos z)) as [H3| H3].
+   ++easy.
+   ++apply PQnlt_ge in H3; apply H3.
+     eapply PQlt_le_trans; [ apply H2 | ].
+     rewrite PQadd_comm.
+     apply PQle_sub_le_add_r.
+     rewrite PQsub_diag.
+     apply PQle_0_l.
+  --idtac.
 ...
