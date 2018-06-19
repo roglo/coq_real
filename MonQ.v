@@ -677,6 +677,12 @@ unfold PQsub_num.
 now rewrite Nat.sub_diag.
 Qed.
 
+Theorem PQle_antisymm : ∀ x y, (x ≤ y)%PQ → (y ≤ x)%PQ → (x == y)%PQ.
+Proof.
+intros * Hxy Hyx.
+apply (Nat.le_antisymm _ _ Hxy Hyx).
+Qed.
+
       (* --------- *)
 
 Delimit Scope MQ_scope with MQ.
@@ -1072,20 +1078,5 @@ destruct b1.
        apply PQle_sub_le_add_r in H5.
        rewrite PQadd_comm in H5.
        apply PQle_sub_le_add_r in H5.
-...
-       unfold PQsub_num, nd in H1; simpl in H1.
-       unfold PQsub_num, nd in H1; simpl in H1.
-...
-Theorem PQle_antisymm : ∀ n m, (n ≤ m)%PQ → (m ≤ n)%PQ → (n == m)%PQ.
-Admitted.
        specialize (PQle_antisymm _ _ H3 H5) as H6.
-       rewrite <- H6 in H1.
-...
-simpl in H1.
-
-Search (_ ≤ _ → _ ≤ _ → _ = _)%nat.
-Set Printing All.
-Search PQsub_num.
-       rewrite <- H6 in H1.
-
 ...
