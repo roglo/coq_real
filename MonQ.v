@@ -957,6 +957,11 @@ destruct b1.
        now rewrite PQadd_comm.
     +++simpl; symmetry.
        apply PQsub_add_distr.
-   ---destruct (PQlt_le_dec (MQpos y) (MQpos z)) as [H3| H3].
-    +++simpl; rewrite Hb4.
+   ---exfalso.
+      apply Bool.eqb_false_iff in Hb2.
+      apply Bool.eqb_false_iff in Hb3.
+      apply Bool.eqb_false_iff in Hb4.
+      now destruct (MQsign x), (MQsign y), (MQsign z).
+-destruct (zerop (PQnum (MQpos (x + y + z)) + PQnum (MQpos (x + (y + z)))))
+    as [H1| H1]; [ easy | ].
 ...
