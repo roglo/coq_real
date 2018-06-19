@@ -1079,4 +1079,7 @@ destruct b1.
        rewrite PQadd_comm in H5.
        apply PQle_sub_le_add_r in H5.
        specialize (PQle_antisymm _ _ H3 H5) as H6.
+       unfold "=="%PQ in H6.
+       unfold PQsub_num in H1.
+       rewrite H6, Nat.sub_diag, Nat.add_0_l in H1.
 ...
