@@ -939,4 +939,14 @@ destruct b1.
        apply PQsub_sub_assoc.
        split; [ easy | now rewrite PQadd_comm; apply PQlt_le_incl ].
     +++exfalso.
+       apply PQle_add_le_sub_l in H3.
+       now apply PQnlt_ge in H3.
+   ---exfalso.
+      apply Bool.eqb_false_iff in Hb2.
+      apply Bool.eqb_false_iff in Hb3.
+      apply Bool.eqb_false_iff in Hb4.
+      now destruct (MQsign x), (MQsign y), (MQsign z).
+   **simpl.
+     destruct b3.
+   ---simpl; rewrite Hb2.
 ...
