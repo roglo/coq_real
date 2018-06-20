@@ -303,6 +303,25 @@ do 4 rewrite Nat.sub_0_r.
 ring.
 Qed.
 
+Theorem PQadd_0_l : ∀ x, (0 + x == x)%PQ.
+Proof.
+intros x.
+unfold "=="%PQ, "+"%PQ, nd; simpl.
+unfold PQadd_num, PQadd_den1, nd; simpl.
+rewrite Nat.add_0_r, Nat.sub_0_r.
+rewrite <- Nat.mul_assoc; f_equal; simpl.
+now rewrite Nat.add_0_r.
+Qed.
+
+Theorem PQadd_0_r : ∀ x, (x + 0 == x)%PQ.
+Proof.
+intros x.
+rewrite PQadd_comm.
+apply PQadd_0_l.
+Qed.
+
+(* *)
+
 Theorem PQsub_add_distr : ∀ x y z, (x - (y + z) == x - y - z)%PQ.
 Proof.
 intros.
@@ -400,23 +419,6 @@ Proof. intros; apply Nat.le_0_l. Qed.
 
 Theorem PQnlt_0_r : ∀ x, (¬ x < 0)%PQ.
 Proof. intros; apply Nat.nlt_0_r. Qed.
-
-Theorem PQadd_0_l : ∀ x, (0 + x == x)%PQ.
-Proof.
-intros x.
-unfold "=="%PQ, "+"%PQ, nd; simpl.
-unfold PQadd_num, PQadd_den1, nd; simpl.
-rewrite Nat.add_0_r, Nat.sub_0_r.
-rewrite <- Nat.mul_assoc; f_equal; simpl.
-now rewrite Nat.add_0_r.
-Qed.
-
-Theorem PQadd_0_r : ∀ x, (x + 0 == x)%PQ.
-Proof.
-intros x.
-rewrite PQadd_comm.
-apply PQadd_0_l.
-Qed.
 
 Theorem PQsub_add : ∀ x y, (x ≤ y)%PQ → (y - x + x == y)%PQ.
 Proof.
