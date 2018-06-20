@@ -282,24 +282,19 @@ rewrite Hy.
 f_equal; ring.
 Qed.
 
-Theorem PQnum_add_comm : ∀ x y, PQnum (x + y) = PQnum (y + x).
-Proof.
-intros.
-apply Nat.add_comm.
-Qed.
-
-Theorem PQden1_add_comm : ∀ x y, PQden1 (x + y) = PQden1 (y + x).
-Proof.
-intros.
-unfold PQadd; simpl.
-unfold PQadd_den1.
-now rewrite Nat.mul_comm.
-Qed.
-
 Theorem PQadd_comm : ∀ x y, (x + y == y + x)%PQ.
 Proof.
 intros.
 unfold "==".
+assert (PQnum_add_comm : ∀ x y, PQnum (x + y) = PQnum (y + x)). {
+  intros; apply Nat.add_comm.
+}
+assert (PQden1_add_comm : ∀ x y, PQden1 (x + y) = PQden1 (y + x)). {
+  intros.
+  unfold PQadd; simpl.
+  unfold PQadd_den1.
+  now rewrite Nat.mul_comm.
+}
 unfold nd; rewrite PQnum_add_comm.
 now rewrite PQden1_add_comm.
 Qed.
