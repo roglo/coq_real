@@ -193,6 +193,13 @@ Arguments PQsub x%PQ y%PQ.
 Notation "x + y" := (PQadd x y) : PQ_scope.
 Notation "x - y" := (PQsub x y) : PQ_scope.
 
+(* allows to use rewrite inside an addition
+   e.g.
+      H : x = y
+      ====================
+      ..... (x + z)%PQ ....
+   rewrite H.
+ *)
 Instance PQadd_morph : Proper (PQeq ==> PQeq ==> PQeq) PQadd.
 Proof.
 intros x1 x2 Hx y1 y2 Hy.
@@ -230,6 +237,13 @@ rewrite Hy.
 ring.
 Qed.
 
+(* allows to use rewrite inside a subtraction
+   e.g.
+      H : x = y
+      ====================
+      ..... (x - z)%PQ ....
+   rewrite H.
+ *)
 Instance PQsub_morph : Proper (PQeq ==> PQeq ==> PQeq) PQsub.
 Proof.
 intros x1 x2 Hx y1 y2 Hy.
