@@ -10,32 +10,16 @@ Arguments MQmake _ _%PQ.
 Arguments MQsign x%MQ : rename.
 Arguments MQpos x%MQ : rename.
 
-Definition MQadd x y :=
-  if Bool.eqb (MQsign x) (MQsign y) then
-    MQmake (MQsign x) (MQpos x + MQpos y)
-  else if PQlt_le_dec (MQpos x) (MQpos y) then
-    MQmake (MQsign y) (MQpos y - MQpos x)
-  else
-    MQmake (MQsign x) (MQpos x - MQpos y).
+Notation "0" := (MQmake true 0) : MQ_scope.
 
-Definition MQopp x := MQmake (negb (MQsign x)) (MQpos x).
+(* equality *)
 
 Definition MQeq x y :=
   if Bool.eqb (MQsign x) (MQsign y) then (MQpos x == MQpos y)%PQ
   else if zerop (PQnum (MQpos x) + PQnum (MQpos y)) then True
   else False.
 
-Notation "0" := (MQmake true 0) : MQ_scope.
-Notation "- x" := (MQopp x) : MQ_scope.
 Notation "x == y" := (MQeq x y) (at level 70) : MQ_scope.
-Notation "x + y" := (MQadd x y) : MQ_scope.
-Notation "x - y" := (MQadd x (MQopp y)) : MQ_scope.
-(*
-Notation "x < y" := (MQlt x y) : MQ_scope.
-Notation "x ≤ y" := (MQle x y) : MQ_scope.
-Notation "x > y" := (¬ MQle x y) : MQ_scope.
-Notation "x ≥ y" := (¬ MQlt x y) : MQ_scope.
-*)
 
 Theorem MQeq_refl : ∀ x : MQ, (x == x)%MQ.
 Proof.
@@ -116,7 +100,32 @@ Add Parametric Relation : _ MQeq
 Instance MQeq_morph : Proper (MQeq ==> MQeq ==> iff) MQeq.
 Proof.
 Admitted.
+*)
 
+(*
+Notation "x < y" := (MQlt x y) : MQ_scope.
+Notation "x ≤ y" := (MQle x y) : MQ_scope.
+Notation "x > y" := (¬ MQle x y) : MQ_scope.
+Notation "x ≥ y" := (¬ MQlt x y) : MQ_scope.
+*)
+
+(* addition *)
+
+Definition MQadd x y :=
+  if Bool.eqb (MQsign x) (MQsign y) then
+    MQmake (MQsign x) (MQpos x + MQpos y)
+  else if PQlt_le_dec (MQpos x) (MQpos y) then
+    MQmake (MQsign y) (MQpos y - MQpos x)
+  else
+    MQmake (MQsign x) (MQpos x - MQpos y).
+
+Definition MQopp x := MQmake (negb (MQsign x)) (MQpos x).
+
+Notation "- x" := (MQopp x) : MQ_scope.
+Notation "x + y" := (MQadd x y) : MQ_scope.
+Notation "x - y" := (MQadd x (MQopp y)) : MQ_scope.
+
+(*
 Instance MQpos_morph : Proper (MQeq ==> PQeq) MQpos.
 Proof.
 Admitted.
