@@ -151,8 +151,16 @@ destruct b1.
     now apply PQlt_le_incl.
   --simpl in Hb1.
     now rewrite Bool.eqb_reflx in Hb1.
-  *idtac.
-...
+  *destruct (PQlt_le_dec (MQpos x) (MQpos y)) as [H2| H2]; simpl in Hb1 |-*.
+  --now rewrite Bool.eqb_reflx in Hb1.
+  --specialize (PQle_antisymm _ _ H1 H2) as H3.
+    destruct
+      (zerop (PQsub_num (MQpos x) (MQpos y) + PQsub_num (MQpos y) (MQpos x)))
+      as [H4| H4]; [ easy | ].
+    unfold "=="%PQ, nd in H3.
+    unfold PQsub_num, nd in H4.
+    now rewrite H3, Nat.sub_diag in H4.
+Qed.
 
 Theorem MQadd_assoc : ∀ x y z, (x + y) + z == x + (y + z).
 Proof.
