@@ -2,10 +2,10 @@ Archimedean.vio: Archimedean.v
 Archimedean.vo Archimedean.glob Archimedean.v.beautified: Archimedean.v
 FracReal.vio: FracReal.v Misc.vio Summation.vio
 FracReal.vo FracReal.glob FracReal.v.beautified: FracReal.v Misc.vo Summation.vo
+MQ.vio: MQ.v PQ.vio
+MQ.vo MQ.glob MQ.v.beautified: MQ.v PQ.vo
 Misc.vio: Misc.v
 Misc.vo Misc.glob Misc.v.beautified: Misc.v
-MonQ.vio: MonQ.v PQ.vio
-MonQ.vo MonQ.glob MonQ.v.beautified: MonQ.v PQ.vo
 PQ.vio: PQ.v Misc.vio
 PQ.vo PQ.glob PQ.v.beautified: PQ.v Misc.vo
 Small.vio: Small.v Misc.vio Summation.vio
