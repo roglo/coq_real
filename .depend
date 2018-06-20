@@ -4,9 +4,21 @@ FracReal.vio: FracReal.v Misc.vio Summation.vio
 FracReal.vo FracReal.glob FracReal.v.beautified: FracReal.v Misc.vo Summation.vo
 Misc.vio: Misc.v
 Misc.vo Misc.glob Misc.v.beautified: Misc.v
+MonQ.vio: MonQ.v PQ.vio
+MonQ.vo MonQ.glob MonQ.v.beautified: MonQ.v PQ.vo
+PQ.vio: PQ.v Misc.vio
+PQ.vo PQ.glob PQ.v.beautified: PQ.v Misc.vo
 Small.vio: Small.v Misc.vio Summation.vio
 Small.vo Small.glob Small.v.beautified: Small.v Misc.vo Summation.vo
 Summation.vio: Summation.v Misc.vio
 Summation.vo Summation.glob Summation.v.beautified: Summation.v Misc.vo
 Xnat.vio: Xnat.v Misc.vio Summation.vio
 Xnat.vo Xnat.glob Xnat.v.beautified: Xnat.v Misc.vo Summation.vo
+cat.vio: cat.v
+cat.vo cat.glob cat.v.beautified: cat.v
+hott.vio: hott.v
+hott.vo hott.glob hott.v.beautified: hott.v
+snake.vio: snake.v
+snake.vo snake.glob snake.v.beautified: snake.v
+zf.vio: zf.v
+zf.vo zf.glob zf.v.beautified: zf.v
