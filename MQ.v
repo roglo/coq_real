@@ -130,9 +130,28 @@ intros.
 unfold "==".
 remember (Bool.eqb (MQsign (x + y)) (MQsign (y + x))) as b1 eqn:Hb1.
 symmetry in Hb1.
+unfold "+"%MQ in Hb1 |-*.
+rewrite Bool_eqb_comm in Hb1 |-*.
+remember (Bool.eqb (MQsign y) (MQsign x)) as byx eqn:Hbyx.
+symmetry in Hbyx.
 destruct b1.
--unfold "+"%MQ.
- rewrite Bool_eqb_comm.
+-destruct byx; simpl; [ apply PQadd_comm | ].
+ destruct (PQlt_le_dec (MQpos x) (MQpos y)) as [H1| H1]; simpl.
+ +destruct (PQlt_le_dec (MQpos y) (MQpos x)) as [H2| H2]; [ simpl | easy ].
+  now apply PQlt_le_incl, PQnlt_ge in H2.
+ +destruct (PQlt_le_dec (MQpos y) (MQpos x)) as [H2| H2]; [ easy | simpl ].
+  now rewrite (PQle_antisymm _ _ H1 H2).
+-rewrite Bool_eqb_comm in Hbyx.
+ rewrite Hbyx in Hb1.
+ destruct byx; simpl in Hb1 |-*.
+ +now rewrite Bool_eqb_comm, Hb1 in Hbyx.
+ +destruct (PQlt_le_dec (MQpos y) (MQpos x)) as [H1| H1]; simpl in Hb1; simpl.
+  *destruct (PQlt_le_dec (MQpos x) (MQpos y)) as [H2| H2].
+  --apply PQnle_gt in H2; exfalso; apply H2.
+    now apply PQlt_le_incl.
+  --simpl in Hb1.
+    now rewrite Bool.eqb_reflx in Hb1.
+  *idtac.
 ...
 
 Theorem MQadd_assoc : ∀ x y z, (x + y) + z == x + (y + z).
