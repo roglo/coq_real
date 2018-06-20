@@ -52,7 +52,7 @@ Add Parametric Relation : _ PQeq
  transitivity proved by PQeq_trans
  as PQeq_equiv_rel.
 
-(* lt le *)
+(* inequality *)
 
 Definition PQlt x y := nd x y < nd y x.
 Definition PQle x y := nd x y ≤ nd y x.
@@ -177,6 +177,12 @@ split; intros Hxy.
 -now apply (H x1 x2 y1 y2).
 -symmetry in Hx, Hy.
  now apply (H x2 x1 y2 y1).
+Qed.
+
+Theorem PQle_antisymm : ∀ x y, (x ≤ y)%PQ → (y ≤ x)%PQ → (x == y)%PQ.
+Proof.
+intros * Hxy Hyx.
+apply (Nat.le_antisymm _ _ Hxy Hyx).
 Qed.
 
 (* addition, subtraction *)
@@ -695,8 +701,38 @@ unfold PQsub_num.
 now rewrite Nat.sub_diag.
 Qed.
 
-Theorem PQle_antisymm : ∀ x y, (x ≤ y)%PQ → (y ≤ x)%PQ → (x == y)%PQ.
+(* multiplication *)
+
+Definition PQmul_num x y := PQnum x * PQnum y.
+Definition PQmul_den1 x y := S (PQden1 x) * S (PQden1 y) - 1.
+
+Definition PQmul x y := PQmake (PQmul_num x y) (PQmul_den1 x y).
+Arguments PQmul x%PQ y%PQ.
+
+Notation "x * y" := (PQmul x y) : PQ_scope.
+
+(* allows to use rewrite inside a multiplication
+   e.g.
+      H : x = y
+      ====================
+      ..... (x * z)%PQ ....
+   rewrite H.
+ *)
+Instance PQmul_morph : Proper (PQeq ==> PQeq ==> PQeq) PQmul.
 Proof.
-intros * Hxy Hyx.
-apply (Nat.le_antisymm _ _ Hxy Hyx).
+intros x1 x2 Hx y1 y2 Hy.
+move Hx before Hy.
+unfold "*"%PQ.
+unfold "==", nd in Hx, Hy |-*; simpl.
+unfold PQmul_num, PQmul_den1.
+rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
+setoid_rewrite Nat.mul_shuffle0.
+do 2 rewrite Nat.mul_assoc.
+rewrite Hx.
+setoid_rewrite <- Nat.mul_assoc.
+f_equal.
+rewrite Nat.mul_comm, Hy.
+apply Nat.mul_comm.
 Qed.
