@@ -761,3 +761,18 @@ unfold "==", "*"%PQ, nd; f_equal; simpl.
  do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
  apply Nat.mul_assoc.
 Qed.
+
+Theorem PQmul_add_distr_l : ∀ x y z, (x * (y + z) == x * y + x * z)%PQ.
+Proof.
+intros.
+unfold "==", "*"%PQ, "+"%PQ, nd; simpl.
+unfold PQmul_num, PQadd_den1, PQadd_num, PQmul_den1, nd.
+remember S as f; simpl; subst f.
+rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+do 5 rewrite Nat.sub_succ, Nat.sub_0_r.
+ring.
+Qed.
