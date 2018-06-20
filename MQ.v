@@ -1,6 +1,6 @@
 (* Implementation of rationals using only nat *)
 
-Require Import Utf8 Arith.
+Require Import Utf8 Arith Morphisms.
 Require Import PQ.
 
 Delimit Scope MQ_scope with MQ.
@@ -112,9 +112,30 @@ Add Parametric Relation : _ MQeq
  transitivity proved by MQeq_trans
  as MQeq_equiv_rel.
 
+(*
+Instance MQeq_morph : Proper (MQeq ==> MQeq ==> iff) MQeq.
+Proof.
+Admitted.
+
+Instance MQpos_morph : Proper (MQeq ==> PQeq) MQpos.
+Proof.
+Admitted.
+*)
+
 Open Scope MQ_scope.
 
-Theorem MQadd_assoc : ∀ x y z, ((x + y) + z == x + (y + z))%MQ.
+Theorem MQadd_comm : ∀ x y, x + y == y + x.
+Proof.
+intros.
+unfold "==".
+remember (Bool.eqb (MQsign (x + y)) (MQsign (y + x))) as b1 eqn:Hb1.
+symmetry in Hb1.
+destruct b1.
+-unfold "+"%MQ.
+ rewrite Bool_eqb_comm.
+...
+
+Theorem MQadd_assoc : ∀ x y z, (x + y) + z == x + (y + z).
 Proof.
 intros.
 unfold "=="%MQ.
