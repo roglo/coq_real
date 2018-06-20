@@ -71,6 +71,13 @@ split; intros H; [ now apply Nat.nlt_ge in H | ].
 now apply Nat.nlt_ge.
 Qed.
 
+Theorem PQnle_gt : ∀ x y, ¬ (x ≤ y)%PQ ↔ (y < x)%PQ.
+Proof.
+intros.
+split; intros H; [ now apply Nat.nle_gt in H | ].
+now apply Nat.nle_gt.
+Qed.
+
 Theorem PQlt_le_dec : ∀ x y : PQ, {(x < y)%PQ} + {(y ≤ x)%PQ}.
 Proof.
 intros (xn, xd) (yn, yd).
@@ -827,7 +834,7 @@ destruct b1.
       apply PQnlt_ge in H3; apply H3; clear H3.
       now apply PQlt_add_lt_sub_r.
    ++exfalso.
-     apply PQnlt_ge in H1; [ easy | ].
+     apply PQnle_gt in H1; apply H1.
      rewrite <- PQadd_0_l.
      apply PQadd_le_mono; [ apply PQle_0_l | easy ].
   --simpl.
@@ -835,7 +842,7 @@ destruct b1.
    ++simpl; rewrite Hb3.
      destruct (PQlt_le_dec (MQpos x) (MQpos z - MQpos y)) as [H3| H3].
     **exfalso.
-      apply PQnlt_ge in H3; [ easy | ].
+      apply PQnle_gt in H3; apply H3.
       now apply PQle_sub_le_add_r.
     **simpl; symmetry.
       apply PQsub_sub_assoc.
@@ -876,7 +883,7 @@ destruct b1.
     **simpl; rewrite Hb2.
       destruct (PQlt_le_dec (MQpos x) (MQpos y - MQpos z)) as [H4| H4].
     ---exfalso.
-       apply PQnlt_ge in H4; [ easy | ].
+       apply PQnle_gt in H4; apply H4.
        apply PQle_sub_le_add_r.
        rewrite PQadd_comm.
        now apply PQle_sub_le_add_r, PQlt_le_incl.
@@ -932,7 +939,7 @@ destruct b1.
     **simpl; rewrite Hb2.
       destruct (PQlt_le_dec (MQpos x) (MQpos y - MQpos z)) as [H3| H3].
     ---exfalso.
-       apply PQnlt_ge in H3; [ easy | ].
+       apply PQnle_gt in H3; apply H3.
        apply (PQle_trans _ (MQpos y)); [ | easy ].
        apply PQle_sub_le_add_r.
        rewrite <- PQadd_0_r at 1.
@@ -1050,7 +1057,7 @@ destruct b1.
     **simpl in Hb1, H1.
       rewrite Hbxy in Hb1, H1.
       destruct (PQlt_le_dec (MQpos x) (MQpos y - MQpos z)) as [H5| H5].
-    ---apply PQnlt_ge in H5; [ easy | ].
+    ---apply PQnle_gt in H5; apply H5.
        apply PQle_sub_le_add_r.
        rewrite PQadd_comm.
        now apply PQle_sub_le_add_r, PQlt_le_incl.
@@ -1122,4 +1129,19 @@ destruct b1.
        apply -> Bool.eqb_true_iff in Hbyz.
        now rewrite Hbyz in Hb1.
     ---simpl in Hb1, H1.
-...
+       apply PQnle_gt in H3; apply H3.
+       now apply PQle_add_le_sub_l.
+    **simpl in Hb1, H1.
+      destruct (PQlt_le_dec (MQpos x) (MQpos y + MQpos z)) as [H4| H4].
+    ---simpl in Hb1, H1.
+       apply PQnlt_ge in H3; apply H3.
+       apply (PQadd_lt_mono_r _ _ (MQpos y)).
+       rewrite PQsub_add; [ | easy ].
+       now rewrite PQadd_comm.
+    ---easy.
+   ++clear Hb1 H1.
+     apply Bool.eqb_false_iff in Hbxy.
+     apply Bool.eqb_false_iff in Hbxz.
+     apply Bool.eqb_false_iff in Hbyz.
+     now destruct (MQsign x), (MQsign y), (MQsign z).
+Qed.
