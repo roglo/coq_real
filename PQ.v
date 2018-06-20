@@ -736,3 +736,28 @@ f_equal.
 rewrite Nat.mul_comm, Hy.
 apply Nat.mul_comm.
 Qed.
+
+Theorem PQmul_comm : ∀ x y, (x * y == y * x)%PQ.
+Proof.
+intros.
+unfold "==", "*"%PQ, nd; f_equal; simpl.
+-apply Nat.mul_comm.
+-unfold PQmul_den1.
+ f_equal; f_equal.
+ apply Nat.mul_comm.
+Qed.
+
+Theorem PQmul_assoc : ∀ x y z, ((x * y) * z == x * (y * z))%PQ.
+Proof.
+intros.
+unfold "==", "*"%PQ, nd; f_equal; simpl.
+-unfold PQmul_num; simpl; symmetry.
+ apply Nat.mul_assoc.
+-unfold PQmul_den1.
+ remember S as f; simpl; subst f.
+ f_equal; f_equal.
+ rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+ rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+ do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
+ apply Nat.mul_assoc.
+Qed.
