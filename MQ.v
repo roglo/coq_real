@@ -542,3 +542,41 @@ intros.
 unfold MQmul; simpl.
 now rewrite Bool.xorb_assoc, PQmul_assoc.
 Qed.
+
+(*
+Theorem MQpos_add : ∀ x y, (MQpos (x + y) == MQpos x + MQpos y)%PQ.
+Proof.
+intros.
+unfold "=="%PQ, nd.
+unfold "+"%PQ; simpl.
+unfold PQadd_num, nd; simpl.
+unfold "+"%MQ.
+remember (Bool.eqb (MQsign x) (MQsign y)) as b eqn:Hb.
+symmetry in Hb.
+destruct b; [ easy | ].
+destruct (PQlt_le_dec (MQpos x) (MQpos y)) as [H1| H1]; simpl.
+-unfold PQsub_num, nd.
+ f_equal.
+ +idtac.
+...
+ +f_equal.
+  unfold PQadd_den1.
+  now rewrite Nat.mul_comm.
+-idtac.
+...
+*)
+
+Theorem MQpos_mul : ∀ x y, (MQpos (x * y) == MQpos x * MQpos y)%PQ.
+Proof. easy. Qed.
+
+Theorem MQmul_add_distr_l : ∀ x y z, x * (y + z) == x * y + x * z.
+Proof.
+intros.
+unfold "=="; simpl.
+remember
+  (Bool.eqb (xorb (MQsign x) (MQsign (y + z))) (MQsign (x * y + x * z)))
+  as b1 eqn:Hb1.
+symmetry in Hb1.
+destruct b1.
+-rewrite <- MQpos_mul.
+...
