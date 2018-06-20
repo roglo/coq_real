@@ -96,6 +96,14 @@ Add Parametric Relation : _ MQeq
  transitivity proved by MQeq_trans
  as MQeq_equiv_rel.
 
+Instance MQmake_morph : Proper (eq ==> PQeq ==> MQeq) MQmake.
+Proof.
+intros sx sy Hs x y Hxy.
+unfold "=="%MQ; simpl.
+rewrite Hs.
+now rewrite Bool.eqb_reflx.
+Qed.
+
 (*
 Instance MQeq_morph : Proper (MQeq ==> MQeq ==> iff) MQeq.
 Proof.
@@ -512,4 +520,25 @@ destruct b1.
      apply Bool.eqb_false_iff in Hbxz.
      apply Bool.eqb_false_iff in Hbyz.
      now destruct (MQsign x), (MQsign y), (MQsign z).
+Qed.
+
+(* multiplication *)
+
+Definition MQmul x y :=
+  MQmake (xorb (MQsign x) (MQsign y)) (MQpos x * MQpos y).
+
+Notation "x * y" := (MQmul x y) : MQ_scope.
+
+Theorem MQmul_comm : ∀ x y, x * y == y * x.
+Proof.
+intros.
+unfold MQmul.
+now rewrite Bool.xorb_comm, PQmul_comm.
+Qed.
+
+Theorem MQmul_assoc : ∀ x y z, (x * y) * z == x * (y * z).
+Proof.
+intros.
+unfold MQmul; simpl.
+now rewrite Bool.xorb_assoc, PQmul_assoc.
 Qed.
