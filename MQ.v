@@ -543,25 +543,6 @@ unfold MQmul; simpl.
 now rewrite Bool.xorb_assoc, PQmul_assoc.
 Qed.
 
-(*
-Theorem MQpos_add : ∀ x y, (MQpos (x + y) == MQpos x + MQpos y)%PQ.
-Proof.
-intros.
-unfold "=="%PQ, nd.
-unfold "+"%PQ; simpl.
-unfold PQadd_num, nd; simpl.
-unfold "+"%MQ.
-remember (Bool.eqb (MQsign x) (MQsign y)) as b eqn:Hb.
-symmetry in Hb.
-destruct b; [ easy | ].
-destruct (PQlt_le_dec (MQpos x) (MQpos y)) as [H1| H1]; simpl.
--unfold PQsub_num, PQadd_den1, nd.
- destruct x as (xs, xp).
- destruct y as (ys, yp).
- remember S as f; simpl in Hb, H1 |-*; subst f.
-...
-*)
-
 Theorem MQpos_mul : ∀ x y, (MQpos (x * y) == MQpos x * MQpos y)%PQ.
 Proof. easy. Qed.
 
@@ -596,5 +577,32 @@ destruct b1.
    ++rewrite H3.
      do 3 rewrite PQmul_0_l.
      now rewrite PQsub_0_r.
-   ++idtac.
+   ++exfalso.
+     apply PQmul_le_mono_pos_l in H2; [ | easy ].
+     now apply PQnlt_ge in H2.
+  *destruct (PQlt_le_dec (MQpos x * MQpos y) (MQpos x * MQpos z)) as [H2| H2].
+  --simpl.
+    destruct (PQeq_dec (MQpos x) 0) as [H3| H3].
+   ++rewrite H3.
+     do 3 rewrite PQmul_0_l.
+     now rewrite PQsub_0_r.
+   ++exfalso.
+     apply PQnle_gt in H2; apply H2.
+     now apply PQmul_le_mono_pos_l.
+  --apply PQmul_sub_distr_l.
+-destruct
+   (zerop
+      (PQmul_num (MQpos x) (MQpos (y + z)) + PQnum (MQpos (x * y + x * z))))
+   as [H1| H1]; [ easy | ].
+ unfold PQmul_num in H1.
+ remember (MQsign x) as sx eqn:Hsx.
+ symmetry in Hsx.
+ destruct sx; simpl in Hb1.
+ +remember (MQsign (y + z)) as syz eqn:Hsyz.
+  symmetry in Hsyz.
+  destruct syz; simpl in Hb1.
+  *remember (MQsign (x * y + x * z)) as s eqn:Hs.
+   symmetry in Hs.
+   destruct s; [ clear Hb1 | easy ].
+(* ??? *)
 ...

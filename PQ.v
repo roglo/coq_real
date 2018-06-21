@@ -95,6 +95,15 @@ now right; apply Nat.nlt_ge.
 Qed.
 Arguments PQlt_le_dec x%PQ y%PQ.
 
+Theorem PQle_lt_dec : ∀ x y : PQ, {(x ≤ y)%PQ} + {(y < x)%PQ}.
+Proof.
+intros (xn, xd) (yn, yd).
+unfold PQlt, PQle, nd; simpl.
+destruct (le_dec (xn * S yd) (yn * S xd)) as [H1| H1]; [ now left | ].
+now right; apply Nat.nle_gt.
+Qed.
+Arguments PQle_lt_dec x%PQ y%PQ.
+
 Instance PQlt_morph : Proper (PQeq ==> PQeq ==> iff) PQlt.
 Proof.
 assert (H : ∀ x1 x2 y1 y2,
@@ -815,6 +824,31 @@ Proof.
 intros * Hxy.
 setoid_rewrite PQmul_comm.
 now apply PQmul_le_mono_l.
+Qed.
+
+Theorem PQmul_le_mono_pos_l : ∀ x y z, (z ≠≠ 0 → x ≤ y ↔ z * x ≤ z * y)%PQ.
+Proof.
+intros * Hz.
+unfold "≤"%PQ, "*"%PQ, nd; simpl.
+unfold PQmul_num, PQmul_den1.
+rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
+split; intros H.
+-do 2 rewrite <- Nat.mul_assoc.
+ apply Nat.mul_le_mono_l.
+ do 2 rewrite Nat.mul_assoc.
+ setoid_rewrite Nat.mul_shuffle0.
+ now apply Nat.mul_le_mono_r.
+-do 2 rewrite <- Nat.mul_assoc in H.
+ apply <- Nat.mul_le_mono_pos_l in H.
+ +do 2 rewrite Nat.mul_assoc in H.
+  setoid_rewrite Nat.mul_shuffle0 in H.
+  apply Nat.mul_le_mono_pos_r in H; [ easy | flia ].
+ +apply Nat.neq_0_lt_0.
+  intros H1; apply Hz.
+  unfold "=="%PQ, nd.
+  now rewrite H1.
 Qed.
 
 Theorem PQmul_add_distr_l : ∀ x y z, (x * (y + z) == x * y + x * z)%PQ.
