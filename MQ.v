@@ -590,7 +590,6 @@ destruct b1.
   rewrite H; clear H.
   destruct (PQlt_le_dec (MQpos y) (MQpos z)) as [H1| H1]; simpl.
   *destruct (PQlt_le_dec (MQpos x * MQpos y) (MQpos x * MQpos z)) as [H2| H2].
+  --apply PQmul_sub_distr_l.
   --simpl.
-...
-    apply PQmul_sub_distr_l.
 ...

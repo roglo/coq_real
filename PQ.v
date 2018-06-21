@@ -64,6 +64,9 @@ Notation "x ≥ y" := (¬ PQlt x y) : PQ_scope.
 Notation "x ≤ y ≤ z" := (x ≤ y ∧ y ≤ z)%PQ (at level 70, y at next level) :
   PQ_scope.
 
+Theorem PQle_refl : ∀ x, (x ≤ x)%PQ.
+Proof. now unfold "≤"%PQ. Qed.
+
 Theorem PQnlt_ge : ∀ x y, ¬ (x < y)%PQ ↔ (y ≤ x)%PQ.
 Proof.
 intros.
@@ -737,22 +740,6 @@ rewrite Nat.mul_comm, Hy.
 apply Nat.mul_comm.
 Qed.
 
-Theorem PQmul_le_mono_l : ∀ x y z, (x ≤ y → z * x ≤ z * y)%PQ.
-Proof.
-unfold "≤"%PQ, nd; simpl.
-intros * Hxy.
-unfold PQmul_den1.
-rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
-rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
-do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
-do 2 rewrite Nat.mul_assoc.
-setoid_rewrite Nat.mul_shuffle0.
-apply Nat.mul_le_mono_r.
-unfold PQmul_num.
-do 2 rewrite <- Nat.mul_assoc.
-now apply Nat.mul_le_mono_l.
-Qed.
-
 Theorem PQmul_comm : ∀ x y, (x * y == y * x)%PQ.
 Proof.
 intros.
@@ -776,6 +763,29 @@ unfold "==", "*"%PQ, nd; f_equal; simpl.
  rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
  do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
  apply Nat.mul_assoc.
+Qed.
+
+Theorem PQmul_le_mono_l : ∀ x y z, (x ≤ y → z * x ≤ z * y)%PQ.
+Proof.
+unfold "≤"%PQ, nd; simpl.
+intros * Hxy.
+unfold PQmul_den1.
+rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
+do 2 rewrite Nat.mul_assoc.
+setoid_rewrite Nat.mul_shuffle0.
+apply Nat.mul_le_mono_r.
+unfold PQmul_num.
+do 2 rewrite <- Nat.mul_assoc.
+now apply Nat.mul_le_mono_l.
+Qed.
+
+Theorem PQmul_le_mono_r : ∀ x y z, (x ≤ y → x * z ≤ y * z)%PQ.
+Proof.
+intros * Hxy.
+setoid_rewrite PQmul_comm.
+now apply PQmul_le_mono_l.
 Qed.
 
 Theorem PQmul_add_distr_l : ∀ x y z, (x * (y + z) == x * y + x * z)%PQ.
@@ -808,31 +818,11 @@ destruct (PQlt_le_dec y z) as [H1| H1].
   apply PQmul_le_mono_l.
   now apply PQsub_0_le.
  +now apply PQsub_0_le in H2; rewrite H2.
--idtac.
-...
-
--unfold "==", "*"%PQ, "-"%PQ, nd; simpl.
- unfold "≤"%PQ, nd in H1.
- unfold PQmul_num, PQadd_den1, PQsub_num, PQmul_den1, nd.
- remember S as f; simpl; subst f.
- rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
- rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
- rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
- rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
- rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
- do 5 rewrite Nat.sub_succ, Nat.sub_0_r.
- rewrite Nat.mul_sub_distr_l.
- destruct x as (xn, xd).
- destruct y as (yn, yd).
- destruct z as (zn, zd).
- simpl in H1.
- remember S as f; simpl; subst f.
- remember (S xd) as sxd.
- remember (S yd) as syd.
- remember (S zd) as szd.
- assert (szd > 0) by lia.
- assert (sxd > 0) by lia.
- assert (syd > 0) by lia.
- clear xd yd zd Heqsyd Heqszd Heqsxd.
- lia.
-...
+-assert (Hy : (y == y - z + z)%PQ) by now symmetry; apply PQsub_add.
+ pose (t := (y - z)%PQ).
+ fold t in Hy |-*.
+ rewrite Hy, PQmul_add_distr_l.
+ rewrite <- PQadd_sub_assoc.
+ +now rewrite PQsub_diag, PQadd_0_r.
+ +apply PQmul_le_mono_r, PQle_refl.
+Qed.
