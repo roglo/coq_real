@@ -737,6 +737,22 @@ rewrite Nat.mul_comm, Hy.
 apply Nat.mul_comm.
 Qed.
 
+Theorem PQmul_le_mono_l : ∀ x y z, (x ≤ y → z * x ≤ z * y)%PQ.
+Proof.
+unfold "≤"%PQ, nd; simpl.
+intros * Hxy.
+unfold PQmul_den1.
+rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
+do 2 rewrite Nat.mul_assoc.
+setoid_rewrite Nat.mul_shuffle0.
+apply Nat.mul_le_mono_r.
+unfold PQmul_num.
+do 2 rewrite <- Nat.mul_assoc.
+now apply Nat.mul_le_mono_l.
+Qed.
+
 Theorem PQmul_comm : ∀ x y, (x * y == y * x)%PQ.
 Proof.
 intros.
@@ -780,18 +796,43 @@ Qed.
 Theorem PQmul_sub_distr_l : ∀ x y z, (x * (y - z) == x * y - x * z)%PQ.
 Proof.
 intros.
-unfold "==", "*"%PQ, "-"%PQ, nd; simpl.
-unfold PQmul_num, PQadd_den1, PQsub_num, PQmul_den1, nd.
-remember S as f; simpl; subst f.
-rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
-rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
-rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
-rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
-rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
-do 5 rewrite Nat.sub_succ, Nat.sub_0_r.
-rewrite Nat.mul_sub_distr_l.
-destruct x as (xn, xd).
-destruct y as (yn, yd).
-destruct z as (zn, zd).
-simpl.
+destruct (PQlt_le_dec y z) as [H1| H1].
+-apply PQlt_le_incl in H1.
+ apply PQsub_0_le in H1; rewrite H1.
+ unfold "*"%PQ at 1.
+ unfold PQmul_num; simpl.
+ rewrite Nat.mul_0_r.
+ transitivity 0%PQ; [ easy | ].
+ destruct (PQlt_le_dec (x * z) (x * y)) as [H2| H2].
+ +apply PQnle_gt in H2; exfalso; apply H2; clear H2.
+  apply PQmul_le_mono_l.
+  now apply PQsub_0_le.
+ +now apply PQsub_0_le in H2; rewrite H2.
+-idtac.
+...
+
+-unfold "==", "*"%PQ, "-"%PQ, nd; simpl.
+ unfold "≤"%PQ, nd in H1.
+ unfold PQmul_num, PQadd_den1, PQsub_num, PQmul_den1, nd.
+ remember S as f; simpl; subst f.
+ rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+ rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+ rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+ rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+ rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+ do 5 rewrite Nat.sub_succ, Nat.sub_0_r.
+ rewrite Nat.mul_sub_distr_l.
+ destruct x as (xn, xd).
+ destruct y as (yn, yd).
+ destruct z as (zn, zd).
+ simpl in H1.
+ remember S as f; simpl; subst f.
+ remember (S xd) as sxd.
+ remember (S yd) as syd.
+ remember (S zd) as szd.
+ assert (szd > 0) by lia.
+ assert (sxd > 0) by lia.
+ assert (syd > 0) by lia.
+ clear xd yd zd Heqsyd Heqszd Heqsxd.
+ lia.
 ...
