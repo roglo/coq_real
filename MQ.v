@@ -35,6 +35,14 @@ unfold Bool.eqb.
 now destruct b1, b2.
 Qed.
 
+Theorem Bool_eqb_assoc : ∀ b1 b2 b3,
+  Bool.eqb (Bool.eqb b1 b2) b3 = Bool.eqb b1 (Bool.eqb b2 b3).
+Proof.
+intros.
+unfold Bool.eqb.
+now destruct b1, b2, b3.
+Qed.
+
 Theorem MQeq_symm : ∀ x y : MQ, (x == y)%MQ → (y == x)%MQ.
 Proof.
 unfold "=="%MQ.
@@ -525,7 +533,7 @@ Qed.
 (* multiplication *)
 
 Definition MQmul x y :=
-  MQmake (xorb (MQsign x) (MQsign y)) (MQpos x * MQpos y).
+  MQmake (Bool.eqb (MQsign x) (MQsign y)) (MQpos x * MQpos y).
 
 Notation "x * y" := (MQmul x y) : MQ_scope.
 
@@ -533,14 +541,14 @@ Theorem MQmul_comm : ∀ x y, x * y == y * x.
 Proof.
 intros.
 unfold MQmul.
-now rewrite Bool.xorb_comm, PQmul_comm.
+now rewrite Bool_eqb_comm, PQmul_comm.
 Qed.
 
 Theorem MQmul_assoc : ∀ x y z, (x * y) * z == x * (y * z).
 Proof.
 intros.
 unfold MQmul; simpl.
-now rewrite Bool.xorb_assoc, PQmul_assoc.
+now rewrite Bool_eqb_assoc, PQmul_assoc.
 Qed.
 
 Theorem MQpos_mul : ∀ x y, (MQpos (x * y) == MQpos x * MQpos y)%PQ.
@@ -551,7 +559,7 @@ Proof.
 intros.
 unfold "=="; simpl.
 remember
-  (Bool.eqb (xorb (MQsign x) (MQsign (y + z))) (MQsign (x * y + x * z)))
+  (Bool.eqb (Bool.eqb (MQsign x) (MQsign (y + z))) (MQsign (x * y + x * z)))
   as b1 eqn:Hb1.
 symmetry in Hb1.
 destruct b1.
@@ -563,6 +571,8 @@ destruct b1.
  +apply -> Bool.eqb_true_iff in Hbyz.
   rewrite Hbyz, Bool.eqb_reflx; simpl.
   apply PQmul_add_distr_l.
+ +idtac.
+...
  +assert
     (H : Bool.eqb (xorb (MQsign x) (MQsign y)) (xorb (MQsign x) (MQsign z)) =
       false). {
