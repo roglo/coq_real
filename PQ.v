@@ -20,6 +20,7 @@ Definition nd x y := PQnum x * S (PQden1 y).
 Definition PQeq x y := nd x y = nd y x.
 
 Notation "x == y" := (PQeq x y) (at level 70) : PQ_scope.
+Notation "x ≠≠ y" := (¬ PQeq x y) (at level 70) : PQ_scope.
 
 Theorem PQeq_refl : ∀ x : PQ, (x == x)%PQ.
 Proof. easy. Qed.
@@ -51,6 +52,10 @@ Add Parametric Relation : _ PQeq
  symmetry proved by PQeq_symm
  transitivity proved by PQeq_trans
  as PQeq_equiv_rel.
+
+Theorem PQeq_dec : ∀ x y : PQ, {(x == y)%PQ} + {(x ≠≠ y)%PQ}.
+Proof. intros; apply Nat.eq_dec. Qed.
+Arguments PQeq_dec x%PQ y%PQ.
 
 (* inequality *)
 
@@ -338,6 +343,17 @@ rewrite PQadd_comm.
 apply PQadd_0_l.
 Qed.
 
+Theorem PQsub_0_r : ∀ x, (x - 0 == x)%PQ.
+Proof.
+intros x.
+unfold "=="%PQ, "-"%PQ, nd; simpl.
+unfold PQsub_num, PQadd_den1, nd; simpl.
+rewrite Nat.sub_0_r.
+rewrite <- Nat.mul_assoc; f_equal; simpl.
+rewrite Nat.add_0_r, Nat.mul_comm; simpl.
+now rewrite Nat.add_0_r, Nat.add_comm.
+Qed.
+
 (* *)
 
 Theorem PQsub_add_distr : ∀ x y z, (x - (y + z) == x - y - z)%PQ.
@@ -474,6 +490,19 @@ apply (Nat.le_trans _ (PQnum y * S (PQden1 x) * S (PQden1 z))).
 -setoid_rewrite Nat.mul_shuffle0.
  apply Nat.mul_le_mono_pos_r; [ flia | easy ].
 Qed.
+
+Theorem PQlt_trans : ∀ x y z, (x < y)%PQ → (y < z)%PQ → (x < z)%PQ.
+Proof.
+intros * Hxy Hyz.
+unfold "<"%PQ, nd in Hxy, Hyz |-*.
+apply (Nat.mul_lt_mono_pos_r (S (PQden1 y))); [ flia | ].
+rewrite Nat.mul_shuffle0.
+apply (Nat.lt_trans _ (PQnum y * S (PQden1 x) * S (PQden1 z))).
+-apply Nat.mul_lt_mono_pos_r; [ flia | easy ].
+-setoid_rewrite Nat.mul_shuffle0.
+ apply Nat.mul_lt_mono_pos_r; [ flia | easy ].
+Qed.
+Arguments PQlt_trans x%PQ y%PQ z%PQ.
 
 Theorem PQle_lt_trans : ∀ x y z, (x ≤ y)%PQ → (y < z)%PQ → (x < z)%PQ.
 Proof.
@@ -825,4 +854,13 @@ destruct (PQlt_le_dec y z) as [H1| H1].
  rewrite <- PQadd_sub_assoc.
  +now rewrite PQsub_diag, PQadd_0_r.
  +apply PQmul_le_mono_r, PQle_refl.
+Qed.
+
+Theorem PQmul_0_l : ∀ x, (0 * x == 0)%PQ.
+Proof.
+intros.
+rewrite PQmul_comm.
+transitivity (x * (x - x))%PQ.
+-now rewrite PQsub_diag.
+-now rewrite PQmul_sub_distr_l, PQsub_diag.
 Qed.

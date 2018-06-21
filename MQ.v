@@ -592,4 +592,9 @@ destruct b1.
   *destruct (PQlt_le_dec (MQpos x * MQpos y) (MQpos x * MQpos z)) as [H2| H2].
   --apply PQmul_sub_distr_l.
   --simpl.
+    destruct (PQeq_dec (MQpos x) 0) as [H3| H3].
+   ++rewrite H3.
+     do 3 rewrite PQmul_0_l.
+     now rewrite PQsub_0_r.
+   ++idtac.
 ...
