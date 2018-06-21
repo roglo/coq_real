@@ -555,14 +555,10 @@ remember (Bool.eqb (MQsign x) (MQsign y)) as b eqn:Hb.
 symmetry in Hb.
 destruct b; [ easy | ].
 destruct (PQlt_le_dec (MQpos x) (MQpos y)) as [H1| H1]; simpl.
--unfold PQsub_num, nd.
- f_equal.
- +idtac.
-...
- +f_equal.
-  unfold PQadd_den1.
-  now rewrite Nat.mul_comm.
--idtac.
+-unfold PQsub_num, PQadd_den1, nd.
+ destruct x as (xs, xp).
+ destruct y as (ys, yp).
+ remember S as f; simpl in Hb, H1 |-*; subst f.
 ...
 *)
 
