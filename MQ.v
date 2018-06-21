@@ -571,10 +571,9 @@ destruct b1.
  +apply -> Bool.eqb_true_iff in Hbyz.
   rewrite Hbyz, Bool.eqb_reflx; simpl.
   apply PQmul_add_distr_l.
- +idtac.
-...
  +assert
-    (H : Bool.eqb (xorb (MQsign x) (MQsign y)) (xorb (MQsign x) (MQsign z)) =
+    (H : Bool.eqb
+           (Bool.eqb (MQsign x) (MQsign y)) (Bool.eqb (MQsign x) (MQsign z)) =
       false). {
     now destruct (MQsign x), (MQsign y), (MQsign z).
   }
@@ -610,9 +609,22 @@ destruct b1.
  destruct sx; simpl in Hb1.
  +remember (MQsign (y + z)) as syz eqn:Hsyz.
   symmetry in Hsyz.
+  unfold "+" in Hsyz.
   destruct syz; simpl in Hb1.
   *remember (MQsign (x * y + x * z)) as s eqn:Hs.
    symmetry in Hs.
-   destruct s; [ clear Hb1 | easy ].
-(* ??? *)
+   destruct s; [ easy | clear Hb1 ].
+   unfold "+" in Hs; simpl in Hs.
+   rewrite Hsx in Hs; simpl in Hs.
+   remember (MQsign y) as sy eqn:Hsy.
+   symmetry in Hsy.
+   destruct sy; simpl in Hsyz, Hs.
+  --remember (MQsign z) as sz eqn:Hsz.
+    symmetry in Hsz.
+    destruct sz; simpl in Hs; [ easy | ].
+    destruct (PQlt_le_dec (MQpos y) (MQpos z)) as [H2| H2]; [ easy | ].
+    clear Hsyz.
+    destruct (PQlt_le_dec (MQpos x * MQpos y) (MQpos x * MQpos z))
+      as [H3| H3]; [ clear Hs | easy ].
+
 ...
