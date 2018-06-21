@@ -575,4 +575,22 @@ remember
 symmetry in Hb1.
 destruct b1.
 -rewrite <- MQpos_mul.
+ unfold "+"%MQ, "*"%MQ; simpl.
+ remember (Bool.eqb (MQsign y) (MQsign z)) as byz eqn:Hbyz.
+ symmetry in Hbyz.
+ destruct byz; simpl.
+ +apply -> Bool.eqb_true_iff in Hbyz.
+  rewrite Hbyz, Bool.eqb_reflx; simpl.
+  apply PQmul_add_distr_l.
+ +assert
+    (H : Bool.eqb (xorb (MQsign x) (MQsign y)) (xorb (MQsign x) (MQsign z)) =
+      false). {
+    now destruct (MQsign x), (MQsign y), (MQsign z).
+  }
+  rewrite H; clear H.
+  destruct (PQlt_le_dec (MQpos y) (MQpos z)) as [H1| H1]; simpl.
+  *destruct (PQlt_le_dec (MQpos x * MQpos y) (MQpos x * MQpos z)) as [H2| H2].
+  --simpl.
+...
+    apply PQmul_sub_distr_l.
 ...
