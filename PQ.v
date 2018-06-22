@@ -851,6 +851,30 @@ split; intros H.
   now rewrite H1.
 Qed.
 
+Theorem PQmul_lt_mono_pos_l : ∀ x y z, (x ≠≠ 0 → y < z ↔ x * y < x * z)%PQ.
+intros * Hz.
+unfold "<"%PQ, "*"%PQ, nd; simpl.
+unfold PQmul_num, PQmul_den1.
+rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
+split; intros H.
+-do 2 rewrite <- Nat.mul_assoc.
+ apply Nat.mul_lt_mono_pos_l.
+ +apply Nat.neq_0_lt_0.
+  unfold "=="%PQ, nd in Hz; simpl in Hz; flia Hz.
+ +do 2 rewrite Nat.mul_assoc.
+  setoid_rewrite Nat.mul_shuffle0.
+  apply Nat.mul_lt_mono_pos_r; [ flia | easy ].
+-do 2 rewrite <- Nat.mul_assoc in H.
+ apply <- Nat.mul_lt_mono_pos_l in H.
+ +do 2 rewrite Nat.mul_assoc in H.
+  setoid_rewrite Nat.mul_shuffle0 in H.
+  apply Nat.mul_lt_mono_pos_r in H; [ easy | flia ].
+ +apply Nat.neq_0_lt_0.
+  unfold "=="%PQ, nd in Hz; simpl in Hz; flia Hz.
+Qed.
+
 Theorem PQmul_add_distr_l : ∀ x y z, (x * (y + z) == x * y + x * z)%PQ.
 Proof.
 intros.
@@ -897,4 +921,10 @@ rewrite PQmul_comm.
 transitivity (x * (x - x))%PQ.
 -now rewrite PQsub_diag.
 -now rewrite PQmul_sub_distr_l, PQsub_diag.
+Qed.
+
+Theorem PQneq_0_lt_0 : ∀ n, (n ≠≠ 0 ↔ 0 < n)%PQ.
+Proof.
+unfold "=="%PQ, "<"%PQ, nd; simpl.
+intros; split; intros H; flia H.
 Qed.
