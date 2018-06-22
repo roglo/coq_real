@@ -565,16 +565,6 @@ remember (MQsign y) as sy eqn:Hsy.
 symmetry in Hsy.
 remember (MQsign z) as sz eqn:Hsz.
 symmetry in Hsz.
-(*
-remember (MQsign (y + z)) as syz eqn:Hsyz.
-symmetry in Hsyz.
-move syz before sx.
-unfold "+" in Hsyz.
-move sy before sx; move sz before sy.
-remember (MQsign (x * y + x * z)) as s eqn:Hs.
-symmetry in Hs.
-move s before syz.
-*)
 destruct (PQlt_le_dec (MQpos y) (MQpos z)) as [H2| H2]; simpl.
 -destruct (PQlt_le_dec (MQpos x * MQpos y) (MQpos x * MQpos z)) as [H3| H3].
  +destruct sx, sy, sz; simpl; try easy;
