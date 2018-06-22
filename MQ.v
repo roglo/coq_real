@@ -558,6 +558,43 @@ Theorem MQmul_add_distr_l : ∀ x y z, x * (y + z) == x * y + x * z.
 Proof.
 intros.
 unfold "=="; simpl.
+unfold "+", "*"; simpl.
+remember (MQsign x) as sx eqn:Hsx.
+symmetry in Hsx.
+remember (MQsign y) as sy eqn:Hsy.
+symmetry in Hsy.
+remember (MQsign z) as sz eqn:Hsz.
+symmetry in Hsz.
+(*
+remember (MQsign (y + z)) as syz eqn:Hsyz.
+symmetry in Hsyz.
+move syz before sx.
+unfold "+" in Hsyz.
+move sy before sx; move sz before sy.
+remember (MQsign (x * y + x * z)) as s eqn:Hs.
+symmetry in Hs.
+move s before syz.
+*)
+destruct (PQlt_le_dec (MQpos y) (MQpos z)) as [H2| H2]; simpl.
+-destruct (PQlt_le_dec (MQpos x * MQpos y) (MQpos x * MQpos z)) as [H3| H3].
+ +destruct sx, sy, sz; simpl; try easy;
+    try apply PQmul_add_distr_l; try apply PQmul_sub_distr_l.
+ +destruct (PQeq_dec (MQpos x) 0) as [H4| H4].
+  *unfold "=="%PQ, nd in H4; simpl in H4.
+   unfold PQmul_num, PQsub_num, nd; simpl.
+   unfold PQmul_num.
+   apply Nat.eq_mul_0_l in H4; [ | easy ].
+   unfold "*"%PQ, "+"%PQ; simpl.
+   unfold PQmul_num; simpl.
+   rewrite H4.
+   destruct sx, sy, sz; simpl; try easy; try apply PQmul_add_distr_l.
+  *apply PQmul_le_mono_pos_l in H3; [ | easy ].
+   now apply PQnlt_ge in H2.
+-idtac.
+
+...
+intros.
+unfold "=="; simpl.
 remember
   (Bool.eqb (Bool.eqb (MQsign x) (MQsign (y + z))) (MQsign (x * y + x * z)))
   as b1 eqn:Hb1.
