@@ -673,5 +673,17 @@ destruct b1.
       now rewrite H4 in H1; simpl in H1.
    ++apply PQnle_gt in H2; apply H2.
      now apply PQmul_le_mono_pos_l in H3.
-  --destruct sz; simpl in Hsyz.
+  --remember (MQsign (x * y + x * z)) as b eqn:Hb.
+    symmetry in Hb.
+    destruct b; [ clear Hb1 | easy ].
+    unfold "*", "+" in Hb; simpl in Hb.
+    rewrite Hsx, Hsy, Hsz in Hb; simpl in Hb.
+    destruct sz; simpl in Hb; [ simpl in Hsyz | easy ].
+    destruct (PQlt_le_dec (MQpos y) (MQpos z)) as [H2| H2]; [ easy | ].
+    clear Hsyz.
+    destruct (PQlt_le_dec (MQpos x * MQpos y) (MQpos x * MQpos z))
+      as [H3| H3]; [ clear Hb | easy ].
+    apply PQnle_gt in H3; apply H3; clear H3.
+    now apply PQmul_le_mono_l.
+ +idtac.
 ...
