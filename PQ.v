@@ -11,8 +11,8 @@ Record PQ := PQmake { PQnum : nat; PQden1 : nat }.
 Arguments PQnum x%PQ : rename.
 Arguments PQden1 x%PQ : rename.
 
-Notation "0" := (PQmake 0 1) : PQ_scope.
-Notation "1" := (PQmake 1 1) : PQ_scope.
+Notation "0" := (PQmake 0 0) : PQ_scope.
+Notation "1" := (PQmake 1 0) : PQ_scope.
 
 Definition nd x y := PQnum x * S (PQden1 y).
 
@@ -372,10 +372,7 @@ Proof.
 intros x.
 unfold "=="%PQ, "-"%PQ, nd; simpl.
 unfold PQsub_num, PQadd_den1, nd; simpl.
-rewrite Nat.sub_0_r.
-rewrite <- Nat.mul_assoc; f_equal; simpl.
-rewrite Nat.add_0_r, Nat.mul_comm; simpl.
-now rewrite Nat.add_0_r, Nat.add_comm.
+now do 2 rewrite Nat.sub_0_r, Nat.mul_1_r.
 Qed.
 
 (* *)

@@ -137,7 +137,7 @@ Arguments fd2n _ x%F i%nat.
 
 (* Relation with Cauchy sequences *)
 
-Require Import MQ.
+Require Import MQ PQ.
 
 Definition is_cauchy_seq u :=
   ∀ ε, ε > 0 → ∃ N, ∀ p q, p ≥ N ∧ q ≥ N → MQabs (u p - u q) < ε.
@@ -148,10 +148,10 @@ Definition freal_seq_num {r : radix} (rg := nat_ord_ring) x n :=
 
 Definition freal_seq_den {r : radix} n := rad ^ S n.
 
-...
-
 Definition freal_seq {r : radix} x n :=
-  Qmake (Z.of_nat (freal_seq_num x n)) (Pos.of_nat (freal_seq_den n)).
+  MQmake true (PQmake (freal_seq_num x n) (freal_seq_den n - 1)).
+
+...
 
 Theorem fold_Qminus : ∀ x y, (x + - y == x - y)%Q.
 Proof. easy. Qed.
