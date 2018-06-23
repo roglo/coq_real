@@ -73,6 +73,12 @@ Notation "x ≤ y ≤ z" := (x ≤ y ∧ y ≤ z)%PQ (at level 70, y at next lev
 Theorem PQle_refl : ∀ x, (x ≤ x)%PQ.
 Proof. now unfold "≤"%PQ. Qed.
 
+Theorem PQneq_0_lt_0 : ∀ x, (x ≠≠ 0 ↔ 0 < x)%PQ.
+Proof.
+unfold "=="%PQ, "<"%PQ, nd; simpl.
+intros; split; intros H; flia H.
+Qed.
+
 Theorem PQnlt_ge : ∀ x y, ¬ (x < y)%PQ ↔ (y ≤ x)%PQ.
 Proof.
 intros.
@@ -754,7 +760,7 @@ unfold PQsub_num.
 now rewrite Nat.sub_diag.
 Qed.
 
-(* multiplication *)
+(* multiplication, inversion, division *)
 
 Definition PQmul_num x y := PQnum x * PQnum y.
 Definition PQmul_den1 x y := S (PQden1 x) * S (PQden1 y) - 1.
@@ -762,7 +768,10 @@ Definition PQmul_den1 x y := S (PQden1 x) * S (PQden1 y) - 1.
 Definition PQmul x y := PQmake (PQmul_num x y) (PQmul_den1 x y).
 Arguments PQmul x%PQ y%PQ.
 
+Definition PQinv x := PQmake (PQden1 x + 1) (PQnum x - 1).
+
 Notation "x * y" := (PQmul x y) : PQ_scope.
+Notation "/ x" := (PQinv x) : PQ_scope.
 
 (* allows to use rewrite inside a multiplication
    e.g.
@@ -935,8 +944,13 @@ transitivity (x * (x - x))%PQ.
 -now rewrite PQmul_sub_distr_l, PQsub_diag.
 Qed.
 
-Theorem PQneq_0_lt_0 : ∀ n, (n ≠≠ 0 ↔ 0 < n)%PQ.
+Theorem PQinv_involutive: ∀ x, (x ≠≠ 0 → / / x == x)%PQ.
 Proof.
-unfold "=="%PQ, "<"%PQ, nd; simpl.
-intros; split; intros H; flia H.
+intros * Hnz.
+unfold "/"%PQ; simpl.
+rewrite Nat.add_sub.
+rewrite Nat.sub_add; [ easy | ].
+unfold "=="%PQ, nd in Hnz; simpl in Hnz.
+rewrite Nat.mul_1_r in Hnz.
+now apply Nat.neq_0_lt_0.
 Qed.

@@ -150,7 +150,7 @@ Notation "x > y" := (¬ MQle x y) : MQ_scope.
 Notation "x ≥ y" := (¬ MQlt x y) : MQ_scope.
 *)
 
-(* addition *)
+(* addition, opposite, subtraction *)
 
 Definition MQadd x y :=
   if Bool.eqb (MQsign x) (MQsign y) then
@@ -550,12 +550,18 @@ destruct b1.
      now destruct (MQsign x), (MQsign y), (MQsign z).
 Qed.
 
-(* multiplication *)
+(* multiplication, inverse, division *)
 
 Definition MQmul x y :=
   MQmake (Bool.eqb (MQsign x) (MQsign y)) (MQpos x * MQpos y).
 
+Definition MQinv x :=
+  MQmake (MQsign x) (PQinv (MQpos x)).
+
+...
+
 Notation "x * y" := (MQmul x y) : MQ_scope.
+Notation "/ x" := (MQinv x) : MQ_scope.
 
 (* allows to use rewrite inside a multiplication
    e.g.
