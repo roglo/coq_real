@@ -113,12 +113,6 @@ now rewrite Bool.eqb_reflx.
 Qed.
 
 (*
-Instance MQeq_morph : Proper (MQeq ==> MQeq ==> iff) MQeq.
-Proof.
-Admitted.
-*)
-
-(*
 Notation "x < y" := (MQlt x y) : MQ_scope.
 Notation "x ≤ y" := (MQle x y) : MQ_scope.
 Notation "x > y" := (¬ MQle x y) : MQ_scope.
@@ -140,12 +134,6 @@ Definition MQopp x := MQmake (negb (MQsign x)) (MQpos x).
 Notation "- x" := (MQopp x) : MQ_scope.
 Notation "x + y" := (MQadd x y) : MQ_scope.
 Notation "x - y" := (MQadd x (MQopp y)) : MQ_scope.
-
-(*
-Instance MQpos_morph : Proper (MQeq ==> PQeq) MQpos.
-Proof.
-Admitted.
-*)
 
 Open Scope MQ_scope.
 
@@ -537,6 +525,87 @@ Definition MQmul x y :=
 
 Notation "x * y" := (MQmul x y) : MQ_scope.
 
+Instance MQmul_morph : Proper (MQeq ==> MQeq ==> MQeq) MQmul.
+Proof.
+unfold "=="%MQ; simpl.
+intros x1 x2 Hx y1 y2 Hy.
+move y1 before x2; move y2 before y1.
+unfold "*"%MQ; simpl.
+remember (MQsign x1) as sx1 eqn:Hsx1.
+symmetry in Hsx1.
+remember (MQsign x2) as sx2 eqn:Hsx2.
+symmetry in Hsx2.
+remember (MQsign y1) as sy1 eqn:Hsy1.
+symmetry in Hsy1.
+remember (MQsign y2) as sy2 eqn:Hsy2.
+symmetry in Hsy2.
+move sx2 before sx1; move sy1 before sx2; move sy2 before sy1.
+move Hsy1 before Hsx2; move Hsy2 before Hsy1.
+destruct sx1, sx2, sy1, sy2; simpl in Hx, Hy |-*; try now rewrite Hx, Hy.
+-destruct (zerop (PQnum (MQpos y1) + PQnum (MQpos y2)))
+    as [H1| H1]; [ clear Hy | easy ].
+ apply Nat.eq_add_0 in H1.
+ unfold PQmul_num.
+ now rewrite (proj1 H1), (proj2 H1), Nat.mul_0_r, Nat.mul_0_r.
+-destruct (zerop (PQnum (MQpos y1) + PQnum (MQpos y2)))
+    as [H1| H1]; [ clear Hy | easy ].
+ apply Nat.eq_add_0 in H1.
+ unfold PQmul_num.
+ now rewrite (proj1 H1), (proj2 H1), Nat.mul_0_r, Nat.mul_0_r.
+-destruct (zerop (PQnum (MQpos x1) + PQnum (MQpos x2)))
+   as [H1| H1]; [ clear Hx | easy ].
+ apply Nat.eq_add_0 in H1.
+ unfold "=="%PQ, "*"%PQ, nd; simpl; unfold PQmul_num.
+ now rewrite (proj1 H1), (proj2 H1).
+-destruct (zerop (PQnum (MQpos x1) + PQnum (MQpos x2)))
+   as [H1| H1]; [ clear Hx | easy ].
+ apply Nat.eq_add_0 in H1.
+ unfold "=="%PQ, "*"%PQ, nd; simpl; unfold PQmul_num.
+ now rewrite (proj1 H1), (proj2 H1).
+-destruct (zerop (PQnum (MQpos x1) + PQnum (MQpos x2)))
+   as [H1| H1]; [ clear Hx | easy ].
+ apply Nat.eq_add_0 in H1.
+ unfold "=="%PQ, "*"%PQ, nd; simpl; unfold PQmul_num.
+ now rewrite (proj1 H1), (proj2 H1).
+-destruct (zerop (PQnum (MQpos x1) + PQnum (MQpos x2)))
+   as [H1| H1]; [ clear Hx | easy ].
+ apply Nat.eq_add_0 in H1.
+ unfold "=="%PQ, "*"%PQ, nd; simpl; unfold PQmul_num.
+ now rewrite (proj1 H1), (proj2 H1).
+-destruct (zerop (PQnum (MQpos x1) + PQnum (MQpos x2)))
+   as [H1| H1]; [ clear Hx | easy ].
+ apply Nat.eq_add_0 in H1.
+ unfold "=="%PQ, "*"%PQ, nd; simpl; unfold PQmul_num.
+ now rewrite (proj1 H1), (proj2 H1).
+-destruct (zerop (PQnum (MQpos x1) + PQnum (MQpos x2)))
+   as [H1| H1]; [ clear Hx | easy ].
+ apply Nat.eq_add_0 in H1.
+ unfold "=="%PQ, "*"%PQ, nd; simpl; unfold PQmul_num.
+ now rewrite (proj1 H1), (proj2 H1).
+-destruct (zerop (PQnum (MQpos x1) + PQnum (MQpos x2)))
+   as [H1| H1]; [ clear Hx | easy ].
+ apply Nat.eq_add_0 in H1.
+ unfold "=="%PQ, "*"%PQ, nd; simpl; unfold PQmul_num.
+ now rewrite (proj1 H1), (proj2 H1).
+-destruct (zerop (PQnum (MQpos x1) + PQnum (MQpos x2)))
+   as [H1| H1]; [ clear Hx | easy ].
+ apply Nat.eq_add_0 in H1.
+ unfold "=="%PQ, "*"%PQ, nd; simpl; unfold PQmul_num.
+ now rewrite (proj1 H1), (proj2 H1).
+-destruct (zerop (PQnum (MQpos y1) + PQnum (MQpos y2)))
+   as [H1| H1]; [ clear Hy | easy ].
+ apply Nat.eq_add_0 in H1.
+ unfold PQmul_num.
+ now rewrite (proj1 H1), (proj2 H1), Nat.mul_0_r, Nat.mul_0_r.
+-destruct (zerop (PQnum (MQpos y1) + PQnum (MQpos y2)))
+   as [H1| H1]; [ clear Hy | easy ].
+ apply Nat.eq_add_0 in H1.
+ unfold PQmul_num.
+ now rewrite (proj1 H1), (proj2 H1), Nat.mul_0_r, Nat.mul_0_r.
+Qed.
+
+...
+
 Theorem MQmul_comm : ∀ x y, x * y == y * x.
 Proof.
 intros.
@@ -557,16 +626,13 @@ Proof. easy. Qed.
 Theorem MQmul_add_distr_l : ∀ x y z, x * (y + z) == x * y + x * z.
 Proof.
 intros.
-unfold "=="; simpl.
-unfold "+", "*"; simpl.
-remember (MQsign x) as sx eqn:Hsx.
-symmetry in Hsx.
-remember (MQsign y) as sy eqn:Hsy.
-symmetry in Hsy.
-remember (MQsign z) as sz eqn:Hsz.
-symmetry in Hsz.
-destruct (PQlt_le_dec (MQpos y) (MQpos z)) as [H2| H2]; simpl.
--destruct (PQlt_le_dec (MQpos x * MQpos y) (MQpos x * MQpos z)) as [H3| H3].
+remember (PQlt_le_dec (MQpos y) (MQpos z)) as dyz eqn:Hdyz.
+symmetry in Hdyz.
+destruct dyz as [H2| H2].
+-unfold "=="; simpl.
+ unfold "+", "*"; simpl.
+ rewrite Hdyz; clear Hdyz.
+ destruct (PQlt_le_dec (MQpos x * MQpos y) (MQpos x * MQpos z)) as [H3| H3].
  +destruct sx, sy, sz; simpl;
     try apply PQmul_add_distr_l; apply PQmul_sub_distr_l.
  +destruct (PQeq_dec (MQpos x) 0) as [H4| H4].
@@ -580,6 +646,11 @@ destruct (PQlt_le_dec (MQpos y) (MQpos z)) as [H2| H2]; simpl.
    destruct sx, sy, sz; simpl; try easy; try apply PQmul_add_distr_l.
   *apply PQmul_le_mono_pos_l in H3; [ | easy ].
    now apply PQnlt_ge in H2.
+-idtac.
+Set Printing All.
+ setoid_rewrite MQadd_comm.
+...
+
 -destruct (PQlt_le_dec (MQpos x * MQpos y) (MQpos x * MQpos z)) as [H3| H3].
  +destruct (PQeq_dec (MQpos x) 0) as [H4| H4].
   *unfold "=="%PQ, nd in H4; simpl in H4.
