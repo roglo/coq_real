@@ -104,6 +104,14 @@ Add Parametric Relation : _ MQeq
  transitivity proved by MQeq_trans
  as MQeq_equiv_rel.
 
+(* allows to use rewrite inside a Qmake
+   e.g.
+      Hs : sx = sy
+      H : x = y
+      ====================
+      ... (Qmake sx x) ...
+   rewrite Hs, H.
+ *)
 Instance MQmake_morph : Proper (eq ==> PQeq ==> MQeq) MQmake.
 Proof.
 intros sx sy Hs x y Hxy.
@@ -525,20 +533,24 @@ Definition MQmul x y :=
 
 Notation "x * y" := (MQmul x y) : MQ_scope.
 
+(* allows to use rewrite inside a multiplication
+   e.g.
+      H : x = y
+      ====================
+      ... (x * z) ...
+   rewrite H.
+ *)
 Instance MQmul_morph : Proper (MQeq ==> MQeq ==> MQeq) MQmul.
 Proof.
+(* to be simplified: many repetitions *)
 unfold "=="%MQ; simpl.
 intros x1 x2 Hx y1 y2 Hy.
 move y1 before x2; move y2 before y1.
 unfold "*"%MQ; simpl.
-remember (MQsign x1) as sx1 eqn:Hsx1.
-symmetry in Hsx1.
-remember (MQsign x2) as sx2 eqn:Hsx2.
-symmetry in Hsx2.
-remember (MQsign y1) as sy1 eqn:Hsy1.
-symmetry in Hsy1.
-remember (MQsign y2) as sy2 eqn:Hsy2.
-symmetry in Hsy2.
+remember (MQsign x1) as sx1 eqn:Hsx1; symmetry in Hsx1.
+remember (MQsign x2) as sx2 eqn:Hsx2; symmetry in Hsx2.
+remember (MQsign y1) as sy1 eqn:Hsy1; symmetry in Hsy1.
+remember (MQsign y2) as sy2 eqn:Hsy2; symmetry in Hsy2.
 move sx2 before sx1; move sy1 before sx2; move sy2 before sy1.
 move Hsy1 before Hsx2; move Hsy2 before Hsy1.
 destruct sx1, sx2, sy1, sy2; simpl in Hx, Hy |-*; try now rewrite Hx, Hy.
@@ -623,15 +635,13 @@ Proof. easy. Qed.
 
 Theorem MQmul_add_distr_l : ∀ x y z, x * (y + z) == x * y + x * z.
 Proof.
+(* the 2nd case is almost the first one by swapping y and z *)
 intros.
 unfold "=="; simpl.
 unfold "+", "*"; simpl.
-remember (MQsign x) as sx eqn:Hsx.
-symmetry in Hsx.
-remember (MQsign y) as sy eqn:Hsy.
-symmetry in Hsy.
-remember (MQsign z) as sz eqn:Hsz.
-symmetry in Hsz.
+remember (MQsign x) as sx eqn:Hsx; symmetry in Hsx.
+remember (MQsign y) as sy eqn:Hsy; symmetry in Hsy.
+remember (MQsign z) as sz eqn:Hsz; symmetry in Hsz.
 destruct (PQlt_le_dec (MQpos y) (MQpos z)) as [H2| H2]; simpl.
 -destruct (PQlt_le_dec (MQpos x * MQpos y) (MQpos x * MQpos z)) as [H3| H3].
  +destruct sx, sy, sz; simpl;

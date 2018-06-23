@@ -104,6 +104,13 @@ now right; apply Nat.nle_gt.
 Qed.
 Arguments PQle_lt_dec x%PQ y%PQ.
 
+(* allows to use rewrite inside a less than
+   e.g.
+      H : x = y
+      ====================
+      (x < z)%PQ
+   rewrite H.
+ *)
 Instance PQlt_morph : Proper (PQeq ==> PQeq ==> iff) PQlt.
 Proof.
 assert (H : ∀ x1 x2 y1 y2,
@@ -150,6 +157,13 @@ split; intros Hxy.
  now apply (H x2 x1 y2 y1).
 Qed.
 
+(* allows to use rewrite inside a less equal
+   e.g.
+      H : x = y
+      ====================
+      (x ≤ z)%PQ
+   rewrite H.
+ *)
 Instance PQle_morph : Proper (PQeq ==> PQeq ==> iff) PQle.
 Proof.
 assert (H : ∀ x1 x2 y1 y2,
