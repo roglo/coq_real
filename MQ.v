@@ -604,8 +604,6 @@ destruct sx1, sx2, sy1, sy2; simpl in Hx, Hy |-*; try now rewrite Hx, Hy.
  now rewrite (proj1 H1), (proj2 H1), Nat.mul_0_r, Nat.mul_0_r.
 Qed.
 
-...
-
 Theorem MQmul_comm : ∀ x y, x * y == y * x.
 Proof.
 intros.
@@ -626,13 +624,16 @@ Proof. easy. Qed.
 Theorem MQmul_add_distr_l : ∀ x y z, x * (y + z) == x * y + x * z.
 Proof.
 intros.
-remember (PQlt_le_dec (MQpos y) (MQpos z)) as dyz eqn:Hdyz.
-symmetry in Hdyz.
-destruct dyz as [H2| H2].
--unfold "=="; simpl.
- unfold "+", "*"; simpl.
- rewrite Hdyz; clear Hdyz.
- destruct (PQlt_le_dec (MQpos x * MQpos y) (MQpos x * MQpos z)) as [H3| H3].
+unfold "=="; simpl.
+unfold "+", "*"; simpl.
+remember (MQsign x) as sx eqn:Hsx.
+symmetry in Hsx.
+remember (MQsign y) as sy eqn:Hsy.
+symmetry in Hsy.
+remember (MQsign z) as sz eqn:Hsz.
+symmetry in Hsz.
+destruct (PQlt_le_dec (MQpos y) (MQpos z)) as [H2| H2]; simpl.
+-destruct (PQlt_le_dec (MQpos x * MQpos y) (MQpos x * MQpos z)) as [H3| H3].
  +destruct sx, sy, sz; simpl;
     try apply PQmul_add_distr_l; apply PQmul_sub_distr_l.
  +destruct (PQeq_dec (MQpos x) 0) as [H4| H4].
@@ -646,11 +647,6 @@ destruct dyz as [H2| H2].
    destruct sx, sy, sz; simpl; try easy; try apply PQmul_add_distr_l.
   *apply PQmul_le_mono_pos_l in H3; [ | easy ].
    now apply PQnlt_ge in H2.
--idtac.
-Set Printing All.
- setoid_rewrite MQadd_comm.
-...
-
 -destruct (PQlt_le_dec (MQpos x * MQpos y) (MQpos x * MQpos z)) as [H3| H3].
  +destruct (PQeq_dec (MQpos x) 0) as [H4| H4].
   *unfold "=="%PQ, nd in H4; simpl in H4.
