@@ -550,6 +550,23 @@ destruct b1.
      now destruct (MQsign x), (MQsign y), (MQsign z).
 Qed.
 
+Theorem MQadd_opp_r : ∀ x, (x - x == 0)%MQ.
+Proof.
+intros.
+unfold "-", "+", "=="; simpl.
+rewrite Bool.eqb_negb2.
+destruct (PQlt_le_dec (MQpos x) (MQpos x)) as [H1| H1]; simpl.
+-now apply PQlt_irrefl in H1.
+-destruct (Bool.eqb (MQsign x) true); [ apply PQsub_diag | ].
+ rewrite Nat.add_0_r.
+ destruct (zerop (PQsub_num (MQpos x) (MQpos x))) as [H2| H2]; [ easy | ].
+ unfold PQsub_num in H2.
+ now rewrite Nat.sub_diag in H2.
+Qed.
+
+Theorem MQadd_opp_l : ∀ x, (- x + x == 0)%MQ.
+Proof. intros; rewrite MQadd_comm; apply MQadd_opp_r. Qed.
+
 (* multiplication, inverse, division *)
 
 Definition MQmul x y :=
@@ -558,10 +575,9 @@ Definition MQmul x y :=
 Definition MQinv x :=
   MQmake (MQsign x) (PQinv (MQpos x)).
 
-...
-
 Notation "x * y" := (MQmul x y) : MQ_scope.
 Notation "/ x" := (MQinv x) : MQ_scope.
+Notation "x / y" := (MQmul x (MQinv y)) : MQ_scope.
 
 (* allows to use rewrite inside a multiplication
    e.g.

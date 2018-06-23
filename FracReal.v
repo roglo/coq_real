@@ -151,18 +151,15 @@ Definition freal_seq_den {r : radix} n := rad ^ S n.
 Definition freal_seq {r : radix} x n :=
   MQmake true (PQmake (freal_seq_num x n) (freal_seq_den n - 1)).
 
-Theorem fold_MQminus : ∀ x y, (x + - y == x - y)%MQ.
+Theorem fold_MQsub : ∀ x y, (x + - y == x - y)%MQ.
 Proof. easy. Qed.
-
-...
 
 Theorem fold_MQdiv : ∀ x y, (x * / y == x / y)%MQ.
 Proof. easy. Qed.
 
-Theorem Qplus_opp_l : ∀ x, (- x + x == 0)%Q.
-Proof. intros; rewrite Qplus_comm; apply Qplus_opp_r. Qed.
+Definition PQ_of_nat n := PQmake n 0.
 
-Definition Q_of_nat n := Qmake (Z.of_nat n) 1.
+...
 
 Theorem Qden_of_inv_Q_of_nat : ∀ n, Qden (/ Q_of_nat n) = Pos.of_nat n.
 Proof.
