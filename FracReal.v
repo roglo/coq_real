@@ -137,16 +137,18 @@ Arguments fd2n _ x%F i%nat.
 
 (* Relation with Cauchy sequences *)
 
-Require Import QArith.
-Definition Qabs x := if Qlt_le_dec x 0 then Qopp x else x.
+Require Import MQ.
+
 Definition is_cauchy_seq u :=
-  ∀ ε, ε > 0 → ∃ N, ∀ p q, p ≥ N ∧ q ≥ N → Qabs (u p - u q) < ε.
-Close Scope Q.
+  ∀ ε, ε > 0 → ∃ N, ∀ p q, p ≥ N ∧ q ≥ N → MQabs (u p - u q) < ε.
+Close Scope MQ.
 
 Definition freal_seq_num {r : radix} (rg := nat_ord_ring) x n :=
   Σ (i = 0, n), fd2n x i * rad ^ (n - i).
 
 Definition freal_seq_den {r : radix} n := rad ^ S n.
+
+...
 
 Definition freal_seq {r : radix} x n :=
   Qmake (Z.of_nat (freal_seq_num x n)) (Pos.of_nat (freal_seq_den n)).

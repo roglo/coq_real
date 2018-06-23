@@ -11,6 +11,7 @@ Arguments MQsign x%MQ : rename.
 Arguments MQpos x%MQ : rename.
 
 Notation "0" := (MQmake true 0) : MQ_scope.
+Notation "1" := (MQmake true 1) : MQ_scope.
 
 (* equality *)
 
@@ -120,10 +121,32 @@ rewrite Hs.
 now rewrite Bool.eqb_reflx.
 Qed.
 
-(*
+Definition MQlt x y :=
+  if MQsign x then
+    if MQsign y then PQlt (MQpos x) (MQpos y)
+    else False
+  else
+    if negb (MQsign y) then PQlt (MQpos y) (MQpos x)
+    else if PQeq_dec (MQpos x + MQpos y) 0 then False
+    else True.
+Arguments MQlt x%MQ y%MQ.
+
+Definition MQle x y :=
+  if MQsign x then
+    if MQsign y then PQle (MQpos x) (MQpos y)
+    else if PQeq_dec (MQpos x + MQpos y) 0 then True
+    else False
+  else
+    if negb (MQsign y) then PQle (MQpos y) (MQpos x)
+    else True.
+Arguments MQle x%MQ y%MQ.
+
 Notation "x < y" := (MQlt x y) : MQ_scope.
+(*
 Notation "x ≤ y" := (MQle x y) : MQ_scope.
+*)
 Notation "x > y" := (¬ MQle x y) : MQ_scope.
+(*
 Notation "x ≥ y" := (¬ MQlt x y) : MQ_scope.
 *)
 
@@ -138,6 +161,7 @@ Definition MQadd x y :=
     MQmake (MQsign x) (MQpos x - MQpos y).
 
 Definition MQopp x := MQmake (negb (MQsign x)) (MQpos x).
+Definition MQabs x := MQmake true (MQpos x).
 
 Notation "- x" := (MQopp x) : MQ_scope.
 Notation "x + y" := (MQadd x y) : MQ_scope.
