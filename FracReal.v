@@ -269,8 +269,20 @@ destruct b.
   --simpl in Hb.
     destruct sp; [ clear Hb | easy ].
     rewrite summation_rtl.
-    rewrite summation_shift.
+    rewrite summation_shift; [ | easy ].
     replace (q - S p) with (s - 1) by flia Hs.
+    unfold "=="%PQ, nd.
+    remember S as f; simpl; subst f.
+    do 3 rewrite summation_mul_distr_r.
+    apply summation_eq_compat.
+    intros i Hi.
+    remember S as f; simpl; subst f.
+    rewrite <- Nat.pow_add_r.
+    replace (S q + S p) with (S (S (q + p))) by flia.
+    rewrite <- Nat.sub_succ_l; [ | easy ].
+    rewrite <- Nat.sub_succ_l; [ | easy ].
+    rewrite Nat.sub_succ, Nat.sub_0_r.
+    replace (q + S p - (S p + i)) with (q - i) by flia.
 ...
   --do 2 rewrite summation_mul_distr_r.
     remember S as f; simpl; subst f.
