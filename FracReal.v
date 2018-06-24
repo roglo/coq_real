@@ -213,6 +213,17 @@ assert (H1r : ∀ p, 1 ≤ rad ^ S p). {
   destruct rad as [| rr]; [ flia Hr | ].
   now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
 }
+assert (HS :
+  Σ (i = 0, p), fd2n x i * rad ^ (p - i) * rad ^ S q =
+  Σ (i = 0, p), fd2n x i * rad ^ (q - i) * rad ^ S p). {
+  apply summation_eq_compat.
+  clear - Hpq.
+  intros i Hi.
+  do 2 rewrite <- Nat.mul_assoc; f_equal.
+  do 2 rewrite <- Nat.pow_add_r; f_equal.
+  flia Hpq Hi.
+}
+unfold rg in HS.
 destruct b.
 -destruct sq.
  +unfold "=="%MQ; simpl.
@@ -234,9 +245,8 @@ destruct b.
   rewrite summation_split with (e := p); [ | flia Hpq ].
   apply Nat.nlt_ge.
   remember S as f; simpl; subst f.
-...
-  rewrite <- Nat.add_0_r.
-...
+  rewrite HS.
+  apply Nat.le_add_r.
  +destruct sq.
   *remember S as f.
    unfold "=="%MQ; simpl.
@@ -254,15 +264,17 @@ destruct b.
    rewrite Nat.add_comm.
    rewrite <- Nat.sub_succ_l; [ | easy ].
    rewrite <- Nat.sub_succ_l; [ | easy ].
+   do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
    rewrite Nat_add_sub_diag.
-  -- ...
+  --simpl in Hb.
+    destruct sp; [ clear Hb | easy ].
+    rewrite summation_rtl.
+    rewrite summation_shift.
+    replace (q - S p) with (s - 1) by flia Hs.
+...
   --do 2 rewrite summation_mul_distr_r.
-    apply summation_eq_compat.
-    intros i Hi.
     remember S as f; simpl; subst f.
-    do 2 rewrite <- Nat.mul_assoc; f_equal.
-    do 2 rewrite <- Nat.pow_add_r; f_equal.
-    flia Hpq Hi.
+    now rewrite HS.
   *now rewrite Hfq in Hsq.
 ...
 assert
