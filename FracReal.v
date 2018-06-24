@@ -192,9 +192,78 @@ Theorem uq_minus_up {r : radix} (rg := nat_ord_ring) : ∀ x p q,
            (Σ (i = 0, q - p - 1), (fd2n x (q - i) * rad ^ i)%nat)
            (rad ^ S q - 1)))%MQ.
 Proof.
-intros * Hpq.
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hpq.
 remember (q - p) as s eqn:Hs.
 move s before q.
+(**)
+remember (freal_seq x q) as fq eqn:Hfq.
+remember (freal_seq x p) as fp eqn:Hfp.
+move fp before fq.
+unfold "-"%MQ, "+"%MQ.
+remember S as f; simpl; subst f.
+remember (Bool.eqb (MQsign fq) (negb (MQsign fp))) as b eqn:Hb.
+symmetry in Hb.
+remember (MQsign fq) as sq eqn:Hsq; symmetry in Hsq.
+remember (MQsign fp) as sp eqn:Hsp; symmetry in Hsp.
+move sp before sq.
+assert (H1r : ∀ p, 1 ≤ rad ^ S p). {
+  clear -  Hr; intros.
+  destruct rad as [| rr]; [ flia Hr | ].
+  now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+}
+destruct b.
+-destruct sq.
+ +unfold "=="%MQ; simpl.
+  simpl in Hb.
+  destruct sp; [ easy | now rewrite Hfp in Hsp ].
+ +now rewrite Hfq in Hsq.
+-destruct (PQlt_le_dec (MQpos fq) (MQpos fp)) as [H1| H1].
+ +exfalso.
+  rewrite Hfq, Hfp in H1; simpl in H1.
+  unfold "<"%PQ, nd in H1.
+  simpl in H1.
+  unfold freal_seq_num, freal_seq_den in H1.
+  apply Nat.nle_gt in H1; apply H1; clear H1.
+  rewrite <- Nat.sub_succ_l; [ | easy ].
+  rewrite <- Nat.sub_succ_l; [ | easy ].
+  do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
+  do 2 rewrite summation_mul_distr_r.
+  apply Nat.nlt_ge.
+  rewrite summation_split with (e := p); [ | flia Hpq ].
+  apply Nat.nlt_ge.
+  remember S as f; simpl; subst f.
+...
+  rewrite <- Nat.add_0_r.
+...
+ +destruct sq.
+  *remember S as f.
+   unfold "=="%MQ; simpl.
+   rewrite Hfq, Hfp; simpl.
+   unfold "-"%PQ.
+   rewrite <- Heqf.
+   unfold PQsub_num, nd; simpl.
+   unfold freal_seq_den, freal_seq_num.
+   rewrite <- Heqf; simpl.
+   unfold PQadd_den1.
+   rewrite <- Heqf; simpl.
+   subst f.
+   rewrite summation_split with (e := p); [ | flia Hpq ].
+   rewrite Nat.mul_add_distr_r.
+   rewrite Nat.add_comm.
+   rewrite <- Nat.sub_succ_l; [ | easy ].
+   rewrite <- Nat.sub_succ_l; [ | easy ].
+   rewrite Nat_add_sub_diag.
+  -- ...
+  --do 2 rewrite summation_mul_distr_r.
+    apply summation_eq_compat.
+    intros i Hi.
+    remember S as f; simpl; subst f.
+    do 2 rewrite <- Nat.mul_assoc; f_equal.
+    do 2 rewrite <- Nat.pow_add_r; f_equal.
+    flia Hpq Hi.
+  *now rewrite Hfq in Hsq.
 ...
 assert
   (H : (freal_seq x p ==

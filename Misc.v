@@ -98,6 +98,12 @@ apply Nat.add_le_mono_l.
 apply Nat.le_0_l.
 Qed.
 
+Theorem Nat_add_sub_diag : ∀ a b c, b = c → a + b - c = a.
+Proof.
+intros * Hbc; subst b.
+apply Nat.add_sub.
+Qed.
+
 Theorem Nat_mul_le_pos_l : ∀ a b, 1 ≤ a → b ≤ a * b.
 Proof.
 intros * Ha.

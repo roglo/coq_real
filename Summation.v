@@ -320,6 +320,42 @@ destruct (le_dec b k) as [Hbk| Hbk].
  now rewrite rng_add_0_l.
 Qed.
 
+(*
+Theorem summation_sub_distr `{rg : ord_ring} : ∀ g h b k,
+  (Σ (i = b, k), (g i - h i) =
+   Σ (i = b, k), g i - Σ (i = b, k), h i)%Rg.
+Proof.
+intros.
+destruct (le_dec b k) as [Hbk| Hbk].
+ revert b Hbk.
+ induction k; intros.
+  destruct b; [ | easy ].
+  now do 3 rewrite summation_only_one.
+
+  rewrite summation_split_last; [ | easy ].
+  rewrite summation_split_last; [ | easy ].
+  rewrite summation_split_last; [ | easy ].
+  destruct (eq_nat_dec b (S k)) as [H₂| H₂].
+   subst b.
+   unfold summation; simpl.
+   rewrite Nat.sub_diag; simpl.
+   now do 3 rewrite rng_add_0_l.
+
+   apply Nat_le_neq_lt in Hbk; [ | easy ].
+   apply Nat.succ_le_mono in Hbk.
+   rewrite IHk; [ | easy ].
+...
+   do 2 rewrite rng_add_assoc; f_equal.
+   do 2 rewrite <- rng_add_assoc; f_equal.
+   apply rng_add_comm.
+
+ unfold summation.
+ apply Nat.nle_gt in Hbk.
+ replace (S k - b) with O by lia; simpl.
+ now rewrite rng_add_0_l.
+...
+*)
+
 Theorem summation_aux_shift `{rg : ord_ring} : ∀ b len g,
   summation_aux b len g = summation_aux 0 len (λ i, g (b + i)).
 Proof.
