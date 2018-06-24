@@ -8,6 +8,7 @@ Tactic Notation "flia" hyp_list(Hs) := clear - Hs; lia.
 Delimit Scope PQ_scope with PQ.
 
 Record PQ := PQmake { PQnum : nat; PQden1 : nat }.
+Arguments PQmake _%nat _%nat.
 Arguments PQnum x%PQ : rename.
 Arguments PQden1 x%PQ : rename.
 

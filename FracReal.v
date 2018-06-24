@@ -184,19 +184,21 @@ destruct z as [| p| p].
 Qed.
 *)
 
-(*
 Theorem uq_minus_up {r : radix} (rg := nat_ord_ring) : ∀ x p q,
   p < q
   → (freal_seq x q - freal_seq x p ==
-      Z.of_nat (Σ (i = 0, q - p - 1), (fd2n x (q - i) * rad ^ i)%nat) #
-      Pos.of_nat (rad ^ S q))%Q.
+      MQmake true
+        (PQmake
+           (Σ (i = 0, q - p - 1), (fd2n x (q - i) * rad ^ i)%nat)
+           (rad ^ S q - 1)))%MQ.
 Proof.
 intros * Hpq.
 remember (q - p) as s eqn:Hs.
 move s before q.
+...
 assert
   (H : (freal_seq x p ==
-        freal_seq x p * Q_of_nat (rad ^ s) / Q_of_nat (rad ^ s))%Q). {
+        (freal_seq x p * rad ^ s / rad ^ s)%nat)%MQ). {
   rewrite Qdiv_mult_l; [ easy | ].
   intros H; unfold "==" in H.
   simpl in H.
@@ -217,7 +219,6 @@ rewrite Qden_of_inv_Q_of_nat in H.
 rewrite <- Nat2Pos.inj_mul in H.
 -idtac.
 ...
-*)
 
 Theorem freal_is_cauchy_seq {r : radix} : ∀ x, is_cauchy_seq (freal_seq x).
 Proof.
