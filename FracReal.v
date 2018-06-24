@@ -159,8 +159,7 @@ Proof. easy. Qed.
 
 Definition PQ_of_nat n := PQmake n 0.
 
-...
-
+(*
 Theorem Qden_of_inv_Q_of_nat : ∀ n, Qden (/ Q_of_nat n) = Pos.of_nat n.
 Proof.
 intros n.
@@ -183,7 +182,9 @@ destruct z as [| p| p].
  apply Z.nle_gt in H1; apply H1; clear H1.
  apply Nat2Z.is_nonneg.
 Qed.
+*)
 
+(*
 Theorem uq_minus_up {r : radix} (rg := nat_ord_ring) : ∀ x p q,
   p < q
   → (freal_seq x q - freal_seq x p ==
@@ -216,11 +217,12 @@ rewrite Qden_of_inv_Q_of_nat in H.
 rewrite <- Nat2Pos.inj_mul in H.
 -idtac.
 ...
+*)
 
 Theorem freal_is_cauchy_seq {r : radix} : ∀ x, is_cauchy_seq (freal_seq x).
 Proof.
 intros x ε Hε.
-exists (Pos.to_nat (Qden ε)).
+exists (PQden1 (MQpos ε) + 1).
 intros p q (Hp, Hq).
 destruct (lt_dec p q) as [Hpq| Hpq].
 -specialize (uq_minus_up x p q Hpq) as H.
