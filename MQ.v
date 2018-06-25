@@ -169,10 +169,16 @@ Ltac MQlt_morph :=
       |- _ ] =>
       let H1 := fresh "H1" in
       let H2 := fresh "H2" in
+      let H3 := fresh "H3" in
+      let H4 := fresh "H4" in
       destruct (zerop (PQnum (MQpos x1) + PQnum (MQpos x2))) as [H1| ];
         [ clear H | easy ];
       apply Nat.eq_add_0 in H1;
       destruct H1 as (H1, H2);
+      generalize H1; intros H3;
+      apply PQeq_num_0 in H3;
+      generalize H2; intros H4;
+      apply PQeq_num_0 in H4;
       MQlt_morph
   | [ H :
       if PQeq_dec (MQpos ?x + MQpos ?y) 0 then False else True
@@ -208,27 +214,29 @@ destruct sx1, sx2, sy1, sy2; simpl in Hx, Hy |-*; MQlt_morph.
  rewrite H2 in Hxy; simpl in Hxy.
  now apply Nat.nlt_0_r in Hxy.
 -rewrite Hy.
- destruct (PQeq_dec (MQpos x2 + MQpos y2) 0) as [H3| H3].
+ rewrite H3.
+ destruct (PQeq_dec (MQpos x2 + MQpos y2) 0) as [H5| H5].
  +split; [ intros H | easy ].
-  apply PQeq_add_0 in H3.
-  rewrite (proj2 H3) in H.
+  apply PQeq_add_0 in H5.
+  rewrite (proj2 H5) in H.
   now apply PQnlt_0_r in H.
  +split; [ easy | intros _ ].
-  apply PQeq_num_0 in H1.
-  apply PQeq_num_0 in H2.
-  rewrite H2, PQadd_0_l in H3.
-  rewrite H1.
+  rewrite H4, PQadd_0_l in H5.
   now apply PQneq_0_lt_0.
--apply PQeq_num_0 in H1.
- apply PQeq_num_0 in H3.
- now rewrite H1, H3.
--apply PQeq_num_0 in H3.
- apply PQeq_num_0 in H2.
- rewrite H3, H2, PQadd_0_r in H4.
- now apply H4.
--apply PQeq_num_0 in H2.
- rewrite H2 in Hxy.
+-now rewrite H7, H3.
+-rewrite H7, H4, PQadd_0_r in H8.
+ now apply H8.
+-rewrite H4 in Hxy.
  now apply PQnlt_0_r in Hxy.
+-destruct (PQeq_dec (MQpos x1 + MQpos y1) 0) as [H5| H5].
+ +split; [ easy | intros H6 ].
+  rewrite H3, PQadd_0_l in H5.
+  rewrite <- Hy, H5 in H6.
+  now apply PQnlt_0_r in H6.
+ +split; [ intros _ | easy ].
+  rewrite H3, PQadd_0_l, Hy in H5.
+  rewrite H4.
+  now apply PQneq_0_lt_0.
 -idtac.
 ...
 
