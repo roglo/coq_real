@@ -310,6 +310,7 @@ destruct (lt_dec q p) as [Hpq| Hpq].
  destruct εs; [ | now unfold "≤"%MQ in Hε; simpl in Hε ].
  unfold "<"%PQ, nd.
  remember S as f; simpl; subst f.
+ simpl in Hq, Hp.
  rewrite <- Nat.sub_succ_l; [ | ].
  +rewrite Nat.sub_succ, Nat.sub_0_r.
 ...
