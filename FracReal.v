@@ -313,6 +313,7 @@ destruct (lt_dec q p) as [Hpq| Hpq].
  simpl in Hq, Hp.
  rewrite <- Nat.sub_succ_l; [ | ].
  +rewrite Nat.sub_succ, Nat.sub_0_r.
+  rewrite Nat.add_1_r in Hp, Hq.
 ...
 
 unfold Qabs.
