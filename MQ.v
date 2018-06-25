@@ -167,10 +167,10 @@ Ltac MQlt_morph :=
   | [ H :
       if zerop (PQnum (MQpos ?x1) + PQnum (MQpos ?x2)) then True else False
       |- _ ] =>
-      let H1 := fresh "H1" in
-      let H2 := fresh "H2" in
-      let H3 := fresh "H3" in
-      let H4 := fresh "H4" in
+      let H1 := fresh "H1n" in
+      let H2 := fresh "H2n" in
+      let H3 := fresh "H1p" in
+      let H4 := fresh "H2p" in
       destruct (zerop (PQnum (MQpos x1) + PQnum (MQpos x2))) as [H1| ];
         [ clear H | easy ];
       apply Nat.eq_add_0 in H1;
@@ -208,40 +208,37 @@ symmetry in Hsx1, Hsx2, Hsy1, Hsy2.
 destruct sx1, sx2, sy1, sy2; simpl in Hx, Hy |-*; MQlt_morph.
 -now rewrite Hx, Hy.
 -unfold "<"%PQ, nd in Hxy.
- rewrite H1 in Hxy; simpl in Hxy.
+ rewrite H1n in Hxy; simpl in Hxy.
  now apply Nat.nlt_0_r in Hxy.
 -unfold "<"%PQ, nd in Hxy.
- rewrite H2 in Hxy; simpl in Hxy.
+ rewrite H2n in Hxy; simpl in Hxy.
  now apply Nat.nlt_0_r in Hxy.
--rewrite Hy.
- rewrite H3.
+-rewrite Hy, H1p.
  destruct (PQeq_dec (MQpos x2 + MQpos y2) 0) as [H5| H5].
  +split; [ intros H | easy ].
   apply PQeq_add_0 in H5.
   rewrite (proj2 H5) in H.
   now apply PQnlt_0_r in H.
  +split; [ easy | intros _ ].
-  rewrite H4, PQadd_0_l in H5.
+  rewrite H2p, PQadd_0_l in H5.
   now apply PQneq_0_lt_0.
--now rewrite H7, H3.
--rewrite H7, H4, PQadd_0_r in H8.
- now apply H8.
--rewrite H4 in Hxy.
+-now rewrite H1p, H2p0.
+-rewrite H2p, H2p0, PQadd_0_r in H1.
+ now apply H1.
+-rewrite H2p in Hxy.
  now apply PQnlt_0_r in Hxy.
--destruct (PQeq_dec (MQpos x1 + MQpos y1) 0) as [H5| H5].
- +split; [ easy | intros H6 ].
-  rewrite H3, PQadd_0_l in H5.
-  rewrite <- Hy, H5 in H6.
-  now apply PQnlt_0_r in H6.
+-rewrite PQif_eq_if_eqb, H1p, Hy, PQadd_0_l, <- PQif_eq_if_eqb.
+ destruct (PQeq_dec (MQpos y2) 0) as [H1| H1].
+ +now rewrite H2p, H1.
  +split; [ intros _ | easy ].
-  rewrite H3, PQadd_0_l, Hy in H5.
-  rewrite H4.
-  now apply PQneq_0_lt_0.
--rewrite H6, H3 in H8; apply H8.
+  now rewrite H2p; apply PQneq_0_lt_0.
+-rewrite H1p0, H1p in H1; apply H1.
  apply PQadd_0_l.
--now rewrite H3, H4, H6, H7.
--now rewrite H3 in Hxy.
-
+-now rewrite H1p0, H2p.
+-now rewrite H1p in Hxy.
+-do 2 rewrite PQif_eq_if_eqb.
+ now rewrite Hx, Hy.
+-idtac.
 ...
 
 (* addition, opposite, subtraction *)
