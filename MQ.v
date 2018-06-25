@@ -700,19 +700,22 @@ Notation "x / y" := (MQmul x (MQinv y)) : MQ_scope.
 
 Ltac MQmul_morph_tac :=
   match goal with
-  | [ H : if (zerop (PQnum (MQpos ?x) + PQnum (MQpos ?y))) then ?P else ?Q |- _ ] =>
+  | [ H : if (zerop (PQnum (MQpos ?x) + PQnum (MQpos ?y))) then ?P else ?Q
+       |- _ ] =>
       destruct (zerop (PQnum (MQpos x) + PQnum (MQpos y)))
         as [H1| H1]; [ | easy ];
       apply Nat.eq_add_0 in H1;
       unfold "=="%PQ, "*"%PQ, nd; simpl; unfold PQmul_num;
       now rewrite (proj1 H1), (proj2 H1)
-  | [ H : if (zerop (PQnum (MQpos ?x) + PQnum (MQpos ?y))) then ?P else ?Q |- _ ] =>
+  | [ H : if (zerop (PQnum (MQpos ?x) + PQnum (MQpos ?y))) then ?P else ?Q
+       |- _ ] =>
       destruct (zerop (PQnum (MQpos x) + PQnum (MQpos y)))
         as [H1| H1]; [ | easy ];
       apply Nat.eq_add_0 in H1;
       unfold PQmul_num;
       now rewrite (proj1 H1), (proj2 H1), Nat.mul_0_r, Nat.mul_0_r
-  | [ Hx : (MQpos ?x1 == MQpos ?x2)%PQ, Hy : (MQpos ?y1 == MQpos ?y2)%PQ |- _ ] =>
+  | [ Hx : (MQpos ?x1 == MQpos ?x2)%PQ, Hy : (MQpos ?y1 == MQpos ?y2)%PQ
+       |- _ ] =>
       now rewrite Hx, Hy
   | _ => idtac
   end.

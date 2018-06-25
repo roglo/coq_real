@@ -315,21 +315,8 @@ destruct (lt_dec q p) as [Hpq| Hpq].
  +rewrite Nat.sub_succ, Nat.sub_0_r.
   rewrite Nat.add_1_r in Hp, Hq.
 ...
-
-unfold Qabs.
-destruct (Qlt_le_dec (freal_seq x p - freal_seq x q) 0) as [Hpq| Hpq].
--unfold Qminus.
- rewrite Qopp_plus, Qopp_involutive, Qplus_comm, fold_Qminus.
- apply (Qplus_lt_l _ _ (freal_seq x q)) in Hpq.
- unfold Qminus in Hpq.
- rewrite <- Qplus_assoc, Qplus_opp_l in Hpq.
- rewrite Qplus_0_l, Qplus_0_r in Hpq.
- unfold freal_seq, Qlt in Hpq.
- remember S as f; simpl in Hpq; subst f.
- unfold freal_seq, Qlt.
- remember S as f; simpl; subst f.
- rewrite Z.mul_opp_l, Z.add_opp_r.
-...
+ + ...
+- ...
 
 (* In names, "9" actually means "rad-1" *)
 
