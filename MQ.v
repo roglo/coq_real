@@ -142,28 +142,24 @@ Definition MQle x y :=
 Arguments MQle x%MQ y%MQ.
 
 Notation "x < y" := (MQlt x y) : MQ_scope.
-(*
 Notation "x ≤ y" := (MQle x y) : MQ_scope.
-*)
 Notation "x > y" := (¬ MQle x y) : MQ_scope.
-(*
 Notation "x ≥ y" := (¬ MQlt x y) : MQ_scope.
-*)
 
-Ltac MQlt_morph :=
+Ltac MQlt_morph_tac :=
   match goal with
   | H : False |- _ => easy
   | |- ?H ↔ False =>
       let H1 := fresh "Hxy" in
       split; [ intros H1 | easy ];
-      MQlt_morph
+      MQlt_morph_tac
   | |- False ↔ ?H =>
       let H1 := fresh "Hxy" in
       split; [ easy | intros H1 ];
-      MQlt_morph
+      MQlt_morph_tac
   | H : True |- _ =>
       clear H;
-      MQlt_morph
+      MQlt_morph_tac
   | [ H :
       if zerop (PQnum (MQpos ?x1) + PQnum (MQpos ?x2)) then True else False
       |- _ ] =>
@@ -179,7 +175,7 @@ Ltac MQlt_morph :=
       apply PQeq_num_0 in H3;
       generalize H2; intros H4;
       apply PQeq_num_0 in H4;
-      MQlt_morph
+      MQlt_morph_tac
   | [ H :
       if PQeq_dec (MQpos ?x + MQpos ?y) 0 then False else True
       |- _ ] =>
@@ -189,7 +185,7 @@ Ltac MQlt_morph :=
           let H2 := fresh "H2" in
           destruct H1 as (H1, H2)
         | ];
-       MQlt_morph
+       MQlt_morph_tac
   | _ => idtac
   end.
 
@@ -205,7 +201,7 @@ remember (MQsign y2) as sy2 eqn:Hsy2.
 move sx2 before sx1; move sy1 before sx2; move sy2 before sy1.
 move Hsy1 before Hsx2; move Hsy2 before Hsy1.
 symmetry in Hsx1, Hsx2, Hsy1, Hsy2.
-destruct sx1, sx2, sy1, sy2; simpl in Hx, Hy |-*; MQlt_morph.
+destruct sx1, sx2, sy1, sy2; simpl in Hx, Hy |-*; MQlt_morph_tac.
 -now rewrite Hx, Hy.
 -unfold "<"%PQ, nd in Hxy.
  rewrite H1n in Hxy; simpl in Hxy.
@@ -243,8 +239,13 @@ destruct sx1, sx2, sy1, sy2; simpl in Hx, Hy |-*; MQlt_morph.
  +now rewrite <- Hx, H1.
  +split; [ intros _ | easy ].
   now rewrite <- Hx, H2p; apply PQneq_0_lt_0.
--idtac.
-...
+-rewrite PQif_eq_if_eqb, H2p, PQadd_0_r, <- PQif_eq_if_eqb.
+ destruct (PQeq_dec (MQpos x2) 0) as [H1| H1].
+ +now rewrite Hx, H1.
+ +split; [ easy | intros _ ].
+  now rewrite H1p, Hx; apply PQneq_0_lt_0.
+-now rewrite Hx, Hy.
+Qed.
 
 (* addition, opposite, subtraction *)
 
@@ -266,7 +267,26 @@ Notation "x - y" := (MQadd x (MQopp y)) : MQ_scope.
 Open Scope MQ_scope.
 
 Instance MQabs_morph : Proper (MQeq ==> MQeq) MQabs.
-...
+Proof.
+intros x y Hxy.
+unfold MQabs, "=="%MQ; simpl.
+unfold "==" in Hxy.
+remember (MQsign x) as sx eqn:Hsx.
+remember (MQsign y) as sy eqn:Hsy.
+destruct sx, sy; simpl in Hxy; [ easy | | | easy ].
+-destruct (zerop (PQnum (MQpos x) + PQnum (MQpos y))) as [H1| ]; [ | easy ].
+ apply Nat.eq_add_0 in H1.
+ destruct H1 as (H1, H2).
+ apply PQeq_num_0 in H1.
+ apply PQeq_num_0 in H2.
+ now rewrite H1, H2.
+-destruct (zerop (PQnum (MQpos x) + PQnum (MQpos y))) as [H1| ]; [ | easy ].
+ apply Nat.eq_add_0 in H1.
+ destruct H1 as (H1, H2).
+ apply PQeq_num_0 in H1.
+ apply PQeq_num_0 in H2.
+ now rewrite H1, H2.
+Qed.
 
 Theorem MQadd_comm : ∀ x y, x + y == y + x.
 Proof.

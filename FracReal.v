@@ -140,8 +140,12 @@ Arguments fd2n _ x%F i%nat.
 Require Import MQ PQ.
 
 Definition is_cauchy_seq u :=
-  ∀ ε, ε > 0 → ∃ N, ∀ p q, p ≥ N ∧ q ≥ N → MQabs (u p - u q) < ε.
+  ∀ ε, ε > 0 → ∃ N : nat, ∀ p q, (p ≥ N)%nat ∧ (q ≥ N)%nat → MQabs (u p - u q) < ε.
 Close Scope MQ.
+
+...
+
+Check is_cauchy_seq.
 
 Definition freal_seq_num {r : radix} (rg := nat_ord_ring) x n :=
   Σ (i = 0, n), fd2n x i * rad ^ (n - i).
@@ -294,6 +298,11 @@ destruct b.
   *now rewrite Hfq in Hsq.
 Qed.
 
+Check is_cauchy_seq.
+freal_seq
+     : FracReal → nat → MQ
+
+
 Theorem freal_is_cauchy_seq {r : radix} : ∀ x, is_cauchy_seq (freal_seq x).
 Proof.
 intros x ε Hε.
@@ -303,7 +312,12 @@ destruct (lt_dec q p) as [Hpq| Hpq].
 -rewrite (uq_minus_up x q p Hpq).
  unfold MQabs.
  remember S as f; simpl; subst f.
- simpl.
+ unfold "<"%MQ.
+ remember S as f; simpl; subst f.
+ unfold "≤"%MQ in Hε.
+...
+ destruct ε as (εs, εp).
+ remember S as f; simpl; subst f.
 ...
 
 unfold Qabs.
