@@ -197,7 +197,9 @@ destruct sx1, sx2, sy1, sy2; simpl in Hx, Hy |-*.
   apply PQeq_num_0 in H1.
   apply PQeq_num_0 in H2.
   rewrite H2, PQadd_0_l in H3.
-
+  rewrite H1.
+  now apply PQneq_0_lt_0.
+-idtac.
 ...
 
 (* addition, opposite, subtraction *)
