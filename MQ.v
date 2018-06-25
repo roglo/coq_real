@@ -150,6 +150,43 @@ Notation "x > y" := (¬ MQle x y) : MQ_scope.
 Notation "x ≥ y" := (¬ MQlt x y) : MQ_scope.
 *)
 
+Ltac MQlt_morph :=
+  match goal with
+  | H : False |- _ => easy
+  | |- ?H ↔ False =>
+      let H1 := fresh "Hxy" in
+      split; [ intros H1 | easy ];
+      MQlt_morph
+  | |- False ↔ ?H =>
+      let H1 := fresh "Hxy" in
+      split; [ easy | intros H1 ];
+      MQlt_morph
+  | H : True |- _ =>
+      clear H;
+      MQlt_morph
+  | [ H :
+      if zerop (PQnum (MQpos ?x1) + PQnum (MQpos ?x2)) then True else False
+      |- _ ] =>
+      let H1 := fresh "H1" in
+      let H2 := fresh "H2" in
+      destruct (zerop (PQnum (MQpos x1) + PQnum (MQpos x2))) as [H1| ];
+        [ clear H | easy ];
+      apply Nat.eq_add_0 in H1;
+      destruct H1 as (H1, H2);
+      MQlt_morph
+  | [ H :
+      if PQeq_dec (MQpos ?x + MQpos ?y) 0 then False else True
+      |- _ ] =>
+      let H1 := fresh "H1" in
+      destruct (PQeq_dec (MQpos x + MQpos y) 0) as [H1| H1];
+        [ apply PQeq_add_0 in H1;
+          let H2 := fresh "H2" in
+          destruct H1 as (H1, H2)
+        | ];
+       MQlt_morph
+  | _ => idtac
+  end.
+
 Instance MQlt_morph : Proper (MQeq ==> MQeq ==> iff) MQlt.
 Proof.
 unfold "<"%MQ, "=="%MQ.
@@ -162,32 +199,15 @@ remember (MQsign y2) as sy2 eqn:Hsy2.
 move sx2 before sx1; move sy1 before sx2; move sy2 before sy1.
 move Hsy1 before Hsx2; move Hsy2 before Hsy1.
 symmetry in Hsx1, Hsx2, Hsy1, Hsy2.
-destruct sx1, sx2, sy1, sy2; simpl in Hx, Hy |-*.
+destruct sx1, sx2, sy1, sy2; simpl in Hx, Hy |-*; MQlt_morph.
 -now rewrite Hx, Hy.
--split; [ | easy ].
- intros H.
- destruct (zerop (PQnum (MQpos y1) + PQnum (MQpos y2)))
-   as [H1| H1]; [ clear Hy | easy ].
- apply Nat.eq_add_0 in H1.
- destruct H1 as (H1, H2).
- unfold "<"%PQ, nd in H.
- rewrite H1 in H; simpl in H.
- now apply Nat.nlt_0_r in H.
--split; [ easy | ].
- intros H.
- destruct (zerop (PQnum (MQpos y1) + PQnum (MQpos y2)))
-   as [H1| H1]; [ clear Hy | easy ].
- apply Nat.eq_add_0 in H1.
- destruct H1 as (H1, H2).
- unfold "<"%PQ, nd in H.
- rewrite H2 in H; simpl in H.
- now apply Nat.nlt_0_r in H.
--easy.
--destruct (zerop (PQnum (MQpos x1) + PQnum (MQpos x2)))
-    as [H1| H1]; [ clear Hx | easy ].
- rewrite Hy.
- apply Nat.eq_add_0 in H1.
- destruct H1 as (H1, H2).
+-unfold "<"%PQ, nd in Hxy.
+ rewrite H1 in Hxy; simpl in Hxy.
+ now apply Nat.nlt_0_r in Hxy.
+-unfold "<"%PQ, nd in Hxy.
+ rewrite H2 in Hxy; simpl in Hxy.
+ now apply Nat.nlt_0_r in Hxy.
+-rewrite Hy.
  destruct (PQeq_dec (MQpos x2 + MQpos y2) 0) as [H3| H3].
  +split; [ intros H | easy ].
   apply PQeq_add_0 in H3.
@@ -199,6 +219,16 @@ destruct sx1, sx2, sy1, sy2; simpl in Hx, Hy |-*.
   rewrite H2, PQadd_0_l in H3.
   rewrite H1.
   now apply PQneq_0_lt_0.
+-apply PQeq_num_0 in H1.
+ apply PQeq_num_0 in H3.
+ now rewrite H1, H3.
+-apply PQeq_num_0 in H3.
+ apply PQeq_num_0 in H2.
+ rewrite H3, H2, PQadd_0_r in H4.
+ now apply H4.
+-apply PQeq_num_0 in H2.
+ rewrite H2 in Hxy.
+ now apply PQnlt_0_r in Hxy.
 -idtac.
 ...
 
