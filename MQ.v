@@ -698,6 +698,25 @@ Notation "x * y" := (MQmul x y) : MQ_scope.
 Notation "/ x" := (MQinv x) : MQ_scope.
 Notation "x / y" := (MQmul x (MQinv y)) : MQ_scope.
 
+Ltac MQmul_morph_tac :=
+  match goal with
+  | [ H : if (zerop (PQnum (MQpos ?x) + PQnum (MQpos ?y))) then ?P else ?Q |- _ ] =>
+      destruct (zerop (PQnum (MQpos x) + PQnum (MQpos y)))
+        as [H1| H1]; [ | easy ];
+      apply Nat.eq_add_0 in H1;
+      unfold "=="%PQ, "*"%PQ, nd; simpl; unfold PQmul_num;
+      now rewrite (proj1 H1), (proj2 H1)
+  | [ H : if (zerop (PQnum (MQpos ?x) + PQnum (MQpos ?y))) then ?P else ?Q |- _ ] =>
+      destruct (zerop (PQnum (MQpos x) + PQnum (MQpos y)))
+        as [H1| H1]; [ | easy ];
+      apply Nat.eq_add_0 in H1;
+      unfold PQmul_num;
+      now rewrite (proj1 H1), (proj2 H1), Nat.mul_0_r, Nat.mul_0_r
+  | [ Hx : (MQpos ?x1 == MQpos ?x2)%PQ, Hy : (MQpos ?y1 == MQpos ?y2)%PQ |- _ ] =>
+      now rewrite Hx, Hy
+  | _ => idtac
+  end.
+
 (* allows to use rewrite inside a multiplication
    e.g.
       H : x = y
@@ -707,7 +726,6 @@ Notation "x / y" := (MQmul x (MQinv y)) : MQ_scope.
  *)
 Instance MQmul_morph : Proper (MQeq ==> MQeq ==> MQeq) MQmul.
 Proof.
-(* to be simplified: many repetitions *)
 unfold "=="%MQ; simpl.
 intros x1 x2 Hx y1 y2 Hy.
 move y1 before x2; move y2 before y1.
@@ -718,70 +736,7 @@ remember (MQsign y1) as sy1 eqn:Hsy1; symmetry in Hsy1.
 remember (MQsign y2) as sy2 eqn:Hsy2; symmetry in Hsy2.
 move sx2 before sx1; move sy1 before sx2; move sy2 before sy1.
 move Hsy1 before Hsx2; move Hsy2 before Hsy1.
-...
-(* make a ltac *)
-
-destruct sx1, sx2, sy1, sy2; simpl in Hx, Hy |-*; try now rewrite Hx, Hy.
--destruct (zerop (PQnum (MQpos y1) + PQnum (MQpos y2)))
-    as [H1| H1]; [ clear Hy | easy ].
- apply Nat.eq_add_0 in H1.
- unfold PQmul_num.
- now rewrite (proj1 H1), (proj2 H1), Nat.mul_0_r, Nat.mul_0_r.
--destruct (zerop (PQnum (MQpos y1) + PQnum (MQpos y2)))
-    as [H1| H1]; [ clear Hy | easy ].
- apply Nat.eq_add_0 in H1.
- unfold PQmul_num.
- now rewrite (proj1 H1), (proj2 H1), Nat.mul_0_r, Nat.mul_0_r.
--destruct (zerop (PQnum (MQpos x1) + PQnum (MQpos x2)))
-   as [H1| H1]; [ clear Hx | easy ].
- apply Nat.eq_add_0 in H1.
- unfold "=="%PQ, "*"%PQ, nd; simpl; unfold PQmul_num.
- now rewrite (proj1 H1), (proj2 H1).
--destruct (zerop (PQnum (MQpos x1) + PQnum (MQpos x2)))
-   as [H1| H1]; [ clear Hx | easy ].
- apply Nat.eq_add_0 in H1.
- unfold "=="%PQ, "*"%PQ, nd; simpl; unfold PQmul_num.
- now rewrite (proj1 H1), (proj2 H1).
--destruct (zerop (PQnum (MQpos x1) + PQnum (MQpos x2)))
-   as [H1| H1]; [ clear Hx | easy ].
- apply Nat.eq_add_0 in H1.
- unfold "=="%PQ, "*"%PQ, nd; simpl; unfold PQmul_num.
- now rewrite (proj1 H1), (proj2 H1).
--destruct (zerop (PQnum (MQpos x1) + PQnum (MQpos x2)))
-   as [H1| H1]; [ clear Hx | easy ].
- apply Nat.eq_add_0 in H1.
- unfold "=="%PQ, "*"%PQ, nd; simpl; unfold PQmul_num.
- now rewrite (proj1 H1), (proj2 H1).
--destruct (zerop (PQnum (MQpos x1) + PQnum (MQpos x2)))
-   as [H1| H1]; [ clear Hx | easy ].
- apply Nat.eq_add_0 in H1.
- unfold "=="%PQ, "*"%PQ, nd; simpl; unfold PQmul_num.
- now rewrite (proj1 H1), (proj2 H1).
--destruct (zerop (PQnum (MQpos x1) + PQnum (MQpos x2)))
-   as [H1| H1]; [ clear Hx | easy ].
- apply Nat.eq_add_0 in H1.
- unfold "=="%PQ, "*"%PQ, nd; simpl; unfold PQmul_num.
- now rewrite (proj1 H1), (proj2 H1).
--destruct (zerop (PQnum (MQpos x1) + PQnum (MQpos x2)))
-   as [H1| H1]; [ clear Hx | easy ].
- apply Nat.eq_add_0 in H1.
- unfold "=="%PQ, "*"%PQ, nd; simpl; unfold PQmul_num.
- now rewrite (proj1 H1), (proj2 H1).
--destruct (zerop (PQnum (MQpos x1) + PQnum (MQpos x2)))
-   as [H1| H1]; [ clear Hx | easy ].
- apply Nat.eq_add_0 in H1.
- unfold "=="%PQ, "*"%PQ, nd; simpl; unfold PQmul_num.
- now rewrite (proj1 H1), (proj2 H1).
--destruct (zerop (PQnum (MQpos y1) + PQnum (MQpos y2)))
-   as [H1| H1]; [ clear Hy | easy ].
- apply Nat.eq_add_0 in H1.
- unfold PQmul_num.
- now rewrite (proj1 H1), (proj2 H1), Nat.mul_0_r, Nat.mul_0_r.
--destruct (zerop (PQnum (MQpos y1) + PQnum (MQpos y2)))
-   as [H1| H1]; [ clear Hy | easy ].
- apply Nat.eq_add_0 in H1.
- unfold PQmul_num.
- now rewrite (proj1 H1), (proj2 H1), Nat.mul_0_r, Nat.mul_0_r.
+destruct sx1, sx2, sy1, sy2; simpl in Hx, Hy |-*; MQmul_morph_tac.
 Qed.
 
 Theorem MQmul_comm : ∀ x y, x * y == y * x.
