@@ -238,6 +238,11 @@ destruct sx1, sx2, sy1, sy2; simpl in Hx, Hy |-*; MQlt_morph.
 -now rewrite H1p in Hxy.
 -do 2 rewrite PQif_eq_if_eqb.
  now rewrite Hx, Hy.
+-rewrite PQif_eq_if_eqb, H1p, PQadd_0_r, <- PQif_eq_if_eqb.
+ destruct (PQeq_dec (MQpos x1) 0) as [H1| H1].
+ +now rewrite <- Hx, H1.
+ +split; [ intros _ | easy ].
+  now rewrite <- Hx, H2p; apply PQneq_0_lt_0.
 -idtac.
 ...
 
