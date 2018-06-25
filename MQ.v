@@ -718,6 +718,9 @@ remember (MQsign y1) as sy1 eqn:Hsy1; symmetry in Hsy1.
 remember (MQsign y2) as sy2 eqn:Hsy2; symmetry in Hsy2.
 move sx2 before sx1; move sy1 before sx2; move sy2 before sy1.
 move Hsy1 before Hsx2; move Hsy2 before Hsy1.
+...
+(* make a ltac *)
+
 destruct sx1, sx2, sy1, sy2; simpl in Hx, Hy |-*; try now rewrite Hx, Hy.
 -destruct (zerop (PQnum (MQpos y1) + PQnum (MQpos y2)))
     as [H1| H1]; [ clear Hy | easy ].
