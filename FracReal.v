@@ -283,43 +283,27 @@ destruct b.
     rewrite <- Nat.sub_succ_l; [ | easy ].
     rewrite Nat.sub_succ, Nat.sub_0_r.
     replace (q + S p - (S p + i)) with (q - i) by flia.
-...
+    do 3 rewrite <- Nat.mul_assoc; f_equal.
+    replace (q - (q - i)) with i by flia Hs Hi; f_equal.
+    rewrite <- Nat.pow_add_r.
+    rewrite Nat.sub_succ, Nat.sub_0_r; f_equal.
+    flia.
   --do 2 rewrite summation_mul_distr_r.
     remember S as f; simpl; subst f.
     now rewrite HS.
   *now rewrite Hfq in Hsq.
-...
-assert
-  (H : (freal_seq x p ==
-        (freal_seq x p * rad ^ s / rad ^ s)%nat)%MQ). {
-  rewrite Qdiv_mult_l; [ easy | ].
-  intros H; unfold "==" in H.
-  simpl in H.
-  apply Z.eq_mul_0 in H.
-  destruct H as [H| H]; [ | easy ].
-  rewrite <- Nat2Z.inj_0 in H.
-  apply Nat2Z.inj in H.
-  now apply Nat.pow_nonzero in H.
-}
-unfold Qmult in H; simpl in H.
-rewrite Pos.mul_1_r in H.
-rewrite <- Nat2Z.inj_mul in H.
-unfold freal_seq_num in H.
-rewrite summation_mul_distr_r in H; simpl in H.
-unfold Qdiv in H; simpl in H.
-unfold Qmult in H; simpl in H.
-rewrite Qden_of_inv_Q_of_nat in H.
-rewrite <- Nat2Pos.inj_mul in H.
--idtac.
-...
+Qed.
 
 Theorem freal_is_cauchy_seq {r : radix} : ∀ x, is_cauchy_seq (freal_seq x).
 Proof.
 intros x ε Hε.
 exists (PQden1 (MQpos ε) + 1).
 intros p q (Hp, Hq).
-destruct (lt_dec p q) as [Hpq| Hpq].
--specialize (uq_minus_up x p q Hpq) as H.
+destruct (lt_dec q p) as [Hpq| Hpq].
+-rewrite (uq_minus_up x q p Hpq).
+ unfold MQabs.
+ remember S as f; simpl; subst f.
+ simpl.
 ...
 
 unfold Qabs.

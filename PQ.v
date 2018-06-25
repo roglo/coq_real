@@ -384,6 +384,28 @@ Qed.
 
 (* *)
 
+Theorem PQeq_add_0 : ∀ x y, (x + y == 0 ↔ x == 0 ∧ y == 0)%PQ.
+Proof.
+intros.
+unfold "==", nd; simpl.
+do 3 rewrite Nat.mul_1_r.
+unfold PQadd_num, nd.
+split; intros H.
+-apply Nat.eq_add_0 in H.
+ destruct H as (H1, H2).
+ apply Nat.eq_mul_0_l in H1; [ | easy ].
+ apply Nat.eq_mul_0_l in H2; [ | easy ].
+ easy.
+-now rewrite (proj1 H), (proj2 H).
+Qed.
+
+Theorem PQeq_num_0 : ∀ x, PQnum x = 0 ↔ (x == 0)%PQ.
+Proof.
+intros.
+unfold "==", nd; simpl.
+now rewrite Nat.mul_1_r.
+Qed.
+
 Theorem PQsub_add_distr : ∀ x y z, (x - (y + z) == x - y - z)%PQ.
 Proof.
 intros.

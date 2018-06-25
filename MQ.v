@@ -150,6 +150,56 @@ Notation "x > y" := (¬ MQle x y) : MQ_scope.
 Notation "x ≥ y" := (¬ MQlt x y) : MQ_scope.
 *)
 
+Instance MQlt_morph : Proper (MQeq ==> MQeq ==> iff) MQlt.
+Proof.
+unfold "<"%MQ, "=="%MQ.
+intros x1 x2 Hx y1 y2 Hy.
+move y1 before x2; move y2 before y1.
+remember (MQsign x1) as sx1 eqn:Hsx1.
+remember (MQsign x2) as sx2 eqn:Hsx2.
+remember (MQsign y1) as sy1 eqn:Hsy1.
+remember (MQsign y2) as sy2 eqn:Hsy2.
+move sx2 before sx1; move sy1 before sx2; move sy2 before sy1.
+move Hsy1 before Hsx2; move Hsy2 before Hsy1.
+symmetry in Hsx1, Hsx2, Hsy1, Hsy2.
+destruct sx1, sx2, sy1, sy2; simpl in Hx, Hy |-*.
+-now rewrite Hx, Hy.
+-split; [ | easy ].
+ intros H.
+ destruct (zerop (PQnum (MQpos y1) + PQnum (MQpos y2)))
+   as [H1| H1]; [ clear Hy | easy ].
+ apply Nat.eq_add_0 in H1.
+ destruct H1 as (H1, H2).
+ unfold "<"%PQ, nd in H.
+ rewrite H1 in H; simpl in H.
+ now apply Nat.nlt_0_r in H.
+-split; [ easy | ].
+ intros H.
+ destruct (zerop (PQnum (MQpos y1) + PQnum (MQpos y2)))
+   as [H1| H1]; [ clear Hy | easy ].
+ apply Nat.eq_add_0 in H1.
+ destruct H1 as (H1, H2).
+ unfold "<"%PQ, nd in H.
+ rewrite H2 in H; simpl in H.
+ now apply Nat.nlt_0_r in H.
+-easy.
+-destruct (zerop (PQnum (MQpos x1) + PQnum (MQpos x2)))
+    as [H1| H1]; [ clear Hx | easy ].
+ rewrite Hy.
+ apply Nat.eq_add_0 in H1.
+ destruct H1 as (H1, H2).
+ destruct (PQeq_dec (MQpos x2 + MQpos y2) 0) as [H3| H3].
+ +split; [ intros H | easy ].
+  apply PQeq_add_0 in H3.
+  rewrite (proj2 H3) in H.
+  now apply PQnlt_0_r in H.
+ +split; [ easy | intros _ ].
+  apply PQeq_num_0 in H1.
+  apply PQeq_num_0 in H2.
+  rewrite H2, PQadd_0_l in H3.
+
+...
+
 (* addition, opposite, subtraction *)
 
 Definition MQadd x y :=
@@ -168,6 +218,9 @@ Notation "x + y" := (MQadd x y) : MQ_scope.
 Notation "x - y" := (MQadd x (MQopp y)) : MQ_scope.
 
 Open Scope MQ_scope.
+
+Instance MQabs_morph : Proper (MQeq ==> MQeq) MQabs.
+...
 
 Theorem MQadd_comm : ∀ x y, x + y == y + x.
 Proof.
