@@ -237,7 +237,11 @@ destruct sx1, sx2, sy1, sy2; simpl in Hx, Hy |-*; MQlt_morph.
   rewrite H3, PQadd_0_l, Hy in H5.
   rewrite H4.
   now apply PQneq_0_lt_0.
--idtac.
+-rewrite H6, H3 in H8; apply H8.
+ apply PQadd_0_l.
+-now rewrite H3, H4, H6, H7.
+-now rewrite H3 in Hxy.
+
 ...
 
 (* addition, opposite, subtraction *)
