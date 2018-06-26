@@ -20,8 +20,6 @@ Definition nd x y := PQnum x * S (PQden1 y).
 (* equality *)
 
 Definition PQeq x y := nd x y = nd y x.
-Definition PQeqb x y := Nat.eqb (nd x y) (nd y x).
-Arguments PQeqb _%PQ _%PQ.
 
 Notation "x == y" := (PQeq x y) (at level 70) : PQ_scope.
 Notation "x ≠≠ y" := (¬ PQeq x y) (at level 70) : PQ_scope.
@@ -61,55 +59,38 @@ Theorem PQeq_dec : ∀ x y : PQ, {(x == y)%PQ} + {(x ≠≠ y)%PQ}.
 Proof. intros; apply Nat.eq_dec. Qed.
 Arguments PQeq_dec x%PQ y%PQ.
 
-(* allows to use rewrite inside a PQeqb
-   e.g.
+Definition if_PQeq (P Q : Prop) x y :=
+  match PQeq_dec x y with
+  | left _ => P
+  | right _ => Q
+  end.
+Arguments if_PQeq _ _ x%PQ y%PQ.
+
+Notation "'if_PQeq_dec' x y 'then' P 'else' Q" :=
+  (if_PQeq P Q x y) (at level 200, x at level 9, y at level 9).
+
+Theorem PQeq_if : ∀ P Q x y,
+  (if PQeq_dec x y then P else Q) = if_PQeq P Q x y.
+Proof. easy. Qed.
+
+(* allows to use rewrite inside a if PQeq_dec ...
+   through PQeq_if, e.g.
       H : (x = y)%PQ
       ====================
-      ... PQeqb x z ...
-   rewrite H.
+      ... if PQeq_dec x z then P else Q ...
+   > rewrite PQeq_if, H, <- PQeq_if.
+      ====================
+      ... if PQeq_dec y z then P else Q ...
  *)
-Instance PQeqb_morph : Proper (PQeq ==> PQeq ==> eq) PQeqb.
+Instance PQsumbool_eq_morph {P Q} :
+  Proper (PQeq ==> PQeq ==> iff) (if_PQeq P Q).
 Proof.
 intros x1 x2 Hx y1 y2 Hy.
 move y1 before x2; move y2 before y1.
-unfold "==" in Hx, Hy.
-unfold PQeqb.
-remember (nd x1 y1 =? nd y1 x1) as b1 eqn:Hb1.
-remember (nd x2 y2 =? nd y2 x2) as b2 eqn:Hb2.
-move b2 before b1.
-symmetry in Hb1, Hb2.
-destruct b1, b2; [ easy | | | easy ].
--apply Nat.eqb_eq in Hb1.
- apply Nat.eqb_neq in Hb2.
- exfalso; apply Hb2; clear Hb2.
- unfold nd in *.
- apply (Nat.mul_cancel_r _ _ (S (PQden1 x1))); [ easy | ].
- rewrite Nat.mul_shuffle0, <- Hx.
- setoid_rewrite Nat.mul_shuffle0; f_equal.
- apply (Nat.mul_cancel_r _ _ (S (PQden1 y1))); [ easy | ].
- rewrite Nat.mul_shuffle0, Hb1.
- now setoid_rewrite Nat.mul_shuffle0; f_equal.
--apply Nat.eqb_neq in Hb1.
- apply Nat.eqb_eq in Hb2.
- exfalso; apply Hb1; clear Hb1.
- unfold nd in *.
- apply (Nat.mul_cancel_r _ _ (S (PQden1 x2))); [ easy | ].
- rewrite Nat.mul_shuffle0, Hx.
- setoid_rewrite Nat.mul_shuffle0; f_equal.
- apply (Nat.mul_cancel_r _ _ (S (PQden1 y2))); [ easy | ].
- rewrite Nat.mul_shuffle0, Hb2.
- now setoid_rewrite Nat.mul_shuffle0; f_equal.
-Qed.
-
-Theorem PQif_eq_if_eqb : ∀ x y P Q,
-  (if PQeq_dec x y then P else Q)
-  ↔ (if PQeqb x y then P else Q).
-Proof.
-intros.
-remember (PQeqb x y) as b eqn:Hb; symmetry in Hb.
-destruct (PQeq_dec x y) as [H1| H1].
--destruct b; [ easy | now apply Nat.eqb_neq in Hb ].
--destruct b; [ now apply Nat.eqb_eq in Hb | easy ].
+unfold if_PQeq.
+destruct (PQeq_dec x1 y1) as [H1| H1]; rewrite Hx, Hy in H1.
+-now destruct (PQeq_dec x2 y2).
+-now destruct (PQeq_dec x2 y2).
 Qed.
 
 (* inequality *)

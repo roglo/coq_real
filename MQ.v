@@ -210,40 +210,30 @@ destruct sx1, sx2, sy1, sy2; simpl in Hx, Hy |-*; MQlt_morph_tac.
  rewrite H2n in Hxy; simpl in Hxy.
  now apply Nat.nlt_0_r in Hxy.
 -rewrite Hy, H1p.
- destruct (PQeq_dec (MQpos x2 + MQpos y2) 0) as [H5| H5].
- +split; [ intros H | easy ].
-  apply PQeq_add_0 in H5.
-  rewrite (proj2 H5) in H.
-  now apply PQnlt_0_r in H.
- +split; [ easy | intros _ ].
-  rewrite H2p, PQadd_0_l in H5.
-  now apply PQneq_0_lt_0.
+ rewrite PQeq_if, H2p, PQadd_0_l, <- Hy, <- PQeq_if.
+ destruct (PQeq_dec (MQpos y1) 0) as [H5| H5]; [ now rewrite H5 | ].
+ split; [ easy | now intros; apply PQneq_0_lt_0 ].
 -now rewrite H1p, H2p0.
 -rewrite H2p, H2p0, PQadd_0_r in H1.
  now apply H1.
 -rewrite H2p in Hxy.
  now apply PQnlt_0_r in Hxy.
--rewrite PQif_eq_if_eqb, H1p, Hy, PQadd_0_l, <- PQif_eq_if_eqb.
+-rewrite PQeq_if, H1p, Hy, PQadd_0_l, <- PQeq_if.
  destruct (PQeq_dec (MQpos y2) 0) as [H1| H1].
  +now rewrite H2p, H1.
- +split; [ intros _ | easy ].
-  now rewrite H2p; apply PQneq_0_lt_0.
+ +split; [ now intros; rewrite H2p; apply PQneq_0_lt_0 | easy ].
 -rewrite H1p0, H1p in H1; apply H1.
  apply PQadd_0_l.
 -now rewrite H1p0, H2p.
 -now rewrite H1p in Hxy.
--do 2 rewrite PQif_eq_if_eqb.
+-do 2 rewrite PQeq_if.
  now rewrite Hx, Hy.
--rewrite PQif_eq_if_eqb, H1p, PQadd_0_r, <- PQif_eq_if_eqb.
- destruct (PQeq_dec (MQpos x1) 0) as [H1| H1].
- +now rewrite <- Hx, H1.
- +split; [ intros _ | easy ].
-  now rewrite <- Hx, H2p; apply PQneq_0_lt_0.
--rewrite PQif_eq_if_eqb, H2p, PQadd_0_r, <- PQif_eq_if_eqb.
- destruct (PQeq_dec (MQpos x2) 0) as [H1| H1].
- +now rewrite Hx, H1.
- +split; [ easy | intros _ ].
-  now rewrite H1p, Hx; apply PQneq_0_lt_0.
+-rewrite PQeq_if, H1p, H2p, PQadd_0_r, Hx, <- PQeq_if.
+ destruct (PQeq_dec (MQpos x2) 0) as [H1| H1]; [ now rewrite H1 | ].
+ split; [ now intros; apply PQneq_0_lt_0 | easy ].
+-rewrite PQeq_if, H1p, H2p, PQadd_0_r, Hx, <- PQeq_if.
+ destruct (PQeq_dec (MQpos x2) 0) as [H1| H1]; [ now rewrite H1 | ].
+ split; [ easy | now intros; apply PQneq_0_lt_0 ].
 -now rewrite Hx, Hy.
 Qed.
 
