@@ -59,11 +59,7 @@ Theorem PQeq_dec : ∀ x y : PQ, {(x == y)%PQ} + {(x ≠≠ y)%PQ}.
 Proof. intros; apply Nat.eq_dec. Qed.
 Arguments PQeq_dec x%PQ y%PQ.
 
-Definition if_PQeq (P Q : Prop) x y :=
-  match PQeq_dec x y with
-  | left _ => P
-  | right _ => Q
-  end.
+Definition if_PQeq (P Q : Prop) x y := if PQeq_dec x y then P else Q.
 Arguments if_PQeq _ _ x%PQ y%PQ.
 
 Notation "'if_PQeq_dec' x y 'then' P 'else' Q" :=
@@ -73,21 +69,20 @@ Theorem PQeq_if : ∀ P Q x y,
   (if PQeq_dec x y then P else Q) = if_PQeq P Q x y.
 Proof. easy. Qed.
 
-(* allows to use rewrite inside a if PQeq_dec ...
+(* allows to use rewrite inside a if_PQeq_dec ...
    through PQeq_if, e.g.
       H : (x = y)%PQ
       ====================
-      ... if PQeq_dec x z then P else Q ...
-   > rewrite PQeq_if, H, <- PQeq_if.
+      ... if_PQeq_dec x z then P else Q ...
+   > rewrite H.
       ====================
-      ... if PQeq_dec y z then P else Q ...
+      ... if_PQeq_dec y z then P else Q ...
  *)
 Instance PQsumbool_eq_morph {P Q} :
-  Proper (PQeq ==> PQeq ==> iff) (if_PQeq P Q).
+  Proper (PQeq ==> PQeq ==> iff) (λ x y, if PQeq_dec x y then P else Q).
 Proof.
 intros x1 x2 Hx y1 y2 Hy.
 move y1 before x2; move y2 before y1.
-unfold if_PQeq.
 destruct (PQeq_dec x1 y1) as [H1| H1]; rewrite Hx, Hy in H1.
 -now destruct (PQeq_dec x2 y2).
 -now destruct (PQeq_dec x2 y2).
