@@ -297,6 +297,7 @@ Qed.
 Theorem freal_is_cauchy_seq {r : radix} : ∀ x, is_cauchy_seq (freal_seq x).
 Proof.
 intros x ε Hε.
+specialize radix_ge_2 as Hr.
 exists (PQden1 (MQpos ε) + 1).
 intros p q (Hp, Hq).
 destruct (lt_dec q p) as [Hpq| Hpq].
@@ -316,21 +317,41 @@ destruct (lt_dec q p) as [Hpq| Hpq].
   rewrite Nat.add_1_r in Hp, Hq.
   remember (PQnum εp) as εn eqn:Hεn.
   remember (S (PQden1 εp)) as εd eqn:Hεd.
-  assert (H1 : εd ≤ εn * (rad - 1) * rad ^ q). {
-    assert (H1 : εd ≤ rad ^ q). {
+  assert (H1 : 0 < εn). {
+    subst εn.
+    unfold "≤"%MQ in Hε; simpl in Hε.
+    unfold "≤"%PQ, nd in Hε; simpl in Hε.
+    rewrite Nat.mul_1_r in Hε.
+    now apply Nat.nle_gt in Hε.
+  }
+  assert (H2 : εd ≤ εn * (rad - 1) * rad ^ q). {
+    assert (H2 : εd ≤ rad ^ q). {
       eapply le_trans; [ apply Hq | ].
       now apply Nat.lt_le_incl, Nat.pow_gt_lin_r.
     }
-    assert (H2 : 0 < εn). {
-      subst εn.
-      unfold "≤"%MQ in Hε; simpl in Hε.
-      unfold "≤"%PQ, nd in Hε; simpl in Hε.
-      rewrite Nat.mul_1_r in Hε.
-      now apply Nat.nle_gt in Hε.
-    }
-...
+    eapply le_trans; [ apply H2 | ].
+    apply Nat_mul_le_pos_l.
+    destruct εn; [ easy | simpl; flia Hr ].
   }
-  eapply le_lt_trans; [ apply Nat.mul_le_mono_l, H1 | ].
+  eapply le_lt_trans; [ apply Nat.mul_le_mono_l, H2 | ].
+  rewrite Nat.mul_comm.
+  do 2 rewrite <- Nat.mul_assoc.
+  apply Nat.mul_lt_mono_pos_l; [ easy | ].
+  rewrite summation_mul_distr_l; simpl.
+  apply Nat.mul_lt_mono; [ flia Hr | ].
+  destruct p; [ easy | ].
+  replace (S p - q - 1) with (p - q) by flia.
+  eapply Nat.le_lt_trans.
+  *apply (@summation_le_compat _ nat_ord_ring _ _ _ (λ i, rad ^ (q + i + 1))).
+   intros i Hi.
+   remember S as f; simpl; unfold Nat.le; simpl; subst f.
+   rewrite <- Nat.add_assoc, Nat.pow_add_r.
+   apply Nat.mul_le_mono_l.
+   rewrite Nat.add_comm, Nat.pow_add_r.
+   apply Nat.mul_le_mono_r.
+   rewrite Nat.pow_1_r.
+   apply Nat.lt_le_incl, digit_lt_radix.
+  *idtac.
 ...
  + ...
 - ...
