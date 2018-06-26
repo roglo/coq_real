@@ -314,12 +314,23 @@ destruct (lt_dec q p) as [Hpq| Hpq].
  rewrite <- Nat.sub_succ_l; [ | ].
  +rewrite Nat.sub_succ, Nat.sub_0_r.
   rewrite Nat.add_1_r in Hp, Hq.
+  remember (PQnum εp) as εn eqn:Hεn.
   remember (S (PQden1 εp)) as εd eqn:Hεd.
-  assert (H1 : εd ≤ rad ^ q). {
-    eapply le_trans; [ apply Hq | ].
-    now apply Nat.lt_le_incl, Nat.pow_gt_lin_r.
-  }
+  assert (H1 : εd ≤ εn * (rad - 1) * rad ^ q). {
+    assert (H1 : εd ≤ rad ^ q). {
+      eapply le_trans; [ apply Hq | ].
+      now apply Nat.lt_le_incl, Nat.pow_gt_lin_r.
+    }
+    assert (H2 : 0 < εn). {
+      subst εn.
+      unfold "≤"%MQ in Hε; simpl in Hε.
+      unfold "≤"%PQ, nd in Hε; simpl in Hε.
+      rewrite Nat.mul_1_r in Hε.
+      now apply Nat.nle_gt in Hε.
+    }
 ...
+  }
+  eapply le_lt_trans; [ apply Nat.mul_le_mono_l, H1 | ].
 ...
  + ...
 - ...
