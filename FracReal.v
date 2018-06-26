@@ -135,6 +135,42 @@ Arguments freal r _%F.
 Definition fd2n {r : radix} x (i : nat) := dig (freal x i).
 Arguments fd2n _ x%F i%nat.
 
+(* *)
+
+Theorem power_summation (rg := nat_ord_ring) : ∀ a n,
+  0 < a
+  → a ^ S n = 1 + (a - 1) * Σ (i = 0, n), a ^ i.
+Proof.
+intros * Ha.
+induction n.
+ rewrite summation_only_one.
+ rewrite Nat.pow_0_r, Nat.mul_1_r.
+ rewrite Nat.pow_1_r; flia Ha.
+
+ rewrite summation_split_last; [ | flia ].
+ rewrite Nat.mul_add_distr_l.
+ rewrite Nat.add_assoc.
+ rewrite <- IHn.
+ rewrite Nat.mul_sub_distr_r.
+ simpl; rewrite Nat.add_0_r.
+ rewrite Nat.add_sub_assoc.
+  now rewrite Nat.add_comm, Nat.add_sub.
+
+  apply Nat.mul_le_mono; [ easy | ].
+  replace (a ^ n) with (1 * a ^ n) at 1 by flia.
+  apply Nat.mul_le_mono_nonneg_r; flia Ha.
+Qed.
+
+Theorem power_summation_sub_1 (rg := nat_ord_ring) : ∀ a n,
+  0 < a
+  → a ^ S n - 1 = (a - 1) * Σ (i = 0, n), a ^ i.
+Proof.
+intros * Ha.
+rewrite power_summation; [ | easy ].
+rewrite Nat.add_comm.
+now rewrite Nat.add_sub.
+Qed.
+
 (* Relation with Cauchy sequences *)
 
 Require Import MQ PQ.
@@ -351,7 +387,7 @@ destruct (lt_dec q p) as [Hpq| Hpq].
    apply Nat.mul_le_mono_r.
    rewrite Nat.pow_1_r.
    apply Nat.lt_le_incl, digit_lt_radix.
-  *idtac.
+  *rewrite power_summation; [ | easy ].
 ...
  + ...
 - ...
@@ -1431,40 +1467,6 @@ intros * Ha.
 induction b; [ easy | simpl ].
 replace 1 with (1 * 1) by flia.
 apply Nat.mul_le_mono_nonneg; [ flia | easy | flia | easy ].
-Qed.
-
-Theorem power_summation (rg := nat_ord_ring) : ∀ a n,
-  0 < a
-  → a ^ S n = 1 + (a - 1) * Σ (i = 0, n), a ^ i.
-Proof.
-intros * Ha.
-induction n.
- rewrite summation_only_one.
- rewrite Nat.pow_0_r, Nat.mul_1_r.
- rewrite Nat.pow_1_r; flia Ha.
-
- rewrite summation_split_last; [ | flia ].
- rewrite Nat.mul_add_distr_l.
- rewrite Nat.add_assoc.
- rewrite <- IHn.
- rewrite Nat.mul_sub_distr_r.
- simpl; rewrite Nat.add_0_r.
- rewrite Nat.add_sub_assoc.
-  now rewrite Nat.add_comm, Nat.add_sub.
-
-  apply Nat.mul_le_mono; [ easy | ].
-  replace (a ^ n) with (1 * a ^ n) at 1 by flia.
-  apply Nat.mul_le_mono_nonneg_r; flia Ha.
-Qed.
-
-Theorem power_summation_sub_1 (rg := nat_ord_ring) : ∀ a n,
-  0 < a
-  → a ^ S n - 1 = (a - 1) * Σ (i = 0, n), a ^ i.
-Proof.
-intros * Ha.
-rewrite power_summation; [ | easy ].
-rewrite Nat.add_comm.
-now rewrite Nat.add_sub.
 Qed.
 
 Theorem nA_dig_seq_ub {r : radix} : ∀ u n i,
