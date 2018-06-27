@@ -384,10 +384,6 @@ destruct (lt_dec q p) as [Hpq| Hpq].
   now apply MQgt_lt_iff.
 Qed.
 
-Inspect 1.
-
-...
-
 (* In names, "9" actually means "rad-1" *)
 
 Definition is_9_after {r : radix} u i j :=
@@ -1125,6 +1121,19 @@ Definition freal_mul {r : radix} (a b : FracReal) :=
 
 Notation "a + b" := (freal_add a b) : freal_scope.
 Notation "a * b" := (freal_mul a b) : freal_scope.
+
+(* addition of cauchy sequences *)
+
+Definition cauchy_add (u v : nat → MQ) i := (u i + v i)%MQ.
+
+Theorem cauchy_add_is_cauchy : ∀ u v, is_cauchy_seq (cauchy_add u v).
+Proof.
+intros.
+unfold is_cauchy_seq.
+intros * Hε.
+...
+
+(* return to addition *)
 
 Theorem sequence_add_comm : ∀ f g i, sequence_add f g i = sequence_add g f i.
 Proof.
