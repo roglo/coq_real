@@ -292,6 +292,39 @@ destruct sx, sy; simpl in Hxy; [ easy | | | easy ].
  now rewrite H1, H2.
 Qed.
 
+(* allows to use rewrite inside an addition
+   e.g.
+      H : x = y
+      ====================
+      ... (x + z) ...
+   rewrite H.
+ *)
+Instance MQadd_morph : Proper (MQeq ==> MQeq ==> MQeq) MQadd.
+Proof.
+unfold "=="%MQ; simpl.
+intros x1 x2 Hx y1 y2 Hy.
+move y1 before x2; move y2 before y1.
+unfold "+"%MQ; simpl.
+remember (MQsign x1) as sx1 eqn:Hsx1; symmetry in Hsx1.
+remember (MQsign x2) as sx2 eqn:Hsx2; symmetry in Hsx2.
+remember (MQsign y1) as sy1 eqn:Hsy1; symmetry in Hsy1.
+remember (MQsign y2) as sy2 eqn:Hsy2; symmetry in Hsy2.
+move sx2 before sx1; move sy1 before sx2; move sy2 before sy1.
+move Hsy1 before Hsx2; move Hsy2 before Hsy1.
+destruct sx1, sx2, sy1, sy2; simpl in Hx, Hy; simpl.
+-now rewrite Hx, Hy.
+-destruct (zerop (PQnum (MQpos y1) + PQnum (MQpos y2))) as [H1| ]; [ | easy ].
+ clear Hy.
+ apply Nat.eq_add_0 in H1.
+ destruct H1 as (H1, H2).
+ generalize H1; intros H3.
+ apply PQeq_num_0 in H3.
+ generalize H2; intros H4.
+ apply PQeq_num_0 in H4.
+...
+ rewrite H4.
+...
+
 Theorem MQabs_0 : MQabs 0 == 0.
 Proof. easy. Qed.
 
@@ -679,6 +712,24 @@ destruct b1.
      now destruct (MQsign x), (MQsign y), (MQsign z).
 Qed.
 
+Theorem MQadd_cancel_r : ∀ x y z, (x + z == y + z)%MQ ↔ (x == y)%MQ.
+Proof.
+intros.
+split.
+Focus 2.
+intros H.
+Set Printing All.
+ rewrite H.
+...
+
+Theorem MQadd_shuffle0 : ∀ x y z, (x + y + z == x + z + y)%MQ.
+Proof.
+intros.
+do 2 rewrite MQadd_assoc.
+setoid_rewrite MQadd_comm.
+Search MQadd_cancel_r.
+...
+
 Theorem MQadd_opp_r : ∀ x, (x - x == 0)%MQ.
 Proof.
 intros.
@@ -696,6 +747,13 @@ Qed.
 Theorem MQadd_opp_l : ∀ x, (- x + x == 0)%MQ.
 Proof. intros; rewrite MQadd_comm; apply MQadd_opp_r. Qed.
 
+Theorem MQsub_opp_r : ∀ x y, (x - - y = x + y)%MQ.
+Proof.
+intros.
+unfold "-"%MQ; simpl.
+now rewrite Bool.negb_involutive.
+Qed.
+
 Theorem MQopp_sub_distr : ∀ x y, (- (x - y) == - x + y)%MQ.
 Proof.
 intros.
@@ -707,14 +765,48 @@ destruct sx, sy; simpl; [ | easy | easy | ].
 -now destruct (PQlt_le_dec (MQpos x) (MQpos y)).
 Qed.
 
-Theorem PQsub_add_distr : ∀ x y z, (x - (y + z) == x - y - z)%MQ.
+Theorem MQsub_add_distr : ∀ x y z, (x - (y + z) == x - y - z)%MQ.
 Proof.
 intros.
-...
+rewrite MQadd_assoc.
+unfold "+"%MQ; simpl.
+remember (MQsign x) as sx eqn:Hsx; symmetry in Hsx.
+remember (MQsign y) as sy eqn:Hsy; symmetry in Hsy.
+remember (MQsign z) as sz eqn:Hsz; symmetry in Hsz.
+destruct sy, sz; simpl; [ easy | | | easy ].
+-now destruct sx, (PQlt_le_dec (MQpos y) (MQpos z)).
+-now destruct sx, (PQlt_le_dec (MQpos y) (MQpos z)).
+Qed.
 
 Theorem MQsub_sub_distr : ∀ x y z, (x - (y - z) == x + z - y)%MQ.
 Proof.
 intros.
+rewrite MQsub_add_distr, MQsub_opp_r.
+rewrite MQadd_shuffle0.
+
+...
+intros.
+rewrite MQadd_assoc.
+unfold "+"%MQ; simpl.
+remember (MQsign x) as sx eqn:Hsx; symmetry in Hsx.
+remember (MQsign y) as sy eqn:Hsy; symmetry in Hsy.
+remember (MQsign z) as sz eqn:Hsz; symmetry in Hsz.
+destruct sy, sz; simpl.
+-destruct sx; simpl.
+ +destruct (PQlt_le_dec (MQpos y) (MQpos z)) as [H1| H1]; simpl.
+  *destruct (PQlt_le_dec (MQpos z) (MQpos y)) as [H2|]; [ simpl | easy ].
+   apply PQnle_gt in H2.
+   exfalso; apply H2; clear H2.
+   now apply PQlt_le_incl.
+  *idtac.
+
+...
+
+-now destruct sx, (PQlt_le_dec (MQpos y) (MQpos z)).
+-now destruct sx, (PQlt_le_dec (MQpos y) (MQpos z)).
+Qed.
+
+rewrite MQsub_add_distr.
 ...
 
 (* multiplication, inverse, division *)
