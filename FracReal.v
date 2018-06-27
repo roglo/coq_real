@@ -348,76 +348,52 @@ destruct (lt_dec q p) as [Hpq| Hpq].
  unfold "<"%PQ, nd.
  remember S as f; simpl; subst f.
  simpl in Hq, Hp.
- rewrite <- Nat.sub_succ_l; [ | ].
- +rewrite Nat.sub_succ, Nat.sub_0_r.
-  rewrite Nat.add_1_r in Hp, Hq.
-  remember (PQnum εp) as εn eqn:Hεn.
-  remember (S (PQden1 εp)) as εd eqn:Hεd.
-  assert (H1 : 0 < εn). {
-    subst εn.
-    unfold "≤"%MQ in Hε; simpl in Hε.
-    unfold "≤"%PQ, nd in Hε; simpl in Hε.
-    rewrite Nat.mul_1_r in Hε.
-    now apply Nat.nle_gt in Hε.
-  }
-  assert (H2 : εd ≤ εn * (rad - 1) * rad ^ q). {
-    assert (H2 : εd ≤ rad ^ q). {
-      eapply le_trans; [ apply Hq | ].
-      now apply Nat.lt_le_incl, Nat.pow_gt_lin_r.
-    }
-    eapply le_trans; [ apply H2 | ].
-    apply Nat_mul_le_pos_l.
-    destruct εn; [ easy | simpl; flia Hr ].
-  }
-(**)
-  apply (Nat.mul_le_mono_r _ _ (rad ^ (p - q))) in H2.
-  rewrite <- Nat.mul_assoc, <- Nat.pow_add_r in H2.
-  replace (q + (p - q)) with p in H2 by flia Hpq.
-  remember (εd * rad ^ (p - q)) as u eqn:Hu.
-  assert (H : u - 1 < u). {
-    destruct u; [ | flia ].
-    symmetry in Hu.
-    apply Nat.eq_mul_0 in Hu.
-    destruct Hu as [Hu| Hu]; [ flia Hεd Hu | ].
-    now apply Nat.pow_nonzero in Hu.
-  }
-  apply (Nat.lt_le_trans (u - 1)) in H2; [ subst u; clear H | easy ].
+ rewrite <- Nat.sub_succ_l; [ | now apply Nat.neq_0_lt_0, Nat.pow_nonzero ].
+ rewrite Nat.sub_succ, Nat.sub_0_r.
+ rewrite Nat.add_1_r in Hp, Hq.
+ remember (PQnum εp) as εn eqn:Hεn.
+ remember (S (PQden1 εp)) as εd eqn:Hεd.
+ assert (H1 : 0 < εn). {
+   subst εn.
+   unfold "≤"%MQ in Hε; simpl in Hε.
+   unfold "≤"%PQ, nd in Hε; simpl in Hε.
+   rewrite Nat.mul_1_r in Hε.
+   now apply Nat.nle_gt in Hε.
+ }
+ assert (H2 : εd ≤ εn * (rad - 1) * rad ^ q). {
+   assert (H2 : εd ≤ rad ^ q). {
+     eapply le_trans; [ apply Hq | ].
+     now apply Nat.lt_le_incl, Nat.pow_gt_lin_r.
+   }
+   eapply le_trans; [ apply H2 | ].
+   apply Nat_mul_le_pos_l.
+   destruct εn; [ easy | simpl; flia Hr ].
+ }
+ apply (Nat.mul_le_mono_r _ _ (rad ^ (p - q))) in H2.
+ rewrite <- Nat.mul_assoc, <- Nat.pow_add_r in H2.
+ replace (q + (p - q)) with p in H2 by flia Hpq.
+ apply (Nat.le_trans (εd * rad ^ (p - q) - εd * 1)) in H2; [ | flia ].
+ rewrite <- Nat.mul_sub_distr_l in H2.
+ eapply Nat.le_lt_trans.
+ +apply Nat.mul_le_mono_pos_r; [ flia Hεd | ].
+  apply (@summation_le_compat _ nat_ord_ring)
+    with (g := λ i, (rad - 1) * rad ^ i).
+  intros i Hi; simpl; unfold Nat.le.
+  apply Nat.mul_le_mono_pos_r.
+  *now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+  *apply digit_le_pred_radix.
+ +rewrite <- summation_mul_distr_l.
+  remember S as f; simpl; subst f.
+  rewrite <- power_summation_sub_1; [ | easy ].
+  rewrite <- Nat.sub_succ_l; [ | flia Hpq ].
+  rewrite Nat.sub_succ, Nat.sub_0_r, Nat.mul_comm.
+  eapply Nat.le_lt_trans; [ apply H2 | ].
+  rewrite <- Nat.mul_assoc.
+  apply Nat.mul_lt_mono_pos_l; [ easy | simpl ].
+  apply Nat.mul_lt_mono_pos_r; [ | flia Hr ].
+  now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+-idtac.
 ...
-  eapply Nat.le_lt_trans.
-  *apply Nat.mul_le_mono_pos_r; [ flia Hεd | ].
-   apply (@summation_le_compat _ nat_ord_ring)
-     with (g := λ i, (rad - 1) * rad ^ i).
-   intros i Hi; simpl; unfold Nat.le.
-   apply Nat.mul_le_mono_pos_r.
-  --now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-  --apply digit_le_pred_radix.
-  *idtac.
-
-...
-  eapply le_lt_trans; [ apply Nat.mul_le_mono_l, H2 | ].
-  rewrite Nat.mul_comm.
-  do 2 rewrite <- Nat.mul_assoc.
-  apply Nat.mul_lt_mono_pos_l; [ easy | ].
-  rewrite summation_mul_distr_l; simpl.
-  apply Nat.mul_lt_mono; [ flia Hr | ].
-  destruct p; [ easy | ].
-  replace (S p - q - 1) with (p - q) by flia.
-  eapply Nat.le_lt_trans.
-  *apply (@summation_le_compat _ nat_ord_ring _ _ _ (λ i, rad ^ (q + i + 1))).
-   intros i Hi.
-   remember S as f; simpl; unfold Nat.le; simpl; subst f.
-   rewrite <- Nat.add_assoc, Nat.pow_add_r.
-   apply Nat.mul_le_mono_l.
-   rewrite Nat.add_comm, Nat.pow_add_r.
-   apply Nat.mul_le_mono_r.
-   rewrite Nat.pow_1_r.
-   apply Nat.lt_le_incl, digit_lt_radix.
-  *rewrite power_summation; [ | easy ].
-   apply -> Nat.succ_le_mono.
-   rewrite summation_mul_distr_l; simpl.
-...
- + ...
-- ...
 
 (* In names, "9" actually means "rad-1" *)
 
