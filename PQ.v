@@ -78,7 +78,7 @@ Proof. easy. Qed.
       ====================
       ... if_PQeq_dec y z then P else Q ...
  *)
-Instance PQsumbool_eq_morph {P Q} :
+Instance PQif_PQeq_morph {P Q} :
   Proper (PQeq ==> PQeq ==> iff) (λ x y, if PQeq_dec x y then P else Q).
 Proof.
 intros x1 x2 Hx y1 y2 Hy.
