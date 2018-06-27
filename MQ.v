@@ -237,6 +237,20 @@ destruct sx1, sx2, sy1, sy2; simpl in Hx, Hy |-*; MQlt_morph_tac.
 -now rewrite Hx, Hy.
 Qed.
 
+Theorem MQgt_lt_iff : ∀ x y, (x > y)%MQ ↔ (y < x)%MQ.
+Proof.
+intros.
+unfold "≤"%MQ, "<"%MQ.
+remember (MQsign x) as sx eqn:Hsx; symmetry in Hsx.
+remember (MQsign y) as sy eqn:Hsy; symmetry in Hsy.
+destruct sx, sy; simpl.
+-apply PQgt_lt_iff.
+-rewrite PQeq_if, PQadd_comm, <- PQeq_if.
+ now destruct (PQeq_dec (MQpos y + MQpos x) 0).
+-easy.
+-apply PQgt_lt_iff.
+Qed.
+
 (* addition, opposite, subtraction *)
 
 Definition MQadd x y :=
@@ -277,6 +291,9 @@ destruct sx, sy; simpl in Hxy; [ easy | | | easy ].
  apply PQeq_num_0 in H2.
  now rewrite H1, H2.
 Qed.
+
+Theorem MQabs_0 : MQabs 0 == 0.
+Proof. easy. Qed.
 
 Theorem MQabs_opp : ∀ x, MQabs (- x) == MQabs x.
 Proof. easy. Qed.

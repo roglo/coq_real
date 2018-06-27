@@ -253,6 +253,12 @@ intros * Hxy Hyx.
 apply (Nat.le_antisymm _ _ Hxy Hyx).
 Qed.
 
+Theorem PQgt_lt_iff : ∀ x y, (x > y)%PQ ↔ (y < x)%PQ.
+Proof.
+intros.
+split; intros H; now apply Nat.nle_gt in H.
+Qed.
+
 (* addition, subtraction *)
 
 Definition PQadd_num x y := nd x y + nd y x.

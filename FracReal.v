@@ -402,7 +402,15 @@ destruct (lt_dec q p) as [Hpq| Hpq].
 -destruct (lt_dec p q) as [Hqp| Hqp].
  +rewrite <- MQabs_opp, MQopp_sub_distr, MQadd_comm.
   now apply H.
- +idtac.
+ +apply Nat.nlt_ge in Hpq.
+  apply Nat.nlt_ge in Hqp.
+  apply Nat.le_antisymm in Hpq; [ subst q | easy ].
+  rewrite MQadd_opp_r, MQabs_0.
+  now apply MQgt_lt_iff.
+Qed.
+
+Inspect 1.
+
 ...
 
 (* In names, "9" actually means "rad-1" *)
