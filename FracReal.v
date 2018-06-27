@@ -1126,11 +1126,17 @@ Notation "a * b" := (freal_mul a b) : freal_scope.
 
 Definition cauchy_add (u v : nat → MQ) i := (u i + v i)%MQ.
 
-Theorem cauchy_add_is_cauchy : ∀ u v, is_cauchy_seq (cauchy_add u v).
+Theorem cauchy_add_is_cauchy : ∀ u v,
+  is_cauchy_seq u
+  → is_cauchy_seq v
+  →  is_cauchy_seq (cauchy_add u v).
 Proof.
-intros.
-unfold is_cauchy_seq.
-intros * Hε.
+intros * Hu Hv ε Hε.
+unfold is_cauchy_seq in Hu, Hv.
+exists (PQden1 (MQpos ε) + 1).
+intros p q (Hp, Hq).
+assert
+  (H : ∀ p q, PQden1 (MQpos ε) + 1 ≤ q < p → (MQabs (u p - u q) < ε)%MQ). {
 ...
 
 (* return to addition *)
