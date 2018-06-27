@@ -233,7 +233,6 @@ specialize radix_ge_2 as Hr.
 intros Hpq.
 remember (q - p) as s eqn:Hs.
 move s before q.
-(**)
 remember (freal_seq x q) as fq eqn:Hfq.
 remember (freal_seq x p) as fp eqn:Hfp.
 move fp before fq.
@@ -336,63 +335,74 @@ intros x ε Hε.
 specialize radix_ge_2 as Hr.
 exists (PQden1 (MQpos ε) + 1).
 intros p q (Hp, Hq).
-destruct (lt_dec q p) as [Hpq| Hpq].
--rewrite (uq_minus_up x q p Hpq).
- unfold MQabs.
- remember S as f; simpl; subst f.
- unfold "<"%MQ.
- remember S as f; simpl; subst f.
- destruct ε as (εs, εp).
- remember S as f; simpl; subst f.
- destruct εs; [ | now unfold "≤"%MQ in Hε; simpl in Hε ].
- unfold "<"%PQ, nd.
- remember S as f; simpl; subst f.
- simpl in Hq, Hp.
- rewrite <- Nat.sub_succ_l; [ | now apply Nat.neq_0_lt_0, Nat.pow_nonzero ].
- rewrite Nat.sub_succ, Nat.sub_0_r.
- rewrite Nat.add_1_r in Hp, Hq.
- remember (PQnum εp) as εn eqn:Hεn.
- remember (S (PQden1 εp)) as εd eqn:Hεd.
- assert (H1 : 0 < εn). {
-   subst εn.
-   unfold "≤"%MQ in Hε; simpl in Hε.
-   unfold "≤"%PQ, nd in Hε; simpl in Hε.
-   rewrite Nat.mul_1_r in Hε.
-   now apply Nat.nle_gt in Hε.
- }
- assert (H2 : εd ≤ εn * (rad - 1) * rad ^ q). {
-   assert (H2 : εd ≤ rad ^ q). {
-     eapply le_trans; [ apply Hq | ].
-     now apply Nat.lt_le_incl, Nat.pow_gt_lin_r.
-   }
-   eapply le_trans; [ apply H2 | ].
-   apply Nat_mul_le_pos_l.
-   destruct εn; [ easy | simpl; flia Hr ].
- }
- apply (Nat.mul_le_mono_r _ _ (rad ^ (p - q))) in H2.
- rewrite <- Nat.mul_assoc, <- Nat.pow_add_r in H2.
- replace (q + (p - q)) with p in H2 by flia Hpq.
- apply (Nat.le_trans (εd * rad ^ (p - q) - εd * 1)) in H2; [ | flia ].
- rewrite <- Nat.mul_sub_distr_l in H2.
- eapply Nat.le_lt_trans.
- +apply Nat.mul_le_mono_pos_r; [ flia Hεd | ].
-  apply (@summation_le_compat _ nat_ord_ring)
-    with (g := λ i, (rad - 1) * rad ^ i).
-  intros i Hi; simpl; unfold Nat.le.
-  apply Nat.mul_le_mono_pos_r.
-  *now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-  *apply digit_le_pred_radix.
- +rewrite <- summation_mul_distr_l.
+assert
+  (H : ∀ p q,
+      PQden1 (MQpos ε) + 1 ≤ q < p
+      → (MQabs (freal_seq x p - freal_seq x q) < ε)%MQ). {
+  clear p q Hp Hq.
+  intros * (Hq, Hpq).
+  rewrite (uq_minus_up x q p Hpq).
+  unfold MQabs.
   remember S as f; simpl; subst f.
-  rewrite <- power_summation_sub_1; [ | easy ].
-  rewrite <- Nat.sub_succ_l; [ | flia Hpq ].
-  rewrite Nat.sub_succ, Nat.sub_0_r, Nat.mul_comm.
-  eapply Nat.le_lt_trans; [ apply H2 | ].
-  rewrite <- Nat.mul_assoc.
-  apply Nat.mul_lt_mono_pos_l; [ easy | simpl ].
-  apply Nat.mul_lt_mono_pos_r; [ | flia Hr ].
-  now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
--idtac.
+  unfold "<"%MQ.
+  remember S as f; simpl; subst f.
+  destruct ε as (εs, εp).
+  remember S as f; simpl; subst f.
+  destruct εs; [ | now unfold "≤"%MQ in Hε; simpl in Hε ].
+  unfold "<"%PQ, nd.
+  remember S as f; simpl; subst f.
+  simpl in Hq(*, Hp*).
+  rewrite <- Nat.sub_succ_l; [ | now apply Nat.neq_0_lt_0, Nat.pow_nonzero ].
+  rewrite Nat.sub_succ, Nat.sub_0_r.
+  rewrite Nat.add_1_r in (*Hp,*) Hq.
+  remember (PQnum εp) as εn eqn:Hεn.
+  remember (S (PQden1 εp)) as εd eqn:Hεd.
+  assert (H1 : 0 < εn). {
+    subst εn.
+    unfold "≤"%MQ in Hε; simpl in Hε.
+    unfold "≤"%PQ, nd in Hε; simpl in Hε.
+    rewrite Nat.mul_1_r in Hε.
+    now apply Nat.nle_gt in Hε.
+  }
+  assert (H2 : εd ≤ εn * (rad - 1) * rad ^ q). {
+    assert (H2 : εd ≤ rad ^ q). {
+      eapply le_trans; [ apply Hq | ].
+      now apply Nat.lt_le_incl, Nat.pow_gt_lin_r.
+    }
+    eapply le_trans; [ apply H2 | ].
+    apply Nat_mul_le_pos_l.
+    destruct εn; [ easy | simpl; flia Hr ].
+  }
+  apply (Nat.mul_le_mono_r _ _ (rad ^ (p - q))) in H2.
+  rewrite <- Nat.mul_assoc, <- Nat.pow_add_r in H2.
+  replace (q + (p - q)) with p in H2 by flia Hpq.
+  apply (Nat.le_trans (εd * rad ^ (p - q) - εd * 1)) in H2; [ | flia ].
+  rewrite <- Nat.mul_sub_distr_l in H2.
+  eapply Nat.le_lt_trans.
+  +apply Nat.mul_le_mono_pos_r; [ flia Hεd | ].
+   apply (@summation_le_compat _ nat_ord_ring)
+     with (g := λ i, (rad - 1) * rad ^ i).
+   intros i Hi; simpl; unfold Nat.le.
+   apply Nat.mul_le_mono_pos_r.
+   *now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+   *apply digit_le_pred_radix.
+  +rewrite <- summation_mul_distr_l.
+   remember S as f; simpl; subst f.
+   rewrite <- power_summation_sub_1; [ | easy ].
+   rewrite <- Nat.sub_succ_l; [ | flia Hpq ].
+   rewrite Nat.sub_succ, Nat.sub_0_r, Nat.mul_comm.
+   eapply Nat.le_lt_trans; [ apply H2 | ].
+   rewrite <- Nat.mul_assoc.
+   apply Nat.mul_lt_mono_pos_l; [ easy | simpl ].
+   apply Nat.mul_lt_mono_pos_r; [ | flia Hr ].
+   now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+}
+destruct (lt_dec q p) as [Hpq| Hpq].
+-now apply H.
+-destruct (lt_dec p q) as [Hqp| Hqp].
+ +rewrite <- MQabs_opp, MQopp_sub_distr, MQadd_comm.
+  now apply H.
+ +idtac.
 ...
 
 (* In names, "9" actually means "rad-1" *)

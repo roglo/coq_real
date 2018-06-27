@@ -278,6 +278,9 @@ destruct sx, sy; simpl in Hxy; [ easy | | | easy ].
  now rewrite H1, H2.
 Qed.
 
+Theorem MQabs_opp : ∀ x, MQabs (- x) == MQabs x.
+Proof. easy. Qed.
+
 Theorem MQadd_comm : ∀ x y, x + y == y + x.
 Proof.
 intros.
@@ -675,6 +678,17 @@ Qed.
 
 Theorem MQadd_opp_l : ∀ x, (- x + x == 0)%MQ.
 Proof. intros; rewrite MQadd_comm; apply MQadd_opp_r. Qed.
+
+Theorem MQopp_sub_distr : ∀ x y, (- (x - y) == - x + y)%MQ.
+Proof.
+intros.
+unfold "+"%MQ; simpl.
+remember (MQsign x) as sx eqn:Hsx; symmetry in Hsx.
+remember (MQsign y) as sy eqn:Hsy; symmetry in Hsy.
+destruct sx, sy; simpl; [ | easy | easy | ].
+-now destruct (PQlt_le_dec (MQpos x) (MQpos y)).
+-now destruct (PQlt_le_dec (MQpos x) (MQpos y)).
+Qed.
 
 (* multiplication, inverse, division *)
 
