@@ -1135,8 +1135,12 @@ intros * Hu Hv ε Hε.
 unfold is_cauchy_seq in Hu, Hv.
 exists (PQden1 (MQpos ε) + 1).
 intros p q (Hp, Hq).
-assert
-  (H : ∀ p q, PQden1 (MQpos ε) + 1 ≤ q < p → (MQabs (u p - u q) < ε)%MQ). {
+unfold cauchy_add.
+assert (H : (u p + v p - (u q + v q) == (u p - u q) + (v p - v q))%MQ). {
+  rewrite MQsub_add_distr.
+  ...
+}
+
 ...
 
 (* return to addition *)

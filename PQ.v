@@ -495,7 +495,7 @@ f_equal.
  ring.
 Qed.
 
-Theorem PQsub_sub_assoc : ∀ x y z,
+Theorem PQsub_sub_distr : ∀ x y z,
   (z ≤ y ≤ x + z)%PQ → (x - (y - z) == x + z - y)%PQ.
 Proof.
 intros * (Hzy, Hyx).

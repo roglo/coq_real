@@ -378,7 +378,7 @@ destruct b1.
       apply PQnle_gt in H3; apply H3.
       now apply PQle_sub_le_add_r.
     **simpl; symmetry.
-      apply PQsub_sub_assoc.
+      apply PQsub_sub_distr.
       split; [ now apply PQlt_le_incl | easy ].
    ++rewrite Bool.eqb_reflx; simpl; symmetry.
      now apply PQadd_sub_assoc.
@@ -403,7 +403,7 @@ destruct b1.
     ---simpl.
        rewrite PQadd_sub_assoc; [ | now apply PQlt_le_incl ].
        rewrite PQadd_comm.
-       apply PQsub_sub_assoc.
+       apply PQsub_sub_distr.
        split; [ now apply PQlt_le_incl | ].
        eapply PQle_trans; [ apply PQlt_le_incl, H3 | ].
        rewrite <- PQadd_0_r at 1.
@@ -421,8 +421,8 @@ destruct b1.
        rewrite PQadd_comm.
        now apply PQle_sub_le_add_r, PQlt_le_incl.
     ---simpl.
-       rewrite PQsub_sub_assoc.
-     +++rewrite PQsub_sub_assoc; [ now rewrite PQadd_comm | ].
+       rewrite PQsub_sub_distr.
+     +++rewrite PQsub_sub_distr; [ now rewrite PQadd_comm | ].
         split; [ easy | now apply PQle_sub_le_add_r ].
      +++split; [ now apply PQlt_le_incl | ].
         now apply PQle_sub_le_add_r, PQlt_le_incl.
@@ -479,7 +479,7 @@ destruct b1.
        apply PQadd_le_mono; [ | apply PQle_0_l ].
        now unfold "≤"%PQ.
     ---simpl; symmetry.
-       rewrite PQsub_sub_assoc.
+       rewrite PQsub_sub_distr.
      +++now apply PQadd_sub_swap.
      +++split; [ easy | ].
         now apply PQle_sub_le_add_r.
@@ -490,7 +490,7 @@ destruct b1.
       destruct (PQlt_le_dec (MQpos x) (MQpos y + MQpos z)) as [H3| H3].
     +++simpl.
        rewrite PQadd_comm.
-       apply PQsub_sub_assoc.
+       apply PQsub_sub_distr.
        split; [ easy | now rewrite PQadd_comm; apply PQlt_le_incl ].
     +++exfalso.
        apply PQle_add_le_sub_l in H3.
@@ -706,6 +706,16 @@ destruct sx, sy; simpl; [ | easy | easy | ].
 -now destruct (PQlt_le_dec (MQpos x) (MQpos y)).
 -now destruct (PQlt_le_dec (MQpos x) (MQpos y)).
 Qed.
+
+Theorem PQsub_add_distr : ∀ x y z, (x - (y + z) == x - y - z)%MQ.
+Proof.
+intros.
+...
+
+Theorem MQsub_sub_distr : ∀ x y z, (x - (y - z) == x + z - y)%MQ.
+Proof.
+intros.
+...
 
 (* multiplication, inverse, division *)
 
