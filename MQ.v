@@ -350,6 +350,16 @@ destruct sx1, sx2, sy1, sy2; simpl in Hx, Hy; simpl; MQadd_morph_tac.
   destruct (PQlt_le_dec (MQpos x2) (MQpos y2)) as [H6| H6]; simpl.
   *now apply PQnlt_ge in H6.
   *now rewrite Hx, Hy.
+-destruct (PQlt_le_dec (MQpos x2) (MQpos y2)) as [H5| H5]; simpl.
+ +now rewrite H3, Hy, H4, PQadd_0_l, PQsub_0_r.
+ +unfold PQadd_num, PQsub_num, nd.
+  rewrite H1, H2, Nat.add_0_r; simpl.
+...
+  rewrite Hy in H5.
+  rewrite <- H4 in H5.
+....
+ +now rewrite H3, H4, PQadd_0_r, PQsub_0_r.
+ +now rewrite H4 in H5.
 -idtac.
 ...
 
