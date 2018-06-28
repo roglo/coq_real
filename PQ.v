@@ -280,6 +280,9 @@ unfold "==", nd in Hx, Hy |-*.
 unfold PQsub_num1, PQadd_den1, nd; simpl.
 split_var x1q; split_var x2q; split_var y1q; split_var y2q.
 move Hx before Hy.
+destruct (zerop (x1q0 * y1q1 - y1q0 * x1q1)) as [H1| H1].
+-rewrite H1; simpl; rewrite Nat.add_0_r.
+
 ...
 assert (H : 0 < x1q0 * y1q1 - y1q0 * x1q1). {
   destruct x1q0, y1q1, y1q0, x1q1; simpl; try easy.
