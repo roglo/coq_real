@@ -1,4 +1,4 @@
-(* Implementation of non negative rationals using only nat *)
+(* Implementation of positive (non zero) rationals using only nat *)
 
 Require Import Utf8 Arith Morphisms Psatz.
 Require Import Misc.
@@ -7,15 +7,16 @@ Tactic Notation "flia" hyp_list(Hs) := clear - Hs; lia.
 
 Delimit Scope PQ_scope with PQ.
 
-Record PQ := PQmake { PQnum : nat; PQden1 : nat }.
+(* A PQ number {PQnum1:=a; PQden1:=b} represents the rational (a+1)/(b+1) *)
+
+Record PQ := PQmake { PQnum1 : nat; PQden1 : nat }.
 Arguments PQmake _%nat _%nat.
-Arguments PQnum x%PQ : rename.
+Arguments PQnum1 x%PQ : rename.
 Arguments PQden1 x%PQ : rename.
 
-Notation "0" := (PQmake 0 0) : PQ_scope.
-Notation "1" := (PQmake 1 0) : PQ_scope.
+Notation "1" := (PQmake 0 0) : PQ_scope.
 
-Definition nd x y := PQnum x * S (PQden1 y).
+Definition nd x y := S (PQnum1 x) * S (PQden1 y).
 
 (* equality *)
 
@@ -35,18 +36,11 @@ Proof.
 unfold "==".
 intros * Hxy Hyz.
 unfold nd in *.
-destruct (zerop (PQnum y)) as [Hy| Hy].
--rewrite Hy in Hxy, Hyz; simpl in Hxy, Hyz.
- symmetry in Hyz.
- apply Nat.eq_mul_0_l in Hxy; [ | easy ].
- apply Nat.eq_mul_0_l in Hyz; [ | easy ].
- now rewrite Hxy, Hyz.
--apply (Nat.mul_cancel_l _ _ (PQnum y)).
- +now intros H; rewrite H in Hy.
- +rewrite Nat.mul_assoc, Nat.mul_shuffle0, Hyz.
-  rewrite Nat.mul_shuffle0, <- Nat.mul_assoc, Hxy.
-  rewrite Nat.mul_comm, Nat.mul_shuffle0.
-  symmetry; apply Nat.mul_assoc.
+apply (Nat.mul_cancel_l _ _ (S (PQnum1 y))); [ easy | ].
+rewrite Nat.mul_assoc, Nat.mul_shuffle0, Hyz.
+rewrite Nat.mul_shuffle0, <- Nat.mul_assoc, Hxy.
+rewrite Nat.mul_comm, Nat.mul_shuffle0.
+symmetry; apply Nat.mul_assoc.
 Qed.
 
 Add Parametric Relation : _ PQeq
@@ -105,12 +99,6 @@ Notation "x ≤ y ≤ z" := (x ≤ y ∧ y ≤ z)%PQ (at level 70, y at next lev
 Theorem PQle_refl : ∀ x, (x ≤ x)%PQ.
 Proof. now unfold "≤"%PQ. Qed.
 
-Theorem PQneq_0_lt_0 : ∀ x, (x ≠≠ 0 ↔ 0 < x)%PQ.
-Proof.
-unfold "=="%PQ, "<"%PQ, nd; simpl.
-intros; split; intros H; flia H.
-Qed.
-
 Theorem PQnlt_ge : ∀ x y, ¬ (x < y)%PQ ↔ (y ≤ x)%PQ.
 Proof.
 intros.
@@ -125,11 +113,13 @@ split; intros H; [ now apply Nat.nle_gt in H | ].
 now apply Nat.nle_gt.
 Qed.
 
+Ltac ssimpl := remember S as f; simpl; subst f.
+
 Theorem PQlt_le_dec : ∀ x y : PQ, {(x < y)%PQ} + {(y ≤ x)%PQ}.
 Proof.
 intros (xn, xd) (yn, yd).
-unfold PQlt, PQle, nd; simpl.
-destruct (lt_dec (xn * S yd) (yn * S xd)) as [H1| H1]; [ now left | ].
+unfold PQlt, PQle, nd; ssimpl.
+destruct (lt_dec (S xn * S yd) (S yn * S xd)) as [H1| H1]; [ now left | ].
 now right; apply Nat.nlt_ge.
 Qed.
 Arguments PQlt_le_dec x%PQ y%PQ.
@@ -137,8 +127,8 @@ Arguments PQlt_le_dec x%PQ y%PQ.
 Theorem PQle_lt_dec : ∀ x y : PQ, {(x ≤ y)%PQ} + {(y < x)%PQ}.
 Proof.
 intros (xn, xd) (yn, yd).
-unfold PQlt, PQle, nd; simpl.
-destruct (le_dec (xn * S yd) (yn * S xd)) as [H1| H1]; [ now left | ].
+unfold PQlt, PQle, nd; ssimpl.
+destruct (le_dec (S xn * S yd) (S yn * S xd)) as [H1| H1]; [ now left | ].
 now right; apply Nat.nle_gt.
 Qed.
 Arguments PQle_lt_dec x%PQ y%PQ.
@@ -182,7 +172,7 @@ assert (H : ∀ x1 x2 y1 y2,
   setoid_rewrite Nat.mul_shuffle0.
   apply Nat.mul_lt_mono_pos_r; [ easy | ].
   apply (Nat.mul_lt_mono_pos_r y1d); [ easy | ].
-  remember (x1n * y2d) as u.
+  remember (S x1n * y2d) as u.
   rewrite Nat.mul_shuffle0; subst u.
   rewrite <- Hy.
   setoid_rewrite Nat.mul_shuffle0.
@@ -235,7 +225,7 @@ assert (H : ∀ x1 x2 y1 y2,
   setoid_rewrite Nat.mul_shuffle0.
   apply Nat.mul_le_mono_pos_r; [ easy | ].
   apply (Nat.mul_le_mono_pos_r _ _ y1d); [ easy | ].
-  remember (x1n * y2d) as u.
+  remember (S x1n * y2d) as u.
   rewrite Nat.mul_shuffle0; subst u.
   rewrite <- Hy.
   setoid_rewrite Nat.mul_shuffle0.
@@ -257,12 +247,14 @@ Qed.
 
 (* addition, subtraction *)
 
-Definition PQadd_num x y := nd x y + nd y x.
-Definition PQsub_num x y := nd x y - nd y x.
+...
+
+Definition PQadd_num1 x y := nd x y + nd y x.
+Definition PQsub_num1 x y := nd x y - nd y x.
 Definition PQadd_den1 x y := S (PQden1 x) * S (PQden1 y) - 1.
 
-Definition PQadd x y := PQmake (PQadd_num x y) (PQadd_den1 x y).
-Definition PQsub x y := PQmake (PQsub_num x y) (PQadd_den1 x y).
+Definition PQadd x y := PQmake (PQadd_num1 x y) (PQadd_den1 x y).
+Definition PQsub x y := PQmake (PQsub_num1 x y) (PQadd_den1 x y).
 Arguments PQadd x%PQ y%PQ.
 Arguments PQsub x%PQ y%PQ.
 
@@ -281,13 +273,13 @@ Proof.
 intros x1 x2 Hx y1 y2 Hy.
 move Hx before Hy.
 unfold "+"%PQ.
-unfold "==", nd in Hx, Hy |-*; simpl.
+unfold "==", nd in Hx, Hy |-*; ssimpl.
+...
 unfold PQadd_num, PQadd_den1, nd.
 destruct x1 as (x1n, x1d).
 destruct x2 as (x2n, x2d).
 destruct y1 as (y1n, y1d).
-destruct y2 as (y2n, y2d).
-remember S as f; simpl in *; subst f.
+destruct y2 as (y2n, y2d); ssimpl.
 rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
 rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
 do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
