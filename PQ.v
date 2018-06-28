@@ -155,17 +155,17 @@ Instance PQlt_morph : Proper (PQeq ==> PQeq ==> iff) PQlt.
 Proof.
 assert (H : ∀ x1 x2 y1 y2,
   (x1 == x2)%PQ → (y1 == y2)%PQ → (x1 < y1)%PQ → (x2 < y2)%PQ). {
-  intros * Hx Hy Hxy.
+  intros x1q x2q y1q y2q Hx Hy Hxy.
   unfold "<"%PQ, nd in Hxy |-*.
   unfold "=="%PQ, nd in Hx, Hy.
-  split_var x1; split_var x2; split_var y1; split_var y2.
+  split_var x1q; split_var x2q; split_var y1q; split_var y2q.
   move Hx before Hy.
-  apply (Nat.mul_lt_mono_pos_l y0); [ easy | ].
+  apply (Nat.mul_lt_mono_pos_l y1q0); [ easy | ].
   rewrite Nat.mul_assoc, Nat.mul_shuffle0, Hy; clear Hy.
-  remember (y6 * y3 * x6) as u; rewrite Nat.mul_comm; subst u.
+  remember (y2q0 * y1q1 * x2q0) as u; rewrite Nat.mul_comm; subst u.
   do 2 rewrite <- Nat.mul_assoc.
   apply Nat.mul_lt_mono_pos_l; [ easy | ].
-  apply (Nat.mul_lt_mono_pos_r x3); [ easy | ].
+  apply (Nat.mul_lt_mono_pos_r x1q1); [ easy | ].
   rewrite <- Nat.mul_assoc, <- Hx; clear Hx.
   rewrite Nat.mul_assoc, Nat.mul_comm.
   rewrite <- Nat.mul_assoc.
@@ -191,41 +191,22 @@ Instance PQle_morph : Proper (PQeq ==> PQeq ==> iff) PQle.
 Proof.
 assert (H : ∀ x1 x2 y1 y2,
   (x1 == x2)%PQ → (y1 == y2)%PQ → (x1 ≤ y1)%PQ → (x2 ≤ y2)%PQ). {
-  intros * Hx Hy Hxy.
+  intros x1q x2q y1q y2q Hx Hy Hxy.
   unfold "≤"%PQ, nd in Hxy |-*.
   unfold "=="%PQ, nd in Hx, Hy.
-  split_var x1; split_var x2; split_var y1; split_var y2.
-...
-  destruct x1 as (x1n, x1d).
-  destruct x2 as (x2n, x2d).
-  destruct y1 as (y1n, y1d).
-  destruct y2 as (y2n, y2d).
-  remember S as f; simpl in *; subst f.
-  remember (S x1d) as u.
-  assert (Hx1 : 0 < u) by flia Hequ.
-  clear x1d Hequ; rename u into x1d.
-  remember (S x2d) as u.
-  assert (Hx2 : 0 < u) by flia Hequ.
-  clear x2d Hequ; rename u into x2d.
-  remember (S y1d) as u.
-  assert (Hy1 : 0 < u) by flia Hequ.
-  clear y1d Hequ; rename u into y1d.
-  remember (S y2d) as u.
-  assert (Hy2 : 0 < u) by flia Hequ.
-  clear y2d Hequ; rename u into y2d.
-  move x1d before y2n; move x2d before x1d.
-  move Hx at bottom; move Hy at bottom.
-  move Hxy at bottom.
-  apply (Nat.mul_le_mono_pos_r _ _ x1d); [ easy | ].
-  rewrite Nat.mul_shuffle0, <- Hx.
-  setoid_rewrite Nat.mul_shuffle0.
-  apply Nat.mul_le_mono_pos_r; [ easy | ].
-  apply (Nat.mul_le_mono_pos_r _ _ y1d); [ easy | ].
-  remember (S x1n * y2d) as u.
-  rewrite Nat.mul_shuffle0; subst u.
-  rewrite <- Hy.
-  setoid_rewrite Nat.mul_shuffle0.
-  now apply Nat.mul_le_mono_pos_r.
+  split_var x1q; split_var x2q; split_var y1q; split_var y2q.
+  move Hx before Hy.
+  apply (Nat.mul_le_mono_pos_l _ _ y1q0); [ easy | ].
+  rewrite Nat.mul_assoc, Nat.mul_shuffle0, Hy; clear Hy.
+  remember (y2q0 * y1q1 * x2q0) as u; rewrite Nat.mul_comm; subst u.
+  do 2 rewrite <- Nat.mul_assoc.
+  apply Nat.mul_le_mono_pos_l; [ easy | ].
+  apply (Nat.mul_le_mono_pos_r _ _ x1q1); [ easy | ].
+  rewrite <- Nat.mul_assoc, <- Hx; clear Hx.
+  rewrite Nat.mul_assoc, Nat.mul_comm.
+  rewrite <- Nat.mul_assoc.
+  apply Nat.mul_le_mono_pos_l; [ easy | ].
+  now rewrite Nat.mul_comm.
 }
 intros x1 x2 Hx y1 y2 Hy.
 move y1 before x2; move y2 before y1.
@@ -245,7 +226,7 @@ Qed.
 
 Definition PQadd_num1 x y := nd x y + nd y x - 1.
 Definition PQsub_num1 x y := nd x y - nd y x - 1.
-Definition PQadd_den1 x y := S (PQden1 x) * S (PQden1 y) - 1.
+Definition PQadd_den1 x y := (PQden1 x + 1) * (PQden1 y + 1) - 1.
 
 Definition PQadd x y := PQmake (PQadd_num1 x y) (PQadd_den1 x y).
 Definition PQsub x y := PQmake (PQsub_num1 x y) (PQadd_den1 x y).
@@ -264,40 +245,23 @@ Notation "x - y" := (PQsub x y) : PQ_scope.
  *)
 Instance PQadd_morph : Proper (PQeq ==> PQeq ==> PQeq) PQadd.
 Proof.
-intros (x1n, x1d) (x2n, x2d) Hx (y1n, y1d) (y2n, y2d) Hy.
+intros x1q x2q Hx y1q y2q Hy.
 move Hx before Hy.
 unfold "+"%PQ.
 unfold "==", nd in Hx, Hy |-*.
-unfold PQadd_num1, PQadd_den1, nd.
-remember S as f; simpl in *; subst f.
-rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
-rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
-do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
-remember (S x1d) as u.
-assert (Hx1 : 0 < u) by flia Hequ.
-clear x1d Hequ; rename u into x1d.
-remember (S x2d) as u.
-assert (Hx2 : 0 < u) by flia Hequ.
-clear x2d Hequ; rename u into x2d.
-remember (S y1d) as u.
-assert (Hy1 : 0 < u) by flia Hequ.
-clear y1d Hequ; rename u into y1d.
-remember (S y2d) as u.
-assert (Hy2 : 0 < u) by flia Hequ.
-clear y2d Hequ; rename u into y2d.
-move x1d before y2n; move x2d before x1d.
-move Hx at bottom; move Hy at bottom.
-remember S as f.
+unfold PQadd_num1, PQadd_den1, nd; simpl.
+rewrite Nat.sub_add; [ | do 4 rewrite Nat.add_1_r; simpl; flia ].
+rewrite Nat.sub_add; [ | do 2 rewrite Nat.add_1_r; simpl; flia ].
+rewrite Nat.sub_add; [ | do 2 rewrite Nat.add_1_r; simpl; flia ].
+rewrite Nat.sub_add; [ | do 2 rewrite Nat.add_1_r; simpl; flia ].
+split_var x1q; split_var x2q; split_var y1q; split_var y2q.
+move Hx before Hy.
 ring_simplify.
-replace (f x1n * y1d * x2d) with (f x1n * x2d * y1d) by flia.
-rewrite Hx.
-replace (f y1n * x1d * x2d * y2d) with (f y1n * y2d * x1d * x2d) by flia.
-rewrite Hy.
-subst f.
-rewrite <- Nat.sub_succ_l; [ | simpl; flia Hx2 ].
-rewrite <- Nat.sub_succ_l; [ | destruct x1d, y1d; simpl; try easy; flia ].
-do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
-ring.
+rewrite Nat.add_comm; f_equal.
+-replace (y1q0 * x1q1 * x2q1 * y2q1) with (y1q0 * y2q1 * x1q1 * x2q1) by flia.
+ rewrite Hy; flia.
+-replace (x1q0 * y1q1 * x2q1) with (x1q0 * x2q1 * y1q1) by flia.
+ rewrite Hx; flia.
 Qed.
 
 (* allows to use rewrite inside a subtraction
@@ -309,12 +273,32 @@ Qed.
  *)
 Instance PQsub_morph : Proper (PQeq ==> PQeq ==> PQeq) PQsub.
 Proof.
+intros x1q x2q Hx y1q y2q Hy.
+move Hx before Hy.
+unfold "-"%PQ.
+unfold "==", nd in Hx, Hy |-*.
+unfold PQsub_num1, PQadd_den1, nd; simpl.
+rewrite Nat.sub_add.
+...
+rewrite Nat.sub_add; [ | do 4 rewrite Nat.add_1_r; simpl; flia ].
+rewrite Nat.sub_add; [ | do 2 rewrite Nat.add_1_r; simpl; flia ].
+rewrite Nat.sub_add; [ | do 2 rewrite Nat.add_1_r; simpl; flia ].
+rewrite Nat.sub_add; [ | do 2 rewrite Nat.add_1_r; simpl; flia ].
+split_var x1q; split_var x2q; split_var y1q; split_var y2q.
+move Hx before Hy.
+ring_simplify.
+rewrite Nat.add_comm; f_equal.
+-replace (y1q0 * x1q1 * x2q1 * y2q1) with (y1q0 * y2q1 * x1q1 * x2q1) by flia.
+ rewrite Hy; flia.
+-replace (x1q0 * y1q1 * x2q1) with (x1q0 * x2q1 * y1q1) by flia.
+ rewrite Hx; flia.
+...
+
 intros (x1n, x1d) (x2n, x2d) Hx (y1n, y1d) (y2n, y2d) Hy.
 move Hx before Hy.
 unfold "-"%PQ.
 unfold "==", nd in Hx, Hy |-*.
 unfold PQsub_num1, PQadd_den1, nd.
-remember S as f; simpl in *; subst f.
 ...
 rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
 rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
