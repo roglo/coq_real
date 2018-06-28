@@ -141,10 +141,13 @@ Definition MQle x y :=
     else True.
 Arguments MQle x%MQ y%MQ.
 
+Definition MQgt x y := MQlt y x.
+Definition MQge x y := MQle y x.
+
 Notation "x < y" := (MQlt x y) : MQ_scope.
 Notation "x ≤ y" := (MQle x y) : MQ_scope.
-Notation "x > y" := (MQlt y x) (only parsing) : MQ_scope.
-Notation "x ≥ y" := (MQle y x) (only parsing) : MQ_scope.
+Notation "x > y" := (MQgt x y) : MQ_scope.
+Notation "x ≥ y" := (MQge x y) : MQ_scope.
 
 Ltac MQlt_morph_tac :=
   match goal with
@@ -345,7 +348,10 @@ destruct sx1, sx2, sy1, sy2; simpl in Hx, Hy; simpl; MQadd_morph_tac.
   now rewrite H1.
 -unfold PQadd_num, PQsub_num, nd.
  now rewrite H1n0, H2n0, H1n, H2n.
--idtac.
+-destruct (PQlt_le_dec (MQpos x1) (MQpos y1)) as [H1| H1]; simpl.
+ +now rewrite H1p in H1.
+ +idtac.
+
 ...
 
 Theorem MQabs_0 : MQabs 0 == 0.

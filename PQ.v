@@ -92,11 +92,13 @@ Qed.
 
 Definition PQlt x y := nd x y < nd y x.
 Definition PQle x y := nd x y ≤ nd y x.
+Definition PQgt x y := PQlt y x.
+Definition PQge x y := PQle y x.
 
 Notation "x < y" := (PQlt x y) : PQ_scope.
 Notation "x ≤ y" := (PQle x y) : PQ_scope.
-Notation "x > y" := (PQlt y x) (only parsing) : PQ_scope.
-Notation "x ≥ y" := (PQle y x) (only parsing) : PQ_scope.
+Notation "x > y" := (PQgt x y) : PQ_scope.
+Notation "x ≥ y" := (PQge x y) : PQ_scope.
 Notation "x ≤ y ≤ z" := (x ≤ y ∧ y ≤ z)%PQ (at level 70, y at next level) :
   PQ_scope.
 
