@@ -321,8 +321,11 @@ destruct sx1, sx2, sy1, sy2; simpl in Hx, Hy; simpl.
  apply PQeq_num_0 in H3.
  generalize H2; intros H4.
  apply PQeq_num_0 in H4.
-...
- rewrite H4.
+ destruct (PQlt_le_dec (MQpos x2) (MQpos y2)) as [H5| H5].
+ +now rewrite H4 in H5.
+ +simpl.
+  now rewrite H3, H4, PQadd_0_r, PQsub_0_r.
+-idtac.
 ...
 
 Theorem MQabs_0 : MQabs 0 == 0.
