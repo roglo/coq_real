@@ -264,6 +264,40 @@ rewrite Nat.add_comm; f_equal.
  rewrite Hx; flia.
 Qed.
 
+(* allows to use rewrite inside a subtraction
+   e.g.
+      H : x = y
+      ====================
+      ..... (x - z)%PQ ....
+   rewrite H.
+ *)
+Instance PQsub_morph : Proper (PQeq ==> PQeq ==> PQeq) PQsub.
+Proof.
+intros x1q x2q Hx y1q y2q Hy.
+move Hx before Hy.
+unfold "-"%PQ.
+unfold "==", nd in Hx, Hy |-*.
+unfold PQadd_den1, nd; simpl.
+symmetry; rewrite Nat.mul_comm.
+rewrite Nat.sub_add; [ | do 2 rewrite Nat.add_1_r; simpl; flia ].
+symmetry; rewrite Nat.mul_comm.
+rewrite Nat.sub_add; [ | do 2 rewrite Nat.add_1_r; simpl; flia ].
+
+...
+rewrite Nat.sub_add; [ | do 4 rewrite Nat.add_1_r; simpl; flia ].
+rewrite Nat.sub_add; [ | do 2 rewrite Nat.add_1_r; simpl; flia ].
+rewrite Nat.sub_add; [ | do 2 rewrite Nat.add_1_r; simpl; flia ].
+rewrite Nat.sub_add; [ | do 2 rewrite Nat.add_1_r; simpl; flia ].
+split_var x1q; split_var x2q; split_var y1q; split_var y2q.
+move Hx before Hy.
+ring_simplify.
+rewrite Nat.add_comm; f_equal.
+-replace (y1q0 * x1q1 * x2q1 * y2q1) with (y1q0 * y2q1 * x1q1 * x2q1) by flia.
+ rewrite Hy; flia.
+-replace (x1q0 * y1q1 * x2q1) with (x1q0 * x2q1 * y1q1) by flia.
+ rewrite Hx; flia.
+Qed.
+
 Theorem PQadd_comm : ∀ x y, (x + y == y + x)%PQ.
 Proof.
 intros.
