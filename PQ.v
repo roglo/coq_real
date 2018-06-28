@@ -16,7 +16,7 @@ Arguments PQden1 x%PQ : rename.
 
 Notation "1" := (PQmake 0 0) : PQ_scope.
 
-Definition nd x y := S (PQnum1 x) * S (PQden1 y).
+Definition nd x y := (PQnum1 x + 1) * (PQden1 y + 1).
 
 (* equality *)
 
@@ -36,7 +36,7 @@ Proof.
 unfold "==".
 intros * Hxy Hyz.
 unfold nd in *.
-apply (Nat.mul_cancel_l _ _ (S (PQnum1 y))); [ easy | ].
+apply (Nat.mul_cancel_l _ _ (PQnum1 y + 1)); [ flia | ].
 rewrite Nat.mul_assoc, Nat.mul_shuffle0, Hyz.
 rewrite Nat.mul_shuffle0, <- Nat.mul_assoc, Hxy.
 rewrite Nat.mul_comm, Nat.mul_shuffle0.
@@ -116,20 +116,33 @@ Qed.
 Theorem PQlt_le_dec : ∀ x y : PQ, {(x < y)%PQ} + {(y ≤ x)%PQ}.
 Proof.
 intros (xn, xd) (yn, yd).
-unfold PQlt, PQle, nd.
-destruct (lt_dec (S xn * S yd) (S yn * S xd)) as [H1| H1]; [ now left | ].
-now right; apply Nat.nlt_ge.
+unfold PQlt, PQle, nd; simpl.
+destruct (lt_dec ((xn + 1) * (yd + 1)) ((yn + 1) * (xd + 1))) as [H1| H1].
+-now left.
+-now right; apply Nat.nlt_ge.
 Qed.
 Arguments PQlt_le_dec x%PQ y%PQ.
 
 Theorem PQle_lt_dec : ∀ x y : PQ, {(x ≤ y)%PQ} + {(y < x)%PQ}.
 Proof.
 intros (xn, xd) (yn, yd).
-unfold PQlt, PQle, nd.
-destruct (le_dec (S xn * S yd) (S yn * S xd)) as [H1| H1]; [ now left | ].
-now right; apply Nat.nle_gt.
+unfold PQlt, PQle, nd; simpl.
+destruct (le_dec ((xn + 1) * (yd + 1)) ((yn + 1) * (xd + 1))) as [H1| H1].
+-now left.
+-now right; apply Nat.nle_gt.
 Qed.
 Arguments PQle_lt_dec x%PQ y%PQ.
+
+Ltac split_var x :=
+  let xn := fresh x in
+  let xd := fresh x in
+  let Hpn := fresh x in
+  let Hpd := fresh x in
+  remember (PQnum1 x + 1) as xn eqn:Hxn;
+  remember (PQden1 x + 1) as xd eqn:Hxd;
+  assert (Hpn : 0 < xn) by flia Hxn;
+  assert (Hpd : 0 < xd) by flia Hxd;
+  clear Hxn Hxd.
 
 (* allows to use rewrite inside a less than
    e.g.
@@ -145,36 +158,19 @@ assert (H : ∀ x1 x2 y1 y2,
   intros * Hx Hy Hxy.
   unfold "<"%PQ, nd in Hxy |-*.
   unfold "=="%PQ, nd in Hx, Hy.
-  destruct x1 as (x1n, x1d).
-  destruct x2 as (x2n, x2d).
-  destruct y1 as (y1n, y1d).
-  destruct y2 as (y2n, y2d).
-  remember S as f; simpl in *; subst f.
-  remember (S x1d) as u.
-  assert (Hx1 : 0 < u) by flia Hequ.
-  clear x1d Hequ; rename u into x1d.
-  remember (S x2d) as u.
-  assert (Hx2 : 0 < u) by flia Hequ.
-  clear x2d Hequ; rename u into x2d.
-  remember (S y1d) as u.
-  assert (Hy1 : 0 < u) by flia Hequ.
-  clear y1d Hequ; rename u into y1d.
-  remember (S y2d) as u.
-  assert (Hy2 : 0 < u) by flia Hequ.
-  clear y2d Hequ; rename u into y2d.
-  move x1d before y2n; move x2d before x1d.
-  move Hx at bottom; move Hy at bottom.
-  move Hxy at bottom.
-  apply (Nat.mul_lt_mono_pos_r x1d); [ easy | ].
-  rewrite Nat.mul_shuffle0, <- Hx.
-  setoid_rewrite Nat.mul_shuffle0.
-  apply Nat.mul_lt_mono_pos_r; [ easy | ].
-  apply (Nat.mul_lt_mono_pos_r y1d); [ easy | ].
-  remember (S x1n * y2d) as u.
-  rewrite Nat.mul_shuffle0; subst u.
-  rewrite <- Hy.
-  setoid_rewrite Nat.mul_shuffle0.
-  now apply Nat.mul_lt_mono_pos_r.
+  split_var x1; split_var x2; split_var y1; split_var y2.
+  move Hx before Hy.
+  apply (Nat.mul_lt_mono_pos_l y0); [ easy | ].
+  rewrite Nat.mul_assoc, Nat.mul_shuffle0, Hy; clear Hy.
+  remember (y6 * y3 * x6) as u; rewrite Nat.mul_comm; subst u.
+  do 2 rewrite <- Nat.mul_assoc.
+  apply Nat.mul_lt_mono_pos_l; [ easy | ].
+  apply (Nat.mul_lt_mono_pos_r x3); [ easy | ].
+  rewrite <- Nat.mul_assoc, <- Hx; clear Hx.
+  rewrite Nat.mul_assoc, Nat.mul_comm.
+  rewrite <- Nat.mul_assoc.
+  apply Nat.mul_lt_mono_pos_l; [ easy | ].
+  now rewrite Nat.mul_comm.
 }
 intros x1 x2 Hx y1 y2 Hy.
 move y1 before x2; move y2 before y1.
@@ -198,6 +194,8 @@ assert (H : ∀ x1 x2 y1 y2,
   intros * Hx Hy Hxy.
   unfold "≤"%PQ, nd in Hxy |-*.
   unfold "=="%PQ, nd in Hx, Hy.
+  split_var x1; split_var x2; split_var y1; split_var y2.
+...
   destruct x1 as (x1n, x1d).
   destruct x2 as (x2n, x2d).
   destruct y1 as (y1n, y1d).
