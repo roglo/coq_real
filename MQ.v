@@ -105,12 +105,12 @@ Add Parametric Relation : _ MQeq
  transitivity proved by MQeq_trans
  as MQeq_equiv_rel.
 
-(* allows to use rewrite inside a Qmake
+(* allows to use rewrite inside a MQmake
    e.g.
       Hs : sx = sy
       H : x = y
       ====================
-      ... (Qmake sx x) ...
+      ... (MQmake sx x) ...
    rewrite Hs, H.
  *)
 Instance MQmake_morph : Proper (eq ==> PQeq ==> MQeq) MQmake.
@@ -292,6 +292,28 @@ destruct sx, sy; simpl in Hxy; [ easy | | | easy ].
  now rewrite H1, H2.
 Qed.
 
+Ltac MQadd_morph_tac :=
+  match goal with
+  | [ H :
+      if (zerop (PQnum (MQpos ?x) + PQnum (MQpos ?y))) then True else False
+       |- _ ] =>
+        destruct (zerop (PQnum (MQpos x) + PQnum (MQpos y)))
+          as [H1| H1 ]; [ | easy ];
+        clear H;
+        apply Nat.eq_add_0 in H1;
+        destruct H1 as (H1, H2);
+        generalize H1; intros H3;
+        apply PQeq_num_0 in H3;
+        generalize H2; intros H4;
+        apply PQeq_num_0 in H4
+(*
+  | [ Hx : (MQpos ?x1 == MQpos ?x2)%PQ, Hy : (MQpos ?y1 == MQpos ?y2)%PQ
+       |- _ ] =>
+      now rewrite Hx, Hy
+*)
+  | _ => idtac
+  end.
+
 (* allows to use rewrite inside an addition
    e.g.
       H : x = y
@@ -311,20 +333,23 @@ remember (MQsign y1) as sy1 eqn:Hsy1; symmetry in Hsy1.
 remember (MQsign y2) as sy2 eqn:Hsy2; symmetry in Hsy2.
 move sx2 before sx1; move sy1 before sx2; move sy2 before sy1.
 move Hsy1 before Hsx2; move Hsy2 before Hsy1.
-destruct sx1, sx2, sy1, sy2; simpl in Hx, Hy; simpl.
+destruct sx1, sx2, sy1, sy2; simpl in Hx, Hy; simpl; MQadd_morph_tac.
 -now rewrite Hx, Hy.
--destruct (zerop (PQnum (MQpos y1) + PQnum (MQpos y2))) as [H1| ]; [ | easy ].
- clear Hy.
- apply Nat.eq_add_0 in H1.
- destruct H1 as (H1, H2).
- generalize H1; intros H3.
- apply PQeq_num_0 in H3.
- generalize H2; intros H4.
- apply PQeq_num_0 in H4.
- destruct (PQlt_le_dec (MQpos x2) (MQpos y2)) as [H5| H5].
+-destruct (PQlt_le_dec (MQpos x2) (MQpos y2)) as [H5| H5]; simpl.
  +now rewrite H4 in H5.
- +simpl.
-  now rewrite H3, H4, PQadd_0_r, PQsub_0_r.
+ +now rewrite H3, H4, PQadd_0_r, PQsub_0_r.
+-destruct (PQlt_le_dec (MQpos x1) (MQpos y1)) as [H5| H5]; simpl.
+ +now rewrite H3 in H5.
+ +now rewrite H3, H4, PQadd_0_r, PQsub_0_r.
+-destruct (PQlt_le_dec (MQpos x1) (MQpos y1)) as [H5| H5]; simpl.
+ +rewrite Hx, Hy in H5.
+  destruct (PQlt_le_dec (MQpos x2) (MQpos y2)) as [H6| H6]; simpl.
+  *now rewrite Hx, Hy.
+  *now apply PQnlt_ge in H6.
+ +rewrite Hx, Hy in H5.
+  destruct (PQlt_le_dec (MQpos x2) (MQpos y2)) as [H6| H6]; simpl.
+  *now apply PQnlt_ge in H6.
+  *now rewrite Hx, Hy.
 -idtac.
 ...
 
@@ -823,6 +848,9 @@ Definition MQinv x :=
 Notation "x * y" := (MQmul x y) : MQ_scope.
 Notation "/ x" := (MQinv x) : MQ_scope.
 Notation "x / y" := (MQmul x (MQinv y)) : MQ_scope.
+
+...
+(* remplacer ?P et ?Q par True et False, pour voir *)
 
 Ltac MQmul_morph_tac :=
   match goal with
