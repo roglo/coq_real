@@ -1,4 +1,4 @@
-(* Implementation of positive rationals using only nat *)
+(* Implementation of non negative rationals using only nat *)
 
 Require Import Utf8 Arith Morphisms Psatz.
 Require Import Misc.
