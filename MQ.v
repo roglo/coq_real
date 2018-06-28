@@ -143,8 +143,8 @@ Arguments MQle x%MQ y%MQ.
 
 Notation "x < y" := (MQlt x y) : MQ_scope.
 Notation "x ≤ y" := (MQle x y) : MQ_scope.
-Notation "x > y" := (¬ MQle x y) : MQ_scope.
-Notation "x ≥ y" := (¬ MQlt x y) : MQ_scope.
+Notation "x > y" := (MQlt y x) (only parsing) : MQ_scope.
+Notation "x ≥ y" := (MQle y x) (only parsing) : MQ_scope.
 
 Ltac MQlt_morph_tac :=
   match goal with
@@ -237,20 +237,6 @@ destruct sx1, sx2, sy1, sy2; simpl in Hx, Hy |-*; MQlt_morph_tac.
 -now rewrite Hx, Hy.
 Qed.
 
-Theorem MQgt_lt_iff : ∀ x y, (x > y)%MQ ↔ (y < x)%MQ.
-Proof.
-intros.
-unfold "≤"%MQ, "<"%MQ.
-remember (MQsign x) as sx eqn:Hsx; symmetry in Hsx.
-remember (MQsign y) as sy eqn:Hsy; symmetry in Hsy.
-destruct sx, sy; simpl.
--apply PQgt_lt_iff.
--rewrite PQeq_if, PQadd_comm, <- PQeq_if.
- now destruct (PQeq_dec (MQpos y + MQpos x) 0).
--easy.
--apply PQgt_lt_iff.
-Qed.
-
 (* addition, opposite, subtraction *)
 
 Definition MQadd x y :=
@@ -297,20 +283,20 @@ Ltac MQadd_morph_tac :=
   | [ H :
       if (zerop (PQnum (MQpos ?x) + PQnum (MQpos ?y))) then True else False
        |- _ ] =>
-        destruct (zerop (PQnum (MQpos x) + PQnum (MQpos y)))
-          as [H1| H1 ]; [ | easy ];
-        clear H;
-        apply Nat.eq_add_0 in H1;
-        destruct H1 as (H1, H2);
-        generalize H1; intros H3;
-        apply PQeq_num_0 in H3;
-        generalize H2; intros H4;
-        apply PQeq_num_0 in H4
-(*
-  | [ Hx : (MQpos ?x1 == MQpos ?x2)%PQ, Hy : (MQpos ?y1 == MQpos ?y2)%PQ
-       |- _ ] =>
-      now rewrite Hx, Hy
-*)
+      let H1 := fresh "H1n" in
+      let H2 := fresh "H2n" in
+      let H3 := fresh "H1p" in
+      let H4 := fresh "H2p" in
+      destruct (zerop (PQnum (MQpos x) + PQnum (MQpos y)))
+        as [H1| ]; [ clear H | easy ];
+      clear H;
+      apply Nat.eq_add_0 in H1;
+      destruct H1 as (H1, H2);
+      generalize H1; intros H3;
+      apply PQeq_num_0 in H3;
+      generalize H2; intros H4;
+      apply PQeq_num_0 in H4;
+      MQadd_morph_tac
   | _ => idtac
   end.
 
@@ -335,31 +321,30 @@ move sx2 before sx1; move sy1 before sx2; move sy2 before sy1.
 move Hsy1 before Hsx2; move Hsy2 before Hsy1.
 destruct sx1, sx2, sy1, sy2; simpl in Hx, Hy; simpl; MQadd_morph_tac.
 -now rewrite Hx, Hy.
--destruct (PQlt_le_dec (MQpos x2) (MQpos y2)) as [H5| H5]; simpl.
- +now rewrite H4 in H5.
- +now rewrite H3, H4, PQadd_0_r, PQsub_0_r.
--destruct (PQlt_le_dec (MQpos x1) (MQpos y1)) as [H5| H5]; simpl.
- +now rewrite H3 in H5.
- +now rewrite H3, H4, PQadd_0_r, PQsub_0_r.
--destruct (PQlt_le_dec (MQpos x1) (MQpos y1)) as [H5| H5]; simpl.
- +rewrite Hx, Hy in H5.
-  destruct (PQlt_le_dec (MQpos x2) (MQpos y2)) as [H6| H6]; simpl.
+-destruct (PQlt_le_dec (MQpos x2) (MQpos y2)) as [H1| H1]; simpl.
+ +now rewrite H2p in H1.
+ +now rewrite H1p, H2p, PQadd_0_r, PQsub_0_r.
+-destruct (PQlt_le_dec (MQpos x1) (MQpos y1)) as [H1| H1]; simpl.
+ +now rewrite H1p in H1.
+ +now rewrite H1p, H2p, PQadd_0_r, PQsub_0_r.
+-destruct (PQlt_le_dec (MQpos x1) (MQpos y1)) as [H1| H1]; simpl.
+ +rewrite Hx, Hy in H1.
+  destruct (PQlt_le_dec (MQpos x2) (MQpos y2)) as [H2| H2]; simpl.
   *now rewrite Hx, Hy.
-  *now apply PQnlt_ge in H6.
- +rewrite Hx, Hy in H5.
-  destruct (PQlt_le_dec (MQpos x2) (MQpos y2)) as [H6| H6]; simpl.
-  *now apply PQnlt_ge in H6.
+  *now apply PQnlt_ge in H2.
+ +rewrite Hx, Hy in H1.
+  destruct (PQlt_le_dec (MQpos x2) (MQpos y2)) as [H2| H2]; simpl.
+  *now apply PQnlt_ge in H2.
   *now rewrite Hx, Hy.
--destruct (PQlt_le_dec (MQpos x2) (MQpos y2)) as [H5| H5]; simpl.
- +now rewrite H3, Hy, H4, PQadd_0_l, PQsub_0_r.
+-destruct (PQlt_le_dec (MQpos x2) (MQpos y2)) as [H1| H1]; simpl.
+ +now rewrite H1p, Hy, H2p, PQadd_0_l, PQsub_0_r.
  +unfold PQadd_num, PQsub_num, nd.
-  rewrite H1, H2, Nat.add_0_r; simpl.
-...
-  rewrite Hy in H5.
-  rewrite <- H4 in H5.
-....
- +now rewrite H3, H4, PQadd_0_r, PQsub_0_r.
- +now rewrite H4 in H5.
+  rewrite H1n, H2n, Nat.add_0_r; simpl.
+  rewrite <- Hy, H2p in H1.
+  apply PQle_0_r, PQeq_num_0 in H1.
+  now rewrite H1.
+-unfold PQadd_num, PQsub_num, nd.
+ now rewrite H1n0, H2n0, H1n, H2n.
 -idtac.
 ...
 

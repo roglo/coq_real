@@ -95,8 +95,8 @@ Definition PQle x y := nd x y ≤ nd y x.
 
 Notation "x < y" := (PQlt x y) : PQ_scope.
 Notation "x ≤ y" := (PQle x y) : PQ_scope.
-Notation "x > y" := (¬ PQle x y) : PQ_scope.
-Notation "x ≥ y" := (¬ PQlt x y) : PQ_scope.
+Notation "x > y" := (PQlt y x) (only parsing) : PQ_scope.
+Notation "x ≥ y" := (PQle y x) (only parsing) : PQ_scope.
 Notation "x ≤ y ≤ z" := (x ≤ y ∧ y ≤ z)%PQ (at level 70, y at next level) :
   PQ_scope.
 
@@ -251,12 +251,6 @@ Theorem PQle_antisymm : ∀ x y, (x ≤ y)%PQ → (y ≤ x)%PQ → (x == y)%PQ.
 Proof.
 intros * Hxy Hyx.
 apply (Nat.le_antisymm _ _ Hxy Hyx).
-Qed.
-
-Theorem PQgt_lt_iff : ∀ x y, (x > y)%PQ ↔ (y < x)%PQ.
-Proof.
-intros.
-split; intros H; now apply Nat.nle_gt in H.
 Qed.
 
 (* addition, subtraction *)
@@ -535,6 +529,9 @@ Proof. intros * Hxy; now apply Nat.lt_le_incl. Qed.
 
 Theorem PQle_0_l : ∀ x, (0 ≤ x)%PQ.
 Proof. intros; apply Nat.le_0_l. Qed.
+
+Theorem PQle_0_r : ∀ x, (x ≤ 0 ↔ x == 0)%PQ.
+Proof. intros; apply Nat.le_0_r. Qed.
 
 Theorem PQnlt_0_r : ∀ x, (¬ x < 0)%PQ.
 Proof. intros; apply Nat.nlt_0_r. Qed.
