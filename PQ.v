@@ -319,16 +319,19 @@ rewrite Nat.add_comm; f_equal.
 -replace (x1q0 * y1q1 * x2q1) with (x1q0 * x2q1 * y1q1) by flia.
  rewrite Hx; flia.
 ...
-
 intros (x1n, x1d) (x2n, x2d) Hx (y1n, y1d) (y2n, y2d) Hy.
 move Hx before Hy.
 unfold "-"%PQ.
 unfold "==", nd in Hx, Hy |-*.
 unfold PQsub_num1, PQadd_den1, nd.
-...
-rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
-rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
-do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
+simpl in Hx, Hy |-*.
+repeat rewrite Nat.add_1_r in Hx.
+repeat rewrite Nat.add_1_r in Hy.
+repeat rewrite Nat.add_1_r.
+remember (S x1n) as sx1n.
+remember (S x2n) as sx2n.
+remember (S y1n) as sy1n.
+remember (S y2n) as sy2n.
 remember (S x1d) as u.
 assert (Hx1 : 0 < u) by flia Hequ.
 clear x1d Hequ; rename u into x1d.
@@ -345,7 +348,7 @@ move x1d before y2n; move x2d before x1d.
 move Hx at bottom; move Hy at bottom.
 ring_simplify.
 do 4 rewrite Nat.mul_sub_distr_r.
-replace (x1n * y1d * x2d) with (x1n * x2d * y1d) by flia.
+replace (sx1n * y1d * x2d) with (sx1n * x2d * y1d) by flia.
 rewrite Hx.
 replace (y1n * x1d * x2d * y2d) with (y1n * y2d * x1d * x2d) by flia.
 rewrite Hy.
