@@ -296,6 +296,9 @@ move y2d before x1n; move y2n before x1n.
 move y1d before x1n; move y1n before x1n.
 move x2d before x1n; move x2n before x1n.
 move x1d before x1n.
+(**)
+ring_simplify.
+...
 apply (Nat.mul_cancel_l _ _ x1n); [ now subst x1n; rewrite Nat.add_comm | ].
 do 4 rewrite Nat.mul_assoc; rewrite Hx.
 do 4 rewrite <- Nat.mul_assoc.
