@@ -282,7 +282,53 @@ symmetry; rewrite Nat.mul_comm.
 rewrite Nat.sub_add; [ | do 2 rewrite Nat.add_1_r; simpl; flia ].
 symmetry; rewrite Nat.mul_comm.
 rewrite Nat.sub_add; [ | do 2 rewrite Nat.add_1_r; simpl; flia ].
+unfold PQsub_num1, nd.
+remember (PQnum1 x1q + 1) as x1n eqn:Hx1n; symmetry in Hx1n.
+remember (PQden1 x1q + 1) as x1d eqn:Hx1d; symmetry in Hx1d.
+remember (PQnum1 x2q + 1) as x2n eqn:Hx2n; symmetry in Hx2n.
+remember (PQden1 x2q + 1) as x2d eqn:Hx2d; symmetry in Hx2d.
+remember (PQnum1 y1q + 1) as y1n eqn:Hy1n; symmetry in Hy1n.
+remember (PQden1 y1q + 1) as y1d eqn:Hy1d; symmetry in Hy1d.
+remember (PQnum1 y2q + 1) as y2n eqn:Hy2n; symmetry in Hy2n.
+remember (PQden1 y2q + 1) as y2d eqn:Hy2d; symmetry in Hy2d.
+move Hx before Hy.
+move y2d before x1n; move y2n before x1n.
+move y1d before x1n; move y1n before x1n.
+move x2d before x1n; move x2n before x1n.
+move x1d before x1n.
+apply (Nat.mul_cancel_l _ _ x1n); [ now subst x1n; rewrite Nat.add_comm | ].
+do 4 rewrite Nat.mul_assoc; rewrite Hx.
+do 4 rewrite <- Nat.mul_assoc.
+do 2 (rewrite Nat.mul_comm; symmetry).
+do 4 rewrite <- Nat.mul_assoc; f_equal.
+apply (Nat.mul_cancel_l _ _ y1n); [ now subst y1n; rewrite Nat.add_comm | ].
+do 4 rewrite Nat.mul_assoc; rewrite Hy.
+do 4 rewrite <- Nat.mul_assoc.
+do 2 (rewrite Nat.mul_comm; symmetry).
+do 4 rewrite <- Nat.mul_assoc; f_equal.
+do 2 (rewrite Nat.mul_comm; symmetry).
+...
+  ============================
+  x2n * y2n * (x1n * y1d - y1n * x1d - 1 + 1) =
+  x1n * y1n * (x2n * y2d - y2n * x2d - 1 + 1)
+  ============================
+  x2d * y2d * (x1n * y1d - y1n * x1d - 1 + 1) =
+  x1d * y1d * (x2n * y2d - y2n * x2d - 1 + 1)
+...
 
+rewrite Nat.mul_add_distr_r, Nat.mul_sub_distr_r, Nat.mul_sub_distr_r.
+symmetry.
+rewrite Nat.mul_add_distr_r, Nat.mul_sub_distr_r, Nat.mul_sub_distr_r.
+symmetry.
+...
+  ============================
+  (x1n * y1d - y1n * x1d - 1 + 1) * (x2n * y2n) =
+  (x2n * y2d - y2n * x2d - 1 + 1) * (x1n * y1n)
+...
+rewrite Nat.mul_add_distr_l, Nat.mul_1_r; symmetry.
+rewrite Nat.mul_add_distr_l, Nat.mul_1_r; symmetry.
+rewrite Nat.mul_sub_distr_l, Nat.mul_1_r; symmetry.
+rewrite Nat.mul_sub_distr_l, Nat.mul_1_r; symmetry.
 ...
 rewrite Nat.sub_add; [ | do 4 rewrite Nat.add_1_r; simpl; flia ].
 rewrite Nat.sub_add; [ | do 2 rewrite Nat.add_1_r; simpl; flia ].
