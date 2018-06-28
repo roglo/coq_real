@@ -278,7 +278,33 @@ move Hx before Hy.
 unfold "-"%PQ.
 unfold "==", nd in Hx, Hy |-*.
 unfold PQsub_num1, PQadd_den1, nd; simpl.
-rewrite Nat.sub_add.
+split_var x1q; split_var x2q; split_var y1q; split_var y2q.
+move Hx before Hy.
+...
+assert (H : 0 < x1q0 * y1q1 - y1q0 * x1q1). {
+  destruct x1q0, y1q1, y1q0, x1q1; simpl; try easy.
+  setoid_rewrite Nat.mul_comm; simpl.
+...
+intros x1q x2q Hx y1q y2q Hy.
+move Hx before Hy.
+unfold "-"%PQ.
+unfold "==", nd in Hx, Hy |-*.
+unfold PQsub_num1, PQadd_den1, nd; simpl.
+split_var x1q; split_var x2q; split_var y1q; split_var y2q.
+move Hx before Hy.
+ring_simplify.
+do 2 rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+do 4 rewrite Nat.mul_sub_distr_r.
+do 2 rewrite Nat.mul_1_l.
+do 4 rewrite Nat.mul_assoc.
+f_equal.
+replace (x1q0 * y1q1 * x2q1) with (x1q0 * x2q1 * y1q1) by flia.
+rewrite Hx.
+replace (x2q0 * x1q1 * y1q1 * y2q1) with (x2q0 * y2q1 * x1q1 * y1q1) by flia.
+replace (y1q0 * x1q1 * x2q1 * y2q1) with (y1q0 * y2q1 * x1q1 * x2q1) by flia.
+rewrite Hy.
+replace (y2q0 * y1q1 * x1q1 * x2q1) with (y2q0 * x2q1 * x1q1 * y1q1) by flia.
+
 ...
 rewrite Nat.sub_add; [ | do 4 rewrite Nat.add_1_r; simpl; flia ].
 rewrite Nat.sub_add; [ | do 2 rewrite Nat.add_1_r; simpl; flia ].
