@@ -264,106 +264,15 @@ rewrite Nat.add_comm; f_equal.
  rewrite Hx; flia.
 Qed.
 
-(* allows to use rewrite inside a subtraction
-   e.g.
-      H : x = y
-      ====================
-      ..... (x - z)%PQ ....
-   rewrite H.
- *)
-Instance PQsub_morph : Proper (PQeq ==> PQeq ==> PQeq) PQsub.
-Proof.
-intros x1q x2q Hx y1q y2q Hy.
-move Hx before Hy.
-unfold "-"%PQ.
-unfold "==", nd in Hx, Hy |-*.
-unfold PQsub_num1, PQadd_den1, nd; simpl.
-split_var x1q; split_var x2q; split_var y1q; split_var y2q.
-move Hx before Hy.
-destruct (zerop (x1q0 * y1q1 - y1q0 * x1q1)) as [H1| H1].
--rewrite H1; simpl; rewrite Nat.add_0_r.
-
-...
-assert (H : 0 < x1q0 * y1q1 - y1q0 * x1q1). {
-  destruct x1q0, y1q1, y1q0, x1q1; simpl; try easy.
-  setoid_rewrite Nat.mul_comm; simpl.
-...
-intros x1q x2q Hx y1q y2q Hy.
-move Hx before Hy.
-unfold "-"%PQ.
-unfold "==", nd in Hx, Hy |-*.
-unfold PQsub_num1, PQadd_den1, nd; simpl.
-split_var x1q; split_var x2q; split_var y1q; split_var y2q.
-move Hx before Hy.
-ring_simplify.
-do 2 rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
-do 4 rewrite Nat.mul_sub_distr_r.
-do 2 rewrite Nat.mul_1_l.
-do 4 rewrite Nat.mul_assoc.
-f_equal.
-replace (x1q0 * y1q1 * x2q1) with (x1q0 * x2q1 * y1q1) by flia.
-rewrite Hx.
-replace (x2q0 * x1q1 * y1q1 * y2q1) with (x2q0 * y2q1 * x1q1 * y1q1) by flia.
-replace (y1q0 * x1q1 * x2q1 * y2q1) with (y1q0 * y2q1 * x1q1 * x2q1) by flia.
-rewrite Hy.
-replace (y2q0 * y1q1 * x1q1 * x2q1) with (y2q0 * x2q1 * x1q1 * y1q1) by flia.
-
-...
-rewrite Nat.sub_add; [ | do 4 rewrite Nat.add_1_r; simpl; flia ].
-rewrite Nat.sub_add; [ | do 2 rewrite Nat.add_1_r; simpl; flia ].
-rewrite Nat.sub_add; [ | do 2 rewrite Nat.add_1_r; simpl; flia ].
-rewrite Nat.sub_add; [ | do 2 rewrite Nat.add_1_r; simpl; flia ].
-split_var x1q; split_var x2q; split_var y1q; split_var y2q.
-move Hx before Hy.
-ring_simplify.
-rewrite Nat.add_comm; f_equal.
--replace (y1q0 * x1q1 * x2q1 * y2q1) with (y1q0 * y2q1 * x1q1 * x2q1) by flia.
- rewrite Hy; flia.
--replace (x1q0 * y1q1 * x2q1) with (x1q0 * x2q1 * y1q1) by flia.
- rewrite Hx; flia.
-...
-intros (x1n, x1d) (x2n, x2d) Hx (y1n, y1d) (y2n, y2d) Hy.
-move Hx before Hy.
-unfold "-"%PQ.
-unfold "==", nd in Hx, Hy |-*.
-unfold PQsub_num1, PQadd_den1, nd.
-simpl in Hx, Hy |-*.
-repeat rewrite Nat.add_1_r in Hx.
-repeat rewrite Nat.add_1_r in Hy.
-repeat rewrite Nat.add_1_r.
-remember (S x1n) as sx1n.
-remember (S x2n) as sx2n.
-remember (S y1n) as sy1n.
-remember (S y2n) as sy2n.
-remember (S x1d) as u.
-assert (Hx1 : 0 < u) by flia Hequ.
-clear x1d Hequ; rename u into x1d.
-remember (S x2d) as u.
-assert (Hx2 : 0 < u) by flia Hequ.
-clear x2d Hequ; rename u into x2d.
-remember (S y1d) as u.
-assert (Hy1 : 0 < u) by flia Hequ.
-clear y1d Hequ; rename u into y1d.
-remember (S y2d) as u.
-assert (Hy2 : 0 < u) by flia Hequ.
-clear y2d Hequ; rename u into y2d.
-move x1d before y2n; move x2d before x1d.
-move Hx at bottom; move Hy at bottom.
-ring_simplify.
-do 4 rewrite Nat.mul_sub_distr_r.
-replace (sx1n * y1d * x2d) with (sx1n * x2d * y1d) by flia.
-rewrite Hx.
-replace (y1n * x1d * x2d * y2d) with (y1n * y2d * x1d * x2d) by flia.
-rewrite Hy.
-f_equal; ring.
-Qed.
-
 Theorem PQadd_comm : ∀ x y, (x + y == y + x)%PQ.
 Proof.
 intros.
 unfold "==".
-assert (PQnum_add_comm : ∀ x y, PQnum (x + y) = PQnum (y + x)). {
-  intros; apply Nat.add_comm.
+assert (PQnum_add_comm : ∀ x y, PQnum1 (x + y) = PQnum1 (y + x)). {
+  intros.
+  unfold "+"%PQ; simpl.
+  unfold PQadd_num1, nd; f_equal.
+  now rewrite Nat.add_comm.
 }
 assert (PQden1_add_comm : ∀ x y, PQden1 (x + y) = PQden1 (y + x)). {
   intros.
@@ -371,20 +280,21 @@ assert (PQden1_add_comm : ∀ x y, PQden1 (x + y) = PQden1 (y + x)). {
   unfold PQadd_den1.
   now rewrite Nat.mul_comm.
 }
-unfold nd; rewrite PQnum_add_comm.
-now rewrite PQden1_add_comm.
+now unfold nd; rewrite PQnum_add_comm, PQden1_add_comm.
 Qed.
 
 Theorem PQadd_assoc : ∀ x y z, ((x + y) + z == x + (y + z))%PQ.
 Proof.
 intros.
+...
+
+intros.
 unfold "==".
 unfold nd; simpl.
-unfold PQadd_num, PQadd_den1.
+unfold PQadd_num1, PQadd_den1.
 unfold nd; simpl.
-unfold PQadd_num, PQadd_den1.
+unfold PQadd_num1, PQadd_den1.
 unfold nd; simpl.
-do 4 rewrite Nat.sub_0_r.
 ring.
 Qed.
 
