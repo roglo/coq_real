@@ -285,7 +285,16 @@ assert (H1 : ∀ x y z, (x == y)%PQ → (x - z == y - z)%PQ). {
   symmetry; rewrite Nat.mul_comm.
   rewrite Nat.sub_add; [ | do 2 rewrite Nat.add_1_r; simpl; flia ].
   setoid_rewrite Nat.mul_shuffle0; f_equal.
-  unfold PQsub_num1, nd.
+  unfold PQsub_num1.
+  destruct (zerop (nd x z - nd z x)) as [H1| H1].
+  -rewrite H1; simpl; rewrite Nat.mul_1_r.
+   destruct (zerop (nd y z - nd z y)) as [H2| H2].
+   +rewrite H2; simpl; rewrite Nat.mul_1_r.
+    unfold nd in H1, H2.
+
+...
+  do 2 (rewrite Nat.mul_add_distr_l; symmetry).
+  do 2 (rewrite Nat.mul_sub_distr_l; symmetry).
 ...
 }
 eapply PQeq_trans; [ apply H1, Hx | ].
