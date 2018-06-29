@@ -304,6 +304,23 @@ Proof.
 intros * H1 Hx Hy.
 generalize H1; intros H2; move H2 before H1.
 rewrite Hx, Hy in H2.
+unfold "-"%PQ.
+unfold "==", nd in Hx, Hy |-*.
+unfold "<"%PQ, nd in H1, H2.
+unfold PQsub_num1, PQadd_den1, nd; simpl.
+...
+rewrite Nat.sub_add; [ | do 4 rewrite Nat.add_1_r; simpl; flia ].
+rewrite Nat.sub_add; [ | do 2 rewrite Nat.add_1_r; simpl; flia ].
+rewrite Nat.sub_add; [ | do 2 rewrite Nat.add_1_r; simpl; flia ].
+rewrite Nat.sub_add; [ | do 2 rewrite Nat.add_1_r; simpl; flia ].
+split_var x1q; split_var x2q; split_var y1q; split_var y2q.
+move Hx before Hy.
+ring_simplify.
+rewrite Nat.add_comm; f_equal.
+-replace (y1q0 * x1q1 * x2q1 * y2q1) with (y1q0 * y2q1 * x1q1 * x2q1) by flia.
+ rewrite Hy; flia.
+-replace (x1q0 * y1q1 * x2q1) with (x1q0 * x2q1 * y1q1) by flia.
+ rewrite Hx; flia.
 
 ...
 
