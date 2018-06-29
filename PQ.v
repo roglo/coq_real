@@ -275,6 +275,23 @@ Instance PQsub_morph : Proper (PQeq ==> PQeq ==> PQeq) PQsub.
 Proof.
 intros x1q x2q Hx y1q y2q Hy.
 move Hx before Hy.
+assert (H1 : ∀ x y z, (x == y)%PQ → (x - z == y - z)%PQ). {
+  clear; intros * Hxy.
+  unfold "-"%PQ.
+  unfold "==", nd in Hxy |-*.
+  unfold PQadd_den1, nd; simpl.
+  symmetry; rewrite Nat.mul_comm.
+  rewrite Nat.sub_add; [ | do 2 rewrite Nat.add_1_r; simpl; flia ].
+  symmetry; rewrite Nat.mul_comm.
+  rewrite Nat.sub_add; [ | do 2 rewrite Nat.add_1_r; simpl; flia ].
+  setoid_rewrite Nat.mul_shuffle0; f_equal.
+  unfold PQsub_num1, nd.
+...
+}
+eapply PQeq_trans; [ apply H1, Hx | ].
+...
+intros x1q x2q Hx y1q y2q Hy.
+move Hx before Hy.
 unfold "-"%PQ.
 unfold "==", nd in Hx, Hy |-*.
 unfold PQadd_den1, nd; simpl.
