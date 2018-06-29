@@ -358,13 +358,13 @@ Theorem PQadd_lt_mono_r : ∀ x y z, (x < y)%PQ ↔ (x + z < y + z)%PQ.
 Proof.
 unfold "<"%PQ, "+"%PQ, PQadd_num1, PQadd_den1, nd; simpl.
 intros *.
-...
-rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
-rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
-do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
-do 2 rewrite Nat.mul_assoc.
+repeat rewrite Nat.add_1_r; simpl.
+repeat (rewrite <- Nat.sub_succ_l; [ | simpl; flia ]).
+repeat rewrite Nat.sub_0_r.
 split; intros H.
--apply Nat.mul_lt_mono_pos_r; [ flia | ].
+-apply -> Nat.succ_lt_mono.
+...
+ apply Nat.mul_lt_mono_pos_r; [ flia | ].
  do 2 rewrite Nat.mul_add_distr_r.
  remember (PQnum x * S (PQden1 z)) as u.
  rewrite Nat.mul_shuffle0; subst u.
