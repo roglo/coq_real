@@ -380,194 +380,68 @@ split; intros H.
  subst zd; simpl; flia.
 Qed.
 
-...
-
 Theorem PQadd_le_mono_r : ∀ x y z, (x ≤ y ↔ x + z ≤ y + z)%PQ.
 Proof.
-unfold "≤"%PQ, "+"%PQ, PQadd_num, PQadd_den1, nd.
-remember S as f; simpl; subst f.
+unfold "≤"%PQ, "+"%PQ, PQadd_num1, PQadd_den1, nd; simpl.
 intros *.
-rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
-rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
-do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
-do 2 rewrite Nat.mul_assoc.
+do 10 rewrite Nat.add_1_r.
+do 4 (rewrite <- Nat.sub_succ_l; [ | simpl; flia ]).
+do 4 rewrite Nat.sub_succ, Nat.sub_0_r.
+do 2 rewrite Nat.mul_add_distr_r.
+remember (S (PQnum1 x)) as xn eqn:Hxn.
+remember (S (PQden1 x)) as xd eqn:Hxd.
+remember (S (PQnum1 y)) as yn eqn:Hyn.
+remember (S (PQden1 y)) as yd eqn:Hyd.
+remember (S (PQnum1 z)) as zn eqn:Hzn.
+remember (S (PQden1 z)) as zd eqn:Hzd.
+replace (zn * yd * (xd * zd)) with (zn * xd * (yd * zd)) by flia.
+replace (xn * zd * (yd * zd)) with (xn * yd * (zd * zd)) by flia.
+replace (yn * zd * (xd * zd)) with (yn * xd * (zd * zd)) by flia.
 split; intros H.
--apply Nat.mul_le_mono_pos_r; [ flia | ].
- do 2 rewrite Nat.mul_add_distr_r.
- remember (PQnum x * S (PQden1 z)) as u.
- rewrite Nat.mul_shuffle0; subst u.
- apply Nat.add_le_mono_r.
- setoid_rewrite Nat.mul_shuffle0.
- apply Nat.mul_le_mono_pos_r; [ flia | easy ].
--apply Nat.mul_le_mono_pos_r in H; [ | flia ].
- do 2 rewrite Nat.mul_add_distr_r in H.
- remember (PQnum x * S (PQden1 z)) as u.
- rewrite Nat.mul_shuffle0 in H; subst u.
- apply Nat.add_le_mono_r in H.
- setoid_rewrite Nat.mul_shuffle0 in H.
- apply Nat.mul_le_mono_pos_r in H; [ easy | flia ].
+-apply Nat.add_le_mono_r.
+ now apply Nat.mul_le_mono_r.
+-apply Nat.add_le_mono_r in H.
+ apply Nat.mul_le_mono_pos_r in H; [ easy | ].
+ subst zd; simpl; flia.
 Qed.
 
 Theorem PQadd_le_mono : ∀ x y z t,
   (x ≤ y)%PQ → (z ≤ t)%PQ → (x + z ≤ y + t)%PQ.
 Proof.
-unfold "≤"%PQ, "+"%PQ, PQadd_num, PQadd_den1, nd.
-remember S as f; simpl; subst f.
-intros * Hxy Hzt.
-rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
-rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
-do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
-do 2 rewrite Nat.mul_add_distr_r.
-apply Nat.add_le_mono.
--rewrite Nat.mul_shuffle0.
- do 2 rewrite Nat.mul_assoc.
- apply Nat.mul_le_mono_r.
- remember (PQnum x * S (PQden1 y)) as u.
- rewrite Nat.mul_shuffle0; subst u.
- now apply Nat.mul_le_mono_r.
--rewrite Nat.mul_assoc.
- rewrite Nat.mul_shuffle0.
- do 2 rewrite <- Nat.mul_assoc.
- rewrite Nat.mul_shuffle0.
- do 3 rewrite Nat.mul_assoc.
- apply Nat.mul_le_mono_r.
- setoid_rewrite Nat.mul_shuffle0.
- now apply Nat.mul_le_mono_r.
-Qed.
-
-Theorem PQsub_0_le : ∀ x y, (x - y == 0)%PQ ↔ (x ≤ y)%PQ.
-Proof.
-unfold "=="%PQ, "-"%PQ, "≤"%PQ, PQsub_num, PQadd_den1, nd; simpl.
-intros.
-split; intros Hxy.
--apply Nat.eq_mul_0_l in Hxy; [ | easy ].
- now apply Nat.sub_0_le.
--apply Nat.eq_mul_0; left.
- now apply Nat.sub_0_le.
-Qed.
-
-Theorem PQlt_add_lt_sub_r : ∀ x y z, (x + z < y)%PQ ↔ (x < y - z)%PQ.
-Proof.
-intros.
-destruct (PQlt_le_dec z y) as [LE| GE].
--rewrite <- (PQsub_add z y) at 1 by now apply PQlt_le_incl.
- now rewrite <- PQadd_lt_mono_r.
--assert (GE' := GE).
- rewrite <- PQsub_0_le in GE'; rewrite GE'.
- split; intros Lt.
- +elim (PQlt_irrefl y).
-  apply PQle_lt_trans with (x + z)%PQ; [ | easy ].
-  rewrite <- (PQadd_0_l y).
-  apply PQadd_le_mono; [ | easy ].
-  apply PQle_0_l.
- +now elim (PQnlt_0_r x).
-Qed.
-
-Theorem PQsub_add_le : ∀ x y, (x ≤ x - y + y)%PQ.
-Proof.
-intros.
-destruct (PQlt_le_dec x y) as [H1| H1].
--apply PQlt_le_incl in H1.
- apply PQsub_0_le in H1.
- rewrite H1, PQadd_0_l.
- now apply PQsub_0_le.
--rewrite PQsub_add; [ | easy ].
- unfold "≤"%PQ; easy.
-Qed.
-
-Theorem PQle_sub_le_add_r : ∀ x y z, (x - z ≤ y ↔ x ≤ y + z)%PQ.
-Proof.
-intros.
-split; intros LE.
--rewrite (PQadd_le_mono_r _ _ z) in LE.
- apply PQle_trans with (x - z + z)%PQ; [ | easy ].
- apply PQsub_add_le.
--destruct (PQlt_le_dec x z) as [LE'|GE].
- +apply PQlt_le_incl in LE'.
-  rewrite <- PQsub_0_le in LE'; rewrite LE'.
-  apply PQle_0_l.
- +rewrite (PQadd_le_mono_r _ _ z).
-  now rewrite PQsub_add.
-Qed.
-
-Theorem PQle_add_le_sub_r : ∀ x y z, (x + z ≤ y → x ≤ y - z)%PQ.
-Proof.
-intros * LE.
-apply (PQadd_le_mono_r _ _ z).
-rewrite PQsub_add; [ easy | ].
-apply PQle_trans with (x + z)%PQ; [ | easy ].
-rewrite <- (PQadd_0_l z) at 1.
-rewrite <- PQadd_le_mono_r.
-apply PQle_0_l.
-Qed.
-
-Theorem PQle_add_le_sub_l: ∀ x y z, (x + z ≤ y → z ≤ y - x)%PQ.
-Proof.
+unfold "≤"%PQ, "+"%PQ, PQadd_num1, PQadd_den1, nd; simpl.
 intros *.
-rewrite PQadd_comm.
-apply PQle_add_le_sub_r.
-Qed.
-
-Theorem PQsub_sub_swap : ∀ x y z, (x - y - z == x - z - y)%PQ.
-Proof.
-intros.
-unfold "=="%PQ, "-"%PQ, PQsub_num, PQadd_den1, nd.
-remember S as f; simpl; subst f.
-rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
-rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
-rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
-rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+do 12 rewrite Nat.add_1_r.
+intros Hxy Hzt.
+do 4 (rewrite <- Nat.sub_succ_l; [ | simpl; flia ]).
 do 4 rewrite Nat.sub_succ, Nat.sub_0_r.
-f_equal; [ | apply Nat.mul_shuffle0 ].
-do 2 rewrite Nat.mul_sub_distr_r.
-do 2 rewrite Nat.mul_assoc.
-rewrite Nat_sub_sub_swap.
-f_equal; f_equal.
-apply Nat.mul_shuffle0.
-Qed.
-
-Theorem PQadd_sub_swap: ∀ x y z, (z ≤ x)%PQ → (x + y - z == x - z + y)%PQ.
-Proof.
-intros * Hzx.
-unfold "≤"%PQ, nd in Hzx.
-unfold "=="%PQ, "-"%PQ, PQsub_num, PQadd_den1, nd.
-remember S as f; simpl; subst f.
-unfold PQadd_den1, PQadd_num, nd.
-remember S as f; simpl; subst f.
-rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
-rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
-rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
-rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
-do 4 rewrite Nat.sub_succ, Nat.sub_0_r.
-f_equal; [ | apply Nat.mul_shuffle0 ].
-rewrite Nat.mul_sub_distr_r.
-rewrite Nat.mul_add_distr_r.
-do 2 rewrite Nat.mul_assoc.
-rewrite Nat.add_sub_swap.
--f_equal; f_equal.
- apply Nat.mul_shuffle0.
--remember (PQnum z * S (PQden1 x)) as u.
- rewrite Nat.mul_shuffle0; subst u.
+do 2 rewrite Nat.mul_add_distr_r.
+remember (S (PQnum1 x)) as xn eqn:Hxn.
+remember (S (PQden1 x)) as xd eqn:Hxd.
+remember (S (PQnum1 y)) as yn eqn:Hyn.
+remember (S (PQden1 y)) as yd eqn:Hyd.
+remember (S (PQnum1 z)) as zn eqn:Hzn.
+remember (S (PQden1 z)) as zd eqn:Hzd.
+remember (S (PQnum1 t)) as tn eqn:Htn.
+remember (S (PQden1 t)) as td eqn:Htd.
+move Hxy before Hzt.
+apply Nat.add_le_mono.
+-replace (xn * zd * (yd * td)) with (xn * yd * (td * zd)) by flia.
+ replace (yn * td * (xd * zd)) with (yn * xd * (td * zd)) by flia.
  now apply Nat.mul_le_mono_r.
-Qed.
-
-Theorem PQsub_diag : ∀ x, (x - x == 0)%PQ.
-Proof.
-intros.
-unfold "=="%PQ, nd; simpl.
-unfold PQsub_num.
-now rewrite Nat.sub_diag.
+-replace (zn * xd * (yd * td)) with (zn * td * (xd * yd)) by flia.
+ replace (tn * yd * (xd * zd)) with (tn * zd * (xd * yd)) by flia.
+ now apply Nat.mul_le_mono_r.
 Qed.
 
 (* multiplication, inversion, division *)
 
-Definition PQmul_num x y := PQnum x * PQnum y.
-Definition PQmul_den1 x y := S (PQden1 x) * S (PQden1 y) - 1.
+Definition PQmul_num1 x y := (PQnum1 x + 1) * (PQnum1 y + 1) - 1.
+Definition PQmul_den1 x y := (PQden1 x + 1) * (PQden1 y + 1) - 1.
 
-Definition PQmul x y := PQmake (PQmul_num x y) (PQmul_den1 x y).
+Definition PQmul x y := PQmake (PQmul_num1 x y) (PQmul_den1 x y).
 Arguments PQmul x%PQ y%PQ.
 
-Definition PQinv x := PQmake (PQden1 x + 1) (PQnum x - 1).
+Definition PQinv x := PQmake (PQden1 x) (PQnum1 x).
 
 Notation "x * y" := (PQmul x y) : PQ_scope.
 Notation "/ x" := (PQinv x) : PQ_scope.
@@ -585,7 +459,8 @@ intros x1 x2 Hx y1 y2 Hy.
 move Hx before Hy.
 unfold "*"%PQ.
 unfold "==", nd in Hx, Hy |-*; simpl.
-unfold PQmul_num, PQmul_den1.
+unfold PQmul_num1, PQmul_den1.
+...
 rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
 rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
 do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
