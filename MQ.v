@@ -151,6 +151,28 @@ unfold "==" in Hxy.
 now destruct x, y.
 Qed.
 
+(* allows to use rewrite inside a if_PQlt_le_dec
+   when P and Q are of type MQ, through PQlt_le_if, e.g.
+      H : (x = y)%PQ
+      ====================
+      ... if_PQlt_le_dec x z then P else Q ...
+   > rewrite H.
+      ====================
+      ... if_PQlt_le_dec y z then P else Q ...
+ *)
+Instance PQeq_PQlt_le_MQ_morph {P Q} :
+  Proper (PQeq ==> PQeq ==> MQeq) (λ x y, if_PQlt_le_dec x y then P else Q).
+Proof.
+intros x1 x2 Hx y1 y2 Hy.
+move y1 before x2; move y2 before y1.
+do 2 rewrite <- PQlt_le_if.
+destruct (PQlt_le_dec x1 y1) as [H1| H1]; rewrite Hx, Hy in H1.
+-destruct (PQlt_le_dec x2 y2) as [| H2]; [ easy | ].
+ now apply PQnlt_ge in H2.
+-destruct (PQlt_le_dec x2 y2) as [H2| ]; [ | easy ].
+ now apply PQnlt_ge in H2.
+Qed.
+
 (* allows to use rewrite inside an addition
    e.g.
       H : x = y
@@ -167,7 +189,18 @@ destruct
   x1 as [| px1| px1], y1 as [| py1| py1],
   x2 as [| px2| px2], y2 as [| py2| py2]; try easy.
 -now rewrite Hx, Hy.
--rewrite Hx.
+-destruct (PQlt_le_dec px1 py1) as [H1| H1].
+ +destruct (PQlt_le_dec px2 py2) as [H2| H2].
+  *idtac.
+...
+  *unfold "=="%PQ, "-"%PQ, nd; simpl.
+simpl.
+...
+ rewrite PQlt_le_if.
+Set Printing All.
+ rewrite Hx at 1.
+...
+ rewrite Hx at 1.
 ...
 
 -destruct (PQlt_le_dec px1 py1) as [H1| H1].

@@ -53,13 +53,13 @@ Theorem PQeq_dec : ∀ x y : PQ, {(x == y)%PQ} + {(x ≠≠ y)%PQ}.
 Proof. intros; apply Nat.eq_dec. Qed.
 Arguments PQeq_dec x%PQ y%PQ.
 
-Definition if_PQeq (P Q : Prop) x y := if PQeq_dec x y then P else Q.
-Arguments if_PQeq _ _ x%PQ y%PQ.
+Definition if_PQeq {A} (P Q : A) x y := if PQeq_dec x y then P else Q.
+Arguments if_PQeq _ _ _ x%PQ y%PQ.
 
 Notation "'if_PQeq_dec' x y 'then' P 'else' Q" :=
   (if_PQeq P Q x y) (at level 200, x at level 9, y at level 9).
 
-Theorem PQeq_if : ∀ P Q x y,
+Theorem PQeq_if : ∀ A {P Q : A} x y,
   (if PQeq_dec x y then P else Q) = if_PQeq P Q x y.
 Proof. easy. Qed.
 
@@ -72,7 +72,7 @@ Proof. easy. Qed.
       ====================
       ... if_PQeq_dec y z then P else Q ...
  *)
-Instance PQif_PQeq_morph {P Q} :
+Instance PQif_PQeq_morph {P Q : Prop} :
   Proper (PQeq ==> PQeq ==> iff) (λ x y, if PQeq_dec x y then P else Q).
 Proof.
 intros x1 x2 Hx y1 y2 Hy.
@@ -216,14 +216,14 @@ split; intros Hxy.
  now apply (H x2 x1 y2 y1).
 Qed.
 
-Definition if_PQlt_le (P Q : Prop) x y := if PQlt_le_dec x y then P else Q.
-Arguments if_PQlt_le _ _ x%PQ y%PQ.
+Definition if_PQlt_le {A} (P Q : A) x y := if PQlt_le_dec x y then P else Q.
+Arguments if_PQlt_le _ _ _ x%PQ y%PQ.
 
 Notation "'if_PQlt_le_dec' x y 'then' P 'else' Q" :=
   (if_PQlt_le P Q x y) (at level 200, x at level 9, y at level 9).
 
-Theorem PQlt_le_if : ∀ P Q x y,
-  (if PQlt_le_dec x y then P else Q) = if_PQlt_le P Q x y.
+Theorem PQlt_le_if : ∀ {A} (P Q : A) x y,
+  (if PQlt_le_dec x y then P else Q) = @if_PQlt_le A P Q x y.
 Proof. easy. Qed.
 
 (* allows to use rewrite inside a if_PQlt_le_dec ...
