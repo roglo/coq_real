@@ -9,6 +9,8 @@ Inductive MQ :=
   | MQ0 : MQ
   | MQpos : PQ → MQ
   | MQneg : PQ → MQ.
+Arguments MQpos p%PQ.
+Arguments MQneg p%PQ.
 
 Notation "0" := (MQ0) : MQ_scope.
 Notation "1" := (MQpos 1) : MQ_scope.
@@ -100,18 +102,40 @@ Qed.
 
 (* addition, opposite, subtraction *)
 
-...
-
 Definition MQadd x y :=
-  if Bool.eqb (MQsign x) (MQsign y) then
-    MQmake (MQsign x) (MQpos x + MQpos y)
-  else if PQlt_le_dec (MQpos x) (MQpos y) then
-    MQmake (MQsign y) (MQpos y - MQpos x)
-  else
-    MQmake (MQsign x) (MQpos x - MQpos y).
+  match x with
+  | MQ0 => y
+  | MQpos px =>
+      match y with
+      | MQ0 => x
+      | MQpos py => MQpos (px + py)
+      | MQneg py =>
+          if PQlt_le_dec px py then MQneg (py - px)
+          else if PQlt_le_dec py px then MQpos (px - py)
+          else MQ0
+      end
+  | MQneg px =>
+      match y with
+      | MQ0 => x
+      | MQpos py =>
+          if PQlt_le_dec px py then MQpos (py - px)
+          else if PQlt_le_dec py px then MQneg (px - py)
+          else MQ0
+      | MQneg py => MQneg (px + py)
+      end
+  end.
 
-Definition MQopp x := MQmake (negb (MQsign x)) (MQpos x).
-Definition MQabs x := MQmake true (MQpos x).
+Definition MQopp x :=
+  match x with
+  | MQ0 => MQ0
+  | MQpos px => MQneg px
+  | MQneg px => MQpos px
+  end.
+Definition MQabs x :=
+  match x with
+  | MQneg px => MQpos px
+  | _ => x
+  end.
 
 Notation "- x" := (MQopp x) : MQ_scope.
 Notation "x + y" := (MQadd x y) : MQ_scope.
@@ -124,6 +148,8 @@ Proof.
 intros x y Hxy.
 unfold MQabs, "=="%MQ; simpl.
 unfold "==" in Hxy.
+...
+
 remember (MQsign x) as sx eqn:Hsx.
 remember (MQsign y) as sy eqn:Hsy.
 destruct sx, sy; simpl in Hxy; [ easy | | | easy ].
