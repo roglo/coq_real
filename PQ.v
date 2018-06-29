@@ -486,21 +486,22 @@ Proof.
 intros.
 unfold "==", "*"%PQ, nd; f_equal; simpl.
 -unfold PQmul_num1; simpl.
-...
-
--unfold PQmul_num1; simpl; symmetry.
- apply Nat.mul_assoc.
--unfold PQmul_den1.
- remember S as f; simpl; subst f.
- f_equal; f_equal.
- rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
- rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
- do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
+ do 7 rewrite Nat.add_1_r.
+ do 4 (rewrite <- Nat.sub_succ_l; [ | simpl; flia ]).
+ do 4 rewrite Nat.sub_succ, Nat.sub_0_r.
+ symmetry; apply Nat.mul_assoc.
+-unfold PQmul_den1; simpl.
+ do 7 rewrite Nat.add_1_r.
+ do 4 (rewrite <- Nat.sub_succ_l; [ | simpl; flia ]).
+ do 4 rewrite Nat.sub_succ, Nat.sub_0_r.
  apply Nat.mul_assoc.
 Qed.
 
 Theorem PQmul_le_mono_l : ∀ x y z, (x ≤ y → z * x ≤ z * y)%PQ.
 Proof.
+unfold "≤"%PQ, nd; simpl.
+intros * Hxy.
+...
 unfold "≤"%PQ, nd; simpl.
 intros * Hxy.
 unfold PQmul_den1.
