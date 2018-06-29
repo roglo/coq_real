@@ -5,98 +5,40 @@ Require Import PQ.
 
 Delimit Scope MQ_scope with MQ.
 
-Record MQ := MQmake { MQsign : bool; MQpos : PQ }.
-Arguments MQmake _ _%PQ.
-Arguments MQsign x%MQ : rename.
-Arguments MQpos x%MQ : rename.
+Inductive MQ :=
+  | MQ0 : MQ
+  | MQpos : PQ → MQ
+  | MQneg : PQ → MQ.
 
-Notation "0" := (MQmake true 0) : MQ_scope.
-Notation "1" := (MQmake true 1) : MQ_scope.
+Notation "0" := (MQ0) : MQ_scope.
+Notation "1" := (MQpos 1) : MQ_scope.
 
 (* equality *)
 
 Definition MQeq x y :=
-  if Bool.eqb (MQsign x) (MQsign y) then (MQpos x == MQpos y)%PQ
-  else if zerop (PQnum (MQpos x) + PQnum (MQpos y)) then True
-  else False.
+  match x with
+  | MQ0 => match y with MQ0 => True | _ => False end
+  | MQpos px => match y with MQpos py => PQeq px py | _ => False end
+  | MQneg px => match y with MQneg py => PQeq px py | _ => False end
+  end.
 
 Notation "x == y" := (MQeq x y) (at level 70) : MQ_scope.
 
 Theorem MQeq_refl : ∀ x : MQ, (x == x)%MQ.
-Proof.
-intros.
-unfold "=="%MQ.
-now rewrite Bool.eqb_reflx.
-Qed.
-
-Theorem Bool_eqb_comm : ∀ b1 b2, Bool.eqb b1 b2 = Bool.eqb b2 b1.
-Proof.
-intros.
-unfold Bool.eqb.
-now destruct b1, b2.
-Qed.
-
-Theorem Bool_eqb_assoc : ∀ b1 b2 b3,
-  Bool.eqb (Bool.eqb b1 b2) b3 = Bool.eqb b1 (Bool.eqb b2 b3).
-Proof.
-intros.
-unfold Bool.eqb.
-now destruct b1, b2, b3.
-Qed.
+Proof. now intros; destruct x. Qed.
 
 Theorem MQeq_symm : ∀ x y : MQ, (x == y)%MQ → (y == x)%MQ.
 Proof.
 unfold "=="%MQ.
 intros * Hxy.
-rewrite Bool_eqb_comm, Nat.add_comm.
-now destruct (Bool.eqb (MQsign x) (MQsign y)).
+destruct x as [| px| px]; [ easy | now destruct y | now destruct y ].
 Qed.
 
 Theorem MQeq_trans : ∀ x y z : MQ, (x == y)%MQ → (y == z)%MQ → (x == z)%MQ.
 Proof.
 unfold "=="%MQ.
 intros * Hxy Hyz.
-remember (Bool.eqb (MQsign x) (MQsign y)) as b1 eqn:Hb1.
-symmetry in Hb1.
-destruct b1.
--apply -> Bool.eqb_true_iff in Hb1.
- rewrite Hb1.
- remember (Bool.eqb (MQsign y) (MQsign z)) as b2 eqn:Hb2.
- symmetry in Hb2.
- destruct b2; [ now rewrite Hxy | ].
- destruct (zerop (PQnum (MQpos y) + PQnum (MQpos z))) as [H1| H1]; [ | easy ].
- apply Nat.eq_add_0 in H1.
- destruct H1 as (H1, H2).
- rewrite H2, Nat.add_0_r.
- unfold "=="%PQ in Hxy.
- unfold nd in Hxy.
- rewrite H1, Nat.mul_0_l in Hxy.
- apply Nat.eq_mul_0_l in Hxy; [ | easy ].
- now rewrite Hxy.
--destruct (zerop (PQnum (MQpos x) + PQnum (MQpos y))) as [H1| H1]; [ | easy ].
- apply Nat.eq_add_0 in H1.
- destruct H1 as (H1, H2).
- rewrite H1, Nat.add_0_l.
- rewrite H2, Nat.add_0_l in Hyz.
- apply -> Bool.eqb_false_iff in Hb1.
- remember (Bool.eqb (MQsign y) (MQsign z)) as b2 eqn:Hb2.
- remember (Bool.eqb (MQsign x) (MQsign z)) as b3 eqn:Hb3.
- symmetry in Hb2, Hb3.
- destruct b2.
- +apply -> Bool.eqb_true_iff in Hb2.
-  destruct b3.
-  *apply -> Bool.eqb_true_iff in Hb3.
-   now rewrite Hb2 in Hb1.
-  *destruct (zerop (PQnum (MQpos z))) as [| H3]; [ easy | ].
-   unfold "=="%PQ, nd in Hyz.
-   rewrite H2, Nat.mul_0_l in Hyz.
-   symmetry in Hyz.
-   apply Nat.eq_mul_0_l in Hyz; [ | easy ].
-   now rewrite Hyz in H3.
- +destruct (zerop (PQnum (MQpos z))) as [H3| ]; [ | easy ].
-  destruct b3; [ | easy ].
-  unfold "=="%PQ, nd.
-  now rewrite H1, H3.
+destruct x, y, z; try easy; now transitivity p0.
 Qed.
 
 Add Parametric Relation : _ MQeq
@@ -105,21 +47,27 @@ Add Parametric Relation : _ MQeq
  transitivity proved by MQeq_trans
  as MQeq_equiv_rel.
 
-(* allows to use rewrite inside a MQmake
+(* allows to use rewrite inside a MQpos
    e.g.
-      Hs : sx = sy
       H : x = y
       ====================
-      ... (MQmake sx x) ...
-   rewrite Hs, H.
+      ... (MQpos x) ...
+   rewrite H.
  *)
-Instance MQmake_morph : Proper (eq ==> PQeq ==> MQeq) MQmake.
-Proof.
-intros sx sy Hs x y Hxy.
-unfold "=="%MQ; simpl.
-rewrite Hs.
-now rewrite Bool.eqb_reflx.
-Qed.
+Instance MQpos_morph : Proper (PQeq ==> MQeq) MQpos.
+Proof. easy. Qed.
+
+(* allows to use rewrite inside a MQneg
+   e.g.
+      H : x = y
+      ====================
+      ... (MQneg x) ...
+   rewrite H.
+ *)
+Instance MQneg_morph : Proper (PQeq ==> MQeq) MQneg.
+Proof. easy. Qed.
+
+...
 
 Definition MQlt x y :=
   if MQsign x then
