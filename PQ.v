@@ -455,20 +455,18 @@ Notation "/ x" := (PQinv x) : PQ_scope.
  *)
 Instance PQmul_morph : Proper (PQeq ==> PQeq ==> PQeq) PQmul.
 Proof.
-intros x1 x2 Hx y1 y2 Hy.
-move Hx before Hy.
 unfold "*"%PQ.
-unfold "==", nd in Hx, Hy |-*; simpl.
-unfold PQmul_num1, PQmul_den1.
-...
-rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
-rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
-do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
+unfold "==", nd; simpl.
+unfold PQmul_num1, PQmul_den1; simpl.
+intros x1 x2 Hx y1 y2 Hy; simpl.
+move Hx before Hy.
+do 4 rewrite Nat.add_1_r in Hx, Hy.
+do 12 rewrite Nat.add_1_r.
+do 4 (rewrite <- Nat.sub_succ_l; [ | simpl; flia ]).
+do 4 rewrite Nat.sub_succ, Nat.sub_0_r.
 setoid_rewrite Nat.mul_shuffle0.
-do 2 rewrite Nat.mul_assoc.
-rewrite Hx.
-setoid_rewrite <- Nat.mul_assoc.
-f_equal.
+do 2 rewrite Nat.mul_assoc; rewrite Hx.
+setoid_rewrite <- Nat.mul_assoc; f_equal.
 rewrite Nat.mul_comm, Hy.
 apply Nat.mul_comm.
 Qed.
@@ -477,9 +475,9 @@ Theorem PQmul_comm : ∀ x y, (x * y == y * x)%PQ.
 Proof.
 intros.
 unfold "==", "*"%PQ, nd; f_equal; simpl.
--apply Nat.mul_comm.
--unfold PQmul_den1.
- f_equal; f_equal.
+-unfold PQmul_num1; f_equal; f_equal.
+ apply Nat.mul_comm.
+-unfold PQmul_den1; f_equal; f_equal.
  apply Nat.mul_comm.
 Qed.
 
@@ -487,7 +485,10 @@ Theorem PQmul_assoc : ∀ x y z, ((x * y) * z == x * (y * z))%PQ.
 Proof.
 intros.
 unfold "==", "*"%PQ, nd; f_equal; simpl.
--unfold PQmul_num; simpl; symmetry.
+-unfold PQmul_num1; simpl.
+...
+
+-unfold PQmul_num1; simpl; symmetry.
  apply Nat.mul_assoc.
 -unfold PQmul_den1.
  remember S as f; simpl; subst f.
