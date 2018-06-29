@@ -499,19 +499,16 @@ Qed.
 
 Theorem PQmul_le_mono_l : ∀ x y z, (x ≤ y → z * x ≤ z * y)%PQ.
 Proof.
+intros *.
 unfold "≤"%PQ, nd; simpl.
-intros * Hxy.
-...
-unfold "≤"%PQ, nd; simpl.
-intros * Hxy.
-unfold PQmul_den1.
-rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
-rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
-do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
+unfold PQmul_num1, PQmul_den1.
+do 10 rewrite Nat.add_1_r.
+do 4 (rewrite <- Nat.sub_succ_l; [ | simpl; flia ]).
+do 4 rewrite Nat.sub_succ, Nat.sub_0_r.
+intros Hxy.
 do 2 rewrite Nat.mul_assoc.
 setoid_rewrite Nat.mul_shuffle0.
 apply Nat.mul_le_mono_r.
-unfold PQmul_num.
 do 2 rewrite <- Nat.mul_assoc.
 now apply Nat.mul_le_mono_l.
 Qed.
@@ -523,110 +520,16 @@ setoid_rewrite PQmul_comm.
 now apply PQmul_le_mono_l.
 Qed.
 
-Theorem PQmul_le_mono_pos_l : ∀ x y z, (z ≠≠ 0 → x ≤ y ↔ z * x ≤ z * y)%PQ.
-Proof.
-intros * Hz.
-unfold "≤"%PQ, "*"%PQ, nd; simpl.
-unfold PQmul_num, PQmul_den1.
-rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
-rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
-do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
-split; intros H.
--do 2 rewrite <- Nat.mul_assoc.
- apply Nat.mul_le_mono_l.
- do 2 rewrite Nat.mul_assoc.
- setoid_rewrite Nat.mul_shuffle0.
- now apply Nat.mul_le_mono_r.
--do 2 rewrite <- Nat.mul_assoc in H.
- apply <- Nat.mul_le_mono_pos_l in H.
- +do 2 rewrite Nat.mul_assoc in H.
-  setoid_rewrite Nat.mul_shuffle0 in H.
-  apply Nat.mul_le_mono_pos_r in H; [ easy | flia ].
- +apply Nat.neq_0_lt_0.
-  intros H1; apply Hz.
-  unfold "=="%PQ, nd.
-  now rewrite H1.
-Qed.
-
-Theorem PQmul_lt_mono_pos_l : ∀ x y z, (x ≠≠ 0 → y < z ↔ x * y < x * z)%PQ.
-intros * Hz.
-unfold "<"%PQ, "*"%PQ, nd; simpl.
-unfold PQmul_num, PQmul_den1.
-rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
-rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
-do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
-split; intros H.
--do 2 rewrite <- Nat.mul_assoc.
- apply Nat.mul_lt_mono_pos_l.
- +apply Nat.neq_0_lt_0.
-  unfold "=="%PQ, nd in Hz; simpl in Hz; flia Hz.
- +do 2 rewrite Nat.mul_assoc.
-  setoid_rewrite Nat.mul_shuffle0.
-  apply Nat.mul_lt_mono_pos_r; [ flia | easy ].
--do 2 rewrite <- Nat.mul_assoc in H.
- apply <- Nat.mul_lt_mono_pos_l in H.
- +do 2 rewrite Nat.mul_assoc in H.
-  setoid_rewrite Nat.mul_shuffle0 in H.
-  apply Nat.mul_lt_mono_pos_r in H; [ easy | flia ].
- +apply Nat.neq_0_lt_0.
-  unfold "=="%PQ, nd in Hz; simpl in Hz; flia Hz.
-Qed.
-
 Theorem PQmul_add_distr_l : ∀ x y z, (x * (y + z) == x * y + x * z)%PQ.
 Proof.
 intros.
 unfold "==", "*"%PQ, "+"%PQ, nd; simpl.
-unfold PQmul_num, PQadd_den1, PQadd_num, PQmul_den1, nd.
-remember S as f; simpl; subst f.
-rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
-rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
-rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
-rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
-rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
-do 5 rewrite Nat.sub_succ, Nat.sub_0_r.
+unfold PQmul_num1, PQadd_den1, PQadd_num1, PQmul_den1, nd; simpl.
+do 16 rewrite Nat.add_1_r.
+do 10 (rewrite <- Nat.sub_succ_l; [ | simpl; flia ]).
+do 10 rewrite Nat.sub_succ, Nat.sub_0_r.
 ring.
 Qed.
 
-Theorem PQmul_sub_distr_l : ∀ x y z, (x * (y - z) == x * y - x * z)%PQ.
-Proof.
-intros.
-destruct (PQlt_le_dec y z) as [H1| H1].
--apply PQlt_le_incl in H1.
- apply PQsub_0_le in H1; rewrite H1.
- unfold "*"%PQ at 1.
- unfold PQmul_num; simpl.
- rewrite Nat.mul_0_r.
- transitivity 0%PQ; [ easy | ].
- destruct (PQlt_le_dec (x * z) (x * y)) as [H2| H2].
- +apply PQnle_gt in H2; exfalso; apply H2; clear H2.
-  apply PQmul_le_mono_l.
-  now apply PQsub_0_le.
- +now apply PQsub_0_le in H2; rewrite H2.
--assert (Hy : (y == y - z + z)%PQ) by now symmetry; apply PQsub_add.
- pose (t := (y - z)%PQ).
- fold t in Hy |-*.
- rewrite Hy, PQmul_add_distr_l.
- rewrite <- PQadd_sub_assoc.
- +now rewrite PQsub_diag, PQadd_0_r.
- +apply PQmul_le_mono_r, PQle_refl.
-Qed.
-
-Theorem PQmul_0_l : ∀ x, (0 * x == 0)%PQ.
-Proof.
-intros.
-rewrite PQmul_comm.
-transitivity (x * (x - x))%PQ.
--now rewrite PQsub_diag.
--now rewrite PQmul_sub_distr_l, PQsub_diag.
-Qed.
-
-Theorem PQinv_involutive: ∀ x, (x ≠≠ 0 → / / x == x)%PQ.
-Proof.
-intros * Hnz.
-unfold "/"%PQ; simpl.
-rewrite Nat.add_sub.
-rewrite Nat.sub_add; [ easy | ].
-unfold "=="%PQ, nd in Hnz; simpl in Hnz.
-rewrite Nat.mul_1_r in Hnz.
-now apply Nat.neq_0_lt_0.
-Qed.
+Theorem PQinv_involutive: ∀ x, (/ / x == x)%PQ.
+Proof. easy. Qed.
