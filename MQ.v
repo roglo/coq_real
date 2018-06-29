@@ -67,26 +67,20 @@ Proof. easy. Qed.
 Instance MQneg_morph : Proper (PQeq ==> MQeq) MQneg.
 Proof. easy. Qed.
 
-...
-
 Definition MQlt x y :=
-  if MQsign x then
-    if MQsign y then PQlt (MQpos x) (MQpos y)
-    else False
-  else
-    if negb (MQsign y) then PQlt (MQpos y) (MQpos x)
-    else if PQeq_dec (MQpos x + MQpos y) 0 then False
-    else True.
+  match x with
+  | MQ0 => match y with MQpos _ => True | _ => False end
+  | MQpos px => match y with MQpos py => PQlt px py | _ => False end
+  | MQneg px => match y with MQneg py => PQlt py px | _ => False end
+  end.
 Arguments MQlt x%MQ y%MQ.
 
 Definition MQle x y :=
-  if MQsign x then
-    if MQsign y then PQle (MQpos x) (MQpos y)
-    else if PQeq_dec (MQpos x + MQpos y) 0 then True
-    else False
-  else
-    if negb (MQsign y) then PQle (MQpos y) (MQpos x)
-    else True.
+  match x with
+  | MQ0 => match y with MQ0 | MQpos _ => True | _ => False end
+  | MQpos px => match y with MQpos py => PQle px py | _ => False end
+  | MQneg px => match y with MQneg py => PQle py px | _ => True end
+  end.
 Arguments MQle x%MQ y%MQ.
 
 Definition MQgt x y := MQlt y x.
@@ -96,6 +90,8 @@ Notation "x < y" := (MQlt x y) : MQ_scope.
 Notation "x ≤ y" := (MQle x y) : MQ_scope.
 Notation "x > y" := (MQgt x y) : MQ_scope.
 Notation "x ≥ y" := (MQge x y) : MQ_scope.
+
+...
 
 Ltac MQlt_morph_tac :=
   match goal with
