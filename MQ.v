@@ -148,46 +148,8 @@ Proof.
 intros x y Hxy.
 unfold MQabs, "=="%MQ; simpl.
 unfold "==" in Hxy.
-...
-
-remember (MQsign x) as sx eqn:Hsx.
-remember (MQsign y) as sy eqn:Hsy.
-destruct sx, sy; simpl in Hxy; [ easy | | | easy ].
--destruct (zerop (PQnum (MQpos x) + PQnum (MQpos y))) as [H1| ]; [ | easy ].
- apply Nat.eq_add_0 in H1.
- destruct H1 as (H1, H2).
- apply PQeq_num_0 in H1.
- apply PQeq_num_0 in H2.
- now rewrite H1, H2.
--destruct (zerop (PQnum (MQpos x) + PQnum (MQpos y))) as [H1| ]; [ | easy ].
- apply Nat.eq_add_0 in H1.
- destruct H1 as (H1, H2).
- apply PQeq_num_0 in H1.
- apply PQeq_num_0 in H2.
- now rewrite H1, H2.
+now destruct x, y.
 Qed.
-
-Ltac MQadd_morph_tac :=
-  match goal with
-  | [ H :
-      if (zerop (PQnum (MQpos ?x) + PQnum (MQpos ?y))) then True else False
-       |- _ ] =>
-      let H1 := fresh "H1n" in
-      let H2 := fresh "H2n" in
-      let H3 := fresh "H1p" in
-      let H4 := fresh "H2p" in
-      destruct (zerop (PQnum (MQpos x) + PQnum (MQpos y)))
-        as [H1| ]; [ clear H | easy ];
-      clear H;
-      apply Nat.eq_add_0 in H1;
-      destruct H1 as (H1, H2);
-      generalize H1; intros H3;
-      apply PQeq_num_0 in H3;
-      generalize H2; intros H4;
-      apply PQeq_num_0 in H4;
-      MQadd_morph_tac
-  | _ => idtac
-  end.
 
 (* allows to use rewrite inside an addition
    e.g.
@@ -200,8 +162,18 @@ Instance MQadd_morph : Proper (MQeq ==> MQeq ==> MQeq) MQadd.
 Proof.
 unfold "=="%MQ; simpl.
 intros x1 x2 Hx y1 y2 Hy.
-move y1 before x2; move y2 before y1.
 unfold "+"%MQ; simpl.
+destruct
+  x1 as [| px1| px1], y1 as [| py1| py1],
+  x2 as [| px2| px2], y2 as [| py2| py2]; try easy.
+-now rewrite Hx, Hy.
+-rewrite Hx.
+...
+
+-destruct (PQlt_le_dec px1 py1) as [H1| H1].
+ +idtac.
+...
+move y1 before x2; move y2 before y1.
 remember (MQsign x1) as sx1 eqn:Hsx1; symmetry in Hsx1.
 remember (MQsign x2) as sx2 eqn:Hsx2; symmetry in Hsx2.
 remember (MQsign y1) as sy1 eqn:Hsy1; symmetry in Hsy1.

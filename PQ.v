@@ -216,6 +216,37 @@ split; intros Hxy.
  now apply (H x2 x1 y2 y1).
 Qed.
 
+Definition if_PQlt_le (P Q : Prop) x y := if PQlt_le_dec x y then P else Q.
+Arguments if_PQlt_le _ _ x%PQ y%PQ.
+
+Notation "'if_PQlt_le_dec' x y 'then' P 'else' Q" :=
+  (if_PQlt_le P Q x y) (at level 200, x at level 9, y at level 9).
+
+Theorem PQlt_le_if : ∀ P Q x y,
+  (if PQlt_le_dec x y then P else Q) = if_PQlt_le P Q x y.
+Proof. easy. Qed.
+
+(* allows to use rewrite inside a if_PQlt_le_dec ...
+   through PQlt_le_if, e.g.
+      H : (x = y)%PQ
+      ====================
+      ... if_PQlt_le_dec x z then P else Q ...
+   > rewrite H.
+      ====================
+      ... if_PQlt_le_dec y z then P else Q ...
+ *)
+Instance PQeq_PQlt_le_morph {P Q} :
+  Proper (PQeq ==> PQeq ==> iff) (λ x y, if PQlt_le_dec x y then P else Q).
+Proof.
+intros x1 x2 Hx y1 y2 Hy.
+move y1 before x2; move y2 before y1.
+destruct (PQlt_le_dec x1 y1) as [H1| H1]; rewrite Hx, Hy in H1.
+-destruct (PQlt_le_dec x2 y2) as [| H2]; [ easy | ].
+ now apply PQnlt_ge in H2.
+-destruct (PQlt_le_dec x2 y2) as [H2| ]; [ | easy ].
+ now apply PQnlt_ge in H2.
+Qed.
+
 Theorem PQle_antisymm : ∀ x y, (x ≤ y)%PQ → (y ≤ x)%PQ → (x == y)%PQ.
 Proof.
 intros * Hxy Hyx.
