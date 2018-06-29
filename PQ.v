@@ -295,6 +295,18 @@ rewrite Nat.add_comm; f_equal.
  rewrite Hx; flia.
 Qed.
 
+Theorem PQsub_morph : ∀ x1 x2 y1 y2,
+  (x1 < y1)%PQ
+  → (x1 == x2)%PQ
+  → (y1 == y2)%PQ
+  → (y1 - x1 == y2 - x2)%PQ.
+Proof.
+intros * H1 Hx Hy.
+generalize H1; intros H2; move H2 before H1.
+rewrite Hx, Hy in H2.
+
+...
+
 Theorem PQadd_comm : ∀ x y, (x + y == y + x)%PQ.
 Proof.
 intros.
