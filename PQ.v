@@ -583,7 +583,16 @@ Proof.
 intros x y.
 unfold "+"%PQ, "-"%PQ, "==", nd; simpl.
 unfold PQsub_num1, PQadd_num1, PQadd_den1, nd; simpl.
-...
+do 8 rewrite Nat.add_1_r.
+rewrite <- Nat.sub_succ_l.
+-rewrite Nat.sub_succ, Nat.sub_0_r.
+ do 3 (rewrite <- Nat.sub_succ_l; [ | simpl; flia ]).
+ do 3 rewrite Nat.sub_succ, Nat.sub_0_r.
+ rewrite Nat.mul_assoc, Nat.mul_add_distr_r, Nat.add_sub; flia.
+-do 2 (rewrite <- Nat.sub_succ_l; [ | simpl; flia ]).
+ do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
+ rewrite Nat.mul_add_distr_r, Nat.mul_assoc, Nat.add_sub; simpl; flia.
+Qed.
 
 (* multiplication, inversion, division *)
 

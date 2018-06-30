@@ -287,13 +287,9 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl.
    destruct c2; [ easy | | ].
   --apply PQcompare_lt_iff in Hc2.
     apply PQsub_morph with (x1 := py) (x2 := py) in Hc1; [ | | easy ].
-    rewrite <- Hc1 in Hc2.
-rewrite PQadd_sub in Hc2.
-...
-Search (_ + _ - _)%nat.
-
-Check PQadd_sub.
-
+   ++rewrite <- Hc1, PQadd_sub in Hc2.
+     now apply PQlt_irrefl in Hc2.
+   ++Search (_ < _ + _)%PQ.
 ...
 intros.
 unfold "=="%MQ.
