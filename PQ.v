@@ -85,6 +85,7 @@ Qed.
 (* inequality *)
 
 Definition PQcompare x y := Nat.compare (nd x y) (nd y x).
+Arguments PQcompare x%PQ y%PQ.
 
 Definition PQlt x y := nd x y < nd y x.
 Definition PQle x y := nd x y ≤ nd y x.
@@ -561,6 +562,20 @@ apply Nat.add_le_mono.
 -replace (zn * xd * (yd * td)) with (zn * td * (xd * yd)) by flia.
  replace (tn * yd * (xd * zd)) with (tn * zd * (xd * yd)) by flia.
  now apply Nat.mul_le_mono_r.
+Qed.
+
+Theorem PQadd_no_neutral : ∀ x y, (y + x ≠≠ x)%PQ.
+Proof.
+intros x y Hxy.
+unfold "+"%PQ, "=="%PQ, nd in Hxy; simpl in Hxy.
+unfold PQadd_num1, PQadd_den1, nd in Hxy.
+do 6 rewrite Nat.add_1_r in Hxy.
+do 2 (rewrite <- Nat.sub_succ_l in Hxy; [ | simpl; flia ]).
+do 2 rewrite Nat.sub_succ, Nat.sub_0_r in Hxy.
+rewrite Nat.mul_add_distr_r in Hxy.
+rewrite Nat.mul_assoc in Hxy.
+apply Nat.add_sub_eq_r in Hxy.
+now rewrite Nat.sub_diag in Hxy.
 Qed.
 
 (* multiplication, inversion, division *)

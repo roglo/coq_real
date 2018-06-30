@@ -274,38 +274,17 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl.
 -now destruct (PQcompare py pz).
 -now destruct (PQcompare px pz).
 -apply PQadd_assoc.
--remember (PQcompare (px + py)%PQ pz) as c1 eqn:Hc1; symmetry in Hc1.
+-remember (PQcompare (px + py) pz) as c1 eqn:Hc1; symmetry in Hc1.
  remember (PQcompare py pz) as cyz eqn:Hcyz; symmetry in Hcyz.
- destruct c1 as [| p1| p1].
+ destruct c1.
  +apply PQcompare_eq_iff in Hc1.
-  destruct cyz as [| pyz| pyz].
-  *apply PQcompare_eq_iff in Hcyz.
-   rewrite Hcyz in Hc1.
-(* ah putain l'autre enculé ! *)
-...
-
--unfold "+"%PQ; simpl.
- unfold PQadd_num1, PQadd_den1, nd; simpl.
-
--remember (PQcompare py pz) as cyz eqn:Hcyz; symmetry in Hcyz.
- destruct cyz as [| pyz| pyz]; [ easy | easy | ].
-
-...
--remember (PQcompare py pz) as cyz eqn:Hcyz; symmetry in Hcyz.
- destruct cyz as [| pyz| pyz]; [ easy | easy | ].
-
-...
-destruct x as [| px| px]; simpl.
--destruct y as [| py| py]; simpl; [ now destruct z | | ].
- +destruct z as [| pz| pz].
-
-
-...
-remember (x + y + z) as t1 eqn:Ht1; symmetry in Ht1.
-remember (x + (y + z)) as t2 eqn:Ht2; symmetry in Ht2.
-move t2 before t1.
-destruct t1 as [| t1| t1].
--destruct t2 as [| t2| t2]; [ easy | | ].
+  destruct cyz.
+  *apply PQcompare_eq_iff in Hcyz; rewrite Hcyz in Hc1; clear Hcyz.
+   now apply PQadd_no_neutral in Hc1.
+  *apply PQcompare_lt_iff in Hcyz.
+   remember (PQcompare px (pz - py)) as c2 eqn:Hc2; symmetry in Hc2.
+   destruct c2; [ easy | | ].
+  --apply PQcompare_lt_iff in Hc2.
 
 ...
 intros.
