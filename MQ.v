@@ -201,8 +201,7 @@ unfold "+"%MQ; simpl.
 move Hx before Hy.
 destruct
   x1 as [| px1| px1], y1 as [| py1| py1],
-  x2 as [| px2| px2], y2 as [| py2| py2]; try easy.
--now rewrite Hx, Hy.
+  x2 as [| px2| px2], y2 as [| py2| py2]; try easy; try now rewrite Hx, Hy.
 -remember (PQcompare px1 py1) as c1 eqn:Hc1; symmetry in Hc1.
  remember (PQcompare px2 py2) as c2 eqn:Hc2; symmetry in Hc2.
  rewrite Hx, Hy, Hc2 in Hc1; subst c2.
@@ -223,7 +222,6 @@ destruct
  +apply PQcompare_gt_iff in Hc2.
   rewrite <- Hx, <- Hy in Hc2.
   now apply PQsub_morph.
--now rewrite Hx, Hy.
 Qed.
 
 Theorem MQabs_0 : MQabs 0 == 0.
@@ -235,7 +233,57 @@ Proof. now intros x; destruct x. Qed.
 Theorem MQadd_comm : ∀ x y, x + y == y + x.
 Proof.
 intros.
-unfold "==".
+destruct x as [| px| px], y as [| py| py]; try easy; try apply PQadd_comm.
+-unfold "==", "+".
+ remember (PQcompare px py) as c1 eqn:Hc1; symmetry in Hc1.
+ remember (PQcompare py px) as c2 eqn:Hc2; symmetry in Hc2.
+ move c2 before c1.
+ destruct c1.
+ +apply PQcompare_eq_iff in Hc1.
+  rewrite Hc1 in Hc2.
+  destruct c2; [ easy | | ].
+  *now apply PQcompare_lt_iff, PQlt_irrefl in Hc2.
+  *now apply PQcompare_gt_iff, PQlt_irrefl in Hc2.
+ +apply PQcompare_lt_iff in Hc1.
+  destruct c2; [ | | easy ].
+  *apply PQcompare_eq_iff in Hc2; rewrite Hc2 in Hc1.
+   now apply PQlt_irrefl in Hc1.
+  *apply PQcompare_lt_iff in Hc2.
+   apply PQnle_gt in Hc2.
+   now apply Hc2, PQlt_le_incl.
+ +apply PQcompare_gt_iff in Hc1.
+  destruct c2; [ | easy | ].
+  *apply PQcompare_eq_iff in Hc2; rewrite Hc2 in Hc1.
+   now apply PQlt_irrefl in Hc1.
+  *apply PQcompare_gt_iff in Hc2.
+   apply PQnle_gt in Hc2.
+   now apply Hc2, PQlt_le_incl.
+-unfold "==", "+".
+ remember (PQcompare px py) as c1 eqn:Hc1; symmetry in Hc1.
+ remember (PQcompare py px) as c2 eqn:Hc2; symmetry in Hc2.
+ move c2 before c1.
+ destruct c1.
+ +apply PQcompare_eq_iff in Hc1.
+  rewrite Hc1 in Hc2.
+  destruct c2; [ easy | | ].
+  *now apply PQcompare_lt_iff, PQlt_irrefl in Hc2.
+  *now apply PQcompare_gt_iff, PQlt_irrefl in Hc2.
+ +apply PQcompare_lt_iff in Hc1.
+  destruct c2; [ | | easy ].
+  *apply PQcompare_eq_iff in Hc2; rewrite Hc2 in Hc1.
+   now apply PQlt_irrefl in Hc1.
+  *apply PQcompare_lt_iff in Hc2.
+   apply PQnle_gt in Hc2.
+   now apply Hc2, PQlt_le_incl.
+ +apply PQcompare_gt_iff in Hc1.
+  destruct c2; [ | easy | ].
+  *apply PQcompare_eq_iff in Hc2; rewrite Hc2 in Hc1.
+   now apply PQlt_irrefl in Hc1.
+  *apply PQcompare_gt_iff in Hc2.
+   apply PQnle_gt in Hc2.
+   now apply Hc2, PQlt_le_incl.
+Qed.
+
 ...
 remember (Bool.eqb (MQsign (x + y)) (MQsign (y + x))) as b1 eqn:Hb1.
 symmetry in Hb1.
