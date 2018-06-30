@@ -308,21 +308,32 @@ unfold "-"%PQ.
 unfold "==", nd in Hx, Hy |-*.
 unfold "<"%PQ, nd in H1, H2.
 unfold PQsub_num1, PQadd_den1, nd; simpl.
-...
-rewrite Nat.sub_add; [ | do 4 rewrite Nat.add_1_r; simpl; flia ].
-rewrite Nat.sub_add; [ | do 2 rewrite Nat.add_1_r; simpl; flia ].
-rewrite Nat.sub_add; [ | do 2 rewrite Nat.add_1_r; simpl; flia ].
-rewrite Nat.sub_add; [ | do 2 rewrite Nat.add_1_r; simpl; flia ].
-split_var x1q; split_var x2q; split_var y1q; split_var y2q.
-move Hx before Hy.
-ring_simplify.
-rewrite Nat.add_comm; f_equal.
--replace (y1q0 * x1q1 * x2q1 * y2q1) with (y1q0 * y2q1 * x1q1 * x2q1) by flia.
+do 4 rewrite Nat.add_1_r in H1, H2, Hx, Hy.
+do 12 rewrite Nat.add_1_r.
+do 2 (rewrite <- Nat.sub_succ_l; [ | flia H1 ]).
+rewrite Nat_sub_sub_swap, Nat.sub_succ, Nat.sub_0_r.
+rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+rewrite Nat.sub_succ, Nat.sub_0_r.
+do 2 (rewrite <- Nat.sub_succ_l; [ | flia H2 ]).
+rewrite Nat_sub_sub_swap, Nat.sub_succ, Nat.sub_0_r.
+rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+rewrite Nat.sub_succ, Nat.sub_0_r.
+do 2 rewrite Nat.mul_sub_distr_r.
+remember (S (PQnum1 x1)) as x1n eqn:Hx1n.
+remember (S (PQden1 x1)) as x1d eqn:Hx1d.
+remember (S (PQnum1 x2)) as x2n eqn:Hx2n.
+remember (S (PQden1 x2)) as x2d eqn:Hx2d.
+remember (S (PQnum1 y1)) as y1n eqn:Hy1n.
+remember (S (PQden1 y1)) as y1d eqn:Hy1d.
+remember (S (PQnum1 y2)) as y2n eqn:Hy2n.
+remember (S (PQden1 y2)) as y2d eqn:Hy2d.
+move H1 before H2.
+f_equal.
+-replace (y1n * x1d * (y2d * x2d)) with (y1n * y2d * x1d * x2d) by flia.
  rewrite Hy; flia.
--replace (x1q0 * y1q1 * x2q1) with (x1q0 * x2q1 * y1q1) by flia.
+-replace (x1n * y1d * (y2d * x2d)) with (x1n * x2d * y1d * y2d) by flia.
  rewrite Hx; flia.
-
-...
+Qed.
 
 Theorem PQadd_comm : ∀ x y, (x + y == y + x)%PQ.
 Proof.
