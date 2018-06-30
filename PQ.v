@@ -98,6 +98,9 @@ Notation "x ≥ y" := (PQge x y) : PQ_scope.
 Notation "x ≤ y ≤ z" := (x ≤ y ∧ y ≤ z)%PQ (at level 70, y at next level) :
   PQ_scope.
 
+Theorem PQcompare_eq_iff : ∀ n m, PQcompare n m = Lt ↔ (n < m)%PQ.
+...
+
 Theorem PQle_refl : ∀ x, (x ≤ x)%PQ.
 Proof. now unfold "≤"%PQ. Qed.
 

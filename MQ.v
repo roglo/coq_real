@@ -206,9 +206,13 @@ destruct
 -remember (PQcompare px1 py1) as c1 eqn:Hc1; symmetry in Hc1.
  remember (PQcompare px2 py2) as c2 eqn:Hc2; symmetry in Hc2.
  move c2 before c1.
- destruct c1, c2.
+ destruct c1.
+ +apply PQcompare_eq_iff in Hc1.
+...
  +easy.
  +idtac.
+Require Import ZArith.
+Search (_ = Lt).
 (* ouais, bof, c'est pas si pratique, en fait *)
 (* mais c'est peut-être plus équilibré que ci-dessous *)
 ...
