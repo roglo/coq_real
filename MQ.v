@@ -265,10 +265,18 @@ Proof. easy. Qed.
 Theorem MQabs_opp : ∀ x, MQabs (- x) == MQabs x.
 Proof. now intros x; destruct x. Qed.
 
-...
-
 Theorem MQadd_assoc : ∀ x y z, (x + y) + z == x + (y + z).
 Proof.
+intros.
+unfold "=="%MQ.
+...
+remember (x + y + z) as t1 eqn:Ht1; symmetry in Ht1.
+remember (x + (y + z)) as t2 eqn:Ht2; symmetry in Ht2.
+move t2 before t1.
+destruct t1 as [| t1| t1].
+-destruct t2 as [| t2| t2]; [ easy | | ].
+
+...
 intros.
 unfold "=="%MQ.
 remember (Bool.eqb (MQsign (x + y + z)) (MQsign (x + (y + z)))) as b1 eqn:Hb1.
