@@ -213,80 +213,30 @@ destruct
  +apply PQcompare_gt_iff in Hc2.
   rewrite <- Hx, <- Hy in Hc2.
   now apply PQsub_morph.
--idtac.
-...
-destruct (PQlt_le_dec px1 py1) as [H1| H1].
- +destruct (PQlt_le_dec px2 py2) as [H2| H2].
-  *now apply PQsub_morph.
-  *destruct (PQlt_le_dec py2 px2) as [H3| H3].
-  --rewrite Hx, Hy in H1.
-    apply PQnle_gt in H3; apply H3.
-    now apply PQlt_le_incl.
-  --apply PQle_antisymm in H2; [ | easy ].
-    rewrite Hx, H2, <- Hy in H1.
-    now apply PQlt_irrefl in H1.
- +destruct (PQlt_le_dec py1 px1) as [H2| H2].
-  *destruct (PQlt_le_dec px2 py2) as [H3| H3].
-  --rewrite Hx, Hy in H1.
-    apply PQnle_gt in H3; apply H3.
-    now apply PQlt_le_incl.
-  --destruct (PQlt_le_dec py2 px2) as [H4| H4].
-   ++now apply PQsub_morph.
-   ++idtac.
-     apply PQle_antisymm in H4; [ | easy ].
-     rewrite Hy, H4, <- Hx in H2.
-     now apply PQlt_irrefl in H2.
-  *idtac.
-...
-move y1 before x2; move y2 before y1.
-remember (MQsign x1) as sx1 eqn:Hsx1; symmetry in Hsx1.
-remember (MQsign x2) as sx2 eqn:Hsx2; symmetry in Hsx2.
-remember (MQsign y1) as sy1 eqn:Hsy1; symmetry in Hsy1.
-remember (MQsign y2) as sy2 eqn:Hsy2; symmetry in Hsy2.
-move sx2 before sx1; move sy1 before sx2; move sy2 before sy1.
-move Hsy1 before Hsx2; move Hsy2 before Hsy1.
-destruct sx1, sx2, sy1, sy2; simpl in Hx, Hy; simpl; MQadd_morph_tac.
+-remember (PQcompare px1 py1) as c1 eqn:Hc1; symmetry in Hc1.
+ remember (PQcompare px2 py2) as c2 eqn:Hc2; symmetry in Hc2.
+ rewrite Hx, Hy, Hc2 in Hc1; subst c2.
+ destruct c1; [ easy | | ].
+ +apply PQcompare_lt_iff in Hc2.
+  rewrite <- Hx, <- Hy in Hc2.
+  now apply PQsub_morph.
+ +apply PQcompare_gt_iff in Hc2.
+  rewrite <- Hx, <- Hy in Hc2.
+  now apply PQsub_morph.
 -now rewrite Hx, Hy.
--destruct (PQlt_le_dec (MQpos x2) (MQpos y2)) as [H1| H1]; simpl.
- +now rewrite H2p in H1.
- +now rewrite H1p, H2p, PQadd_0_r, PQsub_0_r.
--destruct (PQlt_le_dec (MQpos x1) (MQpos y1)) as [H1| H1]; simpl.
- +now rewrite H1p in H1.
- +now rewrite H1p, H2p, PQadd_0_r, PQsub_0_r.
--destruct (PQlt_le_dec (MQpos x1) (MQpos y1)) as [H1| H1]; simpl.
- +rewrite Hx, Hy in H1.
-  destruct (PQlt_le_dec (MQpos x2) (MQpos y2)) as [H2| H2]; simpl.
-  *now rewrite Hx, Hy.
-  *now apply PQnlt_ge in H2.
- +rewrite Hx, Hy in H1.
-  destruct (PQlt_le_dec (MQpos x2) (MQpos y2)) as [H2| H2]; simpl.
-  *now apply PQnlt_ge in H2.
-  *now rewrite Hx, Hy.
--destruct (PQlt_le_dec (MQpos x2) (MQpos y2)) as [H1| H1]; simpl.
- +now rewrite H1p, Hy, H2p, PQadd_0_l, PQsub_0_r.
- +unfold PQadd_num, PQsub_num, nd.
-  rewrite H1n, H2n, Nat.add_0_r; simpl.
-  rewrite <- Hy, H2p in H1.
-  apply PQle_0_r, PQeq_num_0 in H1.
-  now rewrite H1.
--unfold PQadd_num, PQsub_num, nd.
- now rewrite H1n0, H2n0, H1n, H2n.
--destruct (PQlt_le_dec (MQpos x1) (MQpos y1)) as [H1| H1]; simpl.
- +now rewrite H1p in H1.
- +idtac.
-
-...
+Qed.
 
 Theorem MQabs_0 : MQabs 0 == 0.
 Proof. easy. Qed.
 
 Theorem MQabs_opp : ∀ x, MQabs (- x) == MQabs x.
-Proof. easy. Qed.
+Proof. now intros x; destruct x. Qed.
 
 Theorem MQadd_comm : ∀ x y, x + y == y + x.
 Proof.
 intros.
 unfold "==".
+...
 remember (Bool.eqb (MQsign (x + y)) (MQsign (y + x))) as b1 eqn:Hb1.
 symmetry in Hb1.
 unfold "+"%MQ in Hb1 |-*.
