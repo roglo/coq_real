@@ -192,20 +192,25 @@ destruct
 -destruct (PQlt_le_dec px1 py1) as [H1| H1].
  +destruct (PQlt_le_dec px2 py2) as [H2| H2].
   *now apply PQsub_morph.
+  *destruct (PQlt_le_dec py2 px2) as [H3| H3].
+  --rewrite Hx, Hy in H1.
+    apply PQnle_gt in H3; apply H3.
+    now apply PQlt_le_incl.
+  --apply PQle_antisymm in H2; [ | easy ].
+    rewrite Hx, H2, <- Hy in H1.
+    now apply PQlt_irrefl in H1.
+ +destruct (PQlt_le_dec py1 px1) as [H2| H2].
+  *destruct (PQlt_le_dec px2 py2) as [H3| H3].
+  --rewrite Hx, Hy in H1.
+    apply PQnle_gt in H3; apply H3.
+    now apply PQlt_le_incl.
+  --destruct (PQlt_le_dec py2 px2) as [H4| H4].
+   ++now apply PQsub_morph.
+   ++idtac.
+     apply PQle_antisymm in H4; [ | easy ].
+     rewrite Hy, H4, <- Hx in H2.
+     now apply PQlt_irrefl in H2.
   *idtac.
-...
-  *unfold "=="%PQ, "-"%PQ, nd; simpl.
-simpl.
-...
- rewrite PQlt_le_if.
-Set Printing All.
- rewrite Hx at 1.
-...
- rewrite Hx at 1.
-...
-
--destruct (PQlt_le_dec px1 py1) as [H1| H1].
- +idtac.
 ...
 move y1 before x2; move y2 before y1.
 remember (MQsign x1) as sx1 eqn:Hsx1; symmetry in Hsx1.
