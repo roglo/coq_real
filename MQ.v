@@ -186,52 +186,6 @@ destruct (PQlt_le_dec x1 y1) as [H1| H1]; rewrite Hx, Hy in H1.
  now apply PQnlt_ge in H2.
 Qed.
 
-(* allows to use rewrite inside an addition
-   e.g.
-      H : x = y
-      ====================
-      ... (x + z) ...
-   rewrite H.
- *)
-Instance MQadd_morph : Proper (MQeq ==> MQeq ==> MQeq) MQadd.
-Proof.
-intros x1 x2 Hx y1 y2 Hy.
-move Hx before Hy.
-unfold "=="%MQ in Hx, Hy |-*.
-unfold "+"%MQ; simpl.
-(* repetition : à revoir comme MQadd_comm ci-dessous *)
-...
-destruct
-  x1 as [| px1| px1], y1 as [| py1| py1],
-  x2 as [| px2| px2], y2 as [| py2| py2]; try easy; try rewrite Hx, Hy.
--remember (PQcompare px1 py1) as c1 eqn:Hc1; symmetry in Hc1.
- remember (PQcompare px2 py2) as c2 eqn:Hc2; symmetry in Hc2.
- rewrite Hx, Hy, Hc2 in Hc1; subst c2.
- destruct c1; [ easy | | ].
- +apply PQcompare_lt_iff in Hc2.
-  rewrite <- Hx, <- Hy in Hc2.
-  now apply PQsub_morph.
- +apply PQcompare_gt_iff in Hc2.
-  rewrite <- Hx, <- Hy in Hc2.
-  now apply PQsub_morph.
--remember (PQcompare px1 py1) as c1 eqn:Hc1; symmetry in Hc1.
- remember (PQcompare px2 py2) as c2 eqn:Hc2; symmetry in Hc2.
- rewrite Hx, Hy, Hc2 in Hc1; subst c2.
- destruct c1; [ easy | | ].
- +apply PQcompare_lt_iff in Hc2.
-  rewrite <- Hx, <- Hy in Hc2.
-  now apply PQsub_morph.
- +apply PQcompare_gt_iff in Hc2.
-  rewrite <- Hx, <- Hy in Hc2.
-  now apply PQsub_morph.
-Qed.
-
-Theorem MQabs_0 : MQabs 0 == 0.
-Proof. easy. Qed.
-
-Theorem MQabs_opp : ∀ x, MQabs (- x) == MQabs x.
-Proof. now intros x; destruct x. Qed.
-
 Theorem MQadd_comm : ∀ x y, x + y == y + x.
 Proof.
 assert (H : ∀ px py, MQpos px + MQneg py == MQneg py + MQpos px). {
@@ -263,6 +217,53 @@ assert (H : ∀ px py, MQpos px + MQneg py == MQneg py + MQpos px). {
 }
 now intros; destruct x, y; try apply PQadd_comm.
 Qed.
+
+(* allows to use rewrite inside an addition
+   e.g.
+      H : x = y
+      ====================
+      ... (x + z) ...
+   rewrite H.
+ *)
+Instance MQadd_morph : Proper (MQeq ==> MQeq ==> MQeq) MQadd.
+Proof.
+intros x1 x2 Hx y1 y2 Hy.
+move Hx before Hy.
+assert (H : ∀ px1 px2 py1 py2,
+  MQpos px1 == MQpos px2
+  → MQneg py1 == MQneg py2
+  → MQpos px1 + MQneg py1 == MQpos px2 + MQneg py2). {
+  clear; intros * Hx Hy.
+  unfold "=="%MQ in Hx, Hy |-*.
+  unfold "+"%MQ; simpl.
+  remember (PQcompare px1 py1) as c1 eqn:Hc1; symmetry in Hc1.
+  remember (PQcompare px2 py2) as c2 eqn:Hc2; symmetry in Hc2.
+  rewrite Hx, Hy, Hc2 in Hc1; subst c2.
+  destruct c1; [ easy | | ].
+  -apply PQcompare_lt_iff in Hc2.
+   rewrite <- Hx, <- Hy in Hc2.
+   now apply PQsub_morph.
+  -apply PQcompare_gt_iff in Hc2.
+   rewrite <- Hx, <- Hy in Hc2.
+   now apply PQsub_morph.
+}
+destruct
+  x1 as [| px1| px1], y1 as [| py1| py1],
+  x2 as [| px2| px2], y2 as [| py2| py2]; try easy.
+-unfold "=="%MQ in Hx, Hy |-*; unfold "+"%MQ; simpl.
+ now rewrite Hx, Hy.
+-now apply H.
+-do 2 (rewrite MQadd_comm; symmetry).
+ now apply H.
+-unfold "=="%MQ in Hx, Hy |-*; unfold "+"%MQ; simpl.
+ now rewrite Hx, Hy.
+Qed.
+
+Theorem MQabs_0 : MQabs 0 == 0.
+Proof. easy. Qed.
+
+Theorem MQabs_opp : ∀ x, MQabs (- x) == MQabs x.
+Proof. now intros x; destruct x. Qed.
 
 ...
 
