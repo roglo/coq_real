@@ -84,6 +84,8 @@ Qed.
 
 (* inequality *)
 
+Definition PQcompare x y := Nat.compare (nd x y) (nd y x).
+
 Definition PQlt x y := nd x y < nd y x.
 Definition PQle x y := nd x y ≤ nd y x.
 Definition PQgt x y := PQlt y x.

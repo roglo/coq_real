@@ -69,6 +69,15 @@ Proof. easy. Qed.
 Instance MQneg_morph : Proper (PQeq ==> MQeq) MQneg.
 Proof. easy. Qed.
 
+(* comparison *)
+
+Definition MQcompare x y :=
+  match x with
+  | MQ0 => match y with MQ0 => Eq | MQpos _ => Lt | MQneg _ => Gt end
+  | MQpos px => match y with MQpos py => PQcompare px py | _ => Gt end
+  | MQneg px => match y with MQneg py => PQcompare py px | _ => Gt end
+  end.
+
 Definition MQlt x y :=
   match x with
   | MQ0 => match y with MQpos _ => True | _ => False end
@@ -110,17 +119,21 @@ Definition MQadd x y :=
       | MQ0 => x
       | MQpos py => MQpos (px + py)
       | MQneg py =>
-          if PQlt_le_dec px py then MQneg (py - px)
-          else if PQlt_le_dec py px then MQpos (px - py)
-          else MQ0
+          match PQcompare px py with
+          | Eq => MQ0
+          | Lt => MQneg (py - px)
+          | Gt => MQpos (px - py)
+          end
       end
   | MQneg px =>
       match y with
       | MQ0 => x
       | MQpos py =>
-          if PQlt_le_dec px py then MQpos (py - px)
-          else if PQlt_le_dec py px then MQneg (px - py)
-          else MQ0
+          match PQcompare px py with
+          | Eq => MQ0
+          | Lt => MQpos (py - px)
+          | Gt => MQneg (px - py)
+          end
       | MQneg py => MQneg (px + py)
       end
   end.
@@ -185,11 +198,21 @@ Proof.
 unfold "=="%MQ; simpl.
 intros x1 x2 Hx y1 y2 Hy.
 unfold "+"%MQ; simpl.
+move Hx before Hy.
 destruct
   x1 as [| px1| px1], y1 as [| py1| py1],
   x2 as [| px2| px2], y2 as [| py2| py2]; try easy.
 -now rewrite Hx, Hy.
--destruct (PQlt_le_dec px1 py1) as [H1| H1].
+-remember (PQcompare px1 py1) as c1 eqn:Hc1; symmetry in Hc1.
+ remember (PQcompare px2 py2) as c2 eqn:Hc2; symmetry in Hc2.
+ move c2 before c1.
+ destruct c1, c2.
+ +easy.
+ +idtac.
+(* ouais, bof, c'est pas si pratique, en fait *)
+(* mais c'est peut-être plus équilibré que ci-dessous *)
+...
+destruct (PQlt_le_dec px1 py1) as [H1| H1].
  +destruct (PQlt_le_dec px2 py2) as [H2| H2].
   *now apply PQsub_morph.
   *destruct (PQlt_le_dec py2 px2) as [H3| H3].
