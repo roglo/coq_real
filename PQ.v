@@ -579,6 +579,10 @@ now rewrite Nat.sub_diag in Hxy.
 Qed.
 
 Theorem PQadd_sub : ∀ x y, (x + y - y == x)%PQ.
+Proof.
+intros x y.
+unfold "+"%PQ, "-"%PQ, "==", nd; simpl.
+unfold PQsub_num1, PQadd_num1, PQadd_den1, nd; simpl.
 ...
 
 (* multiplication, inversion, division *)
