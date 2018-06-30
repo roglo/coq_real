@@ -75,14 +75,14 @@ Definition MQcompare x y :=
   match x with
   | MQ0 => match y with MQ0 => Eq | MQpos _ => Lt | MQneg _ => Gt end
   | MQpos px => match y with MQpos py => PQcompare px py | _ => Gt end
-  | MQneg px => match y with MQneg py => PQcompare py px | _ => Gt end
+  | MQneg px => match y with MQneg py => PQcompare py px | _ => Lt end
   end.
 
 Definition MQlt x y :=
   match x with
   | MQ0 => match y with MQpos _ => True | _ => False end
   | MQpos px => match y with MQpos py => PQlt px py | _ => False end
-  | MQneg px => match y with MQneg py => PQlt py px | _ => False end
+  | MQneg px => match y with MQneg py => PQlt py px | _ => True end
   end.
 Arguments MQlt x%MQ y%MQ.
 
@@ -269,6 +269,37 @@ Theorem MQadd_assoc : ∀ x y z, (x + y) + z == x + (y + z).
 Proof.
 intros.
 unfold "=="%MQ.
+destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl.
+-now destruct (PQcompare py pz).
+-now destruct (PQcompare py pz).
+-now destruct (PQcompare px pz).
+-apply PQadd_assoc.
+-remember (PQcompare (px + py)%PQ pz) as c1 eqn:Hc1; symmetry in Hc1.
+ remember (PQcompare py pz) as cyz eqn:Hcyz; symmetry in Hcyz.
+ destruct c1 as [| p1| p1].
+ +apply PQcompare_eq_iff in Hc1.
+  destruct cyz as [| pyz| pyz].
+  *apply PQcompare_eq_iff in Hcyz.
+   rewrite Hcyz in Hc1.
+(* ah putain l'autre enculé ! *)
+...
+
+-unfold "+"%PQ; simpl.
+ unfold PQadd_num1, PQadd_den1, nd; simpl.
+
+-remember (PQcompare py pz) as cyz eqn:Hcyz; symmetry in Hcyz.
+ destruct cyz as [| pyz| pyz]; [ easy | easy | ].
+
+...
+-remember (PQcompare py pz) as cyz eqn:Hcyz; symmetry in Hcyz.
+ destruct cyz as [| pyz| pyz]; [ easy | easy | ].
+
+...
+destruct x as [| px| px]; simpl.
+-destruct y as [| py| py]; simpl; [ now destruct z | | ].
+ +destruct z as [| pz| pz].
+
+
 ...
 remember (x + y + z) as t1 eqn:Ht1; symmetry in Ht1.
 remember (x + (y + z)) as t2 eqn:Ht2; symmetry in Ht2.
