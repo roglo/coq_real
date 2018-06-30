@@ -98,8 +98,14 @@ Notation "x ≥ y" := (PQge x y) : PQ_scope.
 Notation "x ≤ y ≤ z" := (x ≤ y ∧ y ≤ z)%PQ (at level 70, y at next level) :
   PQ_scope.
 
-Theorem PQcompare_eq_iff : ∀ n m, PQcompare n m = Lt ↔ (n < m)%PQ.
-...
+Theorem PQcompare_eq_iff : ∀ x y, PQcompare x y = Eq ↔ (x == y)%PQ.
+Proof. intros; apply Nat.compare_eq_iff. Qed.
+
+Theorem PQcompare_lt_iff : ∀ x y, PQcompare x y = Lt ↔ (x < y)%PQ.
+Proof. intros; apply Nat.compare_lt_iff. Qed.
+
+Theorem PQcompare_gt_iff : ∀ x y, PQcompare x y = Gt ↔ (x > y)%PQ.
+Proof. intros; apply Nat.compare_gt_iff. Qed.
 
 Theorem PQle_refl : ∀ x, (x ≤ x)%PQ.
 Proof. now unfold "≤"%PQ. Qed.
@@ -185,6 +191,12 @@ split; intros Hxy.
  now apply (H x2 x1 y2 y1).
 Qed.
 
+Instance PQgt_morph : Proper (PQeq ==> PQeq ==> iff) PQgt.
+Proof.
+intros x1 x2 Hx y1 y2 Hy.
+now apply PQlt_morph.
+Qed.
+
 (* allows to use rewrite inside a less equal
    e.g.
       H : x = y
@@ -219,6 +231,12 @@ split; intros Hxy.
 -now apply (H x1 x2 y1 y2).
 -symmetry in Hx, Hy.
  now apply (H x2 x1 y2 y1).
+Qed.
+
+Instance PQge_morph : Proper (PQeq ==> PQeq ==> iff) PQge.
+Proof.
+intros x1 x2 Hx y1 y2 Hy.
+now apply PQle_morph.
 Qed.
 
 Definition if_PQlt_le {A} (P Q : A) x y := if PQlt_le_dec x y then P else Q.
@@ -428,6 +446,42 @@ apply (Nat.lt_le_trans _ ((PQnum1 y + 1) * (PQden1 x + 1) * (PQden1 z + 1))).
 -apply Nat.mul_lt_mono_pos_r; [ flia | easy ].
 -setoid_rewrite Nat.mul_shuffle0.
  apply Nat.mul_le_mono_pos_r; [ flia | easy ].
+Qed.
+
+Instance PQcompare_morph : Proper (PQeq ==> PQeq ==> eq) PQcompare.
+Proof.
+intros x1 x2 Hx y1 y2 Hy.
+move Hx before Hy.
+remember (PQcompare x1 y1) as c1 eqn:Hc1; symmetry in Hc1.
+remember (PQcompare x2 y2) as c2 eqn:Hc2; symmetry in Hc2.
+move c2 before c1.
+destruct c1.
+-apply PQcompare_eq_iff in Hc1.
+ destruct c2; [ easy | | ].
+ +apply PQcompare_lt_iff in Hc2.
+  rewrite <- Hy, <- Hc1, Hx in Hc2.
+  now apply PQlt_irrefl in Hc2.
+ +apply PQcompare_gt_iff in Hc2.
+  rewrite <- Hy, <- Hc1, Hx in Hc2.
+  now apply PQlt_irrefl in Hc2.
+-apply PQcompare_lt_iff in Hc1.
+ destruct c2; [ | easy | ].
+ +apply PQcompare_eq_iff in Hc2.
+  rewrite Hx, Hc2, Hy in Hc1.
+  now apply PQlt_irrefl in Hc1.
+ +apply PQcompare_gt_iff in Hc2.
+  rewrite Hx, Hy in Hc1.
+  apply PQnle_gt in Hc2.
+  now exfalso; apply Hc2, PQlt_le_incl.
+-apply PQcompare_gt_iff in Hc1.
+ destruct c2; [ | | easy ].
+ +apply PQcompare_eq_iff in Hc2.
+  rewrite Hx, Hc2, <- Hy in Hc1.
+  now apply PQlt_irrefl in Hc1.
+ +apply PQcompare_lt_iff in Hc2.
+  rewrite Hx, Hy in Hc1.
+  apply PQnle_gt in Hc2.
+  now exfalso; apply Hc2, PQlt_le_incl.
 Qed.
 
 Theorem PQadd_lt_mono_r : ∀ x y z, (x < y)%PQ ↔ (x + z < y + z)%PQ.

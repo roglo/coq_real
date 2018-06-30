@@ -208,13 +208,31 @@ destruct
  move c2 before c1.
  destruct c1.
  +apply PQcompare_eq_iff in Hc1.
-...
- +easy.
- +idtac.
-Require Import ZArith.
-Search (_ = Lt).
-(* ouais, bof, c'est pas si pratique, en fait *)
-(* mais c'est peut-être plus équilibré que ci-dessous *)
+  rewrite <- Hy, <- Hc1, Hx in Hc2.
+  destruct c2; [ easy | | ].
+  *now apply PQcompare_lt_iff, PQlt_irrefl in Hc2.
+  *now apply PQcompare_gt_iff, PQlt_irrefl in Hc2.
+ +apply PQcompare_lt_iff in Hc1.
+  destruct c2.
+  *apply PQcompare_eq_iff in Hc2.
+   rewrite Hx, Hy, Hc2 in Hc1.
+   now apply PQlt_irrefl in Hc1.
+  *now apply PQsub_morph.
+  *apply PQcompare_gt_iff in Hc2.
+   rewrite Hx, Hy in Hc1.
+   apply PQnle_gt in Hc2.
+   now apply Hc2, PQlt_le_incl.
+ +apply PQcompare_gt_iff in Hc1.
+  destruct c2.
+  *apply PQcompare_eq_iff in Hc2.
+   rewrite Hx, Hy, Hc2 in Hc1.
+   now apply PQlt_irrefl in Hc1.
+  *apply PQcompare_lt_iff in Hc2.
+   rewrite Hx, Hy in Hc1.
+   apply PQnle_gt in Hc2.
+   now apply Hc2, PQlt_le_incl.
+  *now apply PQsub_morph.
+-idtac.
 ...
 destruct (PQlt_le_dec px1 py1) as [H1| H1].
  +destruct (PQlt_le_dec px2 py2) as [H2| H2].
