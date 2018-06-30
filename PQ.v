@@ -594,6 +594,27 @@ rewrite <- Nat.sub_succ_l.
  rewrite Nat.mul_add_distr_r, Nat.mul_assoc, Nat.add_sub; simpl; flia.
 Qed.
 
+Theorem PQlt_add_r : ∀ x y, (x < x + y)%PQ.
+Proof.
+intros.
+unfold "<"%PQ, "+"%PQ; simpl.
+unfold PQadd_num1, PQadd_den1, nd; simpl.
+do 6 rewrite Nat.add_1_r.
+do 2 (rewrite <- Nat.sub_succ_l; [ | simpl; flia ]).
+do 2 (rewrite Nat.sub_succ, Nat.sub_0_r).
+rewrite Nat.mul_add_distr_r.
+rewrite Nat.mul_assoc, Nat.mul_shuffle0.
+rewrite <- Nat.add_0_r at 1.
+apply Nat.add_le_lt_mono; [ easy | simpl; flia ].
+Qed.
+
+Theorem PQlt_add_l : ∀ x y, (x < y + x)%PQ.
+Proof.
+intros.
+rewrite PQadd_comm.
+apply PQlt_add_r.
+Qed.
+
 (* multiplication, inversion, division *)
 
 Definition PQmul_num1 x y := (PQnum1 x + 1) * (PQnum1 y + 1) - 1.

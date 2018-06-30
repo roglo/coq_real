@@ -286,10 +286,11 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl.
    remember (PQcompare px (pz - py)) as c2 eqn:Hc2; symmetry in Hc2.
    destruct c2; [ easy | | ].
   --apply PQcompare_lt_iff in Hc2.
-    apply PQsub_morph with (x1 := py) (x2 := py) in Hc1; [ | | easy ].
+    apply (PQsub_morph py py) in Hc1; [ | | easy ].
    ++rewrite <- Hc1, PQadd_sub in Hc2.
      now apply PQlt_irrefl in Hc2.
-   ++Search (_ < _ + _)%PQ.
+   ++apply PQlt_add_l.
+  --apply PQcompare_gt_iff in Hc2; unfold ">"%PQ in Hc2.
 ...
 intros.
 unfold "=="%MQ.
