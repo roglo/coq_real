@@ -291,6 +291,13 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl.
      now apply PQlt_irrefl in Hc2.
    ++apply PQlt_add_l.
   --apply PQcompare_gt_iff in Hc2; unfold ">"%PQ in Hc2.
+    rewrite (PQsub_morph py py pz (px + py)) in Hc2; [ | easy | easy | easy ].
+    rewrite PQadd_sub in Hc2.
+    now apply PQlt_irrefl in Hc2.
+  *apply PQcompare_gt_iff in Hcyz.
+   rewrite <- Hc1 in Hcyz; apply PQnle_gt in Hcyz.
+   apply Hcyz; clear Hcyz.
+Search (_ ≤ _ + _)%PQ.
 ...
 intros.
 unfold "=="%MQ.

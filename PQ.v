@@ -358,6 +358,7 @@ f_equal.
 -replace (x1n * y1d * (y2d * x2d)) with (x1n * x2d * y1d * y2d) by flia.
  rewrite Hx; flia.
 Qed.
+Arguments PQsub_morph x1%PQ x2%PQ y1%PQ y2%PQ.
 
 Theorem PQadd_comm : ∀ x y, (x + y == y + x)%PQ.
 Proof.
