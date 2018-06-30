@@ -191,6 +191,7 @@ destruct
 -now rewrite Hx, Hy.
 -destruct (PQlt_le_dec px1 py1) as [H1| H1].
  +destruct (PQlt_le_dec px2 py2) as [H2| H2].
+  *now apply PQsub_morph.
   *idtac.
 ...
   *unfold "=="%PQ, "-"%PQ, nd; simpl.
