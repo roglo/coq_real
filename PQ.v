@@ -578,6 +578,9 @@ apply Nat.add_sub_eq_r in Hxy.
 now rewrite Nat.sub_diag in Hxy.
 Qed.
 
+Theorem PQadd_sub : ∀ x y, (x + y - y == x)%PQ.
+...
+
 (* multiplication, inversion, division *)
 
 Definition PQmul_num1 x y := (PQnum1 x + 1) * (PQnum1 y + 1) - 1.

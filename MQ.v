@@ -2,6 +2,7 @@
 
 Require Import Utf8 Arith Morphisms.
 Require Import PQ.
+Set Nested Proofs Allowed.
 
 Delimit Scope MQ_scope with MQ.
 
@@ -285,6 +286,13 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl.
    remember (PQcompare px (pz - py)) as c2 eqn:Hc2; symmetry in Hc2.
    destruct c2; [ easy | | ].
   --apply PQcompare_lt_iff in Hc2.
+    apply PQsub_morph with (x1 := py) (x2 := py) in Hc1; [ | | easy ].
+    rewrite <- Hc1 in Hc2.
+rewrite PQadd_sub in Hc2.
+...
+Search (_ + _ - _)%nat.
+
+Check PQadd_sub.
 
 ...
 intros.
