@@ -696,7 +696,30 @@ Qed.
 
 Theorem PQadd_sub_assoc: ∀ x y z, (z < y)%PQ → (x + (y - z) == x + y - z)%PQ.
 Proof.
-intros * Hzy.
+intros *.
+unfold "<"%PQ, "=="%PQ, "-"%PQ, "+"%PQ, nd; simpl.
+unfold PQadd_num1, PQsub_num1, PQadd_den1, nd; simpl.
+intros Hzy.
+do 4 rewrite Nat.add_1_r in Hzy.
+do 14 rewrite Nat.add_1_r.
+remember (S (PQnum1 x)) as xn eqn:Hxn.
+remember (S (PQden1 x)) as xd eqn:Hxd.
+remember (S (PQnum1 y)) as yn eqn:Hyn.
+remember (S (PQden1 y)) as yd eqn:Hyd.
+remember (S (PQnum1 z)) as zn eqn:Hzn.
+remember (S (PQden1 z)) as zd eqn:Hzd.
+move Hzy at bottom.
+do 2 (rewrite <- Nat.sub_succ_l; [ | subst; simpl; flia ]).
+do 4 (rewrite <- Nat.sub_succ_l; [ | subst; simpl; flia Hzy ]).
+rewrite <- Nat.sub_succ_l.
+-rewrite <- Nat.sub_succ_l.
+ +do 2 (rewrite <- Nat.sub_succ_l; [ | subst; simpl; flia ]).
+  do 6 (rewrite Nat.sub_succ, Nat.sub_0_r).
+  setoid_rewrite Nat_sub_sub_swap.
+  do 2 (rewrite Nat.sub_succ, Nat.sub_0_r).
+  do 2 rewrite Nat.mul_sub_distr_r.
+  do 3 rewrite Nat.mul_add_distr_r.
+  do 12 rewrite Nat.mul_assoc.
 ...
 
 Theorem PQlt_add_r : ∀ x y, (x < x + y)%PQ.
