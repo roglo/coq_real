@@ -627,9 +627,72 @@ Theorem PQsub_sub_distr : ∀ x y z,
 Proof.
 intros *.
 unfold "<"%PQ, "=="%PQ, "-"%PQ, "+"%PQ, nd; simpl.
-unfold PQsub_num1, PQadd_den1, nd; simpl.
+unfold PQadd_num1, PQsub_num1, PQadd_den1, nd; simpl.
 intros Hzy Hyzx.
-...
+do 4 rewrite Nat.add_1_r in Hzy.
+do 8 rewrite Nat.add_1_r in Hyzx.
+rewrite Nat_sub_sub_swap in Hyzx.
+do 3 (rewrite <- Nat.sub_succ_l in Hyzx; [ | simpl; flia Hzy ]).
+do 2 (rewrite Nat.sub_succ, Nat.sub_0_r in Hyzx).
+do 14 rewrite Nat.add_1_r.
+remember (S (PQnum1 x)) as xn eqn:Hxn.
+remember (S (PQden1 x)) as xd eqn:Hxd.
+remember (S (PQnum1 y)) as yn eqn:Hyn.
+remember (S (PQden1 y)) as yd eqn:Hyd.
+remember (S (PQnum1 z)) as zn eqn:Hzn.
+remember (S (PQden1 z)) as zd eqn:Hzd.
+move Hzy at bottom; move Hyzx at bottom.
+rewrite Nat.mul_sub_distr_r, Nat.mul_assoc in Hyzx.
+rewrite <- Nat.sub_succ_l.
+-rewrite <- Nat.sub_succ_l.
+ +rewrite <- Nat.sub_succ_l; [ | subst yd zd; simpl; flia ].
+  do 4 (rewrite <- Nat.sub_succ_l; [ | subst; simpl; flia Hzy ]).
+  rewrite <- Nat.sub_succ_l.
+  *rewrite <- Nat.sub_succ_l.
+  --rewrite <- Nat.sub_succ_l; [ | subst; simpl; flia ].
+    setoid_rewrite Nat_sub_sub_swap.
+    do 6 (rewrite Nat.sub_succ, Nat.sub_0_r).
+    rewrite Nat_sub_sub_swap.
+    rewrite Nat.sub_succ, Nat.sub_0_r.
+    do 4 rewrite Nat.mul_sub_distr_r.
+    rewrite <- Nat.sub_succ_l; [ | subst; simpl; flia ].
+    rewrite Nat.sub_succ, Nat.sub_0_r.
+    do 12 rewrite Nat.mul_assoc.
+    do 4 rewrite Nat.mul_add_distr_r.
+    rewrite Nat_sub_sub_assoc; [ flia | ].
+    split.
+   ++do 4 apply Nat.mul_le_mono_r.
+     now apply Nat.lt_le_incl.
+   ++do 3 (rewrite <- Nat.mul_add_distr_r; apply Nat.mul_le_mono_r).
+     flia Hyzx.
+  --rewrite Nat.sub_succ, Nat.sub_0_r.
+    rewrite <- Nat.sub_succ_l; [ | subst; simpl; flia ].
+    rewrite Nat.sub_succ, Nat.sub_0_r.
+    rewrite Nat.mul_add_distr_r, Nat.mul_assoc.
+    flia Hyzx.
+  *rewrite Nat.sub_succ, Nat.sub_0_r.
+   rewrite <- Nat.sub_succ_l; [ | subst; simpl; flia ].
+   rewrite Nat.sub_succ, Nat.sub_0_r.
+   rewrite Nat.mul_add_distr_r, Nat.mul_assoc.
+   flia Hyzx.
+ +rewrite <- Nat.sub_succ_l.
+  *rewrite <- Nat.sub_succ_l; [ | flia Hzy ].
+   rewrite Nat_sub_sub_swap.
+   rewrite Nat.sub_succ, Nat.sub_0_r.
+   rewrite <- Nat.sub_succ_l; [ | subst; simpl; flia ].
+   rewrite Nat.sub_succ, Nat.sub_0_r.
+   rewrite Nat.mul_sub_distr_r, Nat.mul_assoc.
+   flia Hyzx.
+  *flia Hzy.
+-rewrite <- Nat.sub_succ_l; [ | subst; simpl; flia ].
+ rewrite Nat.sub_succ, Nat.sub_0_r.
+ do 2 (rewrite <- Nat.sub_succ_l; [ | flia Hzy ]).
+ rewrite Nat_sub_sub_swap.
+ rewrite Nat.sub_succ, Nat.sub_0_r.
+ rewrite Nat.mul_sub_distr_r.
+ flia Hyzx.
+ (* c'était laborieux, faudrait peut-être une tactique ? *)
+Qed.
 
 Theorem PQlt_add_r : ∀ x y, (x < x + y)%PQ.
 Proof.

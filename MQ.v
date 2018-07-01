@@ -331,11 +331,11 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy.
    destruct c3; [ easy | easy | ].
    apply PQcompare_gt_iff in Hc3.
    injection Hv; clear Hv; intros; subst pv.
-Search (_ + _ - _)%PQ.
-Require Import ZArith.
-Search (_ + _ - _)%positive.
-symmetry.
-now apply PQsub_sub_distr.
+   now symmetry; apply PQsub_sub_distr.
+  *apply PQcompare_gt_iff in Hc2.
+   injection Hv; clear Hv; intros; subst pv.
+...
+   symmetry; apply PQsub_add_distr.
 ...
  simpl.
  remember (PQcompare (px + py) pz) as c1 eqn:Hc1; symmetry in Hc1.
