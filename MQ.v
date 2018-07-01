@@ -323,6 +323,19 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy.
   destruct c2; simpl in Hv.
   *apply PQcompare_eq_iff in Hc2.
    injection Hv; clear Hv; intros Hv; subst pv.
+   symmetry in Hc2.
+   rewrite (PQsub_morph pz py (px + py) (px + py)); [ | easy | easy | easy ].
+   apply PQadd_sub.
+  *apply PQcompare_lt_iff in Hc2.
+   remember (PQcompare px (pz - py)) as c3 eqn:Hc3; symmetry in Hc3.
+   destruct c3; [ easy | easy | ].
+   apply PQcompare_gt_iff in Hc3.
+   injection Hv; clear Hv; intros; subst pv.
+Search (_ + _ - _)%PQ.
+Require Import ZArith.
+Search (_ + _ - _)%positive.
+symmetry.
+now apply PQsub_sub_distr.
 ...
  simpl.
  remember (PQcompare (px + py) pz) as c1 eqn:Hc1; symmetry in Hc1.
