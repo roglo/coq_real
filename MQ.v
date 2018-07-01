@@ -341,14 +341,82 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy.
   apply PQcompare_gt_iff in Hc1.
   injection Hu; clear Hu; intros; subst pu.
   remember (PQcompare py pz) as c2 eqn:Hc2; symmetry in Hc2.
-  destruct c2; simpl in Hv; [ easy | | ].
+  destruct c2; simpl in Hv; [ easy | | easy ].
+  apply PQcompare_lt_iff in Hc2.
+  remember (PQcompare px (pz - py)) as c3 eqn:Hc3; symmetry in Hc3.
+  destruct c3; [ easy | | easy ].
+  apply PQcompare_lt_iff in Hc3.
+  injection Hv; clear Hv; intros; subst pv.
+  apply PQnle_gt in Hc1; apply Hc1; clear Hc1.
+  apply (PQadd_lt_mono_r _ _ py) in Hc3.
+  rewrite PQsub_add in Hc3; [ | easy ].
+  now apply PQlt_le_incl.
+ +simpl in Hu, Hv.
+  remember (PQcompare (px + py) pz) as c1 eqn:Hc1; symmetry in Hc1.
+  destruct c1; [ easy | | easy ].
+  apply PQcompare_lt_iff in Hc1.
+  injection Hu; clear Hu; intros; subst pu.
+  remember (PQcompare py pz) as c2 eqn:Hc2; symmetry in Hc2.
+  destruct c2; simpl in Hv; [ easy | | easy ].
+  apply PQcompare_lt_iff in Hc2.
+  remember (PQcompare px (pz - py)) as c3 eqn:Hc3; symmetry in Hc3.
+  destruct c3; [ | easy | easy ].
+  apply PQcompare_eq_iff in Hc3; clear Hv.
+  rewrite Hc3 in Hc1.
+  rewrite PQsub_add in Hc1; [ | easy ].
+  now apply PQlt_irrefl in Hc1.
+ +simpl in Hu, Hv.
+  remember (PQcompare (px + py) pz) as c1 eqn:Hc1; symmetry in Hc1.
+  destruct c1; [ easy | | easy ].
+  apply PQcompare_lt_iff in Hc1.
+  injection Hu; clear Hu; intros; subst pu.
+  remember (PQcompare py pz) as c2 eqn:Hc2; symmetry in Hc2.
+  destruct c2; simpl in Hv.
+  *apply PQcompare_eq_iff in Hc2.
+   injection Hv; clear Hv; intros; subst pv.
+   rewrite Hc2 in Hc1.
+   apply PQnle_gt in Hc1; apply Hc1.
+   apply PQlt_le_incl, PQlt_add_l.
   *apply PQcompare_lt_iff in Hc2.
    remember (PQcompare px (pz - py)) as c3 eqn:Hc3; symmetry in Hc3.
-   destruct c3; [ easy | | easy ].
-   apply PQcompare_lt_iff in Hc3.
+   destruct c3; [ easy | easy | ].
+   apply PQcompare_gt_iff in Hc3.
    injection Hv; clear Hv; intros; subst pv.
-   apply PQnle_gt in Hc1; apply Hc1; clear Hc1.
-Search (_ < _ - _)%PQ.
+   apply PQnle_gt in Hc3; apply Hc3; clear Hc3.
+   apply (PQadd_le_mono_r _ _ py).
+   rewrite PQsub_add; [ | easy ].
+   now apply PQlt_le_incl.
+  *apply PQcompare_gt_iff in Hc2.
+   injection Hv; clear Hv; intros; subst pv.
+   apply PQnle_gt in Hc2; apply Hc2; clear Hc2.
+   apply (PQadd_le_mono_l _ _ px).
+   apply PQlt_le_incl.
+   eapply PQlt_trans; [ apply Hc1 | apply PQlt_add_l ].
+ +simpl in Hu, Hv.
+  remember (PQcompare (px + py) pz) as c1 eqn:Hc1; symmetry in Hc1.
+  destruct c1; [ easy | | easy ].
+  apply PQcompare_lt_iff in Hc1.
+  injection Hu; clear Hu; intros; subst pu.
+  remember (PQcompare py pz) as c2 eqn:Hc2; symmetry in Hc2.
+  destruct c2; simpl in Hv; [ easy | | easy ].
+  apply PQcompare_lt_iff in Hc2.
+  remember (PQcompare px (pz - py)) as c3 eqn:Hc3; symmetry in Hc3.
+  destruct c3; [ easy | | easy ].
+  apply PQcompare_lt_iff in Hc3.
+  injection Hv; clear Hv; intros; subst pv.
+Search (_ - _ - _)%PQ.
+Search (_ - (_ + _))%PQ.
+Require Import ZArith.
+Search (_ - _ - _)%positive.
+Search (_ - (_ + _))%positive.
+Check Pos.sub_add_distr.
+...
+  apply PQsub_add_assoc.
+
+  now symmetry; apply PQsub_sub_distr.
+  *apply PQcompare_gt_iff in Hc2.
+   injection Hv; clear Hv; intros; subst pv.
+   now symmetry; apply PQadd_sub_assoc.
 ...
  simpl.
  remember (PQcompare (px + py) pz) as c1 eqn:Hc1; symmetry in Hc1.

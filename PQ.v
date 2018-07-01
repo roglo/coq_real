@@ -537,6 +537,12 @@ split; intros H.
  subst zd; simpl; flia.
 Qed.
 
+Theorem PQadd_le_mono_l : ∀ x y z, (x ≤ y ↔ z + x ≤ z + y)%PQ.
+Proof.
+setoid_rewrite PQadd_comm.
+apply PQadd_le_mono_r.
+Qed.
+
 Theorem PQadd_le_mono : ∀ x y z t,
   (x ≤ y)%PQ → (z ≤ t)%PQ → (x + z ≤ y + t)%PQ.
 Proof.
