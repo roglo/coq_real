@@ -720,7 +720,31 @@ rewrite <- Nat.sub_succ_l.
   do 2 rewrite Nat.mul_sub_distr_r.
   do 3 rewrite Nat.mul_add_distr_r.
   do 12 rewrite Nat.mul_assoc.
-...
+  do 7 rewrite <- Nat.mul_add_distr_r.
+  do 4 rewrite <- Nat.mul_sub_distr_r.
+  f_equal; f_equal; f_equal.
+  rewrite Nat.mul_sub_distr_r.
+  rewrite Nat.mul_add_distr_r.
+  replace (yn * zd * xd) with (yn * xd * zd) by flia.
+  replace (zn * yd * xd) with (zn * xd * yd) by flia.
+  apply Nat.add_sub_assoc.
+  setoid_rewrite Nat.mul_shuffle0.
+  now apply Nat.mul_le_mono_r, Nat.lt_le_incl.
+ +rewrite <- Nat.sub_succ_l; [ | subst; simpl; flia ].
+  do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
+  rewrite Nat.mul_add_distr_r, Nat.mul_assoc.
+  eapply Nat.le_trans.
+  *rewrite Nat.mul_shuffle0.
+   apply Nat.mul_le_mono_r, Nat.lt_le_incl, Hzy.
+  *rewrite Nat.mul_shuffle0.
+   apply Nat_add_le_l.
+-rewrite <- Nat.sub_succ_l; [ | subst; simpl; flia ].
+ do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
+ rewrite Nat.mul_add_distr_r, Nat.mul_assoc.
+ rewrite <- Nat.add_sub_assoc; [ subst; simpl; flia | ].
+ setoid_rewrite Nat.mul_shuffle0.
+ apply Nat.mul_le_mono_r, Nat.lt_le_incl, Hzy.
+Qed.
 
 Theorem PQlt_add_r : ∀ x y, (x < x + y)%PQ.
 Proof.
