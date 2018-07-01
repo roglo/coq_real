@@ -313,6 +313,10 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy.
   apply PQcompare_eq_iff in Hc3; clear Hv.
   rewrite Hc3 in Hc1.
   apply PQnle_gt in Hc1; apply Hc1; clear Hc1.
+  rewrite PQsub_add; [ | easy ].
+...
+  reflexivity.
+  apply PQ_le_refl.
 ...
   unfold ">"%PQ in Hc1.
   specialize (PQsub_morph) as H.

@@ -595,6 +595,33 @@ rewrite <- Nat.sub_succ_l.
  rewrite Nat.mul_add_distr_r, Nat.mul_assoc, Nat.add_sub; simpl; flia.
 Qed.
 
+Theorem PQsub_add : ∀ x y, (y < x)%PQ → (x - y + y == x)%PQ.
+Proof.
+intros x y Hxy.
+unfold "<"%PQ, nd in Hxy.
+unfold "+"%PQ, "-"%PQ, "==", nd; simpl.
+unfold PQsub_num1, PQadd_num1, PQadd_den1, nd; simpl.
+do 4 rewrite Nat.add_1_r in Hxy.
+do 8 rewrite Nat.add_1_r.
+rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+rewrite Nat.sub_succ, Nat.sub_0_r.
+do 2 (rewrite <- Nat.sub_succ_l; [ | flia Hxy ]).
+do 2 (rewrite <- Nat.sub_succ_l; [ | simpl; flia ]).
+do 2 (rewrite Nat.sub_succ, Nat.sub_0_r).
+do 3 rewrite Nat.mul_assoc.
+rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+rewrite Nat.mul_sub_distr_r.
+remember (S (PQnum1 y) * S (PQden1 x) * S (PQden1 y)) as u.
+rewrite Nat_sub_sub_swap.
+rewrite Nat.sub_add; [ rewrite Nat.mul_sub_distr_r; lia | subst u ].
+replace (S (PQden1 y)) with (1 * S (PQden1 y)) by flia.
+do 3 rewrite Nat.mul_1_l at 1.
+rewrite <- Nat.mul_sub_distr_r.
+apply Nat.mul_le_mono_r.
+rewrite Nat.sub_succ, Nat.sub_0_r.
+now apply Nat.lt_le_incl.
+Qed.
+
 Theorem PQlt_add_r : ∀ x y, (x < x + y)%PQ.
 Proof.
 intros.
