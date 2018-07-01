@@ -694,6 +694,11 @@ rewrite <- Nat.sub_succ_l.
  (* c'était laborieux, faudrait peut-être une tactique ? *)
 Qed.
 
+Theorem PQadd_sub_assoc: ∀ x y z, (z < y)%PQ → (x + (y - z) == x + y - z)%PQ.
+Proof.
+intros * Hzy.
+...
+
 Theorem PQlt_add_r : ∀ x y, (x < x + y)%PQ.
 Proof.
 intros.

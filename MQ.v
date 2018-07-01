@@ -335,7 +335,7 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy.
   *apply PQcompare_gt_iff in Hc2.
    injection Hv; clear Hv; intros; subst pv.
 ...
-   symmetry; apply PQsub_add_distr.
+   now symmetry; apply PQadd_sub_assoc.
 ...
  simpl.
  remember (PQcompare (px + py) pz) as c1 eqn:Hc1; symmetry in Hc1.
