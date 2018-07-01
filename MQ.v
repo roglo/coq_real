@@ -262,8 +262,7 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy.
 -now simpl; destruct (PQcompare py pz).
 -now simpl; destruct (PQcompare px pz).
 -simpl; apply PQadd_assoc.
--idtac.
- remember (MQpos px + MQpos py + MQneg pz) as u eqn:Hu.
+-remember (MQpos px + MQpos py + MQneg pz) as u eqn:Hu.
  remember (MQpos px + (MQpos py + MQneg pz)) as v eqn:Hv.
  symmetry in Hu, Hv; move v before u.
  destruct u as [| pu| pu], v as [| pv| pv]; try easy.
