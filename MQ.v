@@ -112,39 +112,32 @@ Qed.
 
 (* addition, opposite, subtraction *)
 
-Definition MQadd x y :=
-  match x with
-  | MQ0 => y
-  | MQpos px =>
-      match y with
-      | MQ0 => x
-      | MQpos py => MQpos (px + py)
-      | MQneg py =>
-          match PQcompare px py with
-          | Eq => MQ0
-          | Lt => MQneg (py - px)
-          | Gt => MQpos (px - py)
-          end
-      end
-  | MQneg px =>
-      match y with
-      | MQ0 => x
-      | MQpos py =>
-          match PQcompare px py with
-          | Eq => MQ0
-          | Lt => MQpos (py - px)
-          | Gt => MQneg (px - py)
-          end
-      | MQneg py => MQneg (px + py)
-      end
-  end.
-
 Definition MQopp x :=
   match x with
   | MQ0 => MQ0
   | MQpos px => MQneg px
   | MQneg px => MQpos px
   end.
+
+Definition MQadd_PQ_l px y :=
+  match y with
+  | MQ0 => MQpos px
+  | MQpos py => MQpos (px + py)
+  | MQneg py =>
+      match PQcompare px py with
+      | Eq => MQ0
+      | Lt => MQneg (py - px)
+      | Gt => MQpos (px - py)
+      end
+  end.
+
+Definition MQadd x y :=
+  match x with
+  | MQ0 => y
+  | MQpos px => MQadd_PQ_l px y
+  | MQneg px => MQopp (MQadd_PQ_l px (MQopp y))
+  end.
+
 Definition MQabs x :=
   match x with
   | MQneg px => MQpos px
@@ -264,11 +257,76 @@ Theorem MQadd_assoc : ∀ x y z, (x + y) + z == x + (y + z).
 Proof.
 intros.
 unfold "=="%MQ.
-destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl.
--now destruct (PQcompare py pz).
--now destruct (PQcompare py pz).
--now destruct (PQcompare px pz).
--apply PQadd_assoc.
+destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy.
+-now simpl; destruct (PQcompare py pz).
+-now simpl; destruct (PQcompare py pz).
+-now simpl; destruct (PQcompare px pz).
+-simpl; apply PQadd_assoc.
+-idtac.
+ remember (MQpos px + MQpos py + MQneg pz) as u eqn:Hu.
+ remember (MQpos px + (MQpos py + MQneg pz)) as v eqn:Hv.
+ symmetry in Hu, Hv; move v before u.
+ destruct u as [| pu| pu], v as [| pv| pv]; try easy.
+ +simpl in Hu, Hv.
+  remember (PQcompare (px + py) pz) as c1 eqn:Hc1; symmetry in Hc1.
+  remember (PQcompare py pz) as cyz eqn:Hcyz; symmetry in Hcyz.
+  destruct c1; [ | easy | easy ].
+  apply PQcompare_eq_iff in Hc1.
+  destruct cyz.
+  *apply PQcompare_eq_iff in Hcyz; rewrite Hcyz in Hc1.
+   now apply PQadd_no_neutral in Hc1.
+  *apply PQcompare_lt_iff in Hcyz.
+   remember (MQadd_PQ_l px (MQneg (pz - py))) as c eqn:Hc; symmetry in Hc.
+   destruct c; [ easy | | easy ].
+   simpl in Hc.
+   remember (PQcompare px (pz - py)) as c2 eqn:Hc2; symmetry in Hc2.
+   destruct c2; [ easy | easy | ].
+   apply PQcompare_gt_iff in Hc2.
+   apply (PQsub_morph py py) in Hc1; [ | apply PQlt_add_l | easy ].
+   rewrite <- Hc1, PQadd_sub in Hc2.
+   now apply PQlt_irrefl in Hc2.
+  *apply PQcompare_gt_iff in Hcyz.
+   rewrite <- Hc1 in Hcyz; apply PQnle_gt in Hcyz.
+   apply Hcyz, PQlt_le_incl, PQlt_add_l.
+ +idtac.
+...
+ simpl.
+ remember (PQcompare (px + py) pz) as c1 eqn:Hc1; symmetry in Hc1.
+ remember (PQcompare py pz) as cyz eqn:Hcyz; symmetry in Hcyz.
+ destruct c1.
+ +apply PQcompare_eq_iff in Hc1.
+  destruct cyz.
+  *apply PQcompare_eq_iff in Hcyz; rewrite Hcyz in Hc1.
+   now apply PQadd_no_neutral in Hc1.
+  *apply PQcompare_lt_iff in Hcyz.
+   remember (MQadd_PQ_l px (MQneg (pz - py))) as c eqn:Hc; symmetry in Hc.
+simpl in Hc.
+   destruct c; [ easy | | ].
+  --simpl in Hc.
+    remember (PQcompare px (pz - py)) as c2 eqn:Hc2; symmetry in Hc2.
+    destruct c2; [ easy | easy | ].
+    apply PQcompare_gt_iff in Hc2.
+    apply (PQsub_morph py py) in Hc1; [ | apply PQlt_add_l | easy ].
+    rewrite <- Hc1, PQadd_sub in Hc2.
+    now apply PQlt_irrefl in Hc2.
+  --simpl in Hc.
+    remember (PQcompare px (pz - py)) as c2 eqn:Hc2; symmetry in Hc2.
+    destruct c2; [ easy | | easy ].
+    apply PQcompare_lt_iff in Hc2.
+    rewrite (PQsub_morph py py pz (px + py)) in Hc2; [ | easy | easy | easy ].
+    rewrite PQadd_sub in Hc2.
+    now apply PQlt_irrefl in Hc2.
+  *apply PQcompare_gt_iff in Hcyz; simpl.
+   rewrite <- Hc1 in Hcyz; apply PQnle_gt in Hcyz.
+   apply Hcyz, PQlt_le_incl, PQlt_add_l.
+ +apply PQcompare_lt_iff in Hc1.
+  destruct cyz.
+  *apply PQcompare_eq_iff in Hcyz; simpl.
+   rewrite Hcyz in Hc1; apply PQnle_gt in Hc1.
+   apply Hc1, PQlt_le_incl, PQlt_add_l.
+  *apply PQcompare_lt_iff in Hcyz.
+
+...
 -remember (PQcompare (px + py) pz) as c1 eqn:Hc1; symmetry in Hc1.
  remember (PQcompare py pz) as cyz eqn:Hcyz; symmetry in Hcyz.
  destruct c1.
