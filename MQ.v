@@ -187,34 +187,28 @@ destruct (PQlt_le_dec x1 y1) as [H1| H1]; rewrite Hx, Hy in H1.
  now apply PQnlt_ge in H2.
 Qed.
 
+Theorem PQcompare_comm : ∀ {A} {a b c : A} px py,
+  match PQcompare px py with
+  | Eq => a
+  | Lt => b
+  | Gt => c
+  end =
+  match PQcompare py px with
+  | Eq => a
+  | Lt => c
+  | Gt => b
+  end.
+Admitted.
+
 Theorem MQadd_comm : ∀ x y, x + y == y + x.
 Proof.
+intros.
 assert (H : ∀ px py, MQpos px + MQneg py == MQneg py + MQpos px). {
   intros.
-  unfold "==", "+".
-  remember (PQcompare px py) as c1 eqn:Hc1; symmetry in Hc1.
-  remember (PQcompare py px) as c2 eqn:Hc2; symmetry in Hc2.
-  move c2 before c1.
-  destruct c1.
-  -apply PQcompare_eq_iff in Hc1.
-   rewrite Hc1 in Hc2.
-   destruct c2; [ easy | | ].
-   +now apply PQcompare_lt_iff, PQlt_irrefl in Hc2.
-   +now apply PQcompare_gt_iff, PQlt_irrefl in Hc2.
-  -apply PQcompare_lt_iff in Hc1.
-   destruct c2; [ | | easy ].
-   +apply PQcompare_eq_iff in Hc2; rewrite Hc2 in Hc1.
-    now apply PQlt_irrefl in Hc1.
-   +apply PQcompare_lt_iff in Hc2.
-    apply PQnle_gt in Hc2.
-    now apply Hc2, PQlt_le_incl.
-  -apply PQcompare_gt_iff in Hc1.
-   destruct c2; [ | easy | ].
-   +apply PQcompare_eq_iff in Hc2; rewrite Hc2 in Hc1.
-    now apply PQlt_irrefl in Hc1.
-   +apply PQcompare_gt_iff in Hc2.
-    apply PQnle_gt in Hc2.
-    now apply Hc2, PQlt_le_incl.
+  unfold "==", "+"; simpl.
+  rewrite PQcompare_comm.
+  remember (PQcompare py px) as c eqn:Hc; symmetry in Hc.
+  now destruct c.
 }
 now intros; destruct x, y; try apply PQadd_comm.
 Qed.
