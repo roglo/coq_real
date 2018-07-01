@@ -288,6 +288,44 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy.
   *apply PQcompare_gt_iff in Hcyz.
    rewrite <- Hc1 in Hcyz; apply PQnle_gt in Hcyz.
    apply Hcyz, PQlt_le_incl, PQlt_add_l.
+ +simpl in Hu, Hv.
+  remember (PQcompare (px + py) pz) as c1 eqn:Hc1; symmetry in Hc1.
+  destruct c1; [ | easy | easy ].
+  apply PQcompare_eq_iff in Hc1; clear Hu.
+  remember (PQcompare py pz) as c2 eqn:Hc2; symmetry in Hc2.
+  destruct c2; [ easy | | easy ].
+  apply PQcompare_lt_iff in Hc2; simpl in Hv.
+  remember (PQcompare px (pz - py)) as c3 eqn:Hc3; symmetry in Hc3.
+  destruct c3; [ easy | | easy ].
+  apply PQcompare_lt_iff in Hc3.
+  rewrite (PQsub_morph py py pz (px + py)) in Hc3; [ | easy | easy | easy ].
+  rewrite PQadd_sub in Hc3.
+  now apply PQlt_irrefl in Hc3.
+ +simpl in Hu, Hv.
+  remember (PQcompare (px + py) pz) as c1 eqn:Hc1; symmetry in Hc1.
+  destruct c1; [ easy | easy | ].
+  apply PQcompare_gt_iff in Hc1; clear Hu.
+  remember (PQcompare py pz) as c2 eqn:Hc2; symmetry in Hc2.
+  destruct c2; [ easy | | easy ].
+  apply PQcompare_lt_iff in Hc2; simpl in Hv.
+  remember (PQcompare px (pz - py)) as c3 eqn:Hc3; symmetry in Hc3.
+  destruct c3; [ | easy | easy ].
+  apply PQcompare_eq_iff in Hc3; clear Hv.
+  rewrite Hc3 in Hc1.
+  apply PQnle_gt in Hc1; apply Hc1; clear Hc1.
+...
+  unfold ">"%PQ in Hc1.
+  specialize (PQsub_morph) as H.
+...
+Search (_ < _ + _)%PQ.
+Search (_ + _ ≤ _)%PQ.
+  specialize (PQsub_morph) as H.
+
+Search (_ - _ + _)%PQ.
+
+  rewrite (PQsub_morph py py pz (px + py)) in Hc3; [ | easy | easy | ].
+  rewrite PQadd_sub in Hc3.
+  now apply PQlt_irrefl in Hc3.
  +idtac.
 ...
  simpl.
