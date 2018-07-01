@@ -334,8 +334,21 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy.
    now symmetry; apply PQsub_sub_distr.
   *apply PQcompare_gt_iff in Hc2.
    injection Hv; clear Hv; intros; subst pv.
-...
    now symmetry; apply PQadd_sub_assoc.
+ +simpl in Hu, Hv.
+  remember (PQcompare (px + py) pz) as c1 eqn:Hc1; symmetry in Hc1.
+  destruct c1; [ easy | easy | ].
+  apply PQcompare_gt_iff in Hc1.
+  injection Hu; clear Hu; intros; subst pu.
+  remember (PQcompare py pz) as c2 eqn:Hc2; symmetry in Hc2.
+  destruct c2; simpl in Hv; [ easy | | ].
+  *apply PQcompare_lt_iff in Hc2.
+   remember (PQcompare px (pz - py)) as c3 eqn:Hc3; symmetry in Hc3.
+   destruct c3; [ easy | | easy ].
+   apply PQcompare_lt_iff in Hc3.
+   injection Hv; clear Hv; intros; subst pv.
+   apply PQnle_gt in Hc1; apply Hc1; clear Hc1.
+Search (_ < _ - _)%PQ.
 ...
  simpl.
  remember (PQcompare (px + py) pz) as c1 eqn:Hc1; symmetry in Hc1.
