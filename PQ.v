@@ -486,6 +486,7 @@ destruct c1.
   apply PQnle_gt in Hc2.
   now exfalso; apply Hc2, PQlt_le_incl.
 Qed.
+Arguments PQcompare_morph x1%PQ x2%PQ Hx%PQ y1%PQ y2%PQ Hy%PQ : rename.
 
 Theorem PQadd_lt_mono_r : ∀ x y z, (x < y)%PQ ↔ (x + z < y + z)%PQ.
 Proof.

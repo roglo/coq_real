@@ -339,6 +339,33 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy;
   apply PQnle_gt in Hc1; apply Hc1; clear Hc1.
   apply PQlt_le_incl; apply PQlt_add_r.
  +destruct c3; PQcompare_iff.
+  *rewrite PQadd_comm, Hc3 in Hc1.
+   rewrite PQsub_add in Hc1; [ | easy ].
+   now apply PQlt_irrefl in Hc1.
+  *now apply PQsub_add_distr.
+  *apply PQnle_gt in Hc3; apply Hc3; clear Hc3.
+   apply (PQadd_le_mono_r _ _ py).
+   rewrite PQsub_add; [ | easy ].
+   rewrite PQadd_comm.
+   now apply PQlt_le_incl.
+ +apply PQnle_gt in Hc1; apply Hc1; clear Hc1.
+  apply PQlt_le_incl, (PQlt_trans _ py); [ easy | ].
+  apply PQlt_add_r.
+-now simpl; rewrite PQcompare_comm; destruct (PQcompare px py).
+-simpl.
+ remember (PQcompare py px) as c1 eqn:Hc1; symmetry in Hc1.
+ remember (PQcompare py pz) as c2 eqn:Hc2; symmetry in Hc2.
+ destruct c1, c2; simpl; repeat PQcompare_iff.
+ +now symmetry in Hc2; transitivity py.
+ +now rewrite <- Hc1, PQadd_comm, PQsub_add.
+ +symmetry in Hc1.
+  rewrite (PQcompare_morph px py Hc1 (py - pz) (py - pz)); [ | easy ].
+  remember (PQcompare py (py - pz)) as c3 eqn:Hc3; symmetry in Hc3.
+  destruct c3; simpl; PQcompare_iff.
+  symmetry in Hc3; revert Hc3.
+  apply PQsub_no_neutral.
+...
+PQadd_no_neutral: ∀ x y : PQ, (y + x ≠≠ x)%PQ
 ...
 destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy;
   MQadd_assoc_morph_tac.
