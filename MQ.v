@@ -305,14 +305,8 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy;
 -rewrite Hc3 in Hc1.
  rewrite PQsub_add in Hc1; [ | easy ].
  now apply PQlt_irrefl in Hc1.
--Search (_ - (_ + _))%PQ.
-rewrite PQsub_add_distr; [ | easy ].
-Search (_ - _ - _)%PQ.
-Require Import ZArith.
-Search (_ - _ - _)%positive.
-Search (_ - (_ + _))%positive.
-Check Pos.sub_add_distr.
-apply PQsub_sub_swap.
+-rewrite PQsub_add_distr; [ | easy ].
+ now apply PQsub_sub_swap.
 -idtac.
 
 ...
