@@ -628,6 +628,17 @@ rewrite Nat.sub_succ, Nat.sub_0_r.
 now apply Nat.lt_le_incl.
 Qed.
 
+Theorem PQsub_sub_swap : ∀ x y z, (x - y - z == x - z - y)%PQ.
+Proof.
+intros.
+unfold "-"%PQ, "=="%PQ.
+unfold PQsub_num1, PQadd_den1, nd; simpl.
+...
+
+Theorem PQsub_add_distr
+     : ∀ p q r, (q + r < p)%PQ → (p - (q + r) == p - q - r)%PQ.
+...
+
 Theorem PQsub_sub_distr : ∀ x y z,
   (z < y)%PQ → (y - z < x)%PQ → (x - (y - z) == x + z - y)%PQ.
 Proof.

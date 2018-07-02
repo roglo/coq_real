@@ -253,14 +253,69 @@ Proof. easy. Qed.
 Theorem MQabs_opp : ∀ x, MQabs (- x) == MQabs x.
 Proof. now intros x; destruct x. Qed.
 
+Ltac app_comp_iff_tac :=
+  match goal with
+  | [ H : PQcompare _ _ = Eq |- _ ] =>
+      apply PQcompare_eq_iff in H; app_comp_iff_tac
+  | [ H : PQcompare _ _ = Lt |- _ ] =>
+      apply PQcompare_lt_iff in H; app_comp_iff_tac
+  | [ H : PQcompare _ _ = Gt |- _ ] =>
+      apply PQcompare_gt_iff in H; app_comp_iff_tac
+  | _ => idtac
+  end.
+
+Ltac MQadd_assoc_morph_tac :=
+  match goal with
+  | [ px : PQ, py : PQ, pz : PQ |- _ : (_ + _ + _ == _ + (_ + _))%PQ ] =>
+    apply PQadd_assoc
+  | [ px : PQ, py : PQ, pz : PQ |- _ ] =>
+    simpl;
+    remember (PQcompare (px + py) pz) as c1 eqn:Hc1; symmetry in Hc1;
+    remember (PQcompare py pz) as c2 eqn:Hc2; symmetry in Hc2;
+    remember (PQcompare px (pz - py)) as c3 eqn:Hc3; symmetry in Hc3;
+    move c2 before c1; move c3 before c2;
+    destruct c1, c2; app_comp_iff_tac;
+    simpl;
+    try (rewrite Hc3; destruct c3; (try easy; app_comp_iff_tac))
+  | _ => idtac
+  end.
+
 Theorem MQadd_assoc : ∀ x y z, (x + y) + z == x + (y + z).
 Proof.
 intros.
 unfold "=="%MQ.
-destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy.
+destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy;
+  MQadd_assoc_morph_tac.
 -now simpl; destruct (PQcompare py pz).
 -now simpl; destruct (PQcompare py pz).
 -now simpl; destruct (PQcompare px pz).
+(**)
+-rewrite Hc2 in Hc1.
+ now apply PQadd_no_neutral in Hc1.
+-apply (PQsub_morph py py) in Hc1; [ | apply PQlt_add_l | easy ].
+ rewrite <- Hc1, PQadd_sub in Hc3.
+ now apply PQlt_irrefl in Hc3.
+-apply (PQsub_morph py py) in Hc1; [ | apply PQlt_add_l | easy ].
+ rewrite <- Hc1, PQadd_sub in Hc3.
+ now apply PQlt_irrefl in Hc3.
+-rewrite <- Hc1 in Hc2; apply PQnle_gt in Hc2.
+ apply Hc2, PQlt_le_incl, PQlt_add_l.
+-rewrite <- Hc2 in Hc1; apply PQnle_gt in Hc1.
+ apply Hc1, PQlt_le_incl, PQlt_add_l.
+-rewrite Hc3 in Hc1.
+ rewrite PQsub_add in Hc1; [ | easy ].
+ now apply PQlt_irrefl in Hc1.
+-Search (_ - (_ + _))%PQ.
+rewrite PQsub_add_distr; [ | easy ].
+Search (_ - _ - _)%PQ.
+Require Import ZArith.
+Search (_ - _ - _)%positive.
+Search (_ - (_ + _))%positive.
+Check Pos.sub_add_distr.
+apply PQsub_sub_swap.
+-idtac.
+
+...
 -simpl; apply PQadd_assoc.
 -remember (MQpos px + MQpos py + MQneg pz) as u eqn:Hu.
  remember (MQpos px + (MQpos py + MQneg pz)) as v eqn:Hv.
@@ -284,6 +339,7 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy.
    apply (PQsub_morph py py) in Hc1; [ | apply PQlt_add_l | easy ].
    rewrite <- Hc1, PQadd_sub in Hc2.
    now apply PQlt_irrefl in Hc2.
+...
   *apply PQcompare_gt_iff in Hcyz.
    rewrite <- Hc1 in Hcyz; apply PQnle_gt in Hcyz.
    apply Hcyz, PQlt_le_incl, PQlt_add_l.
