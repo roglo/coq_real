@@ -573,6 +573,33 @@ apply Nat.add_le_mono.
  now apply Nat.mul_le_mono_r.
 Qed.
 
+Ltac split_var2 x xn xd Hpn Hpd :=
+  remember (S (PQnum1 x)) as xn eqn:Heqxn;
+  remember (S (PQden1 x)) as xd eqn:Heqxd;
+  move xn at top; move xd at top;
+  assert (Hpn : 0 < xn) by flia Heqxn;
+  assert (Hpd : 0 < xd) by flia Heqxd;
+  clear Heqxn Heqxd.
+
+Ltac PQtac1 :=
+  unfold "+"%PQ, "-"%PQ, "<"%PQ, "=="%PQ, "≤"%PQ;
+  unfold PQadd_num1, PQsub_num1, PQadd_den1, nd; simpl;
+  repeat rewrite Nat.add_1_r.
+
+Ltac PQtac2 :=
+  rewrite <- Nat.sub_succ_l;
+  try (rewrite Nat.sub_succ, Nat.sub_0_r);
+  match goal with
+  | [ |- 1 ≤ S _ * _ ] => try (simpl; flia)
+  | [ |- 1 ≤ S _ * _ * _ ] => try (simpl; flia)
+  | _ => idtac
+  end.
+
+Ltac PQtac3 :=
+  repeat rewrite Nat.mul_sub_distr_r;
+  repeat rewrite Nat.mul_add_distr_r;
+  repeat rewrite Nat.mul_assoc.
+
 Theorem PQadd_no_neutral : ∀ x y, (y + x ≠≠ x)%PQ.
 Proof.
 intros x y Hxy.
@@ -585,6 +612,20 @@ rewrite Nat.mul_add_distr_r in Hxy.
 rewrite Nat.mul_assoc in Hxy.
 apply Nat.add_sub_eq_r in Hxy.
 now rewrite Nat.sub_diag in Hxy.
+Qed.
+
+Theorem PQsub_no_neutral : ∀ x y, (y < x)%PQ → (x - y ≠≠ x)%PQ.
+Proof.
+intros *; PQtac1; intros Hyz.
+PQtac2; [ | flia Hyz ].
+PQtac3.
+rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+rewrite Nat.sub_succ, Nat.sub_0_r, Nat.mul_assoc.
+intros H.
+apply Nat.add_sub_eq_nz in H; [ | simpl; flia ].
+rewrite Nat.add_comm, Nat.mul_shuffle0 in H.
+rewrite <- Nat.add_0_r in H.
+now apply Nat.add_cancel_l in H.
 Qed.
 
 Theorem PQadd_sub : ∀ x y, (x + y - y == x)%PQ.
@@ -650,33 +691,6 @@ intros.
 rewrite PQadd_comm.
 apply PQlt_add_r.
 Qed.
-
-Ltac split_var2 x xn xd Hpn Hpd :=
-  remember (S (PQnum1 x)) as xn eqn:Heqxn;
-  remember (S (PQden1 x)) as xd eqn:Heqxd;
-  move xn at top; move xd at top;
-  assert (Hpn : 0 < xn) by flia Heqxn;
-  assert (Hpd : 0 < xd) by flia Heqxd;
-  clear Heqxn Heqxd.
-
-Ltac PQtac1 :=
-  unfold "+"%PQ, "-"%PQ, "<"%PQ, "=="%PQ, "≤"%PQ;
-  unfold PQadd_num1, PQsub_num1, PQadd_den1, nd; simpl;
-  repeat rewrite Nat.add_1_r.
-
-Ltac PQtac2 :=
-  rewrite <- Nat.sub_succ_l;
-  try (rewrite Nat.sub_succ, Nat.sub_0_r);
-  match goal with
-  | [ |- 1 ≤ S _ * _ ] => try (simpl; flia)
-  | [ |- 1 ≤ S _ * _ * _ ] => try (simpl; flia)
-  | _ => idtac
-  end.
-
-Ltac PQtac3 :=
-  repeat rewrite Nat.mul_sub_distr_r;
-  repeat rewrite Nat.mul_add_distr_r;
-  repeat rewrite Nat.mul_assoc.
 
 Theorem PQsub_add_distr : ∀ x y z,
   (y + z < x)%PQ → (x - (y + z) == x - y - z)%PQ.

@@ -254,6 +254,7 @@ eapply MQeq_trans.
 ...
 *)
 
+(*
 Ltac MQadd_assoc_morph_tac :=
   match goal with
   | [ px : PQ, py : PQ, pz : PQ |- _ : (_ + _ + _ == _ + (_ + _))%PQ ] =>
@@ -269,7 +270,9 @@ Ltac MQadd_assoc_morph_tac :=
     try (rewrite Hc3; destruct c3; (try easy; repeat PQcompare_iff))
   | _ => idtac
   end.
+*)
 
+(*
 Ltac MQadd_assoc_morph_tac2 :=
   match goal with
   | [ px : PQ, py : PQ, pz : PQ |- _ : (_ + _ + _ == _ + (_ + _))%PQ ] =>
@@ -285,6 +288,7 @@ Ltac MQadd_assoc_morph_tac2 :=
     try (rewrite Hc3; destruct c3; (try easy; repeat PQcompare_iff))
   | _ => idtac
   end.
+*)
 
 Theorem MQadd_assoc : ∀ x y z, (x + y) + z == x + (y + z).
 Proof.
@@ -362,10 +366,8 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy;
   rewrite (PQcompare_morph px py Hc1 (py - pz) (py - pz)); [ | easy ].
   remember (PQcompare py (py - pz)) as c3 eqn:Hc3; symmetry in Hc3.
   destruct c3; simpl; PQcompare_iff.
-  symmetry in Hc3; revert Hc3.
-  apply PQsub_no_neutral.
-...
-PQadd_no_neutral: ∀ x y : PQ, (y + x ≠≠ x)%PQ
+  *now symmetry in Hc3; apply PQsub_no_neutral in Hc3.
+  *idtac.
 ...
 destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy;
   MQadd_assoc_morph_tac.
