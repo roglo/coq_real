@@ -659,7 +659,7 @@ Ltac split_var2 x xn xd Hpn Hpd :=
   clear Heqxn Heqxd.
 
 Ltac PQtac1 :=
-  unfold "+"%PQ, "-"%PQ, "<"%PQ, "=="%PQ;
+  unfold "+"%PQ, "-"%PQ, "<"%PQ, "=="%PQ, "≤"%PQ;
   unfold PQadd_num1, PQsub_num1, PQadd_den1, nd; simpl;
   repeat rewrite Nat.add_1_r.
 

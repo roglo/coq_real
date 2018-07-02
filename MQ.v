@@ -309,16 +309,36 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy;
  +rewrite Hc2, PQadd_comm in Hc1; symmetry in Hc1; revert Hc1.
   apply PQadd_no_neutral.
  +destruct c3; [ easy | | ]; PQcompare_iff.
-...
-
-rewrite <- PQadd_comm.
-
-
-; destruct (PQcompare px pz).
-
-
-
-
+  *rewrite PQadd_comm in Hc1.
+   rewrite (PQsub_morph py py pz (px + py)) in Hc3; [ | easy | easy | easy ].
+   rewrite PQadd_sub in Hc3.
+   now apply PQlt_irrefl in Hc3.
+  *rewrite PQadd_comm in Hc1.
+   rewrite (PQsub_morph py py pz (px + py)) in Hc3; [ | easy | easy | easy ].
+   rewrite PQadd_sub in Hc3.
+   now apply PQlt_irrefl in Hc3.
+ +rewrite Hc1 in Hc2.
+  apply PQnle_gt in Hc2; apply Hc2; clear Hc2.
+  apply PQlt_le_incl, PQlt_add_r.
+ +rewrite (PQsub_morph pz pz (py + px) (px + pz)); [ | easy | easy | ].
+  *apply PQadd_sub.
+  *now rewrite Hc2, PQadd_comm.
+ +destruct c3; PQcompare_iff.
+  *rewrite PQadd_comm, Hc3 in Hc1.
+   rewrite PQsub_add in Hc1; [ | easy ].
+   now apply PQlt_irrefl in Hc1.
+  *apply PQnle_gt in Hc3; apply Hc3; clear Hc3.
+   apply (PQadd_le_mono_r _ _ py).
+   rewrite PQsub_add; [ | easy ].
+   now rewrite PQadd_comm; apply PQlt_le_incl.
+  *rewrite PQsub_sub_distr; [ | easy | easy ].
+   apply PQsub_morph; [ easy | easy | apply PQadd_comm ].
+ +rewrite PQadd_sub_assoc; [ | easy ].
+  apply PQsub_morph; [ easy | easy | apply PQadd_comm ].
+ +rewrite Hc2 in Hc1.
+  apply PQnle_gt in Hc1; apply Hc1; clear Hc1.
+  apply PQlt_le_incl; apply PQlt_add_r.
+ +destruct c3; PQcompare_iff.
 ...
 destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy;
   MQadd_assoc_morph_tac.
