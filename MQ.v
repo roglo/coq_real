@@ -284,6 +284,8 @@ Theorem MQadd_assoc : ∀ x y z, (x + y) + z == x + (y + z).
 Proof.
 intros.
 unfold "=="%MQ.
+destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy.
+,,,
 destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy;
   MQadd_assoc_morph_tac.
 -now simpl; destruct (PQcompare py pz).
