@@ -180,19 +180,6 @@ destruct (PQlt_le_dec x1 y1) as [H1| H1]; rewrite Hx, Hy in H1.
  now apply PQnlt_ge in H2.
 Qed.
 
-Theorem PQcompare_comm : ∀ {A} {a b c : A} px py,
-  match PQcompare px py with
-  | Eq => a
-  | Lt => b
-  | Gt => c
-  end =
-  match PQcompare py px with
-  | Eq => a
-  | Lt => c
-  | Gt => b
-  end.
-Admitted.
-
 Theorem MQadd_comm : ∀ x y, x + y == y + x.
 Proof.
 intros.
@@ -253,16 +240,19 @@ Proof. easy. Qed.
 Theorem MQabs_opp : ∀ x, MQabs (- x) == MQabs x.
 Proof. now intros x; destruct x. Qed.
 
-Ltac app_comp_iff_tac :=
-  match goal with
-  | [ H : PQcompare _ _ = Eq |- _ ] =>
-      apply PQcompare_eq_iff in H; app_comp_iff_tac
-  | [ H : PQcompare _ _ = Lt |- _ ] =>
-      apply PQcompare_lt_iff in H; app_comp_iff_tac
-  | [ H : PQcompare _ _ = Gt |- _ ] =>
-      apply PQcompare_gt_iff in H; app_comp_iff_tac
-  | _ => idtac
-  end.
+(*
+Theorem MQadd_add_swap : ∀ x y z, x + y + z == x + z + y.
+Proof.
+intros.
+rewrite MQadd_comm.
+remember (x + y) as t eqn:H.
+assert (Ht : t == x + y) by now subst t.
+rewrite MQadd_comm in Ht; rewrite Ht.
+rewrite MQadd_comm in Heqt.
+Search (_ + _ == _ + _)%MQ.
+eapply MQeq_trans.
+...
+*)
 
 Ltac MQadd_assoc_morph_tac :=
   match goal with
@@ -274,18 +264,62 @@ Ltac MQadd_assoc_morph_tac :=
     remember (PQcompare py pz) as c2 eqn:Hc2; symmetry in Hc2;
     remember (PQcompare px (pz - py)) as c3 eqn:Hc3; symmetry in Hc3;
     move c2 before c1; move c3 before c2;
-    destruct c1, c2; app_comp_iff_tac;
+    destruct c1, c2; repeat PQcompare_iff;
     simpl;
-    try (rewrite Hc3; destruct c3; (try easy; app_comp_iff_tac))
+    try (rewrite Hc3; destruct c3; (try easy; repeat PQcompare_iff))
+  | _ => idtac
+  end.
+
+Ltac MQadd_assoc_morph_tac2 :=
+  match goal with
+  | [ px : PQ, py : PQ, pz : PQ |- _ : (_ + _ + _ == _ + (_ + _))%PQ ] =>
+    apply PQadd_assoc
+  | [ px : PQ, py : PQ, pz : PQ |- _ ] =>
+    simpl;
+    remember (PQcompare pz (py + px) pz) as c1 eqn:Hc1; symmetry in Hc1;
+    remember (PQcompare py pz) as c2 eqn:Hc2; symmetry in Hc2;
+    remember (PQcompare px (pz - py)) as c3 eqn:Hc3; symmetry in Hc3;
+    move c2 before c1; move c3 before c2;
+    destruct c1, c2; repeat PQcompare_iff;
+    simpl;
+    try (rewrite Hc3; destruct c3; (try easy; repeat PQcompare_iff))
   | _ => idtac
   end.
 
 Theorem MQadd_assoc : ∀ x y z, (x + y) + z == x + (y + z).
 Proof.
 intros.
+rewrite MQadd_comm.
+remember (x + y) as t eqn:H.
+assert (Ht : t == x + y) by now subst t.
+rewrite MQadd_comm in Ht; rewrite Ht.
+clear t H Ht.
 unfold "=="%MQ.
-destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy.
-,,,
+destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy;
+  try apply PQadd_comm.
+-now simpl; rewrite PQcompare_comm; destruct (PQcompare py pz).
+-now simpl; rewrite PQcompare_comm; destruct (PQcompare py pz).
+-now simpl; rewrite PQcompare_comm; destruct (PQcompare px pz).
+-simpl; rewrite <- PQadd_assoc, PQadd_comm; apply PQadd_cancel_l, PQadd_comm.
+-simpl.
+ remember (PQcompare pz (py + px)) as c1 eqn:Hc1; symmetry in Hc1.
+ remember (PQcompare py pz) as c2 eqn:Hc2; symmetry in Hc2.
+ remember (PQcompare px (pz - py)) as c3 eqn:Hc3; symmetry in Hc3.
+ destruct c1, c2; repeat PQcompare_iff; simpl; try rewrite Hc3.
+ +rewrite Hc2, PQadd_comm in Hc1; symmetry in Hc1; revert Hc1.
+  apply PQadd_no_neutral.
+ +destruct c3; [ easy | | ]; PQcompare_iff.
+...
+
+rewrite <- PQadd_comm.
+
+
+; destruct (PQcompare px pz).
+
+
+
+
+...
 destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy;
   MQadd_assoc_morph_tac.
 -now simpl; destruct (PQcompare py pz).
@@ -896,7 +930,7 @@ Set Printing All.
  rewrite H.
 ...
 
-Theorem MQadd_shuffle0 : ∀ x y z, (x + y + z == x + z + y)%MQ.
+Theorem MQadd_add_swap : ∀ x y z, (x + y + z == x + z + y)%MQ.
 Proof.
 intros.
 do 2 rewrite MQadd_assoc.

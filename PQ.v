@@ -797,6 +797,24 @@ rewrite <- Nat.sub_succ_l.
  apply Nat.mul_le_mono_r, Nat.lt_le_incl, Hzy.
 Qed.
 
+Theorem PQadd_cancel_l : ∀ x y z, (z + x == z + y ↔ x == y)%PQ.
+Proof.
+intros.
+split; intros H; [ | now rewrite H ].
+revert H; PQtac1; intros.
+do 4 (rewrite <- Nat.sub_succ_l in H; [ | simpl; flia ]).
+do 4 rewrite Nat.sub_succ, Nat.sub_0_r in H.
+setoid_rewrite Nat.mul_comm in H.
+do 2 rewrite <- Nat.mul_assoc in H.
+apply Nat.mul_cancel_l in H; [ | easy ].
+setoid_rewrite Nat.mul_comm in H.
+do 2 rewrite Nat.mul_add_distr_r in H.
+rewrite Nat.mul_shuffle0 in H.
+apply Nat.add_cancel_l in H.
+setoid_rewrite Nat.mul_shuffle0 in H.
+now apply Nat.mul_cancel_r in H.
+Qed.
+
 (* multiplication, inversion, division *)
 
 Definition PQmul_num1 x y := (PQnum1 x + 1) * (PQnum1 y + 1) - 1.
@@ -897,3 +915,35 @@ Qed.
 
 Theorem PQinv_involutive: ∀ x, (/ / x == x)%PQ.
 Proof. easy. Qed.
+
+Ltac PQcompare_iff :=
+  match goal with
+  | [ H : PQcompare _ _ = Eq |- _ ] => apply PQcompare_eq_iff in H
+  | [ H : PQcompare _ _ = Lt |- _ ] => apply PQcompare_lt_iff in H
+  | [ H : PQcompare _ _ = Gt |- _ ] => apply PQcompare_gt_iff in H
+  end.
+
+Theorem PQcompare_comm : ∀ {A} {a b c : A} px py,
+  match PQcompare px py with
+  | Eq => a
+  | Lt => b
+  | Gt => c
+  end =
+  match PQcompare py px with
+  | Eq => a
+  | Lt => c
+  | Gt => b
+  end.
+Proof.
+intros.
+remember (PQcompare px py) as b1 eqn:Hb1; symmetry in Hb1.
+remember (PQcompare py px) as b2 eqn:Hb2; symmetry in Hb2.
+move b2 before b1.
+destruct b1, b2; try easy; repeat PQcompare_iff.
+-now rewrite Hb1 in Hb2; apply PQlt_irrefl in Hb2.
+-now rewrite Hb1 in Hb2; apply PQlt_irrefl in Hb2.
+-now rewrite Hb2 in Hb1; apply PQlt_irrefl in Hb1.
+-now apply PQnle_gt in Hb2; exfalso; apply Hb2; apply PQlt_le_incl.
+-now rewrite Hb2 in Hb1; apply PQlt_irrefl in Hb1.
+-now apply PQnle_gt in Hb2; exfalso; apply Hb2; apply PQlt_le_incl.
+Qed.
