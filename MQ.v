@@ -307,6 +307,16 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy;
  now apply PQlt_irrefl in Hc1.
 -rewrite PQsub_add_distr; [ | easy ].
  now apply PQsub_sub_swap.
+-apply PQnle_gt in Hc3; apply Hc3; clear Hc3.
+ apply (PQadd_le_mono_r _ _ py).
+ rewrite PQsub_add; [ | easy ].
+ now apply PQlt_le_incl.
+-apply PQnle_gt in Hc2; apply Hc2; clear Hc2.
+ apply PQlt_le_incl.
+ apply (PQlt_trans _ (px + py)); [ apply PQlt_add_l | easy ].
+-rewrite <- Hc2 in Hc1.
+ rewrite <- (PQsub_morph py pz); [ | apply Hc1 | easy | easy ].
+ apply PQadd_sub.
 -idtac.
 
 ...

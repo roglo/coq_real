@@ -410,6 +410,7 @@ apply (Nat.le_trans _ ((PQnum1 y + 1) * (PQden1 x + 1) * (PQden1 z + 1))).
 -setoid_rewrite Nat.mul_shuffle0.
  apply Nat.mul_le_mono_pos_r; [ flia | easy ].
 Qed.
+Arguments PQle_trans x%PQ y%PQ z%PQ.
 
 Theorem PQlt_trans : ∀ x y z, (x < y)%PQ → (y < z)%PQ → (x < z)%PQ.
 Proof.
