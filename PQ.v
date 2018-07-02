@@ -628,11 +628,39 @@ rewrite Nat.sub_succ, Nat.sub_0_r.
 now apply Nat.lt_le_incl.
 Qed.
 
+Ltac split_var2 x xn xd Hpn Hpd :=
+  remember (S (PQnum1 x)) as xn eqn:Heqxn;
+  remember (S (PQden1 x)) as xd eqn:Heqxd;
+  move xn at top; move xd at top;
+  assert (Hpn : 0 < xn) by flia Heqxn;
+  assert (Hpd : 0 < xd) by flia Heqxd;
+  clear Heqxn Heqxd.
+
+Ltac PQtac :=
+  unfold "+"%PQ, "-"%PQ, "=="%PQ;
+  unfold PQadd_num1, PQsub_num1, PQadd_den1, nd; simpl;
+  repeat rewrite Nat.add_1_r;
+  repeat
+    (rewrite <- Nat.sub_succ_l; try (rewrite Nat.sub_succ, Nat.sub_0_r);
+     match goal with
+     | [ |- 1 ≤ S _ * _ ] => try (simpl; flia)
+     | [ |- 1 ≤ S _ * _ * _ ] => try (simpl; flia)
+     | _ => idtac
+     end);
+  repeat rewrite Nat.mul_sub_distr_r;
+  repeat rewrite Nat.mul_assoc.
+
 Theorem PQsub_sub_swap : ∀ x y z, (x - y - z == x - z - y)%PQ.
 Proof.
-intros.
-unfold "-"%PQ, "=="%PQ.
-unfold PQsub_num1, PQadd_den1, nd; simpl.
+intros; PQtac.
+-split_var2 x xn xd Hxn Hxd.
+ split_var2 y yn yd Hyn Hyd.
+ split_var2 z zn zd Hzn Hzd.
+ flia.
+-split_var2 x xn xd Hxn Hxd.
+ split_var2 y yn yd Hyn Hyd.
+ split_var2 z zn zd Hzn Hzd.
+
 ...
 
 Theorem PQsub_add_distr
