@@ -283,14 +283,87 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl.
    rewrite PQadd_comm in Hc3.
    exfalso; apply PQnle_gt in Hc3; apply Hc3.
    now apply PQlt_le_incl.
-  *now f_equal; apply PQsub_add_distr.
+  *now f_equal; rewrite PQsub_add_distr.
  +apply PQnle_gt in Hc2.
   exfalso; apply Hc2; apply PQlt_le_incl.
   apply (PQlt_trans _ (px + py)); [ | easy ].
   apply PQlt_add_r.
  +f_equal.
-(* est-ce que c'est bon, ça ? Si c'est pas bon, alors le théorème est
-   faux et il faut que je l'applique avec "==", pas avec "=" *)
+  (* il suffit que |z| ≠ |x| → contradiction *)
+  admit.
+ +remember (PQcompare (pz - px) py) as c3 eqn:Hc3; symmetry in Hc3.
+  destruct c3; PQcompare_iff; simpl.
+  *rewrite PQadd_comm, <- Hc3 in Hc1.
+   rewrite PQsub_add in Hc1; [ | easy ].
+   now apply PQlt_irrefl in Hc1.
+  *rewrite PQadd_comm; symmetry.
+   now f_equal; rewrite PQsub_sub_distr.
+  *apply (PQadd_lt_mono_r _ _ px) in Hc3.
+   rewrite PQsub_add in Hc3; [ | easy ].
+   rewrite PQadd_comm in Hc3.
+   exfalso; apply PQnle_gt in Hc3; apply Hc3.
+   now apply PQlt_le_incl.
+ +f_equal.
+  rewrite PQadd_comm.
+  rewrite <- PQadd_sub_assoc; [ | easy ].
+  apply PQadd_comm.
+-now destruct (PQcompare px py).
+-remember (PQcompare (px + pz) py) as c1 eqn:Hc1; symmetry in Hc1.
+ remember (PQcompare px py) as c2 eqn:Hc2; symmetry in Hc2.
+ move c2 before c1.
+ destruct c1, c2; repeat PQcompare_iff.
+ +now rewrite Hc2, PQadd_comm in Hc1; apply PQadd_no_neutral in Hc1.
+ +remember (PQcompare (py - px) pz) as c3 eqn:Hc3; symmetry in Hc3.
+  destruct c3; PQcompare_iff; [ easy | | ].
+  *apply (PQadd_lt_mono_r _ _ px) in Hc3.
+   rewrite PQsub_add in Hc3; [ | easy ].
+   rewrite PQadd_comm, Hc1 in Hc3.
+   now apply PQlt_irrefl in Hc3.
+  *apply (PQadd_lt_mono_r _ _ px) in Hc3.
+   rewrite PQsub_add in Hc3; [ | easy ].
+   rewrite PQadd_comm, Hc1 in Hc3.
+   now apply PQlt_irrefl in Hc3.
+ +rewrite <- Hc1 in Hc2.
+  exfalso; apply PQnle_gt in Hc2; apply Hc2.
+  apply PQlt_le_incl, PQlt_add_r.
+ +rewrite Hc2 in Hc1.
+  exfalso; apply PQnle_gt in Hc1; apply Hc1.
+  apply PQlt_le_incl, PQlt_add_r.
+ +remember (PQcompare (py - px) pz) as c3 eqn:Hc3; symmetry in Hc3.
+  destruct c3; PQcompare_iff; simpl.
+  *rewrite PQadd_comm, <- Hc3 in Hc1.
+   rewrite PQsub_add in Hc1; [ | easy ].
+   now apply PQlt_irrefl in Hc1.
+  *apply (PQadd_lt_mono_r _ _ px) in Hc3.
+   rewrite PQsub_add in Hc3; [ | easy ].
+   rewrite PQadd_comm in Hc3.
+   exfalso; apply PQnle_gt in Hc3; apply Hc3.
+   now apply PQlt_le_incl.
+  *now f_equal; rewrite PQsub_add_distr.
+ +apply PQnle_gt in Hc2.
+  exfalso; apply Hc2; apply PQlt_le_incl.
+  apply (PQlt_trans _ (px + pz)); [ | easy ].
+  apply PQlt_add_r.
+ +f_equal.
+  (* il suffit que |y| ≠ |x| → contradiction *)
+  admit.
+ +remember (PQcompare (py - px) pz) as c3 eqn:Hc3; symmetry in Hc3.
+  destruct c3; PQcompare_iff; simpl.
+  *rewrite PQadd_comm, <- Hc3 in Hc1.
+   rewrite PQsub_add in Hc1; [ | easy ].
+   now apply PQlt_irrefl in Hc1.
+  *rewrite PQadd_comm; symmetry.
+   now f_equal; rewrite PQsub_sub_distr.
+  *apply (PQadd_lt_mono_r _ _ px) in Hc3.
+   rewrite PQsub_add in Hc3; [ | easy ].
+   rewrite PQadd_comm in Hc3.
+   exfalso; apply PQnle_gt in Hc3; apply Hc3.
+   now apply PQlt_le_incl.
+ +f_equal.
+  rewrite PQadd_comm.
+  rewrite PQadd_sub_assoc; [ | easy ].
+  now rewrite PQadd_comm.
+-idtac.
 ...
 
 (*
