@@ -505,6 +505,13 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl.
  apply MQopp_inj_wd.
  do 2 rewrite MQopp_match_comp; simpl.
  apply PQadd_swap_lemma2.
+-do 2 rewrite MQopp_match_comp; simpl.
+ rewrite PQcompare_comm, MQmatch_match_comp.
+ rewrite MQmatch_opp_comp, PQcompare_comm; symmetry.
+ rewrite MQmatch_opp_comp; simpl.
+ apply MQopp_inj_wd.
+ rewrite MQopp_match_comp; simpl.
+ apply PQadd_swap_lemma1.
 -idtac.
 ...
 
