@@ -700,6 +700,18 @@ rewrite PQadd_comm.
 apply PQlt_add_r.
 Qed.
 
+Theorem PQsub_lt : ∀ x y, (y < x)%PQ → (x - y < x)%PQ.
+Proof.
+intros * Hyx.
+revert Hyx; PQtac1; intros.
+repeat PQtac2.
+-rewrite Nat.mul_assoc, Nat.mul_shuffle0.
+ apply Nat.mul_lt_mono_pos_r; [ apply Nat.lt_0_succ | ].
+ apply Nat.sub_lt; [ | simpl; apply Nat.lt_0_succ ].
+ now apply Nat.lt_le_incl.
+-flia Hyx.
+Qed.
+
 (* Leibnitz equality applies *)
 Theorem PQsub_add_distr : ∀ x y z,
   (y < x)%PQ → (x - (y + z))%PQ = (x - y - z)%PQ.
@@ -751,6 +763,22 @@ f_equal; f_equal.
 rewrite Nat.add_sub_assoc.
 -f_equal; [ f_equal; apply Nat.mul_shuffle0 | apply Nat.mul_shuffle0 ].
 -now apply Nat.mul_le_mono_r, Nat.lt_le_incl.
+Qed.
+
+(* Leibnitz equality applies *)
+Theorem PQadd_sub_swap : ∀ x y z, (z < x)%PQ → (x + y - z = x - z + y)%PQ.
+Proof.
+intros * Hzx.
+revert Hzx; PQtac1; intros.
+repeat PQtac2; [ | flia Hzx | simpl; flia ].
+PQtac3.
+f_equal; [ f_equal | now rewrite Nat.mul_shuffle0 ].
+rewrite Nat.add_sub_swap.
+-f_equal; f_equal; apply Nat.mul_shuffle0.
+-setoid_rewrite Nat.mul_shuffle0.
+ rewrite Nat.mul_shuffle0.
+ apply Nat.mul_le_mono_pos_r; [ apply Nat.lt_0_succ | ].
+ now apply Nat.lt_le_incl.
 Qed.
 
 Theorem PQadd_cancel_l : ∀ x y z, (z + x == z + y ↔ x == y)%PQ.

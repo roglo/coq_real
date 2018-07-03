@@ -242,27 +242,26 @@ Theorem MQabs_opp : ∀ x, MQabs (- x) = MQabs x.
 Proof. now intros x; destruct x. Qed.
 
 Theorem glop : ∀ px py pz,
-  (px ≠≠ pz)%PQ ∨ (px + py ≤ pz)%PQ
-  → match PQcompare (px + py) pz with
-    | Eq => 0
-    | Lt => MQneg (pz - (px + py))
-    | Gt => MQpos (px + py - pz)
-    end =
-    match match PQcompare px pz with
-          | Eq => 0
-          | Lt => MQneg (pz - px)
-          | Gt => MQpos (px - pz)
-          end with
-    | 0 => MQpos py
-    | MQpos px0 => MQpos (px0 + py)
-    | MQneg px0 => - match PQcompare px0 py with
-                     | Eq => 0
-                     | Lt => MQneg (py - px0)
-                     | Gt => MQpos (px0 - py)
-                     end
+  match PQcompare (px + py) pz with
+  | Eq => 0
+  | Lt => MQneg (pz - (px + py))
+  | Gt => MQpos (px + py - pz)
+  end ==
+  match match PQcompare px pz with
+        | Eq => 0
+        | Lt => MQneg (pz - px)
+        | Gt => MQpos (px - pz)
+        end with
+  | 0 => MQpos py
+  | MQpos px0 => MQpos (px0 + py)
+  | MQneg px0 => - match PQcompare px0 py with
+                   | Eq => 0
+                   | Lt => MQneg (py - px0)
+                   | Gt => MQpos (px0 - py)
+                   end
     end.
 Proof.
-intros * Hpp.
+intros.
 remember (PQcompare (px + py) pz) as c1 eqn:Hc1; symmetry in Hc1.
 remember (PQcompare px pz) as c2 eqn:Hc2; symmetry in Hc2.
 move c2 before c1.
@@ -299,8 +298,11 @@ destruct c1, c2; repeat PQcompare_iff.
  exfalso; apply Hc2; apply PQlt_le_incl.
  apply (PQlt_trans _ (px + py)); [ | easy ].
  apply PQlt_add_r.
-+now apply PQnle_gt in Hc1; destruct Hpp.
-+remember (PQcompare (pz - px) py) as c3 eqn:Hc3; symmetry in Hc3.
++rewrite (PQsub_morph pz pz (px + py) (py + pz)); [ | easy | easy | ].
+ *now rewrite PQadd_sub.
+ *now rewrite Hc2, PQadd_comm.
++simpl.
+ remember (PQcompare (pz - px) py) as c3 eqn:Hc3; symmetry in Hc3.
  destruct c3; PQcompare_iff; simpl.
  *rewrite PQadd_comm, <- Hc3 in Hc1.
   rewrite PQsub_add in Hc1; [ | easy ].
@@ -312,33 +314,50 @@ destruct c1, c2; repeat PQcompare_iff.
   rewrite PQadd_comm in Hc3.
   exfalso; apply PQnle_gt in Hc3; apply Hc3.
   now apply PQlt_le_incl.
-+f_equal.
- rewrite PQadd_comm.
++rewrite PQadd_comm.
  rewrite <- PQadd_sub_assoc; [ | easy ].
- apply PQadd_comm.
+ now rewrite PQadd_comm.
 Qed.
 
-Theorem MQadd_add_swap : ∀ x y z, x + y + z = x + z + y.
+Theorem MQadd_add_swap : ∀ x y z, x + y + z == x + z + y.
 Proof.
 intros.
 unfold "+".
 destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl.
--f_equal; apply PQadd_comm.
+-now rewrite PQadd_comm.
 -now rewrite PQcompare_comm; destruct (PQcompare pz py).
 -now rewrite PQcompare_comm; destruct (PQcompare pz py).
--f_equal; apply PQadd_comm.
+-now rewrite PQadd_comm.
 -now destruct (PQcompare px pz).
--f_equal; apply PQadd_add_swap.
+-now rewrite PQadd_add_swap.
 -apply glop.
- (* ajouter (px ≠≠ pz)%PQ ∨ (px + py ≤ pz)%PQ dans les hypothèses *)
- admit.
 -now destruct (PQcompare px py).
 -symmetry; apply glop.
- (* ajouter (px ≠≠ py)%PQ ∨ (px + pz ≤ py)%PQ dans les hypothèses *)
- admit.
--idtac.
-
-...
+-remember (PQcompare px py) as c1 eqn:Hc1; symmetry in Hc1.
+ remember (PQcompare px pz) as c2 eqn:Hc2; symmetry in Hc2.
+ destruct c1, c2; repeat PQcompare_iff.
+ +now rewrite <- Hc1, Hc2.
+ +rewrite (PQsub_morph _ py _ pz); [ | easy | easy | easy ].
+  rewrite PQsub_add; [ easy | now rewrite <- Hc1 ].
+ +remember (PQcompare (px - pz) py) as c3 eqn:Hc3; symmetry in Hc3.
+  destruct c3; PQcompare_iff.
+  *exfalso; rewrite <- Hc1 in Hc3.
+   now apply PQsub_no_neutral in Hc3.
+  *rewrite PQsub_sub_distr; [ | easy | easy ].
+   rewrite PQadd_comm.
+   rewrite (PQsub_morph px py (pz + py) (pz + py)); [ | | easy | easy ].
+  --now rewrite PQadd_sub.
+  --rewrite Hc1; apply PQlt_add_l.
+  *apply PQnle_gt in Hc3.
+   exfalso; apply Hc3; rewrite <- Hc1.
+   now apply PQlt_le_incl, PQsub_lt.
+ +rewrite (PQsub_morph _ pz _ py); [ | easy | easy | easy ].
+  rewrite PQsub_add; [ easy | now rewrite <- Hc2 ].
+ +rewrite PQadd_comm.
+  rewrite PQadd_sub_assoc; [ | easy ].
+  now rewrite PQadd_sub_swap.
+ +idtac.
+..
 
 (*
 Ltac MQadd_assoc_morph_tac :=
