@@ -360,35 +360,63 @@ f_equal.
 Qed.
 Arguments PQsub_morph x1%PQ x2%PQ y1%PQ y2%PQ.
 
-Theorem PQadd_comm : ∀ x y, (x + y == y + x)%PQ.
+Ltac split_var2 x xn xd Hpn Hpd :=
+  remember (S (PQnum1 x)) as xn eqn:Heqxn;
+  remember (S (PQden1 x)) as xd eqn:Heqxd;
+  move xn at top; move xd at top;
+  assert (Hpn : 0 < xn) by flia Heqxn;
+  assert (Hpd : 0 < xd) by flia Heqxd;
+  clear Heqxn Heqxd.
+
+Ltac PQtac1 :=
+  unfold "+"%PQ, "-"%PQ, "<"%PQ, "=="%PQ, "≤"%PQ;
+  unfold PQadd_num1, PQsub_num1, PQadd_den1, nd; simpl;
+  repeat rewrite Nat.add_1_r.
+
+Ltac PQtac2 :=
+  rewrite <- Nat.sub_succ_l;
+  try (rewrite Nat.sub_succ, Nat.sub_0_r);
+  match goal with
+  | [ |- 1 ≤ S _ * _ ] => try (simpl; flia)
+  | [ |- 1 ≤ S _ * _ * _ ] => try (simpl; flia)
+  | _ => idtac
+  end.
+
+Ltac PQtac3 :=
+  repeat rewrite Nat.mul_sub_distr_r;
+  repeat rewrite Nat.mul_add_distr_r;
+  repeat rewrite Nat.mul_assoc.
+
+(* notice that these theorem works with Leibnitz equalities
+   (therefore "==" too) *)
+
+Theorem PQadd_comm : ∀ x y, (x + y)%PQ = (y + x)%PQ.
 Proof.
 intros.
-unfold "==".
-assert (PQnum_add_comm : ∀ x y, PQnum1 (x + y) = PQnum1 (y + x)). {
-  intros.
-  unfold "+"%PQ; simpl.
-  unfold PQadd_num1, nd; f_equal.
-  now rewrite Nat.add_comm.
-}
-assert (PQden1_add_comm : ∀ x y, PQden1 (x + y) = PQden1 (y + x)). {
-  intros.
-  unfold PQadd; simpl.
-  unfold PQadd_den1.
-  now rewrite Nat.mul_comm.
-}
-now unfold nd; rewrite PQnum_add_comm, PQden1_add_comm.
+unfold "+"%PQ; f_equal.
+-now unfold PQadd_num1, nd; rewrite Nat.add_comm.
+-now unfold PQadd_den1, nd; rewrite Nat.mul_comm.
 Qed.
 
-Theorem PQadd_assoc : ∀ x y z, ((x + y) + z == x + (y + z))%PQ.
+Theorem PQadd_add_comm : ∀ x y z, (x + y + z)%PQ = (x + z + y)%PQ.
+Proof.
+intros; PQtac1.
+repeat PQtac2; [ | simpl; flia | simpl; flia ].
+PQtac3; f_equal; [ | f_equal; apply Nat.mul_shuffle0 ].
+f_equal.
+rewrite Nat.add_shuffle0.
+f_equal; f_equal.
+apply Nat.mul_shuffle0.
+Qed.
+
+Theorem PQadd_assoc : ∀ x y z, ((x + y) + z)%PQ = (x + (y + z))%PQ.
 Proof.
 intros.
+symmetry.
 rewrite PQadd_comm.
-unfold "==", nd; simpl.
-unfold PQadd_num1, PQadd_den1, nd; simpl.
-unfold PQadd_num1, PQadd_den1, nd; simpl.
-do 14 rewrite Nat.add_1_r; simpl.
-do 8 rewrite Nat.sub_0_r.
-ring.
+remember (x + y)%PQ as t eqn:Ht.
+rewrite PQadd_comm in Ht; subst t.
+apply PQadd_add_comm.
 Qed.
 
 (* *)
@@ -573,33 +601,6 @@ apply Nat.add_le_mono.
  now apply Nat.mul_le_mono_r.
 Qed.
 
-Ltac split_var2 x xn xd Hpn Hpd :=
-  remember (S (PQnum1 x)) as xn eqn:Heqxn;
-  remember (S (PQden1 x)) as xd eqn:Heqxd;
-  move xn at top; move xd at top;
-  assert (Hpn : 0 < xn) by flia Heqxn;
-  assert (Hpd : 0 < xd) by flia Heqxd;
-  clear Heqxn Heqxd.
-
-Ltac PQtac1 :=
-  unfold "+"%PQ, "-"%PQ, "<"%PQ, "=="%PQ, "≤"%PQ;
-  unfold PQadd_num1, PQsub_num1, PQadd_den1, nd; simpl;
-  repeat rewrite Nat.add_1_r.
-
-Ltac PQtac2 :=
-  rewrite <- Nat.sub_succ_l;
-  try (rewrite Nat.sub_succ, Nat.sub_0_r);
-  match goal with
-  | [ |- 1 ≤ S _ * _ ] => try (simpl; flia)
-  | [ |- 1 ≤ S _ * _ * _ ] => try (simpl; flia)
-  | _ => idtac
-  end.
-
-Ltac PQtac3 :=
-  repeat rewrite Nat.mul_sub_distr_r;
-  repeat rewrite Nat.mul_add_distr_r;
-  repeat rewrite Nat.mul_assoc.
-
 Theorem PQadd_no_neutral : ∀ x y, (y + x ≠≠ x)%PQ.
 Proof.
 intros x y Hxy.
@@ -693,42 +694,19 @@ apply PQlt_add_r.
 Qed.
 
 Theorem PQsub_add_distr : ∀ x y z,
-  (y + z < x)%PQ → (x - (y + z) == x - y - z)%PQ.
+  (y < x)%PQ → (x - (y + z))%PQ = (x - y - z)%PQ.
 Proof.
-intros * Hyzx.
-assert (Hyx : (y < x)%PQ). {
-  eapply PQlt_trans; [ | apply Hyzx ].
-  apply PQlt_add_r.
-}
-assert (Hzx : (z < x)%PQ). {
-  eapply PQlt_trans; [ | apply Hyzx ].
-  apply PQlt_add_l.
-}
-revert Hyzx Hyx Hzx; PQtac1; intros.
-do 2 (rewrite <- Nat.sub_succ_l in Hyzx; [ | simpl; flia ]).
-do 2 rewrite Nat.sub_succ, Nat.sub_0_r in Hyzx.
-repeat rewrite Nat.mul_add_distr_r in Hyz.
-repeat rewrite Nat.mul_assoc in Hyz.
-repeat PQtac2; PQtac3.
--split_var2 x xn xd Hxn Hxd.
- split_var2 y yn yd Hyn Hyd.
- split_var2 z zn zd Hzn Hzd; flia.
--flia Hyx.
--flia Hyzx.
--flia Hyx.
--simpl; flia.
--flia Hyzx.
--simpl; flia.
+intros * Hyx.
+revert Hyx; PQtac1; intros.
+repeat PQtac2; PQtac3; [ f_equal; flia | flia Hyx | simpl; flia ].
 Qed.
 
 Theorem PQsub_sub_swap : ∀ x y z,
-  (y + z < x)%PQ → (x - y - z == x - z - y)%PQ.
+  (y < x)%PQ → (z < x)%PQ → (x - y - z)%PQ = (x - z - y)%PQ.
 Proof.
-intros * Hyz.
+intros * Hyx Hzx.
 rewrite <- PQsub_add_distr; [ | easy ].
-etransitivity.
--now apply (PQsub_morph (y + z) _ x x Hyz (PQadd_comm y z)).
--now apply PQsub_add_distr; rewrite PQadd_comm.
+rewrite <- PQsub_add_distr; [ now rewrite PQadd_comm | easy ].
 Qed.
 
 Theorem PQsub_sub_distr : ∀ x y z,

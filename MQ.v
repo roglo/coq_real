@@ -183,14 +183,16 @@ Qed.
 Theorem MQadd_comm : ∀ x y, x + y == y + x.
 Proof.
 intros.
-assert (H : ∀ px py, MQpos px + MQneg py == MQneg py + MQpos px). {
-  intros.
-  unfold "==", "+"; simpl.
-  rewrite PQcompare_comm.
-  remember (PQcompare py px) as c eqn:Hc; symmetry in Hc.
-  now destruct c.
-}
-now intros; destruct x, y; try apply PQadd_comm.
+unfold "==", "+".
+destruct x as [| px| px], y as [| py| py]; try easy; simpl.
+-now rewrite PQadd_comm.
+-rewrite PQcompare_comm.
+ remember (PQcompare py px) as c eqn:Hc; symmetry in Hc.
+ now destruct c.
+-rewrite PQcompare_comm.
+ remember (PQcompare py px) as c eqn:Hc; symmetry in Hc.
+ now destruct c.
+-now rewrite PQadd_comm.
 Qed.
 
 (* allows to use rewrite inside an addition
