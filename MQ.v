@@ -356,8 +356,29 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl.
  +rewrite PQadd_comm.
   rewrite PQadd_sub_assoc; [ | easy ].
   now rewrite PQadd_sub_swap.
- +idtac.
-..
+ +remember (PQcompare (px - pz) py) as c3 eqn:Hc3; symmetry in Hc3.
+  destruct c3; PQcompare_iff.
+  *exfalso; rewrite <- Hc3 in Hc1.
+   apply PQnle_gt in Hc1; apply Hc1.
+   now apply PQlt_le_incl, PQsub_lt.
+  *rewrite PQsub_sub_distr; [ | easy | easy ].
+   now rewrite PQadd_sub_swap.
+  *exfalso; apply PQnle_gt in Hc3; apply Hc3.
+   apply PQlt_le_incl.
+   apply (PQlt_trans _ px); [ now apply PQsub_lt | easy ].
+...
+ +remember (PQcompare (px - pz) py) as c3 eqn:Hc3; symmetry in Hc3.
+  destruct c3; PQcompare_iff.
+  *exfalso; rewrite <- Hc3 in Hc1.
+   apply PQnle_gt in Hc1; apply Hc1.
+   now apply PQlt_le_incl, PQsub_lt.
+  *rewrite PQsub_sub_distr; [ | easy | easy ].
+   now rewrite PQadd_sub_swap.
+  *exfalso; apply PQnle_gt in Hc3; apply Hc3.
+   apply PQlt_le_incl.
+   apply (PQlt_trans _ px); [ now apply PQsub_lt | easy ].
+
+...
 
 (*
 Ltac MQadd_assoc_morph_tac :=
