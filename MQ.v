@@ -319,6 +319,11 @@ destruct c1, c2; repeat PQcompare_iff.
  now rewrite PQadd_comm.
 Qed.
 
+Theorem MQopp_match_comp : ∀ c eq lt gt,
+  - match c with Eq => eq | Lt => lt | Gt => gt end =
+  match c with Eq => - eq | Lt => - lt | Gt => - gt end.
+Proof. intros; now destruct c. Qed.
+
 Theorem MQadd_add_swap : ∀ x y z, x + y + z == x + z + y.
 Proof.
 intros.
@@ -433,8 +438,10 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl.
   *now rewrite PQsub_sub_swap.
 -now destruct (PQcompare px pz).
 -now destruct (PQcompare px py).
--idtac.
-(* do a lemma -match PQcompare px py ... = match PQcompare py px ... *)
+-do 2 rewrite MQopp_match_comp; simpl.
+ setoid_rewrite PQcompare_comm.
+(* mouais, ça va pas: faut que je fasse un lemme pour transformer
+   le match match en un match unique *)
 ...
 
 above goal:
