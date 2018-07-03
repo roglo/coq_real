@@ -290,7 +290,7 @@ Ltac MQadd_assoc_morph_tac2 :=
   end.
 *)
 
-Theorem glop : ∀ A u v (f00 : A) f0p f0n fp0 fpp fpn fn0 fnp fnn,
+Theorem MQmatch_match : ∀ A u v (f00 : A) f0p f0n fp0 fpp fpn fn0 fnp fnn,
   match u with
   | 0 =>
       match v with 0 => f00 | MQpos pv => f0p pv | MQneg pv => f0n pv end
@@ -330,10 +330,7 @@ rewrite MQadd_comm in Ht; rewrite Ht.
 clear t H Ht.
 setoid_rewrite MQadd_comm.
 unfold "=="%MQ.
-remember (y + x + z) as u eqn:Hu; symmetry in Hu.
-remember (y + z + x) as v eqn:Hv; symmetry in Hv.
-move v before u.
-rewrite (glop Prop u v).
+rewrite MQmatch_match.
 ...
 intros.
 rewrite MQadd_comm.
