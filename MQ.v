@@ -181,24 +181,20 @@ destruct (PQlt_le_dec x1 y1) as [H1| H1]; rewrite Hx, Hy in H1.
 Qed.
 
 (* Leibnitz equality applies *)
-Theorem MQadd_comm : ∀ x y, x + y == y + x.
+Theorem MQadd_comm : ∀ x y, x + y = y + x.
 Proof.
 intros.
-unfold "==", "+".
+unfold "+".
 destruct x as [| px| px], y as [| py| py]; try easy; simpl.
--now rewrite PQadd_comm.
--rewrite PQcompare_comm.
- remember (PQcompare py px) as c eqn:Hc; symmetry in Hc.
- now destruct c.
--rewrite PQcompare_comm.
- remember (PQcompare py px) as c eqn:Hc; symmetry in Hc.
- now destruct c.
--now rewrite PQadd_comm.
+-f_equal; apply PQadd_comm.
+-now rewrite PQcompare_comm; destruct (PQcompare py px).
+-now rewrite PQcompare_comm; destruct (PQcompare py px).
+-f_equal; apply PQadd_comm.
 Qed.
 
 (* allows to use rewrite inside an addition
    e.g.
-      H : x = y
+      H : x == y
       ====================
       ... (x + z) ...
    rewrite H.
@@ -237,25 +233,65 @@ destruct
  now rewrite Hx, Hy.
 Qed.
 
-Theorem MQabs_0 : MQabs 0 == 0.
+(* Leibnitz equality applies *)
+Theorem MQabs_0 : MQabs 0 = 0.
 Proof. easy. Qed.
 
-Theorem MQabs_opp : ∀ x, MQabs (- x) == MQabs x.
+(* Leibnitz equality applies *)
+Theorem MQabs_opp : ∀ x, MQabs (- x) = MQabs x.
 Proof. now intros x; destruct x. Qed.
 
-(*
-Theorem MQadd_add_swap : ∀ x y z, x + y + z == x + z + y.
+Theorem MQadd_add_swap : ∀ x y z, x + y + z = x + z + y.
 Proof.
 intros.
-rewrite MQadd_comm.
-remember (x + y) as t eqn:H.
-assert (Ht : t == x + y) by now subst t.
-rewrite MQadd_comm in Ht; rewrite Ht.
-rewrite MQadd_comm in Heqt.
-Search (_ + _ == _ + _)%MQ.
-eapply MQeq_trans.
+unfold "+".
+destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl.
+-f_equal; apply PQadd_comm.
+-now rewrite PQcompare_comm; destruct (PQcompare pz py).
+-now rewrite PQcompare_comm; destruct (PQcompare pz py).
+-f_equal; apply PQadd_comm.
+-now destruct (PQcompare px pz).
+-f_equal; apply PQadd_add_swap.
+-remember (PQcompare (px + py) pz) as c1 eqn:Hc1; symmetry in Hc1.
+ remember (PQcompare px pz) as c2 eqn:Hc2; symmetry in Hc2.
+ move c2 before c1.
+ destruct c1, c2; repeat PQcompare_iff.
+ +now rewrite Hc2, PQadd_comm in Hc1; apply PQadd_no_neutral in Hc1.
+ +remember (PQcompare (pz - px) py) as c3 eqn:Hc3; symmetry in Hc3.
+  destruct c3; PQcompare_iff; [ easy | | ].
+  *apply (PQadd_lt_mono_r _ _ px) in Hc3.
+   rewrite PQsub_add in Hc3; [ | easy ].
+   rewrite PQadd_comm, Hc1 in Hc3.
+   now apply PQlt_irrefl in Hc3.
+  *apply (PQadd_lt_mono_r _ _ px) in Hc3.
+   rewrite PQsub_add in Hc3; [ | easy ].
+   rewrite PQadd_comm, Hc1 in Hc3.
+   now apply PQlt_irrefl in Hc3.
+ +rewrite <- Hc1 in Hc2.
+  exfalso; apply PQnle_gt in Hc2; apply Hc2.
+  apply PQlt_le_incl, PQlt_add_r.
+ +rewrite Hc2 in Hc1.
+  exfalso; apply PQnle_gt in Hc1; apply Hc1.
+  apply PQlt_le_incl, PQlt_add_r.
+ +remember (PQcompare (pz - px) py) as c3 eqn:Hc3; symmetry in Hc3.
+  destruct c3; PQcompare_iff; simpl.
+  *rewrite PQadd_comm, <- Hc3 in Hc1.
+   rewrite PQsub_add in Hc1; [ | easy ].
+   now apply PQlt_irrefl in Hc1.
+  *apply (PQadd_lt_mono_r _ _ px) in Hc3.
+   rewrite PQsub_add in Hc3; [ | easy ].
+   rewrite PQadd_comm in Hc3.
+   exfalso; apply PQnle_gt in Hc3; apply Hc3.
+   now apply PQlt_le_incl.
+  *now f_equal; apply PQsub_add_distr.
+ +apply PQnle_gt in Hc2.
+  exfalso; apply Hc2; apply PQlt_le_incl.
+  apply (PQlt_trans _ (px + py)); [ | easy ].
+  apply PQlt_add_r.
+ +f_equal.
+(* est-ce que c'est bon, ça ? Si c'est pas bon, alors le théorème est
+   faux et il faut que je l'applique avec "==", pas avec "=" *)
 ...
-*)
 
 (*
 Ltac MQadd_assoc_morph_tac :=

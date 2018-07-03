@@ -404,7 +404,7 @@ unfold "+"%PQ; f_equal.
 Qed.
 
 (* Leibnitz equality applies *)
-Theorem PQadd_add_comm : ∀ x y z, (x + y + z)%PQ = (x + z + y)%PQ.
+Theorem PQadd_add_swap : ∀ x y z, (x + y + z)%PQ = (x + z + y)%PQ.
 Proof.
 intros; PQtac1.
 repeat PQtac2; [ | simpl; flia | simpl; flia ].
@@ -423,7 +423,7 @@ symmetry.
 rewrite PQadd_comm.
 remember (x + y)%PQ as t eqn:Ht.
 rewrite PQadd_comm in Ht; subst t.
-apply PQadd_add_comm.
+apply PQadd_add_swap.
 Qed.
 
 (* *)
