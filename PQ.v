@@ -387,9 +387,12 @@ Ltac PQtac3 :=
   repeat rewrite Nat.mul_add_distr_r;
   repeat rewrite Nat.mul_assoc.
 
-(* notice that these theorem works with Leibnitz equalities
-   (therefore "==" too) *)
+(* Notice that some theorems work with Leibnitz equalities
+   (therefore with "=="); it is the case when these equalities
+   hold the same variables at the right and left part of the
+   equlity (e.g (x+y)+z=x+(y+z), but not x+y-y=x) *)
 
+(* Leibnitz equality applies *)
 Theorem PQadd_comm : ∀ x y, (x + y)%PQ = (y + x)%PQ.
 Proof.
 intros.
@@ -398,6 +401,7 @@ unfold "+"%PQ; f_equal.
 -now unfold PQadd_den1, nd; rewrite Nat.mul_comm.
 Qed.
 
+(* Leibnitz equality applies *)
 Theorem PQadd_add_comm : ∀ x y z, (x + y + z)%PQ = (x + z + y)%PQ.
 Proof.
 intros; PQtac1.
@@ -409,6 +413,7 @@ f_equal; f_equal.
 apply Nat.mul_shuffle0.
 Qed.
 
+(* Leibnitz equality applies *)
 Theorem PQadd_assoc : ∀ x y z, ((x + y) + z)%PQ = (x + (y + z))%PQ.
 Proof.
 intros.
@@ -693,6 +698,7 @@ rewrite PQadd_comm.
 apply PQlt_add_r.
 Qed.
 
+(* Leibnitz equality applies *)
 Theorem PQsub_add_distr : ∀ x y z,
   (y < x)%PQ → (x - (y + z))%PQ = (x - y - z)%PQ.
 Proof.
@@ -701,6 +707,7 @@ revert Hyx; PQtac1; intros.
 repeat PQtac2; PQtac3; [ f_equal; flia | flia Hyx | simpl; flia ].
 Qed.
 
+(* Leibnitz equality applies *)
 Theorem PQsub_sub_swap : ∀ x y z,
   (y < x)%PQ → (z < x)%PQ → (x - y - z)%PQ = (x - z - y)%PQ.
 Proof.
@@ -709,8 +716,9 @@ rewrite <- PQsub_add_distr; [ | easy ].
 rewrite <- PQsub_add_distr; [ now rewrite PQadd_comm | easy ].
 Qed.
 
+(* Leibnitz equality applies *)
 Theorem PQsub_sub_distr : ∀ x y z,
-  (z < y)%PQ → (y - z < x)%PQ → (x - (y - z) == x + z - y)%PQ.
+  (z < y)%PQ → (y - z < x)%PQ → (x - (y - z))%PQ = (x + z - y)%PQ.
 Proof.
 intros * Hzy Hyzx.
 revert Hzy Hyzx; PQtac1; intros.
@@ -719,23 +727,19 @@ do 2 (rewrite <- Nat.sub_succ_l in Hyzx; [ | flia Hzy ]).
 rewrite <- Nat.sub_succ_l in Hyzx; [ | simpl; flia ].
 do 2 rewrite Nat.sub_succ, Nat.sub_0_r in Hyzx.
 rewrite Nat.mul_sub_distr_r, Nat.mul_assoc in Hyzx.
-repeat PQtac2; PQtac3; [ | | | | flia Hzy | flia Hyzx | flia Hzy ].
--split_var2 x xn xd Hxn Hxd.
- split_var2 y yn yd Hyn Hyd.
- split_var2 z zn zd Hzn Hzd.
- rewrite Nat_sub_sub_assoc; [ flia | ].
- split.
- +now do 4 apply Nat.mul_le_mono_r; apply Nat.lt_le_incl.
- +do 3 rewrite <- Nat.mul_add_distr_r.
-  do 3 apply Nat.mul_le_mono_r.
-  flia Hyzx.
--simpl; flia.
--split_var2 x xn xd Hxn Hxd.
- split_var2 y yn yd Hyn Hyd.
- split_var2 z zn zd Hzn Hzd.
- flia Hyzx.
--simpl; flia.
+repeat PQtac2; PQtac3; [ | simpl; flia | ].
+-f_equal; [ f_equal | now rewrite Nat.mul_shuffle0 ].
+ rewrite Nat_sub_sub_assoc.
+ +f_equal; [ | now rewrite Nat.mul_shuffle0 ].
+  now f_equal; rewrite Nat.mul_shuffle0.
+ +split; [ | flia Hyzx ].
+  now apply Nat.mul_le_mono_r, Nat.lt_le_incl.
+-flia Hzy.
 Qed.
+
+Theorem PQadd_sub_assoc: ∀ x y z, (z < y)%PQ → (x + (y - z))%PQ = (x + y - z)%PQ.
+Proof.
+...
 
 Theorem PQadd_sub_assoc: ∀ x y z, (z < y)%PQ → (x + (y - z) == x + y - z)%PQ.
 Proof.
