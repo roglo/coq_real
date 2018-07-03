@@ -247,19 +247,16 @@ Theorem PQadd_swap_lemma1 : ∀ px py pz,
   | Lt => MQneg (pz - (px + py))
   | Gt => MQpos (px + py - pz)
   end ==
-  match match PQcompare px pz with
-        | Eq => 0
-        | Lt => MQneg (pz - px)
-        | Gt => MQpos (px - pz)
-        end with
-  | 0 => MQpos py
-  | MQpos px0 => MQpos (px0 + py)
-  | MQneg px0 => - match PQcompare px0 py with
-                   | Eq => 0
-                   | Lt => MQneg (py - px0)
-                   | Gt => MQpos (px0 - py)
-                   end
-    end.
+  match PQcompare px pz with
+  | Eq => MQpos py
+  | Lt =>
+      match PQcompare (pz - px) py with
+      | Eq => 0
+      | Lt => MQpos (py - (pz - px))
+      | Gt => MQneg (pz - px - py)
+      end
+  | Gt => MQpos (px - pz + py)
+  end.
 Proof.
 intros.
 remember (PQcompare (px + py) pz) as c1 eqn:Hc1; symmetry in Hc1.
@@ -319,6 +316,129 @@ destruct c1, c2; repeat PQcompare_iff.
  now rewrite PQadd_comm.
 Qed.
 
+Theorem PQadd_swap_lemma2 : ∀ px py pz,
+  match PQcompare px py with
+  | Eq => MQneg pz
+  | Lt => MQneg (py - px + pz)
+  | Gt =>
+      match PQcompare (px - py) pz with
+      | Eq => 0
+      | Lt => MQneg (pz - (px - py))
+      | Gt => MQpos (px - py - pz)
+      end
+  end ==
+  match PQcompare px pz with
+  | Eq => MQneg py
+  | Lt => MQneg (pz - px + py)
+  | Gt =>
+      match PQcompare (px - pz) py with
+      | Eq => 0
+      | Lt => MQneg (py - (px - pz))
+      | Gt => MQpos (px - pz - py)
+      end
+  end.
+Proof.
+intros.
+remember (PQcompare px py) as c1 eqn:Hc1; symmetry in Hc1.
+remember (PQcompare px pz) as c2 eqn:Hc2; symmetry in Hc2.
+destruct c1, c2; repeat PQcompare_iff; simpl.
+-now rewrite <- Hc1, Hc2.
+-rewrite (PQsub_morph _ py _ pz); [ | easy | easy | easy ].
+ rewrite PQsub_add; [ easy | now rewrite <- Hc1 ].
+-remember (PQcompare (px - pz) py) as c3 eqn:Hc3; symmetry in Hc3.
+ destruct c3; PQcompare_iff.
+ +exfalso; rewrite <- Hc1 in Hc3.
+  now apply PQsub_no_neutral in Hc3.
+ +rewrite PQsub_sub_distr; [ | easy | easy ].
+  rewrite PQadd_comm.
+  rewrite (PQsub_morph px py (pz + py) (pz + py)); [ | | easy | easy ].
+  *now rewrite PQadd_sub.
+  *rewrite Hc1; apply PQlt_add_l.
+ +apply PQnle_gt in Hc3.
+  exfalso; apply Hc3; rewrite <- Hc1.
+  now apply PQlt_le_incl, PQsub_lt.
+-rewrite (PQsub_morph _ pz _ py); [ | easy | easy | easy ].
+ rewrite PQsub_add; [ easy | now rewrite <- Hc2 ].
+-rewrite PQadd_comm.
+ rewrite PQadd_sub_assoc; [ | easy ].
+ now rewrite PQadd_sub_swap.
+-remember (PQcompare (px - pz) py) as c3 eqn:Hc3; symmetry in Hc3.
+ destruct c3; PQcompare_iff.
+ +exfalso; rewrite <- Hc3 in Hc1.
+  apply PQnle_gt in Hc1; apply Hc1.
+  now apply PQlt_le_incl, PQsub_lt.
+ +rewrite PQsub_sub_distr; [ | easy | easy ].
+  now rewrite PQadd_sub_swap.
+ +exfalso; apply PQnle_gt in Hc3; apply Hc3.
+  apply PQlt_le_incl.
+  apply (PQlt_trans _ px); [ now apply PQsub_lt | easy ].
+-remember (PQcompare (px - py) pz) as c3 eqn:Hc3; symmetry in Hc3.
+ destruct c3; PQcompare_iff.
+ +exfalso; rewrite <- Hc2 in Hc3.
+  now apply PQsub_no_neutral in Hc3.
+ +symmetry in Hc2.
+  rewrite (PQsub_morph _ (px - py) _ px); [ | easy | easy | easy ].
+  rewrite PQsub_sub_distr; [ | easy | now apply PQsub_lt ].
+  now rewrite PQadd_comm, PQadd_sub.
+ +exfalso; apply PQnle_gt in Hc3; apply Hc3.
+  rewrite <- Hc2.
+  now apply PQlt_le_incl, PQsub_lt.
+-remember (PQcompare (px - py) pz) as c3 eqn:Hc3; symmetry in Hc3.
+ destruct c3; PQcompare_iff.
+ *exfalso; rewrite <- Hc3 in Hc2.
+  apply PQnle_gt in Hc2; apply Hc2.
+  now apply PQlt_le_incl, PQsub_lt.
+ *rewrite PQsub_sub_distr; [ | easy | easy ].
+  now rewrite PQadd_sub_swap.
+ *exfalso; apply PQnle_gt in Hc3; apply Hc3.
+  apply PQlt_le_incl.
+  apply (PQlt_trans _ px); [ now apply PQsub_lt | easy ].
+-remember (PQcompare (px - py) pz) as c3 eqn:Hc3; symmetry in Hc3.
+ remember (PQcompare (px - pz) py) as c4 eqn:Hc4; symmetry in Hc4.
+ destruct c3, c4; repeat PQcompare_iff; simpl.
+ *easy.
+ *exfalso; apply PQnle_gt in Hc4; apply Hc4.
+  symmetry in Hc3.
+  rewrite (PQsub_morph _ (px - py) _ px); [ | easy | easy | easy ].
+  rewrite PQsub_sub_distr; [ | easy | now apply PQsub_lt ].
+  rewrite PQadd_comm, PQadd_sub; apply PQle_refl.
+ *exfalso; apply PQnle_gt in Hc4; apply Hc4.
+  symmetry in Hc3.
+  rewrite (PQsub_morph _ (px - py) _ px); [ | easy | easy | easy ].
+  rewrite PQsub_sub_distr; [ | easy | now apply PQsub_lt ].
+  rewrite PQadd_comm, PQadd_sub; apply PQle_refl.
+ *exfalso; symmetry in Hc4.
+  rewrite (PQsub_morph _ (px - pz) _ px) in Hc3; [ | easy | easy | easy ].
+  rewrite PQsub_sub_distr in Hc3; [ | easy | now apply PQsub_lt ].
+  rewrite PQadd_comm, PQadd_sub in Hc3.
+  now apply PQlt_irrefl in Hc3.
+ *rewrite PQsub_sub_distr; [ | easy | easy ].
+  rewrite PQsub_sub_distr; [ | easy | easy ].
+  now rewrite PQadd_comm.
+ *exfalso; apply PQnle_gt in Hc4; apply Hc4; clear Hc4.
+  apply (PQadd_le_mono_r _ _ pz).
+  rewrite PQsub_add; [ | easy ].
+  apply PQnlt_ge; intros Hc4.
+  apply PQnle_gt in Hc3; apply Hc3; clear Hc3.
+  apply (PQadd_le_mono_r _ _ py).
+  rewrite PQsub_add; [ | easy ].
+  now apply PQlt_le_incl; rewrite PQadd_comm.
+ *exfalso; symmetry in Hc4.
+  rewrite (PQsub_morph _ (px - pz) _ px) in Hc3; [ | easy | easy | easy ].
+  rewrite PQsub_sub_distr in Hc3; [ | easy | now apply PQsub_lt ].
+  rewrite PQadd_comm, PQadd_sub in Hc3.
+  now apply PQlt_irrefl in Hc3.
+ *exfalso; apply PQnle_gt in Hc4; apply Hc4; clear Hc4.
+  apply (PQadd_le_mono_r _ _ pz).
+  rewrite PQsub_add; [ | easy ].
+  apply PQnlt_ge; intros Hc4.
+  apply PQnle_gt in Hc3; apply Hc3; clear Hc3.
+  apply (PQadd_le_mono_r _ _ py).
+  rewrite PQsub_add; [ | easy ].
+  now apply PQlt_le_incl; rewrite PQadd_comm.
+ *now rewrite PQsub_sub_swap.
+Qed.
+
 Theorem MQopp_inj_wd : ∀ x y, (- x == - y)%MQ ↔ (x == y)%MQ.
 Proof. now intros; destruct x, y. Qed.
 
@@ -367,108 +487,13 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl.
 -now rewrite PQadd_comm.
 -now destruct (PQcompare px pz).
 -now rewrite PQadd_add_swap.
--apply PQadd_swap_lemma1.
+-rewrite MQmatch_match_comp, MQopp_match_comp; simpl.
+ apply PQadd_swap_lemma1.
 -now destruct (PQcompare px py).
--symmetry; apply PQadd_swap_lemma1.
+-rewrite MQmatch_match_comp, MQopp_match_comp; simpl.
+ symmetry; apply PQadd_swap_lemma1.
 -do 2 (rewrite MQmatch_match_comp; symmetry).
- remember (PQcompare px py) as c1 eqn:Hc1; symmetry in Hc1.
- remember (PQcompare px pz) as c2 eqn:Hc2; symmetry in Hc2.
- destruct c1, c2; repeat PQcompare_iff; simpl.
- +now rewrite <- Hc1, Hc2.
- +rewrite (PQsub_morph _ py _ pz); [ | easy | easy | easy ].
-  rewrite PQsub_add; [ easy | now rewrite <- Hc1 ].
- +remember (PQcompare (px - pz) py) as c3 eqn:Hc3; symmetry in Hc3.
-  destruct c3; PQcompare_iff.
-  *exfalso; rewrite <- Hc1 in Hc3.
-   now apply PQsub_no_neutral in Hc3.
-  *rewrite PQsub_sub_distr; [ | easy | easy ].
-   rewrite PQadd_comm.
-   rewrite (PQsub_morph px py (pz + py) (pz + py)); [ | | easy | easy ].
-  --now rewrite PQadd_sub.
-  --rewrite Hc1; apply PQlt_add_l.
-  *apply PQnle_gt in Hc3.
-   exfalso; apply Hc3; rewrite <- Hc1.
-   now apply PQlt_le_incl, PQsub_lt.
- +rewrite (PQsub_morph _ pz _ py); [ | easy | easy | easy ].
-  rewrite PQsub_add; [ easy | now rewrite <- Hc2 ].
- +rewrite PQadd_comm.
-  rewrite PQadd_sub_assoc; [ | easy ].
-  now rewrite PQadd_sub_swap.
- +remember (PQcompare (px - pz) py) as c3 eqn:Hc3; symmetry in Hc3.
-  destruct c3; PQcompare_iff.
-  *exfalso; rewrite <- Hc3 in Hc1.
-   apply PQnle_gt in Hc1; apply Hc1.
-   now apply PQlt_le_incl, PQsub_lt.
-  *rewrite PQsub_sub_distr; [ | easy | easy ].
-   now rewrite PQadd_sub_swap.
-  *exfalso; apply PQnle_gt in Hc3; apply Hc3.
-   apply PQlt_le_incl.
-   apply (PQlt_trans _ px); [ now apply PQsub_lt | easy ].
- +remember (PQcompare (px - py) pz) as c3 eqn:Hc3; symmetry in Hc3.
-  destruct c3; PQcompare_iff.
-  *exfalso; rewrite <- Hc2 in Hc3.
-   now apply PQsub_no_neutral in Hc3.
-  *symmetry in Hc2.
-   rewrite (PQsub_morph _ (px - py) _ px); [ | easy | easy | easy ].
-   rewrite PQsub_sub_distr; [ | easy | now apply PQsub_lt ].
-   now rewrite PQadd_comm, PQadd_sub.
-  *exfalso; apply PQnle_gt in Hc3; apply Hc3.
-   rewrite <- Hc2.
-   now apply PQlt_le_incl, PQsub_lt.
- +remember (PQcompare (px - py) pz) as c3 eqn:Hc3; symmetry in Hc3.
-  destruct c3; PQcompare_iff.
-  *exfalso; rewrite <- Hc3 in Hc2.
-   apply PQnle_gt in Hc2; apply Hc2.
-   now apply PQlt_le_incl, PQsub_lt.
-  *rewrite PQsub_sub_distr; [ | easy | easy ].
-   now rewrite PQadd_sub_swap.
-  *exfalso; apply PQnle_gt in Hc3; apply Hc3.
-   apply PQlt_le_incl.
-   apply (PQlt_trans _ px); [ now apply PQsub_lt | easy ].
- +remember (PQcompare (px - py) pz) as c3 eqn:Hc3; symmetry in Hc3.
-  remember (PQcompare (px - pz) py) as c4 eqn:Hc4; symmetry in Hc4.
-  destruct c3, c4; repeat PQcompare_iff; simpl.
-  *easy.
-  *exfalso; apply PQnle_gt in Hc4; apply Hc4.
-   symmetry in Hc3.
-   rewrite (PQsub_morph _ (px - py) _ px); [ | easy | easy | easy ].
-   rewrite PQsub_sub_distr; [ | easy | now apply PQsub_lt ].
-   rewrite PQadd_comm, PQadd_sub; apply PQle_refl.
-  *exfalso; apply PQnle_gt in Hc4; apply Hc4.
-   symmetry in Hc3.
-   rewrite (PQsub_morph _ (px - py) _ px); [ | easy | easy | easy ].
-   rewrite PQsub_sub_distr; [ | easy | now apply PQsub_lt ].
-   rewrite PQadd_comm, PQadd_sub; apply PQle_refl.
-  *exfalso; symmetry in Hc4.
-   rewrite (PQsub_morph _ (px - pz) _ px) in Hc3; [ | easy | easy | easy ].
-   rewrite PQsub_sub_distr in Hc3; [ | easy | now apply PQsub_lt ].
-   rewrite PQadd_comm, PQadd_sub in Hc3.
-   now apply PQlt_irrefl in Hc3.
-  *rewrite PQsub_sub_distr; [ | easy | easy ].
-   rewrite PQsub_sub_distr; [ | easy | easy ].
-   now rewrite PQadd_comm.
-  *exfalso; apply PQnle_gt in Hc4; apply Hc4; clear Hc4.
-   apply (PQadd_le_mono_r _ _ pz).
-   rewrite PQsub_add; [ | easy ].
-   apply PQnlt_ge; intros Hc4.
-   apply PQnle_gt in Hc3; apply Hc3; clear Hc3.
-   apply (PQadd_le_mono_r _ _ py).
-   rewrite PQsub_add; [ | easy ].
-   now apply PQlt_le_incl; rewrite PQadd_comm.
-  *exfalso; symmetry in Hc4.
-   rewrite (PQsub_morph _ (px - pz) _ px) in Hc3; [ | easy | easy | easy ].
-   rewrite PQsub_sub_distr in Hc3; [ | easy | now apply PQsub_lt ].
-   rewrite PQadd_comm, PQadd_sub in Hc3.
-   now apply PQlt_irrefl in Hc3.
-  *exfalso; apply PQnle_gt in Hc4; apply Hc4; clear Hc4.
-   apply (PQadd_le_mono_r _ _ pz).
-   rewrite PQsub_add; [ | easy ].
-   apply PQnlt_ge; intros Hc4.
-   apply PQnle_gt in Hc3; apply Hc3; clear Hc3.
-   apply (PQadd_le_mono_r _ _ py).
-   rewrite PQsub_add; [ | easy ].
-   now apply PQlt_le_incl; rewrite PQadd_comm.
-  *now rewrite PQsub_sub_swap.
+ apply PQadd_swap_lemma2.
 -now destruct (PQcompare px pz).
 -now destruct (PQcompare px py).
 -do 2 rewrite MQopp_match_comp; simpl.
@@ -479,29 +504,9 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl.
  setoid_rewrite MQmatch_opp_comp; simpl.
  apply MQopp_inj_wd.
  do 2 rewrite MQopp_match_comp; simpl.
+ apply PQadd_swap_lemma2.
+-idtac.
 ...
-matching above goal -> make a lemma!
-  ============================
-  match PQcompare px py with
-  | Eq => MQneg pz
-  | Lt => MQneg (py - px + pz)
-  | Gt =>
-      match PQcompare (px - py) pz with
-      | Eq => 0
-      | Lt => MQneg (pz - (px - py))
-      | Gt => MQpos (px - py - pz)
-      end
-  end ==
-  match PQcompare px pz with
-  | Eq => MQneg py
-  | Lt => MQneg (pz - px + py)
-  | Gt =>
-      match PQcompare (px - pz) py with
-      | Eq => 0
-      | Lt => MQneg (py - (px - pz))
-      | Gt => MQpos (px - pz - py)
-      end
-  end
 
 (*
 Ltac MQadd_assoc_morph_tac :=
