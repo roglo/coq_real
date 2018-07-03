@@ -180,6 +180,7 @@ destruct (PQlt_le_dec x1 y1) as [H1| H1]; rewrite Hx, Hy in H1.
  now apply PQnlt_ge in H2.
 Qed.
 
+(* Leibnitz equality applies *)
 Theorem MQadd_comm : ∀ x y, x + y == y + x.
 Proof.
 intros.

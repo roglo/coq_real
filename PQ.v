@@ -383,6 +383,8 @@ Ltac PQtac2 :=
   end.
 
 Ltac PQtac3 :=
+  repeat rewrite Nat.mul_sub_distr_l;
+  repeat rewrite Nat.mul_add_distr_l;
   repeat rewrite Nat.mul_sub_distr_r;
   repeat rewrite Nat.mul_add_distr_r;
   repeat rewrite Nat.mul_assoc.
@@ -737,61 +739,18 @@ repeat PQtac2; PQtac3; [ | simpl; flia | ].
 -flia Hzy.
 Qed.
 
-Theorem PQadd_sub_assoc: ∀ x y z, (z < y)%PQ → (x + (y - z))%PQ = (x + y - z)%PQ.
+(* Leibnitz equality applies *)
+Theorem PQadd_sub_assoc: ∀ x y z,
+  (z < y)%PQ → (x + (y - z))%PQ = (x + y - z)%PQ.
 Proof.
-...
-
-Theorem PQadd_sub_assoc: ∀ x y z, (z < y)%PQ → (x + (y - z) == x + y - z)%PQ.
-Proof.
-(* refaire en utilisant les tactiques PQ *)
-intros *.
-unfold "<"%PQ, "=="%PQ, "-"%PQ, "+"%PQ, nd; simpl.
-unfold PQadd_num1, PQsub_num1, PQadd_den1, nd; simpl.
-intros Hzy.
-do 4 rewrite Nat.add_1_r in Hzy.
-do 14 rewrite Nat.add_1_r.
-remember (S (PQnum1 x)) as xn eqn:Hxn.
-remember (S (PQden1 x)) as xd eqn:Hxd.
-remember (S (PQnum1 y)) as yn eqn:Hyn.
-remember (S (PQden1 y)) as yd eqn:Hyd.
-remember (S (PQnum1 z)) as zn eqn:Hzn.
-remember (S (PQden1 z)) as zd eqn:Hzd.
-move Hzy at bottom.
-do 2 (rewrite <- Nat.sub_succ_l; [ | subst; simpl; flia ]).
-do 4 (rewrite <- Nat.sub_succ_l; [ | subst; simpl; flia Hzy ]).
-rewrite <- Nat.sub_succ_l.
--rewrite <- Nat.sub_succ_l.
- +do 2 (rewrite <- Nat.sub_succ_l; [ | subst; simpl; flia ]).
-  do 6 (rewrite Nat.sub_succ, Nat.sub_0_r).
-  setoid_rewrite Nat_sub_sub_swap.
-  do 2 (rewrite Nat.sub_succ, Nat.sub_0_r).
-  do 2 rewrite Nat.mul_sub_distr_r.
-  do 3 rewrite Nat.mul_add_distr_r.
-  do 12 rewrite Nat.mul_assoc.
-  do 7 rewrite <- Nat.mul_add_distr_r.
-  do 4 rewrite <- Nat.mul_sub_distr_r.
-  f_equal; f_equal; f_equal.
-  rewrite Nat.mul_sub_distr_r.
-  rewrite Nat.mul_add_distr_r.
-  replace (yn * zd * xd) with (yn * xd * zd) by flia.
-  replace (zn * yd * xd) with (zn * xd * yd) by flia.
-  apply Nat.add_sub_assoc.
-  setoid_rewrite Nat.mul_shuffle0.
-  now apply Nat.mul_le_mono_r, Nat.lt_le_incl.
- +rewrite <- Nat.sub_succ_l; [ | subst; simpl; flia ].
-  do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
-  rewrite Nat.mul_add_distr_r, Nat.mul_assoc.
-  eapply Nat.le_trans.
-  *rewrite Nat.mul_shuffle0.
-   apply Nat.mul_le_mono_r, Nat.lt_le_incl, Hzy.
-  *rewrite Nat.mul_shuffle0.
-   apply Nat_add_le_l.
--rewrite <- Nat.sub_succ_l; [ | subst; simpl; flia ].
- do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
- rewrite Nat.mul_add_distr_r, Nat.mul_assoc.
- rewrite <- Nat.add_sub_assoc; [ subst; simpl; flia | ].
- setoid_rewrite Nat.mul_shuffle0.
- apply Nat.mul_le_mono_r, Nat.lt_le_incl, Hzy.
+intros * Hzy.
+revert Hzy; PQtac1; intros.
+repeat PQtac2; [ | simpl; flia | flia Hzy ].
+PQtac3.
+f_equal; f_equal.
+rewrite Nat.add_sub_assoc.
+-f_equal; [ f_equal; apply Nat.mul_shuffle0 | apply Nat.mul_shuffle0 ].
+-now apply Nat.mul_le_mono_r, Nat.lt_le_incl.
 Qed.
 
 Theorem PQadd_cancel_l : ∀ x y z, (z + x == z + y ↔ x == y)%PQ.
