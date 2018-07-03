@@ -366,18 +366,42 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl.
   *exfalso; apply PQnle_gt in Hc3; apply Hc3.
    apply PQlt_le_incl.
    apply (PQlt_trans _ px); [ now apply PQsub_lt | easy ].
-...
- +remember (PQcompare (px - pz) py) as c3 eqn:Hc3; symmetry in Hc3.
+ +remember (PQcompare (px - py) pz) as c3 eqn:Hc3; symmetry in Hc3.
   destruct c3; PQcompare_iff.
-  *exfalso; rewrite <- Hc3 in Hc1.
-   apply PQnle_gt in Hc1; apply Hc1.
+  *exfalso; rewrite <- Hc2 in Hc3.
+   now apply PQsub_no_neutral in Hc3.
+  *symmetry in Hc2.
+   rewrite (PQsub_morph _ (px - py) _ px); [ | easy | easy | easy ].
+   rewrite PQsub_sub_distr; [ | easy | now apply PQsub_lt ].
+   now rewrite PQadd_comm, PQadd_sub.
+  *exfalso; apply PQnle_gt in Hc3; apply Hc3.
+   rewrite <- Hc2.
+   now apply PQlt_le_incl, PQsub_lt.
+ +remember (PQcompare (px - py) pz) as c3 eqn:Hc3; symmetry in Hc3.
+  destruct c3; PQcompare_iff.
+  *exfalso; rewrite <- Hc3 in Hc2.
+   apply PQnle_gt in Hc2; apply Hc2.
    now apply PQlt_le_incl, PQsub_lt.
   *rewrite PQsub_sub_distr; [ | easy | easy ].
    now rewrite PQadd_sub_swap.
   *exfalso; apply PQnle_gt in Hc3; apply Hc3.
    apply PQlt_le_incl.
    apply (PQlt_trans _ px); [ now apply PQsub_lt | easy ].
-
+ +remember (PQcompare (px - py) pz) as c3 eqn:Hc3; symmetry in Hc3.
+  remember (PQcompare (px - pz) py) as c4 eqn:Hc4; symmetry in Hc4.
+  destruct c3, c4; repeat PQcompare_iff.
+  *easy.
+  *exfalso; apply PQnle_gt in Hc4; apply Hc4.
+   symmetry in Hc3.
+   rewrite (PQsub_morph _ (px - py) _ px); [ | easy | easy | easy ].
+   rewrite PQsub_sub_distr; [ | easy | now apply PQsub_lt ].
+   rewrite PQadd_comm, PQadd_sub; apply PQle_refl.
+  *exfalso; apply PQnle_gt in Hc4; apply Hc4.
+   symmetry in Hc3.
+   rewrite (PQsub_morph _ (px - py) _ px); [ | easy | easy | easy ].
+   rewrite PQsub_sub_distr; [ | easy | now apply PQsub_lt ].
+   rewrite PQadd_comm, PQadd_sub; apply PQle_refl.
+  *exfalso.
 ...
 
 (*
