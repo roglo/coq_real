@@ -319,9 +319,38 @@ destruct c1, c2; repeat PQcompare_iff.
  now rewrite PQadd_comm.
 Qed.
 
+(* Leibnitz equality applies *)
+Theorem MQopp_involutive : ∀ x, - - x = x.
+Proof. intros; now destruct x. Qed.
+
 Theorem MQopp_match_comp : ∀ c eq lt gt,
   - match c with Eq => eq | Lt => lt | Gt => gt end =
   match c with Eq => - eq | Lt => - lt | Gt => - gt end.
+Proof. intros; now destruct c. Qed.
+
+Theorem MQmatch_opp_comp : ∀ c eq lt gt,
+  match c with Eq => eq | Lt => lt | Gt => gt end =
+  - match c with Eq => - eq | Lt => - lt | Gt => - gt end.
+Search (- - _).
+Proof. now intros; destruct c; rewrite MQopp_involutive. Qed.
+
+Theorem MQmatch_match_comp : ∀ A c p q (f0 : A) fp fn,
+  match
+    match c with
+    | Eq => 0
+    | Lt => MQneg p
+    | Gt => MQpos q
+    end
+  with
+  | 0 => f0
+  | MQpos px => fp px
+  | MQneg px => fn px
+  end =
+  match c with
+  | Eq => f0
+  | Lt => fn p
+  | Gt => fp q
+  end.
 Proof. intros; now destruct c. Qed.
 
 Theorem MQadd_add_swap : ∀ x y z, x + y + z == x + z + y.
@@ -338,7 +367,8 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl.
 -apply PQadd_swap_lemma1.
 -now destruct (PQcompare px py).
 -symmetry; apply PQadd_swap_lemma1.
--remember (PQcompare px py) as c1 eqn:Hc1; symmetry in Hc1.
+-do 2 (rewrite MQmatch_match_comp; symmetry).
+ remember (PQcompare px py) as c1 eqn:Hc1; symmetry in Hc1.
  remember (PQcompare px pz) as c2 eqn:Hc2; symmetry in Hc2.
  destruct c1, c2; repeat PQcompare_iff; simpl.
  +now rewrite <- Hc1, Hc2.
@@ -440,37 +470,32 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl.
 -now destruct (PQcompare px py).
 -do 2 rewrite MQopp_match_comp; simpl.
  setoid_rewrite PQcompare_comm.
-(* mouais, ça va pas: faut que je fasse un lemme pour transformer
-   le match match en un match unique *)
+ do 2 (rewrite MQmatch_match_comp; symmetry).
+ do 2 rewrite MQopp_match_comp; simpl.
+ setoid_rewrite MQmatch_opp_comp; simpl.
+(* mmmm... not working *)
 ...
-
 above goal:
   ============================
-  match match PQcompare px py with
-        | Eq => 0
-        | Lt => MQneg (py - px)
-        | Gt => MQpos (px - py)
-        end with
-  | 0 => MQneg pz
-  | MQpos px0 => match PQcompare px0 pz with
-                 | Eq => 0
-                 | Lt => MQneg (pz - px0)
-                 | Gt => MQpos (px0 - pz)
-                 end
-  | MQneg px0 => MQneg (px0 + pz)
+  match PQcompare px py with
+  | Eq => MQneg pz
+  | Lt => MQneg (py - px + pz)
+  | Gt =>
+      match PQcompare (px - py) pz with
+      | Eq => 0
+      | Lt => MQneg (pz - (px - py))
+      | Gt => MQpos (px - py - pz)
+      end
   end ==
-  match match PQcompare px pz with
-        | Eq => 0
-        | Lt => MQneg (pz - px)
-        | Gt => MQpos (px - pz)
-        end with
-  | 0 => MQneg py
-  | MQpos px0 => match PQcompare px0 py with
-                 | Eq => 0
-                 | Lt => MQneg (py - px0)
-                 | Gt => MQpos (px0 - py)
-                 end
-  | MQneg px0 => MQneg (px0 + py)
+  match PQcompare px pz with
+  | Eq => MQneg py
+  | Lt => MQneg (pz - px + py)
+  | Gt =>
+      match PQcompare (px - pz) py with
+      | Eq => 0
+      | Lt => MQneg (py - (px - pz))
+      | Gt => MQpos (px - pz - py)
+      end
   end
 ...
  remember (PQcompare px py) as c1 eqn:Hc1; symmetry in Hc1.
