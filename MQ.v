@@ -319,6 +319,9 @@ destruct c1, c2; repeat PQcompare_iff.
  now rewrite PQadd_comm.
 Qed.
 
+Theorem MQopp_inj_wd : ∀ x y, (- x == - y)%MQ ↔ (x == y)%MQ.
+Proof. now intros; destruct x, y. Qed.
+
 (* Leibnitz equality applies *)
 Theorem MQopp_involutive : ∀ x, - - x = x.
 Proof. intros; now destruct x. Qed.
@@ -472,10 +475,12 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl.
  setoid_rewrite PQcompare_comm.
  do 2 (rewrite MQmatch_match_comp; symmetry).
  do 2 rewrite MQopp_match_comp; simpl.
+ setoid_rewrite PQcompare_comm.
  setoid_rewrite MQmatch_opp_comp; simpl.
-(* mmmm... not working *)
+ apply MQopp_inj_wd.
+ do 2 rewrite MQopp_match_comp; simpl.
 ...
-above goal:
+matching above goal -> make a lemma!
   ============================
   match PQcompare px py with
   | Eq => MQneg pz
@@ -497,20 +502,6 @@ above goal:
       | Gt => MQpos (px - pz - py)
       end
   end
-...
- remember (PQcompare px py) as c1 eqn:Hc1; symmetry in Hc1.
- remember (PQcompare px pz) as c2 eqn:Hc2; symmetry in Hc2.
- destruct c1, c2; repeat PQcompare_iff; simpl.
- +now rewrite <- Hc1, Hc2.
- +rewrite (PQsub_morph _ py _ pz); [ | easy | easy | easy ].
-  rewrite PQsub_add; [ easy | now rewrite <- Hc1 ].
- +remember (PQcompare (px - pz) py) as c3 eqn:Hc3; symmetry in Hc3.
-  destruct c3; PQcompare_iff.
-  *exfalso; rewrite <- Hc1 in Hc3.
-   now apply PQsub_no_neutral in Hc3.
-  *rewrite PQsub_sub_distr; [ | easy | easy ].
-   rewrite PQadd_comm.
-...
 
 (*
 Ltac MQadd_assoc_morph_tac :=
