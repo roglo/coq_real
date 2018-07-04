@@ -694,19 +694,41 @@ destruct x as [| px| px]; [ | easy | ].
  now destruct y.
 Qed.
 
-Theorem MQsub_add_distr : ∀ x y z, (x - (y + z) == x - y - z)%MQ.
+(* Leibnitz equality applies *)
+Theorem MQopp_add_distr : ∀ x y, (- (x + y) = - x - y)%MQ.
 Proof.
 intros.
-rewrite MQadd_assoc.
-unfold "+"%MQ; simpl.
-...
+destruct x as [| px| px]; [ easy | | ]; simpl.
+-now rewrite MQopp_involutive.
+-now rewrite MQopp_involutive.
+Qed.
 
-Theorem MQsub_sub_distr : ∀ x y z, (x - (y - z) == x + z - y)%MQ.
+(* Leibnitz equality applies *)
+Theorem MQadd_0_l : ∀ x, (0 + x)%MQ = x.
+Proof. now intros x; destruct x. Qed.
+
+(* Leibnitz equality applies *)
+Theorem MQadd_0_r : ∀ x, (x + 0)%MQ = x.
+Proof. now intros x; destruct x. Qed.
+
+Theorem MQsub_sub_distr : ∀ x y z, (x - (y - z) == x - y + z)%MQ.
 Proof.
 intros.
-rewrite MQsub_add_distr, MQsub_opp_r.
-rewrite MQadd_shuffle0.
-
+destruct x as [| px| px].
+-now simpl; rewrite MQopp_sub_distr, MQadd_comm.
+-rewrite MQopp_sub_distr; simpl.
+ unfold MQadd_PQ_l; simpl.
+ destruct y as [| py| py]; simpl; [ now destruct z | | ].
+ +unfold MQadd_PQ_l; simpl.
+  destruct z as [| pz| pz]; simpl; [ now rewrite MQadd_0_r | | ].
+  *rewrite MQopp_match_comp.
+   rewrite PQcompare_comm; simpl.
+   rewrite MQmatch_match_comp.
+   remember (PQcompare pz py) as c1 eqn:Hc1; symmetry in Hc1.
+   remember (PQcompare px py) as c2 eqn:Hc2; symmetry in Hc2.
+   destruct c1, c2; do 2 PQcompare_iff; simpl.
+  --now transitivity py.
+  --idtac.
 ...
 intros.
 rewrite MQadd_assoc.
