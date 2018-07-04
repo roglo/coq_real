@@ -599,20 +599,7 @@ destruct x as [| px| px], y as [| py| py]; simpl.
   destruct c1, c2; do 2 PQcompare_iff; try easy.
   *transitivity pz; [ easy | now symmetry ].
   *apply -> MQpos_inj_wd in H.
-(* ça mérite un lemme *)
-...
-Theorem PQsub_cancel_l : ∀ x y z, (x - y == x - z)%PQ ↔ (y == z)%PQ.
-...
-   apply (PQadd_cancel_r _ _ px) in H.
-   rewrite PQsub_add in H; [ | easy ].
-   apply (PQadd_cancel_r _ _ (pz - py)).
-   setoid_rewrite PQadd_comm.
-   rewrite PQsub_add; [ | easy ].
-   now symmetry.
-...
-PQadd_cancel_r: ∀ x y z : PQ, (x + z == y + z)%PQ ↔ (x == y)%PQ
-PQadd_cancel_l: ∀ x y z : PQ, (z + x == z + y)%PQ ↔ (x == y)%PQ
-...
+   now apply PQsub_cancel_l in H.
 ...
 
 Theorem MQadd_opp_r : ∀ x, (x - x == 0)%MQ.
