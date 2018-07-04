@@ -556,6 +556,16 @@ destruct x as [| px| px], y as [| py| py]; simpl.
   now apply PQsub_no_neutral in H.
 -split; [ | easy ].
  unfold MQadd_PQ_l; intros H.
+ destruct z as [| pz| pz]; [ easy | | ].
+ +simpl in H.
+  remember (PQcompare py pz) as c1 eqn:Hc1; symmetry in Hc1.
+  destruct c1; PQcompare_iff; [ easy | simpl in H | easy ].
+  symmetry in H.
+  now apply PQsub_no_neutral in H.
+ +simpl in H; symmetry in H.
+  now apply PQadd_no_neutral in H.
+-split; [ | easy ].
+ unfold MQadd_PQ_l; intros H.
 ...
 
 Theorem MQadd_opp_r : ∀ x, (x - x == 0)%MQ.
