@@ -840,8 +840,15 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy;
  +now rewrite Hc1 in Hc2; apply PQlt_irrefl in Hc2.
  +apply PQmul_cancel_l in Hc2; rewrite Hc2 in Hc1.
   now apply PQlt_irrefl in Hc1.
- +now simpl; rewrite PQmul_sub_distr_l.
- +exfalso.
+ +now rewrite PQmul_sub_distr_l.
+ +exfalso; apply PQnle_gt in Hc2; apply Hc2.
+  now apply PQmul_le_mono_l, PQlt_le_incl.
+ +apply PQmul_cancel_l in Hc2; rewrite Hc2 in Hc1.
+  now apply PQlt_irrefl in Hc1.
+ +exfalso; apply PQnle_gt in Hc2; apply Hc2.
+  now apply PQmul_le_mono_l, PQlt_le_incl.
+ +now rewrite PQmul_sub_distr_l.
+-idtac.
 ...
 
 Theorem MQmul_add_distr_l : ∀ x y z, x * (y + z) == x * y + x * z.
