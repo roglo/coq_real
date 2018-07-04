@@ -180,6 +180,24 @@ destruct (PQlt_le_dec x1 y1) as [H1| H1]; rewrite Hx, Hy in H1.
  now apply PQnlt_ge in H2.
 Qed.
 
+Theorem MQpos_inj_wd : ∀ x y, (MQpos x == MQpos y)%MQ ↔ (x == y)%PQ.
+Proof. now intros; destruct x, y. Qed.
+
+Instance MQadd_PQ_l_morph : Proper (PQeq ==> MQeq ==> MQeq) MQadd_PQ_l.
+Proof.
+intros x1 x2 Hx y1 y2 Hy.
+unfold MQadd_PQ_l.
+destruct y1 as [| py1| py1], y2 as [| py2| py2]; try easy; simpl.
+-now apply -> MQpos_inj_wd in Hy; rewrite Hx, Hy.
+-apply -> MQpos_inj_wd in Hy; rewrite Hx, Hy.
+ remember (PQcompare x2 py2) as c1 eqn:Hc1; symmetry in Hc1.
+ destruct c1; PQcompare_iff; [ easy | | ].
+ +symmetry in Hx, Hy.
+  now rewrite (PQsub_morph x2 x1 _ py1).
+ +symmetry in Hx, Hy.
+  now rewrite (PQsub_morph py2 py1 _ x1).
+Qed.
+
 (* Leibnitz equality applies *)
 Theorem MQadd_comm : ∀ x y, x + y = y + x.
 Proof.
@@ -439,9 +457,6 @@ destruct c1, c2; repeat PQcompare_iff; simpl.
  *now rewrite PQsub_sub_swap.
 Qed.
 
-Theorem MQpos_inj_wd : ∀ x y, (MQpos x == MQpos y)%MQ ↔ (x == y)%PQ.
-Proof. now intros; destruct x, y. Qed.
-
 Theorem MQopp_inj_wd : ∀ x y, (- x == - y)%MQ ↔ (x == y)%MQ.
 Proof. now intros; destruct x, y. Qed.
 
@@ -573,7 +588,13 @@ destruct x as [| px| px], y as [| py| py]; simpl.
   destruct c1; PQcompare_iff; [ easy | | easy ].
   apply -> MQpos_inj_wd in H. (* why is it working? *)
   now apply PQsub_no_neutral in H.
--idtac.
+-split; intros H; [ | now rewrite H ].
+ unfold MQadd_PQ_l in H.
+ destruct z as [| pz| pz].
+ +now apply -> MQpos_inj_wd in H.
+ +apply -> MQpos_inj_wd in H.
+  now apply PQadd_cancel_r in H.
+ +idtac.
 ...
 
 Theorem MQadd_opp_r : ∀ x, (x - x == 0)%MQ.

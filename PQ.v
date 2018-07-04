@@ -799,6 +799,13 @@ setoid_rewrite Nat.mul_shuffle0 in H.
 now apply Nat.mul_cancel_r in H.
 Qed.
 
+Theorem PQadd_cancel_r : ∀ x y z, (x + z == y + z ↔ x == y)%PQ.
+Proof.
+intros.
+setoid_rewrite PQadd_comm.
+apply PQadd_cancel_l.
+Qed.
+
 (* multiplication, inversion, division *)
 
 Definition PQmul_num1 x y := (PQnum1 x + 1) * (PQnum1 y + 1) - 1.
