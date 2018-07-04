@@ -930,11 +930,45 @@ do 10 rewrite Nat.sub_succ, Nat.sub_0_r.
 ring.
 Qed.
 
+Theorem PQmul_sub_distr_l : ∀ x y z,
+  (z < y → x * (y - z) == x * y - x * z)%PQ.
+Proof.
+intros *.
+unfold "==", "*"%PQ, "+"%PQ, "<"%PQ, nd; simpl.
+unfold PQmul_num1, PQadd_den1, PQadd_num1, PQmul_den1, nd; simpl.
+PQtac1; intros Hzy.
+repeat PQtac2.
+-repeat rewrite Nat.mul_assoc; f_equal.
+ rewrite Nat.mul_shuffle0; f_equal; f_equal.
+ rewrite Nat.mul_sub_distr_l, Nat.mul_sub_distr_r.
+ repeat rewrite <- Nat.mul_assoc; f_equal.
+ +f_equal; f_equal; apply Nat.mul_comm.
+ +f_equal; f_equal; apply Nat.mul_comm.
+-do 2 rewrite <- Nat.mul_assoc.
+ rewrite <- Nat.mul_sub_distr_l.
+ do 2 rewrite Nat.mul_assoc.
+ setoid_rewrite Nat.mul_shuffle0.
+ rewrite <- Nat.mul_sub_distr_r.
+ rewrite Nat.mul_assoc, Nat.mul_comm, Nat.mul_assoc.
+ remember (S (PQnum1 z) * S (PQden1 y)) as u.
+ remember (S (PQnum1 y) * S (PQden1 z)) as v.
+ assert (H : 0 < v - u) by flia Hzy.
+ destruct (v - u); [ easy | simpl; flia ].
+-flia Hzy.
+Qed.
+
 Theorem PQmul_cancel_l : ∀ x y z, (z * x == z * y ↔ x == y)%PQ.
 Proof.
 intros.
-split; intros H; [ | now rewrite H ].
-...
+split; [ | now intros H; rewrite H ].
+unfold "*"%PQ, PQmul_num1, PQmul_den1.
+PQtac1; repeat PQtac2; intros H.
+do 2 rewrite Nat.mul_assoc in H.
+setoid_rewrite Nat.mul_shuffle0 in H.
+apply Nat.mul_cancel_r in H; [ | easy ].
+do 2 rewrite <- Nat.mul_assoc in H.
+now apply Nat.mul_cancel_l in H.
+Qed.
 
 (* Leibnitz equality applies *)
 Theorem PQinv_involutive: ∀ x, (/ / x = x)%PQ.
