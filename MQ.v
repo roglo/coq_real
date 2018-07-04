@@ -832,6 +832,13 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy;
 -now rewrite PQmul_add_distr_l.
 -simpl; unfold MQmul_PQ_l.
  rewrite MQmatch_match_comp.
+ remember (PQcompare py pz) as c1 eqn:Hc1; symmetry in Hc1.
+ remember (PQcompare (px * py) (px * pz)) as c2 eqn:Hc2; symmetry in Hc2.
+ destruct c1, c2; do 2 PQcompare_iff.
+ +easy.
+ +now rewrite Hc1 in Hc2; apply PQlt_irrefl in Hc2.
+ +now rewrite Hc1 in Hc2; apply PQlt_irrefl in Hc2.
+ +apply PQmul_cancel_l in Hc2.
 ...
 
 Theorem MQmul_add_distr_l : ∀ x y z, x * (y + z) == x * y + x * z.

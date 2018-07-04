@@ -930,6 +930,12 @@ do 10 rewrite Nat.sub_succ, Nat.sub_0_r.
 ring.
 Qed.
 
+Theorem PQmul_cancel_l : ∀ x y z, (z * x == z * y ↔ x == y)%PQ.
+Proof.
+intros.
+split; intros H; [ | now rewrite H ].
+...
+
 (* Leibnitz equality applies *)
 Theorem PQinv_involutive: ∀ x, (/ / x = x)%PQ.
 Proof. intros. unfold "/"%PQ; now destruct x. Qed.
