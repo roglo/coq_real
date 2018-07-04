@@ -805,6 +805,7 @@ intros.
 setoid_rewrite PQadd_comm.
 apply PQadd_cancel_l.
 Qed.
+Arguments PQadd_cancel_r x%PQ y%PQ z%PQ.
 
 (* multiplication, inversion, division *)
 

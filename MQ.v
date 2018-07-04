@@ -594,7 +594,25 @@ destruct x as [| px| px], y as [| py| py]; simpl.
  +now apply -> MQpos_inj_wd in H.
  +apply -> MQpos_inj_wd in H.
   now apply PQadd_cancel_r in H.
- +idtac.
+ +remember (PQcompare px pz) as c1 eqn:Hc1; symmetry in Hc1.
+  remember (PQcompare py pz) as c2 eqn:Hc2; symmetry in Hc2.
+  destruct c1, c2; do 2 PQcompare_iff; try easy.
+  *transitivity pz; [ easy | now symmetry ].
+  *apply -> MQpos_inj_wd in H.
+(* ça mérite un lemme *)
+...
+Theorem PQsub_cancel_l : ∀ x y z, (x - y == x - z)%PQ ↔ (y == z)%PQ.
+...
+   apply (PQadd_cancel_r _ _ px) in H.
+   rewrite PQsub_add in H; [ | easy ].
+   apply (PQadd_cancel_r _ _ (pz - py)).
+   setoid_rewrite PQadd_comm.
+   rewrite PQsub_add; [ | easy ].
+   now symmetry.
+...
+PQadd_cancel_r: ∀ x y z : PQ, (x + z == y + z)%PQ ↔ (x == y)%PQ
+PQadd_cancel_l: ∀ x y z : PQ, (z + x == z + y)%PQ ↔ (x == y)%PQ
+...
 ...
 
 Theorem MQadd_opp_r : ∀ x, (x - x == 0)%MQ.
