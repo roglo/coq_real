@@ -664,6 +664,13 @@ destruct x as [| px| px], y as [| py| py]; simpl.
   *now rewrite H.
 Qed.
 
+Theorem MQadd_cancel_l : ∀ x y z, (x + y == x + z)%MQ ↔ (y == z)%MQ.
+Proof.
+intros.
+setoid_rewrite MQadd_comm.
+apply MQadd_cancel_r.
+Qed.
+
 (* Leibnitz equality applies *)
 Theorem MQadd_opp_r : ∀ x, (x - x = 0)%MQ.
 Proof.
@@ -714,121 +721,118 @@ Proof. now intros x; destruct x. Qed.
 Theorem MQsub_sub_distr : ∀ x y z, (x - (y - z) == x - y + z)%MQ.
 Proof.
 intros.
-destruct x as [| px| px].
--now simpl; rewrite MQopp_sub_distr, MQadd_comm.
--rewrite MQopp_sub_distr; simpl.
- unfold MQadd_PQ_l; simpl.
- destruct y as [| py| py]; simpl; [ now destruct z | | ].
- +unfold MQadd_PQ_l; simpl.
-  destruct z as [| pz| pz]; simpl; [ now rewrite MQadd_0_r | | ].
-  *rewrite MQopp_match_comp.
-   rewrite PQcompare_comm; simpl.
-   rewrite MQmatch_match_comp.
-   remember (PQcompare pz py) as c1 eqn:Hc1; symmetry in Hc1.
-   remember (PQcompare px py) as c2 eqn:Hc2; symmetry in Hc2.
-   destruct c1, c2; do 2 PQcompare_iff; simpl.
-  --now transitivity py.
-  --idtac.
-...
-intros.
 rewrite MQadd_assoc.
-unfold "+"%MQ; simpl.
-remember (MQsign x) as sx eqn:Hsx; symmetry in Hsx.
-remember (MQsign y) as sy eqn:Hsy; symmetry in Hsy.
-remember (MQsign z) as sz eqn:Hsz; symmetry in Hsz.
-destruct sy, sz; simpl.
--destruct sx; simpl.
- +destruct (PQlt_le_dec (MQpos y) (MQpos z)) as [H1| H1]; simpl.
-  *destruct (PQlt_le_dec (MQpos z) (MQpos y)) as [H2|]; [ simpl | easy ].
-   apply PQnle_gt in H2.
-   exfalso; apply H2; clear H2.
-   now apply PQlt_le_incl.
-  *idtac.
-
-...
-
--now destruct sx, (PQlt_le_dec (MQpos y) (MQpos z)).
--now destruct sx, (PQlt_le_dec (MQpos y) (MQpos z)).
+apply MQadd_cancel_l.
+now rewrite MQopp_sub_distr.
 Qed.
-
-rewrite MQsub_add_distr.
-...
 
 (* multiplication, inverse, division *)
 
+Definition MQmul_PQ_l px y :=
+  match y with
+  | MQ0 => MQ0
+  | MQpos py => MQpos (px * py)
+  | MQneg py => MQneg (px * py)
+  end.
+
 Definition MQmul x y :=
-  MQmake (Bool.eqb (MQsign x) (MQsign y)) (MQpos x * MQpos y).
+  match x with
+  | MQ0 => MQ0
+  | MQpos px => MQmul_PQ_l px y
+  | MQneg px => MQmul_PQ_l px (MQopp y)
+  end.
 
 Definition MQinv x :=
-  MQmake (MQsign x) (PQinv (MQpos x)).
+  match x with
+  | MQ0 => MQ0
+  | MQpos px => MQpos (/ px)
+  | MQneg px => MQneg (/ px)
+  end.
 
 Notation "x * y" := (MQmul x y) : MQ_scope.
 Notation "/ x" := (MQinv x) : MQ_scope.
 Notation "x / y" := (MQmul x (MQinv y)) : MQ_scope.
 
-...
-(* remplacer ?P et ?Q par True et False, pour voir *)
-
-Ltac MQmul_morph_tac :=
-  match goal with
-  | [ H : if (zerop (PQnum (MQpos ?x) + PQnum (MQpos ?y))) then ?P else ?Q
-       |- _ ] =>
-      destruct (zerop (PQnum (MQpos x) + PQnum (MQpos y)))
-        as [H1| H1]; [ | easy ];
-      apply Nat.eq_add_0 in H1;
-      unfold "=="%PQ, "*"%PQ, nd; simpl; unfold PQmul_num;
-      now rewrite (proj1 H1), (proj2 H1)
-  | [ H : if (zerop (PQnum (MQpos ?x) + PQnum (MQpos ?y))) then ?P else ?Q
-       |- _ ] =>
-      destruct (zerop (PQnum (MQpos x) + PQnum (MQpos y)))
-        as [H1| H1]; [ | easy ];
-      apply Nat.eq_add_0 in H1;
-      unfold PQmul_num;
-      now rewrite (proj1 H1), (proj2 H1), Nat.mul_0_r, Nat.mul_0_r
-  | [ Hx : (MQpos ?x1 == MQpos ?x2)%PQ, Hy : (MQpos ?y1 == MQpos ?y2)%PQ
-       |- _ ] =>
-      now rewrite Hx, Hy
-  | _ => idtac
-  end.
+Instance MQmul_PQ_l_morph : Proper (PQeq ==> MQeq ==> MQeq) MQmul_PQ_l.
+Proof.
+intros x1 x2 Hx y1 y2 Hy.
+unfold MQmul_PQ_l.
+destruct y1 as [| py1| py1], y2 as [| py2| py2]; try easy.
+-now apply -> MQpos_inj_wd in Hy; rewrite Hx, Hy.
+-now apply -> MQpos_inj_wd in Hy; rewrite Hx, Hy.
+Qed.
 
 (* allows to use rewrite inside a multiplication
    e.g.
-      H : x = y
+      H : x == y
       ====================
       ... (x * z) ...
    rewrite H.
  *)
 Instance MQmul_morph : Proper (MQeq ==> MQeq ==> MQeq) MQmul.
 Proof.
-unfold "=="%MQ; simpl.
 intros x1 x2 Hx y1 y2 Hy.
-move y1 before x2; move y2 before y1.
-unfold "*"%MQ; simpl.
-remember (MQsign x1) as sx1 eqn:Hsx1; symmetry in Hsx1.
-remember (MQsign x2) as sx2 eqn:Hsx2; symmetry in Hsx2.
-remember (MQsign y1) as sy1 eqn:Hsy1; symmetry in Hsy1.
-remember (MQsign y2) as sy2 eqn:Hsy2; symmetry in Hsy2.
-move sx2 before sx1; move sy1 before sx2; move sy2 before sy1.
-move Hsy1 before Hsx2; move Hsy2 before Hsy1.
-destruct sx1, sx2, sy1, sy2; simpl in Hx, Hy |-*; MQmul_morph_tac.
+unfold "*".
+destruct x1 as [| px1| px1], x2 as [| px2| px2]; simpl; try easy.
+-now apply -> MQpos_inj_wd in Hx; rewrite Hx, Hy.
+-apply -> MQpos_inj_wd in Hx.
+ apply MQopp_inj_wd in Hy.
+ now rewrite Hx, Hy.
 Qed.
 
-Theorem MQmul_comm : ∀ x y, x * y == y * x.
+(* Leibnitz equality applies *)
+Theorem MQmul_comm : ∀ x y, x * y = y * x.
 Proof.
 intros.
 unfold MQmul.
-now rewrite Bool_eqb_comm, PQmul_comm.
+now destruct x, y; simpl; try now rewrite PQmul_comm.
 Qed.
 
-Theorem MQmul_assoc : ∀ x y z, (x * y) * z == x * (y * z).
+(* Leibnitz equality applies *)
+Theorem MQmul_assoc : ∀ x y z, (x * y) * z = x * (y * z).
 Proof.
 intros.
-unfold MQmul; simpl.
-now rewrite Bool_eqb_assoc, PQmul_assoc.
+unfold "*"%MQ.
+now destruct x, y, z; simpl; try now rewrite PQmul_assoc.
 Qed.
 
-Theorem MQpos_mul : ∀ x y, (MQpos (x * y) == MQpos x * MQpos y)%PQ.
+Theorem MQpos_add : ∀ x y, (MQpos (x + y) = MQpos x + MQpos y)%MQ.
 Proof. easy. Qed.
+
+Theorem MQpos_mul : ∀ x y, (MQpos (x * y) = MQpos x * MQpos y)%MQ.
+Proof. easy. Qed.
+
+Theorem MQpos_mul_neg : ∀ x y, (MQpos (x * y) = MQneg x * MQneg y)%MQ.
+Proof. easy. Qed.
+
+Theorem MQneg_add : ∀ x y, (MQneg (x + y) = MQneg x + MQneg y)%MQ.
+Proof. easy. Qed.
+
+Theorem MQneg_mul_l : ∀ x y, (MQneg (x * y) = MQneg x * MQpos y)%MQ.
+Proof. easy. Qed.
+
+Theorem MQneg_mul_r : ∀ x y, (MQneg (x * y) = MQpos x * MQneg y)%MQ.
+Proof. easy. Qed.
+
+Ltac MQpos_tac :=
+  match goal with
+  | [ |- context[MQpos _ + MQpos _] ] => rewrite <- MQpos_add
+  | [ |- context[MQpos _ * MQpos _] ] => rewrite <- MQpos_mul
+  | [ |- context[MQneg _ * MQneg _] ] => rewrite <- MQpos_mul_neg
+  | [ |- context[MQneg _ + MQneg _] ] => rewrite <- MQneg_add
+  | [ |- context[MQneg _ * MQpos _] ] => rewrite <- MQneg_mul_l
+  | [ |- context[MQpos _ * MQneg _] ] => rewrite <- MQneg_mul_r
+  end.
+
+Theorem MQmul_add_distr_l : ∀ x y z, x * (y + z) == x * y + x * z.
+Proof.
+intros.
+destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy;
+  repeat MQpos_tac.
+-now rewrite PQmul_add_distr_l.
+-simpl; unfold MQmul_PQ_l.
+ rewrite MQmatch_match_comp.
+...
 
 Theorem MQmul_add_distr_l : ∀ x y z, x * (y + z) == x * y + x * z.
 Proof.

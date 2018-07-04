@@ -878,30 +878,22 @@ rewrite Nat.mul_comm, Hy.
 apply Nat.mul_comm.
 Qed.
 
-Theorem PQmul_comm : ∀ x y, (x * y == y * x)%PQ.
+(* Leibnitz equality applies *)
+Theorem PQmul_comm : ∀ x y, (x * y = y * x)%PQ.
 Proof.
 intros.
-unfold "==", "*"%PQ, nd; f_equal; simpl.
--unfold PQmul_num1; f_equal; f_equal.
- apply Nat.mul_comm.
--unfold PQmul_den1; f_equal; f_equal.
- apply Nat.mul_comm.
+unfold "*"%PQ; f_equal.
+-now unfold PQmul_num1; simpl; rewrite Nat.mul_comm.
+-now unfold PQmul_den1; simpl; rewrite Nat.mul_comm.
 Qed.
 
-Theorem PQmul_assoc : ∀ x y z, ((x * y) * z == x * (y * z))%PQ.
-Proof.
+(* Leibnitz equality applies *)
+Theorem PQmul_assoc : ∀ x y z, ((x * y) * z = x * (y * z))%PQ.
 intros.
-unfold "==", "*"%PQ, nd; f_equal; simpl.
--unfold PQmul_num1; simpl.
- do 7 rewrite Nat.add_1_r.
- do 4 (rewrite <- Nat.sub_succ_l; [ | simpl; flia ]).
- do 4 rewrite Nat.sub_succ, Nat.sub_0_r.
- symmetry; apply Nat.mul_assoc.
--unfold PQmul_den1; simpl.
- do 7 rewrite Nat.add_1_r.
- do 4 (rewrite <- Nat.sub_succ_l; [ | simpl; flia ]).
- do 4 rewrite Nat.sub_succ, Nat.sub_0_r.
- apply Nat.mul_assoc.
+unfold "*"%PQ; simpl.
+unfold PQmul_num1, PQmul_den1; simpl; PQtac1; repeat PQtac2; f_equal.
+-now rewrite Nat.mul_assoc.
+-now rewrite Nat.mul_assoc.
 Qed.
 
 Theorem PQmul_le_mono_l : ∀ x y z, (x ≤ y → z * x ≤ z * y)%PQ.
@@ -938,8 +930,9 @@ do 10 rewrite Nat.sub_succ, Nat.sub_0_r.
 ring.
 Qed.
 
-Theorem PQinv_involutive: ∀ x, (/ / x == x)%PQ.
-Proof. easy. Qed.
+(* Leibnitz equality applies *)
+Theorem PQinv_involutive: ∀ x, (/ / x = x)%PQ.
+Proof. intros. unfold "/"%PQ; now destruct x. Qed.
 
 Ltac PQcompare_iff :=
   match goal with
