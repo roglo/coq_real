@@ -566,6 +566,14 @@ destruct x as [| px| px], y as [| py| py]; simpl.
   now apply PQadd_no_neutral in H.
 -split; [ | easy ].
  unfold MQadd_PQ_l; intros H.
+ destruct z as [| pz| pz]; [ easy | | ].
+ +apply -> MQpos_inj_wd in H.
+  now apply PQadd_no_neutral in H.
+ +remember (PQcompare px pz) as c1 eqn:Hc1; symmetry in Hc1.
+  destruct c1; PQcompare_iff; [ easy | | easy ].
+  apply -> MQpos_inj_wd in H. (* why is it working? *)
+  now apply PQsub_no_neutral in H.
+-idtac.
 ...
 
 Theorem MQadd_opp_r : ∀ x, (x - x == 0)%MQ.
