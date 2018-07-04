@@ -439,6 +439,9 @@ destruct c1, c2; repeat PQcompare_iff; simpl.
  *now rewrite PQsub_sub_swap.
 Qed.
 
+Theorem MQpos_inj_wd : ∀ x y, (MQpos x == MQpos y)%MQ ↔ (x == y)%PQ.
+Proof. now intros; destruct x, y. Qed.
+
 Theorem MQopp_inj_wd : ∀ x y, (- x == - y)%MQ ↔ (x == y)%MQ.
 Proof. now intros; destruct x, y. Qed.
 
@@ -538,11 +541,21 @@ Qed.
 Theorem MQadd_cancel_r : ∀ x y z, (x + z == y + z)%MQ ↔ (x == y)%MQ.
 Proof.
 intros.
-split.
-Focus 2.
-intros H.
-Set Printing All.
- rewrite H.
+unfold "+".
+destruct x as [| px| px], y as [| py| py]; simpl.
+-easy.
+-split; [ | easy ].
+ unfold MQadd_PQ_l; intros H.
+ destruct z as [| pz| pz]; [ easy | | ].
+ +apply -> MQpos_inj_wd in H; symmetry in H.
+  now apply PQadd_no_neutral in H.
+ +remember (PQcompare py pz) as c1 eqn:Hc1; symmetry in Hc1.
+  destruct c1; PQcompare_iff; [ easy | | easy ].
+  apply -> MQpos_inj_wd in H. (* why is it working? *)
+  symmetry in H.
+  now apply PQsub_no_neutral in H.
+-split; [ | easy ].
+ unfold MQadd_PQ_l; intros H.
 ...
 
 Theorem MQadd_opp_r : ∀ x, (x - x == 0)%MQ.
