@@ -848,7 +848,30 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy;
  +exfalso; apply PQnle_gt in Hc2; apply Hc2.
   now apply PQmul_le_mono_l, PQlt_le_incl.
  +now rewrite PQmul_sub_distr_l.
--idtac.
+-simpl; unfold MQmul_PQ_l.
+ rewrite MQopp_match_comp; simpl.
+ rewrite PQcompare_comm, MQmatch_match_comp.
+ rewrite MQopp_match_comp; simpl.
+ symmetry; rewrite PQcompare_comm; symmetry.
+...
+faire un lemme
+
+ remember (PQcompare pz py) as c1 eqn:Hc1; symmetry in Hc1.
+ remember (PQcompare (px * pz) (px * py)) as c2 eqn:Hc2; symmetry in Hc2.
+ destruct c1, c2; do 2 PQcompare_iff.
+ +easy.
+ +now rewrite Hc1 in Hc2; apply PQlt_irrefl in Hc2.
+ +now rewrite Hc1 in Hc2; apply PQlt_irrefl in Hc2.
+ +apply PQmul_cancel_l in Hc2; rewrite Hc2 in Hc1.
+  now apply PQlt_irrefl in Hc1.
+ +now rewrite PQmul_sub_distr_l.
+ +exfalso; apply PQnle_gt in Hc2; apply Hc2.
+  now apply PQmul_le_mono_l, PQlt_le_incl.
+ +apply PQmul_cancel_l in Hc2; rewrite Hc2 in Hc1.
+  now apply PQlt_irrefl in Hc1.
+ +exfalso; apply PQnle_gt in Hc2; apply Hc2.
+  now apply PQmul_le_mono_l, PQlt_le_incl.
+ +now rewrite PQmul_sub_distr_l.
 ...
 
 Theorem MQmul_add_distr_l : ∀ x y z, x * (y + z) == x * y + x * z.
