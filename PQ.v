@@ -826,6 +826,20 @@ split; intros H.
  now symmetry.
 Qed.
 
+Theorem PQsub_cancel_r : ∀ x y z,
+  (z < x)%PQ → (z < y)%PQ → (x - z == y - z)%PQ ↔ (x == y)%PQ.
+Proof.
+intros * Hzx Hzy.
+split; intros H.
+-apply (PQadd_cancel_l _ _ z) in H.
+ setoid_rewrite PQadd_comm in H.
+ rewrite PQsub_add in H; [ | easy ].
+ now rewrite PQsub_add in H.
+-apply (PQadd_cancel_r _ _ z).
+ rewrite PQsub_add; [ | easy ].
+ now rewrite PQsub_add.
+Qed.
+
 (* multiplication, inversion, division *)
 
 Definition PQmul_num1 x y := (PQnum1 x + 1) * (PQnum1 y + 1) - 1.

@@ -600,11 +600,76 @@ destruct x as [| px| px], y as [| py| py]; simpl.
   *transitivity pz; [ easy | now symmetry ].
   *apply -> MQpos_inj_wd in H.
    now apply PQsub_cancel_l in H.
-...
+  *apply -> MQpos_inj_wd in H.
+   now apply PQsub_cancel_r in H.
+-split; [ | easy ].
+ unfold MQadd_PQ_l; intros H.
+ destruct z as [| pz| pz]; [ easy | | ].
+ +simpl in H.
+  remember (PQcompare py pz) as c1 eqn:Hc1; symmetry in Hc1.
+  destruct c1; PQcompare_iff; [ easy | simpl in H | easy ].
+  apply (PQadd_cancel_r _ _ py) in H.
+  rewrite PQsub_add in H; [ | easy ].
+  rewrite PQadd_add_swap in H.
+  now apply PQadd_no_neutral in H.
+ +remember (PQcompare px pz) as c1 eqn:Hc1; symmetry in Hc1.
+  destruct c1; PQcompare_iff; [ easy | simpl in H | easy ].
+  apply (PQadd_cancel_r _ _ px) in H.
+  rewrite PQsub_add in H; [ | easy ].
+  rewrite PQadd_add_swap in H; symmetry in H.
+  now apply PQadd_no_neutral in H.
+-split; [ | easy ].
+ unfold MQadd_PQ_l; intros H.
+ destruct z as [| pz| pz]; [ easy | | ].
+ +simpl in H.
+  remember (PQcompare px pz) as c1 eqn:Hc1; symmetry in Hc1.
+  destruct c1; PQcompare_iff; [ easy | simpl in H | easy ].
+  now apply PQsub_no_neutral in H.
+ +simpl in H.
+  now apply PQadd_no_neutral in H.
+-split; [ | easy ].
+ unfold MQadd_PQ_l; intros H.
+ destruct z as [| pz| pz]; [ easy | | ].
+ +simpl in H.
+  remember (PQcompare px pz) as c1 eqn:Hc1; symmetry in Hc1.
+  destruct c1; PQcompare_iff; [ easy | simpl in H | easy ].
+  apply (PQadd_cancel_r _ _ px) in H.
+  rewrite PQsub_add in H; [ | easy ].
+  rewrite PQadd_add_swap in H; symmetry in H.
+  now apply PQadd_no_neutral in H.
+ +simpl in H.
+  remember (PQcompare py pz) as c1 eqn:Hc1; symmetry in Hc1.
+  destruct c1; PQcompare_iff; [ easy | simpl in H | easy ].
+  apply (PQadd_cancel_r _ _ py) in H.
+  rewrite PQsub_add in H; [ | easy ].
+  rewrite PQadd_add_swap in H.
+  now apply PQadd_no_neutral in H.
+-split; intros H.
+ +unfold MQadd_PQ_l in H.
+  destruct z as [| pz| pz]; [ easy | | ]; simpl in H.
+  *remember (PQcompare px pz) as c1 eqn:Hc1; symmetry in Hc1.
+   remember (PQcompare py pz) as c2 eqn:Hc2; symmetry in Hc2.
+   destruct c1, c2; do 2 PQcompare_iff; try easy; simpl in H.
+  --now transitivity pz.
+  --now apply PQsub_cancel_l in H.
+  --now apply PQsub_cancel_r in H.
+  *now apply PQadd_cancel_r in H.
+ +unfold MQadd_PQ_l.
+  destruct z as [| pz| pz]; [ easy | | ]; simpl.
+  *rewrite H.
+   remember (PQcompare py pz) as c1 eqn:Hc1; symmetry in Hc1.
+   destruct c1; PQcompare_iff; [ easy | | ]; simpl.
+  --apply PQsub_cancel_l; [ now rewrite H | easy | easy ].
+  --apply PQsub_cancel_r; [ now rewrite H | easy | easy ].
+  *now rewrite H.
+Qed.
 
 Theorem MQadd_opp_r : ∀ x, (x - x == 0)%MQ.
 Proof.
 intros.
+Inspect 1.
+...
+
 unfold "-", "+", "=="; simpl.
 rewrite Bool.eqb_negb2.
 destruct (PQlt_le_dec (MQpos x) (MQpos x)) as [H1| H1]; simpl.
