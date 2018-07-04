@@ -664,42 +664,34 @@ destruct x as [| px| px], y as [| py| py]; simpl.
   *now rewrite H.
 Qed.
 
-Theorem MQadd_opp_r : ∀ x, (x - x == 0)%MQ.
+(* Leibnitz equality applies *)
+Theorem MQadd_opp_r : ∀ x, (x - x = 0)%MQ.
 Proof.
 intros.
-Inspect 1.
-...
-
-unfold "-", "+", "=="; simpl.
-rewrite Bool.eqb_negb2.
-destruct (PQlt_le_dec (MQpos x) (MQpos x)) as [H1| H1]; simpl.
--now apply PQlt_irrefl in H1.
--destruct (Bool.eqb (MQsign x) true); [ apply PQsub_diag | ].
- rewrite Nat.add_0_r.
- destruct (zerop (PQsub_num (MQpos x) (MQpos x))) as [H2| H2]; [ easy | ].
- unfold PQsub_num in H2.
- now rewrite Nat.sub_diag in H2.
+now destruct x as [| px| px]; [ easy | | ]; simpl; rewrite PQcompare_refl.
 Qed.
 
-Theorem MQadd_opp_l : ∀ x, (- x + x == 0)%MQ.
+(* Leibnitz equality applies *)
+Theorem MQadd_opp_l : ∀ x, (- x + x = 0)%MQ.
 Proof. intros; rewrite MQadd_comm; apply MQadd_opp_r. Qed.
 
+(* Leibnitz equality applies *)
 Theorem MQsub_opp_r : ∀ x y, (x - - y = x + y)%MQ.
 Proof.
 intros.
-unfold "-"%MQ; simpl.
-now rewrite Bool.negb_involutive.
+unfold "-"%MQ; simpl; now destruct y.
 Qed.
 
-Theorem MQopp_sub_distr : ∀ x y, (- (x - y) == - x + y)%MQ.
+(* Leibnitz equality applies *)
+Theorem MQopp_sub_distr : ∀ x y, (- (x - y) = - x + y)%MQ.
 Proof.
 intros.
 unfold "+"%MQ; simpl.
-remember (MQsign x) as sx eqn:Hsx; symmetry in Hsx.
-remember (MQsign y) as sy eqn:Hsy; symmetry in Hsy.
-destruct sx, sy; simpl; [ | easy | easy | ].
--now destruct (PQlt_le_dec (MQpos x) (MQpos y)).
--now destruct (PQlt_le_dec (MQpos x) (MQpos y)).
+destruct x as [| px| px]; [ | easy | ].
+-apply MQopp_involutive.
+-unfold MQadd_PQ_l; simpl.
+ rewrite MQopp_involutive.
+ now destruct y.
 Qed.
 
 Theorem MQsub_add_distr : ∀ x y z, (x - (y + z) == x - y - z)%MQ.
@@ -707,13 +699,7 @@ Proof.
 intros.
 rewrite MQadd_assoc.
 unfold "+"%MQ; simpl.
-remember (MQsign x) as sx eqn:Hsx; symmetry in Hsx.
-remember (MQsign y) as sy eqn:Hsy; symmetry in Hsy.
-remember (MQsign z) as sz eqn:Hsz; symmetry in Hsz.
-destruct sy, sz; simpl; [ easy | | | easy ].
--now destruct sx, (PQlt_le_dec (MQpos y) (MQpos z)).
--now destruct sx, (PQlt_le_dec (MQpos y) (MQpos z)).
-Qed.
+...
 
 Theorem MQsub_sub_distr : ∀ x y z, (x - (y - z) == x + z - y)%MQ.
 Proof.

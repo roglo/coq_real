@@ -948,6 +948,13 @@ Ltac PQcompare_iff :=
   | [ H : PQcompare _ _ = Gt |- _ ] => apply PQcompare_gt_iff in H
   end.
 
+Theorem PQcompare_refl : ∀ x, PQcompare x x = Eq.
+Proof.
+intros.
+remember (PQcompare x x) as c eqn:Hc; symmetry in Hc.
+now destruct c; [ easy | | ]; PQcompare_iff; apply PQlt_irrefl in Hc.
+Qed.
+
 Theorem PQcompare_comm : ∀ {A} {a b c : A} px py,
   match PQcompare px py with
   | Eq => a
