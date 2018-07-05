@@ -326,35 +326,12 @@ enough (H1 : ∃ N, ∀ p q, N < p ≤ q →
    unfold "<"%MQ.
    remember ((‖ freal_seq x p - freal_seq x q ‖)%MQ) as y eqn:Hy.
    symmetry in Hy; destruct y as [| py| py]; [ easy | | easy ].
-...
    unfold MQabs in Hy.
-   unfold freal_seq in Hy.
-   unfold pos_freal_seq in H2.
-   remember (freal_seq_num x p) as xp eqn:Hxp; symmetry in Hxp.
-   remember (freal_seq_num x q) as xq eqn:Hxq; symmetry in Hxq.
-   move xq before xp.
-   destruct xp, xq; [ easy | | | ].
-   +simpl in H2, Hy.
-    injection Hy; clear Hy; intros Hy.
-    unfold pos_freal_seq in Hy; simpl in Hy.
-    rewrite Hxq in Hy; simpl in Hy.
-    rewrite Hy in H2.
-
-...
-   unfold "<"%MQ, MQabs, freal_seq.
-   destruct q.
-   +apply Nat.le_0_r in Hpq; subst p.
-    unfold freal_seq_num; simpl.
-    rewrite summation_only_one; simpl; rewrite Nat.mul_1_r.
-    destruct (fd2n x 0); [ easy | simpl ].
-    now rewrite PQcompare_refl.
-   +idtac.
-   +destruct p.
-    unfold freal_seq_num; simpl.
-    rewrite summation_only_one; simpl; rewrite Nat.mul_1_r.
-...
-    *unfold summation; simpl.
-
+   remember ((freal_seq x p - freal_seq x q)%MQ) as z eqn:Hz.
+   symmetry in Hz.
+   destruct z as [| pz| pz]; [ easy | | ].
+   +injection Hy; clear Hy; intros Hy; subst pz.
+    unfold freal_seq in Hz.
 ...
 exists (PQden1 (MQpos ε) + 1).
 intros p q (Hp, Hq).
