@@ -184,6 +184,8 @@ Definition freal_seq_num {r : radix} (rg := nat_ord_ring) x n :=
 
 Definition freal_seq_den {r : radix} n := rad ^ S n.
 
+...
+
 Definition freal_seq {r : radix} x n :=
   MQmake true (PQmake (freal_seq_num x n) (freal_seq_den n - 1)).
 
