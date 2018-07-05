@@ -472,7 +472,6 @@ Proof. intros; now destruct c. Qed.
 Theorem MQmatch_opp_comp : ∀ c eq lt gt,
   match c with Eq => eq | Lt => lt | Gt => gt end =
   - match c with Eq => - eq | Lt => - lt | Gt => - gt end.
-Search (- - _).
 Proof. now intros; destruct c; rewrite MQopp_involutive. Qed.
 
 Theorem MQmatch_match_comp : ∀ A c p q (f0 : A) fp fn,
