@@ -332,6 +332,8 @@ enough (H1 : ∃ N, ∀ p q, N < p ≤ q →
    destruct z as [| pz| pz]; [ easy | | ].
    +injection Hy; clear Hy; intros Hy; subst pz.
     unfold freal_seq in Hz.
+    unfold pos_freal_seq in H2.
+    unfold "<"%PQ, nd in H2; simpl in H2.
 ...
 exists (PQden1 (MQpos ε) + 1).
 intros p q (Hp, Hq).
