@@ -190,11 +190,10 @@ Definition freal_seq {r : radix} x n :=
   | S n1 => MQpos (PQmake n1 (freal_seq_den n - 1))
   end.
 
-...
+Definition PQ_of_nat n := PQmake (n - 1) 0.
 
-Definition PQ_of_nat n := PQmake n 0.
-
-Theorem uq_minus_up {r : radix} (rg := nat_ord_ring) : ∀ x p q,
+(*
+Theorem u_q_minus_u_p {r : radix} (rg := nat_ord_ring) : ∀ x p q,
   p < q
   → (freal_seq x q - freal_seq x p ==
       MQmake true
@@ -302,11 +301,13 @@ destruct b.
     now rewrite HS.
   *now rewrite Hfq in Hsq.
 Qed.
+*)
 
 Theorem freal_is_cauchy_seq {r : radix} : ∀ x, is_cauchy_seq (freal_seq x).
 Proof.
 intros x ε Hε.
 specialize radix_ge_2 as Hr.
+...
 exists (PQden1 (MQpos ε) + 1).
 intros p q (Hp, Hq).
 assert
