@@ -147,6 +147,7 @@ Definition MQabs x :=
 Notation "- x" := (MQopp x) : MQ_scope.
 Notation "x + y" := (MQadd x y) : MQ_scope.
 Notation "x - y" := (MQadd x (MQopp y)) : MQ_scope.
+Notation "‖ x ‖" := (MQabs x) (at level 60) : MQ_scope.
 
 Open Scope MQ_scope.
 
@@ -879,3 +880,5 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy;
  rewrite MQmatch_match_comp.
  apply MQmul_add_distr_l_lemma1.
 Qed.
+
+Close Scope MQ.

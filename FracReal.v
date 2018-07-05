@@ -175,22 +175,26 @@ Qed.
 
 Require Import MQ PQ.
 
+Open Scope MQ.
 Definition is_cauchy_seq u :=
-  ∀ ε, ε > 0 → ∃ N, ∀ p q, (p >= N ∧ q >= N)%nat → MQabs (u p - u q) < ε.
+  ∀ ε, ε > 0 → ∃ N, ∀ p q, (p >= N ∧ q >= N)%nat → ‖ u p - u q ‖ < ε.
 Close Scope MQ.
 
-Definition freal_seq_num {r : radix} (rg := nat_ord_ring) x n :=
-  Σ (i = 0, n), fd2n x i * rad ^ (n - i).
+Definition freal_seq_num {r : radix} (rg := nat_ord_ring) x m :=
+  Σ (i = 0, m), fd2n x i * rad ^ (m - i).
 
-Definition freal_seq_den {r : radix} n := rad ^ S n.
+Definition freal_seq_den {r : radix} m := rad ^ S m.
 
-Definition freal_seq {r : radix} x n :=
-  match freal_seq_num x n with
+Definition pos_freal_seq {r : radix} x m :=
+  PQmake (freal_seq_num x m - 1) (freal_seq_den m - 1).
+
+Definition freal_seq {r : radix} x m :=
+  match freal_seq_num x m with
   | 0 => 0%MQ
-  | S n1 => MQpos (PQmake n1 (freal_seq_den n - 1))
+  | S _ => MQpos (pos_freal_seq x m)
   end.
 
-Definition PQ_of_nat n := PQmake (n - 1) 0.
+Definition PQ_of_nat i := PQmake (i - 1) 0.
 
 (*
 Theorem u_q_minus_u_p {r : radix} (rg := nat_ord_ring) : ∀ x p q,
@@ -307,6 +311,50 @@ Theorem freal_is_cauchy_seq {r : radix} : ∀ x, is_cauchy_seq (freal_seq x).
 Proof.
 intros x ε Hε.
 specialize radix_ge_2 as Hr.
+assert (H : ∃ e, MQpos e = ε). {
+  destruct ε as [| e| ]; [ easy | now exists e | easy ].
+}
+destruct H as (e, He); subst ε; clear Hε; rename e into ε.
+enough (H1 : ∃ N, ∀ p q, N < p ≤ q →
+  (pos_freal_seq x p - pos_freal_seq x q < ε)%PQ). {
+  destruct H1 as (N & H1).
+  exists (S N); intros p q (Hp, Hq).
+  destruct (le_dec p q) as [Hpq| Hqp].
+  -specialize (H1 p q) as H2.
+   assert (H : N < p ≤ q) by flia Hp Hpq.
+   specialize (H2 H); clear H.
+   unfold "<"%MQ.
+   remember ((‖ freal_seq x p - freal_seq x q ‖)%MQ) as y eqn:Hy.
+   symmetry in Hy; destruct y as [| py| py]; [ easy | | easy ].
+...
+   unfold MQabs in Hy.
+   unfold freal_seq in Hy.
+   unfold pos_freal_seq in H2.
+   remember (freal_seq_num x p) as xp eqn:Hxp; symmetry in Hxp.
+   remember (freal_seq_num x q) as xq eqn:Hxq; symmetry in Hxq.
+   move xq before xp.
+   destruct xp, xq; [ easy | | | ].
+   +simpl in H2, Hy.
+    injection Hy; clear Hy; intros Hy.
+    unfold pos_freal_seq in Hy; simpl in Hy.
+    rewrite Hxq in Hy; simpl in Hy.
+    rewrite Hy in H2.
+
+...
+   unfold "<"%MQ, MQabs, freal_seq.
+   destruct q.
+   +apply Nat.le_0_r in Hpq; subst p.
+    unfold freal_seq_num; simpl.
+    rewrite summation_only_one; simpl; rewrite Nat.mul_1_r.
+    destruct (fd2n x 0); [ easy | simpl ].
+    now rewrite PQcompare_refl.
+   +idtac.
+   +destruct p.
+    unfold freal_seq_num; simpl.
+    rewrite summation_only_one; simpl; rewrite Nat.mul_1_r.
+...
+    *unfold summation; simpl.
+
 ...
 exists (PQden1 (MQpos ε) + 1).
 intros p q (Hp, Hq).
