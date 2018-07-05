@@ -17,6 +17,7 @@ Arguments PQden1 x%PQ : rename.
 Notation "1" := (PQmake 0 0) : PQ_scope.
 
 Definition nd x y := (PQnum1 x + 1) * (PQden1 y + 1).
+Definition PQone x := PQmake (PQden1 x) (PQden1 x).
 
 (* equality *)
 
@@ -271,12 +272,6 @@ destruct (PQlt_le_dec x1 y1) as [H1| H1]; rewrite Hx, Hy in H1.
  now apply PQnlt_ge in H2.
 Qed.
 
-Theorem PQle_antisymm : ∀ x y, (x ≤ y)%PQ → (y ≤ x)%PQ → (x == y)%PQ.
-Proof.
-intros * Hxy Hyx.
-apply (Nat.le_antisymm _ _ Hxy Hyx).
-Qed.
-
 (* addition, subtraction *)
 
 Definition PQadd_num1 x y := nd x y + nd y x - 1.
@@ -290,6 +285,19 @@ Arguments PQsub x%PQ y%PQ.
 
 Notation "x + y" := (PQadd x y) : PQ_scope.
 Notation "x - y" := (PQsub x y) : PQ_scope.
+
+(* multiplication, inversion, division *)
+
+Definition PQmul_num1 x y := (PQnum1 x + 1) * (PQnum1 y + 1) - 1.
+Definition PQmul_den1 x y := (PQden1 x + 1) * (PQden1 y + 1) - 1.
+
+Definition PQmul x y := PQmake (PQmul_num1 x y) (PQmul_den1 x y).
+Arguments PQmul x%PQ y%PQ.
+
+Definition PQinv x := PQmake (PQden1 x) (PQnum1 x).
+
+Notation "x * y" := (PQmul x y) : PQ_scope.
+Notation "/ x" := (PQinv x) : PQ_scope.
 
 (* allows to use rewrite inside an addition
    e.g.
@@ -360,6 +368,31 @@ f_equal.
 Qed.
 Arguments PQsub_morph x1%PQ x2%PQ y1%PQ y2%PQ.
 
+(* allows to use rewrite inside a multiplication
+   e.g.
+      H : x = y
+      ====================
+      ..... (x * z)%PQ ....
+   rewrite H.
+ *)
+Instance PQmul_morph : Proper (PQeq ==> PQeq ==> PQeq) PQmul.
+Proof.
+unfold "*"%PQ.
+unfold "==", nd; simpl.
+unfold PQmul_num1, PQmul_den1; simpl.
+intros x1 x2 Hx y1 y2 Hy; simpl.
+move Hx before Hy.
+do 4 rewrite Nat.add_1_r in Hx, Hy.
+do 12 rewrite Nat.add_1_r.
+do 4 (rewrite <- Nat.sub_succ_l; [ | simpl; flia ]).
+do 4 rewrite Nat.sub_succ, Nat.sub_0_r.
+setoid_rewrite Nat.mul_shuffle0.
+do 2 rewrite Nat.mul_assoc; rewrite Hx.
+setoid_rewrite <- Nat.mul_assoc; f_equal.
+rewrite Nat.mul_comm, Hy.
+apply Nat.mul_comm.
+Qed.
+
 Ltac split_var2 x xn xd Hpn Hpd :=
   remember (S (PQnum1 x)) as xn eqn:Heqxn;
   remember (S (PQden1 x)) as xd eqn:Heqxd;
@@ -389,13 +422,34 @@ Ltac PQtac3 :=
   repeat rewrite Nat.mul_add_distr_r;
   repeat rewrite Nat.mul_assoc.
 
-(* Notice that some theorems work with Leibnitz equalities
-   (therefore with "=="); it is the case when these equalities
-   hold the same variables at the right and left part of the
-   equlity (e.g (x+y)+z=x+(y+z), but not x+y-y=x) *)
+Theorem PQmul_one_r : ∀ x y, (x * PQone y == x)%PQ.
+Proof.
+intros.
+unfold "*"%PQ, "==", PQone, nd; simpl.
+unfold PQmul_num1, PQmul_den1; simpl.
+PQtac1; repeat PQtac2; PQtac3.
+apply Nat.mul_shuffle0.
+Qed.
 
-(* Leibnitz equality applies *)
-Theorem PQadd_comm : ∀ x y, (x + y)%PQ = (y + x)%PQ.
+Theorem PQle_antisymm_eq : ∀ x y,
+  (x ≤ y)%PQ → (y ≤ x)%PQ → (x * PQone y = y * PQone x)%PQ.
+Proof.
+intros x y Hxy Hyx.
+unfold PQone, "*"%PQ; simpl.
+unfold PQmul_num1, PQmul_den1; simpl.
+specialize (Nat.le_antisymm _ _ Hxy Hyx) as H.
+unfold nd in H; rewrite H.
+f_equal.
+now rewrite Nat.mul_comm.
+Qed.
+
+Theorem PQle_antisymm : ∀ x y, (x ≤ y)%PQ → (y ≤ x)%PQ → (x == y)%PQ.
+Proof.
+intros * Hxy Hyx.
+apply (Nat.le_antisymm _ _ Hxy Hyx).
+Qed.
+
+Theorem PQadd_comm_eq : ∀ x y, (x + y)%PQ = (y + x)%PQ.
 Proof.
 intros.
 unfold "+"%PQ; f_equal.
@@ -403,8 +457,10 @@ unfold "+"%PQ; f_equal.
 -now unfold PQadd_den1, nd; rewrite Nat.mul_comm.
 Qed.
 
-(* Leibnitz equality applies *)
-Theorem PQadd_add_swap : ∀ x y z, (x + y + z)%PQ = (x + z + y)%PQ.
+Theorem PQadd_comm : ∀ x y, (x + y == y + x)%PQ.
+Proof. intros; now rewrite PQadd_comm_eq. Qed.
+
+Theorem PQadd_add_swap_eq : ∀ x y z, (x + y + z)%PQ = (x + z + y)%PQ.
 Proof.
 intros; PQtac1.
 repeat PQtac2; [ | simpl; flia | simpl; flia ].
@@ -415,16 +471,21 @@ f_equal; f_equal.
 apply Nat.mul_shuffle0.
 Qed.
 
-(* Leibnitz equality applies *)
-Theorem PQadd_assoc : ∀ x y z, ((x + y) + z)%PQ = (x + (y + z))%PQ.
+Theorem PQadd_add_swap : ∀ x y z, (x + y + z == x + z + y)%PQ.
+Proof. now intros; rewrite PQadd_add_swap_eq. Qed.
+
+Theorem PQadd_assoc_eq : ∀ x y z, ((x + y) + z)%PQ = (x + (y + z))%PQ.
 Proof.
 intros.
 symmetry.
-rewrite PQadd_comm.
+rewrite PQadd_comm_eq.
 remember (x + y)%PQ as t eqn:Ht.
-rewrite PQadd_comm in Ht; subst t.
-apply PQadd_add_swap.
+rewrite PQadd_comm_eq in Ht; subst t.
+apply PQadd_add_swap_eq.
 Qed.
+
+Theorem PQadd_assoc : ∀ x y z, ((x + y) + z)%PQ = (x + (y + z))%PQ.
+Proof. now intros; rewrite PQadd_assoc_eq. Qed.
 
 (* *)
 
@@ -636,47 +697,49 @@ rewrite <- Nat.add_0_r in H.
 now apply Nat.add_cancel_l in H.
 Qed.
 
+Theorem PQadd_sub_eq : ∀ x y, (x + y - y = x * PQone y * PQone y)%PQ.
+Proof.
+intros.
+unfold "+"%PQ, "-"%PQ, "*"%PQ, PQone; simpl.
+unfold PQsub_num1, PQadd_num1, PQadd_den1, nd; simpl.
+unfold PQmul_num1, PQmul_den1; simpl.
+f_equal.
+do 7 rewrite Nat.add_1_r.
+do 3 (rewrite <- Nat.sub_succ_l; [ | simpl; flia ]).
+do 3 rewrite Nat.sub_succ, Nat.sub_0_r.
+rewrite Nat.mul_add_distr_r, Nat.mul_assoc.
+now rewrite Nat.add_sub.
+Qed.
+
 Theorem PQadd_sub : ∀ x y, (x + y - y == x)%PQ.
 Proof.
 intros x y.
-unfold "+"%PQ, "-"%PQ, "==", nd; simpl.
-unfold PQsub_num1, PQadd_num1, PQadd_den1, nd; simpl.
-do 8 rewrite Nat.add_1_r.
-rewrite <- Nat.sub_succ_l.
--rewrite Nat.sub_succ, Nat.sub_0_r.
- do 3 (rewrite <- Nat.sub_succ_l; [ | simpl; flia ]).
- do 3 rewrite Nat.sub_succ, Nat.sub_0_r.
- rewrite Nat.mul_assoc, Nat.mul_add_distr_r, Nat.add_sub; flia.
--do 2 (rewrite <- Nat.sub_succ_l; [ | simpl; flia ]).
- do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
- rewrite Nat.mul_add_distr_r, Nat.mul_assoc, Nat.add_sub; simpl; flia.
+rewrite PQadd_sub_eq.
+now do 2 rewrite PQmul_one_r.
 Qed.
 
-Theorem PQsub_add : ∀ x y, (y < x)%PQ → (x - y + y == x)%PQ.
+Theorem PQsub_add_eq : ∀ x y,
+  (y < x)%PQ → (x - y + y = x * PQone y * PQone y)%PQ.
 Proof.
 intros x y Hxy.
 unfold "<"%PQ, nd in Hxy.
 unfold "+"%PQ, "-"%PQ, "==", nd; simpl.
 unfold PQsub_num1, PQadd_num1, PQadd_den1, nd; simpl.
+unfold "*"%PQ, PQone, PQmul_num1, PQmul_den1; simpl.
 do 4 rewrite Nat.add_1_r in Hxy.
-do 8 rewrite Nat.add_1_r.
-rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
-rewrite Nat.sub_succ, Nat.sub_0_r.
-do 2 (rewrite <- Nat.sub_succ_l; [ | flia Hxy ]).
-do 2 (rewrite <- Nat.sub_succ_l; [ | simpl; flia ]).
-do 2 (rewrite Nat.sub_succ, Nat.sub_0_r).
-do 3 rewrite Nat.mul_assoc.
-rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
-rewrite Nat.mul_sub_distr_r.
-remember (S (PQnum1 y) * S (PQden1 x) * S (PQden1 y)) as u.
-rewrite Nat_sub_sub_swap.
-rewrite Nat.sub_add; [ rewrite Nat.mul_sub_distr_r; lia | subst u ].
-replace (S (PQden1 y)) with (1 * S (PQden1 y)) by flia.
-do 3 rewrite Nat.mul_1_l at 1.
-rewrite <- Nat.mul_sub_distr_r.
-apply Nat.mul_le_mono_r.
-rewrite Nat.sub_succ, Nat.sub_0_r.
-now apply Nat.lt_le_incl.
+f_equal.
+PQtac1; repeat PQtac2; [ | flia Hxy ].
+PQtac3; rewrite Nat.sub_add; [ easy | ].
+setoid_rewrite Nat.mul_shuffle0.
+rewrite Nat.mul_shuffle0.
+now apply Nat.mul_le_mono_r, Nat.lt_le_incl.
+Qed.
+
+Theorem PQsub_add : ∀ x y, (y < x)%PQ → (x - y + y == x)%PQ.
+Proof.
+intros x y Hxy.
+rewrite PQsub_add_eq; [ | easy ].
+now do 2 rewrite PQmul_one_r.
 Qed.
 
 Theorem PQlt_add_r : ∀ x y, (x < x + y)%PQ.
@@ -711,6 +774,8 @@ repeat PQtac2.
  now apply Nat.lt_le_incl.
 -flia Hyx.
 Qed.
+
+...
 
 (* Leibnitz equality applies *)
 Theorem PQsub_add_distr : ∀ x y z,
@@ -840,44 +905,6 @@ split; intros H.
  now rewrite PQsub_add.
 Qed.
 
-(* multiplication, inversion, division *)
-
-Definition PQmul_num1 x y := (PQnum1 x + 1) * (PQnum1 y + 1) - 1.
-Definition PQmul_den1 x y := (PQden1 x + 1) * (PQden1 y + 1) - 1.
-
-Definition PQmul x y := PQmake (PQmul_num1 x y) (PQmul_den1 x y).
-Arguments PQmul x%PQ y%PQ.
-
-Definition PQinv x := PQmake (PQden1 x) (PQnum1 x).
-
-Notation "x * y" := (PQmul x y) : PQ_scope.
-Notation "/ x" := (PQinv x) : PQ_scope.
-
-(* allows to use rewrite inside a multiplication
-   e.g.
-      H : x = y
-      ====================
-      ..... (x * z)%PQ ....
-   rewrite H.
- *)
-Instance PQmul_morph : Proper (PQeq ==> PQeq ==> PQeq) PQmul.
-Proof.
-unfold "*"%PQ.
-unfold "==", nd; simpl.
-unfold PQmul_num1, PQmul_den1; simpl.
-intros x1 x2 Hx y1 y2 Hy; simpl.
-move Hx before Hy.
-do 4 rewrite Nat.add_1_r in Hx, Hy.
-do 12 rewrite Nat.add_1_r.
-do 4 (rewrite <- Nat.sub_succ_l; [ | simpl; flia ]).
-do 4 rewrite Nat.sub_succ, Nat.sub_0_r.
-setoid_rewrite Nat.mul_shuffle0.
-do 2 rewrite Nat.mul_assoc; rewrite Hx.
-setoid_rewrite <- Nat.mul_assoc; f_equal.
-rewrite Nat.mul_comm, Hy.
-apply Nat.mul_comm.
-Qed.
-
 (* Leibnitz equality applies *)
 Theorem PQmul_comm : ∀ x y, (x * y = y * x)%PQ.
 Proof.
@@ -973,6 +1000,8 @@ Qed.
 (* Leibnitz equality applies *)
 Theorem PQinv_involutive: ∀ x, (/ / x = x)%PQ.
 Proof. intros. unfold "/"%PQ; now destruct x. Qed.
+
+(* *)
 
 Ltac PQcompare_iff :=
   match goal with
