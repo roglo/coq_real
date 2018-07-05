@@ -869,5 +869,14 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy;
  rewrite MQopp_match_comp; simpl.
  symmetry; rewrite PQcompare_comm; symmetry.
  apply MQmul_add_distr_l_lemma1.
--idtac.
-...
+-simpl; unfold MQmul_PQ_l.
+ rewrite MQopp_match_comp; simpl.
+ rewrite PQcompare_comm, MQmatch_match_comp.
+ rewrite MQopp_match_comp; simpl.
+ symmetry; rewrite PQcompare_comm; symmetry.
+ apply MQmul_add_distr_l_lemma1.
+-simpl; unfold MQmul_PQ_l.
+ rewrite MQopp_involutive.
+ rewrite MQmatch_match_comp.
+ apply MQmul_add_distr_l_lemma1.
+Qed.
