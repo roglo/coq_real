@@ -824,92 +824,50 @@ Ltac MQpos_tac :=
   | [ |- context[MQpos _ * MQneg _] ] => rewrite <- MQneg_mul_r
   end.
 
+Theorem MQmul_add_distr_l_lemma1 : ∀ px py pz,
+  match PQcompare py pz with
+  | Eq => 0
+  | Lt => MQneg (px * (pz - py))
+  | Gt => MQpos (px * (py - pz))
+  end ==
+  match PQcompare (px * py) (px * pz) with
+  | Eq => 0
+  | Lt => MQneg (px * pz - px * py)
+  | Gt => MQpos (px * py - px * pz)
+  end.
+Proof.
+intros.
+remember (PQcompare py pz) as c1 eqn:Hc1; symmetry in Hc1.
+remember (PQcompare (px * py) (px * pz)) as c2 eqn:Hc2; symmetry in Hc2.
+destruct c1, c2; do 2 PQcompare_iff.
+-easy.
+-now rewrite Hc1 in Hc2; apply PQlt_irrefl in Hc2.
+-now rewrite Hc1 in Hc2; apply PQlt_irrefl in Hc2.
+-apply PQmul_cancel_l in Hc2; rewrite Hc2 in Hc1.
+ now apply PQlt_irrefl in Hc1.
+-now rewrite PQmul_sub_distr_l.
+-exfalso; apply PQnle_gt in Hc2; apply Hc2.
+ now apply PQmul_le_mono_l, PQlt_le_incl.
+-apply PQmul_cancel_l in Hc2; rewrite Hc2 in Hc1.
+ now apply PQlt_irrefl in Hc1.
+-exfalso; apply PQnle_gt in Hc2; apply Hc2.
+ now apply PQmul_le_mono_l, PQlt_le_incl.
+-now rewrite PQmul_sub_distr_l.
+Qed.
+
 Theorem MQmul_add_distr_l : ∀ x y z, x * (y + z) == x * y + x * z.
 Proof.
 intros.
 destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy;
-  repeat MQpos_tac.
--now rewrite PQmul_add_distr_l.
+  repeat MQpos_tac; try now rewrite PQmul_add_distr_l.
 -simpl; unfold MQmul_PQ_l.
  rewrite MQmatch_match_comp.
- remember (PQcompare py pz) as c1 eqn:Hc1; symmetry in Hc1.
- remember (PQcompare (px * py) (px * pz)) as c2 eqn:Hc2; symmetry in Hc2.
- destruct c1, c2; do 2 PQcompare_iff.
- +easy.
- +now rewrite Hc1 in Hc2; apply PQlt_irrefl in Hc2.
- +now rewrite Hc1 in Hc2; apply PQlt_irrefl in Hc2.
- +apply PQmul_cancel_l in Hc2; rewrite Hc2 in Hc1.
-  now apply PQlt_irrefl in Hc1.
- +now rewrite PQmul_sub_distr_l.
- +exfalso; apply PQnle_gt in Hc2; apply Hc2.
-  now apply PQmul_le_mono_l, PQlt_le_incl.
- +apply PQmul_cancel_l in Hc2; rewrite Hc2 in Hc1.
-  now apply PQlt_irrefl in Hc1.
- +exfalso; apply PQnle_gt in Hc2; apply Hc2.
-  now apply PQmul_le_mono_l, PQlt_le_incl.
- +now rewrite PQmul_sub_distr_l.
+ apply MQmul_add_distr_l_lemma1.
 -simpl; unfold MQmul_PQ_l.
  rewrite MQopp_match_comp; simpl.
  rewrite PQcompare_comm, MQmatch_match_comp.
  rewrite MQopp_match_comp; simpl.
  symmetry; rewrite PQcompare_comm; symmetry.
+ apply MQmul_add_distr_l_lemma1.
+-idtac.
 ...
-faire un lemme
-
- remember (PQcompare pz py) as c1 eqn:Hc1; symmetry in Hc1.
- remember (PQcompare (px * pz) (px * py)) as c2 eqn:Hc2; symmetry in Hc2.
- destruct c1, c2; do 2 PQcompare_iff.
- +easy.
- +now rewrite Hc1 in Hc2; apply PQlt_irrefl in Hc2.
- +now rewrite Hc1 in Hc2; apply PQlt_irrefl in Hc2.
- +apply PQmul_cancel_l in Hc2; rewrite Hc2 in Hc1.
-  now apply PQlt_irrefl in Hc1.
- +now rewrite PQmul_sub_distr_l.
- +exfalso; apply PQnle_gt in Hc2; apply Hc2.
-  now apply PQmul_le_mono_l, PQlt_le_incl.
- +apply PQmul_cancel_l in Hc2; rewrite Hc2 in Hc1.
-  now apply PQlt_irrefl in Hc1.
- +exfalso; apply PQnle_gt in Hc2; apply Hc2.
-  now apply PQmul_le_mono_l, PQlt_le_incl.
- +now rewrite PQmul_sub_distr_l.
-...
-
-Theorem MQmul_add_distr_l : ∀ x y z, x * (y + z) == x * y + x * z.
-Proof.
-(* the 2nd case is almost the first one by swapping y and z *)
-intros.
-unfold "=="; simpl.
-unfold "+", "*"; simpl.
-remember (MQsign x) as sx eqn:Hsx; symmetry in Hsx.
-remember (MQsign y) as sy eqn:Hsy; symmetry in Hsy.
-remember (MQsign z) as sz eqn:Hsz; symmetry in Hsz.
-destruct (PQlt_le_dec (MQpos y) (MQpos z)) as [H2| H2]; simpl.
--destruct (PQlt_le_dec (MQpos x * MQpos y) (MQpos x * MQpos z)) as [H3| H3].
- +destruct sx, sy, sz; simpl;
-    try apply PQmul_add_distr_l; apply PQmul_sub_distr_l.
- +destruct (PQeq_dec (MQpos x) 0) as [H4| H4].
-  *unfold "=="%PQ, nd in H4; simpl in H4.
-   unfold PQmul_num, PQsub_num, nd; simpl.
-   unfold PQmul_num.
-   apply Nat.eq_mul_0_l in H4; [ | easy ].
-   unfold "*"%PQ, "+"%PQ; simpl.
-   unfold PQmul_num; simpl.
-   rewrite H4.
-   destruct sx, sy, sz; simpl; try easy; try apply PQmul_add_distr_l.
-  *apply PQmul_le_mono_pos_l in H3; [ | easy ].
-   now apply PQnlt_ge in H2.
--destruct (PQlt_le_dec (MQpos x * MQpos y) (MQpos x * MQpos z)) as [H3| H3].
- +destruct (PQeq_dec (MQpos x) 0) as [H4| H4].
-  *unfold "=="%PQ, nd in H4; simpl in H4.
-   unfold PQmul_num, PQsub_num, nd; simpl.
-   unfold PQmul_num.
-   apply Nat.eq_mul_0_l in H4; [ | easy ].
-   unfold "*"%PQ, "+"%PQ; simpl.
-   unfold PQmul_num; simpl.
-   rewrite H4.
-   destruct sx, sy, sz; simpl; try easy; try apply PQmul_add_distr_l.
-  *apply PQnle_gt in H3; exfalso; apply H3.
-   now apply PQmul_le_mono_pos_l.
- +destruct sx, sy, sz; simpl;
-    try apply PQmul_add_distr_l; apply PQmul_sub_distr_l.
-Qed.
