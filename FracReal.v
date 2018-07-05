@@ -184,16 +184,13 @@ Definition freal_seq_num {r : radix} (rg := nat_ord_ring) x n :=
 
 Definition freal_seq_den {r : radix} n := rad ^ S n.
 
-...
-
 Definition freal_seq {r : radix} x n :=
-  MQmake true (PQmake (freal_seq_num x n) (freal_seq_den n - 1)).
+  match freal_seq_num x n with
+  | 0 => 0%MQ
+  | S n1 => MQpos (PQmake n1 (freal_seq_den n - 1))
+  end.
 
-Theorem fold_MQsub : ∀ x y, (x + - y == x - y)%MQ.
-Proof. easy. Qed.
-
-Theorem fold_MQdiv : ∀ x y, (x * / y == x / y)%MQ.
-Proof. easy. Qed.
+...
 
 Definition PQ_of_nat n := PQmake n 0.
 
