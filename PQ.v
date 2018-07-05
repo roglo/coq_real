@@ -775,10 +775,7 @@ repeat PQtac2.
 -flia Hyx.
 Qed.
 
-...
-
-(* Leibnitz equality applies *)
-Theorem PQsub_add_distr : ∀ x y z,
+Theorem PQsub_add_distr_eq : ∀ x y z,
   (y < x)%PQ → (x - (y + z))%PQ = (x - y - z)%PQ.
 Proof.
 intros * Hyx.
@@ -786,17 +783,23 @@ revert Hyx; PQtac1; intros.
 repeat PQtac2; PQtac3; [ f_equal; flia | flia Hyx | simpl; flia ].
 Qed.
 
-(* Leibnitz equality applies *)
-Theorem PQsub_sub_swap : ∀ x y z,
+Theorem PQsub_add_distr : ∀ x y z,
+  (y < x)%PQ → (x - (y + z) == x - y - z)%PQ.
+Proof. now intros; rewrite PQsub_add_distr_eq. Qed.
+
+Theorem PQsub_sub_swap_eq : ∀ x y z,
   (y < x)%PQ → (z < x)%PQ → (x - y - z)%PQ = (x - z - y)%PQ.
 Proof.
 intros * Hyx Hzx.
-rewrite <- PQsub_add_distr; [ | easy ].
-rewrite <- PQsub_add_distr; [ now rewrite PQadd_comm | easy ].
+rewrite <- PQsub_add_distr_eq; [ | easy ].
+rewrite <- PQsub_add_distr_eq; [ now rewrite PQadd_comm_eq | easy ].
 Qed.
 
-(* Leibnitz equality applies *)
-Theorem PQsub_sub_distr : ∀ x y z,
+Theorem PQsub_sub_swap : ∀ x y z,
+  (y < x)%PQ → (z < x)%PQ → (x - y - z == x - z - y)%PQ.
+Proof. now intros; rewrite PQsub_sub_swap_eq. Qed.
+
+Theorem PQsub_sub_distr_eq : ∀ x y z,
   (z < y)%PQ → (y - z < x)%PQ → (x - (y - z))%PQ = (x + z - y)%PQ.
 Proof.
 intros * Hzy Hyzx.
@@ -816,8 +819,11 @@ repeat PQtac2; PQtac3; [ | simpl; flia | ].
 -flia Hzy.
 Qed.
 
-(* Leibnitz equality applies *)
-Theorem PQadd_sub_assoc: ∀ x y z,
+Theorem PQsub_sub_distr : ∀ x y z,
+  (z < y)%PQ → (y - z < x)%PQ → (x - (y - z) == x + z - y)%PQ.
+Proof. now intros; rewrite PQsub_sub_distr_eq. Qed.
+
+Theorem PQadd_sub_assoc_eq : ∀ x y z,
   (z < y)%PQ → (x + (y - z))%PQ = (x + y - z)%PQ.
 Proof.
 intros * Hzy.
@@ -830,8 +836,11 @@ rewrite Nat.add_sub_assoc.
 -now apply Nat.mul_le_mono_r, Nat.lt_le_incl.
 Qed.
 
-(* Leibnitz equality applies *)
-Theorem PQadd_sub_swap : ∀ x y z, (z < x)%PQ → (x + y - z = x - z + y)%PQ.
+Theorem PQadd_sub_assoc : ∀ x y z,
+  (z < y)%PQ → (x + (y - z) == x + y - z)%PQ.
+Proof. now intros; rewrite PQadd_sub_assoc_eq. Qed.
+
+Theorem PQadd_sub_swap_eq : ∀ x y z, (z < x)%PQ → (x + y - z = x - z + y)%PQ.
 Proof.
 intros * Hzx.
 revert Hzx; PQtac1; intros.
@@ -846,10 +855,13 @@ rewrite Nat.add_sub_swap.
  now apply Nat.lt_le_incl.
 Qed.
 
-Theorem PQadd_cancel_l : ∀ x y z, (z + x == z + y ↔ x == y)%PQ.
+Theorem PQadd_sub_swap : ∀ x y z, (z < x)%PQ → (x + y - z = x - z + y)%PQ.
+Proof. now intros; rewrite PQadd_sub_swap_eq. Qed.
+
+Theorem PQadd_cancel_l_eq : ∀ x y z,
+  (z + x == z + y)%PQ → (x * PQone y = y * PQone x)%PQ.
 Proof.
-intros.
-split; intros H; [ | now rewrite H ].
+intros * H.
 revert H; PQtac1; intros.
 do 4 (rewrite <- Nat.sub_succ_l in H; [ | simpl; flia ]).
 do 4 rewrite Nat.sub_succ, Nat.sub_0_r in H.
@@ -861,8 +873,28 @@ do 2 rewrite Nat.mul_add_distr_r in H.
 rewrite Nat.mul_shuffle0 in H.
 apply Nat.add_cancel_l in H.
 setoid_rewrite Nat.mul_shuffle0 in H.
-now apply Nat.mul_cancel_r in H.
+apply Nat.mul_cancel_r in H; [ | easy ].
+unfold "*"%PQ, PQone, PQmul_num1, PQmul_den1; simpl.
+PQtac1; rewrite H; f_equal.
+now rewrite Nat.mul_comm.
 Qed.
+
+Theorem PQadd_cancel_l : ∀ x y z, (z + x == z + y)%PQ ↔ (x == y)%PQ.
+Proof.
+intros.
+split; intros H; [ | now rewrite H ].
+specialize (PQadd_cancel_l_eq _ _ _ H) as H1.
+unfold "*"%PQ, PQone, PQmul_num1, PQmul_den1 in H1; simpl in H1.
+injection H1; clear H1; intros H1 H2.
+revert H2; PQtac1; intros.
+simpl in H2; simpl; do 2 rewrite Nat.sub_0_r in H2.
+now rewrite H2.
+Qed.
+
+(* mouais, chais pas si PQadd_cancel_l ci-dessus est très convainquant ;
+   est-ce une bonne idée de passer par PQadd_cancel_l_eq ?
+   du coup, chais pas, mais je ne le fais pas pour PQadd_cancel_r
+   ci-dessous *)
 
 Theorem PQadd_cancel_r : ∀ x y z, (x + z == y + z ↔ x == y)%PQ.
 Proof.
@@ -905,8 +937,7 @@ split; intros H.
  now rewrite PQsub_add.
 Qed.
 
-(* Leibnitz equality applies *)
-Theorem PQmul_comm : ∀ x y, (x * y = y * x)%PQ.
+Theorem PQmul_comm_eq : ∀ x y, (x * y = y * x)%PQ.
 Proof.
 intros.
 unfold "*"%PQ; f_equal.
@@ -914,14 +945,19 @@ unfold "*"%PQ; f_equal.
 -now unfold PQmul_den1; simpl; rewrite Nat.mul_comm.
 Qed.
 
-(* Leibnitz equality applies *)
-Theorem PQmul_assoc : ∀ x y z, ((x * y) * z = x * (y * z))%PQ.
+Theorem PQmul_comm : ∀ x y, (x * y == y * x)%PQ.
+Proof. now intros; rewrite PQmul_comm_eq. Qed.
+
+Theorem PQmul_assoc_eq : ∀ x y z, ((x * y) * z = x * (y * z))%PQ.
 intros.
 unfold "*"%PQ; simpl.
 unfold PQmul_num1, PQmul_den1; simpl; PQtac1; repeat PQtac2; f_equal.
 -now rewrite Nat.mul_assoc.
 -now rewrite Nat.mul_assoc.
 Qed.
+
+Theorem PQmul_assoc : ∀ x y z, ((x * y) * z == x * (y * z))%PQ.
+Proof. now intros; rewrite PQmul_assoc_eq. Qed.
 
 Theorem PQmul_le_mono_l : ∀ x y z, (x ≤ y → z * x ≤ z * y)%PQ.
 Proof.
@@ -946,16 +982,22 @@ setoid_rewrite PQmul_comm.
 now apply PQmul_le_mono_l.
 Qed.
 
-Theorem PQmul_add_distr_l : ∀ x y z, (x * (y + z) == x * y + x * z)%PQ.
+Theorem PQmul_add_distr_l_eq : ∀ x y z,
+  (x * (y + z) * PQone x = x * y + x * z)%PQ.
 Proof.
 intros.
 unfold "==", "*"%PQ, "+"%PQ, nd; simpl.
 unfold PQmul_num1, PQadd_den1, PQadd_num1, PQmul_den1, nd; simpl.
-do 16 rewrite Nat.add_1_r.
-do 10 (rewrite <- Nat.sub_succ_l; [ | simpl; flia ]).
-do 10 rewrite Nat.sub_succ, Nat.sub_0_r.
-ring.
+PQtac1; do 2 PQtac2; [ | simpl; flia ].
+PQtac3; do 6 PQtac2.
+PQtac3; f_equal; [ | now rewrite Nat.mul_shuffle0 ].
+now f_equal; f_equal; rewrite Nat.mul_shuffle0.
 Qed.
+
+Theorem PQmul_add_distr_l : ∀ x y z, (x * (y + z) == x * y + x * z)%PQ.
+Proof. now intros; rewrite <- PQmul_add_distr_l_eq, PQmul_one_r. Qed.
+
+...
 
 Theorem PQmul_sub_distr_l : ∀ x y z,
   (z < y → x * (y - z) == x * y - x * z)%PQ.
