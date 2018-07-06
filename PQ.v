@@ -697,19 +697,21 @@ rewrite <- Nat.add_0_r in H.
 now apply Nat.add_cancel_l in H.
 Qed.
 
-Theorem PQadd_sub_eq : ∀ x y, (x + y - y = x * PQone y * PQone y)%PQ.
+Theorem PQadd_sub_same_eq : ∀ px py pz,
+  (py == pz)%PQ
+  → (px + py - pz = px * PQone py * PQone pz)%PQ.
 Proof.
-intros.
-unfold "+"%PQ, "-"%PQ, "*"%PQ, PQone; simpl.
-unfold PQsub_num1, PQadd_num1, PQadd_den1, nd; simpl.
-unfold PQmul_num1, PQmul_den1; simpl.
-f_equal.
-do 7 rewrite Nat.add_1_r.
-do 3 (rewrite <- Nat.sub_succ_l; [ | simpl; flia ]).
-do 3 rewrite Nat.sub_succ, Nat.sub_0_r.
-rewrite Nat.mul_add_distr_r, Nat.mul_assoc.
-now rewrite Nat.add_sub.
+intros * Hyz.
+unfold "*"%PQ, PQmul_num1, PQmul_den1.
+revert Hyz.
+PQtac1; intros; PQtac2; [ | simpl; flia ].
+PQtac3; do 2 PQtac2; PQtac3; f_equal.
+remember (S (PQnum1 px) * S (PQden1 py)) as t.
+now rewrite Nat.mul_shuffle0, Hyz, Nat.mul_shuffle0, Nat.add_sub.
 Qed.
+
+Theorem PQadd_sub_eq : ∀ x y, (x + y - y = x * PQone y * PQone y)%PQ.
+Proof. now intros; rewrite PQadd_sub_same_eq. Qed.
 
 Theorem PQadd_sub : ∀ x y, (x + y - y == x)%PQ.
 Proof.
@@ -1020,10 +1022,9 @@ now rewrite PQmul_one_r.
 Qed.
 
 Theorem PQmul_cancel_l_eq : ∀ x y z,
-  (z * x == z * y)%PQ → (x * PQone z = y * PQone z)%PQ.
+  (z * x == z * y)%PQ → (x * PQone y = y * PQone x)%PQ.
 Proof.
 intros * H.
-...
 revert H; unfold "*"%PQ, PQmul_num1, PQmul_den1.
 destruct x as (xn, xd).
 destruct y as (yn, yd).
@@ -1035,44 +1036,26 @@ apply Nat.mul_cancel_l in H; [ | easy ].
 setoid_rewrite Nat.mul_comm in H.
 do 2 rewrite <- Nat.mul_assoc in H.
 apply Nat.mul_cancel_l in H; [ | easy ].
-...
-intros; injection H; clear H; intros H1 H2.
-revert H1 H2; PQtac1; intros.
-setoid_rewrite Nat.mul_comm in H1.
-setoid_rewrite Nat.mul_comm in H2.
-simpl in H1, H2.
-do 2 rewrite Nat.sub_0_r in H1, H2.
-apply Nat.add_cancel_l in H1.
-apply Nat.add_cancel_l in H2.
-apply Nat.mul_cancel_r in H1; [ | easy ].
-apply Nat.mul_cancel_r in H2; [ | easy ].
-now subst.
+f_equal; rewrite Nat.mul_comm; [ now rewrite H, Nat.mul_comm | easy ].
 Qed.
 
 Theorem PQmul_cancel_l : ∀ x y z, (z * x == z * y ↔ x == y)%PQ.
 Proof.
-intros.
-split; [ | now intros H; rewrite H ].
-intros H.
-specialize PQmul_cancel_l_eq.
-...
-...
-
-Theorem PQmul_cancel_l : ∀ x y z, (z * x == z * y ↔ x == y)%PQ.
 Proof.
 intros.
-split; [ | now intros H; rewrite H ].
-unfold "*"%PQ, PQmul_num1, PQmul_den1.
-PQtac1; repeat PQtac2; intros H.
-do 2 rewrite Nat.mul_assoc in H.
-setoid_rewrite Nat.mul_shuffle0 in H.
-apply Nat.mul_cancel_r in H; [ | easy ].
-do 2 rewrite <- Nat.mul_assoc in H.
-now apply Nat.mul_cancel_l in H.
+split; intros H; [ | now rewrite H ].
+specialize (PQmul_cancel_l_eq _ _ _ H) as H1.
+unfold "*"%PQ, PQone, PQmul_num1, PQmul_den1 in H1; simpl in H1.
+injection H1; clear H1; intros H1 H2.
+revert H2; PQtac1; intros.
+simpl in H2; simpl; do 2 rewrite Nat.sub_0_r in H2.
+now rewrite H2.
 Qed.
 
-(* Leibnitz equality applies *)
-Theorem PQinv_involutive: ∀ x, (/ / x = x)%PQ.
+Theorem PQinv_involutive_eq : ∀ x, (/ / x = x)%PQ.
+Proof. intros. unfold "/"%PQ; now destruct x. Qed.
+
+Theorem PQinv_involutive : ∀ x, (/ / x == x)%PQ.
 Proof. intros. unfold "/"%PQ; now destruct x. Qed.
 
 (* *)
