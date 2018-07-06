@@ -8,12 +8,14 @@ Record GQ :=
     { GQnum1 : nat; GQden1 : nat;
       GQprop : Nat.gcd (S GQnum1) (S GQden1) = 1 }.
 
+Definition GQ_of_nat n := GQmake (n - 1) 0 (Nat.gcd_1_r (S (n - 1))).
+
 Definition GQadd_num x y :=
   S (GQnum1 x) * S (GQden1 y) + S (GQnum1 y) * S (GQnum1 y).
 Definition GQadd_den x y :=
   S (GQden1 x) * S (GQden1 y).
 
-Theorem GCadd_prop : ∀ x y
+Theorem GQadd_prop : ∀ x y
   (n := GQadd_num x y) (d := GQadd_den x y) (g := Nat.gcd n d),
   Nat.gcd (S (n / g - 1)) (S (d / g - 1)) = 1.
 Proof.
@@ -40,16 +42,20 @@ rewrite <- Nat.sub_succ_l.
  *now intros H; rewrite Nat.mul_comm, H in Hc.
 Qed.
 
-Definition GCadd x y :=
+Definition GQadd x y :=
   let n := GQadd_num x y in
   let d := GQadd_den x y in
   let g := Nat.gcd n d in
-  GQmake (Nat.div n g - 1) (Nat.div d g - 1) (GCadd_prop x y).
+  GQmake (Nat.div n g - 1) (Nat.div d g - 1) (GQadd_prop x y).
 
 (* se pose aussi le problème de l'unicité de la preuve de GQprop
    pour pouvoir utiliser l'égalité de Leibnitz ; mais à mon avis,
    elle n'est pas unique dans le cas général ; faudrait alors un
    axiome, berk ! *)
+
+Compute (GQadd (GQ_of_nat 2) (GQ_of_nat 3)).
+
+(* 2 + 3 = 11, y a un blème *)
 
 ...
 
