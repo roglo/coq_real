@@ -199,19 +199,16 @@ destruct y1 as [| py1| py1], y2 as [| py2| py2]; try easy; simpl.
   now rewrite (PQsub_morph py2 py1 _ x1).
 Qed.
 
-Theorem MQadd_comm_eq : ∀ x y, x + y = y + x.
+Theorem MQadd_comm : ∀ x y, x + y = y + x.
 Proof.
 intros.
 unfold "+".
 destruct x as [| px| px], y as [| py| py]; try easy; simpl.
--f_equal; apply PQadd_comm_eq.
+-f_equal; apply PQadd_comm.
 -now rewrite PQcompare_comm; destruct (PQcompare py px).
 -now rewrite PQcompare_comm; destruct (PQcompare py px).
--f_equal; apply PQadd_comm_eq.
+-f_equal; apply PQadd_comm.
 Qed.
-
-Theorem MQadd_comm : ∀ x y, x + y == y + x.
-Proof. now intros; rewrite MQadd_comm_eq. Qed.
 
 
 (* allows to use rewrite inside an addition
@@ -326,14 +323,14 @@ destruct c1, c2; repeat PQcompare_iff.
  *rewrite PQadd_comm, <- Hc3 in Hc1.
   rewrite PQsub_add in Hc1; [ | easy ].
   now apply PQlt_irrefl in Hc1.
- *rewrite PQadd_comm_eq; symmetry.
+ *rewrite PQadd_comm; symmetry.
   now f_equal; rewrite PQsub_sub_distr.
  *apply (PQadd_lt_mono_r _ _ px) in Hc3.
   rewrite PQsub_add in Hc3; [ | easy ].
   rewrite PQadd_comm in Hc3.
   exfalso; apply PQnle_gt in Hc3; apply Hc3.
   now apply PQlt_le_incl.
-+rewrite PQadd_comm_eq.
++rewrite PQadd_comm.
  rewrite <- PQadd_sub_assoc; [ | easy ].
  now rewrite PQadd_comm.
 Qed.
@@ -372,7 +369,7 @@ destruct c1, c2; repeat PQcompare_iff; simpl.
  +exfalso; rewrite <- Hc1 in Hc3.
   now apply PQsub_no_neutral in Hc3.
  +rewrite PQsub_sub_distr; [ | easy | easy ].
-  rewrite PQadd_comm_eq.
+  rewrite PQadd_comm.
   rewrite (PQsub_morph px py (pz + py) (pz + py)); [ | | easy | easy ].
   *now rewrite PQadd_sub.
   *rewrite Hc1; apply PQlt_add_l.
@@ -401,7 +398,7 @@ destruct c1, c2; repeat PQcompare_iff; simpl.
  +symmetry in Hc2.
   rewrite (PQsub_morph _ (px - py) _ px); [ | easy | easy | easy ].
   rewrite PQsub_sub_distr; [ | easy | now apply PQsub_lt ].
-  now rewrite PQadd_comm_eq, PQadd_sub.
+  now rewrite PQadd_comm, PQadd_sub.
  +exfalso; apply PQnle_gt in Hc3; apply Hc3.
   rewrite <- Hc2.
   now apply PQlt_le_incl, PQsub_lt.
@@ -423,20 +420,20 @@ destruct c1, c2; repeat PQcompare_iff; simpl.
   symmetry in Hc3.
   rewrite (PQsub_morph _ (px - py) _ px); [ | easy | easy | easy ].
   rewrite PQsub_sub_distr; [ | easy | now apply PQsub_lt ].
-  rewrite PQadd_comm_eq, PQadd_sub; apply PQle_refl.
+  rewrite PQadd_comm, PQadd_sub; apply PQle_refl.
  *exfalso; apply PQnle_gt in Hc4; apply Hc4.
   symmetry in Hc3.
   rewrite (PQsub_morph _ (px - py) _ px); [ | easy | easy | easy ].
   rewrite PQsub_sub_distr; [ | easy | now apply PQsub_lt ].
-  rewrite PQadd_comm_eq, PQadd_sub; apply PQle_refl.
+  rewrite PQadd_comm, PQadd_sub; apply PQle_refl.
  *exfalso; symmetry in Hc4.
   rewrite (PQsub_morph _ (px - pz) _ px) in Hc3; [ | easy | easy | easy ].
   rewrite PQsub_sub_distr in Hc3; [ | easy | now apply PQsub_lt ].
-  rewrite PQadd_comm_eq, PQadd_sub in Hc3.
+  rewrite PQadd_comm, PQadd_sub in Hc3.
   now apply PQlt_irrefl in Hc3.
  *rewrite PQsub_sub_distr; [ | easy | easy ].
   rewrite PQsub_sub_distr; [ | easy | easy ].
-  now rewrite PQadd_comm_eq.
+  now rewrite PQadd_comm.
  *exfalso; apply PQnle_gt in Hc4; apply Hc4; clear Hc4.
   apply (PQadd_le_mono_r _ _ pz).
   rewrite PQsub_add; [ | easy ].
@@ -448,7 +445,7 @@ destruct c1, c2; repeat PQcompare_iff; simpl.
  *exfalso; symmetry in Hc4.
   rewrite (PQsub_morph _ (px - pz) _ px) in Hc3; [ | easy | easy | easy ].
   rewrite PQsub_sub_distr in Hc3; [ | easy | now apply PQsub_lt ].
-  rewrite PQadd_comm_eq, PQadd_sub in Hc3.
+  rewrite PQadd_comm, PQadd_sub in Hc3.
   now apply PQlt_irrefl in Hc3.
  *exfalso; apply PQnle_gt in Hc4; apply Hc4; clear Hc4.
   apply (PQadd_le_mono_r _ _ pz).
@@ -683,7 +680,7 @@ Qed.
 
 (* Leibnitz equality applies *)
 Theorem MQadd_opp_l : ∀ x, (- x + x = 0)%MQ.
-Proof. intros; rewrite MQadd_comm_eq; apply MQadd_opp_r. Qed.
+Proof. intros; rewrite MQadd_comm; apply MQadd_opp_r. Qed.
 
 (* Leibnitz equality applies *)
 Theorem MQsub_opp_r : ∀ x y, (x - - y = x + y)%MQ.
@@ -788,7 +785,7 @@ Theorem MQmul_comm : ∀ x y, x * y = y * x.
 Proof.
 intros.
 unfold MQmul.
-now destruct x, y; simpl; try now rewrite PQmul_comm_eq.
+now destruct x, y; simpl; try now rewrite PQmul_comm.
 Qed.
 
 (* Leibnitz equality applies *)
@@ -796,7 +793,7 @@ Theorem MQmul_assoc : ∀ x y z, (x * y) * z = x * (y * z).
 Proof.
 intros.
 unfold "*"%MQ.
-now destruct x, y, z; simpl; try now rewrite PQmul_assoc_eq.
+now destruct x, y, z; simpl; try now rewrite PQmul_assoc.
 Qed.
 
 Theorem MQpos_add : ∀ x y, (MQpos (x + y) = MQpos x + MQpos y)%MQ.

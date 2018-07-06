@@ -449,7 +449,7 @@ intros * Hxy Hyx.
 apply (Nat.le_antisymm _ _ Hxy Hyx).
 Qed.
 
-Theorem PQadd_comm_eq : ∀ x y, (x + y)%PQ = (y + x)%PQ.
+Theorem PQadd_comm : ∀ x y, (x + y)%PQ = (y + x)%PQ.
 Proof.
 intros.
 unfold "+"%PQ; f_equal.
@@ -457,10 +457,7 @@ unfold "+"%PQ; f_equal.
 -now unfold PQadd_den1, nd; rewrite Nat.mul_comm.
 Qed.
 
-Theorem PQadd_comm : ∀ x y, (x + y == y + x)%PQ.
-Proof. intros; now rewrite PQadd_comm_eq. Qed.
-
-Theorem PQadd_add_swap_eq : ∀ x y z, (x + y + z)%PQ = (x + z + y)%PQ.
+Theorem PQadd_add_swap : ∀ x y z, (x + y + z)%PQ = (x + z + y)%PQ.
 Proof.
 intros; PQtac1.
 repeat PQtac2; [ | simpl; flia | simpl; flia ].
@@ -471,21 +468,15 @@ f_equal; f_equal.
 apply Nat.mul_shuffle0.
 Qed.
 
-Theorem PQadd_add_swap : ∀ x y z, (x + y + z == x + z + y)%PQ.
-Proof. now intros; rewrite PQadd_add_swap_eq. Qed.
-
-Theorem PQadd_assoc_eq : ∀ x y z, ((x + y) + z)%PQ = (x + (y + z))%PQ.
+Theorem PQadd_assoc : ∀ x y z, ((x + y) + z)%PQ = (x + (y + z))%PQ.
 Proof.
 intros.
 symmetry.
-rewrite PQadd_comm_eq.
+rewrite PQadd_comm.
 remember (x + y)%PQ as t eqn:Ht.
-rewrite PQadd_comm_eq in Ht; subst t.
-apply PQadd_add_swap_eq.
+rewrite PQadd_comm in Ht; subst t.
+apply PQadd_add_swap.
 Qed.
-
-Theorem PQadd_assoc : ∀ x y z, ((x + y) + z)%PQ = (x + (y + z))%PQ.
-Proof. now intros; rewrite PQadd_assoc_eq. Qed.
 
 (* *)
 
@@ -777,7 +768,7 @@ repeat PQtac2.
 -flia Hyx.
 Qed.
 
-Theorem PQsub_add_distr_eq : ∀ x y z,
+Theorem PQsub_add_distr : ∀ x y z,
   (y < x)%PQ → (x - (y + z))%PQ = (x - y - z)%PQ.
 Proof.
 intros * Hyx.
@@ -785,23 +776,15 @@ revert Hyx; PQtac1; intros.
 repeat PQtac2; PQtac3; [ f_equal; flia | flia Hyx | simpl; flia ].
 Qed.
 
-Theorem PQsub_add_distr : ∀ x y z,
-  (y < x)%PQ → (x - (y + z) == x - y - z)%PQ.
-Proof. now intros; rewrite PQsub_add_distr_eq. Qed.
-
-Theorem PQsub_sub_swap_eq : ∀ x y z,
+Theorem PQsub_sub_swap : ∀ x y z,
   (y < x)%PQ → (z < x)%PQ → (x - y - z)%PQ = (x - z - y)%PQ.
 Proof.
 intros * Hyx Hzx.
-rewrite <- PQsub_add_distr_eq; [ | easy ].
-rewrite <- PQsub_add_distr_eq; [ now rewrite PQadd_comm_eq | easy ].
+rewrite <- PQsub_add_distr; [ | easy ].
+rewrite <- PQsub_add_distr; [ now rewrite PQadd_comm | easy ].
 Qed.
 
-Theorem PQsub_sub_swap : ∀ x y z,
-  (y < x)%PQ → (z < x)%PQ → (x - y - z == x - z - y)%PQ.
-Proof. now intros; rewrite PQsub_sub_swap_eq. Qed.
-
-Theorem PQsub_sub_distr_eq : ∀ x y z,
+Theorem PQsub_sub_distr : ∀ x y z,
   (z < y)%PQ → (y - z < x)%PQ → (x - (y - z))%PQ = (x + z - y)%PQ.
 Proof.
 intros * Hzy Hyzx.
@@ -821,11 +804,7 @@ repeat PQtac2; PQtac3; [ | simpl; flia | ].
 -flia Hzy.
 Qed.
 
-Theorem PQsub_sub_distr : ∀ x y z,
-  (z < y)%PQ → (y - z < x)%PQ → (x - (y - z) == x + z - y)%PQ.
-Proof. now intros; rewrite PQsub_sub_distr_eq. Qed.
-
-Theorem PQadd_sub_assoc_eq : ∀ x y z,
+Theorem PQadd_sub_assoc : ∀ x y z,
   (z < y)%PQ → (x + (y - z))%PQ = (x + y - z)%PQ.
 Proof.
 intros * Hzy.
@@ -838,11 +817,7 @@ rewrite Nat.add_sub_assoc.
 -now apply Nat.mul_le_mono_r, Nat.lt_le_incl.
 Qed.
 
-Theorem PQadd_sub_assoc : ∀ x y z,
-  (z < y)%PQ → (x + (y - z) == x + y - z)%PQ.
-Proof. now intros; rewrite PQadd_sub_assoc_eq. Qed.
-
-Theorem PQadd_sub_swap_eq : ∀ x y z, (z < x)%PQ → (x + y - z = x - z + y)%PQ.
+Theorem PQadd_sub_swap : ∀ x y z, (z < x)%PQ → (x + y - z = x - z + y)%PQ.
 Proof.
 intros * Hzx.
 revert Hzx; PQtac1; intros.
@@ -856,9 +831,6 @@ rewrite Nat.add_sub_swap.
  apply Nat.mul_le_mono_pos_r; [ apply Nat.lt_0_succ | ].
  now apply Nat.lt_le_incl.
 Qed.
-
-Theorem PQadd_sub_swap : ∀ x y z, (z < x)%PQ → (x + y - z = x - z + y)%PQ.
-Proof. now intros; rewrite PQadd_sub_swap_eq. Qed.
 
 Theorem PQadd_cancel_l_eq : ∀ x y z,
   (z + x == z + y)%PQ → (x * PQone y = y * PQone x)%PQ.
@@ -939,7 +911,7 @@ split; intros H.
  now rewrite PQsub_add.
 Qed.
 
-Theorem PQmul_comm_eq : ∀ x y, (x * y = y * x)%PQ.
+Theorem PQmul_comm : ∀ x y, (x * y = y * x)%PQ.
 Proof.
 intros.
 unfold "*"%PQ; f_equal.
@@ -947,19 +919,13 @@ unfold "*"%PQ; f_equal.
 -now unfold PQmul_den1; simpl; rewrite Nat.mul_comm.
 Qed.
 
-Theorem PQmul_comm : ∀ x y, (x * y == y * x)%PQ.
-Proof. now intros; rewrite PQmul_comm_eq. Qed.
-
-Theorem PQmul_assoc_eq : ∀ x y z, ((x * y) * z = x * (y * z))%PQ.
+Theorem PQmul_assoc : ∀ x y z, ((x * y) * z = x * (y * z))%PQ.
 intros.
 unfold "*"%PQ; simpl.
 unfold PQmul_num1, PQmul_den1; simpl; PQtac1; repeat PQtac2; f_equal.
 -now rewrite Nat.mul_assoc.
 -now rewrite Nat.mul_assoc.
 Qed.
-
-Theorem PQmul_assoc : ∀ x y z, ((x * y) * z == x * (y * z))%PQ.
-Proof. now intros; rewrite PQmul_assoc_eq. Qed.
 
 Theorem PQmul_le_mono_l : ∀ x y z, (x ≤ y → z * x ≤ z * y)%PQ.
 Proof.
@@ -1052,10 +1018,7 @@ simpl in H2; simpl; do 2 rewrite Nat.sub_0_r in H2.
 now rewrite H2.
 Qed.
 
-Theorem PQinv_involutive_eq : ∀ x, (/ / x = x)%PQ.
-Proof. intros. unfold "/"%PQ; now destruct x. Qed.
-
-Theorem PQinv_involutive : ∀ x, (/ / x == x)%PQ.
+Theorem PQinv_involutive : ∀ x, (/ / x = x)%PQ.
 Proof. intros. unfold "/"%PQ; now destruct x. Qed.
 
 (* *)
