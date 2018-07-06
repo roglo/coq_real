@@ -1,7 +1,6 @@
 (* rationals where num and den always common primes *)
 
-Require Import Utf8.
-Require Import Arith.
+Require Import Utf8 Arith.
 
 Delimit Scope GQ_scope with GQ.
 
@@ -118,6 +117,12 @@ Compute GQN 2 4.
 Compute GQN 3 6.
 Compute GQN 4 8.
 
+Theorem GQ_add_comm : ∀ x y, (x + y = y + x)%GQ.
+Proof.
+intros.
+unfold "+"%GQ; simpl.
+destruct x as (xn, xd, xp), y as (yn, yd, yp); simpl.
+unfold GQadd_num, GQadd_den; simpl.
 ...
 
 Definition div_gcd x y := Nat.div x (Nat.gcd x y).
