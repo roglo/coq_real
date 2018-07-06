@@ -11,7 +11,7 @@ Record GQ :=
 Definition GQ_of_nat n := GQmake (n - 1) 0 (Nat.gcd_1_r (S (n - 1))).
 
 Definition GQadd_num x y :=
-  S (GQnum1 x) * S (GQden1 y) + S (GQnum1 y) * S (GQnum1 y).
+  S (GQnum1 x) * S (GQden1 y) + S (GQnum1 y) * S (GQden1 x).
 Definition GQadd_den x y :=
   S (GQden1 x) * S (GQden1 y).
 
@@ -53,9 +53,7 @@ Definition GQadd x y :=
    elle n'est pas unique dans le cas général ; faudrait alors un
    axiome, berk ! *)
 
-Compute (GQadd (GQ_of_nat 2) (GQ_of_nat 3)).
-
-(* 2 + 3 = 11, y a un blème *)
+Compute (GQadd (GQ_of_nat 7) (GQ_of_nat 13)).
 
 ...
 
