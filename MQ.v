@@ -16,6 +16,12 @@ Arguments MQneg p%PQ.
 Notation "0" := (MQ0) : MQ_scope.
 Notation "1" := (MQpos 1) : MQ_scope.
 
+Definition MQ_of_nat n :=
+  match n with
+  | 0 => MQ0
+  | S _ => MQpos (PQ_of_nat n)
+  end.
+
 (* equality *)
 
 Definition MQeq x y :=
