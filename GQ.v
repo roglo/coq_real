@@ -62,7 +62,6 @@ Theorem GQmul_prop : ∀ x y
   Nat.gcd (S (n / g - 1)) (S (d / g - 1)) = 1.
 Proof.
 (* tactique à faire, ou lemmes communs avec GQadd_prop *)
-(* et puis peut-être qu'il faut se servir de GQprop de x et y !? *)
 intros.
 rewrite <- Nat.sub_succ_l.
 -rewrite <- Nat.sub_succ_l.
@@ -104,14 +103,20 @@ Qed.
 Definition GQinv x := GQmake (GQden1 x) (GQnum1 x) (GQinv_prop x).
 
 Notation "x * y" := (GQmul x y) : GQ_scope.
+Notation "x / y" := (GQmul x (GQinv y)) : GQ_scope.
 Notation "/ x" := (GQinv x) : GQ_scope.
+
+Definition GQN a b := (GQ_of_nat a / GQ_of_nat b)%GQ.
 
 Print Grammar constr.
 
 Notation "x +/+ y" := (GQmake x y _) (at level 40) : GQ_scope.
 
-Compute (GQ_of_nat 7 * / GQ_of_nat 3)%GQ.
-Compute (GQmul (GQ_of_nat 16) (GQinv (GQ_of_nat 24))).
+Compute GQN 7 3.
+Compute GQN 16 24.
+Compute GQN 2 4.
+Compute GQN 3 6.
+Compute GQN 4 8.
 
 ...
 
