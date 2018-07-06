@@ -318,6 +318,7 @@ destruct H as (e, He); subst ε; clear Hε; rename e into ε.
 enough (H1 : ∃ N, ∀ p q, N < p ≤ q →
   (pos_freal_seq x p - pos_freal_seq x q < ε)%PQ). {
   destruct H1 as (N & H1).
+...
   exists (S N); intros p q (Hp, Hq).
   destruct (le_dec p q) as [Hpq| Hqp].
   -specialize (H1 p q) as H2.
@@ -334,6 +335,26 @@ enough (H1 : ∃ N, ∀ p q, N < p ≤ q →
     unfold freal_seq in Hz.
     unfold pos_freal_seq in H2.
     unfold "<"%PQ, nd in H2; simpl in H2.
+    unfold PQsub_num1, PQadd_den1, nd in H2; simpl in H2.
+    remember (freal_seq_num x p) as pn eqn:Hpn; symmetry in Hpn.
+    remember (freal_seq_num x q) as qn eqn:Hqn; symmetry in Hqn.
+    remember (freal_seq_den p) as pd eqn:Hpd; symmetry in Hpd.
+    remember (freal_seq_den q) as qd eqn:Hqd; symmetry in Hqd.
+    destruct pn; [ now destruct qn | simpl in H2, Hz ].
+    rewrite Nat.sub_0_r in H2.
+    destruct qn; simpl in H2, Hz.
+    *rewrite Nat.add_0_r in H2.
+     injection Hz; clear Hz; intros; subst py.
+     unfold pos_freal_seq; simpl.
+     rewrite Hpn, Hpd, Nat.sub_succ, Nat.sub_0_r.
+     destruct pd, qd; simpl in H2; simpl.
+    --do 2 rewrite Nat.mul_1_r in H2.
+      rewrite Nat.add_sub in H2.
+      unfold "<"%PQ, nd; simpl.
+      rewrite Nat.mul_1_r.
+      destruct pn; [ easy | ].
+      rewrite Nat.sub_succ, Nat.sub_0_r in H2.
+
 ...
 exists (PQden1 (MQpos ε) + 1).
 intros p q (Hp, Hq).
