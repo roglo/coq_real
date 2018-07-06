@@ -997,10 +997,8 @@ Qed.
 Theorem PQmul_add_distr_l : ∀ x y z, (x * (y + z) == x * y + x * z)%PQ.
 Proof. now intros; rewrite <- PQmul_add_distr_l_eq, PQmul_one_r. Qed.
 
-...
-
-Theorem PQmul_sub_distr_l : ∀ x y z,
-  (z < y → x * (y - z) == x * y - x * z)%PQ.
+Theorem PQmul_sub_distr_l_eq : ∀ x y z,
+  (z < y → x * (y - z) * PQone x = x * y - x * z)%PQ.
 Proof.
 intros *.
 unfold "==", "*"%PQ, "+"%PQ, "<"%PQ, nd; simpl.
@@ -1008,23 +1006,57 @@ unfold PQmul_num1, PQadd_den1, PQadd_num1, PQmul_den1, nd; simpl.
 PQtac1; intros Hzy.
 repeat PQtac2.
 -repeat rewrite Nat.mul_assoc; f_equal.
- rewrite Nat.mul_shuffle0; f_equal; f_equal.
- rewrite Nat.mul_sub_distr_l, Nat.mul_sub_distr_r.
- repeat rewrite <- Nat.mul_assoc; f_equal.
- +f_equal; f_equal; apply Nat.mul_comm.
- +f_equal; f_equal; apply Nat.mul_comm.
--do 2 rewrite <- Nat.mul_assoc.
- rewrite <- Nat.mul_sub_distr_l.
- do 2 rewrite Nat.mul_assoc.
- setoid_rewrite Nat.mul_shuffle0.
- rewrite <- Nat.mul_sub_distr_r.
- rewrite Nat.mul_assoc, Nat.mul_comm, Nat.mul_assoc.
- remember (S (PQnum1 z) * S (PQden1 y)) as u.
- remember (S (PQnum1 y) * S (PQden1 z)) as v.
- assert (H : 0 < v - u) by flia Hzy.
- destruct (v - u); [ easy | simpl; flia ].
+ +f_equal; PQtac3; f_equal; apply Nat.mul_shuffle0.
+ +f_equal; apply Nat.mul_shuffle0.
 -flia Hzy.
 Qed.
+
+Theorem PQmul_sub_distr_l : ∀ x y z,
+  (z < y → x * (y - z) == x * y - x * z)%PQ.
+Proof.
+intros * Hzy.
+rewrite <- PQmul_sub_distr_l_eq; [ | easy ].
+now rewrite PQmul_one_r.
+Qed.
+
+Theorem PQmul_cancel_l_eq : ∀ x y z,
+  (z * x == z * y)%PQ → (x * PQone z = y * PQone z)%PQ.
+Proof.
+intros * H.
+...
+revert H; unfold "*"%PQ, PQmul_num1, PQmul_den1.
+destruct x as (xn, xd).
+destruct y as (yn, yd).
+destruct z as (zn, zd); simpl.
+PQtac1; do 4 PQtac2.
+intros.
+do 2 rewrite <- Nat.mul_assoc in H.
+apply Nat.mul_cancel_l in H; [ | easy ].
+setoid_rewrite Nat.mul_comm in H.
+do 2 rewrite <- Nat.mul_assoc in H.
+apply Nat.mul_cancel_l in H; [ | easy ].
+...
+intros; injection H; clear H; intros H1 H2.
+revert H1 H2; PQtac1; intros.
+setoid_rewrite Nat.mul_comm in H1.
+setoid_rewrite Nat.mul_comm in H2.
+simpl in H1, H2.
+do 2 rewrite Nat.sub_0_r in H1, H2.
+apply Nat.add_cancel_l in H1.
+apply Nat.add_cancel_l in H2.
+apply Nat.mul_cancel_r in H1; [ | easy ].
+apply Nat.mul_cancel_r in H2; [ | easy ].
+now subst.
+Qed.
+
+Theorem PQmul_cancel_l : ∀ x y z, (z * x == z * y ↔ x == y)%PQ.
+Proof.
+intros.
+split; [ | now intros H; rewrite H ].
+intros H.
+specialize PQmul_cancel_l_eq.
+...
+...
 
 Theorem PQmul_cancel_l : ∀ x y z, (z * x == z * y ↔ x == y)%PQ.
 Proof.
