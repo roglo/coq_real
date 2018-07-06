@@ -1,30 +1,35 @@
 (* rationals where num and den always common primes *)
 
 Require Import Utf8.
+Require Import Arith.
 
 Record GQ :=
-  GQmake { GQnum : nat; GQden : nat; GQprop : Nat.gcd GQnum GQden = 1 }.
+  GQmake
+    { GQnum1 : nat; GQden1 : nat;
+      GQprop : Nat.gcd (S GQnum1) (S GQden1) = 1 }.
+
+Theorem Pouet : ∀ n d g,
+  g = Nat.gcd (S n) (S d)
+  → Nat.gcd (Nat.div (S n) g) (Nat.div (S d) g) = 1.
+Proof.
+intros * Hg.
+rewrite Nat.gcd_div_gcd; [ easy | | easy ].
+subst g; intros H.
+now apply Nat.gcd_eq_0 in H.
+Qed.
 
 Definition GCadd x y :=
-  let n := GQnum x * GQden y + GQnum y * GQnum y in
-  let d := GQden x * GQden y in
+  let n := S (GQnum1 x) * S (GQden1 y) + S (GQnum1 y) * S (GQnum1 y) - 1 in
+  let d := S (GQden1 x) * S (GQden1 y) - 1 in
   let g := Nat.gcd n d in
   GQmake (Nat.div n g) (Nat.div d g).
+...
+
+ (Pouet n d g).
 
 Print GCadd.
 
-Require Import Arith.
-
-Theorem Pouet : ∀ x y n d g,
-  n = GQnum x * GQden y + GQnum y * GQnum y
-  → d = GQden x * GQden y
-  → g = Nat.gcd n d
-  → Nat.gcd (Nat.div n g) (Nat.div d g) = 1.
-Proof.
-intros * Hn Hd Hg.
-rewrite Nat.gcd_div_gcd; [ easy | | easy ].
-Search (Nat.gcd (Nat.div _ _)).
-...
+Print GCadd.
 
 Definition div_gcd x y := Nat.div x (Nat.gcd x y).
 
