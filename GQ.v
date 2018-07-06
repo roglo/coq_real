@@ -120,9 +120,11 @@ Compute GQN 4 8.
 Theorem GQ_add_comm : ∀ x y, (x + y = y + x)%GQ.
 Proof.
 intros.
-unfold "+"%GQ; simpl.
-destruct x as (xn, xd, xp), y as (yn, yd, yp); simpl.
-unfold GQadd_num, GQadd_den; simpl.
+unfold "+"%GQ.
+destruct x as (xn, xd, xp), y as (yn, yd, yp).
+remember (GQmake xn xd xp) as u.
+remember (GQmake yn yd yp) as v.
+move v before u.
 ...
 
 Definition div_gcd x y := Nat.div x (Nat.gcd x y).
