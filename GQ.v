@@ -8,19 +8,10 @@ Record GQ :=
     { GQnum1 : nat; GQden1 : nat;
       GQprop : Nat.gcd (S GQnum1) (S GQden1) = 1 }.
 
-Definition GCadd x y :=
-  let n := S (GQnum1 x) * S (GQden1 y) + S (GQnum1 y) * S (GQnum1 y) in
-  let d := S (GQden1 x) * S (GQden1 y) in
-  let g := Nat.gcd n d in
-  GQmake (Nat.div n g - 1) (Nat.div d g - 1).
-
-Print GCadd.
-
-Theorem glop : ∀ n d g,
-  g = Nat.gcd n d
-  → Nat.gcd (S (n / g - 1)) (S (d / g - 1)) = 1.
+Theorem glop : ∀ n d (g := Nat.gcd n d),
+  Nat.gcd (S (n / g - 1)) (S (d / g - 1)) = 1.
 Proof.
-intros * Hg.
+intros *.
 rewrite <- Nat.sub_succ_l.
 -rewrite <- Nat.sub_succ_l.
  +do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
@@ -28,6 +19,14 @@ rewrite <- Nat.sub_succ_l.
   subst g; intros H.
   apply Nat.gcd_eq_0 in H.
 ...
+
+Definition GCadd x y :=
+  let n := S (GQnum1 x) * S (GQden1 y) + S (GQnum1 y) * S (GQnum1 y) in
+  let d := S (GQden1 x) * S (GQden1 y) in
+  let g := Nat.gcd n d in
+  GQmake (Nat.div n g - 1) (Nat.div d g - 1) (glop n d).
+
+Print GCadd.
 
 Definition div_gcd x y := Nat.div x (Nat.gcd x y).
 
