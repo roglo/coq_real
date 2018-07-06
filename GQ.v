@@ -3,6 +3,8 @@
 Require Import Utf8.
 Require Import Arith.
 
+Delimit Scope GQ_scope with GQ.
+
 Record GQ :=
   GQmake
     { GQnum1 : nat; GQden1 : nat;
@@ -48,12 +50,68 @@ Definition GQadd x y :=
   let g := Nat.gcd n d in
   GQmake (Nat.div n g - 1) (Nat.div d g - 1) (GQadd_prop x y).
 
-(* se pose aussi le problème de l'unicité de la preuve de GQprop
-   pour pouvoir utiliser l'égalité de Leibnitz ; mais à mon avis,
-   elle n'est pas unique dans le cas général ; faudrait alors un
-   axiome, berk ! *)
+Notation "x + y" := (GQadd x y) : GQ_scope.
 
 Compute (GQadd (GQ_of_nat 7) (GQ_of_nat 13)).
+
+Definition GQmul_num x y :=
+  S (GQnum1 x) * S (GQnum1 y).
+
+Theorem GQmul_prop : ∀ x y
+  (n := GQmul_num x y) (d := GQadd_den x y) (g := Nat.gcd n d),
+  Nat.gcd (S (n / g - 1)) (S (d / g - 1)) = 1.
+Proof.
+(* tactique à faire, ou lemmes communs avec GQadd_prop *)
+(* et puis peut-être qu'il faut se servir de GQprop de x et y !? *)
+intros.
+rewrite <- Nat.sub_succ_l.
+-rewrite <- Nat.sub_succ_l.
+ +do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
+  rewrite Nat.gcd_div_gcd; [ easy | | easy ].
+  subst g; intros H.
+  now apply Nat.gcd_eq_0 in H.
+ +specialize (Nat.gcd_divide_r n d) as H.
+  fold g in H.
+  unfold Nat.divide in H.
+  destruct H as (c & Hc).
+  rewrite Hc, Nat.div_mul.
+  *destruct c; [ easy | apply Nat.lt_0_succ ].
+  *now intros H; rewrite Nat.mul_comm, H in Hc.
+-specialize (Nat.gcd_divide_l n d) as H.
+ fold g in H.
+ unfold Nat.divide in H.
+ destruct H as (c & Hc).
+ rewrite Hc, Nat.div_mul.
+ *destruct c; [ easy | apply Nat.lt_0_succ ].
+ *now intros H; rewrite Nat.mul_comm, H in Hc.
+Qed.
+
+Definition GQmul x y :=
+  let n := GQmul_num x y in
+  let d := GQadd_den x y in
+  let g := Nat.gcd n d in
+  GQmake (Nat.div n g - 1) (Nat.div d g - 1) (GQmul_prop x y).
+
+Compute (GQmul (GQ_of_nat 7) (GQ_of_nat 3)).
+
+Theorem GQinv_prop : ∀ x, Nat.gcd (S (GQden1 x)) (S (GQnum1 x)) = 1.
+Proof.
+intros.
+specialize (GQprop x) as H.
+now rewrite Nat.gcd_comm in H.
+Qed.
+
+Definition GQinv x := GQmake (GQden1 x) (GQnum1 x) (GQinv_prop x).
+
+Notation "x * y" := (GQmul x y) : GQ_scope.
+Notation "/ x" := (GQinv x) : GQ_scope.
+
+Print Grammar constr.
+
+Notation "x +/+ y" := (GQmake x y _) (at level 40) : GQ_scope.
+
+Compute (GQ_of_nat 7 * / GQ_of_nat 3)%GQ.
+Compute (GQmul (GQ_of_nat 16) (GQinv (GQ_of_nat 24))).
 
 ...
 
@@ -65,4 +123,7 @@ Definition div_gcd x y := Nat.div x (Nat.gcd x y).
 (* mais en un seul coup, sans "vraie" division et sans "vrai" pgcd,
    c'est possible ? *)
 
-Print Nat.gcd.
+(* se pose aussi le problème de l'unicité de la preuve de GQprop
+   pour pouvoir utiliser l'égalité de Leibnitz ; mais à mon avis,
+   elle n'est pas unique dans le cas général ; faudrait alors un
+   axiome, berk ! *)
