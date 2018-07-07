@@ -12,6 +12,14 @@ Record GQ :=
 
 Definition GQ_of_nat n := GQmake (n - 1) 0 (Nat.gcd_1_r (S (n - 1))).
 
+Definition div_gcd_l x y := Nat.div x (Nat.gcd x y).
+Theorem fold_div_gcd_l x y : Nat.div x (Nat.gcd x y) = div_gcd_l x y.
+Proof. easy. Qed.
+
+Definition div_gcd_r x y := Nat.div y (Nat.gcd x y).
+Theorem fold_div_gcd_r x y : Nat.div y (Nat.gcd x y) = div_gcd_r x y.
+Proof. easy. Qed.
+
 Definition GQadd_num x y :=
   S (GQnum1 x) * S (GQden1 y) + S (GQnum1 y) * S (GQden1 x).
 Definition GQadd_den x y :=
@@ -47,8 +55,7 @@ Qed.
 Definition GQadd x y :=
   let n := GQadd_num x y in
   let d := GQadd_den x y in
-  let g := Nat.gcd n d in
-  GQmake (Nat.div n g - 1) (Nat.div d g - 1) (GQadd_prop x y).
+  GQmake (div_gcd_l n d - 1) (div_gcd_r n d - 1) (GQadd_prop x y).
 
 Notation "x + y" := (GQadd x y) : GQ_scope.
 
@@ -88,8 +95,7 @@ Qed.
 Definition GQmul x y :=
   let n := GQmul_num x y in
   let d := GQadd_den x y in
-  let g := Nat.gcd n d in
-  GQmake (Nat.div n g - 1) (Nat.div d g - 1) (GQmul_prop x y).
+  GQmake (div_gcd_l n d - 1) (div_gcd_r n d - 1) (GQmul_prop x y).
 
 Compute (GQmul (GQ_of_nat 7) (GQ_of_nat 3)).
 
@@ -148,19 +154,51 @@ intros.
 apply GQeq; unfold "+"%GQ.
 do 2 rewrite GQnum1_make, GQden1_make.
 split; f_equal.
--f_equal; [ apply Nat.add_comm | ].
- f_equal; [ apply Nat.add_comm | apply Nat.mul_comm ].
--f_equal; [ apply Nat.mul_comm | ].
- f_equal; [ apply Nat.add_comm | apply Nat.mul_comm ].
+-f_equal; [ apply Nat.add_comm | apply Nat.mul_comm ].
+-f_equal; [ apply Nat.add_comm | apply Nat.mul_comm ].
 Qed.
 
-Definition div_gcd_l x y := Nat.div x (Nat.gcd x y).
-Theorem fold_div_gcd_l x y : Nat.div x (Nat.gcd x y) = div_gcd_l x y.
-Proof. easy. Qed.
+Theorem eq_div_gcd_l_1_iff : ∀ a b,
+  a ≠ 0 → div_gcd_l a b = 1 ↔ Nat.divide a b.
+Proof.
+intros * Ha.
+split; intros H.
+-exists (b / a).
+ unfold div_gcd_l in H.
+ specialize (Nat.gcd_divide_l a b) as H1.
+ destruct H1 as (c, Hc).
+ rewrite Hc in H at 1.
+ rewrite Nat.div_mul in H.
+ +subst c.
+  rewrite Nat.mul_1_l in Hc.
+  rewrite Hc at 1;
+  rewrite Nat.mul_comm, <- Nat.gcd_div_swap, <- Hc.
+  rewrite Nat.div_same; [ | easy ].
+  now rewrite Nat.mul_1_l.
+ +now intros H1; rewrite H1, Nat.mul_0_r in Hc.
+-destruct H as (c, Hc); subst b.
+ unfold div_gcd_l.
+ rewrite Nat.mul_comm, Nat.gcd_mul_diag_l; [ | apply Nat.le_0_l ].
+ now apply Nat.div_same.
+Qed.
 
-Definition div_gcd_r x y := Nat.div y (Nat.gcd x y).
-Theorem fold_div_gcd_r x y : Nat.div y (Nat.gcd x y) = div_gcd_r x y.
-Proof. easy. Qed.
+Theorem eq_div_gcd_l_same_iff : ∀ a b,
+  a ≠ 0 → div_gcd_l a b = a ↔ Nat.gcd a b = 1.
+Proof.
+intros * Ha.
+unfold div_gcd_l.
+split; intros H.
+-idtac.
+ specialize (Nat.gcd_divide_l a b) as H1.
+ destruct H1 as (c, Hc).
+ rewrite Hc in H at 1.
+ rewrite Nat.div_mul in H.
+ +subst c; symmetry in Hc.
+  rewrite <- Nat.mul_1_r in Hc.
+  now apply Nat.mul_cancel_l in Hc.
+ +now intros H1; rewrite H1, Nat.mul_0_r in Hc.
+-now rewrite H, Nat.div_1_r.
+Qed.
 
 Theorem GQadd_add_swap : ∀ x y z, (x + y + z = x + z + y)%GQ.
 Proof.
@@ -181,13 +219,24 @@ split; f_equal.
  move xp at bottom; move yp at bottom; move zp at bottom.
  setoid_rewrite <- Nat.sub_succ_l.
  +do 4 rewrite Nat.sub_succ, Nat.sub_0_r.
+(*
   do 4 rewrite fold_div_gcd_l.
   do 2 rewrite fold_div_gcd_r.
+*)
   remember (S xn * S yd + S yn * S xd) as a1.
   remember (S xd * S yd) as b1.
   remember (S xn * S zd + S zn * S xd) as a2.
   remember (S xd * S zd) as b2.
   move b2 before a1; move a2 before a1; move b1 before a1.
+Inspect 2.
+Check Nat.gauss.
+...
+(1/2+1/2)+1/3 = 4/4+1/3 = 1/1+1/3 = 4/3 = 4/3
+1/2+(1/2+1/3) = 1/2+5/6 = 1/2+5/6 = 16/12 = 4/3
+
+Search (Nat.gcd _ _ = 1).
+
+...
 Search (_ / Nat.gcd _ _).
 ...
 
