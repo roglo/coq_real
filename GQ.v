@@ -124,12 +124,20 @@ Proof. easy. Qed.
 Theorem GQden1_make : ∀ n d p, GQden1 (GQmake n d p) = d.
 Proof. easy. Qed.
 
-Theorem GQadd_num_make_l : ∀ n p q y,
-  GQadd_num (GQmake n p q) y = S n * S (GQden1 y) + S (GQnum1 y) * S p.
+Theorem GQadd_num_make : ∀ xn xd xp yn yd yp,
+  GQadd_num (GQmake xn xd xp) (GQmake yn yd yp) = S xn * S yd + S yn * S xd.
 Proof. easy. Qed.
 
-Theorem GQadd_den_make_l : ∀ n p q y,
-  GQadd_den (GQmake n p q) y = S p * S (GQden1 y).
+Theorem GQadd_den_make : ∀ xn xd xp yn yd yp,
+  GQadd_den (GQmake xn xd xp) (GQmake yn yd yp) = S xd * S yd.
+Proof. easy. Qed.
+
+Theorem GQadd_num_make_l : ∀ xn xd xp y,
+  GQadd_num (GQmake xn xd xp) y = S xn * S (GQden1 y) + S (GQnum1 y) * S xd.
+Proof. easy. Qed.
+
+Theorem GQadd_den_make_l : ∀ n d p y,
+  GQadd_den (GQmake n d p) y = S d * S (GQden1 y).
 Proof. easy. Qed.
 
 Axiom GQeq : ∀ x y, x = y ↔ GQnum1 x = GQnum1 y ∧ GQden1 x = GQden1 y.
@@ -146,6 +154,10 @@ split; f_equal.
  f_equal; [ apply Nat.add_comm | apply Nat.mul_comm ].
 Qed.
 
+Definition div_gcd_l x y := Nat.div x (Nat.gcd x y).
+Theorem fold_div_gcd_l x y : Nat.div x (Nat.gcd x y) = div_gcd_l x y.
+Proof. easy. Qed.
+
 Theorem GQadd_add_swap : ∀ x y z, (x + y + z = x + z + y)%GQ.
 Proof.
 intros.
@@ -154,6 +166,18 @@ do 2 rewrite GQnum1_make, GQden1_make.
 split; f_equal.
 -do 2 rewrite GQadd_num_make_l.
  do 2 rewrite GQadd_den_make_l.
+ remember S as f.
+ remember Nat.gcd as g.
+ destruct x as (xn, xd, xp).
+ destruct y as (yn, yd, yp).
+ destruct z as (zn, zd, zp).
+ simpl; subst f g.
+ do 2 rewrite GQadd_num_make.
+ do 2 rewrite GQadd_den_make.
+ move xp at bottom; move yp at bottom; move zp at bottom.
+ setoid_rewrite <- Nat.sub_succ_l.
+ +do 4 rewrite Nat.sub_succ, Nat.sub_0_r.
+  do 4 rewrite fold_div_gcd_l.
 ...
 
 Theorem GQadd_assoc : ∀ x y z, ((x + y) + z = x + (y + z))%GQ.
@@ -165,3 +189,8 @@ rewrite GQadd_comm in Ht; subst t.
 setoid_rewrite GQadd_comm.
 apply GQadd_add_swap.
 Qed.
+
+Definition div_gcd x y := Nat.div x (Nat.gcd x y).
+
+(* y a-t-il une fonction qui fait Nat.div x (Nat.gcd x y) ?
+   car c'est toujours divisible ! *)
