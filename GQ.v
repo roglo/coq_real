@@ -108,9 +108,9 @@ Notation "/ x" := (GQinv x) : GQ_scope.
 
 Definition GQN a b := (GQ_of_nat a / GQ_of_nat b)%GQ.
 
-Print Grammar constr.
-
-Notation "x +/+ y" := (GQmake x y _) (at level 40) : GQ_scope.
+(*
+Notation "x +/+ y" := (GQmake x y _) (at level 40, only parsing) : GQ_scope.
+*)
 
 Compute GQN 7 3.
 Compute GQN 16 24.
@@ -130,19 +130,29 @@ Theorem GQ_add_comm : ∀ x y, (x + y = y + x)%GQ.
 Proof.
 intros.
 apply GQeq; unfold "+"%GQ.
-split.
--do 2 rewrite GQnum1_make; f_equal.
- f_equal; [ apply Nat.add_comm | ].
+do 2 rewrite GQnum1_make, GQden1_make.
+split; f_equal.
+-f_equal; [ apply Nat.add_comm | ].
  f_equal; [ apply Nat.add_comm | apply Nat.mul_comm ].
--do 2 rewrite GQden1_make; f_equal.
- f_equal; [ apply Nat.mul_comm | ].
+-f_equal; [ apply Nat.mul_comm | ].
  f_equal; [ apply Nat.add_comm | apply Nat.mul_comm ].
 Qed.
+
+Definition pouet xn xd yn yd := S xn * S yd + S yn * S xd.
+Theorem GQadd_num_pouet : ∀ x y,
+  GQadd_num x y = pouet (GQnum1 x) (GQden1 x) (GQnum1 y) (GQden1 y).
+Proof. easy. Qed.
+
+Definition glop xd yd := S xd * S yd.
+Theorem GQadd_den_glop : ∀ x y, GQadd_den x y = glop (GQden1 x) (GQden1 y).
+Proof. easy. Qed.
 
 Theorem GQ_add_assoc : ∀ x y z, ((x + y) + z = x + (y + z))%GQ.
 Proof.
 intros.
 apply GQeq; unfold "+"%GQ.
-split.
--do 2 rewrite GQnum1_make; f_equal.
+do 2 rewrite GQnum1_make, GQden1_make.
+split; f_equal.
+-idtac.
+ rewrite GQadd_num_pouet, GQnum1_make, GQden1_make.
 ...
