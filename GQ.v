@@ -118,15 +118,23 @@ Compute GQN 2 4.
 Compute GQN 3 6.
 Compute GQN 4 8.
 
-Axiom GQeq : ∀ x y, x = y ↔ GQnum1 x = GQnum1 y ∧ GQden1 x = GQden1 y.
-
 Theorem GQnum1_make : ∀ n d p, GQnum1 (GQmake n d p) = n.
 Proof. easy. Qed.
 
 Theorem GQden1_make : ∀ n d p, GQden1 (GQmake n d p) = d.
 Proof. easy. Qed.
 
-Theorem GQ_add_comm : ∀ x y, (x + y = y + x)%GQ.
+Theorem GQadd_num_make_l : ∀ n p q y,
+  GQadd_num (GQmake n p q) y = S n * S (GQden1 y) + S (GQnum1 y) * S p.
+Proof. easy. Qed.
+
+Theorem GQadd_den_make_l : ∀ n p q y,
+  GQadd_den (GQmake n p q) y = S p * S (GQden1 y).
+Proof. easy. Qed.
+
+Axiom GQeq : ∀ x y, x = y ↔ GQnum1 x = GQnum1 y ∧ GQden1 x = GQden1 y.
+
+Theorem GQadd_comm : ∀ x y, (x + y = y + x)%GQ.
 Proof.
 intros.
 apply GQeq; unfold "+"%GQ.
@@ -138,21 +146,22 @@ split; f_equal.
  f_equal; [ apply Nat.add_comm | apply Nat.mul_comm ].
 Qed.
 
-Definition pouet xn xd yn yd := S xn * S yd + S yn * S xd.
-Theorem GQadd_num_pouet : ∀ x y,
-  GQadd_num x y = pouet (GQnum1 x) (GQden1 x) (GQnum1 y) (GQden1 y).
-Proof. easy. Qed.
-
-Definition glop xd yd := S xd * S yd.
-Theorem GQadd_den_glop : ∀ x y, GQadd_den x y = glop (GQden1 x) (GQden1 y).
-Proof. easy. Qed.
-
-Theorem GQ_add_assoc : ∀ x y z, ((x + y) + z = x + (y + z))%GQ.
+Theorem GQadd_add_swap : ∀ x y z, (x + y + z = x + z + y)%GQ.
 Proof.
 intros.
 apply GQeq; unfold "+"%GQ.
 do 2 rewrite GQnum1_make, GQden1_make.
 split; f_equal.
--idtac.
- rewrite GQadd_num_pouet, GQnum1_make, GQden1_make.
+-do 2 rewrite GQadd_num_make_l.
+ do 2 rewrite GQadd_den_make_l.
 ...
+
+Theorem GQadd_assoc : ∀ x y z, ((x + y) + z = x + (y + z))%GQ.
+Proof.
+intros.
+rewrite GQadd_comm.
+remember (x + y)%GQ as t eqn:Ht.
+rewrite GQadd_comm in Ht; subst t.
+setoid_rewrite GQadd_comm.
+apply GQadd_add_swap.
+Qed.
