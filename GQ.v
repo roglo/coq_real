@@ -158,6 +158,10 @@ Definition div_gcd_l x y := Nat.div x (Nat.gcd x y).
 Theorem fold_div_gcd_l x y : Nat.div x (Nat.gcd x y) = div_gcd_l x y.
 Proof. easy. Qed.
 
+Definition div_gcd_r x y := Nat.div y (Nat.gcd x y).
+Theorem fold_div_gcd_r x y : Nat.div y (Nat.gcd x y) = div_gcd_r x y.
+Proof. easy. Qed.
+
 Theorem GQadd_add_swap : ∀ x y z, (x + y + z = x + z + y)%GQ.
 Proof.
 intros.
@@ -178,6 +182,12 @@ split; f_equal.
  setoid_rewrite <- Nat.sub_succ_l.
  +do 4 rewrite Nat.sub_succ, Nat.sub_0_r.
   do 4 rewrite fold_div_gcd_l.
+  do 2 rewrite fold_div_gcd_r.
+  remember (S xn * S yd + S yn * S xd) as a1.
+  remember (S xd * S yd) as b1.
+  remember (S xn * S zd + S zn * S xd) as a2.
+  remember (S xd * S zd) as b2.
+  move b2 before a1; move a2 before a1; move b1 before a1.
 Search (_ / Nat.gcd _ _).
 ...
 
