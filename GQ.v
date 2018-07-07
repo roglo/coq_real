@@ -221,6 +221,8 @@ Qed.
 
 Definition GQ_of_PQ x := GQN (S (PQnum1 x)) (S (PQden1 x)).
 Definition PQ_of_GQ x := PQmake (GQnum1 x) (GQden1 x).
+Arguments GQ_of_PQ x%PQ.
+Arguments PQ_of_GQ x%GQ.
 
 Theorem GQ_o_PQ : ∀ x, GQ_of_PQ (PQ_of_GQ x) = x.
 Proof.
@@ -236,6 +238,25 @@ split.
 -apply eq_div_gcd_r_same_iff in xp; [ | easy ].
  now rewrite xp, Nat.sub_succ, Nat.sub_0_r.
 Qed.
+
+Theorem glop : ∀ x y, (x + y)%GQ = GQ_of_PQ (PQ_of_GQ x + PQ_of_GQ y).
+Proof.
+intros.
+apply GQeq.
+split.
+-idtac.
+...
+-unfold "+"%GQ.
+ unfold GQ_of_PQ, PQ_of_GQ; simpl.
+ f_equal.
+ unfold PQadd_num1, PQadd_den1, nd; simpl.
+ unfold GQN.
+ remember S as f.
+ unfold GQ_of_nat.
+ simpl; subst f.
+ unfold "/"%GQ, "*"%GQ.
+
+...
 
 Theorem GQadd_add_swap : ∀ x y z, (x + y + z = x + z + y)%GQ.
 Proof.
