@@ -1085,12 +1085,8 @@ Fixpoint rat_of_nat_loop it m :=
       match m with
       | 0 => (0, 1)
       | _ =>
-          if Nat.even m then
-            let '(n, d) := rat_of_nat_loop it' (m / 2) in
-            (d, n + d)
-          else
-            let '(n, d) := rat_of_nat_loop it' (m / 2) in
-            (n + d, d)
+          let '(n, d) := rat_of_nat_loop it' (m / 2) in
+          if Nat.even m then (d, n + d) else (n + d, d)
       end
   end.
 
