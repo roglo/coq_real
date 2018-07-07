@@ -199,6 +199,13 @@ split; intros H.
 -now rewrite H, Nat.div_1_r.
 Qed.
 
+Theorem div_gcd_l_r : ∀ a b, div_gcd_l a b = div_gcd_r b a.
+Proof.
+intros.
+unfold div_gcd_l, div_gcd_r.
+now rewrite Nat.gcd_comm.
+Qed.
+
 Theorem eq_div_gcd_r_same_iff : ∀ a b,
   b ≠ 0 → div_gcd_r a b = b ↔ Nat.gcd a b = 1.
 Proof.
@@ -206,7 +213,11 @@ intros * Ha.
 split; intros H.
 -rewrite Nat.gcd_comm.
  apply eq_div_gcd_l_same_iff; [ easy | ].
-...
+ rewrite <- H at 2.
+ apply div_gcd_l_r.
+-unfold div_gcd_r; rewrite H.
+ apply Nat.div_1_r.
+Qed.
 
 Definition GQ_of_PQ x := GQN (S (PQnum1 x)) (S (PQden1 x)).
 Definition PQ_of_GQ x := PQmake (GQnum1 x) (GQden1 x).
@@ -224,23 +235,7 @@ split.
  now rewrite xp, Nat.sub_succ, Nat.sub_0_r.
 -apply eq_div_gcd_r_same_iff in xp; [ | easy ].
  now rewrite xp, Nat.sub_succ, Nat.sub_0_r.
-...
-
--unfold PQ_of_GQ, GQ_of_PQ, GQN, GQ_of_nat; simpl.
-
-unfold "/"%GQ, "*"%GQ; simpl.
-f_equal.
--unfold GQmul_num, GQ_of_nat, GQadd_den; simpl.
- do 2 rewrite Nat.sub_0_r.
- rewrite Nat.mul_1_r, Nat.add_0_r.
- apply Nat.succ_inj.
- rewrite <- Nat.sub_succ_l.
- +rewrite Nat.sub_succ, Nat.sub_0_r.
-  apply eq_div_gcd_l_same_iff; [ easy | ].
-  admit. (* en fait c'est faux *)
- +admit. (* cui-là, c'est vrai *)
--idtac.
-...
+Qed.
 
 Theorem GQadd_add_swap : ∀ x y z, (x + y + z = x + z + y)%GQ.
 Proof.
@@ -261,15 +256,15 @@ split; f_equal.
  move xp at bottom; move yp at bottom; move zp at bottom.
  setoid_rewrite <- Nat.sub_succ_l.
  +do 4 rewrite Nat.sub_succ, Nat.sub_0_r.
-(*
-  do 4 rewrite fold_div_gcd_l.
-  do 2 rewrite fold_div_gcd_r.
-*)
   remember (S xn * S yd + S yn * S xd) as a1.
   remember (S xd * S yd) as b1.
   remember (S xn * S zd + S zn * S xd) as a2.
   remember (S xd * S zd) as b2.
   move b2 before a1; move a2 before a1; move b1 before a1.
+  do 2 rewrite <- div_gcd_l_r.
+Print div_gcd_l.
+Search div_gcd_l.
+Search ((_ + _) / Nat.gcd _ _).
 Inspect 2.
 Check Nat.gauss.
 ...
