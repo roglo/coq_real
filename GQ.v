@@ -239,15 +239,33 @@ split.
  now rewrite xp, Nat.sub_succ, Nat.sub_0_r.
 Qed.
 
-Theorem glop : ∀ x y, (x + y)%GQ = GQ_of_PQ (PQ_of_GQ x + PQ_of_GQ y).
+Theorem GQadd_PQadd : ∀ x y, (x + y)%GQ = GQ_of_PQ (PQ_of_GQ x + PQ_of_GQ y).
 Proof.
 intros.
 apply GQeq.
 split.
--idtac.
-...
 -unfold "+"%GQ.
- unfold GQ_of_PQ, PQ_of_GQ; simpl.
+ remember GQ_of_PQ as f; simpl; subst f.
+ remember (PQ_of_GQ x + PQ_of_GQ y)%PQ as z.
+ simpl; f_equal.
+ unfold "/"%GQ; simpl; rewrite Nat.sub_0_r.
+ unfold GQmul_num, GQadd_den.
+ remember S as f; simpl; subst f.
+ rewrite Nat.mul_1_r, Nat.mul_1_l.
+ rewrite <- Nat.sub_succ_l; [ | flia ].
+ rewrite Nat.sub_succ, Nat.sub_0_r.
+ unfold "+"%PQ in Heqz.
+ unfold PQadd_num1, PQadd_den1, nd in Heqz.
+ simpl in Heqz;  subst z.
+ remember S as f; simpl; subst f.
+ PQtac1.
+ rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+ rewrite Nat.sub_succ, Nat.sub_0_r.
+ now rewrite <- Nat.sub_succ_l; [ easy | simpl; flia ].
+-idtac.
+
+...
+ unfold GQ_of_PQ, PQ_of_GQ.
  f_equal.
  unfold PQadd_num1, PQadd_den1, nd; simpl.
  unfold GQN.
