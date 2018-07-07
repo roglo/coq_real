@@ -138,3 +138,11 @@ split.
  f_equal; [ apply Nat.mul_comm | ].
  f_equal; [ apply Nat.add_comm | apply Nat.mul_comm ].
 Qed.
+
+Theorem GQ_add_assoc : ∀ x y z, ((x + y) + z = x + (y + z))%GQ.
+Proof.
+intros.
+apply GQeq; unfold "+"%GQ.
+split.
+-do 2 rewrite GQnum1_make; f_equal.
+...
