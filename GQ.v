@@ -1,6 +1,6 @@
 (* rationals where num and den always common primes *)
 
-Require Import Utf8 Arith.
+Require Import Utf8 Arith PQ.
 Set Nested Proofs Allowed.
 
 Delimit Scope GQ_scope with GQ.
@@ -188,8 +188,7 @@ Proof.
 intros * Ha.
 unfold div_gcd_l.
 split; intros H.
--idtac.
- specialize (Nat.gcd_divide_l a b) as H1.
+-specialize (Nat.gcd_divide_l a b) as H1.
  destruct H1 as (c, Hc).
  rewrite Hc in H at 1.
  rewrite Nat.div_mul in H.
@@ -199,6 +198,49 @@ split; intros H.
  +now intros H1; rewrite H1, Nat.mul_0_r in Hc.
 -now rewrite H, Nat.div_1_r.
 Qed.
+
+Theorem eq_div_gcd_r_same_iff : ∀ a b,
+  b ≠ 0 → div_gcd_r a b = b ↔ Nat.gcd a b = 1.
+Proof.
+intros * Ha.
+split; intros H.
+-rewrite Nat.gcd_comm.
+ apply eq_div_gcd_l_same_iff; [ easy | ].
+...
+
+Definition GQ_of_PQ x := GQN (S (PQnum1 x)) (S (PQden1 x)).
+Definition PQ_of_GQ x := PQmake (GQnum1 x) (GQden1 x).
+
+Theorem GQ_o_PQ : ∀ x, GQ_of_PQ (PQ_of_GQ x) = x.
+Proof.
+intros (xn, xd, xp).
+apply GQeq.
+unfold GQ_of_PQ, PQ_of_GQ; simpl.
+unfold GQmul_num, GQadd_den, GQ_of_nat; simpl.
+do 2 rewrite Nat.sub_0_r.
+rewrite Nat.add_0_r, Nat.mul_1_r.
+split.
+-apply eq_div_gcd_l_same_iff in xp; [ | easy ].
+ now rewrite xp, Nat.sub_succ, Nat.sub_0_r.
+-apply eq_div_gcd_r_same_iff in xp; [ | easy ].
+ now rewrite xp, Nat.sub_succ, Nat.sub_0_r.
+...
+
+-unfold PQ_of_GQ, GQ_of_PQ, GQN, GQ_of_nat; simpl.
+
+unfold "/"%GQ, "*"%GQ; simpl.
+f_equal.
+-unfold GQmul_num, GQ_of_nat, GQadd_den; simpl.
+ do 2 rewrite Nat.sub_0_r.
+ rewrite Nat.mul_1_r, Nat.add_0_r.
+ apply Nat.succ_inj.
+ rewrite <- Nat.sub_succ_l.
+ +rewrite Nat.sub_succ, Nat.sub_0_r.
+  apply eq_div_gcd_l_same_iff; [ easy | ].
+  admit. (* en fait c'est faux *)
+ +admit. (* cui-là, c'est vrai *)
+-idtac.
+...
 
 Theorem GQadd_add_swap : ∀ x y z, (x + y + z = x + z + y)%GQ.
 Proof.
