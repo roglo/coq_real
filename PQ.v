@@ -1063,6 +1063,8 @@ destruct b1, b2; try easy; repeat PQcompare_iff.
 -now apply PQnle_gt in Hb2; exfalso; apply Hb2; apply PQlt_le_incl.
 Qed.
 
+(* digression *)
+
 Fixpoint nat_of_rat_loop it x :=
   let n := fst x in
   let d := snd x in
@@ -1098,12 +1100,16 @@ Definition rat_of_nat m := rat_of_nat_loop (m + 1) m.
 Definition nr := nat_of_rat.
 Definition rn := rat_of_nat.
 
+(* rn o nr a la propriété de fabriquer la fraction irréductible *)
+
+(*
 Compute (rn (nr (1, 2))).
 Compute (rn (nr (2, 4))).
 Compute (rn (nr (3, 6))).
 Compute (rn (nr (10, 6))).
 Compute (rn (nr (6, 10))).
-Compute (rn (nr (355, 113))).
+Compute (rn (nr (22, 7))).
 Compute (rn (nr (3, 4))).
 Compute (rn (nr (1, 0))).
 Compute (rn (nr (0, 1))).
+*)
