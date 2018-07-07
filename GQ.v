@@ -178,6 +178,7 @@ split; f_equal.
  setoid_rewrite <- Nat.sub_succ_l.
  +do 4 rewrite Nat.sub_succ, Nat.sub_0_r.
   do 4 rewrite fold_div_gcd_l.
+Search (_ / Nat.gcd _ _).
 ...
 
 Theorem GQadd_assoc : ∀ x y z, ((x + y) + z = x + (y + z))%GQ.
