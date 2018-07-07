@@ -1,6 +1,7 @@
 (* rationals where num and den always common primes *)
 
 Require Import Utf8 Arith.
+Set Nested Proofs Allowed.
 
 Delimit Scope GQ_scope with GQ.
 
@@ -117,25 +118,23 @@ Compute GQN 2 4.
 Compute GQN 3 6.
 Compute GQN 4 8.
 
+Axiom GQeq : ∀ x y, x = y ↔ GQnum1 x = GQnum1 y ∧ GQden1 x = GQden1 y.
+
+Theorem GQnum1_make : ∀ n d p, GQnum1 (GQmake n d p) = n.
+Proof. easy. Qed.
+
+Theorem GQden1_make : ∀ n d p, GQden1 (GQmake n d p) = d.
+Proof. easy. Qed.
+
 Theorem GQ_add_comm : ∀ x y, (x + y = y + x)%GQ.
 Proof.
 intros.
-unfold "+"%GQ.
-destruct x as (xn, xd, xp), y as (yn, yd, yp).
-remember (GQmake xn xd xp) as u.
-remember (GQmake yn yd yp) as v.
-move v before u.
-...
-
-Definition div_gcd x y := Nat.div x (Nat.gcd x y).
-
-(* y a-t-il une fonction qui fait Nat.div x (Nat.gcd x y) ?
-   car c'est toujours divisible ! *)
- 
-(* mais en un seul coup, sans "vraie" division et sans "vrai" pgcd,
-   c'est possible ? *)
-
-(* se pose aussi le problème de l'unicité de la preuve de GQprop
-   pour pouvoir utiliser l'égalité de Leibnitz ; mais à mon avis,
-   elle n'est pas unique dans le cas général ; faudrait alors un
-   axiome, berk ! *)
+apply GQeq; unfold "+"%GQ.
+split.
+-do 2 rewrite GQnum1_make; f_equal.
+ f_equal; [ apply Nat.add_comm | ].
+ f_equal; [ apply Nat.add_comm | apply Nat.mul_comm ].
+-do 2 rewrite GQden1_make; f_equal.
+ f_equal; [ apply Nat.mul_comm | ].
+ f_equal; [ apply Nat.add_comm | apply Nat.mul_comm ].
+Qed.
