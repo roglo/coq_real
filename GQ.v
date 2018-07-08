@@ -322,6 +322,13 @@ Qed.
 Theorem GQ_of_PQ_additive : ∀ x y,
   GQ_of_PQ (x + y) = (GQ_of_PQ x + GQ_of_PQ y)%GQ.
 Proof.
+(*
+intros.
+apply GQeq.
+unfold "+"%GQ.
+remember GQ_of_PQ as f; simpl; subst f.
+...
+*)
 intros.
 apply GQeq.
 (**)
