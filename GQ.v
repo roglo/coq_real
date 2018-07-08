@@ -283,35 +283,68 @@ split.
  now rewrite <- Nat.sub_succ_l; [ easy | simpl; flia ].
 Qed.
 
+Theorem GQnum1_of_nat : ∀ m, GQnum1 (GQ_of_nat m) = m - 1.
+Proof. easy. Qed.
+
+Theorem GQden1_of_nat : ∀ m, GQden1 (GQ_of_nat m) = 0.
+Proof. easy. Qed.
+
+Theorem GQnum1_GQN : ∀ n d,
+  GQnum1 (GQN (S n) (S d)) = div_gcd_l (S n) (S d) - 1.
+Proof.
+intros; simpl.
+unfold GQmul_num, GQadd_den; simpl.
+rewrite Nat.mul_1_r, Nat.add_0_r.
+now do 2 rewrite Nat.sub_0_r.
+Qed.
+
+Theorem GQden1_GQN : ∀ n d,
+  GQden1 (GQN (S n) (S d)) = div_gcd_r (S n) (S d) - 1.
+Proof.
+intros; simpl.
+unfold GQmul_num, GQadd_den; simpl.
+rewrite Nat.mul_1_r, Nat.add_0_r.
+now do 2 rewrite Nat.sub_0_r.
+Qed.
+
+Theorem div_gcd_l_succ_l_pos : ∀ n d, 0 < div_gcd_l (S n) d.
+Proof.
+intros.
+unfold div_gcd_l.
+specialize (Nat.gcd_divide_l (S n) d) as (c, Hc).
+rewrite Hc at 1.
+rewrite Nat.div_mul.
+-destruct c; [ easy | apply Nat.lt_0_succ ].
+-intros H; rewrite H in Hc.
+ now rewrite Nat.mul_0_r in Hc.
+Qed.
+
 Theorem GQ_of_PQ_additive : ∀ x y,
   GQ_of_PQ (x + y) = (GQ_of_PQ x + GQ_of_PQ y)%GQ.
 Proof.
 intros.
 apply GQeq.
-split.
--unfold "+"%PQ.
- unfold GQ_of_PQ at 1; simpl.
- unfold GQN.
- unfold "/"%GQ, "*"%GQ; simpl.
- rewrite Nat.sub_0_r.
- unfold GQmul_num, GQadd_den; simpl.
- rewrite Nat.sub_0_r.
- unfold PQadd_num1, PQadd_den1, nd.
- f_equal.
- rewrite Nat.add_0_r.
-
-...
-unfold GQ_of_PQ; simpl.
-unfold GQN; simpl.
-unfold "/"%GQ; simpl.
-do 2 rewrite Nat.sub_0_r.
-unfold PQadd_num1, PQadd_den1, nd; simpl.
-unfold "*"%GQ.
-rewrite Nat.sub_0_r.
-unfold GQ_of_nat; simpl.
-do 6 rewrite Nat.sub_0_r.
-f_equal.
--idtac.
+(**)
+simpl.
+unfold "/"%GQ.
+unfold GQadd_num, GQmul_num, GQadd_den.
+rewrite GQnum1_make, GQden1_make.
+do 2 rewrite <- div_gcd_l_r.
+do 2 rewrite GQnum1_of_nat, GQden1_of_nat.
+rewrite Nat.mul_1_r, Nat.mul_1_l.
+do 2 (rewrite <- Nat.sub_succ_l; [ | flia ]).
+do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
+unfold PQadd_num1, PQadd_den1, nd.
+do 4 rewrite Nat.add_1_r.
+do 2 (rewrite <- Nat.sub_succ_l; [ | simpl; flia ]).
+do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
+split; f_equal.
+-unfold GQ_of_PQ.
+ do 2 rewrite GQnum1_GQN.
+ do 2 rewrite GQden1_GQN.
+ do 2 rewrite <- div_gcd_l_r.
+ do 4 (rewrite <- Nat.sub_succ_l; [ | apply div_gcd_l_succ_l_pos ]).
+ do 4 rewrite Nat.sub_succ, Nat.sub_0_r.
 ...
 
 Theorem GQadd_add_swap : ∀ x y z, (x + y + z = x + z + y)%GQ.
