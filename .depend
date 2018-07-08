@@ -1,7 +1,9 @@
 Archimedean.vio: Archimedean.v
 Archimedean.vo Archimedean.glob Archimedean.v.beautified: Archimedean.v
-FracReal.vio: FracReal.v Misc.vio Summation.vio MQ.vio
-FracReal.vo FracReal.glob FracReal.v.beautified: FracReal.v Misc.vo Summation.vo MQ.vo
+FracReal.vio: FracReal.v Misc.vio Summation.vio MQ.vio PQ.vio
+FracReal.vo FracReal.glob FracReal.v.beautified: FracReal.v Misc.vo Summation.vo MQ.vo PQ.vo
+GQ.vio: GQ.v PQ.vio
+GQ.vo GQ.glob GQ.v.beautified: GQ.v PQ.vo
 MQ.vio: MQ.v PQ.vio
 MQ.vo MQ.glob MQ.v.beautified: MQ.v PQ.vo
 Misc.vio: Misc.v
