@@ -338,13 +338,14 @@ unfold PQadd_num1, PQadd_den1, nd.
 do 4 rewrite Nat.add_1_r.
 do 2 (rewrite <- Nat.sub_succ_l; [ | simpl; flia ]).
 do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
+unfold GQ_of_PQ.
+do 2 rewrite GQnum1_GQN.
+do 2 rewrite GQden1_GQN.
+do 2 rewrite <- div_gcd_l_r.
+do 4 (rewrite <- Nat.sub_succ_l; [ | apply div_gcd_l_succ_l_pos ]).
+do 4 rewrite Nat.sub_succ, Nat.sub_0_r.
 split; f_equal.
--unfold GQ_of_PQ.
- do 2 rewrite GQnum1_GQN.
- do 2 rewrite GQden1_GQN.
- do 2 rewrite <- div_gcd_l_r.
- do 4 (rewrite <- Nat.sub_succ_l; [ | apply div_gcd_l_succ_l_pos ]).
- do 4 rewrite Nat.sub_succ, Nat.sub_0_r.
+-idtac.
 ...
 
 Theorem GQadd_add_swap : ∀ x y z, (x + y + z = x + z + y)%GQ.
