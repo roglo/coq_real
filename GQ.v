@@ -243,6 +243,7 @@ Theorem GQadd_PQadd : ∀ x y, (x + y)%GQ = GQ_of_PQ (PQ_of_GQ x + PQ_of_GQ y).
 Proof.
 intros.
 apply GQeq.
+(* exactly the same list of tactics for both cases below *)
 split.
 -unfold "+"%GQ.
  remember GQ_of_PQ as f; simpl; subst f.
@@ -262,22 +263,64 @@ split.
  rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
  rewrite Nat.sub_succ, Nat.sub_0_r.
  now rewrite <- Nat.sub_succ_l; [ easy | simpl; flia ].
--idtac.
+-unfold "+"%GQ.
+ remember GQ_of_PQ as f; simpl; subst f.
+ remember (PQ_of_GQ x + PQ_of_GQ y)%PQ as z.
+ simpl; f_equal.
+ unfold "/"%GQ; simpl; rewrite Nat.sub_0_r.
+ unfold GQmul_num, GQadd_den.
+ remember S as f; simpl; subst f.
+ rewrite Nat.mul_1_r, Nat.mul_1_l.
+ rewrite <- Nat.sub_succ_l; [ | flia ].
+ rewrite Nat.sub_succ, Nat.sub_0_r.
+ unfold "+"%PQ in Heqz.
+ unfold PQadd_num1, PQadd_den1, nd in Heqz.
+ simpl in Heqz;  subst z.
+ remember S as f; simpl; subst f.
+ PQtac1.
+ rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+ rewrite Nat.sub_succ, Nat.sub_0_r.
+ now rewrite <- Nat.sub_succ_l; [ easy | simpl; flia ].
+Qed.
+
+Theorem GQ_of_PQ_additive : ∀ x y,
+  GQ_of_PQ (x + y) = (GQ_of_PQ x + GQ_of_PQ y)%GQ.
+Proof.
+intros.
+apply GQeq.
+split.
+-unfold "+"%PQ.
+ unfold GQ_of_PQ at 1; simpl.
+ unfold GQN.
+ unfold "/"%GQ, "*"%GQ; simpl.
+ rewrite Nat.sub_0_r.
+ unfold GQmul_num, GQadd_den; simpl.
+ rewrite Nat.sub_0_r.
+ unfold PQadd_num1, PQadd_den1, nd.
+ f_equal.
+ rewrite Nat.add_0_r.
 
 ...
- unfold GQ_of_PQ, PQ_of_GQ.
- f_equal.
- unfold PQadd_num1, PQadd_den1, nd; simpl.
- unfold GQN.
- remember S as f.
- unfold GQ_of_nat.
- simpl; subst f.
- unfold "/"%GQ, "*"%GQ.
-
+unfold GQ_of_PQ; simpl.
+unfold GQN; simpl.
+unfold "/"%GQ; simpl.
+do 2 rewrite Nat.sub_0_r.
+unfold PQadd_num1, PQadd_den1, nd; simpl.
+unfold "*"%GQ.
+rewrite Nat.sub_0_r.
+unfold GQ_of_nat; simpl.
+do 6 rewrite Nat.sub_0_r.
+f_equal.
+-idtac.
 ...
 
 Theorem GQadd_add_swap : ∀ x y z, (x + y + z = x + z + y)%GQ.
 Proof.
+intros.
+Inspect 1.
+do 4 rewrite GQadd_PQadd.
+...
+
 intros.
 apply GQeq; unfold "+"%GQ.
 do 2 rewrite GQnum1_make, GQden1_make.
