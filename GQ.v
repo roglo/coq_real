@@ -359,8 +359,8 @@ split; f_equal.
  remember (div_gcd_l (S (PQnum1 y)) (S (PQden1 y))) as b1 eqn:Hb1.
  remember (div_gcd_l (S (PQden1 y)) (S (PQnum1 y))) as b2 eqn:Hb2.
  move b2 before a1; move b1 before a1; move a2 before a1.
-Abort. (*
 ...
+(*
  unfold div_gcd_l at 2.
  specialize (Nat.gcd_divide_l (a1 * b2 + b1 * a2) (a2 * b2)) as (c, Hc).
  rewrite Hc at 1.
@@ -378,18 +378,19 @@ do 2 rewrite GQadd_num_make_l.
 do 2 rewrite GQadd_den_make_l.
 ...
 *)
-(*
+(**)
 intros.
 do 4 rewrite GQadd_PQadd.
 remember (PQ_of_GQ x) as x' eqn:Hx'.
 remember (PQ_of_GQ y) as y' eqn:Hy'.
 remember (PQ_of_GQ z) as z' eqn:Hz'.
 move z' before x'; move y' before x'.
-f_equal.
-Check GQ_of_PQ_additive.
-do 2 rewrite GQ_of_PQ_additive.
+do 4 rewrite GQ_of_PQ_additive.
+do 2 rewrite GQ_o_PQ.
+do 4 rewrite <- GQ_of_PQ_additive.
+now rewrite PQadd_add_swap.
 ...
-*)
+(**)
 intros.
 apply GQeq; unfold "+"%GQ.
 do 2 rewrite GQnum1_make, GQden1_make.
