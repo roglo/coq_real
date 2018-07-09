@@ -369,10 +369,17 @@ split; f_equal.
 
 Theorem GQadd_add_swap : ∀ x y z, (x + y + z = x + z + y)%GQ.
 Proof.
+(*
 intros.
 do 4 rewrite GQadd_PQadd.
+remember (PQ_of_GQ x) as x' eqn:Hx'.
+remember (PQ_of_GQ y) as y' eqn:Hy'.
+remember (PQ_of_GQ z) as z' eqn:Hz'.
+move z' before x'; move y' before x'.
+f_equal.
+do 2 rewrite GQ_of_PQ_additive.
 ...
-
+*)
 intros.
 apply GQeq; unfold "+"%GQ.
 do 2 rewrite GQnum1_make, GQden1_make.
