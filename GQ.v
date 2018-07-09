@@ -319,6 +319,7 @@ rewrite Nat.div_mul.
  now rewrite Nat.mul_0_r in Hc.
 Qed.
 
+(*
 Theorem GQ_of_PQ_additive : ∀ x y,
   GQ_of_PQ (x + y) = (GQ_of_PQ x + GQ_of_PQ y)%GQ.
 Proof.
@@ -364,22 +365,11 @@ split; f_equal.
  rewrite Hc at 1.
  rewrite Nat.div_mul.
 ...
-Theorem glop : ∀ a b c, a = c * Nat.gcd a b ∧ div_gcd_l a b = c.
-Proof.
-intros.
-specialize (Nat.gcd_divide_l a b) as (c', Hc').
-rewrite Hc' at 1.
-
-
-
-Nat.gcd_divide_l: ∀ a b : nat, Nat.divide (Nat.gcd a b) a
-Nat.gcd_divide_r: ∀ a b : nat, Nat.divide (Nat.gcd a b) b
-...
+*)
 
 Theorem GQadd_add_swap : ∀ x y z, (x + y + z = x + z + y)%GQ.
 Proof.
 intros.
-Inspect 1.
 do 4 rewrite GQadd_PQadd.
 ...
 
