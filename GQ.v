@@ -339,7 +339,15 @@ split; f_equal.
  remember (div_gcd_l (S (PQnum1 y)) (S (PQden1 y))) as b1 eqn:Hb1.
  remember (div_gcd_l (S (PQden1 y)) (S (PQnum1 y))) as b2 eqn:Hb2.
  move b2 before a1; move b1 before a1; move a2 before a1.
+ destruct x as (xn, xd).
+ destruct y as (yn, yd).
+ remember S as f; simpl in *; subst f.
 ...
+a / gcd (a, b) = c / gcd (c, d)
+a * gcd (c, d) = c * gcd (a, b)
+Nat.gcd (a*c, a*d) = Nat.gcd (a*c, b*c)
+...
+Nat.gcd_mul_mono_l: ∀ n m p : nat, Nat.gcd (p * n) (p * m) = p * Nat.gcd n m
 (*
  unfold div_gcd_l at 2.
  specialize (Nat.gcd_divide_l (a1 * b2 + b1 * a2) (a2 * b2)) as (c, Hc).
