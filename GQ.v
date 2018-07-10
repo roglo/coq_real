@@ -364,6 +364,30 @@ Qed.
 Theorem ggcd_gcd : ∀ a b, fst (ggcd a b) = Nat.gcd a b.
 Proof. now intros; apply ggcdn_gcd. Qed.
 
+Theorem ggcdn_correct_divisors : ∀ a b n,
+  a + b + 1 ≤ n
+  → let '(g, (aa, bb)) := ggcdn n a b in
+     a = g * aa ∧ b = g * bb.
+Proof.
+intros * Hn.
+remember (ggcdn n a b) as g eqn:Hg.
+destruct g as (g, (aa, bb)).
+revert a b g aa bb Hn Hg.
+induction n; intros; [ flia Hn | ].
+simpl in Hg.
+...
+
+Theorem ggcd_correct_divisors : ∀ a b,
+  let '(g, (aa, bb)) := ggcd a b in
+  a = g * aa ∧ b = g * bb.
+Proof.
+intros.
+remember (ggcd a b) as g eqn:Hg.
+destruct g as (g, (aa, bb)).
+split.
+-unfold ggcd in Hg.
+...
+
 Theorem ggcdn_div_gcd_l : ∀ a b n,
   b ≠ 0 → a + b + 1 ≤ n → fst (snd (ggcdn n a b)) = div_gcd_l a b.
 Proof.
