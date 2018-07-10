@@ -299,6 +299,41 @@ rewrite Nat.div_mul.
  now rewrite Nat.mul_0_r in Hc.
 Qed.
 
+(* Inspiré de Pos.ggcdn, mais faudrait simplifier parce qu'avec les
+   nat, on n'est pas en base 2 *)
+Fixpoint ggcdn it a b :=
+  match it with
+  | 0 => (1, (a, b))
+  | S it' =>
+      if Nat.eq_dec a 1 then (1, (1, b))
+      else if Nat.odd a then
+        if Nat.odd b then
+          match Nat.compare a b with
+          | Eq => (a, (1, 1))
+          | Lt =>
+              let '(g, (a', b')) := ggcdn it' (b / 2 - a / 2) a in
+              (g, (b', b' + 2 * a'))
+          | Gt =>
+              let '(g, (a', b')) := ggcdn it' (a / 2 - b / 2) b in
+              (g, (b' + 2 * a', b'))
+          end
+        else
+          let '(g, (a', b')) := ggcdn it' a (b / 2) in
+          (g, (a', 2 * b'))
+      else
+        if Nat.eq_dec b 1 then (1, (a, 1))
+        else if Nat.odd b then
+          let '(g, (a', b')) := ggcdn it' (a / 2) b in
+          (g, (2 * a', b'))
+        else
+          let '(g, (a', b')) := ggcdn it' (a / 2) (b / 2) in
+          (2 * g, (a', b'))
+  end.
+Definition ggcd a b := ggcdn (a + b) a b.
+Compute (ggcd 40 15).
+
+...
+
 (**)
 Theorem GQ_of_PQ_additive : ∀ x y,
   GQ_of_PQ (x + y) = (GQ_of_PQ x + GQ_of_PQ y)%GQ.
@@ -342,6 +377,13 @@ split; f_equal.
  destruct x as (xn, xd).
  destruct y as (yn, yd).
  remember S as f; simpl in *; subst f.
+Require Import QArith.
+Print Qred.
+Print Z.ggcd.
+About Z.ggcd.
+Print Pos.ggcd.
+Close Scope Q_scope.
+
 ...
 a / gcd (a, b) = c / gcd (c, d)
 a * gcd (c, d) = c * gcd (a, b)
