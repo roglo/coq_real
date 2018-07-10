@@ -322,6 +322,8 @@ Definition ggcd a b := ggcdn (a + b + 1) a b.
 Require Import QArith.
 Print Qred.
 Search Z.ggcd.
+About Z.ggcd_gcd.
+Close Scope Q_scope.
 
 Theorem ggcdn_gcd : ∀ a b n, a + b + 1 ≤ n → fst (ggcdn n a b) = Nat.gcd a b.
 Proof.
@@ -332,30 +334,35 @@ induction n; intros.
 -simpl.
  destruct a; [ easy | ].
  simpl in Hab.
- remember Nat.gcd as f; simpl; subst f.
  apply Nat.succ_le_mono in Hab.
- specialize (IHn _ _ Hab) as H.
- destruct b.
- +simpl.
-  rewrite Nat.sub_diag; simpl.
-  rewrite Nat.add_0_r in Hab.
-  rewrite Nat.gcd_comm in H; simpl in H.
-  destruct n; [ simpl | easy ].
-  now rewrite Nat.add_comm in Hab.
- +remember (Nat.compare a b) as c eqn:Hc; symmetry in Hc.
-  destruct c.
-  *apply Nat.compare_eq_iff in Hc; subst b.
-   now rewrite Nat.gcd_diag.
-  *apply Nat.compare_lt_iff in Hc.
-   rewrite Nat.sub_succ.
-...
-   destruct n; [ now rewrite Nat.add_comm in Hab | ].
-   remember Nat.gcd as f; simpl; subst f.
-...
+ remember (Nat.compare (S a) b) as c eqn:Hc; symmetry in Hc.
+ destruct c.
+ +apply Nat.compare_eq_iff in Hc; rewrite Hc.
+  now rewrite Nat.gcd_diag.
+ +apply Nat.compare_lt_iff in Hc.
+  specialize (IHn (b - S a) (S a)) as H1.
+  assert (H : b - S a + S a + 1 ≤ n) by flia Hab Hc.
+  specialize (H1 H); clear H.
+  remember (ggcdn n (b - S a) (S a)) as gab eqn:Hgab.
+  symmetry in Hgab.
+  destruct gab as (g, (a', b')).
+  rewrite Nat.gcd_comm, Nat.gcd_sub_diag_r in H1; [ easy | flia Hc ].
+ +apply Nat.compare_gt_iff in Hc.
+  destruct b.
+  *destruct n; [ now rewrite Nat.add_comm in Hab | simpl ].
+   now rewrite Nat.sub_diag.
+  *specialize (IHn (S b) (S a - S b)) as H1.
+   assert (H : S b + (S a - S b) + 1 ≤ n) by flia Hab Hc.
+   specialize (H1 H); clear H.
+   remember (ggcdn n (S b) (S a - S b)) as gab eqn:Hgab.
+   symmetry in Hgab.
+   destruct gab as (g, (a', b')).
+   rewrite Nat.gcd_sub_diag_r in H1; [ | flia Hc ].
+   now rewrite Nat.gcd_comm in H1.
+Qed.
 
 Theorem ggcd_gcd : ∀ a b, fst (ggcd a b) = Nat.gcd a b.
-Proof.
-intros.
+Proof. now intros; apply ggcdn_gcd. Qed.
 
 ...
 
