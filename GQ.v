@@ -299,38 +299,63 @@ rewrite Nat.div_mul.
  now rewrite Nat.mul_0_r in Hc.
 Qed.
 
-(* Inspiré de Pos.ggcdn, mais faudrait simplifier parce qu'avec les
-   nat, on n'est pas en base 2 *)
 Fixpoint ggcdn it a b :=
   match it with
-  | 0 => (1, (a, b))
+  | 0 => (0, (0, 0))
   | S it' =>
-      if Nat.eq_dec a 1 then (1, (1, b))
-      else if Nat.odd a then
-        if Nat.odd b then
+      match a with
+      | 0 => (b, (0, 1))
+      | _ =>
           match Nat.compare a b with
           | Eq => (a, (1, 1))
           | Lt =>
-              let '(g, (a', b')) := ggcdn it' (b / 2 - a / 2) a in
-              (g, (b', b' + 2 * a'))
+              let '(g, (a', b')) := ggcdn it' (b - a) a in
+              (g, (b', a' + b'))
           | Gt =>
-              let '(g, (a', b')) := ggcdn it' (a / 2 - b / 2) b in
-              (g, (b' + 2 * a', b'))
+              let '(g, (a', b')) := ggcdn it' b (a - b) in
+              (g, (a' + b', a'))
           end
-        else
-          let '(g, (a', b')) := ggcdn it' a (b / 2) in
-          (g, (a', 2 * b'))
-      else
-        if Nat.eq_dec b 1 then (1, (a, 1))
-        else if Nat.odd b then
-          let '(g, (a', b')) := ggcdn it' (a / 2) b in
-          (g, (2 * a', b'))
-        else
-          let '(g, (a', b')) := ggcdn it' (a / 2) (b / 2) in
-          (2 * g, (a', b'))
+      end
   end.
-Definition ggcd a b := ggcdn (a + b) a b.
-Compute (ggcd 40 15).
+Definition ggcd a b := ggcdn (a + b + 1) a b.
+
+Require Import QArith.
+Print Qred.
+Search Z.ggcd.
+
+Theorem ggcdn_gcd : ∀ a b n, a + b + 1 ≤ n → fst (ggcdn n a b) = Nat.gcd a b.
+Proof.
+intros * Hab.
+revert a b Hab.
+induction n; intros.
+-now apply Nat.le_0_r, Nat.eq_add_0 in Hab.
+-simpl.
+ destruct a; [ easy | ].
+ simpl in Hab.
+ remember Nat.gcd as f; simpl; subst f.
+ apply Nat.succ_le_mono in Hab.
+ specialize (IHn _ _ Hab) as H.
+ destruct b.
+ +simpl.
+  rewrite Nat.sub_diag; simpl.
+  rewrite Nat.add_0_r in Hab.
+  rewrite Nat.gcd_comm in H; simpl in H.
+  destruct n; [ simpl | easy ].
+  now rewrite Nat.add_comm in Hab.
+ +remember (Nat.compare a b) as c eqn:Hc; symmetry in Hc.
+  destruct c.
+  *apply Nat.compare_eq_iff in Hc; subst b.
+   now rewrite Nat.gcd_diag.
+  *apply Nat.compare_lt_iff in Hc.
+   rewrite Nat.sub_succ.
+...
+   destruct n; [ now rewrite Nat.add_comm in Hab | ].
+   remember Nat.gcd as f; simpl; subst f.
+...
+
+Theorem ggcd_gcd : ∀ a b, fst (ggcd a b) = Nat.gcd a b.
+Proof.
+intros.
 
 ...
 
