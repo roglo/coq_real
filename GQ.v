@@ -364,6 +364,46 @@ Qed.
 Theorem ggcd_gcd : ∀ a b, fst (ggcd a b) = Nat.gcd a b.
 Proof. now intros; apply ggcdn_gcd. Qed.
 
+Theorem ggcdn_div_gcd_l : ∀ a b n,
+  b ≠ 0 → a + b + 1 ≤ n → fst (snd (ggcdn n a b)) = div_gcd_l a b.
+Proof.
+intros * Hb Hab.
+revert a b Hb Hab.
+induction n; intros.
+-now apply Nat.le_0_r, Nat.eq_add_0 in Hab.
+-simpl.
+ unfold div_gcd_l.
+ destruct a; [ now rewrite Nat.div_0_l | ].
+ simpl in Hab.
+ apply Nat.succ_le_mono in Hab.
+ remember (Nat.compare (S a) b) as c eqn:Hc; symmetry in Hc.
+ destruct c.
+ +apply Nat.compare_eq_iff in Hc; rewrite Hc.
+  now rewrite Nat.gcd_diag, Nat.div_same.
+ +apply Nat.compare_lt_iff in Hc.
+  specialize (IHn (b - S a) (S a) (Nat.neq_succ_0 a)) as H1.
+  assert (H : b - S a + S a + 1 ≤ n) by flia Hab Hc.
+  specialize (H1 H); clear H.
+  remember (ggcdn n (b - S a) (S a)) as gab eqn:Hgab.
+  symmetry in Hgab.
+  destruct gab as (g, (a', b')).
+  simpl in H1.
+  remember Nat.gcd as f; simpl; subst f.
+  destruct n; [ flia Hab | ].
+  simpl in Hgab.
+  remember (b - S a) as ba eqn:Hba; symmetry in Hba.
+  destruct ba; [ flia Hc Hba | ].
+  remember (Nat.compare (S ba) (S a)) as c1 eqn:Hc1.
+  symmetry in Hc1.
+  destruct c1.
+  *apply Nat.compare_eq_iff in Hc1.
+   apply Nat.succ_inj in Hc1; subst ba.
+   injection Hgab; clear Hgab; intros H2 H3 H4; subst b' g.
+   move H3 at top; subst a'.
+   replace b with (S a * 2) by flia Hc Hba.
+   rewrite Nat.gcd_mul_diag_l; [ | apply Nat.le_0_l ].
+   now rewrite Nat.div_same.
+  *apply Nat.compare_lt_iff in Hc1.
 ...
 
 (**)
