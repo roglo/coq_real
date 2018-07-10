@@ -404,6 +404,17 @@ induction n; intros.
    rewrite Nat.gcd_mul_diag_l; [ | apply Nat.le_0_l ].
    now rewrite Nat.div_same.
   *apply Nat.compare_lt_iff in Hc1.
+   remember (ggcdn n (a - ba) (S ba)) as g1 eqn:Hg1.
+   destruct g1 as (g1, (a'', b'')).
+   injection Hgab; clear Hgab; intros; subst g1 b'' a'.
+   destruct n.
+  --simpl in Hg1.
+    injection Hg1; clear Hg1; intros Hd Ha'' Hg.
+    subst a'' g; simpl in H.
+    rewrite Hd in H; subst b'.
+    specialize (div_gcd_l_succ_l_pos ba (S a)) as H.
+    now rewrite Hd in H.
+  --idtac.
 ...
 
 (**)
