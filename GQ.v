@@ -433,8 +433,6 @@ rewrite Nat.mul_comm, Nat.div_mul; [ easy | ].
 now intros H; subst g.
 Qed.
 
-...
-
 (**)
 Theorem GQ_of_PQ_additive : ∀ x y,
   GQ_of_PQ (x + y) = (GQ_of_PQ x + GQ_of_PQ y)%GQ.
@@ -478,19 +476,18 @@ split; f_equal.
  destruct x as (xn, xd).
  destruct y as (yn, yd).
  remember S as f; simpl in *; subst f.
-Require Import QArith.
+ rewrite <- ggcd_div_gcd_l; [ | simpl; flia ].
+ rewrite <- ggcd_div_gcd_l.
+ f_equal; f_equal.
+Require Import ZArith.
+Search Z.ggcd.
+...
 Print Qred.
 Print Z.ggcd.
 About Z.ggcd.
 Print Pos.ggcd.
 Close Scope Q_scope.
-
 ...
-a / gcd (a, b) = c / gcd (c, d)
-a * gcd (c, d) = c * gcd (a, b)
-Nat.gcd (a*c, a*d) = Nat.gcd (a*c, b*c)
-...
-Nat.gcd_mul_mono_l: ∀ n m p : nat, Nat.gcd (p * n) (p * m) = p * Nat.gcd n m
 (*
  unfold div_gcd_l at 2.
  specialize (Nat.gcd_divide_l (a1 * b2 + b1 * a2) (a2 * b2)) as (c, Hc).
