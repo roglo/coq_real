@@ -413,7 +413,21 @@ induction n; intros.
     rewrite Hd in H; subst b'.
     specialize (div_gcd_l_succ_l_pos ba (S a)) as H.
     now rewrite Hd in H.
-  --idtac.
+  --remember (a - ba) as aba eqn:Haba; symmetry in Haba.
+    destruct aba; [ flia Hc1 Haba | ].
+    remember (Nat.compare (S aba) (S ba)) as c2 eqn:Hc2.
+    symmetry in Hc2.
+    destruct c2.
+   ++apply Nat.compare_eq_iff in Hc2.
+     injection Hc2; clear Hc2; intros; subst aba.
+     injection Hg1; clear Hg1; intros Hg1; intros; subst g a''.
+     rewrite Hg1 in H; simpl in H; subst b'.
+     unfold div_gcd_l in Hg1.
+     apply (Nat.mul_cancel_r _ _ (S a)) in Hg1; [ | easy ].
+     rewrite Nat.mul_1_l in Hg1.
+     rewrite Nat.gcd_div_swap in Hg1.
+...
+   ++injection Hg1; clear Hg1; intros Hg1; intros; subst g a''.
 ...
 
 (**)
