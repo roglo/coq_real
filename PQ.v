@@ -1062,3 +1062,39 @@ destruct b1, b2; try easy; repeat PQcompare_iff.
 -now rewrite Hb2 in Hb1; apply PQlt_irrefl in Hb1.
 -now apply PQnle_gt in Hb2; exfalso; apply Hb2; apply PQlt_le_incl.
 Qed.
+
+Require Import Nat_ggcd.
+
+Definition PQred x :=
+  let '(_, (aa, bb)) := ggcd (PQnum1 x + 1) (PQden1 x + 1) in
+  PQmake (aa - 1) (bb - 1).
+
+Definition PQH x := PQmake (PQnum1 x + 1) (PQden1 x + 1).
+Definition PQF a b := PQmake (a - 1) (b - 1).
+
+Compute (PQH (PQred (PQF 16 24))).
+Compute (PQH (PQred (PQF 2 3))).
+
+Theorem PQred_idemp : ∀ x, PQred (PQred x) = PQred x.
+Proof.
+intros (xn, xd).
+unfold PQred; simpl.
+remember (ggcd (xn + 1) (xd + 1)) as g eqn:Hg1.
+destruct g as (g1, (aa1, bb1)); simpl.
+enough (Haa1 : aa1 ≠ 0).
+enough (Hbb1 : bb1 ≠ 0).
+rewrite Nat.sub_add; [ | flia Haa1 ].
+rewrite Nat.sub_add; [ | flia Hbb1 ].
+specialize (ggcd_correct_divisors (xn + 1) (xd + 1)) as H1.
+assert (H : xd + 1 ≠ 0) by flia.
+specialize (H1 H); clear H.
+rewrite <- Hg1 in H1.
+destruct H1 as (H1, H2).
+remember (ggcd aa1 bb1) as g eqn:Hg2.
+destruct g as (g2, (aa2, bb2)); simpl.
+specialize (ggcd_correct_divisors aa1 bb1 Hbb1) as H3.
+rewrite <- Hg2 in H3.
+destruct H3 as (H3, H4).
+move H1 before H3; move H2 before H3.
+(* mais g2 vaut forcément 1 en fait *)
+...

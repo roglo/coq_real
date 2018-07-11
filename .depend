@@ -10,8 +10,8 @@ Misc.vio: Misc.v
 Misc.vo Misc.glob Misc.v.beautified: Misc.v
 Nat_ggcd.vio: Nat_ggcd.v
 Nat_ggcd.vo Nat_ggcd.glob Nat_ggcd.v.beautified: Nat_ggcd.v
-PQ.vio: PQ.v Misc.vio
-PQ.vo PQ.glob PQ.v.beautified: PQ.v Misc.vo
+PQ.vio: PQ.v Misc.vio Nat_ggcd.vio
+PQ.vo PQ.glob PQ.v.beautified: PQ.v Misc.vo Nat_ggcd.vo
 Small.vio: Small.v Misc.vio Summation.vio
 Small.vo Small.glob Small.v.beautified: Small.v Misc.vo Summation.vo
 Summation.vio: Summation.v Misc.vio
