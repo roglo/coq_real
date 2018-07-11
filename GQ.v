@@ -478,8 +478,7 @@ do 2 rewrite <- div_gcd_l_r.
 do 4 (rewrite <- Nat.sub_succ_l; [ | apply div_gcd_l_succ_l_pos ]).
 do 4 rewrite Nat.sub_succ, Nat.sub_0_r.
 split; f_equal.
--idtac.
- remember (div_gcd_l (S (PQnum1 x)) (S (PQden1 x))) as a1 eqn:Ha1.
+-remember (div_gcd_l (S (PQnum1 x)) (S (PQden1 x))) as a1 eqn:Ha1.
  remember (div_gcd_l (S (PQden1 x)) (S (PQnum1 x))) as a2 eqn:Ha2.
  remember (div_gcd_l (S (PQnum1 y)) (S (PQden1 y))) as b1 eqn:Hb1.
  remember (div_gcd_l (S (PQden1 y)) (S (PQnum1 y))) as b2 eqn:Hb2.
@@ -489,7 +488,39 @@ split; f_equal.
  remember S as f; simpl in *; subst f.
  rewrite <- ggcd_div_gcd_l; [ | simpl; flia ].
  rewrite <- ggcd_div_gcd_l.
- f_equal; f_equal.
+ +remember (S xn * S yd + S yn * S xd) as u1 eqn:Hu1.
+  remember (S xd * S yd) as v1 eqn:Hv1.
+  move v1 before u1.
+  specialize (ggcd_correct_divisors u1 v1) as H1.
+  assert (H : v1 ≠ 0) by now intros H; subst v1.
+  specialize (H1 H); clear H.
+  remember (ggcd u1 v1) as g1 eqn:Hg1; symmetry in Hg1.
+  destruct g1 as (g1, (aa1, bb1)); simpl.
+  destruct H1 as (H1, H2).
+  remember (a1 * b2 + b1 * a2) as u2 eqn:Hu2.
+  remember (a2 * b2) as v2 eqn:Hv2.
+  move v2 before v1; move u2 before v1.
+  specialize (ggcd_correct_divisors u2 v2) as H3.
+  assert (H : v2 ≠ 0). {
+    intros H; move H at top; subst v2.
+    symmetry in Hv2.
+    apply Nat.eq_mul_0 in Hv2.
+    destruct Hv2 as [Hv2| Hv2].
+    -move Hv2 at top; subst a2.
+     specialize (div_gcd_l_succ_l_pos xd (S xn)) as H.
+     now rewrite <- Ha2 in H.
+    -move Hv2 at top; subst b2.
+     specialize (div_gcd_l_succ_l_pos yd (S yn)) as H.
+     now rewrite <- Hb2 in H.
+  }
+  specialize (H3 H); clear H.
+  remember (ggcd u2 v2) as g2 eqn:Hg2; symmetry in Hg2.
+  destruct g2 as (g2, (aa2, bb2)); simpl.
+  destruct H3 as (H3, H4).
+  move g2 before g1; move bb2 before bb1; move aa2 before bb1.
+  move Hg1 at bottom; move Hg2 at bottom.
+  move H2 before H3; move H1 before H2.
+  move Hu1 before Hu2; move Hv1 before Hu2.
 ...
 Require Import ZArith.
 Search Z.ggcd.
