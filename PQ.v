@@ -2,6 +2,7 @@
 
 Require Import Utf8 Arith Morphisms Psatz.
 Require Import Misc.
+Set Nested Proofs Allowed.
 
 Tactic Notation "flia" hyp_list(Hs) := clear - Hs; lia.
 
@@ -1083,6 +1084,9 @@ remember (ggcd (xn + 1) (xd + 1)) as g eqn:Hg1.
 destruct g as (g1, (aa1, bb1)); simpl.
 assert (Haa1 : aa1 ≠ 0). {
   intros H; subst aa1.
+  specialize (ggcd_succ_l_neq_0 xn (xd + 1)) as H.
+  now rewrite <- Nat.add_1_r, <- Hg1 in H.
+}
 ...
   do 2 rewrite Nat.add_1_r in Hg1.
   unfold ggcd in Hg1; simpl in Hg1.

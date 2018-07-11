@@ -122,6 +122,7 @@ unfold div_gcd_l, div_gcd_r.
 now rewrite Nat.gcd_comm.
 Qed.
 
+(*
 Theorem ggcd_div_gcd_l : ∀ a b,
   b ≠ 0 → fst (snd (ggcd a b)) = div_gcd_l a b.
 Proof.
@@ -155,6 +156,7 @@ rewrite <- H1.
 rewrite Nat.mul_comm, Nat.div_mul; [ easy | ].
 now intros H; subst g.
 Qed.
+*)
 
 Theorem div_gcd_l_succ_l_pos : ∀ n d, 0 < div_gcd_l (S n) d.
 Proof.
