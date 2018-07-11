@@ -306,13 +306,11 @@ destruct b.
  rewrite <- ggcd_div_gcd_l; [ | easy ].
  rewrite div_gcd_l_r.
  rewrite <- ggcd_div_gcd_r; [ | easy ].
- unfold ggcd; simpl.
- remember (a ?= b) as c1 eqn:Hc1; symmetry in Hc1.
- destruct c1; [ easy | | ].
- +apply Nat.compare_lt_iff in Hc1.
-  remember (ggcdn (a + S b + 1) (b - a) (S a)) as g eqn:Hg.
-  symmetry in Hg.
-  destruct g as (g, (aa, bb)); simpl.
+ specialize (ggcd_correct_divisors (S a) (S b) (Nat.neq_succ_0 b)) as H.
+ remember (ggcd (S a) (S b)) as g eqn:Hg; symmetry in Hg.
+ destruct g as (g, (aa, bb)); simpl.
+ destruct H as (Ha, Hb).
+ rewrite <- ggcd_gcd.
 ...
 
 Definition GQN a b := GQmake (div_gcd_l a b - 1) (div_gcd_r a b - 1).
