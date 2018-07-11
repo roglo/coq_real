@@ -287,6 +287,7 @@ Qed.
 (*
 Definition GQN a b := (GQ_of_nat a / GQ_of_nat b)%GQ.
 *)
+
 Theorem GQN_prop : ∀ a b,
   Nat.gcd (S (div_gcd_l a b - 1)) (S (div_gcd_r a b - 1)) = 1.
 Proof.
@@ -310,14 +311,15 @@ destruct b.
  remember (ggcd (S a) (S b)) as g eqn:Hg; symmetry in Hg.
  destruct g as (g, (aa, bb)); simpl.
  destruct H as (Ha, Hb).
- rewrite <- ggcd_gcd.
-...
-
-Definition GQN a b := GQmake (div_gcd_l a b - 1) (div_gcd_r a b - 1).
-...
-
-Print GQN.
-GQ_of_nat = λ n : nat, {| GQnum1 := n - 1; GQden1 := 0; GQprop := Nat.gcd_1_r (S (n - 1)) |}
+ specialize (ggcd_gcd (S a) (S b)) as H1.
+ rewrite Hg in H1.
+ assert (Hgz : g ≠ 0) by now intros H; rewrite H in Ha.
+ apply Nat.gcd_div_gcd in H1; simpl in H1; [ | easy ].
+ rewrite Ha, Hb in H1.
+ rewrite Nat.mul_comm, Nat.div_mul in H1; [ | easy ].
+ now rewrite Nat.mul_comm, Nat.div_mul in H1.
+Qed.
+Definition GQN a b := GQmake (div_gcd_l a b - 1) (div_gcd_r a b - 1) (GQN_prop a b).
 
 (*
 Notation "x +/+ y" := (GQmake x y _) (at level 40, only parsing) : GQ_scope.
@@ -425,11 +427,7 @@ Arguments PQ_of_GQ x%GQ.
 Theorem GQ_o_PQ : ∀ x, GQ_of_PQ (PQ_of_GQ x) = x.
 Proof.
 intros (xn, xd, xp).
-apply GQeq.
-unfold GQ_of_PQ, PQ_of_GQ; simpl.
-unfold GQmul_num, GQadd_den, GQ_of_nat; simpl.
-do 2 rewrite Nat.sub_0_r.
-rewrite Nat.add_0_r, Nat.mul_1_r.
+apply GQeq; simpl.
 split.
 -apply eq_div_gcd_l_same_iff in xp; [ | easy ].
  now rewrite xp, Nat.sub_succ, Nat.sub_0_r.
@@ -440,21 +438,7 @@ Qed.
 Theorem GQadd_PQadd : ∀ x y, (x + y)%GQ = GQ_of_PQ (PQ_of_GQ x + PQ_of_GQ y).
 Proof.
 intros.
-apply GQeq.
-unfold "+"%GQ.
-remember GQ_of_PQ as f; simpl; subst f.
-remember (PQ_of_GQ x + PQ_of_GQ y)%PQ as z.
-simpl; f_equal.
-unfold "/"%GQ; simpl; rewrite Nat.sub_0_r.
-unfold GQmul_num, GQadd_den.
-remember S as f; simpl; subst f.
-rewrite Nat.mul_1_r, Nat.mul_1_l.
-rewrite <- Nat.sub_succ_l; [ | flia ].
-rewrite Nat.sub_succ, Nat.sub_0_r.
-unfold "+"%PQ in Heqz.
-unfold PQadd_num1, PQadd_den1, nd in Heqz.
-simpl in Heqz;  subst z.
-remember S as f; simpl; subst f.
+apply GQeq; simpl.
 PQtac1.
 rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
 rewrite Nat.sub_succ, Nat.sub_0_r.
@@ -469,26 +453,20 @@ Proof. easy. Qed.
 
 Theorem GQnum1_GQN : ∀ n d,
   GQnum1 (GQN (S n) (S d)) = div_gcd_l (S n) (S d) - 1.
-Proof.
-intros; simpl.
-unfold GQmul_num, GQadd_den; simpl.
-rewrite Nat.mul_1_r, Nat.add_0_r.
-now do 2 rewrite Nat.sub_0_r.
-Qed.
+Proof. easy. Qed.
 
 Theorem GQden1_GQN : ∀ n d,
   GQden1 (GQN (S n) (S d)) = div_gcd_r (S n) (S d) - 1.
-Proof.
-intros; simpl.
-unfold GQmul_num, GQadd_den; simpl.
-rewrite Nat.mul_1_r, Nat.add_0_r.
-now do 2 rewrite Nat.sub_0_r.
-Qed.
+Proof. easy. Qed.
 
 (**)
 Theorem GQ_of_PQ_additive : ∀ x y,
   GQ_of_PQ (x + y) = (GQ_of_PQ x + GQ_of_PQ y)%GQ.
 Proof.
+intros.
+apply GQeq; simpl.
+...
+
 (*
 intros.
 apply GQeq.
