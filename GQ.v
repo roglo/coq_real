@@ -465,27 +465,8 @@ Theorem GQ_of_PQ_additive : ∀ x y,
 Proof.
 intros.
 apply GQeq; simpl.
-...
-
-(*
-intros.
-apply GQeq.
-unfold "+"%GQ.
-remember GQ_of_PQ as f; simpl; subst f.
-...
-*)
-intros.
-apply GQeq.
-(**)
-simpl.
-unfold "/"%GQ.
 unfold GQadd_num, GQmul_num, GQadd_den.
-rewrite GQnum1_make, GQden1_make.
 do 2 rewrite <- div_gcd_l_r.
-do 2 rewrite GQnum1_of_nat, GQden1_of_nat.
-rewrite Nat.mul_1_r, Nat.mul_1_l.
-do 2 (rewrite <- Nat.sub_succ_l; [ | flia ]).
-do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
 unfold PQadd_num1, PQadd_den1, nd.
 do 4 rewrite Nat.add_1_r.
 do 2 (rewrite <- Nat.sub_succ_l; [ | simpl; flia ]).
@@ -509,6 +490,7 @@ split; f_equal.
  rewrite <- ggcd_div_gcd_l; [ | simpl; flia ].
  rewrite <- ggcd_div_gcd_l.
  f_equal; f_equal.
+...
 Require Import ZArith.
 Search Z.ggcd.
 ...
