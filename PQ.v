@@ -1070,11 +1070,13 @@ Definition PQred x :=
   let '(_, (aa, bb)) := ggcd (PQnum1 x + 1) (PQden1 x + 1) in
   PQmake (aa - 1) (bb - 1).
 
+(*
 Definition PQH x := PQmake (PQnum1 x + 1) (PQden1 x + 1).
 Definition PQF a b := PQmake (a - 1) (b - 1).
 
 Compute (PQH (PQred (PQF 16 24))).
 Compute (PQH (PQred (PQF 2 3))).
+*)
 
 Theorem PQred_idemp : ∀ x, PQred (PQred x) = PQred x.
 Proof.
@@ -1087,13 +1089,13 @@ assert (Haa1 : aa1 ≠ 0). {
   specialize (ggcd_succ_l_neq_0 xn (xd + 1)) as H.
   now rewrite <- Nat.add_1_r, <- Hg1 in H.
 }
-...
-  do 2 rewrite Nat.add_1_r in Hg1.
-  unfold ggcd in Hg1; simpl in Hg1.
-  simpl in Hg1.
-...
-
-enough (Hbb1 : bb1 ≠ 0).
+assert (Hbb1 : bb1 ≠ 0). {
+  intros H; subst bb1.
+  symmetry in Hg1.
+  apply ggcd_swap in Hg1; [ | flia | flia ].
+  specialize (ggcd_succ_l_neq_0 xd (xn + 1)) as H.
+  now rewrite <- Nat.add_1_r, Hg1 in H.
+}
 rewrite Nat.sub_add; [ | flia Haa1 ].
 rewrite Nat.sub_add; [ | flia Hbb1 ].
 specialize (ggcd_correct_divisors (xn + 1) (xd + 1)) as H1.
@@ -1122,4 +1124,4 @@ apply Nat.mul_cancel_l in H.
  now rewrite Nat.mul_1_l in H3, H4; subst bb1 aa1.
 -intros H5; subst g1; simpl in Hg; subst g.
  now rewrite Nat.add_1_r in H1.
-...
+Qed.

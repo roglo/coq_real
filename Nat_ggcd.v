@@ -171,11 +171,18 @@ rewrite <- Hg1 in H4; simpl in H4.
 now rewrite Nat.gcd_comm, <- H3 in H4.
 Qed.
 
-Theorem Nat_gcd_le : ∀ a b, Nat.gcd a b ≤ a.
+Theorem Nat_gcd_le_l : ∀ a b, a ≠ 0 → Nat.gcd a b ≤ a.
 Proof.
-intros.
+intros * Ha.
 specialize (Nat.gcd_divide_l a b) as (c, Hc).
-...
+rewrite <- Nat.mul_1_l at 1.
+rewrite Hc at 2.
+apply Nat.mul_le_mono_pos_r.
+-apply Nat.neq_0_lt_0.
+ intros H.
+ now apply Nat.gcd_eq_0_l in H.
+-destruct c; [ easy | flia ].
+Qed.
 
 Theorem ggcd_succ_l_neq_0 : ∀ a b, fst (snd (ggcd (S a) b)) ≠ 0.
 Proof.
@@ -185,36 +192,8 @@ destruct b.
 -rewrite ggcd_fst_snd; [ | easy ].
  intros H1.
  apply Nat.div_small_iff in H1.
- +idtac.
-Search (Nat.gcd _ _ ≤ _).
-
-...
- apply Nat.div_small_iff in H1.
- +rewrite <- Nat.mul_1_l in H1.
-  apply Nat.nle_gt in H1; apply H1.
-  specialize (Nat.gcd_divide_l (S a) (S b)) as H2.
-  destruct H2 as (c, Hc).
-  rewrite Hc at 2.
-  apply Nat.mul_le_mono_pos_r.
-  *idtac.
-Search Nat.gcd.
-...
-
-Nat.gcd_divide_l: ∀ a b : nat, Nat.divide (Nat.gcd a b) a
-Search (Nat.gcd _ _).
-...
-intros.
-unfold ggcd.
-remember (S a + b + 1) as n eqn:Hn.
-assert (H : S a + b + 1 ≤ n) by flia Hn.
-clear Hn; rename H into Hn.
-revert a b Hn.
-induction n; intros; [ easy | ].
-remember (S a) as aa; simpl; subst aa.
-remember (S a ?= b) as c1 eqn:Hc1; symmetry in Hc1.
-destruct c1; [ easy | | ].
--apply Nat.compare_lt_iff in Hc1.
- remember (ggcdn n (b - S a) (S a)) as g eqn:Hg1.
- destruct g as (g1, (aa1, bb1)).
-Inspect 4.
-...
+ +apply Nat.nle_gt in H1; apply H1.
+  now apply Nat_gcd_le_l.
+ +intros H2.
+  now apply Nat.gcd_eq_0_l in H2.
+Qed.
