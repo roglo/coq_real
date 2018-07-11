@@ -1081,7 +1081,14 @@ intros (xn, xd).
 unfold PQred; simpl.
 remember (ggcd (xn + 1) (xd + 1)) as g eqn:Hg1.
 destruct g as (g1, (aa1, bb1)); simpl.
-enough (Haa1 : aa1 ≠ 0).
+assert (Haa1 : aa1 ≠ 0). {
+  intros H; subst aa1.
+...
+  do 2 rewrite Nat.add_1_r in Hg1.
+  unfold ggcd in Hg1; simpl in Hg1.
+  simpl in Hg1.
+...
+
 enough (Hbb1 : bb1 ≠ 0).
 rewrite Nat.sub_add; [ | flia Haa1 ].
 rewrite Nat.sub_add; [ | flia Hbb1 ].
@@ -1096,5 +1103,19 @@ specialize (ggcd_correct_divisors aa1 bb1 Hbb1) as H3.
 rewrite <- Hg2 in H3.
 destruct H3 as (H3, H4).
 move H1 before H3; move H2 before H3.
-(* mais g2 vaut forcément 1 en fait *)
+rewrite H3, Nat.mul_assoc in H1.
+rewrite H4, Nat.mul_assoc in H2.
+rewrite H1, H2 in Hg1.
+remember (g1 * g2) as g eqn:Hg.
+specialize (ggcd_gcd (g * aa2) (g * bb2)) as H.
+rewrite <- Hg1 in H; simpl in H.
+rewrite Nat.gcd_mul_mono_l in H.
+rewrite Hg in H; symmetry in H.
+rewrite <- Nat.mul_1_r, <- Nat.mul_assoc in H.
+apply Nat.mul_cancel_l in H.
+-apply Nat.eq_mul_1 in H.
+ destruct H as (HH, H); subst g2.
+ now rewrite Nat.mul_1_l in H3, H4; subst bb1 aa1.
+-intros H5; subst g1; simpl in Hg; subst g.
+ now rewrite Nat.add_1_r in H1.
 ...
