@@ -59,7 +59,9 @@ Definition GQadd x y :=
 
 Notation "x + y" := (GQadd x y) : GQ_scope.
 
+(*
 Compute (GQadd (GQ_of_nat 7) (GQ_of_nat 13)).
+*)
 
 Definition GQmul_num x y :=
   S (GQnum1 x) * S (GQnum1 y).
@@ -112,7 +114,20 @@ Notation "x * y" := (GQmul x y) : GQ_scope.
 Notation "x / y" := (GQmul x (GQinv y)) : GQ_scope.
 Notation "/ x" := (GQinv x) : GQ_scope.
 
+(*
 Definition GQN a b := (GQ_of_nat a / GQ_of_nat b)%GQ.
+*)
+Theorem GQN_prop : ∀ a b,
+  Nat.gcd (S (div_gcd_l a b - 1)) (S (div_gcd_r a b - 1)) = 1.
+Proof.
+...
+
+Definition GQN a b := GQmake (div_gcd_l a b - 1) (div_gcd_r a b - 1).
+
+...
+
+Print GQN.
+GQ_of_nat = λ n : nat, {| GQnum1 := n - 1; GQden1 := 0; GQprop := Nat.gcd_1_r (S (n - 1)) |}
 
 (*
 Notation "x +/+ y" := (GQmake x y _) (at level 40, only parsing) : GQ_scope.
