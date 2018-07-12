@@ -1198,5 +1198,3 @@ easy.
 Qed.
 
 (* merci Bérénice ! *)
-
-...

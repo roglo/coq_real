@@ -190,12 +190,14 @@ destruct b.
  rewrite <- div_gcd_l_r.
  rewrite <- Nat.sub_succ_l; [ | apply div_gcd_l_succ_l_pos ].
  do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
- rewrite <- ggcd_div_gcd_l; [ | easy ].
- rewrite div_gcd_l_r.
- rewrite <- ggcd_div_gcd_r; [ | easy ].
- specialize (ggcd_correct_divisors (S a) (S b) (Nat.neq_succ_0 b)) as H.
+ remember Nat.gcd as f.
+ unfold div_gcd_l at 2.
+ rewrite Nat.gcd_comm.
+ subst f.
+ apply Nat.gcd_div_gcd; [ | easy ].
+ specialize (ggcd_correct_divisors (S a) (S b)) as H.
  remember (ggcd (S a) (S b)) as g eqn:Hg; symmetry in Hg.
- destruct g as (g, (aa, bb)); simpl.
+ destruct g as (g, (aa, bb)).
  destruct H as (Ha, Hb).
  specialize (ggcd_gcd (S a) (S b)) as H1.
  rewrite Hg in H1.
@@ -203,7 +205,13 @@ destruct b.
  apply Nat.gcd_div_gcd in H1; simpl in H1; [ | easy ].
  rewrite Ha, Hb in H1.
  rewrite Nat.mul_comm, Nat.div_mul in H1; [ | easy ].
- now rewrite Nat.mul_comm, Nat.div_mul in H1.
+ rewrite Nat.mul_comm, Nat.div_mul in H1; [ | easy ].
+ rewrite Ha, Hb.
+ rewrite Nat.gcd_mul_mono_l.
+ intros H.
+ apply Nat.eq_mul_0 in H.
+ destruct H; [ easy | ].
+ now rewrite H1 in H.
 Qed.
 Definition GQN a b := GQmake (div_gcd_l a b - 1) (div_gcd_r a b - 1) (GQN_prop a b).
 
@@ -345,10 +353,22 @@ Theorem GQden1_GQN : ∀ n d,
   GQden1 (GQN (S n) (S d)) = div_gcd_r (S n) (S d) - 1.
 Proof. easy. Qed.
 
+(*
+Theorem glop : ∀ x, Nat.gcd (S (PQnum1 (PQred x) - 1)) (S (PQden1 (PQred x) - 1)) = 1.
+Admitted.
+
+Theorem GQ_of_PQ_red : ∀ x, GQ_of_PQ x = GQmake (PQnum1 (PQred x) - 1) (PQden1 (PQred x) - 1) (glop x).
+Proof.
+Admitted.
+*)
+
 (**)
 Theorem GQ_of_PQ_additive : ∀ x y,
   GQ_of_PQ (x + y) = (GQ_of_PQ x + GQ_of_PQ y)%GQ.
 Proof.
+intros.
+...
+
 intros.
 apply GQeq; simpl.
 unfold GQadd_num, GQmul_num, GQadd_den.
