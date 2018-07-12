@@ -1150,4 +1150,6 @@ PQtac2; [ | flia Hbb2 ].
 PQtac2; [ | flia Haa2 ].
 PQtac2; [ | flia Hbb1 ].
 PQtac2; [ | ].
+Require Import QArith.
+Search Qred.
 ,,,
