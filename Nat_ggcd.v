@@ -262,3 +262,37 @@ specialize (ggcd_gcd (c * a) (c * b)) as H1.
 rewrite <- Hg in H1; simpl in H1.
 now rewrite Nat.gcd_mul_mono_l in H1.
 Qed.
+
+Theorem ggcd_succ_l : ∀ a b g aa bb,
+  ggcd (S a) b = (g, (aa, bb)) → g ≠ 0 ∧ aa ≠ 0.
+Proof.
+intros * Hg.
+erewrite ggcd_split in Hg; [ | easy ].
+remember S as f; simpl.
+injection Hg; clear Hg; intros; subst g aa bb.
+subst f.
+split.
+-now intros H; apply Nat.gcd_eq_0_l in H.
+-intros H.
+ apply Nat.div_small_iff in H.
+ +apply Nat.nle_gt in H; apply H.
+  now apply Nat_gcd_le_l.
+ +now intros H1; apply Nat.gcd_eq_0_l in H1.
+Qed.
+
+Theorem ggcd_succ_r : ∀ a b g aa bb,
+  ggcd a (S b) = (g, (aa, bb)) → g ≠ 0 ∧ bb ≠ 0.
+Proof.
+intros * Hg.
+erewrite ggcd_split in Hg; [ | easy ].
+remember S as f; simpl.
+injection Hg; clear Hg; intros; subst g aa bb.
+subst f.
+split.
+-now intros H; apply Nat.gcd_eq_0_r in H.
+-intros H.
+ apply Nat.div_small_iff in H.
+ +apply Nat.nle_gt in H; apply H.
+  now apply Nat_gcd_le_r.
+ +now intros H1; apply Nat.gcd_eq_0_r in H1.
+Qed.

@@ -1196,5 +1196,24 @@ rewrite PQred_add_l, PQadd_comm.
 rewrite PQred_add_l, PQadd_comm.
 easy.
 Qed.
-
 (* merci Bérénice ! *)
+
+Theorem PQred_gcd : ∀ x,
+  Nat.gcd (PQnum1 (PQred x) + 1) (PQden1 (PQred x) + 1) = 1.
+Proof.
+intros.
+unfold PQred.
+remember (ggcd (PQnum1 x + 1) (PQden1 x + 1)) as g eqn:Hg1.
+destruct g as (g1, (aa1, bb1)); simpl.
+remember (Nat.gcd (PQnum1 x + 1) (PQden1 x + 1)) as g eqn:Hg.
+specialize (ggcd_split _ _ _ Hg) as H.
+rewrite <- Hg1 in H.
+do 2 rewrite Nat.add_1_r in Hg1; symmetry in Hg1.
+rewrite Nat.sub_add.
+-rewrite Nat.sub_add.
+ +injection H; clear H; intros; subst g1 aa1 bb1.
+  apply ggcd_succ_l in Hg1.
+  now apply Nat.gcd_div_gcd.
+ +apply ggcd_succ_r in Hg1; flia Hg1.
+-apply ggcd_succ_l in Hg1; flia Hg1.
+Qed.

@@ -353,9 +353,9 @@ Theorem GQden1_GQN : ∀ n d,
   GQden1 (GQN (S n) (S d)) = div_gcd_r (S n) (S d) - 1.
 Proof. easy. Qed.
 
-(*
-Theorem glop : ∀ x, Nat.gcd (S (PQnum1 (PQred x) - 1)) (S (PQden1 (PQred x) - 1)) = 1.
-Admitted.
+Theorem GQ_of_PQ_red_prop : ∀ x, Nat.gcd (S (PQnum1 (PQred x) - 1)) (S (PQden1 (PQred x) - 1)) = 1.
+Proof.
+...
 
 Theorem GQ_of_PQ_red : ∀ x, GQ_of_PQ x = GQmake (PQnum1 (PQred x) - 1) (PQden1 (PQred x) - 1) (glop x).
 Proof.
