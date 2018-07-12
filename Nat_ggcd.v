@@ -195,6 +195,13 @@ apply Nat.mul_le_mono_pos_r.
 -destruct c; [ easy | flia ].
 Qed.
 
+Theorem Nat_gcd_le_r : ∀ a b, b ≠ 0 → Nat.gcd a b ≤ b.
+Proof.
+intros * Hb.
+rewrite Nat.gcd_comm.
+now apply Nat_gcd_le_l.
+Qed.
+
 Theorem ggcd_succ_l_neq_0 : ∀ a b, fst (snd (ggcd (S a) b)) ≠ 0.
 Proof.
 intros.
@@ -240,4 +247,18 @@ destruct g1.
  rewrite Nat.div_mul_cancel_l; [ | easy | easy ].
  rewrite Nat.div_mul_cancel_l; [ | easy | easy ].
  now rewrite (ggcd_split _ _ (S g1)).
+Qed.
+
+Theorem ggcd_mul_mono_l : ∀ a b c,
+  c ≠ 0
+  → ggcd (c * a) (c * b) = (c * Nat.gcd a b, snd (ggcd a b)).
+Proof.
+intros * Hc.
+specialize (snd_ggcd_mul_mono_l a b c Hc) as H.
+remember (ggcd (c * a) (c * b)) as g eqn:Hg.
+destruct g as (g, (aa, bb)).
+simpl in H; rewrite H; f_equal.
+specialize (ggcd_gcd (c * a) (c * b)) as H1.
+rewrite <- Hg in H1; simpl in H1.
+now rewrite Nat.gcd_mul_mono_l in H1.
 Qed.

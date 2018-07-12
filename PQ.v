@@ -1093,20 +1093,18 @@ assert (Haa1 : aa1 ≠ 0). {
 assert (Hbb1 : bb1 ≠ 0). {
   intros H; subst bb1.
   symmetry in Hg1.
-  apply ggcd_swap in Hg1; [ | flia | flia ].
+  apply ggcd_swap in Hg1.
   specialize (ggcd_succ_l_neq_0 xd (xn + 1)) as H.
   now rewrite <- Nat.add_1_r, Hg1 in H.
 }
 rewrite Nat.sub_add; [ | flia Haa1 ].
 rewrite Nat.sub_add; [ | flia Hbb1 ].
 specialize (ggcd_correct_divisors (xn + 1) (xd + 1)) as H1.
-assert (H : xd + 1 ≠ 0) by flia.
-specialize (H1 H); clear H.
 rewrite <- Hg1 in H1.
 destruct H1 as (H1, H2).
 remember (ggcd aa1 bb1) as g eqn:Hg2.
 destruct g as (g2, (aa2, bb2)); simpl.
-specialize (ggcd_correct_divisors aa1 bb1 Hbb1) as H3.
+specialize (ggcd_correct_divisors aa1 bb1) as H3.
 rewrite <- Hg2 in H3.
 destruct H3 as (H3, H4).
 move H1 before H3; move H2 before H3.
@@ -1127,9 +1125,7 @@ apply Nat.mul_cancel_l in H.
  now rewrite Nat.add_1_r in H1.
 Qed.
 
-...
-
-Theorem glop : ∀ x y a, PQred (x + y) = PQred (PQmake a a * x + y).
+Theorem PQred_mul_one_l : ∀ x y a, PQred (x + y) = PQred (PQmake a a * x + y).
 Proof.
 intros (xn, xd) (yn, yd) a.
 unfold PQred; simpl.
@@ -1143,52 +1139,64 @@ do 3 PQtac2.
 replace (S yn * (S a * S xd)) with (S a * (S yn * S xd)) by flia.
 rewrite <- Nat.mul_assoc, <- Nat.mul_add_distr_l.
 rewrite <- Nat.mul_assoc.
-rewrite ggcd_mul_mono_l.
-
-...
+rewrite ggcd_mul_mono_l; [ | easy ].
+now destruct (ggcd (S xn * S yd + S yn * S xd) (S xd * S yd)).
+Qed.
 
 Theorem PQred_add_l : ∀ x y, PQred (x + y) = PQred (PQred x + y).
 Proof.
-intros (xn, xd) (yn, yd).
+intros.
+remember (Nat.gcd (PQnum1 x + 1) (PQden1 x + 1)) as a eqn:Ha.
+rewrite (PQred_mul_one_l (PQred x) y (a - 1)).
+f_equal; f_equal.
+destruct x as (xn, xd).
+simpl in Ha.
+unfold "*"%PQ; simpl.
+unfold PQmul_num1, PQmul_den1; simpl.
 unfold PQred; simpl.
-unfold PQadd_num1, PQadd_den1, nd.
-PQtac1; PQtac2; [ | simpl; flia ].
-remember (ggcd (S xn) (S xd)) as g1 eqn:Hg1.
-destruct g1 as (g1, (aa1, bb1)).
-remember S as f; simpl; subst f.
-PQtac2.
-enough (Haa1 : aa1 ≠ 0).
-enough (Hbb1 : bb1 ≠ 0).
-PQtac2; [ | simpl; flia ].
-PQtac2; [ | flia Haa1 ].
-PQtac2; [ | flia Hbb1 ].
-PQtac2; [ | ].
-,,,
-...
+specialize (ggcd_split (xn + 1) (xd + 1) a Ha) as H.
+rewrite H; simpl.
+destruct a.
+-symmetry in Ha.
+ apply Nat.gcd_eq_0_l in Ha; flia Ha.
+-replace (S a - 1 + 1) with (S a) by flia.
+ assert (H2 : (xn + 1) / S a ≠ 0). {
+   intros H1.
+   apply Nat.div_small_iff in H1; [ | easy ].
+   specialize (Nat_gcd_le_l (xn + 1) (xd +  1)) as H2.
+   assert (H3 : xn + 1 ≠ 0) by flia.
+   specialize (H2 H3).
+   flia Ha H1 H2.
+ }
+ assert (H3 : (xd + 1) / S a ≠ 0). {
+   intros H1.
+   apply Nat.div_small_iff in H1; [ | easy ].
+   specialize (Nat_gcd_le_r (xn + 1) (xd +  1)) as H3.
+   assert (H4 : xd + 1 ≠ 0) by flia.
+   specialize (H3 H4).
+   flia Ha H1 H3.
+ }
+ rewrite Nat.sub_add; [ | flia H2 ].
+ rewrite Nat.sub_add; [ | flia H3 ].
+ specialize (Nat.gcd_divide_l (xn + 1) (xd + 1)) as (c1, Hc1).
+ rewrite <- Ha in Hc1; rewrite Hc1.
+ rewrite Nat.div_mul; [ | easy ].
+ rewrite Nat.mul_comm, <- Hc1, Nat.add_sub.
+ specialize (Nat.gcd_divide_r (xn + 1) (xd + 1)) as (c2, Hc2).
+ rewrite <- Ha in Hc2; rewrite Hc2.
+ rewrite Nat.div_mul; [ | easy ].
+ rewrite Nat.mul_comm, <- Hc2, Nat.add_sub.
+ easy.
+Qed.
 
 Theorem PQred_add : ∀ x y, PQred (x + y) = PQred (PQred x + PQred y).
 Proof.
-intros (xn, xd) (yn, yd).
-unfold PQred; simpl.
-unfold PQadd_num1, PQadd_den1, nd.
-PQtac1; PQtac2; [ | simpl; flia ].
-remember (ggcd (S xn) (S xd)) as g1 eqn:Hg1.
-remember (ggcd (S yn) (S yd)) as g2 eqn:Hg2.
-move g2 before g1.
-destruct g1 as (g1, (aa1, bb1)).
-destruct g2 as (g2, (aa2, bb2)).
-remember S as f; simpl; subst f.
-PQtac2.
-enough (Haa1 : aa1 ≠ 0).
-enough (Haa2 : aa2 ≠ 0).
-enough (Hbb1 : bb1 ≠ 0).
-enough (Hbb2 : bb2 ≠ 0).
-PQtac2; [ | simpl; flia Haa1 Haa2 Hbb1 Hbb2 ].
-PQtac2; [ | flia Haa1 ].
-PQtac2; [ | flia Hbb2 ].
-PQtac2; [ | flia Haa2 ].
-PQtac2; [ | flia Hbb1 ].
-PQtac2; [ | ].
-Require Import QArith.
-Search Qred.
-,,,
+intros.
+rewrite PQred_add_l, PQadd_comm.
+rewrite PQred_add_l, PQadd_comm.
+easy.
+Qed.
+
+(* merci Bérénice ! *)
+
+...
