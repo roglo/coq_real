@@ -339,6 +339,18 @@ rewrite Nat.sub_succ, Nat.sub_0_r.
 now rewrite <- Nat.sub_succ_l; [ easy | simpl; flia ].
 Qed.
 
+Theorem GQmul_PQmul : ∀ x y, (x * y)%GQ = GQ_of_PQ (PQ_of_GQ x * PQ_of_GQ y).
+Proof.
+intros.
+apply GQeq; simpl.
+unfold PQmul_num1, PQmul_den1.
+unfold GQmul_num, GQadd_den.
+unfold "+"%PQ, "-"%PQ, "<"%PQ, "=="%PQ, "≤"%PQ;
+unfold PQadd_num1, PQsub_num1, PQadd_den1, nd.
+repeat rewrite Nat.add_1_r.
+now do 2 PQtac2.
+Qed.
+
 Theorem GQnum1_of_nat : ∀ m, GQnum1 (GQ_of_nat m) = m - 1.
 Proof. easy. Qed.
 
@@ -403,6 +415,18 @@ rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
 now do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
 Qed.
 
+Theorem GQ_of_PQ_multiplicative : ∀ x y,
+  GQ_of_PQ (x * y) = (GQ_of_PQ x * GQ_of_PQ y)%GQ.
+Proof.
+intros.
+do 3 rewrite GQ_of_PQ_red.
+apply GQeq; simpl.
+unfold GQmul_num, GQadd_den.
+remember S as f; simpl; subst f.
+...
+rewrite PQred_mul.
+...
+
 Theorem GQadd_add_swap : ∀ x y z, (x + y + z = x + z + y)%GQ.
 Proof.
 intros.
@@ -426,5 +450,11 @@ rewrite GQadd_comm in Ht; subst t.
 setoid_rewrite GQadd_comm.
 apply GQadd_add_swap.
 Qed.
+
+Theorem GDmul_mul_swap : ∀ x y z, (x * y * z = x * z * y)%GQ.
+Proof.
+intros.
+do 4 rewrite GQmul_PQmul.
+Check GQ_of_PQ_multiplicative.
 
 ...
