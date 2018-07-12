@@ -1246,11 +1246,21 @@ destruct a.
  }
 *)
  do 4 (rewrite Nat.sub_add; [ | do 2 rewrite Nat.add_1_r; simpl; flia ]).
- rewrite Nat.sub_add; [ | ].
- rewrite Nat.sub_add; [ | ].
- rewrite Nat.sub_add; [ | ].
- rewrite Nat.sub_add; [ | ].
- do 2 rewrite <- Nat.mul_assoc.
+ rewrite Nat.sub_add.
+ +rewrite Nat.sub_add.
+  *rewrite Nat.sub_add.
+  --rewrite Nat.sub_add.
+   ++rewrite <- Nat.divide_div_mul_exact; [ | easy | ].
+    **rewrite <- Nat.divide_div_mul_exact; [ | easy | ].
+    ---replace (S a * (xn + 1)) with ((xn + 1) * S a) by apply Nat.mul_comm.
+       replace (S a * (xd + 1)) with ((xd + 1) * S a) by apply Nat.mul_comm.
+       rewrite Nat.div_mul; [ | easy ].
+       now rewrite Nat.div_mul.
+    ---rewrite Ha; apply Nat.gcd_divide_r.
+    **rewrite Ha; apply Nat.gcd_divide_l.
+   ++idtac.
+
+...
  rewrite ggcd_mul_mono_l; [ | easy ].
 ...
 
