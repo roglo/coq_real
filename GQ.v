@@ -353,14 +353,26 @@ Theorem GQden1_GQN : ∀ n d,
   GQden1 (GQN (S n) (S d)) = div_gcd_r (S n) (S d) - 1.
 Proof. easy. Qed.
 
-Theorem GQ_of_PQ_red_prop : ∀ x, Nat.gcd (S (PQnum1 (PQred x) - 1)) (S (PQden1 (PQred x) - 1)) = 1.
+Theorem GQ_of_PQ_red_prop : ∀ x, Nat.gcd (S (PQnum1 (PQred x))) (S (PQden1 (PQred x))) = 1.
 Proof.
+intros.
+specialize (PQred_gcd x) as H1.
+now do 2 rewrite Nat.add_1_r in H1.
+Qed.
+
+Theorem GQ_of_PQ_red : ∀ x,
+  GQ_of_PQ x = GQmake (PQnum1 (PQred x)) (PQden1 (PQred x)) (GQ_of_PQ_red_prop x).
+Proof.
+intros.
+apply GQeq.
+unfold GQ_of_PQ, GQN, PQred.
+simpl.
+remember (ggcd (PQnum1 x + 1) (PQden1 x + 1)) as g eqn:Hg.
+destruct g as (g, (aa, bb)).
+simpl.
+split; f_equal.
 ...
 
-Theorem GQ_of_PQ_red : ∀ x, GQ_of_PQ x = GQmake (PQnum1 (PQred x) - 1) (PQden1 (PQred x) - 1) (glop x).
-Proof.
-Admitted.
-*)
 
 (**)
 Theorem GQ_of_PQ_additive : ∀ x y,
