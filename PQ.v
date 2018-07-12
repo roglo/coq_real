@@ -1069,6 +1069,7 @@ Require Import Nat_ggcd.
 Definition PQred x :=
   let '(_, (aa, bb)) := ggcd (PQnum1 x + 1) (PQden1 x + 1) in
   PQmake (aa - 1) (bb - 1).
+Arguments PQred x%PQ.
 
 (*
 Definition PQH x := PQmake (PQnum1 x + 1) (PQden1 x + 1).
@@ -1125,3 +1126,9 @@ apply Nat.mul_cancel_l in H.
 -intros H5; subst g1; simpl in Hg; subst g.
  now rewrite Nat.add_1_r in H1.
 Qed.
+
+Theorem PQred_add : ∀ x y, PQred (x + y) = PQred (PQred x + PQred y).
+Proof.
+intros.
+unfold PQred.
+,,,
