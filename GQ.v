@@ -360,6 +360,9 @@ specialize (PQred_gcd x) as H1.
 now do 2 rewrite Nat.add_1_r in H1.
 Qed.
 
+Theorem ggcd_div_gcd : ∀ a b, ggcd a b = (Nat.gcd a b, (div_gcd_l a b, div_gcd_r a b)).
+Proof. now intros; apply ggcd_split. Qed.
+
 Theorem GQ_of_PQ_red : ∀ x,
   GQ_of_PQ x = GQmake (PQnum1 (PQred x)) (PQden1 (PQred x)) (GQ_of_PQ_red_prop x).
 Proof.
@@ -368,106 +371,40 @@ apply GQeq.
 unfold GQ_of_PQ, GQN, PQred.
 simpl.
 remember (ggcd (PQnum1 x + 1) (PQden1 x + 1)) as g eqn:Hg.
-destruct g as (g, (aa, bb)).
-simpl.
-split; f_equal.
-...
+destruct g as (g, (aa, bb)); simpl.
+rewrite ggcd_div_gcd in Hg.
+injection Hg; clear Hg; intros; subst g aa bb.
+now do 2 rewrite Nat.add_1_r.
+Qed.
 
-
-(**)
 Theorem GQ_of_PQ_additive : ∀ x y,
   GQ_of_PQ (x + y) = (GQ_of_PQ x + GQ_of_PQ y)%GQ.
 Proof.
 intros.
-...
-
-intros.
+do 3 rewrite GQ_of_PQ_red.
 apply GQeq; simpl.
-unfold GQadd_num, GQmul_num, GQadd_den.
-do 2 rewrite <- div_gcd_l_r.
+unfold "+"%GQ.
+unfold GQadd_num, GQadd_den.
+remember S as f; simpl; subst f.
+rewrite PQred_add.
+unfold "+"%PQ.
 unfold PQadd_num1, PQadd_den1, nd.
-do 4 rewrite Nat.add_1_r.
-do 2 (rewrite <- Nat.sub_succ_l; [ | simpl; flia ]).
-do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
-unfold GQ_of_PQ.
-do 2 rewrite GQnum1_GQN.
-do 2 rewrite GQden1_GQN.
-do 2 rewrite <- div_gcd_l_r.
-do 4 (rewrite <- Nat.sub_succ_l; [ | apply div_gcd_l_succ_l_pos ]).
-do 4 rewrite Nat.sub_succ, Nat.sub_0_r.
-split; f_equal.
--remember (div_gcd_l (S (PQnum1 x)) (S (PQden1 x))) as a1 eqn:Ha1.
- remember (div_gcd_l (S (PQden1 x)) (S (PQnum1 x))) as a2 eqn:Ha2.
- remember (div_gcd_l (S (PQnum1 y)) (S (PQden1 y))) as b1 eqn:Hb1.
- remember (div_gcd_l (S (PQden1 y)) (S (PQnum1 y))) as b2 eqn:Hb2.
- move b2 before a1; move b1 before a1; move a2 before a1.
- destruct x as (xn, xd).
- destruct y as (yn, yd).
- remember S as f; simpl in *; subst f.
- rewrite <- ggcd_div_gcd_l; [ | simpl; flia ].
- rewrite <- ggcd_div_gcd_l.
- +remember (S xn * S yd + S yn * S xd) as u1 eqn:Hu1.
-  remember (S xd * S yd) as v1 eqn:Hv1.
-  move v1 before u1.
-  specialize (ggcd_correct_divisors u1 v1) as H1.
-  assert (H : v1 ≠ 0) by now intros H; subst v1.
-  specialize (H1 H); clear H.
-  remember (ggcd u1 v1) as g1 eqn:Hg1; symmetry in Hg1.
-  destruct g1 as (g1, (aa1, bb1)); simpl.
-  destruct H1 as (H1, H2).
-  remember (a1 * b2 + b1 * a2) as u2 eqn:Hu2.
-  remember (a2 * b2) as v2 eqn:Hv2.
-  move v2 before v1; move u2 before v1.
-  specialize (ggcd_correct_divisors u2 v2) as H3.
-  assert (H : v2 ≠ 0). {
-    intros H; move H at top; subst v2.
-    symmetry in Hv2.
-    apply Nat.eq_mul_0 in Hv2.
-    destruct Hv2 as [Hv2| Hv2].
-    -move Hv2 at top; subst a2.
-     specialize (div_gcd_l_succ_l_pos xd (S xn)) as H.
-     now rewrite <- Ha2 in H.
-    -move Hv2 at top; subst b2.
-     specialize (div_gcd_l_succ_l_pos yd (S yn)) as H.
-     now rewrite <- Hb2 in H.
-  }
-  specialize (H3 H); clear H.
-  remember (ggcd u2 v2) as g2 eqn:Hg2; symmetry in Hg2.
-  destruct g2 as (g2, (aa2, bb2)); simpl.
-  destruct H3 as (H3, H4).
-  move g2 before g1; move bb2 before bb1; move aa2 before bb1.
-  move Hg1 at bottom; move Hg2 at bottom.
-  move H2 before H3; move H1 before H2.
-  move Hu1 before Hu2; move Hv1 before Hu2.
-...
-Require Import ZArith.
-Search Z.ggcd.
-...
-Print Qred.
-Print Z.ggcd.
-About Z.ggcd.
-Print Pos.ggcd.
-Close Scope Q_scope.
-...
-(*
- unfold div_gcd_l at 2.
- specialize (Nat.gcd_divide_l (a1 * b2 + b1 * a2) (a2 * b2)) as (c, Hc).
- rewrite Hc at 1.
- rewrite Nat.div_mul.
-...
-*)
+remember (PQred x) as xr eqn:Hxr.
+remember (PQred y) as yr eqn:Hyr.
+destruct xr as (xn, xd).
+destruct yr as (yn, yd).
+unfold PQred.
+remember S as f; simpl; subst f.
+rewrite ggcd_div_gcd.
+remember S as f; simpl; subst f.
+do 6 rewrite Nat.add_1_r.
+rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+now do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
+Qed.
 
 Theorem GQadd_add_swap : ∀ x y z, (x + y + z = x + z + y)%GQ.
 Proof.
-(*
-intros.
-apply GQeq; unfold "+"%GQ.
-do 2 rewrite GQnum1_make, GQden1_make.
-do 2 rewrite GQadd_num_make_l.
-do 2 rewrite GQadd_den_make_l.
-...
-*)
-(**)
 intros.
 do 4 rewrite GQadd_PQadd.
 remember (PQ_of_GQ x) as x' eqn:Hx'.
@@ -478,46 +415,7 @@ do 4 rewrite GQ_of_PQ_additive.
 do 2 rewrite GQ_o_PQ.
 do 4 rewrite <- GQ_of_PQ_additive.
 now rewrite PQadd_add_swap.
-...
-(**)
-intros.
-apply GQeq; unfold "+"%GQ.
-do 2 rewrite GQnum1_make, GQden1_make.
-split; f_equal.
--do 2 rewrite GQadd_num_make_l.
- do 2 rewrite GQadd_den_make_l.
- remember S as f.
- remember Nat.gcd as g.
- destruct x as (xn, xd, xp).
- destruct y as (yn, yd, yp).
- destruct z as (zn, zd, zp).
- simpl; subst f g.
- do 2 rewrite GQadd_num_make.
- do 2 rewrite GQadd_den_make.
- move xp at bottom; move yp at bottom; move zp at bottom.
- setoid_rewrite <- Nat.sub_succ_l.
- +do 4 rewrite Nat.sub_succ, Nat.sub_0_r.
-  remember (S xn * S yd + S yn * S xd) as a1.
-  remember (S xd * S yd) as b1.
-  remember (S xn * S zd + S zn * S xd) as a2.
-  remember (S xd * S zd) as b2.
-  move b2 before a1; move a2 before a1; move b1 before a1.
-  do 2 rewrite <- div_gcd_l_r.
-Print div_gcd_l.
-Search div_gcd_l.
-Search (Nat.gcd _ _ = 1).
-Search ((_ + _) / Nat.gcd _ _).
-Inspect 2.
-Check Nat.gauss.
-...
-(1/2+1/2)+1/3 = 4/4+1/3 = 1/1+1/3 = 4/3 = 4/3
-1/2+(1/2+1/3) = 1/2+5/6 = 1/2+5/6 = 16/12 = 4/3
-
-Search (Nat.gcd _ _ = 1).
-
-...
-Search (_ / Nat.gcd _ _).
-...
+Qed.
 
 Theorem GQadd_assoc : ∀ x y z, ((x + y) + z = x + (y + z))%GQ.
 Proof.
@@ -529,7 +427,4 @@ setoid_rewrite GQadd_comm.
 apply GQadd_add_swap.
 Qed.
 
-Definition div_gcd x y := Nat.div x (Nat.gcd x y).
-
-(* y a-t-il une fonction qui fait Nat.div x (Nat.gcd x y) ?
-   car c'est toujours divisible ! *)
+...
