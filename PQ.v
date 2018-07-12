@@ -1127,6 +1127,25 @@ apply Nat.mul_cancel_l in H.
  now rewrite Nat.add_1_r in H1.
 Qed.
 
+Theorem PQred_add_l : ∀ x y, PQred (x + y) = PQred (PQred x + y).
+Proof.
+intros (xn, xd) (yn, yd).
+unfold PQred; simpl.
+unfold PQadd_num1, PQadd_den1, nd.
+PQtac1; PQtac2; [ | simpl; flia ].
+remember (ggcd (S xn) (S xd)) as g1 eqn:Hg1.
+destruct g1 as (g1, (aa1, bb1)).
+remember S as f; simpl; subst f.
+PQtac2.
+enough (Haa1 : aa1 ≠ 0).
+enough (Hbb1 : bb1 ≠ 0).
+PQtac2; [ | simpl; flia ].
+PQtac2; [ | flia Haa1 ].
+PQtac2; [ | flia Hbb1 ].
+PQtac2; [ | ].
+,,,
+...
+
 Theorem PQred_add : ∀ x y, PQred (x + y) = PQred (PQred x + PQred y).
 Proof.
 intros (xn, xd) (yn, yd).
