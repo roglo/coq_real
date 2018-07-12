@@ -1129,6 +1129,25 @@ Qed.
 
 Theorem PQred_add : ∀ x y, PQred (x + y) = PQred (PQred x + PQred y).
 Proof.
-intros.
-unfold PQred.
+intros (xn, xd) (yn, yd).
+unfold PQred; simpl.
+unfold PQadd_num1, PQadd_den1, nd.
+PQtac1; PQtac2; [ | simpl; flia ].
+remember (ggcd (S xn) (S xd)) as g1 eqn:Hg1.
+remember (ggcd (S yn) (S yd)) as g2 eqn:Hg2.
+move g2 before g1.
+destruct g1 as (g1, (aa1, bb1)).
+destruct g2 as (g2, (aa2, bb2)).
+remember S as f; simpl; subst f.
+PQtac2.
+enough (Haa1 : aa1 ≠ 0).
+enough (Haa2 : aa2 ≠ 0).
+enough (Hbb1 : bb1 ≠ 0).
+enough (Hbb2 : bb2 ≠ 0).
+PQtac2; [ | simpl; flia Haa1 Haa2 Hbb1 Hbb2 ].
+PQtac2; [ | flia Haa1 ].
+PQtac2; [ | flia Hbb2 ].
+PQtac2; [ | flia Haa2 ].
+PQtac2; [ | flia Hbb1 ].
+PQtac2; [ | ].
 ,,,
