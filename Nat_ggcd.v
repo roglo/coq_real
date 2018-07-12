@@ -10,7 +10,7 @@ Fixpoint ggcdn it a b :=
   | 0 => (0, (0, 0))
   | S it' =>
       match a with
-      | 0 => (b, (0, 1))
+      | 0 => (b, (0, b / b))
       | _ =>
           match Nat.compare a b with
           | Eq => (a, (1, 1))
@@ -65,19 +65,20 @@ Theorem ggcd_gcd : ∀ a b, fst (ggcd a b) = Nat.gcd a b.
 Proof. now intros; apply ggcdn_gcd. Qed.
 
 Theorem ggcdn_correct_divisors : ∀ a b n,
-  b ≠ 0
-  → a + b + 1 ≤ n
+  a + b + 1 ≤ n
   → let '(g, (aa, bb)) := ggcdn n a b in
      a = g * aa ∧ b = g * bb.
 Proof.
-intros * Hb Hn.
+intros * Hn.
 remember (ggcdn n a b) as g eqn:Hg.
 destruct g as (g, (aa, bb)).
-revert a b g aa bb Hb Hn Hg.
+revert a b g aa bb (*Hb*) Hn Hg.
 induction n; intros; [ flia Hn | ].
 simpl in Hg.
 destruct a.
--injection Hg; clear Hg; intros; subst g aa bb; flia.
+-injection Hg; clear Hg; intros; subst g aa bb.
+ destruct b; [ easy | ].
+ rewrite Nat.div_same; [ flia | easy ].
 -remember (S a ?= b) as c1 eqn:Hc1; symmetry in Hc1.
  destruct c1.
  +apply Nat.compare_eq_iff in Hc1.
@@ -87,7 +88,7 @@ destruct a.
   remember (ggcdn n (b - S a) (S a)) as g1 eqn:Hg1.
   destruct g1 as (g1, (aa1, bb1)).
   injection Hg; clear Hg; intros; subst g1 bb1 bb.
-  specialize (IHn (b - S a) (S a) g aa1 aa (Nat.neq_succ_0 a)) as H1.
+  specialize (IHn (b - S a) (S a) g aa1 aa (*Nat.neq_succ_0 a*)) as H1.
   assert (H : b - S a + S a + 1 ≤ n) by flia Hn Hc1.
   specialize (H1 H Hg1) as (H1, H2); clear H.
   split; [ easy | ].
@@ -99,64 +100,74 @@ destruct a.
   remember (ggcdn n b (S a - b)) as g1 eqn:Hg1.
   destruct g1 as (g1, (aa1, bb1)).
   injection Hg; clear Hg; intros; subst g1 aa1 aa.
-  specialize (IHn b (S a - b) g bb bb1) as H1.
-  assert (H : b + (S a - b) + 1 ≤ n) by flia Hb Hn Hc1.
-  assert (H' : S a - b ≠ 0) by flia Hc1.
-  specialize (H1 H' H Hg1) as (H1, H2); clear H H'.
-  split; [ | easy ].
-  apply Nat.add_sub_eq_nz in H2; [ flia H1 H2 | ].
-  intros H.
-  apply Nat.eq_mul_0 in H.
-  destruct H as [H| H]; [ now subst g | subst bb1; flia Hc1 H2 ].
+  destruct b.
+  *rewrite Nat.sub_0_r in Hg1.
+   destruct n; [ flia Hn | ].
+   remember (S a) as aa; simpl in Hg1; subst aa.
+   rewrite Nat.div_same in Hg1; [ | easy ].
+   injection Hg1; clear Hg1; intros; subst g bb bb1.
+   now rewrite Nat.add_0_l, Nat.mul_1_r, Nat.mul_0_r.
+  *specialize (IHn (S b) (S a - S b) g bb bb1) as H1.
+   assert (H : S b + (S a - S b) + 1 ≤ n) by flia Hn Hc1.
+   specialize (H1 H Hg1) as (H1, H2); clear H.
+   split; [ | easy ].
+   apply Nat.add_sub_eq_nz in H2; [ flia H1 H2 | ].
+   intros H.
+   apply Nat.eq_mul_0 in H.
+   destruct H as [H| H]; [ now subst g | subst bb1; flia Hc1 H2 ].
 Qed.
 
 Theorem ggcd_correct_divisors : ∀ a b,
-  b ≠ 0
-  → let '(g, (aa, bb)) := ggcd a b in
-     a = g * aa ∧ b = g * bb.
+  let '(g, (aa, bb)) := ggcd a b in
+  a = g * aa ∧ b = g * bb.
 Proof. now intros; apply ggcdn_correct_divisors. Qed.
 
-Theorem ggcd_fst_snd : ∀ a b, b ≠ 0 → fst (snd (ggcd a b)) = a / Nat.gcd a b.
+Theorem ggcd_fst_snd : ∀ a b, fst (snd (ggcd a b)) = a / Nat.gcd a b.
 Proof.
-intros * Hb.
-specialize (ggcd_correct_divisors a b Hb) as H.
+intros.
+specialize (ggcd_correct_divisors a b) as H.
 remember (ggcd a b) as g eqn:Hg.
 destruct g as (g, (aa, bb)).
 destruct H as (H1, H2); simpl.
-subst a b.
-specialize (ggcd_gcd (g * aa) (g * bb)) as H1.
-rewrite <- Hg in H1; simpl in H1.
-rewrite <- H1.
-rewrite Nat.mul_comm, Nat.div_mul; [ easy | ].
-now intros H; subst g.
+destruct g.
+-simpl in H1, H2; subst a b; simpl.
+ unfold ggcd in Hg; simpl in Hg.
+ now injection Hg; intros; subst aa.
+-subst a b.
+ specialize (ggcd_gcd (S g * aa) (S g * bb)) as H1.
+ rewrite <- Hg in H1.
+ rewrite <- H1.
+ rewrite Nat.mul_comm, Nat.div_mul; [ easy | ].
+ now intros H; simpl in H.
 Qed.
 
-Theorem ggcd_snd_snd : ∀ a b,
-  b ≠ 0 → snd (snd (ggcd a b)) = b / Nat.gcd a b.
+Theorem ggcd_snd_snd : ∀ a b, snd (snd (ggcd a b)) = b / Nat.gcd a b.
 Proof.
-intros * Hb.
-specialize (ggcd_correct_divisors a b Hb) as H.
+intros.
+specialize (ggcd_correct_divisors a b) as H.
 remember (ggcd a b) as g eqn:Hg.
 destruct g as (g, (aa, bb)).
 destruct H as (H1, H2); simpl.
-subst a b.
-specialize (ggcd_gcd (g * aa) (g * bb)) as H1.
-rewrite <- Hg in H1; simpl in H1.
-rewrite <- H1.
-rewrite Nat.mul_comm, Nat.div_mul; [ easy | ].
-now intros H; subst g.
+destruct g.
+-simpl in H1, H2; subst a b; simpl.
+ unfold ggcd in Hg; simpl in Hg.
+ now injection Hg; intros; subst bb.
+-subst a b.
+ specialize (ggcd_gcd (S g * aa) (S g * bb)) as H1.
+ rewrite <- Hg in H1.
+ rewrite <- H1.
+ rewrite Nat.mul_comm, Nat.div_mul; [ easy | ].
+ now intros H; simpl in H.
 Qed.
 
 Theorem ggcd_swap : ∀ a b g aa bb,
-  a ≠ 0 → b ≠ 0
-  → ggcd a b = (g, (aa, bb))
-  → ggcd b a = (g, (bb, aa)).
+  ggcd a b = (g, (aa, bb)) → ggcd b a = (g, (bb, aa)).
 Proof.
-intros * Ha Hb Hab.
-specialize (ggcd_fst_snd a b Hb) as H1.
-specialize (ggcd_snd_snd a b Hb) as H2.
-specialize (ggcd_fst_snd b a Ha) as H3.
-specialize (ggcd_snd_snd b a Ha) as H4.
+intros * Hab.
+specialize (ggcd_fst_snd a b) as H1.
+specialize (ggcd_snd_snd a b) as H2.
+specialize (ggcd_fst_snd b a) as H3.
+specialize (ggcd_snd_snd b a) as H4.
 rewrite Hab in H1; simpl in H1.
 rewrite Hab in H2; simpl in H2.
 rewrite Nat.gcd_comm, <- H2 in H3.
@@ -187,13 +198,46 @@ Qed.
 Theorem ggcd_succ_l_neq_0 : ∀ a b, fst (snd (ggcd (S a) b)) ≠ 0.
 Proof.
 intros.
-destruct b.
--now unfold ggcd; rewrite Nat.add_0_r, Nat.add_1_r.
--rewrite ggcd_fst_snd; [ | easy ].
- intros H1.
- apply Nat.div_small_iff in H1.
- +apply Nat.nle_gt in H1; apply H1.
-  now apply Nat_gcd_le_l.
- +intros H2.
-  now apply Nat.gcd_eq_0_l in H2.
+rewrite ggcd_fst_snd.
+intros H1.
+apply Nat.div_small_iff in H1.
++apply Nat.nle_gt in H1; apply H1.
+ now apply Nat_gcd_le_l.
++intros H2.
+ now apply Nat.gcd_eq_0_l in H2.
+Qed.
+
+Theorem ggcd_split : ∀ a b g,
+  g = Nat.gcd a b → ggcd a b = (g, (a / g, b / g)).
+Proof.
+intros * Hg.
+remember (ggcd a b) as g1 eqn:Hg1.
+destruct g1 as (g1, (aa1, bb1)).
+specialize (ggcd_gcd a b) as H1.
+rewrite <- Hg1, <- Hg in H1; simpl in H1; subst g1.
+specialize (ggcd_fst_snd a b) as H1.
+rewrite <- Hg1, <- Hg in H1; simpl in H1; subst aa1.
+specialize (ggcd_snd_snd a b) as H1.
+rewrite <- Hg1, <- Hg in H1; simpl in H1; subst bb1.
+easy.
+Qed.
+
+Theorem snd_ggcd_mul_mono_l : ∀ a b c,
+  c ≠ 0
+  → snd (ggcd (c * a) (c * b)) = snd (ggcd a b).
+Proof.
+intros * Hc.
+remember (Nat.gcd (c * a) (c * b)) as g eqn:Hg.
+rewrite (ggcd_split _ _ g); [ | easy ].
+rewrite Nat.gcd_mul_mono_l in Hg.
+remember (Nat.gcd a b) as g1 eqn:Hg1.
+destruct g1.
+-rewrite Nat.mul_0_r in Hg; subst g.
+ symmetry in Hg1.
+ apply Nat.gcd_eq_0 in Hg1.
+ now destruct Hg1; subst a b.
+-subst g.
+ rewrite Nat.div_mul_cancel_l; [ | easy | easy ].
+ rewrite Nat.div_mul_cancel_l; [ | easy | easy ].
+ now rewrite (ggcd_split _ _ (S g1)).
 Qed.

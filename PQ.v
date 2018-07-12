@@ -1127,6 +1127,26 @@ apply Nat.mul_cancel_l in H.
  now rewrite Nat.add_1_r in H1.
 Qed.
 
+...
+
+Theorem glop : ∀ x y a, PQred (x + y) = PQred (PQmake a a * x + y).
+Proof.
+intros (xn, xd) (yn, yd) a.
+unfold PQred; simpl.
+unfold "*"%PQ, PQ_of_nat.
+unfold PQmul_num1, PQmul_den1; simpl.
+unfold PQadd_num1, PQadd_den1, nd; simpl.
+PQtac1.
+PQtac2; [ PQtac2 | simpl; flia ].
+PQtac2; [ | simpl; flia ].
+do 3 PQtac2.
+replace (S yn * (S a * S xd)) with (S a * (S yn * S xd)) by flia.
+rewrite <- Nat.mul_assoc, <- Nat.mul_add_distr_l.
+rewrite <- Nat.mul_assoc.
+rewrite ggcd_mul_mono_l.
+
+...
+
 Theorem PQred_add_l : ∀ x y, PQred (x + y) = PQred (PQred x + y).
 Proof.
 intros (xn, xd) (yn, yd).
