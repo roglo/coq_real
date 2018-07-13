@@ -247,12 +247,12 @@ Theorem GQadd_den_make_l : ∀ n d p y,
   GQadd_den (GQmake n d p) y = S d * S (GQden1 y).
 Proof. easy. Qed.
 
-Axiom GQeq : ∀ x y, x = y ↔ GQnum1 x = GQnum1 y ∧ GQden1 x = GQden1 y.
+Axiom GQeq_iff : ∀ x y, x = y ↔ GQnum1 x = GQnum1 y ∧ GQden1 x = GQden1 y.
 
 Theorem GQadd_comm : ∀ x y, (x + y = y + x)%GQ.
 Proof.
 intros.
-apply GQeq; unfold "+"%GQ.
+apply GQeq_iff; unfold "+"%GQ.
 do 2 rewrite GQnum1_make, GQden1_make.
 split; f_equal.
 -f_equal; [ apply Nat.add_comm | apply Nat.mul_comm ].
@@ -321,7 +321,7 @@ Arguments PQ_of_GQ x%GQ.
 Theorem GQ_o_PQ : ∀ x, GQ_of_PQ (PQ_of_GQ x) = x.
 Proof.
 intros (xn, xd, xp).
-apply GQeq; simpl.
+apply GQeq_iff; simpl.
 split.
 -apply eq_div_gcd_l_same_iff in xp; [ | easy ].
  now rewrite xp, Nat.sub_succ, Nat.sub_0_r.
@@ -332,7 +332,7 @@ Qed.
 Theorem GQadd_PQadd : ∀ x y, (x + y)%GQ = GQ_of_PQ (PQ_of_GQ x + PQ_of_GQ y).
 Proof.
 intros.
-apply GQeq; simpl.
+apply GQeq_iff; simpl.
 PQtac1.
 rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
 rewrite Nat.sub_succ, Nat.sub_0_r.
@@ -342,7 +342,7 @@ Qed.
 Theorem GQmul_PQmul : ∀ x y, (x * y)%GQ = GQ_of_PQ (PQ_of_GQ x * PQ_of_GQ y).
 Proof.
 intros.
-apply GQeq; simpl.
+apply GQeq_iff; simpl.
 unfold PQmul_num1, PQmul_den1.
 unfold GQmul_num, GQadd_den.
 unfold "+"%PQ, "-"%PQ, "<"%PQ, "=="%PQ, "≤"%PQ;
@@ -380,7 +380,7 @@ Theorem GQ_of_PQ_red : ∀ x,
   GQ_of_PQ x = GQmake (PQnum1 (PQred x)) (PQden1 (PQred x)) (GQ_of_PQ_red_prop x).
 Proof.
 intros.
-apply GQeq.
+apply GQeq_iff.
 unfold GQ_of_PQ, GQN, PQred.
 simpl.
 remember (ggcd (PQnum1 x + 1) (PQden1 x + 1)) as g eqn:Hg.
@@ -395,7 +395,7 @@ Theorem GQ_of_PQ_additive : ∀ x y,
 Proof.
 intros.
 do 3 rewrite GQ_of_PQ_red.
-apply GQeq; simpl.
+apply GQeq_iff; simpl.
 unfold "+"%GQ.
 unfold GQadd_num, GQadd_den.
 remember S as f; simpl; subst f.
@@ -421,7 +421,7 @@ Theorem GQ_of_PQ_multiplicative : ∀ x y,
 Proof.
 intros.
 do 3 rewrite GQ_of_PQ_red.
-apply GQeq; simpl.
+apply GQeq_iff; simpl.
 unfold GQmul_num, GQadd_den.
 remember S as f; simpl; subst f.
 rewrite PQred_mul.
@@ -468,7 +468,7 @@ Qed.
 Theorem GQmul_comm : ∀ x y, (x * y = y * x)%GQ.
 Proof.
 intros.
-apply GQeq; unfold "*"%GQ.
+apply GQeq_iff; unfold "*"%GQ.
 do 2 rewrite GQnum1_make, GQden1_make.
 split; f_equal.
 -f_equal; apply Nat.mul_comm.
@@ -505,7 +505,7 @@ intros (xn, xd) (yn, yd) Hxy.
 unfold "=="%PQ, nd in Hxy.
 simpl in Hxy.
 unfold GQ_of_PQ, GQN.
-apply GQeq; simpl.
+apply GQeq_iff; simpl.
 unfold div_gcd_l, div_gcd_r.
 remember (Nat.gcd (S xn) (S xd)) as gx eqn:Hgx.
 remember (Nat.gcd (S yn) (S yd)) as gy eqn:Hgy.
