@@ -424,7 +424,21 @@ apply GQeq; simpl.
 unfold GQmul_num, GQadd_den.
 remember S as f; simpl; subst f.
 rewrite PQred_mul.
-...
+unfold "*"%PQ.
+unfold PQmul_num1, PQmul_den1.
+remember (PQred x) as xr eqn:Hxr.
+remember (PQred y) as yr eqn:Hyr.
+destruct xr as (xn, xd).
+destruct yr as (yn, yd).
+unfold PQred.
+remember S as f; simpl; subst f.
+rewrite ggcd_div_gcd.
+remember S as f; simpl; subst f.
+do 6 rewrite Nat.add_1_r.
+rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
+now do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
+Qed.
 
 Theorem GQadd_add_swap : ∀ x y z, (x + y + z = x + z + y)%GQ.
 Proof.
@@ -450,10 +464,18 @@ setoid_rewrite GQadd_comm.
 apply GQadd_add_swap.
 Qed.
 
-Theorem GDmul_mul_swap : ∀ x y z, (x * y * z = x * z * y)%GQ.
+Theorem GQmul_mul_swap : ∀ x y z, (x * y * z = x * z * y)%GQ.
 Proof.
 intros.
 do 4 rewrite GQmul_PQmul.
-Check GQ_of_PQ_multiplicative.
+remember (PQ_of_GQ x) as x' eqn:Hx'.
+remember (PQ_of_GQ y) as y' eqn:Hy'.
+remember (PQ_of_GQ z) as z' eqn:Hz'.
+move z' before x'; move y' before x'.
+do 4 rewrite GQ_of_PQ_multiplicative.
+do 2 rewrite GQ_o_PQ.
+do 4 rewrite <- GQ_of_PQ_multiplicative.
+now rewrite PQmul_mul_swap.
+Qed.
 
 ...

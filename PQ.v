@@ -929,6 +929,14 @@ unfold PQmul_num1, PQmul_den1; simpl; PQtac1; repeat PQtac2; f_equal.
 -now rewrite Nat.mul_assoc.
 Qed.
 
+Theorem PQmul_mul_swap : ∀ x y z, (x * y * z = x * z * y)%PQ.
+intros.
+unfold "*"%PQ; simpl.
+unfold PQmul_num1, PQmul_den1; simpl; PQtac1; repeat PQtac2; f_equal.
+-now rewrite Nat.mul_shuffle0.
+-now rewrite Nat.mul_shuffle0.
+Qed.
+
 Theorem PQmul_le_mono_l : ∀ x y z, (x ≤ y → z * x ≤ z * y)%PQ.
 Proof.
 intros *.
