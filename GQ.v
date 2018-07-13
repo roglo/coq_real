@@ -518,12 +518,23 @@ rewrite Hx in H1; rewrite Hy in H3.
 destruct H1 as (H1, H2).
 destruct H3 as (H3, H4).
 do 4 rewrite Nat.add_1_r in Hxy.
-rewrite H1, H2 in Hxy.
-symmetry in Hxy; rewrite Nat.mul_comm in Hxy.
-do 2 rewrite <- Nat.mul_assoc in Hxy.
-apply Nat.mul_cancel_l in Hxy.
-rewrite H3, H4 in Hxy.
-...
+assert (Hgxz : gx ≠ 0) by now intros H; rewrite H in H1.
+assert (Hgyz : gy ≠ 0) by now intros H; rewrite H in H3.
+split; f_equal.
+-rewrite <- (Nat.mul_cancel_l _ _ gx), <- H1; [ | easy ].
+ rewrite <- (Nat.mul_cancel_l _ _ gy); [ | easy ].
+ rewrite Nat.mul_assoc, Nat.mul_shuffle0, <- H3.
+ rewrite Hgy, Nat.mul_comm, <- Nat.gcd_mul_mono_l.
+ rewrite Hgx, <- Nat.gcd_mul_mono_l, Hxy, Nat.mul_comm.
+ easy.
+-rewrite <- (Nat.mul_cancel_l _ _ gx), <- H2; [ | easy ].
+ rewrite <- (Nat.mul_cancel_l _ _ gy); [ | easy ].
+ rewrite Nat.mul_assoc, Nat.mul_shuffle0, <- H4.
+ rewrite Hgy, Nat.mul_comm, <- Nat.gcd_mul_mono_l.
+ rewrite Hgx, <- Nat.gcd_mul_mono_l.
+ rewrite Nat.mul_comm in Hxy; rewrite Hxy.
+ f_equal; apply Nat.mul_comm.
+Qed.
 
 Theorem GQmul_add_distr_l : ∀ x y z, (x * (y + z) = x * y + x * z)%GQ.
 Proof.
@@ -540,8 +551,8 @@ do 3 rewrite GQ_o_PQ.
 do 2 rewrite <- GQ_of_PQ_multiplicative.
 do 2 rewrite <- GQ_of_PQ_additive.
 rewrite <- GQ_of_PQ_multiplicative.
-...
 rewrite <- PQmul_add_distr_l.
+easy.
 Qed.
 
 ...
