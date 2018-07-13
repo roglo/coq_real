@@ -423,7 +423,6 @@ do 3 rewrite GQ_of_PQ_red.
 apply GQeq; simpl.
 unfold GQmul_num, GQadd_den.
 remember S as f; simpl; subst f.
-...
 rewrite PQred_mul.
 ...
 
