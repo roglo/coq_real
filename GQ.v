@@ -1,6 +1,6 @@
 (* rationals where num and den always common primes *)
 
-Require Import Utf8 Arith.
+Require Import Utf8 Arith Morphisms.
 Require Import PQ Nat_ggcd.
 Set Nested Proofs Allowed.
 
@@ -372,7 +372,8 @@ specialize (PQred_gcd x) as H1.
 now do 2 rewrite Nat.add_1_r in H1.
 Qed.
 
-Theorem ggcd_div_gcd : ∀ a b, ggcd a b = (Nat.gcd a b, (div_gcd_l a b, div_gcd_r a b)).
+Theorem ggcd_div_gcd : ∀ a b,
+  ggcd a b = (Nat.gcd a b, (div_gcd_l a b, div_gcd_r a b)).
 Proof. now intros; apply ggcd_split. Qed.
 
 Theorem GQ_of_PQ_red : ∀ x,
@@ -464,6 +465,16 @@ setoid_rewrite GQadd_comm.
 apply GQadd_add_swap.
 Qed.
 
+Theorem GQmul_comm : ∀ x y, (x * y = y * x)%GQ.
+Proof.
+intros.
+apply GQeq; unfold "*"%GQ.
+do 2 rewrite GQnum1_make, GQden1_make.
+split; f_equal.
+-f_equal; apply Nat.mul_comm.
+-f_equal; apply Nat.mul_comm.
+Qed.
+
 Theorem GQmul_mul_swap : ∀ x y z, (x * y * z = x * z * y)%GQ.
 Proof.
 intros.
@@ -476,6 +487,61 @@ do 4 rewrite GQ_of_PQ_multiplicative.
 do 2 rewrite GQ_o_PQ.
 do 4 rewrite <- GQ_of_PQ_multiplicative.
 now rewrite PQmul_mul_swap.
+Qed.
+
+Theorem GQmul_assoc : ∀ x y z, ((x * y) * z = x * (y * z))%GQ.
+Proof.
+intros.
+rewrite GQmul_comm.
+remember (x * y)%GQ as t eqn:Ht.
+rewrite GQmul_comm in Ht; subst t.
+setoid_rewrite GQmul_comm.
+apply GQmul_mul_swap.
+Qed.
+
+Instance GQ_of_PQ_morph : Proper (PQeq ==> eq) GQ_of_PQ.
+Proof.
+intros (xn, xd) (yn, yd) Hxy.
+unfold "=="%PQ, nd in Hxy.
+simpl in Hxy.
+unfold GQ_of_PQ, GQN.
+apply GQeq; simpl.
+unfold div_gcd_l, div_gcd_r.
+remember (Nat.gcd (S xn) (S xd)) as gx eqn:Hgx.
+remember (Nat.gcd (S yn) (S yd)) as gy eqn:Hgy.
+move gy before gx.
+specialize (ggcd_split _ _ _ Hgx) as Hx.
+specialize (ggcd_split _ _ _ Hgy) as Hy.
+specialize (ggcd_correct_divisors (S xn) (S xd)) as H1.
+specialize (ggcd_correct_divisors (S yn) (S yd)) as H3.
+rewrite Hx in H1; rewrite Hy in H3.
+destruct H1 as (H1, H2).
+destruct H3 as (H3, H4).
+do 4 rewrite Nat.add_1_r in Hxy.
+rewrite H1, H2 in Hxy.
+symmetry in Hxy; rewrite Nat.mul_comm in Hxy.
+do 2 rewrite <- Nat.mul_assoc in Hxy.
+apply Nat.mul_cancel_l in Hxy.
+rewrite H3, H4 in Hxy.
+...
+
+Theorem GQmul_add_distr_l : ∀ x y z, (x * (y + z) = x * y + x * z)%GQ.
+Proof.
+intros.
+do 3 rewrite GQmul_PQmul.
+do 2 rewrite GQadd_PQadd.
+remember (PQ_of_GQ x) as x' eqn:Hx'.
+remember (PQ_of_GQ y) as y' eqn:Hy'.
+remember (PQ_of_GQ z) as z' eqn:Hz'.
+move z' before x'; move y' before x'.
+do 3 rewrite GQ_of_PQ_multiplicative.
+do 2 rewrite GQ_of_PQ_additive.
+do 3 rewrite GQ_o_PQ.
+do 2 rewrite <- GQ_of_PQ_multiplicative.
+do 2 rewrite <- GQ_of_PQ_additive.
+rewrite <- GQ_of_PQ_multiplicative.
+...
+rewrite <- PQmul_add_distr_l.
 Qed.
 
 ...
