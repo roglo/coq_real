@@ -564,5 +564,3 @@ rewrite <- GQ_of_PQ_multiplicative.
 rewrite <- PQmul_add_distr_l.
 easy.
 Qed.
-
-...

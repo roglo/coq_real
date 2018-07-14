@@ -318,12 +318,14 @@ destruct H as (e, He); subst ε; clear Hε; rename e into ε.
 enough (H1 : ∃ N, ∀ p q, N < p ≤ q →
   (pos_freal_seq x p - pos_freal_seq x q < ε)%PQ). {
   destruct H1 as (N & H1).
-...
   exists (S N); intros p q (Hp, Hq).
   destruct (le_dec p q) as [Hpq| Hqp].
   -specialize (H1 p q) as H2.
    assert (H : N < p ≤ q) by flia Hp Hpq.
    specialize (H2 H); clear H.
+Print pos_freal_seq.
+Print freal_seq.
+...
    unfold "<"%MQ.
    remember ((‖ freal_seq x p - freal_seq x q ‖)%MQ) as y eqn:Hy.
    symmetry in Hy; destruct y as [| py| py]; [ easy | | easy ].
