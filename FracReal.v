@@ -323,8 +323,13 @@ enough (H1 : ∃ N, ∀ p q, N < p ≤ q →
   -specialize (H1 p q) as H2.
    assert (H : N < p ≤ q) by flia Hp Hpq.
    specialize (H2 H); clear H.
-Print pos_freal_seq.
-Print freal_seq.
+(**)
+   unfold freal_seq.
+   remember (freal_seq_num x p) as xsp eqn:Hxsp; symmetry in Hxsp.
+   remember (freal_seq_num x q) as xsq eqn:Hxsq; symmetry in Hxsq.
+   destruct xsp.
+   +destruct xsq; [ easy | simpl ].
+    unfold freal_seq_num in Hxsp.
 ...
    unfold "<"%MQ.
    remember ((‖ freal_seq x p - freal_seq x q ‖)%MQ) as y eqn:Hy.
