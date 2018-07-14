@@ -329,6 +329,14 @@ enough (H1 : ∃ N, ∀ p q, N < p ≤ q →
    remember (freal_seq_num x q) as xsq eqn:Hxsq; symmetry in Hxsq.
    destruct xsp.
    +destruct xsq; [ easy | simpl ].
+unfold pos_freal_seq at 1 in H2.
+rewrite Hxsp in H2; simpl in H2.
+unfold "-"%PQ in H2.
+remember (pos_freal_seq x q) as xq eqn:Hxq.
+unfold PQsub_num1, PQadd_den1, nd in H2.
+simpl in H2.
+rewrite Nat.add_0_r in H2.
+...
     unfold freal_seq_num in Hxsp.
 ...
    unfold "<"%MQ.
