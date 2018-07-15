@@ -1,7 +1,7 @@
 (* Implementation of rationals using only nat *)
 
 Require Import Utf8 Arith Morphisms.
-Require Import PQ.
+Require Import PQ GQ.
 Set Nested Proofs Allowed.
 
 Delimit Scope MQ_scope with MQ.
@@ -47,7 +47,7 @@ Theorem MQeq_trans : ∀ x y z : MQ, (x == y)%MQ → (y == z)%MQ → (x == z)%MQ
 Proof.
 unfold "=="%MQ.
 intros * Hxy Hyz.
-destruct x, y, z; try easy; now transitivity p0.
+destruct x, y as [| py| py], z; try easy; now transitivity py.
 Qed.
 
 Add Parametric Relation : _ MQeq

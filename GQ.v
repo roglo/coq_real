@@ -100,7 +100,9 @@ Definition GQmul x y :=
   let d := GQadd_den x y in
   GQmake (div_gcd_l n d - 1) (div_gcd_r n d - 1) (GQmul_prop x y).
 
+(*
 Compute (GQmul (GQ_of_nat 7) (GQ_of_nat 3)).
+*)
 
 Theorem GQinv_prop : ∀ x, Nat.gcd (S (GQden1 x)) (S (GQnum1 x)) = 1.
 Proof.
@@ -219,11 +221,13 @@ Definition GQN a b := GQmake (div_gcd_l a b - 1) (div_gcd_r a b - 1) (GQN_prop a
 Notation "x +/+ y" := (GQmake x y _) (at level 40, only parsing) : GQ_scope.
 *)
 
+(*
 Compute GQN 7 3.
 Compute GQN 16 24.
 Compute GQN 2 4.
 Compute GQN 3 6.
 Compute GQN 4 8.
+*)
 
 Theorem GQnum1_make : ∀ n d p, GQnum1 (GQmake n d p) = n.
 Proof. easy. Qed.
@@ -247,7 +251,9 @@ Theorem GQadd_den_make_l : ∀ n d p y,
   GQadd_den (GQmake n d p) y = S d * S (GQden1 y).
 Proof. easy. Qed.
 
-Theorem GQeq_eq : ∀ x y, x = y ↔ GQnum1 x = GQnum1 y ∧ GQden1 x = GQden1 y.
+Definition GQeq x y := GQnum1 x = GQnum1 y ∧ GQden1 x = GQden1 y.
+
+Theorem GQeq_eq : ∀ x y, x = y ↔ GQeq x y.
 Proof.
 intros.
 split; [ now intros; subst x | ].
@@ -262,7 +268,7 @@ Qed.
 Theorem GQadd_comm : ∀ x y, (x + y = y + x)%GQ.
 Proof.
 intros.
-apply GQeq_eq; unfold "+"%GQ.
+apply GQeq_eq; unfold "+"%GQ, GQeq.
 do 2 rewrite GQnum1_make, GQden1_make.
 split; f_equal.
 -f_equal; [ apply Nat.add_comm | apply Nat.mul_comm ].
@@ -331,7 +337,7 @@ Arguments PQ_of_GQ x%GQ.
 Theorem GQ_o_PQ : ∀ x, GQ_of_PQ (PQ_of_GQ x) = x.
 Proof.
 intros (xn, xd, xp).
-apply GQeq_eq; simpl.
+apply GQeq_eq; unfold GQeq; simpl.
 split.
 -apply eq_div_gcd_l_same_iff in xp; [ | easy ].
  now rewrite xp, Nat.sub_succ, Nat.sub_0_r.
@@ -342,7 +348,7 @@ Qed.
 Theorem GQadd_PQadd : ∀ x y, (x + y)%GQ = GQ_of_PQ (PQ_of_GQ x + PQ_of_GQ y).
 Proof.
 intros.
-apply GQeq_eq; simpl.
+apply GQeq_eq; unfold GQeq; simpl.
 PQtac1.
 rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
 rewrite Nat.sub_succ, Nat.sub_0_r.
@@ -352,7 +358,7 @@ Qed.
 Theorem GQmul_PQmul : ∀ x y, (x * y)%GQ = GQ_of_PQ (PQ_of_GQ x * PQ_of_GQ y).
 Proof.
 intros.
-apply GQeq_eq; simpl.
+apply GQeq_eq; unfold GQeq; simpl.
 unfold PQmul_num1, PQmul_den1.
 unfold GQmul_num, GQadd_den.
 unfold "+"%PQ, "-"%PQ, "<"%PQ, "=="%PQ, "≤"%PQ;
@@ -390,7 +396,7 @@ Theorem GQ_of_PQ_red : ∀ x,
   GQ_of_PQ x = GQmake (PQnum1 (PQred x)) (PQden1 (PQred x)) (GQ_of_PQ_red_prop x).
 Proof.
 intros.
-apply GQeq_eq.
+apply GQeq_eq; unfold GQeq.
 unfold GQ_of_PQ, GQN, PQred.
 simpl.
 remember (ggcd (PQnum1 x + 1) (PQden1 x + 1)) as g eqn:Hg.
@@ -405,7 +411,7 @@ Theorem GQ_of_PQ_additive : ∀ x y,
 Proof.
 intros.
 do 3 rewrite GQ_of_PQ_red.
-apply GQeq_eq; simpl.
+apply GQeq_eq; unfold GQeq; simpl.
 unfold "+"%GQ.
 unfold GQadd_num, GQadd_den.
 remember S as f; simpl; subst f.
@@ -431,7 +437,7 @@ Theorem GQ_of_PQ_multiplicative : ∀ x y,
 Proof.
 intros.
 do 3 rewrite GQ_of_PQ_red.
-apply GQeq_eq; simpl.
+apply GQeq_eq; unfold GQeq; simpl.
 unfold GQmul_num, GQadd_den.
 remember S as f; simpl; subst f.
 rewrite PQred_mul.
@@ -478,7 +484,7 @@ Qed.
 Theorem GQmul_comm : ∀ x y, (x * y = y * x)%GQ.
 Proof.
 intros.
-apply GQeq_eq; unfold "*"%GQ.
+apply GQeq_eq; unfold GQeq, "*"%GQ.
 do 2 rewrite GQnum1_make, GQden1_make.
 split; f_equal.
 -f_equal; apply Nat.mul_comm.
@@ -515,7 +521,7 @@ intros (xn, xd) (yn, yd) Hxy.
 unfold "=="%PQ, nd in Hxy.
 simpl in Hxy.
 unfold GQ_of_PQ, GQN.
-apply GQeq_eq; simpl.
+apply GQeq_eq; unfold GQeq; simpl.
 unfold div_gcd_l, div_gcd_r.
 remember (Nat.gcd (S xn) (S xd)) as gx eqn:Hgx.
 remember (Nat.gcd (S yn) (S yd)) as gy eqn:Hgy.
