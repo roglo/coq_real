@@ -1,7 +1,7 @@
 (* Implementation of rationals using only nat *)
 
 Require Import Utf8 Arith Morphisms.
-Require Import PQ GQ.
+Require Import PQ.
 Set Nested Proofs Allowed.
 
 Delimit Scope MQ_scope with MQ.
