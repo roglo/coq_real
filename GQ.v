@@ -15,13 +15,91 @@ Arguments GQmake PQ_of_GQ%PQ.
 Definition GQ_of_PQ x :=
   GQmake (PQmake (PQnum1 (PQred x)) (PQden1 (PQred x))) (PQred_gcd x).
 
+Arguments PQ_of_GQ x%GQ : rename.
+Arguments GQ_of_PQ x%PQ.
+
 Definition GQ_of_nat n := GQmake (PQ_of_nat n) (Nat.gcd_1_r (n - 1 + 1)).
 
-Definition GQadd x y := GQ_of_PQ (PQred (x + y)).
-Definition GQmul x y := GQ_of_PQ (PQred (x * y)).
+Definition GQadd x y := GQ_of_PQ (PQred (PQ_of_GQ x + PQ_of_GQ y)).
+Definition GQmul x y := GQ_of_PQ (PQred (PQ_of_GQ x * PQ_of_GQ y)).
 
 Notation "x + y" := (GQadd x y) : GQ_scope.
 Notation "x * y" := (GQmul x y) : GQ_scope.
+
+Theorem GQeq_eq : ∀ x y, x = y ↔ (PQ_of_GQ x = PQ_of_GQ y)%PQ.
+Proof.
+intros.
+split; [ now intros; subst x | ].
+intros H.
+destruct x as (x, xp).
+destruct y as (y, yp).
+simpl in H; subst x; f_equal.
+apply UIP_nat.
+Qed.
+
+Theorem GQ_of_PQred : ∀ x, GQ_of_PQ (PQred x) = GQ_of_PQ x.
+Proof.
+intros.
+unfold GQ_of_PQ.
+apply GQeq_eq; simpl.
+now rewrite PQred_idemp.
+Qed.
+
+Theorem PQred_of_GQ : ∀ x, PQred (PQ_of_GQ x) = PQ_of_GQ x.
+Proof.
+intros (xp, Hxp); simpl.
+unfold PQred.
+symmetry in Hxp.
+apply ggcd_split in Hxp.
+rewrite Hxp.
+do 2 rewrite Nat.div_1_r.
+do 2 rewrite Nat.add_sub.
+now destruct xp.
+Qed.
+
+Theorem GQ_of_PQ_additive : ∀ x y,
+  GQ_of_PQ (x + y) = (GQ_of_PQ x + GQ_of_PQ y)%GQ.
+Proof.
+intros.
+apply GQeq_eq.
+unfold GQ_of_PQ.
+remember GQadd as f; simpl; subst f.
+unfold "+"%GQ.
+remember PQadd as f; simpl; subst f.
+rewrite PQred_idemp, PQred_add.
+easy.
+Qed.
+
+Theorem GQ_o_PQ : ∀ x, GQ_of_PQ (PQ_of_GQ x) = x.
+Proof.
+intros.
+apply GQeq_eq.
+unfold GQ_of_PQ; simpl.
+rewrite PQred_of_GQ.
+now destruct (PQ_of_GQ x).
+Qed.
+
+Theorem GQadd_comm : ∀ x y, (x + y = y + x)%GQ.
+Proof.
+intros.
+unfold "+"%GQ.
+now rewrite PQadd_comm.
+Qed.
+
+Theorem GQadd_assoc : ∀ x y z, ((x + y) + z = x + (y + z))%GQ.
+Proof.
+intros.
+unfold "+"%GQ.
+do 4 rewrite GQ_of_PQred.
+remember (PQ_of_GQ x) as x'.
+remember (PQ_of_GQ y) as y'.
+remember (PQ_of_GQ z) as z'.
+move z' before x'; move y' before x'.
+do 4 rewrite GQ_of_PQ_additive.
+do 2 rewrite GQ_o_PQ.
+do 4 rewrite <- GQ_of_PQ_additive.
+now rewrite PQadd_assoc.
+Qed.
 
 ...
 
