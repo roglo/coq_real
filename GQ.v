@@ -1,4 +1,4 @@
-(* rationals where num and den always common primes *)
+(* rationals where num and den are always common primes *)
 
 Require Import Utf8 Arith Morphisms.
 Require Import PQ Nat_ggcd.
@@ -8,10 +8,22 @@ Delimit Scope GQ_scope with GQ.
 
 Record GQ :=
   GQmake
-    { GQnum1 : nat; GQden1 : nat;
-      GQprop : Nat.gcd (S GQnum1) (S GQden1) = 1 }.
+    { PQ_of_GQ : PQ;
+      GQprop : Nat.gcd (PQnum1 PQ_of_GQ + 1) (PQden1 PQ_of_GQ + 1) = 1 }.
+Arguments GQmake PQ_of_GQ%PQ.
 
-Definition GQ_of_nat n := GQmake (n - 1) 0 (Nat.gcd_1_r (S (n - 1))).
+Definition GQ_of_PQ x :=
+  GQmake (PQmake (PQnum1 (PQred x)) (PQden1 (PQred x))) (PQred_gcd x).
+
+Definition GQ_of_nat n := GQmake (PQ_of_nat n) (Nat.gcd_1_r (n - 1 + 1)).
+
+Definition GQadd x y := GQ_of_PQ (PQred (x + y)).
+Definition GQmul x y := GQ_of_PQ (PQred (x * y)).
+
+Notation "x + y" := (GQadd x y) : GQ_scope.
+Notation "x * y" := (GQmul x y) : GQ_scope.
+
+...
 
 Definition div_gcd_l x y := Nat.div x (Nat.gcd x y).
 Theorem fold_div_gcd_l x y : Nat.div x (Nat.gcd x y) = div_gcd_l x y.
