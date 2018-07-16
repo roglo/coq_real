@@ -1016,31 +1016,6 @@ remember (PQcompare x x) as c eqn:Hc; symmetry in Hc.
 now destruct c; [ easy | | ]; PQcompare_iff; apply PQlt_irrefl in Hc.
 Qed.
 
-Theorem PQcompare_comm : ∀ {A} {a b c : A} px py,
-  match PQcompare px py with
-  | Eq => a
-  | Lt => b
-  | Gt => c
-  end =
-  match PQcompare py px with
-  | Eq => a
-  | Lt => c
-  | Gt => b
-  end.
-Proof.
-intros.
-remember (PQcompare px py) as b1 eqn:Hb1; symmetry in Hb1.
-remember (PQcompare py px) as b2 eqn:Hb2; symmetry in Hb2.
-move b2 before b1.
-destruct b1, b2; try easy; repeat PQcompare_iff.
--now rewrite Hb1 in Hb2; apply PQlt_irrefl in Hb2.
--now rewrite Hb1 in Hb2; apply PQlt_irrefl in Hb2.
--now rewrite Hb2 in Hb1; apply PQlt_irrefl in Hb1.
--now apply PQnle_gt in Hb2; exfalso; apply Hb2; apply PQlt_le_incl.
--now rewrite Hb2 in Hb1; apply PQlt_irrefl in Hb1.
--now apply PQnle_gt in Hb2; exfalso; apply Hb2; apply PQlt_le_incl.
-Qed.
-
 Require Import Nat_ggcd.
 
 Definition PQred x :=

@@ -19,6 +19,7 @@ Parameter PQ_of_nat : nat → PQ.
 
 Delimit Scope PQ_scope with PQ.
 Notation "x == y" := (PQeq x y) (at level 70) : PQ_scope.
+Notation "x ≠≠ y" := (¬ PQeq x y) (at level 70) : PQ_scope.
 Notation "x + y" := (PQadd x y) : PQ_scope.
 Notation "x - y" := (PQsub x y) : PQ_scope.
 Notation "x < y" := (PQlt x y) : PQ_scope.
@@ -28,10 +29,13 @@ Notation "x ≥ y" := (PQge x y) : PQ_scope.
 
 Parameter PQlt_le_dec : ∀ x y : PQ, {(x < y)%PQ} + {(y ≤ x)%PQ}.
 Parameter PQnlt_ge : ∀ x y, ¬ (x < y)%PQ ↔ (y ≤ x)%PQ.
+Parameter PQnle_gt : ∀ x y, ¬ (x ≤ y)%PQ ↔ (y < x)%PQ.
+Parameter PQlt_le_incl : ∀ x y, (x < y)%PQ → (x ≤ y)%PQ.
 
 Parameter PQeq_refl : ∀ x, (x == x)%PQ.
 Parameter PQeq_symm : ∀ x y, (x == y)%PQ → (y == x)%PQ.
 Parameter PQeq_trans : ∀ x y z, (x == y)%PQ → (y == z)%PQ → (x == z)%PQ.
+Parameter PQlt_irrefl : ∀ x, (¬ x < x)%PQ.
 
 Add Parametric Relation : _ PQeq
  reflexivity proved by PQeq_refl
@@ -53,7 +57,9 @@ Parameter PQsub_morph : ∀ x1 x2 y1 y2,
   (x1 < y1)%PQ → (x1 == x2)%PQ → (y1 == y2)%PQ → (y1 - x1 == y2 - x2)%PQ.
 
 Parameter PQadd_comm : ∀ x y, (x + y)%PQ = (y + x)%PQ.
-
+Parameter PQadd_no_neutral : ∀ x y, (y + x ≠≠ x)%PQ.
+Parameter PQadd_lt_mono_r : ∀ x y z, (x < y)%PQ ↔ (x + z < y + z)%PQ.
+Parameter PQsub_add : ∀ x y, (y < x)%PQ → (x - y + y == x)%PQ.
 End PQ_sig.
 
 Module MQ_fun (PosQ : PQ_sig).
@@ -64,6 +70,8 @@ Instance PQlt_morph : Proper (PQeq ==> PQeq ==> iff) PQlt.
 Proof. apply PQlt_morph. Qed.
 Instance PQle_morph : Proper (PQeq ==> PQeq ==> iff) PQle.
 Proof. apply PQle_morph. Qed.
+Instance PQgt_morph : Proper (PQeq ==> PQeq ==> iff) PQgt.
+Proof. now intros x1 x2 Hx y1 y2 Hy; apply PQlt_morph. Qed.
 Instance PQadd_morph : Proper (PQeq ==> PQeq ==> PQeq) PQadd.
 Proof. apply PQadd_morph. Qed.
 Instance PQcompare_morph : Proper (PQeq ==> PQeq ==> eq) PQcompare.
@@ -78,6 +86,31 @@ Ltac PQcompare_iff :=
   | [ H : PQcompare _ _ = Lt |- _ ] => apply PQcompare_lt_iff in H
   | [ H : PQcompare _ _ = Gt |- _ ] => apply PQcompare_gt_iff in H
   end.
+
+Theorem PQcompare_swap : ∀ {A} {a b c : A} px py,
+  match PQcompare px py with
+  | Eq => a
+  | Lt => b
+  | Gt => c
+  end =
+  match PQcompare py px with
+  | Eq => a
+  | Lt => c
+  | Gt => b
+  end.
+Proof.
+intros.
+remember (PQcompare px py) as b1 eqn:Hb1; symmetry in Hb1.
+remember (PQcompare py px) as b2 eqn:Hb2; symmetry in Hb2.
+move b2 before b1.
+destruct b1, b2; try easy; repeat PQcompare_iff.
+-now rewrite Hb1 in Hb2; apply PQlt_irrefl in Hb2.
+-now rewrite Hb1 in Hb2; apply PQlt_irrefl in Hb2.
+-now rewrite Hb2 in Hb1; apply PQlt_irrefl in Hb1.
+-now apply PQnle_gt in Hb2; exfalso; apply Hb2; apply PQlt_le_incl.
+-now rewrite Hb2 in Hb1; apply PQlt_irrefl in Hb1.
+-now apply PQnle_gt in Hb2; exfalso; apply Hb2; apply PQlt_le_incl.
+Qed.
 
 (* *)
 
@@ -317,8 +350,8 @@ intros.
 unfold "+".
 destruct x as [| px| px], y as [| py| py]; try easy; simpl.
 -f_equal; apply PQadd_comm.
--now rewrite PQcompare_comm; destruct (PQcompare py px).
--now rewrite PQcompare_comm; destruct (PQcompare py px).
+-now rewrite PQcompare_swap; destruct (PQcompare py px).
+-now rewrite PQcompare_swap; destruct (PQcompare py px).
 -f_equal; apply PQadd_comm.
 Qed.
 
@@ -612,8 +645,8 @@ intros.
 unfold "+".
 destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl.
 -now rewrite PQadd_comm.
--now rewrite PQcompare_comm; destruct (PQcompare pz py).
--now rewrite PQcompare_comm; destruct (PQcompare pz py).
+-now rewrite PQcompare_swap; destruct (PQcompare pz py).
+-now rewrite PQcompare_swap; destruct (PQcompare pz py).
 -now rewrite PQadd_comm.
 -now destruct (PQcompare px pz).
 -now rewrite PQadd_add_swap.
@@ -627,27 +660,27 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl.
 -now destruct (PQcompare px pz).
 -now destruct (PQcompare px py).
 -do 2 rewrite MQopp_match_comp; simpl.
- setoid_rewrite PQcompare_comm.
+ setoid_rewrite PQcompare_swap.
  do 2 (rewrite MQmatch_match_comp; symmetry).
  do 2 rewrite MQopp_match_comp; simpl.
- setoid_rewrite PQcompare_comm.
+ setoid_rewrite PQcompare_swap.
  setoid_rewrite MQmatch_opp_comp; simpl.
  apply MQopp_inj_wd.
  do 2 rewrite MQopp_match_comp; simpl.
  apply MQadd_swap_lemma2.
 -do 2 rewrite MQopp_match_comp; simpl.
- rewrite PQcompare_comm, MQmatch_match_comp.
- rewrite MQmatch_opp_comp, PQcompare_comm; symmetry.
+ rewrite PQcompare_swap, MQmatch_match_comp.
+ rewrite MQmatch_opp_comp, PQcompare_swap; symmetry.
  rewrite MQmatch_opp_comp; simpl.
  apply MQopp_inj_wd.
  rewrite MQopp_match_comp; simpl.
  apply MQadd_swap_lemma1.
 -do 2 rewrite MQopp_match_comp; simpl.
- symmetry; rewrite PQcompare_comm.
+ symmetry; rewrite PQcompare_swap.
  rewrite MQmatch_match_comp, MQmatch_opp_comp; symmetry.
  rewrite MQmatch_opp_comp; symmetry.
  apply MQopp_inj_wd; simpl.
- rewrite PQcompare_comm, MQopp_match_comp; simpl.
+ rewrite PQcompare_swap, MQopp_match_comp; simpl.
  symmetry.
  apply MQadd_swap_lemma1.
 -now rewrite PQadd_add_swap.
@@ -977,15 +1010,15 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy;
  apply MQmul_add_distr_l_lemma1.
 -simpl; unfold MQmul_PQ_l.
  rewrite MQopp_match_comp; simpl.
- rewrite PQcompare_comm, MQmatch_match_comp.
+ rewrite PQcompare_swap, MQmatch_match_comp.
  rewrite MQopp_match_comp; simpl.
- symmetry; rewrite PQcompare_comm; symmetry.
+ symmetry; rewrite PQcompare_swap; symmetry.
  apply MQmul_add_distr_l_lemma1.
 -simpl; unfold MQmul_PQ_l.
  rewrite MQopp_match_comp; simpl.
- rewrite PQcompare_comm, MQmatch_match_comp.
+ rewrite PQcompare_swap, MQmatch_match_comp.
  rewrite MQopp_match_comp; simpl.
- symmetry; rewrite PQcompare_comm; symmetry.
+ symmetry; rewrite PQcompare_swap; symmetry.
  apply MQmul_add_distr_l_lemma1.
 -simpl; unfold MQmul_PQ_l.
  rewrite MQopp_involutive.
