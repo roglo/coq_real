@@ -1,10 +1,104 @@
 (* Implementation of rationals using only nat *)
 
 Require Import Utf8 Arith Morphisms.
-Require Import PQ.
+(*
+Require Import PQ GQ.
+*)
 Set Nested Proofs Allowed.
 
+(*
+Module Type PQ_sig.
+Parameter PQ : Type.
+Parameter PQeq : PQ → PQ → Prop.
+Parameter PQadd : PQ → PQ → PQ.
+Parameter PQsub : PQ → PQ → PQ.
+Parameter PQlt : PQ → PQ → Prop.
+Parameter PQle : PQ → PQ → Prop.
+Definition PQgt x y := PQlt y x.
+Definition PQge x y := PQle y x.
+Parameter PQ_of_nat : nat → PQ.
+
+Delimit Scope PQ_scope with PQ.
+Notation "x == y" := (PQeq x y) (at level 70) : PQ_scope.
+Notation "x + y" := (PQadd x y) : PQ_scope.
+Notation "x - y" := (PQsub x y) : PQ_scope.
+Notation "x < y" := (PQlt x y) : PQ_scope.
+Notation "x ≤ y" := (PQle x y) : PQ_scope.
+Notation "x > y" := (PQgt x y) : PQ_scope.
+Notation "x ≥ y" := (PQge x y) : PQ_scope.
+
+Parameter PQlt_le_dec : ∀ x y : PQ, {(x < y)%PQ} + {(y ≤ x)%PQ}.
+Parameter PQnlt_ge : ∀ x y, ¬ (x < y)%PQ ↔ (y ≤ x)%PQ.
+
+Parameter PQeq_refl : ∀ x, (x == x)%PQ.
+Parameter PQeq_symm : ∀ x y, (x == y)%PQ → (y == x)%PQ.
+Parameter PQeq_trans : ∀ x y z, (x == y)%PQ → (y == z)%PQ → (x == z)%PQ.
+
+Add Parametric Relation : _ PQeq
+ reflexivity proved by PQeq_refl
+ symmetry proved by PQeq_symm
+ transitivity proved by PQeq_trans
+ as PQeq_equiv_rel.
+
+Parameter PQcompare : PQ → PQ → comparison.
+Arguments PQcompare x%PQ y%PQ.
+Parameter PQcompare_eq_iff : ∀ x y, PQcompare x y = Eq ↔ (x == y)%PQ.
+Parameter PQcompare_lt_iff : ∀ x y, PQcompare x y = Lt ↔ (x < y)%PQ.
+Parameter PQcompare_gt_iff : ∀ x y, PQcompare x y = Gt ↔ (x > y)%PQ.
+
+Parameter PQlt_morph : Proper (PQeq ==> PQeq ==> iff) PQlt.
+Parameter PQle_morph : Proper (PQeq ==> PQeq ==> iff) PQle.
+Parameter PQadd_morph : Proper (PQeq ==> PQeq ==> PQeq) PQadd.
+Parameter PQcompare_morph : Proper (PQeq ==> PQeq ==> eq) PQcompare.
+Parameter PQsub_morph : ∀ x1 x2 y1 y2,
+  (x1 < y1)%PQ → (x1 == x2)%PQ → (y1 == y2)%PQ → (y1 - x1 == y2 - x2)%PQ.
+
+Parameter PQadd_comm : ∀ x y, (x + y)%PQ = (y + x)%PQ.
+
+End PQ_sig.
+
+Module MQ_fun (PosQ : PQ_sig).
+
+Import PosQ.
+
+Instance PQlt_morph : Proper (PQeq ==> PQeq ==> iff) PQlt.
+Proof. apply PQlt_morph. Qed.
+Instance PQle_morph : Proper (PQeq ==> PQeq ==> iff) PQle.
+Proof. apply PQle_morph. Qed.
+Instance PQadd_morph : Proper (PQeq ==> PQeq ==> PQeq) PQadd.
+Proof. apply PQadd_morph. Qed.
+Instance PQcompare_morph : Proper (PQeq ==> PQeq ==> eq) PQcompare.
+Proof. apply PQcompare_morph. Qed.
+*)
+
 Delimit Scope MQ_scope with MQ.
+
+(*
+Definition pq := pqmake PQ PQeq PQadd PQsub PQlt PQgt PQcompare PQ_of_nat.
+Definition pq := pqmake GQ eq GQ_of_nat.
+*)
+
+(*
+Theorem PQcompare_eq_iff : ∀ x y, PQcompare x y = Eq ↔ (x == y)%PQ.
+Proof. intros.
+
+Theorem PQcompare_lt_iff : ∀ x y, @PQcompare pq x y = Lt ↔ (x < y)%PQ.
+Proof. intros; apply Nat.compare_lt_iff. Qed.
+
+Theorem PQcompare_gt_iff : ∀ x y, @PQcompare pq x y = Gt ↔ (x > y)%PQ.
+Proof. intros; apply Nat.compare_gt_iff. Qed.
+*)
+
+Require Import PQ.
+
+Ltac PQcompare_iff :=
+  match goal with
+  | [ H : PQcompare _ _ = Eq |- _ ] => apply PQcompare_eq_iff in H
+  | [ H : PQcompare _ _ = Lt |- _ ] => apply PQcompare_lt_iff in H
+  | [ H : PQcompare _ _ = Gt |- _ ] => apply PQcompare_gt_iff in H
+  end.
+
+(* *)
 
 Inductive MQ :=
   | MQ0 : MQ
@@ -27,14 +121,14 @@ Definition MQ_of_nat n :=
 Definition MQeq x y :=
   match x with
   | MQ0 => match y with MQ0 => True | _ => False end
-  | MQpos px => match y with MQpos py => PQeq px py | _ => False end
-  | MQneg px => match y with MQneg py => PQeq px py | _ => False end
+  | MQpos px => match y with MQpos py => (px == py)%PQ | _ => False end
+  | MQneg px => match y with MQneg py => (px == py)%PQ | _ => False end
   end.
 
 Notation "x == y" := (MQeq x y) (at level 70) : MQ_scope.
 
 Theorem MQeq_refl : ∀ x : MQ, (x == x)%MQ.
-Proof. now intros; destruct x. Qed.
+Proof. now intros; unfold "=="%MQ; destruct x. Qed.
 
 Theorem MQeq_symm : ∀ x y : MQ, (x == y)%MQ → (y == x)%MQ.
 Proof.
@@ -165,6 +259,37 @@ unfold "==" in Hxy.
 now destruct x, y.
 Qed.
 
+Definition if_PQlt_le {A} (P Q : A) x y := if PQlt_le_dec x y then P else Q.
+Arguments if_PQlt_le _ _ _ x%PQ y%PQ.
+
+Notation "'if_PQlt_le_dec' x y 'then' P 'else' Q" :=
+  (if_PQlt_le P Q x y) (at level 200, x at level 9, y at level 9).
+
+Theorem PQlt_le_if : ∀ {A} (P Q : A) x y,
+  (if PQlt_le_dec x y then P else Q) = @if_PQlt_le A P Q x y.
+Proof. easy. Qed.
+
+(* allows to use rewrite inside a if_PQlt_le_dec ...
+   through PQlt_le_if, e.g.
+      H : (x = y)%PQ
+      ====================
+      ... if_PQlt_le_dec x z then P else Q ...
+   > rewrite H.
+      ====================
+      ... if_PQlt_le_dec y z then P else Q ...
+ *)
+Instance PQeq_PQlt_le_morph {P Q} :
+  Proper (PQeq ==> PQeq ==> iff) (λ x y, if PQlt_le_dec x y then P else Q).
+Proof.
+intros x1 x2 Hx y1 y2 Hy.
+move y1 before x2; move y2 before y1.
+destruct (PQlt_le_dec x1 y1) as [H1| H1]; rewrite Hx, Hy in H1.
+-destruct (PQlt_le_dec x2 y2) as [| H2]; [ easy | ].
+ now apply PQnlt_ge in H2.
+-destruct (PQlt_le_dec x2 y2) as [H2| ]; [ | easy ].
+ now apply PQnlt_ge in H2.
+Qed.
+
 (* allows to use rewrite inside a if_PQlt_le_dec
    when P and Q are of type MQ, through PQlt_le_if, e.g.
       H : (x = y)%PQ
@@ -188,13 +313,13 @@ destruct (PQlt_le_dec x1 y1) as [H1| H1]; rewrite Hx, Hy in H1.
 Qed.
 
 Theorem MQpos_inj_wd : ∀ x y, (MQpos x == MQpos y)%MQ ↔ (x == y)%PQ.
-Proof. now intros; destruct x, y. Qed.
+Proof. intros; easy. Qed.
 
 Instance MQadd_PQ_l_morph : Proper (PQeq ==> MQeq ==> MQeq) MQadd_PQ_l.
 Proof.
 intros x1 x2 Hx y1 y2 Hy.
 unfold MQadd_PQ_l.
-destruct y1 as [| py1| py1], y2 as [| py2| py2]; try easy; simpl.
+destruct y1 as [| py1| py1], y2 as [| py2| py2]; try easy.
 -now apply -> MQpos_inj_wd in Hy; rewrite Hx, Hy.
 -apply -> MQpos_inj_wd in Hy; rewrite Hx, Hy.
  remember (PQcompare x2 py2) as c1 eqn:Hc1; symmetry in Hc1.
@@ -269,18 +394,18 @@ Proof. now intros x; destruct x. Qed.
 Theorem MQadd_swap_lemma1 : ∀ px py pz,
   match PQcompare (px + py) pz with
   | Eq => 0
-  | Lt => MQneg (pz - (px + py))
-  | Gt => MQpos (px + py - pz)
+  | Lt => MQneg (pz - (px + py))%PQ
+  | Gt => MQpos (px + py - pz)%PQ
   end ==
   match PQcompare px pz with
   | Eq => MQpos py
   | Lt =>
       match PQcompare (pz - px) py with
       | Eq => 0
-      | Lt => MQpos (py - (pz - px))
-      | Gt => MQneg (pz - px - py)
+      | Lt => MQpos (py - (pz - px))%PQ
+      | Gt => MQneg (pz - px - py)%PQ
       end
-  | Gt => MQpos (px - pz + py)
+  | Gt => MQpos (px - pz + py)%PQ
   end.
 Proof.
 intros.
@@ -344,29 +469,29 @@ Qed.
 Theorem MQadd_swap_lemma2 : ∀ px py pz,
   match PQcompare px py with
   | Eq => MQneg pz
-  | Lt => MQneg (py - px + pz)
+  | Lt => MQneg (py - px + pz)%PQ
   | Gt =>
       match PQcompare (px - py) pz with
       | Eq => 0
-      | Lt => MQneg (pz - (px - py))
-      | Gt => MQpos (px - py - pz)
+      | Lt => MQneg (pz - (px - py))%PQ
+      | Gt => MQpos (px - py - pz)%PQ
       end
   end ==
   match PQcompare px pz with
   | Eq => MQneg py
-  | Lt => MQneg (pz - px + py)
+  | Lt => MQneg (pz - px + py)%PQ
   | Gt =>
       match PQcompare (px - pz) py with
       | Eq => 0
-      | Lt => MQneg (py - (px - pz))
-      | Gt => MQpos (px - pz - py)
+      | Lt => MQneg (py - (px - pz))%PQ
+      | Gt => MQpos (px - pz - py)%PQ
       end
   end.
 Proof.
 intros.
 remember (PQcompare px py) as c1 eqn:Hc1; symmetry in Hc1.
 remember (PQcompare px pz) as c2 eqn:Hc2; symmetry in Hc2.
-destruct c1, c2; repeat PQcompare_iff; simpl.
+destruct c1, c2; repeat PQcompare_iff.
 -now rewrite <- Hc1, Hc2.
 -rewrite (PQsub_morph _ py _ pz); [ | easy | easy | easy ].
  rewrite PQsub_add; [ easy | now rewrite <- Hc1 ].
