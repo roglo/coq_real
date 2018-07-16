@@ -3,6 +3,7 @@
 Require Import Utf8 Arith Morphisms.
 Set Nested Proofs Allowed.
 
+(**)
 Require Import PQ.
 (*
 Module Type PQ_sig.
@@ -67,17 +68,6 @@ Instance PQadd_morph : Proper (PQeq ==> PQeq ==> PQeq) PQadd.
 Proof. apply PQadd_morph. Qed.
 Instance PQcompare_morph : Proper (PQeq ==> PQeq ==> eq) PQcompare.
 Proof. apply PQcompare_morph. Qed.
-*)
-
-(*
-Theorem PQcompare_eq_iff : ∀ x y, PQcompare x y = Eq ↔ (x == y)%PQ.
-Proof. intros.
-
-Theorem PQcompare_lt_iff : ∀ x y, @PQcompare pq x y = Lt ↔ (x < y)%PQ.
-Proof. intros; apply Nat.compare_lt_iff. Qed.
-
-Theorem PQcompare_gt_iff : ∀ x y, @PQcompare pq x y = Gt ↔ (x > y)%PQ.
-Proof. intros; apply Nat.compare_gt_iff. Qed.
 *)
 
 Delimit Scope MQ_scope with MQ.
