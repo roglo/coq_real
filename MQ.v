@@ -1,11 +1,9 @@
 (* Implementation of rationals using only nat *)
 
 Require Import Utf8 Arith Morphisms.
-(*
-Require Import PQ GQ.
-*)
 Set Nested Proofs Allowed.
 
+Require Import PQ.
 (*
 Module Type PQ_sig.
 Parameter PQ : Type.
@@ -71,13 +69,6 @@ Instance PQcompare_morph : Proper (PQeq ==> PQeq ==> eq) PQcompare.
 Proof. apply PQcompare_morph. Qed.
 *)
 
-Delimit Scope MQ_scope with MQ.
-
-(*
-Definition pq := pqmake PQ PQeq PQadd PQsub PQlt PQgt PQcompare PQ_of_nat.
-Definition pq := pqmake GQ eq GQ_of_nat.
-*)
-
 (*
 Theorem PQcompare_eq_iff : ∀ x y, PQcompare x y = Eq ↔ (x == y)%PQ.
 Proof. intros.
@@ -89,7 +80,7 @@ Theorem PQcompare_gt_iff : ∀ x y, @PQcompare pq x y = Gt ↔ (x > y)%PQ.
 Proof. intros; apply Nat.compare_gt_iff. Qed.
 *)
 
-Require Import PQ.
+Delimit Scope MQ_scope with MQ.
 
 Ltac PQcompare_iff :=
   match goal with
