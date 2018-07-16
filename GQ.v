@@ -37,6 +37,46 @@ simpl in H; subst x; f_equal.
 apply UIP_nat.
 Qed.
 
+Instance GQ_of_PQ_morph : Proper (PQeq ==> eq) GQ_of_PQ.
+Proof.
+intros (xn, xd) (yn, yd) Hxy.
+unfold "=="%PQ, nd in Hxy.
+simpl in Hxy.
+unfold GQ_of_PQ.
+apply GQeq_eq; simpl.
+unfold PQred; simpl.
+...
+
+unfold div_gcd_l, div_gcd_r.
+remember (Nat.gcd (S xn) (S xd)) as gx eqn:Hgx.
+remember (Nat.gcd (S yn) (S yd)) as gy eqn:Hgy.
+move gy before gx.
+specialize (ggcd_split _ _ _ Hgx) as Hx.
+specialize (ggcd_split _ _ _ Hgy) as Hy.
+specialize (ggcd_correct_divisors (S xn) (S xd)) as H1.
+specialize (ggcd_correct_divisors (S yn) (S yd)) as H3.
+rewrite Hx in H1; rewrite Hy in H3.
+destruct H1 as (H1, H2).
+destruct H3 as (H3, H4).
+do 4 rewrite Nat.add_1_r in Hxy.
+assert (Hgxz : gx ≠ 0) by now intros H; rewrite H in H1.
+assert (Hgyz : gy ≠ 0) by now intros H; rewrite H in H3.
+split; f_equal.
+-rewrite <- (Nat.mul_cancel_l _ _ gx), <- H1; [ | easy ].
+ rewrite <- (Nat.mul_cancel_l _ _ gy); [ | easy ].
+ rewrite Nat.mul_assoc, Nat.mul_shuffle0, <- H3.
+ rewrite Hgy, Nat.mul_comm, <- Nat.gcd_mul_mono_l.
+ rewrite Hgx, <- Nat.gcd_mul_mono_l, Hxy, Nat.mul_comm.
+ easy.
+-rewrite <- (Nat.mul_cancel_l _ _ gx), <- H2; [ | easy ].
+ rewrite <- (Nat.mul_cancel_l _ _ gy); [ | easy ].
+ rewrite Nat.mul_assoc, Nat.mul_shuffle0, <- H4.
+ rewrite Hgy, Nat.mul_comm, <- Nat.gcd_mul_mono_l.
+ rewrite Hgx, <- Nat.gcd_mul_mono_l.
+ rewrite Nat.mul_comm in Hxy; rewrite Hxy.
+ f_equal; apply Nat.mul_comm.
+Qed.
+
 Theorem GQ_of_PQred : ∀ x, GQ_of_PQ (PQred x) = GQ_of_PQ x.
 Proof.
 intros.
@@ -69,6 +109,18 @@ remember PQadd as f; simpl; subst f.
 now rewrite PQred_add.
 Qed.
 
+Theorem GQ_of_PQ_multiplicative : ∀ x y,
+  GQ_of_PQ (x * y) = (GQ_of_PQ x * GQ_of_PQ y)%GQ.
+Proof.
+intros.
+apply GQeq_eq.
+unfold GQ_of_PQ.
+remember GQmul as f; simpl; subst f.
+unfold "*"%GQ.
+remember PQmul as f; simpl; subst f.
+now rewrite PQred_mul.
+Qed.
+
 Theorem GQ_o_PQ : ∀ x, GQ_of_PQ (PQ_of_GQ x) = x.
 Proof.
 intros.
@@ -97,6 +149,62 @@ do 4 rewrite GQ_of_PQ_additive.
 do 2 rewrite GQ_o_PQ.
 do 4 rewrite <- GQ_of_PQ_additive.
 now rewrite PQadd_assoc.
+Qed.
+
+Theorem GQmul_comm : ∀ x y, (x * y = y * x)%GQ.
+Proof.
+intros.
+unfold "*"%GQ.
+now rewrite PQmul_comm.
+Qed.
+
+Theorem GQmul_assoc : ∀ x y z, ((x * y) * z = x * (y * z))%GQ.
+Proof.
+intros.
+unfold "*"%GQ.
+remember (PQ_of_GQ x) as x'.
+remember (PQ_of_GQ y) as y'.
+remember (PQ_of_GQ z) as z'.
+move z' before x'; move y' before x'.
+do 4 rewrite GQ_of_PQ_multiplicative.
+do 2 rewrite GQ_o_PQ.
+do 4 rewrite <- GQ_of_PQ_multiplicative.
+now rewrite PQmul_assoc.
+Qed.
+
+Theorem GQmul_add_distr_l : ∀ x y z, (x * (y + z) = x * y + x * z)%GQ.
+Proof.
+intros.
+unfold "*"%GQ, "+"%GQ.
+remember (PQ_of_GQ x) as x'.
+remember (PQ_of_GQ y) as y'.
+remember (PQ_of_GQ z) as z'.
+move z' before x'; move y' before x'.
+do 3 rewrite GQ_of_PQ_multiplicative.
+do 2 rewrite GQ_of_PQ_additive.
+do 3 rewrite GQ_o_PQ.
+rewrite <- GQ_of_PQ_additive.
+do 3 rewrite <- GQ_of_PQ_multiplicative.
+rewrite <- GQ_of_PQ_additive.
+...
+rewrite PQmul_add_distr_l.
+...
+
+intros.
+do 3 rewrite GQmul_PQmul.
+do 2 rewrite GQadd_PQadd.
+remember (PQ_of_GQ x) as x' eqn:Hx'.
+remember (PQ_of_GQ y) as y' eqn:Hy'.
+remember (PQ_of_GQ z) as z' eqn:Hz'.
+move z' before x'; move y' before x'.
+do 3 rewrite GQ_of_PQ_multiplicative.
+do 2 rewrite GQ_of_PQ_additive.
+do 3 rewrite GQ_o_PQ.
+do 2 rewrite <- GQ_of_PQ_multiplicative.
+do 2 rewrite <- GQ_of_PQ_additive.
+rewrite <- GQ_of_PQ_multiplicative.
+rewrite <- PQmul_add_distr_l.
+easy.
 Qed.
 
 ...
