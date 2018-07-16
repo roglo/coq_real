@@ -20,8 +20,8 @@ Arguments GQ_of_PQ x%PQ.
 
 Definition GQ_of_nat n := GQmake (PQ_of_nat n) (Nat.gcd_1_r (n - 1 + 1)).
 
-Definition GQadd x y := GQ_of_PQ (PQred (PQ_of_GQ x + PQ_of_GQ y)).
-Definition GQmul x y := GQ_of_PQ (PQred (PQ_of_GQ x * PQ_of_GQ y)).
+Definition GQadd x y := GQ_of_PQ (PQ_of_GQ x + PQ_of_GQ y).
+Definition GQmul x y := GQ_of_PQ (PQ_of_GQ x * PQ_of_GQ y).
 
 Notation "x + y" := (GQadd x y) : GQ_scope.
 Notation "x * y" := (GQmul x y) : GQ_scope.
@@ -66,8 +66,7 @@ unfold GQ_of_PQ.
 remember GQadd as f; simpl; subst f.
 unfold "+"%GQ.
 remember PQadd as f; simpl; subst f.
-rewrite PQred_idemp, PQred_add.
-easy.
+now rewrite PQred_add.
 Qed.
 
 Theorem GQ_o_PQ : ∀ x, GQ_of_PQ (PQ_of_GQ x) = x.
@@ -90,7 +89,6 @@ Theorem GQadd_assoc : ∀ x y z, ((x + y) + z = x + (y + z))%GQ.
 Proof.
 intros.
 unfold "+"%GQ.
-do 4 rewrite GQ_of_PQred.
 remember (PQ_of_GQ x) as x'.
 remember (PQ_of_GQ y) as y'.
 remember (PQ_of_GQ z) as z'.
