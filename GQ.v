@@ -124,42 +124,6 @@ unfold div_gcd_l, div_gcd_r.
 now rewrite Nat.gcd_comm.
 Qed.
 
-(*
-Theorem ggcd_div_gcd_l : ∀ a b,
-  b ≠ 0 → fst (snd (ggcd a b)) = div_gcd_l a b.
-Proof.
-intros * Hb.
-specialize (ggcd_correct_divisors a b Hb) as H.
-remember (ggcd a b) as g eqn:Hg.
-destruct g as (g, (aa, bb)).
-destruct H as (H1, H2); simpl.
-unfold div_gcd_l.
-subst a b.
-specialize (ggcd_gcd (g * aa) (g * bb)) as H1.
-rewrite <- Hg in H1; simpl in H1.
-rewrite <- H1.
-rewrite Nat.mul_comm, Nat.div_mul; [ easy | ].
-now intros H; subst g.
-Qed.
-
-Theorem ggcd_div_gcd_r : ∀ a b,
-  b ≠ 0 → snd (snd (ggcd a b)) = div_gcd_r a b.
-Proof.
-intros * Hb.
-specialize (ggcd_correct_divisors a b Hb) as H.
-remember (ggcd a b) as g eqn:Hg.
-destruct g as (g, (aa, bb)).
-destruct H as (H1, H2); simpl.
-unfold div_gcd_r.
-subst a b.
-specialize (ggcd_gcd (g * aa) (g * bb)) as H1.
-rewrite <- Hg in H1; simpl in H1.
-rewrite <- H1.
-rewrite Nat.mul_comm, Nat.div_mul; [ easy | ].
-now intros H; subst g.
-Qed.
-*)
-
 Theorem div_gcd_l_succ_l_pos : ∀ n d, 0 < div_gcd_l (S n) d.
 Proof.
 intros.
@@ -171,10 +135,6 @@ rewrite Nat.div_mul.
 -intros H; rewrite H in Hc.
  now rewrite Nat.mul_0_r in Hc.
 Qed.
-
-(*
-Definition GQN a b := (GQ_of_nat a / GQ_of_nat b)%GQ.
-*)
 
 Theorem GQN_prop : ∀ a b,
   Nat.gcd (S (div_gcd_l a b - 1)) (S (div_gcd_r a b - 1)) = 1.
@@ -215,11 +175,8 @@ destruct b.
  destruct H; [ easy | ].
  now rewrite H1 in H.
 Qed.
-Definition GQN a b := GQmake (div_gcd_l a b - 1) (div_gcd_r a b - 1) (GQN_prop a b).
-
-(*
-Notation "x +/+ y" := (GQmake x y _) (at level 40, only parsing) : GQ_scope.
-*)
+Definition GQN a b :=
+  GQmake (div_gcd_l a b - 1) (div_gcd_r a b - 1) (GQN_prop a b).
 
 (*
 Compute GQN 7 3.
@@ -381,7 +338,8 @@ Theorem GQden1_GQN : ∀ n d,
   GQden1 (GQN (S n) (S d)) = div_gcd_r (S n) (S d) - 1.
 Proof. easy. Qed.
 
-Theorem GQ_of_PQ_red_prop : ∀ x, Nat.gcd (S (PQnum1 (PQred x))) (S (PQden1 (PQred x))) = 1.
+Theorem GQ_of_PQ_red_prop :
+  ∀ x, Nat.gcd (S (PQnum1 (PQred x))) (S (PQden1 (PQred x))) = 1.
 Proof.
 intros.
 specialize (PQred_gcd x) as H1.
