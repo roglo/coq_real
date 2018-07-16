@@ -76,6 +76,7 @@ split; f_equal.
  rewrite Nat.mul_comm in Hxy; rewrite Hxy.
  f_equal; apply Nat.mul_comm.
 Qed.
+*)
 
 Theorem GQ_of_PQred : ∀ x, GQ_of_PQ (PQred x) = GQ_of_PQ x.
 Proof.
@@ -187,7 +188,18 @@ rewrite <- GQ_of_PQ_additive.
 do 3 rewrite <- GQ_of_PQ_multiplicative.
 rewrite <- GQ_of_PQ_additive.
 ...
-rewrite PQmul_add_distr_l.
+rewrite <- PQmul_add_distr_l_eq.
+...
+remember (x' * (y' + z'))%PQ as t'.
+rewrite GQ_of_PQ_multiplicative.
+unfold "*"%GQ.
+rewrite GQ_of_PQ_multiplicative.
+do 2 rewrite GQ_o_PQ.
+premember (GQ_of_PQ t') as t.
+unfold GQ_of_PQ.
+unfold PQone.
+unfold PQred; simpl.
+rewrite PQmul_one_r.
 ...
 
 intros.
