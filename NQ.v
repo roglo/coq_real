@@ -1,118 +1,10 @@
 (* Implementation of rationals using only nat *)
 
-Require Import Utf8 Arith Morphisms.
 Set Nested Proofs Allowed.
-
-(**)
+Require Import Utf8 Arith Morphisms.
 Require Import PQ.
-(*
-Module Type PQ_sig.
-Parameter PQ : Type.
-Parameter PQeq : PQ → PQ → Prop.
-Parameter PQadd : PQ → PQ → PQ.
-Parameter PQsub : PQ → PQ → PQ.
-Parameter PQlt : PQ → PQ → Prop.
-Parameter PQle : PQ → PQ → Prop.
-Definition PQgt x y := PQlt y x.
-Definition PQge x y := PQle y x.
-Parameter PQ_of_nat : nat → PQ.
-
-Delimit Scope PQ_scope with PQ.
-Notation "x == y" := (PQeq x y) (at level 70) : PQ_scope.
-Notation "x ≠≠ y" := (¬ PQeq x y) (at level 70) : PQ_scope.
-Notation "x + y" := (PQadd x y) : PQ_scope.
-Notation "x - y" := (PQsub x y) : PQ_scope.
-Notation "x < y" := (PQlt x y) : PQ_scope.
-Notation "x ≤ y" := (PQle x y) : PQ_scope.
-Notation "x > y" := (PQgt x y) : PQ_scope.
-Notation "x ≥ y" := (PQge x y) : PQ_scope.
-
-Parameter PQlt_le_dec : ∀ x y : PQ, {(x < y)%PQ} + {(y ≤ x)%PQ}.
-Parameter PQnlt_ge : ∀ x y, ¬ (x < y)%PQ ↔ (y ≤ x)%PQ.
-Parameter PQnle_gt : ∀ x y, ¬ (x ≤ y)%PQ ↔ (y < x)%PQ.
-Parameter PQlt_le_incl : ∀ x y, (x < y)%PQ → (x ≤ y)%PQ.
-
-Parameter PQeq_refl : ∀ x, (x == x)%PQ.
-Parameter PQeq_symm : ∀ x y, (x == y)%PQ → (y == x)%PQ.
-Parameter PQeq_trans : ∀ x y z, (x == y)%PQ → (y == z)%PQ → (x == z)%PQ.
-Parameter PQlt_irrefl : ∀ x, (¬ x < x)%PQ.
-
-Add Parametric Relation : _ PQeq
- reflexivity proved by PQeq_refl
- symmetry proved by PQeq_symm
- transitivity proved by PQeq_trans
- as PQeq_equiv_rel.
-
-Parameter PQcompare : PQ → PQ → comparison.
-Arguments PQcompare x%PQ y%PQ.
-Parameter PQcompare_eq_iff : ∀ x y, PQcompare x y = Eq ↔ (x == y)%PQ.
-Parameter PQcompare_lt_iff : ∀ x y, PQcompare x y = Lt ↔ (x < y)%PQ.
-Parameter PQcompare_gt_iff : ∀ x y, PQcompare x y = Gt ↔ (x > y)%PQ.
-
-Parameter PQlt_morph : Proper (PQeq ==> PQeq ==> iff) PQlt.
-Parameter PQle_morph : Proper (PQeq ==> PQeq ==> iff) PQle.
-Parameter PQadd_morph : Proper (PQeq ==> PQeq ==> PQeq) PQadd.
-Parameter PQcompare_morph : Proper (PQeq ==> PQeq ==> eq) PQcompare.
-Parameter PQsub_morph : ∀ x1 x2 y1 y2,
-  (x1 < y1)%PQ → (x1 == x2)%PQ → (y1 == y2)%PQ → (y1 - x1 == y2 - x2)%PQ.
-
-Parameter PQadd_comm : ∀ x y, (x + y)%PQ = (y + x)%PQ.
-Parameter PQadd_no_neutral : ∀ x y, (y + x ≠≠ x)%PQ.
-Parameter PQadd_lt_mono_r : ∀ x y z, (x < y)%PQ ↔ (x + z < y + z)%PQ.
-Parameter PQsub_add : ∀ x y, (y < x)%PQ → (x - y + y == x)%PQ.
-End PQ_sig.
-
-Module NQ_fun (PosQ : PQ_sig).
-
-Import PosQ.
-
-Instance PQlt_morph : Proper (PQeq ==> PQeq ==> iff) PQlt.
-Proof. apply PQlt_morph. Qed.
-Instance PQle_morph : Proper (PQeq ==> PQeq ==> iff) PQle.
-Proof. apply PQle_morph. Qed.
-Instance PQgt_morph : Proper (PQeq ==> PQeq ==> iff) PQgt.
-Proof. now intros x1 x2 Hx y1 y2 Hy; apply PQlt_morph. Qed.
-Instance PQadd_morph : Proper (PQeq ==> PQeq ==> PQeq) PQadd.
-Proof. apply PQadd_morph. Qed.
-Instance PQcompare_morph : Proper (PQeq ==> PQeq ==> eq) PQcompare.
-Proof. apply PQcompare_morph. Qed.
-*)
 
 Delimit Scope NQ_scope with NQ.
-
-Ltac PQcompare_iff :=
-  match goal with
-  | [ H : PQcompare _ _ = Eq |- _ ] => apply PQcompare_eq_iff in H
-  | [ H : PQcompare _ _ = Lt |- _ ] => apply PQcompare_lt_iff in H
-  | [ H : PQcompare _ _ = Gt |- _ ] => apply PQcompare_gt_iff in H
-  end.
-
-Theorem PQcompare_swap : ∀ {A} {a b c : A} px py,
-  match PQcompare px py with
-  | Eq => a
-  | Lt => b
-  | Gt => c
-  end =
-  match PQcompare py px with
-  | Eq => a
-  | Lt => c
-  | Gt => b
-  end.
-Proof.
-intros.
-remember (PQcompare px py) as b1 eqn:Hb1; symmetry in Hb1.
-remember (PQcompare py px) as b2 eqn:Hb2; symmetry in Hb2.
-move b2 before b1.
-destruct b1, b2; try easy; repeat PQcompare_iff.
--now rewrite Hb1 in Hb2; apply PQlt_irrefl in Hb2.
--now rewrite Hb1 in Hb2; apply PQlt_irrefl in Hb2.
--now rewrite Hb2 in Hb1; apply PQlt_irrefl in Hb1.
--now apply PQnle_gt in Hb2; exfalso; apply Hb2; apply PQlt_le_incl.
--now rewrite Hb2 in Hb1; apply PQlt_irrefl in Hb1.
--now apply PQnle_gt in Hb2; exfalso; apply Hb2; apply PQlt_le_incl.
-Qed.
-
-(* *)
 
 Inductive NQ :=
   | NQ0 : NQ
@@ -262,6 +154,42 @@ Notation "- x" := (NQopp x) : NQ_scope.
 Notation "x + y" := (NQadd x y) : NQ_scope.
 Notation "x - y" := (NQadd x (NQopp y)) : NQ_scope.
 Notation "‖ x ‖" := (NQabs x) (at level 60) : NQ_scope.
+
+(* *)
+
+Ltac PQcompare_iff :=
+  match goal with
+  | [ H : PQcompare _ _ = Eq |- _ ] => apply PQcompare_eq_iff in H
+  | [ H : PQcompare _ _ = Lt |- _ ] => apply PQcompare_lt_iff in H
+  | [ H : PQcompare _ _ = Gt |- _ ] => apply PQcompare_gt_iff in H
+  end.
+
+Theorem PQcompare_swap : ∀ {A} {a b c : A} px py,
+  match PQcompare px py with
+  | Eq => a
+  | Lt => b
+  | Gt => c
+  end =
+  match PQcompare py px with
+  | Eq => a
+  | Lt => c
+  | Gt => b
+  end.
+Proof.
+intros.
+remember (PQcompare px py) as b1 eqn:Hb1; symmetry in Hb1.
+remember (PQcompare py px) as b2 eqn:Hb2; symmetry in Hb2.
+move b2 before b1.
+destruct b1, b2; try easy; repeat PQcompare_iff.
+-now rewrite Hb1 in Hb2; apply PQlt_irrefl in Hb2.
+-now rewrite Hb1 in Hb2; apply PQlt_irrefl in Hb2.
+-now rewrite Hb2 in Hb1; apply PQlt_irrefl in Hb1.
+-now apply PQnle_gt in Hb2; exfalso; apply Hb2; apply PQlt_le_incl.
+-now rewrite Hb2 in Hb1; apply PQlt_irrefl in Hb1.
+-now apply PQnle_gt in Hb2; exfalso; apply Hb2; apply PQlt_le_incl.
+Qed.
+
+(* *)
 
 Open Scope NQ_scope.
 
