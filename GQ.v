@@ -125,6 +125,14 @@ rewrite PQred_of_GQ.
 now destruct (PQ_of_GQ x).
 Qed.
 
+Ltac tac_to_PQ :=
+  repeat rewrite GQ_of_PQ_additive;
+  repeat rewrite GQ_of_PQ_multiplicative;
+  repeat rewrite GQ_o_PQ;
+  repeat rewrite <- GQ_of_PQ_additive;
+  repeat rewrite <- GQ_of_PQ_multiplicative;
+  repeat rewrite <- GQ_of_PQ_additive.
+
 Theorem GQadd_comm : ∀ x y, (x + y = y + x)%GQ.
 Proof.
 intros.
@@ -140,9 +148,7 @@ remember (PQ_of_GQ x) as x'.
 remember (PQ_of_GQ y) as y'.
 remember (PQ_of_GQ z) as z'.
 move z' before x'; move y' before x'.
-do 4 rewrite GQ_of_PQ_additive.
-do 2 rewrite GQ_o_PQ.
-do 4 rewrite <- GQ_of_PQ_additive.
+tac_to_PQ.
 now rewrite PQadd_assoc.
 Qed.
 
@@ -161,9 +167,7 @@ remember (PQ_of_GQ x) as x'.
 remember (PQ_of_GQ y) as y'.
 remember (PQ_of_GQ z) as z'.
 move z' before x'; move y' before x'.
-do 4 rewrite GQ_of_PQ_multiplicative.
-do 2 rewrite GQ_o_PQ.
-do 4 rewrite <- GQ_of_PQ_multiplicative.
+tac_to_PQ.
 now rewrite PQmul_assoc.
 Qed.
 
@@ -175,14 +179,8 @@ remember (PQ_of_GQ x) as x'.
 remember (PQ_of_GQ y) as y'.
 remember (PQ_of_GQ z) as z'.
 move z' before x'; move y' before x'.
-do 3 rewrite GQ_of_PQ_multiplicative.
-do 2 rewrite GQ_of_PQ_additive.
-do 3 rewrite GQ_o_PQ.
-rewrite <- GQ_of_PQ_additive.
-do 3 rewrite <- GQ_of_PQ_multiplicative.
-rewrite <- GQ_of_PQ_additive.
-rewrite <- PQmul_add_distr_l.
-easy.
+tac_to_PQ.
+now rewrite PQmul_add_distr_l.
 Qed.
 
 ...
