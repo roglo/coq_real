@@ -19,6 +19,8 @@ Arguments GQ_of_PQ x%PQ.
 
 Definition GQ_of_nat n := GQmake (PQ_of_nat n) (Nat.gcd_1_r (n - 1 + 1)).
 
+Notation "1" := (GQmake 1 (Nat.gcd_1_r (0 + 1))) : GQ_scope.
+
 Definition GQadd x y := GQ_of_PQ (PQ_of_GQ x + PQ_of_GQ y).
 Definition GQmul x y := GQ_of_PQ (PQ_of_GQ x * PQ_of_GQ y).
 
@@ -186,3 +188,17 @@ intros.
 tac_to_PQ.
 now rewrite PQmul_mul_swap.
 Qed.
+
+(* *)
+
+Delimit Scope NQ_scope with NQ.
+
+Inductive NQ :=
+  | NQ0 : NQ
+  | NQpos : GQ → NQ
+  | NQneg : GQ → NQ.
+Arguments NQpos p%GQ.
+Arguments NQneg p%GQ.
+
+Notation "0" := (NQ0) : NQ_scope.
+Notation "1" := (NQpos 1) : NQ_scope.
