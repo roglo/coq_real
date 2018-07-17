@@ -125,7 +125,7 @@ Definition NQopp x :=
   | NQneg px => NQpos px
   end.
 
-Definition NQadd_PQ_l px y :=
+Definition NQadd_pos_l px y :=
   match y with
   | NQ0 => NQpos px
   | NQpos py => NQpos (px + py)
@@ -140,8 +140,8 @@ Definition NQadd_PQ_l px y :=
 Definition NQadd x y :=
   match x with
   | NQ0 => y
-  | NQpos px => NQadd_PQ_l px y
-  | NQneg px => NQopp (NQadd_PQ_l px (NQopp y))
+  | NQpos px => NQadd_pos_l px y
+  | NQneg px => NQopp (NQadd_pos_l px (NQopp y))
   end.
 
 Definition NQabs x :=
@@ -257,10 +257,10 @@ Qed.
 Theorem NQpos_inj_wd : ∀ x y, (NQpos x == NQpos y)%NQ ↔ (x == y)%PQ.
 Proof. intros; easy. Qed.
 
-Instance NQadd_PQ_l_morph : Proper (PQeq ==> NQeq ==> NQeq) NQadd_PQ_l.
+Instance NQadd_pos_l_morph : Proper (PQeq ==> NQeq ==> NQeq) NQadd_pos_l.
 Proof.
 intros x1 x2 Hx y1 y2 Hy.
-unfold NQadd_PQ_l.
+unfold NQadd_pos_l.
 destruct y1 as [| py1| py1], y2 as [| py2| py2]; try easy.
 -now apply -> NQpos_inj_wd in Hy; rewrite Hx, Hy.
 -apply -> NQpos_inj_wd in Hy; rewrite Hx, Hy.
@@ -633,7 +633,7 @@ unfold "+".
 destruct x as [| px| px], y as [| py| py]; simpl.
 -easy.
 -split; [ | easy ].
- unfold NQadd_PQ_l; intros H.
+ unfold NQadd_pos_l; intros H.
  destruct z as [| pz| pz]; [ easy | | ].
  +apply -> NQpos_inj_wd in H; symmetry in H.
   now apply PQadd_no_neutral in H.
@@ -643,7 +643,7 @@ destruct x as [| px| px], y as [| py| py]; simpl.
   symmetry in H.
   now apply PQsub_no_neutral in H.
 -split; [ | easy ].
- unfold NQadd_PQ_l; intros H.
+ unfold NQadd_pos_l; intros H.
  destruct z as [| pz| pz]; [ easy | | ].
  +simpl in H.
   remember (PQcompare py pz) as c1 eqn:Hc1; symmetry in Hc1.
@@ -653,7 +653,7 @@ destruct x as [| px| px], y as [| py| py]; simpl.
  +simpl in H; symmetry in H.
   now apply PQadd_no_neutral in H.
 -split; [ | easy ].
- unfold NQadd_PQ_l; intros H.
+ unfold NQadd_pos_l; intros H.
  destruct z as [| pz| pz]; [ easy | | ].
  +apply -> NQpos_inj_wd in H.
   now apply PQadd_no_neutral in H.
@@ -662,7 +662,7 @@ destruct x as [| px| px], y as [| py| py]; simpl.
   apply -> NQpos_inj_wd in H. (* why is it working? *)
   now apply PQsub_no_neutral in H.
 -split; intros H; [ | now rewrite H ].
- unfold NQadd_PQ_l in H.
+ unfold NQadd_pos_l in H.
  destruct z as [| pz| pz].
  +now apply -> NQpos_inj_wd in H.
  +apply -> NQpos_inj_wd in H.
@@ -676,7 +676,7 @@ destruct x as [| px| px], y as [| py| py]; simpl.
   *apply -> NQpos_inj_wd in H.
    now apply PQsub_cancel_r in H.
 -split; [ | easy ].
- unfold NQadd_PQ_l; intros H.
+ unfold NQadd_pos_l; intros H.
  destruct z as [| pz| pz]; [ easy | | ].
  +simpl in H.
   remember (PQcompare py pz) as c1 eqn:Hc1; symmetry in Hc1.
@@ -692,7 +692,7 @@ destruct x as [| px| px], y as [| py| py]; simpl.
   rewrite PQadd_add_swap in H; symmetry in H.
   now apply PQadd_no_neutral in H.
 -split; [ | easy ].
- unfold NQadd_PQ_l; intros H.
+ unfold NQadd_pos_l; intros H.
  destruct z as [| pz| pz]; [ easy | | ].
  +simpl in H.
   remember (PQcompare px pz) as c1 eqn:Hc1; symmetry in Hc1.
@@ -701,7 +701,7 @@ destruct x as [| px| px], y as [| py| py]; simpl.
  +simpl in H.
   now apply PQadd_no_neutral in H.
 -split; [ | easy ].
- unfold NQadd_PQ_l; intros H.
+ unfold NQadd_pos_l; intros H.
  destruct z as [| pz| pz]; [ easy | | ].
  +simpl in H.
   remember (PQcompare px pz) as c1 eqn:Hc1; symmetry in Hc1.
@@ -718,7 +718,7 @@ destruct x as [| px| px], y as [| py| py]; simpl.
   rewrite PQadd_add_swap in H.
   now apply PQadd_no_neutral in H.
 -split; intros H.
- +unfold NQadd_PQ_l in H.
+ +unfold NQadd_pos_l in H.
   destruct z as [| pz| pz]; [ easy | | ]; simpl in H.
   *remember (PQcompare px pz) as c1 eqn:Hc1; symmetry in Hc1.
    remember (PQcompare py pz) as c2 eqn:Hc2; symmetry in Hc2.
@@ -727,7 +727,7 @@ destruct x as [| px| px], y as [| py| py]; simpl.
   --now apply PQsub_cancel_l in H.
   --now apply PQsub_cancel_r in H.
   *now apply PQadd_cancel_r in H.
- +unfold NQadd_PQ_l.
+ +unfold NQadd_pos_l.
   destruct z as [| pz| pz]; [ easy | | ]; simpl.
   *rewrite H.
    remember (PQcompare py pz) as c1 eqn:Hc1; symmetry in Hc1.
@@ -769,7 +769,7 @@ intros.
 unfold "+"%NQ; simpl.
 destruct x as [| px| px]; [ | easy | ].
 -apply NQopp_involutive.
--unfold NQadd_PQ_l; simpl.
+-unfold NQadd_pos_l; simpl.
  rewrite NQopp_involutive.
  now destruct y.
 Qed.
