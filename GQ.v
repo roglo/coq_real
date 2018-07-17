@@ -132,8 +132,8 @@ Ltac tac_to_PQ :=
   | [ x : GQ |- _ ] =>
       match goal with
       [ |- context[PQ_of_GQ x] ] =>
-        let y := fresh x in
-        let Hy := fresh x in
+        let y := fresh "u" in
+        let Hy := fresh "Hu" in
         remember (PQ_of_GQ x) as y eqn:Hy
       end
   | _ => idtac
@@ -148,7 +148,7 @@ Ltac tac_to_PQ :=
 Theorem GQadd_comm : ∀ x y, (x + y = y + x)%GQ.
 Proof.
 intros.
-unfold "+"%GQ.
+tac_to_PQ.
 now rewrite PQadd_comm.
 Qed.
 
