@@ -12,8 +12,7 @@ Record GQ :=
       GQprop : Nat.gcd (PQnum1 PQ_of_GQ + 1) (PQden1 PQ_of_GQ + 1) = 1 }.
 Arguments GQmake PQ_of_GQ%PQ.
 
-Definition GQ_of_PQ x :=
-  GQmake (PQmake (PQnum1 (PQred x)) (PQden1 (PQred x))) (PQred_gcd x).
+Definition GQ_of_PQ x := GQmake (PQred x) (PQred_gcd x).
 
 Arguments PQ_of_GQ x%GQ : rename.
 Arguments GQ_of_PQ x%PQ.
