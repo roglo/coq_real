@@ -62,7 +62,7 @@ Parameter PQadd_lt_mono_r : ∀ x y z, (x < y)%PQ ↔ (x + z < y + z)%PQ.
 Parameter PQsub_add : ∀ x y, (y < x)%PQ → (x - y + y == x)%PQ.
 End PQ_sig.
 
-Module MQ_fun (PosQ : PQ_sig).
+Module NQ_fun (PosQ : PQ_sig).
 
 Import PosQ.
 
@@ -78,7 +78,7 @@ Instance PQcompare_morph : Proper (PQeq ==> PQeq ==> eq) PQcompare.
 Proof. apply PQcompare_morph. Qed.
 *)
 
-Delimit Scope MQ_scope with MQ.
+Delimit Scope NQ_scope with NQ.
 
 Ltac PQcompare_iff :=
   match goal with
@@ -114,161 +114,161 @@ Qed.
 
 (* *)
 
-Inductive MQ :=
-  | MQ0 : MQ
-  | MQpos : PQ → MQ
-  | MQneg : PQ → MQ.
-Arguments MQpos p%PQ.
-Arguments MQneg p%PQ.
+Inductive NQ :=
+  | NQ0 : NQ
+  | NQpos : PQ → NQ
+  | NQneg : PQ → NQ.
+Arguments NQpos p%PQ.
+Arguments NQneg p%PQ.
 
-Notation "0" := (MQ0) : MQ_scope.
-Notation "1" := (MQpos 1) : MQ_scope.
+Notation "0" := (NQ0) : NQ_scope.
+Notation "1" := (NQpos 1) : NQ_scope.
 
-Definition MQ_of_nat n :=
+Definition NQ_of_nat n :=
   match n with
-  | 0 => MQ0
-  | S _ => MQpos (PQ_of_nat n)
+  | 0 => NQ0
+  | S _ => NQpos (PQ_of_nat n)
   end.
 
 (* equality *)
 
-Definition MQeq x y :=
+Definition NQeq x y :=
   match x with
-  | MQ0 => match y with MQ0 => True | _ => False end
-  | MQpos px => match y with MQpos py => (px == py)%PQ | _ => False end
-  | MQneg px => match y with MQneg py => (px == py)%PQ | _ => False end
+  | NQ0 => match y with NQ0 => True | _ => False end
+  | NQpos px => match y with NQpos py => (px == py)%PQ | _ => False end
+  | NQneg px => match y with NQneg py => (px == py)%PQ | _ => False end
   end.
 
-Notation "x == y" := (MQeq x y) (at level 70) : MQ_scope.
+Notation "x == y" := (NQeq x y) (at level 70) : NQ_scope.
 
-Theorem MQeq_refl : ∀ x : MQ, (x == x)%MQ.
-Proof. now intros; unfold "=="%MQ; destruct x. Qed.
+Theorem NQeq_refl : ∀ x : NQ, (x == x)%NQ.
+Proof. now intros; unfold "=="%NQ; destruct x. Qed.
 
-Theorem MQeq_symm : ∀ x y : MQ, (x == y)%MQ → (y == x)%MQ.
+Theorem NQeq_symm : ∀ x y : NQ, (x == y)%NQ → (y == x)%NQ.
 Proof.
-unfold "=="%MQ.
+unfold "=="%NQ.
 intros * Hxy.
 destruct x as [| px| px]; [ easy | now destruct y | now destruct y ].
 Qed.
 
-Theorem MQeq_trans : ∀ x y z : MQ, (x == y)%MQ → (y == z)%MQ → (x == z)%MQ.
+Theorem NQeq_trans : ∀ x y z : NQ, (x == y)%NQ → (y == z)%NQ → (x == z)%NQ.
 Proof.
-unfold "=="%MQ.
+unfold "=="%NQ.
 intros * Hxy Hyz.
 destruct x, y as [| py| py], z; try easy; now transitivity py.
 Qed.
 
-Add Parametric Relation : _ MQeq
- reflexivity proved by MQeq_refl
- symmetry proved by MQeq_symm
- transitivity proved by MQeq_trans
- as MQeq_equiv_rel.
+Add Parametric Relation : _ NQeq
+ reflexivity proved by NQeq_refl
+ symmetry proved by NQeq_symm
+ transitivity proved by NQeq_trans
+ as NQeq_equiv_rel.
 
-(* allows to use rewrite inside a MQpos
+(* allows to use rewrite inside a NQpos
    e.g.
       H : x = y
       ====================
-      ... (MQpos x) ...
+      ... (NQpos x) ...
    rewrite H.
  *)
-Instance MQpos_morph : Proper (PQeq ==> MQeq) MQpos.
+Instance NQpos_morph : Proper (PQeq ==> NQeq) NQpos.
 Proof. easy. Qed.
 
-(* allows to use rewrite inside a MQneg
+(* allows to use rewrite inside a NQneg
    e.g.
       H : x = y
       ====================
-      ... (MQneg x) ...
+      ... (NQneg x) ...
    rewrite H.
  *)
-Instance MQneg_morph : Proper (PQeq ==> MQeq) MQneg.
+Instance NQneg_morph : Proper (PQeq ==> NQeq) NQneg.
 Proof. easy. Qed.
 
 (* comparison *)
 
-Definition MQcompare x y :=
+Definition NQcompare x y :=
   match x with
-  | MQ0 => match y with MQ0 => Eq | MQpos _ => Lt | MQneg _ => Gt end
-  | MQpos px => match y with MQpos py => PQcompare px py | _ => Gt end
-  | MQneg px => match y with MQneg py => PQcompare py px | _ => Lt end
+  | NQ0 => match y with NQ0 => Eq | NQpos _ => Lt | NQneg _ => Gt end
+  | NQpos px => match y with NQpos py => PQcompare px py | _ => Gt end
+  | NQneg px => match y with NQneg py => PQcompare py px | _ => Lt end
   end.
 
-Definition MQlt x y :=
+Definition NQlt x y :=
   match x with
-  | MQ0 => match y with MQpos _ => True | _ => False end
-  | MQpos px => match y with MQpos py => PQlt px py | _ => False end
-  | MQneg px => match y with MQneg py => PQlt py px | _ => True end
+  | NQ0 => match y with NQpos _ => True | _ => False end
+  | NQpos px => match y with NQpos py => PQlt px py | _ => False end
+  | NQneg px => match y with NQneg py => PQlt py px | _ => True end
   end.
-Arguments MQlt x%MQ y%MQ.
+Arguments NQlt x%NQ y%NQ.
 
-Definition MQle x y :=
+Definition NQle x y :=
   match x with
-  | MQ0 => match y with MQ0 | MQpos _ => True | _ => False end
-  | MQpos px => match y with MQpos py => PQle px py | _ => False end
-  | MQneg px => match y with MQneg py => PQle py px | _ => True end
+  | NQ0 => match y with NQ0 | NQpos _ => True | _ => False end
+  | NQpos px => match y with NQpos py => PQle px py | _ => False end
+  | NQneg px => match y with NQneg py => PQle py px | _ => True end
   end.
-Arguments MQle x%MQ y%MQ.
+Arguments NQle x%NQ y%NQ.
 
-Definition MQgt x y := MQlt y x.
-Definition MQge x y := MQle y x.
+Definition NQgt x y := NQlt y x.
+Definition NQge x y := NQle y x.
 
-Notation "x < y" := (MQlt x y) : MQ_scope.
-Notation "x ≤ y" := (MQle x y) : MQ_scope.
-Notation "x > y" := (MQgt x y) : MQ_scope.
-Notation "x ≥ y" := (MQge x y) : MQ_scope.
+Notation "x < y" := (NQlt x y) : NQ_scope.
+Notation "x ≤ y" := (NQle x y) : NQ_scope.
+Notation "x > y" := (NQgt x y) : NQ_scope.
+Notation "x ≥ y" := (NQge x y) : NQ_scope.
 
-Instance MQlt_morph : Proper (MQeq ==> MQeq ==> iff) MQlt.
+Instance NQlt_morph : Proper (NQeq ==> NQeq ==> iff) NQlt.
 Proof.
-unfold "<"%MQ, "=="%MQ.
+unfold "<"%NQ, "=="%NQ.
 intros x1 x2 Hx y1 y2 Hy.
 destruct x1, y1, x2, y2; try easy; now rewrite Hx, Hy.
 Qed.
 
 (* addition, opposite, subtraction *)
 
-Definition MQopp x :=
+Definition NQopp x :=
   match x with
-  | MQ0 => MQ0
-  | MQpos px => MQneg px
-  | MQneg px => MQpos px
+  | NQ0 => NQ0
+  | NQpos px => NQneg px
+  | NQneg px => NQpos px
   end.
 
-Definition MQadd_PQ_l px y :=
+Definition NQadd_PQ_l px y :=
   match y with
-  | MQ0 => MQpos px
-  | MQpos py => MQpos (px + py)
-  | MQneg py =>
+  | NQ0 => NQpos px
+  | NQpos py => NQpos (px + py)
+  | NQneg py =>
       match PQcompare px py with
-      | Eq => MQ0
-      | Lt => MQneg (py - px)
-      | Gt => MQpos (px - py)
+      | Eq => NQ0
+      | Lt => NQneg (py - px)
+      | Gt => NQpos (px - py)
       end
   end.
 
-Definition MQadd x y :=
+Definition NQadd x y :=
   match x with
-  | MQ0 => y
-  | MQpos px => MQadd_PQ_l px y
-  | MQneg px => MQopp (MQadd_PQ_l px (MQopp y))
+  | NQ0 => y
+  | NQpos px => NQadd_PQ_l px y
+  | NQneg px => NQopp (NQadd_PQ_l px (NQopp y))
   end.
 
-Definition MQabs x :=
+Definition NQabs x :=
   match x with
-  | MQneg px => MQpos px
+  | NQneg px => NQpos px
   | _ => x
   end.
 
-Notation "- x" := (MQopp x) : MQ_scope.
-Notation "x + y" := (MQadd x y) : MQ_scope.
-Notation "x - y" := (MQadd x (MQopp y)) : MQ_scope.
-Notation "‖ x ‖" := (MQabs x) (at level 60) : MQ_scope.
+Notation "- x" := (NQopp x) : NQ_scope.
+Notation "x + y" := (NQadd x y) : NQ_scope.
+Notation "x - y" := (NQadd x (NQopp y)) : NQ_scope.
+Notation "‖ x ‖" := (NQabs x) (at level 60) : NQ_scope.
 
-Open Scope MQ_scope.
+Open Scope NQ_scope.
 
-Instance MQabs_morph : Proper (MQeq ==> MQeq) MQabs.
+Instance NQabs_morph : Proper (NQeq ==> NQeq) NQabs.
 Proof.
 intros x y Hxy.
-unfold MQabs, "=="%MQ; simpl.
+unfold NQabs, "=="%NQ; simpl.
 unfold "==" in Hxy.
 now destruct x, y.
 Qed.
@@ -305,7 +305,7 @@ destruct (PQlt_le_dec x1 y1) as [H1| H1]; rewrite Hx, Hy in H1.
 Qed.
 
 (* allows to use rewrite inside a if_PQlt_le_dec
-   when P and Q are of type MQ, through PQlt_le_if, e.g.
+   when P and Q are of type NQ, through PQlt_le_if, e.g.
       H : (x = y)%PQ
       ====================
       ... if_PQlt_le_dec x z then P else Q ...
@@ -313,8 +313,8 @@ Qed.
       ====================
       ... if_PQlt_le_dec y z then P else Q ...
  *)
-Instance PQeq_PQlt_le_MQ_morph {P Q} :
-  Proper (PQeq ==> PQeq ==> MQeq) (λ x y, if_PQlt_le_dec x y then P else Q).
+Instance PQeq_PQlt_le_NQ_morph {P Q} :
+  Proper (PQeq ==> PQeq ==> NQeq) (λ x y, if_PQlt_le_dec x y then P else Q).
 Proof.
 intros x1 x2 Hx y1 y2 Hy.
 move y1 before x2; move y2 before y1.
@@ -326,16 +326,16 @@ destruct (PQlt_le_dec x1 y1) as [H1| H1]; rewrite Hx, Hy in H1.
  now apply PQnlt_ge in H2.
 Qed.
 
-Theorem MQpos_inj_wd : ∀ x y, (MQpos x == MQpos y)%MQ ↔ (x == y)%PQ.
+Theorem NQpos_inj_wd : ∀ x y, (NQpos x == NQpos y)%NQ ↔ (x == y)%PQ.
 Proof. intros; easy. Qed.
 
-Instance MQadd_PQ_l_morph : Proper (PQeq ==> MQeq ==> MQeq) MQadd_PQ_l.
+Instance NQadd_PQ_l_morph : Proper (PQeq ==> NQeq ==> NQeq) NQadd_PQ_l.
 Proof.
 intros x1 x2 Hx y1 y2 Hy.
-unfold MQadd_PQ_l.
+unfold NQadd_PQ_l.
 destruct y1 as [| py1| py1], y2 as [| py2| py2]; try easy.
--now apply -> MQpos_inj_wd in Hy; rewrite Hx, Hy.
--apply -> MQpos_inj_wd in Hy; rewrite Hx, Hy.
+-now apply -> NQpos_inj_wd in Hy; rewrite Hx, Hy.
+-apply -> NQpos_inj_wd in Hy; rewrite Hx, Hy.
  remember (PQcompare x2 py2) as c1 eqn:Hc1; symmetry in Hc1.
  destruct c1; PQcompare_iff; [ easy | | ].
  +symmetry in Hx, Hy.
@@ -344,7 +344,7 @@ destruct y1 as [| py1| py1], y2 as [| py2| py2]; try easy.
   now rewrite (PQsub_morph py2 py1 _ x1).
 Qed.
 
-Theorem MQadd_comm : ∀ x y, x + y = y + x.
+Theorem NQadd_comm : ∀ x y, x + y = y + x.
 Proof.
 intros.
 unfold "+".
@@ -363,17 +363,17 @@ Qed.
       ... (x + z) ...
    rewrite H.
  *)
-Instance MQadd_morph : Proper (MQeq ==> MQeq ==> MQeq) MQadd.
+Instance NQadd_morph : Proper (NQeq ==> NQeq ==> NQeq) NQadd.
 Proof.
 intros x1 x2 Hx y1 y2 Hy.
 move Hx before Hy.
 assert (H : ∀ px1 px2 py1 py2,
-  MQpos px1 == MQpos px2
-  → MQneg py1 == MQneg py2
-  → MQpos px1 + MQneg py1 == MQpos px2 + MQneg py2). {
+  NQpos px1 == NQpos px2
+  → NQneg py1 == NQneg py2
+  → NQpos px1 + NQneg py1 == NQpos px2 + NQneg py2). {
   clear; intros * Hx Hy.
-  unfold "=="%MQ in Hx, Hy |-*.
-  unfold "+"%MQ; simpl.
+  unfold "=="%NQ in Hx, Hy |-*.
+  unfold "+"%NQ; simpl.
   remember (PQcompare px1 py1) as c1 eqn:Hc1; symmetry in Hc1.
   remember (PQcompare px2 py2) as c2 eqn:Hc2; symmetry in Hc2.
   rewrite Hx, Hy, Hc2 in Hc1; subst c2.
@@ -388,38 +388,38 @@ assert (H : ∀ px1 px2 py1 py2,
 destruct
   x1 as [| px1| px1], y1 as [| py1| py1],
   x2 as [| px2| px2], y2 as [| py2| py2]; try easy.
--unfold "=="%MQ in Hx, Hy |-*; unfold "+"%MQ; simpl.
+-unfold "=="%NQ in Hx, Hy |-*; unfold "+"%NQ; simpl.
  now rewrite Hx, Hy.
 -now apply H.
--do 2 (rewrite MQadd_comm; symmetry).
+-do 2 (rewrite NQadd_comm; symmetry).
  now apply H.
--unfold "=="%MQ in Hx, Hy |-*; unfold "+"%MQ; simpl.
+-unfold "=="%NQ in Hx, Hy |-*; unfold "+"%NQ; simpl.
  now rewrite Hx, Hy.
 Qed.
 
 (* Leibnitz equality applies *)
-Theorem MQabs_0 : MQabs 0 = 0.
+Theorem NQabs_0 : NQabs 0 = 0.
 Proof. easy. Qed.
 
 (* Leibnitz equality applies *)
-Theorem MQabs_opp : ∀ x, MQabs (- x) = MQabs x.
+Theorem NQabs_opp : ∀ x, NQabs (- x) = NQabs x.
 Proof. now intros x; destruct x. Qed.
 
-Theorem MQadd_swap_lemma1 : ∀ px py pz,
+Theorem NQadd_swap_lemma1 : ∀ px py pz,
   match PQcompare (px + py) pz with
   | Eq => 0
-  | Lt => MQneg (pz - (px + py))%PQ
-  | Gt => MQpos (px + py - pz)%PQ
+  | Lt => NQneg (pz - (px + py))%PQ
+  | Gt => NQpos (px + py - pz)%PQ
   end ==
   match PQcompare px pz with
-  | Eq => MQpos py
+  | Eq => NQpos py
   | Lt =>
       match PQcompare (pz - px) py with
       | Eq => 0
-      | Lt => MQpos (py - (pz - px))%PQ
-      | Gt => MQneg (pz - px - py)%PQ
+      | Lt => NQpos (py - (pz - px))%PQ
+      | Gt => NQneg (pz - px - py)%PQ
       end
-  | Gt => MQpos (px - pz + py)%PQ
+  | Gt => NQpos (px - pz + py)%PQ
   end.
 Proof.
 intros.
@@ -480,25 +480,25 @@ destruct c1, c2; repeat PQcompare_iff.
  now rewrite PQadd_comm.
 Qed.
 
-Theorem MQadd_swap_lemma2 : ∀ px py pz,
+Theorem NQadd_swap_lemma2 : ∀ px py pz,
   match PQcompare px py with
-  | Eq => MQneg pz
-  | Lt => MQneg (py - px + pz)%PQ
+  | Eq => NQneg pz
+  | Lt => NQneg (py - px + pz)%PQ
   | Gt =>
       match PQcompare (px - py) pz with
       | Eq => 0
-      | Lt => MQneg (pz - (px - py))%PQ
-      | Gt => MQpos (px - py - pz)%PQ
+      | Lt => NQneg (pz - (px - py))%PQ
+      | Gt => NQpos (px - py - pz)%PQ
       end
   end ==
   match PQcompare px pz with
-  | Eq => MQneg py
-  | Lt => MQneg (pz - px + py)%PQ
+  | Eq => NQneg py
+  | Lt => NQneg (pz - px + py)%PQ
   | Gt =>
       match PQcompare (px - pz) py with
       | Eq => 0
-      | Lt => MQneg (py - (px - pz))%PQ
-      | Gt => MQpos (px - pz - py)%PQ
+      | Lt => NQneg (py - (px - pz))%PQ
+      | Gt => NQpos (px - pz - py)%PQ
       end
   end.
 Proof.
@@ -603,34 +603,34 @@ destruct c1, c2; repeat PQcompare_iff.
  *now rewrite PQsub_sub_swap.
 Qed.
 
-Theorem MQopp_inj_wd : ∀ x y, (- x == - y)%MQ ↔ (x == y)%MQ.
+Theorem NQopp_inj_wd : ∀ x y, (- x == - y)%NQ ↔ (x == y)%NQ.
 Proof. now intros; destruct x, y. Qed.
 
 (* Leibnitz equality applies *)
-Theorem MQopp_involutive : ∀ x, - - x = x.
+Theorem NQopp_involutive : ∀ x, - - x = x.
 Proof. intros; now destruct x. Qed.
 
-Theorem MQopp_match_comp : ∀ c eq lt gt,
+Theorem NQopp_match_comp : ∀ c eq lt gt,
   - match c with Eq => eq | Lt => lt | Gt => gt end =
   match c with Eq => - eq | Lt => - lt | Gt => - gt end.
 Proof. intros; now destruct c. Qed.
 
-Theorem MQmatch_opp_comp : ∀ c eq lt gt,
+Theorem NQmatch_opp_comp : ∀ c eq lt gt,
   match c with Eq => eq | Lt => lt | Gt => gt end =
   - match c with Eq => - eq | Lt => - lt | Gt => - gt end.
-Proof. now intros; destruct c; rewrite MQopp_involutive. Qed.
+Proof. now intros; destruct c; rewrite NQopp_involutive. Qed.
 
-Theorem MQmatch_match_comp : ∀ A c p q (f0 : A) fp fn,
+Theorem NQmatch_match_comp : ∀ A c p q (f0 : A) fp fn,
   match
     match c with
     | Eq => 0
-    | Lt => MQneg p
-    | Gt => MQpos q
+    | Lt => NQneg p
+    | Gt => NQpos q
     end
   with
   | 0 => f0
-  | MQpos px => fp px
-  | MQneg px => fn px
+  | NQpos px => fp px
+  | NQneg px => fn px
   end =
   match c with
   | Eq => f0
@@ -639,7 +639,7 @@ Theorem MQmatch_match_comp : ∀ A c p q (f0 : A) fp fn,
   end.
 Proof. intros; now destruct c. Qed.
 
-Theorem MQadd_add_swap : ∀ x y z, x + y + z == x + z + y.
+Theorem NQadd_add_swap : ∀ x y z, x + y + z == x + z + y.
 Proof.
 intros.
 unfold "+".
@@ -650,72 +650,72 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl.
 -now rewrite PQadd_comm.
 -now destruct (PQcompare px pz).
 -now rewrite PQadd_add_swap.
--rewrite MQmatch_match_comp, MQopp_match_comp; simpl.
- apply MQadd_swap_lemma1.
+-rewrite NQmatch_match_comp, NQopp_match_comp; simpl.
+ apply NQadd_swap_lemma1.
 -now destruct (PQcompare px py).
--rewrite MQmatch_match_comp, MQopp_match_comp; simpl.
- symmetry; apply MQadd_swap_lemma1.
--do 2 (rewrite MQmatch_match_comp; symmetry).
- apply MQadd_swap_lemma2.
+-rewrite NQmatch_match_comp, NQopp_match_comp; simpl.
+ symmetry; apply NQadd_swap_lemma1.
+-do 2 (rewrite NQmatch_match_comp; symmetry).
+ apply NQadd_swap_lemma2.
 -now destruct (PQcompare px pz).
 -now destruct (PQcompare px py).
--do 2 rewrite MQopp_match_comp; simpl.
+-do 2 rewrite NQopp_match_comp; simpl.
  setoid_rewrite PQcompare_swap.
- do 2 (rewrite MQmatch_match_comp; symmetry).
- do 2 rewrite MQopp_match_comp; simpl.
+ do 2 (rewrite NQmatch_match_comp; symmetry).
+ do 2 rewrite NQopp_match_comp; simpl.
  setoid_rewrite PQcompare_swap.
- setoid_rewrite MQmatch_opp_comp; simpl.
- apply MQopp_inj_wd.
- do 2 rewrite MQopp_match_comp; simpl.
- apply MQadd_swap_lemma2.
--do 2 rewrite MQopp_match_comp; simpl.
- rewrite PQcompare_swap, MQmatch_match_comp.
- rewrite MQmatch_opp_comp, PQcompare_swap; symmetry.
- rewrite MQmatch_opp_comp; simpl.
- apply MQopp_inj_wd.
- rewrite MQopp_match_comp; simpl.
- apply MQadd_swap_lemma1.
--do 2 rewrite MQopp_match_comp; simpl.
+ setoid_rewrite NQmatch_opp_comp; simpl.
+ apply NQopp_inj_wd.
+ do 2 rewrite NQopp_match_comp; simpl.
+ apply NQadd_swap_lemma2.
+-do 2 rewrite NQopp_match_comp; simpl.
+ rewrite PQcompare_swap, NQmatch_match_comp.
+ rewrite NQmatch_opp_comp, PQcompare_swap; symmetry.
+ rewrite NQmatch_opp_comp; simpl.
+ apply NQopp_inj_wd.
+ rewrite NQopp_match_comp; simpl.
+ apply NQadd_swap_lemma1.
+-do 2 rewrite NQopp_match_comp; simpl.
  symmetry; rewrite PQcompare_swap.
- rewrite MQmatch_match_comp, MQmatch_opp_comp; symmetry.
- rewrite MQmatch_opp_comp; symmetry.
- apply MQopp_inj_wd; simpl.
- rewrite PQcompare_swap, MQopp_match_comp; simpl.
+ rewrite NQmatch_match_comp, NQmatch_opp_comp; symmetry.
+ rewrite NQmatch_opp_comp; symmetry.
+ apply NQopp_inj_wd; simpl.
+ rewrite PQcompare_swap, NQopp_match_comp; simpl.
  symmetry.
- apply MQadd_swap_lemma1.
+ apply NQadd_swap_lemma1.
 -now rewrite PQadd_add_swap.
 Qed.
 
-Theorem MQadd_assoc : ∀ x y z, (x + y) + z == x + (y + z).
+Theorem NQadd_assoc : ∀ x y z, (x + y) + z == x + (y + z).
 Proof.
 intros.
-rewrite MQadd_comm.
+rewrite NQadd_comm.
 remember (x + y) as t eqn:H.
 assert (Ht : t == x + y) by now subst t.
-rewrite MQadd_comm in Ht; rewrite Ht.
+rewrite NQadd_comm in Ht; rewrite Ht.
 clear t H Ht.
-setoid_rewrite MQadd_comm.
-apply MQadd_add_swap.
+setoid_rewrite NQadd_comm.
+apply NQadd_add_swap.
 Qed.
 
-Theorem MQadd_cancel_r : ∀ x y z, (x + z == y + z)%MQ ↔ (x == y)%MQ.
+Theorem NQadd_cancel_r : ∀ x y z, (x + z == y + z)%NQ ↔ (x == y)%NQ.
 Proof.
 intros.
 unfold "+".
 destruct x as [| px| px], y as [| py| py]; simpl.
 -easy.
 -split; [ | easy ].
- unfold MQadd_PQ_l; intros H.
+ unfold NQadd_PQ_l; intros H.
  destruct z as [| pz| pz]; [ easy | | ].
- +apply -> MQpos_inj_wd in H; symmetry in H.
+ +apply -> NQpos_inj_wd in H; symmetry in H.
   now apply PQadd_no_neutral in H.
  +remember (PQcompare py pz) as c1 eqn:Hc1; symmetry in Hc1.
   destruct c1; PQcompare_iff; [ easy | | easy ].
-  apply -> MQpos_inj_wd in H. (* why is it working? *)
+  apply -> NQpos_inj_wd in H. (* why is it working? *)
   symmetry in H.
   now apply PQsub_no_neutral in H.
 -split; [ | easy ].
- unfold MQadd_PQ_l; intros H.
+ unfold NQadd_PQ_l; intros H.
  destruct z as [| pz| pz]; [ easy | | ].
  +simpl in H.
   remember (PQcompare py pz) as c1 eqn:Hc1; symmetry in Hc1.
@@ -725,30 +725,30 @@ destruct x as [| px| px], y as [| py| py]; simpl.
  +simpl in H; symmetry in H.
   now apply PQadd_no_neutral in H.
 -split; [ | easy ].
- unfold MQadd_PQ_l; intros H.
+ unfold NQadd_PQ_l; intros H.
  destruct z as [| pz| pz]; [ easy | | ].
- +apply -> MQpos_inj_wd in H.
+ +apply -> NQpos_inj_wd in H.
   now apply PQadd_no_neutral in H.
  +remember (PQcompare px pz) as c1 eqn:Hc1; symmetry in Hc1.
   destruct c1; PQcompare_iff; [ easy | | easy ].
-  apply -> MQpos_inj_wd in H. (* why is it working? *)
+  apply -> NQpos_inj_wd in H. (* why is it working? *)
   now apply PQsub_no_neutral in H.
 -split; intros H; [ | now rewrite H ].
- unfold MQadd_PQ_l in H.
+ unfold NQadd_PQ_l in H.
  destruct z as [| pz| pz].
- +now apply -> MQpos_inj_wd in H.
- +apply -> MQpos_inj_wd in H.
+ +now apply -> NQpos_inj_wd in H.
+ +apply -> NQpos_inj_wd in H.
   now apply PQadd_cancel_r in H.
  +remember (PQcompare px pz) as c1 eqn:Hc1; symmetry in Hc1.
   remember (PQcompare py pz) as c2 eqn:Hc2; symmetry in Hc2.
   destruct c1, c2; do 2 PQcompare_iff; try easy.
   *transitivity pz; [ easy | now symmetry ].
-  *apply -> MQpos_inj_wd in H.
+  *apply -> NQpos_inj_wd in H.
    now apply PQsub_cancel_l in H.
-  *apply -> MQpos_inj_wd in H.
+  *apply -> NQpos_inj_wd in H.
    now apply PQsub_cancel_r in H.
 -split; [ | easy ].
- unfold MQadd_PQ_l; intros H.
+ unfold NQadd_PQ_l; intros H.
  destruct z as [| pz| pz]; [ easy | | ].
  +simpl in H.
   remember (PQcompare py pz) as c1 eqn:Hc1; symmetry in Hc1.
@@ -764,7 +764,7 @@ destruct x as [| px| px], y as [| py| py]; simpl.
   rewrite PQadd_add_swap in H; symmetry in H.
   now apply PQadd_no_neutral in H.
 -split; [ | easy ].
- unfold MQadd_PQ_l; intros H.
+ unfold NQadd_PQ_l; intros H.
  destruct z as [| pz| pz]; [ easy | | ].
  +simpl in H.
   remember (PQcompare px pz) as c1 eqn:Hc1; symmetry in Hc1.
@@ -773,7 +773,7 @@ destruct x as [| px| px], y as [| py| py]; simpl.
  +simpl in H.
   now apply PQadd_no_neutral in H.
 -split; [ | easy ].
- unfold MQadd_PQ_l; intros H.
+ unfold NQadd_PQ_l; intros H.
  destruct z as [| pz| pz]; [ easy | | ].
  +simpl in H.
   remember (PQcompare px pz) as c1 eqn:Hc1; symmetry in Hc1.
@@ -790,7 +790,7 @@ destruct x as [| px| px], y as [| py| py]; simpl.
   rewrite PQadd_add_swap in H.
   now apply PQadd_no_neutral in H.
 -split; intros H.
- +unfold MQadd_PQ_l in H.
+ +unfold NQadd_PQ_l in H.
   destruct z as [| pz| pz]; [ easy | | ]; simpl in H.
   *remember (PQcompare px pz) as c1 eqn:Hc1; symmetry in Hc1.
    remember (PQcompare py pz) as c2 eqn:Hc2; symmetry in Hc2.
@@ -799,7 +799,7 @@ destruct x as [| px| px], y as [| py| py]; simpl.
   --now apply PQsub_cancel_l in H.
   --now apply PQsub_cancel_r in H.
   *now apply PQadd_cancel_r in H.
- +unfold MQadd_PQ_l.
+ +unfold NQadd_PQ_l.
   destruct z as [| pz| pz]; [ easy | | ]; simpl.
   *rewrite H.
    remember (PQcompare py pz) as c1 eqn:Hc1; symmetry in Hc1.
@@ -809,102 +809,102 @@ destruct x as [| px| px], y as [| py| py]; simpl.
   *now rewrite H.
 Qed.
 
-Theorem MQadd_cancel_l : ∀ x y z, (x + y == x + z)%MQ ↔ (y == z)%MQ.
+Theorem NQadd_cancel_l : ∀ x y z, (x + y == x + z)%NQ ↔ (y == z)%NQ.
 Proof.
 intros.
-setoid_rewrite MQadd_comm.
-apply MQadd_cancel_r.
+setoid_rewrite NQadd_comm.
+apply NQadd_cancel_r.
 Qed.
 
 (* Leibnitz equality applies *)
-Theorem MQadd_opp_r : ∀ x, (x - x = 0)%MQ.
+Theorem NQadd_opp_r : ∀ x, (x - x = 0)%NQ.
 Proof.
 intros.
 now destruct x as [| px| px]; [ easy | | ]; simpl; rewrite PQcompare_refl.
 Qed.
 
 (* Leibnitz equality applies *)
-Theorem MQadd_opp_l : ∀ x, (- x + x = 0)%MQ.
-Proof. intros; rewrite MQadd_comm; apply MQadd_opp_r. Qed.
+Theorem NQadd_opp_l : ∀ x, (- x + x = 0)%NQ.
+Proof. intros; rewrite NQadd_comm; apply NQadd_opp_r. Qed.
 
 (* Leibnitz equality applies *)
-Theorem MQsub_opp_r : ∀ x y, (x - - y = x + y)%MQ.
+Theorem NQsub_opp_r : ∀ x y, (x - - y = x + y)%NQ.
 Proof.
 intros.
-unfold "-"%MQ; simpl; now destruct y.
+unfold "-"%NQ; simpl; now destruct y.
 Qed.
 
 (* Leibnitz equality applies *)
-Theorem MQopp_sub_distr : ∀ x y, (- (x - y) = - x + y)%MQ.
+Theorem NQopp_sub_distr : ∀ x y, (- (x - y) = - x + y)%NQ.
 Proof.
 intros.
-unfold "+"%MQ; simpl.
+unfold "+"%NQ; simpl.
 destruct x as [| px| px]; [ | easy | ].
--apply MQopp_involutive.
--unfold MQadd_PQ_l; simpl.
- rewrite MQopp_involutive.
+-apply NQopp_involutive.
+-unfold NQadd_PQ_l; simpl.
+ rewrite NQopp_involutive.
  now destruct y.
 Qed.
 
 (* Leibnitz equality applies *)
-Theorem MQopp_add_distr : ∀ x y, (- (x + y) = - x - y)%MQ.
+Theorem NQopp_add_distr : ∀ x y, (- (x + y) = - x - y)%NQ.
 Proof.
 intros.
 destruct x as [| px| px]; [ easy | | ]; simpl.
--now rewrite MQopp_involutive.
--now rewrite MQopp_involutive.
+-now rewrite NQopp_involutive.
+-now rewrite NQopp_involutive.
 Qed.
 
 (* Leibnitz equality applies *)
-Theorem MQadd_0_l : ∀ x, (0 + x)%MQ = x.
+Theorem NQadd_0_l : ∀ x, (0 + x)%NQ = x.
 Proof. now intros x; destruct x. Qed.
 
 (* Leibnitz equality applies *)
-Theorem MQadd_0_r : ∀ x, (x + 0)%MQ = x.
+Theorem NQadd_0_r : ∀ x, (x + 0)%NQ = x.
 Proof. now intros x; destruct x. Qed.
 
-Theorem MQsub_sub_distr : ∀ x y z, (x - (y - z) == x - y + z)%MQ.
+Theorem NQsub_sub_distr : ∀ x y z, (x - (y - z) == x - y + z)%NQ.
 Proof.
 intros.
-rewrite MQadd_assoc.
-apply MQadd_cancel_l.
-now rewrite MQopp_sub_distr.
+rewrite NQadd_assoc.
+apply NQadd_cancel_l.
+now rewrite NQopp_sub_distr.
 Qed.
 
 (* multiplication, inverse, division *)
 
-Definition MQmul_PQ_l px y :=
+Definition NQmul_PQ_l px y :=
   match y with
-  | MQ0 => MQ0
-  | MQpos py => MQpos (px * py)
-  | MQneg py => MQneg (px * py)
+  | NQ0 => NQ0
+  | NQpos py => NQpos (px * py)
+  | NQneg py => NQneg (px * py)
   end.
 
-Definition MQmul x y :=
+Definition NQmul x y :=
   match x with
-  | MQ0 => MQ0
-  | MQpos px => MQmul_PQ_l px y
-  | MQneg px => MQmul_PQ_l px (MQopp y)
+  | NQ0 => NQ0
+  | NQpos px => NQmul_PQ_l px y
+  | NQneg px => NQmul_PQ_l px (NQopp y)
   end.
 
-Definition MQinv x :=
+Definition NQinv x :=
   match x with
-  | MQ0 => MQ0
-  | MQpos px => MQpos (/ px)
-  | MQneg px => MQneg (/ px)
+  | NQ0 => NQ0
+  | NQpos px => NQpos (/ px)
+  | NQneg px => NQneg (/ px)
   end.
 
-Notation "x * y" := (MQmul x y) : MQ_scope.
-Notation "/ x" := (MQinv x) : MQ_scope.
-Notation "x / y" := (MQmul x (MQinv y)) : MQ_scope.
+Notation "x * y" := (NQmul x y) : NQ_scope.
+Notation "/ x" := (NQinv x) : NQ_scope.
+Notation "x / y" := (NQmul x (NQinv y)) : NQ_scope.
 
-Instance MQmul_PQ_l_morph : Proper (PQeq ==> MQeq ==> MQeq) MQmul_PQ_l.
+Instance NQmul_PQ_l_morph : Proper (PQeq ==> NQeq ==> NQeq) NQmul_PQ_l.
 Proof.
 intros x1 x2 Hx y1 y2 Hy.
-unfold MQmul_PQ_l.
+unfold NQmul_PQ_l.
 destruct y1 as [| py1| py1], y2 as [| py2| py2]; try easy.
--now apply -> MQpos_inj_wd in Hy; rewrite Hx, Hy.
--now apply -> MQpos_inj_wd in Hy; rewrite Hx, Hy.
+-now apply -> NQpos_inj_wd in Hy; rewrite Hx, Hy.
+-now apply -> NQpos_inj_wd in Hy; rewrite Hx, Hy.
 Qed.
 
 (* allows to use rewrite inside a multiplication
@@ -914,71 +914,71 @@ Qed.
       ... (x * z) ...
    rewrite H.
  *)
-Instance MQmul_morph : Proper (MQeq ==> MQeq ==> MQeq) MQmul.
+Instance NQmul_morph : Proper (NQeq ==> NQeq ==> NQeq) NQmul.
 Proof.
 intros x1 x2 Hx y1 y2 Hy.
 unfold "*".
 destruct x1 as [| px1| px1], x2 as [| px2| px2]; simpl; try easy.
--now apply -> MQpos_inj_wd in Hx; rewrite Hx, Hy.
--apply -> MQpos_inj_wd in Hx.
- apply MQopp_inj_wd in Hy.
+-now apply -> NQpos_inj_wd in Hx; rewrite Hx, Hy.
+-apply -> NQpos_inj_wd in Hx.
+ apply NQopp_inj_wd in Hy.
  now rewrite Hx, Hy.
 Qed.
 
 (* Leibnitz equality applies *)
-Theorem MQmul_comm : ∀ x y, x * y = y * x.
+Theorem NQmul_comm : ∀ x y, x * y = y * x.
 Proof.
 intros.
-unfold MQmul.
+unfold NQmul.
 now destruct x, y; simpl; try now rewrite PQmul_comm.
 Qed.
 
 (* Leibnitz equality applies *)
-Theorem MQmul_assoc : ∀ x y z, (x * y) * z = x * (y * z).
+Theorem NQmul_assoc : ∀ x y z, (x * y) * z = x * (y * z).
 Proof.
 intros.
-unfold "*"%MQ.
+unfold "*"%NQ.
 now destruct x, y, z; simpl; try now rewrite PQmul_assoc.
 Qed.
 
-Theorem MQpos_add : ∀ x y, (MQpos (x + y) = MQpos x + MQpos y)%MQ.
+Theorem NQpos_add : ∀ x y, (NQpos (x + y) = NQpos x + NQpos y)%NQ.
 Proof. easy. Qed.
 
-Theorem MQpos_mul : ∀ x y, (MQpos (x * y) = MQpos x * MQpos y)%MQ.
+Theorem NQpos_mul : ∀ x y, (NQpos (x * y) = NQpos x * NQpos y)%NQ.
 Proof. easy. Qed.
 
-Theorem MQpos_mul_neg : ∀ x y, (MQpos (x * y) = MQneg x * MQneg y)%MQ.
+Theorem NQpos_mul_neg : ∀ x y, (NQpos (x * y) = NQneg x * NQneg y)%NQ.
 Proof. easy. Qed.
 
-Theorem MQneg_add : ∀ x y, (MQneg (x + y) = MQneg x + MQneg y)%MQ.
+Theorem NQneg_add : ∀ x y, (NQneg (x + y) = NQneg x + NQneg y)%NQ.
 Proof. easy. Qed.
 
-Theorem MQneg_mul_l : ∀ x y, (MQneg (x * y) = MQneg x * MQpos y)%MQ.
+Theorem NQneg_mul_l : ∀ x y, (NQneg (x * y) = NQneg x * NQpos y)%NQ.
 Proof. easy. Qed.
 
-Theorem MQneg_mul_r : ∀ x y, (MQneg (x * y) = MQpos x * MQneg y)%MQ.
+Theorem NQneg_mul_r : ∀ x y, (NQneg (x * y) = NQpos x * NQneg y)%NQ.
 Proof. easy. Qed.
 
-Ltac MQpos_tac :=
+Ltac NQpos_tac :=
   match goal with
-  | [ |- context[MQpos _ + MQpos _] ] => rewrite <- MQpos_add
-  | [ |- context[MQpos _ * MQpos _] ] => rewrite <- MQpos_mul
-  | [ |- context[MQneg _ * MQneg _] ] => rewrite <- MQpos_mul_neg
-  | [ |- context[MQneg _ + MQneg _] ] => rewrite <- MQneg_add
-  | [ |- context[MQneg _ * MQpos _] ] => rewrite <- MQneg_mul_l
-  | [ |- context[MQpos _ * MQneg _] ] => rewrite <- MQneg_mul_r
+  | [ |- context[NQpos _ + NQpos _] ] => rewrite <- NQpos_add
+  | [ |- context[NQpos _ * NQpos _] ] => rewrite <- NQpos_mul
+  | [ |- context[NQneg _ * NQneg _] ] => rewrite <- NQpos_mul_neg
+  | [ |- context[NQneg _ + NQneg _] ] => rewrite <- NQneg_add
+  | [ |- context[NQneg _ * NQpos _] ] => rewrite <- NQneg_mul_l
+  | [ |- context[NQpos _ * NQneg _] ] => rewrite <- NQneg_mul_r
   end.
 
-Theorem MQmul_add_distr_l_lemma1 : ∀ px py pz,
+Theorem NQmul_add_distr_l_lemma1 : ∀ px py pz,
   match PQcompare py pz with
   | Eq => 0
-  | Lt => MQneg (px * (pz - py))
-  | Gt => MQpos (px * (py - pz))
+  | Lt => NQneg (px * (pz - py))
+  | Gt => NQpos (px * (py - pz))
   end ==
   match PQcompare (px * py) (px * pz) with
   | Eq => 0
-  | Lt => MQneg (px * pz - px * py)
-  | Gt => MQpos (px * py - px * pz)
+  | Lt => NQneg (px * pz - px * py)
+  | Gt => NQpos (px * py - px * pz)
   end.
 Proof.
 intros.
@@ -1000,30 +1000,30 @@ destruct c1, c2; do 2 PQcompare_iff.
 -now rewrite PQmul_sub_distr_l.
 Qed.
 
-Theorem MQmul_add_distr_l : ∀ x y z, x * (y + z) == x * y + x * z.
+Theorem NQmul_add_distr_l : ∀ x y z, x * (y + z) == x * y + x * z.
 Proof.
 intros.
 destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy;
-  repeat MQpos_tac; try now rewrite PQmul_add_distr_l.
--simpl; unfold MQmul_PQ_l.
- rewrite MQmatch_match_comp.
- apply MQmul_add_distr_l_lemma1.
--simpl; unfold MQmul_PQ_l.
- rewrite MQopp_match_comp; simpl.
- rewrite PQcompare_swap, MQmatch_match_comp.
- rewrite MQopp_match_comp; simpl.
+  repeat NQpos_tac; try now rewrite PQmul_add_distr_l.
+-simpl; unfold NQmul_PQ_l.
+ rewrite NQmatch_match_comp.
+ apply NQmul_add_distr_l_lemma1.
+-simpl; unfold NQmul_PQ_l.
+ rewrite NQopp_match_comp; simpl.
+ rewrite PQcompare_swap, NQmatch_match_comp.
+ rewrite NQopp_match_comp; simpl.
  symmetry; rewrite PQcompare_swap; symmetry.
- apply MQmul_add_distr_l_lemma1.
--simpl; unfold MQmul_PQ_l.
- rewrite MQopp_match_comp; simpl.
- rewrite PQcompare_swap, MQmatch_match_comp.
- rewrite MQopp_match_comp; simpl.
+ apply NQmul_add_distr_l_lemma1.
+-simpl; unfold NQmul_PQ_l.
+ rewrite NQopp_match_comp; simpl.
+ rewrite PQcompare_swap, NQmatch_match_comp.
+ rewrite NQopp_match_comp; simpl.
  symmetry; rewrite PQcompare_swap; symmetry.
- apply MQmul_add_distr_l_lemma1.
--simpl; unfold MQmul_PQ_l.
- rewrite MQopp_involutive.
- rewrite MQmatch_match_comp.
- apply MQmul_add_distr_l_lemma1.
+ apply NQmul_add_distr_l_lemma1.
+-simpl; unfold NQmul_PQ_l.
+ rewrite NQopp_involutive.
+ rewrite NQmatch_match_comp.
+ apply NQmul_add_distr_l_lemma1.
 Qed.
 
-Close Scope MQ.
+Close Scope NQ.

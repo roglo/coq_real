@@ -173,12 +173,12 @@ Qed.
 
 (* Relation with Cauchy sequences *)
 
-Require Import MQ PQ.
+Require Import NQ PQ.
 
-Open Scope MQ.
+Open Scope NQ.
 Definition is_cauchy_seq u :=
   ∀ ε, ε > 0 → ∃ N, ∀ p q, (p >= N ∧ q >= N)%nat → ‖ u p - u q ‖ < ε.
-Close Scope MQ.
+Close Scope NQ.
 
 Definition freal_seq_num {r : radix} (rg := nat_ord_ring) x m :=
   Σ (i = 0, m), fd2n x i * rad ^ (m - i).
@@ -190,8 +190,8 @@ Definition pos_freal_seq {r : radix} x m :=
 
 Definition freal_seq {r : radix} x m :=
   match freal_seq_num x m with
-  | 0 => 0%MQ
-  | S _ => MQpos (pos_freal_seq x m)
+  | 0 => 0%NQ
+  | S _ => NQpos (pos_freal_seq x m)
   end.
 
 Definition PQ_of_nat i := PQmake (i - 1) 0.
@@ -200,10 +200,10 @@ Definition PQ_of_nat i := PQmake (i - 1) 0.
 Theorem u_q_minus_u_p {r : radix} (rg := nat_ord_ring) : ∀ x p q,
   p < q
   → (freal_seq x q - freal_seq x p ==
-      MQmake true
+      NQmake true
         (PQmake
            (Σ (i = 0, q - p - 1), (fd2n x (q - i) * rad ^ i)%nat)
-           (rad ^ S q - 1)))%MQ.
+           (rad ^ S q - 1)))%NQ.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
@@ -213,12 +213,12 @@ move s before q.
 remember (freal_seq x q) as fq eqn:Hfq.
 remember (freal_seq x p) as fp eqn:Hfp.
 move fp before fq.
-unfold "-"%MQ, "+"%MQ.
+unfold "-"%NQ, "+"%NQ.
 remember S as f; simpl; subst f.
-remember (Bool.eqb (MQsign fq) (negb (MQsign fp))) as b eqn:Hb.
+remember (Bool.eqb (NQsign fq) (negb (NQsign fp))) as b eqn:Hb.
 symmetry in Hb.
-remember (MQsign fq) as sq eqn:Hsq; symmetry in Hsq.
-remember (MQsign fp) as sp eqn:Hsp; symmetry in Hsp.
+remember (NQsign fq) as sq eqn:Hsq; symmetry in Hsq.
+remember (NQsign fp) as sp eqn:Hsp; symmetry in Hsp.
 move sp before sq.
 assert (H1r : ∀ p, 1 ≤ rad ^ S p). {
   clear -  Hr; intros.
@@ -238,11 +238,11 @@ assert (HS :
 unfold rg in HS.
 destruct b.
 -destruct sq.
- +unfold "=="%MQ; simpl.
+ +unfold "=="%NQ; simpl.
   simpl in Hb.
   destruct sp; [ easy | now rewrite Hfp in Hsp ].
  +now rewrite Hfq in Hsq.
--destruct (PQlt_le_dec (MQpos fq) (MQpos fp)) as [H1| H1].
+-destruct (PQlt_le_dec (NQpos fq) (NQpos fp)) as [H1| H1].
  +exfalso.
   rewrite Hfq, Hfp in H1; simpl in H1.
   unfold "<"%PQ, nd in H1.
@@ -261,7 +261,7 @@ destruct b.
   apply Nat.le_add_r.
  +destruct sq.
   *remember S as f.
-   unfold "=="%MQ; simpl.
+   unfold "=="%NQ; simpl.
    rewrite Hfq, Hfp; simpl.
    unfold "-"%PQ.
    rewrite <- Heqf.
@@ -311,7 +311,7 @@ Theorem freal_is_cauchy_seq {r : radix} : ∀ x, is_cauchy_seq (freal_seq x).
 Proof.
 intros x ε Hε.
 specialize radix_ge_2 as Hr.
-assert (H : ∃ e, MQpos e = ε). {
+assert (H : ∃ e, NQpos e = ε). {
   destruct ε as [| e| ]; [ easy | now exists e | easy ].
 }
 destruct H as (e, He); subst ε; clear Hε; rename e into ε.
@@ -339,11 +339,11 @@ rewrite Nat.add_0_r in H2.
 ...
     unfold freal_seq_num in Hxsp.
 ...
-   unfold "<"%MQ.
-   remember ((‖ freal_seq x p - freal_seq x q ‖)%MQ) as y eqn:Hy.
+   unfold "<"%NQ.
+   remember ((‖ freal_seq x p - freal_seq x q ‖)%NQ) as y eqn:Hy.
    symmetry in Hy; destruct y as [| py| py]; [ easy | | easy ].
-   unfold MQabs in Hy.
-   remember ((freal_seq x p - freal_seq x q)%MQ) as z eqn:Hz.
+   unfold NQabs in Hy.
+   remember ((freal_seq x p - freal_seq x q)%NQ) as z eqn:Hz.
    symmetry in Hz.
    destruct z as [| pz| pz]; [ easy | | ].
    +injection Hy; clear Hy; intros Hy; subst pz.
@@ -371,22 +371,22 @@ rewrite Nat.add_0_r in H2.
       rewrite Nat.sub_succ, Nat.sub_0_r in H2.
 
 ...
-exists (PQden1 (MQpos ε) + 1).
+exists (PQden1 (NQpos ε) + 1).
 intros p q (Hp, Hq).
 assert
   (H : ∀ p q,
-      PQden1 (MQpos ε) + 1 ≤ q < p
-      → (MQabs (freal_seq x p - freal_seq x q) < ε)%MQ). {
+      PQden1 (NQpos ε) + 1 ≤ q < p
+      → (NQabs (freal_seq x p - freal_seq x q) < ε)%NQ). {
   clear p q Hp Hq.
   intros * (Hq, Hpq).
   rewrite (uq_minus_up x q p Hpq).
-  unfold MQabs.
+  unfold NQabs.
   remember S as f; simpl; subst f.
-  unfold "<"%MQ.
+  unfold "<"%NQ.
   remember S as f; simpl; subst f.
   destruct ε as (εs, εp).
   remember S as f; simpl; subst f.
-  destruct εs; [ | now unfold "≤"%MQ in Hε; simpl in Hε ].
+  destruct εs; [ | now unfold "≤"%NQ in Hε; simpl in Hε ].
   unfold "<"%PQ, nd.
   remember S as f; simpl; subst f.
   simpl in Hq(*, Hp*).
@@ -397,7 +397,7 @@ assert
   remember (S (PQden1 εp)) as εd eqn:Hεd.
   assert (H1 : 0 < εn). {
     subst εn.
-    unfold "≤"%MQ in Hε; simpl in Hε.
+    unfold "≤"%NQ in Hε; simpl in Hε.
     unfold "≤"%PQ, nd in Hε; simpl in Hε.
     rewrite Nat.mul_1_r in Hε.
     now apply Nat.nle_gt in Hε.
@@ -438,13 +438,13 @@ assert
 destruct (lt_dec q p) as [Hpq| Hpq].
 -now apply H.
 -destruct (lt_dec p q) as [Hqp| Hqp].
- +rewrite <- MQabs_opp, MQopp_sub_distr, MQadd_comm.
+ +rewrite <- NQabs_opp, NQopp_sub_distr, NQadd_comm.
   now apply H.
  +apply Nat.nlt_ge in Hpq.
   apply Nat.nlt_ge in Hqp.
   apply Nat.le_antisymm in Hpq; [ subst q | easy ].
-  rewrite MQadd_opp_r, MQabs_0.
-  now apply MQgt_lt_iff.
+  rewrite NQadd_opp_r, NQabs_0.
+  now apply NQgt_lt_iff.
 Qed.
 
 (* In names, "9" actually means "rad-1" *)
@@ -1187,7 +1187,7 @@ Notation "a * b" := (freal_mul a b) : freal_scope.
 
 (* addition of cauchy sequences *)
 
-Definition cauchy_add (u v : nat → MQ) i := (u i + v i)%MQ.
+Definition cauchy_add (u v : nat → NQ) i := (u i + v i)%NQ.
 
 Theorem cauchy_add_is_cauchy : ∀ u v,
   is_cauchy_seq u
@@ -1196,11 +1196,11 @@ Theorem cauchy_add_is_cauchy : ∀ u v,
 Proof.
 intros * Hu Hv ε Hε.
 unfold is_cauchy_seq in Hu, Hv.
-exists (PQden1 (MQpos ε) + 1).
+exists (PQden1 (NQpos ε) + 1).
 intros p q (Hp, Hq).
 unfold cauchy_add.
-assert (H : (u p + v p - (u q + v q) == (u p - u q) + (v p - v q))%MQ). {
-  rewrite MQsub_add_distr.
+assert (H : (u p + v p - (u q + v q) == (u p - u q) + (v p - v q))%NQ). {
+  rewrite NQsub_add_distr.
   ...
 }
 
