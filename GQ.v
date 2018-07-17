@@ -126,6 +126,18 @@ now destruct (PQ_of_GQ x).
 Qed.
 
 Ltac tac_to_PQ :=
+  unfold "+"%GQ, "*"%GQ;
+  repeat
+  match goal with
+  | [ x : GQ |- _ ] =>
+      match goal with
+      [ |- context[PQ_of_GQ x] ] =>
+        let y := fresh x in
+        let Hy := fresh x in
+        remember (PQ_of_GQ x) as y eqn:Hy
+      end
+  | _ => idtac
+  end;
   repeat rewrite GQ_of_PQ_additive;
   repeat rewrite GQ_of_PQ_multiplicative;
   repeat rewrite GQ_o_PQ;
@@ -143,11 +155,6 @@ Qed.
 Theorem GQadd_assoc : ∀ x y z, ((x + y) + z = x + (y + z))%GQ.
 Proof.
 intros.
-unfold "+"%GQ.
-remember (PQ_of_GQ x) as x'.
-remember (PQ_of_GQ y) as y'.
-remember (PQ_of_GQ z) as z'.
-move z' before x'; move y' before x'.
 tac_to_PQ.
 now rewrite PQadd_assoc.
 Qed.
@@ -155,18 +162,13 @@ Qed.
 Theorem GQmul_comm : ∀ x y, (x * y = y * x)%GQ.
 Proof.
 intros.
-unfold "*"%GQ.
+tac_to_PQ.
 now rewrite PQmul_comm.
 Qed.
 
 Theorem GQmul_assoc : ∀ x y z, ((x * y) * z = x * (y * z))%GQ.
 Proof.
 intros.
-unfold "*"%GQ.
-remember (PQ_of_GQ x) as x'.
-remember (PQ_of_GQ y) as y'.
-remember (PQ_of_GQ z) as z'.
-move z' before x'; move y' before x'.
 tac_to_PQ.
 now rewrite PQmul_assoc.
 Qed.
@@ -174,11 +176,6 @@ Qed.
 Theorem GQmul_add_distr_l : ∀ x y z, (x * (y + z) = x * y + x * z)%GQ.
 Proof.
 intros.
-unfold "*"%GQ, "+"%GQ.
-remember (PQ_of_GQ x) as x'.
-remember (PQ_of_GQ y) as y'.
-remember (PQ_of_GQ z) as z'.
-move z' before x'; move y' before x'.
 tac_to_PQ.
 now rewrite PQmul_add_distr_l.
 Qed.
