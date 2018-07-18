@@ -22,9 +22,11 @@ Definition GQ_of_nat n := GQmake (PQ_of_nat n) (Nat.gcd_1_r (n - 1 + 1)).
 Notation "1" := (GQmake 1 (Nat.gcd_1_r (0 + 1))) : GQ_scope.
 
 Definition GQadd x y := GQ_of_PQ (PQ_of_GQ x + PQ_of_GQ y).
+Definition GQsub x y := GQ_of_PQ (PQ_of_GQ x - PQ_of_GQ y).
 Definition GQmul x y := GQ_of_PQ (PQ_of_GQ x * PQ_of_GQ y).
 
 Notation "x + y" := (GQadd x y) : GQ_scope.
+Notation "x - y" := (GQsub x y) : GQ_scope.
 Notation "x * y" := (GQmul x y) : GQ_scope.
 
 Theorem GQeq_eq : ∀ x y, x = y ↔ (PQ_of_GQ x = PQ_of_GQ y)%PQ.
@@ -189,6 +191,9 @@ tac_to_PQ.
 now rewrite PQmul_mul_swap.
 Qed.
 
+Definition GQcompare x y := PQcompare (PQ_of_GQ x) (PQ_of_GQ y).
+Arguments GQcompare x%GQ y%GQ.
+
 (* *)
 
 Delimit Scope NQ_scope with NQ.
@@ -202,3 +207,34 @@ Arguments NQneg p%GQ.
 
 Notation "0" := (NQ0) : NQ_scope.
 Notation "1" := (NQpos 1) : NQ_scope.
+
+Definition NQadd_pos_l px y :=
+  match y with
+  | NQ0 => NQpos px
+  | NQpos py => NQpos (px + py)
+  | NQneg py =>
+      match GQcompare px py with
+      | Eq => NQ0
+      | Lt => NQneg (py - px)
+      | Gt => NQpos (px - py)
+      end
+  end.
+
+Definition NQadd_neg_l px y :=
+  match y with
+  | NQ0 => NQneg px
+  | NQpos py =>
+      match GQcompare px py with
+      | Eq => NQ0
+      | Lt => NQpos (py - px)
+      | Gt => NQneg (px - py)
+      end
+  | NQneg py => NQneg (px + py)
+  end.
+
+Definition NQadd x y :=
+  match x with
+  | NQ0 => y
+  | NQpos px => NQadd_pos_l px y
+  | NQneg px => NQadd_neg_l px y
+  end.
