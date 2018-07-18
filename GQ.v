@@ -18,6 +18,7 @@ Arguments PQ_of_GQ x%GQ : rename.
 Arguments GQ_of_PQ x%PQ.
 
 Definition GQ_of_nat n := GQmake (PQ_of_nat n) (Nat.gcd_1_r (n - 1 + 1)).
+Definition GQ_of_pair n d := GQ_of_PQ (PQ_of_pair n d).
 
 Notation "1" := (GQmake 1 (Nat.gcd_1_r (0 + 1))) : GQ_scope.
 
@@ -214,6 +215,8 @@ Definition NQ_of_nat n :=
   | S _ => NQpos (GQ_of_nat n)
   end.
 
+Definition NQ_of_pair n d := NQpos (GQ_of_pair n d).
+
 Definition NQadd_pos_l px y :=
   match y with
   | NQ0 => NQpos px
@@ -257,3 +260,5 @@ Notation "x + y" := (NQadd x y) : NQ_scope.
 Notation "x - y" := (NQadd x (NQopp y)) : NQ_scope.
 
 Compute (NQ_of_nat 22 - NQ_of_nat 35)%NQ.
+Compute (NQ_of_pair 355 113).
+Check PQred_gcd.
