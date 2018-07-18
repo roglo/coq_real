@@ -195,6 +195,54 @@ Qed.
 Definition GQcompare x y := PQcompare (PQ_of_GQ x) (PQ_of_GQ y).
 Arguments GQcompare x%GQ y%GQ.
 
+Theorem GQcompare_eq_iff : ∀ x y, GQcompare x y = Eq ↔ x = y.
+Proof.
+intros.
+split; intros H.
+-unfold GQcompare in H.
+ apply PQcompare_eq_iff in H.
+Search PQ_of_GQ.
+...
+Proof. intros; apply Nat.compare_eq_iff. Qed.
+
+Theorem GQcompare_lt_iff : ∀ x y, GQcompare x y = Lt ↔ (x < y)%GQ.
+Proof. intros; apply Nat.compare_lt_iff. Qed.
+
+Theorem GQcompare_gt_iff : ∀ x y, GQcompare x y = Gt ↔ (x > y)%GQ.
+Proof. intros; apply Nat.compare_gt_iff. Qed.
+
+Ltac GQcompare_iff :=
+  match goal with
+  | [ H : GQcompare _ _ = Eq |- _ ] => apply GQcompare_eq_iff in H
+  | [ H : GQcompare _ _ = Lt |- _ ] => apply GQcompare_lt_iff in H
+  | [ H : GQcompare _ _ = Gt |- _ ] => apply GQcompare_gt_iff in H
+  end.
+
+Theorem GQcompare_swap : ∀ {A} {a b c : A} px py,
+  match GQcompare px py with
+  | Eq => a
+  | Lt => b
+  | Gt => c
+  end =
+  match GQcompare py px with
+  | Eq => a
+  | Lt => c
+  | Gt => b
+  end.
+Proof.
+intros.
+remember (GQcompare px py) as b1 eqn:Hb1; symmetry in Hb1.
+remember (GQcompare py px) as b2 eqn:Hb2; symmetry in Hb2.
+move b2 before b1.
+destruct b1, b2; try easy; repeat GQcompare_iff.
+-now rewrite Hb1 in Hb2; apply PQlt_irrefl in Hb2.
+-now rewrite Hb1 in Hb2; apply PQlt_irrefl in Hb2.
+-now rewrite Hb2 in Hb1; apply PQlt_irrefl in Hb1.
+-now apply PQnle_gt in Hb2; exfalso; apply Hb2; apply PQlt_le_incl.
+-now rewrite Hb2 in Hb1; apply PQlt_irrefl in Hb1.
+-now apply PQnle_gt in Hb2; exfalso; apply Hb2; apply PQlt_le_incl.
+Qed.
+
 (* *)
 
 Delimit Scope NQ_scope with NQ.
@@ -259,6 +307,33 @@ Notation "- x" := (NQopp x) : NQ_scope.
 Notation "x + y" := (NQadd x y) : NQ_scope.
 Notation "x - y" := (NQadd x (NQopp y)) : NQ_scope.
 
-Compute (NQ_of_nat 22 - NQ_of_nat 35)%NQ.
-Compute (NQ_of_pair 355 113).
-Check PQred_gcd.
+Definition NQmul_pos_l px y :=
+  match y with
+  | NQ0 => NQ0
+  | NQpos py => NQpos (px * py)
+  | NQneg py => NQneg (px * py)
+  end.
+
+Definition NQmul_neg_l px y :=
+  match y with
+  | NQ0 => NQ0
+  | NQpos py => NQneg (px * py)
+  | NQneg py => NQpos (px * py)
+  end.
+
+Definition NQmul x y :=
+  match x with
+  | NQ0 => NQ0
+  | NQpos px => NQmul_pos_l px y
+  | NQneg px => NQmul_neg_l px y
+  end.
+
+Theorem NQadd_comm : ∀ x y, (x + y = y + x)%NQ.
+intros.
+unfold "+".
+destruct x as [| px| px], y as [| py| py]; try easy; simpl.
+-f_equal; apply GQadd_comm.
+-now rewrite GQcompare_swap; destruct (GQcompare py px).
+-now rewrite PQcompare_swap; destruct (PQcompare py px).
+-f_equal; apply PQadd_comm.
+Qed.

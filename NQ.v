@@ -800,7 +800,7 @@ Qed.
 
 (* multiplication, inverse, division *)
 
-Definition NQmul_PQ_l px y :=
+Definition NQmul_pos_l px y :=
   match y with
   | NQ0 => NQ0
   | NQpos py => NQpos (px * py)
@@ -810,8 +810,8 @@ Definition NQmul_PQ_l px y :=
 Definition NQmul x y :=
   match x with
   | NQ0 => NQ0
-  | NQpos px => NQmul_PQ_l px y
-  | NQneg px => NQmul_PQ_l px (NQopp y)
+  | NQpos px => NQmul_pos_l px y
+  | NQneg px => NQmul_pos_l px (NQopp y)
   end.
 
 Definition NQinv x :=
@@ -825,10 +825,10 @@ Notation "x * y" := (NQmul x y) : NQ_scope.
 Notation "/ x" := (NQinv x) : NQ_scope.
 Notation "x / y" := (NQmul x (NQinv y)) : NQ_scope.
 
-Instance NQmul_PQ_l_morph : Proper (PQeq ==> NQeq ==> NQeq) NQmul_PQ_l.
+Instance NQmul_PQ_l_morph : Proper (PQeq ==> NQeq ==> NQeq) NQmul_pos_l.
 Proof.
 intros x1 x2 Hx y1 y2 Hy.
-unfold NQmul_PQ_l.
+unfold NQmul_pos_l.
 destruct y1 as [| py1| py1], y2 as [| py2| py2]; try easy.
 -now apply -> NQpos_inj_wd in Hy; rewrite Hx, Hy.
 -now apply -> NQpos_inj_wd in Hy; rewrite Hx, Hy.
@@ -932,22 +932,22 @@ Proof.
 intros.
 destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy;
   repeat NQpos_tac; try now rewrite PQmul_add_distr_l.
--simpl; unfold NQmul_PQ_l.
+-simpl; unfold NQmul_pos_l.
  rewrite NQmatch_match_comp.
  apply NQmul_add_distr_l_lemma1.
--simpl; unfold NQmul_PQ_l.
+-simpl; unfold NQmul_pos_l.
  rewrite NQopp_match_comp; simpl.
  rewrite PQcompare_swap, NQmatch_match_comp.
  rewrite NQopp_match_comp; simpl.
  symmetry; rewrite PQcompare_swap; symmetry.
  apply NQmul_add_distr_l_lemma1.
--simpl; unfold NQmul_PQ_l.
+-simpl; unfold NQmul_pos_l.
  rewrite NQopp_match_comp; simpl.
  rewrite PQcompare_swap, NQmatch_match_comp.
  rewrite NQopp_match_comp; simpl.
  symmetry; rewrite PQcompare_swap; symmetry.
  apply NQmul_add_distr_l_lemma1.
--simpl; unfold NQmul_PQ_l.
+-simpl; unfold NQmul_pos_l.
  rewrite NQopp_involutive.
  rewrite NQmatch_match_comp.
  apply NQmul_add_distr_l_lemma1.
