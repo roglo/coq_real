@@ -201,7 +201,20 @@ intros.
 split; intros H.
 -unfold GQcompare in H.
  apply PQcompare_eq_iff in H.
+ apply GQeq_eq.
+ destruct x as (x, Hx).
+ destruct y as (y, Hy).
+ move y before x.
+ simpl in H; simpl.
+ destruct x as (xn, xd).
+ destruct y as (yn, yd).
+ simpl in *.
+ unfold "=="%PQ, nd in H.
+ simpl in H.
+ f_equal.
+...
 Search PQ_of_GQ.
+Search (_ == _)%PQ.
 ...
 Proof. intros; apply Nat.compare_eq_iff. Qed.
 
