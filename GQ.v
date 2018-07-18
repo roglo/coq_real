@@ -211,7 +211,14 @@ split; intros H.
  simpl in *.
  unfold "=="%PQ, nd in H.
  simpl in H.
+Search (Nat.gcd _ _ = 1).
+...
+
  f_equal.
+ +apply (Nat.add_cancel_r _ _ 1).
+  apply (Nat.mul_cancel_r _ _ (yd + 1)); [ flia | ].
+  rewrite H.
+
 ...
 Search PQ_of_GQ.
 Search (_ == _)%PQ.
