@@ -283,7 +283,6 @@ destruct x as [| px| px], y as [| py| py]; try easy; simpl.
 -f_equal; apply PQadd_comm.
 Qed.
 
-
 (* allows to use rewrite inside an addition
    e.g.
       H : x == y
