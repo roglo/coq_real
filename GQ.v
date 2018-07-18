@@ -208,6 +208,12 @@ Arguments NQneg p%GQ.
 Notation "0" := (NQ0) : NQ_scope.
 Notation "1" := (NQpos 1) : NQ_scope.
 
+Definition NQ_of_nat n :=
+  match n with
+  | 0 => NQ0
+  | S _ => NQpos (GQ_of_nat n)
+  end.
+
 Definition NQadd_pos_l px y :=
   match y with
   | NQ0 => NQpos px
@@ -238,3 +244,16 @@ Definition NQadd x y :=
   | NQpos px => NQadd_pos_l px y
   | NQneg px => NQadd_neg_l px y
   end.
+
+Definition NQopp x :=
+  match x with
+  | NQ0 => NQ0
+  | NQpos px => NQneg px
+  | NQneg px => NQpos px
+  end.
+
+Notation "- x" := (NQopp x) : NQ_scope.
+Notation "x + y" := (NQadd x y) : NQ_scope.
+Notation "x - y" := (NQadd x (NQopp y)) : NQ_scope.
+
+Compute (NQ_of_nat 22 - NQ_of_nat 35)%NQ.
