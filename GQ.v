@@ -204,9 +204,6 @@ tac_to_PQ.
 now rewrite PQmul_mul_swap.
 Qed.
 
-Definition GQcompare x y := PQcompare (PQ_of_GQ x) (PQ_of_GQ y).
-Arguments GQcompare x%GQ y%GQ.
-
 Theorem PQ_of_GQ_eq : ∀ x y,
   (PQ_of_GQ x == PQ_of_GQ y)%PQ
   → PQ_of_GQ x = PQ_of_GQ y.
@@ -233,6 +230,27 @@ apply Nat.add_cancel_r in Hx.
 apply Nat.add_cancel_r in H.
 now rewrite Hx, H.
 Qed.
+
+Theorem GQ_of_PQ_eq : ∀ x y, GQ_of_PQ x = GQ_of_PQ y → (x == y)%PQ.
+Proof.
+intros (xn, xd) (yn, yd) H.
+unfold GQ_of_PQ in H; simpl in H.
+injection H; clear H; intros H.
+unfold PQred in H; simpl in H.
+remember (ggcd (xn + 1) (xd + 1)) as g1 eqn:Hg1.
+remember (ggcd (yn + 1) (yd + 1)) as g2 eqn:Hg2.
+move g2 before g1.
+destruct g1 as (g1, (aa1, bb1)).
+destruct g2 as (g2, (aa2, bb2)).
+erewrite ggcd_split in Hg1; [ | easy ].
+erewrite ggcd_split in Hg2; [ | easy ].
+injection Hg1; clear Hg1; intros; subst g1 aa1 bb1.
+injection Hg2; clear Hg2; intros; subst g2 aa2 bb2.
+
+...
+
+Definition GQcompare x y := PQcompare (PQ_of_GQ x) (PQ_of_GQ y).
+Arguments GQcompare x%GQ y%GQ.
 
 Theorem GQcompare_eq_iff : ∀ x y, GQcompare x y = Eq ↔ x = y.
 Proof.
@@ -371,8 +389,22 @@ Definition NQmul x y :=
 Theorem GQadd_no_neutral : ∀ x y, (y + x)%GQ ≠ x.
 Proof.
 intros x y Hxy.
+unfold "+"%GQ in Hxy; simpl in Hxy.
+rewrite <- GQ_o_PQ in Hxy.
+remember (PQ_of_GQ x) as x'.
+remember (PQ_of_GQ y) as y'.
+move y' before x'.
+Search GQ_of_PQ.
+
 ...
-unfold "+"%PQ, "=="%PQ, nd in Hxy; simpl in Hxy.
+rewrite GQ_of_PQ_additive in Hxy.
+
+
+rewrite GQ_o_PQ in Hxy.
+
+apply PQadd_no_neutral in Hxy.
+...
+
 unfold PQadd_num1, PQadd_den1, nd in Hxy.
 do 6 rewrite Nat.add_1_r in Hxy.
 do 2 (rewrite <- Nat.sub_succ_l in Hxy; [ | simpl; flia ]).
