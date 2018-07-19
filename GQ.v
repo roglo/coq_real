@@ -146,9 +146,22 @@ Theorem PQ_of_GQ_additive : ∀ x y,
   (PQ_of_GQ (x + y) == PQ_of_GQ x + PQ_of_GQ y)%PQ.
 Proof.
 intros.
+unfold "=="%PQ, nd; simpl.
+remember (PQ_of_GQ x) as x'.
+remember (PQ_of_GQ y) as y'.
+move y' before x'.
+unfold "+"%PQ; simpl.
+remember (PQadd_num1 x' y') as nz' eqn:Hnz'.
+remember (PQadd_den1 x' y') as pz' eqn:Hpz'.
+move pz' before nz'.
+unfold PQred.
+simpl.
+...
+
 unfold "+"%PQ, "=="%PQ, nd; simpl.
+...
+
 unfold PQadd_num1, PQadd_den1, nd.
-Search PQ_of_GQ.
 ...
 
 Theorem glop : ∀ x y,
@@ -161,8 +174,6 @@ rewrite glop.
 rewrite Nat.sub_add.
 rewrite Nat.sub_add.
 Search PQred.
-remember (PQ_of_GQ x) as x'.
-remember (PQ_of_GQ y) as y'.
 ...
 rewrite PQred_add.
 Search PQred.
