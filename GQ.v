@@ -199,12 +199,37 @@ Theorem glop : ∀ x y,
   (PQ_of_GQ x == PQ_of_GQ y)%PQ
   → PQ_of_GQ x = PQ_of_GQ y.
 Proof.
+(*
+intros * H.
+rewrite <- PQred_of_GQ in H; symmetry in H.
+rewrite <- PQred_of_GQ in H; symmetry in H.
+rewrite <- PQred_of_GQ; symmetry.
+rewrite <- PQred_of_GQ; symmetry.
+remember (PQ_of_GQ x) as x'.
+remember (PQ_of_GQ y) as y'.
+move y' before x'.
+destruct x' as (xn, xd).
+destruct y' as (yn, yd); simpl in *.
+unfold "=="%PQ, nd in H; simpl in H.
+unfold PQred in H |-*.
+simpl in H; simpl.
+remember (ggcd (xn + 1) (xd + 1)) as gx eqn:Hgx.
+remember (ggcd (yn + 1) (yd + 1)) as gy eqn:Hgy.
+move gy before gx.
+destruct gx as (gx, (aax, bbx)).
+destruct gy as (gy, (aay, bby)).
+simpl in H.
+...
+*)
+(*
 intros * H.
 Search PQ_of_GQ.
 rewrite <- PQred_of_GQ; symmetry.
 rewrite <- PQred_of_GQ; symmetry.
 unfold PQred.
 ...
+*)
+intros * H.
 destruct x as (x, Hx).
 destruct y as (y, Hy).
 move y before x.
