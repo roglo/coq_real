@@ -30,6 +30,18 @@ Notation "x + y" := (GQadd x y) : GQ_scope.
 Notation "x - y" := (GQsub x y) : GQ_scope.
 Notation "x * y" := (GQmul x y) : GQ_scope.
 
+Definition GQlt x y := PQlt (PQ_of_GQ x) (PQ_of_GQ y).
+Definition GQle x y := PQle (PQ_of_GQ x) (PQ_of_GQ y).
+Definition GQgt x y := GQlt y x.
+Definition GQge x y := GQle y x.
+
+Notation "x < y" := (GQlt x y) : GQ_scope.
+Notation "x ≤ y" := (GQle x y) : GQ_scope.
+Notation "x > y" := (GQgt x y) : GQ_scope.
+Notation "x ≥ y" := (GQge x y) : GQ_scope.
+Notation "x ≤ y ≤ z" := (x ≤ y ∧ y ≤ z)%GQ (at level 70, y at next level) :
+  GQ_scope.
+
 Theorem GQeq_eq : ∀ x y, x = y ↔ (PQ_of_GQ x = PQ_of_GQ y)%PQ.
 Proof.
 intros.
@@ -195,40 +207,10 @@ Qed.
 Definition GQcompare x y := PQcompare (PQ_of_GQ x) (PQ_of_GQ y).
 Arguments GQcompare x%GQ y%GQ.
 
-Theorem glop : ∀ x y,
+Theorem PQ_of_GQ_eq : ∀ x y,
   (PQ_of_GQ x == PQ_of_GQ y)%PQ
   → PQ_of_GQ x = PQ_of_GQ y.
 Proof.
-(*
-intros * H.
-rewrite <- PQred_of_GQ in H; symmetry in H.
-rewrite <- PQred_of_GQ in H; symmetry in H.
-rewrite <- PQred_of_GQ; symmetry.
-rewrite <- PQred_of_GQ; symmetry.
-remember (PQ_of_GQ x) as x'.
-remember (PQ_of_GQ y) as y'.
-move y' before x'.
-destruct x' as (xn, xd).
-destruct y' as (yn, yd); simpl in *.
-unfold "=="%PQ, nd in H; simpl in H.
-unfold PQred in H |-*.
-simpl in H; simpl.
-remember (ggcd (xn + 1) (xd + 1)) as gx eqn:Hgx.
-remember (ggcd (yn + 1) (yd + 1)) as gy eqn:Hgy.
-move gy before gx.
-destruct gx as (gx, (aax, bbx)).
-destruct gy as (gy, (aay, bby)).
-simpl in H.
-...
-*)
-(*
-intros * H.
-Search PQ_of_GQ.
-rewrite <- PQred_of_GQ; symmetry.
-rewrite <- PQred_of_GQ; symmetry.
-unfold PQred.
-...
-*)
 intros * H.
 destruct x as (x, Hx).
 destruct y as (y, Hy).
@@ -239,44 +221,29 @@ destruct y as (yn, yd).
 simpl in *.
 unfold "=="%PQ, nd in H.
 simpl in H.
-Search (Nat.gcd _ _ = 1).
-...
-
-assert (PQred (PQ_of_GQ x) = PQred (PQ_of_GQ y)). {
-Check GQ_of_PQred.
-Search GQ_of_PQ.
-...
+apply (Nat.mul_cancel_r _ _ (yd + 1)) in Hx; [ | flia ].
+rewrite Nat.mul_1_l in Hx.
+Search (Nat.gcd (_ * _)).
+rewrite <- Nat.gcd_mul_mono_r in Hx.
+rewrite H, Nat.mul_comm in Hx.
+rewrite Nat.gcd_mul_mono_l, Hy, Nat.mul_1_r in Hx.
+rewrite Hx in H.
+apply Nat.mul_cancel_r in H; [ | flia ].
+apply Nat.add_cancel_r in Hx.
+apply Nat.add_cancel_r in H.
+now rewrite Hx, H.
+Qed.
 
 Theorem GQcompare_eq_iff : ∀ x y, GQcompare x y = Eq ↔ x = y.
 Proof.
 intros.
+unfold GQcompare.
 split; intros H.
--unfold GQcompare in H.
- apply PQcompare_eq_iff in H.
- apply GQeq_eq.
-...
- destruct x as (x, Hx).
- destruct y as (y, Hy).
- move y before x.
- simpl in H; simpl.
- destruct x as (xn, xd).
- destruct y as (yn, yd).
- simpl in *.
- unfold "=="%PQ, nd in H.
- simpl in H.
-Search (Nat.gcd _ _ = 1).
-...
-
- f_equal.
- +apply (Nat.add_cancel_r _ _ 1).
-  apply (Nat.mul_cancel_r _ _ (yd + 1)); [ flia | ].
-  rewrite H.
-
-...
-Search PQ_of_GQ.
-Search (_ == _)%PQ.
-...
-Proof. intros; apply Nat.compare_eq_iff. Qed.
+-apply PQcompare_eq_iff in H.
+ now apply GQeq_eq, PQ_of_GQ_eq.
+-rewrite H.
+ now apply PQcompare_eq_iff.
+Qed.
 
 Theorem GQcompare_lt_iff : ∀ x y, GQcompare x y = Lt ↔ (x < y)%GQ.
 Proof. intros; apply Nat.compare_lt_iff. Qed.
@@ -407,6 +374,6 @@ unfold "+".
 destruct x as [| px| px], y as [| py| py]; try easy; simpl.
 -f_equal; apply GQadd_comm.
 -now rewrite GQcompare_swap; destruct (GQcompare py px).
--now rewrite PQcompare_swap; destruct (PQcompare py px).
--f_equal; apply PQadd_comm.
+-now rewrite GQcompare_swap; destruct (GQcompare py px).
+-f_equal; apply GQadd_comm.
 Qed.
