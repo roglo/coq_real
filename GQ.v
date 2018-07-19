@@ -254,7 +254,21 @@ rewrite Nat.sub_add in H1; [ | ].
 rewrite Nat.sub_add in H2; [ | ].
 rewrite Nat.sub_add in H2; [ | ].
 unfold "=="%PQ, nd; simpl.
-
+apply (Nat.mul_cancel_l _ _ (xn + 1)) in H1; [ | ].
+rewrite <- Nat.gcd_div_swap in H1.
+rewrite H2 in H1.
+remember (Nat.gcd (xn + 1) (xd + 1)) as gx eqn:Hgx.
+remember (Nat.gcd (yn + 1) (yd + 1)) as gy eqn:Hgy.
+move gy before gx.
+symmetry in H1; rewrite Nat.mul_comm in H1; symmetry in H1.
+...
+apply (Nat.mul_cancel_r _ _ gy) in H1; [ | ].
+rewrite Nat.mul_shuffle0 in H1.
+Search (_ / _ * _).
+Search (_ / _ * _).
+Check Nat.gcd_div_swap.
+...
+Nat.gcd_mul_mono_l: ∀ n m p : nat, Nat.gcd (p * n) (p * m) = p * Nat.gcd n m
 ...
 
 Definition GQcompare x y := PQcompare (PQ_of_GQ x) (PQ_of_GQ y).
