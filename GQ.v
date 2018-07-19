@@ -195,6 +195,28 @@ Qed.
 Definition GQcompare x y := PQcompare (PQ_of_GQ x) (PQ_of_GQ y).
 Arguments GQcompare x%GQ y%GQ.
 
+Theorem glop : ∀ x y,
+  (PQ_of_GQ x == PQ_of_GQ y)%PQ
+  → PQ_of_GQ x = PQ_of_GQ y.
+Proof.
+intros * H.
+destruct x as (x, Hx).
+destruct y as (y, Hy).
+move y before x.
+simpl in H; simpl.
+destruct x as (xn, xd).
+destruct y as (yn, yd).
+simpl in *.
+unfold "=="%PQ, nd in H.
+simpl in H.
+Search (Nat.gcd _ _ = 1).
+...
+
+assert (PQred (PQ_of_GQ x) = PQred (PQ_of_GQ y)). {
+Check GQ_of_PQred.
+Search GQ_of_PQ.
+...
+
 Theorem GQcompare_eq_iff : ∀ x y, GQcompare x y = Eq ↔ x = y.
 Proof.
 intros.
@@ -202,6 +224,7 @@ split; intros H.
 -unfold GQcompare in H.
  apply PQcompare_eq_iff in H.
  apply GQeq_eq.
+...
  destruct x as (x, Hx).
  destruct y as (y, Hy).
  move y before x.
