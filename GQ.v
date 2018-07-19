@@ -142,6 +142,38 @@ rewrite PQred_of_GQ.
 now destruct (PQ_of_GQ x).
 Qed.
 
+Theorem PQ_of_GQ_additive : ∀ x y,
+  (PQ_of_GQ (x + y) == PQ_of_GQ x + PQ_of_GQ y)%PQ.
+Proof.
+intros.
+unfold "+"%PQ, "=="%PQ, nd; simpl.
+unfold PQadd_num1, PQadd_den1, nd.
+Search PQ_of_GQ.
+...
+
+Theorem glop : ∀ x y,
+  PQred (PQ_of_GQ x + PQ_of_GQ y) =
+  PQ_of_GQ (x + y).
+Proof. easy. Qed.
+rewrite glop.
+
+...
+rewrite Nat.sub_add.
+rewrite Nat.sub_add.
+Search PQred.
+remember (PQ_of_GQ x) as x'.
+remember (PQ_of_GQ y) as y'.
+...
+rewrite PQred_add.
+Search PQred.
+do 2 rewrite PQred_of_GQ.
+...
+r
+
+rewrite GQ_of_PQ_additive.
+do 2 rewrite GQ_o_PQ.
+...
+
 Ltac tac_to_PQ :=
   unfold "+"%GQ, "*"%GQ;
   repeat
@@ -210,6 +242,48 @@ intros.
 tac_to_PQ.
 now rewrite PQmul_mul_swap.
 Qed.
+
+Theorem GQadd_lt_mono_r : ∀ x y z, (x < y)%GQ ↔ (x + z < y + z)%GQ.
+Proof.
+intros.
+  unfold "+"%GQ, "*"%GQ.
+unfold "<"%GQ.
+  repeat
+  match goal with
+  | [ x : GQ |- _ ] =>
+      match goal with
+      [ |- context[PQ_of_GQ x] ] =>
+        let y := fresh "u" in
+        let Hy := fresh "Hu" in
+        remember (PQ_of_GQ x) as y eqn:Hy
+      end
+  | _ => idtac
+  end.
+  repeat rewrite GQ_of_PQ_additive.
+Search (PQ_of_GQ (_ + _)).
+split.
+intros H.
+repeat rewrite PQ_of_GQ_additive.
+apply PQadd_lt_mono_r.
+rewrite PQ_o_GQ.
+
+
+  repeat rewrite GQ_of_PQ_multiplicative.
+...
+  repeat rewrite GQ_o_PQ.
+
+unfold "<"%GQ.
+rewrite PQadd_lt_mono_r.
+
+  repeat rewrite GQ_o_PQ.
+  repeat rewrite <- GQ_of_PQ_additive;
+  repeat rewrite <- GQ_of_PQ_multiplicative;
+  repeat rewrite <- GQ_of_PQ_additive.
+tac_to_PQ.
+…..
+
+rewrite PQadd_lt_mono_r.
+...
 
 Theorem PQ_of_GQ_eq : ∀ x y,
   (PQ_of_GQ x == PQ_of_GQ y)%PQ
