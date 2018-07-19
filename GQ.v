@@ -200,6 +200,11 @@ Theorem glop : ∀ x y,
   → PQ_of_GQ x = PQ_of_GQ y.
 Proof.
 intros * H.
+Search PQ_of_GQ.
+rewrite <- PQred_of_GQ; symmetry.
+rewrite <- PQred_of_GQ; symmetry.
+unfold PQred.
+...
 destruct x as (x, Hx).
 destruct y as (y, Hy).
 move y before x.
