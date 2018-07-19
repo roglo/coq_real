@@ -169,6 +169,13 @@ tac_to_PQ.
 now rewrite PQadd_comm.
 Qed.
 
+Theorem GQadd_add_swap : ∀ x y z, (x + y + z = x + z + y)%GQ.
+Proof.
+intros.
+tac_to_PQ.
+now rewrite PQadd_add_swap.
+Qed.
+
 Theorem GQadd_assoc : ∀ x y z, ((x + y) + z = x + (y + z))%GQ.
 Proof.
 intros.
@@ -249,27 +256,60 @@ injection Hg2; clear Hg2; intros; subst g2 aa2 bb2.
 injection H; clear H; intros H1 H2.
 apply (Nat.add_cancel_r _ _ 1) in H1.
 apply (Nat.add_cancel_r _ _ 1) in H2.
-rewrite Nat.sub_add in H1; [ | ].
-rewrite Nat.sub_add in H1; [ | ].
-rewrite Nat.sub_add in H2; [ | ].
-rewrite Nat.sub_add in H2; [ | ].
-unfold "=="%PQ, nd; simpl.
-apply (Nat.mul_cancel_l _ _ (xn + 1)) in H1; [ | ].
-rewrite <- Nat.gcd_div_swap in H1.
-rewrite H2 in H1.
 remember (Nat.gcd (xn + 1) (xd + 1)) as gx eqn:Hgx.
 remember (Nat.gcd (yn + 1) (yd + 1)) as gy eqn:Hgy.
 move gy before gx.
+assert (Hgxz : gx ≠ 0). {
+  intros H; rewrite Hgx in H; apply Nat.gcd_eq_0_r in H.
+  now rewrite Nat.add_1_r in H.
+}
+assert (Hgyz : gy ≠ 0). {
+  intros H; rewrite Hgy in H; apply Nat.gcd_eq_0_r in H.
+  now rewrite Nat.add_1_r in H.
+}
+assert (Hxngx : 1 ≤ (xn + 1) / gx). {
+  specialize (Nat.gcd_divide_l (xn + 1) (xd + 1)) as (c1, Hc1).
+  rewrite <- Hgx in Hc1; rewrite Hc1.
+  rewrite Nat.div_mul; [ | easy ].
+  destruct c1; [ now rewrite Nat.add_1_r in Hc1 | flia ].
+}
+assert (Hxdgx : 1 ≤ (xd + 1) / gx). {
+  specialize (Nat.gcd_divide_r (xn + 1) (xd + 1)) as (c1, Hc1).
+  rewrite <- Hgx in Hc1; rewrite Hc1.
+  rewrite Nat.div_mul; [ | easy ].
+  destruct c1; [ now rewrite Nat.add_1_r in Hc1 | flia ].
+}
+assert (Hxngy : 1 ≤ (yn + 1) / gy). {
+  specialize (Nat.gcd_divide_l (yn + 1) (yd + 1)) as (c1, Hc1).
+  rewrite <- Hgy in Hc1; rewrite Hc1.
+  rewrite Nat.div_mul; [ | easy ].
+  destruct c1; [ now rewrite Nat.add_1_r in Hc1 | flia ].
+}
+assert (Hxdgy : 1 ≤ (yd + 1) / gy). {
+  specialize (Nat.gcd_divide_r (yn + 1) (yd + 1)) as (c1, Hc1).
+  rewrite <- Hgy in Hc1; rewrite Hc1.
+  rewrite Nat.div_mul; [ | easy ].
+  destruct c1; [ now rewrite Nat.add_1_r in Hc1 | flia ].
+}
+rewrite Nat.sub_add in H1; [ | easy ].
+rewrite Nat.sub_add in H1; [ | easy ].
+rewrite Nat.sub_add in H2; [ | easy ].
+rewrite Nat.sub_add in H2; [ | easy ].
+unfold "=="%PQ, nd; simpl.
+apply (Nat.mul_cancel_l _ _ (xn + 1)) in H1; [ | flia ].
+rewrite Hgx, <- Nat.gcd_div_swap, <- Hgx in H1.
+rewrite H2 in H1.
 symmetry in H1; rewrite Nat.mul_comm in H1; symmetry in H1.
-...
-apply (Nat.mul_cancel_r _ _ gy) in H1; [ | ].
-rewrite Nat.mul_shuffle0 in H1.
-Search (_ / _ * _).
-Search (_ / _ * _).
-Check Nat.gcd_div_swap.
-...
-Nat.gcd_mul_mono_l: ∀ n m p : nat, Nat.gcd (p * n) (p * m) = p * Nat.gcd n m
-...
+specialize (Nat.gcd_divide_l (yn + 1) (yd + 1)) as (c1, Hc1).
+specialize (Nat.gcd_divide_r (yn + 1) (yd + 1)) as (c2, Hc2).
+rewrite <- Hgy in Hc1, Hc2.
+rewrite Hc1, Nat.div_mul in H1; [ | easy ].
+rewrite Hc2, Nat.div_mul in H1; [ | easy ].
+rewrite Hc1, Hc2.
+rewrite Nat.mul_shuffle0, Nat.mul_assoc.
+apply Nat.mul_cancel_r; [ easy | ].
+rewrite H1; apply Nat.mul_comm.
+Qed.
 
 Definition GQcompare x y := PQcompare (PQ_of_GQ x) (PQ_of_GQ y).
 Arguments GQcompare x%GQ y%GQ.
@@ -416,25 +456,8 @@ rewrite <- GQ_o_PQ in Hxy.
 remember (PQ_of_GQ x) as x'.
 remember (PQ_of_GQ y) as y'.
 move y' before x'.
-Search GQ_of_PQ.
-
-...
-rewrite GQ_of_PQ_additive in Hxy.
-
-
-rewrite GQ_o_PQ in Hxy.
-
-apply PQadd_no_neutral in Hxy.
-...
-
-unfold PQadd_num1, PQadd_den1, nd in Hxy.
-do 6 rewrite Nat.add_1_r in Hxy.
-do 2 (rewrite <- Nat.sub_succ_l in Hxy; [ | simpl; flia ]).
-do 2 rewrite Nat.sub_succ, Nat.sub_0_r in Hxy.
-rewrite Nat.mul_add_distr_r in Hxy.
-rewrite Nat.mul_assoc in Hxy.
-apply Nat.add_sub_eq_r in Hxy.
-now rewrite Nat.sub_diag in Hxy.
+apply GQ_of_PQ_eq in Hxy.
+now apply PQadd_no_neutral in Hxy.
 Qed.
 
 Theorem NQadd_comm : ∀ x y, (x + y = y + x)%NQ.
@@ -448,6 +471,37 @@ destruct x as [| px| px], y as [| py| py]; try easy; simpl.
 -f_equal; apply GQadd_comm.
 Qed.
 
+Theorem NQadd_add_swap : ∀ x y z, (x + y + z = x + z + y)%NQ.
+Proof.
+intros.
+unfold "+"%NQ.
+destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl.
+-now rewrite GQadd_comm.
+-now rewrite GQcompare_swap; destruct (GQcompare pz py).
+-now rewrite GQcompare_swap; destruct (GQcompare pz py).
+-now rewrite GQadd_comm.
+-now destruct (GQcompare px pz).
+-now rewrite GQadd_add_swap.
+...
+-rewrite NQmatch_match_comp, NQopp_match_comp; simpl.
+ apply NQadd_swap_lemma1.
+-now destruct (PQcompare px py).
+-rewrite NQmatch_match_comp, NQopp_match_comp; simpl.
+ symmetry; apply NQadd_swap_lemma1.
+-do 2 (rewrite NQmatch_match_comp; symmetry).
+ apply NQadd_swap_lemma2.
+-now destruct (PQcompare px pz).
+-now destruct (PQcompare px py).
+-do 2 rewrite NQopp_match_comp; simpl.
+ setoid_rewrite PQcompare_swap.
+ do 2 (rewrite NQmatch_match_comp; symmetry).
+ do 2 rewrite NQopp_match_comp; simpl.
+ setoid_rewrite PQcompare_swap.
+ setoid_rewrite NQmatch_opp_comp; simpl.
+ apply NQopp_inj_wd.
+ do 2 rewrite NQopp_match_comp; simpl.
+...
+
 Theorem NQadd_assoc : ∀ x y z, ((x + y) + z = x + (y + z))%NQ.
 Proof.
 intros.
@@ -458,10 +512,9 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl.
  remember (GQcompare py pz) as c2 eqn:Hc2; symmetry in Hc2.
  move c2 before c1.
  destruct c1, c2; do 2  GQcompare_iff.
- +subst py.
+ +now subst py; apply GQadd_no_neutral in Hc1.
+ +idtac.
 ...
-  apply GQadd_no_neutral in Hc1.
-
 
 -now rewrite GQcompare_swap; destruct (GQcompare py px).
 -now rewrite GQcompare_swap; destruct (GQcompare py px).
