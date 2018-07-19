@@ -368,11 +368,47 @@ Definition NQmul x y :=
   | NQneg px => NQmul_neg_l px y
   end.
 
+Theorem GQadd_no_neutral : ∀ x y, (y + x)%GQ ≠ x.
+Proof.
+intros x y Hxy.
+...
+unfold "+"%PQ, "=="%PQ, nd in Hxy; simpl in Hxy.
+unfold PQadd_num1, PQadd_den1, nd in Hxy.
+do 6 rewrite Nat.add_1_r in Hxy.
+do 2 (rewrite <- Nat.sub_succ_l in Hxy; [ | simpl; flia ]).
+do 2 rewrite Nat.sub_succ, Nat.sub_0_r in Hxy.
+rewrite Nat.mul_add_distr_r in Hxy.
+rewrite Nat.mul_assoc in Hxy.
+apply Nat.add_sub_eq_r in Hxy.
+now rewrite Nat.sub_diag in Hxy.
+Qed.
+
 Theorem NQadd_comm : ∀ x y, (x + y = y + x)%NQ.
+Proof.
 intros.
 unfold "+".
 destruct x as [| px| px], y as [| py| py]; try easy; simpl.
 -f_equal; apply GQadd_comm.
+-now rewrite GQcompare_swap; destruct (GQcompare py px).
+-now rewrite GQcompare_swap; destruct (GQcompare py px).
+-f_equal; apply GQadd_comm.
+Qed.
+
+Theorem NQadd_assoc : ∀ x y z, ((x + y) + z = x + (y + z))%NQ.
+Proof.
+intros.
+unfold "+".
+destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl.
+-f_equal; apply GQadd_assoc.
+-remember (GQcompare (px + py) pz) as c1 eqn:Hc1; symmetry in Hc1.
+ remember (GQcompare py pz) as c2 eqn:Hc2; symmetry in Hc2.
+ move c2 before c1.
+ destruct c1, c2; do 2  GQcompare_iff.
+ +subst py.
+...
+  apply GQadd_no_neutral in Hc1.
+
+
 -now rewrite GQcompare_swap; destruct (GQcompare py px).
 -now rewrite GQcompare_swap; destruct (GQcompare py px).
 -f_equal; apply GQadd_comm.
