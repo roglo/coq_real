@@ -460,6 +460,30 @@ apply GQ_of_PQ_eq in Hxy.
 now apply PQadd_no_neutral in Hxy.
 Qed.
 
+Theorem NQmatch_match_comp : ∀ A c p q (f0 : A) fp fn,
+  match
+    match c with
+    | Eq => 0%NQ
+    | Lt => NQneg p
+    | Gt => NQpos q
+    end
+  with
+  | 0%NQ => f0
+  | NQpos px => fp px
+  | NQneg px => fn px
+  end =
+  match c with
+  | Eq => f0
+  | Lt => fn p
+  | Gt => fp q
+  end.
+Proof. intros; now destruct c. Qed.
+
+Theorem NQopp_match_comp : ∀ c eq lt gt,
+  (- match c with Eq => eq | Lt => lt | Gt => gt end =
+   match c with Eq => - eq | Lt => - lt | Gt => - gt end)%NQ.
+Proof. intros; now destruct c. Qed.
+
 Theorem NQadd_comm : ∀ x y, (x + y = y + x)%NQ.
 Proof.
 intros.
@@ -470,6 +494,84 @@ destruct x as [| px| px], y as [| py| py]; try easy; simpl.
 -now rewrite GQcompare_swap; destruct (GQcompare py px).
 -f_equal; apply GQadd_comm.
 Qed.
+
+Theorem NQadd_swap_lemma1 : ∀ px py pz,
+  match GQcompare (px + py) pz with
+  | Eq => 0%NQ
+  | Lt => NQneg (pz - (px + py))%GQ
+  | Gt => NQpos (px + py - pz)%GQ
+  end =
+  match GQcompare px pz with
+  | Eq => NQpos py
+  | Lt =>
+      match GQcompare (pz - px) py with
+      | Eq => 0%NQ
+      | Lt => NQpos (py - (pz - px))%GQ
+      | Gt => NQneg (pz - px - py)%GQ
+      end
+  | Gt => NQpos (px - pz + py)%GQ
+  end.
+Proof.
+intros.
+remember (GQcompare (px + py) pz) as c1 eqn:Hc1; symmetry in Hc1.
+remember (GQcompare px pz) as c2 eqn:Hc2; symmetry in Hc2.
+move c2 before c1.
+destruct c1, c2; repeat GQcompare_iff.
++now rewrite Hc2, GQadd_comm in Hc1; apply GQadd_no_neutral in Hc1.
++remember (GQcompare (pz - px) py) as c3 eqn:Hc3; symmetry in Hc3.
+ destruct c3; GQcompare_iff; [ easy | | ].
+...
+ *apply (GQadd_lt_mono_r _ _ px) in Hc3.
+  rewrite GQsub_add in Hc3; [ | easy ].
+  rewrite GQadd_comm, Hc1 in Hc3.
+  now apply GQlt_irrefl in Hc3.
+ *apply (GQadd_lt_mono_r _ _ px) in Hc3.
+  rewrite GQsub_add in Hc3; [ | easy ].
+  rewrite GQadd_comm, Hc1 in Hc3.
+  now apply GQlt_irrefl in Hc3.
++rewrite <- Hc1 in Hc2.
+ exfalso; apply GQnle_gt in Hc2; apply Hc2.
+ apply GQlt_le_incl, GQlt_add_r.
++rewrite Hc2 in Hc1.
+ exfalso; apply GQnle_gt in Hc1; apply Hc1.
+ apply GQlt_le_incl, GQlt_add_r.
++remember (GQcompare (pz - px) py) as c3 eqn:Hc3; symmetry in Hc3.
+ destruct c3; GQcompare_iff; simpl.
+ *rewrite GQadd_comm, <- Hc3 in Hc1.
+  rewrite GQsub_add in Hc1; [ | easy ].
+  now apply GQlt_irrefl in Hc1.
+ *apply (GQadd_lt_mono_r _ _ px) in Hc3.
+  rewrite GQsub_add in Hc3; [ | easy ].
+  rewrite GQadd_comm in Hc3.
+  exfalso; apply GQnle_gt in Hc3; apply Hc3.
+  now apply GQlt_le_incl.
+ *now f_equal; rewrite GQsub_add_distr.
++apply GQnle_gt in Hc2.
+ exfalso; apply Hc2; apply GQlt_le_incl.
+ apply (GQlt_trans _ (px + py)); [ | easy ].
+ apply GQlt_add_r.
++rewrite (GQsub_morph pz pz (px + py) (py + pz)); [ | easy | easy | ].
+ *now rewrite GQadd_sub.
+ *now rewrite Hc2, GQadd_comm.
++simpl.
+ remember (GQcompare (pz - px) py) as c3 eqn:Hc3; symmetry in Hc3.
+ destruct c3; GQcompare_iff; simpl.
+ *rewrite GQadd_comm, <- Hc3 in Hc1.
+  rewrite GQsub_add in Hc1; [ | easy ].
+  now apply GQlt_irrefl in Hc1.
+ *rewrite GQadd_comm; symmetry.
+  now f_equal; rewrite GQsub_sub_distr.
+ *apply (GQadd_lt_mono_r _ _ px) in Hc3.
+  rewrite GQsub_add in Hc3; [ | easy ].
+  rewrite GQadd_comm in Hc3.
+  exfalso; apply GQnle_gt in Hc3; apply Hc3.
+  now apply GQlt_le_incl.
++rewrite GQadd_comm.
+ rewrite <- GQadd_sub_assoc; [ | easy ].
+ now rewrite GQadd_comm.
+Qed.
+
+...
 
 Theorem NQadd_add_swap : ∀ x y z, (x + y + z = x + z + y)%NQ.
 Proof.
@@ -482,6 +584,7 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl.
 -now rewrite GQadd_comm.
 -now destruct (GQcompare px pz).
 -now rewrite GQadd_add_swap.
+-rewrite NQmatch_match_comp.
 ...
 -rewrite NQmatch_match_comp, NQopp_match_comp; simpl.
  apply NQadd_swap_lemma1.
