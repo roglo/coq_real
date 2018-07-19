@@ -246,6 +246,14 @@ erewrite ggcd_split in Hg1; [ | easy ].
 erewrite ggcd_split in Hg2; [ | easy ].
 injection Hg1; clear Hg1; intros; subst g1 aa1 bb1.
 injection Hg2; clear Hg2; intros; subst g2 aa2 bb2.
+injection H; clear H; intros H1 H2.
+apply (Nat.add_cancel_r _ _ 1) in H1.
+apply (Nat.add_cancel_r _ _ 1) in H2.
+rewrite Nat.sub_add in H1; [ | ].
+rewrite Nat.sub_add in H1; [ | ].
+rewrite Nat.sub_add in H2; [ | ].
+rewrite Nat.sub_add in H2; [ | ].
+unfold "=="%PQ, nd; simpl.
 
 ...
 
