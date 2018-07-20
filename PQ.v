@@ -1155,6 +1155,34 @@ rewrite ggcd_mul_mono_l; [ | easy ].
 now destruct (ggcd (S xn * S yn) (S xd * S yd)).
 Qed.
 
+Theorem PQred_lt_l : ∀ x y, (x < y)%PQ → (PQred x < y)%PQ.
+Proof.
+intros * Hyx.
+unfold PQred.
+remember (Nat.gcd (PQnum1 x + 1) (PQden1 x + 1)) as a eqn:Ha.
+erewrite ggcd_split; [ | apply Ha ].
+unfold "<"%PQ, nd; simpl.
+assert (Haz : a ≠ 0). {
+  intros H; rewrite Ha in H.
+  apply Nat.gcd_eq_0_l in H.
+  now rewrite Nat.add_1_r in H.
+}
+specialize (Nat.gcd_divide_l (PQnum1 x + 1) (PQden1 x + 1)) as (c1, Hc1).
+rewrite <- Ha in Hc1; rewrite Hc1.
+rewrite Nat.div_mul; [ | easy ].
+specialize (Nat.gcd_divide_r (PQnum1 x + 1) (PQden1 x + 1)) as (c2, Hc2).
+rewrite <- Ha in Hc2; rewrite Hc2.
+rewrite Nat.div_mul; [ | easy ].
+rewrite Nat.sub_add.
+-rewrite Nat.sub_add.
+ +rewrite (Nat.mul_lt_mono_pos_r a); [ | flia Haz ].
+  rewrite Nat.mul_shuffle0, <- Hc1.
+  rewrite <- Nat.mul_assoc, <- Hc2.
+  easy.
+ +destruct c2; [ flia Hc2 | flia ].
+-destruct c1; [ flia Hc1 | flia ].
+Qed.
+
 Theorem PQred_lt_r : ∀ x y, (x < y)%PQ → (x < PQred y)%PQ.
 Proof.
 intros * Hyx.
@@ -1277,47 +1305,49 @@ Qed.
 Theorem PQred_sub_r : ∀ x y, (y < x)%PQ → PQred (x - y) = PQred (x - PQred y).
 Proof.
 intros * Hyx.
-remember (Nat.gcd (PQnum1 x + 1) (PQden1 x + 1)) as a eqn:Ha.
-rewrite (PQred_sub_mul_one_l x (PQred y) (a - 1)).
-Search (PQred _ < _)%PQ.
-...
+remember (Nat.gcd (PQnum1 y + 1) (PQden1 y + 1)) as a eqn:Ha.
 rewrite (PQred_sub_mul_one_l x (PQred y) (a - 1)); [ | now apply PQred_lt_l ].
-destruct x as (xn, xd).
+destruct y as (yn, yd).
 simpl in Ha.
 unfold "*"%PQ; simpl.
 unfold PQmul_num1, PQmul_den1; simpl.
 unfold PQred; simpl.
-specialize (ggcd_split (xn + 1) (xd + 1) a Ha) as H.
+specialize (ggcd_split (yn + 1) (yd + 1) a Ha) as H.
 rewrite H; simpl.
 destruct a.
 -symmetry in Ha.
  apply Nat.gcd_eq_0_l in Ha; flia Ha.
 -replace (S a - 1 + 1) with (S a) by flia.
- assert (H2 : (xn + 1) / S a ≠ 0). {
+(*
+ assert (H2 : (yn + 1) / S a ≠ 0). {
    intros H1.
    apply Nat.div_small_iff in H1; [ | easy ].
-   specialize (Nat_gcd_le_l (xn + 1) (xd +  1)) as H2.
-   assert (H3 : xn + 1 ≠ 0) by flia.
+   specialize (Nat_gcd_le_l (yn + 1) (yd +  1)) as H2.
+   assert (H3 : yn + 1 ≠ 0) by flia.
    specialize (H2 H3).
    flia Ha H1 H2.
  }
- assert (H3 : (xd + 1) / S a ≠ 0). {
+ assert (H3 : (yd + 1) / S a ≠ 0). {
    intros H1.
    apply Nat.div_small_iff in H1; [ | easy ].
-   specialize (Nat_gcd_le_r (xn + 1) (xd +  1)) as H3.
-   assert (H4 : xd + 1 ≠ 0) by flia.
+   specialize (Nat_gcd_le_r (yn + 1) (yd +  1)) as H3.
+   assert (H4 : yd + 1 ≠ 0) by flia.
    specialize (H3 H4).
    flia Ha H1 H3.
  }
- rewrite Nat.sub_add; [ | flia H2 ].
  rewrite Nat.sub_add; [ | flia H3 ].
- specialize (Nat.gcd_divide_l (xn + 1) (xd + 1)) as (c1, Hc1).
+ rewrite Nat.sub_add; [ | flia H3 ].
+*)
+ specialize (Nat.gcd_divide_l (yn + 1) (yd + 1)) as (c1, Hc1).
  rewrite <- Ha in Hc1; rewrite Hc1.
  rewrite Nat.div_mul; [ | easy ].
+(*
  rewrite Nat.mul_comm, <- Hc1, Nat.add_sub.
- specialize (Nat.gcd_divide_r (xn + 1) (xd + 1)) as (c2, Hc2).
+*)
+ specialize (Nat.gcd_divide_r (yn + 1) (yd + 1)) as (c2, Hc2).
  rewrite <- Ha in Hc2; rewrite Hc2.
  rewrite Nat.div_mul; [ | easy ].
+...
  rewrite Nat.mul_comm, <- Hc2, Nat.add_sub.
  easy.
 ...
