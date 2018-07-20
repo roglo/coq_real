@@ -142,48 +142,48 @@ rewrite PQred_of_GQ.
 now destruct (PQ_of_GQ x).
 Qed.
 
+Theorem PQ_o_GQ : ∀ x, (PQ_of_GQ (GQ_of_PQ x) == x)%PQ.
+Proof.
+intros.
+unfold "=="%PQ, nd; simpl.
+unfold PQred.
+remember (ggcd (PQnum1 x + 1) (PQden1 x + 1)) as g eqn:Hg.
+erewrite ggcd_split in Hg; [ | easy ].
+subst g; simpl.
+specialize (Nat.gcd_divide_l (PQnum1 x + 1) (PQden1 x + 1)) as (c1, Hc1).
+specialize (Nat.gcd_divide_r (PQnum1 x + 1) (PQden1 x + 1)) as (c2, Hc2).
+move c2 before c1.
+rewrite Hc1 at 1.
+assert (Hg : Nat.gcd (PQnum1 x + 1) (PQden1 x + 1) ≠ 0). {
+  intros H; rewrite H in Hc1; flia Hc1.
+}
+rewrite Nat.div_mul; [ | easy ].
+symmetry; rewrite Nat.mul_comm.
+rewrite Hc2 at 1.
+rewrite Nat.div_mul; [ | easy ].
+symmetry; rewrite Nat.mul_comm.
+rewrite Nat.sub_add.
+-rewrite Nat.sub_add.
+ +rewrite Hc1.
+  rewrite Hc2 at 1.
+  now rewrite Nat.mul_assoc, Nat.mul_shuffle0.
+ +destruct c2; [ flia Hc2 | flia ].
+-destruct c1; [ flia Hc1 | flia ].
+Qed.
+
 Theorem PQ_of_GQ_additive : ∀ x y,
   (PQ_of_GQ (x + y) == PQ_of_GQ x + PQ_of_GQ y)%PQ.
 Proof.
 intros.
-unfold "=="%PQ, nd; simpl.
 remember (PQ_of_GQ x) as x'.
 remember (PQ_of_GQ y) as y'.
 move y' before x'.
-unfold "+"%PQ; simpl.
-remember (PQadd_num1 x' y') as nz' eqn:Hnz'.
-remember (PQadd_den1 x' y') as pz' eqn:Hpz'.
-move pz' before nz'.
-unfold PQred.
-simpl.
-...
-
-unfold "+"%PQ, "=="%PQ, nd; simpl.
-...
-
-unfold PQadd_num1, PQadd_den1, nd.
-...
-
-Theorem glop : ∀ x y,
-  PQred (PQ_of_GQ x + PQ_of_GQ y) =
-  PQ_of_GQ (x + y).
-Proof. easy. Qed.
-rewrite glop.
-
-...
-rewrite Nat.sub_add.
-rewrite Nat.sub_add.
-Search PQred.
-...
-rewrite PQred_add.
-Search PQred.
-do 2 rewrite PQred_of_GQ.
-...
-r
-
-rewrite GQ_of_PQ_additive.
-do 2 rewrite GQ_o_PQ.
-...
+specialize (GQ_o_PQ x) as H; rewrite <- H, <- Heqx'; clear H.
+specialize (GQ_o_PQ y) as H; rewrite <- H, <- Heqy'; clear H.
+clear x y Heqx' Heqy'; rename x' into x; rename y' into y.
+rewrite <- GQ_of_PQ_additive.
+apply PQ_o_GQ.
+Qed.
 
 Ltac tac_to_PQ :=
   unfold "+"%GQ, "*"%GQ;
@@ -257,44 +257,12 @@ Qed.
 Theorem GQadd_lt_mono_r : ∀ x y z, (x < y)%GQ ↔ (x + z < y + z)%GQ.
 Proof.
 intros.
-  unfold "+"%GQ, "*"%GQ.
-unfold "<"%GQ.
-  repeat
-  match goal with
-  | [ x : GQ |- _ ] =>
-      match goal with
-      [ |- context[PQ_of_GQ x] ] =>
-        let y := fresh "u" in
-        let Hy := fresh "Hu" in
-        remember (PQ_of_GQ x) as y eqn:Hy
-      end
-  | _ => idtac
-  end.
-  repeat rewrite GQ_of_PQ_additive.
-Search (PQ_of_GQ (_ + _)).
-split.
-intros H.
-repeat rewrite PQ_of_GQ_additive.
+unfold "+"%GQ, "<"%GQ.
+do 2 rewrite GQ_of_PQ_additive.
+do 2 rewrite PQ_of_GQ_additive.
+do 3 rewrite PQ_o_GQ.
 apply PQadd_lt_mono_r.
-rewrite PQ_o_GQ.
-
-
-  repeat rewrite GQ_of_PQ_multiplicative.
-...
-  repeat rewrite GQ_o_PQ.
-
-unfold "<"%GQ.
-rewrite PQadd_lt_mono_r.
-
-  repeat rewrite GQ_o_PQ.
-  repeat rewrite <- GQ_of_PQ_additive;
-  repeat rewrite <- GQ_of_PQ_multiplicative;
-  repeat rewrite <- GQ_of_PQ_additive.
-tac_to_PQ.
-…..
-
-rewrite PQadd_lt_mono_r.
-...
+Qed.
 
 Theorem PQ_of_GQ_eq : ∀ x y,
   (PQ_of_GQ x == PQ_of_GQ y)%PQ
@@ -605,11 +573,18 @@ destruct c1, c2; repeat GQcompare_iff.
 +now rewrite Hc2, GQadd_comm in Hc1; apply GQadd_no_neutral in Hc1.
 +remember (GQcompare (pz - px) py) as c3 eqn:Hc3; symmetry in Hc3.
  destruct c3; GQcompare_iff; [ easy | | ].
+ *specialize (proj1 (GQadd_lt_mono_r _ _ px) Hc3) as H.
 ...
+  rewrite GQsub_add in Hc3; [ | easy ].
+  rewrite GQadd_comm, Hc1 in Hc3.
+  now apply GQlt_irrefl in Hc3.
+...
+(*
  *apply (GQadd_lt_mono_r _ _ px) in Hc3.
   rewrite GQsub_add in Hc3; [ | easy ].
   rewrite GQadd_comm, Hc1 in Hc3.
   now apply GQlt_irrefl in Hc3.
+*)
  *apply (GQadd_lt_mono_r _ _ px) in Hc3.
   rewrite GQsub_add in Hc3; [ | easy ].
   rewrite GQadd_comm, Hc1 in Hc3.
