@@ -121,6 +121,21 @@ remember PQadd as f; simpl; subst f.
 now rewrite PQred_add.
 Qed.
 
+Theorem GQ_of_PQ_subtractive : ∀ x y,
+  GQ_of_PQ (x - y) = (GQ_of_PQ x - GQ_of_PQ y)%GQ.
+Proof.
+intros.
+apply GQeq_eq.
+unfold GQ_of_PQ.
+remember GQsub as f; simpl; subst f.
+unfold "-"%GQ.
+remember GQsub as f; simpl; subst f.
+...
+now rewrite PQred_sub.
+Qed.
+
+...
+
 Theorem GQ_of_PQ_multiplicative : ∀ x y,
   GQ_of_PQ (x * y) = (GQ_of_PQ x * GQ_of_PQ y)%GQ.
 Proof.
@@ -573,7 +588,7 @@ destruct c1, c2; repeat GQcompare_iff.
 +now rewrite Hc2, GQadd_comm in Hc1; apply GQadd_no_neutral in Hc1.
 +remember (GQcompare (pz - px) py) as c3 eqn:Hc3; symmetry in Hc3.
  destruct c3; GQcompare_iff; [ easy | | ].
- *specialize (proj1 (GQadd_lt_mono_r _ _ px) Hc3) as H.
+ *apply (GQadd_lt_mono_r (pz - px)%GQ _ px) in Hc3.
 ...
   rewrite GQsub_add in Hc3; [ | easy ].
   rewrite GQadd_comm, Hc1 in Hc3.
