@@ -122,19 +122,16 @@ now rewrite PQred_add.
 Qed.
 
 Theorem GQ_of_PQ_subtractive : ∀ x y,
-  GQ_of_PQ (x - y) = (GQ_of_PQ x - GQ_of_PQ y)%GQ.
+  (y < x)%PQ → GQ_of_PQ (x - y) = (GQ_of_PQ x - GQ_of_PQ y)%GQ.
 Proof.
-intros.
+intros * Hyx.
 apply GQeq_eq.
 unfold GQ_of_PQ.
 remember GQsub as f; simpl; subst f.
 unfold "-"%GQ.
 remember GQsub as f; simpl; subst f.
-...
-now rewrite PQred_sub.
+now apply PQred_sub.
 Qed.
-
-...
 
 Theorem GQ_of_PQ_multiplicative : ∀ x y,
   GQ_of_PQ (x * y) = (GQ_of_PQ x * GQ_of_PQ y)%GQ.
@@ -201,7 +198,7 @@ apply PQ_o_GQ.
 Qed.
 
 Ltac tac_to_PQ :=
-  unfold "+"%GQ, "*"%GQ;
+  unfold "+"%GQ, "-"%GQ, "*"%GQ;
   repeat
   match goal with
   | [ x : GQ |- _ ] =>
@@ -278,6 +275,17 @@ do 2 rewrite PQ_of_GQ_additive.
 do 3 rewrite PQ_o_GQ.
 apply PQadd_lt_mono_r.
 Qed.
+
+Theorem GQsub_add : ∀ x y, (y < x)%GQ → (x - y + y)%GQ = x.
+Proof.
+intros.
+unfold "+"%GQ, "-"%GQ, "<"%GQ.
+rewrite GQ_of_PQ_additive.
+rewrite GQ_of_PQ_subtractive.
+-do 3 rewrite GQ_o_PQ.
+...
+ apply PQsub_add.
+...
 
 Theorem PQ_of_GQ_eq : ∀ x y,
   (PQ_of_GQ x == PQ_of_GQ y)%PQ

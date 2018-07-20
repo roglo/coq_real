@@ -1306,7 +1306,7 @@ Theorem PQred_sub_r : ∀ x y, (y < x)%PQ → PQred (x - y) = PQred (x - PQred y
 Proof.
 intros * Hyx.
 remember (Nat.gcd (PQnum1 y + 1) (PQden1 y + 1)) as a eqn:Ha.
-rewrite (PQred_sub_mul_one_l x (PQred y) (a - 1)); [ | now apply PQred_lt_l ].
+rewrite (PQred_sub_mul_one_r x (PQred y) (a - 1)); [ | now apply PQred_lt_l ].
 destruct y as (yn, yd).
 simpl in Ha.
 unfold "*"%PQ; simpl.
@@ -1318,7 +1318,6 @@ destruct a.
 -symmetry in Ha.
  apply Nat.gcd_eq_0_l in Ha; flia Ha.
 -replace (S a - 1 + 1) with (S a) by flia.
-(*
  assert (H2 : (yn + 1) / S a ≠ 0). {
    intros H1.
    apply Nat.div_small_iff in H1; [ | easy ].
@@ -1335,22 +1334,18 @@ destruct a.
    specialize (H3 H4).
    flia Ha H1 H3.
  }
+ rewrite Nat.sub_add; [ | flia H2 ].
  rewrite Nat.sub_add; [ | flia H3 ].
- rewrite Nat.sub_add; [ | flia H3 ].
-*)
  specialize (Nat.gcd_divide_l (yn + 1) (yd + 1)) as (c1, Hc1).
  rewrite <- Ha in Hc1; rewrite Hc1.
  rewrite Nat.div_mul; [ | easy ].
-(*
  rewrite Nat.mul_comm, <- Hc1, Nat.add_sub.
-*)
  specialize (Nat.gcd_divide_r (yn + 1) (yd + 1)) as (c2, Hc2).
  rewrite <- Ha in Hc2; rewrite Hc2.
  rewrite Nat.div_mul; [ | easy ].
-...
  rewrite Nat.mul_comm, <- Hc2, Nat.add_sub.
  easy.
-...
+Qed.
 
 Theorem PQred_add : ∀ x y, PQred (x + y) = PQred (PQred x + PQred y).
 Proof.
@@ -1366,13 +1361,8 @@ Theorem PQred_sub : ∀ x y,
 Proof.
 intros.
 rewrite PQred_sub_l; [ | easy ].
-...
-
-rewrite PQred_sub_l.
-
-rewrite PQred_sub_l, PQadd_comm.
-rewrite PQred_add_l, PQadd_comm.
-easy.
+rewrite PQred_sub_r; [ easy | ].
+now apply PQred_lt_r.
 Qed.
 
 Theorem PQred_mul_l : ∀ x y, PQred (x * y) = PQred (PQred x * y).
