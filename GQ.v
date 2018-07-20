@@ -296,6 +296,22 @@ Qed.
 Theorem GQlt_irrefl : ∀ x, ¬ (x < x)%GQ.
 Proof. intros; apply PQlt_irrefl. Qed.
 
+Theorem GQnle_gt : ∀ x y, ¬ (x ≤ y)%GQ ↔ (y < x)%GQ.
+Proof. intros; apply PQnle_gt. Qed.
+
+Theorem GQlt_le_incl : ∀ x y, (x < y)%GQ → (x ≤ y)%GQ.
+Proof. intros x y; apply PQlt_le_incl. Qed.
+
+Theorem GQlt_add_r : ∀ x y, (x < x + y)%GQ.
+Proof.
+intros x y.
+unfold "<"%GQ, "+"%GQ.
+remember (PQ_of_GQ x) as x'.
+remember (PQ_of_GQ y) as y'.
+rewrite PQ_o_GQ.
+apply PQlt_add_r.
+Qed.
+
 Theorem PQ_of_GQ_eq : ∀ x y,
   (PQ_of_GQ x == PQ_of_GQ y)%PQ
   → PQ_of_GQ x = PQ_of_GQ y.
@@ -614,7 +630,6 @@ destruct c1, c2; repeat GQcompare_iff.
   rewrite GQadd_comm, Hc1 in Hc3.
   now apply GQlt_irrefl in Hc3.
 +rewrite <- Hc1 in Hc2.
-...
  exfalso; apply GQnle_gt in Hc2; apply Hc2.
  apply GQlt_le_incl, GQlt_add_r.
 +rewrite Hc2 in Hc1.
@@ -625,11 +640,12 @@ destruct c1, c2; repeat GQcompare_iff.
  *rewrite GQadd_comm, <- Hc3 in Hc1.
   rewrite GQsub_add in Hc1; [ | easy ].
   now apply GQlt_irrefl in Hc1.
- *apply (GQadd_lt_mono_r _ _ px) in Hc3.
+ *apply (GQadd_lt_mono_r (pz - px)%GQ _ px) in Hc3.
   rewrite GQsub_add in Hc3; [ | easy ].
   rewrite GQadd_comm in Hc3.
   exfalso; apply GQnle_gt in Hc3; apply Hc3.
   now apply GQlt_le_incl.
+...
  *now f_equal; rewrite GQsub_add_distr.
 +apply GQnle_gt in Hc2.
  exfalso; apply Hc2; apply GQlt_le_incl.
