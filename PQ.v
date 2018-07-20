@@ -1132,6 +1132,34 @@ rewrite ggcd_mul_mono_l; [ | easy ].
 now destruct (ggcd (S xn * S yn) (S xd * S yd)).
 Qed.
 
+Theorem PQred_lt_r : ∀ x y, (x < y)%PQ → (x < PQred y)%PQ.
+Proof.
+intros * Hyx.
+unfold PQred.
+remember (Nat.gcd (PQnum1 y + 1) (PQden1 y + 1)) as a eqn:Ha.
+erewrite ggcd_split; [ | apply Ha ].
+unfold "<"%PQ, nd; simpl.
+assert (Haz : a ≠ 0). {
+  intros H; rewrite Ha in H.
+  apply Nat.gcd_eq_0_l in H.
+  now rewrite Nat.add_1_r in H.
+}
+specialize (Nat.gcd_divide_l (PQnum1 y + 1) (PQden1 y + 1)) as (c1, Hc1).
+rewrite <- Ha in Hc1; rewrite Hc1.
+rewrite Nat.div_mul; [ | easy ].
+specialize (Nat.gcd_divide_r (PQnum1 y + 1) (PQden1 y + 1)) as (c2, Hc2).
+rewrite <- Ha in Hc2; rewrite Hc2.
+rewrite Nat.div_mul; [ | easy ].
+rewrite Nat.sub_add.
+-rewrite Nat.sub_add.
+ +rewrite (Nat.mul_lt_mono_pos_r a); [ | flia Haz ].
+  rewrite <- Nat.mul_assoc, <- Hc2.
+  rewrite Nat.mul_shuffle0, <- Hc1.
+  easy.
+ +destruct c1; [ flia Hc1 | flia ].
+-destruct c2; [ flia Hc2 | flia ].
+Qed.
+
 Theorem PQred_add_l : ∀ x y, PQred (x + y) = PQred (PQred x + y).
 Proof.
 intros.
@@ -1182,11 +1210,7 @@ Theorem PQred_sub_l : ∀ x y, (y < x)%PQ → PQred (x - y) = PQred (PQred x - y
 Proof.
 intros * Hyx.
 remember (Nat.gcd (PQnum1 x + 1) (PQden1 x + 1)) as a eqn:Ha.
-assert (Hr : (y < PQred x)%PQ). {
-...
-rewrite (PQred_sub_mul_one_l (PQred x) y (a - 1)).
-...
-f_equal; f_equal.
+rewrite (PQred_sub_mul_one_l (PQred x) y (a - 1)); [ | now apply PQred_lt_r ].
 destruct x as (xn, xd).
 simpl in Ha.
 unfold "*"%PQ; simpl.
@@ -1227,6 +1251,11 @@ destruct a.
  easy.
 Qed.
 
+Theorem PQred_sub_r : ∀ x y, (y < x)%PQ → PQred (x - y) = PQred (x - PQred y).
+Proof.
+intros * Hyx.
+...
+
 Theorem PQred_add : ∀ x y, PQred (x + y) = PQred (PQred x + PQred y).
 Proof.
 intros.
@@ -1236,11 +1265,16 @@ easy.
 Qed.
 (* merci Bérénice ! *)
 
-Theorem PQred_sub : ∀ x y, PQred (x - y) = PQred (PQred x - PQred y).
+Theorem PQred_sub : ∀ x y,
+  (y < x)%PQ → PQred (x - y) = PQred (PQred x - PQred y).
 Proof.
 intros.
+rewrite PQred_sub_l; [ | easy ].
 ...
-rewrite PQred_add_l, PQadd_comm.
+
+rewrite PQred_sub_l.
+
+rewrite PQred_sub_l, PQadd_comm.
 rewrite PQred_add_l, PQadd_comm.
 easy.
 Qed.
