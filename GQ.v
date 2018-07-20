@@ -315,6 +315,38 @@ Qed.
 Theorem GQsub_add_distr : ∀ x y z,
   (y < x)%GQ → (x - (y + z))%GQ = (x - y - z)%GQ.
 Proof.
+intros * Hyx.
+revert Hyx.
+unfold "+"%GQ, "-"%GQ, "<"%GQ; intros.
+remember (PQ_of_GQ x) as x' eqn:Hx'.
+remember (PQ_of_GQ y) as y' eqn:Hy'.
+remember (PQ_of_GQ z) as z' eqn:Hz'.
+...
+rewrite PQ_o_GQ.
+...
+
+intros * Hyx.
+revert Hyx.
+unfold "+"%GQ, "-"%GQ, "<"%GQ; intros.
+remember (PQ_of_GQ x) as x' eqn:Hx'.
+remember (PQ_of_GQ y) as y' eqn:Hy'.
+remember (PQ_of_GQ z) as z' eqn:Hz'.
+rewrite GQ_of_PQ_additive.
+rewrite GQ_of_PQ_subtractive.
+-rewrite GQ_of_PQ_subtractive.
+ +rewrite GQ_of_PQ_subtractive; [ | easy ].
+  do 2 rewrite GQ_o_PQ.
+  rewrite <- GQ_of_PQ_subtractive; [ | easy ].
+  rewrite <- GQ_of_PQ_subtractive.
+  *rewrite <- GQ_of_PQ_additive.
+   rewrite <- GQ_of_PQ_subtractive.
+  --now rewrite PQsub_add_distr.
+  --idtac.
+...
+unfold PQadd_num1, PQsub_num1, PQadd_den1, nd; simpl;
+repeat rewrite Nat.add_1_r.
+
+...
 intros.
 tac_to_PQ.
 rewrite GQ_of_PQ_additive.
