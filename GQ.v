@@ -312,6 +312,25 @@ rewrite PQ_o_GQ.
 apply PQlt_add_r.
 Qed.
 
+Theorem GQsub_add_distr : ∀ x y z,
+  (y < x)%GQ → (x - (y + z))%GQ = (x - y - z)%GQ.
+Proof.
+intros.
+tac_to_PQ.
+rewrite GQ_of_PQ_additive.
+rewrite GQ_of_PQ_subtractive.
+-rewrite GQ_of_PQ_subtractive.
+ +rewrite GQ_of_PQ_subtractive.
+  *do 2 rewrite GQ_o_PQ.
+   rewrite <- GQ_of_PQ_additive.
+   rewrite <- GQ_of_PQ_subtractive.
+  --rewrite <- GQ_of_PQ_subtractive.
+   ++rewrite <- GQ_of_PQ_subtractive.
+    **now subst; f_equal; apply PQsub_add_distr.
+    **subst.
+(* ah chiasse de pute *)
+...
+
 Theorem PQ_of_GQ_eq : ∀ x y,
   (PQ_of_GQ x == PQ_of_GQ y)%PQ
   → PQ_of_GQ x = PQ_of_GQ y.
