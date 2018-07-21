@@ -313,6 +313,12 @@ apply PQlt_add_r.
 Qed.
 
 Theorem GQsub_add_distr : ∀ x y z,
+  (y + z < x)%GQ → (x - (y + z))%GQ = (x - y - z)%GQ.
+Proof.
+intros * Hyzx.
+...
+
+Theorem GQsub_add_distr : ∀ x y z,
   (y < x)%GQ → (x - (y + z))%GQ = (x - y - z)%GQ.
 Proof.
 intros * Hyx.
@@ -320,6 +326,10 @@ apply GQeq_eq.
 unfold "+"%GQ, "-"%GQ, "<"%GQ; intros.
 unfold GQ_of_PQ; simpl.
 Search (PQred (_ - _)).
+Compute (PQ_of_pair 1 1 - (PQ_of_pair 6 10 + PQ_of_pair 6 10))%PQ.
+Compute (PQ_of_pair 1 1 - PQ_of_pair 6 10 - PQ_of_pair 6 10)%PQ.
+Compute (GQ_of_pair 1 1 - (GQ_of_pair 6 10 + GQ_of_pair 6 10))%GQ.
+Compute (GQ_of_pair 1 1 - GQ_of_pair 6 10 - GQ_of_pair 6 10)%GQ.
 ...
 
 
