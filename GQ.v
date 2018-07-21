@@ -316,69 +316,34 @@ Theorem GQsub_add_distr : ∀ x y z,
   (y + z < x)%GQ → (x - (y + z))%GQ = (x - y - z)%GQ.
 Proof.
 intros * Hyzx.
-...
-
-Theorem GQsub_add_distr : ∀ x y z,
-  (y < x)%GQ → (x - (y + z))%GQ = (x - y - z)%GQ.
-Proof.
-intros * Hyx.
-apply GQeq_eq.
-unfold "+"%GQ, "-"%GQ, "<"%GQ; intros.
-unfold GQ_of_PQ; simpl.
-Search (PQred (_ - _)).
-Compute (PQ_of_pair 1 1 - (PQ_of_pair 6 10 + PQ_of_pair 6 10))%PQ.
-Compute (PQ_of_pair 1 1 - PQ_of_pair 6 10 - PQ_of_pair 6 10)%PQ.
-Compute (GQ_of_pair 1 1 - (GQ_of_pair 6 10 + GQ_of_pair 6 10))%GQ.
-Compute (GQ_of_pair 1 1 - GQ_of_pair 6 10 - GQ_of_pair 6 10)%GQ.
-...
-
-
-remember (PQ_of_GQ x) as x' eqn:Hx'.
-remember (PQ_of_GQ y) as y' eqn:Hy'.
-remember (PQ_of_GQ z) as z' eqn:Hz'.
-rewrite GQ_of_PQ_additive.
-
-...
-rewrite PQ_o_GQ.
-...
-
-intros * Hyx.
-revert Hyx.
+revert Hyzx.
 unfold "+"%GQ, "-"%GQ, "<"%GQ; intros.
 remember (PQ_of_GQ x) as x' eqn:Hx'.
 remember (PQ_of_GQ y) as y' eqn:Hy'.
 remember (PQ_of_GQ z) as z' eqn:Hz'.
+rewrite PQ_o_GQ in Hyzx.
 rewrite GQ_of_PQ_additive.
+assert (Hyx : (y' < x')%PQ). {
+  eapply PQlt_trans; [ | apply Hyzx ].
+  apply PQlt_add_r.
+}
+assert (Hzxy : (z' < x' - y')%PQ). {
+  apply (PQadd_lt_mono_r _ _ y').
+  rewrite PQsub_add; [ | easy ].
+  now rewrite PQadd_comm.
+}
 rewrite GQ_of_PQ_subtractive.
--rewrite GQ_of_PQ_subtractive.
- +rewrite GQ_of_PQ_subtractive; [ | easy ].
-  do 2 rewrite GQ_o_PQ.
-  rewrite <- GQ_of_PQ_subtractive; [ | easy ].
-  rewrite <- GQ_of_PQ_subtractive.
-  *rewrite <- GQ_of_PQ_additive.
-   rewrite <- GQ_of_PQ_subtractive.
-  --now rewrite PQsub_add_distr.
-  --idtac.
-...
-unfold PQadd_num1, PQsub_num1, PQadd_den1, nd; simpl;
-repeat rewrite Nat.add_1_r.
-
-...
-intros.
-tac_to_PQ.
-rewrite GQ_of_PQ_additive.
-rewrite GQ_of_PQ_subtractive.
--rewrite GQ_of_PQ_subtractive.
- +rewrite GQ_of_PQ_subtractive.
-  *do 2 rewrite GQ_o_PQ.
-   rewrite <- GQ_of_PQ_additive.
-   rewrite <- GQ_of_PQ_subtractive.
-  --rewrite <- GQ_of_PQ_subtractive.
-   ++rewrite <- GQ_of_PQ_subtractive.
-    **now subst; f_equal; apply PQsub_add_distr.
-    **subst.
-(* ah chiasse de pute *)
-...
+-rewrite GQ_of_PQ_subtractive; [ | now rewrite PQ_o_GQ ].
+ rewrite GQ_of_PQ_subtractive; [ | easy ].
+ do 2 rewrite GQ_o_PQ.
+ rewrite <- GQ_of_PQ_subtractive; [ | easy ].
+ rewrite <- GQ_of_PQ_subtractive; [ | easy ].
+ rewrite <- GQ_of_PQ_additive.
+ rewrite <- GQ_of_PQ_subtractive; [ | easy ].
+ now rewrite PQsub_add_distr.
+-rewrite PQ_of_GQ_additive.
+ now do 2 rewrite PQ_o_GQ.
+Qed.
 
 Theorem PQ_of_GQ_eq : ∀ x y,
   (PQ_of_GQ x == PQ_of_GQ y)%PQ
@@ -713,10 +678,10 @@ destruct c1, c2; repeat GQcompare_iff.
   rewrite GQadd_comm in Hc3.
   exfalso; apply GQnle_gt in Hc3; apply Hc3.
   now apply GQlt_le_incl.
-...
  *now f_equal; rewrite GQsub_add_distr.
 +apply GQnle_gt in Hc2.
  exfalso; apply Hc2; apply GQlt_le_incl.
+...
  apply (GQlt_trans _ (px + py)); [ | easy ].
  apply GQlt_add_r.
 +rewrite (GQsub_morph pz pz (px + py) (py + pz)); [ | easy | easy | ].
