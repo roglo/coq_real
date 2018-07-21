@@ -302,6 +302,9 @@ Proof. intros; apply PQnle_gt. Qed.
 Theorem GQlt_le_incl : ∀ x y, (x < y)%GQ → (x ≤ y)%GQ.
 Proof. intros x y; apply PQlt_le_incl. Qed.
 
+Theorem GQlt_trans : ∀ x y z, (x < y)%GQ → (y < z)%GQ → (x < z)%GQ.
+Proof. intros x y z; apply PQlt_trans. Qed.
+
 Theorem GQlt_add_r : ∀ x y, (x < x + y)%GQ.
 Proof.
 intros x y.
@@ -681,9 +684,9 @@ destruct c1, c2; repeat GQcompare_iff.
  *now f_equal; rewrite GQsub_add_distr.
 +apply GQnle_gt in Hc2.
  exfalso; apply Hc2; apply GQlt_le_incl.
-...
- apply (GQlt_trans _ (px + py)); [ | easy ].
+ apply (GQlt_trans _ (px + py)%GQ); [ | easy ].
  apply GQlt_add_r.
+...
 +rewrite (GQsub_morph pz pz (px + py) (py + pz)); [ | easy | easy | ].
  *now rewrite GQadd_sub.
  *now rewrite Hc2, GQadd_comm.
