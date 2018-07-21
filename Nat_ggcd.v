@@ -296,3 +296,11 @@ split.
   now apply Nat_gcd_le_r.
  +now intros H1; apply Nat.gcd_eq_0_r in H1.
 Qed.
+
+Theorem ggcd_1_l : ∀ n, ggcd 1 n = (1, (1, n)).
+Proof.
+intros.
+erewrite ggcd_split; [ | easy ].
+rewrite Nat.gcd_1_l.
+now do 2 rewrite Nat.div_1_r.
+Qed.

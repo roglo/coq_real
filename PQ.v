@@ -1097,6 +1097,62 @@ now destruct (ggcd (S xn * S yd + S yn * S xd) (S xd * S yd)).
 Qed.
 
 Theorem PQred_sub_mul_one_l : ∀ x y a,
+  PQred (x - y) = PQred (PQmake a a * x - y).
+Proof.
+intros.
+destruct (PQlt_le_dec y x) as [Hyx | Hxy].
+-destruct x as (xn, xd).
+ destruct y as (yn, yd).
+ unfold PQred; simpl.
+ unfold "*"%PQ, PQ_of_nat.
+ unfold PQmul_num1, PQmul_den1; simpl.
+ unfold PQsub_num1, PQadd_den1, nd; simpl.
+ revert Hyx; PQtac1; intros.
+ PQtac2; [ PQtac2 | flia Hyx ].
+ PQtac2.
+ +do 3 PQtac2.
+  replace (S yn * (S a * S xd)) with (S a * (S yn * S xd)) by flia.
+  rewrite <- Nat.mul_assoc, <- Nat.mul_sub_distr_l.
+  rewrite <- Nat.mul_assoc.
+  rewrite ggcd_mul_mono_l; [ | easy ].
+  now destruct (ggcd (S xn * S yd - S yn * S xd) (S xd * S yd)).
+ +do 2 PQtac2.
+  replace (S yn * (S a * S xd)) with (S a * (S yn * S xd)) by flia.
+  rewrite <- Nat.mul_assoc, <- Nat.mul_sub_distr_l.
+  simpl; flia Hyx.
+-destruct x as (xn, xd).
+ destruct y as (yn, yd).
+ unfold "-"%PQ.
+ unfold PQsub_num1, PQadd_den1, nd; simpl.
+ unfold "≤"%PQ, nd in Hxy; simpl in Hxy.
+ replace ((xn + 1) * (yd + 1) - (yn + 1) * (xd + 1)) with 0 by flia Hxy.
+ simpl.
+ unfold PQmul_num1, PQmul_den1; simpl.
+ rewrite Nat.sub_add; [ | rewrite Nat.add_1_r; simpl; flia ].
+ rewrite Nat.sub_add; [ | rewrite Nat.add_1_r; simpl; flia ].
+ replace ((yn + 1) * ((a + 1) * (xd + 1)))
+   with ((a + 1) * (yn + 1) * (xd + 1)) by flia.
+ do 2 rewrite <- Nat.mul_assoc.
+ rewrite <- Nat.mul_sub_distr_l.
+ replace ((xn + 1) * (yd + 1) - (yn + 1) * (xd + 1)) with 0 by flia Hxy.
+ rewrite Nat.mul_0_r; simpl.
+(* c'est bizarre que PQred 0 ne donne pas (0, 1) *)
+ unfold PQred; simpl.
+ rewrite Nat.sub_add; [ | rewrite Nat.add_1_r; simpl; flia ].
+ rewrite Nat.sub_add; [ | do 3 rewrite Nat.add_1_r; simpl; flia ].
+ do 2 rewrite ggcd_1_l; simpl.
+ f_equal.
+...
+ destruct x as (xn, xd).
+ destruct y as (yn, yd).
+ unfold PQred; simpl.
+...
+
+Qed.
+
+...
+
+Theorem PQred_sub_mul_one_l : ∀ x y a,
   (y < x)%PQ -> PQred (x - y) = PQred (PQmake a a * x - y).
 Proof.
 intros (xn, xd) (yn, yd) a Hyx.
