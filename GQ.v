@@ -673,32 +673,19 @@ Qed.
 
 Theorem GQsub_no_neutral : ∀ x y, (y < x)%GQ → (x - y ≠ x)%GQ.
 Proof.
-intros * Hyx.
-unfold "-"%GQ.
-rewrite GQ_of_PQ_subtractive.
-do 2 rewrite GQ_o_PQ.
-intros H.
-rewrite <- H in Hyx.
-apply GQnle_gt in Hyx; apply Hyx.
-Search (_ - _ ≤ _)%GQ.
-...
-
-intros * Hyx Hxy.
-unfold "-"%GQ in Hxy.
-rewrite GQ_of_PQ_subtractive in Hxy.
-rewrite GQ_o_PQ in Hxy.
-
-...
-intros *; PQtac1; intros Hyz.
-PQtac2; [ | flia Hyz ].
-PQtac3.
-rewrite <- Nat.sub_succ_l; [ | simpl; flia ].
-rewrite Nat.sub_succ, Nat.sub_0_r, Nat.mul_assoc.
-intros H.
-apply Nat.add_sub_eq_nz in H; [ | simpl; flia ].
-rewrite Nat.add_comm, Nat.mul_shuffle0 in H.
-rewrite <- Nat.add_0_r in H.
-now apply Nat.add_cancel_l in H.
+intros *.
+unfold "-"%GQ, "<"%GQ; intros Hyx Hxy.
+rewrite GQ_of_PQ_subtractive in Hxy; [ | easy ].
+rewrite <- GQ_o_PQ in Hxy.
+remember (PQ_of_GQ x) as x'.
+remember (PQ_of_GQ y) as y'.
+move y' before x'.
+apply GQ_of_PQ_eq in Hxy.
+rewrite (PQsub_morph _ y' _ x') in Hxy.
+-now apply PQsub_no_neutral in Hxy.
+-now do 2 rewrite PQ_o_GQ.
+-apply PQ_o_GQ.
+-apply PQ_o_GQ.
 Qed.
 
 Theorem NQmatch_match_comp : ∀ A c p q (f0 : A) fp fn,
@@ -840,15 +827,13 @@ destruct c1, c2; repeat GQcompare_iff.
 -remember (GQcompare (px - pz) py) as c3 eqn:Hc3; symmetry in Hc3.
  destruct c3; GQcompare_iff.
  +exfalso; rewrite <- Hc1 in Hc3.
-...
   now apply GQsub_no_neutral in Hc3.
  +rewrite GQsub_sub_distr; [ | easy | easy ].
   rewrite GQadd_comm.
-  rewrite (GQsub_morph px py (pz + py) (pz + py)); [ | | easy | easy ].
-  *now rewrite GQadd_sub.
-  *rewrite Hc1; apply GQlt_add_l.
+  now rewrite Hc1, GQadd_sub.
  +apply GQnle_gt in Hc3.
   exfalso; apply Hc3; rewrite <- Hc1.
+...
   now apply GQlt_le_incl, GQsub_lt.
 -rewrite (GQsub_morph _ pz _ py); [ | easy | easy | easy ].
  rewrite GQsub_add; [ easy | now rewrite <- Hc2 ].
