@@ -92,6 +92,9 @@ f_equal; f_equal.
  apply Nat.mul_comm.
 Qed.
 
+Theorem GQle_refl : ∀ x, (x ≤ x)%GQ.
+Proof. intros; apply PQle_refl. Qed.
+
 Theorem GQ_of_PQred : ∀ x, GQ_of_PQ (PQred x) = GQ_of_PQ x.
 Proof.
 intros.
@@ -443,6 +446,14 @@ symmetry.
 rewrite GQ_of_PQ_subtractive; [ | now rewrite PQ_o_GQ ].
 rewrite PQ_o_GQ.
 now rewrite <- GQ_of_PQ_subtractive.
+Qed.
+
+Theorem GQadd_sub_swap : ∀ x y z,
+  (z < x)%GQ → (x + y - z)%GQ = (x - z + y)%GQ.
+Proof.
+intros * Hzx.
+rewrite GQadd_comm, <- GQadd_sub_assoc; [ | easy ].
+now rewrite GQadd_comm.
 Qed.
 
 Theorem PQ_of_GQ_eq : ∀ x y,
@@ -857,9 +868,7 @@ destruct c1, c2; repeat GQcompare_iff.
  +apply GQnle_gt in Hc3.
   exfalso; apply Hc3; rewrite <- Hc1.
   now apply GQlt_le_incl, GQsub_lt.
-...
--rewrite (GQsub_morph _ pz _ py); [ | easy | easy | easy ].
- rewrite GQsub_add; [ easy | now rewrite <- Hc2 ].
+-rewrite Hc2, GQsub_add; [ easy | now rewrite <- Hc2 ].
 -rewrite GQadd_comm.
  rewrite GQadd_sub_assoc; [ | easy ].
  now rewrite GQadd_sub_swap.
@@ -878,8 +887,7 @@ destruct c1, c2; repeat GQcompare_iff.
  +exfalso; rewrite <- Hc2 in Hc3.
   now apply GQsub_no_neutral in Hc3.
  +symmetry in Hc2.
-  rewrite (GQsub_morph _ (px - py) _ px); [ | easy | easy | easy ].
-  rewrite GQsub_sub_distr; [ | easy | now apply GQsub_lt ].
+  rewrite Hc2, GQsub_sub_distr; [ | easy | now apply GQsub_lt ].
   now rewrite GQadd_comm, GQadd_sub.
  +exfalso; apply GQnle_gt in Hc3; apply Hc3.
   rewrite <- Hc2.
@@ -900,16 +908,15 @@ destruct c1, c2; repeat GQcompare_iff.
  *easy.
  *exfalso; apply GQnle_gt in Hc4; apply Hc4.
   symmetry in Hc3.
-  rewrite (GQsub_morph _ (px - py) _ px); [ | easy | easy | easy ].
-  rewrite GQsub_sub_distr; [ | easy | now apply GQsub_lt ].
+  rewrite Hc3, GQsub_sub_distr; [ | easy | now apply GQsub_lt ].
   rewrite GQadd_comm, GQadd_sub; apply GQle_refl.
  *exfalso; apply GQnle_gt in Hc4; apply Hc4.
   symmetry in Hc3.
-  rewrite (GQsub_morph _ (px - py) _ px); [ | easy | easy | easy ].
+  rewrite Hc3.
   rewrite GQsub_sub_distr; [ | easy | now apply GQsub_lt ].
   rewrite GQadd_comm, GQadd_sub; apply GQle_refl.
  *exfalso; symmetry in Hc4.
-  rewrite (GQsub_morph _ (px - pz) _ px) in Hc3; [ | easy | easy | easy ].
+  rewrite Hc4 in Hc3.
   rewrite GQsub_sub_distr in Hc3; [ | easy | now apply GQsub_lt ].
   rewrite GQadd_comm, GQadd_sub in Hc3.
   now apply GQlt_irrefl in Hc3.
@@ -917,6 +924,7 @@ destruct c1, c2; repeat GQcompare_iff.
   rewrite GQsub_sub_distr; [ | easy | easy ].
   now rewrite GQadd_comm.
  *exfalso; apply GQnle_gt in Hc4; apply Hc4; clear Hc4.
+...
   apply (GQadd_le_mono_r _ _ pz).
   rewrite GQsub_add; [ | easy ].
   apply GQnlt_ge; intros Hc4.
