@@ -378,6 +378,8 @@ unfold "+"%GQ, "-"%GQ, "<"%GQ; intros.
 remember (PQ_of_GQ x) as x' eqn:Hx'.
 remember (PQ_of_GQ y) as y' eqn:Hy'.
 remember (PQ_of_GQ z) as z' eqn:Hz'.
+move x' after y'; move z' before y'.
+move Hx' after Hy'.
 rewrite PQ_o_GQ in Hyzx.
 rewrite GQ_of_PQ_additive.
 assert (Hyxz : (y' < x' + z')%PQ). {
@@ -395,6 +397,29 @@ rewrite GQ_of_PQ_subtractive.
  now rewrite PQsub_sub_distr.
 -rewrite PQ_of_GQ_additive.
  now do 2 rewrite PQ_o_GQ.
+Qed.
+
+Theorem GQadd_sub_assoc : ∀ x y z,
+  (z < y)%GQ → (x + (y - z))%GQ = (x + y - z)%GQ.
+Proof.
+intros * Hzy.
+revert Hzy.
+unfold "+"%GQ, "-"%GQ, "<"%GQ; intros.
+remember (PQ_of_GQ x) as x' eqn:Hx'.
+remember (PQ_of_GQ y) as y' eqn:Hy'.
+remember (PQ_of_GQ z) as z' eqn:Hz'.
+revert Hzy; tac_to_PQ; intros.
+move x' after y'; move z' before y'.
+move Hx' after Hy'.
+rewrite PQadd_sub_assoc; [ | easy ].
+assert (Hzxy : (z' < x' + y')%PQ). {
+  eapply PQlt_trans; [ apply Hzy | ].
+  apply PQlt_add_l.
+}
+symmetry.
+rewrite GQ_of_PQ_subtractive; [ | now rewrite PQ_o_GQ ].
+rewrite PQ_o_GQ.
+now rewrite <- GQ_of_PQ_subtractive.
 Qed.
 
 Theorem PQ_of_GQ_eq : ∀ x y,
@@ -749,12 +774,9 @@ destruct c1, c2; repeat GQcompare_iff.
   exfalso; apply GQnle_gt in Hc3; apply Hc3.
   now apply GQlt_le_incl.
 +rewrite GQadd_comm.
-...
  rewrite <- GQadd_sub_assoc; [ | easy ].
  now rewrite GQadd_comm.
 Qed.
-
-...
 
 Theorem NQadd_add_swap : ∀ x y z, (x + y + z = x + z + y)%NQ.
 Proof.
@@ -768,13 +790,12 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl.
 -now destruct (GQcompare px pz).
 -now rewrite GQadd_add_swap.
 -rewrite NQmatch_match_comp.
-...
--rewrite NQmatch_match_comp, NQopp_match_comp; simpl.
  apply NQadd_swap_lemma1.
--now destruct (PQcompare px py).
--rewrite NQmatch_match_comp, NQopp_match_comp; simpl.
+-now destruct (GQcompare px py).
+-rewrite NQmatch_match_comp.
  symmetry; apply NQadd_swap_lemma1.
 -do 2 (rewrite NQmatch_match_comp; symmetry).
+...
  apply NQadd_swap_lemma2.
 -now destruct (PQcompare px pz).
 -now destruct (PQcompare px py).
