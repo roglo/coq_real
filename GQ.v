@@ -25,6 +25,9 @@ Notation "1" := (GQmake 1 (Nat.gcd_1_r (0 + 1))) : GQ_scope.
 Definition GQadd x y := GQ_of_PQ (PQ_of_GQ x + PQ_of_GQ y).
 Definition GQsub x y := GQ_of_PQ (PQ_of_GQ x - PQ_of_GQ y).
 Definition GQmul x y := GQ_of_PQ (PQ_of_GQ x * PQ_of_GQ y).
+Arguments GQadd x%GQ y%GQ.
+Arguments GQsub x%GQ y%GQ.
+Arguments GQmul x%GQ y%GQ.
 
 Notation "x + y" := (GQadd x y) : GQ_scope.
 Notation "x - y" := (GQsub x y) : GQ_scope.
@@ -305,6 +308,24 @@ Proof. intros x y; apply PQlt_le_incl. Qed.
 Theorem GQlt_trans : ∀ x y z, (x < y)%GQ → (y < z)%GQ → (x < z)%GQ.
 Proof. intros x y z; apply PQlt_trans. Qed.
 
+Theorem GQadd_sub : ∀ x y, (x + y - y)%GQ = x.
+Proof.
+intros.
+unfold "+"%GQ, "-"%GQ.
+remember (PQ_of_GQ x) as x'.
+remember (PQ_of_GQ y) as y'.
+assert (Hyx : (y' < x' + y')%PQ) by apply PQlt_add_l.
+rewrite GQ_of_PQ_additive.
+rewrite GQ_of_PQ_subtractive.
+-rewrite GQ_o_PQ.
+ rewrite <- GQ_of_PQ_additive.
+ rewrite <- GQ_of_PQ_subtractive; [ | easy ].
+ rewrite PQadd_sub.
+ now rewrite Heqx', GQ_o_PQ.
+-rewrite PQ_of_GQ_additive.
+ now do 2 rewrite PQ_o_GQ.
+Qed.
+
 Theorem GQlt_add_r : ∀ x y, (x < x + y)%GQ.
 Proof.
 intros x y.
@@ -344,6 +365,34 @@ rewrite GQ_of_PQ_subtractive.
  rewrite <- GQ_of_PQ_additive.
  rewrite <- GQ_of_PQ_subtractive; [ | easy ].
  now rewrite PQsub_add_distr.
+-rewrite PQ_of_GQ_additive.
+ now do 2 rewrite PQ_o_GQ.
+Qed.
+
+Theorem GQsub_sub_distr : ∀ x y z,
+  (z < y)%GQ → (y - z < x)%GQ → (x - (y - z))%GQ = (x + z - y)%GQ.
+Proof.
+intros * Hzy Hyzx.
+revert Hzy Hyzx.
+unfold "+"%GQ, "-"%GQ, "<"%GQ; intros.
+remember (PQ_of_GQ x) as x' eqn:Hx'.
+remember (PQ_of_GQ y) as y' eqn:Hy'.
+remember (PQ_of_GQ z) as z' eqn:Hz'.
+rewrite PQ_o_GQ in Hyzx.
+rewrite GQ_of_PQ_additive.
+assert (Hyxz : (y' < x' + z')%PQ). {
+  apply (PQadd_lt_mono_r _ _ z') in Hyzx.
+  now rewrite PQsub_add in Hyzx.
+}
+rewrite GQ_of_PQ_subtractive; [ | now rewrite PQ_o_GQ ].
+rewrite GQ_of_PQ_subtractive; [ | easy ].
+rewrite GQ_of_PQ_subtractive.
+-do 2 rewrite GQ_o_PQ.
+ rewrite <- GQ_of_PQ_subtractive; [ | easy ].
+ rewrite <- GQ_of_PQ_subtractive; [ | easy ].
+ rewrite <- GQ_of_PQ_additive.
+ rewrite <- GQ_of_PQ_subtractive; [ | easy ].
+ now rewrite PQsub_sub_distr.
 -rewrite PQ_of_GQ_additive.
  now do 2 rewrite PQ_o_GQ.
 Qed.
@@ -686,12 +735,8 @@ destruct c1, c2; repeat GQcompare_iff.
  exfalso; apply Hc2; apply GQlt_le_incl.
  apply (GQlt_trans _ (px + py)%GQ); [ | easy ].
  apply GQlt_add_r.
-...
-+rewrite (GQsub_morph pz pz (px + py) (py + pz)); [ | easy | easy | ].
- *now rewrite GQadd_sub.
- *now rewrite Hc2, GQadd_comm.
-+simpl.
- remember (GQcompare (pz - px) py) as c3 eqn:Hc3; symmetry in Hc3.
++now subst px; rewrite GQadd_comm, GQadd_sub.
++remember (GQcompare (pz - px) py) as c3 eqn:Hc3; symmetry in Hc3.
  destruct c3; GQcompare_iff; simpl.
  *rewrite GQadd_comm, <- Hc3 in Hc1.
   rewrite GQsub_add in Hc1; [ | easy ].
@@ -704,6 +749,7 @@ destruct c1, c2; repeat GQcompare_iff.
   exfalso; apply GQnle_gt in Hc3; apply Hc3.
   now apply GQlt_le_incl.
 +rewrite GQadd_comm.
+...
  rewrite <- GQadd_sub_assoc; [ | easy ].
  now rewrite GQadd_comm.
 Qed.
