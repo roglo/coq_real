@@ -318,6 +318,9 @@ Proof. intros; apply PQlt_irrefl. Qed.
 Theorem GQnle_gt : ∀ x y, ¬ (x ≤ y)%GQ ↔ (y < x)%GQ.
 Proof. intros; apply PQnle_gt. Qed.
 
+Theorem GQnlt_ge : ∀ x y, ¬ (x < y)%GQ ↔ (y ≤ x)%GQ.
+Proof. intros; apply PQnlt_ge. Qed.
+
 Theorem GQlt_le_incl : ∀ x y, (x < y)%GQ → (x ≤ y)%GQ.
 Proof. intros x y; apply PQlt_le_incl. Qed.
 
@@ -332,6 +335,16 @@ rewrite GQ_of_PQ_subtractive; [ | easy ].
 do 2 rewrite GQ_o_PQ.
 rewrite PQ_of_GQ_subtractive; [ | easy ].
 now apply PQsub_lt.
+Qed.
+
+Theorem GQadd_le_mono_r : ∀ x y z, (x ≤ y)%GQ ↔ (x + z ≤ y + z)%GQ.
+Proof.
+intros *.
+unfold "+"%GQ, "≤"%GQ.
+do 2 rewrite GQ_of_PQ_additive.
+do 3 rewrite GQ_o_PQ.
+do 2 rewrite PQ_of_GQ_additive.
+apply PQadd_le_mono_r.
 Qed.
 
 Theorem GQadd_sub : ∀ x y, (x + y - y)%GQ = x.
@@ -453,6 +466,15 @@ Theorem GQadd_sub_swap : ∀ x y z,
 Proof.
 intros * Hzx.
 rewrite GQadd_comm, <- GQadd_sub_assoc; [ | easy ].
+now rewrite GQadd_comm.
+Qed.
+
+Theorem GQsub_sub_swap : ∀ x y z,
+  (y + z < x)%GQ → (x - y - z)%GQ = (x - z - y)%GQ.
+Proof.
+intros * Hyzx.
+rewrite <- GQsub_add_distr; [ | easy ].
+rewrite <- GQsub_add_distr; [ | now rewrite GQadd_comm ].
 now rewrite GQadd_comm.
 Qed.
 
@@ -924,7 +946,6 @@ destruct c1, c2; repeat GQcompare_iff.
   rewrite GQsub_sub_distr; [ | easy | easy ].
   now rewrite GQadd_comm.
  *exfalso; apply GQnle_gt in Hc4; apply Hc4; clear Hc4.
-...
   apply (GQadd_le_mono_r _ _ pz).
   rewrite GQsub_add; [ | easy ].
   apply GQnlt_ge; intros Hc4.
@@ -933,7 +954,7 @@ destruct c1, c2; repeat GQcompare_iff.
   rewrite GQsub_add; [ | easy ].
   now apply GQlt_le_incl; rewrite GQadd_comm.
  *exfalso; symmetry in Hc4.
-  rewrite (GQsub_morph _ (px - pz) _ px) in Hc3; [ | easy | easy | easy ].
+  rewrite Hc4 in Hc3.
   rewrite GQsub_sub_distr in Hc3; [ | easy | now apply GQsub_lt ].
   rewrite GQadd_comm, GQadd_sub in Hc3.
   now apply GQlt_irrefl in Hc3.
@@ -945,9 +966,10 @@ destruct c1, c2; repeat GQcompare_iff.
   apply (GQadd_le_mono_r _ _ py).
   rewrite GQsub_add; [ | easy ].
   now apply GQlt_le_incl; rewrite GQadd_comm.
- *now rewrite GQsub_sub_swap.
+ *rewrite GQsub_sub_swap; [ easy | ].
+  apply (GQadd_lt_mono_r _ _ pz) in Hc4.
+  now rewrite GQsub_add in Hc4.
 Qed.
-...
 
 Theorem NQadd_add_swap : ∀ x y z, (x + y + z = x + z + y)%NQ.
 Proof.
@@ -966,10 +988,25 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl.
 -rewrite NQmatch_match_comp.
  symmetry; apply NQadd_swap_lemma1.
 -do 2 (rewrite NQmatch_match_comp; symmetry).
-...
  apply NQadd_swap_lemma2.
--now destruct (PQcompare px pz).
--now destruct (PQcompare px py).
+-now destruct (GQcompare px pz).
+-now destruct (GQcompare px py).
+-rewrite GQcompare_swap, NQmatch_match_comp; symmetry.
+ rewrite GQcompare_swap, NQmatch_match_comp; symmetry.
+ do 2 rewrite <- NQadd_swap_lemma1.
+ now replace (pz + py)%GQ with (py + pz)%GQ by apply GQadd_comm.
+-rewrite GQcompare_swap, NQmatch_match_comp; symmetry.
+Search (- _)%NQ.
+...
+Check NQadd_swap_lemma1.
+...
+ rewrite NQadd_swap_lemma2; symmetry.
+...
+ rewrite NQadd_swap_lemma1.
+
+ now replace (pz + py)%GQ with (py + pz)%GQ by apply GQadd_comm.
+-
+
 -do 2 rewrite NQopp_match_comp; simpl.
  setoid_rewrite PQcompare_swap.
  do 2 (rewrite NQmatch_match_comp; symmetry).
