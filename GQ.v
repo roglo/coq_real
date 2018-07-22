@@ -763,10 +763,18 @@ Theorem NQmatch_match_comp : ∀ A c p q (f0 : A) fp fn,
   end.
 Proof. intros; now destruct c. Qed.
 
+Theorem NQopp_involutive : ∀ x, (- - x)%NQ = x.
+Proof. intros; now destruct x. Qed.
+
 Theorem NQopp_match_comp : ∀ c eq lt gt,
   (- match c with Eq => eq | Lt => lt | Gt => gt end =
    match c with Eq => - eq | Lt => - lt | Gt => - gt end)%NQ.
 Proof. intros; now destruct c. Qed.
+
+Theorem NQmatch_opp_comp : ∀ c eq lt gt,
+  (match c with Eq => eq | Lt => lt | Gt => gt end =
+   - match c with Eq => - eq | Lt => - lt | Gt => - gt end)%NQ.
+Proof. now intros; destruct c; rewrite NQopp_involutive. Qed.
 
 Theorem NQadd_comm : ∀ x y, (x + y = y + x)%NQ.
 Proof.
@@ -996,17 +1004,13 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl.
  do 2 rewrite <- NQadd_swap_lemma1.
  now replace (pz + py)%GQ with (py + pz)%GQ by apply GQadd_comm.
 -rewrite GQcompare_swap, NQmatch_match_comp; symmetry.
-Search (- _)%NQ.
-...
-Check NQadd_swap_lemma1.
-...
- rewrite NQadd_swap_lemma2; symmetry.
-...
+ rewrite NQmatch_opp_comp; simpl.
  rewrite NQadd_swap_lemma1.
-
- now replace (pz + py)%GQ with (py + pz)%GQ by apply GQadd_comm.
--
-
+ rewrite GQcompare_swap.
+ rewrite NQmatch_opp_comp; simpl.
+ rewrite NQopp_involutive.
+ now rewrite NQopp_match_comp.
+...
 -do 2 rewrite NQopp_match_comp; simpl.
  setoid_rewrite PQcompare_swap.
  do 2 (rewrite NQmatch_match_comp; symmetry).
