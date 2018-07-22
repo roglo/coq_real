@@ -200,6 +200,19 @@ rewrite <- GQ_of_PQ_additive.
 apply PQ_o_GQ.
 Qed.
 
+Theorem PQ_of_GQ_subtractive : ∀ x y,
+  (y < x)%GQ → (PQ_of_GQ (x - y) == PQ_of_GQ x - PQ_of_GQ y)%PQ.
+Proof.
+intros * Hyx.
+remember (PQ_of_GQ x) as x'.
+remember (PQ_of_GQ y) as y'.
+move y' before x'.
+specialize (GQ_o_PQ x) as H; rewrite <- H, <- Heqx'; clear H.
+specialize (GQ_o_PQ y) as H; rewrite <- H, <- Heqy'; clear H.
+rewrite <- GQ_of_PQ_subtractive; [ apply PQ_o_GQ | ].
+now subst x' y'.
+Qed.
+
 Ltac tac_to_PQ :=
   unfold "+"%GQ, "-"%GQ, "*"%GQ;
   repeat
@@ -307,6 +320,16 @@ Proof. intros x y; apply PQlt_le_incl. Qed.
 
 Theorem GQlt_trans : ∀ x y z, (x < y)%GQ → (y < z)%GQ → (x < z)%GQ.
 Proof. intros x y z; apply PQlt_trans. Qed.
+
+Theorem GQsub_lt : ∀ x y, (y < x)%GQ → (x - y < x)%GQ.
+Proof.
+intros x y z.
+unfold "-"%GQ, "<"%GQ.
+rewrite GQ_of_PQ_subtractive; [ | easy ].
+do 2 rewrite GQ_o_PQ.
+rewrite PQ_of_GQ_subtractive; [ | easy ].
+now apply PQsub_lt.
+Qed.
 
 Theorem GQadd_sub : ∀ x y, (x + y - y)%GQ = x.
 Proof.
@@ -833,8 +856,8 @@ destruct c1, c2; repeat GQcompare_iff.
   now rewrite Hc1, GQadd_sub.
  +apply GQnle_gt in Hc3.
   exfalso; apply Hc3; rewrite <- Hc1.
-...
   now apply GQlt_le_incl, GQsub_lt.
+...
 -rewrite (GQsub_morph _ pz _ py); [ | easy | easy | easy ].
  rewrite GQsub_add; [ easy | now rewrite <- Hc2 ].
 -rewrite GQadd_comm.
