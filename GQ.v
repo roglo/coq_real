@@ -494,7 +494,6 @@ unfold "=="%PQ, nd in H.
 simpl in H.
 apply (Nat.mul_cancel_r _ _ (yd + 1)) in Hx; [ | flia ].
 rewrite Nat.mul_1_l in Hx.
-Search (Nat.gcd (_ * _)).
 rewrite <- Nat.gcd_mul_mono_r in Hx.
 rewrite H, Nat.mul_comm in Hx.
 rewrite Nat.gcd_mul_mono_l, Hy, Nat.mul_1_r in Hx.
@@ -1010,32 +1009,19 @@ destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl.
  rewrite NQmatch_opp_comp; simpl.
  rewrite NQopp_involutive.
  now rewrite NQopp_match_comp.
-...
--do 2 rewrite NQopp_match_comp; simpl.
- setoid_rewrite PQcompare_swap.
- do 2 (rewrite NQmatch_match_comp; symmetry).
- do 2 rewrite NQopp_match_comp; simpl.
- setoid_rewrite PQcompare_swap.
- setoid_rewrite NQmatch_opp_comp; simpl.
- apply NQopp_inj_wd.
- do 2 rewrite NQopp_match_comp; simpl.
-...
+-rewrite NQmatch_opp_comp; simpl.
+ rewrite NQadd_swap_lemma1; symmetry.
+ rewrite GQcompare_swap, NQmatch_match_comp, GQcompare_swap.
+ now do 2 rewrite NQopp_match_comp.
+-now rewrite GQadd_add_swap.
+Qed.
 
 Theorem NQadd_assoc : ∀ x y z, ((x + y) + z = x + (y + z))%NQ.
 Proof.
 intros.
-unfold "+".
-destruct x as [| px| px], y as [| py| py], z as [| pz| pz]; try easy; simpl.
--f_equal; apply GQadd_assoc.
--remember (GQcompare (px + py) pz) as c1 eqn:Hc1; symmetry in Hc1.
- remember (GQcompare py pz) as c2 eqn:Hc2; symmetry in Hc2.
- move c2 before c1.
- destruct c1, c2; do 2  GQcompare_iff.
- +now subst py; apply GQadd_no_neutral in Hc1.
- +idtac.
-...
-
--now rewrite GQcompare_swap; destruct (GQcompare py px).
--now rewrite GQcompare_swap; destruct (GQcompare py px).
--f_equal; apply GQadd_comm.
+rewrite NQadd_comm.
+remember (x + y)%NQ as t eqn:Ht.
+rewrite NQadd_comm in Ht; rewrite Ht.
+setoid_rewrite NQadd_comm.
+apply NQadd_add_swap.
 Qed.
