@@ -173,7 +173,11 @@ Qed.
 
 (* Relation with Cauchy sequences *)
 
+(*
 Require Import NQ PQ.
+*)
+Require Import PQ GQ.
+(**)
 
 Open Scope NQ.
 Definition is_cauchy_seq u :=
@@ -186,15 +190,13 @@ Definition freal_seq_num {r : radix} (rg := nat_ord_ring) x m :=
 Definition freal_seq_den {r : radix} m := rad ^ S m.
 
 Definition pos_freal_seq {r : radix} x m :=
-  PQmake (freal_seq_num x m - 1) (freal_seq_den m - 1).
+  GQ_of_PQ (PQmake (freal_seq_num x m - 1) (freal_seq_den m - 1)).
 
 Definition freal_seq {r : radix} x m :=
   match freal_seq_num x m with
   | 0 => 0%NQ
   | S _ => NQpos (pos_freal_seq x m)
   end.
-
-Definition PQ_of_nat i := PQmake (i - 1) 0.
 
 (*
 Theorem u_q_minus_u_p {r : radix} (rg := nat_ord_ring) : ∀ x p q,
@@ -316,7 +318,7 @@ assert (H : ∃ e, NQpos e = ε). {
 }
 destruct H as (e, He); subst ε; clear Hε; rename e into ε.
 enough (H1 : ∃ N, ∀ p q, N < p ≤ q →
-  (pos_freal_seq x p - pos_freal_seq x q < ε)%PQ). {
+  (pos_freal_seq x p - pos_freal_seq x q < ε)%GQ). {
   destruct H1 as (N & H1).
   exists (S N); intros p q (Hp, Hq).
   destruct (le_dec p q) as [Hpq| Hqp].

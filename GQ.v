@@ -651,6 +651,37 @@ Definition NQ_of_nat n :=
 
 Definition NQ_of_pair n d := NQpos (GQ_of_pair n d).
 
+Definition NQcompare x y :=
+  match x with
+  | NQ0 => match y with NQ0 => Eq | NQpos _ => Lt | NQneg _ => Gt end
+  | NQpos px => match y with NQpos py => GQcompare px py | _ => Gt end
+  | NQneg px => match y with NQneg py => GQcompare py px | _ => Lt end
+  end.
+
+Definition NQlt x y :=
+  match x with
+  | NQ0 => match y with NQpos _ => True | _ => False end
+  | NQpos px => match y with NQpos py => GQlt px py | _ => False end
+  | NQneg px => match y with NQneg py => GQlt py px | _ => True end
+  end.
+Arguments NQlt x%NQ y%NQ.
+
+Definition NQle x y :=
+  match x with
+  | NQ0 => match y with NQ0 | NQpos _ => True | _ => False end
+  | NQpos px => match y with NQpos py => GQle px py | _ => False end
+  | NQneg px => match y with NQneg py => GQle py px | _ => True end
+  end.
+Arguments NQle x%NQ y%NQ.
+
+Definition NQgt x y := NQlt y x.
+Definition NQge x y := NQle y x.
+
+Notation "x < y" := (NQlt x y) : NQ_scope.
+Notation "x ≤ y" := (NQle x y) : NQ_scope.
+Notation "x > y" := (NQgt x y) : NQ_scope.
+Notation "x ≥ y" := (NQge x y) : NQ_scope.
+
 Definition NQadd_pos_l px y :=
   match y with
   | NQ0 => NQpos px
@@ -689,9 +720,16 @@ Definition NQopp x :=
   | NQneg px => NQpos px
   end.
 
+Definition NQabs x :=
+  match x with
+  | NQneg px => NQpos px
+  | _ => x
+  end.
+
 Notation "- x" := (NQopp x) : NQ_scope.
 Notation "x + y" := (NQadd x y) : NQ_scope.
 Notation "x - y" := (NQadd x (NQopp y)) : NQ_scope.
+Notation "‖ x ‖" := (NQabs x) (at level 60) : NQ_scope.
 
 Definition NQmul_pos_l px y :=
   match y with
