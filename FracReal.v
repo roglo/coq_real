@@ -5224,7 +5224,9 @@ specialize radix_ge_2 as Hr.
 specialize (freal_normalized_cases x) as [H1| H1].
 -unfold freal_eq.
  now rewrite H1.
--specialize (ends_with_999_or_not y) as [Hy| Hy].
+-idtac.
+...
+ specialize (ends_with_999_or_not y) as [Hy| Hy].
  +destruct H1 as (n & Hbef & Hwhi & Hnaft & Haft).
   unfold "="%F.
   apply eq_freal_norm_eq_true_iff.
