@@ -171,6 +171,7 @@ rewrite Nat.add_comm.
 now rewrite Nat.add_sub.
 Qed.
 
+(*
 (* Relation with Cauchy sequences *)
 
 (*
@@ -197,117 +198,6 @@ Definition freal_seq {r : radix} x m :=
   | 0 => 0%NQ
   | S _ => NQpos (pos_freal_seq x m)
   end.
-
-(*
-Theorem u_q_minus_u_p {r : radix} (rg := nat_ord_ring) : ∀ x p q,
-  p < q
-  → (freal_seq x q - freal_seq x p ==
-      NQmake true
-        (PQmake
-           (Σ (i = 0, q - p - 1), (fd2n x (q - i) * rad ^ i)%nat)
-           (rad ^ S q - 1)))%NQ.
-Proof.
-intros *.
-specialize radix_ge_2 as Hr.
-intros Hpq.
-remember (q - p) as s eqn:Hs.
-move s before q.
-remember (freal_seq x q) as fq eqn:Hfq.
-remember (freal_seq x p) as fp eqn:Hfp.
-move fp before fq.
-unfold "-"%NQ, "+"%NQ.
-remember S as f; simpl; subst f.
-remember (Bool.eqb (NQsign fq) (negb (NQsign fp))) as b eqn:Hb.
-symmetry in Hb.
-remember (NQsign fq) as sq eqn:Hsq; symmetry in Hsq.
-remember (NQsign fp) as sp eqn:Hsp; symmetry in Hsp.
-move sp before sq.
-assert (H1r : ∀ p, 1 ≤ rad ^ S p). {
-  clear -  Hr; intros.
-  destruct rad as [| rr]; [ flia Hr | ].
-  now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-}
-assert (HS :
-  Σ (i = 0, p), fd2n x i * rad ^ (p - i) * rad ^ S q =
-  Σ (i = 0, p), fd2n x i * rad ^ (q - i) * rad ^ S p). {
-  apply summation_eq_compat.
-  clear - Hpq.
-  intros i Hi.
-  do 2 rewrite <- Nat.mul_assoc; f_equal.
-  do 2 rewrite <- Nat.pow_add_r; f_equal.
-  flia Hpq Hi.
-}
-unfold rg in HS.
-destruct b.
--destruct sq.
- +unfold "=="%NQ; simpl.
-  simpl in Hb.
-  destruct sp; [ easy | now rewrite Hfp in Hsp ].
- +now rewrite Hfq in Hsq.
--destruct (PQlt_le_dec (NQpos fq) (NQpos fp)) as [H1| H1].
- +exfalso.
-  rewrite Hfq, Hfp in H1; simpl in H1.
-  unfold "<"%PQ, nd in H1.
-  simpl in H1.
-  unfold freal_seq_num, freal_seq_den in H1.
-  apply Nat.nle_gt in H1; apply H1; clear H1.
-  rewrite <- Nat.sub_succ_l; [ | easy ].
-  rewrite <- Nat.sub_succ_l; [ | easy ].
-  do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
-  do 2 rewrite summation_mul_distr_r.
-  apply Nat.nlt_ge.
-  rewrite summation_split with (e := p); [ | flia Hpq ].
-  apply Nat.nlt_ge.
-  remember S as f; simpl; subst f.
-  rewrite HS.
-  apply Nat.le_add_r.
- +destruct sq.
-  *remember S as f.
-   unfold "=="%NQ; simpl.
-   rewrite Hfq, Hfp; simpl.
-   unfold "-"%PQ.
-   rewrite <- Heqf.
-   unfold PQsub_num, nd; simpl.
-   unfold freal_seq_den, freal_seq_num.
-   rewrite <- Heqf; simpl.
-   unfold PQadd_den1.
-   rewrite <- Heqf; simpl.
-   subst f.
-   rewrite summation_split with (e := p); [ | flia Hpq ].
-   rewrite Nat.mul_add_distr_r.
-   rewrite Nat.add_comm.
-   rewrite <- Nat.sub_succ_l; [ | easy ].
-   rewrite <- Nat.sub_succ_l; [ | easy ].
-   do 2 rewrite Nat.sub_succ, Nat.sub_0_r.
-   rewrite Nat_add_sub_diag.
-  --simpl in Hb.
-    destruct sp; [ clear Hb | easy ].
-    rewrite summation_rtl.
-    rewrite summation_shift; [ | easy ].
-    replace (q - S p) with (s - 1) by flia Hs.
-    unfold "=="%PQ, nd.
-    remember S as f; simpl; subst f.
-    do 3 rewrite summation_mul_distr_r.
-    apply summation_eq_compat.
-    intros i Hi.
-    remember S as f; simpl; subst f.
-    rewrite <- Nat.pow_add_r.
-    replace (S q + S p) with (S (S (q + p))) by flia.
-    rewrite <- Nat.sub_succ_l; [ | easy ].
-    rewrite <- Nat.sub_succ_l; [ | easy ].
-    rewrite Nat.sub_succ, Nat.sub_0_r.
-    replace (q + S p - (S p + i)) with (q - i) by flia.
-    do 3 rewrite <- Nat.mul_assoc; f_equal.
-    replace (q - (q - i)) with i by flia Hs Hi; f_equal.
-    rewrite <- Nat.pow_add_r.
-    rewrite Nat.sub_succ, Nat.sub_0_r; f_equal.
-    flia.
-  --do 2 rewrite summation_mul_distr_r.
-    remember S as f; simpl; subst f.
-    now rewrite HS.
-  *now rewrite Hfq in Hsq.
-Qed.
-*)
 
 Theorem freal_is_cauchy_seq {r : radix} : ∀ x, is_cauchy_seq (freal_seq x).
 Proof.
@@ -338,116 +228,9 @@ remember (pos_freal_seq x q) as xq eqn:Hxq.
 unfold PQsub_num1, PQadd_den1, nd in H2.
 simpl in H2.
 rewrite Nat.add_0_r in H2.
+(* probably feasible mais j'ai la flemme de continuer *)
 ...
-    unfold freal_seq_num in Hxsp.
-...
-   unfold "<"%NQ.
-   remember ((‖ freal_seq x p - freal_seq x q ‖)%NQ) as y eqn:Hy.
-   symmetry in Hy; destruct y as [| py| py]; [ easy | | easy ].
-   unfold NQabs in Hy.
-   remember ((freal_seq x p - freal_seq x q)%NQ) as z eqn:Hz.
-   symmetry in Hz.
-   destruct z as [| pz| pz]; [ easy | | ].
-   +injection Hy; clear Hy; intros Hy; subst pz.
-    unfold freal_seq in Hz.
-    unfold pos_freal_seq in H2.
-    unfold "<"%PQ, nd in H2; simpl in H2.
-    unfold PQsub_num1, PQadd_den1, nd in H2; simpl in H2.
-    remember (freal_seq_num x p) as pn eqn:Hpn; symmetry in Hpn.
-    remember (freal_seq_num x q) as qn eqn:Hqn; symmetry in Hqn.
-    remember (freal_seq_den p) as pd eqn:Hpd; symmetry in Hpd.
-    remember (freal_seq_den q) as qd eqn:Hqd; symmetry in Hqd.
-    destruct pn; [ now destruct qn | simpl in H2, Hz ].
-    rewrite Nat.sub_0_r in H2.
-    destruct qn; simpl in H2, Hz.
-    *rewrite Nat.add_0_r in H2.
-     injection Hz; clear Hz; intros; subst py.
-     unfold pos_freal_seq; simpl.
-     rewrite Hpn, Hpd, Nat.sub_succ, Nat.sub_0_r.
-     destruct pd, qd; simpl in H2; simpl.
-    --do 2 rewrite Nat.mul_1_r in H2.
-      rewrite Nat.add_sub in H2.
-      unfold "<"%PQ, nd; simpl.
-      rewrite Nat.mul_1_r.
-      destruct pn; [ easy | ].
-      rewrite Nat.sub_succ, Nat.sub_0_r in H2.
-
-...
-exists (PQden1 (NQpos ε) + 1).
-intros p q (Hp, Hq).
-assert
-  (H : ∀ p q,
-      PQden1 (NQpos ε) + 1 ≤ q < p
-      → (NQabs (freal_seq x p - freal_seq x q) < ε)%NQ). {
-  clear p q Hp Hq.
-  intros * (Hq, Hpq).
-  rewrite (uq_minus_up x q p Hpq).
-  unfold NQabs.
-  remember S as f; simpl; subst f.
-  unfold "<"%NQ.
-  remember S as f; simpl; subst f.
-  destruct ε as (εs, εp).
-  remember S as f; simpl; subst f.
-  destruct εs; [ | now unfold "≤"%NQ in Hε; simpl in Hε ].
-  unfold "<"%PQ, nd.
-  remember S as f; simpl; subst f.
-  simpl in Hq(*, Hp*).
-  rewrite <- Nat.sub_succ_l; [ | now apply Nat.neq_0_lt_0, Nat.pow_nonzero ].
-  rewrite Nat.sub_succ, Nat.sub_0_r.
-  rewrite Nat.add_1_r in (*Hp,*) Hq.
-  remember (PQnum εp) as εn eqn:Hεn.
-  remember (S (PQden1 εp)) as εd eqn:Hεd.
-  assert (H1 : 0 < εn). {
-    subst εn.
-    unfold "≤"%NQ in Hε; simpl in Hε.
-    unfold "≤"%PQ, nd in Hε; simpl in Hε.
-    rewrite Nat.mul_1_r in Hε.
-    now apply Nat.nle_gt in Hε.
-  }
-  assert (H2 : εd ≤ εn * (rad - 1) * rad ^ q). {
-    assert (H2 : εd ≤ rad ^ q). {
-      eapply le_trans; [ apply Hq | ].
-      now apply Nat.lt_le_incl, Nat.pow_gt_lin_r.
-    }
-    eapply le_trans; [ apply H2 | ].
-    apply Nat_mul_le_pos_l.
-    destruct εn; [ easy | simpl; flia Hr ].
-  }
-  apply (Nat.mul_le_mono_r _ _ (rad ^ (p - q))) in H2.
-  rewrite <- Nat.mul_assoc, <- Nat.pow_add_r in H2.
-  replace (q + (p - q)) with p in H2 by flia Hpq.
-  apply (Nat.le_trans (εd * rad ^ (p - q) - εd * 1)) in H2; [ | flia ].
-  rewrite <- Nat.mul_sub_distr_l in H2.
-  eapply Nat.le_lt_trans.
-  +apply Nat.mul_le_mono_pos_r; [ flia Hεd | ].
-   apply (@summation_le_compat _ nat_ord_ring)
-     with (g := λ i, (rad - 1) * rad ^ i).
-   intros i Hi; simpl; unfold Nat.le.
-   apply Nat.mul_le_mono_pos_r.
-   *now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-   *apply digit_le_pred_radix.
-  +rewrite <- summation_mul_distr_l.
-   remember S as f; simpl; subst f.
-   rewrite <- power_summation_sub_1; [ | easy ].
-   rewrite <- Nat.sub_succ_l; [ | flia Hpq ].
-   rewrite Nat.sub_succ, Nat.sub_0_r, Nat.mul_comm.
-   eapply Nat.le_lt_trans; [ apply H2 | ].
-   rewrite <- Nat.mul_assoc.
-   apply Nat.mul_lt_mono_pos_l; [ easy | simpl ].
-   apply Nat.mul_lt_mono_pos_r; [ | flia Hr ].
-   now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-}
-destruct (lt_dec q p) as [Hpq| Hpq].
--now apply H.
--destruct (lt_dec p q) as [Hqp| Hqp].
- +rewrite <- NQabs_opp, NQopp_sub_distr, NQadd_comm.
-  now apply H.
- +apply Nat.nlt_ge in Hpq.
-  apply Nat.nlt_ge in Hqp.
-  apply Nat.le_antisymm in Hpq; [ subst q | easy ].
-  rewrite NQadd_opp_r, NQabs_0.
-  now apply NQgt_lt_iff.
-Qed.
+*)
 
 (* In names, "9" actually means "rad-1" *)
 
@@ -1187,6 +970,7 @@ Definition freal_mul {r : radix} (a b : FracReal) :=
 Notation "a + b" := (freal_add a b) : freal_scope.
 Notation "a * b" := (freal_mul a b) : freal_scope.
 
+(*
 (* addition of cauchy sequences *)
 
 Definition cauchy_add (u v : nat → NQ) i := (u i + v i)%NQ.
@@ -1209,6 +993,7 @@ assert (H : (u p + v p - (u q + v q) == (u p - u q) + (v p - v q))%NQ). {
 ...
 
 (* return to addition *)
+*)
 
 Theorem sequence_add_comm : ∀ f g i, sequence_add f g i = sequence_add g f i.
 Proof.
