@@ -83,17 +83,19 @@ Proof.
 destruct r as (rad, radi); simpl; flia radi.
 Qed.
 
+(*
 Theorem radix_gt_1 {r : radix} : 1 < rad.
 Proof.
 destruct r as (rad, radi); simpl; flia radi.
 Qed.
+*)
 
 Theorem radix_ne_0 {r : radix} : rad ≠ 0.
 Proof.
 destruct r as (rad, radi); simpl; flia radi.
 Qed.
 
-Hint Resolve radix_gt_0 radix_ge_1 radix_gt_1 radix_ne_0 radix_ge_2.
+Hint Resolve radix_gt_0 radix_ge_1 (*radix_gt_1*) radix_ne_0 radix_ge_2.
 
 (* Digit *)
 
@@ -238,8 +240,10 @@ Definition is_9_after {r : radix} u i j :=
   if eq_nat_dec (d2n u (i + j)) (rad - 1) then true else false.
 Definition is_9_strict_after {r : radix} u i j :=
   if eq_nat_dec (d2n u (i + j + 1)) (rad - 1) then true else false.
+(*
 Definition is_0_strict_after {r : radix} u i j :=
   if eq_nat_dec (d2n u (i + j + 1)) 0 then true else false.
+*)
 
 Definition digit_sequence_normalize {r : radix} (u : nat → digit) i :=
   match LPO_fst (is_9_strict_after u i) with
@@ -265,25 +269,31 @@ Definition freal_norm_eq {r : radix} x y :=
   | inr _ => False
   end.
 
+(*
 Definition freal_norm_lt {r : radix} x y :=
   match LPO_fst (has_same_digits x y) with
   | inl _ => True
   | inr (exist _ i _) =>
       if lt_dec (fd2n x i) (fd2n y i) then True else False
   end.
+*)
 
 Definition freal_eq {r : radix} x y :=
   freal_norm_eq (freal_normalize x) (freal_normalize y).
 
+(*
 Definition freal_lt {r : radix} x y :=
   freal_norm_lt (freal_normalize x) (freal_normalize y).
 
 Definition freal_0 {r : radix} := {| freal i := digit_0 |}.
 
 Notation "0" := (freal_0) : freal_scope.
+*)
 Notation "a = b" := (freal_eq a b) : freal_scope.
+(*
 Notation "a ≠ b" := (¬ freal_eq a b) : freal_scope.
 Notation "a < b" := (freal_lt a b) : freal_scope.
+*)
 
 Theorem is_9_after_false_iff {r : radix} : ∀ i j u,
   is_9_after u i j = false ↔ d2n u (i + j) ≠ rad - 1.
@@ -310,9 +320,11 @@ specialize (Hm9 k); unfold is_9_strict_after in Hm9.
 now destruct (Nat.eq_dec (d2n u (i + k + 1)) (rad - 1)).
 Qed.
 
+(*
 Theorem is_9_after_add {r : radix} : ∀ u i j,
   is_9_after u 0 (i + j) = is_9_after u i j.
 Proof. easy. Qed.
+*)
 
 Theorem is_9_strict_after_add {r : radix} : ∀ u i j,
   is_9_strict_after u 0 (i + j) = is_9_strict_after u i j.
@@ -905,19 +917,23 @@ Qed.
 (* Addition, Multiplication *)
 
 Definition sequence_add (a b : nat → nat) i := a i + b i.
+(*
 Definition sequence_mul (rg := nat_ord_ring) (a b : nat → nat) i :=
   Σ (j = 0, i), a j * b (i - j).
+*)
 
 Definition freal_add_series {r : radix} a b :=
   sequence_add (fd2n a) (fd2n b).
 
 Arguments freal_add_series _ a%F b%F.
 
+(*
 Definition freal_mul_series {r : radix} a b i :=
   match i with
   | 0 => 0
   | S i' => sequence_mul (fd2n a) (fd2n b) i'
   end.
+*)
 
 Definition nA {r : radix} (rg := nat_ord_ring) i n u :=
   Σ (j = i + 1, n - 1), u j * rad ^ (n - 1 - j).
@@ -954,11 +970,14 @@ Definition freal_add_to_seq {r : radix} (a b : FracReal) :=
 
 Arguments freal_add_to_seq _ a%F b%F.
 
+(*
 Definition freal_mul_to_seq {r : radix} (a b : FracReal) :=
   numbers_to_digits (freal_mul_series a b).
+*)
 
 Definition freal_unorm_add {r : radix} x y := {| freal := freal_add_to_seq x y |}.
 
+(*
 Definition freal_add {r : radix} (a b : FracReal) :=
   freal_unorm_add (freal_normalize a) (freal_normalize b).
 
@@ -1246,6 +1265,7 @@ destruct (LPO_fst (is_9_strict_after xy i)) as [Hxy| Hxy].
  +subst xy yx; simpl.
   apply freal_mul_to_seq_i_comm.
 Qed.
+*)
 
 Theorem has_same_digits_false_iff {r : radix} : ∀ x y i,
   has_same_digits x y i = false ↔ fd2n x i ≠ fd2n y i.
@@ -1263,6 +1283,7 @@ unfold has_same_digits.
 now destruct (Nat.eq_dec (fd2n x i) (fd2n y i)).
 Qed.
 
+(*
 Theorem freal_add_comm {r : radix} : ∀ x y : FracReal, (x + y = y + x)%F.
 Proof.
 intros.
@@ -1333,6 +1354,7 @@ induction b; [ easy | simpl ].
 replace 1 with (1 * 1) by flia.
 apply Nat.mul_le_mono_nonneg; [ flia | easy | flia | easy ].
 Qed.
+*)
 
 Theorem nA_dig_seq_ub {r : radix} : ∀ u n i,
   (∀ j, i < j < n → u j < rad) →
@@ -1359,6 +1381,7 @@ apply Nat.le_add_le_sub_l.
 apply Hu; flia Hk Hj.
 Qed.
 
+(*
 Theorem nA_upper_bound {r : radix} : ∀ x n i,
   nA i n (fd2n x) < rad ^ (n - i - 1).
 Proof.
@@ -1439,6 +1462,7 @@ destruct (LPO_fst (is_9_strict_after (λ _ : nat, digit_0) i)) as [H| H].
  destruct rr; [ flia Hr2 | easy ].
 -easy.
 Qed.
+*)
 
 Theorem A_ge_1_false_iff {r : radix} : ∀ i u k,
   let n := rad * (i + k + 3) in
@@ -1468,6 +1492,7 @@ destruct (lt_dec (nA i n u mod s) ((rad ^ S k - 1) * t)) as [H1| H1].
 -now split; [ apply Nat.nlt_ge in H1 | ].
 Qed.
 
+(*
 Theorem Nat_pow_succ_pow : ∀ a b, a ^ S b = (a ^ b - 1) * a + a.
 Proof.
 intros; simpl.
@@ -1859,9 +1884,11 @@ subst n0x nx; simpl.
 unfold fd2n; f_equal.
 apply dig_norm_add_0_l.
 Qed.
+*)
 
-Require Import Morphisms Setoid.
+Require Import (*Morphisms*) Setoid.
 
+(*
 Theorem freal_eq_refl {r : radix} : reflexive _ freal_eq.
 Proof.
 intros x.
@@ -1914,6 +1941,7 @@ Add Parametric Relation {r : radix} : (FracReal) freal_eq
  symmetry proved by freal_eq_sym
  transitivity proved by freal_eq_trans
  as freal_eq_rel.
+*)
 
 Theorem all_eq_seq_all_eq {r : radix} : ∀ x y,
   (∀ k, has_same_digits x y k = true) → (∀ k, freal x k = freal y k).
@@ -1979,6 +2007,7 @@ destruct (LPO_fst (A_ge_1 f i)) as [Hf| Hf].
    now rewrite Hl in Hjk.
 Qed.
 
+(*
 Theorem Nat_div_succ_l_eq_div : ∀ p q, q ≠ 0 →
   (S p) / q = p / q ↔ p mod q ≠ q - 1.
 Proof.
@@ -2070,6 +2099,7 @@ remember (a / b) as c eqn:Hc; symmetry in Hc.
 destruct c; [ flia H1 | ].
 rewrite Nat.mul_comm in Hal; simpl in Hal; flia Hal H1.
 Qed.
+*)
 
 Theorem freal_add_series_le_twice_pred {r : radix} : ∀ x y i,
   freal_add_series x y i ≤ 2 * (rad - 1).
@@ -2082,6 +2112,7 @@ apply digit_le_pred_radix.
 apply digit_le_pred_radix.
 Qed.
 
+(*
 Theorem all_le_nA_le {r : radix} : ∀ u a i n,
   (∀ j, i < j < n → u j ≤ a * (rad - 1))
   → nA i n u ≤ a * (rad ^ (n - i - 1) - 1).
@@ -2352,6 +2383,7 @@ destruct (le_dec (fd2n x (S i + 1)) (fd2n (freal_normalize x) (S i + 1)))
    apply Nat.mul_le_mono_r.
    apply digit_le_pred_radix.
 Qed.
+*)
 
 Theorem nA_split_first {r : radix} : ∀ i n u,
   i + 1 ≤ n - 1
@@ -2385,6 +2417,7 @@ simpl; f_equal.
  flia Hin.
 Qed.
 
+(*
 Theorem nA_succ_r {r : radix} : ∀ i n u,
   i + 1 ≤ n - 1
   → nA i (S n) u = rad * nA i n u + u n.
@@ -2668,6 +2701,7 @@ apply le_trans with
  replace (n - 1 - (n - 1 + (i + 1) - (i + 1 + j))) with j by flia Hj.
  easy.
 Qed.
+*)
 
 Theorem nA_split {r : radix} : ∀ u i n e,
   i + 1 ≤ e - 1 ≤ n - 1
@@ -2715,6 +2749,7 @@ destruct (lt_dec (n - 1) (i + 1)) as [Hin| Hin].
  apply Nat.mul_le_mono_r, Hur.
 Qed.
 
+(*
 Theorem nA_upper_bound_for_add_2 {r : radix} : ∀ u i n,
   (∀ k, u k ≤ 2 * (rad - 1))
   → u (i + 1) = rad - 2
@@ -2777,6 +2812,7 @@ replace (rad ^ 2 - 1) with (rad ^ 2 - rad - 1 + rad ^ 1).
  destruct rad as [| rr]; [ easy | ].
  destruct rr; [ flia Hr | simpl; flia ].
 Qed.
+*)
 
 Theorem nA_upper_bound_for_add_3 {r : radix} : ∀ u i n,
   (∀ k, u k ≤ 2 * (rad - 1))
@@ -3023,6 +3059,7 @@ replace ((rad ^ (k + 2) - 1) * rad ^ (s - (k + 2))) with
  now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
 Qed.
 
+(*
 Theorem num_to_dig_9_ge_7 {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
   → (∀ k, d2n (numbers_to_digits u) (i + k) = rad - 1)
@@ -3084,6 +3121,7 @@ destruct (LPO_fst (A_ge_1 u i)) as [H2| H2].
    apply Nat.sub_add.
    flia H2.
 Qed.
+*)
 
 Theorem A_ge_1_add_first_ge {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
@@ -3237,6 +3275,7 @@ destruct (lt_dec (u (i + 1)) rad) as [H2| H2].
  now specialize (A_ge_1_add_first_ge_rad u i Hur Hu H2) as H3.
 Qed.
 
+(*
 Theorem A_ge_1_add_8_aft_ge_rad {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
   → A_ge_1 u i 1 = true
@@ -3376,6 +3415,7 @@ rewrite Nat.mul_1_l, <- Nat.pow_add_r.
 replace (2 + (s - 2)) with s by flia Hs Hin.
 apply Nat.le_sub_l.
 Qed.
+*)
 
 Theorem A_ge_1_add_8_eq {r : radix} : ∀ u i,
   (∀ k, u k ≤ 2 * (rad - 1))
@@ -3816,6 +3856,7 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
  now replace (i + k + 2) with (i + S k + 1) in H2 by flia.
 Qed.
 
+(*
 Theorem eq_nA_div_1 {r : radix} : ∀ i n u,
   (∀ k, u k ≤ 2 * (rad - 1))
   → nA i n u ≥ rad ^ (n - i - 1)
@@ -4579,6 +4620,7 @@ destruct (LPO_fst (has_same_digits nx (freal_normalize nx))) as [H1| H1].
   now rewrite Nat.add_shuffle0 in H2.
  +easy.
 Qed.
+*)
 
 Theorem freal_norm_eq_refl {r : radix} : reflexive _ freal_norm_eq.
 Proof.
@@ -4667,6 +4709,7 @@ destruct H2 as [H2| [H2| H2]]; [ | | now right ].
  now rewrite <- Hnx.
 Qed.
 
+(*
 Theorem old_freal_normalized_cases {r : radix} : ∀ x,
   freal_norm_eq x (freal_normalize x) ∨
   (∃ n, ∀ i, fd2n x (n + i) = rad - 1).
@@ -4678,6 +4721,7 @@ exists (k + 1); intros i.
 specialize (Hxaft (1 + i)).
 now rewrite Nat.add_assoc in Hxaft.
 Qed.
+*)
 
 Theorem eq_freal_norm_eq_true_iff {r : radix} : ∀ x y,
   freal_norm_eq x y
@@ -4772,6 +4816,7 @@ unfold freal_add_series, sequence_add, fd2n.
 now rewrite H3, H4.
 Qed.
 
+(*
 Theorem add_series_plus_carry_norm_not_norm {r : radix} : ∀ x y n nx i,
   (∀ i, i < n - 1 → freal nx i = freal x i)
   → n = 0 ∨ fd2n nx (n - 1) = S (fd2n x (n - 1))
@@ -4946,6 +4991,7 @@ destruct (lt_dec i (n - 1)) as [H8| H8].
     unfold fd2n in Haftj.
     flia Hr Haftj H7.
 Qed.
+*)
 
 Theorem ends_with_999_or_not {r : radix} : ∀ x,
   (∀ i, ∃ j, fd2n x (i + j) ≠ rad - 1)
