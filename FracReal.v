@@ -313,6 +313,22 @@ unfold is_9_after.
 now destruct (Nat.eq_dec (d2n u (i + j)) (rad - 1)).
 Qed.
 
+Theorem is_0_after_false_iff {r : radix} : ∀ i j u,
+  is_0_after u i j = false ↔ d2n u (i + j) ≠ 0.
+Proof.
+intros.
+unfold is_0_after.
+now destruct (Nat.eq_dec (d2n u (i + j)) 0).
+Qed.
+
+Theorem is_0_after_true_iff {r : radix} : ∀ i j u,
+  is_0_after u i j = true ↔ d2n u (i + j) = 0.
+Proof.
+intros.
+unfold is_0_after.
+now destruct (Nat.eq_dec (d2n u (i + j)) 0).
+Qed.
+
 Theorem is_9_strict_after_all_9 {r : radix} : ∀ u i,
   (∀ j, is_9_strict_after u i j = true)
   → (∀ k, d2n u (i + k + 1) = rad - 1).
@@ -894,6 +910,36 @@ Proof.
 intros.
 unfold has_not_9_after.
 destruct (LPO_fst (is_9_after u (i + j))) as [H1| H1].
+-split; [ intros _ | easy ].
+ now exists H1.
+-split; [ easy | ].
+ intros (P & _).
+ destruct H1 as (k & _ & Q).
+ now rewrite P in Q.
+Qed.
+
+Theorem has_not_0_after_true_iff {r : radix} : ∀ u i j,
+  has_not_0_after u i j = true ↔
+  ∃ k P, LPO_fst (is_0_after u (i + j)) = inr (exist _ k P).
+Proof.
+intros.
+unfold has_not_0_after.
+destruct (LPO_fst (is_0_after u (i + j))) as [H1| H1].
+-split; [ easy | ].
+ intros (k & (P & Q) & _).
+ now rewrite H1 in Q.
+-split; [ intros _ | easy ].
+ destruct H1 as (k & Hk).
+ now exists k, Hk.
+Qed.
+
+Theorem has_not_0_after_false_iff {r : radix} : ∀ u i j,
+  has_not_0_after u i j = false ↔
+  ∃ P, LPO_fst (is_0_after u (i + j)) = inl P.
+Proof.
+intros.
+unfold has_not_0_after.
+destruct (LPO_fst (is_0_after u (i + j))) as [H1| H1].
 -split; [ intros _ | easy ].
  now exists H1.
 -split; [ easy | ].
@@ -5081,22 +5127,21 @@ destruct (LPO_fst (ends_with_000 (freal x))) as [H1| H1].
  specialize (H1 0) as H2.
  apply ends_with_000_true_iff in H2.
  destruct H2 as (j & (Hjj & Hj) & _).
-...
  apply has_not_0_after_false_iff in Hj.
  simpl in Hj.
  destruct Hj as (Hj & _).
  exists j.
  intros k.
  specialize (Hj k) as H2.
- now apply is_9_after_true_iff in H2.
+ now apply is_0_after_true_iff in H2.
 -left; intros i.
  destruct H1 as (j & Hjj & Hj).
- apply ends_with_999_false_iff in Hj.
+ apply ends_with_000_false_iff in Hj.
  destruct Hj as (H1 & _).
  specialize (H1 i) as H2.
- apply has_not_9_after_true_iff in H2.
+ apply has_not_0_after_true_iff in H2.
  destruct H2 as (k & (Hjk & Hk) & _).
- apply is_9_after_false_iff in Hk.
+ apply is_0_after_false_iff in Hk.
  exists (j + k).
  now replace (j + i + k) with (i + (j + k)) in Hk by flia.
 Qed.
@@ -5304,17 +5349,17 @@ specialize (freal_normalized_cases x) as [H1| H1].
 -unfold freal_eq.
  now rewrite H1.
 -destruct H1 as (n & Hbef & Hwhi & Hnaft & Haft).
- specialize (ends_with_999_or_not y) as [Hy| Hy].
- +specialize (ends_with_000_or_not y) as [Hy| Hy].
+ specialize (ends_with_999_or_not y) as [Hy9| Hy9].
+ +specialize (ends_with_000_or_not y) as [Hy0| Hy0].
+  *unfold "="%F.
+   apply eq_freal_norm_eq_true_iff.
+   intros i.
 ...
- +unfold "="%F.
-  apply eq_freal_norm_eq_true_iff.
-  intros i.
-  remember (freal_normalize x) as nx eqn:Hnx.
-  remember (freal_unorm_add nx y) as nxy eqn:Hnxy.
-  remember (freal_unorm_add x y) as xy eqn:Hxy.
-  move xy before nxy.
-  destruct (le_dec n i) as [Hni| Hni].
+   remember (freal_normalize x) as nx eqn:Hnx.
+   remember (freal_unorm_add nx y) as nxy eqn:Hnxy.
+   remember (freal_unorm_add x y) as xy eqn:Hxy.
+   move xy before nxy.
+   destruct (le_dec n i) as [Hni| Hni].
   *assert (H1 : fd2n (freal_normalize nxy) i = fd2n (freal_normalize y) i). {
      now eapply add_norm_0_l.
    }
