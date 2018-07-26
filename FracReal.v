@@ -5224,13 +5224,15 @@ specialize radix_ge_2 as Hr.
 specialize (freal_normalized_cases x) as [H1| H1].
 -unfold freal_eq.
  now rewrite H1.
--idtac.
-...
- specialize (ends_with_999_or_not y) as [Hy| Hy].
+-specialize (ends_with_999_or_not y) as [Hy| Hy].
  +destruct H1 as (n & Hbef & Hwhi & Hnaft & Haft).
   unfold "="%F.
   apply eq_freal_norm_eq_true_iff.
   intros i.
+(* I am considering y not ending with 999... but perhaps I should consider
+   also if y is ending or not with 000... because it may make a difference
+   when adding x, which is ending with 999! *)
+...
   remember (freal_normalize x) as nx eqn:Hnx.
   remember (freal_unorm_add nx y) as nxy eqn:Hnxy.
   remember (freal_unorm_add x y) as xy eqn:Hxy.
