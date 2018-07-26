@@ -236,6 +236,8 @@ rewrite Nat.add_0_r in H2.
 
 (* In names, "9" actually means "rad-1" *)
 
+Definition is_0_after {r : radix} u i j :=
+  if eq_nat_dec (d2n u (i + j)) 0 then true else false.
 Definition is_9_after {r : radix} u i j :=
   if eq_nat_dec (d2n u (i + j)) (rad - 1) then true else false.
 Definition is_9_strict_after {r : radix} u i j :=
@@ -782,8 +784,20 @@ Definition has_not_9_after {r : radix} u i j :=
   | inr _ => true
   end.
 
+Definition has_not_0_after {r : radix} u i j :=
+  match LPO_fst (is_0_after u (i + j)) with
+  | inl _ => false
+  | inr _ => true
+  end.
+
 Definition ends_with_999 {r : radix} u i :=
   match LPO_fst (has_not_9_after u i) with
+  | inl _ => false
+  | inr _ => true
+  end.
+
+Definition ends_with_000 {r : radix} u i :=
+  match LPO_fst (has_not_0_after u i) with
   | inl _ => false
   | inr _ => true
   end.
@@ -819,6 +833,41 @@ split.
 -intros (P & _).
  unfold ends_with_999.
  destruct (LPO_fst (has_not_9_after u i)) as [H1| H1]; [ easy | ].
+ destruct H1 as (j & (_, Q)).
+ now rewrite P in Q.
+Qed.
+
+Theorem ends_with_000_true_iff {r : radix} : ∀ u i,
+  ends_with_000 u i = true ↔
+  ∃ j P, LPO_fst (has_not_0_after u i) = inr (exist _ j P).
+Proof.
+intros.
+split.
+-intros H9.
+ unfold ends_with_000 in H9.
+ destruct (LPO_fst (has_not_0_after u i)) as [H1| H1]; [ easy | clear H9 ].
+ destruct H1 as (j & Hjj).
+ now exists j, Hjj.
+-intros (j & ((P & Q) & _)).
+ unfold ends_with_000.
+ destruct (LPO_fst (has_not_0_after u i)) as [H1| H1]; [ | easy ].
+ specialize (H1 j).
+ now rewrite H1 in Q.
+Qed.
+
+Theorem ends_with_000_false_iff {r : radix} : ∀ u i,
+  ends_with_000 u i = false ↔
+  ∃ P, LPO_fst (has_not_0_after u i) = inl P.
+Proof.
+intros.
+split.
+-intros H9.
+ unfold ends_with_000 in H9.
+ destruct (LPO_fst (has_not_0_after u i)) as [H1| H1]; [ clear H9 | easy ].
+ now exists H1.
+-intros (P & _).
+ unfold ends_with_000.
+ destruct (LPO_fst (has_not_0_after u i)) as [H1| H1]; [ easy | ].
  destruct H1 as (j & (_, Q)).
  now rewrite P in Q.
 Qed.
@@ -5022,6 +5071,36 @@ destruct (LPO_fst (ends_with_999 (freal x))) as [H1| H1].
  now replace (j + i + k) with (i + (j + k)) in Hk by flia.
 Qed.
 
+Theorem ends_with_000_or_not {r : radix} : ∀ x,
+  (∀ i, ∃ j, fd2n x (i + j) ≠ 0)
+  ∨ (∃ i, ∀ j, fd2n x (i + j) = 0).
+Proof.
+intros.
+destruct (LPO_fst (ends_with_000 (freal x))) as [H1| H1].
+-right.
+ specialize (H1 0) as H2.
+ apply ends_with_000_true_iff in H2.
+ destruct H2 as (j & (Hjj & Hj) & _).
+...
+ apply has_not_0_after_false_iff in Hj.
+ simpl in Hj.
+ destruct Hj as (Hj & _).
+ exists j.
+ intros k.
+ specialize (Hj k) as H2.
+ now apply is_9_after_true_iff in H2.
+-left; intros i.
+ destruct H1 as (j & Hjj & Hj).
+ apply ends_with_999_false_iff in Hj.
+ destruct Hj as (H1 & _).
+ specialize (H1 i) as H2.
+ apply has_not_9_after_true_iff in H2.
+ destruct H2 as (k & (Hjk & Hk) & _).
+ apply is_9_after_false_iff in Hk.
+ exists (j + k).
+ now replace (j + i + k) with (i + (j + k)) in Hk by flia.
+Qed.
+
 Theorem add_norm_0_l {r : radix} : ∀ y n nx i nxy,
   (∀ i : nat, fd2n nx (n + i) = 0)
   → (∀ i : nat, ∃ j : nat, fd2n y (i + j) ≠ rad - 1)
@@ -5224,15 +5303,13 @@ specialize radix_ge_2 as Hr.
 specialize (freal_normalized_cases x) as [H1| H1].
 -unfold freal_eq.
  now rewrite H1.
--specialize (ends_with_999_or_not y) as [Hy| Hy].
- +destruct H1 as (n & Hbef & Hwhi & Hnaft & Haft).
-  unfold "="%F.
+-destruct H1 as (n & Hbef & Hwhi & Hnaft & Haft).
+ specialize (ends_with_999_or_not y) as [Hy| Hy].
+ +specialize (ends_with_000_or_not y) as [Hy| Hy].
+...
+ +unfold "="%F.
   apply eq_freal_norm_eq_true_iff.
   intros i.
-(* I am considering y not ending with 999... but perhaps I should consider
-   also if y is ending or not with 000... because it may make a difference
-   when adding x, which is ending with 999! *)
-...
   remember (freal_normalize x) as nx eqn:Hnx.
   remember (freal_unorm_add nx y) as nxy eqn:Hnxy.
   remember (freal_unorm_add x y) as xy eqn:Hxy.
