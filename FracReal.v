@@ -2105,14 +2105,15 @@ destruct (LPO_fst (A_ge_1 f i)) as [Hf| Hf].
    now rewrite Hl in Hjk.
 Qed.
 
-Theorem numbers_to_digits_shift {r : radix} : ∀ f n i,
-  numbers_to_digits f (n + i) = numbers_to_digits (λ j, f (n + j)) i.
+Theorem numbers_to_digits_shift {r : radix} : ∀ u n i,
+  (∀ k, u k < rad)
+  → numbers_to_digits u (n + i) = numbers_to_digits (λ j, u (n + j)) i.
 Proof.
-intros.
+intros * Hu.
 unfold numbers_to_digits.
 apply digit_eq_eq.
-destruct (LPO_fst (A_ge_1 f (n + i))) as [H1| H1].
--destruct (LPO_fst (A_ge_1 (λ j, f (n + j)) i)) as [H2| H2]; simpl.
+destruct (LPO_fst (A_ge_1 u (n + i))) as [H1| H1].
+-destruct (LPO_fst (A_ge_1 (λ j, u (n + j)) i)) as [H2| H2]; simpl.
  +now rewrite Nat.add_assoc.
  +destruct H2 as (j & Hjj & Hj).
   exfalso.
@@ -2121,6 +2122,18 @@ destruct (LPO_fst (A_ge_1 f (n + i))) as [H1| H1].
   remember (n2 - i - 1) as s2 eqn:Hs2.
   move s2 before n2.
   replace (n2 - i - j - 2) with (s2 - S j) in Hj by flia Hs2.
+  specialize (all_lt_rad_A_ge_1_true_if _ _ Hu H1) as H2.
+...
+
+  remember 42 as l eqn:Hl; move Hl at top.
+  specialize (H1 l).
+  apply A_ge_1_true_iff in H1.
+  remember (n + i) as i1 eqn:Hi1.
+  remember (rad * (i1 + l + 3)) as n1 eqn:Hn1.
+  remember (n1 - i1 - 1) as s1 eqn:Hs1.
+  replace (n1 - i1 - l - 2) with (s1 - S l) in H1 by flia Hs1.
+  move H1 at bottom.
+  move Hj at bottom.
 ...
   specialize (H1 j).
   apply A_ge_1_false_iff in Hj.
@@ -2158,8 +2171,8 @@ Search A_ge_1.
 
   unfold A_ge_1 in H1, Hj.
 Search nA.
-
 ...
+*)
 
 Theorem numbers_to_digits_eq_compat_from {r : radix} : ∀ f g n,
   (∀ i, f (n + i) = g (n + i)) →
@@ -2173,11 +2186,7 @@ specialize (numbers_to_digits_eq_compat _ _ H) as H1.
 specialize (H1 i).
 unfold fi, gi in H1.
 now do 2 rewrite <- numbers_to_digits_shift in H1.
-...
-
-unfold numbers_to_digits in H1 |-*.
-simpl in H1.
-...
+Qed.
 
 (*
 Theorem Nat_div_succ_l_eq_div : ∀ p q, q ≠ 0 →
