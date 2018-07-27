@@ -2,6 +2,7 @@
    Implemented as function of type nat → nat.
    Operations + and * implemented using LPO. *)
 
+Set Nested Proofs Allowed.
 Require Import Utf8 Arith Psatz NPeano.
 Require Import Misc Summation.
 Import Init.Nat.
@@ -1750,10 +1751,10 @@ Qed.
 
 Theorem all_lt_rad_A_ge_1_true_if {r : radix} : ∀ i u,
   (∀ k, u k < rad)
-  → (∀ k, A_ge_1 u i k = true) → ∀ j, i < j → u j = rad - 1.
+  → (∀ k, A_ge_1 u i k = true) → ∀ j, u (S i + j) = rad - 1.
 Proof.
 intros * Hu.
-intros Hk * Hij.
+intros Hk *.
 specialize (Hk j).
 apply A_ge_1_true_iff in Hk.
 remember (rad * (i + j + 3)) as n eqn:Hn.
@@ -1769,7 +1770,7 @@ rewrite Nat.mod_small in HnA.
  *rewrite Hn.
   specialize radix_ge_2 as Hr.
   destruct rad; [ easy | simpl; flia ].
- *flia Hij.
+ *flia.
 +rewrite Hs.
  apply nA_dig_seq_ub; [ intros; apply Hu | ].
  rewrite Hn.
@@ -2103,6 +2104,47 @@ destruct (LPO_fst (A_ge_1 f i)) as [Hf| Hf].
    erewrite A_ge_1_eq_compat in Hjk; [ | easy ].
    now rewrite Hl in Hjk.
 Qed.
+
+Theorem numbers_to_digits_shift {r : radix} : ∀ f n i,
+  numbers_to_digits f (n + i) = numbers_to_digits (λ j, f (n + j)) i.
+Proof.
+intros.
+unfold numbers_to_digits.
+apply digit_eq_eq.
+destruct (LPO_fst (A_ge_1 f (n + i))) as [H1| H1].
+-destruct (LPO_fst (A_ge_1 (λ j, f (n + j)) i)) as [H2| H2]; simpl.
+ +now rewrite Nat.add_assoc.
+ +destruct H2 as (j & Hjj & Hj).
+...
+
+  specialize (A_ge_1_eq_compat i (λ j, f (n + j))) as H.
+
+  rewrite A_ge_1_eq_compat with (g := λ i, f (n + i)) in Hj.
+  specialize (H1 j).
+  rewrite A_ge_1_eq_compat with (g := λ i, f (n + i)) in H1.
+
+  unfold A_ge_1 in H1, Hj.
+Search nA.
+
+...
+
+Theorem numbers_to_digits_eq_compat_from {r : radix} : ∀ f g n,
+  (∀ i, f (n + i) = g (n + i)) →
+  ∀ i, numbers_to_digits f (n + i) = numbers_to_digits g (n + i).
+Proof.
+intros * Hfg i.
+set (fi i := f (n + i)).
+set (gi i := g (n + i)).
+assert (H : ∀ i, fi i = gi i) by (intros; apply Hfg).
+specialize (numbers_to_digits_eq_compat _ _ H) as H1.
+specialize (H1 i).
+unfold fi, gi in H1.
+now do 2 rewrite <- numbers_to_digits_shift in H1.
+...
+
+unfold numbers_to_digits in H1 |-*.
+simpl in H1.
+...
 
 (*
 Theorem Nat_div_succ_l_eq_div : ∀ p q, q ≠ 0 →
@@ -5405,17 +5447,63 @@ specialize (freal_normalized_cases x) as [H1| H1].
    unfold digit_sequence_normalize.
    destruct (LPO_fst (is_9_strict_after (freal nxy) i)) as [H1| H1].
   --specialize (is_9_strict_after_all_9 _ _ H1) as H2; clear H1.
-assert (H1 : ∀ k, fd2n y (S n + k) = rad - 1). {
-  intros k.
-  specialize (H2 (S n + k - S i)) as H1.
-  replace (i + (S n + k - S i) + 1) with (S n + k) in H1 by flia Hni.
-  rewrite Hnxy in H1.
-  unfold freal_unorm_add in H1; simpl in H1.
-  unfold freal_add_to_seq, d2n in H1.
+    assert (H1 : ∀ k, fd2n y (S n + k) = rad - 1). {
+      intros k.
+      specialize (H2 (S n + k - S i)) as H1.
+      replace (i + (S n + k - S i) + 1) with (S n + k) in H1 by flia Hni.
+      rewrite Hnxy in H1.
+      unfold freal_unorm_add in H1; remember S as f; simpl in H1; subst f.
+      unfold freal_add_to_seq, d2n in H1.
+...
+rewrite numbers_to_digits_eq_compat_from with (g := fd2n y) in H1.
+(*
+...
+      remember (λ i, freal_add_series nx y (S n + i)) as f eqn:Hf.
+      remember (λ i, fd2n y (S n + i)) as g eqn:Hg.
+      specialize (numbers_to_digits_eq_compat f g) as H3.
+      assert (H : ∀ i, f i = g i). {
+        intros j; subst f g; remember S as f; simpl; subst f.
+        unfold freal_add_series, sequence_add.
+        now rewrite Hnaft.
+      }
+      specialize (H3 H 0); clear H.
+      subst f g.
+      unfold numbers_to_digits in H1, H3.
+      simpl in H1, H3.
+
+
+  subst f; simpl in H.
+...
   rewrite numbers_to_digits_eq_compat with (g := fd2n y) in H1.
+*)
   -unfold numbers_to_digits in H1.
-   destruct (LPO_fst (A_ge_1 (fd2n y) (S (n + k)))) as [H3| H3].
+   destruct (LPO_fst (A_ge_1 (fd2n y) (S n + k))) as [H3| H3].
+   +specialize (all_lt_rad_A_ge_1_true_if (S n + k) (fd2n y)) as H4.
+    assert (H : ∀ k, fd2n y k < rad) by (intros; apply digit_lt_radix).
+    specialize (H4 H H3); clear H.
+    specialize (Hy9 (S (S (n + k)))) as (j & Hy9).
+    now rewrite H4 in Hy9.
+   +destruct H3 as (j & Hjj & Hj); simpl in H1.
+    rewrite Nat.div_small in H1.
+    *rewrite Nat.add_0_r in H1.
+     rewrite Nat.mod_small in H1; [ easy | apply digit_lt_radix ].
+    *apply nA_dig_seq_ub; [ intros; apply digit_lt_radix | ].
+     destruct rad; [ easy | simpl; flia ].
+  -intros j.
+   unfold freal_add_series, sequence_add.
+
+...
+Search (∀ _, A_ge_1 _ _ _ = true).
+all_lt_rad_A_ge_1_true_if:
+  ∀ (r : radix) (i : nat) (u : nat → nat),
+    (∀ k : nat, u k < rad) → (∀ k : nat, A_ge_1 u i k = true) → ∀ j : nat, i < j → u j = rad - 1
+    specialize (is_9_strict_after_all_9 _ _ H3) as H4.
+...
    +simpl in H1.
+    rewrite Nat.div_small in H1; [ | apply digit_lt_radix ].
+    rewrite Nat.add_0_r in H1.
+    rewrite Nat.mod_small in H1.
+
 ...
 all_lt_rad_A_ge_1_true_if:
   ∀ (r : radix) (i : nat) (u : nat → nat),
