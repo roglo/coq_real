@@ -2115,7 +2115,12 @@ destruct (LPO_fst (A_ge_1 f (n + i))) as [H1| H1].
 -destruct (LPO_fst (A_ge_1 (λ j, f (n + j)) i)) as [H2| H2]; simpl.
  +now rewrite Nat.add_assoc.
  +destruct H2 as (j & Hjj & Hj).
-Search A_ge_1.
+  exfalso.
+  apply A_ge_1_false_iff in Hj.
+  remember (rad * (i + j + 3)) as n2 eqn:Hn2.
+  remember (n2 - i - 1) as s2 eqn:Hs2.
+  move s2 before n2.
+  replace (n2 - i - j - 2) with (s2 - S j) in Hj by flia Hs2.
 ...
   specialize (H1 j).
   apply A_ge_1_false_iff in Hj.
