@@ -1441,6 +1441,7 @@ unfold freal_add_series; simpl.
 unfold sequence_add; simpl.
 easy.
 Qed.
+*)
 
 Theorem Nat_pow_ge_1 : ∀ a b, 0 < a → 1 ≤ a ^ b.
 Proof.
@@ -1449,7 +1450,6 @@ induction b; [ easy | simpl ].
 replace 1 with (1 * 1) by flia.
 apply Nat.mul_le_mono_nonneg; [ flia | easy | flia | easy ].
 Qed.
-*)
 
 Theorem nA_dig_seq_ub {r : radix} : ∀ u n i,
   (∀ j, i < j < n → u j < rad) →
@@ -1617,6 +1617,7 @@ split.
  specialize (Hk k).
  now apply A_ge_1_true_iff.
 Qed.
+*)
 
 Theorem when_99000_le_uuu00 {r : radix} : ∀ u i j k n,
   (∀ k, u k < rad)
@@ -1776,6 +1777,7 @@ rewrite Nat.mod_small in HnA.
  destruct rad; [ flia Hr | simpl in Hn; flia Hn ].
 Qed.
 
+(*
 Theorem freal_normalize_0_all_0 {r : radix} : ∀ i,
   fd2n (freal_normalize 0) i = 0.
 Proof.
@@ -5411,6 +5413,16 @@ assert (H1 : ∀ k, fd2n y (S n + k) = rad - 1). {
   unfold freal_unorm_add in H1; simpl in H1.
   unfold freal_add_to_seq, d2n in H1.
   rewrite numbers_to_digits_eq_compat with (g := fd2n y) in H1.
+  -unfold numbers_to_digits in H1.
+   destruct (LPO_fst (A_ge_1 (fd2n y) (S (n + k)))) as [H3| H3].
+   +simpl in H1.
+...
+all_lt_rad_A_ge_1_true_if:
+  ∀ (r : radix) (i : nat) (u : nat → nat),
+    (∀ k : nat, u k < rad) → (∀ k : nat, A_ge_1 u i k = true) → ∀ j : nat, i < j → u j = rad - 1
+...
+    apply A_ge_1_add_all_true_if in H3.
+
 ...
     destruct (LPO_fst (is_9_strict_after (freal xy) i)) as [H1| H1].
    ++specialize (is_9_strict_after_all_9 _ _ H1) as H3; clear H1.
