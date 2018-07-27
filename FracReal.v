@@ -5396,7 +5396,6 @@ specialize (freal_normalized_cases x) as [H1| H1].
    }
    now rewrite H1, H3.
   *apply Nat.nle_gt in Hni.
-...
    destruct Hwhi as [| Hwhi ]; [ now subst n | ].
    destruct n; [ easy | ].
    replace (S n - 1) with n in Hbef, Hwhi by flia.
@@ -5404,6 +5403,15 @@ specialize (freal_normalized_cases x) as [H1| H1].
    unfold digit_sequence_normalize.
    destruct (LPO_fst (is_9_strict_after (freal nxy) i)) as [H1| H1].
   --specialize (is_9_strict_after_all_9 _ _ H1) as H2; clear H1.
+assert (H1 : ∀ k, fd2n y (S n + k) = rad - 1). {
+  intros k.
+  specialize (H2 (S n + k - S i)) as H1.
+  replace (i + (S n + k - S i) + 1) with (S n + k) in H1 by flia Hni.
+  rewrite Hnxy in H1.
+  unfold freal_unorm_add in H1; simpl in H1.
+  unfold freal_add_to_seq, d2n in H1.
+  rewrite numbers_to_digits_eq_compat with (g := fd2n y) in H1.
+...
     destruct (LPO_fst (is_9_strict_after (freal xy) i)) as [H1| H1].
    ++specialize (is_9_strict_after_all_9 _ _ H1) as H3; clear H1.
     **destruct (lt_dec (S (d2n (freal nxy) i)) rad) as [H1| H1].
