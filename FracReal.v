@@ -2115,10 +2115,38 @@ destruct (LPO_fst (A_ge_1 f (n + i))) as [H1| H1].
 -destruct (LPO_fst (A_ge_1 (λ j, f (n + j)) i)) as [H2| H2]; simpl.
  +now rewrite Nat.add_assoc.
  +destruct H2 as (j & Hjj & Hj).
+Search A_ge_1.
+...
+  specialize (H1 j).
+  apply A_ge_1_false_iff in Hj.
+  apply A_ge_1_true_iff in H1.
+  remember (n + i) as i1 eqn:Hi1.
+  remember (rad * (i1 + j + 3)) as n1 eqn:Hn1.
+  move n1 before i1.
+  remember (rad * (i + j + 3)) as n2 eqn:Hn2.
+  move n2 before n1.
+  remember (λ j, f (n + j)) as g eqn:Hg.
+  move g before f.
+  exfalso; apply Nat.nlt_ge in H1; apply H1; clear H1.
+  unfold nA in Hj |-*.
+  rewrite summation_shift in Hj.
+  *rewrite summation_shift.
+  --replace (
+
+
+Search nA.
+...
+
+  destruct (lt_dec n j) as [Hnj| Hnj].
+  *apply A_ge_1_false_iff in Hj.
+   specialize (H1 (j - n)).
+   apply A_ge_1_true_iff in H1.
+   replace (n + i + (j - n) + 3) with (i + j + 3) in H1 by flia Hnj.
+
+Search A_ge_1.
 ...
 
   specialize (A_ge_1_eq_compat i (λ j, f (n + j))) as H.
-
   rewrite A_ge_1_eq_compat with (g := λ i, f (n + i)) in Hj.
   specialize (H1 j).
   rewrite A_ge_1_eq_compat with (g := λ i, f (n + i)) in H1.
