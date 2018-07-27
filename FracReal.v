@@ -5146,16 +5146,16 @@ destruct (LPO_fst (ends_with_000 (freal x))) as [H1| H1].
  now replace (j + i + k) with (i + (j + k)) in Hk by flia.
 Qed.
 
-Theorem add_norm_0_l {r : radix} : ∀ y n nx i nxy,
+Theorem add_norm_0_l {r : radix} : ∀ y n nx nxy,
   (∀ i : nat, fd2n nx (n + i) = 0)
   → (∀ i : nat, ∃ j : nat, fd2n y (i + j) ≠ rad - 1)
   → nxy = freal_unorm_add nx y
-  → n ≤ i
+  → ∀ i, n ≤ i
   → fd2n (freal_normalize nxy) i = fd2n (freal_normalize y) i.
 Proof.
 intros *.
 specialize radix_ge_2 as Hr.
-intros Hnaft Hy Hnxy Hni.
+intros Hnaft Hy Hnxy i Hni.
 unfold fd2n; f_equal.
 apply (freal_eq_normalize_eq n); [ | easy ].
 intros j Hj.
@@ -5350,23 +5350,21 @@ specialize (freal_normalized_cases x) as [H1| H1].
  now rewrite H1.
 -destruct H1 as (n & Hbef & Hwhi & Hnaft & Haft).
  specialize (ends_with_999_or_not y) as [Hy9| Hy9].
- +specialize (ends_with_000_or_not y) as [Hy0| Hy0].
-  *unfold "="%F.
-   apply eq_freal_norm_eq_true_iff.
-   intros i.
-...
-   remember (freal_normalize x) as nx eqn:Hnx.
-   remember (freal_unorm_add nx y) as nxy eqn:Hnxy.
-   remember (freal_unorm_add x y) as xy eqn:Hxy.
-   move xy before nxy.
-   destruct (le_dec n i) as [Hni| Hni].
+ +unfold "="%F.
+  apply eq_freal_norm_eq_true_iff.
+  intros i.
+  remember (freal_normalize x) as nx eqn:Hnx.
+  remember (freal_unorm_add nx y) as nxy eqn:Hnxy.
+  remember (freal_unorm_add x y) as xy eqn:Hxy.
+  move xy before nxy.
+  destruct (le_dec n i) as [Hni| Hni].
   *assert (H1 : fd2n (freal_normalize nxy) i = fd2n (freal_normalize y) i). {
      now eapply add_norm_0_l.
    }
    assert (H3 : fd2n (freal_normalize xy) i = fd2n (freal_normalize y) i). {
      unfold freal_normalize, fd2n; simpl.
      unfold digit_sequence_normalize.
-     specialize (unorm_add_inf_pred_rad x y n Haft Hy i Hni) as H2i.
+     specialize (unorm_add_inf_pred_rad x y n Haft Hy9 i Hni) as H2i.
      unfold fd2n in H2i; unfold d2n; rewrite <- Hxy in H2i.
      apply digit_eq_eq in H2i.
      rewrite H2i.
@@ -5377,7 +5375,7 @@ specialize (freal_normalized_cases x) as [H1| H1].
       +destruct H3 as (k & Hjk & Hk).
        apply is_9_strict_after_false_iff in Hk.
        exfalso.
-       specialize (unorm_add_inf_pred_rad x y n Haft Hy (i + k + 1)) as H3.
+       specialize (unorm_add_inf_pred_rad x y n Haft Hy9 (i + k + 1)) as H3.
        rewrite <- Hxy in H3; unfold fd2n in H3.
        assert (H : n ≤ i + k + 1) by flia Hni.
        specialize (H3 H); clear H.
@@ -5388,7 +5386,7 @@ specialize (freal_normalized_cases x) as [H1| H1].
       +destruct H3 as (k & Hjk & Hk).
        apply is_9_strict_after_false_iff in Hk.
        specialize (is_9_strict_after_all_9 _ i H4) as H5; clear H4.
-       specialize (unorm_add_inf_pred_rad x y n Haft Hy (i + k + 1)) as H3.
+       specialize (unorm_add_inf_pred_rad x y n Haft Hy9 (i + k + 1)) as H3.
        rewrite <- Hxy in H3; unfold fd2n in H3.
        assert (H : n ≤ i + k + 1) by flia Hni.
        specialize (H3 H); clear H.
@@ -5398,6 +5396,7 @@ specialize (freal_normalized_cases x) as [H1| H1].
    }
    now rewrite H1, H3.
   *apply Nat.nle_gt in Hni.
+...
    destruct Hwhi as [| Hwhi ]; [ now subst n | ].
    destruct n; [ easy | ].
    replace (S n - 1) with n in Hbef, Hwhi by flia.
