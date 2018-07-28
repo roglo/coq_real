@@ -2172,6 +2172,12 @@ destruct (LPO_fst (A_ge_1 u (n + i))) as [H1| H1].
   move s2 before n2.
   replace (n2 - i - j - 2) with (s2 - S j) in Hj by flia Hs2.
   specialize (all_lt_rad_A_ge_1_true_if _ _ Hu H1) as H2.
+(**)
+apply Nat.nle_gt in Hj.
+apply Hj; clear Hj.
+rewrite Nat.mod_small.
+
+...
   specialize (H1 j).
   apply A_ge_1_true_iff in H1.
   remember (n + i) as i1 eqn:Hi1.
