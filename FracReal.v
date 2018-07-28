@@ -2134,6 +2134,8 @@ destruct (LPO_fst (A_ge_1 u (n + i))) as [H1| H1].
   move Hj at bottom.
   apply Nat.nlt_ge in H1.
   apply H1; clear H1.
+(* s1 = s2 + (rad - 1) * n
+   s2 = rad * (i + j + 3) - (i + 1) *)
 ...
   specialize (H1 j).
   apply A_ge_1_false_iff in Hj.
