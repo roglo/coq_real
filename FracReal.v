@@ -2116,8 +2116,6 @@ destruct (LPO_fst (A_ge_1 u (n + i))) as [H1| H1].
 -destruct (LPO_fst (A_ge_1 (λ j, u (n + j)) i)) as [H2| H2]; simpl.
  +now rewrite Nat.add_assoc.
  +destruct H2 as (j & Hjj & Hj).
-  simpl.
-...
   exfalso.
   apply A_ge_1_false_iff in Hj.
   remember (rad * (i + j + 3)) as n2 eqn:Hn2.
@@ -2125,17 +2123,17 @@ destruct (LPO_fst (A_ge_1 u (n + i))) as [H1| H1].
   move s2 before n2.
   replace (n2 - i - j - 2) with (s2 - S j) in Hj by flia Hs2.
   specialize (all_lt_rad_A_ge_1_true_if _ _ Hu H1) as H2.
-...
-
-  remember 42 as l eqn:Hl; move Hl at top.
-  specialize (H1 l).
+  specialize (H1 j).
   apply A_ge_1_true_iff in H1.
   remember (n + i) as i1 eqn:Hi1.
-  remember (rad * (i1 + l + 3)) as n1 eqn:Hn1.
+  remember (rad * (i1 + j + 3)) as n1 eqn:Hn1.
   remember (n1 - i1 - 1) as s1 eqn:Hs1.
-  replace (n1 - i1 - l - 2) with (s1 - S l) in H1 by flia Hs1.
+  move n1 before i1; move s1 before n1.
+  replace (n1 - i1 - j - 2) with (s1 - S j) in H1 by flia Hs1.
   move H1 at bottom.
   move Hj at bottom.
+  apply Nat.nlt_ge in H1.
+  apply H1; clear H1.
 ...
   specialize (H1 j).
   apply A_ge_1_false_iff in Hj.
