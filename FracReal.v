@@ -2158,7 +2158,9 @@ Theorem numbers_to_digits_shift {r : radix} : ∀ u n i,
   (∀ k, u k < rad)
   → numbers_to_digits u (n + i) = numbers_to_digits (λ j, u (n + j)) i.
 Proof.
-intros * Hu.
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hu.
 unfold numbers_to_digits.
 apply digit_eq_eq.
 destruct (LPO_fst (A_ge_1 u (n + i))) as [H1| H1].
@@ -2177,8 +2179,39 @@ apply Nat.nle_gt in Hj.
 apply Hj; clear Hj.
 rewrite Nat.mod_small.
 apply (le_trans _ (rad ^ s2 - 1)).
+rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+rewrite <- Nat.pow_add_r.
+rewrite Nat.add_sub_assoc.
+rewrite Nat.add_comm, Nat.add_sub.
+apply Nat.sub_le_mono_l.
+now apply Nat_pow_ge_1.
+rewrite Hs2, Hn2.
+destruct rad; [ easy | simpl; flia ].
+destruct s2; [ simpl; flia | ].
+unfold nA.
+rewrite summation_rtl, summation_shift.
+replace (n2 - 1 - (i + 1)) with s2 by flia Hs2.
+rewrite power_summation_sub_1; [ | easy ].
+rewrite summation_mul_distr_l; simpl.
+apply (@summation_le_compat nat_ord_ring_def).
+intros k Hk; simpl; unfold Nat.le.
+replace (n2 - 1 + (i + 1) - (i + 1 + k)) with (n2 - 1 - k) by flia.
+apply Nat.mul_le_mono.
+...
+
+specialize (H2 (n2 - k - 2)).
+replace (n2 - i - k - 2) with (S s2 - k - 1) in H2 by flia Hs2.
+
+....
+
+destruct s2.
+rewrite Hn2 in Hs2.
+destruct rad; [ easy | simpl in Hs2; flia Hs2 ].
 ...
 rewrite power_summation_sub_1; [ | easy ].
+rewrite <- Nat.mul_assoc, summation_mul_distr_r.
+rewrite power_summation_sub_1; [ | easy ].
+apply Nat.mul_le_mono_l; simpl.
 ...
 (* further:
 Theorem all_le_nA_le {r : radix} : ∀ u a i n,
