@@ -2211,6 +2211,8 @@ destruct (LPO_fst (A_ge_1 u (n + i))) as [H1| H1].
    rewrite Hn2.
    destruct rad; [ easy | simpl; flia ].
 -destruct H1 as (j & Hjj & Hj); simpl.
+ destruct (LPO_fst (A_ge_1 (λ j, u (n + j)) i)) as [H2| H2]; simpl.
+ +idtac.
 ....
 
 Theorem numbers_to_digits_eq_compat_from {r : radix} : ∀ f g n,
