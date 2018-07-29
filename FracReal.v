@@ -2172,11 +2172,26 @@ destruct (LPO_fst (A_ge_1 u (n + i))) as [H1| H1].
   move s2 before n2.
   replace (n2 - i - j - 2) with (s2 - S j) in Hj by flia Hs2.
   specialize (all_lt_rad_A_ge_1_true_if _ _ Hu H1) as H2.
+Search (∀ _, A_ge_1 _ _ _ = true).
 (**)
 apply Nat.nle_gt in Hj.
 apply Hj; clear Hj.
 rewrite Nat.mod_small.
-
+...
+(* further:
+Theorem all_le_nA_le {r : radix} : ∀ u a i n,
+  (∀ j, i < j < n → u j ≤ a * (rad - 1))
+  → nA i n u ≤ a * (rad ^ (n - i - 1) - 1).
+Theorem A_ge_1_add_all_true_if {r : radix} : ∀ u i,
+  (∀ k, u k ≤ 2 * (rad - 1))
+  → (∀ k, A_ge_1 u i k = true)
+  → (∀ k, u (i + k + 1) = rad - 1) ∨
+     (∀ k, u (i + k + 1) = 2 * (rad - 1)) ∨
+     (∃ j,
+       (∀ k, k < j → u (i + k + 1) = rad - 1) ∧
+       u (i + j + 1) = rad - 2 ∧
+       (∀ k, u (i + j + k + 2) = 2 * (rad - 1))).
+*)
 ...
   specialize (H1 j).
   apply A_ge_1_true_iff in H1.
