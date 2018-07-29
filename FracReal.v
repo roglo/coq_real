@@ -2172,11 +2172,13 @@ destruct (LPO_fst (A_ge_1 u (n + i))) as [H1| H1].
   move s2 before n2.
   replace (n2 - i - j - 2) with (s2 - S j) in Hj by flia Hs2.
   specialize (all_lt_rad_A_ge_1_true_if _ _ Hu H1) as H2.
-Search (∀ _, A_ge_1 _ _ _ = true).
 (**)
 apply Nat.nle_gt in Hj.
 apply Hj; clear Hj.
 rewrite Nat.mod_small.
+apply (le_trans _ (rad ^ s2 - 1)).
+...
+rewrite power_summation_sub_1; [ | easy ].
 ...
 (* further:
 Theorem all_le_nA_le {r : radix} : ∀ u a i n,
