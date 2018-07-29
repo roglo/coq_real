@@ -2211,8 +2211,54 @@ destruct (LPO_fst (A_ge_1 u (n + i))) as [H1| H1].
    rewrite Hn2.
    destruct rad; [ easy | simpl; flia ].
 -destruct H1 as (j & Hjj & Hj); simpl.
- destruct (LPO_fst (A_ge_1 (λ j, u (n + j)) i)) as [H2| H2]; simpl.
- +idtac.
+ destruct (LPO_fst (A_ge_1 (λ j, u (n + j)) i)) as [H1| H1]; simpl.
+ +exfalso.
+  apply A_ge_1_false_iff in Hj.
+  remember (rad * (n + i + j + 3)) as n2 eqn:Hn2.
+  remember (n2 - (n + i) - 1) as s2 eqn:Hs2.
+  move s2 before n2.
+  replace (n2 - (n + i) - j - 2) with (s2 - S j) in Hj by flia Hs2.
+  assert (H : ∀ k, (λ j, (u (n + j))) k < rad) by (intros; apply Hu).
+  specialize (all_lt_rad_A_ge_1_true_if _ _ H H1) as H2.
+  simpl in H2; clear H.
+  apply Nat.nle_gt in Hj.
+  apply Hj; clear Hj.
+  rewrite Nat.mod_small.
+  *apply (le_trans _ (rad ^ s2 - 1)).
+  --rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+    rewrite <- Nat.pow_add_r.
+    rewrite Nat.add_sub_assoc.
+   ++rewrite Nat.add_comm, Nat.add_sub.
+     apply Nat.sub_le_mono_l.
+     now apply Nat_pow_ge_1.
+   ++rewrite Hs2, Hn2.
+     destruct rad; [ easy | simpl; flia ].
+  --destruct s2; [ simpl; flia | ].
+    unfold nA.
+    rewrite summation_rtl, summation_shift.
+   ++replace (n2 - 1 - (n + i + 1)) with s2 by flia Hs2.
+     rewrite power_summation_sub_1; [ | easy ].
+     rewrite summation_mul_distr_l; simpl.
+     apply (@summation_le_compat nat_ord_ring_def).
+     intros k Hk; simpl; unfold Nat.le.
+     replace (n2 - 1 + (n + i + 1) - (n + i + 1 + k)) with (n2 - 1 - k)
+       by flia.
+     apply Nat.mul_le_mono.
+...
+    **specialize (H2 (n2 - i - k - 2)).
+      replace (S (n + i) + (n2 - i - k - 2)) with (n + (n2 - 1 - k)) in H2
+        by flia Hs2 Hk.
+      now rewrite H2.
+    **replace (n2 - 1 - (n2 - 1 - k)) with k; [ easy | ].
+      rewrite Nat_sub_sub_swap.
+      rewrite <- Nat.sub_add_distr.
+      rewrite Nat_sub_sub_swap.
+      rewrite Nat.sub_add; flia Hs2 Hk.
+   ++rewrite Hn2.
+     destruct rad; [ easy | simpl; flia ].
+  *rewrite Hs2; apply nA_dig_seq_ub; [ intros; apply Hu | ].
+   rewrite Hn2.
+   destruct rad; [ easy | simpl; flia ].
 ....
 
 Theorem numbers_to_digits_eq_compat_from {r : radix} : ∀ f g n,
