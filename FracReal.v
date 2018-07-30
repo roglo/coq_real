@@ -5499,6 +5499,68 @@ destruct (LPO_fst (A_ge_1 u i)) as [H2| H2].
    now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
 Qed.
 
+Theorem numbers_to_digits_normalize {r : radix} : ∀ x i,
+  numbers_to_digits (fd2n x) i = freal (freal_normalize x) i.
+Proof.
+intros.
+unfold numbers_to_digits, freal_normalize, digit_sequence_normalize; simpl.
+apply digit_eq_eq.
+destruct (LPO_fst (A_ge_1 (fd2n x) i)) as [H1| H1]; simpl.
+-assert (H : ∀ k : nat, fd2n x (S i + k) < rad). {
+   intros; apply digit_lt_radix.
+ }
+ specialize (all_lt_rad_A_ge_1_true_if _ _ H H1) as H2; clear H H1.
+ destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H1| H1]; simpl.
+ +specialize (is_9_strict_after_all_9 _ _ H1) as H3; clear H1.
+  rewrite Nat.div_small; [ | apply digit_lt_radix ].
+  rewrite Nat.add_0_r.
+  destruct (lt_dec (S (d2n (freal x) i)) rad) as [H1| H1]; simpl.
+  *unfold d2n in H1; unfold fd2n, d2n.
+   rewrite Nat.mod_small; flia H1.
+  *assert (H : d2n (freal x) i < rad) by apply digit_lt_radix.
+   unfold d2n in H1, H; unfold fd2n, d2n.
+   replace (dig (freal x i)) with (rad - 1) by flia H1 H.
+   rewrite Nat.sub_add; [ | easy ].
+   now rewrite Nat.mod_same.
+ +destruct H1 as (j & Hjj & Hj).
+  apply is_9_strict_after_false_iff in Hj.
+  replace (i + j + 1) with (S i + j) in Hj by flia.
+  unfold fd2n in H2; unfold d2n in Hj.
+  now rewrite H2 in Hj.
+-destruct H1 as (j & Hjj & Hj); simpl.
+ destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H1| H1]; simpl.
+ +specialize (is_9_strict_after_all_9 _ _ H1) as H3; clear H1.
+...
+
+  rewrite Nat.div_small; [ | apply digit_lt_radix ].
+  rewrite Nat.add_0_r.
+  destruct (lt_dec (S (d2n (freal x) i)) rad) as [H1| H1]; simpl.
+  *unfold d2n in H1; unfold fd2n, d2n.
+   rewrite Nat.mod_small; flia H1.
+  *assert (H : d2n (freal x) i < rad) by apply digit_lt_radix.
+   unfold d2n in H1, H; unfold fd2n, d2n.
+   replace (dig (freal x i)) with (rad - 1) by flia H1 H.
+   rewrite Nat.sub_add; [ | easy ].
+   now rewrite Nat.mod_same.
+ +destruct H1 as (j & Hjj & Hj).
+  apply is_9_strict_after_false_iff in Hj.
+  replace (i + j + 1) with (S i + j) in Hj by flia.
+  unfold fd2n in H2; unfold d2n in Hj.
+  now rewrite H2 in Hj.
+...
+
+
+Search (∀ k, is_9_strict_after _ _ _ = true).
+is_9_strict_after_all_9:
+  ∀ (r : radix) (u : nat → digit) (i : nat),
+    (∀ j : nat, is_9_strict_after u i j = true) → ∀ k : nat, d2n u (i + k + 1) = rad - 1
+all_lt_rad_A_ge_1_true_if:
+  ∀ (r : radix) (i : nat) (u : nat → nat),
+    (∀ k : nat, u (S i + k) < rad) → (∀ k : nat, A_ge_1 u i k = true) → ∀ j : nat, u (S i + j) = rad - 1
+
+
+...
+
 Theorem freal_eq_add_norm_l {r : radix} : ∀ x y,
   (freal_unorm_add (freal_normalize x) y = freal_unorm_add x y)%F.
 Proof.
@@ -5564,6 +5626,8 @@ specialize (freal_normalized_cases x) as [H1| H1].
   --specialize (is_9_strict_after_all_9 _ _ H1) as H2; clear H1.
     assert (H1 : ∀ k, dig (numbers_to_digits (fd2n y) (S n + k)) = rad - 1). {
       intros k.
+...
+rewrite numbers_to_digits_normalize.
       specialize (H2 (S n + k - S i)) as H1.
       replace (i + (S n + k - S i) + 1) with (S n + k) in H1 by flia Hni.
       rewrite Hnxy in H1.
@@ -5579,6 +5643,7 @@ specialize (freal_normalized_cases x) as [H1| H1].
        now rewrite Hnaft.
     }
     exfalso.
+...
 Theorem not_eq_all_numbers_to_digits_9 {r : radix} : ∀ u n,
   (∀ i, u (n + i) < rad)
   → ¬ ∀ k, dig (numbers_to_digits u (n + k)) = rad - 1.
@@ -5594,6 +5659,7 @@ destruct (LPO_fst (A_ge_1 u n)) as [H3| H3].
    apply Hu.
  }
  specialize (all_lt_rad_A_ge_1_true_if n u H H3) as H4; clear H.
+
 ...
     specialize (H1 0) as H3.
     rewrite Nat.add_0_r in H3.
