@@ -5578,19 +5578,31 @@ specialize (freal_normalized_cases x) as [H1| H1].
        unfold freal_add_series, sequence_add.
        now rewrite Hnaft.
     }
-(* H1 supposed to be impossible *)
+    exfalso.
+    specialize (H1 0) as H3.
+    rewrite Nat.add_0_r in H3.
+    unfold numbers_to_digits in H3.
+    destruct (LPO_fst (A_ge_1 (fd2n y) (S n))) as [H4| H4]; simpl in H3.
+   ++specialize (all_lt_rad_A_ge_1_true_if (S n) (fd2n y)) as H5.
+     assert (H : ∀ k, fd2n y (S (S n) + k) < rad). {
+       intros k; apply digit_lt_radix.
+     }
+     specialize (H5 H H4); clear H.
+     specialize (Hy9 (S (S n))) as (j & Hj).
+     apply Hj, H5.
+   ++destruct H4 as (j & Hjj & Hj); simpl in H3.
 ...
-    assert (H1 : ∀ k, fd2n y (S n + k) = rad - 1). {
-      intros k.
-      specialize (H2 (S n + k - S i)) as H1.
-      replace (i + (S n + k - S i) + 1) with (S n + k) in H1 by flia Hni.
-      rewrite Hnxy in H1.
-      unfold freal_unorm_add in H1; remember S as f; simpl in H1; subst f.
-      unfold freal_add_to_seq, d2n in H1.
-      rewrite numbers_to_digits_eq_compat_from with (g := fd2n y) in H1.
-...
-Search (numbers_to_digits (fd2n _)).
-Search numbers_to_digits.
+     specialize (H1 1) as H6.
+     unfold numbers_to_digits in H6.
+     destruct (LPO_fst (A_ge_1 (fd2n y) (S n + 1))) as [H7| H7]; simpl in H6.
+    **rewrite Nat.div_small in H6; [ | apply digit_lt_radix ].
+      specialize (H5 0); rewrite <- Nat.add_1_r, Nat.add_0_r in H5.
+      rewrite Nat.add_succ_l in H5; rewrite H5 in H6.
+      rewrite Nat.sub_add in H6; [ | easy ].
+      rewrite Nat.add_0_r in H6.
+      rewrite Nat.mod_same in H6; [ | easy ].
+      flia Hr H6.
+    **destruct H7 as (j & Hjj & Hj); simpl in H6.
 ...
       remember (λ i, freal_add_series nx y (S n + i)) as f eqn:Hf.
       remember (λ i, fd2n y (S n + i)) as g eqn:Hg.
