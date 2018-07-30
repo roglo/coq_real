@@ -5542,13 +5542,58 @@ destruct (LPO_fst (A_ge_1 (fd2n x) i)) as [H1| H1]; simpl.
     destruct rad; [ easy | simpl; flia ].
   }
   rewrite Nat.mod_small.
-  *unfold nA.
+  *assert (H : nA i n (fd2n x) = rad ^ s - 1). {
+     destruct s.
+     -rewrite Hn in Hs.
+      destruct rad; [ easy | simpl in Hs; flia Hs ].
+     -unfold nA.
+      rewrite power_summation_sub_1; [ | easy ].
+      rewrite summation_rtl.
+      rewrite summation_shift; [ | easy ].
+      replace (n - 1 - (i + 1)) with s by flia Hs.
+      rewrite summation_mul_distr_l.
+      apply summation_eq_compat.
+      intros k Hk; simpl.
+      replace (n - 1 + (i + 1) - (i + 1 + k)) with (n - k - 1) by flia.
+      replace (n - 1 - (n - k - 1)) with k by flia Hk Hs.
+      f_equal.
+      specialize (H3 (n - k - i - 2)).
+      now replace (i + (n - k - i - 2) + 1) with (n - k - 1) in H3
+        by flia Hk Hs Hin.
+   }
+   rewrite H; clear H.
+   destruct s.
+  --rewrite Hn in Hs.
+    destruct rad; [ easy | simpl in Hs; flia Hs ].
+  --rewrite Nat.sub_succ.
+    rewrite power_summation_sub_1; [ | easy ].
+    rewrite power_summation_sub_1; [ | easy ].
+    rewrite <- Nat.mul_assoc.
+    apply Nat.mul_le_mono_l.
+...
+
    rewrite summation_rtl.
    rewrite summation_shift; [ | easy ].
+   replace (n - 1 - (i + 1)) with (s - 1) by flia Hs.
    rewrite (summation_split _ _ j).
   --rewrite power_summation_sub_1; [ | easy ].
     rewrite summation_mul_distr_l; simpl.
-    replace (n - 1 - (i + 1)) with (s - 1) by flia Hs.
+
+...
+    apply le_plus_trans.
+    rewrite summation_mul_distr_r; simpl.
+    apply (@summation_le_compat nat_ord_ring_def).
+    intros k Hk; simpl; unfold Nat.le.
+replace (n - 1 - (i + 1 + k)) with (s - S k) by flia Hs Hk.
+
+    replace (n - 1 + (i + 1) - (i + 1 + k)) with (n - 1 - k) by flia.
+    assert (Hkn : k < n - 1). {
+      rewrite Hn.
+      destruct rad; [ easy | simpl; flia Hk ].
+    }
+    replace (n - 1 - (n - 1 - k)) with k by flia Hkn.
+
+    replace (n - 1 - (n - 1 + (i + 1) - (i + 1 + k))) with k
 ...
     apply le_plus_trans.
     rewrite summation_mul_distr_r; simpl.
