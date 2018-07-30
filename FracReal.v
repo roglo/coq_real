@@ -5688,7 +5688,15 @@ specialize (freal_normalized_cases x) as [H1| H1].
     specialize (normalized_not_999 y) as H4.
     apply H4.
     exists (S n); easy.
-  --idtac.
+  --destruct H1 as (j & Hjj & Hj).
+    apply is_9_strict_after_false_iff in Hj.
+    destruct (LPO_fst (is_9_strict_after (freal xy) i)) as [H1| H1].
+   ++specialize (is_9_strict_after_all_9 _ _ H1) as H2; clear H1.
+rewrite Hxy in H2.
+unfold freal_unorm_add in H2; simpl in H2.
+unfold freal_add_to_seq in H2.
+Search (numbers_to_digits).
+(* normalement numbers_to_digits ne peut pas se terminer par 999... *)
 ...
 
 Theorem freal_add_assoc {r : radix} : ∀ x y z,
