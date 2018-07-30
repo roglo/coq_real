@@ -5503,6 +5503,7 @@ Theorem numbers_to_digits_normalize {r : radix} : ∀ x i,
   numbers_to_digits (fd2n x) i = freal (freal_normalize x) i.
 Proof.
 intros.
+specialize radix_ge_2 as Hr.
 unfold numbers_to_digits, freal_normalize, digit_sequence_normalize; simpl.
 apply digit_eq_eq.
 destruct (LPO_fst (A_ge_1 (fd2n x) i)) as [H1| H1]; simpl.
@@ -5530,6 +5531,67 @@ destruct (LPO_fst (A_ge_1 (fd2n x) i)) as [H1| H1]; simpl.
 -destruct H1 as (j & Hjj & Hj); simpl.
  destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H1| H1]; simpl.
  +specialize (is_9_strict_after_all_9 _ _ H1) as H3; clear H1.
+  apply A_ge_1_false_iff in Hj.
+  remember (rad * (i + j + 3)) as n eqn:Hn.
+  remember (n - i - 1) as s eqn:Hs.
+  move s before n.
+  replace (n - i - j - 2) with (s - S j) in Hj by flia Hs.
+  exfalso; apply Nat.nle_gt in Hj; apply Hj; clear Hj.
+  assert (Hin : i + 1 ≤ n - 1). {
+    rewrite Hn.
+    destruct rad; [ easy | simpl; flia ].
+  }
+  rewrite Nat.mod_small.
+  *unfold nA.
+   rewrite summation_rtl.
+   rewrite summation_shift; [ | easy ].
+   rewrite (summation_split _ _ j).
+  --rewrite power_summation_sub_1; [ | easy ].
+    rewrite summation_mul_distr_l; simpl.
+    replace (n - 1 - (i + 1)) with (s - 1) by flia Hs.
+...
+    apply le_plus_trans.
+    rewrite summation_mul_distr_r; simpl.
+    apply (@summation_le_compat nat_ord_ring_def).
+    intros k Hk; simpl; unfold Nat.le.
+    replace (n - 1 + (i + 1) - (i + 1 + k)) with (n - 1 - k) by flia.
+    assert (Hkn : k < n - 1). {
+      rewrite Hn.
+      destruct rad; [ easy | simpl; flia Hk ].
+    }
+    replace (n - 1 - (n - 1 - k)) with k by flia Hkn.
+
+    replace (n - 1 - (n - 1 + (i + 1) - (i + 1 + k))) with k
+                                                           by flia Hin Hk Hs.
+...
+  *rewrite Hs.
+   apply nA_dig_seq_ub; [ | easy ].
+   intros; apply digit_lt_radix.
+ +idtac.
+...
+  apply Nat.mul_le_mono_r.
+  replace (m + i + 2 - 1 - (i + 1)) with m by flia.
+  apply (@summation_le_compat nat_ord_ring_def).
+  intros j Hj; simpl; unfold Nat.le.
+  replace (m + i + 2 - 1 + (i + 1) - (i + 1 + j))
+    with (m + i + 1 - j) by flia.
+  replace (m + i + 2 - 1 - (m + i + 1 - j)) with j by flia Hj.
+  apply Nat.mul_le_mono_r.
+  specialize (Haft (m + i + 1 - j - n)) as H3.
+  replace (n + (m + i + 1 - j - n)) with (m + i + 1 - j) in H3
+    by flia Hni Hj.
+  unfold u, freal_add_series, sequence_add.
+  rewrite H3.
+  flia.
+ +apply Nat.nlt_ge in H2.
+  rewrite Nat_div_less_small.
+  *replace (rad - 1 + fd2n y i + 1) with (rad + fd2n y i) by flia Hr.
+   rewrite Nat_mod_add_same_l; [ | easy ].
+   rewrite Nat.mod_small; [ easy | ].
+
+...
+Search (nA _ _ _ < _).
+2: apply nA_dig_seq_ub.
 ...
 
   rewrite Nat.div_small; [ | apply digit_lt_radix ].
