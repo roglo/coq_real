@@ -5566,105 +5566,38 @@ destruct (LPO_fst (A_ge_1 (fd2n x) i)) as [H1| H1]; simpl.
   --rewrite Hn in Hs.
     destruct rad; [ easy | simpl in Hs; flia Hs ].
   --rewrite Nat.sub_succ.
+    remember (S j) as sj.
     rewrite power_summation_sub_1; [ | easy ].
+    rewrite (summation_split _ _ (s - j - 1)); [ | flia ].
+    rewrite Nat.add_comm.
+    rewrite Nat.mul_add_distr_l.
+    apply le_plus_trans.
+    assert (Hjs : j < s). {
+      apply Nat.succ_lt_mono; rewrite Hs, Hn.
+      destruct rad; [ easy | simpl; flia ].
+    }
+    rewrite summation_shift; [ | flia Hjs ].
+    rewrite <- Nat.sub_succ_l; [ | flia Hjs ].
+    rewrite Nat.sub_succ, Nat.sub_0_r.
+    subst sj.
     rewrite power_summation_sub_1; [ | easy ].
     rewrite <- Nat.mul_assoc.
     apply Nat.mul_le_mono_l.
-...
-
-   rewrite summation_rtl.
-   rewrite summation_shift; [ | easy ].
-   replace (n - 1 - (i + 1)) with (s - 1) by flia Hs.
-   rewrite (summation_split _ _ j).
-  --rewrite power_summation_sub_1; [ | easy ].
-    rewrite summation_mul_distr_l; simpl.
-
-...
-    apply le_plus_trans.
+    replace (s - (s - j)) with j by flia Hjs.
     rewrite summation_mul_distr_r; simpl.
     apply (@summation_le_compat nat_ord_ring_def).
     intros k Hk; simpl; unfold Nat.le.
-replace (n - 1 - (i + 1 + k)) with (s - S k) by flia Hs Hk.
-
-    replace (n - 1 + (i + 1) - (i + 1 + k)) with (n - 1 - k) by flia.
-    assert (Hkn : k < n - 1). {
-      rewrite Hn.
-      destruct rad; [ easy | simpl; flia Hk ].
-    }
-    replace (n - 1 - (n - 1 - k)) with k by flia Hkn.
-
-    replace (n - 1 - (n - 1 + (i + 1) - (i + 1 + k))) with k
-...
-    apply le_plus_trans.
-    rewrite summation_mul_distr_r; simpl.
-    apply (@summation_le_compat nat_ord_ring_def).
-    intros k Hk; simpl; unfold Nat.le.
-    replace (n - 1 + (i + 1) - (i + 1 + k)) with (n - 1 - k) by flia.
-    assert (Hkn : k < n - 1). {
-      rewrite Hn.
-      destruct rad; [ easy | simpl; flia Hk ].
-    }
-    replace (n - 1 - (n - 1 - k)) with k by flia Hkn.
-
-    replace (n - 1 - (n - 1 + (i + 1) - (i + 1 + k))) with k
-                                                           by flia Hin Hk Hs.
-...
+    rewrite <- Nat.pow_add_r.
+    now replace (k + (s - j)) with (s - j + k) by flia.
   *rewrite Hs.
    apply nA_dig_seq_ub; [ | easy ].
    intros; apply digit_lt_radix.
- +idtac.
-...
-  apply Nat.mul_le_mono_r.
-  replace (m + i + 2 - 1 - (i + 1)) with m by flia.
-  apply (@summation_le_compat nat_ord_ring_def).
-  intros j Hj; simpl; unfold Nat.le.
-  replace (m + i + 2 - 1 + (i + 1) - (i + 1 + j))
-    with (m + i + 1 - j) by flia.
-  replace (m + i + 2 - 1 - (m + i + 1 - j)) with j by flia Hj.
-  apply Nat.mul_le_mono_r.
-  specialize (Haft (m + i + 1 - j - n)) as H3.
-  replace (n + (m + i + 1 - j - n)) with (m + i + 1 - j) in H3
-    by flia Hni Hj.
-  unfold u, freal_add_series, sequence_add.
-  rewrite H3.
-  flia.
- +apply Nat.nlt_ge in H2.
-  rewrite Nat_div_less_small.
-  *replace (rad - 1 + fd2n y i + 1) with (rad + fd2n y i) by flia Hr.
-   rewrite Nat_mod_add_same_l; [ | easy ].
-   rewrite Nat.mod_small; [ easy | ].
-
-...
-Search (nA _ _ _ < _).
-2: apply nA_dig_seq_ub.
-...
-
-  rewrite Nat.div_small; [ | apply digit_lt_radix ].
-  rewrite Nat.add_0_r.
-  destruct (lt_dec (S (d2n (freal x) i)) rad) as [H1| H1]; simpl.
-  *unfold d2n in H1; unfold fd2n, d2n.
-   rewrite Nat.mod_small; flia H1.
-  *assert (H : d2n (freal x) i < rad) by apply digit_lt_radix.
-   unfold d2n in H1, H; unfold fd2n, d2n.
-   replace (dig (freal x i)) with (rad - 1) by flia H1 H.
-   rewrite Nat.sub_add; [ | easy ].
-   now rewrite Nat.mod_same.
- +destruct H1 as (j & Hjj & Hj).
-  apply is_9_strict_after_false_iff in Hj.
-  replace (i + j + 1) with (S i + j) in Hj by flia.
-  unfold fd2n in H2; unfold d2n in Hj.
-  now rewrite H2 in Hj.
-...
-
-
-Search (∀ k, is_9_strict_after _ _ _ = true).
-is_9_strict_after_all_9:
-  ∀ (r : radix) (u : nat → digit) (i : nat),
-    (∀ j : nat, is_9_strict_after u i j = true) → ∀ k : nat, d2n u (i + k + 1) = rad - 1
-all_lt_rad_A_ge_1_true_if:
-  ∀ (r : radix) (i : nat) (u : nat → nat),
-    (∀ k : nat, u (S i + k) < rad) → (∀ k : nat, A_ge_1 u i k = true) → ∀ j : nat, u (S i + j) = rad - 1
-
+ +rewrite Nat.div_small.
+  *rewrite Nat.add_0_r, Nat.mod_small; [ easy | ].
+   apply digit_lt_radix.
+  *apply nA_dig_seq_ub; [ intros; apply digit_lt_radix | ].
+   destruct rad; [ easy | simpl; flia ].
+Qed.
 
 ...
 
