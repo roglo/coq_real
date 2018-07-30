@@ -1621,7 +1621,7 @@ Qed.
 *)
 
 Theorem when_99000_le_uuu00 {r : radix} : ∀ u i j k n,
-  (∀ k, u k < rad)
+  (∀ k, u (S i + k) < rad)
   → (rad ^ S j - 1) * rad ^ (n - i - j - 2) ≤ nA i n u
   → S j ≤ n - i - 1
   → i + 1 ≤ k ≤ i + j + 1
@@ -1669,7 +1669,10 @@ assert (H : nA i n u * rad ^ S j / s = nA i (i + j + 2) u). {
      --apply (@summation_le_compat nat_ord_ring_def).
        intros p Hp; simpl; unfold Nat.le.
        apply Nat.mul_le_mono_r.
-       specialize (Hu (S (i + j + 1 + m - p))); flia Hu.
+       specialize (Hu (j + 1 + m - p)); simpl in Hu.
+       rewrite Nat.add_sub_assoc in Hu; [ | flia Hp ].
+       do 2 rewrite Nat.add_assoc in Hu.
+       flia Hu.
      --intros p Hp.
        f_equal; f_equal; [ flia Hp | flia Hm Hp ].
    +intros p Hp.
@@ -1700,7 +1703,8 @@ rewrite summation_eq_compat with (h := λ k, u (i + 1 + k) * rad ^ (j - k))
    apply (@summation_le_compat nat_ord_ring_def); simpl; unfold Nat.le.
    intros p Hp.
    apply Nat.mul_le_mono_r.
-   specialize (Hu (i + 1 + p)); flia Hu.
+   rewrite Nat.add_1_r.
+   specialize (Hu p); flia Hu.
  }
  clear HnA; rename H into HnA.
  setoid_rewrite summation_rtl in HnA.
@@ -1709,7 +1713,7 @@ rewrite summation_eq_compat with (h := λ k, u (i + 1 + k) * rad ^ (j - k))
  +symmetry in HnA.
   rewrite summation_eq_compat with (h := λ k, (rad - 1) * rad ^ k) in HnA.
   *clear n Hj.
-   revert i HnA k Hk.
+   revert i Hu HnA k Hk.
    induction j; intros.
   --do 2 rewrite summation_only_one in HnA.
     rewrite Nat.sub_0_r, Nat.add_0_r, Nat.pow_0_r in HnA.
@@ -1722,6 +1726,7 @@ rewrite summation_eq_compat with (h := λ k, u (i + 1 + k) * rad ^ (j - k))
    ++rewrite H1 in HnA.
      apply Nat.add_cancel_r in HnA.
      destruct (eq_nat_dec k (S i)) as [H2| H2]; [ now subst k | ].
+...
      apply IHj with (i := S i); [ | flia Hk H2 ].
      rewrite HnA.
      apply summation_eq_compat.
@@ -1750,8 +1755,9 @@ rewrite summation_eq_compat with (h := λ k, u (i + 1 + k) * rad ^ (j - k))
 Qed.
 
 Theorem all_lt_rad_A_ge_1_true_if {r : radix} : ∀ i u,
-  (∀ k, u k < rad)
-  → (∀ k, A_ge_1 u i k = true) → ∀ j, u (S i + j) = rad - 1.
+  (∀ k, u (S i + k) < rad)
+  → (∀ k, A_ge_1 u i k = true)
+  → ∀ j, u (S i + j) = rad - 1.
 Proof.
 intros * Hu.
 intros Hk *.
@@ -1765,6 +1771,7 @@ assert (Hsz : s ≠ 0) by now subst s; apply Nat.pow_nonzero.
 rename Hk into HnA.
 rewrite Nat.mod_small in HnA.
 +apply when_99000_le_uuu00 with (i0 := i) (j0 := j) (n0 := n).
+...
  *easy.
  *now rewrite <- Hsj.
  *rewrite Hn.
@@ -2155,7 +2162,7 @@ destruct (LPO_fst (A_ge_1 f i)) as [Hf| Hf].
 Qed.
 
 Theorem numbers_to_digits_shift {r : radix} : ∀ u n i,
-  (∀ k, u k < rad)
+  (∀ k, u (n + k) < rad)
   → numbers_to_digits u (n + i) = numbers_to_digits (λ j, u (n + j)) i.
 Proof.
 intros *.
@@ -2173,6 +2180,8 @@ destruct (LPO_fst (A_ge_1 u (n + i))) as [H1| H1].
   remember (n2 - i - 1) as s2 eqn:Hs2.
   move s2 before n2.
   replace (n2 - i - j - 2) with (s2 - S j) in Hj by flia Hs2.
+  specialize (all_lt_rad_A_ge_1_true_if) as H2.
+...
   specialize (all_lt_rad_A_ge_1_true_if _ _ Hu H1) as H2.
   apply Nat.nle_gt in Hj.
   apply Hj; clear Hj.
@@ -2267,18 +2276,19 @@ destruct (LPO_fst (A_ge_1 u (n + i))) as [H1| H1].
 Qed.
 
 Theorem numbers_to_digits_eq_compat_from {r : radix} : ∀ f g n,
-  (∀ i, f i < rad)
-  → (∀ i, g i < rad)
+  (∀ i, f (n + i) < rad)
   → (∀ i, f (n + i) = g (n + i))
   → ∀ i, numbers_to_digits f (n + i) = numbers_to_digits g (n + i).
 Proof.
-intros * Hf Hg Hfg i.
+intros * Hf Hfg i.
 set (fi i := f (n + i)).
 set (gi i := g (n + i)).
 assert (H : ∀ i, fi i = gi i) by (intros; apply Hfg).
 specialize (numbers_to_digits_eq_compat _ _ H) as H1.
 specialize (H1 i).
 unfold fi, gi in H1.
+rewrite <- numbers_to_digits_shift in H1.
+...
 rewrite <- numbers_to_digits_shift in H1; [ | easy ].
 rewrite <- numbers_to_digits_shift in H1; [ | easy ].
 easy.
