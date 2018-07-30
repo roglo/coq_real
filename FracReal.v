@@ -5599,6 +5599,21 @@ destruct (LPO_fst (A_ge_1 u i)) as [H2| H2].
    now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
 Qed.
 
+Theorem not_numbers_to_digits_all_9 {r : radix} : ∀ u n,
+  ¬ (∀ k, d2n (numbers_to_digits u) (n + k) = rad - 1).
+Proof.
+intros * Hn.
+specialize (Hn 0) as H1.
+unfold numbers_to_digits, d2n in H1.
+rewrite Nat.add_0_r in H1.
+destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
+-idtac.
+Search (∀ k, A_ge_1 _ _ _ = true).
+Search numbers_to_digits.
+...
+-destruct H2 as (j & Hjj & Hj); simpl in H1.
+...
+
 Theorem freal_eq_add_norm_l {r : radix} : ∀ x y,
   (freal_unorm_add (freal_normalize x) y = freal_unorm_add x y)%F.
 Proof.
@@ -5695,8 +5710,14 @@ specialize (freal_normalized_cases x) as [H1| H1].
 rewrite Hxy in H2.
 unfold freal_unorm_add in H2; simpl in H2.
 unfold freal_add_to_seq in H2.
-Search (numbers_to_digits).
-(* normalement numbers_to_digits ne peut pas se terminer par 999... *)
+...
+assert (H : ∀ k,
+ d2n (numbers_to_digits (freal_add_series x y)) (S i + k) = rad - 1). {
+  intros k; specialize (H2 k).
+  now replace (S i + k) with (i + k + 1) by flia.
+}
+now apply not_numbers_to_digits_all_9 in H.
+++idtac.
 ...
 
 Theorem freal_add_assoc {r : radix} : ∀ x y z,
