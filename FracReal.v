@@ -5499,18 +5499,6 @@ destruct (LPO_fst (A_ge_1 u i)) as [H2| H2].
    now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
 Qed.
 
-Theorem freal_numbers_to_digits {r : radix} : ∀ x i,
-  numbers_to_digits (fd2n x) i = freal x i.
-Proof.
-intros.
-unfold numbers_to_digits.
-apply digit_eq_eq.
-destruct (LPO_fst (A_ge_1 (fd2n x) i)) as [H1| H1]; simpl.
--simpl.
-Search (∀ k, A_ge_1 _ _ _ = true).
-(* ah non ça marche pas *)
-...
-
 Theorem freal_eq_add_norm_l {r : radix} : ∀ x y,
   (freal_unorm_add (freal_normalize x) y = freal_unorm_add x y)%F.
 Proof.
@@ -5582,6 +5570,7 @@ specialize (freal_normalized_cases x) as [H1| H1].
       unfold freal_unorm_add in H1; remember S as f; simpl in H1; subst f.
       unfold freal_add_to_seq, d2n in H1.
       rewrite numbers_to_digits_eq_compat_from with (g := fd2n y) in H1.
+...
 Search (numbers_to_digits (fd2n _)).
 Search numbers_to_digits.
 ...
