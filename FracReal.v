@@ -2196,8 +2196,8 @@ destruct (LPO_fst (A_ge_1 u (n + i))) as [H1| H1].
      intros k Hk; simpl; unfold Nat.le.
      replace (n2 - 1 + (i + 1) - (i + 1 + k)) with (n2 - 1 - k) by flia.
      apply Nat.mul_le_mono.
-    **specialize (H2 (n2 - i - k - 2)).
-      replace (S (n + i) + (n2 - i - k - 2)) with (n + (n2 - 1 - k)) in H2
+    **specialize (H2 (s2 - k)).
+      replace (S (n + i) + (s2 - k)) with (n + (n2 - 1 - k)) in H2
         by flia Hs2 Hk.
       now rewrite H2.
     **replace (n2 - 1 - (n2 - 1 - k)) with k; [ easy | ].
@@ -2244,10 +2244,8 @@ destruct (LPO_fst (A_ge_1 u (n + i))) as [H1| H1].
      replace (n2 - 1 + (n + i + 1) - (n + i + 1 + k)) with (n2 - 1 - k)
        by flia.
      apply Nat.mul_le_mono.
-...
-    **specialize (H2 (n2 - i - k - 2)).
-      replace (S (n + i) + (n2 - i - k - 2)) with (n + (n2 - 1 - k)) in H2
-        by flia Hs2 Hk.
+    **specialize (H2 (s2 - k)).
+      replace (n + S (i + (s2 - k))) with (n2 - 1 - k) in H2 by flia Hs2 Hk.
       now rewrite H2.
     **replace (n2 - 1 - (n2 - 1 - k)) with k; [ easy | ].
       rewrite Nat_sub_sub_swap.
@@ -2259,20 +2257,31 @@ destruct (LPO_fst (A_ge_1 u (n + i))) as [H1| H1].
   *rewrite Hs2; apply nA_dig_seq_ub; [ intros; apply Hu | ].
    rewrite Hn2.
    destruct rad; [ easy | simpl; flia ].
-....
+ +destruct H1 as (k & Hjk & Hk); simpl.
+  rewrite Nat.div_small.
+  *rewrite Nat.div_small; [ easy | ].
+   apply nA_dig_seq_ub; [ intros; apply Hu | ].
+   destruct rad; [ easy | simpl; flia ].
+  *apply nA_dig_seq_ub; [ intros; apply Hu | ].
+   destruct rad; [ easy | simpl; flia ].
+Qed.
 
 Theorem numbers_to_digits_eq_compat_from {r : radix} : ∀ f g n,
-  (∀ i, f (n + i) = g (n + i)) →
-  ∀ i, numbers_to_digits f (n + i) = numbers_to_digits g (n + i).
+  (∀ i, f i < rad)
+  → (∀ i, g i < rad)
+  → (∀ i, f (n + i) = g (n + i))
+  → ∀ i, numbers_to_digits f (n + i) = numbers_to_digits g (n + i).
 Proof.
-intros * Hfg i.
+intros * Hf Hg Hfg i.
 set (fi i := f (n + i)).
 set (gi i := g (n + i)).
 assert (H : ∀ i, fi i = gi i) by (intros; apply Hfg).
 specialize (numbers_to_digits_eq_compat _ _ H) as H1.
 specialize (H1 i).
 unfold fi, gi in H1.
-now do 2 rewrite <- numbers_to_digits_shift in H1.
+rewrite <- numbers_to_digits_shift in H1; [ | easy ].
+rewrite <- numbers_to_digits_shift in H1; [ | easy ].
+easy.
 Qed.
 
 (*
@@ -5534,9 +5543,9 @@ specialize (freal_normalized_cases x) as [H1| H1].
       rewrite Hnxy in H1.
       unfold freal_unorm_add in H1; remember S as f; simpl in H1; subst f.
       unfold freal_add_to_seq, d2n in H1.
-...
-rewrite numbers_to_digits_eq_compat_from with (g := fd2n y) in H1.
-(*
+      rewrite numbers_to_digits_eq_compat_from with (g := fd2n y) in H1.
+Search (numbers_to_digits (fd2n _)).
+Search numbers_to_digits.
 ...
       remember (λ i, freal_add_series nx y (S n + i)) as f eqn:Hf.
       remember (λ i, fd2n y (S n + i)) as g eqn:Hg.
