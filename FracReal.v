@@ -5580,23 +5580,21 @@ specialize (freal_normalized_cases x) as [H1| H1].
     }
     exfalso.
 Theorem not_eq_all_numbers_to_digits_9 {r : radix} : ∀ u n,
-  ¬ ∀ k, dig (numbers_to_digits u (n + k)) = rad - 1.
+  (∀ i, u (n + i) < rad)
+  → ¬ ∀ k, dig (numbers_to_digits u (n + k)) = rad - 1.
 Proof.
-intros * H1.
+intros * Hu H1.
 unfold numbers_to_digits in H1.
+specialize (H1 0) as H2.
+rewrite Nat.add_0_r in H2.
+destruct (LPO_fst (A_ge_1 u n)) as [H3| H3].
+-simpl in H2.
+ assert (H : ∀ i, u (S n + i) < rad). {
+   intros; rewrite Nat.add_succ_l, <- Nat.add_succ_r.
+   apply Hu.
+ }
+ specialize (all_lt_rad_A_ge_1_true_if n u H H3) as H4; clear H.
 ...
-    specialize (normalized_not_999 y) as H3; apply H3; clear H3.
-    unfold freal_normalize, fd2n; simpl.
-    unfold digit_sequence_normalize.
-    unfold numbers_to_digits in H1.
-... (* lien entre normalized et numbers_to_digits ? *)
-
-normalized_not_999:
-  ∀ (r : radix) (x : FracReal), ¬ (∃ i : nat, ∀ j : nat, fd2n (freal_normalize x) (i + j) = rad - 1)
-Search freal_normalize.
-Search numbers_to_digits.
-...
-
     specialize (H1 0) as H3.
     rewrite Nat.add_0_r in H3.
     unfold numbers_to_digits in H3.
