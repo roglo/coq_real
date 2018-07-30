@@ -2275,17 +2275,22 @@ destruct (LPO_fst (A_ge_1 u (n + i))) as [H1| H1].
       rewrite Nat.sub_add; flia Hs2 Hk.
    ++rewrite Hn2.
      destruct rad; [ easy | simpl; flia ].
-...
-  *rewrite Hs2; apply nA_dig_seq_ub; [ intros; apply Hu | ].
-   rewrite Hn2.
-   destruct rad; [ easy | simpl; flia ].
+  *rewrite Hs2; apply nA_dig_seq_ub.
+  --intros k Hk.
+    specialize (Hu (k - n)).
+    now replace (n + (k - n)) with k in Hu by flia Hk.
+  --rewrite Hn2.
+    destruct rad; [ easy | simpl; flia ].
  +destruct H1 as (k & Hjk & Hk); simpl.
   rewrite Nat.div_small.
   *rewrite Nat.div_small; [ easy | ].
    apply nA_dig_seq_ub; [ intros; apply Hu | ].
    destruct rad; [ easy | simpl; flia ].
-  *apply nA_dig_seq_ub; [ intros; apply Hu | ].
-   destruct rad; [ easy | simpl; flia ].
+  *apply nA_dig_seq_ub.
+  --intros l Hl.
+    specialize (Hu (l - n)).
+    now replace (n + (l - n)) with l in Hu by flia Hl.
+  --destruct rad; [ easy | simpl; flia ].
 Qed.
 
 Theorem numbers_to_digits_eq_compat_from {r : radix} : ∀ f g n,
@@ -2300,11 +2305,9 @@ assert (H : ∀ i, fi i = gi i) by (intros; apply Hfg).
 specialize (numbers_to_digits_eq_compat _ _ H) as H1.
 specialize (H1 i).
 unfold fi, gi in H1.
-rewrite <- numbers_to_digits_shift in H1.
-...
 rewrite <- numbers_to_digits_shift in H1; [ | easy ].
-rewrite <- numbers_to_digits_shift in H1; [ | easy ].
-easy.
+rewrite <- numbers_to_digits_shift in H1; [ easy | ].
+intros j; rewrite <- Hfg; apply Hf.
 Qed.
 
 (*
@@ -5495,6 +5498,18 @@ destruct (LPO_fst (A_ge_1 u i)) as [H2| H2].
    enough (H : 1 ≤ rad ^ s1) by flia H.
    now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
 Qed.
+
+Theorem freal_numbers_to_digits {r : radix} : ∀ x i,
+  numbers_to_digits (fd2n x) i = freal x i.
+Proof.
+intros.
+unfold numbers_to_digits.
+apply digit_eq_eq.
+destruct (LPO_fst (A_ge_1 (fd2n x) i)) as [H1| H1]; simpl.
+-simpl.
+Search (∀ k, A_ge_1 _ _ _ = true).
+(* ah non ça marche pas *)
+...
 
 Theorem freal_eq_add_norm_l {r : radix} : ∀ x y,
   (freal_unorm_add (freal_normalize x) y = freal_unorm_add x y)%F.
