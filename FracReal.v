@@ -5686,22 +5686,22 @@ specialize (Hn 0) as H1.
 unfold numbers_to_digits, d2n in H1.
 rewrite Nat.add_0_r in H1.
 destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
--idtac.
-...
- specialize (Hn 1) as H3.
+-specialize (Hn 1) as H3.
  unfold numbers_to_digits, d2n in H3.
  destruct (LPO_fst (A_ge_1 u (n + 1))) as [H4| H4]; simpl in H3.
  +move H4 before H2.
-  replace (n + 1 + 1) with (n + 2) in H3 by flia.
+  replace (n + 1 + 3) with (n + 4) in H3 by flia.
   specialize (Hn 2) as H5.
   unfold numbers_to_digits, d2n in H5.
   destruct (LPO_fst (A_ge_1 u (n + 2))) as [H6| H6]; simpl in H5.
   *move H6 before H4.
+   replace (n + 2 + 3) with (n + 5) in H5 by flia.
+Search (∀ _, A_ge_1 _ _ _ = true).
+...
 Search numbers_to_digits.
 Print numbers_to_digits.
 ...
 
-Search (∀ _, A_ge_1 _ _ _ = true).
 ...
 
 intros * Hn.
