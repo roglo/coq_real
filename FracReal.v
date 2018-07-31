@@ -5696,6 +5696,16 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
   destruct (LPO_fst (A_ge_1 u (n + 2))) as [H6| H6]; simpl in H5.
   *move H6 before H4.
    replace (n + 2 + 3) with (n + 5) in H5 by flia.
+specialize (H2 0) as H7.
+apply A_ge_1_true_iff in H7.
+rewrite Nat.add_0_r in H7.
+do 2 rewrite <- Nat.sub_add_distr in H7.
+replace (n + 1 + 1) with (n + 2) in H7 by flia.
+specialize (H2 1) as H8.
+apply A_ge_1_true_iff in H8.
+replace (n + 1 + 3) with (n + 4) in H8 by flia.
+do 2 rewrite <- Nat.sub_add_distr in H8.
+replace (n + 1 + 2) with (n + 3) in H8 by flia.
 Search (∀ _, A_ge_1 _ _ _ = true).
 ...
 Search numbers_to_digits.
