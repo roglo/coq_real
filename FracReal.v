@@ -4292,9 +4292,8 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
  now replace (i + k + 2) with (i + S k + 1) in H2 by flia.
 Qed.
 
-(*
 Theorem eq_nA_div_1 {r : radix} : ∀ i n u,
-  (∀ k, u k ≤ 2 * (rad - 1))
+  (∀ k, u (i + k + 1) ≤ 2 * (rad - 1))
   → nA i n u ≥ rad ^ (n - i - 1)
   → nA i n u / rad ^ (n - i - 1) = 1.
 Proof.
@@ -4312,6 +4311,7 @@ replace x with (x - rad ^ s + 1 * rad ^ s).
  now apply Nat.sub_add.
 Qed.
 
+(*
 Theorem eq_mod_rad_add_pred_rad {r : radix} : ∀ u i n s,
   (∀ k, u k ≤ 2 * (rad - 1))
   → s = n - i - 1
@@ -5737,7 +5737,7 @@ unfold numbers_to_digits, d2n in H1.
 rewrite Nat.add_0_r in H1.
 destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
 -specialize (A_ge_1_add_all_true_if _ _ Hur H2) as H3.
- destruct H3 as [H3| H3].
+ destruct H3 as [H3| [H3| H3]].
  +rewrite Nat.div_small in H1.
   *rewrite Nat.add_0_r in H1.
    specialize (Hn 1) as H4.
@@ -5768,7 +5768,31 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
       replace (n + (k - n - 1) + 1) with k in H3 by flia Hk.
       flia Hr H3.
     **destruct rad; [ easy | simpl; flia ].
-  *idtac.
+  *apply nA_dig_seq_ub.
+  --intros k Hk.
+    specialize (H3 (k - n - 1)).
+    replace (n + (k - n - 1) + 1) with k in H3 by flia Hk.
+    flia Hr H3.
+  --destruct rad; [ easy | simpl; flia ].
+ +specialize (Hn 1) as H4.
+  unfold numbers_to_digits, d2n in H4.
+  destruct (LPO_fst (A_ge_1 u (n + 1))) as [H5| H5]; simpl in H4.
+  *specialize (H3 0) as H; rewrite Nat.add_0_r in H.
+   rewrite H in H4; clear H.
+   rewrite eq_nA_div_1 in H4.
+  --admit.
+  --intros k.
+    replace (n + 1 + k + 1) with (n + (1 + k) + 1) by flia.
+    apply Hur.
+  --admit.
+  *destruct H5 as (j & Hjj & Hj); simpl in H4.
+   apply A_ge_1_false_iff in Hj.
+   admit.
+ +destruct H3 as (j & Hjbef & Hjwhi & Hjaft).
+  admit.
+-destruct H2 as (j & Hjj & Hj); simpl in H1.
+ apply A_ge_1_false_iff in Hj.
+ admit.
 ...
 
 Theorem not_numbers_to_digits_all_9 {r : radix} : ∀ u n,
