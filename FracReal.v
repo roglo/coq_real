@@ -5599,6 +5599,7 @@ destruct (LPO_fst (A_ge_1 u i)) as [H2| H2].
    now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
 Qed.
 
+(*
 Theorem normalize_numbers_of_digits {r : radix} : ∀ u i,
   digit_sequence_normalize (numbers_to_digits u) i =
   numbers_to_digits u i.
@@ -5607,11 +5608,34 @@ intros.
 unfold digit_sequence_normalize.
 remember (numbers_to_digits u) as v eqn:Hv.
 destruct (LPO_fst (is_9_strict_after v i)) as [H1| H1]; [ | easy ].
+specialize (is_9_strict_after_all_9 _ _ H1) as H2.
 ...
+*)
 
 Theorem not_numbers_to_digits_all_9 {r : radix} : ∀ u n,
   ¬ (∀ k, d2n (numbers_to_digits u) (n + k) = rad - 1).
 Proof.
+intros * Hn.
+specialize (Hn 0) as H1.
+unfold numbers_to_digits, d2n in H1.
+rewrite Nat.add_0_r in H1.
+destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
+-specialize (Hn 1) as H3.
+ unfold numbers_to_digits, d2n in H3.
+ destruct (LPO_fst (A_ge_1 u (n + 1))) as [H4| H4]; simpl in H3.
+ +move H4 before H2.
+  replace (n + 1 + 1) with (n + 2) in H3 by flia.
+  specialize (Hn 2) as H5.
+  unfold numbers_to_digits, d2n in H5.
+  destruct (LPO_fst (A_ge_1 u (n + 2))) as [H6| H6]; simpl in H5.
+  *move H6 before H4.
+Search numbers_to_digits.
+Print numbers_to_digits.
+...
+
+Search (∀ _, A_ge_1 _ _ _ = true).
+...
+
 intros * Hn.
 unfold d2n in Hn.
 assert (H1 : ∀ k,
