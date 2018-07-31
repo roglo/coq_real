@@ -1052,12 +1052,18 @@ Definition A_ge_1 {r : radix} u i k :=
 Definition numbers_to_digits {r : radix} u i :=
   match LPO_fst (A_ge_1 u i) with
   | inl _ =>
+(*
+      let n := rad * (i + 3) in
+      let s := rad ^ (n - i - 1) in
+      let d := u i + 1 + nA i n u / s in
+*)
       let d := u i + 1 + u (i + 1) / rad in
+(**)
       mkdig _ (d mod rad) (Nat.mod_upper_bound d rad radix_ne_0)
   | inr (exist _ l _) =>
       let n := rad * (i + l + 3) in
-      let s := rad ^ (n - i - 1) in
-      let d := u i + nA i n u / s in
+      let s := n - i - 1 in
+      let d := u i + nA i n u / rad ^ s in
       mkdig _ (d mod rad) (Nat.mod_upper_bound d rad radix_ne_0)
   end.
 
