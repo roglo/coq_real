@@ -5811,12 +5811,17 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
   *specialize (H3 0) as H; rewrite Nat.add_0_r in H.
    rewrite H in H4; clear H.
    rewrite eq_nA_div_1 in H4.
-  --idtac.
-...
+  --rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H4.
+    replace (2 * rad - 2 + 1 + 1) with (2 * rad) in H4 by flia Hr.
+    rewrite Nat.mod_mul in H4; [ | easy ].
+    flia Hr H4.
   --intros k.
     replace (n + 1 + k + 1) with (n + (1 + k) + 1) by flia.
     apply Hur.
-  --admit.
+  --idtac.
+Check nA_ge_999000.
+(* ah non ça s'applique pas... ici, faut utiliser H3 *)
+...
   *destruct H5 as (j & Hjj & Hj); simpl in H4.
    apply A_ge_1_false_iff in Hj.
    admit.
