@@ -5566,6 +5566,43 @@ destruct (LPO_fst (A_ge_1 (freal_add_series nx y) j)) as [H1| H1].
    destruct rad; [ easy | simpl; flia ].
 Qed.
 
+Theorem nA_ge_999000 {r : radix} : ∀ u i j,
+  (∀ k, rad - 1 ≤ u (i + k + 1))
+  → let n1 := rad * (i + j + 3) in
+     let s1 := n1 - i - 1 in
+     (rad ^ S j - 1) * rad ^ (s1 - S j) ≤ nA i n1 u.
+Proof.
+intros *.
+specialize radix_ge_2 as Hr.
+intros Hur.
+remember S as f; simpl; subst f.
+set (n1 := rad * (i + j + 3)).
+set (s1 := n1 - i - 1).
+assert (Hin1 : i + j + 2 ≤ n1 - 1). {
+  subst n1.
+  destruct rad; [ easy | simpl; flia ].
+}
+rewrite nA_split with (e := j + i + 2); [ | flia Hin1 ].
+apply le_plus_trans.
+unfold nA.
+rewrite summation_rtl.
+rewrite summation_shift; [ | flia ].
+rewrite power_summation_sub_1; [ | easy ].
+rewrite summation_mul_distr_l.
+replace (n1 - (j + i + 2)) with (s1 - S j) by (subst n1 s1; flia Hin1).
+apply Nat.mul_le_mono_r.
+replace (j + i + 2 - 1 - (i + 1)) with j by flia.
+apply (@summation_le_compat nat_ord_ring_def).
+intros k Hk; simpl; unfold Nat.le.
+replace (j + i + 2 - 1 + (i + 1) - (i + 1 + k))
+  with (j + i + 1 - k) by flia.
+replace (j + i + 2 - 1 - (j + i + 1 - k)) with k by flia Hk.
+apply Nat.mul_le_mono_r.
+specialize (Hur (j - k)).
+replace (i + (j - k) + 1) with (j + i + 1 - k) in Hur by flia Hk.
+easy.
+Qed.
+
 Theorem unorm_add_inf_pred_rad {r : radix} : ∀ x y n,
   (∀ i, fd2n x (n + i) = rad - 1)
   → (∀ i, ∃ j : nat, fd2n y (i + j) ≠ rad - 1)
@@ -5665,31 +5702,15 @@ destruct (LPO_fst (A_ge_1 u i)) as [H2| H2].
  +exfalso.
   rewrite Nat.mod_small in Hm; [ | easy ].
   apply Nat.nle_gt in Hm; apply Hm; clear Hm.
-  assert (Hin1 : i + m + 2 ≤ n1 - 1). {
-    subst n1.
-    destruct rad; [ easy | simpl; flia ].
-  }
-  rewrite nA_split with (e := m + i + 2); [ | flia Hni Hin1 ].
-  apply le_plus_trans.
-  unfold nA.
-  rewrite summation_rtl.
-  rewrite summation_shift; [ | flia Hni ].
-  rewrite power_summation_sub_1; [ | easy ].
-  rewrite summation_mul_distr_l.
-  replace (n1 - (m + i + 2)) with (s1 - S m) by flia Hs1 Hin1.
-  apply Nat.mul_le_mono_r.
-  replace (m + i + 2 - 1 - (i + 1)) with m by flia.
-  apply (@summation_le_compat nat_ord_ring_def).
-  intros j Hj; simpl; unfold Nat.le.
-  replace (m + i + 2 - 1 + (i + 1) - (i + 1 + j))
-    with (m + i + 1 - j) by flia.
-  replace (m + i + 2 - 1 - (m + i + 1 - j)) with j by flia Hj.
-  apply Nat.mul_le_mono_r.
-  specialize (Haft (m + i + 1 - j - n)) as H3.
-  replace (n + (m + i + 1 - j - n)) with (m + i + 1 - j) in H3
-    by flia Hni Hj.
-  unfold u, freal_add_series, sequence_add.
-  rewrite H3.
+  clear - Hr Hn1 Hni Hs1 Haft.
+  rewrite Hs1, Hn1.
+  apply nA_ge_999000.
+  intros k.
+  unfold u.
+  unfold freal_add_series, sequence_add.
+  specialize (Haft (i + k + 1 - n)).
+  replace (n + (i + k + 1 - n)) with (i + k + 1) in Haft by flia Hni.
+  rewrite Haft.
   flia.
  +apply Nat.nlt_ge in H2.
   rewrite Nat_div_less_small.
@@ -5711,19 +5732,6 @@ destruct (LPO_fst (A_ge_1 u i)) as [H2| H2].
    enough (H : 1 ≤ rad ^ s1) by flia H.
    now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
 Qed.
-
-(*
-Theorem normalize_numbers_of_digits {r : radix} : ∀ u i,
-  digit_sequence_normalize (numbers_to_digits u) i =
-  numbers_to_digits u i.
-Proof.
-intros.
-unfold digit_sequence_normalize.
-remember (numbers_to_digits u) as v eqn:Hv.
-destruct (LPO_fst (is_9_strict_after v i)) as [H1| H1]; [ | easy ].
-specialize (is_9_strict_after_all_9 _ _ H1) as H2.
-...
-*)
 
 Theorem not_numbers_to_digits_all_9 {r : radix} : ∀ u n,
   (∀ k, u (n + k + 1) ≤ 2 * (rad - 1))
@@ -5760,8 +5768,10 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
     apply A_ge_1_false_iff in Hj.
     apply Nat.nle_gt in Hj; apply Hj; clear Hj.
     rewrite Nat.mod_small.
-   ++idtac.
-...
+   ++apply nA_ge_999000.
+     intros k.
+     replace (n + 1 + k + 1) with (n + (1 + k) + 1) by flia.
+     now rewrite H3.
    ++apply nA_dig_seq_ub.
     **intros k Hk.
       specialize (H3 (k - n - 1)).
@@ -5780,7 +5790,8 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
   *specialize (H3 0) as H; rewrite Nat.add_0_r in H.
    rewrite H in H4; clear H.
    rewrite eq_nA_div_1 in H4.
-  --admit.
+  --idtac.
+...
   --intros k.
     replace (n + 1 + k + 1) with (n + (1 + k) + 1) by flia.
     apply Hur.
