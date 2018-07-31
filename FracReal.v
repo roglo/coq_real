@@ -1079,16 +1079,18 @@ Definition freal_mul_to_seq {r : radix} (a b : FracReal) :=
 
 Definition freal_unorm_add {r : radix} x y := {| freal := freal_add_to_seq x y |}.
 
-(*
 Definition freal_add {r : radix} (a b : FracReal) :=
   freal_unorm_add (freal_normalize a) (freal_normalize b).
 
 Arguments freal_add _ a%F b%F.
 
+(*
 Definition freal_mul {r : radix} (a b : FracReal) :=
   {| freal := freal_mul_to_seq a b |}.
+*)
 
 Notation "a + b" := (freal_add a b) : freal_scope.
+(*
 Notation "a * b" := (freal_mul a b) : freal_scope.
 
 (*
@@ -1115,6 +1117,7 @@ assert (H : (u p + v p - (u q + v q) == (u p - u q) + (v p - v q))%NQ). {
 
 (* return to addition *)
 *)
+*)
 
 Theorem sequence_add_comm : ∀ f g i, sequence_add f g i = sequence_add g f i.
 Proof.
@@ -1123,6 +1126,7 @@ unfold sequence_add.
 apply Nat.add_comm.
 Qed.
 
+(*
 Theorem sequence_mul_comm : ∀ f g i, sequence_mul f g i = sequence_mul g f i.
 Proof.
 intros.
@@ -1142,6 +1146,7 @@ induction i; intros.
  apply summation_eq_compat; intros j Hj.
  now rewrite <- Nat.sub_succ_l.
 Qed.
+*)
 
 Theorem freal_add_series_comm {r : radix} : ∀ x y i,
   freal_add_series x y i = freal_add_series y x i.
@@ -1151,6 +1156,7 @@ unfold freal_add_series.
 apply sequence_add_comm.
 Qed.
 
+(*
 Theorem freal_mul_series_comm {r : radix} : ∀ x y i,
   freal_mul_series x y i = freal_mul_series y x i.
 Proof.
@@ -1159,6 +1165,7 @@ unfold freal_mul_series.
 destruct i; [ easy | ].
 apply sequence_mul_comm.
 Qed.
+*)
 
 Theorem nA_freal_add_series_comm {r : radix} : ∀ x y i n,
   nA i n (freal_add_series x y) = nA i n (freal_add_series y x).
@@ -1169,6 +1176,7 @@ apply summation_eq_compat; intros j Hj.
 now rewrite freal_add_series_comm.
 Qed.
 
+(*
 Theorem nA_freal_mul_series_comm {r : radix} : ∀ x y i n,
   nA i n (freal_mul_series x y) = nA i n (freal_mul_series y x).
 Proof.
@@ -1177,6 +1185,7 @@ unfold nA; simpl.
 apply summation_eq_compat; intros j Hj.
 now rewrite freal_mul_series_comm.
 Qed.
+*)
 
 Theorem A_ge_1_freal_add_series_comm {r : radix} : ∀ x y i k,
   A_ge_1 (freal_add_series x y) i k =
@@ -1187,6 +1196,7 @@ unfold A_ge_1.
 now rewrite nA_freal_add_series_comm.
 Qed.
 
+(*
 Theorem A_ge_1_freal_mul_series_comm {r : radix} : ∀ x y i k,
   A_ge_1 (freal_mul_series x y) i k =
   A_ge_1 (freal_mul_series y x) i k.
@@ -1195,6 +1205,7 @@ intros.
 unfold A_ge_1.
 now rewrite nA_freal_mul_series_comm.
 Qed.
+*)
 
 Theorem freal_add_to_seq_i_comm {r : radix} : ∀ x y i,
   freal_add_to_seq x y i = freal_add_to_seq y x i.
@@ -1208,10 +1219,17 @@ destruct (LPO_fst (A_ge_1 xy i)) as [Hxy| Hxy].
 -rewrite Heqxy; simpl.
  setoid_rewrite freal_add_series_comm.
  rewrite <- Heqyx.
- destruct (LPO_fst (A_ge_1 yx i)) as [Hyx| Hyx]; [ easy | ].
- destruct Hyx as (k & Hjk & Hk).
- rewrite Heqyx, A_ge_1_freal_add_series_comm, <- Heqxy in Hk.
- now rewrite Hxy in Hk.
+ destruct (LPO_fst (A_ge_1 yx i)) as [Hyx| Hyx].
+ +simpl.
+  rewrite <- Heqxy.
+  f_equal; f_equal; f_equal.
+  apply summation_eq_compat.
+  intros k Hk.
+  f_equal; subst xy yx.
+  apply freal_add_series_comm.
+ +destruct Hyx as (k & Hjk & Hk).
+  rewrite Heqyx, A_ge_1_freal_add_series_comm, <- Heqxy in Hk.
+  now rewrite Hxy in Hk.
 -destruct Hxy as (k & Hjk & Hk).
  rewrite Heqxy, A_ge_1_freal_add_series_comm, <- Heqyx in Hk.
  destruct (LPO_fst (A_ge_1 yx i)) as [Hyx| Hyx].
@@ -1228,6 +1246,7 @@ destruct (LPO_fst (A_ge_1 xy i)) as [Hxy| Hxy].
    now rewrite <- Heqyx, Hl in Hkl.
 Qed.
 
+(*
 Theorem freal_mul_to_seq_i_comm {r : radix} : ∀ x y i,
   freal_mul_to_seq x y i = freal_mul_to_seq y x i.
 Proof.
@@ -1260,6 +1279,7 @@ destruct (LPO_fst (A_ge_1 xy i)) as [Hxy| Hxy].
    rewrite <- Heqyx in Hkl.
    now rewrite Hl in Hkl.
 Qed.
+*)
 
 Theorem dig_norm_add_comm {r : radix} : ∀ x y i,
   freal (freal_normalize (x + y)) i = freal (freal_normalize (y + x)) i.
@@ -1290,7 +1310,7 @@ destruct (LPO_fst (is_9_strict_after xy i)) as [Hxy| Hxy].
    subst xy yx; simpl in Hryx; unfold d2n in Hryx.
    now rewrite freal_add_to_seq_i_comm in Hryx.
  +destruct Hyx as (k & Hjk & Hk); clear Hjk.
-  unfold freal_mul in Heqyx; simpl in Heqyx.
+  unfold freal_add in Heqyx; simpl in Heqyx.
   subst yx; simpl in Hk; simpl.
   unfold freal_add in Heqxy; simpl in Heqxy.
   subst xy; simpl in Hxy; simpl.
@@ -1316,6 +1336,7 @@ destruct (LPO_fst (is_9_strict_after xy i)) as [Hxy| Hxy].
   apply freal_add_to_seq_i_comm.
 Qed.
 
+(*
 Theorem dig_norm_mul_comm {r : radix} : ∀ x y i,
   freal (freal_normalize (x * y)) i = freal (freal_normalize (y * x)) i.
 Proof.
@@ -1385,7 +1406,6 @@ unfold has_same_digits.
 now destruct (Nat.eq_dec (fd2n x i) (fd2n y i)).
 Qed.
 
-(*
 Theorem freal_add_comm {r : radix} : ∀ x y : FracReal, (x + y = y + x)%F.
 Proof.
 intros.
@@ -1402,6 +1422,7 @@ subst nxy nyx; unfold fd2n; f_equal.
 apply dig_norm_add_comm.
 Qed.
 
+(*
 Theorem freal_mul_comm {r : radix} : ∀ x y : FracReal, (x * y = y * x)%F.
 Proof.
 intros.
@@ -2119,7 +2140,6 @@ Qed.
 
 Require Import (*Morphisms*) Setoid.
 
-(*
 Theorem freal_eq_refl {r : radix} : reflexive _ freal_eq.
 Proof.
 intros x.
@@ -2172,7 +2192,6 @@ Add Parametric Relation {r : radix} : (FracReal) freal_eq
  symmetry proved by freal_eq_sym
  transitivity proved by freal_eq_trans
  as freal_eq_rel.
-*)
 
 Theorem nA_split_first {r : radix} : ∀ i n u,
   i + 1 ≤ n - 1
@@ -2483,6 +2502,7 @@ split; intros Hpq.
   subst a a'.
   apply Nat.div_le_mono; [ easy | flia ].
 Qed.
+*)
 
 Theorem freal_eq_normalized_eq {r : radix} : ∀ x y,
   (x = y)%F ↔
@@ -2523,6 +2543,7 @@ unfold fd2n.
 now rewrite Hxy, Hxy'.
 Qed.
 
+(*
 Theorem Nat_mod_pred_le_twice_pred : ∀ a b,
   b ≠ 0
   → a mod b = b - 1
@@ -5806,74 +5827,6 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
  admit.
 ...
 
-Theorem not_numbers_to_digits_all_9 {r : radix} : ∀ u n,
-  ¬ (∀ k, d2n (numbers_to_digits u) (n + k) = rad - 1).
-Proof.
-intros * Hn.
-specialize (Hn 0) as H1.
-unfold numbers_to_digits, d2n in H1.
-rewrite Nat.add_0_r in H1.
-destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
--specialize (Hn 1) as H3.
- unfold numbers_to_digits, d2n in H3.
- destruct (LPO_fst (A_ge_1 u (n + 1))) as [H4| H4]; simpl in H3.
- +move H4 before H2.
-  replace (n + 1 + 3) with (n + 4) in H3 by flia.
-  specialize (Hn 2) as H5.
-  unfold numbers_to_digits, d2n in H5.
-  destruct (LPO_fst (A_ge_1 u (n + 2))) as [H6| H6]; simpl in H5.
-  *move H6 before H4.
-   replace (n + 2 + 3) with (n + 5) in H5 by flia.
-specialize (H2 0) as H7.
-apply A_ge_1_true_iff in H7.
-rewrite Nat.add_0_r in H7.
-do 2 rewrite <- Nat.sub_add_distr in H7.
-replace (n + 1 + 1) with (n + 2) in H7 by flia.
-specialize (H2 1) as H8.
-apply A_ge_1_true_iff in H8.
-replace (n + 1 + 3) with (n + 4) in H8 by flia.
-do 2 rewrite <- Nat.sub_add_distr in H8.
-replace (n + 1 + 2) with (n + 3) in H8 by flia.
-Search (∀ _, A_ge_1 _ _ _ = true).
-...
-Search numbers_to_digits.
-Print numbers_to_digits.
-...
-
-...
-
-intros * Hn.
-unfold d2n in Hn.
-assert (H1 : ∀ k,
-   dig (digit_sequence_normalize (numbers_to_digits u) (n + k)) = rad - 1). {
-  intros k.
-  rewrite normalize_numbers_of_digits; apply Hn.
-}
-specialize (normalized_not_999) as H2.
-unfold freal_normalize, fd2n in H2.
-simpl in H2.
-specialize (H2 {| freal := numbers_to_digits u |}).
-apply H2; clear H2.
-exists n.
-apply H1.
-...
-Qed.
-
-Theorem not_numbers_to_digits_all_9 {r : radix} : ∀ u n,
-  ¬ (∀ k, d2n (numbers_to_digits u) (n + k) = rad - 1).
-Proof.
-intros * Hn.
-specialize (Hn 0) as H1.
-unfold numbers_to_digits, d2n in H1.
-rewrite Nat.add_0_r in H1.
-destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
--idtac.
-Search (∀ k, A_ge_1 _ _ _ = true).
-Search numbers_to_digits.
-...
--destruct H2 as (j & Hjj & Hj); simpl in H1.
-...
-
 Theorem freal_eq_add_norm_l {r : radix} : ∀ x y,
   (freal_unorm_add (freal_normalize x) y = freal_unorm_add x y)%F.
 Proof.
@@ -5967,32 +5920,30 @@ specialize (freal_normalized_cases x) as [H1| H1].
     apply is_9_strict_after_false_iff in Hj.
     destruct (LPO_fst (is_9_strict_after (freal xy) i)) as [H1| H1].
    ++specialize (is_9_strict_after_all_9 _ _ H1) as H2; clear H1.
-rewrite Hxy in H2.
-unfold freal_unorm_add in H2; simpl in H2.
-unfold freal_add_to_seq in H2.
-...
-assert (H : ∀ k,
- d2n (numbers_to_digits (freal_add_series x y)) (S i + k) = rad - 1). {
-  intros k; specialize (H2 k).
-  now replace (S i + k) with (i + k + 1) by flia.
+assert (H3 : ∀ k, d2n (freal xy) (i + 1 + k) = rad - 1). {
+  intros k.
+  replace (i + 1 + k) with (i + k + 1) by flia.
+  apply H2.
 }
-now apply not_numbers_to_digits_all_9 in H.
-++idtac.
+rewrite Hxy in H3.
+unfold freal_unorm_add in H3; simpl in H3.
+unfold freal_add_to_seq in H3.
+apply not_numbers_to_digits_all_9 in H3; [ easy | ].
+...
+   ++destruct H1 as (k & Hjk & Hk).
 ...
 
 Theorem freal_add_assoc {r : radix} : ∀ x y z,
   (x + (y + z) = (x + y) + z)%F.
 Proof.
 intros.
-apply -> freal_eq_prop_eq.
 specialize (freal_add_comm (x + y)%F z) as H.
-apply freal_eq_prop_eq in H.
 rewrite H; clear H.
 specialize (freal_add_comm x y) as H.
-apply freal_eq_prop_eq in H.
 rewrite H; clear H.
-(**)
-unfold freal_add.
+unfold freal_add; simpl.
+rewrite freal_eq_add_norm_l; symmetry.
+rewrite freal_eq_add_norm_l; symmetry.
 
 ...
 apply freal_eq_prop_eq.
