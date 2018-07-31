@@ -1052,13 +1052,13 @@ Definition A_ge_1 {r : radix} u i k :=
 Definition numbers_to_digits {r : radix} u i :=
   match LPO_fst (A_ge_1 u i) with
   | inl _ =>
-(*
+(**)
       let n := rad * (i + 3) in
       let s := rad ^ (n - i - 1) in
       let d := u i + 1 + nA i n u / s in
-*)
+(*
       let d := u i + 1 + u (i + 1) / rad in
-(**)
+*)
       mkdig _ (d mod rad) (Nat.mod_upper_bound d rad radix_ne_0)
   | inr (exist _ l _) =>
       let n := rad * (i + l + 3) in
@@ -1810,7 +1810,7 @@ destruct (LPO_fst (A_ge_1 (fd2n x) i)) as [H1| H1]; simpl.
  specialize (all_lt_rad_A_ge_1_true_if _ _ H H1) as H2; clear H H1.
  destruct (LPO_fst (is_9_strict_after (freal x) i)) as [H1| H1]; simpl.
  +specialize (is_9_strict_after_all_9 _ _ H1) as H3; clear H1.
-(*
+(**)
   rewrite Nat.div_small.
   *rewrite Nat.add_0_r.
    destruct (lt_dec (S (d2n (freal x) i)) rad) as [H1| H1]; simpl.
@@ -1823,7 +1823,7 @@ destruct (LPO_fst (A_ge_1 (fd2n x) i)) as [H1| H1]; simpl.
     now rewrite Nat.mod_same.
   *apply nA_dig_seq_ub; [ intros; apply digit_lt_radix | ].
    destruct rad; [ easy | simpl; flia ].
-*)
+(*
   rewrite Nat.div_small; [ | apply digit_lt_radix ].
   rewrite Nat.add_0_r.
   destruct (lt_dec (S (d2n (freal x) i)) rad) as [H1| H1]; simpl.
@@ -1834,7 +1834,7 @@ destruct (LPO_fst (A_ge_1 (fd2n x) i)) as [H1| H1]; simpl.
    replace (dig (freal x i)) with (rad - 1) by flia H1 H.
    rewrite Nat.sub_add; [ | easy ].
    now rewrite Nat.mod_same.
-(**)
+*)
  +destruct H1 as (j & Hjj & Hj).
   apply is_9_strict_after_false_iff in Hj.
   replace (i + j + 1) with (S i + j) in Hj by flia.
@@ -2260,12 +2260,12 @@ unfold numbers_to_digits.
 rewrite Hfg.
 destruct (LPO_fst (A_ge_1 f i)) as [Hf| Hf].
 -destruct (LPO_fst (A_ge_1 g i)) as [Hg| Hg].
-(*
+(**)
  +apply digit_eq_eq; simpl.
   rewrite (nA_eq_compat _ _ _ g); [ easy | intros; apply Hfg ].
-*)
+(*
  +now rewrite Hfg.
-(**)
+*)
  +exfalso.
   destruct Hg as (k & Hjk & H).
   specialize (Hf k).
@@ -2303,7 +2303,7 @@ unfold numbers_to_digits.
 apply digit_eq_eq.
 destruct (LPO_fst (A_ge_1 u (n + i))) as [H1| H1].
 -destruct (LPO_fst (A_ge_1 (λ j, u (n + j)) i)) as [H2| H2]; simpl.
-(*
+(**)
  +rewrite Nat.div_small.
   *rewrite Nat.div_small; [ easy | ].
    apply nA_dig_seq_ub; [ intros; apply Hu | ].
@@ -2313,9 +2313,9 @@ destruct (LPO_fst (A_ge_1 u (n + i))) as [H1| H1].
     specialize (Hu (l - n)).
     now replace (n + (l - n)) with l in Hu by flia Hl.
   --destruct rad; [ easy | simpl; flia ].
-*)
+(*
  +now rewrite Nat.add_assoc.
-(**)
+*)
  +destruct H2 as (j & Hjj & Hj).
   exfalso.
   apply A_ge_1_false_iff in Hj.
@@ -5547,7 +5547,7 @@ destruct (LPO_fst (A_ge_1 u i)) as [H2| H2].
  }
  specialize (H3 H H2); clear H H2.
  destruct H3 as [H3| [H3| H3]].
-(*
+(**)
  +rewrite Nat.div_small.
   *rewrite Nat.add_0_r.
    rewrite Nat.mod_small; [ easy | ].
@@ -5558,14 +5558,14 @@ destruct (LPO_fst (A_ge_1 u i)) as [H2| H2].
     replace (i + (k - i - 1) + 1) with k in H3 by flia Hk.
     rewrite H3; flia Hr.
   --destruct rad; [ easy | simpl; flia ].
-*)
+(*
  +specialize (H3 0) as H4.
   rewrite Nat.add_0_r in H4; rewrite H4; clear H4.
   rewrite Nat.div_small; [ | flia Hr ].
   rewrite Nat.add_0_r.
   rewrite Nat.mod_small; [ easy | ].
   apply digit_lt_radix.
-(**)
+*)
  +specialize (Hy (i + 1)) as H4.
   destruct H4 as (k & Hk).
   rewrite Nat.add_shuffle0 in Hk.
@@ -5575,9 +5575,24 @@ destruct (LPO_fst (A_ge_1 u i)) as [H2| H2].
   replace (n + (i - n + k + 1)) with (i + k + 1) in H4 by flia Hni.
   flia H3 Hk H4.
  +destruct H3 as (j & Hjbef & Hjwhi & Hjaft).
+(**)
+  remember (rad * (i + 3)) as n1 eqn:Hn1.
+  remember (n1 - i - 1) as s1 eqn:Hs1.
+  move s1 before n1.
+  destruct (lt_dec (nA i n1 u) (rad ^ s1)) as [H2| H2].
+  *rewrite Nat.div_small; [ | easy ].
+   rewrite Nat.add_0_r.
+   rewrite Nat.mod_small; [ easy | apply digit_lt_radix ].
+  *exfalso.
+   specialize (Hy (i + j + 2)) as (k & Hk).
+   specialize (Haft (i - n + j + 2 + k)).
+   replace (n + (i - n + j + 2 + k)) with (i + j + 2 + k) in Haft by flia Hni.
+   specialize (Hjaft k).
+   rewrite Nat.add_shuffle0 in Hjaft.
+   unfold u, freal_add_series, sequence_add in Hjaft.
+   rewrite Haft in Hjaft.
+   flia Hjaft Hk.
 (*
-...
-*)
   destruct j.
   *rewrite Nat.add_0_r in Hjwhi; rewrite Hjwhi.
    rewrite Nat.div_small; [ | flia Hr ].
@@ -5590,7 +5605,7 @@ destruct (LPO_fst (A_ge_1 u i)) as [H2| H2].
    rewrite Nat.add_0_r.
    rewrite Nat.mod_small; [ easy | ].
    apply digit_lt_radix.
-(**)
+*)
 -destruct H2 as (m & Hjm & Hm); simpl.
  apply A_ge_1_false_iff in Hm.
  remember (rad * (i + m + 3)) as n1 eqn:Hn1.
