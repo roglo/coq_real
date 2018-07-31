@@ -5686,7 +5686,7 @@ specialize (Hn 0) as H1.
 unfold numbers_to_digits, d2n in H1.
 rewrite Nat.add_0_r in H1.
 destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
--rewrite Nat.add_mod in H1; [ | easy ].
+-idtac.
 ...
  specialize (Hn 1) as H3.
  unfold numbers_to_digits, d2n in H3.
