@@ -5620,17 +5620,9 @@ specialize (Hn 0) as H1.
 unfold numbers_to_digits, d2n in H1.
 rewrite Nat.add_0_r in H1.
 destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
--idtac.
- specialize (H2 0) as H3.
- apply A_ge_1_true_iff in H3.
- rewrite Nat.add_0_r, Nat.sub_0_r in H3.
- remember (rad * (n + 3)) as n1 eqn:Hn1.
- remember (n1 - n - 1) as s1 eqn:Hs1.
- move s1 before n1.
- replace (n1 - n - 2) with (s1 - 1) in H3 by flia Hs1.
-(* chais pas *)
+-rewrite Nat.add_mod in H1; [ | easy ].
 ...
--specialize (Hn 1) as H3.
+ specialize (Hn 1) as H3.
  unfold numbers_to_digits, d2n in H3.
  destruct (LPO_fst (A_ge_1 u (n + 1))) as [H4| H4]; simpl in H3.
  +move H4 before H2.
