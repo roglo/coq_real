@@ -5599,6 +5599,36 @@ destruct (LPO_fst (A_ge_1 u i)) as [H2| H2].
    now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
 Qed.
 
+Theorem normalize_numbers_of_digits {r : radix} : ∀ u i,
+  digit_sequence_normalize (numbers_to_digits u) i =
+  numbers_to_digits u i.
+Proof.
+intros.
+unfold digit_sequence_normalize.
+remember (numbers_to_digits u) as v eqn:Hv.
+destruct (LPO_fst (is_9_strict_after v i)) as [H1| H1]; [ | easy ].
+...
+
+Theorem not_numbers_to_digits_all_9 {r : radix} : ∀ u n,
+  ¬ (∀ k, d2n (numbers_to_digits u) (n + k) = rad - 1).
+Proof.
+intros * Hn.
+unfold d2n in Hn.
+assert (H1 : ∀ k,
+   dig (digit_sequence_normalize (numbers_to_digits u) (n + k)) = rad - 1). {
+  intros k.
+  rewrite normalize_numbers_of_digits; apply Hn.
+}
+specialize (normalized_not_999) as H2.
+unfold freal_normalize, fd2n in H2.
+simpl in H2.
+specialize (H2 {| freal := numbers_to_digits u |}).
+apply H2; clear H2.
+exists n.
+apply H1.
+...
+Qed.
+
 Theorem not_numbers_to_digits_all_9 {r : radix} : ∀ u n,
   ¬ (∀ k, d2n (numbers_to_digits u) (n + k) = rad - 1).
 Proof.
