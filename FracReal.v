@@ -5918,31 +5918,44 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
   rewrite Nat.pow_1_r.
   destruct s1; [ simpl; flia Hr | ].
   destruct (lt_dec j s1) as [Hjs| Hjs].
-  *assert (HnA : nA (n + 1) n1 u = rad ^ s1 - 2). {
+  *assert (HnA : nA n n1 u = rad ^ S s1 - 2). {
      unfold nA.
-     rewrite summation_rtl.
      rewrite summation_shift; [ | flia Hs1 Hjs ].
-     replace (n1 - 1 - (n + 1 + 1)) with (s1 - 1) by flia Hs1.
-...
-     rewrite (summation_eq_compat _ (λ i, 2 * (rad - 1) * rad ^ i)).
-     -rewrite <- summation_mul_distr_l.
-       remember mult as f; remember S as g; simpl; subst f g.
+     replace (n1 - 1 - (n + 1)) with s1 by flia Hs1.
+     destruct j.
+     -rewrite summation_split_first; [ | apply Nat.le_0_l ].
+      rewrite Nat.add_0_r in Hjwhi.
+      rewrite Nat.add_0_r, Hjwhi.
+      remember S as f; simpl; subst f.
+      replace (n1 - 1 - (n + 1)) with s1 by flia Hs1.
+      rewrite summation_rtl.
+      rewrite summation_shift; [ | easy ].
+      rewrite (summation_eq_compat _ (λ i, 2 * (rad - 1) * rad ^ i)).
+      +rewrite <- summation_mul_distr_l.
+       remember S as f; simpl; subst f.
        rewrite <- Nat.mul_assoc.
        rewrite <- power_summation_sub_1; [ | easy ].
-       rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
-       rewrite Nat.add_sub_assoc; [ flia | ].
-       simpl; replace 2 with (2 * 1) by apply Nat.mul_1_r.
-       apply Nat.mul_le_mono; [ easy | ].
-       now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-      -intros i Hi.
-       replace (n1 - 1 + (n + 1 + 1) - (n + 1 + 1 + i)) with (n1 - 1 - i)
-         by flia.
-       replace (n1 - 1 - (n1 - 1 - i)) with i by flia Hs1 Hi; f_equal.
-       specialize (H3 (n1 - n - i - 2)).
-       replace (n + (n1 - n - i - 2) + 1) with (n1 - 1 - i) in H3
-         by flia Hs1 Hi.
-       easy.
-    }
+...
+      +intros i Hi.
+       replace (n + 1 + (s1 + 1 - (1 + i))) with (n1 - i - 1) by flia Hs1 Hi.
+       replace (n1 - 1 - (n1 - i - 1)) with i by flia Hs1 Hi.
+       f_equal.
+       replace (n1 - i - 1) with (n + (s1 - i - 1) + 2) by flia Hs1 Hi Hjs.
+       rewrite Nat.add_0_r in Hjaft.
+       apply Hjaft.
+     -idtac.
+...
+
+     -rewrite (summation_split _ _ j); [ | flia Hjs ].
+      rewrite (summation_eq_compat _ (λ i, (rad - 1) * rad ^ (S s1 - i - 1))).
+      +admit.
+      +idtac.
+       intros i Hij.
+       f_equal.
+       *rewrite Nat.add_shuffle0, Hjbef; [ easy | flia Hij ].
+       *f_equal; flia Hs1.
+   }
+
 ...
 
   destruct s1; [ simpl; flia Hr | ].
