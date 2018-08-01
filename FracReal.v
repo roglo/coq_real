@@ -5851,42 +5851,41 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
    apply A_ge_1_false_iff in Hj.
    remember (rad * (n + 1 + j + 3)) as n1 eqn:Hn1.
    remember (n1 - (n + 1) - 1) as s1 eqn:Hs1.
-   rewrite Nat_mod_less_small in Hj.
-  --apply Nat.nle_gt in Hj; apply Hj; clear Hj.
-    apply Nat.le_add_le_sub_l.
-    (* 1/9/9/9/0/0/0/0 ≤ 18/18/18/18/18/18/18 (= 1/9/9/9/9/9/9/8) *)
-    assert (H : nA (n + 1) n1 u = rad ^ s1 + (rad ^ s1 - 2)). {
-      unfold nA.
-      rewrite summation_rtl.
-      rewrite summation_shift.
-      -replace (n1 - 1 - (n + 1 + 1)) with (s1 - 1) by flia Hs1.
+   destruct s1.
+  --symmetry in Hs1.
+    apply Nat.sub_0_le in Hs1.
+    rewrite Hn1 in Hs1.
+    destruct rad; [ simpl in Hn1; now subst n1 | simpl in Hs1; flia Hs1 ].
+  --rewrite Nat_mod_less_small in Hj.
+   ++apply Nat.nle_gt in Hj; apply Hj; clear Hj.
+     apply Nat.le_add_le_sub_l.
+     (* 1/9/9/9/0/0/0/0 ≤ 18/18/18/18/18/18/18 (= 1/9/9/9/9/9/9/8) *)
+     assert (H : nA (n + 1) n1 u = rad ^ S s1 + (rad ^ S s1 - 2)). {
+       unfold nA.
+       rewrite summation_rtl.
+       rewrite summation_shift; [ | flia Hs1 ].
+       replace (n1 - 1 - (n + 1 + 1)) with s1 by flia Hs1.
        rewrite (summation_eq_compat _ (λ i, 2 * (rad - 1) * rad ^ i)).
-+admit. (*
-       +rewrite <- summation_mul_distr_l.
-        remember mult as f; simpl; subst f.
-        rewrite <- power_summation_sub_1.
-...
-*)
-       +intros i Hi.
+       -rewrite <- summation_mul_distr_l.
+        remember mult as f; remember S as g; simpl; subst f g.
+        rewrite <- Nat.mul_assoc.
+        rewrite <- power_summation_sub_1; [ | easy ].
+        rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+        rewrite Nat.add_sub_assoc; [ flia | ].
+        simpl; replace 2 with (2 * 1) by apply Nat.mul_1_r.
+        apply Nat.mul_le_mono; [ easy | ].
+        now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+       -intros i Hi.
         replace (n1 - 1 + (n + 1 + 1) - (n + 1 + 1 + i)) with (n1 - 1 - i)
           by flia.
         replace (n1 - 1 - (n1 - 1 - i)) with i by flia Hs1 Hi; f_equal.
         specialize (H3 (n1 - n - i - 2)).
-        replace (n + (n1 - n - i - 2) + 1) with (n1 - 1 - i) in H3.
-        *easy.
-        *rewrite <- Nat.add_assoc, Nat.add_comm.
-
-...
-         rewrite Nat_sub_sub_swap.
-        *rewrite Hn1.
-
-         destruct rad; [ easy | ].
-         simpl.
-
-
-        replace (n + 1 + 1 + i) with (n + (i + 1) + 1) by flia.
-        rewrite H3; f_equal; f_equal.
-        flia Hs1 Hi.
+        replace (n + (n1 - n - i - 2) + 1) with (n1 - 1 - i) in H3
+          by flia Hs1 Hi.
+        easy.
+     }
+     rewrite H; clear H.
+     apply Nat.add_le_mono_l.
 ...
  +destruct H3 as (j & Hjbef & Hjwhi & Hjaft).
   admit.
