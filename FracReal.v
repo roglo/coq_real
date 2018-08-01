@@ -5969,12 +5969,29 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
         rewrite summation_rtl.
         rewrite Nat.add_0_r.
         rewrite summation_eq_compat with (h := λ i, 2 * (rad - 1) * rad ^ i).
-       --idtac.
-         rewrite <- summation_mul_distr_l.
+       --rewrite <- summation_mul_distr_l.
          remember S as f; simpl; subst f.
          rewrite <- Nat.mul_assoc.
          rewrite <- power_summation_sub_1; [ | easy ].
+         rewrite <- Nat.sub_succ_l; [ | easy ].
+         rewrite Nat.sub_succ.
+         rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+         rewrite Nat.add_assoc.
+         rewrite Nat.mul_sub_distr_r.
+         replace (rad * rad ^ (s1 - j - 1)) with (rad ^ (s1 - j)).
+        ++rewrite Nat.add_sub_assoc.
+         **rewrite Nat.sub_add.
+         ---rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+            rewrite Nat.add_sub_assoc.
+          +++replace (s1 - j - 1) with (s1 - S j) by flia.
+             rewrite <- Nat.pow_add_r.
+             replace (S j + (s1 - j)) with (S s1) by flia Hjs.
+             f_equal; apply Nat.sub_add.
 ...
+          +++admit.
+         ---admit.
+         **admit.
+        ++admit.
        --intros i Hi.
          replace (n + 1 + (S (S j) + (s1 - S (S j) - i)))
            with (n1 - i - 1) by flia Hs1 Hjs Hi.
@@ -5988,17 +6005,12 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
        rewrite Nat.add_shuffle0, Hjbef; [ | flia ].
        f_equal; f_equal; flia Hs1 Hi Hjs.
    }
-
-...
-
-  destruct s1; [ simpl; flia Hr | ].
-  rewrite Nat.mod_small.
-  *admit.
-  *idtac.
-...
-   rewrite power_summation; [ | easy ].
-
-...
+   rewrite HnA.
+   rewrite Nat.mod_small.
+  --admit.
+  --admit.
+  *apply Nat.nlt_ge in Hjs.
+   admit.
 -destruct H2 as (j & Hjj & Hj); simpl in H1.
  apply A_ge_1_false_iff in Hj.
  admit.
