@@ -5856,35 +5856,35 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
     apply Nat.sub_0_le in Hs1.
     rewrite Hn1 in Hs1.
     destruct rad; [ simpl in Hn1; now subst n1 | simpl in Hs1; flia Hs1 ].
-  --rewrite Nat_mod_less_small in Hj.
+  --assert (HnA : nA (n + 1) n1 u = rad ^ S s1 + (rad ^ S s1 - 2)). {
+      unfold nA.
+      rewrite summation_rtl.
+      rewrite summation_shift; [ | flia Hs1 ].
+      replace (n1 - 1 - (n + 1 + 1)) with s1 by flia Hs1.
+      rewrite (summation_eq_compat _ (λ i, 2 * (rad - 1) * rad ^ i)).
+      -rewrite <- summation_mul_distr_l.
+       remember mult as f; remember S as g; simpl; subst f g.
+       rewrite <- Nat.mul_assoc.
+       rewrite <- power_summation_sub_1; [ | easy ].
+       rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+       rewrite Nat.add_sub_assoc; [ flia | ].
+       simpl; replace 2 with (2 * 1) by apply Nat.mul_1_r.
+       apply Nat.mul_le_mono; [ easy | ].
+       now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+      -intros i Hi.
+       replace (n1 - 1 + (n + 1 + 1) - (n + 1 + 1 + i)) with (n1 - 1 - i)
+         by flia.
+       replace (n1 - 1 - (n1 - 1 - i)) with i by flia Hs1 Hi; f_equal.
+       specialize (H3 (n1 - n - i - 2)).
+       replace (n + (n1 - n - i - 2) + 1) with (n1 - 1 - i) in H3
+         by flia Hs1 Hi.
+       easy.
+    }
+    rewrite Nat_mod_less_small in Hj.
    ++apply Nat.nle_gt in Hj; apply Hj; clear Hj.
      apply Nat.le_add_le_sub_l.
      (* 1/9/9/9/0/0/0/0 ≤ 18/18/18/18/18/18/18 (= 1/9/9/9/9/9/9/8) *)
-     assert (H : nA (n + 1) n1 u = rad ^ S s1 + (rad ^ S s1 - 2)). {
-       unfold nA.
-       rewrite summation_rtl.
-       rewrite summation_shift; [ | flia Hs1 ].
-       replace (n1 - 1 - (n + 1 + 1)) with s1 by flia Hs1.
-       rewrite (summation_eq_compat _ (λ i, 2 * (rad - 1) * rad ^ i)).
-       -rewrite <- summation_mul_distr_l.
-        remember mult as f; remember S as g; simpl; subst f g.
-        rewrite <- Nat.mul_assoc.
-        rewrite <- power_summation_sub_1; [ | easy ].
-        rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
-        rewrite Nat.add_sub_assoc; [ flia | ].
-        simpl; replace 2 with (2 * 1) by apply Nat.mul_1_r.
-        apply Nat.mul_le_mono; [ easy | ].
-        now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-       -intros i Hi.
-        replace (n1 - 1 + (n + 1 + 1) - (n + 1 + 1 + i)) with (n1 - 1 - i)
-          by flia.
-        replace (n1 - 1 - (n1 - 1 - i)) with i by flia Hs1 Hi; f_equal.
-        specialize (H3 (n1 - n - i - 2)).
-        replace (n + (n1 - n - i - 2) + 1) with (n1 - 1 - i) in H3
-          by flia Hs1 Hi.
-        easy.
-     }
-     rewrite H; clear H.
+     rewrite HnA.
      apply Nat.add_le_mono_l.
      rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
      rewrite <- Nat.pow_add_r.
@@ -5899,10 +5899,17 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
      replace 2 with (2 * 1) by apply Nat.mul_1_r.
      apply Nat.mul_le_mono; [ easy | ].
      now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-   ++idtac.
-...
+   ++rewrite HnA.
+     split; [ flia | ].
+     remember (S s1) as ss; simpl; subst ss.
+     apply Nat.add_lt_mono_l.
+     rewrite Nat.add_0_r.
+     apply Nat.sub_lt; [ | flia ].
+     simpl; replace 2 with (2 * 1) by apply Nat.mul_1_r.
+     apply Nat.mul_le_mono; [ easy | ].
+     now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
  +destruct H3 as (j & Hjbef & Hjwhi & Hjaft).
-  admit.
+...
 -destruct H2 as (j & Hjj & Hj); simpl in H1.
  apply A_ge_1_false_iff in Hj.
  admit.
