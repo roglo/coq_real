@@ -5951,17 +5951,42 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
        replace (n1 - i - 1) with (n + (s1 - i - 1) + 2) by flia Hs1 Hi Hjs.
        rewrite Nat.add_0_r in Hjaft.
        apply Hjaft.
-     -idtac.
-...
-
      -rewrite (summation_split _ _ j); [ | flia Hjs ].
-      rewrite (summation_eq_compat _ (λ i, (rad - 1) * rad ^ (S s1 - i - 1))).
-      +admit.
-      +idtac.
-       intros i Hij.
-       f_equal.
-       *rewrite Nat.add_shuffle0, Hjbef; [ easy | flia Hij ].
-       *f_equal; flia Hs1.
+      rewrite summation_rtl, Nat.add_0_r.
+      rewrite (summation_eq_compat _ (λ i, (rad - 1) * rad ^ (s1 - j + i))).
+      +rewrite <- summation_mul_distr_l.
+       remember S as f; simpl; subst f.
+       rewrite (summation_eq_compat _ (λ i, rad ^ (s1 - j) * rad ^ i)).
+       *rewrite <- summation_mul_distr_l.
+        remember S as f; simpl; subst f.
+        rewrite Nat.mul_assoc, Nat.mul_shuffle0.
+        rewrite <- power_summation_sub_1; [ | easy ].
+        rewrite summation_split_first; [ | flia Hjs ].
+        remember S as f; simpl; subst f.
+        rewrite Nat.add_shuffle0, Hjwhi.
+        replace (n1 - 1 - (n + S j + 1)) with (s1 - j - 1) by flia Hs1.
+        rewrite summation_shift; [ | flia Hjs ].
+        rewrite summation_rtl.
+        rewrite Nat.add_0_r.
+        rewrite summation_eq_compat with (h := λ i, 2 * (rad - 1) * rad ^ i).
+       --idtac.
+         rewrite <- summation_mul_distr_l.
+         remember S as f; simpl; subst f.
+         rewrite <- Nat.mul_assoc.
+         rewrite <- power_summation_sub_1; [ | easy ].
+...
+       --intros i Hi.
+         replace (n + 1 + (S (S j) + (s1 - S (S j) - i)))
+           with (n1 - i - 1) by flia Hs1 Hjs Hi.
+         replace (n1 - 1 - (n1 - i - 1)) with i by flia Hs1 Hi.
+         f_equal.
+         replace (n1 - i - 1) with (n + S j + (s1 - j - i - 2) + 2)
+           by flia Hs1 Hjs Hi.
+         apply Hjaft.
+       *intros; apply Nat.pow_add_r.
+      +intros i Hi.
+       rewrite Nat.add_shuffle0, Hjbef; [ | flia ].
+       f_equal; f_equal; flia Hs1 Hi Hjs.
    }
 
 ...
