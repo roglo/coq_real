@@ -5849,6 +5849,11 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
      now rewrite H3.
   *destruct H5 as (j & Hjj & Hj); simpl in H4.
    apply A_ge_1_false_iff in Hj.
+   remember (rad * (n + 1 + j + 3)) as n1 eqn:Hn1.
+   remember (n1 - (n + 1) - 1) as s1 eqn:Hs1.
+   rewrite Nat_mod_less_small in Hj.
+  --apply Nat.nle_gt in Hj; apply Hj; clear Hj.
+Check nA_ge_999000.
 ...
  +destruct H3 as (j & Hjbef & Hjwhi & Hjaft).
   admit.
