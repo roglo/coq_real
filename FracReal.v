@@ -5821,6 +5821,27 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
   --remember (rad * (n + 1 + 3)) as n1 eqn:Hn1.
     remember (n1 - (n + 1) - 1) as s1 eqn:Hs1.
     move s1 before n1; symmetry in Hs1.
+    unfold nA.
+    rewrite (summation_eq_compat _ (λ i, 2 * (rad - 1) * rad ^ (n1 - 1 - i))).
+   ++rewrite <- summation_mul_distr_l.
+     remember mult as f; simpl; subst f.
+     rewrite summation_rtl.
+     rewrite summation_shift.
+    **replace (n1 - 1 - (n + 1 + 1)) with (s1 - 1) by flia Hs1.
+      rewrite (summation_eq_compat _ (λ i, rad ^ i)).
+    ---rewrite <- Nat.mul_assoc, <- power_summation_sub_1; [ | easy ].
+       rewrite <- Nat.sub_succ_l.
+     +++rewrite Nat.sub_succ, Nat.sub_0_r.
+        rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+...
+        destruct rad as [| rr]; [ easy | ].
+        destruct rr; [ flia Hr | ].
+        simpl.
+...
+Focus 2.
+intros i Hi.
+f_equal.
+flia Hs1 Hi.
 ...
     destruct s1.
    ++apply Nat.sub_0_le in Hs1; apply Nat.nlt_ge in Hs1.
