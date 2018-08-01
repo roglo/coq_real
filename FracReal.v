@@ -5909,13 +5909,14 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
      apply Nat.mul_le_mono; [ easy | ].
      now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
  +destruct H3 as (j & Hjbef & Hjwhi & Hjaft).
+  remember (rad * (n + 3)) as n1 eqn:Hn1.
+  remember (n1 - n - 1) as s1 eqn:Hs1.
 ...
   specialize (H2 0) as H3.
   apply A_ge_1_true_iff in H3.
   apply Nat.nlt_ge in H3; apply H3; clear H3.
   rewrite Nat.add_0_r.
-  remember (rad * (n + 3)) as n1 eqn:Hn1.
-  remember (n1 - n - 1) as s1 eqn:Hs1.
+...
   rewrite Nat.pow_1_r.
   destruct s1; [ simpl; flia Hr | ].
   destruct (lt_dec j s1) as [Hjs| Hjs].
