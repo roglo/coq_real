@@ -5855,6 +5855,38 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
   --apply Nat.nle_gt in Hj; apply Hj; clear Hj.
     apply Nat.le_add_le_sub_l.
     (* 1/9/9/9/0/0/0/0 ≤ 18/18/18/18/18/18/18 (= 1/9/9/9/9/9/9/8) *)
+    assert (H : nA (n + 1) n1 u = rad ^ s1 + (rad ^ s1 - 2)). {
+      unfold nA.
+      rewrite summation_rtl.
+      rewrite summation_shift.
+      -replace (n1 - 1 - (n + 1 + 1)) with (s1 - 1) by flia Hs1.
+       rewrite (summation_eq_compat _ (λ i, 2 * (rad - 1) * rad ^ i)).
++admit. (*
+       +rewrite <- summation_mul_distr_l.
+        remember mult as f; simpl; subst f.
+        rewrite <- power_summation_sub_1.
+...
+*)
+       +intros i Hi.
+        replace (n1 - 1 + (n + 1 + 1) - (n + 1 + 1 + i)) with (n1 - 1 - i)
+          by flia.
+        replace (n1 - 1 - (n1 - 1 - i)) with i by flia Hs1 Hi; f_equal.
+        specialize (H3 (n1 - n - i - 2)).
+        replace (n + (n1 - n - i - 2) + 1) with (n1 - 1 - i) in H3.
+        *easy.
+        *rewrite <- Nat.add_assoc, Nat.add_comm.
+
+...
+         rewrite Nat_sub_sub_swap.
+        *rewrite Hn1.
+
+         destruct rad; [ easy | ].
+         simpl.
+
+
+        replace (n + 1 + 1 + i) with (n + (i + 1) + 1) by flia.
+        rewrite H3; f_equal; f_equal.
+        flia Hs1 Hi.
 ...
  +destruct H3 as (j & Hjbef & Hjwhi & Hjaft).
   admit.
