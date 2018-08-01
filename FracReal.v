@@ -5886,6 +5886,20 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
      }
      rewrite H; clear H.
      apply Nat.add_le_mono_l.
+     rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+     rewrite <- Nat.pow_add_r.
+     assert (Hjs : j < s1). {
+       apply Nat.succ_lt_mono.
+       rewrite Hs1, Hn1.
+       destruct rad; [ easy | simpl; flia ].
+     }
+     replace (S j + (S s1 - S j)) with (S s1); [ | flia Hjs ].
+     apply Nat.sub_le_mono_l.
+     rewrite Nat.sub_succ_l; [ simpl | easy ].
+     replace 2 with (2 * 1) by apply Nat.mul_1_r.
+     apply Nat.mul_le_mono; [ easy | ].
+     now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+   ++idtac.
 ...
  +destruct H3 as (j & Hjbef & Hjwhi & Hjaft).
   admit.
