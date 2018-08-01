@@ -5937,7 +5937,13 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
        rewrite <- power_summation_sub_1; [ | easy ].
        rewrite <- Nat.sub_succ_l; [ | easy ].
        rewrite Nat.sub_succ, Nat.sub_0_r.
-...
+       rewrite Nat.mul_sub_distr_r, Nat.mul_sub_distr_l, Nat.mul_1_r.
+       rewrite Nat.add_sub_assoc.
+       *rewrite Nat.sub_add; [ easy | ].
+        now apply Nat.mul_le_mono_r.
+       *replace 2 with (2 * 1) at 1 by apply Nat.mul_1_r.
+        apply Nat.mul_le_mono_l.
+        now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
       +intros i Hi.
        replace (n + 1 + (s1 + 1 - (1 + i))) with (n1 - i - 1) by flia Hs1 Hi.
        replace (n1 - 1 - (n1 - i - 1)) with i by flia Hs1 Hi.
