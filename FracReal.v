@@ -5918,7 +5918,7 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
   rewrite Nat.pow_1_r.
   destruct s1; [ simpl; flia Hr | ].
   destruct (lt_dec j s1) as [Hjs| Hjs].
-  *assert (HnA : nA (n + 1) n1 u = rad ^ S s1 - 2). {
+  *assert (HnA : nA (n + 1) n1 u = rad ^ s1 - 2). {
      unfold nA.
      rewrite summation_rtl.
      rewrite summation_shift; [ | flia Hs1 Hjs ].
