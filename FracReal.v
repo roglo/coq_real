@@ -3928,6 +3928,7 @@ intros Hu.
 specialize radix_ge_2 as Hr; move Hr before i.
 specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
 -right; right.
+...
  exists 0.
  rewrite Nat.add_0_r.
  split; [ easy | ].
