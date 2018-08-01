@@ -5987,11 +5987,21 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
              rewrite <- Nat.pow_add_r.
              replace (S j + (s1 - j)) with (S s1) by flia Hjs.
              f_equal; apply Nat.sub_add.
-...
-          +++admit.
-         ---admit.
-         **admit.
-        ++admit.
+             remember mult as f; simpl; subst f.
+             apply Nat.mul_le_mono; [ easy | ].
+             apply Nat.pow_le_mono_r; [ easy | flia ].
+          +++replace 2 with (2 * 1) at 1 by apply Nat.mul_1_r.
+             apply Nat.mul_le_mono_l.
+             now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+         ---rewrite <- Nat.pow_add_r.
+            apply Nat.pow_le_mono_r; [ easy | flia ].
+         **rewrite Nat_sub_sub_swap.
+           replace (s1 - j) with (1 + (s1 - j - 1)) by flia Hjs.
+           rewrite Nat_sub_sub_swap.
+           rewrite Nat.pow_add_r, Nat.pow_1_r.
+           now apply Nat.mul_le_mono_r.
+        ++replace (s1 - j) with (1 + (s1 - j - 1)) at 1 by flia Hjs.
+          now rewrite Nat.pow_add_r, Nat.pow_1_r.
        --intros i Hi.
          replace (n + 1 + (S (S j) + (s1 - S (S j) - i)))
            with (n1 - i - 1) by flia Hs1 Hjs Hi.
@@ -6007,7 +6017,8 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
    }
    rewrite HnA.
    rewrite Nat.mod_small.
-  --admit.
+  --idtac.
+...
   --admit.
   *apply Nat.nlt_ge in Hjs.
    admit.
