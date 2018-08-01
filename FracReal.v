@@ -5818,9 +5818,54 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
   --intros k.
     replace (n + 1 + k + 1) with (n + (1 + k) + 1) by flia.
     apply Hur.
-  --idtac.
+  --remember (rad * (n + 1 + 3)) as n1 eqn:Hn1.
+    remember (n1 - (n + 1) - 1) as s1 eqn:Hs1.
+    move s1 before n1; symmetry in Hs1.
+...
+    destruct s1.
+   ++apply Nat.sub_0_le in Hs1; apply Nat.nlt_ge in Hs1.
+     exfalso; apply Hs1; clear Hs1; rewrite Hn1.
+     destruct rad; [ easy | simpl; flia ].
+   ++rewrite power_summation; [ | easy ].
+     rewrite summation_split_first; [ | flia ].
+     rewrite Nat.mul_add_distr_l; simpl.
+     rewrite Nat.mul_1_r.
+     rewrite <- Nat.add_succ_l.
+     rewrite nA_split_last.
+    **rewrite Nat.add_comm.
+      apply Nat.add_le_mono.
+    ---specialize (H3 (n1 - n - 2)).
+       replace (n + (n1 - n - 2) + 1) with (n1 - 1) in H3.
+     +++rewrite H3; flia Hr.
+     +++rewrite Hn1.
+        destruct rad; [ easy | simpl; flia ].
+    ---remember summation as f.
+       unfold nA.
+       rewrite summation_rtl.
+       rewrite summation_shift.
+     +++replace (n1 - 1 - 1 - (n + 1 + 1)) with (s1 - 1) by flia Hs1.
+        subst f.
+        do 2 rewrite summation_mul_distr_l; simpl.
+        rewrite summation_shift.
+      ***apply (@summation_le_compat _ nat_ord_ring).
+         intros i Hi.
+         remember plus as f; simpl; subst f; unfold Nat.le.
+         replace (n1 - 1 - 1 + (n + 1 + 1) - (n + 1 + 1 + i)) with (n1 - i - 2)
+           by flia.
+         replace (n1 - 1 - 1 - (n1 - i - 2)) with i by flia Hs1 Hi.
+         simpl.
+(* chiasse de pute, ça marche pas *)
+....
+
+        remember plus as f; simpl; subst f.
+      apply Nat.add_le_mono.
+
+...
+
+
 Check nA_ge_999000.
 (* ah non ça s'applique pas... ici, faut utiliser H3 *)
+
 ...
   *destruct H5 as (j & Hjj & Hj); simpl in H4.
    apply A_ge_1_false_iff in Hj.
