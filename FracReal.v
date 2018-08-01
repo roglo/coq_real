@@ -5909,6 +5909,49 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
      apply Nat.mul_le_mono; [ easy | ].
      now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
  +destruct H3 as (j & Hjbef & Hjwhi & Hjaft).
+  specialize (H2 0) as H3.
+  apply A_ge_1_true_iff in H3.
+  apply Nat.nlt_ge in H3; apply H3; clear H3.
+  rewrite Nat.add_0_r.
+  remember (rad * (n + 3)) as n1 eqn:Hn1.
+  remember (n1 - n - 1) as s1 eqn:Hs1.
+  rewrite Nat.pow_1_r.
+  destruct s1; [ simpl; flia Hr | ].
+  destruct (lt_dec j s1) as [Hjs| Hjs].
+  *assert (HnA : nA (n + 1) n1 u = rad ^ S s1 - 2). {
+     unfold nA.
+     rewrite summation_rtl.
+     rewrite summation_shift; [ | flia Hs1 Hjs ].
+     replace (n1 - 1 - (n + 1 + 1)) with (s1 - 1) by flia Hs1.
+...
+     rewrite (summation_eq_compat _ (λ i, 2 * (rad - 1) * rad ^ i)).
+     -rewrite <- summation_mul_distr_l.
+       remember mult as f; remember S as g; simpl; subst f g.
+       rewrite <- Nat.mul_assoc.
+       rewrite <- power_summation_sub_1; [ | easy ].
+       rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+       rewrite Nat.add_sub_assoc; [ flia | ].
+       simpl; replace 2 with (2 * 1) by apply Nat.mul_1_r.
+       apply Nat.mul_le_mono; [ easy | ].
+       now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+      -intros i Hi.
+       replace (n1 - 1 + (n + 1 + 1) - (n + 1 + 1 + i)) with (n1 - 1 - i)
+         by flia.
+       replace (n1 - 1 - (n1 - 1 - i)) with i by flia Hs1 Hi; f_equal.
+       specialize (H3 (n1 - n - i - 2)).
+       replace (n + (n1 - n - i - 2) + 1) with (n1 - 1 - i) in H3
+         by flia Hs1 Hi.
+       easy.
+    }
+...
+
+  destruct s1; [ simpl; flia Hr | ].
+  rewrite Nat.mod_small.
+  *admit.
+  *idtac.
+...
+   rewrite power_summation; [ | easy ].
+
 ...
 -destruct H2 as (j & Hjj & Hj); simpl in H1.
  apply A_ge_1_false_iff in Hj.
