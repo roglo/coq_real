@@ -5853,7 +5853,8 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
    remember (n1 - (n + 1) - 1) as s1 eqn:Hs1.
    rewrite Nat_mod_less_small in Hj.
   --apply Nat.nle_gt in Hj; apply Hj; clear Hj.
-Check nA_ge_999000.
+    apply Nat.le_add_le_sub_l.
+    (* 1/9/9/9/0/0/0/0 ≤ 18/18/18/18/18/18/18 (= 1/9/9/9/9/9/9/8) *)
 ...
  +destruct H3 as (j & Hjbef & Hjwhi & Hjaft).
   admit.
