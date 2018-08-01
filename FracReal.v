@@ -5909,6 +5909,7 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
      apply Nat.mul_le_mono; [ easy | ].
      now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
  +destruct H3 as (j & Hjbef & Hjwhi & Hjaft).
+...
   specialize (H2 0) as H3.
   apply A_ge_1_true_iff in H3.
   apply Nat.nlt_ge in H3; apply H3; clear H3.
@@ -6016,8 +6017,12 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
        f_equal; f_equal; flia Hs1 Hi Hjs.
    }
    rewrite HnA.
+   rewrite Nat.sub_succ, Nat.sub_0_r.
+   rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+   rewrite <- Nat.pow_succ_r'.
    rewrite Nat.mod_small.
   --idtac.
+(* aie !!! *)
 ...
   --admit.
   *apply Nat.nlt_ge in Hjs.
