@@ -3913,20 +3913,6 @@ rewrite Nat.add_comm, Nat.mul_comm in H1.
 now apply Nat.add_le_mono_l in H1.
 Qed.
 
-Theorem new_attempt_A_ge_1_add_all_true_if {r : radix} : ∀ u i,
-  (∀ k, u (i + k) ≤ 2 * (rad - 1))
-  → (∀ k, A_ge_1 u i k = true)
-  → (∀ k, u (i + k) = rad - 1) ∨
-     (∀ k, u (i + k) = 2 * (rad - 1)) ∨
-     (∃ j,
-       (∀ k, k < j → u (i + k) = rad - 1) ∧
-       u (i + j) = rad - 2 ∧
-       (∀ k, u (i + j + k + 1) = 2 * (rad - 1))).
-Proof.
-intros * Hur.
-intros Hu.
-...
-
 Theorem A_ge_1_add_all_true_if {r : radix} : ∀ u i,
   (∀ k, u (i + k + 1) ≤ 2 * (rad - 1))
   → (∀ k, A_ge_1 u i k = true)
@@ -3942,7 +3928,6 @@ intros Hu.
 specialize radix_ge_2 as Hr; move Hr before i.
 specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
 -right; right.
-...
  exists 0.
  rewrite Nat.add_0_r.
  split; [ easy | ].
