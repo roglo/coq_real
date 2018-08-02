@@ -6085,9 +6085,10 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
    apply A_ge_1_add_r_true_if in H2.
    now rewrite H2 in Hk.
 -destruct H2 as (j & Hjj & Hj); simpl in H1.
-...
  apply A_ge_1_false_iff in Hj.
- admit.
+ remember (rad * (n + j + 3)) as n1 eqn:Hn1.
+ remember (n1 - n - 1) as s1 eqn:Hs1.
+ move s1 before n1.
 ...
 
 Theorem freal_eq_add_norm_l {r : radix} : ∀ x y,
