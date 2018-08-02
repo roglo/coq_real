@@ -5912,116 +5912,124 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
   remember (rad * (n + 3)) as n1 eqn:Hn1.
   remember (n1 - n - 1) as s1 eqn:Hs1.
   move s1 before n1.
-  specialize (H2 0) as H3.
-  apply A_ge_1_true_iff in H3.
-  apply Nat.nlt_ge in H3; apply H3; clear H3.
-  rewrite Nat.add_0_r.
-  rewrite Nat.pow_1_r.
-  rewrite <- Hn1, <- Hs1.
-  destruct s1; [ simpl; flia Hr | ].
-  destruct (lt_dec j s1) as [Hjs| Hjs].
-  *assert (HnA : nA n n1 u = rad ^ S s1 - 2). {
-     unfold nA.
-     rewrite summation_shift; [ | flia Hs1 Hjs ].
-     replace (n1 - 1 - (n + 1)) with s1 by flia Hs1.
-     destruct j.
-     -rewrite summation_split_first; [ | apply Nat.le_0_l ].
-      rewrite Nat.add_0_r in Hjwhi.
-      rewrite Nat.add_0_r, Hjwhi.
-      remember S as f; simpl; subst f.
+  destruct s1.
+  *symmetry in Hs1.
+   apply Nat.sub_0_le in Hs1.
+   rewrite Hn1 in Hs1.
+   destruct rad; [ easy | simpl in Hs1; flia Hs1 ].
+  *destruct (lt_dec j s1) as [Hjs| Hjs].
+  --assert (HnA : nA n n1 u = rad ^ S s1 - 2). {
+      clear - j Hjs Hjbef Hjwhi Hjaft Hs1.
+... (* est-ce que s1 ≠ 0 ne serait pas plus général que Hjs ? *)
+      specialize radix_ge_2 as Hr; move Hr before n.
+      unfold nA.
+      rewrite summation_shift; [ | flia Hs1 ].
       replace (n1 - 1 - (n + 1)) with s1 by flia Hs1.
-      rewrite summation_rtl.
-      rewrite summation_shift; [ | easy ].
-      rewrite (summation_eq_compat _ (λ i, 2 * (rad - 1) * rad ^ i)).
-      +rewrite <- summation_mul_distr_l.
+      destruct j.
+      -rewrite summation_split_first; [ | apply Nat.le_0_l ].
+       rewrite Nat.add_0_r in Hjwhi.
+       rewrite Nat.add_0_r, Hjwhi.
        remember S as f; simpl; subst f.
-       rewrite <- Nat.mul_assoc.
-       rewrite <- power_summation_sub_1; [ | easy ].
-       rewrite <- Nat.sub_succ_l; [ | easy ].
-       rewrite Nat.sub_succ, Nat.sub_0_r.
-       rewrite Nat.mul_sub_distr_r, Nat.mul_sub_distr_l, Nat.mul_1_r.
-       rewrite Nat.add_sub_assoc.
-       *rewrite Nat.sub_add; [ easy | ].
-        now apply Nat.mul_le_mono_r.
-       *replace 2 with (2 * 1) at 1 by apply Nat.mul_1_r.
-        apply Nat.mul_le_mono_l.
-        now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-      +intros i Hi.
-       replace (n + 1 + (s1 + 1 - (1 + i))) with (n1 - i - 1) by flia Hs1 Hi.
-       replace (n1 - 1 - (n1 - i - 1)) with i by flia Hs1 Hi.
-       f_equal.
-       replace (n1 - i - 1) with (n + (s1 - i - 1) + 2) by flia Hs1 Hi Hjs.
-       rewrite Nat.add_0_r in Hjaft.
-       apply Hjaft.
-     -rewrite (summation_split _ _ j); [ | flia Hjs ].
-      rewrite summation_rtl, Nat.add_0_r.
-      rewrite (summation_eq_compat _ (λ i, (rad - 1) * rad ^ (s1 - j + i))).
-      +rewrite <- summation_mul_distr_l.
-       remember S as f; simpl; subst f.
-       rewrite (summation_eq_compat _ (λ i, rad ^ (s1 - j) * rad ^ i)).
-       *rewrite <- summation_mul_distr_l.
+       replace (n1 - 1 - (n + 1)) with s1 by flia Hs1.
+       rewrite summation_rtl.
+       rewrite summation_shift; [ | easy ].
+       rewrite (summation_eq_compat _ (λ i, 2 * (rad - 1) * rad ^ i)).
+       +rewrite <- summation_mul_distr_l.
         remember S as f; simpl; subst f.
-        rewrite Nat.mul_assoc, Nat.mul_shuffle0.
+        rewrite <- Nat.mul_assoc.
         rewrite <- power_summation_sub_1; [ | easy ].
-        rewrite summation_split_first; [ | flia Hjs ].
+        rewrite <- Nat.sub_succ_l; [ | easy ].
+        rewrite Nat.sub_succ, Nat.sub_0_r.
+        rewrite Nat.mul_sub_distr_r, Nat.mul_sub_distr_l, Nat.mul_1_r.
+        rewrite Nat.add_sub_assoc.
+        *rewrite Nat.sub_add; [ easy | ].
+         now apply Nat.mul_le_mono_r.
+        *replace 2 with (2 * 1) at 1 by apply Nat.mul_1_r.
+         apply Nat.mul_le_mono_l.
+         now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+       +intros i Hi.
+        replace (n + 1 + (s1 + 1 - (1 + i))) with (n1 - i - 1) by flia Hs1 Hi.
+        replace (n1 - 1 - (n1 - i - 1)) with i by flia Hs1 Hi.
+        f_equal.
+        replace (n1 - i - 1) with (n + (s1 - i - 1) + 2) by flia Hs1 Hi Hjs.
+        rewrite Nat.add_0_r in Hjaft.
+        apply Hjaft.
+      -rewrite (summation_split _ _ j); [ | flia Hjs ].
+       rewrite summation_rtl, Nat.add_0_r.
+       rewrite (summation_eq_compat _ (λ i, (rad - 1) * rad ^ (s1 - j + i))).
+       +rewrite <- summation_mul_distr_l.
         remember S as f; simpl; subst f.
-        rewrite Nat.add_shuffle0, Hjwhi.
-        replace (n1 - 1 - (n + S j + 1)) with (s1 - j - 1) by flia Hs1.
-        rewrite summation_shift; [ | flia Hjs ].
-        rewrite summation_rtl.
-        rewrite Nat.add_0_r.
-        rewrite summation_eq_compat with (h := λ i, 2 * (rad - 1) * rad ^ i).
-       --rewrite <- summation_mul_distr_l.
+        rewrite (summation_eq_compat _ (λ i, rad ^ (s1 - j) * rad ^ i)).
+        *rewrite <- summation_mul_distr_l.
          remember S as f; simpl; subst f.
-         rewrite <- Nat.mul_assoc.
+         rewrite Nat.mul_assoc, Nat.mul_shuffle0.
          rewrite <- power_summation_sub_1; [ | easy ].
-         rewrite <- Nat.sub_succ_l; [ | easy ].
-         rewrite Nat.sub_succ.
-         rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
-         rewrite Nat.add_assoc.
-         rewrite Nat.mul_sub_distr_r.
-         replace (rad * rad ^ (s1 - j - 1)) with (rad ^ (s1 - j)).
-        ++rewrite Nat.add_sub_assoc.
-         **rewrite Nat.sub_add.
-         ---rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
-            rewrite Nat.add_sub_assoc.
-          +++replace (s1 - j - 1) with (s1 - S j) by flia.
-             rewrite <- Nat.pow_add_r.
-             replace (S j + (s1 - j)) with (S s1) by flia Hjs.
-             f_equal; apply Nat.sub_add.
-             remember mult as f; simpl; subst f.
-             apply Nat.mul_le_mono; [ easy | ].
-             apply Nat.pow_le_mono_r; [ easy | flia ].
-          +++replace 2 with (2 * 1) at 1 by apply Nat.mul_1_r.
-             apply Nat.mul_le_mono_l.
-             now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
-         ---rewrite <- Nat.pow_add_r.
-            apply Nat.pow_le_mono_r; [ easy | flia ].
-         **rewrite Nat_sub_sub_swap.
-           replace (s1 - j) with (1 + (s1 - j - 1)) by flia Hjs.
-           rewrite Nat_sub_sub_swap.
-           rewrite Nat.pow_add_r, Nat.pow_1_r.
-           now apply Nat.mul_le_mono_r.
-        ++replace (s1 - j) with (1 + (s1 - j - 1)) at 1 by flia Hjs.
-          now rewrite Nat.pow_add_r, Nat.pow_1_r.
-       --intros i Hi.
-         replace (n + 1 + (S (S j) + (s1 - S (S j) - i)))
-           with (n1 - i - 1) by flia Hs1 Hjs Hi.
-         replace (n1 - 1 - (n1 - i - 1)) with i by flia Hs1 Hi.
-         f_equal.
-         replace (n1 - i - 1) with (n + S j + (s1 - j - i - 2) + 2)
-           by flia Hs1 Hjs Hi.
-         apply Hjaft.
-       *intros; apply Nat.pow_add_r.
-      +intros i Hi.
-       rewrite Nat.add_shuffle0, Hjbef; [ | flia ].
-       f_equal; f_equal; flia Hs1 Hi Hjs.
-   }
-   rewrite HnA.
-   rewrite Nat.sub_succ, Nat.sub_0_r.
-   rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
-   rewrite <- Nat.pow_succ_r'.
-   rewrite Nat.mod_small.
+         rewrite summation_split_first; [ | flia Hjs ].
+         remember S as f; simpl; subst f.
+         rewrite Nat.add_shuffle0, Hjwhi.
+         replace (n1 - 1 - (n + S j + 1)) with (s1 - j - 1) by flia Hs1.
+         rewrite summation_shift; [ | flia Hjs ].
+         rewrite summation_rtl.
+         rewrite Nat.add_0_r.
+         rewrite summation_eq_compat with (h := λ i, 2 * (rad - 1) * rad ^ i).
+         --rewrite <- summation_mul_distr_l.
+           remember S as f; simpl; subst f.
+           rewrite <- Nat.mul_assoc.
+           rewrite <- power_summation_sub_1; [ | easy ].
+           rewrite <- Nat.sub_succ_l; [ | easy ].
+           rewrite Nat.sub_succ.
+           rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+           rewrite Nat.add_assoc.
+           rewrite Nat.mul_sub_distr_r.
+           replace (rad * rad ^ (s1 - j - 1)) with (rad ^ (s1 - j)).
+           ++rewrite Nat.add_sub_assoc.
+             **rewrite Nat.sub_add.
+               ---rewrite Nat.mul_sub_distr_l, Nat.mul_1_r.
+                  rewrite Nat.add_sub_assoc.
+                  +++replace (s1 - j - 1) with (s1 - S j) by flia.
+                     rewrite <- Nat.pow_add_r.
+                     replace (S j + (s1 - j)) with (S s1) by flia Hjs.
+                     f_equal; apply Nat.sub_add.
+                     remember mult as f; simpl; subst f.
+                     apply Nat.mul_le_mono; [ easy | ].
+                     apply Nat.pow_le_mono_r; [ easy | flia ].
+                  +++replace 2 with (2 * 1) at 1 by apply Nat.mul_1_r.
+                     apply Nat.mul_le_mono_l.
+                     now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+               ---rewrite <- Nat.pow_add_r.
+                  apply Nat.pow_le_mono_r; [ easy | flia ].
+             **rewrite Nat_sub_sub_swap.
+               replace (s1 - j) with (1 + (s1 - j - 1)) by flia Hjs.
+               rewrite Nat_sub_sub_swap.
+               rewrite Nat.pow_add_r, Nat.pow_1_r.
+               now apply Nat.mul_le_mono_r.
+           ++replace (s1 - j) with (1 + (s1 - j - 1)) at 1 by flia Hjs.
+             now rewrite Nat.pow_add_r, Nat.pow_1_r.
+         --intros i Hi.
+           replace (n + 1 + (S (S j) + (s1 - S (S j) - i)))
+             with (n1 - i - 1) by flia Hs1 Hjs Hi.
+           replace (n1 - 1 - (n1 - i - 1)) with i by flia Hs1 Hi.
+           f_equal.
+           replace (n1 - i - 1) with (n + S j + (s1 - j - i - 2) + 2)
+             by flia Hs1 Hjs Hi.
+           apply Hjaft.
+        *intros; apply Nat.pow_add_r.
+       +intros i Hi.
+        rewrite Nat.add_shuffle0, Hjbef; [ | flia ].
+        f_equal; f_equal; flia Hs1 Hi Hjs.
+    }
+...
+    specialize (H2 0) as H3.
+    apply A_ge_1_true_iff in H3.
+    apply Nat.nlt_ge in H3; apply H3; clear H3.
+    rewrite Nat.add_0_r.
+    rewrite Nat.pow_1_r.
+    rewrite <- Hn1, <- Hs1.
+    rewrite HnA.
+    rewrite Nat.sub_succ, Nat.sub_0_r.
+    rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
+    rewrite <- Nat.pow_succ_r'.
+    rewrite Nat.mod_small.
   --idtac.
 (* aie !!! *)
 ...
