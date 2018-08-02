@@ -6090,7 +6090,11 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
  remember (n1 - n - 1) as s1 eqn:Hs1.
  move s1 before n1.
 ...
-(**)
+ destruct (lt_dec (nA n n1 u) (rad ^ s1)) as [H2| H2].
+ +rewrite Nat.mod_small in Hj; [ | easy ].
+  rewrite Nat.div_small in H1; [ | easy ].
+  rewrite Nat.add_0_r in H1.
+...
  specialize (Hn 1) as H2.
  unfold d2n, numbers_to_digits in H2.
  destruct (LPO_fst (A_ge_1 u (n + 1))) as [H3| H3].
