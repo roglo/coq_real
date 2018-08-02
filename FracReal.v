@@ -4525,6 +4525,7 @@ destruct (lt_dec (nA i n u) (rad ^ s)) as [H1| H1].
   rewrite <- Hs in H2.
   flia H2 H.
 Qed.
+*)
 
 Theorem A_ge_1_add_r_true_if {r : radix} : ∀ u i j k,
    A_ge_1 u i (j + k) = true
@@ -4544,8 +4545,7 @@ assert (Hijn : i + j + 2 ≤ n - 1). {
   destruct rad; [ easy | simpl; flia ].
 }
 replace (n - i - 1) with (s + j) in Hu by flia Hs Hijn.
-replace (n - (i + j) - k - 2) with (s - S k) by flia Hs.
-replace (n - i - (j + k) - 2) with (s - S k) in Hu by flia Hs.
+replace (s + j - S (j + k)) with (s - S k) in Hu by flia Hs.
 move Hu at bottom.
 revert Hu.
 apply Decidable.contrapositive; [ apply Nat.le_decidable | ].
@@ -4600,6 +4600,7 @@ intros * Hu *.
 apply A_ge_1_add_r_true_if, Hu.
 Qed.
 
+(*
 Theorem not_forall_eq_exists_not_neq : ∀ m (f : _ → nat) a,
   ¬ (∀ i, i < m → f i = a)
   → ∃ i, i < m ∧ f i ≠ a.
@@ -6019,6 +6020,7 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
      apply Nat.mul_le_mono; [ easy | ].
      now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
  +destruct H3 as (j & Hjbef & Hjwhi & Hjaft).
+(*
   remember (rad * (n + 3)) as n1 eqn:Hn1.
   remember (n1 - n - 1) as s1 eqn:Hs1.
   move s1 before n1.
@@ -6032,6 +6034,21 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
       rewrite Hs1.
       apply (nA_9998 _ _ _ j); [ easy | easy | easy | flia Hs1 Hjs ].
     }
+*)
+    specialize (Hn (j + 1)) as H3.
+    unfold d2n, numbers_to_digits in H3.
+    destruct (LPO_fst (A_ge_1 u (n + (j + 1)))) as [H4| H4].
+   ++simpl in H3.
+     remember (rad * (n + (j + 1) + 3)) as n2 eqn:Hn2.
+     remember (n2 - (n + (j + 1)) - 1) as s2 eqn:Hs2.
+     move s2 before n2.
+...
+Search A_ge_1.
+A_ge_1_add_r_all_true_if:
+  ∀ (r : radix) (u : nat → nat) (i : nat),
+    (∀ k : nat, A_ge_1 u i k = true) → ∀ j k : nat, A_ge_1 u (i + j) k = true
+A_ge_1_add_r_true_if:
+  ∀ (r : radix) (u : nat → nat) (i j k : nat), A_ge_1 u i (j + k) = true → A_ge_1 u (i + j) k = true
 ...
     specialize (H2 0) as H3.
     apply A_ge_1_true_iff in H3.
