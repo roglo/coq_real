@@ -6035,17 +6035,14 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
 ...
     specialize (H2 0) as H3.
     apply A_ge_1_true_iff in H3.
-    apply Nat.nlt_ge in H3; apply H3; clear H3.
-    rewrite Nat.add_0_r.
-    rewrite Nat.pow_1_r.
-    rewrite <- Hn1, <- Hs1.
-    rewrite HnA.
-    rewrite Nat.sub_succ, Nat.sub_0_r.
-    rewrite Nat.mul_sub_distr_r, Nat.mul_1_l.
-    rewrite <- Nat.pow_succ_r'.
-    rewrite Nat.mod_small.
+    rewrite Nat.add_0_r, Nat.pow_1_r in H3.
+    rewrite <- Hn1, <- Hs1 in H3.
+    rewrite HnA in H3.
+    rewrite Nat.sub_succ, Nat.sub_0_r in H3.
+    rewrite Nat.mul_sub_distr_r, Nat.mul_1_l in H3.
+    rewrite <- Nat.pow_succ_r' in H3.
+    rewrite Nat.mod_small in H3.
   --idtac.
-(* aie !!! *)
 ...
   --admit.
   *apply Nat.nlt_ge in Hjs.
