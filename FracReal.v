@@ -6090,15 +6090,37 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
  remember (n1 - n - 1) as s1 eqn:Hs1.
  move s1 before n1.
 ...
+(**)
+ specialize (Hn 1) as H2.
+ unfold d2n, numbers_to_digits in H2.
+ destruct (LPO_fst (A_ge_1 u (n + 1))) as [H3| H3].
+ +simpl in H2.
+  remember (rad * (n + 1 + 3)) as n2 eqn:Hn2.
+  remember (n2 - (n + 1) - 1) as s2 eqn:Hs2.
+  move s2 before n2.
+  specialize (A_ge_1_add_all_true_if u (n + 1)) as H4.
+  assert (H : ∀ k, u (n + 1 + k + 1) ≤ 2 * (rad - 1)). {
+    intros k; replace (n + 1 + k + 1) with (n + (1 + k) + 1) by flia.
+    apply Hur.
+  }
+  specialize (H4 H H3); clear H.
+  destruct H4 as [H4| [H4| H4]].
+  *idtac.
+...
  specialize (Hn j) as H2.
  unfold d2n, numbers_to_digits in H2.
  destruct (LPO_fst (A_ge_1 u (n + j))) as [H3| H3].
  +simpl in H2.
-  specialize (H3 0).
-...
-A_ge_1_add_r_true_if:
-  ∀ (r : radix) (u : nat → nat) (i j k : nat),
-    A_ge_1 u i (j + k) = true → A_ge_1 u (i + j) k = true
+  rewrite <- Hn1 in H2.
+  replace (n1 - (n + j) - 1) with (s1 - j) in H2 by flia Hs1.
+  specialize (A_ge_1_add_all_true_if u (n + j)) as H4.
+  assert (H : ∀ k, u (n + j + k + 1) ≤ 2 * (rad - 1)). {
+    intros k; replace (n + j + k + 1) with (n + (j + k) + 1) by flia.
+    apply Hur.
+  }
+  specialize (H4 H H3); clear H.
+  destruct H4 as [H4| [H4| H4]].
+  *idtac.
 ...
 
 Theorem freal_eq_add_norm_l {r : radix} : ∀ x y,
