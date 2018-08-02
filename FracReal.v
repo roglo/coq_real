@@ -6085,19 +6085,17 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
    apply A_ge_1_add_r_true_if in H2.
    now rewrite H2 in Hk.
 -destruct H2 as (j & Hjj & Hj); simpl in H1.
-(*
  apply A_ge_1_false_iff in Hj.
  remember (rad * (n + j + 3)) as n1 eqn:Hn1.
  remember (n1 - n - 1) as s1 eqn:Hs1.
  move s1 before n1.
-*)
+...
  specialize (Hn j) as H2.
  unfold d2n, numbers_to_digits in H2.
  destruct (LPO_fst (A_ge_1 u (n + j))) as [H3| H3].
  +simpl in H2.
   specialize (H3 0).
 ...
-  specialize (A_ge_1_add_r_true_if _ _ _ _ H3).
 A_ge_1_add_r_true_if:
   ∀ (r : radix) (u : nat → nat) (i j k : nat),
     A_ge_1 u i (j + k) = true → A_ge_1 u (i + j) k = true
