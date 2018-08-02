@@ -6076,10 +6076,16 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
      apply Nat.sub_0_le in Hs2.
      rewrite Hn2 in Hs2.
      destruct rad; [ easy | simpl in Hs2; flia Hs2 ].
-   ++idtac.
-...
-   ++admit.
+   ++enough (H6 : 2 ≤ rad ^ S s2) by flia H6; simpl.
+     replace 2 with (2 * 1) by apply Nat.mul_1_r.
+     apply Nat.mul_le_mono; [ easy | ].
+     now apply Nat.neq_0_lt_0, Nat.pow_nonzero.
+  *destruct H4 as (k & Hjk & Hk); simpl in H3.
+   specialize (H2 (j + 1 + k)).
+   apply A_ge_1_add_r_true_if in H2.
+   now rewrite H2 in Hk.
 -destruct H2 as (j & Hjj & Hj); simpl in H1.
+...
  apply A_ge_1_false_iff in Hj.
  admit.
 ...
