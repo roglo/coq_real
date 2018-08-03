@@ -6089,27 +6089,27 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
  remember (rad * (n + j + 3)) as n1 eqn:Hn1.
  remember (n1 - n - 1) as s1 eqn:Hs1.
  move s1 before n1.
-...
  destruct (lt_dec (nA n n1 u) (rad ^ s1)) as [H2| H2].
  +rewrite Nat.mod_small in Hj; [ | easy ].
   rewrite Nat.div_small in H1; [ | easy ].
   rewrite Nat.add_0_r in H1.
-...
- specialize (Hn 1) as H2.
- unfold d2n, numbers_to_digits in H2.
- destruct (LPO_fst (A_ge_1 u (n + 1))) as [H3| H3].
- +simpl in H2.
-  remember (rad * (n + 1 + 3)) as n2 eqn:Hn2.
-  remember (n2 - (n + 1) - 1) as s2 eqn:Hs2.
-  move s2 before n2.
-  specialize (A_ge_1_add_all_true_if u (n + 1)) as H4.
-  assert (H : ∀ k, u (n + 1 + k + 1) ≤ 2 * (rad - 1)). {
-    intros k; replace (n + 1 + k + 1) with (n + (1 + k) + 1) by flia.
-    apply Hur.
-  }
-  specialize (H4 H H3); clear H.
-  destruct H4 as [H4| [H4| H4]].
-  *idtac.
+  specialize (Hn 1) as H3.
+  unfold d2n, numbers_to_digits in H3.
+  destruct (LPO_fst (A_ge_1 u (n + 1))) as [H4| H4].
+  *simpl in H3.
+   remember (rad * (n + 1 + 3)) as n2 eqn:Hn2.
+   remember (n2 - (n + 1) - 1) as s2 eqn:Hs2.
+   move s2 before n2.
+   specialize (A_ge_1_add_all_true_if u (n + 1)) as H5.
+   assert (H : ∀ k, u (n + 1 + k + 1) ≤ 2 * (rad - 1)). {
+     intros k; replace (n + 1 + k + 1) with (n + (1 + k) + 1) by flia.
+     apply Hur.
+   }
+   specialize (H5 H H4); clear H.
+   destruct H5 as [H5| [H5| H5]].
+  --admit.
+  --admit.
+  --destruct H5 as (k & Hkbef & Hkwhi & Hkaft).
 ...
  specialize (Hn j) as H2.
  unfold d2n, numbers_to_digits in H2.
