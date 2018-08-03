@@ -6093,6 +6093,7 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
  +rewrite Nat.mod_small in Hj; [ | easy ].
   rewrite Nat.div_small in H1; [ | easy ].
   rewrite Nat.add_0_r in H1.
+...
   specialize (Hn 1) as H3.
   unfold d2n, numbers_to_digits in H3.
   destruct (LPO_fst (A_ge_1 u (n + 1))) as [H4| H4].
