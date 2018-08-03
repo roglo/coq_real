@@ -4353,11 +4353,13 @@ Fixpoint A_lt_1_bef_j_loop {r : radix} it u n j i :=
       if lt_dec i j then
         u (n + 2 + i) < 2 * (rad - 1) ∨ A_lt_1_bef_j_loop it' u n j (S i)
       else
-        A_lt_1_aft_j_loop it' u n (S i)
+        A_lt_1_aft_j_loop it' u n i
   end.
 
 Definition A_lt_1 {r : radix} u n n1 j :=
-  A_lt_1_bef_j_loop (n1 - n - 1) u n j 0.
+  u (n + 1) mod rad ≤ 7 ∨
+  u (n + 1) mod rad = 8 ∧
+   A_lt_1_bef_j_loop (n1 - n - 1) u n j 0.
 
 Theorem A_lt_1_add_false_if {r : radix} : ∀ u n n1 j,
   (∀ k, u (n + k + 1) ≤ 2 * (rad - 1))
@@ -4367,7 +4369,55 @@ Proof.
 intros *.
 specialize radix_ge_2 as Hr; move Hr before u.
 intros Hur Hu.
-Abort. (* à faire et à vérifier *)
+unfold A_lt_1.
+destruct (le_dec (u (n + 1) mod rad) 7) as [Hu7| Hu7]; [ now left | right ].
+destruct (eq_nat_dec (u (n + 1) mod rad) 8) as [Hu8| Hu8].
+-split; [ easy | ].
+ remember (n1 - n - 1) as s1 eqn:Hs1.
+ symmetry in Hs1.
+ move s1 before n1.
+ revert n1 j Hu Hs1.
+ induction s1; intros; [ easy | simpl ].
+ do 2 rewrite Nat.add_0_r.
+ destruct (lt_dec 0 j) as [H1| H1].
+ +destruct (eq_nat_dec (u (n + 2)) (2 * (rad - 1))) as [H2| H2].
+  *right.
+   destruct s1; [ easy | simpl ].
+   rewrite Nat.add_0_r.
+   replace (n + 2 + 1) with (n + 3) by flia.
+   destruct (lt_dec 1 j) as [H3| H3]; move H3 before H1.
+  --destruct (lt_dec (u (n + 3)) (2 * (rad - 1))) as [H4| H4].
+   ++left.
+     now simpl in H4; rewrite Nat.add_0_r in H4.
+   ++right; apply Nat.nlt_ge in H4.
+     admit.
+  --apply Nat.nlt_ge in H3.
+    replace j with 1 in Hu by flia H1 H3.
+    clear j H1 H3.
+    destruct s1; [ easy | simpl ].
+    replace (n + 2 + 1) with (n + 3) by flia.
+    destruct (lt_dec (u (n + 3)) (rad - 1)) as [H3| H3]; [ now left | right ].
+    apply Nat.nlt_ge in H3.
+    destruct (eq_nat_dec (u (n + 3)) (rad - 1)) as [H4| H4].
+   ++split; [ easy | ].
+     admit.
+   ++exfalso; apply H4; clear H4.
+     apply A_ge_1_false_iff in Hu.
+     remember (rad * (n + 1 + 3)) as n2 eqn:Hn2.
+     remember (n2 - n - 1) as s2 eqn:Hs2.
+     move s2 before n2.
+     admit.
+  *left.
+   specialize (Hur 1); replace (n + 1 + 1) with (n + 2) in Hur by flia.
+   replace (rad - 1 + (rad - 1)) with (2 * (rad - 1)) by flia.
+   flia Hur H2.
+ +apply Nat.nlt_ge in H1.
+  apply Nat.le_0_r in H1; subst j.
+  admit.
+-exfalso.
+ apply Nat.nle_gt in Hu7.
+(* ah non, c'est faux, ça : il reste le cas = 9 *)
+...
 
 Theorem eq_nA_div_1 {r : radix} : ∀ i n u,
   (∀ k, u (i + k + 1) ≤ 2 * (rad - 1))
