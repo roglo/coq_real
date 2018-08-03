@@ -4339,6 +4339,36 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
  now replace (i + k + 2) with (i + S k + 1) in H2 by flia.
 Qed.
 
+Fixpoint A_lt_1_aft_j_loop {r : radix} it u n i :=
+  match it with
+  | 0 => True
+  | S it' =>
+      u (n + 2 + i) < rad - 1 ∨
+      (u (n + 2 + i) = rad - 1 ∧ A_lt_1_aft_j_loop it' u n (S i))
+  end.
+Fixpoint A_lt_1_bef_j_loop {r : radix} it u n j i :=
+  match it with
+  | 0 => True
+  | S it' =>
+      if lt_dec i j then
+        u (n + 2 + i) < 2 * (rad - 1) ∨ A_lt_1_bef_j_loop it' u n j (S i)
+      else
+        A_lt_1_aft_j_loop it' u n (S i)
+  end.
+
+Definition A_lt_1 {r : radix} u n n1 j :=
+  A_lt_1_bef_j_loop (n1 - n - 1) u n j 0.
+
+Theorem A_lt_1_add_false_if {r : radix} : ∀ u n n1 j,
+  (∀ k, u (n + k + 1) ≤ 2 * (rad - 1))
+  → A_ge_1 u n j = false
+  → A_lt_1 u n n1 j.
+Proof.
+intros *.
+specialize radix_ge_2 as Hr; move Hr before u.
+intros Hur Hu.
+Abort. (* à faire et à vérifier *)
+
 Theorem eq_nA_div_1 {r : radix} : ∀ i n u,
   (∀ k, u (i + k + 1) ≤ 2 * (rad - 1))
   → nA i n u ≥ rad ^ (n - i - 1)
