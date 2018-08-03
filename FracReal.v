@@ -4356,10 +4356,13 @@ Fixpoint A_lt_1_bef_j_loop {r : radix} it u n j i :=
         A_lt_1_aft_j_loop it' u n i
   end.
 
+Definition A_lt_1_with_9 {r : radix} u n n1 j :=
+...
+
 Definition A_lt_1 {r : radix} u n n1 j :=
   u (n + 1) mod rad ≤ 7 ∨
-  u (n + 1) mod rad = 8 ∧
-   A_lt_1_bef_j_loop (n1 - n - 1) u n j 0.
+  u (n + 1) mod rad = 8 ∧ A_lt_1_bef_j_loop (n1 - n - 1) u n j 0 ∨
+  u (n + 1) = 9 ∧ j ≠ 0 ∧ A_lt_1_with_9 u (S n) n1 (j - 1).
 
 Theorem A_lt_1_add_false_if {r : radix} : ∀ u n n1 j,
   (∀ k, u (n + k + 1) ≤ 2 * (rad - 1))
@@ -4369,14 +4372,17 @@ Proof.
 intros *.
 specialize radix_ge_2 as Hr; move Hr before u.
 intros Hur Hu.
-unfold A_lt_1.
-destruct (le_dec (u (n + 1) mod rad) 7) as [Hu7| Hu7]; [ now left | right ].
-destruct (eq_nat_dec (u (n + 1) mod rad) 8) as [Hu8| Hu8].
--split; [ easy | ].
- remember (n1 - n - 1) as s1 eqn:Hs1.
- symmetry in Hs1.
- move s1 before n1.
- revert n1 j Hu Hs1.
+destruct j.
+-simpl.
+ destruct (le_dec (u (n + 1) mod rad) 7) as [Hu7| Hu7]; [ now left | right ].
+ destruct (eq_nat_dec (u (n + 1) mod rad) 8) as [Hu8| Hu8].
+ +left.
+  split; [ easy | ].
+  remember (n1 - n - 1) as s1 eqn:Hs1.
+  symmetry in Hs1.
+  move s1 before n1.
+...
+  revert n1 j Hu Hs1.
  induction s1; intros; [ easy | simpl ].
  do 2 rewrite Nat.add_0_r.
  destruct (lt_dec 0 j) as [H1| H1].
