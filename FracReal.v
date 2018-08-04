@@ -6178,18 +6178,27 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
    by A_ge_1 = false *)
 destruct j.
 Focus 2.
+(*
 specialize (Hjj 0 (Nat.lt_0_succ j)).
+*)
+specialize (Hjj j (Nat.lt_succ_diag_r j)).
+(**)
 apply A_ge_1_true_iff in Hjj.
 apply A_ge_1_false_iff in Hj.
+(*
 rewrite Nat.add_0_r in Hjj.
 remember (rad * (n + 3)) as n1 eqn:Hn1.
 remember (n1 - n - 1) as s1 eqn:Hs1.
+rewrite Nat.pow_1_r in Hjj.
+*)
+remember (rad * (n + j + 3)) as n1 eqn:Hn1.
+remember (n1 - n - 1) as s1 eqn:Hs1.
+(**)
 move s1 before n1.
 remember (rad * (n + S j + 3)) as n2 eqn:Hn2.
 remember (n2 - n - 1) as s2 eqn:Hs2.
 move n2 before s1; move s2 before n2.
 move Hn2 before Hs1; move Hs2 before Hn2.
-rewrite Nat.pow_1_r in Hjj.
 move H1 before s2.
 (**)
 ...
