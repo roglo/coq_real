@@ -4339,95 +4339,6 @@ specialize (A_ge_1_add_first u i Hur (Hu 0)) as [[H1| H1]| H1].
  now replace (i + k + 2) with (i + S k + 1) in H2 by flia.
 Qed.
 
-(*
-Fixpoint A_lt_1_aft_j_loop {r : radix} it u n i :=
-  match it with
-  | 0 => True
-  | S it' =>
-      u (n + 2 + i) < rad - 1 ∨
-      (u (n + 2 + i) = rad - 1 ∧ A_lt_1_aft_j_loop it' u n (S i))
-  end.
-
-Fixpoint A_lt_1_bef_j_loop {r : radix} it u n j i :=
-  match it with
-  | 0 => True
-  | S it' =>
-      if lt_dec i j then
-        u (n + 2 + i) < 2 * (rad - 1) ∨ A_lt_1_bef_j_loop it' u n j (S i)
-      else
-        A_lt_1_aft_j_loop it' u n i
-  end.
-
-Definition A_lt_1_with_9 {r : radix} u n n1 j :=
-...
-
-Definition A_lt_1 {r : radix} u n n1 j :=
-  u (n + 1) mod rad ≤ 7 ∨
-  u (n + 1) mod rad = 8 ∧ A_lt_1_bef_j_loop (n1 - n - 1) u n j 0 ∨
-  u (n + 1) = 9 ∧ j ≠ 0 ∧ A_lt_1_with_9 u (S n) n1 (j - 1).
-
-Theorem A_lt_1_add_false_if {r : radix} : ∀ u n n1 j,
-  (∀ k, u (n + k + 1) ≤ 2 * (rad - 1))
-  → A_ge_1 u n j = false
-  → A_lt_1 u n n1 j.
-Proof.
-intros *.
-specialize radix_ge_2 as Hr; move Hr before u.
-intros Hur Hu.
-destruct j.
--simpl.
- destruct (le_dec (u (n + 1) mod rad) 7) as [Hu7| Hu7]; [ now left | right ].
- destruct (eq_nat_dec (u (n + 1) mod rad) 8) as [Hu8| Hu8].
- +left.
-  split; [ easy | ].
-  remember (n1 - n - 1) as s1 eqn:Hs1.
-  symmetry in Hs1.
-  move s1 before n1.
-...
-  revert n1 j Hu Hs1.
- induction s1; intros; [ easy | simpl ].
- do 2 rewrite Nat.add_0_r.
- destruct (lt_dec 0 j) as [H1| H1].
- +destruct (eq_nat_dec (u (n + 2)) (2 * (rad - 1))) as [H2| H2].
-  *right.
-   destruct s1; [ easy | simpl ].
-   rewrite Nat.add_0_r.
-   replace (n + 2 + 1) with (n + 3) by flia.
-   destruct (lt_dec 1 j) as [H3| H3]; move H3 before H1.
-  --destruct (lt_dec (u (n + 3)) (2 * (rad - 1))) as [H4| H4].
-   ++left.
-     now simpl in H4; rewrite Nat.add_0_r in H4.
-   ++right; apply Nat.nlt_ge in H4.
-     admit.
-  --apply Nat.nlt_ge in H3.
-    replace j with 1 in Hu by flia H1 H3.
-    clear j H1 H3.
-    destruct s1; [ easy | simpl ].
-    replace (n + 2 + 1) with (n + 3) by flia.
-    destruct (lt_dec (u (n + 3)) (rad - 1)) as [H3| H3]; [ now left | right ].
-    apply Nat.nlt_ge in H3.
-    destruct (eq_nat_dec (u (n + 3)) (rad - 1)) as [H4| H4].
-   ++split; [ easy | ].
-     admit.
-   ++exfalso; apply H4; clear H4.
-     apply A_ge_1_false_iff in Hu.
-     remember (rad * (n + 1 + 3)) as n2 eqn:Hn2.
-     remember (n2 - n - 1) as s2 eqn:Hs2.
-     move s2 before n2.
-     admit.
-  *left.
-   specialize (Hur 1); replace (n + 1 + 1) with (n + 2) in Hur by flia.
-   replace (rad - 1 + (rad - 1)) with (2 * (rad - 1)) by flia.
-   flia Hur H2.
- +apply Nat.nlt_ge in H1.
-  apply Nat.le_0_r in H1; subst j.
-  admit.
--exfalso.
- apply Nat.nle_gt in Hu7.
-(* ah non, c'est faux, ça : il reste le cas = 9 *)
-...
-*)
-
 Theorem eq_nA_div_1 {r : radix} : ∀ i n u,
   (∀ k, u (i + k + 1) ≤ 2 * (rad - 1))
   → nA i n u ≥ rad ^ (n - i - 1)
@@ -6174,75 +6085,16 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
    apply A_ge_1_add_r_true_if in H2.
    now rewrite H2 in Hk.
 -destruct H2 as (j & Hjj & Hj); simpl in H1.
-(* experiment to see what happens with A_ge_1 = true followed
-   by A_ge_1 = false *)
-destruct j.
-Focus 2.
-(*
-specialize (Hjj 0 (Nat.lt_0_succ j)).
-*)
-specialize (Hjj j (Nat.lt_succ_diag_r j)).
-(**)
-apply A_ge_1_true_iff in Hjj.
-apply A_ge_1_false_iff in Hj.
-(*
-rewrite Nat.add_0_r in Hjj.
-remember (rad * (n + 3)) as n1 eqn:Hn1.
-remember (n1 - n - 1) as s1 eqn:Hs1.
-rewrite Nat.pow_1_r in Hjj.
-*)
-remember (rad * (n + j + 3)) as n1 eqn:Hn1.
-remember (n1 - n - 1) as s1 eqn:Hs1.
-(**)
-move s1 before n1.
-remember (rad * (n + S j + 3)) as n2 eqn:Hn2.
-remember (n2 - n - 1) as s2 eqn:Hs2.
-move n2 before s1; move s2 before n2.
-move Hn2 before Hs1; move Hs2 before Hn2.
-move H1 before s2.
-(**)
-...
- apply A_ge_1_false_iff in Hj.
- remember (rad * (n + j + 3)) as n1 eqn:Hn1.
- remember (n1 - n - 1) as s1 eqn:Hs1.
- move s1 before n1.
- destruct (lt_dec (nA n n1 u) (rad ^ s1)) as [H2| H2].
- +rewrite Nat.mod_small in Hj; [ | easy ].
-  rewrite Nat.div_small in H1; [ | easy ].
-  rewrite Nat.add_0_r in H1.
-...
-  specialize (Hn 1) as H3.
-  unfold d2n, numbers_to_digits in H3.
-  destruct (LPO_fst (A_ge_1 u (n + 1))) as [H4| H4].
-  *simpl in H3.
-   remember (rad * (n + 1 + 3)) as n2 eqn:Hn2.
-   remember (n2 - (n + 1) - 1) as s2 eqn:Hs2.
-   move s2 before n2.
-   specialize (A_ge_1_add_all_true_if u (n + 1)) as H5.
-   assert (H : ∀ k, u (n + 1 + k + 1) ≤ 2 * (rad - 1)). {
-     intros k; replace (n + 1 + k + 1) with (n + (1 + k) + 1) by flia.
-     apply Hur.
-   }
-   specialize (H5 H H4); clear H.
-   destruct H5 as [H5| [H5| H5]].
-  --admit.
-  --admit.
-  --destruct H5 as (k & Hkbef & Hkwhi & Hkaft).
-...
- specialize (Hn j) as H2.
- unfold d2n, numbers_to_digits in H2.
- destruct (LPO_fst (A_ge_1 u (n + j))) as [H3| H3].
- +simpl in H2.
-  rewrite <- Hn1 in H2.
-  replace (n1 - (n + j) - 1) with (s1 - j) in H2 by flia Hs1.
-  specialize (A_ge_1_add_all_true_if u (n + j)) as H4.
-  assert (H : ∀ k, u (n + j + k + 1) ≤ 2 * (rad - 1)). {
-    intros k; replace (n + j + k + 1) with (n + (j + k) + 1) by flia.
-    apply Hur.
-  }
-  specialize (H4 H H3); clear H.
-  destruct H4 as [H4| [H4| H4]].
-  *idtac.
+ destruct j.
+ +clear Hjj.
+  apply A_ge_1_false_iff in Hj.
+  rewrite Nat.add_0_r in Hj, H1.
+  rewrite Nat.pow_1_r in Hj.
+  remember (rad * (n + 3)) as n1 eqn:Hn1.
+  remember (n1 - n - 1) as s1 eqn:Hs1.
+  move s1 before n1.
+  admit.
+ +idtac.
 ...
 
 Theorem freal_eq_add_norm_l {r : radix} : ∀ x y,
