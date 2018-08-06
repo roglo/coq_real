@@ -6159,13 +6159,6 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
         rewrite <- Nat.mul_sub_distr_r in Hj.
         replace (rad - 1 - (rad - 2)) with 1 in Hj by flia Hr.
         rewrite Nat.mul_1_l, <- Nat.add_1_r in Hj.
-(*
-  Hs1 : s1 = n1 - n - 1
-  Hj : nA (n + 1) n1 u < rad ^ (s1 - 1)
-
-  Hs1' : s1' = n1 - (n + 1) - 1
-  Hj : nA (n + 1) n1 u < rad ^ s1'
-*)
 ...
      +++rewrite Hn1.
         destruct rad; [ easy | simpl; flia ].
