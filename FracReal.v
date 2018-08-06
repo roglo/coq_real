@@ -6151,7 +6151,24 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
     **idtac. (* u(n+1) = 8 *)
       destruct (lt_dec (u (n + 1) + 1) rad) as [H4| H4].
     ---rewrite Nat.mod_small in H2; [ | easy ].
+       rewrite nA_split_first in Hj.
+     +++assert (H5 : u (n + 1) = rad - 2) by flia H2; clear H2 H4.
+        rewrite H5 in Hj.
+        replace (n1 - n - 2) with (s1 - 1) in Hj by flia Hs1.
+        apply Nat.lt_add_lt_sub_l in Hj.
+        rewrite <- Nat.mul_sub_distr_r in Hj.
+        replace (rad - 1 - (rad - 2)) with 1 in Hj by flia Hr.
+        rewrite Nat.mul_1_l, <- Nat.add_1_r in Hj.
+(*
+  Hs1 : s1 = n1 - n - 1
+  Hj : nA (n + 1) n1 u < rad ^ (s1 - 1)
+
+  Hs1' : s1' = n1 - (n + 1) - 1
+  Hj : nA (n + 1) n1 u < rad ^ s1'
+*)
 ...
+     +++rewrite Hn1.
+        destruct rad; [ easy | simpl; flia ].
     ---apply Nat.nlt_ge in H4.
        rewrite Nat_mod_less_small in H2.
      +++apply Nat.nle_gt in Hj; apply Hj; clear Hj.
