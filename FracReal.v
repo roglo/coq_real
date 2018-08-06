@@ -6105,11 +6105,65 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
   remember (rad * (n + 3)) as n1 eqn:Hn1.
   remember (n1 - n - 1) as s1 eqn:Hs1.
   move s1 before n1.
-revert n1 Hn1 Hs1 Hj.
-induction s1; intros.
-rewrite Hn1 in Hs1.
-destruct rad; [ easy | simpl in Hs1; flia Hs1 ].
-rewrite Nat.sub_succ, Nat.sub_0_r in Hj.
+(**)
+  destruct (lt_dec (nA n n1 u) (rad ^ s1)) as [H1| H1].
+  *rewrite Nat.mod_small in Hj; [ | easy ].
+   specialize (Hn 1) as H2.
+   unfold d2n, numbers_to_digits in H2.
+   destruct (LPO_fst (A_ge_1 u (n + 1))) as [H3| H3].
+  --simpl in H2.
+    assert (Hn' : ∀ k, d2n (numbers_to_digits u) ((n + 1) + k) = rad - 1). {
+      intros k.
+      replace (n + 1 + k) with (n + (1 + k)) by flia.
+      apply Hn.
+    }
+    revert Hn'.
+    apply not_numbers_to_digits_all_9_all_ge_1; [ | easy | easy ].
+    intros k.
+    replace (n + 1 + k + 1) with (n + (1 + k) + 1) by flia.
+    apply Hur.
+  --destruct H3 as (k & Hjk & Hk); simpl in H2.
+    remember (rad * (n + 1 + k + 3)) as n2 eqn:Hn2.
+    remember (n2 - (n + 1) - 1) as s2 eqn:Hs2.
+    move n2 before s1; move s2 before n2.
+    destruct (lt_dec (nA (n + 1) n2 u) (rad ^ s2)) as [H3| H3].
+   ++rewrite Nat.div_small in H2; [ | easy ].
+     rewrite Nat.add_0_r in H2.
+     destruct (lt_dec (u (n + 1)) rad) as [H4| H4].
+    **rewrite Nat.mod_small in H2; [ | easy ].
+      clear H4.
+      apply Nat.nle_gt in Hj; apply Hj; clear Hj.
+      rewrite nA_split_first.
+    ---rewrite H2.
+       replace (n1 - n - 2) with (s1 - 1) by flia Hs1.
+       apply Nat.le_add_r.
+    ---rewrite Hn1.
+       destruct rad; [ easy | simpl; flia ].
+    **apply Nat.nlt_ge in H4.
+      rewrite Nat_mod_less_small in H2.
+    ---specialize (Hur 0); rewrite Nat.add_0_r in Hur.
+       flia Hur H2 H4 Hr.
+    ---split; [ easy | ].
+       specialize (Hur 0); rewrite Nat.add_0_r in Hur.
+       flia Hr Hur.
+   ++apply Nat.nlt_ge in H3.
+     rewrite Nat_div_less_small in H2.
+    **idtac. (* u(n+1) = 8 *)
+...
+    **split; [ easy | ].
+      specialize (nA_upper_bound_for_add u (n + 1) n2) as H4.
+      rewrite <- Hs2 in H4.
+      assert (H : ∀ k, u (n + 1 + k + 1) ≤ 2 * (rad - 1)). {
+        intros l.
+        replace (n + 1 + l + 1) with (n + (1 + l) + 1) by flia.
+        apply Hur.
+      }
+      specialize (H4 H); clear H.
+      rewrite Nat.mul_sub_distr_l, Nat.mul_1_r in H4.
+      specialize (Nat.pow_nonzero rad s2 radix_ne_0) as H5.
+      flia Hr H4 H5.
+  * ...
+...
   specialize (Hn 1) as H2.
   unfold d2n, numbers_to_digits in H2.
   destruct (LPO_fst (A_ge_1 u (n + 1))) as [H3| H3].
@@ -6124,8 +6178,7 @@ rewrite Nat.sub_succ, Nat.sub_0_r in Hj.
    intros k.
    replace (n + 1 + k + 1) with (n + (1 + k) + 1) by flia.
    apply Hur.
-  *destruct H3 as (k & Hjk & Hk).
-   simpl in H2.
+  *destruct H3 as (k & Hjk & Hk); simpl in H2.
    remember (rad * (n + 1 + k + 3)) as n2 eqn:Hn2.
    remember (n2 - (n + 1) - 1) as s2 eqn:Hs2.
    move n2 before s1; move s2 before n2.
@@ -6135,11 +6188,12 @@ rewrite Nat.sub_succ, Nat.sub_0_r in Hj.
     destruct (lt_dec (u (n + 1)) rad) as [H4| H4].
    ++rewrite Nat.mod_small in H2; [ | easy ].
      clear H4.
-     destruct (lt_dec (nA n n1 u) (rad ^ S s1)) as [H4| H4].
+...
+     destruct (lt_dec (nA n n1 u) (rad ^ s1)) as [H4| H4].
     **rewrite Nat.mod_small in Hj; [ | easy ].
       apply Nat.nle_gt in Hj; apply Hj; clear Hj.
       rewrite nA_split_first.
-    ---replace (n1 - n - 2) with s1 by flia Hs1.
+    ---replace (n1 - n - 2) with (s1 - 1) by flia Hs1.
        rewrite H2.
        apply Nat.le_add_r.
     ---rewrite Hn1.
@@ -6147,7 +6201,26 @@ rewrite Nat.sub_succ, Nat.sub_0_r in Hj.
     **rewrite Nat_mod_less_small in Hj.
     ---apply Nat.nlt_ge in H4.
        rewrite nA_split_first in H4.
-     +++replace (n1 - n - 2) with s1 in H4 by flia Hs1.
+     +++replace (n1 - n - 2) with (s1 - 1) in H4 by flia Hs1.
+        specialize (Hn 2) as H1.
+        unfold d2n, numbers_to_digits in H1.
+        destruct (LPO_fst (A_ge_1 u (n + 2))) as [H5| H5].
+      ***simpl in H1.
+         assert (Hn' : ∀ k, d2n (numbers_to_digits u) ((n + 2) + k) = rad - 1). {
+           intros l.
+           replace (n + 2 + l) with (n + (2 + l)) by flia.
+           apply Hn.
+         }
+         revert Hn'.
+         apply not_numbers_to_digits_all_9_all_ge_1; [ | easy | easy ].
+         intros k2.
+         replace (n + 2 + k2 + 1) with (n + (2 + k2) + 1) by flia.
+         apply Hur.
+      ***destruct H5 as (j2 & Hjj2 & Hj2).
+         simpl in H1.
+         remember (rad * (n + 2 + j2 + 3)) as n3 eqn:Hn3.
+         remember (n3 - (n + 2) - 1) as s3 eqn:Hs3.
+         move n3 before s2; move s3 before n3.
 ...
      +++rewrite Hn1.
         destruct rad; [ easy | simpl; flia ].
