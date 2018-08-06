@@ -6142,7 +6142,11 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
        destruct rad; [ easy | simpl; flia ].
     **rewrite Nat_mod_less_small in Hj.
     ---apply Nat.nlt_ge in H4.
-       ...
+       rewrite nA_split_first in H4.
+     +++replace (n1 - n - 2) with (s1 - 1) in H4 by flia Hs1.
+...
+     +++rewrite Hn1.
+        destruct rad; [ easy | simpl; flia ].
     ---split; [ flia H4 | ].
        specialize (nA_upper_bound_for_add u n n1 Hur) as H5.
        rewrite <- Hs1 in H5.
@@ -6158,7 +6162,18 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
       flia Hr Hur.
   --apply Nat.nlt_ge in H3.
     rewrite Nat_div_less_small in H2.
-   ++ ... (* pas gagné *)
+   ++idtac.
+     (* u(n+1) = 8 ou 18 *)
+     destruct (lt_dec (u (n + 1) + 1) rad) as [H4| H4].
+    **rewrite Nat.mod_small in H2; [ clear H4 | easy ].
+      ...
+    **apply Nat.nlt_ge in H4.
+      rewrite Nat_mod_less_small in H2.
+    ---assert (H : u (n + 1) = 2 * (rad - 1)) by flia H2.
+       clear H2 H4; rename H into H2.
+       ...
+    ---split; [ easy | ].
+       ...
    ++split; [ easy | ].
      specialize (nA_upper_bound_for_add u (n + 1) n2) as H4.
      rewrite <- Hs2 in H4.
