@@ -6133,11 +6133,15 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
      clear H4.
      destruct (lt_dec (nA n n1 u) (rad ^ s1)) as [H4| H4].
     **rewrite Nat.mod_small in Hj; [ | easy ].
-      admit.
+      apply Nat.nle_gt in Hj; apply Hj; clear Hj.
+      rewrite nA_split_first.
+    ---replace (n1 - n - 2) with (s1 - 1) by flia Hs1.
+       rewrite H2.
+       apply Nat.le_add_r.
+    ---rewrite Hn1.
+       destruct rad; [ easy | simpl; flia ].
     **rewrite Nat_mod_less_small in Hj.
     ---idtac.
-(* pas bon, ça. Faudrait peut-être pas que je n'utilise not_numbers..._ge_1
-   dans ce cas-là *)
 ...
 apply Nat.lt_sub_lt_add_l in Hj.
 ...
