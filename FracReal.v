@@ -6164,6 +6164,10 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
         replace (rad - 1 - (rad - 2)) with 1 in Hj by flia Hr.
         rewrite Nat.mul_1_l, <- Nat.add_1_r in Hj.
         move Hj before H4.
+apply A_ge_1_false_iff in Hk.
+rewrite <- Hn2 in Hk.
+rewrite <- Hs2 in Hk.
+rewrite Nat_mod_less_small in Hk.
 ...
      +++rewrite Hn1.
         destruct rad; [ easy | simpl; flia ].
