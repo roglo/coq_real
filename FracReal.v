@@ -6105,7 +6105,6 @@ destruct (LPO_fst (A_ge_1 u n)) as [H2| H2]; simpl in H1.
   remember (rad * (n + 3)) as n1 eqn:Hn1.
   remember (n1 - n - 1) as s1 eqn:Hs1.
   move s1 before n1.
-...
   specialize (Hn 1) as H2.
   unfold d2n, numbers_to_digits in H2.
   destruct (LPO_fst (A_ge_1 u (n + 1))) as [H3| H3].
